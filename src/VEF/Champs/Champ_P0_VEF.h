@@ -20,10 +20,12 @@
 #include <Champ_Inc_P0_base.h>
 #include <Ref_Zone_VEF.h>
 
-//.DESCRIPTION classe Champ_P0_VEF
-// Classe qui represente un champ discret P0 par element
-// associe a une zone discretisee de type Zone_VEF
-//
+/*! @brief classe Champ_P0_VEF Classe qui represente un champ discret P0 par element
+ *
+ *  associe a une zone discretisee de type Zone_VEF
+ *
+ *
+ */
 
 //.SECTION voir aussi
 // Champ_P0

@@ -170,25 +170,12 @@ Entree& Loi_Etat_rhoT_GR_QC::readOn(Entree& is)
   return is;
 }
 
-// Description:
-//    Calcule la masse volumique ponctuelle
-// Precondition:
-// Parametre: double P
-//    Signification: pression
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Parametre: double h
-//    Signification: enthalpie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: double
-//    Signification: masse volumique correspondante
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la masse volumique ponctuelle
+ *
+ * @param (double P) pression
+ * @param (double h) enthalpie
+ * @return (double) masse volumique correspondante
+ */
 double Loi_Etat_rhoT_GR_QC::calculer_masse_volumique(double P, double h) const
 {
   double res = 0;
@@ -208,25 +195,12 @@ double Loi_Etat_rhoT_GR_QC::calculer_masse_volumique(double P, double h) const
   return res;
 }
 
-// Description:
-//    Calcule la temperature ponctuelle
-// Precondition:
-// Parametre: double P
-//    Signification: pression
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Parametre: double h
-//    Signification: enthalpie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: double
-//    Signification: masse volumique correspondante
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la temperature ponctuelle
+ *
+ * @param (double P) pression
+ * @param (double h) enthalpie
+ * @return (double) masse volumique correspondante
+ */
 double Loi_Etat_rhoT_GR_QC::calculer_temperature(double P, double h)
 {
   double res = 0;
@@ -246,20 +220,9 @@ double Loi_Etat_rhoT_GR_QC::calculer_temperature(double P, double h)
   return res;
 }
 
-// Description:
-//    Cas gaz Reel : doit recalculer l'enthalpie a partir de la pression et la temperature
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Cas gaz Reel : doit recalculer l'enthalpie a partir de la pression et la temperature
+ *
+ */
 double Loi_Etat_rhoT_GR_QC::calculer_H(double Pth_, double T_) const
 {
   double res=0;

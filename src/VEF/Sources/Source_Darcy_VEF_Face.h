@@ -16,12 +16,13 @@
 #ifndef Source_Darcy_VEF_Face_included
 #define Source_Darcy_VEF_Face_included
 
-//
-// .DESCRIPTION class Source_Darcy_VEF_Face
-//
-// Terme de Darcy pour les milieux poreux
-//
-//
+/*! @brief class Source_Darcy_VEF_Face
+ *
+ *  Terme de Darcy pour les milieux poreux
+ *
+ *
+ *
+ */
 
 #include <Terme_Source_VEF_base.h>
 #include <Iterateur_Source_VEF.h>

@@ -16,8 +16,9 @@
 #ifndef Terme_Source_VEF_base_included
 #define Terme_Source_VEF_base_included
 
-// .DESCRIPTION
-// VEF implementation of Source_base class
+/*! @brief VEF implementation of Source_base class
+ *
+ */
 
 #include <Source_base.h>
 #include <Iterateur_Source_VEF.h>
@@ -51,8 +52,9 @@ protected:
 //   Fonctions inline de la classe Terme_Source_VEF_base
 //
 
-// Description:
-// constructeur
+/*! @brief constructeur
+ *
+ */
 inline Terme_Source_VEF_base::Terme_Source_VEF_base(const Iterateur_Source_VEF_base& iter_base) :
   iter(iter_base)
 {}

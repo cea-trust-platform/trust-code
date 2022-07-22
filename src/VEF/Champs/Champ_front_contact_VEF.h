@@ -31,19 +31,16 @@ class Zone_dis_base;
 class Zone_Cl_dis_base;
 class Front_dis_base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_front_contact_VEF
-//     Permet le couplage scalaire (temperature ou concentration) entre problemes en calculant
-//     la valeur a la paroi qui permet d'egaliser les flux.
-//     calculer_coeffs_echange stocke grad_num_local et grad_fro_local tels que (aux signes pres?)
-//     flux = grad_num_local + Scal_paroi*grad_fro_local
-//     mettre_a_jour recupere les grad* d'en face et calcule Scal_paroi de
-//     facon a egaliser les flux.
-// .SECTION voir aussi
-//     Champ_front_var_instationnaire Champ_Inc
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_front_contact_VEF Permet le couplage scalaire (temperature ou concentration) entre problemes en calculant
+ *
+ *      la valeur a la paroi qui permet d'egaliser les flux.
+ *      calculer_coeffs_echange stocke grad_num_local et grad_fro_local tels que (aux signes pres?)
+ *      flux = grad_num_local + Scal_paroi*grad_fro_local
+ *      mettre_a_jour recupere les grad* d'en face et calcule Scal_paroi de
+ *      facon a egaliser les flux.
+ *
+ * @sa Champ_front_var_instationnaire Champ_Inc
+ */
 class Champ_front_contact_VEF : public Ch_front_var_instationnaire_dep
 {
 

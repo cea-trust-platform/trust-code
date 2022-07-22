@@ -22,8 +22,9 @@
 #include <Ref_Zone_Cl_VEF.h>
 #include <Zone_Cl_VEF.h>
 
-//.DESCRIPTION  classe grad_U_Champ_P1NC
-//
+/*! @brief classe grad_U_Champ_P1NC
+ *
+ */
 
 class grad_U_Champ_P1NC : public Champ_Fonc_P0_VEF
 

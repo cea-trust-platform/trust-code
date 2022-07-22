@@ -25,8 +25,9 @@
 class Probleme_base;
 class Navier_Stokes_std;
 
-// .DESCRIPTION class Terme_Source_Canal_RANS_LES_VEF_Face Cette classe concerne un terme source calcule en partie grace
-//  a un calcul RANS preliminaire et applique au calcul LES en cours
+/*! @brief class Terme_Source_Canal_RANS_LES_VEF_Face Cette classe concerne un terme source calcule en partie grace a un calcul RANS preliminaire et applique au calcul LES en cours
+ *
+ */
 class Terme_Source_Canal_RANS_LES_VEF_Face : public Source_base
 {
   Declare_instanciable_sans_destructeur(Terme_Source_Canal_RANS_LES_VEF_Face);

@@ -28,16 +28,20 @@ Sortie& Terme_Source_Acceleration_VDF_Face::printOn(Sortie& s ) const
   return s << que_suis_je() ;
 }
 
-// Description: Appel a Terme_Source_Acceleration::lire_data
+/*! @brief Appel a Terme_Source_Acceleration::lire_data
+ *
+ */
 Entree& Terme_Source_Acceleration_VDF_Face::readOn(Entree& s )
 {
   lire_data(s);
   return s;
 }
 
-// Description:
-//  Methode appelee par Source_base::completer() apres associer_zones
-//  Remplit les ref. aux zones et zone_cl
+/*! @brief Methode appelee par Source_base::completer() apres associer_zones Remplit les ref.
+ *
+ * aux zones et zone_cl
+ *
+ */
 void Terme_Source_Acceleration_VDF_Face::associer_zones(const Zone_dis& zone_dis,
                                                         const Zone_Cl_dis& zone_Cl_dis)
 {
@@ -47,16 +51,17 @@ void Terme_Source_Acceleration_VDF_Face::associer_zones(const Zone_dis& zone_dis
   la_zone_Cl_VDF_ = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur());
 }
 
-// Description:
-//  Fonction outil pour Terme_Source_Acceleration_VDF_Face::ajouter
-//  Ajout des contributions d'une liste contigue de faces du terme source de translation:
-//   s_face = terme_source * rho
-//   resu  += integrale (s_face) sur le volume de controle de la vitesse.
-//  On traite les cas suivants:
-//    rho = reference nulle (=> rho = 1.)  sinon rho != nul
-//    faces de bord => sortie libre
-//    periodicite
-//    faces_internes
+/*! @brief Fonction outil pour Terme_Source_Acceleration_VDF_Face::ajouter Ajout des contributions d'une liste contigue de faces du terme source de translation:
+ *
+ *    s_face = terme_source * rho
+ *    resu  += integrale (s_face) sur le volume de controle de la vitesse.
+ *   On traite les cas suivants:
+ *     rho = reference nulle (=> rho = 1.)  sinon rho != nul
+ *     faces de bord => sortie libre
+ *     periodicite
+ *     faces_internes
+ *
+ */
 static void TSAVDF_ajouter_liste_faces(const int premiere_face, const int derniere_face,
                                        const DoubleVect& volumes_entrelaces,
                                        const DoubleVect& volumes_elements,
@@ -108,11 +113,13 @@ static void TSAVDF_ajouter_liste_faces(const int premiere_face, const int dernie
     }
 }
 
-// Description:
-//  Ajoute le terme (la_source_ * rho * volume_entrelace) au champ resu.
-//  On suppose que resu est discretise comme la vitesse en VDF.
-// Effet de bord:
-//  On met (la_source_ * rho) dans terme_source_post_
+/*! @brief Ajoute le terme (la_source_ * rho * volume_entrelace) au champ resu.
+ *
+ * On suppose que resu est discretise comme la vitesse en VDF.
+ *  Effet de bord:
+ *   On met (la_source_ * rho) dans terme_source_post_
+ *
+ */
 void Terme_Source_Acceleration_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Zone_VDF&    zone_VDF           = la_zone_VDF_.valeur();
@@ -201,16 +208,19 @@ void Terme_Source_Acceleration_VDF_Face::ajouter_blocs(matrices_t matrices, Doub
   }
 }
 
-// Description: Calcul des trois composantes du champ de vitesse fluide au centre
-//  de chaque face. Le resultat est stocke dans v_faces_stockage et on renvoie
-//  une reference au tableau. Pas d'espace virtuel dans le tableau.
-//  La composante normale a la face est deja connue: c'est la valeur discrete.
-//  Les autres composantes sont calculees en faisant la moyenne des vitesse
-//  des faces des elements voisins qui ont la bonne orientation, ponderee
-//  par le volume de l'element.
-//  Traitement des bords : on prend la vitesse de l'element voisin (a priori
-//   pas bon pour les conditions aux limites de vitesse imposee au bord,
-//   mais le vpoint est corrige ensuite pour imposer la vitesse).
+/*! @brief Calcul des trois composantes du champ de vitesse fluide au centre de chaque face.
+ *
+ * Le resultat est stocke dans v_faces_stockage et on renvoie
+ *   une reference au tableau. Pas d'espace virtuel dans le tableau.
+ *   La composante normale a la face est deja connue: c'est la valeur discrete.
+ *   Les autres composantes sont calculees en faisant la moyenne des vitesse
+ *   des faces des elements voisins qui ont la bonne orientation, ponderee
+ *   par le volume de l'element.
+ *   Traitement des bords : on prend la vitesse de l'element voisin (a priori
+ *    pas bon pour les conditions aux limites de vitesse imposee au bord,
+ *    mais le vpoint est corrige ensuite pour imposer la vitesse).
+ *
+ */
 const DoubleTab& Terme_Source_Acceleration_VDF_Face::calculer_vitesse_faces(
   DoubleTab& v_faces_stockage) const
 {
@@ -281,12 +291,10 @@ const DoubleTab& Terme_Source_Acceleration_VDF_Face::calculer_vitesse_faces(
   return v_faces_stockage;
 }
 
-// Description:
-//   Associe le champ de masse volumique=>
-//   Le terme source calcule sera alors homogene a d/dt(integrale(rho*v)).
-// Parametre:     champ_rho
-// Signification: un champ de type Champ_Fonc_P0_VDF qui sera utilise
-//                lors des appels a "ajouter()" pour evaluer la masse volumique.
+/*! @brief Associe le champ de masse volumique=> Le terme source calcule sera alors homogene a d/dt(integrale(rho*v)).
+ *
+ * @param (champ_rho) un champ de type Champ_Fonc_P0_VDF qui sera utilise lors des appels a "ajouter()" pour evaluer la masse volumique.
+ */
 
 void Terme_Source_Acceleration_VDF_Face::associer_champ_rho(const Champ_base& champ_rho)
 {

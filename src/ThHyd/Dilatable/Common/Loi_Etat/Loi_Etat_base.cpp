@@ -38,58 +38,27 @@ Entree& Loi_Etat_base::readOn(Entree& is)
   return is;
 }
 
-// Description:
-//    Associe le fluide a la loi d'etat
-// Precondition:
-// Parametre: Fluide_Dilatable_base& fl
-//    Signification: le fluide associe
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe le fluide a la loi d'etat
+ *
+ * @param (Fluide_Dilatable_base& fl) le fluide associe
+ */
 void Loi_Etat_base::associer_fluide(const Fluide_Dilatable_base& fl)
 {
   le_fluide = fl;
 }
 
-// Description:
-//    Associe le probleme a la loi d'etat
-// Precondition:
-// Parametre: Fluide_Dilatable_base& fl
-//    Signification: le fluide associe
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe le probleme a la loi d'etat
+ *
+ * @param (Fluide_Dilatable_base& fl) le fluide associe
+ */
 void Loi_Etat_base::assoscier_probleme(const Probleme_base& pb)
 {
   le_prob_ = pb;
 }
 
-// Description:
-//    Renvoie le champ de le temperature
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le champ de le temperature
+ *
+ */
 const Champ_Don& Loi_Etat_base::ch_temperature() const
 {
   return temperature_;
@@ -100,20 +69,9 @@ Champ_Don& Loi_Etat_base::ch_temperature()
   return temperature_;
 }
 
-// Description:
-//    Initialise l'inconnue de l'equation de chaleur : ne fai rien
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Initialise l'inconnue de l'equation de chaleur : ne fai rien
+ *
+ */
 void Loi_Etat_base::initialiser_inco_ch()
 {
   DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
@@ -126,20 +84,9 @@ void Loi_Etat_base::initialiser_inco_ch()
   tab_rho_np1.echange_espace_virtuel();
 }
 
-// Description:
-//    Prepare le fluide au calcul.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Prepare le fluide au calcul.
+ *
+ */
 void Loi_Etat_base::preparer_calcul()
 {
   remplir_T();
@@ -148,20 +95,10 @@ void Loi_Etat_base::preparer_calcul()
   mettre_a_jour(t);
 }
 
-// Description:
-//    Met a jour la loi d'etat et le champ rho
-// Precondition:
-// Parametre: double temps
-//    Signification: le temps de calcul
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Met a jour la loi d'etat et le champ rho
+ *
+ * @param (double temps) le temps de calcul
+ */
 void Loi_Etat_base::mettre_a_jour(double temps)
 {
   //remplissage de rho avec rho(n+1)
@@ -175,20 +112,9 @@ void Loi_Etat_base::mettre_a_jour(double temps)
   le_fluide->masse_volumique().mettre_a_jour(temps);
 }
 
-// Description:
-//    Calcule la viscosite
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la viscosite
+ *
+ */
 void Loi_Etat_base::calculer_mu()
 {
   Champ_Don& mu = le_fluide->viscosite_dynamique();
@@ -205,20 +131,9 @@ void Loi_Etat_base::calculer_mu()
     }
 }
 
-// Description:
-//    Calcule la conductivite
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la conductivite
+ *
+ */
 void Loi_Etat_base::calculer_lambda()
 {
   const Champ_Don& mu = le_fluide->viscosite_dynamique();
@@ -244,20 +159,9 @@ void Loi_Etat_base::calculer_lambda()
   tab_lambda.echange_espace_virtuel();
 }
 
-// Description:
-//    Calcule la viscosite cinematique
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la viscosite cinematique
+ *
+ */
 void Loi_Etat_base::calculer_nu()
 {
   const Champ_Don& mu = le_fluide->viscosite_dynamique();
@@ -312,20 +216,9 @@ void Loi_Etat_base::calculer_nu()
   Debog::verifier("Loi_Etat_base::calculer_nu tab_nu",tab_nu);
 }
 
-// Description:
-//    Calcule la diffusivite
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la diffusivite
+ *
+ */
 void Loi_Etat_base::calculer_alpha()
 {
   const Champ_Don& lambda = le_fluide->conductivite();
@@ -349,60 +242,25 @@ void Loi_Etat_base::calculer_alpha()
 }
 
 
-// Description:
-// Ne fait rien
-// Surcharge dans Loi_Etat_Melange_GP
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ne fait rien Surcharge dans Loi_Etat_Melange_GP
+ *
+ */
 void Loi_Etat_base::calculer_mu_sur_Sc()
 {
   /* Do nothing : overloaded later */
 }
 
-// Description:
-// Ne fait rien
-// Surcharge dans Loi_Etat_Melange_Binaire
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ne fait rien Surcharge dans Loi_Etat_Melange_Binaire
+ *
+ */
 void Loi_Etat_base::calculer_nu_sur_Sc()
 {
   /* Do nothing : overloaded later */
 }
 
-// Description:
-//    Recalcule la masse volumique
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Recalcule la masse volumique
+ *
+ */
 void Loi_Etat_base::calculer_masse_volumique()
 {
   const DoubleTab& tab_ICh = le_fluide->inco_chaleur().valeurs();
@@ -419,21 +277,9 @@ void Loi_Etat_base::calculer_masse_volumique()
   le_fluide->calculer_rho_face(tab_rho_np1);
 }
 
-// Description:
-//    Cas gaz parfait : ne fait rien
-//    Cas gaz Reel : doit recalculer l'enthalpie a partir de la pression et la temperature
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Cas gaz parfait : ne fait rien Cas gaz Reel : doit recalculer l'enthalpie a partir de la pression et la temperature
+ *
+ */
 double Loi_Etat_base::calculer_H(double Pth_, double T_) const
 {
   return T_;

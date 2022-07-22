@@ -22,15 +22,10 @@
 #include <Champ_Don.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//
-//
-// .SECTION voir aussi
-//      Navier_Stokes_Turbulent, Traitement_particulier_base,
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief
+ *
+ * @sa Navier_Stokes_Turbulent, Traitement_particulier_base,
+ */
 class Traitement_particulier_NS_Pression : public Traitement_particulier_NS_base
 {
   Declare_base(Traitement_particulier_NS_Pression);

@@ -18,13 +18,10 @@
 
 #include <Schema_Temps.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Multi_Sch_ThHyd
-// .SECTION voir aussi
-//     Schema_Temps_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Multi_Sch_ThHyd
+ *
+ * @sa Schema_Temps_base
+ */
 class Multi_Sch_ThHyd: public Schema_Temps_base
 {
 

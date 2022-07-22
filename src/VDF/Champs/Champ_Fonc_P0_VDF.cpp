@@ -35,8 +35,9 @@ Entree& Champ_Fonc_P0_VDF::readOn(Entree& s)
   return s ;
 }
 
-// Description:
-// Ecrit le champ sous la forme IJK
+/*! @brief Ecrit le champ sous la forme IJK
+ *
+ */
 int Champ_Fonc_P0_VDF::imprime(Sortie& os, int ncomp) const
 {
   // valeur_au_ijk(xi,yj,zk,valeurs,ncomp);

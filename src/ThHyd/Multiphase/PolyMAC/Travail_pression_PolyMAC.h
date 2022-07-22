@@ -18,16 +18,13 @@
 
 #include <Source_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Travail_pression_PolyMAC
-//    Cette classe implemente dans PolyMAC le travail de la pression
-//    - p (d alpha_k / dt + div(alpha_k v_k) )
-//    dans l'equation d'energie ecrite en energie interne (cf. CATHARE 3D)
-// .SECTION voir aussi
-//    Operateur_PolyMAC_base Operateur_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Travail_pression_PolyMAC Cette classe implemente dans PolyMAC le travail de la pression
+ *
+ *     - p (d alpha_k / dt + div(alpha_k v_k) )
+ *     dans l'equation d'energie ecrite en energie interne (cf. CATHARE 3D)
+ *
+ * @sa Operateur_PolyMAC_base Operateur_base
+ */
 class Travail_pression_PolyMAC: public Source_base
 {
   Declare_instanciable(Travail_pression_PolyMAC);

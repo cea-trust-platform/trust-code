@@ -27,15 +27,15 @@
 #include <ArrOfBit.h>
 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION class Op_Diff_VEF_Face
-//  Cette classe represente l'operateur de diffusion
-//  La discretisation est VEF
-//  Le champ diffuse est scalaire
-//  Le champ de diffusivite est uniforme
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief class Op_Diff_VEF_Face Cette classe represente l'operateur de diffusion
+ *
+ *   La discretisation est VEF
+ *   Le champ diffuse est scalaire
+ *   Le champ de diffusivite est uniforme
+ *
+ *
+ *
+ */
 
 class Op_Diff_VEFP1NCP1B_Face : public Op_Diff_VEF_Face
 {

@@ -24,15 +24,12 @@
 
 Declare_vect(RefObjU);
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Convection_Diffusion_Temperature
-//     Cas particulier de Convection_Diffusion_std
-//     quand le scalaire subissant le transport est la temperature.
-// .SECTION voir aussi
-//     Conv_Diffusion_std
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Convection_Diffusion_Temperature Cas particulier de Convection_Diffusion_std
+ *
+ *      quand le scalaire subissant le transport est la temperature.
+ *
+ * @sa Conv_Diffusion_std
+ */
 
 class Convection_Diffusion_Temperature : public Convection_Diffusion_std
 {
@@ -105,61 +102,32 @@ protected :
 };
 
 
-// Description:
-//    Associe un fluide incompressible a l'equation.
-// Precondition:
-// Parametre: Fluide_base& un_fluide
-//    Signification: le milieu fluide incompressible a associer a l'equation
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: l'equation a un milieu associe
+/*! @brief Associe un fluide incompressible a l'equation.
+ *
+ * @param (Fluide_base& un_fluide) le milieu fluide incompressible a associer a l'equation
+ */
 inline void Convection_Diffusion_Temperature::associer_fluide(const Fluide_base& un_fluide)
 {
   le_fluide = un_fluide;
 }
 
 
-// Description:
-//    Renvoie le champ inconnue representant la temperatue.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Inc&
-//    Signification: le champ inconnue representant la temperatue
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le champ inconnue representant la temperatue.
+ *
+ * (version const)
+ *
+ * @return (Champ_Inc&) le champ inconnue representant la temperatue
+ */
 inline const Champ_Inc& Convection_Diffusion_Temperature::inconnue() const
 {
   return la_temperature;
 }
 
 
-// Description:
-//    Renvoie le champ inconnue representant la temperatue.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Inc&
-//    Signification: le champ inconnue representant la temperatue
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le champ inconnue representant la temperatue.
+ *
+ * @return (Champ_Inc&) le champ inconnue representant la temperatue
+ */
 inline Champ_Inc& Convection_Diffusion_Temperature::inconnue()
 {
   return la_temperature;

@@ -23,11 +23,13 @@
 #include <Zone_VDF.h>
 class Champ_base;
 
-// .DESCRIPTION class Eval_Diff_VDF_Multi_inco_var
-// Cette classe represente un evaluateur de flux diffusif
-// pour un vecteur d'inconnues avec une diffusivite par
-// inconnue. Le champ de diffusivite associe a chaque inconnue n'est pas constant.
-// .SECTION voir aussi Evaluateur_VDF
+/*! @brief class Eval_Diff_VDF_Multi_inco_var Cette classe represente un evaluateur de flux diffusif
+ *
+ *  pour un vecteur d'inconnues avec une diffusivite par
+ *  inconnue. Le champ de diffusivite associe a chaque inconnue n'est pas constant.
+ *
+ * @sa Evaluateur_VDF
+ */
 class Eval_Diff_VDF_Multi_inco_var : public Eval_Diff_VDF
 {
 

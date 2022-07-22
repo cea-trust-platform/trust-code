@@ -25,48 +25,31 @@ Implemente_deriv(Turbulence_paroi_scal_base);
 Implemente_instanciable(Turbulence_paroi_scal,"Turbulence_paroi_scal",DERIV(Turbulence_paroi_scal_base));
 
 
-// Description:
-//    Ecrit le type de l'objet sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit le type de l'objet sur un flot de sortie
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Turbulence_paroi_scal::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
 
-// Description:
-//    Lit les caracteristques de la loi de parois
-//    a partir d'un flot d'entree.
-//    Format:
-//      type_de_loi_de_paroi
-//    Les valeurs possibles du type de loi de paroi sont:
-//      - "loi_standard_hydr"
-//      - "negligeable"
-//      - "loi_VanDriest"
-//      - "loi_standard_hydr_scalaire"
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: type de loi de paroi incompatible avec le probleme traite
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit les caracteristques de la loi de parois a partir d'un flot d'entree.
+ *
+ *     Format:
+ *       type_de_loi_de_paroi
+ *     Les valeurs possibles du type de loi de paroi sont:
+ *       - "loi_standard_hydr"
+ *       - "negligeable"
+ *       - "loi_VanDriest"
+ *       - "loi_standard_hydr_scalaire"
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ * @throws type de loi de paroi incompatible avec le probleme traite
+ */
 Entree& Turbulence_paroi_scal::readOn(Entree& s)
 {
   Cerr << "Lecture du type de loi de parois " << finl;
@@ -111,21 +94,10 @@ Entree& Turbulence_paroi_scal::readOn(Entree& s)
 }
 
 
-// Description:
-//    Associe un modele de turbulence a l'objet.
-// Precondition:
-// Parametre: Mod_turb_hyd_base& le_modele
-//    Signification: le modele de turbulence hydraulique
-//                   a associer a l'objet
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: l'objet a un modele de turbulence associe
+/*! @brief Associe un modele de turbulence a l'objet.
+ *
+ * @param (Mod_turb_hyd_base& le_modele) le modele de turbulence hydraulique a associer a l'objet
+ */
 void Turbulence_paroi_scal::associer_modele(const Modele_turbulence_scal_base& mod)
 {
   mon_modele_turb_scal = mod;

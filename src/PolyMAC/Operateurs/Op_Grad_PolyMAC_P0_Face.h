@@ -23,13 +23,14 @@
 #include <Ref_Zone_Cl_PolyMAC.h>
 #include <Ref_Champ_Face_PolyMAC_P0.h>
 
-//
-// .DESCRIPTION class Op_Grad_PolyMAC_P0_Face
-//
-//  Cette classe represente l'operateur de gradient
-//  La discretisation est PolyMAC_P0
-//  On calcule le gradient d'un champ_Elem_PolyMAC_P0 (la pression)
-//
+/*! @brief class Op_Grad_PolyMAC_P0_Face
+ *
+ *   Cette classe represente l'operateur de gradient
+ *   La discretisation est PolyMAC_P0
+ *   On calcule le gradient d'un champ_Elem_PolyMAC_P0 (la pression)
+ *
+ *
+ */
 
 // .SECTION voir aussi
 // Operateur_Grad_base

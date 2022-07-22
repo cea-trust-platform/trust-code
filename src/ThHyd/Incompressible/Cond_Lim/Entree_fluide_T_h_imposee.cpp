@@ -20,43 +20,27 @@
 Implemente_instanciable(Entree_fluide_T_h_imposee,"Frontiere_ouverte_T_h_imposee",Dirichlet_entree_fluide);
 
 
-// Description:
-//    Ecrit le type de l'objet sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit le type de l'objet sur un flot de sortie.
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Entree_fluide_T_h_imposee::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << "\n";
 }
 
-// Description:
-//    Type le_champ_front en "Champ_front_uniforme".
-//    Lit les valeurs du champ exterieur si les conditions
-//    aux limites sont specifiees: "T_ext", "C_ext", "Y_ext" ou "K_Eps_ext"
-//    Produit une erreur sinon.
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree& s
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: type de champ exterieur non reconnu,
-//            les types reconnus sont: "T_ext", "C_ext", "Y_ext" ou "K_Eps_ext"
-// Effets de bord:
-// Postcondition:
+/*! @brief Type le_champ_front en "Champ_front_uniforme".
+ *
+ * Lit les valeurs du champ exterieur si les conditions
+ *     aux limites sont specifiees: "T_ext", "C_ext", "Y_ext" ou "K_Eps_ext"
+ *     Produit une erreur sinon.
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree& s) le flot d'entree modifie
+ * @throws type de champ exterieur non reconnu,
+ * les types reconnus sont: "T_ext", "C_ext", "Y_ext" ou "K_Eps_ext"
+ */
 Entree& Entree_fluide_T_h_imposee::readOn(Entree& s )
 {
   le_champ_front.typer("Champ_front_uniforme");
@@ -114,26 +98,15 @@ Entree& Entree_fluide_T_h_imposee::readOn(Entree& s )
   return s;
 }
 
-// Description:
-//    Renvoie un booleen indiquant la compatibilite des conditions
-//    aux limites avec l'equation specifiee en parametre.
-//    Des CL de type Entree_fluide_temperature_imposee sont compatibles
-//    avec une equation dont le domaine est la Thermique
-//    ou bien indetermine.
-// Precondition:
-// Parametre: Equation_base& eqn
-//    Signification: l'equation avec laquelle il faut verifier la compatibilite
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: int
-//    Signification: valeur booleenne,
-//                   1 si les CL sont compatibles avec l'equation
-//                   0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie un booleen indiquant la compatibilite des conditions aux limites avec l'equation specifiee en parametre.
+ *
+ *     Des CL de type Entree_fluide_temperature_imposee sont compatibles
+ *     avec une equation dont le domaine est la Thermique
+ *     ou bien indetermine.
+ *
+ * @param (Equation_base& eqn) l'equation avec laquelle il faut verifier la compatibilite
+ * @return (int) valeur booleenne, 1 si les CL sont compatibles avec l'equation 0 sinon
+ */
 int Entree_fluide_T_h_imposee::compatible_avec_eqn(const Equation_base& eqn) const
 {
   Motcle dom_app=eqn.domaine_application();
@@ -149,21 +122,12 @@ int Entree_fluide_T_h_imposee::compatible_avec_eqn(const Equation_base& eqn) con
     }
 }
 
-// Description:
-//    Renvoie la valeur de la i-eme composante
-//    du champ impose a l'exterieur de la frontiere.
-// Precondition:
-// Parametre: int i
-//    Signification: indice suivant la premiere dimension du champ
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: double
-//    Signification: la valeur imposee sur la composante du champ specifiee
-//    Contraintes:
-// Exception: deuxieme dimension du champ de frontiere superieur a 1
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la valeur de la i-eme composante du champ impose a l'exterieur de la frontiere.
+ *
+ * @param (int i) indice suivant la premiere dimension du champ
+ * @return (double) la valeur imposee sur la composante du champ specifiee
+ * @throws deuxieme dimension du champ de frontiere superieur a 1
+ */
 double Entree_fluide_T_h_imposee::val_imp(int i) const
 {
   if (type_cond_lim == 0)
@@ -192,26 +156,12 @@ double Entree_fluide_T_h_imposee::val_imp(int i) const
     }
 }
 
-// Description:
-//    Renvoie la valeur de la (i,j)-eme composante
-//    du champ impose a l'exterieur de la frontiere.
-// Precondition:
-// Parametre: int i
-//    Signification: indice suivant la premiere dimension du champ
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Parametre: int j
-//    Signification: indice suivant la deuxieme dimension du champ
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: double
-//    Signification: la valeur imposee sur la composante du champ specifiee
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la valeur de la (i,j)-eme composante du champ impose a l'exterieur de la frontiere.
+ *
+ * @param (int i) indice suivant la premiere dimension du champ
+ * @param (int j) indice suivant la deuxieme dimension du champ
+ * @return (double) la valeur imposee sur la composante du champ specifiee
+ */
 double Entree_fluide_T_h_imposee::val_imp(int i,int j) const
 {
   if (type_cond_lim == 0)

@@ -23,9 +23,9 @@
 
 // class Probleme_base;
 
-//
-// .DESCRIPTION class Terme_Source_Decroissance_Radioactive_VEF_Face
-//
+/*! @brief class Terme_Source_Decroissance_Radioactive_VEF_Face
+ *
+ */
 
 //
 // .SECTION voir aussi Source_base

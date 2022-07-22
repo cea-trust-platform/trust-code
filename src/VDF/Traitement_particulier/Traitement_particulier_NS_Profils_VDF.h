@@ -20,20 +20,19 @@
 #include <Traitement_particulier_NS_Profils.h>
 #include <TRUSTTabs_forward.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     class Trait_part_NS_Profils_VDF
-//     This classe enables a particular treatment
-//     for computations which have a periodic BC (ie homogeneous direction)
-//     and on which we want profiles in a specific direction and position :
-//         + mean velocity profiles
-//         + fluctuations
-//
-// .SECTION see also
-//      Navier_Stokes_Turbulent, Traitement_particulier_base,
-//      Traitement_particulier_VDF
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief class Trait_part_NS_Profils_VDF This classe enables a particular treatment
+ *
+ *      for computations which have a periodic BC (ie homogeneous direction)
+ *      and on which we want profiles in a specific direction and position :
+ *          + mean velocity profiles
+ *          + fluctuations
+ *
+ *  .SECTION see also
+ *       Navier_Stokes_Turbulent, Traitement_particulier_base,
+ *       Traitement_particulier_VDF
+ *
+ *
+ */
 class Traitement_particulier_NS_Profils_VDF : public Traitement_particulier_NS_Profils
 {
   Declare_instanciable(Traitement_particulier_NS_Profils_VDF);

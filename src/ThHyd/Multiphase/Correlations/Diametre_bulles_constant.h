@@ -18,12 +18,11 @@
 #include <Correlation_base.h>
 #include <Champ_Fonc.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Diametre_bulles_constant
-//      Contient un champ de bulles de diametre constant
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Diametre_bulles_constant Contient un champ de bulles de diametre constant
+ *
+ *
+ *
+ */
 
 class Diametre_bulles_constant : public Correlation_base
 {

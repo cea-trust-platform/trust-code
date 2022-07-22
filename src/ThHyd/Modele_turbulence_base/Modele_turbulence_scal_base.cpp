@@ -33,42 +33,25 @@ Modele_turbulence_scal_base::Modele_turbulence_scal_base()
   */
 }
 
-// Description:
-//    Ecrit le type et le nom de l'objet sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit le type et le nom de l'objet sur un flot de sortie
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Modele_turbulence_scal_base::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
 
-// Description:
-//    Lit les specifications d'un modele de turbulence
-//    a partir d'un flot d'entree.
-//    Appelle Entree& lire(const Motcle&,Entree&)
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: accolade ouvrante attendue
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit les specifications d'un modele de turbulence a partir d'un flot d'entree.
+ *
+ *     Appelle Entree& lire(const Motcle&,Entree&)
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ * @throws accolade ouvrante attendue
+ */
 Entree& Modele_turbulence_scal_base::readOn(Entree& is )
 {
   Cerr<<"Reading of data for a "<<que_suis_je()<<" scalar turbulence model"<<finl;
@@ -123,66 +106,32 @@ int  Modele_turbulence_scal_base::lire_motcle_non_standard(const Motcle& motlu, 
 }
 
 
-// Description:
-//    Associe l'equation passe en parametre au modele de turbulence.
-//    L'equation est caste en Convection_Diffusion_std.
-// Precondition:
-// Parametre: Equation_base& eqn
-//    Signification: l'equation a laquelle l'objet s'associe
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: le modele de turbulence a une equation associee
+/*! @brief Associe l'equation passe en parametre au modele de turbulence.
+ *
+ * L'equation est caste en Convection_Diffusion_std.
+ *
+ * @param (Equation_base& eqn) l'equation a laquelle l'objet s'associe
+ */
 void Modele_turbulence_scal_base::associer_eqn(const Equation_base& eqn)
 {
   mon_equation = ref_cast(Convection_Diffusion_std,eqn);
 }
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Zone_dis&
-//    Signification: une zone discretisee
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Parametre: Zone_Cl_dis&
-//    Signification: une zone de conditions aux limites discretisees
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Zone_dis&) une zone discretisee
+ * @param (Zone_Cl_dis&) une zone de conditions aux limites discretisees
+ */
 void Modele_turbulence_scal_base::associer(const Zone_dis& , const Zone_Cl_dis& )
 {
   ;
 }
 
 
-// Description:
-//    Discretise le modele de turbulence.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: le modele de turbulence est discretise
+/*! @brief Discretise le modele de turbulence.
+ *
+ */
 void Modele_turbulence_scal_base::discretiser()
 {
   Cerr << "Turbulence scalar model discretization" << finl;
@@ -194,47 +143,25 @@ void Modele_turbulence_scal_base::discretiser()
   champs_compris_.ajoute_champ(diffusivite_turbulente_);
 }
 
-// Description:
-//    Complete le modele de turbulence:
-//     met a jour des references de l'objet.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Complete le modele de turbulence: met a jour des references de l'objet.
+ *
+ */
 void Modele_turbulence_scal_base::completer()
 {
 }
 
-// Description:
-// A surcharger dans les classes derivees qui possedent une ou des equations
-// Appeler preparer_pas_de_temps sur ces equations.
+/*! @brief A surcharger dans les classes derivees qui possedent une ou des equations Appeler preparer_pas_de_temps sur ces equations.
+ *
+ */
 bool Modele_turbulence_scal_base::initTimeStep(double dt)
 {
   return true;
 }
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN
+ *
+ * @return (int) renvoie toujours 1
+ */
 int Modele_turbulence_scal_base::preparer_calcul()
 {
   if (loipar.non_nul())
@@ -244,20 +171,11 @@ int Modele_turbulence_scal_base::preparer_calcul()
 }
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Sortie&
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: NON ACCEDE
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Sortie&) un flot de sortie
+ * @return (int) renvoie toujours 1
+ */
 int Modele_turbulence_scal_base::sauvegarder(Sortie& os) const
 {
   if (loipar.non_nul())
@@ -266,20 +184,9 @@ int Modele_turbulence_scal_base::sauvegarder(Sortie& os) const
     return 0;
 }
 
-// Description:
-//    Effectue l'ecriture d'une identite si cela est necessaire.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Effectue l'ecriture d'une identite si cela est necessaire.
+ *
+ */
 void Modele_turbulence_scal_base::a_faire(Sortie& os) const
 {
   int afaire,special;
@@ -300,20 +207,11 @@ void Modele_turbulence_scal_base::a_faire(Sortie& os) const
 
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Entree&
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: NON ACCEDE
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Entree&) un flot d'entree
+ * @return (int) renvoie toujours 1
+ */
 int Modele_turbulence_scal_base::reprendre(Entree& is)
 {
   // Pour l'instant on ne lit plus dans le .sauv
@@ -371,20 +269,11 @@ void Modele_turbulence_scal_base::get_noms_champs_postraitables(Noms& nom,Option
     loipar->get_noms_champs_postraitables(nom,opt);
 }
 
-// Description:
-//    Indique s'il faut imprimer ou non le Nusselt local
-// Precondition:
-// Parametre: double temps_courant, double dt
-//    Signification: un flot d'entree
-//    Valeurs par defaut: aucune
-//    Contraintes:
-//    Acces: NON ACCEDE
-// Retour: int
-//    Signification: renvoie 1 si on imprime, 0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Indique s'il faut imprimer ou non le Nusselt local
+ *
+ * @param (double temps_courant, double dt) un flot d'entree
+ * @return (int) renvoie 1 si on imprime, 0 sinon
+ */
 int Modele_turbulence_scal_base::limpr_nusselt(double temps_courant, double temps_prec, double dt) const
 {
   const Schema_Temps_base& sch = mon_equation->schema_temps();
@@ -402,20 +291,10 @@ int Modele_turbulence_scal_base::limpr_nusselt(double temps_courant, double temp
     }
 }
 
-// Description:
-//    Effectue l'impression si cela est necessaire.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Effectue l'impression si cela est necessaire.
+ *
+ * @return renvoie toujours 1
+ */
 void Modele_turbulence_scal_base::imprimer(Sortie& os) const
 {
   const Schema_Temps_base& sch = mon_equation->schema_temps();

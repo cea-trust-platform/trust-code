@@ -44,7 +44,9 @@ Entree& Op_Conv_VEF_base::readOn(Entree& s )
 }
 
 
-// Description: definit si l'on convecte psi avec phi*u ou avec u
+/*! @brief definit si l'on convecte psi avec phi*u ou avec u
+ *
+ */
 int  Op_Conv_VEF_base::phi_u_transportant(const Equation_base& eq) const
 {
   if (eq.inconnue().le_nom()=="vitesse")

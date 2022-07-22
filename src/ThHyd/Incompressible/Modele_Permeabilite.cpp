@@ -19,42 +19,24 @@
 Implemente_deriv(Modele_Permeabilite_base);
 Implemente_instanciable(Modele_Permeabilite,"Modele_Permeabilite",DERIV(Modele_Permeabilite_base));
 
-// Description:
-//    Imprime le type du modele sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Imprime le type du modele sur un flot de sortie.
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Modele_Permeabilite::printOn(Sortie& s ) const
 {
   return DERIV(Modele_Permeabilite_base)::printOn(s);
 }
 
 
-// Description:
-//    Lit les specifications d'un modele Permeabilite
-//    a partir d'un flot d'entree.
-//    Controle dynamique du type du terme source.
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit les specifications d'un modele Permeabilite a partir d'un flot d'entree.
+ *
+ *     Controle dynamique du type du terme source.
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Modele_Permeabilite::readOn(Entree& s )
 {
   return s;

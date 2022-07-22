@@ -20,64 +20,35 @@
 Implemente_instanciable(Entree_fluide_Flux_Chaleur_Turbulente_imposee,"Frontiere_ouverte_Flux_Chaleur_Turbulente_imposee",Dirichlet_entree_fluide);
 
 
-// Description:
-//    Ecrit le type de l'objet sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit le type de l'objet sur un flot de sortie.
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Entree_fluide_Flux_Chaleur_Turbulente_imposee::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << "\n";
 }
 
-// Description:
-//    Simple appel a: Cond_lim_base::readOn(Entree& )
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree& s
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Cond_lim_base::readOn(Entree& )
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree& s) le flot d'entree modifie
+ */
 Entree& Entree_fluide_Flux_Chaleur_Turbulente_imposee::readOn(Entree& s)
 {
   return Cond_lim_base::readOn(s);
 }
 
-// Description:
-//    Renvoie un booleen indiquant la compatibilite des conditions
-//    aux limites avec l'equation specifiee en parametre.
-//    Des CL de type Entree_fluide_temperature_imposee sont compatibles
-//    avec une equation dont le domaine est la Thermique
-//    ou bien indetermine.
-// Precondition:
-// Parametre: Equation_base& eqn
-//    Signification: l'equation avec laquelle il faut verifier la compatibilite
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: int
-//    Signification: valeur booleenne,
-//                   1 si les CL sont compatibles avec l'equation
-//                   0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie un booleen indiquant la compatibilite des conditions aux limites avec l'equation specifiee en parametre.
+ *
+ *     Des CL de type Entree_fluide_temperature_imposee sont compatibles
+ *     avec une equation dont le domaine est la Thermique
+ *     ou bien indetermine.
+ *
+ * @param (Equation_base& eqn) l'equation avec laquelle il faut verifier la compatibilite
+ * @return (int) valeur booleenne, 1 si les CL sont compatibles avec l'equation 0 sinon
+ */
 int Entree_fluide_Flux_Chaleur_Turbulente_imposee::compatible_avec_eqn(const Equation_base& eqn) const
 {
   Motcle dom_app=eqn.domaine_application();

@@ -98,23 +98,15 @@ int Navier_Stokes_Fluide_Dilatable_Proto::impr_impl(const Navier_Stokes_std& eqn
   return 1;
 }
 
-// Description:
-//    Calcule la derivee en temps de l'inconnue vitesse,
-//    i.e. l'acceleration dU/dt et la renvoie.
-//    Appelle Equation_base::derivee_en_temps_inco(DoubleTab& )
-//    Calcule egalement la pression.
-// Precondition:
-// Parametre: DoubleTab& vpoint
-//    Signification: le tableau des valeurs de l'acceleration dU/dt
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: DoubleTab&
-//    Signification: le tableau des valeurs de l'acceleration (derivee de la vitesse)
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la derivee en temps de l'inconnue vitesse, i.
+ *
+ * e. l'acceleration dU/dt et la renvoie.
+ *     Appelle Equation_base::derivee_en_temps_inco(DoubleTab& )
+ *     Calcule egalement la pression.
+ *
+ * @param (DoubleTab& vpoint) le tableau des valeurs de l'acceleration dU/dt
+ * @return (DoubleTab&) le tableau des valeurs de l'acceleration (derivee de la vitesse)
+ */
 DoubleTab& Navier_Stokes_Fluide_Dilatable_Proto::derivee_en_temps_inco_impl(Navier_Stokes_std& eqn,DoubleTab& vpoint)
 {
   const Fluide_Dilatable_base& fluide_dil=ref_cast(Fluide_Dilatable_base,eqn.milieu());

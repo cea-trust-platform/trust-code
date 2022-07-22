@@ -16,8 +16,9 @@
 #ifndef Terme_Source_PolyMAC_base_included
 #define Terme_Source_PolyMAC_base_included
 
-// .DESCRIPTION
-// PolyMAC implementation of Source_base class
+/*! @brief PolyMAC implementation of Source_base class
+ *
+ */
 
 #include <Source_base.h>
 #include <Iterateur_Source_PolyMAC.h>
@@ -53,8 +54,9 @@ protected:
 //   Fonctions inline de la classe Terme_Source_PolyMAC_base
 //
 
-// Description:
-// constructeur
+/*! @brief constructeur
+ *
+ */
 inline Terme_Source_PolyMAC_base::Terme_Source_PolyMAC_base(const Iterateur_Source_PolyMAC_base& iter_base) :
   iter(iter_base)
 {}

@@ -38,45 +38,20 @@ Entree& EDO_Pression_th_VEF::readOn(Entree& is)
   return EDO_Pression_th_base::readOn(is);
 }
 
-// Description:
-//    Associe les zones a l'EDO
-// Precondition:
-// Parametre: Zone_dis& zone
-//    Signification: zone
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: Zone_Cl_dis& zone_cl
-//    Signification: zone cl
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe les zones a l'EDO
+ *
+ * @param (Zone_dis& zone) zone
+ * @param (Zone_Cl_dis& zone_cl) zone cl
+ */
 void  EDO_Pression_th_VEF::associer_zones(const Zone_dis& zone, const Zone_Cl_dis& zone_cl)
 {
   la_zone = ref_cast(Zone_VEF,zone.valeur());
   la_zone_Cl = zone_cl;
 }
 
-// Description:
-//    Complete l'EDO : calcule rho sur les faces
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Complete l'EDO : calcule rho sur les faces
+ *
+ */
 void EDO_Pression_th_VEF::completer()
 {
   if (!ref_cast(Zone_VEF_PreP1b,la_zone.valeur()).get_alphaE())

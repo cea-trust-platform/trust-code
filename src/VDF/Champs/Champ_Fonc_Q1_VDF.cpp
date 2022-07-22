@@ -37,36 +37,17 @@ Entree& Champ_Fonc_Q1_VDF::readOn(Entree& s)
   return s ;
 }
 
-// Description:
-//
-// Precondition:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 const Zone_dis_base& Champ_Fonc_Q1_VDF::zone_dis_base() const
 {
   return la_zone_VF.valeur();
 }
-// Description:
-//
-// Precondition:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour:  z_dis
-//    Signification: la zone discretise
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ * @return (z_dis) la zone discretise
+ */
 void Champ_Fonc_Q1_VDF::associer_zone_dis_base(const Zone_dis_base& z_dis)
 {
   la_zone_VF=ref_cast(Zone_VF, z_dis);

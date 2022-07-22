@@ -21,10 +21,10 @@
 #include <Champ_P1NC_implementation.h>
 #include <Ref_Zone_VEF.h>
 
-//.DESCRIPTION classe Champ_Fonc_P1NC
-//
-//.SECTION voir aussi
-// Champ_Fonc_base Champ P1NC
+/*! @brief classe Champ_Fonc_P1NC
+ *
+ * @sa Champ_Fonc_base Champ P1NC
+ */
 
 class Champ_Fonc_P1NC: public Champ_Fonc_base, public Champ_P1NC_implementation
 {

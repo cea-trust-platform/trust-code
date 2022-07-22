@@ -766,8 +766,9 @@ void modif_matrice_pour_periodique_apres_contribuer(Matrice_Morse& matrice,const
 }
 
 
-// Description: divise les coefficients sur les ligne des faces periodiques par 2 en prevision
-// de l'application modifier_matrice_pour_periodique_apres_contribuer qui va sommer les 2 lignes des faces periodiques associees
+/*! @brief divise les coefficients sur les ligne des faces periodiques par 2 en prevision de l'application modifier_matrice_pour_periodique_apres_contribuer qui va sommer les 2 lignes des faces periodiques associees
+ *
+ */
 
 
 void Op_VEF_Face::modifier_matrice_pour_periodique_avant_contribuer(Matrice_Morse& matrice,const Equation_base& eqn) const
@@ -777,9 +778,11 @@ void Op_VEF_Face::modifier_matrice_pour_periodique_avant_contribuer(Matrice_Mors
     return;
   modif_matrice_pour_periodique_avant_contribuer(matrice,eqn);
 }
-// Description: Somme  les 2 lignes des faces periodiques associees
-// permet de calculer dans le code sans se poser de question pour retrouver la face_associee
-// on ne parcourt que la moitiee des faces periodiques dans contribuer_a_avec (en general).
+/*! @brief Somme  les 2 lignes des faces periodiques associees permet de calculer dans le code sans se poser de question pour retrouver la face_associee
+ *
+ *  on ne parcourt que la moitiee des faces periodiques dans contribuer_a_avec (en general).
+ *
+ */
 
 
 void Op_VEF_Face::modifier_matrice_pour_periodique_apres_contribuer(Matrice_Morse& matrice,const Equation_base& eqn) const

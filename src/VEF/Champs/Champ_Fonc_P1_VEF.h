@@ -20,8 +20,9 @@
 #include <Champ_Fonc_P1_base.h>
 #include <Ref_Zone_VEF.h>
 
-//.DESCRIPTION classe Champ_Fonc_P1_VEF
-//
+/*! @brief classe Champ_Fonc_P1_VEF
+ *
+ */
 
 //.SECTION voir aussi
 // Champ_Fonc_P1

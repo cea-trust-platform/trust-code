@@ -26,16 +26,12 @@
 class Probleme_base;
 class Zone_Cl_dis;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Fluide_Dilatable_base
-//    Cette classe represente un d'un fluide dilatable,
-//    heritant de fluide base
-// .SECTION voir aussi
-//     Milieu_base Fluide_base
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Fluide_Dilatable_base Cette classe represente un d'un fluide dilatable,
+ *
+ *     heritant de fluide base
+ *
+ * @sa Milieu_base Fluide_base
+ */
 
 class Fluide_Dilatable_base : public Fluide_base
 {

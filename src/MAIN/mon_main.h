@@ -21,21 +21,19 @@
 #include <Interprete_bloc.h>
 #include <Comm_Group.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//   Classe creee et executee par main() et lors d'une execution TRUST a
-//   travers Python. Il faut
-//   - creer une instance mon_main
-//   - initialiser le parallele
-//   - appeler dowork(nom_du_cas) (lecture et interpretation du jdd)
-//   A cet instant on peut jouer avec les objets crees en python
-//   (voir Interprete_bloc::objet_global(nom))
-//   - detruire l'instance mon_main
-//   L'interprete principal conserve ses objets jusqu'a la destruction
-//   de l'instance mon_main
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe creee et executee par main() et lors d'une execution TRUST a travers Python.
+ *
+ * Il faut
+ *    - creer une instance mon_main
+ *    - initialiser le parallele
+ *    - appeler dowork(nom_du_cas) (lecture et interpretation du jdd)
+ *    A cet instant on peut jouer avec les objets crees en python
+ *    (voir Interprete_bloc::objet_global(nom))
+ *    - detruire l'instance mon_main
+ *    L'interprete principal conserve ses objets jusqu'a la destruction
+ *    de l'instance mon_main
+ *
+ */
 class mon_main
 {
 public:

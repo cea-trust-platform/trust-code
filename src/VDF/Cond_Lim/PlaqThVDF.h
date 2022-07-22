@@ -17,15 +17,16 @@
 #define PlaqThVDF_included
 
 
-//
-// .DESCRIPTION PlaqThVDF
-//
-// Cette classe derive de Echange_global_impose ( voir Echange_impose )
-//
-//    Elle represente une plaque conductrice
-//
-//////////////////////////////////////////////////////////////////////////////
-//
+/*! @brief PlaqThVDF
+ *
+ *  Cette classe derive de Echange_global_impose ( voir Echange_impose )
+ *
+ *     Elle represente une plaque conductrice
+ *
+ *
+ *
+ *
+ */
 
 #include <Echange_global_impose.h>
 

@@ -22,22 +22,19 @@
 #include <vector>
 #include <set>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Milieu_composite
-//    Cette classe represente un fluide reel ainsi que
-//    ses proprietes:
-//        - viscosite cinematique, (mu)
-//        - viscosite dynamique,   (nu)
-//        - masse volumique,       (rho)
-//        - diffusivite,           (alpha)
-//        - conductivite,          (lambda)
-//        - capacite calorifique,  (Cp)
-//        - dilatabilite thermique du constituant (beta_co)
-// .SECTION voir aussi
-//     Milieu_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Milieu_composite Cette classe represente un fluide reel ainsi que
+ *
+ *     ses proprietes:
+ *         - viscosite cinematique, (mu)
+ *         - viscosite dynamique,   (nu)
+ *         - masse volumique,       (rho)
+ *         - diffusivite,           (alpha)
+ *         - conductivite,          (lambda)
+ *         - capacite calorifique,  (Cp)
+ *         - dilatabilite thermique du constituant (beta_co)
+ *
+ * @sa Milieu_base
+ */
 class Milieu_composite: public Fluide_base
 {
   Declare_instanciable(Milieu_composite);

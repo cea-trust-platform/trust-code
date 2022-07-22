@@ -20,9 +20,11 @@
 #include <Matrice_Morse.h>
 #include <SFichier.h>
 
-// .DESCRIPTION class Op_Grad_VDF_Face
-//  Cette classe represente l'operateur de gradient
-//  La discretisation est VDF. On calcule le gradient d'un champ_P0_VDF (la pression)
+/*! @brief class Op_Grad_VDF_Face Cette classe represente l'operateur de gradient
+ *
+ *   La discretisation est VDF. On calcule le gradient d'un champ_P0_VDF (la pression)
+ *
+ */
 class Op_Grad_VDF_Face : public Op_Grad_VDF_Face_base
 {
   Declare_instanciable(Op_Grad_VDF_Face);

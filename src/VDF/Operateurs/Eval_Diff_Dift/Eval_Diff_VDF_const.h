@@ -24,9 +24,11 @@
 #include <Zone_VDF.h>
 class Champ_base;
 
-// .DESCRIPTION class Eval_Diff_VDF_const
-// Cette classe represente un evaluateur de flux diffusif
-// avec un coefficient de diffusivite qui est isotrope et constant en espace.
+/*! @brief class Eval_Diff_VDF_const Cette classe represente un evaluateur de flux diffusif
+ *
+ *  avec un coefficient de diffusivite qui est isotrope et constant en espace.
+ *
+ */
 class Eval_Diff_VDF_const : public Eval_Diff_VDF
 
 {

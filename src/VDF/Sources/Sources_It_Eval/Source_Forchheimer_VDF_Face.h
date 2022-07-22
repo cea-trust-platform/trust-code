@@ -24,10 +24,12 @@ class Zone_Cl_dis;
 class Zone_dis;
 
 declare_It_Sou_VDF_Face(Eval_Forchheimer_VDF_Face)
-// .DESCRIPTION class Source_Forchheimer_VDF_Face
-// Cette classe represente le terme de Forchheimer pour les ecoulement en milieux poreux.
-// Ce terme doit normalement etre de type "operateur" : pour l'instant il est code comme un terme
-// source et donc ne  doit etre utilise qu'avec un schema en temps de type explicite.
+/*! @brief class Source_Forchheimer_VDF_Face Cette classe represente le terme de Forchheimer pour les ecoulement en milieux poreux.
+ *
+ *  Ce terme doit normalement etre de type "operateur" : pour l'instant il est code comme un terme
+ *  source et donc ne  doit etre utilise qu'avec un schema en temps de type explicite.
+ *
+ */
 class Source_Forchheimer_VDF_Face : public Terme_Source_VDF_base
 {
   Declare_instanciable_sans_constructeur(Source_Forchheimer_VDF_Face);

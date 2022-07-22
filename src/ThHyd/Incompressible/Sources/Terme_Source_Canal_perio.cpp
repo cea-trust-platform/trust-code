@@ -383,9 +383,9 @@ ArrOfDouble Terme_Source_Canal_perio::source_convection_diffusion(double debit_e
   return s;
 }
 
-// Description:
-// Term source calculation (called by VDF and VEF implementations)
-// TODO: returning an ArrOfDouble is baaad.
+/*! @brief Term source calculation (called by VDF and VEF implementations) TODO: returning an ArrOfDouble is baaad.
+ *
+ */
 ArrOfDouble Terme_Source_Canal_perio::source() const
 {
   double tps = equation().schema_temps().temps_courant();

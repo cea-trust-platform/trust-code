@@ -19,20 +19,19 @@
 #include <TRUSTTabs_forward.h>
 #include <Correlation_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Masse_ajoutee_base
-//      masse ajoutee de la forme
-//      alpha_k rho_k Dv_k / Dt -> alpha_k rho_k Dv_k / Dt + sum_l ma(k, l) Dv_l / Dt
-//      cette classe definit une fonction calculer avec :
-//    entrees :
-//        alpha[n]  -> taux de presence de la phase n
-//        rho[n]    -> masse volumique de la phase n
-//
-//    entree / sortie :
-//       a_r(k, l)   -> a mettre dans l'equation de qdm (par defaut : alpha(k) * rho(k) pour la phase k)
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Masse_ajoutee_base masse ajoutee de la forme
+ *
+ *       alpha_k rho_k Dv_k / Dt -> alpha_k rho_k Dv_k / Dt + sum_l ma(k, l) Dv_l / Dt
+ *       cette classe definit une fonction calculer avec :
+ *     entrees :
+ *         alpha[n]  -> taux de presence de la phase n
+ *         rho[n]    -> masse volumique de la phase n
+ *
+ *     entree / sortie :
+ *        a_r(k, l)   -> a mettre dans l'equation de qdm (par defaut : alpha(k) * rho(k) pour la phase k)
+ *
+ *
+ */
 
 class Masse_ajoutee_base : public Correlation_base
 {

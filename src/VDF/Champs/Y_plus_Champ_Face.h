@@ -23,10 +23,10 @@
 #include <Ref_Zone_Cl_VDF.h>
 #include <Zone_Cl_dis_base.h>
 
-//.DESCRIPTION  classe Y_plus_Champ_Face
-//
-// .SECTION voir aussi
-// Champ_y_plus Champ_Fonc_P0_VDF
+/*! @brief classe Y_plus_Champ_Face
+ *
+ * @sa Champ_y_plus Champ_Fonc_P0_VDF
+ */
 
 class Y_plus_Champ_Face : public Champ_y_plus,
   public Champ_Fonc_P0_VDF

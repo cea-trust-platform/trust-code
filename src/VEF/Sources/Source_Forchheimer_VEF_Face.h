@@ -16,12 +16,13 @@
 #ifndef Source_Forchheimer_VEF_Face_included
 #define Source_Forchheimer_VEF_Face_included
 
-//
-// .DESCRIPTION class Source_Forchheimer_VEF_Face
-//
-// Terme de Forchheimer pour les milieux poreux
-//
-//
+/*! @brief class Source_Forchheimer_VEF_Face
+ *
+ *  Terme de Forchheimer pour les milieux poreux
+ *
+ *
+ *
+ */
 
 #include <Terme_Source_VEF_base.h>
 #include <Iterateur_Source_VEF.h>

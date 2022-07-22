@@ -24,9 +24,9 @@
 #include <Ref_Champ_P1NC.h>
 class Probleme_base;
 
-//
-// .DESCRIPTION class Terme_Source_Qdm_lambdaup_VEF_Face
-//
+/*! @brief class Terme_Source_Qdm_lambdaup_VEF_Face
+ *
+ */
 
 //
 // .SECTION voir aussi Source_base

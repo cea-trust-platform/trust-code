@@ -43,20 +43,9 @@ double Loi_Etat_Binaire_GP_QC::calculer_masse_volumique(double P, double Y1) con
   return Loi_Etat_Binaire_GP_base::calculer_masse_volumique(P,Y1);
 }
 
-// Description:
-//    Recalcule la masse volumique
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Recalcule la masse volumique
+ *
+ */
 void Loi_Etat_Binaire_GP_QC::calculer_masse_volumique()
 {
   const DoubleTab& tab_Y1 = le_fluide->inco_chaleur().valeurs();

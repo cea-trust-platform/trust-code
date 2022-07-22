@@ -19,14 +19,15 @@
 
 #include <Op_Conv_VEF_base.h>
 
-//
-// .DESCRIPTION class Op_Conv_kschemas_centre_VEF
-//
-//  Cette classe represente l'operateur de convection associe a une equation de
-//  transport d'un scalaire.
-//  La discretisation est VEF
-//  Le champ convecte est scalaire ou vecteur de type Champ_Inc_Base (P1NC et Q1NC)
-//  Le schema de convection est du type kschemas_centre
+/*! @brief class Op_Conv_kschemas_centre_VEF
+ *
+ *   Cette classe represente l'operateur de convection associe a une equation de
+ *   transport d'un scalaire.
+ *   La discretisation est VEF
+ *   Le champ convecte est scalaire ou vecteur de type Champ_Inc_Base (P1NC et Q1NC)
+ *   Le schema de convection est du type kschemas_centre
+ *
+ */
 
 //
 // .SECTION voir aussi

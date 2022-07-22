@@ -21,10 +21,10 @@
 #include <Ref_Zone_PolyMAC.h>
 #include <Ref_Zone_Cl_PolyMAC.h>
 
-//
-// .DESCRIPTION class Source_Generique_Face_PolyMAC
-// .SECTION voir aussi Source_Generique_base
-//
+/*! @brief class Source_Generique_Face_PolyMAC
+ *
+ * @sa Source_Generique_base
+ */
 class Source_Generique_Face_PolyMAC: public Source_Generique_base
 {
 

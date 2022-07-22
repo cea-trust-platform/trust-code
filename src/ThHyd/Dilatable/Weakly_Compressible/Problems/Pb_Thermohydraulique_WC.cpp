@@ -24,13 +24,14 @@ Sortie& Pb_Thermohydraulique_WC::printOn(Sortie& os) const { return Probleme_bas
 
 Entree& Pb_Thermohydraulique_WC::readOn(Entree& is) { return Probleme_base::readOn(is); }
 
-// Description:
-//    Renvoie 2 car il y a 2 equations : Navier_Stokes_WC et Convection_Diffusion_Chaleur_WC
+/*! @brief Renvoie 2 car il y a 2 equations : Navier_Stokes_WC et Convection_Diffusion_Chaleur_WC
+ *
+ */
 int Pb_Thermohydraulique_WC::nombre_d_equations() const { return 2; }
 
-// Description:
-//    Renvoie l'equation d'hydraulique de type Navier_Stokes_WC si i=0
-//    Renvoie l'equation de la thermique de type Convection_Diffusion_Chaleur_WC si i=1
+/*! @brief Renvoie l'equation d'hydraulique de type Navier_Stokes_WC si i=0 Renvoie l'equation de la thermique de type Convection_Diffusion_Chaleur_WC si i=1
+ *
+ */
 const Equation_base& Pb_Thermohydraulique_WC::equation(int i) const
 {
   return equation_impl(i,eq_hydraulique,eq_thermique);
@@ -41,8 +42,9 @@ Equation_base& Pb_Thermohydraulique_WC::equation(int i)
   return equation_impl(i,eq_hydraulique,eq_thermique);
 }
 
-// Description:
-//    Teste la compatibilite des equations de la thermique et de l'hydraulique.
+/*! @brief Teste la compatibilite des equations de la thermique et de l'hydraulique.
+ *
+ */
 int Pb_Thermohydraulique_WC::verifier()
 {
   return verifier_impl(eq_hydraulique,eq_thermique, true /* is_thermal */);

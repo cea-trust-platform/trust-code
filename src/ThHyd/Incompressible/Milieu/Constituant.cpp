@@ -54,22 +54,13 @@ void Constituant::discretiser(const Probleme_base& pb, const  Discretisation_bas
 }
 
 
-// Description:
-//    Renvoie le nombre de constituants.
-//    (i.e. le nombre de composantes du champ representant
-//          le coefficient de diffusion)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de constituants
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le nombre de constituants.
+ *
+ * (i.e. le nombre de composantes du champ representant
+ *           le coefficient de diffusion)
+ *
+ * @return (int) le nombre de constituants
+ */
 int Constituant::nb_constituants() const
 {
   return D.nb_comp();

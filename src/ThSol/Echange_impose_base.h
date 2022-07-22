@@ -19,27 +19,24 @@
 #include <Cond_lim_base.h>
 #include <TRUSTTab.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Echange_impose_base:
-//    Cette condition limite sert uniquement pour l'equation d'energie.
-//    Elle correspond a imposer un echange de chaleur avec l'exterieur
-//    du domaine en imposant une temperature exterieure T_ext et un
-//    coefficient d'echange h_imp.
-//    Le terme de flux calcule a partir du couple(h_imp,T_ext) s'ecrit :
-//                           h_t(T_ext - T_entier)*Surf
-//                          avec h_t : coefficient d'echange global.
-//    Il figure au second membre de l'equation d'energie.
-//    Soit l'utilisateur donne un coefficient d'echange qui correspond
-//    uniquement a la paroi, auquel cas le programme calculera la diffusion
-//    sur la demi-maille pres de la paroi, soit il donne un coefficient
-//    d'echange global qui tient compte directement des deux precedents.
-//    Les deux classes derivees Echange_externe_impose et Echange_global_impose
-//    representent ces deux possibilites.
-// .SECTION voir aussi
-//    Cond_lim_base Echange_externe_impose Echange_global_impose
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Echange_impose_base: Cette condition limite sert uniquement pour l'equation d'energie.
+ *
+ *     Elle correspond a imposer un echange de chaleur avec l'exterieur
+ *     du domaine en imposant une temperature exterieure T_ext et un
+ *     coefficient d'echange h_imp.
+ *     Le terme de flux calcule a partir du couple(h_imp,T_ext) s'ecrit :
+ *                            h_t(T_ext - T_entier)*Surf
+ *                           avec h_t : coefficient d'echange global.
+ *     Il figure au second membre de l'equation d'energie.
+ *     Soit l'utilisateur donne un coefficient d'echange qui correspond
+ *     uniquement a la paroi, auquel cas le programme calculera la diffusion
+ *     sur la demi-maille pres de la paroi, soit il donne un coefficient
+ *     d'echange global qui tient compte directement des deux precedents.
+ *     Les deux classes derivees Echange_externe_impose et Echange_global_impose
+ *     representent ces deux possibilites.
+ *
+ * @sa Cond_lim_base Echange_externe_impose Echange_global_impose
+ */
 class Echange_impose_base  : public Cond_lim_base
 {
 
@@ -85,60 +82,31 @@ protected :
 };
 
 
-// Description:
-//    Renvoie le champ T_ext de temperature imposee a la frontiere.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_front&
-//    Signification: le champ T_ext de temperature imposee a la frontiere
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le champ T_ext de temperature imposee a la frontiere.
+ *
+ * @return (Champ_front&) le champ T_ext de temperature imposee a la frontiere
+ */
 inline Champ_front& Echange_impose_base::T_ext()
 {
   return le_champ_front;
 }
 
-// Description:
-//    Renvoie le champ T_ext de temperature imposee a la frontiere.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_front&
-//    Signification: le champ T_ext de temperature imposee a la frontiere
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le champ T_ext de temperature imposee a la frontiere.
+ *
+ * (version const)
+ *
+ * @return (Champ_front&) le champ T_ext de temperature imposee a la frontiere
+ */
 inline const Champ_front& Echange_impose_base::T_ext() const
 {
   return le_champ_front;
 }
 
-// Description:
-//    Constructeur par defaut de la classe Echange_impose_base.
-//    Ne construit rien, initialise le champ init a 0.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Constructeur par defaut de la classe Echange_impose_base.
+ *
+ * Ne construit rien, initialise le champ init a 0.
+ *
+ */
 
 inline Champ_front& Echange_impose_base::h_imp()
 {

@@ -21,15 +21,16 @@
 #include <Matrice_Morse.h>
 
 
-//
-// .DESCRIPTION class Op_Conv_Amont_old_VEF_Face
-//
-//  Cette classe represente l'operateur de convection associe a une equation de
-//  transport d'un scalaire.
-//  La discretisation est VEF
-//  Le champ convecte est scalaire ou vecteur de type Champ_P1NC
-//  Le schema de convection est du type Amont
-//  Les methodes pour l'implicite sont codees.
+/*! @brief class Op_Conv_Amont_old_VEF_Face
+ *
+ *   Cette classe represente l'operateur de convection associe a une equation de
+ *   transport d'un scalaire.
+ *   La discretisation est VEF
+ *   Le champ convecte est scalaire ou vecteur de type Champ_P1NC
+ *   Le schema de convection est du type Amont
+ *   Les methodes pour l'implicite sont codees.
+ *
+ */
 
 //
 // .SECTION voir aussi
@@ -58,9 +59,9 @@ protected:
 };
 
 
-// Description:
-// on dimensionne notre matrice au moyen de la methode dimensionner de la classe
-// Op_VEF_Face.
+/*! @brief on dimensionne notre matrice au moyen de la methode dimensionner de la classe Op_VEF_Face.
+ *
+ */
 
 inline  void Op_Conv_Amont_old_VEF_Face::dimensionner(Matrice_Morse& matrice) const
 {
@@ -68,9 +69,9 @@ inline  void Op_Conv_Amont_old_VEF_Face::dimensionner(Matrice_Morse& matrice) co
 }
 
 
-// Description:
-// On modifie le second membre et la matrice dans le cas des
-// conditions de dirichlet.
+/*! @brief On modifie le second membre et la matrice dans le cas des conditions de dirichlet.
+ *
+ */
 
 inline void Op_Conv_Amont_old_VEF_Face::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const
 {
@@ -78,8 +79,9 @@ inline void Op_Conv_Amont_old_VEF_Face::modifier_pour_Cl(Matrice_Morse& matrice,
 }
 
 
-//Description:
-//on assemble la matrice des inconnues implicite.
+/*! @brief on assemble la matrice des inconnues implicite.
+ *
+ */
 
 inline void Op_Conv_Amont_old_VEF_Face::contribuer_a_avec(const DoubleTab& inco,
                                                           Matrice_Morse& matrice) const
@@ -87,8 +89,9 @@ inline void Op_Conv_Amont_old_VEF_Face::contribuer_a_avec(const DoubleTab& inco,
   ajouter_contribution(inco, matrice);
 }
 
-//Description:
-//on ajoute la contribution du second membre.
+/*! @brief on ajoute la contribution du second membre.
+ *
+ */
 
 inline void Op_Conv_Amont_old_VEF_Face::contribuer_au_second_membre(DoubleTab& resu) const
 {

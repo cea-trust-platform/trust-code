@@ -18,18 +18,14 @@
 
 #include <Loi_Etat_Mono_GP_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Loi_Etat_GP_WC
-//     Cette classe represente la loi d'etat pour les gaz parfaits.
-//     Associe a un fluide dilatable, elle definit un fluide weakly compressible
-//     dont la loi d'eata est :
-//        Pth = rho*R*T
-// .SECTION voir aussi
-//     Fluide_Dilatable_base Loi_Etat_Mono_GP_base
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Loi_Etat_GP_WC Cette classe represente la loi d'etat pour les gaz parfaits.
+ *
+ *      Associe a un fluide dilatable, elle definit un fluide weakly compressible
+ *      dont la loi d'eata est :
+ *         Pth = rho*R*T
+ *
+ * @sa Fluide_Dilatable_base Loi_Etat_Mono_GP_base
+ */
 
 class Loi_Etat_GP_WC : public Loi_Etat_Mono_GP_base
 {

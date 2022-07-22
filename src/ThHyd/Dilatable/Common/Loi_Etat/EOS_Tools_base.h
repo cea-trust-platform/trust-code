@@ -23,13 +23,9 @@ class Fluide_Dilatable_base;
 class Zone_Cl_dis;
 class Zone_dis;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Abstraite EOS_Tools_base
-// .SECTION voir aussi
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Abstraite EOS_Tools_base
+ *
+ */
 
 class EOS_Tools_base : public Objet_U
 {

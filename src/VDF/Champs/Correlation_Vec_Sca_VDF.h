@@ -22,11 +22,10 @@
 #include <Zone_dis.h>
 #include <Zone_VF.h>
 
-//
-//.DESCRIPTION  classe Correlation_Vec_Sca_VDF
-//
-// .SECTION voir aussi
-//  Champ_Fonc_P0_VDF Correlation_Vec_Sca_VDF
+/*! @brief classe Correlation_Vec_Sca_VDF
+ *
+ * @sa Champ_Fonc_P0_VDF Correlation_Vec_Sca_VDF
+ */
 
 class Correlation_Vec_Sca_VDF : public Champ_Fonc_P0_VDF
 

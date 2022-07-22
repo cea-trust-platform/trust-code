@@ -20,14 +20,15 @@
 #include <Op_Conv_VEF_base.h>
 #include <Ref_Champ_P1NC.h>
 
-//
-// .DESCRIPTION class Op_Conv_Vort_VEF_Face
-//
-//  Cette classe represente l'operateur de convection associe a une equation de
-//  transport d'un scalaire.
-//  La discretisation est VEF
-//  Le champ convecte est scalaire ou vecteur de type Champ_P1NC
-//  Le schema de convection est du type Amont
+/*! @brief class Op_Conv_Vort_VEF_Face
+ *
+ *   Cette classe represente l'operateur de convection associe a une equation de
+ *   transport d'un scalaire.
+ *   La discretisation est VEF
+ *   Le champ convecte est scalaire ou vecteur de type Champ_P1NC
+ *   Le schema de convection est du type Amont
+ *
+ */
 
 //
 // .SECTION voir aussi

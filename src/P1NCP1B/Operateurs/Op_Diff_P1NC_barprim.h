@@ -30,14 +30,15 @@
 
 
 
-//
-// .DESCRIPTION class Op_Diff_VEF_Face
-//  Cette classe represente l'operateur de diffusion
-//  La discretisation est VEF
-//  Le champ diffuse est scalaire
-//  Le champ de diffusivite est uniforme
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief class Op_Diff_VEF_Face Cette classe represente l'operateur de diffusion
+ *
+ *   La discretisation est VEF
+ *   Le champ diffuse est scalaire
+ *   Le champ de diffusivite est uniforme
+ *
+ *
+ *
+ */
 
 class Op_Diff_P1NC_barprim : public Operateur_Diff_base, public Op_VEF_Face
 {
@@ -76,8 +77,9 @@ protected :
 
 };
 
-// Description:
-// on dimensionne notre matrice.
+/*! @brief on dimensionne notre matrice.
+ *
+ */
 
 inline  void Op_Diff_P1NC_barprim::dimensionner(Matrice_Morse& matrice) const
 {
@@ -92,8 +94,9 @@ inline void Op_Diff_P1NC_barprim::modifier_pour_Cl(Matrice_Morse& matrice, Doubl
 }
 
 
-//Description:
-//on assemble la matrice.
+/*! @brief on assemble la matrice.
+ *
+ */
 
 inline void Op_Diff_P1NC_barprim::contribuer_a_avec(const DoubleTab& inco,
                                                     Matrice_Morse& matrice) const
@@ -101,8 +104,9 @@ inline void Op_Diff_P1NC_barprim::contribuer_a_avec(const DoubleTab& inco,
   /*    ajouter_contribution(inco, matrice);    */
 }
 
-//Description:
-//on ajoute la contribution du second membre.
+/*! @brief on ajoute la contribution du second membre.
+ *
+ */
 
 inline void Op_Diff_P1NC_barprim::contribuer_au_second_membre(DoubleTab& resu) const
 {

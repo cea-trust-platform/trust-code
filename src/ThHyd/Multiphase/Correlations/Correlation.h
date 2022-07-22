@@ -20,15 +20,12 @@
 #include <Deriv.h>
 #include <Correlation_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Correlation
-//     Un objet Correlation peut referencer n'importe quel objet
-//     derivant de Correlation_base.
-// .SECTION voir aussi
-//     Correlation_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Correlation Un objet Correlation peut referencer n'importe quel objet
+ *
+ *      derivant de Correlation_base.
+ *
+ * @sa Correlation_base
+ */
 
 class Correlation_base;
 

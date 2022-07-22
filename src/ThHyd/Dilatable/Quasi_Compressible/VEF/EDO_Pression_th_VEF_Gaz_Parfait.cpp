@@ -40,20 +40,11 @@ Entree& EDO_Pression_th_VEF_Gaz_Parfait::readOn(Entree& is)
 }
 
 
-// Description:
-//    Resoud l'EDO
-// Precondition:
-// Parametre: double Pth_n
-//    Signification: La pression a l'etape precedente
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: double
-//    Signification: La nouvelle valeur de la pression
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Resoud l'EDO
+ *
+ * @param (double Pth_n) La pression a l'etape precedente
+ * @return (double) La nouvelle valeur de la pression
+ */
 double EDO_Pression_th_VEF_Gaz_Parfait::resoudre(double Pth_n)
 {
 

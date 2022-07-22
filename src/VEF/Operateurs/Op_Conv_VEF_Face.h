@@ -20,14 +20,15 @@
 #include <TRUSTTabs_forward.h>
 #include <Op_Conv_VEF_base.h>
 #include <Motcle.h>
-//
-// .DESCRIPTION class Op_Conv_VEF_Face
-//
-//  Cette classe represente l'operateur de convection associe a une equation de
-//  transport d'un scalaire.
-//  La discretisation est VEF
-//  Le champ convecte est scalaire ou vecteur de type Champ_P1NC
-//  Le schema de convection est du type Decentre ou Centre
+/*! @brief class Op_Conv_VEF_Face
+ *
+ *   Cette classe represente l'operateur de convection associe a une equation de
+ *   transport d'un scalaire.
+ *   La discretisation est VEF
+ *   Le champ convecte est scalaire ou vecteur de type Champ_P1NC
+ *   Le schema de convection est du type Decentre ou Centre
+ *
+ */
 
 //
 // .SECTION voir aussi
@@ -70,34 +71,36 @@ protected:
 };
 
 
-// Description:
-// on dimensionne notre matrice au moyen de la methode dimensionner de la classe
-// Op_VEF_Face.
+/*! @brief on dimensionne notre matrice au moyen de la methode dimensionner de la classe Op_VEF_Face.
+ *
+ */
 
 inline void Op_Conv_VEF_Face::dimensionner(Matrice_Morse& matrice) const
 {
   Op_VEF_Face::dimensionner(la_zone_vef.valeur(), la_zcl_vef.valeur(), matrice);
 }
 
-// Description:
-// On modifie le second membre et la matrice dans le cas des
-// conditions de dirichlet.
+/*! @brief On modifie le second membre et la matrice dans le cas des conditions de dirichlet.
+ *
+ */
 
 inline void Op_Conv_VEF_Face::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const
 {
   Op_VEF_Face::modifier_pour_Cl(la_zone_vef.valeur(), la_zcl_vef.valeur(), matrice, secmem);
 }
 
-//Description:
-//on assemble la matrice des inconnues implicite.
+/*! @brief on assemble la matrice des inconnues implicite.
+ *
+ */
 
 inline void Op_Conv_VEF_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   ajouter_contribution(inco, matrice);
 }
 
-//Description:
-//on ajoute la contribution du second membre.
+/*! @brief on ajoute la contribution du second membre.
+ *
+ */
 
 inline void Op_Conv_VEF_Face::contribuer_au_second_membre(DoubleTab& resu) const
 {

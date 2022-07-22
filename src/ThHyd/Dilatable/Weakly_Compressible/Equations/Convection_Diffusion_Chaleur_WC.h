@@ -19,17 +19,14 @@
 #include <Convection_Diffusion_Chaleur_Fluide_Dilatable_base.h>
 #include <Operateur_Grad.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Convection_Diffusion_Chaleur_WC
-//     Cas particulier de Convection_Diffusion_Chaleur_Fluide_Dilatable_base pour un fluide quasi conpressible
-//     quand le scalaire subissant le transport est la temperature en gaz parfaits,
-//     ou l'enthalpie en gaz reels.
-//     (generalisation de Convection_Diffusion_Temperature pour les gaz reels)
-// .SECTION voir aussi
-//     Conv_Diffusion_std Convection_Diffusion_Temperature
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Convection_Diffusion_Chaleur_WC Cas particulier de Convection_Diffusion_Chaleur_Fluide_Dilatable_base pour un fluide quasi conpressible
+ *
+ *      quand le scalaire subissant le transport est la temperature en gaz parfaits,
+ *      ou l'enthalpie en gaz reels.
+ *      (generalisation de Convection_Diffusion_Temperature pour les gaz reels)
+ *
+ * @sa Conv_Diffusion_std Convection_Diffusion_Temperature
+ */
 
 class Convection_Diffusion_Chaleur_WC : public Convection_Diffusion_Chaleur_Fluide_Dilatable_base
 {

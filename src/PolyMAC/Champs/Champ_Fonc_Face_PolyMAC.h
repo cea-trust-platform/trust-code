@@ -20,15 +20,13 @@
 #include <Zone_VF.h>
 #include <Ref_Zone_VF.h>
 
-/////////////////////////////////////////////////////////////////////////////
-// .NAME        : Champ_Fonc_Face_PolyMAC
-// .HEADER      : Trio_U_Kernel_Fixes Trio_U_Kernel_Fixes/src/Champs_dis
-// .LIBRARY     : libTrio_U_Kernel_Fixes
-// .DESCRIPTION : class Champ_Fonc_Face_PolyMAC
-//
-// <Description of class Champ_Fonc_Face_PolyMAC>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Champ_Fonc_Face_PolyMAC
+ *
+ *  <Description of class Champ_Fonc_Face_PolyMAC>
+ *
+ *
+ *
+ */
 
 class Champ_Fonc_Face_PolyMAC : public Champ_Fonc_base
 {

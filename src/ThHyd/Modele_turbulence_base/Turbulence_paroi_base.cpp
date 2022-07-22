@@ -33,46 +33,29 @@ Turbulence_paroi_base::Turbulence_paroi_base()
   champs_compris_.ajoute_nom_compris("u_star");
 }
 
-// Description:
-//    Ecrit le type de l'objet sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit le type de l'objet sur un flot de sortie
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Turbulence_paroi_base::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
 
-// Description:
-//    Ne fait rien dans la classe de base. A surcharger.
-//    La syntaxe est :
-//    Turbulence_paroi nom_de_la_loi
-//    ou Turbulence_paroi nom_de_la_loi { parametres }
-//    Cette methode est appelee par Mod_turb_hyd_base::readOn
-//    dans le second cas, et apres lecture de l'accolade ouvrante.
-//    Elle doit donc lire les parametres ET l'accolade fermante !
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree& s
-//    Signification: le flot d'entree
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ne fait rien dans la classe de base.
+ *
+ * A surcharger. La syntaxe est :
+ *     Turbulence_paroi nom_de_la_loi
+ *     ou Turbulence_paroi nom_de_la_loi { parametres }
+ *     Cette methode est appelee par Mod_turb_hyd_base::readOn
+ *     dans le second cas, et apres lecture de l'accolade ouvrante.
+ *     Elle doit donc lire les parametres ET l'accolade fermante !
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree& s) le flot d'entree
+ */
 Entree& Turbulence_paroi_base::readOn(Entree& is)
 {
   return is ;
@@ -83,22 +66,10 @@ void Turbulence_paroi_base::set_param(Param& param)
 }
 
 
-// Description:
-//    Give a boolean indicating if we need to use shear
-//    by default we consider that we use the shear
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: boolean
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-//
+/*! @brief Give a boolean indicating if we need to use shear by default we consider that we use the shear
+ *
+ * @return (boolean)
+ */
 bool Turbulence_paroi_base::use_shear() const
 {
   return true;
@@ -161,21 +132,9 @@ void Turbulence_paroi_base::get_noms_champs_postraitables(Noms& nom,Option opt) 
     nom.add(champs_compris_.liste_noms_compris());
 
 }
-// Description:
-//    Ouverture/creation d'un fichier d'impression de
-//    Face, uplus_, dplus_, tab_u_star, Cisaillement_paroi_
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ouverture/creation d'un fichier d'impression de Face, uplus_, dplus_, tab_u_star, Cisaillement_paroi_
+ *
+ */
 void Turbulence_paroi_base::ouvrir_fichier_partage(EcrFicPartage& Ustar,const Nom& extension) const
 {
 
@@ -204,21 +163,9 @@ void Turbulence_paroi_base::ouvrir_fichier_partage(EcrFicPartage& Ustar,const No
   nb_impr_++;
 }
 
-// Description:
-//    Ouverture/creation d'un fichier d'impression de
-//    moyennes de uplus_, dplus_, tab_u_star
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ouverture/creation d'un fichier d'impression de moyennes de uplus_, dplus_, tab_u_star
+ *
+ */
 void Turbulence_paroi_base::ouvrir_fichier_partage(EcrFicPartage& fichier,const Nom& nom_fichier,const Nom& extension) const
 {
   const Probleme_base& pb=mon_modele_turb_hyd->equation().probleme();

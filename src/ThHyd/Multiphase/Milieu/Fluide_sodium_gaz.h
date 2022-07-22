@@ -18,13 +18,12 @@
 
 #include <Fluide_reel_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Fluide_sodium_gaz
-//    Cette classe represente un milieu reel
-//    dont les lois viennent de "Lois_Na"
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Fluide_sodium_gaz Cette classe represente un milieu reel
+ *
+ *     dont les lois viennent de "Lois_Na"
+ *
+ *
+ */
 class Fluide_sodium_gaz: public Fluide_reel_base
 {
   Declare_instanciable(Fluide_sodium_gaz);

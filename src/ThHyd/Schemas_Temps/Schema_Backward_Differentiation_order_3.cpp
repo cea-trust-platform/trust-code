@@ -27,42 +27,24 @@
 Implemente_instanciable(Schema_Backward_Differentiation_order_3,"Schema_Backward_Differentiation_order_3",Schema_Backward_Differentiation_base);
 
 
-// Description:
-//    Simple appel a: Schema_Temps_base::printOn(Sortie& )
-//    Ecrit le schema en temps sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Schema_Temps_base::printOn(Sortie& ) Ecrit le schema en temps sur un flot de sortie.
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Schema_Backward_Differentiation_order_3::printOn(Sortie& s) const
 {
   return  Schema_Backward_Differentiation_base::printOn(s);
 }
 
 
-// Description:
-//    Lit le schema en temps a partir d'un flot d'entree.
-//    Simple appel a: Schema_Temps_base::readOn(Entree& )
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit le schema en temps a partir d'un flot d'entree.
+ *
+ * Simple appel a: Schema_Temps_base::readOn(Entree& )
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Schema_Backward_Differentiation_order_3::readOn(Entree& s)
 {
   return Schema_Backward_Differentiation_base::readOn(s);
@@ -75,9 +57,11 @@ Entree& Schema_Backward_Differentiation_order_3::readOn(Entree& s)
 ////////////////////////////////
 
 
-// Description:
-//    Renvoie le nombre de valeurs temporelles a conserver.
-//    Ici : n-1, n et n+1 donc 3.
+/*! @brief Renvoie le nombre de valeurs temporelles a conserver.
+ *
+ * Ici : n-1, n et n+1 donc 3.
+ *
+ */
 int Schema_Backward_Differentiation_order_3::nb_valeurs_temporelles() const
 {
   return 5 ;

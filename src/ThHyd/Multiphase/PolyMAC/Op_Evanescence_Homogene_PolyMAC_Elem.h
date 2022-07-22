@@ -18,14 +18,12 @@
 
 #include <Operateur_Evanescence_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Op_Evanescence_Homogene_PolyMAC_Elem
-//    gestion dans PolyMAC de l'evanescence dans une equation aux elements (masse, energie...)
-// .SECTION voir aussi
-//    Operateur_PolyMAC_base Operateur_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Op_Evanescence_Homogene_PolyMAC_Elem gestion dans PolyMAC de l'evanescence dans une equation aux elements (masse, energie.
+ *
+ * ..)
+ *
+ * @sa Operateur_PolyMAC_base Operateur_base
+ */
 class Op_Evanescence_Homogene_PolyMAC_Elem: public Operateur_Evanescence_base
 {
   Declare_instanciable(Op_Evanescence_Homogene_PolyMAC_Elem);

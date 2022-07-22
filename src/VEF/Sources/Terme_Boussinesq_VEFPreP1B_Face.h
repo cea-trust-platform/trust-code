@@ -20,9 +20,9 @@
 
 class Convection_Diffusion_std;
 
-//
-// .DESCRIPTION class Terme_Boussinesq_scalaire_VEFPreP1B_Face
-// Terme Source de Boussinesq pour une dicretisation VEFPreP1B
+/*! @brief class Terme_Boussinesq_scalaire_VEFPreP1B_Face Terme Source de Boussinesq pour une dicretisation VEFPreP1B
+ *
+ */
 
 class Terme_Boussinesq_VEFPreP1B_Face : public Terme_Boussinesq_VEF_Face
 {

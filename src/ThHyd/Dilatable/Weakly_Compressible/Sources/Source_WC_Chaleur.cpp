@@ -42,21 +42,12 @@ DoubleTab& Source_WC_Chaleur::ajouter(DoubleTab& resu) const
   return ajouter_(resu);
 }
 
-// Description:
-//    Ajoute le terme source weakly compressible
-//    d P_tot / d t = del P / del t + u.grad(P_tot)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ajoute le terme source weakly compressible d P_tot / d t = del P / del t + u.
+ *
+ * grad(P_tot)
+ *
+ * @return (Entree&)
+ */
 DoubleTab& Source_WC_Chaleur::ajouter_(DoubleTab& resu) const
 {
   double dt_ = mon_equation->schema_temps().temps_courant() - mon_equation->schema_temps().temps_precedent();

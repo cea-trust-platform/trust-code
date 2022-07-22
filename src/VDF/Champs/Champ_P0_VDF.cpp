@@ -76,10 +76,12 @@ DoubleTab& Champ_P0_VDF::remplir_coord_noeuds(DoubleTab& positions) const
   return positions;
 }
 
-// Description:
-// renvoie la moyenne du champ au sens P0 i.e la somme, divisee par
-// le volume total du domaine, des valeurs constantes par element
-// multipliees par les volumes des elements
+/*! @brief renvoie la moyenne du champ au sens P0 i.
+ *
+ * e la somme, divisee par le volume total du domaine, des valeurs constantes par element
+ *  multipliees par les volumes des elements
+ *
+ */
 
 DoubleVect Champ_P0_VDF::moyenne() const
 {
@@ -105,9 +107,9 @@ DoubleVect Champ_P0_VDF::moyenne() const
   return moy;
 }
 
-// Description:
-// Cette fonction effectue le calcul de la moyenne au sens P0
-// de la kieme composante du champ
+/*! @brief Cette fonction effectue le calcul de la moyenne au sens P0 de la kieme composante du champ
+ *
+ */
 double Champ_P0_VDF::moyenne(int ncomp) const
 {
   const Zone_VDF& zvdf=la_zone_VDF.valeur();
@@ -128,8 +130,9 @@ double Champ_P0_VDF::moyenne(int ncomp) const
   return moy;
 }
 
-// Description:
-// Ecrit le champ sous la forme IJK
+/*! @brief Ecrit le champ sous la forme IJK
+ *
+ */
 int Champ_P0_VDF::imprime(Sortie& os, int ncomp) const
 {
   // valeur_au_ijk(xi,yj,zk,valeurs,ncomp);
@@ -251,21 +254,13 @@ int Champ_P0_VDF::imprime(Sortie& os, int ncomp) const
   return 1;
 }
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    calcule l'integrale de l'une des composantes
-//    du champ sur le domaine qui lui correspond
-// Precondition:
-// Parametre: int ncomp
-//    Signification: le numero de la composante integree en espace
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: valeur de l'integrale
-//    Contraintes:
-// Exception:
-// Effets de bord:
+/*! @brief Appel a l'objet sous-jacent calcule l'integrale de l'une des composantes
+ *
+ *     du champ sur le domaine qui lui correspond
+ *
+ * @param (int ncomp) le numero de la composante integree en espace
+ * @return (double) valeur de l'integrale
+ */
 double Champ_P0_VDF::integrale_espace(int ncomp) const
 {
   // Cerr << "Champ_P0_VDF::integrale_espace " << finl;

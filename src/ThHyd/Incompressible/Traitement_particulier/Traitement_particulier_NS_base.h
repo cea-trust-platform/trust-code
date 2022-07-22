@@ -27,16 +27,13 @@
 
 class Equation_base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Traitement_particulier_NS_base
-//     Derive de Support_Champ_Masse_Volumique: utilisation de rho
-//     pour le calcul de l'energie cinetique par exemple (front-tracking)
-//     voir Traitement_particulier_NS_EC
-// .SECTION voir aussi
-//      Navier_Stokes_Standard
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Traitement_particulier_NS_base Derive de Support_Champ_Masse_Volumique: utilisation de rho
+ *
+ *      pour le calcul de l'energie cinetique par exemple (front-tracking)
+ *      voir Traitement_particulier_NS_EC
+ *
+ * @sa Navier_Stokes_Standard
+ */
 class Traitement_particulier_NS_base : public Objet_U,
   public Support_Champ_Masse_Volumique,
   public Champs_compris_interface

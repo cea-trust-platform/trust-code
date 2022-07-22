@@ -28,41 +28,21 @@ Convection_Diffusion_Concentration::Convection_Diffusion_Concentration():masse_m
 {
   //On dimensionne liste_noms_compris et on remplit dans readOn()
 }
-// Description:
-//    Simple appel a: Convection_Diffusion_std::printOn(Sortie&)
-// Precondition:
-// Parametre: Sortie& is
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a: Convection_Diffusion_std::printOn(Sortie&)
+ *
+ * @param (Sortie& is) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Convection_Diffusion_Concentration::printOn(Sortie& is) const
 {
   return Convection_Diffusion_std::printOn(is);
 }
 
-// Description:
-//    Verifie si l'equation a une concentration et un constituant associe
-//    et appelle Convection_Diffusion_std::readOn(Entree&).
-// Precondition: l'objet a une concentration associee
-// Precondition: l'objet a un constituant associe
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree& is
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Verifie si l'equation a une concentration et un constituant associe et appelle Convection_Diffusion_std::readOn(Entree&).
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree& is) le flot d'entree modifie
+ */
 Entree& Convection_Diffusion_Concentration::readOn(Entree& is)
 {
   assert(la_concentration.non_nul());
@@ -137,22 +117,11 @@ int Convection_Diffusion_Concentration::lire_motcle_non_standard(const Motcle& m
   return 1;
 }
 
-// Description:
-//    Associe un milieu physique a l'equation,
-//    le milieu est en fait caste en Constituant et associe a l'equation.
-// Precondition:
-// Parametre: Milieu_base& un_milieu
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//                 doit pourvoir etre force au type "Constituant"
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: diffusivite du constituant dans le fluide non definie
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe un milieu physique a l'equation, le milieu est en fait caste en Constituant et associe a l'equation.
+ *
+ * @param (Milieu_base& un_milieu)
+ * @throws diffusivite du constituant dans le fluide non definie
+ */
 void Convection_Diffusion_Concentration::associer_milieu_base(const Milieu_base& un_milieu)
 {
   const Constituant& un_constituant = ref_cast(Constituant,un_milieu);
@@ -170,20 +139,9 @@ const Champ_Don& Convection_Diffusion_Concentration::diffusivite_pour_transport(
   return constituant().diffusivite_constituant();
 }
 
-// Description:
-//    Discretise l'equation.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: l'equation est discretisee
+/*! @brief Discretise l'equation.
+ *
+ */
 void Convection_Diffusion_Concentration::discretiser()
 {
   const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
@@ -195,64 +153,37 @@ void Convection_Diffusion_Concentration::discretiser()
 }
 
 
-// Description:
-//    Renvoie le milieu physique de l'equation.
-//    (un Constituant upcaste en Milieu_base)
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Milieu_base&
-//    Signification: le Constituant upcaste en Milieu_base
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le milieu physique de l'equation.
+ *
+ * (un Constituant upcaste en Milieu_base)
+ *     (version const)
+ *
+ * @return (Milieu_base&) le Constituant upcaste en Milieu_base
+ */
 const Milieu_base& Convection_Diffusion_Concentration::milieu() const
 {
   return constituant();
 }
 
 
-// Description:
-//    Renvoie le milieu physique de l'equation.
-//    (un Constituant upcaste en Milieu_base)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Milieu_base&
-//    Signification: le Constituant upcaste en Milieu_base
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le milieu physique de l'equation.
+ *
+ * (un Constituant upcaste en Milieu_base)
+ *
+ * @return (Milieu_base&) le Constituant upcaste en Milieu_base
+ */
 Milieu_base& Convection_Diffusion_Concentration::milieu()
 {
   return constituant();
 }
 
 
-// Description:
-//    Renvoie le constituant (si il a ete associe).
-//    (version const)
-// Precondition: un constituant doit avoir ete associe a l'equation.
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Constituant&
-//    Signification: le constituant associe a l'equation
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le constituant (si il a ete associe).
+ *
+ * (version const)
+ *
+ * @return (Constituant&) le constituant associe a l'equation
+ */
 const Constituant& Convection_Diffusion_Concentration::constituant() const
 {
   if(!le_constituant.non_nul())
@@ -264,20 +195,10 @@ const Constituant& Convection_Diffusion_Concentration::constituant() const
 }
 
 
-// Description:
-//    Renvoie le constituant (si il a ete associe).
-// Precondition: un constituant doit avoir ete associe a l'equation.
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Constituant&
-//    Signification: le constituant associe a l'equation
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le constituant (si il a ete associe).
+ *
+ * @return (Constituant&) le constituant associe a l'equation
+ */
 Constituant& Convection_Diffusion_Concentration::constituant()
 {
   if(!le_constituant.non_nul())
@@ -303,50 +224,29 @@ void Convection_Diffusion_Concentration::mettre_a_jour(double temps)
   constituant().mettre_a_jour(temps);
 }
 
-// Description:
-//    Impression des flux sur les bords sur un flot de sortie.
-//    Appelle Equation_base::impr(Sortie&)
-// Precondition: Sortie&
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: int
-//    Signification: code de retour propage
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Impression des flux sur les bords sur un flot de sortie.
+ *
+ * Appelle Equation_base::impr(Sortie&)
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (int) code de retour propage
+ */
 int Convection_Diffusion_Concentration::impr(Sortie& os) const
 {
   return Equation_base::impr(os);
 }
 
-// Description:
-//    Renvoie 1 si le mot clef specifie designe un type de
-//    champ inconnue de l'equation.
-//    Renvoie 1 si mot = "concentration"
-//    Renvoie 0 sinon
-//    Si la methode renvoie 1 ch_ref fait reference au champ, dont
-//    le type a ete specifie.
-// Precondition:
-// Parametre: Motcle& mot
-//    Signification: le type du champ dont on veut recuperer la reference
-//    Valeurs par defaut:
-//    Contraintes: reference constante, valeur parmi "concentration"
-//    Acces: entree
-// Parametre: REF(Champ_base)& ch_ref
-//    Signification: la reference sur le champ du type specifie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: int
-//    Signification: renvoie 1 si le champ a ete trouve, 0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie 1 si le mot clef specifie designe un type de champ inconnue de l'equation.
+ *
+ *     Renvoie 1 si mot = "concentration"
+ *     Renvoie 0 sinon
+ *     Si la methode renvoie 1 ch_ref fait reference au champ, dont
+ *     le type a ete specifie.
+ *
+ * @param (Motcle& mot) le type du champ dont on veut recuperer la reference
+ * @param (REF(Champ_base)& ch_ref) la reference sur le champ du type specifie
+ * @return (int) renvoie 1 si le champ a ete trouve, 0 sinon
+ */
 inline int string2int(char* digit, int& result)
 {
   result = 0;
@@ -369,21 +269,12 @@ inline int string2int(char* digit, int& result)
 
 
 
-// Description:
-//    Renvoie le nom du domaine d'application de l'equation.
-//    Ici "Concentration".
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Motcle&
-//    Signification: le nom du domaine d'application de l'equation
-//    Contraintes: toujours egal a "Concentration"
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nom du domaine d'application de l'equation.
+ *
+ * Ici "Concentration".
+ *
+ * @return (Motcle&) le nom du domaine d'application de l'equation
+ */
 const Motcle& Convection_Diffusion_Concentration::domaine_application() const
 {
   static Motcle domaine = "Concentration";

@@ -30,41 +30,23 @@ Implemente_instanciable(Echange_interne_impose,"Paroi_echange_interne_impose",Ec
 // XD attr h_imp chaine h_imp 0 Exchange coefficient value expressed in W.m-2.K-1.
 // XD attr ch front_field_base ch 0 Boundary field type.
 
-// Description:
-//    Ecrit le type de l'objet sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit le type de l'objet sur un flot de sortie
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Echange_interne_impose::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << "\n";
 }
 
-// Description:
-//    Simple appel a Echange_impose_base::readOn(Entree&)
-//    Lit les specifications des conditions aux limites
-//    a partir d'un flot d'entree.
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a Echange_impose_base::readOn(Entree&) Lit les specifications des conditions aux limites
+ *
+ *     a partir d'un flot d'entree.
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot de sortie modifie
+ */
 Entree& Echange_interne_impose::readOn(Entree& s )
 {
   Motcle motlu;

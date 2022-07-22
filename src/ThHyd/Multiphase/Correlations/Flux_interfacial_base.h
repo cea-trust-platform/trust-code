@@ -19,27 +19,26 @@
 #include <TRUSTTabs_forward.h>
 #include <Correlation_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Flux_interfacial_base
-//      correlations de flux de chaleur interfacial de la forme
-//      Phi_{kl} = h_{kl}(T_k - T_l)
-//      cette classe definit une fonction flux avec :
-//    entrees :
-//        D_h       -> diametre hyd
-//        alpha[n]  -> taux de presence de la phase n
-//        T[n]      -> temperature de la phase n
-//        p         -> pression
-//        nv[N * n + k]     -> norme de la vitesse de la phase n en si k == n, norme de v_k-v_n si k != n
-//        lambda[n], mu[n], rho[n], Cp[n] -> diverses proprietes physiques de la phase n
-//
-//    sorties :
-//       hi(k, l)    -> coeff d'echange entre la phase k et l'interface avec la phase l (hi(l, k) != hi(k, l) !)
-//    dT_hi(k, l, n) -> derivee de hi(k, l) en T[n]
-//    da_hi(k, l, n) -> derivee de hi(k, l) en a[n]
-//    dp_hi(k, l)    -> derivee de hi(k, l) en p
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Flux_interfacial_base correlations de flux de chaleur interfacial de la forme
+ *
+ *       Phi_{kl} = h_{kl}(T_k - T_l)
+ *       cette classe definit une fonction flux avec :
+ *     entrees :
+ *         D_h       -> diametre hyd
+ *         alpha[n]  -> taux de presence de la phase n
+ *         T[n]      -> temperature de la phase n
+ *         p         -> pression
+ *         nv[N * n + k]     -> norme de la vitesse de la phase n en si k == n, norme de v_k-v_n si k != n
+ *         lambda[n], mu[n], rho[n], Cp[n] -> diverses proprietes physiques de la phase n
+ *
+ *     sorties :
+ *        hi(k, l)    -> coeff d'echange entre la phase k et l'interface avec la phase l (hi(l, k) != hi(k, l) !)
+ *     dT_hi(k, l, n) -> derivee de hi(k, l) en T[n]
+ *     da_hi(k, l, n) -> derivee de hi(k, l) en a[n]
+ *     dp_hi(k, l)    -> derivee de hi(k, l) en p
+ *
+ *
+ */
 
 class Flux_interfacial_base : public Correlation_base
 {

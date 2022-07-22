@@ -21,11 +21,10 @@
 #include <Ref_Zone_VDF.h>
 #include <Champ_Face_implementation.h>
 
-//
-//.DESCRIPTION  classe Champ_Fonc_Face
-//
-// .SECTION voir aussi
-// Champ_Fonc_base Champ_Face
+/*! @brief classe Champ_Fonc_Face
+ *
+ * @sa Champ_Fonc_base Champ_Face
+ */
 
 class Champ_Fonc_Face : public Champ_Fonc_base, public Champ_Face_implementation
 {

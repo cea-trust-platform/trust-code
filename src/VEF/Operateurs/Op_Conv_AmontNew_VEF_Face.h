@@ -22,15 +22,16 @@
 #include <Matrice_Morse.h>
 
 
-//
-// .DESCRIPTION class Op_Conv_AmontNew_VEF_Face
-//
-//  Cette classe represente l'operateur de convection associe a une equation de
-//  transport d'un scalaire.
-//  La discretisation est VEF
-//  Le champ convecte est scalaire ou vecteur de type Champ_P1NC
-//  Le schema de convection est du type AmontNew
-//  Les methodes pour l'implicite sont codees.
+/*! @brief class Op_Conv_AmontNew_VEF_Face
+ *
+ *   Cette classe represente l'operateur de convection associe a une equation de
+ *   transport d'un scalaire.
+ *   La discretisation est VEF
+ *   Le champ convecte est scalaire ou vecteur de type Champ_P1NC
+ *   Le schema de convection est du type AmontNew
+ *   Les methodes pour l'implicite sont codees.
+ *
+ */
 
 //
 // .SECTION voir aussi

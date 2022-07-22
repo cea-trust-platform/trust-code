@@ -23,9 +23,9 @@
 #include <Ref_Zone_Cl_VEF.h>
 class Probleme_base;
 
-//
-// .DESCRIPTION class Terme_Source_Qdm_VEF_Face
-//
+/*! @brief class Terme_Source_Qdm_VEF_Face
+ *
+ */
 
 //
 // .SECTION voir aussi Source_base

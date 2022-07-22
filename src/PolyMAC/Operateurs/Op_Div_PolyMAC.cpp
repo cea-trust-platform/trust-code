@@ -49,7 +49,9 @@ Entree& Op_Div_PolyMAC::readOn(Entree& s)
 
 
 
-// Description:
+/*! @brief
+ *
+ */
 void Op_Div_PolyMAC::associer(const Zone_dis& zone_dis,
                               const Zone_Cl_dis& zone_Cl_dis,
                               const Champ_Inc&)

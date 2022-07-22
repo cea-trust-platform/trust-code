@@ -25,12 +25,11 @@ class Navier_Stokes_std;
 class Matrice_Morse;
 class Sortie;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Navier_Stokes_Fluide_Dilatable_Proto
-//
-//////////////////////////////////////
+/*! @brief classe Navier_Stokes_Fluide_Dilatable_Proto
+ *
+ *
+ *
+ */
 
 class Navier_Stokes_Fluide_Dilatable_Proto
 {

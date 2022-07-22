@@ -57,7 +57,9 @@ void Op_Grad_EF::mettre_a_jour(double temps)
 
 #undef lire_valimp_dans_med_
 
-// Description:
+/*! @brief
+ *
+ */
 void Op_Grad_EF::associer(const Zone_dis& zone_dis,
                           const Zone_Cl_dis& zone_Cl_dis,
                           const Champ_Inc& inc)

@@ -16,13 +16,13 @@
 #ifndef Terme_Source_Coriolis_VDF_Face_included
 #define Terme_Source_Coriolis_VDF_Face_included
 
-//
-// .DESCRIPTION class Terme_Source_Coriolis_VDF_Face
-//  Cette classe permet de calculer la force de Coriolis en VDF
-//
-//
-// .SECTION voir aussi
-// Terme_Source_Coriolis
+/*! @brief class Terme_Source_Coriolis_VDF_Face Cette classe permet de calculer la force de Coriolis en VDF
+ *
+ *
+ *
+ *
+ * @sa Terme_Source_Coriolis
+ */
 
 #include <Source_base.h>
 #include <Terme_Source_Coriolis.h>

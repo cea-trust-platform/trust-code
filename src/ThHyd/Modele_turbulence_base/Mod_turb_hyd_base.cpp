@@ -33,48 +33,31 @@
 
 Implemente_base_sans_constructeur(Mod_turb_hyd_base,"Mod_turb_hyd_base",Objet_U);
 
-// Description:
-//    Ecrit le type et le nom de l'objet sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit le type et le nom de l'objet sur un flot de sortie
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Mod_turb_hyd_base::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
 
-// Description:
-//    Lit les specifications d'un modele de turbulence
-//    a partir d'un flot d'entree.
-//    Format:
-//    Modele_turbulence type_modele
-//    {
-//      [Turbulence_paroi la_loi_de_paroi]
-//      bloc de lecture specifique du type de turbulence
-//    }
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: accolade ouvrante attendue
-// Exception: loi de paroi incompatible avec le probleme
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit les specifications d'un modele de turbulence a partir d'un flot d'entree.
+ *
+ *     Format:
+ *     Modele_turbulence type_modele
+ *     {
+ *       [Turbulence_paroi la_loi_de_paroi]
+ *       bloc de lecture specifique du type de turbulence
+ *     }
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ * @throws accolade ouvrante attendue
+ * @throws loi de paroi incompatible avec le probleme
+ */
 Entree& Mod_turb_hyd_base::readOn(Entree& is)
 {
   Cerr<<"Reading of data for a "<<que_suis_je()<<" hydraulic turbulence model"<<finl;
@@ -214,88 +197,44 @@ int Mod_turb_hyd_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
   return -1;
 }
 
-// Description:
-//    Associe l'equation passe en parametre au modele de turbulence.
-// Precondition:
-// Parametre: Equation_base& eqn
-//    Signification: l'equation a laquelle l'objet s'associe
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: le modele de turbulence a une equation associee
+/*! @brief Associe l'equation passe en parametre au modele de turbulence.
+ *
+ * @param (Equation_base& eqn) l'equation a laquelle l'objet s'associe
+ */
 void Mod_turb_hyd_base::associer_eqn(const Equation_base& eqn)
 {
   mon_equation = eqn;
 }
 
 
-// Description:
-//    NE FAIT RIEN
-//    a surcharger dans les classes derivees.
-//    Associe la zone discretisee et la zone des conditions
-//    aux limites discretisees au modele de turbulence.
-// Precondition:
-// Parametre: Zone_dis&
-//    Signification: une zone discretisee
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Parametre: Zone_Cl_dis&
-//    Signification: une zone de conditions aux limites discretisees
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN a surcharger dans les classes derivees.
+ *
+ *     Associe la zone discretisee et la zone des conditions
+ *     aux limites discretisees au modele de turbulence.
+ *
+ * @param (Zone_dis&) une zone discretisee
+ * @param (Zone_Cl_dis&) une zone de conditions aux limites discretisees
+ */
 void Mod_turb_hyd_base::associer(const Zone_dis& , const Zone_Cl_dis&  )
 {
   ;
 }
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN
+ *
+ */
 void Mod_turb_hyd_base::completer()
 {
   ;
 }
 
 
-// Description:
-//    Lit le fichier dom_Wall_length.xyz pour remplir le champs wall_length en vue d'un post-traitement de distance_paroi
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit le fichier dom_Wall_length.
+ *
+ * xyz pour remplir le champs wall_length en vue d'un post-traitement de distance_paroi
+ *
+ */
 void Mod_turb_hyd_base::lire_distance_paroi( )
 {
 
@@ -323,20 +262,9 @@ void Mod_turb_hyd_base::lire_distance_paroi( )
 }
 
 
-// Description:
-//    Discretise le modele de turbulence.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: le modele de turbulence est discretise
+/*! @brief Discretise le modele de turbulence.
+ *
+ */
 void Mod_turb_hyd_base::discretiser()
 {
   Cerr << "Turbulence hydraulic model discretization" << finl;
@@ -381,22 +309,13 @@ void Mod_turb_hyd_base::discretiser_K(const Schema_Temps_base& sch,
   dis.discretiser_champ("champ_elem",z.valeur(),"K","m2/s2",1,sch.temps_courant(),ch);
 }
 
-// Description:
-//    Prepare le calcul.
-//    Initialise la loi de paroi.
-//    Remplit le champ wall_length en cas de post traitemetn de la distance_paroi
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: code de retour de Turbulence_paroi::init_lois_paroi()
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Prepare le calcul.
+ *
+ * Initialise la loi de paroi.
+ *     Remplit le champ wall_length en cas de post traitemetn de la distance_paroi
+ *
+ * @return (int) code de retour de Turbulence_paroi::init_lois_paroi()
+ */
 int Mod_turb_hyd_base::preparer_calcul()
 {
   int res = 1;
@@ -475,20 +394,10 @@ void Mod_turb_hyd_base::get_noms_champs_postraitables(Noms& nom,Option opt) cons
     loipar->get_noms_champs_postraitables(nom,opt);
 }
 
-// Description:
-//    Effectue l'impression si cela est necessaire.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Effectue l'impression si cela est necessaire.
+ *
+ * @return renvoie toujours 1
+ */
 void Mod_turb_hyd_base::imprimer(Sortie& os) const
 {
   const Schema_Temps_base& sch = mon_equation->schema_temps();
@@ -518,21 +427,13 @@ int Mod_turb_hyd_base::limpr_ustar(double temps_courant, double temps_prec, doub
 }
 
 
-// Description:
-//    Sauvegarde le modele de turbulence sur un flot de sortie.
-//    Sauvegarde le type de l'objet.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Sauvegarde le modele de turbulence sur un flot de sortie.
+ *
+ * Sauvegarde le type de l'objet.
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (int) renvoie toujours 1
+ */
 int Mod_turb_hyd_base::sauvegarder(Sortie& os) const
 {
   a_faire(os);
@@ -552,20 +453,11 @@ int Mod_turb_hyd_base::sauvegarder(Sortie& os) const
   assert(mp_sum(borne_visco_turb.size())!=0);
   return 0;
 }
-// Description:
-//    Reprend la loi de paroi
-// Precondition:
-// Parametre: Entree&
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: NON ACCEDE
-// Retour: int
-//    Signification: renvoie toujours 0
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Reprend la loi de paroi
+ *
+ * @param (Entree&) un flot d'entree
+ * @return (int) renvoie toujours 0
+ */
 int Mod_turb_hyd_base::reprendre(Entree& is)
 {
   if (loipar.non_nul())
@@ -573,20 +465,9 @@ int Mod_turb_hyd_base::reprendre(Entree& is)
   return 0;
 }
 
-// Description:
-//    Effectue l'ecriture d'une identite si cela est necessaire.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Effectue l'ecriture d'une identite si cela est necessaire.
+ *
+ */
 void Mod_turb_hyd_base::a_faire(Sortie& os) const
 {
   int afaire,special;

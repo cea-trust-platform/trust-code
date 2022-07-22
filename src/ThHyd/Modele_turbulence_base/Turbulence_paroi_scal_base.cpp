@@ -27,40 +27,22 @@
 Implemente_base_sans_constructeur(Turbulence_paroi_scal_base,"Turbulence_paroi_scal_base",Objet_U);
 
 
-// Description:
-//    Ecrit le type de l'objet sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit le type de l'objet sur un flot de sortie
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Turbulence_paroi_scal_base::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree& s
-//    Signification: le flot d'entree
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree& s) le flot d'entree
+ */
 Entree& Turbulence_paroi_scal_base::readOn(Entree& is)
 {
 
@@ -83,21 +65,9 @@ void Turbulence_paroi_scal_base::get_noms_champs_postraitables(Noms& nom,Option 
     nom.add(champs_compris_.liste_noms_compris());
 
 }
-// Description:
-//    Ouverture/creation d'un fichier d'impression de
-//    Face, d_eq, Nu local, h
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ouverture/creation d'un fichier d'impression de Face, d_eq, Nu local, h
+ *
+ */
 void Turbulence_paroi_scal_base::ouvrir_fichier_partage(EcrFicPartage& Nusselt,const Nom& extension) const
 {
   const Probleme_base& pb=mon_modele_turb_scal->equation().probleme();
@@ -126,22 +96,10 @@ void Turbulence_paroi_scal_base::ouvrir_fichier_partage(EcrFicPartage& Nusselt,c
 
 
 
-// Description:
-//    Give a boolean indicating if we need to use equivant distance
-//    by default we consider that we use the equivalent distance
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: boolean
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-//
+/*! @brief Give a boolean indicating if we need to use equivant distance by default we consider that we use the equivalent distance
+ *
+ * @return (boolean)
+ */
 bool Turbulence_paroi_scal_base::use_equivalent_distance() const
 {
   return true;

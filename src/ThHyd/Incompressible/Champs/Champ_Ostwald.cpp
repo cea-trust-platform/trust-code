@@ -24,21 +24,13 @@
 Implemente_instanciable(Champ_Ostwald,"Champ_Ostwald",Champ_Fonc_P0_base);
 
 
-// Description:
-//    Imprime le champ sur un flot de sortie.
-//    Imprime le nb_de composantes.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Imprime le champ sur un flot de sortie.
+ *
+ * Imprime le nb_de composantes.
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Champ_Ostwald::printOn(Sortie& os) const
 {
   //const int nb_compo = valeurs()(0,0);
@@ -47,44 +39,25 @@ Sortie& Champ_Ostwald::printOn(Sortie& os) const
 }
 
 
-// Description:
-//    Lit un champ a partir d'un flot d'entree.
-//    On lit le nombre de composante du champ (nb_comp)
-//    Format:
-//      Champ_Ostwald nb_comp
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit un champ a partir d'un flot d'entree.
+ *
+ * On lit le nombre de composante du champ (nb_comp)
+ *     Format:
+ *       Champ_Ostwald nb_comp
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Champ_Ostwald::readOn(Entree& is)
 {
   return is;
 }
 
 
-// Description:
-//    NE FAIT RIEN, provoque une erreur
-//    A surcharger dans les classes derivees.
-// Precondition:
-// Parametre: double
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN, provoque une erreur A surcharger dans les classes derivees.
+ *
+ * @param (double)
+ */
 void Champ_Ostwald::mettre_a_jour(double )
 {
   Cerr << "Champ_Ostwald::mettre_a_jour() ne fait rien" << finl;
@@ -92,21 +65,9 @@ void Champ_Ostwald::mettre_a_jour(double )
   exit();
 }
 
-// Description:
-//    NE FAIT RIEN, provoque une erreur
-//    A surcharger dans les classes derivees.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN, provoque une erreur A surcharger dans les classes derivees.
+ *
+ */
 int Champ_Ostwald::initialiser(const double un_temps)
 {
   Cerr << "Champ_Ostwald::initialiser(temps) must be overloaded" << finl;
@@ -115,21 +76,10 @@ int Champ_Ostwald::initialiser(const double un_temps)
   return 0;
 }
 
-// Description:
-//    NE FAIT RIEN, provoque une erreur
-//    A surcharger dans les classes derivees.
-// Precondition:
-// Parametre: double
-//    Signification: tps ou se fait le calcul
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN, provoque une erreur A surcharger dans les classes derivees.
+ *
+ * @param (double) tps ou se fait le calcul
+ */
 void Champ_Ostwald::me_calculer(double tps)
 {
   Cerr << "Champ_Ostwald::me_calculer() ne fait rien" << finl;
@@ -137,21 +87,10 @@ void Champ_Ostwald::me_calculer(double tps)
   exit();
 }
 
-// Description:
-//    NE FAIT RIEN, provoque une erreur
-//    A surcharger dans les classes derivees.
-// Precondition:
-// Parametre: Champ_base
-//    Signification: un des champs derives
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN, provoque une erreur A surcharger dans les classes derivees.
+ *
+ * @param (Champ_base) un des champs derives
+ */
 /*
   void Champ_Ostwald::associer_champ(const Champ_base& ch)
   {
@@ -160,20 +99,11 @@ void Champ_Ostwald::me_calculer(double tps)
   exit();
   }*/
 
-// Description:
-//    Fixe le nombre de degres de liberte par composante
-// Precondition:
-// Parametre: int nb_noeuds
-//    Signification: le nombre de degre de liberte par composante
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de degres de liberte par composante
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: le tableaux des valeurs peut etre redimensionne
+/*! @brief Fixe le nombre de degres de liberte par composante
+ *
+ * @param (int nb_noeuds) le nombre de degre de liberte par composante
+ * @return (int) le nombre de degres de liberte par composante
+ */
 int Champ_Ostwald::fixer_nb_valeurs_nodales(int nb_noeuds)
 {
   // Note B.M.: encore un heritage a la noix qui m'empeche de factoriser
@@ -192,21 +122,9 @@ int Champ_Ostwald::fixer_nb_valeurs_nodales(int nb_noeuds)
 }
 
 
-// Description:
-//    NE FAIT RIEN, provoque une erreur
-//    A surcharger dans les classes derivees.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN, provoque une erreur A surcharger dans les classes derivees.
+ *
+ */
 
 void Champ_Ostwald::associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base)
 {

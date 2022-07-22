@@ -23,16 +23,10 @@
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Dirichlet_paroi_fixe
-//     Represente une paroi immobile dans une equation de type Navier_Stokes.
-// .SECTION voir aussi
-//     Dirichlet_homogene
-//    Objet compatible avec des equations du domaine de l'Hydraulique
-//    ou indetermine. (voir compatible_avec_eqn(const Equation_base&) const)
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Dirichlet_paroi_fixe Represente une paroi immobile dans une equation de type Navier_Stokes.
+ *
+ * @sa Dirichlet_homogene, Objet compatible avec des equations du domaine de l'Hydraulique, ou indetermine. (voir compatible_avec_eqn(const Equation_base&) const)
+ */
 class Dirichlet_paroi_fixe  : public Dirichlet_homogene
 {
 

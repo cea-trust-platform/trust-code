@@ -25,13 +25,14 @@
 
 Declare_It_Sou_EF(Eval_Puiss_Th_EF);
 
-//.DESCRIPTION class Puissance_Thermique_EF
-//
-// Cette classe represente un terme source de l'equation de la thermique
-// du type degagement volumique de puissance thermique
-//
-//.SECTION voir aussi Terme_Puissance_Thermique, Terme_Source_EF_base
-//
+/*! @brief class Puissance_Thermique_EF
+ *
+ *  Cette classe represente un terme source de l'equation de la thermique
+ *  du type degagement volumique de puissance thermique
+ *
+ *
+ * @sa Terme_Puissance_Thermique, Terme_Source_EF_base
+ */
 class Puissance_Thermique_EF : public Terme_Puissance_Thermique,
   public Terme_Source_EF_base
 {

@@ -23,8 +23,9 @@
 
 class Champ_Inc_base;
 
-// .DESCRIPTION class Eval_Conv_VDF
-// classe de base des evaluateurs de convection VDF
+/*! @brief class Eval_Conv_VDF classe de base des evaluateurs de convection VDF
+ *
+ */
 
 class Eval_Conv_VDF : public Evaluateur_VDF, public Eval_Conv_VDF_tools
 {
@@ -54,8 +55,9 @@ protected:
   DoubleTab dt_vitesse;
 };
 
-// Description:
-// associe le champ de vitesse transportante
+/*! @brief associe le champ de vitesse transportante
+ *
+ */
 inline void Eval_Conv_VDF::associer(const Champ_Face& vit)
 {
   vitesse_=vit;

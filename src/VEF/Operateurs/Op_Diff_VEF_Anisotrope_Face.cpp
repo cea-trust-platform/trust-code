@@ -48,8 +48,9 @@ Entree& Op_Diff_VEF_Anisotrope_Face::readOn(Entree& s )
   return s ;
 }
 
-// Description:
-// associe le champ de diffusivite
+/*! @brief associe le champ de diffusivite
+ *
+ */
 void Op_Diff_VEF_Anisotrope_Face::associer_diffusivite(const Champ_base& diffu)
 {
   diffusivite_ = diffu;

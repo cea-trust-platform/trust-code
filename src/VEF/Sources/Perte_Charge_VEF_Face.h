@@ -28,9 +28,9 @@
 
 class Probleme_base;
 
-//
-// .DESCRIPTION class Perte_Charge_VEF_Face
-//
+/*! @brief class Perte_Charge_VEF_Face
+ *
+ */
 
 //
 // .SECTION voir aussi Source_base

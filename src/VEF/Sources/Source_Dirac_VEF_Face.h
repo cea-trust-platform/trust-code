@@ -23,9 +23,9 @@
 
 class Zone_dis;
 class Zone_Cl_dis;
-//
-// .DESCRIPTION class Terme_Source_Dirac_VEF_Face
-//
+/*! @brief class Terme_Source_Dirac_VEF_Face
+ *
+ */
 
 //
 // .SECTION voir aussi Source_base

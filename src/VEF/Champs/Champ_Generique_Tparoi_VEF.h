@@ -18,8 +18,9 @@
 #define Champ_Generique_Tparoi_VEF_included
 
 #include <Champ_Gen_de_Champs_Gen.h>
-//
-// .DESCRIPTION class Champ_Generique_Tparoi_VEF
+/*! @brief class Champ_Generique_Tparoi_VEF
+ *
+ */
 
 // A preciser
 // Syntaxe a respecter pour jdd

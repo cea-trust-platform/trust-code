@@ -12,9 +12,11 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-// .DESCRIPTION
-// Fichier qui permet de faire un ref_cast sur un fluide d'Ostwald.
-// utilise par Champ_Ostwald.h pour pouvoir utiliser le fluide
+/*! @brief Fichier qui permet de faire un ref_cast sur un fluide d'Ostwald.
+ *
+ * utilise par Champ_Ostwald.h pour pouvoir utiliser le fluide
+ *
+ */
 
 #ifndef Ref_Fluide_Ostwald_included
 #define Ref_Fluide_Ostwald_included

@@ -16,14 +16,14 @@
 #ifndef Modifier_pour_fluide_dilatable
 #define Modifier_pour_fluide_dilatable
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     Fonctions destinees a multiplier ou diviser un tableau de valeurs par un vecteur.
-//     Ces fonctions sont utilisees ici pour multiplier ou diviser un tableau par rho
-//     pour le cas ou le milieu est un Fluide_Dilatable_base
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Fonctions destinees a multiplier ou diviser un tableau de valeurs par un vecteur.
+ *
+ * Ces fonctions sont utilisees ici pour multiplier ou diviser un tableau par rho
+ *      pour le cas ou le milieu est un Fluide_Dilatable_base
+ *
+ *
+ *
+ */
 
 #include <TRUSTTabs_forward.h>
 class Fluide_Dilatable_base;

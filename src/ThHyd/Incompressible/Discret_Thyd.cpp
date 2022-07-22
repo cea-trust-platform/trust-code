@@ -25,40 +25,22 @@
 Implemente_base(Discret_Thyd,"Discret_Thyd",Discret_Thermique);
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie
+ */
 Sortie& Discret_Thyd::printOn(Sortie& s) const
 {
   return s;
 }
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification: le flot d'entree
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree
+ */
 Entree& Discret_Thyd::readOn(Entree& s)
 {
   return s ;
@@ -133,31 +115,12 @@ void Discret_Thyd::gradient_P(const Schema_Temps_base& sch,
   discretiser_champ("gradient_pression",z.valeur(), "gradient_pression", "m/s2", dimension,1,
                     sch.temps_courant(),ch);
 }
-// Description:
-//    NE FAIT RIEN, provoque une erreur
-//    A surcharger dans les classes derivees.
-// Precondition:
-// Parametre: Schema_Temps_base&
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Parametre: Champ_Inc&
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Parametre: Champ_Fonc&
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: NON ACCEDE
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN, provoque une erreur A surcharger dans les classes derivees.
+ *
+ * @param (Schema_Temps_base&)
+ * @param (Champ_Inc&)
+ * @param (Champ_Fonc&)
+ */
 void Discret_Thyd::creer_champ_vorticite(const Schema_Temps_base&, const Champ_Inc& ,
                                          Champ_Fonc& ) const
 {
@@ -166,31 +129,12 @@ void Discret_Thyd::creer_champ_vorticite(const Schema_Temps_base&, const Champ_I
   Process::exit();
 }
 
-// Description:
-//    NE FAIT RIEN, provoque une erreur
-//    A surcharger dans les classes derivees.
-// Precondition:
-// Parametre: Schema_Temps_base&
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Parametre: Champ_Inc&
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Parametre: Champ_Fonc&
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: NON ACCEDE
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN, provoque une erreur A surcharger dans les classes derivees.
+ *
+ * @param (Schema_Temps_base&)
+ * @param (Champ_Inc&)
+ * @param (Champ_Fonc&)
+ */
 void Discret_Thyd::critere_Q(const Zone_dis& ,const Zone_Cl_dis& ,const Champ_Inc& , Champ_Fonc& ) const
 {
   // pour le VDF, on a besoin de la Zone_Cl_dis, mais pas pour le VEF
@@ -200,31 +144,12 @@ void Discret_Thyd::critere_Q(const Zone_dis& ,const Zone_Cl_dis& ,const Champ_In
   Process::exit();
 }
 
-// Description:
-//    NE FAIT RIEN, provoque une erreur
-//    A surcharger dans les classes derivees.
-// Precondition:
-// Parametre: Schema_Temps_base&
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Parametre: Champ_Inc&
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Parametre: Champ_Fonc&
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: NON ACCEDE
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN, provoque une erreur A surcharger dans les classes derivees.
+ *
+ * @param (Schema_Temps_base&)
+ * @param (Champ_Inc&)
+ * @param (Champ_Fonc&)
+ */
 void Discret_Thyd::porosite_volumique(const Zone_dis& z, const Schema_Temps_base& sch , Champ_Fonc& ch ) const
 {
   Cerr << "Volumic porosity field discretization" << finl;
@@ -292,36 +217,13 @@ void Discret_Thyd::h_conv(const Zone_dis& z,const Zone_Cl_dis& zcl, const Champ_
   Process::exit();
 }
 
-// Description:
-//    NE FAIT RIEN, provoque une erreur
-//    A surcharger dans les classes derivees.
-// Precondition:
-// Parametre: Zone_dis&
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Parametre: Fluide_Ostwald&
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: NON ACCEDE
-// Parametre: Champ_Inc&
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Parametre: Champ_Inc&
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: NON ACCEDE
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN, provoque une erreur A surcharger dans les classes derivees.
+ *
+ * @param (Zone_dis&)
+ * @param (Fluide_Ostwald&)
+ * @param (Champ_Inc&)
+ * @param (Champ_Inc&)
+ */
 void Discret_Thyd::proprietes_physiques_fluide_Ostwald(const Zone_dis& , Fluide_Ostwald& ,
                                                        const Navier_Stokes_std& ,
                                                        const Champ_Inc& ) const

@@ -17,14 +17,13 @@
 #define Frottement_interfacial_Weber_included
 #include <Frottement_interfacial_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Frottement_interfacial_Wallis
-//      coefficients de frottement interfacial d'un ecoulement annulaire
-//      -> correlation de Wallis ou l'on renseigne une densite d'aire interfaciale fonction du Weber critique (parametre du jeu de donnees)
-//      parametres : non!
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Frottement_interfacial_Wallis coefficients de frottement interfacial d'un ecoulement annulaire
+ *
+ *       -> correlation de Wallis ou l'on renseigne une densite d'aire interfaciale fonction du Weber critique (parametre du jeu de donnees)
+ *       parametres : non!
+ *
+ *
+ */
 
 class Frottement_interfacial_Weber : public Frottement_interfacial_base
 {

@@ -17,13 +17,12 @@
 #define Multiplicateur_diphasique_homogene_included
 #include <Multiplicateur_diphasique_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Multiplicateur_diphasique_homogene
-//    multiplicateur diphasique homogene : Phi^2 = 1 + x (rho_l / rho_g - 1)
-//    raccord vers la phase vapeur a partir de alpha_min et jusqu'a alpha_max
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Multiplicateur_diphasique_homogene multiplicateur diphasique homogene : Phi^2 = 1 + x (rho_l / rho_g - 1)
+ *
+ *     raccord vers la phase vapeur a partir de alpha_min et jusqu'a alpha_max
+ *
+ *
+ */
 
 class Multiplicateur_diphasique_homogene : public Multiplicateur_diphasique_base
 {

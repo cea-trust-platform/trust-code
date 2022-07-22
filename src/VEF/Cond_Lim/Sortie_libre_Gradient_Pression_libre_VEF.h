@@ -17,20 +17,20 @@
 #define Sortie_libre_Gradient_Pression_libre_VEF_included
 
 
-//
-// .DESCRIPTION Sortie_libre_Gradient_Pression_libre_VEF
-//
-// Cette classe derive de la classe Neumann_sortie_libre
-//
-//    Elle represente une frontiere ouverte avec condition
-//    de gradient de pression calculer.
-//    La fonction flux_impose() renvoie une valeur de pression
-//    a l'exterieur calculee a partir du gradient de pression impose
-//    et de la pression a l'interieur du domaine.
-//
-//
-// .SECTION voir aussi
-// Milieu_base
+/*! @brief Sortie_libre_Gradient_Pression_libre_VEF
+ *
+ *  Cette classe derive de la classe Neumann_sortie_libre
+ *
+ *     Elle represente une frontiere ouverte avec condition
+ *     de gradient de pression calculer.
+ *     La fonction flux_impose() renvoie une valeur de pression
+ *     a l'exterieur calculee a partir du gradient de pression impose
+ *     et de la pression a l'interieur du domaine.
+ *
+ *
+ *
+ * @sa Milieu_base
+ */
 
 
 #include <Neumann_sortie_libre.h>

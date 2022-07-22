@@ -19,20 +19,17 @@
 #include <Neumann_sortie_libre.h>
 #include <TRUSTTabs_forward.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Sortie_libre_pression_moyenne_imposee
-//    Cette classe derive de Neumann_sortie_libre
-//    Elle represente une frontiere ouverte avec condition de niveau moyen de
-//    pression impose (un gradient peut donc apparaitre).
-//    L'objet de type Champ_bord le_champ_bord contient la pression et la
-//    fonction flux_impose() renvoie les valeurs de cette pression.
-//    champ_ext contient une valeur de la vitesse du fluide a l'exterieur
-//    accessible par la methode val_ext()
-// .SECTION voir aussi
-//     Neumann_sortie_libre
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Sortie_libre_pression_moyenne_imposee Cette classe derive de Neumann_sortie_libre
+ *
+ *     Elle represente une frontiere ouverte avec condition de niveau moyen de
+ *     pression impose (un gradient peut donc apparaitre).
+ *     L'objet de type Champ_bord le_champ_bord contient la pression et la
+ *     fonction flux_impose() renvoie les valeurs de cette pression.
+ *     champ_ext contient une valeur de la vitesse du fluide a l'exterieur
+ *     accessible par la methode val_ext()
+ *
+ * @sa Neumann_sortie_libre
+ */
 class Sortie_libre_pression_moyenne_imposee : public Neumann_sortie_libre
 {
 

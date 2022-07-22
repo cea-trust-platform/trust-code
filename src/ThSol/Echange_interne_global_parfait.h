@@ -19,16 +19,13 @@
 #include <Echange_interne_global_impose.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Echange_interne_global_parfait
-//    Cette classe represente le cas particulier d'un échange interne parfait (h=+inf)
-//    Marche seulement en EF pour le moment.
-//
-// .SECTION voir aussi
-//    Echange_impose_base Echange_interne_global_impose
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Echange_interne_global_parfait Cette classe represente le cas particulier d'un échange interne parfait (h=+inf)
+ *
+ *     Marche seulement en EF pour le moment.
+ *
+ *
+ * @sa Echange_impose_base Echange_interne_global_impose
+ */
 class Echange_interne_global_parfait : public Echange_interne_global_impose
 {
 

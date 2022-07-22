@@ -22,13 +22,13 @@
 #include <SolveurSys.h>
 #include <Zone_PolyMAC.h>
 
-/////////////////////////////////////////////////////////////////////////////
-// .NAME        : Champ_Face_PolyMAC
-// .DESCRIPTION : class Champ_Face_PolyMAC
-//
-// Champ correspondant a une inconnue decrite par ses flux aux faces (type vitesse)
-// Degres de libertes : composante normale aux faces + composante tangentielle aux aretes de la vorticite
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Champ_Face_PolyMAC
+ *
+ *  Champ correspondant a une inconnue decrite par ses flux aux faces (type vitesse)
+ *  Degres de libertes : composante normale aux faces + composante tangentielle aux aretes de la vorticite
+ *
+ *
+ */
 
 class Champ_Face_PolyMAC : public Champ_Inc_base
 {

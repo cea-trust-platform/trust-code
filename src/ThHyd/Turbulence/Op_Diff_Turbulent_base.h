@@ -20,10 +20,10 @@
 #include <Ref_Champ_Fonc.h>
 #include <TRUSTVect.h>
 
-// .DESCRIPTION : classe Op_Diff_Turbulent_base
-//     Classe de base pour les operateurs de diffusion pour un ecoulement turbulent.
-// .SECTION voir aussi
-//     Operateur_Diff_base
+/*! @brief : classe Op_Diff_Turbulent_base Classe de base pour les operateurs de diffusion pour un ecoulement turbulent.
+ *
+ * @sa Operateur_Diff_base
+ */
 class Op_Diff_Turbulent_base
 {
 public :

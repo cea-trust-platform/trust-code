@@ -20,14 +20,10 @@
 #include <Convection_Diffusion_std.h>
 #include <Ref_Fluide_Dilatable_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Convection_Diffusion_Fluide_Dilatable_base pour un fluide dilatable
-//
-// .SECTION voir aussi
-//     Conv_Diffusion_std Convection_Diffusion_Temperature
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Convection_Diffusion_Fluide_Dilatable_base pour un fluide dilatable
+ *
+ * @sa Conv_Diffusion_std Convection_Diffusion_Temperature
+ */
 
 class Convection_Diffusion_Fluide_Dilatable_base : public Convection_Diffusion_std,
   public Convection_Diffusion_Fluide_Dilatable_Proto

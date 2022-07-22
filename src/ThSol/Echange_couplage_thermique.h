@@ -19,13 +19,13 @@
 #include <Echange_global_impose.h>
 #include <Lecture_Champ.h>
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Echange_couplage_thermique
-//
-// <Description of class Echange_couplage_thermique>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Echange_couplage_thermique
+ *
+ *  <Description of class Echange_couplage_thermique>
+ *
+ *
+ *
+ */
 
 class Echange_couplage_thermique : public Echange_global_impose
 {

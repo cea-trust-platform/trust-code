@@ -17,11 +17,12 @@
 #ifndef Terme_Source_Canal_RANS_LES_VDF_Elem_included
 #define Terme_Source_Canal_RANS_LES_VDF_Elem_included
 
-//
-// .DESCRIPTION class Terme_Source_Canal_RANS_LES_VDF_Elem
-//  Cette classe concerne un terme source calcule en partie grace
-//  a un calcul RANS preliminaire et applique au calcul LES en cours
-//
+/*! @brief class Terme_Source_Canal_RANS_LES_VDF_Elem Cette classe concerne un terme source calcule en partie grace
+ *
+ *   a un calcul RANS preliminaire et applique au calcul LES en cours
+ *
+ *
+ */
 #include <TRUSTTabs_forward.h>
 #include <Ref_Zone_Cl_VDF.h>
 #include <Ref_Zone_VDF.h>

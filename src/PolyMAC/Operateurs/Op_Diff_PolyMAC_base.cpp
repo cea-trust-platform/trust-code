@@ -211,9 +211,9 @@ void Op_Diff_PolyMAC_base::associer(const Zone_dis& zone_dis, const Zone_Cl_dis&
   la_zcl_poly_ = ref_cast(Zone_Cl_PolyMAC,zcl.valeur());
 }
 
-// Description:
-// calcule la contribution de la diffusion, la range dans resu
-// renvoie resu
+/*! @brief calcule la contribution de la diffusion, la range dans resu renvoie resu
+ *
+ */
 DoubleTab& Op_Diff_PolyMAC_base::calculer(const DoubleTab& inco,  DoubleTab& resu) const
 {
   resu =0;

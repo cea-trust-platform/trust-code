@@ -20,22 +20,13 @@
 #include <Dirichlet_entree_fluide.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Entree_fluide_concentration_imposee
-//    Cas particulier de la classe Dirichlet_entree_fluide
-//    pour la concentration imposee: impose la concentration d'entree du
-//    fluide dans une equation de type Convection_Diffusion_Concentration
-// .SECTION voir aussi
-//    Dirichlet_entree_fluide Convection_Diffusion_Concentration
-//////////////////////////////////////////////////////////////////////////////
-// CLASS: Entree_fluide_Fluctu_temperature_imposee :
-//
-// Cas particulier de la classe Dirichlet_entree_fluide
-// pour le taux de disspation et la variance de temperature imposee
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Entree_fluide_concentration_imposee Cas particulier de la classe Dirichlet_entree_fluide
+ *
+ *     pour la concentration imposee: impose la concentration d'entree du
+ *     fluide dans une equation de type Convection_Diffusion_Concentration
+ *
+ * @sa Dirichlet_entree_fluide Convection_Diffusion_Concentration, CLASS: Entree_fluide_Fluctu_temperature_imposee :, Cas particulier de la classe Dirichlet_entree_fluide, pour le taux de disspation et la variance de temperature imposee
+ */
 class Entree_fluide_Fluctu_Temperature_imposee  : public Dirichlet_entree_fluide
 {
 

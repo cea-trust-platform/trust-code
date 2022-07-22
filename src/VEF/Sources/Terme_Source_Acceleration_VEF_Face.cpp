@@ -27,16 +27,20 @@ Sortie& Terme_Source_Acceleration_VEF_Face::printOn(Sortie& s ) const
   return s << que_suis_je() ;
 }
 
-// Description: Appel a Terme_Source_Acceleration::lire_data
+/*! @brief Appel a Terme_Source_Acceleration::lire_data
+ *
+ */
 Entree& Terme_Source_Acceleration_VEF_Face::readOn(Entree& s )
 {
   lire_data(s);
   return s;
 }
 
-// Description:
-//  Methode appelee par Source_base::completer() apres associer_zones
-//  Remplit les ref. aux zones et zone_cl
+/*! @brief Methode appelee par Source_base::completer() apres associer_zones Remplit les ref.
+ *
+ * aux zones et zone_cl
+ *
+ */
 void Terme_Source_Acceleration_VEF_Face::associer_zones(const Zone_dis& zone_dis,
                                                         const Zone_Cl_dis& zone_Cl_dis)
 {
@@ -46,17 +50,18 @@ void Terme_Source_Acceleration_VEF_Face::associer_zones(const Zone_dis& zone_dis
   la_zone_Cl_VEF_ = ref_cast(Zone_Cl_VEFP1B, zone_Cl_dis.valeur());
 }
 
-// Description:
-//  Fonction outil pour Terme_Source_Acceleration_VEF_Face::ajouter
-//  Ajout des contributions d'une liste contigue de faces du terme source de translation:
-//   s_face = terme_source * rho
-//   resu  += integrale (s_face) sur le volume de controle de la vitesse.
-//  On traite les cas suivants:
-//    rho = reference nulle (=> rho = 1.)  sinon rho != nul
-//    faces de bord => sortie libre
-//    periodicite
-//    symetrie car en VEF la vitesse sur la face de bord peut ne pas etre nul (V_tangentielle)
-//    faces_internes
+/*! @brief Fonction outil pour Terme_Source_Acceleration_VEF_Face::ajouter Ajout des contributions d'une liste contigue de faces du terme source de translation:
+ *
+ *    s_face = terme_source * rho
+ *    resu  += integrale (s_face) sur le volume de controle de la vitesse.
+ *   On traite les cas suivants:
+ *     rho = reference nulle (=> rho = 1.)  sinon rho != nul
+ *     faces de bord => sortie libre
+ *     periodicite
+ *     symetrie car en VEF la vitesse sur la face de bord peut ne pas etre nul (V_tangentielle)
+ *     faces_internes
+ *
+ */
 static void TSAVEF_ajouter_liste_faces(const int premiere_face, const int derniere_face,
                                        const DoubleVect& volumes_entrelaces,
                                        const DoubleVect& volumes_elements,
@@ -114,18 +119,20 @@ static void TSAVEF_ajouter_liste_faces(const int premiere_face, const int dernie
     }
 }
 
-// Description:
-//  Ajoute le terme (la_source_ * rho * volume_entrelace) au champ resu.
-//  On suppose que resu est discretise comme la vitesse.
-//  L'espace virtuel de "resu" n'est PAS mis a jour !
-//
-//  Commentaire sur le schema: L'acceleration d/dt(v) est calculee aux elements,
-//   puis multipliee par "rho" aux elements, puis evaluee aux faces par une
-//   moyenne sur les elements voisins de la face. C'est un premier essai, pas
-//   forcement la meilleure idee. Comme l'acceleration depend de la vitesse qui
-//   est aux faces, on passe par deux interpolations successives.
-// Effet de bord:
-//  On met (la_source_ * rho) dans terme_source_post_
+/*! @brief Ajoute le terme (la_source_ * rho * volume_entrelace) au champ resu.
+ *
+ * On suppose que resu est discretise comme la vitesse.
+ *   L'espace virtuel de "resu" n'est PAS mis a jour !
+ *
+ *   Commentaire sur le schema: L'acceleration d/dt(v) est calculee aux elements,
+ *    puis multipliee par "rho" aux elements, puis evaluee aux faces par une
+ *    moyenne sur les elements voisins de la face. C'est un premier essai, pas
+ *    forcement la meilleure idee. Comme l'acceleration depend de la vitesse qui
+ *    est aux faces, on passe par deux interpolations successives.
+ *  Effet de bord:
+ *   On met (la_source_ * rho) dans terme_source_post_
+ *
+ */
 DoubleTab& Terme_Source_Acceleration_VEF_Face::ajouter(DoubleTab& resu) const
 {
   const Zone_VF&     zone               = la_zone_VEF_.valeur();
@@ -217,14 +224,14 @@ DoubleTab& Terme_Source_Acceleration_VEF_Face::ajouter(DoubleTab& resu) const
   return resu;
 }
 
-// Description:
-//  Calcul du champ de vitesse trois composantes aux faces a partir
-//  du champ de vitesse aux faces de eq_hydraulique_.inconnue().
-//  En VEF: rien a faire. On ne se sert pas du stockage fourni en
-//  parametre, on renvoie N.S.inconnue()
-// Parametre: v_faces_stockage
-// Signification: tableau ou stocker le resultat s'il y a des calculs a faire.
-//                En vef, on ne s'en sert pas
+/*! @brief Calcul du champ de vitesse trois composantes aux faces a partir du champ de vitesse aux faces de eq_hydraulique_.
+ *
+ * inconnue().
+ *   En VEF: rien a faire. On ne se sert pas du stockage fourni en
+ *   parametre, on renvoie N.S.inconnue()
+ *
+ * @param (v_faces_stockage) tableau ou stocker le resultat s'il y a des calculs a faire. En vef, on ne s'en sert pas
+ */
 const DoubleTab& Terme_Source_Acceleration_VEF_Face::calculer_vitesse_faces(
   DoubleTab& v_faces_stockage) const
 {
@@ -232,12 +239,10 @@ const DoubleTab& Terme_Source_Acceleration_VEF_Face::calculer_vitesse_faces(
   return v_faces.valeur().valeurs();
 }
 
-// Description:
-//   Associe le champ de masse volumique=>
-//   Le terme source calcule sera alors homogene a d/dt(integrale(rho*v)).
-// Parametre:     champ_rho
-// Signification: un champ de type Champ_Fonc_P0_VEF qui sera utilise
-//                lors des appels a "ajouter()" pour evaluer la masse volumique.
+/*! @brief Associe le champ de masse volumique=> Le terme source calcule sera alors homogene a d/dt(integrale(rho*v)).
+ *
+ * @param (champ_rho) un champ de type Champ_Fonc_P0_VEF qui sera utilise lors des appels a "ajouter()" pour evaluer la masse volumique.
+ */
 
 void Terme_Source_Acceleration_VEF_Face::associer_champ_rho(const Champ_base& champ_rho)
 {

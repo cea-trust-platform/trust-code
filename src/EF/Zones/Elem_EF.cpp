@@ -51,8 +51,9 @@ Entree& Elem_EF::readOn(Entree& s )
   return s ;
 }
 
-// Description:
-// determination du type
+/*! @brief determination du type
+ *
+ */
 void Elem_EF::typer(Nom type_elem_geom)
 {
 //  Cerr << "Elem_EF::typer()" << finl ;

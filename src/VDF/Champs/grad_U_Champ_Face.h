@@ -21,9 +21,9 @@
 #include <Ref_Champ_Face.h>
 #include <Ref_Zone_Cl_VDF.h>
 
-//
-//.DESCRIPTION  classe grad_U_Champ_Face
-//
+/*! @brief classe grad_U_Champ_Face
+ *
+ */
 
 class grad_U_Champ_Face : public Champ_Fonc_P0_VDF
 

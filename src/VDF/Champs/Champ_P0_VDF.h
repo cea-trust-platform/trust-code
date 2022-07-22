@@ -20,10 +20,12 @@
 #include <Champ_Inc_P0_base.h>
 #include <Ref_Zone_VDF.h>
 
-//.DESCRIPTION classe Champ_P0_VDF
-// Classe qui represente un champ discret P0 par element
-// associe a une zone discretisee de type Zone_VDF
-//
+/*! @brief classe Champ_P0_VDF Classe qui represente un champ discret P0 par element
+ *
+ *  associe a une zone discretisee de type Zone_VDF
+ *
+ *
+ */
 
 //.SECTION voir aussi
 // Champ_P0

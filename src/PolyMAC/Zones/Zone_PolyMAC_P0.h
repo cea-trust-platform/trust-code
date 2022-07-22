@@ -41,39 +41,40 @@
 
 class Geometrie;
 
-//
-// .DESCRIPTION class Zone_PolyMAC_P0
-//
-// 	Classe instanciable qui derive de Zone_VF.
-// 	Cette classe contient les informations geometriques que demande
-// 	la methode des Volumes Elements Finis (element de Crouzeix-Raviart)
-// 	La classe porte un certain nombre d'informations concernant les faces
-// 	Dans cet ensemble de faces on fait figurer aussi les faces du bord et
-//      des joints. Pour manipuler les faces on distingue 2 categories:
-//           - les faces non standard qui sont sur un joint, un bord ou qui sont
-//             internes tout en appartenant a un element du bord
-//           - les faces standard qui sont les faces internes n'appartenant pas
-//             a un element du bord
-//      Cette distinction correspond au traitement des conditions aux limites:les
-//      faces standard ne "voient pas" les conditions aux limites.
-//      L'ensemble des faces est numerote comme suit:
-//           - les faces qui sont sur une Zone_joint apparaissent en premier
-//    	       (dans l'ordre du vecteur les_joints)
-//   	     - les faces qui sont sur une Zone_bord apparaissent ensuite
-//	       (dans l'ordre du vecteur les_bords)
-//  	     - les faces internes non standard apparaissent ensuite
-//           - les faces internes standard en dernier
-//      Finalement on trouve regroupees en premier toutes les faces non standard
-//      qui vont necessiter un traitement particulier
-//      On distingue deux types d'elements
-//           - les elements non standard : ils ont au moins une face de bord
-//           - les elements standard : ils n'ont pas de face de bord
-//      Les elements standard (resp. les elements non standard) ne sont pas ranges
-//      de maniere consecutive dans l'objet Zone. On utilise le tableau
-//      rang_elem_non_std pour acceder de maniere selective a l'un ou
-//      l'autre des types d'elements
-//
-//
+/*! @brief class Zone_PolyMAC_P0
+ *
+ *  	Classe instanciable qui derive de Zone_VF.
+ *  	Cette classe contient les informations geometriques que demande
+ *  	la methode des Volumes Elements Finis (element de Crouzeix-Raviart)
+ *  	La classe porte un certain nombre d'informations concernant les faces
+ *  	Dans cet ensemble de faces on fait figurer aussi les faces du bord et
+ *       des joints. Pour manipuler les faces on distingue 2 categories:
+ *            - les faces non standard qui sont sur un joint, un bord ou qui sont
+ *              internes tout en appartenant a un element du bord
+ *            - les faces standard qui sont les faces internes n'appartenant pas
+ *              a un element du bord
+ *       Cette distinction correspond au traitement des conditions aux limites:les
+ *       faces standard ne "voient pas" les conditions aux limites.
+ *       L'ensemble des faces est numerote comme suit:
+ *            - les faces qui sont sur une Zone_joint apparaissent en premier
+ *     	       (dans l'ordre du vecteur les_joints)
+ *    	     - les faces qui sont sur une Zone_bord apparaissent ensuite
+ * 	       (dans l'ordre du vecteur les_bords)
+ *   	     - les faces internes non standard apparaissent ensuite
+ *            - les faces internes standard en dernier
+ *       Finalement on trouve regroupees en premier toutes les faces non standard
+ *       qui vont necessiter un traitement particulier
+ *       On distingue deux types d'elements
+ *            - les elements non standard : ils ont au moins une face de bord
+ *            - les elements standard : ils n'ont pas de face de bord
+ *       Les elements standard (resp. les elements non standard) ne sont pas ranges
+ *       de maniere consecutive dans l'objet Zone. On utilise le tableau
+ *       rang_elem_non_std pour acceder de maniere selective a l'un ou
+ *       l'autre des types d'elements
+ *
+ *
+ *
+ */
 
 
 class Zone_PolyMAC_P0 : public Zone_PolyMAC

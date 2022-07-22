@@ -19,15 +19,12 @@
 
 #include <Scalaire_impose_paroi.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Temperature_imposee_paroi
-//    Impose la temperature de la paroi dans une equation de type
-//    Convection_Diffusion_Temperature
-// .SECTION voir aussi
-//    Dirichlet Convection_Diffusion_Temperature
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Temperature_imposee_paroi Impose la temperature de la paroi dans une equation de type
+ *
+ *     Convection_Diffusion_Temperature
+ *
+ * @sa Dirichlet Convection_Diffusion_Temperature
+ */
 class Temperature_imposee_paroi  : public Scalaire_impose_paroi
 {
 

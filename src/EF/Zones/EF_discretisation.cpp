@@ -53,16 +53,18 @@ Sortie& EF_discretisation::printOn(Sortie& s) const
   return s ;
 }
 
-// Description:
-// Discretisation d'un champ pour le EF en fonction d'une directive
-// de discretisation. La directive est un Motcle comme "vitesse", "pression",
-// "temperature", "champ_elem" (cree un champ de type P0), ...
-// Cette methode determine le type du champ a creer en fonction du type d'element
-// et de la directive de discretisation. Elle determine ensuite le nombre de ddl
-// et fixe l'ensemble des parametres du champ (type, nb_compo, nb_ddl, nb_pas_dt,
-// nom(s), unite(s) et nature du champ) et associe la Zone_dis au champ.
-// Voir le code pour avoir la correspondance entre les directives et
-// le type de champ cree.
+/*! @brief Discretisation d'un champ pour le EF en fonction d'une directive de discretisation.
+ *
+ * La directive est un Motcle comme "vitesse", "pression",
+ *  "temperature", "champ_elem" (cree un champ de type P0), ...
+ *  Cette methode determine le type du champ a creer en fonction du type d'element
+ *  et de la directive de discretisation. Elle determine ensuite le nombre de ddl
+ *  et fixe l'ensemble des parametres du champ (type, nb_compo, nb_ddl, nb_pas_dt,
+ *  nom(s), unite(s) et nature du champ) et associe la Zone_dis au champ.
+ *  Voir le code pour avoir la correspondance entre les directives et
+ *  le type de champ cree.
+ *
+ */
 void EF_discretisation::discretiser_champ(
   const Motcle& directive, const Zone_dis_base& z,
   Nature_du_champ nature,
@@ -180,8 +182,11 @@ void EF_discretisation::discretiser_champ(
 
 }
 
-// Description:
-// Idem que EF_discretisation::discretiser_champ(... , Champ_Inc)
+/*! @brief Idem que EF_discretisation::discretiser_champ(.
+ *
+ * .. , Champ_Inc)
+ *
+ */
 void EF_discretisation::discretiser_champ(
   const Motcle& directive, const Zone_dis_base& z,
   Nature_du_champ nature,
@@ -194,8 +199,11 @@ void EF_discretisation::discretiser_champ(
                              nb_comp, temps, champ);
 }
 
-// Description:
-// Idem que EF_discretisation::discretiser_champ(... , Champ_Inc)
+/*! @brief Idem que EF_discretisation::discretiser_champ(.
+ *
+ * .. , Champ_Inc)
+ *
+ */
 void EF_discretisation::discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
                                           Nature_du_champ nature,
                                           const Noms& noms, const Noms& unites,
@@ -207,11 +215,13 @@ void EF_discretisation::discretiser_champ(const Motcle& directive, const Zone_di
                              nb_comp, temps, champ);
 }
 
-// Description:
-// Idem que EF_discretisation::discretiser_champ(... , Champ_Inc)
-// Traitement commun aux champ_fonc et champ_don.
-// Cette methode est privee (passage d'un Objet_U pas propre vu
-// de l'exterieur ...)
+/*! @brief Idem que EF_discretisation::discretiser_champ(.
+ *
+ * .. , Champ_Inc) Traitement commun aux champ_fonc et champ_don.
+ *  Cette methode est privee (passage d'un Objet_U pas propre vu
+ *  de l'exterieur ...)
+ *
+ */
 void EF_discretisation::discretiser_champ_fonc_don(
   const Motcle& directive, const Zone_dis_base& z,
   Nature_du_champ nature,
@@ -481,35 +491,13 @@ void EF_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch,
 
 
 
-// Description:
-//    discretise en EF le fluide incompressible, donc  K e N
-// Precondition:
-// Parametre: Zone_dis&
-//    Signification: zone a discretiser
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces:
-// Parametre: Fluide_Ostwald&
-//    Signification: fluide a discretiser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: Champ_Inc&
-//    Signification: ch_vitesse
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces:
-// Parametre: Champ_Inc&
-//    Signification: temperature
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief discretise en EF le fluide incompressible, donc  K e N
+ *
+ * @param (Zone_dis&) zone a discretiser
+ * @param (Fluide_Ostwald&) fluide a discretiser
+ * @param (Champ_Inc&) ch_vitesse
+ * @param (Champ_Inc&) temperature
+ */
 void EF_discretisation::proprietes_physiques_fluide_Ostwald(const Zone_dis& z, Fluide_Ostwald& le_fluide,
                                                             const Navier_Stokes_std& eqn_hydr, const Champ_Inc& ch_temper ) const
 {

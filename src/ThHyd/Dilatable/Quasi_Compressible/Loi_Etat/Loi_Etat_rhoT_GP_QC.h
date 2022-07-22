@@ -21,13 +21,13 @@
 #include <Champ_Don.h>
 #include <Parser_U.h>
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Loi_Etat_rhoT_GP_QC
-//
-// <Description of class Loi_Etat_rhoT_GP_QC>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Loi_Etat_rhoT_GP_QC
+ *
+ *  <Description of class Loi_Etat_rhoT_GP_QC>
+ *
+ *
+ *
+ */
 
 class Loi_Etat_rhoT_GP_QC : public Loi_Etat_GP_base
 {

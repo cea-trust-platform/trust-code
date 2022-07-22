@@ -35,27 +35,33 @@ class Eval_Conv_VDF_Face_leaves : public Eval_Conv_VDF_Face<Eval_Conv_VDF_Face_l
  * mais en ne fesant intervenir que les valeurs fournies par les conditions limites.
  */
 
-// .DESCRIPTION class Eval_Amont_VDF_Face
-// Evaluateur VDF pour la convection Le champ convecte est un Champ_Face
-// Schema de convection Amont
+/*! @brief class Eval_Amont_VDF_Face Evaluateur VDF pour la convection Le champ convecte est un Champ_Face
+ *
+ *  Schema de convection Amont
+ *
+ */
 class Eval_Amont_VDF_Face : public Eval_Conv_VDF_Face<Eval_Amont_VDF_Face>, public Eval_Conv_VDF
 {
 public:
   static constexpr bool IS_AMONT = true, CALC_ARR_COIN_FL = true;
 };
 
-// .DESCRIPTION  class Eval_Centre_VDF_Face
-// Evaluateur VDF pour la convection Le champ convecte est un Champ_Face
-// Schema de convection Centre
+/*! @brief class Eval_Centre_VDF_Face Evaluateur VDF pour la convection Le champ convecte est un Champ_Face
+ *
+ *  Schema de convection Centre
+ *
+ */
 class Eval_Centre_VDF_Face : public Eval_Conv_VDF_Face<Eval_Centre_VDF_Face>, public Eval_Conv_VDF
 {
 public:
   static constexpr bool IS_CENTRE = true;
 };
 
-// .DESCRIPTION  class Eval_Centre4_VDF_Face
-// Evaluateur VDF pour la convection Le champ convecte est un Champ_Face
-// Schema de convection Centre4 (sur 4 points)
+/*! @brief class Eval_Centre4_VDF_Face Evaluateur VDF pour la convection Le champ convecte est un Champ_Face
+ *
+ *  Schema de convection Centre4 (sur 4 points)
+ *
+ */
 class Eval_Centre4_VDF_Face : public Eval_Conv_VDF_Face<Eval_Centre4_VDF_Face>, public Eval_Conv_VDF
 {
 public:
@@ -74,9 +80,11 @@ public:
   {return calcul_g_impl(dxam,dx,dxav,g1,g2,g3,g4); }
 };
 
-// .DESCRIPTION class Eval_Quick_VDF_Face
-// Evaluateur VDF pour la convection Le champ convecte est un Champ_Face
-// Schema de convection Quick
+/*! @brief class Eval_Quick_VDF_Face Evaluateur VDF pour la convection Le champ convecte est un Champ_Face
+ *
+ *  Schema de convection Quick
+ *
+ */
 class Eval_Quick_VDF_Face : public Eval_Conv_VDF_Face<Eval_Quick_VDF_Face>, public Eval_Conv_VDF
 {
 public:
@@ -99,9 +107,11 @@ public:
   { return conv_quick_sharp_moins_impl(psc,vit_0,vit_1,vit_1_1,dx,dm,dxam); }
 };
 
-// .DESCRIPTION class Eval_Quick_VDF_Face_Axi
-// Evaluateur VDF pour la convection en coordonnees cylindriques : Le champ convecte est un Champ_Face
-// Schema de convection Quick
+/*! @brief class Eval_Quick_VDF_Face_Axi Evaluateur VDF pour la convection en coordonnees cylindriques : Le champ convecte est un Champ_Face
+ *
+ *  Schema de convection Quick
+ *
+ */
 class Eval_Quick_VDF_Face_Axi : public Eval_Conv_VDF_Face<Eval_Quick_VDF_Face_Axi>, public Eval_Conv_VDF
 {
 public:

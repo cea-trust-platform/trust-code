@@ -52,8 +52,9 @@ protected:
 //   Fonctions inline de la classe Terme_Source_EF_base
 //
 
-// Description:
-// constructeur
+/*! @brief constructeur
+ *
+ */
 inline Terme_Source_EF_base::Terme_Source_EF_base(const Iterateur_Source_EF_base& iter_base) :
   iter(iter_base)
 {}

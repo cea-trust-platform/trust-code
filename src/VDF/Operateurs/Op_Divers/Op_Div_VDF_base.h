@@ -19,8 +19,9 @@
 #include <Iterateur_VDF_base.h>
 #include <Operateur_Div.h>
 
-// .DESCRIPTION class Op_Div_VDF_base
-// Classe de base des operateurs de divergence VDF
+/*! @brief class Op_Div_VDF_base Classe de base des operateurs de divergence VDF
+ *
+ */
 class Op_Div_VDF_base : public Operateur_Div_base
 {
   Declare_base(Op_Div_VDF_base);

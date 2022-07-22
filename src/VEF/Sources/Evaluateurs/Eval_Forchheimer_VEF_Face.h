@@ -16,11 +16,11 @@
 #ifndef Eval_Forchheimer_VEF_Face_included
 #define Eval_Forchheimer_VEF_Face_included
 
-////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION class Eval_Forchheimer_VEF_Face
-//
-////////////////////////////////////////////////////////////////////////////
+/*! @brief class Eval_Forchheimer_VEF_Face
+ *
+ *
+ *
+ */
 
 #include <Evaluateur_Source_VEF_Face.h>
 #include <Modele_Permeabilite.h>

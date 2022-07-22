@@ -18,17 +18,14 @@
 
 #include <Convection_Diffusion_Fluide_Dilatable_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Convection_Diffusion_Chaleur_Fluide_Dilatable_base
-//     Cas particulier de Convection_Diffusion_std pour un fluide quasi dilatable
-//     quand le scalaire subissant le transport est la temperature en gaz parfaits,
-//     ou l'enthalpie en gaz reels.
-//     (generalisation de Convection_Diffusion_Temperature pour les gaz reels)
-// .SECTION voir aussi
-//     Conv_Diffusion_std Convection_Diffusion_Chaleur_Fluide_Dilatable_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Convection_Diffusion_Chaleur_Fluide_Dilatable_base Cas particulier de Convection_Diffusion_std pour un fluide quasi dilatable
+ *
+ *      quand le scalaire subissant le transport est la temperature en gaz parfaits,
+ *      ou l'enthalpie en gaz reels.
+ *      (generalisation de Convection_Diffusion_Temperature pour les gaz reels)
+ *
+ * @sa Conv_Diffusion_std Convection_Diffusion_Chaleur_Fluide_Dilatable_base
+ */
 
 class Convection_Diffusion_Chaleur_Fluide_Dilatable_base : public Convection_Diffusion_Fluide_Dilatable_base
 {

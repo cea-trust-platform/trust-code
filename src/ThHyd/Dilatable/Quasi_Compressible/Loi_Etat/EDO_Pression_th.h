@@ -19,15 +19,12 @@
 #include <EDO_Pression_th_base.h>
 #include <Deriv.h>
 
-////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-// class EDO_Pression_th
-//    Cette classe est la derivee de la classe EDO_Pression_th_base
-//
-// .SECTION voir aussi
-// EDO_Pression_th_base
-////////////////////////////////////////////////////////////////
+/*! @brief class EDO_Pression_th Cette classe est la derivee de la classe EDO_Pression_th_base
+ *
+ *
+ *
+ * @sa EDO_Pression_th_base
+ */
 
 Declare_deriv(EDO_Pression_th_base);
 

@@ -25,19 +25,15 @@ class Zone_dis_base;
 class Zone_Cl_dis_base;
 class Equation_base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Terme_Puissance_Thermique
-//    Cette classe represente un terme source de l'equation de la thermique
-//    du type degagement volumique de puissance thermique.
-//    Un objet Terme_Puissance_Thermique contient la puissance (Champ donne
-//    utilisateur) et des references a la masse volumique (rho) et la chaleur.
-//    specifique (Cp).
-// .SECTION voir aussi
-//    Classe non instanciable.
-//    L'implementation des termes dependra de leur discretisation.
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Terme_Puissance_Thermique Cette classe represente un terme source de l'equation de la thermique
+ *
+ *     du type degagement volumique de puissance thermique.
+ *     Un objet Terme_Puissance_Thermique contient la puissance (Champ donne
+ *     utilisateur) et des references a la masse volumique (rho) et la chaleur.
+ *     specifique (Cp).
+ *
+ * @sa Classe non instanciable., L'implementation des termes dependra de leur discretisation.
+ */
 class Terme_Puissance_Thermique
 {
 

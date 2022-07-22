@@ -28,28 +28,28 @@
 #include <Domaine.h>
 
 class Convection_Diffusion_std;
-//////////////////////////////////////////////////////////////////////////////
-// .DESCRIPTION
-//    Classe Terme_Boussinesq_base
-//    Cette classe represente le terme de gravite qui figure dans l'equation
-//    de la dynamique divisee par la masse volumique de reference.
-//    On est dans le cadre de l'hypothese de Boussinesq:la masse volumique est
-//    supposee constante et egale a sa valeur de reference sauf dans le terme
-//    des forces de volumes ou on prend en compte une petite variation de la
-//    masse volumique en fonction d'un ou de plusieurs scalaires transportes
-//    par l'ecoulement (la temperature et/ou une ou plusieurs concentrations).
-//    Cas particulier de Terme_Boussinesq_base pour la temperature
-//    Le terme de gravite a pour expression: beta*(T-T0) ou beta
-//    represente la dilatabilite de la masse volumique et T0 une valeur
-//    de reference pour la temperature
-//    Cas particulier de Terme_Boussinesq_base pour une concentration
-//    Le terme de gravite a pour expression : beta*(C-C0)
-//    ou (beta[0]*(C[0]-C0[0]) + .....+ beta[i]*(C[i]-C0[i])) dans
-//    le cas d'un vecteur de concentrations
-//    beta represente la variation de la masse volumique en fonction
-//    de la concentration du constituant et C0 une valeur de reference
-//    pour la concentration
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Terme_Boussinesq_base Cette classe represente le terme de gravite qui figure dans l'equation
+ *
+ *     de la dynamique divisee par la masse volumique de reference.
+ *     On est dans le cadre de l'hypothese de Boussinesq:la masse volumique est
+ *     supposee constante et egale a sa valeur de reference sauf dans le terme
+ *     des forces de volumes ou on prend en compte une petite variation de la
+ *     masse volumique en fonction d'un ou de plusieurs scalaires transportes
+ *     par l'ecoulement (la temperature et/ou une ou plusieurs concentrations).
+ *     Cas particulier de Terme_Boussinesq_base pour la temperature
+ *     Le terme de gravite a pour expression: beta*(T-T0) ou beta
+ *     represente la dilatabilite de la masse volumique et T0 une valeur
+ *     de reference pour la temperature
+ *     Cas particulier de Terme_Boussinesq_base pour une concentration
+ *     Le terme de gravite a pour expression : beta*(C-C0)
+ *     ou (beta[0]*(C[0]-C0[0]) + .....+ beta[i]*(C[i]-C0[i])) dans
+ *     le cas d'un vecteur de concentrations
+ *     beta represente la variation de la masse volumique en fonction
+ *     de la concentration du constituant et C0 une valeur de reference
+ *     pour la concentration
+ *
+ *
+ */
 class Terme_Boussinesq_base : public Source_base
 {
   Declare_base(Terme_Boussinesq_base);

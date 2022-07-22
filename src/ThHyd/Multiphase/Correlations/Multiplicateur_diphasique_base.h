@@ -19,25 +19,24 @@
 #include <TRUSTTabs_forward.h>
 #include <Correlation_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Multiplicateur_diphasique_base
-//      correlations de multiplicateurs diphasiques de la forme
-//      F_{kp} = - C_{kp} F_{p, k seul} - C'_{kp} F_{p,melange}
-//    entrees :
-//      alpha : taux de presence
-//      rho   : masses volumique
-//        v   : vitesses (pour calcul du titre)
-//        f   : facteurs de Darcy qu'aurait l'ecoulement si tout le debit etait dans la phase k
-//       mu   : viscosites cinematiques
-//       Dh   : diametre hydraulique
-//    gamma   : tension superficielle
-//      F_k   : F_{p, k seul}
-//      F_m   : F_{p, melange}
-//    sortie :
-//        coeff(k, 0/1) -> coefficients C_{kp} et C'_{kp}
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Multiplicateur_diphasique_base correlations de multiplicateurs diphasiques de la forme
+ *
+ *       F_{kp} = - C_{kp} F_{p, k seul} - C'_{kp} F_{p,melange}
+ *     entrees :
+ *       alpha : taux de presence
+ *       rho   : masses volumique
+ *         v   : vitesses (pour calcul du titre)
+ *         f   : facteurs de Darcy qu'aurait l'ecoulement si tout le debit etait dans la phase k
+ *        mu   : viscosites cinematiques
+ *        Dh   : diametre hydraulique
+ *     gamma   : tension superficielle
+ *       F_k   : F_{p, k seul}
+ *       F_m   : F_{p, melange}
+ *     sortie :
+ *         coeff(k, 0/1) -> coefficients C_{kp} et C'_{kp}
+ *
+ *
+ */
 
 class Multiplicateur_diphasique_base : public Correlation_base
 {

@@ -18,12 +18,11 @@
 #include <Correlation_base.h>
 #include <Champ_Fonc.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Diametre_bulles_champ
-//      Contient un champ de bulles de diametre defini dans un champ par l'utilisateur
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Diametre_bulles_champ Contient un champ de bulles de diametre defini dans un champ par l'utilisateur
+ *
+ *
+ *
+ */
 
 class Diametre_bulles_champ : public Correlation_base
 {

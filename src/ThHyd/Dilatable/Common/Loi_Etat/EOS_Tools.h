@@ -19,15 +19,12 @@
 #include <EOS_Tools_base.h>
 #include <Deriv.h>
 
-////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-// class EOS_Tools
-//    Cette classe est la derivee de la classe EOS_Tools_base
-//
-// .SECTION voir aussi
-// EOS_Tools_base
-////////////////////////////////////////////////////////////////
+/*! @brief class EOS_Tools Cette classe est la derivee de la classe EOS_Tools_base
+ *
+ *
+ *
+ * @sa EOS_Tools_base
+ */
 
 Declare_deriv(EOS_Tools_base);
 

@@ -28,20 +28,10 @@ Entree& EDO_Pression_th::readOn(Entree& is)
   return is;
 }
 
-// Description:
-//    Type la loi d'etat
-// Precondition:
-// Parametre: Nom& typ
-//    Signification: le nom de type a donner a la loi d'etat
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Type la loi d'etat
+ *
+ * @param (Nom& typ) le nom de type a donner a la loi d'etat
+ */
 void EDO_Pression_th::typer(const Nom& type)
 {
   Nom typ = "EDO_Pression_th_";

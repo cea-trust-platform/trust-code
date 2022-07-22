@@ -18,8 +18,9 @@
 
 #include <Fluide_reel_base.h>
 
-// .DESCRIPTION : Classe StiffenedGas
-//    Cette classe represente un milieu reel
+/*! @brief : Classe StiffenedGas Cette classe represente un milieu reel
+ *
+ */
 class StiffenedGas: public Fluide_reel_base
 {
   Declare_instanciable_sans_constructeur(StiffenedGas);

@@ -22,13 +22,14 @@
 #include <Zone_PolyMAC_P0.h>
 #include <Ref_Zone_Cl_PolyMAC.h>
 
-//
-// .DESCRIPTION class Op_Div_PolyMAC_P0
-//
-//  Cette classe represente l'operateur de divergence
-//  La discretisation est PolyMAC_P0
-//  On calcule la divergence d'un champ_P1NC (la vitesse)
-//
+/*! @brief class Op_Div_PolyMAC_P0
+ *
+ *   Cette classe represente l'operateur de divergence
+ *   La discretisation est PolyMAC_P0
+ *   On calcule la divergence d'un champ_P1NC (la vitesse)
+ *
+ *
+ */
 
 
 //

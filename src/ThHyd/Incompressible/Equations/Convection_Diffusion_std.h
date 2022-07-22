@@ -24,28 +24,20 @@
 #include <Ref_Champ_Inc_base.h>
 class Champ_Don;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Convection_Diffusion_std
-//     Cette classe est la base des equations modelisant le transport
-//     d'un scalaire.
-//     Cette classe porte les termes communs a l'equation
-//     de transport d'un scalaire en regime laminaire.
-//     On se place sous l'hypothese de fluide incompressible.
-//         DT/dt = div(terme visqueux) + termes sources/rho_0
-//     avec DT/dt : derivee particulaire du scalaire
-//     Rq: l'implementation de la classe permet bien sur de negliger
-//         certains termes de l'equation (le terme diffusif,
-//         le terme convectif,tel ou tel terme source).
-// .SECTION voir aussi
-//     Equation_base
-//     Classe abstraite
-//     Methodes abstraites:
-//       Entree& lire(const Motcle&, Entree&)
-//       const Champ_Inc& inconnue() const
-//       Champ_Inc& inconnue()
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Convection_Diffusion_std Cette classe est la base des equations modelisant le transport
+ *
+ *      d'un scalaire.
+ *      Cette classe porte les termes communs a l'equation
+ *      de transport d'un scalaire en regime laminaire.
+ *      On se place sous l'hypothese de fluide incompressible.
+ *          DT/dt = div(terme visqueux) + termes sources/rho_0
+ *      avec DT/dt : derivee particulaire du scalaire
+ *      Rq: l'implementation de la classe permet bien sur de negliger
+ *          certains termes de l'equation (le terme diffusif,
+ *          le terme convectif,tel ou tel terme source).
+ *
+ * @sa Equation_base, Classe abstraite, Methodes abstraites:, Entree& lire(const Motcle&, Entree&), const Champ_Inc& inconnue() const, Champ_Inc& inconnue()
+ */
 class Convection_Diffusion_std : public Equation_base
 {
   Declare_base(Convection_Diffusion_std);
@@ -78,41 +70,20 @@ protected :
 };
 
 
-// Description:
-//    Renvoie une reference sur le champ representant
-//    la vitesse transportante.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Inc&
-//    Signification: le champ representant la vitesse transportante
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie une reference sur le champ representant la vitesse transportante.
+ *
+ * @return (Champ_Inc&) le champ representant la vitesse transportante
+ */
 inline const Champ_Inc_base& Convection_Diffusion_std::vitesse_transportante() const
 {
   return la_vitesse_transportante.valeur();
 }
 
 
-// Description:
-//    Associe la vitesse transportante a l'equation.
-// Precondition:
-// Parametre: Champ_Inc& vit
-//    Signification: le champ a affecter a la vitesse transportante
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: une vitesse transportante a ete associe a l'equation
+/*! @brief Associe la vitesse transportante a l'equation.
+ *
+ * @param (Champ_Inc& vit) le champ a affecter a la vitesse transportante
+ */
 inline void Convection_Diffusion_std::associer_vitesse(const Champ_base& vit)
 {
   la_vitesse_transportante = ref_cast(Champ_Inc_base,vit);

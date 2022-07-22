@@ -37,25 +37,14 @@ Entree& Navier_Stokes_QC::readOn(Entree& is)
   return is;
 }
 
-// Description:
-//    Complete l'equation base,
-//    associe la pression a l'equation,
-//    complete la divergence, le gradient et le solveur pression.
-//    Ajout de 2 termes sources: l'un representant la force centrifuge
-//    dans le cas axi-symetrique,l'autre intervenant dans la resolution
-//    en 2D axisymetrique
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Complete l'equation base, associe la pression a l'equation,
+ *
+ *     complete la divergence, le gradient et le solveur pression.
+ *     Ajout de 2 termes sources: l'un representant la force centrifuge
+ *     dans le cas axi-symetrique,l'autre intervenant dans la resolution
+ *     en 2D axisymetrique
+ *
+ */
 void Navier_Stokes_QC::completer()
 {
   Cerr<<"Navier_Stokes_QC::completer"<<finl;

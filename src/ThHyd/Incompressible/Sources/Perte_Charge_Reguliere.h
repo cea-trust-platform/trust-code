@@ -20,16 +20,13 @@
 #include <TRUSTVect.h>
 #include <math.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Perte_Charge_Reguliere
-//    Cette classe derivee de Perte_Charge est utiliseelorsque l'on veut
-//    modeliser une zone de l'ecoulement dans laquelle des obstacles sont
-//    immerges (faisceau de tubes par exemple)
-// .SECTION voir aussi
-//    Perte_Charge Perte_Charge_Singuliere
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Perte_Charge_Reguliere Cette classe derivee de Perte_Charge est utiliseelorsque l'on veut
+ *
+ *     modeliser une zone de l'ecoulement dans laquelle des obstacles sont
+ *     immerges (faisceau de tubes par exemple)
+ *
+ * @sa Perte_Charge Perte_Charge_Singuliere
+ */
 class Perte_Charge_Reguliere : public Perte_Charge
 {
 
@@ -61,76 +58,40 @@ protected :
 };
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief
+ *
+ * @return (double)
+ */
 inline double Perte_Charge_Reguliere::D() const
 {
   return D_;
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief
+ *
+ * @return (double)
+ */
 inline double Perte_Charge_Reguliere::d() const
 {
   return d_;
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief
+ *
+ * @return (double)
+ */
 inline double Perte_Charge_Reguliere::a() const
 {
   return a_;
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief
+ *
+ * @return (double)
+ */
 inline double Perte_Charge_Reguliere::b() const
 {
   return b_;
@@ -141,19 +102,10 @@ inline double Perte_Charge_Reguliere::CF() const
   return Cf_;
 }
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief
+ *
+ * @return (double)
+ */
 inline double Perte_Charge_Reguliere::calculer_Cf_blasius(double Re) const
 {
   double Cf = 0.;

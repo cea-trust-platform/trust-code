@@ -17,20 +17,10 @@
 
 
 
-// Description:
-//    Renvoie le champ donne representant le terme source
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Don&
-//    Signification: le champ donne representant le terme source
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le champ donne representant le terme source
+ *
+ * @return (Champ_Don&) le champ donne representant le terme source
+ */
 const Champ_Don& Terme_Source_Qdm::source() const
 {
   return la_source;

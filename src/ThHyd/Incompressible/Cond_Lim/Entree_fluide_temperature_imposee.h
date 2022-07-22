@@ -20,16 +20,13 @@
 #include <Dirichlet_entree_fluide.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Entree_fluide_temperature_imposee
-//    Cas particulier de la classe Dirichlet_entree_fluide
-//    pour la temperature imposee: impose la temperature d'entree du fluide
-//    dans une equation de type Convection_Diffusion_Temperature
-// .SECTION voir aussi
-//    Dirichlet_entree_fluide Convection_Diffusion_Temperature
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Entree_fluide_temperature_imposee Cas particulier de la classe Dirichlet_entree_fluide
+ *
+ *     pour la temperature imposee: impose la temperature d'entree du fluide
+ *     dans une equation de type Convection_Diffusion_Temperature
+ *
+ * @sa Dirichlet_entree_fluide Convection_Diffusion_Temperature
+ */
 class Entree_fluide_temperature_imposee  : public Dirichlet_entree_fluide
 {
 

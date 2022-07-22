@@ -46,14 +46,16 @@ Entree& Assembleur_P_VDF::readOn(Entree& s )
   return Assembleur_base::readOn(s);
 }
 
-// Description:
-// Remplit le tableau faces avec la liste des indices des faces periodiques
-// dans le tableau faces_voisins. Chaque face periodique figure deux fois
-// dans faces_voisins (a chaque face correspond la face opposee). On ne
-// met dans le tableau faces que celle des deux qui a l'indice le + petit
-// dans la liste des faces de chaque bord periodique.
-// Valeur de retour:
-// nombre de faces periodiques (egal a la taille du tableau faces).
+/*! @brief Remplit le tableau faces avec la liste des indices des faces periodiques dans le tableau faces_voisins.
+ *
+ * Chaque face periodique figure deux fois
+ *  dans faces_voisins (a chaque face correspond la face opposee). On ne
+ *  met dans le tableau faces que celle des deux qui a l'indice le + petit
+ *  dans la liste des faces de chaque bord periodique.
+ *  Valeur de retour:
+ *  nombre de faces periodiques (egal a la taille du tableau faces).
+ *
+ */
 int Assembleur_P_VDF::liste_faces_periodiques(ArrOfInt& faces)
 {
   // On commence par surestimer largement la taille du tableau :
@@ -93,14 +95,16 @@ int Assembleur_P_VDF::liste_faces_periodiques(ArrOfInt& faces)
   return nb_faces_periodiques;
 }
 
-// Description:
-//  Determine les elements non nuls de la matrice et prepare le stockage.
-//  Matrice creuse de taille nb_elements (lignes) * nb_elem_tot (colonnes)
-//  Codee comme une matrice bloc composee de deux matrices morse:
-//   * Matrice carree symetrique nb_elements * nb_elements
-//     (contient les termes M(i,j) ou i et j sont des numeros d'elements reels)
-//   * Matrice rectangle nb_elements * (nb_elem_tot - nb_elem)
-//     (contient les termes M(i,j) ou i est reel et j est virtuel
+/*! @brief Determine les elements non nuls de la matrice et prepare le stockage.
+ *
+ * Matrice creuse de taille nb_elements (lignes) * nb_elem_tot (colonnes)
+ *   Codee comme une matrice bloc composee de deux matrices morse:
+ *    * Matrice carree symetrique nb_elements * nb_elements
+ *      (contient les termes M(i,j) ou i et j sont des numeros d'elements reels)
+ *    * Matrice rectangle nb_elements * (nb_elem_tot - nb_elem)
+ *      (contient les termes M(i,j) ou i est reel et j est virtuel
+ *
+ */
 int Assembleur_P_VDF::construire(Matrice& la_matrice)
 {
   int i;
@@ -269,28 +273,12 @@ int Assembleur_P_VDF::construire(Matrice& la_matrice)
   return 1;
 }
 
-// Description:
-//  Calcul des coefficients de la matrice de pression avec un champ de rho.
-//  Si rho_ptr == 0, on calcule la matrice -div( porosite * grad P ),
-//  sinon on calcule -div( porosite/rho grad P ) et *rho_ptr doit etre un Champ_Fonc_Face.
-// Precondition:
-//  La matrice doit etre typee et dimensionnee, tab1_ et tab2_ remplis
-//  avec les elements non nuls de la matrice.
-//  On suppose que le tableau tab2_ est inchange depuis son remplissage dans
-//  "construire". Le remplissage se fait avec des boucles identiques pour que
-//  tab2 et coeff se correspondent.
-//
-// A essayer : trier les elements d'une ligne par ordre croissant de numero de
-// colonne et utiliser un acces matrice(ligne,colonne) avec recherche binaire.
-// C'est plus lisible.
-//
-// La matrice M est telle que si le vecteur P(i) contient la valeur de la pression au centre
-// des elements Omega(i), alors le vecteur A=M*P est tel que A(i) vaut :
-//  A(i) = - INTEGRALE sur Omega(i)             (div (porosite/rho * grad P) * dOmega)
-//       = - INTEGRALE sur le bord de Omega(i)) (porosite/rho * gradP * Normale * ds)
-//
-// On discretise grad P = (P(i+1) - P(i)) / h, avec h = volume(Omega') / surface(face)
-// (Omega' est le volume de controle de la qdm)
+/*! @brief Calcul des coefficients de la matrice de pression avec un champ de rho.
+ *
+ * Si rho_ptr == 0, on calcule la matrice -div( porosite * grad P ),
+ *   sinon on calcule -div( porosite/rho grad P ) et *rho_ptr doit etre un Champ_Fonc_Face.
+ *
+ */
 
 int Assembleur_P_VDF::remplir(Matrice& la_matrice, const DoubleVect& volumes_entrelaces,const Champ_Don_base * rho_ptr)
 {
@@ -479,14 +467,16 @@ int Assembleur_P_VDF::remplir(Matrice& la_matrice, const DoubleVect& volumes_ent
   return 1;
 }
 
-// Description:
-// Modification du second membre pour appliquer les conditions aux limites.
-// Les conditions prises en charge sont
-//  Neumann_sortie_libre,
-//  Entree_fluide_vitesse_imposee,
-//  Dirichlet_paroi_defilante (rien a faire),
-//  Dirichlet_paroi_fixe (rien a faire),
-//  Symetrie (rien a faire)
+/*! @brief Modification du second membre pour appliquer les conditions aux limites.
+ *
+ * Les conditions prises en charge sont
+ *   Neumann_sortie_libre,
+ *   Entree_fluide_vitesse_imposee,
+ *   Dirichlet_paroi_defilante (rien a faire),
+ *   Dirichlet_paroi_fixe (rien a faire),
+ *   Symetrie (rien a faire)
+ *
+ */
 int Assembleur_P_VDF::modifier_secmem(DoubleTab& secmem)
 {
   const Zone_Cl_VDF& la_zone_cl = la_zone_Cl_VDF.valeur();
@@ -539,15 +529,16 @@ int Assembleur_P_VDF::modifier_secmem(DoubleTab& secmem)
   return 1;
 }
 
-// Description:
-// Modification du second membre du solveur en pression pour une condition
-//  "Neumann_sortie_libre".
-// Calcul en "increment de pression" :
-//  ajouter l'increment de pression, c'est a dire zero (c.l. instationnaire non supportee)
-// Calcul en "pression" :
-//  Ajout du terme Pimpose * surface / volume_entrelace au second membre dans la discretisation de la
-//  pression au bord (entre un element elem0 et un element fictif exterieur a pression imposee) :
-//    grad P = (P(elem0) - Pimpose) * surface / volume_entrelace
+/*! @brief Modification du second membre du solveur en pression pour une condition "Neumann_sortie_libre".
+ *
+ *  Calcul en "increment de pression" :
+ *   ajouter l'increment de pression, c'est a dire zero (c.l. instationnaire non supportee)
+ *  Calcul en "pression" :
+ *   Ajout du terme Pimpose * surface / volume_entrelace au second membre dans la discretisation de la
+ *   pression au bord (entre un element elem0 et un element fictif exterieur a pression imposee) :
+ *     grad P = (P(elem0) - Pimpose) * surface / volume_entrelace
+ *
+ */
 
 void Assembleur_P_VDF::modifier_secmem_pression_imposee(const Neumann_sortie_libre& cond_lim,
                                                         const Front_VF& frontiere_vf,
@@ -587,11 +578,12 @@ void Assembleur_P_VDF::modifier_secmem_pression_imposee(const Neumann_sortie_lib
     }
 }
 
-// Description:
-// Modification du second membre du systeme en pression pour une condition aux limites
-// de vitesse imposee.
-// Si on resout en increment de pression, ...
-// sinon rien a faire.
+/*! @brief Modification du second membre du systeme en pression pour une condition aux limites de vitesse imposee.
+ *
+ *  Si on resout en increment de pression, ...
+ *  sinon rien a faire.
+ *
+ */
 void Assembleur_P_VDF::modifier_secmem_vitesse_imposee(const Entree_fluide_vitesse_imposee& cond_lim,
                                                        const Front_VF& frontiere_vf,
                                                        DoubleTab& secmem)
@@ -682,10 +674,11 @@ int Assembleur_P_VDF::assembler_mat(Matrice& matrice,const DoubleVect& volumes_e
   return 1;
 }
 
-// Description:
-//  Assemblage de la matrice de pression M telle que
-//   M*P = div(porosite * grad (P))
-//  et calcul des coefficients pour modifier_secmem.
+/*! @brief Assemblage de la matrice de pression M telle que M*P = div(porosite * grad (P))
+ *
+ *   et calcul des coefficients pour modifier_secmem.
+ *
+ */
 int Assembleur_P_VDF::assembler(Matrice& matrice)
 {
   if (je_suis_maitre())
@@ -701,16 +694,13 @@ int Assembleur_P_VDF::assembler(Matrice& matrice)
   return 1;
 }
 
-// Description:
-//  Assemblage de la matrice de pression M telle que
-//   M*P = div(porosite/rho * grad (P))
-//  et calcul des coefficients pour modifier_secmem.
-// Parametre: matrice
-//  Signification: La matrice a assembler.
-//  Contrainte:    Soit la matrice n'est pas encore typee (alors on la "construit"),
-//                 soit c'est la meme que lors de l'appel precedent.
-// Parametre: rho
-//  Contrainte: Doit etre un champ de type Champ_Fonc_Face.
+/*! @brief Assemblage de la matrice de pression M telle que M*P = div(porosite/rho * grad (P))
+ *
+ *   et calcul des coefficients pour modifier_secmem.
+ *
+ * @param (matrice) La matrice a assembler. Contrainte:    Soit la matrice n'est pas encore typee (alors on la "construit"), soit c'est la meme que lors de l'appel precedent.
+ * @param (rho)
+ */
 int Assembleur_P_VDF::assembler_rho_variable(Matrice& matrice,
                                              const Champ_Don_base& rho)
 {
@@ -736,23 +726,15 @@ int Assembleur_P_VDF::assembler_rho_variable(Matrice& matrice,
   return 1;
 }
 
-// Description:
-//    Assemble la matrice de pression pour un fluide quasi compressible.
-//    La matrice M est telle que M*P = div( porosite * grad(P) ).
-//    Le drapeau resoudre_increment_pression est mis a zero s'il n'a pas
-//    encore ete assigne.
-// Precondition:
-// Parametre: DoubleTab& tab_rho
-//    Signification: mass volumique
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Assemble la matrice de pression pour un fluide quasi compressible.
+ *
+ * La matrice M est telle que M*P = div( porosite * grad(P) ).
+ *     Le drapeau resoudre_increment_pression est mis a zero s'il n'a pas
+ *     encore ete assigne.
+ *
+ * @param (DoubleTab& tab_rho) mass volumique
+ * @return (int) renvoie toujours 1
+ */
 int Assembleur_P_VDF::assembler_QC(const DoubleTab& tab_rho, Matrice& matrice)
 {
   // Par defaut pour le qc: resolution en pression et pas en increment pression.

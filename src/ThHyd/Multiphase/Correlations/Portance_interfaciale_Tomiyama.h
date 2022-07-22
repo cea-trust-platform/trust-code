@@ -17,13 +17,12 @@
 #define Portance_interfaciale_Tomiyama_included
 #include <Portance_interfaciale_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Portance_interfaciale_Tomiyama
-//      coefficients de portance interfaciale d'un ecoulement a bulles deformables
-//      Le coefficient renvoye par cette classe est toujours >0, c'est Portanc_interfaciale_PolyMAC_P0 qui gere les signes
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Portance_interfaciale_Tomiyama coefficients de portance interfaciale d'un ecoulement a bulles deformables
+ *
+ *       Le coefficient renvoye par cette classe est toujours >0, c'est Portanc_interfaciale_PolyMAC_P0 qui gere les signes
+ *
+ *
+ */
 
 class Portance_interfaciale_Tomiyama : public Portance_interfaciale_base
 {

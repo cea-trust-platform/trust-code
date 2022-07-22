@@ -24,41 +24,41 @@
 #include <Domaine.h>
 class Geometrie;
 
-//////////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION class Zone_VDF
-//
-//         Classe instanciable qui derive de Zone_VF.
-//         Cette classe contient les informations geometriques que demande
-//         la methode des Volumes Differences Finis.
-//         La classe porte un certain nombre d'informations concernant les faces
-//      L'ensemble des faces est numerote comme suit:
-//           - les faces qui sont sur une Zone_joint apparaissent en premier
-//                   (dans l'ordre du vecteur les_joints)
-//                - les faces qui sont sur une Zone_bord apparaissent ensuite
-//               (dans l'ordre du vecteur les_bords)
-//               - les faces internes apparaissent ensuite
-//      A chaque face on fait correspondre un int qui indique son orientation.
-//      On suppose qu'a l'interieur de chaque famille de faces (bord,joint,interne)
-//      on trouve:
-//           - le bloc des faces d'equation x = cte (faces d'orientation 0)
-//           - le bloc des faces d'equation y = cte (faces d'orientation 1)
-//           - le bloc des faces d'equation z = cte (faces d'orientation 2)
-//      Pour le bloc des faces de bord on conserve les sous-blocs constitues par
-//      les faces d'un meme bord.
-//      On n'a pas besoin d'une numerotation particuliere des elements.
-//      On a introduit la notion d'arete pour le calcul des flux diffusifs et
-//      convectifs dans la conservation de la quantite de mouvement.
-//      Le tableau Qdm contient la connectivite arete/faces. Dans le tableau
-//      Qdm les aretes apparaissent dans l'ordre suivant:
-//           - bloc des aretes joints
-//           - bloc des aretes bord
-//           - bloc des aretes mixtes
-//           - bloc des aretes internes
-//      A l'interieur de chaque bloc les aretes apparaissent dans l'ordre
-//      suivant: aretes XY, aretes XZ et aretes YZ.
-//
-/////////////////////////////////////////////////////////////////////////////////
+/*! @brief class Zone_VDF
+ *
+ *          Classe instanciable qui derive de Zone_VF.
+ *          Cette classe contient les informations geometriques que demande
+ *          la methode des Volumes Differences Finis.
+ *          La classe porte un certain nombre d'informations concernant les faces
+ *       L'ensemble des faces est numerote comme suit:
+ *            - les faces qui sont sur une Zone_joint apparaissent en premier
+ *                    (dans l'ordre du vecteur les_joints)
+ *                 - les faces qui sont sur une Zone_bord apparaissent ensuite
+ *                (dans l'ordre du vecteur les_bords)
+ *                - les faces internes apparaissent ensuite
+ *       A chaque face on fait correspondre un int qui indique son orientation.
+ *       On suppose qu'a l'interieur de chaque famille de faces (bord,joint,interne)
+ *       on trouve:
+ *            - le bloc des faces d'equation x = cte (faces d'orientation 0)
+ *            - le bloc des faces d'equation y = cte (faces d'orientation 1)
+ *            - le bloc des faces d'equation z = cte (faces d'orientation 2)
+ *       Pour le bloc des faces de bord on conserve les sous-blocs constitues par
+ *       les faces d'un meme bord.
+ *       On n'a pas besoin d'une numerotation particuliere des elements.
+ *       On a introduit la notion d'arete pour le calcul des flux diffusifs et
+ *       convectifs dans la conservation de la quantite de mouvement.
+ *       Le tableau Qdm contient la connectivite arete/faces. Dans le tableau
+ *       Qdm les aretes apparaissent dans l'ordre suivant:
+ *            - bloc des aretes joints
+ *            - bloc des aretes bord
+ *            - bloc des aretes mixtes
+ *            - bloc des aretes internes
+ *       A l'interieur de chaque bloc les aretes apparaissent dans l'ordre
+ *       suivant: aretes XY, aretes XZ et aretes YZ.
+ *
+ *
+ *
+ */
 
 class Zone_VDF : public Zone_VF
 {
@@ -171,97 +171,123 @@ private:
 
 // Fonctions inline
 
-// Description:
+/*! @brief
+ *
+ */
 inline IntTab& Zone_VDF::Qdm()
 {
   return Qdm_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline const IntTab& Zone_VDF::Qdm() const
 {
   return Qdm_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline int Zone_VDF::nb_faces_X() const
 {
   return nb_faces_X_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline int Zone_VDF::nb_faces_Y() const
 {
   return nb_faces_Y_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline int Zone_VDF::nb_faces_Z() const
 {
   return nb_faces_Z_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline int Zone_VDF::Qdm(int num_arete,int i) const
 {
   return Qdm_(num_arete,i);
 }
 
-// Description:
-// inline double Zone_VDF::porosite_face(int i) const
-// {
-//  return porosite_face_[i];
-// }
+/*! @brief inline double Zone_VDF::porosite_face(int i) const {
+ *
+ *   return porosite_face_[i];
+ *  }
+ *
+ */
 
-// Description:
+/*! @brief
+ *
+ */
 inline IntVect& Zone_VDF::orientation()
 {
   return orientation_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline const IntVect& Zone_VDF::orientation() const
 {
   return orientation_;
 }
 
-// Description:
-// inline DoubleVect& Zone_VDF::porosite_face()
-// {
-//  return porosite_face_;
-// }
+/*! @brief inline DoubleVect& Zone_VDF::porosite_face() {
+ *
+ *   return porosite_face_;
+ *  }
+ *
+ */
 
-// Description:
-// inline const DoubleVect& Zone_VDF::porosite_face() const
-// {
-//   return porosite_face_;
-// }
+/*! @brief inline const DoubleVect& Zone_VDF::porosite_face() const {
+ *
+ *    return porosite_face_;
+ *  }
+ *
+ */
 
-// Description:
-// inline DoubleVect& Zone_VDF::porosite_elem()
-// {
-//  return porosite_elem_;
-// }
+/*! @brief inline DoubleVect& Zone_VDF::porosite_elem() {
+ *
+ *   return porosite_elem_;
+ *  }
+ *
+ */
 
-// Description:
-// inline const DoubleVect& Zone_VDF::porosite_elem() const
-// {
-//  return porosite_elem_;
-// }
+/*! @brief inline const DoubleVect& Zone_VDF::porosite_elem() const {
+ *
+ *   return porosite_elem_;
+ *  }
+ *
+ */
 
-// Description:
-// inline double Zone_VDF::porosite_elem(int i) const
-// {
-//  return porosite_elem_[i];
-// }
+/*! @brief inline double Zone_VDF::porosite_elem(int i) const {
+ *
+ *   return porosite_elem_[i];
+ *  }
+ *
+ */
 
-// Description:
+/*! @brief
+ *
+ */
 inline int Zone_VDF::orientation(int i) const
 {
   return orientation_[i];
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline double Zone_VDF::face_normales(int num_face,int k) const
 {
   int ori = orientation(num_face);
@@ -274,7 +300,9 @@ inline double Zone_VDF::face_normales(int num_face,int k) const
 // Fonction de calcul utilisable uniquement en coordonnees cartesiennes
 // de la distance entre les centres de 2 faces dans la direction k
 
-// Description:
+/*! @brief
+ *
+ */
 inline double Zone_VDF::dist_face(int fac1, int fac2, int k) const
 {
   // Attention cette methode n'est plus appelee par les methodes dist_face de
@@ -285,7 +313,9 @@ inline double Zone_VDF::dist_face(int fac1, int fac2, int k) const
 // Fonction de calcul utilisable uniquement en coordonnees cylindriques
 // de la distance entre les centres de 2 faces dans la direction k
 
-// Description:
+/*! @brief
+ *
+ */
 inline double Zone_VDF::dist_face_axi(int fac1, int fac2, int k) const
 {
   if (k != 1)
@@ -304,7 +334,9 @@ inline double Zone_VDF::dist_face_axi(int fac1, int fac2, int k) const
 // Pour une face interne distance normale = distance entre les centres des
 // deux mailles voisines.
 
-// Description:
+/*! @brief
+ *
+ */
 inline double Zone_VDF::dist_norm(int num_face) const
 {
   int n1 = face_voisins_(num_face,0);
@@ -316,7 +348,9 @@ inline double Zone_VDF::dist_norm(int num_face) const
 // Fonction de calcul utilisable uniquement en coordonnees cylindriques
 // de la distance normale pour une face interne
 
-// Description:
+/*! @brief
+ *
+ */
 inline double Zone_VDF::dist_norm_axi(int num_face) const
 {
   int n1 = face_voisins_(num_face,0);
@@ -340,7 +374,9 @@ inline double Zone_VDF::dist_norm_axi(int num_face) const
 // Pour une face de bord distance normale est egale a la distance entre le
 // centre de la maille voisine et le bord.
 
-// Description:
+/*! @brief
+ *
+ */
 inline double Zone_VDF::dist_norm_bord(int num_face) const
 {
   int n1 = face_voisins_(num_face,0);
@@ -356,7 +392,9 @@ inline double Zone_VDF::dist_norm_bord(int num_face) const
 // Fonction de calcul utilisable uniquement en coordonnees cylindriques
 // de la distance normale pour une face de bord
 
-// Description:
+/*! @brief
+ *
+ */
 inline double Zone_VDF::dist_norm_bord_axi(int num_face) const
 {
   int n1 = face_voisins_(num_face,0);
@@ -389,7 +427,9 @@ inline double Zone_VDF::dist_norm_bord_axi(int num_face) const
 // Fonction de calcul de la distance entre les centres de 2 faces
 // de meme orientation utilisable en coordonnees cylindriques et cartesiennes
 
-// Description:
+/*! @brief
+ *
+ */
 inline double Zone_VDF::distance_face(int n1, int n2, int k) const
 {
   double dist,d_teta;
@@ -409,7 +449,9 @@ inline double Zone_VDF::distance_face(int n1, int n2, int k) const
 // Fonction de calcul de la distance normale pour une face quelconque
 // utilisable en coordonnees cylindriques et cartesiennes
 
-// Description:
+/*! @brief
+ *
+ */
 inline double Zone_VDF::distance_normale(int num_face) const
 {
 
@@ -456,111 +498,147 @@ inline double Zone_VDF::distance_normale(int num_face) const
   return dist;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline int Zone_VDF::nb_aretes_joint() const
 {
   return nb_aretes_joint_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline int Zone_VDF::nb_aretes_coin() const
 {
   return nb_aretes_coin_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline int Zone_VDF::premiere_arete_coin() const
 {
   return nb_aretes_joint_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline int Zone_VDF::nb_aretes_bord() const
 {
   return nb_aretes_bord_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline int Zone_VDF::premiere_arete_bord() const
 {
   return nb_aretes_joint_+ nb_aretes_coin_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline int Zone_VDF::nb_aretes_mixtes() const
 {
   return nb_aretes_mixtes_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline int Zone_VDF::premiere_arete_mixte() const
 {
   return nb_aretes_ - nb_aretes_mixtes_ - nb_aretes_internes_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline int Zone_VDF::nb_aretes_internes() const
 {
   return nb_aretes_internes_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline int Zone_VDF::nb_aretes() const
 {
   return nb_aretes_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline int Zone_VDF::premiere_arete_interne() const
 {
   return nb_aretes_ - nb_aretes_internes_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline double Zone_VDF::h_x() const
 {
   return h_x_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline double Zone_VDF::h_y() const
 {
   return h_y_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline double Zone_VDF::h_z() const
 {
   return h_z_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline double Zone_VDF::dist_elem(int n1, int n2, int k) const
 {
   return xp_(n2,k)-xp_(n1,k);
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline double Zone_VDF::dist_elem_period(int n1, int n2, int k) const
 {
   return xp_(n2,k) - xv_(elem_faces(n2,k),k)
          + xv_(elem_faces(n1,k+dimension),k) - xp_(n1,k);
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline double Zone_VDF::dim_elem(int n1, int k) const
 {
   return xv_(elem_faces_(n1,k+dimension),k)-xv_(elem_faces_(n1,k),k);
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline double Zone_VDF::dim_face(int n1, int k) const
 {
   int elem = std::max(face_voisins_(n1,0), face_voisins_(n1,1));
   return dim_elem(elem, k);
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline double Zone_VDF::delta_C(int elem) const
 {
   double dist= 1;
@@ -569,7 +647,9 @@ inline double Zone_VDF::delta_C(int elem) const
   return pow(dist,1./3.);
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline int Zone_VDF::amont_amont(int num_face, int i) const
 {
   int k=orientation_[num_face];
@@ -578,7 +658,9 @@ inline int Zone_VDF::amont_amont(int num_face, int i) const
   return face_voisins_(face,i);
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline int Zone_VDF::face_amont_princ(int num_face, int i) const
 {
   int ori=orientation(num_face);
@@ -588,7 +670,9 @@ inline int Zone_VDF::face_amont_princ(int num_face, int i) const
   return elem;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline int Zone_VDF::face_amont_conj(int num_face, int k, int i) const
 {
   int ori = orientation(num_face);
@@ -621,9 +705,9 @@ inline int Zone_VDF::face_amont_conj(int num_face, int k, int i) const
   return face_conj;
 }
 
-// Description:
-// Determine la face voisine de notre face
-// en prevoyant que cette derniere puisse etre de type bord.
+/*! @brief Determine la face voisine de notre face en prevoyant que cette derniere puisse etre de type bord.
+ *
+ */
 inline int Zone_VDF::face_bord_amont(int num_face, int k, int i) const
 {
   int ori = orientation(num_face);
@@ -653,17 +737,20 @@ inline int Zone_VDF::face_bord_amont(int num_face, int k, int i) const
   return elem;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline int Zone_VDF::elem_voisin(int elem, int face , int indic) const
 {
   int ori = orientation_(face);
   return face_voisins_(elem_faces_(elem,ori+indic*dimension),indic);
 }
 
-// Description:
-// Fonction de calcul utilisable uniquement en coordonnees cartesiennes
-// de la distance entre le centre d'une face et
-// le centre de face_voisins(face,0)
+/*! @brief Fonction de calcul utilisable uniquement en coordonnees cartesiennes de la distance entre le centre d'une face et
+ *
+ *  le centre de face_voisins(face,0)
+ *
+ */
 inline double Zone_VDF::dist_face_elem0(int num_face,int n0) const
 
 {
@@ -671,20 +758,22 @@ inline double Zone_VDF::dist_face_elem0(int num_face,int n0) const
   return xv_(num_face,ori) - xp_(n0,ori);
 }
 
-// Description:
-// Fonction de calcul utilisable uniquement en coordonnees cartesiennes
-// de la distance entre le centre d'une face et
-// le centre de face_voisins(face,1)
+/*! @brief Fonction de calcul utilisable uniquement en coordonnees cartesiennes de la distance entre le centre d'une face et
+ *
+ *  le centre de face_voisins(face,1)
+ *
+ */
 inline double Zone_VDF::dist_face_elem1(int num_face,int n1) const
 {
   int ori = orientation_[num_face];
   return xp_(n1,ori) - xv_(num_face,ori);
 }
 
-// Description:
-// Fonction de calcul utilisable uniquement en coordonnees cylindriques
-// de la distance entre le centre d'une face et
-// le centre de face_voisins(face,0)
+/*! @brief Fonction de calcul utilisable uniquement en coordonnees cylindriques de la distance entre le centre d'une face et
+ *
+ *  le centre de face_voisins(face,0)
+ *
+ */
 inline double Zone_VDF::dist_face_elem0_axi(int num_face,int n0) const
 {
   int ori = orientation_[num_face];
@@ -701,10 +790,11 @@ inline double Zone_VDF::dist_face_elem0_axi(int num_face,int n0) const
   return dist;
 }
 
-// Description:
-// Fonction de calcul utilisable uniquement en coordonnees cylindriques
-// de la distance entre le centre d'une face et le centre
-// de face_voisins(face,1)
+/*! @brief Fonction de calcul utilisable uniquement en coordonnees cylindriques de la distance entre le centre d'une face et le centre
+ *
+ *  de face_voisins(face,1)
+ *
+ */
 inline double Zone_VDF::dist_face_elem1_axi(int num_face,int n1) const
 {
   int ori = orientation_[num_face];

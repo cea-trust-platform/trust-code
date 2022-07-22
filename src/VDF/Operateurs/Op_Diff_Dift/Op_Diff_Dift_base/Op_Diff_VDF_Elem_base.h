@@ -22,10 +22,12 @@
 class Eval_VDF_Elem;
 #include <Eval_Diff_VDF.h>
 
-// .DESCRIPTION class Op_Diff_VDF_Elem_base
-//  Cette classe represente l'operateur de diffusion associe a une equation de transport.
-//  La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite est uniforme
-//  L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Diff_VDF_const_Elem
+/*! @brief class Op_Diff_VDF_Elem_base Cette classe represente l'operateur de diffusion associe a une equation de transport.
+ *
+ *   La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite est uniforme
+ *   L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Diff_VDF_const_Elem
+ *
+ */
 class Op_Diff_VDF_Elem_base : public Op_Diff_VDF_base, public Op_VDF_Elem
 {
   Declare_base_sans_constructeur(Op_Diff_VDF_Elem_base);

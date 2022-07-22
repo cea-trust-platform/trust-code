@@ -2209,14 +2209,16 @@ ajouter_contribution(const DoubleTab& inconnue,Matrice_Morse& matrice) const
   if (test_) test();
 }
 
-//Description: Calcule la diffusivite "nu_p1" aux sommets du maillage
-// en fonction de la diffusivite "nu_elem" aux elements.
-// On suppose que nu_elem a son espace virtuel a jour,
-// que nu_p1 est dimensionne nb_dim==1 avec la structure domaine.md_vector_sommets()
-// En sortie l'espace virtuel de nu_p1 est mis a jour
-//
-// L'interpolateur calculs pour un sommet la moyenne (non ponderee) des
-// diffusivites sur les elements adjacents a ce sommet.
+/*! @brief Calcule la diffusivite "nu_p1" aux sommets du maillage en fonction de la diffusivite "nu_elem" aux elements.
+ *
+ *  On suppose que nu_elem a son espace virtuel a jour,
+ *  que nu_p1 est dimensionne nb_dim==1 avec la structure domaine.md_vector_sommets()
+ *  En sortie l'espace virtuel de nu_p1 est mis a jour
+ *
+ *  L'interpolateur calculs pour un sommet la moyenne (non ponderee) des
+ *  diffusivites sur les elements adjacents a ce sommet.
+ *
+ */
 void Op_Diff_VEFP1NCP1B_Face::
 remplir_nu_p1(const DoubleTab& nu_elem,DoubleTab& nu_p1) const
 {

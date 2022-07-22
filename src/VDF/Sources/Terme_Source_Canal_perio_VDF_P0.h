@@ -19,13 +19,13 @@
 
 
 
-//
-// .DESCRIPTION class Terme_Source_Canal_perio_VDF_P0
-//  Cette classe permet de conserver le debit dans une simulation
-//  temporelle de Canal
-//
-// .SECTION voir aussi
-//  Terme_Source_Canal_perio
+/*! @brief class Terme_Source_Canal_perio_VDF_P0 Cette classe permet de conserver le debit dans une simulation
+ *
+ *   temporelle de Canal
+ *
+ *
+ * @sa Terme_Source_Canal_perio
+ */
 
 #include <Terme_Source_Canal_perio_VDF_Face.h>
 

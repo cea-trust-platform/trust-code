@@ -19,15 +19,12 @@
 #include <Temperature_imposee_paroi.h>
 #include <Ref_Fluide_Dilatable_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Temperature_imposee_paroi_H
-//    Impose la temperature de la paroi dans une equation de type
-//    Convection_Diffusion_Enthalpie
-// .SECTION voir aussi
-//    Dirichlet Convection_Diffusion_Enthalpie_QC
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Temperature_imposee_paroi_H Impose la temperature de la paroi dans une equation de type
+ *
+ *     Convection_Diffusion_Enthalpie
+ *
+ * @sa Dirichlet Convection_Diffusion_Enthalpie_QC
+ */
 
 class Temperature_imposee_paroi_H  : public Temperature_imposee_paroi
 {

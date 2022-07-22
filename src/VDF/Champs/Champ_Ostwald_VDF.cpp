@@ -21,20 +21,11 @@
 Implemente_instanciable(Champ_Ostwald_VDF,"Champ_Ostwald_VDF",Champ_Ostwald);
 
 
-// Description:
-//    Imprime le champ sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Imprime le champ sur un flot de sortie.
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Champ_Ostwald_VDF::printOn(Sortie& os) const
 {
   //  const int nb_compo = valeurs()(0,0);
@@ -43,40 +34,21 @@ Sortie& Champ_Ostwald_VDF::printOn(Sortie& os) const
 }
 
 
-// Description:
-//        Ne sert a rien
-//    Format:
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ne sert a rien Format:
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 
 Entree& Champ_Ostwald_VDF::readOn(Entree& is)
 {
   return is;
 }
 
-// Description:
-//         met le parametre mu a jour
-// Precondition:
-// Parametre: double
-//  signification: le temps ou la mise a jour est effectuee
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief met le parametre mu a jour
+ *
+ * @param (double)
+ */
 
 void Champ_Ostwald_VDF::mettre_a_jour(double tps)
 {
@@ -87,22 +59,13 @@ void Champ_Ostwald_VDF::mettre_a_jour(double tps)
 
 
 
-// Description:
-//   Calcul la viscosite mu en fonction de la consistance et de
-//   l'indice de structure en utilisant la loi d'Ostwald. Pour
-//   des viscsites tres faible et tres fortes on utilise une regression
-// Precondition:
-// Parametre: DoubleTab&
-//    Signification: les viscosite au temps precedent
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcul la viscosite mu en fonction de la consistance et de l'indice de structure en utilisant la loi d'Ostwald.
+ *
+ * Pour
+ *    des viscsites tres faible et tres fortes on utilise une regression
+ *
+ * @param (DoubleTab&) les viscosite au temps precedent
+ */
 
 void Champ_Ostwald_VDF::calculer_mu(DoubleTab& mu_tab)
 {
@@ -134,22 +97,12 @@ void Champ_Ostwald_VDF::calculer_mu(DoubleTab& mu_tab)
 }
 
 
-// Description:
-//   Calcul le champ Ostwald :
-//        calcul de D::D
-//        puis calcul de mu
-// Precondition:
-// Parametre: double
-//    Signification: temps ou le calcul est effectue
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcul le champ Ostwald : calcul de D::D
+ *
+ *         puis calcul de mu
+ *
+ * @param (double) temps ou le calcul est effectue
+ */
 
 void Champ_Ostwald_VDF::me_calculer(double tps)
 {
@@ -161,20 +114,9 @@ void Champ_Ostwald_VDF::me_calculer(double tps)
     }
 }
 
-// Description:
-//    Initialise le champs
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Initialise le champs
+ *
+ */
 int Champ_Ostwald_VDF::initialiser(const double un_temps)
 {
   mettre_a_jour(un_temps);

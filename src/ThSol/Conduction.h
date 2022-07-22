@@ -25,20 +25,16 @@
 class Milieu_base;
 class Champ_Don;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Conduction
-//    Cette classe represente l'equation d'evolution
-//    de la temperature dans un solide de conductivite k et de masse volumique rho et chaleur specifique Cp
-//        (rho.Cp) . dT/dt - div (k grad T) = (rho.Cp) . f
-//    Les termes rho et Cp peuvent etre non uniformes car cette classe
-//    ne fait pas le raccourci de calculer la diffusivite k/(rho*Cp).
-//
-// .SECTION voir aussi
-//     Equation_base
-//     Conduction
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Conduction Cette classe represente l'equation d'evolution
+ *
+ *     de la temperature dans un solide de conductivite k et de masse volumique rho et chaleur specifique Cp
+ *         (rho.Cp) . dT/dt - div (k grad T) = (rho.Cp) . f
+ *     Les termes rho et Cp peuvent etre non uniformes car cette classe
+ *     ne fait pas le raccourci de calculer la diffusivite k/(rho*Cp).
+ *
+ *
+ * @sa Equation_base, Conduction
+ */
 class Conduction : public Equation_base
 {
 
@@ -90,43 +86,25 @@ protected :
 
 };
 
-// Description:
-//    Renvoie le champ inconnue de l'equation,
-//    i.e. la temperature.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Inc&
-//    Signification: le champ inconnue de l'equation: la temperature
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le champ inconnue de l'equation, i.
+ *
+ * e. la temperature.
+ *
+ * @return (Champ_Inc&) le champ inconnue de l'equation: la temperature
+ */
 inline Champ_Inc& Conduction::inconnue()
 {
   return la_temperature;
 }
 
 
-// Description:
-//    Renvoie le champ inconnue de l'equation,
-//    i.e. la temperature.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Inc&
-//    Signification: le champ inconnue de l'equation: la temperature
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le champ inconnue de l'equation, i.
+ *
+ * e. la temperature.
+ *     (version const)
+ *
+ * @return (Champ_Inc&) le champ inconnue de l'equation: la temperature
+ */
 inline const Champ_Inc& Conduction::inconnue() const
 {
   return la_temperature;

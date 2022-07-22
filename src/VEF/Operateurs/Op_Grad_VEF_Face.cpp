@@ -47,7 +47,9 @@ inline void erreur()
   Process::exit();
 }
 
-// Description:
+/*! @brief
+ *
+ */
 void Op_Grad_VEF_Face::associer(const Zone_dis& zone_dis,
                                 const Zone_Cl_dis& zone_Cl_dis,
                                 const Champ_Inc&)

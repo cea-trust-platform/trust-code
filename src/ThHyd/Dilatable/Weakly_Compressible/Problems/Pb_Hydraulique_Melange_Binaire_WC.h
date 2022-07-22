@@ -21,16 +21,13 @@
 #include <Navier_Stokes_WC.h>
 #include <Pb_WC_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Pb_Hydraulique_Melange_Binaire_WC
-//     Cette classe represente un probleme de hydraulique binaire en fluide weakly compressible:
-//      - Equations de Navier_Stokes en regime laminaire
-//      - Equation de conv/diff fraction massique en regime laminaire
-// .SECTION voir aussi
-//     Probleme_base Navier_Stokes_WC Convection_Diffusion_Espece_Binaire_WC
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Pb_Hydraulique_Melange_Binaire_WC Cette classe represente un probleme de hydraulique binaire en fluide weakly compressible:
+ *
+ *       - Equations de Navier_Stokes en regime laminaire
+ *       - Equation de conv/diff fraction massique en regime laminaire
+ *
+ * @sa Probleme_base Navier_Stokes_WC Convection_Diffusion_Espece_Binaire_WC
+ */
 
 class Pb_Hydraulique_Melange_Binaire_WC : public Pb_WC_base, public Pb_Dilatable_Proto
 {

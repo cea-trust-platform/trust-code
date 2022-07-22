@@ -25,45 +25,27 @@
 Implemente_base_sans_constructeur(Echange_impose_base,"Echange_impose_base",Cond_lim_base);
 
 
-// Description:
-//    Ecrit le type de l'objet sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit le type de l'objet sur un flot de sortie
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Echange_impose_base::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << "\n";
 }
 
-// Description:
-//    Lecture d'une condition aux limite de type Echange_impose_base
-//    a partir d'un flot d'entree.
-//    On doit lire le coefficient d'echange global H_imp et la temperature
-//    a la frontiere T_ext.
-//    Format:
-//        "h_imp" type_champ_front bloc de lecture champ
-//        "T_ext" type_champ_front bloc de lecture champ
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lecture d'une condition aux limite de type Echange_impose_base a partir d'un flot d'entree.
+ *
+ *     On doit lire le coefficient d'echange global H_imp et la temperature
+ *     a la frontiere T_ext.
+ *     Format:
+ *         "h_imp" type_champ_front bloc de lecture champ
+ *         "T_ext" type_champ_front bloc de lecture champ
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Echange_impose_base::readOn(Entree& s )
 {
   Motcle motlu;
@@ -106,22 +88,11 @@ Entree& Echange_impose_base::readOn(Entree& s )
   return s ;
 }
 
-// Description:
-//    Renvoie la valeur de la temperature imposee
-//    sur la i-eme composante du champ de frontiere.
-// Precondition:
-// Parametre: int i
-//    Signification: l'indice de la composante du champ de
-//                   de frontiere
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la valeur de la temperature imposee sur la i-eme composante du champ de frontiere.
+ *
+ * @param (int i) l'indice de la composante du champ de de frontiere
+ * @return (double)
+ */
 double Echange_impose_base::T_ext(int i) const
 {
   if (T_ext().valeurs().size()==1)
@@ -138,26 +109,12 @@ double Echange_impose_base::T_ext(int i) const
 }
 
 
-// Description:
-//    Renvoie la valeur de la temperature imposee
-//    sur la (i,j)-eme composante du champ de frontiere.
-// Precondition:
-// Parametre: int i
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int j
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la valeur de la temperature imposee sur la (i,j)-eme composante du champ de frontiere.
+ *
+ * @param (int i)
+ * @param (int j)
+ * @return (double)
+ */
 double Echange_impose_base::T_ext(int i, int j) const
 {
   if (T_ext().valeurs().dimension(0)==1)
@@ -167,22 +124,13 @@ double Echange_impose_base::T_ext(int i, int j) const
 }
 
 
-// Description:
-//    Renvoie la valeur du coefficient d'echange
-//    de chaleur impose sur la i-eme composante
-//    du champ de frontiere.
-// Precondition:
-// Parametre: int i
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la valeur du coefficient d'echange de chaleur impose sur la i-eme composante
+ *
+ *     du champ de frontiere.
+ *
+ * @param (int i)
+ * @return (double)
+ */
 double Echange_impose_base::h_imp(int i) const
 {
 
@@ -199,27 +147,14 @@ double Echange_impose_base::h_imp(int i) const
 }
 
 
-// Description:
-//    Renvoie la valeur du coefficient d'echange
-//    de chaleur impose sur la i-eme composante
-//    du champ de frontiere.
-// Precondition:
-// Parametre: int i
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int j
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la valeur du coefficient d'echange de chaleur impose sur la i-eme composante
+ *
+ *     du champ de frontiere.
+ *
+ * @param (int i)
+ * @param (int j)
+ * @return (double)
+ */
 double Echange_impose_base::h_imp(int i, int j) const
 {
 
@@ -232,23 +167,13 @@ double Echange_impose_base::h_imp(int i, int j) const
 
 
 
-// Description:
-//    Effectue une mise a jour en temps
-//    des conditions aux limites.
-//    Lors du premier appel des initialisations sont effectuees:
-//      h_imp(0,0) = (rho(0,0)*Cp(0,0))
-// Precondition:
-// Parametre: double temps
-//    Signification: le temp de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Effectue une mise a jour en temps des conditions aux limites.
+ *
+ *     Lors du premier appel des initialisations sont effectuees:
+ *       h_imp(0,0) = (rho(0,0)*Cp(0,0))
+ *
+ * @param (double temps) le temp de mise a jour
+ */
 void Echange_impose_base::mettre_a_jour(double temps)
 {
   Cond_lim_base::mettre_a_jour(temps);
@@ -280,25 +205,16 @@ int Echange_impose_base::compatible_avec_discr(const Discretisation_base& discr)
 }
 
 
-// Description:
-//    Verifie la compatibilite des conditions aux limites avec
-//    l'equation passee en parametre.
-//   Les conditions aux limites de type Ech_imp_base  sont
-//   compatibles avec des equations de type:
-//         - Thermique
-//         - indetermine
-// Precondition:
-// Parametre: Equation_base& eqn
-//    Signification: l'equation avec laquelle on doit verifier la compatibilite
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: int
-//    Signification: valeur booleenne, 1 si compatible 0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Verifie la compatibilite des conditions aux limites avec l'equation passee en parametre.
+ *
+ *    Les conditions aux limites de type Ech_imp_base  sont
+ *    compatibles avec des equations de type:
+ *          - Thermique
+ *          - indetermine
+ *
+ * @param (Equation_base& eqn) l'equation avec laquelle on doit verifier la compatibilite
+ * @return (int) valeur booleenne, 1 si compatible 0 sinon
+ */
 int Echange_impose_base::compatible_avec_eqn(const Equation_base& eqn) const
 {
   Motcle dom_app=eqn.domaine_application();

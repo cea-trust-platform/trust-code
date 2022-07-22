@@ -22,10 +22,11 @@
 #include <Ref_Zone_Cl_PolyMAC.h>
 #include <SFichier.h>
 
-//
-// .DESCRIPTION class Op_Conv_PolyMAC_base
-//
-// Classe de base des operateurs de convection VDF
+/*! @brief class Op_Conv_PolyMAC_base
+ *
+ *  Classe de base des operateurs de convection VDF
+ *
+ */
 
 //
 // .SECTION voir aussi
@@ -74,9 +75,9 @@ protected:
 
 
 
-// Description:
-// calcule la contribution de la convection, la range dans resu
-// renvoie resu
+/*! @brief calcule la contribution de la convection, la range dans resu renvoie resu
+ *
+ */
 inline DoubleTab& Op_Conv_PolyMAC_base::calculer(const DoubleTab& inco, DoubleTab& resu) const
 {
   resu=0;

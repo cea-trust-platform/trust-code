@@ -98,24 +98,29 @@ void Sch_CN_iteratif::set_param(Param& param)
 //                            //
 ////////////////////////////////
 
-// Description:
-//    Renvoie le nombre de valeurs temporelles a conserver.
-//    Ici : n, n+1/2 et n+1, donc 3
+/*! @brief Renvoie le nombre de valeurs temporelles a conserver.
+ *
+ * Ici : n, n+1/2 et n+1, donc 3
+ *
+ */
 int Sch_CN_iteratif::nb_valeurs_temporelles() const
 {
   return 3;
 }
 
-// Description:
-//    Renvoie le nombre de valeurs temporelles futures.
-//    Ici : n+1/2 et n+1 donc 2.
+/*! @brief Renvoie le nombre de valeurs temporelles futures.
+ *
+ * Ici : n+1/2 et n+1 donc 2.
+ *
+ */
 int Sch_CN_iteratif::nb_valeurs_futures() const
 {
   return 2;
 }
 
-// Description:
-//    Renvoie le le temps a la i-eme valeur future.
+/*! @brief Renvoie le le temps a la i-eme valeur future.
+ *
+ */
 double Sch_CN_iteratif::temps_futur(int i) const
 {
   assert(i>0 && i<=2);
@@ -125,10 +130,11 @@ double Sch_CN_iteratif::temps_futur(int i) const
     return temps_courant()+pas_de_temps()/2;
 }
 
-// Description:
-//    Renvoie le temps que doivent utiliser les champs a
-//    l'appel de valeurs()
-//    Ici : t(n+1/2)
+/*! @brief Renvoie le temps que doivent utiliser les champs a l'appel de valeurs()
+ *
+ *     Ici : t(n+1/2)
+ *
+ */
 double Sch_CN_iteratif::temps_defaut() const
 {
   return temps_futur(1);
@@ -154,7 +160,9 @@ bool Sch_CN_iteratif::initTimeStep(double dt)
   return Schema_Temps_base::initTimeStep(dt);
 }
 
-// Description:
+/*! @brief
+ *
+ */
 bool Sch_CN_iteratif::iterateTimeStep(bool& converged)
 {
 
@@ -241,13 +249,15 @@ bool Sch_CN_iteratif::iterateTimeStep(bool& converged)
 }
 
 
-// Description:
-// Calcule une iteration de la resolution sur l'equation i.
-// Calcule u(n+1/2,p+1)=u(n)+f(u(n+1/2,p))*dt/2
-// et u(n+1,p+1)=u(n)+f(u(n+1/2,p))*dt
-// ou f donne du/dt en fonction de u
-// Retourne true dans converged si ca ne bouge plus d'une iteration a l'autre, false sinon
-// Renvoie true si OK pour continuer a iterer, false sinon (diverge ou trop d'iterations)
+/*! @brief Calcule une iteration de la resolution sur l'equation i.
+ *
+ * Calcule u(n+1/2,p+1)=u(n)+f(u(n+1/2,p))*dt/2
+ *  et u(n+1,p+1)=u(n)+f(u(n+1/2,p))*dt
+ *  ou f donne du/dt en fonction de u
+ *  Retourne true dans converged si ca ne bouge plus d'une iteration a l'autre, false sinon
+ *  Renvoie true si OK pour continuer a iterer, false sinon (diverge ou trop d'iterations)
+ *
+ */
 bool Sch_CN_iteratif::iterateTimeStepOnEquation(int i,bool& converged)
 {
 
@@ -349,38 +359,21 @@ int Sch_CN_iteratif::faire_un_pas_de_temps_eqn_base(Equation_base&)
 }
 
 
-// Description:
-//    Indique si le calcul iteratif a converge.
-// Critere de convergence utilise :
-//    || u(n+1,p+1) - u(n+1,p) ||  <  seuil * || u(n+1/2,p+1) ||
-// C'est equivalent a
-//    || u(n+1,p) - u(n+1) || < seuil * || (Id-(dt/2).(df/du))^-1 || * || u(n+1/2,p+1) ||
-// ou u(n+1) est la solution exacte en n+1,
-//    df/du est le lagrangien de f(u), pris en u(n+1/2)
-//    et les normes sont compatibles entre matrices et vecteurs (ici norme infinie).
-// Precondition:
-// Parametre: DoubleTab& u0
-//    Signification: L'inconnue au debut de l'intervalle de temps u(n).
-//                   C'est aussi la premiere estimation u(n+1/2,0) de l'inconnue en tn+1/2.
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Parametre: DoubleTab& up1
-//    Signification: Estimation de l'inconnue en tn+1/2 a l'iteration p+1 : u(n+1/2,p+1)
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Parametre: DoubleTab& delta
-//    Signification: u(n+1/2,p+1) - u(n+1/2,p)
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: bool
-//    Signification: true=converge, false=non converge
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Indique si le calcul iteratif a converge.
+ *
+ * Critere de convergence utilise :
+ *     || u(n+1,p+1) - u(n+1,p) ||  <  seuil * || u(n+1/2,p+1) ||
+ *  C'est equivalent a
+ *     || u(n+1,p) - u(n+1) || < seuil * || (Id-(dt/2).(df/du))^-1 || * || u(n+1/2,p+1) ||
+ *  ou u(n+1) est la solution exacte en n+1,
+ *     df/du est le lagrangien de f(u), pris en u(n+1/2)
+ *     et les normes sont compatibles entre matrices et vecteurs (ici norme infinie).
+ *
+ * @param (DoubleTab& u0) L'inconnue au debut de l'intervalle de temps u(n). C'est aussi la premiere estimation u(n+1/2,0) de l'inconnue en tn+1/2.
+ * @param (DoubleTab& up1) Estimation de l'inconnue en tn+1/2 a l'iteration p+1 : u(n+1/2,p+1)
+ * @param (DoubleTab& delta) u(n+1/2,p+1) - u(n+1/2,p)
+ * @return (bool) true=converge, false=non converge
+ */
 bool Sch_CN_iteratif::convergence(const DoubleTab& u0, const DoubleTab& up1, const DoubleTab& delta, int p) const
 {
   double a = mp_max_abs_vect(delta);
@@ -390,31 +383,13 @@ bool Sch_CN_iteratif::convergence(const DoubleTab& u0, const DoubleTab& up1, con
   return resu;
 }
 
-// Description:
-//    Indique si le calcul iteratif a diverge.
-// Precondition:
-// Parametre: DoubleTab& u0
-//    Signification: L'inconnue au debut de l'intervalle de temps u(n).
-//                   C'est aussi la premiere estimation u(n+1/2,0) de l'inconnue en tn+1/2.
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: DoubleTab& up1
-//    Signification: Estimation de l'inconnue en tn+1/2 a l'iteration p+1 : u(n+1/2,p+1)
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: DoubleTab& delta
-//    Signification: u(n+1/2,p+1) - u(n+1/2,p)
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: bool
-//    Signification: true=diverge, false=non diverge
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Indique si le calcul iteratif a diverge.
+ *
+ * @param (DoubleTab& u0) L'inconnue au debut de l'intervalle de temps u(n). C'est aussi la premiere estimation u(n+1/2,0) de l'inconnue en tn+1/2.
+ * @param (DoubleTab& up1) Estimation de l'inconnue en tn+1/2 a l'iteration p+1 : u(n+1/2,p+1)
+ * @param (DoubleTab& delta) u(n+1/2,p+1) - u(n+1/2,p)
+ * @return (bool) true=diverge, false=non diverge
+ */
 bool Sch_CN_iteratif::divergence(const DoubleTab& u0, const DoubleTab& up1, const DoubleTab& delta, int p) const
 {
   // WEC : ameliorable...

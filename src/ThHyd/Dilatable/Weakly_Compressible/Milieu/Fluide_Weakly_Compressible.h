@@ -20,15 +20,12 @@
 
 class Zone_Cl_dis;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Fluide_Weakly_Compressible
-//    Cette classe represente un d'un fluide faiblement compressible
-//    c'est a dire heritant de Fluide_Dilatable_base
-// .SECTION voir aussi
-//     Milieu_base Fluide_Dilatable_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Fluide_Weakly_Compressible Cette classe represente un d'un fluide faiblement compressible
+ *
+ *     c'est a dire heritant de Fluide_Dilatable_base
+ *
+ * @sa Milieu_base Fluide_Dilatable_base
+ */
 
 class Fluide_Weakly_Compressible : public Fluide_Dilatable_base
 {

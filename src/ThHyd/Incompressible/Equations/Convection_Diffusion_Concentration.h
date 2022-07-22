@@ -19,17 +19,14 @@
 #include <Convection_Diffusion_std.h>
 #include <Ref_Constituant.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Convection_Diffusion_Concentration
-//     Cas particulier de Convection_Diffusion_std
-//     pour un ou plusieurs constituants.
-//     Dans le cas de plusieurs constituants les champs
-//     concentration et diffusivite sont vectoriels.
-// .SECTION voir aussi
-//      Convection_Diffusion_std
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Convection_Diffusion_Concentration Cas particulier de Convection_Diffusion_std
+ *
+ *      pour un ou plusieurs constituants.
+ *      Dans le cas de plusieurs constituants les champs
+ *      concentration et diffusivite sont vectoriels.
+ *
+ * @sa Convection_Diffusion_std
+ */
 class Convection_Diffusion_Concentration : public Convection_Diffusion_std
 {
   Declare_instanciable_sans_constructeur(Convection_Diffusion_Concentration);
@@ -65,81 +62,42 @@ protected :
 };
 
 
-// Description:
-//    Associe un constituant a l'equation.
-// Precondition:
-// Parametre: Constituant& un_constituant
-//    Signification: un constituant a associer a l'equation
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: l'equation a un constituant associe
+/*! @brief Associe un constituant a l'equation.
+ *
+ * @param (Constituant& un_constituant) un constituant a associer a l'equation
+ */
 inline void Convection_Diffusion_Concentration::associer_constituant(const Constituant& un_constituant)
 {
   le_constituant = un_constituant;
 }
 
 
-// Description:
-//    Renvoie le champ inconnue de l'equation: la concentration.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Inc&
-//    Signification: le champ inconnue de l'equation, la concentration.
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le champ inconnue de l'equation: la concentration.
+ *
+ * (version const)
+ *
+ * @return (Champ_Inc&) le champ inconnue de l'equation, la concentration.
+ */
 inline const Champ_Inc& Convection_Diffusion_Concentration::inconnue() const
 {
   return la_concentration;
 }
 
 
-// Description:
-//    Renvoie le champ inconnue de l'equation: la concentration.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Inc&
-//    Signification: le champ inconnue de l'equation, la concentration.
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le champ inconnue de l'equation: la concentration.
+ *
+ * @return (Champ_Inc&) le champ inconnue de l'equation, la concentration.
+ */
 inline Champ_Inc& Convection_Diffusion_Concentration::inconnue()
 {
   return la_concentration;
 }
 
 
-// Description:
-//    Renvoie le nombre de constituants du "Constituant" de l'equation.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de constituants de l'equation
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de constituants du "Constituant" de l'equation.
+ *
+ * @return (int) le nombre de constituants de l'equation
+ */
 inline int Convection_Diffusion_Concentration::nb_constituants() const
 {
   return nb_constituants_;

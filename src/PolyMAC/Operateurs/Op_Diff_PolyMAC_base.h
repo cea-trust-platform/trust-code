@@ -26,10 +26,11 @@
 class Champ_Fonc;
 
 
-//
-// .DESCRIPTION class Op_Diff_PolyMAC_base
-//
-// Classe de base des operateurs de diffusion PolyMAC
+/*! @brief class Op_Diff_PolyMAC_base
+ *
+ *  Classe de base des operateurs de diffusion PolyMAC
+ *
+ */
 
 //
 // .SECTION voir aussi

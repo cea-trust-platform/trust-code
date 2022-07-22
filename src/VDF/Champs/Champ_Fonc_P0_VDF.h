@@ -19,8 +19,9 @@
 
 #include <Champ_Fonc_P0_base.h>
 
-//.DESCRIPTION classe Champ_Fonc_P0_VDF
-//
+/*! @brief classe Champ_Fonc_P0_VDF
+ *
+ */
 
 //.SECTION voir aussi
 // Champ_Fonc_P0

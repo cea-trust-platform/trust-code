@@ -25,11 +25,13 @@
 #include <Op_EF_base.h>
 #include <Champ_Don.h>
 
-// .DESCRIPTION class Op_Dift_EF_Q1
-//  Cette classe represente l'operateur de diffusion
-//  La discretisation est EF
-//  Le champ diffuse est scalaire
-//  Le champ de diffusivite est uniforme
+/*! @brief class Op_Dift_EF_Q1 Cette classe represente l'operateur de diffusion
+ *
+ *   La discretisation est EF
+ *   Le champ diffuse est scalaire
+ *   Le champ de diffusivite est uniforme
+ *
+ */
 class Op_Dift_EF_Q1 : public Op_Dift_EF_base
 {
   Declare_instanciable(Op_Dift_EF_Q1);

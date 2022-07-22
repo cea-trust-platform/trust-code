@@ -23,18 +23,14 @@
 #include <Zone_VF.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Traitement_particulier_THI_new
-//     Cette classe permet de faire les traitements particuliers
-//     pour les calculs de THI, en particulier initialisation
-//     particuliere et calculs des spectres!!
-//
-// .SECTION voir aussi
-//      Navier_Stokes_Turbulent, Traitement_particulier_base,
-//      Traitement_particulier_VEF
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Traitement_particulier_THI_new Cette classe permet de faire les traitements particuliers
+ *
+ *      pour les calculs de THI, en particulier initialisation
+ *      particuliere et calculs des spectres!!
+ *
+ *
+ * @sa Navier_Stokes_Turbulent, Traitement_particulier_base,, Traitement_particulier_VEF
+ */
 class Traitement_particulier_NS_THI_new : public Traitement_particulier_NS_base
 {
   Declare_base(Traitement_particulier_NS_THI_new);

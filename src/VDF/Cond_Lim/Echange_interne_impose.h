@@ -19,19 +19,16 @@
 #include <Echange_externe_impose.h>
 #include <Ref_Champ_Don.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Echange_interne_impose:
-//    Cette classe represente le cas particulier de la classe
-//    Echange_externe_impose ou la paroi d'echange est interne au domaine.
-//    La temperature exterieures definie dans Echange_externe_impose devient alors la
-//    temperature situee de l'autre cote de la paroi interne.
-//    Lorsque la température est au centre de l'élément (VDF par ex), on modifie aussi le h_gap
-//    fourni pour prendre en compte la demi-maille située de l'autre côté de la paroi.
-// .SECTION voir aussi
-//    Echange_impose_base Echange_global_impose
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Echange_interne_impose: Cette classe represente le cas particulier de la classe
+ *
+ *     Echange_externe_impose ou la paroi d'echange est interne au domaine.
+ *     La temperature exterieures definie dans Echange_externe_impose devient alors la
+ *     temperature situee de l'autre cote de la paroi interne.
+ *     Lorsque la température est au centre de l'élément (VDF par ex), on modifie aussi le h_gap
+ *     fourni pour prendre en compte la demi-maille située de l'autre côté de la paroi.
+ *
+ * @sa Echange_impose_base Echange_global_impose
+ */
 class Echange_interne_impose  : public Echange_externe_impose
 {
 

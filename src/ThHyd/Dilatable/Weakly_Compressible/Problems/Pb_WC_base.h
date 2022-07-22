@@ -18,17 +18,14 @@
 
 #include <Pb_Dilatable_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Pb_WC_base
-//    Cette classe est censee factoriser ce qui est commun a l'ensemble
-//    des problemes weakly-compressibles.
-//    Il est suppose dans l'algorithme de iterateTimeStep que la
-//     premiere equation est hydraulique et la deuxieme est thermique.
-// .SECTION voir aussi Pb_Dilatable_base
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Pb_WC_base Cette classe est censee factoriser ce qui est commun a l'ensemble
+ *
+ *     des problemes weakly-compressibles.
+ *     Il est suppose dans l'algorithme de iterateTimeStep que la
+ *      premiere equation est hydraulique et la deuxieme est thermique.
+ *
+ * @sa Pb_Dilatable_base
+ */
 
 class Pb_WC_base : public Pb_Dilatable_base
 {

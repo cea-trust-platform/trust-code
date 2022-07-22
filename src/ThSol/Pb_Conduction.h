@@ -22,18 +22,14 @@
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Pb_Conduction
-//    Cette classe represente un probleme de conduction avec rho et Cp non uniformes :
-//      (rho.Cp) dT/dt -div (k grad T) = (rho.Cp) f
-//    Cette classe est exactement identique a Pb_Conduction si ce n'est qu'elle force l'utilisateur a l'usage d'un probleme
-//    de nature differente.
-// .SECTION voir aussi
-//     Probleme_base
-//     Pb_Conduction
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Pb_Conduction Cette classe represente un probleme de conduction avec rho et Cp non uniformes :
+ *
+ *       (rho.Cp) dT/dt -div (k grad T) = (rho.Cp) f
+ *     Cette classe est exactement identique a Pb_Conduction si ce n'est qu'elle force l'utilisateur a l'usage d'un probleme
+ *     de nature differente.
+ *
+ * @sa Probleme_base, Pb_Conduction
+ */
 class Pb_Conduction : public Probleme_base
 {
 

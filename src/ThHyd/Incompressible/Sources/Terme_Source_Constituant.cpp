@@ -17,22 +17,12 @@
 #include <Schema_Temps_base.h>
 #include <Probleme_base.h>
 
-// Description:
-//    Lit le terme de puissance a partir
-//    d'un flot d'entree.
-//    Lit uniquement un champ donne representant la_puissance.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit le terme de puissance a partir d'un flot d'entree.
+ *
+ *     Lit uniquement un champ donne representant la_puissance.
+ *
+ * @param (Entree& is) un flot d'entree
+ */
 void Terme_Source_Constituant::lire_donnees(Entree& is)
 {
   Cerr << "Lecture du Champ Source pour le terme source du/des constituants" << finl;

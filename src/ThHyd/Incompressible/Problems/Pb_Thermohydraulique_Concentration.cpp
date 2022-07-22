@@ -21,90 +21,51 @@
 Implemente_instanciable(Pb_Thermohydraulique_Concentration,"Pb_Thermohydraulique_Concentration",Pb_Fluide_base);
 
 
-// Description:
-//    Simple appel a: Pb_Fluide_base::printOn(Sortie&)
-//    Ecrit le probleme sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a: Pb_Fluide_base::printOn(Sortie&) Ecrit le probleme sur un flot de sortie.
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Pb_Thermohydraulique_Concentration::printOn(Sortie& os) const
 {
   return Pb_Fluide_base::printOn(os);
 }
 
 
-// Description:
-//    Simple appel a: Pb_Fluide_base::readOn(Entree&)
-//    Lit le probleme a partir d'un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Pb_Fluide_base::readOn(Entree&) Lit le probleme a partir d'un flot d'entree.
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Pb_Thermohydraulique_Concentration::readOn(Entree& is)
 {
   return Pb_Fluide_base::readOn(is);
 }
 
-// Description:
-//    Renvoie le nombre d'equation,
-//    Renvoie 3 car il y a 2 equations a un probleme de
-//    thermo-hydraulique avec concentration:
-//        - l'equation de Navier Stokes
-//        - equation d'energie en regime laminaire
-//        - une equation de convection-diffusion
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre d'equations
-//    Contraintes: renvoie toujours 3, car il y 3 equations au probleme
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre d'equation, Renvoie 3 car il y a 2 equations a un probleme de
+ *
+ *     thermo-hydraulique avec concentration:
+ *         - l'equation de Navier Stokes
+ *         - equation d'energie en regime laminaire
+ *         - une equation de convection-diffusion
+ *
+ * @return (int) le nombre d'equations
+ */
 int Pb_Thermohydraulique_Concentration::nombre_d_equations() const
 {
   return 3;
 }
 
-// Description:
-//    Renvoie l'equation d'hydraulique de type Navier_Stokes_std si i=0
-//    Renvoie l'equation de la thermique de type
-//    Convection_Diffusion_Temperature si i=1
-//    Renvoie l'equation de la thermique de type
-//    Convection_Diffusion_Concentration si i=2
-//    (version const)
-// Precondition:
-// Parametre: int i
-//    Signification: l'index de l'equation a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: 0 <= i <= 2
-//    Acces:
-// Retour:  Equation_base&
-//    Signification: l'equation correspondante a l'index
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie l'equation d'hydraulique de type Navier_Stokes_std si i=0 Renvoie l'equation de la thermique de type
+ *
+ *     Convection_Diffusion_Temperature si i=1
+ *     Renvoie l'equation de la thermique de type
+ *     Convection_Diffusion_Concentration si i=2
+ *     (version const)
+ *
+ * @param (int i) l'index de l'equation a renvoyer
+ * @return (Equation_base&) l'equation correspondante a l'index
+ */
 const Equation_base& Pb_Thermohydraulique_Concentration::equation(int i) const
 {
   if ( !( i==0 || i==1 || i==2 ) )
@@ -120,24 +81,15 @@ const Equation_base& Pb_Thermohydraulique_Concentration::equation(int i) const
     return eq_concentration;
 }
 
-// Description:
-//    Renvoie l'equation d'hydraulique de type Navier_Stokes_std si i=0
-//    Renvoie l'equation de la thermique de type
-//    Convection_Diffusion_Temperature si i=1
-//    Renvoie l'equation de la thermique de type
-//    Convection_Diffusion_Concentration si i=2
-// Precondition:
-// Parametre: int i
-//    Signification: l'index de l'equation a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: 0 <= i <= 2
-//    Acces:
-// Retour:  Equation_base&
-//    Signification: l'equation correspondante a l'index
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie l'equation d'hydraulique de type Navier_Stokes_std si i=0 Renvoie l'equation de la thermique de type
+ *
+ *     Convection_Diffusion_Temperature si i=1
+ *     Renvoie l'equation de la thermique de type
+ *     Convection_Diffusion_Concentration si i=2
+ *
+ * @param (int i) l'index de l'equation a renvoyer
+ * @return (Equation_base&) l'equation correspondante a l'index
+ */
 Equation_base& Pb_Thermohydraulique_Concentration::equation(int i)
 {
   if ( !( i==0 || i==1 || i==2 ) )
@@ -155,27 +107,16 @@ Equation_base& Pb_Thermohydraulique_Concentration::equation(int i)
 
 
 
-// Description:
-//    Associe un milieu au probleme,
-//    Si le milieu est de type
-//      - Fluide_Incompressible, il sera associe a l'equation de l'hydraulique
-//        et a l'equation d'energie.
-//      - Constituant, il sera associe a l'equation de convection-diffusion
-//    Un autre type de milieu provoque une erreur
-// Precondition:
-// Parametre: Milieu_base& mil
-//    Signification: le milieu physique a associer au probleme
-//    Valeurs par defaut:
-//    Contraintes: doit etre de type fluide incompressible
-//                 ou de type constituant
-//                 reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: mauvais type de milieu physique
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe un milieu au probleme, Si le milieu est de type
+ *
+ *       - Fluide_Incompressible, il sera associe a l'equation de l'hydraulique
+ *         et a l'equation d'energie.
+ *       - Constituant, il sera associe a l'equation de convection-diffusion
+ *     Un autre type de milieu provoque une erreur
+ *
+ * @param (Milieu_base& mil) le milieu physique a associer au probleme
+ * @throws mauvais type de milieu physique
+ */
 void Pb_Thermohydraulique_Concentration::associer_milieu_base(const Milieu_base& mil)
 {
   if ( sub_type(Fluide_Incompressible,mil) )
@@ -194,25 +135,16 @@ void Pb_Thermohydraulique_Concentration::associer_milieu_base(const Milieu_base&
 }
 
 
-// Description:
-//    Teste la compatibilite des equations de convection-diffusion
-//    et de l'hydraulique. Le test se fait sur les conditions
-//    aux limites discretisees de chaque equation.
-//    Appels aux fonctions de librairie hors classe:
-//      tester_compatibilite_hydr_thermique(const Zone_Cl_dis&,const Zone_Cl_dis&)
-//      tester_compatibilite_hydr_concentration(const Zone_Cl_dis&,const Zone_Cl_dis&)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: code de retour propage
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Teste la compatibilite des equations de convection-diffusion et de l'hydraulique.
+ *
+ * Le test se fait sur les conditions
+ *     aux limites discretisees de chaque equation.
+ *     Appels aux fonctions de librairie hors classe:
+ *       tester_compatibilite_hydr_thermique(const Zone_Cl_dis&,const Zone_Cl_dis&)
+ *       tester_compatibilite_hydr_concentration(const Zone_Cl_dis&,const Zone_Cl_dis&)
+ *
+ * @return (int) code de retour propage
+ */
 int Pb_Thermohydraulique_Concentration::verifier()
 {
   const Zone_Cl_dis& zone_Cl_hydr = eq_hydraulique.zone_Cl_dis();

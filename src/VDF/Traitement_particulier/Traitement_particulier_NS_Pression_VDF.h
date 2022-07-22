@@ -20,17 +20,13 @@
 #include <Traitement_particulier_NS_Pression.h>
 #include <Champ_P0_VDF.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Traitement_particulier_NS_Pression_VDF
-//     Cette classe permet de faire les traitements particuliers
-//     pour les calculs de la pression
-//
-// .SECTION voir aussi
-//      Navier_Stokes, Traitement_particulier_base,
-//      Traitement_particulier_Pression
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Traitement_particulier_NS_Pression_VDF Cette classe permet de faire les traitements particuliers
+ *
+ *      pour les calculs de la pression
+ *
+ *
+ * @sa Navier_Stokes, Traitement_particulier_base,, Traitement_particulier_Pression
+ */
 class Traitement_particulier_NS_Pression_VDF : public Traitement_particulier_NS_Pression
 {
   Declare_instanciable_sans_constructeur(Traitement_particulier_NS_Pression_VDF);

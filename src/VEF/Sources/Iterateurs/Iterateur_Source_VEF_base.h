@@ -17,11 +17,10 @@
 #define Iterateur_Source_VEF_base_included
 
 
-//
-// .DESCRIPTION class Iterateur_Source_VEF_base
-//
-// .SECTION voir aussi Objet_U
-//
+/*! @brief class Iterateur_Source_VEF_base
+ *
+ * @sa Objet_U
+ */
 
 #include <TRUSTTabs_forward.h>
 #include <Ref_Zone_Cl_VEF.h>

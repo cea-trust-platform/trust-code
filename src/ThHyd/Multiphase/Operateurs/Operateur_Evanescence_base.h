@@ -18,15 +18,12 @@
 
 #include <Operateur_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Operateur_Evanescence
-//    Classe generique de la hierarchie des operateurs representant un terme
-//    de gestion de l'evanescence.
-// .SECTION voir aussi
-//    Operateur_base Operateur
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Operateur_Evanescence Classe generique de la hierarchie des operateurs representant un terme
+ *
+ *     de gestion de l'evanescence.
+ *
+ * @sa Operateur_base Operateur
+ */
 
 class Operateur_Evanescence_base  : public Operateur_base
 {

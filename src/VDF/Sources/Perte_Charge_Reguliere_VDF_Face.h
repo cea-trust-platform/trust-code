@@ -21,9 +21,9 @@
 #include <Perte_Charge_Reguliere.h>
 #include <Equation_base.h>
 
-//
-// .DESCRIPTION class Perte_Charge_Reguliere_VDF_Face
-//
+/*! @brief class Perte_Charge_Reguliere_VDF_Face
+ *
+ */
 
 //
 // .SECTION voir aussi Perte_Charge_VDF_Face

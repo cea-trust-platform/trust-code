@@ -26,9 +26,11 @@ class Zone_Cl_dis;
 class Zone_dis;
 
 declare_It_Sou_VDF_Elem(Eval_Puiss_Neutr_VDF_Elem)
-// .DESCRIPTION class Source_Neutronique_VDF
-//  Cette classe constitue l'implementation en VDF du terme source
-//  Source_Neutronique dans ThSol/.
+/*! @brief class Source_Neutronique_VDF Cette classe constitue l'implementation en VDF du terme source
+ *
+ *   Source_Neutronique dans ThSol/.
+ *
+ */
 class Source_Neutronique_VDF : public Source_Neutronique
 {
   Declare_instanciable_sans_constructeur(Source_Neutronique_VDF);

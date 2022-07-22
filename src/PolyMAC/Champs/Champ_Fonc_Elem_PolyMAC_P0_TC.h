@@ -25,17 +25,16 @@
 #include <Champ_Fonc.h>
 #include <Ref_Champ_Fonc.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    class Champ_Fonc_Elem_PolyMAC_P0_TC for the calculation of the shear rate (taux de cisaillement)
-//      This field is a Champ_Fonc_Elem_PolyMAC_P0 with 1 value per element and per phase :
-//      Champ_Fonc_Elem_PolyMAC_P0_TC::valeurs()(e, n) returns the value of phase n in element e
-//      The shear rate is calculated using
-//        shear rate = sqrt(2*Sij*Sij)
-//        Sij = 1/2(grad(u)+t grad(u))
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief class Champ_Fonc_Elem_PolyMAC_P0_TC for the calculation of the shear rate (taux de cisaillement) This field is a Champ_Fonc_Elem_PolyMAC_P0 with 1 value per element and per phase :
+ *
+ *       Champ_Fonc_Elem_PolyMAC_P0_TC::valeurs()(e, n) returns the value of phase n in element e
+ *       The shear rate is calculated using
+ *         shear rate = sqrt(2*Sij*Sij)
+ *         Sij = 1/2(grad(u)+t grad(u))
+ *
+ *
+ *
+ */
 
 class Champ_Fonc_Elem_PolyMAC_P0_TC : public Champ_Fonc_Elem_PolyMAC
 

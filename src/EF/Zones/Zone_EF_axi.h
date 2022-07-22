@@ -19,13 +19,13 @@
 #include <Zone_EF.h>
 
 class DomaineAxi1d;
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Zone_EF_axi
-//
-// <Description of class Zone_EF_axi>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Zone_EF_axi
+ *
+ *  <Description of class Zone_EF_axi>
+ *
+ *
+ *
+ */
 
 class Zone_EF_axi : public Zone_EF
 {

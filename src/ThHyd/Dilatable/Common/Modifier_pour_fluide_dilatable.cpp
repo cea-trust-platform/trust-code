@@ -90,9 +90,12 @@ void multiplier_diviser_rho(DoubleVect& tab,const Fluide_Dilatable_base& le_flui
   Process::exit();
 }
 
-// Description: multiplie le tableau val par la masse volumique si le fluide est dilatable.
-//  Le tableau val peut avoir diverses localisations (determinees a partir de get_md_vector())
-//  et peut etre de type DoubleTab avec des dimension(i>0) quelconques (plusieurs composantes)
+/*! @brief multiplie le tableau val par la masse volumique si le fluide est dilatable.
+ *
+ * Le tableau val peut avoir diverses localisations (determinees a partir de get_md_vector())
+ *   et peut etre de type DoubleTab avec des dimension(i>0) quelconques (plusieurs composantes)
+ *
+ */
 void multiplier_par_rho_si_dilatable(DoubleVect& val,const Milieu_base& mil)
 {
   if (sub_type(Fluide_Dilatable_base,mil)) multiplier_diviser_rho(val,ref_cast(Fluide_Dilatable_base,mil), 0 /* multiplier */);
@@ -103,7 +106,9 @@ void multiplier_par_rho_si_dilatable(DoubleVect& val,const Milieu_base& mil)
     }
 }
 
-// Description: Idem que multiplier_par_rho_si_dilatable mais on divise par rho.
+/*! @brief Idem que multiplier_par_rho_si_dilatable mais on divise par rho.
+ *
+ */
 void diviser_par_rho_si_dilatable(DoubleVect& val,const Milieu_base& mil)
 {
   if (sub_type(Fluide_Dilatable_base,mil)) multiplier_diviser_rho(val,ref_cast(Fluide_Dilatable_base,mil), 1 /* diviser */);

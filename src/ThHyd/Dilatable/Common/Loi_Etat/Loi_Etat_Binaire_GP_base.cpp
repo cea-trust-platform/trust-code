@@ -49,21 +49,11 @@ void Loi_Etat_Binaire_GP_base::calculer_lambda()
   /* Do nothing */
 }
 
-// Description:
-//    Calcule la viscosite dynamique de mélange (depend des fraction massique)
-// Voir Wilke  https://aip.scitation.org/doi/pdf/10.1063/1.1747673
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la viscosite dynamique de mélange (depend des fraction massique) Voir Wilke  https://aip.
+ *
+ * scitation.org/doi/pdf/10.1063/1.1747673
+ *
+ */
 void Loi_Etat_Binaire_GP_base::calculer_mu_wilke()
 {
   const DoubleTab& tab_Y1 = le_fluide->inco_chaleur().valeurs();
@@ -96,20 +86,9 @@ void Loi_Etat_Binaire_GP_base::calculer_mu_wilke()
   Debog::verifier("calculer_mu_wilke",tab_mu);
 }
 
-// Description:
-//    Calcule la viscosite dynamique
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la viscosite dynamique
+ *
+ */
 void Loi_Etat_Binaire_GP_base::calculer_mu()
 {
   Champ_Don& mu = le_fluide->viscosite_dynamique();
@@ -135,20 +114,9 @@ void Loi_Etat_Binaire_GP_base::calculer_alpha()
   /* Do nothing */
 }
 
-// Description:
-//    Calcule la viscosite dynamique sur Schmidt
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la viscosite dynamique sur Schmidt
+ *
+ */
 void Loi_Etat_Binaire_GP_base::calculer_mu_sur_Sc()
 {
   /*
@@ -186,20 +154,9 @@ void Loi_Etat_Binaire_GP_base::calculer_mu_sur_Sc()
   tab_mu_sur_Sc.echange_espace_virtuel();
 }
 
-// Description:
-//    Calcule la viscosite dynamique sur Schmidt
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la viscosite dynamique sur Schmidt
+ *
+ */
 void Loi_Etat_Binaire_GP_base::calculer_nu_sur_Sc()
 {
   /*
@@ -220,59 +177,27 @@ void Loi_Etat_Binaire_GP_base::calculer_nu_sur_Sc()
   tab_nu_sur_Sc.echange_espace_virtuel();
 }
 
-// Description:
-//    Calcule le Cp
-//    NE FAIT RIEN : le Cp est constant
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule le Cp NE FAIT RIEN : le Cp est constant
+ *
+ */
 void Loi_Etat_Binaire_GP_base::calculer_Cp()
 {
   /* Do nothing */
 }
 
-// Description:
-//    Renvoie le type de fluide associe.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie pour l'impression
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le type de fluide associe.
+ *
+ * @param (Sortie& os) le flot de sortie pour l'impression
+ * @return (Sortie&) le flot de sortie modifie
+ */
 const Nom Loi_Etat_Binaire_GP_base::type_fluide() const
 {
   return "Melange_Binaire";
 }
 
-// Description:
-//    Calcule la pression avec la temperature et la masse volumique
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la pression avec la temperature et la masse volumique
+ *
+ */
 double Loi_Etat_Binaire_GP_base::inverser_Pth(double Y1, double rho)
 {
   /*

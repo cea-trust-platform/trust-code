@@ -20,17 +20,13 @@
 
 class Fluide_Dilatable_base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Loi_Etat_GP_base
-//     Cette classe represente la loi d'etat base pour les gaz parfaits.
-//     Elle definit un fluide dilatable dont la loi d'etat est :
-//        Pth = rho*R*T
-// .SECTION voir aussi
-//     Fluide_Dilatable_base Loi_Etat_base
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Loi_Etat_GP_base Cette classe represente la loi d'etat base pour les gaz parfaits.
+ *
+ *      Elle definit un fluide dilatable dont la loi d'etat est :
+ *         Pth = rho*R*T
+ *
+ * @sa Fluide_Dilatable_base Loi_Etat_base
+ */
 
 class Loi_Etat_GP_base : public Loi_Etat_base
 {

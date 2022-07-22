@@ -19,19 +19,15 @@
 
 #include <Traitement_particulier_NS_canal.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Traitement_particulier_NS_canal_VDF
-//     Cette classe permet de faire les traitements particuliers
-//     pour le calcul d'un canal plan :
-//         * conservation du debit
-//         * calculs de moyennes
-//
-// .SECTION voir aussi
-//      Navier_Stokes_Turbulent, Traitement_particulier_base,
-//      Traitement_particulier_VDF
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Traitement_particulier_NS_canal_VDF Cette classe permet de faire les traitements particuliers
+ *
+ *      pour le calcul d'un canal plan :
+ *          * conservation du debit
+ *          * calculs de moyennes
+ *
+ *
+ * @sa Navier_Stokes_Turbulent, Traitement_particulier_base,, Traitement_particulier_VDF
+ */
 class Traitement_particulier_NS_canal_VDF : public Traitement_particulier_NS_canal
 {
   Declare_instanciable(Traitement_particulier_NS_canal_VDF);

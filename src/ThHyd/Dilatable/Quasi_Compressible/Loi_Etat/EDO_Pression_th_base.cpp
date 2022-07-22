@@ -27,20 +27,10 @@ Entree& EDO_Pression_th_base::readOn(Entree& is)
   return is;
 }
 
-// Description:
-//    Associe le fluide a l'EDO
-// Precondition:
-// Parametre: Fluide_Quasi_Compressible& fl
-//    Signification: le fluide associe
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe le fluide a l'EDO
+ *
+ * @param (Fluide_Quasi_Compressible& fl) le fluide associe
+ */
 void EDO_Pression_th_base::associer_fluide(const Fluide_Quasi_Compressible& fl)
 {
   le_fluide_ = fl;

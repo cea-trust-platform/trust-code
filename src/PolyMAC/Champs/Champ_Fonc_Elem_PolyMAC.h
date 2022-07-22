@@ -19,8 +19,9 @@
 
 #include <Champ_Fonc_P0_base.h>
 
-//.DESCRIPTION classe Champ_Fonc_Elem_PolyMAC
-//
+/*! @brief classe Champ_Fonc_Elem_PolyMAC
+ *
+ */
 
 //.SECTION voir aussi
 // Champ_Fonc_P0

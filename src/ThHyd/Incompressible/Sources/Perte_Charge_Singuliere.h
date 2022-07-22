@@ -26,16 +26,13 @@ class Zone_dis_base;
 class Equation_base;
 class Source_base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Perte_Charge_Singuliere
-//    Cette classe derivee de Perte_Charge est utilisee lorsque l'on veut
-//    modeliser une perte de charge sur une surface (passage d'une grille par exemple)
-//    par exemple)
-// .SECTION voir aussi
-//     Perte_Charge Perte_Charge_Reguliere
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Perte_Charge_Singuliere Cette classe derivee de Perte_Charge est utilisee lorsque l'on veut
+ *
+ *     modeliser une perte de charge sur une surface (passage d'une grille par exemple)
+ *     par exemple)
+ *
+ * @sa Perte_Charge Perte_Charge_Reguliere
+ */
 class Perte_Charge_Singuliere : public Perte_Charge
 {
 
@@ -59,19 +56,10 @@ protected :
 };
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief
+ *
+ * @return (double)
+ */
 inline double Perte_Charge_Singuliere::K() const
 {
   return K_;

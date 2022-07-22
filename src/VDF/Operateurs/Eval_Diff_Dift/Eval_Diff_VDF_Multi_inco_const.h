@@ -23,11 +23,13 @@
 
 class Champ_base;
 
-// .DESCRIPTION class Eval_Diff_VDF_Multi_inco_const
-// Cette classe represente un evaluateur de flux diffusif
-// pour un vecteur d'inconnues avec une diffusivite par
-// inconnue. Le champ de diffusivite associe a chaque inconnue est constant.
-// .SECTION voir aussi Evaluateur_VDF
+/*! @brief class Eval_Diff_VDF_Multi_inco_const Cette classe represente un evaluateur de flux diffusif
+ *
+ *  pour un vecteur d'inconnues avec une diffusivite par
+ *  inconnue. Le champ de diffusivite associe a chaque inconnue est constant.
+ *
+ * @sa Evaluateur_VDF
+ */
 
 class Eval_Diff_VDF_Multi_inco_const : public Eval_Diff_VDF
 {

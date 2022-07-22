@@ -20,60 +20,31 @@
 
 Implemente_instanciable(Echange_externe_impose_H,"Paroi_echange_externe_impose_H",Echange_externe_impose);
 
-// Description:
-//    Ecrit le type de l'objet sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit le type de l'objet sur un flot de sortie
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Echange_externe_impose_H::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << "\n";
 }
 
-// Description:
-//    Simple appel a Echange_impose_base::readOn(Entree&)
-//    Lit les specifications des conditions aux limites
-//    a partir d'un flot d'entree.
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a Echange_impose_base::readOn(Entree&) Lit les specifications des conditions aux limites
+ *
+ *     a partir d'un flot d'entree.
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot de sortie modifie
+ */
 Entree& Echange_externe_impose_H::readOn(Entree& s )
 {
   return Echange_externe_impose::readOn(s) ;
 }
 
-// Description:
-//    Complete les conditions aux limites.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Complete les conditions aux limites.
+ *
+ */
 void Echange_externe_impose_H::completer()
 {
   Echange_impose_base::completer();
@@ -81,22 +52,11 @@ void Echange_externe_impose_H::completer()
   modifier_val_imp = 1;
 }
 
-// Description:
-//    Renvoie la valeur de la temperature imposee
-//    sur la i-eme composante du champ de frontiere.
-// Precondition:
-// Parametre: int i
-//    Signification: l'indice de la composante du champ de
-//                   de frontiere
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la valeur de la temperature imposee sur la i-eme composante du champ de frontiere.
+ *
+ * @param (int i) l'indice de la composante du champ de de frontiere
+ * @return (double)
+ */
 double Echange_externe_impose_H::T_ext(int i) const
 {
   if (le_champ_front.valeurs().size()==1)
@@ -120,26 +80,12 @@ double Echange_externe_impose_H::T_ext(int i) const
   return 0.;
 }
 
-// Description:
-//    Renvoie la valeur de la temperature imposee
-//    sur la (i,j)-eme composante du champ de frontiere.
-// Precondition:
-// Parametre: int i
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int j
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la valeur de la temperature imposee sur la (i,j)-eme composante du champ de frontiere.
+ *
+ * @param (int i)
+ * @param (int j)
+ * @return (double)
+ */
 double Echange_externe_impose_H::T_ext(int i, int j) const
 {
   if (le_champ_front.valeurs().dimension(0)==1)
@@ -158,24 +104,15 @@ double Echange_externe_impose_H::T_ext(int i, int j) const
     }
 }
 
-// Description:
-//    Verifie la compatibilite des conditions aux limites avec
-//    l'equation passee en parametre.
-//   Les conditions aux limites de type Ech_imp_base  sont
-//   compatibles avec des equations de type:
-//         - Thermique_H  (thermique avec inconnue = enthalpie)
-// Precondition:
-// Parametre: Equation_base& eqn
-//    Signification: l'equation avec laquelle on doit verifier la compatibilite
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: int
-//    Signification: valeur booleenne, 1 si compatible 0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Verifie la compatibilite des conditions aux limites avec l'equation passee en parametre.
+ *
+ *    Les conditions aux limites de type Ech_imp_base  sont
+ *    compatibles avec des equations de type:
+ *          - Thermique_H  (thermique avec inconnue = enthalpie)
+ *
+ * @param (Equation_base& eqn) l'equation avec laquelle on doit verifier la compatibilite
+ * @return (int) valeur booleenne, 1 si compatible 0 sinon
+ */
 int Echange_externe_impose_H::compatible_avec_eqn(const Equation_base& eqn) const
 {
   Motcle dom_app=eqn.domaine_application();

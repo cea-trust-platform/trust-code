@@ -17,17 +17,16 @@
 #define Multiplicateur_diphasique_Lottes_Flinn_included
 #include <Multiplicateur_diphasique_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Multiplicateur_diphasique_Lottes_Flinn
-//      correlation de multiplicateur diphasique de Lottes-Flinn :
-//        alpha < alpha_min -> seule la phase liquide frotte avec phi = 1 / (1-alpha)^2
-//        alpha > alpha_max -> seule la vapeur frotte
-//      parametres :
-//       - alpha_min -> debut de la transition
-//       - alpha_fin -> fin de la transition
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Multiplicateur_diphasique_Lottes_Flinn correlation de multiplicateur diphasique de Lottes-Flinn :
+ *
+ *         alpha < alpha_min -> seule la phase liquide frotte avec phi = 1 / (1-alpha)^2
+ *         alpha > alpha_max -> seule la vapeur frotte
+ *       parametres :
+ *        - alpha_min -> debut de la transition
+ *        - alpha_fin -> fin de la transition
+ *
+ *
+ */
 
 class Multiplicateur_diphasique_Lottes_Flinn : public Multiplicateur_diphasique_base
 {

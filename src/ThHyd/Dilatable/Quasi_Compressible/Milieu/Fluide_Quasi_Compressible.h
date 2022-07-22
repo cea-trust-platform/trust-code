@@ -21,16 +21,12 @@
 
 class Zone_Cl_dis;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Fluide_Quasi_Compressible
-//    Cette classe represente un d'un fluide quasi compressible
-//    c'est a dire heritant de fluide dilatable
-// .SECTION voir aussi
-//     Milieu_base Fluide_Dilatable_base
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Fluide_Quasi_Compressible Cette classe represente un d'un fluide quasi compressible
+ *
+ *     c'est a dire heritant de fluide dilatable
+ *
+ * @sa Milieu_base Fluide_Dilatable_base
+ */
 
 class Fluide_Quasi_Compressible : public Fluide_Dilatable_base
 {

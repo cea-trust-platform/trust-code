@@ -19,18 +19,15 @@
 #include <Echange_global_impose.h>
 #include <Ref_Champ_Don.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Echange_interne_global_impose:
-//    Cette classe represente le cas particulier de la classe
-//    Echange_global_impose ou la paroi d'echange est interne au domaine.
-//    La temperature exterieure definie dans Echange_global_impose devient alors la
-//    temperature situee de l'autre cote de la paroi interne.
-//    L'implicitation de cette CL demande un traitement spécial, voir Op_Diff_EF::ajouter_contributions_bords()
-// .SECTION voir aussi
-//    Echange_impose_base Echange_global_impose
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Echange_interne_global_impose: Cette classe represente le cas particulier de la classe
+ *
+ *     Echange_global_impose ou la paroi d'echange est interne au domaine.
+ *     La temperature exterieure definie dans Echange_global_impose devient alors la
+ *     temperature situee de l'autre cote de la paroi interne.
+ *     L'implicitation de cette CL demande un traitement spécial, voir Op_Diff_EF::ajouter_contributions_bords()
+ *
+ * @sa Echange_impose_base Echange_global_impose
+ */
 class Echange_interne_global_impose  : public Echange_global_impose
 {
 

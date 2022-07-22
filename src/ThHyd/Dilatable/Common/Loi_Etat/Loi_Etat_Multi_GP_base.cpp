@@ -50,21 +50,10 @@ void Loi_Etat_Multi_GP_base::calculer_masse_molaire()
   Debog::verifier("Masse_mol_mel",masse_mol_mel);
 }
 
-// Description:
-// Associe l inconnue de chaque equation de
-// fraction massique a la loi d'etat
-// Precondition:
-// Parametre: inconnue
-//    Signification: l inconnue associee
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe l inconnue de chaque equation de fraction massique a la loi d'etat
+ *
+ * @param (inconnue) l inconnue associee
+ */
 void Loi_Etat_Multi_GP_base::associer_inconnue(const Champ_Inc_base& inconnue)
 {
   REF(Champ_Inc_base) inco;
@@ -81,20 +70,9 @@ void Loi_Etat_Multi_GP_base::calculer_Cp()
   Debog::verifier("tab_Cp",tab_Cp);
 }
 
-// Description:
-//    Calcule la conductivite
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la conductivite
+ *
+ */
 void Loi_Etat_Multi_GP_base::calculer_lambda()
 {
   const Champ_Don& mu = le_fluide->viscosite_dynamique();
@@ -124,20 +102,9 @@ void Loi_Etat_Multi_GP_base::calculer_lambda()
   Debog::verifier("tab_lambda",tab_lambda);
 }
 
-// Description:
-//    Calcule la diffusivite
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la diffusivite
+ *
+ */
 void Loi_Etat_Multi_GP_base::calculer_alpha()
 {
   const Champ_Don& lambda = le_fluide->conductivite();
@@ -223,20 +190,9 @@ double Loi_Etat_Multi_GP_base::calculer_masse_volumique(double P, double T) cons
   return -1000.;
 }
 
-// Description:
-//    Calcule la viscosite dynamique
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la viscosite dynamique
+ *
+ */
 void Loi_Etat_Multi_GP_base::calculer_mu()
 {
   Champ_Don& mu = le_fluide->viscosite_dynamique();

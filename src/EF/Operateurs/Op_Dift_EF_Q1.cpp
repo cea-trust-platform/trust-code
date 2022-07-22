@@ -85,8 +85,9 @@ void Op_Dift_EF_Q1::remplir_marqueur_elem_CL_paroi(ArrOfInt& marqueur,const Zone
     }
 }
 
-// Description:
-// associe le champ de diffusivite
+/*! @brief associe le champ de diffusivite
+ *
+ */
 void Op_Dift_EF_Q1::associer_diffusivite(const Champ_base& diffu)
 {
   diffusivite_ = diffu;

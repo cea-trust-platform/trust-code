@@ -21,8 +21,9 @@
 #include <Ref_Champ_Face.h>
 #include <Ref_Champ_Don.h>
 
-//.DESCRIPTION  classe Reynolds_maille_Champ_Face
-//
+/*! @brief classe Reynolds_maille_Champ_Face
+ *
+ */
 
 class Reynolds_maille_Champ_Face : public Champ_Fonc_Face
 

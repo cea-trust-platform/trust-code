@@ -21,16 +21,13 @@
 
 class Fluide_Dilatable_base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Pb_Dilatable_base
-//    Cette classe est censee factoriser ce qui est commun a l'ensemble
-//    des problemes dilatables.
-//
-// .SECTION voir aussi Pb_Fluide_base
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Pb_Dilatable_base Cette classe est censee factoriser ce qui est commun a l'ensemble
+ *
+ *     des problemes dilatables.
+ *
+ *
+ * @sa Pb_Fluide_base
+ */
 
 class Pb_Dilatable_base : public Pb_Fluide_base
 {

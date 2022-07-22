@@ -19,16 +19,13 @@
 #include <Operateur.h>
 #include <Operateur_Evanescence_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Operateur_Evanescence
-//    Classe generique de la hierarchie des operateurs representant un terme
-//    de gestion de l'evanescence. Un objet Operateur_Evanescence peut referencer n'importe quel
-//    objet derivant de Operateur_Evanescence_base.
-// .SECTION voir aussi
-//    Operateur_base Operateur
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Operateur_Evanescence Classe generique de la hierarchie des operateurs representant un terme
+ *
+ *     de gestion de l'evanescence. Un objet Operateur_Evanescence peut referencer n'importe quel
+ *     objet derivant de Operateur_Evanescence_base.
+ *
+ * @sa Operateur_base Operateur
+ */
 
 class Operateur_Evanescence  : public Operateur, public DERIV(Operateur_Evanescence_base)
 {

@@ -21,11 +21,13 @@
 #include <Ref_Champ_Fonc.h>
 #include <Champ_Fonc.h>
 
-// .DESCRIPTION class Eval_Dift_VDF_var
-// Cette classe represente un evaluateur de flux diffusif
-// total (diffusion laminaire et turbulente)
-// avec une diffusivite variable en espace.
-//.SECTION voir aussi Eval_Diff_VDF_var
+/*! @brief class Eval_Dift_VDF_var Cette classe represente un evaluateur de flux diffusif
+ *
+ *  total (diffusion laminaire et turbulente)
+ *  avec une diffusivite variable en espace.
+ *
+ * @sa Eval_Diff_VDF_var
+ */
 class Eval_Dift_VDF_var : public Eval_Diff_VDF_var, public Eval_Turbulence
 {
 public:

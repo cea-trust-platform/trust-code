@@ -27,40 +27,22 @@
 Implemente_base_sans_constructeur_ni_destructeur(Traitement_particulier_NS_EC,"Traitement_particulier_NS_EC",Traitement_particulier_NS_base);
 
 
-// Description:
-//
-// Precondition:
-// Parametre: Sortie& is
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief
+ *
+ * @param (Sortie& is) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Traitement_particulier_NS_EC::printOn(Sortie& is) const
 {
   return is;
 }
 
 
-// Description:
-//
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Traitement_particulier_NS_EC::readOn(Entree& is)
 {
   return is;
@@ -181,9 +163,11 @@ void Traitement_particulier_NS_EC::post_traitement_particulier()
     }
 }
 
-// Description:
-//  Fonction outil utilisee dans calculer_Ec. Calcule la somme
-//  de 0.5*v^2*rho*volumes_entrelaces.
+/*! @brief Fonction outil utilisee dans calculer_Ec.
+ *
+ * Calcule la somme de 0.5*v^2*rho*volumes_entrelaces.
+ *
+ */
 static double trait_part_calculer_ec_faces(const int         face_debut,
                                            const int         nb_faces,
                                            const int                frontiere,
@@ -257,16 +241,17 @@ static double trait_part_calculer_ec_faces(const int         face_debut,
   return ec;
 }
 
-// Description:
-//  Meme methode de calcul en VDF et en VEF.
-//
-//  Si aucun champ de masse volumique n'a ete associe, on calcule
-//   INTEGRALE de 1/2 * u^2 sur le domaine.
-//  Si un champ de masse volumique a ete associe, il doit etre
-//  de type "champ aux faces". On calcule INTEGRALE de 1/2 * rho * u^2.
-//  rho est un champ P0 aux elements, u est P0 sur les volumes entrelaces
-// Valeur de retour:
-//  La somme sur tous les processeurs de l'integrale de 1/2*rho*u*u.
+/*! @brief Meme methode de calcul en VDF et en VEF.
+ *
+ *   Si aucun champ de masse volumique n'a ete associe, on calcule
+ *    INTEGRALE de 1/2 * u^2 sur le domaine.
+ *   Si un champ de masse volumique a ete associe, il doit etre
+ *   de type "champ aux faces". On calcule INTEGRALE de 1/2 * rho * u^2.
+ *   rho est un champ P0 aux elements, u est P0 sur les volumes entrelaces
+ *  Valeur de retour:
+ *   La somme sur tous les processeurs de l'integrale de 1/2*rho*u*u.
+ *
+ */
 void Traitement_particulier_NS_EC::calculer_Ec(double& energie_cinetique)
 {
 

@@ -22,10 +22,12 @@
 #include <Champ_base.h>
 #include <Zone_VDF.h>
 
-// .DESCRIPTION class Eval_Diff_VDF_var_aniso
-// Cette classe represente un evaluateur de flux diffusif
-// avec un coefficient de diffusivite qui n'est pas constant en espace.
-//.SECTION voir aussi Evaluateur_VDF
+/*! @brief class Eval_Diff_VDF_var_aniso Cette classe represente un evaluateur de flux diffusif
+ *
+ *  avec un coefficient de diffusivite qui n'est pas constant en espace.
+ *
+ * @sa Evaluateur_VDF
+ */
 class Eval_Diff_VDF_var_aniso : public Eval_Diff_VDF
 {
 public:
@@ -70,8 +72,9 @@ inline const Champ_base& Eval_Diff_VDF_var_aniso::get_diffusivite() const
   return diffusivite_.valeur();
 }
 
-// Description:
-// associe le champ de diffusivite
+/*! @brief associe le champ de diffusivite
+ *
+ */
 inline void Eval_Diff_VDF_var_aniso::associer(const Champ_base& diffu)
 {
   // ONLY AVAILABLE FOR TRUST : conduction problem

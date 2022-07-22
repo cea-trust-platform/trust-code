@@ -30,22 +30,13 @@ Implemente_instanciable(Champ_front_debit_QC,"Champ_front_debit_QC_VDF",Ch_front
 
 
 
-// Description:
-//    Impression sur un flot de sortie au format:
-//    taille
-//    valeur(0) ... valeur(i)  ... valeur(taille-1)
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Impression sur un flot de sortie au format: taille
+ *
+ *     valeur(0) ... valeur(i)  ... valeur(taille-1)
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Champ_front_debit_QC::printOn(Sortie& os) const
 {
   const DoubleTab& tab=valeurs();
@@ -55,25 +46,17 @@ Sortie& Champ_front_debit_QC::printOn(Sortie& os) const
   return os;
 }
 
-// Description:
-//    Lecture a partir d'un flot d'entree au format:
-//    nombre_de_composantes
-//    moyenne moyenne(0) ... moyenne(nombre_de_composantes-1)
-//    moyenne amplitude(0) ... amplitude(nombre_de_composantes-1)
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: accolade ouvrante attendue
-// Exception: mot clef inconnu a cet endroit
-// Exception: accolade fermante attendue
-// Effets de bord:
-// Postcondition:
+/*! @brief Lecture a partir d'un flot d'entree au format: nombre_de_composantes
+ *
+ *     moyenne moyenne(0) ... moyenne(nombre_de_composantes-1)
+ *     moyenne amplitude(0) ... amplitude(nombre_de_composantes-1)
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ * @throws accolade ouvrante attendue
+ * @throws mot clef inconnu a cet endroit
+ * @throws accolade fermante attendue
+ */
 Entree& Champ_front_debit_QC::readOn(Entree& is)
 {
   Cerr<<"Champ_front_debit_QC_VDF usage : dim { val1 .. valdim } [ moyen ] nom_pb"<<finl;
@@ -118,40 +101,20 @@ Entree& Champ_front_debit_QC::readOn(Entree& is)
 }
 
 
-// Description:
-//    Pas code !!
-// Precondition:
-// Parametre: Champ_front_base& ch
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Retour: Champ_front_base&
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Pas code !!
+ *
+ * @param (Champ_front_base& ch)
+ * @return (Champ_front_base&)
+ */
 Champ_front_base& Champ_front_debit_QC::affecter_(const Champ_front_base& ch)
 {
   return *this;
 }
 
-// Description:
-//     Mise a jour du temps
-//     et retirage aleatoire des valeurs du bruit.
-// Precondition:
-// Parametre: double tps
-//    Signification: le temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Mise a jour du temps et retirage aleatoire des valeurs du bruit.
+ *
+ * @param (double tps) le temps de mise a jour
+ */
 void Champ_front_debit_QC::mettre_a_jour(double tps)
 {
 

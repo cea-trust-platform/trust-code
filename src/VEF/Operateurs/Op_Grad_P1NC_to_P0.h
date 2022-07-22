@@ -23,13 +23,14 @@
 #include <Zone_Cl_VEF.h>
 #include <Ref_Zone_VEF.h>
 
-//
-// .DESCRIPTION class Op_Grad_P1NC_to_P0
-//
-//  Cette classe represente un operateur de gradient
-//  La discretisation est VEF
-//  On calcule le gradient d'un champ_P1NC a une composante (temperature,concentration)
-//   et le champ de sortie est P0 (aux elements)
+/*! @brief class Op_Grad_P1NC_to_P0
+ *
+ *   Cette classe represente un operateur de gradient
+ *   La discretisation est VEF
+ *   On calcule le gradient d'un champ_P1NC a une composante (temperature,concentration)
+ *    et le champ de sortie est P0 (aux elements)
+ *
+ */
 
 
 //

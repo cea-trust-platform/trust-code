@@ -23,9 +23,9 @@
 class Domaine;
 #include <TRUSTList.h>
 
-//
-// .DESCRIPTION class Perte_Charge_Singuliere_VEF_Face
-//
+/*! @brief class Perte_Charge_Singuliere_VEF_Face
+ *
+ */
 
 //
 // .SECTION voir aussi Perte_Charge_VEF_Face

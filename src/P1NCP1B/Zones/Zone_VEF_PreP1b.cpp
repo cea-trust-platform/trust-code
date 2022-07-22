@@ -46,10 +46,12 @@ Entree& Zone_VEF_PreP1b::readOn(Entree& is )
   return Zone_VEF::readOn(is);
 }
 
-// Description:
-//  Les volumes calcules dans discretiser() ne tiennent pas compte de
-//  la periodicite. Pour les sommets periodiques, on fait la somme
-//  de tous les volumes des sommets "identiques" au sens de la periodicite.
+/*! @brief Les volumes calcules dans discretiser() ne tiennent pas compte de la periodicite.
+ *
+ * Pour les sommets periodiques, on fait la somme
+ *   de tous les volumes des sommets "identiques" au sens de la periodicite.
+ *
+ */
 void Zone_VEF_PreP1b::discretiser()
 {
   Zone_VEF::discretiser();

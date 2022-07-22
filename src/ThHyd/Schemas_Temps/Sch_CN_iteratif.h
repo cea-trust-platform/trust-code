@@ -19,35 +19,32 @@
 #include <Schema_Temps_base.h>
 #include <TRUSTTabs_forward.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Sch_CN_iteratif
-//     Schema en temps alternant un demi-pas de temps d'Euler implicite et un demi-pas de temps de LeapFrog.
-//     La resolution implicite est iterative (point fixe).
-//     Le pas de temps est calcule comme le produit du pas de temps de stabilite explicite par un facsec.
-//     Le facsec est ajuste automatiquement pour que la resolution converge en un nombre d'iterations predefini.
-//     Les caracteristiques de chaque iteration sont ecrites dans le fichier dt_CN.
-//
-//     La resolution est gouvernee par 4 parametres (valeurs par defauts entre parentheses) :
-//     * seuil (1e-3) : le seuil de convergence. Plus il est bas, plus la resolution est precise.
-//     * facsec_max (2) : la valeur du facsec que l'on ne veut pas depasser (eviter les instabilites et capter les phenomenes physiques)
-//     * niter_min (2) : le nombre minimum d'iterations. En deca, on continue a iterer meme si on semble avoir atteint la convergence.
-//     * niter_avg (3) : le nombre d'iterations que l'on souhaite faire pour arriver a convergence.
-//     * niter_max (6) : le nombre d'iteration au-dela duquel on reessaye avec un facsec plus petit.
-//
-//     Conseil pour le choix des parametres d'ajustement du facsec :
-//     * Choisir seuil en fonction de la precision desiree.
-//     * Choisir niter_min : 2 garantit un schema d'ordre 2 en temps.
-//     * Si on cherche un stationnaire, choisir seuil_statio >= seuil.
-//     * Choisir facsec_max en fonction des phenomenes physiques a capter.
-//     * Commencer par tester avec une grande valeur de niter_avg. Observer le comportement du nombre d'iterations.
-//       Il bute sur une valeur maximum avant de retomber.
-//     * Choisir niter_avg aux 2/3 de cette valeur maximum, et niter_max aux 4/3 ou au double environ.
-//
-// .SECTION voir aussi
-//     Schema_Temps_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Sch_CN_iteratif Schema en temps alternant un demi-pas de temps d'Euler implicite et un demi-pas de temps de LeapFrog.
+ *
+ *      La resolution implicite est iterative (point fixe).
+ *      Le pas de temps est calcule comme le produit du pas de temps de stabilite explicite par un facsec.
+ *      Le facsec est ajuste automatiquement pour que la resolution converge en un nombre d'iterations predefini.
+ *      Les caracteristiques de chaque iteration sont ecrites dans le fichier dt_CN.
+ *
+ *      La resolution est gouvernee par 4 parametres (valeurs par defauts entre parentheses) :
+ *      * seuil (1e-3) : le seuil de convergence. Plus il est bas, plus la resolution est precise.
+ *      * facsec_max (2) : la valeur du facsec que l'on ne veut pas depasser (eviter les instabilites et capter les phenomenes physiques)
+ *      * niter_min (2) : le nombre minimum d'iterations. En deca, on continue a iterer meme si on semble avoir atteint la convergence.
+ *      * niter_avg (3) : le nombre d'iterations que l'on souhaite faire pour arriver a convergence.
+ *      * niter_max (6) : le nombre d'iteration au-dela duquel on reessaye avec un facsec plus petit.
+ *
+ *      Conseil pour le choix des parametres d'ajustement du facsec :
+ *      * Choisir seuil en fonction de la precision desiree.
+ *      * Choisir niter_min : 2 garantit un schema d'ordre 2 en temps.
+ *      * Si on cherche un stationnaire, choisir seuil_statio >= seuil.
+ *      * Choisir facsec_max en fonction des phenomenes physiques a capter.
+ *      * Commencer par tester avec une grande valeur de niter_avg. Observer le comportement du nombre d'iterations.
+ *        Il bute sur une valeur maximum avant de retomber.
+ *      * Choisir niter_avg aux 2/3 de cette valeur maximum, et niter_max aux 4/3 ou au double environ.
+ *
+ *
+ * @sa Schema_Temps_base
+ */
 class Sch_CN_iteratif : public Schema_Temps_base
 {
   Declare_instanciable(Sch_CN_iteratif);

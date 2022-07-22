@@ -44,8 +44,9 @@ Entree& Champ_front_pression_from_u::readOn(Entree& is)
 
 
 
-// Description:
-// Mise a jour du temps
+/*! @brief Mise a jour du temps
+ *
+ */
 
 int Champ_front_pression_from_u::initialiser(double tps, const Champ_Inc_base& inco)
 {

@@ -24,18 +24,15 @@
 class Zone_Cl_dis;
 class Zone_dis;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION class Source_Gravite_Fluide_Dilatable_base
-//
-//  Cette classe represente un terme source supplementaire
-//  a prendre en compte dans les equations de quantite de mouvement
-//  dans le cas ou le fluide est dilatable et s'il y a gravite
-//
-// .SECTION voir aussi
-// Source_base Fluide_Dilatable_base
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief class Source_Gravite_Fluide_Dilatable_base
+ *
+ *   Cette classe represente un terme source supplementaire
+ *   a prendre en compte dans les equations de quantite de mouvement
+ *   dans le cas ou le fluide est dilatable et s'il y a gravite
+ *
+ *
+ * @sa Source_base Fluide_Dilatable_base
+ */
 
 class Source_Gravite_Fluide_Dilatable_base : public Source_base
 {

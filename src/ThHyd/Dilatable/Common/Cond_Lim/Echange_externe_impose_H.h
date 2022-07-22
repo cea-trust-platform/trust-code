@@ -19,16 +19,13 @@
 #include <Echange_externe_impose.h>
 #include <Ref_Fluide_Dilatable_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Echange_externe_impose_H:
-//    Cette classe represente le cas particulier de la classe
-//    Echange_externe_impose pour une equation en enthalpie..
-//
-// .SECTION voir aussi
-//    Echange_impose_base Echange_externe_impose
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Echange_externe_impose_H: Cette classe represente le cas particulier de la classe
+ *
+ *     Echange_externe_impose pour une equation en enthalpie..
+ *
+ *
+ * @sa Echange_impose_base Echange_externe_impose
+ */
 class Echange_externe_impose_H  : public Echange_externe_impose
 {
   Declare_instanciable(Echange_externe_impose_H);

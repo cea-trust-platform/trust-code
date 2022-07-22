@@ -43,8 +43,9 @@ protected:
   double porosite;
 };
 
-// Description:
-// associe le champ de diffusivite
+/*! @brief associe le champ de diffusivite
+ *
+ */
 inline void Eval_Darcy_VDF_Face::associer(const Champ_Don& diffu)
 {
   const int nb_faces_tot = la_zone.valeur().nb_faces_tot();

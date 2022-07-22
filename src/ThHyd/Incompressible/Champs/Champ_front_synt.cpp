@@ -29,22 +29,13 @@
 
 Implemente_instanciable(Champ_front_synt,"Champ_front_synt",Ch_front_var_instationnaire_dep);
 
-// Description:
-//    Impression sur un flot de sortie au format:
-//    taille
-//    valeur(0) ... valeur(i)  ... valeur(taille-1)
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Impression sur un flot de sortie au format: taille
+ *
+ *     valeur(0) ... valeur(i)  ... valeur(taille-1)
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Champ_front_synt::printOn(Sortie& os) const
 {
   const DoubleTab& tab=valeurs();
@@ -54,8 +45,9 @@ Sortie& Champ_front_synt::printOn(Sortie& os) const
   return os;
 }
 
-// Description:
-// Mise a jour du temps
+/*! @brief Mise a jour du temps
+ *
+ */
 
 int Champ_front_synt::initialiser(double tps, const Champ_Inc_base& inco)
 {
@@ -69,25 +61,17 @@ int Champ_front_synt::initialiser(double tps, const Champ_Inc_base& inco)
 }
 
 
-// Description:
-//    Lecture a partir d'un flot d'entree au format:
-//    nombre_de_composantes
-//    moyenne moyenne(0) ... moyenne(nombre_de_composantes-1)
-//    moyenne amplitude(0) ... amplitude(nombre_de_composantes-1)
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: accolade ouvrante attendue
-// Exception: mot clef inconnu a cet endroit
-// Exception: accolade fermante attendue
-// Effets de bord:
-// Postcondition:
+/*! @brief Lecture a partir d'un flot d'entree au format: nombre_de_composantes
+ *
+ *     moyenne moyenne(0) ... moyenne(nombre_de_composantes-1)
+ *     moyenne amplitude(0) ... amplitude(nombre_de_composantes-1)
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ * @throws accolade ouvrante attendue
+ * @throws mot clef inconnu a cet endroit
+ * @throws accolade fermante attendue
+ */
 Entree& Champ_front_synt::readOn(Entree& is)
 {
   timeScale = 0.;
@@ -236,20 +220,11 @@ Entree& Champ_front_synt::readOn(Entree& is)
 }
 
 
-// Description:
-//    Pas code !!
-// Precondition:
-// Parametre: Champ_front_base& ch
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Retour: Champ_front_base&
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Pas code !!
+ *
+ * @param (Champ_front_base& ch)
+ * @return (Champ_front_base&)
+ */
 Champ_front_base& Champ_front_synt::affecter_(const Champ_front_base& ch)
 {
   return *this;

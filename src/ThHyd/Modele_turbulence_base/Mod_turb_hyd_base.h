@@ -30,27 +30,20 @@ class Equation_base;
 class Schema_Temps_base;
 class Param;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Mod_turb_hyd_base
-//    Cette classe sert de base a la hierarchie des classes
-//    qui representent un modele de turbulence pour les
-//    equations de Navier-Stokes. Il existe deja deux classes derivees
-//    qui representent le modele de turbulence (k,e) et le modele
-//    de turbulence sous maille. Ces deux modeles ont en commun
-//    le calcul d'une viscosite turbulente.
-//
-//    B.Mat. : la classe herite de support_champ_masse_volumique.
-//     en Front-Tracking (et plus tard en qc), elle fournit le
-//     mecanisme pour recuperer rho.
-// .SECTION voir aussi
-//    Mod_turb_hyd_ss_maille Modele_turbulence_hyd_K_Eps
-//    Classe abstraite
-//    Methode abstraite
-//      void mettre_a_jour(double )
-//      Entree& lire(const Motcle&, Entree&)
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Mod_turb_hyd_base Cette classe sert de base a la hierarchie des classes
+ *
+ *     qui representent un modele de turbulence pour les
+ *     equations de Navier-Stokes. Il existe deja deux classes derivees
+ *     qui representent le modele de turbulence (k,e) et le modele
+ *     de turbulence sous maille. Ces deux modeles ont en commun
+ *     le calcul d'une viscosite turbulente.
+ *
+ *     B.Mat. : la classe herite de support_champ_masse_volumique.
+ *      en Front-Tracking (et plus tard en qc), elle fournit le
+ *      mecanisme pour recuperer rho.
+ *
+ * @sa Mod_turb_hyd_ss_maille Modele_turbulence_hyd_K_Eps, Classe abstraite, Methode abstraite, void mettre_a_jour(double ), Entree& lire(const Motcle&, Entree&)
+ */
 class Mod_turb_hyd_base : public Objet_U,
   public Support_Champ_Masse_Volumique,
   public Champs_compris_interface
@@ -147,41 +140,22 @@ inline Mod_turb_hyd_base::Mod_turb_hyd_base()
   calcul_borne_locale_visco_turb_ = 0;
   dt_diff_sur_dt_conv_ = -1;
 }
-// Description:
-//    Renvoie la viscosite turbulente.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Fonc&
-//    Signification: le champ representant la viscosite turbulente
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la viscosite turbulente.
+ *
+ * @return (Champ_Fonc&) le champ representant la viscosite turbulente
+ */
 inline const Champ_Fonc& Mod_turb_hyd_base::viscosite_turbulente() const
 {
   return la_viscosite_turbulente;
 }
 
 
-// Description:
-//    Renvoie l'equation associee au modele de turbulence.
-//    (c'est une equation du type Equation_base)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Equation_base&
-//    Signification: l'equation associee au modele de turbulence
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie l'equation associee au modele de turbulence.
+ *
+ * (c'est une equation du type Equation_base)
+ *
+ * @return (Equation_base&) l'equation associee au modele de turbulence
+ */
 inline Equation_base& Mod_turb_hyd_base::equation()
 {
   if (mon_equation.non_nul()==0)
@@ -202,20 +176,10 @@ inline const Equation_base& Mod_turb_hyd_base::equation() const
   return mon_equation.valeur();
 }
 
-// Description:
-//    Renvoie de la valeur de Cmu
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: la valeur Cmu
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie de la valeur de Cmu
+ *
+ * @return (la valeur Cmu)
+ */
 inline double Mod_turb_hyd_base::get_Cmu() const
 {
   return LeCmu;

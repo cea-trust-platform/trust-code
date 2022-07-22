@@ -23,23 +23,13 @@
 #include <Discretisation_base.h>
 #include <Champ_val_tot_sur_vol_base.h>
 
-// Description:
-//    Lit le terme de puissance thermique a partir
-//    d'un flot d'entree et d une equation pour eventuellement
-//    acceder a la discretisation afin de typer la_puissance.
-//    Lit uniquement un champ donne representant la_puissance.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit le terme de puissance thermique a partir d'un flot d'entree et d une equation pour eventuellement
+ *
+ *     acceder a la discretisation afin de typer la_puissance.
+ *     Lit uniquement un champ donne representant la_puissance.
+ *
+ * @param (Entree& is) un flot d'entree
+ */
 void Terme_Puissance_Thermique::lire_donnees(Entree& is,const Equation_base& eqn)
 {
   Cerr << "Lecture du Champ Puissance" << finl;

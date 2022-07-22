@@ -23,17 +23,13 @@
 #include <Zone_VEF.h>
 #include <Zone_Cl_VEF.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Traitement_particulier_Brech_VEF
-//     Cette classe permet de faire les traitements particuliers
-//     pour le calcul des flux pour le cas Brech :
-//
-// .SECTION voir aussi
-//      Navier_Stokes_Turbulent, Traitement_particulier_base,
-//      Traitement_particulier_VEF
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Traitement_particulier_Brech_VEF Cette classe permet de faire les traitements particuliers
+ *
+ *      pour le calcul des flux pour le cas Brech :
+ *
+ *
+ * @sa Navier_Stokes_Turbulent, Traitement_particulier_base,, Traitement_particulier_VEF
+ */
 class Traitement_particulier_NS_Brech_VEF : public Traitement_particulier_NS_VEF
 {
   Declare_instanciable_sans_constructeur(Traitement_particulier_NS_Brech_VEF);

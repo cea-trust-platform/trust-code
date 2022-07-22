@@ -450,21 +450,11 @@ int  Assembleur_P_EF::assembler_mat(Matrice& la_matrice,const DoubleVect& volume
 
 }
 
-// Description:
-//    Assemble la matrice de pression pour un fluide quasi compressible
-//    laplacein(P) est remplace par div(grad(P)/rho).
-// Precondition:
-// Parametre: DoubleTab& tab_rho
-//    Signification: mass volumique
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Assemble la matrice de pression pour un fluide quasi compressible laplacein(P) est remplace par div(grad(P)/rho).
+ *
+ * @param (DoubleTab& tab_rho) mass volumique
+ * @return (int) renvoie toujours 1
+ */
 int Assembleur_P_EF::assembler_QC(const DoubleTab& tab_rho, Matrice& matrice)
 {
   Cerr << "Assemblage de la matrice de pression pour Quasi Compressible en cours..." << finl;

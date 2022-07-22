@@ -93,8 +93,9 @@ void read(Entree& is, Parser_U& fct_Scalaire0_)
   fct_Scalaire0_.parseString();
 }
 
-// Description:
-// Lit les parametres du terme source a partir d'un flot d'entree.
+/*! @brief Lit les parametres du terme source a partir d'un flot d'entree.
+ *
+ */
 Entree& Terme_Boussinesq_base::lire_donnees(Entree& is)
 {
   Cerr << "Reading Boussinesq source term parameters." << finl;

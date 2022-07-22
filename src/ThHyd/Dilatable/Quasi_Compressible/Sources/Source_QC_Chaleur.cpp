@@ -43,20 +43,10 @@ DoubleTab& Source_QC_Chaleur::ajouter(DoubleTab& resu) const
 }
 
 
-// Description:
-//    Ajoute les termes sources
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ajoute les termes sources
+ *
+ * @return (Entree&)
+ */
 DoubleTab& Source_QC_Chaleur::ajouter_(DoubleTab& resu) const
 {
   double dt_= mon_equation->schema_temps().temps_courant() - mon_equation->schema_temps().temps_precedent();

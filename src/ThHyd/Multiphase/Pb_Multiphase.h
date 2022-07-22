@@ -25,24 +25,21 @@
 #include <Correlation.h>
 #include <List_Equation.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Pb_Multiphase
-//     Cette classe represente un probleme de thermohydraulique multiphase de type "3*N equations" :
-//      - QDM_Multiphase : equations de Navier-Stokes et de continuite pour chaque phase
-//                         inconnues : v_k (vitesses par phase)
-//                         champs auxiliaires : pression p, taux de presence a_k (sum a_k = 1)
-//      - Energie_Multiphase : equations de conservation de l'energie pour chaque phase
-//                             inconnues : T_k (temperatures)
-//    schema de resolution typique :
-//      1) QDM_Multiphase -> prediction des vitesses
-//                           conservation de la masse -> Newton (etape "semi-implicite")
-//      3) Energie_Multiphase -> advection/dffusion implicite de l'energie
-//
-// .SECTION voir aussi
-//     Pb_Fluide_base QDM_Multiphase Masse_Multiphase Energie_Multiphase
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Pb_Multiphase Cette classe represente un probleme de thermohydraulique multiphase de type "3*N equations" :
+ *
+ *       - QDM_Multiphase : equations de Navier-Stokes et de continuite pour chaque phase
+ *                          inconnues : v_k (vitesses par phase)
+ *                          champs auxiliaires : pression p, taux de presence a_k (sum a_k = 1)
+ *       - Energie_Multiphase : equations de conservation de l'energie pour chaque phase
+ *                              inconnues : T_k (temperatures)
+ *     schema de resolution typique :
+ *       1) QDM_Multiphase -> prediction des vitesses
+ *                            conservation de la masse -> Newton (etape "semi-implicite")
+ *       3) Energie_Multiphase -> advection/dffusion implicite de l'energie
+ *
+ *
+ * @sa Pb_Fluide_base QDM_Multiphase Masse_Multiphase Energie_Multiphase
+ */
 
 class Pb_Multiphase : public Pb_Fluide_base
 {

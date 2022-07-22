@@ -18,13 +18,13 @@
 
 #include <Segment_EF.h>
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Segment_EF_axi
-//
-// <Description of class Segment_EF_axi>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Segment_EF_axi
+ *
+ *  <Description of class Segment_EF_axi>
+ *
+ *
+ *
+ */
 
 class Segment_EF_axi : public Segment_EF
 {

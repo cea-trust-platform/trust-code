@@ -20,11 +20,9 @@
 #include <TRUSTTabs_forward.h>
 #include <TRUSTTab.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Flux interfacial a coefficient constant par phase
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Flux interfacial a coefficient constant par phase
+ *
+ */
 
 class Flux_interfacial_Coef_Constant : public Flux_interfacial_base
 {

@@ -21,10 +21,11 @@
 #include <Ref_Zone_Cl_VDF.h>
 
 class Convection_Diffusion_std;
-//
-// .DESCRIPTION class Terme_Boussinesq_scalaire_VDF_Face
-//
-// Terme Source de Boussinesq pour une dicretisation VDF
+/*! @brief class Terme_Boussinesq_scalaire_VDF_Face
+ *
+ *  Terme Source de Boussinesq pour une dicretisation VDF
+ *
+ */
 
 class Terme_Boussinesq_VDF_Face : public Terme_Boussinesq_base
 {

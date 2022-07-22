@@ -567,21 +567,11 @@ int Assembleur_P_VEF::remplir(Matrice& la_matrice, const DoubleTab& inverse_quan
   return 1;
 }
 
-// Description:
-//    Assemble la matrice de pression pour un fluide quasi compressible
-//    laplacein(P) est remplace par div(grad(P)/rho).
-// Precondition:
-// Parametre: DoubleTab& tab_rho
-//    Signification: mass volumique
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Assemble la matrice de pression pour un fluide quasi compressible laplacein(P) est remplace par div(grad(P)/rho).
+ *
+ * @param (DoubleTab& tab_rho) mass volumique
+ * @return (int) renvoie toujours 1
+ */
 int Assembleur_P_VEF::assembler_QC(const DoubleTab& tab_rho, Matrice& matrice)
 {
   Cerr << "Assemblage de la matrice de pression pour Quasi Compressible en cours..." << finl;
@@ -685,17 +675,13 @@ int Assembleur_P_VEF::modifier_solution(DoubleTab& pression)
   return 1;
 }
 
-// Description:
-//    Modifier eventuellement la matrice pour la rendre definie si elle ne l'est pas
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: int
-//    Signification: renvoie 1 si la matrice est modifiee 0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Modifier eventuellement la matrice pour la rendre definie si elle ne l'est pas Valeurs par defaut:
+ *
+ *     Contraintes:
+ *     Acces: entree
+ *
+ * @return (int) renvoie 1 si la matrice est modifiee 0 sinon
+ */
 int Assembleur_P_VEF::modifier_matrice(Matrice& matrice)
 {
   int matrice_modifiee=0;

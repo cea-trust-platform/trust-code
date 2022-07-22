@@ -22,15 +22,12 @@
 
 class Champ_Inc_base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Loi_Etat_Multi_GP_base
-//     Cette classe represente la loi d'etat pour un melange de gaz parfaits.
-//
-// .SECTION voir aussi
-//     Fluide_Dilatable_base Loi_Etat_base Loi_Etat_Melange_GP_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Loi_Etat_Multi_GP_base Cette classe represente la loi d'etat pour un melange de gaz parfaits.
+ *
+ *
+ *
+ * @sa Fluide_Dilatable_base Loi_Etat_base Loi_Etat_Melange_GP_base
+ */
 
 Declare_liste(REF(Champ_Inc_base));
 

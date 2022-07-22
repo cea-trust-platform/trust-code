@@ -55,15 +55,17 @@ Entree& Zone_Cl_PolyMAC::readOn(Entree& is )
 //
 /////////////////////////////////////////////////////////////////////
 
-// Description:
-// etape de discretisation : dimensionnement des tableaux
+/*! @brief etape de discretisation : dimensionnement des tableaux
+ *
+ */
 void Zone_Cl_PolyMAC::associer(const Zone_PolyMAC& la_zone_PolyMAC)
 {
   //  int nb_elem_Cl  = la_zone_PolyMAC.nb_elem_Cl();
 }
 
-// Description:
-// remplissage des tableaux
+/*! @brief remplissage des tableaux
+ *
+ */
 void Zone_Cl_PolyMAC::completer(const Zone_dis& une_zone_dis)
 {
   modif_perio_fait_ =0;
@@ -78,15 +80,16 @@ void Zone_Cl_PolyMAC::completer(const Zone_dis& une_zone_dis)
       exit();
     }
 }
-// Description:
-// appele par remplir_volumes_entrelaces_Cl() : remplissage de type_elem_Cl_
+/*! @brief appele par remplir_volumes_entrelaces_Cl() : remplissage de type_elem_Cl_
+ *
+ */
 void Zone_Cl_PolyMAC::remplir_type_elem_Cl(const Zone_PolyMAC& la_zone_PolyMAC)
 {
 }
 
-// Description:
-// Impose les conditions aux limites a la valeur temporelle "temps" du
-// Champ_Inc
+/*! @brief Impose les conditions aux limites a la valeur temporelle "temps" du Champ_Inc
+ *
+ */
 void Zone_Cl_PolyMAC::imposer_cond_lim(Champ_Inc& ch, double temps)
 {
 

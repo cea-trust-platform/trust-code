@@ -20,27 +20,23 @@
 #include <Operateur_Evanescence.h>
 #include <vector>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe QDM_Multiphase
-//    Cette classe porte les termes de l'equation de la dynamique
-//    pour un fluide sans modelisation de la turbulence.
-//    On suppose l'hypothese de fluide quasi compressible.
-//    Sous ces hypotheses, on utilise la forme suivante des equations de
-//    Navier_Stokes:
-//       DU/dt = div(terme visqueux) - gradP/rho + sources/rho
-//       div U = W
-//    avec DU/dt : derivee particulaire de la vitesse
-//         rho   : masse volumique
-//    Rq : l'implementation de la classe permet bien sur de negliger
-//         certains termes de l'equation (le terme visqueux, le terme
-//         convectif, tel ou tel terme source).
-//    L'inconnue est le champ de vitesse.
-// .SECTION voir aussi
-//      Equation_base Pb_Thermohydraulique_QC Navier_Stokes_std
-//////////////////////////////////////
-////////////////////////////////////////
+/*! @brief classe QDM_Multiphase Cette classe porte les termes de l'equation de la dynamique
+ *
+ *     pour un fluide sans modelisation de la turbulence.
+ *     On suppose l'hypothese de fluide quasi compressible.
+ *     Sous ces hypotheses, on utilise la forme suivante des equations de
+ *     Navier_Stokes:
+ *        DU/dt = div(terme visqueux) - gradP/rho + sources/rho
+ *        div U = W
+ *     avec DU/dt : derivee particulaire de la vitesse
+ *          rho   : masse volumique
+ *     Rq : l'implementation de la classe permet bien sur de negliger
+ *          certains termes de l'equation (le terme visqueux, le terme
+ *          convectif, tel ou tel terme source).
+ *     L'inconnue est le champ de vitesse.
+ *
+ * @sa Equation_base Pb_Thermohydraulique_QC Navier_Stokes_std
+ */
 class QDM_Multiphase : public Navier_Stokes_std
 {
   Declare_instanciable(QDM_Multiphase);

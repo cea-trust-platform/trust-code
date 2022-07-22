@@ -21,15 +21,12 @@
 #include <Ref_Fluide_base.h>
 #include <Operateur_Evanescence.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Masse_Multiphase
-//     Cas particulier de Convection_Diffusion_std pour un fluide quasi conpressible
-//     quand le scalaire subissant le transport est la fraction massique
-// .SECTION voir aussi
-//     Conv_Diffusion_std
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Masse_Multiphase Cas particulier de Convection_Diffusion_std pour un fluide quasi conpressible
+ *
+ *      quand le scalaire subissant le transport est la fraction massique
+ *
+ * @sa Conv_Diffusion_std
+ */
 class Masse_Multiphase : public Convection_Diffusion_std
 {
   Declare_instanciable_sans_constructeur(Masse_Multiphase);
@@ -87,43 +84,20 @@ protected :
 };
 
 
-// Description:
-//    Renvoie le champ inconnue representant l'inconnue (T ou H)
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Inc&
-//    Signification: le champ inconnue representant la temperature (GP)
-//      ou l'enthalpie (GR)
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le champ inconnue representant l'inconnue (T ou H) (version const)
+ *
+ * @return (Champ_Inc&) le champ inconnue representant la temperature (GP) ou l'enthalpie (GR)
+ */
 inline const Champ_Inc& Masse_Multiphase::inconnue() const
 {
   return l_inco_ch;
 }
 
 
-// Description:
-//    Renvoie le champ inconnue representant l'inconnue (T ou H)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Inc&
-//    Signification: le champ inconnue representant la temperature (GP)
-//      ou l'enthalpie (GR)
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le champ inconnue representant l'inconnue (T ou H)
+ *
+ * @return (Champ_Inc&) le champ inconnue representant la temperature (GP) ou l'enthalpie (GR)
+ */
 inline Champ_Inc& Masse_Multiphase::inconnue()
 {
   return l_inco_ch;

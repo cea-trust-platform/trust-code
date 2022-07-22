@@ -21,10 +21,12 @@
 #include <ItVDFEl.h>
 
 declare_It_VDF_Elem(Eval_Div_VDF_Elem)
-// .DESCRIPTION class Op_Div_VDF_Elem
-//  Cette classe represente l'operateur de divergence
-//  La discretisation est VDF. On calcule la divergence d'un champ de type Champ_Face
-//  L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Div_VDF_Elem
+/*! @brief class Op_Div_VDF_Elem Cette classe represente l'operateur de divergence
+ *
+ *   La discretisation est VDF. On calcule la divergence d'un champ de type Champ_Face
+ *   L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Div_VDF_Elem
+ *
+ */
 class Op_Div_VDF_Elem : public Op_Div_VDF_base
 {
   Declare_instanciable_sans_constructeur(Op_Div_VDF_Elem);

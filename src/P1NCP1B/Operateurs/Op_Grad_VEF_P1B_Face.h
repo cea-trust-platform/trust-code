@@ -21,13 +21,14 @@
 #include <Champ_P1_isoP1Bulle.h>
 #include <Ref_Champ_P1_isoP1Bulle.h>
 
-//
-// .DESCRIPTION class Op_Grad_VEF_P1B_Face
-//
-//  Cette classe represente l'operateur de gradient
-//  La discretisation est VEF
-//  On calcule le gradient d'un champ_P1B_VEF (la pression)
-//
+/*! @brief class Op_Grad_VEF_P1B_Face
+ *
+ *   Cette classe represente l'operateur de gradient
+ *   La discretisation est VEF
+ *   On calcule le gradient d'un champ_P1B_VEF (la pression)
+ *
+ *
+ */
 
 
 //

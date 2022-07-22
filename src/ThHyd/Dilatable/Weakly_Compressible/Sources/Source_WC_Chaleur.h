@@ -23,18 +23,15 @@ class Zone_Cl_dis;
 class Zone_dis;
 class Zone_VF;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION class Source_WC_Chaleur
-//
-// Cette classe represente un terme source supplementaire
-// a prendre en compte dans les equations de la chaleur
-//  dans le cas ou le fluide est weakly compressible
-//
-// .SECTION voir aussi
-// Source_Chaleur_Fluide_Dilatable_base Fluide_Weakly_Compressible
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief class Source_WC_Chaleur
+ *
+ *  Cette classe represente un terme source supplementaire
+ *  a prendre en compte dans les equations de la chaleur
+ *   dans le cas ou le fluide est weakly compressible
+ *
+ *
+ * @sa Source_Chaleur_Fluide_Dilatable_base Fluide_Weakly_Compressible
+ */
 
 class Source_WC_Chaleur : public Source_Chaleur_Fluide_Dilatable_base
 {

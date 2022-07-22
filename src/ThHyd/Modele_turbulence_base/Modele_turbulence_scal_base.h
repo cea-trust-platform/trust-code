@@ -28,22 +28,15 @@ class Zone_Cl_dis;
 class Param;
 class Schema_Temps_base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Modele_turbulence_scal_base
-//    Cette classe represente un modele de turbulence pour une equation de
-//    convection-diffusion d'un scalaire couplee a Navier_Stokes. On utilise
-//    deux classes derivees de cette classe de base qui representent le
-//    modele de turbulence (k,eps) et le modele de turbulence sous maille.
-//    Ces deux modeles ont en commun le calcul d'une diffusivite turbulente.
-// .SECTION voir aussi
-//    Modele_turbulence_scal_Prandtl Modele_turb_scal_Prandtl_sous_maille
-//    Classe abstraite
-//    Methode abstraite
-//      void mettre_a_jour(double )
-//      Entree& lire(const Motcle&, Entree&)
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Modele_turbulence_scal_base Cette classe represente un modele de turbulence pour une equation de
+ *
+ *     convection-diffusion d'un scalaire couplee a Navier_Stokes. On utilise
+ *     deux classes derivees de cette classe de base qui representent le
+ *     modele de turbulence (k,eps) et le modele de turbulence sous maille.
+ *     Ces deux modeles ont en commun le calcul d'une diffusivite turbulente.
+ *
+ * @sa Modele_turbulence_scal_Prandtl Modele_turb_scal_Prandtl_sous_maille, Classe abstraite, Methode abstraite, void mettre_a_jour(double ), Entree& lire(const Motcle&, Entree&)
+ */
 class Modele_turbulence_scal_base : public Champs_compris_interface, public Objet_U
 {
 
@@ -102,60 +95,28 @@ protected :
 
 };
 
-// Description:
-//    Renvoie la loi de turbulence sur la paroi
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Turbulence_paroi_scal&
-//    Signification: la loi de turbulence sur la paroi
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la loi de turbulence sur la paroi (version const)
+ *
+ * @return (Turbulence_paroi_scal&) la loi de turbulence sur la paroi
+ */
 inline const Turbulence_paroi_scal& Modele_turbulence_scal_base::loi_paroi() const
 {
   return loipar;
 }
 
-// Description:
-//    Renvoie si oui ou non loi de paroi
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie si oui ou non loi de paroi (version const)
+ *
+ * @return (int)
+ */
 inline int Modele_turbulence_scal_base::loi_paroi_non_nulle() const
 {
   return loipar.non_nul();
 }
 
-// Description:
-//    Renvoie la loi de turbulence sur la paroi
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Turbulence_paroi_scal&
-//    Signification: la loi de turbulence sur la paroi
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la loi de turbulence sur la paroi
+ *
+ * @return (Turbulence_paroi_scal&) la loi de turbulence sur la paroi
+ */
 inline Turbulence_paroi_scal& Modele_turbulence_scal_base::loi_paroi()
 {
   return loipar;

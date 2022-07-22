@@ -26,10 +26,11 @@
 #include <Domaine.h>
 #include <Op_EF_base.h>
 
-//
-// .DESCRIPTION class Op_Conv_EF_base
-//
-// Classe de base des operateurs de convection EF
+/*! @brief class Op_Conv_EF_base
+ *
+ *  Classe de base des operateurs de convection EF
+ *
+ */
 
 //
 // .SECTION voir aussi

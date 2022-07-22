@@ -97,20 +97,10 @@ Entree& Loi_Etat::readOn(Entree& is)
   return is;
 }
 
-// Description:
-//    Type la loi d'etat
-// Precondition:
-// Parametre: Nom& typ
-//    Signification: le nom de type a donner a la loi d'etat
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Type la loi d'etat
+ *
+ * @param (Nom& typ) le nom de type a donner a la loi d'etat
+ */
 void Loi_Etat::typer(const Nom& type)
 {
   DERIV(Loi_Etat_base)::typer(type);

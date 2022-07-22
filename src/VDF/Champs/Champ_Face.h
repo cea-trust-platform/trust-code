@@ -24,18 +24,20 @@
 
 class Zone_Cl_VDF;
 
-//.DESCRIPTION class Champ_Face
-//  Cette classe sert a representer un champ vectoriel dont on ne calcule
-//  que les composantes normales aux faces.Il n'y a donc qu'un degre de
-//  liberte par face et l'attribut nb_comp_ d'un objet de type Champ_Face
-//  vaut 1. On peut neammoins imposer toutes les composantes du champ sur
-//  le bord. Si n est le nombre de faces total de la zone et nb_faces_bord
-//  le nombre de faces de bord le tableau de valeurs associe au champ
-//  est construit comme suit:
-//      - n valeurs pour representer les composantes normales aux faces
-//      - nb_faces_bord*dimension pour stocker les valeurs imposees
-//        sur les faces de bord
-// Rq : cette classe est specifique au module VDF
+/*! @brief class Champ_Face Cette classe sert a representer un champ vectoriel dont on ne calcule
+ *
+ *   que les composantes normales aux faces.Il n'y a donc qu'un degre de
+ *   liberte par face et l'attribut nb_comp_ d'un objet de type Champ_Face
+ *   vaut 1. On peut neammoins imposer toutes les composantes du champ sur
+ *   le bord. Si n est le nombre de faces total de la zone et nb_faces_bord
+ *   le nombre de faces de bord le tableau de valeurs associe au champ
+ *   est construit comme suit:
+ *       - n valeurs pour representer les composantes normales aux faces
+ *       - nb_faces_bord*dimension pour stocker les valeurs imposees
+ *         sur les faces de bord
+ *  Rq : cette classe est specifique au module VDF
+ *
+ */
 
 //.SECTION voir aussi
 // Champ_Inc_base

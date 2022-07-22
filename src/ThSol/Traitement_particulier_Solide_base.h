@@ -25,14 +25,10 @@
 #include <Motcle.h>
 class Equation_base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Traitement_particulier_Solide_base
-//
-// .SECTION voir aussi
-//      Conduction
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Traitement_particulier_Solide_base
+ *
+ * @sa Conduction
+ */
 class Traitement_particulier_Solide_base : public Objet_U, public Champs_compris_interface
 {
   Declare_base(Traitement_particulier_Solide_base);

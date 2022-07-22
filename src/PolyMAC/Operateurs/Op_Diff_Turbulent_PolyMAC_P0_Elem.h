@@ -20,16 +20,16 @@
 #include <Correlation.h>
 #include <Transport_turbulent_base.h>
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Op_Diff_Turbulent_PolyMAC_P0_Elem
-//
-// Version de Op_Diff_PolyMAC_P0_Elem prenant en compte l'effet de la turbulence
-// par le biais d'une correlation de type Transport_turbulent.
-// (celle-ci reposera sur la modelisation de la viscosite turbulente fournie
-//  par la correlation Viscosite_turbulente de l'operateur de diffusion de la QDM)
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Op_Diff_Turbulent_PolyMAC_P0_Elem
+ *
+ *  Version de Op_Diff_PolyMAC_P0_Elem prenant en compte l'effet de la turbulence
+ *  par le biais d'une correlation de type Transport_turbulent.
+ *  (celle-ci reposera sur la modelisation de la viscosite turbulente fournie
+ *   par la correlation Viscosite_turbulente de l'operateur de diffusion de la QDM)
+ *
+ *
+ *
+ */
 
 class Op_Diff_Turbulent_PolyMAC_P0_Elem : public Op_Diff_PolyMAC_P0_Elem
 {

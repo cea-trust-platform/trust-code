@@ -36,59 +36,29 @@ Entree& Loi_Etat_GP_base::readOn(Entree& is)
   return is;
 }
 
-// Description:
-//    Renvoie le type de fluide associe.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie pour l'impression
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le type de fluide associe.
+ *
+ * @param (Sortie& os) le flot de sortie pour l'impression
+ * @return (Sortie&) le flot de sortie modifie
+ */
 const Nom Loi_Etat_GP_base::type_fluide() const
 {
   return "Gaz_Parfait";
 }
 
-// Description:
-//    Associe le fluide a la loi d'etat
-// Precondition:
-// Parametre: Fluide_Dilatable_base& fl
-//    Signification: le fluide associe
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe le fluide a la loi d'etat
+ *
+ * @param (Fluide_Dilatable_base& fl) le fluide associe
+ */
 void Loi_Etat_GP_base::associer_fluide(const Fluide_Dilatable_base& fl)
 {
   Loi_Etat_base::associer_fluide(fl);
   le_fluide->set_Cp(Cp_);
 }
 
-// Description:
-//    Initialise la loi d'etat : calcul Pth
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Initialise la loi d'etat : calcul Pth
+ *
+ */
 void Loi_Etat_GP_base::initialiser()
 {
   const DoubleTab& tab_Temp = le_fluide->inco_chaleur().valeurs();
@@ -105,20 +75,11 @@ void Loi_Etat_GP_base::initialiser()
     }
 }
 
-// Description:
-//    Remplit le tableau de la temperature : T=temp+273.15
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Remplit le tableau de la temperature : T=temp+273.
+ *
+ * 15
+ *
+ */
 void Loi_Etat_GP_base::remplir_T()
 {
   const DoubleTab& tab_Temp = le_fluide->inco_chaleur().valeurs();
@@ -127,40 +88,17 @@ void Loi_Etat_GP_base::remplir_T()
   for (i=0 ; i<ntot ; i++) tab_T(i,0) = tab_Temp(i,0);
 }
 
-// Description:
-//    Calcule le Cp
-//    NE FAIT RIEN : le Cp est constant
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule le Cp NE FAIT RIEN : le Cp est constant
+ *
+ */
 void Loi_Etat_GP_base::calculer_Cp()
 {
   /* Do nothing */
 }
 
-// Description:
-//    Calcule la conductivite
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la conductivite
+ *
+ */
 void Loi_Etat_GP_base::calculer_lambda()
 {
   const Champ_Don& mu = le_fluide->viscosite_dynamique();
@@ -206,20 +144,9 @@ void Loi_Etat_GP_base::calculer_lambda()
   tab_lambda.echange_espace_virtuel();
 }
 
-// Description:
-//    Calcule la diffusivite
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la diffusivite
+ *
+ */
 void Loi_Etat_GP_base::calculer_alpha()
 {
   const Champ_Don& lambda = le_fluide->conductivite();
@@ -287,39 +214,17 @@ double Loi_Etat_GP_base::calculer_masse_volumique(double P, double T) const
   return P / ( R_ * T );
 }
 
-// Description:
-//    Calcule la pression avec la temperature et la masse volumique
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la pression avec la temperature et la masse volumique
+ *
+ */
 double Loi_Etat_GP_base::inverser_Pth(double T, double rho)
 {
   return rho * R_ * T;
 }
 
-// Description:
-//    Calcule la masse volumique
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la masse volumique
+ *
+ */
 void Loi_Etat_GP_base::calculer_masse_volumique()
 {
   Loi_Etat_base::calculer_masse_volumique();

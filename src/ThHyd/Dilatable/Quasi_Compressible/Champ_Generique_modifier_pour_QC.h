@@ -20,10 +20,12 @@
 #include <Champ_Gen_de_Champs_Gen.h>
 #include <Ref_Milieu_base.h>
 
-// .DESCRIPTION class Champ_Generique_modifier_pour_QC
-// Champ destine a post-traiter un champ d un probleme en quasi-compressible
-// que l on souhaite multiplier ou diviser par la masse volumique (rho).
-// La classe porte une REF au milieu qui doit etre de type Fluide_Quasi_Compressible.
+/*! @brief class Champ_Generique_modifier_pour_QC Champ destine a post-traiter un champ d un probleme en quasi-compressible
+ *
+ *  que l on souhaite multiplier ou diviser par la masse volumique (rho).
+ *  La classe porte une REF au milieu qui doit etre de type Fluide_Quasi_Compressible.
+ *
+ */
 
 //// Syntaxe a respecter pour jdd
 //

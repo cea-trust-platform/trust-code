@@ -17,11 +17,9 @@
 #define Iterateur_Source_EF_included
 
 
-//
-// .DESCRIPTION class Iterateur_Source_EF
-//
-// .SECTION voir aussi
-//
+/*! @brief class Iterateur_Source_EF
+ *
+ */
 
 #include <Iterateur_Source_EF_base.h>
 

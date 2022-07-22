@@ -27,26 +27,19 @@ class Ensemble_Lagrange_base;
 class Probleme_base;
 class Discretisation_base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Marqueur_Lagrange_base
-//     La classe Marqueur_Lagange_base est la classe de base des classes de marqueurs
-//     Actuellement une seule classe instanciable derivant : Marqueur_FT
-//     Un marqueur est destine a suivre le mouvement du fluide en integrant la trajectoire
-//     d un ensemble de particules a partir de la vitesse (interpolee) du fluide.
-//     -l ensemble des points suivis est attribut de Marqueur_FT car de type Maillage_FT_Disc
-//     -le postraitement est realise sur le nombre de particules par maille (densite_particules_)
-//      ou sur le nuage de points
-//     -l integration est demarree a partir d un temps t_debut_integr_ fixe par l utilisateur
-//        ou egal a t_init par defaut
-// .SECTION voir aussi
-//
-//     Classe abstraite.
-//     Methodes abstraites:
-//     Ensemble_Lagrange_base&  ensemble_points()
-//     void calculer_valeurs_champs()
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Marqueur_Lagrange_base La classe Marqueur_Lagange_base est la classe de base des classes de marqueurs
+ *
+ *      Actuellement une seule classe instanciable derivant : Marqueur_FT
+ *      Un marqueur est destine a suivre le mouvement du fluide en integrant la trajectoire
+ *      d un ensemble de particules a partir de la vitesse (interpolee) du fluide.
+ *      -l ensemble des points suivis est attribut de Marqueur_FT car de type Maillage_FT_Disc
+ *      -le postraitement est realise sur le nombre de particules par maille (densite_particules_)
+ *       ou sur le nuage de points
+ *      -l integration est demarree a partir d un temps t_debut_integr_ fixe par l utilisateur
+ *         ou egal a t_init par defaut
+ *
+ * @sa Classe abstraite., Methodes abstraites:, Ensemble_Lagrange_base&  ensemble_points(), void calculer_valeurs_champs()
+ */
 class Marqueur_Lagrange_base: public Champs_compris_interface, public Objet_U
 {
   Declare_base_sans_constructeur(Marqueur_Lagrange_base);

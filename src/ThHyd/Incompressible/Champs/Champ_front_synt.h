@@ -22,14 +22,10 @@
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_front_synt
-//     Classe derivee de Champ_front_base
-// .SECTION voir aussi
-//     Champ_front_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_front_synt Classe derivee de Champ_front_base
+ *
+ * @sa Champ_front_base
+ */
 
 
 class Champ_front_synt : public Ch_front_var_instationnaire_dep

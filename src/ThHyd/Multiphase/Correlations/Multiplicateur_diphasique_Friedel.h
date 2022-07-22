@@ -17,14 +17,13 @@
 #define Multiplicateur_diphasique_Friedel_included
 #include <Multiplicateur_diphasique_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Multiplicateur_diphasique_Friedel
-//    multiplicateur diphasique par la correlation de Friedel :
-//    - applique a la phase liquide pour alpha < alpha_min
-//    - applique a la phase vapeur pour alpha > alpha_max
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Multiplicateur_diphasique_Friedel multiplicateur diphasique par la correlation de Friedel :
+ *
+ *     - applique a la phase liquide pour alpha < alpha_min
+ *     - applique a la phase vapeur pour alpha > alpha_max
+ *
+ *
+ */
 
 class Multiplicateur_diphasique_Friedel : public Multiplicateur_diphasique_base
 {

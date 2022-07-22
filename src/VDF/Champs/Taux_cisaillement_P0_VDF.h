@@ -21,8 +21,9 @@
 #include <Ref_Champ_Face.h>
 #include <Ref_Zone_Cl_VDF.h>
 
-//.DESCRIPTION  classe Taux_cisaillement_P0_VDF
-//
+/*! @brief classe Taux_cisaillement_P0_VDF
+ *
+ */
 
 class Taux_cisaillement_P0_VDF : public Champ_Fonc_P0_VDF
 

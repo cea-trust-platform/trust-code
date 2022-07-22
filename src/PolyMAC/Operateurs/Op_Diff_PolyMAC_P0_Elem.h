@@ -19,13 +19,13 @@
 #include <Op_Diff_PolyMAC_P0_base.h>
 #include <Matrice_Morse.h>
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Op_Diff_PolyMAC_P0_Elem
-//
-// <Description of class Op_Diff_PolyMAC_P0_Elem>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Op_Diff_PolyMAC_P0_Elem
+ *
+ *  <Description of class Op_Diff_PolyMAC_P0_Elem>
+ *
+ *
+ *
+ */
 
 class Op_Diff_PolyMAC_P0_Elem : public Op_Diff_PolyMAC_P0_base
 {

@@ -22,12 +22,14 @@
 #include <Ref_Champ_Fonc.h>
 #include <Champ_Fonc.h>
 
-// .DESCRIPTION class Eval_Dift_VDF_Multi_inco_var
-// Cette classe represente un evaluateur de flux diffusif total
-// (laminaire et  turbulent) pour un vecteur d'inconnues
-// avec une diffusivite par inconnue.
-// Le champ de diffusivite associe a chaque inconnue n'est pas constant.
-// .SECTION voir aussi Eval_Diff_VDF_Multi_inco_var
+/*! @brief class Eval_Dift_VDF_Multi_inco_var Cette classe represente un evaluateur de flux diffusif total
+ *
+ *  (laminaire et  turbulent) pour un vecteur d'inconnues
+ *  avec une diffusivite par inconnue.
+ *  Le champ de diffusivite associe a chaque inconnue n'est pas constant.
+ *
+ * @sa Eval_Diff_VDF_Multi_inco_var
+ */
 class Eval_Dift_VDF_Multi_inco_var : public Eval_Diff_VDF_Multi_inco_var, public Eval_Turbulence
 {
 

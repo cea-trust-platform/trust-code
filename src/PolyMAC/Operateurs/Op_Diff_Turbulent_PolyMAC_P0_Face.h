@@ -22,14 +22,14 @@
 
 #include <vector>
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Op_Diff_Turbulent_PolyMAC_P0_Face
-//
-// Operateur de diffusion de vitesse prenant en compte l'effet de la turbulence
-// par le biais d'une correlation de type Viscosite_turbulente_base.
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Op_Diff_Turbulent_PolyMAC_P0_Face
+ *
+ *  Operateur de diffusion de vitesse prenant en compte l'effet de la turbulence
+ *  par le biais d'une correlation de type Viscosite_turbulente_base.
+ *
+ *
+ *
+ */
 
 class Op_Diff_Turbulent_PolyMAC_P0_Face : public Op_Diff_PolyMAC_P0_Face
 {

@@ -70,28 +70,24 @@ Entree& Zone_VDF::readOn(Entree& is)
   is >>  h_x_>>h_y_>>h_z_;
   return is ;
 }
-// Description:
-// renvoie un Faces_VDF* !
+/*! @brief renvoie un Faces_VDF* !
+ *
+ */
 Faces* Zone_VDF::creer_faces()
 {
   Faces_VDF* les_faces_vdf=new(Faces_VDF);
   return les_faces_vdf;
 }
 
-// Description:
-//  Reordonne les faces internes par orientation, on doit mettre a jour
-//  tous les tableaux qui dependent des indices de faces internes, soit:
-//   - faces_sommets
-//   - faces_voisins
-//   - elem_faces
-//   - orientation
-//   - Zone.faces_joint().items_communs(FACE)
-// Precondition:
-//   - les faces reelles sont construites,
-//   - pas d'espace virtuel pour les tableaux ci-dessus
-//   - items_communs(FACE) contient les indices des faces de joint
-// Postcondition:
-//   - items_communs(FACE) est renumerote
+/*! @brief Reordonne les faces internes par orientation, on doit mettre a jour tous les tableaux qui dependent des indices de faces internes, soit:
+ *
+ *    - faces_sommets
+ *    - faces_voisins
+ *    - elem_faces
+ *    - orientation
+ *    - Zone.faces_joint().items_communs(FACE)
+ *
+ */
 static void reordonner_vdf(const int nb_faces_front,
                            Faces_VDF& faces, IntTab& elem_faces,
                            IntVect& orientation, Joints& joints)
@@ -189,10 +185,11 @@ static void reordonner_vdf(const int nb_faces_front,
   }
 }
 
-// Description:
-// reordonne les faces en fonction de l'orientation
-// calcule les centres de gravite des faces
-// calcule les surfaces
+/*! @brief reordonne les faces en fonction de l'orientation calcule les centres de gravite des faces
+ *
+ *  calcule les surfaces
+ *
+ */
 void Zone_VDF::reordonner(Faces& les_faces)
 {
   //  Cerr << "Faces : " << les_faces << finl;
@@ -208,15 +205,16 @@ void Zone_VDF::reordonner(Faces& les_faces)
                  les_faces_vdf, elem_faces_, orientation_, joints);
 }
 
-// Description:
-// appel a  Zone_VF::discretiser()
-// calcul des centres de gravite des elements
-// remplissage des connectivites elements/faces
-// on reordonne les connectivites faces/elements
-// de sorte que el1 est a gauche et el2 a droite.
-// calcul des porosites volumiques et surfaciques
-// generation des aretes
-// calcul des pas du maillage
+/*! @brief appel a  Zone_VF::discretiser() calcul des centres de gravite des elements
+ *
+ *  remplissage des connectivites elements/faces
+ *  on reordonne les connectivites faces/elements
+ *  de sorte que el1 est a gauche et el2 a droite.
+ *  calcul des porosites volumiques et surfaciques
+ *  generation des aretes
+ *  calcul des pas du maillage
+ *
+ */
 void Zone_VDF::discretiser()
 {
   Zone_VF::discretiser();
@@ -301,8 +299,9 @@ void  Zone_VDF::remplir_elem_faces()
   // Deja fait dans la nouvelle version
 }
 
-// Description:
-// remplissage des volumes entrelaces
+/*! @brief remplissage des volumes entrelaces
+ *
+ */
 void Zone_VDF::calculer_volumes_entrelaces()
 {
   Cerr << "On calcule les volumes entrelaces" << finl;
@@ -357,8 +356,9 @@ static inline int face_vois(const Zone_VDF& zvdf, const Zone& zone, int face, in
   return elem;
 }
 
-// Description:
-// generation des aretes
+/*! @brief generation des aretes
+ *
+ */
 void Zone_VDF::genere_aretes()
 {
   Cerr << "On genere les aretes" << finl;
@@ -587,8 +587,9 @@ void Zone_VDF::genere_aretes()
   //Cerr << "Qdm : " << Qdm_ << finl;
 }
 
-// Description:
-// calcul des pas du maillage
+/*! @brief calcul des pas du maillage
+ *
+ */
 void Zone_VDF::calcul_h()
 {
   // Calcul de h_x_ , h_y_ et h_z_:
@@ -978,9 +979,9 @@ void Zone_VDF::modifier_pour_Cl(const Conds_lim& conds_lim)
   Zone_VF::marquer_faces_double_contrib(conds_lim);
 }
 
-// Description:
-//  remplit le tableau face_voisins_fictifs_
-// ne CREE PAS d elts fictifs!!!
+/*! @brief remplit le tableau face_voisins_fictifs_ ne CREE PAS d elts fictifs!!!
+ *
+ */
 
 void Zone_VDF::creer_elements_fictifs(const Zone_Cl_dis_base& zcldisbase)
 {

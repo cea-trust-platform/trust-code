@@ -19,12 +19,11 @@
 #include <Changement_phase_base.h>
 #include <TRUSTTabs_forward.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Correlation de changement de phase de Silver et Simpson (1949)
-//    G_{kl} = lambda A_i alpha_k alpha_l sqrt(M / 2 pi R) (psat(T_k) / sqrt(T_k) - p / sqrt(T_l))
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Correlation de changement de phase de Silver et Simpson (1949) G_{kl} = lambda A_i alpha_k alpha_l sqrt(M / 2 pi R) (psat(T_k) / sqrt(T_k) - p / sqrt(T_l))
+ *
+ *
+ *
+ */
 
 class Changement_phase_Silver_Simpson : public Changement_phase_base
 {

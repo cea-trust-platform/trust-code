@@ -18,19 +18,15 @@
 
 #include <Traitement_particulier_NS_EC.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Traitement_particulier_NS_EC_VEF
-//     Cette classe permet de faire les traitements particuliers
-//     pour les calculs de  l'energie cinetique totale en VEF
-//     Rien de particulier au VEF. Calculs implementes dans la
-//     classe de base.
-//
-// .SECTION voir aussi
-//      Navier_Stokes_Turbulent, Traitement_particulier_base,
-//      Traitement_particulier_NS_EC
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Traitement_particulier_NS_EC_VEF Cette classe permet de faire les traitements particuliers
+ *
+ *      pour les calculs de  l'energie cinetique totale en VEF
+ *      Rien de particulier au VEF. Calculs implementes dans la
+ *      classe de base.
+ *
+ *
+ * @sa Navier_Stokes_Turbulent, Traitement_particulier_base,, Traitement_particulier_NS_EC
+ */
 class Traitement_particulier_NS_EC_VEF : public Traitement_particulier_NS_EC
 {
   Declare_instanciable_sans_constructeur(Traitement_particulier_NS_EC_VEF);

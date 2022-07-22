@@ -83,21 +83,12 @@ int Convection_Diffusion_Espece_Fluide_Dilatable_base::reprendre(Entree& is)
   return 1;
 }
 
-// Description:
-//    Renvoie le nom du domaine d'application de l'equation.
-//    Ici "Thermique".
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Motcle&
-//    Signification: le nom du domaine d'application de l'equation
-//    Contraintes: toujours egal a "Thermique"
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nom du domaine d'application de l'equation.
+ *
+ * Ici "Thermique".
+ *
+ * @return (Motcle&) le nom du domaine d'application de l'equation
+ */
 const Motcle& Convection_Diffusion_Espece_Fluide_Dilatable_base::domaine_application() const
 {
   static Motcle domaine ="Fraction_massique";

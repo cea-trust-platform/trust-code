@@ -20,18 +20,15 @@
 #include <Source_Gravite_Fluide_Dilatable_base.h>
 #include <Source_Fluide_Dilatable_VDF_Proto.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION class  Source_WC_Gravite_VDF
-//
-// Cette classe represente un terme source supplementaire a prendre en compte
-// dans les equations de quantite de mouvement dans le cas ou le fluide est
-// weakly compressible, en cas de gravite, et pour une discretisation VDF.
-//
-// .SECTION voir aussi
-// Source_base Fluide_Weakly_Compressible Source_Gravite_Fluide_Dilatable_base
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief class  Source_WC_Gravite_VDF
+ *
+ *  Cette classe represente un terme source supplementaire a prendre en compte
+ *  dans les equations de quantite de mouvement dans le cas ou le fluide est
+ *  weakly compressible, en cas de gravite, et pour une discretisation VDF.
+ *
+ *
+ * @sa Source_base Fluide_Weakly_Compressible Source_Gravite_Fluide_Dilatable_base
+ */
 
 class Source_WC_Gravite_VDF : public Source_Gravite_Fluide_Dilatable_base,
   public Source_Fluide_Dilatable_VDF_Proto

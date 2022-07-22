@@ -20,15 +20,12 @@
 
 class Fluide_Dilatable_base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Convection_Diffusion_Espece_Fluide_Dilatable_base
-//     Cas particulier de Convection_Diffusion_std pour un fluide dilatable
-//     quand le scalaire subissant le transport est la fraction massique
-// .SECTION voir aussi
-//     Conv_Diffusion_std Convection_Diffusion_Chaleur_Fluide_Dilatable_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Convection_Diffusion_Espece_Fluide_Dilatable_base Cas particulier de Convection_Diffusion_std pour un fluide dilatable
+ *
+ *      quand le scalaire subissant le transport est la fraction massique
+ *
+ * @sa Conv_Diffusion_std Convection_Diffusion_Chaleur_Fluide_Dilatable_base
+ */
 
 class Convection_Diffusion_Espece_Fluide_Dilatable_base : public Convection_Diffusion_Fluide_Dilatable_base
 {

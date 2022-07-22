@@ -19,16 +19,14 @@
 #include <Frottement_impose_base.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Frottement_externe_impose
-//    Classe de base pour des conditions aux limites de type Navier (v.n nul, v_t par contrainte
-//    imposee) dans laquelle la contrainte imposee suit un coefficient de frottement :
-//    (force subie) = - coefficient_frottement * (vitesse tangentielle)_{face}
-// .SECTION voir aussi
-//    Navier
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Frottement_externe_impose Classe de base pour des conditions aux limites de type Navier (v.
+ *
+ * n nul, v_t par contrainte
+ *     imposee) dans laquelle la contrainte imposee suit un coefficient de frottement :
+ *     (force subie) = - coefficient_frottement * (vitesse tangentielle)_{face}
+ *
+ * @sa Navier
+ */
 class Frottement_externe_impose : public Frottement_impose_base
 {
   Declare_base(Frottement_externe_impose);

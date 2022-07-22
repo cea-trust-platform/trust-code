@@ -30,21 +30,12 @@
 
 extern void convert_to(const char *s, double& ob);
 
-// Description:
-//    Lit les specifications d'une perte de charge singuliere
-//    a partir d'un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: mot cle inattendu, on attendait "KX","KY", "KZ" ou "K"
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit les specifications d'une perte de charge singuliere a partir d'un flot d'entree.
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ * @throws mot cle inattendu, on attendait "KX","KY", "KZ" ou "K"
+ */
 Entree& Perte_Charge_Singuliere::lire_donnees(Entree& is)
 {
   Motcle motlu;

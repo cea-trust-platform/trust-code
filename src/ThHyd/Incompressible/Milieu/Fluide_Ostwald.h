@@ -12,19 +12,18 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//
-// .DESCRIPTION  class Fluide_Ostwald
-//
-// Possede les proprietes d'un fluide incompressible plus:
-// N : indice de structure
-// K : consistance du fluide
-// La viscosite dynamique dans ce cas depend de K, N et Grad(U)
-// Nouveau fluide. c'est un fluide incompressible non newtonien. Il derive donc
-//   de fluide_Incompressible et possede quelques proprietes de plus (K, N)
-//   mu depend de K, N, et de grad(U)
-// .SECTION voir aussi
-//     Fluide_Incompressible
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief class Fluide_Ostwald
+ *
+ *  Possede les proprietes d'un fluide incompressible plus:
+ *  N : indice de structure
+ *  K : consistance du fluide
+ *  La viscosite dynamique dans ce cas depend de K, N et Grad(U)
+ *  Nouveau fluide. c'est un fluide incompressible non newtonien. Il derive donc
+ *    de fluide_Incompressible et possede quelques proprietes de plus (K, N)
+ *    mu depend de K, N, et de grad(U)
+ *
+ * @sa Fluide_Incompressible
+ */
 
 #ifndef Fluide_Ostwald_included
 #define Fluide_Ostwald_included

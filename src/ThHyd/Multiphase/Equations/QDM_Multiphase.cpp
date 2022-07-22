@@ -39,49 +39,31 @@ Implemente_instanciable(QDM_Multiphase,"QDM_Multiphase",Navier_Stokes_std);
 // attr alpha_res_min flottant alpha_res_min 0 Activation threshold for full replacement of vanishing phase equation (default value : 0)
 // attr alpha_res flottant alpha_res 0 Activation threshold for gradual replacement of vanishing phase equation (tends to full replacement when alpha tends to alpha_res_min)
 
-// Description:
-//    Simple appel a: Equation_base::printOn(Sortie&)
-//    Ecrit l'equation sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet la methode ne modifie pas l'objet
+/*! @brief Simple appel a: Equation_base::printOn(Sortie&) Ecrit l'equation sur un flot de sortie.
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& QDM_Multiphase::printOn(Sortie& is) const
 {
   return Equation_base::printOn(is);
 }
 
 
-// Description:
-//    Appel Equation_base::readOn(Entree& is)
-//    En sortie verifie que l'on a bien lu:
-//        - le terme diffusif,
-//        - le terme convectif,
-//        - le solveur en pression
-// Precondition: l'equation doit avoir un milieu fluide associe
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: terme diffusif non specifie dans jeu de donnees, specifier
-//            un type negligeable pour l'operateur si il est a negliger
-// Exception: terme convectif non specifie dans jeu de donnees, specifier
-//            un type negligeable pour l'operateur si il est a negliger
-// Exception: solveur pression non defini dans jeu de donnees
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel Equation_base::readOn(Entree& is) En sortie verifie que l'on a bien lu:
+ *
+ *         - le terme diffusif,
+ *         - le terme convectif,
+ *         - le solveur en pression
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ * @throws terme diffusif non specifie dans jeu de donnees, specifier
+ * un type negligeable pour l'operateur si il est a negliger
+ * @throws terme convectif non specifie dans jeu de donnees, specifier
+ * un type negligeable pour l'operateur si il est a negliger
+ * @throws solveur pression non defini dans jeu de donnees
+ */
 
 Entree& QDM_Multiphase::readOn(Entree& is)
 {
@@ -258,25 +240,14 @@ const Champ_base& QDM_Multiphase::vitesse_pour_transport() const
   return la_vitesse;
 }
 
-// Description:
-//    Complete l'equation base,
-//    associe la pression a l'equation,
-//    complete la divergence, le gradient et le solveur pression.
-//    Ajout de 2 termes sources: l'un representant la force centrifuge
-//    dans le cas axi-symetrique,l'autre intervenant dans la resolution
-//    en 2D axisymetrique
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Complete l'equation base, associe la pression a l'equation,
+ *
+ *     complete la divergence, le gradient et le solveur pression.
+ *     Ajout de 2 termes sources: l'un representant la force centrifuge
+ *     dans le cas axi-symetrique,l'autre intervenant dans la resolution
+ *     en 2D axisymetrique
+ *
+ */
 void QDM_Multiphase::completer()
 {
   Cerr<<" Navier_Stokes_std::completer_deb"<<finl;

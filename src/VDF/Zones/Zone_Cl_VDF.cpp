@@ -364,9 +364,9 @@ void Zone_Cl_VDF::completer(const Zone_dis& une_zone_dis)
   Cerr << "Zone_Cl_VDF::completer OK" << finl;
 }
 
-// Description:
-// Impose les conditions aux limites a la valeur temporelle "temps" du
-// Champ_Inc
+/*! @brief Impose les conditions aux limites a la valeur temporelle "temps" du Champ_Inc
+ *
+ */
 void Zone_Cl_VDF::imposer_cond_lim(Champ_Inc& ch, double temps)
 {
   static int init=0;

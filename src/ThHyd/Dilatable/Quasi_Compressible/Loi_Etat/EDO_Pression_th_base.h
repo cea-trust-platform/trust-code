@@ -23,20 +23,12 @@ class Fluide_Quasi_Compressible;
 class Zone_Cl_dis;
 class Zone_dis;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe EDO_Pression_th_base
-//     Cette classe est la base de la hierarchie des EDO sur la pression
-//     associees a la resolution du schema pour les fluides quasi compressibles
-// .SECTION voir aussi
-//     Fluide_Quasi_Compressible
-//     Classe abstraite dont toutes les lois d'etat doivent deriver.
-//     Methodes abstraites:
-//       void calculer_coeff_T()
-//       void Resoudre_EDO_PT()
-//       void calculer_masse_volumique()
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe EDO_Pression_th_base Cette classe est la base de la hierarchie des EDO sur la pression
+ *
+ *      associees a la resolution du schema pour les fluides quasi compressibles
+ *
+ * @sa Fluide_Quasi_Compressible, Classe abstraite dont toutes les lois d'etat doivent deriver., Methodes abstraites:, void calculer_coeff_T(), void Resoudre_EDO_PT(), void calculer_masse_volumique()
+ */
 
 class EDO_Pression_th_base : public Objet_U
 {

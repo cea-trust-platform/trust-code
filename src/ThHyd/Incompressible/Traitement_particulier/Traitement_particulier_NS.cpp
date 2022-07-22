@@ -19,43 +19,27 @@ Implemente_deriv(Traitement_particulier_NS_base);
 Implemente_instanciable(Traitement_particulier_NS,"Traitement_particulier_NS",DERIV(Traitement_particulier_NS_base));
 
 
-// Description:
-//    Impression de l'equation sur un flot de sortie.
-//    Simple appel a Equation_base::printOn(Sortie&).
-// Precondition:
-// Parametre: Sortie& is
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Impression de l'equation sur un flot de sortie.
+ *
+ * Simple appel a Equation_base::printOn(Sortie&).
+ *
+ * @param (Sortie& is) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Traitement_particulier_NS::printOn(Sortie& is) const
 {
   return DERIV(Traitement_particulier_NS_base)::printOn(is);
 }
 
 
-// Description:
-//    Lit les specifications de l'equation de Navier Stokes a
-//    partir d'un flot d'entree.
-//    Simple appel a Navier_Stokes_std::readOn(Entree&)
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: pas de modele de turbulence speficie
-// Effets de bord:
-// Postcondition: un modele de turbulence doit avoir ete specifie
+/*! @brief Lit les specifications de l'equation de Navier Stokes a partir d'un flot d'entree.
+ *
+ *     Simple appel a Navier_Stokes_std::readOn(Entree&)
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ * @throws pas de modele de turbulence speficie
+ */
 Entree& Traitement_particulier_NS::readOn(Entree& is)
 {
   return DERIV(Traitement_particulier_NS_base)::readOn(is);

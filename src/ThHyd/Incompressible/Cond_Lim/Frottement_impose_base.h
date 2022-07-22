@@ -23,18 +23,16 @@
 #include <Ref_Frontiere_dis_base.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Frottement_impose_base
-//    Classe de base pour des conditions aux limites de type Navier (v.n nul, v_t par contrainte
-//    imposee) dans laquelle la contrainte imposee suit un coefficient de frottement :
-//    (force subie) = - coefficient_frottement * (vitesse tangentielle)
-//    La vitesse tangentielle peut etre soit prise directement a chaque face (classe Frottement_externe_impose),
-//    soit etre prise en l'element voisin de la face (classe Frottement_global_impose)
-// .SECTION voir aussi
-//    Navier
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Frottement_impose_base Classe de base pour des conditions aux limites de type Navier (v.
+ *
+ * n nul, v_t par contrainte
+ *     imposee) dans laquelle la contrainte imposee suit un coefficient de frottement :
+ *     (force subie) = - coefficient_frottement * (vitesse tangentielle)
+ *     La vitesse tangentielle peut etre soit prise directement a chaque face (classe Frottement_externe_impose),
+ *     soit etre prise en l'element voisin de la face (classe Frottement_global_impose)
+ *
+ * @sa Navier
+ */
 class Frottement_impose_base : public Navier
 {
 

@@ -126,7 +126,9 @@ DoubleTab& Perte_Charge_VEF::ajouter(DoubleTab& resu) const
   return resu;
 }
 
-// Description: copie de ajouter sauf la derniere ligne
+/*! @brief copie de ajouter sauf la derniere ligne
+ *
+ */
 void Perte_Charge_VEF::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   if (implicite_==0) return; // La perte de charge n'est pas implicitee, on quitte

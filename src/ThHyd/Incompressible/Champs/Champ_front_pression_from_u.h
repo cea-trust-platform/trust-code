@@ -26,10 +26,12 @@
 #include <Ref_Champ_Inc_base.h>
 #include <Parser_U.h>
 
-//.DESCRIPTION  class Champ_front_pression_from_u
-//
-// Classe derivee de Champ_front_base qui represente les
-// champs aux frontieres normaux :
+/*! @brief class Champ_front_pression_from_u
+ *
+ *  Classe derivee de Champ_front_base qui represente les
+ *  champs aux frontieres normaux :
+ *
+ */
 
 //.SECTION voir aussi
 // Champ_front_base

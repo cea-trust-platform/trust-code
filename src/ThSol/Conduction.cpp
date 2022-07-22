@@ -28,40 +28,22 @@ Conduction::Conduction()
   // champs_compris_.ajoute_nom_compris("temperature_paroi");
   champs_compris_.ajoute_nom_compris("temperature_residu");
 }
-// Description:
-//    Ecrit le type de l'equation sur un flot de
-//    sortie.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit le type de l'equation sur un flot de sortie.
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Conduction::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << "\n";
 }
 
-// Description:
-//    cf Equation_base::readOn(Entree&)
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: terme diffusif non specifie
-// Effets de bord:
-// Postcondition:
+/*! @brief cf Equation_base::readOn(Entree&)
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ * @throws terme diffusif non specifie
+ */
 Entree& Conduction::readOn(Entree& is )
 {
   Equation_base::readOn(is);
@@ -152,85 +134,44 @@ const Champ_base& Conduction::diffusivite_pour_pas_de_temps() const
   return terme_diffusif.diffusivite();
 }
 
-// Description:
-//    Associe un milieu physique a l'equation,
-//    le milieu est en fait caste en Solide.
-// Precondition:
-// Parametre: Milieu_base& un_milieu
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//                 doit pourvoir etre force au type "Solide"
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe un milieu physique a l'equation, le milieu est en fait caste en Solide.
+ *
+ * @param (Milieu_base& un_milieu)
+ */
 void Conduction::associer_milieu_base(const Milieu_base& le_milieu)
 {
   associer_solide(ref_cast(Solide,le_milieu));
 }
 
-// Description:
-//    Associe le milieu solide a l'equation.
-// Precondition:
-// Parametre: Solide& un_solide
-//    Signification: le milieu solide a associer a l'equation
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: l'equation a un milieu physique associe
+/*! @brief Associe le milieu solide a l'equation.
+ *
+ * @param (Solide& un_solide) le milieu solide a associer a l'equation
+ */
 void Conduction::associer_solide(const Solide& un_solide)
 {
   le_solide = un_solide;
 }
 
-// Description:
-//    Renvoie le nombre d'operateurs de l'equation
-//    pour l'equation de conduction standart renvoie toujours 1.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre d'operateurs de l'equation
-//    Contraintes: toujours egal a 1
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre d'operateurs de l'equation pour l'equation de conduction standart renvoie toujours 1.
+ *
+ * @return (int) le nombre d'operateurs de l'equation
+ */
 int Conduction::nombre_d_operateurs() const
 {
   return 1;
 }
 
-// Description:
-//    Renvoie l'operateur d'index specifie de l'equation.
-//    Renvoie terme_diffusif si i=0
-//     exit si i>0
-//    (version const)
-// Precondition:
-// Parametre: int i
-//    Signification: index de l'operateur a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: i = 0
-//    Acces:
-// Retour: Operateur&
-//    Signification: l'operateur d'index specifie
-//                  (uniquement terme_diffusif)
-//    Contraintes: reference constante
-// Exception: l'equation de conduction standard ne contient
-//            qu'un operateur
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie l'operateur d'index specifie de l'equation.
+ *
+ * Renvoie terme_diffusif si i=0
+ *      exit si i>0
+ *     (version const)
+ *
+ * @param (int i) index de l'operateur a renvoyer
+ * @return (Operateur&) l'operateur d'index specifie (uniquement terme_diffusif)
+ * @throws l'equation de conduction standard ne contient
+ * qu'un operateur
+ */
 const Operateur& Conduction::operateur(int i) const
 {
   if (i == 0)
@@ -245,24 +186,16 @@ const Operateur& Conduction::operateur(int i) const
   return terme_diffusif;
 }
 
-// Description:
-//    Renvoie l'operateur d'index specifie de l'equation.
-//    Renvoie terme_diffusif si i=0
-//     exit si i>0
-// Precondition:
-// Parametre: int i
-//    Signification: index de l'operateur a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: i = 0
-//    Acces:
-// Retour: Operateur&
-//    Signification: l'operateur d'index specifie
-//                  (uniquement terme_diffusif)
-//    Contraintes:
-// Exception: l'equation de conduction standard ne contient
-//            qu'un operateur
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie l'operateur d'index specifie de l'equation.
+ *
+ * Renvoie terme_diffusif si i=0
+ *      exit si i>0
+ *
+ * @param (int i) index de l'operateur a renvoyer
+ * @return (Operateur&) l'operateur d'index specifie (uniquement terme_diffusif)
+ * @throws l'equation de conduction standard ne contient
+ * qu'un operateur
+ */
 Operateur& Conduction::operateur(int i)
 {
   if (i == 0)
@@ -277,20 +210,9 @@ Operateur& Conduction::operateur(int i)
   return terme_diffusif;
 }
 
-// Description:
-//    Discretise l'equation
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: l'equation est discretisee
+/*! @brief Discretise l'equation
+ *
+ */
 void Conduction::discretiser()
 {
   const Discret_Thermique& dis=ref_cast(Discret_Thermique, discretisation());
@@ -301,64 +223,36 @@ void Conduction::discretiser()
 }
 
 
-// Description:
-//    Renvoie le milieu physique associe a l'equation.
-//    Ici Solide upcaste en Milieu_base.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Milieu_base&
-//    Signification: le milieu physique associe a l'equation
-//                   (Solide upcaste en Milieu_base)
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le milieu physique associe a l'equation.
+ *
+ * Ici Solide upcaste en Milieu_base.
+ *     (version const)
+ *
+ * @return (Milieu_base&) le milieu physique associe a l'equation (Solide upcaste en Milieu_base)
+ */
 const Milieu_base& Conduction::milieu() const
 {
   return solide();
 }
 
-// Description:
-//    Renvoie le milieu physique associe a l'equation.
-//    Ici Solide upcaste en Milieu_base.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Milieu_base&
-//    Signification: le milieu physique associe a l'equation
-//                   (Solide upcaste en Milieu_base)
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le milieu physique associe a l'equation.
+ *
+ * Ici Solide upcaste en Milieu_base.
+ *
+ * @return (Milieu_base&) le milieu physique associe a l'equation (Solide upcaste en Milieu_base)
+ */
 Milieu_base& Conduction::milieu()
 {
   return solide();
 }
 
-// Description:
-//    Renvoie le milieu solide associe a l'equation.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Solide&
-//    Signification: le milieu solide associe a l'equation
-//    Contraintes: reference constante
-// Exception: pas de milieu solide associe a l'equation
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le milieu solide associe a l'equation.
+ *
+ * (version const)
+ *
+ * @return (Solide&) le milieu solide associe a l'equation
+ * @throws pas de milieu solide associe a l'equation
+ */
 const Solide& Conduction::solide() const
 {
   if(!le_solide.non_nul())
@@ -428,20 +322,11 @@ void Conduction::get_noms_champs_postraitables(Noms& nom,Option opt) const
     le_traitement_particulier->get_noms_champs_postraitables(nom,opt);
 }
 
-// Description:
-//    Renvoie le milieu solide associe a l'equation.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Solide&
-//    Signification: le milieu solide associe a l'equation
-//    Contraintes:
-// Exception: pas de milieu solide associe a l'equation
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le milieu solide associe a l'equation.
+ *
+ * @return (Solide&) le milieu solide associe a l'equation
+ * @throws pas de milieu solide associe a l'equation
+ */
 Solide& Conduction::solide()
 {
   if(!le_solide.non_nul())
@@ -452,41 +337,23 @@ Solide& Conduction::solide()
   return le_solide.valeur();
 }
 
-// Description:
-//    Imprime le terme diffusif sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Imprime le terme diffusif sur un flot de sortie.
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (int) renvoie toujours 1
+ */
 int Conduction::impr(Sortie& os) const
 {
   return Equation_base::impr(os);
 }
 
 
-// Description:
-//    Renvoie le nom du domaine d'application de l'equation.
-//    Ici "Thermique".
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Motcle&
-//    Signification: le nom du domaine d'application de l'equation
-//    Contraintes: toujours egal a "Thermique"
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nom du domaine d'application de l'equation.
+ *
+ * Ici "Thermique".
+ *
+ * @return (Motcle&) le nom du domaine d'application de l'equation
+ */
 const Motcle& Conduction::domaine_application() const
 {
   static Motcle domaine = "Thermique";

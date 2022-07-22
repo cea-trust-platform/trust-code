@@ -87,16 +87,18 @@ Entree& VEFPreP1B::readOn(Entree& is )
   return is;
 }
 
-// Description:
-// Discretisation d'un champ pour le VEFP1B en fonction d'une directive
-// de discretisation. La directive est un Motcle comme "pression",
-// "divergence_vitesse" (cree un champ de type P1_isoP1Bulle).
-// Cette methode determine le type du champ a creer en fonction du type d'element
-// et de la directive de discretisation. Elle determine ensuite le nombre de ddl
-// et fixe l'ensemble des parametres du champ (type, nb_compo, nb_ddl, nb_pas_dt,
-// nom(s), unite(s), nature du champ et attribue un temps) et associe la Zone_dis au champ.
-// Voir le code pour avoir la correspondance entre les directives et
-// le type de champ cree.
+/*! @brief Discretisation d'un champ pour le VEFP1B en fonction d'une directive de discretisation.
+ *
+ * La directive est un Motcle comme "pression",
+ *  "divergence_vitesse" (cree un champ de type P1_isoP1Bulle).
+ *  Cette methode determine le type du champ a creer en fonction du type d'element
+ *  et de la directive de discretisation. Elle determine ensuite le nombre de ddl
+ *  et fixe l'ensemble des parametres du champ (type, nb_compo, nb_ddl, nb_pas_dt,
+ *  nom(s), unite(s), nature du champ et attribue un temps) et associe la Zone_dis au champ.
+ *  Voir le code pour avoir la correspondance entre les directives et
+ *  le type de champ cree.
+ *
+ */
 void VEFPreP1B::discretiser_champ(
   const Motcle& directive, const Zone_dis_base& z,
   Nature_du_champ nature,
@@ -155,8 +157,11 @@ void VEFPreP1B::discretiser_champ(
 
 }
 
-// Description:
-// Idem que VEFPreP1B::discretiser_champ(... , Champ_Inc)
+/*! @brief Idem que VEFPreP1B::discretiser_champ(.
+ *
+ * .. , Champ_Inc)
+ *
+ */
 void VEFPreP1B::discretiser_champ(
   const Motcle& directive, const Zone_dis_base& z,
   Nature_du_champ nature,
@@ -169,8 +174,11 @@ void VEFPreP1B::discretiser_champ(
                              nb_comp, temps, champ);
 }
 
-// Description:
-// Idem que VEFPreP1B::discretiser_champ(... , Champ_Inc)
+/*! @brief Idem que VEFPreP1B::discretiser_champ(.
+ *
+ * .. , Champ_Inc)
+ *
+ */
 void VEFPreP1B::discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
                                   Nature_du_champ nature,
                                   const Noms& noms, const Noms& unites,
@@ -182,11 +190,13 @@ void VEFPreP1B::discretiser_champ(const Motcle& directive, const Zone_dis_base& 
                              nb_comp, temps, champ);
 }
 
-// Description:
-// Idem que VEF_discretisation::discretiser_champ(... , Champ_Inc)
-// Traitement commun aux champ_fonc et champ_don.
-// Cette methode est privee (passage d'un Objet_U pas propre vu
-// de l'exterieur ...)
+/*! @brief Idem que VEF_discretisation::discretiser_champ(.
+ *
+ * .. , Champ_Inc) Traitement commun aux champ_fonc et champ_don.
+ *  Cette methode est privee (passage d'un Objet_U pas propre vu
+ *  de l'exterieur ...)
+ *
+ */
 void VEFPreP1B::discretiser_champ_fonc_don(
   const Motcle& directive, const Zone_dis_base& z,
   Nature_du_champ nature,

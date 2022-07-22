@@ -20,16 +20,13 @@
 
 class Fluide_Dilatable_base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Loi_Etat_Binaire_GP_base
-//     Cette classe represente la loi d'etat pour les melanges binaires.
-//     Elle definit un fluide binaire dilatable dont la loi d'eata est :
-//        Pth = rho*R*T*(Y1/M1+Y2/M2)
-// .SECTION voir aussi
-//     Loi_Etat_Melange_GP_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Loi_Etat_Binaire_GP_base Cette classe represente la loi d'etat pour les melanges binaires.
+ *
+ *      Elle definit un fluide binaire dilatable dont la loi d'eata est :
+ *         Pth = rho*R*T*(Y1/M1+Y2/M2)
+ *
+ * @sa Loi_Etat_Melange_GP_base
+ */
 
 class Loi_Etat_Binaire_GP_base : public Loi_Etat_Melange_GP_base
 {

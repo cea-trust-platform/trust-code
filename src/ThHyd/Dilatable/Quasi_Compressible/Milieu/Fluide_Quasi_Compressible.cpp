@@ -166,20 +166,10 @@ int Fluide_Quasi_Compressible::lire_motcle_non_standard(const Motcle& mot, Entre
   else return Fluide_Dilatable_base::lire_motcle_non_standard(mot,is);
 }
 
-// Description:
-//    Complete le fluide avec les champs inconnus associes au probleme
-// Precondition:
-// Parametre: Pb_Thermohydraulique& pb
-//    Signification: le probleme a resoudre
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Complete le fluide avec les champs inconnus associes au probleme
+ *
+ * @param (Pb_Thermohydraulique& pb) le probleme a resoudre
+ */
 void Fluide_Quasi_Compressible::completer(const Probleme_base& pb)
 {
   Cerr<<"Fluide_Quasi_Compressible::completer Pth = " << Pth_ << finl;
@@ -195,20 +185,9 @@ void Fluide_Quasi_Compressible::completer(const Probleme_base& pb)
   if (traitement_PTh != 2) completer_edo(pb);
 }
 
-// Description:
-//    Prepare le pas de temps
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Prepare le pas de temps
+ *
+ */
 void Fluide_Quasi_Compressible::preparer_pas_temps()
 {
   Fluide_Dilatable_base::preparer_pas_temps();

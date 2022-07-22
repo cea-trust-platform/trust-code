@@ -19,17 +19,14 @@
 #include <Neumann.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Neumann_paroi
-//    Cette condition limite correspond a un flux impose pour l'equation de
-//    transport d'un scalaire. Ex: une paroi chauffante pour l'equation de
-//    transport de la temperature.
-//    Le flux impose est uniforme.
-// .SECTION voir aussi
-//    Neumann
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Neumann_paroi Cette condition limite correspond a un flux impose pour l'equation de
+ *
+ *     transport d'un scalaire. Ex: une paroi chauffante pour l'equation de
+ *     transport de la temperature.
+ *     Le flux impose est uniforme.
+ *
+ * @sa Neumann
+ */
 class Neumann_paroi : public Neumann
 {
 

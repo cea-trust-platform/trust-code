@@ -20,7 +20,9 @@ True_int info_atelier(Sortie& s)
 
   return 0;
 }
-// Description: permet de stocker l'atelier et de le reecrire
+/*! @brief permet de stocker l'atelier et de le reecrire
+ *
+ */
 void restore_atelier(Sortie& s)
 {
 }

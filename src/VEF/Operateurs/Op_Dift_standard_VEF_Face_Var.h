@@ -19,10 +19,11 @@
 
 #include <Op_Dift_standard_VEF_Face.h>
 
-//
-// .DESCRIPTION class Op_Dift_standard_VEF_Face_Var
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief class Op_Dift_standard_VEF_Face_Var
+ *
+ *
+ *
+ */
 
 class Op_Dift_standard_VEF_Face_Var : public Op_Dift_standard_VEF_Face
 {

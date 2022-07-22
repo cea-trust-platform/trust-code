@@ -20,84 +20,44 @@
 
 Implemente_instanciable(Entree_fluide_temperature_imposee_H,"Entree_temperature_imposee_H",Entree_fluide_temperature_imposee);
 
-// Description:
-//    Ecrit le type de l'objet sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit le type de l'objet sur un flot de sortie.
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Entree_fluide_temperature_imposee_H::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << "\n";
 }
 
-// Description:
-//    Simple appel a: Cond_lim_base::readOn(Entree& )
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree& s
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Cond_lim_base::readOn(Entree& )
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree& s) le flot d'entree modifie
+ */
 Entree& Entree_fluide_temperature_imposee_H::readOn(Entree& s)
 {
   return Entree_fluide_temperature_imposee::readOn(s);
 }
 
-// Description:
-//    Complete les conditions aux limites.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Complete les conditions aux limites.
+ *
+ */
 void Entree_fluide_temperature_imposee_H::completer()
 {
   le_fluide = ref_cast(Fluide_Dilatable_base,ma_zone_cl_dis->equation().milieu());
   modifier_val_imp = 1;
 }
 
-// Description:
-//    Renvoie un booleen indiquant la compatibilite des conditions
-//    aux limites avec l'equation specifiee en parametre.
-//    Des CL de type Entree_fluide_temperature_imposee sont compatibles
-//    avec une equation dont le domaine est la Thermique
-//    ou bien indetermine.
-// Precondition:
-// Parametre: Equation_base& eqn
-//    Signification: l'equation avec laquelle il faut verifier la compatibilite
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: int
-//    Signification: valeur booleenne,
-//                   1 si les CL sont compatibles avec l'equation
-//                   0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie un booleen indiquant la compatibilite des conditions aux limites avec l'equation specifiee en parametre.
+ *
+ *     Des CL de type Entree_fluide_temperature_imposee sont compatibles
+ *     avec une equation dont le domaine est la Thermique
+ *     ou bien indetermine.
+ *
+ * @param (Equation_base& eqn) l'equation avec laquelle il faut verifier la compatibilite
+ * @return (int) valeur booleenne, 1 si les CL sont compatibles avec l'equation 0 sinon
+ */
 int Entree_fluide_temperature_imposee_H::compatible_avec_eqn(const Equation_base& eqn) const
 {
   Motcle dom_app=eqn.domaine_application();
@@ -111,21 +71,12 @@ int Entree_fluide_temperature_imposee_H::compatible_avec_eqn(const Equation_base
     }
 }
 
-// Description:
-//    Renvoie la valeur imposee sur la i-eme composante
-//    du champ a la frontiere.
-// Precondition:
-// Parametre: int i
-//    Signification: indice suivant la premiere dimension du champ
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: double
-//    Signification: la valeur imposee sur la composante du champ specifiee
-//    Contraintes:
-// Exception: deuxieme dimension du champ de frontiere superieur a 1
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la valeur imposee sur la i-eme composante du champ a la frontiere.
+ *
+ * @param (int i) indice suivant la premiere dimension du champ
+ * @return (double) la valeur imposee sur la composante du champ specifiee
+ * @throws deuxieme dimension du champ de frontiere superieur a 1
+ */
 double Entree_fluide_temperature_imposee_H::val_imp(int i) const
 {
   if (le_champ_front.valeurs().size()==1)
@@ -149,26 +100,12 @@ double Entree_fluide_temperature_imposee_H::val_imp(int i) const
   return 0.;
 }
 
-// Description:
-//    Renvoie la valeur imposee sur la (i,j)-eme composante
-//    du champ a la frontiere.
-// Precondition:
-// Parametre: int i
-//    Signification: indice suivant la premiere dimension du champ
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Parametre: int j
-//    Signification: indice suivant la deuxieme dimension du champ
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: double
-//    Signification: la valeur imposee sur la composante du champ specifiee
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la valeur imposee sur la (i,j)-eme composante du champ a la frontiere.
+ *
+ * @param (int i) indice suivant la premiere dimension du champ
+ * @param (int j) indice suivant la deuxieme dimension du champ
+ * @return (double) la valeur imposee sur la composante du champ specifiee
+ */
 double Entree_fluide_temperature_imposee_H::val_imp(int i, int j) const
 {
   if (le_champ_front.valeurs().dimension(0)==1)

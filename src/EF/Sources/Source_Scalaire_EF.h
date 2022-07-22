@@ -23,9 +23,9 @@
 
 class Probleme_base;
 
-//
-// .DESCRIPTION class Source_Scalaire_EF
-//
+/*! @brief class Source_Scalaire_EF
+ *
+ */
 
 //
 // .SECTION voir aussi Source_base

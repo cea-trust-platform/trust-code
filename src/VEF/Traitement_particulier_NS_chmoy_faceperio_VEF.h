@@ -20,19 +20,15 @@
 #include <Traitement_particulier_NS_chmoy_faceperio.h>
 #include <Ref_Convection_Diffusion_std.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Traitement_particulier_NS_chmoy_faceperio_VEF
-//     Cette classe permet de faire les traitements particuliers
-//     pour le calcul d'un canal plan :
-//         * conservation du debit
-//         * calculs de moyennes
-//
-// .SECTION voir aussi
-//      Navier_Stokes_Turbulent, Traitement_particulier_base,
-//      Traitement_particulier_VEF
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Traitement_particulier_NS_chmoy_faceperio_VEF Cette classe permet de faire les traitements particuliers
+ *
+ *      pour le calcul d'un canal plan :
+ *          * conservation du debit
+ *          * calculs de moyennes
+ *
+ *
+ * @sa Navier_Stokes_Turbulent, Traitement_particulier_base,, Traitement_particulier_VEF
+ */
 class Traitement_particulier_NS_chmoy_faceperio_VEF : public Traitement_particulier_NS_chmoy_faceperio
 {
   Declare_instanciable(Traitement_particulier_NS_chmoy_faceperio_VEF);

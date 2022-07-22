@@ -21,15 +21,10 @@
 #include <Ref_Convection_Diffusion_std.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Traitement_particulier_NS_Profils_thermo_VDF
-//
-// .SECTION voir aussi
-//      Navier_Stokes_Turbulent, Traitement_particulier_base,
-//      Traitement_particulier_VDF, Trait_part_NS_Profils_VDF
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Traitement_particulier_NS_Profils_thermo_VDF
+ *
+ * @sa Navier_Stokes_Turbulent, Traitement_particulier_base,, Traitement_particulier_VDF, Trait_part_NS_Profils_VDF
+ */
 class Traitement_particulier_NS_Profils_thermo_VDF : public Traitement_particulier_NS_Profils_VDF
 {
   Declare_instanciable(Traitement_particulier_NS_Profils_thermo_VDF);

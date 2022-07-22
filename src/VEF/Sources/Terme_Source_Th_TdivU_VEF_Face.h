@@ -22,9 +22,9 @@
 #include <Operateur_Conv.h>
 class Probleme_base;
 #include <Equation.h>
-//
-// .DESCRIPTION class Terme_Source_Th_TdivU_VEF_Face
-//
+/*! @brief class Terme_Source_Th_TdivU_VEF_Face
+ *
+ */
 
 //
 // .SECTION voir aussi Source_base

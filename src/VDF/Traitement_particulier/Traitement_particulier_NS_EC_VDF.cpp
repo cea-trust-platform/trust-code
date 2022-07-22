@@ -18,20 +18,27 @@
 
 Implemente_instanciable_sans_constructeur(Traitement_particulier_NS_EC_VDF,"Traitement_particulier_NS_EC_VDF",Traitement_particulier_NS_EC);
 
-// Description: constructeur par defaut.
-//  On declare que la classe supporte un champ rho variable
+/*! @brief constructeur par defaut.
+ *
+ * On declare que la classe supporte un champ rho variable
+ *
+ */
 Traitement_particulier_NS_EC_VDF::Traitement_particulier_NS_EC_VDF()
 {
   declare_support_masse_volumique(1);
 }
 
-// Description: does nothing
+/*! @brief does nothing
+ *
+ */
 Sortie& Traitement_particulier_NS_EC_VDF::printOn(Sortie& is) const
 {
   return is;
 }
 
-// Description: does nothing
+/*! @brief does nothing
+ *
+ */
 Entree& Traitement_particulier_NS_EC_VDF::readOn(Entree& is)
 {
   return is;

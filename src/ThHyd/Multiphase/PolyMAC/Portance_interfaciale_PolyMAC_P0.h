@@ -19,17 +19,14 @@
 #include <Source_base.h>
 #include <Correlation.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Portance_interfaciale_PolyMAC_P0
-//    Cette classe implemente dans PolyMAC_P0 un operateur de portance interfaciale
-//    de la forme F_{n_l} = - F_{k} = C_{n_l, k} (u_k - u_n_l) x rot(u_n_l) ou la phase
-//    n_l est la phase liquide porteuse et k une phase gazeuse
-//    le calcul de C_{n_l, k} est realise par la hierarchie Portance_interfaciale_base
-// .SECTION voir aussi
-//    Operateur_PolyMAC_P0_base Operateur_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Portance_interfaciale_PolyMAC_P0 Cette classe implemente dans PolyMAC_P0 un operateur de portance interfaciale
+ *
+ *     de la forme F_{n_l} = - F_{k} = C_{n_l, k} (u_k - u_n_l) x rot(u_n_l) ou la phase
+ *     n_l est la phase liquide porteuse et k une phase gazeuse
+ *     le calcul de C_{n_l, k} est realise par la hierarchie Portance_interfaciale_base
+ *
+ * @sa Operateur_PolyMAC_P0_base Operateur_base
+ */
 class Portance_interfaciale_PolyMAC_P0: public Source_base
 {
   Declare_instanciable(Portance_interfaciale_PolyMAC_P0);

@@ -38,46 +38,21 @@ Entree& EOS_Tools_VEF::readOn(Entree& is)
   return is;
 }
 
-// Description:
-//    Associe les zones a l'EDO
-// Precondition:
-// Parametre: Zone_dis& zone
-//    Signification: zone
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: Zone_Cl_dis& zone_cl
-//    Signification: zone cl
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe les zones a l'EDO
+ *
+ * @param (Zone_dis& zone) zone
+ * @param (Zone_Cl_dis& zone_cl) zone cl
+ */
 void  EOS_Tools_VEF::associer_zones(const Zone_dis& zone, const Zone_Cl_dis& zone_cl)
 {
   la_zone = ref_cast(Zone_VEF,zone.valeur());
   la_zone_Cl = zone_cl;
 }
 
-// Description:
-//    Renvoie rho avec la meme discretisation que la vitesse :
-//    une valeur par face en VEF
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: rho discretise par face
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie rho avec la meme discretisation que la vitesse : une valeur par face en VEF
+ *
+ * @return (DoubleTab&) rho discretise par face
+ */
 const DoubleTab& EOS_Tools_VEF::rho_discvit() const
 {
   return le_fluide_->masse_volumique().valeurs();
@@ -93,20 +68,10 @@ const DoubleTab& EOS_Tools_VEF::rho_face_np1() const
   return le_fluide_->rho_np1();
 }
 
-// Description:
-//    Calcule la moyenne volumique de la grandeur P1NC donnee
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: rho discretise par face
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la moyenne volumique de la grandeur P1NC donnee
+ *
+ * @return (DoubleTab&) rho discretise par face
+ */
 double EOS_Tools_VEF::moyenne_vol(const DoubleTab& tab) const
 {
   assert(tab.line_size() == 1);
@@ -120,8 +85,9 @@ double EOS_Tools_VEF::moyenne_vol(const DoubleTab& tab) const
   return x / y;
 }
 
-// Description:
-// Div(u) is computed on faces from Div(u) on elements
+/*! @brief Div(u) is computed on faces from Div(u) on elements
+ *
+ */
 void EOS_Tools_VEF::divu_discvit(const DoubleTab& DivVelocityElements, DoubleTab& DivVelocityFaces)
 {
   assert_espace_virtuel_vect(DivVelocityElements);
@@ -168,21 +134,12 @@ void EOS_Tools_VEF::divu_discvit(const DoubleTab& DivVelocityElements, DoubleTab
     }
 }
 
-// Description:
-//    Calcule le second membre de l'equation de continuite pour une discretisation VEF_P1B:
-//    div(U) = W = dZ/dT + U.grad(Z)    avec Z=ln(rho)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification: rho discretise par face
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule le second membre de l'equation de continuite pour une discretisation VEF_P1B: div(U) = W = dZ/dT + U.
+ *
+ * grad(Z)    avec Z=ln(rho)
+ *
+ * @return rho discretise par face
+ */
 void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
 {
   double dt = le_fluide().vitesse()->equation().schema_temps().pas_de_temps();

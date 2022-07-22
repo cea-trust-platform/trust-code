@@ -20,19 +20,16 @@
 #include <Source_WC_Chaleur.h>
 class Zone_VF;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION class  Source_WC_Chaleur_VEF
-//
-// Cette classe represente un terme source supplementaire
-// a prendre en compte dans les equations de la chaleur
-//  dans le cas ou le fluide est weakly compressible et pour
-//  une discretisation VEF
-//
-// .SECTION voir aussi
-// Source_base Fluide_Weakly_Compressible Source_WC_Chaleur
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief class  Source_WC_Chaleur_VEF
+ *
+ *  Cette classe represente un terme source supplementaire
+ *  a prendre en compte dans les equations de la chaleur
+ *   dans le cas ou le fluide est weakly compressible et pour
+ *   une discretisation VEF
+ *
+ *
+ * @sa Source_base Fluide_Weakly_Compressible Source_WC_Chaleur
+ */
 
 class Source_WC_Chaleur_VEF : public Source_WC_Chaleur, public Source_Fluide_Dilatable_VEF_Proto
 {

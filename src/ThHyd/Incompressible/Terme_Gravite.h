@@ -20,16 +20,13 @@
 #include <Ref_Champ_Don_base.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Terme_Gravite
-//    Cette represente un terme de gravite. Elle contient
-//    une reference sur champ donne qui represente une gravite.
-// .SECTION voir aussi
-//    Champ_Don_base
-//    Classe hors hierarchie TrioU
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Terme_Gravite Cette represente un terme de gravite.
+ *
+ * Elle contient
+ *     une reference sur champ donne qui represente une gravite.
+ *
+ * @sa Champ_Don_base, Classe hors hierarchie TrioU
+ */
 class Terme_Gravite
 {
 public :
@@ -43,20 +40,10 @@ protected:
 };
 
 
-// Description:
-//    Associe un champ representant la gravite a l'objet Gravite.
-// Precondition:
-// Parametre: Champ_Don_base& g
-//    Signification: un champ donne representant une gravite
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe un champ representant la gravite a l'objet Gravite.
+ *
+ * @param (Champ_Don_base& g) un champ donne representant une gravite
+ */
 inline void Terme_Gravite::associer_gravite(const Champ_Don_base& g)
 {
   gravite=g;

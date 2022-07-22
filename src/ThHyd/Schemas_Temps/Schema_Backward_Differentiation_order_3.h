@@ -21,16 +21,13 @@
 class Probleme_Couple;
 class Matrice_Base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Schema_Backward_Differentiation_order_3
-//     Cette classe represente un schema de differentiation retrograde d'ordre 2 :
-//     U(n+1) = 4/3 *U(n) - 1/3 U(n-1) + 2/3 * dt*(dU/dt)(n+1) dans le cas
-//     ou le pas de temps est constant au cours du temps
-// .SECTION voir aussi
-//     Schema_Temps_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Schema_Backward_Differentiation_order_3 Cette classe represente un schema de differentiation retrograde d'ordre 2 :
+ *
+ *      U(n+1) = 4/3 *U(n) - 1/3 U(n-1) + 2/3 * dt*(dU/dt)(n+1) dans le cas
+ *      ou le pas de temps est constant au cours du temps
+ *
+ * @sa Schema_Temps_base
+ */
 class Schema_Backward_Differentiation_order_3: public Schema_Backward_Differentiation_base
 {
 

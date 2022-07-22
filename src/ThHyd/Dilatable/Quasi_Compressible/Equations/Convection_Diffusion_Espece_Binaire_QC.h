@@ -18,15 +18,12 @@
 
 #include <Convection_Diffusion_Espece_Binaire_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Convection_Diffusion_Espece_Binaire_QC
-//     Cas particulier de Convection_Diffusion_Espece_Binaire_base
-//     pour un fluide quasi conpressible iso-therme et iso-bar
-// .SECTION voir aussi
-//     Convection_Diffusion_Espece_Binaire_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Convection_Diffusion_Espece_Binaire_QC Cas particulier de Convection_Diffusion_Espece_Binaire_base
+ *
+ *      pour un fluide quasi conpressible iso-therme et iso-bar
+ *
+ * @sa Convection_Diffusion_Espece_Binaire_base
+ */
 
 class Convection_Diffusion_Espece_Binaire_QC : public Convection_Diffusion_Espece_Binaire_base
 {

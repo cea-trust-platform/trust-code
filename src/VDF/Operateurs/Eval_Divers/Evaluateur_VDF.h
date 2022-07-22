@@ -21,13 +21,16 @@
 #include <Zone_VDF.h>
 #include <TRUSTTab.h>
 
-// .DESCRIPTION class Evaluateur_VDF
-// Classe de base des evaluateurs VDF. Cette classe n'appartient pas a la
-// hierarchie des Objet_U.
-// Cette classe porte une reference a un objet de type Zone_VDF et une
-// reference a un objet de type Zone_Cl_VDF. Elle porte des tableaux locaux
-// qui sont en fait des references aux tableaux de l'objet de type Zone_VDF
-// (ces tableaux locaux n'existent pas en memoire).
+/*! @brief class Evaluateur_VDF Classe de base des evaluateurs VDF.
+ *
+ * Cette classe n'appartient pas a la
+ *  hierarchie des Objet_U.
+ *  Cette classe porte une reference a un objet de type Zone_VDF et une
+ *  reference a un objet de type Zone_Cl_VDF. Elle porte des tableaux locaux
+ *  qui sont en fait des references aux tableaux de l'objet de type Zone_VDF
+ *  (ces tableaux locaux n'existent pas en memoire).
+ *
+ */
 
 class Evaluateur_VDF
 {

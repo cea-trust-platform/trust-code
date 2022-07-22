@@ -22,10 +22,9 @@
 
 class Convection_Diffusion_std;
 class Champ_Don;
-//
-// .DESCRIPTION
-// Terme Source de Boussinesq pour une dicretisation VEF
-//
+/*! @brief Terme Source de Boussinesq pour une dicretisation VEF
+ *
+ */
 
 class Terme_Boussinesq_VEF_Face : public Terme_Boussinesq_base
 {

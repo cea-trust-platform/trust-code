@@ -17,15 +17,14 @@
 #define Frottement_interfacial_Sonnenburg_included
 #include <Frottement_interfacial_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Frottement_interfacial_Sonnenburg
-//      coefficients de frottement interfacial correspondant a la correlation
-//      de "drift flux" de Sonnenburg, modifiee par Bissen, Alpy et Medale
-//      pour presenter les bonnes limites en alpha -> 0 et alpha -> 1
-//      parametres : non!
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Frottement_interfacial_Sonnenburg coefficients de frottement interfacial correspondant a la correlation
+ *
+ *       de "drift flux" de Sonnenburg, modifiee par Bissen, Alpy et Medale
+ *       pour presenter les bonnes limites en alpha -> 0 et alpha -> 1
+ *       parametres : non!
+ *
+ *
+ */
 
 class Frottement_interfacial_Sonnenburg : public Frottement_interfacial_base
 {

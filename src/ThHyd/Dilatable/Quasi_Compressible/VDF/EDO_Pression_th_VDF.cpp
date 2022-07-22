@@ -46,20 +46,9 @@ void  EDO_Pression_th_VDF::associer_zones(const Zone_dis& zone, const Zone_Cl_di
   la_zone_Cl = zone_cl;
 }
 
-// Description:
-//    Complete l'EDO : calcule rho sur les faces
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Complete l'EDO : calcule rho sur les faces
+ *
+ */
 void EDO_Pression_th_VDF::completer()
 {
   const DoubleTab& tab_ICh = le_fluide_->inco_chaleur().valeurs();
@@ -68,20 +57,10 @@ void EDO_Pression_th_VDF::completer()
   le_fluide_->checkTraitementPth(la_zone_Cl);
 }
 
-// Description:
-//    Renvoie la valeur de la pression calculee pour conserver la masse
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Double
-//    Signification: pression calculee
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la valeur de la pression calculee pour conserver la masse
+ *
+ * @return (Double) pression calculee
+ */
 double EDO_Pression_th_VDF::masse_totale(double P,const DoubleTab& T)
 {
   int elem, nb_elem=la_zone->nb_elem();

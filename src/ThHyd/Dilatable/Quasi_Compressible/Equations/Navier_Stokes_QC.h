@@ -18,27 +18,23 @@
 
 #include <Navier_Stokes_Fluide_Dilatable_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Navier_Stokes_QC
-//    Cette classe porte les termes de l'equation de la dynamique
-//    pour un fluide sans modelisation de la turbulence.
-//    On suppose l'hypothese de fluide quasi compressible.
-//    Sous ces hypotheses, on utilise la forme suivante des equations de
-//    Navier_Stokes:
-//       DU/dt = div(terme visqueux) - gradP/rho + sources/rho
-//       div U = W
-//    avec DU/dt : derivee particulaire de la vitesse
-//         rho   : masse volumique
-//    Rq : l'implementation de la classe permet bien sur de negliger
-//         certains termes de l'equation (le terme visqueux, le terme
-//         convectif, tel ou tel terme source).
-//    L'inconnue est le champ de vitesse.
-// .SECTION voir aussi
-//      Navier_Stokes_Fluide_Dilatable_base
-//
-//////////////////////////////////////
+/*! @brief classe Navier_Stokes_QC Cette classe porte les termes de l'equation de la dynamique
+ *
+ *     pour un fluide sans modelisation de la turbulence.
+ *     On suppose l'hypothese de fluide quasi compressible.
+ *     Sous ces hypotheses, on utilise la forme suivante des equations de
+ *     Navier_Stokes:
+ *        DU/dt = div(terme visqueux) - gradP/rho + sources/rho
+ *        div U = W
+ *     avec DU/dt : derivee particulaire de la vitesse
+ *          rho   : masse volumique
+ *     Rq : l'implementation de la classe permet bien sur de negliger
+ *          certains termes de l'equation (le terme visqueux, le terme
+ *          convectif, tel ou tel terme source).
+ *     L'inconnue est le champ de vitesse.
+ *
+ * @sa Navier_Stokes_Fluide_Dilatable_base
+ */
 
 class Navier_Stokes_QC : public Navier_Stokes_Fluide_Dilatable_base
 {

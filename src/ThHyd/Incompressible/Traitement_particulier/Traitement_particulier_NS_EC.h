@@ -21,17 +21,13 @@
 #include <Champ_Don.h>
 #include <SFichier.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Traitement_particulier_EC
-//     Cette classe permet de faire les traitements particuliers
-//     pour les calculs de  l'energie cinetique totale
-//
-// .SECTION voir aussi
-//      Navier_Stokes_Turbulent, Traitement_particulier_base,
-//      Traitement_particulier_VEF
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Traitement_particulier_EC Cette classe permet de faire les traitements particuliers
+ *
+ *      pour les calculs de  l'energie cinetique totale
+ *
+ *
+ * @sa Navier_Stokes_Turbulent, Traitement_particulier_base,, Traitement_particulier_VEF
+ */
 class Traitement_particulier_NS_EC : public Traitement_particulier_NS_base
 {
   Declare_base_sans_constructeur_ni_destructeur(Traitement_particulier_NS_EC);

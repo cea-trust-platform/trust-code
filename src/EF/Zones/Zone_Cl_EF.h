@@ -18,10 +18,11 @@
 
 
 
-//
-// .DESCRIPTION class Zone_Cl_EF
-//  Cette classe porte les tableaux qui servent a mettre en oeuvre
-//  les condition aux limites dans la formulation EF
+/*! @brief class Zone_Cl_EF Cette classe porte les tableaux qui servent a mettre en oeuvre
+ *
+ *   les condition aux limites dans la formulation EF
+ *
+ */
 
 //
 // .SECTION voir aussi

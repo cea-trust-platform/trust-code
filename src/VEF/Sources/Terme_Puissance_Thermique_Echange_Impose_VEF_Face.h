@@ -25,9 +25,9 @@
 
 class Probleme_base;
 
-//
-// .DESCRIPTION class Terme_Puissance_Thermique_Echange_Impose_VEF_Face
-//
+/*! @brief class Terme_Puissance_Thermique_Echange_Impose_VEF_Face
+ *
+ */
 
 //
 // .SECTION voir aussi Source_base

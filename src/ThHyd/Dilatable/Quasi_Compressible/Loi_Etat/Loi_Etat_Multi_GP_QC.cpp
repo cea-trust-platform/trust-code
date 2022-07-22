@@ -49,41 +49,18 @@ Entree& Loi_Etat_Multi_GP_QC::readOn(Entree& is)
   return is;
 }
 
-// Description:
-// Associe les proprietes physiques
-// d une espece a la loi d'etat
-// Precondition:
-// Parametre: eq
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe les proprietes physiques d une espece a la loi d'etat
+ *
+ * @param (eq)
+ */
 void Loi_Etat_Multi_GP_QC::associer_espece(const Convection_Diffusion_Espece_Multi_QC& eq)
 {
   liste_especes.add(eq.espece());
 }
 
-// Description:
-//    Calcule la masse molaire du melange (M)
-//    M depend de la mase molaire de chaque espece et de la composition du melange (Yi)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la masse molaire du melange (M) M depend de la mase molaire de chaque espece et de la composition du melange (Yi)
+ *
+ */
 void Loi_Etat_Multi_GP_QC::calculer_masse_molaire(DoubleTab& tab_masse_mol_mel) const
 {
   const int size = tab_masse_mol_mel.size();
@@ -116,21 +93,9 @@ void Loi_Etat_Multi_GP_QC::calculer_masse_molaire(DoubleTab& tab_masse_mol_mel) 
       tab_masse_mol_mel(elem,0) = numer_M[elem] / inv_M[elem];
 }
 
-// Description:
-//    Calcule le Cp du melange
-//    Le Cp depend du Cp de chaque espece et de la composition du melange (Yi)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule le Cp du melange Le Cp depend du Cp de chaque espece et de la composition du melange (Yi)
+ *
+ */
 void Loi_Etat_Multi_GP_QC::calculer_tab_Cp(DoubleTab& tab_Cp) const
 {
   // FIXME : Actuellement on suppose que Cp est pris constant pour chacune des especes
@@ -144,21 +109,9 @@ void Loi_Etat_Multi_GP_QC::calculer_tab_Cp(DoubleTab& tab_Cp) const
     }
 }
 
-// Description:
-//    Corrections explicites pour les fractions massiques pour forcer
-//    la somme a 1 et sans valeurs negatives
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Corrections explicites pour les fractions massiques pour forcer la somme a 1 et sans valeurs negatives
+ *
+ */
 void Loi_Etat_Multi_GP_QC::rabot(int futur)
 {
   DoubleTab test( liste_Y(0).valeur().valeurs()) ;
@@ -209,20 +162,9 @@ void Loi_Etat_Multi_GP_QC::rabot(int futur)
     }
 }
 
-// Description:
-//    Recalcule la masse volumique
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Recalcule la masse volumique
+ *
+ */
 void Loi_Etat_Multi_GP_QC::calculer_masse_volumique()
 {
   const DoubleTab& tab_ICh = le_fluide->inco_chaleur().valeurs();
@@ -259,20 +201,9 @@ double Loi_Etat_Multi_GP_QC::calculer_masse_volumique(double P, double T) const
   return Loi_Etat_Multi_GP_base::calculer_masse_volumique(P,T);
 }
 
-// Description:
-//    Calcule la viscosite dynamique de reference (depend des Yi)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la viscosite dynamique de reference (depend des Yi)
+ *
+ */
 void Loi_Etat_Multi_GP_QC::calculer_mu_wilke()
 {
   // With Wilke formulation: https://aip.scitation.org/doi/pdf/10.1063/1.1747673
@@ -312,20 +243,9 @@ void Loi_Etat_Multi_GP_QC::calculer_mu_wilke()
   calculer_tab_mu(mu, size);
 }
 
-// Description:
-//    Calcule la viscosite dynamique sur Schmidt
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la viscosite dynamique sur Schmidt
+ *
+ */
 void Loi_Etat_Multi_GP_QC::calculer_mu_sur_Sc()
 {
   const Champ_Don& mu = le_fluide->viscosite_dynamique();

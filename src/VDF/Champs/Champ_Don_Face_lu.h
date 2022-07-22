@@ -18,23 +18,20 @@
 
 #include <Champ_Fonc_Face.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     class Champ_Don_Face_lu
-//     Cette classe represente un champ de donnees que l'on lit
-//     dans un fichier avec les conventions suivantes:
-//      - n valeurs du champ sont donnees dans le fichier
-//        n doit etre egal au nombre de faces  du maillage
-//      - le format du fichier est le suivant:
-//         n
-//         .......................
-//         xi yi (zi) ui (vi) (wi) ou xi yi (zi) sont
-//         les coordonnees du centre de gravite des faces
-//         .......................
-// .SECTION voir aussi
-//     Champ_Don_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief class Champ_Don_Face_lu Cette classe represente un champ de donnees que l'on lit
+ *
+ *      dans un fichier avec les conventions suivantes:
+ *       - n valeurs du champ sont donnees dans le fichier
+ *         n doit etre egal au nombre de faces  du maillage
+ *       - le format du fichier est le suivant:
+ *          n
+ *          .......................
+ *          xi yi (zi) ui (vi) (wi) ou xi yi (zi) sont
+ *          les coordonnees du centre de gravite des faces
+ *          .......................
+ *
+ * @sa Champ_Don_base
+ */
 
 class Champ_Don_Face_lu : public Champ_Fonc_Face
 {

@@ -23,14 +23,14 @@
 #include <SolveurSys.h>
 #include <Zone_PolyMAC_P0.h>
 
-/////////////////////////////////////////////////////////////////////////////
-// .NAME        : Champ_Face_PolyMAC_P0
-// .DESCRIPTION : class Champ_Face_PolyMAC_P0
-//
-// Champ correspondant a une inconnue decrite par ses tangentes aux faces duales (ligne amont-aval, type vitesse)
-// Les flux aux faces sont accessibles par les methodes valeurs_normales(), avec synchro automatique
-// Degres de libertes : composantes tangentielles aux faces duales
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Champ_Face_PolyMAC_P0
+ *
+ *  Champ correspondant a une inconnue decrite par ses tangentes aux faces duales (ligne amont-aval, type vitesse)
+ *  Les flux aux faces sont accessibles par les methodes valeurs_normales(), avec synchro automatique
+ *  Degres de libertes : composantes tangentielles aux faces duales
+ *
+ *
+ */
 
 class Champ_Face_PolyMAC_P0 : public Champ_Face_PolyMAC
 {

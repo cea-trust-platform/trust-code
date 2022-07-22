@@ -51,20 +51,9 @@ const Champ_base& Convection_Diffusion_Espece_Multi_QC::diffusivite_pour_pas_de_
   return le_fluide->mu_sur_Schmidt();
 }
 
-// Description:
-//    Associe l inconnue de l equation a la loi d etat,
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe l inconnue de l equation a la loi d etat,
+ *
+ */
 void Convection_Diffusion_Espece_Multi_QC::completer()
 {
   Convection_Diffusion_Espece_Multi_base::completer();
@@ -74,22 +63,14 @@ void Convection_Diffusion_Espece_Multi_QC::completer()
   loi_etat.associer_espece(*this);
 }
 
-// Description:
-//     Renvoie la derivee en temps de l'inconnue de l'equation.
-//     Le calcul est le suivant:
-//         d(inconnue)/dt = M^{-1} * (sources - somme(Op_{i}(inconnue))) / rho
-// Precondition:
-// Parametre: DoubleTab& derivee
-//    Signification: le tableau des valeurs de la derivee en temps du champ inconnu
-//    Valeurs par defaut:
-//    Contraintes: ce parametre est remis a zero des l'entree de la methode
-//    Acces: sortie
-// Retour: DoubleTab&
-//    Signification: le tableau des valeurs de la derivee en temps du champ inconnu
-//    Contraintes:
-// Exception:
-// Effets de bord: des communications (si version parallele) sont generees pas cet appel
-// Postcondition:
+/*! @brief Renvoie la derivee en temps de l'inconnue de l'equation.
+ *
+ * Le calcul est le suivant:
+ *          d(inconnue)/dt = M^{-1} * (sources - somme(Op_{i}(inconnue))) / rho
+ *
+ * @param (DoubleTab& derivee) le tableau des valeurs de la derivee en temps du champ inconnu
+ * @return (DoubleTab&) le tableau des valeurs de la derivee en temps du champ inconnu
+ */
 DoubleTab& Convection_Diffusion_Espece_Multi_QC::derivee_en_temps_inco(DoubleTab& derivee)
 {
   if (schema_temps().diffusion_implicite())

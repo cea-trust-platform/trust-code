@@ -25,13 +25,12 @@
 
 class Probleme_base;
 
-//
-// .DESCRIPTION class Source_PDF_base
-// Base class for the source terms for the penalisation of the momentum in the Immersed Boundary Method (IBM)
-//
-// .SECTION voir aussi Source_dep_inco_base, and Source_PDF
-//
-//
+/*! @brief class Source_PDF_base Base class for the source terms for the penalisation of the momentum in the Immersed Boundary Method (IBM)
+ *
+ *
+ *
+ * @sa Source_dep_inco_base, and Source_PDF
+ */
 
 class Source_PDF_base : public Source_dep_inco_base
 {

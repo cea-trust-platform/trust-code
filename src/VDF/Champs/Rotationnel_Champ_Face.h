@@ -21,11 +21,10 @@
 #include <Champ_Fonc_P0_VDF.h>
 #include <Ref_Champ_Face.h>
 
-//
-//.DESCRIPTION  classe Rotationnel_Champ_Face
-//
-// .SECTION voir aussi
-// Champ_Rotationnel Champ_Fonc_P0_VDF
+/*! @brief classe Rotationnel_Champ_Face
+ *
+ * @sa Champ_Rotationnel Champ_Fonc_P0_VDF
+ */
 
 class Rotationnel_Champ_Face : public Champ_Rotationnel,
   public Champ_Fonc_P0_VDF

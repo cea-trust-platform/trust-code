@@ -24,13 +24,14 @@
 #include <Source_base.h>
 
 
-//
-// .DESCRIPTION class Force_Centrifuge_VDF_Face_Axi
-//
-// Cette classe represente la force centrifuge
-// a prendre en compte dans les equations de Navier-Stokes
-// en coordonnees cylindriques pour une dicretisation VDF
-//
+/*! @brief class Force_Centrifuge_VDF_Face_Axi
+ *
+ *  Cette classe represente la force centrifuge
+ *  a prendre en compte dans les equations de Navier-Stokes
+ *  en coordonnees cylindriques pour une dicretisation VDF
+ *
+ *
+ */
 
 // .SECTION voir aussi
 // Source_base

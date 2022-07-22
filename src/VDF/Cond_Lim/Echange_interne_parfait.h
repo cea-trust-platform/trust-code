@@ -18,16 +18,13 @@
 
 #include <Echange_interne_impose.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Echange_interne_parfait:
-//    Cette classe represente le cas particulier de la classe
-//    Echange_interne_impose où h_gap=+infinity
-//    En VDF la seule partie contribuant au h_tot reste les épaisseurs de demi-maille.
-// .SECTION voir aussi
-//    Echange_interne_parfait Echange_interne_impose
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Echange_interne_parfait: Cette classe represente le cas particulier de la classe
+ *
+ *     Echange_interne_impose où h_gap=+infinity
+ *     En VDF la seule partie contribuant au h_tot reste les épaisseurs de demi-maille.
+ *
+ * @sa Echange_interne_parfait Echange_interne_impose
+ */
 class Echange_interne_parfait  : public Echange_interne_impose
 {
 

@@ -18,20 +18,20 @@
 
 
 
-//
-// .DESCRIPTION class Zone_Cl_VEF
-//  Cette classe porte les tableaux qui servent a mettre en oeuvre
-//  les condition aux limites dans la formulation VEF
-//  volumes_entrelaces_Cl_ : volumes des polyedres entrelaces autour des faces
-//                           non standard
-//  normales_facettes_Cl_ : normales aux facettes situees dans des polyedres
-//                          non standard
-//  type_elem_Cl_: type des polyedres non standard. Le type_elem_Cl d'un element
-//                 non standard depend de son nombre de faces de Dirichlet et de
-//                 la position de ces faces dans l'element (voir Tri_VEF et Tetra_VEF)
-//
-// .SECTION voir aussi
-// Zone_Cl_dis_base
+/*! @brief class Zone_Cl_VEF Cette classe porte les tableaux qui servent a mettre en oeuvre
+ *
+ *   les condition aux limites dans la formulation VEF
+ *   volumes_entrelaces_Cl_ : volumes des polyedres entrelaces autour des faces
+ *                            non standard
+ *   normales_facettes_Cl_ : normales aux facettes situees dans des polyedres
+ *                           non standard
+ *   type_elem_Cl_: type des polyedres non standard. Le type_elem_Cl d'un element
+ *                  non standard depend de son nombre de faces de Dirichlet et de
+ *                  la position de ces faces dans l'element (voir Tri_VEF et Tetra_VEF)
+ *
+ *
+ * @sa Zone_Cl_dis_base
+ */
 
 
 #include <Zone_Cl_dis_base.h>

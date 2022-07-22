@@ -17,29 +17,26 @@
 #define Sch_CN_EX_iteratif_included
 
 #include <Sch_CN_iteratif.h>
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Sch_CN_EX_iteratif
-//
-//     Ce schema en temps implemente quelques astuces en plus de Sch_CN_iteratif pour
-//     le stabiliser au-dela de son domaine de stabilite naturel (facsec<2).
-//
-//     Un facteur d'amortissement des iterations est defini : omega.
-//     Il ameliore la stabilite, mais deterore la qualite de la resolution :
-//     Aux petits nombres d'iterations, les derivees temporelles sont sous-estimees
-//     et les lois de conservation ne sont plus necessairement satisfaites.
-//
-//     Pour augmenter le pas de temps, les equations autres que Navier-Stokes sont resolues
-//     via le calcul de plusieurs pas de temps d'Euler explicite.
-//     A chaque iteration de Sch_CN_iteratif, les n pas de temps d'Euler explicite sont recalcules.
-//
-//     Ce schema est adapte aux cas industriels de type gros calculs hydrauliques LES avec
-//     thermique couplee a du solide
-//
-// .SECTION voir aussi
-//     Sch_CN_iteratif
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Sch_CN_EX_iteratif
+ *
+ *      Ce schema en temps implemente quelques astuces en plus de Sch_CN_iteratif pour
+ *      le stabiliser au-dela de son domaine de stabilite naturel (facsec<2).
+ *
+ *      Un facteur d'amortissement des iterations est defini : omega.
+ *      Il ameliore la stabilite, mais deterore la qualite de la resolution :
+ *      Aux petits nombres d'iterations, les derivees temporelles sont sous-estimees
+ *      et les lois de conservation ne sont plus necessairement satisfaites.
+ *
+ *      Pour augmenter le pas de temps, les equations autres que Navier-Stokes sont resolues
+ *      via le calcul de plusieurs pas de temps d'Euler explicite.
+ *      A chaque iteration de Sch_CN_iteratif, les n pas de temps d'Euler explicite sont recalcules.
+ *
+ *      Ce schema est adapte aux cas industriels de type gros calculs hydrauliques LES avec
+ *      thermique couplee a du solide
+ *
+ *
+ * @sa Sch_CN_iteratif
+ */
 class Sch_CN_EX_iteratif : public Sch_CN_iteratif
 {
   Declare_instanciable(Sch_CN_EX_iteratif);

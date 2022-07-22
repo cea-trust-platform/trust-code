@@ -25,9 +25,9 @@
 
 class Probleme_base;
 
-//
-// .DESCRIPTION class Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC
-//
+/*! @brief class Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC
+ *
+ */
 
 //
 // .SECTION voir aussi Source_base

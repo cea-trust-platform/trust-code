@@ -23,9 +23,9 @@
 class Domaine;
 #include <TRUSTList.h>
 
-//
-// .DESCRIPTION class DP_Impose_PolyMAC_Face
-//
+/*! @brief class DP_Impose_PolyMAC_Face
+ *
+ */
 
 //
 // .SECTION voir aussi Perte_Charge_PolyMAC_Face

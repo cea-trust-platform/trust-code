@@ -35,9 +35,9 @@ Entree& Tri_VEF::readOn(Entree& s )
 
 Tri_VEF::Tri_VEF()
 {
-  // Description:
-  // KEL_(0,fa7),KEL_(1,fa7) sont  les numeros locaux des 2 faces
-  // qui entourent la facette de numero local fa7
+  /*! @brief KEL_(0,fa7),KEL_(1,fa7) sont  les numeros locaux des 2 faces qui entourent la facette de numero local fa7
+   *
+   */
   int tmp[3][3]=
   {
     {1, 2, 0},
@@ -50,8 +50,9 @@ Tri_VEF::Tri_VEF()
       KEL_(i,j)=tmp[i][j];
 }
 
-// Description:
-// remplit le tableau face_normales dans la Zone_VEF
+/*! @brief remplit le tableau face_normales dans la Zone_VEF
+ *
+ */
 void Tri_VEF::normale(int num_Face,DoubleTab& Face_normales,
                       const  IntTab& Face_sommets,
                       const IntTab& Face_voisins,
@@ -96,8 +97,9 @@ void Tri_VEF::normale(int num_Face,DoubleTab& Face_normales,
     }
 }
 
-// Description:
-// calcule les normales des facettes pour des elem standards
+/*! @brief calcule les normales des facettes pour des elem standards
+ *
+ */
 void Tri_VEF::creer_facette_normales(const Zone& zone_geom,
                                      DoubleTab& facette_normales,
                                      const IntVect& rang_elem_non_std) const
@@ -167,9 +169,9 @@ void Tri_VEF::creer_facette_normales(const Zone& zone_geom,
   facette_normales.echange_espace_virtuel();
 }
 
-// Description:
-// remplit le tableau normales_facettes_Cl dans la Zone_Cl_VEF
-// pour la facette fa7 de l'element num_elem
+/*! @brief remplit le tableau normales_facettes_Cl dans la Zone_Cl_VEF pour la facette fa7 de l'element num_elem
+ *
+ */
 void Tri_VEF::creer_normales_facettes_Cl(DoubleTab& normales_facettes_Cl,
                                          int fa7,
                                          int num_elem,const DoubleTab& x,
@@ -206,9 +208,9 @@ void Tri_VEF::creer_normales_facettes_Cl(DoubleTab& normales_facettes_Cl,
 
 }
 
-// Description:
-// modifie les volumes entrelaces pour la face j d'un elem
-// non standard
+/*! @brief modifie les volumes entrelaces pour la face j d'un elem non standard
+ *
+ */
 void Tri_VEF::modif_volumes_entrelaces(int j,int elem,
                                        const Zone_VEF& la_zone_VEF,
                                        DoubleVect& volumes_entrelaces_Cl,
@@ -286,9 +288,9 @@ void Tri_VEF::modif_volumes_entrelaces(int j,int elem,
 
 }
 
-// Description:
-// modifie les volumes entrelaces pour la face joint j d'un elem
-// non standard
+/*! @brief modifie les volumes entrelaces pour la face joint j d'un elem non standard
+ *
+ */
 void Tri_VEF::modif_volumes_entrelaces_faces_joints(int j,int elem,
                                                     const Zone_VEF& la_zone_VEF,
                                                     DoubleVect& volumes_entrelaces_Cl,
@@ -386,8 +388,9 @@ void Tri_VEF::modif_volumes_entrelaces_faces_joints(int j,int elem,
 
 }
 
-// Description:
-//
+/*! @brief
+ *
+ */
 void Tri_VEF::calcul_vc(const ArrOfInt& Face,ArrOfDouble& vc,
                         const ArrOfDouble& vs,const DoubleTab& vsom,
                         const Champ_Inc_base& vitesse,int type_cl, const DoubleVect& porosite_face) const
@@ -453,10 +456,11 @@ void Tri_VEF::calcul_vc(const ArrOfInt& Face,ArrOfDouble& vc,
 
 }
 
-// Description:
-// calcule les coord xg du centre d'un element non standard
-// calcule aussi idirichlet=nb de faces de Dirichlet de l'element
-// si idirichlet=2, n1 est le numero du sommet confondu avec G
+/*! @brief calcule les coord xg du centre d'un element non standard calcule aussi idirichlet=nb de faces de Dirichlet de l'element
+ *
+ *  si idirichlet=2, n1 est le numero du sommet confondu avec G
+ *
+ */
 void Tri_VEF::calcul_xg(DoubleVect& xg, const DoubleTab& x,
                         const int type_elem_Cl,int& idirichlet,int& n1,int& ,int& ) const
 {
@@ -550,10 +554,11 @@ void Tri_VEF::calcul_xg(DoubleVect& xg, const DoubleTab& x,
 
 }
 
-// Description:
-// modifie normales_facettes_Cl quand idirichlet=2
-// idirichlet=nb de faces de Dirichlet de l'element
-// si idirichlet=2, n1 est le numero du sommet confondu avec G
+/*! @brief modifie normales_facettes_Cl quand idirichlet=2 idirichlet=nb de faces de Dirichlet de l'element
+ *
+ *  si idirichlet=2, n1 est le numero du sommet confondu avec G
+ *
+ */
 void Tri_VEF::modif_normales_facettes_Cl(DoubleTab& normales_facettes_Cl,
                                          int fa7,int num_elem,
                                          int idirichlet,int n1,int ,int ) const

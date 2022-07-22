@@ -16,13 +16,13 @@
 #ifndef Terme_Source_Canal_perio_VEF_P1NC_included
 #define Terme_Source_Canal_perio_VEF_P1NC_included
 
-//
-// .DESCRIPTION class Terme_Source_Canal_perio_VEF_P1NC
-//  Cette classe permet de conserver le debit dans une simulation
-//  temporelle de Canal
-//
-// .SECTION voir aussi
-//  Terme_Source_Canal_perio
+/*! @brief class Terme_Source_Canal_perio_VEF_P1NC Cette classe permet de conserver le debit dans une simulation
+ *
+ *   temporelle de Canal
+ *
+ *
+ * @sa Terme_Source_Canal_perio
+ */
 
 #include <Terme_Source_Canal_perio.h>
 #include <TRUSTTabs_forward.h>

@@ -21,9 +21,10 @@
 #include <Ref_Zone_VEF.h>
 #include <Ref_Zone_Cl_VEF.h>
 
-// .DESCRIPTION class Source_Generique_VEF
-// .SECTION voir aussi Source_Generique_base
-//
+/*! @brief class Source_Generique_VEF
+ *
+ * @sa Source_Generique_base
+ */
 class Source_Generique_VEF: public Source_Generique_base
 {
 

@@ -22,8 +22,9 @@
 #include <SFichier.h>
 class Probleme_base;
 
-// .DESCRIPTION
-// Source term to keep a constant flow rate in a channel with periodic boundary conditions
+/*! @brief Source term to keep a constant flow rate in a channel with periodic boundary conditions
+ *
+ */
 
 class Terme_Source_Canal_perio : public Source_base
 {

@@ -25,17 +25,14 @@
 //class Zone_Cl_dis_base;
 //class Front_dis_base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_front_contact_fictif_VEF
-//     Classe derivee de Champ_front_contact_VEF elle-meme derivant de
-//        Champ_front_var qui represente les
-//     champs a la frontiere obtenus en prenant la trace
-//     d'un objet de type Champ_Inc (champ inconnue d'une equation)
-// .SECTION voir aussi
-//     Champ_front_var_instationnaire Champ_Inc
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_front_contact_fictif_VEF Classe derivee de Champ_front_contact_VEF elle-meme derivant de
+ *
+ *         Champ_front_var qui represente les
+ *      champs a la frontiere obtenus en prenant la trace
+ *      d'un objet de type Champ_Inc (champ inconnue d'une equation)
+ *
+ * @sa Champ_front_var_instationnaire Champ_Inc
+ */
 class Champ_front_contact_fictif_VEF : public Champ_front_contact_VEF
 {
 

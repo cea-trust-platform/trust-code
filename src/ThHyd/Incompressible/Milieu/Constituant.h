@@ -18,19 +18,16 @@
 
 #include <Milieu_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Constituant
-//    Cette classe represente le(s) constituant(s) d'un fluide.
-//    Elle contient un champ alpha representant le coefficient de diffusion
-//    du constituant.
-//    Lorsqu'un objet de type Constituant represente plusieurs constituant
-//    le champ alpha est vectoriel avec autant de composantes qu'il y a
-//    de constituants.
-// .SECTION voir aussi
-//    Milieu_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Constituant Cette classe represente le(s) constituant(s) d'un fluide.
+ *
+ *     Elle contient un champ alpha representant le coefficient de diffusion
+ *     du constituant.
+ *     Lorsqu'un objet de type Constituant represente plusieurs constituant
+ *     le champ alpha est vectoriel avec autant de composantes qu'il y a
+ *     de constituants.
+ *
+ * @sa Milieu_base
+ */
 class Constituant : public Milieu_base
 {
   Declare_instanciable(Constituant);
@@ -51,41 +48,22 @@ protected :
 };
 
 
-// Description:
-// Renvoie le coefficient de diffusion du constituant.
-// Precondition:
-// Parametre:
-// Signification:
-// Valeurs par defaut:
-// Contraintes:
-// Acces:
-// Retour: Champ_Don&
-// Signification: le champ representant le coefficient de diffusion
-// Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le coefficient de diffusion du constituant.
+ *
+ * @return (Champ_Don&) le champ representant le coefficient de diffusion
+ */
 inline const Champ_Don& Constituant::diffusivite_constituant() const
 {
   return D;
 }
 
 
-// Description:
-//    Mise a jour en temps du milieu, i.e. de la
-//    coefficient_diffusion du constituant.
-// Precondition:
-// Parametre: double temps
-//    Signification: le temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Mise a jour en temps du milieu, i.
+ *
+ * e. de la coefficient_diffusion du constituant.
+ *
+ * @param (double temps) le temps de mise a jour
+ */
 inline void Constituant::mettre_a_jour(double temps)
 {
   if (D.non_nul())
@@ -93,20 +71,9 @@ inline void Constituant::mettre_a_jour(double temps)
 }
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN
+ *
+ */
 inline int Constituant::initialiser(const double temps)
 {
   if (D.non_nul())

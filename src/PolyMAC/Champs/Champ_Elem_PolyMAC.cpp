@@ -45,54 +45,26 @@ Entree& Champ_Elem_PolyMAC::readOn(Entree& s)
   return s ;
 }
 
-// Description:
-//
-// Precondition:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 const Zone_dis_base& Champ_Elem_PolyMAC::zone_dis_base() const
 {
   return la_zone_VF.valeur();
 }
-// Description:
-//
-// Precondition:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour:  z_dis
-//    Signification: la zone discretise
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ * @return (z_dis) la zone discretise
+ */
 void Champ_Elem_PolyMAC::associer_zone_dis_base(const Zone_dis_base& z_dis)
 {
   la_zone_VF=ref_cast(Zone_VF, z_dis);
 }
 
-// Description:
-//
-// Precondition:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: la_zone_PolyMAC_P0.valeur()
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ * @return (la_zone_PolyMAC_P0.valeur())
+ */
 const Zone_PolyMAC& Champ_Elem_PolyMAC::zone_PolyMAC() const
 {
   return ref_cast(Zone_PolyMAC, la_zone_VF.valeur());

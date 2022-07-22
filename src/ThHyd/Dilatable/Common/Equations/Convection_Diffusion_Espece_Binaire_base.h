@@ -18,15 +18,12 @@
 
 #include <Convection_Diffusion_Espece_Fluide_Dilatable_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Convection_Diffusion_Espece_Binaire_base
-//     Cas particulier de Convection_Diffusion_Espece_Fluide_Dilatable_base
-//     pour un fluide dilatable iso-therme et iso-bar
-// .SECTION voir aussi
-//     Convection_Diffusion_Espece_Fluide_Dilatable_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Convection_Diffusion_Espece_Binaire_base Cas particulier de Convection_Diffusion_Espece_Fluide_Dilatable_base
+ *
+ *      pour un fluide dilatable iso-therme et iso-bar
+ *
+ * @sa Convection_Diffusion_Espece_Fluide_Dilatable_base
+ */
 
 class Convection_Diffusion_Espece_Binaire_base : public Convection_Diffusion_Espece_Fluide_Dilatable_base
 {

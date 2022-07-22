@@ -28,40 +28,22 @@ Implemente_instanciable_sans_constructeur(Traitement_particulier_NS_Profils_ther
 Traitement_particulier_NS_Profils_thermo_VDF::Traitement_particulier_NS_Profils_thermo_VDF():oui_repr_stats_thermo(0)
 {
 }
-// Description: Classe permettant de faire les statistiques sur le champs
-//              de temperature avec des profils dans un domaine homogene dans une direction.
-// Precondition: Il faut traiter un probleme Thermohydraulique
-// Parametre: Sortie& is
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Classe permettant de faire les statistiques sur le champs de temperature avec des profils dans un domaine homogene dans une direction.
+ *
+ * @param (Sortie& is) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Traitement_particulier_NS_Profils_thermo_VDF::printOn(Sortie& is) const
 {
   return is;
 }
 
 
-// Description:
-//
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Traitement_particulier_NS_Profils_thermo_VDF::readOn(Entree& is)
 {
   return is;

@@ -48,11 +48,12 @@ void Sch_CN_EX_iteratif::set_param(Param& param)
   Sch_CN_iteratif::set_param(param);
 }
 
-// Description:
-// Ne tient compte que de l'equation de Navier Stokes du probleme (s'il y en a une)
-// Les autres ne sont pas limitantes : elles font autant de sous-pas de temps que necessaire.
-// Code honteusement recopie de Probleme_base::calculer_pas_de_temps()
-//
+/*! @brief Ne tient compte que de l'equation de Navier Stokes du probleme (s'il y en a une) Les autres ne sont pas limitantes : elles font autant de sous-pas de temps que necessaire.
+ *
+ *  Code honteusement recopie de Probleme_base::calculer_pas_de_temps()
+ *
+ *
+ */
 void Sch_CN_EX_iteratif::mettre_a_jour_dt_stab()
 {
   imprimer(Cout);

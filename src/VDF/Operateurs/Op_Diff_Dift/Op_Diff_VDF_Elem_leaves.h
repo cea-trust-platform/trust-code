@@ -29,10 +29,12 @@ class Op_Diff_VDF_Elem_leaves
 //////////////// CONST /////////////////
 
 declare_It_VDF_Elem(Eval_Diff_VDF_const_Elem)
-// .DESCRIPTION class Op_Diff_VDF_Elem
-//  Cette classe represente l'operateur de diffusion associe a une equation de transport.
-//  La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite n'est pas uniforme
-//  L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Diff_VDF_var_Elem
+/*! @brief class Op_Diff_VDF_Elem Cette classe represente l'operateur de diffusion associe a une equation de transport.
+ *
+ *   La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite n'est pas uniforme
+ *   L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Diff_VDF_var_Elem
+ *
+ */
 class Op_Diff_VDF_Elem : public Op_Diff_VDF_Elem_base, public Op_Diff_Dift_VDF<Op_Diff_VDF_Elem>
 {
   Declare_instanciable_sans_constructeur(Op_Diff_VDF_Elem);
@@ -45,10 +47,12 @@ public:
 };
 
 declare_It_VDF_Elem(Eval_Diff_VDF_const_Elem_Axi)
-// .DESCRIPTION class Op_Diff_VDF_Elem_Axi
-//  Cette classe represente l'operateur de diffusion associe a une equation de transport.
-//  La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite n'est pas uniforme
-//  L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Diff_VDF_var_Elem
+/*! @brief class Op_Diff_VDF_Elem_Axi Cette classe represente l'operateur de diffusion associe a une equation de transport.
+ *
+ *   La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite n'est pas uniforme
+ *   L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Diff_VDF_var_Elem
+ *
+ */
 class Op_Diff_VDF_Elem_Axi : public Op_Diff_VDF_Elem_base, public Op_Diff_Dift_VDF<Op_Diff_VDF_Elem_Axi>
 {
   Declare_instanciable_sans_constructeur(Op_Diff_VDF_Elem_Axi);
@@ -61,10 +65,12 @@ public:
 };
 
 declare_It_VDF_Elem(Eval_Diff_VDF_Multi_inco_const_Elem)
-// .DESCRIPTION class Op_Diff_VDF_Multi_inco_Elem
-//  Cette classe represente l'operateur de diffusion associe a une equation de transport.
-//  La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite n'est pas uniforme
-//  L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Diff_VDF_var_Elem
+/*! @brief class Op_Diff_VDF_Multi_inco_Elem Cette classe represente l'operateur de diffusion associe a une equation de transport.
+ *
+ *   La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite n'est pas uniforme
+ *   L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Diff_VDF_var_Elem
+ *
+ */
 class Op_Diff_VDF_Multi_inco_Elem : public Op_Diff_VDF_Elem_base, public Op_Diff_Dift_VDF<Op_Diff_VDF_Multi_inco_Elem>
 {
   Declare_instanciable_sans_constructeur(Op_Diff_VDF_Multi_inco_Elem);
@@ -77,10 +83,12 @@ public:
 };
 
 declare_It_VDF_Elem(Eval_Diff_VDF_Multi_inco_const_Elem_Axi)
-// .DESCRIPTION class Op_Diff_VDF_Multi_inco_Elem_Axi
-//  Cette classe represente l'operateur de diffusion associe a une equation de transport.
-//  La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite n'est pas uniforme
-//  L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Diff_VDF_var_Elem
+/*! @brief class Op_Diff_VDF_Multi_inco_Elem_Axi Cette classe represente l'operateur de diffusion associe a une equation de transport.
+ *
+ *   La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite n'est pas uniforme
+ *   L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Diff_VDF_var_Elem
+ *
+ */
 class Op_Diff_VDF_Multi_inco_Elem_Axi : public Op_Diff_VDF_Elem_base, public Op_Diff_Dift_VDF<Op_Diff_VDF_Multi_inco_Elem_Axi>
 {
   Declare_instanciable_sans_constructeur(Op_Diff_VDF_Multi_inco_Elem_Axi);
@@ -95,10 +103,12 @@ public:
 //////////////// VAR /////////////////
 
 declare_It_VDF_Elem(Eval_Diff_VDF_var_Elem)
-// .DESCRIPTION class Op_Diff_VDF_var_Elem
-//  Cette classe represente l'operateur de diffusion associe a une equation de transport.
-//  La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite n'est pas uniforme
-//  L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Diff_VDF_var_Elem
+/*! @brief class Op_Diff_VDF_var_Elem Cette classe represente l'operateur de diffusion associe a une equation de transport.
+ *
+ *   La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite n'est pas uniforme
+ *   L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Diff_VDF_var_Elem
+ *
+ */
 class Op_Diff_VDF_var_Elem : public Op_Diff_VDF_Elem_base, public Op_Diff_Dift_VDF<Op_Diff_VDF_var_Elem>
 {
   Declare_instanciable_sans_constructeur(Op_Diff_VDF_var_Elem);
@@ -111,10 +121,12 @@ public:
 };
 
 declare_It_VDF_Elem(Eval_Diff_VDF_var_Elem_Axi)
-// .DESCRIPTION class Op_Diff_VDF_var_Elem_Axi
-//  Cette classe represente l'operateur de diffusion associe a une equation de transport.
-//  La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite n'est pas uniforme
-//  L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Diff_VDF_var_Elem
+/*! @brief class Op_Diff_VDF_var_Elem_Axi Cette classe represente l'operateur de diffusion associe a une equation de transport.
+ *
+ *   La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite n'est pas uniforme
+ *   L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Diff_VDF_var_Elem
+ *
+ */
 class Op_Diff_VDF_var_Elem_Axi : public Op_Diff_VDF_Elem_base, public Op_Diff_Dift_VDF<Op_Diff_VDF_var_Elem_Axi>
 {
   Declare_instanciable_sans_constructeur(Op_Diff_VDF_var_Elem_Axi);
@@ -127,10 +139,12 @@ public:
 };
 
 declare_It_VDF_Elem(Eval_Diff_VDF_var_Elem_aniso)
-// .DESCRIPTION class Op_Diff_VDF_var_Elem_aniso
-//  Cette classe represente l'operateur de diffusion associe a une equation de transport.
-//  La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite n'est pas uniforme
-//  L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Diff_VDF_var_Elem
+/*! @brief class Op_Diff_VDF_var_Elem_aniso Cette classe represente l'operateur de diffusion associe a une equation de transport.
+ *
+ *   La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite n'est pas uniforme
+ *   L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Diff_VDF_var_Elem
+ *
+ */
 class Op_Diff_VDF_var_Elem_aniso : public Op_Diff_VDF_Elem_base, public Op_Diff_Dift_VDF<Op_Diff_VDF_var_Elem_aniso>
 {
   Declare_instanciable_sans_constructeur(Op_Diff_VDF_var_Elem_aniso);
@@ -143,10 +157,12 @@ public:
 };
 
 declare_It_VDF_Elem(Eval_Diff_VDF_Multi_inco_var_Elem)
-// .DESCRIPTION class Op_Diff_VDF_Multi_inco_var_Elem
-//  Cette classe represente l'operateur de diffusion associe a une equation de transport.
-//  La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite n'est pas uniforme
-//  L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Diff_VDF_var_Elem
+/*! @brief class Op_Diff_VDF_Multi_inco_var_Elem Cette classe represente l'operateur de diffusion associe a une equation de transport.
+ *
+ *   La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite n'est pas uniforme
+ *   L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Diff_VDF_var_Elem
+ *
+ */
 class Op_Diff_VDF_Multi_inco_var_Elem : public Op_Diff_VDF_Elem_base, public Op_Diff_Dift_VDF<Op_Diff_VDF_Multi_inco_var_Elem>
 {
   Declare_instanciable_sans_constructeur(Op_Diff_VDF_Multi_inco_var_Elem);
@@ -159,10 +175,12 @@ public:
 };
 
 declare_It_VDF_Elem(Eval_Diff_VDF_Multi_inco_var_Elem_Axi)
-// .DESCRIPTION class Op_Diff_VDF_Multi_inco_var_Elem_Axi
-//  Cette classe represente l'operateur de diffusion associe a une equation de transport.
-//  La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite n'est pas uniforme
-//  L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Diff_VDF_var_Elem
+/*! @brief class Op_Diff_VDF_Multi_inco_var_Elem_Axi Cette classe represente l'operateur de diffusion associe a une equation de transport.
+ *
+ *   La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite n'est pas uniforme
+ *   L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Diff_VDF_var_Elem
+ *
+ */
 class Op_Diff_VDF_Multi_inco_var_Elem_Axi : public Op_Diff_VDF_Elem_base, public Op_Diff_Dift_VDF<Op_Diff_VDF_Multi_inco_var_Elem_Axi>
 {
   Declare_instanciable_sans_constructeur(Op_Diff_VDF_Multi_inco_var_Elem_Axi);

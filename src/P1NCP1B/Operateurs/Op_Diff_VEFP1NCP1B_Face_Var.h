@@ -19,17 +19,18 @@
 
 #include <Op_Diff_VEFP1NCP1B_Face.h>
 
-//
-// .DESCRIPTION class Op_Diff_VEFP1NCP1B_Face_Var
-//  Cette classe represente l'operateur de diffusion
-//  La discretisation est VEF
-//  Le champ diffuse est scalaire
-//  Le champ de diffusivite est fonction de T
-//  Operateur de diffusion qui permet l'utilisation de variables changeant au
-//  cours du temps. Il s'oppose a l'operateur constant Op_Diff_VEF_Face en VEF.
-//  Il existe le meme en version VDF.
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief class Op_Diff_VEFP1NCP1B_Face_Var Cette classe represente l'operateur de diffusion
+ *
+ *   La discretisation est VEF
+ *   Le champ diffuse est scalaire
+ *   Le champ de diffusivite est fonction de T
+ *   Operateur de diffusion qui permet l'utilisation de variables changeant au
+ *   cours du temps. Il s'oppose a l'operateur constant Op_Diff_VEF_Face en VEF.
+ *   Il existe le meme en version VDF.
+ *
+ *
+ *
+ */
 
 class Op_Diff_VEFP1NCP1B_Face_Var : public Op_Diff_VEFP1NCP1B_Face
 {

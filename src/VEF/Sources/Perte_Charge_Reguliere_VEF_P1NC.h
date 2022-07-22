@@ -20,9 +20,9 @@
 #include <Perte_Charge_VEF_Face.h>
 #include <Perte_Charge_Reguliere.h>
 
-//
-// .DESCRIPTION class Perte_Charge_Reguliere_VEF_P1NC
-//
+/*! @brief class Perte_Charge_Reguliere_VEF_P1NC
+ *
+ */
 
 //
 // .SECTION voir aussi Perte_Charge_VEF_P1NC

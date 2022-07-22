@@ -60,16 +60,18 @@ void Echange_contact_VDF::completer()
   T_autre_pb()->fixer_nb_valeurs_temporelles(nb_cases);
 }
 
-// Description:
-//    Change le i-eme temps futur de la CL.
+/*! @brief Change le i-eme temps futur de la CL.
+ *
+ */
 void Echange_contact_VDF::changer_temps_futur(double temps,int i)
 {
   Cond_lim_base::changer_temps_futur(temps,i);
   T_autre_pb()->changer_temps_futur(temps,i);
 }
 
-// Description:
-//    Tourne la roue de la CL
+/*! @brief Tourne la roue de la CL
+ *
+ */
 int Echange_contact_VDF::avancer(double temps)
 {
   int ok=Cond_lim_base::avancer(temps);
@@ -77,8 +79,9 @@ int Echange_contact_VDF::avancer(double temps)
   return ok;
 }
 
-// Description:
-//    Tourne la roue de la CL
+/*! @brief Tourne la roue de la CL
+ *
+ */
 int Echange_contact_VDF::reculer(double temps)
 {
   int ok=Cond_lim_base::reculer(temps);
@@ -361,9 +364,9 @@ void Echange_contact_VDF::mettre_a_jour(double temps)
 }
 
 
-// Description:
-// remplit Teta_eq
-// utilise T_autre_pb au temps passe en parametre
+/*! @brief remplit Teta_eq utilise T_autre_pb au temps passe en parametre
+ *
+ */
 void Echange_contact_VDF::calculer_Teta_equiv(DoubleTab& Teta_eq,const DoubleTab& mon_h,const DoubleTab& lautre_h,int i,double temps)
 {
   const Front_VF& ma_front_vf = ref_cast(Front_VF,frontiere_dis());
@@ -378,9 +381,9 @@ void Echange_contact_VDF::calculer_Teta_equiv(DoubleTab& Teta_eq,const DoubleTab
   Teta_eq.echange_espace_virtuel();
 }
 
-// Description:
-// remplit Teta_p
-// utilise T_autre_pb au temps passe en parametre
+/*! @brief remplit Teta_p utilise T_autre_pb au temps passe en parametre
+ *
+ */
 void Echange_contact_VDF::calculer_Teta_paroi(DoubleTab& Teta_p,const DoubleTab& mon_h,const DoubleTab& lautre_h,int i, double temps)
 {
   const Equation_base& mon_eqn = zone_Cl_dis().equation();

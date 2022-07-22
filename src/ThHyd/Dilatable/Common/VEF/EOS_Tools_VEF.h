@@ -22,14 +22,10 @@
 
 class Fluide_Dilatable_base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe EOS_Tools_VEF
-//     Cette classe et specifique a discretisation de type VEF.
-// .SECTION voir aussi
-//     Fluide_Dilatable_base EOS_Tools_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe EOS_Tools_VEF Cette classe et specifique a discretisation de type VEF.
+ *
+ * @sa Fluide_Dilatable_base EOS_Tools_base
+ */
 
 class EOS_Tools_VEF: public EOS_Tools_base
 {

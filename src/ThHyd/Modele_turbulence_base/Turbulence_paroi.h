@@ -25,19 +25,16 @@ class Probleme_base;
 
 Declare_deriv(Turbulence_paroi_base);
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Turbulence_paroi
-//    Classe generique de la hierarchie des turbulences au niveau de la
-//    paroi, un objet Turbulence_paroi peut referencer n'importe quel
-//    objet derivant Turbulence_paroi_base.
-//    La plupart des methodes appellent les methodes de l'objet Probleme
-//    sous-jacent via la methode valeur() declaree grace a la macro
-//Declare_deriv().;
-// .SECTION voir aussi
-//    Turbulence_paroi_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Turbulence_paroi Classe generique de la hierarchie des turbulences au niveau de la
+ *
+ *     paroi, un objet Turbulence_paroi peut referencer n'importe quel
+ *     objet derivant Turbulence_paroi_base.
+ *     La plupart des methodes appellent les methodes de l'objet Probleme
+ *     sous-jacent via la methode valeur() declaree grace a la macro
+ * Declare_deriv().;
+ *
+ * @sa Turbulence_paroi_base
+ */
 class Turbulence_paroi : public DERIV(Turbulence_paroi_base)
 {
 
@@ -66,21 +63,11 @@ protected:
 };
 
 
-// Description:
-//    Operateur d'affectation d'un objet Turbulence_paroi_base
-//    dans un objet Turbulence_paroi.
-// Precondition:
-// Parametre: Turbulence_paroi_base& paroi_base
-//    Signification: la partie droite de l'affectation
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: Turbulence_paroi&
-//    Signification: le resultat de l'affectation (*this)
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Operateur d'affectation d'un objet Turbulence_paroi_base dans un objet Turbulence_paroi.
+ *
+ * @param (Turbulence_paroi_base& paroi_base) la partie droite de l'affectation
+ * @return (Turbulence_paroi&) le resultat de l'affectation (*this)
+ */
 /*inline Turbulence_paroi& Turbulence_paroi::operator=(const Turbulence_paroi_base& paroi_base)
   {
   DERIV(Turbulence_paroi_base)::operator=(paroi_base);
@@ -88,159 +75,90 @@ protected:
   }*/
 
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Initialise les lois de parois.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: code de retour propage
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Initialise les lois de parois.
+ *
+ * @return (int) code de retour propage
+ */
 inline int Turbulence_paroi::init_lois_paroi()
 {
   return valeur().init_lois_paroi();
 }
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Imprime les u* de la loi de paroi
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification: code de retour propage
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Imprime les u* de la loi de paroi
+ *
+ * @return code de retour propage
+ */
 inline void Turbulence_paroi::imprimer_ustar(Sortie& os) const
 {
   valeur().imprimer_ustar(os);
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Imprime les u* moyens de la loi de paroi
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification: code de retour propage
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Imprime les u* moyens de la loi de paroi
+ *
+ * @return code de retour propage
+ */
 inline void Turbulence_paroi::imprimer_ustar_mean_only(Sortie& os, int boundaries_, const LIST(Nom)& boundaries_list, const Nom& nom_fichier_) const
 {
   valeur().imprimer_ustar_mean_only(os, boundaries_, boundaries_list, nom_fichier_);
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Imprime la premiere ligne du fichier ***ustar_mean_only.out
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Imprime la premiere ligne du fichier ***ustar_mean_only.out
+ *
+ */
 inline void Turbulence_paroi::imprimer_premiere_ligne_ustar(int boundaries_, const LIST(Nom)& boundaries_list, const Nom& nom_fichier_ ) const
 {
   valeur().imprimer_premiere_ligne_ustar(boundaries_, boundaries_list, nom_fichier_);
 }
 
-// Description:
-//    Appel a l'objet sous-jacent.
-// Precondition:
-// Parametre: Champ_Inc& ch
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: code de retour propage
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * @param (Champ_Inc& ch)
+ * @return (int) code de retour propage
+ */
 inline int Turbulence_paroi::calculer_hyd(Champ_Inc& ch)
 {
   return valeur().calculer_hyd(ch);
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent
-// Precondition:
-// Parametre: Champ_Fonc& ch1
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: Champ_Fonc& ch2
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: code de retour propage
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent
+ *
+ * @param (Champ_Fonc& ch1)
+ * @param (Champ_Fonc& ch2)
+ * @return (int) code de retour propage
+ */
 inline int Turbulence_paroi::calculer_hyd(Champ_Fonc& ch1,Champ_Fonc& ch2)
 {
   return valeur().calculer_hyd(ch1,ch2);
 }
 
-// Description:
-//    Appel a l'objet sous-jacent.
-// Precondition:
-// Parametre: Champ_Inc_base& ch
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: code de retour propage
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * @param (Champ_Inc_base& ch)
+ * @return (int) code de retour propage
+ */
 inline int Turbulence_paroi::calculer_hyd(Champ_Inc_base& ch)
 {
   return valeur().calculer_hyd(ch.valeurs());
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent.
-// Precondition:
-// Parametre: Champ_Fonc_base& ch1
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: Champ_Fonc_base& ch2
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: code de retour propage
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * @param (Champ_Fonc_base& ch1)
+ * @param (Champ_Fonc_base& ch2)
+ * @return (int) code de retour propage
+ */
 inline int Turbulence_paroi::calculer_hyd(Champ_Fonc_base& ch1,Champ_Fonc_base& ch2)
 {
   return valeur().calculer_hyd(ch1.valeurs(),ch2.valeurs());

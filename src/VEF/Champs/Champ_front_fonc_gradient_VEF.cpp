@@ -33,8 +33,9 @@ Entree& Champ_front_fonc_gradient_VEF::readOn(Entree& s)
   return s;
 }
 
-// Description:
-// Mise a jour du temps
+/*! @brief Mise a jour du temps
+ *
+ */
 
 void Champ_front_fonc_gradient_VEF::mettre_a_jour(double temps)
 {

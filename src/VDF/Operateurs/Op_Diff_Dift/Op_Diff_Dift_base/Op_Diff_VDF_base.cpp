@@ -48,8 +48,9 @@ void Op_Diff_VDF_base::calculer_flux_bord(const DoubleTab& inco) const
   iter.valeur().calculer_flux_bord(inco);
 }
 
-//Description:
-//on ajoute la contribution du second membre.
+/*! @brief on ajoute la contribution du second membre.
+ *
+ */
 void Op_Diff_VDF_base::contribuer_au_second_membre(DoubleTab& resu) const
 {
   iter.contribuer_au_second_membre(resu);
@@ -126,8 +127,9 @@ void Op_Diff_VDF_base::contribuer_au_second_membre(DoubleTab& resu) const
     }
 }
 
-// Description:
-// calcule la contribution de la diffusion, la range dans resu
+/*! @brief calcule la contribution de la diffusion, la range dans resu
+ *
+ */
 DoubleTab& Op_Diff_VDF_base::calculer(const DoubleTab& inco,  DoubleTab& resu) const
 {
   resu =0;

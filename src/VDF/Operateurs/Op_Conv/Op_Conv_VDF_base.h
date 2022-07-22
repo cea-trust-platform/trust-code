@@ -19,8 +19,9 @@
 #include <Iterateur_VDF_base.h>
 #include <Operateur_Conv.h>
 
-// .DESCRIPTION class Op_Conv_VDF_base
-// Classe de base des operateurs de convection VDF
+/*! @brief class Op_Conv_VDF_base Classe de base des operateurs de convection VDF
+ *
+ */
 class Op_Conv_VDF_base : public Operateur_Conv_base
 {
   Declare_base(Op_Conv_VDF_base);

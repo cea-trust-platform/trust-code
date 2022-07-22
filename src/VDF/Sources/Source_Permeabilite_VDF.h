@@ -23,8 +23,9 @@ class Source_Permeabilite_VDF
 { };
 /// \endcond
 
-// .DESCRIPTION class ModPerm_Cte
-//  Cette classe represente une permeabilite cte.
+/*! @brief class ModPerm_Cte Cette classe represente une permeabilite cte.
+ *
+ */
 class ModPerm_Cte : public Modele_Permeabilite_base
 {
   Declare_instanciable_sans_constructeur(ModPerm_Cte);
@@ -36,8 +37,9 @@ protected:
   double cte;
 };
 
-// .DESCRIPTION
-//  Cette classe represente la correlation de Carman Kozeny pour la permeabilite d'un lit de particule de diametre donne.
+/*! @brief Cette classe represente la correlation de Carman Kozeny pour la permeabilite d'un lit de particule de diametre donne.
+ *
+ */
 class ModPerm_Carman_Kozeny : public Modele_Permeabilite_base
 {
   Declare_instanciable_sans_constructeur(ModPerm_Carman_Kozeny);
@@ -56,8 +58,9 @@ protected:
   double diam, C;
 };
 
-// .DESCRIPTION
-//  Cette classe represente la correlation de Ergun pour la permeabilite d'un lit de particule de diametre donne.
+/*! @brief Cette classe represente la correlation de Ergun pour la permeabilite d'un lit de particule de diametre donne.
+ *
+ */
 class ModPerm_ErgunPourDarcy : public ModPerm_Carman_Kozeny
 {
   Declare_instanciable_sans_constructeur(ModPerm_ErgunPourDarcy);
@@ -65,9 +68,9 @@ public:
   ModPerm_ErgunPourDarcy() { C = 150.; }
 };
 
-// .DESCRIPTION
-//  Cette classe represente la correlation de Ergun associe au terme de Forchheimer,
-//  pour la permeabilite d'un lit de particule de diametre donne.
+/*! @brief Cette classe represente la correlation de Ergun associe au terme de Forchheimer, pour la permeabilite d'un lit de particule de diametre donne.
+ *
+ */
 class ModPerm_ErgunPourForch : public ModPerm_Carman_Kozeny
 {
   Declare_instanciable_sans_constructeur(ModPerm_ErgunPourForch);

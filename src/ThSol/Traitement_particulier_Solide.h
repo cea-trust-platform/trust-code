@@ -21,14 +21,10 @@
 #include <Deriv.h>
 
 Declare_deriv(Traitement_particulier_Solide_base);
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Traitement_particulier_Solide
-//
-// .SECTION voir aussi
-//      Conduction, Traitement_particulier_Solide_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Traitement_particulier_Solide
+ *
+ * @sa Conduction, Traitement_particulier_Solide_base
+ */
 class Traitement_particulier_Solide : public DERIV(Traitement_particulier_Solide_base)
 {
   Declare_instanciable(Traitement_particulier_Solide);

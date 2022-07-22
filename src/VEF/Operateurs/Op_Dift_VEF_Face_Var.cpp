@@ -18,7 +18,9 @@ Implemente_instanciable_sans_constructeur(Op_Dift_VEF_Face_Var,"Op_Dift_VEF_var_
 
 
 
-// Description: Constructeur par defaut: on supporte rho variable
+/*! @brief Constructeur par defaut: on supporte rho variable
+ *
+ */
 Op_Dift_VEF_Face_Var::Op_Dift_VEF_Face_Var()
 {
   declare_support_masse_volumique(1);

@@ -19,14 +19,10 @@
 
 #include <Fluide_Quasi_Compressible.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Espece
-//
-// .SECTION voir aussi
-//     Milieu_base Fluide_Incompressible Fluide_Quasi_Compressible
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Espece
+ *
+ * @sa Milieu_base Fluide_Incompressible Fluide_Quasi_Compressible
+ */
 
 class Espece : public Fluide_Quasi_Compressible
 {

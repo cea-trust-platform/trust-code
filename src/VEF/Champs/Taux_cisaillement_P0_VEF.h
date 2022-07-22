@@ -21,8 +21,9 @@
 #include <Ref_Champ_P1NC.h>
 #include <Ref_Zone_Cl_VEF.h>
 
-//.DESCRIPTION  classe Taux_cisaillement_P0_VEF
-//
+/*! @brief classe Taux_cisaillement_P0_VEF
+ *
+ */
 
 class Taux_cisaillement_P0_VEF : public Champ_Fonc_P0_VEF
 {

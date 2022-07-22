@@ -18,11 +18,10 @@
 
 
 
-//
-// .DESCRIPTION class Zone_Cl_VDF
-//
-// .SECTION voir aussi
-// Zone_Cl_dis_base
+/*! @brief class Zone_Cl_VDF
+ *
+ * @sa Zone_Cl_dis_base
+ */
 
 
 #include <Zone_Cl_dis_base.h>

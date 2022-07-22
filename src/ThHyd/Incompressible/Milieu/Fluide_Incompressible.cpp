@@ -49,21 +49,11 @@ Entree& Fluide_Incompressible::readOn(Entree& is)
 }
 
 
-// Description:
-//    Verifie que les champs lus l'ont ete correctement.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: la masse volumique (rho) n'est pas de type Champ_Uniforme
-// Exception: la capacite calorifique (Cp) n'est pas de type Champ_Uniforme
-// Effets de bord:
-// Postcondition:
+/*! @brief Verifie que les champs lus l'ont ete correctement.
+ *
+ * @throws la masse volumique (rho) n'est pas de type Champ_Uniforme
+ * @throws la capacite calorifique (Cp) n'est pas de type Champ_Uniforme
+ */
 void Fluide_Incompressible::verifier_coherence_champs(int& err,Nom& msg)
 {
   msg="";

@@ -49,20 +49,10 @@ void  EOS_Tools_VDF::associer_zones(const Zone_dis& zone, const Zone_Cl_dis& zon
   tab_rho_face_np1=toto.valeurs();
 }
 
-// Description:
-//    Calcule la moyenne volumique de la grandeur P0 donnee
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: rho discretise par face
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la moyenne volumique de la grandeur P0 donnee
+ *
+ * @return (DoubleTab&) rho discretise par face
+ */
 double EOS_Tools_VDF::moyenne_vol(const DoubleTab& tab) const
 {
   int nb_elem=la_zone->nb_elem();
@@ -108,41 +98,19 @@ void EOS_Tools_VDF::calculer_rho_face_np1(const DoubleTab& tab_rhoP0)
     tab_rho_face_demi(face)=(tab_rho_face_np1(face)+tab_rho_face(face))/2.;
 }
 
-// Description:
-//    Renvoie rho avec la meme discretisation que la vitesse :
-//    une valeur par face en VDF
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: rho discretise par face
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie rho avec la meme discretisation que la vitesse : une valeur par face en VDF
+ *
+ * @return (DoubleTab&) rho discretise par face
+ */
 const DoubleTab& EOS_Tools_VDF::rho_discvit() const
 {
   return tab_rho_face_demi;
 }
 
-// Description:
-//    Renvoie div(u) avec la meme discretisation que la vitesse :
-//    une valeur par face en VDF
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification: div(u) discretise par face
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie div(u) avec la meme discretisation que la vitesse : une valeur par face en VDF
+ *
+ * @return div(u) discretise par face
+ */
 void EOS_Tools_VDF::divu_discvit(const DoubleTab& secmem1, DoubleTab& secmem2)
 {
   assert_espace_virtuel_vect(secmem1);
@@ -167,21 +135,10 @@ void EOS_Tools_VDF::divu_discvit(const DoubleTab& secmem1, DoubleTab& secmem2)
   secmem2.echange_espace_virtuel();
 }
 
-// Description:
-//    Calcule le second membre de l'equation de continuite :
-//    div(rhoU) = W = -dZ/dT    avec Z=rho
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification: rho discretise par face
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule le second membre de l'equation de continuite : div(rhoU) = W = -dZ/dT    avec Z=rho
+ *
+ * @return rho discretise par face
+ */
 void EOS_Tools_VDF::secmembre_divU_Z(DoubleTab& tab_W) const
 {
   double dt = le_fluide().vitesse()->equation().schema_temps().pas_de_temps();

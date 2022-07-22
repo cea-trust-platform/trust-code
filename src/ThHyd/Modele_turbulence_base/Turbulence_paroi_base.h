@@ -31,22 +31,13 @@ class Probleme_base;
 class EcrFicPartage;
 class Param;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Turbulence_paroi_base
-//    Classe de base pour la hierarchie des classes representant les modeles
-//    de calcul des grandeurs turbulentes aux voisinages des parois.
-//    Contient une reference a un modele de turbulence.
-// .SECTION voir aussi
-//    Paroi_std_hyd_VDF Paroi_std_scal_hyd_VDF
-//    Classe abstraite
-//    Methodes abstraites
-//      void associer(const Zone_dis&, const Zone_Cl_dis&)
-//      int init_lois_paroi()
-//      int calculer_hyd(DoubleTab& )
-//      int calculer_hyd(DoubleTab& , DoubleTab& )
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Turbulence_paroi_base Classe de base pour la hierarchie des classes representant les modeles
+ *
+ *     de calcul des grandeurs turbulentes aux voisinages des parois.
+ *     Contient une reference a un modele de turbulence.
+ *
+ * @sa Paroi_std_hyd_VDF Paroi_std_scal_hyd_VDF, Classe abstraite, Methodes abstraites, void associer(const Zone_dis&, const Zone_Cl_dis&), int init_lois_paroi(), int calculer_hyd(DoubleTab& ), int calculer_hyd(DoubleTab& , DoubleTab& )
+ */
 class Turbulence_paroi_base : public Champs_compris_interface, public Objet_U
 {
 
@@ -130,66 +121,33 @@ inline void Turbulence_paroi_base::imprimer_ustar_mean_only(Sortie&, int, const 
 inline void Turbulence_paroi_base::imprimer_premiere_ligne_ustar(int, const LIST(Nom)&, const Nom& ) const
 {
 }
-// Description:
-//    Associe un modele de turbulence a l'objet.
-// Precondition:
-// Parametre: Mod_turb_hyd_base& le_modele
-//    Signification: le modele de turbulence hydraulique
-//                   a associer a l'objet
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: l'objet a un modele de turbulence associe
+/*! @brief Associe un modele de turbulence a l'objet.
+ *
+ * @param (Mod_turb_hyd_base& le_modele) le modele de turbulence hydraulique a associer a l'objet
+ */
 inline void Turbulence_paroi_base::associer_modele(const Mod_turb_hyd_base& le_modele)
 {
   mon_modele_turb_hyd = le_modele;
 }
 
 
-// Description:
-//    Simple appel a int calculer_hyd(DoubleTab& ).
-// Precondition:
-// Parametre: Champ_Inc& ch
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: int
-//    Signification: code de retour propage
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a int calculer_hyd(DoubleTab& ).
+ *
+ * @param (Champ_Inc& ch)
+ * @return (int) code de retour propage
+ */
 inline int Turbulence_paroi_base::calculer_hyd(Champ_Inc& ch)
 {
   return calculer_hyd(ch.valeurs());
 }
 
 
-// Description:
-//    Simple appel a int calculer_hyd(DoubleTab&, DoubleTab&).
-// Precondition:
-// Parametre: Champ_Inc& ch1
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Parametre: Champ_Inc& ch2
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: int
-//    Signification: code de retour propage
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a int calculer_hyd(DoubleTab&, DoubleTab&).
+ *
+ * @param (Champ_Inc& ch1)
+ * @param (Champ_Inc& ch2)
+ * @return (int) code de retour propage
+ */
 inline int Turbulence_paroi_base::calculer_hyd(Champ_Fonc& ch1,Champ_Fonc& ch2)
 {
   return calculer_hyd(ch1.valeurs(),ch2.valeurs());

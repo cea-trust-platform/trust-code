@@ -15,21 +15,12 @@
 
 #include <DP_Impose.h>
 
-// Description:
-//    Lit les specifications d'un Delta P impose
-//    a partir d'un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: pas un champ
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit les specifications d'un Delta P impose a partir d'un flot d'entree.
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ * @throws pas un champ
+ */
 Entree& DP_Impose::lire_donnees(Entree& is)
 {
   Motcle acc_ouverte("{");

@@ -163,9 +163,11 @@ Entree& Simpler_Base::readOn(Entree& is )
   return is;
 }
 
-// Description:
-// retourne le parametre_implicte de l'equation si il existe si il n'existe pas le cree...
-// si les params sont vides on copie ceux du simpler
+/*! @brief retourne le parametre_implicte de l'equation si il existe si il n'existe pas le cree.
+ *
+ * .. si les params sont vides on copie ceux du simpler
+ *
+ */
 Parametre_equation& Simpler_Base::get_and_set_parametre_equation(Equation_base& eqn)
 {
   Parametre_equation& param = eqn.parametre_equation();

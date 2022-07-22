@@ -18,17 +18,14 @@
 
 #include <Loi_Etat_Binaire_GP_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Loi_Etat_Binaire_GP_QC
-//     Cette classe represente la loi d'etat pour les melanges binaires.
-//     Associe a un fluide dilatable, elle definit un fluide binaire quasi compressible
-//     dont la loi d'eata est :
-//        Pth = rho*R*T*(Y1/M1+Y2/M2)
-// .SECTION voir aussi
-//     Loi_Etat_Binaire_GP_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Loi_Etat_Binaire_GP_QC Cette classe represente la loi d'etat pour les melanges binaires.
+ *
+ *      Associe a un fluide dilatable, elle definit un fluide binaire quasi compressible
+ *      dont la loi d'eata est :
+ *         Pth = rho*R*T*(Y1/M1+Y2/M2)
+ *
+ * @sa Loi_Etat_Binaire_GP_base
+ */
 
 class Loi_Etat_Binaire_GP_QC : public Loi_Etat_Binaire_GP_base
 {

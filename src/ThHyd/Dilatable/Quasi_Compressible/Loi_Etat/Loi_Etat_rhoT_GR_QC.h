@@ -23,18 +23,15 @@
 
 #include <Loi_Etat_GR_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Loi_Etat_rhoT_GR_QC
-//     Cette classe represente la loi d'etat pour les gaz reels.
-//     Associe a un fluide incompressible, elle definit un fluide quasi compressible
-//     dont la loi d'etat est :
-//         rho=rho(Pth,H)
-//         T  =  T(Pth,H)
-// .SECTION voir aussi
-//     Fluide_Quasi_Compressible Loi_Etat_GR_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Loi_Etat_rhoT_GR_QC Cette classe represente la loi d'etat pour les gaz reels.
+ *
+ *      Associe a un fluide incompressible, elle definit un fluide quasi compressible
+ *      dont la loi d'etat est :
+ *          rho=rho(Pth,H)
+ *          T  =  T(Pth,H)
+ *
+ * @sa Fluide_Quasi_Compressible Loi_Etat_GR_base
+ */
 
 class Loi_Etat_rhoT_GR_QC : public Loi_Etat_GR_base
 {

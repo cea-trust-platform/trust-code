@@ -19,8 +19,9 @@
 #include <Iterateur_VDF_base.h>
 #include <Operateur_Grad.h>
 
-// .DESCRIPTION class Op_Grad_VDF_base
-// Classe de base des operateurs de gradient VDF
+/*! @brief class Op_Grad_VDF_base Classe de base des operateurs de gradient VDF
+ *
+ */
 class Op_Grad_VDF_base : public Operateur_Grad_base
 {
   Declare_base(Op_Grad_VDF_base);

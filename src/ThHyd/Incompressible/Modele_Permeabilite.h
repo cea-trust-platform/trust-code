@@ -21,13 +21,9 @@
 
 Declare_deriv(Modele_Permeabilite_base);
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Modele_Permeabilite
-//    Classe generique pour un modele de permeabilite.
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Modele_Permeabilite Classe generique pour un modele de permeabilite.
+ *
+ */
 class Modele_Permeabilite : public DERIV(Modele_Permeabilite_base)
 {
 
@@ -43,20 +39,9 @@ public:
 
 };
 
-// Description:
-//    Appel a l'objet sous-jacent
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent
+ *
+ */
 inline double Modele_Permeabilite::getK(double porosite) const
 {
   return valeur().getK(porosite);

@@ -26,60 +26,33 @@
 Implemente_instanciable(EDO_Pression_th_VDF_Gaz_Reel,"EDO_Pression_th_VDF_Gaz_Reel",EDO_Pression_th_VDF);
 
 
-// Description:
-//    Imprime la loi sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie pour l'impression
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Imprime la loi sur un flot de sortie.
+ *
+ * @param (Sortie& os) le flot de sortie pour l'impression
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& EDO_Pression_th_VDF_Gaz_Reel::printOn(Sortie& os) const
 {
   os <<que_suis_je()<< finl;
   return os;
 }
 
-// Description:
-//    Lecture d'une EDO sur un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree pour la lecture des parametres
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lecture d'une EDO sur un flot d'entree.
+ *
+ * @param (Entree& is) le flot d'entree pour la lecture des parametres
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& EDO_Pression_th_VDF_Gaz_Reel::readOn(Entree& is)
 {
   return is;
 }
 
 
-// Description:
-//    Resoud l'EDO
-// Precondition:
-// Parametre: double Pth_n
-//    Signification: La pression a l'etape precedente
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: double
-//    Signification: La nouvelle valeur de la pression
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Resoud l'EDO
+ *
+ * @param (double Pth_n) La pression a l'etape precedente
+ * @return (double) La nouvelle valeur de la pression
+ */
 
 
 double EDO_Pression_th_VDF_Gaz_Reel::resoudre(double Pth_n)

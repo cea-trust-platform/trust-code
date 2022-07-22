@@ -21,8 +21,9 @@
 #include <Ref_Zone_VDF.h>
 #include <Zone_VDF.h>
 
-//.DESCRIPTION classe Champ_Fonc_P1_VDF
-//
+/*! @brief classe Champ_Fonc_P1_VDF
+ *
+ */
 
 //.SECTION voir aussi
 // Champ_Fonc_P1

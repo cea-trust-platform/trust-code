@@ -69,9 +69,11 @@ void Modele_turbulence_hyd_nul::mettre_a_jour(double temps)
 {
 }
 
-// Description:
-//  Les operations qui suivent correspondent a ce qu'on trouve
-//  dans Navier_Stokes_Turbulent::reprendre...
+/*! @brief Les operations qui suivent correspondent a ce qu'on trouve dans Navier_Stokes_Turbulent::reprendre.
+ *
+ * ..
+ *
+ */
 int Modele_turbulence_hyd_nul::sauvegarder(Sortie& os) const
 {
   // en mode ecriture special seul le maitre ecrit l'entete

@@ -19,14 +19,15 @@
 
 #include <Op_Diff_VEF_Face.h>
 
-//
-// .DESCRIPTION class Op_Diff_VEF_Face_Q1_Q1
-//  Cette classe represente l'operateur de diffusion
-//  La discretisation est VEF
-//  Le champ diffuse est scalaire
-//  Le champ de diffusivite est uniforme
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief class Op_Diff_VEF_Face_Q1_Q1 Cette classe represente l'operateur de diffusion
+ *
+ *   La discretisation est VEF
+ *   Le champ diffuse est scalaire
+ *   Le champ de diffusivite est uniforme
+ *
+ *
+ *
+ */
 
 class Op_Diff_VEF_Face_Q1 : public Op_Diff_VEF_base
 {
@@ -58,8 +59,9 @@ protected :
   REF(Champ_base) diffusivite_;
 };
 
-// Description:
-// on dimensionne notre matrice.
+/*! @brief on dimensionne notre matrice.
+ *
+ */
 
 inline  void Op_Diff_VEF_Face_Q1::dimensionner(Matrice_Morse& matrice) const
 {
@@ -72,8 +74,9 @@ inline void Op_Diff_VEF_Face_Q1::modifier_pour_Cl(Matrice_Morse& matrice, Double
 }
 
 
-//Description:
-//on assemble la matrice.
+/*! @brief on assemble la matrice.
+ *
+ */
 
 inline void Op_Diff_VEF_Face_Q1::contribuer_a_avec(const DoubleTab& inco,
                                                    Matrice_Morse& matrice) const
@@ -81,8 +84,9 @@ inline void Op_Diff_VEF_Face_Q1::contribuer_a_avec(const DoubleTab& inco,
   ajouter_contribution(inco, matrice);
 }
 
-//Description:
-//on ajoute la contribution du second membre.
+/*! @brief on ajoute la contribution du second membre.
+ *
+ */
 
 inline void Op_Diff_VEF_Face_Q1::contribuer_au_second_membre(DoubleTab& resu) const
 {

@@ -23,13 +23,13 @@
 
 class Zone_PolyMAC_P0;
 
-/////////////////////////////////////////////////////////////////////////////
-// .NAME        : Champ_Elem_PolyMAC_P0
-// .DESCRIPTION : class Champ_Elem_PolyMAC_P0
-//
-// Champ correspondant a une inconnue scalaire (type temperature ou pression)
-// Degres de libertes : valeur aux elements + flux aux faces
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Champ_Elem_PolyMAC_P0
+ *
+ *  Champ correspondant a une inconnue scalaire (type temperature ou pression)
+ *  Degres de libertes : valeur aux elements + flux aux faces
+ *
+ *
+ */
 
 class Champ_Elem_PolyMAC_P0 : public Champ_Elem_PolyMAC
 {

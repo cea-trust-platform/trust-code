@@ -20,17 +20,14 @@
 #include <Entree_fluide_vitesse_imposee.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Entree_fluide_vitesse_imposee_libre
-//    Cas particulier de la classe Entree_fluide_vitesse_imposee
-//    pour la vitesse imposee: impose la vitesse du fluide dans
-//    une equation de type Navier_Stokes
-//    en laissant libre les autres champs sur cette frontiere ouverte
-// .SECTION voir aussi
-//    Dirichlet_entree_fluide Navier_Stokes_std
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Entree_fluide_vitesse_imposee_libre Cas particulier de la classe Entree_fluide_vitesse_imposee
+ *
+ *     pour la vitesse imposee: impose la vitesse du fluide dans
+ *     une equation de type Navier_Stokes
+ *     en laissant libre les autres champs sur cette frontiere ouverte
+ *
+ * @sa Dirichlet_entree_fluide Navier_Stokes_std
+ */
 class Entree_fluide_vitesse_imposee_libre  : public Entree_fluide_vitesse_imposee
 {
 

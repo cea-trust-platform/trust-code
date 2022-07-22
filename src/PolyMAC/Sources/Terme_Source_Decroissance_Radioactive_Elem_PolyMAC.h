@@ -23,9 +23,9 @@
 
 // class Probleme_base;
 
-//
-// .DESCRIPTION class Terme_Source_Decroissance_Radioactive_Elem_PolyMAC
-//
+/*! @brief class Terme_Source_Decroissance_Radioactive_Elem_PolyMAC
+ *
+ */
 
 //
 // .SECTION voir aussi Source_base

@@ -18,13 +18,13 @@
 
 #include <Op_Conv_EF.h>
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Op_Conv_SUPG_EF
-//
-// <Description of class Op_Conv_SUPG_EF>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Op_Conv_SUPG_EF
+ *
+ *  <Description of class Op_Conv_SUPG_EF>
+ *
+ *
+ *
+ */
 
 class Op_Conv_SUPG_EF : public Op_Conv_BTD_EF
 {

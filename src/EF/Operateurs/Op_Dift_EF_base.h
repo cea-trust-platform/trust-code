@@ -23,11 +23,11 @@
 #include <Mod_turb_hyd_base.h>
 #include <Ref_Modele_turbulence_scal_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION class  Op_Dift_EF_base
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief class  Op_Dift_EF_base
+ *
+ *
+ *
+ */
 
 class Op_Dift_EF_base : public Op_Diff_EF_base, public Op_Diff_Turbulent_base
 {

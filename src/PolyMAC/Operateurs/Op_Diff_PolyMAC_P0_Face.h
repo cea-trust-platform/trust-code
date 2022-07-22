@@ -18,13 +18,13 @@
 
 #include <Op_Diff_PolyMAC_P0_base.h>
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Op_Diff_PolyMAC_P0_Face
-//
-// <Description of class Op_Diff_PolyMAC_P0_Face>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Op_Diff_PolyMAC_P0_Face
+ *
+ *  <Description of class Op_Diff_PolyMAC_P0_Face>
+ *
+ *
+ *
+ */
 
 class Op_Diff_PolyMAC_P0_Face : public Op_Diff_PolyMAC_P0_base
 {

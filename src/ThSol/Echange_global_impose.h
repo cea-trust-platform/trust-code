@@ -25,26 +25,23 @@
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Echange_global_impose
-//    Cette classe represente le cas particulier de la classe
-//    Echange_impose_base ou l'echange de chaleur total est calcule grace au
-//    coefficient d'echange de chaleur global fourni par l'utilisateur.
-//
-//    ATTENTION, dans le cas des discretisations ou T est localisee au centre de l'element (VDF)
-//    cela correspond a la modelisation d'une paroi d'echange dont l'epaisseur s'etend jusqu'a la moitie
-//    de la premiere maille.
-//
-//     h_t   : coefficient d'echange total
-//     h_imp_: coefficient d'echange global (donnee utilisateur)
-//    On a: h_t = h_imp
-//    Les champs h_imp et T_ext sont uniformes
-//
-// .SECTION voir aussi
-//    Echange_impose_base Echange_externe_impose
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Echange_global_impose Cette classe represente le cas particulier de la classe
+ *
+ *     Echange_impose_base ou l'echange de chaleur total est calcule grace au
+ *     coefficient d'echange de chaleur global fourni par l'utilisateur.
+ *
+ *     ATTENTION, dans le cas des discretisations ou T est localisee au centre de l'element (VDF)
+ *     cela correspond a la modelisation d'une paroi d'echange dont l'epaisseur s'etend jusqu'a la moitie
+ *     de la premiere maille.
+ *
+ *      h_t   : coefficient d'echange total
+ *      h_imp_: coefficient d'echange global (donnee utilisateur)
+ *     On a: h_t = h_imp
+ *     Les champs h_imp et T_ext sont uniformes
+ *
+ *
+ * @sa Echange_impose_base Echange_externe_impose
+ */
 class Echange_global_impose : public Echange_impose_base
 {
 

@@ -80,8 +80,9 @@ Entree& Op_Diff_option_EF::readOn(Entree& s )
   return s ;
 }
 
-// Description:
-// associe le champ de diffusivite
+/*! @brief associe le champ de diffusivite
+ *
+ */
 void Op_Diff_EF::associer_diffusivite(const Champ_base& diffu)
 {
   diffusivite_ = diffu;

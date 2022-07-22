@@ -24,10 +24,12 @@ class Zone_Cl_dis;
 class Zone_dis;
 
 declare_It_Sou_VDF_Face(Eval_Gravite_VDF_Face)
-// .DESCRIPTION class Terme_Gravite_VDF_Face
-// Cette classe represente le terme de gravite qui figure dans l'equation
-// de la dynamique divisee par la masse volumique;la masse volumique est
-// supposee constante.
+/*! @brief class Terme_Gravite_VDF_Face Cette classe represente le terme de gravite qui figure dans l'equation
+ *
+ *  de la dynamique divisee par la masse volumique;la masse volumique est
+ *  supposee constante.
+ *
+ */
 class Terme_Gravite_VDF_Face : public Terme_Source_VDF_base
 {
   Declare_instanciable_sans_constructeur(Terme_Gravite_VDF_Face);

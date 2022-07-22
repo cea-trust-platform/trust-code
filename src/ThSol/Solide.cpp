@@ -24,42 +24,25 @@ Implemente_instanciable(Solide,"Solide",Milieu_base);
 // XD attr lambda field_base lambda_u 1 Conductivity (W.m-1.K-1).
 // XD ref gravite field_base
 
-// Description:
-//    Ecrit les caracteristiques du milieu su run flot de sortie.
-//    Simple appel a: Milieu_base::printOn(Sortie&)
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit les caracteristiques du milieu su run flot de sortie.
+ *
+ * Simple appel a: Milieu_base::printOn(Sortie&)
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Solide::printOn(Sortie& os) const
 {
   return Milieu_base::printOn(os);
 }
 
-// Description:
-//    Lit les caracteristiques du milieu a partir d'un
-//    flot d'entree.
-// cf Milieu_base::readOn
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree& is
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit les caracteristiques du milieu a partir d'un flot d'entree.
+ *
+ *  cf Milieu_base::readOn
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree& is) le flot d'entree modifie
+ */
 Entree& Solide::readOn(Entree& is)
 {
   Milieu_base::readOn(is);
@@ -74,24 +57,13 @@ void Solide::set_param(Param& param)
   param.ajouter_condition("is_read_lambda","Conductivity (lambda) has not been read for a Solide type medium.");
 }
 
-// Description:
-//    Verifie que les champs caracterisant le milieu solide
-//    qui on ete lu par readOn(Entree&) sont coherents.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: la conductivite (lambda) n'est pas strictement positive
-// Exception: l'une des proprietes physique du solide: masse volumique (rho),
-//            capacite calorifique (Cp) ou conductivite (lambda) n'a pas
-//            ete definie.
-// Effets de bord:
-// Postcondition:
+/*! @brief Verifie que les champs caracterisant le milieu solide qui on ete lu par readOn(Entree&) sont coherents.
+ *
+ * @throws la conductivite (lambda) n'est pas strictement positive
+ * @throws l'une des proprietes physique du solide: masse volumique (rho),
+ * capacite calorifique (Cp) ou conductivite (lambda) n'a pas
+ * ete definie.
+ */
 void Solide::verifier_coherence_champs(int& err,Nom& msg)
 {
   msg="";

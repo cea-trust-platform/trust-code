@@ -21,10 +21,10 @@
 #include <Champ_P1iP1B_implementation.h>
 #include <Ref_Zone_VEF_PreP1b.h>
 
-//.DESCRIPTION classe Champ_Fonc_P1_isoP1Bulle
-//
-//.SECTION voir aussi
-// Champ_Fonc_base Champ P1NC
+/*! @brief classe Champ_Fonc_P1_isoP1Bulle
+ *
+ * @sa Champ_Fonc_base Champ P1NC
+ */
 
 class Champ_Fonc_P1_isoP1Bulle: public Champ_Fonc_base, public Champ_P1iP1B_implementation
 {

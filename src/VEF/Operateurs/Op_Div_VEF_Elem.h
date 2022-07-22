@@ -22,13 +22,14 @@
 #include <Zone_VEF.h>
 #include <Ref_Zone_Cl_VEF.h>
 
-//
-// .DESCRIPTION class Op_Div_VEF_Elem
-//
-//  Cette classe represente l'operateur de divergence
-//  La discretisation est VEF
-//  On calcule la divergence d'un champ_P1NC (la vitesse)
-//
+/*! @brief class Op_Div_VEF_Elem
+ *
+ *   Cette classe represente l'operateur de divergence
+ *   La discretisation est VEF
+ *   On calcule la divergence d'un champ_P1NC (la vitesse)
+ *
+ *
+ */
 
 
 //

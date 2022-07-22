@@ -23,17 +23,14 @@
 
 #include <Loi_Etat_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Loi_Etat_GR_base
-//     Cette classe represente la loi d'etat base pour les gaz reels.
-//     Elle definit un fluide dilatable dont la loi d'etat est :
-//         rho=rho(Pth,H)
-//         T  =  T(Pth,H)
-// .SECTION voir aussi
-//     Fluide_Dilatable_base Loi_Etat_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Loi_Etat_GR_base Cette classe represente la loi d'etat base pour les gaz reels.
+ *
+ *      Elle definit un fluide dilatable dont la loi d'etat est :
+ *          rho=rho(Pth,H)
+ *          T  =  T(Pth,H)
+ *
+ * @sa Fluide_Dilatable_base Loi_Etat_base
+ */
 
 class Loi_Etat_GR_base : public Loi_Etat_base
 {

@@ -16,21 +16,19 @@
 
 #include <Cond_lim.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Interface du module ThHyd.
-//    Contient 3 fonctions:
-//      int tester_compatibilite_hydr_thermique(const Zone_Cl_dis& , const Zone_Cl_dis& )
-//      int tester_compatibilite_hydr_concentration(const Zone_Cl_dis& , const Zone_Cl_dis& )
-//      int tester_compatibilite_hydr_fraction_massique(const Zone_Cl_dis& , const Zone_Cl_dis& )
-//    qui servent a tester la coherence des conditions aux limites
-//    et les 3 fonctions
-//      int message_erreur_[therm|conc|fraction_massique](const Cond_lim& , const Cond_lim& , int& )
-//    qui affiche un message d'erreur pour la compatibilite hyd/[therm|conc]
-// .SECTION voir aussi
-//    Fonction de librairie hors classe
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Interface du module ThHyd.
+ *
+ * Contient 3 fonctions:
+ *       int tester_compatibilite_hydr_thermique(const Zone_Cl_dis& , const Zone_Cl_dis& )
+ *       int tester_compatibilite_hydr_concentration(const Zone_Cl_dis& , const Zone_Cl_dis& )
+ *       int tester_compatibilite_hydr_fraction_massique(const Zone_Cl_dis& , const Zone_Cl_dis& )
+ *     qui servent a tester la coherence des conditions aux limites
+ *     et les 3 fonctions
+ *       int message_erreur_[therm|conc|fraction_massique](const Cond_lim& , const Cond_lim& , int& )
+ *     qui affiche un message d'erreur pour la compatibilite hyd/[therm|conc]
+ *
+ * @sa Fonction de librairie hors classe
+ */
 
 class Zone_Cl_dis;
 

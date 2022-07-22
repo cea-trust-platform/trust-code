@@ -36,52 +36,40 @@
 #include <Frontiere_dis_base.h>
 
 
-// Description:
-//    Teste la compatibilite des conditions aux limites
-//    thermiques et hydrauliques.
-//    La liste des compatibilites est la suivante:
-//    -----------------------------------------------------------------------
-//    Hydraulique                      |       Thermique
-//    -----------------------------------------------------------------------
-//    Entree_fluide_vitesse_imposee ===> Entree_fluide_temperature_imposee
-//    Entree_fluide_vitesse_imposee_libre => Neumann_sortie_libre
-//    -----------------------------------------------------------------------
-//    Dirichlet_paroi_fixe |
-//    Dirichlet_paroi_defilante =======> Neumann_paroi_adiabatique
-//    =================================> Neumann_paroi
-//    =================================> Echange_global_impose
-//    =================================> Echange_externe_impose
-//    =================================> Scalaire_impose_paroi
-//    -----------------------------------------------------------------------
-//    Neumann_sortie_libre ============> Entree_fluide_temperature_imposee
-//    =================================> Neumann_sortie_libre
-//    -----------------------------------------------------------------------
-//    Symetrie ========================> Neumann_paroi_adiabatique
-//    =================================> Neumann_paroi
-//    =================================> Echange_global_impose
-//    =================================> Echange_externe_impose
-//    =================================> Scalaire_impose_paroi
-//    =================================> Symetrie
-//    -----------------------------------------------------------------------
-//    Periodique ======================> Periodique
-// Precondition:
-// Parametre: Zone_Cl_dis& zone_Cl_hydr
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: Zone_Cl_dis& zone_Cl_th
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces:entree
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception: nombres de conditions aux limites differents
-// Exception: conditions aux limites hydraulique et thermique incompatibles
-// Effets de bord:
-// Postcondition:
+/*! @brief Teste la compatibilite des conditions aux limites thermiques et hydrauliques.
+ *
+ *     La liste des compatibilites est la suivante:
+ *     -----------------------------------------------------------------------
+ *     Hydraulique                      |       Thermique
+ *     -----------------------------------------------------------------------
+ *     Entree_fluide_vitesse_imposee ===> Entree_fluide_temperature_imposee
+ *     Entree_fluide_vitesse_imposee_libre => Neumann_sortie_libre
+ *     -----------------------------------------------------------------------
+ *     Dirichlet_paroi_fixe |
+ *     Dirichlet_paroi_defilante =======> Neumann_paroi_adiabatique
+ *     =================================> Neumann_paroi
+ *     =================================> Echange_global_impose
+ *     =================================> Echange_externe_impose
+ *     =================================> Scalaire_impose_paroi
+ *     -----------------------------------------------------------------------
+ *     Neumann_sortie_libre ============> Entree_fluide_temperature_imposee
+ *     =================================> Neumann_sortie_libre
+ *     -----------------------------------------------------------------------
+ *     Symetrie ========================> Neumann_paroi_adiabatique
+ *     =================================> Neumann_paroi
+ *     =================================> Echange_global_impose
+ *     =================================> Echange_externe_impose
+ *     =================================> Scalaire_impose_paroi
+ *     =================================> Symetrie
+ *     -----------------------------------------------------------------------
+ *     Periodique ======================> Periodique
+ *
+ * @param (Zone_Cl_dis& zone_Cl_hydr)
+ * @param[in] (Zone_Cl_dis& zone_Cl_th)
+ * @return (int) renvoie toujours 1
+ * @throws nombres de conditions aux limites differents
+ * @throws conditions aux limites hydraulique et thermique incompatibles
+ */
 int tester_compatibilite_hydr_thermique(const Zone_Cl_dis& zone_Cl_hydr, const Zone_Cl_dis& zone_Cl_th)
 {
 
@@ -183,29 +171,13 @@ int tester_compatibilite_hydr_thermique(const Zone_Cl_dis& zone_Cl_hydr, const Z
 }
 
 
-// Description:
-//    Affiche un message d'erreur pour la fonction precedente
-// Precondition:
-// Parametre: Zone_Cl_dis& zone_Cl_hydr
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: Zone_Cl_dis& zone_Cl_th
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: int num_Cl
-//    Signification: numero de la CL
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Effets de bord:
-// Postcondition:
+/*! @brief Affiche un message d'erreur pour la fonction precedente
+ *
+ * @param (Zone_Cl_dis& zone_Cl_hydr)
+ * @param (Zone_Cl_dis& zone_Cl_th)
+ * @param (int num_Cl) numero de la CL
+ * @return (int) renvoie toujours 1
+ */
 int message_erreur_therm(const Cond_lim& la_cl_hydr, const Cond_lim& la_cl_th, int& num_Cl)
 {
   Cerr << "The hydraulic and thermal boundary conditions are not consitent on border:" << finl;
@@ -216,44 +188,32 @@ int message_erreur_therm(const Cond_lim& la_cl_hydr, const Cond_lim& la_cl_th, i
 }
 
 
-// Description:
-//    Teste la compatibilite des conditions aux limites
-//    concentration et hydrauliques.
-//    La liste des compatibilites est la suivante:
-//    -----------------------------------------------------------------------
-//    Hydraulique                      |       Concentration
-//    -----------------------------------------------------------------------
-//    Entree_fluide_vitesse_imposee ===> Entree_fluide_concentration_imposee
-//    =================================> Neumann_sortie_libre
-//    -----------------------------------------------------------------------
-//    Dirichlet_paroi_fixe |
-//    Dirichlet_paroi_defilante =======> Neumann_paroi_flux_nul
-//    -----------------------------------------------------------------------
-//    Neumann_sortie_libre ============> Neumann_sortie_libre
-//    =================================> Entree_fluide_concentration_imposee
-//    -----------------------------------------------------------------------
-//    Symetrie ========================> Symetrie
-//    =================================> Neumann_paroi_flux_nul
-//    -----------------------------------------------------------------------
-//    Periodique ======================> Periodique
-// Precondition:
-// Parametre: Zone_Cl_dis& zone_Cl_hydr
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: Zone_Cl_dis& zone_Cl_co
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception: nombres de conditions aux limites differents
-// Exception: conditions aux limite hydraulique et concentration incompatible
-// Effets de bord:
-// Postcondition:
+/*! @brief Teste la compatibilite des conditions aux limites concentration et hydrauliques.
+ *
+ *     La liste des compatibilites est la suivante:
+ *     -----------------------------------------------------------------------
+ *     Hydraulique                      |       Concentration
+ *     -----------------------------------------------------------------------
+ *     Entree_fluide_vitesse_imposee ===> Entree_fluide_concentration_imposee
+ *     =================================> Neumann_sortie_libre
+ *     -----------------------------------------------------------------------
+ *     Dirichlet_paroi_fixe |
+ *     Dirichlet_paroi_defilante =======> Neumann_paroi_flux_nul
+ *     -----------------------------------------------------------------------
+ *     Neumann_sortie_libre ============> Neumann_sortie_libre
+ *     =================================> Entree_fluide_concentration_imposee
+ *     -----------------------------------------------------------------------
+ *     Symetrie ========================> Symetrie
+ *     =================================> Neumann_paroi_flux_nul
+ *     -----------------------------------------------------------------------
+ *     Periodique ======================> Periodique
+ *
+ * @param (Zone_Cl_dis& zone_Cl_hydr)
+ * @param (Zone_Cl_dis& zone_Cl_co)
+ * @return (int) renvoie toujours 1
+ * @throws nombres de conditions aux limites differents
+ * @throws conditions aux limite hydraulique et concentration incompatible
+ */
 int tester_compatibilite_hydr_concentration(const Zone_Cl_dis& zone_Cl_hydr,
                                             const Zone_Cl_dis& zone_Cl_co)
 {
@@ -332,29 +292,13 @@ int tester_compatibilite_hydr_concentration(const Zone_Cl_dis& zone_Cl_hydr,
 }
 
 
-// Description:
-//    Affiche un message d'erreur pour la fonction precedente
-// Precondition:
-// Parametre: Zone_Cl_dis& zone_Cl_hydr
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: Zone_Cl_dis& zone_Cl_co
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: int num_Cl
-//    Signification: numero de la CL
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Effets de bord:
-// Postcondition:
+/*! @brief Affiche un message d'erreur pour la fonction precedente
+ *
+ * @param (Zone_Cl_dis& zone_Cl_hydr)
+ * @param (Zone_Cl_dis& zone_Cl_co)
+ * @param (int num_Cl) numero de la CL
+ * @return (int) renvoie toujours 1
+ */
 int message_erreur_conc(const Cond_lim& la_cl_hydr, const Cond_lim& la_cl_co, int& num_Cl)
 {
   Cerr << "The hydraulic and concentration boundary conditions are not consitent on border:" << finl;
@@ -364,48 +308,36 @@ int message_erreur_conc(const Cond_lim& la_cl_hydr, const Cond_lim& la_cl_co, in
   return 1;
 }
 
-// Description:
-//    Teste la compatibilite des conditions aux limites
-//    fraction massqiues et hydrauliques.
-//    La liste des compatibilites est la suivante:
-//    -----------------------------------------------------------------------
-//    Hydraulique                      |       Fraction massique
-//    -----------------------------------------------------------------------
-//    Entree_fluide_vitesse_imposee ===> Entree_fluide_fraction_massique_imposee
-//    Entree_fluide_vitesse_imposee_libre => Neumann_sortie_libre
-//    Entree_fluide_vitesse_imposee ===> Echange_externe_impose
-//    Entree_fluide_vitesse_imposee ===> Neumann_paroi
-//    -----------------------------------------------------------------------
-//    Dirichlet_paroi_fixe |
-//    Dirichlet_paroi_defilante =======> Neumann_paroi_flux_nul
-//    =================================> Echange_externe_impose
-//    -----------------------------------------------------------------------
-//    Neumann_sortie_libre ============> Entree_fluide_fraction_massique_imposee
-//    =================================> Neumann_sortie_libre
-//    -----------------------------------------------------------------------
-//    Symetrie ========================> Symetrie
-//    =================================> Neumann_paroi_flux_nul
-//    =================================> Neumann_paroi
-//    -----------------------------------------------------------------------
-//    Periodique ======================> Periodique
-// Precondition:
-// Parametre: Zone_Cl_dis& zone_Cl_hydr
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: Zone_Cl_dis& zone_Cl_fm
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces:entree
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception: nombres de conditions aux limites differents
-// Exception: conditions aux limites hydraulique et fraction massiques incompatibles
-// Effets de bord:
-// Postcondition:
+/*! @brief Teste la compatibilite des conditions aux limites fraction massqiues et hydrauliques.
+ *
+ *     La liste des compatibilites est la suivante:
+ *     -----------------------------------------------------------------------
+ *     Hydraulique                      |       Fraction massique
+ *     -----------------------------------------------------------------------
+ *     Entree_fluide_vitesse_imposee ===> Entree_fluide_fraction_massique_imposee
+ *     Entree_fluide_vitesse_imposee_libre => Neumann_sortie_libre
+ *     Entree_fluide_vitesse_imposee ===> Echange_externe_impose
+ *     Entree_fluide_vitesse_imposee ===> Neumann_paroi
+ *     -----------------------------------------------------------------------
+ *     Dirichlet_paroi_fixe |
+ *     Dirichlet_paroi_defilante =======> Neumann_paroi_flux_nul
+ *     =================================> Echange_externe_impose
+ *     -----------------------------------------------------------------------
+ *     Neumann_sortie_libre ============> Entree_fluide_fraction_massique_imposee
+ *     =================================> Neumann_sortie_libre
+ *     -----------------------------------------------------------------------
+ *     Symetrie ========================> Symetrie
+ *     =================================> Neumann_paroi_flux_nul
+ *     =================================> Neumann_paroi
+ *     -----------------------------------------------------------------------
+ *     Periodique ======================> Periodique
+ *
+ * @param (Zone_Cl_dis& zone_Cl_hydr)
+ * @param[in] (Zone_Cl_dis& zone_Cl_fm)
+ * @return (int) renvoie toujours 1
+ * @throws nombres de conditions aux limites differents
+ * @throws conditions aux limites hydraulique et fraction massiques incompatibles
+ */
 int tester_compatibilite_hydr_fraction_massique(const Zone_Cl_dis& zone_Cl_hydr, const Zone_Cl_dis& zone_Cl_fm)
 {
 
@@ -495,29 +427,13 @@ int tester_compatibilite_hydr_fraction_massique(const Zone_Cl_dis& zone_Cl_hydr,
   return 1;
 }
 
-// Description:
-//    Affiche un message d'erreur pour la fonction precedente
-// Precondition:
-// Parametre: Zone_Cl_dis& zone_Cl_hydr
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: Zone_Cl_dis& zone_Cl_frac_mass
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: int num_Cl
-//    Signification: numero de la CL
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Effets de bord:
-// Postcondition:
+/*! @brief Affiche un message d'erreur pour la fonction precedente
+ *
+ * @param (Zone_Cl_dis& zone_Cl_hydr)
+ * @param (Zone_Cl_dis& zone_Cl_frac_mass)
+ * @param (int num_Cl) numero de la CL
+ * @return (int) renvoie toujours 1
+ */
 int message_erreur_fraction_massique(const Cond_lim& la_cl_hydr, const Cond_lim& la_cl_frac_mass, int& num_Cl)
 {
   Cerr << "The hydraulic and massic fraction boundary conditions are not consitent on border:" << finl;

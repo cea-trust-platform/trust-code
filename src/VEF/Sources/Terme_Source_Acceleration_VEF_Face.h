@@ -21,9 +21,10 @@
 #include <Ref_Zone_VEF_PreP1b.h>
 #include <Ref_Zone_Cl_VEFP1B.h>
 
-// .DESCRIPTION
-//   Terme source d'acceleration specialise pour la discretisation VDF
-// .SECTION voir aussi Terme_Source_Acceleration
+/*! @brief Terme source d'acceleration specialise pour la discretisation VDF
+ *
+ * @sa Terme_Source_Acceleration
+ */
 
 class Terme_Source_Acceleration_VEF_Face : public Terme_Source_Acceleration
 {

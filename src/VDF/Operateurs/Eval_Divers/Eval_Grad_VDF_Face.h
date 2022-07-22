@@ -20,9 +20,10 @@
 #include <Evaluateur_VDF.h>
 #include <Eval_VDF_Face.h>
 
-// .DESCRIPTION class Eval_Grad_VDF_Face
-// Evaluateur VDF pour le gradient
-// .SECTION voir aussi Eval_Grad_VDF
+/*! @brief class Eval_Grad_VDF_Face Evaluateur VDF pour le gradient
+ *
+ * @sa Eval_Grad_VDF
+ */
 class Eval_Grad_VDF_Face : public Evaluateur_VDF, public Eval_VDF_Face
 {
 public:

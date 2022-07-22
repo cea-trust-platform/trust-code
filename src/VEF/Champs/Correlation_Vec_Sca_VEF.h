@@ -19,11 +19,10 @@
 
 #include <Champ_Fonc_P1NC.h>
 
-//
-//.DESCRIPTION  classe Correlation_Vec_Sca_VEF
-//
-// .SECTION voir aussi
-//  Champ_Fonc_P1NC Correlation_Vec_Sca_VEF
+/*! @brief classe Correlation_Vec_Sca_VEF
+ *
+ * @sa Champ_Fonc_P1NC Correlation_Vec_Sca_VEF
+ */
 
 class Correlation_Vec_Sca_VEF : public Champ_Fonc_P1NC
 

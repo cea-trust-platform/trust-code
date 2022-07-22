@@ -30,10 +30,11 @@ Entree& Quadri_VEF::readOn(Entree& s )
   return s ;
 }
 
-// Description:
-// KEL_(0,fa7),KEL_(1,fa7) sont  les numeros locaux des 2 faces
-// qui entourent la facette de numero local fa7
-// le numero local de la fa7 est celui du sommet qui la porte
+/*! @brief KEL_(0,fa7),KEL_(1,fa7) sont  les numeros locaux des 2 faces qui entourent la facette de numero local fa7
+ *
+ *  le numero local de la fa7 est celui du sommet qui la porte
+ *
+ */
 Quadri_VEF::Quadri_VEF()
 {
   int tmp[3][4]=
@@ -48,8 +49,9 @@ Quadri_VEF::Quadri_VEF()
       KEL_(i,j)=tmp[i][j];
 }
 
-// Description:
-// remplit le tableau face_normales dans la Zone_VEF
+/*! @brief remplit le tableau face_normales dans la Zone_VEF
+ *
+ */
 void Quadri_VEF::normale(int num_Face,DoubleTab& Face_normales,
                          const  IntTab& Face_sommets,
                          const IntTab& Face_voisins,
@@ -132,8 +134,9 @@ void Quadri_VEF::normale(int num_Face,DoubleTab& Face_normales,
   Face_normales(num_Face,1)=sign*ny;
 }
 
-// Description:
-// calcule les normales des facettes pour des elem standards
+/*! @brief calcule les normales des facettes pour des elem standards
+ *
+ */
 void Quadri_VEF::creer_facette_normales(const Zone& zone_geom,
                                         DoubleTab& facette_normales,
                                         const IntVect& rang_elem_non_std) const
@@ -242,9 +245,9 @@ void Quadri_VEF::creer_facette_normales(const Zone& zone_geom,
   //  Cerr << "facette_normales internes (Quadri_VEF::creer_normales_facettes) : " << facette_normales << finl;
 }
 
-// Description:
-// remplit le tableau normales_facettes_Cl dans la Zone_Cl_VEF
-// pour la facette fa7 de l'element num_elem
+/*! @brief remplit le tableau normales_facettes_Cl dans la Zone_Cl_VEF pour la facette fa7 de l'element num_elem
+ *
+ */
 void Quadri_VEF::creer_normales_facettes_Cl(DoubleTab& normales_facettes_Cl,
                                             int fa7,
                                             int num_elem,const DoubleTab& x,
@@ -307,9 +310,9 @@ void Quadri_VEF::creer_normales_facettes_Cl(DoubleTab& normales_facettes_Cl,
   // Cerr << "normales_facettes_Cl " << normales_facettes_Cl << finl;
 }
 
-// Description:
-// modifie les volumes entrelaces pour la face j d'un elem
-// non standard
+/*! @brief modifie les volumes entrelaces pour la face j d'un elem non standard
+ *
+ */
 void Quadri_VEF::modif_volumes_entrelaces(int j,int elem,
                                           const Zone_VEF& la_zone_VEF,
                                           DoubleVect& volumes_entrelaces_Cl,
@@ -476,9 +479,9 @@ void Quadri_VEF::modif_volumes_entrelaces(int j,int elem,
 
 }
 
-// Description:
-// modifie les volumes entrelaces pour la face joint j d'un elem
-// non standard
+/*! @brief modifie les volumes entrelaces pour la face joint j d'un elem non standard
+ *
+ */
 void Quadri_VEF::modif_volumes_entrelaces_faces_joints(int j,int elem,
                                                        const Zone_VEF& la_zone_VEF,
                                                        DoubleVect& volumes_entrelaces_Cl,
@@ -501,8 +504,9 @@ void Quadri_VEF::modif_volumes_entrelaces_faces_joints(int j,int elem,
 
 }
 
-// Description:
-//
+/*! @brief
+ *
+ */
 void Quadri_VEF::calcul_vc(const ArrOfInt& Face,ArrOfDouble& vc,
                            const ArrOfDouble& vs,const DoubleTab& vsom,
                            const Champ_Inc_base& vitesse,int type_cl, const DoubleVect& porosite_face) const
@@ -627,10 +631,11 @@ void Quadri_VEF::calcul_vc(const ArrOfInt& Face,ArrOfDouble& vc,
 
 }
 
-// Description:
-// calcule les coord xg du centre d'un element non standard
-// calcule aussi idirichlet=nb de faces de Dirichlet de l'element
-// si idirichlet=2, n1 est le numero du sommet confondu avec G
+/*! @brief calcule les coord xg du centre d'un element non standard calcule aussi idirichlet=nb de faces de Dirichlet de l'element
+ *
+ *  si idirichlet=2, n1 est le numero du sommet confondu avec G
+ *
+ */
 void Quadri_VEF::calcul_xg(DoubleVect& xg, const DoubleTab& x,
                            const int type_elem_Cl,int& idirichlet,int& n1,int& ,int& ) const
 {
@@ -777,10 +782,11 @@ void Quadri_VEF::calcul_xg(DoubleVect& xg, const DoubleTab& x,
 }
 
 
-// Description:
-// modifie normales_facettes_Cl quand idirichlet=3
-// idirichlet=nb de faces de Dirichlet de l'element
-// si idirichlet=3, n1 est le numero du sommet confondu avec G
+/*! @brief modifie normales_facettes_Cl quand idirichlet=3 idirichlet=nb de faces de Dirichlet de l'element
+ *
+ *  si idirichlet=3, n1 est le numero du sommet confondu avec G
+ *
+ */
 void Quadri_VEF::modif_normales_facettes_Cl(DoubleTab& normales_facettes_Cl,
                                             int fa7,int num_elem,
                                             int idirichlet,int n1,int ,int ) const

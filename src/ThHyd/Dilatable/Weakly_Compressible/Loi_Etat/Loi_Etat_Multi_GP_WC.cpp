@@ -107,21 +107,9 @@ void Loi_Etat_Multi_GP_WC::update_Yn_values(Champ_Don& Yn, double temps)
     }
 }
 
-// Description:
-//    Calcule la masse molaire du melange (M)
-//    M depend de la mase molaire de chaque espece et de la composition du melange (Yi)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la masse molaire du melange (M) M depend de la mase molaire de chaque espece et de la composition du melange (Yi)
+ *
+ */
 void Loi_Etat_Multi_GP_WC::calculer_masse_molaire(DoubleTab& tab_masse_mol_mel) const
 {
   assert (sub_type(Champ_Uniforme,masse_molaire_especes().valeur()));
@@ -143,21 +131,9 @@ void Loi_Etat_Multi_GP_WC::calculer_masse_molaire(DoubleTab& tab_masse_mol_mel) 
   for (int elem=0; elem<size; elem++) tab_masse_mol_mel(elem,0) = 1.0 / inv_M[elem];
 }
 
-// Description:
-//    Calcule le Cp du melange
-//    Le Cp depend du Cp de chaque espece et de la composition du melange (Yi)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule le Cp du melange Le Cp depend du Cp de chaque espece et de la composition du melange (Yi)
+ *
+ */
 void Loi_Etat_Multi_GP_WC::calculer_tab_Cp(DoubleTab& tab_Cp) const
 {
   // FIXME : Actuellement on suppose que Cp est pris constant pour chacune des especes
@@ -178,20 +154,9 @@ void Loi_Etat_Multi_GP_WC::calculer_tab_Cp(DoubleTab& tab_Cp) const
     }
 }
 
-// Description:
-//    Recalcule la masse volumique
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Recalcule la masse volumique
+ *
+ */
 void Loi_Etat_Multi_GP_WC::calculer_masse_volumique()
 {
   const DoubleTab& tab_ICh = le_fluide->inco_chaleur().valeurs();
@@ -231,20 +196,9 @@ double Loi_Etat_Multi_GP_WC::calculer_masse_volumique(double P, double T) const
   return Loi_Etat_Multi_GP_base::calculer_masse_volumique(P,T);
 }
 
-// Description:
-//    Calcule la viscosite dynamique de reference (depend des Yi)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la viscosite dynamique de reference (depend des Yi)
+ *
+ */
 void Loi_Etat_Multi_GP_WC::calculer_mu_wilke()
 {
   // With Wilke formulation : https://aip.scitation.org/doi/pdf/10.1063/1.1747673
@@ -287,20 +241,9 @@ void Loi_Etat_Multi_GP_WC::calculer_mu_wilke()
   calculer_tab_mu(mu, size);
 }
 
-// Description:
-//    Calcule la viscosite dynamique sur Schmidt = rho * D
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la viscosite dynamique sur Schmidt = rho * D
+ *
+ */
 void Loi_Etat_Multi_GP_WC::calculer_mu_sur_Sc()
 {
   /*
@@ -344,20 +287,9 @@ void Loi_Etat_Multi_GP_WC::calculer_mu_sur_Sc()
   tab_mu_sur_Sc.echange_espace_virtuel();
 }
 
-// Description:
-//    Calcule la viscosite dynamique sur Schmidt = D
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la viscosite dynamique sur Schmidt = D
+ *
+ */
 void Loi_Etat_Multi_GP_WC::calculer_nu_sur_Sc()
 {
   /*

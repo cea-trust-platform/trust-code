@@ -19,15 +19,12 @@
 #include <Neumann_sortie_libre.h>
 #include <Ref_Fluide_Dilatable_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe  Neumann_sortie_libre_Temp_H
-//    Cette classe represente une frontiere ouverte a temperature imposee pour
-//    une equation de chaleur avec l'enthalpie comme iconnue
-// .SECTION voir aussi
-//     Neumann Sortie_libre_pression_imposee
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe  Neumann_sortie_libre_Temp_H Cette classe represente une frontiere ouverte a temperature imposee pour
+ *
+ *     une equation de chaleur avec l'enthalpie comme iconnue
+ *
+ * @sa Neumann Sortie_libre_pression_imposee
+ */
 
 class Neumann_sortie_libre_Temp_H : public Neumann_sortie_libre
 {

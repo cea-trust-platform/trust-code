@@ -22,42 +22,26 @@ Implemente_deriv(Mod_turb_hyd_base);
 Implemente_instanciable(Mod_turb_hyd,"Mod_turb_hyd",DERIV(Mod_turb_hyd_base));
 
 
-// Description:
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Mod_turb_hyd::printOn(Sortie& s ) const
 {
   return DERIV(Mod_turb_hyd_base)::printOn(s);
 }
 
 
-// Description:
-//    Lit les specifications d'un modele de turbulence
-//    a partir d'un flot d'entree.
-//    Lit le type de modele, type l'objet et appelle
-//    une lecture specifique (par polymorphisme)
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: Les modeles sous maille sont utilisables uniquement en dimension 3
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit les specifications d'un modele de turbulence a partir d'un flot d'entree.
+ *
+ *     Lit le type de modele, type l'objet et appelle
+ *     une lecture specifique (par polymorphisme)
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ * @throws Les modeles sous maille sont utilisables uniquement en dimension 3
+ */
 Entree& Mod_turb_hyd::readOn(Entree& s )
 {
   //  Cerr << " Mod_turb_hyd::readOn" << finl;

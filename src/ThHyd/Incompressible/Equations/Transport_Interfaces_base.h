@@ -19,19 +19,13 @@
 #include <Equation_base.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Transport_Interfaces_base
-//     Cette classe constitue la classe de base des equations de transport d interfaces
-//     Actuellement une seule classe instanciable derivant : Transport_Interfaces_FT_Disc
-//
-// .SECTION voir aussi
-//     Transport_Interfaces_FT_Disc
-//     Methodes abstraites:
-//     void modifier_vpoint_pour_imposer_vit(...)
-//     void integrer_ensemble_lagrange(...)
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Transport_Interfaces_base Cette classe constitue la classe de base des equations de transport d interfaces
+ *
+ *      Actuellement une seule classe instanciable derivant : Transport_Interfaces_FT_Disc
+ *
+ *
+ * @sa Transport_Interfaces_FT_Disc, Methodes abstraites:, void modifier_vpoint_pour_imposer_vit(...), void integrer_ensemble_lagrange(...)
+ */
 
 class Transport_Interfaces_base : public Equation_base
 {

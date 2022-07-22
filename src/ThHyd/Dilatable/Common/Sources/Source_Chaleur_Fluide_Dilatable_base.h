@@ -22,17 +22,14 @@
 class Zone_dis;
 class Zone_Cl_dis;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION class Source_Chaleur_Fluide_Dilatable_base
-//
-// Cette classe represente un terme source supplementaire a prendre en compte dans
-// les equations de la chaleur dans le cas ou le fluide est quasi compressible
-//
-// .SECTION voir aussi
-// Source_base Fluide_Dilatable_base
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief class Source_Chaleur_Fluide_Dilatable_base
+ *
+ *  Cette classe represente un terme source supplementaire a prendre en compte dans
+ *  les equations de la chaleur dans le cas ou le fluide est quasi compressible
+ *
+ *
+ * @sa Source_base Fluide_Dilatable_base
+ */
 
 class Source_Chaleur_Fluide_Dilatable_base : public Source_base
 {

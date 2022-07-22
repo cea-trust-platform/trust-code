@@ -18,16 +18,13 @@
 
 #include <Convection_Diffusion_Espece_Fluide_Dilatable_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Convection_Diffusion_Espece_Multi_base
-//     Cas particulier de Convection_Diffusion_Espece_Fluide_Dilatable_base
-//     pour un fluide quasi conpressible quand le scalaire subissant le transport est
-//     la fraction massique
-// .SECTION voir aussi
-//     Convection_Diffusion_Espece_Fluide_Dilatable_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Convection_Diffusion_Espece_Multi_base Cas particulier de Convection_Diffusion_Espece_Fluide_Dilatable_base
+ *
+ *      pour un fluide quasi conpressible quand le scalaire subissant le transport est
+ *      la fraction massique
+ *
+ * @sa Convection_Diffusion_Espece_Fluide_Dilatable_base
+ */
 
 class Convection_Diffusion_Espece_Multi_base : public Convection_Diffusion_Espece_Fluide_Dilatable_base
 {

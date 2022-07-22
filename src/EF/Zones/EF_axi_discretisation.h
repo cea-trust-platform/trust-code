@@ -18,13 +18,13 @@
 
 #include <EF_discretisation.h>
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class EF_axi_discretisation
-//
-// <Description of class EF_axi_discretisation>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class EF_axi_discretisation
+ *
+ *  <Description of class EF_axi_discretisation>
+ *
+ *
+ *
+ */
 
 class EF_axi_discretisation : public EF_discretisation
 {

@@ -21,17 +21,16 @@
 #include <Ref_Fluide_Ostwald.h>
 #include <Champ_Fonc_P0_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_Ostwald
-//     Represente un champ qui varie en fonction de la consistance et
-//        de l'indice de structure.
-//   Classe mere qui gere le champ utilise pour le fluide d'Ostwald dans les deux
-//   discretisations.
-//   Possede les fonctions generiques aux deux discretisations.
-//   Fait reference a un fluide d'Ostwald pour pouvoir utiliser les deux
-//   parametres du fluide d'Ostwald : K et N.
+/*! @brief classe Champ_Ostwald Represente un champ qui varie en fonction de la consistance et
+ *
+ *         de l'indice de structure.
+ *    Classe mere qui gere le champ utilise pour le fluide d'Ostwald dans les deux
+ *    discretisations.
+ *    Possede les fonctions generiques aux deux discretisations.
+ *    Fait reference a un fluide d'Ostwald pour pouvoir utiliser les deux
+ *    parametres du fluide d'Ostwald : K et N.
+ *
+ */
 
 // .SECTION voir aussi
 //     Champ_Don_base

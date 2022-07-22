@@ -23,14 +23,10 @@
 
 class Fluide_Dilatable_base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe EOS_Tools_VDF
-//     Cette classe et specifique a discretisation de type VDF.
-// .SECTION voir aussi
-//     Fluide_Dilatable_base EOS_Tools_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe EOS_Tools_VDF Cette classe et specifique a discretisation de type VDF.
+ *
+ * @sa Fluide_Dilatable_base EOS_Tools_base
+ */
 
 class EOS_Tools_VDF: public EOS_Tools_base
 {

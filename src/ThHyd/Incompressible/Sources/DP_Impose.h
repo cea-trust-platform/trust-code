@@ -19,16 +19,13 @@
 
 #include <Perte_Charge_Singuliere.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe DP_Impose
-//    Cette classe derivee de Perte_Charge_Singuliere est utilisee lorsque l'on veut
-//    impose un Delta P (pour simuler une pompe) depuis un champ exterieur
-//    par exemple)
-// .SECTION voir aussi
-//     Perte_Charge Perte_Charge_Reguliere
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe DP_Impose Cette classe derivee de Perte_Charge_Singuliere est utilisee lorsque l'on veut
+ *
+ *     impose un Delta P (pour simuler une pompe) depuis un champ exterieur
+ *     par exemple)
+ *
+ * @sa Perte_Charge Perte_Charge_Reguliere
+ */
 class DP_Impose : public Perte_Charge_Singuliere
 {
 

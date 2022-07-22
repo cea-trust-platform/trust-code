@@ -19,16 +19,13 @@
 #include <Neumann_homogene.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Neumann_paroi_adiabatique
-//    Cette condition limite correspond a une paroi adiabatique dans une
-//    equation de type Convection_Diffusion_Temperature.
-//    Le flux de temperature est nul a la frontiere.
-// .SECTION voir aussi
-//    Neumann_homogene
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Neumann_paroi_adiabatique Cette condition limite correspond a une paroi adiabatique dans une
+ *
+ *     equation de type Convection_Diffusion_Temperature.
+ *     Le flux de temperature est nul a la frontiere.
+ *
+ * @sa Neumann_homogene
+ */
 class Neumann_paroi_adiabatique : public Neumann_homogene
 {
 

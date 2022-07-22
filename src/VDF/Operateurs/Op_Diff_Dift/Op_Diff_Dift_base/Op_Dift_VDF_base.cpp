@@ -133,8 +133,9 @@ void Op_Dift_VDF_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, con
 
 }
 
-//Description:
-//on ajoute la contribution du second membre.
+/*! @brief on ajoute la contribution du second membre.
+ *
+ */
 void Op_Dift_VDF_base::contribuer_au_second_membre(DoubleTab& resu) const
 {
   iter.contribuer_au_second_membre(resu);

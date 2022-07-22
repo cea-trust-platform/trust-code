@@ -18,14 +18,10 @@
 
 #include <Operateur_Evanescence_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Op_Evanescence_Homogene_PolyMAC_P0_Face
-//    gestion dans PolyMAC_P0 de l'evanescence dans une equation aux faces (-> QDM)
-// .SECTION voir aussi
-//    Operateur_PolyMAC_P0_base Operateur_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Op_Evanescence_Homogene_PolyMAC_P0_Face gestion dans PolyMAC_P0 de l'evanescence dans une equation aux faces (-> QDM)
+ *
+ * @sa Operateur_PolyMAC_P0_base Operateur_base
+ */
 class Op_Evanescence_Homogene_PolyMAC_P0_Face: public Operateur_Evanescence_base
 {
   Declare_instanciable(Op_Evanescence_Homogene_PolyMAC_P0_Face);

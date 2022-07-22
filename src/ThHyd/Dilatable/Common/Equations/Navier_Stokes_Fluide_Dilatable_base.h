@@ -24,27 +24,23 @@
 
 class Matrice_Morse;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Navier_Stokes_Fluide_Dilatable_base
-//    Cette classe basse porte les termes de l'equation de la dynamique
-//    pour un fluide sans modelisation de la turbulence.
-//    On suppose l'hypothese de fluide dilatable.
-//    Sous ces hypotheses, on utilise la forme suivante des equations de
-//    Navier_Stokes:
-//       DU/dt = div(terme visqueux) - gradP/rho + sources/rho
-//       div U = W
-//    avec DU/dt : derivee particulaire de la vitesse
-//         rho   : masse volumique
-//    Rq : l'implementation de la classe permet bien sur de negliger
-//         certains termes de l'equation (le terme visqueux, le terme
-//         convectif, tel ou tel terme source).
-//    L'inconnue est le champ de vitesse.
-// .SECTION voir aussi
-//      Navier_Stokes_std
-//
-//////////////////////////////////////
+/*! @brief classe Navier_Stokes_Fluide_Dilatable_base Cette classe basse porte les termes de l'equation de la dynamique
+ *
+ *     pour un fluide sans modelisation de la turbulence.
+ *     On suppose l'hypothese de fluide dilatable.
+ *     Sous ces hypotheses, on utilise la forme suivante des equations de
+ *     Navier_Stokes:
+ *        DU/dt = div(terme visqueux) - gradP/rho + sources/rho
+ *        div U = W
+ *     avec DU/dt : derivee particulaire de la vitesse
+ *          rho   : masse volumique
+ *     Rq : l'implementation de la classe permet bien sur de negliger
+ *          certains termes de l'equation (le terme visqueux, le terme
+ *          convectif, tel ou tel terme source).
+ *     L'inconnue est le champ de vitesse.
+ *
+ * @sa Navier_Stokes_std
+ */
 
 class Navier_Stokes_Fluide_Dilatable_base : public Navier_Stokes_std, public Navier_Stokes_Fluide_Dilatable_Proto
 {

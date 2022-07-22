@@ -23,10 +23,10 @@
 #include <Ref_Zone_Cl_VEF.h>
 #include <Zone_Cl_VEF.h>
 
-//.DESCRIPTION  classe Y_plus_Champ_P1NC
-//
-// .SECTION voir aussi
-// Champ_y_plus Champ_Fonc_P0_VEF
+/*! @brief classe Y_plus_Champ_P1NC
+ *
+ * @sa Champ_y_plus Champ_Fonc_P0_VEF
+ */
 
 class Y_plus_Champ_P1NC : public Champ_y_plus,
   public Champ_Fonc_P0_VEF

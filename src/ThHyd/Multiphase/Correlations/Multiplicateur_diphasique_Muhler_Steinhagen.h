@@ -17,16 +17,15 @@
 #define Multiplicateur_diphasique_Muhler_Steinhagen_included
 #include <Multiplicateur_diphasique_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Multiplicateur_diphasique_Muhler_Steinhagen
-//    multiplicateur diphasique par la correlation de Muhler-Steinhagen :
-//      Phi^2 f_m / rho_m = (f_lo / rho_l + C (f_go / rho_g -  f_lo / rho_l) x) (1 - x)^(1/3) + f_go / rho_g x^3
-//      avec C = 2 par defaut
-//    - applique a la phase liquide pour alpha < alpha_min
-//    - applique a la phase vapeur pour alpha > alpha_max
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Multiplicateur_diphasique_Muhler_Steinhagen multiplicateur diphasique par la correlation de Muhler-Steinhagen :
+ *
+ *       Phi^2 f_m / rho_m = (f_lo / rho_l + C (f_go / rho_g -  f_lo / rho_l) x) (1 - x)^(1/3) + f_go / rho_g x^3
+ *       avec C = 2 par defaut
+ *     - applique a la phase liquide pour alpha < alpha_min
+ *     - applique a la phase vapeur pour alpha > alpha_max
+ *
+ *
+ */
 
 class Multiplicateur_diphasique_Muhler_Steinhagen : public Multiplicateur_diphasique_base
 {

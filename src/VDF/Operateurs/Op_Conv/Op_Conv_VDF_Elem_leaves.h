@@ -28,10 +28,12 @@ class Op_Conv_VDF_Elem_leaves
 /// \endcond
 
 declare_It_VDF_Elem(Eval_Amont_VDF_Elem)
-// .DESCRIPTION class Op_Conv_Amont_VDF_Elem
-//  Cette classe represente l'operateur de convection associe a une equation de transport d'un scalaire.
-//  La discretisation est VDF. Le champ convecte est scalaire. Le schema de convection est du type Amont
-//  L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Amont_VDF_Elem
+/*! @brief class Op_Conv_Amont_VDF_Elem Cette classe represente l'operateur de convection associe a une equation de transport d'un scalaire.
+ *
+ *   La discretisation est VDF. Le champ convecte est scalaire. Le schema de convection est du type Amont
+ *   L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Amont_VDF_Elem
+ *
+ */
 class Op_Conv_Amont_VDF_Elem : public Op_Conv_VDF_base, public Op_Conv_VDF<Op_Conv_Amont_VDF_Elem>
 {
   Declare_instanciable_sans_constructeur(Op_Conv_Amont_VDF_Elem);
@@ -64,10 +66,12 @@ protected:
 };
 
 declare_It_VDF_Elem(Eval_Centre_VDF_Elem)
-// .DESCRIPTION class Op_Conv_Centre_VDF_Elem
-//  Cette classe represente l'operateur de convection associe a une equation de transport d'un scalaire.
-//  La discretisation est VDF. Le champ convecte est scalaire. Le schema de convection est du type Centre (sur 2 points)
-//  L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Centre_VDF_Elem
+/*! @brief class Op_Conv_Centre_VDF_Elem Cette classe represente l'operateur de convection associe a une equation de transport d'un scalaire.
+ *
+ *   La discretisation est VDF. Le champ convecte est scalaire. Le schema de convection est du type Centre (sur 2 points)
+ *   L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Centre_VDF_Elem
+ *
+ */
 class Op_Conv_Centre_VDF_Elem : public Op_Conv_VDF_base, public Op_Conv_VDF<Op_Conv_Centre_VDF_Elem>
 {
   Declare_instanciable_sans_constructeur(Op_Conv_Centre_VDF_Elem);
@@ -91,10 +95,12 @@ public:
 };
 
 declare_It_VDF_Elem(Eval_Centre4_VDF_Elem)
-// .DESCRIPTION class Op_Conv_Centre4_VDF_Elem
-//  Cette classe represente l'operateur de convection associe a une equation de transport d'un scalaire.
-//  La discretisation est VDF. Le champ convecte est scalaire. Le schema de convection est du type Centre (sur 4 points)
-//  L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Centre4_VDF_Elem
+/*! @brief class Op_Conv_Centre4_VDF_Elem Cette classe represente l'operateur de convection associe a une equation de transport d'un scalaire.
+ *
+ *   La discretisation est VDF. Le champ convecte est scalaire. Le schema de convection est du type Centre (sur 4 points)
+ *   L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Centre4_VDF_Elem
+ *
+ */
 class Op_Conv_Centre4_VDF_Elem : public Op_Conv_VDF_base, public Op_Conv_VDF<Op_Conv_Centre4_VDF_Elem>
 {
   Declare_instanciable_sans_constructeur(Op_Conv_Centre4_VDF_Elem);
@@ -107,10 +113,12 @@ public:
 };
 
 declare_It_VDF_Elem(Eval_Quick_VDF_Elem)
-// .DESCRIPTION class Op_Conv_Quick_VDF_Elem
-//  Cette classe represente l'operateur de convection associe a une equation de transport d'un scalaire.
-//  La discretisation est VDF. Le champ convecte est scalaire. Le schema de convection est du type Quick
-//  L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Quick_VDF_Elem
+/*! @brief class Op_Conv_Quick_VDF_Elem Cette classe represente l'operateur de convection associe a une equation de transport d'un scalaire.
+ *
+ *   La discretisation est VDF. Le champ convecte est scalaire. Le schema de convection est du type Quick
+ *   L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Quick_VDF_Elem
+ *
+ */
 class Op_Conv_Quick_VDF_Elem : public Op_Conv_VDF_base, public Op_Conv_VDF<Op_Conv_Quick_VDF_Elem>
 {
   Declare_instanciable_sans_constructeur(Op_Conv_Quick_VDF_Elem);

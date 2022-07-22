@@ -40,7 +40,9 @@ Sortie& Terme_Source_Acceleration::printOn(Sortie& s ) const
   return s;
 }
 
-// Description: Appel a Terme_Source_Acceleration::lire_data
+/*! @brief Appel a Terme_Source_Acceleration::lire_data
+ *
+ */
 Entree& Terme_Source_Acceleration::readOn(Entree& s )
 {
   Cerr << "Terme_Source_Acceleration::readOn : appel invalide" << finl;
@@ -49,22 +51,24 @@ Entree& Terme_Source_Acceleration::readOn(Entree& s )
   return s;
 }
 
-// Description:
-// Methode appelee par readOn des classes derivees
-//  Terme_Source_Acceleration_VDF_Face, ...
-//
-// Le format attendu est le suivant
-//  {
-//    [ omega           Un_Champ_uniforme
-//      domegadt        Un_Champ_uniforme
-//      centre_rotation Un_Champ_uniforme
-//      option          TERME_COMPLET | CORIOLIS_SEUL | ENTRAINEMENT_SEUL ]
-//    [ acceleration    Un_Champ_uniforme ]
-//  }
-// Un_Champ_uniforme est typiquement:
-//      Champ_Uniforme 3 x y z
-//    ou
-//      Champ_Fonc_t DOM 3 fx(t) fy(t) fz(t)
+/*! @brief Methode appelee par readOn des classes derivees Terme_Source_Acceleration_VDF_Face, .
+ *
+ * ..
+ *
+ *  Le format attendu est le suivant
+ *   {
+ *     [ omega           Un_Champ_uniforme
+ *       domegadt        Un_Champ_uniforme
+ *       centre_rotation Un_Champ_uniforme
+ *       option          TERME_COMPLET | CORIOLIS_SEUL | ENTRAINEMENT_SEUL ]
+ *     [ acceleration    Un_Champ_uniforme ]
+ *   }
+ *  Un_Champ_uniforme est typiquement:
+ *       Champ_Uniforme 3 x y z
+ *     ou
+ *       Champ_Fonc_t DOM 3 fx(t) fy(t) fz(t)
+ *
+ */
 
 void Terme_Source_Acceleration::lire_data(Entree& s)
 {
@@ -244,16 +248,15 @@ Champ_Fonc& Terme_Source_Acceleration::get_set_terme_source_post() const
   return terme_source_post_;
 }
 
-// Description:
-//  Calcul de la valeur du champ la_source aux faces en fonction de
-//  - calculer_vitesse_faces()
-//  - champ_acceleration_
-//  - omega_
-//  - domegadt_
-//  - centre_rotation_
-// Parametre: champ_source
-// Signification: un champ discretise aux elements de la zone_VF dans lequel
-//                on stocke le resultat du calcul. Espace virtuel a jour.
+/*! @brief Calcul de la valeur du champ la_source aux faces en fonction de - calculer_vitesse_faces()
+ *
+ *   - champ_acceleration_
+ *   - omega_
+ *   - domegadt_
+ *   - centre_rotation_
+ *
+ * @param (champ_source) un champ discretise aux elements de la zone_VF dans lequel on stocke le resultat du calcul. Espace virtuel a jour.
+ */
 const DoubleTab&
 Terme_Source_Acceleration::calculer_la_source(DoubleTab& acceleration_aux_faces) const
 {
@@ -361,8 +364,9 @@ Terme_Source_Acceleration::calculer_la_source(DoubleTab& acceleration_aux_faces)
   return acceleration_aux_faces;
 }
 
-// Description:
-//   resu=0; ajouter(resu); (appel a ajouter() de la classe derivee)
+/*! @brief resu=0; ajouter(resu); (appel a ajouter() de la classe derivee)
+ *
+ */
 DoubleTab& Terme_Source_Acceleration::calculer(DoubleTab& resu) const
 {
   resu = 0;
@@ -371,8 +375,9 @@ DoubleTab& Terme_Source_Acceleration::calculer(DoubleTab& resu) const
   return resu;
 }
 
-// Description:
-//  Evalue les champs d'acceleration et de rotation au temps t.
+/*! @brief Evalue les champs d'acceleration et de rotation au temps t.
+ *
+ */
 void Terme_Source_Acceleration::mettre_a_jour(double temps)
 {
   //Cerr << "Terme_Source_Acceleration::mettre_a_jour temps=" << temps << finl;
@@ -387,11 +392,13 @@ void Terme_Source_Acceleration::mettre_a_jour(double temps)
   get_set_terme_source_post().mettre_a_jour(temps);
 }
 
-// Description:
-//  Methode surchargee de Source_base.
-//  Les mots compris sont:
-//  "ACCELERATION" => renvoie terme_source_post_, homogene a d/dt(rho*v)
-//  Attention a l'effet de bord de ajouter() (voir commentaires de ajouter())
+/*! @brief Methode surchargee de Source_base.
+ *
+ * Les mots compris sont:
+ *   "ACCELERATION" => renvoie terme_source_post_, homogene a d/dt(rho*v)
+ *   Attention a l'effet de bord de ajouter() (voir commentaires de ajouter())
+ *
+ */
 int Terme_Source_Acceleration::a_pour_Champ_Fonc(const Motcle& mot,
                                                  REF(Champ_base) & ch_ref) const
 {
@@ -404,7 +411,9 @@ int Terme_Source_Acceleration::a_pour_Champ_Fonc(const Motcle& mot,
   return ok;
 }
 
-// Description: Renvoie eq_hydraulique_ !
+/*! @brief Renvoie eq_hydraulique_ !
+ *
+ */
 const Navier_Stokes_std& Terme_Source_Acceleration::get_eq_hydraulique() const
 {
   const Navier_Stokes_std& ns = ref_cast(Navier_Stokes_std, equation());

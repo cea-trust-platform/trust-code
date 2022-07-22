@@ -16,21 +16,21 @@
 #ifndef VDF_discretisation_included
 #define VDF_discretisation_included
 
-//
-// .DESCRIPTION class VDF_discretisation
-// classe qui gere la dicretisation VDF du probleme
-//    c'est ici que :
-//    * l'on discretise les proprietes physiques du fluide et notemment celui du fluide
-//       d'Ostwald( K, N, Mu, ...)
-//    * l'on associe le champ d'Ostwald, le fluide et la zone_dis_base
-//    ** ( nouvelles procedures :
-//  void proprietes_physiques_fluide_Ostwald(Zone_dis& ,Fluide_Ostwald& ,
-//           const Navier_Stokes_std& , const Champ_Inc& ) const;
-//   a besoin de la classe Fluide_Ostwald pour avoir acces au fluide etudie
-//                         Navier_Stokes_Std pour avoir acces a l'equation hydraulique
-//                         (donc a la vitesse
-// .SECTION voir aussi
-// Discret_Thyd_Turb
+/*! @brief class VDF_discretisation classe qui gere la dicretisation VDF du probleme
+ *
+ *     c'est ici que :
+ *     * l'on discretise les proprietes physiques du fluide et notemment celui du fluide
+ *        d'Ostwald( K, N, Mu, ...)
+ *     * l'on associe le champ d'Ostwald, le fluide et la zone_dis_base
+ *     ** ( nouvelles procedures :
+ *   void proprietes_physiques_fluide_Ostwald(Zone_dis& ,Fluide_Ostwald& ,
+ *            const Navier_Stokes_std& , const Champ_Inc& ) const;
+ *    a besoin de la classe Fluide_Ostwald pour avoir acces au fluide etudie
+ *                          Navier_Stokes_Std pour avoir acces a l'equation hydraulique
+ *                          (donc a la vitesse
+ *
+ * @sa Discret_Thyd_Turb
+ */
 
 
 #include <Discret_Thyd.h>

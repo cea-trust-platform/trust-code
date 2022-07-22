@@ -39,24 +39,15 @@ Perte_Charge_Reguliere::Perte_Charge_Reguliere( void ) : Perte_Charge( )
 
 }
 
-// Description:
-//    Lit les specifications d'une perte de charge reguliere
-//    a partir d'un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: mot cle inattendu, on attendait "X","Y" ou "Z"
-// Exception: mot cle inattendu, on attendait "d"
-// Exception: mot cle inattendu, on attendait "longitudinale" ou
-//            "transversale"
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit les specifications d'une perte de charge reguliere a partir d'un flot d'entree.
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ * @throws mot cle inattendu, on attendait "X","Y" ou "Z"
+ * @throws mot cle inattendu, on attendait "d"
+ * @throws mot cle inattendu, on attendait "longitudinale" ou
+ * "transversale"
+ */
 Entree& Perte_Charge_Reguliere::lire_donnees(Entree& is)
 {
   int dimension = Objet_U::dimension ;

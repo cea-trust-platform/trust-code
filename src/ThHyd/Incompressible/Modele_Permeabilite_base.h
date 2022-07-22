@@ -19,15 +19,12 @@
 #include <Objet_U.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Modele_Permeabilite_base
-//    Cette classe de base represente un modele de permeabilite
-//    pour les equations des milieux poreux (termes sources de Darcy,
-//    Forchheinmer).
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Modele_Permeabilite_base Cette classe de base represente un modele de permeabilite
+ *
+ *     pour les equations des milieux poreux (termes sources de Darcy,
+ *     Forchheinmer).
+ *
+ */
 class Modele_Permeabilite_base : public Objet_U
 {
 

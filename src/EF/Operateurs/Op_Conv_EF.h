@@ -27,12 +27,14 @@
 
 enum class AJOUTE_COND { GEN , D3_81 , D3_82 , D2_41 , D2_42 };
 
-// .DESCRIPTION class Op_Conv_EF
-//  Cette classe represente l'operateur de convection associe a une equation de
-//  transport d'un scalaire.
-//  La discretisation est EF
-//  Le champ convecte est scalaire ou vecteur de type Champ_P1NC
-//  Le schema de convection est du type Decentre ou Centre
+/*! @brief class Op_Conv_EF Cette classe represente l'operateur de convection associe a une equation de
+ *
+ *   transport d'un scalaire.
+ *   La discretisation est EF
+ *   Le champ convecte est scalaire ou vecteur de type Champ_P1NC
+ *   Le schema de convection est du type Decentre ou Centre
+ *
+ */
 class Op_Conv_EF : public Op_Conv_EF_base
 {
   Declare_instanciable(Op_Conv_EF);

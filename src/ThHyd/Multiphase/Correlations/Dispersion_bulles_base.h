@@ -18,21 +18,20 @@
 #include <TRUSTTab.h>
 #include <Correlation_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Dispersion_bulles_base
-//      utilitaire pour les operateurs de dispersion turbulente ou la force
-//      exercee sur le gaz par le liquide prend la forme
-//      F_{kl} = - F_{lk} = - C_{kl} grad(alpha{k}) + C_{lk} grad(alpha{l}) ou la phase
-//      l est la phase liquide porteuse et k != 0 une phase quelconque
-//      cette classe definit une fonction C_{kl}!=C_{lk} dependant de :
-//        alpha, p, T -> inconnues (une valeur par phase chacune)
-//        rho, mu, sigma, nut, k_turb -> proprietes physiques (idem)
-//        ndv(k, l) -> ||v_k - v_l||, a remplir pour k < l
-//    sortie :
-//        coeff(k, l, 0/1) -> coefficient C_{kl} et sa derivee en ndv(k, l), rempli pour k < l
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Dispersion_bulles_base utilitaire pour les operateurs de dispersion turbulente ou la force
+ *
+ *       exercee sur le gaz par le liquide prend la forme
+ *       F_{kl} = - F_{lk} = - C_{kl} grad(alpha{k}) + C_{lk} grad(alpha{l}) ou la phase
+ *       l est la phase liquide porteuse et k != 0 une phase quelconque
+ *       cette classe definit une fonction C_{kl}!=C_{lk} dependant de :
+ *         alpha, p, T -> inconnues (une valeur par phase chacune)
+ *         rho, mu, sigma, nut, k_turb -> proprietes physiques (idem)
+ *         ndv(k, l) -> ||v_k - v_l||, a remplir pour k < l
+ *     sortie :
+ *         coeff(k, l, 0/1) -> coefficient C_{kl} et sa derivee en ndv(k, l), rempli pour k < l
+ *
+ *
+ */
 
 class Dispersion_bulles_base : public Correlation_base
 {

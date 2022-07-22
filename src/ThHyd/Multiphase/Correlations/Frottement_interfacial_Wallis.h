@@ -17,14 +17,13 @@
 #define Frottement_interfacial_Wallis_included
 #include <Frottement_interfacial_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Frottement_interfacial_Wallis
-//      coefficients de frottement interfacial d'un ecoulement annulaire
-//      -> correlation de Wallis
-//      parametres : non!
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Frottement_interfacial_Wallis coefficients de frottement interfacial d'un ecoulement annulaire
+ *
+ *       -> correlation de Wallis
+ *       parametres : non!
+ *
+ *
+ */
 
 class Frottement_interfacial_Wallis : public Frottement_interfacial_base
 {

@@ -20,10 +20,12 @@
 #include <Champ_P0_VDF.h>
 class Echange_externe_impose;
 
-// .DESCRIPTION class Eval_VDF_Elem
-// Cette classe represente le prototype fonctionnel
-// des evaluateurs de flux associes aux equations de
-// conservation integrees sur les elements
+/*! @brief class Eval_VDF_Elem Cette classe represente le prototype fonctionnel
+ *
+ *  des evaluateurs de flux associes aux equations de
+ *  conservation integrees sur les elements
+ *
+ */
 class Eval_VDF_Elem
 {
 public:

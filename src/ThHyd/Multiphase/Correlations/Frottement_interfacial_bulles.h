@@ -17,15 +17,14 @@
 #define Frottement_interfacial_bulles_included
 #include <Frottement_interfacial_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Frottement_interfacial_bulles
-//      coefficients de frottement interfacial d'un ecoulement a bulles
-//      parametres (a lire dans les Op_FI_*_bulles) :
-//       - r_bulle_ -> rayon de bulle
-//       - C_d_     -> coefficient de friction
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Frottement_interfacial_bulles coefficients de frottement interfacial d'un ecoulement a bulles
+ *
+ *       parametres (a lire dans les Op_FI_*_bulles) :
+ *        - r_bulle_ -> rayon de bulle
+ *        - C_d_     -> coefficient de friction
+ *
+ *
+ */
 
 class Frottement_interfacial_bulles : public Frottement_interfacial_base
 {

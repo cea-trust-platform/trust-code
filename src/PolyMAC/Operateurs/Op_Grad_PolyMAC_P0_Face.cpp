@@ -53,7 +53,9 @@ Entree& Op_Grad_PolyMAC_P0_Face::readOn(Entree& s)
 
 
 
-// Description:
+/*! @brief
+ *
+ */
 void Op_Grad_PolyMAC_P0_Face::associer(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis, const Champ_Inc& ch)
 {
   ref_zone = ref_cast(Zone_PolyMAC_P0, zone_dis.valeur());

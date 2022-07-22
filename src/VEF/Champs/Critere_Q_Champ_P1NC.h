@@ -21,10 +21,10 @@
 #include <Champ_Fonc_P0_VEF.h>
 #include <Ref_Champ_P1NC.h>
 
-//.DESCRIPTION  classe Critere_Q_Champ_P1NC
-//
-// .SECTION voir aussi
-// Champ_Critere_Q Champ_Fonc_P0_VDF
+/*! @brief classe Critere_Q_Champ_P1NC
+ *
+ * @sa Champ_Critere_Q Champ_Fonc_P0_VDF
+ */
 
 class Critere_Q_Champ_P1NC : public Champ_Critere_Q,
   public Champ_Fonc_P0_VEF

@@ -25,16 +25,15 @@
 #include <Champ_Fonc.h>
 #include <Ref_Champ_Fonc.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    class Champ_Fonc_Elem_PolyMAC_P0_rot for the calculation of the vorticity
-//      This field is a Champ_Fonc_Elem_PolyMAC_P0 with 1 value per element and per phase in 2D and 3 in 3D
-//      It isn't a Champ_Fonc_Face_PolyMAC_P0 as there is no physical justification to project the vorticity on a face
-//      In 3D, Champ_Fonc_Elem_PolyMAC_P0_TC::valeurs()(e, n*D + d) returns the value of phase n in element e along the d component
-//      The vorticity is calculated by hand in 2D and 3D using the values of the gradient
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief class Champ_Fonc_Elem_PolyMAC_P0_rot for the calculation of the vorticity This field is a Champ_Fonc_Elem_PolyMAC_P0 with 1 value per element and per phase in 2D and 3 in 3D
+ *
+ *       It isn't a Champ_Fonc_Face_PolyMAC_P0 as there is no physical justification to project the vorticity on a face
+ *       In 3D, Champ_Fonc_Elem_PolyMAC_P0_TC::valeurs()(e, n*D + d) returns the value of phase n in element e along the d component
+ *       The vorticity is calculated by hand in 2D and 3D using the values of the gradient
+ *
+ *
+ *
+ */
 
 class Champ_Fonc_Elem_PolyMAC_P0_rot : public Champ_Fonc_Elem_PolyMAC
 

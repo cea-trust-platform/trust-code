@@ -22,10 +22,11 @@
 #include <Ref_Champ_Uniforme.h>
 #include <Matrice_Morse.h>
 
-//
-// .DESCRIPTION class Op_Dift_VEF_FaceQ1
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief class Op_Dift_VEF_FaceQ1
+ *
+ *
+ *
+ */
 
 class Op_Dift_VEF_Face_Q1 : public Op_Dift_VEF_base
 {
@@ -59,8 +60,9 @@ public:
 protected :
   REF(Champ_Uniforme) diffusivite_;
 };
-// Description:
-// on dimensionne notre matrice.
+/*! @brief on dimensionne notre matrice.
+ *
+ */
 
 inline  void Op_Dift_VEF_Face_Q1::dimensionner(Matrice_Morse& matrice) const
 {
@@ -73,8 +75,9 @@ inline void Op_Dift_VEF_Face_Q1::modifier_pour_Cl(Matrice_Morse& matrice, Double
 }
 
 
-//Description:
-//on assemble la matrice.
+/*! @brief on assemble la matrice.
+ *
+ */
 
 inline void Op_Dift_VEF_Face_Q1::contribuer_a_avec(const DoubleTab& inco,
                                                    Matrice_Morse& matrice) const
@@ -82,8 +85,9 @@ inline void Op_Dift_VEF_Face_Q1::contribuer_a_avec(const DoubleTab& inco,
   ajouter_contribution(inco, matrice);
 }
 
-//Description:
-//on ajoute la contribution du second membre.
+/*! @brief on ajoute la contribution du second membre.
+ *
+ */
 
 inline void Op_Dift_VEF_Face_Q1::contribuer_au_second_membre(DoubleTab& resu) const
 {

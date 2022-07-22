@@ -20,10 +20,12 @@
 #include <Evaluateur_VDF.h>
 #include <Eval_VDF_Face.h>
 
-// .DESCRIPTION class Eval_Diff_VDF_Face
-// Evaluateur VDF pour la diffusion
-// Le champ diffuse est un Champ_Face
-// .SECTION voir aussi Eval_VDF_Face, Evaluateur_VDF
+/*! @brief class Eval_Diff_VDF_Face Evaluateur VDF pour la diffusion
+ *
+ *  Le champ diffuse est un Champ_Face
+ *
+ * @sa Eval_VDF_Face, Evaluateur_VDF
+ */
 template <typename DERIVED_T>
 class Eval_Diff_VDF_Face : public Eval_VDF_Face, public Evaluateur_VDF
 {

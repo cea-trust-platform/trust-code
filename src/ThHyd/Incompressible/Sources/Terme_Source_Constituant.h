@@ -21,19 +21,15 @@
 #include <SFichier.h>
 #include <Equation_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Terme_Source_Constituant
-//    Cette classe represente un terme source de l'equation de transport des constituants
-//    de type degagement volumique de puissance thermique.!!!!A MODIFIER
-//    Un objet Terme_Source_Constituant contient la puissance (Champ donne
-//    utilisateur) et des references a la masse volumique (rho) et la chaleur.
-//    specifique (Cp).
-// .SECTION voir aussi
-//    Classe non instanciable.
-//    L'implementation des termes dependra de leur discretisation.
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Terme_Source_Constituant Cette classe represente un terme source de l'equation de transport des constituants
+ *
+ *     de type degagement volumique de puissance thermique.!!!!A MODIFIER
+ *     Un objet Terme_Source_Constituant contient la puissance (Champ donne
+ *     utilisateur) et des references a la masse volumique (rho) et la chaleur.
+ *     specifique (Cp).
+ *
+ * @sa Classe non instanciable., L'implementation des termes dependra de leur discretisation.
+ */
 class Terme_Source_Constituant
 {
 
@@ -62,27 +58,11 @@ protected:
 };
 
 
-// Description:
-//    Associe les champs donnes rho (masse volumique)
-//    et Cp (chaleur specifique) a l'objet.
-// Precondition:
-// Parametre: Champ_Don& rho
-//    Signification: champ donne representant la masse volumique
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: Champ_Don& cp
-//    Signification: champ donne representant la chaleur specifique
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: le terme de puissance thermique a une masse volumique
-//                et une chaleur specifique associee
+/*! @brief Associe les champs donnes rho (masse volumique) et Cp (chaleur specifique) a l'objet.
+ *
+ * @param (Champ_Don& rho) champ donne representant la masse volumique
+ * @param (Champ_Don& cp) champ donne representant la chaleur specifique
+ */
 /*
   inline void Terme_Source_Constituant::associer_champs(const Champ_base& rho,
   const Champ_Don& cp)

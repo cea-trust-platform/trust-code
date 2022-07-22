@@ -56,8 +56,9 @@ Entree& Op_Diff_VEF_Face_Penalise::readOn(Entree& is )
  *
  */
 
-//Description:
-// methode qui calcule la contribution de l'operateur.
+/*! @brief methode qui calcule la contribution de l'operateur.
+ *
+ */
 DoubleTab& Op_Diff_VEF_Face_Penalise::
 calculer(const DoubleTab& inconnue, DoubleTab& resu) const
 {
@@ -73,9 +74,9 @@ calculer(const DoubleTab& inconnue, DoubleTab& resu) const
  *
  */
 
-//Description:
-//methode qui calcule la vitesse au temps n+1 lorsque le
-//schema explicite est utilise.
+/*! @brief methode qui calcule la vitesse au temps n+1 lorsque le schema explicite est utilise.
+ *
+ */
 DoubleTab& Op_Diff_VEF_Face_Penalise::
 ajouter(const DoubleTab& inconnue, DoubleTab& resu) const
 {
@@ -210,8 +211,9 @@ ajouter(const DoubleTab& inconnue, DoubleTab& resu) const
  *
  */
 
-//Description:
-//methode qui calcule le voisinage d'une face.
+/*! @brief methode qui calcule le voisinage d'une face.
+ *
+ */
 void Op_Diff_VEF_Face_Penalise::
 voisinage(const int Numero_face, IntList& Voisinage) const
 {
@@ -282,8 +284,9 @@ voisinage(const int Numero_face, IntList& Voisinage) const
  *
  */
 
-//Description:
-//methode qui calcule le voisinage d'une liste de faces.
+/*! @brief methode qui calcule le voisinage d'une liste de faces.
+ *
+ */
 void  Op_Diff_VEF_Face_Penalise::
 voisinage(const IntList& Ensemble_faces, IntList& Voisinage) const
 {
@@ -383,9 +386,9 @@ signe(const int Face1, const int Face2) const
  *
  */
 
-//Description:
-//fonction membre qui retourne le coefficient de
-//penalisation associee a chaque face du maillage primaire.
+/*! @brief fonction membre qui retourne le coefficient de penalisation associee a chaque face du maillage primaire.
+ *
+ */
 double  Op_Diff_VEF_Face_Penalise::
 coefficient_penalisation(const int Numero_face) const
 {
@@ -434,9 +437,9 @@ coefficient_penalisation(const int Numero_face) const
  *
  */
 
-//Description:
-//fonction membre qui renvoie la liste des faces appartenant
-//au voisinage de Face1 ET de Face2.
+/*! @brief fonction membre qui renvoie la liste des faces appartenant au voisinage de Face1 ET de Face2.
+ *
+ */
 void  Op_Diff_VEF_Face_Penalise::
 faces_communes(const int Face1,const int Face2,
                IntList& Faces_communes) const
@@ -532,9 +535,9 @@ reduction(const IntList& Liste1,const IntList& Liste2,
  *
  */
 
-//Description:
-//fonction membre qui renvoie le numero de l'element contenant Face1 et Face2
-//s'il existe et renvoie -1 sinon.
+/*! @brief fonction membre qui renvoie le numero de l'element contenant Face1 et Face2 s'il existe et renvoie -1 sinon.
+ *
+ */
 int Op_Diff_VEF_Face_Penalise::
 element_commun(const int Face1,const int Face2) const
 {
@@ -573,10 +576,11 @@ element_commun(const int Face1,const int Face2) const
  *
  */
 
-//Description:
-//fonction membre qui retourne la 3eme face de l'element Element si
-// Face1 et Face2 appartiennent au meme element.
-// Sinon retourne -1.
+/*! @brief fonction membre qui retourne la 3eme face de l'element Element si Face1 et Face2 appartiennent au meme element.
+ *
+ *  Sinon retourne -1.
+ *
+ */
 int Op_Diff_VEF_Face_Penalise::
 autre_face(const int Face1, const int Face2)
 const

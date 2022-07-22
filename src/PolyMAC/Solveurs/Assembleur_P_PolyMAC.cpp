@@ -139,21 +139,12 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
   return 1;
 }
 
-// Description:
-//    Assemble la matrice de pression pour un fluide quasi compressible
-//    laplacein(P) est remplace par div(grad(P)/rho).
-// Precondition:
-// Parametre: DoubleTab& tab_rho
-//    Signification: mass volumique
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// PolyMACfets de bord:
-// Postcondition:
+/*! @brief Assemble la matrice de pression pour un fluide quasi compressible laplacein(P) est remplace par div(grad(P)/rho).
+ *
+ * @param (DoubleTab& tab_rho) mass volumique
+ * @return (int) renvoie toujours 1
+ * @throws PolyMACfets de bord:
+ */
 int Assembleur_P_PolyMAC::assembler_QC(const DoubleTab& tab_rho, Matrice& matrice)
 {
   Cerr << "Assemblage de la matrice de pression pour Quasi Compressible en cours..." << finl;

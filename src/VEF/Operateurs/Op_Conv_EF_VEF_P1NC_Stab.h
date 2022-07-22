@@ -24,20 +24,20 @@
 #include <TRUSTTabs.h>
 #include <TRUSTList.h>
 
-//
-// .DESCRIPTION class Op_Conv_EF_VEF_P1NC_Stab
-//
-//  Cette classe represente l'operateur de convection associe a une equation de
-//  transport d'un scalaire.
-//  La discretisation est VEF
-//  Le champ convecte est scalaire ou vecteur de type Champ_P1NC
-//  Le schema de convection est isu du papier
-//  "High-resolution FEM-TVD schemes based on a fully multidimensional flux limiter"
-//   D.Kuzmin and S.Turek.
-//  On herite de Op pour recuperer l'implicitation amont
-//
-// .SECTION voir aussi
-// Operateur_Conv_base
+/*! @brief class Op_Conv_EF_VEF_P1NC_Stab
+ *
+ *   Cette classe represente l'operateur de convection associe a une equation de
+ *   transport d'un scalaire.
+ *   La discretisation est VEF
+ *   Le champ convecte est scalaire ou vecteur de type Champ_P1NC
+ *   Le schema de convection est isu du papier
+ *   "High-resolution FEM-TVD schemes based on a fully multidimensional flux limiter"
+ *    D.Kuzmin and S.Turek.
+ *   On herite de Op pour recuperer l'implicitation amont
+ *
+ *
+ * @sa Operateur_Conv_base
+ */
 
 
 class Op_Conv_EF_VEF_P1NC_Stab : public Op_Conv_VEF_Face

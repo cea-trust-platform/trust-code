@@ -22,15 +22,13 @@
 #include <Zone_VF.h>
 #include <Motcle.h>
 
-/////////////////////////////////////////////////////////////////////////////
-// .NAME        : PDF_model
-// .HEADER      : genepi3 genepi3/src/Equations/Plaques
-// .LIBRARY     : ?
-// .DESCRIPTION : class PDF_model
-//
-// <Description of class PDF_model>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class PDF_model
+ *
+ *  <Description of class PDF_model>
+ *
+ *
+ *
+ */
 
 class PDF_model : public Objet_U
 {

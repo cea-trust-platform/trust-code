@@ -41,20 +41,9 @@ double Loi_Etat_GP_QC::calculer_masse_volumique(double P, double T) const
          Loi_Etat_Mono_GP_base::calculer_masse_volumique(P,T);
 }
 
-// Description:
-//    Calcule la masse volumique
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la masse volumique
+ *
+ */
 void Loi_Etat_GP_QC::calculer_masse_volumique()
 {
   Loi_Etat_Mono_GP_base::calculer_masse_volumique();

@@ -19,16 +19,14 @@
 #include <Entree_fluide_vitesse_imposee_libre.h>
 #include <Ref_Fluide_Dilatable_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Frontiere ouverte sur laquelle on impose le flux massique rho.U
-//    et non la vitesse U. La vitesse est calculee par division par
-//    rho(n+1) trouve dans le fluide au moment de l'appel a
-//    val_imp.
-// .SECTION voir aussi
-//    Dirichlet_entree_fluide
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Frontiere ouverte sur laquelle on impose le flux massique rho.
+ *
+ * U et non la vitesse U. La vitesse est calculee par division par
+ *     rho(n+1) trouve dans le fluide au moment de l'appel a
+ *     val_imp.
+ *
+ * @sa Dirichlet_entree_fluide
+ */
 
 class Frontiere_ouverte_rho_u_impose  : public Entree_fluide_vitesse_imposee_libre
 {

@@ -21,14 +21,10 @@
 #include <Deriv.h>
 
 Declare_deriv(Traitement_particulier_NS_base);
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Traitement_particulier_NS
-//
-// .SECTION voir aussi
-//      Navier_Stokes_Turbulent, Traitement_particulier_NS_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Traitement_particulier_NS
+ *
+ * @sa Navier_Stokes_Turbulent, Traitement_particulier_NS_base
+ */
 class Traitement_particulier_NS : public DERIV(Traitement_particulier_NS_base)
 {
   Declare_instanciable(Traitement_particulier_NS);

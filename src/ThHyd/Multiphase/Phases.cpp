@@ -28,21 +28,11 @@ Entree& Phases::readOn(Entree& is)
   return Interprete::readOn(is);
 }
 
-// Description:
-//    Fonction principale de l'interprete Phases
-//    Lit la dimension d'espace du probleme.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Fonction principale de l'interprete Phases Lit la dimension d'espace du probleme.
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Phases::interpreter(Entree& is)
 {
   Nom nom_pb, mot, nom_phase, nom_milieu;

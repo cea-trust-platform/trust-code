@@ -24,11 +24,12 @@ class Faces;
 
 ////////////////////////////////////////////////////////////////
 
-//
-//  .DESCRIPTION classe : Echange_contact_VDF_Plaque_Flux_Cte
-//   Calcule le coefficient d'echange via la correlation de Shah, valable
-//   entre deux plaques planes paralleles a flux surfacique constant
-//
+/*! @brief classe : Echange_contact_VDF_Plaque_Flux_Cte Calcule le coefficient d'echange via la correlation de Shah, valable
+ *
+ *    entre deux plaques planes paralleles a flux surfacique constant
+ *
+ *
+ */
 
 ////////////////////////////////////////////////////////////////
 

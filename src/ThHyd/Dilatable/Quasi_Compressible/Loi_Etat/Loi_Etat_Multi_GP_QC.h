@@ -20,15 +20,12 @@
 #include <Loi_Etat_Multi_GP_base.h>
 #include <Ref_Espece.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Loi_Etat_Multi_GP_QC
-//     Cette classe represente la loi d'etat pour un melange de gaz parfaits.
-//
-// .SECTION voir aussi
-//     Fluide_Dilatable_base Loi_Etat_base Loi_Etat_Multi_GP_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Loi_Etat_Multi_GP_QC Cette classe represente la loi d'etat pour un melange de gaz parfaits.
+ *
+ *
+ *
+ * @sa Fluide_Dilatable_base Loi_Etat_base Loi_Etat_Multi_GP_base
+ */
 
 Declare_liste(REF(Espece));
 

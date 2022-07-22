@@ -19,41 +19,40 @@
 #include <TRUSTTabs_forward.h>
 #include <Correlation_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Flux_parietal_base
-//      correlations de flux parietal de la forme
-//        flux de chaleur sensible : q_{p}(k)     = F(alpha_f, p, T_f, T_p, v_f, D_h, D_ch)
-//        flux de chaleur latente  : q_{pi}(k, l) = F(alpha_f, p, T_f, T_p, v_f, D_h, D_ch)
-//          (par ex ebullition nucleee : Gamma_{kl} = q_{pi}(k, l) / Lvap)
-//      cette classe definit deux fonctions q_pk, q_pi avec :
-//    entrees :
-//        N : nombre de phases
-//        D_h, D_ch -> diametre hyd, diametre hyd chauffant
-//        alpha[n]  -> taux de presence de la phase n
-//        T[n]      -> temperature de la phase n
-//        p         -> pression
-//        v[n]      -> norme de la vitesse de la phase n
-//        Tp        -> temperature de la paroi (une seule!)
-//        lambda[n], mu[n], rho[n], Cp[n] -> diverses proprietes physiques de la phase n
-//
-//    sorties :
-//        (*qpk)(n)          -> flux de chaleur vers la phase n
-//        (*da_qpk)(n, m)    -> derivee par rapport a alpha_m
-//        (*dp_qpk)(n)       -> derivee par rapport a p
-//        (*dv_qpk)(n, m)    -> derivee par rapport a v[m]
-//        (*dTf_qpk)(n, m)   -> derivee par rapport a T[m]
-//        (*dTp_qpk)(n)      -> derivee par rapport a Tp
-//        (*qpi)(k, l)       -> flux de chaleur fourni au changement de la phase k vers la phase l (a remplir pour k < l)
-//        (*da_qpi)(k, l, m) -> derivee par rapport a alpha_m
-//        (*dp_qpi)(k, l)    -> derivee par rapport a p
-//        (*dv_qpi)(k, l,m)  -> derivee par rapport a v[m]
-//       (*dTf_qpi)(k, l, m) -> derivee par rapport a T[m]
-//       (*dTp_qpi)(k, l)    -> derivee par rapport a Tp
-//       (*d_nucleation)(k)  -> diametre de nucleation de la phase k
-//        nonlinear          -> regler a 1 si q_pk / q_pi est non-lineaire en Tp / Tf; ne pas toucher sinon
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Flux_parietal_base correlations de flux parietal de la forme
+ *
+ *         flux de chaleur sensible : q_{p}(k)     = F(alpha_f, p, T_f, T_p, v_f, D_h, D_ch)
+ *         flux de chaleur latente  : q_{pi}(k, l) = F(alpha_f, p, T_f, T_p, v_f, D_h, D_ch)
+ *           (par ex ebullition nucleee : Gamma_{kl} = q_{pi}(k, l) / Lvap)
+ *       cette classe definit deux fonctions q_pk, q_pi avec :
+ *     entrees :
+ *         N : nombre de phases
+ *         D_h, D_ch -> diametre hyd, diametre hyd chauffant
+ *         alpha[n]  -> taux de presence de la phase n
+ *         T[n]      -> temperature de la phase n
+ *         p         -> pression
+ *         v[n]      -> norme de la vitesse de la phase n
+ *         Tp        -> temperature de la paroi (une seule!)
+ *         lambda[n], mu[n], rho[n], Cp[n] -> diverses proprietes physiques de la phase n
+ *
+ *     sorties :
+ *         (*qpk)(n)          -> flux de chaleur vers la phase n
+ *         (*da_qpk)(n, m)    -> derivee par rapport a alpha_m
+ *         (*dp_qpk)(n)       -> derivee par rapport a p
+ *         (*dv_qpk)(n, m)    -> derivee par rapport a v[m]
+ *         (*dTf_qpk)(n, m)   -> derivee par rapport a T[m]
+ *         (*dTp_qpk)(n)      -> derivee par rapport a Tp
+ *         (*qpi)(k, l)       -> flux de chaleur fourni au changement de la phase k vers la phase l (a remplir pour k < l)
+ *         (*da_qpi)(k, l, m) -> derivee par rapport a alpha_m
+ *         (*dp_qpi)(k, l)    -> derivee par rapport a p
+ *         (*dv_qpi)(k, l,m)  -> derivee par rapport a v[m]
+ *        (*dTf_qpi)(k, l, m) -> derivee par rapport a T[m]
+ *        (*dTp_qpi)(k, l)    -> derivee par rapport a Tp
+ *        (*d_nucleation)(k)  -> diametre de nucleation de la phase k
+ *         nonlinear          -> regler a 1 si q_pk / q_pi est non-lineaire en Tp / Tf; ne pas toucher sinon
+ *
+ *
+ */
 
 class Flux_parietal_base : public Correlation_base
 {

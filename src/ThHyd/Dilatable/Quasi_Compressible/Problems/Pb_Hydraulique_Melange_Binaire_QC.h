@@ -21,16 +21,13 @@
 #include <Navier_Stokes_QC.h>
 #include <Pb_QC_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Pb_Hydraulique_Melange_Binaire_QC
-//     Cette classe represente un probleme de hydraulique binaire en fluide quasi compressible:
-//      - Equations de Navier_Stokes en regime laminaire
-//      - Equation de conv/diff fraction massique en regime laminaire
-// .SECTION voir aussi
-//     Probleme_base Navier_Stokes_QC Convection_Diffusion_Espece_Binaire_QC
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Pb_Hydraulique_Melange_Binaire_QC Cette classe represente un probleme de hydraulique binaire en fluide quasi compressible:
+ *
+ *       - Equations de Navier_Stokes en regime laminaire
+ *       - Equation de conv/diff fraction massique en regime laminaire
+ *
+ * @sa Probleme_base Navier_Stokes_QC Convection_Diffusion_Espece_Binaire_QC
+ */
 
 class Pb_Hydraulique_Melange_Binaire_QC : public Pb_QC_base, public Pb_Dilatable_Proto
 {

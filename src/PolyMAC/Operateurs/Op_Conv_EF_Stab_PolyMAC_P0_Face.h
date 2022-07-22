@@ -19,13 +19,13 @@
 #include <Op_Conv_PolyMAC_base.h>
 #include <Matrice_Morse.h>
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Op_Conv_EF_Stab_PolyMAC_P0_Face
-//
-// <Description of class Op_Conv_EF_Stab_PolyMAC_P0_Face>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Op_Conv_EF_Stab_PolyMAC_P0_Face
+ *
+ *  <Description of class Op_Conv_EF_Stab_PolyMAC_P0_Face>
+ *
+ *
+ *
+ */
 
 class Op_Conv_EF_Stab_PolyMAC_P0_Face : public Op_Conv_PolyMAC_base
 {

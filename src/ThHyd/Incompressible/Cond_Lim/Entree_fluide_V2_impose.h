@@ -20,20 +20,16 @@
 #include <Dirichlet_entree_fluide.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Entree_fluide_V2_impose
-//    Cas particulier de la classe Dirichlet_entree_fluide
-//    pour les fluctuation de vitesse du modele K_Eps_V2 imposee.
-//    C'est le meme type de classe que Entree_fluide_concentration_imposee
-//    en imposant des grandeurs turbulentes.
-//    Impose les valeurs de V2  d'entree du fluide dans une
-//    equation de type Transport_V2
-// .SECTION voir aussi
-//    Dirichlet_entree_fluide Entree_fluide_concentration_imposee
-//    Transport_V2
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Entree_fluide_V2_impose Cas particulier de la classe Dirichlet_entree_fluide
+ *
+ *     pour les fluctuation de vitesse du modele K_Eps_V2 imposee.
+ *     C'est le meme type de classe que Entree_fluide_concentration_imposee
+ *     en imposant des grandeurs turbulentes.
+ *     Impose les valeurs de V2  d'entree du fluide dans une
+ *     equation de type Transport_V2
+ *
+ * @sa Dirichlet_entree_fluide Entree_fluide_concentration_imposee, Transport_V2
+ */
 class Entree_fluide_V2_impose  : public Dirichlet_entree_fluide
 {
 

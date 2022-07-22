@@ -30,19 +30,15 @@ class Probleme_base;
 class EcrFicPartage;
 class Zone_VF;
 class Champ_Don;
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Turbulence_paroi_scal_base
-//    Classe de base pour la hierarchie des classes representant les modeles
-//    de calcul des grandeurs turbulentes aux voisinages des parois.
-//    La methode principale a implenter dans les classes filles est calculer_scal
-//    qui doit se charger de calculer et remplir le tableau equivalent_distance_ des distances equivalentes
-//    en paroi.
-// .SECTION voir aussi
-//    Classe abstraite
-//    Methodes abstraites
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Turbulence_paroi_scal_base Classe de base pour la hierarchie des classes representant les modeles
+ *
+ *     de calcul des grandeurs turbulentes aux voisinages des parois.
+ *     La methode principale a implenter dans les classes filles est calculer_scal
+ *     qui doit se charger de calculer et remplir le tableau equivalent_distance_ des distances equivalentes
+ *     en paroi.
+ *
+ * @sa Classe abstraite, Methodes abstraites
+ */
 class Turbulence_paroi_scal_base : public Champs_compris_interface, public Objet_U
 {
 
@@ -150,40 +146,20 @@ inline double Turbulence_paroi_scal_base::T_plus(double y_plus, double Pr)
   return Pr*y_plus*exp(-Gamma) + (Prdt_sur_kappa_*log(1.+y_plus) + Beta)*exp(-1./(Gamma+1e-20));
 }
 
-// Description:
-//    Associe un modele de turbulence a l'objet.
-// Precondition:
-// Parametre: Mod_turb_hyd_base& le_modele
-//    Signification: le modele de turbulence hydraulique
-//                   a associer a l'objet
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: l'objet a un modele de turbulence associe
+/*! @brief Associe un modele de turbulence a l'objet.
+ *
+ * @param (Mod_turb_hyd_base& le_modele) le modele de turbulence hydraulique a associer a l'objet
+ */
 inline void Turbulence_paroi_scal_base::associer_modele(const Modele_turbulence_scal_base& le_modele)
 {
   mon_modele_turb_scal = le_modele;
 }
 
-// Description:
-//    Simple appel a int calculer_scal(Champ_Fonc_base& ).
-// Precondition:
-// Parametre: Champ_Fonc& ch
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: int
-//    Signification: code de retour propage
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a int calculer_scal(Champ_Fonc_base& ).
+ *
+ * @param (Champ_Fonc& ch)
+ * @return (int) code de retour propage
+ */
 inline int Turbulence_paroi_scal_base::calculer_scal(Champ_Fonc& ch)
 {
   return calculer_scal(ch.valeur());

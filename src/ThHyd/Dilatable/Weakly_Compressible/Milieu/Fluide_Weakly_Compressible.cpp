@@ -83,20 +83,10 @@ int Fluide_Weakly_Compressible::lire_motcle_non_standard(const Motcle& mot, Entr
   else return Fluide_Dilatable_base::lire_motcle_non_standard(mot,is);
 }
 
-// Description:
-//    Complete le fluide avec les champs inconnus associes au probleme
-// Precondition:
-// Parametre: Pb_Thermohydraulique& pb
-//    Signification: le probleme a resoudre
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Complete le fluide avec les champs inconnus associes au probleme
+ *
+ * @param (Pb_Thermohydraulique& pb) le probleme a resoudre
+ */
 void Fluide_Weakly_Compressible::completer(const Probleme_base& pb)
 {
   Cerr<<"Fluide_Weakly_Compressible::completer" << finl;
@@ -312,20 +302,9 @@ void Fluide_Weakly_Compressible::update_pressure_fields(double temps)
   pression_eos_.mettre_a_jour(temps);
 }
 
-// Description:
-//    Calcule la pression totale : pression thermodynamique + pression hydrodynamique
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la pression totale : pression thermodynamique + pression hydrodynamique
+ *
+ */
 void Fluide_Weakly_Compressible::calculer_pression_tot()
 {
   Fluide_Dilatable_base::calculer_pression_tot();
@@ -341,20 +320,9 @@ void Fluide_Weakly_Compressible::remplir_champ_pression_tot(int n, const DoubleT
     for (int i=0 ; i<n ; i++) PTot(i,0) = PHydro(i,0) + Pth_;
 }
 
-// Description:
-//    Calcule la pression hydrostatique = rho*g*z
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la pression hydrostatique = rho*g*z
+ *
+ */
 void Fluide_Weakly_Compressible::calculer_pression_hydro()
 {
   DoubleTab& tab_Phydro = pression_hydro_.valeurs();
@@ -375,20 +343,9 @@ void Fluide_Weakly_Compressible::calculer_pression_hydro()
   if (use_total_hydro_pressure()) remplir_champ_pression_for_EOS();
 }
 
-// Description:
-//    Calcule la pression utilisee dans les lois d'etat WC
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la pression utilisee dans les lois d'etat WC
+ *
+ */
 void Fluide_Weakly_Compressible::remplir_champ_pression_for_EOS()
 {
   if (use_total_pressure())

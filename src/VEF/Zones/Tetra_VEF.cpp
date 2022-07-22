@@ -32,11 +32,12 @@ Entree& Tetra_VEF::readOn(Entree& s )
 {
   return s ;
 }
-// Description:
-// renvoie pour la facette fa7 :
-// pour j=0,j=1 : les numeros locaux des 2 faces qui entourent fa7
-// pour j=2,j=3 : les numeros locaux des sommets du tetraedre qui
-//                appartiennent a fa7
+/*! @brief renvoie pour la facette fa7 : pour j=0,j=1 : les numeros locaux des 2 faces qui entourent fa7
+ *
+ *  pour j=2,j=3 : les numeros locaux des sommets du tetraedre qui
+ *                 appartiennent a fa7
+ *
+ */
 Tetra_VEF::Tetra_VEF()
 {
   int tmp[4][6]=
@@ -121,8 +122,9 @@ void Tetra_VEF::normale(int num_Face,DoubleTab& Face_normales,
 
 }
 
-// Description:
-// remplit le tableau face_normales dans la Zone_VEF
+/*! @brief remplit le tableau face_normales dans la Zone_VEF
+ *
+ */
 void Tetra_VEF::creer_facette_normales(const Zone& zone_geom,
                                        DoubleTab& facette_normales,
                                        const IntVect& rang_elem_non_std) const
@@ -212,9 +214,9 @@ void Tetra_VEF::creer_facette_normales(const Zone& zone_geom,
 }
 
 
-// Description:
-// remplit le tableau normales_facettes_Cl dans la Zone_Cl_VEF
-// pour la facette fa7 de l'element num_elem
+/*! @brief remplit le tableau normales_facettes_Cl dans la Zone_Cl_VEF pour la facette fa7 de l'element num_elem
+ *
+ */
 void Tetra_VEF::creer_normales_facettes_Cl(DoubleTab& normales_facettes_Cl,
                                            int fa7,
                                            int num_elem,const DoubleTab& x,
@@ -749,9 +751,9 @@ void Tetra_VEF::calcul_vc(const ArrOfInt& Face,ArrOfDouble& vc,
     } // fin du switch
 }
 
-// Description:
-// calcule les coord xg du centre d'un element non standard
-// calcule aussi idirichlet=nb de faces de Dirichlet de l'element
+/*! @brief calcule les coord xg du centre d'un element non standard calcule aussi idirichlet=nb de faces de Dirichlet de l'element
+ *
+ */
 void Tetra_VEF::calcul_xg(DoubleVect& xg,const DoubleTab& x, const int type_elem_Cl,
                           int& idirichlet,int& n1,int& n2,int& n3) const
 {

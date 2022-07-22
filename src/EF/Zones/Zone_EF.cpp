@@ -214,13 +214,14 @@ void Zone_EF::swap(int fac1, int fac2, int nb_som_faces )
 
 }
 
-// Description:
-//  Methode appelee par Zone_VF::discretiser apres la creation
-//  des faces reelles.
-//  On reordonne les faces de sorte a placer les faces "non standard"
-//  au debut de la liste des faces. Les faces non standard sont celles
-//  dont les volumes de controles sont modifies par les conditions aux
-//  limites.
+/*! @brief Methode appelee par Zone_VF::discretiser apres la creation des faces reelles.
+ *
+ *   On reordonne les faces de sorte a placer les faces "non standard"
+ *   au debut de la liste des faces. Les faces non standard sont celles
+ *   dont les volumes de controles sont modifies par les conditions aux
+ *   limites.
+ *
+ */
 void Zone_EF::reordonner(Faces& les_faces)
 {
   if (Process::je_suis_maitre())
@@ -895,9 +896,9 @@ void Zone_EF::modifier_pour_Cl(const Conds_lim& conds_lim)
 }
 
 
-// Description:
-//   creation de l'espace distant pour les faces virtuelles;
-//   creation du tableau des faces virtuelles de bord
+/*! @brief creation de l'espace distant pour les faces virtuelles; creation du tableau des faces virtuelles de bord
+ *
+ */
 void Zone_EF::creer_faces_virtuelles_non_std()
 
 {

@@ -68,7 +68,9 @@ void Champ_P1NC::mettre_a_jour(double un_temps)
   Champ_Inc_base::mettre_a_jour(un_temps);
   filtrer_L2_deja_appele_=0;
 }
-// Description:
+/*! @brief
+ *
+ */
 void Champ_P1NC::abortTimeStep()
 {
   ch_som_=0;

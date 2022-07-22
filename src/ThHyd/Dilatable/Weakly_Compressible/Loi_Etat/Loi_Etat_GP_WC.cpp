@@ -55,20 +55,9 @@ double Loi_Etat_GP_WC::inverser_Pth(double T, double rho)
   return -1.e10;
 }
 
-// Description:
-//    Calcule la masse volumique
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la masse volumique
+ *
+ */
 void Loi_Etat_GP_WC::calculer_masse_volumique()
 {
   const DoubleTab& tab_ICh = le_fluide->inco_chaleur().valeurs();

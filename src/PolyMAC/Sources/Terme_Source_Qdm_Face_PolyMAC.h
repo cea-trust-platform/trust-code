@@ -23,9 +23,9 @@
 #include <Ref_Zone_Cl_PolyMAC.h>
 class Probleme_base;
 
-//
-// .DESCRIPTION class Terme_Source_Qdm_Face_PolyMAC
-//
+/*! @brief class Terme_Source_Qdm_Face_PolyMAC
+ *
+ */
 
 //
 // .SECTION voir aussi Source_base

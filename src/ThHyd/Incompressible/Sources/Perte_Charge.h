@@ -20,22 +20,19 @@
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Perte_Charge
-//    Cette classe represente un terme de perte de charge quiest introduit
-//    dans les equations de Navier-Stokes pour modeliser la presence d'un
-//    certain type d'obstacle dans l'ecoulement.
-//    On utilise la notion de perte de charge pour des obstacles sur lesquels
-//    on ne calcule pas le frottement (obstacles internes aux mailles, ou
-//    grilles par exemple)
-//    Un objet de type Perte_Charge s'applique sur
-//    une seule direction d'espace (direction_perte_charge() >= 0 )
-//    ou sur toutes (direction_perte_charge() == -1)
-// .SECTION voir aussi
-//    Ne derive pas d'Objet_U
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Perte_Charge Cette classe represente un terme de perte de charge quiest introduit
+ *
+ *     dans les equations de Navier-Stokes pour modeliser la presence d'un
+ *     certain type d'obstacle dans l'ecoulement.
+ *     On utilise la notion de perte de charge pour des obstacles sur lesquels
+ *     on ne calcule pas le frottement (obstacles internes aux mailles, ou
+ *     grilles par exemple)
+ *     Un objet de type Perte_Charge s'applique sur
+ *     une seule direction d'espace (direction_perte_charge() >= 0 )
+ *     ou sur toutes (direction_perte_charge() == -1)
+ *
+ * @sa Ne derive pas d'Objet_U
+ */
 class Perte_Charge
 {
 
@@ -49,21 +46,12 @@ protected :
 };
 
 
-// Description:
-//    Renvoie la direction de perte de charge.
-//    (X,Y ou Z), ou -1 si toutes les directions
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: la direction de perte de charge
-//    Contraintes: -1 <= valeur <= dimension
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la direction de perte de charge.
+ *
+ * (X,Y ou Z), ou -1 si toutes les directions
+ *
+ * @return (int) la direction de perte de charge
+ */
 inline int Perte_Charge::direction_perte_charge() const
 {
   return direction_perte_charge_;

@@ -50,20 +50,9 @@ const Champ_base& Convection_Diffusion_Espece_Multi_WC::vitesse_pour_transport()
   return eqn_hydr.rho_la_vitesse() /* rho * u and not u */;
 }
 
-// Description:
-//    Associe l inconnue de l equation a la loi d etat,
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe l inconnue de l equation a la loi d etat,
+ *
+ */
 void Convection_Diffusion_Espece_Multi_WC::completer()
 {
   Convection_Diffusion_Espece_Multi_base::completer();

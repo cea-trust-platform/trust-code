@@ -21,22 +21,19 @@
 #include <map>
 #include <array>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Fluide_reel_base
-//    Cette classe represente un fluide reel ainsi que
-//    ses proprietes:
-//        - viscosite cinematique, (mu)
-//        - viscosite dynamique,   (nu)
-//        - masse volumique,       (rho)
-//        - diffusivite,           (alpha)
-//        - conductivite,          (lambda)
-//        - capacite calorifique,  (Cp)
-//        - dilatabilite thermique du constituant (beta_co)
-// .SECTION voir aussi
-//     Milieu_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Fluide_reel_base Cette classe represente un fluide reel ainsi que
+ *
+ *     ses proprietes:
+ *         - viscosite cinematique, (mu)
+ *         - viscosite dynamique,   (nu)
+ *         - masse volumique,       (rho)
+ *         - diffusivite,           (alpha)
+ *         - conductivite,          (lambda)
+ *         - capacite calorifique,  (Cp)
+ *         - dilatabilite thermique du constituant (beta_co)
+ *
+ * @sa Milieu_base
+ */
 class Fluide_reel_base: public Fluide_base
 {
   Declare_base(Fluide_reel_base);

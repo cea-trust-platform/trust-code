@@ -26,14 +26,15 @@
 #include <Zone_Cl_VEFP1B.h>
 #include <Matrice_Morse_Sym.h>
 #include <SolveurSys.h>
-//
-// .DESCRIPTION class Op_Dift_VEF_P1NCP1B_Face
-//  Cette classe represente l'operateur de diffusion
-//  La discretisation est VEF
-//  Le champ diffuse est scalaire
-//  Le champ de diffusivite est uniforme
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief class Op_Dift_VEF_P1NCP1B_Face Cette classe represente l'operateur de diffusion
+ *
+ *   La discretisation est VEF
+ *   Le champ diffuse est scalaire
+ *   Le champ de diffusivite est uniforme
+ *
+ *
+ *
+ */
 
 class Op_Dift_VEF_P1NCP1B_Face : public Op_Dift_VEF_base
 {

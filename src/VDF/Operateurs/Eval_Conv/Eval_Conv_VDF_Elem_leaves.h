@@ -35,18 +35,22 @@ class Eval_Conv_VDF_Elem_leaves: public Eval_Conv_VDF_Elem<Eval_Conv_VDF_Elem_le
  * mais en ne fesant intervenir que les valeurs fournies par les conditions limites.
  */
 
-// .DESCRIPTION class Eval_Amont_VDF_Elem
-// Evaluateur VDF pour la convection Le champ convecte est scalaire (Champ_P0_VDF)
-// Schema de convection Amont
+/*! @brief class Eval_Amont_VDF_Elem Evaluateur VDF pour la convection Le champ convecte est scalaire (Champ_P0_VDF)
+ *
+ *  Schema de convection Amont
+ *
+ */
 class Eval_Amont_VDF_Elem : public Eval_Conv_VDF_Elem<Eval_Amont_VDF_Elem>, public Eval_Conv_VDF
 {
 public:
   static constexpr bool IS_AMONT = true;
 };
 
-// .DESCRIPTION class Eval_Centre_VDF_Elem
-// Evaluateur VDF pour la convection Le champ convecte est scalaire (Champ_P0_VDF)
-// Schema de convection Centre ordre 2
+/*! @brief class Eval_Centre_VDF_Elem Evaluateur VDF pour la convection Le champ convecte est scalaire (Champ_P0_VDF)
+ *
+ *  Schema de convection Centre ordre 2
+ *
+ */
 class Eval_Centre_VDF_Elem : public Eval_Conv_VDF_Elem<Eval_Centre_VDF_Elem>, public Eval_Conv_VDF
 {
 public:
@@ -61,9 +65,11 @@ public:
   { qcentre2_impl<Type_Double>(psc,num0,num1,num0_0,num1_1,face,transporte,flux); }
 };
 
-// .DESCRIPTION class Eval_Centre4_VDF_Elem
-// Evaluateur VDF pour la convection Le champ convecte est scalaire (Champ_P0_VDF)
-// Schema de convection Centre ordre 4
+/*! @brief class Eval_Centre4_VDF_Elem Evaluateur VDF pour la convection Le champ convecte est scalaire (Champ_P0_VDF)
+ *
+ *  Schema de convection Centre ordre 4
+ *
+ */
 class Eval_Centre4_VDF_Elem : public Eval_Conv_VDF_Elem<Eval_Centre4_VDF_Elem>, public Eval_Conv_VDF
 {
 
@@ -82,9 +88,11 @@ inline void Eval_Centre4_VDF_Elem::qcentre(const double psc, const int num0, con
   qcentre4_impl<Type_Double>(ori,dx,dxam,dxav,psc,num0,num1,num0_0,num1_1,face,transporte,flux);
 }
 
-// .DESCRIPTION class Eval_Quick_VDF_Elem
-// Evaluateur VDF pour la convection Le champ convecte est scalaire (Champ_P0_VDF)
-// Schema de convection Quick
+/*! @brief class Eval_Quick_VDF_Elem Evaluateur VDF pour la convection Le champ convecte est scalaire (Champ_P0_VDF)
+ *
+ *  Schema de convection Quick
+ *
+ */
 class Eval_Quick_VDF_Elem : public Eval_Conv_VDF_Elem<Eval_Quick_VDF_Elem>, public Eval_Conv_VDF
 {
 public:

@@ -22,10 +22,12 @@
 #include <ItSouVDFEl.h>
 
 declare_It_Sou_VDF_Elem(Eval_Source_C_VDF_Elem)
-//.DESCRIPTION class Terme_Source_Constituant_VDF_Elem
-// Cette classe represente un terme source de l'equation de la thermique
-// du type degagement volumique de puissance thermique uniforme sur une zone
-//.SECTION voir aussi Terme_Source_Constituant, Terme_Source_VDF_base
+/*! @brief class Terme_Source_Constituant_VDF_Elem Cette classe represente un terme source de l'equation de la thermique
+ *
+ *  du type degagement volumique de puissance thermique uniforme sur une zone
+ *
+ * @sa Terme_Source_Constituant, Terme_Source_VDF_base
+ */
 class Terme_Source_Constituant_VDF_Elem : public Terme_Source_Constituant, public Terme_Source_VDF_base
 {
   Declare_instanciable_sans_constructeur(Terme_Source_Constituant_VDF_Elem);

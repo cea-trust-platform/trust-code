@@ -23,20 +23,17 @@ Declare_deriv(Mod_turb_hyd_base);
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Mod_turb_hyd
-//    Classe generique de la hierarchie des modeles de turbulence utilises
-//    par une equation_base
-//    un objet Mod_turb_hyd peut referencer n'importe quel objet derivant de
-//    Mod_turb_hyd_base.
-//    La plupart des methodes appellent les methodes de l'objet Mod_turb_hyd
-//    sous-jacent via la methode valeur() declaree grace a la macro
-//Declare_deriv().;
-// .SECTION voir aussi
-//     Mod_turb_hyd_base MorEqn
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Mod_turb_hyd Classe generique de la hierarchie des modeles de turbulence utilises
+ *
+ *     par une equation_base
+ *     un objet Mod_turb_hyd peut referencer n'importe quel objet derivant de
+ *     Mod_turb_hyd_base.
+ *     La plupart des methodes appellent les methodes de l'objet Mod_turb_hyd
+ *     sous-jacent via la methode valeur() declaree grace a la macro
+ * Declare_deriv().;
+ *
+ * @sa Mod_turb_hyd_base MorEqn
+ */
 class Mod_turb_hyd : public MorEqn , public DERIV(Mod_turb_hyd_base)
 {
   Declare_instanciable(Mod_turb_hyd);
@@ -58,21 +55,11 @@ public:
 };
 
 
-// Description:
-//    Operateur d'affectation d'un Mod_turb_hyd_base dans
-//    un Mod_turb_hyd.
-// Precondition:
-// Parametre: Mod_turb_hyd_base& x
-//    Signification: partie droite de l'affectation
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: Mod_turb_hyd&
-//    Signification: resultat de l'affectation (*this)
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Operateur d'affectation d'un Mod_turb_hyd_base dans un Mod_turb_hyd.
+ *
+ * @param (Mod_turb_hyd_base& x) partie droite de l'affectation
+ * @return (Mod_turb_hyd&) resultat de l'affectation (*this)
+ */
 inline Mod_turb_hyd& Mod_turb_hyd::operator=(const Mod_turb_hyd_base& x)
 {
   DERIV(Mod_turb_hyd_base)::operator=(x);
@@ -80,184 +67,92 @@ inline Mod_turb_hyd& Mod_turb_hyd::operator=(const Mod_turb_hyd_base& x)
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Renvoie la viscosite turbulente.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Fonc&
-//    Signification: le champ representant la viscosite turbulente
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Renvoie la viscosite turbulente.
+ *
+ * @return (Champ_Fonc&) le champ representant la viscosite turbulente
+ */
 inline const Champ_Fonc& Mod_turb_hyd::viscosite_turbulente() const
 {
   return valeur().viscosite_turbulente();
 }
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Renvoie la loi de turbulence sur la paroi
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Turbulence_paroi&
-//    Signification: la loi de turbulence sur la paroi
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Renvoie la loi de turbulence sur la paroi
+ *
+ * @return (Turbulence_paroi&) la loi de turbulence sur la paroi
+ */
 inline const Turbulence_paroi& Mod_turb_hyd::loi_paroi() const
 {
   return valeur().loi_paroi();
 }
 
-// Description:
-//    Appel a l'objet sous-jacent
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent
+ *
+ */
 inline int Mod_turb_hyd::preparer_calcul()
 {
   return valeur().preparer_calcul();
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Effectue une mise a jour en temps
-// Precondition:
-// Parametre: double temps
-//    Signification: le temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Effectue une mise a jour en temps
+ *
+ * @param (double temps) le temps de mise a jour
+ */
 inline void Mod_turb_hyd::mettre_a_jour(double temps)
 {
   valeur().mettre_a_jour(temps);
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Effectue une sauvegarde sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: int
-//    Signification: code de retour propage
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent Effectue une sauvegarde sur un flot de sortie
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (int) code de retour propage
+ */
 inline int Mod_turb_hyd::sauvegarder(Sortie& os) const
 {
   return valeur().sauvegarder(os);
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Effectue une reprise sur un flot d'entree
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: int
-//    Signification: code de retour propage
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent Effectue une reprise sur un flot d'entree
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (int) code de retour propage
+ */
 inline int Mod_turb_hyd::reprendre(Entree& is)
 {
   return valeur().reprendre(is);
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Discretise le modele de turbulence
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent Discretise le modele de turbulence
+ *
+ */
 inline void Mod_turb_hyd::discretiser()
 {
   valeur().discretiser();
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent
+ *
+ */
 inline void Mod_turb_hyd::completer()
 {
   valeur().completer();
   valeur().loi_paroi()->completer();
 }
 
-// Description:
-//    Appel a l'objet sous-jacent
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent
+ *
+ */
 inline void Mod_turb_hyd::imprimer(Sortie& os) const
 {
   valeur().imprimer(os);

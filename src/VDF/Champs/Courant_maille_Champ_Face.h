@@ -21,8 +21,9 @@
 #include <Ref_Champ_Face.h>
 #include <Ref_Schema_Temps_base.h>
 
-//.DESCRIPTION  classe Courant_maille_Champ_Face
-//
+/*! @brief classe Courant_maille_Champ_Face
+ *
+ */
 
 class Courant_maille_Champ_Face : public Champ_Fonc_Face
 

@@ -24,20 +24,12 @@
 
 class Fluide_Dilatable_base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Loi_Etat_base
-//     Cette classe est la base de la hierarchie des lois d'etat.
-//     Elle definit un fluide dilatable
-// .SECTION voir aussi
-//     Fluide_Dilatable_base
-//     Classe abstraite dont toutes les lois d'etat doivent deriver.
-//     Methodes abstraites:
-//       void calculer_coeff_T()
-//       void calculer_masse_volumique()
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Loi_Etat_base Cette classe est la base de la hierarchie des lois d'etat.
+ *
+ *      Elle definit un fluide dilatable
+ *
+ * @sa Fluide_Dilatable_base, Classe abstraite dont toutes les lois d'etat doivent deriver., Methodes abstraites:, void calculer_coeff_T(), void calculer_masse_volumique()
+ */
 
 class Loi_Etat_base : public Objet_U, public Champs_compris_interface
 {

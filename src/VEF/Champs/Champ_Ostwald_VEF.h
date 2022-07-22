@@ -27,20 +27,17 @@
 
 class Navier_Stokes_std;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_Ostwald_VEF
-//     Represente un champ en discretisation VEF qui varie en fonction
-//        de la consistance et de l'indice de structure.
-//    Champ utilise pour le fluide d'Ostwald et la discretisation VEF.
-//    Fait reference a zone_VEF pou utiliser la bonne zone avec zone_dis_base
-//                    Champ_P1NC pour calculer D:D
-//                    Navier_Stokes_std pour avoir l'equation thermo_hydraulique
-//                    et pouvoir utiliser une de ses inconnues: la vitesse.
-// .SECTION voir aussi
-//     Champ_Ostwald
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_Ostwald_VEF Represente un champ en discretisation VEF qui varie en fonction
+ *
+ *         de la consistance et de l'indice de structure.
+ *     Champ utilise pour le fluide d'Ostwald et la discretisation VEF.
+ *     Fait reference a zone_VEF pou utiliser la bonne zone avec zone_dis_base
+ *                     Champ_P1NC pour calculer D:D
+ *                     Navier_Stokes_std pour avoir l'equation thermo_hydraulique
+ *                     et pouvoir utiliser une de ses inconnues: la vitesse.
+ *
+ * @sa Champ_Ostwald
+ */
 class Champ_Ostwald_VEF : public Champ_Ostwald
 {
 

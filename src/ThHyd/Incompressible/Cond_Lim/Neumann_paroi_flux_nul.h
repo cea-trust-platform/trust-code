@@ -19,14 +19,10 @@
 #include <Neumann_paroi_adiabatique.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Neumann_paroi_flux_nul
-//    Cette condition limite flux nul a la frontiere.
-// .SECTION voir aussi
-//    Neumann_homogene Neumann_paroi_adiabatique
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Neumann_paroi_flux_nul Cette condition limite flux nul a la frontiere.
+ *
+ * @sa Neumann_homogene Neumann_paroi_adiabatique
+ */
 class Neumann_paroi_flux_nul : public Neumann_paroi_adiabatique
 {
 

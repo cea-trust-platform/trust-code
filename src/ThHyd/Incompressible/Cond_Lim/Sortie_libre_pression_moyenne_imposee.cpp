@@ -23,42 +23,25 @@
 Implemente_instanciable_sans_constructeur(Sortie_libre_pression_moyenne_imposee,"Frontiere_ouverte_pression_moyenne_imposee",Neumann_sortie_libre);
 
 Sortie_libre_pression_moyenne_imposee::Sortie_libre_pression_moyenne_imposee():d_rho(-123.) {}
-// Description:
-//    Ecrit le type de l'objet sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit le type de l'objet sur un flot de sortie.
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Sortie_libre_pression_moyenne_imposee::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << "\n";
 }
 
-// Description:
-//    Lit le champ de frontiere a partir d'un flot d'entree : 1 double.
-//    Type le_champ_ext en "Champ_front_uniforme".
-//    Redimmensionne le_champ_ext en fonction de la dimension
-//    de l'espace (dimension)
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree& s
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit le champ de frontiere a partir d'un flot d'entree : 1 double.
+ *
+ * Type le_champ_ext en "Champ_front_uniforme".
+ *     Redimmensionne le_champ_ext en fonction de la dimension
+ *     de l'espace (dimension)
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree& s) le flot d'entree modifie
+ */
 Entree& Sortie_libre_pression_moyenne_imposee::readOn(Entree& s )
 {
   s >> Pext_;
@@ -69,26 +52,15 @@ Entree& Sortie_libre_pression_moyenne_imposee::readOn(Entree& s )
   return s ;
 }
 
-// Description:
-//    Renvoie un booleen indiquant la compatibilite des conditions
-//    aux limites avec l'equation specifiee en parametre.
-//    Des CL de type Sortie_libre_pression_moyenne_imposee sont compatibles
-//    avec une equation dont le domaine est l'hydraulique (Navier_Stokes)
-//    ou bien indetermine.
-// Precondition:
-// Parametre: Equation_base& eqn
-//    Signification: l'equation avec laquelle il faut verifier la compatibilite
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: int
-//    Signification: valeur booleenne,
-//                   1 si les CL sont compatibles avec l'equation
-//                   0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie un booleen indiquant la compatibilite des conditions aux limites avec l'equation specifiee en parametre.
+ *
+ *     Des CL de type Sortie_libre_pression_moyenne_imposee sont compatibles
+ *     avec une equation dont le domaine est l'hydraulique (Navier_Stokes)
+ *     ou bien indetermine.
+ *
+ * @param (Equation_base& eqn) l'equation avec laquelle il faut verifier la compatibilite
+ * @return (int) valeur booleenne, 1 si les CL sont compatibles avec l'equation 0 sinon
+ */
 int Sortie_libre_pression_moyenne_imposee::compatible_avec_eqn(const Equation_base& eqn) const
 {
   Motcle dom_app=eqn.domaine_application();
@@ -103,20 +75,9 @@ int Sortie_libre_pression_moyenne_imposee::compatible_avec_eqn(const Equation_ba
     }
 }
 
-// Description:
-//    Complete les conditions aux limites.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Complete les conditions aux limites.
+ *
+ */
 void Sortie_libre_pression_moyenne_imposee::completer()
 {
   const Milieu_base& mil=ma_zone_cl_dis->equation().milieu();
@@ -159,20 +120,9 @@ void Sortie_libre_pression_moyenne_imposee::completer()
   face_voisins = zvf.face_voisins();
 }
 
-// Description:
-//    Met a jour les conditions aux limites.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Met a jour les conditions aux limites.
+ *
+ */
 void Sortie_libre_pression_moyenne_imposee::mettre_a_jour(double temps)
 {
   Cond_lim_base::mettre_a_jour(temps);
@@ -230,25 +180,17 @@ void Sortie_libre_pression_moyenne_imposee::mettre_a_jour(double temps)
   //   Cerr<<"  Ptotimp= "<<Ptot/S<<finl;
 }
 
-// Description:
-//    Renvoie la valeur du flux impose sur la i-eme composante
-//    du champ representant le flux a la frontiere.
-//    Le champ a la frontiere est considere constant sur tous
-//    les elements de la frontiere.
-//    La valeur du flux impose a la frontiere est egale
-//    a la valeur du champ (considere constant) a la frontiere divise par d_rho.
-// Precondition:
-// Parametre: int i
-//    Signification: indice suivant la premiere dimension du champ
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: double
-//    Signification: la valeur imposee sur la composante du champ specifiee
-//    Contraintes:
-// Exception: deuxieme dimension du champ de frontiere superieur a 1
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la valeur du flux impose sur la i-eme composante du champ representant le flux a la frontiere.
+ *
+ *     Le champ a la frontiere est considere constant sur tous
+ *     les elements de la frontiere.
+ *     La valeur du flux impose a la frontiere est egale
+ *     a la valeur du champ (considere constant) a la frontiere divise par d_rho.
+ *
+ * @param (int i) indice suivant la premiere dimension du champ
+ * @return (double) la valeur imposee sur la composante du champ specifiee
+ * @throws deuxieme dimension du champ de frontiere superieur a 1
+ */
 double Sortie_libre_pression_moyenne_imposee::flux_impose(int i) const
 {
   const Milieu_base& mil=ma_zone_cl_dis->equation().milieu();
@@ -277,28 +219,15 @@ double Sortie_libre_pression_moyenne_imposee::flux_impose(int i) const
 }
 
 
-// Description:
-//    Renvoie la valeur du flux impose sur la (i,j)-eme composante
-//    du champ representant le flux a la frontiere.
-//    Le champ a la frontiere n'est PAS constant sur tous les elements
-//    la frontiere.
-// Precondition:
-// Parametre: int i
-//    Signification: indice suivant la premiere dimension du champ
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Parametre: int j
-//    Signification: indice suivant la deuxieme dimension du champ
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: double
-//    Signification: la valeur imposee sur la composante du champ specifiee
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la valeur du flux impose sur la (i,j)-eme composante du champ representant le flux a la frontiere.
+ *
+ *     Le champ a la frontiere n'est PAS constant sur tous les elements
+ *     la frontiere.
+ *
+ * @param (int i) indice suivant la premiere dimension du champ
+ * @param (int j) indice suivant la deuxieme dimension du champ
+ * @return (double) la valeur imposee sur la composante du champ specifiee
+ */
 double Sortie_libre_pression_moyenne_imposee::flux_impose(int i,int j) const
 {
   const Milieu_base& mil=ma_zone_cl_dis->equation().milieu();

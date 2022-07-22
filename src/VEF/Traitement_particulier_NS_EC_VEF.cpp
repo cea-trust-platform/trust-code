@@ -18,13 +18,17 @@
 
 Implemente_instanciable_sans_constructeur(Traitement_particulier_NS_EC_VEF,"Traitement_particulier_NS_EC_VEF",Traitement_particulier_NS_EC);
 
-// Description: does nothing.
+/*! @brief does nothing.
+ *
+ */
 Sortie& Traitement_particulier_NS_EC_VEF::printOn(Sortie& is) const
 {
   return is;
 }
 
-// Description: does nothing.
+/*! @brief does nothing.
+ *
+ */
 Entree& Traitement_particulier_NS_EC_VEF::readOn(Entree& is)
 {
   return is;

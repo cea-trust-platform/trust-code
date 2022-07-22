@@ -854,17 +854,13 @@ void Assembleur_P_VEFPreP1B::projete_L2(DoubleTab& pression)
     pression(i)-=pmoy;
 }
 
-// Description:
-//    Modifier eventuellement la matrice pour la rendre definie si elle ne l'est pas
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: int
-//    Signification: renvoie 1 si la matrice est modifiee 0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Modifier eventuellement la matrice pour la rendre definie si elle ne l'est pas Valeurs par defaut:
+ *
+ *     Contraintes:
+ *     Acces: entree
+ *
+ * @return (int) renvoie 1 si la matrice est modifiee 0 sinon
+ */
 int Assembleur_P_VEFPreP1B::modifier_matrice(Matrice& la_matrice)
 {
   int matrice_modifiee=0;

@@ -16,45 +16,42 @@
 #ifndef Navier_Stokes_std_included
 #define Navier_Stokes_std_included
 
+#include <Traitement_particulier_NS.h>
+#include <Navier_Stokes_IBM_impl.h>
 #include <Ref_Fluide_base.h>
+#include <Operateur_Grad.h>
 #include <Operateur_Conv.h>
 #include <Operateur_Diff.h>
 #include <Operateur_Div.h>
-#include <Operateur_Grad.h>
 #include <Assembleur.h>
-#include <Traitement_particulier_NS.h>
 #include <Champ_Fonc.h>
 #include <Champ_Don.h>
-#include <Navier_Stokes_IBM_impl.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Navier_Stokes_std
-//    Cette classe porte les termes de l'equation de la dynamique
-//    pour un fluide sans modelisation de la turbulence.
-//    On suppose l'hypothese de fluide incompressible: div U = 0
-//    On considere la masse volumique constante (egale a rho_0) sauf dans le
-//    terme des forces de gravite (hypotheses de Boussinesq).
-//    Sous ces hypotheses, on utilise la forme suivante des equations de
-//    Navier_Stokes:
-//       DU/dt = div(terme visqueux) - gradP/rho_0 + Bt(T-T0)g + autres sources/rho_0
-//       div U = 0
-//    avec DU/dt : derivee particulaire de la vitesse
-//         rho_0 : masse volumique de reference
-//         T0    : temperature de reference
-//         Bt    : coefficient de dilatabilite du fluide
-//         g     : vecteur gravite
-//    Rq : l'implementation de la classe permet bien sur de negliger
-//         certains termes de l'equation (le terme visqueux, le terme
-//         convectif, tel ou tel terme source).
-//    L'inconnue est le champ de vitesse.
-//
-//    Pour le traitement des cas un peu particulier : ajout de Traitement_particulier
-//    exemple : THI, canal (CA)
-// .SECTION voir aussi
-//      Equation_base Pb_Hydraulique Pb_Thermohydraulique
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Navier_Stokes_std Cette classe porte les termes de l'equation de la dynamique
+ *
+ *     pour un fluide sans modelisation de la turbulence.
+ *     On suppose l'hypothese de fluide incompressible: div U = 0
+ *     On considere la masse volumique constante (egale a rho_0) sauf dans le
+ *     terme des forces de gravite (hypotheses de Boussinesq).
+ *     Sous ces hypotheses, on utilise la forme suivante des equations de
+ *     Navier_Stokes:
+ *        DU/dt = div(terme visqueux) - gradP/rho_0 + Bt(T-T0)g + autres sources/rho_0
+ *        div U = 0
+ *     avec DU/dt : derivee particulaire de la vitesse
+ *          rho_0 : masse volumique de reference
+ *          T0    : temperature de reference
+ *          Bt    : coefficient de dilatabilite du fluide
+ *          g     : vecteur gravite
+ *     Rq : l'implementation de la classe permet bien sur de negliger
+ *          certains termes de l'equation (le terme visqueux, le terme
+ *          convectif, tel ou tel terme source).
+ *     L'inconnue est le champ de vitesse.
+ *
+ *     Pour le traitement des cas un peu particulier : ajout de Traitement_particulier
+ *     exemple : THI, canal (CA)
+ *
+ * @sa Equation_base Pb_Hydraulique Pb_Thermohydraulique
+ */
 class Navier_Stokes_std : public Equation_base, public Navier_Stokes_IBM_impl
 {
   Declare_instanciable_sans_constructeur(Navier_Stokes_std);
@@ -142,46 +139,25 @@ public :
 
   virtual void projeter();
   virtual int projection_a_faire();
-
   virtual void sauver() const;
-
   virtual void calculer_la_pression_en_pa();
-
   virtual void calculer_pression_hydrostatique(Champ_base& pression_hydro) const;
   int verif_Cl() const override;
 
-
   virtual const Champ_Inc& rho_la_vitesse() const;
-
   inline Operateur_Conv& get_terme_convectif() { return terme_convectif; }
 
   virtual void renewing_jacobians( DoubleTab& derivee );
   virtual void div_ale_derivative( DoubleTrav& derivee_ale, double timestep, DoubleTab& derivee, DoubleTrav& secmemP );
   virtual void update_pressure_matrix( void );
 
-
 protected:
   virtual void discretiser_assembleur_pression();
-
-
   REF(Fluide_base) le_fluide;
 
-  Champ_Inc la_vitesse;
-  Champ_Inc la_pression;
-  Champ_Inc divergence_U;
-  Champ_Inc gradient_P;
-  Champ_Inc la_pression_en_pa;
-  Champ_Fonc la_vorticite;
-  Champ_Fonc grad_u;
-  Champ_Fonc critere_Q;
-  Champ_Fonc pression_hydrostatique_;
-  Champ_Fonc porosite_volumique;
-  Champ_Fonc combinaison_champ;
-  Champ_Fonc distance_paroi_globale;
-  Champ_Fonc y_plus;
-  Champ_Fonc Reynolds_maille;
-  Champ_Fonc Courant_maille;
-  Champ_Fonc Taux_cisaillement;
+  Champ_Inc la_vitesse, la_pression, divergence_U, gradient_P, la_pression_en_pa;
+  Champ_Fonc la_vorticite, grad_u, critere_Q, pression_hydrostatique_, porosite_volumique, combinaison_champ;
+  Champ_Fonc distance_paroi_globale, y_plus, Reynolds_maille, Courant_maille, Taux_cisaillement;
 
   Operateur_Conv terme_convectif;
   Operateur_Diff terme_diffusif;
@@ -190,30 +166,19 @@ protected:
   Matrice matrice_pression_;
   Assembleur assembleur_pression_;
   SolveurSys solveur_pression_;
+
   int projection_initiale;
-  double dt_projection;
-  double seuil_projection;
-  double seuil_uzawa;
-  double max_div_U;
-  double seuil_divU;
-  double raison_seuil_divU;
-  double LocalFlowRateRelativeError_;
+  double dt_projection, seuil_projection, seuil_uzawa, max_div_U, seuil_divU, raison_seuil_divU, LocalFlowRateRelativeError_;
   mutable double cumulative_;
 
   Traitement_particulier_NS le_traitement_particulier;
 
-  void uzawa(const DoubleTab&,
-             const Matrice_Base&,
-             SolveurSys&,
-             DoubleTab&,
-             DoubleTab&);
+  void uzawa(const DoubleTab&, const Matrice_Base&, SolveurSys&, DoubleTab&, DoubleTab&);
   Nom chaine_champ_combi;
   int methode_calcul_pression_initiale_;
   // pour genepi il est important d avoir divu =0 car accumulation d'erreur
   // meme si c'est pas faisable avec tous les schemas
   int div_u_nul_et_non_dsurdt_divu_;
-
-
 
 private :
   // Pression au debut du pas de temps, utile pour abortTimeStep, notamment en Piso
@@ -223,5 +188,4 @@ private :
   mutable int postraitement_gradient_P_;
 };
 
-
-#endif
+#endif /* Navier_Stokes_std_included */

@@ -41,8 +41,9 @@ Entree& Op_Diff_VEF_Face_Q1::readOn(Entree& s )
   return s ;
 }
 
-// Description:
-// associe le champ de diffusivite
+/*! @brief associe le champ de diffusivite
+ *
+ */
 void Op_Diff_VEF_Face_Q1::associer_diffusivite(const Champ_base& diffu)
 {
   diffusivite_ = diffu;

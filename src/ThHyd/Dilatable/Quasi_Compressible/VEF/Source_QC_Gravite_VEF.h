@@ -19,18 +19,15 @@
 #include <Source_Gravite_Fluide_Dilatable_base.h>
 #include <Source_Fluide_Dilatable_VEF_Proto.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION class  Source_QC_Gravite_VEF
-//
-//  Cette classe represente un terme source supplementaire a prendre en compte
-//  dans les equations de quantite de mouvement dans le cas ou le fluide est
-//  quasi compressible, en cas de gravite, et pour une discretisation VEF.
-//
-// .SECTION voir aussi
-// Source_base Fluide_Quasi_Compressible Source_Gravite_Fluide_Dilatable_base
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief class  Source_QC_Gravite_VEF
+ *
+ *   Cette classe represente un terme source supplementaire a prendre en compte
+ *   dans les equations de quantite de mouvement dans le cas ou le fluide est
+ *   quasi compressible, en cas de gravite, et pour une discretisation VEF.
+ *
+ *
+ * @sa Source_base Fluide_Quasi_Compressible Source_Gravite_Fluide_Dilatable_base
+ */
 
 class Source_QC_Gravite_VEF : public Source_Gravite_Fluide_Dilatable_base,
   public Source_Fluide_Dilatable_VEF_Proto

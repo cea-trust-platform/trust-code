@@ -22,13 +22,12 @@
 #include <map>
 #include <string>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Loi_paroi_base
-//    Classe de base pour les lois de paroi dans pb_mulitphase
-//    Methodes implementees :
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Loi_paroi_base Classe de base pour les lois de paroi dans pb_mulitphase
+ *
+ *     Methodes implementees :
+ *
+ *
+ */
 
 class Loi_paroi_base : public Correlation_base
 {

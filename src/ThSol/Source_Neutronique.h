@@ -23,15 +23,16 @@
 #include <Parser_U.h>
 
 
-//.DESCRIPTION class Source_Neutronique
-//
-// Cette classe represente un terme source de l'equation de la thermique
-// du type puissance volumique issue de la neutronique.
-// La determination de la puissance s'effectue par resolution d'equations
-// differentielles regissant la cinetique neutronique.
-//
-//.SECTION voir aussi Terme_Puissance_Thermique
-//
+/*! @brief class Source_Neutronique
+ *
+ *  Cette classe represente un terme source de l'equation de la thermique
+ *  du type puissance volumique issue de la neutronique.
+ *  La determination de la puissance s'effectue par resolution d'equations
+ *  differentielles regissant la cinetique neutronique.
+ *
+ *
+ * @sa Terme_Puissance_Thermique
+ */
 
 class Source_Neutronique : public Terme_Puissance_Thermique, public Source_base
 {

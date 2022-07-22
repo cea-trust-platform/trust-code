@@ -54,66 +54,36 @@ DoubleTab& Source_QC_QDM_Gen::ajouter(DoubleTab& resu) const
   resu+=trav;
   return resu;
 }
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees.
-//    Mise a jour en temps du terme source.
-// Precondition:
-// Parametre: double
-//    Signification: le pas de temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+ *
+ *     Mise a jour en temps du terme source.
+ *
+ * @param (double) le pas de temps de mise a jour
+ */
 void Source_QC_QDM_Gen::mettre_a_jour(double t)
 {
   source_incompressible->mettre_a_jour(t);
 }
 
-// Description:
-//    Met a jour les references internes a l'objet Source_QC_QDM_Gen.
-//    Appelle 2 methodes virtuelles pures protegees:
-//       Source_QC_QDM_Gen::associer_zones(const Zone_dis& ,const Zone_Cl_dis&)
-//       Source_QC_QDM_Gen::associer_pb(const Probleme_base&)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la source est liee a tous les objets concernes
+/*! @brief Met a jour les references internes a l'objet Source_QC_QDM_Gen.
+ *
+ * Appelle 2 methodes virtuelles pures protegees:
+ *        Source_QC_QDM_Gen::associer_zones(const Zone_dis& ,const Zone_Cl_dis&)
+ *        Source_QC_QDM_Gen::associer_pb(const Probleme_base&)
+ *
+ */
 void Source_QC_QDM_Gen::completer()
 {
   Source_base::completer();
   source_incompressible->completer();
 }
 
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees.
-//    Mise a jour en temps du terme source.
-// Precondition:
-// Parametre: double
-//    Signification: le pas de temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+ *
+ *     Mise a jour en temps du terme source.
+ *
+ * @param (double) le pas de temps de mise a jour
+ */
 int Source_QC_QDM_Gen::impr(Sortie& os) const
 {
   return source_incompressible->impr(os);

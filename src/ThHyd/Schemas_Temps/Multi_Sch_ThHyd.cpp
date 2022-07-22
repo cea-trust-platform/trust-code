@@ -21,42 +21,24 @@
 Implemente_instanciable(Multi_Sch_ThHyd,"Multi_Schema_ThHyd",Schema_Temps_base);
 
 
-// Description:
-//    Simple appel a: Schema_Temps_base::printOn(Sortie& )
-//    Ecrit le schema en temps sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Schema_Temps_base::printOn(Sortie& ) Ecrit le schema en temps sur un flot de sortie.
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Multi_Sch_ThHyd::printOn(Sortie& s) const
 {
   return  Schema_Temps_base::printOn(s);
 }
 
 
-// Description:
-//    Lit le schema en temps a partir d'un flot d'entree.
-//    Simple appel a: Schema_Temps_base::readOn(Entree& )
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit le schema en temps a partir d'un flot d'entree.
+ *
+ * Simple appel a: Schema_Temps_base::readOn(Entree& )
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Multi_Sch_ThHyd::readOn(Entree& s)
 {
   nb_ss_pas_dt=0;
@@ -71,18 +53,22 @@ Entree& Multi_Sch_ThHyd::readOn(Entree& s)
 ////////////////////////////////
 
 
-// Description:
-//    Renvoie le nombre de valeurs temporelles a conserver.
-//    Ici : le max des deux schemas utilises.
+/*! @brief Renvoie le nombre de valeurs temporelles a conserver.
+ *
+ * Ici : le max des deux schemas utilises.
+ *
+ */
 int Multi_Sch_ThHyd::nb_valeurs_temporelles() const
 {
   return std::max(sch_ns.valeur().nb_valeurs_temporelles(),sch_scalaires.valeur().nb_valeurs_temporelles());
 }
 
 
-// Description:
-//    Renvoie le nombre de valeurs temporelles futures.
-//    Ici : la valeur commune aux deux schemas utilises.
+/*! @brief Renvoie le nombre de valeurs temporelles futures.
+ *
+ * Ici : la valeur commune aux deux schemas utilises.
+ *
+ */
 int Multi_Sch_ThHyd::nb_valeurs_futures() const
 {
   int n=sch_ns.valeur().nb_valeurs_futures();
@@ -90,9 +76,11 @@ int Multi_Sch_ThHyd::nb_valeurs_futures() const
   return n;
 }
 
-// Description:
-//    Renvoie le le temps a la i-eme valeur future.
-//    Ici : la valeur commune aux deux schemas utilises.
+/*! @brief Renvoie le le temps a la i-eme valeur future.
+ *
+ * Ici : la valeur commune aux deux schemas utilises.
+ *
+ */
 double Multi_Sch_ThHyd::temps_futur(int i) const
 {
   double t=sch_ns.valeur().temps_futur(i);
@@ -100,10 +88,11 @@ double Multi_Sch_ThHyd::temps_futur(int i) const
   return t;
 }
 
-// Description:
-//    Renvoie le le temps le temps que doivent rendre les champs a
-//    l'appel de valeurs()
-//    Ici : la valeur commune aux deux schemas utilises.
+/*! @brief Renvoie le le temps le temps que doivent rendre les champs a l'appel de valeurs()
+ *
+ *     Ici : la valeur commune aux deux schemas utilises.
+ *
+ */
 double Multi_Sch_ThHyd::temps_defaut() const
 {
   double t=sch_ns.valeur().temps_defaut();
@@ -191,22 +180,11 @@ void Multi_Sch_ThHyd::set_param(Param& param)
 }
 
 
-// Description:
-//    Effectue un pas de temps d'Euler explicite
-//    sur l'equation passee en parametre.
-// Precondition:
-// Parametre: Equation_base& eqn
-//    Signification: l'equation que l'on veut faire avancer d'un
-//                   pas de temps
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Effectue un pas de temps d'Euler explicite sur l'equation passee en parametre.
+ *
+ * @param (Equation_base& eqn) l'equation que l'on veut faire avancer d'un pas de temps
+ * @return (int) renvoie toujours 1
+ */
 int Multi_Sch_ThHyd::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
 {
   //  double dtok=dt_;
@@ -257,20 +235,10 @@ bool Multi_Sch_ThHyd::iterateTimeStep(bool& converged)
 
 }
 
-// Description:
-//    Corrige le pas de temps dt_min <= dt <= dt_max
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: retourne corriger_pas_temps de la classe mere
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Corrige le pas de temps dt_min <= dt <= dt_max
+ *
+ * @return (int) retourne corriger_pas_temps de la classe mere
+ */
 bool Multi_Sch_ThHyd::corriger_dt_calcule(double& dt) const
 {
   bool ok=sch_ns.valeur().corriger_dt_calcule(dt);
@@ -280,21 +248,10 @@ bool Multi_Sch_ThHyd::corriger_dt_calcule(double& dt) const
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Change le temps courant
-// Precondition:
-// Parametre: double& t
-//    Signification: la nouvelle valeur du temps courant
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent Change le temps courant
+ *
+ * @param (double& t) la nouvelle valeur du temps courant
+ */
 void Multi_Sch_ThHyd::changer_temps_courant(const double t)
 {
   sch_ns.valeur().changer_temps_courant(t);
@@ -303,26 +260,16 @@ void Multi_Sch_ThHyd::changer_temps_courant(const double t)
   Schema_Temps_base::changer_temps_courant(t);
 }
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Renvoie 1 si il y lieu de stopper le calcul pour differente raisons:
-//        - le temps final est atteint
-//        - le nombre de pas de temps maximum est depasse
-//        - l'etat stationnaire est atteint
-//        - indicateur d'arret fichier
-//    Renvoie 0 sinon
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:entier
-//    Signification: 1 si il y a lieu de s'arreter 0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent Renvoie 1 si il y lieu de stopper le calcul pour differente raisons:
+ *
+ *         - le temps final est atteint
+ *         - le nombre de pas de temps maximum est depasse
+ *         - l'etat stationnaire est atteint
+ *         - indicateur d'arret fichier
+ *     Renvoie 0 sinon
+ *
+ * @return (entier) 1 si il y a lieu de s'arreter 0 sinon
+ */
 int Multi_Sch_ThHyd::stop() const
 {
   int ls2 = sch_ns.valeur().stop();
@@ -333,21 +280,10 @@ int Multi_Sch_ThHyd::stop() const
 
 
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Imprime le schema en temp sur un flot de sortie (si il y a lieu).
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent Imprime le schema en temp sur un flot de sortie (si il y a lieu).
+ *
+ * @param (Sortie& os) le flot de sortie
+ */
 void Multi_Sch_ThHyd::imprimer(Sortie& os) const
 {
   sch_ns.valeur().imprimer(os);

@@ -25,13 +25,14 @@
 #include <Ref_Champ_P0_VEF.h>
 #include <Champ_P0_VEF.h>
 
-//
-// .DESCRIPTION class Op_Grad_VEF_Face
-//
-//  Cette classe represente l'operateur de gradient
-//  La discretisation est VEF
-//  On calcule le gradient d'un champ_P0_VEF (la pression)
-//
+/*! @brief class Op_Grad_VEF_Face
+ *
+ *   Cette classe represente l'operateur de gradient
+ *   La discretisation est VEF
+ *   On calcule le gradient d'un champ_P0_VEF (la pression)
+ *
+ *
+ */
 
 
 //

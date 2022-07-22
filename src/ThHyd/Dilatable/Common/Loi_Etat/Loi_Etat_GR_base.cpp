@@ -34,39 +34,19 @@ Entree& Loi_Etat_GR_base::readOn(Entree& is)
   return is;
 }
 
-// Description:
-//    Renvoie le type de fluide associe.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie pour l'impression
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le type de fluide associe.
+ *
+ * @param (Sortie& os) le flot de sortie pour l'impression
+ * @return (Sortie&) le flot de sortie modifie
+ */
 const Nom Loi_Etat_GR_base::type_fluide() const
 {
   return "Gaz_Reel";
 }
 
-// Description:
-//    Initialise la loi d'etat : calcul Pth
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Initialise la loi d'etat : calcul Pth
+ *
+ */
 void Loi_Etat_GR_base::initialiser()
 {
   le_fluide->inco_chaleur()->nommer("enthalpie");
@@ -87,20 +67,9 @@ void Loi_Etat_GR_base::initialiser()
   calculer_Cp();
 }
 
-// Description:
-//    Initialise l'enthalpie
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Initialise l'enthalpie
+ *
+ */
 void Loi_Etat_GR_base::initialiser_inco_ch()
 {
   /*
@@ -134,20 +103,11 @@ void Loi_Etat_GR_base::initialiser_inco_ch()
   Cerr<<"FIN Loi_Etat_GR_base::initialiser_H Pth = "<<Pth<<"  H = "<<tab_TH(0,0)<<finl;
 }
 
-// Description:
-//    Remplit le tableau de la temperature : T=temp+273.15
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Remplit le tableau de la temperature : T=temp+273.
+ *
+ * 15
+ *
+ */
 void Loi_Etat_GR_base::remplir_T()
 {
   const DoubleTab& tab_H = le_fluide->inco_chaleur().valeurs();
@@ -161,21 +121,10 @@ void Loi_Etat_GR_base::remplir_T()
     }
 }
 
-// Description:
-//    Calcule le Cp en fonction des grandeurs physiques P, T, rho
-//    Cp = dh/dT = de/dT - 1/rho^2*drho/dT
-// Precondition:
-// Parametre: double Tmp
-//    Signification: temperature
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule le Cp en fonction des grandeurs physiques P, T, rho Cp = dh/dT = de/dT - 1/rho^2*drho/dT
+ *
+ * @param (double Tmp) temperature
+ */
 double Loi_Etat_GR_base::Cp_calc(double P, double h) const
 {
   double res;
@@ -185,20 +134,9 @@ double Loi_Etat_GR_base::Cp_calc(double P, double h) const
   return res;
 }
 
-// Description:
-//    Calcule le Cp avec le polynome PolyCp_
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule le Cp avec le polynome PolyCp_
+ *
+ */
 void Loi_Etat_GR_base::calculer_Cp()
 {
   double Pth = le_fluide->pression_th();
@@ -206,21 +144,9 @@ void Loi_Etat_GR_base::calculer_Cp()
   for (int i=0; i<tab_Cp.size(); i++) tab_Cp(i) = Cp_calc(Pth,tab_h(i,0));
 }
 
-// Description:
-//    Calcule la conductivite /Cp : equivlent a k*dT/dh
-//    pour utiliser l'enthalpie dans l'operatur de diffusion
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la conductivite /Cp : equivlent a k*dT/dh pour utiliser l'enthalpie dans l'operatur de diffusion
+ *
+ */
 void Loi_Etat_GR_base::calculer_lambda()
 {
   const Champ_Don& mu = le_fluide->viscosite_dynamique();
@@ -257,20 +183,9 @@ double Loi_Etat_GR_base::De_DT(double P, double T) const
   return res;
 }
 
-// Description:
-//    Calcule la pression avec la temperature et la masse volumique
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la pression avec la temperature et la masse volumique
+ *
+ */
 double Loi_Etat_GR_base::inverser_Pth(double H, double rho)
 {
   double P = le_fluide->pression_th();

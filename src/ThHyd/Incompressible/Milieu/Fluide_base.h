@@ -20,22 +20,19 @@
 #include <Milieu_base.h>
 #include <Ref_Champ_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Fluide_base
-//    Cette classe represente un d'un fluide incompressible ainsi que
-//    ses proprietes:
-//        - viscosite cinematique, (mu)
-//        - viscosite dynamique,   (nu)
-//        - masse volumique,       (rho)
-//        - diffusivite,           (alpha)
-//        - conductivite,          (lambda)
-//        - capacite calorifique,  (Cp)
-//        - dilatabilite thermique du constituant (beta_co)
-// .SECTION voir aussi
-//     Milieu_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Fluide_base Cette classe represente un d'un fluide incompressible ainsi que
+ *
+ *     ses proprietes:
+ *         - viscosite cinematique, (mu)
+ *         - viscosite dynamique,   (nu)
+ *         - masse volumique,       (rho)
+ *         - diffusivite,           (alpha)
+ *         - conductivite,          (lambda)
+ *         - capacite calorifique,  (Cp)
+ *         - dilatabilite thermique du constituant (beta_co)
+ *
+ * @sa Milieu_base
+ */
 class Fluide_base : public Milieu_base
 {
   Declare_instanciable_sans_constructeur(Fluide_base);
@@ -103,243 +100,122 @@ protected :
 };
 
 
-// Description:
-//    Renvoie la viscosite dynamique, mu.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Don&
-//    Signification: la viscosite dynamique, mu
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la viscosite dynamique, mu.
+ *
+ * (version const)
+ *
+ * @return (Champ_Don&) la viscosite dynamique, mu
+ */
 inline const Champ_Don& Fluide_base::viscosite_dynamique() const
 {
   return mu;
 }
 
 
-// Description:
-//    Renvoie la viscosite dynamique, mu.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Don&
-//    Signification: la viscosite dynamique, mu
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la viscosite dynamique, mu.
+ *
+ * @return (Champ_Don&) la viscosite dynamique, mu
+ */
 inline Champ_Don& Fluide_base::viscosite_dynamique()
 {
   return mu;
 }
 
 
-// Description:
-//    Renvoie la viscosite cinematique, nu.
-//    (vesrion const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Don&
-//    Signification: la viscosite cinematique, nu
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la viscosite cinematique, nu.
+ *
+ * (vesrion const)
+ *
+ * @return (Champ_Don&) la viscosite cinematique, nu
+ */
 inline const Champ_Don& Fluide_base::viscosite_cinematique() const
 {
   return nu;
 }
 
 
-// Description:
-//    Renvoie la viscosite cinematique, nu.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Don&
-//    Signification: la viscosite cinematique, nu
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la viscosite cinematique, nu.
+ *
+ * @return (Champ_Don&) la viscosite cinematique, nu
+ */
 inline Champ_Don& Fluide_base::viscosite_cinematique()
 {
   return nu;
 }
 
 
-// Description:
-//    Renvoie la dilatabilite du constituant, beta_co.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Don&
-//    Signification: la dilatabilite du constituant, beta_co
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la dilatabilite du constituant, beta_co.
+ *
+ * (version const)
+ *
+ * @return (Champ_Don&) la dilatabilite du constituant, beta_co
+ */
 inline const Champ_Don& Fluide_base::beta_c() const
 {
   return beta_co;
 }
 
 
-// Description:
-//    Renvoie la dilatabilite du constituant, beta_co.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Don&
-//    Signification: la dilatabilite du constituant, beta_co
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la dilatabilite du constituant, beta_co.
+ *
+ * @return (Champ_Don&) la dilatabilite du constituant, beta_co
+ */
 inline Champ_Don& Fluide_base::beta_c()
 {
   return beta_co;
 }
 
 
-// Description:
-//    Renvoie le coefficient d'absorbtion du fluide
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Don&
-//    Signification: le coefficient d'absorbtion du fluide
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le coefficient d'absorbtion du fluide
+ *
+ * @return (Champ_Don&) le coefficient d'absorbtion du fluide
+ */
 inline Champ_Don& Fluide_base::kappa()
 {
   return coeff_absorption_;
 }
 
-// Description:
-//    Renvoie le coefficient d'absorbtion du fluide
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Don&
-//    Signification: le coefficient d'absorbtion du fluide
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le coefficient d'absorbtion du fluide
+ *
+ * @return (Champ_Don&) le coefficient d'absorbtion du fluide
+ */
 inline const Champ_Don& Fluide_base::kappa() const
 {
   return coeff_absorption_;
 }
 
-// Description:
-//    Renvoie l'indice de refraction du fluide
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Don&
-//    Signification: l'indice de refraction du fluide
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie l'indice de refraction du fluide
+ *
+ * @return (Champ_Don&) l'indice de refraction du fluide
+ */
 inline Champ_Don& Fluide_base::indice()
 {
   return indice_refraction_;
 }
 
-// Description:
-//    Renvoie l'indice de refraction du fluide
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Don&
-//    Signification: l'indice de refraction du fluide
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie l'indice de refraction du fluide
+ *
+ * @return (Champ_Don&) l'indice de refraction du fluide
+ */
 inline const Champ_Don& Fluide_base::indice() const
 {
   return indice_refraction_;
 }
 
-// Description:
-//    Renvoie la longueur de penetration du rayonnement dans le fluide
-//    definie comme l = 1/(3*kappa)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Don&
-//    Signification: la longueur de penetration du rayonnement dans le fluide
-//    definie comme l = 1/(3*kappa)
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la longueur de penetration du rayonnement dans le fluide definie comme l = 1/(3*kappa)
+ *
+ * @return (Champ_Don&) la longueur de penetration du rayonnement dans le fluide definie comme l = 1/(3*kappa)
+ */
 inline Champ_Don& Fluide_base::longueur_rayo()
 {
   return longueur_rayo_;
 }
 
 
-// Description:
-//    Renvoie la longueur de penetration du rayonnement dans le fluide
-//    definie comme l = 1/(3*kappa)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Don&
-//    Signification: la longueur de penetration du rayonnement dans le fluide
-//    definie comme l = 1/(3*kappa)
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la longueur de penetration du rayonnement dans le fluide definie comme l = 1/(3*kappa)
+ *
+ * @return (Champ_Don&) la longueur de penetration du rayonnement dans le fluide definie comme l = 1/(3*kappa)
+ */
 inline const Champ_Don& Fluide_base::longeur_rayo() const
 {
   return longueur_rayo_;

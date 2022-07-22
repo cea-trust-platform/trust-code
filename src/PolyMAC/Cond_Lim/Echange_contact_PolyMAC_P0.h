@@ -29,11 +29,12 @@ class Faces;
 
 ////////////////////////////////////////////////////////////////
 
-//
-//  .DESCRIPTION classe : Echange_contact_PolyMAC_P0
-//  Outre le champ_front representant la temperature de paroi,
-//  cette classe possede un autre champ_front avec autant de valeurs
-//  temporelles qui represente la temperature dans l'autre probleme.
+/*! @brief classe : Echange_contact_PolyMAC_P0 Outre le champ_front representant la temperature de paroi,
+ *
+ *   cette classe possede un autre champ_front avec autant de valeurs
+ *   temporelles qui represente la temperature dans l'autre probleme.
+ *
+ */
 
 ////////////////////////////////////////////////////////////////
 

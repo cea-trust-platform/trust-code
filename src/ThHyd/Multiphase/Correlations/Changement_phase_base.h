@@ -20,29 +20,28 @@
 #include <Correlation_base.h>
 #include <Saturation_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Changement_phase_base
-//      correlations de changement de phase
-//      G_{kl} = G(alpha, p, T) (a remplir pour k liquide, l vapeur)
-//      cette classe definit une fonction flux avec :
-//    entrees :
-//        k, l      -> paire de phases
-//        D_h       -> diametre hyd
-//        alpha[n]  -> taux de presence de la phase n
-//        T[n]      -> temperature de la phase n
-//        p         -> pression
-//        nv[n]     -> norme de la vitesse de la phase n
-//        lambda[n], mu[n], rho[n], Cp[n] -> diverses proprietes physiques de la phase n
-//        sat       -> objet "saturation" associe au couple (k, l)
-//
-//    sorties :
-//    retour  -> flux de masse G de k vers l
-//    dT_G(n) -> derivee de G en T[n]
-//    da_G(n) -> derivee de G en a[n]
-//    dp_G    -> derivee de G en p
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Changement_phase_base correlations de changement de phase
+ *
+ *       G_{kl} = G(alpha, p, T) (a remplir pour k liquide, l vapeur)
+ *       cette classe definit une fonction flux avec :
+ *     entrees :
+ *         k, l      -> paire de phases
+ *         D_h       -> diametre hyd
+ *         alpha[n]  -> taux de presence de la phase n
+ *         T[n]      -> temperature de la phase n
+ *         p         -> pression
+ *         nv[n]     -> norme de la vitesse de la phase n
+ *         lambda[n], mu[n], rho[n], Cp[n] -> diverses proprietes physiques de la phase n
+ *         sat       -> objet "saturation" associe au couple (k, l)
+ *
+ *     sorties :
+ *     retour  -> flux de masse G de k vers l
+ *     dT_G(n) -> derivee de G en T[n]
+ *     da_G(n) -> derivee de G en a[n]
+ *     dp_G    -> derivee de G en p
+ *
+ *
+ */
 
 class Changement_phase_base : public Correlation_base
 {

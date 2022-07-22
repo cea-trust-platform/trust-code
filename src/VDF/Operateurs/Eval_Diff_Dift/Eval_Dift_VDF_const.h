@@ -20,14 +20,14 @@
 #include <Eval_Turbulence.h>
 #include <Ref_Champ_Fonc.h>
 #include <Champ_Fonc.h>
-//
-// .DESCRIPTION class Eval_Dift_VDF_const
-//
-// Cette classe represente un evaluateur de flux diffusif
-// total (diffusion laminaire et turbulente)
-// avec une diffusivite constante en espace.
-//.SECTION voir aussi Eval_Diff_VDF_const
-//
+/*! @brief class Eval_Dift_VDF_const
+ *
+ *  Cette classe represente un evaluateur de flux diffusif
+ *  total (diffusion laminaire et turbulente)
+ *  avec une diffusivite constante en espace.
+ *
+ * @sa Eval_Diff_VDF_const
+ */
 
 class Eval_Dift_VDF_const : public Eval_Diff_VDF_const, public Eval_Turbulence
 {

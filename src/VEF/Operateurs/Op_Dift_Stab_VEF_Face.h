@@ -21,10 +21,11 @@
 #include <Operateur_Div.h>
 #include <Op_Dift_VEF_Face.h>
 
-//
-// .DESCRIPTION class Op_Dift_Stab_VEF_Face
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief class Op_Dift_Stab_VEF_Face
+ *
+ *
+ *
+ */
 
 class Op_Dift_Stab_VEF_Face : public Op_Dift_VEF_Face
 {

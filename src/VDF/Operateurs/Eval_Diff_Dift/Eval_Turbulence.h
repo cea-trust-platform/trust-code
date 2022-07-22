@@ -20,8 +20,9 @@
 #include <Turbulence_paroi_scal.h>
 #include <TRUSTVects.h>
 
-// .DESCRIPTION class Eval_Turbulence
-// Implements all stuff related to turbulence for VDF evaluators.
+/*! @brief class Eval_Turbulence Implements all stuff related to turbulence for VDF evaluators.
+ *
+ */
 class Eval_Turbulence
 {
 

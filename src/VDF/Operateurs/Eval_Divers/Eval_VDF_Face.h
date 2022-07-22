@@ -21,10 +21,12 @@
 #include <Champ_Face.h>
 #include <type_traits> // For SFINAE later ...
 
-// .DESCRIPTION class Eval_VDF_Face
-// Cette classe represente le prototype fonctionnel des evaluateurs
-// de flux associes aux equations de conservation integrees
-// sur les volumes entrelaces
+/*! @brief class Eval_VDF_Face Cette classe represente le prototype fonctionnel des evaluateurs
+ *
+ *  de flux associes aux equations de conservation integrees
+ *  sur les volumes entrelaces
+ *
+ */
 class Eval_VDF_Face
 {
 public:

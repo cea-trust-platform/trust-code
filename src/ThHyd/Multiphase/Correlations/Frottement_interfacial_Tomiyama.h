@@ -17,12 +17,11 @@
 #define Frottement_interfacial_Tomiyama_included
 #include <Frottement_interfacial_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Frottement_interfacial_Tomiyama
-//      coefficients de frottement interfacial d'un ecoulement a bulles
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Frottement_interfacial_Tomiyama coefficients de frottement interfacial d'un ecoulement a bulles
+ *
+ *
+ *
+ */
 
 class Frottement_interfacial_Tomiyama : public Frottement_interfacial_base
 {

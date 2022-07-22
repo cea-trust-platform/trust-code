@@ -84,15 +84,17 @@ Entree& Zone_Cl_EF::readOn(Entree& is )
 //
 /////////////////////////////////////////////////////////////////////
 
-// Description:
-// etape de discretisation : dimensionnement des tableaux
+/*! @brief etape de discretisation : dimensionnement des tableaux
+ *
+ */
 void Zone_Cl_EF::associer(const Zone_EF& la_zone_EF)
 {
   //  int nb_elem_Cl  = la_zone_EF.nb_elem_Cl();
 }
 
-// Description:
-// remplissage des tableaux
+/*! @brief remplissage des tableaux
+ *
+ */
 void Zone_Cl_EF::completer(const Zone_dis& une_zone_dis)
 {
   modif_perio_fait_ =0;
@@ -164,8 +166,9 @@ void construit_connectivite_sommet(int type_cl,Static_Int_Lists& som_face_bord,c
     }
 
 }
-// Description:
-// appele par remplir_volumes_entrelaces_Cl() : remplissage de type_elem_Cl_
+/*! @brief appele par remplir_volumes_entrelaces_Cl() : remplissage de type_elem_Cl_
+ *
+ */
 void Zone_Cl_EF::remplir_type_elem_Cl(const Zone_EF& la_zone_EF)
 {
   const Zone& z = la_zone_EF.zone();
@@ -354,10 +357,12 @@ void Zone_Cl_EF::remplir_type_elem_Cl(const Zone_EF& la_zone_EF)
       //exit();
     }
 }
-// Description:
-// Impose les conditions de symetrie
-// c.a.d annules les composantes  du champ sur la ou les normales
-// si tous_les_sommets_sym =1 alors meme les sommets appartenant aussi a un dirichlet sont mis a zero.
+/*! @brief Impose les conditions de symetrie c.
+ *
+ * a.d annules les composantes  du champ sur la ou les normales
+ *  si tous_les_sommets_sym =1 alors meme les sommets appartenant aussi a un dirichlet sont mis a zero.
+ *
+ */
 void Zone_Cl_EF::imposer_symetrie(DoubleTab& values,int tous_les_sommets_sym) const
 {
   // return;
@@ -632,9 +637,9 @@ void  Zone_Cl_EF::imposer_symetrie_matrice_secmem(Matrice_Morse& la_matrice, Dou
   //  exit();
 }
 
-// Description:
-// Impose les conditions aux limites a la valeur temporelle "temps" du
-// Champ_Inc
+/*! @brief Impose les conditions aux limites a la valeur temporelle "temps" du Champ_Inc
+ *
+ */
 void Zone_Cl_EF::imposer_cond_lim(Champ_Inc& ch, double temps)
 {
   DoubleTab& ch_tab = ch->valeurs(temps);

@@ -20,41 +20,24 @@
 
 Implemente_base(Convection_Diffusion_std,"Convection_Diffusion_standard",Equation_base);
 
-// Description:
-//    Simple appel a Equation_base::printOn(Sortie&)
-// Precondition:
-// Parametre: Sortie& is
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a Equation_base::printOn(Sortie&)
+ *
+ * @param (Sortie& is) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Convection_Diffusion_std::printOn(Sortie& is) const
 {
   return Equation_base::printOn(is);
 }
 
 
-// Description:
-//    cf Equation_base::readOn(Entree&)
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: terme diffusif non specifie
-// Exception: terme convectif non specifie
-// Effets de bord:
-// Postcondition:
+/*! @brief cf Equation_base::readOn(Entree&)
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ * @throws terme diffusif non specifie
+ * @throws terme convectif non specifie
+ */
 Entree& Convection_Diffusion_std::readOn(Entree& is)
 {
   Equation_base::readOn(is);
@@ -92,44 +75,25 @@ int Convection_Diffusion_std::lire_motcle_non_standard(const Motcle& mot, Entree
     return Equation_base::lire_motcle_non_standard(mot,is);
   return 1;
 }
-// Description:
-//    Renvoie le nombre d'operateurs de l'equation:
-//    2 pour une equation de diffusion.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre d'operateurs de l'equation
-//    Contraintes: toujours egal a 2
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre d'operateurs de l'equation: 2 pour une equation de diffusion.
+ *
+ * @return (int) le nombre d'operateurs de l'equation
+ */
 int Convection_Diffusion_std::nombre_d_operateurs() const
 {
   return 2;
 }
 
-// Description:
-//    Renvoie l'operateur specifie par son index:
-//     renvoie terme_diffusif si i = 0
-//     renvoie terme_convectif si i = 1
-//     exit si i>1
-//    (version const)
-// Precondition:
-// Parametre: int i
-//    Signification: l'index de l'operateur a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: 0 <= i <= 1
-//    Acces: entree
-// Retour: Operateur&
-//    Signification: l'operateur specifie
-//    Contraintes: reference constante
-// Exception: l'equation n'a pas plus de 2 operateurs
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie l'operateur specifie par son index: renvoie terme_diffusif si i = 0
+ *
+ *      renvoie terme_convectif si i = 1
+ *      exit si i>1
+ *     (version const)
+ *
+ * @param (int i) l'index de l'operateur a renvoyer
+ * @return (Operateur&) l'operateur specifie
+ * @throws l'equation n'a pas plus de 2 operateurs
+ */
 const Operateur& Convection_Diffusion_std::operateur(int i) const
 {
   switch(i)
@@ -148,23 +112,15 @@ const Operateur& Convection_Diffusion_std::operateur(int i) const
   return terme_diffusif;
 }
 
-// Description:
-//    Renvoie l'operateur specifie par son index:
-//     renvoie terme_diffusif si i = 0
-//     renvoie terme_convectif si i = 1
-//     exit si i>1
-// Precondition:
-// Parametre: int i
-//    Signification: l'index de l'operateur a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: 0 <= i <= 1
-//    Acces: entree
-// Retour: Operateur&
-//    Signification: l'operateur specifie
-//    Contraintes:
-// Exception: l'equation n'a pas plus de 2 operateurs
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie l'operateur specifie par son index: renvoie terme_diffusif si i = 0
+ *
+ *      renvoie terme_convectif si i = 1
+ *      exit si i>1
+ *
+ * @param (int i) l'index de l'operateur a renvoyer
+ * @return (Operateur&) l'operateur specifie
+ * @throws l'equation n'a pas plus de 2 operateurs
+ */
 Operateur& Convection_Diffusion_std::operateur(int i)
 {
   switch(i)

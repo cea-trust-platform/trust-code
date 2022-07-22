@@ -16,11 +16,11 @@
 #ifndef Eval_Darcy_VEF_Face_included
 #define Eval_Darcy_VEF_Face_included
 
-////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION class Eval_Darcy_VEF_Face
-//
-////////////////////////////////////////////////////////////////////////////
+/*! @brief class Eval_Darcy_VEF_Face
+ *
+ *
+ *
+ */
 
 #include <Evaluateur_Source_VEF_Face.h>
 #include <Modele_Permeabilite.h>
@@ -68,8 +68,9 @@ inline Eval_Darcy_VEF_Face::Eval_Darcy_VEF_Face(const Eval_Darcy_VEF_Face& eval)
 {
 }
 
-// Description:
-// associe le champ de diffusivite
+/*! @brief associe le champ de diffusivite
+ *
+ */
 void Eval_Darcy_VEF_Face::associer(const Champ_Don& diffu)
 {
   int nb_faces_tot = la_zone.valeur().nb_faces_tot();

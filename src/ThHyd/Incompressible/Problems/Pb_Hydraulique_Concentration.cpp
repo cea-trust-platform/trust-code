@@ -21,88 +21,49 @@
 Implemente_instanciable(Pb_Hydraulique_Concentration,"Pb_Hydraulique_Concentration",Pb_Fluide_base);
 
 
-// Description:
-//    Simple appel a: Pb_Fluide_base::printOn(Sortie&)
-//    Ecrit le probleme sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a: Pb_Fluide_base::printOn(Sortie&) Ecrit le probleme sur un flot de sortie.
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Pb_Hydraulique_Concentration::printOn(Sortie& os) const
 {
   return Pb_Fluide_base::printOn(os);
 }
 
 
-// Description:
-//    Simple appel a: Pb_Fluide_base::readOn(Entree&)
-//    Lit le probleme a partir d'un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Pb_Fluide_base::readOn(Entree&) Lit le probleme a partir d'un flot d'entree.
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Pb_Hydraulique_Concentration::readOn(Entree& is)
 {
   return Pb_Fluide_base::readOn(is);
 }
 
-// Description:
-//    Renvoie le nombre d'equation,
-//    Renvoie 2 car il y a 2 equations a un probleme
-//    hydraulique avec transport:
-//      - l'equation de Navier Stokes
-//      - une equation de convection-diffusion (eventuellement vectorielle)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre d'equation
-//    Contraintes: toujours 2 car il y 2 equations au probleme
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre d'equation, Renvoie 2 car il y a 2 equations a un probleme
+ *
+ *     hydraulique avec transport:
+ *       - l'equation de Navier Stokes
+ *       - une equation de convection-diffusion (eventuellement vectorielle)
+ *
+ * @return (int) le nombre d'equation
+ */
 int Pb_Hydraulique_Concentration::nombre_d_equations() const
 {
   return 2;
 }
 
-// Description:
-//    Renvoie l'equation d'hydraulique de type Navier_Stokes_std si i=0
-//    Renvoie l'equation de convection-diffusion de type
-//    Convection_Diffusion_Concentration si i=1
-//    (l'equation de convection diffusion peut-etre vectorielle)
-//    (version const)
-// Precondition:
-// Parametre: int i
-//    Signification: l'index de l'equation a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: 0 <= i <= 1
-//    Acces:
-// Retour: Equation_base&
-//    Signification: l'equation correspondante a l'index
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie l'equation d'hydraulique de type Navier_Stokes_std si i=0 Renvoie l'equation de convection-diffusion de type
+ *
+ *     Convection_Diffusion_Concentration si i=1
+ *     (l'equation de convection diffusion peut-etre vectorielle)
+ *     (version const)
+ *
+ * @param (int i) l'index de l'equation a renvoyer
+ * @return (Equation_base&) l'equation correspondante a l'index
+ */
 const Equation_base& Pb_Hydraulique_Concentration::equation(int i) const
 {
   if ( !( i==0 || i==1 ) )
@@ -116,23 +77,14 @@ const Equation_base& Pb_Hydraulique_Concentration::equation(int i) const
     return eq_concentration;
 }
 
-// Description:
-//    Renvoie l'equation d'hydraulique de type Navier_Stokes_std si i=0
-//    Renvoie l'equation de convection-diffusion de type
-//    Convection_Diffusion_Concentration si i=1
-//    (l'equation de convection diffusion peut-etre vectorielle)
-// Precondition:
-// Parametre: int i
-//    Signification: l'index de l'equation a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: 0 <= i <= 1
-//    Acces:
-// Retour: Equation_base&
-//    Signification: l'equation correspondante a l'index
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie l'equation d'hydraulique de type Navier_Stokes_std si i=0 Renvoie l'equation de convection-diffusion de type
+ *
+ *     Convection_Diffusion_Concentration si i=1
+ *     (l'equation de convection diffusion peut-etre vectorielle)
+ *
+ * @param (int i) l'index de l'equation a renvoyer
+ * @return (Equation_base&) l'equation correspondante a l'index
+ */
 Equation_base& Pb_Hydraulique_Concentration::equation(int i)
 {
   if ( !( i==0 || i==1 ) )
@@ -147,26 +99,15 @@ Equation_base& Pb_Hydraulique_Concentration::equation(int i)
 }
 
 
-// Description:
-//    Associe un milieu au probleme,
-//    Si le milieu est de type
-//      - Fluide_Incompressible, il sera associe a l'equation de l'hydraulique
-//      - Constituant, il sera associe a l'equation de convection-diffusion
-//    Un autre type de milieu provoque une erreur
-// Precondition:
-// Parametre: Milieu_base& mil
-//    Signification: le milieu physique a associer au probleme
-//    Valeurs par defaut:
-//    Contraintes: doit etre de type fluide incompressible
-//                 ou de type constituant
-//                 reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: mauvais type de milieu physique
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe un milieu au probleme, Si le milieu est de type
+ *
+ *       - Fluide_Incompressible, il sera associe a l'equation de l'hydraulique
+ *       - Constituant, il sera associe a l'equation de convection-diffusion
+ *     Un autre type de milieu provoque une erreur
+ *
+ * @param (Milieu_base& mil) le milieu physique a associer au probleme
+ * @throws mauvais type de milieu physique
+ */
 void Pb_Hydraulique_Concentration::associer_milieu_base(const Milieu_base& mil)
 {
   if ( sub_type(Fluide_Incompressible,mil) )
@@ -182,24 +123,15 @@ void Pb_Hydraulique_Concentration::associer_milieu_base(const Milieu_base& mil)
 }
 
 
-// Description:
-//    Teste la compatibilite des equations de convection-diffusion
-//    et de l'hydraulique. Le test se fait sur les conditions
-//    aux limites discretisees de chaque equation.
-//    Appel la fonction de librairie hors classe:
-//      tester_compatibilite_hydr_concentration(const Zone_Cl_dis&,const Zone_Cl_dis&)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: code de retour propage
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Teste la compatibilite des equations de convection-diffusion et de l'hydraulique.
+ *
+ * Le test se fait sur les conditions
+ *     aux limites discretisees de chaque equation.
+ *     Appel la fonction de librairie hors classe:
+ *       tester_compatibilite_hydr_concentration(const Zone_Cl_dis&,const Zone_Cl_dis&)
+ *
+ * @return (int) code de retour propage
+ */
 int Pb_Hydraulique_Concentration::verifier()
 {
   const Zone_Cl_dis& zone_Cl_hydr = eq_hydraulique.zone_Cl_dis();

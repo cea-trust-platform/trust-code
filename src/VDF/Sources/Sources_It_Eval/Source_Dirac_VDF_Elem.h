@@ -25,8 +25,9 @@ class Zone_dis;
 class Zone_Cl_dis;
 
 declare_It_Sou_VDF_Elem(Eval_Dirac_VDF_Elem)
-// .DESCRIPTION class Source_Dirac_VDF_Elem
-//  Cette classe represente un  terme source de Dirac.
+/*! @brief class Source_Dirac_VDF_Elem Cette classe represente un  terme source de Dirac.
+ *
+ */
 class Source_Dirac_VDF_Elem : public Terme_Puissance_Thermique_VDF_base
 {
   Declare_instanciable_sans_constructeur(Source_Dirac_VDF_Elem);

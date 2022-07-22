@@ -18,10 +18,11 @@
 
 
 
-//
-// .DESCRIPTION class Zone_Cl_PolyMAC
-//  Cette classe porte les tableaux qui servent a mettre en oeuvre
-//  les condition aux limites dans la formulation PolyMAC
+/*! @brief class Zone_Cl_PolyMAC Cette classe porte les tableaux qui servent a mettre en oeuvre
+ *
+ *   les condition aux limites dans la formulation PolyMAC
+ *
+ */
 
 //
 // .SECTION voir aussi

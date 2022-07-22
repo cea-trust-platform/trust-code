@@ -21,9 +21,11 @@
 #include <ItSouVDFEl.h>
 
 declare_It_Sou_VDF_Elem(Eval_Echange_Himp_VDF_Elem)
-//.DESCRIPTION class Source_Echange_Th_VDF
-// Source volumique d'echange thermique avec un autre probleme de meme domaine
-//  dT/dt = h * (T'-T) / rho / Cp
+/*! @brief class Source_Echange_Th_VDF Source volumique d'echange thermique avec un autre probleme de meme domaine
+ *
+ *   dT/dt = h * (T'-T) / rho / Cp
+ *
+ */
 class Source_Echange_Th_VDF : public  Terme_Source_VDF_base
 {
   Declare_instanciable_sans_constructeur(Source_Echange_Th_VDF);

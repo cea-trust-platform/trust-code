@@ -21,15 +21,12 @@
 
 #include <Interprete_geometrique_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe VerifierCoin
-//     Interprete qui resoud un probleme:
-//      [DANS LE JEU DE DONNEES] VerifierCoin pb
-// .SECTION voir aussi
-//     Interprete Probleme
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe VerifierCoin Interprete qui resoud un probleme:
+ *
+ *       [DANS LE JEU DE DONNEES] VerifierCoin pb
+ *
+ * @sa Interprete Probleme
+ */
 class VerifierCoin : public Interprete_geometrique_base
 {
   Declare_instanciable(VerifierCoin);

@@ -24,17 +24,13 @@
 #include <Champ_Fonc_P1_isoP1Bulle.h>
 #include <Champ_P1_isoP1Bulle.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Traitement_particulier_NS_Pression_VEF
-//     Cette classe permet de faire les traitements particuliers
-//     pour les calculs de la pression
-//
-// .SECTION voir aussi
-//      Navier_Stokes, Traitement_particulier_base,
-//      Traitement_particulier_Pression
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Traitement_particulier_NS_Pression_VEF Cette classe permet de faire les traitements particuliers
+ *
+ *      pour les calculs de la pression
+ *
+ *
+ * @sa Navier_Stokes, Traitement_particulier_base,, Traitement_particulier_Pression
+ */
 class Traitement_particulier_NS_Pression_VEF : public Traitement_particulier_NS_Pression
 {
   Declare_instanciable_sans_constructeur(Traitement_particulier_NS_Pression_VEF);

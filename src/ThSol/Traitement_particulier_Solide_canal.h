@@ -21,13 +21,9 @@
 
 class Conduction;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Traitement_particulier_Solide_canal
-//
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Traitement_particulier_Solide_canal
+ *
+ */
 class Traitement_particulier_Solide_canal : public Traitement_particulier_Solide_base
 {
   Declare_base(Traitement_particulier_Solide_canal);

@@ -16,13 +16,13 @@
 #ifndef Terme_Source_inc_th_VDF_Face_included
 #define Terme_Source_inc_th_VDF_Face_included
 
-//
-// .DESCRIPTION class Terme_Source_inc_th_VDF_Face
-//  Cette classe permet de conserver le debit dans une simulation
-//  temporelle de inc
-//
-// .SECTION voir aussi
-//  Terme_Source_inc
+/*! @brief class Terme_Source_inc_th_VDF_Face Cette classe permet de conserver le debit dans une simulation
+ *
+ *   temporelle de inc
+ *
+ *
+ * @sa Terme_Source_inc
+ */
 
 #include <Terme_Source_inc_th.h>
 #include <TRUSTTabs_forward.h>

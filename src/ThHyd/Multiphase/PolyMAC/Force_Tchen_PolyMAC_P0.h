@@ -17,13 +17,12 @@
 #define Force_Tchen_PolyMAC_P0_included
 #include <Source_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Force_Tchen
-//      Force de Tchen dans un ecoulement multiphase
-//      Forme F_Tchen = alpha_v * rho_l * du_l/dt
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Force_Tchen Force de Tchen dans un ecoulement multiphase
+ *
+ *       Forme F_Tchen = alpha_v * rho_l * du_l/dt
+ *
+ *
+ */
 
 class Force_Tchen_PolyMAC_P0: public Source_base
 {

@@ -17,11 +17,9 @@
 #define Iterateur_Source_VEF_included
 
 
-//
-// .DESCRIPTION class Iterateur_Source_VEF
-//
-// .SECTION voir aussi
-//
+/*! @brief class Iterateur_Source_VEF
+ *
+ */
 #define It_Sou_VEF_Face(_TYPE_) name2(Iterateur_Source_VEF_Face, _TYPE_)
 #include <MItSouVEFFa.h>
 #include <Iterateur_Source_VEF_base.h>

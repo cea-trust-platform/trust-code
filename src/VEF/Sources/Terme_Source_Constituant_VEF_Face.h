@@ -25,12 +25,13 @@
 
 declare_It_Sou_VEF_Face(Eval_Source_C_VEF_Face)
 
-//.DESCRIPTION class Terme_Source_Constituant_VEF_Face
-//
-// Cette classe represente un terme source de l'equation de la concentration
-//
-//.SECTION voir aussi Terme_Source_Constituant, Terme_Source_VEF_base
-//
+/*! @brief class Terme_Source_Constituant_VEF_Face
+ *
+ *  Cette classe represente un terme source de l'equation de la concentration
+ *
+ *
+ * @sa Terme_Source_Constituant, Terme_Source_VEF_base
+ */
 class Terme_Source_Constituant_VEF_Face : public Terme_Source_Constituant,
   public Terme_Source_VEF_base
 {

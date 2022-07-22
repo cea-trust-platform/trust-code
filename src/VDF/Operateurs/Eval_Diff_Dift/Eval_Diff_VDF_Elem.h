@@ -22,9 +22,10 @@
 #include <Evaluateur_VDF.h>
 #include <Eval_VDF_Elem.h>
 
-// .DESCRIPTION class Eval_Diff_VDF_Elem
-// Evaluateur VDF pour la diffusion : Le champ diffuse est un Champ_P0_VDF
-// .SECTION voir aussi Eval_VDF_Elem, Evaluateur_VDF
+/*! @brief class Eval_Diff_VDF_Elem Evaluateur VDF pour la diffusion : Le champ diffuse est un Champ_P0_VDF
+ *
+ * @sa Eval_VDF_Elem, Evaluateur_VDF
+ */
 template <typename DERIVED_T>
 class Eval_Diff_VDF_Elem : public Eval_VDF_Elem, public Evaluateur_VDF
 {

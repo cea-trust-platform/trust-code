@@ -54,22 +54,14 @@ void Convection_Diffusion_Fluide_Dilatable_Proto::calculer_div_rho_u_impl
 
 }
 
-// Description:
-//     Renvoie la derivee en temps de l'inconnue de l'equation.
-//     Le calcul est le suivant:
-//         d(inconnue)/dt = M^{-1} * (sources - somme(Op_{i}(inconnue))) / rho
-// Precondition:
-// Parametre: DoubleTab& derivee
-//    Signification: le tableau des valeurs de la derivee en temps du champ inconnu
-//    Valeurs par defaut:
-//    Contraintes: ce parametre est remis a zero des l'entree de la methode
-//    Acces: sortie
-// Retour: DoubleTab&
-//    Signification: le tableau des valeurs de la derivee en temps du champ inconnu
-//    Contraintes:
-// Exception:
-// Effets de bord: des communications (si version parallele) sont generees pas cet appel
-// Postcondition:
+/*! @brief Renvoie la derivee en temps de l'inconnue de l'equation.
+ *
+ * Le calcul est le suivant:
+ *          d(inconnue)/dt = M^{-1} * (sources - somme(Op_{i}(inconnue))) / rho
+ *
+ * @param (DoubleTab& derivee) le tableau des valeurs de la derivee en temps du champ inconnu
+ * @return (DoubleTab&) le tableau des valeurs de la derivee en temps du champ inconnu
+ */
 DoubleTab& Convection_Diffusion_Fluide_Dilatable_Proto::derivee_en_temps_inco_sans_solveur_masse_impl
 (Convection_Diffusion_Fluide_Dilatable_base& eqn, DoubleTab& derivee, const bool is_expl)
 {

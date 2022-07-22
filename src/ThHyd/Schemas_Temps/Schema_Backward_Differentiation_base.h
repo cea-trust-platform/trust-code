@@ -23,13 +23,10 @@
 class Probleme_Couple;
 class Matrice_Base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Schema_Backward_Differentiation_base
-// .SECTION voir aussi
-//     Schema_Temps_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Schema_Backward_Differentiation_base
+ *
+ * @sa Schema_Temps_base
+ */
 class Schema_Backward_Differentiation_base: public Schema_Implicite_Multi_TimeStep_base
 {
 

@@ -17,15 +17,16 @@
 #define Op_Conv_Centre_EF_VEF_Face_included
 
 #include <Op_Conv_VEF_base.h>
-////
-// .DESCRIPTION class Op_Conv_Centre_EF_VEF_Face
-//
-//  Cette classe represente l'operateur de convection associe a une equation de
-//  transport d'un scalaire.
-//  La discretisation est VEF
-//  Le champ convecte est scalaire ou vecteur de type Champ_P1NC
-//  Le schema de convection est du type Centre
-//  On calcule le flux sur la surface a l aide des fonctions de forme
+/*! @brief class Op_Conv_Centre_EF_VEF_Face
+ *
+ *   Cette classe represente l'operateur de convection associe a une equation de
+ *   transport d'un scalaire.
+ *   La discretisation est VEF
+ *   Le champ convecte est scalaire ou vecteur de type Champ_P1NC
+ *   Le schema de convection est du type Centre
+ *   On calcule le flux sur la surface a l aide des fonctions de forme
+ *
+ */
 
 //
 // .SECTION voir aussi

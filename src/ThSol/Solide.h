@@ -18,14 +18,10 @@
 
 #include <Milieu_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Solide
-//    Cette classe represente un milieu solide et ses proprietes.
-// .SECTION voir aussi
-//    Milieu_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Solide Cette classe represente un milieu solide et ses proprietes.
+ *
+ * @sa Milieu_base
+ */
 class Solide : public Milieu_base
 {
   Declare_instanciable(Solide);

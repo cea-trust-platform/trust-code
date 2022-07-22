@@ -59,11 +59,13 @@ static const double coeff_penalisation = 1e9;
 
 
 
-// Description:
-// Projection du champ P1NC "cha" sur l'espace des champs P1.
-// Le resultat est stocke dans cha.ch_som() et renvoye (valeur de retour)
-// Voir note technique 2006/010 de Patrick Quemere "Nouvelle approche VEF pour la LES...".
-// Voir aussi "What is in TRUST" : Scales_Separation_P1_P1NC.
+/*! @brief Projection du champ P1NC "cha" sur l'espace des champs P1.
+ *
+ * Le resultat est stocke dans cha.ch_som() et renvoye (valeur de retour)
+ *  Voir note technique 2006/010 de Patrick Quemere "Nouvelle approche VEF pour la LES...".
+ *  Voir aussi "What is in TRUST" : Scales_Separation_P1_P1NC.
+ *
+ */
 DoubleTab& valeur_P1_L2(Champ_P1NC& cha, const Domaine& dom)
 {
   const Zone& mazone = dom.zone(0);

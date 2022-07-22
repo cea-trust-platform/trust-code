@@ -18,10 +18,12 @@
 #define Champ_front_tangentiel_VEF_included
 
 #include <Champ_front_tangentiel.h>
-//.DESCRIPTION  class Champ_front_tangentiel_VEF
-//
-// Classe derivee de Champ_front_base qui represente les
-// champs aux frontieres tangentiels :
+/*! @brief class Champ_front_tangentiel_VEF
+ *
+ *  Classe derivee de Champ_front_base qui represente les
+ *  champs aux frontieres tangentiels :
+ *
+ */
 
 //.SECTION voir aussi
 // Champ_front_base

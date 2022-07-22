@@ -20,15 +20,12 @@
 #include <Deriv.h>
 #include <Interface_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Interface
-//     Un objet Interface peut referencer n'importe quel objet
-//     derivant de Interface_base.
-// .SECTION voir aussi
-//     Interface_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Interface Un objet Interface peut referencer n'importe quel objet
+ *
+ *      derivant de Interface_base.
+ *
+ * @sa Interface_base
+ */
 
 class Interface_base;
 

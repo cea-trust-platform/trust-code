@@ -21,15 +21,11 @@
 
 #include <Fluide_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe List_Fluide_base
-//     Represente une liste d'Fluide_bases
-//
-// .SECTION voir aussi
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe List_Fluide_base Represente une liste d'Fluide_bases
+ *
+ *
+ *
+ */
 
 
 Declare_liste(Fluide_base);

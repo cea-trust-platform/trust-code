@@ -19,12 +19,13 @@
 
 
 
-//
-// .DESCRIPTION class Terme_Source_Solide_SWIFT_VDF
-//  Cette classe permet le forcage d'un champ moyen de temperature
-//  d'un solide issu d'un calcul SWIFT vers le champ moyen du calcul
-//  LES grossier correspondant.
-//
+/*! @brief class Terme_Source_Solide_SWIFT_VDF Cette classe permet le forcage d'un champ moyen de temperature
+ *
+ *   d'un solide issu d'un calcul SWIFT vers le champ moyen du calcul
+ *   LES grossier correspondant.
+ *
+ *
+ */
 #include <Source_base.h>
 #include <Ref_Probleme_base.h>
 #include <Ref_Conduction.h>

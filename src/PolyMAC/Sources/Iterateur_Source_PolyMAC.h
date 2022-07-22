@@ -17,11 +17,9 @@
 #define Iterateur_Source_PolyMAC_included
 
 
-//
-// .DESCRIPTION class Iterateur_Source_PolyMAC
-//
-// .SECTION voir aussi
-//
+/*! @brief class Iterateur_Source_PolyMAC
+ *
+ */
 #include <Iterateur_Source_PolyMAC_base.h>
 #include <ItSouPolyMACFa.h>
 

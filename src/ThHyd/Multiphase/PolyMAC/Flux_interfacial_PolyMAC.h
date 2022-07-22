@@ -19,16 +19,13 @@
 #include <Source_base.h>
 #include <Ref_Correlation.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Flux_interfacial_PolyMAC
-//    Cette classe implemente dans PolyMAC un operateur de frottement interfacial
-//    de la forme F_{kl} = - F_{lk} = - C_{kl} (u_k - u_l)
-//    le calcul de C_{kl} est realise par la hierarchie Coefficient_Flux_interfacial_base
-// .SECTION voir aussi
-//    Operateur_PolyMAC_base Operateur_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Flux_interfacial_PolyMAC Cette classe implemente dans PolyMAC un operateur de frottement interfacial
+ *
+ *     de la forme F_{kl} = - F_{lk} = - C_{kl} (u_k - u_l)
+ *     le calcul de C_{kl} est realise par la hierarchie Coefficient_Flux_interfacial_base
+ *
+ * @sa Operateur_PolyMAC_base Operateur_base
+ */
 class Flux_interfacial_PolyMAC: public Source_base
 {
   Declare_instanciable(Flux_interfacial_PolyMAC);

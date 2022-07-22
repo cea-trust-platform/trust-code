@@ -48,19 +48,10 @@ Entree& Champ_Elem_PolyMAC_P0::readOn(Entree& s)
   return s ;
 }
 
-// Description:
-//
-// Precondition:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: la_zone_PolyMAC_P0_P0.valeur()
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ * @return (la_zone_PolyMAC_P0_P0.valeur())
+ */
 const Zone_PolyMAC_P0& Champ_Elem_PolyMAC_P0::zone_PolyMAC_P0() const
 {
   return ref_cast(Zone_PolyMAC_P0, la_zone_VF.valeur());

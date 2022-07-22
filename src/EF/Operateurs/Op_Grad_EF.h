@@ -25,13 +25,14 @@
 #include <Ref_Zone_EF.h>
 #include <Champ_Don.h>
 
-//
-// .DESCRIPTION class Op_Grad_EF
-//
-//  Cette classe represente l'operateur de gradient
-//  La discretisation est EF
-//  On calcule le gradient d'un champ_P0_EF (la pression)
-//
+/*! @brief class Op_Grad_EF
+ *
+ *   Cette classe represente l'operateur de gradient
+ *   La discretisation est EF
+ *   On calcule le gradient d'un champ_P0_EF (la pression)
+ *
+ *
+ */
 
 
 //

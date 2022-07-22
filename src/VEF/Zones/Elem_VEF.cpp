@@ -52,8 +52,9 @@ Entree& Elem_VEF::readOn(Entree& s )
   return s ;
 }
 
-// Description:
-// determination du type
+/*! @brief determination du type
+ *
+ */
 void Elem_VEF::typer(Nom type_elem_geom)
 {
   if (Motcle(type_elem_geom)!="Segment")

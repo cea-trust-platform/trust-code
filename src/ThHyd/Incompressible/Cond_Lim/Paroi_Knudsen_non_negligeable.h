@@ -21,17 +21,12 @@
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Paroi_Knudsen_non_negligeable
-//    Impose un saut de vitesse de paroi dans une equation de type Navier_Stokes
-//    proportionnel au gradient de vitesse transverse.
-// .SECTION voir aussi
-//    Dirichlet
-//    Objet compatible avec des equations du domaine de l'Hydraulique
-//    ou indetermine. (voir compatible_avec_eqn(const Equation_base&) const)
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Paroi_Knudsen_non_negligeable Impose un saut de vitesse de paroi dans une equation de type Navier_Stokes
+ *
+ *     proportionnel au gradient de vitesse transverse.
+ *
+ * @sa Dirichlet, Objet compatible avec des equations du domaine de l'Hydraulique, ou indetermine. (voir compatible_avec_eqn(const Equation_base&) const)
+ */
 class Paroi_Knudsen_non_negligeable : public Dirichlet_paroi_defilante
 {
 

@@ -25,30 +25,15 @@ class Equation_base;
 class Champ_Don;
 class Convection_Diffusion_Temperature;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Discret_Thyd
-//    Cette classe est la classe de base representant une discretisation
-//    spatiale appliquee aux problemes de thermo-hydrauliques.
-//    Les methodes virtuelles pures sont a implementer dans les classes
-//    derivees pour typer et discretiser les champs portes par les
-//    equations liees a la discretisation.
-// .SECTION voir aussi
-//    Discret_Thermique
-//    Classe abstraite
-//    Methodes abstraites:
-//      void vitesse(const Schema_Temps_base&, Zone_dis&, Champ_Inc&) const
-//      void pression(const Schema_Temps_base&, Zone_dis&, Champ_Inc&) const
-//      void concentration(const Schema_Temps_base&, Zone_dis&, Champ_Inc&,
-//                         int =1) const
-//      void proprietes_physiques_Fluide_base(Zone_dis& ,
-//                         Fluide_base&, const Champ_Inc& ) const
-//      void proprietes_physiques_fluide_Ostwald(Zone_dis& ,Fluide_Ostwald&,
-//                                                 const Navier_Stokes_std& ,
-//                                                   const Champ_Inc& ) const ;
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Discret_Thyd Cette classe est la classe de base representant une discretisation
+ *
+ *     spatiale appliquee aux problemes de thermo-hydrauliques.
+ *     Les methodes virtuelles pures sont a implementer dans les classes
+ *     derivees pour typer et discretiser les champs portes par les
+ *     equations liees a la discretisation.
+ *
+ * @sa Discret_Thermique, Classe abstraite, Methodes abstraites:, void vitesse(const Schema_Temps_base&, Zone_dis&, Champ_Inc&) const, void pression(const Schema_Temps_base&, Zone_dis&, Champ_Inc&) const, void concentration(const Schema_Temps_base&, Zone_dis&, Champ_Inc&,, int =1) const, void proprietes_physiques_Fluide_base(Zone_dis& ,, Fluide_base&, const Champ_Inc& ) const, void proprietes_physiques_fluide_Ostwald(Zone_dis& ,Fluide_Ostwald&,, const Navier_Stokes_std& ,, const Champ_Inc& ) const ;
+ */
 class Discret_Thyd : public Discret_Thermique
 {
   Declare_base(Discret_Thyd);

@@ -21,10 +21,11 @@
 #include <Ref_Zone_Cl_PolyMAC.h>
 
 class Convection_Diffusion_std;
-//
-// .DESCRIPTION class Terme_Boussinesq_scalaire_PolyMAC_Face
-//
-// Terme Source de Boussinesq pour une dicretisation PolyMAC
+/*! @brief class Terme_Boussinesq_scalaire_PolyMAC_Face
+ *
+ *  Terme Source de Boussinesq pour une dicretisation PolyMAC
+ *
+ */
 
 class Terme_Boussinesq_PolyMAC_Face : public Terme_Boussinesq_base
 {

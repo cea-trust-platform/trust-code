@@ -34,20 +34,11 @@ Implemente_instanciable_sans_constructeur(Fluide_base,"Fluide_base",Milieu_base)
 
 Fluide_base::Fluide_base() { }
 
-// Description:
-//    Ecrit les proprietes du fluide sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit les proprietes du fluide sur un flot de sortie.
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Fluide_base::printOn(Sortie& os) const
 {
   os << "{" << finl;
@@ -62,32 +53,24 @@ Sortie& Fluide_base::printOn(Sortie& os) const
 }
 
 
-// Description:
-//   Lit les caracteristiques du fluide a partir d'un flot
-//   d'entree.
-//   Format:
-//     Fluide_base
-//     {
-//      Mu type_champ bloc de lecture de champ
-//      Rho Champ_Uniforme 1 vrel
-//      [Cp Champ_Uniforme 1 vrel]
-//      [Lambda type_champ bloc de lecture de champ]
-//      [Beta_th type_champ bloc de lecture de champ]
-//      [Beta_co type_champ bloc de lecture de champ]
-//     }
-// cf Milieu_base::readOn
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: accolade ouvrante attendue
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit les caracteristiques du fluide a partir d'un flot d'entree.
+ *
+ *    Format:
+ *      Fluide_base
+ *      {
+ *       Mu type_champ bloc de lecture de champ
+ *       Rho Champ_Uniforme 1 vrel
+ *       [Cp Champ_Uniforme 1 vrel]
+ *       [Lambda type_champ bloc de lecture de champ]
+ *       [Beta_th type_champ bloc de lecture de champ]
+ *       [Beta_co type_champ bloc de lecture de champ]
+ *      }
+ *  cf Milieu_base::readOn
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ * @throws accolade ouvrante attendue
+ */
 Entree& Fluide_base::readOn(Entree& is)
 {
   Milieu_base::readOn(is);
@@ -160,27 +143,17 @@ void Fluide_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
 
   Milieu_base::discretiser(pb,dis);
 }
-// Description:
-//    Verifie que les champs lus l'ont ete correctement.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: la masse volumique (rho) n'est pas strictement positive
-// Exception: la masse volumique (rho) n'est pas de type Champ_Uniforme
-// Exception: la viscosite (mu) n'est pas strictement positive
-// Exception: l'une des proprietes (rho ou mu) du fluide n'a pas ete definie
-// Exception: la capacite calorifique (Cp) n'est pas strictement positive
-// Exception: la capacite calorifique (Cp) n'est pas de type Champ_Uniforme
-// Exception: la conductivite (lambda) n'est pas strictement positive
-// Exception: toutes les proprietes du fluide anisotherme n'ont pas ete definies
-// Effets de bord:
-// Postcondition:
+/*! @brief Verifie que les champs lus l'ont ete correctement.
+ *
+ * @throws la masse volumique (rho) n'est pas strictement positive
+ * @throws la masse volumique (rho) n'est pas de type Champ_Uniforme
+ * @throws la viscosite (mu) n'est pas strictement positive
+ * @throws l'une des proprietes (rho ou mu) du fluide n'a pas ete definie
+ * @throws la capacite calorifique (Cp) n'est pas strictement positive
+ * @throws la capacite calorifique (Cp) n'est pas de type Champ_Uniforme
+ * @throws la conductivite (lambda) n'est pas strictement positive
+ * @throws toutes les proprietes du fluide anisotherme n'ont pas ete definies
+ */
 void Fluide_base::verifier_coherence_champs(int& err,Nom& msg)
 {
   msg="";
@@ -281,23 +254,12 @@ void Fluide_base::verifier_coherence_champs(int& err,Nom& msg)
 }
 
 
-// Description:
-//    Si l'objet reference par nu et du type Champ_Uniforme
-//     type nu en "Champ_Uniforme" et le remplit
-//     avec mu(0,0)/rho(0,0).
-//    Sinon n efait rien.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Si l'objet reference par nu et du type Champ_Uniforme type nu en "Champ_Uniforme" et le remplit
+ *
+ *      avec mu(0,0)/rho(0,0).
+ *     Sinon n efait rien.
+ *
+ */
 void Fluide_base::creer_nu()
 {
   assert(mu.non_nul());
@@ -332,24 +294,14 @@ bool Fluide_base::initTimeStep(double dt)
   return true;
 }
 
-// Description:
-//    Effectue une mise a jour en temps du milieu,
-//    et donc de ses parametres caracteristiques.
-//    Les champs uniformes sont recalcules pour le
-//    nouveau temps specifie, les autres sont mis a
-//    par un appel a CLASSE_DU_CHAMP::mettre_a_jour(double temps).
-// Precondition:
-// Parametre: double temps
-//    Signification: le temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Effectue une mise a jour en temps du milieu, et donc de ses parametres caracteristiques.
+ *
+ *     Les champs uniformes sont recalcules pour le
+ *     nouveau temps specifie, les autres sont mis a
+ *     par un appel a CLASSE_DU_CHAMP::mettre_a_jour(double temps).
+ *
+ * @param (double temps) le temps de mise a jour
+ */
 void Fluide_base::mettre_a_jour(double temps)
 {
   Milieu_base::mettre_a_jour(temps);
@@ -389,20 +341,9 @@ void Fluide_base::mettre_a_jour(double temps)
 }
 
 
-// Description:
-//    Initialise les parametres du fluide.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: les parametres du fluide sont initialises
+/*! @brief Initialise les parametres du fluide.
+ *
+ */
 int Fluide_base::initialiser(const double temps)
 {
   Cerr << "Fluide_base::initialiser()" << finl;

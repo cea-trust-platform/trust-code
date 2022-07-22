@@ -23,9 +23,9 @@
 #include <Ref_Zone_Cl_VDF.h>
 class Probleme_base;
 
-//
-// .DESCRIPTION class Terme_Source_Qdm_VDF_Face
-//
+/*! @brief class Terme_Source_Qdm_VDF_Face
+ *
+ */
 
 //
 // .SECTION voir aussi Source_base

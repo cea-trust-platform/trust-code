@@ -172,20 +172,10 @@ void Fluide_Dilatable_base::warn_syntax_Sutherland()
   Process::exit();
 }
 
-// Description:
-//    Verifie que les champs lus l'ont ete correctement.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: l'une des proprietes (rho mu Cp ou lambda) du fluide n'a pas ete definie
-// Effets de bord:
-// Postcondition:
+/*! @brief Verifie que les champs lus l'ont ete correctement.
+ *
+ * @throws l'une des proprietes (rho mu Cp ou lambda) du fluide n'a pas ete definie
+ */
 void Fluide_Dilatable_base::verifier_coherence_champs(int& err,Nom& msg)
 {
   msg="";
@@ -227,20 +217,10 @@ void Fluide_Dilatable_base::verifier_coherence_champs(int& err,Nom& msg)
   Milieu_base::verifier_coherence_champs(err,msg);
 }
 
-// Description:
-//    Complete le fluide avec un Cp constant
-// Precondition:
-// Parametre: double Cp
-//    Signification: le cp du fluide
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Complete le fluide avec un Cp constant
+ *
+ * @param (double Cp) le cp du fluide
+ */
 void Fluide_Dilatable_base::set_Cp(double Cp_)
 {
   Cp.typer("Champ_Uniforme");
@@ -269,39 +249,17 @@ void Fluide_Dilatable_base::update_rho_cp(double temps)
     tab_multiply_any_shape(rho_cp,Cp.valeurs());
 }
 
-// Description:
-//    Renvoie le tableau des valeurs de le temperature
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le tableau des valeurs de le temperature
+ *
+ */
 const DoubleTab& Fluide_Dilatable_base::temperature() const
 {
   return ch_temperature().valeurs();
 }
 
-// Description:
-//    Renvoie le champ de le temperature
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le champ de le temperature
+ *
+ */
 const Champ_Don& Fluide_Dilatable_base::ch_temperature() const
 {
   return loi_etat_->ch_temperature();
@@ -312,20 +270,9 @@ Champ_Don& Fluide_Dilatable_base::ch_temperature()
   return loi_etat_->ch_temperature();
 }
 
-// Description:
-//    Prepare le pas de temps
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Prepare le pas de temps
+ *
+ */
 void Fluide_Dilatable_base::preparer_pas_temps()
 {
   loi_etat_->mettre_a_jour(le_probleme_->schema_temps().temps_courant());
@@ -395,20 +342,9 @@ void Fluide_Dilatable_base::creer_champs_non_lus()
     }
 }
 
-// Description:
-//    Initialise les parametres du fluide.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: les parametres du fluide sont initialises
+/*! @brief Initialise les parametres du fluide.
+ *
+ */
 int Fluide_Dilatable_base::initialiser(const double temps)
 {
   Cerr << "Fluide_Dilatable_base::initialiser()" << finl;
@@ -444,20 +380,9 @@ void Fluide_Dilatable_base::initialiser_radiatives(const double temps)
     }
 }
 
-// Description:
-//    Calcule la pression totale : pression thermodynamique + pression hydrodynamique
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la pression totale : pression thermodynamique + pression hydrodynamique
+ *
+ */
 void Fluide_Dilatable_base::calculer_pression_tot()
 {
   DoubleTab& tab_Ptot = pression_tot_.valeurs();
@@ -515,20 +440,9 @@ void Fluide_Dilatable_base::mettre_a_jour(double temps)
   write_mean_edo(temps); // si besoin (i.e. QC)
 }
 
-// Description:
-//    Prepare le fluide au calcul.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Prepare le fluide au calcul.
+ *
+ */
 void Fluide_Dilatable_base::preparer_calcul()
 {
   Cerr << "Fluide_Dilatable_base::preparer_calcul()" << finl;
@@ -545,20 +459,10 @@ void Fluide_Dilatable_base::update_pressure_fields(double temps)
   pression_tot_.mettre_a_jour(temps);
 }
 
-// Description:
-//    Complete le fluide avec les champs inconnus associes au probleme
-// Precondition:
-// Parametre: Pb_Thermohydraulique& pb
-//    Signification: le probleme a resoudre
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Complete le fluide avec les champs inconnus associes au probleme
+ *
+ * @param (Pb_Thermohydraulique& pb) le probleme a resoudre
+ */
 void Fluide_Dilatable_base::completer(const Probleme_base& pb)
 {
   le_probleme_ = pb;

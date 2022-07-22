@@ -21,16 +21,13 @@
 #include <Ref_Zone_Cl_dis.h>
 class Fluide_Quasi_Compressible;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe EDO_Pression_th_VEF
-//     Cette classe represente l'EDO sur la pression associee au schema de
-//     de calcul pour les fluides faiblement compressibles, et relatif a
-//     discretisation de type VEF.
-// .SECTION voir aussi
-//     Fluide_Quasi_Compressible EDO_Pression_th_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe EDO_Pression_th_VEF Cette classe represente l'EDO sur la pression associee au schema de
+ *
+ *      de calcul pour les fluides faiblement compressibles, et relatif a
+ *      discretisation de type VEF.
+ *
+ * @sa Fluide_Quasi_Compressible EDO_Pression_th_base
+ */
 
 class EDO_Pression_th_VEF: public EDO_Pression_th_base
 {

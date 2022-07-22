@@ -25,19 +25,16 @@ class Probleme_base;
 
 Declare_deriv(Turbulence_paroi_scal_base);
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Turbulence_paroi_scal
-//    Classe generique de la hierarchie des turbulences au niveau de la
-//    paroi, un objet Turbulence_paroi peut referencer n'importe quel
-//    objet derivant Turbulence_paroi_base.
-//    La plupart des methodes appellent les methodes de l'objet Probleme
-//    sous-jacent via la methode valeur() declaree grace a la macro
-//Declare_deriv().;
-// .SECTION voir aussi
-//    Turbulence_paroi_scal_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Turbulence_paroi_scal Classe generique de la hierarchie des turbulences au niveau de la
+ *
+ *     paroi, un objet Turbulence_paroi peut referencer n'importe quel
+ *     objet derivant Turbulence_paroi_base.
+ *     La plupart des methodes appellent les methodes de l'objet Probleme
+ *     sous-jacent via la methode valeur() declaree grace a la macro
+ * Declare_deriv().;
+ *
+ * @sa Turbulence_paroi_scal_base
+ */
 class Turbulence_paroi_scal : public DERIV(Turbulence_paroi_scal_base)
 {
 
@@ -61,138 +58,73 @@ protected:
 };
 
 
-// Description:
-//    Operateur d'affectation d'un objet Turbulence_paroi_scal_base
-//    dans un objet Turbulence_paroi_scal.
-// Precondition:
-// Parametre: Turbulence_paroi_scal_base& paroi_base
-//    Signification: la partie droite de l'affectation
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: Turbulence_paroi_scal&
-//    Signification: le resultat de l'affectation (*this)
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Operateur d'affectation d'un objet Turbulence_paroi_scal_base dans un objet Turbulence_paroi_scal.
+ *
+ * @param (Turbulence_paroi_scal_base& paroi_base) la partie droite de l'affectation
+ * @return (Turbulence_paroi_scal&) le resultat de l'affectation (*this)
+ */
 inline Turbulence_paroi_scal& Turbulence_paroi_scal::operator=(const Turbulence_paroi_scal_base& paroi_base)
 {
   DERIV(Turbulence_paroi_scal_base)::operator=(paroi_base);
   return *this;
 }
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Imprime le nusselt de la loi de paroi
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification: code de retour propage
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Imprime le nusselt de la loi de paroi
+ *
+ * @return code de retour propage
+ */
 inline void Turbulence_paroi_scal::imprimer_nusselt(Sortie& os) const
 {
   valeur().imprimer_nusselt(os);
 }
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Initialise les lois de parois.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: code de retour propage
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Initialise les lois de parois.
+ *
+ * @return (int) code de retour propage
+ */
 inline int Turbulence_paroi_scal::init_lois_paroi()
 {
   return valeur().init_lois_paroi();
 }
 
-// Description:
-//    Appel a l'objet sous-jacent.
-// Precondition:
-// Parametre: Champ_Fonc& ch
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: code de retour propage
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * @param (Champ_Fonc& ch)
+ * @return (int) code de retour propage
+ */
 inline int Turbulence_paroi_scal::calculer_scal(Champ_Fonc& ch)
 {
   return valeur().calculer_scal(ch);
 }
 
-// Description:
-//    Appel a l'objet sous-jacent.
-// Precondition:
-// Parametre: Champ_Fonc_base& ch
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: code de retour propage
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * @param (Champ_Fonc_base& ch)
+ * @return (int) code de retour propage
+ */
 inline int Turbulence_paroi_scal::calculer_scal(Champ_Fonc_base& ch)
 {
   return valeur().calculer_scal(ch);
 }
 
-// Description:
-//    Appel a l'objet sous-jacent.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: return size of tabular containing equivalent distances associated to all boundaries, so it is equivalent to number of boundaries
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * @return (int) return size of tabular containing equivalent distances associated to all boundaries, so it is equivalent to number of boundaries
+ */
 inline int Turbulence_paroi_scal::tab_equivalent_distance_size()
 {
   return valeur().tab_equivalent_distance_size();
 }
 
-// Description:
-//    Appel a l'objet sous-jacent.
-// Precondition:
-// Parametre: boundary index
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Doublevect
-//    Signification: return equivalent distances associated to boundary index
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * @param (boundary index)
+ * @return (Doublevect) return equivalent distances associated to boundary index
+ */
 inline const DoubleVect& Turbulence_paroi_scal::tab_equivalent_distance(int boundary_index) const
 {
   return valeur().tab_equivalent_distance(boundary_index);

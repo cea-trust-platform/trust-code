@@ -117,22 +117,15 @@ int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::sauvegarder(Sortie& os) 
   return bytes;
 }
 
-// Description:
-//     Effectue une reprise a partir d'un flot d'entree.
-//     Appelle Equation_base::reprendre()
-//     et reprend l'inconnue de la chaleur et la pression thermodynamique
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception: la reprise a echoue, identificateur de la pression non trouve
-// Effets de bord:
-// Postcondition:
+/*! @brief Effectue une reprise a partir d'un flot d'entree.
+ *
+ * Appelle Equation_base::reprendre()
+ *      et reprend l'inconnue de la chaleur et la pression thermodynamique
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (int) renvoie toujours 1
+ * @throws la reprise a echoue, identificateur de la pression non trouve
+ */
 int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::reprendre(Entree& is)
 {
   if (le_fluide->type_fluide() != "Gaz_Parfait") l_inco_ch->nommer("enthalpie");
@@ -154,8 +147,11 @@ int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::preparer_calcul()
   return 1;
 }
 
-// Description:
-// remplissage de la zone cl modifiee avec 1 partout au bord...
+/*! @brief remplissage de la zone cl modifiee avec 1 partout au bord.
+ *
+ * ..
+ *
+ */
 int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::remplir_cl_modifiee()
 {
   zcl_modif_=(zone_Cl_dis());
@@ -174,21 +170,12 @@ int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::remplir_cl_modifiee()
   return 1;
 }
 
-// Description:
-//    Renvoie le nom du domaine d'application de l'equation.
-//    Ici "Thermique".
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Motcle&
-//    Signification: le nom du domaine d'application de l'equation
-//    Contraintes: toujours egal a "Thermique"
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nom du domaine d'application de l'equation.
+ *
+ * Ici "Thermique".
+ *
+ * @return (Motcle&) le nom du domaine d'application de l'equation
+ */
 const Motcle& Convection_Diffusion_Chaleur_Fluide_Dilatable_base::domaine_application() const
 {
   static Motcle domaine = "Thermique_H";

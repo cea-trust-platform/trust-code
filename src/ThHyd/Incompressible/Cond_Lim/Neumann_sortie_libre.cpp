@@ -21,43 +21,27 @@
 Implemente_instanciable(Neumann_sortie_libre,"Frontiere_ouverte",Neumann_val_ext);
 
 
-// Description:
-//    Ecrit le type de l'objet sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit le type de l'objet sur un flot de sortie.
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Neumann_sortie_libre::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << "\n";
 }
 
-// Description:
-//    Type le_champ_front en "Champ_front_uniforme".
-//    Lit les valeurs du champ exterieur si les conditions
-//    aux limites sont specifiees: "T_ext", "C_ext", "Y_ext", "K_Eps_ext" ou "F_M_ext"
-//    Produit une erreur sinon.
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree& s
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: type de champ exterieur non reconnu,
-//            les types reconnus sont: "T_ext", "C_ext", "Y_ext", "K_Eps_ext" ou "F_M_ext"
-// Effets de bord:
-// Postcondition:
+/*! @brief Type le_champ_front en "Champ_front_uniforme".
+ *
+ * Lit les valeurs du champ exterieur si les conditions
+ *     aux limites sont specifiees: "T_ext", "C_ext", "Y_ext", "K_Eps_ext" ou "F_M_ext"
+ *     Produit une erreur sinon.
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree& s) le flot d'entree modifie
+ * @throws type de champ exterieur non reconnu,
+ * les types reconnus sont: "T_ext", "C_ext", "Y_ext", "K_Eps_ext" ou "F_M_ext"
+ */
 Entree& Neumann_sortie_libre::readOn(Entree& s )
 {
   //   le_champ_front.typer("Champ_front_uniforme");
@@ -118,21 +102,12 @@ void Neumann_sortie_libre::verifie_ch_init_nb_comp() const
     }
 }
 
-// Description:
-//    Renvoie la valeur de la i-eme composante
-//    du champ impose a l'exterieur de la frontiere.
-// Precondition:
-// Parametre: int i
-//    Signification: indice suivant la premiere dimension du champ
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: double
-//    Signification: la valeur imposee sur la composante du champ specifiee
-//    Contraintes:
-// Exception: deuxieme dimension du champ de frontiere superieur a 1
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la valeur de la i-eme composante du champ impose a l'exterieur de la frontiere.
+ *
+ * @param (int i) indice suivant la premiere dimension du champ
+ * @return (double) la valeur imposee sur la composante du champ specifiee
+ * @throws deuxieme dimension du champ de frontiere superieur a 1
+ */
 double Neumann_sortie_libre::val_ext(int i) const
 {
   if (le_champ_ext.valeurs().size()==1)
@@ -164,26 +139,12 @@ void Neumann_sortie_libre::associer_fr_dis_base(const Frontiere_dis_base& fr)
   modifier_val_imp = 0;
 }
 
-// Description:
-//    Renvoie la valeur de la (i,j)-eme composante
-//    du champ impose a l'exterieur de la frontiere.
-// Precondition:
-// Parametre: int i
-//    Signification: indice suivant la premiere dimension du champ
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Parametre: int j
-//    Signification: indice suivant la deuxieme dimension du champ
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: double
-//    Signification: la valeur imposee sur la composante du champ specifiee
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la valeur de la (i,j)-eme composante du champ impose a l'exterieur de la frontiere.
+ *
+ * @param (int i) indice suivant la premiere dimension du champ
+ * @param (int j) indice suivant la deuxieme dimension du champ
+ * @return (double) la valeur imposee sur la composante du champ specifiee
+ */
 double Neumann_sortie_libre::val_ext(int i,int j) const
 {
   if (le_champ_ext.valeurs().dimension(0)==1)
@@ -192,26 +153,15 @@ double Neumann_sortie_libre::val_ext(int i,int j) const
     return le_champ_ext(i,j);
 }
 
-// Description:
-//    Renvoie un booleen indiquant la compatibilite des conditions
-//    aux limites avec l'equation specifiee en parametre.
-//    Des CL de type Neumann_sortie_libre sont compatibles
-//    avec une equation dont le domaine est la Thermique, le Transport_Keps,
-//    la Concentration, la Fraction_massique ou bien indetermine.
-// Precondition:
-// Parametre: Equation_base& eqn
-//    Signification: l'equation avec laquelle il faut verifier la compatibilite
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: int
-//    Signification: valeur booleenne,
-//                   1 si les CL sont compatibles avec l'equation
-//                   0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie un booleen indiquant la compatibilite des conditions aux limites avec l'equation specifiee en parametre.
+ *
+ *     Des CL de type Neumann_sortie_libre sont compatibles
+ *     avec une equation dont le domaine est la Thermique, le Transport_Keps,
+ *     la Concentration, la Fraction_massique ou bien indetermine.
+ *
+ * @param (Equation_base& eqn) l'equation avec laquelle il faut verifier la compatibilite
+ * @return (int) valeur booleenne, 1 si les CL sont compatibles avec l'equation 0 sinon
+ */
 int Neumann_sortie_libre::compatible_avec_eqn(const Equation_base& eqn) const
 {
   Motcle dom_app=eqn.domaine_application();

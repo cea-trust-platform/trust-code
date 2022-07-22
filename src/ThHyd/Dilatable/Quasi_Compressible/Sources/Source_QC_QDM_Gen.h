@@ -19,14 +19,13 @@
 #include <Source_base.h>
 #include <Source.h>
 
-//////////////////////////////////////////////////////////////////////////////
-// .DESCRIPTION
-//
-//  Classe Source_QC_QDM_Gen
-//  Ces classes filles permettent  de calculer une source pour le QC
-//  en faisant rho * source_incompressible
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Source_QC_QDM_Gen Ces classes filles permettent  de calculer une source pour le QC
+ *
+ *   en faisant rho * source_incompressible
+ *
+ *
+ *
+ */
 
 class Source_QC_QDM_Gen :  public Source_base
 {

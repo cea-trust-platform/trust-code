@@ -23,9 +23,9 @@
 #include <Ref_Zone_Cl_EF.h>
 class Probleme_base;
 
-//
-// .DESCRIPTION class Source_Qdm_EF
-//
+/*! @brief class Source_Qdm_EF
+ *
+ */
 
 //
 // .SECTION voir aussi Source_base

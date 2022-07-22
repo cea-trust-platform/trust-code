@@ -21,27 +21,24 @@
 #include <Ref_Champ_Inc.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe  Neumann_sortie_libre
-//    Cette classe represente une frontiere ouverte sans vitesse imposee
-//    Pour les equations de Navier_Stokes on impose necessairement
-//    la pression sur une telle frontiere
-//    Pour traiter l'hydraulique, on derive donc de la classe
-//    Neumann_sortie_libre la classe Sortie_libre_pression_imposee
-//    Les conditions aux limites de type Neumann_sortie_libre ou des
-//    types derives se traduisent par des flux diffusifs nuls.
-//    En revanche, le traitement des flux convectifs impose de connaitre
-//    le champ convecte a l'exterieur de la frontiere en cas de re-entree
-//    de fluide. C'est pourquoi la classe porte un Champ_front
-//    (membre le_champ_ext).
-//    Dans les operateurs de calcul, les conditions aux limites
-//    de type Neumann_sortie_libre et des types derives seront traites
-//    de maniere identique
-// .SECTION voir aussi
-//     Neumann Sortie_libre_pression_imposee
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe  Neumann_sortie_libre Cette classe represente une frontiere ouverte sans vitesse imposee
+ *
+ *     Pour les equations de Navier_Stokes on impose necessairement
+ *     la pression sur une telle frontiere
+ *     Pour traiter l'hydraulique, on derive donc de la classe
+ *     Neumann_sortie_libre la classe Sortie_libre_pression_imposee
+ *     Les conditions aux limites de type Neumann_sortie_libre ou des
+ *     types derives se traduisent par des flux diffusifs nuls.
+ *     En revanche, le traitement des flux convectifs impose de connaitre
+ *     le champ convecte a l'exterieur de la frontiere en cas de re-entree
+ *     de fluide. C'est pourquoi la classe porte un Champ_front
+ *     (membre le_champ_ext).
+ *     Dans les operateurs de calcul, les conditions aux limites
+ *     de type Neumann_sortie_libre et des types derives seront traites
+ *     de maniere identique
+ *
+ * @sa Neumann Sortie_libre_pression_imposee
+ */
 class Sortie_libre_Text_H_ext : public Neumann
 {
 

@@ -19,17 +19,14 @@
 #include <Source_base.h>
 #include <Correlation.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Dispersion_bulles_PolyMAC_P0
-//    Cette classe implemente dans PolyMAC_P0 un operateur de dispersion turbulente
-//      F_{kl} = - F_{lk} = - C_{kl} grad(alpha{k}) + C_{lk} grad(alpha{l}) ou la phase
-//      l est la phase liquide porteuse et k != 0 une phase quelconque
-//    le calcul de C_{n_l, k} est realise par la hierarchie Dispersion_turbulente_base
-// .SECTION voir aussi
-//    Operateur_PolyMAC_P0_base Operateur_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Dispersion_bulles_PolyMAC_P0 Cette classe implemente dans PolyMAC_P0 un operateur de dispersion turbulente
+ *
+ *       F_{kl} = - F_{lk} = - C_{kl} grad(alpha{k}) + C_{lk} grad(alpha{l}) ou la phase
+ *       l est la phase liquide porteuse et k != 0 une phase quelconque
+ *     le calcul de C_{n_l, k} est realise par la hierarchie Dispersion_turbulente_base
+ *
+ * @sa Operateur_PolyMAC_P0_base Operateur_base
+ */
 class Dispersion_bulles_PolyMAC_P0: public Source_base
 {
   Declare_instanciable(Dispersion_bulles_PolyMAC_P0);

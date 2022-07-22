@@ -17,10 +17,11 @@
 #define Modele_turbulence_scal_included
 
 
-//
-// .DESCRIPTION class Modele_turbulence_scal
-// Cette classe represente n'importe quelle classe
-// derivee de Modele_turbulence_scal_base
+/*! @brief class Modele_turbulence_scal Cette classe represente n'importe quelle classe
+ *
+ *  derivee de Modele_turbulence_scal_base
+ *
+ */
 
 #include <Modele_turbulence_scal_base.h>
 
@@ -111,20 +112,9 @@ inline int Modele_turbulence_scal::reprendre(Entree& is)
   return valeur().reprendre(is);
 }
 
-// Description:
-//    Appel a l'objet sous-jacent
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent
+ *
+ */
 inline void Modele_turbulence_scal::imprimer(Sortie& os) const
 {
   valeur().imprimer(os);

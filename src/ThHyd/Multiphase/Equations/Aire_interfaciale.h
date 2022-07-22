@@ -20,14 +20,10 @@
 #include <Fluide_base.h>
 #include <Ref_Fluide_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Aire_interfaciale
-//     Equation de transport de l'aire interfaciale
-// .SECTION voir aussi
-//     Conv_Diffusion_std Convection_Diffusion_Temperature
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Aire_interfaciale Equation de transport de l'aire interfaciale
+ *
+ * @sa Conv_Diffusion_std Convection_Diffusion_Temperature
+ */
 class Aire_interfaciale : public Convection_Diffusion_std
 {
   Declare_instanciable_sans_constructeur(Aire_interfaciale);

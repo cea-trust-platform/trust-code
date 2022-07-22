@@ -25,9 +25,9 @@
 
 class Probleme_base;
 
-//
-// .DESCRIPTION class Terme_Puissance_Thermique_Echange_Impose_P0_VDF
-//
+/*! @brief class Terme_Puissance_Thermique_Echange_Impose_P0_VDF
+ *
+ */
 
 //
 // .SECTION voir aussi Source_base

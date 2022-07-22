@@ -20,14 +20,11 @@
 #include <Champ_Don.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     Classe Terme_Source_Qdm
-//     Cette classe represente un terme source qui figure dans l'equation
-//     de la dynamique divisee par la masse volumique de reference.
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Terme_Source_Qdm Cette classe represente un terme source qui figure dans l'equation
+ *
+ *      de la dynamique divisee par la masse volumique de reference.
+ *
+ */
 class Terme_Source_Qdm
 {
 

@@ -18,20 +18,19 @@
 #include <TRUSTTab.h>
 #include <Correlation_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Portance_interfaciale_base
-//      utilitaire pour les operateurs de frottement interfacial prenant la forme
-//      F_{0l} = - F_{l0} = C_{0l} (u_l - u_0) x rot(u_0) ou la phase
-//      0 est la phase porteuse et l != 0 une phase quelconque
-//      cette classe definit une fonction C_{kl} dependant de :
-//        alpha, p, T -> inconnues (une valeur par phase chacune)
-//        rho, mu, sigma -> proprietes physiques (idem)
-//        ndv(k, l) -> ||v_k - v_l||, a remplir pour k < l
-//    sortie :
-//        coeff(k, l, 0/1) -> coefficient C_{kl} et sa derivee en ndv(k, l), rempli pour k < l
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Portance_interfaciale_base utilitaire pour les operateurs de frottement interfacial prenant la forme
+ *
+ *       F_{0l} = - F_{l0} = C_{0l} (u_l - u_0) x rot(u_0) ou la phase
+ *       0 est la phase porteuse et l != 0 une phase quelconque
+ *       cette classe definit une fonction C_{kl} dependant de :
+ *         alpha, p, T -> inconnues (une valeur par phase chacune)
+ *         rho, mu, sigma -> proprietes physiques (idem)
+ *         ndv(k, l) -> ||v_k - v_l||, a remplir pour k < l
+ *     sortie :
+ *         coeff(k, l, 0/1) -> coefficient C_{kl} et sa derivee en ndv(k, l), rempli pour k < l
+ *
+ *
+ */
 
 class Portance_interfaciale_base : public Correlation_base
 {

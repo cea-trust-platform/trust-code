@@ -18,15 +18,12 @@
 
 #include <Loi_Etat_base.h>
 
-////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-// class Loi_Etat
-//    Cette classe est la derivee de la classe Loi_Etat_base
-//
-// .SECTION voir aussi
-// Loi_Etat_base
-////////////////////////////////////////////////////////////////
+/*! @brief class Loi_Etat Cette classe est la derivee de la classe Loi_Etat_base
+ *
+ *
+ *
+ * @sa Loi_Etat_base
+ */
 
 Declare_deriv(Loi_Etat_base);
 

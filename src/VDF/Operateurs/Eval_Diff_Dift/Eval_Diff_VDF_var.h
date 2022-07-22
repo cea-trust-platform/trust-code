@@ -22,10 +22,12 @@
 #include <Champ_base.h>
 #include <Zone_VDF.h>
 
-// .DESCRIPTION class Eval_Diff_VDF_var
-// Cette classe represente un evaluateur de flux diffusif
-// avec un coefficient de diffusivite qui n'est pas constant en espace.
-//.SECTION voir aussi Evaluateur_VDF
+/*! @brief class Eval_Diff_VDF_var Cette classe represente un evaluateur de flux diffusif
+ *
+ *  avec un coefficient de diffusivite qui n'est pas constant en espace.
+ *
+ * @sa Evaluateur_VDF
+ */
 class Eval_Diff_VDF_var : public Eval_Diff_VDF
 {
 public:

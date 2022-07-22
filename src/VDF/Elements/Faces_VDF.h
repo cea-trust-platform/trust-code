@@ -24,8 +24,9 @@
 
 class Aretes;
 
-//.DESCRIPTION class Faces_VDF
-//
+/*! @brief class Faces_VDF
+ *
+ */
 
 
 class Faces_VDF : public Faces
@@ -63,15 +64,17 @@ inline int Faces_VDF::orientation(int i)
   return orientation_(i);
 }
 
-// Description:
-// se lie a la zone
+/*! @brief se lie a la zone
+ *
+ */
 inline void Faces_VDF::associer(const Zone_VDF& une_zone_VDF)
 {
   la_zone_VDF=une_zone_VDF;
 }
 
-// Description:
-// Renvoie la zone
+/*! @brief Renvoie la zone
+ *
+ */
 inline const Zone_VDF& Faces_VDF::zone_VDF() const
 {
   return la_zone_VDF.valeur();

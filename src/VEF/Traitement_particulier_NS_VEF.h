@@ -19,17 +19,14 @@
 
 #include <Traitement_particulier_NS_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Traitement_particulier_VEF
-//     Cette classe permet de ne faire aucyun traitement particulier
-//     (comme avant!!!)
-//     Classe utilisee par defaut??
-//
-// .SECTION voir aussi
-//      Navier_Stokes_std, Traitement_particulier_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Traitement_particulier_VEF Cette classe permet de ne faire aucyun traitement particulier
+ *
+ *      (comme avant!!!)
+ *      Classe utilisee par defaut??
+ *
+ *
+ * @sa Navier_Stokes_std, Traitement_particulier_base
+ */
 class Traitement_particulier_NS_VEF : public Traitement_particulier_NS_base
 {
   Declare_instanciable(Traitement_particulier_NS_VEF);

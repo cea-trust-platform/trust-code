@@ -36,20 +36,11 @@ int meme_point(const ArrOfInt& x, const DoubleTab& tab, int rang_tab)
 Implemente_instanciable(Champ_Don_Face_lu,"Champ_Don_Face_lu",Champ_Fonc_Face);
 
 
-// Description:
-//    Imprime les valeurs du champ sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Imprime les valeurs du champ sur un flot de sortie
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Champ_Don_Face_lu::printOn(Sortie& os) const
 {
   const DoubleTab& tab=valeurs();
@@ -60,21 +51,13 @@ Sortie& Champ_Don_Face_lu::printOn(Sortie& os) const
 }
 
 
-// Description:
-//    Lit le champ sur un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: impossible d'ouvrir le fichier
-// Exception: pas de valeur pour l'element lu
-// Effets de bord:
-// Postcondition: le champ est initialise avec les donnees lues
+/*! @brief Lit le champ sur un flot d'entree.
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ * @throws impossible d'ouvrir le fichier
+ * @throws pas de valeur pour l'element lu
+ */
 Entree& Champ_Don_Face_lu::readOn(Entree& is)
 {
   int dim;

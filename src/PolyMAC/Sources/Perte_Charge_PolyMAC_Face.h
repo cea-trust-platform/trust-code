@@ -29,9 +29,9 @@
 
 class Probleme_base;
 
-//
-// .DESCRIPTION class Perte_Charge_PolyMAC_Face
-//
+/*! @brief class Perte_Charge_PolyMAC_Face
+ *
+ */
 
 //
 // .SECTION voir aussi Source_base

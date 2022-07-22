@@ -20,8 +20,9 @@
 #include <Iterateur_VDF_base.h>
 class Champ_Fonc;
 
-// .DESCRIPTION class Op_Diff_VDF_base
-// Classe de base des operateurs de diffusion VDF
+/*! @brief class Op_Diff_VDF_base Classe de base des operateurs de diffusion VDF
+ *
+ */
 
 class Op_Diff_VDF_base : public Operateur_Diff_base
 {
