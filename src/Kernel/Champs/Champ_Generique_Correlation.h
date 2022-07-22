@@ -22,11 +22,12 @@
 
 class Postraitement_base;
 
-//
-// .DESCRIPTION class Champ_Generique_Correlation
-//
-// Champ destine a post-traiter une correlation d un champ generique
-// La classe porte un operateur statistique "Op_Correlation"
+/*! @brief class Champ_Generique_Correlation
+ *
+ *  Champ destine a post-traiter une correlation d un champ generique
+ *  La classe porte un operateur statistique "Op_Correlation"
+ *
+ */
 
 //// Syntaxe a respecter pour jdd
 //

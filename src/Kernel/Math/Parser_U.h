@@ -20,17 +20,14 @@
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Parser_U
-//     Version de la classe Parser, derivant de Objet_U.
-//     Elle permet lors de son utilisation de beneficier de la gestion de la memoire propre aux Objet_U
-//     a la difference de la classe Math/Parser
-//
-// .SECTION voir aussi
-//     Parser
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Parser_U Version de la classe Parser, derivant de Objet_U.
+ *
+ *      Elle permet lors de son utilisation de beneficier de la gestion de la memoire propre aux Objet_U
+ *      a la difference de la classe Math/Parser
+ *
+ *
+ * @sa Parser
+ */
 class Parser_U : public Objet_U
 {
   Declare_instanciable_sans_constructeur_ni_destructeur(Parser_U);

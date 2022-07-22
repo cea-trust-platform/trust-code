@@ -15,17 +15,16 @@
 
 #ifndef Separateur_included
 #define Separateur_included
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Separateur pour les fichiers.
-//    Ce sont des objets speciaux que l'on peut inserer dans une sortie
-//    comme ceci:
-//      sortie << "coucou" << space << x << finl;
-//    et qui sont traites differemment en fonction du type de fichier
-//    (binaire ou ascii).
-// .SECTION voir aussi Sortie
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Separateur pour les fichiers.
+ *
+ * Ce sont des objets speciaux que l'on peut inserer dans une sortie
+ *     comme ceci:
+ *       sortie << "coucou" << space << x << finl;
+ *     et qui sont traites differemment en fonction du type de fichier
+ *     (binaire ou ascii).
+ *
+ * @sa Sortie
+ */
 
 class Separateur
 {

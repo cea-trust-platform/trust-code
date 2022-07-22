@@ -18,23 +18,26 @@
 #include <sstream>
 class OutputCommBuffer;
 using std::istringstream;
-// .DESCRIPTION        :
-//  Classe outil utilisee exclusivement par Schema_Comm. C'est une classe
-//  derivee de Entree dont le stream est de type istringstream (les donnees
-//  lues par operator>> sont prises dans un buffer).
-//  On utilise la classe comme suit:
-//  (1) on reserve un buffer d'une certaine taille avec
-//    char * buf = input_comm_buffer.reserve_buffer(taille);
-//  (2) on remplit le buffer avec des donnees:
-//    for (i=0; i<taille; i++)
-//       buf[i] = .....;
-//  (3) on cree un stream a partir du buffer:
-//    input_comm_buffer.create_stream();
-//  (4) on peut ensuite lire les donnees a travers l'operateur>>:
-//    input_comm_buffer >> x >> y >> chaine >> ... ;
-//  (5) quand on a fini de lire avec operateur>> on fait
-//    input_comm_buffer.clear();
-//  et on peut refaire (1)
+/*! @brief : Classe outil utilisee exclusivement par Schema_Comm.
+ *
+ * C'est une classe
+ *   derivee de Entree dont le stream est de type istringstream (les donnees
+ *   lues par operator>> sont prises dans un buffer).
+ *   On utilise la classe comme suit:
+ *   (1) on reserve un buffer d'une certaine taille avec
+ *     char * buf = input_comm_buffer.reserve_buffer(taille);
+ *   (2) on remplit le buffer avec des donnees:
+ *     for (i=0; i<taille; i++)
+ *        buf[i] = .....;
+ *   (3) on cree un stream a partir du buffer:
+ *     input_comm_buffer.create_stream();
+ *   (4) on peut ensuite lire les donnees a travers l'operateur>>:
+ *     input_comm_buffer >> x >> y >> chaine >> ... ;
+ *   (5) quand on a fini de lire avec operateur>> on fait
+ *     input_comm_buffer.clear();
+ *   et on peut refaire (1)
+ *
+ */
 
 class InputCommBuffer : public Entree
 {

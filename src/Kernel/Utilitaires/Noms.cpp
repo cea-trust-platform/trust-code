@@ -18,40 +18,22 @@ Implemente_vect(Nom);
 Implemente_instanciable(Noms,"Noms",VECT(Nom));
 
 
-// Description:
-//    Ecriture d'un tableau de noms sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: le flot de sortie a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ecriture d'un tableau de noms sur un flot de sortie
+ *
+ * @param (Sortie& s) le flot de sortie a utiliser
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Noms::printOn(Sortie& s) const
 {
   return VECT(Nom)::printOn(s);
 }
 
 
-// Description:
-//    Lecture d'un tableau de nomss sur un flot d'entree
-// Precondition:
-// Parametre: Entree& s
-//    Signification: le flot d'entree a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree& s
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lecture d'un tableau de nomss sur un flot d'entree
+ *
+ * @param (Entree& s) le flot d'entree a utiliser
+ * @return (Entree& s) le flot d'entree modifie
+ */
 Entree& Noms::readOn(Entree& s)
 {
   return VECT(Nom)::readOn(s);

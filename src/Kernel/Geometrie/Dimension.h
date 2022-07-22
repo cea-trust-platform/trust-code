@@ -20,16 +20,13 @@
 
 #include <Interprete.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Dimension
-//    Cette classe est un interprete qui lit la dimension d'espace.
-//    Directive:
-//          Dimension dim
-// .SECTION voir aussi
-//    Interprete Objet_U
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Dimension Cette classe est un interprete qui lit la dimension d'espace.
+ *
+ *     Directive:
+ *           Dimension dim
+ *
+ * @sa Interprete Objet_U
+ */
 class Dimension : public Interprete
 {
   Declare_instanciable(Dimension);

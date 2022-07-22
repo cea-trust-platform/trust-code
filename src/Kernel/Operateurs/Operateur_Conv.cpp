@@ -23,42 +23,22 @@ Implemente_deriv(Operateur_Conv_base);
 Implemente_instanciable(Operateur_Conv,"Operateur_Conv",DERIV(Operateur_Conv_base));
 
 
-// Description:
-//    Simple appel a Operateur::ecrire(Sortie&)
-//    Ecrit l'operateur sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a Operateur::ecrire(Sortie&) Ecrit l'operateur sur un flot de sortie.
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Operateur_Conv::printOn(Sortie& os) const
 {
   return Operateur::ecrire(os);
 }
 
 
-// Description:
-//    Simple appel a Operateur::lire(Entree&)
-//    Lit l'operateur a partir d'un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a Operateur::lire(Entree&) Lit l'operateur a partir d'un flot d'entree.
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Operateur_Conv::readOn(Entree& is)
 {
   Operateur::lire(is);
@@ -72,22 +52,11 @@ Entree& Operateur_Conv::readOn(Entree& is)
 
 
 
-// Description:
-//    Type l'operateur:
-//     "Op_Conv" + motcle + discretisation + inconnue
-//     Associe la vitesse transportante a l'operateur base
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: l'operateur est type
+/*! @brief Type l'operateur: "Op_Conv" + motcle + discretisation + inconnue
+ *
+ *      Associe la vitesse transportante a l'operateur base
+ *
+ */
 void Operateur_Conv::typer()
 {
   if (Motcle(typ)==Motcle("negligeable"))
@@ -102,27 +71,12 @@ void Operateur_Conv::typer()
   Cerr << valeur().que_suis_je() << finl;
 }
 
-// Description:
-//    Ajoute la contribution de l'operateur au tableau
-//    passe en parametre
-// Precondition:
-// Parametre: DoubleTab& donnee
-//    Signification: tableau contenant les donnees sur lesquelles on applique
-//                   l'operateur.
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleTab& resu
-//    Signification: tableau auquel on ajoute la contribution de l'operateur
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: DoubleTab&
-//    Signification: le tableau contenant le resultat
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ajoute la contribution de l'operateur au tableau passe en parametre
+ *
+ * @param (DoubleTab& donnee) tableau contenant les donnees sur lesquelles on applique l'operateur.
+ * @param (DoubleTab& resu) tableau auquel on ajoute la contribution de l'operateur
+ * @return (DoubleTab&) le tableau contenant le resultat
+ */
 DoubleTab& Operateur_Conv::ajouter(const DoubleTab& donnee,
                                    DoubleTab& resu) const
 {
@@ -132,27 +86,12 @@ DoubleTab& Operateur_Conv::ajouter(const DoubleTab& donnee,
   return tmp;
 }
 
-// Description:
-//    Initialise le tableau passe en parametre avec la contribution
-//    de l'operateur.
-// Precondition:
-// Parametre: DoubleTab& donnee
-//    Signification: tableau contenant les donnees sur lesquelles on applique
-//                   l'operateur.
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleTab& resu
-//    Signification: tableau dans lequel stocke la contribution de l'operateur
-//    Valeurs par defaut:
-//    Contraintes: l'ancien contenu est ecrase
-//    Acces: sortie
-// Retour: DoubleTab&
-//    Signification: le tableau contenant le resultat
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Initialise le tableau passe en parametre avec la contribution de l'operateur.
+ *
+ * @param (DoubleTab& donnee) tableau contenant les donnees sur lesquelles on applique l'operateur.
+ * @param (DoubleTab& resu) tableau dans lequel stocke la contribution de l'operateur
+ * @return (DoubleTab&) le tableau contenant le resultat
+ */
 DoubleTab& Operateur_Conv::calculer(const DoubleTab& donnee,
                                     DoubleTab& resu) const
 {

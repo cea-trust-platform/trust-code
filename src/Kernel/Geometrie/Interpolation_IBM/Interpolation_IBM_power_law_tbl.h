@@ -21,13 +21,13 @@
 #include <Zone.h>
 #include <Param.h>
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Interpolation_IBM_power_law_tbl
-//
-// <Description of class Interpolation_IBM_power_law_tbl>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Interpolation_IBM_power_law_tbl
+ *
+ *  <Description of class Interpolation_IBM_power_law_tbl>
+ *
+ *
+ *
+ */
 
 class Interpolation_IBM_power_law_tbl : public Interpolation_IBM_elem_fluid
 {

@@ -25,37 +25,17 @@
 Implemente_instanciable(Loi_horaire,"Loi_horaire",Objet_U);
 Implemente_ref(Loi_horaire);
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 Sortie& Loi_horaire::printOn(Sortie& os) const
 {
   return os;
 }
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 Entree& Loi_horaire::readOn(Entree& is)
 {
   // Initialisations

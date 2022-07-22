@@ -25,19 +25,16 @@
 Declare_deriv(Zone_Cl_dis_base);
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Zone_Cl_dis
-//    Classe generique de la hierarchie des conditions aux limites
-//    discretisees. Un objet Zone_Cl_dis peut referencer n'importe quel
-//    derivant de Zone_Cl_dis_base.
-//    La plupart des methodes appellent les methodes de l'objet Probleme
-//    sous-jacent via la methode valeur() declaree grace a la macro
-//Declare_deriv().;
-// .SECTION voir aussi
-//    Zone_Cl_dis_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Zone_Cl_dis Classe generique de la hierarchie des conditions aux limites
+ *
+ *     discretisees. Un objet Zone_Cl_dis peut referencer n'importe quel
+ *     derivant de Zone_Cl_dis_base.
+ *     La plupart des methodes appellent les methodes de l'objet Probleme
+ *     sous-jacent via la methode valeur() declaree grace a la macro
+ * Declare_deriv().;
+ *
+ * @sa Zone_Cl_dis_base
+ */
 class Zone_Cl_dis : public DERIV(Zone_Cl_dis_base)
 {
 
@@ -61,171 +58,90 @@ public :
 
 
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Associe l'equation dont l'objet represente les conditions aux limites.
-// Precondition:
-// Parametre: Equation_base& equation
-//    Signification: l'equation a laquelle seront associees les conditions aux limites
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: l'objet a son equation associee
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Associe l'equation dont l'objet represente les conditions aux limites.
+ *
+ * @param (Equation_base& equation) l'equation a laquelle seront associees les conditions aux limites
+ */
 inline void Zone_Cl_dis::associer_eqn(const Equation_base& equation)
 {
   valeur().associer_eqn(equation);
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Impose les conditions aux limites a un temps donne du Champ_Inc
-// Precondition:
-// Parametre: Champ_Inc& ch
-//    Signification: le champ inconnu sur lequel on impose les conditions
-//                   aux limites
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Impose les conditions aux limites a un temps donne du Champ_Inc
+ *
+ * @param (Champ_Inc& ch) le champ inconnu sur lequel on impose les conditions aux limites
+ */
 inline void Zone_Cl_dis::imposer_cond_lim(Champ_Inc& ch, double temps)
 {
   valeur().imposer_cond_lim(ch,temps);
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Renvoie la i-ieme condition aux limites.
-//    (version const)
-// Precondition:
-// Parametre: int i
-//    Signification: l'index de la i-ieme condition aux limites
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Cond_lim&
-//    Signification: la i-ieme condition aux limites
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent Renvoie la i-ieme condition aux limites.
+ *
+ *     (version const)
+ *
+ * @param (int i) l'index de la i-ieme condition aux limites
+ * @return (Cond_lim&) la i-ieme condition aux limites
+ */
 inline const Cond_lim& Zone_Cl_dis::les_conditions_limites(int i) const
 {
   return valeur().les_conditions_limites(i);
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Renvoie la i-ieme condition aux limites.
-// Precondition:
-// Parametre: int i
-//    Signification: l'index de la i-ieme condition aux limites
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Cond_lim&
-//    Signification: la i-ieme condition aux limites
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent Renvoie la i-ieme condition aux limites.
+ *
+ * @param (int i) l'index de la i-ieme condition aux limites
+ * @return (Cond_lim&) la i-ieme condition aux limites
+ */
 inline Cond_lim& Zone_Cl_dis::les_conditions_limites(int i)
 {
   return valeur().les_conditions_limites(i);
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Renvoie le tableau des conditions aux limites.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Conds_lim&
-//    Signification: le tableau des conditions aux limites
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent Renvoie le tableau des conditions aux limites.
+ *
+ * @return (Conds_lim&) le tableau des conditions aux limites
+ */
 inline Conds_lim& Zone_Cl_dis::les_conditions_limites()
 {
   return valeur().les_conditions_limites();
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Renvoie le tableau des conditions aux limites.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Conds_lim&
-//    Signification: le tableau des conditions aux limites
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent Renvoie le tableau des conditions aux limites.
+ *
+ *     (version const)
+ *
+ * @return (Conds_lim&) le tableau des conditions aux limites
+ */
 inline const Conds_lim& Zone_Cl_dis::les_conditions_limites() const
 {
   return valeur().les_conditions_limites();
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Renvoie le nombre de conditions aux limites.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de conditions aux limites
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent Renvoie le nombre de conditions aux limites.
+ *
+ * @return (int) le nombre de conditions aux limites
+ */
 inline int Zone_Cl_dis::nb_cond_lim() const
 {
   return valeur().nb_cond_lim();
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Effectue une mise a jour en temps des conditions aux limites.
-// Precondition:
-// Parametre: double temps
-//    Signification: le pas de temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent Effectue une mise a jour en temps des conditions aux limites.
+ *
+ * @param (double temps) le pas de temps de mise a jour
+ */
 inline void Zone_Cl_dis::mettre_a_jour(double temps)
 {
   valeur().mettre_a_jour(temps);

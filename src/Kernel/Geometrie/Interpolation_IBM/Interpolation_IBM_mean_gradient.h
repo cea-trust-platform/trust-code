@@ -20,13 +20,13 @@
 #include <Interpolation_IBM_base.h>
 #include <TRUSTLists.h>
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Interpolation_IBM_mean_gradient
-//
-// <Description of class Interpolation_IBM_mean_gradient>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Interpolation_IBM_mean_gradient
+ *
+ *  <Description of class Interpolation_IBM_mean_gradient>
+ *
+ *
+ *
+ */
 
 class Interpolation_IBM_mean_gradient : public Interpolation_IBM_base, public Interpolation_IBM_mean_gradient_proto
 {

@@ -19,21 +19,11 @@
 Implemente_base(Operateur_Div_base,"Operateur_Div_base",Operateur_base);
 
 
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie
+ */
 Sortie& Operateur_Div_base::printOn(Sortie& os) const
 {
   return os;

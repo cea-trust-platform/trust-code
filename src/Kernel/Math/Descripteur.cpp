@@ -18,21 +18,11 @@
 Implemente_instanciable_sans_constructeur(Descripteur,"Descripteur",Objet_U);
 
 
-// Description:
-//    Lecture d'un espace virtuel dans un flot d'entree
-//    Un espace virtuel est represente par ses 3 attributs deb_ ,nb_ et stride_
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lecture d'un espace virtuel dans un flot d'entree Un espace virtuel est represente par ses 3 attributs deb_ ,nb_ et stride_
+ *
+ * @param (Entree& is) le flot d'entree a utiliser
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Descripteur::readOn(Entree& is)
 {
   is >> deb_;
@@ -42,21 +32,11 @@ Entree& Descripteur::readOn(Entree& is)
 }
 
 
-// Description:
-//    Ecriture d'un espace virtuel sur un flot de sortie
-//    Un espace virtuel est represente par ses 3 attributs deb_, nb_ et stride_
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ecriture d'un espace virtuel sur un flot de sortie Un espace virtuel est represente par ses 3 attributs deb_, nb_ et stride_
+ *
+ * @param (Sortie& os) le flot de sortie a utiliser
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Descripteur::printOn(Sortie& os) const
 {
   os << deb_ << finl;
@@ -66,21 +46,9 @@ Sortie& Descripteur::printOn(Sortie& os) const
 }
 
 
-// Description:
-// Precondition:
-//    Constructeur par defaut.
-//    Tous les attributs sont fixes a -1
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 Descripteur::Descripteur()
 {
   stride_ = -1;

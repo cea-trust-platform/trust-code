@@ -18,42 +18,22 @@
 Implemente_base(Champ_Uniforme_inst,"Champ_Uniforme_inst",Champ_Uniforme);
 
 
-// Description:
-//    Simple appel a: Champ_Uniforme::printOn(Sortie& )
-//    Imprime le champ sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a: Champ_Uniforme::printOn(Sortie& ) Imprime le champ sur un flot de sortie.
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Champ_Uniforme_inst::printOn(Sortie& os) const
 {
   return Champ_Uniforme::printOn(os) ;
 }
 
 
-// Description:
-//    Simple appel a: Champ_Uniforme::readOn(Entree& )
-//    Lit le champ sur un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Champ_Uniforme::readOn(Entree& ) Lit le champ sur un flot d'entree.
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Champ_Uniforme_inst::readOn(Entree& is)
 {
   return Champ_Uniforme::readOn(is);

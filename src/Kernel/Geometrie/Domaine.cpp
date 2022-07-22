@@ -36,22 +36,14 @@ using MEDCoupling::DataArrayDouble;
 Implemente_instanciable_sans_constructeur(Domaine,"Domaine",Objet_U);
 Implemente_liste(Domaine);
 
-// Description:
-//    Ecrit le domaine sur un flot de sortie.
-//    On ecrit le nom, les sommets, les zones
-//    et les sous-zones.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit le domaine sur un flot de sortie.
+ *
+ * On ecrit le nom, les sommets, les zones
+ *     et les sous-zones.
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Domaine::printOn(Sortie& s ) const
 {
   Cerr << "Writing of " << nb_som() << " nodes." << finl;
@@ -67,19 +59,21 @@ Sortie& Domaine::printOn(Sortie& s ) const
 }
 
 
-// Description:
-//    Lit les specifications d'un domaine
-//    a partir d'un flot d'entree. Associe les zones
-//    lues au domaine.
-//    Format:
-//      nom_domaine
-//      bloc de lecture des Sommets
-//      bloc de lecture des Zones
-//      bloc de lecture des Sous_Zones
-//    Attention: en parallele, chaque processeur s'attend a lire une strucutre domaine
-//     avec des infos de joint, mais il y a des communications globales.
-//     Pour lire un domaine sur un seul processeur, il faut mettre le processeur dans
-//     un groupe seul
+/*! @brief Lit les specifications d'un domaine a partir d'un flot d'entree.
+ *
+ * Associe les zones
+ *     lues au domaine.
+ *     Format:
+ *       nom_domaine
+ *       bloc de lecture des Sommets
+ *       bloc de lecture des Zones
+ *       bloc de lecture des Sous_Zones
+ *     Attention: en parallele, chaque processeur s'attend a lire une strucutre domaine
+ *      avec des infos de joint, mais il y a des communications globales.
+ *      Pour lire un domaine sur un seul processeur, il faut mettre le processeur dans
+ *      un groupe seul
+ *
+ */
 Entree& Domaine::readOn(Entree& s)
 {
 #ifdef SORT_POUR_DEBOG
@@ -120,8 +114,9 @@ Entree& Domaine::readOn(Entree& s)
 }
 
 
-// Description:
-// only read vertices from the stream s
+/*! @brief only read vertices from the stream s
+ *
+ */
 void Domaine::read_vertices(Entree& s)
 {
   // Ajout BM: reset de la structure (a pour effet de debloquer la structure parallele)
@@ -139,24 +134,14 @@ void Domaine::read_vertices(Entree& s)
 }
 
 
-// Description:
-//    Constructeur par defaut d'un objet Domaine.
-//    Ne fait rien sauf fixer la valeur d'epsilon
-//    a Objet_U::precision_geom
-//    Si 2 points d'un domaine sont separes d'une distance
-//    inferieure ou egale a epsilon ils sont consideres egaux.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Constructeur par defaut d'un objet Domaine.
+ *
+ * Ne fait rien sauf fixer la valeur d'epsilon
+ *     a Objet_U::precision_geom
+ *     Si 2 points d'un domaine sont separes d'une distance
+ *     inferieure ou egale a epsilon ils sont consideres egaux.
+ *
+ */
 Domaine::Domaine() : epsilon_(Objet_U::precision_geom),deformable_(0)
 {
 #ifdef MEDCOUPLING_
@@ -165,55 +150,36 @@ Domaine::Domaine() : epsilon_(Objet_U::precision_geom),deformable_(0)
   axi1d = 0;
 }
 
-// Description:
-// Renvoie le nombre total de sommets
+/*! @brief Renvoie le nombre total de sommets
+ *
+ */
 int Domaine::nb_som_tot() const
 {
   return sommets.dimension_tot(0);
 }
 
-// Description:
-// Renvoie le nombre de sommets
+/*! @brief Renvoie le nombre de sommets
+ *
+ */
 int Domaine::nb_som() const
 {
   return sommets.dimension(0);
 }
 
-// Description:
-//    Ajoute une Zone au domaine.
-// Precondition:
-// Parametre: Zone& une_zone
-//    Signification: la zone a ajouter au domaine
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: Zone&
-//    Signification: la zone que l'on vient d'ajouter au domaine
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ajoute une Zone au domaine.
+ *
+ * @param (Zone& une_zone) la zone a ajouter au domaine
+ * @return (Zone&) la zone que l'on vient d'ajouter au domaine
+ */
 Zone& Domaine::add(Zone& une_zone)
 {
   return les_zones.add(une_zone);
 }
 
-// Description:
-//    Ajoute des noeuds (ou sommets) au domaine
-//    (sans verifier les doublons)
-// Precondition:
-// Parametre: DoubleTab& soms
-//    Signification: le tableau contenant les coordonnees
-//                   des noeuds a ajouter au domaine
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ajoute des noeuds (ou sommets) au domaine (sans verifier les doublons)
+ *
+ * @param (DoubleTab& soms) le tableau contenant les coordonnees des noeuds a ajouter au domaine
+ */
 void Domaine::ajouter(const DoubleTab& soms)
 {
   int oldsz=sommets.dimension(0);
@@ -225,30 +191,14 @@ void Domaine::ajouter(const DoubleTab& soms)
       sommets(oldsz+i,k)=soms(i,k) ;
 }
 
-// Description:
-//    Ajoute des noeuds au domaine avec elimination des noeuds double
-//    au retour nums contient les nouveaux numeros des noeuds de soms
-//    apres elimination des doublons.
-// Precondition:
-// Parametre: DoubleTab& soms
-//    Signification: le tableau contenant les coordonnees
-//                   des noeuds a ajouter au domaine
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: IntVect& nums
-//    Signification: le tableau des nouveaux numeros apres
-//                   ajout des nouveaux noeuds et elimination
-//                   des doublons.
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: des noeuds double ont ete trouve
-// Effets de bord:
-// Postcondition:
+/*! @brief Ajoute des noeuds au domaine avec elimination des noeuds double au retour nums contient les nouveaux numeros des noeuds de soms
+ *
+ *     apres elimination des doublons.
+ *
+ * @param (DoubleTab& soms) le tableau contenant les coordonnees des noeuds a ajouter au domaine
+ * @param (IntVect& nums) le tableau des nouveaux numeros apres ajout des nouveaux noeuds et elimination des doublons.
+ * @throws des noeuds double ont ete trouve
+ */
 void Domaine::ajouter(const DoubleTab& soms, IntVect& nums)
 {
   int oldsz=sommets.dimension(0);
@@ -319,43 +269,23 @@ void Domaine::ajouter(const DoubleTab& soms, IntVect& nums)
     }
 }
 
-// Description:
-//    Rassemble les Zones de meme type
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Rassemble les Zones de meme type
+ *
+ */
 void Domaine::comprimer()
 {
   les_zones.comprimer();
 }
 
-// Description:
-//    Association d'une Sous_Zone au domaine.
-//    L'interface permet de passer n'importe quel
-//    Objet_U mais ne gere (dynamiquement) que
-//    l'association d'un objet derivant Sous_Zone.
-// Precondition:
-// Parametre: Objet_U& ob
-//    Signification: l'objet a associer
-//    Valeurs par defaut:
-//    Contraintes: doit deriver Sous_Zone
-//    Acces:
-// Retour: int
-//    Signification: 1 si l'association a reussie
-//                   0 sinon (l'objet n'etait pas derive Sous_Zone)
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Association d'une Sous_Zone au domaine.
+ *
+ * L'interface permet de passer n'importe quel
+ *     Objet_U mais ne gere (dynamiquement) que
+ *     l'association d'un objet derivant Sous_Zone.
+ *
+ * @param (Objet_U& ob) l'objet a associer
+ * @return (int) 1 si l'association a reussie 0 sinon (l'objet n'etait pas derive Sous_Zone)
+ */
 int Domaine::associer_(Objet_U& ob)
 {
   if( sub_type(Sous_Zone, ob))
@@ -368,41 +298,18 @@ int Domaine::associer_(Objet_U& ob)
 }
 
 
-// Description:
-//    Ajoute une Sous_Zone au domaine.
-// Precondition:
-// Parametre: Sous_Zone& ssz
-//    Signification: la Sous-zone a ajouter au domaine
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ajoute une Sous_Zone au domaine.
+ *
+ * @param (Sous_Zone& ssz) la Sous-zone a ajouter au domaine
+ */
 void Domaine::add(const Sous_Zone& ssz)
 {
   les_ss_zones.add(ssz);
 }
 
-// Description:
-//    Reordonne les mailles du domaine suivant les
-//    conventions de Trio-U.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: les mailles du domaine sont reordonnees
-//                suivant les conventions de Trio-U
+/*! @brief Reordonne les mailles du domaine suivant les conventions de Trio-U.
+ *
+ */
 void Domaine::reordonner()
 {
   les_zones.reordonner();
@@ -423,8 +330,11 @@ void Domaine::construire_renum_som_perio(const Conds_lim& les_cl,
                                                 1 /* Calculer les valeurs pour les sommets virtuels */);
 }
 
-// Description: Cree un tableau ayant une "ligne" par sommet du maillage.
-//  Voir MD_Vector_tools::creer_tableau_distribue()
+/*! @brief Cree un tableau ayant une "ligne" par sommet du maillage.
+ *
+ * Voir MD_Vector_tools::creer_tableau_distribue()
+ *
+ */
 void Domaine::creer_tableau_sommets(Array_base& v, Array_base::Resize_Options opt) const
 {
   const MD_Vector& md = md_vector_sommets();
@@ -437,9 +347,12 @@ const MD_Vector& Domaine::md_vector_sommets() const
   return md;
 }
 
-// Description: Cree un tableau ayant une "ligne" par element du maillage.
-//  Pour l'instant, erreur s'il y a plus d'une zone dans le domaine.
-//  Voir MD_Vector_tools::creer_tableau_distribue()
+/*! @brief Cree un tableau ayant une "ligne" par element du maillage.
+ *
+ * Pour l'instant, erreur s'il y a plus d'une zone dans le domaine.
+ *   Voir MD_Vector_tools::creer_tableau_distribue()
+ *
+ */
 void Domaine::creer_tableau_elements(Array_base& v, Array_base::Resize_Options opt) const
 {
   // On pourra faire evoluer le code ci-dessous en creant un

@@ -21,24 +21,18 @@
 class Nom;
 class Entree;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_Proto
-//     Classe representant un prototype de Champ. Tous les classes
-//     representant des champs derivent de Champ_proto. Champ_proto offre
-//     des methodes classiques sur des champs (min, max, norme, += ...)
-//     mais ne contient pas de membre representant des donnees.
-//     La plupart des methodes de Champ_proto font appel aux methodes de
-//     meme nom d'un objet DoubleTab renvoye par la methode abstraite
-//     de Champ_proto valeurs().
-// .SECTION voir aussi
-//     Champ_base DoubleTab
-//     Classe abstraite.
-//     Methode abstraite:
-//       DoubleTab& valeurs()=0
-//       const DoubleTab& valeurs() const
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_Proto Classe representant un prototype de Champ.
+ *
+ * Tous les classes
+ *      representant des champs derivent de Champ_proto. Champ_proto offre
+ *      des methodes classiques sur des champs (min, max, norme, += ...)
+ *      mais ne contient pas de membre representant des donnees.
+ *      La plupart des methodes de Champ_proto font appel aux methodes de
+ *      meme nom d'un objet DoubleTab renvoye par la methode abstraite
+ *      de Champ_proto valeurs().
+ *
+ * @sa Champ_base DoubleTab, Classe abstraite., Methode abstraite:, DoubleTab& valeurs()=0, const DoubleTab& valeurs() const
+ */
 class Champ_Proto
 {
 public:

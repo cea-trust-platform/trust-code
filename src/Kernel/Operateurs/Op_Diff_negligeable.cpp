@@ -32,80 +32,42 @@ Entree& Op_Dift_negligeable::readOn(Entree& is)
   return  Op_Diff_negligeable::readOn(is);
 }
 
-// Description:
-//    Imprime la diffusivite sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Imprime la diffusivite sur un flot de sortie.
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Op_Diff_negligeable::printOn(Sortie& os) const
 {
   return os << la_diffusivite;
 }
 
 
-// Description:
-//    Lit la diffusivite a partir d'un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit la diffusivite a partir d'un flot d'entree.
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Op_Diff_negligeable::readOn(Entree& is)
 {
   return is >> la_diffusivite;
 }
 
 
-// Description:
-//    Associe la diffusivite a l'operateur.
-// Precondition:
-// Parametre: Champ_Don& ch
-//    Signification: le champ representant la diffusivite
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe la diffusivite a l'operateur.
+ *
+ * @param (Champ_Don& ch) le champ representant la diffusivite
+ */
 void Op_Diff_negligeable::associer_diffusivite(const Champ_base& ch)
 {
   la_diffusivite=ch;
 }
 
 
-// Description:
-//    Renvoie le champ representant la diffusivite.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Don_base&
-//    Signification: le champ representant la diffusivite
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le champ representant la diffusivite.
+ *
+ * @return (Champ_Don_base&) le champ representant la diffusivite
+ */
 const Champ_base& Op_Diff_negligeable::diffusivite() const
 {
   return la_diffusivite.valeur();

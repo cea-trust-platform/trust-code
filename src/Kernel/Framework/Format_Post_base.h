@@ -24,18 +24,19 @@ class Motcle;
 class Zone_dis;
 class Param;
 
-//.DESCRIPTION
-// Classe de base des formats de postraitements pour les champs
-// (lata, med, lml, meshtv).
-// Utilisation de la classe par l'interface generique:
-// -typer un objet format de postraitement
-// -initialiser l objet format de postraitement
-// -proceder a des operations de complement et verification
-// -ecrire un domaine
-// -ecrire_temps
-// -ecrire_champ (un type de champ supporte: aux elements ou aux sommets,
-//                ou encore aux faces si on a ecrit les faces du domaine
-//                et si les faces sont supportees par le postraitement)
+/*! @brief Classe de base des formats de postraitements pour les champs (lata, med, lml, meshtv).
+ *
+ *  Utilisation de la classe par l'interface generique:
+ *  -typer un objet format de postraitement
+ *  -initialiser l objet format de postraitement
+ *  -proceder a des operations de complement et verification
+ *  -ecrire un domaine
+ *  -ecrire_temps
+ *  -ecrire_champ (un type de champ supporte: aux elements ou aux sommets,
+ *                 ou encore aux faces si on a ecrit les faces du domaine
+ *                 et si les faces sont supportees par le postraitement)
+ *
+ */
 
 // Les parametres intervenant (eventuellement) dans une operation de postraitement
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////

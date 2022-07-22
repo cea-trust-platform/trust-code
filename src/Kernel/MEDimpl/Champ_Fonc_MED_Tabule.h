@@ -18,13 +18,13 @@
 
 #include <Champ_Fonc_MED.h>
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Champ_Fonc_MED_Tabule
-//
-// <Description of class Champ_Fonc_MED_Tabule>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Champ_Fonc_MED_Tabule
+ *
+ *  <Description of class Champ_Fonc_MED_Tabule>
+ *
+ *
+ *
+ */
 
 class Champ_Fonc_MED_Tabule : public Champ_Fonc_MED
 {

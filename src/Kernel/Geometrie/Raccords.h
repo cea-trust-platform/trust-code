@@ -26,14 +26,10 @@
 
 Declare_liste(Raccord);
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Raccords
-//    Cette represente une liste d'objets de type Raccord.
-// .SECTION voir aussi
-//    Raccord
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Raccords Cette represente une liste d'objets de type Raccord.
+ *
+ * @sa Raccord
+ */
 class Raccords : public LIST(Raccord)
 {
   Declare_instanciable(Raccords);
@@ -46,20 +42,10 @@ public :
 };
 
 
-// Description:
-//    Renvoie le nombre de raccords contenus dans la liste.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de raccords contenus dans la liste
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de raccords contenus dans la liste.
+ *
+ * @return (int) le nombre de raccords contenus dans la liste
+ */
 inline int Raccords::nb_raccords() const
 {
   return size();

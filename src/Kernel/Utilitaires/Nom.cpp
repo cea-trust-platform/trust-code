@@ -31,21 +31,11 @@ void Nom::sed_check_case_non_sensitive(int i)
   check_case_non_sensitive_=i;
 }
 
-// Description:
-//    Surcharge Objet_U::printOn(Sortie&)
-//    Ecriture d'un Nom sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: le flot de sortie a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Surcharge Objet_U::printOn(Sortie&) Ecriture d'un Nom sur un flot de sortie
+ *
+ * @param (Sortie& s) le flot de sortie a utiliser
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Nom::printOn(Sortie& s) const
 {
   const char* nom=getChar();
@@ -56,8 +46,11 @@ Sortie& Nom::printOn(Sortie& s) const
 }
 #define BUFLEN 10000
 
-// Description: Lecture d'un nom.
-//  En cas d'echec, le nom vaut "??" a la sortie.
+/*! @brief Lecture d'un nom.
+ *
+ * En cas d'echec, le nom vaut "??" a la sortie.
+ *
+ */
 Entree& Nom::readOn(Entree& s)
 {
   char buffer[BUFLEN];
@@ -72,41 +65,21 @@ Entree& Nom::readOn(Entree& s)
 //// Nom()
 //
 
-// Description:
-//    Constructeur par defaut.
-//    Cree la chaine "??"
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Constructeur par defaut.
+ *
+ * Cree la chaine "??"
+ *
+ */
 Nom::Nom()
 {
   nb_noms++;
   nom_ = "??";
 }
 
-// Description:
-//    Construction d'un nom a partir d'un caractere
-// Precondition:
-// Parametre: char c
-//    Signification: le caractere du nom
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Construction d'un nom a partir d'un caractere
+ *
+ * @param (char c) le caractere du nom
+ */
 Nom::Nom(char c)
 {
   nb_noms++;
@@ -114,22 +87,12 @@ Nom::Nom(char c)
 }
 
 
-// Description:
-//    Construction d'un nom a partir d'un entier
-//    La chaine cree est la representation de l'entier
-//    Exemple : Nom(128) cree la chaine "128"
-// Precondition:
-// Parametre: int i
-//    Signification: l'entier a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Construction d'un nom a partir d'un entier La chaine cree est la representation de l'entier
+ *
+ *     Exemple : Nom(128) cree la chaine "128"
+ *
+ * @param (int i) l'entier a utiliser
+ */
 Nom::Nom(int i)
 {
   nb_noms++;
@@ -144,21 +107,10 @@ Nom::Nom(int i)
 #endif
   operator=(chaine);
 }
-// Description:
-//    Construction d'un nom a partir d'une chaine de caracteres
-//    La chaine est copiee
-// Precondition:
-// Parametre: const char* nom
-//    Signification: la chaine de caracteres a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Construction d'un nom a partir d'une chaine de caracteres La chaine est copiee
+ *
+ * @param (const char* nom) la chaine de caracteres a utiliser
+ */
 Nom::Nom(const char* nom) : nom_(nom)
 {
   nb_noms++;
@@ -170,40 +122,19 @@ Nom::Nom(const std::string& nom) : nom_(nom)
 }
 
 
-// Description:
-//    Constructeur par copie d'un nom
-// Precondition:
-// Parametre: const Nom& nom
-//    Signification: le nom a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Constructeur par copie d'un nom
+ *
+ * @param (const Nom& nom) le nom a utiliser
+ */
 Nom::Nom(const Nom& nom) : Objet_U(nom), nom_(nom.nom_)
 {
   nb_noms++;
 }
 
-// Description:
-//    Construction d'un nom a partir d'un flottant
-//    La chaine cree est la representation du nombre reel (sprintf)
-// Precondition:
-// Parametre: double le_reel
-//    Signification: le reel a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Construction d'un nom a partir d'un flottant La chaine cree est la representation du nombre reel (sprintf)
+ *
+ * @param (double le_reel) le reel a utiliser
+ */
 Nom::Nom(double le_reel)
 {
   nb_noms++;
@@ -213,22 +144,12 @@ Nom::Nom(double le_reel)
   operator=(la_chaine);
 }
 
-// Description:
-//    Construction d'un nom a partir d'un flottant
-//    La chaine cree est la representation du nombre reel (sprintf)
-//    Le format du nombre represente par la chaine est donne par format
-// Precondition:
-// Parametre: double le_reel
-//    Signification: le reel a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Construction d'un nom a partir d'un flottant La chaine cree est la representation du nombre reel (sprintf)
+ *
+ *     Le format du nombre represente par la chaine est donne par format
+ *
+ * @param (double le_reel) le reel a utiliser
+ */
 Nom::Nom(double le_reel, const char* format)
 {
   char la_chaine[80];
@@ -250,98 +171,60 @@ Nom::Nom(double le_reel, const char* format)
 }
 
 
-// Description:
-//    Destructeur
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Destructeur
+ *
+ */
 Nom::~Nom()
 {
   nb_noms--;
 }
 
-// Description:
-//    Transforme le nom en majuscules
-//    Seules les lettres 'a'-'z' sont modifiees
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Transforme le nom en majuscules Seules les lettres 'a'-'z' sont modifiees
+ *
+ */
 Nom& Nom::majuscule()
 {
   std::transform(nom_.begin(), nom_.end(), nom_.begin(), ::toupper);
   return *this;
 }
 
-// Description:
-//    Renvoie le nombre de caracteres de la chaine du Nom
-//    y compris le caractere zero de fin de chaine.
-//    Exemple : Nom("hello").longueur() == 6
+/*! @brief Renvoie le nombre de caracteres de la chaine du Nom y compris le caractere zero de fin de chaine.
+ *
+ *     Exemple : Nom("hello").longueur() == 6
+ *
+ */
 int Nom::longueur() const
 {
   return (int)nom_.size()+1;
 }
 
-// Description:
-//  Copie la chaine nom.
-//  Modif BM pour que nom puisse pointer sur une sous-partie de nom_
+/*! @brief Copie la chaine nom.
+ *
+ * Modif BM pour que nom puisse pointer sur une sous-partie de nom_
+ *
+ */
 Nom& Nom::operator=(const char* const nom)
 {
   nom_=nom;
   return *this;
 }
 
-// Description:
-//    Copie le Nom nom
-// Precondition:
-// Parametre: const Nom& nom
-//    Signification: le nom a copier
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Nom&
-//    Signification: reference sur this qui represente la chaine du Nom nom
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Copie le Nom nom
+ *
+ * @param (const Nom& nom) le nom a copier
+ * @return (Nom&) reference sur this qui represente la chaine du Nom nom
+ */
 Nom& Nom::operator=(const Nom& nom)
 {
   nom_ = nom.nom_;
   return *this;
 }
 
-// Description:
-//    Concatenation avec un Nom
-// Precondition:
-// Parametre: const Nom& x
-//    Signification: la nom a concatener
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Nom&
-//    Signification: reference sur this
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Concatenation avec un Nom
+ *
+ * @param (const Nom& x) la nom a concatener
+ * @return (Nom&) reference sur this
+ */
 Nom& Nom::operator +=(const Nom& x)
 {
   nom_ += x.nom_;
@@ -354,8 +237,9 @@ Nom& Nom::operator+=(const char *x)
   return *this;
 }
 
-// Description:
-// concatenation de chaine
+/*! @brief concatenation de chaine
+ *
+ */
 Nom& Nom::operator +=(char x)
 {
   char n[2];
@@ -381,23 +265,14 @@ Nom& Nom::operator +=(int x)
   return *this;
 }
 
-// Description:
-//     Extraction de suffixe :
-//     Nom x("azerty");
-//     x.suffix("aze")
-//     x contient "rty".
-// Precondition:
-// Parametre: const char* const ch
-//    Signification: chaine de caractere a utiliser comme prefixe
-//    Valeurs par defaut:
-//    Contraintes: ch doit etre un prefixe de x
-//    Acces:
-// Retour: Nom&
-//    Signification: reference sur this
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Extraction de suffixe : Nom x("azerty");
+ *
+ *      x.suffix("aze")
+ *      x contient "rty".
+ *
+ * @param (const char* const ch) chaine de caractere a utiliser comme prefixe
+ * @return (Nom&) reference sur this
+ */
 Nom& Nom::suffix(const char* const s)
 {
   if (debute_par(s))
@@ -480,20 +355,11 @@ const Nom Nom::getPrefix(const char* const s) const
   return *this;
 }
 
-// Description:
-//    Concatenation avec un Nom
-// Precondition:
-// Parametre: const Nom& x
-//    Signification: la nom a concatener
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Nom
-//    Signification: le nouveau Nom cree avec la concatenation de this et de x
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Concatenation avec un Nom
+ *
+ * @param (const Nom& x) la nom a concatener
+ * @return (Nom) le nouveau Nom cree avec la concatenation de this et de x
+ */
 Nom Nom::operator +(const Nom& x) const
 {
   Nom nouveau(*this);
@@ -501,41 +367,23 @@ Nom Nom::operator +(const Nom& x) const
   return nouveau;
 }
 
-// Description:
-//    Comparaison avec un Objet_U
-//    l'Objet_U est caste en Nom pour la comparaison
-// Precondition:
-// Parametre: const Objet_U& x
-//    Signification: l'Objet_U a utiliser pour la comparaison
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si egalite
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Comparaison avec un Objet_U l'Objet_U est caste en Nom pour la comparaison
+ *
+ * @param (const Objet_U& x) l'Objet_U a utiliser pour la comparaison
+ * @return (int) 1 si egalite
+ */
 int Nom::est_egal_a(const Objet_U& x) const
 {
   if (!(sub_type(Nom, x))) return 0;
   return (*this == ref_cast( Nom, x));
 }
 
-// Description:
-// Insere _prefix000n (n=me() ou nproc()) dans un nom de fichier (par ex:toto.titi) pour donner toto_prefix000n.titi
-// Precondition:
-// Parametre: without_padding
-//    Signification: flag indiquant que l'on ne souhaite pas ajouter de zeros devant n
-//    Valeurs par defaut: 0
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Insere _prefix000n (n=me() ou nproc()) dans un nom de fichier (par ex:toto.
+ *
+ * titi) pour donner toto_prefix000n.titi
+ *
+ * @param (without_padding) flag indiquant que l'on ne souhaite pas ajouter de zeros devant n
+ */
 Nom Nom::nom_me(int n, const char* prefixe, int without_padding) const
 {
   int compteur=(int)nom_.size();
@@ -619,9 +467,9 @@ Nom Nom::nom_me(int n, const char* prefixe, int without_padding) const
   return new_name;
 }
 
-// Description:
-//   Retourne un nom selon la commande usuelle substr
-//   ATTENTION : deb = 1 => premier caractere de la chaine !!!
+/*! @brief Retourne un nom selon la commande usuelle substr ATTENTION : deb = 1 => premier caractere de la chaine !!!
+ *
+ */
 Nom Nom::substr_old(const int deb, const int la_longueur) const
 {
 
@@ -631,20 +479,10 @@ Nom Nom::substr_old(const int deb, const int la_longueur) const
   return nouveau;
 }
 
-// Description:
-// Retourne fichier si le nom est sous la forme /toto/titi/fichier
-// Precondition:
-// Parametre:
-//    Signification
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Retourne fichier si le nom est sous la forme /toto/titi/fichier
+ *
+ * @param (Signification)
+ */
 Nom Nom::basename() const
 {
   Nom dirname("");
@@ -662,45 +500,21 @@ Nom Nom::basename() const
   return the_basename;
 }
 
-// Description:
-//    Retourne un pointeur sur la chaine de caractere du nom
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: char*
-//    Signification: pointeur sur la chaine de caractere du nom
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Retourne un pointeur sur la chaine de caractere du nom
+ *
+ * @return (char*) pointeur sur la chaine de caractere du nom
+ */
 Nom::operator const char*() const
 {
   return nom_.c_str();
 }
 
-// Description:
-//     Comparaison d'un nom avec une chaine de caractere
-//     Utilise strcmp
-// Precondition:
-// Parametre: const Nom& un_nom
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: const char* const un_autre
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si les noms sont egaux, 0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Comparaison d'un nom avec une chaine de caractere Utilise strcmp
+ *
+ * @param (const Nom& un_nom)
+ * @param (const char* const un_autre)
+ * @return (int) 1 si les noms sont egaux, 0 sinon
+ */
 int operator ==(const Nom& un_nom, const char* const un_autre)
 {
   int res_actu=(un_nom.nom_.compare(un_autre)==0);
@@ -730,25 +544,12 @@ int operator ==(const char* const un_autre, const Nom& un_nom)
   return (un_nom == un_autre);
 }
 
-// Description:
-//     Comparaison d'un nom avec une chaine de caractere
-// Precondition:
-// Parametre: const Nom& un_nom
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: const char* const un_autre
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si les noms sont differents, 0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Comparaison d'un nom avec une chaine de caractere
+ *
+ * @param (const Nom& un_nom)
+ * @param (const char* const un_autre)
+ * @return (int) 1 si les noms sont differents, 0 sinon
+ */
 int operator !=(const Nom& un_nom, const char* un_autre)
 {
   return ! (un_nom == un_autre);
@@ -764,20 +565,10 @@ int operator !=(const char* const un_autre, const Nom& un_nom)
   return ! (un_autre == un_nom);
 }
 
-// Description:
-//     Renvoie *this;
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: const Nom&
-//    Signification: reference sur le Nom
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie *this;
+ *
+ * @return (const Nom&) reference sur le Nom
+ */
 const Nom& Nom::le_nom() const
 {
   return *this;

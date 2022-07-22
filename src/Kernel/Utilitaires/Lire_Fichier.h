@@ -20,13 +20,9 @@
 #include <Interprete.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     class Lire_Fichier
-//     Lecture d'un fichier
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief class Lire_Fichier Lecture d'un fichier
+ *
+ */
 class Lire_Fichier : public Interprete
 {
   Declare_instanciable(Lire_Fichier);

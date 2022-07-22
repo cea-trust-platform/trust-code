@@ -24,25 +24,16 @@
 
 class Operateur_base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Operateur
-//     Classe generique de la hierarchie des operateurs.
-//     Cette classe generique est particuliere car elle n'HERITE PAS
-//     de DERIV(Operateur_base) mais de MorEqn.
-//     Une reference sur un Operateur_base est renvoye par la methode
-//     Operateur::l_op_base() qui est virtuelle pure et doit etre surchargee
-//     dans ses derivees.
-// .SECTION voir aussi
-//     MorEqn Operateur_base
-//     Classe abstraite
-//     Methodes abstraites:
-//       Operateur_base& l_op_base()
-//       const Operateur_base& l_op_base() const
-//       DoubleTab& calculer(const DoubleTab&,DoubleTab& ) const
-//       DoubleTab& calculer(const DoubleTab&,DoubleTab& ) const
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Operateur Classe generique de la hierarchie des operateurs.
+ *
+ *      Cette classe generique est particuliere car elle n'HERITE PAS
+ *      de DERIV(Operateur_base) mais de MorEqn.
+ *      Une reference sur un Operateur_base est renvoye par la methode
+ *      Operateur::l_op_base() qui est virtuelle pure et doit etre surchargee
+ *      dans ses derivees.
+ *
+ * @sa MorEqn Operateur_base, Classe abstraite, Methodes abstraites:, Operateur_base& l_op_base(), const Operateur_base& l_op_base() const, DoubleTab& calculer(const DoubleTab&,DoubleTab& ) const, DoubleTab& calculer(const DoubleTab&,DoubleTab& ) const
+ */
 class Operateur : public MorEqn
 {
 public :

@@ -23,19 +23,20 @@
 
 class Postraitement_base;
 
-//
-// .DESCRIPTION class Champ_Generique_Ecart_Type
-// Champ destine a post-traiter un Ecart_Type d un champ generique
-// La classe porte un operateur statistique "Op_Ecart_Type"
-//
-//// Syntaxe a respecter pour jdd
-//
-// "nom_champ" Ecart_Type { t_deb "val_tdeb" t_fin "val_tfin"
-//                source "type_champ_gen" { ...source ref_Champ { Pb_champ "nom_pb" "nom_champ_discret" } }
-//               }
-// "nom_champ" fixe par utilisateur sera le nom du champ generique
-// "val_tdeb" et "val_tfin" valeur de debut et fin des statistiques pour ce champ
-// "type_champ_gen" type d'un champ generique
+/*! @brief class Champ_Generique_Ecart_Type Champ destine a post-traiter un Ecart_Type d un champ generique
+ *
+ *  La classe porte un operateur statistique "Op_Ecart_Type"
+ *
+ *  Syntaxe a respecter pour jdd
+ *
+ *  "nom_champ" Ecart_Type { t_deb "val_tdeb" t_fin "val_tfin"
+ *                 source "type_champ_gen" { ...source ref_Champ { Pb_champ "nom_pb" "nom_champ_discret" } }
+ *                }
+ *  "nom_champ" fixe par utilisateur sera le nom du champ generique
+ *  "val_tdeb" et "val_tfin" valeur de debut et fin des statistiques pour ce champ
+ *  "type_champ_gen" type d'un champ generique
+ *
+ */
 
 class Champ_Generique_Ecart_Type : public Champ_Generique_Statistiques_base
 {

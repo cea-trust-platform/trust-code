@@ -15,15 +15,17 @@
 
 #include <Array_tools.h>
 
-// Description: retire les doublons du tableau array
-//  (suppose que le tableau est trie dans l'ordre croissant)
-//  On deplace les elements conserves pour qu'ils soient contigus
-//  au debut du tableau.
-//  ATTENTION: on ne resize pas le tableau, utiliser la valeur
-//  de retour pour le faire ensuite!
-//  (au cas ou on veuille appliquer cette fonction a un IntTab,
-//   il faut faire resize() et non resize_array())
-// Valeur de retour : nombre d'elements conserves dans le tableau
+/*! @brief retire les doublons du tableau array (suppose que le tableau est trie dans l'ordre croissant)
+ *
+ *   On deplace les elements conserves pour qu'ils soient contigus
+ *   au debut du tableau.
+ *   ATTENTION: on ne resize pas le tableau, utiliser la valeur
+ *   de retour pour le faire ensuite!
+ *   (au cas ou on veuille appliquer cette fonction a un IntTab,
+ *    il faut faire resize() et non resize_array())
+ *  Valeur de retour : nombre d'elements conserves dans le tableau
+ *
+ */
 int array_retirer_doublons(ArrOfInt& array)
 {
   const int size = array.size_array();
@@ -45,8 +47,9 @@ int array_retirer_doublons(ArrOfInt& array)
   return new_size;
 }
 
-// Description: Trie le tableau array dans l'ordre croissant
-//  et retire les doublons.
+/*! @brief Trie le tableau array dans l'ordre croissant et retire les doublons.
+ *
+ */
 void array_trier_retirer_doublons(ArrOfInt& array)
 {
   // IntVect n'est pas traite correctement car on ne
@@ -62,10 +65,13 @@ void array_trier_retirer_doublons(ArrOfInt& array)
   array.resize_array(sz);
 }
 
-// Description: calcule l'intersection entre les deux listes d'entiers
-//  liste1 et liste2. Le resultat est mis dans liste1.
-//  Les deux listes doivent etre triees et sans doublons. liste1 est
-//  triee en sortie.
+/*! @brief calcule l'intersection entre les deux listes d'entiers liste1 et liste2.
+ *
+ * Le resultat est mis dans liste1.
+ *   Les deux listes doivent etre triees et sans doublons. liste1 est
+ *   triee en sortie.
+ *
+ */
 void array_calculer_intersection(ArrOfInt& liste1, const ArrOfInt& liste2)
 {
   const int sz1 = liste1.size_array();
@@ -93,12 +99,14 @@ void array_calculer_intersection(ArrOfInt& liste1, const ArrOfInt& liste2)
   liste1.resize_array(k);
 }
 
-// Description:
-//  Retire de "sorted_array" les elements qui figurent dans "sorted_elements".
-//  Les deux tableaux doivent etre initialement ordonnes dans l'ordre croissant.
-//  Exemple:
-//   En entree sorted_array=[1,4,9,10,12,18], sorted_elements=[3,5,9,10,18,25]
-//   En sortie sorted_array=[1,4,12]
+/*! @brief Retire de "sorted_array" les elements qui figurent dans "sorted_elements".
+ *
+ * Les deux tableaux doivent etre initialement ordonnes dans l'ordre croissant.
+ *   Exemple:
+ *    En entree sorted_array=[1,4,9,10,12,18], sorted_elements=[3,5,9,10,18,25]
+ *    En sortie sorted_array=[1,4,12]
+ *
+ */
 void array_retirer_elements(ArrOfInt& sorted_array, const ArrOfInt& sorted_elements_list)
 {
   int i_read;      // Index dans sorted_array (en lecture)
@@ -137,12 +145,14 @@ void array_retirer_elements(ArrOfInt& sorted_array, const ArrOfInt& sorted_eleme
   sorted_array.resize_array(i_write);
 }
 
-// Description: cherche la "valeur" dans le tableau tab par recherche binaire
-//  Le tableau tab doit etre trie dans l'ordre croissant
-//  Si elle n'est pas trouvee, renvoie -1 (y compris si tab est vide),
-//  sinon, renvoie un index i tel que tab[i] == valeur
-//  (si la valeur figure plusieurs fois dans le tableau, on ne renvoie
-//  pas forcement la premiere occurence).
+/*! @brief cherche la "valeur" dans le tableau tab par recherche binaire Le tableau tab doit etre trie dans l'ordre croissant
+ *
+ *   Si elle n'est pas trouvee, renvoie -1 (y compris si tab est vide),
+ *   sinon, renvoie un index i tel que tab[i] == valeur
+ *   (si la valeur figure plusieurs fois dans le tableau, on ne renvoie
+ *   pas forcement la premiere occurence).
+ *
+ */
 int array_bsearch(const ArrOfInt& tab, int valeur)
 {
   // attention tout est important !
@@ -220,11 +230,13 @@ True_int fct_qsort_tableau_n(const void *ptr1, const void *ptr2)
 #endif
 }
 
-// Description: tri lexicographique du tableau tab (par ordre croissant
-//  de la premiere colonne, si premiere colonne identique, ordre croissant
-//  de la deuxieme, etc).
-//  Le tableau ne doit pas etre un tableau distribue.
-//  Valeur de retour: nombre de colonnes du tableau (produit des tab.dimension(i) pour i>0)
+/*! @brief tri lexicographique du tableau tab (par ordre croissant de la premiere colonne, si premiere colonne identique, ordre croissant
+ *
+ *   de la deuxieme, etc).
+ *   Le tableau ne doit pas etre un tableau distribue.
+ *   Valeur de retour: nombre de colonnes du tableau (produit des tab.dimension(i) pour i>0)
+ *
+ */
 int tri_lexicographique_tableau(IntTab& tab)
 {
   // On verifie que le tableau n'est pas un tableau distribue:
@@ -323,13 +335,14 @@ True_int fct_qsort_tableau_n_indirect(const void *ptr1, const void *ptr2)
 
 }
 
-// Description:
-//  Idem que tri_lexicographique_tableau mais on trie le tableau index qui
-//  contient les indices de lignes du tableau tab tel que tab(index[i], *) soit
-//  croissant quant i augmente. Tri de tous les indices de index...
-//  Si le tableau index est de taille nulle, on en cree un de taille tab.dimension_tot(0)
-//  Sinon on suppose qu'il contient deja des indices de lignes dans tab.
-//  Valeur de retour: nombre de colonnes du tableau (produit des tab.dimension(i) pour i>0)
+/*! @brief Idem que tri_lexicographique_tableau mais on trie le tableau index qui contient les indices de lignes du tableau tab tel que tab(index[i], *) soit
+ *
+ *   croissant quant i augmente. Tri de tous les indices de index...
+ *   Si le tableau index est de taille nulle, on en cree un de taille tab.dimension_tot(0)
+ *   Sinon on suppose qu'il contient deja des indices de lignes dans tab.
+ *   Valeur de retour: nombre de colonnes du tableau (produit des tab.dimension(i) pour i>0)
+ *
+ */
 int tri_lexicographique_tableau_indirect(const IntTab& tab, ArrOfInt& index)
 {
   // On verifie que le tableau n'est pas un tableau distribue:
@@ -375,8 +388,9 @@ void resize_tab_lines(IntTab& tab, const int n)
   tab.resize_dim0(n);
 }
 
-// Description: Trie le tableau tab dans l'ordre lexicographique
-//  et retire les doublons (attention [1,2] n'est pas egal a [2,1])
+/*! @brief Trie le tableau tab dans l'ordre lexicographique et retire les doublons (attention [1,2] n'est pas egal a [2,1])
+ *
+ */
 void tableau_trier_retirer_doublons(IntTab& tab)
 {
   const int nb_lignes = tab.dimension(0);
@@ -437,13 +451,15 @@ static inline int same_line(const IntVect& v, int i, int j)
   return k == ls;
 }
 
-// Description: cherche par un tri lexicographique les lignes identiques de "tab"
-//   et initialise les tailles et contenus de renum et renum_inverse.
-//   renum est de taille tab.dimension_tot(0).
-//    renum[i] contiendra l'indice de la ligne i dans le tableau reduit trie (contenant les lignes uniques)
-//   renum_inverse contient, pour chaque ligne du tableau reduit trie, le plus petit indice de la ligne
-//    correspondante dans tab.
-//    on peut construire le tableau reduit trie en extayant les lignes tab( renum_inverse[i], ...)
+/*! @brief cherche par un tri lexicographique les lignes identiques de "tab" et initialise les tailles et contenus de renum et renum_inverse.
+ *
+ *    renum est de taille tab.dimension_tot(0).
+ *     renum[i] contiendra l'indice de la ligne i dans le tableau reduit trie (contenant les lignes uniques)
+ *    renum_inverse contient, pour chaque ligne du tableau reduit trie, le plus petit indice de la ligne
+ *     correspondante dans tab.
+ *     on peut construire le tableau reduit trie en extayant les lignes tab( renum_inverse[i], ...)
+ *
+ */
 void calculer_renum_sans_doublons(const IntTab& tab, ArrOfInt& renum, ArrOfInt& renum_inverse)
 {
   // MODIF ELI LAUCOIN 31/01/2012 :

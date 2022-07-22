@@ -19,12 +19,9 @@
 
 #include <Ecrire_Fichier.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     Ecriture d'un fichier au format binaire
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Ecriture d'un fichier au format binaire
+ *
+ */
 class Ecrire_Fichier_Formatte : public Ecrire_Fichier
 {
   Declare_instanciable(Ecrire_Fichier_Formatte);

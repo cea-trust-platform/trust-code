@@ -20,19 +20,15 @@
 
 #include <Sous_zones_dis.h>
 #include <Zones_dis.h>
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Domaine_dis
-//     Cette classe represente la notion de domaine discretise
-//     Elle contient l'ensemble des objets de type Zone_dis
-//     qui correspondent a la discretisation des objets
-//     de type Zone contenus dans l'objet Domaine associe au
-//     domaine discretise.
-// .SECTION voir aussi
-//     Domaine Zone Zone_dis
-//     Dans TRUST V1 il n'y qu'une zone par domaine
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Domaine_dis Cette classe represente la notion de domaine discretise
+ *
+ *      Elle contient l'ensemble des objets de type Zone_dis
+ *      qui correspondent a la discretisation des objets
+ *      de type Zone contenus dans l'objet Domaine associe au
+ *      domaine discretise.
+ *
+ * @sa Domaine Zone Zone_dis, Dans TRUST V1 il n'y qu'une zone par domaine
+ */
 Declare_ref(Sous_zones_dis);
 Declare_ref(Zones_dis);
 class Domaine_dis : public Objet_U
@@ -73,100 +69,52 @@ private:
 };
 
 
-// Description:
-//    Renvoie le nombre de zones contenues dans le domaine.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de zones contenues dans le domaine
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de zones contenues dans le domaine.
+ *
+ * @return (int) le nombre de zones contenues dans le domaine
+ */
 inline int Domaine_dis::nombre_de_zones() const
 {
   return les_zones.valeur().size();
 }
 
-// Description:
-//    Renvoie une reference sur la i-eme zone discretisee du domaine.
-//    (version const)
-// Precondition:
-// Parametre: int i
-//    Signification: l'index de la i-eme zone du domaine
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Zone_dis&
-//    Signification: la i-eme zone discretisee du domaine
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie une reference sur la i-eme zone discretisee du domaine.
+ *
+ * (version const)
+ *
+ * @param (int i) l'index de la i-eme zone du domaine
+ * @return (Zone_dis&) la i-eme zone discretisee du domaine
+ */
 inline const Zone_dis& Domaine_dis::zone_dis(int i) const
 {
   return les_zones.valeur()[i];
 }
 
-// Description:
-//    Renvoie une reference sur la i-eme zone discretisee du domaine.
-// Precondition:
-// Parametre: int i
-//    Signification: l'index de la i-eme zone du domaine
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Zone_dis&
-//    Signification: la i-eme zone discretisee du domaine
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie une reference sur la i-eme zone discretisee du domaine.
+ *
+ * @param (int i) l'index de la i-eme zone du domaine
+ * @return (Zone_dis&) la i-eme zone discretisee du domaine
+ */
 inline Zone_dis& Domaine_dis::zone_dis(int i)
 {
   return les_zones.valeur()[i];
 }
 
-// Description:
-//    Renvoie une reference sur le Domaine associe au domaine
-//    discretise.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Domaine&
-//    Signification: le Domaine associe au domaine discretise
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie une reference sur le Domaine associe au domaine discretise.
+ *
+ * @return (Domaine&) le Domaine associe au domaine discretise
+ */
 inline Domaine& Domaine_dis::domaine()
 {
   return le_domaine.valeur();
 }
 
-// Description:
-//    Renvoie une reference sur le Domaine associe au domaine
-//    discretise.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Domaine&
-//    Signification: le Domaine associe au domaine discretise
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie une reference sur le Domaine associe au domaine discretise.
+ *
+ *     (version const)
+ *
+ * @return (Domaine&) le Domaine associe au domaine discretise
+ */
 inline const Domaine& Domaine_dis::domaine() const
 {
   return le_domaine.valeur();

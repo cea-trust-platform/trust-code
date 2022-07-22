@@ -18,61 +18,33 @@
 Implemente_instanciable(PrecisionGeom,"PrecisionGeom",Interprete);
 
 
-// Description:
-//    Simple appel a: Interprete::printOn(Sortie&)
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a: Interprete::printOn(Sortie&)
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& PrecisionGeom::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
 
-// Description:
-//    Simple appel a: Interprete::readOn(Entree&)
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Interprete::readOn(Entree&)
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& PrecisionGeom::readOn(Entree& is)
 {
   return Interprete::readOn(is);
 }
 
 
-// Description:
-//    Fonction principale de l'interprete PrecisionGeom
-//    Lit la dimension d'espace du probleme.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Fonction principale de l'interprete PrecisionGeom Lit la dimension d'espace du probleme.
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& PrecisionGeom::interpreter(Entree& is)
 {
   is >> precision_geom;

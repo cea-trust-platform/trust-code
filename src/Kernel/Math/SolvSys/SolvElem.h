@@ -17,13 +17,13 @@
 #define SolvElem_included
 
 
-//
-// .DESCRIPTION class SolvElem
-//  Un SolvElem represente n'importe qu'elle classe
-//  derivee de la classe SolvElem_base
-//
-// .SECTION voir aussi
-//  SolvElem_base
+/*! @brief class SolvElem Un SolvElem represente n'importe qu'elle classe
+ *
+ *   derivee de la classe SolvElem_base
+ *
+ *
+ * @sa SolvElem_base
+ */
 
 #include <SolvElem_base.h>
 #include <Deriv.h>

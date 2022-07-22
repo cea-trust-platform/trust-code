@@ -108,7 +108,9 @@ inline envoyer_broadcast(_TYPE_& t, int source)
 inline int envoyer_broadcast(long& t, int source) { return envoyer_broadcast_array<long>(&t, 1, source); }
 #endif
 
-// Description: en mode comm_check_enabled(), verifie que le parametre a la meme valeur sur tous les processeurs
+/*! @brief en mode comm_check_enabled(), verifie que le parametre a la meme valeur sur tous les processeurs
+ *
+ */
 template<typename _TYPE_>
 typename std::enable_if<(std::is_same<_TYPE_, int>::value || std::is_same<_TYPE_, double>::value),void >::type
 inline assert_parallel(const _TYPE_ x)
@@ -149,9 +151,12 @@ inline void mp_max_for_each_item(TRUSTArray<_TYPE_>& x) { mp_collective_op(x, Co
 template<typename _TYPE_>
 inline void mp_min_for_each_item(TRUSTArray<_TYPE_>& x) { mp_collective_op(x, Comm_Group::COLL_MIN); }
 
-// Description: On suppose que les tableaux en entree et en sortie sont de taille nproc() . On envoie src[0] au proc 0,
-//  src[1] au proc 1, etc... la valeur recue du processeur 0 et mise dans dest[0], processeur 1 dans dest[1], etc...
-//  Il est autorise d'appeler la fonction avec le meme tableau src et dest.
+/*! @brief On suppose que les tableaux en entree et en sortie sont de taille nproc() .
+ *
+ * On envoie src[0] au proc 0, src[1] au proc 1, etc... la valeur recue du processeur 0 et mise dans dest[0], processeur 1 dans dest[1], etc...
+ *   Il est autorise d'appeler la fonction avec le meme tableau src et dest.
+ *
+ */
 template<typename _TYPE_>
 inline int envoyer_all_to_all(const TRUSTArray<_TYPE_>& src, TRUSTArray<_TYPE_>& dest)
 {

@@ -24,8 +24,11 @@
 
 template<typename _TYPE_> class TRUSTList_Curseur;
 
-// .DESCRIPTION : Classe qui sert a representer une liste de reels int/double precision. On ne peut pas utiliser la classe container
-//  List avec des objets du type int/double car int/double est un type predefini du C++ qui ne possede pas les fonctions exigees par List< >.
+/*! @brief : Classe qui sert a representer une liste de reels int/double precision.
+ *
+ * On ne peut pas utiliser la classe container List avec des objets du type int/double car int/double est un type predefini du C++ qui ne possede pas les fonctions exigees par List< >.
+ *
+ */
 template<typename _TYPE_>
 class TRUSTList : public TRUSTListElem<_TYPE_>
 {
@@ -65,7 +68,9 @@ public :
   inline int contient(_TYPE_) const;
   inline int rang(_TYPE_) const;
 
-  // Description: Renvoie le dernier element de la liste
+  /*! @brief Renvoie le dernier element de la liste
+   *
+   */
   inline TRUSTListElem<_TYPE_>& dernier() { return *dernier_; }
   inline const TRUSTListElem<_TYPE_>& dernier() const { return *dernier_; }
 
@@ -88,7 +93,9 @@ private:
   _TYPE_ min_data, max_data;
 };
 
-// .DESCRIPTION : List_Curseur de reels int/double precision
+/*! @brief : List_Curseur de reels int/double precision
+ *
+ */
 template<typename _TYPE_>
 class TRUSTList_Curseur
 {

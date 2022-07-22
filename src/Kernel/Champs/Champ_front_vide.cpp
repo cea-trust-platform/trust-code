@@ -19,22 +19,14 @@ Implemente_instanciable(Champ_front_vide,"Champ_front_vide",Champ_front_base);
 
 
 
-// Description:
-//    Imprime le champ sur flot de sortie.
-//    Imprime la taille du champ et la valeur (constante) sur
-//    la frontiere.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Imprime le champ sur flot de sortie.
+ *
+ * Imprime la taille du champ et la valeur (constante) sur
+ *     la frontiere.
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Champ_front_vide::printOn(Sortie& os) const
 {
   os << que_suis_je();
@@ -42,22 +34,14 @@ Sortie& Champ_front_vide::printOn(Sortie& os) const
 }
 
 
-// Description:
-//    Lit le champ a partir d'un flot d'entree.
-//    Format:
-//      Champ_front_uniforme nb_compo vrel_1 ... [vrel_i]
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree& is
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: le champ uniforme a la valeur lue
+/*! @brief Lit le champ a partir d'un flot d'entree.
+ *
+ * Format:
+ *       Champ_front_uniforme nb_compo vrel_1 ... [vrel_i]
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree& is) le flot d'entree modifie
+ */
 Entree& Champ_front_vide::readOn(Entree& is)
 {
   return is;

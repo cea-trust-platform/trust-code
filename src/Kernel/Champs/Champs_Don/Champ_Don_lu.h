@@ -18,13 +18,15 @@
 
 #include <TRUSTChamp_Don_generique.h>
 
-// .DESCRIPTION : class Champ_Don_lu
-//     Cette classe represente un champ de donnees que l'on lit dans un fichier avec les conventions suivantes:
-//      - n valeurs du champ sont donnees dans le fichier (n doit etre egal au nombre d'elements du maillage)
-//      - le format du fichier est le suivant:
-//         n
-//         xi yi (zi) ui (vi) (wi)
-// .SECTION voir aussi : TRUSTChamp_Don_generique
+/*! @brief : class Champ_Don_lu Cette classe represente un champ de donnees que l'on lit dans un fichier avec les conventions suivantes:
+ *
+ *       - n valeurs du champ sont donnees dans le fichier (n doit etre egal au nombre d'elements du maillage)
+ *       - le format du fichier est le suivant:
+ *          n
+ *          xi yi (zi) ui (vi) (wi)
+ *
+ * @sa : TRUSTChamp_Don_generique
+ */
 class Champ_Don_lu : public TRUSTChamp_Don_generique<Champ_Don_Type::LU>
 {
   Declare_instanciable(Champ_Don_lu);

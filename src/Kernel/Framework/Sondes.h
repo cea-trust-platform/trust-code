@@ -29,14 +29,10 @@
 Declare_liste(Sonde);
 //Declare_liste(Champ);
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Sondes
-//     Cette classe represente une liste de sondes.
-// .SECTION voir aussi
-//     Sonde Postraitement
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Sondes Cette classe represente une liste de sondes.
+ *
+ * @sa Sonde Postraitement
+ */
 class Sondes : public LIST(Sonde)
 {
 
@@ -75,21 +71,9 @@ inline void Sondes::init_bords()
     }
 }
 
-// Description:
-//    Ouvre tous les fichiers associes a chacune des sondes
-//    de la liste.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: les fichiers associes des sondes sont ouverts
+/*! @brief Ouvre tous les fichiers associes a chacune des sondes de la liste.
+ *
+ */
 inline void Sondes::ouvrir_fichiers()
 {
   LIST_CURSEUR(Sonde) curseur=*this;
@@ -101,20 +85,9 @@ inline void Sondes::ouvrir_fichiers()
 }
 
 
-// Description:
-//    Ferme tous les fichiers des sondes de la liste.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: les fichiers associes des sondes sont fermes
+/*! @brief Ferme tous les fichiers des sondes de la liste.
+ *
+ */
 inline void Sondes::fermer_fichiers()
 {
   LIST_CURSEUR(Sonde) curseur=*this;

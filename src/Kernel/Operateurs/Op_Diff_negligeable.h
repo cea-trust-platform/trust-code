@@ -20,20 +20,17 @@
 #include <Operateur_negligeable.h>
 #include <Ref_Champ_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Op_Diff_negligeable
-//    Cette classe represente un operateur de diffusion negligeable.
-//    Lorsqu'un operateur de ce type est utilise dans une equation
-//    cela revient a negliger le terme de diffusion.
-//    Les methodes de modification et de participation a un calcul de
-//    l'operateur sont en fait des appels aux meme methodes de
-//    Operateur_negligeable qui ne font rien.
-//
-// .SECTION voir aussi
-//    Operateur_Diff_base Operateur_negligeable
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Op_Diff_negligeable Cette classe represente un operateur de diffusion negligeable.
+ *
+ *     Lorsqu'un operateur de ce type est utilise dans une equation
+ *     cela revient a negliger le terme de diffusion.
+ *     Les methodes de modification et de participation a un calcul de
+ *     l'operateur sont en fait des appels aux meme methodes de
+ *     Operateur_negligeable qui ne font rien.
+ *
+ *
+ * @sa Operateur_Diff_base Operateur_negligeable
+ */
 
 class Op_Diff_negligeable: public Operateur_negligeable,
   public Operateur_Diff_base
@@ -80,26 +77,14 @@ class Op_Dift_negligeable: public Op_Diff_negligeable
 };
 
 
-// Description:
-//    Ajoute la contribution de l'operateur a un tableau passe en parametre.
-//    Simple appel a Operateur_negligeable::ajouter(const DoubleTab&,DoubleTab&)
-// Precondition:
-// Parametre: DoubleTab& x
-//    Signification: le tableau sur lequel on applique l'operateur
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Parametre: DoubleTab& y
-//    Signification: tableau auquel on ajoute la contribution de l'operateur
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: DoubleTab&
-//    Signification: le parametre d'entree y non modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ajoute la contribution de l'operateur a un tableau passe en parametre.
+ *
+ * Simple appel a Operateur_negligeable::ajouter(const DoubleTab&,DoubleTab&)
+ *
+ * @param (DoubleTab& x) le tableau sur lequel on applique l'operateur
+ * @param (DoubleTab& y) tableau auquel on ajoute la contribution de l'operateur
+ * @return (DoubleTab&) le parametre d'entree y non modifie
+ */
 inline DoubleTab&
 Op_Diff_negligeable::ajouter(const DoubleTab& x, DoubleTab& y) const
 {
@@ -107,51 +92,28 @@ Op_Diff_negligeable::ajouter(const DoubleTab& x, DoubleTab& y) const
 }
 
 
-// Description:
-//    Initialise le parametre tableau avec la contribution
-//    de l'operateur negligeable: initialise le tableau a ZERO.
-//    Simple appel a Operateur_negligeable::(calculer(const DoubleTab&, DoubleTab&)
-// Precondition:
-// Parametre: DoubleTab& x
-//    Signification: le tableau sur lequel on applique l'operateur
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Parametre: DoubleTab& y
-//    Signification: tableau dans lequel stocke la contribution de l'operateur
-//    Valeurs par defaut:
-//    Contraintes: l'ancien contenu est ecrase
-//    Acces: sortie
-// Retour: DoubleTab&
-//    Signification: le tableau d'entree y mis a zero
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Initialise le parametre tableau avec la contribution de l'operateur negligeable: initialise le tableau a ZERO.
+ *
+ *     Simple appel a Operateur_negligeable::(calculer(const DoubleTab&, DoubleTab&)
+ *
+ * @param (DoubleTab& x) le tableau sur lequel on applique l'operateur
+ * @param (DoubleTab& y) tableau dans lequel stocke la contribution de l'operateur
+ * @return (DoubleTab&) le tableau d'entree y mis a zero
+ */
 inline DoubleTab&
 Op_Diff_negligeable::calculer(const DoubleTab& x, DoubleTab& y) const
 {
   return Operateur_negligeable::calculer(x,y);
 }
 
-// Description:
-//    Mise a jour en temps d'un operateur negligeable: NE FAIT RIEN
-//    Simple appel a Operateur_negligeable::mettre_a_jour(double)
-// Precondition:
-// Parametre: double temps
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: NON ACCEDE
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Mise a jour en temps d'un operateur negligeable: NE FAIT RIEN Simple appel a Operateur_negligeable::mettre_a_jour(double)
+ *
+ * @param (double temps)
+ */
 
-//Description:
-//on assemble la matrice.
+/*! @brief on assemble la matrice.
+ *
+ */
 
 inline void Op_Diff_negligeable::contribuer_a_avec(const DoubleTab& inco,
                                                    Matrice_Morse& amatrice) const
@@ -159,8 +121,9 @@ inline void Op_Diff_negligeable::contribuer_a_avec(const DoubleTab& inco,
   ;
 }
 
-//Description:
-//on ajoute la contribution du second membre.
+/*! @brief on ajoute la contribution du second membre.
+ *
+ */
 
 inline void Op_Diff_negligeable::contribuer_au_second_membre(DoubleTab& resu) const
 {
@@ -184,33 +147,15 @@ inline void Op_Diff_negligeable::mettre_a_jour(double temps)
 }
 
 
-// Description:
-//    Associe divers objets a un operateurs negligeable: NE FAIT RIEN
-//    Simple appel a Operateur_negligeable::associer(const Zone_dis&,
-//                                                     const Zone_Cl_dis&,
-//                                                     const Champ_Inc&)
-// Precondition:
-// Parametre: Zone_dis& z
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Parametre: Zone_Cl_dis& zcl
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Parametre: Champ_Inc& ch
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe divers objets a un operateurs negligeable: NE FAIT RIEN Simple appel a Operateur_negligeable::associer(const Zone_dis&,
+ *
+ *                                                      const Zone_Cl_dis&,
+ *                                                      const Champ_Inc&)
+ *
+ * @param (Zone_dis& z)
+ * @param (Zone_Cl_dis& zcl)
+ * @param (Champ_Inc& ch)
+ */
 inline void Op_Diff_negligeable::associer(const Zone_dis& z,
                                           const Zone_Cl_dis& zcl,
                                           const Champ_Inc& ch)

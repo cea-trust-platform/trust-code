@@ -25,10 +25,11 @@
 #include <Champ_Generique_Operateur_base.h>
 #include <Operateur.h>
 #include <Ref_Equation_base.h>
-//
-// .DESCRIPTION class Champ_Post_Operateur_Eqn
-// Champ destine a post-traiter le gradient d un champ generique
-// La classe porte un operateur statistique "gradient"
+/*! @brief class Champ_Post_Operateur_Eqn Champ destine a post-traiter le gradient d un champ generique
+ *
+ *  La classe porte un operateur statistique "gradient"
+ *
+ */
 
 //// Syntaxe a respecter pour jdd
 //

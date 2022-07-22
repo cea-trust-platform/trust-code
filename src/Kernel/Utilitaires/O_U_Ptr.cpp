@@ -19,22 +19,24 @@
 
 Implemente_base_sans_constructeur_ni_destructeur(O_U_Ptr,"O_U_Ptr",Objet_U);
 
-// Description:
-//    Surcharge Objet_U::printOn(Sortie&)
-//    Ecriture de la cle d'un O_U_Ptr sur un flot de sortie.
-//    A definir avec readOn. Pour l'instant :
-//    os << cle_ << finl;
+/*! @brief Surcharge Objet_U::printOn(Sortie&) Ecriture de la cle d'un O_U_Ptr sur un flot de sortie.
+ *
+ *     A definir avec readOn. Pour l'instant :
+ *     os << cle_ << finl;
+ *
+ */
 Sortie& O_U_Ptr::printOn(Sortie& os) const
 {
   get_O_U_Ptr_check();
   return os << cle_ << finl;
 }
 
-// Description:
-//    Surcharge Objet_U::readOn(Entree&)
-//    Lecture d'un O_U_Ptr (par sa cle) dans un flot d'entree
-//    ATTENTION: Le comportement de cette fonction est a definir.
-//               Pour l'instant: ne fait rien.
+/*! @brief Surcharge Objet_U::readOn(Entree&) Lecture d'un O_U_Ptr (par sa cle) dans un flot d'entree
+ *
+ *     ATTENTION: Le comportement de cette fonction est a definir.
+ *                Pour l'instant: ne fait rien.
+ *
+ */
 Entree& O_U_Ptr::readOn(Entree& is)
 {
   // Il y aurait deux choix pertinents:
@@ -53,53 +55,61 @@ Entree& O_U_Ptr::readOn(Entree& is)
   return is;
 }
 
-// Description:
-//     Destructeur. Il ne detruit pas l'objet en reference
+/*! @brief Destructeur.
+ *
+ * Il ne detruit pas l'objet en reference
+ *
+ */
 O_U_Ptr::~O_U_Ptr()
 {
   // Paranoia : on rend le pointeur invalide
   cle_ = -2;
 }
 
-// Description:
-//     construit un pointeur nul (cle a -1)
+/*! @brief construit un pointeur nul (cle a -1)
+ *
+ */
 O_U_Ptr::O_U_Ptr() :
   cle_(-1),
   ptr_object_id_(-1)
 {
 }
 
-// Description:
-//   Constructeur par copie
+/*! @brief Constructeur par copie
+ *
+ */
 O_U_Ptr::O_U_Ptr(const O_U_Ptr& ptr): Objet_U(ptr)
 {
   assert(0);
 }
 
-// Description:
-//   Operateur copie
+/*! @brief Operateur copie
+ *
+ */
 const O_U_Ptr& O_U_Ptr::operator=(const O_U_Ptr& ptr)
 {
   assert(0);
   return *this;
 }
 
-// Description:
-//     Renvoie 1 si le pointeur est non_nul
-//     Renvoie 0 sinon.
+/*! @brief Renvoie 1 si le pointeur est non_nul Renvoie 0 sinon.
+ *
+ */
 int O_U_Ptr::non_nul() const
 {
   assert(get_O_U_Ptr_check() || 1);
   return (cle_ >= 0);
 }
 
-// Description:
-//   Verifie si le pointeur est valide. Le pointeur est valide
-//     si cle_==-1
-//     ou si la_memoire().objet_u(cle_) a le meme object_id_ que
-//        celui enregistre dans ptr_object_id_.
-//   Si le pointeur n'est pas valide, arret du programme.
-// Renvoie l'adresse de l'objet pointe (de type Objet_U)
+/*! @brief Verifie si le pointeur est valide.
+ *
+ * Le pointeur est valide si cle_==-1
+ *      ou si la_memoire().objet_u(cle_) a le meme object_id_ que
+ *         celui enregistre dans ptr_object_id_.
+ *    Si le pointeur n'est pas valide, arret du programme.
+ *  Renvoie l'adresse de l'objet pointe (de type Objet_U)
+ *
+ */
 Objet_U * O_U_Ptr::get_O_U_Ptr_check() const
 {
   if (cle_ != -1 || ptr_object_id_ != -1)
@@ -127,9 +137,9 @@ Objet_U * O_U_Ptr::get_O_U_Ptr_check() const
   return 0;
 }
 
-// Description:
-//  Verifie que l'objet pointe par ptr est d'un type acceptable
-//  pour le pointeur (avec get_info_ptr)
+/*! @brief Verifie que l'objet pointe par ptr est d'un type acceptable pour le pointeur (avec get_info_ptr)
+ *
+ */
 int O_U_Ptr::check_O_U_Ptr_type(const Objet_U * ptr) const
 {
   if (ptr == 0)
@@ -158,9 +168,11 @@ int O_U_Ptr::check_O_U_Ptr_type(const Objet_U * ptr) const
   return 1;
 }
 
-// Description:
-//     Renvoie ref_().le_nom() si le pointeur est non nul
-//     ou "Pointeur Nul"
+/*! @brief Renvoie ref_().
+ *
+ * le_nom() si le pointeur est non nul ou "Pointeur Nul"
+ *
+ */
 const Nom& O_U_Ptr::le_nom() const
 {
   static Nom nom("Pointeur Nul");
@@ -170,21 +182,11 @@ const Nom& O_U_Ptr::le_nom() const
   return nom;
 }
 
-// Description:
-//     Pour mettre a jour les cles lorsque les
-//     Objet_U ont etes renumerotes.
-// Precondition:
-// Parametre: const int* const new_ones
-//    Signification: tableau de la nouvelle numerotation
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: la nouvelle cle du pointeur
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Pour mettre a jour les cles lorsque les Objet_U ont etes renumerotes.
+ *
+ * @param (const int* const new_ones) tableau de la nouvelle numerotation
+ * @return (int) la nouvelle cle du pointeur
+ */
 int O_U_Ptr::change_num(const int* const new_ones)
 {
   Objet_U::change_num(new_ones);
@@ -196,20 +198,10 @@ int O_U_Ptr::change_num(const int* const new_ones)
   return cle_;
 }
 
-// Description:
-//     Duplique l'Objet_U obj puis change le pointeur vers cette copie.
-// Precondition:
-// Parametre: const Objet_U& obj
-//    Signification: reference sur l'Objet_U a copier
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Duplique l'Objet_U obj puis change le pointeur vers cette copie.
+ *
+ * @param (const Objet_U& obj) reference sur l'Objet_U a copier
+ */
 void O_U_Ptr::recopie(const Objet_U& obj)
 {
   int cle = obj.duplique();
@@ -218,9 +210,9 @@ void O_U_Ptr::recopie(const Objet_U& obj)
   set_O_U_Ptr(& objet);
 }
 
-// Description:
-//   Renvoie un pointeur sur l'Objet_U associe
-//   ATTENTION: l'adresse peut etre nulle (si le pointeur est nul)
+/*! @brief Renvoie un pointeur sur l'Objet_U associe ATTENTION: l'adresse peut etre nulle (si le pointeur est nul)
+ *
+ */
 Objet_U * O_U_Ptr::get_O_U_Ptr() const
 {
   const Objet_U * objet;
@@ -237,9 +229,9 @@ Objet_U * O_U_Ptr::get_O_U_Ptr() const
   return (Objet_U*) objet;
 }
 
-// Description:
-//   Fait pointer *this sur l'objet *ptr
-//   L'adresse peut etre nulle (pointeur nul).
+/*! @brief Fait pointer *this sur l'objet *ptr L'adresse peut etre nulle (pointeur nul).
+ *
+ */
 void O_U_Ptr::set_O_U_Ptr(Objet_U * ptr)
 {
   if (ptr != 0)

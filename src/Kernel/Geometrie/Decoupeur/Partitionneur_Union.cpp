@@ -23,11 +23,13 @@
 // XD attr liste bloc_lecture liste 0 List of the partition files with the following syntaxe: {sous_zone1 decoupage1  ... sous_zoneim decoupageim } where sous_zone1 ... sous_zomeim are small domains names and decoupage1 ... decoupageim are partition files.
 Implemente_instanciable(Partitionneur_Union,"Partitionneur_Union",Partitionneur_base);
 
-// Description:
-//  Lecture des parametres du partitionneur sur disque.
-//  Fomat attendu:
-//    { sous_zone decoupage_sous_zone }
-//  FILENAME est le nom d'un fichier existant au format ArrOfInt ascii.
+/*! @brief Lecture des parametres du partitionneur sur disque.
+ *
+ * Fomat attendu:
+ *     { sous_zone decoupage_sous_zone }
+ *   FILENAME est le nom d'un fichier existant au format ArrOfInt ascii.
+ *
+ */
 Entree& Partitionneur_Union::readOn(Entree& is)
 {
   Nom mot, fic;
@@ -62,10 +64,9 @@ void Partitionneur_Union::associer_domaine(const Domaine& domaine)
   ref_domaine_ = domaine;
 }
 
-// Description:
-//  Lit le contenu du fichier "filename_" et stocke le resultat dans elem_part
-// Precondition:
-//  domaine associe et filename initialise
+/*! @brief Lit le contenu du fichier "filename_" et stocke le resultat dans elem_part
+ *
+ */
 void Partitionneur_Union::construire_partition(IntVect& elem_part, int& nb_parts_tot) const
 {
   elem_part.resize(ref_domaine_->zone(0).nb_elem());

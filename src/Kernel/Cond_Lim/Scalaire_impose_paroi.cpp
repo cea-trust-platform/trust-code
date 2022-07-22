@@ -22,64 +22,35 @@ Implemente_instanciable(Scalaire_impose_paroi,"Scalaire_impose_paroi",Dirichlet)
 // XD scalaire_impose_paroi dirichlet scalaire_impose_paroi 0 Imposed temperature condition at the wall called bord (edge).
 // XD   attr ch front_field_base ch 0 Boundary field type.
 
-// Description:
-//    Ecrit le type de l'objet sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit le type de l'objet sur un flot de sortie.
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Scalaire_impose_paroi::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << "\n";
 }
 
-// Description:
-//    Simple appel a: Dirichlet::readOn(Entree& )
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree& s
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Dirichlet::readOn(Entree& )
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree& s) le flot d'entree modifie
+ */
 Entree& Scalaire_impose_paroi::readOn(Entree& s )
 {
   return Dirichlet::readOn(s) ;
 }
 
 
-// Description:
-//    Verifie que les conditions aux limites sont
-//    compatiblea avec la discretisation specifiees en parametre.
-//    Des CL de type Scalaire_imposee_paroi sont compatibles
-//    avec une discretisation de type VEF.
-// Precondition:
-// Parametre: Discretisation_base& discr
-//    Signification: la discretisation avec laquelle il faut verifier la compatibilite
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: int
-//    Signification: valeur booleenne,
-//                   1 si les CL sont compatibles avec la discretisation
-//                   0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Verifie que les conditions aux limites sont compatiblea avec la discretisation specifiees en parametre.
+ *
+ *     Des CL de type Scalaire_imposee_paroi sont compatibles
+ *     avec une discretisation de type VEF.
+ *
+ * @param (Discretisation_base& discr) la discretisation avec laquelle il faut verifier la compatibilite
+ * @return (int) valeur booleenne, 1 si les CL sont compatibles avec la discretisation 0 sinon
+ */
 int Scalaire_impose_paroi::compatible_avec_discr(const Discretisation_base& discr) const
 {
   Nom type_discr=discr.que_suis_je();
@@ -105,26 +76,15 @@ int Scalaire_impose_paroi::compatible_avec_discr(const Discretisation_base& disc
 }
 
 
-// Description:
-//    Renvoie un booleen indiquant la compatibilite des conditions
-//    aux limites avec l'equation specifiee en parametre.
-//    Des CL de type Scalaire_imposee_paroi sont compatibles
-//    avec une equation dont le domaine est la Thermique, la Concentration
-//    ou bien indetermine.
-// Precondition:
-// Parametre: Equation_base& eqn
-//    Signification: l'equation avec laquelle il faut verifier la compatibilite
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: int
-//    Signification: valeur booleenne,
-//                   1 si les CL sont compatibles avec l'equation
-//                   0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie un booleen indiquant la compatibilite des conditions aux limites avec l'equation specifiee en parametre.
+ *
+ *     Des CL de type Scalaire_imposee_paroi sont compatibles
+ *     avec une equation dont le domaine est la Thermique, la Concentration
+ *     ou bien indetermine.
+ *
+ * @param (Equation_base& eqn) l'equation avec laquelle il faut verifier la compatibilite
+ * @return (int) valeur booleenne, 1 si les CL sont compatibles avec l'equation 0 sinon
+ */
 int Scalaire_impose_paroi::compatible_avec_eqn(const Equation_base& eqn) const
 {
   Motcle dom_app=eqn.domaine_application();

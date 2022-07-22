@@ -18,13 +18,13 @@
 
 #include <Elem_poly_base.h>
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Polygone_poly
-//
-// <Description of class Polygone_poly>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Polygone_poly
+ *
+ *  <Description of class Polygone_poly>
+ *
+ *
+ *
+ */
 
 class Polygone_poly : public Elem_poly_base
 {

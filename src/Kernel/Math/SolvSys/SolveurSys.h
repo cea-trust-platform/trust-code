@@ -16,13 +16,13 @@
 #ifndef SolveurSys_included
 #define SolveurSys_included
 
-//
-// .DESCRIPTION class SolveurSys
-//  Un SolveurSys represente n'importe qu'elle classe
-//  derivee de la classe SolveurSys_base
-//
-// .SECTION voir aussi
-//  Jacobi Gauss_Seidel SOR SolveurSys_base
+/*! @brief class SolveurSys Un SolveurSys represente n'importe qu'elle classe
+ *
+ *   derivee de la classe SolveurSys_base
+ *
+ *
+ * @sa Jacobi Gauss_Seidel SOR SolveurSys_base
+ */
 
 #include <SolveurSys_base.h>
 #include <Matrice_Base.h>

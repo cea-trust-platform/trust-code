@@ -19,36 +19,31 @@
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Mailler
-//    Un mailleur par agglomeration de zones (paves pour le moment)
-//    Structure du jeu de donnee (en dimension 2) :
-//    Mailler dom
-//    {
-//    [Epsilon eps]
-//    Pave nompave1
-//    {
-//       Origine OX OY
-//          Longueurs LX LY
-//          Nombre_de_Noeuds NX NY
-//    }
-//    {
-//       Bord nom_bord1 X = X0 Y0 <= Y <= Y1
-//       Bord nom_bord2 X = X0 Y1 <= Y <= Y2
-//       Bord nom_bord2 Y = Y0 X1 <= X <= X2
-//       ...
-//    } ,
-//    Pave nompave2 ...
-//    }
-//    Deux points seront confondus des que la distance entre eux est
-//    inferieure a Epsilon.
-// .SECTION voir aussi
-//    Interprete Pave
-//    Actuellement le seul tyep d'objet reconnu par Trio-U pour mailler
-//    une domaine est l'objet Pave
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Mailler Un mailleur par agglomeration de zones (paves pour le moment)
+ *
+ *     Structure du jeu de donnee (en dimension 2) :
+ *     Mailler dom
+ *     {
+ *     [Epsilon eps]
+ *     Pave nompave1
+ *     {
+ *        Origine OX OY
+ *           Longueurs LX LY
+ *           Nombre_de_Noeuds NX NY
+ *     }
+ *     {
+ *        Bord nom_bord1 X = X0 Y0 <= Y <= Y1
+ *        Bord nom_bord2 X = X0 Y1 <= Y <= Y2
+ *        Bord nom_bord2 Y = Y0 X1 <= X <= X2
+ *        ...
+ *     } ,
+ *     Pave nompave2 ...
+ *     }
+ *     Deux points seront confondus des que la distance entre eux est
+ *     inferieure a Epsilon.
+ *
+ * @sa Interprete Pave, Actuellement le seul tyep d'objet reconnu par Trio-U pour mailler, une domaine est l'objet Pave
+ */
 #include <Interprete_geometrique_base.h>
 class Mailler : public Interprete_geometrique_base
 {

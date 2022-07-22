@@ -21,11 +21,12 @@
 
 class Champ_Fonc;
 
-// .DESCRIPTION
-//  Classe de base des champs generiques ayant comme source d'autres champs generiques
-//  L'utilisation des methodes de la classe repose sur un principe de recursivite
-//  Une instruction sera de maniere generale appliquee (ou deleguer) a un champ generique
-//  source qui lui meme appliquera (ou deleguera) l action
+/*! @brief Classe de base des champs generiques ayant comme source d'autres champs generiques L'utilisation des methodes de la classe repose sur un principe de recursivite
+ *
+ *   Une instruction sera de maniere generale appliquee (ou deleguer) a un champ generique
+ *   source qui lui meme appliquera (ou deleguera) l action
+ *
+ */
 
 // Syntaxe type pour les classes filles instanciables
 //   "nom_champ"  "type_champ_gen" { source "type_champ_gen" { source ... } }

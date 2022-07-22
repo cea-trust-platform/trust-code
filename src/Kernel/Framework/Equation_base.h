@@ -45,43 +45,40 @@ class Param;
 
 enum Type_modele { TURBULENCE };
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Equation_base
-//     Le role d'une equation est le calcul d'un ou plusieurs champs.
-//     Cette classe est la base de la hierarchie des equations.
-//     Ses membres sont les attributs et les methodes communs
-//     a toutes les classes qui representent des equations.
-//     Une equation est modelisee de la facon suivante:
-//
-//         M * dU_h/dt + Somme_i(Op_i(U_h)) = Somme(Sources);
-//
-//     M est la matrice masse representee par un objet "Solveur_Masse"
-//     U_h est l'inconnue representee par un objet "Champ_Inc"
-//     Op_i est le i-eme operateur de l'equation represente par un objet
-//          "Operateur"
-//     Sources sont les termes sources (eventuellement inexistant) de
-//             l'equation represente par des objets "Source".
-//     Une equation est lie a un probleme par une reference contenue
-//     dans le membre REF(Probleme_base) mon_probleme.
-//
-//     Classe abstraite dont toutes les equations doivent deriver.
-//     Methodes abstraites:
-//       int nombre_d_operateurs() const
-//       const Operateur& operateur(int) const
-//       Operateur& operateur(int)
-//       const Champ_Inc& inconnue() const
-//       Champ_Inc& inconnue()
-//       void associer_milieu_base(const Milieu_base&)
-//       const Milieu_base& milieu() const
-//       Milieu_base& milieu()
-//       Entree& lire(const Motcle&, Entree&) [protegee]
-//
-//
-// .SECTION voir aussi
-//     Equation
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Equation_base Le role d'une equation est le calcul d'un ou plusieurs champs.
+ *
+ *      Cette classe est la base de la hierarchie des equations.
+ *      Ses membres sont les attributs et les methodes communs
+ *      a toutes les classes qui representent des equations.
+ *      Une equation est modelisee de la facon suivante:
+ *
+ *          M * dU_h/dt + Somme_i(Op_i(U_h)) = Somme(Sources);
+ *
+ *      M est la matrice masse representee par un objet "Solveur_Masse"
+ *      U_h est l'inconnue representee par un objet "Champ_Inc"
+ *      Op_i est le i-eme operateur de l'equation represente par un objet
+ *           "Operateur"
+ *      Sources sont les termes sources (eventuellement inexistant) de
+ *              l'equation represente par des objets "Source".
+ *      Une equation est lie a un probleme par une reference contenue
+ *      dans le membre REF(Probleme_base) mon_probleme.
+ *
+ *      Classe abstraite dont toutes les equations doivent deriver.
+ *      Methodes abstraites:
+ *        int nombre_d_operateurs() const
+ *        const Operateur& operateur(int) const
+ *        Operateur& operateur(int)
+ *        const Champ_Inc& inconnue() const
+ *        Champ_Inc& inconnue()
+ *        void associer_milieu_base(const Milieu_base&)
+ *        const Milieu_base& milieu() const
+ *        Milieu_base& milieu()
+ *        Entree& lire(const Motcle&, Entree&) [protegee]
+ *
+ *
+ *
+ * @sa Equation
+ */
 
 Declare_liste(RefObjU);
 
@@ -372,103 +369,53 @@ private :
 };
 
 
-// Description:
-//    Renvoie le nom de l'equation.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Nom&
-//    Signification: le nom de l'equation
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nom de l'equation.
+ *
+ * @return (Nom&) le nom de l'equation
+ */
 inline const Nom& Equation_base::le_nom() const
 {
   return nom_;
 }
 
 
-// Description:
-//    Renvoie la zone des conditions aux limite discretisee
-//    associee a l'equation
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Zone_Cl_dis&
-//    Signification: Zone de condition aux limites discretisee
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la zone des conditions aux limite discretisee associee a l'equation
+ *
+ * @return (Zone_Cl_dis&) Zone de condition aux limites discretisee
+ */
 inline Zone_Cl_dis& Equation_base::zone_Cl_dis()
 {
   return la_zone_Cl_dis;
 }
 
-// Description:
-//    Renvoie la zone des conditions aux limite discretisee
-//    associee a l'equation
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Zone_Cl_dis&
-//    Signification: Zone de condition aux limites discretisee
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la zone des conditions aux limite discretisee associee a l'equation
+ *
+ *     (version const)
+ *
+ * @return (Zone_Cl_dis&) Zone de condition aux limites discretisee
+ */
 inline const Zone_Cl_dis& Equation_base::zone_Cl_dis() const
 {
   return la_zone_Cl_dis;
 }
 
 
-// Description:
-//    Renvoie le solveur de masse associe a l'equation.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Solveur_Masse&
-//    Signification: le solveur de masse associe a l'equation
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le solveur de masse associe a l'equation.
+ *
+ * @return (Solveur_Masse&) le solveur de masse associe a l'equation
+ */
 inline Solveur_Masse& Equation_base::solv_masse()
 {
   return solveur_masse;
 }
 
 
-// Description:
-//    Renvoie le solveur de masse associe a l'equation.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Solveur_Masse&
-//    Signification: le solveur de masse associe a l'equation
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le solveur de masse associe a l'equation.
+ *
+ * (version const)
+ *
+ * @return (Solveur_Masse&) le solveur de masse associe a l'equation
+ */
 inline const Solveur_Masse& Equation_base::solv_masse() const
 {
   return solveur_masse;

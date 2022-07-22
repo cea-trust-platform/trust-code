@@ -16,8 +16,9 @@
 #ifndef Elem_poly_included
 #define Elem_poly_included
 
-//
-// .DESCRIPTION class Elem_poly
+/*! @brief class Elem_poly
+ *
+ */
 
 
 #include <Elem_poly_base.h>

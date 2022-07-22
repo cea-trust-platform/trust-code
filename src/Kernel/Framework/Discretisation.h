@@ -19,16 +19,13 @@
 #include <Ref.h>
 #include <Deriv.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Discretisation
-//     Classe generique de la hierarchie des discretisation en espace.
-//     U objet Discretisation peut referencer n'importe quel objet
-//     derivant de Discretisation_base.
-// .SECTION voir aussi
-//     Discretisation_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Discretisation Classe generique de la hierarchie des discretisation en espace.
+ *
+ *      U objet Discretisation peut referencer n'importe quel objet
+ *      derivant de Discretisation_base.
+ *
+ * @sa Discretisation_base
+ */
 
 class Discretisation_base;
 

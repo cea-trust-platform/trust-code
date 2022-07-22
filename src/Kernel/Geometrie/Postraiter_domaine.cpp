@@ -21,39 +21,21 @@
 
 Implemente_instanciable(Postraiter_domaine,"Postraiter_domaine",Interprete_geometrique_base);
 
-// Description:
-//    Simple appel a: Interprete::printOn(Sortie&)
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a: Interprete::printOn(Sortie&)
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Postraiter_domaine::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
-// Description:
-//    Simple appel a: Interprete::readOn(Entree&)
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Interprete::readOn(Entree&)
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Postraiter_domaine::readOn(Entree& is)
 {
   return Interprete::readOn(is);
@@ -198,20 +180,11 @@ void traite_bord(const Zone& zone,IntVect& ch_som,IntVect& ch_elem3,int num2, Fa
   //Cerr<<Process::me() <<" ch_elem2 size"<<fichier<< " "<<nom_dom<<" " <<nom_bord<<" "<<ch_elem2.dimension(0)<<finl;
   post.ecrire_champ(dom,unites,noms_post,-1,0.,0.,nom_bord, nom_dom, "ELEM","scalar",ch_elem2);
 }
-// Description:
-//    Fonction principale de l'interprete.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Fonction principale de l'interprete.
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree
+ */
 Entree& Postraiter_domaine::interpreter_(Entree& is)
 {
   Nom nom_pdb;

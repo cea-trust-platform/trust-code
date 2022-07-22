@@ -24,13 +24,14 @@ class Faces;
 class Zone_Cl_dis_base;
 
 
-//.DESCRIPTION class Zone_VF
-//
-// Cette classe abstraite contient les informations geometriques
-// communes aux methodes de Volumes Finis (methodes VDF et VEF par exemple)
-//
-//.SECTION voir aussi
-// Zone_dis_base
+/*! @brief class Zone_VF
+ *
+ *  Cette classe abstraite contient les informations geometriques
+ *  communes aux methodes de Volumes Finis (methodes VDF et VEF par exemple)
+ *
+ *
+ * @sa Zone_dis_base
+ */
 
 class Zone_VF : public Zone_dis_base
 {
@@ -265,73 +266,97 @@ inline int Zone_VF::numero_sommet_local(int som, int elem) const
   return -1;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline double Zone_VF::porosite_face(int i) const
 {
   return porosite_face_[i];
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline DoubleVect& Zone_VF::porosite_face()
 {
   return porosite_face_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline const DoubleVect& Zone_VF::porosite_face() const
 {
   return porosite_face_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline DoubleVect& Zone_VF::porosite_elem()
 {
   return porosite_elem_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline const DoubleVect& Zone_VF::porosite_elem() const
 {
   return porosite_elem_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline double Zone_VF::porosite_elem(int i) const
 {
   return porosite_elem_[i];
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline DoubleTab& Zone_VF::diametre_hydraulique_elem()
 {
   return diametre_hydraulique_elem_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline const DoubleTab& Zone_VF::diametre_hydraulique_elem() const
 {
   return diametre_hydraulique_elem_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline DoubleVect& Zone_VF::diametre_hydraulique_face()
 {
   return diametre_hydraulique_face_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline const DoubleVect& Zone_VF::diametre_hydraulique_face() const
 {
   return diametre_hydraulique_face_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline double Zone_VF::diametre_hydraulique_face(int i) const
 {
   return diametre_hydraulique_face_[i];
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline const DoubleVect Zone_VF::section_passage_face() const
 {
   // remplissage des sections de passage
@@ -341,65 +366,82 @@ inline const DoubleVect Zone_VF::section_passage_face() const
   return section_passage_face_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline double Zone_VF::section_passage_face(int i) const
 {
   return face_surfaces_[i] * porosite_face_[i];
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline DoubleVect& Zone_VF::coefficient_frottement()
 {
   return coefficient_frottement_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline const DoubleVect& Zone_VF::coefficient_frottement() const
 {
   return coefficient_frottement_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline double Zone_VF::coefficient_frottement(int i) const
 {
   return coefficient_frottement_[i];
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline DoubleVect& Zone_VF::coefficient_echange_thermique()
 {
   return coefficient_echange_thermique_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline const DoubleVect& Zone_VF::coefficient_echange_thermique() const
 {
   return coefficient_echange_thermique_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline double Zone_VF::coefficient_echange_thermique(int i) const
 {
   return coefficient_echange_thermique_[i];
 }
 
 
-// Description:
-// renvoie le ieme joint.
+/*! @brief renvoie le ieme joint.
+ *
+ */
 inline const Joint& Zone_VF::joint(int i) const
 {
   return zone().joint(i);
 }
 
-// Description:
-// renvoie le ieme joint.
+/*! @brief renvoie le ieme joint.
+ *
+ */
 inline Joint& Zone_VF::joint(int i)
 {
   return zone().joint(i);
 }
 
-// Description:
-// renvoie le volume de la maille i.
+/*! @brief renvoie le volume de la maille i.
+ *
+ */
 inline double Zone_VF::volumes(int i) const
 {
   return volumes_[i];
@@ -409,8 +451,9 @@ inline double Zone_VF::inverse_volumes(int i) const
   return inverse_volumes_[i];
 }
 
-// Description:
-// renvoie le tableaux des volumes des mailles.
+/*! @brief renvoie le tableaux des volumes des mailles.
+ *
+ */
 inline DoubleVect& Zone_VF::volumes()
 {
   return volumes_;
@@ -420,8 +463,9 @@ inline DoubleVect& Zone_VF::inverse_volumes()
   return inverse_volumes_;
 }
 
-// Description:
-// renvoie le tableaux des volumes des mailles.
+/*! @brief renvoie le tableaux des volumes des mailles.
+ *
+ */
 inline const DoubleVect& Zone_VF::volumes() const
 {
   return volumes_;
@@ -430,30 +474,33 @@ inline const DoubleVect& Zone_VF::inverse_volumes() const
 {
   return inverse_volumes_;
 }
-// Description:
-// renvoie l'element voisin de numface dans la direction i.
-// i=0 : dans le sens oppose de l'axe orthogonal a la face numface.
-// i=1 : dans le sens de l'axe orthogonal a la face numface.
-// exemple :
-//
-//                |   0     |     1    |
-//                      numface
-// renvoie -1 si l'element n'existe pas (au bord).
+/*! @brief renvoie l'element voisin de numface dans la direction i.
+ *
+ * i=0 : dans le sens oppose de l'axe orthogonal a la face numface.
+ *  i=1 : dans le sens de l'axe orthogonal a la face numface.
+ *  exemple :
+ *
+ *                 |   0     |     1    |
+ *                       numface
+ *  renvoie -1 si l'element n'existe pas (au bord).
+ *
+ */
 inline int Zone_VF::face_voisins(int num_face,int i) const
 {
   return face_voisins_(num_face,i);
 }
 
-// Description:
-// renvoie le tableaux des volumes des connectivites face elements
-// cf au dessus.
+/*! @brief renvoie le tableaux des volumes des connectivites face elements cf au dessus.
+ *
+ */
 inline IntTab& Zone_VF::face_voisins()
 {
   return face_voisins_;
 }
 
-// Description:
-// cf au dessus.
+/*! @brief cf au dessus.
+ *
+ */
 inline const IntTab& Zone_VF::face_voisins() const
 {
   return face_voisins_;
@@ -464,10 +511,11 @@ inline const IntTab& Zone_VF::face_voisins_fictifs() const
   return face_voisins_fictifs_;
 }
 
-// Description:
-// renvoie dans el0 le numero de l'elt a l'interieur
-// renvoie dans elf le numero de l'elt  fictif (-1 si il n'existe pas)
-//
+/*! @brief renvoie dans el0 le numero de l'elt a l'interieur renvoie dans elf le numero de l'elt  fictif (-1 si il n'existe pas)
+ *
+ *
+ *
+ */
 inline void  Zone_VF::face_voisins_reel_fictif(int face,int& el0,int& elf) const
 {
   assert(face<premiere_face_int());
@@ -483,154 +531,179 @@ inline void  Zone_VF::face_voisins_reel_fictif(int face,int& el0,int& elf) const
 }
 
 
-// Description:
-// renvoie le nombre de joints
+/*! @brief renvoie le nombre de joints
+ *
+ */
 inline int Zone_VF::nb_joints() const
 {
   return zone().nb_joints();
 }
 
-// Description:
-// une face est interne ssi elle separe deux elements.
-// renvoie le numero de la premiere face interne.
+/*! @brief une face est interne ssi elle separe deux elements.
+ *
+ * renvoie le numero de la premiere face interne.
+ *
+ */
 inline int Zone_VF::premiere_face_int() const
 {
   return nb_faces_bord();
 }
 
-// Description:
-// renvoie le nombre global de faces.
+/*! @brief renvoie le nombre global de faces.
+ *
+ */
 inline int Zone_VF::nb_faces() const
 {
   return face_sommets_.dimension(0);
 }
 
-// Description:
-// renvoie le nombre total de faces.
-// C'est-a-dire faces reelles + faces virtuelles
+/*! @brief renvoie le nombre total de faces.
+ *
+ * C'est-a-dire faces reelles + faces virtuelles
+ *
+ */
 inline int Zone_VF::nb_faces_tot() const
 {
   return face_sommets_.dimension_tot(0);
 }
 
 
-// Description:
-// renvoie le nombre de sommets par face.
-// Rque : on a suppose que toutes les faces avait
-// le meme nombre de sommet ce qui exclue des elements
-// comme le prisme.
+/*! @brief renvoie le nombre de sommets par face.
+ *
+ * Rque : on a suppose que toutes les faces avait
+ *  le meme nombre de sommet ce qui exclue des elements
+ *  comme le prisme.
+ *
+ */
 inline int Zone_VF::nb_som_face() const
 {
   return face_sommets_.dimension(1);
 }
 
-// Description:
-// renvoie le nombre de faces sur lesquelles
-// sont appliquees les conditions limites :
-// bords, raccords, plaques.
+/*! @brief renvoie le nombre de faces sur lesquelles sont appliquees les conditions limites :
+ *
+ *  bords, raccords, plaques.
+ *
+ */
 inline int Zone_VF::nb_faces_bord() const
 {
   return zone().nb_faces_frontiere();
 }
 
 
-// Description:
-// renvoie le numero de la premiere des faces sur lesquelles
-// sont appliquees les conditions limites :
-// bords, raccords, plaques.
+/*! @brief renvoie le numero de la premiere des faces sur lesquelles sont appliquees les conditions limites :
+ *
+ *  bords, raccords, plaques.
+ *
+ */
 inline int Zone_VF::premiere_face_bord() const
 {
   return 0;
 }
 
-// Description:
-// une face est interne ssi elle separe deux elements.
-// renvoie le nombre de faces internes.
+/*! @brief une face est interne ssi elle separe deux elements.
+ *
+ * renvoie le nombre de faces internes.
+ *
+ */
 inline int Zone_VF::nb_faces_internes() const
 {
   return nb_faces()- nb_faces_bord();
 }
 
-// Description:
-// renvoie le numero de le ieme face de la maille num_elem
-// la facon dont ces faces sont numerotees est
-// laisse a la responsabilite des classes derivees
+/*! @brief renvoie le numero de le ieme face de la maille num_elem la facon dont ces faces sont numerotees est
+ *
+ *  laisse a la responsabilite des classes derivees
+ *
+ */
 inline int Zone_VF::elem_faces(int num_elem, int i) const
 {
   return elem_faces_(num_elem, i);
 }
 
-// Description:
-// renvoie le tableau de connectivite element/faces
+/*! @brief renvoie le tableau de connectivite element/faces
+ *
+ */
 inline IntTab& Zone_VF::elem_faces()
 {
   return elem_faces_;
 }
 
-// Description:
-// cf au dessus.
+/*! @brief cf au dessus.
+ *
+ */
 inline const IntTab& Zone_VF::elem_faces() const
 {
   return elem_faces_;
 }
 
-// Description:
-// renvoie 1 pour les faces appartenant a un bord perio ou un item commun, 0 par defaut
+/*! @brief renvoie 1 pour les faces appartenant a un bord perio ou un item commun, 0 par defaut
+ *
+ */
 inline ArrOfInt& Zone_VF::faces_doubles()
 {
   return faces_doubles_;
 }
 
-// Description:
-// cf au dessus
+/*! @brief cf au dessus
+ *
+ */
 inline const ArrOfInt& Zone_VF::faces_doubles() const
 {
   return faces_doubles_;
 }
 
-// Description:
-// renvoie le numero du ieme sommet de la face num_face.
+/*! @brief renvoie le numero du ieme sommet de la face num_face.
+ *
+ */
 inline int Zone_VF::face_sommets(int num_face, int i) const
 {
   return face_sommets_(num_face, i);
 }
 
-// Description:
-// renvoie le tableau de connectivite faces/sommets.
+/*! @brief renvoie le tableau de connectivite faces/sommets.
+ *
+ */
 inline IntTab& Zone_VF::face_sommets()
 {
   return face_sommets_;
 }
 
-// Description:
-// cf au dessus.
+/*! @brief cf au dessus.
+ *
+ */
 inline const IntTab& Zone_VF::face_sommets() const
 {
   return face_sommets_;
 }
 
-// Description:
-// renvoie la ieme frontiere_discrete.
+/*! @brief renvoie la ieme frontiere_discrete.
+ *
+ */
 inline const Frontiere_dis_base& Zone_VF::frontiere_dis(int i) const
 {
   return les_bords_[i];
 }
 
-// Description:
-// renvoie la ieme frontiere_discrete.
+/*! @brief renvoie la ieme frontiere_discrete.
+ *
+ */
 inline Frontiere_dis_base& Zone_VF::frontiere_dis(int i)
 {
   return les_bords_[i];
 }
 
-// Description:
-// renvoie la ieme frontiere_discrete.
+/*! @brief renvoie la ieme frontiere_discrete.
+ *
+ */
 inline const Front_VF& Zone_VF::front_VF(int i) const
 {
   return les_bords_[i];
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline double Zone_VF::xv(int num_face,int k) const
 {
   return xv_(num_face,k);
@@ -668,67 +741,89 @@ inline int Zone_VF::orientation(int num_face) const
   return -1;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline DoubleTab& Zone_VF::xv()
 {
   return xv_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline const DoubleTab& Zone_VF::xv() const
 {
   return xv_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline double Zone_VF::xp(int num_elem,int k) const
 {
   return xp_(num_elem,k);
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline DoubleTab& Zone_VF::xp()
 {
   return xp_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline const DoubleTab& Zone_VF::xp() const
 {
   return xp_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline double Zone_VF::xa(int num_arete,int k) const
 {
   return xa_(num_arete,k);
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline DoubleTab& Zone_VF::xa()
 {
   return xa_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline const DoubleTab& Zone_VF::xa() const
 {
   return xa_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline DoubleVect& Zone_VF::volumes_entrelaces()
 {
   return volumes_entrelaces_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline const DoubleVect& Zone_VF::volumes_entrelaces() const
 {
   return volumes_entrelaces_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline double Zone_VF::volumes_entrelaces(int num_face) const
 {
   return volumes_entrelaces_[num_face];
@@ -753,7 +848,9 @@ inline const ArrOfInt& Zone_VF::ind_faces_virt_bord() const
 }
 
 
-// Description: renvoie 1 si face est une face virtuelle de bord, 0 sinon
+/*! @brief renvoie 1 si face est une face virtuelle de bord, 0 sinon
+ *
+ */
 inline int Zone_VF::est_une_face_virt_bord(int face) const
 {
   if (face<nb_faces() || ind_faces_virt_bord()[face-nb_faces()]==-1)
@@ -763,20 +860,26 @@ inline int Zone_VF::est_une_face_virt_bord(int face) const
 }
 
 
-// Description:
+/*! @brief
+ *
+ */
 inline int Zone_VF::face_numero_bord(int num_face) const
 {
   assert(num_face < nb_faces());
   return face_numero_bord_(num_face);
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline IntTab& Zone_VF::face_numero_bord()
 {
   return face_numero_bord_;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 inline const IntTab& Zone_VF::face_numero_bord() const
 {
   return face_numero_bord_;

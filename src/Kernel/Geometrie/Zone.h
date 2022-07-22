@@ -31,21 +31,17 @@
 
 class Motcle;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Zone
-//    Une Zone est un maillage compose d'un ensemble d'elements geometriques
-//    de meme type. Les differents types d'elements sont des objets de
-//    classes derivees de Elem_geom_base.
-//    Une zone a un domaine associe (chaque Zone peut referencer son domaine)
-//    elle a aussi un Nom.
-//    Une zone est constituee d'elements, de bords, de bords periodiques,
-//    de joints, de raccords et de face internes.
-// .SECTION voir aussi
-//    Domaine SousZone Frontiere Elem_geom Elem_geom_base
-//    Bord Bord_perio Joint Raccord Faces_Interne
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Zone Une Zone est un maillage compose d'un ensemble d'elements geometriques
+ *
+ *     de meme type. Les differents types d'elements sont des objets de
+ *     classes derivees de Elem_geom_base.
+ *     Une zone a un domaine associe (chaque Zone peut referencer son domaine)
+ *     elle a aussi un Nom.
+ *     Une zone est constituee d'elements, de bords, de bords periodiques,
+ *     de joints, de raccords et de face internes.
+ *
+ * @sa Domaine SousZone Frontiere Elem_geom Elem_geom_base, Bord Bord_perio Joint Raccord Faces_Interne
+ */
 class Zone : public Objet_U
 {
   Declare_instanciable(Zone);
@@ -276,556 +272,284 @@ inline void Zone::associer_Bords_a_imprimer_sum(LIST(Nom) liste)
 }
 
 
-// Description:
-//    Renvoie le nombre d'elements de la zone.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre d'elements de la zone
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre d'elements de la zone.
+ *
+ * @return (int) le nombre d'elements de la zone
+ */
 inline int Zone::nb_elem() const
 {
   return mes_elems.dimension(0);
 }
 
-// Description:
-//    Renvoie le nombre total d'elements de la zone.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre total d'elements de la zone
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre total d'elements de la zone.
+ *
+ * @return (int) le nombre total d'elements de la zone
+ */
 inline int Zone::nb_elem_tot() const
 {
   return mes_elems.dimension_tot(0);
 }
 
-// Description:
-//    Renvoie le numero (global) j-ieme sommet du i-ieme element
-// Precondition:
-// Parametre: int i
-//    Signification: le numero de l'element
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int j
-//    Signification: le numero local (sur l'element) du sommet dont
-//                   on veut connaitre le numero global
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le numero (global) j-ieme sommet du i-ieme element
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le numero (global) j-ieme sommet du i-ieme element
+ *
+ * @param (int i) le numero de l'element
+ * @param (int j) le numero local (sur l'element) du sommet dont on veut connaitre le numero global
+ * @return (int) le numero (global) j-ieme sommet du i-ieme element
+ */
 inline int Zone::sommet_elem(int i, int j) const
 {
   return mes_elems(i,j);
 }
 
-// Description:
-//    Renvoie le nom de la zone.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Nom&
-//    Signification: le nom de la zone
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nom de la zone.
+ *
+ * @return (Nom&) le nom de la zone
+ */
 inline const Nom& Zone::le_nom() const
 {
   return nom;
 }
 
-// Description:
-//    Donne un nom a la zone.
-// Precondition:
-// Parametre: Nom& nom_
-//    Signification: le nom a donner a la zone
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Donne un nom a la zone.
+ *
+ * @param (Nom& nom_) le nom a donner a la zone
+ */
 inline void Zone::nommer(const Nom& nom_)
 {
   nom = nom_;
 }
 
 
-// Description:
-//    Renvoie le tableau des sommets des elements
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: IntTab&
-//    Signification: le tableau des sommets des elements
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le tableau des sommets des elements
+ *
+ * @return (IntTab&) le tableau des sommets des elements
+ */
 inline IntTab& Zone::les_elems()
 {
   return mes_elems;
 }
 
-// Description:
-//    Renvoie le tableau des sommets des elements
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: IntTab&
-//    Signification: le tableau des sommets des elements
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le tableau des sommets des elements (version const)
+ *
+ * @return (IntTab&) le tableau des sommets des elements
+ */
 inline const IntTab& Zone::les_elems() const
 {
   return mes_elems;
 }
 
-// Description:
-//    Renvoie le nombre de sommets des elements geometriques
-//    constituants la zone. Tous les elements de la zone etant
-//    du meme type ils ont tous le meme nombre de sommets
-//    qui est le nombre de sommet du type des elements geometriques
-//    de la zone.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de sommets par element
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de sommets des elements geometriques constituants la zone.
+ *
+ * Tous les elements de la zone etant
+ *     du meme type ils ont tous le meme nombre de sommets
+ *     qui est le nombre de sommet du type des elements geometriques
+ *     de la zone.
+ *
+ * @return (int) le nombre de sommets par element
+ */
 inline int Zone::nb_som_elem() const
 {
   return elem.nb_som();
 }
 
-// Description:
-//    Renvoie le nombre de face de type i
-//    des elements geometriques constituants la zone.
-//    Ex: les objets de la classe Prisme ont 2 types
-//        de faces: triangle ou quadrangle.
-// Precondition:
-// Parametre: int i
-//    Signification: le type de face
-//    Valeurs par defaut:
-//    Contraintes: i < nombre de type face des elements
-//                 geometriques constituants la zone
-//    Acces:
-// Retour: int
-//    Signification: le nombre de face de type i des
-//                   elements geometriques constituants la zone
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de face de type i des elements geometriques constituants la zone.
+ *
+ *     Ex: les objets de la classe Prisme ont 2 types
+ *         de faces: triangle ou quadrangle.
+ *
+ * @param (int i) le type de face
+ * @return (int) le nombre de face de type i des elements geometriques constituants la zone
+ */
 inline int Zone::nb_faces_elem(int i) const
 {
   return elem.nb_faces(i);
 }
 
-// Description:
-//    Renvoie un element geometrique du type de ceux
-//    qui constituent la zone.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Elem_geom&
-//    Signification: un element geometrique du type de ceux
-//                   qui constituent la zone
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie un element geometrique du type de ceux qui constituent la zone.
+ *
+ *     (version const)
+ *
+ * @return (Elem_geom&) un element geometrique du type de ceux qui constituent la zone
+ */
 inline const Elem_geom& Zone::type_elem() const
 {
   return elem;
 }
 
-// Description:
-//    Renvoie un element geometrique du type de ceux
-//    qui constituent la zone.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Elem_geom&
-//    Signification: un element geometrique du type de ceux
-//                   qui constituent la zone
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie un element geometrique du type de ceux qui constituent la zone.
+ *
+ * @return (Elem_geom&) un element geometrique du type de ceux qui constituent la zone
+ */
 inline Elem_geom& Zone::type_elem()
 {
   return elem;
 }
 
-// Description:
-//    Renvoie le nombre de bords de la zone.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de bords de la zone
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de bords de la zone.
+ *
+ * @return (int) le nombre de bords de la zone
+ */
 inline int Zone::nb_bords() const
 {
   return mes_faces_bord.nb_bords();
 }
 
-// Description:
-//    Renvoie le nombre de joints de la zone.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de joints de la zone
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de joints de la zone.
+ *
+ * @return (int) le nombre de joints de la zone
+ */
 inline int Zone::nb_joints() const
 {
   return mes_faces_joint.nb_joints();
 }
 
-// Description:
-//    Renvoie le nombre de raccords de la zone.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de raccords de la zone
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de raccords de la zone.
+ *
+ * @return (int) le nombre de raccords de la zone
+ */
 inline int Zone::nb_raccords() const
 {
   return mes_faces_raccord.nb_raccords();
 }
 
-// Description:
-//    Renvoie le nombre de frontieres internes de la zone.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de frontieres internes de la zone
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de frontieres internes de la zone.
+ *
+ * @return (int) le nombre de frontieres internes de la zone
+ */
 inline int Zone::nb_frontieres_internes() const
 {
   return mes_faces_int.nb_faces_internes();
 }
 
-// Description:
-//  Renvoie le nombre de faces frontiere de la zone.
-//  C'est la somme des nombres de  bords, de raccords et de faces internes
+/*! @brief Renvoie le nombre de faces frontiere de la zone.
+ *
+ * C'est la somme des nombres de  bords, de raccords et de faces internes
+ *
+ */
 inline int Zone::nb_faces_frontiere() const
 {
   return nb_faces_bord() + nb_faces_raccord() + nb_faces_int();
 }
 
-// Description:
-//    Renvoie le nombre de bords
-//          + le nombre de raccords
-//          + le nombre de faces frontieres internes
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de frontieres ayant des
-//                   conditions aux limites.
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de bords + le nombre de raccords
+ *
+ *           + le nombre de faces frontieres internes
+ *
+ * @return (int) le nombre de frontieres ayant des conditions aux limites.
+ */
 inline int Zone::nb_front_Cl() const
 {
   return nb_bords() +nb_raccords() + nb_frontieres_internes();
 }
-// Description:
-//    Type les elements de la zone avec le
-//    nom passe en parametre. Et associe le type
-//    d'element a la zone.
-// Precondition:
-// Parametre: Nom& typ
-//    Signification: le nom du type des elements geometriques
-//                   de la zone.
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Type les elements de la zone avec le nom passe en parametre.
+ *
+ * Et associe le type
+ *     d'element a la zone.
+ *
+ * @param (Nom& typ) le nom du type des elements geometriques de la zone.
+ */
 inline void Zone::typer(const Nom& typ)
 {
   elem.typer(typ);
   elem.associer_zone(*this);
 }
 
-// Description:
-//    Calcule les centres de gravites des elements de la zone.
-// Precondition:
-// Parametre: DoubleTab& xp
-//    Signification: le tableau contenant les centres de
-//                   gravites des elements de la zone
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Calcule les centres de gravites des elements de la zone.
+ *
+ * @param (DoubleTab& xp) le tableau contenant les centres de gravites des elements de la zone
+ */
 inline void Zone::calculer_centres_gravite(DoubleTab& xp) const
 {
   elem.calculer_centres_gravite(xp);
 }
 
-// Description:
-//    Renvoie le bord dont le nom est specifie.
-//    (version const)
-// Precondition:
-// Parametre: Nom& nom_
-//    Signification: le nom du bord a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: Bord&
-//    Signification: le bord dont le nom est specifie
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le bord dont le nom est specifie.
+ *
+ * (version const)
+ *
+ * @param (Nom& nom_) le nom du bord a renvoyer
+ * @return (Bord&) le bord dont le nom est specifie
+ */
 inline const Bord& Zone::bord(const Nom& nom_) const
 {
   return mes_faces_bord(nom_);
 }
 
-// Description:
-//    Renvoie le bord dont le nom est specifie.
-// Precondition:
-// Parametre: Nom& nom_
-//    Signification: le nom du bord a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: Bord&
-//    Signification: le bord dont le nom est specifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le bord dont le nom est specifie.
+ *
+ * @param (Nom& nom_) le nom du bord a renvoyer
+ * @return (Bord&) le bord dont le nom est specifie
+ */
 inline Bord& Zone::bord(const Nom& nom_)
 {
   return mes_faces_bord(nom_);
 }
 
-// Description:
-//    Renvoie le joint dont le nom est specifie
-//    (version const)
-// Precondition:
-// Parametre: Nom& nom_
-//    Signification: le nom du joint a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: Joint&
-//    Signification: le joint dont le nom est specifie
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le joint dont le nom est specifie (version const)
+ *
+ * @param (Nom& nom_) le nom du joint a renvoyer
+ * @return (Joint&) le joint dont le nom est specifie
+ */
 inline const Joint& Zone::joint(const Nom& nom_) const
 {
   return mes_faces_joint(nom_);
 }
 
-// Description:
-//    Renvoie le joint dont le nom est specifie
-// Precondition:
-// Parametre: Nom& nom_
-//    Signification: le nom du joint a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: Joint&
-//    Signification: le joint dont le nom est specifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le joint dont le nom est specifie
+ *
+ * @param (Nom& nom_) le nom du joint a renvoyer
+ * @return (Joint&) le joint dont le nom est specifie
+ */
 inline Joint& Zone::joint(const Nom& nom_)
 {
   return mes_faces_joint(nom_);
 }
 
-// Description:
-//    Renvoie le raccord dont le nom est specifie
-//    (version const)
-// Precondition:
-// Parametre: Nom& nom_
-//    Signification: le nom du raccord a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: Raccord&
-//    Signification: le raccord dont le nom est specifie
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le raccord dont le nom est specifie (version const)
+ *
+ * @param (Nom& nom_) le nom du raccord a renvoyer
+ * @return (Raccord&) le raccord dont le nom est specifie
+ */
 inline const Raccord& Zone::raccord(const Nom& nom_) const
 {
   return mes_faces_raccord(nom_);
 }
 
-// Description:
-//    Renvoie le raccord dont le nom est specifie
-// Precondition:
-// Parametre: Nom& nom_
-//    Signification: le nom du raccord a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: Raccord&
-//    Signification: le raccord dont le nom est specifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le raccord dont le nom est specifie
+ *
+ * @param (Nom& nom_) le nom du raccord a renvoyer
+ * @return (Raccord&) le raccord dont le nom est specifie
+ */
 inline Raccord& Zone::raccord(const Nom& nom_)
 {
   return mes_faces_raccord(nom_);
 }
 
-// Description:
-//    Renvoie les faces_internes dont le nom est specifie
-//    (version const)
-// Precondition:
-// Parametre: Nom& nom_
-//    Signification: le nom des faces internes a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: Faces_Interne&
-//    Signification: les faces_internes dont le nom est specifie
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie les faces_internes dont le nom est specifie (version const)
+ *
+ * @param (Nom& nom_) le nom des faces internes a renvoyer
+ * @return (Faces_Interne&) les faces_internes dont le nom est specifie
+ */
 inline const Faces_Interne& Zone::faces_interne(const Nom& nom_) const
 {
   return mes_faces_int(nom_);
 }
 
-// Description:
-//    Renvoie les faces_internes dont le nom est specifie
-// Precondition:
-// Parametre: Nom& nom_
-//    Signification: le nom des faces internes a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: Faces_Interne&
-//    Signification: les faces_internes dont le nom est specifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie les faces_internes dont le nom est specifie
+ *
+ * @param (Nom& nom_) le nom des faces internes a renvoyer
+ * @return (Faces_Interne&) les faces_internes dont le nom est specifie
+ */
 inline Faces_Interne& Zone::faces_interne(const Nom& nom_)
 {
   return mes_faces_int(nom_);
 }
 
-// Description:
-//    Renvoie le i-ieme bord de la zone
-//    (version const)
-// Precondition:
-// Parametre: int i
-//    Signification: l'indice du bord renvoyer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Bord&
-//    Signification: le i-ieme bord de la zone
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le i-ieme bord de la zone (version const)
+ *
+ * @param (int i) l'indice du bord renvoyer
+ * @return (Bord&) le i-ieme bord de la zone
+ */
 inline const Bord& Zone::bord(int i) const
 {
   return mes_faces_bord(i);
@@ -865,80 +589,44 @@ inline Frontiere& Zone::frontiere(int i)
   return frontiere(i);
 }
 
-// Description:
-//    Renvoie le i-ieme bord de la zone
-// Precondition:
-// Parametre: int i
-//    Signification: l'indice du bord a renvoyer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Bord&
-//    Signification: le i-ieme bord de la zone
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le i-ieme bord de la zone
+ *
+ * @param (int i) l'indice du bord a renvoyer
+ * @return (Bord&) le i-ieme bord de la zone
+ */
 inline Bord& Zone::bord(int i)
 {
   return mes_faces_bord(i);
 }
 
-// Description:
-//    Renvoie le i-ieme joint de la zone
-//    (version const)
-// Precondition:
-// Parametre: int i
-//    Signification: l'indice du joint renvoyer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Joint&
-//    Signification: le i-ieme joint de la zone
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le i-ieme joint de la zone (version const)
+ *
+ * @param (int i) l'indice du joint renvoyer
+ * @return (Joint&) le i-ieme joint de la zone
+ */
 inline const Joint& Zone::joint(int i) const
 {
   return mes_faces_joint(i);
 }
 
-// Description:
-//    Renvoie le i-ieme joint de la zone
-// Precondition:
-// Parametre: int i
-//    Signification: l'indice du joint a renvoyer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Joint&
-//    Signification: le i-ieme joint de la zone
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le i-ieme joint de la zone
+ *
+ * @param (int i) l'indice du joint a renvoyer
+ * @return (Joint&) le i-ieme joint de la zone
+ */
 inline Joint& Zone::joint(int i)
 {
   return mes_faces_joint(i);
 }
 
-// Description:
-//    Renvoie le joint correspondant au PE specifie.
-//    (PE = Processeur Elementaire, ou numero de processus)
-//    Un joint est une frontiere entre 2 PE.
-// Precondition:
-// Parametre: int pe
-//    Signification: un numero de PE
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Joint&
-//    Signification: le joint correspondant au PE specifie
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le joint correspondant au PE specifie.
+ *
+ * (PE = Processeur Elementaire, ou numero de processus)
+ *     Un joint est une frontiere entre 2 PE.
+ *
+ * @param (int pe) un numero de PE
+ * @return (Joint&) le joint correspondant au PE specifie
+ */
 inline const Joint& Zone::joint_of_pe(int pe) const
 {
   int i;
@@ -956,280 +644,143 @@ inline Joint& Zone::joint_of_pe(int pe)
   return mes_faces_joint(i);
 }
 
-// Description:
-//    Renvoie le i-ieme raccord de la zone
-//    (version const)
-// Precondition:
-// Parametre: int i
-//    Signification: l'indice du raccord renvoyer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Raccord&
-//    Signification: le i-ieme raccord de la zone
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le i-ieme raccord de la zone (version const)
+ *
+ * @param (int i) l'indice du raccord renvoyer
+ * @return (Raccord&) le i-ieme raccord de la zone
+ */
 inline const Raccord& Zone::raccord(int i) const
 {
   return mes_faces_raccord(i);
 }
 
-// Description:
-//    Renvoie le i-ieme raccord de la zone
-// Precondition:
-// Parametre: int i
-//    Signification: l'indice du raccord a renvoyer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Raccord&
-//    Signification: le i-ieme raccord de la zone
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le i-ieme raccord de la zone
+ *
+ * @param (int i) l'indice du raccord a renvoyer
+ * @return (Raccord&) le i-ieme raccord de la zone
+ */
 inline Raccord& Zone::raccord(int i)
 {
   return mes_faces_raccord(i);
 }
 
-// Description:
-//    Renvoie les i-ieme faces internes de la zone
-//    (version const)
-// Precondition:
-// Parametre: int i
-//    Signification: l'indice des faces internes renvoyer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Faces_Internes&
-//    Signification: les i-ieme faces internes de la zone
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie les i-ieme faces internes de la zone (version const)
+ *
+ * @param (int i) l'indice des faces internes renvoyer
+ * @return (Faces_Internes&) les i-ieme faces internes de la zone
+ */
 inline const Faces_Interne& Zone::faces_interne(int i) const
 {
   return mes_faces_int(i);
 }
 
-// Description:
-//    Renvoie les i-ieme faces internes de la zone
-// Precondition:
-// Parametre: int i
-//    Signification: l'indice des faces internes a renvoyer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Facesr_Internes&
-//    Signification: les i-ieme faces internes de la zone
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie les i-ieme faces internes de la zone
+ *
+ * @param (int i) l'indice des faces internes a renvoyer
+ * @return (Facesr_Internes&) les i-ieme faces internes de la zone
+ */
 inline Faces_Interne& Zone::faces_interne(int i)
 {
   return mes_faces_int(i);
 }
 
-// Description:
-//    Renvoie la liste des bords de la zone.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Bords&
-//    Signification: la liste des bords de la zone
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la liste des bords de la zone.
+ *
+ * (version const)
+ *
+ * @return (Bords&) la liste des bords de la zone
+ */
 inline const Bords& Zone::faces_bord() const
 {
   return mes_faces_bord;
 }
 
-// Description:
-//    Renvoie la liste des bords de la zone.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Bords&
-//    Signification: la liste des bords de la zone
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la liste des bords de la zone.
+ *
+ * @return (Bords&) la liste des bords de la zone
+ */
 inline Bords& Zone::faces_bord()
 {
   return mes_faces_bord;
 }
 
-// Description:
-//    Renvoie la liste des joints de la zone.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Joints&
-//    Signification: la liste des joints de la zone
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la liste des joints de la zone.
+ *
+ * (version const)
+ *
+ * @return (Joints&) la liste des joints de la zone
+ */
 inline const Joints& Zone::faces_joint() const
 {
   return mes_faces_joint;
 }
 
-// Description:
-//    Renvoie la liste des joints de la zone.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Joints&
-//    Signification: la liste des joints de la zone
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la liste des joints de la zone.
+ *
+ * @return (Joints&) la liste des joints de la zone
+ */
 inline Joints& Zone::faces_joint()
 {
   return mes_faces_joint;
 }
 
-// Description:
-//    Renvoie la liste des racoords de la zone.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Raccords&
-//    Signification: la liste des raccords de la zone
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la liste des racoords de la zone.
+ *
+ * (version const)
+ *
+ * @return (Raccords&) la liste des raccords de la zone
+ */
 inline const Raccords& Zone::faces_raccord() const
 {
   return mes_faces_raccord;
 }
 
-// Description:
-//    Renvoie la liste des racoords de la zone.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Raccords&
-//    Signification: la liste des raccords de la zone
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la liste des racoords de la zone.
+ *
+ * @return (Raccords&) la liste des raccords de la zone
+ */
 inline Raccords& Zone::faces_raccord()
 {
   return mes_faces_raccord;
 }
 
-// Description:
-//    Renvoie la liste des faces internes de la zone.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Faces_Internes&
-//    Signification: la liste des faces internes de la zone
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la liste des faces internes de la zone.
+ *
+ * (version const)
+ *
+ * @return (Faces_Internes&) la liste des faces internes de la zone
+ */
 inline const Faces_Internes& Zone::faces_int() const
 {
   return mes_faces_int;
 }
 
-// Description:
-//    Renvoie la liste des faces internes de la zone.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Faces_Internes&
-//    Signification: la liste des faces internes de la zone
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la liste des faces internes de la zone.
+ *
+ * @return (Faces_Internes&) la liste des faces internes de la zone
+ */
 inline Faces_Internes& Zone::faces_int()
 {
   return mes_faces_int;
 }
 
-// Description:
-//    Reordonne les elements suivant la convention
-//    employe par Trio-U.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Reordonne les elements suivant la convention employe par Trio-U.
+ *
+ */
 inline void Zone::reordonner()
 {
   elem.reordonner();
 }
 
 
-// //    JY 26/08/97
-// Description:
-//    Renvoie le nombre de faces frontiere de la zone
-//    du type specifie.
-//    C'est la somme des nombres de  bords, de raccords
-//    et de faces internes du type specifie.
-// Precondition:
-// Parametre: Type_Face type
-//    Signification: un type de face
-//                  (certains elements geometriques ont plusieurs types de faces)
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de faces frontiere de la zone du type specifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de faces frontiere de la zone du type specifie.
+ *
+ *     C'est la somme des nombres de  bords, de raccords
+ *     et de faces internes du type specifie.
+ *
+ * @param (Type_Face type) un type de face (certains elements geometriques ont plusieurs types de faces)
+ * @return (int) le nombre de faces frontiere de la zone du type specifie
+ */
 inline int Zone::nb_faces_frontiere(Type_Face type) const
 {
   return
@@ -1245,40 +796,45 @@ inline const ArrOfInt& Zone::ind_faces_virt_bord() const
   return ind_faces_virt_bord_;
 }
 
-// Description:
-// renvoie le nombre d'aretes reelles.
+/*! @brief renvoie le nombre d'aretes reelles.
+ *
+ */
 inline int Zone::
 nb_aretes() const
 {
   return Aretes_som.dimension(0);
 }
 
-// Description:
-// renvoie le nombre d'aretes total (reelles+virtuelles).
+/*! @brief renvoie le nombre d'aretes total (reelles+virtuelles).
+ *
+ */
 inline int Zone::
 nb_aretes_tot() const
 {
   return Aretes_som.dimension_tot(0);
 }
 
-// Description:
-// renvoie le numero du jeme sommet de la ieme arete.
+/*! @brief renvoie le numero du jeme sommet de la ieme arete.
+ *
+ */
 inline int Zone::
 arete_sommets(int i, int j) const
 {
   return Aretes_som(i, j);
 }
 
-// Description:
-// renvoie le numero de la jeme arete du ieme element.
+/*! @brief renvoie le numero de la jeme arete du ieme element.
+ *
+ */
 inline int Zone::
 elem_aretes(int i, int j) const
 {
   return Elem_Aretes(i, j);
 }
 
-// Description:
-// renvoie le tableau de connectivite aretes/sommets.
+/*! @brief renvoie le tableau de connectivite aretes/sommets.
+ *
+ */
 inline const IntTab& Zone::
 aretes_som() const
 {
@@ -1290,8 +846,9 @@ set_aretes_som()
   return Aretes_som;
 }
 
-// Description:
-// renvoie le tableau de connectivite elements/aretes.
+/*! @brief renvoie le tableau de connectivite elements/aretes.
+ *
+ */
 inline const IntTab& Zone::
 elem_aretes() const
 {

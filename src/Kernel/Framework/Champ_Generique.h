@@ -19,11 +19,12 @@
 
 Declare_deriv(Champ_Generique_base);
 
-//
-// .DESCRIPTION :
-// Cette classe sert a representer n'importe quelle classe
-// derivee de la classe Champ_Generique_base
-//
+/*! @brief : Cette classe sert a representer n'importe quelle classe
+ *
+ *  derivee de la classe Champ_Generique_base
+ *
+ *
+ */
 
 class Champ_Generique : public DERIV(Champ_Generique_base)
 {

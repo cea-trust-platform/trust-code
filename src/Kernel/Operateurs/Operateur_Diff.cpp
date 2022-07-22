@@ -23,66 +23,34 @@ Implemente_deriv(Operateur_Diff_base);
 Implemente_instanciable(Operateur_Diff,"Operateur_Diff",DERIV(Operateur_Diff_base));
 
 
-// Description:
-//    Simple appel a Operateur::ecrire(Sortie&)
-//    Ecrit l'operateur sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a Operateur::ecrire(Sortie&) Ecrit l'operateur sur un flot de sortie.
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Operateur_Diff::printOn(Sortie& os) const
 {
   return Operateur::ecrire(os);
 }
 
 
-// Description:
-//    Simple appel a Operateur::lire(Entree&)
-//    Lit l'operateur a partir d'un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a Operateur::lire(Entree&) Lit l'operateur a partir d'un flot d'entree.
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Operateur_Diff::readOn(Entree& is)
 {
   return Operateur::lire(is);
 }
 
-// Description:
-//    Type l'operateur:
-//     se type "Op_Diff_"+discretisation()+
-//     ("_"ou"_Multi_inco_")+("const_"ou"var_")
-//     + inconnue().suffix
-//    Associe la diffusivite a l'operateur base.
-// Precondition: si l'operateur n'est pas negligeable une
-//               diffusivite doit avoir ete associee a l'operateur.
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: l'operateur est type
+/*! @brief Type l'operateur: se type "Op_Diff_"+discretisation()+
+ *
+ *      ("_"ou"_Multi_inco_")+("const_"ou"var_")
+ *      + inconnue().suffix
+ *     Associe la diffusivite a l'operateur base.
+ *
+ */
 void Operateur_Diff::typer()
 {
   Cerr << "Operateur_Diff::typer("<<typ<<")" << finl;
@@ -102,66 +70,32 @@ void Operateur_Diff::typer()
   Cerr << valeur().que_suis_je() << finl;
 }
 
-// Description:
-//    Renvoie l'objet sous-jacent upcaste en Operateur_base
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Operateur_base&
-//    Signification: l'objet sous-jacent upcaste en Operateur_base
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie l'objet sous-jacent upcaste en Operateur_base
+ *
+ * @return (Operateur_base&) l'objet sous-jacent upcaste en Operateur_base
+ */
 Operateur_base& Operateur_Diff::l_op_base()
 {
   return valeur();
 }
-// Description:
-//    Renvoie l'objet sous-jacent upcaste en Operateur_base
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Operateur_base&
-//    Signification: l'objet sous-jacent upcaste en Operateur_base
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie l'objet sous-jacent upcaste en Operateur_base (version const)
+ *
+ * @return (Operateur_base&) l'objet sous-jacent upcaste en Operateur_base
+ */
 const Operateur_base& Operateur_Diff::l_op_base() const
 {
   return valeur();
 }
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Ajoute la contribution de l'operateur au tableau
-//    passe en parametre
-// Precondition:
-// Parametre: DoubleTab& donnee
-//    Signification: tableau contenant les donnees sur lesquelles on applique
-//                   l'operateur.
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleTab& resu
-//    Signification: tableau auquel on ajoute la contribution de l'operateur
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: DoubleTab&
-//    Signification: le tableau contenant le resultat
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Ajoute la contribution de l'operateur au tableau
+ *     passe en parametre
+ *
+ * @param (DoubleTab& donnee) tableau contenant les donnees sur lesquelles on applique l'operateur.
+ * @param (DoubleTab& resu) tableau auquel on ajoute la contribution de l'operateur
+ * @return (DoubleTab&) le tableau contenant le resultat
+ */
 DoubleTab& Operateur_Diff::ajouter(const DoubleTab& donnee,
                                    DoubleTab& resu) const
 {
@@ -171,28 +105,15 @@ DoubleTab& Operateur_Diff::ajouter(const DoubleTab& donnee,
   return tmp;
 }
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Initialise le tableau passe en parametre avec la contribution
-//    de l'operateur.
-// Precondition:
-// Parametre: DoubleTab& donnee
-//    Signification: tableau contenant les donnees sur lesquelles on applique
-//                   l'operateur.
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleTab& resu
-//    Signification: tableau dans lequel stocke la contribution de l'operateur
-//    Valeurs par defaut:
-//    Contraintes: l'ancien contenu est ecrase
-//    Acces: sortie
-// Retour: DoubleTab&
-//    Signification: le tableau contenant le resultat
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Initialise le tableau passe en parametre avec la contribution
+ *     de l'operateur.
+ *
+ * @param (DoubleTab& donnee) tableau contenant les donnees sur lesquelles on applique l'operateur.
+ * @param (DoubleTab& resu) tableau dans lequel stocke la contribution de l'operateur
+ * @return (DoubleTab&) le tableau contenant le resultat
+ */
 DoubleTab& Operateur_Diff::calculer(const DoubleTab& donnee,
                                     DoubleTab& resu) const
 {
@@ -203,40 +124,21 @@ DoubleTab& Operateur_Diff::calculer(const DoubleTab& donnee,
 }
 
 
-// Description:
-//    Renvoie le champ representant la diffusivite.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Don&
-//    Signification: le champ representant la diffusivite
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le champ representant la diffusivite.
+ *
+ * @return (Champ_Don&) le champ representant la diffusivite
+ */
 const Champ_base& Operateur_Diff::diffusivite() const
 {
   return la_diffusivite.valeur();
 }
 
 
-// Description:
-//    Associe la diffusivite a l'operateur.
-// Precondition:
-// Parametre: Champ_Don& nu
-//    Signification: le champ representant la diffusivite
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification: le champ representant la diffusivite
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe la diffusivite a l'operateur.
+ *
+ * @param (Champ_Don& nu) le champ representant la diffusivite
+ * @return le champ representant la diffusivite
+ */
 void Operateur_Diff::associer_diffusivite(const Champ_base& nu)
 {
   la_diffusivite=nu;
@@ -247,20 +149,10 @@ void  Operateur_Diff::associer_diffusivite_pour_pas_de_temps(const Champ_base& n
   valeur().associer_diffusivite_pour_pas_de_temps(nu);
 }
 
-// Description:
-//    Type l'operateur.
-// Precondition:
-// Parametre: Nom& typ
-//    Signification: le nom representant le type de l'operateur
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Type l'operateur.
+ *
+ * @param (Nom& typ) le nom representant le type de l'operateur
+ */
 void Operateur_Diff::typer(const Nom& un_type)
 {
   DERIV(Operateur_Diff_base)::typer(un_type);

@@ -22,18 +22,15 @@
 class Matrice_Diagonale;
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Matrice_Morse_Diag
-//    Represente une matrice M (creuse) symetrique stockee au format Morse
-//    Diagetrique: on ne stocke que la partie triangulaire superieure de la
-//    matrice. Important: Tous les coefficients diagonaux doivent etre stockes
-//    meme s'ils sont nuls (hypothese TRUST pour plusieurs methodes dont multvect).
-//    Cette classe derive de Matrice_Morse_Sym
-// .SECTION voir aussi
-//    Matrice_Morse Matrice_Diag
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Matrice_Morse_Diag Represente une matrice M (creuse) symetrique stockee au format Morse
+ *
+ *     Diagetrique: on ne stocke que la partie triangulaire superieure de la
+ *     matrice. Important: Tous les coefficients diagonaux doivent etre stockes
+ *     meme s'ils sont nuls (hypothese TRUST pour plusieurs methodes dont multvect).
+ *     Cette classe derive de Matrice_Morse_Sym
+ *
+ * @sa Matrice_Morse Matrice_Diag
+ */
 class Matrice_Morse_Diag : public Matrice_Morse_Sym
 {
 

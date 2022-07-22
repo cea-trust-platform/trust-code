@@ -18,23 +18,17 @@
 
 #include <TRUSTTab.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Matrice_Base
-//    Classe de base de la hierarchie des matrices.
-//    Cette classe definie l'interface generique d'une matrice telle
-//    qu'elle est utilisee dans Trio-U. En consequence elle n'est pas
-//    instanciable. Toutes les types de matrices devront deriver de cette
-//    classe de base et implementer ses methodes abstraites.
-//
-//    Dans les commentaires des methodes A represente un objet Matrice_base.
-// .SECTION voir aussi
-//    Classe abstraite
-//    Methodes abstraites:
-//      DoubleVect& multvect_(const DoubleVect&, DoubleVect& ) const
-//      int ordre() const
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Matrice_Base Classe de base de la hierarchie des matrices.
+ *
+ *     Cette classe definie l'interface generique d'une matrice telle
+ *     qu'elle est utilisee dans Trio-U. En consequence elle n'est pas
+ *     instanciable. Toutes les types de matrices devront deriver de cette
+ *     classe de base et implementer ses methodes abstraites.
+ *
+ *     Dans les commentaires des methodes A represente un objet Matrice_base.
+ *
+ * @sa Classe abstraite, Methodes abstraites:, DoubleVect& multvect_(const DoubleVect&, DoubleVect& ) const, int ordre() const
+ */
 
 class Matrice_Base : public Objet_U
 {
@@ -89,26 +83,14 @@ protected:
 
 
 
-// Description:
-//    Multiplication d'un vecteur par la matrice.
-//    Operation: r = A*x
-// Precondition:
-// Parametre: DoubleVect& x
-//    Signification: le vecteur a multiplier
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleVect& r
-//    Signification: le vecteur resultat de l'operation
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: DoubleVect&
-//    Signification: le vecteur resultat de l'operation
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Multiplication d'un vecteur par la matrice.
+ *
+ * Operation: r = A*x
+ *
+ * @param (DoubleVect& x) le vecteur a multiplier
+ * @param (DoubleVect& r) le vecteur resultat de l'operation
+ * @return (DoubleVect&) le vecteur resultat de l'operation
+ */
 inline DoubleVect& Matrice_Base::
 multvect(const DoubleVect& x, DoubleVect& r) const
 {
@@ -125,26 +107,14 @@ multvect_(const DoubleVect& x, DoubleVect& r) const
   return r;
 }
 
-// Description:
-//    Multiplication d'un vecteur par la matrice transposee.
-//    Operation: r = AT*x
-// Precondition:
-// Parametre: DoubleVect& x
-//    Signification: le vecteur a multiplier
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleVect& r
-//    Signification: le vecteur resultat de l'operation
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: DoubleVect&
-//    Signification: le vecteur resultat de l'operation
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Multiplication d'un vecteur par la matrice transposee.
+ *
+ * Operation: r = AT*x
+ *
+ * @param (DoubleVect& x) le vecteur a multiplier
+ * @param (DoubleVect& r) le vecteur resultat de l'operation
+ * @return (DoubleVect&) le vecteur resultat de l'operation
+ */
 inline DoubleVect& Matrice_Base::
 multvectT(const DoubleVect& x, DoubleVect& r) const
 {
@@ -161,27 +131,15 @@ multvectT_(const DoubleVect& x, DoubleVect& r) const
   return r;
 }
 
-// Description:
-//    NON CODE
-//    Multiplication d'une matrice representee par un tableau par la matrice.
-//    Operation: R = A*X
-// Precondition:
-// Parametre: DoubleTab&
-//    Signification: la matrice a multiplier
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Parametre: DoubleTab& r
-//    Signification: la matrice resultat de l'operation
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: DoubleTab&
-//    Signification: la matrice resultat de l'operation
-//    Contraintes:
-// Exception: NON CODE
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NON CODE Multiplication d'une matrice representee par un tableau par la matrice.
+ *
+ *     Operation: R = A*X
+ *
+ * @param (DoubleTab&) la matrice a multiplier
+ * @param (DoubleTab& r) la matrice resultat de l'operation
+ * @return (DoubleTab&) la matrice resultat de l'operation
+ * @throws NON CODE
+ */
 inline DoubleTab& Matrice_Base::
 multTab(const DoubleTab& x, DoubleTab& r) const
 {
@@ -192,26 +150,14 @@ multTab(const DoubleTab& x, DoubleTab& r) const
 }
 
 
-// Description:
-//    Operation de multiplication-accumulation (saxpy) matrice vecteur.
-//    Operation: r = r + A*x
-// Precondition:
-// Parametre: DoubleVect& x
-//    Signification: le vecteur a multiplier
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleVect& r
-//    Signification: le vecteur resultat de l'operation
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: DoubleVect&
-//    Signification: le vecteur resultat de l'operation
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Operation de multiplication-accumulation (saxpy) matrice vecteur.
+ *
+ * Operation: r = r + A*x
+ *
+ * @param (DoubleVect& x) le vecteur a multiplier
+ * @param (DoubleVect& r) le vecteur resultat de l'operation
+ * @return (DoubleVect&) le vecteur resultat de l'operation
+ */
 inline DoubleVect& Matrice_Base::
 ajouter_multvect(const DoubleVect& x, DoubleVect& r) const
 {
@@ -220,26 +166,14 @@ ajouter_multvect(const DoubleVect& x, DoubleVect& r) const
   return r;
 }
 
-// Description:
-//    Operation de multiplication-accumulation (saxpy) matrice vecteur.
-//    Operation: r = r + A*x
-// Precondition:
-// Parametre: DoubleVect& x
-//    Signification: le vecteur a multiplier
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleVect& r
-//    Signification: le vecteur resultat de l'operation
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: DoubleVect&
-//    Signification: le vecteur resultat de l'operation
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Operation de multiplication-accumulation (saxpy) matrice vecteur.
+ *
+ * Operation: r = r + A*x
+ *
+ * @param (DoubleVect& x) le vecteur a multiplier
+ * @param (DoubleVect& r) le vecteur resultat de l'operation
+ * @return (DoubleVect&) le vecteur resultat de l'operation
+ */
 inline DoubleVect& Matrice_Base::
 ajouter_multvectT(const DoubleVect& x, DoubleVect& r) const
 {
@@ -248,28 +182,16 @@ ajouter_multvectT(const DoubleVect& x, DoubleVect& r) const
   return r;
 }
 
-// Description:
-//    NON CODE
-//    Operation de multiplication-accumulation (saxpy) matrice matrice
-//    (matrice represente par un tableau)
-//    Operation: R = R + A*X
-// Precondition:
-// Parametre: DoubleTab&
-//    Signification: la matrice a multiplier
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Parametre: DoubleTab& r
-//    Signification: la matrice resultat de l'operation
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: DoubleTab&
-//    Signification: la matrice resultat de l'operation
-//    Contraintes:
-// Exception: NON CODE
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NON CODE Operation de multiplication-accumulation (saxpy) matrice matrice
+ *
+ *     (matrice represente par un tableau)
+ *     Operation: R = R + A*X
+ *
+ * @param (DoubleTab&) la matrice a multiplier
+ * @param (DoubleTab& r) la matrice resultat de l'operation
+ * @return (DoubleTab&) la matrice resultat de l'operation
+ * @throws NON CODE
+ */
 inline DoubleTab& Matrice_Base::
 ajouter_multTab(const DoubleTab& x, DoubleTab& r) const
 {
@@ -279,26 +201,14 @@ ajouter_multTab(const DoubleTab& x, DoubleTab& r) const
 }
 
 
-// Description:
-//    Fonction (hors classe) amie de la classe Matrice_Base.
-//    Operateur de multiplication: renvoie (A*vect)
-// Precondition:
-// Parametre: Matrice_Base& A
-//    Signification: la matrice multiplicatrice
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleVect& vect
-//    Signification: le vecteur a multiplier
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: DoubleVect
-//    Signification: le vecteur resultat de l'operation
-//    Contraintes: le vecteur est alloue par la methode
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Fonction (hors classe) amie de la classe Matrice_Base.
+ *
+ * Operateur de multiplication: renvoie (A*vect)
+ *
+ * @param (Matrice_Base& A) la matrice multiplicatrice
+ * @param (DoubleVect& vect) le vecteur a multiplier
+ * @return (DoubleVect) le vecteur resultat de l'operation
+ */
 DoubleVect operator * (const Matrice_Base& A, const DoubleVect& vect);
 
 

@@ -53,8 +53,9 @@ Entree& Champ_front_tangentiel::readOn(Entree& is)
 }
 
 
-// Description:
-// Pas code !!
+/*! @brief Pas code !!
+ *
+ */
 
 Champ_front_base& Champ_front_tangentiel::affecter_(const Champ_front_base& ch)
 {

@@ -22,62 +22,32 @@
 Implemente_base(Champ_Fonc_base,"Champ_Fonc_base",Champ_Don_base);
 
 
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees
-// Precondition:
-// Parametre: Sortie& s
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees
+ *
+ * @param (Sortie& s)
+ * @return (Sortie&)
+ */
 Sortie& Champ_Fonc_base::printOn(Sortie& s ) const
 {
   return s ;
 }
 
 
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees
-// Precondition:
-// Parametre: Entree& s
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees
+ *
+ * @param (Entree& s)
+ * @return (Entree&)
+ */
 Entree& Champ_Fonc_base::readOn(Entree& s )
 {
   return s ;
 }
 
 
-// Description:
-//    Mise a jour en temps du champ.
-// Precondition:
-// Parametre: double temps
-//    Signification: le temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Mise a jour en temps du champ.
+ *
+ * @param (double temps) le temps de mise a jour
+ */
 void Champ_Fonc_base::mettre_a_jour(double un_temps)
 {
   changer_temps(un_temps);
@@ -115,21 +85,11 @@ void Champ_Fonc_base::creer_tableau_distribue(const MD_Vector& md, Array_base::R
     }
 }
 
-// Description:
-//    Sauvegarde le champ sur un flot de sortie
-//    Ecrit le nom, le temps et les valeurs.
-// Precondition:
-// Parametre: Sortie& fich
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Sauvegarde le champ sur un flot de sortie Ecrit le nom, le temps et les valeurs.
+ *
+ * @param (Sortie& fich) un flot de sortie
+ * @return (int) renvoie toujours 1
+ */
 int Champ_Fonc_base::sauvegarder(Sortie& fich) const
 {
   // en mode ecriture special seul le maitre ecrit l'entete
@@ -166,22 +126,13 @@ int Champ_Fonc_base::sauvegarder(Sortie& fich) const
 }
 
 
-// Description:
-//    Reprise a partir d'un flot d'entree
-//    Lit le temps et les valeurs du champ.
-//    Saute un bloc si le nom du champ est "anonyme".
-// Precondition:
-// Parametre: Entree& fich
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Reprise a partir d'un flot d'entree Lit le temps et les valeurs du champ.
+ *
+ *     Saute un bloc si le nom du champ est "anonyme".
+ *
+ * @param (Entree& fich) un flot d'entree
+ * @return (int) renvoie toujours 1
+ */
 int Champ_Fonc_base::reprendre(Entree& fich)
 {
   double un_temps;
@@ -205,20 +156,11 @@ int Champ_Fonc_base::reprendre(Entree& fich)
 }
 
 
-// Description:
-//    Affecte un Champ_base dans un Champ_Fonc_base.
-// Precondition:
-// Parametre: Champ_base& ch
-//    Signification: le champ partie droite de l'affectation
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: Champ_base&
-//    Signification: le resultat de l'affectation (*this) (avec upcast)
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Affecte un Champ_base dans un Champ_Fonc_base.
+ *
+ * @param (Champ_base& ch) le champ partie droite de l'affectation
+ * @return (Champ_base&) le resultat de l'affectation (*this) (avec upcast)
+ */
 Champ_base& Champ_Fonc_base::affecter_(const Champ_base& ch)
 {
   DoubleTab noeuds;
@@ -229,26 +171,12 @@ Champ_base& Champ_Fonc_base::affecter_(const Champ_base& ch)
 }
 
 
-// Description:
-//    Affecte une composante d'un Champ_base dans la meme composnate
-//    d'un Champ_Fonc_base.
-// Precondition:
-// Parametre: Champ_base& ch
-//    Signification: le champ partie droite de l'affectation
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: int compo
-//    Signification: l'indice de la composante a affecter
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_base&
-//    Signification: le resultat de l'affectation (*this) (avec upcast)
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Affecte une composante d'un Champ_base dans la meme composnate d'un Champ_Fonc_base.
+ *
+ * @param (Champ_base& ch) le champ partie droite de l'affectation
+ * @param (int compo) l'indice de la composante a affecter
+ * @return (Champ_base&) le resultat de l'affectation (*this) (avec upcast)
+ */
 Champ_base& Champ_Fonc_base::affecter_compo(const Champ_base& ch,
                                             int compo)
 {
@@ -265,47 +193,23 @@ Champ_base& Champ_Fonc_base::affecter_compo(const Champ_base& ch,
 }
 
 
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees
-// Precondition:
-// Parametre: DoubleTab&
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: IntVect&
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: renvoie toujours 0
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees
+ *
+ * @param (DoubleTab&)
+ * @param (IntVect&)
+ * @return (int) renvoie toujours 0
+ */
 int Champ_Fonc_base::remplir_coord_noeuds_et_polys(DoubleTab&, IntVect&) const
 {
   return 0;
 }
 
 
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees
-// Precondition:
-// Parametre: DoubleTab& coord
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: renvoie toujours le parametre coord
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees
+ *
+ * @param (DoubleTab& coord)
+ * @return (DoubleTab&) renvoie toujours le parametre coord
+ */
 DoubleTab& Champ_Fonc_base::remplir_coord_noeuds(DoubleTab& coord) const
 {
   // Ne retourne rien
@@ -313,26 +217,12 @@ DoubleTab& Champ_Fonc_base::remplir_coord_noeuds(DoubleTab& coord) const
 }
 
 
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees
-// Precondition:
-// Parametre: DoubleTab& coord
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: renvoie toujours le parametre coord
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees
+ *
+ * @param (DoubleTab& coord)
+ * @param (int)
+ * @return (DoubleTab&) renvoie toujours le parametre coord
+ */
 DoubleTab& Champ_Fonc_base::remplir_coord_noeuds_compo(DoubleTab& coord,
                                                        int ) const
 {
@@ -341,31 +231,13 @@ DoubleTab& Champ_Fonc_base::remplir_coord_noeuds_compo(DoubleTab& coord,
 }
 
 
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees
-// Precondition:
-// Parametre: DoubleTab&
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: IntVect&
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: renvoie toujours 0
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees
+ *
+ * @param (DoubleTab&)
+ * @param (IntVect&)
+ * @param (int)
+ * @return (int) renvoie toujours 0
+ */
 int Champ_Fonc_base::remplir_coord_noeuds_et_polys_compo(DoubleTab& ,
                                                          IntVect& ,
                                                          int ) const

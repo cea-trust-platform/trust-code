@@ -21,10 +21,11 @@
 class Frontiere;
 class Domaine;
 
-// .DESCRIPTION
-//  Cet interprete permet de reordonner les faces d'un bord periodique selon la convention
-//  utilisee dans le decoupeur (d'abord les faces d'une extremite du domaine, puis dans le
-//  meme ordre, les faces jumelles sur le bord oppose).
+/*! @brief Cet interprete permet de reordonner les faces d'un bord periodique selon la convention utilisee dans le decoupeur (d'abord les faces d'une extremite du domaine, puis dans le
+ *
+ *   meme ordre, les faces jumelles sur le bord oppose).
+ *
+ */
 class Reordonner_faces_periodiques : public Interprete_geometrique_base
 {
 public:

@@ -18,124 +18,66 @@
 Implemente_base(Frontiere_dis_base,"Frontiere_dis_base",Objet_U);
 
 
-// Description:
-//    Surcharge Objet_U::printOn(Sortie&)
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees.
-//    Imprime la frontiere discretisee sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Surcharge Objet_U::printOn(Sortie&) NE FAIT RIEN
+ *
+ *     A surcharger dans les classes derivees.
+ *     Imprime la frontiere discretisee sur un flot de sortie
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Frontiere_dis_base::printOn(Sortie& os ) const
 {
   return os;
 }
 
 
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees.
-//    Lit une frontiere discretisee a partir d'un flot d'entree
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+ *
+ *     Lit une frontiere discretisee a partir d'un flot d'entree
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Frontiere_dis_base::readOn(Entree& is )
 {
   return is;
 }
 
 
-// Description:
-//    Associe l'objet frontiere geometrique a la
-//    frontiere discretisee.
-// Precondition:
-// Parametre: Frontiere& fr
-//    Signification: la frontiere geometrique
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe l'objet frontiere geometrique a la frontiere discretisee.
+ *
+ * @param (Frontiere& fr) la frontiere geometrique
+ */
 void Frontiere_dis_base::associer_frontiere(const Frontiere& fr)
 {
   la_frontiere=fr;
 }
 
-// Description:
-//    Renvoie la frontiere geometrique associee.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Frontiere&
-//    Signification: la frontiere geometrique associee
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la frontiere geometrique associee.
+ *
+ * (version const)
+ *
+ * @return (Frontiere&) la frontiere geometrique associee
+ */
 const Frontiere& Frontiere_dis_base::frontiere() const
 {
   return la_frontiere.valeur();
 }
 
-// Description:
-//    Renvoie la frontiere geometrique associee.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Frontiere&
-//    Signification: la frontiere geometrique associee
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la frontiere geometrique associee.
+ *
+ * @return (Frontiere&) la frontiere geometrique associee
+ */
 Frontiere& Frontiere_dis_base::frontiere()
 {
   return la_frontiere.valeur();
 }
 
-// Description:
-//    Renvoie le nom de la frontiere geometrique.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Nom&
-//    Signification: le nom de la frontiere geometrique
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nom de la frontiere geometrique.
+ *
+ * @return (Nom&) le nom de la frontiere geometrique
+ */
 const Nom& Frontiere_dis_base::le_nom() const
 {
   return la_frontiere->le_nom();

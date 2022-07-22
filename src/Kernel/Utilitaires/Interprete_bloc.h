@@ -22,12 +22,12 @@
 class Interprete_bloc;
 Declare_ref(Interprete_bloc);
 
-/////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//  Interprete un bloc d'instructions dans le jeu de donnees.
-//  Voir Interprete_bloc::interpreter()
-/////////////////////////////////////////////////////////////
+/*! @brief Interprete un bloc d'instructions dans le jeu de donnees.
+ *
+ * Voir Interprete_bloc::interpreter()
+ *
+ *
+ */
 class Interprete_bloc : public liste
 {
   Declare_instanciable(Interprete_bloc);

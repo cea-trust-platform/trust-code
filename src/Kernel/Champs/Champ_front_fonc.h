@@ -19,8 +19,9 @@
 
 #include <Ch_front_var_stationnaire.h>
 
-//.DESCRIPTION  class Champ_front_fonc
-// Classe derivee de Champ_front_var
+/*! @brief class Champ_front_fonc Classe derivee de Champ_front_var
+ *
+ */
 
 //.SECTION voir aussi
 

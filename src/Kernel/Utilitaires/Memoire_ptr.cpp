@@ -16,20 +16,10 @@
 #include <Memoire_ptr.h>
 #include <TRUSTVect.h>
 
-// Description:
-//    Constructeur
-// Precondition:
-// Parametre: Objet_U* ptr
-//    Signification: l'Objet_U sur lequel pointer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Constructeur
+ *
+ * @param (Objet_U* ptr) l'Objet_U sur lequel pointer
+ */
 Memoire_ptr::Memoire_ptr(Objet_U* ptr) : o_ptr(ptr)
 {
   next=-1;

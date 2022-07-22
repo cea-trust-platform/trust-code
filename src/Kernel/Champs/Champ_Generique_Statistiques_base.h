@@ -25,14 +25,13 @@ class Domaine;
 class Nom;
 class Operateur_Statistique_tps_base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//   Classe Champ_Generique_Statistiques_base
-//   Classe de base des classes de champs generiques dedies aux statistiques
-//   Une classe heritant de Champ_Generique_Statistiques_base porte un operateur statistique
-//   Les operateurs consideres sont moyenne, ecart_Type et correlation
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Champ_Generique_Statistiques_base Classe de base des classes de champs generiques dedies aux statistiques
+ *
+ *    Une classe heritant de Champ_Generique_Statistiques_base porte un operateur statistique
+ *    Les operateurs consideres sont moyenne, ecart_Type et correlation
+ *
+ *
+ */
 class Champ_Generique_Statistiques_base : public Champ_Gen_de_Champs_Gen
 {
 

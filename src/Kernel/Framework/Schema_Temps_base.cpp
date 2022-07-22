@@ -131,8 +131,9 @@ bool Schema_Temps_base::initTimeStep(double dt)
   return true;
 }
 
-// Description:
-// Calculate the U(n+1) unknown for each equation (if solved) of the problem with the selected time scheme
+/*! @brief Calculate the U(n+1) unknown for each equation (if solved) of the problem with the selected time scheme
+ *
+ */
 bool Schema_Temps_base::iterateTimeStep(bool& converged)
 {
   // Loop on the equations of the problem:
@@ -160,21 +161,10 @@ bool Schema_Temps_base::iterateTimeStep(bool& converged)
   return true;
 }
 
-// Description:
-//    Renvoie 1 s'il y a lieu d'effectuer une impression (cf dt_impr)
-//    Renvoie 0 sinon
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si il y lieu d'effectuer une impression 0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie 1 s'il y a lieu d'effectuer une impression (cf dt_impr) Renvoie 0 sinon
+ *
+ * @return (int) 1 si il y lieu d'effectuer une impression 0 sinon
+ */
 int Schema_Temps_base::limpr() const
 {
   if (dt_impr_<=0)
@@ -280,20 +270,11 @@ void Schema_Temps_base::terminate()
     progress_<< (int)100<< finl;
 }
 
-// Description:
-// Retourne 1 si lors du dernier pas de temps, le probleme n'a pas evolue.
-// Precondition: validateTimeStep()
-// Parametre: temps
-//    Signification: le temps a atteindre
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: 1 si le probleme n'a pas evolue, 0 sinon.
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Retourne 1 si lors du dernier pas de temps, le probleme n'a pas evolue.
+ *
+ * @param (temps) le temps a atteindre
+ * @return (1 si le probleme n'a pas evolue, 0 sinon.)
+ */
 bool Schema_Temps_base::isStationary() const
 {
   if (stationnaire_atteint_ && (nb_pas_dt_ >= 2))
@@ -355,23 +336,14 @@ void Schema_Temps_base::set_param(Param& param)
   param.ajouter_flag( "disable_dt_ev",&disable_dt_ev_); // XD_ADD_P flag To disable the writing of the .dt_ev file.
   param.ajouter( "gnuplot_header",&gnuplot_header_); // XD_ADD_P int Optional keyword to modify the header of the .out files. Allows to use the column title instead of columns number.
 }
-// Description:
-//    Surcharge Objet_U::printOn(Sortie&)
-//    Imprime le schema en temps sur un flot de sortie.
-//    !! Attention n'est pas symetrique de la lecture !!
-//    On ecrit les differents parametres du schema en temps.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Surcharge Objet_U::printOn(Sortie&) Imprime le schema en temps sur un flot de sortie.
+ *
+ *     !! Attention n'est pas symetrique de la lecture !!
+ *     On ecrit les differents parametres du schema en temps.
+ *
+ * @param (Sortie& os) le flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Schema_Temps_base::printOn(Sortie& os) const
 {
   os << "dt " << dt_ << finl;
@@ -404,28 +376,21 @@ Sortie& Schema_Temps_base::printOn(Sortie& os) const
 }
 
 
-// Description:
-//     Lecture d'un schema en temps a partir d'un flot d'entree.
-//     Le format de lecture attendu est le suivant:
-//     {
-//      [Motcle valeur_reelle]
-//     }
-//     Les mots clefs peuvent etre:
-//     tinit, tmax, nb_pas_dt_max, dt_min, dt_max,
-//     dt_sauv, dt_impr, facsec, seuil_statio,
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: accolade ouvrante attendue
-// Exception: motclef inconnu a cet endroit
-// Effets de bord:
-// Postcondition: le schema en temps est lu
+/*! @brief Lecture d'un schema en temps a partir d'un flot d'entree.
+ *
+ * Le format de lecture attendu est le suivant:
+ *      {
+ *       [Motcle valeur_reelle]
+ *      }
+ *      Les mots clefs peuvent etre:
+ *      tinit, tmax, nb_pas_dt_max, dt_min, dt_max,
+ *      dt_sauv, dt_impr, facsec, seuil_statio,
+ *
+ * @param (Entree& is) le flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ * @throws accolade ouvrante attendue
+ * @throws motclef inconnu a cet endroit
+ */
 Entree& Schema_Temps_base::readOn(Entree& is)
 {
   Cerr<<"Reading of data for a "<<que_suis_je()<<" time scheme"<<finl;
@@ -537,21 +502,11 @@ Entree& Schema_Temps_base::lire_temps_cpu_max(Entree& is)
   return is;
 }
 
-// Description:
-//    Constructeur par defaut d'un schema en temps.
-//    Initialise differents membres de la classe.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: l'objet est initialise
+/*! @brief Constructeur par defaut d'un schema en temps.
+ *
+ * Initialise differents membres de la classe.
+ *
+ */
 Schema_Temps_base::Schema_Temps_base()
 {
   lu_=0;
@@ -592,21 +547,13 @@ Schema_Temps_base::Schema_Temps_base()
   gnuplot_header_ = 0;
   dt_gf_ = DMAXFLOAT;
 }
-// Description:
-//    Impression du numero du pas de temps, la valeur du pas de temps.
-//    et du temps courant.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/osrtie
-// Retour: int
-//    Signification: renvoie toujours 0
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Impression du numero du pas de temps, la valeur du pas de temps.
+ *
+ * et du temps courant.
+ *
+ * @param (Sortie& os) le flot de sortie
+ * @return (int) renvoie toujours 0
+ */
 int Schema_Temps_base::impr(Sortie& os) const
 {
   os << finl;
@@ -617,21 +564,13 @@ int Schema_Temps_base::impr(Sortie& os) const
   return 0;
 }
 
-// Description:
-//    Impression du numero du pas de temps, la valeur du pas de temps.
-//    et du temps courant.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: int
-//    Signification: renvoie toujours 0
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Impression du numero du pas de temps, la valeur du pas de temps.
+ *
+ * et du temps courant.
+ *
+ * @param (Sortie& os) le flot de sortie
+ * @return (int) renvoie toujours 0
+ */
 int Schema_Temps_base::impr(Sortie& os,Probleme_base& pb) const
 {
   os << finl;
@@ -656,21 +595,10 @@ int Schema_Temps_base::impr(Sortie& os,const Probleme_base& pb) const
 extern "C" {
   int ccc_tremain(double*);
 }
-// Description:
-//    Mise a jour du temps courant (t+=dt)
-//    et du nombre de pas de temps effectue (nb_pas_dt_++).
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: retourne toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Mise a jour du temps courant (t+=dt) et du nombre de pas de temps effectue (nb_pas_dt_++).
+ *
+ * @return (int) retourne toujours 1
+ */
 int Schema_Temps_base::mettre_a_jour()
 {
 
@@ -766,20 +694,10 @@ void Schema_Temps_base::mettre_a_jour_dt_stab()
   imprimer(Cout);
   dt_stab_=pb_base().calculer_pas_de_temps();
 }
-// Description:
-//    Imprime le pas de temps sur un flot de sortie s'il y a lieu.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Imprime le pas de temps sur un flot de sortie s'il y a lieu.
+ *
+ * @param (Sortie& os) le flot de sortie
+ */
 void Schema_Temps_base::imprimer(Sortie& os) const
 {
   if (limpr())
@@ -792,20 +710,10 @@ void Schema_Temps_base::imprimer(Sortie& os) const
     }
 }
 
-// Description:
-//    Imprime le pas de temps sur un flot de sortie s'il y a lieu.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Imprime le pas de temps sur un flot de sortie s'il y a lieu.
+ *
+ * @param (Sortie& os) le flot de sortie
+ */
 void Schema_Temps_base::imprimer(Sortie& os, Probleme_base& pb) const
 {
   if (limpr() && je_suis_maitre())
@@ -817,61 +725,31 @@ void Schema_Temps_base::imprimer(Sortie& os, const Probleme_base& pb) const
     impr(os,pb);
 }
 
-// Description:
-//    Sauvegarde le temps courant et le nombre de pas de temps
-//    sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie pour la sauvegarde
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Sauvegarde le temps courant et le nombre de pas de temps sur un flot de sortie.
+ *
+ * @param (Sortie& os) le flot de sortie pour la sauvegarde
+ */
 int Schema_Temps_base::sauvegarder(Sortie& os) const
 {
   return 1;
 }
 
-// Description:
-//    Reprise (lecture) du temps courant et du nombre de pas de
-//    temps effectues a partir d'un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Reprise (lecture) du temps courant et du nombre de pas de temps effectues a partir d'un flot d'entree.
+ *
+ * @param (Entree& is) le flot d'entree
+ * @return (int) renvoie toujours 1
+ */
 int Schema_Temps_base::reprendre(Entree& is)
 {
   return 1;
 }
 
-// Description:
-//    Renvoie 1 si le fichier (d'extension) .stop contient un 1
-//    Renvoie 0 sinon
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si le fichier (d'extension) .stop contient 1, 0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie 1 si le fichier (d'extension) .
+ *
+ * stop contient un 1 Renvoie 0 sinon
+ *
+ * @return (int) 1 si le fichier (d'extension) .stop contient 1, 0 sinon
+ */
 int Schema_Temps_base::stop_lu() const
 {
   int stop_lu_l = 0;
@@ -906,24 +784,15 @@ int Schema_Temps_base::stop_lu() const
   return stop_lu_l;
 }
 
-// Description:
-//    Corrige le pas de temps calcule que l'on passe en parametre
-//    et verifie qu'il n'est pas "trop" petit (< dt-min_).
-//    La correction est la suivante:
-//       delta_t = min((facteur de securite * dt_calc), dt_max)
-//    Et on verifie que delta_t est "suffisamment" plus grand que dt_min_.
-// Precondition:
-// Parametre: double& dt_calc
-//    Signification: le pas de temps calcule a verifier
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: le pas de temps calcule est inferieur a dt_min
-// Effets de bord:
-// Postcondition:
+/*! @brief Corrige le pas de temps calcule que l'on passe en parametre et verifie qu'il n'est pas "trop" petit (< dt-min_).
+ *
+ *     La correction est la suivante:
+ *        delta_t = min((facteur de securite * dt_calc), dt_max)
+ *     Et on verifie que delta_t est "suffisamment" plus grand que dt_min_.
+ *
+ * @param (double& dt_calc) le pas de temps calcule a verifier
+ * @throws le pas de temps calcule est inferieur a dt_min
+ */
 bool Schema_Temps_base::corriger_dt_calcule(double& dt_calc) const
 {
   // Print the RAM
@@ -952,25 +821,15 @@ bool Schema_Temps_base::corriger_dt_calcule(double& dt_calc) const
 }
 
 
-// Description:
-//    Renvoie 1 si il y lieu de stopper le calcul pour differente raisons:
-//        - le temps final est atteint
-//        - le nombre de pas de temps maximum est depasse
-//        - l'etat stationnaire est atteint
-//        - indicateur d'arret fichier (voir int Schema_Temps_base::stop_lu())
-//    Renvoie 0 sinon
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si il y a lieu de stopper le calcul 0 sinon.
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie 1 si il y lieu de stopper le calcul pour differente raisons: - le temps final est atteint
+ *
+ *         - le nombre de pas de temps maximum est depasse
+ *         - l'etat stationnaire est atteint
+ *         - indicateur d'arret fichier (voir int Schema_Temps_base::stop_lu())
+ *     Renvoie 0 sinon
+ *
+ * @return (int) 1 si il y a lieu de stopper le calcul 0 sinon.
+ */
 int Schema_Temps_base::stop() const
 {
   if (temps_final_atteint())
@@ -1045,21 +904,10 @@ void Schema_Temps_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, co
   eqn.solv_masse().valeur().ajouter_blocs(matrices, secmem, pas_de_temps(), semi_impl, 1);
 }
 
-// Description:
-// //Actualisation de stationnaire_atteint_ et residu_
-// (critere residu_<seuil_statio_)
-// Precondition:
-// Parametre: double& t
-//    Signification: le nouveau temps courant
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief //Actualisation de stationnaire_atteint_ et residu_ (critere residu_<seuil_statio_)
+ *
+ * @param (double& t) le nouveau temps courant
+ */
 void Schema_Temps_base::update_critere_statio(const DoubleTab& tab_critere, Equation_base& equation)
 {
   DoubleVect& residu_equation = equation.get_residu();

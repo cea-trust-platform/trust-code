@@ -19,16 +19,10 @@
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe NettoieNoeuds
-//    x->alpha x
-// .SECTION voir aussi
-//    Interprete Pave
-//    Actuellement le seul tyep d'objet reconnu par Trio-U pour mailler
-//    une domaine est l'objet Pave
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe NettoieNoeuds x->alpha x
+ *
+ * @sa Interprete Pave, Actuellement le seul tyep d'objet reconnu par Trio-U pour mailler, une domaine est l'objet Pave
+ */
 #include <Interprete_geometrique_base.h>
 class Domaine;
 class NettoieNoeuds : public Interprete_geometrique_base

@@ -18,18 +18,21 @@
 #include <sstream>
 using  std::ostringstream;
 
-// .DESCRIPTION        :
-//  Classe outil utilisee exclusivement par Schema_Comm. C'est une classe
-//  derivee de Entree dont le stream est de type ostrstream (les donnees
-//  sont ecrites par operator<< dans un buffer en memoire).
-//  On utilise la classe comme suit:
-//  (1) on ecrit des donnees avec operator<< dans le buffer
-//    ouput_comm_buffer << x << y << chaine << ... ;
-//  (2) on recupere l'ensemble des donnees ecrites sous la forme d'un
-//    bloc de memoire contigu de taille "get_buffer_size()" situe
-//    a l'adresse "get_buffer()".
-//  (3) on reinitialise le buffer avec "clear()"
-//  et on peut refaire (1)
+/*! @brief : Classe outil utilisee exclusivement par Schema_Comm.
+ *
+ * C'est une classe
+ *   derivee de Entree dont le stream est de type ostrstream (les donnees
+ *   sont ecrites par operator<< dans un buffer en memoire).
+ *   On utilise la classe comme suit:
+ *   (1) on ecrit des donnees avec operator<< dans le buffer
+ *     ouput_comm_buffer << x << y << chaine << ... ;
+ *   (2) on recupere l'ensemble des donnees ecrites sous la forme d'un
+ *     bloc de memoire contigu de taille "get_buffer_size()" situe
+ *     a l'adresse "get_buffer()".
+ *   (3) on reinitialise le buffer avec "clear()"
+ *   et on peut refaire (1)
+ *
+ */
 
 class OutputCommBuffer : public Sortie
 {

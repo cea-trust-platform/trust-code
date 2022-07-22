@@ -18,60 +18,32 @@
 Implemente_instanciable(Disable_TU,"Disable_TU",Interprete);
 // XD disable_TU interprete disable_TU -1 Flag to disable the writing of the .TU files
 
-// Description:
-//    Simple appel a: Interprete::printOn(Sortie&)
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a: Interprete::printOn(Sortie&)
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Disable_TU::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
 
-// Description:
-//    Simple appel a: Interprete::readOn(Entree&)
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Interprete::readOn(Entree&)
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Disable_TU::readOn(Entree& is)
 {
   return Interprete::readOn(is);
 }
 
-// Description:
-//    Main function of the Disable_TU interpreter
-//    Set the disable_TU variable to 1.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Main function of the Disable_TU interpreter Set the disable_TU variable to 1.
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree
+ */
 Entree& Disable_TU::interpreter(Entree& is)
 {
   Cerr << "Reading of disable_TU flag => Disable the writing of the *.TU and *_detail.TU files."<< finl;

@@ -19,17 +19,13 @@
 #include <Ref_Milieu_base.h>
 #include <List_Equation.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe List_Equations_Scalaires_Passifs_Especes
-//     Represente une liste d'equations de scalaires passifs ou especes
-//     List_Equations_Scalaires_Passifs_Especes comprend une liste d'equations
-//     de scalaires passifs ou especes et est vue comme une equation
-//     elle porte une vraie liste d'equations
-// .SECTION voir aussi
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe List_Equations_Scalaires_Passifs_Especes Represente une liste d'equations de scalaires passifs ou especes
+ *
+ *      List_Equations_Scalaires_Passifs_Especes comprend une liste d'equations
+ *      de scalaires passifs ou especes et est vue comme une equation
+ *      elle porte une vraie liste d'equations
+ *
+ */
 
 class List_Equations_Scalaires_Passifs_Especes : public Equation_base
 {

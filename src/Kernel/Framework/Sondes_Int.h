@@ -21,14 +21,10 @@
 
 Declare_liste(Sonde_Int);
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Sondes_Int
-//     Cette classe represente une liste d'objets de type Sonde_Int.
-// .SECTION voir aussi
-//     Sonde_Int Postraitement
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Sondes_Int Cette classe represente une liste d'objets de type Sonde_Int.
+ *
+ * @sa Sonde_Int Postraitement
+ */
 
 class Sondes_Int : public LIST(Sonde_Int)
 {
@@ -49,21 +45,9 @@ private:
 };
 
 
-// Description:
-//    Ouvre tous les fichiers associes a chacune des sondes
-//    de la liste.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: les fichiers associes des sondes sont ouverts
+/*! @brief Ouvre tous les fichiers associes a chacune des sondes de la liste.
+ *
+ */
 inline void Sondes_Int::ouvrir_fichiers()
 {
   LIST_CURSEUR(Sonde_Int) curseur=*this;
@@ -75,20 +59,9 @@ inline void Sondes_Int::ouvrir_fichiers()
 }
 
 
-// Description:
-//    Ferme tous les fichiers des sondes de la liste.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: les fichiers associes des sondes sont fermes
+/*! @brief Ferme tous les fichiers des sondes de la liste.
+ *
+ */
 inline void Sondes_Int::fermer_fichiers()
 {
   LIST_CURSEUR(Sonde_Int) curseur=*this;

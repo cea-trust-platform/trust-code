@@ -19,9 +19,9 @@
 #include <Ref_Domaine.h>
 class Domaine;
 
-// .DESCRIPTION
-//  Partitionneur de domaine a partir de sous-zones du domaine
-//  Voir construire_partition()
+/*! @brief Partitionneur de domaine a partir de sous-zones du domaine Voir construire_partition()
+ *
+ */
 class Partitionneur_Sous_Zones : public Partitionneur_base
 {
   Declare_instanciable(Partitionneur_Sous_Zones);

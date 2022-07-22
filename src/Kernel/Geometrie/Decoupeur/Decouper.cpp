@@ -35,10 +35,10 @@ Entree& Decouper::readOn(Entree& is)
   return is;
 }
 
-// Description:
-//  Cherche le domaine de nom "le_nom_domaine" parmi les objets connus
-//  de l'interprete et renvoie une ref a ce domaine.
-// Exception: si le domaine n'a pas ete trouve, exit.
+/*! @brief Cherche le domaine de nom "le_nom_domaine" parmi les objets connus de l'interprete et renvoie une ref a ce domaine.
+ *
+ * @throws si le domaine n'a pas ete trouve, exit.
+ */
 const Domaine& Decouper::find_domain(const Nom& le_nom_domaine)
 {
   const Domaine * domaine_ptr = 0;
@@ -60,8 +60,9 @@ const Domaine& Decouper::find_domain(const Nom& le_nom_domaine)
   return *domaine_ptr;
 }
 
-// Description: lecture du partitionneur dans le jeu de donnees
-//  (lecture du type et des parametres et initialisation de d_part)
+/*! @brief lecture du partitionneur dans le jeu de donnees (lecture du type et des parametres et initialisation de d_part)
+ *
+ */
 static void lire_partitionneur(DERIV(Partitionneur_base) & d_part,
                                const Domaine& domaine, Entree& is)
 {

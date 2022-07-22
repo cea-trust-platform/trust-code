@@ -26,23 +26,20 @@ namespace ICoCo
 class TrioField;
 }
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Probleme_U
-//
-//     Cette classe ajoute des specificites TRUST a l'interface
-//     generale definie dans la classe Problem.
-//
-//     De Probleme_U derivent :
-//     * Probleme_base pour tous les problemes individuels
-//     * Couplage_U pour les couplages de plusieurs Probleme_U
-//
-//     Toutes ces classes doivent satisfaire l'API de Problem
-//     completee par celle de Probleme_U.
-//
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Probleme_U
+ *
+ *      Cette classe ajoute des specificites TRUST a l'interface
+ *      generale definie dans la classe Problem.
+ *
+ *      De Probleme_U derivent :
+ *      * Probleme_base pour tous les problemes individuels
+ *      * Couplage_U pour les couplages de plusieurs Probleme_U
+ *
+ *      Toutes ces classes doivent satisfaire l'API de Problem
+ *      completee par celle de Probleme_U.
+ *
+ *
+ */
 class Probleme_U : public Objet_U
 {
   Declare_base(Probleme_U);

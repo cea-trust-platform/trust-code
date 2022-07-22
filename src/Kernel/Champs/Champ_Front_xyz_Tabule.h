@@ -19,13 +19,13 @@
 #include <Champ_front_txyz.h>
 #include <Table.h>
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Champ_Front_xyz_Tabule
-//
-// <Description of class Champ_Front_xyz_Tabule>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Champ_Front_xyz_Tabule
+ *
+ *  <Description of class Champ_Front_xyz_Tabule>
+ *
+ *
+ *
+ */
 
 class Champ_Front_xyz_Tabule : public Champ_front_txyz
 {

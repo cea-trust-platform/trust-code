@@ -13,14 +13,9 @@
 *
 *****************************************************************************/
 
-///////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//
-// .SECTION voir aussi
-//
-//
-///////////////////////////////////////////////////////////////////////////
+/*! @brief
+ *
+ */
 
 #ifndef Champ_Fonc_MED_included
 #define Champ_Fonc_MED_included
@@ -35,8 +30,9 @@
 #endif
 
 
-//.DESCRIPTION classe Champ_Fonc_MED
-//
+/*! @brief classe Champ_Fonc_MED
+ *
+ */
 
 //.SECTION voir aussi
 // Champ_Fonc_P0

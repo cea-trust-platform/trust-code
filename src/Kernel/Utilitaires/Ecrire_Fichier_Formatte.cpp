@@ -16,22 +16,27 @@
 
 Implemente_instanciable(Ecrire_Fichier_Formatte,"Ecrire_Fichier_Formatte",Ecrire_Fichier);
 
-// Description:
-//    Appel a la methode printOn de la classe Interprete
+/*! @brief Appel a la methode printOn de la classe Interprete
+ *
+ */
 Sortie& Ecrire_Fichier_Formatte::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
-// Description:
-//    Appel a la methode readOn de la classe Interprete
+/*! @brief Appel a la methode readOn de la classe Interprete
+ *
+ */
 Entree& Ecrire_Fichier_Formatte::readOn(Entree& is)
 {
   return Interprete::readOn(is);
 }
 
-// Description: Interprete sequentiel. Syntaxe:
-//  Ecrire_Fichier_Formatte nom_objet nom_fichier
+/*! @brief Interprete sequentiel.
+ *
+ * Syntaxe: Ecrire_Fichier_Formatte nom_objet nom_fichier
+ *
+ */
 Entree& Ecrire_Fichier_Formatte::interpreter(Entree& is)
 {
   Ecrire_Fichier::interpreter_(is, 0 /* formatte */);

@@ -18,10 +18,13 @@
 
 #include <TRUSTChamp_Divers_generique.h>
 
-// .DESCRIPTION class Tayl_Green
-//   by: buchal@che41b0.der.edf.fr
-//   modified version on  Champs/Tourbillon in *.datafile:   Tourbillon kwave
-//    u=sin(kwave*x)*cos(kwave*y) & v=cos(kwave*x)*sin(kwave*y)
+/*! @brief class Tayl_Green by: buchal@che41b0.
+ *
+ * der.edf.fr
+ *    modified version on  Champs/Tourbillon in *.datafile:   Tourbillon kwave
+ *     u=sin(kwave*x)*cos(kwave*y) & v=cos(kwave*x)*sin(kwave*y)
+ *
+ */
 class Tayl_Green : public TRUSTChamp_Divers_generique<Champ_Divers_Type::INUTILE>
 {
   Declare_instanciable_sans_constructeur(Tayl_Green);

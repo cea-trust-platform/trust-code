@@ -18,10 +18,9 @@
 
 #include <Lire.h>
 
-//////////////////////////////////////////////////////////////////////////////
-// .DESCRIPTION
-// Keyword to read an object, typically from a data file
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Keyword to read an object, typically from a data file
+ *
+ */
 class Typer_Lire : public Lire
 {
   Declare_instanciable(Typer_Lire);

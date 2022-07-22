@@ -27,21 +27,14 @@ class Zone_Cl_dis_base;
 class Matrice_Base;
 class Matrice_Morse;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Solveur_Masse_base
-//     Represente la matrice de masse d'une equation. Une equation
-//     contient une reference a une matrice de masse.
-//     Cette classe est la base de la hierarchie des matrices de masse.
-// .SECTION voir aussi
-//     SolveurMasse Equation_base
-//     Classe abstraite.
-//     Methodes abstraites:
-//       DoubleTab& appliquer(DoubleTab&) const
-//       void associer_zone_dis_base(const Zone_dis_base& )
-//       void associer_zone_cl_dis_base(const Zone_Cl_dis_base& )
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Solveur_Masse_base Represente la matrice de masse d'une equation.
+ *
+ * Une equation
+ *      contient une reference a une matrice de masse.
+ *      Cette classe est la base de la hierarchie des matrices de masse.
+ *
+ * @sa SolveurMasse Equation_base, Classe abstraite., Methodes abstraites:, DoubleTab& appliquer(DoubleTab&) const, void associer_zone_dis_base(const Zone_dis_base& ), void associer_zone_cl_dis_base(const Zone_Cl_dis_base& )
+ */
 
 class Solveur_Masse_base : public Objet_U, public MorEqn
 {

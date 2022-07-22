@@ -19,20 +19,18 @@ Implemente_instanciable_sans_constructeur(RTabInt,"RTabInt",Objet_U);
 
 int RTabInt::TB_ = 1000;
 
-//////////
-// Description:
-// printOn
-//
+/*! @brief printOn
+ *
+ */
 Sortie& RTabInt::printOn(Sortie& os) const
 {
   os << data;
   return os;
 }
 
-//////////
-// Description:
-// readOn
-//
+/*! @brief readOn
+ *
+ */
 Entree& RTabInt::readOn(Entree& is)
 {
   is >> data;
@@ -41,10 +39,9 @@ Entree& RTabInt::readOn(Entree& is)
 }
 
 
-//////////
-// Description:
-// constructeur
-//
+/*! @brief constructeur
+ *
+ */
 RTabInt::RTabInt(int n, int x)
 {
   data.resize_array(n+TB_);
@@ -59,18 +56,17 @@ RTabInt::RTabInt(int n, int x)
   max_data=init;
 }
 
-//////////
-// Description:
-// Renvoi le tableau porte
-//
+/*! @brief Renvoi le tableau porte
+ *
+ */
 const ArrOfInt& RTabInt::donnees() const
 {
   return data;
 }
 
-// Description:
-// Ajoute TB_ cases si i > size_r_
-// sinon ajoute i en queue
+/*! @brief Ajoute TB_ cases si i > size_r_ sinon ajoute i en queue
+ *
+ */
 void RTabInt::add(int i)
 {
   int sz = data.size_array();
@@ -93,9 +89,9 @@ void RTabInt::add(int i)
     max_data=i;
 }
 
-// Description:
-// Recherche un element egal a i dans le tableau
-// Renvoi la valeur si elle existe, -1 sinon
+/*! @brief Recherche un element egal a i dans le tableau Renvoi la valeur si elle existe, -1 sinon
+ *
+ */
 int RTabInt::search(int i)
 {
   if (i<min_data || i>max_data)

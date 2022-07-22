@@ -24,21 +24,14 @@ class Conds_lim;
 class Frontiere_dis_base;
 class Zone_Cl_dis_base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Zone_dis_base
-//     Cette classe est la base de la hierarchie des zones discretisees.
-//     Un objet Zone est associe a la zone discretise.
-//     A chaque methode numerique de Trio U correspond une classe derivant
-//     de Zone_dis_base implementant les outils necessaires a la methode.
-// .SECTION voir aussi
-//     Classe abstraite dont toutes les zones discretisees doivent deriver
-//     Methodes abstraites:
-//       void discretiser()
-//       const Frontiere_dis_base& frontiere_dis(int ) const
-//       void modifier_pour_Cl(const Conds_lim&)
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Zone_dis_base Cette classe est la base de la hierarchie des zones discretisees.
+ *
+ *      Un objet Zone est associe a la zone discretise.
+ *      A chaque methode numerique de Trio U correspond une classe derivant
+ *      de Zone_dis_base implementant les outils necessaires a la methode.
+ *
+ * @sa Classe abstraite dont toutes les zones discretisees doivent deriver, Methodes abstraites:, void discretiser(), const Frontiere_dis_base& frontiere_dis(int ) const, void modifier_pour_Cl(const Conds_lim&)
+ */
 class Zone_dis_base : public Objet_U
 {
 
@@ -91,40 +84,21 @@ protected :
   int dist_paroi_initialisee_ = 0;
 };
 
-// Description:
-//    Renvoie la Zone associee a l'objet.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Zone&
-//    Signification: la zone associee a la zone discretisee
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la Zone associee a l'objet.
+ *
+ * (version const)
+ *
+ * @return (Zone&) la zone associee a la zone discretisee
+ */
 inline const Zone& Zone_dis_base::zone() const
 {
   return la_zone.valeur();
 }
 
-// Description:
-//    Renvoie la Zone associee a l'objet.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Zone&
-//    Signification: la zone associee a la zone discretisee
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la Zone associee a l'objet.
+ *
+ * @return (Zone&) la zone associee a la zone discretisee
+ */
 inline Zone& Zone_dis_base::zone()
 {
   return la_zone.valeur();

@@ -21,8 +21,11 @@
 
 template<typename _TYPE_> class TRUSTList;
 
-// .DESCRIPTION : Classe qui sert a representer une liste de reels int/double precision. On ne peut pas utiliser la classe container
-//  List avec des objets du type int/double car int/double est un type predefini du C++ qui ne possede pas les fonctions exigees par List< >.
+/*! @brief : Classe qui sert a representer une liste de reels int/double precision.
+ *
+ * On ne peut pas utiliser la classe container List avec des objets du type int/double car int/double est un type predefini du C++ qui ne possede pas les fonctions exigees par List< >.
+ *
+ */
 template<typename _TYPE_>
 class TRUSTListElem
 {
@@ -55,8 +58,10 @@ protected:
 using IntListElem = TRUSTListElem<int>;
 using DoubleListElem = TRUSTListElem<double>;
 
-// Description: Constructeur par copie
-// Parametre: const TRUSTListElem& list (la liste a copier)
+/*! @brief Constructeur par copie
+ *
+ * @param (const TRUSTListElem& list (la liste a copier))
+ */
 template<typename _TYPE_>
 TRUSTListElem<_TYPE_>::TRUSTListElem(const TRUSTListElem<_TYPE_>& list)
 {
@@ -95,8 +100,10 @@ TRUSTListElem<_TYPE_>::~TRUSTListElem()
     }
 }
 
-// Description: insertion en queue
-// Parametre: int/double value_to_add (element a ajouter)
+/*! @brief insertion en queue
+ *
+ * @param (int/double value_to_add (element a ajouter))
+ */
 template<typename _TYPE_>
 inline TRUSTListElem<_TYPE_>& TRUSTListElem<_TYPE_>::add(_TYPE_ value_to_add)
 {
@@ -106,8 +113,10 @@ inline TRUSTListElem<_TYPE_>& TRUSTListElem<_TYPE_>::add(_TYPE_ value_to_add)
   return *this;
 }
 
-// Description:  Operateur de comparaison de deux listes
-// Retour:  1 si les listes sont egales, 0 sinon
+/*! @brief Operateur de comparaison de deux listes
+ *
+ * @return (1 si les listes sont egales, 0 sinon)
+ */
 template<typename _TYPE_>
 int operator ==(const TRUSTListElem<_TYPE_>& list1 , const TRUSTListElem<_TYPE_>& list2)
 {

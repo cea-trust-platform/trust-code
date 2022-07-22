@@ -22,16 +22,13 @@
 class Operateur_Diff_base;
 Declare_deriv(Operateur_Diff_base);
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Operateur_Diff
-//    Classe generique de la hierarchie des operateurs representant un terme
-//    de diffusion. Un objet Operateur_Diff peut referencer n'importe quel
-//    objet derivant de Operateur_Diff_base.
-// .SECTION voir aussi
-//    Operateur_Diff_base Operateur
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Operateur_Diff Classe generique de la hierarchie des operateurs representant un terme
+ *
+ *     de diffusion. Un objet Operateur_Diff peut referencer n'importe quel
+ *     objet derivant de Operateur_Diff_base.
+ *
+ * @sa Operateur_Diff_base Operateur
+ */
 
 class Operateur_Diff  : public Operateur,
   public DERIV(Operateur_Diff_base)

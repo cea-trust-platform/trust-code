@@ -18,8 +18,9 @@
 #define Boundary_field_inward_included
 
 #include <Champ_front_normal.h>
-//.DESCRIPTION  class Boundary_field_inward
-//
+/*! @brief class Boundary_field_inward
+ *
+ */
 
 
 class Boundary_field_inward : public Champ_front_normal

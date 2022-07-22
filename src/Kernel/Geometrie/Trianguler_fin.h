@@ -19,19 +19,15 @@
 #include <Triangulation_base.h>
 class Zone;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Trianguler_fin
-//    Cette classe est un interprete qui sert a lire et executer
-//    la directive Trianguler_fin:
-//        Trianguler_fin nom_domaine
-//    Cette directive est a utiliser en discretisation VEF pour obtenir
-//    un maillage triangulaire a partir d'un maillage constitue de rectangles.
-// .SECTION voir aussi
-//    Interprete Rectangle
-//    Cette classe est utilisable en 2D
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Trianguler_fin Cette classe est un interprete qui sert a lire et executer
+ *
+ *     la directive Trianguler_fin:
+ *         Trianguler_fin nom_domaine
+ *     Cette directive est a utiliser en discretisation VEF pour obtenir
+ *     un maillage triangulaire a partir d'un maillage constitue de rectangles.
+ *
+ * @sa Interprete Rectangle, Cette classe est utilisable en 2D
+ */
 class Trianguler_fin : public Triangulation_base
 {
   Declare_instanciable(Trianguler_fin);

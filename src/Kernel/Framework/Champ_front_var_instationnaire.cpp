@@ -17,68 +17,40 @@
 
 Implemente_base(Champ_front_var_instationnaire,"Champ_front_var_instationnaire",Champ_front_var);
 
-// Description:
-//    Imprime le nom du champ sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Imprime le nom du champ sur un flot de sortie
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Champ_front_var_instationnaire::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
 
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Champ_front_var_instationnaire::readOn(Entree& s )
 {
   return s ;
 }
 
 
-// Description:
-//      Surcharge Champ_front_base::fixer_nb_valeurs_temporelles
+/*! @brief Surcharge Champ_front_base::fixer_nb_valeurs_temporelles
+ *
+ */
 void Champ_front_var_instationnaire::fixer_nb_valeurs_temporelles(int nb_cases)
 {
   les_valeurs->fixer_nb_cases(nb_cases);
 }
 
-// Description:
-//    Initialise le temps courant et Gpoint
-// Precondition:
-// Parametre: double tps
-//    Signification: le temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Initialise le temps courant et Gpoint
+ *
+ * @param (double tps) le temps de mise a jour
+ */
 int Champ_front_var_instationnaire::initialiser(double temps, const Champ_Inc_base& inco)
 {
   if (!Champ_front_var::initialiser(temps,inco))
@@ -100,9 +72,11 @@ inline void print(const Roue_ptr& les_valeurs)
     Cerr << "  " << les_valeurs[i].temps() << finl;
 }
 
-// Description:
-//    Renvoie les valeurs au temps desire.
-//    Sinon, sort en erreur.
+/*! @brief Renvoie les valeurs au temps desire.
+ *
+ * Sinon, sort en erreur.
+ *
+ */
 DoubleTab& Champ_front_var_instationnaire::valeurs_au_temps(double temps)
 {
 
@@ -119,9 +93,11 @@ DoubleTab& Champ_front_var_instationnaire::valeurs_au_temps(double temps)
   return valeurs(); // For compilers
 }
 
-// Description:
-//    Renvoie les valeurs au temps desire.
-//    Sinon, sort en erreur.
+/*! @brief Renvoie les valeurs au temps desire.
+ *
+ * Sinon, sort en erreur.
+ *
+ */
 const DoubleTab& Champ_front_var_instationnaire::valeurs_au_temps(double temps) const
 {
 
@@ -138,9 +114,11 @@ const DoubleTab& Champ_front_var_instationnaire::valeurs_au_temps(double temps) 
   return valeurs(); // For compilers
 }
 
-// Description:
-//    Avance jusqu'au temps desire.
-//    Sinon, sort en erreur.
+/*! @brief Avance jusqu'au temps desire.
+ *
+ * Sinon, sort en erreur.
+ *
+ */
 int Champ_front_var_instationnaire::avancer(double temps)
 {
 
@@ -162,9 +140,11 @@ int Champ_front_var_instationnaire::avancer(double temps)
   return 0;
 }
 
-// Description:
-//    Recule jusqu'au temps desire.
-//    Sinon, sort en erreur.
+/*! @brief Recule jusqu'au temps desire.
+ *
+ * Sinon, sort en erreur.
+ *
+ */
 int Champ_front_var_instationnaire::reculer(double temps)
 {
 

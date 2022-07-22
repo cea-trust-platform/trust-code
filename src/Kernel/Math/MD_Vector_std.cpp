@@ -26,28 +26,18 @@ MD_Vector_std::MD_Vector_std()
   nb_items_reels_ = -1;
 }
 
-// Description: Constructeur.
-//  Si nb_items_reels >= 0, items_to_compute contiendra un bloc avec les items reels,
-//   sinon, items_to_compute prendra tous les items (jusqu'a nb_items_tot).
-// Parametre: nb_items_tot
-// Signification: valeur que prendra nb_items_tot_ (doit etre >= 0)
-// Parametre: nb_items_reels
-// Signification: valeur que prendra nb_items_reels_ (doit etre >= -1,
-//  -1 signifie qu'il n'y a pas d'items "reels" groupes au debut du tableau
-// Parametre: pe_voisins
-// Signification: liste des processeurs voisins, classes dans l'ordre croissant
-//  (les tableaux ArrsOfInt doivent avoir la meme taille).
-//  Cette liste n'est pas reprise integralement: on retire les processeurs
-//  pour lesquels toutes les trois listes d'items sont vides.
-// Parametre: items_to_send
-// Signification: pour chaque pe_voisin, liste des items a envoyer (communs et virtuels).
-//  count_items_to_send_to_items_ est calcule par une communication a partir de items_to_recv.
-// Parametre: items_to_recv
-// Signification: liste d'items individuels a recevoir des differents procs
-//  (souvent des items communs mais ce n'est pas obligatoire, ex front-tracking)
-// Parametre: blocs_to_recv
-// Signification: liste de blocs d'items a recevoir (voir MD_Vector_std::blocs_to_recv_)
-//  (souvent les items virtuels...)
+/*! @brief Constructeur.
+ *
+ * Si nb_items_reels >= 0, items_to_compute contiendra un bloc avec les items reels,
+ *    sinon, items_to_compute prendra tous les items (jusqu'a nb_items_tot).
+ *
+ * @param (nb_items_tot) valeur que prendra nb_items_tot_ (doit etre >= 0)
+ * @param (nb_items_reels) valeur que prendra nb_items_reels_ (doit etre >= -1, -1 signifie qu'il n'y a pas d'items "reels" groupes au debut du tableau
+ * @param (pe_voisins) liste des processeurs voisins, classes dans l'ordre croissant (les tableaux ArrsOfInt doivent avoir la meme taille). Cette liste n'est pas reprise integralement: on retire les processeurs pour lesquels toutes les trois listes d'items sont vides.
+ * @param (items_to_send) pour chaque pe_voisin, liste des items a envoyer (communs et virtuels). count_items_to_send_to_items_ est calcule par une communication a partir de items_to_recv.
+ * @param (items_to_recv) liste d'items individuels a recevoir des differents procs (souvent des items communs mais ce n'est pas obligatoire, ex front-tracking)
+ * @param (blocs_to_recv) liste de blocs d'items a recevoir (voir MD_Vector_std::blocs_to_recv_) (souvent les items virtuels...)
+ */
 MD_Vector_std::MD_Vector_std(int nb_items_tot, int nb_items_reels, const ArrOfInt& pe_voisins,
                              const ArrsOfInt& items_to_send, const ArrsOfInt& items_to_recv, const ArrsOfInt& blocs_to_recv)
 {
@@ -193,8 +183,11 @@ MD_Vector_std::MD_Vector_std(int nb_items_tot, int nb_items_reels, const ArrOfIn
     }
 }
 
-// Description: method used to dump/restore a descriptor in a file
-//  Each process writes a different descriptor. See MD_Vector_tools::restore_vector_with_md()
+/*! @brief method used to dump/restore a descriptor in a file Each process writes a different descriptor.
+ *
+ * See MD_Vector_tools::restore_vector_with_md()
+ *
+ */
 Entree& MD_Vector_std::readOn(Entree& is)
 {
   MD_Vector_base2::readOn(is);
@@ -219,8 +212,11 @@ Entree& MD_Vector_std::readOn(Entree& is)
   return is;
 }
 
-// Description: method used to dump/restore a descriptor in a file
-//  Each process writes a different descriptor. See MD_Vector_tools::dump_vector_with_md()
+/*! @brief method used to dump/restore a descriptor in a file Each process writes a different descriptor.
+ *
+ * See MD_Vector_tools::dump_vector_with_md()
+ *
+ */
 Sortie& MD_Vector_std::printOn(Sortie& os) const
 {
   MD_Vector_base2::printOn(os);

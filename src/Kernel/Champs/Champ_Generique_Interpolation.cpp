@@ -23,7 +23,9 @@
 Implemente_instanciable_sans_constructeur(Champ_Generique_Interpolation,"Interpolation",Champ_Gen_de_Champs_Gen);
 Add_synonym(Champ_Generique_Interpolation,"Champ_Post_Interpolation");
 
-// Description: voir reset()
+/*! @brief voir reset()
+ *
+ */
 Champ_Generique_Interpolation::Champ_Generique_Interpolation()
 {
   // valeurs par defaut
@@ -40,7 +42,9 @@ Entree& Champ_Generique_Interpolation::readOn(Entree& is)
   return is;
 }
 
-// Description: appel invalide
+/*! @brief appel invalide
+ *
+ */
 Sortie& Champ_Generique_Interpolation::printOn(Sortie& os) const
 {
   exit();
@@ -63,8 +67,9 @@ void Champ_Generique_Interpolation::set_param(Param& param)
   param.dictionnaire("no",0); // XD_ADD_DICO not_set
 
 }
-// Description: restore la configuration initiale de l'objet
-//  localisation non specifiee, source non specifiee, methode=calculer_champ_post, domaine natif
+/*! @brief restore la configuration initiale de l'objet localisation non specifiee, source non specifiee, methode=calculer_champ_post, domaine natif
+ *
+ */
 void Champ_Generique_Interpolation::reset()
 {
   nom_domaine_lu_ = "";
@@ -76,8 +81,11 @@ void Champ_Generique_Interpolation::reset()
   optimisation_demande_=-1;
 }
 
-// Description: Initialisation de la classe: initialisation de la localisation
-//  demandee. Parametres valides : elem, som.
+/*! @brief Initialisation de la classe: initialisation de la localisation demandee.
+ *
+ * Parametres valides : elem, som.
+ *
+ */
 int Champ_Generique_Interpolation::set_localisation(const Motcle& loc, int exit_on_error)
 {
   Motcles localisations(3);
@@ -102,9 +110,11 @@ int Champ_Generique_Interpolation::set_localisation(const Motcle& loc, int exit_
   return ok;
 }
 
-// Description: Initialisation de la classe: initialisation de la methode d'interpolation
-//  Parametres valides : calculer_champ_post
-//  (Idees pour la suite: affecter, affecter avec integrale...)
+/*! @brief Initialisation de la classe: initialisation de la methode d'interpolation Parametres valides : calculer_champ_post
+ *
+ *   (Idees pour la suite: affecter, affecter avec integrale...)
+ *
+ */
 int Champ_Generique_Interpolation::set_methode(const Motcle& methode, int exit_on_error)
 {
   Motcles methodes_interpolation(1);
@@ -127,8 +137,9 @@ int Champ_Generique_Interpolation::set_methode(const Motcle& methode, int exit_o
   return ok;
 }
 
-// Description: Initialisation de la classe: initialisation du domaine d'interpolation
-//  Parametres valides : "" => domaine natif, ou le nom d'un objet Domaine connu de l'interprete
+/*! @brief Initialisation de la classe: initialisation du domaine d'interpolation Parametres valides : "" => domaine natif, ou le nom d'un objet Domaine connu de l'interprete
+ *
+ */
 int Champ_Generique_Interpolation::set_domaine(const Nom& nom_domaine, int exit_on_error)
 {
   int ok = 0;
@@ -157,9 +168,9 @@ int Champ_Generique_Interpolation::set_domaine(const Nom& nom_domaine, int exit_
   return ok;
 }
 
-// Description: Interpolation du champ source en fonction de la methode, localisation et
-//  domaine demandes.
-// Precondition: localisation et source_[0] sont initialises
+/*! @brief Interpolation du champ source en fonction de la methode, localisation et domaine demandes.
+ *
+ */
 const Champ_base& Champ_Generique_Interpolation::get_champ(Champ& espace_stockage) const
 {
   if (localisation_ == "")
@@ -214,7 +225,9 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_without_evaluation(Ch
   espace_stockage = creer_espace_stockage(nature_source,nb_comp,es_tmp);
   return espace_stockage.valeur();
 }
-// Description: Interpolation du champ source a l'aide de Champ_base::calculer_champ_xxx_post
+/*! @brief Interpolation du champ source a l'aide de Champ_base::calculer_champ_xxx_post
+ *
+ */
 const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_post(Champ& espace_stockage) const
 {
   Champ espace_stockage_source;

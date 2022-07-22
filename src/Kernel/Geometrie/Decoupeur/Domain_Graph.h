@@ -15,8 +15,9 @@
 #ifndef Domain_Graph_included
 #define Domain_Graph_included
 
-// .DESCRIPTION
-//  Build the graph of the domain that the METIS/PARMETIS/PTSCOTCH libraries need
+/*! @brief Build the graph of the domain that the METIS/PARMETIS/PTSCOTCH libraries need
+ *
+ */
 
 class Domain_Graph
 {

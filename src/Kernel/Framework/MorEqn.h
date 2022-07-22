@@ -20,21 +20,15 @@
 
 class Champ;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe MorEqn
-//     Classe qui regroupe les fonctionnalites de liaison avec une
-//     Equation. Le membre MorEqn::mon_equation contient une reference
-//     vers un objet Equation_base. Les classes qui sont des "Morceaux d'equation"
-//     sont associe par une liaison 1-1 a leur equation en heritant de MorEqn,
-//     par exemple: Operateur_base, Solveur_Masse, Source_base ...
-// .SECTION voir aussi
-//     Equation_base
-//     Ce n'est pas une classe de l'arbre TRUST a elle seule.
-//     Cette classe est faite etre une classe mere d'une classe
-//     qui heritera par ailleurs d'Objet_U
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe MorEqn Classe qui regroupe les fonctionnalites de liaison avec une
+ *
+ *      Equation. Le membre MorEqn::mon_equation contient une reference
+ *      vers un objet Equation_base. Les classes qui sont des "Morceaux d'equation"
+ *      sont associe par une liaison 1-1 a leur equation en heritant de MorEqn,
+ *      par exemple: Operateur_base, Solveur_Masse, Source_base ...
+ *
+ * @sa Equation_base, Ce n'est pas une classe de l'arbre TRUST a elle seule., Cette classe est faite etre une classe mere d'une classe, qui heritera par ailleurs d'Objet_U
+ */
 class MorEqn
 {
 
@@ -56,22 +50,13 @@ protected :
 
 MorEqn::~MorEqn()
 {}
-// Description:
-//    Renvoie la reference sur l'equation pointe par
-//    MorEqn::mon_equation.
-//    (version const)
-// Precondition: on doit avoir associe une equation
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Equation_base&
-//    Signification: l'equation associee a l'objet
-//    Contraintes: reference constante
-// Exception: pas d'equation associee
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la reference sur l'equation pointe par MorEqn::mon_equation.
+ *
+ *     (version const)
+ *
+ * @return (Equation_base&) l'equation associee a l'objet
+ * @throws pas d'equation associee
+ */
 inline const Equation_base& MorEqn::equation() const
 {
   if (mon_equation.non_nul()==0)
@@ -82,21 +67,10 @@ inline const Equation_base& MorEqn::equation() const
   return mon_equation.valeur();
 }
 
-// Description:
-//    Renvoie la reference sur l'equation pointe par
-//    MorEqn::mon_equation.
-// Precondition: on doit avoir associe une equation
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Equation_base&
-//    Signification: l'equation associee a l'objet
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la reference sur l'equation pointe par MorEqn::mon_equation.
+ *
+ * @return (Equation_base&) l'equation associee a l'objet
+ */
 inline  Equation_base& MorEqn::equation()
 {
   if (mon_equation.non_nul()==0)

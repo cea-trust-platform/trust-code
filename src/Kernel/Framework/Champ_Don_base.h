@@ -19,17 +19,14 @@
 #include <Champ_base.h>
 #include <TRUSTTab.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_Don_base
-//     classe de base des Champs donnes (non calcules)
-//     les proprietes physiques sont des Champs donnes
-//     mais peuvent etre variables dans le temps dans l'espace
-//     fonctions d'autres champs ...
-// .SECTION voir aussi
-//     Champ_base Champ_Don Champ_Fonc
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_Don_base classe de base des Champs donnes (non calcules)
+ *
+ *      les proprietes physiques sont des Champs donnes
+ *      mais peuvent etre variables dans le temps dans l'espace
+ *      fonctions d'autres champs ...
+ *
+ * @sa Champ_base Champ_Don Champ_Fonc
+ */
 
 template<bool B, typename T> using enable_if_t = typename std::enable_if<B, T>::type;
 
@@ -54,7 +51,9 @@ public:
 
   virtual int initialiser(const double temps);
 
-  // Description: Renvoie le nombre de degre de liberte par composante: le nombre de noeuds.
+  /*! @brief Renvoie le nombre de degre de liberte par composante: le nombre de noeuds.
+   *
+   */
   inline int nb_valeurs_nodales() const override { return valeurs_.dimension(0); }
 
   // forbidden

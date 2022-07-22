@@ -21,15 +21,12 @@
 
 Declare_liste(Operateur_Statistique_tps);
 class Motcle;
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Operateurs_Statistique_tps
-//     Cette classe represente une liste d'operateurs statistiques en temps.
-//     Les objets Postraitement portent un objet de ce type.
-// .SECTION voir aussi
-//     Operateur_Statistique_tps Postraitement
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Operateurs_Statistique_tps Cette classe represente une liste d'operateurs statistiques en temps.
+ *
+ *      Les objets Postraitement portent un objet de ce type.
+ *
+ * @sa Operateur_Statistique_tps Postraitement
+ */
 class Operateurs_Statistique_tps : public LIST(Operateur_Statistique_tps)
 {
   Declare_instanciable(Operateurs_Statistique_tps);

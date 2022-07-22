@@ -29,13 +29,13 @@ class Zone_Cl_dis;
 class Matrice_Morse;
 class SFichier;
 
-//////////////////////////////////////////////////////////////////////////////
-// .DESCRIPTION
-//     classe Source_base
-//     Un objet Source_base est un terme apparaissant au second membre d'une
-//     equation. Cette classe est la base de la hierarchie des Sources, une
-//     source est un morceau d'equation donc Source_base herite de MorEqn.
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Source_base Un objet Source_base est un terme apparaissant au second membre d'une
+ *
+ *      equation. Cette classe est la base de la hierarchie des Sources, une
+ *      source est un morceau d'equation donc Source_base herite de MorEqn.
+ *
+ *
+ */
 
 class Source_base : public Champs_compris_interface, public MorEqn, public Objet_U
 {

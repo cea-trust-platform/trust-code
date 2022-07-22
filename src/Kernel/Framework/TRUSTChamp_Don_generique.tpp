@@ -86,11 +86,11 @@ void TRUSTChamp_Don_generique<_TYPE_>::mettre_a_jour_positions(DoubleTab& positi
     }
 }
 
-// Description: Renvoie la valeur du champ au point specifie par ses coordonnees.
-// Parametre: DoubleVect& x
-//    Signification: les coordonnees du point de calcul
-// Parametre: DoubleVect& val
-//    Signification: la valeur du champ au point specifie
+/*! @brief Renvoie la valeur du champ au point specifie par ses coordonnees.
+ *
+ * @param (DoubleVect& x) les coordonnees du point de calcul
+ * @param (DoubleVect& val) la valeur du champ au point specifie
+ */
 template <Champ_Don_Type _TYPE_> template<Champ_Don_Type T>
 enable_if_t<T != Champ_Don_Type::LU, DoubleVect&>
 TRUSTChamp_Don_generique<_TYPE_>::valeur_a_(const DoubleVect& x, DoubleVect& val) const
@@ -112,15 +112,12 @@ TRUSTChamp_Don_generique<_TYPE_>::valeur_a_(const DoubleVect& x, DoubleVect& val
   return valeur_a_elem(x,val,le_poly(0));
 }
 
-// Description:
-//    Renvoie la valeur du champ au point specifie par ses coordonnees, en indiquant que ce point est
-//    situe dans un element specifie.
-// Parametre: DoubleVect&
-//    Signification: les coordonnees du point de calcul
-// Parametre: DoubleVect& val
-//    Signification: la valeur du champ au point specifie
-// Parametre: int le_poly
-//    Signification: l'element dans lequel est situe le point de calcul
+/*! @brief Renvoie la valeur du champ au point specifie par ses coordonnees, en indiquant que ce point est situe dans un element specifie.
+ *
+ * @param (DoubleVect&) les coordonnees du point de calcul
+ * @param (DoubleVect& val) la valeur du champ au point specifie
+ * @param (int le_poly) l'element dans lequel est situe le point de calcul
+ */
 template <Champ_Don_Type _TYPE_> template<Champ_Don_Type T>
 enable_if_t<T != Champ_Don_Type::LU, DoubleVect&>
 TRUSTChamp_Don_generique<_TYPE_>::valeur_a_elem_(const DoubleVect& x, DoubleVect& val, int ) const
@@ -140,15 +137,12 @@ TRUSTChamp_Don_generique<_TYPE_>::valeur_a_elem_(const DoubleVect& , DoubleVect&
   return val;
 }
 
-// Description:
-//    Renvoie la valeur d'une composante du champ au point specifie
-//    par ses coordonnees, en indiquant que ce point est situe dans un element specifie.
-// Parametre: DoubleVect&
-//    Signification: les coordonnees du point de calcul
-// Parametre: int le_poly
-//    Signification: l'element dans lequel est situe le point de calcul
-// Parametre: int ncomp
-//    Signification: l'index de la composante du champ a calculer
+/*! @brief Renvoie la valeur d'une composante du champ au point specifie par ses coordonnees, en indiquant que ce point est situe dans un element specifie.
+ *
+ * @param (DoubleVect&) les coordonnees du point de calcul
+ * @param (int le_poly) l'element dans lequel est situe le point de calcul
+ * @param (int ncomp) l'index de la composante du champ a calculer
+ */
 template <Champ_Don_Type _TYPE_> template <Champ_Don_Type T>
 enable_if_t<T != Champ_Don_Type::TXYZ, double> /* XYZ ou LU */
 TRUSTChamp_Don_generique<_TYPE_>::valeur_a_elem_compo_(const DoubleVect& x, int le_poly, int ncomp) const
@@ -175,11 +169,11 @@ TRUSTChamp_Don_generique<_TYPE_>::valeur_a_elem_compo_(const DoubleVect& x, int 
   return val;
 }
 
-// Description: Renvoie les valeurs du champ aux points specifies par leurs coordonnees.
-// Parametre: DoubleTab& x
-//    Signification: le tableau des coordonnees des points de calcul
-// Parametre: DoubleTab& val
-//    Signification: le tableau des valeurs du champ aux points specifies
+/*! @brief Renvoie les valeurs du champ aux points specifies par leurs coordonnees.
+ *
+ * @param (DoubleTab& x) le tableau des coordonnees des points de calcul
+ * @param (DoubleTab& val) le tableau des valeurs du champ aux points specifies
+ */
 template <Champ_Don_Type _TYPE_> template <Champ_Don_Type T>
 enable_if_t<T != Champ_Don_Type::LU, DoubleTab&>
 TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_(const DoubleTab& x, DoubleTab& val) const
@@ -204,14 +198,12 @@ TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_(const DoubleTab& x, DoubleTab& val
   return valeur_aux_elems(x,les_polys,val); // VTABLE pour Champ_som_lu
 }
 
-// Description:
-//    Renvoie les valeurs d'une composante du champ aux points specifies par leurs coordonnees.
-// Parametre: DoubleVect& x
-//    Signification: le tableau des coordonnees des points de calcul
-// Parametre: DoubleVect& valeurs
-//    Signification: le tableau des valeurs de la composante du champ aux points specifies
-// Parametre: int ncomp
-//    Signification: l'index de la composante du champ a calculer
+/*! @brief Renvoie les valeurs d'une composante du champ aux points specifies par leurs coordonnees.
+ *
+ * @param (DoubleVect& x) le tableau des coordonnees des points de calcul
+ * @param (DoubleVect& valeurs) le tableau des valeurs de la composante du champ aux points specifies
+ * @param (int ncomp) l'index de la composante du champ a calculer
+ */
 template <Champ_Don_Type _TYPE_> template<Champ_Don_Type T>
 enable_if_t<T != Champ_Don_Type::LU, DoubleVect&>
 TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_compo_(const DoubleTab& x, DoubleVect& val, int ncomp) const
@@ -231,17 +223,12 @@ TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_compo_(const DoubleTab& x, DoubleVe
   return valeur_aux_elems_compo(x,les_polys,val,ncomp); // VTABLE pour Champ_som_lu
 }
 
-// Description:
-//    Renvoie les valeurs du champ aux points specifies
-//    par leurs coordonnees, en indiquant que les points de calculs sont situes dans les elements indiques.
-// Precondition: le nombre de valeurs demandes doit etre egal aux nombre d'elements specifies
-// Precondition: la dernier dimension du tableau des valeurs doit etre egal au nombre de composante du champ
-// Parametre: DoubleTab&
-//    Signification: le tableau des coordonnees des points de calcul
-// Parametre: IntVect& les_polys
-//    Signification: le tableau des elements dans lesquels sont situes les points de calcul (inutile)
-// Parametre: DoubleTab& val
-//    Signification: le tableau des valeurs du champ aux points specifies
+/*! @brief Renvoie les valeurs du champ aux points specifies par leurs coordonnees, en indiquant que les points de calculs sont situes dans les elements indiques.
+ *
+ * @param (DoubleTab&) le tableau des coordonnees des points de calcul
+ * @param (IntVect& les_polys) le tableau des elements dans lesquels sont situes les points de calcul (inutile)
+ * @param (DoubleTab& val) le tableau des valeurs du champ aux points specifies
+ */
 template <Champ_Don_Type _TYPE_> template<Champ_Don_Type T>
 enable_if_t<T != Champ_Don_Type::LU, DoubleTab&>
 TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_elems_(const DoubleTab& x, const IntVect&, DoubleTab& val) const
@@ -266,17 +253,13 @@ TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_elems_(const DoubleTab&, const IntV
   return val;
 }
 
-// Description:
-//    Renvoie les valeurs d'une composante du champ aux points specifies
-//    par leurs coordonnees, en indiquant que les points de calculs sont situes dans les elements indiques.
-// Parametre: DoubleTab& x
-//    Signification: le tableau des coordonnees des points de calcul
-// Parametre: IntVect& les_polys
-//    Signification: le tableau des elements dans lesquels sont situes les points de calcul
-// Parametre: DoubleVect& val
-//    Signification: le tableau des valeurs de la composante du champ aux points specifies
-// Parametre: int ncomp
-//    Signification: l'index de la composante du champ a calculer
+/*! @brief Renvoie les valeurs d'une composante du champ aux points specifies par leurs coordonnees, en indiquant que les points de calculs sont situes dans les elements indiques.
+ *
+ * @param (DoubleTab& x) le tableau des coordonnees des points de calcul
+ * @param (IntVect& les_polys) le tableau des elements dans lesquels sont situes les points de calcul
+ * @param (DoubleVect& val) le tableau des valeurs de la composante du champ aux points specifies
+ * @param (int ncomp) l'index de la composante du champ a calculer
+ */
 template <Champ_Don_Type _TYPE_> template<Champ_Don_Type T>
 enable_if_t<T != Champ_Don_Type::LU, DoubleVect&>
 TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_elems_compo_(const DoubleTab& x, const IntVect&, DoubleVect& val, int ncomp) const

@@ -24,23 +24,22 @@ class Champ_base;
 
 enum Option { NONE, DESCRIPTION };
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champs_compris_interface
-//                   Cette classe contient une interface de methodes destinees a gerer
-//              les champs compris (postraitables) pour une classe donnee.
-//              Les classes qui heritent de cette classe sont : Probleme_base, Equation_base, Milieu_base,
-//              Operateur_base, Source_base, Traitement_particulier_NS_base, Traitement_particulier_Solide_base,
-//              Mod_turb_hyd_base, Modele_turbulence_scal_base, Loi_Etat_base, Modele_Fonc_Bas_Reynolds_Base,
-//              Modele_Fonc_Bas_Reynolds_Thermique_Base et l interface est propagee dans leurs classes derivees
-//
-//        Methodes de l interface
-//        creer_champ()
-//        get_champ()
-//        get_noms_champs_postraitables()
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champs_compris_interface Cette classe contient une interface de methodes destinees a gerer
+ *
+ *               les champs compris (postraitables) pour une classe donnee.
+ *               Les classes qui heritent de cette classe sont : Probleme_base, Equation_base, Milieu_base,
+ *               Operateur_base, Source_base, Traitement_particulier_NS_base, Traitement_particulier_Solide_base,
+ *               Mod_turb_hyd_base, Modele_turbulence_scal_base, Loi_Etat_base, Modele_Fonc_Bas_Reynolds_Base,
+ *               Modele_Fonc_Bas_Reynolds_Thermique_Base et l interface est propagee dans leurs classes derivees
+ *
+ *         Methodes de l interface
+ *         creer_champ()
+ *         get_champ()
+ *         get_noms_champs_postraitables()
+ *
+ *
+ *
+ */
 class Champs_compris_interface
 {
 public :

@@ -26,24 +26,26 @@ class Fichier_lata;
 class Postraitement_lata_private_data;
 class Zone_dis_base;
 
-// .DESCRIPTION        :
-//  Classe de postraitement des champs euleriens au format lata.
-//  On peut l'utiliser sans creer d'instance de la classe:
-//    Pour creer un fichier valide, il faut faire:
-//    (initialisation) ecrire_entete(...)
-//                     ecrire_zone(..., zone1, ...)
-//                    [ecrire_zone(..., zone2, ...)]
-//                    [...                         ]
-//    (pour chaque dt) ecrire_temps(..., temps, ...)
-//                     ecrire_champ(..., valeurs, ...)
-//                    [ecrire_champ(..., valeurs, ...)]
-//                    [...                            ]
-//  Lors des appels aux fonctions statiques, si comm_group == 0,
-//   on ecrit un fichier de postraitement par processeur, sinon on
-//   creee un fichier unique partage.
-//
-//  Si on cree une instance de la classe, l'entete du fichier
-//  est ecrite lors du premier appel a "postraitement".
+/*! @brief : Classe de postraitement des champs euleriens au format lata.
+ *
+ *   On peut l'utiliser sans creer d'instance de la classe:
+ *     Pour creer un fichier valide, il faut faire:
+ *     (initialisation) ecrire_entete(...)
+ *                      ecrire_zone(..., zone1, ...)
+ *                     [ecrire_zone(..., zone2, ...)]
+ *                     [...                         ]
+ *     (pour chaque dt) ecrire_temps(..., temps, ...)
+ *                      ecrire_champ(..., valeurs, ...)
+ *                     [ecrire_champ(..., valeurs, ...)]
+ *                     [...                            ]
+ *   Lors des appels aux fonctions statiques, si comm_group == 0,
+ *    on ecrit un fichier de postraitement par processeur, sinon on
+ *    creee un fichier unique partage.
+ *
+ *   Si on cree une instance de la classe, l'entete du fichier
+ *   est ecrite lors du premier appel a "postraitement".
+ *
+ */
 
 class Postraitement_lata : public Postraitement_base
 {

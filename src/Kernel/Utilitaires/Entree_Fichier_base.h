@@ -24,14 +24,11 @@ using std::ifstream;
 using std::ofstream;
 using std::streampos;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Fichier en lecture
-//    Cette classe est a la classe C++ ifstream ce que la classe Entree est a la
-//    classe C++ istream. Elle redefinit de facon virtuelle les operateurs de lecture dans un fichier.
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Fichier en lecture Cette classe est a la classe C++ ifstream ce que la classe Entree est a la
+ *
+ *     classe C++ istream. Elle redefinit de facon virtuelle les operateurs de lecture dans un fichier.
+ *
+ */
 
 class Entree_Fichier_base : public Entree, public Objet_U
 {

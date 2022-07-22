@@ -19,60 +19,31 @@
 Implemente_liste(Zone);
 Implemente_instanciable(Zones,"Zones",LIST(Zone));
 
-// Description:
-//    Ecrit toutes les zones de la liste sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit toutes les zones de la liste sur un flot de sortie
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Zones::printOn(Sortie& s ) const
 {
   return LIST(Zone)::printOn(s) ;
 }
 
 
-// Description:
-//    Lit les zones a partir d'un flot d'entree.
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit les zones a partir d'un flot d'entree.
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Zones::readOn(Entree& s)
 {
   return LIST(Zone)::readOn(s) ;
 }
 
-// Description:
-//    Associe toutes les zones de la liste au
-//    domaine specifie.
-// Precondition:
-// Parametre: Domaine& un_domaine
-//    Signification: le domaine dont font partie les zones de la liste
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: les zones de la liste sont des zones du domaine specifie
+/*! @brief Associe toutes les zones de la liste au domaine specifie.
+ *
+ * @param (Domaine& un_domaine) le domaine dont font partie les zones de la liste
+ */
 void Zones::associer_domaine(const Domaine& un_domaine)
 {
   LIST_CURSEUR(Zone) curseur(*this);;;
@@ -84,22 +55,12 @@ void Zones::associer_domaine(const Domaine& un_domaine)
 }
 
 
-// Description:
-//    Reordonne les elements du maillage.
-//    On appelle Zone::reordonner() sur chaque
-//    zone de la liste.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Reordonne les elements du maillage.
+ *
+ * On appelle Zone::reordonner() sur chaque
+ *     zone de la liste.
+ *
+ */
 void Zones::reordonner()
 {
   LIST_CURSEUR(Zone) curseur(*this);;;
@@ -111,20 +72,9 @@ void Zones::reordonner()
 }
 
 
-// Description:
-//    On agglomere les Zones de meme type
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief On agglomere les Zones de meme type
+ *
+ */
 void Zones::comprimer()
 {
   if (Process::nproc() > 1)
@@ -221,21 +171,9 @@ void Zones::comprimer()
 }
 
 
-// Description:
-//    Merge all the zones of my processor in a single one
-//    is not tested when the zones are dispatched on multiple processors!
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Merge all the zones of my processor in a single one is not tested when the zones are dispatched on multiple processors!
+ *
+ */
 void Zones::merge()
 {
   LIST_CURSEUR(Zone) curseur(*this);;;

@@ -18,13 +18,10 @@
 
 #include <SFichier.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     Ecriture dans un fichier d'objets ecrits au format binaire
-// .SECTION voir aussi
-//     EFichierBin SFichier
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Ecriture dans un fichier d'objets ecrits au format binaire
+ *
+ * @sa EFichierBin SFichier
+ */
 
 class SFichierBin : public SFichier
 {

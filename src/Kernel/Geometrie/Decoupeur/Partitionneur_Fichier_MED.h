@@ -19,10 +19,11 @@
 #include <Ref_Domaine.h>
 
 
-// .DESCRIPTION
-//  Partition d'un domaine a partir d'un fichier MED contenant un champ donnant,
-//  pour chaque element, le numero du processeur auquel cet element est attache.
-//  Le fichier doit contenir un champ au format ArrOfInt
+/*! @brief Partition d'un domaine a partir d'un fichier MED contenant un champ donnant, pour chaque element, le numero du processeur auquel cet element est attache.
+ *
+ *   Le fichier doit contenir un champ au format ArrOfInt
+ *
+ */
 
 class Partitionneur_Fichier_MED : public Partitionneur_base
 {

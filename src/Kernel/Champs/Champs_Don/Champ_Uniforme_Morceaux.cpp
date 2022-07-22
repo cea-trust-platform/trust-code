@@ -19,15 +19,15 @@ Implemente_instanciable(Champ_Uniforme_Morceaux,"Champ_Uniforme_Morceaux",Champ_
 
 Sortie& Champ_Uniforme_Morceaux::printOn(Sortie& os) const { return os << valeurs(); }
 
-// Description:
-//    Lit les valeurs du champ uniforme par morceaux a partir d'un flot d'entree.
-//    On lit le nom du domaine (nom_domaine) le nombre de composantes du champ (nb_comp) la valeur par defaut
-//    du champ ainsi que les valeurs sur les sous zones.
-//    Format:
-//     Champ_Uniforme_Morceaux nom_domaine nb_comp
-//     { Defaut val_def sous_zone_1 val_1 ... sous_zone_i val_i }
-// Precondition: pour utiliser un objet de type Champ_Uniforme_Morceaux
-//               il faut avoir defini des objets de type Sous_Zone
+/*! @brief Lit les valeurs du champ uniforme par morceaux a partir d'un flot d'entree.
+ *
+ * On lit le nom du domaine (nom_domaine) le nombre de composantes du champ (nb_comp) la valeur par defaut
+ *     du champ ainsi que les valeurs sur les sous zones.
+ *     Format:
+ *      Champ_Uniforme_Morceaux nom_domaine nb_comp
+ *      { Defaut val_def sous_zone_1 val_1 ... sous_zone_i val_i }
+ *
+ */
 Entree& Champ_Uniforme_Morceaux::readOn(Entree& is)
 {
   int dim;

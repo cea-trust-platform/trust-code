@@ -21,24 +21,21 @@
 
 class Domaine;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Raccord_base
-//    Cette classe est simplement une frontiere, c'est la classe de base de la
-//    hierarchie des raccords. Un raccord intervient dans Trio-U lorsque
-//    l'on resoud des problemes differents sur des domaines differents
-//    mais que l'on desire les coupler. On couple alors ces problemes avec
-//    des raccords.
-//
-//    Si les problemes sont resolus dans Trio-U les raccords sont dit
-//    locaux, si un probleme est resolu dans Trio-U et l'autre dans un
-//    autre code le raccord est dit distant.
-//    Cette distinction donne lieu a 2 classes derivees de Raccord_base:
-//           Raccord_local et Raccord_distant
-// .SECTION voir aussi
-//    Frontiere Raccord Raccord_distant Raccord_local
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Raccord_base Cette classe est simplement une frontiere, c'est la classe de base de la
+ *
+ *     hierarchie des raccords. Un raccord intervient dans Trio-U lorsque
+ *     l'on resoud des problemes differents sur des domaines differents
+ *     mais que l'on desire les coupler. On couple alors ces problemes avec
+ *     des raccords.
+ *
+ *     Si les problemes sont resolus dans Trio-U les raccords sont dit
+ *     locaux, si un probleme est resolu dans Trio-U et l'autre dans un
+ *     autre code le raccord est dit distant.
+ *     Cette distinction donne lieu a 2 classes derivees de Raccord_base:
+ *            Raccord_local et Raccord_distant
+ *
+ * @sa Frontiere Raccord Raccord_distant Raccord_local
+ */
 class Raccord_base : public Frontiere
 {
   Declare_base(Raccord_base);
@@ -47,15 +44,12 @@ private :
 };
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Raccord_local
-//    Cette classe represente un raccord entre 2 probleme resolus
-//    par Trio-U.
-// .SECTION voir aussi
-//    Raccord_base Raccord Raccord_distant Raccord
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Raccord_local Cette classe represente un raccord entre 2 probleme resolus
+ *
+ *     par Trio-U.
+ *
+ * @sa Raccord_base Raccord Raccord_distant Raccord
+ */
 class Raccord_local : public Raccord_base
 {
   Declare_base(Raccord_local);
@@ -64,15 +58,12 @@ private :
 };
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Raccord_distant
-//    Cette classe represente un raccord entre 2 probleme dont un est
-//    resolu par Trio-U et l'autre par un autre code
-// .SECTION voir aussi
-//    Raccord_base Raccord Raccord_local
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Raccord_distant Cette classe represente un raccord entre 2 probleme dont un est
+ *
+ *     resolu par Trio-U et l'autre par un autre code
+ *
+ * @sa Raccord_base Raccord Raccord_local
+ */
 class Raccord_distant : public Raccord_base
 {
   Declare_base(Raccord_distant);
@@ -80,15 +71,12 @@ public:
 private :
 };
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Raccord_local_homogene
-//    Cette classe represente un Raccord_local ou les maillages de part et
-//    d'autres coincident.
-// .SECTION voir aussi
-//    Raccord_base Raccord Raccord_distant Raccord_local
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Raccord_local_homogene Cette classe represente un Raccord_local ou les maillages de part et
+ *
+ *     d'autres coincident.
+ *
+ * @sa Raccord_base Raccord Raccord_distant Raccord_local
+ */
 class Raccord_local_homogene : public Raccord_local
 {
   Declare_instanciable(Raccord_local_homogene);

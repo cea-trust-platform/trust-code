@@ -21,50 +21,33 @@ Implemente_liste(Source);
 Implemente_instanciable(Sources,"Sources",LIST(Source));
 
 
-// Description:
-//    Imprime la liste des Sources sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Imprime la liste des Sources sur un flot de sortie.
+ *
+ * @param (Sortie& os) le flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Sources::printOn(Sortie& os) const
 {
   return LIST(Source)::printOn(os);
 }
 
 
-// Description:
-//    Lecture d'une liste de sources sur un flot d'entree.
-//    Lit une liste de sources separees par des virgules
-//    et le sajoute a la liste.
-//    format:
-//    {
-//     bloc de lecture d'une source
-//     [, bloc de lecture d'une source]
-//     ...
-//    }
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: accolade ouvrante attendue
-// Exception: accolade fermante ou virgule attendue
-// Exception:
-// Effets de bord: le flot d'entree est modifie
-// Postcondition:
+/*! @brief Lecture d'une liste de sources sur un flot d'entree.
+ *
+ * Lit une liste de sources separees par des virgules
+ *     et le sajoute a la liste.
+ *     format:
+ *     {
+ *      bloc de lecture d'une source
+ *      [, bloc de lecture d'une source]
+ *      ...
+ *     }
+ *
+ * @param (Entree& is) le flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ * @throws accolade ouvrante attendue
+ * @throws accolade fermante ou virgule attendue
+ */
 Entree& Sources::readOn(Entree& is)
 {
   Nom accouverte="{";
@@ -104,22 +87,11 @@ Entree& Sources::readOn(Entree& is)
 }
 
 
-// Description:
-//    Ajoute la contribution de toutes les sources de la
-//    liste au tableau passe en parametre, et renvoie ce tableau.
-// Precondition:
-// Parametre: DoubleTab& xx
-//    Signification: le tableau dans lequel on doit accumuler la contribution
-//                   des termes sources
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: DoubleTab&
-//    Signification: le parametre xx modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ajoute la contribution de toutes les sources de la liste au tableau passe en parametre, et renvoie ce tableau.
+ *
+ * @param (DoubleTab& xx) le tableau dans lequel on doit accumuler la contribution des termes sources
+ * @return (DoubleTab&) le parametre xx modifie
+ */
 DoubleTab& Sources::ajouter(DoubleTab& xx) const
 {
   CONST_LIST_CURSEUR(Source) curseur(*this);
@@ -131,23 +103,13 @@ DoubleTab& Sources::ajouter(DoubleTab& xx) const
   return xx;
 }
 
-// Description:
-//    Calcule la contribution de toutes les sources de la
-//    liste stocke le resultat dans le tableau passe en parametre,
-//    et renvoie  ce tableau.
-// Precondition:
-// Parametre: DoubleTab& xx
-//    Signification: le tableau dans lequel on doit stocker la somme
-//                   des contributions des sources
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: DoubleTab&
-//    Signification: le parametre xx modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:  la methode ne modifie pas l'objet
+/*! @brief Calcule la contribution de toutes les sources de la liste stocke le resultat dans le tableau passe en parametre,
+ *
+ *     et renvoie  ce tableau.
+ *
+ * @param (DoubleTab& xx) le tableau dans lequel on doit stocker la somme des contributions des sources
+ * @return (DoubleTab&) le parametre xx modifie
+ */
 DoubleTab& Sources::calculer(DoubleTab& xx) const
 {
   xx=0;
@@ -160,20 +122,10 @@ DoubleTab& Sources::calculer(DoubleTab& xx) const
   return xx;
 }
 
-// Description:
-//    Mise a jour en temps, de toute les sources de la liste
-// Precondition:
-// Parametre: double temps
-//    Signification: le pas de temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Mise a jour en temps, de toute les sources de la liste
+ *
+ * @param (double temps) le pas de temps de mise a jour
+ */
 void Sources::mettre_a_jour(double temps)
 {
   LIST_CURSEUR(Source) curseur(*this);
@@ -185,21 +137,11 @@ void Sources::mettre_a_jour(double temps)
 }
 
 
-// Description:
-//    Appelle Source::completer() sur toutes les sources de la
-//    liste. voir Source_base::completer().
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appelle Source::completer() sur toutes les sources de la liste.
+ *
+ * voir Source_base::completer().
+ *
+ */
 void Sources::completer()
 {
   LIST_CURSEUR(Source) curseur(*this);
@@ -210,12 +152,13 @@ void Sources::completer()
     }
 }
 
-// Description:
-//  Pour chaque source de la liste, appel a associer_champ_rho
-//  de la source.
-//  Si la masse volumique est variable, il faut declarer le
-//  champ de rho aux sources avec cette methode (front-tracking)
-//  Sinon, par defaut, les calculs sont faits avec rho=1
+/*! @brief Pour chaque source de la liste, appel a associer_champ_rho de la source.
+ *
+ *   Si la masse volumique est variable, il faut declarer le
+ *   champ de rho aux sources avec cette methode (front-tracking)
+ *   Sinon, par defaut, les calculs sont faits avec rho=1
+ *
+ */
 void Sources::associer_champ_rho(const Champ_base& champ_rho)
 {
   LIST_CURSEUR(Source) curseur(*this);
@@ -228,9 +171,11 @@ void Sources::associer_champ_rho(const Champ_base& champ_rho)
     }
 }
 
-// Description:
-//  Pour chaque source de la liste, appel a a_pour_Champ_Fonc(mot,ch_ref).
-//  Cette methode est appelee par Equation_base::a_pour_Champ_Fonc.
+/*! @brief Pour chaque source de la liste, appel a a_pour_Champ_Fonc(mot,ch_ref).
+ *
+ * Cette methode est appelee par Equation_base::a_pour_Champ_Fonc.
+ *
+ */
 int Sources::a_pour_Champ_Fonc(const Motcle& mot,
                                REF(Champ_base)& ch_ref) const
 {
@@ -250,21 +195,11 @@ int Sources::a_pour_Champ_Fonc(const Motcle& mot,
   return ok;
 }
 
-// Description:
-//    Appelle Source::impr() sur toutes les sources de la
-//    liste. voir Source_base::impr().
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appelle Source::impr() sur toutes les sources de la liste.
+ *
+ * voir Source_base::impr().
+ *
+ */
 int Sources::impr(Sortie& os) const
 {
   CONST_LIST_CURSEUR(Source) curseur(*this);
@@ -276,9 +211,11 @@ int Sources::impr(Sortie& os) const
   return 1;
 }
 
-// Description:
-//    Dimensionnement de la matrice implicite des termes sources.
-//    Parcours toutes les sources de la liste pour dimensionner.
+/*! @brief Dimensionnement de la matrice implicite des termes sources.
+ *
+ * Parcours toutes les sources de la liste pour dimensionner.
+ *
+ */
 void Sources::dimensionner(Matrice_Morse& matrice) const
 {
   CONST_LIST_CURSEUR(Source) curseur(*this);
@@ -292,9 +229,9 @@ void Sources::dimensionner(Matrice_Morse& matrice) const
       ++curseur;
     }
 }
-// Description:
-// contribution a la matrice implicite des termes sources
-// par defaut pas de contribution
+/*! @brief contribution a la matrice implicite des termes sources par defaut pas de contribution
+ *
+ */
 void Sources::contribuer_a_avec(const DoubleTab& a, Matrice_Morse& matrice) const
 {
   CONST_LIST_CURSEUR(Source) curseur(*this);
@@ -319,21 +256,11 @@ void Sources::contribuer_jacobienne(Matrice_Bloc& matrice, int n) const
     }
 }
 
-// Description:
-//    Appelle Source::initialiser(temps) sur toutes les sources de la
-//    liste. voir Source_base::initialiser(double temps).
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appelle Source::initialiser(temps) sur toutes les sources de la liste.
+ *
+ * voir Source_base::initialiser(double temps).
+ *
+ */
 int Sources::initialiser(double temps)
 {
   LIST_CURSEUR(Source) curseur(*this);

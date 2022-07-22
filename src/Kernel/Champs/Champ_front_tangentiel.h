@@ -18,8 +18,9 @@
 #define Champ_front_tangentiel_included
 
 #include <Ch_front_var_instationnaire_dep.h>
-//.DESCRIPTION  class Champ_front_tangentiel
-//
+/*! @brief class Champ_front_tangentiel
+ *
+ */
 
 
 class Champ_front_tangentiel : public Ch_front_var_instationnaire_dep

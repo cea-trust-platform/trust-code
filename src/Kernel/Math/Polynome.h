@@ -19,13 +19,9 @@
 #include <TRUSTTab.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Polynome a n variables, n <= 4
-//    Implementation des coefficients a l'aide d'un DoubleTab
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Polynome a n variables, n <= 4 Implementation des coefficients a l'aide d'un DoubleTab
+ *
+ */
 class Polynome : public Objet_U
 {
   Declare_instanciable(Polynome);
@@ -75,342 +71,139 @@ private :
 
 
 
-// Description:
-//   Construction d'un polynome a une variable de degre n1
-// Precondition:
-// Parametre: int n1
-//    Signification: degre du polynome
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Construction d'un polynome a une variable de degre n1
+ *
+ * @param (int n1) degre du polynome
+ */
 inline Polynome::Polynome(int n1) : coeff_(++n1) {}
 
-// Description:
-//    Construction d'un polynome a 2 variables de degres n1 et n2
-// Precondition:
-// Parametre: int n1
-//    Signification: degre de la premiere variable
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int n2
-//    Signification: degre de la deuxieme variable
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Construction d'un polynome a 2 variables de degres n1 et n2
+ *
+ * @param (int n1) degre de la premiere variable
+ * @param (int n2) degre de la deuxieme variable
+ */
 inline Polynome::Polynome(int n1, int n2) : coeff_(++n1, ++n2) {}
 
-// Description:
-//    Construction d'un polynome a 3 variables de degres n1, n2 et n3
-// Precondition:
-// Parametre: int n1
-//    Signification: degre de la premiere variable
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int n2
-//    Signification: degre de la deuxieme variable
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int n3
-//    Signification: degre de la troisieme variable
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Construction d'un polynome a 3 variables de degres n1, n2 et n3
+ *
+ * @param (int n1) degre de la premiere variable
+ * @param (int n2) degre de la deuxieme variable
+ * @param (int n3) degre de la troisieme variable
+ */
 inline Polynome::Polynome(int n1, int n2, int n3) : coeff_(++n1, ++n2, ++n3) {}
 
-// Description:
-//    Construction d'un polynome a 4 variables de degres n1, n2, n3 et n4
-// Precondition:
-// Parametre: int n1
-//    Signification: degre de la premiere variable
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int n2
-//    Signification: degre de la deuxieme variable
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int n3
-//    Signification: degre de la troisieme variable
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int n4
-//    Signification: degre de la quatrieme variable
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Construction d'un polynome a 4 variables de degres n1, n2, n3 et n4
+ *
+ * @param (int n1) degre de la premiere variable
+ * @param (int n2) degre de la deuxieme variable
+ * @param (int n3) degre de la troisieme variable
+ * @param (int n4) degre de la quatrieme variable
+ */
 inline Polynome::Polynome(int n1, int n2, int n3, int n4) : coeff_(++n1, ++n2, ++n3, ++n4) {}
 
-// Description:
-//    Construction d'un polynome a partir du tableau de ses coefficients
-// Precondition:
-// Parametre: const DoubleTab& t
-//    Signification: le tableau des coefficients du polynome (1 a 4 dimensions)
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Construction d'un polynome a partir du tableau de ses coefficients
+ *
+ * @param (const DoubleTab& t) le tableau des coefficients du polynome (1 a 4 dimensions)
+ */
 inline Polynome::Polynome(const DoubleTab& t) : coeff_(t) {}
 
-// Description:
-//    Retourne le degre du polynome par rapport a la ieme variable
-// Precondition:
-// Parametre: int i
-//    Signification: l'indice de la variable consideree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: degre du polynome
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Retourne le degre du polynome par rapport a la ieme variable
+ *
+ * @param (int i) l'indice de la variable consideree
+ * @return (int) degre du polynome
+ */
 inline int Polynome::degre(int i) const
 {
   return coeff_.dimension(i)-1;
 }
 
-// Description:
-//    Retourne le coefficient du terme de degre n1
-// Precondition:
-// Parametre: int n1
-//    Signification: degre
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double&
-//    Signification: coefficient
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Retourne le coefficient du terme de degre n1
+ *
+ * @param (int n1) degre
+ * @return (double&) coefficient
+ */
 inline double& Polynome::coeff(int n1)
 {
   return coeff_(n1);
 }
 
-// Description:
-//    Retourne le coefficient du terme de degre n1,n2
-// Precondition:
-// Parametre: int n1
-//    Signification: degre
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int n2
-//    Signification: degre
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double&
-//    Signification: coefficient
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Retourne le coefficient du terme de degre n1,n2
+ *
+ * @param (int n1) degre
+ * @param (int n2) degre
+ * @return (double&) coefficient
+ */
 inline double& Polynome::coeff(int n1, int n2)
 {
   return coeff_(n1, n2);
 }
 
-// Description:
-//    Retourne le coefficient du terme de degre n1,n2,n3
-// Precondition:
-// Parametre: int n1
-//    Signification: degre
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int n2
-//    Signification: degre
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int n3
-//    Signification: degre
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double&
-//    Signification: coefficient
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Retourne le coefficient du terme de degre n1,n2,n3
+ *
+ * @param (int n1) degre
+ * @param (int n2) degre
+ * @param (int n3) degre
+ * @return (double&) coefficient
+ */
 inline double& Polynome::coeff(int n1, int n2, int n3)
 {
   return coeff_(n1, n2, n3);
 }
 
-// Description:
-//    Retourne le coefficient du terme de degre n1,n2,n3,n4
-// Precondition:
-// Parametre: int n1
-//    Signification: degre
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int n2
-//    Signification: degre
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int n3
-//    Signification: degre
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int n4
-//    Signification: degre
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double&
-//    Signification: coefficient
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Retourne le coefficient du terme de degre n1,n2,n3,n4
+ *
+ * @param (int n1) degre
+ * @param (int n2) degre
+ * @param (int n3) degre
+ * @param (int n4) degre
+ * @return (double&) coefficient
+ */
 inline double& Polynome::coeff(int n1, int n2, int n3, int n4)
 {
   return coeff_(n1, n2, n3, n4);
 }
 
-// Description:
-//    Retourne le coefficient du terme de degre n1
-// Precondition:
-// Parametre: int n1
-//    Signification: degre
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: coefficient
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Retourne le coefficient du terme de degre n1
+ *
+ * @param (int n1) degre
+ * @return (double) coefficient
+ */
 inline double Polynome::coeff(int n1) const
 {
   return coeff_(n1);
 }
 
-// Description:
-//    Retourne le coefficient du terme de degre n1,n2
-// Precondition:
-// Parametre: int n1
-//    Signification: degre
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int n2
-//    Signification: degre
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: coefficient
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Retourne le coefficient du terme de degre n1,n2
+ *
+ * @param (int n1) degre
+ * @param (int n2) degre
+ * @return (double) coefficient
+ */
 inline double Polynome::coeff(int n1, int n2) const
 {
   return coeff_(n1, n2);
 }
 
-// Description:
-//    Retourne le coefficient du terme de degre n1,n2,n3
-// Precondition:
-// Parametre: int n1
-//    Signification: degre
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int n2
-//    Signification: degre
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int n3
-//    Signification: degre
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: coefficient
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Retourne le coefficient du terme de degre n1,n2,n3
+ *
+ * @param (int n1) degre
+ * @param (int n2) degre
+ * @param (int n3) degre
+ * @return (double) coefficient
+ */
 inline double Polynome::coeff(int n1, int n2, int n3) const
 {
   return coeff_(n1, n2, n3);
 }
 
-// Description:
-//    Retourne le coefficient du terme de degre n1,n2,n3,n4
-// Precondition:
-// Parametre: int n1
-//    Signification: degre
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int n2
-//    Signification: degre
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int n3
-//    Signification: degre
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int n4
-//    Signification: degre
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: coefficient
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Retourne le coefficient du terme de degre n1,n2,n3,n4
+ *
+ * @param (int n1) degre
+ * @param (int n2) degre
+ * @param (int n3) degre
+ * @param (int n4) degre
+ * @return (double) coefficient
+ */
 inline double Polynome::coeff(int n1, int n2, int n3, int n4) const
 {
   return coeff_(n1, n2, n3, n4);

@@ -18,9 +18,10 @@
 
 #include <TRUSTSchema_RK.h>
 
-// .DESCRIPTION : classe Schema_Euler_explicite
-//     Cette classe represente un schema en temps d'Euler explicite: U(n+1) = U(n) + dt*(dU/dt)(n)
-// .SECTION voir aussi Schema_Temps_base
+/*! @brief : classe Schema_Euler_explicite Cette classe represente un schema en temps d'Euler explicite: U(n+1) = U(n) + dt*(dU/dt)(n)
+ *
+ * @sa Schema_Temps_base
+ */
 class Schema_Euler_explicite: public TRUSTSchema_RK<Ordre_RK::UN>
 {
   Declare_instanciable(Schema_Euler_explicite);

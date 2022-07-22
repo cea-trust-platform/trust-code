@@ -14,11 +14,9 @@
 *****************************************************************************/
 
 
-//
-// .DESCRIPTION class Schema_Implicite_base
-//
-// .SECTION voir aussi
-//
+/*! @brief class Schema_Implicite_base
+ *
+ */
 
 #include <Schema_Implicite_base.h>
 #include <Param.h>

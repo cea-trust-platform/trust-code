@@ -136,19 +136,9 @@ inline void F77NAME(LUTSOLV2) (const int* const a, const double* const b,
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(PGMRESV2)(const int* const a, const int* const b,
                               const double* const c, double* const d,
                               const double* const e, const double* const f,

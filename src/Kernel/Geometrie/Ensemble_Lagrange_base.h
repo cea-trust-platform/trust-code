@@ -18,14 +18,13 @@
 #include <Zone.h>
 
 class Equation_base;
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Ensemble_Lagrange_base
-//     Classe de base des classes representant une structure geometrique constituee
-//     d un ensemble de points dont on realise un suivi Lagrangien
-//     Actuellement une seule classe derivant instanciable : Maillage_FT_Disc
-//     -un ensemble Lagrangien est caracterise par les coordonnees de ses points
+/*! @brief classe Ensemble_Lagrange_base Classe de base des classes representant une structure geometrique constituee
+ *
+ *      d un ensemble de points dont on realise un suivi Lagrangien
+ *      Actuellement une seule classe derivant instanciable : Maillage_FT_Disc
+ *      -un ensemble Lagrangien est caracterise par les coordonnees de ses points
+ *
+ */
 
 // .SECTION voir aussi
 //

@@ -24,14 +24,10 @@ Declare_vect(Champ_front);
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champs_front
-//     Cette classe represente un vecteur de Champ_front
-// .SECTION voir aussi
-//      Champ_front
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champs_front Cette classe represente un vecteur de Champ_front
+ *
+ * @sa Champ_front
+ */
 class Champs_front : public VECT(Champ_front)
 {
 

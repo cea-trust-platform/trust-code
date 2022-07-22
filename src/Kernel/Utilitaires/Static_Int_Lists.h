@@ -19,20 +19,22 @@
 #include <TRUSTArray.h>
 #include <Vect.h>
 
-// .DESCRIPTION
-//  Cette classe permet de stocker des listes d'entiers accessibles
-//  en temps constant. La taille des listes ne peut pas changer sans
-//  perdre le contenu (ce sont des listes statiques).
-//  Exemple:
-//   Static_Int_List l;
-//   ArrOfInt tailles(3);
-//   tailles[0] = 2; tailles[1] = 3; tailles[2] = 0;
-//   // On reserve la memoire pour trois listes de taille 2, 3 et 0:
-//   l.set_list_sizes(tailles);
-//   // On affecte une valeur au deuxieme element de la premiere liste:
-//   l.set_value(0,1,765);
-//   // Affiche la valeur
-//   Cout << l(0,1);
+/*! @brief Cette classe permet de stocker des listes d'entiers accessibles en temps constant.
+ *
+ * La taille des listes ne peut pas changer sans
+ *   perdre le contenu (ce sont des listes statiques).
+ *   Exemple:
+ *    Static_Int_List l;
+ *    ArrOfInt tailles(3);
+ *    tailles[0] = 2; tailles[1] = 3; tailles[2] = 0;
+ *    // On reserve la memoire pour trois listes de taille 2, 3 et 0:
+ *    l.set_list_sizes(tailles);
+ *    // On affecte une valeur au deuxieme element de la premiere liste:
+ *    l.set_value(0,1,765);
+ *    // Affiche la valeur
+ *    Cout << l(0,1);
+ *
+ */
 class Static_Int_Lists
 {
 public:
@@ -76,8 +78,9 @@ private:
   ArrOfInt valeurs_;
 };
 
-// Description: affecte la "valeur" au j-ieme element de la i-ieme liste avec
-//  0 <= i < get_nb_lists()  et  0 <= j < get_list_size(i)
+/*! @brief affecte la "valeur" au j-ieme element de la i-ieme liste avec 0 <= i < get_nb_lists()  et  0 <= j < get_list_size(i)
+ *
+ */
 inline void Static_Int_Lists::set_value(int i, int j, int valeur)
 {
   const int index = index_[i] + j;
@@ -85,8 +88,9 @@ inline void Static_Int_Lists::set_value(int i, int j, int valeur)
   valeurs_[index] = valeur;
 }
 
-// Description: renvoie le j-ieme element de la i-ieme liste avec
-//  0 <= i < get_nb_lists()  et  0 <= j < get_list_size(i)
+/*! @brief renvoie le j-ieme element de la i-ieme liste avec 0 <= i < get_nb_lists()  et  0 <= j < get_list_size(i)
+ *
+ */
 inline int Static_Int_Lists::operator() (int i, int j) const
 {
   const int index = index_[i] + j;
@@ -95,14 +99,18 @@ inline int Static_Int_Lists::operator() (int i, int j) const
   return val;
 }
 
-// Description: renvoie le nombre d'elements de la liste i
+/*! @brief renvoie le nombre d'elements de la liste i
+ *
+ */
 inline int Static_Int_Lists::get_list_size(int i) const
 {
   const int size = index_[i+1] - index_[i];
   return size;
 }
 
-// Description: renvoie le nombre de listes stockees
+/*! @brief renvoie le nombre de listes stockees
+ *
+ */
 inline int Static_Int_Lists::get_nb_lists() const
 {
   return index_.size_array() - 1;

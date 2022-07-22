@@ -21,15 +21,11 @@
 
 #include <Equation.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe List_equation
-//     Represente une liste d'equations
-//
-// .SECTION voir aussi
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe List_equation Represente une liste d'equations
+ *
+ *
+ *
+ */
 
 
 Declare_liste(Equation);

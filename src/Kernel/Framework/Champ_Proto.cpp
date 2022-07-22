@@ -15,21 +15,10 @@
 
 #include <Champ_Proto.h>
 
-// Description:
-//    Verification de la dimension du champ
-//    Renvoie la dimension du champ
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: la dimension du champ
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Verification de la dimension du champ Renvoie la dimension du champ
+ *
+ * @return (int) la dimension du champ
+ */
 int Champ_Proto::lire_dimension(Entree& is , const Nom& le_nom_)
 {
   if(!is.check_types()) abort();
@@ -39,21 +28,10 @@ int Champ_Proto::lire_dimension(Entree& is , const Nom& le_nom_)
   return lire_dimension(dim, le_nom_);
 }
 
-// Description:
-//    Verification de la dimension du champ
-//    Renvoie la dimension du champ
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: la dimension du champ
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Verification de la dimension du champ Renvoie la dimension du champ
+ *
+ * @return (int) la dimension du champ
+ */
 int Champ_Proto::lire_dimension(int dim , const Nom& le_nom_)
 {
   if (dim < 1)
@@ -66,22 +44,14 @@ int Champ_Proto::lire_dimension(int dim , const Nom& le_nom_)
 }
 
 
-// Description:
-//    Operateur d'indexation 1D.
-//    Renvoie la i-ieme composantes du champ.
-//    (version const par valeur)
-// Precondition:
-// Parametre: int i
-//    Signification: indice de la composante du champ
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: la i-ieme composantes du champ
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Operateur d'indexation 1D.
+ *
+ * Renvoie la i-ieme composantes du champ.
+ *     (version const par valeur)
+ *
+ * @param (int i) indice de la composante du champ
+ * @return (double) la i-ieme composantes du champ
+ */
 double Champ_Proto::operator()(int i) const
 {
   return valeurs()(i);
@@ -89,21 +59,13 @@ double Champ_Proto::operator()(int i) const
 
 
 
-// Description:
-//    Operateur d'indexation 1D.
-//    Renvoie la i-ieme composantes du champ.
-// Precondition:
-// Parametre: int i
-//    Signification: indice de la composante du champ
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double&
-//    Signification: la i-ieme composantes du champ
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Operateur d'indexation 1D.
+ *
+ * Renvoie la i-ieme composantes du champ.
+ *
+ * @param (int i) indice de la composante du champ
+ * @return (double&) la i-ieme composantes du champ
+ */
 double& Champ_Proto::operator()(int i)
 {
   return valeurs()(i);
@@ -111,27 +73,15 @@ double& Champ_Proto::operator()(int i)
 
 
 
-// Description:
-//    Operateur d'indexation 2D.
-//    Renvoie la composante (i,j) du champ.
-//    (version const par valeur)
-// Precondition:
-// Parametre: int i
-//    Signification: indice suivant la premiere dimension du champ
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int j
-//    Signification: indice suivant la seconde dimension du champ
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: la composante (i,j) du champ
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Operateur d'indexation 2D.
+ *
+ * Renvoie la composante (i,j) du champ.
+ *     (version const par valeur)
+ *
+ * @param (int i) indice suivant la premiere dimension du champ
+ * @param (int j) indice suivant la seconde dimension du champ
+ * @return (double) la composante (i,j) du champ
+ */
 double Champ_Proto::operator()(int i, int j) const
 {
   return valeurs()(i,j);
@@ -139,26 +89,14 @@ double Champ_Proto::operator()(int i, int j) const
 
 
 
-// Description:
-//    Operateur d'indexation 2D.
-//    Renvoie la composante (i,j) du champ.
-// Precondition:
-// Parametre: int i
-//    Signification: indice suivant la premiere dimension du champ
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int j
-//    Signification: indice suivant la seconde dimension du champ
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double&
-//    Signification: la composante (i,j) du champ
-//    Contraintes: reference
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Operateur d'indexation 2D.
+ *
+ * Renvoie la composante (i,j) du champ.
+ *
+ * @param (int i) indice suivant la premiere dimension du champ
+ * @param (int j) indice suivant la seconde dimension du champ
+ * @return (double&) la composante (i,j) du champ
+ */
 double& Champ_Proto::operator()(int i, int j)
 {
   return valeurs()(i,j);

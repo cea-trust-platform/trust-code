@@ -20,21 +20,11 @@
 
 
 
-// Description:
-//    Constructeur par defaut.
-//    Cree la chaine "??"
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Constructeur par defaut.
+ *
+ * Cree la chaine "??"
+ *
+ */
 Char_ptr::Char_ptr()
 {
   nom_ = new char[3];
@@ -45,61 +35,29 @@ Char_ptr::Char_ptr()
 
 
 
-// Description:
-//    Construction d'un nom a partir d'une chaine de caracteres
-//    La chaine est copiee
-// Precondition:
-// Parametre: const char* nom
-//    Signification: la chaine de caracteres a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Construction d'un nom a partir d'une chaine de caracteres La chaine est copiee
+ *
+ * @param (const char* nom) la chaine de caracteres a utiliser
+ */
 Char_ptr::Char_ptr(const char* nom)
 {
   nom_ = 0;
   operator=(nom);
 }
 
-// Description:
-//    Constructeur par copie d'un nom
-// Precondition:
-// Parametre: const Char_ptr& nom
-//    Signification: le nom a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Constructeur par copie d'un nom
+ *
+ * @param (const Char_ptr& nom) le nom a utiliser
+ */
 Char_ptr::Char_ptr(const Char_ptr& nom)
 {
   nom_ = 0;
   operator=(nom);
 }
 
-// Description:
-//    Destructeur
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Destructeur
+ *
+ */
 Char_ptr::~Char_ptr()
 {
   if(nom_)
@@ -107,18 +65,21 @@ Char_ptr::~Char_ptr()
 }
 
 
-// Description:
-//    Renvoie le nombre de caracteres de la chaine du Char_ptr
-//    y compris le caractere zero de fin de chaine.
-//    Exemple : Char_ptr("hello").longueur() == 6
+/*! @brief Renvoie le nombre de caracteres de la chaine du Char_ptr y compris le caractere zero de fin de chaine.
+ *
+ *     Exemple : Char_ptr("hello").longueur() == 6
+ *
+ */
 int Char_ptr::longueur() const
 {
   return ((int)strlen(nom_)+1);
 }
 
-// Description:
-//  Copie la chaine nom.
-//  Modif BM pour que nom puisse pointer sur une sous-partie de nom_
+/*! @brief Copie la chaine nom.
+ *
+ * Modif BM pour que nom puisse pointer sur une sous-partie de nom_
+ *
+ */
 Char_ptr& Char_ptr::operator=(const char* const nom)
 {
   if (nom_ == nom)
@@ -134,40 +95,21 @@ Char_ptr& Char_ptr::operator=(const char* const nom)
   return *this;
 }
 
-// Description:
-//    Copie le Char_ptr nom
-// Precondition:
-// Parametre: const Char_ptr& nom
-//    Signification: le nom a copier
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Char_ptr&
-//    Signification: reference sur this qui represente la chaine du Char_ptr nom
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Copie le Char_ptr nom
+ *
+ * @param (const Char_ptr& nom) le nom a copier
+ * @return (Char_ptr&) reference sur this qui represente la chaine du Char_ptr nom
+ */
 Char_ptr& Char_ptr::operator=(const Char_ptr& nom)
 {
   operator=(nom.nom_);
   return *this;
 }
 
-// Description:
-//    Retourne un pointeur sur la chaine de caractere du nom
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: char*
-//    Signification: pointeur sur la chaine de caractere du nom
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Retourne un pointeur sur la chaine de caractere du nom
+ *
+ * @return (char*) pointeur sur la chaine de caractere du nom
+ */
 Char_ptr::operator char*() const
 {
   return nom_;

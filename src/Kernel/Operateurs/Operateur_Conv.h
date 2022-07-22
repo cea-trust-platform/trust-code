@@ -24,16 +24,13 @@
 Declare_deriv(Operateur_Conv_base);
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Operateur_Conv
-//    Classe generique de la hierarchie des operateurs representant un terme
-//    de convection. Un objet Operateur_Conv peut referencer n'importe quel
-//    objet derivant de Operateur_Conv_base.
-// .SECTION voir aussi
-//      Operateur_Conv_base Operateur
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Operateur_Conv Classe generique de la hierarchie des operateurs representant un terme
+ *
+ *     de convection. Un objet Operateur_Conv peut referencer n'importe quel
+ *     objet derivant de Operateur_Conv_base.
+ *
+ * @sa Operateur_Conv_base Operateur
+ */
 class Operateur_Conv  : public Operateur, public DERIV(Operateur_Conv_base)
 {
   Declare_instanciable(Operateur_Conv);
@@ -54,78 +51,37 @@ protected :
   REF(Champ_base) la_vitesse;
 };
 
-// Description:
-//    Renvoie l'objet sous-jacent upcaste en Operateur_base
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Operateur_base&
-//    Signification: l'objet sous-jacent upcaste en Operateur_base
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie l'objet sous-jacent upcaste en Operateur_base
+ *
+ * @return (Operateur_base&) l'objet sous-jacent upcaste en Operateur_base
+ */
 inline Operateur_base& Operateur_Conv::l_op_base()
 {
   return valeur();
 }
-// Description:
-//    Renvoie l'objet sous-jacent upcaste en Operateur_base
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Operateur_base&
-//    Signification: l'objet sous-jacent upcaste en Operateur_base
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie l'objet sous-jacent upcaste en Operateur_base (version const)
+ *
+ * @return (Operateur_base&) l'objet sous-jacent upcaste en Operateur_base
+ */
 inline const Operateur_base& Operateur_Conv::l_op_base() const
 {
   return valeur();
 }
 
-// Description:
-//    Associe la vitesse (en tant que vitesse transportante)
-//    a l'operateur de convection.
-// Precondition:
-// Parametre: Champ_Inc& vit
-//    Signification: le champ inconnue representant la vitesse
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification: le champ inconnue representant la vitesse transportante
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: l'operateur a une vitesse transportante asscoiee
+/*! @brief Associe la vitesse (en tant que vitesse transportante) a l'operateur de convection.
+ *
+ * @param (Champ_Inc& vit) le champ inconnue representant la vitesse
+ * @return le champ inconnue representant la vitesse transportante
+ */
 inline void Operateur_Conv::associer_vitesse(const Champ_base& vit)
 {
   la_vitesse = vit;
 }
 
-// Description:
-//    Renvoie la vitesse transportante de l'operateur
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Inc&
-//    Signification: le champ inconnue representant la vitesse transportante
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la vitesse transportante de l'operateur
+ *
+ * @return (Champ_Inc&) le champ inconnue representant la vitesse transportante
+ */
 inline const Champ_base& Operateur_Conv::vitesse() const
 {
   return la_vitesse.valeur();
@@ -133,20 +89,10 @@ inline const Champ_base& Operateur_Conv::vitesse() const
 
 
 
-// Description:
-//    Type l'operateur.
-// Precondition:
-// Parametre: Nom& typ
-//    Signification: le nom representant le type de l'operateur
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Type l'operateur.
+ *
+ * @param (Nom& typ) le nom representant le type de l'operateur
+ */
 inline void Operateur_Conv::typer(const Nom& a_type)
 {
   DERIV(Operateur_Conv_base)::typer(a_type);

@@ -18,20 +18,17 @@
 
 #include <Interprete.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Axi_2D
-//    Cette classe est un interprete qui sert a lire l'attribut 2D_axi.
-//    Directive:
-//       2D_Axi
-//    Cette directive optionelle permets de faire les calculs en
-//    coordonnees axisymetrique pour des ecoulements ayant une symetrie axiale.
-//     En l'absence de cette directive les calculs
-//    se font en coordonnees cartesiennes.
-// .SECTION voir aussi
-//    Interprete Objet_U
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Axi_2D Cette classe est un interprete qui sert a lire l'attribut 2D_axi.
+ *
+ *     Directive:
+ *        2D_Axi
+ *     Cette directive optionelle permets de faire les calculs en
+ *     coordonnees axisymetrique pour des ecoulements ayant une symetrie axiale.
+ *      En l'absence de cette directive les calculs
+ *     se font en coordonnees cartesiennes.
+ *
+ * @sa Interprete Objet_U
+ */
 class Bidim_Axi : public Interprete
 {
   Declare_instanciable(Bidim_Axi);

@@ -22,31 +22,28 @@
 #include <TRUSTTab.h>
 #include <algorithm>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Matrice_Morse
-//    Represente une matrice M (creuse), non necessairement carree
-//    stockee au format Morse.
-//    -----------------------------------------------------------------------
-//    On utilise 3 tableaux tab1(n+1), tab2(nnz) et coeff_(nnz):
-//    On note Vi = { j differents de i / M(i,j) est non nul }
-//            tab1[i] = rang dans tab2 de la ieme ligne
-//            pour tab1[i] <= j < tab1[i+1],  tab2[j] decrit Vi
-//            et coeff_[j] = M(i,tab2[j])
-//            tab1 et tab2 sont des rangs au sens fortran:
-//                  1 <= tab2[i] <= n
-//                  tab1[n+1] = nnz+1
-//    Remarque: dans ce commentaire le [] est a prendre au sens fortran:
-//                    tab1[1] designe la premiere valeur de tab1
-//
-//    C'est aussi le format décrit dans la page Wikipedia :
-//        https://fr.wikipedia.org/wiki/Matrice_creuse
-//    en faisant un +1 sur tous les éléments des tableaux d'indices (IA et JA dans la page)
-//    -----------------------------------------------------------------------
-// .SECTION voir aussi
-//     Matrice_Base Matrice_Morse_Sym
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Matrice_Morse Represente une matrice M (creuse), non necessairement carree
+ *
+ *     stockee au format Morse.
+ *     -----------------------------------------------------------------------
+ *     On utilise 3 tableaux tab1(n+1), tab2(nnz) et coeff_(nnz):
+ *     On note Vi = { j differents de i / M(i,j) est non nul }
+ *             tab1[i] = rang dans tab2 de la ieme ligne
+ *             pour tab1[i] <= j < tab1[i+1],  tab2[j] decrit Vi
+ *             et coeff_[j] = M(i,tab2[j])
+ *             tab1 et tab2 sont des rangs au sens fortran:
+ *                   1 <= tab2[i] <= n
+ *                   tab1[n+1] = nnz+1
+ *     Remarque: dans ce commentaire le [] est a prendre au sens fortran:
+ *                     tab1[1] designe la premiere valeur de tab1
+ *
+ *     C'est aussi le format décrit dans la page Wikipedia :
+ *         https://fr.wikipedia.org/wiki/Matrice_creuse
+ *     en faisant un +1 sur tous les éléments des tableaux d'indices (IA et JA dans la page)
+ *     -----------------------------------------------------------------------
+ *
+ * @sa Matrice_Base Matrice_Morse_Sym
+ */
 class Matrice_Morse : public Matrice_Base
 {
 

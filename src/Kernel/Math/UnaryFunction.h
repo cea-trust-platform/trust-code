@@ -15,14 +15,10 @@
 
 #ifndef UnaryFunction_included
 #define UnaryFunction_included
-/////////////////////////////////////////////////////////////////////////=
-/////
-//
-// .DESCRIPTION
-//    Definit une constante dans le jeu de donnees
-// .SECTION voir aussi
-/////////////////////////////////////////////////////////////////////////=
-/////
+/*! @brief Definit une constante dans le jeu de donnees
+ *
+ * @sa =
+ */
 #include <Objet_U.h>
 #include <Nom.h>
 

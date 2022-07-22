@@ -15,17 +15,22 @@
 #include <Static_Int_Lists.h>
 #include <TRUSTArrays.h>
 
-// Description: detruit toutes les listes
+/*! @brief detruit toutes les listes
+ *
+ */
 void Static_Int_Lists::reset()
 {
   index_.resize_array(0);
   valeurs_.resize_array(0);
 }
 
-// Description: detruit les listes existantes et en cree de nouvelles.
-//  On cree autant de listes que d'elements dans le tableau sizes.
-//  La i-ieme liste a une taille sizes[i]
-//  Les valeurs sizes doivent etre positives ou nulles.
+/*! @brief detruit les listes existantes et en cree de nouvelles.
+ *
+ * On cree autant de listes que d'elements dans le tableau sizes.
+ *   La i-ieme liste a une taille sizes[i]
+ *   Les valeurs sizes doivent etre positives ou nulles.
+ *
+ */
 void Static_Int_Lists::set_list_sizes(const ArrOfInt& sizes)
 {
   reset();
@@ -44,9 +49,12 @@ void Static_Int_Lists::set_list_sizes(const ArrOfInt& sizes)
   valeurs_.resize_array(somme_sizes);
 }
 
-// Description: remplace les valeurs stockes par toutes les listes par celles
-//  du tableau data. data doit avoir pour taille la somme des tailles de toutes
-//  les listes.
+/*! @brief remplace les valeurs stockes par toutes les listes par celles du tableau data.
+ *
+ * data doit avoir pour taille la somme des tailles de toutes
+ *   les listes.
+ *
+ */
 void Static_Int_Lists::set_data(const ArrOfInt& data)
 {
   assert(data.size_array() == valeurs_.size_array());
@@ -71,7 +79,9 @@ static int check_index_data(const ArrOfInt& index, const ArrOfInt& data)
 }
 #endif
 
-// Description: remplace index et data.
+/*! @brief remplace index et data.
+ *
+ */
 void Static_Int_Lists::set_index_data(const ArrOfInt& index, const ArrOfInt& data)
 {
   assert(check_index_data(index, data));
@@ -79,8 +89,11 @@ void Static_Int_Lists::set_index_data(const ArrOfInt& index, const ArrOfInt& dat
   valeurs_ = data;
 }
 
-// Description: tri par ordre croissant des valeurs de la i-ieme liste.
-//  Si num_liste < 0, on trie toutes les listes.
+/*! @brief tri par ordre croissant des valeurs de la i-ieme liste.
+ *
+ * Si num_liste < 0, on trie toutes les listes.
+ *
+ */
 void Static_Int_Lists::trier_liste(int num_liste)
 {
   const int i_debut = (num_liste < 0) ? 0 : num_liste;
@@ -97,8 +110,9 @@ void Static_Int_Lists::trier_liste(int num_liste)
     }
 }
 
-// Description: copie la i-ieme liste dans le tableau fourni
-//  Le tableau array doit etre resizable.
+/*! @brief copie la i-ieme liste dans le tableau fourni Le tableau array doit etre resizable.
+ *
+ */
 void Static_Int_Lists::copy_list_to_array(int i, ArrOfInt& array) const
 {
   const int n = get_list_size(i);

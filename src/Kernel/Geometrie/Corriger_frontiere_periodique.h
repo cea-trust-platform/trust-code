@@ -19,11 +19,12 @@
 #include <Connectivite_som_elem.h>
 class Domaine;
 
-// .DESCRIPTION
-//  Cet interprete doit etre utilise en sequentiel (avant decoupage) si
-//  les sommets opposes d'un bord periodique ne sont pas parfaitement alignes.
-//  (cas de certains maillages tetra si le mailleur est trop contraint par la cao).
-//  Il tente de deplacer les sommets pour les aligner.
+/*! @brief Cet interprete doit etre utilise en sequentiel (avant decoupage) si les sommets opposes d'un bord periodique ne sont pas parfaitement alignes.
+ *
+ *   (cas de certains maillages tetra si le mailleur est trop contraint par la cao).
+ *   Il tente de deplacer les sommets pour les aligner.
+ *
+ */
 class Corriger_frontiere_periodique : public Interprete_geometrique_base
 {
   Declare_instanciable(Corriger_frontiere_periodique);

@@ -188,21 +188,11 @@ Entree& Probleme_Couple::readOn(Entree& is)
 }
 
 
-// Description:
-//    Surcharge Objet_U::printOn(Sortie&)
-//    Imprime les problemes couples sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie sur lequel imprimer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition:
+/*! @brief Surcharge Objet_U::printOn(Sortie&) Imprime les problemes couples sur un flot de sortie.
+ *
+ * @param (Sortie& os) le flot de sortie sur lequel imprimer
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Probleme_Couple::printOn(Sortie& os) const
 {
   for(int i=1; i< nb_problemes(); i++)
@@ -223,22 +213,13 @@ bool Probleme_Couple::updateGivenFields()
 }
 
 
-// Description:
-//    Ajoute un probleme a la liste des problemes couples.
-//    Met en place la reference du probleme vers this.
-//    Verifie que l'ordre conduction, thHyd est respecte.
-// Precondition:
-// Parametre: Probleme_base& pb
-//    Signification: le probleme a ajouter au couplage
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ajoute un probleme a la liste des problemes couples.
+ *
+ * Met en place la reference du probleme vers this.
+ *     Verifie que l'ordre conduction, thHyd est respecte.
+ *
+ * @param (Probleme_base& pb) le probleme a ajouter au couplage
+ */
 void Probleme_Couple::ajouter(Probleme_base& pb)
 {
   addProblem(pb);
@@ -279,24 +260,16 @@ void Probleme_Couple::initialize()
 }
 
 
-// Description:
-//    Surcharge Objet_U::associer_(Objet_U&)
-//    Associe un objet au probleme couple, en verifiant le type
-//    dynamiquement. L'objet peut-etre:
-//      - un schema en temps (Schema_Temps_base), et on l'associe aux problemes
-//      - un probleme (Probleme_base), on l'ajoute a la liste
-// Precondition:
-// Parametre: Objet_U& ob
-//    Signification: l'objet a associer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: int
-//    Signification: 1 si l'association a reussie 0 sinon
-//    Contraintes:
-// Exception: l'objet n'est pas d'un type attendu
-// Effets de bord:
-// Postcondition:
+/*! @brief Surcharge Objet_U::associer_(Objet_U&) Associe un objet au probleme couple, en verifiant le type
+ *
+ *     dynamiquement. L'objet peut-etre:
+ *       - un schema en temps (Schema_Temps_base), et on l'associe aux problemes
+ *       - un probleme (Probleme_base), on l'ajoute a la liste
+ *
+ * @param (Objet_U& ob) l'objet a associer
+ * @return (int) 1 si l'association a reussie 0 sinon
+ * @throws l'objet n'est pas d'un type attendu
+ */
 int Probleme_Couple::associer_(Objet_U& ob)
 {
   if( sub_type(Schema_Temps_base, ob))
@@ -315,22 +288,10 @@ int Probleme_Couple::associer_(Objet_U& ob)
 }
 
 
-// Description:
-//    Associe une copie du schema en temps a chaque probleme
-//    du Probleme couple.
-// Precondition:
-// Parametre: Schema_Temps_base& sch
-//    Signification: le schema en temps a associer
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord: les problemes du probleme couple ont un schema en temps
-//                 associe
-// Postcondition:
+/*! @brief Associe une copie du schema en temps a chaque probleme du Probleme couple.
+ *
+ * @param (Schema_Temps_base& sch) le schema en temps a associer
+ */
 void Probleme_Couple::associer_sch_tps_base(Schema_Temps_base& sch)
 {
   sch_clones.dimensionner(nb_problemes());
@@ -344,21 +305,12 @@ void Probleme_Couple::associer_sch_tps_base(Schema_Temps_base& sch)
       if (i!=0) pb.schema_temps().schema_impr()=0;
     }
 }
-// Description:
-//    Renvoie le schema en temps associe aux problemes couples.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Schema_Temps_base&
-//    Signification: le schema en temps associe
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le schema en temps associe aux problemes couples.
+ *
+ * (version const)
+ *
+ * @return (Schema_Temps_base&) le schema en temps associe
+ */
 const Schema_Temps_base& Probleme_Couple::schema_temps() const
 {
   if (nb_problemes()==0)
@@ -371,20 +323,10 @@ const Schema_Temps_base& Probleme_Couple::schema_temps() const
 }
 
 
-// Description:
-//    Renvoie le schema en temps associe aux problemes couples.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Schema_Temps_base&
-//    Signification: le schema en temps associe
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le schema en temps associe aux problemes couples.
+ *
+ * @return (Schema_Temps_base&) le schema en temps associe
+ */
 Schema_Temps_base& Probleme_Couple::schema_temps()
 {
   if (nb_problemes()==0)
@@ -396,24 +338,14 @@ Schema_Temps_base& Probleme_Couple::schema_temps()
   return pb.schema_temps();
 }
 
-// Description:
-//    Associe une discretisation a tous les problemes du probleme
-//    couple.
-//    Appelle Probleme_Base::discretiser(const Discretisation_base&)
-//    sur chacun des problemes du probleme couple.
-//    voir Probleme_Base::discretiser(const Discretisation_base&)
-// Precondition:
-// Parametre: Discretisation_base& dis
-//    Signification: une discretisation pour tous les problemes
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord: tous les problemes du probleme couple sont discretises
-// Postcondition:
+/*! @brief Associe une discretisation a tous les problemes du probleme couple.
+ *
+ *     Appelle Probleme_Base::discretiser(const Discretisation_base&)
+ *     sur chacun des problemes du probleme couple.
+ *     voir Probleme_Base::discretiser(const Discretisation_base&)
+ *
+ * @param (Discretisation_base& dis) une discretisation pour tous les problemes
+ */
 void Probleme_Couple::discretiser(const Discretisation_base& dis)
 {
   // Loop to discretize each problem of the coupled problem:

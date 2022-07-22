@@ -24,13 +24,10 @@ class Nom;
 class Motcle;
 class Param;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe de base pour l'ensemble des postraitements.
-// .SECTION voir aussi
-//    Postraitements
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe de base pour l'ensemble des postraitements.
+ *
+ * @sa Postraitements
+ */
 
 class Postraitement_base : public Objet_U
 {

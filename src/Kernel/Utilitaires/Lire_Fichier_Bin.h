@@ -20,12 +20,9 @@
 #include <Lire_Fichier.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     Lecture d'un fichier au format binaire
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Lecture d'un fichier au format binaire
+ *
+ */
 class Lire_Fichier_Bin : public Lire_Fichier
 {
   Declare_instanciable(Lire_Fichier_Bin);

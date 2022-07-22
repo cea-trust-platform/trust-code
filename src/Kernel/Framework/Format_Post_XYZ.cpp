@@ -28,23 +28,26 @@ Implemente_instanciable_sans_constructeur(Format_Post_XYZ,"Format_Post_XYZ",Form
 //Ecriture dans un seul fichier (sequentiel ou parallele)
 ///////////////////////////////////////////////////////////////////////////
 
-// Description:
-//  Constructeur par defaut:
-//Specifier dans commentaire ce qui est fixe par defaut
+/*! @brief Constructeur par defaut: Specifier dans commentaire ce qui est fixe par defaut
+ *
+ */
 
 Format_Post_XYZ::Format_Post_XYZ()
 {
   reset();
 }
 
-// Description:
-//  Remet l'objet dans l'etat obtenu par le constructeur par defaut.
+/*! @brief Remet l'objet dans l'etat obtenu par le constructeur par defaut.
+ *
+ */
 void Format_Post_XYZ::reset()
 {
   xyz_basename_ = "??";
 }
 
-// Description: erreur => exit
+/*! @brief erreur => exit
+ *
+ */
 Sortie& Format_Post_XYZ::printOn(Sortie& os) const
 {
   Cerr << "Format_Post_XYZ::printOn : error" << finl;
@@ -52,11 +55,13 @@ Sortie& Format_Post_XYZ::printOn(Sortie& os) const
   return os;
 }
 
-// Description: Lecture des parametres du postraitement au format "jeu de donnees"
-//  Le format attendu est le suivant:
-//  {
-//    nom_fichier basename_sans_extension
-//  }
+/*! @brief Lecture des parametres du postraitement au format "jeu de donnees" Le format attendu est le suivant:
+ *
+ *   {
+ *     nom_fichier basename_sans_extension
+ *   }
+ *
+ */
 Entree& Format_Post_XYZ::readOn(Entree& is)
 {
   Format_Post_base::readOn(is);
@@ -68,8 +73,9 @@ void Format_Post_XYZ::set_param(Param& param)
   param.ajouter("nom_fichier",&xyz_basename_,Param::REQUIRED);
 }
 
-// Description: Initialisation de la classe avec des parametres par
-//  defaut
+/*! @brief Initialisation de la classe avec des parametres par defaut
+ *
+ */
 int Format_Post_XYZ::initialize_by_default(const Nom& file_basename)
 {
   xyz_basename_= file_basename;
@@ -129,8 +135,9 @@ int Format_Post_XYZ::preparer_post(const Nom& id_du_domaine,const int est_le_pre
 
 }
 
-// Description:
-//  voir Format_Post_base::ecrire_domaine
+/*! @brief voir Format_Post_base::ecrire_domaine
+ *
+ */
 int Format_Post_XYZ::ecrire_domaine(const Domaine& domaine,const int est_le_premier_post)
 {
   //Appel de la methode statique specifique au format xyz
@@ -142,10 +149,12 @@ int Format_Post_XYZ::ecrire_domaine(const Domaine& domaine,const int est_le_prem
   return 1; // ok tout va bien
 }
 
-// Description: commence l'ecriture d'un nouveau pas de temps
-//  En l'occurence pour le format XYZ:
-//  Ouvre le fichier maitre en mode APPEND et ajoute une ligne
-//   "TEMPS xxxxx"
+/*! @brief commence l'ecriture d'un nouveau pas de temps En l'occurence pour le format XYZ:
+ *
+ *   Ouvre le fichier maitre en mode APPEND et ajoute une ligne
+ *    "TEMPS xxxxx"
+ *
+ */
 int Format_Post_XYZ::ecrire_temps(const double temps)
 {
 
@@ -159,8 +168,9 @@ int Format_Post_XYZ::ecrire_temps(const double temps)
   return 1;
 }
 
-// Description:
-//  voir Format_Post_base::ecrire_champ
+/*! @brief voir Format_Post_base::ecrire_champ
+ *
+ */
 int Format_Post_XYZ::ecrire_champ2(const Domaine& domaine,const Noms& unite_, const Noms& noms_compo,
                                    int ncomp,double temps_,double temps_courant,
                                    const Nom& id_champ,
@@ -181,7 +191,9 @@ int Format_Post_XYZ::ecrire_champ2(const Domaine& domaine,const Noms& unite_, co
   return 1;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 int Format_Post_XYZ::ecrire_item_int(const Nom&     id_item,
                                      const Nom&     id_du_domaine,
                                      const Nom&     id_zone,

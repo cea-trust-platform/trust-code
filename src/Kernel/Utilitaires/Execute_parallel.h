@@ -17,10 +17,12 @@
 #define Execute_parallel_included
 #include <Interprete.h>
 
-// .DESCRIPTION
-//  Interprete permettant l'execution simultanee de plusieurs fichiers
-//  .data en creant des sous-groupes de processeurs en parallele
-//  Voir Execute_parallel::interpreter()
+/*! @brief Interprete permettant l'execution simultanee de plusieurs fichiers .
+ *
+ * data en creant des sous-groupes de processeurs en parallele
+ *   Voir Execute_parallel::interpreter()
+ *
+ */
 class Execute_parallel : public Interprete
 {
   Declare_instanciable(Execute_parallel);

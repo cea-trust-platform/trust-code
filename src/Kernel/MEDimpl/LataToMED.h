@@ -19,17 +19,12 @@
 
 
 
-///////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-// Classe LataToMED
-//    Ecr un fichier MED
-//    Structure du jeu de donnee (en dimension 2) :
-//    LataToMED dom medfile
-// .SECTION voir aussi
-//
-//
-///////////////////////////////////////////////////////////////////////////
+/*! @brief Classe LataToMED Ecr un fichier MED
+ *
+ *     Structure du jeu de donnee (en dimension 2) :
+ *     LataToMED dom medfile
+ *
+ */
 #include <Interprete.h>
 
 

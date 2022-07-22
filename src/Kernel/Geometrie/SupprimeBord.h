@@ -18,13 +18,13 @@
 
 
 
-//
-// .DESCRIPTION class SupprimeBord
-// Supprimebord dom  { bord1 , bord2 }
-// supprime les frontieres bord1 et bord2
-//
-// .SECTION voir aussi
-// Interprete
+/*! @brief class SupprimeBord Supprimebord dom  { bord1 , bord2 }
+ *
+ *  supprime les frontieres bord1 et bord2
+ *
+ *
+ * @sa Interprete
+ */
 
 #include <Interprete_geometrique_base.h>
 #include <Domaine.h>

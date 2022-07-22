@@ -20,32 +20,15 @@
 #include <Faces.h>
 class Nom;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Elem_geom_base
-//    Cette classe est la classe de base pour la definition d'elements
-//    geometriques constituant un maillage (i.e. une Zone geometrique)
-//    Un element geometrique a une Zone associe a laquelle il fournit
-//    les routines de base pour la manipulation des ses elements.
-//    (Une zone n'a qu'un seul type d'element geometrique)
-// .SECTION voir aussi
-//    Hexaedre Prisme Rectangle Segment Tetraedre Triangle
-//    Zone
-//    Classe abstraite
-//    Methodes abstraites:
-//      int face_sommet(int i, int j) const
-//      int nb_som() const
-//      int nb_faces(int=0) const
-//      int nb_som_face(int=0) const
-//      int est_structure() const
-//      const Nom& nom_lml() const
-//      int contient(const ArrOfDouble&, int ) const
-//      int contient(const ArrOfInt&, int ) const
-//      Type_Face type_face(int=0) const
-//      void calculer_volumes(DoubleVect& ) const
-//      void calculer_normales(const IntTab& , DoubleTab& ) const
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Elem_geom_base Cette classe est la classe de base pour la definition d'elements
+ *
+ *     geometriques constituant un maillage (i.e. une Zone geometrique)
+ *     Un element geometrique a une Zone associe a laquelle il fournit
+ *     les routines de base pour la manipulation des ses elements.
+ *     (Une zone n'a qu'un seul type d'element geometrique)
+ *
+ * @sa Hexaedre Prisme Rectangle Segment Tetraedre Triangle, Zone, Classe abstraite, Methodes abstraites:, int face_sommet(int i, int j) const, int nb_som() const, int nb_faces(int=0) const, int nb_som_face(int=0) const, int est_structure() const, const Nom& nom_lml() const, int contient(const ArrOfDouble&, int ) const, int contient(const ArrOfInt&, int ) const, Type_Face type_face(int=0) const, void calculer_volumes(DoubleVect& ) const, void calculer_normales(const IntTab& , DoubleTab& ) const
+ */
 class Elem_geom_base  : public Objet_U
 {
   Declare_base(Elem_geom_base);
@@ -76,46 +59,21 @@ protected:
 };
 
 
-// Description:
-//    Associe l'element geometrique a sa zone.
-// Precondition:
-// Parametre: Zone& une_zone
-//    Signification: la zone a associee a l'element
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe l'element geometrique a sa zone.
+ *
+ * @param (Zone& une_zone) la zone a associee a l'element
+ */
 inline void Elem_geom_base::associer_zone(const Zone& une_zone)
 {
   ma_zone=une_zone;
 }
 
 
-// Description:
-//    Cree les faces de l'element de la zone specifie.
-// Precondition: le nombre de type de face doit etre egal a 1
-// Parametre: Faces& faces
-//    Signification: les faces de l'elements a creer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Parametre: int elem
-//    Signification: le numero de element de la zone dont
-//                   veut creer les faces
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Cree les faces de l'element de la zone specifie.
+ *
+ * @param (Faces& faces) les faces de l'elements a creer
+ * @param (int elem) le numero de element de la zone dont veut creer les faces
+ */
 inline void Elem_geom_base::creer_faces_elem(Faces& faces, int elem) const
 {
   assert(nb_type_face() == 1);

@@ -21,16 +21,13 @@
 #include <Champ_Uniforme.h>
 #include <Champ_Input_Proto.h>
 
-//////////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     class Ch_input_uniforme
-//
-//     Cette classe represente un champ uniforme accessible par setInputField
-//
-// .SECTION voir aussi
-//   Champ_Input_Proto
-/////////////////////////////////////////////////////////////////////////////////
+/*! @brief class Ch_input_uniforme
+ *
+ *      Cette classe represente un champ uniforme accessible par setInputField
+ *
+ *
+ * @sa Champ_Input_Proto
+ */
 
 class Ch_input_uniforme : public Champ_Uniforme, public Champ_Input_Proto
 {

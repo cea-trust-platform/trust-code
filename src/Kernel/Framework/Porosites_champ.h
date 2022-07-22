@@ -19,7 +19,9 @@
 #include <TRUSTTabs_forward.h>
 #include <Interprete.h>
 
-// .DESCRIPTION Porosites_champ nom_pb champ affecte le champ champ a la porosite volumique du domaine du probleme de nom_pb, puis calcule les porosites surfaciques comme moyenne harmonique
+/*! @brief Porosites_champ nom_pb champ affecte le champ champ a la porosite volumique du domaine du probleme de nom_pb, puis calcule les porosites surfaciques comme moyenne harmonique
+ *
+ */
 class Porosites_champ : public Interprete
 {
   Declare_instanciable(Porosites_champ);

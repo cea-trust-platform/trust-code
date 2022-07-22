@@ -20,42 +20,24 @@
 
 Implemente_base(Schema_Explicite_Multi_TimeStep_base,"Schema_Explicite_Multi_TimeStep_base",Schema_Temps_base);
 
-// Description:
-//    Simple appel a: Schema_Temps_base::printOn(Sortie& )
-//    Ecrit le schema en temps sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Schema_Temps_base::printOn(Sortie& ) Ecrit le schema en temps sur un flot de sortie.
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Schema_Explicite_Multi_TimeStep_base::printOn(Sortie& s) const
 {
   return  Schema_Temps_base::printOn(s);
 }
 
 
-// Description:
-//    Lit le schema en temps a partir d'un flot d'entree.
-//    Simple appel a: Schema_Temps_base::readOn(Entree& )
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit le schema en temps a partir d'un flot d'entree.
+ *
+ * Simple appel a: Schema_Temps_base::readOn(Entree& )
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Schema_Explicite_Multi_TimeStep_base::readOn(Entree& s)
 {
   return Schema_Temps_base::readOn(s) ;
@@ -69,27 +51,32 @@ Entree& Schema_Explicite_Multi_TimeStep_base::readOn(Entree& s)
 ////////////////////////////////
 
 
-// Description:
-//    Renvoie le nombre de valeurs temporelles futures.
-//    Ici : n+1, donc 1.
+/*! @brief Renvoie le nombre de valeurs temporelles futures.
+ *
+ * Ici : n+1, donc 1.
+ *
+ */
 int Schema_Explicite_Multi_TimeStep_base::nb_valeurs_futures() const
 {
   return 1 ;
 }
 
-// Description:
-//    Renvoie le le temps a la i-eme valeur future.
-//    Ici : t(n+1)
+/*! @brief Renvoie le le temps a la i-eme valeur future.
+ *
+ * Ici : t(n+1)
+ *
+ */
 double Schema_Explicite_Multi_TimeStep_base::temps_futur(int i) const
 {
   assert(i==1);
   return temps_courant()+pas_de_temps();
 }
 
-// Description:
-//    Renvoie le le temps le temps que doivent rendre les champs a
-//    l'appel de valeurs()
-//    Ici : t(n+1)
+/*! @brief Renvoie le le temps le temps que doivent rendre les champs a l'appel de valeurs()
+ *
+ *     Ici : t(n+1)
+ *
+ */
 double Schema_Explicite_Multi_TimeStep_base::temps_defaut() const
 {
   return temps_courant()+pas_de_temps();
@@ -101,22 +88,11 @@ double Schema_Explicite_Multi_TimeStep_base::temps_defaut() const
 //                                     //
 /////////////////////////////////////////
 
-// Description:
-//    Effectue un pas de temps d'Euler explicite
-//    sur l'equation passee en parametre.
-// Precondition:
-// Parametre: Equation_base& eqn
-//    Signification: l'equation que l'on veut faire avancer d'un
-//                   pas de temps
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Effectue un pas de temps d'Euler explicite sur l'equation passee en parametre.
+ *
+ * @param (Equation_base& eqn) l'equation que l'on veut faire avancer d'un pas de temps
+ * @return (int) renvoie toujours 1
+ */
 int Schema_Explicite_Multi_TimeStep_base::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
 {
   authorized_equation(eqn);

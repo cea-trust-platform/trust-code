@@ -19,38 +19,22 @@ Implemente_deriv(Raccord_base);
 Implemente_instanciable(Raccord,"Raccord",DERIV(Raccord_base));
 
 
-// Description:
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Raccord::printOn(Sortie& s ) const
 {
   return DERIV(Raccord_base)::printOn(s) ;
 }
 
 
-// Description:
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Raccord::readOn(Entree& s)
 {
   return DERIV(Raccord_base)::readOn(s) ;

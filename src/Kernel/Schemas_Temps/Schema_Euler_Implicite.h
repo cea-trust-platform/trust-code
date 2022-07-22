@@ -16,10 +16,11 @@
 #ifndef Schema_Euler_Implicite_included
 #define Schema_Euler_Implicite_included
 
-//////////////////////////////////////////////////////////
-// .DESCRIPTION class Schema_Euler_Implicite
-//  Il herite de schema implicite base et porte un solveur par exemple
-//  le Simpler pour effectuer les Faire_un_pas_de_temps..
+/*! @brief class Schema_Euler_Implicite Il herite de schema implicite base et porte un solveur par exemple
+ *
+ *   le Simpler pour effectuer les Faire_un_pas_de_temps..
+ *
+ */
 
 #include <Schema_Implicite_base.h>
 #include <vector>

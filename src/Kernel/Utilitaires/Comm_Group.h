@@ -19,20 +19,22 @@
 #include <TRUSTArray.h>
 #include <Deriv_Comm_Group.h>
 
-// .DESCRIPTION        :
-//  Cette classe decrit un groupe de processeurs sur lesquels
-//  une portion de code s'execute simultanement. Elle fournit
-//  toutes les methodes permettant d'echanger des donnees entre
-//  les processeurs du groupe (mpsum, send, recv, ...),
-//  et de synchroniser les processeurs (barrier).
-//  Elle est specialisee selon le support reseau (MPI, PVM, ...)
-//  Attention, ces methodes sont reservees a des operations de bas niveau
-//  (noyau TRUST).
-//  Dans le code courant, il faut utiliser les methodes classes de communications
-//  de haut niveau :
-//  (envoyer(), envoyer_broadcast(), class Schema_Comm, class Process, etc)
-//  Pour creer un nouveau groupe et l'utiliser, voir class PE_Groups
-//  Pour la procedure d'initialisation, voir PE_Groups::Initialize()
+/*! @brief : Cette classe decrit un groupe de processeurs sur lesquels
+ *
+ *   une portion de code s'execute simultanement. Elle fournit
+ *   toutes les methodes permettant d'echanger des donnees entre
+ *   les processeurs du groupe (mpsum, send, recv, ...),
+ *   et de synchroniser les processeurs (barrier).
+ *   Elle est specialisee selon le support reseau (MPI, PVM, ...)
+ *   Attention, ces methodes sont reservees a des operations de bas niveau
+ *   (noyau TRUST).
+ *   Dans le code courant, il faut utiliser les methodes classes de communications
+ *   de haut niveau :
+ *   (envoyer(), envoyer_broadcast(), class Schema_Comm, class Process, etc)
+ *   Pour creer un nouveau groupe et l'utiliser, voir class PE_Groups
+ *   Pour la procedure d'initialisation, voir PE_Groups::Initialize()
+ *
+ */
 class Comm_Group : public Objet_U
 {
   Declare_base_sans_constructeur_ni_destructeur(Comm_Group);
@@ -138,9 +140,11 @@ inline int Comm_Group::check_enabled()
   return check_enabled_;
 }
 
-// Description:
-// Cette fonction renvoie un nouveau tag de communication pour le groupe.
-// Effet de bord : incremente le membre group_communication_tag_.
+/*! @brief Cette fonction renvoie un nouveau tag de communication pour le groupe.
+ *
+ * Effet de bord : incremente le membre group_communication_tag_.
+ *
+ */
 inline int Comm_Group::get_new_tag() const
 {
   // B.M. Cette fonctionnalite est finalement tres peu utile en pratique
@@ -149,16 +153,19 @@ inline int Comm_Group::get_new_tag() const
   return group_communication_tag_;
 }
 
-// Description:
-//  Renvoie le rang du processeur local dans le groupe *this.
-//  ou -1 si je ne suis pas dans le groupe.
+/*! @brief Renvoie le rang du processeur local dans le groupe *this.
+ *
+ * ou -1 si je ne suis pas dans le groupe.
+ *
+ */
 inline int Comm_Group::rank() const
 {
   return rank_;
 }
 
-// Description:
-//  Renvoie le nombre de processeurs dans le groupe *this
+/*! @brief Renvoie le nombre de processeurs dans le groupe *this
+ *
+ */
 inline int Comm_Group::nproc() const
 {
   assert(nproc_ >= 0);

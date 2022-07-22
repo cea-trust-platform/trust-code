@@ -15,8 +15,9 @@
 #ifndef CSR_Builder_included
 #define CSR_Builder_included
 
-// .DESCRIPTION
-//  This class is a helper to build CSR stored matrices
+/*! @brief This class is a helper to build CSR stored matrices
+ *
+ */
 class CSR_Builder
 {
 public:

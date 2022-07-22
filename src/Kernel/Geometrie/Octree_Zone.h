@@ -16,8 +16,9 @@
 #define Octree_Zone_included
 #include <Octree_Double.h>
 #include <Ref_Zone.h>
-// .DESCRIPTION: Un octree permettant de retrouver l'element d'une zone contenant
-//  point particulier.
+/*! @brief : Un octree permettant de retrouver l'element d'une zone contenant point particulier.
+ *
+ */
 class Octree_Zone
 {
 public:

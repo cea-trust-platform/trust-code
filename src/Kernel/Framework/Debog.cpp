@@ -52,32 +52,39 @@ void Debog::set_nom_pb_actuel(const Nom& nom)
     Debog_Pb::get_debog_instance()->set_nom_pb_actuel(nom);
 }
 
-// Description: teste le contenu du vecteur v en supposant qu'il contient des
-//  indices d'items associes au descripteur md. Exemple: face_keps_imposee_
-//  Les valeurs negatives doivent etre identiques a la reference,
-//  les valeurs positives ou nulles sont interpretees comme un indice et
-//  doivent etre egale a l'indice de reference apres renumerotation.
+/*! @brief teste le contenu du vecteur v en supposant qu'il contient des indices d'items associes au descripteur md.
+ *
+ * Exemple: face_keps_imposee_
+ *   Les valeurs negatives doivent etre identiques a la reference,
+ *   les valeurs positives ou nulles sont interpretees comme un indice et
+ *   doivent etre egale a l'indice de reference apres renumerotation.
+ *
+ */
 void Debog::verifier_indices_items(const char* const msg, const MD_Vector& md, const IntVect& v)
 {
   // pas code
 }
 
-// Description: renvoie 1 si on est en mode Debog, 0 sinon
+/*! @brief renvoie 1 si on est en mode Debog, 0 sinon
+ *
+ */
 int Debog::active()
 {
   return Debog_Pb::get_debog_instance().non_nul();
 }
 
-// Description: like verifier(), but, in "read&compare" mode, put the reference
-//  value found in the file in the ref variable.
+/*! @brief like verifier(), but, in "read&compare" mode, put the reference value found in the file in the ref variable.
+ *
+ */
 void Debog::verifier_getref(const char* const msg, double x, double& ref)
 {
   if (Debog_Pb::get_debog_instance().non_nul())
     Debog_Pb::get_debog_instance()->verifier(msg, x, &ref);
 }
 
-// Description: like verifier(), but, in "read&compare" mode, put the reference
-//  value found in the file in the ref variable.
+/*! @brief like verifier(), but, in "read&compare" mode, put the reference value found in the file in the ref variable.
+ *
+ */
 void Debog::verifier_getref(const char* const msg, int x, int& ref)
 {
   if (Debog_Pb::get_debog_instance().non_nul())
@@ -90,8 +97,11 @@ void Debog::verifier(const char* const msg, const DoubleVect& x)
     Debog_Pb::get_debog_instance()->verifier(msg, x);
 }
 
-// Description: like verifier(), but, in "read&compare" mode, put the reference
-//  value found in the file in the ref variable. x and ref can point to the same object.
+/*! @brief like verifier(), but, in "read&compare" mode, put the reference value found in the file in the ref variable.
+ *
+ * x and ref can point to the same object.
+ *
+ */
 void Debog::verifier_getref(const char* const msg, const DoubleVect& x, DoubleVect& ref)
 {
   if (Debog_Pb::get_debog_instance().non_nul())
@@ -104,8 +114,11 @@ void Debog::verifier(const char* const msg, const IntVect& x)
     Debog_Pb::get_debog_instance()->verifier(msg, x);
 }
 
-// Description: like verifier(), but, in "read&compare" mode, put the reference
-//  value found in the file in the ref variable. x and ref can point to the same object.
+/*! @brief like verifier(), but, in "read&compare" mode, put the reference value found in the file in the ref variable.
+ *
+ * x and ref can point to the same object.
+ *
+ */
 void Debog::verifier_getref(const char* const msg, const IntVect& x, IntVect& ref)
 {
   if (Debog_Pb::get_debog_instance().non_nul())

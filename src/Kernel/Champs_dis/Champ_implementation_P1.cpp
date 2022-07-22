@@ -147,14 +147,16 @@ void Champ_implementation_P1::value_interpolation(const DoubleTab& positions, co
     }
 }
 
-// Description:
-//  Initialise le tableau de valeurs aux sommets du domaine dom a partir de valeurs lues dans "input".
-//  (on dimensionne, associe la structure parallele et remplit les valeurs reelles et virtuelles)
-//  Le fichier doit avoir le format suivant (n est le nombre de valeurs nodales
-//  stockees, x, y, z sont les coordonnees des sommets, compo1... sont les valeurs
-//  des composantes.
-//  n  (int)
-//  x y [z] compo1 [compo2 [compo3 ... ]]   (type double)
+/*! @brief Initialise le tableau de valeurs aux sommets du domaine dom a partir de valeurs lues dans "input".
+ *
+ * (on dimensionne, associe la structure parallele et remplit les valeurs reelles et virtuelles)
+ *   Le fichier doit avoir le format suivant (n est le nombre de valeurs nodales
+ *   stockees, x, y, z sont les coordonnees des sommets, compo1... sont les valeurs
+ *   des composantes.
+ *   n  (int)
+ *   x y [z] compo1 [compo2 [compo3 ... ]]   (type double)
+ *
+ */
 void Champ_implementation_P1::init_from_file(DoubleTab& val, const Domaine& dom,
                                              int nb_comp, double tolerance, Entree& input)
 {
@@ -214,62 +216,20 @@ void Champ_implementation_P1::init_from_file(DoubleTab& val, const Domaine& dom,
   val.echange_espace_virtuel();
 }
 
-// Description:
-//    Calcule la coordonnee barycentrique d'un point (x,y) par
-//    rapport au sommet specifie d'un triangle ou d'un rectange (un element)
-//    Ce calcul concerne un point 2D.
-// Precondition:
-// Parametre: IntTab& polys
-//    Signification: tableau contenant les numeros des elements
-//                   par rapport auxquels on veut calculer une
-//                   coordonnee barycentrique.
-//                   polys(i,0) est l'indice du sommet 0 de l'element
-//                   i dans le tableau des coordonnees (coord).
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleTab& coord
-//    Signification: les coordonnees des sommets par auxquels on veut
-//                   calculer les coordonnees barycentriques.
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: double x
-//    Signification: la premiere coordonnee cartesienne du point dont
-//                   on veut calculer les coordonnees barycentriques
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Parametre: double y
-//    Signification: la deuxieme coordonnee cartesienne du point dont
-//                   on veut calculer les coordonnees barycentriques
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Parametre: int le_poly
-//    Signification: le numero de l'element (dans le tableau polys) par
-//                   rapport auquel on calculera la coordonnee barycentrique.
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entre
-// Parametre: int i
-//    Signification: le numero du sommet par rapport auquel on veut la
-//                   coordonnee barycentrique.
-//    Valeurs par defaut:
-//    Contraintes: Triangle  0 <= i <= 2
-//    Contraintes: Rectangle 0 <= i <= 3
-//    Acces: entree
-// Retour: double
-//    Signification: la coordonnee barycentrique du point (x,y) par rapport
-//                   au sommet specifie (i) dans l'element specifie (le_poly)
-//    Contraintes: 0 <= valeur <= 1
-// Excpetion: un triangle n'a pas plus de 3 sommets
-// Excpetion: un rectangle n'a pas plus de 4 sommets
-// Exception: erreur arithmetique, denominateur nul
-// Exception: erreur de calcul, coordonnee barycentrique invalide
-// Effets de bord:
-// Postcondition:
-// Not inlined (this method has been splitted in coord_barycentrique_P1_triangle and coord_barycentrique_P1_rectangle to be inlined elsewhere in the code)
+/*! @brief Calcule la coordonnee barycentrique d'un point (x,y) par rapport au sommet specifie d'un triangle ou d'un rectange (un element)
+ *
+ *     Ce calcul concerne un point 2D.
+ *
+ * @param (IntTab& polys) tableau contenant les numeros des elements par rapport auxquels on veut calculer une coordonnee barycentrique. polys(i,0) est l'indice du sommet 0 de l'element i dans le tableau des coordonnees (coord).
+ * @param (DoubleTab& coord) les coordonnees des sommets par auxquels on veut calculer les coordonnees barycentriques.
+ * @param (double x) la premiere coordonnee cartesienne du point dont on veut calculer les coordonnees barycentriques
+ * @param (double y) la deuxieme coordonnee cartesienne du point dont on veut calculer les coordonnees barycentriques
+ * @param (int le_poly) le numero de l'element (dans le tableau polys) par rapport auquel on calculera la coordonnee barycentrique.
+ * @param (int i) le numero du sommet par rapport auquel on veut la coordonnee barycentrique.
+ * @return (double) la coordonnee barycentrique du point (x,y) par rapport au sommet specifie (i) dans l'element specifie (le_poly)
+ * @throws erreur arithmetique, denominateur nul
+ * @throws erreur de calcul, coordonnee barycentrique invalide
+ */
 double coord_barycentrique_P1(const IntTab& polys,
                               const DoubleTab& coord,
                               double x, double y, int le_poly, int i)
@@ -288,68 +248,23 @@ double coord_barycentrique_P1(const IntTab& polys,
 }
 
 
-// Description:
-//    Calcule la coordonnee barycentrique d'un point (x,y,z) par
-//    rapport au sommet specifie d'un tetraedre ou d'un hexaedre (un element)
-//    Ce calcul concerne un point 3D.
-// Precondition:
-// Parametre: IntTab& polys
-//    Signification: tableau contenant les numeros des elements
-//                   par rapport auxquels on veut calculer une
-//                   coordonnee barycentrique.
-//                   polys(i,0) est l'indice du sommet 0 de l'element
-//                   i dans le tableau des coordonnees (coord).
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleTab& coord
-//    Signification: les coordonnees des sommets par auxquels on veut
-//                   calculer les coordonnees barycentriques.
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: double x
-//    Signification: la premiere coordonnee cartesienne du point dont
-//                   on veut calculer les coordonnees barycentriques
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Parametre: double y
-//    Signification: la deuxieme coordonnee cartesienne du point dont
-//                   on veut calculer les coordonnees barycentriques
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Parametre: double z
-//    Signification: la troisieme coordonnee cartesienne du point dont
-//                   on veut calculer les coordonnees barycentriques
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Parametre: int le_poly
-//    Signification: le numero de l'element (dans le tableau polys) par
-//                   rapport auquel on calculera la coordonnee barycentrique.
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entre
-// Parametre: int i
-//    Signification: le numero du sommet par rapport auquel on veut la
-//                   coordonnee barycentrique.
-//    Valeurs par defaut:
-//    Contraintes: Tetraedre 0 <= i <= 3
-//    Contraintes: Hexaedre  0 <= i <= 7
-//    Acces: entree
-// Retour: double
-//    Signification: la coordonnee barycentrique du point (x,y,z) par rapport
-//                   au sommet specifie (i) dans l'element specifie (le_poly)
-//    Contraintes: 0 <= valeur <= 1
-// Exception: un tetraedre n'a pas plus de 4 sommets
-// Exception: un hexaedre n'a pas plus de 8 sommets
-// Exception: erreur arithmetique, denominateur nul
-// Exception: erreur de calcul, coordonnee barycentrique invalide
-// Effets de bord:
-// Postcondition:
-// Do NOT inline (use call to coord_barycentrique_P1_tetraedre or coord_barycentrique_P1_hexaedre instead)
+/*! @brief Calcule la coordonnee barycentrique d'un point (x,y,z) par rapport au sommet specifie d'un tetraedre ou d'un hexaedre (un element)
+ *
+ *     Ce calcul concerne un point 3D.
+ *
+ * @param (IntTab& polys) tableau contenant les numeros des elements par rapport auxquels on veut calculer une coordonnee barycentrique. polys(i,0) est l'indice du sommet 0 de l'element i dans le tableau des coordonnees (coord).
+ * @param (DoubleTab& coord) les coordonnees des sommets par auxquels on veut calculer les coordonnees barycentriques.
+ * @param (double x) la premiere coordonnee cartesienne du point dont on veut calculer les coordonnees barycentriques
+ * @param (double y) la deuxieme coordonnee cartesienne du point dont on veut calculer les coordonnees barycentriques
+ * @param (double z) la troisieme coordonnee cartesienne du point dont on veut calculer les coordonnees barycentriques
+ * @param (int le_poly) le numero de l'element (dans le tableau polys) par rapport auquel on calculera la coordonnee barycentrique.
+ * @param (int i) le numero du sommet par rapport auquel on veut la coordonnee barycentrique.
+ * @return (double) la coordonnee barycentrique du point (x,y,z) par rapport au sommet specifie (i) dans l'element specifie (le_poly)
+ * @throws un tetraedre n'a pas plus de 4 sommets
+ * @throws un hexaedre n'a pas plus de 8 sommets
+ * @throws erreur arithmetique, denominateur nul
+ * @throws erreur de calcul, coordonnee barycentrique invalide
+ */
 double coord_barycentrique_P1(const IntTab& polys,
                               const DoubleTab& coord,
                               double x, double y, double z,

@@ -42,9 +42,11 @@ void Discr_inst::discretiser_champ(const Motcle& directive, const Zone_dis_base&
   assert(0);
   throw;
 }
-// Description:
-// Idem que Discr_inst::discretiser_champ(... , Champ_Inc)
-// pour un Champ_Fonc.
+/*! @brief Idem que Discr_inst::discretiser_champ(.
+ *
+ * .. , Champ_Inc) pour un Champ_Fonc.
+ *
+ */
 void Discr_inst::discretiser_champ(
   const Motcle& directive, const Zone_dis_base& z,
   Nature_du_champ nature,
@@ -57,9 +59,11 @@ void Discr_inst::discretiser_champ(
                              nb_comp, temps, champ);
 }
 
-// Description:
-// Idem que Discr_inst::discretiser_champ(... , Champ_Inc)
-// pour un Champ_Don.
+/*! @brief Idem que Discr_inst::discretiser_champ(.
+ *
+ * .. , Champ_Inc) pour un Champ_Don.
+ *
+ */
 void Discr_inst::discretiser_champ(
   const Motcle& directive, const Zone_dis_base& z,
   Nature_du_champ nature,
@@ -72,11 +76,13 @@ void Discr_inst::discretiser_champ(
                              nb_comp, temps, champ);
 }
 
-// Description:
-// Idem que VEF_discretisation::discretiser_champ(... , Champ_Inc)
-// Traitement commun aux champ_fonc et champ_don.
-// Cette methode est privee (passage d'un Objet_U pas propre vu
-// de l'exterieur ...)
+/*! @brief Idem que VEF_discretisation::discretiser_champ(.
+ *
+ * .. , Champ_Inc) Traitement commun aux champ_fonc et champ_don.
+ *  Cette methode est privee (passage d'un Objet_U pas propre vu
+ *  de l'exterieur ...)
+ *
+ */
 void Discr_inst::discretiser_champ_fonc_don(
   const Motcle& directive, const Zone_dis_base& z,
   Nature_du_champ nature,

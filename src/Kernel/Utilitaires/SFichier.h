@@ -18,14 +18,10 @@
 
 #include <Sortie_Fichier_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Cette classe est a la classe C++ ofstream ce que la classe Sortie est a la classe C++ ostream
-//    Elle redefinit de facon virtuelle les operateurs d'ecriture dans un fichier
-// .SECTION voir aussi
-//    EFichier
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Cette classe est a la classe C++ ofstream ce que la classe Sortie est a la classe C++ ostream Elle redefinit de facon virtuelle les operateurs d'ecriture dans un fichier
+ *
+ * @sa EFichier
+ */
 
 class SFichier :  public Sortie_Fichier_base
 {

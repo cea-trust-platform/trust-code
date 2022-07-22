@@ -22,12 +22,13 @@ class Zone;
 class Zone_VF;
 class Champ_base;
 
-/////////////////////////////////////////////////////////////////////////////
-// .DESCRIPTION        : class Champ_implementation_base
-//
-// Decrire ici la classe Champ_implementation_base
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Champ_implementation_base
+ *
+ *  Decrire ici la classe Champ_implementation_base
+ *
+ *
+ *
+ */
 
 class Champ_implementation_base
 {

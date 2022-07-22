@@ -19,14 +19,15 @@
 #include <Ref_Domaine.h>
 
 
-// .DESCRIPTION
-//  Partition d'un domaine a partir d'un fichier disque contenant, pour chaque
-//  element, le numero du processeur auquel cet element est attache.
-//  Le fichier doit contenir un tableau au format ArrOfInt
-//   (nombre n de valeurs suivi des valeurs).
-//  La taille du tableau doit etre egale au nombre d'elements
-//  du domaine a decouper et chaque valeur du tableau indique
-//  sur quel processeur cet element doit etre place.
+/*! @brief Partition d'un domaine a partir d'un fichier disque contenant, pour chaque element, le numero du processeur auquel cet element est attache.
+ *
+ *   Le fichier doit contenir un tableau au format ArrOfInt
+ *    (nombre n de valeurs suivi des valeurs).
+ *   La taille du tableau doit etre egale au nombre d'elements
+ *   du domaine a decouper et chaque valeur du tableau indique
+ *   sur quel processeur cet element doit etre place.
+ *
+ */
 
 class Partitionneur_Fichier_Decoupage : public Partitionneur_base
 {

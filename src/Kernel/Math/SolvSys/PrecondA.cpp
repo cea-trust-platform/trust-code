@@ -122,9 +122,9 @@ void PrecondA::prepare_(const Matrice_Base& m, const DoubleVect& v)
   Precond_base::prepare_(m, v);
 }
 
-// Description:
-//    Calcule la solution du systeme lineaire: A * solution = b
-//    avec la methode de relaxation PrecondA.
+/*! @brief Calcule la solution du systeme lineaire: A * solution = b avec la methode de relaxation PrecondA.
+ *
+ */
 int PrecondA::preconditionner_(const Matrice_Base& matrice,
                                const DoubleVect& b,
                                DoubleVect& solution)

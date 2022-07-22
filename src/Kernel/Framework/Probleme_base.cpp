@@ -239,12 +239,13 @@ void Probleme_base::getOutputFieldsNames(Noms& noms) const
 }
 
 
-// Description:
-//  Si force=1, effectue le postraitement sans tenir compte des
-//    frequences de postraitement.
-//    Le postraitement est mis a jour et les traitements eventuels sur
-//    les sondes, champs et statistiques sont effectues.
-//  Si force=0, tient compte des frequences d'impression demandees.
+/*! @brief Si force=1, effectue le postraitement sans tenir compte des frequences de postraitement.
+ *
+ *     Le postraitement est mis a jour et les traitements eventuels sur
+ *     les sondes, champs et statistiques sont effectues.
+ *   Si force=0, tient compte des frequences d'impression demandees.
+ *
+ */
 int Probleme_base::postraiter(int force)
 {
   statistiques().begin_count(postraitement_counter_);
@@ -288,8 +289,9 @@ int Probleme_base::postraiter(int force)
   return 1;
 }
 
-// Description:
-//
+/*! @brief
+ *
+ */
 double Probleme_base::computeTimeStep(bool& stop) const
 {
   if (!initialized)
@@ -371,24 +373,15 @@ Probleme_base::Probleme_base() :
   tstat_deb_=tstat_fin_=-1;
 }
 
-// Description:
-//    Surcharge Objet_U::printOn(Sortie&)
-//    Ecriture d'un probleme sur un flot de sortie.
-//    !! Attention n'est pas symetrique de la lecture !!
-//    On ecrit les equations, le postraitement et le domaine
-//    discretise.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Surcharge Objet_U::printOn(Sortie&) Ecriture d'un probleme sur un flot de sortie.
+ *
+ *     !! Attention n'est pas symetrique de la lecture !!
+ *     On ecrit les equations, le postraitement et le domaine
+ *     discretise.
+ *
+ * @param (Sortie& os) flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Probleme_base::printOn(Sortie& os) const
 {
   for(int i=0; i<nombre_d_equations(); i++)
@@ -405,34 +398,26 @@ inline int version_format_sauvegarde()
   return 184;
 }
 
-// Description:
-//    Lecture d'un probleme dans un flot d'entree, et ouverture du
-//    flot de sauvegarde.
-//    Format:
-//     {
-//     nom_equation bloc de lecture d'une equation
-//     Postraitement bloc de lecture postraitement
-//     reprise | sauvegarde | sauvegarde_simple
-//     formatte | binaire
-//     nom_de_fichier
-//     }
-// L'option sauvegarde_simple permet de sauver le probleme dans le fichier choisi
-// en ecrasant a chaque fois les sauvegardes precedentes : cela permet d'economiser de la place disque.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entre modifie
-//    Contraintes:
-// Exception: pas d'accolade ouvrante en debut de format
-// Exception: mot clef "Postraitement" n'est pas la
-// Exception: format de sauvegarde doit etre "binaire" ou "formatte"
-// Exception: pas d'accolade fermante en fin de jeu de donnee
-// Effets de bord:
-// Postcondition: Le pb est associe au postraitement.
+/*! @brief Lecture d'un probleme dans un flot d'entree, et ouverture du flot de sauvegarde.
+ *
+ *     Format:
+ *      {
+ *      nom_equation bloc de lecture d'une equation
+ *      Postraitement bloc de lecture postraitement
+ *      reprise | sauvegarde | sauvegarde_simple
+ *      formatte | binaire
+ *      nom_de_fichier
+ *      }
+ *  L'option sauvegarde_simple permet de sauver le probleme dans le fichier choisi
+ *  en ecrasant a chaque fois les sauvegardes precedentes : cela permet d'economiser de la place disque.
+ *
+ * @param (Entree& is) flot d'entree
+ * @return (Entree&) le flot d'entre modifie
+ * @throws pas d'accolade ouvrante en debut de format
+ * @throws mot clef "Postraitement" n'est pas la
+ * @throws format de sauvegarde doit etre "binaire" ou "formatte"
+ * @throws pas d'accolade fermante en fin de jeu de donnee
+ */
 Entree& Probleme_base::readOn(Entree& is)
 {
   Cerr << "Reading of the problem " << le_nom() << finl;
@@ -713,20 +698,9 @@ Entree& Probleme_base::readOn(Entree& is)
   return is ;
 }
 
-// Description:
-//    Lecture des equations du probleme.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: les equations ont ete lues
+/*! @brief Lecture des equations du probleme.
+ *
+ */
 Entree& Probleme_base::lire_equations(Entree& is, Motcle& dernier_mot)
 {
   Nom un_nom;
@@ -742,21 +716,9 @@ Entree& Probleme_base::lire_equations(Entree& is, Motcle& dernier_mot)
   return is;
 }
 
-// Description:
-//    Associe le probleme a toutes ses equations.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord: modification des objets equations associees, ces
-//                 objets contiennent alors une reference sur le probleme.
-// Postcondition: les equations ont ete associees au probleme
+/*! @brief Associe le probleme a toutes ses equations.
+ *
+ */
 void Probleme_base::associer()
 {
   int nb_eqn=nombre_d_equations();
@@ -764,28 +726,17 @@ void Probleme_base::associer()
     equation(i).associer_pb_base(*this);
 }
 
-// Description:
-//     surcharge Objet_U::associer_(Objet_U& ob)
-//     Associe differents objets au probleme en controlant
-//     le type de l'objet a associer a l'execution.
-//     On peut ainsi associer: un schema en temps, un domaine de calcul ou
-//     un milieu physique.
-//     Utilise les routine de la classe Type_Info (Utilitaires)
-// Precondition:
-// Parametre: Objet_U& ob
-//    Signification: l'objet a associer
-//    Valeurs par defaut:
-//    Contraintes: le type de l'objet peut etre Schema_Temps_base
-//                                              Domaine
-//                                              Milieu_base
-//    Acces: entree
-// Retour: int
-//    Signification: 1 si association reussie 0 sinon
-//                     2 si le milieu est deja associe a un autre probleme
-//    Contraintes:
-// Exception: Objet_U de type inconnu (non prevu)
-// Effets de bord:
-// Postcondition:
+/*! @brief surcharge Objet_U::associer_(Objet_U& ob) Associe differents objets au probleme en controlant
+ *
+ *      le type de l'objet a associer a l'execution.
+ *      On peut ainsi associer: un schema en temps, un domaine de calcul ou
+ *      un milieu physique.
+ *      Utilise les routine de la classe Type_Info (Utilitaires)
+ *
+ * @param (Objet_U& ob) l'objet a associer
+ * @return (int) 1 si association reussie 0 sinon 2 si le milieu est deja associe a un autre probleme
+ * @throws Objet_U de type inconnu (non prevu)
+ */
 int Probleme_base::associer_(Objet_U& ob)
 {
   // Schema_Temps_base Domaine Milieu_base
@@ -817,21 +768,11 @@ int Probleme_base::associer_(Objet_U& ob)
   return 0;
 }
 
-// Description:
-//    Complete les equations associees au probleme.
-//    Remplissage des references, deleguee aux equations.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord: modification des objets equations associees
-// Postcondition:
+/*! @brief Complete les equations associees au probleme.
+ *
+ * Remplissage des references, deleguee aux equations.
+ *
+ */
 void Probleme_base::completer()
 {
   // Cerr << "Probleme_base::completer()" << finl;
@@ -849,65 +790,38 @@ void Probleme_base::completer()
   les_postraitements.completer();
 }
 
-// Description:
-//     Verifie que l'objet est complet, coherent, ...
-//     NON DEVELOPPE RENVOIE TOUJOURS 1
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si l'objet est correct
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Verifie que l'objet est complet, coherent, .
+ *
+ * .. NON DEVELOPPE RENVOIE TOUJOURS 1
+ *
+ * @return (int) 1 si l'objet est correct
+ */
 int Probleme_base::verifier()
 {
   return 1;
 }
 
-// Description:
-//     Associe un domaine au probleme.
-//     Prend un_domaine comme support.
-//     apelle Domaine_dis::associer_dom(const Domaine& )
-// Precondition:
-// Parametre: Domaine& un_domaine
-//    Signification: le domaine
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: les equations sont associees si elles ne l'etaient pas
+/*! @brief Associe un domaine au probleme.
+ *
+ * Prend un_domaine comme support.
+ *      apelle Domaine_dis::associer_dom(const Domaine& )
+ *
+ * @param (Domaine& un_domaine) le domaine
+ */
 void Probleme_base::associer_domaine(const Domaine& un_domaine)
 {
   le_domaine_dis.associer_domaine(un_domaine);
 
 }
 
-// Description:
-//     Affecte une discretisation au probleme
-//     Discretise le Domaine associe au probleme avec la discretisation
-//     Associe la premiere zone du Domaine aux equations du probleme
-//     Discretise les equations associees au probleme
-//     NOTE: TRUST V1 une seule Zone_dis pas Domaine_dis est traitee
-// Precondition:
-// Parametre: Discretisation_base& discretisation
-//    Signification: une discretisation pour le probleme
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord: les equations associees au probleme sont discretisees
+/*! @brief Affecte une discretisation au probleme Discretise le Domaine associe au probleme avec la discretisation
+ *
+ *      Associe la premiere zone du Domaine aux equations du probleme
+ *      Discretise les equations associees au probleme
+ *      NOTE: TRUST V1 une seule Zone_dis pas Domaine_dis est traitee
+ *
+ * @param (Discretisation_base& discretisation) une discretisation pour le probleme
+ */
 void Probleme_base::discretiser(const Discretisation_base& une_discretisation)
 {
   associer();
@@ -1008,20 +922,9 @@ int Probleme_base::expression_predefini(const Motcle& motlu, Nom& expression)
   return 0;
 }
 
-// Description:
-//    Ecriture sur fichier en vue d'une reprise (sauvegarde)
-// Precondition: le flot de sauvegarde est ouvert (membre ficsauv)
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord: modifie le flot reference par Probleme_base::ficsauv
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecriture sur fichier en vue d'une reprise (sauvegarde)
+ *
+ */
 void Probleme_base::sauver() const
 {
   statistiques().begin_count(sauvegarde_counter_);
@@ -1108,21 +1011,11 @@ void Probleme_base::sauver() const
   Cout << "[IO] " << statistiques().last_time(sauvegarde_counter_) << " s to write save file." << finl;
 }
 
-// Description:
-//    Finit le postraitement et sauve le probleme dans un fichier.
-//    Fermeture du fichier associe au postraitement.(Postraitement::finir())
-// Precondition: le flot de sauvegarde est ouvert
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: le postraitement est fini.
+/*! @brief Finit le postraitement et sauve le probleme dans un fichier.
+ *
+ * Fermeture du fichier associe au postraitement.(Postraitement::finir())
+ *
+ */
 void Probleme_base::finir()
 {
   Debog::set_nom_pb_actuel(le_nom());
@@ -1166,21 +1059,13 @@ void Probleme_base::finir()
     sauver_xyz(1);
 }
 
-// Description:
-//    Ecriture du probleme sur fichier en vue d'une reprise.
-//    Ecrit le nom du probleme et sauvegarde les equations.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: flot de sortie pour sauvegarde
-//    Valeurs par defaut:
-//    Contraintes: le flot doit etre ouvert
-//    Acces: sortie
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecriture du probleme sur fichier en vue d'une reprise.
+ *
+ * Ecrit le nom du probleme et sauvegarde les equations.
+ *
+ * @param (Sortie& os) flot de sortie pour sauvegarde
+ * @return (int) renvoie toujours 1
+ */
 int Probleme_base::sauvegarder(Sortie& os) const
 {
   Debog::set_nom_pb_actuel(le_nom());
@@ -1197,21 +1082,11 @@ int Probleme_base::sauvegarder(Sortie& os) const
   return bytes;
 }
 
-// Description:
-//    Lecture d'un flot d'entree (fichier) pour reprise apres
-//    une sauvegarde avec Probleme_base::sauvegarder(Sortie& os).
-// Precondition: Le flot doit etre ouvert
-// Parametre: Entree& is
-//    Signification: le flot d'entree sur lequel on lit la reprise
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: les equations du problemes sont remises dans l'etat de la sauvegarde
+/*! @brief Lecture d'un flot d'entree (fichier) pour reprise apres une sauvegarde avec Probleme_base::sauvegarder(Sortie& os).
+ *
+ * @param (Entree& is) le flot d'entree sur lequel on lit la reprise
+ * @return (int) renvoie toujours 1
+ */
 int Probleme_base::reprendre(Entree& is)
 {
   statistiques().begin_count(temporary_counter_);
@@ -1226,81 +1101,41 @@ int Probleme_base::reprendre(Entree& is)
   return 1;
 }
 
-// Description:
-//    Demande au schema en temps s'il faut faire une impression
-// Precondition: le schema en temps doit etre associe au probleme
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 il faut faire une impression, 0 il ne faut pas.
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Demande au schema en temps s'il faut faire une impression
+ *
+ * @return (int) 1 il faut faire une impression, 0 il ne faut pas.
+ */
 int Probleme_base::limpr() const
 {
   return schema_temps().limpr();
 }
 
-// Description:
-//    Demande au schema en temps s'il faut faire une sauvegarde
-// Precondition: le schema en temps doit etre associe au probleme
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 il faut faire une sauvegarde, 0 il ne faut pas.
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Demande au schema en temps s'il faut faire une sauvegarde
+ *
+ * @return (int) 1 il faut faire une sauvegarde, 0 il ne faut pas.
+ */
 int Probleme_base::lsauv() const
 {
   return schema_temps().lsauv();
 }
 
-// Description:
-//     Imprime les equations associees au probleme si le schema en
-//     temps associe indique que c'est necessaire.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Imprime les equations associees au probleme si le schema en temps associe indique que c'est necessaire.
+ *
+ * @param (Sortie& os) le flot de sortie
+ */
 void Probleme_base::imprimer(Sortie& os) const
 {
   for(int i=0; i<nombre_d_equations(); i++)
     equation(i).imprimer(os);
 }
 
-// Description:
-//    Associe un schema en temps au probleme.
-//    Associe ensuite le schema en temps a toutes
-//    les equations du probleme.
-// Precondition:
-// Parametre: Schema_Temps_base& un_schema_en_temps
-//    Signification: le schema en temps a associer
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord: les equations associees au probleme sont modifiees
-// Postcondition:
+/*! @brief Associe un schema en temps au probleme.
+ *
+ * Associe ensuite le schema en temps a toutes
+ *     les equations du probleme.
+ *
+ * @param (Schema_Temps_base& un_schema_en_temps) le schema en temps a associer
+ */
 void Probleme_base::associer_sch_tps_base(const Schema_Temps_base& un_schema_en_temps)
 {
   if (le_schema_en_temps.non_nul())
@@ -1315,21 +1150,13 @@ void Probleme_base::associer_sch_tps_base(const Schema_Temps_base& un_schema_en_
     equation(i).associer_sch_tps_base(un_schema_en_temps);
 }
 
-// Description:
-//    Renvoie le schema en temps associe au probleme. (si il est non nul)
-//    (version const)
-// Precondition: le schema en temps doit etre associe au probleme
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Schema_Temps_base&
-//    Signification: le schema en temps associe au probleme
-//    Contraintes: reference constante
-// Exception: le schema en temps n'est pas associe au probleme, la reference est nulle
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le schema en temps associe au probleme.
+ *
+ * (si il est non nul) (version const)
+ *
+ * @return (Schema_Temps_base&) le schema en temps associe au probleme
+ * @throws le schema en temps n'est pas associe au probleme, la reference est nulle
+ */
 const Schema_Temps_base& Probleme_base::schema_temps() const
 {
   if(!le_schema_en_temps.non_nul())
@@ -1341,20 +1168,13 @@ const Schema_Temps_base& Probleme_base::schema_temps() const
 }
 
 
-// Description:
-//    Renvoie le schema en temps associe au probleme. (si il est non nul)
-// Precondition: le schema en temps doit etre associe au probleme
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Schema_Temps_base&
-//    Signification: le schema en temps associe au probleme
-//    Contraintes:
-// Exception: le schema en temps n'est pas associe au probleme, la reference est nulle
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le schema en temps associe au probleme.
+ *
+ * (si il est non nul)
+ *
+ * @return (Schema_Temps_base&) le schema en temps associe au probleme
+ * @throws le schema en temps n'est pas associe au probleme, la reference est nulle
+ */
 Schema_Temps_base& Probleme_base::schema_temps()
 {
   if(!le_schema_en_temps.non_nul())
@@ -1366,164 +1186,92 @@ Schema_Temps_base& Probleme_base::schema_temps()
 }
 
 
-// Description:
-//    Renvoie le domaine associe au probleme.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Domaine&
-//    Signification: un domaine
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le domaine associe au probleme.
+ *
+ * (version const)
+ *
+ * @return (Domaine&) un domaine
+ */
 const Domaine& Probleme_base::domaine() const
 {
   return le_domaine_dis.domaine();
 }
 
-// Description:
-//    Renvoie le domaine associe au probleme.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Domaine&
-//    Signification: un domaine
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le domaine associe au probleme.
+ *
+ * @return (Domaine&) un domaine
+ */
 Domaine& Probleme_base::domaine()
 {
   return le_domaine_dis.domaine();
 }
 
-// Description:
-//    Renvoie le domaine discretise associe au probleme.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Domaine_dis&
-//    Signification: un domaine discretise
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le domaine discretise associe au probleme.
+ *
+ * (version const)
+ *
+ * @return (Domaine_dis&) un domaine discretise
+ */
 const Domaine_dis& Probleme_base::domaine_dis() const
 {
   return le_domaine_dis;
 }
 
-// Description:
-//    Renvoie le domaine discretise associe au probleme.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Domaine_dis&
-//    Signification: un domaine discretise
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le domaine discretise associe au probleme.
+ *
+ * @return (Domaine_dis&) un domaine discretise
+ */
 Domaine_dis& Probleme_base::domaine_dis()
 {
   return le_domaine_dis;
 }
 
-// Description:
-//    Associe un milieu physique aux equations du probleme.
-//    Choix du milieu physique.
-// Precondition:
-// Parametre:  Milieu_base& mil
-//    Signification: le milieu a associer (Solide, Fluide Incompressible ...)
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord: les equations associees au probleme ont un milieu associe
-// Postcondition:
+/*! @brief Associe un milieu physique aux equations du probleme.
+ *
+ * Choix du milieu physique.
+ *
+ * @param (Milieu_base& mil) le milieu a associer (Solide, Fluide Incompressible ...)
+ */
 void Probleme_base::associer_milieu_base(const Milieu_base& mil)
 {
   for(int i=0; i<nombre_d_equations(); i++)
     equation(i).associer_milieu_base(mil);
 }
 
-// Description:
-//    Renvoie le milieu physique associe au probleme.
-//    (version const)
-//    On renvoie le milieu associe a la premiere equation.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Milieu_base&
-//    Signification: un milieu physique
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le milieu physique associe au probleme.
+ *
+ * (version const)
+ *     On renvoie le milieu associe a la premiere equation.
+ *
+ * @return (Milieu_base&) un milieu physique
+ */
 const Milieu_base& Probleme_base::milieu() const
 {
   return equation(0).milieu();
 }
 
-// Description:
-//    Renvoie le milieu physique associe au probleme.
-//    On renvoie le milieu associe a la premiere equation.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Milieu_base&
-//    Signification: un milieu physique
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le milieu physique associe au probleme.
+ *
+ * On renvoie le milieu associe a la premiere equation.
+ *
+ * @return (Milieu_base&) un milieu physique
+ */
 Milieu_base& Probleme_base::milieu()
 {
   return equation(0).milieu();
 }
 
-// Description:
-//    Renvoie l'equation dont le nom est specifie.
-//    On indexe les equations avec leur nom associe.
-//    On cherche dans toutes les equations du probleme celle
-//    qui porte le nom specifie.
-//    (version const)
-// Precondition: une equation du probleme doit porter le nom specifie
-// Parametre: Nom& type
-//    Signification: le nom de l'equation a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces:
-// Retour: Equation_base&
-//    Signification: une equation
-//    Contraintes: reference constante
-// Exception: pas d'equation du nom specifie
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie l'equation dont le nom est specifie.
+ *
+ * On indexe les equations avec leur nom associe.
+ *     On cherche dans toutes les equations du probleme celle
+ *     qui porte le nom specifie.
+ *     (version const)
+ *
+ * @param (Nom& type) le nom de l'equation a renvoyer
+ * @return (Equation_base&) une equation
+ * @throws pas d'equation du nom specifie
+ */
 const Equation_base& Probleme_base::equation(const Nom& type) const
 {
   Motcle Type(type);
@@ -1564,23 +1312,16 @@ Equation_base& Probleme_base::getset_equation_by_name(const Nom& un_nom)
   return equation(un_nom);
 }
 
-// Description:
-//    Renvoie l'equation dont le nom est specifie.
-//    On indexe les equations avec leur nom associe.
-//    On cherche dans toutes les equations du probleme celle
-//    qui porte le nom specifie.
-// Precondition: une equation du probleme doit porter le nom specifie
-// Parametre: Nom& type
-//    Signification: le nom de l'equation a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces:
-// Retour: Equation_base&
-//    Signification: une equation
-//    Contraintes: reference constante
-// Exception: pas d'equation du nom specifie
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie l'equation dont le nom est specifie.
+ *
+ * On indexe les equations avec leur nom associe.
+ *     On cherche dans toutes les equations du probleme celle
+ *     qui porte le nom specifie.
+ *
+ * @param (Nom& type) le nom de l'equation a renvoyer
+ * @return (Equation_base&) une equation
+ * @throws pas d'equation du nom specifie
+ */
 Equation_base& Probleme_base::equation(const Nom& type)
 {
   Motcle Type(type);
@@ -1747,8 +1488,9 @@ int Probleme_base::comprend_champ_post(const Motcle& un_nom) const
   return 0;
 }
 
-// Description:
-// On verifie que le temps de debut et de fin des statistiques est identique sur tous les champsde tous les postraitements
+/*! @brief On verifie que le temps de debut et de fin des statistiques est identique sur tous les champsde tous les postraitements
+ *
+ */
 int Probleme_base::verifie_tdeb_tfin(const Motcle& un_nom) const
 {
   CONST_LIST_CURSEUR(DERIV(Postraitement_base)) curseur_post = postraitements();
@@ -1816,21 +1558,12 @@ int Probleme_base::a_pour_IntVect(const Motcle&, REF(IntVect)& ) const
   return 0;
 }
 
-// Description:
-//    Effectue une mise a jour en temps du probleme.
-//    Effectue la mise a jour sur toutes les equations du probleme.
-// Precondition:
-// Parametre: double temps
-//    Signification: le pas de temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Effectue une mise a jour en temps du probleme.
+ *
+ * Effectue la mise a jour sur toutes les equations du probleme.
+ *
+ * @param (double temps) le pas de temps de mise a jour
+ */
 void Probleme_base::mettre_a_jour(double temps)
 {
   // Update the name of the problem being debugged
@@ -1863,22 +1596,9 @@ void Probleme_base::mettre_a_jour(double temps)
 
 }
 
-// Description:
-//    Prepare le calcul: initialise les parametres du milieu et
-//    prepare le calcul de chacune des equations.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord: Le milieu associe est initilialise, les equations sont
-//                 preparees au calcul.
-// Postcondition:
+/*! @brief Prepare le calcul: initialise les parametres du milieu et prepare le calcul de chacune des equations.
+ *
+ */
 void Probleme_base::preparer_calcul()
 {
   const double temps = schema_temps().temps_courant();
@@ -1907,22 +1627,13 @@ void Probleme_base::preparer_calcul()
 }
 
 
-// Description:
-//    Calcul la valeur du prochain pas de temps du probleme.
-//    On calcule le minimum des pas de temps des equations associees
-//    au probleme.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: le pas de temps maximum autorise pour ce probleme
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Calcul la valeur du prochain pas de temps du probleme.
+ *
+ * On calcule le minimum des pas de temps des equations associees
+ *     au probleme.
+ *
+ * @return (double) le pas de temps maximum autorise pour ce probleme
+ */
 double Probleme_base::calculer_pas_de_temps() const
 {
   Debog::set_nom_pb_actuel(le_nom());
@@ -1951,27 +1662,17 @@ int Probleme_base::is_dilatable() const
   return (milieu().que_suis_je()=="Fluide_Quasi_Compressible" || milieu().que_suis_je()=="Fluide_Weakly_Compressible");
 }
 
-// Description:
-//    Initialisation de file_size, bad_allocate, nb_pb_total, num_pb
+/*! @brief Initialisation de file_size, bad_allocate, nb_pb_total, num_pb
+ *
+ */
 long int Probleme_base::file_size=0;        // file_size est l'espace disque en octet necessaire pour ecrire les fichiers XYZ
 int Probleme_base::bad_allocate=1;        // bad_allocate est un int qui permet de savoir si l'allocation a deja eut lieu
 int Probleme_base::nb_pb_total=0;        // nb_pb_total est le nombre total de probleme
 int Probleme_base::num_pb=1;                // num_pb est le numero du probleme courant
 
-// Description:
-//    Verifie que la place necessaire existe sur le disque dur.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Verifie que la place necessaire existe sur le disque dur.
+ *
+ */
 void Probleme_base::allocation() const
 {
   if(schema_temps().file_allocation() && EcritureLectureSpecial::Active)        // Permet de tester l'allocation d'espace disque
@@ -2016,20 +1717,11 @@ void Probleme_base::allocation() const
     }
 }
 
-// Description:
-//    Verifie que la place necessaire existe sur le disque dur.
-// Precondition:
-// Parametre:
-//    Signification: l'espace disque requis
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: retourne 1 si l'espace disque est suffisant, 0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Verifie que la place necessaire existe sur le disque dur.
+ *
+ * @param l'espace disque requis
+ * @return (int) retourne 1 si l'espace disque est suffisant, 0 sinon
+ */
 int Probleme_base::allocate_file_size(long int& size) const
 {
 #ifndef MICROSOFT
@@ -2074,21 +1766,12 @@ int Probleme_base::allocate_file_size(long int& size) const
   return 1;
 }
 
-// Description:
-//    Ecrit le probleme dans un fichier *.calcul_xyz
-//    et calcul la place disque prise par ce fichier
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: retourne toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ecrit le probleme dans un fichier *.
+ *
+ * calcul_xyz et calcul la place disque prise par ce fichier
+ *
+ * @return (int) retourne toujours 1
+ */
 int Probleme_base::file_size_xyz() const
 {
 #ifndef RS6000

@@ -74,8 +74,9 @@ SChaine::~SChaine()
 
 }
 
-// Description:
-//   returns a copy of the string stored by the SChaine
+/*! @brief returns a copy of the string stored by the SChaine
+ *
+ */
 const char* SChaine::get_str() const
 {
   const ostringstream& os = static_cast< const ostringstream& >(get_ostream());

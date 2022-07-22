@@ -13,8 +13,9 @@
 *
 *****************************************************************************/
 
-// .DESCRIPTION Reference a une Frontiere
-//
+/*! @brief Reference a une Frontiere
+ *
+ */
 
 
 #ifndef RefFrontiere_inclus

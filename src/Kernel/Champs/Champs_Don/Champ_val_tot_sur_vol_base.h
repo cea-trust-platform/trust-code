@@ -21,29 +21,28 @@
 class Zone_dis_base;
 class Zone_Cl_dis_base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_val_tot_sur_vol_base
-//     Classe de base derivee de Champ_Uniforme_Morceaux qui represente les champs
-//     dont on veut une evaluation exprimee par val_lue_loc/(Somme_vol_poro_loc)
-//
-//     val_lue_loc designe la valeur lue pour une localisation de l espace (sous zone ou domaine par defaut)
-//     cas VDF : Somme_vol_poro_loc exprime la sommation de vol_element*poro_volumique
-//               pour les elements contenus dans la localisation loc
-//     cas VEF : Somme_vol_poro_loc exprime la sommation de vol_entrelaces*poro_surface
-//                 pour les faces contenues dans la localisation loc
-//     Somme_vol_poro_loc est evalue par la methode eval_contrib_loc() des classes derivees
-//
-// La syntaxe utilisateur a respecter est la suivante :
-//               Valeur_totale_sur_volume nom_domaine nb_comp { defaut val_lue_dom ...zonei val_lue_szi ... }
-//               nom_domaine : nom du domaine de calcul
-//                 nb_comp     : nombre de composantes du champ
-//                 val_lue_dom : valeur lue pour le domaine par defaut
-//                 val_lue_szi : valeur lue pour la sous zone zonei
-//
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_val_tot_sur_vol_base Classe de base derivee de Champ_Uniforme_Morceaux qui represente les champs
+ *
+ *      dont on veut une evaluation exprimee par val_lue_loc/(Somme_vol_poro_loc)
+ *
+ *      val_lue_loc designe la valeur lue pour une localisation de l espace (sous zone ou domaine par defaut)
+ *      cas VDF : Somme_vol_poro_loc exprime la sommation de vol_element*poro_volumique
+ *                pour les elements contenus dans la localisation loc
+ *      cas VEF : Somme_vol_poro_loc exprime la sommation de vol_entrelaces*poro_surface
+ *                  pour les faces contenues dans la localisation loc
+ *      Somme_vol_poro_loc est evalue par la methode eval_contrib_loc() des classes derivees
+ *
+ *  La syntaxe utilisateur a respecter est la suivante :
+ *                Valeur_totale_sur_volume nom_domaine nb_comp { defaut val_lue_dom ...zonei val_lue_szi ... }
+ *                nom_domaine : nom du domaine de calcul
+ *                  nb_comp     : nombre de composantes du champ
+ *                  val_lue_dom : valeur lue pour le domaine par defaut
+ *                  val_lue_szi : valeur lue pour la sous zone zonei
+ *
+ *
+ *
+ *
+ */
 class Champ_val_tot_sur_vol_base : public Champ_Uniforme_Morceaux
 {
 

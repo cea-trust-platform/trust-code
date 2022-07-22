@@ -17,60 +17,29 @@
 
 Implemente_instanciable(Lire_Fichier_Bin,"Lire_Fichier_Bin|Read_File_Binary",Lire_Fichier);
 
-// Description:
-//  appel a la methode printOn de la classe Interprete
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief appel a la methode printOn de la classe Interprete
+ *
+ */
 Sortie& Lire_Fichier_Bin::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
-// Description:
-//  appel a la methode readOn de la classe Interprete
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief appel a la methode readOn de la classe Interprete
+ *
+ */
 Entree& Lire_Fichier_Bin::readOn(Entree& is)
 {
   return Interprete::readOn(is);
 }
 
-// Description:
-//    Lecture d'un fichier au format binaire
-//    Avec 2 arguments nom1 et nom2 , lit l'objet du fichier nom2 dans l'objet nom1
-//    Avec un seul argument nom1, interprete le fichier de nom nom1
-// Precondition:
-// Parametre: Entree& is
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lecture d'un fichier au format binaire Avec 2 arguments nom1 et nom2 , lit l'objet du fichier nom2 dans l'objet nom1
+ *
+ *     Avec un seul argument nom1, interprete le fichier de nom nom1
+ *
+ * @param (Entree& is)
+ * @return (Entree&)
+ */
 Entree& Lire_Fichier_Bin::interpreter(Entree& is)
 {
   return Lire_Fichier::interpreter(is);

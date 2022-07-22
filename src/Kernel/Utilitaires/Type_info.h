@@ -22,13 +22,10 @@ class Sortie;
 class Synonyme_info;
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     modelise une information de type pour les Objet_U
-// .SECTION voir aussi
-//     Objet_U Nom
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief modelise une information de type pour les Objet_U
+ *
+ * @sa Objet_U Nom
+ */
 class Type_info
 {
 public:
@@ -95,21 +92,11 @@ private:
   static int les_types_memsize;
 };
 
-// Description:
-//     Exploration de la hierarchie des types
-//     retourne 1 si p pointe sur un sous type du type considere
-// Precondition:
-// Parametre: const Type_info* p
-//    Signification: pointeur sur le type a tester
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: int
-//    Signification: 1 si p pointe sur un sous type du type considere, 0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Exploration de la hierarchie des types retourne 1 si p pointe sur un sous type du type considere
+ *
+ * @param (const Type_info* p) pointeur sur le type a tester
+ * @return (int) 1 si p pointe sur un sous type du type considere, 0 sinon
+ */
 inline int Type_info::can_cast(const Type_info* p) const
 {
   return ( (same(p)) || (p->has_base(this)) );

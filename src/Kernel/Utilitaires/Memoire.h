@@ -21,7 +21,9 @@ class Sortie;
 class Objet_U;
 class Nom;
 
-// .DESCRIPTION La memoire de Trio-U
+/*! @brief La memoire de Trio-U
+ *
+ */
 class Memoire
 {
 public :
@@ -66,39 +68,21 @@ protected :
 };
 
 
-// Description:
-//    Ajoute une zone de travail "double" dans la memoire
-// Precondition:
-// Parametre: int n
-//    Signification: le nombre d'elements dans la zone a creer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Double_ptr_trav*
-//    Signification: pointeur sur la zone creee
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ajoute une zone de travail "double" dans la memoire
+ *
+ * @param (int n) le nombre d'elements dans la zone a creer
+ * @return (Double_ptr_trav*) pointeur sur la zone creee
+ */
 inline Double_ptr_trav* Memoire::add_trav_double(int n)
 {
   return trav_double->add(n);
 }
 
-// Description:
-//    Ajoute une zone de travail "int" dans la memoire
-// Precondition:
-// Parametre: int n
-//    Signification: le nombre d'elements dans la zone a creer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Int_ptr_trav*
-//    Signification: pointeur sur la zone creee
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ajoute une zone de travail "int" dans la memoire
+ *
+ * @param (int n) le nombre d'elements dans la zone a creer
+ * @return (Int_ptr_trav*) pointeur sur la zone creee
+ */
 inline Int_ptr_trav* Memoire::add_trav_int(int n)
 {
   return trav_int->add(n);

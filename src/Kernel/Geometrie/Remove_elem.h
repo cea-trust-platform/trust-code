@@ -16,11 +16,12 @@
 #ifndef Remove_elem_included
 #define Remove_elem_included
 
-// .DESCRIPTION class Remove_elem
-// Enleve du maillage les elements specifies par l'utilisateur dans le jeu de donnees
-//
-// .SECTION voir aussi
-// Interprete
+/*! @brief class Remove_elem Enleve du maillage les elements specifies par l'utilisateur dans le jeu de donnees
+ *
+ *
+ *
+ * @sa Interprete
+ */
 
 #include <Interprete_geometrique_base.h>
 #include <TRUSTList.h>

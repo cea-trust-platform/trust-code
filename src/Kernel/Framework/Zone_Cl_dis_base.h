@@ -23,25 +23,18 @@
 #include <Conds_lim.h>
 #include <Ref_Champ_Inc.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Zone_Cl_dis_base
-//     Les objets Zone_Cl_dis_base representent les conditions aux limites
-//     discretisees. Zone_Cl_dis_base est un morceau d'equation donc elle
-//     herite de MorEqn, c'est grace a cet heritage que chaque objet
-//     Zone_Cl_dis_base contient une reference vers l'equation a laquelle il
-//     se rapporte. Les conditions aux limites discretisees representent les
-//     conditions aux limites de la zone discretisee associee a l'equation
-//     reference par Zone_Cl_dis_base.
-//     Zone_Cl_dis_base a un membre representant les conditions aux limites.
-// .SECTION voir aussi
-//     MorEqn Conds_lim Cond_lim_base
-//     Classe abstraite.
-//     Methodes abstraites:
-//       void completer(const Zone_dis& )
-//       void imposer_cond_lim(Champ_Inc& )
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Zone_Cl_dis_base Les objets Zone_Cl_dis_base representent les conditions aux limites
+ *
+ *      discretisees. Zone_Cl_dis_base est un morceau d'equation donc elle
+ *      herite de MorEqn, c'est grace a cet heritage que chaque objet
+ *      Zone_Cl_dis_base contient une reference vers l'equation a laquelle il
+ *      se rapporte. Les conditions aux limites discretisees representent les
+ *      conditions aux limites de la zone discretisee associee a l'equation
+ *      reference par Zone_Cl_dis_base.
+ *      Zone_Cl_dis_base a un membre representant les conditions aux limites.
+ *
+ * @sa MorEqn Conds_lim Cond_lim_base, Classe abstraite., Methodes abstraites:, void completer(const Zone_dis& ), void imposer_cond_lim(Champ_Inc& )
+ */
 class Zone_Cl_dis_base : public MorEqn, public Objet_U
 {
 

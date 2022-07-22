@@ -22,27 +22,29 @@ Field_base::Field_base() : nb_compo_(0), nature_(scalaire) { }
 Sortie& Field_base::printOn(Sortie& s ) const { return s; }
 Entree& Field_base::readOn(Entree& is ) { return is; }
 
-// Description: Renvoie le nom du champ.
+/*! @brief Renvoie le nom du champ.
+ *
+ */
 const Nom& Field_base::le_nom() const
 {
   return nom_;
 }
 
-// Description: Donne un nom au champ
-// Parametre: Nom& name
-//    Signification: le nom a donner au champ
+/*! @brief Donne un nom au champ
+ *
+ * @param (Nom& name) le nom a donner au champ
+ */
 void Field_base::nommer(const Nom& name)
 {
   nom_ = name ;
 }
 
-// Description:
-//    Fixe le nombre de composantes du champ.
-//    Le champ est vectoriel s'il est de meme dimension que l'espace.
-// Precondition:
-// Parametre: int i
-//    Signification: le nombre de composantes du champs
-// Postcondition: la nature du champ peut changer, il peut devenir vectoriel s'il a la bonne dimension
+/*! @brief Fixe le nombre de composantes du champ.
+ *
+ * Le champ est vectoriel s'il est de meme dimension que l'espace.
+ *
+ * @param (int i) le nombre de composantes du champs
+ */
 void Field_base::fixer_nb_comp(int i)
 {
   // Interdiction de changer la nature du champ une fois le nb_valeurs_nodales fixe.
@@ -53,59 +55,55 @@ void Field_base::fixer_nb_comp(int i)
   else if (i > dimension) fixer_nature_du_champ(multi_scalaire);
 }
 
-// Description: Fixe le nom des composantes du champ
-// Parametre: Noms& noms
-//    Signification: le tableau des noms a donner aux composantes du champ
-// Retour: Noms&
-//    Signification: le tableau des noms des composantes du champ
+/*! @brief Fixe le nom des composantes du champ
+ *
+ * @param (Noms& noms) le tableau des noms a donner aux composantes du champ
+ * @return (Noms&) le tableau des noms des composantes du champ
+ */
 const Noms& Field_base::fixer_noms_compo(const Noms& noms)
 {
   return noms_compo_ = noms;
 }
 
-// Description:
-//    Renvoie le tableau des noms des composantes du champ
+/*! @brief Renvoie le tableau des noms des composantes du champ
+ *
+ */
 const Noms& Field_base::noms_compo() const
 {
   return noms_compo_;
 }
 
-// Description: Fixe le nom de la i-eme composante du champ
-// Parametre: int i
-//    Signification: l'index de la composante du champ dont on veut specifier le nom
-//    Contraintes: i < nombre de composantes du champ
-// Parametre: Nom& nom
-//    Signification: le nom a donner a la i-eme composante du champ
-// Retour: Nom&
-//    Signification: le nom de i-eme composante du champ
-// Exception: index de la composante du champ invalide
+/*! @brief Fixe le nom de la i-eme composante du champ
+ *
+ * @param (int i) l'index de la composante du champ dont on veut specifier le nom
+ * @param (Nom& nom) le nom a donner a la i-eme composante du champ
+ * @return (Nom&) le nom de i-eme composante du champ
+ * @throws index de la composante du champ invalide
+ */
 const Nom& Field_base::fixer_nom_compo(int i, const Nom& nom)
 {
   assert(i < nb_comp());
   return noms_compo_[i] = nom;
 }
 
-// Description: Renvoie le nom de la ieme composante du champ
-// Parametre: int i
-//    Signification: l'index de la composante du champ dont on veut specifier le nom
-//    Valeurs par defaut:
-//    Contraintes: i < nombre de composantes du champ
-// Retour: Nom& nom
-//    Signification: le nom de i-eme composante du champ
-// Exception: index de la composante du champ invalide
+/*! @brief Renvoie le nom de la ieme composante du champ
+ *
+ * @param (int i) l'index de la composante du champ dont on veut specifier le nom
+ * @return (Nom& nom) le nom de i-eme composante du champ
+ * @throws index de la composante du champ invalide
+ */
 const Nom& Field_base::nom_compo(int i) const
 {
   assert(i < nb_comp());
   return noms_compo_[i];
 }
 
-// Description: Fixe le nom d'un champ scalaire
-// Precondition: le champ doit etre scalaire (avoir 1 seule composante)
-// Parametre: Nom& nom
-//    Signification: le nom a donner au champ (scalaire)
-// Retour: Nom&
-//    Signification: le nom du champ scalaire
-// Exception: le champ n'est pas scalaire
+/*! @brief Fixe le nom d'un champ scalaire
+ *
+ * @param (Nom& nom) le nom a donner au champ (scalaire)
+ * @return (Nom&) le nom du champ scalaire
+ * @throws le champ n'est pas scalaire
+ */
 const Nom& Field_base::fixer_nom_compo(const Nom& nom)
 {
   assert(nb_comp() == 1);
@@ -114,18 +112,21 @@ const Nom& Field_base::fixer_nom_compo(const Nom& nom)
   return noms_compo_[0] = nom;
 }
 
-// Description: Renvoie le nom d'un champ scalaire
+/*! @brief Renvoie le nom d'un champ scalaire
+ *
+ */
 const Nom& Field_base::nom_compo() const
 {
   assert(nb_comp() == 1);
   return le_nom();
 }
 
-// Description:
-//    Specifie les unites des composantes du champ.
-//    Ces unites sont specifiees grace a un tableau de Nom et peuvent etre differentes pour chaque composante du champ.
-// Parametre: Noms& noms
-//    Signification: les noms des unites des composantes du champ
+/*! @brief Specifie les unites des composantes du champ.
+ *
+ * Ces unites sont specifiees grace a un tableau de Nom et peuvent etre differentes pour chaque composante du champ.
+ *
+ * @param (Noms& noms) les noms des unites des composantes du champ
+ */
 const Noms& Field_base::fixer_unites(const Noms& noms)
 {
   unite_.dimensionner_force(nb_comp());
@@ -133,68 +134,63 @@ const Noms& Field_base::fixer_unites(const Noms& noms)
   return unite_ = noms;
 }
 
-// Description:
-//    Renvoie les unites des composantes du champ
-// Retour: Noms&
-//    Signification: les noms des unites des composantes du champ
+/*! @brief Renvoie les unites des composantes du champ
+ *
+ * @return (Noms&) les noms des unites des composantes du champ
+ */
 const Noms& Field_base::unites() const
 {
   return unite_;
 }
 
-// Description: Specifie l'unite de la i-eme composante du champ
-//    Signification: l'index de la composante du champ dont on veut specifier l'unite
-// Parametre: Nom& nom
-//    Signification: le type de l'unite a specifier
-// Retour: Nom&
-//    Signification: le type de l'unite de la i-eme composante du champ
-// Postcondition: le champ est de nature multi-scalaire.
+/*! @brief Specifie l'unite de la i-eme composante du champ Signification: l'index de la composante du champ dont on veut specifier l'unite
+ *
+ * @param (Nom& nom) le type de l'unite a specifier
+ * @return (Nom&) le type de l'unite de la i-eme composante du champ
+ */
 const Nom& Field_base::fixer_unite(int i, const Nom& nom)
 {
   fixer_nature_du_champ(multi_scalaire);
   return unite_[i] = nom;
 }
 
-// Description: Renvoie l'unite de la i-eme composante du champ
-// Parametre: int i
-//    Signification: l'index de la composante du champ dont on veut connaitre l'unite
-// Retour: Nom&
-//    Signification: l'unite de la i-eme composante du champ
+/*! @brief Renvoie l'unite de la i-eme composante du champ
+ *
+ * @param (int i) l'index de la composante du champ dont on veut connaitre l'unite
+ * @return (Nom&) l'unite de la i-eme composante du champ
+ */
 const Nom& Field_base::unite(int i) const
 {
   return unite_[i];
 }
 
-// Description:
-//    Specifie l'unite d'un champ scalaire ou dont toutes les composantes ont la meme unite
-// Parametre: Nom& nom
-//    Signification: l'unite a specifier
-// Retour: Nom&
-//    Signification: l'unite du champ
-// Postcondition: la dimension du tableau stockant les unites est force a 1
+/*! @brief Specifie l'unite d'un champ scalaire ou dont toutes les composantes ont la meme unite
+ *
+ * @param (Nom& nom) l'unite a specifier
+ * @return (Nom&) l'unite du champ
+ */
 const Nom& Field_base::fixer_unite(const Nom& nom)
 {
   unite_.dimensionner_force(1);
   return unite_[0] = nom;
 }
 
-// Description:
-//    Renvoie l'unite d'un champ scalaire dont toutes les composantes ont la meme unite
-// Precondition: toutes les composantes du champ doivent avoir la meme unite
-// Retour: Nom&
-//    Signification: l'unite (commune) des composantes du champ
+/*! @brief Renvoie l'unite d'un champ scalaire dont toutes les composantes ont la meme unite
+ *
+ * @return (Nom&) l'unite (commune) des composantes du champ
+ */
 const Nom& Field_base::unite() const
 {
   assert(unite_.size() == 1);
   return unite_[0];
 }
 
-// Description:
-//    Fixer la nature d'un champ: scalaire, multiscalaire, vectoriel.
-//    Le type (enum) Nature_du_champ est defini dans Ch_base.h.
-// Parametre: Nature_du_champ n
-//    Signification: la nature a donner au champ
-// Postcondition: le membre Field_base::nature est modifie
+/*! @brief Fixer la nature d'un champ: scalaire, multiscalaire, vectoriel.
+ *
+ * Le type (enum) Nature_du_champ est defini dans Ch_base.h.
+ *
+ * @param (Nature_du_champ n) la nature a donner au champ
+ */
 Nature_du_champ Field_base::fixer_nature_du_champ(Nature_du_champ n)
 {
   return nature_ = n;

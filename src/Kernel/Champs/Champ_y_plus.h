@@ -19,17 +19,12 @@
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_y_plus
-//     Permet d'avoir une visualisation de la taille de la premiere maille de paroi en unites de parois.
-//       y+ = y u_tau/nu
-// .SECTION voir aussi
-//     Classe abstraite
-//     Methode abstraite
-//       void me_calculer(double )
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_y_plus Permet d'avoir une visualisation de la taille de la premiere maille de paroi en unites de parois.
+ *
+ *        y+ = y u_tau/nu
+ *
+ * @sa Classe abstraite, Methode abstraite, void me_calculer(double )
+ */
 class Champ_y_plus
 {
 

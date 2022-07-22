@@ -28,8 +28,9 @@ void Octree_Double::reset()
   factor_.reset();
 }
 
-// Description: Convertit une coordonnees reele en coordonnee entiere pour l'octree_int
-// Valeur de retour: 1 si ok, 0 si coordonnee hors de l'octree
+/*! @brief Convertit une coordonnees reele en coordonnee entiere pour l'octree_int Valeur de retour: 1 si ok, 0 si coordonnee hors de l'octree
+ *
+ */
 inline int Octree_Double::integer_position(double x, int direction, int& ix) const
 {
   const double coord_max = (double) Octree_Int::coord_max_;
@@ -68,9 +69,12 @@ inline int Octree_Double::integer_position_clip(double xmin, double xmax,
   return 1;
 }
 
-// Description: cherche les elements ou les points contenus dans l'octree_floor qui
-//  contient le point (x,y,z). Renvoie le nombre n de ces elements.
-//  Les indices des elements sont dans floor_elements()[index+i] pour 0 <= i < n
+/*! @brief cherche les elements ou les points contenus dans l'octree_floor qui contient le point (x,y,z).
+ *
+ * Renvoie le nombre n de ces elements.
+ *   Les indices des elements sont dans floor_elements()[index+i] pour 0 <= i < n
+ *
+ */
 int Octree_Double::search_elements(double x, double y, double z, int& index) const
 {
   if (dim_ == 0)
@@ -89,9 +93,11 @@ int Octree_Double::search_elements(double x, double y, double z, int& index) con
     }
 }
 
-// Description: methode outil pour build_nodes et build_elements
-//  (calcul des facteurs de conversion entre reels et entiers pour Octree_Int
-//  epsilon est ajoute aux coordonnees min et max pour la bounding box de l'octree.
+/*! @brief methode outil pour build_nodes et build_elements (calcul des facteurs de conversion entre reels et entiers pour Octree_Int
+ *
+ *   epsilon est ajoute aux coordonnees min et max pour la bounding box de l'octree.
+ *
+ */
 void Octree_Double::compute_origin_factors(const DoubleTab& coords,
                                            const double epsilon,
                                            const int include_virtual)
@@ -137,13 +143,16 @@ void Octree_Double::compute_origin_factors(const DoubleTab& coords,
     }
 }
 
-// Description: construit un octree contenant les points de coordonnees coords.
-//  Si include_virtual=1, on stocke coords.dimension_tot(0) elements, sinon on en
-//  stocke coords.dimension(0)
-//  Si epsilon = 0, on construit un octree de points de taille nulle (chaque point
-//   se trouve dans un seul octree_floor)
-//  Sinon, on construit un octree d'elements cubiques centres sur les coords, de demie-largeur epsilon.
-//   Un point peut alors se trouver dans plusieurs octree_floor.
+/*! @brief construit un octree contenant les points de coordonnees coords.
+ *
+ * Si include_virtual=1, on stocke coords.dimension_tot(0) elements, sinon on en
+ *   stocke coords.dimension(0)
+ *   Si epsilon = 0, on construit un octree de points de taille nulle (chaque point
+ *    se trouve dans un seul octree_floor)
+ *   Sinon, on construit un octree d'elements cubiques centres sur les coords, de demie-largeur epsilon.
+ *    Un point peut alors se trouver dans plusieurs octree_floor.
+ *
+ */
 void Octree_Double::build_nodes(const DoubleTab& coords, const int include_virtual, const double epsilon)
 {
   octree_int_.reset();
@@ -190,11 +199,14 @@ void Octree_Double::build_nodes(const DoubleTab& coords, const int include_virtu
   octree_int_.build(dim, elements_boxes);
 }
 
-// Description: Construit un octree a partir d'elements volumiques decrits par des
-//  ensembles de sommets. On stocke dans l'octree les parallelipipdes englobant chaque
-//  element (contenant tous les sommets de l'element) plus une marge de epsilon.
-//  Si include_virtual=1, on stocke elements.dimension_tot(0) elements, sinon on en
-//  stocke elements.dimension(0)
+/*! @brief Construit un octree a partir d'elements volumiques decrits par des ensembles de sommets.
+ *
+ * On stocke dans l'octree les parallelipipdes englobant chaque
+ *   element (contenant tous les sommets de l'element) plus une marge de epsilon.
+ *   Si include_virtual=1, on stocke elements.dimension_tot(0) elements, sinon on en
+ *   stocke elements.dimension(0)
+ *
+ */
 void Octree_Double::build_elements(const DoubleTab& coords, const IntTab& elements,
                                    const double epsilon, const int include_virtual)
 {
@@ -232,8 +244,9 @@ void Octree_Double::build_elements(const DoubleTab& coords, const IntTab& elemen
   octree_int_.build(dim, elements_boxes);
 }
 
-// Description: cherche tous les elements ou points ayant potentiellement une intersection
-//  non vide avec la boite donnee.
+/*! @brief cherche tous les elements ou points ayant potentiellement une intersection non vide avec la boite donnee.
+ *
+ */
 int Octree_Double::search_elements_box(double xmin, double ymin, double zmin,
                                        double xmax, double ymax, double zmax,
                                        ArrOfInt& elements) const
@@ -259,8 +272,9 @@ int Octree_Double::search_elements_box(double xmin, double ymin, double zmin,
   return elements.size_array();
 }
 
-// Description: cherche tous les elements ou points ayant potentiellement une intersection
-//  non vide avec la boite donnee (centre + ou - radius dans chaque direction)
+/*! @brief cherche tous les elements ou points ayant potentiellement une intersection non vide avec la boite donnee (centre + ou - radius dans chaque direction)
+ *
+ */
 int Octree_Double::search_elements_box(const ArrOfDouble& center, const double radius,
                                        ArrOfInt& elements) const
 {
@@ -274,11 +288,13 @@ int Octree_Double::search_elements_box(const ArrOfDouble& center, const double r
   return i;
 }
 
-// Description: Methode hors classe
-//  Cherche parmi les sommets de la liste node_list ceux qui sont a une
-//  distance inferieure a epsilon du point (x,y,z). node_list contient des indices de
-//  sommets dans le tableau coords. La liste des noeuds verifiant le critere est mise
-//  dans node_list. On renvoie l'indice dans le tableau coords du sommet le plus proche.
+/*! @brief Methode hors classe Cherche parmi les sommets de la liste node_list ceux qui sont a une
+ *
+ *   distance inferieure a epsilon du point (x,y,z). node_list contient des indices de
+ *   sommets dans le tableau coords. La liste des noeuds verifiant le critere est mise
+ *   dans node_list. On renvoie l'indice dans le tableau coords du sommet le plus proche.
+ *
+ */
 int Octree_Double::search_nodes_close_to(double x, double y, double z,
                                          const DoubleTab& coords, ArrOfInt& node_list,
                                          double epsilon)
@@ -311,7 +327,11 @@ int Octree_Double::search_nodes_close_to(double x, double y, double z,
   return nearest;
 }
 
-// Description: Idem que search_nodes_close_to(double x, double y, double z, ...)
+/*! @brief Idem que search_nodes_close_to(double x, double y, double z, .
+ *
+ * ..)
+ *
+ */
 int Octree_Double::search_nodes_close_to(const ArrOfDouble& point,
                                          const DoubleTab& coords, ArrOfInt& node_list,
                                          double epsilon)

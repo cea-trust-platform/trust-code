@@ -38,18 +38,20 @@ Sortie& Execute_parallel::printOn(Sortie& os) const
   return os;
 }
 
-// Description:
-//  Cree une partition des nproc processeurs du calcul pour interpreter
-//  N jeux de donnees differents. La syntaxe du jeu de donnees est la suivante
-//  Execute_parallel {
-//    liste_cas N cas1 cas2 cas3 ...
-//    [ nb_procs N nproc1 nproc2 nproc3 ... ]
-//  }
-//  "cas1" est le nom du cas (on lit le fichier cas1.data sur disque)
-//  nproc1 est le nombre de processeurs a utiliser pour ce cas
-//  Par defaut, on utilise 1 processeur pour chaque cas
-//  Les sorties Cerr et Cout sont redirigees vers le journal du processeur
-//  maitre de chaque cas.
+/*! @brief Cree une partition des nproc processeurs du calcul pour interpreter N jeux de donnees differents.
+ *
+ * La syntaxe du jeu de donnees est la suivante
+ *   Execute_parallel {
+ *     liste_cas N cas1 cas2 cas3 ...
+ *     [ nb_procs N nproc1 nproc2 nproc3 ... ]
+ *   }
+ *   "cas1" est le nom du cas (on lit le fichier cas1.data sur disque)
+ *   nproc1 est le nombre de processeurs a utiliser pour ce cas
+ *   Par defaut, on utilise 1 processeur pour chaque cas
+ *   Les sorties Cerr et Cout sont redirigees vers le journal du processeur
+ *   maitre de chaque cas.
+ *
+ */
 Entree& Execute_parallel::interpreter(Entree& is)
 {
   Cerr << "Execute_parallel::interpreter to run several cases:" << finl;

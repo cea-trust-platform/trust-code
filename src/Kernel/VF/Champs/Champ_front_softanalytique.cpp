@@ -21,22 +21,14 @@ Implemente_instanciable(Champ_front_softanalytique,"Champ_front_fonc_xyz",Ch_fro
 // XD champ_front_fonc_xyz front_field_base champ_front_fonc_xyz 0 Boundary field which is not constant in space.
 // XD attr val listchaine val 0 Values of field components (mathematical expressions).
 
-// Description:
-//    Imprime le champ sur flot de sortie.
-//    Imprime la taille du champ et la valeur (constante) sur
-//    la frontiere.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Imprime le champ sur flot de sortie.
+ *
+ * Imprime la taille du champ et la valeur (constante) sur
+ *     la frontiere.
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Champ_front_softanalytique::printOn(Sortie& os) const
 {
 
@@ -55,22 +47,14 @@ Sortie& Champ_front_softanalytique::printOn(Sortie& os) const
 }
 
 
-// Description:
-//    Lit le champ a partir d'un flot d'entree.
-//    Format:
-//      Champ_front_softanalytique nb_compo vrel_1 ... [vrel_i]
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree& is
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: le champ analytique a la valeur lue
+/*! @brief Lit le champ a partir d'un flot d'entree.
+ *
+ * Format:
+ *       Champ_front_softanalytique nb_compo vrel_1 ... [vrel_i]
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree& is) le flot d'entree modifie
+ */
 Entree& Champ_front_softanalytique::readOn(Entree& is)
 {
   //Cout << "Dans  Champ_front_softanalytique.readOn !!!!!!!!!" << finl;

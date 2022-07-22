@@ -37,70 +37,52 @@ Implemente_instanciable_sans_constructeur(Pave,"Pave",Zone);
 // XD attr ztanh_taille_premiere_maille floattant ztanh_taille_premiere_maille 1 Size of the first cell of the mesh with tanh (hyperbolic tangent) variation in the Z-direction.
 
 
-// Description:
-//    Simple appel a: Zone::printOn(Sortie&)
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a: Zone::printOn(Sortie&)
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Pave::printOn(Sortie& s ) const
 {
   return Zone::printOn(s) ;
 }
 
 Pave::Pave():a_tanh(-123),tanh_dilatation(-123),xa_tanh(-123),xtanh_dilatation(-123),za_tanh(-123),ztanh_dilatation(-123),Nx(-1),Ny(-1),Nz(-1),Mx(-1),My(-1),Mz(-1),tour_complet(-123) {}
-// Description:
-//    Lit les specifications d'un pave a partir
-//    d'un flot d'entree.
-//    Le format de lecture d'un pave dans le jeu de donnee est le suivant:
-//     Pave nom_pave
-//     {
-//     Origine OX OY (OZ)
-//     Longueurs LX LY (LZ)
-//     Nombre_de_noeuds NX NY (NZ)
-//     Facteurs Fx Fy (Fz)
-//     (Symx)
-//     (Symy)
-//     (Symz)
-//     }
-//     {
-//     (Bord)  nom X = X0 Y0 <= Y <= Y1 Z0 <= Z <= Z1
-//     ...
-//     (Raccord)  local homogene nom X = X0 Y0 <= Y <= Y1 Z0 <= Z <= Z1
-//     ...
-//     (Internes)  nom X = X0 Y0 <= Y <= Y1 Z0 <= Z <= Z1
-//     ...
-//     (Joint)  nom X = X0 Y0 <= Y <= Y1 Z0 <= Z <= Z1 PE_voisin
-//     ...
-//     }
-// Precondition: la dimension d'espace doit avoir ete lue
-//               auparavant
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: dimension d'espace necessaire pour mailler
-// Exception: accolade ouvrante attendue
-// Exception: Symy n'a de sens que pour une dimension >= 2
-// Exception: Symz n'a de sens qu'en dimension 3
-// Exception: Les facteurs de progression doivent etre positifs
-// Exception: Il doit y avoir au moins deux mailles en x
-// Exception: accolade ouvrante attendue avant lecture des bords
-// Exception: mot cle non reconnu
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit les specifications d'un pave a partir d'un flot d'entree.
+ *
+ *     Le format de lecture d'un pave dans le jeu de donnee est le suivant:
+ *      Pave nom_pave
+ *      {
+ *      Origine OX OY (OZ)
+ *      Longueurs LX LY (LZ)
+ *      Nombre_de_noeuds NX NY (NZ)
+ *      Facteurs Fx Fy (Fz)
+ *      (Symx)
+ *      (Symy)
+ *      (Symz)
+ *      }
+ *      {
+ *      (Bord)  nom X = X0 Y0 <= Y <= Y1 Z0 <= Z <= Z1
+ *      ...
+ *      (Raccord)  local homogene nom X = X0 Y0 <= Y <= Y1 Z0 <= Z <= Z1
+ *      ...
+ *      (Internes)  nom X = X0 Y0 <= Y <= Y1 Z0 <= Z <= Z1
+ *      ...
+ *      (Joint)  nom X = X0 Y0 <= Y <= Y1 Z0 <= Z <= Z1 PE_voisin
+ *      ...
+ *      }
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ * @throws dimension d'espace necessaire pour mailler
+ * @throws accolade ouvrante attendue
+ * @throws Symy n'a de sens que pour une dimension >= 2
+ * @throws Symz n'a de sens qu'en dimension 3
+ * @throws Les facteurs de progression doivent etre positifs
+ * @throws Il doit y avoir au moins deux mailles en x
+ * @throws accolade ouvrante attendue avant lecture des bords
+ * @throws mot cle non reconnu
+ */
 Entree& Pave::readOn(Entree& is)
 {
   xtanh_dilatation=0;
@@ -490,20 +472,10 @@ Entree& Pave::readOn(Entree& is)
 }
 
 
-// Description:
-//    Associe un domaine au Pave.
-// Precondition:
-// Parametre: Domaine& un_dom
-//    Signification: le domaine dont fait partie le pave
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe un domaine au Pave.
+ *
+ * @param (Domaine& un_dom) le domaine dont fait partie le pave
+ */
 void Pave::associer_domaine(const Domaine& un_dom)
 {
   Zone::associer_domaine(un_dom);
@@ -520,21 +492,9 @@ void Pave::associer_domaine(const Domaine& un_dom)
 }
 
 
-// Description:
-//    Effectue un maillage 1D, du pave
-//    avec les valeurs des parametres lus par ReadOn.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Effectue un maillage 1D, du pave avec les valeurs des parametres lus par ReadOn.
+ *
+ */
 void Pave::maille1D()
 {
   Cerr << "Step of 1D mesh in progress... " << finl;
@@ -598,21 +558,9 @@ void Pave::maille1D()
 }
 
 
-// Description:
-//    Effectue un maillage 2D, du pave
-//    avec les valeurs des parametres lus par ReadOn.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Effectue un maillage 2D, du pave avec les valeurs des parametres lus par ReadOn.
+ *
+ */
 void Pave::maille2D()
 {
   Cerr << "Step of 2D mesh in progress... " << finl;
@@ -876,21 +824,9 @@ void Pave::maille2D()
   Cerr << "Step of mesh ended " << finl;
 }
 
-// Description:
-//    Effectue un maillage 3D, du pave
-//    avec les valeurs des parametres lus par ReadOn.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Effectue un maillage 3D, du pave avec les valeurs des parametres lus par ReadOn.
+ *
+ */
 void Pave::maille3D()
 {
   Cerr << "Step of 3D mesh in progress... " << finl;
@@ -1317,25 +1253,14 @@ void Pave::maille3D()
 }
 
 
-// Description:
-//    Type le pave suivant la dimension d'espace
-//    et suivant le repere de coordonnees demande (cylindrique
-//    ou cartesien)
-//    En dimension 1      : le pave est maille avec des segments
-//    En dimension 2 (axi): la pave est maille avec des rectangle (axi)
-//    En dimension 3 (axi): la pave est maille avec des hexaedres (axi)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Type le pave suivant la dimension d'espace et suivant le repere de coordonnees demande (cylindrique
+ *
+ *     ou cartesien)
+ *     En dimension 1      : le pave est maille avec des segments
+ *     En dimension 2 (axi): la pave est maille avec des rectangle (axi)
+ *     En dimension 3 (axi): la pave est maille avec des hexaedres (axi)
+ *
+ */
 void Pave::typer_()
 {
   switch(dimension)
@@ -1362,22 +1287,13 @@ void Pave::typer_()
     }
 }
 
-// Description:
-//    Lit les longueurs LX LY [LZ] du jeu de donnee
-//    a partir d'un flot d'entree.
-//    Methode appelee par readOn(Entree&)
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: La Longueur est en nombre de tour en axi, comprise entre 0 et 1
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit les longueurs LX LY [LZ] du jeu de donnee a partir d'un flot d'entree.
+ *
+ *     Methode appelee par readOn(Entree&)
+ *
+ * @param (Entree& is) un flot d'entree
+ * @throws La Longueur est en nombre de tour en axi, comprise entre 0 et 1
+ */
 void Pave::lire_Longueurs(Entree& is)
 {
   int i;
@@ -1396,23 +1312,14 @@ void Pave::lire_Longueurs(Entree& is)
     }
 }
 
-// Description:
-//    Lit le nombre de noeuds dans le jeu de donnee
-//    a partir d'un flot d'entree et construit les noeuds.
-//    Methode appelee par readOn(Entree&)
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: en coordonnees axi il faut lire les longueurs d'abord
-// Exception: dimension d'espace non prevue
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit le nombre de noeuds dans le jeu de donnee a partir d'un flot d'entree et construit les noeuds.
+ *
+ *     Methode appelee par readOn(Entree&)
+ *
+ * @param (Entree& is) un flot d'entree
+ * @throws en coordonnees axi il faut lire les longueurs d'abord
+ * @throws dimension d'espace non prevue
+ */
 void Pave::lire_Noeuds(Entree& is)
 {
   int i, j, k;

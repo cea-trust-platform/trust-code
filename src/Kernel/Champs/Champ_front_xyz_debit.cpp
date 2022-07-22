@@ -168,8 +168,9 @@ void Champ_front_xyz_debit::changer_temps_futur(double temps,int i)
     velocity_profil_.valeur().changer_temps_futur(temps,i);
 }
 
-// Description:
-//    Turn the wheel of the CL
+/*! @brief Turn the wheel of the CL
+ *
+ */
 int Champ_front_xyz_debit::avancer(double temps)
 {
 //  Cerr << "Champ_front_xyz_debit::avancer" << finl;
@@ -183,8 +184,9 @@ int Champ_front_xyz_debit::avancer(double temps)
     return 0;
 }
 
-// Description:
-//    Turn the wheel of the CL
+/*! @brief Turn the wheel of the CL
+ *
+ */
 int Champ_front_xyz_debit::reculer(double temps)
 {
 //  Cerr << "Champ_front_xyz_debit::reculer" << finl;

@@ -27,57 +27,52 @@ class Champ_Inc_base;
 
 class Zone_dis_base;
 class Cond_lim_base;
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_front_base
-//     Classe de base pour la hierarchie des champs aux frontieres. Un
-//     objet Champ_front_base definit un champ sur la frontiere d'un
-//     domaine. Un objet de type Champ_front_base sera associe a
-//     chaque condition aux limites.
-//     Champ_front_base derive de Champ_Proto, afin d'avoir une interface
-//     conforme a tous les champs, et d'heriter des operations courantes sur
-//     les Champs.
-//     Les deux methodes principales sont initialiser et
-//     mettre_a_jour.  Ce sont les deux seules qui peuvent modifier les
-//     valeurs du champ.
-//     La methode initialiser est appelee une fois au debut du
-//     calcul. Elle ne doit pas dependre de donnees exterieures a
-//     l'equation qui porte la CL (en effet, rien ne garantit que ces
-//     donnees sont initialisees). En revanche, les valeurs de
-//     l'inconnue sur laquelle porte la CL peuvent etre utiles pour
-//     l'initialisation => l'inconnue est passee en parametre en
-//     lecture seule.
-//     La methode mettre_a_jour est appelee au debut de chaque pas de
-//     temps ou sous-pas-de-temps, elle peut utiliser des donnees
-//     exterieures a l'equation. A charge a l'algorithme de s'assurer
-//     que ces donnees sont pertinentes...
-//     Dans le cas de champs stationnaires, la methode mettre_a_jour
-//     n'a rien a faire et les valeurs sont remplies une fois pour
-//     toutes par la methode initialiser.
-//     Dans le cas de champs instationnaires, il y a plusieurs valeurs en temps
-//     et chacune peut etre mise a jour.
-//     Les Champ_front sont divises en :
-//      * Champ_front_uniforme, constant dans le temps et l'espace
-//      * Champ_front_instationnaire_base, uniformes en espace mais variables en temps
-//      * Champ_front_var, variables en espace.
-//     Les Champ_front_var sont ensuite classes selon qu'ils sont
-//     stationnaires ou instationnaires.
-//
-//     Les valeurs sont stockees dans une roue de DoubleTab.
-//     Si le champ est uniforme en espace, les DoubleTab sont
-//     dimensionnes a 1.
-//     S'il est stationnaire, la roue n'a qu'une valeur temporelle
-//     et le temps qui lui est assigne n'a pas de sens.
-//     S'il est instationnaire, les valeurs temporelles sont celles
-//     de l'inconnue de l'equation a laquelle se rapporte le champ.
-//
-// .SECTION voir aussi
-//     Champ_Proto Frontiere_dis_base
-//     Classe abstraite
-//     Methode abstraite:
-//       Champ_front_base& affecter_(const Champ_front_base& ch)
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_front_base Classe de base pour la hierarchie des champs aux frontieres.
+ *
+ * Un
+ *      objet Champ_front_base definit un champ sur la frontiere d'un
+ *      domaine. Un objet de type Champ_front_base sera associe a
+ *      chaque condition aux limites.
+ *      Champ_front_base derive de Champ_Proto, afin d'avoir une interface
+ *      conforme a tous les champs, et d'heriter des operations courantes sur
+ *      les Champs.
+ *      Les deux methodes principales sont initialiser et
+ *      mettre_a_jour.  Ce sont les deux seules qui peuvent modifier les
+ *      valeurs du champ.
+ *      La methode initialiser est appelee une fois au debut du
+ *      calcul. Elle ne doit pas dependre de donnees exterieures a
+ *      l'equation qui porte la CL (en effet, rien ne garantit que ces
+ *      donnees sont initialisees). En revanche, les valeurs de
+ *      l'inconnue sur laquelle porte la CL peuvent etre utiles pour
+ *      l'initialisation => l'inconnue est passee en parametre en
+ *      lecture seule.
+ *      La methode mettre_a_jour est appelee au debut de chaque pas de
+ *      temps ou sous-pas-de-temps, elle peut utiliser des donnees
+ *      exterieures a l'equation. A charge a l'algorithme de s'assurer
+ *      que ces donnees sont pertinentes...
+ *      Dans le cas de champs stationnaires, la methode mettre_a_jour
+ *      n'a rien a faire et les valeurs sont remplies une fois pour
+ *      toutes par la methode initialiser.
+ *      Dans le cas de champs instationnaires, il y a plusieurs valeurs en temps
+ *      et chacune peut etre mise a jour.
+ *      Les Champ_front sont divises en :
+ *       * Champ_front_uniforme, constant dans le temps et l'espace
+ *       * Champ_front_instationnaire_base, uniformes en espace mais variables en temps
+ *       * Champ_front_var, variables en espace.
+ *      Les Champ_front_var sont ensuite classes selon qu'ils sont
+ *      stationnaires ou instationnaires.
+ *
+ *      Les valeurs sont stockees dans une roue de DoubleTab.
+ *      Si le champ est uniforme en espace, les DoubleTab sont
+ *      dimensionnes a 1.
+ *      S'il est stationnaire, la roue n'a qu'une valeur temporelle
+ *      et le temps qui lui est assigne n'a pas de sens.
+ *      S'il est instationnaire, les valeurs temporelles sont celles
+ *      de l'inconnue de l'equation a laquelle se rapporte le champ.
+ *
+ *
+ * @sa Champ_Proto Frontiere_dis_base, Classe abstraite, Methode abstraite:, Champ_front_base& affecter_(const Champ_front_base& ch)
+ */
 class Champ_front_base : public Field_base, public Champ_Proto
 {
 
@@ -126,82 +121,44 @@ protected:
 };
 
 
-// Description:
-//    Renvoie la frontiere discretisee associee au champ.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Frontiere_dis_base&
-//    Signification: la frontiere discretisee associee au champ
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la frontiere discretisee associee au champ.
+ *
+ * (version const)
+ *
+ * @return (Frontiere_dis_base&) la frontiere discretisee associee au champ
+ */
 inline const Frontiere_dis_base& Champ_front_base::frontiere_dis() const
 {
   return la_frontiere_dis.valeur();
 }
 
 
-// Description:
-//    Renvoie la frontiere discretisee associee au champ.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Frontiere_dis_base&
-//    Signification: la frontiere discretisee associee au champ
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la frontiere discretisee associee au champ.
+ *
+ * @return (Frontiere_dis_base&) la frontiere discretisee associee au champ
+ */
 inline Frontiere_dis_base& Champ_front_base::frontiere_dis()
 {
   return la_frontiere_dis.valeur();
 }
 
 
-// Description:
-//    Renvoie le tableau des valeurs du champ.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: le tableau des valeurs du champ au temps par defaut.
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le tableau des valeurs du champ.
+ *
+ * @return (DoubleTab&) le tableau des valeurs du champ au temps par defaut.
+ */
 inline DoubleTab& Champ_front_base::valeurs()
 {
   return valeurs_au_temps(temps_defaut);
 }
 
 
-// Description:
-//    Renvoie le tableau des valeurs du champ au temps par defaut.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: le tableau des valeurs du champ
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le tableau des valeurs du champ au temps par defaut.
+ *
+ * (version const)
+ *
+ * @return (DoubleTab&) le tableau des valeurs du champ
+ */
 inline const DoubleTab& Champ_front_base::valeurs() const
 {
   return valeurs_au_temps(temps_defaut);

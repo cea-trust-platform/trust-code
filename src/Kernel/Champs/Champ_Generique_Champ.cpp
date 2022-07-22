@@ -31,10 +31,11 @@ Entree& Champ_Generique_Champ::readOn( Entree& is )
 }
 
 
-// Description:
-//  pb_champ :   declenche la lecture du nom du probleme (nom_pb_) auquel appartient
-//                 le champ discret et le nom de ce champ discret (nom_champ_)
-//  nom_source : option pour nommer le champ en tant que source (sinon nommer par defaut)
+/*! @brief pb_champ :   declenche la lecture du nom du probleme (nom_pb_) auquel appartient le champ discret et le nom de ce champ discret (nom_champ_)
+ *
+ *   nom_source : option pour nommer le champ en tant que source (sinon nommer par defaut)
+ *
+ */
 void Champ_Generique_Champ::set_param(Param& param)
 {
   param.ajouter_non_std("nom_source",(this));
@@ -60,9 +61,11 @@ void Champ_Generique_Champ::mettre_a_jour(double temps)
 {
   champ_.mettre_a_jour(temps);
 }
-// Description:
-//  Voir Champ_Generique_base::get_champ.
-//  Ici, l'espace_stockage n'est pas utilise, le champ existe deja
+/*! @brief Voir Champ_Generique_base::get_champ.
+ *
+ * Ici, l'espace_stockage n'est pas utilise, le champ existe deja
+ *
+ */
 const Champ_base& Champ_Generique_Champ::get_champ(Champ& espace_stockage) const
 {
   return champ_.valeur();

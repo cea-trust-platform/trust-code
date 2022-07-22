@@ -15,7 +15,9 @@
 
 #include <DomaineCutter_Correspondance.h>
 
-// Description: constructeur par defaut
+/*! @brief constructeur par defaut
+ *
+ */
 DomaineCutter_Correspondance::DomaineCutter_Correspondance()
 {
   partie_ = -1;

@@ -22,49 +22,33 @@ Implemente_instanciable_sans_constructeur_ni_destructeur(Sonde_Int,"Sonde_Int",O
 Sonde_Int::Sonde_Int():le_fichier(0) { }
 
 
-// Description:
-//    Imprime le type de l'objet sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Imprime le type de l'objet sur un flot de sortie.
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Sonde_Int::printOn(Sortie& s ) const
 {
   return s << que_suis_je();
 }
 
 
-// Description:
-//    Lit les specifications d'une sonde a partir d'un flot d'entree.
-//    Format:
-//    Sonde_Ints
-//     {
-//       [nom_sonde nom_champ Periode dts Points n x1 y1 [z1] ... xn yn [zn]
-//       [nom_sonde nom_champ Periode dts Segment ns x1 y1 [z1] x2 y2 [z2]
-//       ...
-//     }
-// Precondition: le postraitement doit avoir ete associe
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: donnees de la sonde non definies
-// Exception: erreur de format, mot clef inconnus
-// Exception: donnees de la sonde pas definies correctement
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit les specifications d'une sonde a partir d'un flot d'entree.
+ *
+ * Format:
+ *     Sonde_Ints
+ *      {
+ *        [nom_sonde nom_champ Periode dts Points n x1 y1 [z1] ... xn yn [zn]
+ *        [nom_sonde nom_champ Periode dts Segment ns x1 y1 [z1] x2 y2 [z2]
+ *        ...
+ *      }
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ * @throws donnees de la sonde non definies
+ * @throws erreur de format, mot clef inconnus
+ * @throws donnees de la sonde pas definies correctement
+ */
 Entree& Sonde_Int::readOn(Entree& is )
 {
   assert(mon_post.non_nul());
@@ -278,20 +262,10 @@ Entree& Sonde_Int::readOn(Entree& is )
 }
 
 
-// Description:
-//    Associer le postraitement a la sonde.
-// Precondition:
-// Parametre: Postraitement& le_post
-//    Signification: le postraitement a associer
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la sonde a un postraitement associe
+/*! @brief Associer le postraitement a la sonde.
+ *
+ * @param (Postraitement& le_post) le postraitement a associer
+ */
 void Sonde_Int::associer_post(const Postraitement& le_post)
 {
   mon_post=le_post;
@@ -307,22 +281,14 @@ void Sonde_Int::associer_post(const Postraitement& le_post)
 }
 
 
-// Description:
-//    Initialise la sonde. Dimensionne les tableaux,
-//    de valeurs, verifie si les points specifies sont
-//    bien dans la zone de calcul.
-// Precondition:
-// Parametre: Zone& zone_geom
-//    Signification: la zone de calcul qui sera sondee
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: point de sondage en dehors de la zone de calcul
-// Effets de bord:
-// Postcondition: la sonde est initialisee
+/*! @brief Initialise la sonde.
+ *
+ * Dimensionne les tableaux, de valeurs, verifie si les points specifies sont
+ *     bien dans la zone de calcul.
+ *
+ * @param (Zone& zone_geom) la zone de calcul qui sera sondee
+ * @throws point de sondage en dehors de la zone de calcul
+ */
 void Sonde_Int::initialiser(const Zone& zone_geom)
 {
   nb_bip = 0.;
@@ -346,20 +312,11 @@ void Sonde_Int::initialiser(const Zone& zone_geom)
 }
 
 
-// Description:
-//    Ouvre le fichier associe a la sonde. (*.son)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: le fichier associe est ouvert
+/*! @brief Ouvre le fichier associe a la sonde.
+ *
+ * (*.son)
+ *
+ */
 void Sonde_Int::ouvrir_fichier()
 {
   if(je_suis_maitre())
@@ -499,26 +456,11 @@ void Sonde_Int::ouvrir_fichier()
 }
 
 
-// Description:
-//    Effectue une mise a jour en temps de la sonde
-//    effectue le postraitement.
-// Precondition:
-// Parametre: double temps
-//    Signification: le temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double tinit
-//    Signification: le temps initial de la sonde
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Effectue une mise a jour en temps de la sonde effectue le postraitement.
+ *
+ * @param (double temps) le temps de mise a jour
+ * @param (double tinit) le temps initial de la sonde
+ */
 void Sonde_Int::mettre_a_jour(double un_temps, double tinit)
 {
   double nb;
@@ -531,22 +473,12 @@ void Sonde_Int::mettre_a_jour(double un_temps, double tinit)
 }
 
 
-// Description:
-//    Effectue un postraitement.
-//    Imprime les valeurs du tableau aux positions demandees
-//    sur le fichier associe.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Effectue un postraitement.
+ *
+ * Imprime les valeurs du tableau aux positions demandees
+ *     sur le fichier associe.
+ *
+ */
 void Sonde_Int::postraiter(double un_temps)
 {
   if (sub_type(IntTab,mon_tableau.valeur()))

@@ -20,12 +20,13 @@
 #include <Frontiere.h>
 #include <Frontiere_dis_base.h>
 
-/////////////////////////////////////////////////////////////////////////////
-// .DESCRIPTION        : class Champ_implementation_sommet_base
-//
-// Decrire ici la classe Champ_implementation_sommet_base
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Champ_implementation_sommet_base
+ *
+ *  Decrire ici la classe Champ_implementation_sommet_base
+ *
+ *
+ *
+ */
 
 class Champ_implementation_sommet_base : public Champ_implementation_base
 {

@@ -25,11 +25,13 @@ Partitionneur_Fichier_Decoupage::Partitionneur_Fichier_Decoupage()
   corriger_partition_ = 0;
 }
 
-// Description:
-//  Lecture des parametres du partitionneur sur disque.
-//  Fomat attendu:
-//    { fichier FILENAME }
-//  FILENAME est le nom d'un fichier existant au format ArrOfInt ascii.
+/*! @brief Lecture des parametres du partitionneur sur disque.
+ *
+ * Fomat attendu:
+ *     { fichier FILENAME }
+ *   FILENAME est le nom d'un fichier existant au format ArrOfInt ascii.
+ *
+ */
 Entree& Partitionneur_Fichier_Decoupage::readOn(Entree& is)
 {
   Partitionneur_base::readOn(is);
@@ -62,10 +64,9 @@ void Partitionneur_Fichier_Decoupage::initialiser(const char *filename)
   filename_ = filename;
 }
 
-// Description:
-//  Lit le contenu du fichier "filename_" et stocke le resultat dans elem_part
-// Precondition:
-//  domaine associe et filename initialise
+/*! @brief Lit le contenu du fichier "filename_" et stocke le resultat dans elem_part
+ *
+ */
 void Partitionneur_Fichier_Decoupage::construire_partition(IntVect& elem_part, int& nb_parts_tot) const
 {
   if (! ref_domaine_.non_nul())

@@ -19,15 +19,12 @@
 
 #include <Dirichlet.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Scalaire_impose_paroi
-//    Impose un scalaire a la paroi dans une equation de type
-//    Convection-Difussion d'un scalaire
-// .SECTION voir aussi
-//    Dirichlet
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Scalaire_impose_paroi Impose un scalaire a la paroi dans une equation de type
+ *
+ *     Convection-Difussion d'un scalaire
+ *
+ * @sa Dirichlet
+ */
 class Scalaire_impose_paroi  : public Dirichlet
 {
 

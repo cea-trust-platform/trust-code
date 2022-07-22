@@ -21,16 +21,13 @@
 #include <Probleme_U.h>
 #include <List_Ref_Probleme_U.h>
 
-//////////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     class Couplage_U
-//
-//     Cette classe implemente Probleme_U dans le cas d'un probleme composite
-//     couplant plusieurs Probleme_U.
-//
-// .SECTION voir aussi
-/////////////////////////////////////////////////////////////////////////////////
+/*! @brief class Couplage_U
+ *
+ *      Cette classe implemente Probleme_U dans le cas d'un probleme composite
+ *      couplant plusieurs Probleme_U.
+ *
+ *
+ */
 class Couplage_U : public Probleme_U
 {
   Declare_instanciable(Couplage_U);

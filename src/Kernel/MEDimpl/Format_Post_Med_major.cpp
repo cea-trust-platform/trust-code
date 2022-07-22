@@ -16,7 +16,9 @@
 
 Implemente_instanciable_sans_constructeur(Format_Post_Med_major,"Format_Post_Med_major",Format_Post_Med);
 
-// Description: erreur => exit
+/*! @brief erreur => exit
+ *
+ */
 Sortie& Format_Post_Med_major::printOn(Sortie& os) const
 {
   Cerr << "Format_Post_Mesh_major::printOn : error" << finl;
@@ -24,11 +26,13 @@ Sortie& Format_Post_Med_major::printOn(Sortie& os) const
   return os;
 }
 
-// Description: Lecture des parametres du postraitement au format "jeu de donnees"
-//  Le format attendu est le suivant:
-//  {
-//    nom_fichier filename_sans_extension
-//  }
+/*! @brief Lecture des parametres du postraitement au format "jeu de donnees" Le format attendu est le suivant:
+ *
+ *   {
+ *     nom_fichier filename_sans_extension
+ *   }
+ *
+ */
 Entree& Format_Post_Med_major::readOn(Entree& is)
 {
   Format_Post_Med::readOn(is);

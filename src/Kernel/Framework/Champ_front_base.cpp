@@ -23,152 +23,95 @@ Champ_front_base::Champ_front_base()
 {
   temps_defaut = -1.;
 }
-// Description:
-//    Imprime le nom du champ sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Imprime le nom du champ sur un flot de sortie
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Champ_front_base::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
 
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees.
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification: le flot d'entree
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree
+ */
 Entree& Champ_front_base::readOn(Entree& s )
 {
   return s ;
 }
 
 
-// Description:
-//    Initialisation en debut de calcul.
-//    Imperativement cette methode ne doit pas utiliser de donnees
-//    externes a l'equation (couplage). Si mettre_a_jour le fait,
-//    alors initialiser ne doit pas appeler mettre_a_jour.
-// Precondition: appel a completer
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: 0 en cas d'erreur, 1 sinon.
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Initialisation en debut de calcul.
+ *
+ * Imperativement cette methode ne doit pas utiliser de donnees
+ *     externes a l'equation (couplage). Si mettre_a_jour le fait,
+ *     alors initialiser ne doit pas appeler mettre_a_jour.
+ *
+ * @return (0 en cas d'erreur, 1 sinon.)
+ */
 int Champ_front_base::initialiser(double temps, const Champ_Inc_base& inco)
 {
   return 1;
 }
 
-// Description:
-//    Associe une frontiere discretisee au champ.
-// Precondition:
-// Parametre: Frontiere_dis_base& fr
-//    Signification: la frontiere discretisee a associer au champ
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: le champ a une frontiere associee
+/*! @brief Associe une frontiere discretisee au champ.
+ *
+ * @param (Frontiere_dis_base& fr) la frontiere discretisee a associer au champ
+ */
 void Champ_front_base::associer_fr_dis_base(const Frontiere_dis_base& fr)
 {
   la_frontiere_dis=fr;
 }
 
 
-// Description:
-//   NE FAIT RIEN, a surcharger.
-//   Cette methode est appelee au debut de chaque pas de temps ou
-//   sous-pas-de-temps, elle peut eventuellement utiliser des donnees
-//   exterieures a l'equation. A charge a l'algorithme de s'assurer
-//   que ces donnees sont pertinentes...
-//   Calcule la valeur de la condition aux limites au temps demande.
-// Precondition:
-// Parametre: double
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN, a surcharger.
+ *
+ * Cette methode est appelee au debut de chaque pas de temps ou
+ *    sous-pas-de-temps, elle peut eventuellement utiliser des donnees
+ *    exterieures a l'equation. A charge a l'algorithme de s'assurer
+ *    que ces donnees sont pertinentes...
+ *    Calcule la valeur de la condition aux limites au temps demande.
+ *
+ * @param (double)
+ */
 void Champ_front_base::mettre_a_jour(double temps)
 {
 }
 
-// Description:
-//     Appele par Conds_lim::completer
-//     Par defaut ne fait rien.
-//     A surcharger dans les champs_front instationnaires.
+/*! @brief Appele par Conds_lim::completer Par defaut ne fait rien.
+ *
+ *      A surcharger dans les champs_front instationnaires.
+ *
+ */
 void Champ_front_base::fixer_nb_valeurs_temporelles(int nb_cases)
 {
 }
 
-// Description:
-//   NE FAIT RIEN, a surcharger
-//   Cette methode peut calculer et stocker des donnees utiles a la
-//   CL, et dependant uniquement de l'inconnue sur laquelle porte
-//   cette CL (pas de l'exterieur). cf Champ_front_contact_VEF par exemple.
-//   Elle est appelee lorsque l'inconnue est modifiee.
-// Precondition:
-// Parametre: double
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN, a surcharger Cette methode peut calculer et stocker des donnees utiles a la
+ *
+ *    CL, et dependant uniquement de l'inconnue sur laquelle porte
+ *    cette CL (pas de l'exterieur). cf Champ_front_contact_VEF par exemple.
+ *    Elle est appelee lorsque l'inconnue est modifiee.
+ *
+ * @param (double)
+ */
 void Champ_front_base::calculer_coeffs_echange(double temps)
 {
 }
 
-// Description:
-//    Renvoie le vecteur des valeurs du champ pour la face donnee.
-//    Par defaut pour les champs fonc, on suppose que le tableau des
-//    valeurs porte nb_faces * nb_compo_ valeurs.
-//    Exemple de cas particulier: champ_front_uniforme::valeurs_face
-// Parametre:     num_face
-// Signification: l'indice d'une face sur la frontiere
-//                0 <= num_face < frontiere_dis().frontiere().nb_faces()
-// Parametre:     val
-// Signification: On resize ce tableau et on le remplit.
+/*! @brief Renvoie le vecteur des valeurs du champ pour la face donnee.
+ *
+ * Par defaut pour les champs fonc, on suppose que le tableau des
+ *     valeurs porte nb_faces * nb_compo_ valeurs.
+ *     Exemple de cas particulier: champ_front_uniforme::valeurs_face
+ *
+ * @param (num_face) l'indice d'une face sur la frontiere 0 <= num_face < frontiere_dis().frontiere().nb_faces()
+ * @param (val) On resize ce tableau et on le remplit.
+ */
 void Champ_front_base::valeurs_face(int num_face, DoubleVect& val) const
 {
 #ifndef NDEBUG
@@ -192,22 +135,13 @@ const Zone_dis_base& Champ_front_base::zone_dis() const
 }
 
 
-// Description:
-//     A implementer dans les classes derivees.
-//     Avance en temps : le nouveau temps present sera le temps passe
-//     en parametre.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si OK, 0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief A implementer dans les classes derivees.
+ *
+ * Avance en temps : le nouveau temps present sera le temps passe
+ *      en parametre.
+ *
+ * @return (int) 1 si OK, 0 sinon
+ */
 int Champ_front_base::avancer(double temps)
 {
   Cerr << "Champ_front_base::avancer(double temps) should be overloaded"
@@ -216,22 +150,13 @@ int Champ_front_base::avancer(double temps)
   return 0;
 }
 
-// Description:
-//     A implementer dans les classes derivees.
-//     Recule en temps : le nouveau temps present sera le temps passe
-//     en parametre.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si OK, 0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief A implementer dans les classes derivees.
+ *
+ * Recule en temps : le nouveau temps present sera le temps passe
+ *      en parametre.
+ *
+ * @return (int) 1 si OK, 0 sinon
+ */
 int Champ_front_base::reculer(double temps)
 {
   Cerr << "Champ_front_base::reculer(double temps) should be overloaded "

@@ -91,17 +91,17 @@ Entree& Zone_VF::readOn(Entree& is)
   return is ;
 }
 
-// Description:
-// cette methode ne fait rien
-// elle est surchargee par Zone_VDF par ex.
+/*! @brief cette methode ne fait rien elle est surchargee par Zone_VDF par ex.
+ *
+ */
 void Zone_VF::reordonner(Faces& )
 {
 }
 
 
-// Description:
-// Genere les faces
-// construits les frontieres
+/*! @brief Genere les faces construits les frontieres
+ *
+ */
 void Zone_VF::discretiser()
 {
   Cerr << "<<<<<< Discretization VF >>>>>>>>>>" << finl;
@@ -255,9 +255,9 @@ void Zone_VF::remplir_face_voisins_fictifs(const Zone_Cl_dis_base& )
 
 
 
-// Description:
-// renvoie new(Faces) !
-// elle est surchargee par Zone_VDF par ex.
+/*! @brief renvoie new(Faces) ! elle est surchargee par Zone_VDF par ex.
+ *
+ */
 Faces* Zone_VF::creer_faces()
 {
   Faces* les_faces=new(Faces);
@@ -420,8 +420,11 @@ void Zone_VF::calculer_coefficient_frottement()
   coefficient_frottement_= 0;
 }
 
-// Description:
-//  Remplissage du tableau face_virt_pe_num_ (voir commentaire dans Zone_VF.h)
+/*! @brief Remplissage du tableau face_virt_pe_num_ (voir commentaire dans Zone_VF.
+ *
+ * h)
+ *
+ */
 void Zone_VF::construire_face_virt_pe_num()
 {
   int i;
@@ -453,9 +456,9 @@ const IntTab& Zone_VF::face_virt_pe_num() const
   return face_virt_pe_num_;
 }
 
-// Description:
-// Compute the normalized boundary outward vector associated to the face global_face_number
-// and eventually scaled by scale_factor
+/*! @brief Compute the normalized boundary outward vector associated to the face global_face_number and eventually scaled by scale_factor
+ *
+ */
 DoubleTab Zone_VF::normalized_boundaries_outward_vector(int global_face_number, double scale_factor) const
 {
   const IntTab& neighbor_faces = face_voisins();
@@ -660,10 +663,11 @@ const DoubleTab& Zone_VF::xv_bord() const
   return xv_bord_;
 }
 
-// Description:
-// renvoie le nombre total de faces sur lesquelles
-// sont appliquees les conditions limites :
-// bords, raccords, plaques.
+/*! @brief renvoie le nombre total de faces sur lesquelles sont appliquees les conditions limites :
+ *
+ *  bords, raccords, plaques.
+ *
+ */
 inline int Zone_VF::nb_faces_bord_tot() const
 {
   return md_vector_faces_bord().valeur().get_nb_items_tot();

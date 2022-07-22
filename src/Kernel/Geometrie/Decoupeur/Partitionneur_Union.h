@@ -20,20 +20,21 @@
 #include <map>
 #include <string>
 
-// .DESCRIPTION
-// Decoupeur permettant de decouper un domaine global de maniere conforme avec un ensemble de sous-domaines
-// deja decoupes. C'est l'operation inverse de Partitionneur_Sous_Domaine.
-//
-// Syntaxe:
-//    partitionneur union
-//    {
-//      <sous-zone 1>  <fichier ecrire_decoupage du sous-domaine 1>
-//      ...
-//      <sous-zone N>  <fichier ecrire_decoupage du sous-domaine N>
-//    }
-//
-// .SECTION voir aussi
-//    Partitionneur_Sous_Domaine Create_domain_from_sous_zone
+/*! @brief Decoupeur permettant de decouper un domaine global de maniere conforme avec un ensemble de sous-domaines deja decoupes.
+ *
+ * C'est l'operation inverse de Partitionneur_Sous_Domaine.
+ *
+ *  Syntaxe:
+ *     partitionneur union
+ *     {
+ *       <sous-zone 1>  <fichier ecrire_decoupage du sous-domaine 1>
+ *       ...
+ *       <sous-zone N>  <fichier ecrire_decoupage du sous-domaine N>
+ *     }
+ *
+ *
+ * @sa Partitionneur_Sous_Domaine Create_domain_from_sous_zone
+ */
 class Partitionneur_Union : public Partitionneur_base
 {
   Declare_instanciable(Partitionneur_Union);

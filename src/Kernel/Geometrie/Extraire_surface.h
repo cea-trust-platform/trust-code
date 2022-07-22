@@ -26,14 +26,10 @@ class Nom;
 class Domaine;
 class Zone_VF;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Extraire_surface
-//    Lecture d'un fichier
-// .SECTION voir aussi
-//    Interprete
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Extraire_surface Lecture d'un fichier
+ *
+ * @sa Interprete
+ */
 class Extraire_surface : public Interprete_geometrique_base
 {
   Declare_instanciable(Extraire_surface);

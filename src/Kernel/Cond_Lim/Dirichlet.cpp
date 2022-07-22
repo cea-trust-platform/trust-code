@@ -19,20 +19,11 @@
 Implemente_base(Dirichlet,"Dirichlet",Cond_lim_base);
 
 
-// Description:
-//    Ecrit le type de l'objet sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit le type de l'objet sur un flot de sortie.
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Dirichlet::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << "\n";
@@ -40,87 +31,43 @@ Sortie& Dirichlet::printOn(Sortie& s ) const
 
 
 
-// Description:
-//    Simple appel a: Cond_lim_base::readOn(Entree& )
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree& s
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Cond_lim_base::readOn(Entree& )
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree& s) le flot d'entree modifie
+ */
 Entree& Dirichlet::readOn(Entree& s )
 {
   return Cond_lim_base::readOn(s);
 }
 
 
-// Description:
-//    Renvoie la valeur imposee sur la i-eme composante
-//    du champ a la frontiere au temps par defaut du champ_front.
-// Precondition:
-// Parametre: int i
-//    Signification: indice suivant la premiere dimension du champ
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: double
-//    Signification: la valeur imposee sur la composante du champ specifiee
-//    Contraintes:
-// Exception: deuxieme dimension du champ de frontiere superieur a 1
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la valeur imposee sur la i-eme composante du champ a la frontiere au temps par defaut du champ_front.
+ *
+ * @param (int i) indice suivant la premiere dimension du champ
+ * @return (double) la valeur imposee sur la composante du champ specifiee
+ * @throws deuxieme dimension du champ de frontiere superieur a 1
+ */
 double Dirichlet::val_imp(int i) const
 {
   return val_imp_au_temps(le_champ_front->get_temps_defaut(),i);
 }
 
 
-// Description:
-//    Renvoie la valeur imposee sur la (i,j)-eme composante
-//    du champ a la frontiere au temps par defaut du champ_front.
-// Precondition:
-// Parametre: int i
-//    Signification: indice suivant la premiere dimension du champ
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Parametre: int j
-//    Signification: indice suivant la deuxieme dimension du champ
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: double
-//    Signification: la valeur imposee sur la composante du champ specifiee
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la valeur imposee sur la (i,j)-eme composante du champ a la frontiere au temps par defaut du champ_front.
+ *
+ * @param (int i) indice suivant la premiere dimension du champ
+ * @param (int j) indice suivant la deuxieme dimension du champ
+ * @return (double) la valeur imposee sur la composante du champ specifiee
+ */
 double Dirichlet::val_imp(int i, int j) const
 {
   return val_imp_au_temps(le_champ_front->get_temps_defaut(),i,j);
 }
 
-// Description:
-//    Renvoie la valeur imposee sur la i-eme composante
-//    du champ a la frontiere au temps precise.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la valeur imposee sur la i-eme composante du champ a la frontiere au temps precise.
+ *
+ */
 double Dirichlet::val_imp_au_temps(double temps, int i) const
 {
   const DoubleTab& tab=le_champ_front->valeurs_au_temps(temps);
@@ -135,26 +82,9 @@ double Dirichlet::val_imp_au_temps(double temps, int i) const
 }
 
 
-// Description:
-//    Renvoie la valeur imposee sur la (i,j)-eme composante
-//    du champ a la frontiere au temps precise.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la valeur imposee sur la (i,j)-eme composante du champ a la frontiere au temps precise.
+ *
+ */
 double Dirichlet::val_imp_au_temps(double temps, int i, int j) const
 {
   const DoubleTab& tab=le_champ_front->valeurs_au_temps(temps);

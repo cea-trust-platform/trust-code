@@ -18,15 +18,12 @@
 #include <O_U_Ptr.h>
 #include <Nom.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Ref_
-//     un type qui permet d'acceder a un objet de la classe Objet_U ou
-//     de l'une quelconque des classes derivees de la classe Objet_U
-// .SECTION voir aussi
-//     O_U_Ptr Objet_U
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Ref_ un type qui permet d'acceder a un objet de la classe Objet_U ou
+ *
+ *      de l'une quelconque des classes derivees de la classe Objet_U
+ *
+ * @sa O_U_Ptr Objet_U
+ */
 class Ref_ : public O_U_Ptr
 {
   Declare_base(Ref_);

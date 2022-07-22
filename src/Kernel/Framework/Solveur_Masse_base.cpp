@@ -24,95 +24,58 @@ Implemente_base_sans_constructeur(Solveur_Masse_base,"Solveur_Masse_base",Objet_
 
 Solveur_Masse_base::Solveur_Masse_base() : has_coefficient_temporel_(0), penalisation_flag_(1), penalisation_(0)  {}
 
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees.
-//    Imprime le solveur de masse sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+ *
+ *     Imprime le solveur de masse sur un flot de sortie.
+ *
+ * @param (Sortie& os) le flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Solveur_Masse_base::printOn(Sortie& os) const
 {
   return os;
 }
 
 
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees.
-//    Lecture d'un solveur de masse sur un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot d'entree est modifie
-// Postcondition:
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+ *
+ *     Lecture d'un solveur de masse sur un flot d'entree.
+ *
+ * @param (Entree& is) le flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Solveur_Masse_base::readOn(Entree& is)
 {
   return is;
 }
 
 
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees.
-//    Mise a jour en temps du solveur de masse.
-// Precondition:
-// Parametre: double
-//    Signification: le pas de temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+ *
+ *     Mise a jour en temps du solveur de masse.
+ *
+ * @param (double) le pas de temps de mise a jour
+ */
 void Solveur_Masse_base::mettre_a_jour(double )
 {
 }
 
 
-// Description:
-//    NE FAIT RIEN
-//    Eventuellement a surcharger dans les classes derivees
-//    si la matrice de masse necessite un assemblage.
-//    Assemble le solveur de masse (en general la matrice de masse)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la matrice de masse est assemblee
+/*! @brief NE FAIT RIEN Eventuellement a surcharger dans les classes derivees
+ *
+ *     si la matrice de masse necessite un assemblage.
+ *     Assemble le solveur de masse (en general la matrice de masse)
+ *
+ */
 void Solveur_Masse_base::assembler()
 {
   ;
 }
-// Description: permet de choisir le nom du coefficient temporelle
-// que l'on veut utiliser pour appliquer
-// verifie que le champ exsite bien
+/*! @brief permet de choisir le nom du coefficient temporelle que l'on veut utiliser pour appliquer
+ *
+ *  verifie que le champ exsite bien
+ *
+ */
 void Solveur_Masse_base::set_name_of_coefficient_temporel(const Nom& name)
 {
   name_of_coefficient_temporel_=name;
@@ -135,10 +98,12 @@ void Solveur_Masse_base::set_name_of_coefficient_temporel(const Nom& name)
 
 }
 
-// Description: renvoie appliquer_impl(x/coeffient_temporelle)
-// si on a un coefficient temporelle
-// sinon renvoie appliquer_impl(x)
-// Return M-1.x
+/*! @brief renvoie appliquer_impl(x/coeffient_temporelle) si on a un coefficient temporelle
+ *
+ *  sinon renvoie appliquer_impl(x)
+ *  Return M-1.x
+ *
+ */
 DoubleTab& Solveur_Masse_base::appliquer(DoubleTab& x) const
 {
   if (has_coefficient_temporel_)

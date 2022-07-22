@@ -18,10 +18,11 @@
 
 
 
-//
-// .DESCRIPTION Methodes de communications
-//
-//
+/*! @brief Methodes de communications
+ *
+ *
+ *
+ */
 
 #ifdef MPI_
 

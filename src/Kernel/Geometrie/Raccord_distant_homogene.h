@@ -49,19 +49,9 @@ private :
   ArrOfInt send_pe_list_;
   ArrOfInt recv_pe_list_;
 };
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline IntTab& Raccord_distant_homogene::Tab_Envoi()
 {
   return tab_envoi;
@@ -72,19 +62,9 @@ inline const IntTab& Raccord_distant_homogene::Tab_Envoi() const
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline ArrOfInt& Raccord_distant_homogene::Tab_Recep()
 {
   return tab_recep;
@@ -95,19 +75,9 @@ inline const ArrOfInt& Raccord_distant_homogene::Tab_Recep() const
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline Nom& Raccord_distant_homogene::nom_frontiere_voisine()
 {
   return nom_frontiere_voisine_;

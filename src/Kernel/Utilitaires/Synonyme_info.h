@@ -25,13 +25,10 @@ class Sortie;
 // Macro to declare A and B synonyms:
 #define Add_synonym(A,B) const Synonyme_info name2(name2(synonym_,A),__LINE__)(B,A::info_obj.name())
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     modelise une information de synonyme pour les Objet_U
-// .SECTION voir aussi
-//     Objet_U Nom
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief modelise une information de synonyme pour les Objet_U
+ *
+ * @sa Objet_U Nom
+ */
 class Synonyme_info
 {
 public:

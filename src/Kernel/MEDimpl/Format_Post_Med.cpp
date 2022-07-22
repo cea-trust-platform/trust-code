@@ -33,8 +33,9 @@ Implemente_instanciable_sans_constructeur(Format_Post_Med,"Format_Post_Med",Form
 //-Metode finir_med(...) pour concatener les fichiers crees
 ///////////////////////////////////////////////////////////////////////////////////////
 
-// Description:
-//  Constructeur par defaut:
+/*! @brief Constructeur par defaut:
+ *
+ */
 
 //Specifier dans commentaire ce qui est fixe par defaut
 Format_Post_Med::Format_Post_Med()
@@ -42,15 +43,18 @@ Format_Post_Med::Format_Post_Med()
   reset();
 }
 
-// Description:
-//  Remet l'objet dans l'etat obtenu par le constructeur par defaut.
+/*! @brief Remet l'objet dans l'etat obtenu par le constructeur par defaut.
+ *
+ */
 void Format_Post_Med::reset()
 {
   med_basename_ = "??";
   ecr_med.setMajorMode(false);
 }
 
-// Description: erreur => exit
+/*! @brief erreur => exit
+ *
+ */
 Sortie& Format_Post_Med::printOn(Sortie& os) const
 {
   Cerr << "Format_Post_Meshtv::printOn : error" << finl;
@@ -58,11 +62,13 @@ Sortie& Format_Post_Med::printOn(Sortie& os) const
   return os;
 }
 
-// Description: Lecture des parametres du postraitement au format "jeu de donnees"
-//  Le format attendu est le suivant:
-//  {
-//    nom_fichier filename_sans_extension
-//  }
+/*! @brief Lecture des parametres du postraitement au format "jeu de donnees" Le format attendu est le suivant:
+ *
+ *   {
+ *     nom_fichier filename_sans_extension
+ *   }
+ *
+ */
 Entree& Format_Post_Med::readOn(Entree& is)
 {
   Format_Post_base::readOn(is);
@@ -74,8 +80,9 @@ void Format_Post_Med::set_param(Param& param)
   param.ajouter("nom_fichier",&med_basename_,Param::REQUIRED);
 }
 
-// Description: Initialisation de la classe avec des parametres par
-//  defaut
+/*! @brief Initialisation de la classe avec des parametres par defaut
+ *
+ */
 int Format_Post_Med::initialize_by_default(const Nom& file_basename)
 {
   med_basename_= file_basename;
@@ -191,8 +198,9 @@ int Format_Post_Med::ecrire_domaine(const Domaine& domaine,const int est_le_prem
   return ecrire_domaine_dis(domaine, zone_dis_base, est_le_premier_post);
 }
 
-// Description:
-//  voir Format_Post_base::ecrire_domaine
+/*! @brief voir Format_Post_base::ecrire_domaine
+ *
+ */
 int Format_Post_Med::ecrire_domaine_dis(const Domaine& domaine,const REF(Zone_dis_base)& zone_dis_base,const int est_le_premier_post)
 {
   Nom nom_fich(med_basename_);
@@ -211,9 +219,11 @@ int Format_Post_Med::ecrire_domaine_dis(const Domaine& domaine,const REF(Zone_di
   return 1; // ok tout va bien
 }
 
-// Description: commence l'ecriture d'un nouveau pas de temps
-//  Ouvre le fichier maitre en mode APPEND et ajoute une ligne
-//   "TEMPS xxxxx" si ce temps n'a pas encore ete ecrit
+/*! @brief commence l'ecriture d'un nouveau pas de temps Ouvre le fichier maitre en mode APPEND et ajoute une ligne
+ *
+ *    "TEMPS xxxxx" si ce temps n'a pas encore ete ecrit
+ *
+ */
 int Format_Post_Med::ecrire_temps(const double temps)
 {
   Nom nom_fich(med_basename_);
@@ -227,8 +237,9 @@ int Format_Post_Med::ecrire_temps(const double temps)
   return 1;
 }
 
-// Description:
-//  voir Format_Post_base::ecrire_champ
+/*! @brief voir Format_Post_base::ecrire_champ
+ *
+ */
 int Format_Post_Med::ecrire_champ(const Domaine& domaine,const Noms& unite_,const Noms& noms_compo,
                                   int ncomp,double temps_,double temps_courant,
                                   const Nom& id_champ,
@@ -255,7 +266,9 @@ int Format_Post_Med::ecrire_champ(const Domaine& domaine,const Noms& unite_,cons
   return 1;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 
 int Format_Post_Med::ecrire_item_int(const Nom&     id_item,
                                      const Nom&     id_du_domaine,

@@ -24,14 +24,13 @@
 #include <Parser_U.h>
 #include <Equation_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Parametre_implicite
-//     Un objet Parametre_implicite est un objet regroupant les differentes
-//     options specifiques pour piso ou simpler
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Parametre_implicite Un objet Parametre_implicite est un objet regroupant les differentes
+ *
+ *      options specifiques pour piso ou simpler
+ *
+ *
+ *
+ */
 class Parametre_implicite : public Parametre_equation_base
 {
   Declare_instanciable(Parametre_implicite);

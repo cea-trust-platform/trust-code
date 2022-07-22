@@ -23,15 +23,12 @@
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Segment
-//    Cette classe represente l'element geometrique segment.
-//    Un segment a 1 face et 2 sommets.
-// .SECTION voir aussi
-//    Elem_geom_base Elem_geom
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Segment Cette classe represente l'element geometrique segment.
+ *
+ *     Un segment a 1 face et 2 sommets.
+ *
+ * @sa Elem_geom_base Elem_geom
+ */
 class Segment : public Elem_geom_base
 {
 
@@ -57,26 +54,12 @@ public :
 };
 
 
-// Description:
-//    Renvoie le numero du j-ieme sommet de la i-ieme face de
-//    l'element.
-// Precondition:
-// Parametre: int i
-//    Signification: un numero de face
-//    Valeurs par defaut:
-//    Contraintes: i < 2
-//    Acces:
-// Parametre: int j
-//    Signification: un numero de sommet
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le numero du j-ieme sommet de la i-ieme face
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le numero du j-ieme sommet de la i-ieme face de l'element.
+ *
+ * @param (int i) un numero de face
+ * @param (int j) un numero de sommet
+ * @return (int) le numero du j-ieme sommet de la i-ieme face
+ */
 inline int Segment::face_sommet(int i, int j) const
 {
   assert(i<2);
@@ -90,21 +73,11 @@ inline int Segment::face_sommet(int i, int j) const
 }
 
 
-// Description:
-//    Renvoie le numero du i-ieme sommet de la face 0
-//    LE CODE NE FAIT PAS CE QU'ON ATTENDRAIT.
-// Precondition:
-// Parametre: int i
-//    Signification: le numero du sommet a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: i=0
-//    Acces:
-// Retour: int
-//    Signification: renvoie toujours 0 (si i=0)
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le numero du i-ieme sommet de la face 0 LE CODE NE FAIT PAS CE QU'ON ATTENDRAIT.
+ *
+ * @param (int i) le numero du sommet a renvoyer
+ * @return (int) renvoie toujours 0 (si i=0)
+ */
 inline int Segment::face_sommet0(int i) const
 {
   // face_sommet0(0)=0;
@@ -119,41 +92,21 @@ inline int Segment::face_sommet0(int i) const
 
 
 
-// Description:
-//    Renvoie le nombre de sommets d'un segment: 2.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de sommets d'un segment
-//    Contraintes: toujours egal a 2
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de sommets d'un segment: 2.
+ *
+ * @return (int) le nombre de sommets d'un segment
+ */
 inline int Segment::nb_som() const
 {
   return 2;
 }
 
 
-// Description:
-//    Renvoie le nombre de faces du type specifie
-//    que possede l'element geometrique.
-// Precondition:
-// Parametre: int i
-//    Signification: le type de face
-//    Valeurs par defaut: 0
-//    Contraintes: i=0
-//    Acces:
-// Retour: int
-//    Signification: le nombre de faces de type i
-//    Contraintes: toujours egal a 2 (si i=0)
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de faces du type specifie que possede l'element geometrique.
+ *
+ * @param (int i) le type de face
+ * @return (int) le nombre de faces de type i
+ */
 inline int Segment::nb_faces(int i) const
 {
   assert(i==0);
@@ -166,22 +119,13 @@ inline int Segment::nb_faces(int i) const
 }
 
 
-// Description:
-//    Renvoie le nombre de sommets des faces
-//    du type specifie.
-//    LE CODE NE FAIT PAS CE QU'ON ATTENDRAIT.
-// Precondition:
-// Parametre: int i
-//    Signification: le type de face
-//    Valeurs par defaut: 0
-//    Contraintes:  i=0
-//    Acces:
-// Retour: int
-//    Signification: le nombre de sommets des faces de type i
-//    Contraintes: toujours egal a 1 (si i=0)
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de sommets des faces du type specifie.
+ *
+ *     LE CODE NE FAIT PAS CE QU'ON ATTENDRAIT.
+ *
+ * @param (int i) le type de face
+ * @return (int) le nombre de sommets des faces de type i
+ */
 inline int Segment::nb_som_face(int i) const
 {
   assert(i==0);
@@ -194,43 +138,23 @@ inline int Segment::nb_som_face(int i) const
 }
 
 
-// Description:
-//    Renvoie toujours 1, car l'element geometrique
-//    Segment est de type structure.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si l'element est de type structure
-//                   0 sinon
-//    Contraintes: toujours egal a 1
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie toujours 1, car l'element geometrique Segment est de type structure.
+ *
+ * @return (int) 1 si l'element est de type structure 0 sinon
+ */
 inline int Segment::est_structure() const
 {
   return 1;
 }
 
 
-// Description:
-//    Renvoie le i-ieme type de face.
-//    Un segment n'a qu'un seul type de face.
-// Precondition:
-// Parametre: int i
-//    Signification: le rang du type de face a renvoyer
-//    Valeurs par defaut: 0
-//    Contraintes: i=0
-//    Acces:
-// Retour: Type_Face
-//    Signification: un type de face
-//    Contraintes: toujours egal a Faces::point_1D (si i=0)
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le i-ieme type de face.
+ *
+ * Un segment n'a qu'un seul type de face.
+ *
+ * @param (int i) le rang du type de face a renvoyer
+ * @return (Type_Face) un type de face
+ */
 inline Type_Face Segment::type_face(int i) const
 {
   assert(i==0);

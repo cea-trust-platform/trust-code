@@ -23,20 +23,11 @@ Implemente_instanciable(Pb_MED,"Pb_MED",Probleme_base);
 Implemente_instanciable(Pbc_MED,"Pbc_MED",Probleme_Couple);
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie
+ */
 Sortie& Pb_MED::printOn(Sortie& s ) const
 {
   return s;
@@ -130,20 +121,11 @@ Entree& Pbc_MED::readOn(Entree& is )
   return is;
 }
 
-// Description:
-//    Simple appel a: Probleme_base::readOn(Entree&)
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Probleme_base::readOn(Entree&)
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Pb_MED::readOn(Entree& is )
 {
   dis_bidon.typer("VF_inst");
@@ -178,44 +160,26 @@ Entree& Pb_MED::readOn(Entree& is )
 }
 
 
-// Description:
-//    Renvoie le nombre d'equations du probleme.
-//    Toujours egal a 1 pour un probleme de conduction standart.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre d'equations du probleme
-//    Contraintes: toujours egal a 1
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre d'equations du probleme.
+ *
+ * Toujours egal a 1 pour un probleme de conduction standart.
+ *
+ * @return (int) le nombre d'equations du probleme
+ */
 int Pb_MED::nombre_d_equations() const
 {
   return 0;
 }
 
-// Description:
-//    Renvoie l'equation de type MED
-//     si i = 0,
-//    Provoque une erreur sinon car le probleme
-//    n'a qu'une seule equation.
-//    (version const)
-// Precondition:
-// Parametre: int i
-//    Signification: l'index de l'equation a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: i doit etre egal a zero
-//    Acces:
-// Retour: Equation_base&
-//    Signification: l'equation de type MED
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie l'equation de type MED si i = 0,
+ *
+ *     Provoque une erreur sinon car le probleme
+ *     n'a qu'une seule equation.
+ *     (version const)
+ *
+ * @param (int i) l'index de l'equation a renvoyer
+ * @return (Equation_base&) l'equation de type MED
+ */
 const Equation_base& Pb_MED::equation(int i) const
 {
   assert(0);
@@ -226,23 +190,14 @@ const Equation_base& Pb_MED::equation(int i) const
   return Probleme_base::equation("bidon");
 }
 
-// Description:
-//    Renvoie l'equation de type MED
-//     si i = 0,
-//    Provoque une erreur sinon car le probleme
-//    n'a qu'une seule equation.
-// Precondition:
-// Parametre: int i
-//    Signification: l'index de l'equation a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: i doit etre egal a zero
-//    Acces:
-// Retour: Equation_base&
-//    Signification: l'equation de type MED
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie l'equation de type MED si i = 0,
+ *
+ *     Provoque une erreur sinon car le probleme
+ *     n'a qu'une seule equation.
+ *
+ * @param (int i) l'index de l'equation a renvoyer
+ * @return (Equation_base&) l'equation de type MED
+ */
 Equation_base& Pb_MED::equation(int i)
 {
   assert(0);

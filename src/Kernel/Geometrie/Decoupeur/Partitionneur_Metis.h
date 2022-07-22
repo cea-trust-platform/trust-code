@@ -19,9 +19,11 @@
 #include <Ref_Domaine.h>
 
 
-// .DESCRIPTION
-//  Partition d'un domaine en nb_parties parties equilibrees en utilisant
-//  la librairie METIS. Voir construire_partition
+/*! @brief Partition d'un domaine en nb_parties parties equilibrees en utilisant la librairie METIS.
+ *
+ * Voir construire_partition
+ *
+ */
 
 class Partitionneur_Metis : public Partitionneur_base
 {

@@ -20,18 +20,15 @@
 #include <OBuffer.h>
 #include <Nom.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Ecriture dans un fichier partage
-//    Cette classe implemente les operateurs et les methodes virtuelles de la clase SFichier de la facon suivante :
-//    un fichier physiquement localise sur le disque de la machine heberge la tache maitre de
-//    l'application Trio-U (le processus de rang 0 dans le groupe "tous").
-//    Chacun des processus ecrit ses donnees l'un apres l'autre, par ordre croissant de rang dans le groupe "tous"
-//    La synchronisation est realisee par un systeme de semaphore.
-//    Ce type de fichier est notamment utilise pour la creation d'un fichier de post-traitement unique.
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Ecriture dans un fichier partage Cette classe implemente les operateurs et les methodes virtuelles de la clase SFichier de la facon suivante :
+ *
+ *     un fichier physiquement localise sur le disque de la machine heberge la tache maitre de
+ *     l'application Trio-U (le processus de rang 0 dans le groupe "tous").
+ *     Chacun des processus ecrit ses donnees l'un apres l'autre, par ordre croissant de rang dans le groupe "tous"
+ *     La synchronisation est realisee par un systeme de semaphore.
+ *     Ce type de fichier est notamment utilise pour la creation d'un fichier de post-traitement unique.
+ *
+ */
 
 class OBuffer;
 

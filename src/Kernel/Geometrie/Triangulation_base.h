@@ -18,25 +18,13 @@
 
 #include <Interprete_geometrique_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-// .NOM  Triangulation_base
-// .ENTETE  TRUST Geometrie
-// .LIBRAIRIE
-// .FILE  Triangulation_base.h
-// .FILE  Triangulation_base.cpp
-//
-// .DESCRIPTION Triangulation_base
-//     Classe destinee a factoriser l'action de triangulation des interpretes
-//     de type Trianguler et Tetraedriser
-//     .
-// .SECTION voir aussi
-//
-// .CONTRAINTES
-//
-// .INVARIANTS
-// .HTML
-// .EPS
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Triangulation_base Classe destinee a factoriser l'action de triangulation des interpretes
+ *
+ *      de type Trianguler et Tetraedriser
+ *      .
+ *
+ * @sa .CONTRAINTES, .INVARIANTS, .HTML, .EPS
+ */
 class Triangulation_base : public Interprete_geometrique_base
 {
   Declare_base(Triangulation_base);

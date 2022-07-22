@@ -19,15 +19,13 @@
 #include <Entree.h>
 #include <sstream>
 using std::istringstream;
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//   Une entree dont la source est une chaine de caracteres.
-//   Le constructeur cree sa propre copie de la chaine, de sorte
-//   que la chaine d'origine peut etre modifiee ensuite sans modifier
-//   la EChaine.
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Une entree dont la source est une chaine de caracteres.
+ *
+ * Le constructeur cree sa propre copie de la chaine, de sorte
+ *    que la chaine d'origine peut etre modifiee ensuite sans modifier
+ *    la EChaine.
+ *
+ */
 
 class EChaine : public Entree
 {

@@ -27,66 +27,40 @@ Extruder::Extruder()
   direction.resize(3,Array_base::NOCOPY_NOINIT);
 }
 
-// Description:
-//    Simple appel a: Interprete::printOn(Sortie&)
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a: Interprete::printOn(Sortie&)
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Extruder::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
 
-// Description:
-//    Simple appel a: Interprete::readOn(Entree&)
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Interprete::readOn(Entree&)
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Extruder::readOn(Entree& is)
 {
   return Interprete::readOn(is);
 }
 
 
-// Description:
-//    Fonction principale de l'interprete Extruder
-//    Triangule 1 a 1 toutes les zones du domaine
-//    specifie par la directive.
-//    On triangule la zone grace a la methode:
-//      void Extruder::extruder(Zone& zone) const
-//    Extruder signifie ici transformer en triangle des
-//    elements geometrique d'une zone.
-// Precondition: on doit etre en 2D (dimension d'espace=2)
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree
-//    Contraintes:
-// Exception: l'objet a mailler n'est pas du type Domaine
-// Effets de bord:
-// Postcondition:
+/*! @brief Fonction principale de l'interprete Extruder Triangule 1 a 1 toutes les zones du domaine
+ *
+ *     specifie par la directive.
+ *     On triangule la zone grace a la methode:
+ *       void Extruder::extruder(Zone& zone) const
+ *     Extruder signifie ici transformer en triangle des
+ *     elements geometrique d'une zone.
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree
+ * @throws l'objet a mailler n'est pas du type Domaine
+ */
 Entree& Extruder::interpreter_(Entree& is)
 {
   Nom nom_dom;
@@ -113,23 +87,13 @@ inline void check_boundary_name(const Nom& name)
       Process::exit();
     }
 }
-// Description:
-//    Triangule tous les element d'une zone: transforme
-//    les elements goemetriques de la zone en triangles.
-//    Pour l'instant on ne sait raffiner que des Rectangles
-//    (on les coupe en 4).
-// Precondition:
-// Parametre: Zone& zone
-//    Signification: la zone dont on veut raffiner les elements
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Triangule tous les element d'une zone: transforme les elements goemetriques de la zone en triangles.
+ *
+ *     Pour l'instant on ne sait raffiner que des Rectangles
+ *     (on les coupe en 4).
+ *
+ * @param (Zone& zone) la zone dont on veut raffiner les elements
+ */
 void Extruder::extruder(Domaine& dom)
 {
   Zone& zone = dom.zone(0);

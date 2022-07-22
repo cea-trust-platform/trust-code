@@ -18,8 +18,11 @@
 
 #include <TRUSTTab.h>
 
-// .DESCRIPTION : Tableau de travail a n entrees pour n<= 4
-//  C'est un TRUSTTab avec allocation dans un pool de memoire gere par la_memoire. L'allocation initiale est realisee avec alloc_temp_storage
+/*! @brief : Tableau de travail a n entrees pour n<= 4 C'est un TRUSTTab avec allocation dans un pool de memoire gere par la_memoire.
+ *
+ * L'allocation initiale est realisee avec alloc_temp_storage
+ *
+ */
 template<typename _TYPE_>
 class TRUSTTrav : public TRUSTTab<_TYPE_>
 {

@@ -26,14 +26,10 @@
 class Nom;
 class Domaine;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Extraire_plan
-//    Lecture d'un fichier
-// .SECTION voir aussi
-//    Interprete
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Extraire_plan Lecture d'un fichier
+ *
+ * @sa Interprete
+ */
 class Extraire_plan : public Interprete_geometrique_base
 {
   Declare_instanciable(Extraire_plan);

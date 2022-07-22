@@ -19,60 +19,32 @@ Implemente_liste(Faces_Interne);
 Implemente_instanciable(Faces_Internes,"Faces_Internes",LIST(Faces_Interne));
 
 
-// Description:
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Faces_Internes::printOn(Sortie& os) const
 {
   return LIST(Faces_Interne)::printOn(os);
 }
 
 
-// Description:
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Faces_Internes::readOn(Entree& is)
 {
   return LIST(Faces_Interne)::readOn(is);
 }
 
 
-// Description:
-//    Associe une zone a tous les objets Faces_Interne
-//    de la liste.
-// Precondition:
-// Parametre: Zone& une_zone
-//    Signification: la zone a associer aux Faces_Interne
-//                   de la liste
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe une zone a tous les objets Faces_Interne de la liste.
+ *
+ * @param (Zone& une_zone) la zone a associer aux Faces_Interne de la liste
+ */
 void Faces_Internes::associer_zone(const Zone& une_zone)
 {
   LIST_CURSEUR(Faces_Interne) curseur(*this);
@@ -84,24 +56,14 @@ void Faces_Internes::associer_zone(const Zone& une_zone)
 }
 
 
-// Description:
-//    Renvoie le nombre total de faces contenues dans
-//    la liste des Faces_Interne, i.e. la somme de toutes
-//    les faces de tous les objet Faces_Interne contenu dans
-//    la liste.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre total de faces contenues dans
-//                   la liste des Faces_Interne
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre total de faces contenues dans la liste des Faces_Interne, i.
+ *
+ * e. la somme de toutes
+ *     les faces de tous les objet Faces_Interne contenu dans
+ *     la liste.
+ *
+ * @return (int) le nombre total de faces contenues dans la liste des Faces_Interne
+ */
 int Faces_Internes::nb_faces() const
 {
   int nombre=0;
@@ -114,26 +76,15 @@ int Faces_Internes::nb_faces() const
   return nombre;
 }
 
-// //    JY 26/08/97
-// Description:
-//    Renvoie le nombre total de faces de type specifie
-//    contenues dans la liste des Faces_Interne
-//    i.e. la somme de toutes les faces de type specifie
-//    de tous les objet Faces_Interne contenu dans
-//    la liste.
-// Precondition:
-// Parametre: Type_Face type
-//    Signification: le type des faces a compter
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre total de faces contenues dans
-//                   la liste des Faces_Interne
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre total de faces de type specifie contenues dans la liste des Faces_Interne
+ *
+ *     i.e. la somme de toutes les faces de type specifie
+ *     de tous les objet Faces_Interne contenu dans
+ *     la liste.
+ *
+ * @param (Type_Face type) le type des faces a compter
+ * @return (int) le nombre total de faces contenues dans la liste des Faces_Interne
+ */
 int Faces_Internes::nb_faces(Type_Face type) const
 {
   CONST_LIST_CURSEUR(Faces_Interne) curseur(*this);

@@ -18,12 +18,9 @@
 
 #include <Interprete.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     Ecriture d'un fichier
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Ecriture d'un fichier
+ *
+ */
 class Ecrire_Fichier : public Interprete
 {
   Declare_instanciable(Ecrire_Fichier);

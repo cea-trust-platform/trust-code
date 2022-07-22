@@ -18,11 +18,10 @@
 
 
 
-//
-// .DESCRIPTION class Solveur_lineaire
-//
-// .SECTION voir aussi
-// Solveur_base
+/*! @brief class Solveur_lineaire
+ *
+ * @sa Solveur_base
+ */
 
 #include <Solveur_Implicite_Base.h>
 

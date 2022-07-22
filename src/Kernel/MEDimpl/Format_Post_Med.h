@@ -19,8 +19,9 @@
 #include <Format_Post_base.h>
 #include <EcrMED.h>
 
-// .DESCRIPTION        :
-//  Classe de postraitement des champs euleriens au format med.
+/*! @brief : Classe de postraitement des champs euleriens au format med.
+ *
+ */
 
 ///////////////////////////////////////////////////////////////////////
 //    Pour creer un fichier valide, il faut faire:

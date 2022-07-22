@@ -22,15 +22,15 @@
 #include <Domaine.h>
 class Geometrie;
 
-//////////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION class Zone_VF_inst
-//
-//         Classe instanciable qui derive de Zone_VF.
-//      Cette classe ne sait rien faire !!!!
-//      Elle permet juste d'appeler des methodes de type Champ_Inc_base::affecter avec une zone_dis contenant une reference a une zone.
-//
-/////////////////////////////////////////////////////////////////////////////////
+/*! @brief class Zone_VF_inst
+ *
+ *          Classe instanciable qui derive de Zone_VF.
+ *       Cette classe ne sait rien faire !!!!
+ *       Elle permet juste d'appeler des methodes de type Champ_Inc_base::affecter avec une zone_dis contenant une reference a une zone.
+ *
+ *
+ *
+ */
 
 class Zone_VF_inst : public Zone_VF
 {

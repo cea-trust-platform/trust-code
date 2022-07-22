@@ -17,9 +17,11 @@
 
 #include <Matrice_Base.h>
 
-// .DESCRIPTION: Matrice avec un stockage encore plus creux que Matrice_Morse:
-//  On stocke uniquement les lignes non vides (economie sur la taille de tab1_,
-//  tab2_ et coeff_ restent identiques)
+/*! @brief : Matrice avec un stockage encore plus creux que Matrice_Morse: On stocke uniquement les lignes non vides (economie sur la taille de tab1_,
+ *
+ *   tab2_ et coeff_ restent identiques)
+ *
+ */
 class Matrice_SuperMorse
 {
 public :

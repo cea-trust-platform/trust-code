@@ -19,13 +19,15 @@
 #include <TRUSTTabs_forward.h>
 #include <Deriv_Comm_Group.h>
 
-// .DESCRIPTION        :
-//  Cette classe regroupe des fonctions permettant la creation, la
-//  destruction et le changement du groupe de processeurs actif.
-//  La creation du groupe principal doit etre dans le MAIN.cpp
-//  et il faut initialiser PE_Groups en lui donnant le groupe principal.
-//  Les autres groupes crees seront du meme type.
-//  Voir aussi la class Comm_Group
+/*! @brief : Cette classe regroupe des fonctions permettant la creation, la
+ *
+ *   destruction et le changement du groupe de processeurs actif.
+ *   La creation du groupe principal doit etre dans le MAIN.cpp
+ *   et il faut initialiser PE_Groups en lui donnant le groupe principal.
+ *   Les autres groupes crees seront du meme type.
+ *   Voir aussi la class Comm_Group
+ *
+ */
 class PE_Groups
 {
 public:
@@ -46,7 +48,9 @@ private:
   static const Comm_Group *current_group_;
 };
 
-// Description: renvoie une reference au groupe de processeurs actif courant
+/*! @brief renvoie une reference au groupe de processeurs actif courant
+ *
+ */
 inline const Comm_Group& PE_Groups::current_group()
 {
   assert(check_current_group());

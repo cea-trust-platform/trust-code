@@ -18,14 +18,10 @@
 
 #include <Ref.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     class RefObjU
-//     Pour creer une reference sur n'importe quel Objet_U
-// .SECTION voir aussi
-//   Objet_U
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief class RefObjU Pour creer une reference sur n'importe quel Objet_U
+ *
+ * @sa Objet_U
+ */
 
 // Cette classe est quasiment identique a REF(Objet_U),
 // sauf qu'elle ne contient pas les operateurs de conversion

@@ -57,8 +57,9 @@ void Partitionneur_Tranche::set_param(Param& param)
   param.ajouter_arr_size_predefinie("tranches",&nb_tranches_,Param::REQUIRED);
 }
 
-// Description:
-//  Premiere etape d'initialisation du partitionneur: on associe un domaine.
+/*! @brief Premiere etape d'initialisation du partitionneur: on associe un domaine.
+ *
+ */
 void Partitionneur_Tranche::associer_domaine(const Domaine& domaine)
 {
   ref_domaine_ = domaine;
@@ -66,9 +67,11 @@ void Partitionneur_Tranche::associer_domaine(const Domaine& domaine)
   nb_tranches_ = -1;
 }
 
-// Description:
-//  Deuxieme etape d'initialisation: on definit le nombre de tranches.
-//  (on peut utiliser readOn a la place).
+/*! @brief Deuxieme etape d'initialisation: on definit le nombre de tranches.
+ *
+ * (on peut utiliser readOn a la place).
+ *
+ */
 void Partitionneur_Tranche::initialiser(const ArrOfInt& nb_tranches)
 {
   assert(ref_domaine_.non_nul());
@@ -81,8 +84,9 @@ void Partitionneur_Tranche::initialiser(const ArrOfInt& nb_tranches)
 static const DoubleTab * static_qsort_DoubleTab_ptr;
 static int            static_qsort_DoubleTab_colonne;
 
-// Description: fonction outil pour tri quicksort
-//  (comparaison de deux reels avec un index)
+/*! @brief fonction outil pour tri quicksort (comparaison de deux reels avec un index)
+ *
+ */
 static True_int trier_index_compare_fct(const void *i_, const void *j_)
 {
   const int i = *((int*)i_);
@@ -99,9 +103,12 @@ static True_int trier_index_compare_fct(const void *i_, const void *j_)
   return resu;
 }
 
-// Description: Fonction outil utilisee dans construire_partition.
-//  On reordonne les valeurs du tableau index de sorte que les valeurs
-//  tab(index[i], colonne) soient classees dans l'ordre croissant.
+/*! @brief Fonction outil utilisee dans construire_partition.
+ *
+ * On reordonne les valeurs du tableau index de sorte que les valeurs
+ *   tab(index[i], colonne) soient classees dans l'ordre croissant.
+ *
+ */
 static void trier_index_colonne_i(const DoubleTab& tab,
                                   ArrOfInt& index,
                                   const int colonne)
@@ -117,9 +124,12 @@ static void trier_index_colonne_i(const DoubleTab& tab,
   qsort(index_ptr, index_size, index_member_size, trier_index_compare_fct);
 }
 
-// Description: Remplissage du tableau directions perio a partir des noms des bords
-//  periodiques. Pour 0 <= i < Objet_U::dimension directions_perio[i] vaut 1 s'il
-//  existe un bord periodique pour lequel le vecteur delta est dirige dans la direction i.
+/*! @brief Remplissage du tableau directions perio a partir des noms des bords periodiques.
+ *
+ * Pour 0 <= i < Objet_U::dimension directions_perio[i] vaut 1 s'il
+ *   existe un bord periodique pour lequel le vecteur delta est dirige dans la direction i.
+ *
+ */
 void Partitionneur_Tranche::chercher_direction_perio(const Zone& zone,
                                                      const Noms& liste_bords_perio,
                                                      ArrOfInt& directions_perio)

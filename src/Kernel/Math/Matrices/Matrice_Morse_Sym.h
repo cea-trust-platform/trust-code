@@ -21,18 +21,15 @@
 #include <Matrice.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Matrice_Morse_Sym
-//    Represente une matrice M (creuse) symetrique stockee au format Morse
-//    Symetrique: on ne stocke que la partie triangulaire superieure de la
-//    matrice. Important: Tous les coefficients diagonaux doivent etre stockes
-//    meme s'ils sont nuls (hypothese TRUST pour plusieurs methodes dont multvect).
-//    Cette classe derive de Matrice_Morse et Matrice_Sym.
-// .SECTION voir aussi
-//    Matrice_Morse Matrice_Sym
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Matrice_Morse_Sym Represente une matrice M (creuse) symetrique stockee au format Morse
+ *
+ *     Symetrique: on ne stocke que la partie triangulaire superieure de la
+ *     matrice. Important: Tous les coefficients diagonaux doivent etre stockes
+ *     meme s'ils sont nuls (hypothese TRUST pour plusieurs methodes dont multvect).
+ *     Cette classe derive de Matrice_Morse et Matrice_Sym.
+ *
+ * @sa Matrice_Morse Matrice_Sym
+ */
 class Matrice_Morse_Sym : public Matrice_Morse, public Matrice_Sym
 {
 

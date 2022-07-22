@@ -23,17 +23,14 @@
 #include <Domaine.h>
 #include <Schema_Temps.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Discretiser
-//     Discretise un probleme:
-//     {DANS LE JEU DE DONNEES] Discretiser pb dis
-//     Discretise le probleme "pb" avec la discretisation "dis"
-//     ou "dis" est une Discretisation_base VDF ou VEF pour le moment.
-// .SECTION voir aussi
-//     Interprete Discretisation_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Discretiser Discretise un probleme:
+ *
+ *      {DANS LE JEU DE DONNEES] Discretiser pb dis
+ *      Discretise le probleme "pb" avec la discretisation "dis"
+ *      ou "dis" est une Discretisation_base VDF ou VEF pour le moment.
+ *
+ * @sa Interprete Discretisation_base
+ */
 class Discretiser : public Interprete
 {
   Declare_instanciable(Discretiser);

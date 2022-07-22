@@ -20,10 +20,11 @@
 #include <Vect_Parser_U.h>
 #include <TRUSTTabs.h>
 
-// .DESCRIPTION
-//    Classe Parser_Eval
-//    Cette classe a pour fonction d evaleur les valeurs prises par une fonction analytique.
-//    La fonction peut dependre de l espace (x, y, z), du temps (t) et d'un champ parametre (val).
+/*! @brief Classe Parser_Eval Cette classe a pour fonction d evaleur les valeurs prises par une fonction analytique.
+ *
+ *     La fonction peut dependre de l espace (x, y, z), du temps (t) et d'un champ parametre (val).
+ *
+ */
 class Parser_Eval
 {
 public :

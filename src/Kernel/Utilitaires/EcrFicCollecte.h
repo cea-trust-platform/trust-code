@@ -21,16 +21,13 @@
 #include <Process.h>
 class Objet_U;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Ecriture dans un fichier
-//    Cette classe implemente les operateurs et les methodes virtuelles de la clase SFichier de la facon suivante :
-//    Il y a autant de fichiers que de processus, physiquement localises sur le disque de la machine hebergeant la tache maitre de l'application Trio-U (le processus de rang 0 dans le groupe "tous")
-//    Le processus maitre recoit chaque item a ecrire de chacun des processus et dans chacun chacun des fichiers.
-//    il en est de meme pour les methodes d'inspection de l'etat d'un fichier.
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Ecriture dans un fichier Cette classe implemente les operateurs et les methodes virtuelles de la clase SFichier de la facon suivante :
+ *
+ *     Il y a autant de fichiers que de processus, physiquement localises sur le disque de la machine hebergeant la tache maitre de l'application Trio-U (le processus de rang 0 dans le groupe "tous")
+ *     Le processus maitre recoit chaque item a ecrire de chacun des processus et dans chacun chacun des fichiers.
+ *     il en est de meme pour les methodes d'inspection de l'etat d'un fichier.
+ *
+ */
 
 class EcrFicCollecte : public SFichier
 {

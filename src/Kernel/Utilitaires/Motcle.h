@@ -18,12 +18,9 @@
 
 #include <Vect.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     Une chaine de caractere (Nom) en majuscules
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Une chaine de caractere (Nom) en majuscules
+ *
+ */
 class Motcle : public Nom
 {
   Declare_instanciable_sans_constructeur(Motcle);
@@ -61,12 +58,9 @@ public:
 Declare_vect(Motcle);
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     Un tableau d'objets de la classe Motcle
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Un tableau d'objets de la classe Motcle
+ *
+ */
 class Motcles : public VECT(Motcle)
 {
   Declare_instanciable(Motcles);

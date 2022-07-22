@@ -18,18 +18,15 @@
 
 #include <Interprete.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Class Disable_TU
-//    This class is an interpreter used to read the disable_TU flag.
-//    Directive:
-//       disable_TU
-//    This optional directive disables the output of * .TU files.
-//    Without this directive, the * .TU files are written
-// .SECTION voir aussi
-//    Interprete Objet_U
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Class Disable_TU This class is an interpreter used to read the disable_TU flag.
+ *
+ *     Directive:
+ *        disable_TU
+ *     This optional directive disables the output of * .TU files.
+ *     Without this directive, the * .TU files are written
+ *
+ * @sa Interprete Objet_U
+ */
 class Disable_TU : public Interprete
 {
   Declare_instanciable(Disable_TU);

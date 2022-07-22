@@ -30,29 +30,18 @@ class Conds_lim;
 class SFichier;
 class EcrFicPartage;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Operateur_base
-//     Classe est la base de la hierarchie des objets representant un
-//     operateur utilise dans des equations de TRUST. Ses membres sont
-//     les attributs et les methodes communs a toutes les classes qui
-//     representent un operateur. Un Operateur est un morceau d'equation
-//     c'est pourquoi il derive de MorEqn qui lui permet d'avoir une
-//     reference sur l'equation auquel il est attache.
-//     Exemple de classe d'operateur: Op_Diff_K_Eps_negligeable,
-//                                    Operateur_Div_base
-// .SECTION voir aussi
-//     MorEqn Operateur Equation_base
-//     Classe abstraite. Un certain nombre de methodes DOIVENT etre
-//     surchargees dans les classes derivees.
-//     Methodes abstraites:
-//       DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const
-//       DoubleTab& calculer(const DoubleTab&, DoubleTab& ) const
-//        void associer(const Zone_dis&,
-//                      const Zone_Cl_dis&,
-//                      const Champ_Inc& inco)
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Operateur_base Classe est la base de la hierarchie des objets representant un
+ *
+ *      operateur utilise dans des equations de TRUST. Ses membres sont
+ *      les attributs et les methodes communs a toutes les classes qui
+ *      representent un operateur. Un Operateur est un morceau d'equation
+ *      c'est pourquoi il derive de MorEqn qui lui permet d'avoir une
+ *      reference sur l'equation auquel il est attache.
+ *      Exemple de classe d'operateur: Op_Diff_K_Eps_negligeable,
+ *                                     Operateur_Div_base
+ *
+ * @sa MorEqn Operateur Equation_base, Classe abstraite. Un certain nombre de methodes DOIVENT etre, surchargees dans les classes derivees., Methodes abstraites:, DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const, DoubleTab& calculer(const DoubleTab&, DoubleTab& ) const, void associer(const Zone_dis&,, const Zone_Cl_dis&,, const Champ_Inc& inco)
+ */
 class Operateur_base : public Objet_U, public MorEqn, public Champs_compris_interface
 {
   Declare_base(Operateur_base);
@@ -168,21 +157,12 @@ protected :
 };
 
 
-// Description:
-//    Associe une equation a l'operateur.
-//    Simple Appel a MorEqn::associer_eqn(const Equation_base&)
-// Precondition:
-// Parametre: Equation_base& eqn
-//    Signification: l'equation a laquelle l'operateur doit etre associe
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe une equation a l'operateur.
+ *
+ * Simple Appel a MorEqn::associer_eqn(const Equation_base&)
+ *
+ * @param (Equation_base& eqn) l'equation a laquelle l'operateur doit etre associe
+ */
 inline void Operateur_base::associer_eqn(const Equation_base& eqn)
 {
   MorEqn::associer_eqn(eqn);

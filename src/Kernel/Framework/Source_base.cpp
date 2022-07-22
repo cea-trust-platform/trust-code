@@ -26,66 +26,38 @@
 Implemente_base(Source_base,"Source_base",Objet_U);
 
 
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees.
-//    Imprime la source sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+ *
+ *     Imprime la source sur un flot de sortie.
+ *
+ * @param (Sortie& os) le flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Source_base::printOn(Sortie& os) const
 {
   return os;
 }
 
 
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees.
-//    Lecture d'un terme source sur un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot d'entree est modifie
-// Postcondition:
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+ *
+ *     Lecture d'un terme source sur un flot d'entree.
+ *
+ * @param (Entree& is) le flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Source_base::readOn(Entree& is)
 {
   return is;
 }
 
 
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees.
-//    Mise a jour en temps du terme source.
-// Precondition:
-// Parametre: double
-//    Signification: le pas de temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+ *
+ *     Mise a jour en temps du terme source.
+ *
+ * @param (double) le pas de temps de mise a jour
+ */
 void Source_base::mettre_a_jour(double )
 {
   Cerr << finl;
@@ -96,23 +68,13 @@ void Source_base::mettre_a_jour(double )
 }
 
 
-// Description:
-//    Met a jour les references internes a l'objet Source_base.
-//    Appelle 2 methodes virtuelles pures protegees:
-//       Source_base::associer_zones(const Zone_dis& ,const Zone_Cl_dis&)
-//       Source_base::associer_pb(const Probleme_base&)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la source est liee a tous les objets concernes
+/*! @brief Met a jour les references internes a l'objet Source_base.
+ *
+ * Appelle 2 methodes virtuelles pures protegees:
+ *        Source_base::associer_zones(const Zone_dis& ,const Zone_Cl_dis&)
+ *        Source_base::associer_pb(const Probleme_base&)
+ *
+ */
 void Source_base::completer()
 {
   const Equation_base& eqn = equation();
@@ -125,19 +87,20 @@ void Source_base::completer()
   bilan_=0;
 }
 
-// Description:
-//  Cette methode (ou la methode de la classe derivee) est appelee
-//  par Sources::associer_champ_rho pour chaque source de la liste
-//  (par exemple, a l'initialisation d'un calcul front-tracking).
-//  Cette methode doit etre reimplementee dans les classes derivees
-//  utilisees dans les problemes a rho variable.
-//
-//  La methode ajouter calcule le terme suivant:
-//    INTEGRALE            (terme source)
-//    sur volume entrelace
-//
-//  Dans les problemes ou rho est variable, "terme source" homogene a rho*v.
-//  Sinon, "terme source" est homogene a v.
+/*! @brief Cette methode (ou la methode de la classe derivee) est appelee par Sources::associer_champ_rho pour chaque source de la liste
+ *
+ *   (par exemple, a l'initialisation d'un calcul front-tracking).
+ *   Cette methode doit etre reimplementee dans les classes derivees
+ *   utilisees dans les problemes a rho variable.
+ *
+ *   La methode ajouter calcule le terme suivant:
+ *     INTEGRALE            (terme source)
+ *     sur volume entrelace
+ *
+ *   Dans les problemes ou rho est variable, "terme source" homogene a rho*v.
+ *   Sinon, "terme source" est homogene a v.
+ *
+ */
 void Source_base::associer_champ_rho(const Champ_base& champ_rho)
 {
   Cerr << "In Source_base::associer_champ_rho" << finl;
@@ -149,9 +112,11 @@ void Source_base::associer_champ_rho(const Champ_base& champ_rho)
   exit();
 }
 
-// Description:
-//  Si la source comprend le motcle "mot", elle remplit la reference a ch_ref
-//  et renvoie 1, sinon renvoie 0 (voir Source_Translation par ex.)
+/*! @brief Si la source comprend le motcle "mot", elle remplit la reference a ch_ref et renvoie 1, sinon renvoie 0 (voir Source_Translation par ex.
+ *
+ * )
+ *
+ */
 int Source_base::a_pour_Champ_Fonc(const Motcle& mot,
                                    REF(Champ_base)& ch_ref) const
 {
@@ -181,22 +146,12 @@ void Source_base::get_noms_champs_postraitables(Noms& nom,Option opt) const
 }
 
 
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees.
-//    Mise a jour en temps du terme source.
-// Precondition:
-// Parametre: double
-//    Signification: le pas de temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+ *
+ *     Mise a jour en temps du terme source.
+ *
+ * @param (double) le pas de temps de mise a jour
+ */
 static std::map<std::string, int> counters; // ToDo provisoire
 int Source_base::impr(Sortie& os) const
 {
@@ -241,9 +196,11 @@ int Source_base::impr(Sortie& os) const
     }
   return 1;
 }
-// Description:
-//    Dimensionnement de la matrice implicite des termes sources.
-//    Par defaut ne fait rien.
+/*! @brief Dimensionnement de la matrice implicite des termes sources.
+ *
+ * Par defaut ne fait rien.
+ *
+ */
 void Source_base::dimensionner(Matrice_Morse& mat) const
 {
   if (has_interface_blocs()) dimensionner_blocs({{ equation().inconnue().le_nom().getString(), &mat }});
@@ -267,9 +224,9 @@ DoubleTab& Source_base::calculer(DoubleTab& secmem) const
   return ajouter(secmem);
 }
 
-// Description:
-// contribution a la matrice implicite des termes sources
-// par defaut pas de contribution
+/*! @brief contribution a la matrice implicite des termes sources par defaut pas de contribution
+ *
+ */
 void Source_base::contribuer_a_avec(const DoubleTab&, Matrice_Morse& mat) const
 {
   if (!has_interface_blocs()) return;
@@ -277,10 +234,11 @@ void Source_base::contribuer_a_avec(const DoubleTab&, Matrice_Morse& mat) const
   ajouter_blocs({{ equation().inconnue().le_nom().getString(), &mat}}, secmem, {});
 }
 
-// Description:
-// contribution au second membres des termes sources en implicite
-// par defaut erreur
-// methode presente par coherence avec Operateur_base
+/*! @brief contribution au second membres des termes sources en implicite par defaut erreur
+ *
+ *  methode presente par coherence avec Operateur_base
+ *
+ */
 void Source_base::contribuer_au_second_membre(DoubleTab& ) const
 {
   Cerr<<"Source_base::contribuer_au_second_membre(DoubleTab& ) const uncoded"<<finl;
@@ -297,23 +255,12 @@ void Source_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const ta
   Process::exit(que_suis_je() + " : ajouter_blocs() not coded!");
 }
 
-// Description:
-//    Contrairement aux methodes mettre_a_jour, les methodes
-//    initialiser des sources ne peuvent pas dependre de l'exterieur
-//    (lui-meme peut ne pas etre initialise)
-//    Par defaut, mettre_a_jour
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Contrairement aux methodes mettre_a_jour, les methodes initialiser des sources ne peuvent pas dependre de l'exterieur
+ *
+ *     (lui-meme peut ne pas etre initialise)
+ *     Par defaut, mettre_a_jour
+ *
+ */
 int Source_base::initialiser(double temps)
 {
   mettre_a_jour(temps);
@@ -321,21 +268,10 @@ int Source_base::initialiser(double temps)
 }
 
 
-// Description:
-//    Ouverture/creation d'un fichier d'impression d'un terme source
-//    A surcharger dans les classes derivees.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: methode a surcharger
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ouverture/creation d'un fichier d'impression d'un terme source A surcharger dans les classes derivees.
+ *
+ * @throws methode a surcharger
+ */
 void Source_base::ouvrir_fichier(SFichier& os,const Nom& type, const int flag) const
 {
   // flag nul on n'ouvre pas le fichier

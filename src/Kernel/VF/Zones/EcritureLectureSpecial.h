@@ -20,19 +20,14 @@
 #include <Interprete.h>
 #include <Motcle.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe EcritureLetureSpecial
-//     Classe static qui permet de faire une sauvegarde ou/et une lecture
-//   particuliere :
-//        un seul fichier binaire contenant les positions + les valeurs
-//    Permet de faire une reprise sur un nbre different de proc
-// .SECTION voir aussi
-//    Si le format est active (en lecture ou en ecriture) sur un probleme,
-// il doit l'etre sur tous.
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe EcritureLetureSpecial Classe static qui permet de faire une sauvegarde ou/et une lecture
+ *
+ *    particuliere :
+ *         un seul fichier binaire contenant les positions + les valeurs
+ *     Permet de faire une reprise sur un nbre different de proc
+ *
+ * @sa Si le format est active (en lecture ou en ecriture) sur un probleme,, il doit l'etre sur tous.
+ */
 
 class Sortie;
 class Entree;

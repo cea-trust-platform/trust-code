@@ -19,15 +19,10 @@
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_Rotationnel
-// .SECTION voir aussi
-//     Classe abstraite
-//     Methode abstraite
-//       void me_calculer(double )
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_Rotationnel
+ *
+ * @sa Classe abstraite, Methode abstraite, void me_calculer(double )
+ */
 class Champ_Rotationnel
 {
 

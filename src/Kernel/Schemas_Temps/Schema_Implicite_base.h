@@ -18,12 +18,11 @@
 
 
 
-//
-// .DESCRIPTION class Schema_Implicite_base
-//  Classe de base pour tous les schemas en temps implicite
-//  Il porte un objet de type Solveur ( ex le Simpler)
-// .SECTION voir aussi
-//
+/*! @brief class Schema_Implicite_base Classe de base pour tous les schemas en temps implicite
+ *
+ *   Il porte un objet de type Solveur ( ex le Simpler)
+ *
+ */
 
 #include <Schema_Temps_base.h>
 #include <Solveur_Implicite.h>

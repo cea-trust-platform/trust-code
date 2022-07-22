@@ -19,19 +19,16 @@
 #include <Schema_Temps_base.h>
 
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Leap_frog
-//     Cette classe represente un schema en temps Leap_Frog.
-//     Si (n<=4)
-//        U(n+1) = 2*dt*(dU/dt)(n) + U(n)
-//     Si(n>4)
-//        U(n+1) = dt*(dU/dt)(n) + gamma*U(n) + (1-2*gamma)*U(n-1)
-//                                            + gamma*U(n-2)
-// .SECTION voir aussi
-//    Schema_Temps_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Leap_frog Cette classe represente un schema en temps Leap_Frog.
+ *
+ *      Si (n<=4)
+ *         U(n+1) = 2*dt*(dU/dt)(n) + U(n)
+ *      Si(n>4)
+ *         U(n+1) = dt*(dU/dt)(n) + gamma*U(n) + (1-2*gamma)*U(n-1)
+ *                                             + gamma*U(n-2)
+ *
+ * @sa Schema_Temps_base
+ */
 class Leap_frog : public Schema_Temps_base
 {
 

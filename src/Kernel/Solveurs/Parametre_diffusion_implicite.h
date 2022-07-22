@@ -23,14 +23,13 @@
 #include <SolveurSys.h>
 #include <Matrice_Morse.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Parametre_diffusion_implicite
-//     Un objet Parametre_diffusion_implicite est un objet regroupant les differentes
-//     options specifiques pour diffusion_implicite
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Parametre_diffusion_implicite Un objet Parametre_diffusion_implicite est un objet regroupant les differentes
+ *
+ *      options specifiques pour diffusion_implicite
+ *
+ *
+ *
+ */
 class Parametre_diffusion_implicite : public Parametre_equation_base
 {
   Declare_instanciable(Parametre_diffusion_implicite);

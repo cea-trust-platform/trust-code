@@ -87,7 +87,11 @@ int Entree_complete::good()
   return is.good();
 }
 
-// Description: Il est interdit de changer de type d'entree. exit()
+/*! @brief Il est interdit de changer de type d'entree.
+ *
+ * exit()
+ *
+ */
 int Entree_complete::set_bin(int bin)
 {
   if (bin)
@@ -98,9 +102,11 @@ int Entree_complete::set_bin(int bin)
   return bin;
 }
 
-// Description: affecte le drapeau aux deux entrees sources
-//  Attention, le drapeau de entree2 est modifie !
-//  Voir Entree::set_check_types()
+/*! @brief affecte le drapeau aux deux entrees sources Attention, le drapeau de entree2 est modifie !
+ *
+ *   Voir Entree::set_check_types()
+ *
+ */
 void Entree_complete::set_check_types(int flag)
 {
   Entree::set_check_types(flag);
@@ -108,9 +114,11 @@ void Entree_complete::set_check_types(int flag)
   entree2_->set_check_types(flag);
 }
 
-// Description: affecte la valeur aux deux entrees sources
-//  Attention, la valeur de entree2 est modifiee !
-//  Voir Entree::set_error_action()
+/*! @brief affecte la valeur aux deux entrees sources Attention, la valeur de entree2 est modifiee !
+ *
+ *   Voir Entree::set_error_action()
+ *
+ */
 void Entree_complete::set_error_action(Error_Action action)
 {
   Entree::set_error_action(action);

@@ -17,40 +17,22 @@
 
 Implemente_instanciable(Faces_Interne,"Faces_Interne",Frontiere);
 
-// Description:
-//    Simple appel a Frontiere::printOn(Sortie&)
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a Frontiere::printOn(Sortie&)
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Faces_Interne::printOn(Sortie& s ) const
 {
   return Frontiere::printOn(s) ;
 }
 
 
-// Description:
-//    Simple appel a Frontiere::readOn(Entree&)
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a Frontiere::readOn(Entree&)
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Faces_Interne::readOn(Entree& s)
 {
   return Frontiere::readOn(s) ;

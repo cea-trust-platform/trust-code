@@ -21,19 +21,15 @@
 #include <TRUSTTabs_forward.h>
 class Domaine;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe ExtrudeParoi
-//    Cette classe est un interprete qui sert a lire et executer
-//    la directive ExtrudeParoi:
-//        ExtrudeParoi nom_domaine
-//    Cette directive est a utiliser en discretisation VEF 2D pour obtenir
-//    un maillage 3D par extrusion puis decoupage.
-// .SECTION voir aussi
-//    Interprete ExtrudeParoi
-//    Cette classe est utilisable en 3D
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe ExtrudeParoi Cette classe est un interprete qui sert a lire et executer
+ *
+ *     la directive ExtrudeParoi:
+ *         ExtrudeParoi nom_domaine
+ *     Cette directive est a utiliser en discretisation VEF 2D pour obtenir
+ *     un maillage 3D par extrusion puis decoupage.
+ *
+ * @sa Interprete ExtrudeParoi, Cette classe est utilisable en 3D
+ */
 class ExtrudeParoi : public Interprete_geometrique_base
 {
   Declare_instanciable_sans_constructeur(ExtrudeParoi);

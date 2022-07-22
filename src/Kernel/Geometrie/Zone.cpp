@@ -29,23 +29,15 @@ Zone::Zone() :
   volume_total_ = -1.; // pas encore calcule
 }
 
-// Description:
-//    Ecrit la Zone sur un flot de sortie.
-//    On ecrit le nom, le type des elements, les elements
-//    et les bords, les bords periodiques, les joints, les
-//    raccords et les faces internes.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit la Zone sur un flot de sortie.
+ *
+ * On ecrit le nom, le type des elements, les elements
+ *     et les bords, les bords periodiques, les joints, les
+ *     raccords et les faces internes.
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Zone::printOn(Sortie& s ) const
 {
   Cerr << "Writing of " << nb_elem() << " elements." << finl;
@@ -107,22 +99,14 @@ static void corriger_type(Faces& faces,const Elem_geom_base& type_elem)
     }
 }
 
-// Description:
-//    Lit les objets constituant une Zone
-//    a partir d'un flot d'entree. Une fois les objets
-//    lus on les associe a la zone.
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit les objets constituant une Zone a partir d'un flot d'entree.
+ *
+ * Une fois les objets
+ *     lus on les associe a la zone.
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Zone::readOn(Entree& s)
 {
   read_zone(s);
@@ -131,8 +115,9 @@ Entree& Zone::readOn(Entree& s)
 }
 
 
-// Description:
-// read zone from the input stream
+/*! @brief read zone from the input stream
+ *
+ */
 void Zone::read_zone(Entree& s)
 {
   s >> nom ;
@@ -145,9 +130,9 @@ void Zone::read_zone(Entree& s)
   s >> mes_faces_int;
 }
 
-// Description:
-// associate the read objects to the zone
-// and check that the reading objects are coherent
+/*! @brief associate the read objects to the zone and check that the reading objects are coherent
+ *
+ */
 void Zone::check_zone()
 {
   // remplacer Faces::vide_0D par le bon type pour les procs qui n'ont pas de faces de bord:
@@ -237,70 +222,35 @@ Entree& Zone::Lire_Bords_a_imprimer_sum(Entree& is)
 /////////////////////////////////////////////////////////////////////
 
 
-// Description:
-//    Renvoie le domaine dont la zone fait partie.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Domaine&
-//    Signification: le domaine dont la zone fait partie
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le domaine dont la zone fait partie.
+ *
+ * (version const)
+ *
+ * @return (Domaine&) le domaine dont la zone fait partie
+ */
 const Domaine& Zone::domaine() const
 {
   return le_domaine.valeur();
 }
 
-// Description:
-//    Renvoie le domaine dont la zone fait partie.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Domaine&
-//    Signification: le domaine dont la zone fait partie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le domaine dont la zone fait partie.
+ *
+ * @return (Domaine&) le domaine dont la zone fait partie
+ */
 Domaine& Zone::domaine()
 {
   return le_domaine.valeur();
 }
 
-// Description:
-//    che les numeros (indices) des elements contenants les sommets
-//    specifies par le parametre "sommets".
-//    Utilise:
-//     ArrOfInt& Zone::chercher_elements(const DoubleTab&,ArrOfInt&) const
-// Precondition:
-// Parametre: IntTab& sommets
-//    Signification: le tableau des numeros des sommets dont
-//                   on cherche les elements correspondants
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: ArrOfInt& elem_
-//    Signification: le tableau contenant les numeros des elements
-//                   contenant les sommets specifies
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: ArrOfInt&
-//    Signification: le tableau des numeros des sommets dont
-//                   on cherche les elements correspondants
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief che les numeros (indices) des elements contenants les sommets specifies par le parametre "sommets".
+ *
+ *     Utilise:
+ *      ArrOfInt& Zone::chercher_elements(const DoubleTab&,ArrOfInt&) const
+ *
+ * @param (IntTab& sommets) le tableau des numeros des sommets dont on cherche les elements correspondants
+ * @param (ArrOfInt& elem_) le tableau contenant les numeros des elements contenant les sommets specifies
+ * @return (ArrOfInt&) le tableau des numeros des sommets dont on cherche les elements correspondants
+ */
 ArrOfInt& Zone::indice_elements(const IntTab& sommets,
                                 ArrOfInt& elem_,
                                 int reel) const
@@ -317,29 +267,12 @@ ArrOfInt& Zone::indice_elements(const IntTab& sommets,
   return chercher_elements(xg,elem_,reel);
 }
 
-// Description:
-//    Recherche des elements contenant les points dont les
-//    coordonnees sont specifiees.
-// Precondition:
-// Parametre: DoubleTab& positions
-//    Signification: les coordonnees des points dont on veut
-//                   connaitre l'element correspondant
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: ArrOfInt& elements
-//    Signification: le tableau des numeros des elements contenant
-//                   les points specifies
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: ArrOfInt&
-//    Signification: le tableau des numeros des elements contenant
-//                   les points specifies
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Recherche des elements contenant les points dont les coordonnees sont specifiees.
+ *
+ * @param (DoubleTab& positions) les coordonnees des points dont on veut connaitre l'element correspondant
+ * @param (ArrOfInt& elements) le tableau des numeros des elements contenant les points specifies
+ * @return (ArrOfInt&) le tableau des numeros des elements contenant les points specifies
+ */
 static double cached_memory=0;
 bool sameDoubleTab(const DoubleTab& a, const DoubleTab& b)
 {
@@ -423,29 +356,12 @@ ArrOfInt& Zone::chercher_elements(const DoubleTab& positions,
   return elements;
 }
 
-// Description:
-//    Recherche des elements contenant les points dont les
-//    coordonnees sont specifiees.
-// Precondition:
-// Parametre: DoubleVect& positions
-//    Signification: les coordonnees du point dont on veut
-//                   connaitre l'element correspondant
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: ArrOfInt& elements
-//    Signification: le tableau des numeros des elements contenant
-//                   les points specifies
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: ArrOfInt&
-//    Signification: le tableau des numeros des elements contenant
-//                   les points specifies
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Recherche des elements contenant les points dont les coordonnees sont specifiees.
+ *
+ * @param (DoubleVect& positions) les coordonnees du point dont on veut connaitre l'element correspondant
+ * @param (ArrOfInt& elements) le tableau des numeros des elements contenant les points specifies
+ * @return (ArrOfInt&) le tableau des numeros des elements contenant les points specifies
+ */
 ArrOfInt& Zone::chercher_elements(const DoubleVect& positions,
                                   ArrOfInt& elements,
                                   int reel) const
@@ -464,97 +380,46 @@ ArrOfInt& Zone::chercher_elements(const DoubleVect& positions,
   for (int ii=0; ii<n; ii++) positions2(0,ii)=positions(ii);
   return chercher_elements( positions2, elements, reel) ;
 }
-// Description:
-//    Specifie le domaine dont la zone fait partie.
-// Precondition:
-// Parametre: Domaine& un_domaine
-//    Signification: le domaine dont la zone fait partie
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la zone est considere comme faisant partie
-//                du domaine specifie.
+/*! @brief Specifie le domaine dont la zone fait partie.
+ *
+ * @param (Domaine& un_domaine) le domaine dont la zone fait partie
+ */
 void Zone::associer_domaine(const Domaine& un_domaine)
 {
   le_domaine=un_domaine;
 }
 
-// Description:
-//    Renvoie le nombre de faces qui sont des bords.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de faces qui sont des bords
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de faces qui sont des bords.
+ *
+ * @return (int) le nombre de faces qui sont des bords
+ */
 int Zone::nb_faces_bord() const
 {
   return mes_faces_bord.nb_faces();
 }
 
-// Description:
-//    Renvoie le nombre de joints de la zone.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de joints de la zone
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de joints de la zone.
+ *
+ * @return (int) le nombre de joints de la zone
+ */
 int Zone::nb_faces_joint() const
 {
   return mes_faces_joint.nb_faces();
 }
 
-// Description:
-//    Renvoie le nombre de raccords de la zone.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de raccords de la zone
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de raccords de la zone.
+ *
+ * @return (int) le nombre de raccords de la zone
+ */
 int Zone::nb_faces_raccord() const
 {
   return mes_faces_raccord.nb_faces();
 }
 
-// Description:
-//    Renvoie le nombre de face internes de la zone.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de face internes de la zone
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de face internes de la zone.
+ *
+ * @return (int) le nombre de face internes de la zone
+ */
 int Zone::nb_faces_int() const
 {
   return mes_faces_int.nb_faces();
@@ -562,145 +427,72 @@ int Zone::nb_faces_int() const
 
 
 
-// Description:
-//    Renvoie le nombre de sommets de la zone.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de sommets de la zone
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de sommets de la zone.
+ *
+ * @return (int) le nombre de sommets de la zone
+ */
 int  Zone::nb_som() const
 {
   // MONOZONE pour le moment!
   return domaine().nb_som();
 }
 
-// Description:
-//    Renvoie le nombre total de sommets de la zone.
-//    i.e. le nombre de sommets reels et virtuels
-//    sur le processeur courant.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre total de sommets de la zone
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre total de sommets de la zone.
+ *
+ * i.e. le nombre de sommets reels et virtuels
+ *     sur le processeur courant.
+ *
+ * @return (int) le nombre total de sommets de la zone
+ */
 int  Zone::nb_som_tot() const
 {
   // MONOZONE pour le moment!
   return domaine().nb_som_tot();
 }
 
-// Description:
-//    Renvoie le nombre de faces du i-ieme bord.
-// Precondition:
-// Parametre: int i
-//    Signification: le numero du bord dont on veut
-//                   connaitre le nombre de faces
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de faces du i-ieme bord
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de faces du i-ieme bord.
+ *
+ * @param (int i) le numero du bord dont on veut connaitre le nombre de faces
+ * @return (int) le nombre de faces du i-ieme bord
+ */
 int Zone::nb_faces_bord(int i) const
 {
   return mes_faces_bord(i).nb_faces();
 }
 
-// Description:
-//    Renvoie le nombre de faces du i-ieme joint.
-// Precondition:
-// Parametre: int i
-//    Signification: le numero du joint dont on veut
-//                   connaitre le nombre de faces
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: nombre de faces du i-ieme joint
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de faces du i-ieme joint.
+ *
+ * @param (int i) le numero du joint dont on veut connaitre le nombre de faces
+ * @return (int) nombre de faces du i-ieme joint
+ */
 int Zone::nb_faces_joint(int i) const
 {
   return mes_faces_joint(i).nb_faces();
 }
 
-// Description:
-//    Renvoie le nombre de faces du i-ieme raccord.
-// Precondition:
-// Parametre: int i
-//    Signification: le numero du raccord dont on veut
-//                   connaitre le nombre de faces
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de faces du i-ieme raccord
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de faces du i-ieme raccord.
+ *
+ * @param (int i) le numero du raccord dont on veut connaitre le nombre de faces
+ * @return (int) le nombre de faces du i-ieme raccord
+ */
 int Zone::nb_faces_raccord(int i) const
 {
   return mes_faces_raccord(i)->nb_faces();
 }
-// Description:
-//    Renvoie le nombre de faces de la i-ieme
-//    liste de faces internes
-// Precondition:
-// Parametre: int i
-//    Signification: le numero de la liste de faces internes dont on veut
-//                   connaitre le nombre de faces
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int i
-//    Signification: le nombre de faces de la i-ieme liste
-//                   de faces internes
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de faces de la i-ieme liste de faces internes
+ *
+ * @param (int i) le numero de la liste de faces internes dont on veut connaitre le nombre de faces
+ * @return (int i) le nombre de faces de la i-ieme liste de faces internes
+ */
 int Zone::nb_faces_int(int i) const
 {
   return mes_faces_int(i).nb_faces();
 }
 
-// Description:
-//    Renumerotation des noeuds:
-//      Le noeud de numero k devient le noeud de numero Les_Nums[k]
-// Precondition:
-// Parametre: IntVect& Les_Nums
-//    Signification: le vecteur contenant la nouvelle numerotation
-//                   Nouveau_numero_noeud_i = Les_Nums[Ancien_numero_noeud_i]
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: les noeuds ont une nouvelle numerotation
+/*! @brief Renumerotation des noeuds: Le noeud de numero k devient le noeud de numero Les_Nums[k]
+ *
+ * @param (IntVect& Les_Nums) le vecteur contenant la nouvelle numerotation Nouveau_numero_noeud_i = Les_Nums[Ancien_numero_noeud_i]
+ */
 void Zone::renum(const IntVect& Les_Nums)
 {
   int dim0 = mes_elems.dimension(0);
@@ -720,23 +512,12 @@ void Zone::renum(const IntVect& Les_Nums)
     mes_faces_int(i).renum(Les_Nums);
 }
 
-// Description:
-//    Renumerotation des noeuds et des elements presents dans les items communs des joints
-//      Le noeud de numero k devient le noeud de numero Les_Nums[k]
-//      l'element de numero e devient l'element de numero e+elem_offset
-// Precondition:
-// Parametre: IntVect& Les_Nums
-//    Signification: le vecteur contenant la nouvelle numerotation
-//                   Nouveau_numero_noeud_i = Les_Nums[Ancien_numero_noeud_i]
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: les items communs ont une nouvelle numerotation
+/*! @brief Renumerotation des noeuds et des elements presents dans les items communs des joints Le noeud de numero k devient le noeud de numero Les_Nums[k]
+ *
+ *       l'element de numero e devient l'element de numero e+elem_offset
+ *
+ * @param (IntVect& Les_Nums) le vecteur contenant la nouvelle numerotation Nouveau_numero_noeud_i = Les_Nums[Ancien_numero_noeud_i]
+ */
 void Zone::renum_joint_common_items(const IntVect& Les_Nums, const int elem_offset)
 {
   for (int i_joint = 0; i_joint < nb_joints(); i_joint++)
@@ -751,22 +532,12 @@ void Zone::renum_joint_common_items(const IntVect& Les_Nums, const int elem_offs
 }
 
 
-// Description:
-//    Renvoie -1 si face n'est pas une face interne
-//    Renvoie le numero de la face dupliquee sinon.
-// Precondition:
-// Parametre: int face
-//    Signification: le numero de la face interne a chercher
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: int
-//    Signification: -1 si la face specifiee n'est pas une face interne
-//                   le numero de la face dupliquee sinon
-//    Contraintes:
-// Exception: erreur TRUST (face non trouvee)
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie -1 si face n'est pas une face interne Renvoie le numero de la face dupliquee sinon.
+ *
+ * @param (int face) le numero de la face interne a chercher
+ * @return (int) -1 si la face specifiee n'est pas une face interne le numero de la face dupliquee sinon
+ * @throws erreur TRUST (face non trouvee)
+ */
 int Zone::face_interne_conjuguee(int face) const
 {
   if( (face)>=nb_faces_frontiere())
@@ -796,21 +567,9 @@ int Zone::face_interne_conjuguee(int face) const
 }
 
 
-// Description:
-// Correcting type of borders if they were empty before merge (ie equal to vide_0D)
-// difference with corriger_type is that we don't want to delete faces inside borders afterwards
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Correcting type of borders if they were empty before merge (ie equal to vide_0D) difference with corriger_type is that we don't want to delete faces inside borders afterwards
+ *
+ */
 void Zone::correct_type_of_borders_after_merge()
 {
   {
@@ -912,21 +671,9 @@ void Zone::correct_type_of_borders_after_merge()
   }
 }
 
-// Description:
-//    Concatene les joints de meme nom
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: les joints qui portent le meme nom sont
-//                regroupes dans un seul
+/*! @brief Concatene les joints de meme nom
+ *
+ */
 int Zone::comprimer_joints()
 {
   LIST_CURSEUR(Joint) curseur(mes_faces_joint);;;
@@ -952,22 +699,9 @@ int Zone::comprimer_joints()
 
 
 
-// Description:
-//    Concatene les bords de meme nom et ceci pour:
-//    les bords, les bords periodiques et les faces internes.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: les bords qui portent le meme nom sont
-//                regroupes dans un seul
+/*! @brief Concatene les bords de meme nom et ceci pour: les bords, les bords periodiques et les faces internes.
+ *
+ */
 int Zone::comprimer()
 {
   {
@@ -1044,22 +778,12 @@ int Zone::comprimer()
   return 1;
 }
 
-// Description:
-//    Ecriture des noms des bords sur un flot de sortie
-//    Ecrit les noms des: bords, bords periodiques, raccords
-//                        et faces internes.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecriture des noms des bords sur un flot de sortie Ecrit les noms des: bords, bords periodiques, raccords
+ *
+ *                         et faces internes.
+ *
+ * @param (Sortie& os) un flot de sortie
+ */
 void Zone::ecrire_noms_bords(Sortie& os) const
 {
   {
@@ -1099,132 +823,65 @@ double Zone::epsilon() const
 }
 
 
-// Description:
-//    Renvoie le nombre de faces du type specifie.
-// Precondition:
-// Parametre: Type_Face type
-//    Signification: un type de face
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de faces du type specifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de faces du type specifie.
+ *
+ * @param (Type_Face type) un type de face
+ * @return (int) le nombre de faces du type specifie
+ */
 int Zone::nb_faces_bord(Type_Face type) const
 {
   return mes_faces_bord.nb_faces(type);
 }
 
-// Description:
-//    Renvoie le nombre de joints du type specifie
-// Precondition:
-// Parametre: Type_Face type
-//    Signification: un type de face
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de joints du type specifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de joints du type specifie
+ *
+ * @param (Type_Face type) un type de face
+ * @return (int) le nombre de joints du type specifie
+ */
 int Zone::nb_faces_joint(Type_Face type) const
 {
   return mes_faces_joint.nb_faces(type);
 }
 
-// Description:
-//    Renvoie le nombre de raccords du type specifie
-// Precondition:
-// Parametre: Type_Face type
-//    Signification: un type de face
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de raccords du type specifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de raccords du type specifie
+ *
+ * @param (Type_Face type) un type de face
+ * @return (int) le nombre de raccords du type specifie
+ */
 int Zone::nb_faces_raccord(Type_Face type) const
 {
   return mes_faces_raccord.nb_faces(type);
 }
 
-// Description:
-//    Renvoie le nombre de faces interieures du type specifie
-// Precondition:
-// Parametre: Type_Face type
-//    Signification: un type de face
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de faces interieures du type specifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de faces interieures du type specifie
+ *
+ * @param (Type_Face type) un type de face
+ * @return (int) le nombre de faces interieures du type specifie
+ */
 int Zone::nb_faces_int(Type_Face type) const
 {
   return mes_faces_int.nb_faces(type);
 }
 
-// Description:
-//    Renvoie le rang de l'element contenant
-//    le point dont les coordonnees sont specifiees.
-// Precondition:
-// Parametre: double x
-//    Signification: coordonnee en X
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double y
-//    Signification: coordonnee en Y
-//    Valeurs par defaut: 0
-//    Contraintes:
-//    Acces:
-// Parametre: double z
-//    Signification: coordonnee en Z
-//    Valeurs par defaut: 0
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le rang de l'element contenant
-//                   le point dont les coordonnees sont specifiees.
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le rang de l'element contenant le point dont les coordonnees sont specifiees.
+ *
+ * @param (double x) coordonnee en X
+ * @param (double y) coordonnee en Y
+ * @param (double z) coordonnee en Z
+ * @return (int) le rang de l'element contenant le point dont les coordonnees sont specifiees.
+ */
 int Zone::chercher_elements(double x, double y, double z,int reel) const
 {
   const OctreeRoot& octree = construit_octree(reel);
   return octree.rang_elem(x, y, z);
 }
 
-// Description:
-// Precondition:
-// Parametre: DoubleTab& pos
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: ArrOfInt& som
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: ArrOfInt&
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief
+ *
+ * @param (DoubleTab& pos)
+ * @param (ArrOfInt& som)
+ * @return (ArrOfInt&)
+ */
 ArrOfInt& Zone::chercher_sommets(const DoubleTab& pos,
                                  ArrOfInt& som,
                                  int reel) const
@@ -1234,24 +891,12 @@ ArrOfInt& Zone::chercher_sommets(const DoubleTab& pos,
   return som;
 }
 
-// Description:
-// Precondition:
-// Parametre: DoubleTab& pos
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: IntTab& aretes_som
-//    Signification: la definition des aretes par leurs sommets
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: ArrOfInt& aretes
-//    Signification: Liste des aretes trouvees
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief
+ *
+ * @param (DoubleTab& pos)
+ * @param (IntTab& aretes_som) la definition des aretes par leurs sommets
+ * @return (ArrOfInt& aretes) Liste des aretes trouvees
+ */
 ArrOfInt& Zone::chercher_aretes(const DoubleTab& pos,
                                 ArrOfInt& aretes,
                                 int reel) const
@@ -1261,29 +906,12 @@ ArrOfInt& Zone::chercher_aretes(const DoubleTab& pos,
   return aretes;
 }
 
-// Description:
-// Precondition:
-// Parametre: double x
-//    Signification: coordonnee en X
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double y
-//    Signification: coordonnee en Y
-//    Valeurs par defaut: 0
-//    Contraintes:
-//    Acces:
-// Parametre: double z
-//    Signification: coordonnee en Z
-//    Valeurs par defaut: 0
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief
+ *
+ * @param (double x) coordonnee en X
+ * @param (double y) coordonnee en Y
+ * @param (double z) coordonnee en Z
+ */
 int Zone::chercher_sommets(double x, double y, double z, int reel) const
 {
   const OctreeRoot& octree = construit_octree(reel);
@@ -1439,20 +1067,9 @@ const IntTab& Zone::elem_virt_pe_num() const
 {
   return elem_virt_pe_num_;
 }
-// Description:
-// Calcule le centre de gravite de la zone
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule le centre de gravite de la zone
+ *
+ */
 void Zone::calculer_mon_centre_de_gravite(ArrOfDouble& c)
 {
   c=0;
@@ -1476,21 +1093,10 @@ void Zone::calculer_mon_centre_de_gravite(ArrOfDouble& c)
   volume_total_ = mp_somme_vect(volumes);
 }
 
-// Description:
-//    Calcule les volumes des elements de la zone.
-// Precondition:
-// Parametre: DoubleVect& volumes
-//    Signification: le tableau contenant les volumes
-//                   des elements de la zone
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Calcule les volumes des elements de la zone.
+ *
+ * @param (DoubleVect& volumes) le tableau contenant les volumes des elements de la zone
+ */
 void Zone::calculer_volumes(DoubleVect& volumes, DoubleVect& inverse_volumes) const
 {
   if (!volumes.get_md_vector().non_nul())
@@ -1514,21 +1120,10 @@ void Zone::calculer_volumes(DoubleVect& volumes, DoubleVect& inverse_volumes) co
     }
 }
 
-// Description:
-//    Calcule les centres de gravites des aretes de la zone.
-// Precondition:
-// Parametre: DoubleTab& xa
-//    Signification: le tableau contenant les centres de
-//                   gravites des aretes de la zone
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Calcule les centres de gravites des aretes de la zone.
+ *
+ * @param (DoubleTab& xa) le tableau contenant les centres de gravites des aretes de la zone
+ */
 void Zone::calculer_centres_gravite_aretes(DoubleTab& xa) const
 {
   const DoubleTab& coord = domaine().coord_sommets();
@@ -1574,7 +1169,9 @@ const OctreeRoot& Zone::construit_octree() const
   return octree;
 }
 
-// Description: construction de l'octree si pas deja fait
+/*! @brief construction de l'octree si pas deja fait
+ *
+ */
 const OctreeRoot& Zone::construit_octree(int& reel) const
 {
   if (!deriv_octree_.non_nul())
@@ -1588,15 +1185,20 @@ const OctreeRoot& Zone::construit_octree(int& reel) const
   return octree;
 }
 
-// Description: creation d'un tableau parallele de valeurs aux elements.
-//  Voir MD_Vector_tools::creer_tableau_distribue()
+/*! @brief creation d'un tableau parallele de valeurs aux elements.
+ *
+ * Voir MD_Vector_tools::creer_tableau_distribue()
+ *
+ */
 void Zone::creer_tableau_elements(Array_base& x, Array_base::Resize_Options opt) const
 {
   const MD_Vector& md = md_vector_elements();
   MD_Vector_tools::creer_tableau_distribue(md, x, opt);
 }
 
-// Description: renvoie le descripteur parallele des tableaux aux elements de la zone
+/*! @brief renvoie le descripteur parallele des tableaux aux elements de la zone
+ *
+ */
 const MD_Vector& Zone::md_vector_elements() const
 {
   const MD_Vector& md = mes_elems.get_md_vector();

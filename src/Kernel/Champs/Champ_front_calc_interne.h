@@ -20,15 +20,12 @@
 #include <Champ_front_calc.h>
 #include <TRUSTTrav.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_front_calc_interne
-//     Classe derivee de Champ_front_calc qui represente
-//     le transfert d'un champ_inc d'un cote a l'autre d'une paroi interne.
-// .SECTION voir aussi
-//     Champ_front_calc Echange_interne_impose
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_front_calc_interne Classe derivee de Champ_front_calc qui represente
+ *
+ *      le transfert d'un champ_inc d'un cote a l'autre d'une paroi interne.
+ *
+ * @sa Champ_front_calc Echange_interne_impose
+ */
 class Champ_front_calc_interne : public Champ_front_calc
 {
 

@@ -19,17 +19,15 @@
 
 #include <Faces.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Frontiere.
-//    Une Frontiere decrit une partie de la frontiere d'une Zone,
-//    elle possede un Nom, elle porte des Faces et a une Zone associee.
-//    Une Frontiere peut etre specialisee en un Bord, un Joint un
-//    Raccord ou une Face Interne.
-// .SECTION voir aussi
-//    Zone Bord Joint Raccord Faces_Interne
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Frontiere.
+ *
+ * Une Frontiere decrit une partie de la frontiere d'une Zone,
+ *     elle possede un Nom, elle porte des Faces et a une Zone associee.
+ *     Une Frontiere peut etre specialisee en un Bord, un Joint un
+ *     Raccord ou une Face Interne.
+ *
+ * @sa Zone Bord Joint Raccord Faces_Interne
+ */
 class Frontiere : public Objet_U
 {
   Declare_base(Frontiere);
@@ -90,100 +88,50 @@ private :
 };
 
 
-// Description:
-//    Renvoie le nombre de faces de la frontiere.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de faces de la frontiere
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de faces de la frontiere.
+ *
+ * @return (int) le nombre de faces de la frontiere
+ */
 inline int Frontiere::nb_faces() const
 {
   return les_faces.nb_faces();
 }
 
 
-// Description:
-//    Dimensionne la frontiere, i.e. fixe
-//    son nombre de faces.
-// Precondition:
-// Parametre: int i
-//    Signification: le nombre de faces a donner a la frontiere
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la frontiere a i faces.
+/*! @brief Dimensionne la frontiere, i.
+ *
+ * e. fixe son nombre de faces.
+ *
+ * @param (int i) le nombre de faces a donner a la frontiere
+ */
 inline void Frontiere::dimensionner(int i)
 {
   les_faces.dimensionner(i);
 }
 
 
-// Description:
-//    Renvoie le nom de la frontiere.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Nom&
-//    Signification: le nom de la frontiere
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nom de la frontiere.
+ *
+ * @return (Nom&) le nom de la frontiere
+ */
 inline const Nom& Frontiere::le_nom() const
 {
   return nom;
 }
 
-// Description:
-//    Renvoie les faces de la frontiere
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Faces&
-//    Signification: les faces de la frontiere
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie les faces de la frontiere (version const)
+ *
+ * @return (Faces&) les faces de la frontiere
+ */
 inline const Faces& Frontiere::faces() const
 {
   return les_faces;
 }
 
-// Description:
-//    Renvoie les faces de la frontiere
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Faces&
-//    Signification: les faces de la frontiere
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie les faces de la frontiere
+ *
+ * @return (Faces&) les faces de la frontiere
+ */
 inline Faces& Frontiere::faces()
 {
   return les_faces;

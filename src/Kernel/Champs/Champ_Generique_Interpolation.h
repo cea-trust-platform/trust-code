@@ -19,11 +19,12 @@
 #include <Champ_Gen_de_Champs_Gen.h>
 #include <Domaine_dis.h>
 
-// .DESCRIPTION
-//  Un champ generique qui est construit comme une interpolation
-//  d'un autre champ generique (interpolation aux sommets ou aux elements).
-//  L interpolation sera effectuee sur un domaine qui peut etre
-//  le domaine de calcul ou un domaine different specifie par l utilisateur
+/*! @brief Un champ generique qui est construit comme une interpolation d'un autre champ generique (interpolation aux sommets ou aux elements).
+ *
+ *   L interpolation sera effectuee sur un domaine qui peut etre
+ *   le domaine de calcul ou un domaine different specifie par l utilisateur
+ *
+ */
 
 //// Syntaxe a respecter pour jdd
 //

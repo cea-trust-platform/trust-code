@@ -18,67 +18,40 @@
 Implemente_instanciable(Associer,"Associer|Associate",Interprete);
 
 
-// Description:
-//    Simple appel a:
-//      Interprete::printOn(Sortie&)
-//    Imprime l'interprete sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a: Interprete::printOn(Sortie&)
+ *
+ *     Imprime l'interprete sur un flot de sortie
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Associer::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
 
-// Description:
-//    Simple appel a:
-//      Interprete::readOn(Entree&)
-//    Ecrit l'interprete sur un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Interprete::readOn(Entree&)
+ *
+ *     Ecrit l'interprete sur un flot d'entree.
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Associer::readOn(Entree& is)
 {
   return Interprete::readOn(is);
 }
 
-// Description:
-//    Fonction principale de l'interprete Associer:
-//      associer deux objets.
-//    On essaye d'associer 1 a 2 et 2 a 1, provoque une
-//    erreur si cela echoue.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree, a partir duquel on lit
-//                   les noms des objets a associer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: on ne sait pas associer obj1 et obj2
-// Effets de bord:
-// Postcondition: les 2 objets sont (eventuellement) associes.
+/*! @brief Fonction principale de l'interprete Associer: associer deux objets.
+ *
+ *     On essaye d'associer 1 a 2 et 2 a 1, provoque une
+ *     erreur si cela echoue.
+ *
+ * @param (Entree& is) un flot d'entree, a partir duquel on lit les noms des objets a associer
+ * @return (Entree&) le flot d'entree modifie
+ * @throws on ne sait pas associer obj1 et obj2
+ */
 Entree& Associer::interpreter(Entree& is)
 {
   // Acquisition des parametres :

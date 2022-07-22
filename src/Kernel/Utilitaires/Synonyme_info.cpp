@@ -66,14 +66,15 @@ Synonyme_info::~Synonyme_info()
     }
 }
 
-// Description:
-//  Recherche le synonyme de nom "nom" dans la liste de synonymes enregistres
-//  par une recherche binaire.
-//  On compare les chaines converties en majuscules.
-//  On range dans "index" l'indice du synonyme, s'il a ete trouve
-//  et sinon l'indice du synonyme juste apres (dans ce cas, on a
-//   les_synonymes[index-1]->n < nom < les_synonymes[index]->n )
-//  Si le synonyme a ete trouve on renvoie 1, sinon 0.
+/*! @brief Recherche le synonyme de nom "nom" dans la liste de synonymes enregistres par une recherche binaire.
+ *
+ *   On compare les chaines converties en majuscules.
+ *   On range dans "index" l'indice du synonyme, s'il a ete trouve
+ *   et sinon l'indice du synonyme juste apres (dans ce cas, on a
+ *    les_synonymes[index-1]->n < nom < les_synonymes[index]->n )
+ *   Si le synonyme a ete trouve on renvoie 1, sinon 0.
+ *
+ */
 int Synonyme_info::search_synonyme_info_name(const char *nom, int& index)
 {
   assert(nom != 0);
@@ -106,31 +107,13 @@ int Synonyme_info::search_synonyme_info_name(const char *nom, int& index)
   index = imax;
   return 0;
 }
-// Description:
-//     Constructeur par un nom, un tableau de meres.
-// Precondition:
-// Parametre: const char* nom
-//    Signification: le nom du synonyme a creer
-//    Valeurs par defaut:
-//    Contraintes: nom != null
-//    Acces: entree
-// Parametre: int nb_base
-//    Signification: le nombre de meres dans le tableau bases[]
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Parametre: const Synonyme_info* bases[]
-//    Signification: le tableau specifiant les synonymes de bases (meres) du synonyme a creer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-//    Sort en erreur si le nom n'est pas defini (null)
-// Effets de bord:
-// Postcondition:
+/*! @brief Constructeur par un nom, un tableau de meres.
+ *
+ * @param (const char* nom) le nom du synonyme a creer
+ * @param (int nb_base) le nombre de meres dans le tableau bases[]
+ * @param (const Synonyme_info* bases[]) le tableau specifiant les synonymes de bases (meres) du synonyme a creer
+ * @throws Sort en erreur si le nom n'est pas defini (null)
+ */
 Synonyme_info::Synonyme_info(const char* un_nom, const char* org_name) :
   n(un_nom),org(org_name)
 {
@@ -144,10 +127,11 @@ Synonyme_info::Synonyme_info(const char* un_nom, const char* org_name) :
   ajouter_synonyme(*this);
 }
 
-// Description:
-//  Methode statique appelee par les constructeurs de Synonyme_info pour
-//  ajouter un nouveau synonyme a la liste des synonymes enregistres.
-//  Verifie que le nom du synonyme n'existe pas encore.
+/*! @brief Methode statique appelee par les constructeurs de Synonyme_info pour ajouter un nouveau synonyme a la liste des synonymes enregistres.
+ *
+ *   Verifie que le nom du synonyme n'existe pas encore.
+ *
+ */
 void Synonyme_info::retirer_synonyme(const char* nom)
 {
   // On cherche ou mettre le synonyme dans le tableau :
@@ -167,10 +151,11 @@ void Synonyme_info::retirer_synonyme(const char* nom)
     }
 }
 
-// Description:
-//  Methode statique appelee par les constructeurs de Synonyme_info pour
-//  ajouter un nouveau synonyme a la liste des synonymes enregistres.
-//  Verifie que le nom du synonyme n'existe pas encore.
+/*! @brief Methode statique appelee par les constructeurs de Synonyme_info pour ajouter un nouveau synonyme a la liste des synonymes enregistres.
+ *
+ *   Verifie que le nom du synonyme n'existe pas encore.
+ *
+ */
 void Synonyme_info::ajouter_synonyme(const Synonyme_info& synonyme_info)
 {
   // Verifie qu'il y a assez de place dans le tableau :
@@ -211,20 +196,11 @@ void Synonyme_info::ajouter_synonyme(const Synonyme_info& synonyme_info)
     }
 }
 
-// Description:
-//     Ecriture de toute la hierarchie du synonyme considere sur un flux de sortie
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ecriture de toute la hierarchie du synonyme considere sur un flux de sortie
+ *
+ * @param (Sortie& os) flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Synonyme_info::hierarchie(Sortie& os)
 {
   os << "There is " << nb_classes << " synomyms:" << finl;
@@ -234,23 +210,14 @@ Sortie& Synonyme_info::hierarchie(Sortie& os)
   return os << finl<<flush;
 }
 
-// Description:
-//     Test d'existence d'une classe du synonyme indique
-//     si il existe une classe T dont le Synonyme_info a
-//     le nom nom, alors est_un_synonyme renvoie 1
-//     renvoie le pointeur nul sinon.
-// Precondition:
-// Parametre: const char* nom
-//    Signification: chaine de caractere associee a un synonyme
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: code de retour (0 ou  1)
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Test d'existence d'une classe du synonyme indique si il existe une classe T dont le Synonyme_info a
+ *
+ *      le nom nom, alors est_un_synonyme renvoie 1
+ *      renvoie le pointeur nul sinon.
+ *
+ * @param (const char* nom) chaine de caractere associee a un synonyme
+ * @return (int) code de retour (0 ou  1)
+ */
 int Synonyme_info::est_un_synonyme(const char* nom)
 {
   const Synonyme_info * synonyme = synonyme_info_from_name(nom);
@@ -259,10 +226,12 @@ int Synonyme_info::est_un_synonyme(const char* nom)
 
 
 
-// Description:
-//  Methode statique qui renvoie un pointeur vers le Synonyme_info
-//  dont le nom est "synonyme_name". Si synonyme_name n'est pas un synonyme,
-//  renvoie un pointeur nul.
+/*! @brief Methode statique qui renvoie un pointeur vers le Synonyme_info dont le nom est "synonyme_name".
+ *
+ * Si synonyme_name n'est pas un synonyme,
+ *   renvoie un pointeur nul.
+ *
+ */
 const Synonyme_info * Synonyme_info::synonyme_info_from_name(const char * synonyme_name)
 {
   const Synonyme_info * synonyme_info = 0;

@@ -23,18 +23,15 @@ class Equation_base;
 
 Declare_deriv(Source_base);
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Source
-//     Classe generique de la hierarchie des sources, un objet Source peut
-//     referencer n'importe quel d'objet derivant de Source_base.
-//     La plupart des methodes appellent les methodes de l'objet Probleme
-//     sous-jacent via la methode valeur() declaree grace a la macro
-//Declare_deriv().;
-// .SECTION voir aussi
-//      Source_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Source Classe generique de la hierarchie des sources, un objet Source peut
+ *
+ *      referencer n'importe quel d'objet derivant de Source_base.
+ *      La plupart des methodes appellent les methodes de l'objet Probleme
+ *      sous-jacent via la methode valeur() declaree grace a la macro
+ * Declare_deriv().;
+ *
+ * @sa Source_base
+ */
 class Source : public DERIV(Source_base)
 {
   Declare_instanciable(Source);
@@ -49,21 +46,12 @@ public :
   int initialiser(double temps);
 };
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Mise a jour (en temps) de la source.
-// Precondition:
-// Parametre: double temps
-//    Signification: le pas de temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Mise a jour (en temps) de la source.
+ *
+ * @param (double temps) le pas de temps de mise a jour
+ */
 inline void Source::mettre_a_jour(double temps)
 {
   valeur().mettre_a_jour(temps);

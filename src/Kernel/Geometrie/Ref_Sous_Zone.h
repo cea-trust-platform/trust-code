@@ -13,8 +13,9 @@
 *
 *****************************************************************************/
 
-// .DESCRIPTION Reference a une SousZone
-//
+/*! @brief Reference a une SousZone
+ *
+ */
 
 
 #ifndef Ref_Sous_Zone_included

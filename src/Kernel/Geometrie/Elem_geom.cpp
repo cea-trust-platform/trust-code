@@ -20,19 +20,11 @@ Implemente_deriv(Elem_geom_base);
 Implemente_instanciable(Elem_geom,"Elem_geom",DERIV(Elem_geom_base));
 
 
-// Description:
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Elem_geom::printOn(Sortie& s ) const
 {
   return DERIV(Elem_geom_base)::printOn(s);
@@ -40,19 +32,11 @@ Sortie& Elem_geom::printOn(Sortie& s ) const
 
 
 
-// Description:
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Elem_geom::readOn(Entree& s )
 {
   return DERIV(Elem_geom_base)::readOn(s);

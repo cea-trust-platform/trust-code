@@ -20,7 +20,11 @@
 #include <TRUSTVect.h>
 #include <math.h>
 
-// .DESCRIPTION : Tableau a n entrees pour n<= 4. Repose sur un TRUSTVect avec calculs de l'indice corespondant
+/*! @brief : Tableau a n entrees pour n<= 4.
+ *
+ * Repose sur un TRUSTVect avec calculs de l'indice corespondant
+ *
+ */
 template<typename _TYPE_>
 class TRUSTTab : public TRUSTVect<_TYPE_>
 {
@@ -38,7 +42,9 @@ protected:
     return xxx->numero();
   }
 
-  // Description: ecriture d'un tableau sequentiel (idem que TRUSTVect::printOn() on ne sait pas quoi faire de pertinent pour un tableau distribue).
+  /*! @brief ecriture d'un tableau sequentiel (idem que TRUSTVect::printOn() on ne sait pas quoi faire de pertinent pour un tableau distribue).
+   *
+   */
   Sortie& printOn(Sortie& os) const override
   {
     assert(verifie_LINE_SIZE());
@@ -60,8 +66,9 @@ protected:
     return os;
   }
 
-  // Description: lecture d'un tableau sequentiel
-  // Precondition: le md_vector_ doit etre nul.
+  /*! @brief lecture d'un tableau sequentiel
+   *
+   */
   Entree& readOn(Entree& is) override
   {
     if (TRUSTVect<_TYPE_>::get_md_vector().non_nul())

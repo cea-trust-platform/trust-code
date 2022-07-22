@@ -21,13 +21,10 @@
 
 #include <Interprete.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Ecrire_Champ_MED
-// .SECTION voir aussi
-//     Interprete
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Ecrire_Champ_MED
+ *
+ * @sa Interprete
+ */
 class Ecrire_Champ_MED : public Interprete
 {
   Declare_instanciable(Ecrire_Champ_MED);

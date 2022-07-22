@@ -23,46 +23,54 @@ class Schema_RK_Classique
 { };
 /// \endcond
 
-// .DESCRIPTION : classe RK2_Classique
-//     Cette classe represente un schema en temps de Runge Kutta d'ordre 2 classique :
-//     k1 = h * f(y0)
-//     k2 = h * f(y0 + 0.5 * k1)
-//     y1 = y0 + k2
+/*! @brief : classe RK2_Classique Cette classe represente un schema en temps de Runge Kutta d'ordre 2 classique :
+ *
+ *      k1 = h * f(y0)
+ *      k2 = h * f(y0 + 0.5 * k1)
+ *      y1 = y0 + k2
+ *
+ */
 class RK2_Classique: public TRUSTSchema_RK<Ordre_RK::DEUX_CLASSIQUE>
 {
   Declare_instanciable(RK2_Classique);
 };
 
-// .DESCRIPTION : classe RK3_Classique
-//     Cette classe represente un schema en temps de Runge Kutta d'ordre 3 classique :
-//     k1 = h * f(y0)
-//     k2 = h * f(y0 + 0.5 * k1)
-//     k3 = h * f(y0 - k1 + 2 * k2)
-//     y1 = y0 + 1/6 * (k1 + 4 * k2 + k3)
+/*! @brief : classe RK3_Classique Cette classe represente un schema en temps de Runge Kutta d'ordre 3 classique :
+ *
+ *      k1 = h * f(y0)
+ *      k2 = h * f(y0 + 0.5 * k1)
+ *      k3 = h * f(y0 - k1 + 2 * k2)
+ *      y1 = y0 + 1/6 * (k1 + 4 * k2 + k3)
+ *
+ */
 class RK3_Classique: public TRUSTSchema_RK<Ordre_RK::TROIS_CLASSIQUE>
 {
   Declare_instanciable(RK3_Classique);
 };
 
-// .DESCRIPTION : classe RK4_Classique
-//     Cette classe represente un schema en temps de Runge Kutta d'ordre 3 classique :
-//     k1 = h * f(y0)
-//     k2 = h * f(y0 + 0.5 * k1)
-//     k3 = h * f(y0 + 0.5 * k2)
-//     k4 = h * f(y0 + k3)
-//     y1 = y0 + 1/6 * (k1 + 2 * k2 + 2 * k3 + k4)
+/*! @brief : classe RK4_Classique Cette classe represente un schema en temps de Runge Kutta d'ordre 3 classique :
+ *
+ *      k1 = h * f(y0)
+ *      k2 = h * f(y0 + 0.5 * k1)
+ *      k3 = h * f(y0 + 0.5 * k2)
+ *      k4 = h * f(y0 + k3)
+ *      y1 = y0 + 1/6 * (k1 + 2 * k2 + 2 * k3 + k4)
+ *
+ */
 class RK4_Classique: public TRUSTSchema_RK<Ordre_RK::QUATRE_CLASSIQUE>
 {
   Declare_instanciable(RK4_Classique);
 };
 
-// .DESCRIPTION : classe RK4_Classique_3_8
-//     Cette classe represente un schema en temps de Runge Kutta d'ordre 3 classique at avec 3/8 comme coeffs :
-//     k1 = h * f(y0)
-//     k2 = h * f(y0 + 1/3 * k1)
-//     k3 = h * f(y0 - 1/3 * k1 + k2)
-//     k4 = h * f(y0 + k1 - k2 + k3)
-//     y1 = y0 + 1/8 * (k1 + 3 * k2 + 3 * k3 + k4)
+/*! @brief : classe RK4_Classique_3_8 Cette classe represente un schema en temps de Runge Kutta d'ordre 3 classique at avec 3/8 comme coeffs :
+ *
+ *      k1 = h * f(y0)
+ *      k2 = h * f(y0 + 1/3 * k1)
+ *      k3 = h * f(y0 - 1/3 * k1 + k2)
+ *      k4 = h * f(y0 + k1 - k2 + k3)
+ *      y1 = y0 + 1/8 * (k1 + 3 * k2 + 3 * k3 + k4)
+ *
+ */
 class RK4_Classique_3_8: public TRUSTSchema_RK<Ordre_RK::QUATRE_CLASSIQUE_3_8>
 {
   Declare_instanciable(RK4_Classique_3_8);

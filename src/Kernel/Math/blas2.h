@@ -21,11 +21,9 @@
 #include <generic.h>
 
 extern "C"
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief
+ *
+ */
 {
   void F77DECLARE(DGEMV)(char* trans, integer* M, integer* N, double* alpha,
                          double* const A, integer* lda, const double* dx,

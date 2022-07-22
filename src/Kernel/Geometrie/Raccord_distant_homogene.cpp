@@ -32,21 +32,11 @@ using namespace MEDCoupling;
 
 Implemente_instanciable_sans_constructeur(Raccord_distant_homogene,"Raccord_distant_homogene",Raccord_distant);
 
-// Description:
-//    Simple appel a: Raccord_distant::printOn(Sortie& )
-//    (+ finl)
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a: Raccord_distant::printOn(Sortie& ) (+ finl)
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Raccord_distant_homogene::printOn(Sortie& s ) const
 {
   Raccord_distant::printOn(s) << finl;
@@ -62,20 +52,11 @@ Sortie& Raccord_distant_homogene::printOn(Sortie& s ) const
 
 
 
-// Description:
-//    Simple appel a: Raccord_distant::readOn(Entree& )
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Raccord_distant::readOn(Entree& )
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Raccord_distant_homogene::readOn(Entree& s)
 {
   Raccord_distant::readOn(s) ;
@@ -95,8 +76,9 @@ Entree& Raccord_distant_homogene::readOn(Entree& s)
 Raccord_distant_homogene::Raccord_distant_homogene() : est_initialise_(0),e_(0)
 {}
 
-// Description:
-// Retourne dans le DoubleTab x la trace sur le raccord distant du DoubleTab y localise aux elements du domaine distant
+/*! @brief Retourne dans le DoubleTab x la trace sur le raccord distant du DoubleTab y localise aux elements du domaine distant
+ *
+ */
 void Raccord_distant_homogene::trace_elem_distant(const DoubleTab& y, DoubleTab& x) const
 {
   assert(est_initialise());
@@ -141,8 +123,9 @@ void Raccord_distant_homogene::trace_elem_distant(const DoubleTab& y, DoubleTab&
   schema.end_comm();
 }
 
-// Description:
-// Retourne dans le DoubleTab x la trace sur le raccord distant du DoubleTab y localise aux faces
+/*! @brief Retourne dans le DoubleTab x la trace sur le raccord distant du DoubleTab y localise aux faces
+ *
+ */
 void Raccord_distant_homogene::trace_face_distant(const DoubleTab& y, DoubleTab& x) const
 {
   assert(est_initialise());
@@ -179,8 +162,9 @@ void Raccord_distant_homogene::trace_face_distant(const DoubleTab& y, DoubleTab&
   schema.end_comm();
 }
 
-// Description:
-// Retourne dans le DoubleVect x la trace sur le raccord distant du DoubleVect y localise aux faces du raccord distant
+/*! @brief Retourne dans le DoubleVect x la trace sur le raccord distant du DoubleVect y localise aux faces du raccord distant
+ *
+ */
 void Raccord_distant_homogene::trace_face_distant(const DoubleVect& y, DoubleVect& x) const
 {
   // Verifie que l'on passe bien un tableau aux faces du raccord
@@ -241,8 +225,9 @@ void Raccord_distant_homogene::completer()
   recv_pe_list_.ordonne_array();
 }
 
-// Description:
-// Initialise le raccord distant avec la frontiere et la zone discretisee opposees au raccord distant, et la zone discretisee du raccord distant
+/*! @brief Initialise le raccord distant avec la frontiere et la zone discretisee opposees au raccord distant, et la zone discretisee du raccord distant
+ *
+ */
 void Raccord_distant_homogene::initialise(const Frontiere& opposed_boundary, const Zone_dis_base& opposed_zone_dis, const Zone_dis_base& zone_dis)
 {
   Raccord_distant_homogene& raccord_distant = *this;

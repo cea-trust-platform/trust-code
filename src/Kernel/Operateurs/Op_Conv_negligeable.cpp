@@ -19,80 +19,42 @@
 Implemente_instanciable(Op_Conv_negligeable,"Op_Conv_negligeable",Operateur_Conv_base);
 
 
-// Description:
-//    Imprime la vitesse sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Imprime la vitesse sur un flot de sortie.
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Op_Conv_negligeable::printOn(Sortie& os) const
 {
   return os << la_vitesse;
 }
 
 
-// Description:
-//    Lit la vitesse a partir d'un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit la vitesse a partir d'un flot d'entree.
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Op_Conv_negligeable::readOn(Entree& is)
 {
   return is >> la_vitesse;
 }
 
 
-// Description:
-//    Associe la vitesse a l'operateur.
-// Precondition:
-// Parametre: Champ_Inc& ch
-//    Signification: le champ inconnue representant la vitesse
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe la vitesse a l'operateur.
+ *
+ * @param (Champ_Inc& ch) le champ inconnue representant la vitesse
+ */
 void Op_Conv_negligeable::associer_vitesse(const Champ_base& ch)
 {
   la_vitesse = ch;
 }
 
 
-// Description:
-//    Renvoie le champ inconnue representant la vitesse
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Inc&
-//    Signification: le champ inconnue representant la vitesse
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le champ inconnue representant la vitesse
+ *
+ * @return (Champ_Inc&) le champ inconnue representant la vitesse
+ */
 const Champ_base& Op_Conv_negligeable::vitesse() const
 {
   return la_vitesse.valeur();

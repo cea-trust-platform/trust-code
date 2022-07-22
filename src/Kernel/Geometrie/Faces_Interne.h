@@ -21,18 +21,15 @@
 #include <Frontiere.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Faces_Interne
-//    La classe sert a representer un ensemble de faces qui sont internes
-//    d'un point de vue geometrique mais qui sont traitees comme des faces
-//    frontieres par les operateurs.
-//    On se sert des Faces_Internes pour representer des plaques a l'interieur
-//    d'un domaine fluide par exemple
-// .SECTION voir aussi
-//    Frontiere Zone
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Faces_Interne La classe sert a representer un ensemble de faces qui sont internes
+ *
+ *     d'un point de vue geometrique mais qui sont traitees comme des faces
+ *     frontieres par les operateurs.
+ *     On se sert des Faces_Internes pour representer des plaques a l'interieur
+ *     d'un domaine fluide par exemple
+ *
+ * @sa Frontiere Zone
+ */
 class Faces_Interne : public Frontiere
 {
   Declare_instanciable(Faces_Interne);

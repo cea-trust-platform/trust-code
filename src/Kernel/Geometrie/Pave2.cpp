@@ -17,39 +17,26 @@
 #include <math.h>
 
 
-// Description:
-//    Lit les specifications d'une frontiere du jeu de donnee
-//    a partir d'un flot d'entree et la construit.
-//    Format:
-//    nom_front X = X0 Y0 <= Y <= Y1 Z0 <= Z <= Z1
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Parametre: Frontiere& front
-//    Signification: la frontiere lue
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: mot clef "X" attendu
-// Exception: mot clef "=" attendu
-// Exception: extremite en X invalide
-// Exception: mot clef "X" ou "Y" attendu
-// Exception: mot clef "<=" attendu
-// Exception: mot clef "Y" attendu
-// Exception: extremite en Y invalide
-// Exception: il n'y a pas de bord en teta, vous avez maille
-//            une couronne complete
-// Exception: mot clef "X" ou "Y" ou "Z" attendu
-// Exception: mot clef "Z" attendu
-// Exception: extremite en Z invalide
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit les specifications d'une frontiere du jeu de donnee a partir d'un flot d'entree et la construit.
+ *
+ *     Format:
+ *     nom_front X = X0 Y0 <= Y <= Y1 Z0 <= Z <= Z1
+ *
+ * @param (Entree& is) un flot d'entree
+ * @param (Frontiere& front) la frontiere lue
+ * @throws mot clef "X" attendu
+ * @throws mot clef "=" attendu
+ * @throws extremite en X invalide
+ * @throws mot clef "X" ou "Y" attendu
+ * @throws mot clef "<=" attendu
+ * @throws mot clef "Y" attendu
+ * @throws extremite en Y invalide
+ * @throws il n'y a pas de bord en teta, vous avez maille
+ * une couronne complete
+ * @throws mot clef "X" ou "Y" ou "Z" attendu
+ * @throws mot clef "Z" attendu
+ * @throws extremite en Z invalide
+ */
 void Pave::lire_front(Entree& is, Frontiere& front)
 {
   int i, j, k;

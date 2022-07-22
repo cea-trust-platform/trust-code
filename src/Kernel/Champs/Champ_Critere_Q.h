@@ -19,17 +19,12 @@
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_Critere_Q
-//     Permet de visualiser les tourbillons sans etre polluer par les gradients
-//       = 0.5*(\Omega_{ij}*\Omega_{ij}-S_{ij}*S_{ij})
-// .SECTION voir aussi
-//     Classe abstraite
-//     Methode abstraite
-//       void me_calculer(double )
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_Critere_Q Permet de visualiser les tourbillons sans etre polluer par les gradients
+ *
+ *        = 0.5*(\Omega_{ij}*\Omega_{ij}-S_{ij}*S_{ij})
+ *
+ * @sa Classe abstraite, Methode abstraite, void me_calculer(double )
+ */
 class Champ_Critere_Q
 {
 

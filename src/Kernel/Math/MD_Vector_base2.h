@@ -63,8 +63,11 @@ public:
   ArrOfInt blocs_items_to_compute_;
 };
 
-// Description: methode outil pour ajouter un item a un tableau du genre "blocs" contenant
-//  des series de blocs... alonge le bloc precedent ou commence un nouveau bloc si l'item n'est pas contigu avec le bloc precedent.
+/*! @brief methode outil pour ajouter un item a un tableau du genre "blocs" contenant des series de blocs.
+ *
+ * .. alonge le bloc precedent ou commence un nouveau bloc si l'item n'est pas contigu avec le bloc precedent.
+ *
+ */
 void MD_Vector_base2::append_item_to_blocs(ArrOfInt& blocs, int item)
 {
   int n = blocs.size_array();

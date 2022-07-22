@@ -84,8 +84,9 @@ void SSOR::prepare_(const Matrice_Base& la_matrice, const DoubleVect& secmem)
   Precond_base::prepare_(la_matrice, secmem);
 }
 
-// Description:
-//    Calcule la solution du systeme lineaire: A * solution = b avec la methode de relaxation SSOR.
+/*! @brief Calcule la solution du systeme lineaire: A * solution = b avec la methode de relaxation SSOR.
+ *
+ */
 int SSOR::preconditionner_(const Matrice_Base& la_matrice, const DoubleVect& b, DoubleVect& solution)
 {
   // pour compatibilite historique:

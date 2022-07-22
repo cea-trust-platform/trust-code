@@ -93,17 +93,14 @@ void Reordonner_faces_periodiques::chercher_direction_perio(ArrOfDouble& directi
   Cerr << "Periodicity direction for " << dom.le_nom() << "/" << bord << " " << direction_perio;
 }
 
-// Description:
-//  Reordonne le tableau "faces" selon la convention des faces periodiques:
-//  D'abord les faces d'une extremite, puis dans le meme ordre, les faces jumelles.
-//  Attention, l'algorithme est en n carre (lent), et ne fonctionne qu'en sequentiel.
-// Parametre: zone
-// Signification: la zone a laquelle appartiennent les faces
-// Parametre: direction_perio
-// Signification: le vecteur qui separe le centre d'une face au centre de la face opposee
-// Parametre: faces
-// Signification: le tableau des faces (pour chaque face, indices de ses sommets) a reordonner
-// Valeur de retour: 1 si ok, 0 si on n'a pas trouve de face jumelle a une face a precision_geom pres.
+/*! @brief Reordonne le tableau "faces" selon la convention des faces periodiques: D'abord les faces d'une extremite, puis dans le meme ordre, les faces jumelles.
+ *
+ *   Attention, l'algorithme est en n carre (lent), et ne fonctionne qu'en sequentiel.
+ *
+ * @param (zone) la zone a laquelle appartiennent les faces
+ * @param (direction_perio) le vecteur qui separe le centre d'une face au centre de la face opposee
+ * @param (faces) le tableau des faces (pour chaque face, indices de ses sommets) a reordonner Valeur de retour: 1 si ok, 0 si on n'a pas trouve de face jumelle a une face a precision_geom pres.
+ */
 int Reordonner_faces_periodiques::reordonner_faces_periodiques(const Domaine& domaine,
                                                                IntTab& faces,
                                                                const ArrOfDouble& direction_perio,
@@ -200,12 +197,15 @@ int Reordonner_faces_periodiques::reordonner_faces_periodiques(const Domaine& do
   return 1;
 }
 
-// Description: essaie de verifier si les faces du bord num_bord sont ordonnees suivant la convention
-// des faces periodiques. On stocke dans vecteur_delta la direction de periodicite presumee (intervalle
-// mesure entre la premiere face et la face jumelle), et erreur le max de l'erreur par rapport a cette
-// mesure pour les autres faces.
-// En parallele, l'erreur est le max sur tous les processeurs
-// Valeur de retour: 1 si ok, 0 si l'erreur est superieure a precision_geom.
+/*! @brief essaie de verifier si les faces du bord num_bord sont ordonnees suivant la convention des faces periodiques.
+ *
+ * On stocke dans vecteur_delta la direction de periodicite presumee (intervalle
+ *  mesure entre la premiere face et la face jumelle), et erreur le max de l'erreur par rapport a cette
+ *  mesure pour les autres faces.
+ *  En parallele, l'erreur est le max sur tous les processeurs
+ *  Valeur de retour: 1 si ok, 0 si l'erreur est superieure a precision_geom.
+ *
+ */
 int Reordonner_faces_periodiques::check_faces_periodiques(const Frontiere& frontiere,
                                                           ArrOfDouble& vecteur_delta,
                                                           ArrOfDouble& erreur,

@@ -20,21 +20,18 @@
 #include <communications.h>
 #include <EFichier.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//   Classe de base des entrees diffusees: le processeur maitre lit
-//   les donnees dans la classe get_entree_master() et les diffuse
-//   sur tous les processeurs.
-//   Attention, les methodes operator>>(), get(), eof(), good() et bad()
-//   doivent etre appelees simultanement sur tous les processeurs.
-//   Les classes derivees doivent reimplementer get_entree_master().
-//   La methode get_entree_master() doit renvoyer une reference a l'entree
-//   qui sert de source sur le processeur maitre, elle n'est jamais appellee
-//   sur les autres processeurs.
-//   Attention: l'entree source doit avoir set_error_action(ERROR_CONTINUE)
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe de base des entrees diffusees: le processeur maitre lit les donnees dans la classe get_entree_master() et les diffuse
+ *
+ *    sur tous les processeurs.
+ *    Attention, les methodes operator>>(), get(), eof(), good() et bad()
+ *    doivent etre appelees simultanement sur tous les processeurs.
+ *    Les classes derivees doivent reimplementer get_entree_master().
+ *    La methode get_entree_master() doit renvoyer une reference a l'entree
+ *    qui sert de source sur le processeur maitre, elle n'est jamais appellee
+ *    sur les autres processeurs.
+ *    Attention: l'entree source doit avoir set_error_action(ERROR_CONTINUE)
+ *
+ */
 
 //    Since 1.7.0 version, Lec_Diffuse_base class inherits EFichier class not Entree class
 class Lec_Diffuse_base: public EFichier

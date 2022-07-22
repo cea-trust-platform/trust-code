@@ -18,8 +18,11 @@
 
 #include <Format_Post_Lata.h>
 
-// .DESCRIPTION        : classe d'ecriture des postraitement au format lata V1
-//   (Trio_U version 1.4.9 et anterieures). Fournie pour compatibilite
+/*! @brief : classe d'ecriture des postraitement au format lata V1 (Trio_U version 1.
+ *
+ * 4.9 et anterieures). Fournie pour compatibilite
+ *
+ */
 class Format_Post_Lata_V1 : public Format_Post_Lata
 {
   Declare_instanciable_sans_constructeur(Format_Post_Lata_V1);

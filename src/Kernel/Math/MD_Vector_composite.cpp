@@ -21,8 +21,11 @@ implemente_vect_no_obj(MD_Vector)
 
 Implemente_instanciable(MD_Vector_composite,"MD_Vector_composite",MD_Vector_base2);
 
-// Description: method used to dump/restore a descriptor in a file
-//  Each process writes a different descriptor. See MD_Vector_tools::dump_vector_with_md()
+/*! @brief method used to dump/restore a descriptor in a file Each process writes a different descriptor.
+ *
+ * See MD_Vector_tools::dump_vector_with_md()
+ *
+ */
 Sortie& MD_Vector_composite::printOn(Sortie& os) const
 {
   MD_Vector_base2::printOn(os);
@@ -44,8 +47,11 @@ Sortie& MD_Vector_composite::printOn(Sortie& os) const
   return os;
 }
 
-// Description: method used to dump/restore a descriptor in a file
-//  Each process writes a different descriptor. See MD_Vector_tools::restore_vector_with_md()
+/*! @brief method used to dump/restore a descriptor in a file Each process writes a different descriptor.
+ *
+ * See MD_Vector_tools::restore_vector_with_md()
+ *
+ */
 Entree& MD_Vector_composite::readOn(Entree& is)
 {
   MD_Vector_base2::readOn(is);
@@ -98,7 +104,9 @@ static void append_blocs(ArrOfInt& dest, const ArrOfInt& src, int offset = 0, in
     dest[i] = offset + src[j] * multiplier;
 }
 
-// Description: returns i such that a[i]==x, or -1 if x is not found
+/*! @brief returns i such that a[i]==x, or -1 if x is not found
+ *
+ */
 static int find_in_array(const ArrOfInt& a, int x)
 {
   int n;
@@ -244,43 +252,45 @@ static void append_global_md(MD_Vector_std& dest, const MD_Vector_std& src, int 
   dest.nb_items_to_items_ = new_nb_items_to_items;
 }
 
-// Description:
-//   Append the "part" descriptor to the composite vector.
-//   By default, shape=0 says that for each item in "part", one item will
-//   be appended to the composite descriptor.
-//   If shape=n, each items in "part" will be duplicated n times in the
-//   composite descriptor.
-//   The difference between 0 and 1 is when we create parts with DoubleTab_parts
-//   (see class DoubleTab_parts)
-//  Exemples:
-//   1) P1Bubble pressure fields have one, two or three parts with shape=1.
-//       (see Zone_VEF_PreP1b::discretiser_suite())
-//   2) One can create a composite field containing
-//    - velocity degrees of freedom at the faces
-//    - pressure d.o.f. at the elements
-//    - one multiscalar d.o.f at nodes
-//        MD_Vector_composite mdc;
-//        mdc.add_part(zonevf.md_vector_faces(), dimension);
-//        mdc.add_part(zone.md_vector_elements(), 0 /* scalar */);
-//        mdc.add_part(domaine.md_vector_sommets(), 1 /* multiscalar with 1 component */);
-//        MD_Vector md;
-//        md.copy(mdc);
-//    I will create a DoubleVect of this form by attaching this descriptor:
-//              DoubleVect v;
-//         MD_Vector_tools::creer_tableau_distribue(md, v);
-//       DoubleTab_Parts parts(v);
-//       // parts[0] has nb_dim()==2, dimensions are [ zonevf.nb_faces_tot, 3 ]
-//       // parts[1] has nb_dim()==1, dimension [ zone.nb_elem_tot ] /* speciel case shape==0 */
-//       // parts[2] has nb_dim()==2, dimension [ domaine.nb_som_tot, 1 ]
-//    I can duplicate items in the descriptor by creating DoubleTab objects:
-//    The following code will create an array containing 12 d.o.f for each face
-//    followed by 4 d.o.f for each element and 4 d.o.f for each node:
-//       DoubleTab tab(0, 4);
-//       MD_Vector_tools::creer_tableau_distribue(md, tab);
-//       DoubleTab_Parts parts(tab);
-//       // parts[0] has nb_dim()==3, dimensions are [ zonevf.nb_faces_tot, 3, 4 ]
-//       // parts[1] has nb_dim()==2, dimension [ zone.nb_elem_tot, 4 ] /* speciel case shape==0 */
-//       // parts[2] has nb_dim()==3, dimension [ domaine.nb_som_tot, 1, 4 ]
+/*! @brief Append the "part" descriptor to the composite vector.
+ *
+ * By default, shape=0 says that for each item in "part", one item will
+ *    be appended to the composite descriptor.
+ *    If shape=n, each items in "part" will be duplicated n times in the
+ *    composite descriptor.
+ *    The difference between 0 and 1 is when we create parts with DoubleTab_parts
+ *    (see class DoubleTab_parts)
+ *   Exemples:
+ *    1) P1Bubble pressure fields have one, two or three parts with shape=1.
+ *        (see Zone_VEF_PreP1b::discretiser_suite())
+ *    2) One can create a composite field containing
+ *     - velocity degrees of freedom at the faces
+ *     - pressure d.o.f. at the elements
+ *     - one multiscalar d.o.f at nodes
+ *         MD_Vector_composite mdc;
+ *         mdc.add_part(zonevf.md_vector_faces(), dimension);
+ *         mdc.add_part(zone.md_vector_elements(), 0 // scalar //);
+ *         mdc.add_part(domaine.md_vector_sommets(), 1 // multiscalar with 1 component //);
+ *         MD_Vector md;
+ *         md.copy(mdc);
+ *     I will create a DoubleVect of this form by attaching this descriptor:
+ *               DoubleVect v;
+ *          MD_Vector_tools::creer_tableau_distribue(md, v);
+ *        DoubleTab_Parts parts(v);
+ *        // parts[0] has nb_dim()==2, dimensions are [ zonevf.nb_faces_tot, 3 ]
+ *        // parts[1] has nb_dim()==1, dimension [ zone.nb_elem_tot ] // speciel case shape==0 //
+ *        // parts[2] has nb_dim()==2, dimension [ domaine.nb_som_tot, 1 ]
+ *     I can duplicate items in the descriptor by creating DoubleTab objects:
+ *     The following code will create an array containing 12 d.o.f for each face
+ *     followed by 4 d.o.f for each element and 4 d.o.f for each node:
+ *        DoubleTab tab(0, 4);
+ *        MD_Vector_tools::creer_tableau_distribue(md, tab);
+ *        DoubleTab_Parts parts(tab);
+ *        // parts[0] has nb_dim()==3, dimensions are [ zonevf.nb_faces_tot, 3, 4 ]
+ *        // parts[1] has nb_dim()==2, dimension [ zone.nb_elem_tot, 4 ] // speciel case shape==0 //
+ *        // parts[2] has nb_dim()==3, dimension [ domaine.nb_som_tot, 1, 4 ]
+ *
+ */
 void MD_Vector_composite::add_part(const MD_Vector& part, int shape, Nom name)
 {
   assert(part.non_nul());

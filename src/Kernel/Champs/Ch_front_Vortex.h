@@ -22,17 +22,14 @@
 
 #include <Ref_Domaine.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Ch_fr_Vortex
-//     Classe derivee de Champ_front_var qui represente les
-//     champs aux frontieres calcules suivant la methode des vortex
-//        nval
-//        xi yi zi val_i
-// .SECTION voir aussi
-//     Champ_front_base Champ_front_var
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Ch_fr_Vortex Classe derivee de Champ_front_var qui represente les
+ *
+ *      champs aux frontieres calcules suivant la methode des vortex
+ *         nval
+ *         xi yi zi val_i
+ *
+ * @sa Champ_front_base Champ_front_var
+ */
 class Ch_front_Vortex : public Champ_front_var_instationnaire
 {
   Declare_instanciable_sans_destructeur(Ch_front_Vortex);

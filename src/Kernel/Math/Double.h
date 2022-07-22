@@ -67,7 +67,9 @@
 #  define DMINFLOAT        1e-30
 # endif
 
-// .DESCRIPTION : fonctions utiles sur les double
+/*! @brief : fonctions utiles sur les double
+ *
+ */
 
 inline double carre(double x) { return x*x; }
 

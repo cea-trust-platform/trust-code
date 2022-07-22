@@ -16,17 +16,12 @@
 #ifndef LireMED_included
 #define LireMED_included
 
-///////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-// Classe LireMED
-//    Lire un fichier MED
-//    Structure du jeu de donnee (en dimension 2) :
-//    LireMED dom medfile
-// .SECTION voir aussi
-//
-//
-///////////////////////////////////////////////////////////////////////////
+/*! @brief Classe LireMED Lire un fichier MED
+ *
+ *     Structure du jeu de donnee (en dimension 2) :
+ *     LireMED dom medfile
+ *
+ */
 
 #include <Interprete_geometrique_base.h>
 #include <TRUSTTabs_forward.h>

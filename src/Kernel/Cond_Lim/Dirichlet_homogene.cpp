@@ -18,41 +18,22 @@
 Implemente_base(Dirichlet_homogene,"Dirichlet_homogene",Cond_lim_base);
 
 
-// Description:
-//    Ecrit le type de l'objet sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit le type de l'objet sur un flot de sortie.
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Dirichlet_homogene::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << "\n";
 }
 
 
-// Description:
-//    Type le champ a la frontiere en "Champ_front_uniforme"
-//    Ne lit rien sur le flot passe en parametre
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: NON ACCEDE
-// Retour: Entree& s
-//    Signification: le flot d'entree
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Type le champ a la frontiere en "Champ_front_uniforme" Ne lit rien sur le flot passe en parametre
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree& s) le flot d'entree
+ */
 Entree& Dirichlet_homogene::readOn(Entree& s )
 {
   le_champ_front.typer("Champ_front_uniforme");

@@ -19,9 +19,9 @@
 
 #include <Champ_Gen_de_Champs_Gen.h>
 
-//
-// .DESCRIPTION class Champ_Generique_Reduction_0D
-//
+/*! @brief class Champ_Generique_Reduction_0D
+ *
+ */
 
 // Champ destine a post-traiter un champ reduit a une dimension 0D
 // On construit un champ prenant en tout point de l espace la valeur reduite

@@ -26,29 +26,23 @@ Implemente_instanciable_sans_constructeur(Format_Post_Lata,"Format_Post_Lata_V2"
 
 #define _LATA_INT_TYPE_ int
 
-// Description:
-//  Construit un fichier de type EcrFicPartage(Bin) ou EcrFicPrive(Bin),
-//  binaire ou pas selon le parametre "format".
-//  Si parallel==MULTIPLE_FILES, le fichier est de type EcrFicPrive(Bin).
-//    Dans ce cas, chaque processeur ouvre un fichier different, dont
-//    le nom est "basename_XXXXXextension", ou XXXXX est egal a Process::me().
-//    Tous les processeurs renverront is_master() == 1.
-//  Si parallel==SINGLE_FILE est non nul, le fichier est de type EcrFicPartage(Bin).
-//    Seul le processeur maitre ouvre le fichier, le nom du fichier est
-//    "basenameextension".
-//    is_master() renverra 1 sur le maitre, 0 sur les autres processeurs.
-// Parametre:     basename
-// Signification: debut du nom du fichier
-// Parametre:     extension
-// Signification: fin du nom du fichier
-// Parametre:     mode_append
-// Signification: Si mode_append==ERASE, on ouvre en mode ecriture,
-//                si mode_append==APPEND, on ouvre en mode append.
-// Parametre:     format
-// Signification: Determine si on ouvre en binaire ou pas.
-//                (valeurs possibles: Format_Post_Lata::ASCII ou Format_Post_Lata::BINAIRE)
-// Parametre:     parallel
-// Signification: fichier unique partage ou plusieurs fichiers prives...
+/*! @brief Construit un fichier de type EcrFicPartage(Bin) ou EcrFicPrive(Bin), binaire ou pas selon le parametre "format".
+ *
+ *   Si parallel==MULTIPLE_FILES, le fichier est de type EcrFicPrive(Bin).
+ *     Dans ce cas, chaque processeur ouvre un fichier different, dont
+ *     le nom est "basename_XXXXXextension", ou XXXXX est egal a Process::me().
+ *     Tous les processeurs renverront is_master() == 1.
+ *   Si parallel==SINGLE_FILE est non nul, le fichier est de type EcrFicPartage(Bin).
+ *     Seul le processeur maitre ouvre le fichier, le nom du fichier est
+ *     "basenameextension".
+ *     is_master() renverra 1 sur le maitre, 0 sur les autres processeurs.
+ *
+ * @param (basename) debut du nom du fichier
+ * @param (extension) fin du nom du fichier
+ * @param (mode_append) Si mode_append==ERASE, on ouvre en mode ecriture, si mode_append==APPEND, on ouvre en mode append.
+ * @param (format) Determine si on ouvre en binaire ou pas. (valeurs possibles: Format_Post_Lata::ASCII ou Format_Post_Lata::BINAIRE)
+ * @param (parallel) fichier unique partage ou plusieurs fichiers prives...
+ */
 Fichier_Lata::Fichier_Lata(const char * basename, const char * extension,
                            Mode mode_append,
                            Format_Post_Lata::Format format,
@@ -153,17 +147,19 @@ SFichier& Fichier_Lata::get_SFichier()
   return *fichier_;
 }
 
-// Description:
-//  Renvoie le nom du fichier avec le path
+/*! @brief Renvoie le nom du fichier avec le path
+ *
+ */
 const Nom& Fichier_Lata::get_filename() const
 {
   return filename_;
 }
 
-// Description:
-//  Si le fichier est de type partage, renvoie 1 si me() est egal au master
-//  du groupe et 0 sinon,
-//  Si le fichier est prive, renvoie 1 sur tous les processeurs.
+/*! @brief Si le fichier est de type partage, renvoie 1 si me() est egal au master du groupe et 0 sinon,
+ *
+ *   Si le fichier est prive, renvoie 1 sur tous les processeurs.
+ *
+ */
 int Fichier_Lata::is_master() const
 {
   int resu = 0;
@@ -181,9 +177,9 @@ int Fichier_Lata::is_master() const
   return resu;
 }
 
-// Description:
-//  Si le fichier est de type partage, appelle la methode syncfile(),
-//  sinon ne fait rien.
+/*! @brief Si le fichier est de type partage, appelle la methode syncfile(), sinon ne fait rien.
+ *
+ */
 void Fichier_Lata::syncfile()
 {
   if (is_parallel_ && Process::nproc() > 1)
@@ -204,17 +200,20 @@ Fichier_Lata_maitre::Fichier_Lata_maitre(const char * basename,
 
 // ****************************************************************************
 
-// Description:
-//  Renvoie l'extension conventionnelle des fichiers lata : ".lata"
+/*! @brief Renvoie l'extension conventionnelle des fichiers lata : ".
+ *
+ * lata"
+ *
+ */
 const char * Format_Post_Lata::extension_lata()
 {
   static const char * ext = ".lata";
   return ext;
 }
 
-// Description:
-//  Renvoie le nom d'un fichier sans le path :
-//  on enleve les caracteres avant le dernier /
+/*! @brief Renvoie le nom d'un fichier sans le path : on enleve les caracteres avant le dernier /
+ *
+ */
 const char * Format_Post_Lata::remove_path(const char * filename)
 {
   int i = (int)strlen(filename);
@@ -223,10 +222,11 @@ const char * Format_Post_Lata::remove_path(const char * filename)
   return filename + i;
 }
 
-// Description:
-//  Ouvre le fichier maitre en mode ERASE et ecrit l'entete du fichier lata
-//  (sur le processeur maitre seulement).
-////void Format_Post_Lata::ecrire_entete_lata()
+/*! @brief Ouvre le fichier maitre en mode ERASE et ecrit l'entete du fichier lata (sur le processeur maitre seulement).
+ *
+ * void Format_Post_Lata::ecrire_entete_lata()
+ *
+ */
 int Format_Post_Lata::ecrire_entete(const double temps_courant,const int reprise,const int est_le_premier_post)
 {
 
@@ -296,19 +296,20 @@ int Format_Post_Lata::preparer_post(const Nom& id_du_domaine, const int est_le_p
   return 1;
 }
 
-// Description:
-//  fichier est un fichier lata de donnees (pas le fichier maitre)
-//  on y ecrit le tableau tab tel quel (en binaire ou ascii et sur un ou
-//  plusieurs fichiers en parallel).
-//  nb_colonnes est rempli avec le produit des tab.dimension(i) pour i>0
-//
-//  bloc_number et nb_blocs sont utilises pour les valeurs aux sommets en 2D
-//  pour le format lataV1 : on ecrit deux fois le nombre de sommets dans le meme bloc
-//  (bloc_number = le numero du bloc courant en cours d'ecriture,
-//   nb_blocs = le nombre total de blocs ecrits. Le tag de debut et de fin
-//   est ecrit au debut du premier bloc et a la fin du dernier et le nombre est
-//   la taille du tableau multiplie par le nombre de blocs (on suppose que tous
-//   les blocs sont identiques)).
+/*! @brief fichier est un fichier lata de donnees (pas le fichier maitre) on y ecrit le tableau tab tel quel (en binaire ou ascii et sur un ou
+ *
+ *   plusieurs fichiers en parallel).
+ *   nb_colonnes est rempli avec le produit des tab.dimension(i) pour i>0
+ *
+ *   bloc_number et nb_blocs sont utilises pour les valeurs aux sommets en 2D
+ *   pour le format lataV1 : on ecrit deux fois le nombre de sommets dans le meme bloc
+ *   (bloc_number = le numero du bloc courant en cours d'ecriture,
+ *    nb_blocs = le nombre total de blocs ecrits. Le tag de debut et de fin
+ *    est ecrit au debut du premier bloc et a la fin du dernier et le nombre est
+ *    la taille du tableau multiplie par le nombre de blocs (on suppose que tous
+ *    les blocs sont identiques)).
+ *
+ */
 int Format_Post_Lata::write_doubletab(Fichier_Lata& fichier, const DoubleTab& tab, int& nb_colonnes, const Options_Para& option, const int bloc_number, const int nb_blocs)
 {
   int line_size = 1;
@@ -391,14 +392,17 @@ int Format_Post_Lata::write_doubletab(Fichier_Lata& fichier, const DoubleTab& ta
   return nb_lignes_tot;
 }
 
-// Description: Ecriture d'un tableau d'entiers dans le fichier fourni.
-//  Les valeurs ecrites sont les valeurs du tableau auquelles ont ajoute
-//  "decalage". Cette valeur est utilisee pour passer en numerotation
-//  fortran (ajouter 1), ou pour passer en numerotation globale (ajouter
-//  le nombre d'elements sur les processeurs precedents).
-//  On renvoie dans nb_colonnes la somme des dimension(i) pour i>0.
-// Valeur de retour: somme des dimension(0) ecrits (selon que tous les
-//  processeurs ecrivent sur le meme fichier ou pas).
+/*! @brief Ecriture d'un tableau d'entiers dans le fichier fourni.
+ *
+ * Les valeurs ecrites sont les valeurs du tableau auquelles ont ajoute
+ *   "decalage". Cette valeur est utilisee pour passer en numerotation
+ *   fortran (ajouter 1), ou pour passer en numerotation globale (ajouter
+ *   le nombre d'elements sur les processeurs precedents).
+ *   On renvoie dans nb_colonnes la somme des dimension(i) pour i>0.
+ *  Valeur de retour: somme des dimension(0) ecrits (selon que tous les
+ *   processeurs ecrivent sur le meme fichier ou pas).
+ *
+ */
 int Format_Post_Lata::write_inttab(Fichier_Lata& fichier, int decalage, int decalage_partiel, const IntTab& tab, int& nb_colonnes, const Options_Para& option)
 {
   assert(decalage_partiel>=decalage);
@@ -524,15 +528,17 @@ int Format_Post_Lata::write_inttab(Fichier_Lata& fichier, int decalage, int deca
   return nb_lignes_tot;
 }
 
-// Description:
-//  Constructeur par defaut: format_ ASCII et options_para_ = SINGLE_FILE
+/*! @brief Constructeur par defaut: format_ ASCII et options_para_ = SINGLE_FILE
+ *
+ */
 Format_Post_Lata::Format_Post_Lata()
 {
   reset();
 }
 
-// Description:
-//  Remet l'objet dans l'etat obtenu par le constructeur par defaut.
+/*! @brief Remet l'objet dans l'etat obtenu par le constructeur par defaut.
+ *
+ */
 void Format_Post_Lata::reset()
 {
   lata_basename_ = "??";
@@ -545,7 +551,9 @@ void Format_Post_Lata::reset()
   file_existe_=0;
 }
 
-// Description: erreur => exit
+/*! @brief erreur => exit
+ *
+ */
 Sortie& Format_Post_Lata::printOn(Sortie& os) const
 {
   Cerr << "Format_Post_Lata::printOn : error" << finl;
@@ -553,13 +561,15 @@ Sortie& Format_Post_Lata::printOn(Sortie& os) const
   return os;
 }
 
-// Description: Lecture des parametres du postraitement au format "jeu de donnees"
-//  Le format attendu est le suivant:
-//  {
-//       nom_fichier nom                       champ obligatoire
-//     [ format   ascii|binaire ]              valeur par defaut : ascii
-//     [ parallel single_file|multiple_files ] valeur par defaut : single_file
-//  }
+/*! @brief Lecture des parametres du postraitement au format "jeu de donnees" Le format attendu est le suivant:
+ *
+ *   {
+ *        nom_fichier nom                       champ obligatoire
+ *      [ format   ascii|binaire ]              valeur par defaut : ascii
+ *      [ parallel single_file|multiple_files ] valeur par defaut : single_file
+ *   }
+ *
+ */
 Entree& Format_Post_Lata::readOn(Entree& is)
 {
   assert(status == RESET);
@@ -581,8 +591,9 @@ int Format_Post_Lata::lire_motcle_non_standard(const Motcle& mot, Entree& is)
   return 0;
 }
 
-// Description: Initialisation de la classe avec des parametres par
-// defaut (format ASCII, SINGLE_FILE)
+/*! @brief Initialisation de la classe avec des parametres par defaut (format ASCII, SINGLE_FILE)
+ *
+ */
 int Format_Post_Lata::initialize_by_default(const Nom& file_basename)
 {
   assert(status == RESET);
@@ -615,8 +626,9 @@ int Format_Post_Lata::initialize(const Nom& file_basename, const int format, con
   return 1;
 }
 
-// Description: Initialisation de la classe, ouverture du fichier et ecriture
-//  de l'entete.
+/*! @brief Initialisation de la classe, ouverture du fichier et ecriture de l'entete.
+ *
+ */
 int Format_Post_Lata::initialize_lata(const Nom& file_basename,
                                       const Format format,
                                       const Options_Para options_para)
@@ -630,7 +642,9 @@ int Format_Post_Lata::initialize_lata(const Nom& file_basename,
   return 1;
 }
 
-// Description: Modification du nom du fichier de postraitement.
+/*! @brief Modification du nom du fichier de postraitement.
+ *
+ */
 int Format_Post_Lata::modify_file_basename(const Nom file_basename, const int a_faire, const double tinit)
 {
   assert(a_faire==0||a_faire==1||a_faire==2);
@@ -780,14 +794,15 @@ int Format_Post_Lata::finir_sans_reprise(const Nom file_basename)
   return 1;
 }
 
-// Description:
-//  voir Format_Post_base::ecrire_domaine
-//  On accepte l'ecriture d'un domaine dans un pas de temps, mais
-//  les id_domaines doivent etre tous distincts.
-//  Ecrit le fichier "basename(_XXXXX).lata.nom_domaine", qui contient
-//  la liste des sommets et la liste des elements.
-//  Si le PE est maitre, ouvre le fichier maitre en mode APPEND et
-//  ajoute une reference a ce fichier.
+/*! @brief voir Format_Post_base::ecrire_domaine On accepte l'ecriture d'un domaine dans un pas de temps, mais
+ *
+ *   les id_domaines doivent etre tous distincts.
+ *   Ecrit le fichier "basename(_XXXXX).lata.nom_domaine", qui contient
+ *   la liste des sommets et la liste des elements.
+ *   Si le PE est maitre, ouvre le fichier maitre en mode APPEND et
+ *   ajoute une reference a ce fichier.
+ *
+ */
 int Format_Post_Lata::ecrire_domaine(const Domaine& domaine,const int est_le_premier_post)
 {
   if (status == RESET)
@@ -964,18 +979,21 @@ int Format_Post_Lata::ecrire_domaine(const Domaine& domaine,const int est_le_pre
   return 1; // ok tout va bien
 }
 
-// Description: commence l'ecriture d'un nouveau pas de temps
-//  En l'occurence pour le format LATA:
-//  Ouvre le fichier maitre en mode APPEND et ajoute une ligne
-//   "TEMPS xxxxx" si ce temps n'a pas encore ete ecrit
+/*! @brief commence l'ecriture d'un nouveau pas de temps En l'occurence pour le format LATA:
+ *
+ *   Ouvre le fichier maitre en mode APPEND et ajoute une ligne
+ *    "TEMPS xxxxx" si ce temps n'a pas encore ete ecrit
+ *
+ */
 int Format_Post_Lata::ecrire_temps(const double temps)
 {
   ecrire_temps_lata(temps,temps_courant_,lata_basename_,status,options_para_);
   return 1;
 }
 
-// Description:
-//  voir Format_Post_base::ecrire_champ
+/*! @brief voir Format_Post_base::ecrire_champ
+ *
+ */
 int Format_Post_Lata::ecrire_champ(const Domaine& domaine, const Noms& unite_, const Noms& noms_compo, int ncomp, double temps, double temps_courant, const Nom& id_du_champ, const Nom& id_du_domaine,
                                    const Nom& localisation, const Nom& nature, const DoubleTab& valeurs)
 {
@@ -1061,14 +1079,15 @@ int Format_Post_Lata::ecrire_champ(const Domaine& domaine, const Noms& unite_, c
 }
 
 
-// Description:
-//  voir Format_Post_base::ecrire_champ
-//  ATTENTION: si "reference" est non vide on ajoute 1 a toutes les
-//   valeurs pour passer en numerotation fortran, et si de plus on
-//   ecrit un fichier lata unique pour tous les processeurs, on ajoute un
-//   decalage a toutes les valeurs (renumerotation des indices pour
-//   passer en numerotation globale, voir le codage de ecrire_domaine
-//   par exemple)
+/*! @brief voir Format_Post_base::ecrire_champ ATTENTION: si "reference" est non vide on ajoute 1 a toutes les
+ *
+ *    valeurs pour passer en numerotation fortran, et si de plus on
+ *    ecrit un fichier lata unique pour tous les processeurs, on ajoute un
+ *    decalage a toutes les valeurs (renumerotation des indices pour
+ *    passer en numerotation globale, voir le codage de ecrire_domaine
+ *    par exemple)
+ *
+ */
 int Format_Post_Lata::ecrire_item_int(//const Nom    & id_champ,
   const Nom&     id_item,
   const Nom&     id_du_domaine,

@@ -34,321 +34,209 @@ Implemente_base(Probleme_U,"Probleme_U",Objet_U);
 using ICoCo::WrongArgument;
 using ICoCo::TrioField;
 
-// Description:
-//    A surcharger...
+/*! @brief A surcharger.
+ *
+ * ..
+ *
+ */
 Sortie& Probleme_U::printOn(Sortie& os) const
 {
   return os;
 }
 
-// Description:
-//    A surcharger...
+/*! @brief A surcharger.
+ *
+ * ..
+ *
+ */
 Entree& Probleme_U::readOn(Entree& is)
 {
   return is ;
 }
 
-// Description:
-// This method is called once at the beginning, before any other one of
-// the interface Problem.
-// Precondition: Problem is instantiated, not initialized
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: WrongContext
-// Effets de bord:
-// Postcondition:
-// Problem initialized.
-// Unknown and given fields are initialized at initial time
+/*! @brief This method is called once at the beginning, before any other one of the interface Problem.
+ *
+ * @throws WrongContext
+ */
 void Probleme_U::initialize()
 {
 }
 
-// Description:
-// This method is called once at the end, after any other one.
-// It frees the memory and saves anything that needs to be saved.
-// Precondition: initialize, but not yet terminate
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: WrongContext
-// Effets de bord:
-// Postcondition:
-// The object is ready to be destroyed.
+/*! @brief This method is called once at the end, after any other one.
+ *
+ * It frees the memory and saves anything that needs to be saved.
+ *
+ * @throws WrongContext
+ */
 void Probleme_U::terminate()
 {
 }
 
-// Description:
-// Returns the present time.
-// This value may change only at the call of validateTimeStep.
-// A surcharger
-// Precondition: initialize, not yet terminate
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: present time
-//    Contraintes:
-// Exception: WrongContext
-// Effets de bord:
-// Postcondition:
-// Problem unchanged
+/*! @brief Returns the present time.
+ *
+ * This value may change only at the call of validateTimeStep.
+ *  A surcharger
+ *
+ * @return (double) present time
+ * @throws WrongContext
+ */
 double Probleme_U::presentTime() const
 {
   return 0;
 }
 
-// Description:
-// Compute the value the Problem would like for the next time step.
-// This value will not necessarily be used at the call of initTimeStep,
-// but it is a hint.
-// This method may use all the internal state of the Problem.
-// Precondition: initialize, not yet terminate
-// Parametre: stop
-//    Signification: Does the Problem want to stop ?
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: The desired time step
-//    Contraintes:
-// Exception: WrongContext
-// Effets de bord:
-// Postcondition:
-// Problem unchanged
+/*! @brief Compute the value the Problem would like for the next time step.
+ *
+ * This value will not necessarily be used at the call of initTimeStep,
+ *  but it is a hint.
+ *  This method may use all the internal state of the Problem.
+ *
+ * @param (stop) Does the Problem want to stop ?
+ * @return (double) The desired time step
+ * @throws WrongContext
+ */
 double Probleme_U::computeTimeStep(bool& stop) const
 {
   stop=true;
   return 0;
 }
 
-// Description:
-// This method allocates and initializes the unknown and given fields
-// for the future time step.
-// The value of the interval is imposed through the parameter dt.
-// In case of error, returns false.
-// Precondition: initialize, not yet terminate, timestep not yet initialized, dt>0
-// Parametre: double dt
-//    Signification: the time interval to allocate
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: bool
-//    Signification: true=OK, false=error, not able to tackle this dt
-//    Contraintes:
-// Exception: WrongContext, WrongArgument
-// Effets de bord:
-// Postcondition:
-// Enables the call to several methods for the next time step
+/*! @brief This method allocates and initializes the unknown and given fields for the future time step.
+ *
+ *  The value of the interval is imposed through the parameter dt.
+ *  In case of error, returns false.
+ *
+ * @param (double dt) the time interval to allocate
+ * @return (bool) true=OK, false=error, not able to tackle this dt
+ * @throws WrongContext, WrongArgument
+ */
 bool Probleme_U::initTimeStep(double dt)
 {
   return false;
 }
 
-// Description:
-// Validates the calculated unknown by moving the present time
-// at the end of the time step.
-// This method is allowed to free past values of the unknown and given
-// fields.
-// Precondition: initTimeStep
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: WrongContext
-// Effets de bord:
-// Postcondition:
-// The present time has moved forward.
+/*! @brief Validates the calculated unknown by moving the present time at the end of the time step.
+ *
+ *  This method is allowed to free past values of the unknown and given
+ *  fields.
+ *
+ * @throws WrongContext
+ */
 void Probleme_U::validateTimeStep()
 {
 }
 
-// Description:
-// Tells if the Problem unknowns have changed during the last time step.
-// Precondition: validateTimeStep
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: bool
-//    Signification: true=stationary, false=not stationary
-//    Contraintes:
-// Exception: WrongContext
-// Effets de bord:
-// Postcondition:
-// Problem unchanged
+/*! @brief Tells if the Problem unknowns have changed during the last time step.
+ *
+ * @return (bool) true=stationary, false=not stationary
+ * @throws WrongContext
+ */
 bool Probleme_U::isStationary() const
 {
   return false;
 }
 
-// Description:
-// Tells to the Problem that stationary is reached or not
+/*! @brief Tells to the Problem that stationary is reached or not
+ *
+ */
 void Probleme_U::setStationary(bool)
 {
 }
 
-// Description:
-// Aborts the resolution of the current time step.
-// Precondition: initTimeStep
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: WrongContext
-// Effets de bord:
-// Postcondition:
-// Can call again initTimeStep with a new dt.
+/*! @brief Aborts the resolution of the current time step.
+ *
+ * @throws WrongContext
+ */
 void Probleme_U::abortTimeStep()
 {
 }
 
-// Description:
-// In the case solveTimeStep uses an iterative process,
-// this method executes a single iteration.
-// It is thus possible to modify the given fields between iterations.
-// converged is set to true if the process has converged, ie if the
-// unknown fields are solution to the problem on the next time step.
-// Otherwise converged is set to false.
-// The return value indicates if the convergence process behaves normally.
-// If false, the Problem wishes to abort the time step resolution.
-// Precondition: initTimeStep
-// Parametre: bool& converged
-//    Signification: It is a return value :
-//                   true if the process has converged, false otherwise.
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: bool
-//    Signification: true=OK, false=unable to converge
-//    Contraintes:
-// Exception: WrongContext
-// Effets de bord:
-// Postcondition:
-// The unknowns are updated over the next time step.
+/*! @brief In the case solveTimeStep uses an iterative process, this method executes a single iteration.
+ *
+ *  It is thus possible to modify the given fields between iterations.
+ *  converged is set to true if the process has converged, ie if the
+ *  unknown fields are solution to the problem on the next time step.
+ *  Otherwise converged is set to false.
+ *  The return value indicates if the convergence process behaves normally.
+ *  If false, the Problem wishes to abort the time step resolution.
+ *
+ * @param (bool& converged) It is a return value : true if the process has converged, false otherwise.
+ * @return (bool) true=OK, false=unable to converge
+ * @throws WrongContext
+ */
 bool Probleme_U::iterateTimeStep(bool& converged)
 {
   return false;
 }
 
-// Description:
-// Demande au probleme de postraiter ses champs, sondes,...
-// Dans Probleme_U::run(), postraiter() est appele a chaque pas de
-// temps avec force=0 et au debut et a la fin du calcul avec force=1.
-// WEC : il serait bon que, un jour, postraiter soit const
-// Precondition: appel a initialize()
-// Parametre: force
-//    Signification: 1=postraiter absolument, 0=postraiter si c'est necessaire.
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: 0 en cas d'erreur, 1 sinon.
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-// Des champs dependant de l'inconnue sont calcules.
+/*! @brief Demande au probleme de postraiter ses champs, sondes,.
+ *
+ * .. Dans Probleme_U::run(), postraiter() est appele a chaque pas de
+ *  temps avec force=0 et au debut et a la fin du calcul avec force=1.
+ *  WEC : il serait bon que, un jour, postraiter soit const
+ *
+ * @param (force) 1=postraiter absolument, 0=postraiter si c'est necessaire.
+ * @return (0 en cas d'erreur, 1 sinon.)
+ */
 int Probleme_U::postraiter(int force)
 {
   return 0;
 }
 
-// Description:
-// Doit-on imprimer les statistiques d'execution maintenant ?
+/*! @brief Doit-on imprimer les statistiques d'execution maintenant ?
+ *
+ */
 int Probleme_U::limpr() const
 {
   return 0;
 }
 
-// Description:
-// Doit-on sauvegarder l'etat du probleme sur disque maintenant ?
+/*! @brief Doit-on sauvegarder l'etat du probleme sur disque maintenant ?
+ *
+ */
 int Probleme_U::lsauv() const
 {
   return 0;
 }
 
-// Description:
-// Sauvegarder l'etat du probleme sur disque
+/*! @brief Sauvegarder l'etat du probleme sur disque
+ *
+ */
 void Probleme_U::sauver() const
 {
   return ;
 }
 
 
-// Description:
-// ATTENTION :
-//
-// Rentre ici tout ce qui ne correspond pas a l'API normale de Problem.
-//
-// Actuellement on y met a jour les CLs et les termes sources, sachant
-// que certains vont chercher eux-memes des informations dans les
-// problemes voisins...
-//
-// Programme de travail : tout ce qui est dans cette methode doit etre
-// rendu independant de l'exterieur, et peut du coup rejoindre
-// initTimeStep.
-// Le reste passe dans l'interface d'echange de champs.
-// Ce travail sera fini quand updateGivenFields sera vide et supprime !
-//
-// Precondition: initTimeStep
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: true=OK, false=error
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-// Rien n'est maitrise...
+/*! @brief ATTENTION :
+ *
+ *  Rentre ici tout ce qui ne correspond pas a l'API normale de Problem.
+ *
+ *  Actuellement on y met a jour les CLs et les termes sources, sachant
+ *  que certains vont chercher eux-memes des informations dans les
+ *  problemes voisins...
+ *
+ *  Programme de travail : tout ce qui est dans cette methode doit etre
+ *  rendu independant de l'exterieur, et peut du coup rejoindre
+ *  initTimeStep.
+ *  Le reste passe dans l'interface d'echange de champs.
+ *  Ce travail sera fini quand updateGivenFields sera vide et supprime !
+ *
+ *
+ * @return (true=OK, false=error)
+ */
 bool  Probleme_U::updateGivenFields()
 {
   return true;
 }
 
 
-// Description:
-// Cette methode est une sorte de main() du Problem
-// Elle peut etre utilisee si le probleme n'est couple a aucun autre.
-// (s'il n'a besoin d'aucun champ d'entree).
-// Precondition: initialize
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: bool
-//    Signification: true=OK, false=error
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-// Seule la methode terminate peut etre appelee apres
+/*! @brief Cette methode est une sorte de main() du Problem Elle peut etre utilisee si le probleme n'est couple a aucun autre.
+ *
+ *  (s'il n'a besoin d'aucun champ d'entree).
+ *
+ * @return (bool) true=OK, false=error
+ */
 bool Probleme_U::run()
 {
   // Force the post process task at the beginning of the run
@@ -477,23 +365,13 @@ bool Probleme_U::run()
   return ok;
 }
 
-// Description:
-// This method has the same role as the method run, but it stops
-// when reaching the time given in parameter.
-// If this time cannot be reached, the method returns false.
-// Precondition: initialize
-// Parametre: double time
-//    Signification: time to reach
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: true=OK, false=error
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-// If the method succeeds, the present time is time.
+/*! @brief This method has the same role as the method run, but it stops when reaching the time given in parameter.
+ *
+ *  If this time cannot be reached, the method returns false.
+ *
+ * @param (double time) time to reach
+ * @return (true=OK, false=error)
+ */
 bool Probleme_U::runUntil(double time)
 {
 
@@ -563,7 +441,9 @@ bool Probleme_U::runUntil(double time)
   return ok;
 }
 
-// Description: pour recodage eventuel et appel unifie en python
+/*! @brief pour recodage eventuel et appel unifie en python
+ *
+ */
 bool Probleme_U::solveTimeStep(void)
 {
   bool converged = false;
@@ -578,67 +458,36 @@ bool Probleme_U::solveTimeStep(void)
   return ok;
 }
 
-// Description:
-// Returns the future time (end of current computing interval)
-// This value is valid between initTimeStep and either
-// validateTimeStep or abortTimeStep.
-// A surcharger
-// Precondition: initTimeStep, not yet validateTimeStep neither abortTimeStep
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: future time
-//    Contraintes:
-// Exception: WrongContext
-// Effets de bord:
-// Postcondition:
-// Problem unchanged
+/*! @brief Returns the future time (end of current computing interval) This value is valid between initTimeStep and either
+ *
+ *  validateTimeStep or abortTimeStep.
+ *  A surcharger
+ *
+ * @return (double) future time
+ * @throws WrongContext
+ */
 double Probleme_U::futureTime() const
 {
   return 0;
 }
 
-// Description:
-// This method is used to find the names of input fields understood by the Problem
-// Precondition: initTimeStep
-// Parametre: Noms
-//    Signification: list of names where the Problem appends its input field names.
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-// Problem unchanged
+/*! @brief This method is used to find the names of input fields understood by the Problem
+ *
+ * @param (Noms) list of names where the Problem appends its input field names.
+ */
 void Probleme_U::getInputFieldsNames(Noms& noms) const
 {
 }
 
-// Description:
-// This method is used to find in a hierarchy of problems the
-// Champ_Input_Proto of a given name.
-// Implementation is not optimal in 2 ways :
-//  - no error if two input fields have the same name.
-//  - no optimisation of the number of REF objects created and destroyed.
-// Precondition: initialize
-// Parametre: string name
-//    Signification: name of the input field we are looking for
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: REF(Field_base)
-//    Signification: found <=> non_nul(), then points to a Champ_Input_Proto of that name.
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-// If the method succeeds, the present time is time.
+/*! @brief This method is used to find in a hierarchy of problems the Champ_Input_Proto of a given name.
+ *
+ *  Implementation is not optimal in 2 ways :
+ *   - no error if two input fields have the same name.
+ *   - no optimisation of the number of REF objects created and destroyed.
+ *
+ * @param (string name) name of the input field we are looking for
+ * @return (REF(Field_base)) found <=> non_nul(), then points to a Champ_Input_Proto of that name.
+ */
 REF(Field_base) Probleme_U::findInputField(const Nom& name) const
 {
   REF(Field_base) ch;
@@ -648,21 +497,10 @@ REF(Field_base) Probleme_U::findInputField(const Nom& name) const
 
 
 
-// Description:
-// This method is used to find the names of output fields understood by the Problem
-// Precondition: initTimeStep
-// Parametre: Noms
-//    Signification: list of names where the Problem appends its output field names.
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-// Problem unchanged
+/*! @brief This method is used to find the names of output fields understood by the Problem
+ *
+ * @param (Noms) list of names where the Problem appends its output field names.
+ */
 void Probleme_U::getOutputFieldsNames(Noms& noms) const
 {
 }
@@ -675,23 +513,9 @@ REF(Champ_Generique_base) Probleme_U::findOutputField(const Nom& name) const
 
 
 
-// Description:
-// This method is used to get a template of a field expected for the given name.
-// Precondition: initTimeStep, name is one of getInputFieldsNames
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-// afield contains a field with vales neither allocated nor filled, describing the
-// field expected by setInputField for that name.
-// Problem unchanged
+/*! @brief This method is used to get a template of a field expected for the given name.
+ *
+ */
 void Probleme_U::getInputFieldTemplate(const Nom& name, TrioField& afield) const
 {
   REF(Field_base) ch=findInputField(name);
@@ -706,21 +530,9 @@ void Probleme_U::getInputFieldTemplate(const Nom& name, TrioField& afield) const
   chip->getTemplate(afield);
 }
 
-// Description:
-// This method is used to provide the Problem with an input field.
-// Precondition: initTimeStep, name is one of getInputFieldsNames, afield is like in getInputFieldTemplate
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-// Values of afield have been used (copied inside the Problem).
+/*! @brief This method is used to provide the Problem with an input field.
+ *
+ */
 void Probleme_U::setInputField(const Nom& name, const TrioField& afield)
 {
   REF(Field_base) ch=findInputField(name);

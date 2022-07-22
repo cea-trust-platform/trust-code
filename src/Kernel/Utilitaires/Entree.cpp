@@ -103,19 +103,21 @@ Entree& Entree::operator=(Entree& is)
   return *this;
 }
 
-// Description: Lecture d'une chaine dans ostream_
-//  bufsize est la taille du buffer alloue pour ob (y compris
-//  le caractere 0 final).
-//  La chaine contient toujours un 0 meme en cas d'echec.
-//  La methode renvoie 1 si la lecture est bonne, 0 sinon.
-//  Si le buffer est trop petit, pour l'instant on fait exit() mais
-//  par la suite on pourra tester: si strlen(ob)==bufsize-1, alors
-//  refaire lire() jusqu'a arriver au bout. Si le lire() suivant
-//  renvoie une chaine de longueur nulle, cela signifie que la taille de la
-//  chaine etait exactement bufsize-1.
-//  Attention: le comportement est different en binaire et en ascii.
-//   En binaire, on lit la chaine jusqu'au prochain '\0'.
-//   En ascii, on lit la chaine jusqu'au prochain separateur (espace, tab, fin ligne)
+/*! @brief Lecture d'une chaine dans ostream_ bufsize est la taille du buffer alloue pour ob (y compris
+ *
+ *   le caractere 0 final).
+ *   La chaine contient toujours un 0 meme en cas d'echec.
+ *   La methode renvoie 1 si la lecture est bonne, 0 sinon.
+ *   Si le buffer est trop petit, pour l'instant on fait exit() mais
+ *   par la suite on pourra tester: si strlen(ob)==bufsize-1, alors
+ *   refaire lire() jusqu'a arriver au bout. Si le lire() suivant
+ *   renvoie une chaine de longueur nulle, cela signifie que la taille de la
+ *   chaine etait exactement bufsize-1.
+ *   Attention: le comportement est different en binaire et en ascii.
+ *    En binaire, on lit la chaine jusqu'au prochain '\0'.
+ *    En ascii, on lit la chaine jusqu'au prochain separateur (espace, tab, fin ligne)
+ *
+ */
 int Entree::get(char* ob, int bufsize)
 {
   assert(istream_!=0);
@@ -166,7 +168,9 @@ void error_convert(const char * s, const char * type)
   Process::exit();
 }
 
-// Description: methode de conversion
+/*! @brief methode de conversion
+ *
+ */
 void convert_to(const char *s, int& ob)
 {
   errno = 0;
@@ -283,9 +287,11 @@ Entree::~Entree()
   istream_=0;
 }
 
-// Description:
-//  Change le mode d'ecriture du fichier.
-//  Cette methode peut etre appelee n'importe quand.
+/*! @brief Change le mode d'ecriture du fichier.
+ *
+ * Cette methode peut etre appelee n'importe quand.
+ *
+ */
 int Entree::set_bin(int bin)
 {
   assert(bin==0 || bin==1);
@@ -304,45 +310,53 @@ int Entree::is_bin() const
   return bin_;
 }
 
-// Description: indique si le stream doit verifier les types des objets lus
-//  (ints et nombres flottants). Exemple : l'entree contient 123.456 123.456
-//  int i;
-//  check_types(0);
-//  is >> i;   // i contient 123
-//  check_types(1);
-//  is >> i;   // Erreur : on lit la chaine 123.456 et on essaye de la convertir en int
-//  Voir operator>>(int &)
+/*! @brief indique si le stream doit verifier les types des objets lus (ints et nombres flottants).
+ *
+ * Exemple : l'entree contient 123.456 123.456
+ *   int i;
+ *   check_types(0);
+ *   is >> i;   // i contient 123
+ *   check_types(1);
+ *   is >> i;   // Erreur : on lit la chaine 123.456 et on essaye de la convertir en int
+ *   Voir operator>>(int &)
+ *
+ */
 void Entree::set_check_types(int flag)
 {
   check_types_ = flag;
 }
 
-// Description: renvoie la valeur actuelle du drapeau, voir set_check_types()
+/*! @brief renvoie la valeur actuelle du drapeau, voir set_check_types()
+ *
+ */
 int Entree::check_types() const
 {
   return check_types_;
 }
 
 
-// Description: Cette fonction est appellee par operateur>>, get, get_nom
-//  ouvrir, fermer, lire, etc... en cas d'echec (lorsque fail() est mis)
-//  Elle renvoie 0 s'il y a eu une erreur (passer par error_handle() qui
-//  traite en inline le cas ou il n'y a pas d'erreur), et 1 s'il n'y a pas
-//  d'erreur.
-//  (par commodite de codage des methodes qui l'utilisent, on
-//   ecrira "return error_handle(fail());"
-//  Elle peut etre configuree pour
-//   - renvoyer "0" en cas d'erreur et continuer l'execution du code
-//     (cas d'un ancien code qui ne gere pas les exceptions mais teste
-//      le drapeau fail() de temps en temps)
-//     Dans ce cas les methodes operator>> continuent l'execution du code
-//     meme en cas d'echec, le contenu des variables lues est indefini !
-//   - faire Process::exit() (cas d'une portion de code dans laquelle
-//     on ne veut pas faire de gestion d'erreur du tout et ou on suppose
-//     que tout va toujours bien)
-//   - lever une exception (permet une gestion rigoureuse des erreurs
-//     et une information utilisateur optimale en fonction du contexte)
-//  Voir aussi set_error_action()
+/*! @brief Cette fonction est appellee par operateur>>, get, get_nom ouvrir, fermer, lire, etc.
+ *
+ * .. en cas d'echec (lorsque fail() est mis)
+ *   Elle renvoie 0 s'il y a eu une erreur (passer par error_handle() qui
+ *   traite en inline le cas ou il n'y a pas d'erreur), et 1 s'il n'y a pas
+ *   d'erreur.
+ *   (par commodite de codage des methodes qui l'utilisent, on
+ *    ecrira "return error_handle(fail());"
+ *   Elle peut etre configuree pour
+ *    - renvoyer "0" en cas d'erreur et continuer l'execution du code
+ *      (cas d'un ancien code qui ne gere pas les exceptions mais teste
+ *       le drapeau fail() de temps en temps)
+ *      Dans ce cas les methodes operator>> continuent l'execution du code
+ *      meme en cas d'echec, le contenu des variables lues est indefini !
+ *    - faire Process::exit() (cas d'une portion de code dans laquelle
+ *      on ne veut pas faire de gestion d'erreur du tout et ou on suppose
+ *      que tout va toujours bien)
+ *    - lever une exception (permet une gestion rigoureuse des erreurs
+ *      et une information utilisateur optimale en fonction du contexte)
+ *   Voir aussi set_error_action()
+ *
+ */
 int Entree::error_handle_(int fail_flag)
 {
   if (!fail_flag)
@@ -372,15 +386,17 @@ int Entree::error_handle_(int fail_flag)
   return 0;
 }
 
-// Description: renvoie error_action_ pour cette entree
-//  (permet de la modifier et de restaurer ensuite la valeur anterieure)
+/*! @brief renvoie error_action_ pour cette entree (permet de la modifier et de restaurer ensuite la valeur anterieure)
+ *
+ */
 Entree::Error_Action Entree::get_error_action()
 {
   return error_action_;
 }
 
-// Description: Change le comportement en cas d'erreur de l'entree,
-//  voir error_handle_() et get_error_action()
+/*! @brief Change le comportement en cas d'erreur de l'entree, voir error_handle_() et get_error_action()
+ *
+ */
 void Entree::set_error_action(Entree::Error_Action action)
 {
   error_action_ = action;
@@ -406,8 +422,9 @@ int is_a_binary_file(Nom& filename)
   return 0;
 }
 
-// Description:
-// ToDo TMA : commenter
+/*! @brief ToDo TMA : commenter
+ *
+ */
 void Entree::set_diffuse(int diffuse)
 {
   // virtual method does nothing ; cf Lec_Diffuse_base

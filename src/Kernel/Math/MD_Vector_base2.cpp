@@ -26,8 +26,11 @@ MD_Vector_base2::MD_Vector_base2()
   nb_items_seq_local_ = -1;
 }
 
-// Description: method used to dump/restore a descriptor in a file
-//  Each process writes a different descriptor. See MD_Vector_tools::restore_vector_with_md()
+/*! @brief method used to dump/restore a descriptor in a file Each process writes a different descriptor.
+ *
+ * See MD_Vector_tools::restore_vector_with_md()
+ *
+ */
 Entree& MD_Vector_base2::readOn(Entree& is)
 {
   Param p("MD_Vector_base2");
@@ -41,8 +44,11 @@ Entree& MD_Vector_base2::readOn(Entree& is)
   return is;
 }
 
-// Description: method used to dump/restore a descriptor in a file
-//  Each process writes a different descriptor. See MD_Vector_tools::dump_vector_with_md()
+/*! @brief method used to dump/restore a descriptor in a file Each process writes a different descriptor.
+ *
+ * See MD_Vector_tools::dump_vector_with_md()
+ *
+ */
 Sortie& MD_Vector_base2::printOn(Sortie& os) const
 {
   os << "{" << finl;

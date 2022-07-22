@@ -19,42 +19,22 @@ Implemente_deriv(Champ_Don_base);
 Implemente_instanciable(Champ_Don,"Champ_Don",DERIV(Champ_Don_base));
 
 
-// Description:
-//    Surcharge Objet_U::printOn(Sortie&)
-//    Imprime le champ sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Surcharge Objet_U::printOn(Sortie&) Imprime le champ sur un flot de sortie.
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Champ_Don::printOn(Sortie& os) const
 {
   return DERIV(Champ_Don_base)::printOn(os);
 }
 
 
-// Description:
-//    Surcharge Objet_U::readOn(Entree&)
-//    Lecture du champ a partir d'un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree sur lequel lire
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Surcharge Objet_U::readOn(Entree&) Lecture du champ a partir d'un flot d'entree.
+ *
+ * @param (Entree& is) le flot d'entree sur lequel lire
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Champ_Don::readOn(Entree& is)
 {
   return DERIV(Champ_Don_base)::readOn(is);

@@ -13,25 +13,25 @@
 *
 *****************************************************************************/
 
-//
-// .DESCRIPTION
-//  Gestion des dependances machines pour l'appel a FORTRAN
-//  La macro F77DECLARE(TOTO) permet de declarer une routine FORTRAN.
-//  La macro F77NAME(TOTO) permet d'appeler une routine FORTRAN.
-//  Exemple :
-//  toto.f :
-//         SUBROUTINE TOTO(DOUBLE X)
-//         X=2.0*X
-//         RETURN
-//         END
-//
-//  appel_toto.cpp
-//  void F77DECLARE(TOTO) (const double* );
-//  void main()
-//  {
-//     double x;
-//     F77NAME(TOTO)(x);
-//  }
+/*! @brief Gestion des dependances machines pour l'appel a FORTRAN La macro F77DECLARE(TOTO) permet de declarer une routine FORTRAN.
+ *
+ *   La macro F77NAME(TOTO) permet d'appeler une routine FORTRAN.
+ *   Exemple :
+ *   toto.f :
+ *          SUBROUTINE TOTO(DOUBLE X)
+ *          X=2.0*X
+ *          RETURN
+ *          END
+ *
+ *   appel_toto.cpp
+ *   void F77DECLARE(TOTO) (const double* );
+ *   void main()
+ *   {
+ *      double x;
+ *      F77NAME(TOTO)(x);
+ *   }
+ *
+ */
 
 #ifndef _ARCH_H_
 #define _ARCH_H_

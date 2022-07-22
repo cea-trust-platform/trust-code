@@ -22,20 +22,16 @@
 class Domaine;
 class Faces;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Extruder_en3
-//    Cette classe est un interprete qui sert a lire et executer
-//    la directive Extruder_en3 :
-//        Extruder_en3 { nb_domaine nom_domaine1 nom_domaine2 .. direction nb_tranches }
-//    Cette directive est a utiliser en discretisation VEF 2D pour obtenir
-//    un maillage 3D par extrusion puis decoupage.
-//   Ici chaque triangle est extruder en prisme, puis decoupe en 3 tetras.
-// .SECTION voir aussi
-//    Interprete Extruder_en3
-//    Cette classe est utilisable en 3D
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Extruder_en3 Cette classe est un interprete qui sert a lire et executer
+ *
+ *     la directive Extruder_en3 :
+ *         Extruder_en3 { nb_domaine nom_domaine1 nom_domaine2 .. direction nb_tranches }
+ *     Cette directive est a utiliser en discretisation VEF 2D pour obtenir
+ *     un maillage 3D par extrusion puis decoupage.
+ *    Ici chaque triangle est extruder en prisme, puis decoupe en 3 tetras.
+ *
+ * @sa Interprete Extruder_en3, Cette classe est utilisable en 3D
+ */
 class Extruder_en3 : public Interprete_geometrique_base
 {
   Declare_instanciable_sans_constructeur(Extruder_en3);

@@ -22,13 +22,15 @@ Implemente_instanciable(Joint,"Joint",Frontiere);
 //  Implementation de la classe Joint
 // ***************************************************************
 
-// Description:
-//    Ecrit le joint sur un flot de sortie.
-//    On ecrit:
-//      - la frontiere
-//      - le PE voisin
-//      - l'epaisseur
-//      - les sommets
+/*! @brief Ecrit le joint sur un flot de sortie.
+ *
+ * On ecrit:
+ *       - la frontiere
+ *       - le PE voisin
+ *       - l'epaisseur
+ *       - les sommets
+ *
+ */
 Sortie& Joint::printOn(Sortie& s ) const
 {
   Frontiere::printOn(s) ;
@@ -40,8 +42,9 @@ Sortie& Joint::printOn(Sortie& s ) const
   return s ;
 }
 
-// Description:
-//    Lit un joint a partir d'un flot d'entree.
+/*! @brief Lit un joint a partir d'un flot d'entree.
+ *
+ */
 Entree& Joint::readOn(Entree& s)
 {
   Frontiere::readOn(s) ;
@@ -64,7 +67,9 @@ Entree& Joint::readOn(Entree& s)
   return s ;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 void Joint::dimensionner(int i)
 {
   faces().dimensionner(i);
@@ -73,51 +78,43 @@ void Joint::dimensionner(int i)
 }
 
 
-// Description:
-//    Fixe le numero du PE voisin.
+/*! @brief Fixe le numero du PE voisin.
+ *
+ */
 void Joint::affecte_PEvoisin(int num)
 {
   PEvoisin_ = num;
 }
 
-// Description:
-//    Fixe l'epaisseur du joint
+/*! @brief Fixe l'epaisseur du joint
+ *
+ */
 void Joint::affecte_epaisseur(int ep)
 {
   epaisseur_ = ep;
 }
 
-// Description:
-//    Renvoie PEvoisin (numero de la zone voisine)
+/*! @brief Renvoie PEvoisin (numero de la zone voisine)
+ *
+ */
 int Joint::PEvoisin() const
 {
   return PEvoisin_;
 }
 
-// Description:
-//    Renvoie l'epaisseur du joint.
+/*! @brief Renvoie l'epaisseur du joint.
+ *
+ */
 int Joint::epaisseur() const
 {
   return epaisseur_;
 }
 
 
-// Description:
-//    Ajoute des faces a la frontiere (au joint)
-//    voir Frontiere::ajouter_faces(const IntTab&)
-// Precondition:
-// Parametre: IntTab& sommets
-//    Signification: tableau contenant les numeros des sommets
-//                   des face a ajouter
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ajoute des faces a la frontiere (au joint) voir Frontiere::ajouter_faces(const IntTab&)
+ *
+ * @param (IntTab& sommets) tableau contenant les numeros des sommets des face a ajouter
+ */
 void Joint::ajouter_faces(const IntTab& sommets)
 {
   faces().ajouter(sommets);
@@ -145,10 +142,13 @@ const ArrOfInt&  Joint::esp_dist_faces() const
 }
 
 
-// Description: Renvoie les informations de joint pour un type d'item
-//  geometrique donne, pour remplissage des structures. Ces structures
-//  sont generalement remplies par la classe Scatter. Exceptions notables:
-//  Zone_VDF et Zone_VF pour la renumerotation des faces.
+/*! @brief Renvoie les informations de joint pour un type d'item geometrique donne, pour remplissage des structures.
+ *
+ * Ces structures
+ *   sont generalement remplies par la classe Scatter. Exceptions notables:
+ *   Zone_VDF et Zone_VF pour la renumerotation des faces.
+ *
+ */
 Joint_Items& Joint::set_joint_item(Type_Item item)
 {
   switch(item)
@@ -175,7 +175,9 @@ Joint_Items& Joint::set_joint_item(Type_Item item)
   return joint_sommets_; // never arrive here
 }
 
-// Description: Renvoie les informations de joint pour le type demande.
+/*! @brief Renvoie les informations de joint pour le type demande.
+ *
+ */
 const Joint_Items& Joint::joint_item(Type_Item item) const
 {
   switch(item)

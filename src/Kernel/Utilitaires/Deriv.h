@@ -13,50 +13,48 @@
 *
 *****************************************************************************/
 
-//////////////////////////////////////////////////////////////////////////////
-// .DESCRIPTION
-//
-//  Soit une classe Type_base qui derive de Objet_U.
-//  DERIV(T) est une petite classe contenant un pointeur vers une instance de Type_base,
-//  ou de n'importe quelle classe derivee de Type_base qui est creee
-//  dynamiquement lors a l'execution.
-//
-//  Definition de la classe DERIV:
-//   class Type_base; // Une declaration forward de Type_base suffit
-//Declare_deriv(Type_base);;
-//
-//  Implementation de la classe DERIV:
-//   class Type_base : Un_Type_Derive_de_Objet_U
-//   { ... } ;
-//Implemente_deriv(Type_base);//IlfautquelaclasseType_basesoitdefinie;
-//
-//  Creation d'un objet de type DERIV(Type_base) :
-//   DERIV(Type_base) deriv_type; // deriv_type est encore un pointeur nul
-//
-//  On suppose que la classe Type_Derive derive de Type_base et est instanciable:
-//   class Type_Derive : Type_base
-//   {
-//Declare_instanciable(Type_Derive);;
-//     ...
-//   };
-//
-//  Creation d'une instance de la classe Type_Derive qui derive de Type_base:
-//   deriv_type.typer("Type_Derive");
-//
-//  Acces a l'instance de Type_Derive:
-//   Type_Derive & objet_derive = deriv_type.valeur();
-//   const Type_Derive & objet_derive = deriv_type.valeur();
-//
-//  L'instance de Type_Derive est detruite si on appelle a nouveau "typer()"
-//  ou si l'objet deriv_type est detruit.
-//
-//  Exemples :
-//   Equation_base     Operateur_Diff_base  ... ( <=> Type_base )
-//   Navier_Stokes_std Op_Diff_VDF_var_Face     ( <=> Type_derive )
-//   Equation          Operateur_Diff           ( <=> DERIV(Type_base) )
-//
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Soit une classe Type_base qui derive de Objet_U.
+ *
+ * DERIV(T) est une petite classe contenant un pointeur vers une instance de Type_base,
+ *   ou de n'importe quelle classe derivee de Type_base qui est creee
+ *   dynamiquement lors a l'execution.
+ *
+ *   Definition de la classe DERIV:
+ *    class Type_base; // Une declaration forward de Type_base suffit
+ * Declare_deriv(Type_base);;
+ *
+ *   Implementation de la classe DERIV:
+ *    class Type_base : Un_Type_Derive_de_Objet_U
+ *    { ... } ;
+ * Implemente_deriv(Type_base);//IlfautquelaclasseType_basesoitdefinie;
+ *
+ *   Creation d'un objet de type DERIV(Type_base) :
+ *    DERIV(Type_base) deriv_type; // deriv_type est encore un pointeur nul
+ *
+ *   On suppose que la classe Type_Derive derive de Type_base et est instanciable:
+ *    class Type_Derive : Type_base
+ *    {
+ * Declare_instanciable(Type_Derive);;
+ *      ...
+ *    };
+ *
+ *   Creation d'une instance de la classe Type_Derive qui derive de Type_base:
+ *    deriv_type.typer("Type_Derive");
+ *
+ *   Acces a l'instance de Type_Derive:
+ *    Type_Derive & objet_derive = deriv_type.valeur();
+ *    const Type_Derive & objet_derive = deriv_type.valeur();
+ *
+ *   L'instance de Type_Derive est detruite si on appelle a nouveau "typer()"
+ *   ou si l'objet deriv_type est detruit.
+ *
+ *   Exemples :
+ *    Equation_base     Operateur_Diff_base  ... ( <=> Type_base )
+ *    Navier_Stokes_std Op_Diff_VDF_var_Face     ( <=> Type_derive )
+ *    Equation          Operateur_Diff           ( <=> DERIV(Type_base) )
+ *
+ *
+ */
 
 #ifndef Deriv_H
 #define Deriv_H

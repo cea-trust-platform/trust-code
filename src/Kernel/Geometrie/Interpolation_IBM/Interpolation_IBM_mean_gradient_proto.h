@@ -20,13 +20,13 @@
 #include <TRUSTLists.h>
 #include <Champ_Don.h>
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Interpolation_IBM_mean_gradient_proto
-//
-// Pure C++ class to allow multiple inheritance in Interpolation_IBM_hybrid
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Interpolation_IBM_mean_gradient_proto
+ *
+ *  Pure C++ class to allow multiple inheritance in Interpolation_IBM_hybrid
+ *
+ *
+ *
+ */
 
 class Interpolation_IBM_mean_gradient_proto
 {

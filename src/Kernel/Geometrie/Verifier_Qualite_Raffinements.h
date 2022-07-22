@@ -18,15 +18,13 @@
 
 #include <Interprete_geometrique_base.h>
 
-/////////////////////////////////////////////////////////////////////////////
-// .NAME        : Verifier_Qualite_Raffinements
-// .HEADER      : Raffiner_Simplexes Raffiner_Simplexes/src
-// .LIBRARY     : libRaffiner_Simplexes
-// .DESCRIPTION : class Verifier_Qualite_Raffinements
-//
-// <Description of class Verifier_Qualite_Raffinements>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Verifier_Qualite_Raffinements
+ *
+ *  <Description of class Verifier_Qualite_Raffinements>
+ *
+ *
+ *
+ */
 
 class Verifier_Qualite_Raffinements : public Interprete_geometrique_base
 {

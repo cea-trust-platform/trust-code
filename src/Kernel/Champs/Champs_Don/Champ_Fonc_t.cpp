@@ -18,31 +18,24 @@
 
 Implemente_instanciable(Champ_Fonc_t,"Champ_Fonc_t",Champ_Uniforme_inst);
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie
+ */
 Sortie& Champ_Fonc_t::printOn(Sortie& os) const
 {
   return os;
 }
 
-// Description:
-//  Lecture des parametres dans le fichier data.
-//  On attend
-//    nb_composantes expression_composante1(t) expression_composante2(t) ...
-//  Exemple:
-//    3 SIN(t) t*t 1.+t
+/*! @brief Lecture des parametres dans le fichier data.
+ *
+ * On attend
+ *     nb_composantes expression_composante1(t) expression_composante2(t) ...
+ *   Exemple:
+ *     3 SIN(t) t*t 1.+t
+ *
+ */
 Entree& Champ_Fonc_t::readOn(Entree& is)
 {
   int nb_compo;
@@ -73,9 +66,9 @@ Entree& Champ_Fonc_t::readOn(Entree& is)
   return is;
 }
 
-// Description:
-//  Calcul du tableau "valeurs()" au temps t a partir des fonctions
-//  analytiques lues dans le readOn
+/*! @brief Calcul du tableau "valeurs()" au temps t a partir des fonctions analytiques lues dans le readOn
+ *
+ */
 void Champ_Fonc_t::me_calculer(double t)
 {
   int i = 0;

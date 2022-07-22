@@ -19,19 +19,15 @@
 #include <Triangulation_base.h>
 class Zone;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Tetra_par_prisme
-//    Cette classe est un interprete qui sert a lire et executer
-//    la directive Tetra_par_prisme:
-//        Tetra_par_prisme nom_domaine
-//    Cette directive est a utiliser en discretisation VEF pour obtenir
-//    un maillage tetraedrique (par prismes) a partir d'un maillage constitue de paves.
-// .SECTION voir aussi
-//    Interprete Pave Tetraedre
-//     Cette classe est utilisable en 3D
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Tetra_par_prisme Cette classe est un interprete qui sert a lire et executer
+ *
+ *     la directive Tetra_par_prisme:
+ *         Tetra_par_prisme nom_domaine
+ *     Cette directive est a utiliser en discretisation VEF pour obtenir
+ *     un maillage tetraedrique (par prismes) a partir d'un maillage constitue de paves.
+ *
+ * @sa Interprete Pave Tetraedre, Cette classe est utilisable en 3D
+ */
 class Tetraedriser_par_prisme : public Triangulation_base
 {
   Declare_instanciable(Tetraedriser_par_prisme);

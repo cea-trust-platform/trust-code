@@ -21,30 +21,13 @@
 #include <Champ_Generique.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Source_Generique_base
-//     Cette classe est la base de la hierarchie des sources portant
-//     un Champ_Generique qui permet d'evaluer une expression dependante
-//     de champs du probleme.
-// .SECTION voir aussi
-//     Source_base
-//     Classe abstraite.
-//     Methodes abstraites:
-//       DoubleTab& ajouter(DoubleTab& ) const
-//       void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) [protected]
-//       void associer_pb(const Probleme_base& ) [protected]
-//         Nom localisation_source()
-//
-//  Syntaxe :
-//  Sources { Source_Generique "Champ_Generique { ...} " }
-//  avec "Champ_Generique" un champ generique a specifier.
-//
-//  Rq : la discretisation du champ renvoye par le champ generique
-//       doit correspondre a celle ou est evaluee le terme source.
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Source_Generique_base Cette classe est la base de la hierarchie des sources portant
+ *
+ *      un Champ_Generique qui permet d'evaluer une expression dependante
+ *      de champs du probleme.
+ *
+ * @sa Source_base, Classe abstraite., Methodes abstraites:, DoubleTab& ajouter(DoubleTab& ) const, void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) [protected], void associer_pb(const Probleme_base& ) [protected], Nom localisation_source(), Syntaxe :, Sources { Source_Generique "Champ_Generique { ...} " }, avec "Champ_Generique" un champ generique a specifier., Rq : la discretisation du champ renvoye par le champ generique, doit correspondre a celle ou est evaluee le terme source.
+ */
 class Source_Generique_base : public Source_base
 {
   Declare_base(Source_Generique_base);

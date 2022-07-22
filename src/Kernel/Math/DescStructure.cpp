@@ -22,12 +22,13 @@ Implemente_instanciable(DescStructure,"DescStructure",Objet_U);
 Implemente_vect(Esp_Virt);
 Implemente_vect(Esp_Dist);
 
-// Description:
-//    Lecture d'un descripteur de structure
-//    Un descripteur de structure est constitue d'un
-//    identificateur, d'un vecteur d'espaces virtuels,
-//    d'un vecteur d'espaces distants et d'un descripteur de
-//    structure interne
+/*! @brief Lecture d'un descripteur de structure Un descripteur de structure est constitue d'un
+ *
+ *     identificateur, d'un vecteur d'espaces virtuels,
+ *     d'un vecteur d'espaces distants et d'un descripteur de
+ *     structure interne
+ *
+ */
 Entree& DescStructure::readOn(Entree& is)
 {
 //  VectEsp_Virt virt_data_;
@@ -50,7 +51,9 @@ Entree& DescStructure::readOn(Entree& is)
   return is;
 }
 
-// Description: Pas utilise
+/*! @brief Pas utilise
+ *
+ */
 Sortie& DescStructure::printOn(Sortie& os) const
 {
   Cerr<<"DescStructure::printOn no more used" <<finl;

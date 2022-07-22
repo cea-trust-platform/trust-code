@@ -20,14 +20,10 @@
 
 Declare_liste(Joint);
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Joints
-//    Cette classe represente une liste d'objet de type Joint
-// .SECTION voir aussi
-//    Joint
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Joints Cette classe represente une liste d'objet de type Joint
+ *
+ * @sa Joint
+ */
 
 class Joints : public LIST(Joint)
 {

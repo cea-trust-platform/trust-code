@@ -24,26 +24,19 @@ class Equation_base;
 class Discretisation_base;
 class Champ_Inc;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Cond_lim_base
-//     Classe de base pour la hierarchie des classes qui representent
-//     les differentes conditions aux limites (Dirichlet, Neumann ...).
-//     Un objet condition aux limite sert a definir, pour une equation
-//     donnee, les conditions aux limites a appliquer sur une frontiere
-//     d'un domaine.
-//     Chaque objet Cond_lim_base contient une reference vers l'objet
-//     Zone_Cl_dis_base dont il fait partie.
-//     Chaque objet contient egalement un objet Champ_front contenant les
-//     valeurs a imposer sur la frontiere.
-// .SECTION voir aussi
-//     Cond_lim Zone_Cl_dis_base Frontiere_dis_base
-//     Classe abstraite dont toutes les objets representant des conditions
-//     aux limites doivent deriver.
-//     Methode abstraite:
-//       int compatible_avec_eqn(const Equation_base&) const
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Cond_lim_base Classe de base pour la hierarchie des classes qui representent
+ *
+ *      les differentes conditions aux limites (Dirichlet, Neumann ...).
+ *      Un objet condition aux limite sert a definir, pour une equation
+ *      donnee, les conditions aux limites a appliquer sur une frontiere
+ *      d'un domaine.
+ *      Chaque objet Cond_lim_base contient une reference vers l'objet
+ *      Zone_Cl_dis_base dont il fait partie.
+ *      Chaque objet contient egalement un objet Champ_front contenant les
+ *      valeurs a imposer sur la frontiere.
+ *
+ * @sa Cond_lim Zone_Cl_dis_base Frontiere_dis_base, Classe abstraite dont toutes les objets representant des conditions, aux limites doivent deriver., Methode abstraite:, int compatible_avec_eqn(const Equation_base&) const
+ */
 class Cond_lim_base : public Objet_U
 {
 
@@ -97,90 +90,44 @@ protected:
 };
 
 
-// Description:
-//    Renvoie la frontiere discretisee a laquelle les conditions
-//    aux limites s'appliquent.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Frontiere_dis_base&
-//    Signification: la frontiere discretisee a laquelle les conditions
-//                   aux limites sont associees
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la frontiere discretisee a laquelle les conditions aux limites s'appliquent.
+ *
+ * @return (Frontiere_dis_base&) la frontiere discretisee a laquelle les conditions aux limites sont associees
+ */
 inline Frontiere_dis_base& Cond_lim_base::frontiere_dis()
 {
   return le_champ_front.frontiere_dis();
 }
 
 
-// Description:
-//    Renvoie la frontiere discretisee a laquelle les conditions
-//    aux limites s'appliquent.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Frontiere_dis_base&
-//    Signification: la frontiere discretisee a laquelle les conditions
-//                   aux limites sont associees
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la frontiere discretisee a laquelle les conditions aux limites s'appliquent.
+ *
+ *     (version const)
+ *
+ * @return (Frontiere_dis_base&) la frontiere discretisee a laquelle les conditions aux limites sont associees
+ */
 inline const Frontiere_dis_base& Cond_lim_base::frontiere_dis() const
 {
   return le_champ_front.frontiere_dis();
 }
 
 
-// Description:
-//    Renvoie la zone des conditions aux limites discretisee dont
-//    l'objet fait partie.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Zone_Cl_dis_base&
-//    Signification: la zone des conditions aux limites discretisee dont
-//                   l'objet fait partie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la zone des conditions aux limites discretisee dont l'objet fait partie.
+ *
+ * @return (Zone_Cl_dis_base&) la zone des conditions aux limites discretisee dont l'objet fait partie
+ */
 inline Zone_Cl_dis_base& Cond_lim_base::zone_Cl_dis()
 {
   return ma_zone_cl_dis.valeur();
 }
 
 
-// Description:
-//    Renvoie la zone des conditions aux limites discretisee dont
-//    l'objet fait partie.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Zone_Cl_dis_base&
-//    Signification: la zone des conditions aux limites discretisee dont
-//                   l'objet fait partie
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la zone des conditions aux limites discretisee dont l'objet fait partie.
+ *
+ *     (version const)
+ *
+ * @return (Zone_Cl_dis_base&) la zone des conditions aux limites discretisee dont l'objet fait partie
+ */
 inline const Zone_Cl_dis_base& Cond_lim_base::zone_Cl_dis() const
 {
   return ma_zone_cl_dis.valeur();
@@ -196,29 +143,19 @@ inline const Champ_front& Cond_lim_base::champ_front() const
   return le_champ_front;
 }
 
-// Description:
-//    Positionne le drapeau modifier_val_imp a la valeur donnee :
-//    - si drap == 1 : modifier_val_imp=1
-//    - sinon        : modifier_val_imp=0
-//    Ce drapeau permet a la CL de savoir si elle doit renvoyer la valeur stockee
-//    telle quelle, ou si elle doit la traduire pour l'objet appelant
-//    A la CL de savoir ensuite quelle traduction faire.
-//    Voir application dans Temperature_imposee_paroi_H, ou la CL renvoie l'enthalpie
-//    par defaut (modifier_val_imp=1), ou la temperature sinon (cas de l'operateur de diffusion)
-//    Le drapeau est positionne dans le equation.derivee_en_temps_inco
-//    selon l'operateur qui va etre appele
-// Precondition:
-// Parametre: drap
-//    Signification: valeur a donner au drapeau
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Positionne le drapeau modifier_val_imp a la valeur donnee : - si drap == 1 : modifier_val_imp=1
+ *
+ *     - sinon        : modifier_val_imp=0
+ *     Ce drapeau permet a la CL de savoir si elle doit renvoyer la valeur stockee
+ *     telle quelle, ou si elle doit la traduire pour l'objet appelant
+ *     A la CL de savoir ensuite quelle traduction faire.
+ *     Voir application dans Temperature_imposee_paroi_H, ou la CL renvoie l'enthalpie
+ *     par defaut (modifier_val_imp=1), ou la temperature sinon (cas de l'operateur de diffusion)
+ *     Le drapeau est positionne dans le equation.derivee_en_temps_inco
+ *     selon l'operateur qui va etre appele
+ *
+ * @param (drap) valeur a donner au drapeau
+ */
 inline void Cond_lim_base::set_modifier_val_imp(int drap)
 {
   //positionne le drapeau a 0 ou 1

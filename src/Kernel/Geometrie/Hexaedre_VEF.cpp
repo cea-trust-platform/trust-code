@@ -19,40 +19,22 @@
 Implemente_instanciable(Hexaedre_VEF,"Hexaedre_VEF",Elem_geom_base);
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie
+ */
 Sortie& Hexaedre_VEF::printOn(Sortie& s ) const
 {
   return s;
 }
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification: le flot d'entree
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree
+ */
 Entree& Hexaedre_VEF::readOn(Entree& s )
 {
   return s;
@@ -61,40 +43,20 @@ Entree& Hexaedre_VEF::readOn(Entree& s )
 
 
 
-// Description:
-//    Renvoie le nom LML d'un Hexaedre_VEF = "HEXA8".
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Nom&
-//    Signification: toujours egal a "HEXA8"
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nom LML d'un Hexaedre_VEF = "HEXA8".
+ *
+ * @return (Nom&) toujours egal a "HEXA8"
+ */
 const Nom& Hexaedre_VEF::nom_lml() const
 {
   static Nom nom="VOXEL8";
   return nom;
 }
 
-// Description:
-//    teste si une position pos est un tetraedre de sommets som(i)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Nom&
-//    Signification: toujours egal a "HEXA8"
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief teste si une position pos est un tetraedre de sommets som(i)
+ *
+ * @return (Nom&) toujours egal a "HEXA8"
+ */
 static int entre_faces(const Zone& zone,const Domaine& dom,const ArrOfDouble& pos, int Asom0_, int Asom1_, int Asom2_, int Bsom0_, int Bsom1_, int Bsom2_)
 {
   double prodA,prodB;
@@ -145,20 +107,10 @@ static int entre_faces(const Zone& zone,const Domaine& dom,const ArrOfDouble& po
     }
   return 0;
 }
-// Description:
-//    teste si une position pos est un tetraedre de sommets som(i)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Nom&
-//    Signification: toujours egal a "HEXA8"
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief teste si une position pos est un tetraedre de sommets som(i)
+ *
+ * @return (Nom&) toujours egal a "HEXA8"
+ */
 static int contient_Tetra(const Zone& zone,const Domaine& dom,const ArrOfDouble& pos, int som0_, int som1_, int som2_, int som3_, int aff)
 {
   double prod1,prod2;
@@ -285,32 +237,15 @@ static int contient_Tetra(const Zone& zone,const Domaine& dom,const ArrOfDouble&
   return 1;
 }
 
-// Description:
-//    Renvoie 1 si l'element ielem de la zone associee a
-//              l'element geometrique contient le point
-//              de coordonnees specifiees par le parametre "pos".
-//    Renvoie 0 sinon.
-// Precondition:
-// Parametre: DoubleVect& pos
-//    Signification: coordonnees du point que l'on
-//                   cherche a localiser
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: int ielem
-//    Signification: le numero de l'element de la zone
-//                   dans lequel on cherche le point.
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si le point de coordonnees specifiees
-//                   appartient a l'element ielem
-//                   0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie 1 si l'element ielem de la zone associee a l'element geometrique contient le point
+ *
+ *               de coordonnees specifiees par le parametre "pos".
+ *     Renvoie 0 sinon.
+ *
+ * @param (DoubleVect& pos) coordonnees du point que l'on cherche a localiser
+ * @param (int ielem) le numero de l'element de la zone dans lequel on cherche le point.
+ * @return (int) 1 si le point de coordonnees specifiees appartient a l'element ielem 0 sinon
+ */
 int Hexaedre_VEF::contient(const ArrOfDouble& pos, int element ) const
 {
   assert(pos.size_array()==3);
@@ -353,30 +288,14 @@ int Hexaedre_VEF::contient(const ArrOfDouble& pos, int element ) const
 }
 
 
-// Description:
-//    Renvoie 1 si les sommets specifies par le parametre "pos"
-//    sont les sommets de l'element "element" de la zone associee a
-//    l'element geometrique.
-// Precondition:
-// Parametre: IntVect& pos
-//    Signification: les numeros des sommets a comparer
-//                   avec ceux de l'elements "element"
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: int element
-//    Signification: le numero de l'element de la zone
-//                   dont on veut comparer les sommets
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si les sommets passes en parametre
-//                   sont ceux de l'element specifie, 0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie 1 si les sommets specifies par le parametre "pos" sont les sommets de l'element "element" de la zone associee a
+ *
+ *     l'element geometrique.
+ *
+ * @param (IntVect& pos) les numeros des sommets a comparer avec ceux de l'elements "element"
+ * @param (int element) le numero de l'element de la zone dont on veut comparer les sommets
+ * @return (int) 1 si les sommets passes en parametre sont ceux de l'element specifie, 0 sinon
+ */
 int Hexaedre_VEF::contient(const ArrOfInt& som, int element ) const
 {
   const Zone& zone=ma_zone.valeur();
@@ -393,21 +312,10 @@ int Hexaedre_VEF::contient(const ArrOfInt& som, int element ) const
     return 0;
 }
 
-// Description:
-//    Calcule les volumes des elements de la zone associee.
-// Precondition:
-// Parametre: DoubleVect& volumes
-//    Signification: le vecteur contenant les valeurs  des
-//                   des volumes des elements de la zone
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Calcule les volumes des elements de la zone associee.
+ *
+ * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la zone
+ */
 void Hexaedre_VEF::calculer_volumes(DoubleVect& volumes) const
 {
   const Zone& zone=ma_zone.valeur();
@@ -560,20 +468,9 @@ void Hexaedre_VEF::calculer_volumes(DoubleVect& volumes) const
 
 }
 
-// Description:
-//    Reordonne
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Reordonne
+ *
+ */
 inline int reordonne(int i0,int i1,int i2,int i3,DoubleTab& coord,IntTab& elem,int& num_poly,int test, DoubleTab& v, ArrOfDouble& prod_,ArrOfDouble& prod_v, ArrOfDouble& dist, DoubleTab& prod_v2)
 {
   int s[4];
@@ -841,7 +738,9 @@ static int faces_sommets_hexa_vef[6][4] =
   { 4, 5, 6, 7 }
 };
 
-// Description: voir ElemGeomBase::get_tab_faces_sommets_locaux
+/*! @brief voir ElemGeomBase::get_tab_faces_sommets_locaux
+ *
+ */
 int Hexaedre_VEF::get_tab_faces_sommets_locaux(IntTab& faces_som_local) const
 {
   faces_som_local.resize(6,4);

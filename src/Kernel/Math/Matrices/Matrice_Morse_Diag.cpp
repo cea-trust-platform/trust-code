@@ -17,60 +17,48 @@
 
 Implemente_instanciable_sans_constructeur(Matrice_Morse_Diag,"Matrice_Morse_Diag",Matrice_Morse_Sym);
 
-// Description:
-//    Ecrit les trois tableaux de la structure de stockage
-//    Morse sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie& s
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit les trois tableaux de la structure de stockage Morse sur un flot de sortie.
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie& s) le flot de sortie modifie
+ */
 Sortie& Matrice_Morse_Diag::printOn(Sortie& s) const
 {
   return  Matrice_Morse::printOn(s);
 }
 
 
-// Description:
-//    NON CODE
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree& s
-//    Signification: le flot d'entree
-//    Contraintes:
-// Exception: NON CODE
-// Effets de bord:
-// Postcondition:
+/*! @brief NON CODE
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree& s) le flot d'entree
+ * @throws NON CODE
+ */
 Entree& Matrice_Morse_Diag::readOn(Entree& s)
 {
   return  Matrice_Morse::readOn(s) ;
 }
 
-// Description: provoquue une erreur le but de cette matrice est juste de calculer la diagonale
+/*! @brief provoquue une erreur le but de cette matrice est juste de calculer la diagonale
+ *
+ */
 DoubleVect& Matrice_Morse_Diag::ajouter_multvect_(const DoubleVect& x, DoubleVect& y) const
 {
   return Matrice_Morse::ajouter_multvect_(x,y);
 }
 
-// Description: provoquue une erreur le but de cette matrice est juste de calculer la diagonale
+/*! @brief provoquue une erreur le but de cette matrice est juste de calculer la diagonale
+ *
+ */
 DoubleVect& Matrice_Morse_Diag::ajouter_multvectT_(const DoubleVect& x, DoubleVect& y) const
 {
   Cerr<<" not implemented "<<finl;
   exit();
   return y;
 }
-// Description: provoquue une erreur le but de cette matrice est juste de calculer la diagonale
+/*! @brief provoquue une erreur le but de cette matrice est juste de calculer la diagonale
+ *
+ */
 DoubleTab& Matrice_Morse_Diag::ajouter_multTab_(const DoubleTab& x, DoubleTab& y) const
 {
   Cerr<<" not implemented "<<finl;

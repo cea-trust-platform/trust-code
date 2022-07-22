@@ -20,13 +20,13 @@
 #include <Champ.h>
 #include <Ref_DoubleTab.h>
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class DomaineAxi1d
-//
-// <Description of class DomaineAxi1d>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class DomaineAxi1d
+ *
+ *  <Description of class DomaineAxi1d>
+ *
+ *
+ *
+ */
 
 class DomaineAxi1d : public Domaine
 {

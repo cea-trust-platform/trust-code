@@ -22,21 +22,11 @@ Implemente_instanciable(UserUnaryFunction,"UserUnaryFunction",UnaryFunction);
 
 
 
-// Description:
-//    Ecriture sur un flot de sortie
-//    Ecrit la valeur de la constante
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ecriture sur un flot de sortie Ecrit la valeur de la constante
+ *
+ * @param (Sortie& os) le flot de sortie a utiliser
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& UserUnaryFunction::printOn(Sortie& os) const
 {
 
@@ -44,20 +34,11 @@ Sortie& UserUnaryFunction::printOn(Sortie& os) const
 }
 
 
-// Description:
-//    Lit la valeur de la constante
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit la valeur de la constante
+ *
+ * @param (Entree& is) le flot d'entree a utiliser
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& UserUnaryFunction::readOn(Entree& is)
 {
 #ifdef AVEC_PARSER

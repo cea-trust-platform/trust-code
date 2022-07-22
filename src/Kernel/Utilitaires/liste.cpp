@@ -17,20 +17,11 @@
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(liste,"liste",Objet_U);
 
-// Description:
-//     Lecture d'une liste sur un flot d'entree
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lecture d'une liste sur un flot d'entree
+ *
+ * @param (Entree& is) le flot d'entree a utiliser
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& liste::readOn(Entree& is)
 {
   vide();
@@ -63,20 +54,11 @@ Entree& liste::readOn(Entree& is)
 }
 
 
-// Description:
-//     Ecriture d'une liste sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ecriture d'une liste sur un flot de sortie
+ *
+ * @param (Sortie& os) le flot de sortie a utiliser
+ * @return (Sortie&) le flot d'entree modifie
+ */
 Sortie& liste::printOn(Sortie& os) const
 {
   Nom accouverte="{";
@@ -100,20 +82,10 @@ Sortie& liste::printOn(Sortie& os) const
   return os;
 }
 
-// Description:
-//     Renvoie le dernier element de la liste
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: liste&
-//    Signification: le dernier element de la liste
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le dernier element de la liste
+ *
+ * @return (liste&) le dernier element de la liste
+ */
 liste& liste::dernier()
 {
   if (est_dernier()) return *this;
@@ -125,20 +97,10 @@ liste& liste::dernier()
 
 }
 
-// Description:
-//     Renvoie le dernier element de la liste
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: const liste&
-//    Signification: le dernier element de la liste
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le dernier element de la liste
+ *
+ * @return (const liste&) le dernier element de la liste
+ */
 const liste& liste::dernier() const
 {
   if (est_dernier()) return *this;
@@ -150,21 +112,10 @@ const liste& liste::dernier() const
 
 }
 
-// Description:
-//     Renvoie la taille de la liste
-//     Une liste vide est de taille nulle
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: nombre d'elements de la liste
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la taille de la liste Une liste vide est de taille nulle
+ *
+ * @return (int) nombre d'elements de la liste
+ */
 int liste::size() const
 {
   if(est_vide()) return 0;
@@ -179,40 +130,18 @@ int liste::size() const
   return compteur;
 }
 
-// Description:
-//     Destructeur de liste
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Destructeur de liste
+ *
+ */
 liste::~liste()
 {
   vide();
   suivant_=0;
 }
 
-// Description:
-//     Vide la liste
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Vide la liste
+ *
+ */
 void liste::vide()
 {
   if (!est_vide())
@@ -227,20 +156,11 @@ void liste::vide()
   suivant_=this;
 }
 
-// Description:
-//     Operateur d'acces au ieme element de la liste
-// Precondition:
-// Parametre: int i
-//    Signification: l'indice de l'element a trouver
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Objet_U&
-//    Signification: le ieme element de la liste
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Operateur d'acces au ieme element de la liste
+ *
+ * @param (int i) l'indice de l'element a trouver
+ * @return (Objet_U&) le ieme element de la liste
+ */
 Objet_U& liste::operator[](int i)
 {
   liste_curseur curseur(*this);
@@ -260,20 +180,11 @@ Objet_U& liste::operator[](int i)
   return curseur.valeur();
 }
 
-// Description:
-//     Operateur d'acces au ieme element de la liste
-// Precondition:
-// Parametre: int i
-//    Signification: l'indice de l'element a trouver
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: const Objet_U&
-//    Signification: le ieme element de la liste
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Operateur d'acces au ieme element de la liste
+ *
+ * @param (int i) l'indice de l'element a trouver
+ * @return (const Objet_U&) le ieme element de la liste
+ */
 const Objet_U& liste::operator[](int i) const
 {
   liste_curseur curseur(*this);
@@ -288,20 +199,11 @@ const Objet_U& liste::operator[](int i) const
   return curseur.valeur();
 }
 
-// Description:
-//     Operateur d'acces a l'element de la liste qui est egal a nom
-// Precondition:
-// Parametre: const Nom& nom
-//    Signification: le nom de l'element a trouver
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Objet_U&
-//    Signification: l'element de la liste qui est egal a nom
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Operateur d'acces a l'element de la liste qui est egal a nom
+ *
+ * @param (const Nom& nom) le nom de l'element a trouver
+ * @return (Objet_U&) l'element de la liste qui est egal a nom
+ */
 Objet_U& liste::operator[](const Nom& nom)
 {
   liste_curseur curseur(*this);
@@ -325,20 +227,11 @@ Objet_U& liste::operator[](const Nom& nom)
   return curseur.valeur();
 }
 
-// Description:
-//     Operateur d'acces a l'element de la liste qui est egal a nom
-// Precondition:
-// Parametre: const Nom& nom
-//    Signification: le nom de l'element a trouver
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: const Objet_U&
-//    Signification: l'element de la liste qui est egal a nom
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Operateur d'acces a l'element de la liste qui est egal a nom
+ *
+ * @param (const Nom& nom) le nom de l'element a trouver
+ * @return (const Objet_U&) l'element de la liste qui est egal a nom
+ */
 const Objet_U& liste::operator[](const Nom& nom) const
 {
   liste_curseur curseur(*this);
@@ -361,21 +254,10 @@ const Objet_U& liste::operator[](const Nom& nom) const
   return curseur.valeur();
 }
 
-// Description:
-//     Operateur d'affectation de liste
-// Precondition:
-// Parametre: const liste& list
-//    Signification: la liste a affecter
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-//    Les anciens elements sont perdus
-// Postcondition:
+/*! @brief Operateur d'affectation de liste
+ *
+ * @param (const liste& list) la liste a affecter
+ */
 liste& liste::operator=(const liste& list)
 {
   vide();
@@ -383,11 +265,11 @@ liste& liste::operator=(const liste& list)
   return *this;
 }
 
-//////////
-// Description:
-// Ajout d'un Objet_U a la liste
-// to_add est libere en sortie
-//
+/*! @brief Ajout d'un Objet_U a la liste to_add est libere en sortie
+ *
+ *
+ *
+ */
 Objet_U& liste::add_deplace(DerObjU& to_add)
 {
   if( est_vide())
@@ -416,20 +298,11 @@ Objet_U& liste::add_deplace(DerObjU& to_add)
 }
 
 
-// Description:
-//     Ajout d'un Objet_U a la liste
-// Precondition:
-// Parametre: const Objet_U& to_add
-//    Signification: L'Objet_U a ajouter
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Objet_U&
-//    Signification: L'Objet_U ajoute
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ajout d'un Objet_U a la liste
+ *
+ * @param (const Objet_U& to_add) L'Objet_U a ajouter
+ * @return (Objet_U&) L'Objet_U ajoute
+ */
 Objet_U& liste::add(const Objet_U& to_add)
 {
   if( est_vide())
@@ -455,20 +328,11 @@ Objet_U& liste::add(const Objet_U& to_add)
     }
 }
 
-// Description:
-//     Ajout d'une liste a la liste
-// Precondition:
-// Parametre: const liste& list
-//    Signification: la liste a ajouter
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: liste&
-//    Signification: la liste comportant tous les elements
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ajout d'une liste a la liste
+ *
+ * @param (const liste& list) la liste a ajouter
+ * @return (liste&) la liste comportant tous les elements
+ */
 liste& liste::add(const liste& list)
 {
   liste_curseur curseur(list);
@@ -481,20 +345,11 @@ liste& liste::add(const liste& list)
   return *this;
 }
 
-// Description:
-//     Ajout d'un Objet_U a la liste ssi il n'existe pas deja
-// Precondition:
-// Parametre: const Objet_U& to_add
-//    Signification: l'Objet_U a ajouter
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Objet_U&
-//    Signification: L'Objet_U existant deja dans la liste ou celui ajoute
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ajout d'un Objet_U a la liste ssi il n'existe pas deja
+ *
+ * @param (const Objet_U& to_add) l'Objet_U a ajouter
+ * @return (Objet_U&) L'Objet_U existant deja dans la liste ou celui ajoute
+ */
 Objet_U& liste::add_if_not(const Objet_U& to_add)
 {
   if( est_vide())
@@ -520,21 +375,12 @@ Objet_U& liste::add_if_not(const Objet_U& to_add)
   return valeur();
 }
 
-// Description:
-//     Recherche d'un Objet_U dans la liste
-// Precondition:
-// Parametre: const Objet_U& obj
-//    Signification: l'Objet_U a rechercher
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: liste&
-//    Signification: L'element trouve dans la liste
-//    Contraintes:
-// Exception:
-//    Sort en erreur si l'Objet_U n'est pas present dans la liste
-// Effets de bord:
-// Postcondition:
+/*! @brief Recherche d'un Objet_U dans la liste
+ *
+ * @param (const Objet_U& obj) l'Objet_U a rechercher
+ * @return (liste&) L'element trouve dans la liste
+ * @throws Sort en erreur si l'Objet_U n'est pas present dans la liste
+ */
 liste& liste::search(const Objet_U& obj) const
 {
   liste_curseur curseur=*this;
@@ -549,21 +395,12 @@ liste& liste::search(const Objet_U& obj) const
   return *suivant_;
 }
 
-// Description:
-//     Recherche d'un Objet_U de Nom ch dans la liste
-// Precondition:
-// Parametre: const char* const ch
-//    Signification: le nom de l'Objet_U a rechercher
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: liste&
-//    Signification: L'element de la liste trouve
-//    Contraintes:
-// Exception:
-//    Sort en erreur si aucun Objet_U n'est trouve
-// Effets de bord:
-// Postcondition:
+/*! @brief Recherche d'un Objet_U de Nom ch dans la liste
+ *
+ * @param (const char* const ch) le nom de l'Objet_U a rechercher
+ * @return (liste&) L'element de la liste trouve
+ * @throws Sort en erreur si aucun Objet_U n'est trouve
+ */
 liste& liste::search(const char* const ch) const
 {
   Nom nom(ch);
@@ -579,20 +416,11 @@ liste& liste::search(const char* const ch) const
   return *suivant_;
 }
 
-// Description:
-//     Verifie si un Objet_U appartient ou non a la liste
-// Precondition:
-// Parametre: const Objet_U& obj
-//    Signification: L'Objet_U a rechercher
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si la liste contient l'Objet_U obj, 0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Verifie si un Objet_U appartient ou non a la liste
+ *
+ * @param (const Objet_U& obj) L'Objet_U a rechercher
+ * @return (int) 1 si la liste contient l'Objet_U obj, 0 sinon
+ */
 int liste::contient(const Objet_U& obj) const
 {
   liste_curseur curseur=*this;
@@ -605,20 +433,11 @@ int liste::contient(const Objet_U& obj) const
   return 0;
 }
 
-// Description:
-//     Verifie si un Objet_U de Nom ch appartient ou non a la liste
-// Precondition:
-// Parametre: const char* const ch
-//    Signification: le nom de l'Objet_U a rechercher
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si la liste contient un Objet_U de Nom ch, 0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Verifie si un Objet_U de Nom ch appartient ou non a la liste
+ *
+ * @param (const char* const ch) le nom de l'Objet_U a rechercher
+ * @return (int) 1 si la liste contient un Objet_U de Nom ch, 0 sinon
+ */
 int liste::contient(const char* const ch ) const
 {
   Nom nom(ch);
@@ -632,20 +451,11 @@ int liste::contient(const char* const ch ) const
   return 0;
 }
 
-// Description:
-//     Renvoie le rang d'un Objet_U dans la liste
-// Precondition:
-// Parametre: const Objet_U& obj
-//    Signification: l'Objet_U a rechercher
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le rang de L'Objet_U dans la liste, -1 si l'Objet_U n'est pas dans la liste
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le rang d'un Objet_U dans la liste
+ *
+ * @param (const Objet_U& obj) l'Objet_U a rechercher
+ * @return (int) le rang de L'Objet_U dans la liste, -1 si l'Objet_U n'est pas dans la liste
+ */
 int liste::rang(const Objet_U& obj) const
 {
   liste_curseur curseur=*this;
@@ -660,21 +470,11 @@ int liste::rang(const Objet_U& obj) const
   return -1;
 }
 
-// Description:
-//     Renvoie le rang d'une chaine de caracteres contenue dans la liste
-//     Recherche un Objet_U de Nom ch
-// Precondition:
-// Parametre: const char* const ch
-//    Signification: le nom de l'Objet_U a rechercher
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le rang de l'Objet_U trouve ou -1 si aucun ne correspond
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le rang d'une chaine de caracteres contenue dans la liste Recherche un Objet_U de Nom ch
+ *
+ * @param (const char* const ch) le nom de l'Objet_U a rechercher
+ * @return (int) le rang de l'Objet_U trouve ou -1 si aucun ne correspond
+ */
 int liste::rang(const char* const ch ) const
 {
   Nom nom(ch);
@@ -690,20 +490,10 @@ int liste::rang(const char* const ch ) const
   return -1;
 }
 
-// Description:
-//     Supprime un Objet_U contenu dans la liste
-// Precondition: Ne marche que si this est la tete de liste
-// Parametre: const Objet_U& obj
-//    Signification: l'Objet_U a supprimer de la liste
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Supprime un Objet_U contenu dans la liste
+ *
+ * @param (const Objet_U& obj) l'Objet_U a supprimer de la liste
+ */
 void liste::suppr(const Objet_U& obj)
 {
   if(valeur()==obj)
@@ -747,20 +537,10 @@ void liste::suppr(const Objet_U& obj)
   Cerr << "We have not found an object == : " << obj << finl;
 }
 
-// Description:
-//     Supprime l'Objet de Nom ch contenu dans la liste
-// Precondition:
-// Parametre: const char* const ch
-//    Signification: le nom de l'Objet_U a supprimer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Supprime l'Objet de Nom ch contenu dans la liste
+ *
+ * @param (const char* const ch) le nom de l'Objet_U a supprimer
+ */
 void liste::suppr(const char* const ch )
 {
   Nom nom(ch);
@@ -805,20 +585,11 @@ void liste::suppr(const char* const ch )
   Cerr << "We have not found an object with name : " << ch << finl;
 }
 
-// Description:
-//     Insertion d'un Objet_U dans la liste
-// Precondition:
-// Parametre: const Objet_U& ob
-//    Signification: l'Objet_U a inserer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Objet_U&
-//    Signification: L'Objet_U insere
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Insertion d'un Objet_U dans la liste
+ *
+ * @param (const Objet_U& ob) l'Objet_U a inserer
+ * @return (Objet_U&) L'Objet_U insere
+ */
 Objet_U& liste::inserer(const Objet_U& ob)
 {
   if (est_vide() || est_dernier())
@@ -832,22 +603,11 @@ Objet_U& liste::inserer(const Objet_U& ob)
     }
 }
 
-// Description:
-//     Insertion d'une liste
-//     NON CODE - SORT SYSTEMATIQUEMENT EN ERREUR
-// Precondition:
-// Parametre: const liste&
-//    Signification: la liste a inserer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-//    Sort toujours en erreur
-// Effets de bord:
-// Postcondition:
+/*! @brief Insertion d'une liste NON CODE - SORT SYSTEMATIQUEMENT EN ERREUR
+ *
+ * @param (const liste&) la liste a inserer
+ * @throws Sort toujours en erreur
+ */
 liste& liste::inserer(const liste&)
 {
   Cerr << "liste::inserer(const liste&) : not coded !" << finl;
@@ -855,21 +615,9 @@ liste& liste::inserer(const liste&)
   return *this;
 }
 
-// Description:
-//     Supprime l'element suivant de la liste
-//     Ne fait rien si la liste est vide ou si l'element courant est le dernier de la liste
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Supprime l'element suivant de la liste Ne fait rien si la liste est vide ou si l'element courant est le dernier de la liste
+ *
+ */
 void liste::supprimer()
 {
   if(est_vide()) return;
@@ -880,26 +628,12 @@ void liste::supprimer()
   delete old;
 }
 
-// Description:
-//     Operateur de comparaison de deux listes
-//     La comparaison repose sur l'egalite des Objet_U des 2 listes
-// Precondition:
-// Parametre: const liste& list1
-//    Signification: premiere liste a comparer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: const liste& list2
-//    Signification: seconde liste a comparer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si les listes sont egales, 0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Operateur de comparaison de deux listes La comparaison repose sur l'egalite des Objet_U des 2 listes
+ *
+ * @param (const liste& list1) premiere liste a comparer
+ * @param (const liste& list2) seconde liste a comparer
+ * @return (int) 1 si les listes sont egales, 0 sinon
+ */
 int operator ==(const liste& list1 , const liste& list2)
 {
   liste_curseur curseur1=list1;
@@ -918,26 +652,12 @@ int operator ==(const liste& list1 , const liste& list2)
   return 0;
 }
 
-// Description:
-//     Operateur de difference entre deux listes
-//     La comparaison repose sur l'egalite des Objet_U des 2 listes
-// Precondition:
-// Parametre: const liste& list1
-//    Signification: premiere liste a comparer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: const liste& list2
-//    Signification: seconde liste a comparer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si les listes sont differentes, 0 si elles egales
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Operateur de difference entre deux listes La comparaison repose sur l'egalite des Objet_U des 2 listes
+ *
+ * @param (const liste& list1) premiere liste a comparer
+ * @param (const liste& list2) seconde liste a comparer
+ * @return (int) 1 si les listes sont differentes, 0 si elles egales
+ */
 int operator !=(const liste& list1 , const liste& list2)
 {
   return !(list1==list2);

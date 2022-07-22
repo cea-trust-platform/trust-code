@@ -33,21 +33,17 @@ class Domaine_dis;
 class Probleme_base;
 class Zone_VF;
 class Zone_dis_base;
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Domaine
-//    Un Domaine represente le domaine (spatial) de resolution d'un Probleme.
-//    Un Domaine a un Nom, il est constitue d'une ou plusieurs Zone qui
-//    peuvent etre eventuellement decoupees en Sous_Zone.
-//    Un Domaine porte l'ensemble des sommets utilises par ses Zones.
-//    On peut vouloir resoudre des problemes de type different sur plusieurs
-//    domaines, geometriquement les domaines sont alors couples par des
-//    surfaces qu'on appelle Raccord.
-// .SECTION voir aussi
-//     Zone Sous_Zone Probleme Raccord
-//     Dans Trio-U V1 les domaines sont constitues d'une seule zone
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Domaine Un Domaine represente le domaine (spatial) de resolution d'un Probleme.
+ *
+ *     Un Domaine a un Nom, il est constitue d'une ou plusieurs Zone qui
+ *     peuvent etre eventuellement decoupees en Sous_Zone.
+ *     Un Domaine porte l'ensemble des sommets utilises par ses Zones.
+ *     On peut vouloir resoudre des problemes de type different sur plusieurs
+ *     domaines, geometriquement les domaines sont alors couples par des
+ *     surfaces qu'on appelle Raccord.
+ *
+ * @sa Zone Sous_Zone Probleme Raccord, Dans Trio-U V1 les domaines sont constitues d'une seule zone
+ */
 class Domaine : public Objet_U
 {
   Declare_instanciable_sans_constructeur(Domaine);
@@ -180,58 +176,28 @@ protected :
 };
 Declare_liste(Domaine);
 
-// Description:
-//    Renvoie le nom du domaine.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Nom&
-//    Signification: le nom du domaine
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nom du domaine.
+ *
+ * @return (Nom&) le nom du domaine
+ */
 inline const Nom& Domaine::le_nom() const
 {
   return nom_;
 }
 
-// Description:
-//    Donne un nom au domaine.
-// Precondition:
-// Parametre: Nom& un_nom
-//    Signification: le nom a donner au domaine
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: le domaine a un nom
+/*! @brief Donne un nom au domaine.
+ *
+ * @param (Nom& un_nom) le nom a donner au domaine
+ */
 inline void Domaine::nommer(const Nom& un_nom)
 {
   nom_=un_nom;
 }
 
-// Description:
-//    Renvoie le nombre de zone du domaine.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de zones du domaine
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de zone du domaine.
+ *
+ * @return (int) le nombre de zones du domaine
+ */
 inline int Domaine::nb_zones() const
 {
   return les_zones.size();
@@ -247,331 +213,178 @@ inline void check_domaine(int n)
       Process::exit();
     }
 }
-// Description:
-//    Renvoie la i-ieme zone du domaine.
-//    (version const)
-// Precondition:
-// Parametre: int i
-//    Signification: l'indice de la zone a renvoyer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Zone&
-//    Signification: la i-ieme zone du domaine
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la i-ieme zone du domaine.
+ *
+ * (version const)
+ *
+ * @param (int i) l'indice de la zone a renvoyer
+ * @return (Zone&) la i-ieme zone du domaine
+ */
 inline const Zone& Domaine::zone(int i) const
 {
   check_domaine(nb_zones());
   return les_zones[i];
 }
 
-// Description:
-//    Renvoie la i-ieme zone du domaine.
-// Precondition:
-// Parametre: int i
-//    Signification: l'indice de la zone a renvoyer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Zone&
-//    Signification: la i-ieme zone du domaine
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la i-ieme zone du domaine.
+ *
+ * @param (int i) l'indice de la zone a renvoyer
+ * @return (Zone&) la i-ieme zone du domaine
+ */
 inline Zone& Domaine::zone(int i)
 {
   check_domaine(nb_zones());
   return les_zones[i];
 }
 
-// Description:
-//    Renvoie la Zone dont le nom est indique en parametre.
-//    (version const)
-// Precondition:
-// Parametre: Nom& un_nom
-//    Signification: le nom de la zone a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: Zone&
-//    Signification: la Zone dont le nom est indique en parametre
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la Zone dont le nom est indique en parametre.
+ *
+ * (version const)
+ *
+ * @param (Nom& un_nom) le nom de la zone a renvoyer
+ * @return (Zone&) la Zone dont le nom est indique en parametre
+ */
 inline const Zone& Domaine::zone(const Nom& un_nom) const
 {
   check_domaine(nb_zones());
   return les_zones(un_nom);
 }
 
-// Description:
-//    Renvoie la Zone dont le nom est indique en parametre.
-// Precondition:
-// Parametre: Nom& un_nom
-//    Signification: le nom de la zone a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: Zone&
-//    Signification: la Zone dont le nom est indique en parametre
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la Zone dont le nom est indique en parametre.
+ *
+ * @param (Nom& un_nom) le nom de la zone a renvoyer
+ * @return (Zone&) la Zone dont le nom est indique en parametre
+ */
 inline Zone& Domaine::zone(const Nom& un_nom)
 {
   check_domaine(nb_zones());
   return les_zones(un_nom);
 }
 
-// Description:
-//    Renvoie le nombre de sous-zone.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de sous-zone
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de sous-zone.
+ *
+ * @return (int) le nombre de sous-zone
+ */
 inline int Domaine::nb_ss_zones() const
 {
   return les_ss_zones.size();
 }
 
-// Description:
-//    Renvoie la i-ieme sous-zone.
-//    (version const)
-// Precondition:
-// Parametre: int i
-//    Signification: l'indice de la zone a renvoyer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sous_Zone&
-//    Signification: la i-ieme sous-zone
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la i-ieme sous-zone.
+ *
+ * (version const)
+ *
+ * @param (int i) l'indice de la zone a renvoyer
+ * @return (Sous_Zone&) la i-ieme sous-zone
+ */
 inline const Sous_Zone& Domaine::ss_zone(int i) const
 {
   return les_ss_zones[i].valeur();
 }
 
-// Description:
-//    Renvoie la i-ieme sous-zone.
-// Precondition:
-// Parametre: int i
-//    Signification: l'indice de la zone a renvoyer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sous_Zone&
-//    Signification: la i-ieme sous-zone
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la i-ieme sous-zone.
+ *
+ * @param (int i) l'indice de la zone a renvoyer
+ * @return (Sous_Zone&) la i-ieme sous-zone
+ */
 inline Sous_Zone& Domaine::ss_zone(int i)
 {
   return les_ss_zones[i].valeur();
 }
 
-// Description:
-//    Renvoie la sous-zone dont le nom est indique en parametre.
-//    (version const)
-// Precondition:
-// Parametre: Nom& un_nom
-//    Signification: le nom de la sous-zone a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: Sous_Zone&
-//    Signification: la sous-zone dont le nom est indique en parametre
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la sous-zone dont le nom est indique en parametre.
+ *
+ * (version const)
+ *
+ * @param (Nom& un_nom) le nom de la sous-zone a renvoyer
+ * @return (Sous_Zone&) la sous-zone dont le nom est indique en parametre
+ */
 inline const Sous_Zone& Domaine::ss_zone(const Nom& un_nom) const
 {
   return les_ss_zones(un_nom).valeur();
 }
 
-// Description:
-//    Renvoie la sous-zone dont le nom est indique en parametre.
-// Precondition:
-// Parametre: Nom& un_nom
-//    Signification: le nom de la sous-zone a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: Sous_Zone&
-//    Signification: la sous-zone dont le nom est indique en parametre
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la sous-zone dont le nom est indique en parametre.
+ *
+ * @param (Nom& un_nom) le nom de la sous-zone a renvoyer
+ * @return (Sous_Zone&) la sous-zone dont le nom est indique en parametre
+ */
 inline Sous_Zone& Domaine::ss_zone(const Nom& un_nom)
 {
   return les_ss_zones(un_nom).valeur();
 }
 
-// Description:
-//    Renvoie la j-ieme coordonnee du i-ieme noeud.
-// Precondition:
-// Parametre: int i
-//    Signification: numero du noeud
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int j
-//    Signification: indice de la composante a renvoyer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: la j-ieme coordonnee du i-ieme noeud
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la j-ieme coordonnee du i-ieme noeud.
+ *
+ * @param (int i) numero du noeud
+ * @param (int j) indice de la composante a renvoyer
+ * @return (double) la j-ieme coordonnee du i-ieme noeud
+ */
 inline double Domaine::coord(int i,int j) const
 {
   return sommets(numero_sommet(i),j);
 }
 
-// Description:
-//    Renvoie une reference sur la j-ieme coordonnee
-//    du i-ieme noeud. (ce qui permet de modifier sa valeur)
-// Precondition:
-// Parametre: int i
-//    Signification: numero du noeud
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int j
-//    Signification: indice de la composante a renvoyer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double&
-//    Signification: reference sur la j-ieme coordonnee du i-ieme noeud
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie une reference sur la j-ieme coordonnee du i-ieme noeud.
+ *
+ * (ce qui permet de modifier sa valeur)
+ *
+ * @param (int i) numero du noeud
+ * @param (int j) indice de la composante a renvoyer
+ * @return (double&) reference sur la j-ieme coordonnee du i-ieme noeud
+ */
 inline double& Domaine::coord(int i, int j)
 {
   return sommets(numero_sommet(i),j);
 }
 
-// Description:
-//    Renvoie le tableau des coordonnees des noeuds (sommets).
-//   (acces en lecture)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: le tableau des coordonnees des noeuds
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le tableau des coordonnees des noeuds (sommets).
+ *
+ * (acces en lecture)
+ *
+ * @return (DoubleTab&) le tableau des coordonnees des noeuds
+ */
 inline const DoubleTab& Domaine::coord_sommets() const
 {
   return sommets;
 }
 
-// Description:
-//    Fixe epsilon,
-//    Si 2 points d'un domaine sont separes d'une distance
-//    inferieure ou egale a epsilon ils sont consideres egaux.
-// Precondition:
-// Parametre: double eps
-//    Signification: la valeur a donner a epsilon
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Fixe epsilon, Si 2 points d'un domaine sont separes d'une distance
+ *
+ *     inferieure ou egale a epsilon ils sont consideres egaux.
+ *
+ * @param (double eps) la valeur a donner a epsilon
+ */
 inline void Domaine::fixer_epsilon(double eps)
 {
   epsilon_=eps;
 }
 
-// Description:
-//    Renvoie epsilon.
-//    Si 2 points d'un domaine sont separes d'une distance
-//    inferieure ou egale a epsilon ils sont consideres egaux.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: la distance a partir de laquelles 2 points
-//                   sont confondus
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie epsilon.
+ *
+ * Si 2 points d'un domaine sont separes d'une distance
+ *     inferieure ou egale a epsilon ils sont consideres egaux.
+ *
+ * @return (double) la distance a partir de laquelles 2 points sont confondus
+ */
 inline double Domaine::epsilon() const
 {
   return epsilon_;
 }
 
-// Description:
-//    Renvoie le nombre total de sommets.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre total de sommets
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-// Renvoie le tableau sommets
+/*! @brief Renvoie le nombre total de sommets.
+ *
+ * @return (int) le nombre total de sommets
+ */
 inline DoubleTab& Domaine::les_sommets()
 {
   return sommets;
 }
 
-// Description:
-//    Renvoie le tableau des sommets du domaine.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: le tableau des sommets du domaine
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le tableau des sommets du domaine.
+ *
+ * @return (DoubleTab&) le tableau des sommets du domaine
+ */
 inline const DoubleTab& Domaine::les_sommets() const
 {
   return sommets;

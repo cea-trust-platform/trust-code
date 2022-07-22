@@ -19,11 +19,13 @@
 #include <TRUSTTabs.h>
 #include <Noms.h>
 
-// .DESCRIPTION
-//  Metadata for a distributed composite vector.
-//  This class describes a vector that contains one or more sub-vectors (see P1bubble arrays),
-//  each sub-vector has the same shape as the base vector, plus one dimension if shapes_[i] > 0
-//  See also class DoubleTab_Parts and class ConstDoubleTab_Parts
+/*! @brief Metadata for a distributed composite vector.
+ *
+ * This class describes a vector that contains one or more sub-vectors (see P1bubble arrays),
+ *   each sub-vector has the same shape as the base vector, plus one dimension if shapes_[i] > 0
+ *   See also class DoubleTab_Parts and class ConstDoubleTab_Parts
+ *
+ */
 class MD_Vector_composite : public MD_Vector_base2
 {
   Declare_instanciable(MD_Vector_composite);

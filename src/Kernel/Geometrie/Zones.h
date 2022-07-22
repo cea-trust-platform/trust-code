@@ -20,14 +20,10 @@
 
 Declare_liste(Zone);
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Zones
-//    Cette classe represente une liste de Zone.
-// .SECTION voir aussi
-//    Zone
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Zones Cette classe represente une liste de Zone.
+ *
+ * @sa Zone
+ */
 
 class Zones : public LIST(Zone)
 {

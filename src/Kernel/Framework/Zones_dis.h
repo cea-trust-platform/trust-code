@@ -22,16 +22,13 @@
 
 Declare_vect(Zone_dis);
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Zones_dis
-//     La classe Zones_dis represente un vecteur contenant des objets de la
-//     classe Zone_dis. Une classe representant un vecteur d'objet est
-//     declaree grace a la macro VECT(classe_X).
-// .SECTION voir aussi
-//     Zone_dis
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Zones_dis La classe Zones_dis represente un vecteur contenant des objets de la
+ *
+ *      classe Zone_dis. Une classe representant un vecteur d'objet est
+ *      declaree grace a la macro VECT(classe_X).
+ *
+ * @sa Zone_dis
+ */
 class Zones_dis : public VECT(Zone_dis)
 {
 

@@ -29,8 +29,9 @@ Entree& Polygone_poly::readOn( Entree& is )
   Elem_poly_base::readOn( is );
   return is;
 }
-// Description:
-// remplit le tableau face_normales dans la Zone_poly
+/*! @brief remplit le tableau face_normales dans la Zone_poly
+ *
+ */
 void Polygone_poly::normale(int num_Face,DoubleTab& Face_normales,
                             const  IntTab& Face_sommets,
                             const IntTab& Face_voisins,

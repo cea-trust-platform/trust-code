@@ -22,17 +22,14 @@
 #include <Rectangle.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Rectangle_axi
-//    Cette classe represente la deformee du rectangle dans
-//    le cas d'un maillage en coordonnees cylindriques
-//    Les methodes de la classe Rectangle dont Rectangle_axi derive sont
-//    surchargees pour effectuer les calculs en coordonnees cylindrique.
-// .SECTION voir aussi
-//    Rectangle Elem_geom_base Elem_geom
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Rectangle_axi Cette classe represente la deformee du rectangle dans
+ *
+ *     le cas d'un maillage en coordonnees cylindriques
+ *     Les methodes de la classe Rectangle dont Rectangle_axi derive sont
+ *     surchargees pour effectuer les calculs en coordonnees cylindrique.
+ *
+ * @sa Rectangle Elem_geom_base Elem_geom
+ */
 class Rectangle_axi : public Rectangle
 {
 
@@ -50,21 +47,13 @@ public :
 };
 
 
-// Description:
-//    Renvoie le i-ieme type de face.
-//    Un rectangle (Axi) n'a qu'un seul type de face.
-// Precondition:
-// Parametre: int i
-//    Signification: le rang du type de face a renvoyer
-//    Valeurs par defaut: 0
-//    Contraintes: i=0
-//    Acces:
-// Retour: Type_Face
-//    Signification: un type de face
-//    Contraintes: toujours egal a Faces::segment_2D_axi (si i=0)
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le i-ieme type de face.
+ *
+ * Un rectangle (Axi) n'a qu'un seul type de face.
+ *
+ * @param (int i) le rang du type de face a renvoyer
+ * @return (Type_Face) un type de face
+ */
 inline Type_Face Rectangle_axi::type_face(int i) const
 {
   assert(i==0);

@@ -19,12 +19,10 @@
 
 #include <Schema_Temps_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-// .DESCRIPTION
-//     classe Schema_Explicite_Multi_TimeStep_base
-// .SECTION voir aussi
-//     Schema_Temps_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Schema_Explicite_Multi_TimeStep_base
+ *
+ * @sa Schema_Temps_base
+ */
 class Schema_Explicite_Multi_TimeStep_base: public Schema_Temps_base
 {
 

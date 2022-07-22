@@ -20,18 +20,15 @@
 
 Declare_deriv(Champ_Fonc_base);
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_Fonc
-//     Classe generique de la hierarchie des champs fontions du temps,
-//     un objet Champ_Fonc peut referencer n'importe quel objet derivant de
-//     Champ_Fonc_base.
-//     La plupart des methodes appellent les methodes de l'objet Champ_Fonc
-//     sous-jacent via la methode valeur() declaree grace a la macro
-// .SECTION voir aussi
-//     Champ_Fonc_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_Fonc Classe generique de la hierarchie des champs fontions du temps,
+ *
+ *      un objet Champ_Fonc peut referencer n'importe quel objet derivant de
+ *      Champ_Fonc_base.
+ *      La plupart des methodes appellent les methodes de l'objet Champ_Fonc
+ *      sous-jacent via la methode valeur() declaree grace a la macro
+ *
+ * @sa Champ_Fonc_base
+ */
 class Champ_Fonc : public DERIV(Champ_Fonc_base), public Champ_Proto
 {
   Declare_instanciable(Champ_Fonc);
@@ -66,268 +63,136 @@ public :
   };
 };
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Fixe le nombre de degres de liberte par composante
-// Precondition:
-// Parametre: int n
-//    Signification: le nombre de degres de liberte par comp
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent Fixe le nombre de degres de liberte par composante
+ *
+ * @param (int n) le nombre de degres de liberte par comp
+ */
 inline void Champ_Fonc::fixer_nb_valeurs_nodales(int n)
 {
   valeur().fixer_nb_valeurs_nodales(n);
 }
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Renvoie le nombre de degres de liberte par composante
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de degres de liberte par composante
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent Renvoie le nombre de degres de liberte par composante
+ *
+ * @return (int) le nombre de degres de liberte par composante
+ */
 inline int Champ_Fonc::nb_valeurs_nodales() const
 {
   return valeur().nb_valeurs_nodales();
 }
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Renvoie le tableau des valeurs du champ
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: le tableau des valeurs du champ
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent Renvoie le tableau des valeurs du champ
+ *
+ * @return (DoubleTab&) le tableau des valeurs du champ
+ */
 inline DoubleTab& Champ_Fonc::valeurs()
 {
   return valeur().valeurs();
 }
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Renvoie le tableau des valeurs du champ
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: le tableau des valeurs du champ
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent Renvoie le tableau des valeurs du champ
+ *
+ *     (version const)
+ *
+ * @return (DoubleTab&) le tableau des valeurs du champ
+ */
 inline const DoubleTab& Champ_Fonc::valeurs() const
 {
   return valeur().valeurs();
 }
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Renvoie le temps courant du champ
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: le temps courant du champ
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent Renvoie le temps courant du champ
+ *
+ * @return (double) le temps courant du champ
+ */
 inline double Champ_Fonc::temps() const
 {
   return valeur().temps();
 }
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Change le temps courant du champ, et le renvoie.
-// Precondition:
-// Parametre: double& t
-//    Signification: le nouveau temps courant du champ
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: double
-//    Signification: le nouveau temps courant du champ
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent Change le temps courant du champ, et le renvoie.
+ *
+ * @param (double& t) le nouveau temps courant du champ
+ * @return (double) le nouveau temps courant du champ
+ */
 inline double Champ_Fonc::changer_temps(const double t)
 {
   return valeur().changer_temps(t);
 }
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Associe une zone discretisee au champ.
-// Precondition:
-// Parametre: Zone_dis_base& zone_dis
-//    Signification: la zone discretisee a associer au champ
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: le champ a une zone discretisee associee
+/*! @brief Appel a l'objet sous-jacent Associe une zone discretisee au champ.
+ *
+ * @param (Zone_dis_base& zone_dis) la zone discretisee a associer au champ
+ */
 inline void Champ_Fonc::associer_zone_dis_base(const Zone_dis_base& zone_dis)
 {
   valeur().associer_zone_dis_base(zone_dis);
 }
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Renvoe la zone discretisee associee
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Zone_dis_base&
-//    Signification: la zone discretisee associee
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent Renvoe la zone discretisee associee
+ *
+ * @return (Zone_dis_base&) la zone discretisee associee
+ */
 inline const Zone_dis_base& Champ_Fonc::zone_dis_base() const
 {
   return valeur().zone_dis_base();
 }
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Effectue une mise a jour en temps
-// Precondition:
-// Parametre: double temps
-//    Signification: le temps de mise a jour
+/*! @brief Appel a l'objet sous-jacent Effectue une mise a jour en temps
+ *
+ * @param (double temps) le temps de mise a jour
+ */
 inline void Champ_Fonc::mettre_a_jour(double un_temps)
 {
   valeur().mettre_a_jour(un_temps);
 }
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Initilialise le champ (si il y lieu)
+/*! @brief Appel a l'objet sous-jacent Initilialise le champ (si il y lieu)
+ *
+ */
 inline int Champ_Fonc::initialiser(const double un_temps)
 {
   return valeur().initialiser(un_temps);
 }
 
-// Description:
-//    Operateur d'affectation d'un Champ_Fonc_base dans
-//    un  Champ_Fonc.
-// Precondition:
-// Parametre: Champ_Fonc_base& ch_fonc_base
-//    Signification: la partie droite de l'affectation
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: Champ_Fonc&
-//    Signification: le resultat de l'affectation (*this)
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Operateur d'affectation d'un Champ_Fonc_base dans un  Champ_Fonc.
+ *
+ * @param (Champ_Fonc_base& ch_fonc_base) la partie droite de l'affectation
+ * @return (Champ_Fonc&) le resultat de l'affectation (*this)
+ */
 inline Champ_Fonc& Champ_Fonc::operator=(const Champ_Fonc_base& ch_fonc_base)
 {
   DERIV(Champ_Fonc_base)::operator=(ch_fonc_base);
   return *this;
 }
 
-// Description:
-//    Operateur d'affectation d'un Champ_Fonc_base dans
-//    un  Champ_Fonc.
-// Precondition:
-// Parametre: Champ_Fonc_base& ch_fonc_base
-//    Signification: la partie droite de l'affectation
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: Champ_Fonc&
-//    Signification: le resultat de l'affectation (*this)
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Operateur d'affectation d'un Champ_Fonc_base dans un  Champ_Fonc.
+ *
+ * @param (Champ_Fonc_base& ch_fonc_base) la partie droite de l'affectation
+ * @return (Champ_Fonc&) le resultat de l'affectation (*this)
+ */
 inline Champ_Fonc& Champ_Fonc::operator=(const Champ_Fonc& ch_fonc)
 {
   if (ch_fonc.non_nul()) DERIV(Champ_Fonc_base)::operator=(ch_fonc.valeur());
   return *this;
 }
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Postraite au format lml.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Parametre: Motcle& loc_post
-//    Signification: la localisation du postraitement, "sommet" ou "constant par element"
-//    Valeurs par defaut:
-//    Contraintes: reference constante, valeurs prevues: "som","elem"
-//    Acces: entree
-// Retour: int
-//    Signification: code de retour propage
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent Postraite au format lml.
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @param (Motcle& loc_post) la localisation du postraitement, "sommet" ou "constant par element"
+ * @return (int) code de retour propage
+ */
 inline int Champ_Fonc::reprendre(Entree& fich)
 {
   return valeur().reprendre(fich);
 }
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Effectue une sauvegarde sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& fich
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: int
-//    Signification: code de retour propage
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent Effectue une sauvegarde sur un flot de sortie
+ *
+ * @param (Sortie& fich) un flot de sortie
+ * @return (int) code de retour propage
+ */
 inline int Champ_Fonc::sauvegarder(Sortie& fich) const
 {
   return valeur().sauvegarder(fich);

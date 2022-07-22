@@ -15,40 +15,41 @@
 
 #include <Support_Champ_Masse_Volumique.h>
 
-// Description:
-//  Constructeur de la classe. Par defaut, une classe derivee deja codee
-//  appelle le constructeur sans argument. support_ok est mis a zero
-//  et on produit une erreur si Associer_champ_masse_volumique est appele.
-//  Pour signifier que le champ de masse volumique est supporte par
-//  la classe derivee, il faut appeler Declare_support_masse_volumique
+/*! @brief Constructeur de la classe.
+ *
+ * Par defaut, une classe derivee deja codee appelle le constructeur sans argument. support_ok est mis a zero
+ *   et on produit une erreur si Associer_champ_masse_volumique est appele.
+ *   Pour signifier que le champ de masse volumique est supporte par
+ *   la classe derivee, il faut appeler Declare_support_masse_volumique
+ *
+ */
 Support_Champ_Masse_Volumique::Support_Champ_Masse_Volumique() :
   support_ok_(0)
 {
 }
 
-// Description:
-//  Destructeur virtuel (pour eviter les warnings)
+/*! @brief Destructeur virtuel (pour eviter les warnings)
+ *
+ */
 Support_Champ_Masse_Volumique::~Support_Champ_Masse_Volumique()
 {
 }
 
-// Description:
-//  Le constructeur d'une classe derivee qui se sert de la masse volumique
-//  doit appeler cette fonction avec la valeur 1. Si une classe cliente
-//  (Navier Stokes par ex.) essaie d'associer la masse volumique a une
-//  classe qui n'a pas fait ok=1, on s'arrete : fonction non implementee.
+/*! @brief Le constructeur d'une classe derivee qui se sert de la masse volumique doit appeler cette fonction avec la valeur 1.
+ *
+ * Si une classe cliente
+ *   (Navier Stokes par ex.) essaie d'associer la masse volumique a une
+ *   classe qui n'a pas fait ok=1, on s'arrete : fonction non implementee.
+ *
+ */
 void Support_Champ_Masse_Volumique::declare_support_masse_volumique(int ok)
 {
   support_ok_ = ok;
 }
 
-// Description:
-//  Methode a appeler dans la preparation du probleme pour demander
-//  a l'objet de tenir compte du champ de masse volumique en parametre.
-// Precondition:
-//  Le constructeur de la classe derivee doit avoir appele "declare_support_masse_volumique"
-//  (pour declarer que l'implementation de la classe tient compte de rho variable).
-//  Il faut evidemment coder tout ce qu'il faut dans la classe en meme temps...
+/*! @brief Methode a appeler dans la preparation du probleme pour demander a l'objet de tenir compte du champ de masse volumique en parametre.
+ *
+ */
 void Support_Champ_Masse_Volumique::associer_champ_masse_volumique(const Champ_base& ch)
 {
   if (! support_ok_)
@@ -61,24 +62,27 @@ void Support_Champ_Masse_Volumique::associer_champ_masse_volumique(const Champ_b
   ref_champ_rho_ = ch;
 }
 
-// Description:
-//  Annule la reference a la masse volumique.
+/*! @brief Annule la reference a la masse volumique.
+ *
+ */
 void Support_Champ_Masse_Volumique::dissocier_champ_masse_volumique()
 {
   REF(Champ_base) ref_nulle;
   ref_champ_rho_ = ref_nulle;
 }
 
-// Description:
-//  Renvoie 1 si la masse volumique a ete associee, 0 sinon.
+/*! @brief Renvoie 1 si la masse volumique a ete associee, 0 sinon.
+ *
+ */
 int Support_Champ_Masse_Volumique::has_champ_masse_volumique() const
 {
   int ref_non_nulle = ref_champ_rho_.non_nul();
   return ref_non_nulle;
 }
 
-// Description: Renvoie le champ de masse volumique
-// Precondition: Le champ doit avoir ete associe
+/*! @brief Renvoie le champ de masse volumique
+ *
+ */
 const Champ_base& Support_Champ_Masse_Volumique::get_champ_masse_volumique() const
 {
   assert(ref_champ_rho_.non_nul());

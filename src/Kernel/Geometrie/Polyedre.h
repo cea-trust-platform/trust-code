@@ -26,16 +26,13 @@
 
 #include <Poly_geom_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Polyedre
-//    Cette represente l'element geometrique Polyedre.
-//    Un polyedre est un element defini par ses faces
-//    de type Faces::polygone_3D
-// .SECTION voir aussi
-//    Poly_geom_base Elem_geom
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Polyedre Cette represente l'element geometrique Polyedre.
+ *
+ *     Un polyedre est un element defini par ses faces
+ *     de type Faces::polygone_3D
+ *
+ * @sa Poly_geom_base Elem_geom
+ */
 class Polyedre  : public Poly_geom_base
 {
 
@@ -99,25 +96,12 @@ private :
 };
 
 
-// Description:
-//    Renvoie le numero du j-ieme sommet de la i-ieme face de
-//    l'element.
-// Precondition:
-// Parametre: int i
-//    Signification: un numero de face
-//    Valeurs par defaut:
-//    Acces:
-// Parametre: int j
-//    Signification: un numero de sommet
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le numero du j-ieme sommet de la i-ieme face
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le numero du j-ieme sommet de la i-ieme face de l'element.
+ *
+ * @param (int i) un numero de face
+ * @param (int j) un numero de sommet
+ * @return (int) le numero du j-ieme sommet de la i-ieme face
+ */
 inline int Polyedre::face_sommet(int face, int sommet) const
 {
   BLOQUE;
@@ -125,19 +109,10 @@ inline int Polyedre::face_sommet(int face, int sommet) const
 }
 
 
-// Description:
-//    Renvoie le nombre de sommets d'un Polyedre
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de sommets maximum d'un polyedre
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de sommets d'un Polyedre
+ *
+ * @return (int) le nombre de sommets maximum d'un polyedre
+ */
 inline int Polyedre::nb_som() const
 {
   return get_nb_som_elem_max();
@@ -145,16 +120,12 @@ inline int Polyedre::nb_som() const
 }
 
 
-// Description:
-//    Renvoie le nombre de faces du type specifie
-//    que possede l'element geometrique.
-//    Un Polyedre a 1 type de faces: polygon_3D
-// Precondition:
-// Parametre: int i
-//    Signification: le type de face
-//    Valeurs par defaut: 0
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de faces du type specifie que possede l'element geometrique.
+ *
+ *     Un Polyedre a 1 type de faces: polygon_3D
+ *
+ * @param (int i) le type de face
+ */
 inline int Polyedre::nb_faces(int i) const
 {
   assert(i==0);
@@ -170,19 +141,11 @@ inline int Polyedre::nb_faces(int i) const
 }
 
 
-// Description:
-//    Renvoie le nombre maximum de sommets des faces
-//    du type specifie.
-// Precondition:
-// Parametre: int i
-//    Signification: le type de face
-//    Valeurs par defaut: 0
-//    Acces:
-// Retour: int
-//    Signification: le nombre de sommets des faces de type i
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre maximum de sommets des faces du type specifie.
+ *
+ * @param (int i) le type de face
+ * @return (int) le nombre de sommets des faces de type i
+ */
 inline int Polyedre::nb_som_face(int i) const
 {
   assert(i==0);
@@ -211,20 +174,13 @@ inline int Polyedre::est_structure() const
 }
 
 
-// Description:
-//    Renvoie le i-ieme type de face.
-//    Un polyedre a 2 types de face: quadrangle et triangle
-// Precondition:
-// Parametre: int i
-//    Signification: le rang du type de face a renvoyer
-//    Valeurs par defaut: 0
-//    Acces:
-// Retour: Type_Face
-//    Signification: le type de la face i
-//    Contraintes: i=0 (Faces::polygone_3D)
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le i-ieme type de face.
+ *
+ * Un polyedre a 2 types de face: quadrangle et triangle
+ *
+ * @param (int i) le rang du type de face a renvoyer
+ * @return (Type_Face) le type de la face i
+ */
 inline Type_Face Polyedre::type_face(int i) const
 {
   assert(i<=0);

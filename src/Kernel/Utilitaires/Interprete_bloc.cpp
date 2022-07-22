@@ -22,10 +22,13 @@ Implemente_ref(Interprete_bloc);
 // Voir Interprete_bloc::interprete_courant()
 static REF(Interprete_bloc) interprete_courant_;
 
-// Description: renvoie l'interprete_bloc en train d'etre
-//  lu dans le jeu de donnees. On change d'interprete courant
-//  quand on cree et on detruit un objet de type Interprete_bloc
-//  (par exemple quand on entre ou qu'on sort d'un bloc { })
+/*! @brief renvoie l'interprete_bloc en train d'etre lu dans le jeu de donnees.
+ *
+ * On change d'interprete courant
+ *   quand on cree et on detruit un objet de type Interprete_bloc
+ *   (par exemple quand on entre ou qu'on sort d'un bloc { })
+ *
+ */
 Interprete_bloc& Interprete_bloc::interprete_courant()
 {
   return interprete_courant_.valeur();
@@ -59,14 +62,16 @@ Entree& Interprete_bloc::readOn(Entree& is)
   return is;
 }
 
-// Description:
-//  Interpretation d'un bloc d'instructions prises dans l'entree is.
-//  Si le bloc commence par {, on suppose que l'accolade a deja ete lue.
-//  Le bloc se termine soit par }, soit par la fin du fichier, soit par
-//  le mot FIN en fonction de bloc_type (voir mon_main.cpp par exemple)
-//  Si verifie_sans_interpreter!=0, on ne cree aucun objet et on ne
-//  lance aucun interprete, on se contente de verifier la coherence des
-//  accolades (meme nombre de { que de }).
+/*! @brief Interpretation d'un bloc d'instructions prises dans l'entree is.
+ *
+ * Si le bloc commence par {, on suppose que l'accolade a deja ete lue.
+ *   Le bloc se termine soit par }, soit par la fin du fichier, soit par
+ *   le mot FIN en fonction de bloc_type (voir mon_main.cpp par exemple)
+ *   Si verifie_sans_interpreter!=0, on ne cree aucun objet et on ne
+ *   lance aucun interprete, on se contente de verifier la coherence des
+ *   accolades (meme nombre de { que de }).
+ *
+ */
 Entree& Interprete_bloc::interpreter_bloc(Entree& is,
                                           Bloc_Type bloc_type,
                                           int verifie_sans_interpreter)
@@ -209,9 +214,9 @@ Entree& Interprete_bloc::interpreter_bloc(Entree& is,
   return is;
 }
 
-// Description:
-//  Renvoie l'Objet_U correspondant a nom contenu dans cet interprete_bloc
-//  Si l'objet n'existe pas, exit() (on ne cherche pas dans le pere).
+/*! @brief Renvoie l'Objet_U correspondant a nom contenu dans cet interprete_bloc Si l'objet n'existe pas, exit() (on ne cherche pas dans le pere).
+ *
+ */
 Objet_U& Interprete_bloc::objet_local(const Nom& nom)
 {
   const int i = les_noms_.search(nom);
@@ -224,16 +229,20 @@ Objet_U& Interprete_bloc::objet_local(const Nom& nom)
   return operator[](i);
 }
 
-// Description: renvoie un drapeau indiquant si un objet de ce nom
-//  est enregistre dans cet inteprete (ne teste pas le pere).
+/*! @brief renvoie un drapeau indiquant si un objet de ce nom est enregistre dans cet inteprete (ne teste pas le pere).
+ *
+ */
 int Interprete_bloc::objet_local_existant(const Nom& nom)
 {
   const int i = les_noms_.search(nom);
   return (i >= 0);
 }
 
-// Description: Ajoute l'objet ob a la liste des objets de l'interprete,
-//  et nomme l'objet avec nom. Si l'objet existe deja, exit()
+/*! @brief Ajoute l'objet ob a la liste des objets de l'interprete, et nomme l'objet avec nom.
+ *
+ * Si l'objet existe deja, exit()
+ *
+ */
 Objet_U& Interprete_bloc::ajouter(const Nom& nom, DerObjU& ob)
 {
   Journal(3) << "Interprete::ajouter(" << nom << ") de type "
@@ -249,9 +258,11 @@ Objet_U& Interprete_bloc::ajouter(const Nom& nom, DerObjU& ob)
   return obu;
 }
 
-// Description: cherche l'objet demande dans l'Interprete_bloc
-//  courant (Interprete_bloc::interprete_courant()) et dans tous
-//  ses peres successifs. Si l'objet n'existe pas, exit()
+/*! @brief cherche l'objet demande dans l'Interprete_bloc courant (Interprete_bloc::interprete_courant()) et dans tous
+ *
+ *   ses peres successifs. Si l'objet n'existe pas, exit()
+ *
+ */
 Objet_U& Interprete_bloc::objet_global(const Nom& nom)
 {
   REF(Interprete_bloc) ptr(interprete_courant());
@@ -272,8 +283,9 @@ Objet_U& Interprete_bloc::objet_global(const Nom& nom)
   return objet_global(nom); // Pour le compilo
 }
 
-// Description: renvoie un drapeau indiquant si un objet de ce
-//  nom existe dans inteprete_courant() ou l'un de ses parents.
+/*! @brief renvoie un drapeau indiquant si un objet de ce nom existe dans inteprete_courant() ou l'un de ses parents.
+ *
+ */
 int Interprete_bloc::objet_global_existant(const Nom& nom)
 {
   REF(Interprete_bloc) ptr(interprete_courant());

@@ -20,13 +20,9 @@
 #include <Interprete_geometrique_base.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     class Lire_Fichier
-//     Lecture d'un fichier
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief class Lire_Fichier Lecture d'un fichier
+ *
+ */
 class Lire_Tgrid : public Interprete_geometrique_base
 {
   Declare_instanciable(Lire_Tgrid);

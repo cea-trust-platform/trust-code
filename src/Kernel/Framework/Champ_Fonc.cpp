@@ -20,40 +20,22 @@ Implemente_instanciable(Champ_Fonc,"Champ_Fonc",DERIV(Champ_Fonc_base));
 
 
 
-// Description:
-//     Lecture d'un Champ_Fonc sur un flot d'entree
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lecture d'un Champ_Fonc sur un flot d'entree
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Champ_Fonc::readOn(Entree& s)
 {
   return DERIV(Champ_Fonc_base)::readOn(s);
 }
 
 
-// Description:
-//     Ecriture d'un Champ_Fonc sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour:Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecriture d'un Champ_Fonc sur un flot de sortie
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Champ_Fonc::printOn(Sortie& s) const
 {
   return DERIV(Champ_Fonc_base)::printOn(s);

@@ -176,8 +176,11 @@ void mon_construire_correspondance_items_par_coordonnees(Joints& joints, const J
 }
 
 
-// Description:
-// Construction des tableaux joint_item(Joint::SOMMET).items_communs de tous les joints de la zone(0) du domaine dom
+/*! @brief Construction des tableaux joint_item(Joint::SOMMET).
+ *
+ * items_communs de tous les joints de la zone(0) du domaine dom
+ *
+ */
 
 void mon_construire_correspondance_sommets_par_coordonnees(Domaine& dom)
 {

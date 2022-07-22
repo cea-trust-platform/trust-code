@@ -15,10 +15,11 @@
 #ifndef Domaine_bord_included
 #define Domaine_bord_included
 #include <Domaine.h>
-// .DESCRIPTION
-//  Cette classe est un domaine dont les sommets et les elements sont extraits d'un
-//  bord d'un domaine source.
-//  On construit ce domaine par la methode construire_domaine_bord()
+/*! @brief Cette classe est un domaine dont les sommets et les elements sont extraits d'un bord d'un domaine source.
+ *
+ *   On construit ce domaine par la methode construire_domaine_bord()
+ *
+ */
 class Domaine_bord : public Domaine
 {
   Declare_instanciable(Domaine_bord);

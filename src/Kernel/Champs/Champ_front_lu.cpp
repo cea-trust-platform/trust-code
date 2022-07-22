@@ -23,22 +23,14 @@ Implemente_instanciable(Champ_front_lu,"Champ_front_lu",Ch_front_var_stationnair
 
 
 
-// Description:
-//    Imprime le champ sur flot de sortie.
-//    Imprime la taille du champ et la valeur (constante) sur
-//    la frontiere.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Imprime le champ sur flot de sortie.
+ *
+ * Imprime la taille du champ et la valeur (constante) sur
+ *     la frontiere.
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Champ_front_lu::printOn(Sortie& os) const
 {
   const DoubleTab& tab=valeurs();
@@ -49,22 +41,14 @@ Sortie& Champ_front_lu::printOn(Sortie& os) const
 }
 
 
-// Description:
-//    Lit le champ a partir d'un flot d'entree.
-//    Format:
-//      Champ_front_lu nb_compo vrel_1 ... [vrel_i]
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree& is
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: le champ analytique a la valeur lue
+/*! @brief Lit le champ a partir d'un flot d'entree.
+ *
+ * Format:
+ *       Champ_front_lu nb_compo vrel_1 ... [vrel_i]
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree& is) le flot d'entree modifie
+ */
 Entree& Champ_front_lu::readOn(Entree& is)
 {
   int dim;
@@ -261,20 +245,11 @@ int Champ_front_lu::initialiser(double temps, const Champ_Inc_base& inco)
   return 1;
 }
 
-// Description:
-//    Renvoie le format du fichier lu
-// Precondition:
-// Parametre: Nom name
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: int
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le format du fichier lu
+ *
+ * @param (Nom name) un flot d'entree
+ * @return (int)
+ */
 int Champ_front_lu::is_bin(Nom name)
 {
   LecFicDiffuse fichier(name);

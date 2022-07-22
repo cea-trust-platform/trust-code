@@ -216,22 +216,26 @@ Sortie& Sortie::syncfile()
   return *this;
 }
 
-// Description:
-//  Ecriture d'un objet ou d'une variable.
-//  Dans cette implementation (et dans la plupart des classes derivees)
-//  on appelle simplement ob.printOn (a l'exception de Sortie_Nulle)
-//  Attention, si on veut que le flux puisse etre indifferemment ASCII ou BINAIRE,
-//  il faut inserer "<< space <<"  ou "<< finl <<" pour separer les objets.
+/*! @brief Ecriture d'un objet ou d'une variable.
+ *
+ * Dans cette implementation (et dans la plupart des classes derivees)
+ *   on appelle simplement ob.printOn (a l'exception de Sortie_Nulle)
+ *   Attention, si on veut que le flux puisse etre indifferemment ASCII ou BINAIRE,
+ *   il faut inserer "<< space <<"  ou "<< finl <<" pour separer les objets.
+ *
+ */
 Sortie& Sortie::operator<<(const Objet_U& ob)
 {
   ob.printOn(*this);
   return *this;
 }
 
-// Description:
-// Ecriture d'une chaine de caracteres. Attention, pour pouvoir
-// relire correctement la chaine en mode ascii, celle-ci ne doit
-// pas contenir de separateur (ni espace, ni retour a la ligne, ...)
+/*! @brief Ecriture d'une chaine de caracteres.
+ *
+ * Attention, pour pouvoir relire correctement la chaine en mode ascii, celle-ci ne doit
+ *  pas contenir de separateur (ni espace, ni retour a la ligne, ...)
+ *
+ */
 Sortie& Sortie::operator <<(const char* ob)
 {
   if(bin_)
@@ -271,13 +275,15 @@ Sortie::~Sortie()
   ostream_=0;
 }
 
-// Description:
-//  Change le mode d'ecriture du fichier.
-//  Cette methode peut etre appelee n'importe quand. Attention
-//  cependant pour les fichiers Ecrire_Fichier_Partage :
-//  il faut faire le changement uniquement au debut de l'ecriture
-//  d'un bloc, juste apres syncfile() (sinon, mauvaise traduction
-//  des retours a la ligne lors du syncfile suivant).
+/*! @brief Change le mode d'ecriture du fichier.
+ *
+ * Cette methode peut etre appelee n'importe quand. Attention
+ *   cependant pour les fichiers Ecrire_Fichier_Partage :
+ *   il faut faire le changement uniquement au debut de l'ecriture
+ *   d'un bloc, juste apres syncfile() (sinon, mauvaise traduction
+ *   des retours a la ligne lors du syncfile suivant).
+ *
+ */
 int Sortie::set_bin(int bin)
 {
   assert(bin==0 || bin==1);

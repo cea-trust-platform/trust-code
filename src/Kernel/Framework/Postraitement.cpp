@@ -215,20 +215,11 @@ int Postraitement::champ_fonc(Motcle& nom_champ, REF(Champ_base)& mon_champ, REF
   return 0;
 }
 
-// Description:
-//    Imprime le type de l'objet sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Imprime le type de l'objet sur un flot de sortie.
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Postraitement::printOn(Sortie& s ) const
 {
   s << que_suis_je() << finl;
@@ -236,31 +227,24 @@ Sortie& Postraitement::printOn(Sortie& s ) const
 }
 
 
-// Description:
-//    Lit les directives de postraitement sur un flot d'entree.
-//    Format:
-//    Postraitement
-//    {
-//      Sondes bloc de lecture des sondes |
-//      Champs bloc de lecture des champs a postraiter |
-//      Statistiques bloc de lecture objet statistique |
-//      Fichier
-//    }
-// Precondition:
-// Parametre: Entree& s
-//    Signification:  un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: accolade ouverte attendue
-// Exception: lecture des champs: mot clef "dt_post" attendu
-// Exception: lecture du bloc statistique: mot clef "dt_post" attendu
-// Exception: mot clef inconnu
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit les directives de postraitement sur un flot d'entree.
+ *
+ * Format:
+ *     Postraitement
+ *     {
+ *       Sondes bloc de lecture des sondes |
+ *       Champs bloc de lecture des champs a postraiter |
+ *       Statistiques bloc de lecture objet statistique |
+ *       Fichier
+ *     }
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ * @throws accolade ouverte attendue
+ * @throws lecture des champs: mot clef "dt_post" attendu
+ * @throws lecture du bloc statistique: mot clef "dt_post" attendu
+ * @throws mot clef inconnu
+ */
 Entree& Postraitement::readOn(Entree& s )
 {
   Cerr << "Reading guidelines of postprocessing" << finl;
@@ -557,22 +541,12 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
   return -1;
 }
 
-// Description:
-//    Constructeur par defaut.
-//    Les frequences de postraitement prennent la valeur
-//    par defaut 1e6. Et aucun postraitement n'est demande.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Constructeur par defaut.
+ *
+ * Les frequences de postraitement prennent la valeur
+ *     par defaut 1e6. Et aucun postraitement n'est demande.
+ *
+ */
 Postraitement::Postraitement()
 {
   est_le_premier_postraitement_pour_nom_fich_=-1;
@@ -754,24 +728,17 @@ void Postraitement::completer_sondes()
   les_sondes_.completer();
 }
 
-// Description:
-//    Lit le nom des champs a postraiter sur un flot d'entree.
-//    Format:
-//    {
-//       ???
-//    }
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception: accolade ouvrante attendue
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit le nom des champs a postraiter sur un flot d'entree.
+ *
+ * Format:
+ *     {
+ *        ???
+ *     }
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (int) renvoie toujours 1
+ * @throws accolade ouvrante attendue
+ */
 int Postraitement::lire_champs_a_postraiter(Entree& s)
 {
   Motcle accolade_ouverte("{");
@@ -978,8 +945,9 @@ int Postraitement::lire_champs_stat_a_postraiter(Entree& s)
   return 1;
 }
 
-// Description:
-// On recherche les champs statistiques dans les sources du champ courant
+/*! @brief On recherche les champs statistiques dans les sources du champ courant
+ *
+ */
 int Postraitement::cherche_stat_dans_les_sources(const Champ_Gen_de_Champs_Gen& ch, Motcle nom)
 {
   if (sub_type(Champ_Generique_Statistiques_base,ch))
@@ -1004,8 +972,9 @@ int Postraitement::cherche_stat_dans_les_sources(const Champ_Gen_de_Champs_Gen& 
   return 1;
 }
 
-// Description:
-//Lit les champs a postraiter sur un flot d'entree.
+/*! @brief Lit les champs a postraiter sur un flot d'entree.
+ *
+ */
 int Postraitement::lire_champs_operateurs(Entree& s)
 {
   Motcle accolade_ouverte("{");
@@ -1139,23 +1108,13 @@ int Postraitement::lire_tableaux_a_postraiter(Entree& s)
 // dans le cas ou on ecrit sur le meme domaine
 static Noms liste_dom_ecrit;
 
-// Description:
-//    Initialise le postraitement.
-//    Cree le fichier associe au postraitement, ecrit
-//    des infos sur TrioU. Ecrit le probleme sur
-//    le fichier.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Initialise le postraitement.
+ *
+ * Cree le fichier associe au postraitement, ecrit
+ *     des infos sur TrioU. Ecrit le probleme sur
+ *     le fichier.
+ *
+ */
 void Postraitement::init()
 {
   assert(est_le_premier_postraitement_pour_nom_fich()!=-1);
@@ -1317,21 +1276,9 @@ void Postraitement::init()
 }
 
 
-// Description:
-//    Finalise le postraitement
-//    Ferme le fichier associe.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Finalise le postraitement Ferme le fichier associe.
+ *
+ */
 void Postraitement::finir()
 {
   // Fermeture du fichier si le postraitement des champs etait demande
@@ -1344,21 +1291,12 @@ void Postraitement::finir()
     }
 }
 
-// Description:
-//    Effectue le postraitement des Champs de facon imperative.
-//    Mets a jour les champs crees.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Effectue le postraitement des Champs de facon imperative.
+ *
+ * Mets a jour les champs crees.
+ *
+ * @return (int) renvoie toujours 1
+ */
 int Postraitement::postraiter_champs()
 {
   double temps_courant = mon_probleme->schema_temps().temps_courant();
@@ -1487,20 +1425,10 @@ int Postraitement::postraiter_tableaux()
   return 1;
 }
 
-// Description:
-//    Effectue le postraitement des Champs si cela est necessaire.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Effectue le postraitement des Champs si cela est necessaire.
+ *
+ * @return (int) renvoie toujours 1
+ */
 int Postraitement::traiter_champs()
 {
   Schema_Temps_base& sch = mon_probleme->schema_temps();
@@ -1532,20 +1460,10 @@ int Postraitement::traiter_tableaux()
 }
 
 
-// Description:
-//    Effectue le postraitement lie au sondes de facon imperative.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Effectue le postraitement lie au sondes de facon imperative.
+ *
+ * @return (int) renvoie toujours 1
+ */
 int Postraitement::postraiter_sondes()
 {
   les_sondes_.postraiter();
@@ -1554,20 +1472,10 @@ int Postraitement::postraiter_sondes()
 }
 
 
-// Description:
-//    Mets a jour (en temps) le sondes.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Mets a jour (en temps) le sondes.
+ *
+ * @return (int) renvoie toujours 1
+ */
 int Postraitement::traiter_sondes()
 {
   double temps=mon_probleme->schema_temps().temps_courant();

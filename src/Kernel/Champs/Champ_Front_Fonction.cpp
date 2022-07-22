@@ -28,44 +28,29 @@ Implemente_instanciable(Champ_Front_Fonction,"Champ_Front_Fonction",Ch_front_var
 // XD attr expression chaine expression 0 keyword to use a analytical expression like 10.*EXP(-0.1*val) where val be the keyword for the field.
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Champ_Front_Fonction::printOn(Sortie& os) const
 {
   return os;
 }
 
-// Description:
-//     Lecture du Champ a partir d'un flot d'entree,
-//     (On ne sait traiter que les champs scalaires.)
-//     exemple:
-//     Champ_Front_Fonction
-//     1 (nombre de composantes)
-//     temperature  (ch est fonction de la temperature)
-//     val*6 (expression du parser)
-//
-// Precondition: seul les champs scalaires sont traites
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-// Effets de bord:
-// Postcondition:
+/*! @brief Lecture du Champ a partir d'un flot d'entree, (On ne sait traiter que les champs scalaires.
+ *
+ * )
+ *      exemple:
+ *      Champ_Front_Fonction
+ *      1 (nombre de composantes)
+ *      temperature  (ch est fonction de la temperature)
+ *      val*6 (expression du parser)
+ *
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Champ_Front_Fonction::readOn(Entree& is)
 {
 

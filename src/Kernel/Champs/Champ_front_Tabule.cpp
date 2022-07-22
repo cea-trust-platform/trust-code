@@ -21,43 +21,27 @@ Implemente_instanciable(Champ_front_Tabule,"Champ_front_Tabule",Champ_front_inst
 // XD attr nb_comp entier nb_comp 0 Number of field components.
 // XD attr bloc bloc_lecture bloc 0 {nt1 t2 t3 ....tn u1 [v1 w1 ...] u2 [v2 w2 ...] u3 [v3 w3 ...] ... un [vn wn ...] } NL2 Values are entered into a table based on n couples (ti, ui) if nb_comp value is 1. The value of a field at a given time is calculated by linear interpolation from this table.
 
-// Description:
-//    Imprime les valeurs du champ sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Imprime les valeurs du champ sur un flot de sortie.
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Champ_front_Tabule::printOn(Sortie& os) const
 {
   return os << valeurs();
 }
 
 
-// Description:
-//    Lit les valeurs du champ tabule a partir d'un flot d'entree.
-//    Format:
-//     Champ_front_Tabule nb_comp { nval tps_1...tps_nval vrel_1...vrel_nval }
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: accolade ouvrante attendue
-// Exception: accolade fermante attendue
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit les valeurs du champ tabule a partir d'un flot d'entree.
+ *
+ * Format:
+ *      Champ_front_Tabule nb_comp { nval tps_1...tps_nval vrel_1...vrel_nval }
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ * @throws accolade ouvrante attendue
+ * @throws accolade fermante attendue
+ */
 Entree& Champ_front_Tabule::readOn(Entree& is)
 {
   Motcle motlu;
@@ -100,20 +84,11 @@ Entree& Champ_front_Tabule::readOn(Entree& is)
 
 
 
-// Description:
-//    Renvoie l'objet Champ_front_Tabule upcaste en Champ_front_base
-// Precondition:
-// Parametre: Champ_front_base& ch
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: NON ACCEDE
-// Retour: Champ_front_base&
-//    Signification: (*this) upcaste en Champ_front_base
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie l'objet Champ_front_Tabule upcaste en Champ_front_base
+ *
+ * @param (Champ_front_base& ch)
+ * @return (Champ_front_base&) (*this) upcaste en Champ_front_base
+ */
 Champ_front_base& Champ_front_Tabule::affecter_(const Champ_front_base& )
 {
   return *this;
@@ -128,21 +103,12 @@ int Champ_front_Tabule::initialiser(double temps, const Champ_Inc_base& inco)
   return 1;
 }
 
-// Description:
-//    Mise a jour en temps du champ.
-//    Calcul du gradient Gpoint.
-// Precondition:
-// Parametre: double tps
-//    Signification: le temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Mise a jour en temps du champ.
+ *
+ * Calcul du gradient Gpoint.
+ *
+ * @param (double tps) le temps de mise a jour
+ */
 void Champ_front_Tabule::mettre_a_jour(double temps)
 {
   la_table.valeurs(valeurs_au_temps(temps), temps);

@@ -80,69 +80,68 @@ bool Process::force_single_file(const int ranks, const Nom& filename)
     return false;
 }
 
-// Description: renvoie 1 si on est sur le processeur maitre du groupe courant
-//  (c'est a dire me() == 0), 0 sinon. Voir Comm_Group::rank()
+/*! @brief renvoie 1 si on est sur le processeur maitre du groupe courant (c'est a dire me() == 0), 0 sinon.
+ *
+ * Voir Comm_Group::rank()
+ *
+ */
 int Process::je_suis_maitre()
 {
   const int r = PE_Groups::current_group().rank();
   return r == 0;
 }
 
-// Description:
-//     Constructeur par defaut
+/*! @brief Constructeur par defaut
+ *
+ */
 Process::Process()
 {
 }
 
-// Description: renvoie le nombre de processeurs dans le groupe courant
-//  Voir Comm_Group::nproc() et PE_Groups::current_group()
+/*! @brief renvoie le nombre de processeurs dans le groupe courant Voir Comm_Group::nproc() et PE_Groups::current_group()
+ *
+ */
 int Process::nproc()
 {
   const int n = PE_Groups::current_group().nproc();
   return n;
 }
 
-// Description: renvoie mon rang dans le groupe de communication courant.
-//  Voir Comm_Group::rank() et PE_Groups::current_group()
+/*! @brief renvoie mon rang dans le groupe de communication courant.
+ *
+ * Voir Comm_Group::rank() et PE_Groups::current_group()
+ *
+ */
 int Process::me()
 {
   const int r = PE_Groups::current_group().rank();
   return r;
 }
 
-// Description:
-//   Synchronise tous les processeurs du groupe courant
-//   (attend que tous les processeurs soient arrives a la barriere)
-//   Instruction a executer sur tous les processeurs du groupe.
+/*! @brief Synchronise tous les processeurs du groupe courant (attend que tous les processeurs soient arrives a la barriere)
+ *
+ *    Instruction a executer sur tous les processeurs du groupe.
+ *
+ */
 void Process::barrier()
 {
   PE_Groups::current_group().barrier(0);
 }
 
-// Description:
-//    Destructeur
-//    Ne fait rien
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Destructeur Ne fait rien
+ *
+ */
 Process::~Process()
 {
 }
 
-// Description:
-//  Calcule le max de x sur tous les processeurs du groupe courant.
-//  Remarques :
-//   Cette methode doit etre appelee sur tous les processeurs du groupe.
-//   La valeur renvoyee est identique sur tous les processeurs.
+/*! @brief Calcule le max de x sur tous les processeurs du groupe courant.
+ *
+ * Remarques :
+ *    Cette methode doit etre appelee sur tous les processeurs du groupe.
+ *    La valeur renvoyee est identique sur tous les processeurs.
+ *
+ */
 double Process::mp_max(double x)
 {
   const Comm_Group& grp = PE_Groups::current_group();
@@ -151,11 +150,6 @@ double Process::mp_max(double x)
   return y;
 }
 
-// Description:
-//  Calcule le max de x sur tous les processeurs du groupe courant.
-//  Remarques :
-//   Cette methode doit etre appelee sur tous les processeurs du groupe.
-//   La valeur renvoyee est identique sur tous les processeurs.
 int Process::mp_max(int x)
 {
   const Comm_Group& grp = PE_Groups::current_group();
@@ -165,9 +159,11 @@ int Process::mp_max(int x)
 }
 
 
-// Description:
-//  Calcule le min de x sur tous les processeurs du groupe courant.
-//  Voir aussi mp_max()
+/*! @brief Calcule le min de x sur tous les processeurs du groupe courant.
+ *
+ * Voir aussi mp_max()
+ *
+ */
 double Process::mp_min(double x)
 {
   const Comm_Group& grp = PE_Groups::current_group();
@@ -184,10 +180,11 @@ int Process::mp_min(int x)
   return y;
 }
 
-
-// Description:
-//  Calcule la somme de x sur tous les processeurs du groupe courant.
-//  Voir aussi mp_max()
+/*! @brief Calcule la somme de x sur tous les processeurs du groupe courant.
+ *
+ * Voir aussi mp_max()
+ *
+ */
 double Process::mp_sum(double x)
 {
   const Comm_Group& grp = PE_Groups::current_group();
@@ -196,9 +193,11 @@ double Process::mp_sum(double x)
   return y;
 }
 
-// Description:
-//  Calcule la somme de x sur tous les processeurs du groupe courant.
-//  Voir aussi mp_max()
+/*! @brief Calcule la somme de x sur tous les processeurs du groupe courant.
+ *
+ * Voir aussi mp_max()
+ *
+ */
 int Process::mp_sum(int x)
 {
   const Comm_Group& grp = PE_Groups::current_group();
@@ -207,8 +206,9 @@ int Process::mp_sum(int x)
   return y;
 }
 
-// Description:
-//  Calcule le 'et' logique de b sur tous les processeurs du groupe courant.
+/*! @brief Calcule le 'et' logique de b sur tous les processeurs du groupe courant.
+ *
+ */
 bool Process::mp_and(bool b)
 {
   const Comm_Group& grp = PE_Groups::current_group();
@@ -218,21 +218,11 @@ bool Process::mp_and(bool b)
   return y == 1;
 }
 
-// Description:
-//    Routine de sortie de Trio-U sur une erreur
-//    Sauvegarde la memoire et le hierarchie dans les fichiers "memoire.dump" et "hierarchie.dump"
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Routine de sortie de Trio-U sur une erreur Sauvegarde la memoire et le hierarchie dans les fichiers "memoire.
+ *
+ * dump" et "hierarchie.dump"
+ *
+ */
 void Process::exit(int i)
 {
   Nom message="=========================================\nTRUST has caused an error and will stop.\nUnexpected error during TRUST calculation.";
@@ -325,20 +315,9 @@ void Process::exit(const Nom& message ,int i)
   ::exit(i); //Seul ::exit utilise dans le code
 }
 
-// Description:
-//    Routine de sortie de Trio-U sur une erreur abort()
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Routine de sortie de Trio-U sur une erreur abort()
+ *
+ */
 void Process::abort()
 {
 #ifdef NDEBUG
@@ -350,11 +329,13 @@ void Process::abort()
 #endif
 }
 
-// Description:
-//  Renvoie un objet statique de type Sortie qui sert de journal d'evenements.
-//  Si message_level <= verbose_level_, on ecrit le message, sinon
-//  on l'envoie sur une Sortie_Nulle.
-//  Si le fichier journal est ouvert, on ecrit dans le fichier, sinon dans stderr.
+/*! @brief Renvoie un objet statique de type Sortie qui sert de journal d'evenements.
+ *
+ * Si message_level <= verbose_level_, on ecrit le message, sinon
+ *   on l'envoie sur une Sortie_Nulle.
+ *   Si le fichier journal est ouvert, on ecrit dans le fichier, sinon dans stderr.
+ *
+ */
 Sortie& Process::Journal(int message_level)
 {
   if (message_level <= verbose_level_ && verbose_level_ > 0)
@@ -406,15 +387,12 @@ void Process::imprimer_ram_totale(int all_process)
     }
 }
 
-// Description: Initialisation du journal
-// Parametre: verbose_level
-// Signification: les messages de niveau <= verbose_level seront affiches,
-//   les autres seront mis a la poubelle.
-// Parametre: file_name
-// Signification: si pointeur nul, tout le monde ecrit dans cerr, sinon
-//   c'est le nom du fichier (doit etre different sur chaque processeur)
-// Parametre: append
-// Signification: indique si on ouvre le fichier en mode append ou pas.
+/*! @brief Initialisation du journal
+ *
+ * @param (verbose_level) les messages de niveau <= verbose_level seront affiches, les autres seront mis a la poubelle.
+ * @param (file_name) si pointeur nul, tout le monde ecrit dans cerr, sinon c'est le nom du fichier (doit etre different sur chaque processeur)
+ * @param (append) indique si on ouvre le fichier en mode append ou pas.
+ */
 void init_journal_file(int verbose_level, int journal_shared, const char * file_name, int append)
 {
   journal_shared_ = journal_shared;
@@ -470,8 +448,11 @@ void end_journal(int verbose_level)
   journal_file_open_ = 0;
 }
 
-// Description: Renvoie l'objet Sortie sur lequel seront redirigees les
-//  objets ecrits dans Cerr. Cela peut etre std_err_ ou journal_file_
+/*! @brief Renvoie l'objet Sortie sur lequel seront redirigees les objets ecrits dans Cerr.
+ *
+ * Cela peut etre std_err_ ou journal_file_
+ *
+ */
 Sortie& get_Cerr()
 {
   if (journal_file_open_ && cerr_to_journal_)
@@ -502,9 +483,11 @@ Sortie& get_Cerr()
     }
 }
 
-// Description: Si on est sur le maitre, on renvoie cout ou le fichier journal
-//  sinon journal_zero_.
-//  Voir aussi cerr_to_journal_
+/*! @brief Si on est sur le maitre, on renvoie cout ou le fichier journal sinon journal_zero_.
+ *
+ *   Voir aussi cerr_to_journal_
+ *
+ */
 Sortie& get_Cout()
 {
   if (Process::je_suis_maitre())
@@ -525,10 +508,12 @@ Sortie& get_Cout()
     }
 }
 
-// Description: change la destination de Cerr et Cout
-//  Si flag=0, c'est stderr et stdout, sinon, si le fichier
-//  journal est ouvert, c'est le journal, sinon c'est
-//  Sortie_Nulle
+/*! @brief change la destination de Cerr et Cout Si flag=0, c'est stderr et stdout, sinon, si le fichier
+ *
+ *   journal est ouvert, c'est le journal, sinon c'est
+ *   Sortie_Nulle
+ *
+ */
 void set_Cerr_to_journal(int flag)
 {
   cerr_to_journal_ = flag;
@@ -544,15 +529,21 @@ void change_journal_level(int level)
   verbose_level_ = level;
 }
 
-// Description:
-//  Returns the disable_stop_ flag (Disable or not the writing of the .stop file)
+/*! @brief Returns the disable_stop_ flag (Disable or not the writing of the .
+ *
+ * stop file)
+ *
+ */
 int get_disable_stop()
 {
   return disable_stop_;
 }
 
-// Description:
-//  Affects a new value to disable_stop_ flag (Disable or not the writing of the .stop file)
+/*! @brief Affects a new value to disable_stop_ flag (Disable or not the writing of the .
+ *
+ * stop file)
+ *
+ */
 void change_disable_stop(int new_stop)
 {
   disable_stop_ = new_stop;

@@ -15,14 +15,10 @@
 
 #ifndef UserUnaryFunction_included
 #define UserUnaryFunction_included
-/////////////////////////////////////////////////////////////////////////=
-/////
-//
-// .DESCRIPTION
-//    Permet de definir une fonction utilisateur dans le jeu de donnees
-// .SECTION voir aussi
-/////////////////////////////////////////////////////////////////////////=
-/////
+/*! @brief Permet de definir une fonction utilisateur dans le jeu de donnees
+ *
+ * @sa =
+ */
 #include <UnaryFunction.h>
 #include <Nom.h>
 #include <Parser_U.h>

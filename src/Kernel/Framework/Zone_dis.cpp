@@ -19,42 +19,22 @@ Implemente_deriv(Zone_dis_base);
 Implemente_instanciable(Zone_dis,"Zone_dis",DERIV(Zone_dis_base));
 
 
-// Description:
-//    Surcharge Objet_U::printOn(Sortie&)
-//    Imprime la zone discretisee sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Surcharge Objet_U::printOn(Sortie&) Imprime la zone discretisee sur un flot de sortie.
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Zone_dis::printOn(Sortie& os) const
 {
   return DERIV(Zone_dis_base)::printOn(os);
 }
 
 
-// Description:
-//    Surcharge Objet_U::readOn(Entree&)
-//    Lit la zone discretisee a partir d'un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Surcharge Objet_U::readOn(Entree&) Lit la zone discretisee a partir d'un flot d'entree.
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Zone_dis::readOn(Entree& is)
 {
   return DERIV(Zone_dis_base)::readOn(is);

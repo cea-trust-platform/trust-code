@@ -21,63 +21,35 @@ Implemente_instanciable_sans_constructeur(Motcle,"Motcle",Nom);
 Implemente_instanciable(Motcles,"Motcles",VECT(Motcle));
 
 
-// Description:
-//    Ecriture d'un Motcle sur un flot de sortie
-//    Utilise l'implementation de la classe Nom
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: le flot de sortie a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ecriture d'un Motcle sur un flot de sortie Utilise l'implementation de la classe Nom
+ *
+ * @param (Sortie& s) le flot de sortie a utiliser
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Motcle::printOn(Sortie& s) const
 {
   return Nom::printOn(s);
 }
 
 
-// Description:
-//    Ecriture d'un tableau Motcles sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: le flot de sortie a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ecriture d'un tableau Motcles sur un flot de sortie
+ *
+ * @param (Sortie& s) le flot de sortie a utiliser
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Motcles::printOn(Sortie& s) const
 {
   return VECT(Motcle)::printOn(s);
 }
 
 
-// Description:
-//    Lecture d'un Motcle dans un flot d'entree
-//    Utilise l'implementation de la classe Nom
-//    Passe ensuite le Nom en majuscules
-// Precondition:
-// Parametre: Entree& s
-//    Signification: le flux d'entree a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flux d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lecture d'un Motcle dans un flot d'entree Utilise l'implementation de la classe Nom
+ *
+ *     Passe ensuite le Nom en majuscules
+ *
+ * @param (Entree& s) le flux d'entree a utiliser
+ * @return (Entree&) le flux d'entree modifie
+ */
 Entree& Motcle::readOn(Entree& s)
 {
   Nom::readOn(s);
@@ -86,42 +58,19 @@ Entree& Motcle::readOn(Entree& s)
 }
 
 
-// Description:
-//    Constructeur par defaut
-//    Construit un Nom puis le passe en majuscule
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Constructeur par defaut Construit un Nom puis le passe en majuscule
+ *
+ */
 Motcle::Motcle() : Nom()
 {
   majuscule();
 }
 
 
-// Description:
-//    Construction d'un Motcle a partie d'une chaine de caracteres
-//    Construit un Nom puis le passe en majuscules
-// Precondition:
-// Parametre: const char* nom
-//    Signification: la chaine de caracteres du Motcle
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Construction d'un Motcle a partie d'une chaine de caracteres Construit un Nom puis le passe en majuscules
+ *
+ * @param (const char* nom) la chaine de caracteres du Motcle
+ */
 Motcle::Motcle(const char* const nom) : Nom(nom)
 {
   majuscule();
@@ -137,39 +86,19 @@ Motcle::Motcle(const Nom& nom) : Nom(nom)
   majuscule();
 }
 
-// Description:
-//    Construction d'un Motcle par copie
-// Precondition:
-// Parametre: const Motcle& nom
-//    Signification: le Motcle a copier
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Construction d'un Motcle par copie
+ *
+ * @param (const Motcle& nom) le Motcle a copier
+ */
 Motcle::Motcle(const Motcle& nom) : Nom(nom)
 {
 }
 
-// Description:
-//    Construction a partir d'une chaine de caracteres
-//    Utilise l'implementation de la classe Nom
-// Precondition:
-// Parametre: const char* const mot
-//    Signification: la chaine de caracteres du mot a construire
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: Motcle&
-//    Signification: reference sur le Motcle cree
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Construction a partir d'une chaine de caracteres Utilise l'implementation de la classe Nom
+ *
+ * @param (const char* const mot) la chaine de caracteres du mot a construire
+ * @return (Motcle&) reference sur le Motcle cree
+ */
 Motcle& Motcle::operator=(const char* const mot)
 {
   Nom::operator=(mot);
@@ -184,63 +113,34 @@ Motcle& Motcle::operator=(const Nom& mot)
   return *this;
 }
 
-// Description:
-//    Construction par copie
-//    Utilise l'implementation de la classe Nom
-// Precondition:
-// Parametre: const Motcle& mot
-//    Signification: le Motcle a copier
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Motcle&
-//    Signification: reference sur le Motcle modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Construction par copie Utilise l'implementation de la classe Nom
+ *
+ * @param (const Motcle& mot) le Motcle a copier
+ * @return (Motcle&) reference sur le Motcle modifie
+ */
 Motcle& Motcle::operator=(const Motcle& mot)
 {
   Nom::operator=(mot);
   return *this;
 }
 
-// Description:
-//    Lecture d'un tableau Motcles sur un flot d'entree
-// Precondition:
-// Parametre: Entree& s
-//    Signification: le flux d'entree a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flux d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lecture d'un tableau Motcles sur un flot d'entree
+ *
+ * @param (Entree& s) le flux d'entree a utiliser
+ * @return (Entree&) le flux d'entree modifie
+ */
 Entree& Motcles::readOn(Entree& s)
 {
   return VECT(Motcle)::readOn(s);
 }
 
 
-// Description:
-//    Autotest de la classe Motcle
-//    Effectue des affectations de controle
-//    Retourne toujours 1
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: code de retour; retourne toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Autotest de la classe Motcle Effectue des affectations de controle
+ *
+ *     Retourne toujours 1
+ *
+ * @return (int) code de retour; retourne toujours 1
+ */
 int Motcle::selftest()
 {
   Nom un_nom;
@@ -255,21 +155,10 @@ int Motcle::selftest()
 
 
 
-// Description:
-//    Constructeur
-//    Cree un tableau de i elements
-// Precondition:
-// Parametre: int i
-//    Signification: nombre de mots cles
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Constructeur Cree un tableau de i elements
+ *
+ * @param (int i) nombre de mots cles
+ */
 Motcles::Motcles(int i):
   VECT(Motcle)(i)
 {
@@ -329,25 +218,12 @@ static inline int strcmp_uppercase(const char *n1, const char *n2)
   return 1;
 }
 
-// Description:
-//    Comparaison d'un mot cle avec une chaine de caracteres
-// Precondition:
-// Parametre: const Motcle& un_mot
-//    Signification: le mot cle a utiliser pour la comparaison
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Parametre: const char* const nom
-//    Signification: la chaine de caractere avec laquelle comparer le mot cle
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: int
-//    Signification: 1 si le Nom du mot est egal a la chaine
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Comparaison d'un mot cle avec une chaine de caracteres
+ *
+ * @param (const Motcle& un_mot) le mot cle a utiliser pour la comparaison
+ * @param (const char* const nom) la chaine de caractere avec laquelle comparer le mot cle
+ * @return (int) 1 si le Nom du mot est egal a la chaine
+ */
 int operator ==(const Motcle& nom, const Motcle& un_mot)
 {
   const int resu = strcmp_uppercase((const char *) nom, (const char *)un_mot);
@@ -376,25 +252,12 @@ int operator ==(const Nom& nom, const Motcle& un_mot)
   return (un_mot == nom);
 }
 
-// Description:
-//    Comparaison d'un mot cle avec une chaine de caracteres
-// Precondition:
-// Parametre: const Motcle& un_mot
-//    Signification: le mot cle a utiliser pour la comparaison
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Parametre: const char* const nom
-//    Signification: la chaine de caractere avec laquelle comparer le mot cle
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: int
-//    Signification: 1 si le Nom du mot est different de la chaine
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Comparaison d'un mot cle avec une chaine de caracteres
+ *
+ * @param (const Motcle& un_mot) le mot cle a utiliser pour la comparaison
+ * @param (const char* const nom) la chaine de caractere avec laquelle comparer le mot cle
+ * @return (int) 1 si le Nom du mot est different de la chaine
+ */
 int operator !=(const Motcle& nom, const Motcle& un_mot)
 {
   return ! (nom == un_mot);

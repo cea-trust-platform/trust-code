@@ -19,18 +19,13 @@
 
 
 
-///////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-// Class MergeMEDfiles
-//    Merge several MED files written by several procs into a single field object
-//    with a proper underlying mesh (no duplicate nodes)
-//    Usage in data file
-//    Merge_MED [NOM_DU_CAS||med_files_base_name] [all_times||last_time]
-// .SECTION voir aussi
-//
-//
-///////////////////////////////////////////////////////////////////////////
+/*! @brief Class MergeMEDfiles Merge several MED files written by several procs into a single field object
+ *
+ *     with a proper underlying mesh (no duplicate nodes)
+ *     Usage in data file
+ *     Merge_MED [NOM_DU_CAS||med_files_base_name] [all_times||last_time]
+ *
+ */
 #include <Interprete.h>
 #include <vector>
 #include <string>

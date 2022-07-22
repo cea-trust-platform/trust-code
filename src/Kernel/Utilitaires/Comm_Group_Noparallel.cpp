@@ -24,7 +24,9 @@ int Comm_Group_Noparallel::sending_ = 0;
 Comm_Group_Noparallel::Comm_Group_Noparallel() { Comm_Group::init_group_trio(1 /* nproc */, 0 /* rank */); }
 Comm_Group_Noparallel::~Comm_Group_Noparallel() { }
 
-// Description: constructeur pour un sous-groupe */
+/*! @brief constructeur pour un sous-groupe //
+ *
+ */
 void Comm_Group_Noparallel::init_group(const ArrOfInt& pe_list)
 {
   assert(pe_list.size_array() == 1);

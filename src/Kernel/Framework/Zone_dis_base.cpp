@@ -20,104 +20,59 @@
 Implemente_base(Zone_dis_base,"Zone_dis_base",Objet_U);
 
 
-// Description:
-//    Surcharge Objet_U::printOn(Sortie&)
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees.
-//    Imprime la zone discretisee sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Surcharge Objet_U::printOn(Sortie&) NE FAIT RIEN
+ *
+ *     A surcharger dans les classes derivees.
+ *     Imprime la zone discretisee sur un flot de sortie
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Zone_dis_base::printOn(Sortie& os) const
 {
   return os ;
 }
 
 
-// Description:
-//    Surcharge Objet_U::readOn(Sortie&)
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees.
-//    Lit une zone discretisee a partir d'un flot d'entree
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Surcharge Objet_U::readOn(Sortie&) NE FAIT RIEN
+ *
+ *     A surcharger dans les classes derivees.
+ *     Lit une zone discretisee a partir d'un flot d'entree
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Zone_dis_base::readOn(Entree& is)
 {
   return is ;
 }
 
-// Description:
-//    Associe une Zone a l'objet.
-// Precondition:
-// Parametre: Zone& une_zone
-//    Signification: la zone a associee a la zone discretisee
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe une Zone a l'objet.
+ *
+ * @param (Zone& une_zone) la zone a associee a la zone discretisee
+ */
 void Zone_dis_base::associer_zone(const Zone& une_zone)
 {
   la_zone=une_zone;
 }
 
-// Description:
-//    Associe un Domaine_dis a l'objet.
-// Precondition:
-// Parametre: Domaine_dis& un_domaine_dis
-//    Signification: le domaine discretise a associer.
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe un Domaine_dis a l'objet.
+ *
+ * @param (Domaine_dis& un_domaine_dis) le domaine discretise a associer.
+ */
 void Zone_dis_base::associer_domaine_dis(const Domaine_dis& un_domaine_dis)
 {
   le_domaine_dis=un_domaine_dis;
 }
 
-// Description:
-//    Renvoie la frontiere de Nom nom.
-//    (On indexe les frontiere avec leur nom)
-// Precondition:
-// Parametre: Nom& nom
-//    Signification: le nom de la frontiere a indexer
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: Frontiere_dis_base&
-//    Signification: la frontiere discretisee indexee
-//    Contraintes:
-// Exception: frontiere de nom inconnu leve par rang_frontiere(Nom&)
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la frontiere de Nom nom.
+ *
+ * (On indexe les frontiere avec leur nom)
+ *
+ * @param (Nom& nom) le nom de la frontiere a indexer
+ * @return (Frontiere_dis_base&) la frontiere discretisee indexee
+ * @throws frontiere de nom inconnu leve par rang_frontiere(Nom&)
+ */
 const Frontiere_dis_base& Zone_dis_base::frontiere_dis(const Nom& nom) const
 {
   return frontiere_dis(rang_frontiere(nom));
@@ -128,21 +83,12 @@ Frontiere_dis_base& Zone_dis_base::frontiere_dis(const Nom& nom)
   return frontiere_dis(rang_frontiere(nom));
 }
 
-// Description:
-//    Renvoie le rang de la frontiere de Nom nom
-//    Renvoie -1 si aucune frontiere ne s'appelle nom.
-// Precondition:
-// Parametre: Nom& nom
-//    Signification: le nom de la frontiere dont cherche le rang
-//    Valeurs par defaut:
-//    Contraintes:  reference constante
-//    Acces: entree
-// Retour: int
-//    Signification: le rang de la frontiere si elle existe -1 sinon
-//    Contraintes:
-// Exception: pas de frontiere de Nom nom trouvee
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le rang de la frontiere de Nom nom Renvoie -1 si aucune frontiere ne s'appelle nom.
+ *
+ * @param (Nom& nom) le nom de la frontiere dont cherche le rang
+ * @return (int) le rang de la frontiere si elle existe -1 sinon
+ * @throws pas de frontiere de Nom nom trouvee
+ */
 int Zone_dis_base::rang_frontiere(const Nom& nom) const
 {
   for(int i=0; i<nb_front_Cl(); i++)
@@ -164,20 +110,10 @@ int Zone_dis_base::rang_frontiere(const Nom& nom)
   exit();
   return -1;
 }
-// Description:
-//    Ecriture des noms des bords sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecriture des noms des bords sur un flot de sortie.
+ *
+ * @param (Sortie& os) un flot de sortie
+ */
 void Zone_dis_base::ecrire_noms_bords(Sortie& os) const
 {
   zone().ecrire_noms_bords(os);

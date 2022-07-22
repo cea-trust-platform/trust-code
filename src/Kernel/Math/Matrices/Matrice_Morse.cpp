@@ -27,21 +27,11 @@
 
 Implemente_instanciable_sans_constructeur(Matrice_Morse,"Matrice_Morse",Matrice_Base);
 
-// Description:
-//    Ecrit les trois tableaux de la structure de stockage
-//    Morse sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie& s
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit les trois tableaux de la structure de stockage Morse sur un flot de sortie.
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie& s) le flot de sortie modifie
+ */
 Sortie& Matrice_Morse::printOn(Sortie& s) const
 {
   s << tab1_;
@@ -51,20 +41,12 @@ Sortie& Matrice_Morse::printOn(Sortie& s) const
   return s;
 }
 
-// Description:
-//    NON CODE
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree& s
-//    Signification: le flot d'entree
-//    Contraintes:
-// Exception: NON CODE
-// Effets de bord:
-// Postcondition:
+/*! @brief NON CODE
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree& s) le flot d'entree
+ * @throws NON CODE
+ */
 Entree& Matrice_Morse::readOn(Entree& s)
 {
   s >> tab1_;
@@ -212,21 +194,12 @@ Sortie& Matrice_Morse::imprimer_image(Sortie& s, int symetrie) const
 }
 
 
-// Description:
-//    Constructeur par copie d'une Matrice_Morse.
-//    Copie de chaque membre donne du paramtre.
-// Precondition:
-// Parametre: Matrice_Morse& acopier
-//    Signification: la matrice morse a copier
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Constructeur par copie d'une Matrice_Morse.
+ *
+ * Copie de chaque membre donne du paramtre.
+ *
+ * @param (Matrice_Morse& acopier) la matrice morse a copier
+ */
 Matrice_Morse::Matrice_Morse(const Matrice_Morse& acopier) :Matrice_Base(),
   tab1_(acopier.tab1_),
   tab2_(acopier.tab2_),
@@ -238,29 +211,14 @@ Matrice_Morse::Matrice_Morse(const Matrice_Morse& acopier) :Matrice_Base(),
   morse_matrix_structure_has_changed_=1, sorted_ = 0;
   is_stencil_up_to_date_ = acopier.is_stencil_up_to_date_ ;
 }
-// Description:
-//    Constructeur d'une matrice Morse carree d'ordre n
-//    et pouvant stocker au maximum nnz elements non nuls.
-//    Egalement constructeur par defaut car les 2 parametres
-//    ont une valeur par defaut.
-// Precondition:
-// Parametre: int n
-//    Signification: l'ordre de la matrice carree a construire
-//    Valeurs par defaut: 1
-//    Contraintes:
-//    Acces:
-// Parametre: int nnz
-//    Signification: le nombre d'elements non nuls que pourra
-//                   stocker la matrice.
-//    Valeurs par defaut: 1
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Constructeur d'une matrice Morse carree d'ordre n et pouvant stocker au maximum nnz elements non nuls.
+ *
+ *     Egalement constructeur par defaut car les 2 parametres
+ *     ont une valeur par defaut.
+ *
+ * @param (int n) l'ordre de la matrice carree a construire
+ * @param (int nnz) le nombre d'elements non nuls que pourra stocker la matrice.
+ */
 Matrice_Morse::Matrice_Morse(int n, int nnz) :
   morse_matrix_structure_has_changed_(1), symetrique_(0), zero_(0)
 {
@@ -279,32 +237,12 @@ Matrice_Morse::Matrice_Morse()
 }
 
 
-// Description:
-//    Constructeur d'une matrice Morse avec n lignes et m colonnes
-//    pouvant stocker au maximum nnz elements non nuls.
-// Precondition:
-// Parametre: int n
-//    Signification: le nombre de ligne de la matrice
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int m
-//    Signification: le nombre de colonne de la matrice
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int nnz
-//    Signification: le nombre d'elements non nuls que pourra
-//                   stocker la matrice.
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Constructeur d'une matrice Morse avec n lignes et m colonnes pouvant stocker au maximum nnz elements non nuls.
+ *
+ * @param (int n) le nombre de ligne de la matrice
+ * @param (int m) le nombre de colonne de la matrice
+ * @param (int nnz) le nombre d'elements non nuls que pourra stocker la matrice.
+ */
 Matrice_Morse::Matrice_Morse(int n, int m, int nnz):
   morse_matrix_structure_has_changed_(1), symetrique_(0), zero_(0)
 {
@@ -333,8 +271,9 @@ void Matrice_Morse::set_symmetric( const int symmetric )
   symetrique_ = symmetric ;
 }
 
-// Description:
-// Size the matrix with n lines and n columns and nnz zero-values coefficients
+/*! @brief Size the matrix with n lines and n columns and nnz zero-values coefficients
+ *
+ */
 void Matrice_Morse::dimensionner(int n, int nnz)
 {
   dimensionner(n,n,nnz);
@@ -501,8 +440,9 @@ void Matrice_Morse::dimensionner(const IntTab& Ind)
   morse_matrix_structure_has_changed_=1, sorted_ = 0;
 }
 
-// Description:
-// Size the matrix with n lines, m columns with nnz zero-values coefficients
+/*! @brief Size the matrix with n lines, m columns with nnz zero-values coefficients
+ *
+ */
 void Matrice_Morse::dimensionner(int n, int m, int nnz)
 {
   tab2_.resize(nnz);
@@ -532,22 +472,12 @@ void Matrice_Morse::unite()
     operator()(i,i) = 1.0;
 }
 
-// Description:
-//    Renvoie l'ordre de la matrice:
-//     - le nombre de lignes si la matrice est carree
-//     - 0 sinon
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: l'ordre de la matrice
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie l'ordre de la matrice: - le nombre de lignes si la matrice est carree
+ *
+ *      - 0 sinon
+ *
+ * @return (int) l'ordre de la matrice
+ */
 int Matrice_Morse::ordre() const
 {
   if(nb_lignes()==nb_colonnes())
@@ -556,12 +486,13 @@ int Matrice_Morse::ordre() const
     return 0;
 }
 
-// Description:
-// Method to check/clean the Matrice_Morse matrix:
-// -Suppress coefficient defined several times
-// -elim_coeff_nul=0, on ne supprime pas les coefficients nuls de la matrice
-// -elim_coeff_nul=1, on supprime les coefficients nuls de la matrice
-// -elim_coeff_nul=2, on supprime les coefficients nuls et quasi-nuls de la matrice
+/*! @brief Method to check/clean the Matrice_Morse matrix: -Suppress coefficient defined several times
+ *
+ *  -elim_coeff_nul=0, on ne supprime pas les coefficients nuls de la matrice
+ *  -elim_coeff_nul=1, on supprime les coefficients nuls de la matrice
+ *  -elim_coeff_nul=2, on supprime les coefficients nuls et quasi-nuls de la matrice
+ *
+ */
 void Matrice_Morse::compacte(int elim_coeff_nul)
 {
   int n=nb_lignes();
@@ -675,21 +606,10 @@ void Matrice_Morse::compacte(int elim_coeff_nul)
   assert_check_morse_matrix_structure( );
 }
 
-// Description:
-//    Operateur d'affectation d'une Matrice_Morse dans une
-//    autre Matrice_Morse.
-// Precondition:
-// Parametre: Matrice_Morse& a
-//    Signification: la partie droite de l'affectation
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Operateur d'affectation d'une Matrice_Morse dans une autre Matrice_Morse.
+ *
+ * @param (Matrice_Morse& a) la partie droite de l'affectation
+ */
 Matrice_Morse& Matrice_Morse::operator=(const Matrice_Morse& a )
 {
   tab1_.reset(), tab1_.copy(a.get_tab1());
@@ -701,20 +621,10 @@ Matrice_Morse& Matrice_Morse::operator=(const Matrice_Morse& a )
   return(*this);
 }
 
-// Description:
-//    *this = a transposee.
-// Precondition:
-// Parametre: Matrice_Morse& a
-//    Signification: la matrice a transposee
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief *this = a transposee.
+ *
+ * @param (Matrice_Morse& a) la matrice a transposee
+ */
 Matrice_Morse& Matrice_Morse::transpose(const Matrice_Morse& a)
 {
 
@@ -922,9 +832,11 @@ Matrice_Morse& Matrice_Morse::partie_sup(const Matrice_Morse& a)
   return(*this);
 }
 
-// Description:
-//    Operation de multiplication-accumulation (saxpy) matrice vecteur.
-//    Operation: resu = resu + A*x
+/*! @brief Operation de multiplication-accumulation (saxpy) matrice vecteur.
+ *
+ * Operation: resu = resu + A*x
+ *
+ */
 DoubleVect& Matrice_Morse::ajouter_multvect_(const DoubleVect& x,DoubleVect& resu) const
 {
   assert_check_morse_matrix_structure( );
@@ -977,27 +889,14 @@ ArrOfDouble& Matrice_Morse::ajouter_multvect_(const ArrOfDouble& x,ArrOfDouble& 
   return resu;
 }
 
-// Description:
-//    Operation de multiplication-accumulation (saxpy) matrice matrice
-//    (matrice X representee par un tableau)
-//    Operation: RESU = RESU + A*X
-// Precondition:
-// Parametre: DoubleTab& x
-//    Signification: la matrice a multiplier
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleTab& resu
-//    Signification: la matrice resultat de l'operation
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: DoubleTab&
-//    Signification: la matrice resultat de l'operation
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Operation de multiplication-accumulation (saxpy) matrice matrice (matrice X representee par un tableau)
+ *
+ *     Operation: RESU = RESU + A*X
+ *
+ * @param (DoubleTab& x) la matrice a multiplier
+ * @param (DoubleTab& resu) la matrice resultat de l'operation
+ * @return (DoubleTab&) la matrice resultat de l'operation
+ */
 DoubleTab& Matrice_Morse::ajouter_multTab_(const DoubleTab& x,DoubleTab& resu) const
 {
 
@@ -1030,27 +929,14 @@ DoubleTab& Matrice_Morse::ajouter_multTab_(const DoubleTab& x,DoubleTab& resu) c
 }
 
 
-// Description:
-//    Operation de multiplication-accumulation (saxpy) matrice vecteur,
-//    par la matrice transposee.
-//    Operation: resu = resu + A^{T}*x
-// Precondition:
-// Parametre: DoubleVect& x
-//    Signification: le vecteur a multiplier
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleVect& resu
-//    Signification: le vecteur resultat de l'operation
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: DoubleVect&
-//    Signification: le vecteur resultat de l'operation
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Operation de multiplication-accumulation (saxpy) matrice vecteur, par la matrice transposee.
+ *
+ *     Operation: resu = resu + A^{T}*x
+ *
+ * @param (DoubleVect& x) le vecteur a multiplier
+ * @param (DoubleVect& resu) le vecteur resultat de l'operation
+ * @return (DoubleVect&) le vecteur resultat de l'operation
+ */
 DoubleVect& Matrice_Morse::ajouter_multvectT_(const DoubleVect& x,DoubleVect& resu) const
 {
   assert_check_morse_matrix_structure( );
@@ -1085,27 +971,14 @@ ArrOfDouble& Matrice_Morse::ajouter_multvectT_(const ArrOfDouble& x,ArrOfDouble&
   return resu;
 }
 
-// Description:
-//    Fonction (hors classe) amie de la classe Matrice_Morse
-//    Addition de 2 matrices au format Morse.
-//    Operation: renvoie (A+B)
-// Precondition:
-// Parametre: Matrice_Morse& A
-//    Signification: une matrice au format Morse
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: Matrice_Morse& B
-//    Signification: une matrice au format Morse
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: Matrice_Morse
-//    Signification: le resultat de l'operation
-//    Contraintes: la matrice resultat est allouee par la fonction
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Fonction (hors classe) amie de la classe Matrice_Morse Addition de 2 matrices au format Morse.
+ *
+ *     Operation: renvoie (A+B)
+ *
+ * @param (Matrice_Morse& A) une matrice au format Morse
+ * @param (Matrice_Morse& B) une matrice au format Morse
+ * @return (Matrice_Morse) le resultat de l'operation
+ */
 Matrice_Morse operator+(const Matrice_Morse& A , const Matrice_Morse& B )
 {
   int nrow=A.nb_lignes();
@@ -1141,38 +1014,23 @@ bool Matrice_Morse::has_same_morse_matrix_structure(const Matrice_Morse& A) cons
   return true;
 }
 
-// Description:
-//    Calcule la solution du systeme lineaire: A * solution = secmem.
-//    La methode utilisee est GMRES preconditionnee avec ILUT.
-//  ATTENTION: cette methode n'a vraisemblablement jamais ete testee en parallele
-// Precondition:
-// Parametre: DoubleVect& secmem
-//    Signification: le second membre du systeme lineaire
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleVect& solution
-//    Signification: la solution du systeme
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Parametre: double coeff_seuil
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception: Erreur dans ilut 'matrix may be wrong' dixit SAAD
-// Exception: Erreur dans ilut : debordement dans L
-// Exception: Erreur dans ilut : debordement dans U
-// Exception: Valeur illegale de lfil : sans doute ecrasement memoire
-// Exception: Ligne vide rencontree
-// Exception: Pivot nul rencontre ! au pas
-// Exception: Il s'est passe quelque chose de bizarre : je prefere tout arreter.
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Calcule la solution du systeme lineaire: A * solution = secmem.
+ *
+ * La methode utilisee est GMRES preconditionnee avec ILUT.
+ *   ATTENTION: cette methode n'a vraisemblablement jamais ete testee en parallele
+ *
+ * @param (DoubleVect& secmem) le second membre du systeme lineaire
+ * @param (DoubleVect& solution) la solution du systeme
+ * @param (double coeff_seuil)
+ * @return (int) renvoie toujours 1
+ * @throws Erreur dans ilut 'matrix may be wrong' dixit SAAD
+ * @throws Erreur dans ilut : debordement dans L
+ * @throws Erreur dans ilut : debordement dans U
+ * @throws Valeur illegale de lfil : sans doute ecrasement memoire
+ * @throws Ligne vide rencontree
+ * @throws Pivot nul rencontre ! au pas
+ * @throws Il s'est passe quelque chose de bizarre : je prefere tout arreter.
+ */
 int Matrice_Morse::inverse(const DoubleVect& secmem, DoubleVect& solution,
                            double coeff_seuil) const
 {
@@ -1560,24 +1418,15 @@ int Matrice_Morse::inverse(const DoubleVect& secmem, DoubleVect& solution,
 }
 
 
-// Description:
-//    Operateur de multiplication d'une matrice par un vecteur:
-//    scaling des lignes de la matrice par les coefficients
-//    correspondants du vecteur passe en parametre.
-//    A *= x, effectue les scaling suivants:
-//      A(i,:) = A(i,:) * x(i), pour toutes les lignes i de A
-// Precondition:
-// Parametre: DoubleVect& x
-//    Signification: vecteur de scaling
-//    Valeurs par defaut:
-//    Contraintes: x.size() = nb ligne de la matrice
-//    Acces:
-// Retour: Matrice_Morse&
-//    Signification: le resultat de l'operation (*this)
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Operateur de multiplication d'une matrice par un vecteur: scaling des lignes de la matrice par les coefficients
+ *
+ *     correspondants du vecteur passe en parametre.
+ *     A *= x, effectue les scaling suivants:
+ *       A(i,:) = A(i,:) * x(i), pour toutes les lignes i de A
+ *
+ * @param (DoubleVect& x) vecteur de scaling
+ * @return (Matrice_Morse&) le resultat de l'operation (*this)
+ */
 Matrice_Morse& Matrice_Morse::operator *=(const DoubleVect& x)
 {
   int i,k;
@@ -1588,27 +1437,14 @@ Matrice_Morse& Matrice_Morse::operator *=(const DoubleVect& x)
 }
 
 
-// Description:
-//    Affecte le produit de 2 matrices Morse A et B a l'objet (this).
-//    Operation: this = A * B
-// Precondition:
-// Parametre: Matrice_Morse& A
-//    Signification: une matrice au format Morse
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: Matrice_Morse& B
-//    Signification: une matrice au format Morse
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: Matrice_Morse&
-//    Signification: le resultat de l'operation (*this)
-//    Contraintes:
-// Exception:
-// Effets de bord: redimensionne la matrice en cas de besoin,
-//                 si pas assez d'espace pour les elements non nuls generes par le produit.
-// Postcondition:
+/*! @brief Affecte le produit de 2 matrices Morse A et B a l'objet (this).
+ *
+ * Operation: this = A * B
+ *
+ * @param (Matrice_Morse& A) une matrice au format Morse
+ * @param (Matrice_Morse& B) une matrice au format Morse
+ * @return (Matrice_Morse&) le resultat de l'operation (*this)
+ */
 Matrice_Morse& Matrice_Morse::affecte_prod(const Matrice_Morse& a, const Matrice_Morse& b)
 {
   int nrow= a.nb_lignes();                // nb de lignes de A
@@ -1802,28 +1638,15 @@ Matrice_Morse& Matrice_Morse::affecte_prod(const Matrice_Morse& a, const Matrice
 
 
 
-// Description:
-//    Fonction (hors classe) amie de la classe Matrice_Morse
-//    Scaling de la matrice par un scalaire: multiplie tous
-//    les elements de la matrice par un scalaire.
-//    Operation: renvoie x*A
-// Precondition:
-// Parametre: double x
-//    Signification: valeur du scaling
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Parametre: Matrice_Morse& B
-//    Signification: une matrice au format Morse
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: Matrice_Morse
-//    Signification: le resultat de l'operation
-//    Contraintes: la matrice resultat est allouee par la fonction
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Fonction (hors classe) amie de la classe Matrice_Morse Scaling de la matrice par un scalaire: multiplie tous
+ *
+ *     les elements de la matrice par un scalaire.
+ *     Operation: renvoie x*A
+ *
+ * @param (double x) valeur du scaling
+ * @param (Matrice_Morse& B) une matrice au format Morse
+ * @return (Matrice_Morse) le resultat de l'operation
+ */
 Matrice_Morse operator *(double x , const Matrice_Morse& A)
 {
   Matrice_Morse mat_res(A);
@@ -1831,41 +1654,21 @@ Matrice_Morse operator *(double x , const Matrice_Morse& A)
   return(mat_res);
 }
 
-// Description:
-//    Operateur de negation unaire, renvoie l'opposee de la matrice: - A
-//    Appelle operator*(double,const Matrice_Morse&)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Matrice_Morse
-//    Signification: le resultat de l'appel a operator*(double,const Matrice_Morse&)
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Operateur de negation unaire, renvoie l'opposee de la matrice: - A Appelle operator*(double,const Matrice_Morse&)
+ *
+ * @return (Matrice_Morse) le resultat de l'appel a operator*(double,const Matrice_Morse&)
+ */
 Matrice_Morse Matrice_Morse::operator -() const
 {
   return((-1)*(*this));
 }
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Matrice_Morse&
-//    Signification: une matrice morse
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Retour: Matrice_Morse&
-//    Signification: renvoie toujours *this
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Matrice_Morse&) une matrice morse
+ * @return (Matrice_Morse&) renvoie toujours *this
+ */
 Matrice_Morse& Matrice_Morse::operator +=(const Matrice_Morse& A)
 {
   // PL: Avant de verifier de faire des operations couteuses en RAM, on verifie
@@ -1886,22 +1689,13 @@ Matrice_Morse& Matrice_Morse::operator +=(const Matrice_Morse& A)
 }
 
 
-// Description:
-//    Operateur de multiplication (de tous les elements)
-//    d'une matrice par un scalaire.
-//    Operation: A = x * A
-// Precondition:
-// Parametre: double x
-//    Signification: le parametre de scaling
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Matrice_Morse&
-//    Signification: le resultat de l'operation (*this)
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Operateur de multiplication (de tous les elements) d'une matrice par un scalaire.
+ *
+ *     Operation: A = x * A
+ *
+ * @param (double x) le parametre de scaling
+ * @return (Matrice_Morse&) le resultat de l'operation (*this)
+ */
 Matrice_Morse& Matrice_Morse::operator *=(double x )
 {
   scale( x );
@@ -2039,22 +1833,14 @@ void Matrice_Morse::get_stencil_and_coefficients( IntTab&      stencil,
   coefficients.set_smart_resize( 0 );
 }
 
-// Description:
-//    Operateur de division (de tous les elements)
-//    d'une matrice par un scalaire.
-//    Operation: A =  A / x
-// Precondition:
-// Parametre: double x
-//    Signification: le parametre de scaling
-//    Valeurs par defaut:
-//    Contraintes: x doit etre different de zero
-//    Acces:
-// Retour: Matrice_Morse&
-//    Signification: le resultat de l'operation (*this)
-//    Contraintes:
-// Exception: division par zero impossible
-// Effets de bord:
-// Postcondition:
+/*! @brief Operateur de division (de tous les elements) d'une matrice par un scalaire.
+ *
+ *     Operation: A =  A / x
+ *
+ * @param (double x) le parametre de scaling
+ * @return (Matrice_Morse&) le resultat de l'operation (*this)
+ * @throws division par zero impossible
+ */
 Matrice_Morse& Matrice_Morse::operator /=(double x )
 {
   coeff_/=x;
@@ -2145,8 +1931,9 @@ void Matrice_Morse::remplir(const IntLists& voisins,
   is_stencil_up_to_date_=false;
 }
 
-// Description:
-// Remplissage d'une matrice morse par une matrice morse plus petite
+/*! @brief Remplissage d'une matrice morse par une matrice morse plus petite
+ *
+ */
 void Matrice_Morse::remplir(const int ideb, const int jdeb, const int n, const int m, const Matrice_Morse& mat)
 {
   // Verification
@@ -2224,39 +2011,18 @@ void Matrice_Morse::formeF()
 
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN
+ *
+ * @return (int) renvoie toujours 1
+ */
 int Matrice_Morse_test()
 {
   return 1;
 }
 
-// Description:
-//   Remplit la matrice avec des zeros.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Remplit la matrice avec des zeros.
+ *
+ */
 
 void Matrice_Morse::clean()
 {
@@ -2264,16 +2030,9 @@ void Matrice_Morse::clean()
     coeff_[i]=0.;
 }
 
-// Description:
-// Calcule la largeur de bande d'une matrice morse
-// Precondition:
-// Parametre:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcule la largeur de bande d'une matrice morse
+ *
+ */
 int Matrice_Morse::largeur_de_bande() const
 {
   int ldist,min = 0;

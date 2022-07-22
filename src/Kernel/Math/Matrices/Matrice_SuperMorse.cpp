@@ -14,14 +14,15 @@
 *****************************************************************************/
 #include <Matrice_SuperMorse.h>
 
-// Description:
-//   Calcul de "resu += MATRICE * x" et d'un produit scalaire
-//   (c'est une brique de base pour le gradient conjugue, voir class Solv_GCP)
-// Valeur de retour:
-//   partie locale a ce processeur de "(MATRICE * x) scalaire x"
-//   (attention: le produit scalaire compte toutes les lignes de la matrice
-//     les items communs ne sont pas supprimes !)
-//   (attention: c'est different de resu scalaire x !)
+/*! @brief Calcul de "resu += MATRICE * x" et d'un produit scalaire (c'est une brique de base pour le gradient conjugue, voir class Solv_GCP)
+ *
+ *  Valeur de retour:
+ *    partie locale a ce processeur de "(MATRICE * x) scalaire x"
+ *    (attention: le produit scalaire compte toutes les lignes de la matrice
+ *      les items communs ne sont pas supprimes !)
+ *    (attention: c'est different de resu scalaire x !)
+ *
+ */
 double Matrice_SuperMorse::ajouter_mult_vect_et_prodscal(const DoubleVect& x, DoubleVect& resu) const
 {
   assert(resu.size() == x.size());

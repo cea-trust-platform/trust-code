@@ -20,224 +20,120 @@ Implemente_deriv(Assembleur_base);
 Implemente_instanciable(Assembleur,"Assembleur",DERIV(Assembleur_base));
 
 
-// Description:
-//    Simple appel a Assembleur_base::printOn(Sortie&)
-//    Imprime l'equation et ses composants sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie de sauvegarde
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a Assembleur_base::printOn(Sortie&) Imprime l'equation et ses composants sur un flot de sortie.
+ *
+ * @param (Sortie& os) le flot de sortie de sauvegarde
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Assembleur::printOn(Sortie& os) const
 {
   return DERIV(Assembleur_base)::printOn(os);
 }
 
 
-// Description:
-//    Simple appel a Assembleur_base::readOn(Entree&)
-//    Imprime l'equation et ses composants sur un flot de sortie.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree pour la lecture d'une equation
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot d'entree est modifie
-// Postcondition: l'equation est construite avec les elements lus.
+/*! @brief Simple appel a Assembleur_base::readOn(Entree&) Imprime l'equation et ses composants sur un flot de sortie.
+ *
+ * @param (Entree& is) le flot d'entree pour la lecture d'une equation
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Assembleur::readOn(Entree& is)
 {
   return DERIV(Assembleur_base)::readOn(is);
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Permet de completer le systeme.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Permet de completer le systeme.
+ *
+ */
 void Assembleur::completer(const Equation_base& eqn)
 {
   valeur().completer(eqn);
 }
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Permet d'assembler le systeme.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Permet d'assembler le systeme.
+ *
+ * @return (int)
+ */
 int Assembleur::assembler(Matrice& mat)
 {
   return valeur().assembler(mat);
 }
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Permet d'assembler le systeme.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Permet d'assembler le systeme.
+ *
+ * @return (int)
+ */
 int Assembleur::assembler_QC(const DoubleTab& rho, Matrice& mat)
 {
   return valeur().assembler_QC(rho,mat);
 }
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Permet d'associer l'objet a la zone discretisee
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Permet d'associer l'objet a la zone discretisee
+ *
+ */
 void Assembleur::associer_zone_dis_base(const Zone_dis_base& zdis)
 {
   valeur().associer_zone_dis_base(zdis);
 }
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Permet d'associer l'objet a la Zone_Cl_dis
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Permet d'associer l'objet a la Zone_Cl_dis
+ *
+ */
 void Assembleur::associer_zone_cl_dis_base(const Zone_Cl_dis_base& zcldis)
 {
   valeur().associer_zone_cl_dis_base(zcldis);
 }
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Renvoie la zone discretisee associee a l'objet.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Renvoie la zone discretisee associee a l'objet.
+ *
+ * @return (int)
+ */
 const Zone_dis_base& Assembleur::zone_dis_base() const
 {
   return valeur().zone_dis_base();
 }
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Renvoie la Zone_Cl_dis associee a l'objet.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Renvoie la Zone_Cl_dis associee a l'objet.
+ *
+ * @return (int)
+ */
 const Zone_Cl_dis_base& Assembleur::zone_Cl_dis_base() const
 {
   return valeur().zone_Cl_dis_base();
 }
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Permet de modifier le second membre du systeme
-//    Modifie egalement la solution (dans le cas du systeme en pression)
-//    en fonction des conditions aux limites
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Permet de modifier le second membre du systeme
+ *     Modifie egalement la solution (dans le cas du systeme en pression)
+ *     en fonction des conditions aux limites
+ *
+ * @return (int)
+ */
 int Assembleur::modifier_secmem(DoubleTab& secmem)
 {
   return valeur().modifier_secmem(secmem);
 }
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Permet de modifier la pression
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Permet de modifier la pression
+ *
+ * @return (int)
+ */
 int Assembleur::modifier_solution(DoubleTab& sol)
 {
   return valeur().modifier_solution(sol);

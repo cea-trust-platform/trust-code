@@ -21,8 +21,9 @@
 struct IntBoxData;
 class ArrOfBit;
 
-// .DESCRIPTION : Un octree permettant de retrouver des objets ponctuels ou
-//   parallelipipediques dans un espace 1D, 2D ou 3D et des coordonnees entieres
+/*! @brief : Un octree permettant de retrouver des objets ponctuels ou parallelipipediques dans un espace 1D, 2D ou 3D et des coordonnees entieres
+ *
+ */
 class Octree_Int
 {
 public:

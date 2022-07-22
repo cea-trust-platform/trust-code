@@ -22,10 +22,12 @@
 
 class Domaine;
 
-// .DESCRIPTION
-//  Interprete Decouper. Aucun algorithme ici, uniquement lecture
-//  de parametres dans le fichier .data et execution du partitionneur
-//  et du decoupeur. Voir la methode interprete()
+/*! @brief Interprete Decouper.
+ *
+ * Aucun algorithme ici, uniquement lecture de parametres dans le fichier .data et execution du partitionneur
+ *   et du decoupeur. Voir la methode interprete()
+ *
+ */
 
 class Decouper : public Interprete
 {

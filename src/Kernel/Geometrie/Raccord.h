@@ -20,18 +20,15 @@
 
 Declare_deriv(Raccord_base);
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Raccord
-//    Classe generique de la hierarchie des raccords, un objet Raccord
-//    peut referencer n'importe quel objet derivant de Raccord_base.
-//    La plupart des methodes appellent les methodes de l'objet Probleme
-//    sous-jacent via la methode valeur() declaree grace a la macro
-//Declare_deriv().;
-// .SECTION voir aussi
-//    Frontiere Raccord_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Raccord Classe generique de la hierarchie des raccords, un objet Raccord
+ *
+ *     peut referencer n'importe quel objet derivant de Raccord_base.
+ *     La plupart des methodes appellent les methodes de l'objet Probleme
+ *     sous-jacent via la methode valeur() declaree grace a la macro
+ * Declare_deriv().;
+ *
+ * @sa Frontiere Raccord_base
+ */
 class Raccord : public DERIV(Raccord_base)
 {
   Declare_instanciable(Raccord);

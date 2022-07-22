@@ -18,16 +18,13 @@
 
 #include <Deriv.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Assembleur
-//     Classe generique de la hierarchie des Assembleurs de systemes.
-//Un objet Assembleur peut
-//     referencer n'importe quel objet derivant de Assembleur_base.
-// .SECTION voir aussi
-//     Assembleur_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Assembleur Classe generique de la hierarchie des Assembleurs de systemes.
+ *
+ * Un objet Assembleur peut
+ *      referencer n'importe quel objet derivant de Assembleur_base.
+ *
+ * @sa Assembleur_base
+ */
 
 #include <TRUSTTabs_forward.h>
 class Assembleur_base;

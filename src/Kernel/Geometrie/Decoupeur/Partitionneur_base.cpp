@@ -54,9 +54,11 @@ void Partitionneur_base::declarer_bords_periodiques(const Noms& noms_bords_perio
   liste_bords_periodiques_ = noms_bords_periodiques;
 }
 
-// Description: corrige la partition pour que l'element 0 du domaine initial
-//  se trouve sur le premier sous-domaine de la partition.
-//  On echange le premier sous-domaine et celui qui contient l'element 0.
+/*! @brief corrige la partition pour que l'element 0 du domaine initial se trouve sur le premier sous-domaine de la partition.
+ *
+ *   On echange le premier sous-domaine et celui qui contient l'element 0.
+ *
+ */
 void Partitionneur_base::corriger_elem0_sur_proc0(IntVect& elem_part)
 {
   Cerr << "Correction of the splitting to put the element 0 on processor 0." << finl;
@@ -81,18 +83,15 @@ void Partitionneur_base::corriger_elem0_sur_proc0(IntVect& elem_part)
 
 }
 
-// Description: construction (taille et contenu) du tableau elements avec
-//  pour chaque face du bord donne, l'indice de l'element de la zone adjacent
-//  a cette face.
-// Parametre: som_elem
-// Signification: connectivite sommet-elements de la zone, calculee a l'aide
-//  de construire_connectivite_som_elem
-// Parametre: faces
-// Signification: les faces du bord a traiter (pour chaque face, indices des sommets)
-// Parametre: nom_faces
-// Signification: un nom de bord a imprimer en cas d'erreur
-// Parametre: elements
-// Signification: le tableau a remplir.
+/*! @brief construction (taille et contenu) du tableau elements avec pour chaque face du bord donne, l'indice de l'element de la zone adjacent
+ *
+ *   a cette face.
+ *
+ * @param (som_elem) connectivite sommet-elements de la zone, calculee a l'aide de construire_connectivite_som_elem
+ * @param (faces) les faces du bord a traiter (pour chaque face, indices des sommets)
+ * @param (nom_faces) un nom de bord a imprimer en cas d'erreur
+ * @param (elements) le tableau a remplir.
+ */
 static void chercher_elems_voisins_faces(const Static_Int_Lists& som_elem,
                                          const IntTab& faces,
                                          const Nom& nom_faces,
@@ -122,21 +121,16 @@ static void chercher_elems_voisins_faces(const Static_Int_Lists& som_elem,
     }
 }
 
-// Description:
-//  Calcul d'un graphe de connectivite entre les elements lies par des faces periodiques.
-//  Si l'element i est voisin de l'element j par une face periodique, alors il existe
-//  k tel que graph(i,k)==j et il existe k2 tel que graph(j,k2)==i.
-// Parametre: zone
-// Signification: la zone a traiter
-// Parametre: liste_bords_periodiques
-// Signification: liste des noms des bords periodiques. ATTENTION: on suppose que les
-//  faces des bords periodiques sont rangees selon la convention des bords periodiques.
-//  Voir check_faces_periodiques().
-// Parametre: som_elem
-// Signification: la connectivite sommets-elements pour la zone donnee.
-// Parametre: graph
-// Signification: On y stocke le resultat.
-// Valeur de retour: nombre d'elements dans le graphe (egal au nombre de faces periodiques)
+/*! @brief Calcul d'un graphe de connectivite entre les elements lies par des faces periodiques.
+ *
+ * Si l'element i est voisin de l'element j par une face periodique, alors il existe
+ *   k tel que graph(i,k)==j et il existe k2 tel que graph(j,k2)==i.
+ *
+ * @param (zone) la zone a traiter
+ * @param (liste_bords_periodiques) liste des noms des bords periodiques. ATTENTION: on suppose que les faces des bords periodiques sont rangees selon la convention des bords periodiques. Voir check_faces_periodiques().
+ * @param (som_elem) la connectivite sommets-elements pour la zone donnee.
+ * @param (graph) On y stocke le resultat. Valeur de retour: nombre d'elements dans le graphe (egal au nombre de faces periodiques)
+ */
 int Partitionneur_base::calculer_graphe_connexions_periodiques(const Zone& zone,
                                                                const Noms& liste_bords_periodiques,
                                                                const Static_Int_Lists& som_elem,
@@ -236,20 +230,21 @@ int Partitionneur_base::calculer_graphe_connexions_periodiques(const Zone& zone,
   return n * 2;
 }
 
-// Description:
-//  Modifie elem_part pour assurer les proprietes suivantes :
-//  1) Les elements possedant un sommet de bord sont associes
-//     a un processeur possedant une face de bord adjacente a ce sommet.
-//  2) Si un processeur possede un sommet periodique reel, il
-//     possede forcement le renum_som_perio associe (donc un element
-//     qui possede ce sommet et un face periodique).
-//  Cette propriete est indispensable pour le periodique (existence
-//  de renum_som_perio pour tous les sommets).
-//  Pour les autres bords, cette correction est peut-etre inutile, mais
-//  pas sur. Sans cette correction, il peut exister des sommets de bord
-//  isoles (un processeur possede un sommet de bord mais aucune face).
-//  Si on cherche les sommets de bord en parcourant les faces de bord,
-//  c'est faux. Avec cette correction, cet algorithme est correct.
+/*! @brief Modifie elem_part pour assurer les proprietes suivantes : 1) Les elements possedant un sommet de bord sont associes
+ *
+ *      a un processeur possedant une face de bord adjacente a ce sommet.
+ *   2) Si un processeur possede un sommet periodique reel, il
+ *      possede forcement le renum_som_perio associe (donc un element
+ *      qui possede ce sommet et un face periodique).
+ *   Cette propriete est indispensable pour le periodique (existence
+ *   de renum_som_perio pour tous les sommets).
+ *   Pour les autres bords, cette correction est peut-etre inutile, mais
+ *   pas sur. Sans cette correction, il peut exister des sommets de bord
+ *   isoles (un processeur possede un sommet de bord mais aucune face).
+ *   Si on cherche les sommets de bord en parcourant les faces de bord,
+ *   c'est faux. Avec cette correction, cet algorithme est correct.
+ *
+ */
 int Partitionneur_base::corriger_sommets_bord(const Domaine& domaine,
                                               const Noms& liste_bords_perio,
                                               const ArrOfInt& renum_som_perio,
@@ -405,10 +400,12 @@ int Partitionneur_base::corriger_sommets_bord(const Domaine& domaine,
   return count;
 }
 
-// Description: applique des corrections a elem_part pour que le
-//  multi-periodique soit correct :
-//  Si un sommet appartient a plusieurs frontieres periodiques,
-//  tous les elements adjacents sont rattaches au meme processeur.
+/*! @brief applique des corrections a elem_part pour que le multi-periodique soit correct :
+ *
+ *   Si un sommet appartient a plusieurs frontieres periodiques,
+ *   tous les elements adjacents sont rattaches au meme processeur.
+ *
+ */
 int Partitionneur_base::corriger_multiperiodique(const Domaine& domaine,
                                                  const Noms& liste_bords_perio,
                                                  const ArrOfInt& renum_som_perio,
@@ -612,14 +609,13 @@ int Partitionneur_base::corriger_multiperiodique(const Domaine& domaine,
   return count;
 }
 
-// Description: corrige la partition elem_part pour qu'un element i se trouve sur la meme
-//  partition elem_part[i] que tous les elements auxquels il est lie dans le graphe
-//  (elements d'indices graph_elements_perio(i, j) pour tout j).
-// Parametre: graph_elements_perio
-// Signification: graphe calcule par la methode calculer_graphe_connexions_periodiques
-// Parametre: elem_part
-// Signification: pour chaque element, a quelle partie appartient-il.
-// Valeur de retour: nombre d'elements dont la partition a ete corrigee.
+/*! @brief corrige la partition elem_part pour qu'un element i se trouve sur la meme partition elem_part[i] que tous les elements auxquels il est lie dans le graphe
+ *
+ *   (elements d'indices graph_elements_perio(i, j) pour tout j).
+ *
+ * @param (graph_elements_perio) graphe calcule par la methode calculer_graphe_connexions_periodiques
+ * @param (elem_part) pour chaque element, a quelle partie appartient-il. Valeur de retour: nombre d'elements dont la partition a ete corrigee.
+ */
 int Partitionneur_base::corriger_bords_avec_graphe(const Static_Int_Lists& graph_elements_perio,
                                                    const Static_Int_Lists& som_elem,
                                                    const Domaine& domaine,
@@ -665,11 +661,13 @@ int Partitionneur_base::corriger_bords_avec_graphe(const Static_Int_Lists& graph
   return count;
 }
 
-// Description:
-//   Calcul des graphes de connectivite elements periodiques et appel a
-//   corriger_periodique_avec_graphe. (Methode a utiliser quand on ne dispose
-//   pas encore du graphe de de connectivite, si on a le graphe sous la main,
-//   appeler directement corriger_periodique_avec_graphe)
+/*! @brief Calcul des graphes de connectivite elements periodiques et appel a corriger_periodique_avec_graphe.
+ *
+ * (Methode a utiliser quand on ne dispose
+ *    pas encore du graphe de de connectivite, si on a le graphe sous la main,
+ *    appeler directement corriger_periodique_avec_graphe)
+ *
+ */
 void Partitionneur_base::corriger_bords_avec_liste(const Domaine& dom,
                                                    const Noms& liste_bords_periodiques,
                                                    const int my_offset,

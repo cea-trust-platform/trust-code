@@ -18,9 +18,10 @@
 
 #include <Champ_front_Tabule.h>
 
-// .DESCRIPTION : classe Champ_front_Tabule_lu
-//     Classe derivee de Champ_front_Tabule construit un Champ_front_Tabule a partir d'un fichier sonde
-// .SECTION voir aussi : Champ_front_Tabule
+/*! @brief : classe Champ_front_Tabule_lu Classe derivee de Champ_front_Tabule construit un Champ_front_Tabule a partir d'un fichier sonde
+ *
+ * @sa : Champ_front_Tabule
+ */
 class Champ_front_Tabule_lu : public Champ_front_Tabule
 {
   Declare_instanciable(Champ_front_Tabule_lu);

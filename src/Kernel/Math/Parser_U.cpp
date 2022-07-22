@@ -17,42 +17,22 @@
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Parser_U,"Parser_U",Objet_U);
 
-// Description:
-//    Surcharge Objet_U::printOn(Sortie&)
-//    Ecriture d'un Parser_U sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: le flot de sortie a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Surcharge Objet_U::printOn(Sortie&) Ecriture d'un Parser_U sur un flot de sortie
+ *
+ * @param (Sortie& s) le flot de sortie a utiliser
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Parser_U::printOn(Sortie& s) const
 {
   return s;
 }
 
 
-// Description:
-//    Surcharge Objet_U::readOn(Entree&)
-//    Lecture d'un Parser_U dans un flot d'entree
-// Precondition:
-// Parametre: Entree& s
-//    Signification: le flot d'entree a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Surcharge Objet_U::readOn(Entree&) Lecture d'un Parser_U dans un flot d'entree
+ *
+ * @param (Entree& s) le flot d'entree a utiliser
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Parser_U::readOn(Entree& s)
 {
   return s;

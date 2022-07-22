@@ -33,34 +33,30 @@ class Interprete;
 class Motcle;
 class Entree;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Objet_U
-//     Cette classe est la classe de base des Objets de TRUST
-//     Dans les classes derivees de Objet_U, on ajoute toujours
-//      une macro Declare_instanciable ou Declare_base qui donne aux
-//      objets les proprietes suivantes:
-//     Un Objet_U peut etre lu dans une Entree ou ecrit dans une Sortie
-//      (entree/sortie standard, jeu de donnees .data, fichier disque,
-//       buffer memoire, buffer de communication parallele).
-//       Il faut donc toujours implementer les methodes readOn et printOn
-//     Un Objet_U d'un type quelconque peut etre instancie grace a une
-//      chaine de caracteres qui l'identifie (que_suis_je()), voir DERIV::typer
-//     Un Objet_U peut etre "sauvegarde" ou "repris" sur disque (au sens sauvegarde
-//      et reprise d'un calcul). Ces operations sont differentes de readOn/printOn
-//      car elles permettent eventuellement une redistribution des donnees paralleles
-//      ou des changements de version.
-//     Un Objet_U, s'il est "Declare_instanciable", peut etre cree dynamiquement et lu
-//      dans le jeu de donnees TRUST (a travers readOn). Il possede alors le nom
-//      (le_nom()) attribue dans le jeu de donnees (voir les classes Interprete_bloc et Lire)
-//     Un Objet_U fait l'objet d'une gestion memoire speciale par le noyau permettant
-//      le debuggage et l'optimisation (operations specifiques a la creation,
-//      a la destruction et a la copie)
-// .SECTION voir aussi
-//      Memoire Ref_ Deriv_ Process
-//     Classe abstraite
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Objet_U Cette classe est la classe de base des Objets de TRUST
+ *
+ *      Dans les classes derivees de Objet_U, on ajoute toujours
+ *       une macro Declare_instanciable ou Declare_base qui donne aux
+ *       objets les proprietes suivantes:
+ *      Un Objet_U peut etre lu dans une Entree ou ecrit dans une Sortie
+ *       (entree/sortie standard, jeu de donnees .data, fichier disque,
+ *        buffer memoire, buffer de communication parallele).
+ *        Il faut donc toujours implementer les methodes readOn et printOn
+ *      Un Objet_U d'un type quelconque peut etre instancie grace a une
+ *       chaine de caracteres qui l'identifie (que_suis_je()), voir DERIV::typer
+ *      Un Objet_U peut etre "sauvegarde" ou "repris" sur disque (au sens sauvegarde
+ *       et reprise d'un calcul). Ces operations sont differentes de readOn/printOn
+ *       car elles permettent eventuellement une redistribution des donnees paralleles
+ *       ou des changements de version.
+ *      Un Objet_U, s'il est "Declare_instanciable", peut etre cree dynamiquement et lu
+ *       dans le jeu de donnees TRUST (a travers readOn). Il possede alors le nom
+ *       (le_nom()) attribue dans le jeu de donnees (voir les classes Interprete_bloc et Lire)
+ *      Un Objet_U fait l'objet d'une gestion memoire speciale par le noyau permettant
+ *       le debuggage et l'optimisation (operations specifiques a la creation,
+ *       a la destruction et a la copie)
+ *
+ * @sa Memoire Ref_ Deriv_ Process, Classe abstraite
+ */
 class Objet_U : public Process
 {
 public:

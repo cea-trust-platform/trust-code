@@ -22,13 +22,13 @@
 #include <Champ_Don.h>
 #include <Param.h>
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Interpolation_IBM_base
-//
-// <Description of class Interpolation_IBM_base>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Interpolation_IBM_base
+ *
+ *  <Description of class Interpolation_IBM_base>
+ *
+ *
+ *
+ */
 
 class Interpolation_IBM_base : public Objet_U
 {

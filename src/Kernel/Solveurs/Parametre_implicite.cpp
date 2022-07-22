@@ -78,8 +78,9 @@ Entree& Parametre_implicite::readOn(Entree& is)
   return is;
 }
 
-// Description: permet de mettre les seuils equivalents a ceux de la 161
-// pour l'instant warning ensuite ereur.
+/*! @brief permet de mettre les seuils equivalents a ceux de la 161 pour l'instant warning ensuite ereur.
+ *
+ */
 void  Parametre_implicite::set_seuil_solveur_avec_seuil_convergence_solveur(double seuil_convergence_solveur)
 {
   if (seuil_convergence_solveur<0)

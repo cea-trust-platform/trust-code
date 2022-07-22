@@ -21,40 +21,22 @@
 
 Implemente_instanciable(Mailler,"Mailler",Interprete_geometrique_base);
 
-// Description:
-//    Simple appel a: Interprete::printOn(Sortie&)
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a: Interprete::printOn(Sortie&)
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Mailler::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
 
-// Description:
-//    Simple appel a: Interprete::readOn(Entree&)
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Interprete::readOn(Entree&)
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Mailler::readOn(Entree& is)
 {
   return Interprete::readOn(is);
@@ -67,35 +49,25 @@ inline void verifie_syntaxe(Motcle& motlu)
       Process::exit();
     }
 }
-// Description:
-//    Fonction principale de l'interprete Mailler
-//    Structure du jeu de donnee (en dimension 2) :
-//    Mailler dom
-//    {
-//    [Epsilon eps]
-//    [objet1]
-//    ,
-//    [objet2]
-//    ...
-//    }
-//    Deux points seront confondus des que la distance entre eux est
-//    inferieure a Epsilon.
-// Precondition:
-//    Les seuls objets actuellement reconnus par Trio-U pour
-//    mailler un domaine sont les objets de type Pave.
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree
-//    Contraintes:
-// Exception: l'objet a mailler n'est pas du type Domaine
-// Exception: accolade ouvrante attendue
-// Exception: accolade fermante ou virgule attendue
-// Effets de bord:
-// Postcondition:
+/*! @brief Fonction principale de l'interprete Mailler Structure du jeu de donnee (en dimension 2) :
+ *
+ *     Mailler dom
+ *     {
+ *     [Epsilon eps]
+ *     [objet1]
+ *     ,
+ *     [objet2]
+ *     ...
+ *     }
+ *     Deux points seront confondus des que la distance entre eux est
+ *     inferieure a Epsilon.
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree
+ * @throws l'objet a mailler n'est pas du type Domaine
+ * @throws accolade ouvrante attendue
+ * @throws accolade fermante ou virgule attendue
+ */
 Entree& Mailler::interpreter_(Entree& is)
 {
   if (Process::nproc()>1)

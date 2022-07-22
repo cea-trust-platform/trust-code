@@ -18,11 +18,12 @@
 
 #include <TRUSTChamp_Morceaux_generique.h>
 
-// .DESCRIPTION
-//     classe Champ_Uniforme_Morceaux
-//     Cette classe represente champ constant par morceaux dans l'espace
-//     et constant dans le temps.
-// .SECTION voir aussi : TRUSTChamp_Morceaux_generique
+/*! @brief classe Champ_Uniforme_Morceaux Cette classe represente champ constant par morceaux dans l'espace
+ *
+ *      et constant dans le temps.
+ *
+ * @sa : TRUSTChamp_Morceaux_generique
+ */
 class Champ_Uniforme_Morceaux : public TRUSTChamp_Morceaux_generique<Champ_Morceaux_Type::UNIFORME>
 {
   Declare_instanciable(Champ_Uniforme_Morceaux);

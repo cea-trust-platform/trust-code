@@ -61,9 +61,12 @@ private:
       for (int i = 0; i < n; i++) resu[i] = 0;
   }
 
-  // Description: Operation collective sur chaque element d'un tableau de taille n.
-  //  x, resu et op doivent pointer sur un tableau de taille n.
-  //  Pour chaque element x[i] on effectue l'operation op[i] et on met le resultat dans resu[i]
+  /*! @brief Operation collective sur chaque element d'un tableau de taille n.
+   *
+   * x, resu et op doivent pointer sur un tableau de taille n.
+   *   Pour chaque element x[i] on effectue l'operation op[i] et on met le resultat dans resu[i]
+   *
+   */
   template <typename _TYPE_>
   void mp_collective_op_template(const _TYPE_ *x, _TYPE_ *resu, const Collective_Op *op, int n) const
   {

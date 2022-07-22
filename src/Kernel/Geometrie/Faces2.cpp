@@ -14,32 +14,15 @@
 *****************************************************************************/
 #include <Faces2.h>
 
-// Description:
-//    Fonction hors classe
-//    Renvoie le numero du plus petit (au sens de la
-//    numerotation des sommets) sommet d'une face
-// Precondition:
-// Parametre: Faces& faces
-//    Signification: les faces
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: int face
-//    Signification: la face dont on cherche le plus petit sommet
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int nb_som
-//    Signification: le nombre de sommet par face
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le numero du plus petit sommet la face specifiee
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Fonction hors classe Renvoie le numero du plus petit (au sens de la
+ *
+ *     numerotation des sommets) sommet d'une face
+ *
+ * @param (Faces& faces) les faces
+ * @param (int face) la face dont on cherche le plus petit sommet
+ * @param (int nb_som) le nombre de sommet par face
+ * @return (int) le numero du plus petit sommet la face specifiee
+ */
 int ppsf(const Faces& faces, int face, int nb_som)
 {
   int sommet=faces.sommet(face,0);
@@ -49,45 +32,17 @@ int ppsf(const Faces& faces, int face, int nb_som)
 }
 
 
-// Description:
-//    Fonction hors classe
-//    Compare 2 faces de 2 ensembles de faces f1 et f2
-//    et Renvoie 1 si elles sont egales, 0 Sinon.
-// Precondition:
-// Parametre: Faces& faces1
-//    Signification: le premier ensemble de face
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: int f1
-//    Signification: l'indice de la face dans le premier
-//                   ensemble de face
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: Faces& faces2
-//    Signification: le deuxieme ensemble de face
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: int f2
-//    Signification: l'indice de la face dans le deuxieme
-//                   ensemble de face
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int nb_som
-//    Signification: le nombre de sommet par face
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si les 2 faces sont les memes
-//                   0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Fonction hors classe Compare 2 faces de 2 ensembles de faces f1 et f2
+ *
+ *     et Renvoie 1 si elles sont egales, 0 Sinon.
+ *
+ * @param (Faces& faces1) le premier ensemble de face
+ * @param (int f1) l'indice de la face dans le premier ensemble de face
+ * @param (Faces& faces2) le deuxieme ensemble de face
+ * @param (int f2) l'indice de la face dans le deuxieme ensemble de face
+ * @param (int nb_som) le nombre de sommet par face
+ * @return (int) 1 si les 2 faces sont les memes 0 sinon
+ */
 int same(const Faces& faces1, int f1,
          const Faces& faces2, int f2,
          int nb_som)
@@ -107,41 +62,14 @@ int same(const Faces& faces1, int f1,
 }
 
 
-// Description:
-//    Fonction hors classe
-//
-// Precondition:
-// Parametre: Faces& faces
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int& premier
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: Faces& les_faces
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: IntLists& listes
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int nb_som_face
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Fonction hors classe
+ *
+ * @param (Faces& faces)
+ * @param (int& premier)
+ * @param (Faces& les_faces)
+ * @param (IntLists& listes)
+ * @param (int nb_som_face)
+ */
 void ajouter(Faces& faces, int& premier,
              const Faces& les_faces,
              IntLists& listes,

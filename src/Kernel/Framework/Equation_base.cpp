@@ -82,21 +82,12 @@ int Equation_base::equation_non_resolue() const
     }
 }
 
-// Description:
-//    Renvoie la zone discretisee associee a l'equation.
-// Precondition: une zone discretisee doit avoir ete associee a l'equation.
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Zone_dis&
-//    Signification: la zone discretisee asscoiee a l'equation
-//    Contraintes:
-// Exception: l'objet zone discretisee (Zone_dis) est invalide,
-//            probleme associe non discretise.
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la zone discretisee associee a l'equation.
+ *
+ * @return (Zone_dis&) la zone discretisee asscoiee a l'equation
+ * @throws l'objet zone discretisee (Zone_dis) est invalide,
+ * probleme associe non discretise.
+ */
 Zone_dis& Equation_base::zone_dis()
 {
   if (!la_zone_dis.non_nul())
@@ -109,22 +100,14 @@ Zone_dis& Equation_base::zone_dis()
   return la_zone_dis.valeur();
 }
 
-// Description:
-//    Renvoie la zone discretisee associee a l'equation.
-//    (version const)
-// Precondition: une zone discretisee doit avoir ete associee a l'equation.
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Zone_dis&
-//    Signification: la zone discretisee asssociee a l'equation
-//    Contraintes: reference constante
-// Exception: l'objet zone discretisee (Zone_dis) est invalide,
-//            probleme associe non discretise.
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la zone discretisee associee a l'equation.
+ *
+ * (version const)
+ *
+ * @return (Zone_dis&) la zone discretisee asssociee a l'equation
+ * @throws l'objet zone discretisee (Zone_dis) est invalide,
+ * probleme associe non discretise.
+ */
 const Zone_dis& Equation_base::zone_dis() const
 {
   if (!la_zone_dis.non_nul())
@@ -138,27 +121,16 @@ const Zone_dis& Equation_base::zone_dis() const
 }
 
 
-// Description:
-//    Complete la construction (initialisation) des objets associes a
-//    l'equation.
-//    Complete les sources, associe l'equation a l'inconnue complete les
-//    operateurs, complete les conditions aux limites discretisees.
-//    Voir les methodes Source_base::completer(),
-//                      Operateur_base::completer()
-//                      Zone_Cl_dis_base::completer()
-//                      Zone_Cl_dis_base::completer(const Zone_dis& )
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: l'equation est completee
+/*! @brief Complete la construction (initialisation) des objets associes a l'equation.
+ *
+ *     Complete les sources, associe l'equation a l'inconnue complete les
+ *     operateurs, complete les conditions aux limites discretisees.
+ *     Voir les methodes Source_base::completer(),
+ *                       Operateur_base::completer()
+ *                       Zone_Cl_dis_base::completer()
+ *                       Zone_Cl_dis_base::completer(const Zone_dis& )
+ *
+ */
 void Equation_base::completer()
 {
   inconnue().associer_eqn(*this);
@@ -231,23 +203,14 @@ void Equation_base::completer()
 }
 
 
-// Description:
-//    Surcharge Objet_U::printOn
-//    Imprime l'equation et ses composants sur un flot de sortie.
-//    Imprime le nom de l'equation, le solveur masse, les termes sources
-//    les conditions aux limites discretisees, les inconnues et les operateurs.
-// Precondition: le flot doit etre ouvert
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Surcharge Objet_U::printOn Imprime l'equation et ses composants sur un flot de sortie.
+ *
+ *     Imprime le nom de l'equation, le solveur masse, les termes sources
+ *     les conditions aux limites discretisees, les inconnues et les operateurs.
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Equation_base::printOn(Sortie& os) const
 {
   os << nom_ << finl;
@@ -262,28 +225,21 @@ Sortie& Equation_base::printOn(Sortie& os) const
   return os;
 }
 
-// Description:
-//     Lecture d'une equation sur un flot d'entree.
-//     Le format est le suivant:
-//      {
-//        [Source { [sou_1], [sour_2], ...} ]
-//         Conditions_limites { [cl_1] [cl_2] ... }
-//         Conditions_initiales { [cl_init] }
-//      }
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree pour lire l'equation
-//    Valeurs par defaut:
-//    Contraintes: le flot d'entree doit etre ouvert
-//    Acces:
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: mauvais format de lecture, accolade ouvrante attendue
-// Exception: pas de conditions initiales, il faut initialiser l'inconnue
-// Exception: pas de conditions aux limites, il faut donner des conditions aux limites
-// Effets de bord: le flot d'entree a ete modifie
-// Postcondition: l'equation est construite avec les elements lus.
+/*! @brief Lecture d'une equation sur un flot d'entree.
+ *
+ * Le format est le suivant:
+ *       {
+ *         [Source { [sou_1], [sour_2], ...} ]
+ *          Conditions_limites { [cl_1] [cl_2] ... }
+ *          Conditions_initiales { [cl_init] }
+ *       }
+ *
+ * @param (Entree& is) un flot d'entree pour lire l'equation
+ * @return (Entree&) le flot d'entree modifie
+ * @throws mauvais format de lecture, accolade ouvrante attendue
+ * @throws pas de conditions initiales, il faut initialiser l'inconnue
+ * @throws pas de conditions aux limites, il faut donner des conditions aux limites
+ */
 Entree& Equation_base::readOn(Entree& is)
 {
   Cerr<<"Reading of data for a "<<que_suis_je()<<" equation"<<finl;
@@ -387,21 +343,10 @@ int Equation_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
   return -1;
 }
 
-// Description:
-//    Ecrit dans un fichier les valeurs du champ specifie
-// par le mot cle "ecrire_fichier_xyz_valeur"
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot d'entree a ete modifie
-// Postcondition:
+/*! @brief Ecrit dans un fichier les valeurs du champ specifie par le mot cle "ecrire_fichier_xyz_valeur"
+ *
+ * @return le flot d'entree modifie
+ */
 void Equation_base::ecrire_fichier_xyz() const
 {
   for (int numero_champ_xyz=0; numero_champ_xyz<nombre_champ_xyz; numero_champ_xyz++)
@@ -562,20 +507,11 @@ void Equation_base::ecrire_fichier_xyz() const
 
 
 
-// Description:
-//    Lecture des termes sources dans un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: flot d'entree pour lire les termes sources
-//    Valeurs par defaut:
-//    Contraintes: le flot doit etre ouvert
-//    Acces:
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot d'entree a ete modifie
-// Postcondition:
+/*! @brief Lecture des termes sources dans un flot d'entree.
+ *
+ * @param (Entree& is) flot d'entree pour lire les termes sources
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Equation_base::lire_sources(Entree& is)
 {
   Cerr << "Reading of source terms" << finl ;
@@ -583,68 +519,38 @@ Entree& Equation_base::lire_sources(Entree& is)
   return is;
 }
 
-// Description:
-//    Renvoie les termes sources asssocies a l'equation
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sources&
-//    Signification: la liste des termes sources associees a l'equation
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie les termes sources asssocies a l'equation
+ *
+ * @return (Sources&) la liste des termes sources associees a l'equation
+ */
 Sources& Equation_base::sources()
 {
   return les_sources;
 }
 
-// Description:
-//    Renvoie les termes sources asssocies a l'equation
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sources&
-//    Signification: la liste des termes sources associees a l'equation
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie les termes sources asssocies a l'equation (version const)
+ *
+ * @return (Sources&) la liste des termes sources associees a l'equation
+ */
 const Sources& Equation_base::sources() const
 {
   return les_sources;
 }
 
-// Description:
-//     Lecture des conditions initiales dans un flot d'entree.
-//     Le format de lecture est le suivant:
-//     {
-//      Nom [DOIT ETRE LE NOM DE L'INCONNUE]
-//      [LIRE UN CHAMP DONNE]
-//     }
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: erreur de format, accolade ouvrante attendue
-// Exception: mauvais nom pour l'inconnue
-// Exception: erreur de format, accolade fermante attendue
-// Effets de bord: l'inconnue associe au probleme est mise a jour avec
-//                 les conditions initiales lues.
-//                 Le flot d'entree est modifie.
-// Postcondition:
+/*! @brief Lecture des conditions initiales dans un flot d'entree.
+ *
+ * Le format de lecture est le suivant:
+ *      {
+ *       Nom [DOIT ETRE LE NOM DE L'INCONNUE]
+ *       [LIRE UN CHAMP DONNE]
+ *      }
+ *
+ * @param (Entree& is) le flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ * @throws erreur de format, accolade ouvrante attendue
+ * @throws mauvais nom pour l'inconnue
+ * @throws erreur de format, accolade fermante attendue
+ */
 Entree& Equation_base::lire_cond_init(Entree& is)
 {
   Cerr << "Reading of initial conditions\n";
@@ -685,21 +591,14 @@ Entree& Equation_base::lire_cond_init(Entree& is)
   return is;
 }
 
-// Description:
-//     Lecture des conditions limites sur un flot d'entree.
-//     voir Zone_Cl_dis_base::readOn
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: la zone des conditions aux limites discretisee est vide
-// Effets de bord: le flot d'entree est modifie
-// Postcondition:
+/*! @brief Lecture des conditions limites sur un flot d'entree.
+ *
+ * voir Zone_Cl_dis_base::readOn
+ *
+ * @param (Entree& is) le flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ * @throws la zone des conditions aux limites discretisee est vide
+ */
 Entree& Equation_base::lire_cl(Entree& is)
 {
   Cerr << "Reading of boundaries conditions\n";
@@ -714,43 +613,26 @@ Entree& Equation_base::lire_cl(Entree& is)
   return is;
 }
 
-// Description:
-//    On sauvegarde l'inconnue de l'equation sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: int
-//    Signification: le code de retour de Champ_Inc::sauvegarder()
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief On sauvegarde l'inconnue de l'equation sur un flot de sortie.
+ *
+ * @param (Sortie& os)
+ * @return (int) le code de retour de Champ_Inc::sauvegarder()
+ */
 int Equation_base::sauvegarder(Sortie& os) const
 {
   return inconnue().sauvegarder(os);
 }
 
-// Description:
-//     On reprend l'inconnue a partir d'un flot d'entree.
-//     [ON CHERCHE L'INCONNUE PAR SON NOM]
-//     [ON LIT L'INCONNUE]
-//     Voir Champ_Inc::reprendre(Entree&)
-// Precondition:
-// Parametre: Entree& fich
-//    Signification: le flot d'entree (fichier) a lire
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception: erreur de reprise, fin de fichier atteinte sans trouver l'inconnue
-// Effets de bord: l'inconnue assciee au probleme est mise a jour
-//                 le flot d'entree est modifie
-// Postcondition:
+/*! @brief On reprend l'inconnue a partir d'un flot d'entree.
+ *
+ * [ON CHERCHE L'INCONNUE PAR SON NOM]
+ *      [ON LIT L'INCONNUE]
+ *      Voir Champ_Inc::reprendre(Entree&)
+ *
+ * @param (Entree& fich) le flot d'entree (fichier) a lire
+ * @return (int) renvoie toujours 1
+ * @throws erreur de reprise, fin de fichier atteinte sans trouver l'inconnue
+ */
 int Equation_base::reprendre(Entree& fich)
 {
   double temps = schema_temps().temps_courant();
@@ -763,43 +645,25 @@ int Equation_base::reprendre(Entree& fich)
   return 1;
 }
 
-// Description:
-//     Demande au schema en temps si il faut effectuer une impression.
-//     Renvoie 1 si il faut effectuer une impression.
-//     Appel simple a Schema_Temps_base::limpr()
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si il faut effectuer une impression, 0 sinon.
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet.
+/*! @brief Demande au schema en temps si il faut effectuer une impression.
+ *
+ * Renvoie 1 si il faut effectuer une impression.
+ *      Appel simple a Schema_Temps_base::limpr()
+ *
+ * @return (int) 1 si il faut effectuer une impression, 0 sinon.
+ */
 int Equation_base::limpr() const
 {
   return le_schema_en_temps->limpr();
 }
 
-// Description:
-//    Imprime les operateurs de l'equation sur un flot de sortie,
-//    de facon inconditionnelle.
-//    appelle Operateur_base::impr(os)
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Imprime les operateurs de l'equation sur un flot de sortie, de facon inconditionnelle.
+ *
+ *     appelle Operateur_base::impr(os)
+ *
+ * @param (Sortie& os) le flot de sortie
+ * @return (int) renvoie toujours 1
+ */
 int Equation_base::impr(Sortie& os) const
 {
   for(int i=0; i<nombre_d_operateurs(); i++)
@@ -809,22 +673,12 @@ int Equation_base::impr(Sortie& os) const
   return 1;
 }
 
-// Description:
-//    Imprime les operateurs de l'equation si le schema en temps
-//    indique que c'est necessaire.
-//     [SI limpr() ALORS impr(os)]
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie peut etre modifie
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Imprime les operateurs de l'equation si le schema en temps indique que c'est necessaire.
+ *
+ *      [SI limpr() ALORS impr(os)]
+ *
+ * @param (Sortie& os) le flot de sortie
+ */
 void Equation_base::imprimer(Sortie& os) const
 {
   ecrire_fichier_xyz();
@@ -832,11 +686,12 @@ void Equation_base::imprimer(Sortie& os) const
     impr(os);
 }
 
-// Description:
-// Returns the time derivative of the unknown I of the equation:
-// dI/dt = M-1*(sum(operators(I) + sources))
-// In : derivee contains I (but immediatly set to 0)
-// Out: derivee contains dI/dt
+/*! @brief Returns the time derivative of the unknown I of the equation: dI/dt = M-1*(sum(operators(I) + sources))
+ *
+ *  In : derivee contains I (but immediatly set to 0)
+ *  Out: derivee contains dI/dt
+ *
+ */
 DoubleTab& Equation_base::derivee_en_temps_inco(DoubleTab& derivee)
 {
   derivee=0;
@@ -969,69 +824,41 @@ DoubleTab& Equation_base::derivee_en_temps_inco(DoubleTab& derivee)
   return derivee;
 }
 
-// Description:
-//    Renvoie le probleme associe a l'equation.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Probleme_base&
-//    Signification: le probleme associe a l'equation
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le probleme associe a l'equation.
+ *
+ * @return (Probleme_base&) le probleme associe a l'equation
+ */
 Probleme_base& Equation_base::probleme()
 {
   return mon_probleme.valeur();
 }
 
-// Description:
-//    Renvoie le probleme associe a l'equation.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Probleme_base&
-//    Signification: le probleme associe a l'equation
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le probleme associe a l'equation.
+ *
+ * (version const)
+ *
+ * @return (Probleme_base&) le probleme associe a l'equation
+ */
 const Probleme_base& Equation_base::probleme() const
 {
   return mon_probleme.valeur();
 }
 
-// Description:
-//  Methode appelee lorsqu'on cree l'instance de l'objet dans
-//  le jeu de donnees (Interprete::ajouter)
+/*! @brief Methode appelee lorsqu'on cree l'instance de l'objet dans le jeu de donnees (Interprete::ajouter)
+ *
+ */
 void Equation_base::nommer(const Nom& un_nom)
 {
   nom_ = un_nom;
 }
 
-// Description:
-//    S'associe au Probleme passe en parametre.
-//    Associe egalement les sources, les operateurs et le solveur
-//    de masse a l'equation.
-// Precondition:
-// Parametre: Probleme_base& pb
-//    Signification: le probleme auquel l'equation doit s'associer
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord: en sortie les operateurs sont associes a l'equation,
-// Postcondition: l'equation a un probleme associe
+/*! @brief S'associe au Probleme passe en parametre.
+ *
+ * Associe egalement les sources, les operateurs et le solveur
+ *     de masse a l'equation.
+ *
+ * @param (Probleme_base& pb) le probleme auquel l'equation doit s'associer
+ */
 void Equation_base::associer_pb_base(const Probleme_base& pb)
 {
   mon_probleme=pb;
@@ -1054,23 +881,13 @@ void Equation_base::associer_pb_base(const Probleme_base& pb)
   solveur_masse.associer_eqn(*this);
 }
 
-// Description:
-//    Discretise l'equation.
-//    Type la zone_Cl_dis, la formatte, l'associe a l'equation.
-//    Type le solveur masse, lui associe la zone discretisee et
-//    la zone des conditions aux limites discretisees.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Discretise l'equation.
+ *
+ * Type la zone_Cl_dis, la formatte, l'associe a l'equation.
+ *     Type le solveur masse, lui associe la zone discretisee et
+ *     la zone des conditions aux limites discretisees.
+ *
+ */
 void Equation_base::discretiser()
 {
   discretisation().zone_Cl_dis(zone_dis(), la_zone_Cl_dis);
@@ -1106,39 +923,20 @@ void Equation_base::associer_milieu_equation()
   milieu().associer_equation(this);
 }
 
-// Description:
-//    S'associe au schema_en_temps.
-// Precondition:
-// Parametre: Schema_Temps_base& un_schema_en_temps
-//    Signification: le schema en temps a associer a l'equation
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief S'associe au schema_en_temps.
+ *
+ * @param (Schema_Temps_base& un_schema_en_temps) le schema en temps a associer a l'equation
+ */
 void Equation_base::associer_sch_tps_base(const Schema_Temps_base& un_schema_en_temps)
 {
   le_schema_en_temps=un_schema_en_temps;
 }
 
-// Description:
-//    Renvoie le schema en temps associe a l'equation.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Schema_Temps_base&
-//    Signification: le schema en temps associe a l'equation
-//    Contraintes:
-// Exception: pas de schema en temps associe a l'equation
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le schema en temps associe a l'equation.
+ *
+ * @return (Schema_Temps_base&) le schema en temps associe a l'equation
+ * @throws pas de schema en temps associe a l'equation
+ */
 Schema_Temps_base& Equation_base::schema_temps()
 {
   if(!le_schema_en_temps.non_nul())
@@ -1150,20 +948,11 @@ Schema_Temps_base& Equation_base::schema_temps()
   return le_schema_en_temps.valeur();
 }
 
-// Description:
-//     Renvoie le schema en temps associe a l'equation.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Schema_Temps_base&
-//    Signification: le schema en temps associe a l'equation
-//    Contraintes: reference constante
-// Exception: pas de schema en temps associe a l'equation
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le schema en temps associe a l'equation.
+ *
+ * @return (Schema_Temps_base&) le schema en temps associe a l'equation
+ * @throws pas de schema en temps associe a l'equation
+ */
 const Schema_Temps_base& Equation_base::schema_temps() const
 {
   if(!le_schema_en_temps.non_nul())
@@ -1175,42 +964,22 @@ const Schema_Temps_base& Equation_base::schema_temps() const
   return le_schema_en_temps.valeur();
 }
 
-// Description:
-//    Associe la zone discretisee a l'equation.
-// Precondition:
-// Parametre: Zone_dis& z
-//    Signification: la zone discretisee a associee
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe la zone discretisee a l'equation.
+ *
+ * @param (Zone_dis& z) la zone discretisee a associee
+ */
 void Equation_base::associer_zone_dis(const Zone_dis& z)
 {
   la_zone_dis=z;
 }
 
-// Description:
-//   La valeur de l'inconnue sur le pas de temps a ete calculee.
-//   Cette methode avance le present jusqu'au temps passe en parametre.
-//   Elle met aussi a jour les proprietes du milieu.
-// Precondition:
-// Parametre: double temps
-//    Signification: le pas de temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord: les objets associes a l'equations sont modifies
-//                 le milieu physique, l'inconnue les operateurs.
-// Postcondition:
+/*! @brief La valeur de l'inconnue sur le pas de temps a ete calculee.
+ *
+ * Cette methode avance le present jusqu'au temps passe en parametre.
+ *    Elle met aussi a jour les proprietes du milieu.
+ *
+ * @param (double temps) le pas de temps de mise a jour
+ */
 void Equation_base::mettre_a_jour(double temps)
 {
   // On tourne la roue de l'inconnue
@@ -1234,23 +1003,14 @@ void Equation_base::mettre_a_jour_champs_conserves(double temps, int reset)
   if (champ_convecte_.non_nul()) champ_convecte_->mettre_a_jour(temps);
 }
 
-// Description:
-//    Reinitialiser ce qui doit l'etre.
-//    Cette methode est appelee lorsqu'un pas de temps est abandonne,
-//    par exemple parce que le calcul a diverge.
-//    Il faut donc nettoyer ce qui pourrait polluer la nouvelle resolution.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: WrongContext
-// Effets de bord:
-// Postcondition:
+/*! @brief Reinitialiser ce qui doit l'etre.
+ *
+ * Cette methode est appelee lorsqu'un pas de temps est abandonne,
+ *     par exemple parce que le calcul a diverge.
+ *     Il faut donc nettoyer ce qui pourrait polluer la nouvelle resolution.
+ *
+ * @throws WrongContext
+ */
 void Equation_base::abortTimeStep()
 {
   for (int i=0; i<nombre_d_operateurs(); i++)
@@ -1268,20 +1028,10 @@ void Equation_base::valider_iteration()
 {
 }
 
-// Description:
-//    Tout ce qui ne depend pas des autres problemes eventuels.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Tout ce qui ne depend pas des autres problemes eventuels.
+ *
+ * @return (int) renvoie toujours 1
+ */
 int Equation_base::preparer_calcul()
 {
   solveur_masse.valeur().preparer_calcul();
@@ -1318,23 +1068,13 @@ int Equation_base::preparer_calcul()
 }
 
 
-// Description:
-//    Allocation et initialisation de l'inconnue et des CLs
-//    jusqu'a present+dt.
-//  + autres initialisations pour les calculs sur le prochain
-//    pas de temps : operateurs, solveur_masse.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: 0 en cas d'erreur, 1 sinon
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Allocation et initialisation de l'inconnue et des CLs jusqu'a present+dt.
+ *
+ *   + autres initialisations pour les calculs sur le prochain
+ *     pas de temps : operateurs, solveur_masse.
+ *
+ * @return (0 en cas d'erreur, 1 sinon)
+ */
 bool Equation_base::initTimeStep(double dt)
 {
   Schema_Temps_base& sch=schema_temps();
@@ -1404,20 +1144,11 @@ bool Equation_base::updateGivenFields()
 }
 
 
-// Description:
-//    Renvoie la discretisation associee a l'equation.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Discretisation_base&
-//    Signification: a discretisation associee a l'equation
-//    Contraintes: reference constante
-// Exception: pas de probleme associe
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la discretisation associee a l'equation.
+ *
+ * @return (Discretisation_base&) a discretisation associee a l'equation
+ * @throws pas de probleme associe
+ */
 const Discretisation_base& Equation_base::discretisation() const
 {
   if(!mon_probleme.non_nul())
@@ -1578,25 +1309,15 @@ void Equation_base::get_noms_champs_postraitables(Noms& noms,Option opt) const
 }
 
 
-// Description:
-//    Calcul du prochain pas de temps.
-//    Renvoie l'inverse de la somme des inverses des
-//    pas de temps calcules par les operateurs.
-//    Ces pas de temps sont ceux pour le schema d'Euler explicite.
-//    Le pas de temps n'est pas majore par dt_max, ceci est fait dans corriger_dt_calcule
-// Precondition: un schema en temps doit avoir ete associe
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: inverse de la somme des inverses des pas de temps
-//                   calcules par les operateurs
-//    Contraintes:
-// Exception:
-// Effets de bord: impression eventuelle des pas de temps
-// Postcondition:
+/*! @brief Calcul du prochain pas de temps.
+ *
+ * Renvoie l'inverse de la somme des inverses des
+ *     pas de temps calcules par les operateurs.
+ *     Ces pas de temps sont ceux pour le schema d'Euler explicite.
+ *     Le pas de temps n'est pas majore par dt_max, ceci est fait dans corriger_dt_calcule
+ *
+ * @return (double) inverse de la somme des inverses des pas de temps calcules par les operateurs
+ */
 double Equation_base::calculer_pas_de_temps() const
 {
   bool harmonic_calculation = true;
@@ -1704,21 +1425,12 @@ void Equation_base::calculer_pas_de_temps_locaux(DoubleTab& dt_op) const
 
 }
 
-// Description:
-//    Verifie la compatibilite des conditions limites avec l'equation.
-//    voir Conds_lim::compatible_avec_eqn().
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Verifie la compatibilite des conditions limites avec l'equation.
+ *
+ * voir Conds_lim::compatible_avec_eqn().
+ *
+ * @return (int)
+ */
 int Equation_base::verif_Cl() const
 {
   const Conds_lim& les_cl=la_zone_Cl_dis->les_conditions_limites();
@@ -1726,39 +1438,24 @@ int Equation_base::verif_Cl() const
   return les_cl.compatible_avec_discr(discretisation());
 }
 
-// Description:
-//    Renvoie "indetermine"
-//    Navier_Stokes_standard par exemple surcharge cette methode
-//    pour renvoyer "Hydraulique"
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Motcle&
-//    Signification: le nom du domaine d'aplication
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie "indetermine" Navier_Stokes_standard par exemple surcharge cette methode
+ *
+ *     pour renvoyer "Hydraulique"
+ *
+ * @return (Motcle&) le nom du domaine d'aplication
+ */
 const Motcle& Equation_base::domaine_application() const
 {
   static Motcle defaut="indetermine";
   return defaut;
 }
 
-// Description:
-// Verification du nombre de composantes lues pour la specification d un champ.
-// Actuellement utilise pour la lecture d un condition initiale ou limite.
-// Precondition:
-// Parametre:  ch_ref  : un champ inconnu de l equation consideree
-//             nb_comp : nombre de composantes du champ lu
-//             cl      : si verification d'une condition aux limites, pointeur vers celle-ci
-//                       (pour demander un nombre de composantes different selon la CL)
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Verification du nombre de composantes lues pour la specification d un champ.
+ *
+ * Actuellement utilise pour la lecture d un condition initiale ou limite.
+ *
+ * @param (ch_ref  : un champ inconnu de l equation consideree)
+ */
 void Equation_base::verifie_ch_init_nb_comp(const Champ_Inc_base& ch_ref, const int nb_comp) const
 {
   const Nature_du_champ nature = ch_ref.nature_du_champ();
@@ -1802,10 +1499,11 @@ void Equation_base::verifie_ch_init_nb_comp(const Champ_Inc_base& ch_ref, const 
     }
 }
 
-// Description:
-// Add convection term
-// In:  solution is the unknown I
-// Out: secmem is increased by convection(I)
+/*! @brief Add convection term In:  solution is the unknown I
+ *
+ *  Out: secmem is increased by convection(I)
+ *
+ */
 DoubleTab& Equation_base::derivee_en_temps_conv(DoubleTab& secmem, const DoubleTab& solution)
 {
   double dt = le_schema_en_temps->pas_de_temps();
@@ -1856,13 +1554,14 @@ DoubleTab& Equation_base::derivee_en_temps_conv(DoubleTab& secmem, const DoubleT
     }
 }
 
-// Description:
-// Solve: (1/dt + M-1*L)*dI = M-1 * secmem
-// with a Conjugate Gradient matrix-free algorithm by default
-// L is the diffusion
-// M is the mass
-// In : solution=I(n)
-// Out: solution=dI/dt
+/*! @brief Solve: (1/dt + M-1*L)*dI = M-1 * secmem with a Conjugate Gradient matrix-free algorithm by default
+ *
+ *  L is the diffusion
+ *  M is the mass
+ *  In : solution=I(n)
+ *  Out: solution=dI/dt
+ *
+ */
 void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& solution, int size_terme_mul, const DoubleTab& terme_mul)
 {
   if (le_schema_en_temps->impr_diffusion_implicite())

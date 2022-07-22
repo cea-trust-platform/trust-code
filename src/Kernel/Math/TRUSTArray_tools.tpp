@@ -16,8 +16,11 @@
 #ifndef TRUSTArray_tools_TPP_included
 #define TRUSTArray_tools_TPP_included
 
-// Description: Renvoie 1 si les tableaux "v" et "a" sont de la meme taille et contiennent les memes valeurs au sens strict, sinon renvoie 0.
-// Le test est !(v[i]!=a[i])
+/*! @brief Renvoie 1 si les tableaux "v" et "a" sont de la meme taille et contiennent les memes valeurs au sens strict, sinon renvoie 0.
+ *
+ * Le test est !(v[i]!=a[i])
+ *
+ */
 template <typename _TYPE_>
 int operator==(const TRUSTArray<_TYPE_>& v, const TRUSTArray<_TYPE_>& a)
 {
@@ -44,7 +47,9 @@ int operator==(const TRUSTArray<_TYPE_>& v, const TRUSTArray<_TYPE_>& a)
   return resu;
 }
 
-// Description: Retourne l'indice du min ou -1 si le tableau est vide
+/*! @brief Retourne l'indice du min ou -1 si le tableau est vide
+ *
+ */
 template <typename _TYPE_> int imin_array(const TRUSTArray<_TYPE_>& dx)
 {
   int indice_min = -1;
@@ -66,7 +71,9 @@ template <typename _TYPE_> int imin_array(const TRUSTArray<_TYPE_>& dx)
   return indice_min;
 }
 
-// Description: Retourne l'indice du max ou -1 si le tableau est vide
+/*! @brief Retourne l'indice du max ou -1 si le tableau est vide
+ *
+ */
 template <typename _TYPE_> int imax_array(const TRUSTArray<_TYPE_>& dx)
 {
   int indice_max = -1;
@@ -88,8 +95,9 @@ template <typename _TYPE_> int imax_array(const TRUSTArray<_TYPE_>& dx)
   return indice_max;
 }
 
-// Description: Retourne la valeur minimale
-// Precondition: Le tableau doit contenir au moins une valeur
+/*! @brief Retourne la valeur minimale
+ *
+ */
 template <typename _TYPE_>
 _TYPE_ min_array(const TRUSTArray<_TYPE_>& dx)
 {
@@ -104,8 +112,9 @@ _TYPE_ min_array(const TRUSTArray<_TYPE_>& dx)
   return valeur_min;
 }
 
-// Description: Retourne la valeur maximale
-// Precondition: Le tableau doit contenir au moins une valeur
+/*! @brief Retourne la valeur maximale
+ *
+ */
 template <typename _TYPE_>
 _TYPE_ max_array(const TRUSTArray<_TYPE_>& dx)
 {
@@ -124,8 +133,9 @@ _TYPE_ max_array(const TRUSTArray<_TYPE_>& dx)
 static inline double scalar_abs(double x) { return std::fabs(x); }
 static inline int scalar_abs(int x) { return abs(x); }
 
-// Description: Retourne le max des abs(i)
-// Precondition: Le tableau doit contenir au moins une valeur
+/*! @brief Retourne le max des abs(i)
+ *
+ */
 template <typename _TYPE_>
 _TYPE_ max_abs_array(const TRUSTArray<_TYPE_>& dx)
 {
@@ -140,8 +150,9 @@ _TYPE_ max_abs_array(const TRUSTArray<_TYPE_>& dx)
   return valeur_max;
 }
 
-// Description: Retourne le min des abs(i)
-// Precondition: Le tableau doit contenir au moins une valeur
+/*! @brief Retourne le min des abs(i)
+ *
+ */
 template <typename _TYPE_>
 _TYPE_ min_abs_array(const TRUSTArray<_TYPE_>& dx)
 {
@@ -156,7 +167,9 @@ _TYPE_ min_abs_array(const TRUSTArray<_TYPE_>& dx)
   return v;
 }
 
-// Description: Produit scalaire de deux "array"  (dotproduct_array remplace operator* car le nom indique clairement  que l'on fait un produit scalaire non distribue)
+/*! @brief Produit scalaire de deux "array"  (dotproduct_array remplace operator* car le nom indique clairement  que l'on fait un produit scalaire non distribue)
+ *
+ */
 template <typename _TYPE_>
 _TYPE_ dotproduct_array(const TRUSTArray<_TYPE_>& dx, const TRUSTArray<_TYPE_>& dy)
 {
@@ -173,7 +186,9 @@ _TYPE_ dotproduct_array(const TRUSTArray<_TYPE_>& dx, const TRUSTArray<_TYPE_>& 
 }
 
 
-// Description: Calcul de la norme du vecteur dx (fonction blas DNRM2, soit racine carree(somme des dx[i]*dx[i]).
+/*! @brief Calcul de la norme du vecteur dx (fonction blas DNRM2, soit racine carree(somme des dx[i]*dx[i]).
+ *
+ */
 template <typename _TYPE_>
 _TYPE_ norme_array(const TRUSTArray<_TYPE_>& dx)
 {

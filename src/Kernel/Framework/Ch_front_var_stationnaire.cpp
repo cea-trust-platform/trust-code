@@ -33,31 +33,33 @@ Champ_front_base& Ch_front_var_stationnaire::affecter_(const Champ_front_base& c
   return *this;
 }
 
-// Description:
-//    Renvoie les valeurs sans s'occuper du temps puisque le champ
-//    est stationnaire.
+/*! @brief Renvoie les valeurs sans s'occuper du temps puisque le champ est stationnaire.
+ *
+ */
 DoubleTab& Ch_front_var_stationnaire::valeurs_au_temps(double temps)
 {
   return les_valeurs->valeurs();
 }
 
-// Description:
-//    Renvoie les valeurs sans s'occuper du temps puisque le champ
-//    est stationnaire.
+/*! @brief Renvoie les valeurs sans s'occuper du temps puisque le champ est stationnaire.
+ *
+ */
 const DoubleTab& Ch_front_var_stationnaire::valeurs_au_temps(double temps) const
 {
   return les_valeurs->valeurs();
 }
 
-// Description:
-//    Avance en temps : rien a faire pour un champ stationnaire !
+/*! @brief Avance en temps : rien a faire pour un champ stationnaire !
+ *
+ */
 int Ch_front_var_stationnaire::avancer(double temps)
 {
   return 1;
 }
 
-// Description:
-//    Recule en temps : rien a faire pour un champ stationnaire !
+/*! @brief Recule en temps : rien a faire pour un champ stationnaire !
+ *
+ */
 int Ch_front_var_stationnaire::reculer(double temps)
 {
   return 1;

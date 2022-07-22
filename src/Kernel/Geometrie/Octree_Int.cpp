@@ -21,10 +21,12 @@ const int Octree_Int::root_octree_half_width_ = 1073741824; /* 2^30   = 0100 000
 // La valeur suivante doit etre egale a (root_octree_half_width_ * 2 - 1)
 const int Octree_Int::coord_max_ = 2147483647;              /* 2^31-1 = 0111 1111  1111 1111  1111 1111  1111 1111b */
 
-// Description: construction d'un octree_id (voir octree_structure_)
-//  Si type==EMPTY, on l'octree_id est 0
-//  Si type==OCTREE, on suppose que index est un indice dans octree_structure_
-//  Si type==FLOOR, on suppose que index est un indice dans floor_elements_
+/*! @brief construction d'un octree_id (voir octree_structure_) Si type==EMPTY, on l'octree_id est 0
+ *
+ *   Si type==OCTREE, on suppose que index est un indice dans octree_structure_
+ *   Si type==FLOOR, on suppose que index est un indice dans floor_elements_
+ *
+ */
 inline int Octree_Int::octree_id(int index, Octree_Type type)
 {
   switch(type)
@@ -39,9 +41,11 @@ inline int Octree_Int::octree_id(int index, Octree_Type type)
   return -1;
 }
 
-// Description: calcul de l'index de l'octree dans octree_structure ou floor_elements
-//  en fonction du type de l'octree et de son octree_id.
-//  En general on a deja determine le type avant, on le passe en parametre pour optimiser.
+/*! @brief calcul de l'index de l'octree dans octree_structure ou floor_elements en fonction du type de l'octree et de son octree_id.
+ *
+ *   En general on a deja determine le type avant, on le passe en parametre pour optimiser.
+ *
+ */
 inline int Octree_Int::octree_index(int octree_id, Octree_Type type)
 {
   assert(type==octree_type(octree_id));
@@ -57,7 +61,9 @@ inline int Octree_Int::octree_index(int octree_id, Octree_Type type)
   return -1;
 }
 
-// Description: Renvoie le type d'un octree en fonction de son octree_id.
+/*! @brief Renvoie le type d'un octree en fonction de son octree_id.
+ *
+ */
 inline Octree_Int::Octree_Type Octree_Int::octree_type(int octree_id)
 {
   if (octree_id > 0)
@@ -68,16 +74,19 @@ inline Octree_Int::Octree_Type Octree_Int::octree_type(int octree_id)
     return FLOOR;
 }
 
-// Description: construction de l'octree. On donne la dimension (1, 2 ou 3)
-//  et un tableau d'elements a stocker dans l'octree. Deux possibilites:
-//  1) les elements sont ponctuels si elements_boxes.dimension(1) == dimension.
-//     Dans ce cas, chaque element se trouve dans un et un seul octree_floor
-//  2) les elements sont des parallelipipedes, si elements_boxes.dimension(1) == dimension*2
-//     Les "dimension" premieres colonnes sont les coordonnees inferieures,
-//     les "dimension" suivantes sont les coordonnees superieures.
-//     Un parallelipipede peut etre affecte a plusieurs octree_floor.
-//  Les coordonnees stockees dans elements_boxes peuvent aller de 0 a coord_max_ inclus.
-//  Il vaut mieux utiliser toute la plage des entiers en multipliant par un facteur adequat.
+/*! @brief construction de l'octree.
+ *
+ * On donne la dimension (1, 2 ou 3) et un tableau d'elements a stocker dans l'octree. Deux possibilites:
+ *   1) les elements sont ponctuels si elements_boxes.dimension(1) == dimension.
+ *      Dans ce cas, chaque element se trouve dans un et un seul octree_floor
+ *   2) les elements sont des parallelipipedes, si elements_boxes.dimension(1) == dimension*2
+ *      Les "dimension" premieres colonnes sont les coordonnees inferieures,
+ *      les "dimension" suivantes sont les coordonnees superieures.
+ *      Un parallelipipede peut etre affecte a plusieurs octree_floor.
+ *   Les coordonnees stockees dans elements_boxes peuvent aller de 0 a coord_max_ inclus.
+ *   Il vaut mieux utiliser toute la plage des entiers en multipliant par un facteur adequat.
+ *
+ */
 void Octree_Int::build(const int dimension, const IntTab& elements_boxes)
 {
   assert(dimension >= 1 && dimension <= 3);
@@ -116,11 +125,13 @@ void Octree_Int::build(const int dimension, const IntTab& elements_boxes)
                                              tmp_elem_flags);
 }
 
-// Description: renvoie la liste des elements contenant potentiellement le point (x,y,z)
-//  On renvoie n=nombre d'elements de la liste et les elements sont dans
-//  floor_elements()[index+i] pour 0 <= i < n.
-//  En realite on renvoie tous les elements qui ont une intersection non vide avec l'octree_floor
-//  contenant le point (x,y,z)
+/*! @brief renvoie la liste des elements contenant potentiellement le point (x,y,z) On renvoie n=nombre d'elements de la liste et les elements sont dans
+ *
+ *   floor_elements()[index+i] pour 0 <= i < n.
+ *   En realite on renvoie tous les elements qui ont une intersection non vide avec l'octree_floor
+ *   contenant le point (x,y,z)
+ *
+ */
 int Octree_Int::search_elements(int x, int y, int z, int& index) const
 {
   const int nb_octrees = octree_structure_.dimension(1);
@@ -160,9 +171,12 @@ struct IntBoxData
   ArrOfBit *markers_;
 };
 
-// Description: cherche les elements ayant potentiellement une intersection non vide avec la
-//  boite xmin..zmax. Le tableau elements doit etre de type smart_resize(1).
-//  Les elements peuvent apparaitre plusieurs fois dans le tableau "elements"
+/*! @brief cherche les elements ayant potentiellement une intersection non vide avec la boite xmin.
+ *
+ * .zmax. Le tableau elements doit etre de type smart_resize(1).
+ *   Les elements peuvent apparaitre plusieurs fois dans le tableau "elements"
+ *
+ */
 int Octree_Int::search_elements_box(int xmin, int ymin, int zmin,
                                     int xmax, int ymax, int zmax,
                                     ArrOfInt& elements) const
@@ -198,7 +212,11 @@ int Octree_Int::search_elements_box(int xmin, int ymin, int zmin,
   return n;
 }
 
-// Description: ajoute des elements de l'octree_floor a boxdata.elements_
+/*! @brief ajoute des elements de l'octree_floor a boxdata.
+ *
+ * elements_
+ *
+ */
 void Octree_Int::search_elements_box_floor(IntBoxData& boxdata,
                                            int octree_floor_id) const
 {
@@ -229,8 +247,9 @@ static int sub_cube_flags_max[3] = { 2+8+32+128, /* drapeaux des cubes 1,3,5,7 *
                                      16+32+64+128 /* drapeaux des cubes 4,5,6,7 */
                                    };
 
-// Description: cherche recursivement les elements inclus dans la boite
-//  boxdata pour l'octree_id donne, de centre cx, cy, cz.
+/*! @brief cherche recursivement les elements inclus dans la boite boxdata pour l'octree_id donne, de centre cx, cy, cz.
+ *
+ */
 
 void Octree_Int::search_elements_box_recursively(IntBoxData& boxdata,
                                                  int the_octree_id,
@@ -288,8 +307,9 @@ void Octree_Int::reset()
   floor_elements_.reset();
 }
 
-// Description: construit un octree_floor avec la liste d'elements donnee et
-//  renvoie l'octree_id de cet octree_floor
+/*! @brief construit un octree_floor avec la liste d'elements donnee et renvoie l'octree_id de cet octree_floor
+ *
+ */
 int Octree_Int::build_octree_floor(const ArrOfInt& elements_list)
 {
   const int nb_elems = elements_list.size_array();
@@ -301,11 +321,13 @@ int Octree_Int::build_octree_floor(const ArrOfInt& elements_list)
   return octree_id(index, FLOOR);
 }
 
-// Description:
-//  octree_center_i est le premier int de la moitie superieure de l'octree dans la direction i.
-//  octree_half_width est une puissance de 2 egale a octree_center_i-octree_min_i (octree_min_i
-//   est le premier int inclu dans cet octree dans la direction i)
-// Valeur de retour: octree_id de l'octree construit (void octree_structure_)
+/*! @brief octree_center_i est le premier int de la moitie superieure de l'octree dans la direction i.
+ *
+ * octree_half_width est une puissance de 2 egale a octree_center_i-octree_min_i (octree_min_i
+ *    est le premier int inclu dans cet octree dans la direction i)
+ *  Valeur de retour: octree_id de l'octree construit (void octree_structure_)
+ *
+ */
 int Octree_Int::build_octree_recursively(const int octree_center_x,
                                          const int octree_center_y,
                                          const int octree_center_z,
@@ -434,8 +456,9 @@ int Octree_Int::build_octree_recursively(const int octree_center_x,
   return octree_id(index_octree, OCTREE);
 }
 
-// Description: renvoie l'octree_id de l'octree_floor contenant le sommet (x,y,z)
-//  (peut renvoyer l'octree EMPTY)
+/*! @brief renvoie l'octree_id de l'octree_floor contenant le sommet (x,y,z) (peut renvoyer l'octree EMPTY)
+ *
+ */
 int Octree_Int::search_octree_floor(int x, int y, int z) const
 {
   if (octree_type(root_octree_id_) != OCTREE)

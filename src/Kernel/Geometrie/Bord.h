@@ -21,18 +21,15 @@
 
 #include <Frontiere.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Bord
-//    Cette classe represente un bord d'une zone, c'est un type de frontiere
-//    (derive de Frontiere).
-//    On appelle Bord la surface qui borde un Domaine, pour une equation
-//    donnee l'utilisateur doit fournir une condition aux limites a chaque
-//    Bord.
-// .SECTION voir aussi
-//    Frontiere Zone Bords Domaine
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Bord Cette classe represente un bord d'une zone, c'est un type de frontiere
+ *
+ *     (derive de Frontiere).
+ *     On appelle Bord la surface qui borde un Domaine, pour une equation
+ *     donnee l'utilisateur doit fournir une condition aux limites a chaque
+ *     Bord.
+ *
+ * @sa Frontiere Zone Bords Domaine
+ */
 class Bord : public Frontiere
 {
   Declare_instanciable(Bord);

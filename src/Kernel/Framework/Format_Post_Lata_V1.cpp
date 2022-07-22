@@ -30,8 +30,9 @@ void Format_Post_Lata_V1::reset()
   ref_faces_sommets = 0;
 }
 
-// Description: les options sont identiques a celles du format V2
-//  Voir Format_Post_Lata::readOn()
+/*! @brief les options sont identiques a celles du format V2 Voir Format_Post_Lata::readOn()
+ *
+ */
 Entree& Format_Post_Lata_V1::readOn(Entree& is)
 {
   return Format_Post_Lata::readOn(is);
@@ -42,7 +43,9 @@ Sortie& Format_Post_Lata_V1::printOn(Sortie& os) const
   return Format_Post_Lata::printOn(os);
 }
 
-// Description: ecriture de l'entete format LataV1
+/*! @brief ecriture de l'entete format LataV1
+ *
+ */
 int Format_Post_Lata_V1::ecrire_entete(const double temps_courant,const int reprise,const int est_le_premier_post)
 {
   ecrire_entete_lata_V1(lata_basename_,options_para_,est_le_premier_post);
@@ -56,16 +59,17 @@ int Format_Post_Lata_V1::finir(int& est_le_dernier_post)
   return 1;
 }
 
-// Description:
-//  1) Voir documentation de Format_Post_base::ecrire_domaine()
-//  2) Specificites: format LATA ancienne version:
-//   Ecriture du maillage compatible avec le postraitement Data-Visualizer (DV).
-//   DV est un post 3D uniquement. Si le cas traite est 2D on
-//   le rend 3D de la maniere suivante :
-//    - On dedouble tous les noeuds du plan 2D
-//    - On transforme les triangles en prismes
-//    - On transforme les quadrangles en hexaedres
-//   Rq :la numerotation des elements dans DV commence a 1.
+/*! @brief 1) Voir documentation de Format_Post_base::ecrire_domaine() 2) Specificites: format LATA ancienne version:
+ *
+ *    Ecriture du maillage compatible avec le postraitement Data-Visualizer (DV).
+ *    DV est un post 3D uniquement. Si le cas traite est 2D on
+ *    le rend 3D de la maniere suivante :
+ *     - On dedouble tous les noeuds du plan 2D
+ *     - On transforme les triangles en prismes
+ *     - On transforme les quadrangles en hexaedres
+ *    Rq :la numerotation des elements dans DV commence a 1.
+ *
+ */
 
 
 int Format_Post_Lata_V1::ecrire_domaine(const Domaine& domaine,const int est_le_premier_post)
@@ -100,7 +104,9 @@ int Format_Post_Lata_V1::ecrire_champ(const Domaine& domaine, const Noms& unite_
   return 1;
 }
 
-// Description: l'ecriture des bords n'est pas supportee par ce format: return 0
+/*! @brief l'ecriture des bords n'est pas supportee par ce format: return 0
+ *
+ */
 int Format_Post_Lata_V1::ecrire_bords(const Nom&     id_du_domaine,
                                       const Motcle& type_faces,
                                       const DoubleTab& sommets,

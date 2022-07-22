@@ -18,40 +18,22 @@
 Implemente_base(Champ_front_instationnaire_base,"Champ_front_instationnaire_base",Champ_front_base);
 
 
-// Description:
-//    Lit le temps du champ instationnaire sur un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit le temps du champ instationnaire sur un flot d'entree.
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Champ_front_instationnaire_base::readOn(Entree& is)
 {
   return is;
 }
 
 
-// Description:
-//    Ecrit le temps du champ instationnaire sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit le temps du champ instationnaire sur un flot de sortie.
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Champ_front_instationnaire_base::printOn(Sortie& os) const
 {
   return os;
@@ -77,8 +59,9 @@ int Champ_front_instationnaire_base::initialiser(double temps, const Champ_Inc_b
 }
 
 
-// Description:
-//      Surcharge Champ_front_base::fixer_nb_valeurs_temporelles
+/*! @brief Surcharge Champ_front_base::fixer_nb_valeurs_temporelles
+ *
+ */
 void Champ_front_instationnaire_base::fixer_nb_valeurs_temporelles(int nb_cases)
 {
   les_valeurs->fixer_nb_cases(nb_cases);
@@ -91,9 +74,11 @@ inline void print(const Roue_ptr& les_valeurs)
     Cerr << "  " << les_valeurs[i].temps() << finl;
 }
 
-// Description:
-//    Renvoie les valeurs au temps desire.
-//    Sinon, sort en erreur.
+/*! @brief Renvoie les valeurs au temps desire.
+ *
+ * Sinon, sort en erreur.
+ *
+ */
 DoubleTab& Champ_front_instationnaire_base::valeurs_au_temps(double temps)
 {
 
@@ -110,9 +95,11 @@ DoubleTab& Champ_front_instationnaire_base::valeurs_au_temps(double temps)
   return valeurs(); // For compilers
 }
 
-// Description:
-//    Renvoie les valeurs au temps desire.
-//    Sinon, sort en erreur.
+/*! @brief Renvoie les valeurs au temps desire.
+ *
+ * Sinon, sort en erreur.
+ *
+ */
 const DoubleTab& Champ_front_instationnaire_base::valeurs_au_temps(double temps) const
 {
 
@@ -129,9 +116,11 @@ const DoubleTab& Champ_front_instationnaire_base::valeurs_au_temps(double temps)
   return valeurs(); // For compilers
 }
 
-// Description:
-//    Avance jusqu'au temps desire.
-//    Sinon, sort en erreur.
+/*! @brief Avance jusqu'au temps desire.
+ *
+ * Sinon, sort en erreur.
+ *
+ */
 int Champ_front_instationnaire_base::avancer(double temps)
 {
 
@@ -153,9 +142,11 @@ int Champ_front_instationnaire_base::avancer(double temps)
   return 0;
 }
 
-// Description:
-//    Recule jusqu'au temps desire.
-//    Sinon, sort en erreur.
+/*! @brief Recule jusqu'au temps desire.
+ *
+ * Sinon, sort en erreur.
+ *
+ */
 int Champ_front_instationnaire_base::reculer(double temps)
 {
 

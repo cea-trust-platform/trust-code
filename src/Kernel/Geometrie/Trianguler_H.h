@@ -19,28 +19,15 @@
 #include <Triangulation_base.h>
 class Zone;
 
-//////////////////////////////////////////////////////////////////////////////
-// .NOM  Trianguler_H
-// .ENTETE  TRUST Geometrie
-// .LIBRAIRIE  libgeom
-// .FILE  Triangule2.h
-// .FILE  Triangule2.cpp
-//
-// .DESCRIPTION
-//    Classe Trianguler_H
-//    Cette classe est un interprete qui sert a lire et executer
-//    la directive Trianguler_H:
-//        Trianguler_H nom_domaine
-//    Cette directive est a utiliser en discretisation VEF pour obtenir
-//    un maillage triangulaire a partir d'un maillage constitue de rectangles.
-// .SECTION voir aussi
-//    Interprete Rectangle
-// .CONTRAINTES
-//    Cette classe est utilisable en 2D
-// .INVARIANTS
-// .HTML
-// .EPS
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Trianguler_H Cette classe est un interprete qui sert a lire et executer
+ *
+ *     la directive Trianguler_H:
+ *         Trianguler_H nom_domaine
+ *     Cette directive est a utiliser en discretisation VEF pour obtenir
+ *     un maillage triangulaire a partir d'un maillage constitue de rectangles.
+ *
+ * @sa Interprete Rectangle, .CONTRAINTES, Cette classe est utilisable en 2D, .INVARIANTS, .HTML, .EPS
+ */
 class Trianguler_H : public Triangulation_base
 {
   Declare_instanciable(Trianguler_H);

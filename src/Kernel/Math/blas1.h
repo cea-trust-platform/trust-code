@@ -18,21 +18,18 @@
 
 
 
-//
-// .DESCRIPTION Appel aux blas1
-//
+/*! @brief Appel aux blas1
+ *
+ */
 
 #include <arch.h>
 
 
 #ifndef _NO_BLAS1_
 extern "C"
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     Appel aux blas1
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Appel aux blas1
+ *
+ */
 {
 
 #ifdef F77_Majuscule
@@ -166,19 +163,9 @@ extern "C"
 #endif
 }
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 #ifndef F77_Majuscule
 inline double F77NAME(DASUM)(const integer *n,
                              const double* const dx,
@@ -189,19 +176,9 @@ inline double F77NAME(DASUM)(const integer *n,
 
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(DAXPY)(const integer *n,
                            const double * const da,
                            const double * const dx,
@@ -213,19 +190,9 @@ inline void F77NAME(DAXPY)(const integer *n,
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(DCOPY)(const integer *n,
                            const double * const dx,
                            const integer *incx,
@@ -237,19 +204,9 @@ inline void F77NAME(DCOPY)(const integer *n,
 
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline double F77NAME(DDOT)(const integer *n,
                             const double * const dx,
                             const integer *incx,
@@ -260,19 +217,9 @@ inline double F77NAME(DDOT)(const integer *n,
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline double F77NAME(DNRM2)(const integer *n,
                              const double * const dx,
                              const integer *incx)
@@ -281,19 +228,9 @@ inline double F77NAME(DNRM2)(const integer *n,
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(DROT)(const integer *n,
                           double * const dx,
                           const integer *incx,
@@ -306,19 +243,9 @@ inline void F77NAME(DROT)(const integer *n,
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(DROTG)(double * const da,
                            double * const db,
                            double * const c,
@@ -328,19 +255,9 @@ inline void F77NAME(DROTG)(double * const da,
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(DSCAL)(const integer *n,
                            double * const da,
                            double * const dx,
@@ -350,19 +267,9 @@ inline void F77NAME(DSCAL)(const integer *n,
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(DSWAP)(const integer *n,
                            double * const dx,
                            const integer *incx,
@@ -373,19 +280,9 @@ inline void F77NAME(DSWAP)(const integer *n,
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline integer F77NAME(IDAMAX)(const integer *n,
                                const double * const dx,
                                const integer *incx)
@@ -394,19 +291,9 @@ inline integer F77NAME(IDAMAX)(const integer *n,
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline float F77NAME(SDOT)(const integer *n,
                            const float *dx,
                            const integer *incx,
@@ -417,19 +304,9 @@ inline float F77NAME(SDOT)(const integer *n,
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(SAXPY)(const integer *n,
                            const float *da,
                            const float *dx,
@@ -441,19 +318,9 @@ inline void F77NAME(SAXPY)(const integer *n,
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(SCOPY)(const integer *n,
                            float *dx,
                            const integer *incx,
@@ -464,19 +331,9 @@ inline void F77NAME(SCOPY)(const integer *n,
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline float F77NAME(SASUM)(const integer *n,
                             const float *dx,
                             const integer *incx)
@@ -485,19 +342,9 @@ inline float F77NAME(SASUM)(const integer *n,
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline float F77NAME(SNRM2)(const integer *n,
                             const float *dx,
                             const integer *incx)
@@ -506,19 +353,9 @@ inline float F77NAME(SNRM2)(const integer *n,
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(SSCAL)(const integer *n,
                            const float *da,
                            float *dx,
@@ -528,19 +365,9 @@ inline void F77NAME(SSCAL)(const integer *n,
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline integer F77NAME(ISAMAX)(const integer *n,
                                const float * const dx,
                                const integer *incx)
@@ -549,19 +376,9 @@ inline integer F77NAME(ISAMAX)(const integer *n,
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(SSWAP)(const integer *n,
                            float *dx,
                            const integer *incx,
@@ -681,14 +498,18 @@ inline integer F77NAME(IDAMAX)(const integer *n,
 
 #else //_NO_BLAS1_
 
-// .DESCRIPTION
+/*! @brief
+ *
+ */
 static inline void ERREUR(const char* const ch)
 {
   //        Cerr << ch << finl;
   exit();
 }
 
-// .DESCRIPTION
+/*! @brief
+ *
+ */
 inline double F77NAME(DASUM)(const integer *n,
                              const double* const dx,
                              const integer *incx)
@@ -700,7 +521,9 @@ inline double F77NAME(DASUM)(const integer *n,
 }
 
 
-// .DESCRIPTION
+/*! @brief
+ *
+ */
 inline void F77NAME(DAXPY)(const integer *n,
                            const double * const da,
                            const double * const dx,
@@ -716,7 +539,9 @@ inline void F77NAME(DAXPY)(const integer *n,
     }
 }
 
-// .DESCRIPTION
+/*! @brief
+ *
+ */
 inline void F77NAME(DCOPY)(const integer *n,
                            const double * const dx,
                            const integer *incx,
@@ -733,7 +558,9 @@ inline void F77NAME(DCOPY)(const integer *n,
 }
 
 
-// .DESCRIPTION
+/*! @brief
+ *
+ */
 inline double F77NAME(DDOT)(const integer *n,
                             const double * const dx,
                             const integer *incx,
@@ -750,7 +577,9 @@ inline double F77NAME(DDOT)(const integer *n,
   return psc;
 }
 
-// .DESCRIPTION
+/*! @brief
+ *
+ */
 inline double F77NAME(DNRM2)(const integer *n,
                              const double * const dx,
                              const integer *incx)
@@ -759,7 +588,9 @@ inline double F77NAME(DNRM2)(const integer *n,
   return sqrt(F77NAME(DDOT)(n, dx, &un, dx, &un));
 }
 
-// .DESCRIPTION
+/*! @brief
+ *
+ */
 inline void F77NAME(DROT)(const integer *n,
                           double * const dx,
                           const integer *incx,
@@ -771,7 +602,9 @@ inline void F77NAME(DROT)(const integer *n,
   ERREUR("DROT : pas code!");
 }
 
-// .DESCRIPTION
+/*! @brief
+ *
+ */
 inline void F77NAME(DROTG)(double * const da,
                            double * const db,
                            double * const c,
@@ -780,7 +613,9 @@ inline void F77NAME(DROTG)(double * const da,
   ERREUR("DROTG : pas code!");
 }
 
-// .DESCRIPTION
+/*! @brief
+ *
+ */
 inline void F77NAME(DSCAL)(const integer *n,
                            double * const da,
                            double * const dx,
@@ -790,7 +625,9 @@ inline void F77NAME(DSCAL)(const integer *n,
     dx[i]*=*da;
 }
 
-// .DESCRIPTION
+/*! @brief
+ *
+ */
 inline void F77NAME(DSWAP)(const integer *n,
                            double * const dx,
                            const integer *incx,
@@ -809,7 +646,9 @@ inline void F77NAME(DSWAP)(const integer *n,
 
 }
 
-// .DESCRIPTION
+/*! @brief
+ *
+ */
 inline integer F77NAME(IDAMAX)(const integer *n,
                                const double * const dx,
                                const integer *incx)
@@ -825,7 +664,9 @@ inline integer F77NAME(IDAMAX)(const integer *n,
   return imax;
 }
 
-// .DESCRIPTION
+/*! @brief
+ *
+ */
 inline float F77NAME(SDOT)(const integer *n,
                            const float *dx,
                            const integer *incx,
@@ -836,7 +677,9 @@ inline float F77NAME(SDOT)(const integer *n,
   return 0;
 }
 
-// .DESCRIPTION
+/*! @brief
+ *
+ */
 inline void F77NAME(SAXPY)(const integer *n,
                            const float *da,
                            const float *dx,
@@ -847,7 +690,9 @@ inline void F77NAME(SAXPY)(const integer *n,
   ERREUR("SAXPY : pas code!");
 }
 
-// .DESCRIPTION
+/*! @brief
+ *
+ */
 inline void F77NAME(SCOPY)(const integer *n,
                            float *dx,
                            const integer *incx,
@@ -857,7 +702,9 @@ inline void F77NAME(SCOPY)(const integer *n,
   ERREUR("SCOPY : pas code!");
 }
 
-// .DESCRIPTION
+/*! @brief
+ *
+ */
 inline float F77NAME(SASUM)(const integer *n,
                             const float *dx,
                             const integer *incx)
@@ -866,7 +713,9 @@ inline float F77NAME(SASUM)(const integer *n,
   return 0;
 }
 
-// .DESCRIPTION
+/*! @brief
+ *
+ */
 inline float F77NAME(SNRM2)(const integer *n,
                             const float *dx,
                             const integer *incx)
@@ -875,7 +724,9 @@ inline float F77NAME(SNRM2)(const integer *n,
   return 0;
 }
 
-// .DESCRIPTION
+/*! @brief
+ *
+ */
 inline void F77NAME(SSCAL)(const integer *n,
                            const float *da,
                            float *dx,
@@ -884,7 +735,9 @@ inline void F77NAME(SSCAL)(const integer *n,
   ERREUR("SSCAL : pas code!");
 }
 
-// .DESCRIPTION
+/*! @brief
+ *
+ */
 inline integer F77NAME(ISAMAX)(const integer *n,
                                const float * const dx,
                                const integer *incx)
@@ -893,7 +746,9 @@ inline integer F77NAME(ISAMAX)(const integer *n,
   return 0;
 }
 
-// .DESCRIPTION
+/*! @brief
+ *
+ */
 inline void F77NAME(SSWAP)(const integer *n,
                            float *dx,
                            const integer *incx,

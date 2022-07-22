@@ -18,59 +18,34 @@ Implemente_liste(Joint);
 Implemente_instanciable(Joints,"Joints",LIST(Joint));
 
 
-// Description:
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Joints::printOn(Sortie& os) const
 {
   return LIST(Joint)::printOn(os);
 }
 
 
-// Description:
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Joints::readOn(Entree& is)
 {
   return LIST(Joint)::readOn(is);
 }
 
 
-// Description:
-//    Associe une zone a tous les joints de la liste.
-//    Les joints de la liste feront partie de cette zone.
-// Precondition:
-// Parametre: Zone& une_zone
-//    Signification: la zone a associer aux joint
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe une zone a tous les joints de la liste.
+ *
+ * Les joints de la liste feront partie de cette zone.
+ *
+ * @param (Zone& une_zone) la zone a associer aux joint
+ */
 void Joints::associer_zone(const Zone& une_zone)
 {
   LIST_CURSEUR(Joint) curseur(*this);;;
@@ -82,23 +57,13 @@ void Joints::associer_zone(const Zone& une_zone)
 }
 
 
-// Description:
-//    Renvoie le nombre de face total des Joints
-//    de la liste. (la somme des faces de tous les
-//    joints de la liste).
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de face total des Joints
-//                   de la liste
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de face total des Joints de la liste.
+ *
+ * (la somme des faces de tous les
+ *     joints de la liste).
+ *
+ * @return (int) le nombre de face total des Joints de la liste
+ */
 int Joints::nb_faces() const
 {
   CONST_LIST_CURSEUR(Joint) curseur(*this);;;
@@ -111,25 +76,14 @@ int Joints::nb_faces() const
   return nombre;
 }
 
-// //    JY 26/08/97
-// Description:
-//    Renvoie le nombre de faces du type specifie
-//    contenues dans la liste de joints.
-//    (somme des faces de ce type sur tous les
-//     joints de la liste)
-// Precondition:
-// Parametre: Type_Face type
-//    Signification: le type des faces a compter
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de faces du type specifie
-//                   contenues dans la liste de joints
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de faces du type specifie contenues dans la liste de joints.
+ *
+ *     (somme des faces de ce type sur tous les
+ *      joints de la liste)
+ *
+ * @param (Type_Face type) le type des faces a compter
+ * @return (int) le nombre de faces du type specifie contenues dans la liste de joints
+ */
 int Joints::nb_faces(Type_Face type) const
 {
   CONST_LIST_CURSEUR(Joint) curseur(*this);
@@ -144,20 +98,9 @@ int Joints::nb_faces(Type_Face type) const
 }
 
 
-// Description:
-//    Comprime la liste de joints.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Comprime la liste de joints.
+ *
+ */
 void Joints::comprimer()
 {
   Cerr << "Joints::comprimer() - Start" << finl;
@@ -216,40 +159,21 @@ void Joints::comprimer()
   Cerr << "Joints::comprimer() - End" << finl;
 }
 
-// Description:
-//    Renvoie le nombre de Joint de la liste
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de Joint de la liste
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de Joint de la liste
+ *
+ * @return (int) le nombre de Joint de la liste
+ */
 int Joints::nb_joints() const
 {
   return size();
 }
 
-// Description:
-//    Renvoie une reference sur le joint qui a
-//    pour voisin le PE specifie.
-// Precondition:
-// Parametre: int pe
-//    Signification: un numero de PE
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Joint&
-//    Signification: le joint qui a pour voisin le PE specifie
-//    Contraintes:
-// Exception: PE voisin specifie non trouve dans la liste des joints.
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie une reference sur le joint qui a pour voisin le PE specifie.
+ *
+ * @param (int pe) un numero de PE
+ * @return (Joint&) le joint qui a pour voisin le PE specifie
+ * @throws PE voisin specifie non trouve dans la liste des joints.
+ */
 Joint& Joints::joint_PE(int pe)
 {
   LIST_CURSEUR(Joint) curseur(*this);

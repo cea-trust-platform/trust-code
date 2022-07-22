@@ -20,53 +20,34 @@
 Implemente_base(Operateur_Diff_base,"Operateur_Diff_base",Operateur_base);
 
 
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie
+ */
 Sortie& Operateur_Diff_base::printOn(Sortie& os) const
 {
   return os;
 }
 
 
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification: le flot d'entree
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree
+ */
 Entree& Operateur_Diff_base::readOn(Entree& is)
 {
   return is;
 }
 
-// Description:
-//  Associe la vraie diffusivite en m^2/s (en QC par exemple, l'operateur
-//  est applique a rho*u, et on associe alors la viscosite dynamique a
-//  l'operateur au lieu de la viscosite dynamique. Dans ce cas, il
-//  faut associer la vraie diffusivite ici pour le calcul du pas de
-//  temps de stabilite.
+/*! @brief Associe la vraie diffusivite en m^2/s (en QC par exemple, l'operateur est applique a rho*u, et on associe alors la viscosite dynamique a
+ *
+ *   l'operateur au lieu de la viscosite dynamique. Dans ce cas, il
+ *   faut associer la vraie diffusivite ici pour le calcul du pas de
+ *   temps de stabilite.
+ *
+ */
 void Operateur_Diff_base::associer_diffusivite_pour_pas_de_temps(
   const Champ_base& diffu)
 {
@@ -79,17 +60,19 @@ void Operateur_Diff_base::associer_diffusivite_pour_pas_de_temps(
   diffusivite_pour_pas_de_temps_ = diffu;
 }
 
-// Description:
-//  Renvoie le champ_don correspondant a la vraie diffusivite du milieu
-//  qui sert pour le calcul du pas de temps. Si l'operateur s'applique a rho*v
-//  par exemple (cas du QC par exemple), la diffusivite associee est la
-//  viscosite dynamique et non la viscosite cinematique. Il faut utiliser
-//  la viscosite cinematique pour le calcul du pas de temps...
-//  La vraie diffusivite (en m^2/s) est determinee comme suit:
-//  * si diffusivite_pour_pas_de_temps_ a ete initialise => on l'utilise
-//     (systeme mis en place pour le front-tracking, car le milieu
-//      est invalide)
-//  * sinon on utilise diffusivite()
+/*! @brief Renvoie le champ_don correspondant a la vraie diffusivite du milieu qui sert pour le calcul du pas de temps.
+ *
+ * Si l'operateur s'applique a rho*v
+ *   par exemple (cas du QC par exemple), la diffusivite associee est la
+ *   viscosite dynamique et non la viscosite cinematique. Il faut utiliser
+ *   la viscosite cinematique pour le calcul du pas de temps...
+ *   La vraie diffusivite (en m^2/s) est determinee comme suit:
+ *   * si diffusivite_pour_pas_de_temps_ a ete initialise => on l'utilise
+ *      (systeme mis en place pour le front-tracking, car le milieu
+ *       est invalide)
+ *   * sinon on utilise diffusivite()
+ *
+ */
 const Champ_base& Operateur_Diff_base::diffusivite_pour_pas_de_temps() const
 {
   assert( diffusivite_pour_pas_de_temps_.non_nul() );

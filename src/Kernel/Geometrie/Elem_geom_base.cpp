@@ -19,20 +19,11 @@
 Implemente_base(Elem_geom_base,"Elem_geom_base",Objet_U);
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie
+ */
 Sortie& Elem_geom_base::printOn(Sortie& s ) const
 {
   return s;
@@ -40,99 +31,45 @@ Sortie& Elem_geom_base::printOn(Sortie& s ) const
 
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification: le flot d'entree
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree
+ */
 Entree& Elem_geom_base::readOn(Entree& s )
 {
   return s;
 }
 
 
-// Description:
-//    NE FAIT RIEN:
-//    A surcharger dans les classes derivees.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN: A surcharger dans les classes derivees.
+ *
+ */
 void Elem_geom_base::reordonner()
 {
 }
 
 
-// Description:
-//    Renvoie le parametre face si le type
-//    de face specifie est le meme que celui de l'element
-//    geometrique.
-// Precondition:
-// Parametre: int face
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: Type_Face& type
-//    Signification: un type de face
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: mauvais type de face specifie
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le parametre face si le type de face specifie est le meme que celui de l'element
+ *
+ *     geometrique.
+ *
+ * @param (int face)
+ * @param (Type_Face& type) un type de face
+ * @throws mauvais type de face specifie
+ */
 int Elem_geom_base::num_face(int face, Type_Face& type) const
 {
   assert(type==type_face());
   return face;
 }
 
-// Description:
-//    Cree les faces de l'element geometrique specifie de la zone
-//    en precisant le type de face a creer.
-// Precondition:
-// Parametre: Faces& les_faces
-//    Signification: les faces a creer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Parametre: int num_elem
-//    Signification: le numero de l'element dont on veut creer
-//                   les faces
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: Type_Face type
-//    Signification: le type de face a creer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Cree les faces de l'element geometrique specifie de la zone en precisant le type de face a creer.
+ *
+ * @param (Faces& les_faces) les faces a creer
+ * @param (int num_elem) le numero de l'element dont on veut creer les faces
+ * @param (Type_Face type) le type de face a creer
+ */
 void Elem_geom_base::creer_faces_elem(Faces& les_faces ,
                                       int num_elem,
                                       Type_Face type) const
@@ -157,22 +94,10 @@ void Elem_geom_base::creer_faces_elem(Faces& les_faces ,
 }
 
 
-// Description:
-//    Calcule les centres de gravites de tous les elements
-//    de la zone associee a l'element goemetrique.
-// Precondition:
-// Parametre: DoubleTab& xp
-//    Signification: le tableau contenant les coordonnees des
-//                   centres de gravite
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Calcule les centres de gravites de tous les elements de la zone associee a l'element goemetrique.
+ *
+ * @param (DoubleTab& xp) le tableau contenant les coordonnees des centres de gravite
+ */
 void Elem_geom_base::calculer_centres_gravite(DoubleTab& xp) const
 {
   const IntTab& les_Polys = ma_zone->les_elems();
@@ -202,22 +127,12 @@ void Elem_geom_base::calculer_centres_gravite(DoubleTab& xp) const
     }
 }
 
-// Description:
-//    Sort en erreur. Cette methode n'est pas virtuelle pure
-//    pour des raisons de commodite
-// Precondition:
-// Parametre: DoubleTab& xp
-//    Signification: le tableau contenant les coordonnees des
-//                   centres de gravite
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Sort en erreur.
+ *
+ * Cette methode n'est pas virtuelle pure pour des raisons de commodite
+ *
+ * @param (DoubleTab& xp) le tableau contenant les coordonnees des centres de gravite
+ */
 void Elem_geom_base::calculer_normales(const IntTab& faces_sommets , DoubleTab& face_normales) const
 {
   Cerr << "calculer_normales method is not coded for an element " << finl;
@@ -225,36 +140,28 @@ void Elem_geom_base::calculer_normales(const IntTab& faces_sommets , DoubleTab& 
   exit();
 }
 
-// Description:
-//    Renvoie le nombre de type de face de l'element
-//    geometrique.
-//    Par exemple un prisme (Classe Prisme)
-//    a 2 types de faces: un triangle ou un quadrangle.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de type de face de l'element geometrique.
+ *
+ *     Par exemple un prisme (Classe Prisme)
+ *     a 2 types de faces: un triangle ou un quadrangle.
+ *
+ * @return (int) renvoie toujours 1
+ */
 int Elem_geom_base::nb_type_face() const
 {
   return 1;
 }
 
-// Description: remplit le tableau faces_som_local(i,j) qui donne pour
-//  0 <= i < nb_faces()  et  0 <= j < nb_som_face(i) le numero local du sommet
-//  sur l'element.
-//  On a  0 <= faces_sommets_locaux(i,j) < nb_som()
-// Si toutes les faces de l'element n'ont pas le meme nombre de sommets, le nombre
-// de colonnes du tableau est le plus grand nombre de sommets, et les cases inutilisees
-// du tableau sont mises a -1
-// On renvoie 1 si toutes les faces ont le meme nombre d'elements, 0 sinon.
+/*! @brief remplit le tableau faces_som_local(i,j) qui donne pour 0 <= i < nb_faces()  et  0 <= j < nb_som_face(i) le numero local du sommet
+ *
+ *   sur l'element.
+ *   On a  0 <= faces_sommets_locaux(i,j) < nb_som()
+ *  Si toutes les faces de l'element n'ont pas le meme nombre de sommets, le nombre
+ *  de colonnes du tableau est le plus grand nombre de sommets, et les cases inutilisees
+ *  du tableau sont mises a -1
+ *  On renvoie 1 si toutes les faces ont le meme nombre d'elements, 0 sinon.
+ *
+ */
 int Elem_geom_base::get_tab_faces_sommets_locaux(IntTab& faces_som_local) const
 {
   Cerr << "Elem_geom_base::faces_sommets_locaux : error.\n"
@@ -264,10 +171,13 @@ int Elem_geom_base::get_tab_faces_sommets_locaux(IntTab& faces_som_local) const
   return 0;
 }
 
-// Description: idem que Elem_geom_base::get_tab_faces_sommets_locaux mais pour les aretes:
-//  aretes_som_local.dimension(0) = nombre d'aretes sur l'element de reference
-//  aretes_som_local.dimension(1) = 2  (nombre de sommets par arete)
-//  aretes_som_local(i,j) = numero d'un sommet de l'element (0 <= n < nb_sommets_par_element)
+/*! @brief idem que Elem_geom_base::get_tab_faces_sommets_locaux mais pour les aretes: aretes_som_local.
+ *
+ * dimension(0) = nombre d'aretes sur l'element de reference
+ *   aretes_som_local.dimension(1) = 2  (nombre de sommets par arete)
+ *   aretes_som_local(i,j) = numero d'un sommet de l'element (0 <= n < nb_sommets_par_element)
+ *
+ */
 void Elem_geom_base::get_tab_aretes_sommets_locaux(IntTab& aretes_som_local) const
 {
   Cerr << "Elem_geom_base::aretes_sommets_locaux : error.\n"

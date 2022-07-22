@@ -25,21 +25,10 @@ static int max_sz_mem=0;
 static int min_sz_mem=0;
 
 
-// Description:
-//    Retourne un pointeur sur l'instance de la memoire
-//    Cree un nouvel objet memoire si aucune instance n'a deja ete creee
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Memoire*
-//    Signification: pointeur sur l'instance de la memoire
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Retourne un pointeur sur l'instance de la memoire Cree un nouvel objet memoire si aucune instance n'a deja ete creee
+ *
+ * @return (Memoire*) pointeur sur l'instance de la memoire
+ */
 Memoire& Memoire::Instance()
 {
   if (_instance == 0)
@@ -50,21 +39,9 @@ Memoire& Memoire::Instance()
 }
 
 
-// Description:
-//    Constructeur
-//    Initialize une zone de travail pour les Objet_U, les "double" et les "int"
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Constructeur Initialize une zone de travail pour les Objet_U, les "double" et les "int"
+ *
+ */
 Memoire::Memoire() : size(step), data(new Memoire_ptr[step]),
   trav_double(new Double_ptr_trav()), trav_int(new Int_ptr_trav())
 {
@@ -77,21 +54,11 @@ Memoire::Memoire() : size(step), data(new Memoire_ptr[step]),
 }
 
 
-// Description:
-//    Ajoute un Objet_U dans la Memoire de TRUST
-// Precondition:
-//    La memoire doit avoir prealablement ete instanciee
-// Parametre: Objet_U* obj
-//    Signification: pointeur sur l'Objet_U a ajouter
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le numero affecte a l'objet dans la memoire
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ajoute un Objet_U dans la Memoire de TRUST
+ *
+ * @param (Objet_U* obj) pointeur sur l'Objet_U a ajouter
+ * @return (int) le numero affecte a l'objet dans la memoire
+ */
 int Memoire::add(Objet_U* obj)
 {
   assert(_instance != 0);
@@ -139,21 +106,11 @@ int Memoire::add(Objet_U* obj)
 }
 
 
-// Description:
-//    Suppression de la memoire de l'Objet_U de numero num
-//    L'Objet_U n'est pas supprime, seul son pointeur dans la memoire l'est.
-// Precondition:
-// Parametre: int num
-//    Signification: le numero de l'Objet_U a supprimer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: code de retour, retourne toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Suppression de la memoire de l'Objet_U de numero num L'Objet_U n'est pas supprime, seul son pointeur dans la memoire l'est.
+ *
+ * @param (int num) le numero de l'Objet_U a supprimer
+ * @return (int) code de retour, retourne toujours 1
+ */
 int Memoire::suppr(int num)
 {
   //   Cerr << "Suppression de " << num << finl;
@@ -209,25 +166,12 @@ int Memoire::suppr(int num)
 }
 
 
-// Description:
-//    Retourne le rang dans la memoire de l'objet de type et de nom indiques
-// Precondition:
-// Parametre: const Nom& type
-//    Signification: le type de l'objet
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: const Nom& nom
-//    Signification: le nom de l'objet
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le rang de l'objet s'il est trouve dans la memoire, -1 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Retourne le rang dans la memoire de l'objet de type et de nom indiques
+ *
+ * @param (const Nom& type) le type de l'objet
+ * @param (const Nom& nom) le nom de l'objet
+ * @return (int) le rang de l'objet s'il est trouve dans la memoire, -1 sinon
+ */
 int Memoire::rang(const Nom& type, const Nom& nom) const
 {
   Memoire_ptr* x=data;
@@ -243,20 +187,11 @@ int Memoire::rang(const Nom& type, const Nom& nom) const
 }
 
 
-// Description:
-//    Retourne le rang dans la memoire de l'objet de nom indique
-// Precondition:
-// Parametre: const Nom& nom
-//    Signification: le nom de l'objet
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le rang de l'objet s'il est trouve dans la memoire, -1 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Retourne le rang dans la memoire de l'objet de nom indique
+ *
+ * @param (const Nom& nom) le nom de l'objet
+ * @return (int) le rang de l'objet s'il est trouve dans la memoire, -1 sinon
+ */
 int Memoire::rang(const Nom& nom) const
 {
   Memoire_ptr* x=data;
@@ -271,22 +206,12 @@ int Memoire::rang(const Nom& nom) const
 }
 
 
-// Description:
-//    Retoune une reference sur l'Objet_U de rang num dans la memoire
-// Precondition:
-//    num doit etre positif ou nul et inferieur au nombre d'objets de la memoire
-// Parametre: int num
-//    Signification: le rang de l'objet dans la memoire
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: Objet_U&
-//    Signification: reference sur l'Objet_U trouve
-//    Contraintes:
-// Exception:
-//    Sort en erreur si la memoire comporte une erreur a la case de rang num
-// Effets de bord:
-// Postcondition:
+/*! @brief Retoune une reference sur l'Objet_U de rang num dans la memoire
+ *
+ * @param (int num) le rang de l'objet dans la memoire
+ * @return (Objet_U&) reference sur l'Objet_U trouve
+ * @throws Sort en erreur si la memoire comporte une erreur a la case de rang num
+ */
 Objet_U& Memoire::objet_u(int num)
 {
   assert(num >=0);
@@ -307,22 +232,12 @@ Objet_U& Memoire::objet_u(int num)
 }
 
 
-// Description:
-//    Retoune une reference constante sur l'Objet_U de rang num dans la memoire
-// Precondition:
-//    num doit etre positif ou nul et inferieur au nombre d'objets de la memoire
-// Parametre: int num
-//    Signification: le rang de l'objet dans la memoire
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: const Objet_U&
-//    Signification: reference sur l'Objet_U trouve
-//    Contraintes:
-// Exception:
-//    Sort en erreur si la memoire comporte une erreur a la case de rang num
-// Effets de bord:
-// Postcondition:
+/*! @brief Retoune une reference constante sur l'Objet_U de rang num dans la memoire
+ *
+ * @param (int num) le rang de l'objet dans la memoire
+ * @return (const Objet_U&) reference sur l'Objet_U trouve
+ * @throws Sort en erreur si la memoire comporte une erreur a la case de rang num
+ */
 const Objet_U& Memoire::objet_u(int num) const
 {
   assert(num >=0);
@@ -343,22 +258,12 @@ const Objet_U& Memoire::objet_u(int num) const
 }
 
 
-// Description:
-//    Retoune un pointeur sur l'Objet_U de rang num dans la memoire
-// Precondition:
-//    num doit etre positif ou nul et inferieur au nombre d'objets de la memoire
-// Parametre: int num
-//    Signification: le rang de l'objet dans la memoire
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: Objet_U&
-//    Signification: reference sur l'Objet_U trouve
-//    Contraintes:
-// Exception:
-//    Sort en erreur si la memoire comporte une erreur a la case de rang num
-// Effets de bord:
-// Postcondition:
+/*! @brief Retoune un pointeur sur l'Objet_U de rang num dans la memoire
+ *
+ * @param (int num) le rang de l'objet dans la memoire
+ * @return (Objet_U&) reference sur l'Objet_U trouve
+ * @throws Sort en erreur si la memoire comporte une erreur a la case de rang num
+ */
 Objet_U* Memoire::objet_u_ptr(int num)
 {
   assert(num >=0);
@@ -379,22 +284,12 @@ Objet_U* Memoire::objet_u_ptr(int num)
 }
 
 
-// Description:
-//    Retoune un pointeur constant sur l'Objet_U de rang num dans la memoire
-// Precondition:
-//    num doit etre positif ou nul et inferieur au nombre d'objets de la memoire
-// Parametre: int num
-//    Signification: le rang de l'objet dans la memoire
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: Objet_U&
-//    Signification: reference sur l'Objet_U trouve
-//    Contraintes:
-// Exception:
-//    Sort en erreur si la memoire comporte une erreur a la case de rang num
-// Effets de bord:
-// Postcondition:
+/*! @brief Retoune un pointeur constant sur l'Objet_U de rang num dans la memoire
+ *
+ * @param (int num) le rang de l'objet dans la memoire
+ * @return (Objet_U&) reference sur l'Objet_U trouve
+ * @throws Sort en erreur si la memoire comporte une erreur a la case de rang num
+ */
 const Objet_U* Memoire::objet_u_ptr(int num)const
 {
   assert(num >=0);
@@ -415,21 +310,9 @@ const Objet_U* Memoire::objet_u_ptr(int num)const
 }
 
 
-// Description:
-//    Compacte la memoire
-//    Ce compactage est effectue automatiquement lorsqu'il devient necessaire
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Compacte la memoire Ce compactage est effectue automatiquement lorsqu'il devient necessaire
+ *
+ */
 void Memoire::compacte()
 {
   //   Cerr << "On compacte la memoire " << finl;
@@ -473,20 +356,10 @@ void Memoire::compacte()
 }
 
 
-// Description:
-//    Imprime un etat sur la memoire sur la sortie des erreurs
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: code de retour; retourne toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Imprime un etat sur la memoire sur la sortie des erreurs
+ *
+ * @return (int) code de retour; retourne toujours 1
+ */
 int Memoire::imprime() const
 {
   assert(prems <=size);
@@ -525,20 +398,10 @@ int Memoire::imprime() const
 }
 
 
-// Description:
-//    Verifie le contenu de toutes les cases de la memoire
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: code de retour; retourne toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Verifie le contenu de toutes les cases de la memoire
+ *
+ * @return (int) code de retour; retourne toujours 1
+ */
 int Memoire::verifie() const
 {
   assert(prems <=size);
@@ -558,25 +421,12 @@ int Memoire::verifie() const
 }
 
 
-// Description:
-//    Operateur d'affichage d'un etat de la memoire mem sur le flot de sortie os
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: const Memoire& mem
-//    Signification: la memoire a examiner
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie& le flot de sortie modifie
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Operateur d'affichage d'un etat de la memoire mem sur le flot de sortie os
+ *
+ * @param (Sortie& os) le flot de sortie a utiliser
+ * @param (const Memoire& mem) la memoire a examiner
+ * @return (Sortie& le flot de sortie modifie)
+ */
 Sortie& operator << (Sortie& os, const Memoire& mem)
 {
   int i;
@@ -660,22 +510,11 @@ Sortie& operator << (Sortie& os, const Memoire& mem)
 
 
 
-// Description:
-//    Destruction de la memoire
-//    Supprime les zone de travail pour les Objet_U, les double et les int
-//    Sort (exit) avec un code 0
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Destruction de la memoire Supprime les zone de travail pour les Objet_U, les double et les int
+ *
+ *     Sort (exit) avec un code 0
+ *
+ */
 Memoire::~Memoire()
 {
   // GF on a deja tout detruit avant.

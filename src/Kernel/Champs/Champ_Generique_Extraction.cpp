@@ -30,7 +30,9 @@
 Implemente_instanciable_sans_constructeur(Champ_Generique_Extraction,"Extraction",Champ_Gen_de_Champs_Gen);
 Add_synonym(Champ_Generique_Extraction,"Champ_Post_Extraction");
 
-// Description: voir reset()
+/*! @brief voir reset()
+ *
+ */
 Champ_Generique_Extraction::Champ_Generique_Extraction()
 {
   // valeurs par defaut
@@ -51,7 +53,9 @@ Entree& Champ_Generique_Extraction::readOn(Entree& is)
   return is;
 }
 
-// Description: appel invalide
+/*! @brief appel invalide
+ *
+ */
 Sortie& Champ_Generique_Extraction::printOn(Sortie& os) const
 {
   exit();
@@ -91,9 +95,9 @@ const Champ_base& Champ_Generique_Extraction::get_champ_without_evaluation(Champ
   espace_stockage = creer_espace_stockage(nature_source,nb_comp,es_tmp);
   return espace_stockage.valeur();
 }
-// Description:  Extraction des valeurs d un champ (trace ou champ frontiere) sur un bord du domaine
-// Precondition: L extraction est actuellement limitee aux champs inconnus du probleme
-//                 Elle est realisee uniquement sur des frontieres planes
+/*! @brief Extraction des valeurs d un champ (trace ou champ frontiere) sur un bord du domaine
+ *
+ */
 const Champ_base& Champ_Generique_Extraction::get_champ(Champ& espace_stockage) const
 {
 

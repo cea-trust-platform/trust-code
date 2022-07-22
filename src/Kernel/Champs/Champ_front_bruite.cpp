@@ -22,22 +22,13 @@ Implemente_instanciable(Champ_front_bruite,"Champ_front_bruite",Ch_front_var_ins
 // XD attr nb_comp entier nb_comp 0 Number of field components.
 // XD attr bloc bloc_lecture bloc 0 { [N val L val ] Moyenne m_1.....[m_i ] Amplitude A_1.....[A_ i ]}: Random nois: If N and L are not defined, the ith component of the field varies randomly around an average value m_i with a maximum amplitude A_i. NL2 White noise: If N and L are defined, these two additional parameters correspond to L, the domain length and N, the number of nodes in the domain. Noise frequency will be between 2*Pi/L and 2*Pi*N/(4*L). NL2 For example, formula for velocity: u=U0(t) v=U1(t)Uj(t)=Mj+2*Aj*bruit_blanc where bruit_blanc (white_noise) is the formula given in the mettre_a_jour (update) method of the Champ_front_bruite (noise_boundary_field) (Refer to the Ch_fr_bruite.cpp file).
 
-// Description:
-//    Impression sur un flot de sortie au format:
-//    taille
-//    valeur(0) ... valeur(i)  ... valeur(taille-1)
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Impression sur un flot de sortie au format: taille
+ *
+ *     valeur(0) ... valeur(i)  ... valeur(taille-1)
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Champ_front_bruite::printOn(Sortie& os) const
 {
   const DoubleTab& tab=valeurs();
@@ -47,25 +38,17 @@ Sortie& Champ_front_bruite::printOn(Sortie& os) const
   return os;
 }
 
-// Description:
-//    Lecture a partir d'un flot d'entree au format:
-//    nombre_de_composantes
-//    moyenne moyenne(0) ... moyenne(nombre_de_composantes-1)
-//    moyenne amplitude(0) ... amplitude(nombre_de_composantes-1)
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: accolade ouvrante attendue
-// Exception: mot clef inconnu a cet endroit
-// Exception: accolade fermante attendue
-// Effets de bord:
-// Postcondition:
+/*! @brief Lecture a partir d'un flot d'entree au format: nombre_de_composantes
+ *
+ *     moyenne moyenne(0) ... moyenne(nombre_de_composantes-1)
+ *     moyenne amplitude(0) ... amplitude(nombre_de_composantes-1)
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ * @throws accolade ouvrante attendue
+ * @throws mot clef inconnu a cet endroit
+ * @throws accolade fermante attendue
+ */
 Entree& Champ_front_bruite::readOn(Entree& is)
 {
   nx=0;
@@ -130,40 +113,20 @@ Entree& Champ_front_bruite::readOn(Entree& is)
 }
 
 
-// Description:
-//    Pas code !!
-// Precondition:
-// Parametre: Champ_front_base& ch
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Retour: Champ_front_base&
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Pas code !!
+ *
+ * @param (Champ_front_base& ch)
+ * @return (Champ_front_base&)
+ */
 Champ_front_base& Champ_front_bruite::affecter_(const Champ_front_base& ch)
 {
   return *this;
 }
 
-// Description:
-//     Mise a jour du temps
-//     et retirage aleatoire des valeurs du bruit.
-// Precondition:
-// Parametre: double temps
-//    Signification: le temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Mise a jour du temps et retirage aleatoire des valeurs du bruit.
+ *
+ * @param (double temps) le temps de mise a jour
+ */
 void Champ_front_bruite::mettre_a_jour(double temps)
 {
   const Frontiere& front=la_frontiere_dis->frontiere();

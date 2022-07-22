@@ -19,14 +19,11 @@
 
 #include <Entree_Fichier_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Fichier en lecture
-//    Cette classe est a la classe C++ ifstream ce que la classe Entree est a la
-//    classe C++ istream. Elle redefinit de facon virtuelle les operateurs de lecture dans un fichier.
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Fichier en lecture Cette classe est a la classe C++ ifstream ce que la classe Entree est a la
+ *
+ *     classe C++ istream. Elle redefinit de facon virtuelle les operateurs de lecture dans un fichier.
+ *
+ */
 
 class EFichier : public Entree_Fichier_base
 {

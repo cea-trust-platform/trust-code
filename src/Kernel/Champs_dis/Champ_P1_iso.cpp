@@ -18,41 +18,24 @@
 Implemente_base(Champ_P1_iso,"Champ_P1_iso",Champ_Inc_base);
 
 
-// Description:
-//    Ecrit le type et le nom du Champ sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit le type et le nom du Champ sur un flot de sortie
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Champ_P1_iso::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
 
-// Description:
-//    Lit les donnees du champ P1 a partir d'un flot d'entree.
-//    Appelle Champ_Inc_base::lire_donnees(Entree&)
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit les donnees du champ P1 a partir d'un flot d'entree.
+ *
+ * Appelle Champ_Inc_base::lire_donnees(Entree&)
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Champ_P1_iso::readOn(Entree& s)
 {
   lire_donnees(s) ;

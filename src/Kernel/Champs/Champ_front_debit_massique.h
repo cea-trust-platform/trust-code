@@ -22,9 +22,11 @@
 #include <Ref_DoubleTab.h>
 #include <Champ_base.h>
 
-//.DESCRIPTION  class Champ_front_debit_massique
-//
-// Classe derivee de Champ_front_debit pour les amateurs de kg/s
+/*! @brief class Champ_front_debit_massique
+ *
+ *  Classe derivee de Champ_front_debit pour les amateurs de kg/s
+ *
+ */
 
 //.SECTION voir aussi
 // Champ_front_base

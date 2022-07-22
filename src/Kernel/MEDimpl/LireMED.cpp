@@ -62,40 +62,22 @@ LireMED::LireMED()
 #endif
 }
 
-// Description:
-//    Simple appel a: Interprete::printOn(Sortie&)
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a: Interprete::printOn(Sortie&)
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& LireMED::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
 
-// Description:
-//    Simple appel a: Interprete::readOn(Entree&)
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Interprete::readOn(Entree&)
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& LireMED::readOn(Entree& is)
 {
   return Interprete::readOn(is);
@@ -2263,9 +2245,11 @@ void traite_nom_fichier_med(Nom& nom_fic)
   //  Cerr<<"File med read: "<<nom_fic<<finl;
 }
 
-// Description:  Permet de lire le nom d'un champ particulier
-//    exemple "toto toto" ou "toto\ toto"
-//    si le premier mot commence par " on concatene les mots jusqu'au dernier. Si on veut 2 espaces on est oblige de mettre "a\ \ a"
+/*! @brief Permet de lire le nom d'un champ particulier exemple "toto toto" ou "toto\ toto"
+ *
+ *     si le premier mot commence par " on concatene les mots jusqu'au dernier. Si on veut 2 espaces on est oblige de mettre "a\ \ a"
+ *
+ */
 void lire_nom_med(Nom& nom_champ, Entree& s)
 {
 

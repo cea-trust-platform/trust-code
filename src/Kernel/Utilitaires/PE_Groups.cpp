@@ -32,15 +32,17 @@ int PE_Groups::check_current_group()
   return 1;
 }
 
-// Description: Creation d'un nouveau groupe de processeurs
-//  (utilisation possible n'importe ou dans le code)
-//  Il faut l'appeler simultanement sur tous les processeurs du groupe current_group()
-//  avec le meme tableau liste_pe. liste_pe est la liste des rangs dans le groupe
-//  courant des processeurs que l'on veut inclure dans le groupe. Le premier de la
-//  liste sera le maitre du groupe. La liste ne doit pas comporter de doublon et
-//  doit contenir au moins un processeur.
-//  La methode type et initialize l'objet group.
-//  Il faut ensuite appeler enter_group() et exit_group() (autant de fois qu'on veut)
+/*! @brief Creation d'un nouveau groupe de processeurs (utilisation possible n'importe ou dans le code)
+ *
+ *   Il faut l'appeler simultanement sur tous les processeurs du groupe current_group()
+ *   avec le meme tableau liste_pe. liste_pe est la liste des rangs dans le groupe
+ *   courant des processeurs que l'on veut inclure dans le groupe. Le premier de la
+ *   liste sera le maitre du groupe. La liste ne doit pas comporter de doublon et
+ *   doit contenir au moins un processeur.
+ *   La methode type et initialize l'objet group.
+ *   Il faut ensuite appeler enter_group() et exit_group() (autant de fois qu'on veut)
+ *
+ */
 void PE_Groups::create_group(const ArrOfInt& liste_pe, DERIV(Comm_Group) & group, int force_Comm_Group_NoParallel)
 {
   if (liste_pe.size_array()==1 && force_Comm_Group_NoParallel)
@@ -56,37 +58,39 @@ void PE_Groups::create_group(const ArrOfInt& liste_pe, DERIV(Comm_Group) & group
   group.valeur().init_group(liste_pe);
 }
 
-// Description: Si le processeur local appartient au groupe, le groupe courant
-//  pour ce processeur devient "group" et on renvoie 1, sinon on renvoie 0.
-//  Une reference au groupe actuel est sauvegardee et sera restauree quand on
-//  appellera exit_group().
-//  Cette methode doit etre appelee simultanement sur tous les processeurs
-//  du groupe "group".
-//  Attention: a chaque enter_group() doit correspondre un exit_group().
-//  Cependant, il n'est pas interdit d'entrer plusieurs fois de suite dans le
-//  meme groupe, ni d'entrer dans un groupe plus grand que le groupe actuel.
-//  Exemple : group1 et group2 forment une partition du groupe_TRUST()
-//
-//   int sync_point(int x)
-//   {
-//     PE_Groups::enter_group(groupe_TRUST());
-//     int i = mp_sum(x);
-//     PE_Groups::exit_group();
-//     return i;
-//   }
-//   if (PE_Groups::enter_group(group1)) {
-//     s1 = mp_sum(x); // Somme sur le groupe 2
-//     // Point de synchro avec l'autre groupe:
-//     s_all = sync_point(x);
-//   } else if (PE_Groups::enter_group(group2)) {
-//     s2 = mp_sum(x);
-//     // Point de synchro avec l'autre groupe:
-//     s_all = sync_point(x);
-//   } else {
-//     Cerr << "Error: processor " << me() << " is not within a subgroup.";
-//     exit();
-//   }
-//   PE_Groups::exit_group(); // Sort du sous-groupe
+/*! @brief Si le processeur local appartient au groupe, le groupe courant pour ce processeur devient "group" et on renvoie 1, sinon on renvoie 0.
+ *
+ *   Une reference au groupe actuel est sauvegardee et sera restauree quand on
+ *   appellera exit_group().
+ *   Cette methode doit etre appelee simultanement sur tous les processeurs
+ *   du groupe "group".
+ *   Attention: a chaque enter_group() doit correspondre un exit_group().
+ *   Cependant, il n'est pas interdit d'entrer plusieurs fois de suite dans le
+ *   meme groupe, ni d'entrer dans un groupe plus grand que le groupe actuel.
+ *   Exemple : group1 et group2 forment une partition du groupe_TRUST()
+ *
+ *    int sync_point(int x)
+ *    {
+ *      PE_Groups::enter_group(groupe_TRUST());
+ *      int i = mp_sum(x);
+ *      PE_Groups::exit_group();
+ *      return i;
+ *    }
+ *    if (PE_Groups::enter_group(group1)) {
+ *      s1 = mp_sum(x); // Somme sur le groupe 2
+ *      // Point de synchro avec l'autre groupe:
+ *      s_all = sync_point(x);
+ *    } else if (PE_Groups::enter_group(group2)) {
+ *      s2 = mp_sum(x);
+ *      // Point de synchro avec l'autre groupe:
+ *      s_all = sync_point(x);
+ *    } else {
+ *      Cerr << "Error: processor " << me() << " is not within a subgroup.";
+ *      exit();
+ *    }
+ *    PE_Groups::exit_group(); // Sort du sous-groupe
+ *
+ */
 int PE_Groups::enter_group(const Comm_Group& group)
 {
   assert(&group != &current_group());
@@ -117,10 +121,12 @@ int PE_Groups::enter_group(const Comm_Group& group)
     }
 }
 
-// Description: Retourne dans le groupe ou l'on etait avant le dernier
-//  enter_group() reussi (dont le resultat a ete 1).
-//  Cette methode doit etre appelee simultanement sur tous les processeurs
-//  du current_group() actif juste avant exit_group()).
+/*! @brief Retourne dans le groupe ou l'on etait avant le dernier enter_group() reussi (dont le resultat a ete 1).
+ *
+ *   Cette methode doit etre appelee simultanement sur tous les processeurs
+ *   du current_group() actif juste avant exit_group()).
+ *
+ */
 void PE_Groups::exit_group()
 {
   if (Comm_Group::check_enabled())
@@ -135,10 +141,12 @@ void PE_Groups::exit_group()
   current_group_ = &(groups[ngroups-1].valeur());
 }
 
-// Description:
-//  Calcule le rank dans le groupe courant du processeur de rang "rank" dans le "group".
-//  Il faut que 0 <= rank < group.nproc()
-//  Si le processeur en question n'appartient pas au groupe courant, renvoie -1.
+/*! @brief Calcule le rank dans le groupe courant du processeur de rang "rank" dans le "group".
+ *
+ * Il faut que 0 <= rank < group.nproc()
+ *   Si le processeur en question n'appartient pas au groupe courant, renvoie -1.
+ *
+ */
 int PE_Groups::rank_translate(int rank, const Comm_Group& group,
                               const Comm_Group& dest_group)
 {
@@ -147,17 +155,20 @@ int PE_Groups::rank_translate(int rank, const Comm_Group& group,
   return local_rank;
 }
 
-// Description:
-// Renvoie une reference au groupe de tous les processeurs TRUST
+/*! @brief Renvoie une reference au groupe de tous les processeurs TRUST
+ *
+ */
 const Comm_Group& PE_Groups::groupe_TRUST()
 {
   assert(ngroups > 0); // Initialized ?
   return groups[0].valeur();
 }
 
-// Description:
-//  Methode a appeler au debut de l'execution (MAIN.cpp)
-//  Elle initialise current_group() avec groupe_trio_u
+/*! @brief Methode a appeler au debut de l'execution (MAIN.
+ *
+ * cpp) Elle initialise current_group() avec groupe_trio_u
+ *
+ */
 void PE_Groups::initialize(const Comm_Group& groupe_trio_u)
 {
   assert(ngroups == 0);
@@ -166,10 +177,11 @@ void PE_Groups::initialize(const Comm_Group& groupe_trio_u)
   current_group_ = &groupe_trio_u;
 }
 
-// Description:
-//  Methode a appeler en fin d'execution, une fois qu'on est revenu
-//  dans le groupe_TRUST() et juste avant de detruire de Comm_Group
-//  principal.
+/*! @brief Methode a appeler en fin d'execution, une fois qu'on est revenu dans le groupe_TRUST() et juste avant de detruire de Comm_Group
+ *
+ *   principal.
+ *
+ */
 void PE_Groups::finalize()
 {
   assert(ngroups == 1);

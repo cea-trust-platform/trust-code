@@ -19,16 +19,10 @@
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_h_conv
-//     Permet d'avoir une visualisation du gradient de temperature
-// .SECTION voir aussi
-//     Classe abstraite
-//     Methode abstraite
-//       void me_calculer(double )
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_h_conv Permet d'avoir une visualisation du gradient de temperature
+ *
+ * @sa Classe abstraite, Methode abstraite, void me_calculer(double )
+ */
 class Champ_h_conv
 {
 

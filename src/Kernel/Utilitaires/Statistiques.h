@@ -222,11 +222,14 @@ inline void Statistiques::begin_count(const Stat_Counter_Id& counter_id, bool tr
 
 }
 
-// Description: Arret du compteur counter_id. On ajoute quantity a la somme des
-//  'quantity' (par defaut 0) stockees pour ce compteur
-//  et on ajoute 'count' (par defaut 1) au compteur d'appels a end_count pour ce compteur
-//  (quantity sert a sommer par exemple la taille des donnees traitees pendant ce comptage
-//  et count sert a compter combien de fois on a appele ce compteur)
+/*! @brief Arret du compteur counter_id.
+ *
+ * On ajoute quantity a la somme des 'quantity' (par defaut 0) stockees pour ce compteur
+ *   et on ajoute 'count' (par defaut 1) au compteur d'appels a end_count pour ce compteur
+ *   (quantity sert a sommer par exemple la taille des donnees traitees pendant ce comptage
+ *   et count sert a compter combien de fois on a appele ce compteur)
+ *
+ */
 inline void Statistiques::end_count(const Stat_Counter_Id& counter_id,
                                     int quantity,
                                     int count,

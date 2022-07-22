@@ -19,25 +19,22 @@
 
 #include <Champ_front_base.h>
 
-////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_front_var
-//     Classe derivee de Champ_front_base qui represente un champ sur
-//     une frontiere variable en espace (non uniforme).
-//     Le DoubleTab est dimensionne au nombre de faces de la frontiere
-//     par la methode initialiser et possede un espace virtuel.
-//     Chaque modification du tableau de valeurs doit donc etre suivie
-//     d'un appel a echange_espace_virtuel().
-//     Les Champ_front_var sont classes suivant qu'ils sont
-//     stationnaires (Champ_front_var_stationnaire) ou non
-//     (Champ_front_var_instationnaire).
-//     Dans le premier cas, le tableau de valeurs est rempli une fois
-//     pour toutes par la methode initialiser. Dans le deuxieme, il
-//     est aussi recalcule a chaque appel a mettre_a_jour.
-// .SECTION voir aussi
-//     Champ_front_base Champ_Var
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_front_var Classe derivee de Champ_front_base qui represente un champ sur
+ *
+ *      une frontiere variable en espace (non uniforme).
+ *      Le DoubleTab est dimensionne au nombre de faces de la frontiere
+ *      par la methode initialiser et possede un espace virtuel.
+ *      Chaque modification du tableau de valeurs doit donc etre suivie
+ *      d'un appel a echange_espace_virtuel().
+ *      Les Champ_front_var sont classes suivant qu'ils sont
+ *      stationnaires (Champ_front_var_stationnaire) ou non
+ *      (Champ_front_var_instationnaire).
+ *      Dans le premier cas, le tableau de valeurs est rempli une fois
+ *      pour toutes par la methode initialiser. Dans le deuxieme, il
+ *      est aussi recalcule a chaque appel a mettre_a_jour.
+ *
+ * @sa Champ_front_base Champ_Var
+ */
 class Champ_front_var : public Champ_front_base
 {
   Declare_base(Champ_front_var);

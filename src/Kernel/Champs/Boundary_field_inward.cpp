@@ -34,8 +34,9 @@ Entree& Boundary_field_inward::readOn(Entree& is)
 }
 
 
-// Description:
-// Initialize normal inward field given on boundaries
+/*! @brief Initialize normal inward field given on boundaries
+ *
+ */
 
 // Remark :
 // This code is not in "Champ_front_normal::initialiser" function because in the case of using

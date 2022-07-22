@@ -25,16 +25,13 @@ class Motcle;
 Declare_deriv(Operateur_Statistique_tps_base);
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Operateur_Statistique_tps
-//     Classe generique de la hierarchie des operateurs statistiques en
-//     en temps. Un objet Operateur_Statistique_tps peut referencer
-//     n'importe quel objet derivant de Operateur_Statistique_tps_base.
-// .SECTION voir aussi
-//     Operateur_Statistique_tps_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Operateur_Statistique_tps Classe generique de la hierarchie des operateurs statistiques en
+ *
+ *      en temps. Un objet Operateur_Statistique_tps peut referencer
+ *      n'importe quel objet derivant de Operateur_Statistique_tps_base.
+ *
+ * @sa Operateur_Statistique_tps_base
+ */
 class Operateur_Statistique_tps : public DERIV(Operateur_Statistique_tps_base)
 {
 
@@ -96,21 +93,11 @@ public:
 
 
 
-// Description:
-//    Operateur d'affectation d'un Operateur_Statistique_tps_base dans
-//    un Operateur_Statistique_tps.
-// Precondition:
-// Parametre: Operateur_Statistique_tps_base& op_stat_base
-//    Signification: la partie droite de l'affectation
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: Operateur_Statistique_tps&
-//    Signification: le resulrtat de l'affectation (*this)
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Operateur d'affectation d'un Operateur_Statistique_tps_base dans un Operateur_Statistique_tps.
+ *
+ * @param (Operateur_Statistique_tps_base& op_stat_base) la partie droite de l'affectation
+ * @return (Operateur_Statistique_tps&) le resulrtat de l'affectation (*this)
+ */
 inline Operateur_Statistique_tps&
 Operateur_Statistique_tps::operator=(const Operateur_Statistique_tps_base& op_stat_base)
 {

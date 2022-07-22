@@ -20,13 +20,13 @@
 #include <Interpolation_IBM_mean_gradient_proto.h>
 
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Interpolation_IBM_hybrid
-//
-// <Description of class Interpolation_IBM_hybrid>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Interpolation_IBM_hybrid
+ *
+ *  <Description of class Interpolation_IBM_hybrid>
+ *
+ *
+ *
+ */
 
 class Interpolation_IBM_hybrid : public Interpolation_IBM_elem_fluid, public Interpolation_IBM_mean_gradient_proto
 {

@@ -18,13 +18,13 @@
 
 #include <Interprete.h>
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Testeur_MEDCoupling
-//
-// For testing conversion from Champ_base to MEDField
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Testeur_MEDCoupling
+ *
+ *  For testing conversion from Champ_base to MEDField
+ *
+ *
+ *
+ */
 
 class Testeur_MEDCoupling : public Interprete
 {

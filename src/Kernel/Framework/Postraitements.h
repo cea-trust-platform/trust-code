@@ -18,14 +18,10 @@
 
 #include <List.h>
 
-///////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Postraitements
-//     Cette classe represente une liste de postraitements
-// .SECTION voir aussi
-//     Postraitement
-///////////////////////////////////////////////////////////////////
+/*! @brief classe Postraitements Cette classe represente une liste de postraitements
+ *
+ * @sa Postraitement
+ */
 
 class Probleme_base;
 class Postraitement_base;

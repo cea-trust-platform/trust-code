@@ -103,7 +103,11 @@ void Discretisation_base::discretiser_champ(const Motcle& directive, const Zone_
   discretiser_champ(directive, z, scalaire, noms, unites, nb_comp, temps, champ);
 }
 
-// Description: Cette fonction est un outil pour les trois methodes suivantes...
+/*! @brief Cette fonction est un outil pour les trois methodes suivantes.
+ *
+ * ..
+ *
+ */
 void Discretisation_base::test_demande_description(const Motcle& directive,
                                                    const Nom& type_objet) const
 {
@@ -124,12 +128,14 @@ void Discretisation_base::test_demande_description(const Motcle& directive,
   Cerr << "\n The understood directives are :\n";
 }
 
-// Description:
-// Discretisation d'un champ en fonction de la directive et des autres
-// parametres. Voir les classes derivees. Cette methode
-// ne traite aucune directive, elle affiche la liste des directives comprises
-// par les classes derivees.
-// Voir par exemple VDF_discretisation.cpp et VEF...
+/*! @brief Discretisation d'un champ en fonction de la directive et des autres parametres.
+ *
+ * Voir les classes derivees. Cette methode
+ *  ne traite aucune directive, elle affiche la liste des directives comprises
+ *  par les classes derivees.
+ *  Voir par exemple VDF_discretisation.cpp et VEF...
+ *
+ */
 void
 Discretisation_base::discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
                                        Nature_du_champ nature,
@@ -148,7 +154,9 @@ Discretisation_base::discretiser_champ(const Motcle& directive, const Zone_dis_b
                     nb_pas_dt, temps, champ, sous_type);
 }
 
-// Description: idem
+/*! @brief idem
+ *
+ */
 void
 Discretisation_base::discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
                                        Nature_du_champ nature,
@@ -167,7 +175,9 @@ Discretisation_base::discretiser_champ(const Motcle& directive, const Zone_dis_b
                     temps, champ);
 }
 
-// Description: idem
+/*! @brief idem
+ *
+ */
 void
 Discretisation_base::discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
                                        Nature_du_champ nature,
@@ -200,9 +210,9 @@ void Discretisation_base::discretiser_Zone_Cl_dis(const Zone_dis& ,Zone_Cl_dis& 
   exit();
 }
 
-// Description:
-// Fonction outil pour fixer les membres communs a tous les types
-// de champs (utilisee dans creer_champ)
+/*! @brief Fonction outil pour fixer les membres communs a tous les types de champs (utilisee dans creer_champ)
+ *
+ */
 void Discretisation_base::champ_fixer_membres_communs(
   Champ_base& ch,
   const Zone_dis_base& z,
@@ -240,10 +250,12 @@ void Discretisation_base::champ_fixer_membres_communs(
   ch.changer_temps(temps);
 }
 
-// Description:
-// Methode statique qui cree un Champ_Inc du type specifie.
-// Les parametres "directive" et "nom_discretisation" sont
-// utilises pour l'affichage uniquement et sont optionnels
+/*! @brief Methode statique qui cree un Champ_Inc du type specifie.
+ *
+ * Les parametres "directive" et "nom_discretisation" sont
+ *  utilises pour l'affichage uniquement et sont optionnels
+ *
+ */
 void Discretisation_base::creer_champ(Champ_Inc& ch,
                                       const Zone_dis_base& z,
                                       const Nom& type,
@@ -263,10 +275,12 @@ void Discretisation_base::creer_champ(Champ_Inc& ch,
   champ_fixer_membres_communs(chb, z, type, nom, unite, nb_comp, nb_ddl, temps);
 }
 
-// Description:
-// Methode statique qui cree un Champ_Fonc du type specifie.
-// Les parametres "directive" et "nom_discretisation" sont
-// utilises pour l'affichage uniquement et sont optionnels
+/*! @brief Methode statique qui cree un Champ_Fonc du type specifie.
+ *
+ * Les parametres "directive" et "nom_discretisation" sont
+ *  utilises pour l'affichage uniquement et sont optionnels
+ *
+ */
 void Discretisation_base::creer_champ(Champ_Fonc& ch,
                                       const Zone_dis_base& z,
                                       const Nom& type,
@@ -284,10 +298,12 @@ void Discretisation_base::creer_champ(Champ_Fonc& ch,
   champ_fixer_membres_communs(chb, z, type, nom, unite, nb_comp, nb_ddl, temps);
 }
 
-// Description:
-// Methode statique qui cree un Champ_Don du type specifie.
-// Les parametres "directive" et "nom_discretisation" sont
-// utilises pour l'affichage uniquement et sont optionnels
+/*! @brief Methode statique qui cree un Champ_Don du type specifie.
+ *
+ * Les parametres "directive" et "nom_discretisation" sont
+ *  utilises pour l'affichage uniquement et sont optionnels
+ *
+ */
 void Discretisation_base::creer_champ(Champ_Don& ch,
                                       const Zone_dis_base& z,
                                       const Nom& type,
@@ -374,13 +390,10 @@ void Discretisation_base::nommer_completer_champ_physique(const Zone_dis_base& z
     }
 }
 
-// Description: remplit le Nom type en focntion de la classe de operateur, du type de l'operateur et de l'equation
-// Parametre: class_operateur
-// Signification: Ce nom correspond au type de la classe de base de l'objet que l'on veut construire
-//   exemples: "source","Op_conv","Op_diff","Op_div","Op_grad","solveur_masse"
-//
-// Exemple get_name_of_type_for("Op_conv","amont",eqn,type);
-//         get_name_of_type_for("Op_diff"," ",eqn,type,champ_diffusisivite);
+/*! @brief remplit le Nom type en focntion de la classe de operateur, du type de l'operateur et de l'equation
+ *
+ * @param (class_operateur) Ce nom correspond au type de la classe de base de l'objet que l'on veut construire exemples: "source","Op_conv","Op_diff","Op_div","Op_grad","solveur_masse" Exemple get_name_of_type_for("Op_conv","amont",eqn,type); get_name_of_type_for("Op_diff"," ",eqn,type,champ_diffusisivite);
+ */
 
 
 // cela permet de specifier le comportement pour chaque discretisation

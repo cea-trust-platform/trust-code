@@ -73,11 +73,12 @@ Schema_Comm_Vecteurs::~Schema_Comm_Vecteurs()
   assert (status_ == END_INIT || status_ == RESET);
 }
 
-// Description: Reinitialise les tailles de buffers.
-//  Il faut ensuite definir les tailles de buffers avec add_send/recv_area_...()
-//  Cette methode doit etre appelee simultanement sur tous les processeurs du groupe.
-// Precondition: etat RESET ou END_INIT
-// Postcondition: etat BEGIN_INIT
+/*! @brief Reinitialise les tailles de buffers.
+ *
+ * Il faut ensuite definir les tailles de buffers avec add_send/recv_area_...()
+ *   Cette methode doit etre appelee simultanement sur tous les processeurs du groupe.
+ *
+ */
 void Schema_Comm_Vecteurs::begin_init()
 {
   assert(status_ == END_INIT || status_ == RESET);
@@ -93,13 +94,13 @@ void Schema_Comm_Vecteurs::begin_init()
   status_ = BEGIN_INIT;
 }
 
-// Description:
-//  Une fois les donnees a echanger declarees avec add_send/recv_area_...(),
-//  initialise les offset de buffers et alloue un buffer global de taille
-//  suffisante.
-//  Methode a appeler par tous les processeurs du groupe.
-// Precondition: etat BEGIN_INIT
-// Postcondtion: etat END_INIT
+/*! @brief Une fois les donnees a echanger declarees avec add_send/recv_area_.
+ *
+ * ..(), initialise les offset de buffers et alloue un buffer global de taille
+ *   suffisante.
+ *   Methode a appeler par tous les processeurs du groupe.
+ *
+ */
 void Schema_Comm_Vecteurs::end_init()
 {
   assert(status_ == BEGIN_INIT);
@@ -157,19 +158,17 @@ void Schema_Comm_Vecteurs::end_init()
   status_ = END_INIT;
 }
 
-// Description:
-//  Commence un nouvel echange de donnees (les tailles de buffers
-//   doivent avoir ete initialisees avec begin_init() ... end_init())
-//  On place les sdata_.buf_pointers_ au debut des buffers pour chaque
-//   processeur pour lequel un buffer a ete declare en "send"
-//  Apres begin_comm(), il faut remplir les buffers en utilisant
-//   get_next_area_int() ou get_next_area_double() dans le meme
-//   ordre que celui declare dans la phase d'initialisation,
-//   puis appeler exchange()
-// Precondition: Le schema doit etre initialise (etat END_INIT),
-//   et les buffers non bloques (pas d'autre communication en cours
-//   avec ce schema)
-// Postcondition: Le schema est dans l'etat BEGIN_COMM, buffers bloques.
+/*! @brief Commence un nouvel echange de donnees (les tailles de buffers doivent avoir ete initialisees avec begin_init() .
+ *
+ * .. end_init())
+ *   On place les sdata_.buf_pointers_ au debut des buffers pour chaque
+ *    processeur pour lequel un buffer a ete declare en "send"
+ *   Apres begin_comm(), il faut remplir les buffers en utilisant
+ *    get_next_area_int() ou get_next_area_double() dans le meme
+ *    ordre que celui declare dans la phase d'initialisation,
+ *    puis appeler exchange()
+ *
+ */
 void Schema_Comm_Vecteurs::begin_comm()
 {
   assert(status_ == END_INIT);
@@ -251,10 +250,12 @@ void Schema_Comm_Vecteurs::end_comm()
   buffer_locked_ = 0;
 }
 
-// Description: Selon status_, verifie que tous les pointeurs de buffers
-//  pointent a la fin du buffer aloue pour chaque processeur en emission
-//  ou reception. Renvoie 0 en cas d'erreur (si un buffer n'a pas ete
-//  entierement rempli ou vide)
+/*! @brief Selon status_, verifie que tous les pointeurs de buffers pointent a la fin du buffer aloue pour chaque processeur en emission
+ *
+ *   ou reception. Renvoie 0 en cas d'erreur (si un buffer n'a pas ete
+ *   entierement rempli ou vide)
+ *
+ */
 int Schema_Comm_Vecteurs::check_buffers_full() const
 {
   char *ptr = sdata_.buffer_base_;
@@ -304,7 +305,9 @@ int Schema_Comm_Vecteurs::check_buffers_full() const
   return ok;
 }
 
-// Description: verifie qu'il reste au moins byte_size octets dans le buffer du processeur pe
+/*! @brief verifie qu'il reste au moins byte_size octets dans le buffer du processeur pe
+ *
+ */
 int Schema_Comm_Vecteurs::check_next_area(int pe, int byte_size) const
 {
   assert(byte_size >= 0);

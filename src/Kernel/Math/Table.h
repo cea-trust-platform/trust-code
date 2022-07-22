@@ -22,11 +22,9 @@
 #include <Parser_U.h>
 #include <vector>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief
+ *
+ */
 class Table : public Objet_U, public Parser_Eval
 {
   Declare_instanciable_sans_constructeur_ni_destructeur(Table);
@@ -59,25 +57,11 @@ private:
 
 
 
-// Description:
-//   Construit un table avec les valeurs val, et les parametres param
-// Precondition:
-// Parametre: const DoubleVect& param
-//    Signification: parametres
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: const DoubleVect& val
-//    Signification: valeurs
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Construit un table avec les valeurs val, et les parametres param
+ *
+ * @param (const DoubleVect& param) parametres
+ * @param (const DoubleVect& val) valeurs
+ */
 inline Table::Table(const DoubleVect& param,const DoubleVect& aval)
   :  les_parametres(1)
 {

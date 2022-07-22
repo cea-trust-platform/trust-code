@@ -19,19 +19,17 @@
 #include <Objet_U.h>
 #include <Noms.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    This is a base class from which inherit Champ_base and Champ_front_base.
-//    It handles all the generic aspect of a field:
-//     - its name and synonyms
-//     - its number and names of components
-//     - its nature (scalar, vectorial, multi_scalar)
-//     - the units associated to each component
-//
-// .SECTION voir aussi
-//    RefField_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief This is a base class from which inherit Champ_base and Champ_front_base.
+ *
+ * It handles all the generic aspect of a field:
+ *      - its name and synonyms
+ *      - its number and names of components
+ *      - its nature (scalar, vectorial, multi_scalar)
+ *      - the units associated to each component
+ *
+ *
+ * @sa RefField_base
+ */
 
 // Definition of the nature of a field:
 enum Nature_du_champ { scalaire, multi_scalaire, vectoriel };

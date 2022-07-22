@@ -42,7 +42,9 @@ protected:
   static const unsigned int DRAPEAUX_INT;
 };
 
-// Description: Renvoie 1 si le bit e est mis, 0 sinon.
+/*! @brief Renvoie 1 si le bit e est mis, 0 sinon.
+ *
+ */
 inline int ArrOfBit::operator[](int e) const
 {
   assert(e >= 0 && e < taille);
@@ -53,7 +55,9 @@ inline int ArrOfBit::operator[](int e) const
   return resultat;
 }
 
-// Description: Met le bit e a 1.
+/*! @brief Met le bit e a 1.
+ *
+ */
 inline void ArrOfBit::setbit(int e) const
 {
   assert(e >= 0 && e < taille);
@@ -62,7 +66,9 @@ inline void ArrOfBit::setbit(int e) const
   data[i >> SIZE_OF_INT_BITS] |= flag;
 }
 
-// Description: Renvoie la valeur du bit e, puis met le bit e a 1.
+/*! @brief Renvoie la valeur du bit e, puis met le bit e a 1.
+ *
+ */
 inline int ArrOfBit::testsetbit(int e) const
 {
   assert(e >= 0 && e < taille);
@@ -74,7 +80,9 @@ inline int ArrOfBit::testsetbit(int e) const
   return ((old & flag) != 0) ? 1 : 0;
 }
 
-// Description: Met le bit e a 0.
+/*! @brief Met le bit e a 0.
+ *
+ */
 inline void ArrOfBit::clearbit(int e) const
 {
   assert(e >= 0 && e < taille);
@@ -83,7 +91,9 @@ inline void ArrOfBit::clearbit(int e) const
   data[i >> SIZE_OF_INT_BITS] &= ~flag;
 }
 
-// Description: Renvoie la taille du tableau en bits
+/*! @brief Renvoie la taille du tableau en bits
+ *
+ */
 inline int ArrOfBit::size_array() const
 {
   return taille;

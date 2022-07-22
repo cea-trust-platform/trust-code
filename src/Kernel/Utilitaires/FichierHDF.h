@@ -36,16 +36,13 @@
 #endif
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//   This abstract class provides all the functionalities to open and manipulate HDF files and related
-//   concepts (datasets, groups, etc ...)
-//   It intentionally does not place itself in the Sortie_Fichier_base or Entree_Fichier_base hierarchy
-//   since it is rather the datasets inside the HDF file that are regarded as TRUST Fichier objects.
-// .SECTION voir aussi
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief This abstract class provides all the functionalities to open and manipulate HDF files and related concepts (datasets, groups, etc .
+ *
+ * ..)
+ *    It intentionally does not place itself in the Sortie_Fichier_base or Entree_Fichier_base hierarchy
+ *    since it is rather the datasets inside the HDF file that are regarded as TRUST Fichier objects.
+ *
+ */
 class FichierHDF
 {
 public:

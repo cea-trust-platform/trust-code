@@ -19,7 +19,9 @@
 //  Implementation de la classe Joint_Items
 // **********************************************************
 
-// Description: constructeur par defaut
+/*! @brief constructeur par defaut
+ *
+ */
 Joint_Items::Joint_Items()
 {
   nb_items_virtuels_ = -1;
@@ -27,7 +29,9 @@ Joint_Items::Joint_Items()
   flags_init_ = 0;
 }
 
-// Description: remise dans l'etat initial obtenu apres constructeur par defaut
+/*! @brief remise dans l'etat initial obtenu apres constructeur par defaut
+ *
+ */
 void Joint_Items::reset()
 {
   nb_items_virtuels_ = -1;
@@ -38,69 +42,87 @@ void Joint_Items::reset()
   renum_items_communs_.reset();
 }
 
-// Description: Voir items_communs_
+/*! @brief Voir items_communs_
+ *
+ */
 const ArrOfInt& Joint_Items::items_communs() const
 {
   return items_communs_;
 }
 
-// Description:  Renvoie le tableau items_communs_ pour le remplir.
-//  (BM: ce tableau n'est pas encore rempli)
+/*! @brief Renvoie le tableau items_communs_ pour le remplir.
+ *
+ * (BM: ce tableau n'est pas encore rempli)
+ *
+ */
 ArrOfInt& Joint_Items::set_items_communs()
 {
   flags_init_ |= 1;
   return items_communs_;
 }
 
-// Description: Voir items_distants_
+/*! @brief Voir items_distants_
+ *
+ */
 const ArrOfInt& Joint_Items::items_distants() const
 {
   assert(flags_init_ & 2);
   return items_distants_;
 }
 
-// Description:  Renvoie le tableau items_distants_ pour le remplir
-// Voir Scatter::calculer_espace_distant,
-//      Scatter::calculer_espace_distant_faces_frontieres,
-//      Scatter::calculer_espace_distant_elements
+/*! @brief Renvoie le tableau items_distants_ pour le remplir Voir Scatter::calculer_espace_distant,
+ *
+ *       Scatter::calculer_espace_distant_faces_frontieres,
+ *       Scatter::calculer_espace_distant_elements
+ *
+ */
 ArrOfInt& Joint_Items::set_items_distants()
 {
   flags_init_ |= 2;
   return items_distants_;
 }
 
-// Description:  Voir nb_items_virtuels_
-// Voir Scatter::calculer_nb_items_virtuels
+/*! @brief Voir nb_items_virtuels_ Voir Scatter::calculer_nb_items_virtuels
+ *
+ */
 void Joint_Items::set_nb_items_virtuels(int n)
 {
   flags_init_ |= 4;
   nb_items_virtuels_ = n;
 }
 
-// Description:  Voir nb_items_virtuels_
+/*! @brief Voir nb_items_virtuels_
+ *
+ */
 int Joint_Items::nb_items_virtuels() const
 {
   assert(flags_init_ & 4);
   return nb_items_virtuels_;
 }
 
-// Description:  Voir renum_items_communs_
-// Voir Scatter::calculer_colonne0_renum_faces_communes
-//      Scatter::construire_correspondance_sommets_par_coordonnees
+/*! @brief Voir renum_items_communs_ Voir Scatter::calculer_colonne0_renum_faces_communes
+ *
+ *       Scatter::construire_correspondance_sommets_par_coordonnees
+ *
+ */
 IntTab& Joint_Items::set_renum_items_communs()
 {
   flags_init_ |= 8;
   return renum_items_communs_;
 }
 
-// Description:  Voir renum_items_communs_
+/*! @brief Voir renum_items_communs_
+ *
+ */
 const IntTab& Joint_Items::renum_items_communs() const
 {
   assert(flags_init_ & 8);
   return renum_items_communs_;
 }
 
-// Description: Pas encore utilise
+/*! @brief Pas encore utilise
+ *
+ */
 void Joint_Items::set_nb_items_reels(int n)
 {
   assert(n >= 0);
@@ -108,10 +130,12 @@ void Joint_Items::set_nb_items_reels(int n)
   nb_items_reels_ = n;
 }
 
-// Description: Pas encore utilise (prevu pour faciliter la creation
-//  des tableaux distribues, mais les joints ne sont pas le bon endroit
-//  pour stocker cette valeur: il faut pouvoir la stocker meme s'il n'y
-//  a aucun processeur voisin).
+/*! @brief Pas encore utilise (prevu pour faciliter la creation des tableaux distribues, mais les joints ne sont pas le bon endroit
+ *
+ *   pour stocker cette valeur: il faut pouvoir la stocker meme s'il n'y
+ *   a aucun processeur voisin).
+ *
+ */
 int Joint_Items::nb_items_reels() const
 {
   assert(flags_init_ & 16);

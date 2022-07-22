@@ -42,9 +42,11 @@ void Octree_Zone::rang_elements(double x, double y, double z, ArrOfInt& elements
   find_elements(x, y, z, &elements);
 }
 
-// Description: si elements est non nul, remplit le tableau avec la liste des
-//  elements contenant le point x,y,z et renvoie -1, sinon renvoie l'indice du
-//  premier element trouve contenant le point x,y,z ou -1 si aucun element.
+/*! @brief si elements est non nul, remplit le tableau avec la liste des elements contenant le point x,y,z et renvoie -1, sinon renvoie l'indice du
+ *
+ *   premier element trouve contenant le point x,y,z ou -1 si aucun element.
+ *
+ */
 int Octree_Zone::find_elements(double x, double y, double z, ArrOfInt *elements) const
 {
   if (elements)

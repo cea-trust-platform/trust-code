@@ -236,9 +236,12 @@ void Time::calibrate()
 }
 #endif
 
-// Description: Cette methode renvoie un temps en secondes depuis une origine
-//  qui depend de la methode de mesure de la classe Time. Precision, normalement
-//  de l'ordre de 1ms ou inferieur.
+/*! @brief Cette methode renvoie un temps en secondes depuis une origine qui depend de la methode de mesure de la classe Time.
+ *
+ * Precision, normalement
+ *   de l'ordre de 1ms ou inferieur.
+ *
+ */
 double Statistiques::get_time_now()
 {
   Time t;

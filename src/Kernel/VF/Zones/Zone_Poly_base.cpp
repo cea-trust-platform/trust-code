@@ -124,13 +124,14 @@ Entree& Zone_Poly_base::readOn(Entree& is)
   return is;
 }
 
-// Description:
-//  Methode appelee par Zone_VF::discretiser apres la creation
-//  des faces reelles.
-//  On reordonne les faces de sorte a placer les faces "non standard"
-//  au debut de la liste des faces. Les faces non standard sont celles
-//  dont les volumes de controles sont modifies par les conditions aux
-//  limites.
+/*! @brief Methode appelee par Zone_VF::discretiser apres la creation des faces reelles.
+ *
+ *   On reordonne les faces de sorte a placer les faces "non standard"
+ *   au debut de la liste des faces. Les faces non standard sont celles
+ *   dont les volumes de controles sont modifies par les conditions aux
+ *   limites.
+ *
+ */
 void Zone_Poly_base::reordonner(Faces& les_faces)
 {
   if (Process::je_suis_maitre())

@@ -29,12 +29,11 @@ Champ_base& TRUSTChamp_Morceaux_generique<_TYPE_>::affecter_(const Champ_base& c
   return *this;
 }
 
-// Description:
-//    Renvoie la valeur du champ au point specifie par ses coordonnees.
-// Parametre: DoubleVect& positions
-//    Signification: les coordonnees du point de calcul
-// Parametre: DoubleVect& valeurs
-//    Signification: la valeur du champ au point specifie
+/*! @brief Renvoie la valeur du champ au point specifie par ses coordonnees.
+ *
+ * @param (DoubleVect& positions) les coordonnees du point de calcul
+ * @param (DoubleVect& valeurs) la valeur du champ au point specifie
+ */
 template<Champ_Morceaux_Type _TYPE_>
 DoubleVect& TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_a(const DoubleVect& positions, DoubleVect& tab_valeurs) const
 {
@@ -44,15 +43,12 @@ DoubleVect& TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_a(const DoubleVect& po
   return valeur_a_elem(positions, tab_valeurs, le_poly[0]);
 }
 
-// Description:
-//    Renvoie la valeur du champ au point specifie par ses coordonnees, en indiquant que ce point est
-//    situe dans un element specifie.
-// Parametre: DoubleVect&
-//    Signification: les coordonnees du point de calcul
-// Parametre: DoubleVect& val
-//    Signification: la valeur du champ au point specifie
-// Parametre: int le_poly
-//    Signification: l'element dans lequel est situe le point de calcul
+/*! @brief Renvoie la valeur du champ au point specifie par ses coordonnees, en indiquant que ce point est situe dans un element specifie.
+ *
+ * @param (DoubleVect&) les coordonnees du point de calcul
+ * @param (DoubleVect& val) la valeur du champ au point specifie
+ * @param (int le_poly) l'element dans lequel est situe le point de calcul
+ */
 template<Champ_Morceaux_Type _TYPE_>
 DoubleVect& TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_a_elem(const DoubleVect&, DoubleVect& val, int le_poly) const
 {
@@ -64,15 +60,12 @@ DoubleVect& TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_a_elem(const DoubleVec
   return val;
 }
 
-// Description:
-//    Renvoie la valeur d'une composante du champ au point specifie
-//    par ses coordonnees, en indiquant que ce point est situe dans un element specifie.
-// Parametre: DoubleVect&
-//    Signification: les coordonnees du point de calcul
-// Parametre: int le_poly
-//    Signification: l'element dans lequel est situe le point de calcul
-// Parametre: int ncomp
-//    Signification: l'index de la composante du champ a calculer
+/*! @brief Renvoie la valeur d'une composante du champ au point specifie par ses coordonnees, en indiquant que ce point est situe dans un element specifie.
+ *
+ * @param (DoubleVect&) les coordonnees du point de calcul
+ * @param (int le_poly) l'element dans lequel est situe le point de calcul
+ * @param (int ncomp) l'index de la composante du champ a calculer
+ */
 template<Champ_Morceaux_Type _TYPE_>
 double TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_a_elem_compo(const DoubleVect&, int le_poly, int ncomp) const
 {
@@ -84,12 +77,11 @@ double TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_a_elem_compo(const DoubleVe
   return val;
 }
 
-// Description:
-//    Renvoie les valeurs du champ aux points specifies par leurs coordonnees.
-// Parametre: DoubleTab& positions
-//    Signification: le tableau des coordonnees des points de calcul
-// Parametre: DoubleTab& valeurs
-//    Signification: le tableau des valeurs du champ aux points specifies
+/*! @brief Renvoie les valeurs du champ aux points specifies par leurs coordonnees.
+ *
+ * @param (DoubleTab& positions) le tableau des coordonnees des points de calcul
+ * @param (DoubleTab& valeurs) le tableau des valeurs du champ aux points specifies
+ */
 template<Champ_Morceaux_Type _TYPE_>
 DoubleTab& TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_aux(const DoubleTab& positions, DoubleTab& tab_valeurs) const
 {
@@ -99,14 +91,12 @@ DoubleTab& TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_aux(const DoubleTab& po
   return valeur_aux_elems(positions, les_polys, tab_valeurs);
 }
 
-// Description:
-//    Renvoie les valeurs d'une composante du champ aux points specifies par leurs coordonnees.
-// Parametre: DoubleTab& positions
-//    Signification: le tableau des coordonnees des points de calcul
-// Parametre: DoubleVect& valeurs
-//    Signification: le tableau des valeurs de la composante du champ aux points specifies
-// Parametre: int ncomp
-//    Signification: l'index de la composante du champ a calculer
+/*! @brief Renvoie les valeurs d'une composante du champ aux points specifies par leurs coordonnees.
+ *
+ * @param (DoubleTab& positions) le tableau des coordonnees des points de calcul
+ * @param (DoubleVect& valeurs) le tableau des valeurs de la composante du champ aux points specifies
+ * @param (int ncomp) l'index de la composante du champ a calculer
+ */
 template<Champ_Morceaux_Type _TYPE_>
 DoubleVect& TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_aux_compo(const DoubleTab& positions, DoubleVect& tab_valeurs, int ncomp) const
 {
@@ -116,15 +106,12 @@ DoubleVect& TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_aux_compo(const Double
   return valeur_aux_elems_compo(positions, les_polys, tab_valeurs, ncomp);
 }
 
-// Description:
-//    Renvoie les valeurs du champ aux points specifies
-//    par leurs coordonnees, en indiquant que les points de calculs sont situes dans les elements indiques.
-// Parametre: DoubleTab&
-//    Signification: le tableau des coordonnees des points de calcul
-// Parametre: IntVect& les_polys
-//    Signification: le tableau des elements dans lesquels sont situes les points de calcul
-// Parametre: DoubleTab& val
-//    Signification: le tableau des valeurs du champ aux points specifies
+/*! @brief Renvoie les valeurs du champ aux points specifies par leurs coordonnees, en indiquant que les points de calculs sont situes dans les elements indiques.
+ *
+ * @param (DoubleTab&) le tableau des coordonnees des points de calcul
+ * @param (IntVect& les_polys) le tableau des elements dans lesquels sont situes les points de calcul
+ * @param (DoubleTab& val) le tableau des valeurs du champ aux points specifies
+ */
 template<Champ_Morceaux_Type _TYPE_>
 DoubleTab& TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_aux_elems(const DoubleTab&, const IntVect& les_polys, DoubleTab& val) const
 {
@@ -146,17 +133,13 @@ DoubleTab& TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_aux_elems(const DoubleT
   return val;
 }
 
-// Description:
-//    Renvoie les valeurs d'une composante du champ aux points specifies
-//    par leurs coordonnees, en indiquant que les points de calculs sont situes dans les elements indiques.
-// Parametre: DoubleTab&
-//    Signification: le tableau des coordonnees des points de calcul
-// Parametre: IntVect& les_polys
-//    Signification: le tableau des elements dans lesquels sont situes les points de calcul
-// Parametre: DoubleVect& val
-//    Signification: le tableau des valeurs de la composante du champ aux points specifies
-// Parametre: int ncomp
-//    Signification: l'index de la composante du champ a calculer
+/*! @brief Renvoie les valeurs d'une composante du champ aux points specifies par leurs coordonnees, en indiquant que les points de calculs sont situes dans les elements indiques.
+ *
+ * @param (DoubleTab&) le tableau des coordonnees des points de calcul
+ * @param (IntVect& les_polys) le tableau des elements dans lesquels sont situes les points de calcul
+ * @param (DoubleVect& val) le tableau des valeurs de la composante du champ aux points specifies
+ * @param (int ncomp) l'index de la composante du champ a calculer
+ */
 template<Champ_Morceaux_Type _TYPE_>
 DoubleVect& TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_aux_elems_compo(const DoubleTab&, const IntVect& les_polys, DoubleVect& val, int ncomp) const
 {

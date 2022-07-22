@@ -36,22 +36,13 @@ Milieu_base::Milieu_base()
   deja_associe=0;
 }
 
-// Description:
-//    Surcharge Objet_U::printOn
-//    Imprime un mileu sur un flot de sortie.
-//    Appelle Milieu_base::ecrire
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie pour l'impression
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Surcharge Objet_U::printOn Imprime un mileu sur un flot de sortie.
+ *
+ *     Appelle Milieu_base::ecrire
+ *
+ * @param (Sortie& os) le flot de sortie pour l'impression
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Milieu_base::printOn(Sortie& os) const
 {
   os << "{" << finl;
@@ -60,25 +51,16 @@ Sortie& Milieu_base::printOn(Sortie& os) const
   return os;
 }
 
-// Description:
-//    Ecrit un objet milieu sur un flot de sortie.
-//    Ecrit les caracteristiques du milieu:
-//        - masse volumique
-//        - conductivite
-//        - capacite calorifique
-//        - beta_th
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie pour l'ecriture
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:  le flot de sortie est modifie
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit un objet milieu sur un flot de sortie.
+ *
+ * Ecrit les caracteristiques du milieu:
+ *         - masse volumique
+ *         - conductivite
+ *         - capacite calorifique
+ *         - beta_th
+ *
+ * @param (Sortie& os) le flot de sortie pour l'ecriture
+ */
 void  Milieu_base::ecrire(Sortie& os) const
 {
   os << "rho " << rho<< finl;
@@ -179,26 +161,19 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
       champs_compris_.ajoute_champ(rho_cp_elem_.valeur());
     }
 }
-// Description:
-//    Lecture d'un milieu sur un flot d'entree.
-//    Format:
-//    {
-//     grandeur_physique type_champ bloc de lecture du champ
-//    }
-// cf set_param method to know the understood keywords
-// cf Param class to know possible options reading
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree pour la lecture des parametres du milieu
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: accolade ouvrante attendue
-// Effets de bord:
-// Postcondition: l'objet milieu est construit avec les parametres lus
+/*! @brief Lecture d'un milieu sur un flot d'entree.
+ *
+ * Format:
+ *     {
+ *      grandeur_physique type_champ bloc de lecture du champ
+ *     }
+ *  cf set_param method to know the understood keywords
+ *  cf Param class to know possible options reading
+ *
+ * @param (Entree& is) le flot d'entree pour la lecture des parametres du milieu
+ * @return (Entree&) le flot d'entree modifie
+ * @throws accolade ouvrante attendue
+ */
 Entree& Milieu_base::readOn(Entree& is)
 {
   Cerr<<"Reading of data for a "<<que_suis_je()<<" medium"<<finl;
@@ -253,23 +228,14 @@ void Milieu_base::creer_champs_non_lus()
     creer_alpha();
 }
 
-// Description:
-//    Associe la gravite en controlant dynamiquement le
-//    type de l'objet a associer.
-//    Si l'objet est du type Champ_Don ou Champ_Don_base
-//    l'association reussit, sinon elle echoue.
-// Precondition:
-// Parametre: Objet_U& ob
-//    Signification: un objet TRUST devant representer un champ de gravite
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: int
-//    Signification: 1 si l'association a reussie, 0 sinon.
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe la gravite en controlant dynamiquement le type de l'objet a associer.
+ *
+ *     Si l'objet est du type Champ_Don ou Champ_Don_base
+ *     l'association reussit, sinon elle echoue.
+ *
+ * @param (Objet_U& ob) un objet TRUST devant representer un champ de gravite
+ * @return (int) 1 si l'association a reussie, 0 sinon.
+ */
 int Milieu_base::associer_(Objet_U& ob)
 {
   if (sub_type(Champ_Don_base,ob))
@@ -285,20 +251,10 @@ int Milieu_base::associer_(Objet_U& ob)
   return 0;
 }
 
-// Description:
-//    Associe (affecte) un champ de gravite au milieu.
-// Precondition:
-// Parametre: Champ_Don_base& gravite
-//    Signification: champ donne representant la gravite
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe (affecte) un champ de gravite au milieu.
+ *
+ * @param (Champ_Don_base& gravite) champ donne representant la gravite
+ */
 void Milieu_base::associer_gravite(const Champ_Don_base& la_gravite)
 {
   // On verifie que la gravite est de la bonne dimension
@@ -310,26 +266,15 @@ void Milieu_base::associer_gravite(const Champ_Don_base& la_gravite)
   g = la_gravite;
 }
 
-// Description:
-//    Calcul de alpha=lambda/(rho*Cp).
-//    Suivant lambda, rho et Cp alpha peut-etre type comme
-//    un champ uniforme ou un champ uniforme par morceau.
-// Precondition: Conductivite (lambda) non nulle
-// Precondition: Masse volumique (rho) non nulle
-// Precondition: Capacite calorifique (Cp) non nulle
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: violation d'une precondition
-// Exception: impossible de calculer alpha car le type des champs
-//            lambda,rho,Cp n'est pas compatible ou pas gere.
-// Effets de bord:
-// Postcondition: la diffusivite (alpha) est calculee
+/*! @brief Calcul de alpha=lambda/(rho*Cp).
+ *
+ * Suivant lambda, rho et Cp alpha peut-etre type comme
+ *     un champ uniforme ou un champ uniforme par morceau.
+ *
+ * @throws violation d'une precondition
+ * @throws impossible de calculer alpha car le type des champs
+ * lambda,rho,Cp n'est pas compatible ou pas gere.
+ */
 void Milieu_base::calculer_alpha()
 {
   if(lambda.non_nul())
@@ -432,22 +377,13 @@ void Milieu_base::creer_alpha()
   alpha->nommer("alpha");
 }
 
-// Description:
-//    Renvoie la gravite du milieu si elle a ete associe
-//    provoque une erreur sinon.
-//    (version const)
-// Precondition: la gravite doit avoir ete associee
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Don_base&
-//    Signification: le champ representant la gravite du milieu
-//    Contraintes: reference constante
-// Exception: pas de gravite associee au milieu
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la gravite du milieu si elle a ete associe provoque une erreur sinon.
+ *
+ *     (version const)
+ *
+ * @return (Champ_Don_base&) le champ representant la gravite du milieu
+ * @throws pas de gravite associee au milieu
+ */
 const Champ_Don_base& Milieu_base::gravite() const
 {
   if (g.non_nul())
@@ -460,21 +396,10 @@ const Champ_Don_base& Milieu_base::gravite() const
   return g.valeur(); // pour les compilateurs
 }
 
-// Description:
-//    Renvoie la gravite du milieu si elle a ete associe
-//    provoque une erreur sinon.
-// Precondition: la gravite doit avoir ete associee
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Don_base&
-//    Signification: le champ representant la gravite du milieu
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la gravite du milieu si elle a ete associe provoque une erreur sinon.
+ *
+ * @return (Champ_Don_base&) le champ representant la gravite du milieu
+ */
 Champ_Don_base& Milieu_base::gravite()
 {
   if (g.non_nul())
@@ -510,215 +435,110 @@ int Milieu_base::initialiser(const double temps)
   return 1;
 }
 
-// Description:
-//    Renvoie la masse volumique du milieu.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_base&
-//    Signification: le champ donne representant la masse volumique
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la masse volumique du milieu.
+ *
+ * (version const)
+ *
+ * @return (Champ_base&) le champ donne representant la masse volumique
+ */
 const Champ& Milieu_base::masse_volumique() const
 {
   return rho;
 }
 
-// Description:
-//    Renvoie la masse volumique du milieu.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_base&
-//    Signification: le champ donne representant la masse volumique
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la masse volumique du milieu.
+ *
+ * @return (Champ_base&) le champ donne representant la masse volumique
+ */
 Champ& Milieu_base::masse_volumique()
 {
   return rho;
 }
 
-// Description:
-//    Renvoie la diffusivite du milieu.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:Champ_Don&
-//    Signification: le champ donne representant la diffusivite
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la diffusivite du milieu.
+ *
+ * (version const)
+ *
+ * @return (Champ_Don&) le champ donne representant la diffusivite
+ */
 const Champ_Don& Milieu_base::diffusivite() const
 {
   return alpha;
 }
 
-// Description:
-//    Renvoie la diffusivite du milieu.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Don&
-//    Signification: le champ donne representant la diffusivite
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la diffusivite du milieu.
+ *
+ * @return (Champ_Don&) le champ donne representant la diffusivite
+ */
 Champ_Don& Milieu_base::diffusivite()
 {
   return alpha;
 }
 
-// Description:
-//    Renvoie la conductivite du milieu.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Don&
-//    Signification: le champ donne representant la conductivite
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la conductivite du milieu.
+ *
+ * (version const)
+ *
+ * @return (Champ_Don&) le champ donne representant la conductivite
+ */
 const Champ_Don& Milieu_base::conductivite() const
 {
   return lambda;
 }
 
-// Description:
-//    Renvoie la conductivite du milieu.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Don&
-//    Signification: le champ donne representant la conductivite
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la conductivite du milieu.
+ *
+ * @return (Champ_Don&) le champ donne representant la conductivite
+ */
 Champ_Don& Milieu_base::conductivite()
 {
   return lambda;
 }
 
-// Description:
-//    Renvoie la capacite calorifique du milieu.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Don&
-//    Signification: le champ donne representant la capacite calorifique
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la capacite calorifique du milieu.
+ *
+ * (version const)
+ *
+ * @return (Champ_Don&) le champ donne representant la capacite calorifique
+ */
 const Champ_Don& Milieu_base::capacite_calorifique() const
 {
   return Cp;
 }
 
-// Description:
-//    Renvoie la capacite calorifique du milieu.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Don&
-//    Signification: le champ donne representant la capacite calorifique
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la capacite calorifique du milieu.
+ *
+ * @return (Champ_Don&) le champ donne representant la capacite calorifique
+ */
 Champ_Don& Milieu_base::capacite_calorifique()
 {
   return Cp;
 }
 
-// Description:
-//    Renvoie beta_t du milieu.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Don&
-//    Signification: le champ donne representant beta_t
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie beta_t du milieu.
+ *
+ * (version const)
+ *
+ * @return (Champ_Don&) le champ donne representant beta_t
+ */
 const Champ_Don& Milieu_base::beta_t() const
 {
   return beta_th;
 }
 
-// Description:
-//    Renvoie beta_t du milieu.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Don&
-//    Signification: le champ donne representant beta_t
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie beta_t du milieu.
+ *
+ * @return (Champ_Don&) le champ donne representant beta_t
+ */
 Champ_Don& Milieu_base::beta_t()
 {
   return beta_th;
 }
 
-// Description:
-//    Renvoie 1 si la gravite a ete initialisee
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si g.non_nul
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie 1 si la gravite a ete initialisee
+ *
+ * @return (int) 1 si g.non_nul
+ */
 int Milieu_base::a_gravite() const
 {
   if (g.non_nul())
@@ -756,20 +576,10 @@ void Milieu_base::get_noms_champs_postraitables(Noms& nom,Option opt) const
 }
 
 
-// Description:
-//    Renvoie 0 si le milieu est deja associe a un probleme, 1 sinon
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie 0 si le milieu est deja associe a un probleme, 1 sinon
+ *
+ * @return (int)
+ */
 int Milieu_base::est_deja_associe()
 {
   if (deja_associe==1)

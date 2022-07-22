@@ -19,12 +19,10 @@
 #include <Schema_Explicite_Multi_TimeStep_base.h>
 #include <TRUSTTabs_forward.h>
 
-//////////////////////////////////////////////////////////////////////////////
-// .DESCRIPTION
-//     classe Schema_Adams_Bashforth_base
-// .SECTION voir aussi
-//     Schema_Temps_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Schema_Adams_Bashforth_base
+ *
+ * @sa Schema_Temps_base
+ */
 class Schema_Adams_Bashforth_base: public Schema_Explicite_Multi_TimeStep_base
 {
 

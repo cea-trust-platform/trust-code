@@ -18,19 +18,16 @@
 
 #include <Champ_Inc_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_Inc
-//     Classe generique de la hierarchie des champs inconnue, un objet
-//     Champ_Inc peut referencer n'importe quel objet derivant de
-//     Champ_Inc_base.
-//     La plupart des methodes appellent les methodes de l'objet champ
-//     sous-jacent via la methode valeur() declaree grace a la macro
-//Declare_deriv().;
-// .SECTION voir aussi
-//      Ch_Inc_base Zone_dis Ch_proto
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_Inc Classe generique de la hierarchie des champs inconnue, un objet
+ *
+ *      Champ_Inc peut referencer n'importe quel objet derivant de
+ *      Champ_Inc_base.
+ *      La plupart des methodes appellent les methodes de l'objet champ
+ *      sous-jacent via la methode valeur() declaree grace a la macro
+ * Declare_deriv().;
+ *
+ * @sa Ch_Inc_base Zone_dis Ch_proto
+ */
 
 Declare_deriv(Champ_Inc_base);
 

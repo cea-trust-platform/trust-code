@@ -18,18 +18,17 @@
 
 #include <Transformer.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Rotation
-//    Applique une rotation autour d un axe aligne avec un des axes du repere.
-//    Structure du jeu de donnee :
-//    Rotation nom_domaine nom_axe coord1 coord2 angle
-//    nom_domaine   : nom du domaine auquelon applique une rotation
-//    nom_axe       : axe (X, Y ou Z) avec lequel est aligne l axe de rotation
-//    coord1 coord2 : coordonnees (sens dtrigonometrique direct) du centre de rotation
-//                      dans le plan orthogonal a l axe de rotation
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Rotation Applique une rotation autour d un axe aligne avec un des axes du repere.
+ *
+ *     Structure du jeu de donnee :
+ *     Rotation nom_domaine nom_axe coord1 coord2 angle
+ *     nom_domaine   : nom du domaine auquelon applique une rotation
+ *     nom_axe       : axe (X, Y ou Z) avec lequel est aligne l axe de rotation
+ *     coord1 coord2 : coordonnees (sens dtrigonometrique direct) du centre de rotation
+ *                       dans le plan orthogonal a l axe de rotation
+ *
+ *
+ */
 
 class Rotation : public Transformer
 {

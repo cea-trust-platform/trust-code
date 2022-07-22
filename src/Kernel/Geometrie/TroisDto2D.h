@@ -19,16 +19,10 @@
 #include <Domaine.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe TroisDto2D
-//    x->alpha x
-// .SECTION voir aussi
-//    Interprete Pave
-//    Actuellement le seul tyep d'objet reconnu par Trio-U pour mailler
-//    une domaine est l'objet Pave
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe TroisDto2D x->alpha x
+ *
+ * @sa Interprete Pave, Actuellement le seul tyep d'objet reconnu par Trio-U pour mailler, une domaine est l'objet Pave
+ */
 #include <Interprete_geometrique_base.h>
 class TroisDto2D : public Interprete_geometrique_base
 {

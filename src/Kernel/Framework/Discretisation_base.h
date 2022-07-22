@@ -34,20 +34,14 @@ class Champ_Fonc_Tabule;
 class Probleme_base;
 class Equation_base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Discretisation_base
-//     Cette classe represente un schema de discretisation en espace, qui
-//     sera associe a un probleme. Discretisation_base est la classe
-//     abstraite qui est a la base de la hierarchie des discretisations
-//     en espace.
-// .SECTION voir aussi Probleme_base
-//     Classe abstraite dont toutes les discretisations en espace doivent
-//     deriver.
-//     Methode abstraite:
-//       void zone_Cl_dis(Zone_dis& , Zone_Cl_dis& ) const
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Discretisation_base Cette classe represente un schema de discretisation en espace, qui
+ *
+ *      sera associe a un probleme. Discretisation_base est la classe
+ *      abstraite qui est a la base de la hierarchie des discretisations
+ *      en espace.
+ *
+ * @sa Probleme_base, Classe abstraite dont toutes les discretisations en espace doivent, deriver., Methode abstraite:, void zone_Cl_dis(Zone_dis& , Zone_Cl_dis& ) const
+ */
 
 class Discretisation_base : public Objet_U
 {

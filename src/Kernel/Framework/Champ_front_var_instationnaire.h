@@ -20,25 +20,22 @@
 #include <Champ_front_var.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_front_var_instationnaire
-//     Classe derivee de Champ_front_var qui represente les champs aux
-//     frontieres variables en espace et dans le temps.
-//     Les Champ_front_var_instationnaire sont classes suivant que
-//     leurs valeurs dependent ou non de parametres externes a
-//     l'equation, en Champ_front_var_instationnaire_indep et
-//     Champ_front_var_instationnaire_dep.
-//     L'implementation du calcul du champ doit se faire dans la
-//     methode mettre_a_jour.
-//     Dans le premier cas (indep), la methode initialiser peut
-//     appeler la methode mettre_a_jour, mais pas dans le second cas
-//     (dep). Elle peut de toutes facons utiliser l'inconnue qui lui
-//     est passee en parametre comme une premiere estimation.
-// .SECTION voir aussi
-//     Champ_front_var
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_front_var_instationnaire Classe derivee de Champ_front_var qui represente les champs aux
+ *
+ *      frontieres variables en espace et dans le temps.
+ *      Les Champ_front_var_instationnaire sont classes suivant que
+ *      leurs valeurs dependent ou non de parametres externes a
+ *      l'equation, en Champ_front_var_instationnaire_indep et
+ *      Champ_front_var_instationnaire_dep.
+ *      L'implementation du calcul du champ doit se faire dans la
+ *      methode mettre_a_jour.
+ *      Dans le premier cas (indep), la methode initialiser peut
+ *      appeler la methode mettre_a_jour, mais pas dans le second cas
+ *      (dep). Elle peut de toutes facons utiliser l'inconnue qui lui
+ *      est passee en parametre comme une premiere estimation.
+ *
+ * @sa Champ_front_var
+ */
 class Champ_front_var_instationnaire : public Champ_front_var
 {
 

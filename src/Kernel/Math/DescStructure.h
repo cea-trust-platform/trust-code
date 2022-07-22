@@ -26,7 +26,9 @@ class Esp_Dist;
 Declare_vect(Esp_Virt);
 Declare_vect(Esp_Dist);
 
-// .DESCRIPTION Sert a relire ancinne structure parallele
+/*! @brief Sert a relire ancinne structure parallele
+ *
+ */
 class DescStructure : public Objet_U
 {
   Declare_instanciable(DescStructure);

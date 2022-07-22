@@ -19,20 +19,17 @@
 #include <Frontiere.h>
 #include <Joint_Items.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    La classe Joint est une Frontiere qui contient les faces
-//    et les sommets de joint avec la zone PEvoisin() (pour les maillages
-//    distribues en parallele).
-//    Elle porte en plus dans les Joint_Items les informations
-//    permettant de construire les tableaux distribues indexes
-//    par les items geometriques (sommets, faces, elements, aretes,
-//    faces_frontieres)
-//
-// .SECTION voir aussi
-//    Scatter Joint_Item
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief La classe Joint est une Frontiere qui contient les faces et les sommets de joint avec la zone PEvoisin() (pour les maillages
+ *
+ *     distribues en parallele).
+ *     Elle porte en plus dans les Joint_Items les informations
+ *     permettant de construire les tableaux distribues indexes
+ *     par les items geometriques (sommets, faces, elements, aretes,
+ *     faces_frontieres)
+ *
+ *
+ * @sa Scatter Joint_Item
+ */
 
 class Joint : public Frontiere
 {

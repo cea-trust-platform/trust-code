@@ -32,63 +32,26 @@ EcrFicCollecte::~EcrFicCollecte()
 {
   SFichier::close();
 }
-// Description:
-//    Constructeur
-//    Ouvre le fichier avec les parametres mode et prot donnes
-//    Ces parametres sont les parametres de la methode open standard
-// Precondition:
-// Parametre: const char* name
-//    Signification: nom du fichier
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int mode
-//    Signification: parametre passe a open
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int prot
-//    Signification: parametre passe a open
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Constructeur Ouvre le fichier avec les parametres mode et prot donnes
+ *
+ *     Ces parametres sont les parametres de la methode open standard
+ *
+ * @param (const char* name) nom du fichier
+ * @param (int mode) parametre passe a open
+ * @param (int prot) parametre passe a open
+ */
 EcrFicCollecte::EcrFicCollecte(const char* name,IOS_OPEN_MODE mode)
 {
   EcrFicCollecte::ouvrir(name, mode);
 }
 
 
-// Description:
-//    Ouvre le fichier avec les parametres mode et prot donnes
-//    Ces parametres sont les parametres de la methode open standard
-// Precondition:
-// Parametre: const char* name
-//    Signification: nom du fichier
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int mode
-//    Signification: parametre passe a open
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int prot
-//    Signification: parametre passe a open
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ouvre le fichier avec les parametres mode et prot donnes Ces parametres sont les parametres de la methode open standard
+ *
+ * @param (const char* name) nom du fichier
+ * @param (int mode) parametre passe a open
+ * @param (int prot) parametre passe a open
+ */
 int EcrFicCollecte::ouvrir(const char* name,IOS_OPEN_MODE mode)
 {
   Nom nom_fic(name);

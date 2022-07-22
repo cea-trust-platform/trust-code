@@ -96,21 +96,25 @@ Entree& EcritureLectureSpecial::interpreter(Entree& is)
   return is;
 }
 
-// Description:
-//     indique si le format special a ete demande en lecture
-//     active par reprise xyz ....
+/*! @brief indique si le format special a ete demande en lecture active par reprise xyz .
+ *
+ * ...
+ *
+ */
 int EcritureLectureSpecial::is_lecture_special()
 {
   return mode_lec;
 }
 
-// Description:
-//     indique si le format special a ete demande en lecture
-//     active par sauvegarde xyz ....
-//  si le mode ecriture est special c.a.d si format de sauvegarde xyz
-//    alors special =1 a_faire=je_suis_maitre
-//    sinon special=0 , a_faire=1
-//
+/*! @brief indique si le format special a ete demande en lecture active par sauvegarde xyz .
+ *
+ * ...
+ *   si le mode ecriture est special c.a.d si format de sauvegarde xyz
+ *     alors special =1 a_faire=je_suis_maitre
+ *     sinon special=0 , a_faire=1
+ *
+ *
+ */
 int EcritureLectureSpecial::is_ecriture_special(int& special,int& a_faire)
 {
   special=0;
@@ -124,16 +128,11 @@ int EcritureLectureSpecial::is_ecriture_special(int& special,int& a_faire)
   return mode_ecr;
 }
 
-// Description:
-//    simple appel a EcritureLectureSpecial::ecriture_special
-//          (const Zone_VF& zvf,Sortie& fich,int nbval,const DoubleTab& val)
-//    apres avoir recupere le tableau val
-// Precondition:
-// Parametre:
-// Retour:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief simple appel a EcritureLectureSpecial::ecriture_special (const Zone_VF& zvf,Sortie& fich,int nbval,const DoubleTab& val)
+ *
+ *     apres avoir recupere le tableau val
+ *
+ */
 int EcritureLectureSpecial::ecriture_special(const Champ_base& ch, Sortie& fich)
 {
   const Zone_VF& zvf = ref_cast(Zone_VF, ch.zone_dis_base());
@@ -208,9 +207,11 @@ int ecrit(Sortie& fich, const ArrOfBit& items_to_write, const DoubleTab& pos, co
   return 8 * (dim + nb_comp) * nb_val; // Bytes
 }
 
-// Description:
-//  Partie "interieure" de l'ecriture, appellee par la methode en dessous.
-//  Methode recursive, si le tableau a ecrire a un descripteur MD_Vector_composite
+/*! @brief Partie "interieure" de l'ecriture, appellee par la methode en dessous.
+ *
+ * Methode recursive, si le tableau a ecrire a un descripteur MD_Vector_composite
+ *
+ */
 static int ecriture_special_part2(const Zone_VF& zvf, Sortie& fich, const DoubleTab& val)
 {
   const MD_Vector& md = val.get_md_vector();
@@ -240,14 +241,9 @@ static int ecriture_special_part2(const Zone_VF& zvf, Sortie& fich, const Double
   return bytes;
 }
 
-// Description:
-//    codage de l'ecriture des positions et des valeurs de val
-// Precondition:
-// Parametre:
-// Retour:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief codage de l'ecriture des positions et des valeurs de val
+ *
+ */
 int EcritureLectureSpecial::ecriture_special(const Zone_VF& zvf, Sortie& fich, const DoubleTab& val)
 {
   const MD_Vector& md = val.get_md_vector();
@@ -295,15 +291,9 @@ int EcritureLectureSpecial::ecriture_special(const Zone_VF& zvf, Sortie& fich, c
   return bytes;
 }
 
-// Description:
-//    simple appel a EcritureLectureSpecial::lecture_special
-//          (const Zone_VF& zvf,Entree& fich,int nbval, DoubleTab& val )
-// Precondition:
-// Parametre:
-// Retour:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief simple appel a EcritureLectureSpecial::lecture_special (const Zone_VF& zvf,Entree& fich,int nbval, DoubleTab& val )
+ *
+ */
 void EcritureLectureSpecial::lecture_special(Champ_base& ch, Entree& fich)
 {
   const Zone_VF& zvf=ref_cast(Zone_VF,ch.zone_dis_base());
@@ -312,11 +302,14 @@ void EcritureLectureSpecial::lecture_special(Champ_base& ch, Entree& fich)
 }
 
 
-// Description: Reciproque de la methode ecrit(...), lit uniquement les items sequentiels
-//   (donc pas les items communs recus d'un autre processeur)
-//   On verifie a la fin qu'on a bien lu exactement le nombre d'items attendus, s'il en manque
-//   c'est que le epsilon n'est pas bon (ou qu'on a change le maillage...)
-// Valeur de retour: nombre total d'items sequentiels lus (sur tous les procs)
+/*! @brief Reciproque de la methode ecrit(.
+ *
+ * ..), lit uniquement les items sequentiels (donc pas les items communs recus d'un autre processeur)
+ *    On verifie a la fin qu'on a bien lu exactement le nombre d'items attendus, s'il en manque
+ *    c'est que le epsilon n'est pas bon (ou qu'on a change le maillage...)
+ *  Valeur de retour: nombre total d'items sequentiels lus (sur tous les procs)
+ *
+ */
 static int lire_special(Entree& fich, const DoubleTab& coords, DoubleTab& val, const double epsilon)
 {
   const int dim = coords.dimension(1);
@@ -509,15 +502,9 @@ static int lecture_special_part2(const Zone_VF& zvf, Entree& fich, DoubleTab& va
   return ntot;
 }
 
-// Description:
-//    codage de la relecture d'un champ a partir d'un fichier special
-//          positions,valeurs
-// Precondition:
-// Parametre:
-// Retour:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief codage de la relecture d'un champ a partir d'un fichier special positions,valeurs
+ *
+ */
 void EcritureLectureSpecial::lecture_special(const Zone_VF& zvf, Entree& fich, DoubleTab& val)
 {
 
@@ -547,10 +534,11 @@ void EcritureLectureSpecial::lecture_special(const Zone_VF& zvf, Entree& fich, D
   val.echange_espace_virtuel();
 }
 
-// Description:
-//  Renvoie le mode d'ecriture utilise
-//  (pour pouvoir le modifier).
-//  Cette methode est statique.
+/*! @brief Renvoie le mode d'ecriture utilise (pour pouvoir le modifier).
+ *
+ *   Cette methode est statique.
+ *
+ */
 Nom& EcritureLectureSpecial::get_Output()
 {
   static Nom option=Output;

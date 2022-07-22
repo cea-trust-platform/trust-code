@@ -27,13 +27,14 @@ class Param;
 
 enum Entity { NODE, SEGMENT, FACE, ELEMENT };
 
-// Description:
-// Classe de base des champs generiques pour importation d un champ discret
-// et actions elementaires sur ce champ
-//  (postraitement, etc)
-// Attention: toutes les methodes sont PARALLELES, il faut les appeler
-//  simultanement sur tous les processeurs (get_domain() peut par exemple
-//  construire le domaine parallele avant de le renvoyer).
+/*! @brief Classe de base des champs generiques pour importation d un champ discret et actions elementaires sur ce champ
+ *
+ *   (postraitement, etc)
+ *  Attention: toutes les methodes sont PARALLELES, il faut les appeler
+ *   simultanement sur tous les processeurs (get_domain() peut par exemple
+ *   construire le domaine parallele avant de le renvoyer).
+ *
+ */
 class Champ_Generique_base : public Objet_U
 {
   Declare_base(Champ_Generique_base);

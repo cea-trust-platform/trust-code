@@ -16,7 +16,9 @@
 #ifndef TriouError_included
 #define TriouError_included
 
-// Description: classe d erreur declenche par process::exit
+/*! @brief classe d erreur declenche par process::exit
+ *
+ */
 
 class TriouError
 {

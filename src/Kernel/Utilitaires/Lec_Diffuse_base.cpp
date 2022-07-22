@@ -32,10 +32,14 @@ Sortie& Lec_Diffuse_base::printOn(Sortie& s) const
   return s;
 }
 
-// Description: ne fait rien (constructeur protege car c'est une classe de base)
+/*! @brief ne fait rien (constructeur protege car c'est une classe de base)
+ *
+ */
 Lec_Diffuse_base::Lec_Diffuse_base() { }
 
-// Description: erreur
+/*! @brief erreur
+ *
+ */
 Lec_Diffuse_base& Lec_Diffuse_base::operator=(const Lec_Diffuse_base& )
 {
   Cerr << "Error in Lec_Diffuse_base & operator=(const Lec_Diffuse_base & is)" << finl;
@@ -118,7 +122,11 @@ int Lec_Diffuse_base::fail()
   return flag;
 }
 
-// Description: appelle get_entree_master().set_bin(bin)
+/*! @brief appelle get_entree_master().
+ *
+ * set_bin(bin)
+ *
+ */
 int Lec_Diffuse_base::set_bin(int bin)
 {
   if (Process::je_suis_maitre())
@@ -131,7 +139,11 @@ int Lec_Diffuse_base::set_bin(int bin)
   return bin;
 }
 
-// Description: appelle get_entree_master().set_check_types(flag)
+/*! @brief appelle get_entree_master().
+ *
+ * set_check_types(flag)
+ *
+ */
 void Lec_Diffuse_base::set_check_types(int flag)
 {
   Entree::set_check_types(flag);

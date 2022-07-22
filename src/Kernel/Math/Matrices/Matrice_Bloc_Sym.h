@@ -18,12 +18,12 @@
 
 
 
-//
-// .DESCRIPTION class Matrice_Bloc_Sym
-//    Cette classe derive de Matrice_Bloc et Matrice_Sym.
-//
-// .SECTION voir aussi
-// Matrice_Bloc Matrice_Sym
+/*! @brief class Matrice_Bloc_Sym Cette classe derive de Matrice_Bloc et Matrice_Sym.
+ *
+ *
+ *
+ * @sa Matrice_Bloc Matrice_Sym
+ */
 
 #include <Matrice_Bloc.h>
 #include <Matrice_Sym.h>

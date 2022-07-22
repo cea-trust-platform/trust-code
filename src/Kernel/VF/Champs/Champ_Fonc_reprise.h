@@ -13,9 +13,9 @@
 *
 *****************************************************************************/
 
-///////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
+/*! @brief
+ *
+ */
 
 // .SECTION voir aussi
 //
@@ -30,10 +30,12 @@
 #include <Champ_Fonc_base.h>
 #include <Champ_Inc.h>
 
-//.DESCRIPTION classe Champ_Fonc_reprise
-// Cette classe permet de relire un champ sauvegarde dans un fichier xyz
-// elle porte un champ de type Champ_Inc qui est du meme type que le
-// champ passe en argument
+/*! @brief classe Champ_Fonc_reprise Cette classe permet de relire un champ sauvegarde dans un fichier xyz
+ *
+ *  elle porte un champ de type Champ_Inc qui est du meme type que le
+ *  champ passe en argument
+ *
+ */
 
 //.SECTION voir aussi
 // Champ_Fonc_P0

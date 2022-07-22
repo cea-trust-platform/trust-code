@@ -22,16 +22,13 @@
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_front_Tabule
-//     Classe derivee de Champ_front_instationnaire_base qui
-//     represente les champs aux frontieres uniformes en espace,
-//     calcules par tabulation en fonction du temps.
-// .SECTION voir aussi
-//     Champ_front_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_front_Tabule Classe derivee de Champ_front_instationnaire_base qui
+ *
+ *      represente les champs aux frontieres uniformes en espace,
+ *      calcules par tabulation en fonction du temps.
+ *
+ * @sa Champ_front_base
+ */
 class Champ_front_Tabule : public Champ_front_instationnaire_base
 {
   Declare_instanciable(Champ_front_Tabule);

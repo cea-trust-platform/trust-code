@@ -18,8 +18,9 @@
 
 #include <assert.h>
 
-// .DESCRIPTION
-//  Represente un _TYPE_ construit comme un tableau d'elements de type _TYPE_.
+/*! @brief Represente un _TYPE_ construit comme un tableau d'elements de type _TYPE_.
+ *
+ */
 template<typename _TYPE_>
 class TRUSTSingle
 {

@@ -18,13 +18,13 @@
 
 
 
-//
-// .DESCRIPTION class Raffiner_anisotrope
-// Realise un maillage en decoupant chaque tetraedre en 4 nouveaux tetraedres
-// Le maillage obtenu n'a pas de directions preferentielles
-//
-// .SECTION voir aussi
-// Interprete
+/*! @brief class Raffiner_anisotrope Realise un maillage en decoupant chaque tetraedre en 4 nouveaux tetraedres
+ *
+ *  Le maillage obtenu n'a pas de directions preferentielles
+ *
+ *
+ * @sa Interprete
+ */
 
 #include <Interprete_geometrique_base.h>
 #include <Domaine.h>

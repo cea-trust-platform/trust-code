@@ -20,14 +20,15 @@
 #include <Champ_Gen_de_Champs_Gen.h>
 #include <Vect_Parser_U.h>
 
-//
-// .DESCRIPTION class Champ_Generique_Transformation
-//
-// Champ destine a post-traiter une "transformation" dependant de champs generiques et (ou) de x,y,z et t
-// La classe porte un  :
-//   -vecteur de Parseur (fxyz)
-//   -la (les) expression(s) pour exprimer la transformation (les_fct)
-//   -la methode de transformation choisie (methode_)
+/*! @brief class Champ_Generique_Transformation
+ *
+ *  Champ destine a post-traiter une "transformation" dependant de champs generiques et (ou) de x,y,z et t
+ *  La classe porte un  :
+ *    -vecteur de Parseur (fxyz)
+ *    -la (les) expression(s) pour exprimer la transformation (les_fct)
+ *    -la methode de transformation choisie (methode_)
+ *
+ */
 
 //// Syntaxe a respecter pour jdd
 //

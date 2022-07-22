@@ -39,9 +39,9 @@ EcrFicPartage::EcrFicPartage() : SFichier()
   set_bin(0);
 }
 
-// Description:
-//    Ouvre le fichier avec les parametres mode et prot donnes
-//    Ces parametres sont les parametres de la methode open standard
+/*! @brief Ouvre le fichier avec les parametres mode et prot donnes Ces parametres sont les parametres de la methode open standard
+ *
+ */
 EcrFicPartage::EcrFicPartage(const char* name,IOS_OPEN_MODE mode)
 {
   obuffer_ptr_ = new OBuffer;
@@ -56,11 +56,9 @@ inline OBuffer& EcrFicPartage::get_obuffer()
   return *obuffer_ptr_;
 }
 
-// Description:
-//    Ouvre le fichier avec les parametres mode et prot donnes
-//    Ces parametres sont les parametres de la methode open standard
-// Precondition:
-//    Tous les processeurs du groupe doivent executer ceci simultanement !
+/*! @brief Ouvre le fichier avec les parametres mode et prot donnes Ces parametres sont les parametres de la methode open standard
+ *
+ */
 int EcrFicPartage::ouvrir(const char* name,IOS_OPEN_MODE mode)
 {
   // Verification sanitaire : tous les processeurs sont la ?
@@ -88,10 +86,9 @@ int EcrFicPartage::ouvrir(const char* name,IOS_OPEN_MODE mode)
 }
 
 
-// Description:
-//     ferme le fichier
-// Precondition:
-//     Tous les processeurs doivent executer ceci simultanement !
+/*! @brief ferme le fichier
+ *
+ */
 EcrFicPartage::~EcrFicPartage()
 {
   close();
@@ -129,56 +126,59 @@ void EcrFicPartage::close()
     }
 #endif
 }
-// Description:
-//    Permet au processus appelant de bloquer en attente de la ressource commune a tous les processus qui est le fichier partage.
-//    Si le processus appelant cette methode n'est pas le premier, il atend du processus precedent l'endroit ou il doit se positionner dans le fichier pour effectuer sa prochaine ecriture.
-//    Cette methode est systematiquement appelee avant toute nouvelle ecriture dans le fichier.
-// Retour: Sortie&
-//    Signification: *this
+/*! @brief Permet au processus appelant de bloquer en attente de la ressource commune a tous les processus qui est le fichier partage.
+ *
+ * Si le processus appelant cette methode n'est pas le premier, il atend du processus precedent l'endroit ou il doit se positionner dans le fichier pour effectuer sa prochaine ecriture.
+ *     Cette methode est systematiquement appelee avant toute nouvelle ecriture dans le fichier.
+ *
+ * @return (Sortie&) *this
+ */
 Sortie& EcrFicPartage::lockfile()
 {
   return *this;
 }
 
 
-// Description:
-//    Permet de debloquer la ressource critique pour leprocessus suivant.
-//    Le processus appelant, sauf si c'est le premier processus du groupe, envoie
-//    sa position courante au precessus suivant dans le groupe. Cette methode est
-//    a appeler apres chaque ecriture dans le fichier.
-// Retour: Sortie&
-//    Signification: *this
+/*! @brief Permet de debloquer la ressource critique pour leprocessus suivant.
+ *
+ * Le processus appelant, sauf si c'est le premier processus du groupe, envoie
+ *     sa position courante au precessus suivant dans le groupe. Cette methode est
+ *     a appeler apres chaque ecriture dans le fichier.
+ *
+ * @return (Sortie&) *this
+ */
 Sortie& EcrFicPartage::unlockfile()
 {
   return *this;
 }
 
-// Description:
-//  Provoque l'ecriture sur disque des donnees accumulees sur les differents processeurs
-//  depuis le dernier appel a syncfile().
-//  Les donnees sont ecrites dans l'ordre croissant des processeurs.
-//  Cette fonction doit etre appelee le meme nombre de fois sur tous les processeurs !
-//
-//  Exemple:
-//   processeur 0:                         processeur 1:
-//    file << "pe0 : 1" << finl;            file << "pe1 : 1" << finl;
-//    file << "pe0 : 2" << finl;            file << "pe1 : 2" << finl;
-//    file.syncfile();                            file.syncfile();
-//    file << "pe0 : 3" << finl;            file << "pe1 : 3" << finl;
-//    file << "pe0 : 4" << finl;
-//    file.syncfile();                      file.syncfile();
-//    file << "pe0 : end" << finl;          // le processeur 1 n'ecrit pas de donnees
-//    file.syncfile();                      file.syncfile();
-//
-//  Contenu du fichier :
-//    pe0 : 1
-//    pe0 : 2
-//    pe1 : 1
-//    pe1 : 2
-//    pe0 : 3
-//    pe0 : 4
-//    pe1 : 3
-//    pe0 : end
+/*! @brief Provoque l'ecriture sur disque des donnees accumulees sur les differents processeurs depuis le dernier appel a syncfile().
+ *
+ *   Les donnees sont ecrites dans l'ordre croissant des processeurs.
+ *   Cette fonction doit etre appelee le meme nombre de fois sur tous les processeurs !
+ *
+ *   Exemple:
+ *    processeur 0:                         processeur 1:
+ *     file << "pe0 : 1" << finl;            file << "pe1 : 1" << finl;
+ *     file << "pe0 : 2" << finl;            file << "pe1 : 2" << finl;
+ *     file.syncfile();                            file.syncfile();
+ *     file << "pe0 : 3" << finl;            file << "pe1 : 3" << finl;
+ *     file << "pe0 : 4" << finl;
+ *     file.syncfile();                      file.syncfile();
+ *     file << "pe0 : end" << finl;          // le processeur 1 n'ecrit pas de donnees
+ *     file.syncfile();                      file.syncfile();
+ *
+ *   Contenu du fichier :
+ *     pe0 : 1
+ *     pe0 : 2
+ *     pe1 : 1
+ *     pe1 : 2
+ *     pe0 : 3
+ *     pe0 : 4
+ *     pe1 : 3
+ *     pe0 : end
+ *
+ */
 Sortie& EcrFicPartage::syncfile()
 {
   // En mode ascii, les donnees sont converties en ascii lors de l'ecriture dans

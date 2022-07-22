@@ -21,17 +21,14 @@
 #include <Champ_front_instationnaire_base.h>
 #include <Champ_Input_Proto.h>
 
-//////////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     class Ch_front_input_uniforme
-//
-//     Cette classe represente un champ accessible par setInputField
-//     uniforme sur une frontiere.
-//
-// .SECTION voir aussi
-//   Champ_Input_Proto
-/////////////////////////////////////////////////////////////////////////////////
+/*! @brief class Ch_front_input_uniforme
+ *
+ *      Cette classe represente un champ accessible par setInputField
+ *      uniforme sur une frontiere.
+ *
+ *
+ * @sa Champ_Input_Proto
+ */
 
 class Ch_front_input_uniforme : public Champ_front_instationnaire_base, public Champ_Input_Proto
 {

@@ -101,27 +101,32 @@ bool Schema_Implicite_Multi_TimeStep_base::initTimeStep(double dt)
 //                            //
 ////////////////////////////////
 
-// Description:
-//    Renvoie le nombre de valeurs temporelles futures.
-//    Ici : n+1, donc 1.
+/*! @brief Renvoie le nombre de valeurs temporelles futures.
+ *
+ * Ici : n+1, donc 1.
+ *
+ */
 int Schema_Implicite_Multi_TimeStep_base::nb_valeurs_futures() const
 {
   return 1 ;
 }
 
-// Description:
-//    Renvoie le le temps a la i-eme valeur future.
-//    Ici : t(n+1)
+/*! @brief Renvoie le le temps a la i-eme valeur future.
+ *
+ * Ici : t(n+1)
+ *
+ */
 double Schema_Implicite_Multi_TimeStep_base::temps_futur(int i) const
 {
   assert(i==1);
   return temps_courant()+pas_de_temps();
 }
 
-// Description:
-//    Renvoie le le temps le temps que doivent rendre les champs a
-//    l'appel de valeurs()
-//    Ici : t(n+1)
+/*! @brief Renvoie le le temps le temps que doivent rendre les champs a l'appel de valeurs()
+ *
+ *     Ici : t(n+1)
+ *
+ */
 double Schema_Implicite_Multi_TimeStep_base::temps_defaut() const
 {
   return temps_courant()+pas_de_temps();

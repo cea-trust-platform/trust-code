@@ -19,13 +19,13 @@
 #include <Champ_Fonc_MED.h>
 #include <Table.h>
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Champ_Fonc_MED_Table_Temps
-//
-// <Description of class Champ_Fonc_MED_Table_Temps>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Champ_Fonc_MED_Table_Temps
+ *
+ *  <Description of class Champ_Fonc_MED_Table_Temps>
+ *
+ *
+ *
+ */
 
 class Champ_Fonc_MED_Table_Temps : public Champ_Fonc_MED
 {

@@ -19,18 +19,12 @@
 #include <Operateur_base.h>
 #include <Ref_Champ_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Operateur_Conv_base
-//     Cette classe est la base de la hierarchie des operateurs representant
-//     un terme de convection dans une equation.
-// .SECTION voir aussi
-//     Operateur_base
-//     Classe abstraite
-//     Methode abstraite
-//       void associer_vitesse(const Champ_Inc& vit )
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Operateur_Conv_base Cette classe est la base de la hierarchie des operateurs representant
+ *
+ *      un terme de convection dans une equation.
+ *
+ * @sa Operateur_base, Classe abstraite, Methode abstraite, void associer_vitesse(const Champ_Inc& vit )
+ */
 
 class Operateur_Conv_base  : public Operateur_base
 {

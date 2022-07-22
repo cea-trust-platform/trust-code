@@ -19,8 +19,11 @@
 #include <Objet_U.h>
 class MD_Vector;
 
-// .DESCRIPTION: classe vide servant de base a tous les tableaux.
-//  (permet de passer un type generique quel que soit le sous-type du tableau par exemple Domaine::creer_tableau_sommets())
+/*! @brief : classe vide servant de base a tous les tableaux.
+ *
+ * (permet de passer un type generique quel que soit le sous-type du tableau par exemple Domaine::creer_tableau_sommets())
+ *
+ */
 class Array_base : public Objet_U
 {
   Declare_base_sans_constructeur_ni_destructeur(Array_base);

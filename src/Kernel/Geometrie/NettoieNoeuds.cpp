@@ -19,61 +19,35 @@
 
 Implemente_instanciable(NettoieNoeuds,"NettoiePasNoeuds",Interprete_geometrique_base);
 
-// Description:
-//    Simple appel a: Interprete::printOn(Sortie&)
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a: Interprete::printOn(Sortie&)
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& NettoieNoeuds::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
 
-// Description:
-//    Simple appel a: Interprete::readOn(Entree&)
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Interprete::readOn(Entree&)
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& NettoieNoeuds::readOn(Entree& is)
 {
   return Interprete::readOn(is);
 }
 
-// Description:
-//    Fonction principale de l'interprete NettoieNoeuds
-//    Structure du jeu de donnee (en dimension 2) :
-//    NettoieNoeuds dom alpha
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree
-//    Contraintes:
-// Exception: l'objet a mailler n'est pas du type Domaine
-// Effets de bord:
-// Postcondition:
+/*! @brief Fonction principale de l'interprete NettoieNoeuds Structure du jeu de donnee (en dimension 2) :
+ *
+ *     NettoieNoeuds dom alpha
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree
+ * @throws l'objet a mailler n'est pas du type Domaine
+ */
 int NettoieNoeuds::NettoiePasNoeuds=0;
 Entree& NettoieNoeuds::interpreter_(Entree& is)
 {
@@ -246,8 +220,9 @@ void NettoieNoeuds::nettoie(Domaine& dom)
   Scatter::init_sequential_domain(dom);
 }
 
-// Description:
-// regarde si on n'a pas des noeuds doubles
+/*! @brief regarde si on n'a pas des noeuds doubles
+ *
+ */
 void NettoieNoeuds::verifie_noeuds(const Domaine& dom)
 {
   Cerr<<finl<<"Beginning of the search of identical nodes (can be long, algorithm in n^2)..."<<finl;

@@ -21,17 +21,14 @@
 
 class Zone_dis_base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     Classe Champ_Fonc_Tabule
-//     Classe derivee de Champ_Fonc_base qui represente les
-//     champs fonctions d'un autre champ par tabulation
-//     L'objet porte un membre de type Champ_Fonc qui stocke
-//     les valeurs du champ tabule.
-// .SECTION voir aussi
-//     Champ_Fonc_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Champ_Fonc_Tabule Classe derivee de Champ_Fonc_base qui represente les
+ *
+ *      champs fonctions d'un autre champ par tabulation
+ *      L'objet porte un membre de type Champ_Fonc qui stocke
+ *      les valeurs du champ tabule.
+ *
+ * @sa Champ_Fonc_base
+ */
 
 class Champ_Fonc_Tabule : public Champ_Fonc_base
 {
@@ -72,118 +69,58 @@ protected:
   Champ_Fonc le_champ_tabule_dis;
 };
 
-// Description:
-//    Effectue une mise a jour en temps.
-// Precondition:
-// Parametre: double temps
-//    Signification: le temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Effectue une mise a jour en temps.
+ *
+ * @param (double temps) le temps de mise a jour
+ */
 inline void Champ_Fonc_Tabule::mettre_a_jour(double un_temps)
 {
   le_champ_tabule_discretise().mettre_a_jour(un_temps);
   Champ_Fonc_base::mettre_a_jour(un_temps);
 }
 
-// Description:
-//    Initialisation du champ.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Initialisation du champ.
+ *
+ */
 inline int Champ_Fonc_Tabule::initialiser(const double un_temps)
 {
   le_champ_tabule_discretise().initialiser(un_temps);
   return 1;
 }
 
-// Description:
-//    Renvoie le tableau des valeurs du champ.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: le tableau des valeurs du champ
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le tableau des valeurs du champ.
+ *
+ * @return (DoubleTab&) le tableau des valeurs du champ
+ */
 inline DoubleTab& Champ_Fonc_Tabule::valeurs()
 {
   return le_champ_tabule_discretise().valeurs();
 }
 
-// Description:
-//    Renvoie le tableau des valeurs du champ.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: le tableau des valeurs du champ
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le tableau des valeurs du champ.
+ *
+ * (version const)
+ *
+ * @return (DoubleTab&) le tableau des valeurs du champ
+ */
 inline const DoubleTab& Champ_Fonc_Tabule::valeurs() const
 {
   return le_champ_tabule_discretise().valeurs();
 }
 
-// Description:
-//    Associe une Zone discretisee au champ.
-// Precondition:
-// Parametre: Zone_dis_base& zone_dis
-//    Signification: la zone discretisee a associe au champ
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe une Zone discretisee au champ.
+ *
+ * @param (Zone_dis_base& zone_dis) la zone discretisee a associe au champ
+ */
 inline void Champ_Fonc_Tabule::associer_zone_dis_base(const Zone_dis_base& zone_dis)
 {
   le_champ_tabule_discretise().associer_zone_dis_base(zone_dis);
 }
 
-// Description:
-//    Renvoie la Zone discretisee associee.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Zone_dis_base&
-//    Signification: la Zone discretisee associee
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la Zone discretisee associee.
+ *
+ * @return (Zone_dis_base&) la Zone discretisee associee
+ */
 inline const Zone_dis_base& Champ_Fonc_Tabule::zone_dis_base() const
 {
   return le_champ_tabule_discretise().zone_dis_base();
@@ -192,26 +129,12 @@ inline const Zone_dis_base& Champ_Fonc_Tabule::zone_dis_base() const
 inline DoubleVect& Champ_Fonc_Tabule::valeur_a_elem(const DoubleVect& position,
                                                     DoubleVect& les_valeurs,
                                                     int le_poly) const
-// Description:
-//    Effectue le postraitement au format lml
-//    Simple appel a Champ_Fonc::postraiter_lml(Sortie&,const Motcle&) const
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Parametre: Motcle& loc_post
-//    Signification: la localisation du postraitement, "sommet" ou "constant par element"
-//    Valeurs par defaut:
-//    Contraintes: reference constante, valeurs prevues: "som","elem"
-//    Acces: entree
-// Retour: int
-//    Signification: code de retour propage
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Effectue le postraitement au format lml Simple appel a Champ_Fonc::postraiter_lml(Sortie&,const Motcle&) const
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @param (Motcle& loc_post) la localisation du postraitement, "sommet" ou "constant par element"
+ * @return (int) code de retour propage
+ */
 {
   return le_champ_tabule_discretise().valeur_a_elem(position, les_valeurs, le_poly);
 }
@@ -236,21 +159,12 @@ inline DoubleVect& Champ_Fonc_Tabule::valeur_aux_sommets_compo(const Domaine& do
   return le_champ_tabule_discretise().valeur_aux_sommets_compo(dom, les_valeurs, compo);
 }
 
-// Description:
-//    Renvoie le champ tabule calcule.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Fonc&
-//    Signification: le champ tabule calcule
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le champ tabule calcule.
+ *
+ * (version const)
+ *
+ * @return (Champ_Fonc&) le champ tabule calcule
+ */
 inline const Champ_Fonc& Champ_Fonc_Tabule::le_champ_tabule_discretise() const
 {
   if(!le_champ_tabule_dis.non_nul())

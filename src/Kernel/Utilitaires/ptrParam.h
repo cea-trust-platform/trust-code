@@ -18,11 +18,9 @@
 #include <Objet_U.h>
 #include <Vect.h>
 class Param;
-///////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     class Objet_a_lire : contient un nom, et une reference vers un int,double,flag,un Objet_U a lire,ou un Objet_u sur lequel il faut appeler lire_motcle_non_standard
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief class Objet_a_lire : contient un nom, et une reference vers un int,double,flag,un Objet_U a lire,ou un Objet_u sur lequel il faut appeler lire_motcle_non_standard
+ *
+ */
 class ptrParam: public Objet_U
 {
   Declare_instanciable_sans_constructeur_ni_destructeur(ptrParam);

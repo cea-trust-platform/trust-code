@@ -18,9 +18,9 @@
 #include <Partitionneur_base.h>
 #include <Ref_Domaine.h>
 
-// .DESCRIPTION
-//  Partitionneur de domaine en fonction du partitionnement
-//  d'un autre domaine
+/*! @brief Partitionneur de domaine en fonction du partitionnement d'un autre domaine
+ *
+ */
 class Partitionneur_Partition : public Partitionneur_base
 {
   Declare_instanciable(Partitionneur_Partition);

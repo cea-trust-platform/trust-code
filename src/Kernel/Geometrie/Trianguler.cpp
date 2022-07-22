@@ -19,62 +19,34 @@
 Implemente_instanciable(Trianguler,"Trianguler",Triangulation_base);
 
 
-// Description:
-//    Simple appel a: Interprete::printOn(Sortie&)
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a: Interprete::printOn(Sortie&)
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Trianguler::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
 
-// Description:
-//    Simple appel a: Interprete::readOn(Entree&)
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Interprete::readOn(Entree&)
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Trianguler::readOn(Entree& is)
 {
   return Interprete::readOn(is);
 }
 
-// Description:
-//    Triangule tous les element d'une zone: transforme
-//    les elements goemetriques de la zone en triangles.
-//    Pour l'instant on ne sait trianguler que des Rectangles
-//    (on les coupe en 2).
-// Precondition:
-// Parametre: Zone& zone
-//    Signification: la zone dont on veut trianguler les elements
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Triangule tous les element d'une zone: transforme les elements goemetriques de la zone en triangles.
+ *
+ *     Pour l'instant on ne sait trianguler que des Rectangles
+ *     (on les coupe en 2).
+ *
+ * @param (Zone& zone) la zone dont on veut trianguler les elements
+ */
 void Trianguler::trianguler(Zone& zone) const
 {
   if ((zone.type_elem()->que_suis_je() == "Rectangle") || (zone.type_elem()->que_suis_je() == "Quadrangle"))

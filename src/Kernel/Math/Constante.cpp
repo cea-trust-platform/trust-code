@@ -16,21 +16,11 @@
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Constante,"Constante",Objet_U);
 
-// Description:
-//    Ecriture sur un flot de sortie
-//    Ecrit la valeur de la constante
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ecriture sur un flot de sortie Ecrit la valeur de la constante
+ *
+ * @param (Sortie& os) le flot de sortie a utiliser
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Constante::printOn(Sortie& os) const
 {
   os << value;
@@ -38,20 +28,11 @@ Sortie& Constante::printOn(Sortie& os) const
 }
 
 
-// Description:
-//    Lit la valeur de la constante
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit la valeur de la constante
+ *
+ * @param (Entree& is) le flot d'entree a utiliser
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Constante::readOn(Entree& is)
 {
   is >> value;

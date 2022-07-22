@@ -19,17 +19,14 @@
 #include <TRUSTTabs_forward.h>
 #include <Ch_front_input.h>
 
-//////////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     class Ch_front_input
-//
-//     Cette classe represente un champ accessible par setInputField
-//     defini sur une frontiere avec une valeur par face.
-//
-// .SECTION voir aussi
-//   Champ_Input_Proto
-/////////////////////////////////////////////////////////////////////////////////
+/*! @brief class Ch_front_input
+ *
+ *      Cette classe represente un champ accessible par setInputField
+ *      defini sur une frontiere avec une valeur par face.
+ *
+ *
+ * @sa Champ_Input_Proto
+ */
 
 class Ch_front_input_P1 : public Ch_front_input
 {

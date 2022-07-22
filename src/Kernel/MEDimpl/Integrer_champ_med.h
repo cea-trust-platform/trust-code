@@ -26,14 +26,10 @@
 class Nom;
 class Domaine;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Integrer_champ_med
-//    Lecture d'un fichier
-// .SECTION voir aussi
-//    Interprete
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Integrer_champ_med Lecture d'un fichier
+ *
+ * @sa Interprete
+ */
 class Integrer_champ_med : public Interprete
 {
   Declare_instanciable(Integrer_champ_med);

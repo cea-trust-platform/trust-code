@@ -28,9 +28,11 @@ Loi_Fermeture_base::Loi_Fermeture_base()
   status_ = INITIAL;
 }
 
-// Description: Cette methode est la premiere appelee par le probleme
-//  pour construire l'objet au moment ou on l'associe au probleme.
-//  On verifie qu'on est pas encore associe.
+/*! @brief Cette methode est la premiere appelee par le probleme pour construire l'objet au moment ou on l'associe au probleme.
+ *
+ *   On verifie qu'on est pas encore associe.
+ *
+ */
 void Loi_Fermeture_base::associer_pb_base(const Probleme_base& pb)
 {
   if (status_ == PB_ASSOCIE)
@@ -46,23 +48,26 @@ void Loi_Fermeture_base::associer_pb_base(const Probleme_base& pb)
   status_ = PB_ASSOCIE;
 }
 
-// Description: Cette methode est appelee par le probleme apres
-//  la discretisation des equations et du milieu et avant
-//  l'appel a readOn() pour lecture des parametres.
-//  Dans les classes derivees elle doit discretiser au minimum les champs
-//  qui seront requis dans le readOn() des equations ou des autres
-//  lois de fermeture.
+/*! @brief Cette methode est appelee par le probleme apres la discretisation des equations et du milieu et avant
+ *
+ *   l'appel a readOn() pour lecture des parametres.
+ *   Dans les classes derivees elle doit discretiser au minimum les champs
+ *   qui seront requis dans le readOn() des equations ou des autres
+ *   lois de fermeture.
+ *
+ */
 void Loi_Fermeture_base::discretiser(const Discretisation_base&)
 {
   assert(status_ == PB_ASSOCIE);
   status_ = DISCRETISE;
 }
 
-// Description: Cette methode appelle la methode set_param() pour
-//  initialiser les parametres, puis lit les parametres.
-//  Dans l'implementation des classes derivees on peut se contenter
-//  d'appeler la methode de la classe de base et verifier les parametres.
-// Precondition: Il faut avoir discretise avant.
+/*! @brief Cette methode appelle la methode set_param() pour initialiser les parametres, puis lit les parametres.
+ *
+ *   Dans l'implementation des classes derivees on peut se contenter
+ *   d'appeler la methode de la classe de base et verifier les parametres.
+ *
+ */
 Entree& Loi_Fermeture_base::readOn(Entree& is)
 {
   assert(status_ == DISCRETISE);
@@ -73,7 +78,9 @@ Entree& Loi_Fermeture_base::readOn(Entree& is)
   return is;
 }
 
-// Description: Pour l'instant, exit()
+/*! @brief Pour l'instant, exit()
+ *
+ */
 Sortie& Loi_Fermeture_base::printOn(Sortie& os) const
 {
   Cerr << "Loi_Fermeture_base::printOn non code" << finl;
@@ -81,35 +88,44 @@ Sortie& Loi_Fermeture_base::printOn(Sortie& os) const
   return os;
 }
 
-// Description: Cette methode est appelee par le readOn de la classe.
-//  Elle doit etre reimplementee dans les classes derivees pour
-//  ajouter dans "param" les differents parametres a lire
-//  dans le jeu de donnees et appeler la methode de l'ancetre.
-//  Dans la classe de base: aucun parametre.
+/*! @brief Cette methode est appelee par le readOn de la classe.
+ *
+ * Elle doit etre reimplementee dans les classes derivees pour
+ *   ajouter dans "param" les differents parametres a lire
+ *   dans le jeu de donnees et appeler la methode de l'ancetre.
+ *   Dans la classe de base: aucun parametre.
+ *
+ */
 void Loi_Fermeture_base::set_param(Param& param)
 {
 }
 
-// Description: Cette methode est appelee apres avoir lu toutes les equations
-//  et les lois de fermeture (tous les champs et les conditions aux limites
-//  du probleme sont disponibles)
+/*! @brief Cette methode est appelee apres avoir lu toutes les equations et les lois de fermeture (tous les champs et les conditions aux limites
+ *
+ *   du probleme sont disponibles)
+ *
+ */
 void Loi_Fermeture_base::completer()
 {
   assert(status_ == READON_FAIT);
   status_ = COMPLET;
 }
 
-// Description: Renvoie le probleme (j'ai cree cette methode pour ne pas
-//  donner acces au probleme en ecriture par la REF)
+/*! @brief Renvoie le probleme (j'ai cree cette methode pour ne pas donner acces au probleme en ecriture par la REF)
+ *
+ */
 const Probleme_base& Loi_Fermeture_base::mon_probleme() const
 {
   return mon_probleme_.valeur();
 }
 
-// Description: Cette methode est appelee par le probleme apres
-//  preparer_calcul() des equations et du milieu. Elle doit mettre
-//  a jour tous les champs qu'elle gere en fonction des autres
-//  champs du probleme.
+/*! @brief Cette methode est appelee par le probleme apres preparer_calcul() des equations et du milieu.
+ *
+ * Elle doit mettre
+ *   a jour tous les champs qu'elle gere en fonction des autres
+ *   champs du probleme.
+ *
+ */
 void Loi_Fermeture_base::preparer_calcul()
 {
   assert(status_ == COMPLET);
@@ -117,18 +133,23 @@ void Loi_Fermeture_base::preparer_calcul()
   mettre_a_jour(temps);
 }
 
-// Description: Cette methode est appelee par le probleme apres
-//  mettre_a_jour() des equations et du milieu. Elle doit mettre
-//  a jour tous les champs qu'elle gere en fonction des autres
-//  champs du probleme.
+/*! @brief Cette methode est appelee par le probleme apres mettre_a_jour() des equations et du milieu.
+ *
+ * Elle doit mettre
+ *   a jour tous les champs qu'elle gere en fonction des autres
+ *   champs du probleme.
+ *
+ */
 void Loi_Fermeture_base::mettre_a_jour(double temps)
 {
   assert(status_ == COMPLET);
 }
 
-// Description: Cette methode renvoie le champ de nom "nom" s'il est
-//  compris par la classe, sinon appelle la methode get_champ de l'ancetre.
-//  Dans la classe de base, on leve l'exception Champ_compris_erreur.
+/*! @brief Cette methode renvoie le champ de nom "nom" s'il est compris par la classe, sinon appelle la methode get_champ de l'ancetre.
+ *
+ *   Dans la classe de base, on leve l'exception Champ_compris_erreur.
+ *
+ */
 const Champ_base& Loi_Fermeture_base::get_champ(const Motcle& nom) const
 {
   return champs_compris_.get_champ(nom);
@@ -138,7 +159,9 @@ bool Loi_Fermeture_base::has_champ(const Motcle& nom, REF(Champ_base)& ref_champ
   return champs_compris_.has_champ(nom, ref_champ);
 }
 
-// Description: La classe de base ne comprend aucun champ supplementaire
+/*! @brief La classe de base ne comprend aucun champ supplementaire
+ *
+ */
 void Loi_Fermeture_base::creer_champ(const Motcle& motlu)
 {
 }

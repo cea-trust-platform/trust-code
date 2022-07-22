@@ -22,15 +22,12 @@
 
 class Objet_U;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Cette classe implemente les operateurs et les methodes virtuelles de la classe EFichier de la facon suivante :
-//    Il y a autant de fichiers que de processus, physiquement localises sur le disque de la machine hebergeant la tache maitre de l'applicatin Trio-U (le processus de rang 0 dans le groupe "tous").
-//    Le processus maitre lit tour a tour un item dans chacun des fichiers et l'envoie au processus correspondant.
-//    Il en est de meme pour les methodes d'inspection de l'etat d'un fichier.
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Cette classe implemente les operateurs et les methodes virtuelles de la classe EFichier de la facon suivante : Il y a autant de fichiers que de processus, physiquement localises sur le disque de la machine hebergeant la tache maitre de l'applicatin Trio-U (le processus de rang 0 dans le groupe "tous").
+ *
+ *     Le processus maitre lit tour a tour un item dans chacun des fichiers et l'envoie au processus correspondant.
+ *     Il en est de meme pour les methodes d'inspection de l'etat d'un fichier.
+ *
+ */
 
 class LecFicDistribue : public EFichier
 {

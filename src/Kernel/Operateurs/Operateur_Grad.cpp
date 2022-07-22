@@ -22,64 +22,33 @@ Implemente_deriv(Operateur_Grad_base);
 Implemente_instanciable(Operateur_Grad,"Operateur_Grad",DERIV(Operateur_Grad_base));
 
 
-// Description:
-//    Simple appel a Operateur::ecrire(Sortie&)
-//    Ecrit l'operateur sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a Operateur::ecrire(Sortie&) Ecrit l'operateur sur un flot de sortie.
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Operateur_Grad::printOn(Sortie& os) const
 {
   return Operateur::ecrire(os);
 }
 
 
-// Description:
-//    Simple appel a Operateur::lire(Entree&)
-//    Lit l'operateur a partir d'un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a Operateur::lire(Entree&) Lit l'operateur a partir d'un flot d'entree.
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Operateur_Grad::readOn(Entree& is)
 {
   return Operateur::lire(is);
 }
 
 
-// Description:
-//    Type l'operateur:
-//    se type "Op_Grad_"+discretisation()+
-//    "_"+inconnue().suffix
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: l'operateur est type
+/*! @brief Type l'operateur: se type "Op_Grad_"+discretisation()+
+ *
+ *     "_"+inconnue().suffix
+ *
+ */
 void Operateur_Grad::typer()
 {
   Equation_base& eqn=equation();
@@ -95,27 +64,12 @@ void Operateur_Grad::typer_direct(const Nom& un_type)
   DERIV(Operateur_Grad_base)::typer(un_type);
 }
 
-// Description:
-//    Ajoute la contribution de l'operateur au tableau
-//    passe en parametre
-// Precondition:
-// Parametre: DoubleTab& donnee
-//    Signification: tableau contenant les donnees sur lesquelles on applique
-//                   l'operateur.
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleTab& resu
-//    Signification: tableau auquel on ajoute la contribution de l'operateur
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: DoubleTab&
-//    Signification: le tableau contenant le resultat
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ajoute la contribution de l'operateur au tableau passe en parametre
+ *
+ * @param (DoubleTab& donnee) tableau contenant les donnees sur lesquelles on applique l'operateur.
+ * @param (DoubleTab& resu) tableau auquel on ajoute la contribution de l'operateur
+ * @return (DoubleTab&) le tableau contenant le resultat
+ */
 DoubleTab& Operateur_Grad::ajouter(const DoubleTab& donnee,
                                    DoubleTab& resu) const
 {
@@ -126,27 +80,12 @@ DoubleTab& Operateur_Grad::ajouter(const DoubleTab& donnee,
 }
 
 
-// Description:
-//    Initialise le tableau passe en parametre avec la contribution
-//    de l'operateur.
-// Precondition:
-// Parametre: DoubleTab& donnee
-//    Signification: tableau contenant les donnees sur lesquelles on applique
-//                   l'operateur.
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleTab& resu
-//    Signification: tableau dans lequel stocke la contribution de l'operateur
-//    Valeurs par defaut:
-//    Contraintes: l'ancien contenu est ecrase
-//    Acces: sortie
-// Retour: DoubleTab&
-//    Signification: le tableau contenant le resultat
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Initialise le tableau passe en parametre avec la contribution de l'operateur.
+ *
+ * @param (DoubleTab& donnee) tableau contenant les donnees sur lesquelles on applique l'operateur.
+ * @param (DoubleTab& resu) tableau dans lequel stocke la contribution de l'operateur
+ * @return (DoubleTab&) le tableau contenant le resultat
+ */
 DoubleTab& Operateur_Grad::calculer(const DoubleTab& donnee,
                                     DoubleTab& resu) const
 {

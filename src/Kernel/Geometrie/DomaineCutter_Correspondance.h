@@ -18,10 +18,11 @@
 
 #include <TRUSTArray.h>
 
-// .DESCRIPTION
-//  Classe outil contenant la correspondance entre les indices de sommets et
-//  d'elements du domaine global et d'un sous-domaine.
-//  Les champs de cette classe sont remplis par DomaineCutter::construire_sous_domaine()
+/*! @brief Classe outil contenant la correspondance entre les indices de sommets et d'elements du domaine global et d'un sous-domaine.
+ *
+ *   Les champs de cette classe sont remplis par DomaineCutter::construire_sous_domaine()
+ *
+ */
 class DomaineCutter_Correspondance
 {
   DomaineCutter_Correspondance();

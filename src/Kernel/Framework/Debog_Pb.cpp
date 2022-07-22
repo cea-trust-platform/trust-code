@@ -35,7 +35,11 @@ Sortie& Debog_Pb::printOn(Sortie& os) const
   return os;
 }
 
-// Description: methode appelee des qu'une erreur est trouvee dans l'espace reel. (utile pour poser un breakpoint dans gdb)
+/*! @brief methode appelee des qu'une erreur est trouvee dans l'espace reel.
+ *
+ * (utile pour poser un breakpoint dans gdb)
+ *
+ */
 void Debog_Pb::error_function()
 {
   if (exit_on_error_)
@@ -368,9 +372,9 @@ void Debog_Pb::set_nom_pb_actuel(const Nom& nom)
   nom_pb_actuel_ = nom;
 }
 
-// Description:
-//  md_lignes: descripteur des indices de lignes (cad descripteur du vecteur b dans A*x=b)
-//  mb_colonnes: idem, indices colonnes (cad descripteur du vecteur x dans A*x=b)
+/*! @brief md_lignes: descripteur des indices de lignes (cad descripteur du vecteur b dans A*x=b) mb_colonnes: idem, indices colonnes (cad descripteur du vecteur x dans A*x=b)
+ *
+ */
 void Debog_Pb::verifier_matrice(const char *const msg, const Matrice_Base& matrice, const MD_Vector& md_lignes, const MD_Vector& md_colonnes)
 {
   // Attention: cette implementation ne marche que pour les types md_colonnes enregistres dans renum_array_

@@ -21,15 +21,12 @@
 
 class Objet_U;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Cette classe implemente les operateurs et les methodes virtuelles de la classe EFichier de la facon suivante :
-//    Le fichier a lire est physiquement localise sur le disque de la machine hebergeant la tache maitre de l'application Trio-U (le processus de rang 0 dans le groupe "tous")
-//    et chaque item lu dans ce fichier est diffuse a tous les autres processus du groupe tous.
-//    Il en est de meme pour les methodes d'inspection de l'etat d'un fichier.
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Cette classe implemente les operateurs et les methodes virtuelles de la classe EFichier de la facon suivante : Le fichier a lire est physiquement localise sur le disque de la machine hebergeant la tache maitre de l'application Trio-U (le processus de rang 0 dans le groupe "tous")
+ *
+ *     et chaque item lu dans ce fichier est diffuse a tous les autres processus du groupe tous.
+ *     Il en est de meme pour les methodes d'inspection de l'etat d'un fichier.
+ *
+ */
 
 class LecFicDiffuse_JDD : public Lec_Diffuse_base
 {

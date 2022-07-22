@@ -21,17 +21,15 @@
 #include <TRUSTVect.h>
 #include <Ref_Zone.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Sous_Zone
-//    Represente une sous zone volumique i.e un sous ensemble
-//    de polyedres d'un objet de type Zone.
-//    Un objet Sous_Zone porte une reference vers la zone qu'il
-//    subdivise.
-// .SECTION voir aussi
-//    Zone Sous_Zones
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Sous_Zone Represente une sous zone volumique i.
+ *
+ * e un sous ensemble
+ *     de polyedres d'un objet de type Zone.
+ *     Un objet Sous_Zone porte une reference vers la zone qu'il
+ *     subdivise.
+ *
+ * @sa Zone Sous_Zones
+ */
 class Sous_Zone : public Objet_U
 {
   Declare_instanciable(Sous_Zone);
@@ -65,98 +63,48 @@ protected :
   Nom nom_;
 };
 
-// Description:
-//    Constructeur d'une sous-zone a partir d'une zone.
-// Precondition:
-// Parametre: Zone& zone
-//    Signification: la zone dont la sous-zone est une partie
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Constructeur d'une sous-zone a partir d'une zone.
+ *
+ * @param (Zone& zone) la zone dont la sous-zone est une partie
+ */
 inline Sous_Zone::Sous_Zone(const Zone& azone) : la_zone_(azone)
 {}
 
 
-// Description:
-//    Renvoie le nom de la sous-zone.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Nom&
-//    Signification: le nom de la sous-zone
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nom de la sous-zone.
+ *
+ * @return (Nom&) le nom de la sous-zone
+ */
 inline const Nom& Sous_Zone::le_nom() const
 {
   return nom_;
 }
 
 
-// Description:
-//    Renvoie le numero du i-ieme polyedre de la sous-zone.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le numero du i-ieme polyedre de la sous-zone
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le numero du i-ieme polyedre de la sous-zone.
+ *
+ * @return (int) le numero du i-ieme polyedre de la sous-zone
+ */
 inline int Sous_Zone::operator()(int i) const
 {
   return les_polys_[i];
 }
 
 
-// Description:
-//    Renvoie le numero du i-ieme polyedre de la sous-zone.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le numero du i-ieme polyedre de la sous-zone
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le numero du i-ieme polyedre de la sous-zone.
+ *
+ * @return (int) le numero du i-ieme polyedre de la sous-zone
+ */
 inline int Sous_Zone::operator[](int i) const
 {
   return les_polys_[i];
 }
 
 
-// Description:
-//    Renvoie le nombre de polyedre de la sous-zone.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de polyedre de la sous-zone
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de polyedre de la sous-zone.
+ *
+ * @return (int) le nombre de polyedre de la sous-zone
+ */
 inline int Sous_Zone::nb_elem_tot() const
 {
   return les_polys_.size();

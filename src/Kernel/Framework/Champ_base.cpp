@@ -31,65 +31,37 @@
 
 Implemente_base_sans_constructeur(Champ_base,"Champ_base",Field_base);
 
-// Description:
-//    Surcharge Objet_U::printOn(Sortie&)
-//    Imprime le nom du champ sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Surcharge Objet_U::printOn(Sortie&) Imprime le nom du champ sur un flot de sortie.
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Champ_base::printOn(Sortie& os) const
 {
   return os << le_nom() << finl;
 }
 
 
-// Description:
-//    Lecture du nom d'un champ sur un flot d'entree.
-//    Format:
-//      nom_du_champ
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lecture du nom d'un champ sur un flot d'entree.
+ *
+ * Format:
+ *       nom_du_champ
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Champ_base::readOn(Entree& is)
 {
   return is >> nom_;
 }
 
-// Description:
-//    Constructeur par defaut d'un Champ_base.
-//    Mets le champ au temps 0, specifie une unite vide,
-//    donne le nom "anonyme" au champ et lui donne une nature
-//    scalaire.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: un champ anonyme a ete cree
+/*! @brief Constructeur par defaut d'un Champ_base.
+ *
+ * Mets le champ au temps 0, specifie une unite vide,
+ *     donne le nom "anonyme" au champ et lui donne une nature
+ *     scalaire.
+ *
+ */
 Champ_base::Champ_base()
 {
   changer_temps(0.);
@@ -99,16 +71,15 @@ Champ_base::Champ_base()
   nb_compo_ = 1; // Par defaut, champ scalaire
 }
 
-// Description:
-//  Calcule les "valeurs" du champ au point de coordonnees "pos".
-//  Dans cette classe de base, l'implementation appelle
-//  valeur_aux(const DoubleTab &, DoubleTab &)
-// Parametre: DoubleVect&
-//    Signification: les coordonnees du point ou evaluer le champ
-// Parametre: DoubleVect& valeurs
-//    Signification: En entree: doit avoir la bonne taille (nb_comp),
-//                   en sortie contient les composantes du champ.
-// Retour: reference a "valeurs"
+/*! @brief Calcule les "valeurs" du champ au point de coordonnees "pos".
+ *
+ * Dans cette classe de base, l'implementation appelle
+ *   valeur_aux(const DoubleTab &, DoubleTab &)
+ *
+ * @param (DoubleVect&) les coordonnees du point ou evaluer le champ
+ * @param (DoubleVect& valeurs) En entree: doit avoir la bonne taille (nb_comp), en sortie contient les composantes du champ.
+ * @return (reference a "valeurs")
+ */
 DoubleVect& Champ_base::valeur_a(const DoubleVect& pos, DoubleVect& les_valeurs) const
 {
   //assert(les_valeurs.size() == nb_comp());
@@ -122,35 +93,18 @@ DoubleVect& Champ_base::valeur_a(const DoubleVect& pos, DoubleVect& les_valeurs)
   return les_valeurs;
 }
 
-// Description:
-//    provoque une erreur !
-//    doit etre surchargee par les classes derivees
-//    non virtuelle pure par commodite de developpement !
-//    Renvoie la valeur du champ au point specifie
-//    par ses coordonnees, en indiquant que ce point est
-//    situe dans un element specifie.
-// Precondition:
-// Parametre: DoubleVect&
-//    Signification: les coordonnees du point de calcul
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleVect& les_valeurs
-//    Signification: la valeur du champ au point specifie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Parametre: int
-//    Signification: l'element dans lequel est situe le point de calcul
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleVect&
-//    Signification: la valeur du champ au point specifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief provoque une erreur ! doit etre surchargee par les classes derivees
+ *
+ *     non virtuelle pure par commodite de developpement !
+ *     Renvoie la valeur du champ au point specifie
+ *     par ses coordonnees, en indiquant que ce point est
+ *     situe dans un element specifie.
+ *
+ * @param (DoubleVect&) les coordonnees du point de calcul
+ * @param (DoubleVect& les_valeurs) la valeur du champ au point specifie
+ * @param (int) l'element dans lequel est situe le point de calcul
+ * @return (DoubleVect&) la valeur du champ au point specifie
+ */
 DoubleVect& Champ_base::valeur_a_elem(const DoubleVect& ,
                                       DoubleVect& les_valeurs,
                                       int ) const
@@ -161,15 +115,15 @@ DoubleVect& Champ_base::valeur_a_elem(const DoubleVect& ,
   return les_valeurs;
 }
 
-// Description: Calcule la valeur ponctuelle de la composante "compo" du champ
-//    au point de coordonnees pos.
-//    Dans la classe de base, l'implementation appelle
-//    valeur_a(const DoubleVect &, DoubleVect &)
-// Parametre: DoubleVect&
-//    Signification: les coordonnees du point de calcul
-// Parametre: int
-//    Signification: l'index de la composante du champ a calculer
-// Retour: double
+/*! @brief Calcule la valeur ponctuelle de la composante "compo" du champ au point de coordonnees pos.
+ *
+ *     Dans la classe de base, l'implementation appelle
+ *     valeur_a(const DoubleVect &, DoubleVect &)
+ *
+ * @param (DoubleVect&) les coordonnees du point de calcul
+ * @param (int) l'index de la composante du champ a calculer
+ * @return (double)
+ */
 double Champ_base::valeur_a_compo(const DoubleVect& pos, int compo) const
 {
   DoubleVect values(nb_comp());
@@ -178,10 +132,11 @@ double Champ_base::valeur_a_compo(const DoubleVect& pos, int compo) const
   return x;
 }
 
-// Description:
-// provoque une erreur !
-// doit etre surchargee par les classes derivees
-// non virtuelle pure par commodite de developpement !
+/*! @brief provoque une erreur ! doit etre surchargee par les classes derivees
+ *
+ *  non virtuelle pure par commodite de developpement !
+ *
+ */
 double Champ_base::valeur_a_elem_compo(const DoubleVect&, int ,int ) const
 {
   Cerr << que_suis_je();
@@ -190,29 +145,16 @@ double Champ_base::valeur_a_elem_compo(const DoubleVect&, int ,int ) const
   return 0;
 }
 
-// Description:
-//    Provoque une erreur !
-//    Doit etre surchargee par les classes derivees
-//    non virtuelle pure par commodite de developpement !
-//    Renvoie les valeurs du champ aux points specifies
-//    par leurs coordonnees.
-// Precondition:
-// Parametre: DoubleTab&
-//    Signification: le tableau des coordonnees des points de calcul
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleTab& les_valeurs
-//    Signification: le tableau des valeurs du champ aux points specifies
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: DoubleTab&
-//    Signification: le tableau des valeurs du champ aux points specifies
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Provoque une erreur ! Doit etre surchargee par les classes derivees
+ *
+ *     non virtuelle pure par commodite de developpement !
+ *     Renvoie les valeurs du champ aux points specifies
+ *     par leurs coordonnees.
+ *
+ * @param (DoubleTab&) le tableau des coordonnees des points de calcul
+ * @param (DoubleTab& les_valeurs) le tableau des valeurs du champ aux points specifies
+ * @return (DoubleTab&) le tableau des valeurs du champ aux points specifies
+ */
 DoubleTab& Champ_base::valeur_aux(const DoubleTab& ,
                                   DoubleTab& les_valeurs) const
 {
@@ -233,21 +175,16 @@ DoubleTab& Champ_base::valeur_aux_centres_de_gravite(const DoubleTab& positions,
   return valeur_aux_elems(positions, les_polys, les_valeurs);
 }
 
-// Description:
-//  Idem que valeur_aux(const DoubleTab &, DoubleTab &), mais calcule
-//  uniquement la composante compo du champ.
-//  Dans l'implementation de champ_base, on appelle
-//  valeur_aux(const DoubleTab &, DoubleTab &)
-// Parametre: pos
-// Signification: le tableau des coordonnees des points de calcul
-//  (on ne traite pas l'espace virtuel du tableau)
-// Parametre: les_valeurs
-// Signification: tableau destination des valeurs a calculer.
-//  Le tableau valeurs doit avoir la bonne taille en entree,
-//  soit les_valeurs.size() == pos.dimension(0)
-// Parametre: compo
-// Signification: l'index de la composante du champ a calculer
-// Retour: reference au tableau les_valeurs
+/*! @brief Idem que valeur_aux(const DoubleTab &, DoubleTab &), mais calcule uniquement la composante compo du champ.
+ *
+ *   Dans l'implementation de champ_base, on appelle
+ *   valeur_aux(const DoubleTab &, DoubleTab &)
+ *
+ * @param (pos) le tableau des coordonnees des points de calcul (on ne traite pas l'espace virtuel du tableau)
+ * @param (les_valeurs) tableau destination des valeurs a calculer. Le tableau valeurs doit avoir la bonne taille en entree, soit les_valeurs.size() == pos.dimension(0)
+ * @param (compo) l'index de la composante du champ a calculer
+ * @return (reference au tableau les_valeurs)
+ */
 DoubleVect& Champ_base::valeur_aux_compo(const DoubleTab& pos ,
                                          DoubleVect& les_valeurs,
                                          int compo) const
@@ -263,36 +200,18 @@ DoubleVect& Champ_base::valeur_aux_compo(const DoubleTab& pos ,
   return les_valeurs;
 }
 
-// Description:
-//    provoque une erreur !
-//    doit etre surchargee par les classes derivees
-//    non virtuelle pure par commodite de developpement !
-//    Renvoie les valeurs du champ aux points specifies
-//    par leurs coordonnees, en indiquant que les points de
-//    calculs sont situes dans les elements indiques.
-// Precondition:
-// Parametre: DoubleTab&
-//    Signification: le tableau des coordonnees des points de calcul
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: IntVect&
-//    Signification: le tableau des elements dans lesquels sont
-//                   situes les points de calcul
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleTab& les_valeurs
-//    Signification: le tableau des valeurs du champ aux points specifies
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: DoubleTab&
-//    Signification: le tableau des valeurs du champ aux points specifies
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief provoque une erreur ! doit etre surchargee par les classes derivees
+ *
+ *     non virtuelle pure par commodite de developpement !
+ *     Renvoie les valeurs du champ aux points specifies
+ *     par leurs coordonnees, en indiquant que les points de
+ *     calculs sont situes dans les elements indiques.
+ *
+ * @param (DoubleTab&) le tableau des coordonnees des points de calcul
+ * @param (IntVect&) le tableau des elements dans lesquels sont situes les points de calcul
+ * @param (DoubleTab& les_valeurs) le tableau des valeurs du champ aux points specifies
+ * @return (DoubleTab&) le tableau des valeurs du champ aux points specifies
+ */
 DoubleTab& Champ_base::valeur_aux_elems(const DoubleTab&,
                                         const IntVect& ,
                                         DoubleTab& les_valeurs) const
@@ -303,43 +222,19 @@ DoubleTab& Champ_base::valeur_aux_elems(const DoubleTab&,
   return les_valeurs;
 }
 
-// Description:
-//    provoque une erreur !
-//    doit etre surchargee par les classes derivees
-//    non virtuelle pure par commodite de developpement !
-//    Renvoie les valeurs d'une composante du champ aux points specifies
-//    par leurs coordonnees, en indiquant que les points de
-//    calculs sont situes dans les elements indiques.
-// Precondition:
-// Parametre: DoubleTab&
-//    Signification: le tableau des coordonnees des points de calcul
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: IntVect&
-//    Signification: le tableau des elements dans lesquels sont
-//                   situes les points de calcul
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleVect& les_valeurs
-//    Signification: le tableau des valeurs de la composante du champ
-//                   aux points specifies
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Parametre: int
-//    Signification: l'index de la composante du champ a calculer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleVect&
-//    Signification: le tableau des valeurs de la composante du champ
-//                   aux points specifies
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief provoque une erreur ! doit etre surchargee par les classes derivees
+ *
+ *     non virtuelle pure par commodite de developpement !
+ *     Renvoie les valeurs d'une composante du champ aux points specifies
+ *     par leurs coordonnees, en indiquant que les points de
+ *     calculs sont situes dans les elements indiques.
+ *
+ * @param (DoubleTab&) le tableau des coordonnees des points de calcul
+ * @param (IntVect&) le tableau des elements dans lesquels sont situes les points de calcul
+ * @param (DoubleVect& les_valeurs) le tableau des valeurs de la composante du champ aux points specifies
+ * @param (int) l'index de la composante du champ a calculer
+ * @return (DoubleVect&) le tableau des valeurs de la composante du champ aux points specifies
+ */
 DoubleVect& Champ_base::valeur_aux_elems_compo(const DoubleTab&,
                                                const IntVect&,
                                                DoubleVect& les_valeurs,
@@ -374,22 +269,12 @@ DoubleVect& Champ_base::valeur_aux_elems_compo_smooth(const DoubleTab&,
   return les_valeurs;
 }
 
-// Description:
-//    Mise a jour en temps.
-//    NE FAIT RIEN (dans la classe de base)
-// Precondition:
-// Parametre: double
-//    Signification: temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-// renvoi les valeurs au sommet sommet
+/*! @brief Mise a jour en temps.
+ *
+ * NE FAIT RIEN (dans la classe de base)
+ *
+ * @param (double) temps de mise a jour
+ */
 DoubleVect& Champ_base::valeur_a_sommet(int sommet, const Domaine& dom, DoubleVect& val) const
 {
   DoubleVect position(dimension);
@@ -400,8 +285,9 @@ DoubleVect& Champ_base::valeur_a_sommet(int sommet, const Domaine& dom, DoubleVe
   return valeur_a(position, val);
 }
 
-// Description:
-// renvoi la compo eme corrdonne des valeurs a l'element le_poly au sommet sommet
+/*! @brief renvoi la compo eme corrdonne des valeurs a l'element le_poly au sommet sommet
+ *
+ */
 double Champ_base::valeur_a_sommet_compo(int sommet, int le_poly, int compo) const
 {
   Cerr << que_suis_je();
@@ -410,8 +296,9 @@ double Champ_base::valeur_a_sommet_compo(int sommet, int le_poly, int compo) con
   return -1;
 }
 
-// Description:
-// renvoie les valeurs aux sommets du Domaine dom
+/*! @brief renvoie les valeurs aux sommets du Domaine dom
+ *
+ */
 DoubleTab& Champ_base::valeur_aux_sommets(const Domaine& dom, DoubleTab& val) const
 {
   const DoubleTab& positions=dom.coord_sommets();
@@ -421,8 +308,9 @@ DoubleTab& Champ_base::valeur_aux_sommets(const Domaine& dom, DoubleTab& val) co
   return valeur_aux_elems(positions, les_polys, val);
 }
 
-// Description:
-// renvoie la compo eme valeur aux sommets de dom.
+/*! @brief renvoie la compo eme valeur aux sommets de dom.
+ *
+ */
 DoubleVect& Champ_base::valeur_aux_sommets_compo(const Domaine& dom,
                                                  DoubleVect& val, int compo) const
 {
@@ -433,15 +321,17 @@ DoubleVect& Champ_base::valeur_aux_sommets_compo(const Domaine& dom,
   return valeur_aux_elems_compo(positions, les_polys, val, compo);
 }
 
-// Description:
-// renvoie la valeur du champ aux faces
+/*! @brief renvoie la valeur du champ aux faces
+ *
+ */
 DoubleTab& Champ_base::valeur_aux_faces(DoubleTab& result) const
 {
   return valeur_aux(ref_cast(Zone_VF, zone_dis_base()).xv(), result);
 }
 
-// Description:
-// renvoie la valeur du champ aux faces de bord
+/*! @brief renvoie la valeur du champ aux faces de bord
+ *
+ */
 DoubleTab Champ_base::valeur_aux_bords() const
 {
   const DoubleTab& xv_bord = ref_cast(Zone_VF, zone_dis_base()).xv_bord();
@@ -449,8 +339,9 @@ DoubleTab Champ_base::valeur_aux_bords() const
   return valeur_aux(xv_bord, result);
 }
 
-// Description:
-// mettre_a_jour de la classe de base Champ_base :ne fait rien !
+/*! @brief mettre_a_jour de la classe de base Champ_base :ne fait rien !
+ *
+ */
 void Champ_base::mettre_a_jour(double)
 {
 
@@ -458,21 +349,13 @@ void Champ_base::mettre_a_jour(double)
 void Champ_base::abortTimeStep()
 {
 }
-// Description:
-//    Affecter un champ dans un autre.
-//    Rebvoie le resultat de l'affectation.
-// Precondition:
-// Parametre: Champ_base& ch
-//    Signification: partie droite de l'affectation
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: Champ_base&
-//    Signification: le resultat de l'affectation (*this)
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Affecter un champ dans un autre.
+ *
+ * Rebvoie le resultat de l'affectation.
+ *
+ * @param (Champ_base& ch) partie droite de l'affectation
+ * @return (Champ_base&) le resultat de l'affectation (*this)
+ */
 Champ_base& Champ_base::affecter(const Champ_base& ch)
 {
   affecter_(ch);
@@ -492,9 +375,9 @@ void Champ_base::affecter_erreur()
   Process::exit(message);
 }
 
-// Description:
-// cette methode va fixer les unites et le nom des compos
-// elle n'est pas const en realite !!!
+/*! @brief cette methode va fixer les unites et le nom des compos elle n'est pas const en realite !!!
+ *
+ */
 void Champ_base::corriger_unite_nom_compo()
 {
   if(unite_.size() != nb_compo_)
@@ -1073,39 +956,20 @@ void Champ_base::completer(const Zone_Cl_dis_base& zcl)
 {
 }
 
-// Description:
-//    Fixe le temps auquel se situe le champ
-// Precondition:
-// Parametre: double& t
-//    Signification:  le nouveau temps auquel se situe le champ
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: double
-//    Signification: le nouveau temps auquel se situe le champ
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: le temps du champ a ete change
+/*! @brief Fixe le temps auquel se situe le champ
+ *
+ * @param (double& t) le nouveau temps auquel se situe le champ
+ * @return (double) le nouveau temps auquel se situe le champ
+ */
 double Champ_base::changer_temps(const double t)
 {
   return temps_ = t ;
 }
 
-// Description:
-//    Renvoie le temps du champ
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: le temps du champ
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le temps du champ
+ *
+ * @return (double) le temps du champ
+ */
 double Champ_base::temps() const
 {
   return temps_ ;
@@ -1148,40 +1012,26 @@ const Zone_dis_base& Champ_base::zone_dis_base() const
 }
 
 
-// Description:
-//    Calcule la trace d'un champ sur une frontiere au temps tps
-//
-//    WEC :
-//    La frontiere passee en parametre doit faire partie du domaine
-//    sur lequel s'appuie le champ
-//    Le resultat est calcule sur cette frontiere et la taille du
-//    DoubleTab x correspond au nombre de faces de la frontiere.
-//    x peut avoir un espace virtuel, la fonction trace apelle
-//    echange_espace_virtuel.
-//
-//    Cas particulier (malheureusement) du Champ_P0_VDF :
-//    Si la frontiere est un raccord, le resultat est calcule sur le
-//    raccord associe. Dans ce cas, le DoubleTab x doit etre
-//    dimensionne sur le raccord associe.
-//
-// Precondition: x doit etre dimensionne
-// Parametre: Frontiere_dis_base&
-//    Signification: frontiere discretisee sur laquelle on veut
-//                   calculer la trace du champ au temps tps
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleTab& x , double tps
-//    Signification: les valeurs du champ sur la frontiere au temps tps
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: DoubleTab&
-//    Signification: les valeurs du champ sur la frontiere au temps tps
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Calcule la trace d'un champ sur une frontiere au temps tps
+ *
+ *     WEC :
+ *     La frontiere passee en parametre doit faire partie du domaine
+ *     sur lequel s'appuie le champ
+ *     Le resultat est calcule sur cette frontiere et la taille du
+ *     DoubleTab x correspond au nombre de faces de la frontiere.
+ *     x peut avoir un espace virtuel, la fonction trace apelle
+ *     echange_espace_virtuel.
+ *
+ *     Cas particulier (malheureusement) du Champ_P0_VDF :
+ *     Si la frontiere est un raccord, le resultat est calcule sur le
+ *     raccord associe. Dans ce cas, le DoubleTab x doit etre
+ *     dimensionne sur le raccord associe.
+ *
+ *
+ * @param (Frontiere_dis_base&) frontiere discretisee sur laquelle on veut calculer la trace du champ au temps tps
+ * @param (DoubleTab& x , double tps) les valeurs du champ sur la frontiere au temps tps
+ * @return (DoubleTab&) les valeurs du champ sur la frontiere au temps tps
+ */
 DoubleTab& Champ_base::trace(const Frontiere_dis_base& , DoubleTab& x , double tps,int distant) const
 {
   Cerr << que_suis_je() << "did not overloaded Champ_base::trace" << finl;

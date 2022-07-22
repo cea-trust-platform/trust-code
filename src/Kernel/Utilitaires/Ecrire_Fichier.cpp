@@ -21,15 +21,17 @@
 Implemente_instanciable(Ecrire_Fichier,"Ecrire_Fichier",Interprete);
 Add_synonym(Ecrire_Fichier,"Ecrire_Fichier_Bin");
 
-// Description:
-//    Appel a la methode printOn de la classe Interprete
+/*! @brief Appel a la methode printOn de la classe Interprete
+ *
+ */
 Sortie& Ecrire_Fichier::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
-// Description:
-//    Appel a la methode readOn de la classe Interprete
+/*! @brief Appel a la methode readOn de la classe Interprete
+ *
+ */
 Entree& Ecrire_Fichier::readOn(Entree& is)
 {
   return Interprete::readOn(is);

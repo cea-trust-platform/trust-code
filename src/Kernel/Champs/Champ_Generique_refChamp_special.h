@@ -18,13 +18,13 @@
 
 #include <Champ_Generique_refChamp.h>
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Champ_Generique_refChamp_special
-//
-// <Description of class Champ_Generique_refChamp_special>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Champ_Generique_refChamp_special
+ *
+ *  <Description of class Champ_Generique_refChamp_special>
+ *
+ *
+ *
+ */
 
 class Champ_Generique_refChamp_special : public Champ_Generique_refChamp
 {

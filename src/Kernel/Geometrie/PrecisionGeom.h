@@ -20,16 +20,13 @@
 
 #include <Interprete.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe PrecisionGeom
-//    Cette classe est un interprete qui lit la dimension d'espace.
-//    Directive:
-//          PrecisionGeom dim
-// .SECTION voir aussi
-//    Interprete Objet_U
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe PrecisionGeom Cette classe est un interprete qui lit la dimension d'espace.
+ *
+ *     Directive:
+ *           PrecisionGeom dim
+ *
+ * @sa Interprete Objet_U
+ */
 class PrecisionGeom : public Interprete
 {
   Declare_instanciable(PrecisionGeom);

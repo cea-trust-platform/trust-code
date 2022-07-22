@@ -49,8 +49,11 @@ Entree& vect_impl::lit(Entree& s)
   return s;
 }
 
-// Description: methhode surcharge par les classes filles pour fournir la bonne
-// instance aux constructeurs au readOn....
+/*! @brief methhode surcharge par les classes filles pour fournir la bonne instance aux constructeurs au readOn.
+ *
+ * ...
+ *
+ */
 Objet_U* vect_impl::cree_une_instance() const
 {
   Cerr<<"cree_une_instance() must be redefined in "<<que_suis_je()<<finl;

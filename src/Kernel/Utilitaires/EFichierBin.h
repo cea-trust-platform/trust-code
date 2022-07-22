@@ -21,13 +21,10 @@
 #include <EntreeSortie.h>
 #include <Process.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Lecture dans un fichier d'objets ecrits au format binaire
-// .SECTION voir aussi
-//    SFichierBin EFichier
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Lecture dans un fichier d'objets ecrits au format binaire
+ *
+ * @sa SFichierBin EFichier
+ */
 
 class EFichierBin : public EFichier
 {

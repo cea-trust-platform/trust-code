@@ -52,33 +52,40 @@ Comm_Group::Comm_Group()
   group_communication_tag_ = group_number_ % group_increment;
 }
 
-// Description: Le constructeur par copie est interdit !
+/*! @brief Le constructeur par copie est interdit !
+ *
+ */
 Comm_Group::Comm_Group(const Comm_Group& a): Objet_U(a)
 {
   Cerr << "Comm_Group::Comm_Group(const Comm_Group &) error" << finl;
   exit();
 }
 
-// Description: La copie est interdite !
+/*! @brief La copie est interdite !
+ *
+ */
 const Comm_Group& Comm_Group::operator=(const Comm_Group&)
 {
   exit();
   return *this;
 }
 
-// Description: Destructeur (pour l'instant, rien a faire)
+/*! @brief Destructeur (pour l'instant, rien a faire)
+ *
+ */
 Comm_Group::~Comm_Group()
 {
 }
 
-// Description:
-//  Cette fonction doit etre appelee simultanement
-//  par tous les PEs du groupe current_group avec les memes parametres.
-//  Les processeurs de la pe_list sont les rangs dans current_group() des
-//  processeurs du nouveau groupe. Le maitre du groupe est le premier de la liste,
-//  le rang du processeur courant, s'il est dans le groupe est determine par
-//  son rang dans la liste. Il ne doit pas y avoir de doublon.
-//  Cette fonction est appelee par les methodes init_group des classes derivees.
+/*! @brief Cette fonction doit etre appelee simultanement par tous les PEs du groupe current_group avec les memes parametres.
+ *
+ *   Les processeurs de la pe_list sont les rangs dans current_group() des
+ *   processeurs du nouveau groupe. Le maitre du groupe est le premier de la liste,
+ *   le rang du processeur courant, s'il est dans le groupe est determine par
+ *   son rang dans la liste. Il ne doit pas y avoir de doublon.
+ *   Cette fonction est appelee par les methodes init_group des classes derivees.
+ *
+ */
 void Comm_Group::init_group(const ArrOfInt& pe_list)
 {
   // Tous les processeurs du groupe courant doivent arriver ici
@@ -133,9 +140,11 @@ void Comm_Group::init_group(const ArrOfInt& pe_list)
     }
 }
 
-// Description:
-//  Initialise le groupe_TRUST().
-//  Cette methode est appelee par init_group_trio() des classes derivees
+/*! @brief Initialise le groupe_TRUST().
+ *
+ * Cette methode est appelee par init_group_trio() des classes derivees
+ *
+ */
 void Comm_Group::init_group_trio(int nproc_tot, int arank)
 {
   assert(arank >= 0 && arank < nproc_tot);

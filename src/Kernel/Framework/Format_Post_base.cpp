@@ -18,7 +18,9 @@
 
 Implemente_base(Format_Post_base,"Format_Post_base",Objet_U);
 
-// Description: erreur => exit
+/*! @brief erreur => exit
+ *
+ */
 Sortie& Format_Post_base::printOn(Sortie& os) const
 {
   Cerr << "Format_Post_base::printOn : error" << finl;
@@ -42,12 +44,13 @@ int Format_Post_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
   return -1;
 }
 
-// Description:
-//  Initialise le fichier avec des parametres appropries pour son
-//  format (exemple: format ascii, efface le fichier existant, un
-//  fichier unique pour tous les processeurs etc...)
-//  Methode a surcharger dans les classes derivees.
-// Valeur de retour: 1 si l'operation a reussi, 0 sinon.
+/*! @brief Initialise le fichier avec des parametres appropries pour son format (exemple: format ascii, efface le fichier existant, un
+ *
+ *   fichier unique pour tous les processeurs etc...)
+ *   Methode a surcharger dans les classes derivees.
+ *  Valeur de retour: 1 si l'operation a reussi, 0 sinon.
+ *
+ */
 int Format_Post_base::initialize_by_default(const Nom& file_basename)
 {
   Cerr << "Format_Post_base::initialize_by_default(" << file_basename
@@ -132,34 +135,18 @@ int Format_Post_base::test_coherence(const int champs, const int stat, const dou
   return 1;
 }
 
-// Description:
-//  Ecriture d'un maillage. L'ecriture du domaine a lieu soit au debut,
-//  avant le premier appel a ecrire_temps, soit plus tard (maillage dynamique),
-//  mais ce n'est pas forcement supporte par le postraitement.
-//
-// Parametre: id_domaine
-// Signification: le nom affecte au domaine dans le fichier lata.
-// Parametre: type_elem
-// Signification: le type de l'element geometrique (un type supporte par
-//  la classe derivee, en general on comprend au moins "TETRAEDRE", "HEXAEDRE",
-//  "TRIANGLE" et "RECTANGLE")
-// Parametre: dimension
-// Signification: la dimension du domaine (nombre de coordonnees des sommets)
-//  On peut avoir un domaine de dimension 3 et des elements de type triangle
-//  (postraitement d'une interface ou du bord d'un domaine volumique).
-// Parametre: sommets
-// Signification:
-//  Coordonnees des sommets. S'il n'est pas vide, il faut que dimension(1)==dimension
-// Parametre: elements
-// Signification:
-//  Indices des sommets de chaque element. dimension(1) doit correspondre au type
-//  de l'element (3 pour un triangle, 4 pour un rectangle ou un tetraedre, etc...)
-//
-// Precondition:
-//  Le fichier doit avoir ete initialise.
-// Valeur de retour: 1 si operation reussie, 0 sinon (par exemple,
-//  preconditions non remplies ou fonctionnalite non supportee par le
-//  format).
+/*! @brief Ecriture d'un maillage.
+ *
+ * L'ecriture du domaine a lieu soit au debut, avant le premier appel a ecrire_temps, soit plus tard (maillage dynamique),
+ *   mais ce n'est pas forcement supporte par le postraitement.
+ *
+ *
+ * @param (id_domaine) le nom affecte au domaine dans le fichier lata.
+ * @param (type_elem) le type de l'element geometrique (un type supporte par la classe derivee, en general on comprend au moins "TETRAEDRE", "HEXAEDRE", "TRIANGLE" et "RECTANGLE")
+ * @param (dimension) la dimension du domaine (nombre de coordonnees des sommets) On peut avoir un domaine de dimension 3 et des elements de type triangle (postraitement d'une interface ou du bord d'un domaine volumique).
+ * @param (sommets) Coordonnees des sommets. S'il n'est pas vide, il faut que dimension(1)==dimension
+ * @param (elements) Indices des sommets de chaque element. dimension(1) doit correspondre au type de l'element (3 pour un triangle, 4 pour un rectangle ou un tetraedre, etc...)
+ */
 
 int Format_Post_base::ecrire_domaine(const Domaine& domaine,const int est_le_premier_post)
 {
@@ -173,11 +160,11 @@ int Format_Post_base::ecrire_domaine_dis(const Domaine& domaine,const REF(Zone_d
   return ecrire_domaine(domaine, est_le_premier_post);
 }
 
-// Description:
-//  Commence l'ecriture d'un pas de temps. La classe derivee doit accepter
-//  de recevoir plusieurs appels consecutifs a cette methode avec le meme temps.
-// Precondition:  Fichier initialise.
-// Valeur de retour: 1 si operation reussie, 0 sinon.
+/*! @brief Commence l'ecriture d'un pas de temps.
+ *
+ * La classe derivee doit accepter de recevoir plusieurs appels consecutifs a cette methode avec le meme temps.
+ *
+ */
 
 int Format_Post_base::ecrire_temps(const double temps)
 {
@@ -186,29 +173,13 @@ int Format_Post_base::ecrire_temps(const double temps)
   return 0;
 }
 
-// Description:
-//  Ecriture d'un champ dans le fichier de postraitement.
-// Parametre: id_du_champ
-// Signification:
-//  identifiant du champ (permet d'identifier un champ unique si on donne
-//  en plus un numero de pas de temps)
-// Parametre: id_du_domaine
-// Signification:
-//  identifiant du domaine sur lequel le champ est defini
-//  Ce domaine doit avoir ete ecrit avant par "ecrire_domaine".
-// Parametre: localisation
-// Signification:
-//  localisation des valeurs du champ (SOMMETS, ELEMENTS, ou tout autre id. de
-//  tableau deja ecrit)
-//  (tout n'est pas obligatoirement supporte par tous les postraitements)
-// Parametre: data
-// Signification:
-//  tableau de valeurs a postraiter. Le nombre de lignes du tableau
-//  doit etre egal au nombre de lignes du tableau "localisation"
-//  (nombre de sommets, d'elements ou de faces ou autre).
-// Valeur de retour: 1 si operation reussie, 0 sinon (par exemple,
-//  preconditions non remplies ou fonctionnalite non supportee par le
-//  format).
+/*! @brief Ecriture d'un champ dans le fichier de postraitement.
+ *
+ * @param (id_du_champ) identifiant du champ (permet d'identifier un champ unique si on donne en plus un numero de pas de temps)
+ * @param (id_du_domaine) identifiant du domaine sur lequel le champ est defini Ce domaine doit avoir ete ecrit avant par "ecrire_domaine".
+ * @param (localisation) localisation des valeurs du champ (SOMMETS, ELEMENTS, ou tout autre id. de tableau deja ecrit) (tout n'est pas obligatoirement supporte par tous les postraitements)
+ * @param (data) tableau de valeurs a postraiter. Le nombre de lignes du tableau doit etre egal au nombre de lignes du tableau "localisation" (nombre de sommets, d'elements ou de faces ou autre). Valeur de retour: 1 si operation reussie, 0 sinon (par exemple, preconditions non remplies ou fonctionnalite non supportee par le format).
+ */
 
 int Format_Post_base::ecrire_champ(const Domaine& domaine,const Noms& unite_,const Noms& noms_compo,
                                    int ncomp, double temps_,double temps_courant,
@@ -238,22 +209,11 @@ int Format_Post_base::ecrire_champ2(const Domaine& domaine,const Noms& unite_,co
   return 0;
 }
 
-// Description:
-//  Ecriture d'un tableau d'entiers dans le fichier de postraitement
-//  Voir aussi ecrire_champ
-// Parametre: reference
-// Signification: Nom d'un autre tableau deja ecrit. data[i] est un
-//  indice dans ce tableau (exemple: on peut ecrire le tableau
-//  FACES_VOISINS, localisation=FACES, reference=ELEMENTS
-//  car le tableau est indexe par un numero de face et contient
-//  des indices d'elements)
-//  L'ecriture d'un domaine entraine automatiquement l'existence
-//  d'une tableau SOMMETS et d'un tableau ELEMENTS
-// Parametre: reference_size
-// Signification: la taille (locale) du tableau cite en reference
-//  (dimension(0) du tableau). Cette dimension est utilisee pour
-//  renumeroter le contenu du tableau data afin de creer une numerotation
-//  globale lorsque tous les processeurs ecrivent dans un fichier unique.
+/*! @brief Ecriture d'un tableau d'entiers dans le fichier de postraitement Voir aussi ecrire_champ
+ *
+ * @param (reference) Nom d'un autre tableau deja ecrit. data[i] est un indice dans ce tableau (exemple: on peut ecrire le tableau FACES_VOISINS, localisation=FACES, reference=ELEMENTS car le tableau est indexe par un numero de face et contient des indices d'elements) L'ecriture d'un domaine entraine automatiquement l'existence d'une tableau SOMMETS et d'un tableau ELEMENTS
+ * @param (reference_size) la taille (locale) du tableau cite en reference (dimension(0) du tableau). Cette dimension est utilisee pour renumeroter le contenu du tableau data afin de creer une numerotation globale lorsque tous les processeurs ecrivent dans un fichier unique.
+ */
 int Format_Post_base::ecrire_item_int(const Nom&   id_item,
                                       const Nom&   id_du_domaine,
                                       const Nom& id_zone,
@@ -391,130 +351,36 @@ void Format_Post_base::postraiter_debug_valeurs_un_instant(const Nom& nom_fich,
 //Pourquoi pas de declaration de la methode (fonction) static
 
 
-//// Description: Methode outil pour retirer les doublons dans un tableau.
-//static void array_trier_retirer_doublons(ArrOfInt & array)
-//{
-//const int size_ = array.size_array();
-//if (size_ == 0)
-//return;
-//// Tri dans l'ordre croissant
-//array.ordonne_array();
-//// Retire les doublons
-//int new_size_ = 1;
-//int last_value = array[0];
-//for (int i = 1; i < size_; i++) {
-//if (array[i] != last_value) {
-//array[new_size_] = last_value = array[i];
-//new_size_++;
-//}
-//}
-//array.resize_array(new_size_);
-//}
-//
-//
-//
-//
-//// Description:
-////  Ecriture des bords du domaine dans le fichier de postraitement
-//// Parametre: id_du_domaine
-//// Signification: le nom du domaine dont on ecrit les bords
-//// Parametre: type_faces
-//// Signification: le type des faces du bord (le nom d'un type derive de Elem_Geom_base)
-//// Parametre: sommets
-//// Signification: Les coordonnees des sommets du domaine.
-//// Parametre: faces_sommets
-//// Signification: pour chaque face de bord, numeros de ses sommets dans le domaine
-//// Parametre: faces_num_bord
-//// Signification: pour chaque face, numero du bord auquel elle appartient
-////  (le premier bord porte le numero zero)
-//// Parametre: bords_nom
-//// Signification: le nom de chaque bord.
-//int Format_Post_base::ecrire_bords(const Nom    & id_du_domaine,
-//const Motcle & type_faces,
-//const DoubleTab & sommets,
-//const IntTab & faces_sommets,
-//const IntTab & faces_num_bord,
-//const Noms   & bords_nom)
-//{
-//// Le comportement par defaut de "ecrire_bords" consiste a
-//// ecrire une nouvelle geometrie appelee "id_du_domaine_boundary"
-//
-//int i, j;
-//
-//// Creation de la liste des indices de sommets utilises dans les faces de bord:
-//ArrOfInt sommets_bord;
-//sommets_bord = faces_sommets;
-//array_trier_retirer_doublons(sommets_bord);
-//
-//// Creation d'un tableau de renumerotation:
-////   renum[indice global] = indice dans le tableau des sommets de bord
-//const int nb_sommets = sommets.dimension(0);
-//const int nb_sommets_bord = sommets_bord.size_array();
-//ArrOfInt renum(nb_sommets);
-//renum = -1;
-//for (i = 0; i < nb_sommets_bord; i++)
-//renum[sommets_bord[i]] = i;
-//
-//// Renumerotation du tableau faces_sommets
-//IntTab faces_sommets_renum(faces_sommets);
-//{
-//ArrOfInt & faces_sommets_array = faces_sommets_renum;
-//const int faces_sommets_size_array = faces_sommets_array.size_array();
-//for (i = 0; i < faces_sommets_size_array; i++) {
-//int & isom = faces_sommets_array[i];
-//isom = renum[isom];
-//}
-//}
-//
-//// Construction du tableau des sommets
-//const int dim = sommets.dimension(1);
-//DoubleTab coord_som(nb_sommets_bord, dim);
-//for (i = 0; i < nb_sommets_bord; i++) {
-//const int i_old = sommets_bord[i];
-//for (j = 0; j < dim; j++)
-//coord_som(i,j) = sommets(i_old,j);
-//}
-//
-//// Ecriture de la geometrie:
-//Nom id = id_du_domaine + "_boundary";
-//ecrire_domaine(id,
-//type_faces,
-//dim,
-//coord_som,
-//faces_sommets_renum);
-//
-//// Ecriture des noms des bords
-//Nom id_noms = id + "_names";
-//ecrire_noms(id_noms,
-//id,
-//"",
-//bords_nom);
-//
-//// Ecriture des numeros de bord
-//Nom id_tableau = id + "_numbers";
-//
-//
-////La methode s appelle maintenant ecrire_item_int()
-//ecrire_champ_int(id_tableau,
-//id,
-//"elem",
-//id_noms,
-//faces_num_bord,
-//bords_nom.size());
-//
-//return 1;
-//}
-//
-//// Description:
-////  Ecriture d'un tableau de chaines de caracteres.
-////  Voir aussi ecrire_champ
-//int Format_Post_base::ecrire_noms(const Nom  & id_de_la_liste,
-//const Nom  & id_du_domaine,
-//const Nom  & localisation,
-//const Noms & liste_noms)
-//{
-//Cerr << "Format_Post_base::ecrire_noms(...)\n"
-//<< " method not coded for " << que_suis_je() << finl;
-//return 0;
-//}
+/*! @brief Methode outil pour retirer les doublons dans un tableau.
+ *
+ * static void array_trier_retirer_doublons(ArrOfInt & array)
+ * {
+ * const int size_ = array.size_array();
+ * if (size_ == 0)
+ * return;
+ *  Tri dans l'ordre croissant
+ * array.ordonne_array();
+ *  Retire les doublons
+ * int new_size_ = 1;
+ * int last_value = array[0];
+ * for (int i = 1; i < size_; i++) {
+ * if (array[i] != last_value) {
+ * array[new_size_] = last_value = array[i];
+ * new_size_++;
+ * }
+ * }
+ * array.resize_array(new_size_);
+ * }
+ *
+ *
+ *
+ *
+ *
+ * @param (id_du_domaine) le nom du domaine dont on ecrit les bords
+ * @param (type_faces) le type des faces du bord (le nom d'un type derive de Elem_Geom_base)
+ * @param (sommets) Les coordonnees des sommets du domaine.
+ * @param (faces_sommets) pour chaque face de bord, numeros de ses sommets dans le domaine
+ * @param (faces_num_bord) pour chaque face, numero du bord auquel elle appartient (le premier bord porte le numero zero)
+ * @param (bords_nom) le nom de chaque bord. int Format_Post_base::ecrire_bords(const Nom    & id_du_domaine, const Motcle & type_faces, const DoubleTab & sommets, const IntTab & faces_sommets, const IntTab & faces_num_bord, const Noms   & bords_nom) { Le comportement par defaut de "ecrire_bords" consiste a ecrire une nouvelle geometrie appelee "id_du_domaine_boundary" int i, j; Creation de la liste des indices de sommets utilises dans les faces de bord: ArrOfInt sommets_bord; sommets_bord = faces_sommets; array_trier_retirer_doublons(sommets_bord); Creation d'un tableau de renumerotation: renum[indice global] = indice dans le tableau des sommets de bord const int nb_sommets = sommets.dimension(0); const int nb_sommets_bord = sommets_bord.size_array(); ArrOfInt renum(nb_sommets); renum = -1; for (i = 0; i < nb_sommets_bord; i++) renum[sommets_bord[i]] = i; Renumerotation du tableau faces_sommets IntTab faces_sommets_renum(faces_sommets); { ArrOfInt & faces_sommets_array = faces_sommets_renum; const int faces_sommets_size_array = faces_sommets_array.size_array(); for (i = 0; i < faces_sommets_size_array; i++) { int & isom = faces_sommets_array[i]; isom = renum[isom]; } } Construction du tableau des sommets const int dim = sommets.dimension(1); DoubleTab coord_som(nb_sommets_bord, dim); for (i = 0; i < nb_sommets_bord; i++) { const int i_old = sommets_bord[i]; for (j = 0; j < dim; j++) coord_som(i,j) = sommets(i_old,j); } Ecriture de la geometrie: Nom id = id_du_domaine + "_boundary"; ecrire_domaine(id, type_faces, dim, coord_som, faces_sommets_renum); Ecriture des noms des bords Nom id_noms = id + "_names"; ecrire_noms(id_noms, id, "", bords_nom); Ecriture des numeros de bord Nom id_tableau = id + "_numbers"; La methode s appelle maintenant ecrire_item_int() ecrire_champ_int(id_tableau, id, "elem", id_noms, faces_num_bord, bords_nom.size()); return 1; }
+ */
 

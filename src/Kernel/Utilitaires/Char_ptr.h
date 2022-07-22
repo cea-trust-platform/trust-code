@@ -19,23 +19,10 @@
 #define Char_ptr_included
 
 
-//////////////////////////////////////////////////////////////////////////////
-// .NOM  Char_ptr
-// .ENTETE  TRUST Utilitaires
-// .LIBRAIRIE  libutil
-// .FILE  Char_ptr.h
-// .FILE  Char_ptr.cpp
-//
-// .DESCRIPTION
-//     class Char_ptr
-//     Une chaine de caractere pour nommer les objets de TRUST
-// .SECTION voir aussi
-//      Motcle
-// .CONTRAINTES
-// .INVARIANTS
-// .HTML
-// .EPS
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief class Char_ptr Une chaine de caractere pour nommer les objets de TRUST
+ *
+ * @sa Motcle, .CONTRAINTES, .INVARIANTS, .HTML, .EPS
+ */
 
 class Char_ptr
 {

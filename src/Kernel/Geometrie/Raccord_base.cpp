@@ -20,60 +20,33 @@ Implemente_base(Raccord_local,"Raccord_local",Raccord_base);
 Implemente_base(Raccord_distant,"Raccord_distant",Raccord_base);
 Implemente_instanciable(Raccord_local_homogene,"Raccord_local_homogene",Raccord_local);
 
-// Description:
-//    Simple appel a: Frontiere::printOn(Sortie& )
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a: Frontiere::printOn(Sortie& )
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Raccord_base::printOn(Sortie& s ) const
 {
   return Frontiere::printOn(s) ;
 }
 
 
-// Description:
-//    Simple appel a: Frontiere::readOn(Entree& )
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Frontiere::readOn(Entree& )
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Raccord_base::readOn(Entree& s)
 {
   return Frontiere::readOn(s) ;
 }
 
 
-// Description:
-//    Simple appel a: Raccord_base::printOn(Sortie& )
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a: Raccord_base::printOn(Sortie& )
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Raccord_local::printOn(Sortie& s ) const
 {
   return Raccord_base::printOn(s) ;
@@ -82,40 +55,22 @@ Sortie& Raccord_local::printOn(Sortie& s ) const
 
 
 
-// Description:
-//    Simple appel a: Raccord_base::readOn(Entree& )
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Raccord_base::readOn(Entree& )
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Raccord_local::readOn(Entree& s)
 {
   return Raccord_base::readOn(s) ;
 }
 
 
-// Description:
-//    Simple appel a: Raccord_base::printOn(Sortie& )
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a: Raccord_base::printOn(Sortie& )
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Raccord_distant::printOn(Sortie& s ) const
 {
   return Raccord_base::printOn(s) ;
@@ -144,39 +99,21 @@ Entree& Raccord_distant::readOn(Entree& s)
 
 
 
-// Description:
-//    Simple appel a: Raccord_local::printOn(Sortie& )
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a: Raccord_local::printOn(Sortie& )
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Raccord_local_homogene::printOn(Sortie& s ) const
 {
   return Raccord_local::printOn(s) ;
 }
 
-// Description:
-//    Simple appel a: Raccord_local::readOn(Entree& )
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Raccord_local::readOn(Entree& )
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Raccord_local_homogene::readOn(Entree& s)
 {
   return Raccord_local::readOn(s) ;

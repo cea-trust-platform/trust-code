@@ -21,79 +21,40 @@ Implemente_instanciable(Point,"Point",Elem_geom_base);
 
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie
+ */
 Sortie& Point::printOn(Sortie& s ) const
 {
   return s;
 }
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification: le flot d'entree
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree
+ */
 Entree& Point::readOn(Entree& s )
 {
   return s;
 }
 
-// Description:
-//    Reordonne les sommets du segment.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Reordonne les sommets du segment.
+ *
+ */
 void Point::reordonner()
 {
   return;
 }
 
 
-// Description:
-//    Renvoie le nom LML d'un triangle = "VOXEL8".
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Nom&
-//    Signification: toujours egal a "VOXEL8"
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nom LML d'un triangle = "VOXEL8".
+ *
+ * @return (Nom&) toujours egal a "VOXEL8"
+ */
 const Nom& Point::nom_lml() const
 {
   static Nom nom="POINT";
@@ -101,32 +62,15 @@ const Nom& Point::nom_lml() const
 }
 
 
-// Description:
-//    Renvoie 1 si l'element ielem de la zone associee a
-//              l'element geometrique contient le point
-//              de coordonnees specifiees par le parametre "pos".
-//    Renvoie 0 sinon.
-// Precondition:
-// Parametre: DoubleVect& pos
-//    Signification: coordonnees du point que l'on
-//                   cherche a localiser
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: int element
-//    Signification: le numero de l'element de la zone
-//                   dans lequel on cherche le point.
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si le point de coordonnees specifiees
-//                   appartient a l'element "element"
-//                   0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie 1 si l'element ielem de la zone associee a l'element geometrique contient le point
+ *
+ *               de coordonnees specifiees par le parametre "pos".
+ *     Renvoie 0 sinon.
+ *
+ * @param (DoubleVect& pos) coordonnees du point que l'on cherche a localiser
+ * @param (int element) le numero de l'element de la zone dans lequel on cherche le point.
+ * @return (int) 1 si le point de coordonnees specifiees appartient a l'element "element" 0 sinon
+ */
 int Point::contient(const ArrOfDouble& pos, int element ) const
 {
   // on  teste si la positon correspond au sommet
@@ -154,30 +98,14 @@ int Point::contient(const ArrOfDouble& pos, int element ) const
 }
 
 
-// Description:
-//    Renvoie 1 si les sommets specifies par le parametre "pos"
-//    sont les sommets de l'element "element" de la zone associee a
-//    l'element geometrique.
-// Precondition:
-// Parametre: IntVect& pos
-//    Signification: les numeros des sommets a comparer
-//                   avec ceux de l'elements "element"
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: int element
-//    Signification: le numero de l'element de la zone
-//                   dont on veut comparer les sommets
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si les sommets passes en parametre
-//                   sont ceux de l'element specifie, 0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie 1 si les sommets specifies par le parametre "pos" sont les sommets de l'element "element" de la zone associee a
+ *
+ *     l'element geometrique.
+ *
+ * @param (IntVect& pos) les numeros des sommets a comparer avec ceux de l'elements "element"
+ * @param (int element) le numero de l'element de la zone dont on veut comparer les sommets
+ * @return (int) 1 si les sommets passes en parametre sont ceux de l'element specifie, 0 sinon
+ */
 int Point::contient(const ArrOfInt& pos, int element ) const
 {
   abort();
@@ -190,26 +118,17 @@ int Point::contient(const ArrOfInt& pos, int element ) const
     return 0;
 }
 
-// Description:
-//    Calcule les volumes des elements de la zone associee.
-// Precondition:
-// Parametre: DoubleVect& volumes
-//    Signification: le vecteur contenant les valeurs  des
-//                   des volumes des elements de la zone
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Calcule les volumes des elements de la zone associee.
+ *
+ * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la zone
+ */
 void Point::calculer_volumes(DoubleVect& volumes) const
 {
   volumes=1;
 }
-// Description: voir ElemGeomBase::get_tab_faces_sommets_locaux
+/*! @brief voir ElemGeomBase::get_tab_faces_sommets_locaux
+ *
+ */
 int Point::get_tab_faces_sommets_locaux(IntTab& faces_som_local) const
 {
   faces_som_local.resize(1,1);

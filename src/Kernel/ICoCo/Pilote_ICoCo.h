@@ -18,13 +18,9 @@
 
 #include <Interprete.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Pilote_ICoCo
-//     Exemple de pilotage de Trio via ICoCo en C++
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Pilote_ICoCo Exemple de pilotage de Trio via ICoCo en C++
+ *
+ */
 class Pilote_ICoCo : public Interprete
 {
   Declare_instanciable(Pilote_ICoCo);

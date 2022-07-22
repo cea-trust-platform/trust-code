@@ -33,23 +33,13 @@ Entree& Integrale_tps_produit_champs::readOn(Entree& s)
 {
   return s ;
 }
-// Description:
-//    Mets a jour l'integrale.
-//    Verifie que le temps de l'integrale est inferieur a celui du
-//    champ associe et poursuit l'integration jusqu'au temps courant.
-//    si la borne superieure de l'integrale n'est pas depassee.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Mets a jour l'integrale.
+ *
+ * Verifie que le temps de l'integrale est inferieur a celui du
+ *     champ associe et poursuit l'integration jusqu'au temps courant.
+ *     si la borne superieure de l'integrale n'est pas depassee.
+ *
+ */
 void Integrale_tps_produit_champs::mettre_a_jour_integrale()
 {
   Champ espace_stockage_source,espace_stockage_source2;

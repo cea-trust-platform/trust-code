@@ -19,17 +19,15 @@
 #include <TRUSTTabs_forward.h>
 class Roue;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     Pointeur sur une roue.
-//     La roue est creee dans le constructeur, detruite dans le destructeur.
-//     Elle est recopiee dans le constructeur par recopie
-//     et dans l'operateur d'affectation d'un Roue_ptr a un autre.
-//     Dans tous les autres cas seuls les pointeurs sont manipules.
-// .SECTION voir aussi
-//     Champ_Inc
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Pointeur sur une roue.
+ *
+ * La roue est creee dans le constructeur, detruite dans le destructeur.
+ *      Elle est recopiee dans le constructeur par recopie
+ *      et dans l'operateur d'affectation d'un Roue_ptr a un autre.
+ *      Dans tous les autres cas seuls les pointeurs sont manipules.
+ *
+ * @sa Champ_Inc
+ */
 
 struct Roue_ptr
 {
@@ -75,15 +73,13 @@ struct Roue_ptr
 };
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     Classe Roue utilisee dans Champ_Inc_Base.
-//     Permet de gerer le nombre de valeurs du temps pour lesquels le champ
-//     doit rester en memoire.
-// .SECTION voir aussi
-//     Champ_Inc
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Roue utilisee dans Champ_Inc_Base.
+ *
+ * Permet de gerer le nombre de valeurs du temps pour lesquels le champ
+ *      doit rester en memoire.
+ *
+ * @sa Champ_Inc
+ */
 
 
 class Roue
@@ -125,149 +121,70 @@ private :
   Roue_ptr futur_;
 };
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline Roue_ptr::Roue_ptr(Roue *x): ptr(x) {}
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline Roue* Roue_ptr::operator ->() const
 {
   return ptr;
 }
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline Roue* Roue_ptr::operator ->()
 {
   return ptr;
 }
 
-// Description:
-//    Retourne le tableau des valeurs de la Roue
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: const DoubleTab&
-//    Signification: reference constante sur le tableau des valeurs
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Retourne le tableau des valeurs de la Roue
+ *
+ * @return (const DoubleTab&) reference constante sur le tableau des valeurs
+ */
 inline const DoubleTab& Roue::valeurs() const
 {
   return valeurs_;
 }
 
 
-// Description:
-//    Retourne le tableau des valeurs de la Roue
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: const DoubleTab&
-//    Signification: reference sur le tableau des valeurs
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Retourne le tableau des valeurs de la Roue
+ *
+ * @return (const DoubleTab&) reference sur le tableau des valeurs
+ */
 inline DoubleTab& Roue::valeurs()
 {
   return valeurs_;
 }
 
 
-// Description:
-//    Retoune la valeur du temps de la Roue
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: le temps
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Retoune la valeur du temps de la Roue
+ *
+ * @return (double) le temps
+ */
 inline double Roue::temps() const
 {
   return temps_;
 }
 
 
-// Description:
-//    Change le temps de la Roue
-// Precondition:
-// Parametre: const double& t
-//    Signification: le nouveau temps
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: le nouveau temps
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Change le temps de la Roue
+ *
+ * @param (const double& t) le nouveau temps
+ * @return (double) le nouveau temps
+ */
 inline double Roue::changer_temps(const double t)
 {
   return temps_=t;
 }
-// Description:
-//    Retourne le nombre de cases de la Roue
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de cases de la Roue
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Retourne le nombre de cases de la Roue
+ *
+ * @return (int) le nombre de cases de la Roue
+ */
 inline int Roue::nb_cases() const
 {
   return nb_cases_;

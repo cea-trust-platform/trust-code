@@ -18,10 +18,11 @@
 
 #include <Postraitement.h>
 
-// Description:
-//  Classe de champ particuliere qui encapsule une reference
-//  a un champ volumique de TRUST de type Champ_base.
-//  La classe ne gere pas la memoire de Champ_base.
+/*! @brief Classe de champ particuliere qui encapsule une reference a un champ volumique de TRUST de type Champ_base.
+ *
+ *   La classe ne gere pas la memoire de Champ_base.
+ *
+ */
 
 // Syntaxe a respecter pour jdd
 //

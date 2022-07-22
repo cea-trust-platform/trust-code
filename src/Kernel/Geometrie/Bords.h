@@ -26,14 +26,10 @@ Declare_liste(Bord);
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Bords
-//    Cette classe represente une liste d'objets de type Bord
-// .SECTION voir aussi
-//    Bord
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Bords Cette classe represente une liste d'objets de type Bord
+ *
+ * @sa Bord
+ */
 class Bords : public LIST(Bord)
 {
 
@@ -49,20 +45,10 @@ public :
 };
 
 
-// Description:
-//    Renvoie le nombre de bords contenus dans la liste
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de bords contenus dans la liste
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le nombre de bords contenus dans la liste
+ *
+ * @return (int) le nombre de bords contenus dans la liste
+ */
 inline int Bords::nb_bords() const
 {
   return size();

@@ -43,45 +43,28 @@ Domaine_dis::~Domaine_dis()
     }
 }
 
-// Description:
-//    Surcharge Objet_U::printOn(Sortie&)
-//    Imprime le domaine discretise sur un flot de sortie.
-//    Imprime le nom du domaine et les zones qu'il contient.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Surcharge Objet_U::printOn(Sortie&) Imprime le domaine discretise sur un flot de sortie.
+ *
+ *     Imprime le nom du domaine et les zones qu'il contient.
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Domaine_dis::printOn(Sortie& os) const
 {
   return os << domaine().le_nom() << finl << les_zones.valeur() << les_sous_zones_dis.valeur();
 }
 
 
-// Description:
-//    Lit le domaine discretise a partir d'un flot d'entree.
-//    Le format attendu est le suivant:
-//       nom_domaine
-//       bloc de lecture Zones_Dis
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit le domaine discretise a partir d'un flot d'entree.
+ *
+ * Le format attendu est le suivant:
+ *        nom_domaine
+ *        bloc de lecture Zones_Dis
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Domaine_dis::readOn(Entree& is)
 {
   Nom nom;
@@ -89,22 +72,13 @@ Entree& Domaine_dis::readOn(Entree& is)
 }
 
 
-// Description:
-//    Discretise le domaine.
-//    On type et on discretise chaque zone discretisee du domaine discretise
-//    grace a la discretisation passee en parametre.
-// Precondition: le domaine associe doit etre non nul
-// Parametre: Discretisation_base& discretisation
-//    Signification: la discretisation a appliquer a chaque zone du domaine
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: les zones du domaines discretise sont discretisees.
+/*! @brief Discretise le domaine.
+ *
+ * On type et on discretise chaque zone discretisee du domaine discretise
+ *     grace a la discretisation passee en parametre.
+ *
+ * @param (Discretisation_base& discretisation) la discretisation a appliquer a chaque zone du domaine
+ */
 void Domaine_dis::discretiser(const Nom& type_1)
 {
   Nom type(type_1);
@@ -200,22 +174,13 @@ void Domaine_dis::discretiser(const Nom& type_1)
 }
 
 
-// Description:
-//    Associe un Domaine (non discretise) a l'objet.
-//    Dimensionne le tableau des zones discretisees associees
-//    au domaine.
-// Precondition:
-// Parametre: Domaine& un_domaine
-//    Signification: le domaine a associer
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe un Domaine (non discretise) a l'objet.
+ *
+ * Dimensionne le tableau des zones discretisees associees
+ *     au domaine.
+ *
+ * @param (Domaine& un_domaine) le domaine a associer
+ */
 void Domaine_dis::associer_domaine(const Domaine& un_domaine)
 {
   le_domaine=un_domaine;

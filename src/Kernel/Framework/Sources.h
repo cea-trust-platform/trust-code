@@ -20,17 +20,14 @@
 
 Declare_liste(Source);
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     class Sources
-//     Sources represente une liste de Source.
-//     Une equation contient un membres Equation_base::les_sources de type
-//     Sources. Un objet Sources est un morceaux d'equation, cette classe
-//     herite donc de MorEqn.
-// .SECTION voir aussi
-//      Source MorEqn Equation
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief class Sources Sources represente une liste de Source.
+ *
+ *      Une equation contient un membres Equation_base::les_sources de type
+ *      Sources. Un objet Sources est un morceaux d'equation, cette classe
+ *      herite donc de MorEqn.
+ *
+ * @sa Source MorEqn Equation
+ */
 class Sources : public LIST(Source), public MorEqn
 {
   Declare_instanciable(Sources);

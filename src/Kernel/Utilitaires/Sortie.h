@@ -34,18 +34,16 @@ class Objet_U;
 class Separateur;
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//   Classe de base des flux de sortie. Elle sait ecrire des types simples
-//   (entiers, flottants) et des Objet_U (via printOn de l'objet_U)
-//   Attention, certains classes derivees sont paralleles: dans ce cas, il faut appeler
-//   syncfile() periodiquement sur tous les processeurs. Voir class EcrFicPartage
-//   Attention: pour ecrire correctement un flux a la fois en ASCII et BINAIRE,
-//    il faut utiliser un Separateur (finl ou space) pour separer les objets ecrits.
-// .SECTION voir aussi
-//    Entree
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe de base des flux de sortie.
+ *
+ * Elle sait ecrire des types simples (entiers, flottants) et des Objet_U (via printOn de l'objet_U)
+ *    Attention, certains classes derivees sont paralleles: dans ce cas, il faut appeler
+ *    syncfile() periodiquement sur tous les processeurs. Voir class EcrFicPartage
+ *    Attention: pour ecrire correctement un flux a la fois en ASCII et BINAIRE,
+ *     il faut utiliser un Separateur (finl ou space) pour separer les objets ecrits.
+ *
+ * @sa Entree
+ */
 
 class Sortie
 {
@@ -115,12 +113,14 @@ private:
   Sortie& operator_template(const _TYPE_& );
 };
 
-// Description:
-//  Methode de bas niveau pour ecrire un tableau d'ints ou reels dans le stream.
-//  Dans l'implementation de la classe de base, on ecrit dans ostream_.
-//  En binaire on utilise ostream::write(), en ascii ostream::operato<<()
-//  En ascii, on revient a la ligne chaque fois qu'on a ecrit "nb_col" valeurs et a la fin du tableau.
-//  Valeur de retour : ostream_->good()
+/*! @brief Methode de bas niveau pour ecrire un tableau d'ints ou reels dans le stream.
+ *
+ * Dans l'implementation de la classe de base, on ecrit dans ostream_.
+ *   En binaire on utilise ostream::write(), en ascii ostream::operato<<()
+ *   En ascii, on revient a la ligne chaque fois qu'on a ecrit "nb_col" valeurs et a la fin du tableau.
+ *   Valeur de retour : ostream_->good()
+ *
+ */
 template<typename _TYPE_>
 int Sortie::put_template(const _TYPE_ *ob, int n, int nb_col)
 {
@@ -154,10 +154,12 @@ int Sortie::put_template(const _TYPE_ *ob, int n, int nb_col)
   return ostream_->good();
 }
 
-// Description:
-//  Methode de bas niveau pour ecrire un int ou flottant dans le stream.
-//  Dans l'implementation de la classe de base, on ecrit dans ostream_.
-//  En binaire on utilise ostream::write(), en ascii ostream::operato<<()
+/*! @brief Methode de bas niveau pour ecrire un int ou flottant dans le stream.
+ *
+ * Dans l'implementation de la classe de base, on ecrit dans ostream_.
+ *   En binaire on utilise ostream::write(), en ascii ostream::operato<<()
+ *
+ */
 template<typename _TYPE_>
 Sortie& Sortie::operator_template(const _TYPE_ &ob)
 {

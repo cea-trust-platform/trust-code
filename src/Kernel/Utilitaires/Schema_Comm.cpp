@@ -27,16 +27,18 @@ Schema_Comm::Static_Status Schema_Comm::status_ = UNINITIALIZED;
 InOutCommBuffers   Schema_Comm::buffers_;
 int                Schema_Comm::n_buffers_ = 0;
 
-// Description:
-// Accesseur a un membre du tableau obuffers_ (avec verification)
+/*! @brief Accesseur a un membre du tableau obuffers_ (avec verification)
+ *
+ */
 inline OutputCommBuffer& Schema_Comm::obuffer(int pe)
 {
   assert(pe >= 0 && pe < n_buffers_);
   return buffers_.obuffers_[pe];
 }
 
-// Description:
-// Accesseur a un membre du tableau ebuffers_ (avec verification)
+/*! @brief Accesseur a un membre du tableau ebuffers_ (avec verification)
+ *
+ */
 inline InputCommBuffer&   Schema_Comm::ebuffer(int pe)
 {
   assert(pe >= 0 && pe < n_buffers_);
@@ -50,8 +52,9 @@ static const int END_COMM_TAG = 3;
 static const int COPY_OPERATOR_TAG = 4;
 //static const int CHECK_SEND_RCV_TAG = 5;
 
-// Description:
-// Construction d'un nouveau schema de communication.
+/*! @brief Construction d'un nouveau schema de communication.
+ *
+ */
 Schema_Comm::Schema_Comm()
 {
   send_pe_list_.set_smart_resize(1);
@@ -70,16 +73,19 @@ Schema_Comm::Schema_Comm()
     }
 }
 
-// Description:
-// Destruction d'un schema de communication.
+/*! @brief Destruction d'un schema de communication.
+ *
+ */
 Schema_Comm::~Schema_Comm()
 {
 }
 
-// Description:
-// Constructeur par copie (nouveau schema place en mode RESET).
-// Attention : tous les membres du Comm_Group doivent executer
-// cette fonction simultanement.
+/*! @brief Constructeur par copie (nouveau schema place en mode RESET).
+ *
+ * Attention : tous les membres du Comm_Group doivent executer
+ *  cette fonction simultanement.
+ *
+ */
 Schema_Comm::Schema_Comm(const Schema_Comm& schema)
 {
   send_pe_list_.set_smart_resize(1);
@@ -87,11 +93,13 @@ Schema_Comm::Schema_Comm(const Schema_Comm& schema)
   operator= (schema);
 }
 
-// Description:
-// Operateur copie : on copie la liste des processeurs qui
-// communiquent. Le nouveau schema est place dans l'etat RESET.
-// Attention : tous les membres du Comm_Group doivent executer
-// cette fonction simultanement.
+/*! @brief Operateur copie : on copie la liste des processeurs qui communiquent.
+ *
+ * Le nouveau schema est place dans l'etat RESET.
+ *  Attention : tous les membres du Comm_Group doivent executer
+ *  cette fonction simultanement.
+ *
+ */
 const Schema_Comm& Schema_Comm::operator=(const Schema_Comm& schema)
 {
   assert(status_ == RESET);
@@ -106,35 +114,34 @@ const Schema_Comm& Schema_Comm::operator=(const Schema_Comm& schema)
   return *this;
 }
 
-// Description:
-// Methode obsolete, le groupe associe au schema est le groupe
-// courant au moment ou on cree le schema. L'appel a cette methode
-// n'est valide qu'avec le meme groupe que le groupe d'origine.
-// La methode ne fait rien.
+/*! @brief Methode obsolete, le groupe associe au schema est le groupe courant au moment ou on cree le schema.
+ *
+ * L'appel a cette methode
+ *  n'est valide qu'avec le meme groupe que le groupe d'origine.
+ *  La methode ne fait rien.
+ *
+ */
 void Schema_Comm::set_group(const Comm_Group& group)
 {
   assert(&group == &(ref_group_.valeur()));
   assert(&group == &PE_Groups::current_group());
 }
 
-// Description:
-// Renvoie le groupe auquel est associe le schema.
+/*! @brief Renvoie le groupe auquel est associe le schema.
+ *
+ */
 const Comm_Group& Schema_Comm::get_group() const
 {
   assert(ref_group_.non_nul());
   return ref_group_.valeur();
 }
 
-// Description: Definit la liste des processeurs a qui on va envoyer
-// et de qui on va recevoir des donnees.
-// Si me_to_me est non nul, on autorise l'envoi des messages a soi-meme,
-// sinon non (argument optionnel : par defaut, me_to_me=0)
-// Precondition:
-//  * Le schema doit etre dans l'etat RESET.
-//  * Les tableaux doivent verifier le principe "tu m'ecoutes quand je te parle"
-//    (voir commentaire de la classe)
-//  * Mon numero de proc ne doit pas etre dans les listes send_pe_list et
-//    recv_pe_list (sauf si me_to_me=1)
+/*! @brief Definit la liste des processeurs a qui on va envoyer et de qui on va recevoir des donnees.
+ *
+ *  Si me_to_me est non nul, on autorise l'envoi des messages a soi-meme,
+ *  sinon non (argument optionnel : par defaut, me_to_me=0)
+ *
+ */
 void Schema_Comm::set_send_recv_pe_list(const ArrOfInt& send_pe_list,
                                         const ArrOfInt& recv_pe_list,
                                         const int     me_to_me)
@@ -149,12 +156,14 @@ void Schema_Comm::set_send_recv_pe_list(const ArrOfInt& send_pe_list,
   if (group.check_enabled()) check_send_recv_pe_list();
 }
 
-// Description:
-// Reserve les buffers de comm pour une nouvelle communication.
-// Le schema passe de RESET a WRITING, on a maintenant le droit
-// d'appeler send_buffer(). Interdiction d'appeler a nouveau begin_comm
-// sur tous les objets de comm avant d'avoir fini cette communication
-// avec end_comm().
+/*! @brief Reserve les buffers de comm pour une nouvelle communication.
+ *
+ * Le schema passe de RESET a WRITING, on a maintenant le droit
+ *  d'appeler send_buffer(). Interdiction d'appeler a nouveau begin_comm
+ *  sur tous les objets de comm avant d'avoir fini cette communication
+ *  avec end_comm().
+ *
+ */
 void Schema_Comm::begin_comm() const
 {
   // On verifie qu'une autre communication n'est pas en cours.
@@ -245,11 +254,13 @@ static void exchange_data(const ArrOfInt& send_list,
     }
 }
 
-// Description:
-// Transmet la taille des messages a envoyer aux processeurs qui
-// vont les recevoir. La taille est le nombre de bytes des obuffers.
-// send_pe_list et recv_pe_list doivent etre initialises.
-// Le schema doit etre dans l'etat WRITING.
+/*! @brief Transmet la taille des messages a envoyer aux processeurs qui vont les recevoir.
+ *
+ * La taille est le nombre de bytes des obuffers.
+ *  send_pe_list et recv_pe_list doivent etre initialises.
+ *  Le schema doit etre dans l'etat WRITING.
+ *
+ */
 void Schema_Comm::echange_taille(const ArrOfInt& send_size,
                                  ArrOfInt& recv_size) const
 {
@@ -296,10 +307,12 @@ void Schema_Comm::echange_taille(const ArrOfInt& send_size,
   delete[] send_buffers;
 }
 
-// Description:
-// Cette methode lance l'echange de donnees entre tous les processeurs.
-// La taille des messages recus doit etre deja connue.
-// Le schema passe de WRITING a EXCHANGED.
+/*! @brief Cette methode lance l'echange de donnees entre tous les processeurs.
+ *
+ * La taille des messages recus doit etre deja connue.
+ *  Le schema passe de WRITING a EXCHANGED.
+ *
+ */
 void Schema_Comm::echange_messages(const ArrOfInt& send_size,
                                    const ArrOfInt& recv_size) const
 {
@@ -364,11 +377,13 @@ void Schema_Comm::echange_messages(const ArrOfInt& send_size,
   status_ = EXCHANGED;
 }
 
-// Description:
-// Cette methode lance l'echange de donnees entre tous les processeurs.
-// La taille des messages recus n'a pas besoin d'etre connue a priori,
-// on la transmet.
-// Le schema passe de WRITING a EXCHANGED.
+/*! @brief Cette methode lance l'echange de donnees entre tous les processeurs.
+ *
+ * La taille des messages recus n'a pas besoin d'etre connue a priori,
+ *  on la transmet.
+ *  Le schema passe de WRITING a EXCHANGED.
+ *
+ */
 void Schema_Comm::echange_taille_et_messages() const
 {
   static ArrOfInt send_size;
@@ -388,10 +403,12 @@ void Schema_Comm::echange_taille_et_messages() const
   echange_messages(send_size, recv_size);
 }
 
-// Description:
-// Cette methode lance l'echange de donnees. On fournit la taille en octets
-// des messages recus dans recv_size (tableau de la meme taille que recv_pe_list)
-// En mode check_enabled, on verifie que la taille est correcte
+/*! @brief Cette methode lance l'echange de donnees.
+ *
+ * On fournit la taille en octets des messages recus dans recv_size (tableau de la meme taille que recv_pe_list)
+ *  En mode check_enabled, on verifie que la taille est correcte
+ *
+ */
 void Schema_Comm::echange_messages(const ArrOfInt& recv_size) const
 {
   const int n_send = send_pe_list_.size_array();
@@ -415,10 +432,11 @@ void Schema_Comm::echange_messages(const ArrOfInt& recv_size) const
   echange_messages(send_size, recv_size);
 }
 
-// Description:
-// Vide les buffers et libere les ressources: on
-// a fini de lire les donnees recues dans les buffers.
-// Le schema passe de EXCHANGED a RESET
+/*! @brief Vide les buffers et libere les ressources: on a fini de lire les donnees recues dans les buffers.
+ *
+ *  Le schema passe de EXCHANGED a RESET
+ *
+ */
 void Schema_Comm::end_comm() const
 {
   assert(status_ == EXCHANGED && ref_group_.non_nul());
@@ -464,8 +482,11 @@ static int check_PE_in_list(int num_pe, const ArrOfInt& list)
 }
 #endif
 
-// Description: renvoie le buffer correspondant au processeur num_PE pour
-// y entasser des donnees a envoyer. Le schema doit etre dans l'etat WRITING.
+/*! @brief renvoie le buffer correspondant au processeur num_PE pour y entasser des donnees a envoyer.
+ *
+ * Le schema doit etre dans l'etat WRITING.
+ *
+ */
 Sortie& Schema_Comm::send_buffer(int num_PE) const
 {
   // Si l'assert suivant plante, c'est qu'on essaie de
@@ -481,8 +502,11 @@ Sortie& Schema_Comm::send_buffer(int num_PE) const
   return obuffer(num_PE);
 }
 
-// Description: renvoie le buffer correspondant au processeur num_PE pour
-// y lire les donnees recues. Le schema doit etre dans l'etat EXCHANGED.
+/*! @brief renvoie le buffer correspondant au processeur num_PE pour y lire les donnees recues.
+ *
+ * Le schema doit etre dans l'etat EXCHANGED.
+ *
+ */
 Entree& Schema_Comm::recv_buffer(int num_PE) const
 {
   // Si l'assert suivant plante, c'est qu'on essaie de
@@ -509,11 +533,12 @@ const ArrOfInt& Schema_Comm::get_recv_pe_list() const
   return recv_pe_list_;
 }
 
-// Description:
-//  renvoie une reference a un tableau qui contient, pour chaque
-//  processeur de send_pe_list_, la taille en bytes des donnees
-//  a envoyer.
-// A FINIR !!!!
+/*! @brief renvoie une reference a un tableau qui contient, pour chaque processeur de send_pe_list_, la taille en bytes des donnees
+ *
+ *   a envoyer.
+ *  A FINIR !!!!
+ *
+ */
 const ArrOfInt& Schema_Comm_statique::get_send_size() const
 {
   assert(0);
@@ -521,11 +546,12 @@ const ArrOfInt& Schema_Comm_statique::get_send_size() const
   return send_size_;
 }
 
-// Description:
-//  renvoie une reference a un tableau qui contient, pour chaque
-//  processeur de send_pe_list_, la taille en bytes des donnees
-//  a recues.
-// A FINIR !!!!
+/*! @brief renvoie une reference a un tableau qui contient, pour chaque processeur de send_pe_list_, la taille en bytes des donnees
+ *
+ *   a recues.
+ *  A FINIR !!!!
+ *
+ */
 const ArrOfInt& Schema_Comm_statique::get_recv_size() const
 {
   assert(0);
@@ -533,11 +559,9 @@ const ArrOfInt& Schema_Comm_statique::get_recv_size() const
   return recv_size_;
 }
 
-// Description: Verifie que les send/recv_pe_list verifient la propriete
-// "tu m'ecoutes quand je te parle"
-// Precondition:
-// * Statut == RESET
-// * Cette fonction doit etre appelee simultanement sur tous les membres du groupe.
+/*! @brief Verifie que les send/recv_pe_list verifient la propriete "tu m'ecoutes quand je te parle"
+ *
+ */
 void Schema_Comm::check_send_recv_pe_list() const
 {
   assert(status_ == RESET);

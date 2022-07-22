@@ -18,13 +18,13 @@
 
 #include <Segment.h>
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Segment_axi
-//
-// <Description of class Segment_axi>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Segment_axi
+ *
+ *  <Description of class Segment_axi>
+ *
+ *
+ *
+ */
 
 class Segment_axi : public Segment
 {

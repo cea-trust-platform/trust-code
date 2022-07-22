@@ -72,10 +72,11 @@ void Partitionneur_Parmetis::associer_domaine(const Domaine& domaine)
   ref_domaine_ = domaine;
 }
 
-// Description:
-//  Calcule le graphe de connectivite pour parmetis, appelle le partitionneur
-//  et remplit elem_part (pour chaque element, numero de la partie qui lui
-//  est attribuee).
+/*! @brief Calcule le graphe de connectivite pour parmetis, appelle le partitionneur et remplit elem_part (pour chaque element, numero de la partie qui lui
+ *
+ *   est attribuee).
+ *
+ */
 void Partitionneur_Parmetis::construire_partition(IntVect& elem_part, int& nb_parts_tot) const
 {
 #ifndef PARMETIS_

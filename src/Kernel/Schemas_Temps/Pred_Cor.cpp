@@ -43,35 +43,42 @@ Entree& Pred_Cor::readOn(Entree& s)
 ////////////////////////////////
 
 
-// Description:
-//    Renvoie le nombre de valeurs temporelles a conserver.
-//    Ici : n et n+1, donc 2.
+/*! @brief Renvoie le nombre de valeurs temporelles a conserver.
+ *
+ * Ici : n et n+1, donc 2.
+ *
+ */
 int Pred_Cor::nb_valeurs_temporelles() const
 {
   return 2 ;
 }
 
-// Description:
-//    Renvoie le nombre de valeurs temporelles futures.
-//    Ici : n+1, donc 1.
+/*! @brief Renvoie le nombre de valeurs temporelles futures.
+ *
+ * Ici : n+1, donc 1.
+ *
+ */
 int Pred_Cor::nb_valeurs_futures() const
 {
   return 1 ;
 }
 
-// Description:
-//    Renvoie le le temps a la i-eme valeur future.
-//    Ici : t(n+1)
+/*! @brief Renvoie le le temps a la i-eme valeur future.
+ *
+ * Ici : t(n+1)
+ *
+ */
 double Pred_Cor::temps_futur(int i) const
 {
   assert(i==1);
   return temps_courant()+pas_de_temps();
 }
 
-// Description:
-//    Renvoie le le temps le temps que doivent rendre les champs a
-//    l'appel de valeurs()
-//    Ici : t(n+1)
+/*! @brief Renvoie le le temps le temps que doivent rendre les champs a l'appel de valeurs()
+ *
+ *     Ici : t(n+1)
+ *
+ */
 double Pred_Cor::temps_defaut() const
 {
   return temps_courant()+pas_de_temps();

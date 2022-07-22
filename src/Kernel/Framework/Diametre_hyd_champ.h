@@ -19,7 +19,9 @@
 #include <Interprete.h>
 
 
-// .DESCRIPTION Diametre_hyd_champ nom_pb champ affecte le champ champ au diametre hydraulique aux elements du domaine du probleme de nom_pb
+/*! @brief Diametre_hyd_champ nom_pb champ affecte le champ champ au diametre hydraulique aux elements du domaine du probleme de nom_pb
+ *
+ */
 class Diametre_hyd_champ : public Interprete
 {
   Declare_instanciable(Diametre_hyd_champ);

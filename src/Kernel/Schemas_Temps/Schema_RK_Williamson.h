@@ -23,39 +23,45 @@ class Schema_RK_Williamson
 { };
 /// \endcond
 
-// .DESCRIPTION : classe RK2
-//     Cette classe represente un schema en temps de Runge Kutta d'ordre 2, cas 1 de Williamson, s'ecrit :
-//     q1=h f(x0)
-//     x1=x0+b1 q1
-//     q2=h f(x1) +a2 q1
-//     x2=x1+b2 q2, avec a1=0, a2=sqrt(2)-2, b1=sqrt(2)/2, b2=sqrt(2)/2
+/*! @brief : classe RK2 Cette classe represente un schema en temps de Runge Kutta d'ordre 2, cas 1 de Williamson, s'ecrit :
+ *
+ *      q1=h f(x0)
+ *      x1=x0+b1 q1
+ *      q2=h f(x1) +a2 q1
+ *      x2=x1+b2 q2, avec a1=0, a2=sqrt(2)-2, b1=sqrt(2)/2, b2=sqrt(2)/2
+ *
+ */
 class RK2: public TRUSTSchema_RK<Ordre_RK::DEUX_WILLIAMSON>
 {
   Declare_instanciable(RK2);
 };
 
 
-// .DESCRIPTION : classe RK3
-//     Cette classe represente un schema en temps de Runge Kutta d'ordre 3, cas 7 de Williamson, s'ecrit :
-//     q1=h f(x0)
-//     x1=x0+b1 q1
-//     q2=h f(x1) +a2 q1
-//     x2=x1+b2 q2
-//     q3=h f(x2)+a3 q2
-//     x3=x2+b3 q3, avec a1=0, a2=-5/9, a3=-153/128, b1=1/3, b2=15/16, b3=8/15
+/*! @brief : classe RK3 Cette classe represente un schema en temps de Runge Kutta d'ordre 3, cas 7 de Williamson, s'ecrit :
+ *
+ *      q1=h f(x0)
+ *      x1=x0+b1 q1
+ *      q2=h f(x1) +a2 q1
+ *      x2=x1+b2 q2
+ *      q3=h f(x2)+a3 q2
+ *      x3=x2+b3 q3, avec a1=0, a2=-5/9, a3=-153/128, b1=1/3, b2=15/16, b3=8/15
+ *
+ */
 class RK3: public TRUSTSchema_RK<Ordre_RK::TROIS_WILLIAMSON>
 {
   Declare_instanciable(RK3);
 };
 
-// .DESCRIPTION : classe RK4
-//     Cette classe represente un schema en temps de Runge Kutta d'ordre 4 degnere (schema a trois points), cas 17 de Williamson, s'ecrit :
-//     q1=h f(x0)
-//     x1=x0+b1 q1
-//     q2=h f(x1) +a2 q1
-//     x2=x1+b2 q2
-//     q3=h f(x2)+a3 q2
-//     x3=x2+b3 q3, avec a1=0, a2=-1/2, a3=-2, b1=1/2, b2=1, b3=1/6
+/*! @brief : classe RK4 Cette classe represente un schema en temps de Runge Kutta d'ordre 4 degnere (schema a trois points), cas 17 de Williamson, s'ecrit :
+ *
+ *      q1=h f(x0)
+ *      x1=x0+b1 q1
+ *      q2=h f(x1) +a2 q1
+ *      x2=x1+b2 q2
+ *      q3=h f(x2)+a3 q2
+ *      x3=x2+b3 q3, avec a1=0, a2=-1/2, a3=-2, b1=1/2, b2=1, b3=1/6
+ *
+ */
 class RK4: public TRUSTSchema_RK<Ordre_RK::QUATRE_WILLIAMSON>
 {
   Declare_instanciable(RK4);

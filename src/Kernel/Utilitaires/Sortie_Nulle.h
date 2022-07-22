@@ -18,9 +18,11 @@
 
 #include <Sortie.h>
 
-// .DESCRIPTION
-//   Classe derivee de Sortie qui ne sort les donnees nulle part (c'est une poubelle)
-//   Classe utilisee dans le Journal() si celui-ci est desactive. Le pointeur ostream_ est nul.
+/*! @brief Classe derivee de Sortie qui ne sort les donnees nulle part (c'est une poubelle) Classe utilisee dans le Journal() si celui-ci est desactive.
+ *
+ * Le pointeur ostream_ est nul.
+ *
+ */
 class Sortie_Nulle : public Sortie
 {
 public:

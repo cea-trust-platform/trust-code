@@ -18,15 +18,13 @@
 
 #include <Interprete_geometrique_base.h>
 
-/////////////////////////////////////////////////////////////////////////////
-// .NAME        : Orienter_Simplexes
-// .HEADER      : Raffiner_Simplexes Raffiner_Simplexes/src
-// .LIBRARY     : libRaffiner_Simplexes
-// .DESCRIPTION : class Orienter_Simplexes
-//
-// <Description of class Orienter_Simplexes>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Orienter_Simplexes
+ *
+ *  <Description of class Orienter_Simplexes>
+ *
+ *
+ *
+ */
 
 class Orienter_Simplexes : public Interprete_geometrique_base
 {

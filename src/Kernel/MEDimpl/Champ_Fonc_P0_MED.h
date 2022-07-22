@@ -21,12 +21,11 @@
 #include <Champ_Fonc_P0_base.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_Fonc_P0_MED
-//    permet de faire un champ P0 pour le post med
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_Fonc_P0_MED permet de faire un champ P0 pour le post med
+ *
+ *
+ *
+ */
 
 class Champ_Fonc_P0_MED: public Champ_Fonc_P0_base
 {

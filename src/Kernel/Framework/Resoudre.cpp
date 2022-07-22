@@ -21,52 +21,33 @@
 Implemente_instanciable(Resoudre,"Resoudre|Solve",Interprete);
 
 
-// Description:
-//    Simple appel a:
-//      Interprete::printOn(Sortie&)
-//    Imprime l'interprete sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a: Interprete::printOn(Sortie&)
+ *
+ *     Imprime l'interprete sur un flot de sortie
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Resoudre::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
 
-// Description:
-//    Simple appel a:
-//      Interprete::readOn(Entree&)
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Interprete::readOn(Entree&)
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Resoudre::readOn(Entree& is)
 {
   return Interprete::readOn(is);
 }
 
 
-// Description:
-// Task of the interpretor:
-// Solve a problem (name read from the input stream)
+/*! @brief Task of the interpretor: Solve a problem (name read from the input stream)
+ *
+ */
 Entree& Resoudre::interpreter(Entree& is)
 {
   Nom problem_name;

@@ -23,60 +23,31 @@ Implemente_deriv(Solveur_Masse_base);
 Implemente_instanciable(Solveur_Masse,"Solveur_Masse",DERIV(Solveur_Masse_base));
 
 
-// Description:
-//    Imprime le solveur de masse sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Imprime le solveur de masse sur un flot de sortie.
+ *
+ * @param (Sortie& os) le flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Solveur_Masse::printOn(Sortie& os) const
 {
   return DERIV(Solveur_Masse_base)::printOn(os);
 }
 
 
-// Description:
-//    Lit le solveur de masse sur un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot d'entree est modifie
-// Postcondition:
+/*! @brief Lit le solveur de masse sur un flot d'entree.
+ *
+ * @param (Entree& is) le flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Solveur_Masse::readOn(Entree& is)
 {
   return DERIV(Solveur_Masse_base)::readOn(is);
 }
 
 
-// Description:
-//    Construit le bon type de Solveur de masse.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Construit le bon type de Solveur de masse.
+ *
+ */
 void Solveur_Masse::typer()
 {
   Equation_base& eqn=mon_equation.valeur();

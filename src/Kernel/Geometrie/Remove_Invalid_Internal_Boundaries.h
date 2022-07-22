@@ -18,15 +18,13 @@
 
 #include <Interprete_geometrique_base.h>
 
-/////////////////////////////////////////////////////////////////////////////
-// .NAME        : Remove_Invalid_Internal_Boundaries
-// .HEADER      : TRUST_Kernel_Addons TRUST_Kernel_Addons/src/Mesh_Modifiers
-// .LIBRARY     : libTRUST_Kernel_Addons
-// .DESCRIPTION : class Remove_Invalid_Internal_Boundaries
-//
-// <Description of class Remove_Invalid_Internal_Boundaries>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Remove_Invalid_Internal_Boundaries
+ *
+ *  <Description of class Remove_Invalid_Internal_Boundaries>
+ *
+ *
+ *
+ */
 
 class Remove_Invalid_Internal_Boundaries : public Interprete_geometrique_base
 {

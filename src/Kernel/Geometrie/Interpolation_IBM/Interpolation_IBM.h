@@ -21,13 +21,13 @@
 
 Declare_deriv(Interpolation_IBM_base);
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Interpolation_IBM
-//
-// <Description of class Interpolation_IBM>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Interpolation_IBM
+ *
+ *  <Description of class Interpolation_IBM>
+ *
+ *
+ *
+ */
 
 class Interpolation_IBM : public DERIV(Interpolation_IBM_base)
 {

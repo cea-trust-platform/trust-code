@@ -16,10 +16,12 @@
 #define Linear_algebra_tools_impl_H
 #include <Linear_algebra_tools.h>
 
-// Description: calcul de la norme Linfini de la matrice
-// Propriete: on note |x| la norme Linfini de x (vecteur ou matrice)
-//  On a |m * x| <= |m| * |x|
-// En pratique: c'est le max sur j de la somme sur i de std::fabs(m(i,j))
+/*! @brief calcul de la norme Linfini de la matrice Propriete: on note |x| la norme Linfini de x (vecteur ou matrice)
+ *
+ *   On a |m * x| <= |m| * |x|
+ *  En pratique: c'est le max sur j de la somme sur i de std::fabs(m(i,j))
+ *
+ */
 inline double Matrice33::norme_Linfini()
 {
   double x = std::fabs(m[0][0]) + std::fabs(m[0][1]) + std::fabs(m[0][2]);
@@ -30,7 +32,9 @@ inline double Matrice33::norme_Linfini()
   return resu;
 }
 
-// Description: produit avec de la matrice avec le vecteur x.
+/*! @brief produit avec de la matrice avec le vecteur x.
+ *
+ */
 inline void Matrice33::produit(const Matrice33& m, const Vecteur3& x, Vecteur3& y)
 {
   y.v[0] = m.m[0][0] * x.v[0] + m.m[0][1] * x.v[1] + m.m[0][2] * x.v[2];
@@ -51,7 +55,9 @@ inline double Vecteur3::produit_scalaire(const Vecteur3& x, const Vecteur3& y)
   return r;
 }
 
-// Description: norme L_infini, c'est le max des abs(v[i])
+/*! @brief norme L_infini, c'est le max des abs(v[i])
+ *
+ */
 inline double Vecteur3::norme_Linfini()
 {
   double x = std::fabs(v[0]);
@@ -62,10 +68,13 @@ inline double Vecteur3::norme_Linfini()
   return resu;
 }
 
-// Description: calcul de l'inverse.
-//  Si le determinant de "matrice" est nul, exit() si exit_on_error (valeur par defaut)
-//   sinon on ne remplit pas matrice_inv et on renvoie 0.
-// Valeur de retour: determinant de la "matrice" (pas de l'inverse !)
+/*! @brief calcul de l'inverse.
+ *
+ * Si le determinant de "matrice" est nul, exit() si exit_on_error (valeur par defaut)
+ *    sinon on ne remplit pas matrice_inv et on renvoie 0.
+ *  Valeur de retour: determinant de la "matrice" (pas de l'inverse !)
+ *
+ */
 inline double Matrice33::inverse(const Matrice33& matrice, Matrice33& matrice_inv, int exit_on_error)
 {
   const double a00 = matrice.m[0][0];

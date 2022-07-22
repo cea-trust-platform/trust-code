@@ -19,15 +19,13 @@
 #include <Interprete_geometrique_base.h>
 #include <TRUSTTabs.h>
 
-/////////////////////////////////////////////////////////////////////////////
-// .NAME        : Refine_Mesh
-// .HEADER      : TRUST_Kernel_Addons TRUST_Kernel_Addons/src/Mesh_Refinement
-// .LIBRARY     : libTRUST_Kernel_Addons
-// .DESCRIPTION : class Refine_Mesh
-//
-// <Description of class Refine_Mesh>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Refine_Mesh
+ *
+ *  <Description of class Refine_Mesh>
+ *
+ *
+ *
+ */
 
 class Static_Int_Lists;
 

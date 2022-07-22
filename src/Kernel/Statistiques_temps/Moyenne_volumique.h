@@ -26,14 +26,16 @@ class Motcles;
 class Format_Post_base;
 class Zone_VF;
 
-// .DESCRIPTION : cet interprete permet, a la fin du calcul (apres "resoudre"),
-//  de calculer et de stocker dans un fichier lata le produit de convolution
-//  de certains champs d'un probleme avec une fonction filtre arbitraire.
-//  On peut l'utiliser comme un interprete (voir Moyenne_volumique::interpreter())
-//  ou n'importe ou a l'interieur du code comme ceci:
-//   Moyenne_volumique moy;
-//   is >> moy; // lecture de la fonction filtre
-//   moy.calculer_convolution_champ_elem/face(...)
+/*! @brief : cet interprete permet, a la fin du calcul (apres "resoudre"), de calculer et de stocker dans un fichier lata le produit de convolution
+ *
+ *   de certains champs d'un probleme avec une fonction filtre arbitraire.
+ *   On peut l'utiliser comme un interprete (voir Moyenne_volumique::interpreter())
+ *   ou n'importe ou a l'interieur du code comme ceci:
+ *    Moyenne_volumique moy;
+ *    is >> moy; // lecture de la fonction filtre
+ *    moy.calculer_convolution_champ_elem/face(...)
+ *
+ */
 class Moyenne_volumique: public Interprete
 {
   Declare_instanciable(Moyenne_volumique);

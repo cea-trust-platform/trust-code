@@ -22,20 +22,22 @@
 #include <Double.h>
 #include <climits>
 
-// .DESCRIPTION
-//  Represente un tableau d'elements de type int/double/float.
-//  L'etat du tableau est caracterise par la valeur de p_ et de data_ :
-//  * detache : on a alors p_==0, data_==0, size_array_==0 (etat obtenu par le constructeur par defaut, detach_array() et resize_array(0) dans certains cas)
-//  * normal : alors p pointe vers une structure VTRUSTdata, data_==p->data_ et size_array_ <= p->size_.
-//    A la destruction du tableau, si p->ref_count_ est nul on libere la memoire. data_ n'est pas nul.
-//    L'espace memoire du tableau peut etre partage entre plusieurs TRUSTArray (le pointeur "p" pointe alors sur une meme structure).
-//    Ce type de tableau est produit par ref_array().
-//    Le dernier TRUSTArray a utiliser une zone de memoire la detruit lorsqu'il a fini (voir detach_array())
-//    Si smart_resize_==0, alors on a toujours size_array_==p->size_.
-//  * ref_data : p_==0, data_ pointe vers un tableau existant, la memoire n'est pas liberee a la destruction du TRUSTArray.
-//    Ces tableaux sont obtenus par appel a ref_data(...) et peuvent servir pour importer un tableau fourni par une routine exterieure (C ou fortran)
-//
-//  Valeur initiale par defaut : voir "fill_default_value". Priere de supposer desormais que les tableaux ne sont pas initialises par defaut.
+/*! @brief Represente un tableau d'elements de type int/double/float.
+ *
+ * L'etat du tableau est caracterise par la valeur de p_ et de data_ :
+ *   * detache : on a alors p_==0, data_==0, size_array_==0 (etat obtenu par le constructeur par defaut, detach_array() et resize_array(0) dans certains cas)
+ *   * normal : alors p pointe vers une structure VTRUSTdata, data_==p->data_ et size_array_ <= p->size_.
+ *     A la destruction du tableau, si p->ref_count_ est nul on libere la memoire. data_ n'est pas nul.
+ *     L'espace memoire du tableau peut etre partage entre plusieurs TRUSTArray (le pointeur "p" pointe alors sur une meme structure).
+ *     Ce type de tableau est produit par ref_array().
+ *     Le dernier TRUSTArray a utiliser une zone de memoire la detruit lorsqu'il a fini (voir detach_array())
+ *     Si smart_resize_==0, alors on a toujours size_array_==p->size_.
+ *   * ref_data : p_==0, data_ pointe vers un tableau existant, la memoire n'est pas liberee a la destruction du TRUSTArray.
+ *     Ces tableaux sont obtenus par appel a ref_data(...) et peuvent servir pour importer un tableau fourni par une routine exterieure (C ou fortran)
+ *
+ *   Valeur initiale par defaut : voir "fill_default_value". Priere de supposer desormais que les tableaux ne sont pas initialises par defaut.
+ *
+ */
 template <typename _TYPE_>
 class TRUSTArray : public Array_base
 {

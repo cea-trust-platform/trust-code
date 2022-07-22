@@ -13,8 +13,9 @@
 *
 *****************************************************************************/
 
-// .DESCRIPTION Reference a un Domaine
-//
+/*! @brief Reference a un Domaine
+ *
+ */
 
 #ifndef Ref_Domaine_included
 #define Ref_Domaine_included

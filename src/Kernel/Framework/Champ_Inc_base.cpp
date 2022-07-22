@@ -28,87 +28,52 @@
 
 Implemente_base_sans_constructeur(Champ_Inc_base,"Champ_Inc_base",Champ_base);
 
-// Description:
-//    Surcharge Champ_base::printOn(Sortie&) const
-//    Imprime le champ sur un flot de sortie.
-//    Simple appel a Champ_base::printOn(Sortie&) const
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Surcharge Champ_base::printOn(Sortie&) const Imprime le champ sur un flot de sortie.
+ *
+ *     Simple appel a Champ_base::printOn(Sortie&) const
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Champ_Inc_base::printOn(Sortie& os) const
 {
   return Champ_base::printOn(os);
 }
 
 
-// Description:
-//    Lit un champ inconnue sur un flot d'entree.
-//    Simple appel a Champ_base::readOn(Entree&)
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit un champ inconnue sur un flot d'entree.
+ *
+ * Simple appel a Champ_base::readOn(Entree&)
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Champ_Inc_base::readOn(Entree& is)
 {
   return Champ_base::readOn(is);
 }
 
 
-// Description:
-//    Fixe le nombre de valeurs temporelles a conserver.
-//    (un nombre different suivant le schema en temps utilise)
-//    Appelle Roue::fixer_nb_cases(int)
-// Precondition:
-// Parametre: int i
-//    Signification: le nombre de valeurs temporelles a conserver
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de valeurs temporelles a conserver
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: i valeurs temporelles successives du champ seront
-//                conservees.
+/*! @brief Fixe le nombre de valeurs temporelles a conserver.
+ *
+ * (un nombre different suivant le schema en temps utilise)
+ *     Appelle Roue::fixer_nb_cases(int)
+ *
+ * @param (int i) le nombre de valeurs temporelles a conserver
+ * @return (int) le nombre de valeurs temporelles a conserver
+ */
 int Champ_Inc_base::fixer_nb_valeurs_temporelles(int i)
 {
   return les_valeurs->fixer_nb_cases(i);
 }
 
 
-// Description:
-//    Renvoie le nombre de valeurs temporelles actuellement conservees.
-//    Cette valeur est stockee par la Roue du Champ_Inc_base
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de valeurs temporelles actuellement conservees
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de valeurs temporelles actuellement conservees.
+ *
+ * Cette valeur est stockee par la Roue du Champ_Inc_base
+ *
+ * @return (int) le nombre de valeurs temporelles actuellement conservees
+ */
 int Champ_Inc_base::nb_valeurs_temporelles() const
 {
   return les_valeurs->nb_cases();
@@ -116,23 +81,16 @@ int Champ_Inc_base::nb_valeurs_temporelles() const
 
 
 
-// Description:
-//    Lit les valeurs du champs a partir d'un flot d'entree.
-//    Format de lecture:
-//      int [LE NOMBRE DE VALEURS A LIRE]
-//      [LIRE LE NOMBRE DE VALEUR VOULUES]
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: int
-//    Signification: renvoie 1 si la lecture est correcte
-//    Contraintes:
-// Exception: le nombre de valeur a lire est incorrect
-// Effets de bord:
-// Postcondition: le champ contient les valeurs lues dans le flot d'entree
+/*! @brief Lit les valeurs du champs a partir d'un flot d'entree.
+ *
+ * Format de lecture:
+ *       int [LE NOMBRE DE VALEURS A LIRE]
+ *       [LIRE LE NOMBRE DE VALEUR VOULUES]
+ *
+ * @param (Entree& is) le flot d'entree
+ * @return (int) renvoie 1 si la lecture est correcte
+ * @throws le nombre de valeur a lire est incorrect
+ */
 int Champ_Inc_base::lire_donnees(Entree& is)
 {
   int n;
@@ -183,9 +141,11 @@ void Champ_Inc_base::creer_tableau_distribue(const MD_Vector& md, Array_base::Re
     }
 }
 
-// Description: Returns the number of "real" geometric positions of the
-//  degrees of freedom, or -1 if not applicable (fields with multiple
-//  localisations)
+/*! @brief Returns the number of "real" geometric positions of the degrees of freedom, or -1 if not applicable (fields with multiple
+ *
+ *   localisations)
+ *
+ */
 int Champ_Inc_base::nb_valeurs_nodales() const
 {
   int n;
@@ -197,59 +157,29 @@ int Champ_Inc_base::nb_valeurs_nodales() const
   return n;
 }
 
-// Description:
-//    Renvoie le tableau des valeurs du champ au temps courant.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: le tableau des valeurs du champ
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le tableau des valeurs du champ au temps courant.
+ *
+ * @return (DoubleTab&) le tableau des valeurs du champ
+ */
 DoubleTab& Champ_Inc_base::valeurs()
 {
   return les_valeurs->valeurs();
 }
 
-// Description:
-//    Renvoie le tableau des valeurs du champ au temp courant
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: le tableau des valeurs du champ
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le tableau des valeurs du champ au temp courant (version const)
+ *
+ * @return (DoubleTab&) le tableau des valeurs du champ
+ */
 const DoubleTab& Champ_Inc_base::valeurs() const
 {
   return les_valeurs->valeurs();
 }
 
-// Description:
-//    Renvoie les valeurs du champs a l'instant temps.
-// Precondition: temps doit etre un temps de discretisation
-// Parametre: double temps
-//    Signification: le  temps  auquel on veut les valeurs du champ
-//    Valeurs par defaut: non
-//    Contraintes: temps doit etre un temps de discretisation
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: les valeurs du champs a l'instant temps
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie les valeurs du champs a l'instant temps.
+ *
+ * @param (double temps) le  temps  auquel on veut les valeurs du champ
+ * @return (DoubleTab&) les valeurs du champs a l'instant temps
+ */
 DoubleTab& Champ_Inc_base::valeurs(double tps)
 // WEC : Attention dans le cas de Pb_Couple on utilisait le fait que
 // cette fonction renvoyait le present quand elle ne trouvait
@@ -289,20 +219,11 @@ DoubleTab& Champ_Inc_base::valeurs(double tps)
   return valeurs();
 }
 
-// Description:
-//    Renvoie les valeurs du champs a l'instant temps.
-// Precondition: temps doit etre un temps de discretisation
-// Parametre: double temps
-//    Signification: le  temps  auquel on veut les valeurs du champ
-//    Valeurs par defaut: non
-//    Contraintes: temps doit etre un temps de discretisation
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: les valeurs du champs a l'instant temps
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie les valeurs du champs a l'instant temps.
+ *
+ * @param (double temps) le  temps  auquel on veut les valeurs du champ
+ * @return (DoubleTab&) les valeurs du champs a l'instant temps
+ */
 const DoubleTab& Champ_Inc_base::valeurs(double tps) const
 // See above !
 {
@@ -340,103 +261,58 @@ const DoubleTab& Champ_Inc_base::valeurs(double tps) const
   exit();
   return valeurs();
 }
-// Description:
-//    Renvoie les valeurs du champs a l'instant t+i.
-// Precondition: i doit etre inferieur au nombre de valeurs
-//               temporelles conservees.
-// Parametre: int i
-//    Signification: le pas de temps futur auquel on veut les valeurs du champ
-//    Valeurs par defaut: 1
-//    Contraintes: i <= nombre de valeurs temporelles conservees
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: les valeurs du champs a l'instant t+i
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie les valeurs du champs a l'instant t+i.
+ *
+ * @param (int i) le pas de temps futur auquel on veut les valeurs du champ
+ * @return (DoubleTab&) les valeurs du champs a l'instant t+i
+ */
 DoubleTab& Champ_Inc_base::futur(int i)
 {
   return les_valeurs->futur(i).valeurs();
 }
 
-// Description:
-//    Renvoie les valeurs du champs a l'instant t+i.
-//    (version const)
-// Precondition:
-// Parametre: int i
-//    Signification: le pas de temps futur auquel on veut les valeurs du champ
-//    Valeurs par defaut: 1
-//    Contraintes: i <= nombre de valeurs temporelles conservees
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: les valeurs du champs a l'instant t+i
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie les valeurs du champs a l'instant t+i.
+ *
+ * (version const)
+ *
+ * @param (int i) le pas de temps futur auquel on veut les valeurs du champ
+ * @return (DoubleTab&) les valeurs du champs a l'instant t+i
+ */
 const DoubleTab& Champ_Inc_base::futur(int i) const
 {
   return les_valeurs->futur(i).valeurs();
 }
 
 
-// Description:
-//    Renvoie les valeurs du champs a l'instant t-i.
-// Precondition:
-// Parametre: int i
-//    Signification: le pas de temps passe auquel on veut les valeurs du champ
-//    Valeurs par defaut: 1
-//    Contraintes: i <= nombre de valeurs temporelles conservees
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: les valeurs du champs a l'instant t-i
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie les valeurs du champs a l'instant t-i.
+ *
+ * @param (int i) le pas de temps passe auquel on veut les valeurs du champ
+ * @return (DoubleTab&) les valeurs du champs a l'instant t-i
+ */
 DoubleTab& Champ_Inc_base::passe(int i)
 {
   return les_valeurs->passe(i).valeurs();
 }
 
 
-// Description:
-//    Renvoie les valeurs du champs a l'instant t-i.
-//    (version const)
-// Precondition:
-// Parametre: int i
-//    Signification: le pas de temps passe auquel on veut les valeurs du champ
-//    Valeurs par defaut: 1
-//    Contraintes: i <= nombre de valeurs temporelles conservees
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: les valeurs du champs a l'instant t-i
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie les valeurs du champs a l'instant t-i.
+ *
+ * (version const)
+ *
+ * @param (int i) le pas de temps passe auquel on veut les valeurs du champ
+ * @return (DoubleTab&) les valeurs du champs a l'instant t-i
+ */
 const DoubleTab& Champ_Inc_base::passe(int i) const
 {
   return les_valeurs->passe(i).valeurs();
 }
 
 
-// Description:
-//    Avance le pointeur courant de i pas de temps,
-//    dans la liste des valeurs temporelles conservees.
-// Precondition:
-// Parametre: int i
-//    Signification: le nombre de pas de temps dont on avance
-//    Valeurs par defaut: 1
-//    Contraintes: i < nombre de valeurs temporelles conservees
-//    Acces:
-// Retour: Champ_Inc_base&
-//    Signification: renvoie *this, le champ au pas de temps voulu
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Avance le pointeur courant de i pas de temps, dans la liste des valeurs temporelles conservees.
+ *
+ * @param (int i) le nombre de pas de temps dont on avance
+ * @return (Champ_Inc_base&) renvoie *this, le champ au pas de temps voulu
+ */
 Champ_Inc_base& Champ_Inc_base::avancer(int i)
 {
   while(i--)
@@ -446,21 +322,11 @@ Champ_Inc_base& Champ_Inc_base::avancer(int i)
 }
 
 
-// Description:
-//    Recule le pointeur courant de i pas de temps,
-//    dans la liste des valeurs temporelles conservees.
-// Precondition:
-// Parametre: int i
-//    Signification: le nombre de pas de temps dont on recule
-//    Valeurs par defaut: 1
-//    Contraintes: i < nombre de valeurs temporelles conservees
-//    Acces:
-// Retour: Champ_Inc_base&
-//    Signification: renvoie *this, le champ au pas de temps voulu
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Recule le pointeur courant de i pas de temps, dans la liste des valeurs temporelles conservees.
+ *
+ * @param (int i) le nombre de pas de temps dont on recule
+ * @return (Champ_Inc_base&) renvoie *this, le champ au pas de temps voulu
+ */
 Champ_Inc_base& Champ_Inc_base::reculer(int i)
 {
   while(i--)
@@ -469,22 +335,13 @@ Champ_Inc_base& Champ_Inc_base::reculer(int i)
   return *this;
 }
 
-// Description:
-//    Effectue une mise a jour en temps du champ inconnue.
-//    WEC : Maintenant si on l'appelle 2 fois de suite avec le meme
-//    argument, la 2eme ne fait rien.
-// Precondition:
-// Parametre: double temps
-//    Signification: le nouveau temps
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Effectue une mise a jour en temps du champ inconnue.
+ *
+ * WEC : Maintenant si on l'appelle 2 fois de suite avec le meme
+ *     argument, la 2eme ne fait rien.
+ *
+ * @param (double temps) le nouveau temps
+ */
 void Champ_Inc_base::mettre_a_jour(double un_temps)
 {
   // Champ a plusieurs valeurs temporelle :
@@ -525,20 +382,11 @@ void Champ_Inc_base::mettre_a_jour(double un_temps)
     }
 }
 
-// Description:
-//    Fixe le temps du ieme champ futur.
-// Precondition:
-// Parametre: double t, int i
-//    Signification: le nouveau temps
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: le nouveau temps
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: le champ est au temps specifie
+/*! @brief Fixe le temps du ieme champ futur.
+ *
+ * @param (double t, int i) le nouveau temps
+ * @return (double) le nouveau temps
+ */
 double Champ_Inc_base::changer_temps_futur(double t, int i)
 {
   Roue& la_roue=les_valeurs.valeur();
@@ -547,20 +395,11 @@ double Champ_Inc_base::changer_temps_futur(double t, int i)
 }
 
 
-// Description:
-//    Fixe le temps du ieme champ passe.
-// Precondition:
-// Parametre: double t, int i
-//    Signification: le nouveau temps
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: le nouveau temps
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: le champ est au temps specifie
+/*! @brief Fixe le temps du ieme champ passe.
+ *
+ * @param (double t, int i) le nouveau temps
+ * @return (double) le nouveau temps
+ */
 double Champ_Inc_base::changer_temps_passe(double t, int i)
 {
   Roue& la_roue=les_valeurs.valeur();
@@ -568,20 +407,11 @@ double Champ_Inc_base::changer_temps_passe(double t, int i)
   return t;
 }
 
-// Description:
-//    Retourne le temps du ieme champ futur.
-// Precondition:
-// Parametre: int i
-//    Signification: le temps
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: le temps
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: le champ est au temps specifie
+/*! @brief Retourne le temps du ieme champ futur.
+ *
+ * @param (int i) le temps
+ * @return (double) le temps
+ */
 double Champ_Inc_base::recuperer_temps_futur(int i) const
 {
   const Roue& la_roue=les_valeurs.valeur();
@@ -589,43 +419,25 @@ double Champ_Inc_base::recuperer_temps_futur(int i) const
 }
 
 
-// Description:
-//    Retourne le temps du ieme champ passe.
-// Precondition:
-// Parametre: int i
-//    Signification: le temps
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: le temps
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: le champ est au temps specifie
+/*! @brief Retourne le temps du ieme champ passe.
+ *
+ * @param (int i) le temps
+ * @return (double) le temps
+ */
 double Champ_Inc_base::recuperer_temps_passe(int i) const
 {
   const Roue& la_roue=les_valeurs.valeur();
   return la_roue.passe(i).temps();
 }
 
-// Description:
-//    Sauvegarde le champ inconnue sur un flot de sortie.
-//    Ecrit un identifiant, les valeurs du champs, et
-//    la date (le temps au moment de la sauvegarde).
-// Precondition:
-// Parametre: Sortie& fich
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: int
-//    Signification: returns the size of array
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-// Postcondition: le champ inconnue est sauvegarde
+/*! @brief Sauvegarde le champ inconnue sur un flot de sortie.
+ *
+ * Ecrit un identifiant, les valeurs du champs, et
+ *     la date (le temps au moment de la sauvegarde).
+ *
+ * @param (Sortie& fich) un flot de sortie
+ * @return (int) returns the size of array
+ */
 int Champ_Inc_base::sauvegarder(Sortie& fich) const
 {
   // en mode ecriture special seul le maitre ecrit l'entete
@@ -671,21 +483,11 @@ int Champ_Inc_base::sauvegarder(Sortie& fich) const
 }
 
 
-// Description:
-//    Lecture d'un champ inconnue a partir d'un flot d'entree
-//    en vue d'une reprise.
-// Precondition:
-// Parametre: Entree& fich
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lecture d'un champ inconnue a partir d'un flot d'entree en vue d'une reprise.
+ *
+ * @param (Entree& fich) un flot d'entree
+ * @return (int) renvoie toujours 1
+ */
 int Champ_Inc_base::reprendre(Entree& fich)
 {
   double un_temps;
@@ -717,27 +519,12 @@ int Champ_Inc_base::reprendre(Entree& fich)
 }
 
 
-// Description:
-//    Calcule les valeurs du champs inconnue aux positions specifiees.
-// Precondition:
-// Parametre: DoubleTab& positions
-//    Signification: les positions ou l'ont doit calculer le champ inconnues
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleTab& valeurs
-//    Signification: le tableau des valeurs du champ inconnue aux
-//                   positions voulues
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: DoubleTab&
-//    Signification: le tableau des valeurs du champ inconnue aux
-//                   positions voulues
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Calcule les valeurs du champs inconnue aux positions specifiees.
+ *
+ * @param (DoubleTab& positions) les positions ou l'ont doit calculer le champ inconnues
+ * @param (DoubleTab& valeurs) le tableau des valeurs du champ inconnue aux positions voulues
+ * @return (DoubleTab&) le tableau des valeurs du champ inconnue aux positions voulues
+ */
 DoubleTab& Champ_Inc_base::valeur_aux(const DoubleTab& positions,
                                       DoubleTab& tab_valeurs) const
 {
@@ -751,33 +538,13 @@ DoubleTab& Champ_Inc_base::valeur_aux(const DoubleTab& positions,
 }
 
 
-// Description:
-//    Calcule les valeurs du champs inconnue aux positions specifiees,
-//    pour une certaine composante du champ.
-// Precondition:
-// Parametre: DoubleTab& positions
-//    Signification: les positions ou l'ont doit calculer le champ inconnues
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleTab& les_valeurs
-//    Signification: le tableau des valeurs du champ inconnue aux
-//                   positions voulues
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Parametre: int
-//    Signification: l'index de la composante du champ a calculer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleVect&
-//    Signification: le tableau des valeurs de la composante du champ
-//                   specifiee aux positions voulues
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Calcule les valeurs du champs inconnue aux positions specifiees, pour une certaine composante du champ.
+ *
+ * @param (DoubleTab& positions) les positions ou l'ont doit calculer le champ inconnues
+ * @param (DoubleTab& les_valeurs) le tableau des valeurs du champ inconnue aux positions voulues
+ * @param (int) l'index de la composante du champ a calculer
+ * @return (DoubleVect&) le tableau des valeurs de la composante du champ specifiee aux positions voulues
+ */
 DoubleVect& Champ_Inc_base::valeur_aux_compo(const DoubleTab& positions,
                                              DoubleVect& tab_valeurs,
                                              int ncomp) const
@@ -789,25 +556,12 @@ DoubleVect& Champ_Inc_base::valeur_aux_compo(const DoubleTab& positions,
 }
 
 
-// Description:
-//    Calcule la valeur du champs inconnue a la position specifiee.
-// Precondition:
-// Parametre: DoubleVect& position
-//    Signification: la position a laquelle on veut calculer le champ
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleVect& les_valeurs
-//    Signification: la valeur du champ inconnue a la position specifiee
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: DoubleVect&
-//    Signification: la valeur du champ inconnue a la position specifiee
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Calcule la valeur du champs inconnue a la position specifiee.
+ *
+ * @param (DoubleVect& position) la position a laquelle on veut calculer le champ
+ * @param (DoubleVect& les_valeurs) la valeur du champ inconnue a la position specifiee
+ * @return (DoubleVect&) la valeur du champ inconnue a la position specifiee
+ */
 DoubleVect& Champ_Inc_base::valeur_a(const DoubleVect& position,
                                      DoubleVect& tab_valeurs) const
 {
@@ -818,21 +572,11 @@ DoubleVect& Champ_Inc_base::valeur_a(const DoubleVect& position,
 }
 
 
-// Description:
-//    Affectation d'un Champ generique (Champ_base) dans
-//    un champ inconnue.
-// Precondition:
-// Parametre: Champ_base& ch
-//    Signification: le champ partie droite de l'affectation
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: Champ_base&
-//    Signification: le resultat de l'affectation (*this)
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Affectation d'un Champ generique (Champ_base) dans un champ inconnue.
+ *
+ * @param (Champ_base& ch) le champ partie droite de l'affectation
+ * @return (Champ_base&) le resultat de l'affectation (*this)
+ */
 Champ_base& Champ_Inc_base::affecter_(const Champ_base& ch)
 {
   DoubleTab noeuds;
@@ -867,26 +611,12 @@ void Champ_Inc_base::verifie_valeurs_cl()
 
 }
 
-// Description:
-//    Affectation d'une composante d'un Champ quelconque
-//    (Champ_base) dans une composante d'un champ inconnue
-// Precondition:
-// Parametre: Champ_base& ch
-//    Signification: la partie droite de l'affectation
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: int compo
-//    Signification: l'index de la composante a affecter
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: Champ_base&
-//    Signification: le resultat de l'affectation (avec upcast)
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Affectation d'une composante d'un Champ quelconque (Champ_base) dans une composante d'un champ inconnue
+ *
+ * @param (Champ_base& ch) la partie droite de l'affectation
+ * @param (int compo) l'index de la composante a affecter
+ * @return (Champ_base&) le resultat de l'affectation (avec upcast)
+ */
 Champ_base& Champ_Inc_base::affecter_compo(const Champ_base& ch,
                                            int compo)
 {
@@ -904,13 +634,14 @@ Champ_base& Champ_Inc_base::affecter_compo(const Champ_base& ch,
 
 
 
-// Description:
-//    voir Champ_base
-//    Cas particulier (malheureusement) du Champ_P0_VDF :
-//    Si la frontiere est un raccord, le resultat est calcule sur le
-//    raccord associe. Dans ce cas, le DoubleTab x doit etre
-//    dimensionne sur le raccord associe.
-//
+/*! @brief voir Champ_base Cas particulier (malheureusement) du Champ_P0_VDF :
+ *
+ *     Si la frontiere est un raccord, le resultat est calcule sur le
+ *     raccord associe. Dans ce cas, le DoubleTab x doit etre
+ *     dimensionne sur le raccord associe.
+ *
+ *
+ */
 
 DoubleTab& Champ_Inc_base::trace(const Frontiere_dis_base& , DoubleTab& x , double tps,int distant) const
 {
@@ -919,51 +650,23 @@ DoubleTab& Champ_Inc_base::trace(const Frontiere_dis_base& , DoubleTab& x , doub
 }
 
 
-// Description:
-//    NE FAIT RIEN
-//    Methode a surcharger
-// Precondition:
-// Parametre: DoubleTab&
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: IntVect&
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: renvoie toujours 0
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN Methode a surcharger
+ *
+ * @param (DoubleTab&)
+ * @param (IntVect&)
+ * @return (int) renvoie toujours 0
+ */
 int Champ_Inc_base::remplir_coord_noeuds_et_polys(DoubleTab&, IntVect&) const
 {
   return 0;
 }
 
-// Description:
-//    Simple appel a
-//       Champ_Inc_base::remplir_coord_noeuds(DoubleTab&)
-// Precondition:
-// Parametre: DoubleTab& coord
-//    Signification: coordonnees des noeuds a modifier
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int
-//    Signification: l'index de la composante a modifier
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a Champ_Inc_base::remplir_coord_noeuds(DoubleTab&)
+ *
+ * @param (DoubleTab& coord) coordonnees des noeuds a modifier
+ * @param (int) l'index de la composante a modifier
+ * @return (DoubleTab&)
+ */
 DoubleTab& Champ_Inc_base::remplir_coord_noeuds_compo(DoubleTab& coord,
                                                       int ) const
 {
@@ -971,31 +674,13 @@ DoubleTab& Champ_Inc_base::remplir_coord_noeuds_compo(DoubleTab& coord,
 }
 
 
-// Description:
-//    Simple appel a:
-//       Champ_Inc_base::remplir_coord_noeuds_et_polys(DoubleTab&,IntVect& poly)
-// Precondition:
-// Parametre: DoubleTab& coord
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: IntVect& poly
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: code de retour propage
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a: Champ_Inc_base::remplir_coord_noeuds_et_polys(DoubleTab&,IntVect& poly)
+ *
+ * @param (DoubleTab& coord)
+ * @param (IntVect& poly)
+ * @param (int)
+ * @return (int) code de retour propage
+ */
 int Champ_Inc_base::remplir_coord_noeuds_et_polys_compo(DoubleTab& coord,
                                                         IntVect& poly,
                                                         int ) const
@@ -1022,41 +707,23 @@ double Champ_Inc_base::integrale_espace(int ncomp) const
   return 0.;
 }
 
-// Description:
-//    Fixe le temps du champ.
-// Precondition:
-// Parametre: double t
-//    Signification: le nouveau temps
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: le nouveau temps
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: le champ est au temps specifie
+/*! @brief Fixe le temps du champ.
+ *
+ * @param (double t) le nouveau temps
+ * @return (double) le nouveau temps
+ */
 double Champ_Inc_base::changer_temps(const double t)
 {
   les_valeurs->changer_temps(t);
   return temps_ = t;
 }
 
-// Description:
-//    Associe le champ a l'equation dont il represente une inconnue.
-//    Simple appel a MorEqn::associer_eqn(const Equation_base&)
-// Precondition:
-// Parametre: Equation_base& eqn
-//    Signification: l'equation auquel le champ doit s'associer
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: le champ est associe a son equation
+/*! @brief Associe le champ a l'equation dont il represente une inconnue.
+ *
+ * Simple appel a MorEqn::associer_eqn(const Equation_base&)
+ *
+ * @param (Equation_base& eqn) l'equation auquel le champ doit s'associer
+ */
 void Champ_Inc_base::associer_eqn(const Equation_base& eqn)
 {
   MorEqn::associer_eqn(eqn);

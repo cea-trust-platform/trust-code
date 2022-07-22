@@ -22,43 +22,25 @@ Implemente_liste(Table);
 Implemente_instanciable(Champ_Uniforme_Morceaux_Tabule_Temps,"Champ_Uniforme_Morceaux_Tabule_Temps",Champ_Uniforme_Morceaux_inst);
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie
+ */
 Sortie& Champ_Uniforme_Morceaux_Tabule_Temps::printOn(Sortie& os) const
 {
   return os;
 }
 
 
-// Description:
-//    Lit un champ uniforme par morceaux tabule dans
-//    le temps a partir d'un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entre modifie
-//    Contraintes:
-// Exception: accolade ouvrante attendue
-// Exception: mot clef "defaut" attendu
-// Exception: accolade fermante attendue
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit un champ uniforme par morceaux tabule dans le temps a partir d'un flot d'entree.
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entre modifie
+ * @throws accolade ouvrante attendue
+ * @throws mot clef "defaut" attendu
+ * @throws accolade fermante attendue
+ */
 Entree& Champ_Uniforme_Morceaux_Tabule_Temps::readOn(Entree& is)
 {
   int dim;
@@ -134,20 +116,10 @@ Entree& Champ_Uniforme_Morceaux_Tabule_Temps::readOn(Entree& is)
 
 
 
-// Description:
-//    Mise a jour en temps du champ (tabule en temps)
-// Precondition:
-// Parametre: double tps
-//    Signification: le temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Mise a jour en temps du champ (tabule en temps)
+ *
+ * @param (double tps) le temps de mise a jour
+ */
 void Champ_Uniforme_Morceaux_Tabule_Temps::me_calculer(double tps)
 {
   if (!est_egal(temps(),tps))

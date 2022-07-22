@@ -26,14 +26,10 @@
 class Nom;
 class Domaine;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Extraire_domaine
-//    Lecture d'un fichier
-// .SECTION voir aussi
-//    Interprete
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Extraire_domaine Lecture d'un fichier
+ *
+ * @sa Interprete
+ */
 
 class Extraire_domaine : public Interprete_geometrique_base
 {

@@ -19,18 +19,15 @@
 #include <Champ_Fonc_Fonction.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_Fonc_Fonction_txyz
-//     classe derivee de Champ_Fonc_Fonction
-//     Cette classe represente un champ de donnees fonction d une variable scalaire
-//     et de variables d'espaces x,y,z et du temps t. La(les) fonction(s) est(sont) fournie(s)
-//     directement dans le jeu de donnees sous la forme d'expression(s) mathematique
-//         .......................
-// .SECTION voir aussi
-//    Champ_Fonc_Fonction
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_Fonc_Fonction_txyz classe derivee de Champ_Fonc_Fonction
+ *
+ *      Cette classe represente un champ de donnees fonction d une variable scalaire
+ *      et de variables d'espaces x,y,z et du temps t. La(les) fonction(s) est(sont) fournie(s)
+ *      directement dans le jeu de donnees sous la forme d'expression(s) mathematique
+ *          .......................
+ *
+ * @sa Champ_Fonc_Fonction
+ */
 class Champ_Fonc_Fonction_txyz : public Champ_Fonc_Fonction
 {
   Declare_instanciable(Champ_Fonc_Fonction_txyz);

@@ -22,14 +22,13 @@
 #include <Table.h>
 #include <Ref_Probleme_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     Classe Champ_Front_Fonction
-//     Classe derivee de Champ_front_var_instationnaire_dep qui represente les
-//     champs fonctions d'un autre champ par une fonction
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Champ_Front_Fonction Classe derivee de Champ_front_var_instationnaire_dep qui represente les
+ *
+ *      champs fonctions d'un autre champ par une fonction
+ *
+ *
+ *
+ */
 class Champ_Front_Fonction : public Ch_front_var_instationnaire_dep
 {
   Declare_instanciable(Champ_Front_Fonction);

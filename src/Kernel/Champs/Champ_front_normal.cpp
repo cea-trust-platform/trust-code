@@ -47,8 +47,9 @@ Entree& Champ_front_normal::readOn(Entree& is)
 }
 
 
-// Description:
-// Pas code !!
+/*! @brief Pas code !!
+ *
+ */
 Champ_front_base& Champ_front_normal::affecter_(const Champ_front_base& ch)
 {
   // Cerr<<"avant de retourner"<<finl;

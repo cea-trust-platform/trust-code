@@ -21,70 +21,37 @@
 Implemente_instanciable(Ecrire_Champ_MED,"Ecrire_Champ_MED",Interprete);
 
 
-// Description:
-//    Simple appel a:
-//      Interprete::printOn(Sortie&)
-//    Imprime l'interprete sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a: Interprete::printOn(Sortie&)
+ *
+ *     Imprime l'interprete sur un flot de sortie
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Ecrire_Champ_MED::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
 
-// Description:
-//    Simple appel a:
-//      Interprete::readOn(Entree&)
-//    Ecrit l'interprete sur un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Interprete::readOn(Entree&)
+ *
+ *     Ecrit l'interprete sur un flot d'entree.
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Ecrire_Champ_MED::readOn(Entree& is)
 {
   return Interprete::readOn(is);
 }
 
 
-// Description:
-//    Fonction principale de l'interprete Ecrire_Champ_MED:
-//    erreur si cela echoue.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree, a partir duquel on lit
-//                   les arguments
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-// XD ecrire_champ_med interprete ecrire_champ_med -1 Keyword to write a field to MED format into a file. Useful with Homard.
-// XD attr nom_dom ref_domaine nom_dom 0 domain name
-// XD attr nom_chp ref_field_base nom_chp 0 field name
-// XD attr file chaine file 0 file name
+/*! @brief Fonction principale de l'interprete Ecrire_Champ_MED: erreur si cela echoue.
+ *
+ * @param (Entree& is) un flot d'entree, a partir duquel on lit les arguments
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Ecrire_Champ_MED::interpreter(Entree& is)
 {
   Nom nom_domaine, nom_champ,nom_fic;

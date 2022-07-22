@@ -21,9 +21,13 @@
 #endif
 
 
-// .DESCRIPTION : fonctions utiles sur les int
+/*! @brief : fonctions utiles sur les int
+ *
+ */
 
-// Description: sorts x and y in ascending order
+/*! @brief sorts x and y in ascending order
+ *
+ */
 inline void sort_values(int& x, int& y)
 {
   if (x > y)

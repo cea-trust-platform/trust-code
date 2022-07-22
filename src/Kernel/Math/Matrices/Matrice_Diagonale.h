@@ -19,14 +19,10 @@
 #include <TRUSTTabs_forward.h>
 #include <Matrice_Base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Matrice_Diagonale
-//    Represente une matrice diagonale.
-// .SECTION voir aussi
-//    Matrice_Base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Matrice_Diagonale Represente une matrice diagonale.
+ *
+ * @sa Matrice_Base
+ */
 
 class Matrice_Diagonale : public Matrice_Base
 {

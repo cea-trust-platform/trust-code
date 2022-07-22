@@ -44,46 +44,52 @@ Sortie& Partitionneur_Sous_Zones::printOn(Sortie& os) const
   return os;
 }
 
-// Description: Format de lecture:
-//  (la liste de sous_zones/domaines est optionnelle, N est le nombre d'entites lues)
-//  {
-//     [ Sous_zones N nom_sous_zone1 nom_sous_zone2  nom_sous_zone3 ... ]
-//     [ Domaines N nom_domaine1 nom_domaine2 ... ]
-//  }
+/*! @brief Format de lecture: (la liste de sous_zones/domaines est optionnelle, N est le nombre d'entites lues)
+ *
+ *   {
+ *      [ Sous_zones N nom_sous_zone1 nom_sous_zone2  nom_sous_zone3 ... ]
+ *      [ Domaines N nom_domaine1 nom_domaine2 ... ]
+ *   }
+ *
+ */
 void Partitionneur_Sous_Zones::set_param(Param& param)
 {
   param.ajouter("sous_zones",&noms_sous_zones_);     // XD attr sous_zones listchaine sous_zones 1 N SUBZONE_NAME_1 SUBZONE_NAME_2 ...
   param.ajouter("domaines",&noms_domaines_);         // XD attr domaines   listchaine domaines   1 N DOMAIN_NAME_1  DOMAIN_NAME_2  ...
 }
 
-// Description:
-//  Premiere etape d'initialisation du partitionneur: on associe un domaine.
+/*! @brief Premiere etape d'initialisation du partitionneur: on associe un domaine.
+ *
+ */
 void Partitionneur_Sous_Zones::associer_domaine(const Domaine& domaine)
 {
   ref_domaine_ = domaine;
 }
 
-// Description:
-//  Deuxieme etape d'initialisation: on definit les sous_zones a utiliser.
-//  (on peut utiliser readOn a la place).
+/*! @brief Deuxieme etape d'initialisation: on definit les sous_zones a utiliser.
+ *
+ * (on peut utiliser readOn a la place).
+ *
+ */
 void Partitionneur_Sous_Zones::initialiser(const Noms& noms_sous_zones)
 {
   assert(ref_domaine_.non_nul());
   noms_sous_zones_ = noms_sous_zones;
 }
 
-// Description:
-//   Chaque sous-zone de noms_sous_zones_ definit les elements attribues
-//   a un processeur.
-//   Les processeurs sont attribues dans l'ordre d'apparition des
-//   sous-zones/domaines dans le domaine (et non dans l'ordre d'apparition dans
-//   la liste de sous-zones).
-//   Premiere sous_zone/domaine qui figure dans la liste => proc 0
-//   Element de la deuxieme sous_zone => proc 1
-//   ...
-//   Elements restants qui ne figurent dans aucune sous_zone => sur un nouveau pe.
-//   Si un element figure dans plusieurs sous-zones, c'est la premiere sous_zone
-//   qui gagne.
+/*! @brief Chaque sous-zone de noms_sous_zones_ definit les elements attribues a un processeur.
+ *
+ *    Les processeurs sont attribues dans l'ordre d'apparition des
+ *    sous-zones/domaines dans le domaine (et non dans l'ordre d'apparition dans
+ *    la liste de sous-zones).
+ *    Premiere sous_zone/domaine qui figure dans la liste => proc 0
+ *    Element de la deuxieme sous_zone => proc 1
+ *    ...
+ *    Elements restants qui ne figurent dans aucune sous_zone => sur un nouveau pe.
+ *    Si un element figure dans plusieurs sous-zones, c'est la premiere sous_zone
+ *    qui gagne.
+ *
+ */
 void Partitionneur_Sous_Zones::construire_partition(IntVect& elem_part, int& nb_parts_tot) const
 {
   assert(ref_domaine_.non_nul());

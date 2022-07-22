@@ -18,14 +18,14 @@
 
 
 
-//
-// .DESCRIPTION class RegroupeBord
-// Regroupe_bord dom titi { bord1 , bord2 }
-// regroupe les frontieres bord1 et bord2 dans une frontiere de type bord1
-// et de nom titi
-//
-// .SECTION voir aussi
-// Interprete
+/*! @brief class RegroupeBord Regroupe_bord dom titi { bord1 , bord2 }
+ *
+ *  regroupe les frontieres bord1 et bord2 dans une frontiere de type bord1
+ *  et de nom titi
+ *
+ *
+ * @sa Interprete
+ */
 
 #include <Interprete_geometrique_base.h>
 #include <Domaine.h>

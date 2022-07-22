@@ -18,8 +18,9 @@
 
 
 
-//
-// .DESCRIPTION class ExtrudeBord
+/*! @brief class ExtrudeBord
+ *
+ */
 /**
  * Realise une extrusion d'un bord.
  * ExtrudeBord peut extruder un bord maille soit en triangle soit en quadrangle

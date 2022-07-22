@@ -22,17 +22,14 @@
 #include <Hexaedre.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Hexaedre_axi
-//    Cette classe represente la deformee de l'hexaedre dans
-//    le cas d'un maillage en coordonnees cylindriques
-//    Les methodes de la classe Hexaedre dont Hexaedre_axi derive sont
-//    surchargees pour effectuer les calculs en coordonnees cylindrique.
-// .SECTION voir aussi
-//    Hexaedre Elem_geom_base Elem_geom
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Hexaedre_axi Cette classe represente la deformee de l'hexaedre dans
+ *
+ *     le cas d'un maillage en coordonnees cylindriques
+ *     Les methodes de la classe Hexaedre dont Hexaedre_axi derive sont
+ *     surchargees pour effectuer les calculs en coordonnees cylindrique.
+ *
+ * @sa Hexaedre Elem_geom_base Elem_geom
+ */
 class Hexaedre_axi : public Hexaedre
 {
 
@@ -51,21 +48,13 @@ public :
 };
 
 
-// Description:
-//    Renvoie le i-ieme type de face.
-//    Un Hexaedre (Axi) n'a qu'un seul type de face.
-// Precondition:
-// Parametre: int i
-//    Signification: le rang du type de face a renvoyer
-//    Valeurs par defaut: 0
-//    Contraintes: i=0
-//    Acces:
-// Retour: Type_Face
-//    Signification: un type de face
-//    Contraintes: toujours egal a Faces::quadrangle_3D_axi (si i=0)
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le i-ieme type de face.
+ *
+ * Un Hexaedre (Axi) n'a qu'un seul type de face.
+ *
+ * @param (int i) le rang du type de face a renvoyer
+ * @return (Type_Face) un type de face
+ */
 inline Type_Face Hexaedre_axi::type_face(int i) const
 {
   assert(i==0);

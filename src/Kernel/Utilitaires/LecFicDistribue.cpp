@@ -41,63 +41,27 @@ LecFicDistribue::~LecFicDistribue()
   EFichier::close();
 }
 
-// Description:
-//    Constructeur
-//    Ouvre le fichier avec les parametres mode et prot donnes
-//    Ces parametres sont les parametres de la methode open standard
-// Precondition:
-// Parametre: const char* name
-//    Signification: nom du fichier
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int mode
-//    Signification: parametre passe a open
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int prot
-//    Signification: parametre passe a open
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Constructeur Ouvre le fichier avec les parametres mode et prot donnes
+ *
+ *     Ces parametres sont les parametres de la methode open standard
+ *
+ * @param (const char* name) nom du fichier
+ * @param (int mode) parametre passe a open
+ * @param (int prot) parametre passe a open
+ */
 LecFicDistribue::LecFicDistribue(const char* name, IOS_OPEN_MODE mode)
 {
   LecFicDistribue::ouvrir(name, mode);
 }
 
 
-// Description:
-//    Ouvre le fichier avec les parametres mode et prot donnes
-//    Ces parametres sont les parametres de la methode open standard
-// Precondition:
-// Parametre: const char* name
-//    Signification: nom du fichier
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int mode
-//    Signification: parametre passe a open
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int prot
-//    Signification: parametre passe a open
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification: *this
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ouvre le fichier avec les parametres mode et prot donnes Ces parametres sont les parametres de la methode open standard
+ *
+ * @param (const char* name) nom du fichier
+ * @param (int mode) parametre passe a open
+ * @param (int prot) parametre passe a open
+ * @return (Entree&) *this
+ */
 int LecFicDistribue::ouvrir(const char* name, IOS_OPEN_MODE mode)
 {
   Nom nom_fic(name);

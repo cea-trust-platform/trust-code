@@ -19,36 +19,31 @@
 // NOTE : OF 19/6/98
 // Pas de commentaires pour Roue_Ptr, ce n'est pas une classe...
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 Roue_ptr::Roue_ptr() : ptr(new(Roue))
 {
 }
 
 
-// Description:
-// Constructeur par recopie. Copie de l'ensemble de la roue.
-// Utile pour les constructeurs par recopie des champs.
-// (ce constructeur est appele quand on fait un Champ = un autre Champ,
-//  la version precedente copie la reference, d'ou plantage a la destruction)
+/*! @brief Constructeur par recopie.
+ *
+ * Copie de l'ensemble de la roue. Utile pour les constructeurs par recopie des champs.
+ *  (ce constructeur est appele quand on fait un Champ = un autre Champ,
+ *   la version precedente copie la reference, d'ou plantage a la destruction)
+ *
+ */
 Roue_ptr::Roue_ptr(const Roue_ptr& x)
 {
   ptr=new Roue(x.valeur());
 }
 
-// Description:
-// Constructeur par recopie. Copie de l'ensemble de la roue.
+/*! @brief Constructeur par recopie.
+ *
+ * Copie de l'ensemble de la roue.
+ *
+ */
 Roue_ptr& Roue_ptr::operator=(const Roue_ptr& x)
 {
   Cerr << "We pass through Roue_ptr=Roue_ptr" << finl;
@@ -57,36 +52,16 @@ Roue_ptr& Roue_ptr::operator=(const Roue_ptr& x)
   return *this;
 }
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 Roue_ptr::Roue_ptr(Roue& x):ptr(&x)
 {
 }
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 Roue_ptr::~Roue_ptr()
 {
   if(ptr)
@@ -96,79 +71,35 @@ Roue_ptr::~Roue_ptr()
     }
 }
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 Roue& Roue_ptr::operator[](int i)
 {
   return ptr->futur(i);
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 const Roue& Roue_ptr::operator[](int i) const
 {
   return ptr->futur(i);
 }
 
 
-// Description:
-//    Constructeur
-//    Construit une roue avec une seule case, au temps t=0
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Constructeur Construit une roue avec une seule case, au temps t=0
+ *
+ */
 Roue::Roue() : temps_(0), nb_cases_(1), valeurs_(), passe_(this), futur_(this)
 {
 }
 
 
-// Description:
-//    Constructeur par copie
-//    Le temps, les valeurs et les valeurs des Roues futures sont copies
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Constructeur par copie Le temps, les valeurs et les valeurs des Roues futures sont copies
+ *
+ */
 Roue::Roue(const Roue& roue) : temps_(roue.temps_), nb_cases_(1), valeurs_(roue.valeurs_), passe_(this), futur_(this)
 {
   fixer_nb_cases(roue.nb_cases_);
@@ -180,20 +111,9 @@ Roue::Roue(const Roue& roue) : temps_(roue.temps_), nb_cases_(1), valeurs_(roue.
 }
 
 
-// Description:
-//    Desctructeur
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Desctructeur
+ *
+ */
 Roue::~Roue()
 {
   supprimer_case(nb_cases_);
@@ -204,20 +124,11 @@ Roue::~Roue()
   futur_.ptr=passe_.ptr=0;
 }
 
-// Description:
-//    Retourne la Roue correspondant a la ieme case future
-// Precondition:
-// Parametre: int i
-//    Signification: l'indice i de la ieme case future
-//    Valeurs par defaut:
-//    Contraintes: 1 <= i <= nombre de cases
-//    Acces: entree
-// Retour: const Roue&
-//    Signification: reference sur la ieme Roue future
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Retourne la Roue correspondant a la ieme case future
+ *
+ * @param (int i) l'indice i de la ieme case future
+ * @return (const Roue&) reference sur la ieme Roue future
+ */
 const Roue& Roue::futur(int i) const
 {
   assert(i>=0);
@@ -229,20 +140,11 @@ const Roue& Roue::futur(int i) const
 }
 
 
-// Description:
-//    Retourne la Roue correspondant a la ieme case future
-// Precondition:
-// Parametre: int i
-//    Signification: l'indice i de la ieme case future
-//    Valeurs par defaut:
-//    Contraintes: 1 <= i <= nombre de cases
-//    Acces: entree
-// Retour: const Roue&
-//    Signification:  la ieme Roue future
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Retourne la Roue correspondant a la ieme case future
+ *
+ * @param (int i) l'indice i de la ieme case future
+ * @return (const Roue&) la ieme Roue future
+ */
 Roue& Roue::futur(int i)
 {
   assert(i>=0);
@@ -254,20 +156,11 @@ Roue& Roue::futur(int i)
 }
 
 
-// Description:
-//    Retourne la Roue correspondant a la ieme case passee
-// Precondition:
-// Parametre: int i
-//    Signification: l'indice i de la ieme case passee
-//    Valeurs par defaut:
-//    Contraintes: 1 <= i <= nombre de cases
-//    Acces: entree
-// Retour: const Roue&
-//    Signification: reference sur la ieme Roue passee
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Retourne la Roue correspondant a la ieme case passee
+ *
+ * @param (int i) l'indice i de la ieme case passee
+ * @return (const Roue&) reference sur la ieme Roue passee
+ */
 const Roue& Roue::passe(int i) const
 {
   assert(i>=0);
@@ -279,20 +172,11 @@ const Roue& Roue::passe(int i) const
 }
 
 
-// Description:
-//    Retourne la Roue correspondant a la ieme case passee
-// Precondition:
-// Parametre: int i
-//    Signification: l'indice i de la ieme case passee
-//    Valeurs par defaut:
-//    Contraintes: 1 <= i <= nombre de cases
-//    Acces: entree
-// Retour: const Roue&
-//    Signification: la ieme Roue passee
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Retourne la Roue correspondant a la ieme case passee
+ *
+ * @param (int i) l'indice i de la ieme case passee
+ * @return (const Roue&) la ieme Roue passee
+ */
 Roue& Roue::passe(int i)
 {
   assert(i>=0);
@@ -310,21 +194,10 @@ Roue& Roue::passe(int i)
 //    }
 
 
-// Description:
-//    Dimensionne (1D) les valeurs de la Roue et des ses roues futures
-// Precondition:
-// Parametre: int nb_val
-//    Signification: nombre de valeurs
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-//    Redimensionnement des valeurs de la Roue et de ses Roues futures
-// Postcondition:
+/*! @brief Dimensionne (1D) les valeurs de la Roue et des ses roues futures
+ *
+ * @param (int nb_val) nombre de valeurs
+ */
 void Roue::dimensionner(int nb_val)
 {
   if (valeurs_.size() != nb_val )
@@ -336,26 +209,11 @@ void Roue::dimensionner(int nb_val)
 }
 
 
-// Description:
-//    Dimensionne (2D) les valeurs de la Roue et des ses roues futures
-// Precondition:
-// Parametre: int nb_val
-//    Signification: dimension 1 des valeurs
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int nb_ncomp
-//    Signification: dimension 2 des valeurs
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-//    Redimensionnement des valeurs de la Roue et de ses Roues futures
-// Postcondition:
+/*! @brief Dimensionne (2D) les valeurs de la Roue et des ses roues futures
+ *
+ * @param (int nb_val) dimension 1 des valeurs
+ * @param (int nb_ncomp) dimension 2 des valeurs
+ */
 void Roue::dimensionner(int nb_val, int nb_comp)
 {
   if ((valeurs_.size() != nb_val*nb_comp )||(valeurs_.nb_dim()!=2) ||  (nb_comp!=valeurs_.dimension(1)))
@@ -367,20 +225,11 @@ void Roue::dimensionner(int nb_val, int nb_comp)
 }
 
 
-// Description:
-//    Change le nombre de cases de la Roue
-// Precondition:
-// Parametre: int nb_case
-//    Signification: le nouveau nombre de cases
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nouveau nombre de cases
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Change le nombre de cases de la Roue
+ *
+ * @param (int nb_case) le nouveau nombre de cases
+ * @return (int) le nouveau nombre de cases
+ */
 int Roue::fixer_nb_cases(int nb_case)
 {
   if(nb_case==nb_cases_)
@@ -394,34 +243,10 @@ int Roue::fixer_nb_cases(int nb_case)
 }
 
 
-// Description:
-//    Ajoute n cases a la Roue
-// Precondition:
-// Parametre: int n
-//    Signification: le nombre de cases a ajouter
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-//
-//   Avant
-//          ----->
-//   (this)         futur_
-//          <-----
-//
-//   Apres
-//          ----->        ----->
-//   (this)         futur_        fut_(=futur_ d'avant)
-//          <-----        <-----
-//
-//
-//
-//
+/*! @brief Ajoute n cases a la Roue
+ *
+ * @param (int n) le nombre de cases a ajouter
+ */
 void Roue::ajouter_case(int n)
 {
   for (int n_to_add = 0; n_to_add < n; n_to_add++)
@@ -442,32 +267,10 @@ void Roue::ajouter_case(int n)
     }
 }
 
-// Description:
-//    Supprime n cases de la Roue
-// Precondition:
-// Parametre: int n
-//    Signification: nombre de cases a supprimer
-//    Valeurs par defaut:
-//    Contraintes: n < nombre de cases
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-//   Avant
-//          ----->        ----->
-//   (this)         futur_        fut_
-//          <-----        <-----
-//
-//   Apres
-//          ----->
-//   (this)         fut_
-//          <-----
-//
-//
-//
+/*! @brief Supprime n cases de la Roue
+ *
+ * @param (int n) nombre de cases a supprimer
+ */
 void Roue::supprimer_case(int n)
 {
   for (int n_to_kill = 0; n_to_kill < n; n_to_kill++)
@@ -509,21 +312,11 @@ void Roue::supprimer_case(int n)
 }
 
 
-// Description:
-//    Affectation d'une Roue
-//    Les attibuts modifies sont le temps, les valeurs, le nombre de cases et les valeurs des cases futures
-// Precondition:
-// Parametre: const Roue& roue
-//    Signification: la Roue a copier
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Roue&
-//    Signification: la Roue modifiee
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Affectation d'une Roue Les attibuts modifies sont le temps, les valeurs, le nombre de cases et les valeurs des cases futures
+ *
+ * @param (const Roue& roue) la Roue a copier
+ * @return (Roue&) la Roue modifiee
+ */
 Roue& Roue::operator=(const Roue& roue)
 {
   temps_ = roue.temps_;

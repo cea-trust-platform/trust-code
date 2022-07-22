@@ -19,16 +19,13 @@
 #include <Elem_geom_base.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Quadrangle_VEF
-//    Cette classe represente l'element geometrique Quadrangle_VEF.
-//    Un Quadrangle_VEF a 4 faces, 4 sommets et un seul type de face ayant
-//    2 sommets par face.
-// .SECTION voir aussi
-//    Elem_geom_base Elem_geom
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Quadrangle_VEF Cette classe represente l'element geometrique Quadrangle_VEF.
+ *
+ *     Un Quadrangle_VEF a 4 faces, 4 sommets et un seul type de face ayant
+ *     2 sommets par face.
+ *
+ * @sa Elem_geom_base Elem_geom
+ */
 
 class Quadrangle_VEF : public Elem_geom_base
 {
@@ -58,41 +55,21 @@ public :
 
 };
 
-// Description:
-//    Renvoie le nombre de sommets d'un Quadrangle_VEF: 4.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de sommets d'un Quadrangle_VEF
-//    Contraintes: toujours egal a 4
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de sommets d'un Quadrangle_VEF: 4.
+ *
+ * @return (int) le nombre de sommets d'un Quadrangle_VEF
+ */
 inline int Quadrangle_VEF::nb_som() const
 {
   return 4;
 }
 
 
-// Description:
-//    Renvoie le nombre de faces du type specifie
-//    que possede l'element geometrique.
-// Precondition:
-// Parametre: int i
-//    Signification: le type de face
-//    Valeurs par defaut: 0
-//    Contraintes: i=0
-//    Acces:
-// Retour: int
-//    Signification: le nombre de faces de type i
-//    Contraintes: toujours egal a 4 (si i=0)
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de faces du type specifie que possede l'element geometrique.
+ *
+ * @param (int i) le type de face
+ * @return (int) le nombre de faces de type i
+ */
 inline int Quadrangle_VEF::nb_faces(int i) const
 {
   assert(i==0);
@@ -105,21 +82,11 @@ inline int Quadrangle_VEF::nb_faces(int i) const
 }
 
 
-// Description:
-//    Renvoie le nombre de sommets des faces
-//    du type specifie.
-// Precondition:
-// Parametre: int i
-//    Signification: le type de face
-//    Valeurs par defaut: 0
-//    Contraintes:  i=0
-//    Acces:
-// Retour: int
-//    Signification: le nombre de sommets des faces de type i
-//    Contraintes:  toujours egal a 2 (si i=0)
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de sommets des faces du type specifie.
+ *
+ * @param (int i) le type de face
+ * @return (int) le nombre de sommets des faces de type i
+ */
 inline int Quadrangle_VEF::nb_som_face(int i) const
 {
   assert(i==0);
@@ -130,26 +97,12 @@ inline int Quadrangle_VEF::nb_som_face(int i) const
     }
   return 2;
 }
-// Description:
-//    Renvoie le numero du j-ieme sommet de la i-ieme face de
-//    l'element.
-// Precondition:
-// Parametre: int i
-//    Signification: un numero de face
-//    Valeurs par defaut:
-//    Contraintes: i < 4
-//    Acces:
-// Parametre: int j
-//    Signification: un numero de sommet
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le numero du j-ieme sommet de la i-ieme face
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le numero du j-ieme sommet de la i-ieme face de l'element.
+ *
+ * @param (int i) un numero de face
+ * @param (int j) un numero de sommet
+ * @return (int) le numero du j-ieme sommet de la i-ieme face
+ */
 
 inline int Quadrangle_VEF::face_sommet(int i, int j) const
 {
@@ -170,20 +123,11 @@ inline int Quadrangle_VEF::face_sommet(int i, int j) const
 }
 
 
-// Description:
-//    Renvoie le numero du i-ieme sommet de la face 0
-// Precondition:
-// Parametre: int i
-//    Signification: le numero du sommet a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: i=0 ou i=1
-//    Acces:
-// Retour: int
-//    Signification: le numero du i-ieme sommet de la face 0
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le numero du i-ieme sommet de la face 0
+ *
+ * @param (int i) le numero du sommet a renvoyer
+ * @return (int) le numero du i-ieme sommet de la face 0
+ */
 inline int Quadrangle_VEF::face_sommet0(int i) const
 {
   // face_sommet0(0)=0
@@ -199,20 +143,11 @@ inline int Quadrangle_VEF::face_sommet0(int i) const
 }
 
 
-// Description:
-//    Renvoie le numero du i-ieme sommet de la face 1
-// Precondition:
-// Parametre: int i
-//    Signification: le numero du sommet a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: i=0 ou i=1
-//    Acces:
-// Retour: int
-//    Signification: le numero du i-ieme sommet de la face 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le numero du i-ieme sommet de la face 1
+ *
+ * @param (int i) le numero du sommet a renvoyer
+ * @return (int) le numero du i-ieme sommet de la face 1
+ */
 inline int Quadrangle_VEF::face_sommet1(int i) const
 {
   // face_sommet1(0)=0
@@ -228,20 +163,11 @@ inline int Quadrangle_VEF::face_sommet1(int i) const
 }
 
 
-// Description:
-//    Renvoie le numero du i-ieme sommet de la face 2
-// Precondition:
-// Parametre: int i
-//    Signification: le numero du sommet a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: i=0 ou i=1
-//    Acces:
-// Retour: int
-//    Signification: le numero du i-ieme sommet de la face 2
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le numero du i-ieme sommet de la face 2
+ *
+ * @param (int i) le numero du sommet a renvoyer
+ * @return (int) le numero du i-ieme sommet de la face 2
+ */
 inline int Quadrangle_VEF::face_sommet2(int i) const
 {
   // face_sommet2(0)=1
@@ -256,20 +182,11 @@ inline int Quadrangle_VEF::face_sommet2(int i) const
   return 2*i+1;
 }
 
-// Description:
-//    Renvoie le numero du i-ieme sommet de la face 3
-// Precondition:
-// Parametre: int i
-//    Signification: le numero du sommet a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: i=0 ou i=1
-//    Acces:
-// Retour: int
-//    Signification: le numero du i-ieme sommet de la face 3
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le numero du i-ieme sommet de la face 3
+ *
+ * @param (int i) le numero du sommet a renvoyer
+ * @return (int) le numero du i-ieme sommet de la face 3
+ */
 inline int Quadrangle_VEF::face_sommet3(int i) const
 {
   // face_sommet3(0)=2;
@@ -285,43 +202,23 @@ inline int Quadrangle_VEF::face_sommet3(int i) const
 }
 
 
-// Description:
-//    Renvoie toujours 0, car l'element geometrique
-//    Quadrangle_VEF n'est pas de type structure.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si l'element est de type structure
-//                   0 sinon
-//    Contraintes: toujours egal a 0
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie toujours 0, car l'element geometrique Quadrangle_VEF n'est pas de type structure.
+ *
+ * @return (int) 1 si l'element est de type structure 0 sinon
+ */
 inline int Quadrangle_VEF::est_structure() const
 {
   return 0;
 }
 
 
-// Description:
-//    Renvoie le i-ieme type de face.
-//    Un Quadrangle_VEF n'a qu'un seul type de face.
-// Precondition:
-// Parametre: int i
-//    Signification: le rang du type de face a renvoyer
-//    Valeurs par defaut: 0
-//    Contraintes: i=0
-//    Acces:
-// Retour: Type_Face
-//    Signification: un type de face
-//    Contraintes: toujours egal a Faces::segment_2D (si i=0)
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le i-ieme type de face.
+ *
+ * Un Quadrangle_VEF n'a qu'un seul type de face.
+ *
+ * @param (int i) le rang du type de face a renvoyer
+ * @return (Type_Face) un type de face
+ */
 inline Type_Face Quadrangle_VEF::type_face(int i) const
 {
   assert(i==0);

@@ -18,12 +18,12 @@
 
 #include <Interprete_geometrique_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION Polyedriser
-//     Classe destinee a convertir un hexaedre en polyedre
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Polyedriser Classe destinee a convertir un hexaedre en polyedre
+ *
+ *
+ *
+ *
+ */
 class Polyedriser : public Interprete_geometrique_base
 {
   Declare_instanciable(Polyedriser);

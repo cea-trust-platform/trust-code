@@ -71,10 +71,11 @@ void Partitionneur_Ptscotch::associer_domaine(const Domaine& domaine)
   ref_domaine_ = domaine;
 }
 
-// Description:
-//  Calcule le graphe de connectivite, appelle le partitionneur
-//  et remplit elem_part (pour chaque element, numero de la partie qui lui
-//  est attribuee).
+/*! @brief Calcule le graphe de connectivite, appelle le partitionneur et remplit elem_part (pour chaque element, numero de la partie qui lui
+ *
+ *   est attribuee).
+ *
+ */
 void Partitionneur_Ptscotch::construire_partition(IntVect& elem_part, int& nb_parts_tot) const
 {
 #ifndef PTSCOTCH_

@@ -21,11 +21,12 @@
 #include <TRUSTArray.h>
 #include <assert.h>
 
-// .DESCRIPTION
-//    Espace distant utilise pour la gestion des tableaux distribues
-//    Cette classe permet de decrire un espace distant d'un vecteur de donnees.
-//    Elle porte un int representant le numero de processeur a qui est destine la zone decrite.
-//    La description de cet espace distant consiste en un vecteur d'entiers contenant les indices des elements a envoyer.
+/*! @brief Espace distant utilise pour la gestion des tableaux distribues Cette classe permet de decrire un espace distant d'un vecteur de donnees.
+ *
+ *     Elle porte un int representant le numero de processeur a qui est destine la zone decrite.
+ *     La description de cet espace distant consiste en un vecteur d'entiers contenant les indices des elements a envoyer.
+ *
+ */
 class Esp_Dist : public TRUSTArray<int>
 {
   Declare_instanciable_sans_constructeur(Esp_Dist);

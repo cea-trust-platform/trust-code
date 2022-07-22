@@ -56,28 +56,35 @@ protected:
 
 // *******************************************************************
 
-// Description: Renvoie la i-ieme valeur du tableau (0 <= i < taille)
+/*! @brief Renvoie la i-ieme valeur du tableau (0 <= i < taille)
+ *
+ */
 inline float& ArrOfFloat::operator[](int i) const
 {
   assert(i >= 0 && i < size_);
   return data_[i];
 }
 
-// Description: Renvoie la i-ieme valeur du tableau (0 <= i < taille)
+/*! @brief Renvoie la i-ieme valeur du tableau (0 <= i < taille)
+ *
+ */
 inline float& ArrOfFloat::operator[](int i)
 {
   assert(i >= 0 && i < size_);
   return data_[i];
 }
 
-// Description: Renvoie le nombre de valeurs dans le tableau
+/*! @brief Renvoie le nombre de valeurs dans le tableau
+ *
+ */
 inline int ArrOfFloat::size_array() const
 {
   return size_;
 }
 
-// Description: Changement de taille du tableau, en cas d'augmentation,
-// le contenu des nouveaux elements est indefini.
+/*! @brief Changement de taille du tableau, en cas d'augmentation, le contenu des nouveaux elements est indefini.
+ *
+ */
 inline void ArrOfFloat::resize_array(int size)
 {
   assert(size >= 0);

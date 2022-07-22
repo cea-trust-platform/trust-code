@@ -22,14 +22,10 @@
 #include <cstring>
 #include <string>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     class Nom
-//     Une chaine de caractere pour nommer les objets de TRUST
-// .SECTION voir aussi
-//      Motcle
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief class Nom Une chaine de caractere pour nommer les objets de TRUST
+ *
+ * @sa Motcle
+ */
 
 class Nom : public Objet_U
 {

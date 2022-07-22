@@ -27,16 +27,13 @@ class Zone_dis_base;
 class Zone_Cl_dis_base;
 class Front_dis_base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_front_calc
-//     Classe derivee de Champ_front_var qui represente les
-//     champs a la frontiere obtenus en prenant la trace
-//     d'un objet de type Champ_Inc (champ inconnue d'une equation)
-// .SECTION voir aussi
-//     Champ_front_var_instationnaire Champ_Inc
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_front_calc Classe derivee de Champ_front_var qui represente les
+ *
+ *      champs a la frontiere obtenus en prenant la trace
+ *      d'un objet de type Champ_Inc (champ inconnue d'une equation)
+ *
+ * @sa Champ_front_var_instationnaire Champ_Inc
+ */
 class Champ_front_calc : public Ch_front_var_instationnaire_dep
 {
 

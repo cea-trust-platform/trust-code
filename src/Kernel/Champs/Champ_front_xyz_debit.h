@@ -23,8 +23,9 @@
 #include <Champ_front.h>
 #include <Zone_VF.h>
 
-//.DESCRIPTION  class Champ_front_xyz_debit
-//
+/*! @brief class Champ_front_xyz_debit
+ *
+ */
 
 
 class Champ_front_xyz_debit : public Champ_front_normal

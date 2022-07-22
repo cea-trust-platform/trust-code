@@ -20,14 +20,11 @@
 #include <Ref_Champ_base.h>
 #include <List.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champs_compris
-//     Represente un champ compris par un objet de type Equation, Milieu,
-//     Operateur, Source, Traitement_particulier.
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champs_compris Represente un champ compris par un objet de type Equation, Milieu,
+ *
+ *      Operateur, Source, Traitement_particulier.
+ *
+ */
 
 Declare_liste(REF(Champ_base));
 

@@ -20,40 +20,22 @@ Implemente_base(Champ_Uniforme_Morceaux_inst,"Champ_Uniforme_Morceaux_inst",Cham
 
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie
+ */
 Sortie& Champ_Uniforme_Morceaux_inst::printOn(Sortie& os) const
 {
   return os ;
 }
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Entree& is
-//    Signification:  un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification: le flot d'entree
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree
+ */
 Entree& Champ_Uniforme_Morceaux_inst::readOn(Entree& is)
 {
   return is;

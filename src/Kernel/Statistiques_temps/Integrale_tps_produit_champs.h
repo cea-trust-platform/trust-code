@@ -18,18 +18,15 @@
 
 #include <Integrale_tps_Champ.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Integrale_tps_produit_champs
-//    Cette classe represente l'integrale en temps d'un produit de 2 champs
-//    eleves a une puissance entiere et positive entre un temps initial et un
-//    temps courant
-//    Un objet Integrale_tps_produit_champs a donc 2 champs associes dont
-//    il represente l'integrale du produit.
-// .SECTION voir aussi
-//    Classe hors hierarchie TrioU
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Integrale_tps_produit_champs Cette classe represente l'integrale en temps d'un produit de 2 champs
+ *
+ *     eleves a une puissance entiere et positive entre un temps initial et un
+ *     temps courant
+ *     Un objet Integrale_tps_produit_champs a donc 2 champs associes dont
+ *     il represente l'integrale du produit.
+ *
+ * @sa Classe hors hierarchie TrioU
+ */
 class Integrale_tps_produit_champs : public Integrale_tps_Champ
 {
   Declare_instanciable(Integrale_tps_produit_champs);
@@ -71,20 +68,9 @@ protected :
   int support_different_;
 };
 
-// Description:
-//    Associe les champs et les temps
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe les champs et les temps
+ *
+ */
 inline void Integrale_tps_produit_champs::associer(const Champ_Generique_base& ch1, const Champ_Generique_base& ch2, int n1, int n2, double t0, double t1)
 {
   Integrale_tps_Champ::associer(ch1, n1, t0, t1);

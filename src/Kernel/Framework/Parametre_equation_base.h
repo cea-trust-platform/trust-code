@@ -21,13 +21,12 @@
 
 #include <Objet_U.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Parametre_equation_base
-//     Un objet Parametre_equation_base est un objet regroupant les differentes
-//     options specifiques pour unre equation voir Parametre_simpler
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Parametre_equation_base Un objet Parametre_equation_base est un objet regroupant les differentes
+ *
+ *      options specifiques pour unre equation voir Parametre_simpler
+ *
+ *
+ */
 class Parametre_equation_base : public Objet_U
 {
   Declare_base(Parametre_equation_base);

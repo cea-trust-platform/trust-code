@@ -29,26 +29,25 @@ class Zone_dis_base;
 class Zone_Cl_dis_base;
 class Front_dis_base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_front_recyclage
-//
-//                        delt_dist                                             delt_dist
-//        pb1           <---------->             pb2                            <-------->    pb
-//                                 ch_fr2                                     ch_fr
-//     _____________________         ____________________________               ____________________________
-//    |                 |   |       |                            |              |        |                  |
-//    |         dom1    |   |       |            dom2            |              |        |     dom          |
-//    |         ch1     |   |       |bord2                       |              |bord    |     ch           |
-//    |_________________|___|       |____________________________|              |________|__________________|
-//                    plan1                                                             plan
-//
-//                             Fig. 1                                                        Fig. 2
-//
-//     Cette classe a pour objectif d evaluer les valeurs d un champ_front (ch_fr2) sur le bord d un domaine (bord2)
-//     en exploitant les valeurs d un champ 1 (ch1 dit champ evaluateur) evaluees dans un plan (plan1) distant de
-//     delt_dist de bord2 (Fig. 1).
+/*! @brief classe Champ_front_recyclage
+ *
+ *                         delt_dist                                             delt_dist
+ *         pb1           <---------->             pb2                            <-------->    pb
+ *                                  ch_fr2                                     ch_fr
+ *      _____________________         ____________________________               ____________________________
+ *     |                 |   |       |                            |              |        |                  |
+ *     |         dom1    |   |       |            dom2            |              |        |     dom          |
+ *     |         ch1     |   |       |bord2                       |              |bord    |     ch           |
+ *     |_________________|___|       |____________________________|              |________|__________________|
+ *                     plan1                                                             plan
+ *
+ *                              Fig. 1                                                        Fig. 2
+ *
+ *      Cette classe a pour objectif d evaluer les valeurs d un champ_front (ch_fr2) sur le bord d un domaine (bord2)
+ *      en exploitant les valeurs d un champ 1 (ch1 dit champ evaluateur) evaluees dans un plan (plan1) distant de
+ *      delt_dist de bord2 (Fig. 1).
+ *
+ */
 
 //     Les problemes pb2 et pb1, les domaines dom2 et dom1 ainsi que les champs 2 et 1 peuvent etre identiques
 //     (pb2=pb1=pb dom2=dom1=dom et ch2=ch1=ch)

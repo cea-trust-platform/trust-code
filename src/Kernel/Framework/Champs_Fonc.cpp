@@ -20,61 +20,31 @@ Implemente_instanciable(Champs_Fonc,"Champs_Fonc",LIST(Champ_Fonc));
 
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&)
+ */
 Entree& Champs_Fonc::readOn(Entree& s )
 {
   return s ;
 }
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methdode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Sortie& s) un flot de sortie
+ */
 Sortie& Champs_Fonc::printOn(Sortie& s ) const
 {
   return s ;
 }
 
 
-// Description:
-//    Effectue une mise a jour en temps de tous les
-//    Champ contenus dans la liste.
-// Precondition:
-// Parametre: double tps
-//    Signification: le temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Effectue une mise a jour en temps de tous les Champ contenus dans la liste.
+ *
+ * @param (double tps) le temps de mise a jour
+ */
 void Champs_Fonc::mettre_a_jour(double tps)
 {
   LIST_CURSEUR(Champ_Fonc) curseur(*this);

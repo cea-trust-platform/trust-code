@@ -18,11 +18,9 @@
 #include <generic.h>
 
 extern "C"
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief
+ *
+ */
 {
   void F77DECLARE(DGEMM)(char *transa, char *transb, integer *m, integer *n, integer *k,
                          double *alpha, const double *a, integer *lda, const double *b,

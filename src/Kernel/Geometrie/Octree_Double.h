@@ -19,19 +19,22 @@
 #include <Octree_Int.h>
 #include <TRUSTTab.h>
 
-// .DESCRIPTION : Un octree permettant de chercher dans l'espace des elements ou des points
-//  decrits par des coordonnees reeles. Cet objet est base sur Octree_Int.
-//  Astuces:
-//   Pour chercher des points a epsilon pres on peut faire:
-//    1)  build_nodes(coord, include_virt, 0.)
-//      suivi de
-//        search_elements_box(center, epsilon, elements);
-//
-//    2)  build_nodes(coord, include_virt, epsilon)
-//      suivi de
-//        search_elements(x,y,z,...)
-//    La premiere solution prend plus de temps pour construire l'octree mais la recherche est plus rapide
-//    La deuxieme, c'est inverse... et on peut choisir epsilon pour chaque point.
+/*! @brief : Un octree permettant de chercher dans l'espace des elements ou des points decrits par des coordonnees reeles.
+ *
+ * Cet objet est base sur Octree_Int.
+ *   Astuces:
+ *    Pour chercher des points a epsilon pres on peut faire:
+ *     1)  build_nodes(coord, include_virt, 0.)
+ *       suivi de
+ *         search_elements_box(center, epsilon, elements);
+ *
+ *     2)  build_nodes(coord, include_virt, epsilon)
+ *       suivi de
+ *         search_elements(x,y,z,...)
+ *     La premiere solution prend plus de temps pour construire l'octree mais la recherche est plus rapide
+ *     La deuxieme, c'est inverse... et on peut choisir epsilon pour chaque point.
+ *
+ */
 class Octree_Double
 {
 public:

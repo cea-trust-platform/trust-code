@@ -215,12 +215,14 @@ static int bbox_intersection(const DoubleTab& bboxes, int i, int j, double epsil
   return 1;
 }
 
-// Description: for a given set of local coordinates, finds which other processors
-//  share the same nodes.
-//  match must be sized to Process::nproc() and will be filled with, for each processor,
-//  the indexes of coordinates that the corresponding processor shares with me.
-//  Nodes are listed in the same order on couples of processors sharing a list of nodes
-//  match[Process::me()] will be left empty.
+/*! @brief for a given set of local coordinates, finds which other processors share the same nodes.
+ *
+ *   match must be sized to Process::nproc() and will be filled with, for each processor,
+ *   the indexes of coordinates that the corresponding processor shares with me.
+ *   Nodes are listed in the same order on couples of processors sharing a list of nodes
+ *   match[Process::me()] will be left empty.
+ *
+ */
 void find_matching_coordinates(const DoubleTab& coords,
                                ArrsOfInt& match,
                                double epsilon)
@@ -339,11 +341,13 @@ void find_matching_coordinates(const DoubleTab& coords,
   schema.end_comm();
 }
 
-// Description: finds all faces of all elements that
-//  - have only one neighbour elements
-//  - and do not belong to a boundary
-// (these are joint faces)
-// Fills "faces" with the local node numbers of the faces that have been found.
+/*! @brief finds all faces of all elements that - have only one neighbour elements
+ *
+ *   - and do not belong to a boundary
+ *  (these are joint faces)
+ *  Fills "faces" with the local node numbers of the faces that have been found.
+ *
+ */
 static void find_joint_faces(const Zone& zone, IntTab& faces)
 {
   Static_Int_Lists som_elem;

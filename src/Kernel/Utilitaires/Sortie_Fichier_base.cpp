@@ -229,21 +229,10 @@ int Sortie_Fichier_base::ouvrir(const char* name,IOS_OPEN_MODE mode)
   return 1;
 }
 
-// Description:
-//    Force l'ecriture sur disque des donnees dans le tampon
-//    Utilise l'implementation de la classe ofstream
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: *this
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Force l'ecriture sur disque des donnees dans le tampon Utilise l'implementation de la classe ofstream
+ *
+ * @return (Sortie&) *this
+ */
 Sortie& Sortie_Fichier_base::flush()
 {
   if (toFlush()) ofstream_->flush();

@@ -18,19 +18,16 @@
 
 #include <Interprete.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Class Deactivate_SIGINT_Catch
-//    This class is an interpreter used to read the DEACTIVATE_SIGINT_CATCH flag.
-//    Directive:
-//       Deactivate_SIGINT_Catch
-//    This optional directive disables the option that allows to stop correctly the
-//    TRUST simulation when receiving a SIGINT (Ctrl-C).
-//    Without this directive, the simulation stops correctly.
-// .SECTION voir aussi
-//    Interprete Objet_U
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Class Deactivate_SIGINT_Catch This class is an interpreter used to read the DEACTIVATE_SIGINT_CATCH flag.
+ *
+ *     Directive:
+ *        Deactivate_SIGINT_Catch
+ *     This optional directive disables the option that allows to stop correctly the
+ *     TRUST simulation when receiving a SIGINT (Ctrl-C).
+ *     Without this directive, the simulation stops correctly.
+ *
+ * @sa Interprete Objet_U
+ */
 
 class Deactivate_SIGINT_Catch : public Interprete
 {

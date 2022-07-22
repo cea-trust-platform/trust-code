@@ -19,42 +19,24 @@
 Implemente_base(Champ_front_var,"Champ_front_var",Champ_front_base);
 
 
-// Description:
-//    Imprime le nom du champ sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Imprime le nom du champ sur un flot de sortie
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Champ_front_var::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
 
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees
-//    Doit dans tous les cas fixer nb_comp
-// Precondition:
-// Parametre: Entree& is
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees
+ *
+ *     Doit dans tous les cas fixer nb_comp
+ *
+ * @param (Entree& is)
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Champ_front_var::readOn(Entree& s )
 {
   fixer_nb_comp(1);
@@ -62,22 +44,13 @@ Entree& Champ_front_var::readOn(Entree& s )
 }
 
 
-// Description:
-//    Initialisation en debut de calcul.
-//    Dimensionne le tableau de valeurs et cree son espace virtuel.
-//    Les classes derivees doivent imperativement appeler cette methode.
-// Precondition: nb_comp fixe et roue dimensionnee.
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: 0 en cas d'erreur, 1 sinon.
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Initialisation en debut de calcul.
+ *
+ * Dimensionne le tableau de valeurs et cree son espace virtuel.
+ *     Les classes derivees doivent imperativement appeler cette methode.
+ *
+ * @return (0 en cas d'erreur, 1 sinon.)
+ */
 int Champ_front_var::initialiser(double temps, const Champ_Inc_base& inco)
 {
   const Frontiere& frontiere = frontiere_dis().frontiere();

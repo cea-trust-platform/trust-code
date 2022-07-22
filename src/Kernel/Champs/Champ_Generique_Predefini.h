@@ -20,9 +20,9 @@
 #include <Champ_Gen_de_Champs_Gen.h>
 
 
-//
-// .DESCRIPTION class Champ_Generique_Predefini
-//
+/*! @brief class Champ_Generique_Predefini
+ *
+ */
 
 // Champ destine a encapsuler un champ generique dont l'expression est predefinie
 // pour que les utilisateurs disposent de raccourci en terme de syntaxe

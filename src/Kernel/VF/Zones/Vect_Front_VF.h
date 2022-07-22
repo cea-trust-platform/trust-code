@@ -18,9 +18,9 @@
 
 
 
-//
-// .DESCRIPTION class VECT(Front_VF)
-//
+/*! @brief class VECT(Front_VF)
+ *
+ */
 
 #include <Front_VF.h>
 Declare_vect(Front_VF);

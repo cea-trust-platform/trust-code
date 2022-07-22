@@ -23,70 +23,41 @@ Implemente_instanciable(Discretiser,"Discretiser|Discretize",Interprete);
 int Discretiser::is_deja_appele=0;
 
 
-// Description:
-//    Simple appel a:
-//      Interprete::printOn(Sortie&)
-//    Imprime l'interprete sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a: Interprete::printOn(Sortie&)
+ *
+ *     Imprime l'interprete sur un flot de sortie
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Discretiser::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
 
-// Description:
-//    Simple appel a:
-//      Interprete::readOn(Entree&)
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Interprete::readOn(Entree&)
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Discretiser::readOn(Entree& is)
 {
   return Interprete::readOn(is);
 }
 
 
-// Description:
-//    Fonction principale de l'interprete Discretiser:
-//      discretiser un probleme avec une discretisation
-//    On controle dynamiquement le type du probleme et
-//    de la discretisation que l'on a lu, on verifie
-//    que le schema en temps du probleme a ete lu et on
-//    discretise le probleme avec la discretisation.
-// Precondition: le schema en temps du probleme doit avoir ete lu pour discretiser
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: discretisation non reconnue
-// Exception: on ne sait pas discretiser car le probleme n'est pas d'un
-//            sous-type reconnu (Probleme,Probleme_base,Probleme_Couple)
-// Effets de bord:
-// Postcondition: le probleme est discretise avec la discretisation specifiee
+/*! @brief Fonction principale de l'interprete Discretiser: discretiser un probleme avec une discretisation
+ *
+ *     On controle dynamiquement le type du probleme et
+ *     de la discretisation que l'on a lu, on verifie
+ *     que le schema en temps du probleme a ete lu et on
+ *     discretise le probleme avec la discretisation.
+ *
+ * @throws discretisation non reconnue
+ * @throws on ne sait pas discretiser car le probleme n'est pas d'un
+ * sous-type reconnu (Probleme,Probleme_base,Probleme_Couple)
+ */
 Entree& Discretiser::interpreter(Entree& is)
 {
 saisie :

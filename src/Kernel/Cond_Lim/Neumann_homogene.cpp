@@ -19,88 +19,47 @@ Implemente_base(Neumann_homogene,"Neumann_homogene",Cond_lim_base);
 // XD Neumann_homogene condlim_base Neumann_homogene -1 Homogeneous neumann boundary condition
 
 
-// Description:
-//    Ecrit le type de l'objet sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit le type de l'objet sur un flot de sortie.
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Neumann_homogene::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << "\n";
 }
 
-// Description:
-//    Type le champ a la frontiere en "Champ_front_uniforme"
-//    N'ecrit rien sur le flot passe en parametre
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: NON ACCEDE
-// Retour: Entree& s
-//    Signification: le flot d'entree
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Type le champ a la frontiere en "Champ_front_uniforme" N'ecrit rien sur le flot passe en parametre
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree& s) le flot d'entree
+ */
 Entree& Neumann_homogene::readOn(Entree& s )
 {
   le_champ_front.typer("Champ_front_uniforme");
   return s ;
 }
 
-// Description:
-//    Renvoie la valeur du flux impose sur la i-eme composante
-//    du champ representant le flux a la frontiere.
-//    Toujours 0 pour Neumann homogene.
-// Precondition:
-// Parametre: int
-//    Signification: indice suivant la premiere dimension du champ
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: NON ACCEDE
-// Retour: double
-//    Signification: la valeur du flux imposee sur la composante specifiee
-//    Contraintes: toujours egal a 0
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la valeur du flux impose sur la i-eme composante du champ representant le flux a la frontiere.
+ *
+ *     Toujours 0 pour Neumann homogene.
+ *
+ * @param (int) indice suivant la premiere dimension du champ
+ * @return (double) la valeur du flux imposee sur la composante specifiee
+ */
 double Neumann_homogene::flux_impose(int ) const
 {
   return 0;
 }
 
-// Description:
-//    Renvoie la valeur du flux impose sur la (i,j)-eme composante
-//    du champ representant le flux a la frontiere.
-//    Toujours 0 pour Neumann homogene.
-// Precondition:
-// Parametre: int
-//    Signification: indice suivant la premiere dimension du champ
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: NON ACCEDE
-// Parametre: int
-//    Signification: indice suivant la deuxieme dimension du champ
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: NON ACCEDE
-// Retour: double
-//    Signification: la valeur imposee sur la composante specifiee
-//    Contraintes: toujours egal a 0
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la valeur du flux impose sur la (i,j)-eme composante du champ representant le flux a la frontiere.
+ *
+ *     Toujours 0 pour Neumann homogene.
+ *
+ * @param (int) indice suivant la premiere dimension du champ
+ * @param (int) indice suivant la deuxieme dimension du champ
+ * @return (double) la valeur imposee sur la composante specifiee
+ */
 double Neumann_homogene::flux_impose(int ,int ) const
 {
   return 0;

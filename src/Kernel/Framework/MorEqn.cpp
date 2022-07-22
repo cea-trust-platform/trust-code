@@ -17,22 +17,13 @@
 #include <Motcle.h>
 #include <Equation_base.h>
 
-// Description:
-//    Associe une equation a l'objet.
-//    Affecte le membre MorEqn::mon_equation avec l'objet
-//    passe en parametre.
-// Precondition:
-// Parametre: Equation_base& eqn
-//    Signification: l'equation a laquelle on veut s'associer
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe une equation a l'objet.
+ *
+ * Affecte le membre MorEqn::mon_equation avec l'objet
+ *     passe en parametre.
+ *
+ * @param (Equation_base& eqn) l'equation a laquelle on veut s'associer
+ */
 void MorEqn::associer_eqn(const Equation_base& eqn)
 {
   mon_equation=eqn;

@@ -22,17 +22,14 @@
 
 #include <Ref_Domaine.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_front_lu
-//     Classe derivee de Champ_front_var qui represente les
-//     champs aux frontieres dont les valeurs sont lues dans un fichier de format :
-//        nval
-//        xi yi zi val_i
-// .SECTION voir aussi
-//     Champ_front_base Champ_front_var
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_front_lu Classe derivee de Champ_front_var qui represente les
+ *
+ *      champs aux frontieres dont les valeurs sont lues dans un fichier de format :
+ *         nval
+ *         xi yi zi val_i
+ *
+ * @sa Champ_front_base Champ_front_var
+ */
 class Champ_front_lu : public Ch_front_var_stationnaire
 {
   Declare_instanciable(Champ_front_lu);

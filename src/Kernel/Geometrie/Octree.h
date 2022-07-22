@@ -29,13 +29,10 @@
 #define GaucheAvantHaut 6
 #define DroitAvantHaut 7
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Struct OctreeLoc
-// .SECTION voir aussi
-//    Octree
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Struct OctreeLoc
+ *
+ * @sa Octree
+ */
 struct OctreeLoc
 {
   double xmin, xmax, ymin, ymax, zmin, zmax;
@@ -46,13 +43,10 @@ struct OctreeLoc
 class OctreeRoot;
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Octree
-// .SECTION voir aussi
-//    OctreeLoc OctreeRoot OctreeFloor
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Octree
+ *
+ * @sa OctreeLoc OctreeRoot OctreeFloor
+ */
 class Octree
 {
 public :
@@ -87,13 +81,10 @@ private :
 };
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe OctreeRoot
-// .SECTION voir aussi
-//    OctreeLoc Octree OctreeFloor
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe OctreeRoot
+ *
+ * @sa OctreeLoc Octree OctreeFloor
+ */
 class OctreeRoot :  public Objet_U, public Octree
 {
   Declare_instanciable_sans_constructeur(OctreeRoot);
@@ -144,13 +135,10 @@ inline int OctreeRoot::reel() const
   return reel_;
 }
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe OctreeFloor
-// .SECTION voir aussi
-//    OctreeLoc Octree OctreeRoot
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe OctreeFloor
+ *
+ * @sa OctreeLoc Octree OctreeRoot
+ */
 class OctreeFloor : public Octree
 {
 

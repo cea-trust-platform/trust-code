@@ -18,10 +18,11 @@
 
 
 
-//
-// .DESCRIPTION class Discretiser_domaine
-// discrtise le domaine
-// utile pour tester les geometries
+/*! @brief class Discretiser_domaine discrtise le domaine
+ *
+ *  utile pour tester les geometries
+ *
+ */
 
 #include <Interprete_geometrique_base.h>
 

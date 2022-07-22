@@ -21,12 +21,11 @@
 #include <Champ_Fonc_Q1_base.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_Fonc_Q1_MED
-//    permet de faire un champ P1 pour le post med
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_Fonc_Q1_MED permet de faire un champ P1 pour le post med
+ *
+ *
+ *
+ */
 
 class Champ_Fonc_Q1_MED: public Champ_Fonc_Q1_base
 {

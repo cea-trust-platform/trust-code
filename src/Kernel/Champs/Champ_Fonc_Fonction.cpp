@@ -20,29 +20,22 @@ Implemente_instanciable(Champ_Fonc_Fonction,"Champ_Fonc_Fonction",Champ_Fonc_Tab
 
 Sortie& Champ_Fonc_Fonction::printOn(Sortie& os) const { return os; }
 
-// Description:
-//     Lecture du Champ a partir d'un flot d'entree,
-//     (On ne sait traiter que les champs scalaires.)
-//     exemple:
-//     Champ_Fonc_Fonction probleme ch
-//     1 (nombre de composantes)
-//     {
-//     2
-//     0 500 0 250  (ch(0)=0 && ch(500)=250
-//     }
-// Precondition: seul les champs scalaires sont traites
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: accolade fermante attendue
-// Exception: accolade ouvrante attendue
-// Effets de bord:
-// Postcondition:
+/*! @brief Lecture du Champ a partir d'un flot d'entree, (On ne sait traiter que les champs scalaires.
+ *
+ * )
+ *      exemple:
+ *      Champ_Fonc_Fonction probleme ch
+ *      1 (nombre de composantes)
+ *      {
+ *      2
+ *      0 500 0 250  (ch(0)=0 && ch(500)=250
+ *      }
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ * @throws accolade fermante attendue
+ * @throws accolade ouvrante attendue
+ */
 Entree& Champ_Fonc_Fonction::readOn(Entree& is)
 {
   int nbcomp, nbcomp_tmp_ = -1, old_table_syntax_ = 0;

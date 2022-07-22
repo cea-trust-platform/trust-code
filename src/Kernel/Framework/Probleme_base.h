@@ -36,29 +36,22 @@ class Postraitement;
 class Champ_Fonc;
 class Champ_Generique_base;
 class EcrFicPartageBin;
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Probleme_base
-//     C'est un Probleme_U qui n'est pas un couplage.
-//     Le role d'un Probleme_base est la resolution sur un domaine des
-//     equations qui le compose.
-//     Ses membres sont les attributs et les methodes communs
-//     a toutes les classes qui representent des problemes.
-//     Un certains nombre d'objets sont associes au probleme pour
-//     le constituer:
-//       - 1 ou plusieurs equations: objet Equation
-//       - 1 Domaine discretise: objet Domaine_Dis
-//       - un postraitement: objet Postraitement
-//       - Une discretisation: objet Discretistaion
-//       - un schema en temps: objet Schema_temp
-// .SECTION voir aussi Probleme
-//     Classe abstraite dont tous les problemes doivent deriver.
-//     Methodes abstraites:
-//       int nombre_d_equations() const
-//       const Equation_base& equation(int) const
-//       Equation_base& equation(int)
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Probleme_base C'est un Probleme_U qui n'est pas un couplage.
+ *
+ *      Le role d'un Probleme_base est la resolution sur un domaine des
+ *      equations qui le compose.
+ *      Ses membres sont les attributs et les methodes communs
+ *      a toutes les classes qui representent des problemes.
+ *      Un certains nombre d'objets sont associes au probleme pour
+ *      le constituer:
+ *        - 1 ou plusieurs equations: objet Equation
+ *        - 1 Domaine discretise: objet Domaine_Dis
+ *        - un postraitement: objet Postraitement
+ *        - Une discretisation: objet Discretistaion
+ *        - un schema en temps: objet Schema_temp
+ *
+ * @sa Probleme, Classe abstraite dont tous les problemes doivent deriver., Methodes abstraites:, int nombre_d_equations() const, const Equation_base& equation(int) const, Equation_base& equation(int)
+ */
 class Probleme_base : public Champs_compris_interface, public Probleme_U
 {
   Declare_base_sans_constructeur(Probleme_base);
@@ -250,60 +243,29 @@ protected :
 
 };
 
-// Description:
-//    surcharge Objet_U::nommer(const Nom&)
-//    Donne un nom au probleme
-// Precondition:
-// Parametre: Nom& name
-//    Signification: le nom a donner au probleme
-//    Valeurs par defaut:
-//    Contraintes: reference const
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief surcharge Objet_U::nommer(const Nom&) Donne un nom au probleme
+ *
+ * @param (Nom& name) le nom a donner au probleme
+ */
 inline void Probleme_base::nommer(const Nom& name)
 {
   nom=name;
 }
 
-// Description:
-//    surcharge Objet_U::le_nom()
-//    Renvoie le nom du probleme
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Nom&
-//    Signification: le nom du probleme
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief surcharge Objet_U::le_nom() Renvoie le nom du probleme
+ *
+ * @return (Nom&) le nom du probleme
+ */
 inline const Nom& Probleme_base::le_nom() const
 {
   return nom;
 }
 
-// Description:
-//    Renvoie la discretisation associee au probleme
-// Precondition: La discretisation doit etre une REF(Discretisation_base) non nulle
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Discretisation_base&
-//    Signification: discretisation associee au probleme
-//    Contraintes: reference constante
-// Exception: la discretisation n'est pas construite
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la discretisation associee au probleme
+ *
+ * @return (Discretisation_base&) discretisation associee au probleme
+ * @throws la discretisation n'est pas construite
+ */
 inline const Discretisation_base& Probleme_base::discretisation() const
 {
   if(!la_discretisation.non_nul())

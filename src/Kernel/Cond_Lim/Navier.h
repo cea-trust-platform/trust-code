@@ -19,18 +19,15 @@
 #include <Cond_lim_base.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Navier
-//    Condition aux limites sur la vitesse de type "Navier" :
-//      - composante normale de la vitesse nulle
-//      - composante tangentielle de la vitesse libre
-//      - contrainte imposee
-//    Exemples : Symetrie (contrainte nulle), Paroi_frottante (contrainte non nulle)
-// .SECTION voir aussi
-//    Cond_lim_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Navier Condition aux limites sur la vitesse de type "Navier" :
+ *
+ *       - composante normale de la vitesse nulle
+ *       - composante tangentielle de la vitesse libre
+ *       - contrainte imposee
+ *     Exemples : Symetrie (contrainte nulle), Paroi_frottante (contrainte non nulle)
+ *
+ * @sa Cond_lim_base
+ */
 class Navier  : public Cond_lim_base
 {
 

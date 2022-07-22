@@ -20,8 +20,10 @@
 #include <assert.h>
 
 
-// .DESCRIPTION Pointeur dans la Memoire de TRUST pour un Objet_U
-// .SECTION voir aussi Objet_U Memoire
+/*! @brief Pointeur dans la Memoire de TRUST pour un Objet_U
+ *
+ * @sa Objet_U Memoire
+ */
 class Memoire_ptr
 {
 public :
@@ -37,9 +39,10 @@ private :
   Objet_U* o_ptr;
 };
 
-// .DESCRIPTION  Une zone de travail de la Memoire TRUST composee d'elements de type int/double/float
-// .SECTION voir aussi
-//    Memoire Int_ptr_trav Double_ptr_trav
+/*! @brief Une zone de travail de la Memoire TRUST composee d'elements de type int/double/float
+ *
+ * @sa Memoire Int_ptr_trav Double_ptr_trav
+ */
 template<typename _TYPE_>
 class TRUST_ptr_trav
 {
@@ -72,11 +75,11 @@ private :
 typedef TRUST_ptr_trav<double> Double_ptr_trav;
 typedef TRUST_ptr_trav<int> Int_ptr_trav;
 
-// Description: Ajout d'elements dans la zone de travail
-// Parametre: int n
-//    Signification: le nombre d'element a creer dans la zone de travail
-// Retour: Double_ptr_trav*
-//    Signification: pointeur sur le zone de travail contenant les elements crees
+/*! @brief Ajout d'elements dans la zone de travail
+ *
+ * @param (int n) le nombre d'element a creer dans la zone de travail
+ * @return (Double_ptr_trav*) pointeur sur le zone de travail contenant les elements crees
+ */
 template<typename _TYPE_>
 inline TRUST_ptr_trav<_TYPE_>* TRUST_ptr_trav<_TYPE_>::add(int n)
 {
@@ -127,60 +130,28 @@ inline TRUST_ptr_trav<_TYPE_>* TRUST_ptr_trav<_TYPE_>::add(int n)
   return curseur;
 }
 
-// Description:
-//    Indique si le pointeur memoire est libre, c'est-a-dire s'il pointe sur un
-//    Objet_U non nul
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si le pointeur est libre
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Indique si le pointeur memoire est libre, c'est-a-dire s'il pointe sur un Objet_U non nul
+ *
+ * @return (int) 1 si le pointeur est libre
+ */
 inline int Memoire_ptr::libre() const
 {
   return o_ptr==0;
 }
 
-// Description:
-//    Affecte un Objet_U a un pointeur memoire
-// Precondition:
-// Parametre: Objet_U* ptr
-//    Signification: pointeur sur un Objet_U
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Affecte un Objet_U a un pointeur memoire
+ *
+ * @param (Objet_U* ptr) pointeur sur un Objet_U
+ */
 inline void Memoire_ptr::set(Objet_U* ptr)
 {
   o_ptr=ptr;
 }
 
-// Description:
-//    Retourne une reference sur l'Objet_U pointe par le pointeur memoire
-// Precondition:
-//    le pointeur memoire ne doit pas etre libre
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Objet_U&
-//    Signification: reference sur l'Objet_U pointe
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Retourne une reference sur l'Objet_U pointe par le pointeur memoire
+ *
+ * @return (Objet_U&) reference sur l'Objet_U pointe
+ */
 inline Objet_U& Memoire_ptr::obj()
 {
   assert(o_ptr!=0);
@@ -188,21 +159,11 @@ inline Objet_U& Memoire_ptr::obj()
 }
 
 
-// Description:
-//    Operateur d'affectation entre pointeurs memoire
-//    Dans le cas A=B, l'Objet_U pointe par A est l'Objet_U pointe par B
-// Precondition:
-// Parametre: const Memoire_ptr& mptr
-//    Signification: le pointeur memoire B
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Memoire_ptr&
-//    Signification: le pointeur memoire A
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Operateur d'affectation entre pointeurs memoire Dans le cas A=B, l'Objet_U pointe par A est l'Objet_U pointe par B
+ *
+ * @param (const Memoire_ptr& mptr) le pointeur memoire B
+ * @return (Memoire_ptr&) le pointeur memoire A
+ */
 inline Memoire_ptr& Memoire_ptr::operator=(const Memoire_ptr& mptr)
 {
   o_ptr=mptr.o_ptr;

@@ -19,14 +19,12 @@
 #include <Entree.h>
 #include <sstream>
 using std::istringstream;
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//   An Entree whose main source of data is an arbitrary binary buffer set using the
-//   set_data() method. This Entree can then be used to feed any standard TRUST objects.
-// .SECTION voir aussi
-//    EChaine
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief An Entree whose main source of data is an arbitrary binary buffer set using the set_data() method.
+ *
+ * This Entree can then be used to feed any standard TRUST objects.
+ *
+ * @sa EChaine
+ */
 
 class Entree_Brute : public Entree
 {

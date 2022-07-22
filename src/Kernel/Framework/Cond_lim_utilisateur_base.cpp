@@ -30,20 +30,11 @@ Implemente_instanciable(paroi_flux_impose,"paroi_flux_impose",Cond_lim_utilisate
 Implemente_instanciable(paroi_contact,"paroi_contact",Cond_lim_utilisateur_base);
 
 Implemente_instanciable(paroi_contact_fictif,"paroi_contact_fictif",Cond_lim_utilisateur_base);
-// Description:
-//    Ecrit le type de l'objet sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit le type de l'objet sur un flot de sortie
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 
 Sortie& cl_timp::printOn(Sortie& s ) const
 {
@@ -66,22 +57,13 @@ Sortie& paroi_contact_fictif::printOn(Sortie& s ) const
   return s << que_suis_je()  << " "<<nom_autre_pb<<" "<<nom_autre_bord  << " "<<conduct_fictif<<" "<<ep_fictif;
 }
 
-// Description:
-//    Lecture d'une condition aux limite de type Cond_lim_utilisateur_base
-//    a partir d'un flot d'entree.
-//
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lecture d'une condition aux limite de type Cond_lim_utilisateur_base a partir d'un flot d'entree.
+ *
+ *
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& cl_timp::readOn(Entree& s )
 {
   return s;
@@ -110,41 +92,23 @@ Entree& paroi_contact_fictif::readOn(Entree& s )
   s >> ep_fictif;
   return s ;
 }
-// Description:
-//    Ecrit le type de l'objet sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit le type de l'objet sur un flot de sortie
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Cond_lim_utilisateur_base::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
 
-// Description:
-//    Lecture d'une condition aux limite de type Cond_lim_utilisateur_base
-//    a partir d'un flot d'entree.
-//
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lecture d'une condition aux limite de type Cond_lim_utilisateur_base a partir d'un flot d'entree.
+ *
+ *
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Cond_lim_utilisateur_base::readOn(Entree& s )
 {
   // la_cl=new Cond_lim;

@@ -21,15 +21,12 @@
 
 #include <Interprete.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Resoudre
-//     Interprete qui resoud un probleme:
-//      [DANS LE JEU DE DONNEES] Resoudre pb
-// .SECTION voir aussi
-//     Interprete Probleme
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Resoudre Interprete qui resoud un probleme:
+ *
+ *       [DANS LE JEU DE DONNEES] Resoudre pb
+ *
+ * @sa Interprete Probleme
+ */
 class Resoudre : public Interprete
 {
   Declare_instanciable(Resoudre);

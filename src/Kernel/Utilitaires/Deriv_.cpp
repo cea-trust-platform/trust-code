@@ -75,11 +75,13 @@ void Deriv_::detach()
   set_O_U_Ptr((Objet_U *) 0);
 }
 
-// Description:
-//  Essaie de creer une instance du type "type".
-//   si type n'est pas un type ou type n'est pas instanciable=>arret
-//   si type n'est pas un sous-type du type du pointeur=>retour 0
-//   si ok, renvoie l'adresse de l'objet cree.
+/*! @brief Essaie de creer une instance du type "type".
+ *
+ * si type n'est pas un type ou type n'est pas instanciable=>arret
+ *    si type n'est pas un sous-type du type du pointeur=>retour 0
+ *    si ok, renvoie l'adresse de l'objet cree.
+ *
+ */
 
 Objet_U * Deriv_::typer(const char* type)
 {

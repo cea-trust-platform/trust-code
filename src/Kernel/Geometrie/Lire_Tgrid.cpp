@@ -37,39 +37,17 @@ inline void decompression(Nom& nom_fichier)
     }
 }
 Implemente_instanciable(Lire_Tgrid,"Lire_Tgrid",Interprete_geometrique_base);
-// Description:
-//  appel a la methode printOn de la classe Interprete
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief appel a la methode printOn de la classe Interprete
+ *
+ */
 Sortie& Lire_Tgrid::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
-// Description:
-//  appel a la methode readOn de la classe Interprete
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief appel a la methode readOn de la classe Interprete
+ *
+ */
 Entree& Lire_Tgrid::readOn(Entree& is)
 {
   return Interprete::readOn(is);
@@ -215,25 +193,13 @@ inline void va_a_la_parenthese_ouvrante(EFichier& fic)
     }
 }
 
-// Description:
-//    Lecture d'un fichier
-//    Avec 2 arguments nom1 et nom2 , lit l'objet du fichier nom2 dans l'objet nom1
-//    Avec un seul argument nom1, interprete le fichier de nom nom1
-// Precondition:
-// Parametre: Entree& is
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-//
-// Derniere modification effectuee par C. MALOD (CS-fontaine : 04-76-85-99-71)
-// le 8-02-2006, pour lire egalement le format en 2D.
+/*! @brief Lecture d'un fichier Avec 2 arguments nom1 et nom2 , lit l'objet du fichier nom2 dans l'objet nom1
+ *
+ *     Avec un seul argument nom1, interprete le fichier de nom nom1
+ *
+ * @param (Entree& is)
+ * @return (Entree&)
+ */
 Entree& Lire_Tgrid::interpreter_(Entree& is)
 {
   Cerr << "Reading a mesh which comes from Tgrid" << finl;

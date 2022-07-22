@@ -19,13 +19,13 @@
 #include <Champ_Generique_refChamp.h>
 #include <Champ.h>
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Champ_Generique_Champ
-//
-// <Description of class Champ_Generique_Champ>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Champ_Generique_Champ
+ *
+ *  <Description of class Champ_Generique_Champ>
+ *
+ *
+ *
+ */
 
 class Champ_Generique_Champ : public Champ_Generique_refChamp
 {

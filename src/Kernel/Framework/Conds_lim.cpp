@@ -24,62 +24,31 @@ Implemente_vect(Cond_lim);
 Implemente_instanciable(Conds_lim,"Conds_lim",VECT(Cond_lim));
 
 
-// Description:
-//    Surcharge Objet_U::printOn(Sortie&)
-//    Imprime seulement le nom du tableau  des conditions aux limites.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Surcharge Objet_U::printOn(Sortie&) Imprime seulement le nom du tableau  des conditions aux limites.
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Conds_lim::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Conds_lim::readOn(Entree& s )
 {
   return s ;
 }
 
 
-// Description:
-//    Appel Cond_lim::completer() sur chaque condition aux llimites
-//    du vecteur.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel Cond_lim::completer() sur chaque condition aux llimites du vecteur.
+ *
+ */
 void Conds_lim::completer(const Zone_dis& z)
 {
   if (!size()) return; //rien a faire

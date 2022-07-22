@@ -34,9 +34,11 @@ Entree& Precond_base::readOn(Entree& is )
   return is;
 }
 
-// Description: this method must be called before preconditionner() whenever
-//  the matrix changes (coefficients only or coefficients and structure) to
-//  tell the object to recompute some matrix related data.
+/*! @brief this method must be called before preconditionner() whenever the matrix changes (coefficients only or coefficients and structure) to
+ *
+ *   tell the object to recompute some matrix related data.
+ *
+ */
 void Precond_base::reinit(Init_Status x)
 {
   switch(x)
@@ -55,8 +57,11 @@ void Precond_base::reinit(Init_Status x)
     }
 }
 
-// Description: returns 1 if the implementation accepts Matrice_Morse_Sym matrices,  otherwise 0.
-//  (must be reimplemented if answer is 0)
+/*! @brief returns 1 if the implementation accepts Matrice_Morse_Sym matrices,  otherwise 0.
+ *
+ * (must be reimplemented if answer is 0)
+ *
+ */
 int Precond_base::supporte_matrice_morse_sym()
 {
   return 1;
@@ -65,17 +70,22 @@ int Precond_base::supporte_matrice_morse_sym()
 
 
 
-// Description: Call this method to change the behaviour of the preconditionner() method
-//  0-> result will not have an up-to-date virtual space
-//  1-> yes it will (this must be the default value in the implementation)
+/*! @brief Call this method to change the behaviour of the preconditionner() method 0-> result will not have an up-to-date virtual space
+ *
+ *   1-> yes it will (this must be the default value in the implementation)
+ *
+ */
 void Precond_base::set_echange_espace_virtuel_resultat(int flag)
 {
   echange_ev_solution_ = flag;
 }
 
-// Description: Call to the prepare() method if reinit() has been called previously, then
-//  call to preconditionner_()...
-// If echange_ev_solution is not zero, the solution vector will have an updated virtual space.
+/*! @brief Call to the prepare() method if reinit() has been called previously, then call to preconditionner_().
+ *
+ * ..
+ *  If echange_ev_solution is not zero, the solution vector will have an updated virtual space.
+ *
+ */
 int Precond_base::preconditionner(const Matrice_Base& m, const DoubleVect& src, DoubleVect& solution)
 {
   if (status_ != READY)
@@ -86,10 +96,13 @@ int Precond_base::preconditionner(const Matrice_Base& m, const DoubleVect& src, 
   return ok;
 }
 
-// Description: prepares the preconditionner if needed after a matrix change (reinit() call).
-//  prepare() is public, in case we want to perform preparation separately from preconditionning (eg nested solvers)
-//  but calling prepare() is not mandatory (done automatically in preconditionner())
-//  m is the new matrix, and md is the descriptor of the solution vector.
+/*! @brief prepares the preconditionner if needed after a matrix change (reinit() call).
+ *
+ * prepare() is public, in case we want to perform preparation separately from preconditionning (eg nested solvers)
+ *   but calling prepare() is not mandatory (done automatically in preconditionner())
+ *   m is the new matrix, and md is the descriptor of the solution vector.
+ *
+ */
 void Precond_base::prepare(const Matrice_Base& m, const DoubleVect& v)
 {
   if (status_ != READY)
@@ -97,10 +110,13 @@ void Precond_base::prepare(const Matrice_Base& m, const DoubleVect& v)
   assert(status_ == READY);
 }
 
-// Description: this method must be overloaded if some preparation is necessary.
-//  It is called after a call to reinit() and before the next call to preconditionner_().
-//  Do not forget to call the prepare_() method of the ancestor (at the end of the routine, otherwise
-//   status will be put to READY) and use get_status() to know what should be prepared.
+/*! @brief this method must be overloaded if some preparation is necessary.
+ *
+ * It is called after a call to reinit() and before the next call to preconditionner_().
+ *   Do not forget to call the prepare_() method of the ancestor (at the end of the routine, otherwise
+ *    status will be put to READY) and use get_status() to know what should be prepared.
+ *
+ */
 void Precond_base::prepare_(const Matrice_Base& m, const DoubleVect& v)
 {
   status_ = READY;

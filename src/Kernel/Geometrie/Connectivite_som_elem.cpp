@@ -16,22 +16,15 @@
 #include <Static_Int_Lists.h>
 #include <TRUSTTabs.h>
 
-// Description: construction de la structure som_elem pour la zone donnee
-//  On cree pour chaque sommet i la liste des elements adjacents a ce sommet
-//  (c'est la liste des elements k tels que il existe j tel que les_elems(k,j) == i)
-// Parametre:   nb_sommets
-// Description: nombre de sommets utilises dans les elements (som_elem contiendra
-//              autant de listes). Si include_virtual==1, c'est le nombre de sommets
-//              total, sinon c'est le nombre de sommets reels
-// Parametre:   les_elems
-// Description: tableau des elements (contient les numeros des sommets de chaque element)
-//              Les valeurs du tableau doivent etre inferieurs a nb_sommets.
-// Parametre:   som_elem
-// Description: la structure dans laquelle on stocke le resultat. L'ancien
-//   contenu est perdu. Chaque liste d'elements est triee dans l'ordre croissant
-// Parametre:   include_virtual
-// Description: 0 => seuls les elements reels sont inclus dans la structure
-//              1 => on inclut les elements virtuels (donc les sommets virtuels)
+/*! @brief construction de la structure som_elem pour la zone donnee On cree pour chaque sommet i la liste des elements adjacents a ce sommet
+ *
+ *   (c'est la liste des elements k tels que il existe j tel que les_elems(k,j) == i)
+ *
+ * @param (nb_sommets)
+ * @param (les_elems)
+ * @param (som_elem)
+ * @param (include_virtual)
+ */
 void construire_connectivite_som_elem(const int       nb_sommets,
                                       const IntTab&      les_elems,
                                       Static_Int_Lists& som_elem,
@@ -84,20 +77,14 @@ void construire_connectivite_som_elem(const int       nb_sommets,
   som_elem.trier_liste(-1);
 }
 
-// Description: Cherche les elements qui contiennent tous les sommets
-//  du tableau sommets_to_find (permet de trouver les elements
-//  adjacents a une face ou une arete)
-// Parametre:     som_elem
-// Signification: pour chaque sommet, liste triee des elements adjacents
-//                (voir construire_connectivite_som_elem)
-// Parametre:     sommets_to_find
-// Signification: une liste de sommets
-// Parametre:     elements
-// Signification: resultat de la recherche: la liste des elements qui
-//                contiennent tous les sommets de sommets_to_find.
-//                Si sommets_to_find est vide, on renvoie un tableau vide.
-//                (en cas d'appels repetes a cette fonction, il est
-//                 conseille de mettre le drapeau "smart_resize")
+/*! @brief Cherche les elements qui contiennent tous les sommets du tableau sommets_to_find (permet de trouver les elements
+ *
+ *   adjacents a une face ou une arete)
+ *
+ * @param (som_elem) pour chaque sommet, liste triee des elements adjacents (voir construire_connectivite_som_elem)
+ * @param (sommets_to_find) une liste de sommets
+ * @param (elements) resultat de la recherche: la liste des elements qui contiennent tous les sommets de sommets_to_find. Si sommets_to_find est vide, on renvoie un tableau vide. (en cas d'appels repetes a cette fonction, il est conseille de mettre le drapeau "smart_resize")
+ */
 void find_adjacent_elements(const Static_Int_Lists& som_elem,
                             const ArrOfInt& sommets_to_find,
                             ArrOfInt& elements)

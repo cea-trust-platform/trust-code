@@ -18,15 +18,13 @@
 
 #include <Interprete_geometrique_base.h>
 
-/////////////////////////////////////////////////////////////////////////////
-// .NAME        : Rectify_Mesh
-// .HEADER      : TRUST_Kernel_Addons TRUST_Kernel_Addons/src/Mesh_Refinement
-// .LIBRARY     : libTRUST_Kernel_Addons
-// .DESCRIPTION : class Rectify_Mesh
-//
-// <Description of class Rectify_Mesh>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Rectify_Mesh
+ *
+ *  <Description of class Rectify_Mesh>
+ *
+ *
+ *
+ */
 
 class Rectify_Mesh : public Interprete_geometrique_base
 {

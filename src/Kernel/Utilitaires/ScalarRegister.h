@@ -19,14 +19,14 @@
 #include <map>
 #include <Nom.h>
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class ScalarRegister
-//
-// Providing map of scalars associated with a name inside Probleme_U
-// Those are typically toggled through the ICoCo API (get/setInputIntValue() get/setDoubleValue()).
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class ScalarRegister
+ *
+ *  Providing map of scalars associated with a name inside Probleme_U
+ *  Those are typically toggled through the ICoCo API (get/setInputIntValue() get/setDoubleValue()).
+ *
+ *
+ *
+ */
 
 class ScalarRegister
 {

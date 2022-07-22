@@ -19,63 +19,35 @@ Implemente_deriv(Cond_lim_base);
 Implemente_instanciable(Cond_lim,"Cond_lim",DERIV(Cond_lim_base));
 
 
-// Description:
-//    Surcharge Objet_U::printOn(Sortie&)
-//    Imprime seulement le nom de la condition aux limites.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Surcharge Objet_U::printOn(Sortie&) Imprime seulement le nom de la condition aux limites.
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Cond_lim::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
 
-// Description:
-//    Lit la condition aux limites sur un flot d'entree.
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit la condition aux limites sur un flot d'entree.
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Cond_lim::readOn(Entree& s )
 {
   return DERIV(Cond_lim_base)::readOn(s) ;
 }
 
-// Description:
-//    Adopte la Cond_lim passee en parametre.
-//    Il n'y a pas de copie.
-//    La Cond_lim_base eventuellement detenue avant l'appel est detruite.
-//    ATTENTION cl est nul ensuite
-// Precondition:
-// Parametre: Cond_lim& cl
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Adopte la Cond_lim passee en parametre.
+ *
+ * Il n'y a pas de copie.
+ *     La Cond_lim_base eventuellement detenue avant l'appel est detruite.
+ *     ATTENTION cl est nul ensuite
+ *
+ * @param (Cond_lim& cl)
+ */
 void Cond_lim::adopt(Cond_lim& cl)
 {
   detach();

@@ -18,15 +18,12 @@
 
 #include <Interprete_geometrique_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Reordonner
-//    Cette classe est un interprete qui sert a lire la directive Reordonner
-//    qui reordonne les noeuds d'un domaine.
-//      Reordonner dom
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Reordonner Cette classe est un interprete qui sert a lire la directive Reordonner
+ *
+ *     qui reordonne les noeuds d'un domaine.
+ *       Reordonner dom
+ *
+ */
 class Reordonner : public Interprete_geometrique_base
 {
 

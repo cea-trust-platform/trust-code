@@ -19,15 +19,12 @@
 #include <Deriv.h>
 #include <Nom.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     class DerObjU
-//     Pour representer n'importe quel Objet_U
-//     La methode fondamentale est typer.
-// .SECTION voir aussi
-//   Objet_U
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief class DerObjU Pour representer n'importe quel Objet_U
+ *
+ *      La methode fondamentale est typer.
+ *
+ * @sa Objet_U
+ */
 
 // B. Mathieu : cette classe est quasiment identique a DERIV(Objet_U),
 // sauf qu'elle ne contient pas les operateurs de conversion

@@ -21,16 +21,13 @@
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_front_uniforme
-//     Classe derivee de Champ_front_base qui represente les
-//     champs aux frontieres uniformes en espace et constants dans
-//     le temps
-// .SECTION voir aussi
-//     Champ_front_base Champ_Uniforme
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_front_uniforme Classe derivee de Champ_front_base qui represente les
+ *
+ *      champs aux frontieres uniformes en espace et constants dans
+ *      le temps
+ *
+ * @sa Champ_front_base Champ_Uniforme
+ */
 class Champ_front_uniforme : public Champ_front_base
 {
   Declare_instanciable(Champ_front_uniforme);

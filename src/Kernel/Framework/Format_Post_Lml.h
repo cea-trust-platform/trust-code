@@ -19,8 +19,9 @@
 #include <Format_Post_base.h>
 #include <EcrFicPartage.h>
 
-// .DESCRIPTION        :
-//  Classe de postraitement des champs euleriens au format lml.
+/*! @brief : Classe de postraitement des champs euleriens au format lml.
+ *
+ */
 
 ///////////////////////////////////////////////////////////////////////
 //    Pour creer un fichier valide, il faut faire:

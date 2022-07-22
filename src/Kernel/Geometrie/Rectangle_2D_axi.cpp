@@ -19,80 +19,40 @@
 Implemente_instanciable(Rectangle_2D_axi,"Rectangle_2D_axi",Rectangle);
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie
+ */
 Sortie& Rectangle_2D_axi::printOn(Sortie& s ) const
 {
   return s;
 }
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification: le flot d'entree
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree
+ */
 Entree& Rectangle_2D_axi::readOn(Entree& s )
 {
   return s;
 }
 
-//Description:
-//    Renvoie le nom LML d'un rectangle_2D_axi = "VOXEL8".
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Nom&
-//    Signification: toujours egal a "VOXEL8"
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nom LML d'un rectangle_2D_axi = "VOXEL8".
+ *
+ * @return (Nom&) toujours egal a "VOXEL8"
+ */
 const Nom& Rectangle_2D_axi::nom_lml() const
 {
   static Nom nom="VOXEL8";
   return nom;
 }
 
-// Description:
-//    NE FAIT RIEN
-//    A CODER
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN A CODER
+ *
+ */
 void Rectangle_2D_axi::reordonner()
 {
   Rectangle::reordonner();
@@ -100,22 +60,10 @@ void Rectangle_2D_axi::reordonner()
 }
 
 
-// Description:
-//    Calcule les centres de gravites de tous les elements
-//    de la zone associee a l'element goemetrique.
-// Precondition:
-// Parametre: DoubleTab& xp
-//    Signification: le tableau contenant les coordonnees des
-//                   centres de gravite
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Calcule les centres de gravites de tous les elements de la zone associee a l'element goemetrique.
+ *
+ * @param (DoubleTab& xp) le tableau contenant les coordonnees des centres de gravite
+ */
 void Rectangle_2D_axi::calculer_centres_gravite(DoubleTab& xp) const
 {
   /*
@@ -144,21 +92,10 @@ void Rectangle_2D_axi::calculer_centres_gravite(DoubleTab& xp) const
 
 }
 
-// Description:
-//    Calcule les volumes des elements de la zone associee.
-// Precondition:
-// Parametre: DoubleVect& volumes
-//    Signification: le vecteur contenant les valeurs  des
-//                   des volumes des elements de la zone
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Calcule les volumes des elements de la zone associee.
+ *
+ * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la zone
+ */
 void Rectangle_2D_axi::calculer_volumes(DoubleVect& volumes) const
 {
   const Zone& zone=ma_zone.valeur();// zone.valeur() permet d'acceder a                                            // la zone qui est en cours de traitement

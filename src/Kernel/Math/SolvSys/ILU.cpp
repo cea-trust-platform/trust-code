@@ -105,9 +105,9 @@ void ILU::prepare_(const Matrice_Base& la_matrice, const DoubleVect& v)
   Precond_base::prepare_(la_matrice, v);
 }
 
-// Description:
-//    Calcule la solution du systeme lineaire: A * solution = b
-//    avec la methode de relaxation ILU.
+/*! @brief Calcule la solution du systeme lineaire: A * solution = b avec la methode de relaxation ILU.
+ *
+ */
 int ILU::preconditionner_(const Matrice_Base& la_matrice,
                           const DoubleVect& u,
                           DoubleVect& s)

@@ -29,14 +29,10 @@ using std::istream;
 class Objet_U;
 class Nom;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe de definition des operateurs et methodes pour toute lecture dans un flot d'entree
-//    (fichier, clavier, tampon de communication, etc)
-// .SECTION voir aussi
-//    Sortie
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe de definition des operateurs et methodes pour toute lecture dans un flot d'entree (fichier, clavier, tampon de communication, etc)
+ *
+ * @sa Sortie
+ */
 
 class Entree
 {

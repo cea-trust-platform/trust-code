@@ -18,59 +18,30 @@
 Implemente_base(Navier,"Navier",Cond_lim_base);
 
 
-// Description:
-//    Ecrit le type de l'objet sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit le type de l'objet sur un flot de sortie.
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Navier::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << "\n";
 }
 
-// Description:
-//    Type le champ a la frontiere en "Champ_front_uniforme"
-//    Ne lit rien sur le flot passe en parametre
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: NON ACCEDE
-// Retour: Entree& s
-//    Signification: le flot d'entree
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Type le champ a la frontiere en "Champ_front_uniforme" Ne lit rien sur le flot passe en parametre
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree& s) le flot d'entree
+ */
 Entree& Navier::readOn(Entree& s )
 {
   return s ;
 }
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN
+ *
+ * @return (int) renvoie toujours 1
+ */
 int Navier::compatible_avec_eqn(const Equation_base& ) const
 {
   return 1;

@@ -89,16 +89,19 @@ static void creer_tableau_distribue_(const MD_Vector& md, VECT& v, Array_base::R
   v.set_md_vector(md);
 }
 
-// Description: transforme v en un tableau parallele ayant la structure md.
-//  md doit est non nul !
-//  Les dimension(i>=1) du tableau v (si c'est un IntTab ou DoubleTab) sont conservees,
-//  les dimension(0) et dimension_tot(0) sont modifiees en fonction du nombre d'items
-//  specifies dans le MD_Vector.
-//  La dimension initiale du vecteur doit etre soit 0, soit md.get_nb_items_reels(),
-//   soit md.get_nb_items_tot(). Si besoin, la taille du tableau est modifiee et on
-//   initialise le tableau selon opt.
-// ATTENTION, echange_espace_virtuel() n'est PAS appele.
-//  Les cases virtuelles ne sont pas initialisees...
+/*! @brief transforme v en un tableau parallele ayant la structure md.
+ *
+ * md doit est non nul !
+ *   Les dimension(i>=1) du tableau v (si c'est un IntTab ou DoubleTab) sont conservees,
+ *   les dimension(0) et dimension_tot(0) sont modifiees en fonction du nombre d'items
+ *   specifies dans le MD_Vector.
+ *   La dimension initiale du vecteur doit etre soit 0, soit md.get_nb_items_reels(),
+ *    soit md.get_nb_items_tot(). Si besoin, la taille du tableau est modifiee et on
+ *    initialise le tableau selon opt.
+ *  ATTENTION, echange_espace_virtuel() n'est PAS appele.
+ *   Les cases virtuelles ne sont pas initialisees...
+ *
+ */
 void MD_Vector_tools::creer_tableau_distribue(const MD_Vector& md, Array_base& v, Array_base::Resize_Options opt)
 {
   if (!md.non_nul())
@@ -258,8 +261,9 @@ void MD_Vector_tools::compute_sequential_items_index(const MD_Vector&, MD_Vector
   Process::exit();
 }
 
-// Description:
-// Renvoie le nombre d'items extraits (pas le nombre de blocs)
+/*! @brief Renvoie le nombre d'items extraits (pas le nombre de blocs)
+ *
+ */
 static int extract_blocs(const ArrOfInt src, const ArrOfInt& renum, ArrOfInt& dest)
 {
   const int nblocs_src = src.size_array() / 2;
@@ -544,13 +548,16 @@ static void creer_md_vect_renum(const IntVect& renum, const MD_Vector_std& src, 
   dest.blocs_to_recv_.set_index_data(dest_blocs_recv_index, dest_blocs_recv_data);
 }
 
-// Description: cree un descripteur pour un sous-ensemble d'un vecteur.
-//  renum fournit la structure et le descripteur du vecteur source (doit avoir line_size==1)
-//  renum doit contenir -1 pour les items du vecteur source a ne pas conserver et une
-//   valeur positive ou nulle pour les items a conserver.
-//  La valeur renum[i] donne l'indice de cet item dans le nouveau tableau.
-//  Attention, si un item du vecteur source est recu d'un autre processeur et doit etre conserve,
-//   ce meme item doit aussi etre conserve sur le processeur qui envoie cet item.
+/*! @brief cree un descripteur pour un sous-ensemble d'un vecteur.
+ *
+ * renum fournit la structure et le descripteur du vecteur source (doit avoir line_size==1)
+ *   renum doit contenir -1 pour les items du vecteur source a ne pas conserver et une
+ *    valeur positive ou nulle pour les items a conserver.
+ *   La valeur renum[i] donne l'indice de cet item dans le nouveau tableau.
+ *   Attention, si un item du vecteur source est recu d'un autre processeur et doit etre conserve,
+ *    ce meme item doit aussi etre conserve sur le processeur qui envoie cet item.
+ *
+ */
 void MD_Vector_tools::creer_md_vect_renum(const IntVect& renum, MD_Vector& md_vect)
 {
   const MD_Vector& src_md = renum.get_md_vector();
@@ -588,14 +595,16 @@ void MD_Vector_tools::creer_md_vect_renum(const IntVect& renum, MD_Vector& md_ve
     }
 }
 
-// Description:
-//  Idem que creer_md_vect_renum() mais cree une numerotation par defaut.
-//  Le tableau flags_renum doit contenir en entree une valeur POSITIVE OU NULLE pour les
-//  valeurs a conserver et une valeur negative pour les autres.
-//  En sortie, flags_renum contient l'indice de l'item dans le tableau reduit s'il est
-//   conserve, sinon la valeur d'origine non modifiee.
-//  Les items sont places dans l'ordre croissant de leur indice local sur dans le descripteur
-//   d'origine.
+/*! @brief Idem que creer_md_vect_renum() mais cree une numerotation par defaut.
+ *
+ * Le tableau flags_renum doit contenir en entree une valeur POSITIVE OU NULLE pour les
+ *   valeurs a conserver et une valeur negative pour les autres.
+ *   En sortie, flags_renum contient l'indice de l'item dans le tableau reduit s'il est
+ *    conserve, sinon la valeur d'origine non modifiee.
+ *   Les items sont places dans l'ordre croissant de leur indice local sur dans le descripteur
+ *    d'origine.
+ *
+ */
 void MD_Vector_tools::creer_md_vect_renum_auto(IntVect& flags_renum, MD_Vector& md_vect)
 {
   const int n = flags_renum.size_array();
@@ -609,8 +618,11 @@ void MD_Vector_tools::creer_md_vect_renum_auto(IntVect& flags_renum, MD_Vector& 
   creer_md_vect_renum(flags_renum, md_vect);
 }
 
-// Description: dumps vector v with its parallel descriptor to os.
-//  os must be a file type with one file per process (no shared file).
+/*! @brief dumps vector v with its parallel descriptor to os.
+ *
+ * os must be a file type with one file per process (no shared file).
+ *
+ */
 void MD_Vector_tools::dump_vector_with_md(const DoubleVect& v, Sortie& os)
 {
   const MD_Vector_base& md = v.get_md_vector().valeur();
@@ -623,12 +635,15 @@ void MD_Vector_tools::dump_vector_with_md(const DoubleVect& v, Sortie& os)
   os << finl;
 }
 
-// Description: restores a vector saved by dump_vector_with_md.
-//  The code must run with the same number of processors.
-//  "v" will have a newly created copy of the descriptor (not equal to any
-//  other descriptor previously loaded). If "identical" descriptors are needed
-//  for several vectors, you might want to call set_md_vector() afterwards to
-//  attach another descriptor. See save_matrice_conditionnel()
+/*! @brief restores a vector saved by dump_vector_with_md.
+ *
+ * The code must run with the same number of processors.
+ *   "v" will have a newly created copy of the descriptor (not equal to any
+ *   other descriptor previously loaded). If "identical" descriptors are needed
+ *   for several vectors, you might want to call set_md_vector() afterwards to
+ *   attach another descriptor. See save_matrice_conditionnel()
+ *
+ */
 void MD_Vector_tools::restore_vector_with_md(DoubleVect& v, Entree& is)
 {
 

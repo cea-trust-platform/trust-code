@@ -20,11 +20,12 @@
 #include <Vect_Ref_Champ_base.h>
 #include <Table.h>
 
-// .DESCRIPTION
-//     classe Champ_Fonc_Tabule_Morceaux
-//     Cette classe represente un champ prenant par morceaux des valuers fonctions
-//     de l'espace et d'un autre champ scalaire passe en parametre .
-// .SECTION voir aussi : TRUSTChamp_Morceaux_generique
+/*! @brief classe Champ_Fonc_Tabule_Morceaux Cette classe represente un champ prenant par morceaux des valuers fonctions
+ *
+ *      de l'espace et d'un autre champ scalaire passe en parametre .
+ *
+ * @sa : TRUSTChamp_Morceaux_generique
+ */
 class Champ_Fonc_Tabule_Morceaux : public TRUSTChamp_Morceaux_generique<Champ_Morceaux_Type::FONC_TABULE>
 {
   Declare_instanciable(Champ_Fonc_Tabule_Morceaux);

@@ -13,8 +13,9 @@
 *
 *****************************************************************************/
 
-// .DESCRIPTION Reference a une Zone
-//
+/*! @brief Reference a une Zone
+ *
+ */
 
 
 #ifndef Ref_Zone_included

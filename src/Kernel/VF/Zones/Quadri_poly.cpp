@@ -30,16 +30,18 @@ Entree& Quadri_poly::readOn(Entree& s )
   return s ;
 }
 
-// Description:
-// KEL_(0,fa7),KEL_(1,fa7) sont  les numeros locaux des 2 faces
-// qui entourent la facette de numero local fa7
-// le numero local de la fa7 est celui du sommet qui la porte
+/*! @brief KEL_(0,fa7),KEL_(1,fa7) sont  les numeros locaux des 2 faces qui entourent la facette de numero local fa7
+ *
+ *  le numero local de la fa7 est celui du sommet qui la porte
+ *
+ */
 Quadri_poly::Quadri_poly()
 {
 }
 
-// Description:
-// remplit le tableau face_normales dans la Zone_poly
+/*! @brief remplit le tableau face_normales dans la Zone_poly
+ *
+ */
 void Quadri_poly::normale(int num_Face,DoubleTab& Face_normales,
                           const  IntTab& Face_sommets,
                           const IntTab& Face_voisins,
@@ -122,8 +124,9 @@ void Quadri_poly::normale(int num_Face,DoubleTab& Face_normales,
   Face_normales(num_Face,1)=sign*ny;
 }
 
-// Description:
-//
+/*! @brief
+ *
+ */
 void Quadri_poly::calcul_vc(const ArrOfInt& Face,ArrOfDouble& vc,
                             const ArrOfDouble& vs,const DoubleTab& vsom,
                             const Champ_Inc_base& vitesse,int type_cl) const
@@ -248,10 +251,11 @@ void Quadri_poly::calcul_vc(const ArrOfInt& Face,ArrOfDouble& vc,
 
 }
 
-// Description:
-// calcule les coord xg du centre d'un element non standard
-// calcule aussi idirichlet=nb de faces de Dirichlet de l'element
-// si idirichlet=2, n1 est le numero du sommet confondu avec G
+/*! @brief calcule les coord xg du centre d'un element non standard calcule aussi idirichlet=nb de faces de Dirichlet de l'element
+ *
+ *  si idirichlet=2, n1 est le numero du sommet confondu avec G
+ *
+ */
 void Quadri_poly::calcul_xg(DoubleVect& xg, const DoubleTab& x,
                             const int type_elem_Cl,int& idirichlet,int& n1,int& ,int& ) const
 {

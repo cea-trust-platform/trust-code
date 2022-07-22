@@ -21,20 +21,22 @@
 
 class MorEqn;
 
-// .DESCRIPTION class Champ_Generique_Morceau_Equation
-// Champ destine a post-traiter une quantite liee a un morceau d equation
-// Consulter la hierarchie de MorEqn pour connaitre les morceaux d equation
-//// Syntaxe a respecter pour jdd
-//
-// "nom_champ" Morceau_Equation { type "type_moreqn" numero "numero_moreqn" option "type_option" [ compo "num_compo" ]
-//                                                source Champ_Post_ref_Champ { Pb_champ "nom_pb" "nom_champ_discret" }
-//               }
-// "nom_champ"     fixe par utilisateur sera le nom du champ generique
-// "type_moreqn"   designe le type de morceau d equation (actuellement disponible "operateur")
-// "numero_moreqn" designe le numero du morceau
-//                   ex : cas operateur : 0 (diffusion) 1 (convection) [ 2 (gradient) 3 (divergence) pour le cas des "flux_bords" ]
-// "type_option"   option choisie ("stabilite" ou "flux_bords")
-// "num_compo"           numero de la composante a postraiter (a considerer uniquement pour "flux_bords" si plusieurs composantes)
+/*! @brief class Champ_Generique_Morceau_Equation Champ destine a post-traiter une quantite liee a un morceau d equation
+ *
+ *  Consulter la hierarchie de MorEqn pour connaitre les morceaux d equation
+ *  Syntaxe a respecter pour jdd
+ *
+ *  "nom_champ" Morceau_Equation { type "type_moreqn" numero "numero_moreqn" option "type_option" [ compo "num_compo" ]
+ *                                                 source Champ_Post_ref_Champ { Pb_champ "nom_pb" "nom_champ_discret" }
+ *                }
+ *  "nom_champ"     fixe par utilisateur sera le nom du champ generique
+ *  "type_moreqn"   designe le type de morceau d equation (actuellement disponible "operateur")
+ *  "numero_moreqn" designe le numero du morceau
+ *                    ex : cas operateur : 0 (diffusion) 1 (convection) [ 2 (gradient) 3 (divergence) pour le cas des "flux_bords" ]
+ *  "type_option"   option choisie ("stabilite" ou "flux_bords")
+ *  "num_compo"           numero de la composante a postraiter (a considerer uniquement pour "flux_bords" si plusieurs composantes)
+ *
+ */
 
 class Champ_Generique_Morceau_Equation : public Champ_Gen_de_Champs_Gen
 {

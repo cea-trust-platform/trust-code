@@ -19,46 +19,25 @@
 
 Implemente_instanciable(Lire,"Lire|Read",Interprete);
 
-// Description:
-//  appel a la methode printOn de la classe Interprete
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief appel a la methode printOn de la classe Interprete
+ *
+ */
 Sortie& Lire::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
-// Description:
-//  appel a la methode readOn de la classe Interprete
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief appel a la methode readOn de la classe Interprete
+ *
+ */
 Entree& Lire::readOn(Entree& is)
 {
   return Interprete::readOn(is);
 }
 
-// Description:
-// Read an object.
+/*! @brief Read an object.
+ *
+ */
 Entree& Lire::interpreter(Entree& is)
 {
   // Example in a data file:

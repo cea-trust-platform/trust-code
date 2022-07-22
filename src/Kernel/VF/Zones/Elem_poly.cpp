@@ -52,8 +52,9 @@ Entree& Elem_poly::readOn(Entree& s )
   return s ;
 }
 
-// Description:
-// determination du type
+/*! @brief determination du type
+ *
+ */
 void Elem_poly::typer(Nom type_elem_geom)
 {
   Cerr << "Elem_poly::typer()" << finl ;

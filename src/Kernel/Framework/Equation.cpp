@@ -19,40 +19,22 @@ Implemente_deriv(Equation_base);
 Implemente_instanciable(Equation,"Equation",DERIV(Equation_base));
 
 
-// Description:
-//    Imprime l'equation et ses composants sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie de sauvegarde
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Imprime l'equation et ses composants sur un flot de sortie.
+ *
+ * @param (Sortie& os) le flot de sortie de sauvegarde
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Equation::printOn(Sortie& os) const
 {
   return DERIV(Equation_base)::printOn(os);
 }
 
 
-// Description:
-//    Imprime l'equation et ses composants sur un flot de sortie.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree pour la lecture d'une equation
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot d'entree est modifie
-// Postcondition: l'equation est construite avec les elements lus.
+/*! @brief Imprime l'equation et ses composants sur un flot de sortie.
+ *
+ * @param (Entree& is) le flot d'entree pour la lecture d'une equation
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Equation::readOn(Entree& is)
 {
   return DERIV(Equation_base)::readOn(is);

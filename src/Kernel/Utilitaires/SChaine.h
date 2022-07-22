@@ -16,14 +16,12 @@
 #define SChaine_included
 #include <Sortie.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//   Cette classe derivee de Sortie empile ce qu'on lui envoie dans une
-//   chaine de caracteres. On recupere le contenu de la chaine avec get_str().
-// .SECTION voir aussi
-//    EChaine
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Cette classe derivee de Sortie empile ce qu'on lui envoie dans une chaine de caracteres.
+ *
+ * On recupere le contenu de la chaine avec get_str().
+ *
+ * @sa EChaine
+ */
 class SChaine :  public Sortie
 {
 public:

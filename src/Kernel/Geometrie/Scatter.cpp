@@ -43,40 +43,22 @@ Implemente_instanciable_sans_constructeur(Scatter,"Scatter",Interprete);
 Scatter::Scatter()
 {}
 
-// Description:
-//    Simple appel a: Interprete::printOn(Sortie&)
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a: Interprete::printOn(Sortie&)
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Scatter::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
 
-// Description:
-//    Simple appel a: Interprete::readOn(Entree&)
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Interprete::readOn(Entree&)
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Scatter::readOn(Entree& is)
 {
   return Interprete::readOn(is);
@@ -131,13 +113,15 @@ static void dump_lata(const Domaine& dom)
     }
 }
 
-// Description:
-//  Lit et complete un domaine parallele selon les motcles lus
-//  dans le jeu de donnees. Format:
-//   Scatter [debug] file_name domain_name
-//  On lit les sommets, les elements et les sommets et faces de joint,
-//  On construit les espaces distants et virtuels en fonction
-//  de l'epaisseur de joint.
+/*! @brief Lit et complete un domaine parallele selon les motcles lus dans le jeu de donnees.
+ *
+ * Format:
+ *    Scatter [debug] file_name domain_name
+ *   On lit les sommets, les elements et les sommets et faces de joint,
+ *   On construit les espaces distants et virtuels en fonction
+ *   de l'epaisseur de joint.
+ *
+ */
 Entree& Scatter::interpreter(Entree& is)
 {
   // Nom des fichiers de decoupage : nomentree.xxxx
@@ -279,12 +263,13 @@ Entree& Scatter::interpreter(Entree& is)
   return is;
 }
 
-// Description:
-// Merged zones receive joints information from their neighbours
-// to ensure that their common items (vertices) appear in the same order
-// If it's not the case, the merged zone reorders its common items so that it matches the neighbour's order
-// When 2 neighbouring zones have each been merged,
-// only the processor with the lowest rank proceeds to reordering
+/*! @brief Merged zones receive joints information from their neighbours to ensure that their common items (vertices) appear in the same order
+ *
+ *  If it's not the case, the merged zone reorders its common items so that it matches the neighbour's order
+ *  When 2 neighbouring zones have each been merged,
+ *  only the processor with the lowest rank proceeds to reordering
+ *
+ */
 void Scatter::check_consistancy_remote_items(Domaine& dom, const ArrOfInt& mergedZones)
 {
   const Joints& joints     = dom.zone(0).faces_joint();
@@ -405,10 +390,11 @@ void Scatter::check_consistancy_remote_items(Domaine& dom, const ArrOfInt& merge
 }
 
 
-// Description:
-// Does the exact same thing as the readOn of the class Domaine
-// but without collective communication
-// Necessary when the processors don't have the same numbers of file to read
+/*! @brief Does the exact same thing as the readOn of the class Domaine but without collective communication
+ *
+ *  Necessary when the processors don't have the same numbers of file to read
+ *
+ */
 void Scatter::readDomainWithoutCollComm(Domaine& dom, Entree& fic )
 {
   Cerr << "reading vertices..." << finl;
@@ -449,8 +435,9 @@ void Scatter::readDomainWithoutCollComm(Domaine& dom, Entree& fic )
   Cerr << "Done!" << finl;
 }
 
-// Description:
-// Merging dom_to_add with dom
+/*! @brief Merging dom_to_add with dom
+ *
+ */
 void Scatter::mergeDomains(Domaine& dom, Domaine& dom_to_add)
 {
   int old_nb_elems = dom.nb_zones() ? dom.zone(0).nb_elem() : 0;
@@ -496,11 +483,12 @@ void Scatter::mergeDomains(Domaine& dom, Domaine& dom_to_add)
     }
 }
 
-// Description:
-//  Lit le domaine dans le fichier de nom "nomentree",
-//  de type LecFicDistribueBin ou LecFicDistribue
-//  Format attendu : Domaine::ReadOn
-//  La zone est renommee comme le domaine (pour lance_test_seq_par)
+/*! @brief Lit le domaine dans le fichier de nom "nomentree", de type LecFicDistribueBin ou LecFicDistribue
+ *
+ *   Format attendu : Domaine::ReadOn
+ *   La zone est renommee comme le domaine (pour lance_test_seq_par)
+ *
+ */
 void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
 {
   // On determine si le fichier est au nouveau format ou a l'ancien
@@ -693,15 +681,12 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
   barrier();
 }
 
-// Description:
-//  Construction des structures paralleles du domaine et de la zone
-//  (determination des elements distants en fonction de l'epaisseur de joint,
-//   determination des sommets distants,
-//   creation des sommets et des elements virtuels)
-// Precondition:
-//  - Les joints(i).faces et joints(i).sommets doivent etre remplis
-//  - Les joints(i).joint_item(Joint::SOMMET).items_communs()
-//    doivent etre remplis.
+/*! @brief Construction des structures paralleles du domaine et de la zone (determination des elements distants en fonction de l'epaisseur de joint,
+ *
+ *    determination des sommets distants,
+ *    creation des sommets et des elements virtuels)
+ *
+ */
 void Scatter::construire_structures_paralleles(Domaine& dom, const Noms& liste_bords_periodiques)
 {
   // D'abord: supprimer les structures "sequentielles" associees aux sommets et elements lors de la lecture:
@@ -738,8 +723,9 @@ void Scatter::construire_structures_paralleles(Domaine& dom, const Noms& liste_b
   reordonner_faces_de_joint(dom);
 }
 
-// Description:
-//  Tri des joints dans l'ordre croissant des processeurs
+/*! @brief Tri des joints dans l'ordre croissant des processeurs
+ *
+ */
 void Scatter::trier_les_joints(Joints& joints)
 {
   const int nb_joints = joints.size();
@@ -765,7 +751,9 @@ void Scatter::trier_les_joints(Joints& joints)
 }
 
 
-// Description: Methode outil pour retirer les doublons dans un tableau.
+/*! @brief Methode outil pour retirer les doublons dans un tableau.
+ *
+ */
 static void array_trier_retirer_doublons(ArrOfInt& array)
 {
   const int size_ = array.size_array();
@@ -788,12 +776,14 @@ static void array_trier_retirer_doublons(ArrOfInt& array)
 }
 
 
-// Description:
-//  Retire de "sorted_array" les elements qui figurent dans "sorted_elements".
-//  Les deux tableaux doivent etre initialement ordonnes dans l'ordre croissant.
-//  Exemple:
-//   En entree sorted_array=[1,4,9,10,12,18], sorted_elements=[3,5,9,10,18,25]
-//   En sortie sorted_array=[1,4,12]
+/*! @brief Retire de "sorted_array" les elements qui figurent dans "sorted_elements".
+ *
+ * Les deux tableaux doivent etre initialement ordonnes dans l'ordre croissant.
+ *   Exemple:
+ *    En entree sorted_array=[1,4,9,10,12,18], sorted_elements=[3,5,9,10,18,25]
+ *    En sortie sorted_array=[1,4,12]
+ *
+ */
 static void array_retirer_elements(ArrOfInt& sorted_array, const ArrOfInt& sorted_elements_list)
 {
   int i_read;      // Index dans sorted_array (en lecture)
@@ -898,33 +888,26 @@ static int ajouter_joint(Zone& zone, int pe)
 }
 
 
-// Description:
-//  Determination des items distants en fonction d'une liste d'items
-//  a envoyer et de listes d'items communs.
-//  exemple:
-//   calculer_espace_distant_sommets
-//   calculer_espace_distant_faces
-//  Pour les sommets: les "items_to_send" sont les sommets des elements distants,
-//   Si le processeur A veut que le processeur B connaisse le sommet i,
-//   il faut que le processeur qui possede le sommet l'envoie a B.
-//   Le processeur qui "possede" le sommet est le plus petit parmi les PEs
-//   qui partagent ce sommet (item commun) (requis pour pouvoir faire
-//   echange_item_commun et echange_espace_virtuel en une seule passe).
-//   De plus, si plusieurs processeurs demandent a envoyer le meme sommet
-//   au meme processeur, il ne faut l'inserer qu'une seule fois dans l'espace
-//   distant.
-//  Parametre: joints
-//  Signification: les joints dans lesquels on veut calculer un espace distant
-//  Parametre: nb_items_reels
-//  Signification: le nombre d'items reels (sommets, faces, ...)
-//  Parametre: items_to_send
-//  Signification: un vecteur de "nproc()" tableaux, pour chaque processeur,
-//   la liste des items qu'on veut lui envoyer (exemple:tous les sommets des
-//   elements distants, ou toutes les faces)
-//  Parametre: type_item
-//  Signification: les items dont on veut calculer l'espace distant
-// Precondition:
-//  Methode a appeler simultanement par tous les processeurs.
+/*! @brief Determination des items distants en fonction d'une liste d'items a envoyer et de listes d'items communs.
+ *
+ *   exemple:
+ *    calculer_espace_distant_sommets
+ *    calculer_espace_distant_faces
+ *   Pour les sommets: les "items_to_send" sont les sommets des elements distants,
+ *    Si le processeur A veut que le processeur B connaisse le sommet i,
+ *    il faut que le processeur qui possede le sommet l'envoie a B.
+ *    Le processeur qui "possede" le sommet est le plus petit parmi les PEs
+ *    qui partagent ce sommet (item commun) (requis pour pouvoir faire
+ *    echange_item_commun et echange_espace_virtuel en une seule passe).
+ *    De plus, si plusieurs processeurs demandent a envoyer le meme sommet
+ *    au meme processeur, il ne faut l'inserer qu'une seule fois dans l'espace
+ *    distant.
+ *
+ * @param (joints) les joints dans lesquels on veut calculer un espace distant
+ * @param (nb_items_reels) le nombre d'items reels (sommets, faces, ...)
+ * @param (items_to_send) un vecteur de "nproc()" tableaux, pour chaque processeur, la liste des items qu'on veut lui envoyer (exemple:tous les sommets des elements distants, ou toutes les faces)
+ * @param (type_item) les items dont on veut calculer l'espace distant
+ */
 void Scatter::calculer_espace_distant(Zone&                  zone,
                                       const int           nb_items_reels,
                                       const ArrsOfInt& items_to_send,
@@ -1129,16 +1112,16 @@ inline Nom endian()
   else
     return "big-endian";
 }
-// Description:
-//  Ajoute des joints avec tous les pe de pe_voisins.
-//  Pour que l'ensemble des joints soit symetrique,
-//  on en cree aussi un joint sur le processeur destination:
-//   Si A ajoute un joint avec B, alors B ajoute un joint avec A.
-//  On trie les joints par ordre croissant du numero de PE.
-//  ATTENTION: les joints sont donc reordonnes !
-//  On met dans pe_voisins la liste des joints effectivement crees.
-// Precondition:
-//  Methode a appeler simultanement par tous les processeurs.
+/*! @brief Ajoute des joints avec tous les pe de pe_voisins.
+ *
+ * Pour que l'ensemble des joints soit symetrique,
+ *   on en cree aussi un joint sur le processeur destination:
+ *    Si A ajoute un joint avec B, alors B ajoute un joint avec A.
+ *   On trie les joints par ordre croissant du numero de PE.
+ *   ATTENTION: les joints sont donc reordonnes !
+ *   On met dans pe_voisins la liste des joints effectivement crees.
+ *
+ */
 void Scatter::ajouter_joints(Zone& zone,
                              ArrOfInt& pe_voisins)
 {
@@ -1177,36 +1160,22 @@ void Scatter::ajouter_joints(Zone& zone,
   }
 }
 
-// Description:
-//  Methode generique pour calculer l'espace distant d'un type d'items geometrique
-//  (sommet, face, arete) en fonction de l'espace distant des elements:
-//  Les "type_item" distants (pour type_item = sommet face ou arete) sont
-//  les "type_item" attaches aux elements distants.
-//  Exemple : les sommets distants sont tous les sommets de tous les elements
-//  distants.
-// Voir aussi:
-//  Scatter::calculer_espace_distant_sommets
-//  Scatter::calculer_espace_distant_faces
-// Parametre: zone
-// Signification: bah, la zone quoi...
-// Parametre: type_item
-// Signification: le type des items dont on veut calculer l'espace distant
-// Parametre: connectivite_elem_item
-// Signification: le tableau qui donne pour chaque element de la zone les
-//  indices des items de cet element. On n'utilise que la partie reele du
-//  tableau (logiquement, la partie virtuelle n'existe pas encore).
-//  (exemple: zone().les_elems() pour type_item==SOMMET ou zone_VF().face_sommets()
-//   pour type_item==FACE)
-// Parametre: nb_items_reels
-// Signification: le nombre de "type_item" reels
-// Parametre: items_lies
-// Signification: si le tableau est non vide, il doit etre de taille nb_items_reels.
-//  Dans ce cas, il permet de forcer la propriete suivante :
-//   "si l'item i est distant, alors l'item items_lies[i] est distant aussi".
-//  Ce tableau est utilise pour inclure les sommets periodiques virtuels associes.
-//  (voir calculer_espace_distant_sommets).
-// Precondition: les elements distants et les items_communs du type_item
-//  doivent avoir ete remplis.
+/*! @brief Methode generique pour calculer l'espace distant d'un type d'items geometrique (sommet, face, arete) en fonction de l'espace distant des elements:
+ *
+ *   Les "type_item" distants (pour type_item = sommet face ou arete) sont
+ *   les "type_item" attaches aux elements distants.
+ *   Exemple : les sommets distants sont tous les sommets de tous les elements
+ *   distants.
+ *  Voir aussi:
+ *   Scatter::calculer_espace_distant_sommets
+ *   Scatter::calculer_espace_distant_faces
+ *
+ * @param (zone) bah, la zone quoi...
+ * @param (type_item) le type des items dont on veut calculer l'espace distant
+ * @param (connectivite_elem_item) le tableau qui donne pour chaque element de la zone les indices des items de cet element. On n'utilise que la partie reele du tableau (logiquement, la partie virtuelle n'existe pas encore). (exemple: zone().les_elems() pour type_item==SOMMET ou zone_VF().face_sommets() pour type_item==FACE)
+ * @param (nb_items_reels) le nombre de "type_item" reels
+ * @param (items_lies) si le tableau est non vide, il doit etre de taille nb_items_reels. Dans ce cas, il permet de forcer la propriete suivante : "si l'item i est distant, alors l'item items_lies[i] est distant aussi". Ce tableau est utilise pour inclure les sommets periodiques virtuels associes. (voir calculer_espace_distant_sommets).
+ */
 static void calculer_espace_distant_item(Zone& la_zone,
                                          const Joint::Type_Item type_item,
                                          const IntTab& connectivite_elem_item,
@@ -1268,15 +1237,17 @@ static void calculer_espace_distant_item(Zone& la_zone,
   Scatter::calculer_espace_distant(la_zone, nb_items_reels, items_to_send, type_item);
 }
 
-// Description:
-//  En fonction de l'espace distant des elements, calcule l'espace
-//  distant des sommets. Pour chaque joint, on envoie au processeur voisin
-//  l'ensemble des sommets de tous les elements du joint.
-//  C'est le processeur proprietaire du sommet
-//  (plus petit pe qui le possede) qui le met dans son espace distant.
-//  Attention, on cree de nouveaux joints.
-//  On remplit les tableaux
-//   dom.zone(0).faces_joint(i).joint_item(Joint::SOMMET).items_distants();
+/*! @brief En fonction de l'espace distant des elements, calcule l'espace distant des sommets.
+ *
+ * Pour chaque joint, on envoie au processeur voisin
+ *   l'ensemble des sommets de tous les elements du joint.
+ *   C'est le processeur proprietaire du sommet
+ *   (plus petit pe qui le possede) qui le met dans son espace distant.
+ *   Attention, on cree de nouveaux joints.
+ *   On remplit les tableaux
+ *    dom.zone(0).faces_joint(i).joint_item(Joint::SOMMET).items_distants();
+ *
+ */
 void Scatter::calculer_espace_distant_sommets(Domaine& dom, const Noms& liste_bords_perio)
 {
   if (Process::je_suis_maitre())
@@ -1300,8 +1271,9 @@ void Scatter::calculer_espace_distant_sommets(Domaine& dom, const Noms& liste_bo
                                renum_som_perio);
 }
 
-// Description:
-//  Idem que Scatter::calculer_espace_distant_sommets pour les faces
+/*! @brief Idem que Scatter::calculer_espace_distant_sommets pour les faces
+ *
+ */
 void Scatter::calculer_espace_distant_faces(Zone& zone,
                                             const int nb_faces_reelles,
                                             const IntTab& elem_faces)
@@ -1318,8 +1290,9 @@ void Scatter::calculer_espace_distant_faces(Zone& zone,
                                tableau_vide);
 }
 
-// Description:
-//  Idem que Scatter::calculer_espace_distant_sommets pour les aretes
+/*! @brief Idem que Scatter::calculer_espace_distant_sommets pour les aretes
+ *
+ */
 void Scatter::calculer_espace_distant_aretes(Zone& zone,
                                              const int nb_aretes_reelles,
                                              const IntTab& elem_aretes)
@@ -1334,13 +1307,15 @@ void Scatter::calculer_espace_distant_aretes(Zone& zone,
                                tableau_vide);
 }
 
-// Description:
-//  On suppose que chaque joint[i].joint_item(type_item).items_communs()
-//  contient les indices locaux des items de joint communs dans le meme
-//  ordre sur les deux processeurs (local et voisin)
-//  On remplit renum_items_communs :
-//   colonne 0=contenu du tableau items_communs sur le PE voisin
-//   colonne 1=contenu du tableau items_communs sur le PE local
+/*! @brief On suppose que chaque joint[i].
+ *
+ * joint_item(type_item).items_communs() contient les indices locaux des items de joint communs dans le meme
+ *   ordre sur les deux processeurs (local et voisin)
+ *   On remplit renum_items_communs :
+ *    colonne 0=contenu du tableau items_communs sur le PE voisin
+ *    colonne 1=contenu du tableau items_communs sur le PE local
+ *
+ */
 void Scatter::calculer_renum_items_communs(Joints& joints,
                                            const Joint::Type_Item type_item)
 {
@@ -1395,8 +1370,9 @@ void Scatter::calculer_renum_items_communs(Joints& joints,
   schema_comm.end_comm();
 }
 
-// Description: construction d'un MD_Vector_std a partir des informations de joint du domaine
-//  pour le type d'item demande.
+/*! @brief construction d'un MD_Vector_std a partir des informations de joint du domaine pour le type d'item demande.
+ *
+ */
 void Scatter::construire_md_vector(const Domaine& dom, int nb_items_reels, const Joint::Type_Item type_item, MD_Vector& md_vector)
 {
   const Joints& joints  = dom.zone(0).faces_joint();
@@ -1511,11 +1487,12 @@ static True_int fct_tri_table_inverse(const void *ptr1, const void *ptr2)
 
 }
 
-// .DESCRIPTION
-//  Cette classe fournit les outils pour construire l'espace
-//  virtuel d'un tableau contenant des indices d'entites geometriques
-//  (sommets, elements, faces). Elle gere en particulier la
-//  renumerotation des elements virtuels.
+/*! @brief Cette classe fournit les outils pour construire l'espace virtuel d'un tableau contenant des indices d'entites geometriques
+ *
+ *   (sommets, elements, faces). Elle gere en particulier la
+ *   renumerotation des elements virtuels.
+ *
+ */
 class Traduction_Indice_Global_Local
 {
 public:
@@ -1545,10 +1522,11 @@ private:
   IntTab table_inverse_;
 };
 
-// Description:
-//  Initialise le dictionnaire
-// Precontition:
-//  Les espaces distants des entites utilisees doivent avoir ete calculees
+/*! @brief Initialise le dictionnaire Precontition:
+ *
+ *   Les espaces distants des entites utilisees doivent avoir ete calculees
+ *
+ */
 void Traduction_Indice_Global_Local::initialiser(const MD_Vector& md_items)
 {
   md_items_ = md_items;
@@ -1596,12 +1574,13 @@ void Traduction_Indice_Global_Local::reset()
   table_inverse_.reset();
 }
 
-// Description:
-//  Cherche i tel que table_inverse(i, 0) == sommet_global,
-//  et renvoie table_inverse(i, 1) (l'indice local du sommet).
-//  Si le sommet n'est pas trouve dans la table, renvoie -1.
-//  La table_inverse doit etre triee par ordre croissant de la colonne 0.
-//  La table_inverse ne doit pas avoir d'espace virtuel.
+/*! @brief Cherche i tel que table_inverse(i, 0) == sommet_global, et renvoie table_inverse(i, 1) (l'indice local du sommet).
+ *
+ *   Si le sommet n'est pas trouve dans la table, renvoie -1.
+ *   La table_inverse doit etre triee par ordre croissant de la colonne 0.
+ *   La table_inverse ne doit pas avoir d'espace virtuel.
+ *
+ */
 int Traduction_Indice_Global_Local::chercher_table_inverse(const IntTab& table_inverse,
                                                            const int sommet_global)
 {
@@ -1637,12 +1616,14 @@ int Traduction_Indice_Global_Local::chercher_table_inverse(const IntTab& table_i
   return resu;
 }
 
-// Description:
-//  Transforme les indices locaux en indices globaux a l'aide la
-//  "table_" (voir initialiser). On fait :
-//  Pour debut <= i < debut+nb
-//   indices_globaux[i] = table_[indices_locaux[i]]
-//   si indices_locaux[i] < 0 alors indices_globaux[i] = -1
+/*! @brief Transforme les indices locaux en indices globaux a l'aide la "table_" (voir initialiser).
+ *
+ * On fait :
+ *   Pour debut <= i < debut+nb
+ *    indices_globaux[i] = table_[indices_locaux[i]]
+ *    si indices_locaux[i] < 0 alors indices_globaux[i] = -1
+ *
+ */
 void Traduction_Indice_Global_Local::traduire_indice_local_vers_global(
   const ArrOfInt& indices_locaux,
   ArrOfInt& indices_globaux,
@@ -1656,16 +1637,11 @@ void Traduction_Indice_Global_Local::traduire_indice_local_vers_global(
     }
 }
 
-// Description:
-//  Pour debut <= i < debut+nb
-//   indices_locaux[i] = chercher l'indice local de "indices_globaux[i]"
-// Parametre: indices_globaux
-// Signification: le tableau des indices globaux a traduire
-// Parametre: indices_locaux
-// Signification: en sortie, les indices locaux ou -1 si l'indice global
-//                n'a pas ete trouve.
-// Valeur de retour: nombre d'indices non trouves (indices globaux qui
-// ne correspondent a aucun indice local).
+/*! @brief Pour debut <= i < debut+nb indices_locaux[i] = chercher l'indice local de "indices_globaux[i]"
+ *
+ * @param (indices_globaux) le tableau des indices globaux a traduire
+ * @param (indices_locaux) en sortie, les indices locaux ou -1 si l'indice global n'a pas ete trouve. Valeur de retour: nombre d'indices non trouves (indices globaux qui ne correspondent a aucun indice local).
+ */
 int Traduction_Indice_Global_Local::traduire_indice_global_vers_local(
   const ArrOfInt& indices_globaux,
   ArrOfInt& indices_locaux) const
@@ -1702,17 +1678,18 @@ int Traduction_Indice_Global_Local::traduire_indice_global_vers_local(
   return nb_erreurs;
 }
 
-// Description:
-//  A partir d'un tableau dont la structure d'espace virtuel est initialisee
-//  (descripteurs elements distants et virtuels, items communs)
-//  et contenant des indices compatibles avec le contenu des tables
-//  (indices de sommets ou d'elements selon type_table_),
-//  on remplit les elements virtuels du "tableau" en fonction des elements
-//  distants et on traduit les indices en indices locaux.
-//  (exemple, voir construire_espace_virtuel_elements et
-//   construire_espace_virtuel_faces).
-// Valeur de retour: nombre d'indices qui n'ont pas pu etre traduits
-//  (par exemple, le sommet reference n'existe pas sur le processeur voisin)
+/*! @brief A partir d'un tableau dont la structure d'espace virtuel est initialisee (descripteurs elements distants et virtuels, items communs)
+ *
+ *   et contenant des indices compatibles avec le contenu des tables
+ *   (indices de sommets ou d'elements selon type_table_),
+ *   on remplit les elements virtuels du "tableau" en fonction des elements
+ *   distants et on traduit les indices en indices locaux.
+ *   (exemple, voir construire_espace_virtuel_elements et
+ *    construire_espace_virtuel_faces).
+ *  Valeur de retour: nombre d'indices qui n'ont pas pu etre traduits
+ *   (par exemple, le sommet reference n'existe pas sur le processeur voisin)
+ *
+ */
 int Traduction_Indice_Global_Local::traduire_espace_virtuel(IntVect& tableau) const
 {
   // On cree une copie du tableau, dans laquelle on met les indices globaux:
@@ -1738,18 +1715,19 @@ int Traduction_Indice_Global_Local::traduire_espace_virtuel(IntVect& tableau) co
   return nb_erreurs;
 }
 
-// Description:
-//  Construit la structure items_communs + espaces virtuels d'un tableau contenant
-//  des indices d'items geometriques, indexe par un autre type d'item geometrique.
-//  Exemple: tableau indexe par md_indice, contenant des indices md_valeur:
-//     type_indice  type_valeur   exemple de tableau:
-//      element      sommet       zone.les_elems()
-//      face         sommet       faces_sommets
-//      element      face         elem_faces
-//      face         element      faces_voisins
-//      element      element      ?
-//      element      arete        elem_aretes
-//  Nb_valeurs_max est le nombre d'items reels de type "type_valeur".
+/*! @brief Construit la structure items_communs + espaces virtuels d'un tableau contenant des indices d'items geometriques, indexe par un autre type d'item geometrique.
+ *
+ *   Exemple: tableau indexe par md_indice, contenant des indices md_valeur:
+ *      type_indice  type_valeur   exemple de tableau:
+ *       element      sommet       zone.les_elems()
+ *       face         sommet       faces_sommets
+ *       element      face         elem_faces
+ *       face         element      faces_voisins
+ *       element      element      ?
+ *       element      arete        elem_aretes
+ *   Nb_valeurs_max est le nombre d'items reels de type "type_valeur".
+ *
+ */
 void Scatter::construire_espace_virtuel_traduction(const MD_Vector& md_indice,
                                                    const MD_Vector& md_valeur,
                                                    IntTab& tableau,
@@ -1788,13 +1766,13 @@ void Scatter::construire_espace_virtuel_traduction(const MD_Vector& md_indice,
 }
 
 
-// Description:
-//  Reordonne les faces de joint de sorte qu'elles apparaissent dans le meme
-//  ordre sur chaque couple de processeur voisin. En pratique, pour un couple
-//  pe1 < pe2, pe1 envoie ses faces de joint a pe2 et pe2 les traduit en indices
-//  de sommets locaux. Les faces de joint du PE2 ne sont donc pas utilisees.
-// Precondition:
-//  Les sommets distants doivent avoir ete calcules (utilisation du dictionnaire)
+/*! @brief Reordonne les faces de joint de sorte qu'elles apparaissent dans le meme ordre sur chaque couple de processeur voisin.
+ *
+ * En pratique, pour un couple
+ *   pe1 < pe2, pe1 envoie ses faces de joint a pe2 et pe2 les traduit en indices
+ *   de sommets locaux. Les faces de joint du PE2 ne sont donc pas utilisees.
+ *
+ */
 void Scatter::reordonner_faces_de_joint(Domaine& dom)
 {
   // Construction du dictionnaire indice global/indice local
@@ -1884,9 +1862,11 @@ void Scatter::reordonner_faces_de_joint(Domaine& dom)
   schema_comm.end_comm();
 }
 
-// Description: Methode outil: renvoie une liste complete de tous les
-// sommets de joint (sommets des faces + sommets isoles), triee et
-// sans doublons
+/*! @brief Methode outil: renvoie une liste complete de tous les sommets de joint (sommets des faces + sommets isoles), triee et
+ *
+ *  sans doublons
+ *
+ */
 static void calculer_liste_complete_sommets_joint(const Joint& joint, ArrOfInt& liste_sommets)
 {
   liste_sommets = joint.joint_item(Joint::SOMMET).items_communs();
@@ -1914,9 +1894,11 @@ inline int arete_de_sommets_Si_et_Sj(const int Si, const int Sj, const int arete
     return 0;
 }
 
-// Description: Methode outil: renvoie une liste complete de tous les
-// aretes de joint (aretes des faces + aretes isolees), triee et
-// sans doublons
+/*! @brief Methode outil: renvoie une liste complete de tous les aretes de joint (aretes des faces + aretes isolees), triee et
+ *
+ *  sans doublons
+ *
+ */
 static void calculer_liste_complete_aretes_joint(const Joint& joint, ArrOfInt& liste_aretes)
 {
   // Construction de la liste des aretes communes liste_aretes
@@ -2015,14 +1997,15 @@ static void calculer_liste_complete_items_joint(const Joint& joint, const Joint:
     }
 }
 
-// Description:
-//  Les algorithmes actuels pour le periodique (assembleur P1B, OpDivElem P1B)
-//  ont besoin que pour chaque face virtuelle periodique, la face opposee soit
-//  aussi virtuelle. Ceci n'est pas assure a la sortie de la methode
-//  calculer_elements_distants. Cette methode ajoute aux elements distants les
-//  elements manquants pour assurer cette condition:
-//  Si un element est distant pour un PE donne est voisin d'une face periodique,
-//  on ajoute a l'espace distant l'element adjacent a la face opposee.
+/*! @brief Les algorithmes actuels pour le periodique (assembleur P1B, OpDivElem P1B) ont besoin que pour chaque face virtuelle periodique, la face opposee soit
+ *
+ *   aussi virtuelle. Ceci n'est pas assure a la sortie de la methode
+ *   calculer_elements_distants. Cette methode ajoute aux elements distants les
+ *   elements manquants pour assurer cette condition:
+ *   Si un element est distant pour un PE donne est voisin d'une face periodique,
+ *   on ajoute a l'espace distant l'element adjacent a la face opposee.
+ *
+ */
 void Scatter::corriger_espace_distant_elements_perio(Domaine& dom,
                                                      const Noms& liste_bords_periodiques)
 {
@@ -2154,24 +2137,26 @@ void Scatter::corriger_espace_distant_elements_perio(Domaine& dom,
     }
 }
 
-// Description:
-// Remplissage du tableau "espace_distant()" des elements dans les joints.
-// C'est ici qu'on determine les elements de joint en fonction de l'epaisseur de joint.
-// Le tableau espace_distant contient les
-// indices locaux des elements distants (a envoyer aux processeurs voisins)
-// Pour un joint d'epaisseur 1, ce sont tous les elements voisins d'un
-// sommet de joint (sommet sur un face de joint ou sommet isole).
-// Pour un joint d'epaisseur n>1, ce sont tous les elements voisins d'un
-// sommet d'un element du joint d'epaisseur n-1.
-// Le voisinage s'entend sur le domaine global (toutes zones confondues)
-// Historique: premiere version B.Mathieu le 16/01/2007.
-//   Il existe une methode qui determine les elements distants au moment du decoupage
-//   (DomaineCutter::construire_elements_distants_ssdom).
-//   La methode ci-dessous a ete validee par comparaison avec la methode du decoupeur.
-//   Les sorties ont ete verifiees pour des epaisseurs jusqu'a 5 sur des maillages tetra.
-// La difficulte de l'algorithme est d'obtenir les elements virtuels d'epaisseur > 1 qui se
-// trouvent sur des sous-domaines qui ne sont pas en contact direct avec le sous-domaine
-// local. Difficulte resolue par l'algorithme ci-dessous.
+/*! @brief Remplissage du tableau "espace_distant()" des elements dans les joints.
+ *
+ * C'est ici qu'on determine les elements de joint en fonction de l'epaisseur de joint.
+ *  Le tableau espace_distant contient les
+ *  indices locaux des elements distants (a envoyer aux processeurs voisins)
+ *  Pour un joint d'epaisseur 1, ce sont tous les elements voisins d'un
+ *  sommet de joint (sommet sur un face de joint ou sommet isole).
+ *  Pour un joint d'epaisseur n>1, ce sont tous les elements voisins d'un
+ *  sommet d'un element du joint d'epaisseur n-1.
+ *  Le voisinage s'entend sur le domaine global (toutes zones confondues)
+ *  Historique: premiere version B.Mathieu le 16/01/2007.
+ *    Il existe une methode qui determine les elements distants au moment du decoupage
+ *    (DomaineCutter::construire_elements_distants_ssdom).
+ *    La methode ci-dessous a ete validee par comparaison avec la methode du decoupeur.
+ *    Les sorties ont ete verifiees pour des epaisseurs jusqu'a 5 sur des maillages tetra.
+ *  La difficulte de l'algorithme est d'obtenir les elements virtuels d'epaisseur > 1 qui se
+ *  trouvent sur des sous-domaines qui ne sont pas en contact direct avec le sous-domaine
+ *  local. Difficulte resolue par l'algorithme ci-dessous.
+ *
+ */
 void Scatter::calculer_espace_distant_elements(Domaine& dom)
 {
   Zone&        zone         = dom.zone(0);
@@ -2486,20 +2471,22 @@ static True_int fct_cmp_index_coord(const void * ptr1, const void * ptr2)
   return resu;
 }
 
-// Description:
-//  Construit le tableau "correspondance" tel que
-//  Pour 0 <= i < sommets2.size_array(),
-//   Si sommet2(i) existe dans le tableau sommet1, alors
-//      sommets2(i, ...) == sommets1(correspondance[i], ...)
-//   Sinon
-//      correspondance[i] = -1
-//  L'egalite est verifiee a epsilon pres en absolu (soit abs(x1-x2)<epsilon)
-//  L'algorithme est generalement en n1*log(n1) + n2*log(n1)
-//  (recherche basee sur un quicksort).
-//  En cas d'echec du tri, on utilise un algorithme en n1*n2.
-//  Les tableaux sommets1 et sommets2 doivent etre de dimension 2
-//  Le tableau correspondance doit etre de taille sommets2.size_array().
-// Valeur de retour: nombre de sommets de sommets2 non trouves dans le tableau sommets1.
+/*! @brief Construit le tableau "correspondance" tel que Pour 0 <= i < sommets2.
+ *
+ * size_array(),
+ *    Si sommet2(i) existe dans le tableau sommet1, alors
+ *       sommets2(i, ...) == sommets1(correspondance[i], ...)
+ *    Sinon
+ *       correspondance[i] = -1
+ *   L'egalite est verifiee a epsilon pres en absolu (soit abs(x1-x2)<epsilon)
+ *   L'algorithme est generalement en n1*log(n1) + n2*log(n1)
+ *   (recherche basee sur un quicksort).
+ *   En cas d'echec du tri, on utilise un algorithme en n1*n2.
+ *   Les tableaux sommets1 et sommets2 doivent etre de dimension 2
+ *   Le tableau correspondance doit etre de taille sommets2.size_array().
+ *  Valeur de retour: nombre de sommets de sommets2 non trouves dans le tableau sommets1.
+ *
+ */
 int Scatter::Chercher_Correspondance(const DoubleTab& sommets1, const DoubleTab& sommets2,
                                      ArrOfInt& correspondance, const double epsilon)
 {
@@ -2624,22 +2611,9 @@ int Scatter::Chercher_Correspondance(const DoubleTab& sommets1, const DoubleTab&
   return nb_sommets_non_trouves;
 }
 
-// Description:
-//  Methode obsolete (utilisee avec l'ancien decoupeur).
-//
-// Description:
-//  On suppose que le domaine contient les structures suivantes:
-//   * zone(0).faces_joint[i].sommets()            (les sommets de joint isoles)
-//   * zone(0).faces_joint[i].faces().les_sommets  (les sommets des faces de joint)
-//  et que chaque processeur contient une portion d'un domaine complet.
-//  On remplit les tableaux joint_item(Joint::Type_Item).items_communs pour tous les joints de la
-//  zone 0 du domaine et renum_items_communs.
-//  Ordre d'apparition des items : ordre croissant de l'indice du
-//   sommet sur le processeur de rang le plus petit
-//  Cette methode doit etre appelee simultanement sur tous les processeurs
-//  du groupe et ne s'applique qu'aux items ARETE et SOMMET
-//  L'algorithme utilise les coordonnees des items pour retrouver la
-//  correspondance entre les items de joint.
+/*! @brief Methode obsolete (utilisee avec l'ancien decoupeur).
+ *
+ */
 
 void Scatter::construire_correspondance_items_par_coordonnees(Joints& joints, const Joint::Type_Item type_item, const DoubleTab& coord_items)
 {
@@ -2817,8 +2791,11 @@ void Scatter::construire_correspondance_items_par_coordonnees(Joints& joints, co
   }
 }
 
-// Description:
-// Construction des tableaux joint_item(Joint::SOMMET).items_communs de tous les joints de la zone(0) du domaine dom
+/*! @brief Construction des tableaux joint_item(Joint::SOMMET).
+ *
+ * items_communs de tous les joints de la zone(0) du domaine dom
+ *
+ */
 
 void Scatter::construire_correspondance_sommets_par_coordonnees(Domaine& dom)
 {
@@ -2888,9 +2865,11 @@ void Scatter::calculer_nb_items_virtuels(Joints& joints,
   schema_comm.end_comm();
 }
 
-// Description: cree des descripteurs sequentiels pour les tableaux sommets
-//  et elements du domaine (necessaire car Scatter n'est pas appele pour les
-//  domaines en sequentiel)
+/*! @brief cree des descripteurs sequentiels pour les tableaux sommets et elements du domaine (necessaire car Scatter n'est pas appele pour les
+ *
+ *   domaines en sequentiel)
+ *
+ */
 void Scatter::init_sequential_domain(Domaine& dom)
 {
   MD_Vector_std mdstd;
@@ -2910,9 +2889,11 @@ void Scatter::init_sequential_domain(Domaine& dom)
     }
 }
 
-// Description: methode utilisee par les interpretes qui modifient le domaine
-//  (sequentiel), detruit les descripteurs des sommets et elements pour permettre
-//  la modification de ces tableaux.
+/*! @brief methode utilisee par les interpretes qui modifient le domaine (sequentiel), detruit les descripteurs des sommets et elements pour permettre
+ *
+ *   la modification de ces tableaux.
+ *
+ */
 void Scatter::uninit_sequential_domain(Domaine& dom)
 {
   MD_Vector md; // descripteur nul

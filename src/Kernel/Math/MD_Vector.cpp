@@ -20,9 +20,12 @@
 Implemente_deriv(MD_Vector_base);
 Implemente_base_sans_constructeur_ni_destructeur(MD_Vector_base,"MD_Vector_base",Objet_U);
 
-// Description: construction d'un objet MD_Vector par copie d'un
-//  objet existant. C'est la methode recommandee pour creer un objet MD_Vector
-//  (autrement que par copie d'un autre MD_Vector)
+/*! @brief construction d'un objet MD_Vector par copie d'un objet existant.
+ *
+ * C'est la methode recommandee pour creer un objet MD_Vector
+ *   (autrement que par copie d'un autre MD_Vector)
+ *
+ */
 void MD_Vector::copy(const MD_Vector_base& src)
 {
   detach();
@@ -32,8 +35,9 @@ void MD_Vector::copy(const MD_Vector_base& src)
   ptr_->ref_count_ = 1;
 }
 
-// Description: methode non inline pour detacher l'objet pointe.
-// Precondition: suppose que ptr_ est non nul ! (sinon appeler detach())
+/*! @brief methode non inline pour detacher l'objet pointe.
+ *
+ */
 void MD_Vector::detach_()
 {
   assert(ptr_);
@@ -48,8 +52,9 @@ void MD_Vector::detach_()
   ptr_ = 0;
 }
 
-// Description: methode non inline pour attacher l'objet en parametre.
-// Precondition: suppose ptr_ == 0 et src.non_nul() (sinon appeler attach())
+/*! @brief methode non inline pour attacher l'objet en parametre.
+ *
+ */
 void MD_Vector::attach_(const MD_Vector& src)
 {
   assert(ptr_ == 0);
@@ -58,7 +63,9 @@ void MD_Vector::attach_(const MD_Vector& src)
   (ptr_->ref_count_)++;
 }
 
-// Description: renvoie 1 si les structures sont identiques, 0 sinon
+/*! @brief renvoie 1 si les structures sont identiques, 0 sinon
+ *
+ */
 int MD_Vector::operator==(const MD_Vector& md) const
 {
   // Pour l'instant, test tres restrictif: les deux structures sont
@@ -70,7 +77,9 @@ int MD_Vector::operator==(const MD_Vector& md) const
   return ptr_ == md.ptr_;
 }
 
-// Description: reponse inverse de ==
+/*! @brief reponse inverse de ==
+ *
+ */
 int MD_Vector::operator!=(const MD_Vector& md) const
 {
   // B.M.: je code exactement ce qui est dit au dessus (des fois que == change un jour...)

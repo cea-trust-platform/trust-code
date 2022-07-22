@@ -22,10 +22,12 @@
 #include <array>
 #include <map>
 
-// .DESCRIPTION
-//  Interprete Decouper_multi. Decoupage simultane de plusieurs domaine
-//  avec renseignement des sommets connectes par des Raccords (pour extension
-//  des espaces virtuels)
+/*! @brief Interprete Decouper_multi.
+ *
+ * Decoupage simultane de plusieurs domaine avec renseignement des sommets connectes par des Raccords (pour extension
+ *   des espaces virtuels)
+ *
+ */
 class Decouper_multi : public Interprete
 {
   Declare_instanciable(Decouper_multi);

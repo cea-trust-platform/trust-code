@@ -18,8 +18,9 @@
 
 
 
-//
-// .DESCRIPTION class OrienteFacesBord
+/*! @brief class OrienteFacesBord
+ *
+ */
 /**
  */
 //

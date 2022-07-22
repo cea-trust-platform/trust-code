@@ -23,15 +23,14 @@
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Cond_lim_utilisateur_base:
-//    Les classes heritant de cette classe sont des classes utilisaturs
-//    elles vont transformer le jdd
-//    la cl_utilisateur est typee est passe dans la methode complement(ajout)
-//   Dans le jdd on aviat bord cl_util champ....
-//   tout se passe comme si on n avait pas cl_util mais ajout champ...
+/*! @brief classe Cond_lim_utilisateur_base: Les classes heritant de cette classe sont des classes utilisaturs
+ *
+ *     elles vont transformer le jdd
+ *     la cl_utilisateur est typee est passe dans la methode complement(ajout)
+ *    Dans le jdd on aviat bord cl_util champ....
+ *    tout se passe comme si on n avait pas cl_util mais ajout champ...
+ *
+ */
 class Cond_lim;
 //////////////////////////////////////////////////////////////////////////////
 class Cond_lim_utilisateur_base  : public Cond_lim_base

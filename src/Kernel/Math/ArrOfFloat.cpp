@@ -22,21 +22,28 @@ Implemente_instanciable_sans_constructeur_ni_destructeur(ArrOfFloat,"ArrOfFloat"
 const int ArrOfFloat::grow_factor_num_ = 2;
 const int ArrOfFloat::grow_factor_denom_ = 1;
 
-// Description: Construit un tableau vide
+/*! @brief Construit un tableau vide
+ *
+ */
 ArrOfFloat::ArrOfFloat() :
   data_(0), size_(0), memory_size_(0)
 {
 }
 
-// Description: Constructeur d'un tableau vide de taille n.
-// Le tableau n'est pas initialise.
+/*! @brief Constructeur d'un tableau vide de taille n.
+ *
+ * Le tableau n'est pas initialise.
+ *
+ */
 ArrOfFloat::ArrOfFloat(int n) :
   data_(0), size_(0), memory_size_(0)
 {
   resize_array(n);
 }
 
-// Description: Constructeur par copie
+/*! @brief Constructeur par copie
+ *
+ */
 ArrOfFloat::ArrOfFloat(const ArrOfFloat& array) : Objet_U(array),
   data_(0), size_(0), memory_size_(0)
 {
@@ -44,7 +51,9 @@ ArrOfFloat::ArrOfFloat(const ArrOfFloat& array) : Objet_U(array),
 }
 
 
-// Description: Operateur copie (deep copy)
+/*! @brief Operateur copie (deep copy)
+ *
+ */
 const ArrOfFloat& ArrOfFloat::operator=(const ArrOfFloat& array)
 {
   if (&array == this) // Self assignment, why not...
@@ -69,7 +78,9 @@ const ArrOfFloat& ArrOfFloat::operator=(float x)
   return *this;
 }
 
-// Description: Destructeur
+/*! @brief Destructeur
+ *
+ */
 ArrOfFloat::~ArrOfFloat()
 {
   if (data_)
@@ -79,11 +90,12 @@ ArrOfFloat::~ArrOfFloat()
   memory_size_ = 0;
 }
 
-// Description:
-// Augmentation de taille du tableau (appele uniquement si l'espace
-// memoire est insuffisant et qu'il faut reallouer de la memoire).
-// Les anciennes donnees sont recopiees dans le nouveau tableau,
-// le contenu des elements nouveaux est indefini.
+/*! @brief Augmentation de taille du tableau (appele uniquement si l'espace memoire est insuffisant et qu'il faut reallouer de la memoire).
+ *
+ *  Les anciennes donnees sont recopiees dans le nouveau tableau,
+ *  le contenu des elements nouveaux est indefini.
+ *
+ */
 void ArrOfFloat::mem_resize(int size)
 {
   assert(size > size_);
@@ -113,10 +125,12 @@ const float * ArrOfFloat::addr() const
   return data_;
 }
 
-// Description:
-// Lecture du tableau. Format :
-// n                          (int)
-// x[0] x[1] x[2] ... x[n-1]  (float)
+/*! @brief Lecture du tableau.
+ *
+ * Format : n                          (int)
+ *  x[0] x[1] x[2] ... x[n-1]  (float)
+ *
+ */
 Entree& ArrOfFloat::readOn(Entree& is)
 {
   int mysize;
@@ -129,10 +143,12 @@ Entree& ArrOfFloat::readOn(Entree& is)
   return is;
 }
 
-// Description:
-// Ecriture du tableau. Format :
-// n                          (int)
-// x[0] x[1] x[2] ... x[n-1]  (float)
+/*! @brief Ecriture du tableau.
+ *
+ * Format : n                          (int)
+ *  x[0] x[1] x[2] ... x[n-1]  (float)
+ *
+ */
 Sortie& ArrOfFloat::printOn(Sortie& os) const
 {
   os << size_ << finl;
@@ -141,9 +157,11 @@ Sortie& ArrOfFloat::printOn(Sortie& os) const
   return os;
 }
 
-// Description: remplit nb_elements consecutifs du tableau avec une valeur invalide
-//  en commencant par l'indice first_element.
-//  Il faut first_element >= 0 et first_element+nb_elements <= memory_size_.
+/*! @brief remplit nb_elements consecutifs du tableau avec une valeur invalide en commencant par l'indice first_element.
+ *
+ *   Il faut first_element >= 0 et first_element+nb_elements <= memory_size_.
+ *
+ */
 void ArrOfFloat::invalidate(int first_element, int nb_elements)
 {
   // Ceci represente un NAN. N'importe quelle operation avec ca fait encore un NAN.
@@ -163,9 +181,11 @@ void ArrOfFloat::invalidate(int first_element, int nb_elements)
   for (int i = first_element; i < n; i++)
     memcpy(data_+i, & VALEUR_INVALIDE, sizeof(float));
 }
-// Description:
-//   Fonction de comparaison utilisee pour trier le tableau
-//   dans ArrOfDouble::trier(). Voir man qsort
+/*! @brief Fonction de comparaison utilisee pour trier le tableau dans ArrOfDouble::trier().
+ *
+ * Voir man qsort
+ *
+ */
 static True_int fonction_compare_arroffloat_ordonner(const void * data1, const void * data2)
 {
   const float x = *(const float*)data1;
@@ -190,29 +210,18 @@ void ArrOfFloat::ordonne_array()
 }
 
 
-// Description:
-//    Copie les elements source[first_element_source + i]
-//    dans les elements  (*this)[first_element_dest + i] pour 0 <= i < nb_elements
-//    Les autres elements de (*this) sont inchanges.
-// Precondition:
-// Parametre:       const ArrOfDouble& m
-//  Signification:   le tableau a utiliser, doit etre different de *this !
-// Parametre:       int nb_elements
-//  Signification:   nombre d'elements a copier, nb_elements >= -1.
-//                   Si nb_elements==-1, on copie tout le tableau m.
-//  Valeurs par defaut: -1
-// Parametre:       int first_element_dest
-//  Valeurs par defaut: 0
-// Parametre:       int first_element_source
-//  Valeurs par defaut: 0
-// Retour: ArrOfDouble&
-//    Signification: *this
-//    Contraintes:
-// Exception:
-//    Sort en erreur si la taille du tableau m est plus grande que la
-//    taille de tableau this.
-// Effets de bord:
-// Postcondition:
+/*! @brief Copie les elements source[first_element_source + i] dans les elements  (*this)[first_element_dest + i] pour 0 <= i < nb_elements
+ *
+ *     Les autres elements de (*this) sont inchanges.
+ *
+ * @param (const ArrOfDouble& m) le tableau a utiliser, doit etre different de *this !
+ * @param (int nb_elements) nombre d'elements a copier, nb_elements >= -1. Si nb_elements==-1, on copie tout le tableau m.
+ * @param (int first_element_dest)
+ * @param (int first_element_source)
+ * @return (ArrOfDouble&) *this
+ * @throws Sort en erreur si la taille du tableau m est plus grande que la
+ * taille de tableau this.
+ */
 ArrOfFloat& ArrOfFloat::inject_array(const ArrOfFloat& source,
                                      int nb_elements,
                                      int first_element_dest,
@@ -244,10 +253,10 @@ ArrOfFloat& ArrOfFloat::inject_array(const ArrOfFloat& source,
   return *this;
 }
 
-// Description:
-//     muliplie toutes les cases par dy
-// Retour: ArrOfFloat &
-//    Signification: *this
+/*! @brief muliplie toutes les cases par dy
+ *
+ * @return (ArrOfFloat &) *this
+ */
 const ArrOfFloat& ArrOfFloat::operator*= (const float dy)
 {
   float * data = addr();
@@ -258,10 +267,10 @@ const ArrOfFloat& ArrOfFloat::operator*= (const float dy)
 }
 
 
-// Description:
-//     divise toutes les cases par dy
-// Retour: ArrOfFloat &
-//    Signification: *this
+/*! @brief divise toutes les cases par dy
+ *
+ * @return (ArrOfFloat &) *this
+ */
 const ArrOfFloat& ArrOfFloat::operator/= (const float dy)
 {
   // En theorie: les deux lignes suivantes sont plus efficaces, mais

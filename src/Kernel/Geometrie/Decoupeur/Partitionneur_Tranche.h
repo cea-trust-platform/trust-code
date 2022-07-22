@@ -19,9 +19,11 @@
 #include <TRUSTTabs_forward.h>
 #include <Ref_Domaine.h>
 
-// .DESCRIPTION
-//  Partitionneur de domaine en tranches paralleles aux directions
-//  de l'espace. Voir construire_partition
+/*! @brief Partitionneur de domaine en tranches paralleles aux directions de l'espace.
+ *
+ * Voir construire_partition
+ *
+ */
 class Partitionneur_Tranche : public Partitionneur_base
 {
   Declare_instanciable(Partitionneur_Tranche);

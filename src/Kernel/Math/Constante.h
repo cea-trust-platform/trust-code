@@ -20,8 +20,9 @@
 #include <Nom.h>
 class Entree;
 
-// .DESCRIPTION
-//    Definit une constante dans le jeu de donnees
+/*! @brief Definit une constante dans le jeu de donnees
+ *
+ */
 class Constante :  public Objet_U
 {
   Declare_instanciable_sans_constructeur_ni_destructeur(Constante);

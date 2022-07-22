@@ -16,18 +16,13 @@
 #ifndef Read_MED_For_Testing_No_Verify_Option_included
 #define Read_MED_For_Testing_No_Verify_Option_included
 
-///////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-// Dummy class to test the no_very option
-// Indeed, trust -no_verify my_test will not check obsolete keywords in the data file
-// In order to check this functionality, the keyword Read_MED_For_Testing_No_Verify_Option
-// was added to the list of obsolete keywords but this keywords works. Thanks to that
-// we can know if obsolete keywords are checked or not.
-// .SECTION voir aussi
-//
-//
-///////////////////////////////////////////////////////////////////////////
+/*! @brief Dummy class to test the no_very option Indeed, trust -no_verify my_test will not check obsolete keywords in the data file
+ *
+ *  In order to check this functionality, the keyword Read_MED_For_Testing_No_Verify_Option
+ *  was added to the list of obsolete keywords but this keywords works. Thanks to that
+ *  we can know if obsolete keywords are checked or not.
+ *
+ */
 
 #include <TRUSTTabs_forward.h>
 #include <LireMED.h>

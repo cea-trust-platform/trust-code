@@ -20,8 +20,9 @@
 
 class Fichier_Lata;
 
-// .DESCRIPTION        :
-//  Classe de postraitement des champs euleriens au format lata.
+/*! @brief : Classe de postraitement des champs euleriens au format lata.
+ *
+ */
 
 //Pour creer un fichier valide, il faut faire:
 //    (initialisation) initialize("base_nom_fichier", ASCII, SINGLE_FILE);

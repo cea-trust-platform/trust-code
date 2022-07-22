@@ -19,62 +19,34 @@
 Implemente_instanciable(Tetraedriser_par_prisme,"Tetraedriser_par_prisme",Triangulation_base);
 
 
-// Description:
-//    Simple appel a: Interprete::printOn(Sortie&)
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a: Interprete::printOn(Sortie&)
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Tetraedriser_par_prisme::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
 
-// Description:
-//    Simple appel a: Interprete::readOn(Entree&)
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Interprete::readOn(Entree&)
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Tetraedriser_par_prisme::readOn(Entree& is)
 {
   return Interprete::readOn(is);
 }
 
-// Description:
-//    Fonction hors classe
-//    Decoupe toutes les faces d'un objet Faces
-//    dont les faces ont 4 sommets
-//    en 2 faces a 3 sommets.
-// Precondition: les faces doivent avoir 4 sommets
-// Parametre: Faces& faces
-//    Signification: l'ensemble des faces a decouper
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Fonction hors classe Decoupe toutes les faces d'un objet Faces
+ *
+ *     dont les faces ont 4 sommets
+ *     en 2 faces a 3 sommets.
+ *
+ * @param (Faces& faces) l'ensemble des faces a decouper
+ */
 static void decoupe(Zone& zone, Faces& faces)
 {
 
@@ -132,27 +104,18 @@ static void decoupe(Zone& zone, Faces& faces)
 }
 
 
-// Description:
-//    Tetraedrise tous les elements d'une zone : transforme
-//    les elements goemetriques de la zone en tetraedres IDENTIQUES
-//    par la methode des prismes.
-//    Pour l'instant on ne sait tetraedriser que des Hexaedre.
-//    (on les coupe en 2).
-//    Les elements sont tetraedrises et tous les bords
-//    sont types en Triangle_3D.
-// Precondition:
-// Parametre: Zone& zone
-//    Signification: la zone dont on veut tetraedriser les elements
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: on ne sait pas Tetraedriser par prisme les elements
-//            geometriques de ce type
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Tetraedrise tous les elements d'une zone : transforme les elements goemetriques de la zone en tetraedres IDENTIQUES
+ *
+ *     par la methode des prismes.
+ *     Pour l'instant on ne sait tetraedriser que des Hexaedre.
+ *     (on les coupe en 2).
+ *     Les elements sont tetraedrises et tous les bords
+ *     sont types en Triangle_3D.
+ *
+ * @param (Zone& zone) la zone dont on veut tetraedriser les elements
+ * @throws on ne sait pas Tetraedriser par prisme les elements
+ * geometriques de ce type
+ */
 void Tetraedriser_par_prisme::trianguler(Zone& zone) const
 {
   if(zone.type_elem()->que_suis_je() == "Hexaedre")

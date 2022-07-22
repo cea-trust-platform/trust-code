@@ -19,42 +19,22 @@ Implemente_vect(Zone_dis);
 Implemente_instanciable(Zones_dis,"Zones_dis",VECT(Zone_dis));
 
 
-// Description:
-//    Surcharge Objet_U::printOn(Sortie&)
-//    Imprime les zones discretisees du vecteur sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Surcharge Objet_U::printOn(Sortie&) Imprime les zones discretisees du vecteur sur un flot de sortie.
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Zones_dis::printOn(Sortie& os) const
 {
   return VECT(Zone_dis)::printOn(os);
 }
 
 
-// Description:
-//    Surcharge Objet_U::readOn(Entree&)
-//    Lit les zones discretisees a partir d'un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Surcharge Objet_U::readOn(Entree&) Lit les zones discretisees a partir d'un flot d'entree.
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Zones_dis::readOn(Entree& is)
 {
   return VECT(Zone_dis)::readOn(is);

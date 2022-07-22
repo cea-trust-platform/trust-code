@@ -23,18 +23,16 @@
 
 Declare_deriv(Equation_base);
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Equation
-//     Classe generique de la hierarchie des equations. Un objet Equation peut
-//     referencer n'importe quel objet derivant de Equation_base.
-//     La plupart des methodes appellent les methodes de l'objet Probleme
-//     sous-jacent via la methode valeur() declaree grace a la macro
-//Declare_deriv().;
-// .SECTION voir aussi
-//     Eqn_base Operateur Proprietes Champ_Inc
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Equation Classe generique de la hierarchie des equations.
+ *
+ * Un objet Equation peut
+ *      referencer n'importe quel objet derivant de Equation_base.
+ *      La plupart des methodes appellent les methodes de l'objet Probleme
+ *      sous-jacent via la methode valeur() declaree grace a la macro
+ * Declare_deriv().;
+ *
+ * @sa Eqn_base Operateur Proprietes Champ_Inc
+ */
 class Equation : public DERIV(Equation_base)
 {
   Declare_instanciable(Equation);
@@ -63,242 +61,137 @@ inline Equation::Equation(const Equation_base& eqn)
 */
 
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Renvoie le nombre d'operateurs de l'equation.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre d'operateur de l'equation
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Renvoie le nombre d'operateurs de l'equation.
+ *
+ * @return (int) le nombre d'operateur de l'equation
+ */
 inline int Equation::nombre_d_operateurs() const
 {
   return valeur().nombre_d_operateurs();
 }
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Renvoie le i-eme operateur.
-//    (version const)
-// Precondition:
-// Parametre: int
-//    Signification: indice de l'operateur
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Operateur&
-//    Signification: i-eme operateur de l'equation
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Renvoie le i-eme operateur.
+ *     (version const)
+ *
+ * @param (int) indice de l'operateur
+ * @return (Operateur&) i-eme operateur de l'equation
+ */
 inline const Operateur& Equation::operateur(int i) const
 {
   return valeur().operateur(i);
 }
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Renvoie le i-eme operateur.
-// Precondition:
-// Parametre: int
-//    Signification: indice de l'operateur
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Operateur&
-//    Signification: le i-eme operateur de l'equation
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Renvoie le i-eme operateur.
+ *
+ * @param (int) indice de l'operateur
+ * @return (Operateur&) le i-eme operateur de l'equation
+ */
 inline Operateur& Equation::operateur(int i)
 {
   return valeur().operateur(i);
 }
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Renvoie le champ inconnue.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Inc&
-//    Signification: le champ inconnue de l'equation
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Renvoie le champ inconnue.
+ *     (version const)
+ *
+ * @return (Champ_Inc&) le champ inconnue de l'equation
+ */
 inline const Champ_Inc& Equation::inconnue() const
 {
   return valeur().inconnue();
 }
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Discretise l'equation: type l'inconnue.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: l'equation est discretisee
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Discretise l'equation: type l'inconnue.
+ *
+ */
 inline void Equation::discretiser()
 {
   valeur().discretiser();
 }
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Renvoie le champ inconnue.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Inc&
-//    Signification: le champ inconnue de l'equation
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Renvoie le champ inconnue.
+ *
+ * @return (Champ_Inc&) le champ inconnue de l'equation
+ */
 inline Champ_Inc& Equation::inconnue()
 {
   return valeur().inconnue();
 }
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Effectue une sauvegarde des inconnues de l'equation.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie de sauvegarde
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: int
-//    Signification: code de retour propage
-//    Contraintes:
-// Exception:
-// Effets de bord: les inconnues sont sauvegardees
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Effectue une sauvegarde des inconnues de l'equation.
+ *
+ * @param (Sortie& os) le flot de sortie de sauvegarde
+ * @return (int) code de retour propage
+ */
 inline int Equation::sauvegarder(Sortie& os) const
 {
   return valeur().sauvegarder(os);
 }
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Effectue une reprise apres une sauvegarde.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: flot d'entre pour la reprise
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: int
-//    Signification: code de retour propage (1 si reprise OK)
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: l'objet sauvegarde est restaure
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Effectue une reprise apres une sauvegarde.
+ *
+ * @param (Entree& is) flot d'entre pour la reprise
+ * @return (int) code de retour propage (1 si reprise OK)
+ */
 inline int Equation::reprendre(Entree& is)
 {
   return valeur().reprendre(is);
 }
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Associe un schema en temps a l'equation.
-// Precondition:
-// Parametre: Schema_Temps_base& un_schema_temps
-//    Signification: le schema en temps a associer
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: l'equation a un schema en temps associe
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Associe un schema en temps a l'equation.
+ *
+ * @param (Schema_Temps_base& un_schema_temps) le schema en temps a associer
+ */
 inline void Equation::associer_sch_tps_base(const Schema_Temps_base& un_schema_temps)
 {
   valeur().associer_sch_tps_base(un_schema_temps);
 }
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Associe un milieu physique a l'equation.
-//    NOTE: cette methode est abstraite dans Equation_base et prend un
-//          dans ses derivees. Voir par exemple: Navier_Stokes_std
-// Precondition:
-// Parametre: Milieu_base& mil
-//    Signification: le milieu physique de l'equation
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: l'equation a un milieu physique associe
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Associe un milieu physique a l'equation.
+ *     NOTE: cette methode est abstraite dans Equation_base et prend un
+ *           dans ses derivees. Voir par exemple: Navier_Stokes_std
+ *
+ * @param (Milieu_base& mil) le milieu physique de l'equation
+ */
 inline void Equation::associer_milieu_base(const Milieu_base& mil)
 {
   valeur().associer_milieu_base(mil);
 }
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Renvoie le milieu physique de l'equation.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Milieu_base&
-//    Signification: le milieu physique de l'equation
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Renvoie le milieu physique de l'equation.
+ *     (version const)
+ *
+ * @return (Milieu_base&) le milieu physique de l'equation
+ */
 inline const Milieu_base& Equation::milieu() const
 {
   return valeur().milieu();
 }
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Renvoie le milieu physique de l'equation.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Milieu_base&
-//    Signification: le milieu physique de l'equation
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Renvoie le milieu physique de l'equation.
+ *
+ * @return (Milieu_base&) le milieu physique de l'equation
+ */
 inline Milieu_base& Equation::milieu()
 {
   return valeur().milieu();

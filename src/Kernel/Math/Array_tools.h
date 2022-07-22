@@ -18,32 +18,49 @@
 
 #include <TRUSTTab.h>
 
-// Description: Methode outil pour retirer les doublons dans un tableau.
+/*! @brief Methode outil pour retirer les doublons dans un tableau.
+ *
+ */
 void array_trier_retirer_doublons(ArrOfInt& array);
 
-// Description: Methode outil pour calculer l'intersection entre deux listes d'entiers.
+/*! @brief Methode outil pour calculer l'intersection entre deux listes d'entiers.
+ *
+ */
 void array_calculer_intersection(ArrOfInt& liste1, const ArrOfInt& liste2);
 
-// Description: Methode outil pour calculer la difference entre deux listes d'entiers triees
+/*! @brief Methode outil pour calculer la difference entre deux listes d'entiers triees
+ *
+ */
 void array_retirer_elements(ArrOfInt& sorted_array, const ArrOfInt& sorted_elements_list);
 
-// Description: Methode outil pour chercher une valeur dans un tableau trie
+/*! @brief Methode outil pour chercher une valeur dans un tableau trie
+ *
+ */
 int array_bsearch(const ArrOfInt& tab, int valeur);
 
-// Description: Tri lexicographique d'un tableau
+/*! @brief Tri lexicographique d'un tableau
+ *
+ */
 int tri_lexicographique_tableau(IntTab& tab);
 
-// Description: Tri indirect (on trie le tableau index qui contient des numeros de lignes dans tab)
+/*! @brief Tri indirect (on trie le tableau index qui contient des numeros de lignes dans tab)
+ *
+ */
 int tri_lexicographique_tableau_indirect(const IntTab& tab, ArrOfInt& index);
 
-// Description: Methode outil pour retirer les doublons dans un tableau.
+/*! @brief Methode outil pour retirer les doublons dans un tableau.
+ *
+ */
 void tableau_trier_retirer_doublons(IntTab& tab);
 
-// Description: Methode outil pour trouver les doublons (permet de retirer les doublons
-//  sans changer l'ordre des elements)
+/*! @brief Methode outil pour trouver les doublons (permet de retirer les doublons sans changer l'ordre des elements)
+ *
+ */
 void calculer_renum_sans_doublons(const IntTab& tab, ArrOfInt& renum, ArrOfInt& items_a_garder);
 
-// Description: Set the smart_resize flag, preallocates memory for the given size, and resize to zero
+/*! @brief Set the smart_resize flag, preallocates memory for the given size, and resize to zero
+ *
+ */
 template<typename _TYPE_>
 inline void array_smart_allocate(TRUSTArray<_TYPE_>& array, const int n)
 {

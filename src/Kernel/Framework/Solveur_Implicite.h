@@ -16,10 +16,11 @@
 
 
 
-//
-// .DESCRIPTION class Solveur_Implicite
-// Solveur represente n'importe qu'elle classe
-// derivee de la classe Solveur_Implicite_base
+/*! @brief class Solveur_Implicite Solveur represente n'importe qu'elle classe
+ *
+ *  derivee de la classe Solveur_Implicite_base
+ *
+ */
 
 
 

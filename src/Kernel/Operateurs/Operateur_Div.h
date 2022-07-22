@@ -24,16 +24,13 @@
 
 Declare_deriv(Operateur_Div_base);
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Operateur_Div
-//    Classe generique de la hierarchie des operateurs calculant la divergence
-//    d'un champ. Un objet Operateur_Div peut referencer n'importe quel
-//    objet derivant de Operateur_Div_base.
-// .SECTION voir aussi
-//    Operateur_Div_base Operateur
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Operateur_Div Classe generique de la hierarchie des operateurs calculant la divergence
+ *
+ *     d'un champ. Un objet Operateur_Div peut referencer n'importe quel
+ *     objet derivant de Operateur_Div_base.
+ *
+ * @sa Operateur_Div_base Operateur
+ */
 class Operateur_Div  : public Operateur, public DERIV(Operateur_Div_base)
 {
   Declare_instanciable(Operateur_Div);
@@ -50,57 +47,28 @@ public :
 };
 
 
-// Description:
-//    Renvoie l'objet sous-jacent upcaste en Operateur_base
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Operateur_base&
-//    Signification: l'objet sous-jacent upcaste en Operateur_base
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie l'objet sous-jacent upcaste en Operateur_base
+ *
+ * @return (Operateur_base&) l'objet sous-jacent upcaste en Operateur_base
+ */
 inline Operateur_base& Operateur_Div::l_op_base()
 {
   return valeur();
 }
 
-// Description:
-//    Renvoie l'objet sous-jacent upcaste en Operateur_base
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Operateur_base&
-//    Signification: l'objet sous-jacent upcaste en Operateur_base
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie l'objet sous-jacent upcaste en Operateur_base (version const)
+ *
+ * @return (Operateur_base&) l'objet sous-jacent upcaste en Operateur_base
+ */
 inline const Operateur_base& Operateur_Div::l_op_base() const
 {
   return valeur();
 }
 
-// Description:
-//    Initialise le tableau passe en parametre avec la contribution
-//    de l'operateur.
-// Precondition:
-// Parametre: DoubleTab& div
-//    Signification: tableau dans lequel stocke la contribution de l'operateur
-//    Valeurs par defaut:
-//    Contraintes: l'ancien contenu est ecrase
-//    Acces: sortie
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Initialise le tableau passe en parametre avec la contribution de l'operateur.
+ *
+ * @param (DoubleTab& div) tableau dans lequel stocke la contribution de l'operateur
+ */
 inline void Operateur_Div::volumique(DoubleTab& div) const
 {
   valeur().volumique(div);

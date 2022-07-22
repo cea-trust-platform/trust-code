@@ -35,8 +35,9 @@ Tri_poly::Tri_poly()
 {
 }
 
-// Description:
-// remplit le tableau face_normales dans la Zone_poly
+/*! @brief remplit le tableau face_normales dans la Zone_poly
+ *
+ */
 void Tri_poly::normale(int num_Face,DoubleTab& Face_normales,
                        const  IntTab& Face_sommets,
                        const IntTab& Face_voisins,

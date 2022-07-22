@@ -19,14 +19,10 @@
 
 #include <Interprete.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//      Ecrit un objet :
-//      Ecrire ob1
-// .SECTION voir aussi
-//     Ecrire_Fichier
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Ecrit un objet : Ecrire ob1
+ *
+ * @sa Ecrire_Fichier
+ */
 class Ecrire : public Interprete
 {
   Declare_instanciable(Ecrire);

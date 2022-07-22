@@ -30,13 +30,16 @@ Sortie& Moyenne_volumique::printOn(Sortie& s ) const
   return s << que_suis_je() << "\n";
 }
 
-// Description: lecture de la fonction de filtrage.
-//  {
-//    type BOITE|CHAPEAU|QUADRA|GAUSSIENNE|PARSER
-//    demie-largeur L
-//    [ omega W ]
-//    [ expression FORMULE ]
-//  }
+/*! @brief lecture de la fonction de filtrage.
+ *
+ * {
+ *     type BOITE|CHAPEAU|QUADRA|GAUSSIENNE|PARSER
+ *     demie-largeur L
+ *     [ omega W ]
+ *     [ expression FORMULE ]
+ *   }
+ *
+ */
 Entree& Moyenne_volumique::readOn(Entree& is )
 {
   l_ = -1;
@@ -116,8 +119,9 @@ inline double fonction_quadra(double x, double l_)
     }
   return ax * (27. / (16. * l_));
 }
-// Description: Evalue la fonction filtre en chaque coordonnee coord
-//  Methode appelee dans la classe Calcul_integrale_locale
+/*! @brief Evalue la fonction filtre en chaque coordonnee coord Methode appelee dans la classe Calcul_integrale_locale
+ *
+ */
 void Moyenne_volumique::eval_filtre(const DoubleTab& coords, ArrOfDouble& result) const
 {
   const int dim = Objet_U::dimension;
@@ -227,10 +231,11 @@ void Moyenne_volumique::eval_filtre(const DoubleTab& coords, ArrOfDouble& result
     }
 }
 
-// Description:
-// Cherche le champ de nom "nom_champ" dans le probleme de nom "nom_pb"
-//  dans les objers de l'interprete.
-// Methode appelee par traiter_champs()
+/*! @brief Cherche le champ de nom "nom_champ" dans le probleme de nom "nom_pb" dans les objers de l'interprete.
+ *
+ *  Methode appelee par traiter_champs()
+ *
+ */
 int Moyenne_volumique::get_champ(const Nom& nom_pb,
                                  const Nom& nom_champ,
                                  REF(Champ_base) & ref_champ)
@@ -265,11 +270,13 @@ int Moyenne_volumique::get_champ(const Nom& nom_pb,
   return 1;
 }
 
-// Description: fonction outil permettant de faire les calculs et d'ecrire le resultat
-//  dans un fichier lata pour tous les champs d'un type donne de la liste noms_champs.
-//  Methode appelee par interpreter()
-// type_champ=0 => traiter les champs aux elements
-// type_champ=1 => traiter les champs aux faces
+/*! @brief fonction outil permettant de faire les calculs et d'ecrire le resultat dans un fichier lata pour tous les champs d'un type donne de la liste noms_champs.
+ *
+ *   Methode appelee par interpreter()
+ *  type_champ=0 => traiter les champs aux elements
+ *  type_champ=1 => traiter les champs aux faces
+ *
+ */
 void Moyenne_volumique::traiter_champs(const Motcles& noms_champs,
                                        const Nom& nom_pb, const Nom& nom_dom,
                                        const DoubleTab& coords,
@@ -403,18 +410,21 @@ void Moyenne_volumique::traiter_champs(const Motcles& noms_champs,
                     nom_moyenne, nom_dom, localisation, "scalar",extrait);
 }
 
-// Description: Lecture des parametres dans le jeu de donnees. Format attendu:
-//  Moyenne_volumique {
-//    nom_pb NOM_DU_PROBLEME    (ou chercher les champs sources)
-//    nom_domaine DOMAINE_CIBLE (on evalue la convolution aux elements de ce domaine)
-//    noms_champs N CHAMP1 CHAMP2 ... (noms des champs a filtrer dans le probleme)
-//    [ nom_fichier_post NOM_SANS_EXTENSION ] (soit on donne nom_fichier et format_post,
-//                                             soit on donne fichier_post)
-//    [ format_post lata|meshtv|lml|med|... ] (par defaut lata)
-//    [ fichier_post Format_Post_XXX { ... } ] (lecture par readOn du Format_Post_XXX)
-//    fonction_filtre ...  (format : voir Moyenne_volumique::readOn() )
-//    [ localisation ELEM|SOM ]
-//  }
+/*! @brief Lecture des parametres dans le jeu de donnees.
+ *
+ * Format attendu: Moyenne_volumique {
+ *     nom_pb NOM_DU_PROBLEME    (ou chercher les champs sources)
+ *     nom_domaine DOMAINE_CIBLE (on evalue la convolution aux elements de ce domaine)
+ *     noms_champs N CHAMP1 CHAMP2 ... (noms des champs a filtrer dans le probleme)
+ *     [ nom_fichier_post NOM_SANS_EXTENSION ] (soit on donne nom_fichier et format_post,
+ *                                              soit on donne fichier_post)
+ *     [ format_post lata|meshtv|lml|med|... ] (par defaut lata)
+ *     [ fichier_post Format_Post_XXX { ... } ] (lecture par readOn du Format_Post_XXX)
+ *     fonction_filtre ...  (format : voir Moyenne_volumique::readOn() )
+ *     [ localisation ELEM|SOM ]
+ *   }
+ *
+ */
 Entree& Moyenne_volumique::interpreter(Entree& is)
 {
   Cerr << "Starting of Moyenne_volumique::interpreter" << finl;
@@ -517,7 +527,9 @@ Entree& Moyenne_volumique::interpreter(Entree& is)
   return is;
 }
 
-// .DESCRIPTION: classe outil utilisee en interne dans calculer_convolution()
+/*! @brief : classe outil utilisee en interne dans calculer_convolution()
+ *
+ */
 class Calcul_integrale_locale
 {
 public:
@@ -538,8 +550,11 @@ protected:
   int nb_items_reels_;
 };
 
-// Description: constructeur de la classe outil...
-//  Voir Moyenne_volumique::calculer_convolution()
+/*! @brief constructeur de la classe outil.
+ *
+ * .. Voir Moyenne_volumique::calculer_convolution()
+ *
+ */
 Calcul_integrale_locale::Calcul_integrale_locale(const Zone_VF& zone_source,
                                                  const Moyenne_volumique& filter,
                                                  const DoubleTab& champ_source) :
@@ -566,11 +581,14 @@ Calcul_integrale_locale::Calcul_integrale_locale(const Zone_VF& zone_source,
   octree_.build_nodes(coords, 0 /* no virtual items */);
 }
 
-// Description: evalue le produit de convolution "filter_ * champ_source_" au point x,y,z
-//  et stocke le resultat dans resu. On determine les elements a utiliser en fonction
-//  de la taille du filtre en utilisant une octree.
-//  On suppose que le champ source est aux elements.
-//  Methode appelee par Moyenne_volumique::calculer_convolution()
+/*! @brief evalue le produit de convolution "filter_ * champ_source_" au point x,y,z et stocke le resultat dans resu.
+ *
+ * On determine les elements a utiliser en fonction
+ *   de la taille du filtre en utilisant une octree.
+ *   On suppose que le champ source est aux elements.
+ *   Methode appelee par Moyenne_volumique::calculer_convolution()
+ *
+ */
 void Calcul_integrale_locale::calculer(const double x, const double y, const double z,
                                        ArrOfDouble& resu)
 {
@@ -616,9 +634,12 @@ void Calcul_integrale_locale::calculer(const double x, const double y, const dou
     }
 }
 
-// Description: methode generale pour calculer une convolution a partir d'un
-//  champ aux elements ou aux faces. Methode appelee par calculer_convolution_champ_elem()
-//  et calculer_convolution_champ_face()
+/*! @brief methode generale pour calculer une convolution a partir d'un champ aux elements ou aux faces.
+ *
+ * Methode appelee par calculer_convolution_champ_elem()
+ *   et calculer_convolution_champ_face()
+ *
+ */
 void Moyenne_volumique::calculer_convolution(const Zone_VF& zone_source,
                                              const DoubleTab& champ_source,
                                              const DoubleTab& coords_to_compute,
@@ -702,12 +723,14 @@ void Moyenne_volumique::calculer_convolution(const Zone_VF& zone_source,
     }
 }
 
-// Description: Calcule le produit de convolution entre la fonction filtre et
-//  le champ "champ_source" qui doit etre discretise aux elements de la "zone_source".
-//  Le tableau resu aura le meme nombre de colonnes que le tableau "champ_source", et
-//  le meme nombre de lignes que le tableau coords_to_compute.
-//  On suppose que la fonction filtre a un support inclu dans un cube de demi-cote box-size
-//  centre sur l'origine (on ne calcule pas la contribution des elements hors de ce cube).
+/*! @brief Calcule le produit de convolution entre la fonction filtre et le champ "champ_source" qui doit etre discretise aux elements de la "zone_source".
+ *
+ *   Le tableau resu aura le meme nombre de colonnes que le tableau "champ_source", et
+ *   le meme nombre de lignes que le tableau coords_to_compute.
+ *   On suppose que la fonction filtre a un support inclu dans un cube de demi-cote box-size
+ *   centre sur l'origine (on ne calcule pas la contribution des elements hors de ce cube).
+ *
+ */
 void Moyenne_volumique::calculer_convolution_champ_elem(const Zone_VF& zone_source,
                                                         const DoubleTab& champ_source,
                                                         const DoubleTab& coords_to_compute,
@@ -718,12 +741,15 @@ void Moyenne_volumique::calculer_convolution_champ_elem(const Zone_VF& zone_sour
                        coords_to_compute, resu);
 }
 
-// Description: Idem que calculer_convolution_champ_elem pour un champ VDF aux faces.
-//  (on suppose que le champ source est un champ vectoriel contenant pour chaque face
-//  la composante normale du champ a cette face)
-//  Pour chaque colonne du tableau champ_source, on remplit "dimension" colonnes
-//  du tableau resu : la premiere utilisant uniquement les faces de normale X, la deuxieme
-//  avec les faces de normale Y, etc...
+/*! @brief Idem que calculer_convolution_champ_elem pour un champ VDF aux faces.
+ *
+ * (on suppose que le champ source est un champ vectoriel contenant pour chaque face
+ *   la composante normale du champ a cette face)
+ *   Pour chaque colonne du tableau champ_source, on remplit "dimension" colonnes
+ *   du tableau resu : la premiere utilisant uniquement les faces de normale X, la deuxieme
+ *   avec les faces de normale Y, etc...
+ *
+ */
 void Moyenne_volumique::calculer_convolution_champ_face(const Zone_VF& zone_source,
                                                         const DoubleTab& champ_source,
                                                         const DoubleTab& coords_to_compute,

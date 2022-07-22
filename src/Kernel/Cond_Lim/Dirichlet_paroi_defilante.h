@@ -21,16 +21,10 @@
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Dirichlet_paroi_defilante
-//    Impose la vitesse de paroi dnas une equation de type Navier_Stokes.
-// .SECTION voir aussi
-//    Dirichlet
-//    Objet compatible avec des equations du domaine de l'Hydraulique
-//    ou indetermine. (voir compatible_avec_eqn(const Equation_base&) const)
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Dirichlet_paroi_defilante Impose la vitesse de paroi dnas une equation de type Navier_Stokes.
+ *
+ * @sa Dirichlet, Objet compatible avec des equations du domaine de l'Hydraulique, ou indetermine. (voir compatible_avec_eqn(const Equation_base&) const)
+ */
 class Dirichlet_paroi_defilante : public Dirichlet
 {
 

@@ -31,43 +31,25 @@ Champ_front_calc::Champ_front_calc()
 }
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Champ_front_calc::printOn(Sortie& os) const
 {
   return os;
 }
 
-// Description:
-//    Lit le nom d'un probleme, le nom d'un bord et
-//    le nom d'un champ inconnue a partir d'un flot d'entree.
-//    Cree ensuite le champ de frontiere correspondant.
-//    Format:
-//      Champ_front_calc nom_probleme nom_bord nom_champ
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entre
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit le nom d'un probleme, le nom d'un bord et le nom d'un champ inconnue a partir d'un flot d'entree.
+ *
+ *     Cree ensuite le champ de frontiere correspondant.
+ *     Format:
+ *       Champ_front_calc nom_probleme nom_bord nom_champ
+ *
+ * @param (Entree& is) un flot d'entre
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Champ_front_calc::readOn(Entree& is)
 {
   Motcle nom_inco;
@@ -76,37 +58,18 @@ Entree& Champ_front_calc::readOn(Entree& is)
   return is;
 }
 
-// Description:
-//    Cree l'objet Champ_front_calc representant la trace d'un champ
-//    inconnue sur une frontiere a partir des noms:
-//         - du probleme portant l'inconnue
-//         - du bord concerne (la frontiere)
-//         - de l'inconnue
-// Precondition:
-// Parametre: Nom& nom_pb
-//    Signification: le nom du probleme auquel appartent l'inconnue dont
-//                   on veut prendre la trace
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: Nom& nom
-//    Signification: le nom de la frontiere sur laquelle on prend la
-//                   trace de l'inconnue
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: Motcle& nom_inco
-//    Signification: le nom de l'inconnue dont on veut prendre la trace
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: pas de probleme du nom specifie
-// Exception: le probleme n'a pas de champ du nom specifie
-// Effets de bord:
-// Postcondition:
+/*! @brief Cree l'objet Champ_front_calc representant la trace d'un champ inconnue sur une frontiere a partir des noms:
+ *
+ *          - du probleme portant l'inconnue
+ *          - du bord concerne (la frontiere)
+ *          - de l'inconnue
+ *
+ * @param (Nom& nom_pb) le nom du probleme auquel appartent l'inconnue dont on veut prendre la trace
+ * @param (Nom& nom) le nom de la frontiere sur laquelle on prend la trace de l'inconnue
+ * @param (Motcle& nom_inco) le nom de l'inconnue dont on veut prendre la trace
+ * @throws pas de probleme du nom specifie
+ * @throws le probleme n'a pas de champ du nom specifie
+ */
 void Champ_front_calc::creer(const Nom& nom_pb,
                              const Nom& nom_bord,
                              const Motcle& nom_inco)
@@ -170,50 +133,32 @@ int Champ_front_calc::initialiser(double temps, const Champ_Inc_base& inco)
   return 1;
 }
 
-// Description:
-//    Associe le champ inconnue a l'objet
-// Precondition:
-// Parametre: Champ_Inc_base& inco
-//    Signification: le champ inconnue dont on prendra la trace
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: l'objet a un champ inconnue associe
+/*! @brief Associe le champ inconnue a l'objet
+ *
+ * @param (Champ_Inc_base& inco) le champ inconnue dont on prendra la trace
+ */
 void Champ_front_calc::associer_ch_inc_base(const Champ_Inc_base& inco)
 {
   l_inconnue = inco;
 }
 
 
-// Description:
-//    Non code
-// Precondition:
-// Parametre: Champ_front_base& ch
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Retour: Champ_front_base&
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Non code
+ *
+ * @param (Champ_front_base& ch)
+ * @return (Champ_front_base&)
+ */
 Champ_front_base& Champ_front_calc::affecter_(const Champ_front_base& ch)
 {
   return *this;
 }
 
-// Description:
-//    Mise a jour en temps du champ
-//    On prend juste la trace du champ inconnue au pas de
-//    temps auquel il se situe.
-//    WEC : verifier qu'on prend l'inconnue au bon temps !
+/*! @brief Mise a jour en temps du champ On prend juste la trace du champ inconnue au pas de
+ *
+ *     temps auquel il se situe.
+ *     WEC : verifier qu'on prend l'inconnue au bon temps !
+ *
+ */
 
 // Precondition: le nom du bord doit etre different de "??"
 // Parametre: double
@@ -237,60 +182,28 @@ void Champ_front_calc::mettre_a_jour(double temps)
 
 }
 
-// Description:
-//    Renvoie le champ inconnue associe
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Inc_base&
-//    Signification: le champ inconnue associe
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le champ inconnue associe
+ *
+ * @return (Champ_Inc_base&) le champ inconnue associe
+ */
 const Champ_Inc_base& Champ_front_calc::inconnue() const
 {
   return l_inconnue.valeur();
 }
 
-// Description:
-//    Renvoie le nom du bord sur lequel on calcule la trace.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Nom&
-//    Signification: le nom du bord sur lequel on calcule la trace
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nom du bord sur lequel on calcule la trace.
+ *
+ * @return (Nom&) le nom du bord sur lequel on calcule la trace
+ */
 const Nom& Champ_front_calc::nom_bord_oppose() const
 {
   return nom_autre_bord_;
 }
 
-// Description:
-//    Renvoie l'equation associee a l'inconnue dont on prend
-//    la trace.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Equation_base&
-//    Signification: l'equation associee a l'inconnue dont on prend
-//                   la trace
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie l'equation associee a l'inconnue dont on prend la trace.
+ *
+ * @return (Equation_base&) l'equation associee a l'inconnue dont on prend la trace
+ */
 const Equation_base& Champ_front_calc::equation() const
 {
   if (l_inconnue.non_nul()==0)
@@ -301,87 +214,40 @@ const Equation_base& Champ_front_calc::equation() const
   return inconnue().equation();
 }
 
-// Description:
-//    Renvoie le milieu associe a l'equation qui porte
-//    le champ inconnue dont on prend la trace.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Milieu_base&
-//    Signification: le milieu associe a l'equation qui porte
-//                    le champ inconnue dont on prend la trace
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le milieu associe a l'equation qui porte le champ inconnue dont on prend la trace.
+ *
+ * @return (Milieu_base&) le milieu associe a l'equation qui porte le champ inconnue dont on prend la trace
+ */
 const Milieu_base& Champ_front_calc::milieu() const
 {
   return equation().milieu();
 }
 
-// Description:
-//    Renvoie la zone discretisee associee a l'equation
-//    qui porte le champ inconnue dont on prend la trace.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Zone_dis_base&
-//    Signification: la zone discretisee associee a l'equation
-//                   qui porte le champ inconnue dont on prend la trace
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la zone discretisee associee a l'equation qui porte le champ inconnue dont on prend la trace.
+ *
+ * @return (Zone_dis_base&) la zone discretisee associee a l'equation qui porte le champ inconnue dont on prend la trace
+ */
 const Zone_dis_base& Champ_front_calc::zone_dis() const
 {
   return inconnue().zone_dis_base();
 }
 
-// Description:
-//    Renvoie la zone des conditions au limites discretisees
-//    portee par l'equation qui porte le champ inconnue
-//    dont on prend la trace
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Zone_Cl_dis_base&
-//    Signification: la zone des conditions au limites discretisees
-//                   portee par l'equation qui porte le champ inconnue
-//                   dont on prend la trace
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la zone des conditions au limites discretisees portee par l'equation qui porte le champ inconnue
+ *
+ *     dont on prend la trace
+ *
+ * @return (Zone_Cl_dis_base&) la zone des conditions au limites discretisees portee par l'equation qui porte le champ inconnue dont on prend la trace
+ */
 const Zone_Cl_dis_base& Champ_front_calc::zone_Cl_dis() const
 {
   return equation().zone_Cl_dis().valeur();
 }
 
-// Description:
-//    Renvoie la frontiere discretisee correspondante
-//    au domaine sur lequel prend la trace.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Frontiere_dis_base&
-//    Signification: frontiere discretisee correspondante
-//                   au domaine sur lequel prend la trace
-//    Contraintes: reference constante
-// Exception: frontiere du nom specifie introuvable
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la frontiere discretisee correspondante au domaine sur lequel prend la trace.
+ *
+ * @return (Frontiere_dis_base&) frontiere discretisee correspondante au domaine sur lequel prend la trace
+ * @throws frontiere du nom specifie introuvable
+ */
 const Frontiere_dis_base& Champ_front_calc::front_dis() const
 {
   return zone_dis().frontiere_dis(nom_autre_bord_);

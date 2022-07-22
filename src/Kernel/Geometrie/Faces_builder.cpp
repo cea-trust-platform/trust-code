@@ -50,16 +50,17 @@ void Faces_builder::reset()
   face_elem_.reset();
 }
 
-// Description:
-//  A partir de la description des elements de la zone et des frontieres
-//  (bords, raccords, faces internes et joints) :
-//  Remplissage des structures suivantes:
-//  - pour les frontieres de la zone: fixer_num_premiere_face
-//  - les_faces.faces_sommets (faces reeles)
-//  - les_faces.faces_voisins (faces reeles)
-//  - elem_faces              (pour les faces reeles des elements reels)
-//       (on initialise elem_faces de taille nb_elem_reels, nb_faces_par_elem)
-//  - joints.items_communs(FACE)
+/*! @brief A partir de la description des elements de la zone et des frontieres (bords, raccords, faces internes et joints) :
+ *
+ *   Remplissage des structures suivantes:
+ *   - pour les frontieres de la zone: fixer_num_premiere_face
+ *   - les_faces.faces_sommets (faces reeles)
+ *   - les_faces.faces_voisins (faces reeles)
+ *   - elem_faces              (pour les faces reeles des elements reels)
+ *        (on initialise elem_faces de taille nb_elem_reels, nb_faces_par_elem)
+ *   - joints.items_communs(FACE)
+ *
+ */
 void Faces_builder::creer_faces_reeles(Zone& zone,
                                        const Static_Int_Lists& connect_som_elem,
                                        Faces&   les_faces,
@@ -236,8 +237,9 @@ void Faces_builder::creer_faces_reeles(Zone& zone,
   reset();
 }
 
-// Description: methode outil pour creer_faces_frontiere et creer_faces_internes
-//  (si liste non vide sur au moins un processeur, affiche un message et exit()).
+/*! @brief methode outil pour creer_faces_frontiere et creer_faces_internes (si liste non vide sur au moins un processeur, affiche un message et exit()).
+ *
+ */
 void Faces_builder::check_erreur_faces(const char * message,
                                        const ArrOfInt& liste_faces) const
 {
@@ -291,7 +293,9 @@ void Faces_builder::check_erreur_faces(const char * message,
     }
 }
 
-// Description: ajoute une face reelle dans faces_sommets et faces_voisins.
+/*! @brief ajoute une face reelle dans faces_sommets et faces_voisins.
+ *
+ */
 int Faces_builder::ajouter_une_face(const ArrOfInt& une_face,
                                     const int elem0,
                                     const int elem1,
@@ -372,12 +376,13 @@ const IntTab& Faces_builder::faces_element_reference(int elem) const
 }
 
 
-// Description:
-//  Methode outil: on suppose que "une_face" contient les indices
-//  des sommets d'une face de l'element d'indice "elem" dans la zone.
-//  On cherche quel est le numero de cette face sur l'element
-//  de reference. Si les sommets ne correspondent a aucune face de
-//  l'element, on renvoie -1.
+/*! @brief Methode outil: on suppose que "une_face" contient les indices des sommets d'une face de l'element d'indice "elem" dans la zone.
+ *
+ *   On cherche quel est le numero de cette face sur l'element
+ *   de reference. Si les sommets ne correspondent a aucune face de
+ *   l'element, on renvoie -1.
+ *
+ */
 int Faces_builder::chercher_face_element(const ArrOfInt& une_face,
                                          const int     elem) const
 {
@@ -387,15 +392,16 @@ int Faces_builder::chercher_face_element(const ArrOfInt& une_face,
   return i_face;
 }
 
-// Description:
-//  Insere les faces de la frontiere donnee dans les trois tableaux,
-//  a la suite des faces deja presentes dans faces_sommets.
-//  Remplissage de :
-//   frontiere.num_premiere_face
-//  Completion de :
-//   faces_sommets
-//   elem_faces
-//   faces_voisins
+/*! @brief Insere les faces de la frontiere donnee dans les trois tableaux, a la suite des faces deja presentes dans faces_sommets.
+ *
+ *   Remplissage de :
+ *    frontiere.num_premiere_face
+ *   Completion de :
+ *    faces_sommets
+ *    elem_faces
+ *    faces_voisins
+ *
+ */
 void Faces_builder::creer_faces_frontiere(const int nb_voisins_attendus,
                                           Frontiere&   frontiere,
                                           IntTab& faces_sommets,
@@ -540,10 +546,11 @@ void Faces_builder::creer_faces_frontiere(const int nb_voisins_attendus,
   check_erreur_faces(msg, liste_faces_erreur3);
 }
 
-// Description:
-//  Construction des faces interieures au domaine
-//  (faces qui ont deux voisins et qui ne sont pas des "faces_bord_internes")
-//  Les faces de joint ont deja ete creees.
+/*! @brief Construction des faces interieures au domaine (faces qui ont deux voisins et qui ne sont pas des "faces_bord_internes")
+ *
+ *   Les faces de joint ont deja ete creees.
+ *
+ */
 void Faces_builder::creer_faces_internes(IntTab& faces_sommets,
                                          IntTab& elem_faces,
                                          IntTab& faces_voisins) const
@@ -725,14 +732,16 @@ void Faces_builder::creer_faces_internes(IntTab& faces_sommets,
   }
 }
 
-// Description:
-//  Methode appelee par Zone_VF::discretiser().
-//  Construction du descripteur pour les faces de bord
-//  Remplissage de ind_faces_virt_bord et des tableaux get_faces_virt() des frontieres
-//  a partir du descripteur parallele des faces.
-//  Note B.M.: le fait d'avoir mis les faces dans la Zone_VF, les aretes dans la Zone,
-//   certaines parties des proprites des faces de bord dans la Zone_VF et d'autres dans la Zone
-//   fait que l'initialisation passe par des chemins un peu tordus... il faudra nettoyer ca.
+/*! @brief Methode appelee par Zone_VF::discretiser().
+ *
+ * Construction du descripteur pour les faces de bord
+ *   Remplissage de ind_faces_virt_bord et des tableaux get_faces_virt() des frontieres
+ *   a partir du descripteur parallele des faces.
+ *   Note B.M.: le fait d'avoir mis les faces dans la Zone_VF, les aretes dans la Zone,
+ *    certaines parties des proprites des faces de bord dans la Zone_VF et d'autres dans la Zone
+ *    fait que l'initialisation passe par des chemins un peu tordus... il faudra nettoyer ca.
+ *
+ */
 void Zone::init_faces_virt_bord(const MD_Vector& md_vect_faces, MD_Vector& md_vect_faces_front)
 {
   // ***************************************
@@ -838,10 +847,12 @@ void Zone::init_faces_virt_bord(const MD_Vector& md_vect_faces, MD_Vector& md_ve
     }
 }
 
-// Description:
-//  Cette methode permet de faire un echange espace virtuel d'un tableau aux aretes
-//  sans passer par le descripteur des aretes. On utilise le tableau elem_aretes et l'echange
-//  espace virtuel des elements
+/*! @brief Cette methode permet de faire un echange espace virtuel d'un tableau aux aretes sans passer par le descripteur des aretes.
+ *
+ * On utilise le tableau elem_aretes et l'echange
+ *   espace virtuel des elements
+ *
+ */
 static void echanger_tableau_aretes(const IntTab& elem_aretes, int nb_aretes_reelles, ArrOfInt& tab_aretes)
 {
   const int moi = Process::me();

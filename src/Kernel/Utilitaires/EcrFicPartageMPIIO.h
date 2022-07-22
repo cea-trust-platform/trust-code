@@ -21,12 +21,11 @@
 #include <comm_incl.h>
 class Objet_U;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Class to use MPI-IO to write in a single file
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Class to use MPI-IO to write in a single file
+ *
+ *
+ *
+ */
 
 class EcrFicPartageMPIIO : public SFichier
 {

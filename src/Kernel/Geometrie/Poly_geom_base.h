@@ -19,13 +19,13 @@
 #include <Elem_geom_base.h>
 #include <Elem_geom.h>
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Poly_geom_base
-//
-// <Description of class Poly_geom_base>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Poly_geom_base
+ *
+ *  <Description of class Poly_geom_base>
+ *
+ *
+ *
+ */
 
 class Poly_geom_base : public Elem_geom_base
 {

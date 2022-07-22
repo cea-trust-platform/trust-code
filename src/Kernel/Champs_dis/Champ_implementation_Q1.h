@@ -18,12 +18,13 @@
 
 #include <Champ_implementation_sommet_base.h>
 
-/////////////////////////////////////////////////////////////////////////////
-// .DESCRIPTION        : class Champ_implementation_Q1
-//
-// Decrire ici la classe Champ_implementation_Q1
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Champ_implementation_Q1
+ *
+ *  Decrire ici la classe Champ_implementation_Q1
+ *
+ *
+ *
+ */
 
 class Champ_implementation_Q1 : public Champ_implementation_sommet_base
 {

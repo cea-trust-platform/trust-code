@@ -154,8 +154,9 @@ void Entree_Fichier_base::setf(IOS_FORMAT code)
     ifstream_->setf(code);
 }
 
-// Description:
-//    Return True if the file can be opened for reading, false otherwise.
+/*! @brief Return True if the file can be opened for reading, false otherwise.
+ *
+ */
 bool Entree_Fichier_base::Can_be_read(const char * name)
 {
   std::ifstream ifs(name,ios::in);

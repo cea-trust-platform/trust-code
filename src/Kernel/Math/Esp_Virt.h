@@ -19,12 +19,9 @@
 
 #include <Vect_Descripteur.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Espace virtuel utilise dans la gestion des tableaux distribues.
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Espace virtuel utilise dans la gestion des tableaux distribues.
+ *
+ */
 
 class Esp_Virt : public Objet_U
 {

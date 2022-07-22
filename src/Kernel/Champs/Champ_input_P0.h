@@ -21,17 +21,14 @@
 #include <Champ_Fonc_P0_base.h>
 #include <Champ_Input_Proto.h>
 
-//////////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     class Champ_input_P0
-//
-//     Cette classe represente un champ accessible par setInputField
-//     defini sur le domane avec une valeur par element.
-//
-// .SECTION voir aussi
-//   Champ_Input_Proto
-/////////////////////////////////////////////////////////////////////////////////
+/*! @brief class Champ_input_P0
+ *
+ *      Cette classe represente un champ accessible par setInputField
+ *      defini sur le domane avec une valeur par element.
+ *
+ *
+ * @sa Champ_Input_Proto
+ */
 
 class Champ_input_P0 : public Champ_Fonc_P0_base, public Champ_Input_Proto
 {

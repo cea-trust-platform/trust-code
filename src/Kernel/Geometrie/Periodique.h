@@ -22,19 +22,14 @@
 
 class Faces;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Periodique
-//     Cette classe represente une condition aux limites periodique.
-//     On peut specifier une periodicite en X, Y ou Z.
-//     Toutes les faces de la frontiere associee a cette condition doivent
-//     avoir la meme orientation
-// .SECTION voir aussi
-//     Cond_lim_base
-//     Toutes les faces de la frontiere associee a cette condition doivent
-//     avoir la meme orientation
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Periodique Cette classe represente une condition aux limites periodique.
+ *
+ *      On peut specifier une periodicite en X, Y ou Z.
+ *      Toutes les faces de la frontiere associee a cette condition doivent
+ *      avoir la meme orientation
+ *
+ * @sa Cond_lim_base, Toutes les faces de la frontiere associee a cette condition doivent, avoir la meme orientation
+ */
 class Periodique  : public Cond_lim_base
 {
 

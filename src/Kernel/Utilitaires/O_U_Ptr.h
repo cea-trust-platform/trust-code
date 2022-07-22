@@ -20,15 +20,13 @@
 
 class Nom;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Pointeur sur un Objet_U.
-//    Le constructeur par defaut construit un pointeur "nul".
-//
-// .SECTION voir aussi
-//     Ref_ Deriv_ Memoire_
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Pointeur sur un Objet_U.
+ *
+ * Le constructeur par defaut construit un pointeur "nul".
+ *
+ *
+ * @sa Ref_ Deriv_ Memoire_
+ */
 class O_U_Ptr : public Objet_U
 {
   Declare_base_sans_constructeur_ni_destructeur(O_U_Ptr);

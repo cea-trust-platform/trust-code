@@ -23,31 +23,17 @@ class Schema_RK_Rationnel
 {  };
 /// \endcond
 
-// .DESCRIPTION : classe RRK2
-//     Cette classe represente un  schema de Runge Kutta
-//     rationel d'ordre 2 qui s'ecrit:
-//     U(n+1) = U(n) + (2g1 (g1,b) - b(g1,g1))/(b,b)
-//     ou : g1 = dt f(U(n))
-//          g2 = dt f(U(n) + c2 g1)
-//          b = b1 g1 + b2 g2
-//     on choisit b1=2, b2=-1, c2=1/2
-// .SECTION voir aussi : TRUSTSchema_RK
-//
-//  03/07/2017 ABn. Quelques explications RRK2:
-//  Le papier de reference pour l'implementation du Rational Runge Kutta 2 semble etre :
-//  Wambeck - Rational Runge-Kutta methods for solving systems of ordinary differential equations:
-//  https://link.springer.com/article/10.1007/BF02252381
-//  Le "rational" vient de la fraction rationnelle utilisee dans l'expansion.
-//  Le reste colle exactement a l'implementation, d'apres ce que je peux voir. On y retrouve notamment la definition interessante de
-//    a.b / d = a(b,d)+b(d,a)-(a,b) / ||d||^2
-//  pour a, b et d vecteurs.
-//  En deux mots (tires de la conclusion) :
-//  Although rational methods require more computational work than linear ones, they can have some other properties, such as a stable behaviour with explicitness, which make them preferable.
-//  05/07/2017 ABn. Complement explications RRK2:
-//  Application du RRK2 en CFD :
-//  https://link.springer.com/content/pdf/10.1007%2F3-540-13917-6_112.pdf
-//  rho*u reste au temps n pour une evaluation intermediaire de f.
-//  Said differently, from the time scheme perspective, f is only a function of Y1.
+/*! @brief : classe RRK2 Cette classe represente un  schema de Runge Kutta
+ *
+ *      rationel d'ordre 2 qui s'ecrit:
+ *      U(n+1) = U(n) + (2g1 (g1,b) - b(g1,g1))/(b,b)
+ *      ou : g1 = dt f(U(n))
+ *           g2 = dt f(U(n) + c2 g1)
+ *           b = b1 g1 + b2 g2
+ *      on choisit b1=2, b2=-1, c2=1/2
+ *
+ * @sa : TRUSTSchema_RK, 03/07/2017 ABn. Quelques explications RRK2:, Le papier de reference pour l'implementation du Rational Runge Kutta 2 semble etre :, Wambeck - Rational Runge-Kutta methods for solving systems of ordinary differential equations:, https://link.springer.com/article/10.1007/BF02252381, Le "rational" vient de la fraction rationnelle utilisee dans l'expansion., Le reste colle exactement a l'implementation, d'apres ce que je peux voir. On y retrouve notamment la definition interessante de, a.b / d = a(b,d)+b(d,a)-(a,b) / ||d||^2, pour a, b et d vecteurs., En deux mots (tires de la conclusion) :, Although rational methods require more computational work than linear ones, they can have some other properties, such as a stable behaviour with explicitness, which make them preferable., 05/07/2017 ABn. Complement explications RRK2:, Application du RRK2 en CFD :, https://link.springer.com/content/pdf/10.1007%2F3-540-13917-6_112.pdf, rho*u reste au temps n pour une evaluation intermediaire de f., Said differently, from the time scheme perspective, f is only a function of Y1.
+ */
 
 class RRK2: public TRUSTSchema_RK<Ordre_RK::RATIO_DEUX>
 {

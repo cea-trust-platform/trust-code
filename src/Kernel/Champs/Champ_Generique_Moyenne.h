@@ -23,10 +23,11 @@
 
 class Postraitement_base;
 
-//
-// .DESCRIPTION class Champ_Generique_Moyenne
-// Champ destine a post-traiter une moyenne d un champ generique
-// La classe porte un operateur statistique "Op_Moyenne"
+/*! @brief class Champ_Generique_Moyenne Champ destine a post-traiter une moyenne d un champ generique
+ *
+ *  La classe porte un operateur statistique "Op_Moyenne"
+ *
+ */
 
 //// Syntaxe a respecter pour jdd
 //

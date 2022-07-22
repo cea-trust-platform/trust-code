@@ -75,25 +75,14 @@ extern "C" Problem* getProblem()
   return T;
 }
 
-// Description:
-// As initialize doesn't have any arguments, they can be passed to the Problem
-// at the time of instantiation.
-// They can include data file name, MPI communicator,..
-// In this implementation (for use outside TRUST), only the name of an
-// underlying Probleme_U needs to be provided.
-// Precondition: None.
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: WrongContext
-// Effets de bord:
-// Postcondition:
-// Problem instantiated
+/*! @brief As initialize doesn't have any arguments, they can be passed to the Problem at the time of instantiation.
+ *
+ *  They can include data file name, MPI communicator,..
+ *  In this implementation (for use outside TRUST), only the name of an
+ *  underlying Probleme_U needs to be provided.
+ *
+ * @throws WrongContext
+ */
 
 ProblemTrio::ProblemTrio()
 {
@@ -121,24 +110,10 @@ void ProblemTrio::setMPIComm(void* mpicomm)
     }
 #endif
 }
-// Description:
-// This method is called once at the beginning, before any other one of
-// the interface Problem.
-// Precondition: Problem is instantiated, not initialized
-// (*my_params) have been filled by constructor.
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: WrongContext
-// Effets de bord:
-// Postcondition:
-// Problem initialized.
-// Unknown and given fields are initialized at initial time
+/*! @brief This method is called once at the beginning, before any other one of the interface Problem.
+ *
+ * @throws WrongContext
+ */
 bool ProblemTrio::initialize()
 {
   Process::exception_sur_exit=1;
@@ -225,22 +200,12 @@ bool ProblemTrio::initialize_pb(Probleme_U& pb_to_solve)
   return true;
 }
 
-// Description:
-// This method is called once at the end, after any other one.
-// It frees the memory and saves anything that needs to be saved.
-// Precondition: initialize, but not yet terminate
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: WrongContext
-// Effets de bord:
-// Postcondition:
-// The object is ready to be destroyed.
+/*! @brief This method is called once at the end, after any other one.
+ *
+ * It frees the memory and saves anything that needs to be saved.
+ *
+ * @throws WrongContext
+ */
 void ProblemTrio::terminate()
 {
   pb->postraiter(1);
@@ -267,92 +232,57 @@ void ProblemTrio::terminate()
 ///////////////////////////////////
 
 
-// Description:
-// Returns the present time.
-// This value may change only at the call of validateTimeStep.
-// A surcharger
-// Precondition: initialize, not yet terminate
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: present time
-//    Contraintes:
-// Exception: WrongContext
-// Effets de bord:
-// Postcondition:
-// ProblemTrio unchanged
+/*! @brief Returns the present time.
+ *
+ * This value may change only at the call of validateTimeStep.
+ *  A surcharger
+ *
+ * @return (double) present time
+ * @throws WrongContext
+ */
 double ProblemTrio::presentTime() const
 {
   return pb->presentTime();
 }
 
-// Description:
-// Compute the value the Problem would like for the next time step.
-// This value will not necessarily be used at the call of initTimeStep,
-// but it is a hint.
-// This method may use all the internal state of the Problem.
-// Precondition: initialize, not yet terminate
-// Parametre: stop
-//    Signification: Does the Problem want to stop ?
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: The desired time step
-//    Contraintes:
-// Exception: WrongContext
-// Effets de bord:
-// Postcondition:
-// ProblemTrio unchanged
+/*! @brief Compute the value the Problem would like for the next time step.
+ *
+ * This value will not necessarily be used at the call of initTimeStep,
+ *  but it is a hint.
+ *  This method may use all the internal state of the Problem.
+ *
+ * @param (stop) Does the Problem want to stop ?
+ * @return (double) The desired time step
+ * @throws WrongContext
+ */
 double ProblemTrio::computeTimeStep(bool& stop) const
 {
   return pb->computeTimeStep(stop);
 }
 
 
-// Description:
-// This method allocates and initializes the unknown and given fields
-// for the future time step.
-// The value of the interval is imposed through the parameter dt.
-// In case of error, returns false.
-// Precondition: initialize, not yet terminate, timestep not yet initialized, dt>0
-// Parametre: double dt
-//    Signification: the time interval to allocate
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: bool
-//    Signification: true=OK, false=error, not able to tackle this dt
-//    Contraintes:
-// Exception: WrongContext, WrongArgument
-// Effets de bord:
-// Postcondition:
-// Enables the call to several methods for the next time step
+/*! @brief This method allocates and initializes the unknown and given fields for the future time step.
+ *
+ *  The value of the interval is imposed through the parameter dt.
+ *  In case of error, returns false.
+ *
+ * @param (double dt) the time interval to allocate
+ * @return (bool) true=OK, false=error, not able to tackle this dt
+ * @throws WrongContext, WrongArgument
+ */
 bool ProblemTrio::initTimeStep(double dt)
 {
   return pb->initTimeStep(dt);
 }
 
 
-// Description:
-// Calculates the unknown fields for the next time step.
-// The default implementation uses iterations.
-// Precondition: initTimeStep
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: bool
-//    Signification: true=OK, false=unable to find the solution.
-//    Contraintes:
-// Exception: WrongContext
-// Effets de bord:
-// Postcondition:
-// The unknowns are updated over the next time step.
+/*! @brief Calculates the unknown fields for the next time step.
+ *
+ * The default implementation uses iterations.
+ *
+ * @return (bool) true=OK, false=unable to find the solution.
+ * @throws WrongContext
+ */
 bool ProblemTrio::solveTimeStep()
 {
   statistiques().begin_count(timestep_counter_);
@@ -364,24 +294,13 @@ bool ProblemTrio::solveTimeStep()
 }
 
 
-// Description:
-// Validates the calculated unknown by moving the present time
-// at the end of the time step.
-// This method is allowed to free past values of the unknown and given
-// fields.
-// Precondition: initTimeStep
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: WrongContext
-// Effets de bord:
-// Postcondition:
-// The present time has moved forward.
+/*! @brief Validates the calculated unknown by moving the present time at the end of the time step.
+ *
+ *  This method is allowed to free past values of the unknown and given
+ *  fields.
+ *
+ * @throws WrongContext
+ */
 void ProblemTrio::validateTimeStep()
 {
   pb->validateTimeStep();
@@ -400,21 +319,11 @@ void ProblemTrio::validateTimeStep()
   statistiques().end_count(timestep_counter_);
 }
 
-// Description:
-// Tells if the Problem unknowns have changed during the last time step.
-// Precondition: validateTimeStep
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: bool
-//    Signification: true=stationary, false=not stationary
-//    Contraintes:
-// Exception: WrongContext
-// Effets de bord:
-// Postcondition:
-// ProblemTrio unchanged
+/*! @brief Tells if the Problem unknowns have changed during the last time step.
+ *
+ * @return (bool) true=stationary, false=not stationary
+ * @throws WrongContext
+ */
 bool ProblemTrio::isStationary() const
 {
   return pb->isStationary();
@@ -436,21 +345,10 @@ bool ProblemTrio::getStationaryMode() const
 }
 
 
-// Description:
-// Aborts the resolution of the current time step.
-// Precondition: initTimeStep
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: WrongContext
-// Effets de bord:
-// Postcondition:
-// Can call again initTimeStep with a new dt.
+/*! @brief Aborts the resolution of the current time step.
+ *
+ * @throws WrongContext
+ */
 void ProblemTrio::abortTimeStep()
 {
   pb->abortTimeStep();
@@ -462,49 +360,28 @@ void ProblemTrio::abortTimeStep()
 //                                         //
 /////////////////////////////////////////////
 
-// Description:
-// In the case solveTimeStep uses an iterative process,
-// this method executes a single iteration.
-// It is thus possible to modify the given fields between iterations.
-// converged is set to true if the process has converged, ie if the
-// unknown fields are solution to the problem on the next time step.
-// Otherwise converged is set to false.
-// The return value indicates if the convergence process behaves normally.
-// If false, the ProblemTrio wishes to abort the time step resolution.
-// Precondition: initTimeStep
-// Parametre: bool& converged
-//    Signification: It is a return value :
-//                   true if the process has converged, false otherwise.
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: bool
-//    Signification: true=OK, false=unable to converge
-//    Contraintes:
-// Exception: WrongContext
-// Effets de bord:
-// Postcondition:
-// The unknowns are updated over the next time step.
+/*! @brief In the case solveTimeStep uses an iterative process, this method executes a single iteration.
+ *
+ *  It is thus possible to modify the given fields between iterations.
+ *  converged is set to true if the process has converged, ie if the
+ *  unknown fields are solution to the problem on the next time step.
+ *  Otherwise converged is set to false.
+ *  The return value indicates if the convergence process behaves normally.
+ *  If false, the ProblemTrio wishes to abort the time step resolution.
+ *
+ * @param (bool& converged) It is a return value : true if the process has converged, false otherwise.
+ * @return (bool) true=OK, false=unable to converge
+ * @throws WrongContext
+ */
 bool ProblemTrio::iterateTimeStep(bool& converged)
 {
   return pb->iterateTimeStep(converged);
 }
 
-// Description:
-// This method is used to find the names of input fields understood by the Problem
-// Precondition: initTimeStep
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: vector<string>
-//    Signification: list of names usable with getInputFieldTemplate and setInputField
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-// ProblemTrio unchanged
+/*! @brief This method is used to find the names of input fields understood by the Problem
+ *
+ * @return (vector<string>) list of names usable with getInputFieldTemplate and setInputField
+ */
 vector<string> ProblemTrio::getInputFieldsNames() const
 {
   vector<string> v;
@@ -515,44 +392,18 @@ vector<string> ProblemTrio::getInputFieldsNames() const
   return v;
 }
 
-// Description:
-// This method is used to get a template of a field expected for the given name.
-// Precondition: initTimeStep, name is one of getInputFieldsNames
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-// afield contains a field with values neither allocated nor filled, describing the
-// field expected by setInputField for that name.
-// ProblemTrio unchanged
+/*! @brief This method is used to get a template of a field expected for the given name.
+ *
+ */
 void ProblemTrio::getInputFieldTemplate(const std::string& name, TrioField& afield) const
 {
   Nom nom(name);
   pb->getInputFieldTemplate(nom,afield);
 }
 
-// Description:
-// This method is used to provide the Problem with an input field.
-// Precondition: initTimeStep, name is one of getInputFieldsNames, afield is like in getInputFieldTemplate
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-// Values of afield have been used (copied inside the ProblemTrio).
+/*! @brief This method is used to provide the Problem with an input field.
+ *
+ */
 void ProblemTrio::setInputField(const std::string& name, const TrioField& afield)
 {
   Nom nom(name);

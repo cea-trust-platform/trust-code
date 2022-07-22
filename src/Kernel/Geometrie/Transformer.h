@@ -20,14 +20,13 @@
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Transformer
-//    Applique un changement de coordonnees
-//    Structure du jeu de donnee (en dimension 2) :
-//    Transformer dom expr1 expr2
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Transformer Applique un changement de coordonnees
+ *
+ *     Structure du jeu de donnee (en dimension 2) :
+ *     Transformer dom expr1 expr2
+ *
+ *
+ */
 #include <Interprete_geometrique_base.h>
 class Transformer : public Interprete_geometrique_base
 {

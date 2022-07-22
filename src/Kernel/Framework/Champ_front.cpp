@@ -19,20 +19,11 @@ Implemente_deriv(Champ_front_base);
 Implemente_instanciable(Champ_front,"Champ_front",DERIV(Champ_front_base));
 
 
-// Description:
-//    Imprime le champ sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Imprime le champ sur un flot de sortie
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Champ_front::printOn(Sortie& s ) const
 {
   return DERIV(Champ_front_base)::printOn(s) ;
@@ -40,20 +31,11 @@ Sortie& Champ_front::printOn(Sortie& s ) const
 
 
 
-// Description:
-//    Lit le champ a partir d'un flot d'entree
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit le champ a partir d'un flot d'entree
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Champ_front::readOn(Entree& s )
 {
   return DERIV(Champ_front_base)::readOn(s) ;

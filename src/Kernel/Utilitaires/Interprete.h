@@ -20,22 +20,21 @@
 class Interprete;
 Declare_ref(Interprete);
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//   Classe de base des objets "interprete".
-//   Ces objets definissent des actions a realiser lorsqu'on les
-//   rencontre dans le jeu de donnees. L'action est declanchee par
-//   un appel a la methode interpreter().
-//   L'interprete peut ensuite lire des parametres supplementaires
-//   dans l'entree pour realiser sa tache. En general, l'interprete
-//   agit sur d'autres objets declares dans le jeu de donnees. Il peut
-//   y acceder par les methodes objet() et est_un_objet_existant().
-//   Voir par exemple la classe Lire ou la classe Associer
-//   Voir aussi la classe Interprete_bloc qui lit une serie d'instructions
-//   a executer dans le jeu de donnees.
-// .SECTION voir aussi Interprete_bloc
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe de base des objets "interprete".
+ *
+ * Ces objets definissent des actions a realiser lorsqu'on les
+ *    rencontre dans le jeu de donnees. L'action est declanchee par
+ *    un appel a la methode interpreter().
+ *    L'interprete peut ensuite lire des parametres supplementaires
+ *    dans l'entree pour realiser sa tache. En general, l'interprete
+ *    agit sur d'autres objets declares dans le jeu de donnees. Il peut
+ *    y acceder par les methodes objet() et est_un_objet_existant().
+ *    Voir par exemple la classe Lire ou la classe Associer
+ *    Voir aussi la classe Interprete_bloc qui lit une serie d'instructions
+ *    a executer dans le jeu de donnees.
+ *
+ * @sa Interprete_bloc
+ */
 class Interprete : public Objet_U
 {
   Declare_instanciable(Interprete);

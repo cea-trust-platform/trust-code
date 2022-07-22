@@ -20,14 +20,11 @@
 
 class Objet_U;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Ecriture dans un fichier partage
-//    Cette classe derive de Ecr_Fic_Par, en utilisant une sortie en binaire.
-//    Ce type de fichier est notamment utilise pour la creation d'un fichier de post-traitement unique.
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Ecriture dans un fichier partage Cette classe derive de Ecr_Fic_Par, en utilisant une sortie en binaire.
+ *
+ *     Ce type de fichier est notamment utilise pour la creation d'un fichier de post-traitement unique.
+ *
+ */
 
 class EcrFicPartageBin : public EcrFicPartage
 {

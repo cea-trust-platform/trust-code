@@ -31,27 +31,19 @@ class Discretisation_base;
 class Probleme_base;
 class Param;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Milieu_base
-//     Cette classe est la base de la hierarchie des milieux (physiques)
-//     Elle regroupe les fonctionnalites (communes) et les proprietes physiques
-//     d'un milieu. Cette classe contient les principaux champs donnees
-//     caracterisant le milieu:
-//        - masse volumique       (rho)
-//        - diffusivite           (alpha)
-//        - conductivite          (lambda)
-//        - capacite calorifique  (Cp)
-//        - dilatabilite          (beta_th)
-// .SECTION voir aussi
-//     Milieu Solide Fluide_Incompressible Constituant
-//     Classe abstraite dont tous les milieux physiques doivent deriver.
-//     Methodes abstraites:
-//       void tester_champs_lus()
-//       void mettre_a_jour(double temps)
-//       void initialiser()
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Milieu_base Cette classe est la base de la hierarchie des milieux (physiques)
+ *
+ *      Elle regroupe les fonctionnalites (communes) et les proprietes physiques
+ *      d'un milieu. Cette classe contient les principaux champs donnees
+ *      caracterisant le milieu:
+ *         - masse volumique       (rho)
+ *         - diffusivite           (alpha)
+ *         - conductivite          (lambda)
+ *         - capacite calorifique  (Cp)
+ *         - dilatabilite          (beta_th)
+ *
+ * @sa Milieu Solide Fluide_Incompressible Constituant, Classe abstraite dont tous les milieux physiques doivent deriver., Methodes abstraites:, void tester_champs_lus(), void mettre_a_jour(double temps), void initialiser()
+ */
 class Milieu_base : public Champs_compris_interface, public Objet_U
 {
   Declare_base_sans_constructeur(Milieu_base);

@@ -49,18 +49,24 @@ inline void remplir_items_non_calcules_(TRUSTVect<_TYPE_>& v, _TYPE_ valeur)
     }
 }
 
-// Description: Remplit les "items non calcules" du tableau avec une valeur invalide. Ce sont tous les items qui ne sont pas repertories
-//  dans v.get_md_vector().valeurs().get_items_to_compute(). (items non calcules par les operations par defaut sur les vecteurs, en general ce sont les items virtuels)
-//  Il est conseille d'appliquer cette methode a la fin des fonctions qui ne renvoient pas un espace virtuel a jour avec declare_espace_virtuel_invalide(...))
-//  de sorte a provoquer une erreur si l'espace virtuel est utilise.
+/*! @brief Remplit les "items non calcules" du tableau avec une valeur invalide.
+ *
+ * Ce sont tous les items qui ne sont pas repertories dans v.get_md_vector().valeurs().get_items_to_compute(). (items non calcules par les operations par defaut sur les vecteurs, en general ce sont les items virtuels)
+ *   Il est conseille d'appliquer cette methode a la fin des fonctions qui ne renvoient pas un espace virtuel a jour avec declare_espace_virtuel_invalide(...))
+ *   de sorte a provoquer une erreur si l'espace virtuel est utilise.
+ *
+ */
 template<typename _TYPE_>
 inline void remplir_items_non_calcules(TRUSTVect<_TYPE_>& v, _TYPE_ valeur = 0)
 {
   remplir_items_non_calcules_(v, valeur);
 }
 
-// Description: en mode comm_check_enabled(), verifie si l'espace virtuel du vecteur est a jour, si ce n'est pas le cas, exit().
-// Ce test n'est fait qu'en mode comm_check_enabled() car il necessite des communications.
+/*! @brief en mode comm_check_enabled(), verifie si l'espace virtuel du vecteur est a jour, si ce n'est pas le cas, exit().
+ *
+ * Ce test n'est fait qu'en mode comm_check_enabled() car il necessite des communications.
+ *
+ */
 template<typename _TYPE_>
 inline void assert_espace_virtuel_vect(const TRUSTVect<_TYPE_>& v)
 {
@@ -75,9 +81,11 @@ inline void assert_espace_virtuel_vect(const TRUSTVect<_TYPE_>& v)
     }
 }
 
-// Description: When compiled without NDEBUG or when running with check_enabled flag,
-//  fills all "not computed" items with an invalid value (ie, items that are not VECT_REAL_ITEMS, usually, these are the virtual items).
-//  You should call this method whenever you compute some field values but you don't compute or update the virtual space.
+/*! @brief When compiled without NDEBUG or when running with check_enabled flag, fills all "not computed" items with an invalid value (ie, items that are not VECT_REAL_ITEMS, usually, these are the virtual items).
+ *
+ *   You should call this method whenever you compute some field values but you don't compute or update the virtual space.
+ *
+ */
 template<typename _TYPE_>
 inline void declare_espace_virtuel_invalide(TRUSTVect<_TYPE_>& v)
 {

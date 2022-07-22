@@ -20,24 +20,15 @@
 Implemente_base(Frontiere,"Frontiere",Objet_U);
 
 
-// Description:
-//    Lit les specification d'une frontiere
-//    a partir d'un flot d'entree.
-//    On lit:
-//       le nom
-//       les faces
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit les specification d'une frontiere a partir d'un flot d'entree.
+ *
+ *     On lit:
+ *        le nom
+ *        les faces
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Frontiere::readOn(Entree& is)
 {
   is >> nom;
@@ -45,187 +36,92 @@ Entree& Frontiere::readOn(Entree& is)
 }
 
 
-// Description:
-//    Ecrit la frontiere sur un flot de sortie.
-//    On ecrit:
-//      le nom de la frontiere
-//      les faces
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit la frontiere sur un flot de sortie.
+ *
+ * On ecrit:
+ *       le nom de la frontiere
+ *       les faces
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Frontiere::printOn(Sortie& os) const
 {
   os << nom << finl;
   return os << les_faces;
 }
 
-// Description:
-//    Associe la frontiere a la zone dont elle depend.
-// Precondition:
-// Parametre: Zone& une_zone
-//    Signification: la zone a associee a la frontiere
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe la frontiere a la zone dont elle depend.
+ *
+ * @param (Zone& une_zone) la zone a associee a la frontiere
+ */
 void Frontiere::associer_zone(const Zone& une_zone)
 {
   la_zone=une_zone;
   les_faces.associer_zone(une_zone);
 }
 
-// Description:
-//    Donne un nom a la frontiere
-// Precondition:
-// Parametre: Nom& name
-//    Signification: le nom a donner a la frontiere
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Donne un nom a la frontiere
+ *
+ * @param (Nom& name) le nom a donner a la frontiere
+ */
 void Frontiere::nommer(const Nom& name)
 {
   nom=name;
 }
 
-// Description:
-//    Ajoute une (ou plusieurs) face(s) a la frontiere,
-//    la (les) face(s) est (sont) specifiee(s) par un tableau
-//    contenant les numeros des sommets.
-// Precondition:
-// Parametre: IntTab& sommets
-//    Signification: tableau contenant les numeros des sommets
-//                   des face a ajouter
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ajoute une (ou plusieurs) face(s) a la frontiere, la (les) face(s) est (sont) specifiee(s) par un tableau
+ *
+ *     contenant les numeros des sommets.
+ *
+ * @param (IntTab& sommets) tableau contenant les numeros des sommets des face a ajouter
+ */
 void Frontiere::ajouter_faces(const IntTab& sommets)
 {
   les_faces.ajouter(sommets);
 }
 
-// Description:
-//    Type les faces de la frontiere.
-// Precondition:
-// Parametre: Motcle& typ
-//    Signification: le type (geometrique) des faces
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//                 Les types de faces reconnus sont expliques
-//                 dans la classe Faces (methode Faces::type(const Motcle&))
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: les faces de la frontiere sont typees
+/*! @brief Type les faces de la frontiere.
+ *
+ * @param (Motcle& typ) le type (geometrique) des faces
+ */
 void Frontiere::typer_faces(const Motcle& typ)
 {
   les_faces.typer(typ);
 }
 
-// Description:
-//    Type les faces de la frontiere
-// Precondition:
-// Parametre: Type_Face& typ
-//    Signification: le type (geometrique) des faces
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//                 Les types de faces reconnus sont expliques
-//                 dans la classe Faces (methode Faces::type(const Type_Face&))
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Type les faces de la frontiere
+ *
+ * @param (Type_Face& typ) le type (geometrique) des faces
+ */
 void Frontiere::typer_faces(const Type_Face& typ)
 {
   les_faces.typer(typ);
 }
 
-// Description:
-//    Renvoie les sommets des faces de la frontiere
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: IntTab&
-//    Signification: le tableau contenant les numeros des
-//                   sommets des faces de la frontiere
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie les sommets des faces de la frontiere
+ *
+ * @return (IntTab&) le tableau contenant les numeros des sommets des faces de la frontiere
+ */
 IntTab& Frontiere::les_sommets_des_faces()
 {
   return les_faces.les_sommets();
 }
-// Description:
-//    Renvoie les sommets des faces de la frontiere
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: IntTab&
-//    Signification: le tableau contenant les numeros des
-//                   sommets des faces de la frontiere
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie les sommets des faces de la frontiere
+ *
+ * @return (IntTab&) le tableau contenant les numeros des sommets des faces de la frontiere
+ */
 const IntTab& Frontiere::les_sommets_des_faces() const
 {
   return les_faces.les_sommets();
 }
 
-// Description:
-//    Renumerote les noeuds (sommets) des faces.
-//    Le noeud de numero k devient le noeud de numero Les_Nums[k]
-// Precondition:
-// Parametre: IntVect& Les_Nums
-//    Signification: le vecteur de renumerotation
-//                   le_nouveau_sommet[i] = Les_Nums[ancien_sommet[i]]
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renumerote les noeuds (sommets) des faces.
+ *
+ * Le noeud de numero k devient le noeud de numero Les_Nums[k]
+ *
+ * @param (IntVect& Les_Nums) le vecteur de renumerotation le_nouveau_sommet[i] = Les_Nums[ancien_sommet[i]]
+ */
 void Frontiere::renum(const IntVect& Les_Nums)
 {
   IntTab& les_sommets=faces().les_sommets();
@@ -234,61 +130,31 @@ void Frontiere::renum(const IntVect& Les_Nums)
       les_sommets(i,j)=Les_Nums[les_sommets(i,j)];
 }
 
-// Description:
-//    Renvoie la Zone associee a la frontiere.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Zone&
-//    Signification: la zone associee a la frontiere
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la Zone associee a la frontiere.
+ *
+ * (version const)
+ *
+ * @return (Zone&) la zone associee a la frontiere
+ */
 const Zone& Frontiere::zone() const
 {
   return la_zone.valeur();
 }
 
-// Description:
-//    Renvoie la Zone associee a la frontiere.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Zone&
-//    Signification: la zone associee a la frontiere
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la Zone associee a la frontiere.
+ *
+ * @return (Zone&) la zone associee a la frontiere
+ */
 Zone& Frontiere::zone()
 {
   return la_zone.valeur();
 }
 
 
-// Description:
-//    Ajoute les sommets (et faces) de la frontiere
-//    passee en parametre a l'objet (Frontiere).
-// Precondition:
-// Parametre: Frontiere& front
-//    Signification: la frontiere a "ajouter" a l'objet
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ajoute les sommets (et faces) de la frontiere passee en parametre a l'objet (Frontiere).
+ *
+ * @param (Frontiere& front) la frontiere a "ajouter" a l'objet
+ */
 void Frontiere::add(const Frontiere& front)
 {
   const Faces& a_ajouter=front.faces();
@@ -312,16 +178,18 @@ void Frontiere::add(const Frontiere& front)
       les_faces.voisin(nbf1+face, voisin)=a_ajouter.voisin(face, voisin);
 }
 
-// Description: Cree un tableau ayant une "ligne" par face de cette frontiere
-//  Voir MD_Vector_tools::creer_tableau_distribue()
+/*! @brief Cree un tableau ayant une "ligne" par face de cette frontiere Voir MD_Vector_tools::creer_tableau_distribue()
+ *
+ */
 void Frontiere::creer_tableau_faces(Array_base& v, Array_base::Resize_Options opt) const
 {
   const MD_Vector& md = les_faces.les_sommets().get_md_vector();
   MD_Vector_tools::creer_tableau_distribue(md, v, opt);
 }
 
-// Description:
-// Renvoie la trace sur la frontiere du tableau aux elements y
+/*! @brief Renvoie la trace sur la frontiere du tableau aux elements y
+ *
+ */
 void Frontiere::trace_elem_local(const DoubleTab& y, DoubleTab& x) const
 {
   const int size = nb_faces(), nb_compo_ = y.line_size();
@@ -345,8 +213,9 @@ void Frontiere::trace_elem_local(const DoubleTab& y, DoubleTab& x) const
     }
 }
 
-// Description:
-// Renvoie la trace sur la frontiere du tableau aux noeuds y
+/*! @brief Renvoie la trace sur la frontiere du tableau aux noeuds y
+ *
+ */
 void Frontiere::trace_som_local(const DoubleTab& y, DoubleTab& x) const
 {
   const IntTab& som_face = les_sommets_des_faces();
@@ -374,8 +243,9 @@ void Frontiere::trace_som_local(const DoubleTab& y, DoubleTab& x) const
       }
 }
 
-// Description:
-// Renvoie la trace sur la frontiere du tableau aux faces y
+/*! @brief Renvoie la trace sur la frontiere du tableau aux faces y
+ *
+ */
 void Frontiere::trace_face_local(const DoubleVect& y, DoubleVect& x) const
 {
   Cerr << "Frontiere::trace_face(const DoubleVect& y, DoubleVect& x) const" << finl;
@@ -383,8 +253,9 @@ void Frontiere::trace_face_local(const DoubleVect& y, DoubleVect& x) const
   Process::exit();
 }
 
-// Description:
-// Renvoie la trace sur la frontiere du tableau aux faces y
+/*! @brief Renvoie la trace sur la frontiere du tableau aux faces y
+ *
+ */
 void Frontiere::trace_face_local(const DoubleTab& y, DoubleTab& x) const
 {
   int size = nb_faces(), M = y.line_size(), N = x.line_size();

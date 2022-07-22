@@ -19,10 +19,12 @@
 
 #include <Champ_front_xyz_debit.h>
 #include <Champ_front.h>
-//.DESCRIPTION  class Champ_front_debit
-//
-// Classe derivee de Champ_front_base qui represente les
-// champs aux frontieres normaux :
+/*! @brief class Champ_front_debit
+ *
+ *  Classe derivee de Champ_front_base qui represente les
+ *  champs aux frontieres normaux :
+ *
+ */
 
 //.SECTION voir aussi
 // Champ_front_base

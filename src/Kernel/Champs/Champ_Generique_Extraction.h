@@ -19,8 +19,9 @@
 #include <Champ_Gen_de_Champs_Gen.h>
 #include <Domaine_dis.h>
 
-// .DESCRIPTION
-//  Un champ generique qui effctue l extraction d un champ sur une frontiere
+/*! @brief Un champ generique qui effctue l extraction d un champ sur une frontiere
+ *
+ */
 
 //// Syntaxe a respecter pour jdd
 //

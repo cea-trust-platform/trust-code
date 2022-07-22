@@ -29,33 +29,25 @@ class Zone_dis;
 class Zone_dis_base;
 class Domaine;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     Classe Champ_Inc_base
-//     Classe de base des champs inconnues qui sont les champs calcules
-//     par une equation.
-//     Un objet de type Roue est associe au Champ_Inc, cette roue permet
-//     de gerer le nombre de valeurs du temps pour lesquels le champ
-//     doit rester en memoire. C'est le schema en temps qui guide le
-//     nombre de valeurs a garder.
-//     Cette classe peut aussi servir a stocker des champs calcules a
-//     partir d'autres Champ_Inc. Dans ce cas, une fonction calculer_valeurs(...)
-//     est appellee lors de mettre_a_jour() et doit remplir :
-//      - les valeurs du champ a l'instant courant;
-//      - les derivees de ces valeurs par rapport aux inconnues;
-//      - ses valeurs aux bords (stockees dans un tableau, car le champ n'a pas
-//        de CL associee);
-//
-//     Champ_Inc est un morceaux d'equation car il herite de MorEqn.
-// .SECTION voir aussi
-//      MorEqn Champ_Inc Champ_base Ch_proto Equation_base
-//     Classe abstraite
-//     Methodes abstraites:
-//       const Zone_dis_base& associer_zone_dis_base(const Zone_dis_base&)
-//       const Zone_dis_base& zone_dis_base() const
-//       DoubleTab& remplir_coord_noeuds(DoubleTab& ) const
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Champ_Inc_base Classe de base des champs inconnues qui sont les champs calcules
+ *
+ *      par une equation.
+ *      Un objet de type Roue est associe au Champ_Inc, cette roue permet
+ *      de gerer le nombre de valeurs du temps pour lesquels le champ
+ *      doit rester en memoire. C'est le schema en temps qui guide le
+ *      nombre de valeurs a garder.
+ *      Cette classe peut aussi servir a stocker des champs calcules a
+ *      partir d'autres Champ_Inc. Dans ce cas, une fonction calculer_valeurs(...)
+ *      est appellee lors de mettre_a_jour() et doit remplir :
+ *       - les valeurs du champ a l'instant courant;
+ *       - les derivees de ces valeurs par rapport aux inconnues;
+ *       - ses valeurs aux bords (stockees dans un tableau, car le champ n'a pas
+ *         de CL associee);
+ *
+ *      Champ_Inc est un morceaux d'equation car il herite de MorEqn.
+ *
+ * @sa MorEqn Champ_Inc Champ_base Ch_proto Equation_base, Classe abstraite, Methodes abstraites:, const Zone_dis_base& associer_zone_dis_base(const Zone_dis_base&), const Zone_dis_base& zone_dis_base() const, DoubleTab& remplir_coord_noeuds(DoubleTab& ) const
+ */
 
 class Champ_Inc_base : public Champ_base, public MorEqn
 {

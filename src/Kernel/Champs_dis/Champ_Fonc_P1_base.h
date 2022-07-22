@@ -19,12 +19,13 @@
 #include <Champ_Fonc_base.h>
 #include <Champ_implementation_P1.h>
 
-/////////////////////////////////////////////////////////////////////////////
-// .DESCRIPTION        : class Champ_Fonc_P1_base
-//
-// Decrire ici la classe Champ_Fonc_P1_base
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Champ_Fonc_P1_base
+ *
+ *  Decrire ici la classe Champ_Fonc_P1_base
+ *
+ *
+ *
+ */
 
 class Champ_Fonc_P1_base : public Champ_Fonc_base, public Champ_implementation_P1
 {

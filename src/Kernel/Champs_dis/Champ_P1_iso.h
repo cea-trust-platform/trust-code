@@ -23,13 +23,10 @@
 class Motcle;
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Champ_P1_iso
-// .SECTION voir aussi
-//    Champ_Inc_base Champ_P1 Champ_P0
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_P1_iso
+ *
+ * @sa Champ_Inc_base Champ_P1 Champ_P0
+ */
 class Champ_P1_iso : public Champ_Inc_base
 {
   Declare_base(Champ_P1_iso);

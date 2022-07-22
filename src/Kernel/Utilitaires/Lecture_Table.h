@@ -19,13 +19,13 @@
 #include <Objet_U.h>
 #include <Table.h>
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Lecture_Table
-//
-// <Description of class Lecture_Table>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Lecture_Table
+ *
+ *  <Description of class Lecture_Table>
+ *
+ *
+ *
+ */
 
 class Lecture_Table : public Objet_U
 {

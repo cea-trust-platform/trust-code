@@ -36,7 +36,9 @@ Entree& Diametre_hyd_champ::readOn(Entree& is)
   return Interprete::readOn(is);
 }
 
-// Description: Diametre_hyd_champ nom_pb champ affecte le champ champ a la porosite volumique du domaine du probleme de nom_pb, puis calcule les porosites surfacqiues comme moyenne harmonique
+/*! @brief Diametre_hyd_champ nom_pb champ affecte le champ champ a la porosite volumique du domaine du probleme de nom_pb, puis calcule les porosites surfacqiues comme moyenne harmonique
+ *
+ */
 Entree& Diametre_hyd_champ::interpreter(Entree& is)
 {
   Nom nom_pb;

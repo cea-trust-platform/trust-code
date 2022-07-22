@@ -18,37 +18,32 @@
 #include <Zone.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Pave
-//    Une zone particulierement facile a mailler!
-//    La structure du jeu de donnee pour specifier un Pave est:
-//    Pave nom_pave
-//     {
-//     Origine OX OY (OZ)
-//     Longueurs LX LY (LZ)
-//     Nombre_de_noeuds NX NY (NZ)
-//     Facteurs Fx Fy (Fz)
-//     (Symx)
-//     (Symy)
-//     (Symz)
-//     }
-//     {
-//     (Bord)  nom X = X0 Y0 <= Y <= Y1 Z0 <= Z <= Z1
-//     ...
-//     (Raccord)  local homogene nom X = X0 Y0 <= Y <= Y1 Z0 <= Z <= Z1
-//     ...
-//     (Internes)  nom X = X0 Y0 <= Y <= Y1 Z0 <= Z <= Z1
-//     ...
-//     (Joint)  nom X = X0 Y0 <= Y <= Y1 Z0 <= Z <= Z1 PE_voisin
-//     ...
-//     }
-// .SECTION voir aussi
-//    Zone Mailler
-//    Actuellemnt c'est le seul type d'objet reconnu par Trio-U pour mailler
-//    un domaine
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Pave Une zone particulierement facile a mailler!
+ *
+ *     La structure du jeu de donnee pour specifier un Pave est:
+ *     Pave nom_pave
+ *      {
+ *      Origine OX OY (OZ)
+ *      Longueurs LX LY (LZ)
+ *      Nombre_de_noeuds NX NY (NZ)
+ *      Facteurs Fx Fy (Fz)
+ *      (Symx)
+ *      (Symy)
+ *      (Symz)
+ *      }
+ *      {
+ *      (Bord)  nom X = X0 Y0 <= Y <= Y1 Z0 <= Z <= Z1
+ *      ...
+ *      (Raccord)  local homogene nom X = X0 Y0 <= Y <= Y1 Z0 <= Z <= Z1
+ *      ...
+ *      (Internes)  nom X = X0 Y0 <= Y <= Y1 Z0 <= Z <= Z1
+ *      ...
+ *      (Joint)  nom X = X0 Y0 <= Y <= Y1 Z0 <= Z <= Z1 PE_voisin
+ *      ...
+ *      }
+ *
+ * @sa Zone Mailler, Actuellemnt c'est le seul type d'objet reconnu par Trio-U pour mailler, un domaine
+ */
 class Pave : public Zone
 {
   Declare_instanciable(Pave);
@@ -96,45 +91,21 @@ public :
   int tour_complet;
 };
 
-// Description:
-//    Renvoie le nombre de noeuds du pave dans
-//    chacune des dimensions d'espace.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: IntVect&
-//    Signification: vecteur d'entier contenant
-//                   le nombre de noeud du pave suivant
-//                   X, Y et Z
-//    Contraintes: taille du vecteur = dimension de l'espace
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le nombre de noeuds du pave dans chacune des dimensions d'espace.
+ *
+ * @return (IntVect&) vecteur d'entier contenant le nombre de noeud du pave suivant X, Y et Z
+ */
 inline IntVect& Pave::Nb_Noeud()
 {
   return Nb_Noeuds;
 }
 
 
-// Description:
-//    Renvoie le numero de la i-ieme maille
-//    (suivant X)
-// Precondition: utilisable en dimension 1
-// Parametre: int i
-//    Signification: le rang de la maille suivant X
-//                   dont on veut le numero
-//    Valeurs par defaut:
-//    Contraintes: i < nombre de maille suivant X
-//    Acces:
-// Retour: int
-//    Signification: le numero de la maille cherchee
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le numero de la i-ieme maille (suivant X)
+ *
+ * @param (int i) le rang de la maille suivant X dont on veut le numero
+ * @return (int) le numero de la maille cherchee
+ */
 inline int Pave::numero_maille(int i)
 {
   assert(dimension == 1);
@@ -142,26 +113,12 @@ inline int Pave::numero_maille(int i)
   return i;
 }
 
-// Description:
-//    Renvoie le numero de la (i,j)-ieme maille
-//    (suivant (X,Y)).
-// Precondition: utilisable en dimension 2
-// Parametre: int i
-//    Signification: le rang de la maille suivant X
-//    Valeurs par defaut:
-//    Contraintes: i < nombre de maille suivant X
-//    Acces:
-// Parametre: int j
-//    Signification: le rang de la maille suivant Y
-//    Valeurs par defaut:
-//    Contraintes: j < nombre de maille suivant Y
-//    Acces:
-// Retour: int
-//    Signification: le numero de la maille cherchee
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le numero de la (i,j)-ieme maille (suivant (X,Y)).
+ *
+ * @param (int i) le rang de la maille suivant X
+ * @param (int j) le rang de la maille suivant Y
+ * @return (int) le numero de la maille cherchee
+ */
 inline int Pave::numero_maille(int i, int j)
 {
   assert(dimension == 2);
@@ -170,31 +127,13 @@ inline int Pave::numero_maille(int i, int j)
   return j*Nx+i;
 }
 
-// Description:
-//    Renvoie le numero de la (i,j,k)-ieme maille
-//    (suivant (X,Y,Z)).
-// Precondition: utilisable en dimension 3
-// Parametre: int i
-//    Signification: le rang de la maille suivant X
-//    Valeurs par defaut:
-//    Contraintes: i < nombre de maille suivant X
-//    Acces:
-// Parametre: int j
-//    Signification: le rang de la maille suivant Y
-//    Valeurs par defaut:
-//    Contraintes: j < nombre de maille suivant Y
-//    Acces:
-// Parametre: int k
-//    Signification: le rang de la maille suivant Z
-//    Valeurs par defaut:
-//    Contraintes: k < nombre de maille suivant Z
-//    Acces:
-// Retour: int
-//    Signification: le numero de la maille cherchee
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le numero de la (i,j,k)-ieme maille (suivant (X,Y,Z)).
+ *
+ * @param (int i) le rang de la maille suivant X
+ * @param (int j) le rang de la maille suivant Y
+ * @param (int k) le rang de la maille suivant Z
+ * @return (int) le numero de la maille cherchee
+ */
 inline int Pave::numero_maille(int i, int j, int k)
 {
   assert(dimension == 3);
@@ -204,22 +143,11 @@ inline int Pave::numero_maille(int i, int j, int k)
   return k*Ny*Nx+j*Nx+i;
 }
 
-// Description:
-//    Renvoie le numero du i-ieme sommet
-//    (suivant X)
-// Precondition: utilisable en dimension 1
-// Parametre: int i
-//    Signification: le rang du sommet suivant X
-//                   dont on veut le numero
-//    Valeurs par defaut:
-//    Contraintes: i < nombre de sommets suivant X
-//    Acces:
-// Retour: int
-//    Signification: le numero du sommet cherche
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le numero du i-ieme sommet (suivant X)
+ *
+ * @param (int i) le rang du sommet suivant X dont on veut le numero
+ * @return (int) le numero du sommet cherche
+ */
 inline int Pave::numero_sommet(int i)
 {
   assert(dimension == 1);
@@ -227,26 +155,12 @@ inline int Pave::numero_sommet(int i)
   return i;
 }
 
-// Description:
-//    Renvoie le numero du (i,j)-ieme sommet
-//    (suivant (X,Y)).
-// Precondition: utilisable en dimension 2
-// Parametre: int i
-//    Signification: le rang du sommet suivant X
-//    Valeurs par defaut:
-//    Contraintes: i < nombre de sommets suivant X
-//    Acces:
-// Parametre: int j
-//    Signification: le rang du sommet suivant Y
-//    Valeurs par defaut:
-//    Contraintes: j < nombre de sommets suivant Y
-//    Acces:
-// Retour: int
-//    Signification: le numero du sommet cherche
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le numero du (i,j)-ieme sommet (suivant (X,Y)).
+ *
+ * @param (int i) le rang du sommet suivant X
+ * @param (int j) le rang du sommet suivant Y
+ * @return (int) le numero du sommet cherche
+ */
 inline int Pave::numero_sommet(int i, int j)
 {
   assert(dimension == 2);
@@ -257,31 +171,13 @@ inline int Pave::numero_sommet(int i, int j)
   return j*Mx+i;
 }
 
-// Description:
-//    Renvoie le numero du (i,j,k)-ieme sommet
-//    (suivant (X,Y,Z)).
-// Precondition: utilisable en dimension 2
-// Parametre: int i
-//    Signification: le rang du sommet suivant X
-//    Valeurs par defaut:
-//    Contraintes: i < nombre de sommets suivant X
-//    Acces:
-// Parametre: int j
-//    Signification: le rang du sommet suivant Y
-//    Valeurs par defaut:
-//    Contraintes: j < nombre de sommets suivant Y
-//    Acces:
-// Parametre: int k
-//    Signification: le rang du sommet suivant Z
-//    Valeurs par defaut:
-//    Contraintes: k < nombre de sommets suivant Z
-//    Acces:
-// Retour: int
-//    Signification: le numero du sommet cherche
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le numero du (i,j,k)-ieme sommet (suivant (X,Y,Z)).
+ *
+ * @param (int i) le rang du sommet suivant X
+ * @param (int j) le rang du sommet suivant Y
+ * @param (int k) le rang du sommet suivant Z
+ * @return (int) le numero du sommet cherche
+ */
 inline int Pave::numero_sommet(int i, int j, int k  )
 {
   assert(dimension == 3);
@@ -294,171 +190,75 @@ inline int Pave::numero_sommet(int i, int j, int k  )
   return k*My*Mx+j*Mx+i;
 }
 
-// Description:
-//    Renvoie une reference sur le numero du l-ieme sommet
-//    de la i-ieme maille (suivant X) du pave.
-// Precondition: utilisable en dimension 1
-// Parametre: int i
-//    Signification: le rang de la maille suivant X
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int l
-//    Signification: le rang du sommet cherche
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int&
-//    Signification: reference sur le numero du sommet cherche
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie une reference sur le numero du l-ieme sommet de la i-ieme maille (suivant X) du pave.
+ *
+ * @param (int i) le rang de la maille suivant X
+ * @param (int l) le rang du sommet cherche
+ * @return (int&) reference sur le numero du sommet cherche
+ */
 inline int& Pave::maille_sommet(int i, int l)
 {
   assert(dimension == 1);
   return mes_elems(numero_maille(i),l);
 }
 
-// Description:
-//    Renvoie une reference sur le numero du l-ieme sommet
-//    de la (i,j)-ieme maille (suivant (X,Y)) du pave.
-// Precondition: utilisable en dimension 2
-// Parametre: int i
-//    Signification: le rang de la maille suivant X
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int j
-//    Signification: le rang de la maille suivant Y
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int l
-//    Signification: le rang du sommet cherche
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int&
-//    Signification: reference sur le numero du sommet cherche
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie une reference sur le numero du l-ieme sommet de la (i,j)-ieme maille (suivant (X,Y)) du pave.
+ *
+ * @param (int i) le rang de la maille suivant X
+ * @param (int j) le rang de la maille suivant Y
+ * @param (int l) le rang du sommet cherche
+ * @return (int&) reference sur le numero du sommet cherche
+ */
 inline int& Pave::maille_sommet(int i, int j, int l)
 {
   assert(dimension == 2);
   return mes_elems(numero_maille(i, j),l);
 }
 
-// Description:
-//    Renvoie une reference sur le numero du l-ieme sommet
-//    de la (i,j,k)-ieme maille (suivant (X,Y,Z)) du pave.
-// Precondition: utilisable en dimension 3
-// Parametre: int i
-//    Signification: le rang de la maille suivant X
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int j
-//    Signification: le rang de la maille suivant Y
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int j
-//    Signification: le rang de la maille suivant Z
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int l
-//    Signification: le rang du sommet cherche
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int&
-//    Signification: reference sur le numero du sommet cherche
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie une reference sur le numero du l-ieme sommet de la (i,j,k)-ieme maille (suivant (X,Y,Z)) du pave.
+ *
+ * @param (int i) le rang de la maille suivant X
+ * @param (int j) le rang de la maille suivant Y
+ * @param (int j) le rang de la maille suivant Z
+ * @param (int l) le rang du sommet cherche
+ * @return (int&) reference sur le numero du sommet cherche
+ */
 inline int& Pave::maille_sommet(int i, int j, int k, int l)
 {
   assert(dimension == 3);
   return mes_elems(numero_maille(i, j, k), l);
 }
 
-// Description:
-//    Renvoie une reference sur les coordonnees
-//    du i-ieme noeud.
-// Precondition: utilisable en dimension 1
-// Parametre: int i
-//    Signification: le rang du noeud suivant X
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double&
-//    Signification: reference sur les coordonnees du noeud cherche
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie une reference sur les coordonnees du i-ieme noeud.
+ *
+ * @param (int i) le rang du noeud suivant X
+ * @return (double&) reference sur les coordonnees du noeud cherche
+ */
 inline double& Pave::coord_noeud(int i)
 {
   assert(dimension == 1);
   return Les_Noeuds(numero_sommet(i));
 }
 
-// Description:
-//    Renvoie une reference sur les coordonnees
-//    du (i,j)-ieme noeud.
-// Precondition: utilisable en dimension 2
-// Parametre: int i
-//    Signification: le rang du noeud suivant X
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int j
-//    Signification: le rang du noeud suivant Y
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double&
-//    Signification: reference sur les coordonnees du noeud cherche
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie une reference sur les coordonnees du (i,j)-ieme noeud.
+ *
+ * @param (int i) le rang du noeud suivant X
+ * @param (int j) le rang du noeud suivant Y
+ * @return (double&) reference sur les coordonnees du noeud cherche
+ */
 inline double& Pave::coord_noeud(int i, int j, int l)
 {
   assert(dimension == 2);
   return Les_Noeuds(numero_sommet(i, j),l);
 }
 
-// Description:
-//    Renvoie une reference sur les coordonnees
-//    du (i,j,k)-ieme noeud.
-// Precondition: utilisable en dimension 3
-// Parametre: int i
-//    Signification: le rang du noeud suivant X
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int j
-//    Signification: le rang du noeud suivant Y
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int k
-//    Signification: le rang du noeud suivant Z
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double&
-//    Signification: reference sur les coordonnees du noeud cherche
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie une reference sur les coordonnees du (i,j,k)-ieme noeud.
+ *
+ * @param (int i) le rang du noeud suivant X
+ * @param (int j) le rang du noeud suivant Y
+ * @param (int k) le rang du noeud suivant Z
+ * @return (double&) reference sur les coordonnees du noeud cherche
+ */
 inline double& Pave::coord_noeud(int i, int j, int k, int l)
 {
   assert(dimension == 3);

@@ -18,10 +18,9 @@
 
 #include <Interprete.h>
 
-//////////////////////////////////////////////////////////////////////////////
-// .DESCRIPTION
-// Keyword to read an object, typically from a data file
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Keyword to read an object, typically from a data file
+ *
+ */
 class Lire : public Interprete
 {
   Declare_instanciable(Lire);

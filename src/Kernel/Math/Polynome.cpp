@@ -19,21 +19,11 @@ Implemente_instanciable(Polynome,"Polynome",Objet_U);
 
 
 
-// Description:
-//    Ecriture sur un flot de sortie
-//    Ecrit le tableau des coefficients
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ecriture sur un flot de sortie Ecrit le tableau des coefficients
+ *
+ * @param (Sortie& os) le flot de sortie a utiliser
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Polynome::printOn(Sortie& os) const
 {
   os << coeff_;
@@ -41,21 +31,11 @@ Sortie& Polynome::printOn(Sortie& os) const
 }
 
 
-// Description:
-//    Lecture dans un flot d'entree
-//    Lecture du tableau des coefficients
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree& le flot d'entree modifie
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lecture dans un flot d'entree Lecture du tableau des coefficients
+ *
+ * @param (Entree& is) le flot d'entree a utiliser
+ * @return (Entree& le flot d'entree modifie)
+ */
 Entree& Polynome::readOn(Entree& is)
 {
   is >> coeff_;
@@ -63,20 +43,11 @@ Entree& Polynome::readOn(Entree& is)
 }
 
 
-// Description:
-//    Calcul de la valeur du polynome au point x1
-// Precondition:
-// Parametre: double x1
-//    Signification: point
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: valeur du polynome
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcul de la valeur du polynome au point x1
+ *
+ * @param (double x1) point
+ * @return (double) valeur du polynome
+ */
 double Polynome::operator()(double x1) const
 {
   int n=coeff_.dimension(0);
@@ -91,25 +62,12 @@ double Polynome::operator()(double x1) const
   return sum;
 }
 
-// Description:
-//    Calcul de la valeur du polynome au point x1,x2
-// Precondition:
-// Parametre: double x1
-//    Signification: point
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double x2
-//    Signification: point
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: valeur du polynome
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcul de la valeur du polynome au point x1,x2
+ *
+ * @param (double x1) point
+ * @param (double x2) point
+ * @return (double) valeur du polynome
+ */
 double Polynome::operator()(double x1, double x2) const
 {
   int n1=coeff_.dimension(0);
@@ -135,30 +93,13 @@ double Polynome::operator()(double x1, double x2) const
   return sum;
 }
 
-// Description:
-//    Calcul de la valeur du polynome au point x1,x2,x3
-// Precondition:
-// Parametre: double x1
-//    Signification: point
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double x2
-//    Signification: point
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double x3
-//    Signification: point
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: valeur du polynome
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcul de la valeur du polynome au point x1,x2,x3
+ *
+ * @param (double x1) point
+ * @param (double x2) point
+ * @param (double x3) point
+ * @return (double) valeur du polynome
+ */
 double Polynome::operator()(double x1, double x2, double x3) const
 {
   int n1=coeff_.dimension(0);
@@ -195,35 +136,14 @@ double Polynome::operator()(double x1, double x2, double x3) const
   return sum;
 }
 
-// Description:
-//    Calcul de la valeur du polynome au point x1,x2,x3,x4
-// Precondition:
-// Parametre: double x1
-//    Signification: point
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double x2
-//    Signification: point
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double x3
-//    Signification: point
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double x4
-//    Signification: point
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: valeur du polynome
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcul de la valeur du polynome au point x1,x2,x3,x4
+ *
+ * @param (double x1) point
+ * @param (double x2) point
+ * @param (double x3) point
+ * @param (double x4) point
+ * @return (double) valeur du polynome
+ */
 double Polynome::operator()(double x1, double x2, double x3, double x4) const
 {
   int n1=coeff_.dimension(0);
@@ -272,287 +192,152 @@ double Polynome::operator()(double x1, double x2, double x3, double x4) const
 }
 
 
-// Description:
-//     Non code. Ne fait rien
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Non code.
+ *
+ * Ne fait rien
+ *
+ */
 void Polynome::derive(int )
 {
 }
 
-// Description:
-//     Non code. Ne fait rien
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Non code.
+ *
+ * Ne fait rien
+ *
+ */
 void Polynome::integre(int )
 {
 }
 
 
-// Description:
-//     Non code. retourne 0.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Non code.
+ *
+ * retourne 0.
+ *
+ */
 double Polynome::derive(double ) const
 {
   return 0;
 }
 
-// Description:
-//     Non code. retourne 0.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Non code.
+ *
+ * retourne 0.
+ *
+ */
 double Polynome::derive(double , double ) const
 {
   return 0;
 }
 
-// Description:
-//     Non code. retourne 0.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Non code.
+ *
+ * retourne 0.
+ *
+ */
 double Polynome::derive(double , double , double ) const
 {
   return 0;
 }
 
-// Description:
-//     Non code. retourne 0.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Non code.
+ *
+ * retourne 0.
+ *
+ */
 double Polynome::derive(double , double , double , double ) const
 {
   return 0;
 }
 
 
-// Description:
-//     Non code. retourne 0.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Non code.
+ *
+ * retourne 0.
+ *
+ */
 double Polynome::integre(double ) const
 {
   return 0;
 }
 
-// Description:
-//     Non code. retourne 0.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Non code.
+ *
+ * retourne 0.
+ *
+ */
 double Polynome::integre(double , double ) const
 {
   return 0;
 }
 
-// Description:
-//     Non code. retourne 0.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Non code.
+ *
+ * retourne 0.
+ *
+ */
 double Polynome::integre(double , double , double ) const
 {
   return 0;
 }
 
-// Description:
-//     Non code. retourne 0.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Non code.
+ *
+ * retourne 0.
+ *
+ */
 double Polynome::integre(double , double , double , double ) const
 {
   return 0;
 }
 
 
-// Description:
-//     Non code. Ne fait rien. Retourne *this.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Non code.
+ *
+ * Ne fait rien. Retourne *this.
+ *
+ */
 Polynome& Polynome::operator +=(const Polynome&)
 {
   return *this;
 }
 
-// Description:
-//     Non code. Ne fait rien. Retourne *this.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Non code.
+ *
+ * Ne fait rien. Retourne *this.
+ *
+ */
 Polynome& Polynome::operator -=(const Polynome&)
 {
   return *this;
 }
 
-// Description:
-//     Non code. Ne fait rien. Retourne *this.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Non code.
+ *
+ * Ne fait rien. Retourne *this.
+ *
+ */
 Polynome& Polynome::operator *=(const Polynome&)
 {
   return *this;
 }
 
-// Description:
-//     Non code. Ne fait rien. Retourne *this.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Non code.
+ *
+ * Ne fait rien. Retourne *this.
+ *
+ */
 Polynome& Polynome::operator *=(double)
 {
   return *this;
 }
 
-// Description:
-//     Non code. Ne fait rien. Retourne *this.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Non code.
+ *
+ * Ne fait rien. Retourne *this.
+ *
+ */
 Polynome& Polynome::operator /=(double)
 {
   return *this;

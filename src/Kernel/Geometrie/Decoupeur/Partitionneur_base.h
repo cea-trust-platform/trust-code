@@ -24,29 +24,30 @@ class Zone;
 class Static_Int_Lists;
 class Param;
 
-// .DESCRIPTION
-//  Classe de base des partitionneurs de domaine
-//  (pour decouper un maillage avant un calcul parallele).
-//  Cette classe decrit l'interface commune a tous les partitionneurs:
-//  Exemple :
-//
-//   // Creation d'un instance de la classe:
-//   Partitionneur_xxx part;
-//   // Association du domaine de calcul a decouper
-//   part.associer_domaine(domaine);
-//   // Initialisation des parametres specifiques a la classe derivee!
-//       fichier_data >> part;       // Lecture des parametres dans le jdd
-//   ou
-//       part.initialiser(nb_parties); // Initialisation directe (depend de la classe)
-//   // Si besoin :
-//   part.declarer_bords_periodiques(liste_noms_bords_perio);
-//   // Construction du tableau de decoupage:
-//   ArrOfInt elem_part;
-//   part.construire_partition(elem_part);
-//
-//  ATTENTION: en principe, l'implementation de la methode construire_partition()
-//   doit assurer que le decoupage est valide (application des corrections pour les bords
-//   periodiques et autres...)
+/*! @brief Classe de base des partitionneurs de domaine (pour decouper un maillage avant un calcul parallele).
+ *
+ *   Cette classe decrit l'interface commune a tous les partitionneurs:
+ *   Exemple :
+ *
+ *    // Creation d'un instance de la classe:
+ *    Partitionneur_xxx part;
+ *    // Association du domaine de calcul a decouper
+ *    part.associer_domaine(domaine);
+ *    // Initialisation des parametres specifiques a la classe derivee!
+ *        fichier_data >> part;       // Lecture des parametres dans le jdd
+ *    ou
+ *        part.initialiser(nb_parties); // Initialisation directe (depend de la classe)
+ *    // Si besoin :
+ *    part.declarer_bords_periodiques(liste_noms_bords_perio);
+ *    // Construction du tableau de decoupage:
+ *    ArrOfInt elem_part;
+ *    part.construire_partition(elem_part);
+ *
+ *   ATTENTION: en principe, l'implementation de la methode construire_partition()
+ *    doit assurer que le decoupage est valide (application des corrections pour les bords
+ *    periodiques et autres...)
+ *
+ */
 class Partitionneur_base : public Objet_U
 {
   Declare_base(Partitionneur_base);

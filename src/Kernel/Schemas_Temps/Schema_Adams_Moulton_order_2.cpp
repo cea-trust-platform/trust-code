@@ -14,11 +14,9 @@
 *****************************************************************************/
 
 
-//
-// .DESCRIPTION class Schema_Adams_Moulton_order_2
-//
-// .SECTION voir aussi
-//
+/*! @brief class Schema_Adams_Moulton_order_2
+ *
+ */
 
 #include <Schema_Adams_Moulton_order_2.h>
 #include <Equation_base.h>
@@ -49,8 +47,9 @@ Entree& Schema_Adams_Moulton_order_2::readOn(Entree& s)
   return Schema_Adams_Moulton_base::readOn(s);
 }
 
-// Description:
-//    Renvoie le nombre de valeurs temporelles a conserver.
+/*! @brief Renvoie le nombre de valeurs temporelles a conserver.
+ *
+ */
 int Schema_Adams_Moulton_order_2::nb_valeurs_temporelles() const
 {
   return 3 ;

@@ -18,18 +18,15 @@
 
 #include <Champ_front_var_instationnaire.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Ch_front_var_instationnaire_indep
-//     Cette classe abstraite represente un champ sur une frontiere,
-//     variable en espace, instationnaire en temps, et independant de
-//     donnees exterieures au champ.
-//     De ce fait, la methode initialiser peut appeler la methode
-//     mettre_a_jour. Cette classe factorise cet appel.
-//
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Ch_front_var_instationnaire_indep Cette classe abstraite represente un champ sur une frontiere,
+ *
+ *      variable en espace, instationnaire en temps, et independant de
+ *      donnees exterieures au champ.
+ *      De ce fait, la methode initialiser peut appeler la methode
+ *      mettre_a_jour. Cette classe factorise cet appel.
+ *
+ *
+ */
 
 class Ch_front_var_instationnaire_indep : public Champ_front_var_instationnaire
 {

@@ -20,15 +20,12 @@
 
 
 #include <Vect_Parser_U.h>
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Champ_Fonc_t
-//    Cette classe derivee de Champ_Uniforme_inst qui represente
-//    un champ constant dans l'espace et fonction de la variable temps t.
-// .SECTION voir aussi
-//     Champ_Fonc_t
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Champ_Fonc_t Cette classe derivee de Champ_Uniforme_inst qui represente
+ *
+ *     un champ constant dans l'espace et fonction de la variable temps t.
+ *
+ * @sa Champ_Fonc_t
+ */
 class Champ_Fonc_t : public Champ_Uniforme_inst
 {
 

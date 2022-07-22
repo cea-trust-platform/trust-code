@@ -26,14 +26,10 @@
 class Nom;
 class Domaine;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Create_domain_from_sous_zone
-//    Lecture d'un fichier
-// .SECTION voir aussi
-//    Interprete
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Create_domain_from_sous_zone Lecture d'un fichier
+ *
+ * @sa Interprete
+ */
 
 class Create_domain_from_sous_zone : public Interprete_geometrique_base
 {

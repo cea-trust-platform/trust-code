@@ -38,17 +38,20 @@ Implemente_instanciable_sans_constructeur_ni_destructeur(Postraitement_lata,"Pos
 
 // ****************************************************************************
 
-// Description:
-//  Renvoie l'extension conventionnelle des fichiers lata : ".lata"
+/*! @brief Renvoie l'extension conventionnelle des fichiers lata : ".
+ *
+ * lata"
+ *
+ */
 const Nom& Postraitement_lata::extension_lata()
 {
   static const Nom extension_(".lata");
   return extension_;
 }
 
-// Description:
-//  Renvoie le nom d'un fichier sans le path :
-//  on enleve les caracteres avant le dernier /
+/*! @brief Renvoie le nom d'un fichier sans le path : on enleve les caracteres avant le dernier /
+ *
+ */
 const char * Postraitement_lata::remove_path(const char * filename)
 {
   int i = (int)strlen(filename);
@@ -197,9 +200,9 @@ int Postraitement_lata::finir_lata(const Nom& basename,
 }
 
 
-// Description:
-//  Constructeur par defaut: initialisation des membres avec des valeurs
-//  par defaut.
+/*! @brief Constructeur par defaut: initialisation des membres avec des valeurs par defaut.
+ *
+ */
 Postraitement_lata::Postraitement_lata()
 {
   // Les donnees privees de la classe:
@@ -216,13 +219,19 @@ Postraitement_lata::Postraitement_lata()
   verbose_stream_ = 0;
 }
 
-// Description: Destroy me ... muahahahaha
+/*! @brief Destroy me .
+ *
+ * .. muahahahaha
+ *
+ */
 Postraitement_lata::~Postraitement_lata()
 {
   delete private_data_;
 }
 
-// Description: Appel a Postraitement_base::readOn
+/*! @brief Appel a Postraitement_base::readOn
+ *
+ */
 Entree& Postraitement_lata::readOn(Entree& is)
 {
   Postraitement_base::readOn(is);
@@ -284,7 +293,9 @@ int Postraitement_lata::lire_motcle_non_standard(const Motcle& mot, Entree& is)
   return 1;
 }
 
-// Description: lecture du format d'enregistrement (ascii ou binaire)
+/*! @brief lecture du format d'enregistrement (ascii ou binaire)
+ *
+ */
 void Postraitement_lata::lire_format(Entree& is)
 {
   Motcle motcle;
@@ -302,19 +313,21 @@ void Postraitement_lata::lire_format(Entree& is)
     }
 }
 
-// Description: lecture d'une liste de champs a postraiter
-//  On attend ceci :
-//    champs sommets|elements|faces  (le mot cle champs a deja ete lu)
-//    {
-//       nom_du_champ
-//     [ nom_du_champ ]
-//     [ ... ]
-//    }
-//  Les champs lus sont ajoutes a la liste correspondante (sommets, elements, ...),
-//  les doublons sont retires.
-//  Le nom du champ doit etre compris par le probleme (pb.comprend_champ(...))
-//  Attention: les champs postraites aux faces doivent etre discretises aux faces
-//    (pas d'interpolation, on postraite le champ tel quel).
+/*! @brief lecture d'une liste de champs a postraiter On attend ceci :
+ *
+ *     champs sommets|elements|faces  (le mot cle champs a deja ete lu)
+ *     {
+ *        nom_du_champ
+ *      [ nom_du_champ ]
+ *      [ ... ]
+ *     }
+ *   Les champs lus sont ajoutes a la liste correspondante (sommets, elements, ...),
+ *   les doublons sont retires.
+ *   Le nom du champ doit etre compris par le probleme (pb.comprend_champ(...))
+ *   Attention: les champs postraites aux faces doivent etre discretises aux faces
+ *     (pas d'interpolation, on postraite le champ tel quel).
+ *
+ */
 void Postraitement_lata::lire_champs(Entree& is)
 {
   Motcle motcle;
@@ -393,12 +406,13 @@ void Postraitement_lata::lire_champs(Entree& is)
     }
 }
 
-// Description:
-//  Evident...
-// Parametre: loc
-// Description: valeurs autorisees: SOMMETS, ou ELEMENTS ou FACES
-// Parametre: liste
-// Description: une liste de champs compris par le probleme.
+/*! @brief Evident.
+ *
+ * ..
+ *
+ * @param (loc)
+ * @param (liste)
+ */
 void Postraitement_lata::postraiter_liste_champs(Localisation loc, const Motcles& liste)
 {
   if (verbose_stream_)
@@ -528,10 +542,12 @@ void Postraitement_lata::postraiter_liste_champs(Localisation loc, const Motcles
   les_polys.resize(0);
 }
 
-// Description:
-//  Ecrit l'entete si ca n'a pas ete fait, puis, si le temps est ecoule,
-//  post-traite les champs demandes. Le temps actuel est le temps
-//  attribue lors du dernier appel a mettre_a_jour du postraitement.
+/*! @brief Ecrit l'entete si ca n'a pas ete fait, puis, si le temps est ecoule, post-traite les champs demandes.
+ *
+ * Le temps actuel est le temps
+ *   attribue lors du dernier appel a mettre_a_jour du postraitement.
+ *
+ */
 void Postraitement_lata::postraiter(int forcer)
 {
   /*
@@ -592,8 +608,9 @@ void Postraitement_lata::postraiter(int forcer)
   temps_dernier_post_ = temps_;
 }
 
-// Description: renvoie 1 si l'intervalle de temps demande entre deux
-// postraitements est ecoule.
+/*! @brief renvoie 1 si l'intervalle de temps demande entre deux postraitements est ecoule.
+ *
+ */
 int Postraitement_lata::dt_post_ecoule(double& dt_post,
                                        double temps_dernier_post)
 {

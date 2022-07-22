@@ -31,20 +31,32 @@
 
 Implemente_instanciable_sans_constructeur(DomaineCutter,"DomaineCutter",Objet_U);
 
-// Description: Appel invalide. exit.
+/*! @brief Appel invalide.
+ *
+ * exit.
+ *
+ */
 const DomaineCutter& DomaineCutter::operator=(const DomaineCutter& dc)
 {
   exit();
   return *this; // pour le compilateur
 }
 
-// Description: Appel invalide. exit.
+/*! @brief Appel invalide.
+ *
+ * exit.
+ *
+ */
 DomaineCutter::DomaineCutter(const DomaineCutter& dc): Objet_U(dc)
 {
   exit();
 }
 
-// Description:  Appel invalide. exit.
+/*! @brief Appel invalide.
+ *
+ * exit.
+ *
+ */
 Sortie& DomaineCutter::printOn(Sortie& os) const
 {
   Cerr << "Error : DomaineCutter::printOn should not be used." << finl;
@@ -52,7 +64,11 @@ Sortie& DomaineCutter::printOn(Sortie& os) const
   return os; // pour le compilateur
 }
 
-// Description:  Appel invalide. exit.
+/*! @brief Appel invalide.
+ *
+ * exit.
+ *
+ */
 Entree& DomaineCutter::readOn(Entree& s)
 {
   Cerr << "Error : DomaineCutter::readOn should not be used." << finl;
@@ -60,27 +76,18 @@ Entree& DomaineCutter::readOn(Entree& s)
   return s; // pour le compilateur
 }
 
-// Description:
-// Creation de la liste des sommets du sous-domaine "partie".
-// C'est l'ensemble des sommets des elements appartenant a ce sous-domaine.
-// On ne traite que les elements reels.
-// Parametre:     nb_sommets
-// Signification: nombre de sommets de la zone globale
-// Parametre:     les_elems
-// Signification  tableau des elements de la zone globale (pour chaque element, numeros de ses sommets)
-// Parametre:     elem_part
-// Signification: tableau de decoupage (pour chaque element i du domaine global,
-//                elem_part[i] est le numero du sous-domaine auquel il est affecte)
-// Parametre:     partie
-// Signification: le numero du sous-domaine a construire
-// Parametre:     liste_sommets
-// Signification: en sortie : liste des sommets du sous-domaine: liste_sommets[i] est
-//                l'indice dans la zone_globale du i-ieme sommet du sous-domaine.
-//                Les indices sont classes dans l'ordre croissant.
-// Parametre:     liste_inverse_sommets
-// Signification: en sortie : on lui donne la taille nb_sommets et on l'initialise.
-//                liste_inverse_sommet[i] est l'indice du sommet dans le sous-domaine
-//                ou -1 si le sommet i n'est pas dans le sous-domaine)
+/*! @brief Creation de la liste des sommets du sous-domaine "partie".
+ *
+ * C'est l'ensemble des sommets des elements appartenant a ce sous-domaine.
+ *  On ne traite que les elements reels.
+ *
+ * @param (nb_sommets) nombre de sommets de la zone globale
+ * @param (les_elems)
+ * @param (elem_part) tableau de decoupage (pour chaque element i du domaine global, elem_part[i] est le numero du sous-domaine auquel il est affecte)
+ * @param (partie) le numero du sous-domaine a construire
+ * @param (liste_sommets) en sortie : liste des sommets du sous-domaine: liste_sommets[i] est l'indice dans la zone_globale du i-ieme sommet du sous-domaine. Les indices sont classes dans l'ordre croissant.
+ * @param (liste_inverse_sommets) en sortie : on lui donne la taille nb_sommets et on l'initialise. liste_inverse_sommet[i] est l'indice du sommet dans le sous-domaine ou -1 si le sommet i n'est pas dans le sous-domaine)
+ */
 static void construire_liste_sommets_sousdomaine(const int nb_sommets,
                                                  const IntTab& les_elems,
                                                  const ArrOfInt& liste_elements,
@@ -223,19 +230,20 @@ void construire_elems_sous_domaine(const IntTab&    elems_zone_globale,
     }
 }
 
-// Description:
-// Pour une liste de "faces" de la zone globale, compter le nombre de
-// faces incluses dans la partie "part" et les copier dans la structure
-// faces_partie en remplacant les numeros de sommets par les numeros locaux
-// dans le sous-domaine.
-// L'ordre des faces est conserve (si une face apparait avant une autre dans
-// la liste du domaine complet et si elles sont toutes les deux dans la sous-partie,
-// alors leur ordre est conserve). C'est important pour le periodique
-// (hypothese qu'il y a correspondance entre la face i et la face i+n/2 du bord
-// periodique).
-// Attention: la condition pour qu'une face soit incluse est "la face appartient
-//  a un element de la partie voisine". La condition "les sommets des faces sont
-//  des sommets de joint" n'est PAS suffisante.
+/*! @brief Pour une liste de "faces" de la zone globale, compter le nombre de faces incluses dans la partie "part" et les copier dans la structure
+ *
+ *  faces_partie en remplacant les numeros de sommets par les numeros locaux
+ *  dans le sous-domaine.
+ *  L'ordre des faces est conserve (si une face apparait avant une autre dans
+ *  la liste du domaine complet et si elles sont toutes les deux dans la sous-partie,
+ *  alors leur ordre est conserve). C'est important pour le periodique
+ *  (hypothese qu'il y a correspondance entre la face i et la face i+n/2 du bord
+ *  periodique).
+ *  Attention: la condition pour qu'une face soit incluse est "la face appartient
+ *   a un element de la partie voisine". La condition "les sommets des faces sont
+ *   des sommets de joint" n'est PAS suffisante.
+ *
+ */
 void construire_liste_faces_sous_domaine(const ArrOfInt& elements_voisins,
                                          const IntVect& elem_part,
                                          const int     partie,
@@ -317,9 +325,11 @@ void DomaineCutter::construire_faces_bords_ssdom(const ArrOfInt& liste_inverse_s
     }
 }
 
-// Description: Constructions des raccords de la sous_partie a partir des raccords
-//  du domaine global.
-//  Les Raccord_local_homogene sont transformes en Raccord_distant_homogene.
+/*! @brief Constructions des raccords de la sous_partie a partir des raccords du domaine global.
+ *
+ *   Les Raccord_local_homogene sont transformes en Raccord_distant_homogene.
+ *
+ */
 void DomaineCutter::construire_faces_raccords_ssdom(const ArrOfInt& liste_inverse_sommets,
                                                     const int partie,
                                                     Zone& zone_partie) const
@@ -384,9 +394,9 @@ void DomaineCutter::construire_faces_internes_ssdom(const ArrOfInt& liste_invers
     }
 }
 
-// Description:
-//  Pour chaque pe mentionne dans le tableau "voisins", si un joint avec ce pe
-//  n'existe par encore dans la zone, ajoute un joint et initialise ce joint avec "epaisseur".
+/*! @brief Pour chaque pe mentionne dans le tableau "voisins", si un joint avec ce pe n'existe par encore dans la zone, ajoute un joint et initialise ce joint avec "epaisseur".
+ *
+ */
 static void ajouter_joints(Zone& zone, const ArrOfInt& voisins, const int epaisseur)
 {
   Joints& joints = zone.faces_joint();
@@ -415,14 +425,15 @@ static void ajouter_joints(Zone& zone, const ArrOfInt& voisins, const int epaiss
     }
 }
 
-// Description:
-//  A partir d'une liste de sommets de depart (liste_sommets_depart), on
-//  parcourt les elements voisins de ces sommets (si epaisseur <= 1),
-//  puis les voisins de ces elements (voisins par un sommet de l'element) si epaisseur <= 2,
-//  puis les voisins des voisins si epaisseur <= 3, etc
-//  Les elements appartenant a la "partie_a_ignorer" ne sont pas parcourus.
-//  Les indices des elements parcourus sont ranges dans liste_elements_trouves.
-//  Cette methode a ete codee pour construire_elements_distants_ssdom()
+/*! @brief A partir d'une liste de sommets de depart (liste_sommets_depart), on parcourt les elements voisins de ces sommets (si epaisseur <= 1),
+ *
+ *   puis les voisins de ces elements (voisins par un sommet de l'element) si epaisseur <= 2,
+ *   puis les voisins des voisins si epaisseur <= 3, etc
+ *   Les elements appartenant a la "partie_a_ignorer" ne sont pas parcourus.
+ *   Les indices des elements parcourus sont ranges dans liste_elements_trouves.
+ *   Cette methode a ete codee pour construire_elements_distants_ssdom()
+ *
+ */
 static void parcourir_epaisseurs_elements(const IntTab& elements,
                                           const Static_Int_Lists& elem_som,
                                           const IntVect& elem_part,
@@ -497,17 +508,19 @@ static void parcourir_epaisseurs_elements(const IntTab& elements,
     }
 }
 
-// Description: calcul et remplissage de
-//   zone_partie.joint(i).set_joint_item(Joint::ELEMENT).set_items_distants()
-//   (liste des elements distants).
-//   Eventuellement, de nouveaux joints sont crees.
-// Historique: methode codee en janvier 2006 par B.Mathieu. Je croyais que c'etait
-//  trop complique de determiner les elements distants au moment du scatter et j'ai
-//  fini par trouver comment faire. Du coup la methode ci-dessous n'est plus utilisee
-//  en temps normal. En cas de probleme, on peut la reactiver: en theorie elle donne
-//  exactement le meme resultat que l'algorithme code dans Scatter::calculer_espace_distant_elements.
-//  Attention, elle ne fait rien de special pour le bords periodiques...
-// Precondition: les sommets de joint de la zone_partie ont deja ete calcules
+/*! @brief calcul et remplissage de zone_partie.
+ *
+ * joint(i).set_joint_item(Joint::ELEMENT).set_items_distants()
+ *    (liste des elements distants).
+ *    Eventuellement, de nouveaux joints sont crees.
+ *  Historique: methode codee en janvier 2006 par B.Mathieu. Je croyais que c'etait
+ *   trop complique de determiner les elements distants au moment du scatter et j'ai
+ *   fini par trouver comment faire. Du coup la methode ci-dessous n'est plus utilisee
+ *   en temps normal. En cas de probleme, on peut la reactiver: en theorie elle donne
+ *   exactement le meme resultat que l'algorithme code dans Scatter::calculer_espace_distant_elements.
+ *   Attention, elle ne fait rien de special pour le bords periodiques...
+ *
+ */
 void DomaineCutter::construire_elements_distants_ssdom(const int     partie,
                                                        const ArrOfInt& liste_sommets,
                                                        const ArrOfInt& liste_inverse_elements,
@@ -621,18 +634,19 @@ void DomaineCutter::construire_elements_distants_ssdom(const int     partie,
     }
 }
 
-// Description:
-//  Creation des joints et construction des listes et des
-//  tableaux de sommets joints pour tous les joints de
-//  la partie part. Les sommets du joint avec le "PEvoisin" sont
-//  les sommets de la partie "part" qui sont aussi un sommet d'un
-//  element appartenant au PEvoisin.
-//  Les joints apparaissent dans la liste dans l'ordre croissant des PEs.
-//  Note:  Les faces que l'on va creer ensuite utilisent forcement
-//         des sommets que l'on va trouver ici.
-//  Propriete : Les sommets du joint sont classes dans l'ordre croissant
-//              de leur numero local, donc dans l'ordre croissant de
-//              leur numero global (voir Remplir_Numeros_Sommets)
+/*! @brief Creation des joints et construction des listes et des tableaux de sommets joints pour tous les joints de
+ *
+ *   la partie part. Les sommets du joint avec le "PEvoisin" sont
+ *   les sommets de la partie "part" qui sont aussi un sommet d'un
+ *   element appartenant au PEvoisin.
+ *   Les joints apparaissent dans la liste dans l'ordre croissant des PEs.
+ *   Note:  Les faces que l'on va creer ensuite utilisent forcement
+ *          des sommets que l'on va trouver ici.
+ *   Propriete : Les sommets du joint sont classes dans l'ordre croissant
+ *               de leur numero local, donc dans l'ordre croissant de
+ *               leur numero global (voir Remplir_Numeros_Sommets)
+ *
+ */
 
 void DomaineCutter::construire_sommets_joints_ssdom(const ArrOfInt& liste_sommets,
                                                     const ArrOfInt& liste_inverse_sommets,
@@ -953,14 +967,18 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie,
   }
 }
 
-// Description: Constructeur par defaut (structure vide)
+/*! @brief Constructeur par defaut (structure vide)
+ *
+ */
 DomaineCutter::DomaineCutter()
 {
   nb_parties_ = -1;
   epaisseur_joint_ = -1;
 }
 
-// Description: annule toutes les references et vide les tableaux
+/*! @brief annule toutes les references et vide les tableaux
+ *
+ */
 void DomaineCutter::reset()
 {
   ref_domaine_.reset();
@@ -1044,20 +1062,14 @@ void calculer_elements_voisins_bords(const Domaine& dom,
     }
 }
 
-// Description: Prepare les structures de donnees pour la construction
-//  des sous-domaines en fonction d'un decoupage fourni dans elem_part.
-// Parametre: domaine_global
-// Signification: le domaine a decouper (doit avoir une zone). On prend une ref
-//  a ce domaine (il doit donc rester valide).
-// Parametre: elem_part
-// Signification: pour chaque element, numero du sous-domaine auquel il appartient,
-//  avec 0 <= elem_part[i] < nb_parts. Attention, on prend une ref a ce tableau, on
-//  ne fait pas une copie local. Le tableau doit continuer a exister jusqu'a ce qu'on
-//  a fini d'utiliser DomaineCutter.
-// Parametre: nb_parts
-// Signification: nombre total de sous-domaines
-// Parametre: les_faces
-// Parametre: epaisseur_joint
+/*! @brief Prepare les structures de donnees pour la construction des sous-domaines en fonction d'un decoupage fourni dans elem_part.
+ *
+ * @param (domaine_global) le domaine a decouper (doit avoir une zone). On prend une ref a ce domaine (il doit donc rester valide).
+ * @param (elem_part) pour chaque element, numero du sous-domaine auquel il appartient, avec 0 <= elem_part[i] < nb_parts. Attention, on prend une ref a ce tableau, on ne fait pas une copie local. Le tableau doit continuer a exister jusqu'a ce qu'on a fini d'utiliser DomaineCutter.
+ * @param (nb_parts) nombre total de sous-domaines
+ * @param (les_faces)
+ * @param (epaisseur_joint)
+ */
 void DomaineCutter::initialiser(const Domaine&   domaine_global,
                                 const IntVect& elem_part,
                                 const int     nb_parts,
@@ -1098,15 +1110,15 @@ void DomaineCutter::initialiser(const Domaine&   domaine_global,
 
 }
 
-// Description:
-//  Remplit la structure "correspondance" et le "sous_domaine"
-//  pour la partie "part". On cherche les sommets qui appartiennent a la sous-partie,
-//  on calcule les tableaux de renumerotation des sommets et des elements entre numero
-//  global et numero local (structure correspondance), on remplit les structures de
-//  sous_domaine (sommets, elements, frontieres, joints, etc).
-//  Attention: sous_domaine doit etre un objet vierge (ne pas contenir de zone)
-// Precondition:
-//  La methode initialiser doit avoir ete appelee avant
+/*! @brief Remplit la structure "correspondance" et le "sous_domaine" pour la partie "part".
+ *
+ * On cherche les sommets qui appartiennent a la sous-partie,
+ *   on calcule les tableaux de renumerotation des sommets et des elements entre numero
+ *   global et numero local (structure correspondance), on remplit les structures de
+ *   sous_domaine (sommets, elements, frontieres, joints, etc).
+ *   Attention: sous_domaine doit etre un objet vierge (ne pas contenir de zone)
+ *
+ */
 void DomaineCutter::construire_sous_domaine(const int part,
                                             DomaineCutter_Correspondance& correspondance,
                                             Domaine& sous_domaine, const Static_Int_Lists* som_raccord) const
@@ -1196,12 +1208,14 @@ void DomaineCutter::construire_sous_domaine(const int part,
   Scatter::trier_les_joints(zone_partie.faces_joint());
 }
 
-// Description:
-//   Build the name of the ".Zones" file for a given proc and a domain.
-//   If partie == -1 a single filename is returned. For example
-//          DOM.Zones
-//   instead of
-//          DOM_0001.Zones
+/*! @brief Build the name of the ".
+ *
+ * Zones" file for a given proc and a domain. If partie == -1 a single filename is returned. For example
+ *           DOM.Zones
+ *    instead of
+ *           DOM_0001.Zones
+ *
+ */
 static void construire_nom_fichier_sous_domaine(const Nom& basename,
                                                 const int partie, const int nb_parties_,
                                                 const int original_proc,
@@ -1255,11 +1269,13 @@ void DomaineCutter::writeData(const Domaine& sous_domaine, Sortie& os) const
   os << liste_bords_periodiques_;
 }
 
-// Description:
-//  Generation de tous les sous-domaines du calcul et ecriture sur disque des
-//  fichiers basename_000n.Zones pour 0 <= n < nb_parties_.
-//  Si des "sous-zones" sont definies (dans le champ domaine.ss_zones()),
-//  on genere aussi un fichier par sous-zone.
+/*! @brief Generation de tous les sous-domaines du calcul et ecriture sur disque des fichiers basename_000n.
+ *
+ * Zones pour 0 <= n < nb_parties_.
+ *   Si des "sous-zones" sont definies (dans le champ domaine.ss_zones()),
+ *   on genere aussi un fichier par sous-zone.
+ *
+ */
 void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileOutputType format, IntVect& elem_part, const int reorder, const Static_Int_Lists* som_raccord)
 {
   assert(nb_parties_ >= 0);

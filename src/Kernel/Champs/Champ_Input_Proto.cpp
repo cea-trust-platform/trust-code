@@ -24,29 +24,20 @@
 
 using ICoCo::WrongArgument;
 
-// Description:
-//    Lecture d'un champ input dans un flot d'entree
-//    Factorisation des readOn des differents Champ_input
-//    Format:
-//     { nb_comp nombre_de_composantes_du_champ
-//       nom nom_du_champ
-//       probleme nom_du_probleme_base_associe
-//       [sous_zone nom_de_la_sous_zone_associee] }
-// Precondition: sous_zone_ok should be intialized
-// Parametre: Entree& is
-//    Signification: flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour:
-//    Signification: le flot d'entre modifie
-//    Contraintes:
-// Exception: pas d'accolade ouvrante en debut de format
-// Exception : un des 3 motcles absent, autre motcle non compris
-// Exception: pas d'accolade fermante en fin de jeu de donnee
-// Effets de bord:
-// Postcondition: Le champ est liste dans le probleme_base
-// mon_pb et eventuellement ma_sous_zone sont remplis.
+/*! @brief Lecture d'un champ input dans un flot d'entree Factorisation des readOn des differents Champ_input
+ *
+ *     Format:
+ *      { nb_comp nombre_de_composantes_du_champ
+ *        nom nom_du_champ
+ *        probleme nom_du_probleme_base_associe
+ *        [sous_zone nom_de_la_sous_zone_associee] }
+ *
+ * @param (Entree& is) flot d'entree
+ * @return le flot d'entre modifie
+ * @throws pas d'accolade ouvrante en debut de format
+ * Exception : un des 3 motcles absent, autre motcle non compris
+ * @throws pas d'accolade fermante en fin de jeu de donnee
+ */
 void Champ_Input_Proto::read(Entree& is)
 {
   Nom nom_champ;

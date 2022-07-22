@@ -19,19 +19,15 @@
 #include <Triangulation_base.h>
 class Zone;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Tetraedriser
-//    Cette classe est un interprete qui sert a lire et executer
-//    la directive Tetraedriser:
-//        Tetraedriser nom_domaine
-//    Cette directive est a utiliser en discretisation VEF pour obtenir
-//    un maillage tetraedrique a partir d'un maillage constitue de paves.
-// .SECTION voir aussi
-//    Interprete Pave Tetraedre
-//     Cette classe est utilisable en 3D
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Tetraedriser Cette classe est un interprete qui sert a lire et executer
+ *
+ *     la directive Tetraedriser:
+ *         Tetraedriser nom_domaine
+ *     Cette directive est a utiliser en discretisation VEF pour obtenir
+ *     un maillage tetraedrique a partir d'un maillage constitue de paves.
+ *
+ * @sa Interprete Pave Tetraedre, Cette classe est utilisable en 3D
+ */
 class Tetraedriser : public Triangulation_base
 {
   Declare_instanciable(Tetraedriser);

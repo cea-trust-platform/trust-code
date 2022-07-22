@@ -22,12 +22,11 @@ class Parametre_equation_base;
 
 Declare_deriv(Parametre_equation_base);
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Parametre_equation
-//     Classe generique de la hierarchie des Parametres_equation_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Parametre_equation Classe generique de la hierarchie des Parametres_equation_base
+ *
+ *
+ *
+ */
 class Parametre_equation : public DERIV(Parametre_equation_base)
 {
   Declare_instanciable(Parametre_equation);

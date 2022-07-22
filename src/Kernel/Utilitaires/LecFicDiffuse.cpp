@@ -36,9 +36,12 @@ LecFicDiffuse::LecFicDiffuse()
   file_.set_error_action(ERROR_CONTINUE);
 }
 
-// Description: ouverture du fichier name. Cette methode
-//  doit etre appelee sur tous les processeurs. En cas
-//  d'echec : exit()
+/*! @brief ouverture du fichier name.
+ *
+ * Cette methode doit etre appelee sur tous les processeurs. En cas
+ *   d'echec : exit()
+ *
+ */
 LecFicDiffuse::LecFicDiffuse(const char* name,
                              IOS_OPEN_MODE mode)
 {
@@ -51,9 +54,12 @@ LecFicDiffuse::LecFicDiffuse(const char* name,
     }
 }
 
-// Description: Ouverture du fichier. Cette methode doit etre appelee
-//  par tous les processeurs du groupe.
-// Valeur de retour: 1 si ok, 0 sinon
+/*! @brief Ouverture du fichier.
+ *
+ * Cette methode doit etre appelee par tous les processeurs du groupe.
+ *  Valeur de retour: 1 si ok, 0 sinon
+ *
+ */
 int LecFicDiffuse::ouvrir(const char* name,
                           IOS_OPEN_MODE mode)
 {
@@ -64,7 +70,9 @@ int LecFicDiffuse::ouvrir(const char* name,
   return ok;
 }
 
-// Description:
+/*! @brief
+ *
+ */
 istream& LecFicDiffuse::get_istream()
 {
   if(!Process::je_suis_maitre())
@@ -75,7 +83,9 @@ istream& LecFicDiffuse::get_istream()
   return file_.get_istream();
 }
 
-// Description:
+/*! @brief
+ *
+ */
 const istream& LecFicDiffuse::get_istream() const
 {
   if(!Process::je_suis_maitre())

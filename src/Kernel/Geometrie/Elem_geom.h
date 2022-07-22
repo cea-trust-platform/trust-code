@@ -22,18 +22,15 @@
 #include <Elem_geom_base.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     Classe Elem_geom
-//     Classe generique de la hierarchie des elements geometriques, un objet
-//     Elem_geom peut referencer n'importe quel objet derivant de
-//     Elem_geom_base.
-//     La plupart des methodes appellent les methodes de l'objet Elem_geom_base
-//     sous-jacent via la methode valeur() declaree grace a la macro
-//Declare_deriv().;
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Elem_geom Classe generique de la hierarchie des elements geometriques, un objet
+ *
+ *      Elem_geom peut referencer n'importe quel objet derivant de
+ *      Elem_geom_base.
+ *      La plupart des methodes appellent les methodes de l'objet Elem_geom_base
+ *      sous-jacent via la methode valeur() declaree grace a la macro
+ * Declare_deriv().;
+ *
+ */
 Declare_deriv(Elem_geom_base);
 class Elem_geom : public DERIV(Elem_geom_base)
 {
@@ -62,200 +59,94 @@ public:
 
 };
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Associe l'element geometrique a sa zone.
-// Precondition:
-// Parametre: Zone&  z
-//    Signification: la zone dont fait partie l'element
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent Associe l'element geometrique a sa zone.
+ *
+ * @param (Zone&  z) la zone dont fait partie l'element
+ */
 inline void Elem_geom::associer_zone(const Zone&  z)
 {
   valeur().associer_zone(z);
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Renvoie le j-ieme sommet de la i-ieme face de
-//    l'element.
-// Precondition:
-// Parametre: int i
-//    Signification: un numero de face
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int j
-//    Signification: un numero de sommet
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent Renvoie le j-ieme sommet de la i-ieme face de
+ *
+ *     l'element.
+ *
+ * @param (int i) un numero de face
+ * @param (int j) un numero de sommet
+ */
 inline void Elem_geom::face_sommet(int i, int j) const
 {
   valeur().face_sommet(i, j);
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Cree les faces de l'element specifie de la zone.
-//    (sans specifier le type de face a creer)
-// Precondition:
-// Parametre: Faces& les_faces
-//    Signification: les faces de l'element
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Parametre: int num_elem
-//    Signification: le numero de l'element de la zone dont on
-//                   doit creer les faces
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent Cree les faces de l'element specifie de la zone.
+ *
+ *     (sans specifier le type de face a creer)
+ *
+ * @param (Faces& les_faces) les faces de l'element
+ * @param (int num_elem) le numero de l'element de la zone dont on doit creer les faces
+ */
 inline void Elem_geom::creer_faces_elem(Faces& les_faces,int num_elem) const
 {
   valeur().creer_faces_elem(les_faces,num_elem);
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Cree les faces de l'element specifie de la zone
-//    en specifiant le type de de face a creer.
-// Precondition:
-// Parametre: Faces& les_faces
-//    Signification: les faces de l'element
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Parametre: int num_elem
-//    Signification: le numero de l'element de la zone dont on
-//                   doit creer les faces
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: Type_Face typ
-//    Signification: le type de face a creer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent Cree les faces de l'element specifie de la zone
+ *
+ *     en specifiant le type de de face a creer.
+ *
+ * @param (Faces& les_faces) les faces de l'element
+ * @param (int num_elem) le numero de l'element de la zone dont on doit creer les faces
+ * @param (Type_Face typ) le type de face a creer
+ */
 inline void Elem_geom::creer_faces_elem(Faces& les_faces,int num_elem,Type_Face typ) const
 {
   valeur().creer_faces_elem(les_faces,num_elem,typ);
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Calcule les centres de gravites de tous les elements
-//    de la zone geometrique associee.
-// Precondition:
-// Parametre: DoubleTab& xp
-//    Signification: le tableau contenant les coordonnees des
-//                   des centres de gravites.
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent Calcule les centres de gravites de tous les elements
+ *
+ *     de la zone geometrique associee.
+ *
+ * @param (DoubleTab& xp) le tableau contenant les coordonnees des des centres de gravites.
+ */
 inline void Elem_geom::calculer_centres_gravite(DoubleTab& xp) const
 {
   valeur().calculer_centres_gravite(xp);
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Calcule les volumes des elements de la zone associee.
-// Precondition:
-// Parametre: DoubleVect& volumes
-//    Signification: le vecteur contenant les valeurs  des
-//                   des volumes des elements de la zone
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent Calcule les volumes des elements de la zone associee.
+ *
+ * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la zone
+ */
 inline void Elem_geom::calculer_volumes(DoubleVect& volumes) const
 {
   valeur().calculer_volumes(volumes);
 }
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Calcule les normales aux faces des elements de la zone associee.
-// Precondition:
-// Parametre: DoubleTab& face_sommets
-//    Signification: les numeros des sommets des faces
-//                   dans la liste des sommets de la zone
-// Parametre: DoubleTab& face_normales
-//    Signification: le vecteur contenant les normales
-//                   aux faces des elements de la zone
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent Calcule les normales aux faces des elements de la zone associee.
+ *
+ * @param (DoubleTab& face_sommets) les numeros des sommets des faces dans la liste des sommets de la zone
+ * @param (DoubleTab& face_normales) le vecteur contenant les normales aux faces des elements de la zone
+ */
 inline void Elem_geom::calculer_normales(const IntTab& face_sommets, DoubleTab& face_normales) const
 {
   valeur().calculer_normales(face_sommets,face_normales);
 }
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Renvoie le nombre de faces du type specifie
-//    que possede l'element geometrique.
-// Precondition:
-// Parametre: int i
-//    Signification: le type de face
-//    Valeurs par defaut: 0
-//    Contraintes: 0 <= i < nombre de type de face
-//    Acces:
-// Retour: int
-//    Signification: le nombre de face du type specifie
-//                   dans l'element geometrique courant
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent Renvoie le nombre de faces du type specifie
+ *
+ *     que possede l'element geometrique.
+ *
+ * @param (int i) le type de face
+ * @return (int) le nombre de face du type specifie dans l'element geometrique courant
+ */
 inline int Elem_geom::nb_faces(int i) const
 {
   assert(i<nb_type_face());
@@ -263,42 +154,22 @@ inline int Elem_geom::nb_faces(int i) const
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Renvoie le nombre de sommets de l'element
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de sommets de l'element
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent Renvoie le nombre de sommets de l'element
+ *
+ * @return (int) le nombre de sommets de l'element
+ */
 inline int Elem_geom::nb_som() const
 {
   return valeur().nb_som();
 }
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Renvoie le nombre de sommets des faces
-//    du type specifie.
-// Precondition:
-// Parametre: int i
-//    Signification: le type de face
-//    Valeurs par defaut: 0
-//    Contraintes: 0 <= i < nombre de type de face
-//    Acces:
-// Retour: int
-//    Signification: le nombre de sommets des faces du type specifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent Renvoie le nombre de sommets des faces
+ *
+ *     du type specifie.
+ *
+ * @param (int i) le type de face
+ * @return (int) le nombre de sommets des faces du type specifie
+ */
 inline int Elem_geom::nb_som_face(int i) const
 {
   assert(i<nb_type_face());
@@ -306,23 +177,12 @@ inline int Elem_geom::nb_som_face(int i) const
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Renvoie 1 si l'element geometrique est structure,
-//            0 sinon
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: renvoie 1 si l'element geometrique
-//                   est structure, 0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent Renvoie 1 si l'element geometrique est structure,
+ *
+ *             0 sinon
+ *
+ * @return (int) renvoie 1 si l'element geometrique est structure, 0 sinon
+ */
 inline int Elem_geom::est_structure() const
 {
   return valeur().est_structure();
@@ -352,130 +212,64 @@ inline const Nom& Elem_geom::nom_lml() const
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Renvoie 1 si l'element i de la zone associee a
-//              l'element geometrique contient le point
-//              de coordonnees specifiees par le parametre "pos".
-//    Renvoie 0 sinon.
-// Precondition:
-// Parametre: DoubleVect& pos
-//    Signification: coordonnees du point que l'on
-//                   cherche a localiser
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: int i
-//    Signification: le numero de l'element de la zone
-//                   dans lequel on cherche le point.
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si le point de coordonnees specifiees
-//                   appartient a l'element i
-//                   0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent Renvoie 1 si l'element i de la zone associee a
+ *
+ *               l'element geometrique contient le point
+ *               de coordonnees specifiees par le parametre "pos".
+ *     Renvoie 0 sinon.
+ *
+ * @param (DoubleVect& pos) coordonnees du point que l'on cherche a localiser
+ * @param (int i) le numero de l'element de la zone dans lequel on cherche le point.
+ * @return (int) 1 si le point de coordonnees specifiees appartient a l'element i 0 sinon
+ */
 inline int Elem_geom::contient(const ArrOfDouble& pos, int i ) const
 {
   return valeur().contient(pos, i);
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Renvoie 1 si les sommets specifies par le parametre "pos"
-//    sont les sommets de l'element i de la zone associee a
-//    l'element geometrique.
-// Precondition:
-// Parametre: IntVect& pos
-//    Signification: les numeros des sommets a comparer
-//                   avec ceux de l'elements i
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: int i
-//    Signification: le numero de l'element de la zone
-//                   dont on veut comparer les sommets
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si les sommets passes en parametre
-//                   sont ceux de l'element i, 0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent Renvoie 1 si les sommets specifies par le parametre "pos"
+ *
+ *     sont les sommets de l'element i de la zone associee a
+ *     l'element geometrique.
+ *
+ * @param (IntVect& pos) les numeros des sommets a comparer avec ceux de l'elements i
+ * @param (int i) le numero de l'element de la zone dont on veut comparer les sommets
+ * @return (int) 1 si les sommets passes en parametre sont ceux de l'element i, 0 sinon
+ */
 inline int Elem_geom::contient(const ArrOfInt& pos, int i ) const
 {
   return valeur().contient(pos, i);
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Renvoie le i-eme type de face de l'element
-//    geometrique.
-// Precondition:
-// Parametre: int i
-//    Signification: le rang du type de face a renvoyer
-//    Valeurs par defaut: 0
-//    Contraintes: i < nombre de type de face de l'element geometrique
-//    Acces:
-// Retour: Type_Face
-//    Signification: un objet Type_Face correspondant au type
-//                   demande
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent Renvoie le i-eme type de face de l'element
+ *
+ *     geometrique.
+ *
+ * @param (int i) le rang du type de face a renvoyer
+ * @return (Type_Face) un objet Type_Face correspondant au type demande
+ */
 inline Type_Face Elem_geom::type_face(int i) const
 {
   assert(i<nb_type_face());
   return valeur().type_face(i);
 }
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Reordonne les sommets du maillage.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent Reordonne les sommets du maillage.
+ *
+ */
 inline void Elem_geom::reordonner()
 {
   valeur().reordonner();
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Renvoie le nombre de type de face
-//    de l'element geometrique.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent Renvoie le nombre de type de face
+ *
+ *     de l'element geometrique.
+ *
+ */
 inline int Elem_geom::nb_type_face() const
 {
   return valeur().nb_type_face();

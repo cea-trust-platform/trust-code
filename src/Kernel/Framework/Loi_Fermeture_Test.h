@@ -19,13 +19,13 @@
 #include <Loi_Fermeture_base.h>
 #include <Champ_Don.h>
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Loi_Fermeture_Test
-//
-// <Description of class Loi_Fermeture_Test>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Loi_Fermeture_Test
+ *
+ *  <Description of class Loi_Fermeture_Test>
+ *
+ *
+ *
+ */
 
 class Loi_Fermeture_Test : public Loi_Fermeture_base
 {

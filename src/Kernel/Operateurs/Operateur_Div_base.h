@@ -17,15 +17,12 @@
 #define Operateur_Div_base_included
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Operateur_Div_base
-//    Cette classe est la base de la hierarchie des operateurs representant
-//    le calcul de la divergence d'un champ dans une equation.
-// .SECTION voir aussi
-//    Operateur_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Operateur_Div_base Cette classe est la base de la hierarchie des operateurs representant
+ *
+ *     le calcul de la divergence d'un champ dans une equation.
+ *
+ * @sa Operateur_base
+ */
 #include <Operateur_base.h>
 class Operateur_Div_base  : public Operateur_base
 {

@@ -16,13 +16,12 @@
 #ifndef LireMEDfile_included
 #define LireMEDfile_included
 
-///////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-// Classe LireMEDfile
-//    Lit un fichier MED (avec MEDfile)
-//
-///////////////////////////////////////////////////////////////////////////
+/*! @brief Classe LireMEDfile Lit un fichier MED (avec MEDfile)
+ *
+ *
+ *
+ *
+ */
 #include <LireMED.h>
 
 class LireMEDfile : public LireMED

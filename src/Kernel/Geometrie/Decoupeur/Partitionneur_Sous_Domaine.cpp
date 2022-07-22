@@ -27,14 +27,16 @@ Partitionneur_Sous_Domaine::Partitionneur_Sous_Domaine()
   filename_ssz_ = "";
 }
 
-// Description:
-//  Lecture des parametres du partitionneur sur disque.
-//  Fomat attendu:
-//    {
-//        fichier FILENAME
-//        fichier_ssz FILENAME
-//    }
-//  FILENAME est le nom d'un fichier existant au format ArrOfInt ascii.
+/*! @brief Lecture des parametres du partitionneur sur disque.
+ *
+ * Fomat attendu:
+ *     {
+ *         fichier FILENAME
+ *         fichier_ssz FILENAME
+ *     }
+ *   FILENAME est le nom d'un fichier existant au format ArrOfInt ascii.
+ *
+ */
 Entree& Partitionneur_Sous_Domaine::readOn(Entree& is)
 {
   Partitionneur_base::readOn(is);
@@ -56,10 +58,9 @@ void Partitionneur_Sous_Domaine::set_param(Param& param)
   param.ajouter("fichier_ssz",&filename_ssz_,Param::REQUIRED); // XD_ADD_P chaine fichier sous zonne
 }
 
-// Description:
-//  Lit le contenu du fichier "filename_" et stocke le resultat dans elem_part
-// Precondition:
-//  domaine associe et filename initialise
+/*! @brief Lit le contenu du fichier "filename_" et stocke le resultat dans elem_part
+ *
+ */
 void Partitionneur_Sous_Domaine::construire_partition(IntVect& elem_part, int& nb_parts_tot) const
 {
   if (filename_ == "")

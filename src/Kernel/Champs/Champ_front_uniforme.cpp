@@ -19,22 +19,14 @@ Implemente_instanciable(Champ_front_uniforme,"Champ_front_uniforme",Champ_front_
 
 
 
-// Description:
-//    Imprime le champ sur flot de sortie.
-//    Imprime la taille du champ et la valeur (constante) sur
-//    la frontiere.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Imprime le champ sur flot de sortie.
+ *
+ * Imprime la taille du champ et la valeur (constante) sur
+ *     la frontiere.
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Champ_front_uniforme::printOn(Sortie& os) const
 {
   const DoubleTab& tab=valeurs();
@@ -45,22 +37,14 @@ Sortie& Champ_front_uniforme::printOn(Sortie& os) const
 }
 
 
-// Description:
-//    Lit le champ a partir d'un flot d'entree.
-//    Format:
-//      Champ_front_uniforme nb_compo vrel_1 ... [vrel_i]
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree& is
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: le champ uniforme a la valeur lue
+/*! @brief Lit le champ a partir d'un flot d'entree.
+ *
+ * Format:
+ *       Champ_front_uniforme nb_compo vrel_1 ... [vrel_i]
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree& is) le flot d'entree modifie
+ */
 Entree& Champ_front_uniforme::readOn(Entree& is)
 {
   int dim;
@@ -75,39 +59,20 @@ Entree& Champ_front_uniforme::readOn(Entree& is)
 
 
 
-// Description:
-//    Renvoie l'objet upcaste en Champ_front_base&
-// Precondition:
-// Parametre: Champ_front_base& ch
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Retour: Champ_front_base&
-//    Signification: (*this) upcaste en Champ_front_base&
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie l'objet upcaste en Champ_front_base&
+ *
+ * @param (Champ_front_base& ch)
+ * @return (Champ_front_base&) (*this) upcaste en Champ_front_base&
+ */
 Champ_front_base& Champ_front_uniforme::affecter_(const Champ_front_base& ch)
 {
   return *this;
 }
 
-// Description:
-//    Renvoie le vecteur des valeurs du champ pour la face donnee.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification: le tableau des valeurs du champ
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le vecteur des valeurs du champ pour la face donnee.
+ *
+ * @return le tableau des valeurs du champ
+ */
 void Champ_front_uniforme::valeurs_face(int face,DoubleVect& var) const
 {
   var.resize(nb_compo_);
@@ -116,31 +81,33 @@ void Champ_front_uniforme::valeurs_face(int face,DoubleVect& var) const
     var(i) = valeurs()(0,i);
 }
 
-// Description:
-//    Renvoie les valeurs sans s'occuper du temps puisque le champ
-//    est stationnaire.
+/*! @brief Renvoie les valeurs sans s'occuper du temps puisque le champ est stationnaire.
+ *
+ */
 DoubleTab& Champ_front_uniforme::valeurs_au_temps(double temps)
 {
   return les_valeurs->valeurs();
 }
 
-// Description:
-//    Renvoie les valeurs sans s'occuper du temps puisque le champ
-//    est stationnaire.
+/*! @brief Renvoie les valeurs sans s'occuper du temps puisque le champ est stationnaire.
+ *
+ */
 const DoubleTab& Champ_front_uniforme::valeurs_au_temps(double temps) const
 {
   return les_valeurs->valeurs();
 }
 
-// Description:
-//    Avance en temps : rien a faire pour un champ stationnaire !
+/*! @brief Avance en temps : rien a faire pour un champ stationnaire !
+ *
+ */
 int Champ_front_uniforme::avancer(double temps)
 {
   return 1;
 }
 
-// Description:
-//    Recule en temps : rien a faire pour un champ stationnaire !
+/*! @brief Recule en temps : rien a faire pour un champ stationnaire !
+ *
+ */
 int Champ_front_uniforme::reculer(double temps)
 {
   return 1;

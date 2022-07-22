@@ -20,18 +20,12 @@
 #include <Champ_Uniforme_Morceaux.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Champ_Uniforme_Morceaux_inst
-//    Representent un champ constant par morceaux dans l'espace et dependant
-//    du temps.
-// .SECTION voir aussi
-//    Champ_Uniforme_Morceaux Champ_Uniforme
-//    Classe abstraite
-//    Methode abstraite
-//      void me_calculer(double t)
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Champ_Uniforme_Morceaux_inst Representent un champ constant par morceaux dans l'espace et dependant
+ *
+ *     du temps.
+ *
+ * @sa Champ_Uniforme_Morceaux Champ_Uniforme, Classe abstraite, Methode abstraite, void me_calculer(double t)
+ */
 class Champ_Uniforme_Morceaux_inst : public Champ_Uniforme_Morceaux
 {
 
@@ -48,20 +42,10 @@ private :
 };
 
 
-// Description:
-//    Effectue une mise a jour en temps du champ.
-// Precondition:
-// Parametre: double temps
-//    Signification: le temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Effectue une mise a jour en temps du champ.
+ *
+ * @param (double temps) le temps de mise a jour
+ */
 inline void Champ_Uniforme_Morceaux_inst::mettre_a_jour(double un_temps)
 {
   me_calculer(un_temps);

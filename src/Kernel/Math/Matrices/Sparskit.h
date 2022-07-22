@@ -17,25 +17,10 @@
 #define Sparskit_inclus
 
 #include <arch.h>
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
-// FORMATS/formats.f :
-// csrbnd  : converts a compressed sparse row format into a banded format (linpack style)
-// ORDERINGS/levset.f :
-// BSF     : Breadth-First Search traversal (Cuthill-McKee ordering)
-// rversp  : routine to reverse a given permutation (e.g., for RCMK)
-// INFO/infofun.f :
-// bandwidth :  Computes  ml     = lower_bandwidth(A)
-//                       mu     = upper_bandwidth(A)
-//                       iband  = max_bandwidth(A)
-//                       bndav  = average_bandwidth(A)
-// UNARY/unary :
-// dvperm : permutes a real vector (in-place)
-// ivperm : permutes an integer vector (in-place)
-//
+/*! @brief
+ *
+ * @sa FORMATS/formats.f :, csrbnd  : converts a compressed sparse row format into a banded format (linpack style), ORDERINGS/levset.f :, BSF     : Breadth-First Search traversal (Cuthill-McKee ordering), rversp  : routine to reverse a given permutation (e.g., for RCMK), INFO/infofun.f :, bandwidth :  Computes  ml     = lower_bandwidth(A), mu     = upper_bandwidth(A), iband  = max_bandwidth(A), bndav  = average_bandwidth(A), UNARY/unary :, dvperm : permutes a real vector (in-place), ivperm : permutes an integer vector (in-place)
+ */
 
 #ifdef _NO_SPARSKIT_
 static inline void ERREUR(char * msg)
@@ -699,19 +684,9 @@ extern "C" {
 
 }
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 #ifndef F77_Majuscule
 inline void F77NAME(ILUT)(const int* const a, const double* const b,
                           const int* const c, const int* const d,
@@ -739,19 +714,9 @@ inline void F77NAME(LUTSOL) (const int* const a, const double* const b,
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(PGMRES)(const int* const a, const int* const b,
                             const double* const c, double* const d,
                             const double* const e, const double* const f,
@@ -764,19 +729,9 @@ inline void F77NAME(PGMRES)(const int* const a, const int* const b,
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(AMUX)(const int* n, const double* x, const double* y,
                           const double* a,const int* ja, const int* ia)
 {
@@ -784,19 +739,9 @@ inline void F77NAME(AMUX)(const int* n, const double* x, const double* y,
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(ATMUX)(const int* n, const double* x, const double* y,
                            const double* a,const int* ja, const int* ia)
 {
@@ -804,19 +749,9 @@ inline void F77NAME(ATMUX)(const int* n, const double* x, const double* y,
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(AMUDIA)(const int* const a, const int* const b,
                             const double* const c,
                             const int* const d, const int* const e,
@@ -827,19 +762,9 @@ inline void F77NAME(AMUDIA)(const int* const a, const int* const b,
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(AMUB)(const int* const a, const int* const b,
                           const int* const c, const double* const d,
                           const int* const e, const int* const f, const double* const g,
@@ -851,19 +776,9 @@ inline void F77NAME(AMUB)(const int* const a, const int* const b,
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(APLB)(const int* const a, const int* const b,
                           const int* const c,
                           const double* const d, const int* const e,const int* const f,
@@ -875,19 +790,9 @@ inline void F77NAME(APLB)(const int* const a, const int* const b,
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(APLB1)(const int* const a, const int* const b,
                            const int* const c,
                            const double* const d, const int* const e, const int* const f,
@@ -899,19 +804,9 @@ inline void F77NAME(APLB1)(const int* const a, const int* const b,
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(APLSB)(const int* const a, const int* const b,
                            const double* const c,
                            const int* const d, const int* const e, const int* const f,
@@ -923,19 +818,9 @@ inline void F77NAME(APLSB)(const int* const a, const int* const b,
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(APLSB1)(const int* const a, const int* const b,
                             const double* const c,
                             const int* const d, const int* const e, const int* const f,
@@ -947,19 +832,9 @@ inline void F77NAME(APLSB1)(const int* const a, const int* const b,
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(APMBT)(const int* const a, const int* const b,
                            const int* const c,
                            const double* const d, const int* const e,const int* const f,
@@ -971,19 +846,9 @@ inline void F77NAME(APMBT)(const int* const a, const int* const b,
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(APLSBT)(const int* const a, const int* const b,
                             const int* const c,
                             const double* const d, const int* const e,const int* const f,
@@ -995,19 +860,9 @@ inline void F77NAME(APLSBT)(const int* const a, const int* const b,
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(DIAMUA)(const int* const a, const int* const b,
                             const double* const c,
                             const int* const d, const int* const e, const double* const f,
@@ -1017,19 +872,9 @@ inline void F77NAME(DIAMUA)(const int* const a, const int* const b,
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(APLSCA)(const int* const a, const double* const b,
                             const int* const c,
                             const int* const d, const double* const e,const int* const f)
@@ -1038,19 +883,9 @@ inline void F77NAME(APLSCA)(const int* const a, const double* const b,
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(APLDIA)(const int* const a, const int* const b,
                             const double* const c,
                             const int* const d, const int* const e, const double* const f,
@@ -1074,19 +909,9 @@ inline void F77NAME(BANDWIDTH)(const int* const a,const int* const b,
   F77NAME(bandwidth)(a,b,c,d,e,f,g);
 }
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(NONZ)(const int* const a,const int* const b,
                           const int* const c,
                           const double* const d,
@@ -1097,19 +922,9 @@ inline void F77NAME(NONZ)(const int* const a,const int* const b,
   F77NAME(nonz)(a,b,c,d,e,f,g,h,i,j,k);
 }
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(DIAG_DOMI)(const int* const a,const int* const b,
                                const int* const c,
                                const double* const d, const int* const e,
@@ -1120,19 +935,9 @@ inline void F77NAME(DIAG_DOMI)(const int* const a,const int* const b,
   F77NAME(diag_domi)(a,b,c,d,e,f,g,h,i,j);
 }
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(FROBNORM)(const int* const a,const int* const b,
                               const double* const c,const int* const d,
                               const double* const e,const double* const f)
@@ -1140,19 +945,9 @@ inline void F77NAME(FROBNORM)(const int* const a,const int* const b,
   F77NAME(frobnorm)(a,b,c,d,e,f);
 }
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(ANSYM)(const int* const a,const int* const b,
                            const double* const c,
                            const int* const d,const double* const e,const double* const f,
@@ -1162,19 +957,9 @@ inline void F77NAME(ANSYM)(const int* const a,const int* const b,
   F77NAME(ansym)(a,b,c,d,e,f,g,h,i,j,k,l);
 }
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(DISTAIJ)(const int* const a,const int* const b,
                              const int* const c,
                              const int* const d,const double* const e,const double* const f,
@@ -1183,19 +968,9 @@ inline void F77NAME(DISTAIJ)(const int* const a,const int* const b,
   F77NAME(distaij)(a,b,c,d,e,f,g);
 }
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(SKYLINE)(const int* const a,const int* const b,
                              const int* const c,
                              const double* const d,
@@ -1204,19 +979,9 @@ inline void F77NAME(SKYLINE)(const int* const a,const int* const b,
   F77NAME(skyline)(a,b,c,d,e,f,g);
 }
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(DISTDIAG)(const int* const a,const int* const b,
                               const int* const c,
                               const double* const d,const double* const e)
@@ -1224,19 +989,9 @@ inline void F77NAME(DISTDIAG)(const int* const a,const int* const b,
   F77NAME(distdiag)(a,b,c,d,e);
 }
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(BANDPART)(const int* const a,const int* const b,
                               const double* const c,const double* const d,
                               const int* const e,const int* const f)
@@ -1244,19 +999,9 @@ inline void F77NAME(BANDPART)(const int* const a,const int* const b,
   F77NAME(bandpart)(a,b,c,d,e,f);
 }
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void  F77NAME(N_IMP_DIAG)(const int* const a,const int* const b,
                                  const double* const c,
                                  const int* const d,const int* const e,
@@ -1265,19 +1010,9 @@ inline void  F77NAME(N_IMP_DIAG)(const int* const a,const int* const b,
   F77NAME(n_imp_diag)(a,b,c,d,e,f,g);
 }
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(NONZ_LUD)(const int* const a,const int* const b,
                               const double* const c,const int* const d,
                               const int* const e, const int* const f)
@@ -1285,19 +1020,9 @@ inline void F77NAME(NONZ_LUD)(const int* const a,const int* const b,
   F77NAME(nonz_lud)(a,b,c,d,e,f);
 }
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(AVNZ_COL)(const int* const a,const int* const b,
                               const double* const c,const double* const d,
                               const int* const e, const double* const f,
@@ -1306,19 +1031,9 @@ inline void F77NAME(AVNZ_COL)(const int* const a,const int* const b,
   F77NAME(avnz_col)(a,b,c,d,e,f,g);
 }
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(VBRINFO)(const int* const a, const int* const b,
                              const int* const c, const int* const d,
                              const double* const e, const int* const f,
@@ -1363,19 +1078,9 @@ inline void F77NAME(GMRES)(const int* const a, const double* const b,
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 inline void F77NAME(GMRESBIS)(const int* const a, const double* const b,
                               double* c,int* d,double* e,double* f )
 {

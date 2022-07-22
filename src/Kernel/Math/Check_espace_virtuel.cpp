@@ -16,8 +16,11 @@
 #include <Check_espace_virtuel.h>
 #include <MD_Vector_base.h>
 
-// Description: Verifie si le vecteur v a son espace virtuel a jour. Cette fonction doit etre appelee simultanement par tous les processeurs qui partagent le vecteur.
-//  (pour cela, on cree une copie qu'on echange, puis on compare a l'original).
+/*! @brief Verifie si le vecteur v a son espace virtuel a jour.
+ *
+ * Cette fonction doit etre appelee simultanement par tous les processeurs qui partagent le vecteur. (pour cela, on cree une copie qu'on echange, puis on compare a l'original).
+ *
+ */
 int check_espace_virtuel_vect(const DoubleVect& v)
 {
   // On fait une copie:
@@ -36,7 +39,9 @@ int check_espace_virtuel_vect(const DoubleVect& v)
     return 1;
 }
 
-// Description: Idem que  check_espace_virtuel_vect(const DoubleVect & v)
+/*! @brief Idem que  check_espace_virtuel_vect(const DoubleVect & v)
+ *
+ */
 int check_espace_virtuel_vect(const IntVect& v)
 {
   // On fait une copie:
@@ -51,10 +56,12 @@ int check_espace_virtuel_vect(const IntVect& v)
   return 1;
 }
 
-// Description: Appelle remplir_items_non_calcules() si on est en
-//  mode comm_check_enabled() ou en mode debug (NDEBUG non defini)
-//  La "valeur" par defaut est censee provoquer une erreur si on
-//  essaye de l'utiliser.
+/*! @brief Appelle remplir_items_non_calcules() si on est en mode comm_check_enabled() ou en mode debug (NDEBUG non defini)
+ *
+ *   La "valeur" par defaut est censee provoquer une erreur si on
+ *   essaye de l'utiliser.
+ *
+ */
 void assert_invalide_items_non_calcules(DoubleVect& v, double valeur)
 {
 #ifdef NDEBUG

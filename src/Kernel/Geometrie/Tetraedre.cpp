@@ -30,40 +30,22 @@ static int faces_sommets_tetra[4][3] =
 Implemente_instanciable(Tetraedre,"Tetraedre",Elem_geom_base);
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie
+ */
 Sortie& Tetraedre::printOn(Sortie& s ) const
 {
   return s;
 }
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification: le flot d'entree
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree
+ */
 Entree& Tetraedre::readOn(Entree& s )
 {
   return s;
@@ -72,20 +54,10 @@ Entree& Tetraedre::readOn(Entree& s )
 
 
 
-// Description:
-//    Renvoie le nom LML d'un tetraedre = "TETRA4".
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Nom&
-//    Signification: toujours egal a "TETRA4"
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nom LML d'un tetraedre = "TETRA4".
+ *
+ * @return (Nom&) toujours egal a "TETRA4"
+ */
 const Nom& Tetraedre::nom_lml() const
 {
   static Nom nom="TETRA4";
@@ -93,32 +65,15 @@ const Nom& Tetraedre::nom_lml() const
 }
 
 
-// Description:
-//    Renvoie 1 si l'element ielem de la zone associee a
-//              l'element geometrique contient le point
-//              de coordonnees specifiees par le parametre "pos".
-//    Renvoie 0 sinon.
-// Precondition:
-// Parametre: DoubleVect& pos
-//    Signification: coordonnees du point que l'on
-//                   cherche a localiser
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: int ielem
-//    Signification: le numero de l'element de la zone
-//                   dans lequel on cherche le point.
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si le point de coordonnees specifiees
-//                   appartient a l'element ielem
-//                   0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie 1 si l'element ielem de la zone associee a l'element geometrique contient le point
+ *
+ *               de coordonnees specifiees par le parametre "pos".
+ *     Renvoie 0 sinon.
+ *
+ * @param (DoubleVect& pos) coordonnees du point que l'on cherche a localiser
+ * @param (int ielem) le numero de l'element de la zone dans lequel on cherche le point.
+ * @return (int) 1 si le point de coordonnees specifiees appartient a l'element ielem 0 sinon
+ */
 int Tetraedre::contient(const ArrOfDouble& pos, int ielem) const
 {
   // 29/01/2010 Optimisation CPU de la methode (50% plus rapide) par PL
@@ -226,30 +181,14 @@ int Tetraedre::contient(const ArrOfDouble& pos, int ielem) const
 }
 
 
-// Description:
-//    Renvoie 1 si les sommets specifies par le parametre "pos"
-//    sont les sommets de l'element "element" de la zone associee a
-//    l'element geometrique.
-// Precondition:
-// Parametre: IntVect& pos
-//    Signification: les numeros des sommets a comparer
-//                   avec ceux de l'elements "element"
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: int element
-//    Signification: le numero de l'element de la zone
-//                   dont on veut comparer les sommets
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si les sommets passes en parametre
-//                   sont ceux de l'element specifie, 0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie 1 si les sommets specifies par le parametre "pos" sont les sommets de l'element "element" de la zone associee a
+ *
+ *     l'element geometrique.
+ *
+ * @param (IntVect& pos) les numeros des sommets a comparer avec ceux de l'elements "element"
+ * @param (int element) le numero de l'element de la zone dont on veut comparer les sommets
+ * @return (int) 1 si les sommets passes en parametre sont ceux de l'element specifie, 0 sinon
+ */
 int Tetraedre::contient(const ArrOfInt& som, int element ) const
 {
   const Zone& zone=ma_zone.valeur();
@@ -262,21 +201,10 @@ int Tetraedre::contient(const ArrOfInt& som, int element ) const
     return 0;
 }
 
-// Description:
-//    Calcule les volumes des elements de la zone associee.
-// Precondition:
-// Parametre: DoubleVect& volumes
-//    Signification: le vecteur contenant les valeurs  des
-//                   des volumes des elements de la zone
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Calcule les volumes des elements de la zone associee.
+ *
+ * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la zone
+ */
 void Tetraedre::calculer_volumes(DoubleVect& volumes) const
 {
   const Zone& zone=ma_zone.valeur();
@@ -318,24 +246,11 @@ void Tetraedre::calculer_volumes(DoubleVect& volumes) const
 }
 
 
-// Description:
-//    Calcule les normales aux faces des elements de la zone associee.
-// Precondition:
-// Parametre: IntTab& face_sommets
-//    Signification: les numeros des sommets des faces
-//                   dans la liste des sommets de la zone associee
-// Parametre: DoubleTab& face_normales
-//    Signification : les normales aux faces des elements
-//                     de la zone associee
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Calcule les normales aux faces des elements de la zone associee.
+ *
+ * @param (IntTab& face_sommets) les numeros des sommets des faces dans la liste des sommets de la zone associee
+ * @param (DoubleTab& face_normales)
+ */
 void Tetraedre::calculer_normales(const IntTab& Face_sommets ,
                                   DoubleTab& face_normales) const
 {
@@ -365,7 +280,9 @@ void Tetraedre::calculer_normales(const IntTab& Face_sommets ,
     }
 }
 
-// Description: voir ElemGeomBase::get_tab_faces_sommets_locaux
+/*! @brief voir ElemGeomBase::get_tab_faces_sommets_locaux
+ *
+ */
 int Tetraedre::get_tab_faces_sommets_locaux(IntTab& faces_som_local) const
 {
   // un tetraedre a quatre faces de trois sommets

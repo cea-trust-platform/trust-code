@@ -25,14 +25,10 @@
 class Nom;
 class Domaine;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Postraiter_domaine
-//    Lecture d'un fichier
-// .SECTION voir aussi
-//    Interprete
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Postraiter_domaine Lecture d'un fichier
+ *
+ * @sa Interprete
+ */
 class Postraiter_domaine : public Interprete_geometrique_base
 {
   Declare_instanciable(Postraiter_domaine);

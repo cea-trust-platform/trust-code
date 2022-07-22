@@ -19,8 +19,9 @@
 
 #include <Ch_front_var_instationnaire_dep.h>
 #include <Parser_U.h>
-//.DESCRIPTION  class Champ_front_normal
-//
+/*! @brief class Champ_front_normal
+ *
+ */
 
 
 class Champ_front_normal : public Ch_front_var_instationnaire_dep

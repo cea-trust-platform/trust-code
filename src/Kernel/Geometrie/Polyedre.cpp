@@ -32,20 +32,11 @@ Polyedre::Polyedre(): FacesIndex_(1),PolyhedronIndex_(1)
   nb_som_face_max_=0;
 }
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie
+ */
 Sortie& Polyedre::printOn(Sortie& s ) const
 {
   s<< Nodes_        <<finl;
@@ -59,20 +50,11 @@ Sortie& Polyedre::printOn(Sortie& s ) const
 }
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification: le flot d'entree
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree
+ */
 Entree& Polyedre::readOn(Entree& s )
 {
   s>> Nodes_;
@@ -199,20 +181,10 @@ int Polyedre::get_nb_som_elem_max() const
     return ma_zone.valeur().les_elems().dimension(1);
 }
 
-// Description:
-//    Renvoie le nom LML d'un polyedre = "POLYEDRE_"+nb_som_max.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Nom&
-//    Signification: toujours egal a "PRISM6"
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nom LML d'un polyedre = "POLYEDRE_"+nb_som_max.
+ *
+ * @return (Nom&) toujours egal a "PRISM6"
+ */
 const Nom& Polyedre::nom_lml() const
 {
   static Nom nom;
@@ -223,33 +195,17 @@ const Nom& Polyedre::nom_lml() const
 }
 
 
-// Description:
-//    NE FAIT RIEN: A CODER, renvoie toujours 0.
-//    Renvoie 1 si l'element "element" de la zone associee a
-//              l'element geometrique contient le point
-//              de coordonnees specifiees par le parametre "pos".
-//    Renvoie 0 sinon.
-// Precondition:
-// Parametre: DoubleVect& pos
-//    Signification: coordonnees du point que l'on
-//                   cherche a localiser
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: int element
-//    Signification: le numero de l'element de la zone
-//                   dans lequel on cherche le point.
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si le point de coordonnees specifiees
-//                   appartient a l'element "element"
-//                   0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN: A CODER, renvoie toujours 0.
+ *
+ * Renvoie 1 si l'element "element" de la zone associee a
+ *               l'element geometrique contient le point
+ *               de coordonnees specifiees par le parametre "pos".
+ *     Renvoie 0 sinon.
+ *
+ * @param (DoubleVect& pos) coordonnees du point que l'on cherche a localiser
+ * @param (int element) le numero de l'element de la zone dans lequel on cherche le point.
+ * @return (int) 1 si le point de coordonnees specifiees appartient a l'element "element" 0 sinon
+ */
 int Polyedre::contient(const ArrOfDouble& pos, int num_poly ) const
 {
 
@@ -311,31 +267,15 @@ int Polyedre::contient(const ArrOfDouble& pos, int num_poly ) const
 }
 
 
-// Description:
-//    NE FAIT RIEN: A CODER, renvoie toujours 0
-//    Renvoie 1 si les sommets specifies par le parametre "pos"
-//    sont les sommets de l'element "element" de la zone associee a
-//    l'element geometrique.
-// Precondition:
-// Parametre: IntVect& pos
-//    Signification: les numeros des sommets a comparer
-//                   avec ceux de l'elements "element"
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: int element
-//    Signification: le numero de l'element de la zone
-//                   dont on veut comparer les sommets
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si les sommets passes en parametre
-//                   sont ceux de l'element specifie, 0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN: A CODER, renvoie toujours 0 Renvoie 1 si les sommets specifies par le parametre "pos"
+ *
+ *     sont les sommets de l'element "element" de la zone associee a
+ *     l'element geometrique.
+ *
+ * @param (IntVect& pos) les numeros des sommets a comparer avec ceux de l'elements "element"
+ * @param (int element) le numero de l'element de la zone dont on veut comparer les sommets
+ * @return (int) 1 si les sommets passes en parametre sont ceux de l'element specifie, 0 sinon
+ */
 int Polyedre::contient(const ArrOfInt& pos, int num_poly ) const
 {
   BLOQUE;
@@ -343,22 +283,10 @@ int Polyedre::contient(const ArrOfInt& pos, int num_poly ) const
 }
 
 
-// Description:
-//    NE FAIT RIEN: A CODER
-//    Calcule les volumes des elements de la zone associee.
-// Precondition:
-// Parametre: DoubleVect& volumes
-//    Signification: le vecteur contenant les valeurs  des
-//                   des volumes des elements de la zone
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN: A CODER Calcule les volumes des elements de la zone associee.
+ *
+ * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la zone
+ */
 void Polyedre::calculer_volumes(DoubleVect& volumes) const
 {
   const Zone& zone=ma_zone.valeur();
@@ -417,14 +345,16 @@ int Polyedre::nb_type_face() const
   return 1;
 
 }
-// Description: remplit le tableau faces_som_local(i,j) qui donne pour
-//  0 <= i < nb_faces()  et  0 <= j < nb_som_face(i) le numero local du sommet
-//  sur l'element.
-//  On a  0 <= faces_sommets_locaux(i,j) < nb_som()
-// Si toutes les faces de l'element n'ont pas le meme nombre de sommets, le nombre
-// de colonnes du tableau est le plus grand nombre de sommets, et les cases inutilisees
-// du tableau sont mises a -1
-// On renvoie 1 si toutes les faces ont le meme nombre d'elements, 0 sinon.
+/*! @brief remplit le tableau faces_som_local(i,j) qui donne pour 0 <= i < nb_faces()  et  0 <= j < nb_som_face(i) le numero local du sommet
+ *
+ *   sur l'element.
+ *   On a  0 <= faces_sommets_locaux(i,j) < nb_som()
+ *  Si toutes les faces de l'element n'ont pas le meme nombre de sommets, le nombre
+ *  de colonnes du tableau est le plus grand nombre de sommets, et les cases inutilisees
+ *  du tableau sont mises a -1
+ *  On renvoie 1 si toutes les faces ont le meme nombre d'elements, 0 sinon.
+ *
+ */
 int Polyedre::get_tab_faces_sommets_locaux(IntTab& faces_som_local) const
 {
   return 0;
@@ -556,21 +486,11 @@ void Polyedre::remplir_Nodes_glob(ArrOfInt& Nodes_glob,const IntTab& les_elems) 
     }
 }
 
-// Description:
-//    Reordonne les sommets du Polyedre.
-//    NE FAIT RIEN: A CODER
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Reordonne les sommets du Polyedre.
+ *
+ * NE FAIT RIEN: A CODER
+ *
+ */
 void Polyedre::reordonner()
 {
 }

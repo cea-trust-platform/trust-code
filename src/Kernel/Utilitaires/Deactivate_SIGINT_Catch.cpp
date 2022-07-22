@@ -22,9 +22,9 @@ Sortie& Deactivate_SIGINT_Catch::printOn(Sortie& os) const { return Interprete::
 
 Entree& Deactivate_SIGINT_Catch::readOn(Entree& is) { return Interprete::readOn(is); }
 
-// Description:
-//    Main function of the Deactivate_SIGINT_Catch interpreter
-//    Set the Deactivate_SIGINT_Catch variable to 1.
+/*! @brief Main function of the Deactivate_SIGINT_Catch interpreter Set the Deactivate_SIGINT_Catch variable to 1.
+ *
+ */
 Entree& Deactivate_SIGINT_Catch::interpreter(Entree& is)
 {
   DEACTIVATE_SIGINT_CATCH = 1;

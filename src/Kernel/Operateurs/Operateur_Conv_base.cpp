@@ -19,48 +19,29 @@
 Implemente_base_sans_constructeur(Operateur_Conv_base,"Operateur_Conv_base",Operateur_base);
 
 
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie
+ */
 Sortie& Operateur_Conv_base::printOn(Sortie& os) const
 {
   return os;
 }
 
 
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification: le flot d'entree
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree
+ */
 Entree& Operateur_Conv_base::readOn(Entree& is)
 {
   return is;
 }
-//Description:
-// initialise dt_stab_conv a -123
+/*! @brief initialise dt_stab_conv a -123
+ *
+ */
 Operateur_Conv_base::Operateur_Conv_base():dt_stab_conv_(-123.) {}
 
 void Operateur_Conv_base::associer_norme_vitesse(const Champ_base& norme_vitesse)

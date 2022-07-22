@@ -39,9 +39,12 @@ LecFicDiffuse_JDD::LecFicDiffuse_JDD() :
   // file_.set_error_action(ERROR_CONTINUE);
 }
 
-// Description: ouverture du fichier name. Cette methode
-//  doit etre appelee sur tous les processeurs. En cas
-//  d'echec : exit()
+/*! @brief ouverture du fichier name.
+ *
+ * Cette methode doit etre appelee sur tous les processeurs. En cas
+ *   d'echec : exit()
+ *
+ */
 LecFicDiffuse_JDD::LecFicDiffuse_JDD(const char* name,
                                      IOS_OPEN_MODE mode,
                                      bool apply_verification) :
@@ -57,9 +60,12 @@ LecFicDiffuse_JDD::LecFicDiffuse_JDD(const char* name,
     }
 }
 
-// Description: Ouverture du fichier. Cette methode doit etre appelee
-//  par tous les processeurs du groupe.
-// Valeur de retour: 1 si ok, 0 sinon
+/*! @brief Ouverture du fichier.
+ *
+ * Cette methode doit etre appelee par tous les processeurs du groupe.
+ *  Valeur de retour: 1 si ok, 0 sinon
+ *
+ */
 int LecFicDiffuse_JDD::ouvrir(const char* name,
                               IOS_OPEN_MODE mode)
 {

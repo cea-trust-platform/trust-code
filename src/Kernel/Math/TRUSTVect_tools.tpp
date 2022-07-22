@@ -20,8 +20,9 @@
 #define HUGE_VALL 1e99
 #endif
 
-// Description: renvoie 1 si meme strucuture parallele et egalite au sens TRUSTArray (y compris espaces virtuels)
-//  BM: faut-il etre aussi strict, comparer uniquement size() elements ?
+/*! @brief renvoie 1 si meme strucuture parallele et egalite au sens TRUSTArray (y compris espaces virtuels) BM: faut-il etre aussi strict, comparer uniquement size() elements ?
+ *
+ */
 template <typename _TYPE_>
 inline int operator==(const TRUSTVect<_TYPE_>& x, const TRUSTVect<_TYPE_>& y)
 {

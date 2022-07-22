@@ -20,22 +20,19 @@
 #include <Ch_front_var_instationnaire_indep.h>
 #include <Vect_Parser_U.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_front_txyz
-//     Classe derivee de Champ_front_var qui represente les
-//     champs aux frontieres analytiques en espace et constants dans
-//     le temps
-//   Nouveau champ frontiere
-//   il permet de mettre en champ frontiere un parametre qui depend d'une
-//   fonction. Cette fonction est rentree dans le jeu de donnees sous
-//   la forme d'une chaine de caracteres. Pas besoin de recompilation
-//   comme avec la classe Champ_front_analytique qui utilise une
-//   fonction codee en dur.
-// .SECTION voir aussi
-//     Champ_front_base Champ_front_var
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_front_txyz Classe derivee de Champ_front_var qui represente les
+ *
+ *      champs aux frontieres analytiques en espace et constants dans
+ *      le temps
+ *    Nouveau champ frontiere
+ *    il permet de mettre en champ frontiere un parametre qui depend d'une
+ *    fonction. Cette fonction est rentree dans le jeu de donnees sous
+ *    la forme d'une chaine de caracteres. Pas besoin de recompilation
+ *    comme avec la classe Champ_front_analytique qui utilise une
+ *    fonction codee en dur.
+ *
+ * @sa Champ_front_base Champ_front_var
+ */
 class Champ_front_txyz : public Ch_front_var_instationnaire_indep
 {
   Declare_instanciable(Champ_front_txyz);

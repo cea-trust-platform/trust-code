@@ -35,66 +35,38 @@ Operateur_base::Operateur_base()
   col_width_ = -1;
 }
 
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees.
-//    Imprime l'operateur sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+ *
+ *     Imprime l'operateur sur un flot de sortie.
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Operateur_base::printOn(Sortie& os) const
 {
   return os ;
 }
 
 
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees.
-//    Lit un operateur sur un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+ *
+ *     Lit un operateur sur un flot d'entree.
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Operateur_base::readOn(Entree& is)
 {
   return is ;
 }
 
 
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees.
-//    Mise a jour de l'operateur
-// Precondition:
-// Parametre: double
-//    Signification: un pas de temps
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+ *
+ *     Mise a jour de l'operateur
+ *
+ * @param (double) un pas de temps
+ */
 void Operateur_base::mettre_a_jour(double )
 {
 }
@@ -105,21 +77,10 @@ void Operateur_base::abortTimeStep()
 }
 
 
-// Description:
-//    Associe l'operateur a la zone_dis, la zone_Cl_dis,
-//    et a l'inconnue de son equation.
-// Precondition: l'equation associee ne doit pas etre nulle (non associee)
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: pas d'equation associee
-// Effets de bord:
-// Postcondition: l'operateur est pret a etre utilise
+/*! @brief Associe l'operateur a la zone_dis, la zone_Cl_dis, et a l'inconnue de son equation.
+ *
+ * @throws pas d'equation associee
+ */
 void Operateur_base::completer()
 {
   assert(mon_equation.non_nul());
@@ -155,20 +116,10 @@ void Operateur_base::associer_champ(const Champ_Inc& ch)
   le_champ_inco = ch;
 }
 
-// Description:
-//   Calcul dt_stab
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: renvoie toujours  1.e30
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Calcul dt_stab
+ *
+ * @return (double) renvoie toujours  1.e30
+ */
 double Operateur_base::calculer_dt_stab() const
 {
   return 1.e30;
@@ -180,43 +131,24 @@ void Operateur_base::calculer_dt_local(DoubleTab& dt) const
        << "::calculer_dt_local(DoubleVect&)" << finl;
   exit();
 }
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees.
-//    Imprime l'operateur sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+ *
+ *     Imprime l'operateur sur un flot de sortie.
+ *
+ * @param (Sortie& os)
+ * @return (int) renvoie toujours 1
+ */
 int Operateur_base::impr(Sortie& os) const
 {
   return 1;
 }
 
 
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees.
-// Precondition:
-// Parametre: Matrice_Morse&
-//    Signification: une matrice au format Morse
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: methode a surcharger
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+ *
+ * @param (Matrice_Morse&) une matrice au format Morse
+ * @throws methode a surcharger
+ */
 void Operateur_base::dimensionner(Matrice_Morse& mat) const
 {
   /* on tente dimensionner_blocs() */
@@ -263,26 +195,12 @@ void Operateur_base::ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tab
   Process::exit(que_suis_je() + " : ajouter_blocs() not coded!");
 }
 
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees.
-// Precondition:
-// Parametre: Matrice_Morse&
-//    Signification: une matrice au format Morse
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: DoubleTab&
-//    Signification: un tableau de valeur (double)
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: methode a surcharger
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+ *
+ * @param (Matrice_Morse&) une matrice au format Morse
+ * @param (DoubleTab&) un tableau de valeur (double)
+ * @throws methode a surcharger
+ */
 void Operateur_base::modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const
 {
   Cerr << "***********************************************************************************" << finl;
@@ -314,26 +232,12 @@ DoubleTab&  Operateur_base::calculer(const DoubleTab& inco, DoubleTab& secmem) c
   return ajouter(inco, secmem);
 }
 
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees.
-// Precondition:
-// Parametre: DoubleTab&
-//    Signification: un tableau de valeur (double)
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces:
-// Parametre: Matrice_Morse&
-//    Signification: une matrice au format Morse
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: methode a surcharger
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+ *
+ * @param (DoubleTab&) un tableau de valeur (double)
+ * @param (Matrice_Morse&) une matrice au format Morse
+ * @throws methode a surcharger
+ */
 void Operateur_base::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   /* on tente ajouter_blocs() */
@@ -352,21 +256,11 @@ void Operateur_base::contribuer_bloc_vitesse(const DoubleTab& inco, Matrice_Mors
     }
 }
 
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees.
-// Precondition:
-// Parametre: DoubleTab&
-//    Signification: un tableau de valeur (double)
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: methode a surcharger
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+ *
+ * @param (DoubleTab&) un tableau de valeur (double)
+ * @throws methode a surcharger
+ */
 void Operateur_base::contribuer_au_second_membre(DoubleTab&) const
 {
   Cerr << "You must overload the method " << que_suis_je()
@@ -392,21 +286,10 @@ void Operateur_base::set_fichier(const Nom& nom)
   if (nom=="") out_+="unknown_operator";
 }
 
-// Description:
-//    Ouverture/creation d'un fichier d'impression d'un operateur
-//    A surcharger dans les classes derivees.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: methode a surcharger
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ouverture/creation d'un fichier d'impression d'un operateur A surcharger dans les classes derivees.
+ *
+ * @throws methode a surcharger
+ */
 void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int flag) const
 {
 
@@ -516,21 +399,10 @@ void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int flag
   os.setf(ios::scientific);
 }
 
-// Description:
-//    Ouverture/creation d'un fichier d'impression d'un operateur
-//    A surcharger dans les classes derivees.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: methode a surcharger
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ouverture/creation d'un fichier d'impression d'un operateur A surcharger dans les classes derivees.
+ *
+ * @throws methode a surcharger
+ */
 void Operateur_base::ouvrir_fichier_partage(EcrFicPartage& os,const Nom& type, const int flag) const
 {
 

@@ -20,19 +20,16 @@
 #include <Operateur_negligeable.h>
 #include <Ref_Champ_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Op_Conv_negligeable
-//    Cette classe represente un opperateur de convection negligeable.
-//    Lorsqu'un operateur de ce type est utilise dans une equation
-//    cela revient a negliger le terme de convection.
-//    Les methodes de modification et de participation a un calcul de
-//    l'operateur sont en fait des appels aux meme methodes de
-//    Operateur_negligeable qui ne font rien.
-// .SECTION voir aussi
-//    Operateur_negligeable Operateur_Conv_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Op_Conv_negligeable Cette classe represente un opperateur de convection negligeable.
+ *
+ *     Lorsqu'un operateur de ce type est utilise dans une equation
+ *     cela revient a negliger le terme de convection.
+ *     Les methodes de modification et de participation a un calcul de
+ *     l'operateur sont en fait des appels aux meme methodes de
+ *     Operateur_negligeable qui ne font rien.
+ *
+ * @sa Operateur_negligeable Operateur_Conv_base
+ */
 class Op_Conv_negligeable: public Operateur_negligeable,
   public Operateur_Conv_base
 {
@@ -72,8 +69,9 @@ protected :
                        const Champ_Inc& ) override ;
 };
 
-//Description:
-//on ajoute la contribution du second membre.
+/*! @brief on ajoute la contribution du second membre.
+ *
+ */
 
 inline void  Op_Conv_negligeable::contribuer_au_second_membre(DoubleTab& resu) const
 {
@@ -86,54 +84,25 @@ inline void  Op_Conv_negligeable::modifier_pour_Cl(Matrice_Morse& amatrice, Doub
   ;
 }
 
-// Description:
-//    Mise a jour en temps d'un operateur negligeable: NE FAIT RIEN
-//    Simple appel a Operateur_negligeable::mettre_a_jour(double)
-// Precondition:
-// Parametre: double temps
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: NON ACCEDE
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Mise a jour en temps d'un operateur negligeable: NE FAIT RIEN Simple appel a Operateur_negligeable::mettre_a_jour(double)
+ *
+ * @param (double temps)
+ */
 inline void Op_Conv_negligeable::mettre_a_jour(double temps)
 {
   Operateur_negligeable::mettre_a_jour(temps);
 }
 
 
-// Description:
-//    Associe divers objets a un operateurs negligeable: NE FAIT RIEN
-//    Simple appel a Operateur_negligeable::associer(const Zone_dis&,
-//                                                     const Zone_Cl_dis&,
-//                                                     const Champ_Inc&)
-// Precondition:
-// Parametre: Zone_dis& z
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Parametre: Zone_Cl_dis& zcl
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Parametre: Champ_Inc& ch
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe divers objets a un operateurs negligeable: NE FAIT RIEN Simple appel a Operateur_negligeable::associer(const Zone_dis&,
+ *
+ *                                                      const Zone_Cl_dis&,
+ *                                                      const Champ_Inc&)
+ *
+ * @param (Zone_dis& z)
+ * @param (Zone_Cl_dis& zcl)
+ * @param (Champ_Inc& ch)
+ */
 inline void Op_Conv_negligeable::associer(const Zone_dis& z,
                                           const Zone_Cl_dis& zcl,
                                           const Champ_Inc& ch)

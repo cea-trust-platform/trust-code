@@ -19,12 +19,10 @@ Implemente_deriv(Operateur_Statistique_tps_base);
 Implemente_instanciable(Operateur_Statistique_tps,"Operateur_Statistique_tps",DERIV(Operateur_Statistique_tps_base));
 
 
-// Description:
-//    Imprime le type et le nom de l'operateur statistique
-//    sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
+/*! @brief Imprime le type et le nom de l'operateur statistique sur un flot de sortie.
+ *
+ * @param (Sortie& s) un flot de sortie
+ */
 
 //    Valeurs par defaut:
 //    Contraintes:
@@ -41,20 +39,11 @@ Sortie& Operateur_Statistique_tps::printOn(Sortie& s ) const
 }
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Operateur_Statistique_tps::readOn(Entree& s )
 {
   return s ;

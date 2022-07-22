@@ -25,21 +25,18 @@ Declare_deriv(Solveur_Masse_base);
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Solveur_Masse
-//     Classe generique de la hierarchie des solveurs de masse, un objet
-//     Solveur_Masse peut referencer n'importe quel d'objet derivant de
-//     Solveur_Masse_base.
-//     La plupart des methodes appellent les methodes de l'objet Solveur_Masse
-//     sous-jacent via la methode valeur() declaree grace a la macro
-//Declare_deriv().;
-//     Contrairement a la classe de base (Solveur_Masse_base) Solveur_Masse
-//     contient une reference vers l'equation associee car il herite de MorEqn.
-// .SECTION voir aussi
-//     MorEqn Solveur_Masse_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Solveur_Masse Classe generique de la hierarchie des solveurs de masse, un objet
+ *
+ *      Solveur_Masse peut referencer n'importe quel d'objet derivant de
+ *      Solveur_Masse_base.
+ *      La plupart des methodes appellent les methodes de l'objet Solveur_Masse
+ *      sous-jacent via la methode valeur() declaree grace a la macro
+ * Declare_deriv().;
+ *      Contrairement a la classe de base (Solveur_Masse_base) Solveur_Masse
+ *      contient une reference vers l'equation associee car il herite de MorEqn.
+ *
+ * @sa MorEqn Solveur_Masse_base
+ */
 class Solveur_Masse : public DERIV(Solveur_Masse_base), public MorEqn
 {
   Declare_instanciable(Solveur_Masse);
@@ -58,86 +55,48 @@ public :
   inline void get_masse_divide_by_local_dt(DoubleVect& m_dt_locaux, DoubleVect& dt_locaux, int penalisation=1);
 };
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Resoud le systeme lineaire, dont la matrice est la matrice de masse.
-//    Le second membre du systeme lineaire a resoudre est passe en parametre.
-//    Le resultat est stocke dans ce meme parametre et renvoye par la methode.
-//    Operation  xx = M^{-1} * xx
-// Precondition:
-// Parametre: DoubleTab& xx
-//    Signification: le second membre du systeme lineraire a resoudre en entree
-//                   la solution en sortie.
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: DoubleTab&
-//    Signification: la solution M^{-1} * xx
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Resoud le systeme lineaire, dont la matrice est la matrice de masse.
+ *     Le second membre du systeme lineaire a resoudre est passe en parametre.
+ *     Le resultat est stocke dans ce meme parametre et renvoye par la methode.
+ *     Operation  xx = M^{-1} * xx
+ *
+ * @param (DoubleTab& xx) le second membre du systeme lineraire a resoudre en entree la solution en sortie.
+ * @return (DoubleTab&) la solution M^{-1} * xx
+ */
 inline DoubleTab& Solveur_Masse::appliquer(DoubleTab& xx) const
 {
   return valeur().appliquer(xx);
 }
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Mise a jour en temps du solveur de masse.
-// Precondition:
-// Parametre: double temps
-//    Signification: le pas de temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Mise a jour en temps du solveur de masse.
+ *
+ * @param (double temps) le pas de temps de mise a jour
+ */
 inline void Solveur_Masse::mettre_a_jour(double temps)
 {
   valeur().mettre_a_jour(temps);
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Assemblage de la matrice de masse.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la matrice de masse est assemblee
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Assemblage de la matrice de masse.
+ *
+ */
 inline void Solveur_Masse::assembler()
 {
   valeur().assembler();
 }
 
 
-// Description:
-//    Construit le bon type de Solveur de masse.
-// Precondition:
-// Parametre: Nom& typ
-//    Signification: le nom du type a construire
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Construit le bon type de Solveur de masse.
+ *
+ * @param (Nom& typ) le nom du type a construire
+ */
 inline void Solveur_Masse::typer(const Nom& typ)
 {
   DERIV(Solveur_Masse_base)::typer(typ);

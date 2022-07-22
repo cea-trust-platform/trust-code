@@ -23,18 +23,12 @@ class Domaine;
 class Nom;
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Operateur_Statistique_tps_base
-//     Represente des operations statistiques sur les champs.
-//     Des operateurs statistiques sont utilises pour le postraitement.
-// .SECTION voir aussi
-//     Operateurs_Statistique_tps Postraitement
-//     Classe abstraite
-//     Methodes abstraites:
-//       void completer(const Probleme_base& )
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Operateur_Statistique_tps_base Represente des operations statistiques sur les champs.
+ *
+ *      Des operateurs statistiques sont utilises pour le postraitement.
+ *
+ * @sa Operateurs_Statistique_tps Postraitement, Classe abstraite, Methodes abstraites:, void completer(const Probleme_base& )
+ */
 class Operateur_Statistique_tps_base : public Objet_U
 {
 

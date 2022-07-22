@@ -22,19 +22,9 @@
 
 Implemente_instanciable_sans_constructeur(Matrice_Bloc,"Matrice_Bloc",Matrice_Base);
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 Sortie& Matrice_Bloc::printOn( Sortie& os ) const
 {
   os << nb_blocs_ << finl;
@@ -47,19 +37,9 @@ Sortie& Matrice_Bloc::printOn( Sortie& os ) const
   return os;
 }
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 Entree& Matrice_Bloc::readOn( Entree& is )
 {
   is >> nb_blocs_;

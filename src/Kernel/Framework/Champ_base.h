@@ -28,24 +28,17 @@ class Format_Post_base;
 class Frontiere_dis_base;
 class Zone_Cl_dis_base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_base
-//     Cette classe est la base de la hierarchie des champs.
-//     Ses membres sont les attributs et les methodes communs
-//     a toutes les classes qui representent des champs.
-//     Champ_base derive de Champ_Proto, afin d'avoir une interface conforme
-//     a tous les champs, et d'heriter des operations courantes sur les
-//     Champs.
-//     Un champ possede un nom, une unite et des valeurs.
-// .SECTION voir aussi
-//     Champ_Proto Ch_Inc_base Ch_Don_base
-//     Classe abstraite
-//     Methodes abstraites:
-//       Champ_base& affecter_(const Champ_base& )
-//       Champ_base& affecter_compo(const Champ_base&, int compo )
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_base Cette classe est la base de la hierarchie des champs.
+ *
+ *      Ses membres sont les attributs et les methodes communs
+ *      a toutes les classes qui representent des champs.
+ *      Champ_base derive de Champ_Proto, afin d'avoir une interface conforme
+ *      a tous les champs, et d'heriter des operations courantes sur les
+ *      Champs.
+ *      Un champ possede un nom, une unite et des valeurs.
+ *
+ * @sa Champ_Proto Ch_Inc_base Ch_Don_base, Classe abstraite, Methodes abstraites:, Champ_base& affecter_(const Champ_base& ), Champ_base& affecter_compo(const Champ_base&, int compo )
+ */
 class Champ_base : public Field_base, public Champ_Proto
 {
   Declare_base_sans_constructeur(Champ_base);

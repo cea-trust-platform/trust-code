@@ -20,19 +20,18 @@
 #include <Deriv_Matrice_Base.h>
 #include <TRUSTTabs_forward.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Matrice
-//    Classe generique de la hierarchie des matrices.
-//    Un objet de type Matrice peut referencer n'importe quel objet derivant
-//    de Matrice_Base.
-//    La plupart des methodes appellent les methodes de l'objet Probleme
-//    sous-jacent via la methode valeur() declaree grace a la macro
-//Declare_deriv().;
-//
-//    Dans les commentaires des methodes A represente un objet Matrice.
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Matrice Classe generique de la hierarchie des matrices.
+ *
+ *     Un objet de type Matrice peut referencer n'importe quel objet derivant
+ *     de Matrice_Base.
+ *     La plupart des methodes appellent les methodes de l'objet Probleme
+ *     sous-jacent via la methode valeur() declaree grace a la macro
+ * Declare_deriv().;
+ *
+ *     Dans les commentaires des methodes A represente un objet Matrice.
+ *
+ *
+ */
 
 class Matrice : public DERIV(Matrice_Base)
 {

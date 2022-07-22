@@ -115,14 +115,13 @@ void Partitionneur_Metis::associer_domaine(const Domaine& domaine)
   ref_domaine_ = domaine;
 }
 
-// Description:
-//  Calcule le graphe de connectivite pour Metis, appelle le partitionneur
-//  et remplit elem_part (pour chaque element, numero de la partie qui lui
-//  est attribuee).
-//  Les parties sont equilibrees de facon a minimiser le nombre de faces de joint
-//  et a equilibrer le nombre d'elements par partie.
-// Precondition:
-//  domaine associe et nombre de parties initialise
+/*! @brief Calcule le graphe de connectivite pour Metis, appelle le partitionneur et remplit elem_part (pour chaque element, numero de la partie qui lui
+ *
+ *   est attribuee).
+ *   Les parties sont equilibrees de facon a minimiser le nombre de faces de joint
+ *   et a equilibrer le nombre d'elements par partie.
+ *
+ */
 void Partitionneur_Metis::construire_partition(IntVect& elem_part, int& nb_parts_tot) const
 {
 #ifdef NO_METIS

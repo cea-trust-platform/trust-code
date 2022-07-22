@@ -35,11 +35,13 @@ Partitionneur_Fichier_MED::Partitionneur_Fichier_MED()
   fieldname_ = "";
 }
 
-// Description:
-//  Lecture des parametres du partitionneur sur disque.
-//  Fomat attendu:
-//    { file FILENAME field FIELDNAME }
-//  FILENAME est le nom d'un fichier MED, le champ FIELDNAME comporte un ArrayOfInt avec le numero du processeur.
+/*! @brief Lecture des parametres du partitionneur sur disque.
+ *
+ * Fomat attendu:
+ *     { file FILENAME field FIELDNAME }
+ *   FILENAME est le nom d'un fichier MED, le champ FIELDNAME comporte un ArrayOfInt avec le numero du processeur.
+ *
+ */
 Entree& Partitionneur_Fichier_MED::readOn(Entree& is)
 {
   Partitionneur_base::readOn(is);
@@ -71,10 +73,9 @@ void Partitionneur_Fichier_MED::initialiser(const char *filename)
   filename_ = filename;
 }
 
-// Description:
-//  Lit le contenu du fichier "filename_" et stocke le resultat dans elem_part
-// Precondition:
-//  domaine associe et filename initialise
+/*! @brief Lit le contenu du fichier "filename_" et stocke le resultat dans elem_part
+ *
+ */
 void Partitionneur_Fichier_MED::construire_partition(IntVect& elem_part, int& nb_parts_tot) const
 {
   if (! ref_domaine_.non_nul())

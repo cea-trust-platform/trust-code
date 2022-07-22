@@ -27,19 +27,11 @@
 Implemente_instanciable_sans_constructeur(OctreeRoot,"OctreeRoot",Objet_U);
 Implemente_deriv(OctreeRoot);
 
-// Description:
-// Precondition:
-// Parametre: Sortie& is
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief
+ *
+ * @param (Sortie& is) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Octree::printOn(Sortie& is) const
 {
   int nb_octrees=Octree::nombre_d_octrees();
@@ -58,82 +50,46 @@ Sortie& Octree::printOn(Sortie& is) const
   return is << finl;
 }
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification: le flot d'entree
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree
+ */
 Entree& Octree::readOn(Entree& is)
 {
   return is;
 }
 
 
-// Description:
-//    Simple appel a: Octree::printOn(Sortie&)
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a: Octree::printOn(Sortie&)
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& OctreeRoot::printOn(Sortie& os) const
 {
   return Octree::printOn(os);
 }
 
 
-// Description:
-//    Simple appel a: Octree::readOn(Entree&)
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Octree::readOn(Entree&)
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& OctreeRoot::readOn(Entree& is)
 {
   return Octree::readOn(is);
 }
 
 
-// Description:
-//    Appelle  Octree::printOn(Sortie&)
-//    et ecrit le numero des elements sur le
-//    flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appelle  Octree::printOn(Sortie&) et ecrit le numero des elements sur le
+ *
+ *     flot de sortie.
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& OctreeFloor::printOn(Sortie& os) const
 {
   Octree::printOn(os);
@@ -141,64 +97,31 @@ Sortie& OctreeFloor::printOn(Sortie& os) const
 }
 
 
-// Description:
-//    Simple appel a: Octree::readOn(Entree&)
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Octree::readOn(Entree&)
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& OctreeFloor::readOn(Entree& is)
 {
   return Octree::readOn(is);
 }
 
 
-// Description:
-//    Destructeur: appelle Octree::detruire().
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Destructeur: appelle Octree::detruire().
+ *
+ */
 Octree::~Octree()
 {
   detruire();
 }
 
 
-// Description:
-// Precondition:
-// Parametre: OctreeLoc& loc
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: int  i
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ * @param (OctreeLoc& loc)
+ * @param (int  i)
+ */
 void OctreeLoc::construire(const OctreeLoc& loc, int  i)
 {
   double xmil=(loc.xmin+loc.xmax)/2;
@@ -208,39 +131,14 @@ void OctreeLoc::construire(const OctreeLoc& loc, int  i)
 }
 
 
-// Description:
-// Precondition:
-// Parametre: OctreeLoc& loc
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: int  i
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double xmil
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double ymil
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double zmil
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ * @param (OctreeLoc& loc)
+ * @param (int  i)
+ * @param (double xmil)
+ * @param (double ymil)
+ * @param (double zmil)
+ */
 void OctreeLoc::construire(const OctreeLoc& loc, int  i,
                            double xmil, double ymil, double zmil)
 {
@@ -314,29 +212,13 @@ void OctreeLoc::construire(const OctreeLoc& loc, int  i,
 }
 
 
-// Description:
-// Precondition:
-// Parametre: double x
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double y
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double z
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief
+ *
+ * @param (double x)
+ * @param (double y)
+ * @param (double z)
+ * @return (int)
+ */
 int OctreeLoc::direction(double x, double y, double z) const
 {
   double xmil=(xmin+xmax)/2;
@@ -366,20 +248,10 @@ int OctreeLoc::direction(double x, double y, double z) const
 }
 
 
-// Description:
-//    Renvoie le nombre d'octree.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre d'octree
-//    Contraintes: il y en a 2^{dimension d'espace}
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le nombre d'octree.
+ *
+ * @return (int) le nombre d'octree
+ */
 int Octree::nombre_d_octrees()
 {
   int nb_octrees;
@@ -402,34 +274,14 @@ int Octree::nombre_d_octrees()
 }
 
 
-// Description:
-// Precondition:
-// Parametre: OctreeLoc& loc
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: double x
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double y
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double z
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief
+ *
+ * @param (OctreeLoc& loc)
+ * @param (double x)
+ * @param (double y)
+ * @param (double z)
+ * @return (int)
+ */
 int Octree::rang_elem_loc(const OctreeLoc& loc, double x, double y, double z) const
 {
   int element=-1;
@@ -459,39 +311,15 @@ int Octree::rang_elem_loc(const OctreeLoc& loc, double x, double y, double z) co
 }
 
 
-// Description:
-// Precondition:
-// Parametre: OctreeLoc& loc
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: int prems
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double x
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double y
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double z
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief
+ *
+ * @param (OctreeLoc& loc)
+ * @param (int prems)
+ * @param (double x)
+ * @param (double y)
+ * @param (double z)
+ * @return (int)
+ */
 int Octree::rang_elem_depuis_loc(const OctreeLoc& loc, int prems, double x, double y, double z) const
 {
   int element=-1;
@@ -519,20 +347,10 @@ int Octree::rang_elem_depuis_loc(const OctreeLoc& loc, int prems, double x, doub
 }
 
 
-// Description:
-//    Renvoie une reference sur la zone associe a l'octree.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Zone&
-//    Signification: reference sur la zone associe a l'octree
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie une reference sur la zone associe a l'octree.
+ *
+ * @return (Zone&) reference sur la zone associe a l'octree
+ */
 const Zone& Octree::zone() const
 {
   return pere->zone();
@@ -769,34 +587,13 @@ void Octree::ranger_elem_3D(ArrOfInt& ok, int elem, int i, int nb_som_elem, cons
   range3D(xmax, ymax, zmax, xmil, ymil, zmil, ok, SousTab, compteur, i);
 }
 
-// Description:
-// Precondition:
-// Parametre: int nb_octrees
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: ArrOfInt& Tab
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: OctreeLoc& loc
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: Octree* pe
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ * @param (int nb_octrees)
+ * @param (ArrOfInt& Tab)
+ * @param (OctreeLoc& loc)
+ * @param (Octree* pe)
+ */
 void Octree::construire(int nb_octrees, const ArrOfInt& Tab,
                         const OctreeLoc& loc, Octree* pe)
 {
@@ -888,21 +685,11 @@ void Octree::construire(int nb_octrees, const ArrOfInt& Tab,
 }
 
 
-// Description:
-//    Detruit l'octree.
-//    Methode appelee par le destructeur
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Detruit l'octree.
+ *
+ * Methode appelee par le destructeur
+ *
+ */
 void Octree::detruire()
 {
   if(les_octrees==0)
@@ -916,19 +703,10 @@ void Octree::detruire()
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief
+ *
+ * @return (int)
+ */
 int Octree::niveau() const
 {
   int i=0;
@@ -937,20 +715,10 @@ int Octree::niveau() const
 }
 
 
-// Description:
-//    Renvoie la taille de l'octree.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: unsigned
-//    Signification: la taille de l'octree
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la taille de l'octree.
+ *
+ * @return (unsigned) la taille de l'octree
+ */
 int Octree::taille() const
 {
   int nb_octrees=Octree::nombre_d_octrees();
@@ -962,59 +730,29 @@ int Octree::taille() const
 }
 
 
-// Description:
-//    Renvoie la zone associe a l'octree.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Zone&
-//    Signification: la zone associe a l'octree
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la zone associe a l'octree.
+ *
+ * @return (Zone&) la zone associe a l'octree
+ */
 const Zone& OctreeRoot::zone() const
 {
   return la_zone.valeur();
 }
 
 
-// Description:
-//    Associe une zone a l'octree
-// Precondition:
-// Parametre: Zone& z
-//    Signification: la zone a associer a l'octree
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe une zone a l'octree
+ *
+ * @param (Zone& z) la zone a associer a l'octree
+ */
 void OctreeRoot::associer_Zone(const Zone& z)
 {
   la_zone=z;
 }
 
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ */
 void OctreeRoot::construire(int reel_prec)
 {
   detruire();
@@ -1083,30 +821,15 @@ void OctreeRoot::construire(int reel_prec)
 }
 
 
-// Description:
-// Precondition:
-// Parametre: double x
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double y
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double z
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification:
-//    Contraintes:
-// Exception: Erreur dans OctreeRoot::rang_sommet
-// Exception: On a pas trouve de sommet a ces coordonnees
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief
+ *
+ * @param (double x)
+ * @param (double y)
+ * @param (double z)
+ * @return (int)
+ * @throws Erreur dans OctreeRoot::rang_sommet
+ * @throws On a pas trouve de sommet a ces coordonnees
+ */
 int OctreeRoot::rang_sommet(double x, double y, double z) const
 {
   int elem=rang_elem(x, y, z);
@@ -1158,30 +881,15 @@ int OctreeRoot::rang_sommet(double x, double y, double z) const
     return -1;
 }
 
-// Description:
-// Precondition:
-// Parametre: double x
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double y
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double z
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification:
-//    Contraintes:
-// Exception: Erreur dans OctreeRoot::rang_arete
-// Exception: On a pas trouve d'arete a ces coordonnees
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief
+ *
+ * @param (double x)
+ * @param (double y)
+ * @param (double z)
+ * @return (int)
+ * @throws Erreur dans OctreeRoot::rang_arete
+ * @throws On a pas trouve d'arete a ces coordonnees
+ */
 int OctreeRoot::rang_arete(double x, double y, double z) const
 {
   // Recherche l'element contenant le point x,y,z:
@@ -1223,29 +931,13 @@ int OctreeRoot::rang_arete(double x, double y, double z) const
     return -1;
 }
 
-// Description:
-// Precondition:
-// Parametre: double x
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double y
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double z
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief
+ *
+ * @param (double x)
+ * @param (double y)
+ * @param (double z)
+ * @return (int)
+ */
 int OctreeRoot::rang_elem(double x, double y, double z) const
 {
   double epsilon=get_epsilon();
@@ -1256,34 +948,13 @@ int OctreeRoot::rang_elem(double x, double y, double z) const
 }
 
 
-// Description:
-// Precondition:
-// Parametre: int prems
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double x
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double y
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double z
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief
+ *
+ * @param (int prems)
+ * @param (double x)
+ * @param (double y)
+ * @param (double z)
+ */
 int OctreeRoot::rang_elem_depuis(int prems, double x, double y, double z) const
 {
   double epsilon=get_epsilon();
@@ -1294,24 +965,13 @@ int OctreeRoot::rang_elem_depuis(int prems, double x, double y, double z) const
 }
 
 
-// Description:
-// Precondition:
-// Parametre: DoubleTab& positions
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: ArrOfInt& sommets
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification:
-//    Contraintes:
-// Exception: dimension d'espace non prevue
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief
+ *
+ * @param (DoubleTab& positions)
+ * @param (ArrOfInt& sommets)
+ * @return (int)
+ * @throws dimension d'espace non prevue
+ */
 int OctreeRoot::rang_sommet(const DoubleTab& positions, ArrOfInt& sommets) const
 {
   int sz=positions.dimension(0);
@@ -1344,29 +1004,14 @@ int OctreeRoot::rang_sommet(const DoubleTab& positions, ArrOfInt& sommets) const
   return 1;
 }
 
-// Description:
-// Precondition:
-// Parametre: IntTab& elem_aretes
-//    Signification: Definition des aretes par leur sommet
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleTab& positions
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: ArrOfInt& aretes
-//    Signification: Les aretes trouvees
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification:
-//    Contraintes:
-// Exception: dimension d'espace non prevue
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief
+ *
+ * @param (IntTab& elem_aretes) Definition des aretes par leur sommet
+ * @param (DoubleTab& positions)
+ * @param (ArrOfInt& aretes) Les aretes trouvees
+ * @return (int)
+ * @throws dimension d'espace non prevue
+ */
 int OctreeRoot::rang_arete(const DoubleTab& positions, ArrOfInt& aretes) const
 {
   int sz=positions.dimension(0);
@@ -1398,24 +1043,13 @@ int OctreeRoot::rang_arete(const DoubleTab& positions, ArrOfInt& aretes) const
   return 1;
 }
 
-// Description:
-// Precondition:
-// Parametre: DoubleTab& positions
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: ArrOfInt& elems
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification:
-//    Contraintes:
-// Exception: dimension d'espace non prevue
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief
+ *
+ * @param (DoubleTab& positions)
+ * @param (ArrOfInt& elems)
+ * @return (int)
+ * @throws dimension d'espace non prevue
+ */
 int OctreeRoot::rang_elem(const DoubleTab& positions, ArrOfInt& elems) const
 {
   int sz=positions.dimension(0);
@@ -1449,29 +1083,13 @@ int OctreeRoot::rang_elem(const DoubleTab& positions, ArrOfInt& elems) const
 }
 
 
-// Description:
-// Precondition:
-// Parametre: DoubleTab& positions
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: ArrOfInt& prems
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: ArrOfInt& elems
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: dimension d'espace non prevue
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief
+ *
+ * @param (DoubleTab& positions)
+ * @param (ArrOfInt& prems)
+ * @param (ArrOfInt& elems)
+ * @throws dimension d'espace non prevue
+ */
 int OctreeRoot::rang_elem_depuis(const DoubleTab& positions, const ArrOfInt& prems, ArrOfInt& elems) const
 {
   int sz=positions.dimension(0);
@@ -1505,34 +1123,13 @@ int OctreeRoot::rang_elem_depuis(const DoubleTab& positions, const ArrOfInt& pre
 }
 
 
-// Description:
-// Precondition:
-// Parametre:  ArrOfInt& elements
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double x
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double y
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double z
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief
+ *
+ * @param (ArrOfInt& elements)
+ * @param (double x)
+ * @param (double y)
+ * @param (double z)
+ */
 void OctreeRoot::rang_elems_sommet(ArrOfInt& elements, double x, double y, double z) const
 {
   RTabInt els;
@@ -1557,21 +1154,10 @@ void OctreeRoot::rang_elems_sommet(ArrOfInt& elements, double x, double y, doubl
 }
 
 
-// Description:
-//    Renvoie vrai si la zone associee a l'octree
-//    est non nulle.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: code de retour propage
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie vrai si la zone associee a l'octree est non nulle.
+ *
+ * @return (int) code de retour propage
+ */
 int OctreeRoot::construit() const
 {
   if((la_zone.non_nul()==0)||(valid_!=1))
@@ -1592,34 +1178,14 @@ void OctreeRoot::invalide()
 }
 
 
-// Description:
-// Precondition:
-// Parametre: OctreeLoc& loc
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: double x
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double y
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double z
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief
+ *
+ * @param (OctreeLoc& loc)
+ * @param (double x)
+ * @param (double y)
+ * @param (double z)
+ * @return (int)
+ */
 int OctreeFloor::rang_elem_loc(const OctreeLoc& loc, double x, double y, double z) const
 {
   int sz=num_elem.size_array();
@@ -1644,39 +1210,15 @@ int OctreeFloor::rang_elem_loc(const OctreeLoc& loc, double x, double y, double 
   return element;
 }
 
-// Description:
-// Precondition:
-// Parametre: OctreeLoc& loc
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: int prems
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double x
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double y
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double z
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief
+ *
+ * @param (OctreeLoc& loc)
+ * @param (int prems)
+ * @param (double x)
+ * @param (double y)
+ * @param (double z)
+ * @return (int)
+ */
 int OctreeFloor::rang_elem_depuis_loc(const OctreeLoc& loc, int prems, double x, double y, double z) const
 {
   int sz=num_elem.size_array();
@@ -1708,29 +1250,12 @@ int OctreeFloor::rang_elem_depuis_loc(const OctreeLoc& loc, int prems, double x,
 }
 
 
-// Description:
-// Precondition:
-// Parametre: Octree* pe
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: ArrOfInt& Tab
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: OctreeLoc& loc
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ * @param (Octree* pe)
+ * @param (ArrOfInt& Tab)
+ * @param (OctreeLoc& loc)
+ */
 void OctreeFloor::construire(Octree* pe, const ArrOfInt& Tab, const OctreeLoc& loc)
 {
   static int nb_octreefloor=0;
@@ -1746,20 +1271,10 @@ void OctreeFloor::construire(Octree* pe, const ArrOfInt& Tab, const OctreeLoc& l
 }
 
 
-// Description:
-//    Renvoie la taille de l'octree.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: unsigned
-//    Signification: la taille de l'octree
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la taille de l'octree.
+ *
+ * @return (unsigned) la taille de l'octree
+ */
 int OctreeFloor::taille() const
 {
   return (int)sizeof(OctreeFloor)+num_elem.size_array()*(int)sizeof(int);

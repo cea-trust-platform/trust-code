@@ -19,61 +19,32 @@ Implemente_liste(Bord);
 Implemente_instanciable(Bords,"Bords",LIST(Bord));
 
 
-// Description:
-//    Ecrit tous les bords de la liste sur un
-//    flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit tous les bords de la liste sur un flot de sortie.
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Bords::printOn(Sortie& os) const
 {
   return LIST(Bord)::printOn(os);
 }
 
 
-// Description:
-//    Lit les bords a partir d'un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit les bords a partir d'un flot d'entree.
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Bords::readOn(Entree& is)
 {
   return LIST(Bord)::readOn(is);
 }
 
 
-// Description:
-//    Associe une zone a tous les bords de la liste.
-// Precondition:
-// Parametre: Zone& une_zone
-//    Signification: la zone a associer aux bords de la liste
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe une zone a tous les bords de la liste.
+ *
+ * @param (Zone& une_zone) la zone a associer aux bords de la liste
+ */
 void Bords::associer_zone(const Zone& une_zone)
 {
   LIST_CURSEUR(Bord) curseur(*this);
@@ -85,22 +56,10 @@ void Bords::associer_zone(const Zone& une_zone)
 }
 
 
-// Description:
-//    Renvoie le nombre total de faces de tous les bords
-//    de la liste
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre total de faces de tous les bords
-//                   de la liste
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre total de faces de tous les bords de la liste
+ *
+ * @return (int) le nombre total de faces de tous les bords de la liste
+ */
 int Bords::nb_faces() const
 {
   CONST_LIST_CURSEUR(Bord) curseur(*this);
@@ -113,23 +72,11 @@ int Bords::nb_faces() const
   return nombre;
 }
 
-// //    JY 26/08/97
-// Description:
-//    Renvoie le nombre total de faces du type specifie,
-//    pour tous les bords de la liste.
-// Precondition:
-// Parametre: Type_Face type
-//    Signification: le type des faces a comptabiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: int
-//    Signification: le nombre total de faces du type specifie,
-//                   pour tous les bords de la liste
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre total de faces du type specifie, pour tous les bords de la liste.
+ *
+ * @param (Type_Face type) le type des faces a comptabiliser
+ * @return (int) le nombre total de faces du type specifie, pour tous les bords de la liste
+ */
 int Bords::nb_faces(Type_Face type) const
 {
   CONST_LIST_CURSEUR(Bord) curseur(*this);

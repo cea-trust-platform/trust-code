@@ -18,19 +18,16 @@
 
 #include <Interprete.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Axi
-//    Cette classe est un interprete qui sert a lire l'attribut axi.
-//    Directive:
-//        Axi
-//    Cette directive optionelle permets de faire les calculs en
-//    coordonnees cylindriques. En l'absence de cette directive les calculs
-//    se font en coordonnees cartesiennes.
-// .SECTION voir aussi
-//    Interprete Objet_U
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Axi Cette classe est un interprete qui sert a lire l'attribut axi.
+ *
+ *     Directive:
+ *         Axi
+ *     Cette directive optionelle permets de faire les calculs en
+ *     coordonnees cylindriques. En l'absence de cette directive les calculs
+ *     se font en coordonnees cartesiennes.
+ *
+ * @sa Interprete Objet_U
+ */
 class Axi : public Interprete
 {
   Declare_instanciable(Axi);

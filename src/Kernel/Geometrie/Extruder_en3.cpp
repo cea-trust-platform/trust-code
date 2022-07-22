@@ -30,66 +30,40 @@ Extruder_en3::Extruder_en3()
   direction_.resize(3,Array_base::NOCOPY_NOINIT);
 }
 
-// Description:
-//    Simple appel a: Interprete::printOn(Sortie&)
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a: Interprete::printOn(Sortie&)
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Extruder_en3::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
 
-// Description:
-//    Simple appel a: Interprete::readOn(Entree&)
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Interprete::readOn(Entree&)
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Extruder_en3::readOn(Entree& is)
 {
   return Interprete::readOn(is);
 }
 
 
-// Description:
-//    Fonction principale de l'interprete Extruder_en3
-//    Triangule 1 a 1 toutes les zones du domaine
-//    specifie par la directive.
-//    On triangule la zone grace a la methode:
-//      void Extruder_en3::extruder(Zone& zone) const
-//    Extruder_en3 signifie ici transformer en triangle des
-//    elements geometrique d'une zone.
-// Precondition: on doit etre en 2D (dimension d'espace=2)
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree
-//    Contraintes:
-// Exception: l'objet a mailler n'est pas du type Domaine
-// Effets de bord:
-// Postcondition:
+/*! @brief Fonction principale de l'interprete Extruder_en3 Triangule 1 a 1 toutes les zones du domaine
+ *
+ *     specifie par la directive.
+ *     On triangule la zone grace a la methode:
+ *       void Extruder_en3::extruder(Zone& zone) const
+ *     Extruder_en3 signifie ici transformer en triangle des
+ *     elements geometrique d'une zone.
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree
+ * @throws l'objet a mailler n'est pas du type Domaine
+ */
 Entree& Extruder_en3::interpreter_(Entree& is)
 {
   if (Objet_U::dimension!=2)
@@ -151,8 +125,9 @@ Entree& Extruder_en3::interpreter_(Entree& is)
   return is;
 }
 
-// Description:
-// Extrusion d'un domaine surfacique
+/*! @brief Extrusion d'un domaine surfacique
+ *
+ */
 void Extruder_en3::extruder(Domaine& dom, const IntVect& num)
 {
   Zone& zone = dom.zone(0);
@@ -354,8 +329,9 @@ void Extruder_en3::extruder(Domaine& dom, const IntVect& num)
     }
 }
 
-// Description:
-// Creation des bords du domaine extrude
+/*! @brief Creation des bords du domaine extrude
+ *
+ */
 void Extruder_en3::construire_bords(Domaine& dom, Faces& les_faces, int oldnbsom, int oldsz, const IntVect& num)
 {
   Zone& zone = dom.zone(0);
@@ -440,8 +416,9 @@ void Extruder_en3::construire_bords(Domaine& dom, Faces& les_faces, int oldnbsom
     }
 }
 
-// Description:
-// Creation d'un bord lateral
+/*! @brief Creation d'un bord lateral
+ *
+ */
 void Extruder_en3::construire_bord_lateral(Faces& les_faces_du_bord, Faces& les_faces, int oldnbsom, const IntVect& num)
 {
   // oldnbsom = number of nodes of the 2D mesh

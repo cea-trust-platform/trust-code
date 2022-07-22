@@ -25,13 +25,16 @@ class Motcle;
 class Deriv_;
 class ptrParam;     // Defined below in this file
 
-// Description: cette classe permet de factoriser les readOn des Objet_U.
-//  On peut lui ajouter un int, un double, un Objet_U, un flag
-//  associer a un nom. ajouter_non_std permet d'appeler la methode
-//  lire_motcle_non_standard de l'objet passe en parametre.
-//  To give synonyms or translation for parameters, use the following syntax:
-//  ajouter("keyword|french_keyword|japan_keyword",...)
-//  Example: Schema_Temps_base.pp
+/*! @brief cette classe permet de factoriser les readOn des Objet_U.
+ *
+ * On peut lui ajouter un int, un double, un Objet_U, un flag
+ *   associer a un nom. ajouter_non_std permet d'appeler la methode
+ *   lire_motcle_non_standard de l'objet passe en parametre.
+ *   To give synonyms or translation for parameters, use the following syntax:
+ *   ajouter("keyword|french_keyword|japan_keyword",...)
+ *   Example: Schema_Temps_base.pp
+ *
+ */
 class Param
 {
 public:

@@ -18,12 +18,12 @@
 
 
 
-//
-// .DESCRIPTION class Distanceparoi
-// Realise une boite de recirculation (maillage hexa) extrudee d'un bord
-//
-// .SECTION voir aussi
-// Interprete
+/*! @brief class Distanceparoi Realise une boite de recirculation (maillage hexa) extrudee d'un bord
+ *
+ *
+ *
+ * @sa Interprete
+ */
 
 #include <Interprete_geometrique_base.h>
 #include <Domaine.h>

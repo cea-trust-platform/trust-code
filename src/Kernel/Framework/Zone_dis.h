@@ -24,19 +24,17 @@ Declare_deriv(Zone_dis_base);
 class  Zone_Cl_dis_base;
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Zone_dis
-//     Classe generique de la hierarchie des zones discretisees. Un objet
-//     de type Zone_dis peut referencer n'importe quel objet derivant de
-//     Zone_dis_base.
-//     La plupart des methodes appellent les methodes de l'objet Zone
-//     sous-jacent via la methode valeur() declaree grace a la macro
-//Declare_deriv().;
-// .SECTION voir aussi
-//     Zone_dis_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Zone_dis Classe generique de la hierarchie des zones discretisees.
+ *
+ * Un objet
+ *      de type Zone_dis peut referencer n'importe quel objet derivant de
+ *      Zone_dis_base.
+ *      La plupart des methodes appellent les methodes de l'objet Zone
+ *      sous-jacent via la methode valeur() declaree grace a la macro
+ * Declare_deriv().;
+ *
+ * @sa Zone_dis_base
+ */
 class Zone_dis : public DERIV(Zone_dis_base)
 {
 
@@ -54,21 +52,12 @@ public :
 };
 
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Associe une zone (non discretisee) a l'objet.
-// Precondition:
-// Parametre: Zone& une_zone
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Associe une zone (non discretisee) a l'objet.
+ *
+ * @param (Zone& une_zone)
+ */
 inline void Zone_dis::associer_zone(const Zone& une_zone)
 {
   valeur().associer_zone(une_zone);
@@ -79,62 +68,34 @@ inline void Zone_dis::associer_domaine_dis(const Domaine_dis& un_domaine_dis)
   valeur().associer_domaine_dis(un_domaine_dis);
 }
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Renvoie la zone associee.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Zone&
-//    Signification: la zone associee
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Renvoie la zone associee.
+ *     (version const)
+ *
+ * @return (Zone&) la zone associee
+ */
 inline const Zone& Zone_dis::zone() const
 {
   return valeur().zone();
 }
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Renvoie la zone associee.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Zone&
-//    Signification: la zone associee
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Renvoie la zone associee.
+ *
+ * @return (Zone&) la zone associee
+ */
 inline Zone& Zone_dis::zone()
 {
   return valeur().zone();
 }
 
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Se discretise cf Zone_dis_base
-// Precondition: une zone doit avoir ete associee
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la zone discretise EST discretisee
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Se discretise cf Zone_dis_base
+ *
+ */
 inline void Zone_dis::discretiser()
 {
   valeur().discretiser();
@@ -144,21 +105,13 @@ inline void Zone_dis::creer_elements_fictifs(const Zone_Cl_dis_base& zcl)
 {
   valeur().creer_elements_fictifs( zcl);
 }
-// Description:
-//    Appel a l'objet sous-jacent.
-//    Renvoie la ieme frontiere
-// Precondition:
-// Parametre: int i
-//    Signification: l'index de la frontiere a renvoyer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Frontiere_dis_base&
-//    Signification: la i-eme frontiere de la zone discretisee
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * Renvoie la ieme frontiere
+ *
+ * @param (int i) l'index de la frontiere a renvoyer
+ * @return (Frontiere_dis_base&) la i-eme frontiere de la zone discretisee
+ */
 inline const Frontiere_dis_base& Zone_dis::frontiere_dis(int i) const
 {
   return valeur().frontiere_dis(i);

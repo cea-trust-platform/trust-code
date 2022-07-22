@@ -21,31 +21,20 @@
 
 #include <TRUSTTabs_forward.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Matrice_Sym
-//    Cette classe est la classe de base pour la representantion des
-//    matrices symetriques. Cette classe est en fait une classe "interface"
-//    qui donne acces a des methodes de resolutions de systemes lineaires
-//    dont la matrice est symetrique: Gradient conjugue (preconditionne),
-//    solveur SSOR, precondtionneur polynomial.
-//    Cette classe ne contient pas de membre de donnee (hors mis ceux herites de
-//    Process) car elle sera utilisee par heritage multiple.
-//    Elle "accede" a la matrice via la methode de multiplication matrice-vecteur
-//    DoubleVect& multvect(const DoubleVect&, DoubleVect& resu) const
-//    qui est une methode abstraite.
-// .SECTION voir aussi
-//    Matrice_Morse_Sym
-//    Cette classe n'herite pas d'objet U car elle est utilisee par
-//    heritage multiple avec d'autre classe heritant deja d'objet U.
-//    Voir par exemple Mat_Morse_Sym.
-//    Classe abstraite
-//    Methodes abstraites
-//      int ssor(const DoubleVect& secmem, DoubleVect& solution,
-//                           double=_OMEGA_SSOR_ ) const;
-//      DoubleVect& multvect(const DoubleVect&, DoubleVect& resu) const [protegee]
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Matrice_Sym Cette classe est la classe de base pour la representantion des
+ *
+ *     matrices symetriques. Cette classe est en fait une classe "interface"
+ *     qui donne acces a des methodes de resolutions de systemes lineaires
+ *     dont la matrice est symetrique: Gradient conjugue (preconditionne),
+ *     solveur SSOR, precondtionneur polynomial.
+ *     Cette classe ne contient pas de membre de donnee (hors mis ceux herites de
+ *     Process) car elle sera utilisee par heritage multiple.
+ *     Elle "accede" a la matrice via la methode de multiplication matrice-vecteur
+ *     DoubleVect& multvect(const DoubleVect&, DoubleVect& resu) const
+ *     qui est une methode abstraite.
+ *
+ * @sa Matrice_Morse_Sym, Cette classe n'herite pas d'objet U car elle est utilisee par, heritage multiple avec d'autre classe heritant deja d'objet U., Voir par exemple Mat_Morse_Sym., Classe abstraite, Methodes abstraites, int ssor(const DoubleVect& secmem, DoubleVect& solution,, double=_OMEGA_SSOR_ ) const;, DoubleVect& multvect(const DoubleVect&, DoubleVect& resu) const [protegee]
+ */
 
 class Matrice_Sym
 {

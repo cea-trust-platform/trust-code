@@ -25,11 +25,10 @@
 #include <algorithm>
 class StringTokenizer;
 
-/////////////////////////////////////////////////////////////////////////=
-//// .DESCRIPTION
-////    Representation des donnees de la classe Parser
-//// .SECTION voir aussi
-///////////////////////////////////////////////////////////////////////////=
+/*! @brief Representation des donnees de la classe Parser
+ *
+ * @sa =
+ */
 
 class Parser
 {

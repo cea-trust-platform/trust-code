@@ -31,43 +31,26 @@ Champ_front_calc_interne::Champ_front_calc_interne()
   set_distant(0);
 }
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Champ_front_calc_interne::printOn(Sortie& os) const
 {
   return os;
 }
 
-// Description:
-//    Lit le nom d'un champ inconnue a partir d'un flot d'entree.
-//    Cree ensuite le champ de frontiere correspondant qui mettra en relation les deux
-//    cotes de la frontiere interne.
-//    Format:
-//      Champ_front_calc_interne nom_pb nom_bord nom_champ
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entre
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit le nom d'un champ inconnue a partir d'un flot d'entree.
+ *
+ * Cree ensuite le champ de frontiere correspondant qui mettra en relation les deux
+ *     cotes de la frontiere interne.
+ *     Format:
+ *       Champ_front_calc_interne nom_pb nom_bord nom_champ
+ *
+ * @param (Entree& is) un flot d'entre
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Champ_front_calc_interne::readOn(Entree& is)
 {
 #ifndef MEDCOUPLING_

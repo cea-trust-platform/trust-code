@@ -20,8 +20,9 @@
 #include <Champ_front_fonc.h>
 
 
-//.DESCRIPTION  class Champ_front_fonc_pois_tube
-// Classe derivee de Champ_front_fonc
+/*! @brief class Champ_front_fonc_pois_tube Classe derivee de Champ_front_fonc
+ *
+ */
 
 //.SECTION voir aussi
 

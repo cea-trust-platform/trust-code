@@ -19,19 +19,16 @@
 #include <Cond_lim_base.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Neumann_homogene
-//    Cette classe est la classe de base de la hierarchie des conditions
-//    aux limites de type Neumann homogenes.
-//    Une condition aux limites de type Neumann_homogene impose une valeur nulle
-//    de la derivee d'un champ inconnue sur une frontiere, ce qui correspond a:
-//      - flux nul impose pour l'equation de transport d'un scalaire
-//      - contrainte nulle imposee pour l'equation de quantite de mouvement
-// .SECTION voir aussi
-//     Cond_lim_base Neumann
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Neumann_homogene Cette classe est la classe de base de la hierarchie des conditions
+ *
+ *     aux limites de type Neumann homogenes.
+ *     Une condition aux limites de type Neumann_homogene impose une valeur nulle
+ *     de la derivee d'un champ inconnue sur une frontiere, ce qui correspond a:
+ *       - flux nul impose pour l'equation de transport d'un scalaire
+ *       - contrainte nulle imposee pour l'equation de quantite de mouvement
+ *
+ * @sa Cond_lim_base Neumann
+ */
 class Neumann_homogene : public Cond_lim_base
 {
 

@@ -35,16 +35,19 @@ Sortie& Interprete::printOn(Sortie& os) const
   return os;
 }
 
-// Description: Voir Interprete_bloc::objet_global()
-//  BM: la classe Interprete n'est pas le meilleur endroit pour cette
-//  methode mais on verra ca plus tard...
+/*! @brief Voir Interprete_bloc::objet_global() BM: la classe Interprete n'est pas le meilleur endroit pour cette
+ *
+ *   methode mais on verra ca plus tard...
+ *
+ */
 Objet_U& Interprete::objet(const Nom& nom)
 {
   return Interprete_bloc::objet_global(nom);
 }
 
-// Description: Renvoie 1 si l'objet existe, 0 sinon
-//   voir Interprete_bloc::objet_global_existant()
+/*! @brief Renvoie 1 si l'objet existe, 0 sinon voir Interprete_bloc::objet_global_existant()
+ *
+ */
 int Interprete::objet_existant(const Nom& nom)
 {
   return Interprete_bloc::objet_global_existant(nom);

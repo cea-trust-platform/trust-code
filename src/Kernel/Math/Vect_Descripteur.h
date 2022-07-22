@@ -18,11 +18,10 @@
 #include <Descripteur.h>
 #include <Vect.h>
 
-//
-// .DESCRIPTION class VectDescripteur
-//
-// .SECTION voir aussi
-// Descripteur
+/*! @brief class VectDescripteur
+ *
+ * @sa Descripteur
+ */
 Declare_vect(Descripteur);
 
 #endif //Descripteur_H

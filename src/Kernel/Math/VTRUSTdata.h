@@ -25,11 +25,13 @@ class Memoire;
 template<typename _TYPE_> class TRUSTArray;
 template<typename _TYPE_> class TRUST_ptr_trav;
 
-// .DESCRIPTION
-// VTRUSTdata alloue une zone de memoire de la taille specifiee au constructeur, et libere la zone de memoire a la destruction.
-// La memoire peut etre allouee sur le tas (avec new) ou par le mecanisme Memoire::add_trav_double.
-// "ref_count" compte le nombre de pointeurs qui font reference a "this". (permet au dernier utilisateur de l'objet de le detruire)
-// .SECTION voir aussi TRUSTArray
+/*! @brief VTRUSTdata alloue une zone de memoire de la taille specifiee au constructeur, et libere la zone de memoire a la destruction.
+ *
+ * La memoire peut etre allouee sur le tas (avec new) ou par le mecanisme Memoire::add_trav_double.
+ *  "ref_count" compte le nombre de pointeurs qui font reference a "this". (permet au dernier utilisateur de l'objet de le detruire)
+ *
+ * @sa TRUSTArray
+ */
 template<typename _TYPE_>
 class VTRUSTdata
 {
@@ -82,14 +84,11 @@ private:
 typedef VTRUSTdata<double> VDoubledata;
 typedef VTRUSTdata<int> VIntdata;
 
-// Description: Construit un VTRUSTdata de taille size >= 0
-// Parametre: int s
-//    Signification: taille du VTRUSTdata, il faut size >= 0
-// Parametre: Storage storage
-//    Signification: indique si la memoire doit etre allouee avec "new" ou avec "memoire.add_trav_double()"
-//    Valeurs par defaut: STANDARD (allocation avec "new")
-// Postcondition:
-//    data_ n'est jamais nul, meme si size==0
+/*! @brief Construit un VTRUSTdata de taille size >= 0
+ *
+ * @param (int s) taille du VTRUSTdata, il faut size >= 0
+ * @param (Storage storage) indique si la memoire doit etre allouee avec "new" ou avec "memoire.add_trav_double()"
+ */
 template<typename _TYPE_>
 VTRUSTdata<_TYPE_>::VTRUSTdata(int size, Array_base::Storage storage)
 {

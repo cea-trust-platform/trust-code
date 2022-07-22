@@ -24,22 +24,14 @@ Implemente_instanciable(Champ_front_txyz,"Champ_front_fonc_txyz",Ch_front_var_in
 // XD champ_front_fonc_txyz front_field_base champ_front_fonc_txyz 0 Boundary field which is not constant in space and in time.
 // XD attr val listchaine val 0 Values of field components (mathematical expressions).
 
-// Description:
-//    Imprime le champ sur flot de sortie.
-//    Imprime la taille du champ et la valeur (constante) sur
-//    la frontiere.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Imprime le champ sur flot de sortie.
+ *
+ * Imprime la taille du champ et la valeur (constante) sur
+ *     la frontiere.
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Champ_front_txyz::printOn(Sortie& os) const
 {
 
@@ -51,22 +43,14 @@ Sortie& Champ_front_txyz::printOn(Sortie& os) const
 }
 
 
-// Description:
-//    Lit le champ a partir d'un flot d'entree.
-//    Format:
-//      Champ_front_txyz nb_compo vrel_1 ... [vrel_i]
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree& is
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: le champ analytique a la valeur lue
+/*! @brief Lit le champ a partir d'un flot d'entree.
+ *
+ * Format:
+ *       Champ_front_txyz nb_compo vrel_1 ... [vrel_i]
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree& is) le flot d'entree modifie
+ */
 Entree& Champ_front_txyz::readOn(Entree& is)
 {
   //Cout << "Dans  Champ_front_txyz.readOn !!!!!!!!!" << finl;
@@ -101,20 +85,11 @@ Entree& Champ_front_txyz::readOn(Entree& is)
 
 
 
-// Description:
-//    Renvoie l'objet upcaste en Champ_front_base&
-// Precondition:
-// Parametre: Champ_front_base& ch
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Retour: Champ_front_base&
-//    Signification: (*this) upcaste en Champ_front_base&
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie l'objet upcaste en Champ_front_base&
+ *
+ * @param (Champ_front_base& ch)
+ * @return (Champ_front_base&) (*this) upcaste en Champ_front_base&
+ */
 Champ_front_base& Champ_front_txyz::affecter_(const Champ_front_base& ch)
 {
   return *this;

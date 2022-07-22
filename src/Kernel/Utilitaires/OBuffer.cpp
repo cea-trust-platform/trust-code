@@ -49,38 +49,30 @@ int OBuffer::get_precision()
 {
   return (int)buf_->precision();
 }
-// Description:
-//    Force l'ecriture sur disque des donnees dans le tampon
-//    Utilise l'implementation de la classe ofstream
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: *this
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Force l'ecriture sur disque des donnees dans le tampon Utilise l'implementation de la classe ofstream
+ *
+ * @return (Sortie&) *this
+ */
 Sortie& OBuffer::flush()
 {
   return *this;
 }
 
-// Description:
-//  ajoute le caractere nul a la fin du buffer pour en faire une chaine
-//  de caracteres valide. len() renvoie la longueur du buffer, y compris le \0
-//  Voir Ecr_Fic_Par::syncfile()
+/*! @brief ajoute le caractere nul a la fin du buffer pour en faire une chaine de caracteres valide.
+ *
+ * len() renvoie la longueur du buffer, y compris le \0
+ *   Voir Ecr_Fic_Par::syncfile()
+ *
+ */
 void OBuffer::put_null_char()
 {
   assert(! bin_); // Ca n'a pas de sens en binaire
   buf_->put('\0');
 }
 
-// Description:
-//  Renvoie un pointeur sur le debut du buffer.
+/*! @brief Renvoie un pointeur sur le debut du buffer.
+ *
+ */
 const char* OBuffer::str()
 {
 // Need a copy:

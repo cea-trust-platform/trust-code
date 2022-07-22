@@ -19,64 +19,37 @@
 Implemente_instanciable(Reordonner,"Reordonner",Interprete_geometrique_base);
 
 
-// Description:
-//    Ecrit le type de l'objet sur un flot de
-//    sortie.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit le type de l'objet sur un flot de sortie.
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Reordonner::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << "\n";
 }
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree
+ */
 Entree& Reordonner::readOn(Entree& is )
 {
   return is;
 }
 
 
-// Description:
-//    Fonction principale de l'interprete Mailler
-//    Reordonne les noeuds du domaine specifie par
-//    la directive.
-//       Reordonner dom
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: l'objet a reordonner n'est pas du type Domaine
-// Effets de bord:
-// Postcondition:
+/*! @brief Fonction principale de l'interprete Mailler Reordonne les noeuds du domaine specifie par
+ *
+ *     la directive.
+ *        Reordonner dom
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ * @throws l'objet a reordonner n'est pas du type Domaine
+ */
 Entree& Reordonner::interpreter_(Entree& is)
 {
   associer_domaine(is);

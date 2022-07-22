@@ -206,9 +206,11 @@ int Matrice_Dense::ordre( ) const
     }
 }
 
-// Description:
-//    Operation de multiplication-accumulation (saxpy) matrice vecteur.
-//    Operation: resu = resu + Matrix_ * x
+/*! @brief Operation de multiplication-accumulation (saxpy) matrice vecteur.
+ *
+ * Operation: resu = resu + Matrix_ * x
+ *
+ */
 DoubleVect& Matrice_Dense::ajouter_multvect_( const DoubleVect& x , DoubleVect& resu ) const
 {
   const int nb_lines = nb_lignes( ) ;
@@ -288,10 +290,11 @@ bool Matrice_Dense::is_the_same( const Matrice_Dense& other_matrix , const doubl
   return same;
 }
 
-// Description:
-//    Operation de multiplication-accumulation (saxpy) matrice vecteur,
-//    par la matrice transposee.
-//    Operation: resu = resu + A^{T}*x
+/*! @brief Operation de multiplication-accumulation (saxpy) matrice vecteur, par la matrice transposee.
+ *
+ *     Operation: resu = resu + A^{T}*x
+ *
+ */
 DoubleVect& Matrice_Dense::ajouter_multvectT_(const DoubleVect& x,DoubleVect& resu) const
 {
 

@@ -29,10 +29,9 @@ class Equation;
 class Motcle;
 class Param;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Schema_Temps_base
+/*! @brief classe Schema_Temps_base
+ *
+ */
 
 //     Cette classe represente un schema en temps, c'est-a-dire un
 //     algorithme de resolution particulier qui sera associe a un
@@ -413,162 +412,80 @@ private:
 };
 
 
-// Description:
-//    surcharge Objet_U::nommer(const Nom&)
-//    Donne un nom au shema en temps
-// Precondition:
-// Parametre: Nom& name
-//    Signification: le nom a donner au shema en temps
-//    Valeurs par defaut:
-//    Contraintes: reference const
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief surcharge Objet_U::nommer(const Nom&) Donne un nom au shema en temps
+ *
+ * @param (Nom& name) le nom a donner au shema en temps
+ */
 inline void Schema_Temps_base::nommer(const Nom& name)
 {
   nom_=name;
 }
 
 
-// Description:
-//    surcharge Objet_U::le_nom()
-//    Renvoie le nom du shema en temps
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Nom&
-//    Signification: le nom du shema en temps
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief surcharge Objet_U::le_nom() Renvoie le nom du shema en temps
+ *
+ * @return (Nom&) le nom du shema en temps
+ */
 inline const Nom& Schema_Temps_base::le_nom() const
 {
   return nom_;
 }
 
 
-// Description:
-//    Renvoie une reference sur le nombre de pas maxi
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double&
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie une reference sur le nombre de pas maxi
+ *
+ * @return (double&)
+ */
 inline int Schema_Temps_base::nb_pas_dt_max() const
 {
   return nb_pas_dt_max_;
 }
 
 
-// Description:
-//    Renvoie une reference sur le seuil stationnaire
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double&
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie une reference sur le seuil stationnaire
+ *
+ * @return (double&)
+ */
 inline double Schema_Temps_base::seuil_statio() const
 {
   return seuil_statio_;
 }
 
 
-// Description:
-//    Renvoie une reference sur le temps d'impression
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double&
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie une reference sur le temps d'impression
+ *
+ * @return (double&)
+ */
 inline double Schema_Temps_base::temps_impr() const
 {
   return dt_impr_;
 }
 
 
-// Description:
-//    Renvoie une reference sur le temps de sauvegarde
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double&
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie une reference sur le temps de sauvegarde
+ *
+ * @return (double&)
+ */
 inline double Schema_Temps_base::temps_sauv() const
 {
   return dt_sauv_;
 }
 
 
-// Description:
-//    Renvoie une reference sur le temps maximum
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double&
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie une reference sur le temps maximum
+ *
+ * @return (double&)
+ */
 inline double Schema_Temps_base::temps_max() const
 {
   return tmax_;
 }
 
 
-// Description:
-//    Renvoie le pas de temps (delta_t) courant.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: le pas de temps courant
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le pas de temps (delta_t) courant.
+ *
+ * @return (double) le pas de temps courant
+ */
 inline double Schema_Temps_base::pas_de_temps() const
 {
   return dt_;
@@ -577,195 +494,99 @@ inline const DoubleTab& Schema_Temps_base::pas_de_temps_locaux() const
 {
   return dt_locaux_;
 }
-// Description:
-//    Renvoie le pas de temps minimum.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: le pas de temps minimum du schema en temps
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le pas de temps minimum.
+ *
+ * (version const)
+ *
+ * @return (double) le pas de temps minimum du schema en temps
+ */
 inline double Schema_Temps_base::pas_temps_min() const
 {
   return dt_min_;
 }
 
-// Description:
-//    Renvoie une reference sur le pas de temps minimum.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double&
-//    Signification: le pas de temps minimum du schema en temps
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie une reference sur le pas de temps minimum.
+ *
+ * @return (double&) le pas de temps minimum du schema en temps
+ */
 inline double& Schema_Temps_base::pas_temps_min()
 {
   return dt_min_;
 }
 
-// Description:
-//    Renvoie le pas de temps maximum.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: le pas de temps maximum du schema en temps
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le pas de temps maximum.
+ *
+ * (version const)
+ *
+ * @return (double) le pas de temps maximum du schema en temps
+ */
 inline double Schema_Temps_base::pas_temps_max() const
 {
   return dt_max_;
 }
 
-// Description:
-//    Renvoie une reference sur le pas de temps maximum.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double&
-//    Signification: le pas de temps maximum du schema en temps
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie une reference sur le pas de temps maximum.
+ *
+ * @return (double&) le pas de temps maximum du schema en temps
+ */
 inline double& Schema_Temps_base::pas_temps_max()
 {
   return dt_max_;
 }
 
-// Description:
-//    Renvoie le temps courant.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: le temps courant du schema en temps
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le temps courant.
+ *
+ * @return (double) le temps courant du schema en temps
+ */
 inline double Schema_Temps_base::temps_courant() const
 {
   return temps_courant_;
 }
 
 
-// Description:
-//    Renvoie le temps courant.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: le temps courant du schema en temps
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le temps courant.
+ *
+ * @return (double) le temps courant du schema en temps
+ */
 inline double Schema_Temps_base::temps_precedent() const
 {
   return temps_precedent_;
 }
 
-// Description:
-//    Renvoie le temps de calcul ecoule i.e. (temps courant - temps initial).
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: le temps de calcul ecoule
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le temps de calcul ecoule i.
+ *
+ * e. (temps courant - temps initial).
+ *
+ * @return (double) le temps de calcul ecoule
+ */
 inline double Schema_Temps_base::temps_calcul() const
 {
   return temps_courant_ - tinit_;
 }
 
-// Description:
-//    Renvoie le temps initial.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: le temps de calcul ecoule
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le temps initial.
+ *
+ * @return (double) le temps de calcul ecoule
+ */
 inline double Schema_Temps_base::temps_init() const
 {
   return tinit_;
 }
 
 
-// Description:
-//    Renvoie le nombre de pas de temps effectues.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de pas de temps effectues
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de pas de temps effectues.
+ *
+ * @return (int) le nombre de pas de temps effectues
+ */
 inline int Schema_Temps_base::nb_pas_dt() const
 {
   return nb_pas_dt_;
 }
 
-// Description:
-//    Renvoie le nombre d'impressions effectuees.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre d'impressions effectuees
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre d'impressions effectuees.
+ *
+ * @return (int) le nombre d'impressions effectuees
+ */
 inline int Schema_Temps_base::nb_impr() const
 {
   return nb_impr_;
@@ -773,106 +594,60 @@ inline int Schema_Temps_base::nb_impr() const
 
 
 
-// Description:
-//    Change le temps courant.
-// Precondition:
-// Parametre: double& t
-//    Signification: le nouveau temps courant
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Change le temps courant.
+ *
+ * @param (double& t) le nouveau temps courant
+ */
 inline void Schema_Temps_base::changer_temps_courant(const double t)
 {
   temps_courant_ = t;
 }
 
-// Description:
-//    Renvoie le facteur de securite ou multiplicateur de delta_t.
-//    Ce facteur est utilise lors de la correction/verification du
-//    pas de temps. Voir Schema_Temps_base::corriger_dt_calcule(double&)
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: le facteur de securite du schema en temps
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet.
+/*! @brief Renvoie le facteur de securite ou multiplicateur de delta_t.
+ *
+ * Ce facteur est utilise lors de la correction/verification du
+ *     pas de temps. Voir Schema_Temps_base::corriger_dt_calcule(double&)
+ *     (version const)
+ *
+ * @return (double) le facteur de securite du schema en temps
+ */
 inline double Schema_Temps_base::facteur_securite_pas() const
 {
   return facsec_;
 }
 
-// Description:
-//    Renvoie une reference sur le facteur de securite ou multiplicateur de delta_t.
-//    Ce facteur est utilise lors de la correction/verification du
-//    pas de temps. Voir Schema_Temps_base::corriger_dt_calcule(double&)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double&
-//    Signification: le facteur de securite du schema en temps
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie une reference sur le facteur de securite ou multiplicateur de delta_t.
+ *
+ * Ce facteur est utilise lors de la correction/verification du
+ *     pas de temps. Voir Schema_Temps_base::corriger_dt_calcule(double&)
+ *
+ * @return (double&) le facteur de securite du schema en temps
+ */
 inline double& Schema_Temps_base::facteur_securite_pas()
 {
   return facsec_;
 }
 
-// Description:
-//    Renvoie 1 si le temps final est atteint (ou depasse).
-//    Renvoie 1 si temps_courant_ >= tmax
-//    Renvoie 0 sinon
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si le temps final est atteint 0 sinon
-//    Contraintes:
-// Exception: temps final atteint
-// Effets de bord: impression d'information sur Cerr et Cout UNIQUEMENT lors
-//                 du premier appel avec un retour valant 1.
-// Postcondition:
+/*! @brief Renvoie 1 si le temps final est atteint (ou depasse).
+ *
+ * Renvoie 1 si temps_courant_ >= tmax
+ *     Renvoie 0 sinon
+ *
+ * @return (int) 1 si le temps final est atteint 0 sinon
+ * @throws temps final atteint
+ */
 inline int Schema_Temps_base::temps_final_atteint() const
 {
   return ind_tps_final_atteint;
 }
 
-// Description:
-//    Renvoie 1 si (le nombre de pas de temps >= nombre de pas de temps maximum).
-//    Renvoie 0 sinon
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si le nombre de pas de temps maximum est depasse 0 sinon
-//    Contraintes:
-// Exception: nombre de pas de temps maximum atteint
-// Effets de bord: impression d'information sur Cerr et Cout UNIQUEMENT lors
-//                 du premier appel avec un retour valant 1.
-// Postcondition:
+/*! @brief Renvoie 1 si (le nombre de pas de temps >= nombre de pas de temps maximum).
+ *
+ * Renvoie 0 sinon
+ *
+ * @return (int) 1 si le nombre de pas de temps maximum est depasse 0 sinon
+ * @throws nombre de pas de temps maximum atteint
+ */
 inline int Schema_Temps_base::nb_pas_dt_max_atteint() const
 {
   return ind_nb_pas_dt_max_atteint;
@@ -883,20 +658,10 @@ inline int Schema_Temps_base::temps_cpu_max_atteint() const
   return ind_temps_cpu_max_atteint;
 }
 
-// Description:
-//    Renvoie 1 si le schema en temps a ete lu diffusion_implicite.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si le schema en temps a ete lu 0 sinon.
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie 1 si le schema en temps a ete lu diffusion_implicite.
+ *
+ * @return (int) 1 si le schema en temps a ete lu 0 sinon.
+ */
 inline int Schema_Temps_base::diffusion_implicite() const
 {
   return ind_diff_impl_;

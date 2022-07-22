@@ -22,42 +22,44 @@
 #include <DerOu_.h>
 #include <TRUSTTab.h>
 
-// Description:
-//  Envoi de messages point-to-point synchrone entre la source et la cible.
-//  La fonction envoyer se termine au plus tard lorsque le message a ete
-//  recu par l'instruction "recevoir" correspondante  et l'envoi peut etre blocant
-//  (le blocage est force en mode debug, selon Comm_Group::check_enabled() )
-//  Ces communications utilisent Comm_Group::send() et Comm_Group::recv()
-//  Exemples d'utilisations possibles:
-//  1) communication point-a-point (processeur 2 vers processeur 5)
-//       if (me() == 2)
-//         envoyer(objet, 5, canal);
-//       else if (me() == 5)
-//         recevoir(objet, 2, canal);
-//     ou de facon equivalente :
-//       envoyer(objet, 2, 5, canal); // ne fait rien sur les processeurs autres que 2
-//       recevoir(objet, 2, 5, canal); // ne fait rien sur les processeurs autres que 5
-//  2) gather : le processeur 0 recupere les donnees de l'objet t de tout le monde
-//       envoyer(t, me(), 0, canal); // Tout le monde envoie au processeur 0, sur le maitre, ne fait rien
-//       if (je_suis_maitre())
-//         for (i = 0; i < nproc(); i++) {
-//           recevoir(t, 0, i; canal); // Si i==0, ne fait rien.
-//           ... faire quelque chose avec t
-//         }
-//  3) broadcast : le processeur 0 envoie l'objet a tous les autres processeurs
-//     Il n'est pas necessaire de faire le test "if (je_suis_maitre())"
-//       envoyer(objet, 0, -1, canal); // Les processeurs autres que 0 ignorent l'appel
-//       recevoir(objet, 0, -1, canal);// Le processeur 0 ignore l'appel
-//     Il vaut mieux utiliser envoyer_broadcast() pour cet usage.
-//  4) broadcast : ecriture equivalente
-//       if (je_suis_maitre())
-//         envoyer(objet, -1, canal); // Emission par le maitre a tous les processeurs, sauf lui-meme
-//       else
-//         recevoir(objet, 0, canal); // Reception d'un message du processeur maitre
-//     Il vaut mieux utiliser envoyer_broadcast() pour cet usage.
-// Dans l'implementation de envoyer_, on encapsule l'objet recu dans un buffer et on envoie le buffer.
-// Ca marche donc pour les types complexes pourvu que Entree et Sortie sachent lire et ecrire l'objet.
-// Chaque envoi necessite l'envoi de deux messages : d'abord la taille du buffer, puis le contenu.
+/*! @brief Envoi de messages point-to-point synchrone entre la source et la cible.
+ *
+ * La fonction envoyer se termine au plus tard lorsque le message a ete
+ *   recu par l'instruction "recevoir" correspondante  et l'envoi peut etre blocant
+ *   (le blocage est force en mode debug, selon Comm_Group::check_enabled() )
+ *   Ces communications utilisent Comm_Group::send() et Comm_Group::recv()
+ *   Exemples d'utilisations possibles:
+ *   1) communication point-a-point (processeur 2 vers processeur 5)
+ *        if (me() == 2)
+ *          envoyer(objet, 5, canal);
+ *        else if (me() == 5)
+ *          recevoir(objet, 2, canal);
+ *      ou de facon equivalente :
+ *        envoyer(objet, 2, 5, canal); // ne fait rien sur les processeurs autres que 2
+ *        recevoir(objet, 2, 5, canal); // ne fait rien sur les processeurs autres que 5
+ *   2) gather : le processeur 0 recupere les donnees de l'objet t de tout le monde
+ *        envoyer(t, me(), 0, canal); // Tout le monde envoie au processeur 0, sur le maitre, ne fait rien
+ *        if (je_suis_maitre())
+ *          for (i = 0; i < nproc(); i++) {
+ *            recevoir(t, 0, i; canal); // Si i==0, ne fait rien.
+ *            ... faire quelque chose avec t
+ *          }
+ *   3) broadcast : le processeur 0 envoie l'objet a tous les autres processeurs
+ *      Il n'est pas necessaire de faire le test "if (je_suis_maitre())"
+ *        envoyer(objet, 0, -1, canal); // Les processeurs autres que 0 ignorent l'appel
+ *        recevoir(objet, 0, -1, canal);// Le processeur 0 ignore l'appel
+ *      Il vaut mieux utiliser envoyer_broadcast() pour cet usage.
+ *   4) broadcast : ecriture equivalente
+ *        if (je_suis_maitre())
+ *          envoyer(objet, -1, canal); // Emission par le maitre a tous les processeurs, sauf lui-meme
+ *        else
+ *          recevoir(objet, 0, canal); // Reception d'un message du processeur maitre
+ *      Il vaut mieux utiliser envoyer_broadcast() pour cet usage.
+ *  Dans l'implementation de envoyer_, on encapsule l'objet recu dans un buffer et on envoie le buffer.
+ *  Ca marche donc pour les types complexes pourvu que Entree et Sortie sachent lire et ecrire l'objet.
+ *  Chaque envoi necessite l'envoi de deux messages : d'abord la taille du buffer, puis le contenu.
+ *
+ */
 template <typename T>
 int envoyer_buffered_(const T& objet, int source, int cible, int canal)
 {
@@ -93,7 +95,9 @@ int envoyer_buffered_(const T& objet, int source, int cible, int canal)
   return 1;
 }
 
-// Description: Reception d'un message en provenance du processeur source
+/*! @brief Reception d'un message en provenance du processeur source
+ *
+ */
 template <typename T>
 int recevoir_buffered_(T& objet, int source, int cible, int canal)
 {
@@ -116,8 +120,11 @@ int recevoir_buffered_(T& objet, int source, int cible, int canal)
   return 1;
 }
 
-// Description: Broadcast de l'objet par le processeur source a tous les autres processeurs.
-//  Fonctionne pour des types complexes supportes par Entree ou Sortie.
+/*! @brief Broadcast de l'objet par le processeur source a tous les autres processeurs.
+ *
+ * Fonctionne pour des types complexes supportes par Entree ou Sortie.
+ *
+ */
 template <typename T>
 int envoyer_broadcast_buffered_(T& objet, int source)
 {
@@ -209,11 +216,14 @@ int envoyer_all_to_all(const TRUST_Vector<TRUSTArray,int>& src, TRUST_Vector<TRU
   return envoyer_all_to_all_(src, dest);
 }
 
-// Description: On suppose que les tableaux en entree et en sortie
-//  sont de taille nproc() . On envoie src[0] au proc 0,
-//  src[1] au proc 1, etc... la valeur recue du processeur 0 et mise dans
-//  dest[0], processeur 1 dans dest[1], etc...
-//  Il est autorise d'appeler la fonction avec le meme tableau src et dest.
+/*! @brief On suppose que les tableaux en entree et en sortie sont de taille nproc() .
+ *
+ * On envoie src[0] au proc 0,
+ *   src[1] au proc 1, etc... la valeur recue du processeur 0 et mise dans
+ *   dest[0], processeur 1 dans dest[1], etc...
+ *   Il est autorise d'appeler la fonction avec le meme tableau src et dest.
+ *
+ */
 int envoyer_all_to_all(std::vector<long long>& src, std::vector<long long>& dest)
 {
   const Comm_Group& grp = PE_Groups::current_group();
@@ -232,28 +242,18 @@ int envoyer_all_to_all(std::vector<long long>& src, std::vector<long long>& dest
   return 1;
 }
 
-// Description:
-//  Calcule la transposee d'une liste de processeurs:
-//    On construit le tableau dest_list tel que:
-//        x est dans la liste src_list sur le processeur y
-//      si et seulement si
-//        y est dans la liste dest_list sur le processeur x
-//  En pratique, cette fonction permet de calculer la liste des
-//  processeurs qui recoivent des messages si on connait la liste
-//  des processeurs qui envoient des messages, et reciproquement.
-// Parametre:     src_list
-// Signification: Une liste de numeros de PEs presents dans ce groupe de comm.
-//                Ce sont les indices des pes dans le groupe courant (0 <= pe < nproc_)
-// Parametre:     dest_list
-// Signification: Le tableau ou stocker le resultat. On le met a la bonne taille
-//                et on le remplit. Les numeros de PEs sont mis dans l'ordre
-//                croissant.
-//                Ce sont les indices des pes dans le groupe courant (0 <= pe < nproc_)
-// Precondition:
-//  Cette fonction doit etre appelee simultanement sur tous les processeurs
-//  du groupe.
-// Valeur de retour:
-//  nombre d'elements dans dest_list.
+/*! @brief Calcule la transposee d'une liste de processeurs: On construit le tableau dest_list tel que:
+ *
+ *         x est dans la liste src_list sur le processeur y
+ *       si et seulement si
+ *         y est dans la liste dest_list sur le processeur x
+ *   En pratique, cette fonction permet de calculer la liste des
+ *   processeurs qui recoivent des messages si on connait la liste
+ *   des processeurs qui envoient des messages, et reciproquement.
+ *
+ * @param (src_list) Une liste de numeros de PEs presents dans ce groupe de comm. Ce sont les indices des pes dans le groupe courant (0 <= pe < nproc_)
+ * @param (dest_list) Le tableau ou stocker le resultat. On le met a la bonne taille et on le remplit. Les numeros de PEs sont mis dans l'ordre croissant. Ce sont les indices des pes dans le groupe courant (0 <= pe < nproc_)
+ */
 int reverse_send_recv_pe_list(const ArrOfInt& src_list, ArrOfInt& dest_list)
 {
   const Comm_Group& grp = PE_Groups::current_group();
@@ -287,13 +287,21 @@ int mp_operations_commun_(int x, Comm_Group::Collective_Op op)
   return y;
 }
 
-// Description: renvoie le plus grand int i sur l'ensemble des processeurs du groupe courant.
+/*! @brief renvoie le plus grand int i sur l'ensemble des processeurs du groupe courant.
+ *
+ */
 int mp_max(int x) { return mp_operations_commun_(x,Comm_Group::COLL_MAX); }
 
-// Description: renvoie le plus petit int i sur l'ensemble des processeurs du groupe courant.
+/*! @brief renvoie le plus petit int i sur l'ensemble des processeurs du groupe courant.
+ *
+ */
 int mp_min(int x) { return mp_operations_commun_(x,Comm_Group::COLL_MIN); }
 
-// Description: Calul de la somme partielle de i sur les processeurs 0 a me()-1 (renvoie 0 sur le processeur 0). Voir Comm_Group::mppartial_sum()
+/*! @brief Calul de la somme partielle de i sur les processeurs 0 a me()-1 (renvoie 0 sur le processeur 0).
+ *
+ * Voir Comm_Group::mppartial_sum()
+ *
+ */
 int mppartial_sum(int x) { return mp_operations_commun_(x,Comm_Group::COLL_PARTIAL_SUM); }
 
 void mpsum_multiple(double& x1, double& x2)
@@ -308,12 +316,14 @@ void mpsum_multiple(double& x1, double& x2)
   x2 = y[1];
 }
 
-// Description: On suppose que les tableaux en entree et en sortie
-//  sont tels que dimension(0)==nproc() et que les autres dimensions
-//  sont identiques. On envoie src(0, i, j, ...) au proc 0,
-//  src(0, i, j, ...) au proc 1, etc... la valeur recue du processeur 0 et mise dans
-//  dest(0, i, j, ...) , processeur 1 dans dest(1, i, j, ...) , etc...
-//  Il est autorise d'appeler la fonction avec le meme tableau src et dest.
+/*! @brief On suppose que les tableaux en entree et en sortie sont tels que dimension(0)==nproc() et que les autres dimensions
+ *
+ *   sont identiques. On envoie src(0, i, j, ...) au proc 0,
+ *   src(0, i, j, ...) au proc 1, etc... la valeur recue du processeur 0 et mise dans
+ *   dest(0, i, j, ...) , processeur 1 dans dest(1, i, j, ...) , etc...
+ *   Il est autorise d'appeler la fonction avec le meme tableau src et dest.
+ *
+ */
 void envoyer_all_to_all(const DoubleTab& src, DoubleTab& dest)
 {
   const Comm_Group& grp = PE_Groups::current_group();
@@ -334,13 +344,17 @@ void envoyer_all_to_all(const DoubleTab& src, DoubleTab& dest)
     }
 }
 
-// Description: renvoie le drapeau Comm_Group::check_enabled(). Ce drapeau indique si le code tourne en mode DEBUG du parallele.
-//  Dans ce cas, des communications supplementaires ont lieu pour verifier la coherence du parallelisme et le mode de communication
-//  est force en mode synchrone. Cette methode permet de tester le drapeau, et s'il est mis de realiser des verifications supplementaires
+/*! @brief renvoie le drapeau Comm_Group::check_enabled().
+ *
+ * Ce drapeau indique si le code tourne en mode DEBUG du parallele. Dans ce cas, des communications supplementaires ont lieu pour verifier la coherence du parallelisme et le mode de communication
+ *   est force en mode synchrone. Cette methode permet de tester le drapeau, et s'il est mis de realiser des verifications supplementaires
+ *
+ */
 int comm_check_enabled() { return Comm_Group::check_enabled(); }
 
-// Description: renvoie 1 (sur tous les procs) si le parametre est identique sur tous les procs,
-//  sinon renvoie 0 (sur tous les procs)
+/*! @brief renvoie 1 (sur tous les procs) si le parametre est identique sur tous les procs, sinon renvoie 0 (sur tous les procs)
+ *
+ */
 int is_parallel_object(const int x)
 {
   const int x1 = mp_min(x);
@@ -348,8 +362,9 @@ int is_parallel_object(const int x)
   return x1 == x2;
 }
 
-// Description: renvoie 1 (sur tous les procs) si le parametre est identique sur tous les procs,
-//  sinon renvoie 0 (sur tous les procs)
+/*! @brief renvoie 1 (sur tous les procs) si le parametre est identique sur tous les procs, sinon renvoie 0 (sur tous les procs)
+ *
+ */
 int is_parallel_object(const double x)
 {
   const Comm_Group& grp = PE_Groups::current_group();
@@ -378,8 +393,9 @@ template <class T> int compare(const Objet_U& a, const Objet_U& b, int& erreur)
     }
 }
 
-// Description: renvoie 1 (sur tous les procs) si le parametre est identique sur tous les procs,
-//  sinon renvoie 0 (sur tous les procs)
+/*! @brief renvoie 1 (sur tous les procs) si le parametre est identique sur tous les procs, sinon renvoie 0 (sur tous les procs)
+ *
+ */
 int is_parallel_object(const Objet_U& obj)
 {
   int erreur = 0;
@@ -429,8 +445,11 @@ int is_parallel_object(const Objet_U& obj)
   return !erreur;
 }
 
-// Description: en mode comm_check_enabled(), verifie que le parametre a la meme valeur sur tous les processeurs.
-//  Ne fonctionne pas pour tous les types ! Pour l'instant ok pour Noms, Motcles et tableaux.
+/*! @brief en mode comm_check_enabled(), verifie que le parametre a la meme valeur sur tous les processeurs.
+ *
+ * Ne fonctionne pas pour tous les types ! Pour l'instant ok pour Noms, Motcles et tableaux.
+ *
+ */
 void assert_parallel(const Objet_U& obj)
 {
   if (!Comm_Group::check_enabled())

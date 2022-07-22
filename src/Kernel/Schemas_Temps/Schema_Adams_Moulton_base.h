@@ -15,12 +15,11 @@
 
 #ifndef Schema_Adams_Moulton_base_included
 #define Schema_Adams_Moulton_base_included
-//
-// .DESCRIPTION class Schema_Adams_Moulton_base
-//  Il herite de schema implicite base et porte un solveur par exemple
-//  le Simpler pour effectuer les Faire_un_pas_de_temps..
-// .SECTION voir aussi
-//
+/*! @brief class Schema_Adams_Moulton_base Il herite de schema implicite base et porte un solveur par exemple
+ *
+ *   le Simpler pour effectuer les Faire_un_pas_de_temps..
+ *
+ */
 
 #include <Schema_Implicite_Multi_TimeStep_base.h>
 #include <TRUSTTab.h>

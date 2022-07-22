@@ -16,12 +16,12 @@
 #ifndef Modif_bord_to_raccord_included
 #define Modif_bord_to_raccord_included
 
-//
-// .DESCRIPTION class Modif_bord_to_raccord
-// transforme un bord en raccord local homogene
-//
-// .SECTION voir aussi
-// Interprete
+/*! @brief class Modif_bord_to_raccord transforme un bord en raccord local homogene
+ *
+ *
+ *
+ * @sa Interprete
+ */
 
 #include <Interprete_geometrique_base.h>
 #include <Domaine.h>

@@ -21,15 +21,12 @@
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Operateur_Grad_base
-//    Cette classe est la base de la hierarchie des operateurs representant
-//    le calcul du gradient d'un champ dans une equation.
-// .SECTION voir aussi
-//     Operateur_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Operateur_Grad_base Cette classe est la base de la hierarchie des operateurs representant
+ *
+ *     le calcul du gradient d'un champ dans une equation.
+ *
+ * @sa Operateur_base
+ */
 class Operateur_Grad_base  : public Operateur_base
 {
   Declare_base(Operateur_Grad_base);

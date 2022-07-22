@@ -14,11 +14,9 @@
 *****************************************************************************/
 
 
-//
-// .DESCRIPTION class Schema_Adams_Moulton_base
-//
-// .SECTION voir aussi
-//
+/*! @brief class Schema_Adams_Moulton_base
+ *
+ */
 
 #include <Schema_Adams_Moulton_base.h>
 #include <Equation_base.h>

@@ -23,21 +23,11 @@
 
 Implemente_instanciable_sans_constructeur(Matrice_Morse_Sym,"Matrice_Morse_Sym",Matrice_Morse);
 
-// Description:
-//    Ecrit les trois tableaux de la structure de stockage
-//    Morse sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie& s
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit les trois tableaux de la structure de stockage Morse sur un flot de sortie.
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie& s) le flot de sortie modifie
+ */
 Sortie& Matrice_Morse_Sym::printOn(Sortie& s) const
 {
   s<<get_est_definie()<<finl;
@@ -45,20 +35,12 @@ Sortie& Matrice_Morse_Sym::printOn(Sortie& s) const
 }
 
 
-// Description:
-//    NON CODE
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree& s
-//    Signification: le flot d'entree
-//    Contraintes:
-// Exception: NON CODE
-// Effets de bord:
-// Postcondition:
+/*! @brief NON CODE
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree& s) le flot d'entree
+ * @throws NON CODE
+ */
 Entree& Matrice_Morse_Sym::readOn(Entree& s)
 {
   int est_def;
@@ -67,44 +49,17 @@ Entree& Matrice_Morse_Sym::readOn(Entree& s)
   return Matrice_Morse::readOn(s) ;
 }
 
-// Description:
-//    Constructeur d'une Matrice_Morse_Sym comportant
-//    n1 lignes et pouvant stocker n2 elements non-nuls (au maximum).
-//    Les elements de la matrice et la table des connectivites
-//    sont donnes dans les 3 derniers parametres.
-// Precondition:
-// Parametre: int n1
-//    Signification: le nombre de ligne de la matrice
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int n2
-//    Signification: le nombre d'element non nuls stockable
-//                   par la matrice
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: IntLists& voisins
-//    Signification: liste des voisins de chaque lignes
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleLists& valeurs
-//    Signification: liste des valeurs
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleVect& terme_diag
-//    Signification: le vecteur des termes diagonaux
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Constructeur d'une Matrice_Morse_Sym comportant n1 lignes et pouvant stocker n2 elements non-nuls (au maximum).
+ *
+ *     Les elements de la matrice et la table des connectivites
+ *     sont donnes dans les 3 derniers parametres.
+ *
+ * @param (int n1) le nombre de ligne de la matrice
+ * @param (int n2) le nombre d'element non nuls stockable par la matrice
+ * @param (IntLists& voisins) liste des voisins de chaque lignes
+ * @param (DoubleLists& valeurs) liste des valeurs
+ * @param (DoubleVect& terme_diag) le vecteur des termes diagonaux
+ */
 Matrice_Morse_Sym::Matrice_Morse_Sym(int n1, int n2, const IntLists& voisins,
                                      const DoubleLists& valeurs,
                                      const DoubleVect& terme_diag)
@@ -116,21 +71,10 @@ Matrice_Morse_Sym::Matrice_Morse_Sym(int n1, int n2, const IntLists& voisins,
 }
 
 
-// Description:
-//    Constructeur d'une Matrice_Morse_Sym par copie
-//    d'une Matrice_Morse.
-// Precondition:
-// Parametre: Matrice_Morse& acopier
-//    Signification: la matrice a copier
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Constructeur d'une Matrice_Morse_Sym par copie d'une Matrice_Morse.
+ *
+ * @param (Matrice_Morse& acopier) la matrice a copier
+ */
 Matrice_Morse_Sym::Matrice_Morse_Sym(const Matrice_Morse& A)
   :Matrice_Morse(A)
 {
@@ -173,21 +117,10 @@ Matrice_Morse_Sym& Matrice_Morse_Sym::operator=(const Matrice& A)
   return *this;
 }
 
-// Description:
-//    Constructeur d'une Matrice_Morse_Sym par copie
-//    d'une Matrice_Morse.
-// Precondition:
-// Parametre: Matrice_Morse& acopier
-//    Signification: la matrice a copier
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Constructeur d'une Matrice_Morse_Sym par copie d'une Matrice_Morse.
+ *
+ * @param (Matrice_Morse& acopier) la matrice a copier
+ */
 Matrice_Morse_Sym::Matrice_Morse_Sym(const Matrice_Morse_Sym& acopier) :
   Matrice_Morse(acopier),Matrice_Sym()
 {
@@ -196,27 +129,15 @@ Matrice_Morse_Sym::Matrice_Morse_Sym(const Matrice_Morse_Sym& acopier) :
   morse_matrix_structure_has_changed_=1;
 }
 
-// Description:
-//    Operation de multiplication-accumulation (saxpy) matrice matrice
-//    (matrice represente par un tableau)
-//    Operation: RESU = RESU + A*X
-// Precondition:
-// Parametre: DoubleTab& x
-//    Signification: la matrice a multiplier
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleTab& resu
-//    Signification: la matrice resultat de l'operation
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: DoubleTab&
-//    Signification: la matrice resultat de l'operation
-//    Contraintes:
-// Exception: taille du resultat incompatible avec la taille de x
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Operation de multiplication-accumulation (saxpy) matrice matrice (matrice represente par un tableau)
+ *
+ *     Operation: RESU = RESU + A*X
+ *
+ * @param (DoubleTab& x) la matrice a multiplier
+ * @param (DoubleTab& resu) la matrice resultat de l'operation
+ * @return (DoubleTab&) la matrice resultat de l'operation
+ * @throws taille du resultat incompatible avec la taille de x
+ */
 DoubleTab& Matrice_Morse_Sym::ajouter_multTab_(const DoubleTab& x, DoubleTab& resu) const
 {
   if ( (x.nb_dim() == 1) && (resu.nb_dim() == 1))
@@ -302,26 +223,14 @@ double Matrice_Morse_Sym::multvect_et_prodscal(const DoubleVect& x, DoubleVect& 
 }
 
 
-// Description:
-//    Operation de multiplication-accumulation (saxpy) matrice vecteur.
-//    Operation: resu = resu + A*x
-// Precondition:
-// Parametre: DoubleVect& x
-//    Signification: le vecteur a multiplier
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleVect& resu
-//    Signification: le vecteur resultat de l'operation
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: DoubleVect&
-//    Signification: le vecteur resultat de l'operation
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Operation de multiplication-accumulation (saxpy) matrice vecteur.
+ *
+ * Operation: resu = resu + A*x
+ *
+ * @param (DoubleVect& x) le vecteur a multiplier
+ * @param (DoubleVect& resu) le vecteur resultat de l'operation
+ * @return (DoubleVect&) le vecteur resultat de l'operation
+ */
 
 DoubleVect& Matrice_Morse_Sym::ajouter_multvect_(const DoubleVect& x, DoubleVect& resu) const
 {
@@ -414,27 +323,14 @@ DoubleVect& Matrice_Morse_Sym::ajouter_multvect_(const DoubleVect& x, DoubleVect
 }
 
 
-// Description:
-//    Operation de multiplication-accumulation (saxpy) matrice vecteur,
-//    par la matrice transposee.
-//    Operation: resu = resu + A^{T}*x
-// Precondition:
-// Parametre: DoubleVect& x
-//    Signification: le vecteur a multiplier
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleVect& resu
-//    Signification: le vecteur resultat de l'operation
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: DoubleVect&
-//    Signification: le vecteur resultat de l'operation
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Operation de multiplication-accumulation (saxpy) matrice vecteur, par la matrice transposee.
+ *
+ *     Operation: resu = resu + A^{T}*x
+ *
+ * @param (DoubleVect& x) le vecteur a multiplier
+ * @param (DoubleVect& resu) le vecteur resultat de l'operation
+ * @return (DoubleVect&) le vecteur resultat de l'operation
+ */
 DoubleVect& Matrice_Morse_Sym::ajouter_multvectT_(const DoubleVect& x,DoubleVect& resu) const
 {
   Cerr <<"Matrice_Morse_Sym::ajouter_multvectT_ is not coded" << finl;
@@ -443,26 +339,12 @@ DoubleVect& Matrice_Morse_Sym::ajouter_multvectT_(const DoubleVect& x,DoubleVect
 }
 
 
-// Description:
-//    Fonction (hors classe) amie de la classe Matrice_Morse_Sym
-//    NE FAIT RIEN : NON CODE
-// Precondition:
-// Parametre: Matrice_Morse_Sym&
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Parametre: Matrice_Morse_Sym&
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Retour: Matrice_Morse_Sym
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Fonction (hors classe) amie de la classe Matrice_Morse_Sym NE FAIT RIEN : NON CODE
+ *
+ * @param (Matrice_Morse_Sym&)
+ * @param (Matrice_Morse_Sym&)
+ * @return (Matrice_Morse_Sym)
+ */
 Matrice_Morse_Sym operator+(const Matrice_Morse_Sym& A,const Matrice_Morse_Sym& B)
 {
   //Il faut evidemment que les matrices soient de meme taille
@@ -589,26 +471,13 @@ Matrice_Morse_Sym operator+(const Matrice_Morse_Sym& A,const Matrice_Morse_Sym& 
 }
 
 
-// Description:
-//    Fonction (hors classe) amie de la classe Matrice_Morse_Sym
-//    NE FAIT RIEN : NON CODE
-// Precondition:
-// Parametre: double
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: NON ACCEDE
-// Parametre: Matrice_Morse_Sym& A
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: Matrice_Morse_Sym
-//    Signification:
-//    Contraintes:
-// Exception: NON CODE
-// Effets de bord:
-// Postcondition:
+/*! @brief Fonction (hors classe) amie de la classe Matrice_Morse_Sym NE FAIT RIEN : NON CODE
+ *
+ * @param (double)
+ * @param (Matrice_Morse_Sym& A)
+ * @return (Matrice_Morse_Sym)
+ * @throws NON CODE
+ */
 Matrice_Morse_Sym operator *(double x, const Matrice_Morse_Sym& A)
 {
   Matrice_Morse_Sym mat_res(A);
@@ -618,46 +487,24 @@ Matrice_Morse_Sym operator *(double x, const Matrice_Morse_Sym& A)
 }
 
 
-// Description:
-//    Fonction (hors classe) amie de la classe Matrice_Morse_Sym
-//    Simple appel a operator*(double,const Matrice_Morse_Sym&) (qui est NON CODE)
-// Precondition:
-// Parametre: Matrice_Morse_Sym& A
-//    Signification: la matrice a multiplier par x
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Parametre: double x
-//    Signification: un scalaire
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Matrice_Morse_Sym
-//    Signification: le resultat de l'appel sous-jacent
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Fonction (hors classe) amie de la classe Matrice_Morse_Sym Simple appel a operator*(double,const Matrice_Morse_Sym&) (qui est NON CODE)
+ *
+ * @param (Matrice_Morse_Sym& A) la matrice a multiplier par x
+ * @param (double x) un scalaire
+ * @return (Matrice_Morse_Sym) le resultat de l'appel sous-jacent
+ */
 Matrice_Morse_Sym operator *(const Matrice_Morse_Sym& A, double x)
 {
   return(x*A);
 }
 
 
-// Description:
-//    NE FAIT RIEN : NON CODE
-// Precondition:
-// Parametre: double
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: NON ACCEDE
-// Retour: Matrice_Morse_Sym
-//    Signification:
-//    Contraintes:
-// Exception: NON CODE
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN : NON CODE
+ *
+ * @param (double)
+ * @return (Matrice_Morse_Sym)
+ * @throws NON CODE
+ */
 Matrice_Morse_Sym& Matrice_Morse_Sym::operator *=( double x )
 {
   scale( x );
@@ -797,22 +644,11 @@ void Matrice_Morse_Sym::get_symmetric_stencil_and_coefficients( IntTab&      ste
   coefficients.resize_array( new_size );
 }
 
-// Description:
-//    Operateur de negation unaire,
-//    renvoie l'opposee de la matrice:  - A.
-//    Appelle operator*(const Matrice_Morse_Sym&,double)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Operateur de negation unaire, renvoie l'opposee de la matrice:  - A.
+ *
+ *     Appelle operator*(const Matrice_Morse_Sym&,double)
+ *
+ */
 Matrice_Morse_Sym Matrice_Morse_Sym::operator -() const
 {
   return((*this)*(-1));
@@ -850,21 +686,11 @@ static int commun(const ArrOfInt& items,
 */
 
 
-// Description:
-//    Operateur d'affectatiob d'une Matrice_Morse_Sym
-//    dans une Matrice_Morse_Sym.
-// Precondition:
-// Parametre: Matrice_Morse_Sym& a
-//    Signification: la partie droite de l'affectation
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: Matrice_Morse_Sym&
-//    Signification: le resultat de l'affectation (*this)
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Operateur d'affectatiob d'une Matrice_Morse_Sym dans une Matrice_Morse_Sym.
+ *
+ * @param (Matrice_Morse_Sym& a) la partie droite de l'affectation
+ * @return (Matrice_Morse_Sym&) le resultat de l'affectation (*this)
+ */
 Matrice_Morse_Sym& Matrice_Morse_Sym::operator=(const Matrice_Morse_Sym& a )
 {
   tab1_  =a.get_tab1();
@@ -904,18 +730,11 @@ Sortie& Matrice_Morse_Sym::imprimer_formatte(Sortie& s) const
   return Matrice_Morse::imprimer_formatte(s, 1);
 }
 
-// Description:
-//    Suppression des doublons
-//    on ordonne tab2;
-//    Verification de la diagonale: tous ses elements doivent etre stockes
-// Precondition:
-// Parametre:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Suppression des doublons on ordonne tab2;
+ *
+ *     Verification de la diagonale: tous ses elements doivent etre stockes
+ *
+ */
 void Matrice_Morse_Sym::compacte(int elim_coeff_nul)
 {
   Matrice_Morse::compacte(elim_coeff_nul);
@@ -966,16 +785,9 @@ void Matrice_Morse_Sym::compacte(int elim_coeff_nul)
   morse_matrix_structure_has_changed_=1;
 }
 
-// Description:
-//   Renumerotation d'une matrice afin de reduire la largeur de bande
-// Precondition:
-// Parametre:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renumerotation d'une matrice afin de reduire la largeur de bande
+ *
+ */
 void Matrice_Morse_Sym::renumerote() const
 {
   Cerr << "Bandwidth of the matrix : " << largeur_de_bande() << finl;

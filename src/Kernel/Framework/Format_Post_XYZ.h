@@ -19,8 +19,9 @@
 #include <EcrFicPartage.h>
 #include <TRUSTTab.h>
 
-// .DESCRIPTION        :
-//  Classe de postraitement des champs euleriens au format xyz.
+/*! @brief : Classe de postraitement des champs euleriens au format xyz.
+ *
+ */
 
 ///////////////////////////////////////////////////////////////////////
 //    Pour creer un fichier valide, il faut faire:

@@ -24,14 +24,10 @@ Declare_liste(Faces_Interne);
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Class Faces_Internes
-//    Cette classe represente une liste d'objets de type Faces_Interne
-// .SECTION voir aussi
-//    Faces_Interne
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Class Faces_Internes Cette classe represente une liste d'objets de type Faces_Interne
+ *
+ * @sa Faces_Interne
+ */
 class Faces_Internes : public LIST(Faces_Interne)
 {
   Declare_instanciable(Faces_Internes);
@@ -46,22 +42,10 @@ public :
 };
 
 
-// Description:
-//    Renvoie le nombre d'objet Face_Interne stockes
-//    dans la liste.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre d'objet Face_Interne stockes
-//                   dans la liste
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre d'objet Face_Interne stockes dans la liste.
+ *
+ * @return (int) le nombre d'objet Face_Interne stockes dans la liste
+ */
 inline int Faces_Internes::nb_faces_internes() const
 {
   return size();

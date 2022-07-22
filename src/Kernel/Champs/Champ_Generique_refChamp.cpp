@@ -29,12 +29,11 @@
 Implemente_instanciable(Champ_Generique_refChamp,"refChamp",Champ_Generique_base);
 Add_synonym(Champ_Generique_refChamp,"Champ_Post_refChamp");
 
-// Description:
-// Imprime sur un flot de sortie.
-// Parametre: Sortie& os
-// Signification: un flot de sortie
-// Retour: Sortie&
-// Signification: le flot de sortie modifie
+/*! @brief Imprime sur un flot de sortie.
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Champ_Generique_refChamp::printOn(Sortie& os) const
 {
   return os;
@@ -47,10 +46,11 @@ Entree& Champ_Generique_refChamp::readOn(Entree& is)
   return is;
 }
 
-// Description:
-//  pb_champ :   declenche la lecture du nom du probleme (nom_pb_) auquel appartient
-//                 le champ discret et le nom de ce champ discret (nom_champ_)
-//  nom_source : option pour nommer le champ en tant que source (sinon nommer par defaut)
+/*! @brief pb_champ :   declenche la lecture du nom du probleme (nom_pb_) auquel appartient le champ discret et le nom de ce champ discret (nom_champ_)
+ *
+ *   nom_source : option pour nommer le champ en tant que source (sinon nommer par defaut)
+ *
+ */
 void Champ_Generique_refChamp::set_param(Param& param)
 {
   param.ajouter_non_std("nom_source",(this));
@@ -95,16 +95,21 @@ int Champ_Generique_refChamp::lire_motcle_non_standard(const Motcle& mot, Entree
   return 1;
 }
 
-// Description:
-//  On initialise la classe avec le champ en parametre.
-//  On prend une ref a ce champ (il doit rester valable ensuite).
+/*! @brief On initialise la classe avec le champ en parametre.
+ *
+ * On prend une ref a ce champ (il doit rester valable ensuite).
+ *
+ */
 void Champ_Generique_refChamp::initialize(const Champ_base& champ)
 {
   ref_champ_ = champ;
 }
 
-// Description: Renvoie le nombre de coordonnees de chaque sommet du domaine.
-//  Voir GenericField_base::get_dimension()
+/*! @brief Renvoie le nombre de coordonnees de chaque sommet du domaine.
+ *
+ * Voir GenericField_base::get_dimension()
+ *
+ */
 int Champ_Generique_refChamp::get_dimension() const
 {
   // Je n'utilise pas Objet_U::dimension expres car j'espere supprimer
@@ -208,11 +213,12 @@ const Noms Champ_Generique_refChamp::get_property(const Motcle& query) const
 
 }
 
-// Description:
-//  Si le champ n'est pas un champ discret : exception Champ_Generique_erreur("INVALID")
-//  Sinon, renvoie la localisation du champ pour le support "index".
-//  Si index == -1 (valeur par defaut), leve une exception si le champ est multisupport.
-//  Sinon, leve une exception si l'index est superieur au nombre de localisations du champ.
+/*! @brief Si le champ n'est pas un champ discret : exception Champ_Generique_erreur("INVALID") Sinon, renvoie la localisation du champ pour le support "index".
+ *
+ *   Si index == -1 (valeur par defaut), leve une exception si le champ est multisupport.
+ *   Sinon, leve une exception si l'index est superieur au nombre de localisations du champ.
+ *
+ */
 Entity Champ_Generique_refChamp::get_localisation(const int index) const
 {
   Entity loc;
@@ -246,8 +252,11 @@ Entity Champ_Generique_refChamp::get_localisation(const int index) const
   return loc;
 }
 
-// Description: Verifie que le champ est bien un champ discret et
-//  renvoie le tableau de valeurs. Sinon, leve l'exception Champ_Generique_erreur("NO_REF")
+/*! @brief Verifie que le champ est bien un champ discret et renvoie le tableau de valeurs.
+ *
+ * Sinon, leve l'exception Champ_Generique_erreur("NO_REF")
+ *
+ */
 const DoubleTab& Champ_Generique_refChamp::get_ref_values() const
 {
   // Appel a get_localisation pour verifier que le champ est bien un champ discret
@@ -258,8 +267,9 @@ const DoubleTab& Champ_Generique_refChamp::get_ref_values() const
   return val;
 }
 
-// Description: Cree une copie du tableau de valeurs
-//  Voir GenericField_base::get_copy_values()
+/*! @brief Cree une copie du tableau de valeurs Voir GenericField_base::get_copy_values()
+ *
+ */
 void Champ_Generique_refChamp::get_copy_values(DoubleTab& values) const
 {
   const DoubleTab& val = get_ref_values();
@@ -267,7 +277,9 @@ void Champ_Generique_refChamp::get_copy_values(DoubleTab& values) const
   values = val;
 }
 
-// Description: appel a Champ_base::valeur_aux()
+/*! @brief appel a Champ_base::valeur_aux()
+ *
+ */
 void Champ_Generique_refChamp::get_xyz_values(const DoubleTab& coords, DoubleTab& values, ArrOfBit& validity_flag) const
 {
   throw Champ_Generique_erreur("NOT_IMPLEMENTED");
@@ -363,12 +375,14 @@ const Probleme_base& Champ_Generique_refChamp::get_ref_pb_base() const
   return ref_pb_;
 }
 
-// Description:
-//  Renvoie le champ_base sous-jacent. Teste si le champ a bien ete associe.
-//  A terme, cette methode disparaitra de la classe GenericField_base mais reste
-//  dans celle-ci (on y teste si le champ a ete associe).
-// Exceptions:
-//  Champ_Generique_erreur("NOT_INITIALIZED")
+/*! @brief Renvoie le champ_base sous-jacent.
+ *
+ * Teste si le champ a bien ete associe. A terme, cette methode disparaitra de la classe GenericField_base mais reste
+ *   dans celle-ci (on y teste si le champ a ete associe).
+ *  Exceptions:
+ *   Champ_Generique_erreur("NOT_INITIALIZED")
+ *
+ */
 const Champ_base& Champ_Generique_refChamp::get_ref_champ_base() const
 {
   if (!ref_champ_.non_nul())
@@ -387,19 +401,22 @@ void Champ_Generique_refChamp::completer(const Postraitement_base& post)
   nommer_source();
 }
 
-// Description:
-//  Voir Champ_Generique_base::mettre_a_jour
-//  Si le champ est champ_inc dans l'equation, il doit deja avoir
-//  ete mis a jour par l'equation.
-// Si c est un clacule, l actualisation est faite dans get_champ
+/*! @brief Voir Champ_Generique_base::mettre_a_jour Si le champ est champ_inc dans l'equation, il doit deja avoir
+ *
+ *   ete mis a jour par l'equation.
+ *  Si c est un clacule, l actualisation est faite dans get_champ
+ *
+ */
 void Champ_Generique_refChamp::mettre_a_jour(double temps)
 {
 
 }
 
-// Description:
-//  Voir Champ_Generique_base::get_champ.
-//  Ici, l'espace_stockage n'est pas utilise, le champ existe deja
+/*! @brief Voir Champ_Generique_base::get_champ.
+ *
+ * Ici, l'espace_stockage n'est pas utilise, le champ existe deja
+ *
+ */
 const Champ_base& Champ_Generique_refChamp::get_champ(Champ& espace_stockage) const
 {
   {
@@ -414,8 +431,9 @@ const Champ_base& Champ_Generique_refChamp::get_champ_without_evaluation(Champ& 
   return get_champ(espace_stockage);
 }
 
-// Description:
-//  Associe le champ et determine sa localisation.
+/*! @brief Associe le champ et determine sa localisation.
+ *
+ */
 void Champ_Generique_refChamp::set_ref_champ(const Champ_base& champ)
 {
   assert(!ref_champ_.non_nul());

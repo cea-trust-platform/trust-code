@@ -14,10 +14,9 @@
 *****************************************************************************/
 
 
-//
-// .DESCRIPTION
-//
-// .SECTION voir aussi
+/*! @brief
+ *
+ */
 
 #ifndef Avanc_inclus
 #define Avanc_inclus

@@ -24,22 +24,19 @@
 class Schema_Temps_base;
 class Discretisation_base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Probleme_Couple
-//     C'est la classe historique de couplage de TRUST.
-//     Il s'agit d'un Couplage_U particulier.
-//     Le Probleme_Couple ne couple que des Probleme_base, tous
-//     associes au meme schema en temps.
-//     Il possede son propre mecanisme d'echange de champs par "raccords".
-//     Les problemes sont groupes. Chaque groupe fait un iteration, puis les
-//     nouveaux champs sont disponibles pour les groupes suivants. A l'interieur
-//     d'un groupe, ce sont les anciens champs qui sont echanges.
-//
-// .SECTION voir aussi
-//     Probleme_base Probleme
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Probleme_Couple C'est la classe historique de couplage de TRUST.
+ *
+ *      Il s'agit d'un Couplage_U particulier.
+ *      Le Probleme_Couple ne couple que des Probleme_base, tous
+ *      associes au meme schema en temps.
+ *      Il possede son propre mecanisme d'echange de champs par "raccords".
+ *      Les problemes sont groupes. Chaque groupe fait un iteration, puis les
+ *      nouveaux champs sont disponibles pour les groupes suivants. A l'interieur
+ *      d'un groupe, ce sont les anciens champs qui sont echanges.
+ *
+ *
+ * @sa Probleme_base Probleme
+ */
 
 //  WEC :
 //  Le schema en temps est clone autant de fois qu'il y a de problemes

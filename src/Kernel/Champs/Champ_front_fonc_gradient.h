@@ -23,9 +23,11 @@
 #include <Equation_base.h>
 
 class Cond_lim_base;
-//.DESCRIPTION  class Champ_front_fonc_gradient
-//
-// Classe derivee de Champ_front_base
+/*! @brief class Champ_front_fonc_gradient
+ *
+ *  Classe derivee de Champ_front_base
+ *
+ */
 
 //.SECTION voir aussi
 // Champ_front_base

@@ -18,11 +18,10 @@
 
 
 
-//
-// .DESCRIPTION class Front_VF
-//
-// .SECTION voir aussi
-// Frontiere_dis_base
+/*! @brief class Front_VF
+ *
+ * @sa Frontiere_dis_base
+ */
 
 #include <Frontiere_dis_base.h>
 #include <Frontiere.h>

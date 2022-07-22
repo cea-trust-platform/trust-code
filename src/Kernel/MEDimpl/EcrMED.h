@@ -28,11 +28,12 @@ class Champ_Inc_base;
 class Zone_dis_base;
 class Domaine;
 
-// .DESCRIPTION
-// Classe EcrMED
-//    Ecr un fichier MED
-//    Structure du jeu de donnee (en dimension 2) :
-//    EcrMED dom medfile
+/*! @brief Classe EcrMED Ecr un fichier MED
+ *
+ *     Structure du jeu de donnee (en dimension 2) :
+ *     EcrMED dom medfile
+ *
+ */
 class EcrMED : public Interprete
 {
   Declare_instanciable_sans_constructeur(EcrMED);

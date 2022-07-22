@@ -17,10 +17,9 @@
 #define Lapack_inclus
 
 #include <arch.h>
-//
-// .DESCRIPTION
-// Encapsulation de Lapack:
-//
+/*! @brief Encapsulation de Lapack:
+ *
+ */
 
 extern "C"
 {

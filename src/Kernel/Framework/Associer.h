@@ -21,15 +21,12 @@
 
 #include <Interprete.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Associer
-//     Interprete qui associe deux objets obj1 et obj2:
-//     [DANS LE JEU DE DONNEES] Associer ob1 ob2
-// .SECTION voir aussi
-//     Interprete
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Associer Interprete qui associe deux objets obj1 et obj2:
+ *
+ *      [DANS LE JEU DE DONNEES] Associer ob1 ob2
+ *
+ * @sa Interprete
+ */
 class Associer : public Interprete
 {
   Declare_instanciable(Associer);

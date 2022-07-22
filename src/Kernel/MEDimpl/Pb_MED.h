@@ -21,15 +21,9 @@
 #include <Probleme_Couple.h>
 #include <Champs_Fonc.h>
 
-///////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-// Classe Pb_MED
-// Classe pour postraiter relire des fichiers med et les postraiter
-// .SECTION voir aussi
-//
-//
-///////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Pb_MED Classe pour postraiter relire des fichiers med et les postraiter
+ *
+ */
 class Pb_MED : public Probleme_base
 {
 

@@ -53,16 +53,19 @@ void Partitionneur_Partition::set_param(Param& param)
   param.ajouter("domaine",&dom_calcul_,Param::REQUIRED);
 }
 
-// Description:
-//  Premiere etape d'initialisation du partitionneur: on associe un domaine.
+/*! @brief Premiere etape d'initialisation du partitionneur: on associe un domaine.
+ *
+ */
 void Partitionneur_Partition::associer_domaine(const Domaine& domaine)
 {
   ref_domaine_interpol_ = domaine;
 }
 
-// Description:
-//  Deuxieme etape d'initialisation: on definit le nombre de tranches.
-//  (on peut utiliser readOn a la place).
+/*! @brief Deuxieme etape d'initialisation: on definit le nombre de tranches.
+ *
+ * (on peut utiliser readOn a la place).
+ *
+ */
 void Partitionneur_Partition::initialiser()
 {
   assert(ref_domaine_interpol_.non_nul());

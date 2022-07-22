@@ -21,9 +21,9 @@
 #include <Champ_Don.h>
 #include <Discretisation_base.h>
 
-// Generalisation pour les VEF
-// Description: renvoit le tableau res, res=org si flag=0, res= porosite*org sinon
-// attention ne pas modifier res car sinon on ne sait pas ce que l'on fait sur org (d'ou le renvoi const)
+/*! @brief renvoit le tableau res, res=org si flag=0, res= porosite*org sinon attention ne pas modifier res car sinon on ne sait pas ce que l'on fait sur org (d'ou le renvoi const)
+ *
+ */
 const DoubleTab& modif_par_porosite_si_flag(const DoubleTab& org, DoubleTab& res,int flag,const DoubleVect& porosite)
 {
   // Switch mp_min_vect to local_min_abs_vect to avoid mp_min
@@ -51,7 +51,9 @@ Entree& Porosites_champ::readOn(Entree& is)
   return Interprete::readOn(is);
 }
 
-// Description: Porosites_champ nom_pb champ affecte le champ champ a la porosite volumique du domaine du probleme de nom_pb, puis calcule les porosites surfacqiues comme moyenne harmonique
+/*! @brief Porosites_champ nom_pb champ affecte le champ champ a la porosite volumique du domaine du probleme de nom_pb, puis calcule les porosites surfacqiues comme moyenne harmonique
+ *
+ */
 Entree& Porosites_champ::interpreter(Entree& is)
 {
   Nom nom_pb;

@@ -19,20 +19,11 @@ extern const Nom& deriv_vide();
 Implemente_base(Ref_,"Ref_",O_U_Ptr);
 
 
-// Description:
-//    Ecriture de l'Objet_U reference sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ecriture de l'Objet_U reference sur un flot de sortie
+ *
+ * @param (Sortie& os) le flot de sortie a utiliser
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Ref_::printOn(Sortie& os)  const
 {
   O_U_Ptr::printOn(os);
@@ -40,28 +31,22 @@ Sortie& Ref_::printOn(Sortie& os)  const
 }
 
 
-// Description:
-//    Lecture dans un flot d'entree
-//    A surcharger. Ne fait rien
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: Entree&
-//    Signification: le flux d'entree non modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lecture dans un flot d'entree A surcharger.
+ *
+ * Ne fait rien
+ *
+ * @param (Entree& is) le flot d'entree a utiliser
+ * @return (Entree&) le flux d'entree non modifie
+ */
 Entree& Ref_::readOn(Entree& is)
 {
   O_U_Ptr::readOn(is);
   return is;
 }
 
-// Description: Annule la ref
+/*! @brief Annule la ref
+ *
+ */
 void Ref_::reset()
 {
   set_O_U_Ptr((Objet_U*) 0);

@@ -32,9 +32,11 @@ Sortie_Brute::~Sortie_Brute()
 {
 }
 
-// Description:
-//   returns a pointer to the internal data. The data is valid as long as no other write operation is done on
-//   the Sortie_Brute object.
+/*! @brief returns a pointer to the internal data.
+ *
+ * The data is valid as long as no other write operation is done on the Sortie_Brute object.
+ *
+ */
 const char* Sortie_Brute::get_data() const
 {
   const ostringstream& os = static_cast< const ostringstream& >(get_ostream());

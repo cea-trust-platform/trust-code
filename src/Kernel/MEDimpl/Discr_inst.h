@@ -16,10 +16,11 @@
 #ifndef Discr_inst_included
 #define Discr_inst_included
 
-//
-// .DESCRIPTION class Discr_inst
-//  Cette classe ne sait rien faire, on en a besoin pour le Pb_MED
-// on a besoin d'avoir associe une discretisation
+/*! @brief class Discr_inst Cette classe ne sait rien faire, on en a besoin pour le Pb_MED
+ *
+ *  on a besoin d'avoir associe une discretisation
+ *
+ */
 
 
 #include <Discretisation_base.h>

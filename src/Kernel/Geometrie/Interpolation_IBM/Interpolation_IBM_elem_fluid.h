@@ -19,13 +19,13 @@
 #include <Interpolation_IBM_base.h>
 #include <Param.h>
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Interpolation_IBM_elem_fluid
-//
-// <Description of class Interpolation_IBM_elem_fluid>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Interpolation_IBM_elem_fluid
+ *
+ *  <Description of class Interpolation_IBM_elem_fluid>
+ *
+ *
+ *
+ */
 
 class Interpolation_IBM_elem_fluid : public Interpolation_IBM_base
 {

@@ -20,25 +20,18 @@
 #include <Ref_Zone.h>
 class Motcle;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    enum Type_Face
-//    Les differents types geometriques de faces.
-// .SECTION voir aussi
-//    Faces
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief enum Type_Face Les differents types geometriques de faces.
+ *
+ * @sa Faces
+ */
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Faces
-//    Faces decrit un ensemble de faces par leur type (point ,segment,
-//    triangle ou quadrangle), leurs sommets et leurs elements
-//    adjacents.
-// .SECTION voir aussi
-//    IntTab Frontiere
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Faces Faces decrit un ensemble de faces par leur type (point ,segment,
+ *
+ *     triangle ou quadrangle), leurs sommets et leurs elements
+ *     adjacents.
+ *
+ * @sa IntTab Frontiere
+ */
 class Faces : public Objet_U
 {
   Declare_instanciable(Faces);
@@ -106,129 +99,62 @@ calculer_centres_gravite(DoubleTab& xv,
                          Type_Face type_face_,
                          const DoubleTab& coord,
                          const IntTab& sommet);
-// Description:
-//    Renvoie le type des Faces
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Type_Face
-//    Signification: le type des Faces
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le type des Faces
+ *
+ * @return (Type_Face) le type des Faces
+ */
 inline Type_Face Faces::type_face() const
 {
   return type_face_;
 }
 
-// Description:
-//    Renvoie le nombre de Faces
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de Faces
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de Faces
+ *
+ * @return (int) le nombre de Faces
+ */
 inline int Faces::nb_faces() const
 {
   return sommets.dimension(0);
 }
 
-// Description:
-//    Renvoie le nombre total de Faces
-//    i.e. Le nombre de faces reelles et virtuelles
-//    sur le processeur courant.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre total de Faces
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre total de Faces i.
+ *
+ * e. Le nombre de faces reelles et virtuelles
+ *     sur le processeur courant.
+ *
+ * @return (int) le nombre total de Faces
+ */
 inline int Faces::nb_faces_tot() const
 {
   return sommets.dimension_tot(0);
 }
 
-// Description:
-//    Renvoie le numero du j-ieme sommet de la i-ieme face
-// Precondition:
-// Parametre: int i
-//    Signification: indice de la face du sommet a renvoyer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int j
-//    Signification: indice du sommet a renvoyer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le numero du j-ieme sommet de la i-ieme face
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le numero du j-ieme sommet de la i-ieme face
+ *
+ * @param (int i) indice de la face du sommet a renvoyer
+ * @param (int j) indice du sommet a renvoyer
+ * @return (int) le numero du j-ieme sommet de la i-ieme face
+ */
 inline int Faces::sommet(int i, int j) const
 {
   return sommets(i,j);
 }
 
-// Description:
-//    Renvoie une reference sur le numero
-//    du j-ieme sommet de la i-ieme face
-// Precondition:
-// Parametre: int i
-//    Signification: indice de la face du sommet a renvoyer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int j
-//    Signification: indice du sommet a renvoyer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int&
-//    Signification: reference sur le numero du j-ieme sommet
-//                   de la i-ieme face
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie une reference sur le numero du j-ieme sommet de la i-ieme face
+ *
+ * @param (int i) indice de la face du sommet a renvoyer
+ * @param (int j) indice du sommet a renvoyer
+ * @return (int&) reference sur le numero du j-ieme sommet de la i-ieme face
+ */
 inline int& Faces::sommet(int i, int j)
 {
   return sommets(i,j);
 }
 
-// Description:
-//    Renvoie le nombre de sommet par face.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de sommet par face
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de sommet par face.
+ *
+ * @return (int) le nombre de sommet par face
+ */
 inline int Faces::nb_som_faces() const
 {
   if (nb_som_face!=-1)
@@ -237,20 +163,10 @@ inline int Faces::nb_som_faces() const
     return sommets.dimension(1);
 }
 
-// Description:
-//    Renvoie le tableau des sommets de toutes les faces
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: IntTab&
-//    Signification: le tableau des sommets de toutes les faces
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le tableau des sommets de toutes les faces
+ *
+ * @return (IntTab&) le tableau des sommets de toutes les faces
+ */
 inline const IntTab& Faces::les_sommets() const
 {
   return sommets;
@@ -260,108 +176,50 @@ inline IntTab& Faces::les_sommets()
   return sommets;
 }
 
-// Description:
-//    Renvoie le numero du i-ieme voisin de face.
-// Precondition:
-// Parametre: int face
-//    Signification: le numero de la face dont on cherche
-//                   un voisin
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int i
-//    Signification: l'indice du voisin a renvoyer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le numero i-ieme voisin de face
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le numero du i-ieme voisin de face.
+ *
+ * @param (int face) le numero de la face dont on cherche un voisin
+ * @param (int i) l'indice du voisin a renvoyer
+ * @return (int) le numero i-ieme voisin de face
+ */
 inline int Faces::voisin(int face, int i) const
 {
   return faces_voisins(face,i);
 }
 
-// Description:
-//    Renvoie une reference le numero du i-ieme voisin de face.
-// Precondition:
-// Parametre: int face
-//    Signification: le numero de la face dont on cherche
-//                   un voisin
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int i
-//    Signification: l'indice du voisin a renvoyer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int&
-//    Signification: reference sur le numero du i-ieme voisin de face
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie une reference le numero du i-ieme voisin de face.
+ *
+ * @param (int face) le numero de la face dont on cherche un voisin
+ * @param (int i) l'indice du voisin a renvoyer
+ * @return (int&) reference sur le numero du i-ieme voisin de face
+ */
 inline int& Faces::voisin(int face, int i)
 {
   return faces_voisins(face,i);
 }
 
-// Description:
-//    Associe les faces a une Zone.
-// Precondition:
-// Parametre: Zone& z
-//    Signification: la zone a laquelle l'objet s'associe
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe les faces a une Zone.
+ *
+ * @param (Zone& z) la zone a laquelle l'objet s'associe
+ */
 inline void Faces::associer_zone(const Zone& z)
 {
   ma_zone=z;
 }
 
-// Description:
-//    Renvoie la zone associee.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Zone&
-//    Signification: la zone associee
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la zone associee.
+ *
+ * @return (Zone&) la zone associee
+ */
 inline const Zone& Faces::zone() const
 {
   return ma_zone.valeur();
 }
 
-// Description:
-//    Renvoie le tableau des voisins (des faces).
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: IntTab&
-//    Signification: le tableau des voisins (des faces)
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le tableau des voisins (des faces).
+ *
+ * @return (IntTab&) le tableau des voisins (des faces)
+ */
 inline IntTab& Faces::voisins()
 {
   return faces_voisins;

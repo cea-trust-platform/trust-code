@@ -18,27 +18,18 @@
 #include <TRUSTTab.h>
 #include <ArrOfBit.h>
 
-// Description: Calcul des ensembles connexes par faces d'elements
-//  non "marques" (les elements sont relies entre eux par un graphe
-//  symetrique passant par les faces).
-//  Une portion de domaine connexe porte un numero 0 <= i < N
-//  unique et est delimite soit par un bord, soit par un element voisin "marque"
-//  par num_compo[elem] = -1.
-//  Cette methode est sequentielle (peut etre appelee sur un seul processeur)
-// Parametre: elem_faces
-// Description: graph de connectivite elements-faces (pour chaque element i, indices
-//  des faces de cet element), voir Zone_VF::elem_faces()
-// Parametre: faces_elem
-// Description: graph de connectivite faces-elements (pour chaque face, indice du
-//  ou des deux elements adjacents), voir Zone_VF::face_voisins()
-// Parametre: num_compo
-//  En entree, un tableau tel que num_compo.size_array() == elem_faces.dimension_tot(0),
-//  et dont certaines valeurs valent -1 (elements marques), et d'autres non.
-//  En sortie: les elements pour lesquels num_compo = -1 ne sont pas modifies, les autres
-//  sont numerotes par composante connexe locale. On remplit tout le tableau
-//  jusqu'a size_tot() y compris les elements virtuels. Les numeros de composantes
-//  sont locaux a ce processeur.
-// Valeur de retour: N, nombre de composantes connexes locales.
+/*! @brief Calcul des ensembles connexes par faces d'elements non "marques" (les elements sont relies entre eux par un graphe
+ *
+ *   symetrique passant par les faces).
+ *   Une portion de domaine connexe porte un numero 0 <= i < N
+ *   unique et est delimite soit par un bord, soit par un element voisin "marque"
+ *   par num_compo[elem] = -1.
+ *   Cette methode est sequentielle (peut etre appelee sur un seul processeur)
+ *
+ * @param (elem_faces)
+ * @param (faces_elem)
+ * @param (num_compo)
+ */
 int search_connex_components_local(const IntTab& elem_faces, const IntTab& faces_elem, IntVect& num_compo)
 {
   const int nbelem = num_compo.size_totale();
@@ -100,20 +91,11 @@ int search_connex_components_local(const IntTab& elem_faces, const IntTab& faces
   return num_compo_courant;
 }
 
-// Description: recherche des composantes connexes d'un graphe local (non distribue
-//  sur les processeurs) non symetrique.
-// Parametre: graph
-// Description:
-//  On suppose que "graph" est un tableau a deux colonnes
-//  contenant des couples d'indices de "sommets" d'un graphe. Ces couples definissent
-//  un graphe dont on veut chercher les composantes connexes:
-//  deux indices i et j sont dans la meme composante connexe si et seulement si il
-//  existe une suite de couples qui relient directement ou indirectement i et j.
-// Parametre: connex_components
-//  On suppose que connex_components est dimensionne a nb_sommets, le nombre de sommets du graphe.
-//  On met dans connex_components[i] le numero de la composante connexe du graphe a laquelle appartient
-//  le "sommet" i. On attribue tous les numeros i tels que 0 <= i < N
-// Valeur de retour: le nombre N de composantes connexes trouvees.
+/*! @brief recherche des composantes connexes d'un graphe local (non distribue sur les processeurs) non symetrique.
+ *
+ * @param (graph)
+ * @param (connex_components)
+ */
 int compute_graph_connex_components(const IntTab& graph, ArrOfInt& connex_components)
 {
   // connex_components doit deja avoir la bonne taille en entree !
@@ -186,24 +168,14 @@ int compute_graph_connex_components(const IntTab& graph, ArrOfInt& connex_compon
   return count;
 }
 
-// Description:
-//  Recherche les composantes connexes d'un ensemble d'elements distribue sur
-//  tous les processeurs. Cette methode est parallele et doit etre appelee en
-//  meme temps sur tous les processeurs.
-// Parametre: num_compo
-// Description:
-//  num_compo doit avoir au moins une couche d'elements virtuels et doit contenir
-//  le resultat de la methode search_connex_components_local(). Les elements
-//  virtuels ont donc ete remplis avec des numeros de composantes connexes locales.
-//  Le tableau num_compo ne doit PAS avoir subi echange_espace_virtuel !!!
-//  On cherche a l'aide des elements virtuels les composantes connexes connectees
-//  entre elles entre deux processeurs et on leur attribue un numero unique i tel
-//  que tous les indices 0 <= i < N sont utilises.
-// Parametre: nb_local_components
-// Description: doit contenir le nombre de composantes connexes locales utilisees
-//  dans num_compo a l'entree (egale a la valeur de retour de la fonction
-//  search_connex_components_local()).
-// Valeur de retour: nombre N de composantes connexes globales trouvees.
+/*! @brief Recherche les composantes connexes d'un ensemble d'elements distribue sur tous les processeurs.
+ *
+ * Cette methode est parallele et doit etre appelee en
+ *   meme temps sur tous les processeurs.
+ *
+ * @param (num_compo)
+ * @param (nb_local_components)
+ */
 int compute_global_connex_components(IntVect& num_compo, int nb_local_components)
 {
   const int nbelem = num_compo.size();

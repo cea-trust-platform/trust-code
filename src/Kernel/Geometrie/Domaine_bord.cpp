@@ -17,22 +17,27 @@
 
 Implemente_instanciable(Domaine_bord,"Domaine_bord",Domaine);
 
-// Description: pour l'instant exit()
+/*! @brief pour l'instant exit()
+ *
+ */
 Entree& Domaine_bord::readOn(Entree& is)
 {
   exit();
   return is;
 }
 
-// Description: pour l'instant exit()
+/*! @brief pour l'instant exit()
+ *
+ */
 Sortie& Domaine_bord::printOn(Sortie& os) const
 {
   exit();
   return os;
 }
 
-// Description: construit le domaine en appelant extraire_domaine_bord()
-// Precondition: le domaine doit etre vide.
+/*! @brief construit le domaine en appelant extraire_domaine_bord()
+ *
+ */
 void Domaine_bord::construire_domaine_bord(const Domaine& source, const Nom& nom_bord)
 {
   domaine_source_ = source;
@@ -40,27 +45,33 @@ void Domaine_bord::construire_domaine_bord(const Domaine& source, const Nom& nom
   extraire_domaine_bord(source, nom_bord, *this, renum_som_);
 }
 
-// Description: renvoie une reference au domaine source
+/*! @brief renvoie une reference au domaine source
+ *
+ */
 const Domaine& Domaine_bord::get_domaine_source() const
 {
   return domaine_source_;
 }
 
-// Description: renvoie le nom du bord source
+/*! @brief renvoie le nom du bord source
+ *
+ */
 const Nom& Domaine_bord::get_nom_bord_source() const
 {
   return bord_source_;
 }
 
-// Description: renvoie renum_som (pour chaque sommet du domaine_bord, indice
-//  du meme sommet dans le domaine)
+/*! @brief renvoie renum_som (pour chaque sommet du domaine_bord, indice du meme sommet dans le domaine)
+ *
+ */
 const ArrOfInt& Domaine_bord::get_renum_som() const
 {
   return renum_som_;
 }
 
-// Description: methode pour convertir un type de face en type d'element
-//  (a deplacer dans la classe Faces ?)
+/*! @brief methode pour convertir un type de face en type d'element (a deplacer dans la classe Faces ?)
+ *
+ */
 void type_face_to_type_elem(const Elem_geom_base& type_elem, const Type_Face& type_face, Motcle& type_elem_face)
 {
   switch(type_face)
@@ -94,11 +105,13 @@ void type_face_to_type_elem(const Elem_geom_base& type_elem, const Type_Face& ty
     }
 }
 
-// Description: remplit le domaine "dest" avec les sommets et les faces du bord "nom_bord"
-//  du domaine "src". Les sommets du domaine dest sont uniquement les sommets qui sont sur
-//  une face du bord. Le tableau renum_som est dimensionne a dest.nb_som() et rempli comme
-//  suit: renum_som[i] est l'indice dans le domaine "src" du sommet i du domaine "dest".
-// Precondition: le domaine dest doit etre vide (ne pas contenir de zone).
+/*! @brief remplit le domaine "dest" avec les sommets et les faces du bord "nom_bord" du domaine "src".
+ *
+ * Les sommets du domaine dest sont uniquement les sommets qui sont sur
+ *   une face du bord. Le tableau renum_som est dimensionne a dest.nb_som() et rempli comme
+ *   suit: renum_som[i] est l'indice dans le domaine "src" du sommet i du domaine "dest".
+ *
+ */
 void Domaine_bord::extraire_domaine_bord(const Domaine& src,
                                          const Nom& nom_bord,
                                          Domaine& dest,

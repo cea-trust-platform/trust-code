@@ -31,58 +31,30 @@
 #include <Champ_Gen_de_Champs_Gen.h>
 #include <Parser_U.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Postraitement
-//     La classe est dotee -d une liste de champs generiques champs_post_complet_ qui contient
-//                                 tous les champs generiques du post-traitement
-//                           -d une liste d identifiants noms_champs_a_post_ qui contient l identifiant
-//                            des champs a post-traiter
-//
-//     -Lecture des champs generiques declares dans le bloc "definition_champs" (ajoutes dans  champs_post_complet_)
-//     et ajout dans cette liste des champs crees par macro (declenche par ancienne syntaxe dans "champs" et "statistiques")
-//        Construction de la liste des identifiants noms_champs_a_post_ au cours des operations de lecture
-//     -Mise a jour des champs generiques, en realite mise a jour des operateurs statistiques pour les champs qui en porte
-//     -postraitement realise dans postraiter_champs()
-//        Parcours des identifiants
-//        Le champ generique correspondant a un identifiant est recupere par :             get_champ_post("identifiant")
-//        Pour ce champ generique : on calcul les valeurs a ecrire par :                     get_champ(espace_stockage)
-//                                  on recupere les informations complementaires par : get_property(), get_time() ...
-//        Ecriture des valeurs calculees :                                             postraiter(...)
-//
-//
-//  Les macros utilises pour la creation des champs generiques sont detaillees dans le .cpp de la classe
-//  Voir creer_champ_post() et creer_champ_post_stat()
-//
-//.SECTION voir aussi
-//     Hierarchie des champs generiques (Champ_Generique_base)
-//
-//  La syntaxe a respecter dans le jdd
-//  Postraitement {
-//    Sondes
-//     {
-//        ...
-//     }
-//    Definition_champs
-//    {
-//     //Specification des champs generiques
-//    }
-//    Champs
-//    {
-//     -Creation de champ generique par macro si utilisation ancienne syntaxe (ex : vitesse elem) et ajout
-//     identifiant dans la liste noms_champs_a_post_
-//     -Ajout dans la liste  noms_champs_a_post_ pour cas d un champ declare dans le bloc "definition_champs"
-//    }
-//    Statistiques
-//    {
-//        t_deb val_1 t_fin_val_2
-//    -Creation de champ generique par macro si utilisation ancienne syntaxe (ex : Moyenne vitesse elem) et ajout
-//     identifiant dans la liste noms_champs_a_post_
-//    }
-//  }
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Postraitement La classe est dotee -d une liste de champs generiques champs_post_complet_ qui contient
+ *
+ *                                  tous les champs generiques du post-traitement
+ *                            -d une liste d identifiants noms_champs_a_post_ qui contient l identifiant
+ *                             des champs a post-traiter
+ *
+ *      -Lecture des champs generiques declares dans le bloc "definition_champs" (ajoutes dans  champs_post_complet_)
+ *      et ajout dans cette liste des champs crees par macro (declenche par ancienne syntaxe dans "champs" et "statistiques")
+ *         Construction de la liste des identifiants noms_champs_a_post_ au cours des operations de lecture
+ *      -Mise a jour des champs generiques, en realite mise a jour des operateurs statistiques pour les champs qui en porte
+ *      -postraitement realise dans postraiter_champs()
+ *         Parcours des identifiants
+ *         Le champ generique correspondant a un identifiant est recupere par :             get_champ_post("identifiant")
+ *         Pour ce champ generique : on calcul les valeurs a ecrire par :                     get_champ(espace_stockage)
+ *                                   on recupere les informations complementaires par : get_property(), get_time() ...
+ *         Ecriture des valeurs calculees :                                             postraiter(...)
+ *
+ *
+ *   Les macros utilises pour la creation des champs generiques sont detaillees dans le .cpp de la classe
+ *   Voir creer_champ_post() et creer_champ_post_stat()
+ *
+ *
+ * @sa Hierarchie des champs generiques (Champ_Generique_base), La syntaxe a respecter dans le jdd, Postraitement {, Sondes, {, ..., }, Definition_champs, {, //Specification des champs generiques, }, Champs, {, -Creation de champ generique par macro si utilisation ancienne syntaxe (ex : vitesse elem) et ajout, identifiant dans la liste noms_champs_a_post_, -Ajout dans la liste  noms_champs_a_post_ pour cas d un champ declare dans le bloc "definition_champs", }, Statistiques, {, t_deb val_1 t_fin_val_2, -Creation de champ generique par macro si utilisation ancienne syntaxe (ex : Moyenne vitesse elem) et ajout, identifiant dans la liste noms_champs_a_post_, }, }
+ */
 class Postraitement : public Postraitement_base
 {
   Declare_instanciable_sans_constructeur(Postraitement);
@@ -255,30 +227,15 @@ inline int Postraitement::lpost(double temps_courant, double dt_post) const
     }
 }
 
-// Description:
-//    Test de postraitement en tenant compte de l'evolution en temps
-//    du champ.
-//    Renvoie VRAI si le champ necessite un postraitement, vu
-//    le temps courant et le pas de temps fourni.
-// Precondition:
-// Parametre: double temps_courant
-//    Signification: le temps courant
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double dt
-//    Signification: le pas de temps qui vient d'etre accompli
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: valeur booleenne, VRAI si le pas de temp et le temps
-//                   courant fournis indique qu'un postraitement est
-//                   necessaire, FAUX sinon.
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Test de postraitement en tenant compte de l'evolution en temps du champ.
+ *
+ *     Renvoie VRAI si le champ necessite un postraitement, vu
+ *     le temps courant et le pas de temps fourni.
+ *
+ * @param (double temps_courant) le temps courant
+ * @param (double dt) le pas de temps qui vient d'etre accompli
+ * @return (int) valeur booleenne, VRAI si le pas de temp et le temps courant fournis indique qu'un postraitement est necessaire, FAUX sinon.
+ */
 inline int Postraitement::lpost_champ(double temps_courant) const { return lpost(temps_courant, dt_post_ch_); }
 inline int Postraitement::lpost_stat(double temps_courant) const { return lpost(temps_courant, dt_post_stat_); }
 inline int Postraitement::lpost_tab(double temps_courant) const { return lpost(temps_courant, dt_post_tab); }

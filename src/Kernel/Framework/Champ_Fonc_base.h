@@ -25,20 +25,12 @@ class Zone_dis;
 class Domaine;
 class MD_Vector;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_Fonc_base
-//     Classe de base des champs qui sont fonction d'une grandeur calculee
-//     au cours du temps
-// .SECTION voir aussi
-//     Champ_base Champ_Don_base
-//     Classe abstraite.
-//     Methodes abstraites:
-//       void mettre_a_jour(double temps)
-//       void associer_zone_dis_base(const Zone_dis_base&)
-//       const Zone_dis_base& zone_dis_base() const
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_Fonc_base Classe de base des champs qui sont fonction d'une grandeur calculee
+ *
+ *      au cours du temps
+ *
+ * @sa Champ_base Champ_Don_base, Classe abstraite., Methodes abstraites:, void mettre_a_jour(double temps), void associer_zone_dis_base(const Zone_dis_base&), const Zone_dis_base& zone_dis_base() const
+ */
 class Champ_Fonc_base : public Champ_Don_base
 {
   Declare_base(Champ_Fonc_base);

@@ -16,7 +16,9 @@
 #ifndef TRUSTList_TPP_included
 #define TRUSTList_TPP_included
 
-// Description: Ecriture d'une liste sur un flot de sortie les elements separes par des virgules figurent entre des accolades
+/*! @brief Ecriture d'une liste sur un flot de sortie les elements separes par des virgules figurent entre des accolades
+ *
+ */
 template<typename _TYPE_>
 inline Sortie& TRUSTList<_TYPE_>::printOn(Sortie& os) const
 {
@@ -34,7 +36,9 @@ inline Sortie& TRUSTList<_TYPE_>::printOn(Sortie& os) const
   return os;
 }
 
-// Description: Lecture d'une liste sur un flot d'entree les elements separes par des virgules figurent entre des accolades
+/*! @brief Lecture d'une liste sur un flot d'entree les elements separes par des virgules figurent entre des accolades
+ *
+ */
 template<typename _TYPE_>
 inline Entree& TRUSTList<_TYPE_>::readOn(Entree& is)
 {
@@ -52,7 +56,11 @@ inline Entree& TRUSTList<_TYPE_>::readOn(Entree& is)
   return is;
 }
 
-// Description:  Affectation. Les elements sont copies
+/*! @brief Affectation.
+ *
+ * Les elements sont copies
+ *
+ */
 template<typename _TYPE_>
 inline TRUSTList<_TYPE_>& TRUSTList<_TYPE_>::operator=(const TRUSTList<_TYPE_>& a_list)
 {
@@ -70,7 +78,9 @@ inline TRUSTList<_TYPE_>& TRUSTList<_TYPE_>::operator=(const TRUSTList<_TYPE_>& 
   return *this;
 }
 
-// Description: insertion en queue
+/*! @brief insertion en queue
+ *
+ */
 template<typename _TYPE_>
 inline TRUSTList<_TYPE_>& TRUSTList<_TYPE_>::add(_TYPE_ value_to_add)
 {
@@ -100,7 +110,9 @@ inline TRUSTList<_TYPE_>& TRUSTList<_TYPE_>::add(_TYPE_ value_to_add)
     }
 }
 
-// Description:  Renvoie la taille de la liste (Une liste vide est de taille nulle)
+/*! @brief Renvoie la taille de la liste (Une liste vide est de taille nulle)
+ *
+ */
 template<typename _TYPE_>
 inline int TRUSTList<_TYPE_>::size() const
 {
@@ -115,7 +127,9 @@ inline int TRUSTList<_TYPE_>::size() const
   return i;
 }
 
-// Description: Ajout d'un element a la liste ssi il n'existe pas deja
+/*! @brief Ajout d'un element a la liste ssi il n'existe pas deja
+ *
+ */
 template<typename _TYPE_>
 inline TRUSTList<_TYPE_>& TRUSTList<_TYPE_>::add_if_not(_TYPE_ x)
 {
@@ -123,7 +137,9 @@ inline TRUSTList<_TYPE_>& TRUSTList<_TYPE_>::add_if_not(_TYPE_ x)
   else return *this;
 }
 
-// Description: Verifie si un element appartient ou non a la liste
+/*! @brief Verifie si un element appartient ou non a la liste
+ *
+ */
 template<typename _TYPE_>
 inline int TRUSTList<_TYPE_>::contient(_TYPE_ x) const
 {
@@ -138,7 +154,9 @@ inline int TRUSTList<_TYPE_>::contient(_TYPE_ x) const
   return 0;
 }
 
-// Description: renvoie le rang d'un element dans la liste si un element apparait plusieurs fois, renvoie le rang du premier.
+/*! @brief renvoie le rang d'un element dans la liste si un element apparait plusieurs fois, renvoie le rang du premier.
+ *
+ */
 template<typename _TYPE_>
 inline int TRUSTList<_TYPE_>::rang(_TYPE_ x) const
 {
@@ -155,7 +173,9 @@ inline int TRUSTList<_TYPE_>::rang(_TYPE_ x) const
   return -1;
 }
 
-// Description: Operateur d'acces au ieme int de la liste
+/*! @brief Operateur d'acces au ieme int de la liste
+ *
+ */
 template<typename _TYPE_>
 inline _TYPE_& TRUSTList<_TYPE_>::operator[](int i)
 {
@@ -184,7 +204,9 @@ inline const _TYPE_& TRUSTList<_TYPE_>::operator[](int i) const
   return curseur.valeur();
 }
 
-// Description: Operateur de comparaison de deux listes
+/*! @brief Operateur de comparaison de deux listes
+ *
+ */
 template<typename _TYPE_>
 int operator ==(const TRUSTList<_TYPE_>& list1, const TRUSTList<_TYPE_>& list2)
 {
@@ -196,7 +218,9 @@ int operator ==(const TRUSTList<_TYPE_>& list1, const TRUSTList<_TYPE_>& list2)
   return retour;
 }
 
-// Description: Supprime un element contenu dans la liste
+/*! @brief Supprime un element contenu dans la liste
+ *
+ */
 template<typename _TYPE_>
 inline void TRUSTList<_TYPE_>::suppr(_TYPE_ obj)
 {
@@ -256,7 +280,9 @@ inline void TRUSTList<_TYPE_>::calcule_min_max()
     }
 }
 
-// Description: Vide la liste
+/*! @brief Vide la liste
+ *
+ */
 template<typename _TYPE_>
 inline void TRUSTList<_TYPE_>::vide()
 {

@@ -20,12 +20,13 @@
 #include <Champ_implementation_P0.h>
 #include <Ref_Zone_VF.h>
 
-/////////////////////////////////////////////////////////////////////////////
-// .DESCRIPTION        : class Champ_Fonc_P0_base
-//
-// Decrire ici la classe Champ_Fonc_P0_base
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Champ_Fonc_P0_base
+ *
+ *  Decrire ici la classe Champ_Fonc_P0_base
+ *
+ *
+ *
+ */
 
 class Champ_Fonc_P0_base : public Champ_Fonc_base, public Champ_implementation_P0
 {

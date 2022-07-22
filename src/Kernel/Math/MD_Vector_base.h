@@ -23,9 +23,11 @@ class Schema_Comm_Vecteurs;
 class Echange_EV_Options;
 class MD_Vector;
 
-// .DESCRIPTION
-// Classe de base des descripteurs de vecteurs distribues.
-// Voir la documentation des methodes dans MD_Vector_base2 et MD_Vector_std
+/*! @brief Classe de base des descripteurs de vecteurs distribues.
+ *
+ * Voir la documentation des methodes dans MD_Vector_base2 et MD_Vector_std
+ *
+ */
 class MD_Vector_base : public Objet_U
 {
   Declare_base_sans_constructeur_ni_destructeur(MD_Vector_base);

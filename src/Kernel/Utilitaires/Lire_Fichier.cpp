@@ -22,7 +22,9 @@
 
 Implemente_instanciable(Lire_Fichier,"Lire_Fichier|Read_file",Interprete);
 
-// Description: Pas code: exit()
+/*! @brief Pas code: exit()
+ *
+ */
 Sortie& Lire_Fichier::printOn(Sortie& os) const
 {
   Cerr << "Error in Lire_Fichier::printOn()" << finl;
@@ -30,7 +32,9 @@ Sortie& Lire_Fichier::printOn(Sortie& os) const
   return os;
 }
 
-// Description: Pas code: exit()
+/*! @brief Pas code: exit()
+ *
+ */
 Entree& Lire_Fichier::readOn(Entree& is)
 {
   Cerr << "Error in Lire_Fichier::readOn()" << finl;
@@ -38,13 +42,14 @@ Entree& Lire_Fichier::readOn(Entree& is)
   return is;
 }
 
-// Description:
-//  Deux syntaxes possibles dans le jeu de donnees:
-//   Lire_fichier NOM_OBJET NOM_FICHIER
-//    (lit le contenu du fichier dans l'objet avec readOn de l'objet)
-//   Lire_fichier NOM_FICHIER ;
-//    (interprete le fichier dans un interprete local: les objets declares
-//     dans le fichier sont detruits a la fin de la lecture du fichier)
+/*! @brief Deux syntaxes possibles dans le jeu de donnees: Lire_fichier NOM_OBJET NOM_FICHIER
+ *
+ *     (lit le contenu du fichier dans l'objet avec readOn de l'objet)
+ *    Lire_fichier NOM_FICHIER ;
+ *     (interprete le fichier dans un interprete local: les objets declares
+ *      dans le fichier sont detruits a la fin de la lecture du fichier)
+ *
+ */
 Entree& Lire_Fichier::interpreter(Entree& is)
 {
   Nom nom1, nom2;

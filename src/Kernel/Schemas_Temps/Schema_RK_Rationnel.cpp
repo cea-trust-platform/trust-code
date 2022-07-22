@@ -23,18 +23,20 @@ Sortie& RRK2::printOn(Sortie& s) const { return  TRUSTSchema_RK<Ordre_RK::RATIO_
 
 Entree& RRK2::readOn(Entree& s) { return TRUSTSchema_RK<Ordre_RK::RATIO_DEUX>::readOn(s) ; }
 
-// Description:
-//    Effectue un pas de temps de Runge Kutta rationnel d'ordre 2, sur l'equation passee en parametre.
-//    Le schema de Runge Kutta rationel d'ordre 2:
-//     g1=hf(y0)
-//     g2=hf(y0+c2g1)
-//     y1=y0+(g1g1)/(b1g1+b2g2)
-//     ou ab/d = (a(b,d)+b(d,a)-d(a,b)/(d,d)
-//     y1=y0+(2g1(g1,b1g1+b2g2)-(b1g1+b2g2)(g1,g1)/(b1g1+b2g2,b1g1+b2g2)
-//     y1=y0+(2g1(g1,"g2")-("g2")(g1,g1)/("g2","g2")
-//      ordre2 si b2c2=-1/2
-//     b2c2<=-1/2 A0 stabilite et I stabilite
-//     b2c2<= 1/(2cos(alpha)(2-cos(alpha))) O<=alpha<pi/2 Aalpha stabilite
+/*! @brief Effectue un pas de temps de Runge Kutta rationnel d'ordre 2, sur l'equation passee en parametre.
+ *
+ * Le schema de Runge Kutta rationel d'ordre 2:
+ *      g1=hf(y0)
+ *      g2=hf(y0+c2g1)
+ *      y1=y0+(g1g1)/(b1g1+b2g2)
+ *      ou ab/d = (a(b,d)+b(d,a)-d(a,b)/(d,d)
+ *      y1=y0+(2g1(g1,b1g1+b2g2)-(b1g1+b2g2)(g1,g1)/(b1g1+b2g2,b1g1+b2g2)
+ *      y1=y0+(2g1(g1,"g2")-("g2")(g1,g1)/("g2","g2")
+ *       ordre2 si b2c2=-1/2
+ *      b2c2<=-1/2 A0 stabilite et I stabilite
+ *      b2c2<= 1/(2cos(alpha)(2-cos(alpha))) O<=alpha<pi/2 Aalpha stabilite
+ *
+ */
 int RRK2::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
 {
   // Warning sur les 100 premiers pas de temps si facsec est egal a 1 pour faire reflechir l'utilisateur

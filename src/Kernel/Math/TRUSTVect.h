@@ -53,8 +53,11 @@ protected:
     return os;
   }
 
-  // Description: Lecture d'un vecteur sequentiel (comme un ArrOfDouble)
-  //  Attention: appel invalide si le vecteur a un MD_Vector non nul. (pour les vecteurs paralleles, utiliser une methode de sauvegarde/reprise)
+  /*! @brief Lecture d'un vecteur sequentiel (comme un ArrOfDouble) Attention: appel invalide si le vecteur a un MD_Vector non nul.
+   *
+   * (pour les vecteurs paralleles, utiliser une methode de sauvegarde/reprise)
+   *
+   */
   Entree& readOn(Entree& is) override
   {
     if (md_vector_.non_nul())
@@ -74,16 +77,22 @@ public:
 
   TRUSTVect() : size_reelle_(0), line_size_(1) { }
 
-  // Description: construction d'un vecteur de taille n. Les elements du vecteur sont initialises a zero par defaut. Pour ne pas initialiser les valeurs, utiliser ceci:
-  //   DoubleVect toto;
-  //   toto.resize(n, NOCOPY_NOINIT);
+  /*! @brief construction d'un vecteur de taille n.
+   *
+   * Les elements du vecteur sont initialises a zero par defaut. Pour ne pas initialiser les valeurs, utiliser ceci: DoubleVect toto;
+   *    toto.resize(n, NOCOPY_NOINIT);
+   *
+   */
   TRUSTVect(int n) :   TRUSTArray<_TYPE_>(n), size_reelle_(n), line_size_(1) { }
 
-  // Description: Constructeur par copie. Il s'agit d'un "deep copy" voir ArrOfDouble::ArrOfDouble(const ArrOfDouble &)
-  //  Remarque: il n'y a pas de constructeur par copie a partir de ArrOfDouble
-  //   Ceci est volontaire, sinon on risque de grosses pertes de performances par creation implicite d'objets, difficile a trouver.
-  //   (exemple: appel d'une methode toto(const IntVect &) avec un ArrOfInt produit une copie du tableau !)
-  //  Utiliser copy() pour copier un ArrOfDouble dans un DoubleVect
+  /*! @brief Constructeur par copie.
+   *
+   * Il s'agit d'un "deep copy" voir ArrOfDouble::ArrOfDouble(const ArrOfDouble &) Remarque: il n'y a pas de constructeur par copie a partir de ArrOfDouble
+   *    Ceci est volontaire, sinon on risque de grosses pertes de performances par creation implicite d'objets, difficile a trouver.
+   *    (exemple: appel d'une methode toto(const IntVect &) avec un ArrOfInt produit une copie du tableau !)
+   *   Utiliser copy() pour copier un ArrOfDouble dans un DoubleVect
+   *
+   */
   TRUSTVect(const TRUSTVect& v) : TRUSTArray<_TYPE_>(v), md_vector_(v.md_vector_), size_reelle_(v.size_reelle_), line_size_(v.line_size_) { }
 
   inline TRUSTVect& operator=(const TRUSTVect&);
@@ -146,7 +155,9 @@ public:
   inline void ref_data(_TYPE_* ptr, int new_size) override;
   inline void ref_array(TRUSTArray<_TYPE_>&, int start = 0, int sz = -1) override;
 
-  // Description: met l'objet dans l'etat obtenu par le constructeur par defaut.
+  /*! @brief met l'objet dans l'etat obtenu par le constructeur par defaut.
+   *
+   */
   inline void reset() override
   {
     md_vector_.detach();

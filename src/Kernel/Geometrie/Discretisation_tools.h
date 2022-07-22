@@ -18,13 +18,13 @@
 
 class Champ_base;
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Discretisation_tools
-//
-// <Description of class Discretisation_tools>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Discretisation_tools
+ *
+ *  <Description of class Discretisation_tools>
+ *
+ *
+ *
+ */
 
 class Discretisation_tools
 {

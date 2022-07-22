@@ -19,14 +19,16 @@
 
 Param::Param(const char * name):proprietaire_(name) { }
 
-// Description:
-// Read the is input with the parameters (defined with the Param object) inside: { ... }
-// Example, to read:  { a 1 b 2 }
-// Param param(que_suis_je());
-// int a,b;
-// param.ajouter("a",&a);
-// param.ajouter("b",&b);
-// param.lire_avec_accolades_depuis(is);
+/*! @brief Read the is input with the parameters (defined with the Param object) inside: { .
+ *
+ * .. } Example, to read:  { a 1 b 2 }
+ *  Param param(que_suis_je());
+ *  int a,b;
+ *  param.ajouter("a",&a);
+ *  param.ajouter("b",&b);
+ *  param.lire_avec_accolades_depuis(is);
+ *
+ */
 int Param::lire_avec_accolades_depuis(Entree& is)
 {
   int ok=read(is);
@@ -290,11 +292,12 @@ LIST(Nom) split_mot(const Nom& nom)
   return res;
 }
 
-// Description:
-//  Si le dernier parametre ajoute est de type "int", associe a ce
-//   parametre une ou plusieurs chaines de caracteres et pour chacune une valeur numerique.
-//  Il faut appeler dictionnaire pour chaque motcle autorise pour ce parametre
-//  Le parametre lu doit alors etre un motcle parmi ceux du dictionnaire de noms autorises.
+/*! @brief Si le dernier parametre ajoute est de type "int", associe a ce parametre une ou plusieurs chaines de caracteres et pour chacune une valeur numerique.
+ *
+ *   Il faut appeler dictionnaire pour chaque motcle autorise pour ce parametre
+ *   Le parametre lu doit alors etre un motcle parmi ceux du dictionnaire de noms autorises.
+ *
+ */
 void Param::dictionnaire(const char * nom_option, int valeur)
 {
   const int sz = list_parametre_a_lire_.size();
@@ -412,9 +415,11 @@ void Param::ajouter_arr_size_predefinie(const char* mot, ArrOfDouble* quoi,  Par
   obj.set_arrofdouble(quoi);
 }
 
-// Description:
-//  Lecture d'un objet de type deriv. Format attendu : Titi { parametres }
-//  L'objet sera type avec le type prefixeTiti, puis le readOn de l'objet sera appele.
+/*! @brief Lecture d'un objet de type deriv.
+ *
+ * Format attendu : Titi { parametres } L'objet sera type avec le type prefixeTiti, puis le readOn de l'objet sera appele.
+ *
+ */
 void Param::ajouter_deriv(const char* mot, const char *prefixe, Deriv_* quoi,  Param::Nature nat ) //int opt)
 {
   Objet_a_lire& obj=create_or_get_objet_a_lire(mot);

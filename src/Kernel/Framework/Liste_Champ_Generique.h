@@ -19,15 +19,11 @@
 
 #include <Champ_Generique.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe List_Champ_Generique
-//     Represente une liste de Champ_Generique
-//
-// .SECTION voir aussi
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe List_Champ_Generique Represente une liste de Champ_Generique
+ *
+ *
+ *
+ */
 
 
 Declare_liste(Champ_Generique);

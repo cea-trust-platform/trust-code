@@ -25,49 +25,32 @@
 Implemente_base(Zone_Cl_dis_base,"Zone_Cl_dis_base",Objet_U);
 
 
-// Description:
-//    Surcharge Objet_U::printOn(Sortie&)
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees.
-//    Imprime les conditions aux limites discretisees sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Surcharge Objet_U::printOn(Sortie&) NE FAIT RIEN
+ *
+ *     A surcharger dans les classes derivees.
+ *     Imprime les conditions aux limites discretisees sur un flot de sortie
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Zone_Cl_dis_base::printOn(Sortie& os) const
 {
   return os;
 }
 
 
-// Description:
-//    Surcharge Objet_U::readOn(Sortie&)
-//    Lit les conditions aux limites discretisees a partir d'un flot d'entree
-//    Le format attendu est le suivant:
-//    {
-//     Nom Cond_lim [REPETER LECTURE AUTANT DE FOIS QUE NECESSAIRE]
-//    }
-// Precondition: une equation doit avoir ete associee aux conditions aux limites
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: accolade ouvrante attendue
-// Exception: nombre de conditions aux limites lues invalide
-// Effets de bord:
-// Postcondition: l'objet contient les conditions aux limites lues
+/*! @brief Surcharge Objet_U::readOn(Sortie&) Lit les conditions aux limites discretisees a partir d'un flot d'entree
+ *
+ *     Le format attendu est le suivant:
+ *     {
+ *      Nom Cond_lim [REPETER LECTURE AUTANT DE FOIS QUE NECESSAIRE]
+ *     }
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ * @throws accolade ouvrante attendue
+ * @throws nombre de conditions aux limites lues invalide
+ */
 Entree& Zone_Cl_dis_base::readOn(Entree& is)
 {
   assert(mon_equation.non_nul());
@@ -172,23 +155,13 @@ Entree& Zone_Cl_dis_base::readOn(Entree& is)
 }
 
 
-// Description:
-//    Renvoie 1 si l'objet contient une condition aux limites
-//    du Nom specifie.
-//    Renvoie 0 sinon.
-// Precondition:
-// Parametre: Nom& type
-//    Signification: le nom de la condition aux limites a chercher
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: int
-//    Signification: 1 si la condition aux limites de nom specifie a ete
-//                   trouve, 0 sinon.
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie 1 si l'objet contient une condition aux limites du Nom specifie.
+ *
+ *     Renvoie 0 sinon.
+ *
+ * @param (Nom& type) le nom de la condition aux limites a chercher
+ * @return (int) 1 si la condition aux limites de nom specifie a ete trouve, 0 sinon.
+ */
 int Zone_Cl_dis_base::contient_Cl(const Nom& type)
 {
   for(int i=0; i< les_conditions_limites_.size(); i++)
@@ -198,71 +171,54 @@ int Zone_Cl_dis_base::contient_Cl(const Nom& type)
 }
 
 
-// Description:
-//    Renvoie une reference sur la zone discretisee associee aux conditions
-//    aux limites. Cette Zone_dis est associee au travers de l'equation
-//    associee et pas directement a l'objet Zone_Cl_dis_base.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Zone_dis&
-//    Signification: la zone discretisee associee a l'equation associe
-//                   aux conditions aux limites.
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie une reference sur la zone discretisee associee aux conditions aux limites.
+ *
+ * Cette Zone_dis est associee au travers de l'equation
+ *     associee et pas directement a l'objet Zone_Cl_dis_base.
+ *
+ * @return (Zone_dis&) la zone discretisee associee a l'equation associe aux conditions aux limites.
+ */
 Zone_dis& Zone_Cl_dis_base::zone_dis()
 {
   return equation().zone_dis();
 }
 
 
-// Description:
-//    Renvoie une reference sur la zone discretisee associee aux conditions
-//    aux limites. Cette Zone_dis est associee au travers de l'equation
-//    associee et pas directement a l'objet Zone_Cl_dis_base.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Zone_dis&
-//    Signification: la zone discretisee associee a l'equation associe
-//                   aux conditions aux limites.
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie une reference sur la zone discretisee associee aux conditions aux limites.
+ *
+ * Cette Zone_dis est associee au travers de l'equation
+ *     associee et pas directement a l'objet Zone_Cl_dis_base.
+ *     (version const)
+ *
+ * @return (Zone_dis&) la zone discretisee associee a l'equation associe aux conditions aux limites.
+ */
 const Zone_dis& Zone_Cl_dis_base::zone_dis() const
 {
   return equation().zone_dis();
 }
 
 
-// Description:
-//    Change le i-eme temps futur de toutes les CLs.
+/*! @brief Change le i-eme temps futur de toutes les CLs.
+ *
+ */
 void Zone_Cl_dis_base::changer_temps_futur(double temps,int i)
 {
   for (int j=0; j<nb_cond_lim(); j++)
     les_conditions_limites_[j]->changer_temps_futur(temps,i);
 }
 
-// Description:
-//    Change le i-eme temps futur de toutes les CLs.
+/*! @brief Change le i-eme temps futur de toutes les CLs.
+ *
+ */
 void Zone_Cl_dis_base::set_temps_defaut(double temps)
 {
   for (int j=0; j<nb_cond_lim(); j++)
     les_conditions_limites_[j]->set_temps_defaut(temps);
 }
 
-// Description:
-//    Tourne la roue des CLs jusqu'au temps donne
+/*! @brief Tourne la roue des CLs jusqu'au temps donne
+ *
+ */
 int Zone_Cl_dis_base::avancer(double temps)
 {
   int ok=1;
@@ -271,8 +227,9 @@ int Zone_Cl_dis_base::avancer(double temps)
   return ok;
 }
 
-// Description:
-//    Tourne la roue des CLsj usqu'au temps donne
+/*! @brief Tourne la roue des CLsj usqu'au temps donne
+ *
+ */
 int Zone_Cl_dis_base::reculer(double temps)
 {
   int ok=1;
@@ -281,44 +238,23 @@ int Zone_Cl_dis_base::reculer(double temps)
   return ok;
 }
 
-// Description:
-//    Effectue une mise a jour en temps de toutes les conditions
-//    aux limites.
-// Precondition:
-// Parametre: double temps
-//    Signification: le pas de temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Effectue une mise a jour en temps de toutes les conditions aux limites.
+ *
+ * @param (double temps) le pas de temps de mise a jour
+ */
 void Zone_Cl_dis_base::mettre_a_jour(double temps)
 {
   les_conditions_limites_.mettre_a_jour(temps);
 }
 
 
-// Description:
-//    Effectue une mise a jour pour des sous pas de temps
-//    d'un schema en temps (par exemple dans RungeKutta)
-//    pour toutes les Cond Lims renvoyant 1 par le biais de la methode
-//    int Cond_Lim_base::a_mettre_a_jour_ss_pas_dt();
-// Precondition:
-// Parametre: double temps
-//    Signification: le pas de temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Effectue une mise a jour pour des sous pas de temps d'un schema en temps (par exemple dans RungeKutta)
+ *
+ *     pour toutes les Cond Lims renvoyant 1 par le biais de la methode
+ *     int Cond_Lim_base::a_mettre_a_jour_ss_pas_dt();
+ *
+ * @param (double temps) le pas de temps de mise a jour
+ */
 void Zone_Cl_dis_base::mettre_a_jour_ss_pas_dt(double temps)
 {
   const int nb_cl = les_conditions_limites_.size();
@@ -333,23 +269,13 @@ void Zone_Cl_dis_base::mettre_a_jour_ss_pas_dt(double temps)
 }
 
 
-// Description:
-//    Initialise les CLs
-//    Contrairement aux methodes mettre_a_jour, les methodes
-//    initialiser des CLs ne peuvent pas dependre de l'exterieur
-//    (lui-meme peut ne pas etre initialise)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si OK, 0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Initialise les CLs Contrairement aux methodes mettre_a_jour, les methodes
+ *
+ *     initialiser des CLs ne peuvent pas dependre de l'exterieur
+ *     (lui-meme peut ne pas etre initialise)
+ *
+ * @return (int) 1 si OK, 0 sinon
+ */
 int Zone_Cl_dis_base::initialiser(double temps)
 {
   return les_conditions_limites_.initialiser(temps);
@@ -357,41 +283,19 @@ int Zone_Cl_dis_base::initialiser(double temps)
 
 
 
-// Description:
-//    Calcul des coefficients d'echange pour les problemes couples thermiques
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcul des coefficients d'echange pour les problemes couples thermiques
+ *
+ * @return (int) renvoie toujours 1
+ */
 int Zone_Cl_dis_base::calculer_coeffs_echange(double temps)
 {
   les_conditions_limites_.calculer_coeffs_echange(temps);
   return 1;
 }
 
-// Description:
-//    Appel Cond_lim_base::completer() sur chaque
-//    condition aux limites
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel Cond_lim_base::completer() sur chaque condition aux limites
+ *
+ */
 void Zone_Cl_dis_base::completer()
 {
   les_conditions_limites_.completer(zone_dis());
@@ -497,102 +401,56 @@ void Zone_Cl_dis_base::Gpoint(double t1, double t2)
 }
 
 
-// Description:
-//    Renvoie la i-ieme condition aux limites.
-//    (version const)
-// Precondition:
-// Parametre: int i
-//    Signification: le rang de la i-ieme condition aux limites
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Cond_lim&
-//    Signification: la i-ieme condition aux limites
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie la i-ieme condition aux limites.
+ *
+ * (version const)
+ *
+ * @param (int i) le rang de la i-ieme condition aux limites
+ * @return (Cond_lim&) la i-ieme condition aux limites
+ */
 const Cond_lim& Zone_Cl_dis_base::les_conditions_limites(int i) const
 {
   return les_conditions_limites_[i];
 }
 
 
-// Description:
-//    Renvoie la i-ieme condition aux limites.
-// Precondition:
-// Parametre: int i
-//    Signification: le rang de la i-ieme condition aux limites
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:  Cond_lim&
-//    Signification: la i-ieme condition aux limites
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie la i-ieme condition aux limites.
+ *
+ * @param (int i) le rang de la i-ieme condition aux limites
+ * @return (Cond_lim&) la i-ieme condition aux limites
+ */
 Cond_lim& Zone_Cl_dis_base::les_conditions_limites(int i)
 {
   return les_conditions_limites_[i];
 }
 
 
-// Description:
-//    Renvoie le tableaux des conditions aux limites.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Conds_lim&
-//    Signification: le tableau des conditions aux limites
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie le tableaux des conditions aux limites.
+ *
+ * @return (Conds_lim&) le tableau des conditions aux limites
+ */
 Conds_lim& Zone_Cl_dis_base::les_conditions_limites()
 {
   return les_conditions_limites_;
 }
 
 
-// Description:
-//    Renvoie le tableaux des conditions aux limites.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Conds_lim&
-//    Signification: le tableau des conditions aux limites
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le tableaux des conditions aux limites.
+ *
+ * (version const)
+ *
+ * @return (Conds_lim&) le tableau des conditions aux limites
+ */
 const Conds_lim& Zone_Cl_dis_base::les_conditions_limites() const
 {
   return les_conditions_limites_;
 }
 
 
-// Description:
-//    Renvoie le nombre de conditions aux limites.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de conditions aux limites
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de conditions aux limites.
+ *
+ * @return (int) le nombre de conditions aux limites
+ */
 int Zone_Cl_dis_base::nb_cond_lim() const
 {
   return les_conditions_limites_.size();
@@ -612,10 +470,11 @@ const Zone& Zone_Cl_dis_base::zone() const
   return zone_dis().zone();
 }
 
-// Description:
-//  A partir d'un indice de face de bord dans la Zone_VF,
-//  renvoie la condition aux limites a laquelle cette face
-//  appartient, pour 0 <= num_face < nb_faces_Cl().
+/*! @brief A partir d'un indice de face de bord dans la Zone_VF, renvoie la condition aux limites a laquelle cette face
+ *
+ *   appartient, pour 0 <= num_face < nb_faces_Cl().
+ *
+ */
 const Cond_lim& Zone_Cl_dis_base::la_cl_de_la_face(int num_face) const
 {
   //  Algorithme generique: on parcourt les bords jusqu'a trouver

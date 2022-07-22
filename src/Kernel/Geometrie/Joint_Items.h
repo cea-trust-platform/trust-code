@@ -18,19 +18,16 @@
 
 #include <TRUSTTab.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Joint_Items contient les informations de distribution
-//    parallele d'un item geometrique particulier avec une zone
-//    voisine particuliere (item = sommet, element, face, etc..)
-//    Ces structures sont initialisees dans Scatter.
-//    Elles sont ensuite utilisees par exemple pour creer
-//    un tableau distribue indexe par les indices des items
-//    geometriques.
-// .SECTION voir aussi
-//    class Joint
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Joint_Items contient les informations de distribution parallele d'un item geometrique particulier avec une zone
+ *
+ *     voisine particuliere (item = sommet, element, face, etc..)
+ *     Ces structures sont initialisees dans Scatter.
+ *     Elles sont ensuite utilisees par exemple pour creer
+ *     un tableau distribue indexe par les indices des items
+ *     geometriques.
+ *
+ * @sa class Joint
+ */
 
 class Joint_Items
 {

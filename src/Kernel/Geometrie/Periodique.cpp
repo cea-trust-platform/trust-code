@@ -23,20 +23,11 @@
 Implemente_instanciable(Periodique,"Periodique",Cond_lim_base);
 
 
-// Description:
-//    Ecrit le type de l'objet sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit le type de l'objet sur un flot de sortie
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Periodique::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << finl ;
@@ -44,20 +35,25 @@ Sortie& Periodique::printOn(Sortie& s ) const
 
 
 
-// Description:
+/*! @brief
+ *
+ */
 Entree& Periodique::readOn(Entree& s)
 {
   le_champ_front.typer("Champ_front_uniforme");
   return s;
 }
 
-// Description:
-//    Renvoie toujours 1
+/*! @brief Renvoie toujours 1
+ *
+ */
 int Periodique::compatible_avec_eqn(const Equation_base&) const
 {
   return 1;
 }
-// Description:
+/*! @brief
+ *
+ */
 void Periodique::mettre_a_jour(double temps)
 {
 }

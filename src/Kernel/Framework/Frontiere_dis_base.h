@@ -22,16 +22,14 @@
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Frontiere_dis_base
-//     Classe representant une frontiere discretisee. Les objets
-//     Frontiere_dis_base contiennent un reference vers l'objet
-//     geometrique Frontiere.
-// .SECTION voir aussi
-//      Frontiere Domaine_dis
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Frontiere_dis_base Classe representant une frontiere discretisee.
+ *
+ * Les objets
+ *      Frontiere_dis_base contiennent un reference vers l'objet
+ *      geometrique Frontiere.
+ *
+ * @sa Frontiere Domaine_dis
+ */
 class Frontiere_dis_base : public Objet_U
 {
   Declare_base(Frontiere_dis_base);

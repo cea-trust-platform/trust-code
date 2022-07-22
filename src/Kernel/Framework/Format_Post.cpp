@@ -21,59 +21,32 @@ Implemente_deriv(Format_Post_base);
 Implemente_instanciable(Format_Post,"Format_Post",DERIV(Format_Post_base));
 
 
-// Description:
-//    Impression de Format_Post sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Impression de Format_Post sur un flot de sortie.
+ *
+ * @param (Sortie& os) le flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Format_Post::printOn(Sortie& os) const
 {
   return DERIV(Format_Post_base)::printOn(os);
 }
 
 
-// Description:
-//    Lecture de Format_Post sur un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot d'entree est modifie
-// Postcondition:
+/*! @brief Lecture de Format_Post sur un flot d'entree.
+ *
+ * @param (Entree& is) le flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Format_Post::readOn(Entree& is)
 {
   return DERIV(Format_Post_base)::readOn(is);
 }
 
 
-// Description:
-// Precondition:
-// Parametre: Nom& typ
-//    Signification: le nom de type au Format_Post
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ * @param (Nom& typ) le nom de type au Format_Post
+ */
 void Format_Post::typer_direct(const Nom& typ)
 {
   DERIV(Format_Post_base)::typer(typ);

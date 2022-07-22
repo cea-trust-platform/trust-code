@@ -14,11 +14,9 @@
 *****************************************************************************/
 
 
-//
-// .DESCRIPTION class Schema_Adams_Moulton_order_3
-//
-// .SECTION voir aussi
-//
+/*! @brief class Schema_Adams_Moulton_order_3
+ *
+ */
 
 #include <Schema_Adams_Moulton_order_3.h>
 #include <Equation_base.h>
@@ -70,10 +68,12 @@ static double integrate_lagrangian_basis(double a, double b, double c, double bo
 }
 
 
-// Description:
-//    Renvoie le nombre de valeurs temporelles a conserver.
-// 3 valeurs temporelles : tn-1, tn, tn+1
-// 1 valeur de plus pour le fonctionnement des algorithmes de l'implicite
+/*! @brief Renvoie le nombre de valeurs temporelles a conserver.
+ *
+ * 3 valeurs temporelles : tn-1, tn, tn+1
+ *  1 valeur de plus pour le fonctionnement des algorithmes de l'implicite
+ *
+ */
 int Schema_Adams_Moulton_order_3::nb_valeurs_temporelles() const
 {
   return 4 ;

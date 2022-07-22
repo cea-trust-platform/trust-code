@@ -17,59 +17,27 @@
 
 Implemente_instanciable(Ecrire,"Ecrire",Interprete);
 
-// Description:
-//  appel a la methode printOn de la classe Interprete
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief appel a la methode printOn de la classe Interprete
+ *
+ */
 Sortie& Ecrire::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
-// Description:
-//  appel a la methode readOn de la classe Interprete
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief appel a la methode readOn de la classe Interprete
+ *
+ */
 Entree& Ecrire::readOn(Entree& is)
 {
   return Interprete::readOn(is);
 }
 
-// Description:
-//    Lit le nom d'un objet dans is
-//    Ecrit l'objet correspondant sur la sortie standard
-// Precondition:
-// Parametre: Entree& is
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit le nom d'un objet dans is Ecrit l'objet correspondant sur la sortie standard
+ *
+ * @param (Entree& is)
+ * @return (Entree&)
+ */
 Entree& Ecrire::interpreter(Entree& is)
 {
   Nom nom1;

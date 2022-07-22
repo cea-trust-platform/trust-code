@@ -18,18 +18,16 @@
 #define Deriv__included
 #include <O_U_Ptr.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//   Type de base de tous les types DERIV(__TYPE__).
-//   La classe est vide, elle sert de couche intermediaire pour
-//   verifier si un objet est de type DERIV.
-//
-//   30/06/2004, B.Mathieu : la template version n'est plus a jour.
-//
-// .SECTION voir aussi
-//    TpltDeriv O_U_Ptr
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Type de base de tous les types DERIV(__TYPE__).
+ *
+ * La classe est vide, elle sert de couche intermediaire pour
+ *    verifier si un objet est de type DERIV.
+ *
+ *    30/06/2004, B.Mathieu : la template version n'est plus a jour.
+ *
+ *
+ * @sa TpltDeriv O_U_Ptr
+ */
 class Deriv_ : public O_U_Ptr
 {
   Declare_base(Deriv_);

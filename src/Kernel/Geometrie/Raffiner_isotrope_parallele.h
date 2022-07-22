@@ -18,13 +18,13 @@
 
 #include <Raffiner_Simplexes.h>
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Raffiner_isotrope_parallele
-//
-// <Description of class Raffiner_isotrope_parallele>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Raffiner_isotrope_parallele
+ *
+ *  <Description of class Raffiner_isotrope_parallele>
+ *
+ *
+ *
+ */
 
 class Raffiner_isotrope_parallele : public Raffiner_Simplexes
 {

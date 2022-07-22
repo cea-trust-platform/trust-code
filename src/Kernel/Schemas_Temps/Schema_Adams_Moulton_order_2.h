@@ -16,12 +16,11 @@
 #ifndef Schema_Adams_Moulton_order_2_included
 #define Schema_Adams_Moulton_order_2_included
 
-//
-// .DESCRIPTION class Schema_Adams_Moulton_order_2
-//  Il herite de schema implicite base et porte un solveur par exemple
-//  le Simpler pour effectuer les Faire_un_pas_de_temps..
-// .SECTION voir aussi
-//
+/*! @brief class Schema_Adams_Moulton_order_2 Il herite de schema implicite base et porte un solveur par exemple
+ *
+ *   le Simpler pour effectuer les Faire_un_pas_de_temps..
+ *
+ */
 
 #include <Schema_Adams_Moulton_base.h>
 class Probleme_Couple;

@@ -19,41 +19,22 @@ Implemente_deriv(Schema_Temps_base);
 Implemente_instanciable(Schema_Temps,"Schema_Temps",DERIV(Schema_Temps_base));
 
 
-// Description:
-//    Surcharge Objet_U::printOn(Sortie&)
-//    Impression du schema en temps sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Surcharge Objet_U::printOn(Sortie&) Impression du schema en temps sur un flot de sortie.
+ *
+ * @param (Sortie& os) le flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Schema_Temps::printOn(Sortie& os) const
 {
   return DERIV(Schema_Temps_base)::printOn(os);
 }
 
 
-// Description:
-//    Lecture du schema en temps sur un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lecture du schema en temps sur un flot d'entree.
+ *
+ * @param (Entree& is) le flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Schema_Temps::readOn(Entree& is)
 {
   return DERIV(Schema_Temps_base)::readOn(is);

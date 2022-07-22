@@ -21,16 +21,13 @@
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_front_bruite
-//     Classe derivee de Champ_front_base qui represente les
-//     champs aux frontieres bruites : ch(*,i)=m(i)+alea*amplitude(i)
-//     ou alea est une variable aleatoire de loi uniforme sur [0,1]
-// .SECTION voir aussi
-//     Champ_front_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_front_bruite Classe derivee de Champ_front_base qui represente les
+ *
+ *      champs aux frontieres bruites : ch(*,i)=m(i)+alea*amplitude(i)
+ *      ou alea est une variable aleatoire de loi uniforme sur [0,1]
+ *
+ * @sa Champ_front_base
+ */
 class Champ_front_bruite : public Ch_front_var_instationnaire_indep
 {
   Declare_instanciable(Champ_front_bruite);

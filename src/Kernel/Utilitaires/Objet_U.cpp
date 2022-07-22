@@ -44,11 +44,12 @@ static void object_trap(int obj_id)
   Cerr << "Objet_U::Objet_U() : object_id_=" << obj_id << finl;
 }
 
-// Description:
-//   Constructeur par defaut : attribue un numero d'identifiant unique
-//   a l'objet (object_id_), et enregistre l'objet en "memoire"
-//   en lui donnant un numero _num_obj_. L'object_id_ et tres
-//   pratique pour debugger...
+/*! @brief Constructeur par defaut : attribue un numero d'identifiant unique a l'objet (object_id_), et enregistre l'objet en "memoire"
+ *
+ *    en lui donnant un numero _num_obj_. L'object_id_ et tres
+ *    pratique pour debugger...
+ *
+ */
 Objet_U::Objet_U() :  Process(),
   object_id_(static_obj_counter_++)
 {
@@ -61,9 +62,11 @@ Objet_U::Objet_U() :  Process(),
   _num_obj_ = memoire.add(this);
 }
 
-// Description:
-//   Constructeur par copie. Cree un nouveau numero d'objet
-//   (ne copie pas le numero de l'autre objet !)
+/*! @brief Constructeur par copie.
+ *
+ * Cree un nouveau numero d'objet (ne copie pas le numero de l'autre objet !)
+ *
+ */
 Objet_U::Objet_U(const Objet_U&) : Process(),
   object_id_(static_obj_counter_++)
 {
@@ -75,12 +78,9 @@ Objet_U::Objet_U(const Objet_U&) : Process(),
   Memoire& memoire = Memoire::Instance();
   _num_obj_ = memoire.add(this);
 }
-// Description:
-//  Destructeur, supprime l'objet de la liste d'objets enregistres
-//  dans "memoire".
-// Effets de bord:
-//     Suppression de l'objet dans la memoire de TRUST
-// Postcondition:
+/*! @brief Destructeur, supprime l'objet de la liste d'objets enregistres dans "memoire".
+ *
+ */
 Objet_U::~Objet_U()
 {
   Memoire& memoire = Memoire::Instance();
@@ -88,103 +88,66 @@ Objet_U::~Objet_U()
   _num_obj_ = -2; // Paranoia
 }
 
-// Description:
-//   Operateur= : ne fait rien (on conserve le numero et l'identifiant)
+/*! @brief Operateur= : ne fait rien (on conserve le numero et l'identifiant)
+ *
+ */
 const Objet_U& Objet_U::operator=(const Objet_U&)
 {
   return *this;
 }
 
-// Description:
-//   Renvoie l'indice de l'objet dans Memoire::data
+/*! @brief Renvoie l'indice de l'objet dans Memoire::data
+ *
+ */
 int Objet_U::numero() const
 {
   return _num_obj_;
 }
 
-// Description:
-//   Renvoie l'identifiant unique de l'objet object_id_
+/*! @brief Renvoie l'identifiant unique de l'objet object_id_
+ *
+ */
 int Objet_U::get_object_id() const
 {
   return object_id_;
 }
 
-// Description:
-//     renvoie la chaine identifiant la classe.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: const Nom&
-//    Signification: Nom identifiant la classe de l'objet
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief renvoie la chaine identifiant la classe.
+ *
+ * @return (const Nom&) Nom identifiant la classe de l'objet
+ */
 const Nom& Objet_U::que_suis_je() const
 {
   return get_info()->name();
 }
 
 
-// Description:
-//     Ecriture de l'objet sur un flot de sortie
-//     Methode a surcharger
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-//    A surcharger. Le flot de sortie n'est pas modifie dans cette implementation
-// Postcondition:
+/*! @brief Ecriture de l'objet sur un flot de sortie Methode a surcharger
+ *
+ * @param (Sortie& s) flot de sortie
+ * @return (Sortie&) flot de sortie modifie
+ */
 Sortie& Objet_U::printOn(Sortie& s) const
 {
   return s;
 }
 
 
-// Description:
-//     Lecture d'un Objet_U sur un flot d'entree
-//     Methode a surcharger
-// Precondition:
-// Parametre: Entree& s
-//    Signification: flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree& s
-//    Signification: flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-//    A surcharger. Le flot de sortie n'est pas modifie dans cette implementation
-// Postcondition:
+/*! @brief Lecture d'un Objet_U sur un flot d'entree Methode a surcharger
+ *
+ * @param (Entree& s) flot d'entree
+ * @return (Entree& s) flot d'entree modifie
+ */
 Entree& Objet_U::readOn(Entree& s)
 {
   return s;
 }
-// Description:
-//     Lecture des parametres de type non simple d'un objet_U
-//     a partir d'un flot d'entree.
-// Precondition:
-// Parametre: Motcle& motlu
-//    Signification: le nom du terme a lire
-//    Valeurs par defaut:
-//    Acces: entree
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: int
+/*! @brief Lecture des parametres de type non simple d'un objet_U a partir d'un flot d'entree.
+ *
+ * @param (Motcle& motlu) le nom du terme a lire
+ * @param (Entree& is) un flot d'entree
+ * @return (int)
+ */
 int Objet_U::lire_motcle_non_standard(const Motcle& motlu, Entree& is)
 {
   Cerr<<"lire_motcle_non_standard not coded by "<<que_suis_je()<<finl;
@@ -192,65 +155,31 @@ int Objet_U::lire_motcle_non_standard(const Motcle& motlu, Entree& is)
   return -1;
 }
 
-// Description:
-//     Reprise d'un Objet_U sur un flot d'entree
-//     Methode a surcharger : retourne toujours 1 dans cette implementation
-// Precondition:
-// Parametre: Entree&
-//    Signification: flot d'entree a utiliser pour la reprise
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: int
-//    Signification: code de retour
-//    Contraintes:
-// Exception:
-// Effets de bord:
-//     Modification de l'Objet_U
-//     Methode a surcharger. Ne modifie pas l'objet et retourne toujours 1 dans cette implementation
-// Postcondition:
+/*! @brief Reprise d'un Objet_U sur un flot d'entree Methode a surcharger : retourne toujours 1 dans cette implementation
+ *
+ * @param (Entree&) flot d'entree a utiliser pour la reprise
+ * @return (int) code de retour
+ */
 int Objet_U::reprendre(Entree& )
 {
   return 1;
 }
 
 
-// Description:
-//     Sauvegarde d'un Objet_U sur un flot de sortie
-//     Methode a surcharger : retourne toujours 1 dans cette implementation
-// Precondition:
-// Parametre: Sortie&
-//    Signification: flot de sortie a utiliser pour la sauvegarde
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: int
-//    Signification: code de retour
-//    Contraintes:
-// Exception:
-// Effets de bord:
-//     Ne doit pas modifier l'objet ???
-// Postcondition:
+/*! @brief Sauvegarde d'un Objet_U sur un flot de sortie Methode a surcharger : retourne toujours 1 dans cette implementation
+ *
+ * @param (Sortie&) flot de sortie a utiliser pour la sauvegarde
+ * @return (int) code de retour
+ */
 int Objet_U::sauvegarder(Sortie& ) const
 {
   return 0;
 }
 
-// Description:
-//     Donne le nom de l'Objet_U
-//     Methode a surcharger : renvoie "neant" dans cette implementation
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Nom&
-//    Signification: le nom de l'Objet_U
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Donne le nom de l'Objet_U Methode a surcharger : renvoie "neant" dans cette implementation
+ *
+ * @return (Nom&) le nom de l'Objet_U
+ */
 const Nom& Objet_U::le_nom() const
 {
   static Nom inconnu="neant";
@@ -259,57 +188,40 @@ const Nom& Objet_U::le_nom() const
 
 
 
-// Description:
-//     Donne des informations sur le type de l'Objet_U
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: const Type_info*
-//    Signification: structure regroupant les informations sur le type de l'Objet_U
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Donne des informations sur le type de l'Objet_U
+ *
+ * @return (const Type_info*) structure regroupant les informations sur le type de l'Objet_U
+ */
 const Type_info*  Objet_U::get_info() const
 {
   return &info_obj;
 }
 
 
-// Description:
-//     Donne des informations sur le type de l'Objet_U
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: const Type_info*
-//    Signification: structure regroupant les informations sur le type de l'Objet_U
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Donne des informations sur le type de l'Objet_U
+ *
+ * @return (const Type_info*) structure regroupant les informations sur le type de l'Objet_U
+ */
 const Type_info*  Objet_U::info()
 {
   return &info_obj;
 }
 
-// Description:
-//  Renvoie une reference constante vers le nom du cas.
-//  Cette methode est statique.
+/*! @brief Renvoie une reference constante vers le nom du cas.
+ *
+ * Cette methode est statique.
+ *
+ */
 const Nom& Objet_U::nom_du_cas()
 {
   return get_set_nom_du_cas();
 }
 
-// Description:
-//  Renvoie une reference non constante vers le nom du cas
-//  (pour pouvoir le modifier).
-//  Cette methode est statique.
+/*! @brief Renvoie une reference non constante vers le nom du cas (pour pouvoir le modifier).
+ *
+ *   Cette methode est statique.
+ *
+ */
 Nom& Objet_U::get_set_nom_du_cas()
 {
   // Cet objet statique est construit au premier appel
@@ -318,9 +230,9 @@ Nom& Objet_U::get_set_nom_du_cas()
   return nom_du_cas_;
 }
 
-// Description:
-//  Renvoie 1 si l'objet x et *this sont une seule et meme instance
-//  (meme adresse en memoire).
+/*! @brief Renvoie 1 si l'objet x et *this sont une seule et meme instance (meme adresse en memoire).
+ *
+ */
 int Objet_U::est_egal_a(const Objet_U& x) const
 {
   int resultat;
@@ -330,8 +242,9 @@ int Objet_U::est_egal_a(const Objet_U& x) const
     resultat = 0;
   return resultat;
 }
-// Description:
-// methode ajoutee pour caster en python
+/*! @brief methode ajoutee pour caster en python
+ *
+ */
 const Objet_U& Objet_U::self_cast(const Objet_U& obj)
 {
   return ref_cast_non_const(Objet_U,obj);
@@ -341,62 +254,31 @@ Objet_U& Objet_U::self_cast(Objet_U& obj)
   return ref_cast_non_const(Objet_U,obj);
 }
 
-// Description:
-//     Change le numero interne de l'Objet_U
-// Precondition:
-// Parametre: const int* const new_ones
-//    Signification: tableau compose des nouveaux numeros, indexe par les anciens numeros
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nouveau numero affecte a l'Objet_U
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Change le numero interne de l'Objet_U
+ *
+ * @param (const int* const new_ones) tableau compose des nouveaux numeros, indexe par les anciens numeros
+ * @return (int) le nouveau numero affecte a l'Objet_U
+ */
 int Objet_U::change_num(const int* const new_ones)
 {
   return _num_obj_=new_ones[_num_obj_];
 }
 
 
-// Description:
-//     Donne le nom du type de l'Objet_U
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: const char*
-//    Signification: chaine de caracteres representant le type de l'Objet_U
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Donne le nom du type de l'Objet_U
+ *
+ * @return (const char*) chaine de caracteres representant le type de l'Objet_U
+ */
 const char* Objet_U::le_type() const
 {
   return get_info()->name();
 }
 
-// Description:
-//     Associe l'Objet_U a un autre Objet_U
-//     Methode virtuelle a surcharger
-// Precondition:
-// Parametre: Objet_U&
-//    Signification: l'Objet_U avec lequel doit s'effectuer l'association
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: int
-//    Signification: code de retour
-//    Contraintes:
-// Exception:
-// Effets de bord:
-//     Cette methode virtuelle ne fait rien et retourne toujours 0
-//     On peut supposer que l'association peut modifier les deux Objet_U concernes
-// Postcondition:
+/*! @brief Associe l'Objet_U a un autre Objet_U Methode virtuelle a surcharger
+ *
+ * @param (Objet_U&) l'Objet_U avec lequel doit s'effectuer l'association
+ * @return (int) code de retour
+ */
 int Objet_U::associer_(Objet_U&)
 {
   return 0;
@@ -420,70 +302,35 @@ Interprete& Objet_U::interprete()
 }
 
 
-// Description:
-//     Donne un nom a l'Objet_U
-//     Methode virtuelle a surcharger
-// Precondition:
-// Parametre: const Nom&
-//    Signification: le nom a affectuer a l'Objet_U
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-//     Cette implementation ne fait rien
-// Postcondition:
+/*! @brief Donne un nom a l'Objet_U Methode virtuelle a surcharger
+ *
+ * @param (const Nom&) le nom a affectuer a l'Objet_U
+ */
 void Objet_U::nommer(const Nom&)
 {
 }
 
-// Description:
-//   retourne x.est_egal_a(y)
-// Precondition:
-// Parametre: const Objet_U& x
-//    Signification: Objet_U a utiliser pour la comparaison
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Parametre: const Objet_U& y
-//    Signification: Objet_U a utiliser pour la comparaison
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: int
-//    Signification: 1 si les deux Objet_U sont egaux, 0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief retourne x.
+ *
+ * est_egal_a(y)
+ *
+ * @param (const Objet_U& x) Objet_U a utiliser pour la comparaison
+ * @param (const Objet_U& y) Objet_U a utiliser pour la comparaison
+ * @return (int) 1 si les deux Objet_U sont egaux, 0 sinon
+ */
 int operator==(const Objet_U& x, const Objet_U& y)
 {
   return x.est_egal_a(y);
 }
 
-// Description:
-//     Comparaison de deux Objet_U x et y
-//     Renvoie 1 - x.est_egal_a(y);
-// Precondition:
-// Parametre: const Objet_U& x
-//    Signification: Objet_U a utiliser pour la comparaison
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Parametre: const Objet_U& y
-//    Signification: Objet_U a utiliser pour la comparaison
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: int
-//    Signification: 1 si les deux Objet_U sont differents, 0 s'ils sont egaux
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Comparaison de deux Objet_U x et y Renvoie 1 - x.
+ *
+ * est_egal_a(y);
+ *
+ * @param (const Objet_U& x) Objet_U a utiliser pour la comparaison
+ * @param (const Objet_U& y) Objet_U a utiliser pour la comparaison
+ * @return (int) 1 si les deux Objet_U sont differents, 0 s'ils sont egaux
+ */
 int operator!=(const Objet_U& x, const Objet_U& y)
 {
   return (1-(x.est_egal_a(y)));

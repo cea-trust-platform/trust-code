@@ -25,13 +25,15 @@
 #include <TRUSTVect.h>
 #include <ArrOfBit.h>
 
-// .DESCRIPTION
-//  C'est le plus simple des descripteurs, utilise pour les tableaux de valeurs aux sommets, elements,
-//  faces, aretes, faces de bord, etc...
-//  Il supporte la notion d'items "communs" (sommets du maillage partages entre plusieurs processeurs)
-//  et d'items "distants" et "virtuels" (sommets, elements dans l'epaisseur de joint).
-//  Voir aussi MD_Vector_composite (descripteur compose d'une reunion de plusieurs descripteurs, pour le P1Bulle
-//  par exemple)
+/*! @brief C'est le plus simple des descripteurs, utilise pour les tableaux de valeurs aux sommets, elements, faces, aretes, faces de bord, etc.
+ *
+ * ..
+ *   Il supporte la notion d'items "communs" (sommets du maillage partages entre plusieurs processeurs)
+ *   et d'items "distants" et "virtuels" (sommets, elements dans l'epaisseur de joint).
+ *   Voir aussi MD_Vector_composite (descripteur compose d'une reunion de plusieurs descripteurs, pour le P1Bulle
+ *   par exemple)
+ *
+ */
 class MD_Vector_std : public MD_Vector_base2
 {
   Declare_instanciable_sans_constructeur(MD_Vector_std);
@@ -104,9 +106,12 @@ void MD_Vector_std::initialize_comm_template(const Echange_EV_Options& opt, Sche
     }
 }
 
-// Description: This is the first part of the echange_espace_virtuel() process.
-//  We take the data that has to be sent to other processors in "vect" and put it in appropriate send buffers in "buffers". The data taken depends on "opt".
-// Preconditon: The buffers must have been initialized to the appropriate size and neighbour processors.
+/*! @brief This is the first part of the echange_espace_virtuel() process.
+ *
+ * We take the data that has to be sent to other processors in "vect" and put it in appropriate send buffers in "buffers". The data taken depends on "opt".
+ *  Preconditon: The buffers must have been initialized to the appropriate size and neighbour processors.
+ *
+ */
 template<typename _TYPE_>
 void MD_Vector_std::prepare_send_data_template(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& buffers,  TRUSTVect<_TYPE_>& vect) const
 {

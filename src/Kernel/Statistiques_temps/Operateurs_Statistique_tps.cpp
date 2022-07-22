@@ -24,21 +24,11 @@ Implemente_instanciable_sans_constructeur(Operateurs_Statistique_tps,"Operateurs
 
 Operateurs_Statistique_tps::Operateurs_Statistique_tps(): tstat_deb_(-123.), tstat_dernier_calcul_(-123.), tstat_fin_(-123.), lserie_(-123),dt_integr_serie_(-123.) {}
 
-// Description:
-//    Imprime le type et le nom de la liste d'operateurs
-//    sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Imprime le type et le nom de la liste d'operateurs sur un flot de sortie.
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Operateurs_Statistique_tps::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << " " << le_nom();
@@ -59,22 +49,13 @@ inline const Operateur_Statistique_tps& recherche(Operateurs_Statistique_tps& op
   return curseur.valeur();
 }
 
-// Description:
-//    Lit les specifications d'une liste d'operateurs statistiques a
-//    partir d'un flot d'entree.
-// Precondition: la liste d'operateurs doit avoir un postraitement associe
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: accolade ouvrante attendue
-// Exception: mot clef ne correspond pas a un champ inconnu du probleme
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit les specifications d'une liste d'operateurs statistiques a partir d'un flot d'entree.
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ * @throws accolade ouvrante attendue
+ * @throws mot clef ne correspond pas a un champ inconnu du probleme
+ */
 Entree& Operateurs_Statistique_tps::readOn(Entree& s)
 {
   return s;

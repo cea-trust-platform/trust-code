@@ -17,13 +17,9 @@
 #include <FichierHDF.h>
 //#include <comm_incl.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//   Parallel collective version of FichierHDF, to be used for all concurrent reading/writing on HDF files.
-// .SECTION voir aussi
-//
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Parallel collective version of FichierHDF, to be used for all concurrent reading/writing on HDF files.
+ *
+ */
 class FichierHDFPar: public FichierHDF
 {
 public:

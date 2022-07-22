@@ -22,16 +22,12 @@
 #include <Elem_geom_base.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Hexaedre
-//    Cette represente un element geometrique a 6 faces, 8 sommets et
-//    un seul type de face (Faces::quadrangle_3D) a 4 sommets.
-// .SECTION voir aussi
-//    Hexaedre_axi Elem_geom_base Elem_geom
-//    Un hexaedre est un element 3D
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Hexaedre Cette represente un element geometrique a 6 faces, 8 sommets et
+ *
+ *     un seul type de face (Faces::quadrangle_3D) a 4 sommets.
+ *
+ * @sa Hexaedre_axi Elem_geom_base Elem_geom, Un hexaedre est un element 3D
+ */
 class Hexaedre  : public Elem_geom_base
 {
 
@@ -65,41 +61,21 @@ public :
   int get_tab_faces_sommets_locaux(IntTab& faces_som_local) const override;
 };
 
-// Description:
-//    Renvoie le nombre de sommets d'un hexaedre: 8.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de sommets d'un hexaedre
-//    Contraintes: toujours egal a 8
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de sommets d'un hexaedre: 8.
+ *
+ * @return (int) le nombre de sommets d'un hexaedre
+ */
 inline int Hexaedre::nb_som() const
 {
   return 8;
 }
 
 
-// Description:
-//    Renvoie le nombre de faces du type specifie
-//    que possede l'element geometrique.
-// Precondition:
-// Parametre: int i
-//    Signification: le type de face
-//    Valeurs par defaut: 0
-//    Contraintes: i=0
-//    Acces:
-// Retour: int
-//    Signification: le nombre de faces de type i
-//    Contraintes: toujours egal a 6 (si i=0)
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de faces du type specifie que possede l'element geometrique.
+ *
+ * @param (int i) le type de face
+ * @return (int) le nombre de faces de type i
+ */
 inline int Hexaedre::nb_faces(int i) const
 {
   assert(i==0);
@@ -112,21 +88,11 @@ inline int Hexaedre::nb_faces(int i) const
 }
 
 
-// Description:
-//    Renvoie le nombre de sommets des faces
-//    du type specifie.
-// Precondition:
-// Parametre: int i
-//    Signification: le type de face
-//    Valeurs par defaut: 0
-//    Contraintes:  i=0
-//    Acces:
-// Retour: int
-//    Signification: le nombre de sommets des faces de type i
-//    Contraintes:  toujours egal a 4 (si i=0)
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le nombre de sommets des faces du type specifie.
+ *
+ * @param (int i) le type de face
+ * @return (int) le nombre de sommets des faces de type i
+ */
 inline int Hexaedre::nb_som_face(int i) const
 {
   assert(i==0);
@@ -139,20 +105,11 @@ inline int Hexaedre::nb_som_face(int i) const
 }
 
 
-// Description:
-//    Renvoie le numero du i-ieme sommet de la face 0
-// Precondition:
-// Parametre: int i
-//    Signification: le numero du sommet a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: i=0,1,2,3
-//    Acces:
-// Retour: int
-//    Signification: le numero du i-ieme sommet de la face 0
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le numero du i-ieme sommet de la face 0
+ *
+ * @param (int i) le numero du sommet a renvoyer
+ * @return (int) le numero du i-ieme sommet de la face 0
+ */
 inline int Hexaedre::face_sommet0(int i) const
 {
   //face_sommet0(0)=0;
@@ -170,20 +127,11 @@ inline int Hexaedre::face_sommet0(int i) const
 }
 
 
-// Description:
-//    Renvoie le numero du i-ieme sommet de la face 1
-// Precondition:
-// Parametre: int i
-//    Signification: le numero du sommet a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: i=0,1,2,3
-//    Acces:
-// Retour: int
-//    Signification: le numero du i-ieme sommet de la face 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le numero du i-ieme sommet de la face 1
+ *
+ * @param (int i) le numero du sommet a renvoyer
+ * @return (int) le numero du i-ieme sommet de la face 1
+ */
 inline int Hexaedre::face_sommet1(int i) const
 {
   //face_sommet1(0)=0;
@@ -201,20 +149,11 @@ inline int Hexaedre::face_sommet1(int i) const
 }
 
 
-// Description:
-//    Renvoie le numero du i-ieme sommet de la face 2
-// Precondition:
-// Parametre: int i
-//    Signification: le numero du sommet a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: i=0,1,2,3
-//    Acces:
-// Retour: int
-//    Signification: le numero du i-ieme sommet de la face 2
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le numero du i-ieme sommet de la face 2
+ *
+ * @param (int i) le numero du sommet a renvoyer
+ * @return (int) le numero du i-ieme sommet de la face 2
+ */
 inline int Hexaedre::face_sommet2(int i) const
 {
   //face_sommet2(0)=0;
@@ -232,20 +171,11 @@ inline int Hexaedre::face_sommet2(int i) const
 }
 
 
-// Description:
-//    Renvoie le numero du i-ieme sommet de la face 3
-// Precondition:
-// Parametre: int i
-//    Signification: le numero du sommet a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: i=0,1,2,3
-//    Acces:
-// Retour: int
-//    Signification: le numero du i-ieme sommet de la face 3
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le numero du i-ieme sommet de la face 3
+ *
+ * @param (int i) le numero du sommet a renvoyer
+ * @return (int) le numero du i-ieme sommet de la face 3
+ */
 inline int Hexaedre::face_sommet3(int i) const
 {
   //face_sommet3(0)=1;
@@ -263,20 +193,11 @@ inline int Hexaedre::face_sommet3(int i) const
 }
 
 
-// Description:
-//    Renvoie le numero du i-ieme sommet de la face 4
-// Precondition:
-// Parametre: int i
-//    Signification: le numero du sommet a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: i=0,1,2,3
-//    Acces:
-// Retour: int
-//    Signification: le numero du i-ieme sommet de la face 4
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le numero du i-ieme sommet de la face 4
+ *
+ * @param (int i) le numero du sommet a renvoyer
+ * @return (int) le numero du i-ieme sommet de la face 4
+ */
 inline int Hexaedre::face_sommet4(int i) const
 {
   //face_sommet4(0)=2;
@@ -294,20 +215,11 @@ inline int Hexaedre::face_sommet4(int i) const
 }
 
 
-// Description:
-//    Renvoie le numero du i-ieme sommet de la face 5
-// Precondition:
-// Parametre: int i
-//    Signification: le numero du sommet a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: i=0,1,2,3
-//    Acces:
-// Retour: int
-//    Signification: le numero du i-ieme sommet de la face 5
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le numero du i-ieme sommet de la face 5
+ *
+ * @param (int i) le numero du sommet a renvoyer
+ * @return (int) le numero du i-ieme sommet de la face 5
+ */
 inline int Hexaedre::face_sommet5(int i) const
 {
   //face_sommet4(0)=4;
@@ -325,43 +237,23 @@ inline int Hexaedre::face_sommet5(int i) const
 }
 
 
-// Description:
-//    Renvoie toujours 1, car l'element geometrique
-//    Hexaedre est de type structure.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si l'element est de type structure
-//                   0 sinon
-//    Contraintes: toujours egal a 1
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie toujours 1, car l'element geometrique Hexaedre est de type structure.
+ *
+ * @return (int) 1 si l'element est de type structure 0 sinon
+ */
 inline int Hexaedre::est_structure() const
 {
   return 1;
 }
 
 
-// Description:
-//    Renvoie le i-ieme type de face.
-//    Un hexaedre n'a qu'un seul type de face.
-// Precondition:
-// Parametre: int i
-//    Signification: le rang du type de face a renvoyer
-//    Valeurs par defaut: 0
-//    Contraintes: i=0
-//    Acces:
-// Retour: Type_Face
-//    Signification: un type de face
-//    Contraintes: toujours egal a Faces::quadrangle_3D (si i=0)
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le i-ieme type de face.
+ *
+ * Un hexaedre n'a qu'un seul type de face.
+ *
+ * @param (int i) le rang du type de face a renvoyer
+ * @return (Type_Face) un type de face
+ */
 inline Type_Face Hexaedre::type_face(int i) const
 {
   assert(i==0);

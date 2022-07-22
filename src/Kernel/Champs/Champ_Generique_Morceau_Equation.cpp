@@ -143,12 +143,14 @@ Champ_Fonc& Champ_Generique_Morceau_Equation::creer_espace_stockage(const Nature
   return es_tmp;
 }
 
-// Description:
-// le morceau d equation lance la discretisation du champ espace_stockage
-// et remplit son tableau de valeurs par la methode calculer_pour_post(...)
-// Rq : Ce procede differe de celui applique dans les autres Champ_Generique pour lesquels
-// le remplissage du tableau de valeurs de espace_stockage n'est pas delegue
-//
+/*! @brief le morceau d equation lance la discretisation du champ espace_stockage et remplit son tableau de valeurs par la methode calculer_pour_post(.
+ *
+ * ..)
+ *  Rq : Ce procede differe de celui applique dans les autres Champ_Generique pour lesquels
+ *  le remplissage du tableau de valeurs de espace_stockage n'est pas delegue
+ *
+ *
+ */
 const Champ_base& Champ_Generique_Morceau_Equation::get_champ(Champ& espace_stockage) const
 {
   Champ_Fonc es_tmp;

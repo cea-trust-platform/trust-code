@@ -24,7 +24,9 @@ inline void throw_()
   Process::exit();
 }
 
-// .DESCRIPTION : Un tableau de listes de type IntList
+/*! @brief : Un tableau de listes de type IntList
+ *
+ */
 template<typename _TYPE_>
 class TRUSTLists
 {
@@ -88,7 +90,11 @@ protected :
 using IntLists = TRUSTLists<int>;
 using DoubleLists = TRUSTLists<double>;
 
-// Description: Copie et affectation. Les anciennes donnees sont perdues
+/*! @brief Copie et affectation.
+ *
+ * Les anciennes donnees sont perdues
+ *
+ */
 template<typename _TYPE_>
 inline TRUSTLists<_TYPE_>& TRUSTLists<_TYPE_>::operator=(const TRUSTLists<_TYPE_>& vect)
 {
@@ -106,7 +112,9 @@ inline TRUSTLists<_TYPE_>& TRUSTLists<_TYPE_>::operator=(const TRUSTLists<_TYPE_
   return *this;
 }
 
-// Description: Recherche d'une liste dans le tableau
+/*! @brief Recherche d'une liste dans le tableau
+ *
+ */
 template<typename _TYPE_>
 inline int TRUSTLists<_TYPE_>::search(const TRUSTList<_TYPE_>& t) const
 {
@@ -120,7 +128,9 @@ inline int TRUSTLists<_TYPE_>::search(const TRUSTList<_TYPE_>& t) const
   return retour;
 }
 
-// Description: Acces a la ieme liste du tableau
+/*! @brief Acces a la ieme liste du tableau
+ *
+ */
 template<typename _TYPE_>
 inline const TRUSTList<_TYPE_>& TRUSTLists<_TYPE_>::operator[](int i) const
 {
@@ -135,7 +145,9 @@ inline TRUSTList<_TYPE_>& TRUSTLists<_TYPE_>::operator[](int i)
   return data[i];
 }
 
-// Description: Redimensionne un tableau de listes
+/*! @brief Redimensionne un tableau de listes
+ *
+ */
 template<typename _TYPE_>
 inline void TRUSTLists<_TYPE_>::dimensionner(int i)
 {

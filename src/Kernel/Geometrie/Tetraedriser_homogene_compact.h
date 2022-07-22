@@ -18,13 +18,13 @@
 
 
 
-//
-// .DESCRIPTION class Tetra_homogene_compact
-// Realise un maillage en decoupant chaque pave en 40 tetraedres
-// Le maillage obtenu n'a pas de directions preferentielles
-//
-// .SECTION voir aussi
-// Interprete
+/*! @brief class Tetra_homogene_compact Realise un maillage en decoupant chaque pave en 40 tetraedres
+ *
+ *  Le maillage obtenu n'a pas de directions preferentielles
+ *
+ *
+ * @sa Interprete
+ */
 
 #include <Triangulation_base.h>
 #include <Domaine.h>

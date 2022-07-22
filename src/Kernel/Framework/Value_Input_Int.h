@@ -22,13 +22,13 @@
 
 class Param;
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Value_Input_Int
-//
-// For providing an integer in input for ICoCo
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Value_Input_Int
+ *
+ *  For providing an integer in input for ICoCo
+ *
+ *
+ *
+ */
 
 class Value_Input_Int : public Objet_U
 {

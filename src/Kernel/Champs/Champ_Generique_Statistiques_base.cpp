@@ -25,21 +25,11 @@ Champ_Generique_Statistiques_base::Champ_Generique_Statistiques_base()
   tstat_fin_ = -1;
 }
 
-// Description:
-//    Imprime le nom et le type de l'operateur sur
-//    un flot de sortie.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Imprime le nom et le type de l'operateur sur un flot de sortie.
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Champ_Generique_Statistiques_base::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << " " << le_nom();

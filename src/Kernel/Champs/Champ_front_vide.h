@@ -21,15 +21,13 @@
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_front_vide
-//     Classe derivee de Champ_front_base qui permet d'avoir un objet champ_front defini pour que le calcul tourne car il y a beaucoup d'appels a cond_lim_base.champ_front() dans les classes du dessus mais qui pese pas lourd
-//     Classe inspiree de Champ_front_uniforme
-// .SECTION voir aussi
-//     Champ_front_base Champ_Uniforme
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_front_vide Classe derivee de Champ_front_base qui permet d'avoir un objet champ_front defini pour que le calcul tourne car il y a beaucoup d'appels a cond_lim_base.
+ *
+ * champ_front() dans les classes du dessus mais qui pese pas lourd
+ *      Classe inspiree de Champ_front_uniforme
+ *
+ * @sa Champ_front_base Champ_Uniforme
+ */
 class Champ_front_vide : public Champ_front_base
 {
   Declare_instanciable(Champ_front_vide);

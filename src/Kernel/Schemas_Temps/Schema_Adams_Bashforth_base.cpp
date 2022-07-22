@@ -21,42 +21,24 @@
 Implemente_base(Schema_Adams_Bashforth_base,"Schema_Adams_Bashforth_base",Schema_Explicite_Multi_TimeStep_base);
 
 
-// Description:
-//    Simple appel a: Schema_Temps_base::printOn(Sortie& )
-//    Ecrit le schema en temps sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Schema_Temps_base::printOn(Sortie& ) Ecrit le schema en temps sur un flot de sortie.
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Schema_Adams_Bashforth_base::printOn(Sortie& s) const
 {
   return Schema_Explicite_Multi_TimeStep_base::printOn(s);
 }
 
 
-// Description:
-//    Lit le schema en temps a partir d'un flot d'entree.
-//    Simple appel a: Schema_Temps_base::readOn(Entree& )
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit le schema en temps a partir d'un flot d'entree.
+ *
+ * Simple appel a: Schema_Temps_base::readOn(Entree& )
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Schema_Adams_Bashforth_base::readOn(Entree& s)
 {
   return Schema_Explicite_Multi_TimeStep_base::readOn(s) ;

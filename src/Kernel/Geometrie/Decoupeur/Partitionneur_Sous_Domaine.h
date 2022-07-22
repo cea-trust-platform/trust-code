@@ -19,30 +19,30 @@
 #include <Ref_Domaine.h>
 
 
-// .DESCRIPTION
-//  Decoupeur permettant de decouper des sous-domaines (se recouvrant potentiellement)  crees par
-//  Create_domain_from_sous_zone de maniere "conforme" : le sous-domaine est decoupe de maniere
-//  "conforme" avec le domaine complet.
-//
-//  Utilisation:
-//      - creer un domaine global, et deux sous-zones (qui se recouvrent partiellement) pour Domaine1 et Domaine2
-//      - decouper le domaine global et ecrire le fichier de decoupe
-//      - creer Domaine1 et Domaine2 par Create_domain_from_sous_zone
-//      - decouper D1 et D2 par Partitionneur sous_domaine en prenant pour source le decoupage du domaine global.
-//
-//  Syntaxe:
-//    Decouper dom_N
-//    {
-//        partitionneur sous_domaine
-//        {
-//             fichier     decoup/domaine_glob.txt
-//             fichier_ssz sous_zone_dom_N.file
-//        }
-//        Nom_Zones decoup/dom_N
-//    }
-//
-// .SECTION voir aussi
-//    Partitionneur_Union Create_domain_from_sous_zone
+/*! @brief Decoupeur permettant de decouper des sous-domaines (se recouvrant potentiellement)  crees par Create_domain_from_sous_zone de maniere "conforme" : le sous-domaine est decoupe de maniere
+ *
+ *   "conforme" avec le domaine complet.
+ *
+ *   Utilisation:
+ *       - creer un domaine global, et deux sous-zones (qui se recouvrent partiellement) pour Domaine1 et Domaine2
+ *       - decouper le domaine global et ecrire le fichier de decoupe
+ *       - creer Domaine1 et Domaine2 par Create_domain_from_sous_zone
+ *       - decouper D1 et D2 par Partitionneur sous_domaine en prenant pour source le decoupage du domaine global.
+ *
+ *   Syntaxe:
+ *     Decouper dom_N
+ *     {
+ *         partitionneur sous_domaine
+ *         {
+ *              fichier     decoup/domaine_glob.txt
+ *              fichier_ssz sous_zone_dom_N.file
+ *         }
+ *         Nom_Zones decoup/dom_N
+ *     }
+ *
+ *
+ * @sa Partitionneur_Union Create_domain_from_sous_zone
+ */
 class Partitionneur_Sous_Domaine : public Partitionneur_base
 {
   Declare_instanciable(Partitionneur_Sous_Domaine);

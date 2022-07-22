@@ -18,13 +18,13 @@
 
 #include <Interpolation_IBM_base.h>
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Interpolation_IBM_aucune
-//
-// <Description of class Interpolation_IBM_aucune>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Interpolation_IBM_aucune
+ *
+ *  <Description of class Interpolation_IBM_aucune>
+ *
+ *
+ *
+ */
 
 class Interpolation_IBM_aucune : public Interpolation_IBM_base
 {

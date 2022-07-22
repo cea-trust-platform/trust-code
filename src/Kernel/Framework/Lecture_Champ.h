@@ -22,13 +22,13 @@
 
 //Declare_liste(Champ);
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Lecture_Champ
-//
-// <Description of class Lecture_Champ>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class Lecture_Champ
+ *
+ *  <Description of class Lecture_Champ>
+ *
+ *
+ *
+ */
 class List_Nom;
 class Lecture_Champ : public Objet_U
 {

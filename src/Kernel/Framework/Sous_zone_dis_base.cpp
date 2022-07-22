@@ -29,15 +29,17 @@ Entree& Sous_zone_dis_base::readOn(Entree& is)
   return is ;
 }
 
-// Description:
-//    Associe une Sous_Zone a l'objet.
+/*! @brief Associe une Sous_Zone a l'objet.
+ *
+ */
 void Sous_zone_dis_base::associer_sous_zone(const Sous_Zone& une_sous_zone)
 {
   la_sous_zone=une_sous_zone;
 }
 
-// Description:
-//    Associe une Zone_dis a l'objet.
+/*! @brief Associe une Zone_dis a l'objet.
+ *
+ */
 void Sous_zone_dis_base::associer_zone_dis(const Zone_dis_base& une_zone_dis)
 {
   la_zone_dis=une_zone_dis;

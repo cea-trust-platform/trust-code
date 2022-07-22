@@ -18,9 +18,9 @@
 
 
 
-//
-// .DESCRIPTION class Pred_Cor
-// Le schema doit etre utilise avec un schema d'espace alternant
+/*! @brief class Pred_Cor Le schema doit etre utilise avec un schema d'espace alternant
+ *
+ */
 
 
 // .SECTION voir aussi

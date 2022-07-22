@@ -33,18 +33,15 @@ class MEDDoubleField;
 class MEDIntField;
 class Init_Params;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     class ProblemTrio
-//
-//     This class defines the API a problem has to implement in order to be coupled.
-//     For precise specifications and possible use of this API, See NT
-//     SSTH/LMDL_2006_001
-//     Implements IterativeUnsteadyProblem and FieldIO
-//
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief class ProblemTrio
+ *
+ *      This class defines the API a problem has to implement in order to be coupled.
+ *      For precise specifications and possible use of this API, See NT
+ *      SSTH/LMDL_2006_001
+ *      Implements IterativeUnsteadyProblem and FieldIO
+ *
+ *
+ */
 class ProblemTrio : public Problem
 {
 

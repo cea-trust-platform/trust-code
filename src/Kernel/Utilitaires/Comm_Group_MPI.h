@@ -25,12 +25,14 @@
 
 #include <comm_incl.h>
 
-// .DESCRIPTION        :
-//  Classe Comm_Group_MPI, derivee de la classe abstraite Comm_Group.
-//  Cette classe represente un groupe de communication qui repose sur MPI.
-//
-//  Construction de l'objet : voir init_group_trio() pour le groupe_TRUST
-//   et init_group() pour les autres.
+/*! @brief : Classe Comm_Group_MPI, derivee de la classe abstraite Comm_Group.
+ *
+ *   Cette classe represente un groupe de communication qui repose sur MPI.
+ *
+ *   Construction de l'objet : voir init_group_trio() pour le groupe_TRUST
+ *    et init_group() pour les autres.
+ *
+ */
 class Comm_Group_MPI : public Comm_Group
 {
   Declare_instanciable_sans_constructeur_ni_destructeur(Comm_Group_MPI);

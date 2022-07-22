@@ -23,19 +23,16 @@
 Declare_deriv(Champ_front_base);
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_front
-//     Classe generique de la hierarchie des champs aux frontieres,
-//     un objet Champ_front peut referencer n'importe quel objet derivant de
-//     Champ_front_base.
-//     La plupart des methodes appellent les methodes de l'objet Probleme
-//     sous-jacent via la methode valeur() declaree grace a la macro
-//Declare_deriv().;
-// .SECTION voir aussi
-//     Champ_front_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_front Classe generique de la hierarchie des champs aux frontieres,
+ *
+ *      un objet Champ_front peut referencer n'importe quel objet derivant de
+ *      Champ_front_base.
+ *      La plupart des methodes appellent les methodes de l'objet Probleme
+ *      sous-jacent via la methode valeur() declaree grace a la macro
+ * Declare_deriv().;
+ *
+ * @sa Champ_front_base
+ */
 class Champ_front : public DERIV(Champ_front_base), public Champ_Proto
 {
 
@@ -65,42 +62,21 @@ public:
 };
 
 
-// Description:
-//    Constructeur par copie d'un Champ_front_base dans
-//    un Champ_front.
-// Precondition:
-// Parametre: Champ_front_base& x
-//    Signification: le champ a copier
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Constructeur par copie d'un Champ_front_base dans un Champ_front.
+ *
+ * @param (Champ_front_base& x) le champ a copier
+ */
 /*
 inline Champ_front::Champ_front(const Champ_front_base& x)
   :DERIV(Champ_front_base)(x)
 {}
 */
 
-// Description:
-//    Operateur d'affectation d'un Champ_front_base dans un
-//    Champ_front.
-// Precondition:
-// Parametre: Champ_front_base& ch_base
-//    Signification: le champ partie droite de l'affectation
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: Champ_front&
-//    Signification: le resultat de l'affectation
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Operateur d'affectation d'un Champ_front_base dans un Champ_front.
+ *
+ * @param (Champ_front_base& ch_base) le champ partie droite de l'affectation
+ * @return (Champ_front&) le resultat de l'affectation
+ */
 inline Champ_front& Champ_front::operator=(const Champ_front_base& ch_base)
 {
   DERIV(Champ_front_base)::operator=(ch_base);
@@ -108,233 +84,115 @@ inline Champ_front& Champ_front::operator=(const Champ_front_base& ch_base)
 }
 
 
-// Description:
-//    Operateur d'affectation d'un Champ_front_base dans un
-//    Champ_front.
-// Precondition:
-// Parametre: Champ_front_base& ch_base
-//    Signification: le champ partie droite de l'affectation
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: Champ_front&
-//    Signification: le resultat de l'affectation
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Operateur d'affectation d'un Champ_front_base dans un Champ_front.
+ *
+ * @param (Champ_front_base& ch_base) le champ partie droite de l'affectation
+ * @return (Champ_front&) le resultat de l'affectation
+ */
 inline Champ_front& Champ_front::operator=(const Champ_front& ch_front)
 {
   DERIV(Champ_front_base)::operator=(ch_front.valeur());
   return *this;
 }
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Donne un nom au champ
-// Precondition:
-// Parametre: Nom& name
-//    Signification: le nom a donner au champ
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent Donne un nom au champ
+ *
+ * @param (Nom& name) le nom a donner au champ
+ */
 inline void Champ_front::nommer(const Nom& name)
 {
   valeur().nommer(name) ;
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Renvoie le nom du champ
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Nom&
-//    Signification: le nom du champ
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent Renvoie le nom du champ
+ *
+ * @return (Nom&) le nom du champ
+ */
 inline const Nom& Champ_front::le_nom() const
 {
   return valeur().le_nom();
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Renvoie la frontiere discretisee associee au champ
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Frontiere_dis_base&
-//    Signification: la frontiere discretisee associee au champ
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent Renvoie la frontiere discretisee associee au champ
+ *
+ *     (version const)
+ *
+ * @return (Frontiere_dis_base&) la frontiere discretisee associee au champ
+ */
 inline const Frontiere_dis_base& Champ_front::frontiere_dis() const
 {
   return valeur().frontiere_dis();
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Renvoie la frontiere discretisee associee au champ
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Frontiere_dis_base&
-//    Signification: la frontiere discretisee associee au champ
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent Renvoie la frontiere discretisee associee au champ
+ *
+ * @return (Frontiere_dis_base&) la frontiere discretisee associee au champ
+ */
 inline Frontiere_dis_base& Champ_front::frontiere_dis()
 {
   return valeur().frontiere_dis();
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Associe une frontiere discretisee au champ.
-// Precondition:
-// Parametre: Frontiere_dis_base& fr
-//    Signification: la frontiere discretisee a associer
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent Associe une frontiere discretisee au champ.
+ *
+ * @param (Frontiere_dis_base& fr) la frontiere discretisee a associer
+ */
 inline void Champ_front::associer_fr_dis_base(const Frontiere_dis_base& fr)
 {
   valeur().associer_fr_dis_base(fr);
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Renvoie le nombre de composantes du champ
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de composantes du champ
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent Renvoie le nombre de composantes du champ
+ *
+ * @return (int) le nombre de composantes du champ
+ */
 inline int Champ_front::nb_comp() const
 {
   return valeur().nb_comp();
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Effectue une mise a jour en temps.
-// Precondition:
-// Parametre: double temps
-//    Signification: le temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent Effectue une mise a jour en temps.
+ *
+ * @param (double temps) le temps de mise a jour
+ */
 inline void Champ_front::mettre_a_jour(double temps)
 {
   valeur().mettre_a_jour(temps);
 }
 
 
-// Description:
-//    Calcul (si necessaire) les coefficients d'echange pour
-//    un couplage
-// Precondition:
-// Parametre: double temps
-//    Signification: le temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Calcul (si necessaire) les coefficients d'echange pour un couplage
+ *
+ * @param (double temps) le temps de mise a jour
+ */
 inline void Champ_front::calculer_coeffs_echange(double temps)
 {
   valeur().calculer_coeffs_echange(temps);
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Renvoie le tableau des valeurs du champ
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: le tableau des valeurs du champ
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Appel a l'objet sous-jacent Renvoie le tableau des valeurs du champ
+ *
+ * @return (DoubleTab&) le tableau des valeurs du champ
+ */
 inline DoubleTab& Champ_front::valeurs()
 {
   return valeur().valeurs();
 }
 
 
-// Description:
-//    Appel a l'objet sous-jacent
-//    Renvoie le tableau des valeurs du champ
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: le tableau des valeurs du champ
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent Renvoie le tableau des valeurs du champ
+ *
+ *     (version const)
+ *
+ * @return (DoubleTab&) le tableau des valeurs du champ
+ */
 inline const DoubleTab& Champ_front::valeurs() const
 {
   return valeur().valeurs();

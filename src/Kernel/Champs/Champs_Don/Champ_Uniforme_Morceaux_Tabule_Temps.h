@@ -23,15 +23,12 @@
 
 Declare_liste(Table);
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Champ_Uniforme_Morceaux_Tabule_Temps
-//    Cette classe derivee de Champ_Uniforme_Morceaux_inst represente
-//    un champ constant par morceaux dans l'espace et tabule en temps.
-// .SECTION voir aussi
-//     Champ_Uniforme_Morceaux_inst
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_Uniforme_Morceaux_Tabule_Temps Cette classe derivee de Champ_Uniforme_Morceaux_inst represente
+ *
+ *     un champ constant par morceaux dans l'espace et tabule en temps.
+ *
+ * @sa Champ_Uniforme_Morceaux_inst
+ */
 class Champ_Uniforme_Morceaux_Tabule_Temps : public Champ_Uniforme_Morceaux_inst
 {
 

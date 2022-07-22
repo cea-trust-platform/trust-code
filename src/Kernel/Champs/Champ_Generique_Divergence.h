@@ -20,11 +20,12 @@
 #include <Champ_Generique_Operateur_base.h>
 #include <Operateur_Div.h>
 
-//
-// .DESCRIPTION class Champ_Generique_Divergence
-//
-// Champ destine a post-traiter la divergence d un champ generique
-// La classe porte un operateur statistique "divergence"
+/*! @brief class Champ_Generique_Divergence
+ *
+ *  Champ destine a post-traiter la divergence d un champ generique
+ *  La classe porte un operateur statistique "divergence"
+ *
+ */
 
 //// Syntaxe a respecter pour jdd
 //

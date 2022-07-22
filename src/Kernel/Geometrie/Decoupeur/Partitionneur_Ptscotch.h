@@ -18,9 +18,11 @@
 #include <Partitionneur_base.h>
 #include <Ref_Domaine.h>
 
-// .DESCRIPTION
-//  Partition d'un domaine en nb_parties parties equilibrees en utilisant
-//  la librairie Ptscotch. Voir construire_partition
+/*! @brief Partition d'un domaine en nb_parties parties equilibrees en utilisant la librairie Ptscotch.
+ *
+ * Voir construire_partition
+ *
+ */
 
 class Partitionneur_Ptscotch : public Partitionneur_base
 {

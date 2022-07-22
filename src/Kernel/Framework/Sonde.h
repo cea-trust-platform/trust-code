@@ -26,18 +26,15 @@
 #include <Motcle.h>
 class Zone;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Sonde
-//     Cette classe permet d'effectuer l'evolution d'un champ au cours du temps.
-//     On choisit l'ensemble des points sur lesquels on veut sonder un champ et
-//     la periodicite des observations. Les objets Postraitement porte des
-//     des sondes sur les champs a observer, une sonde porte d'ailleurs une
-//     reference sur un postraitement.
-// .SECTION voir aussi
-//     Postraitement Sondes
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Sonde Cette classe permet d'effectuer l'evolution d'un champ au cours du temps.
+ *
+ *      On choisit l'ensemble des points sur lesquels on veut sonder un champ et
+ *      la periodicite des observations. Les objets Postraitement porte des
+ *      des sondes sur les champs a observer, une sonde porte d'ailleurs une
+ *      reference sur un postraitement.
+ *
+ * @sa Postraitement Sondes
+ */
 class Sonde : public Objet_U
 {
   Declare_instanciable_sans_constructeur_ni_destructeur(Sonde);
@@ -115,20 +112,10 @@ protected :
 };
 
 
-// Description:
-//    Le temps ecoule.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: le temps ecoule
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Le temps ecoule.
+ *
+ * @return (double) le temps ecoule
+ */
 inline double Sonde::temps() const
 {
   return nb_bip*periode;
@@ -136,20 +123,9 @@ inline double Sonde::temps() const
 
 
 
-// Description:
-//    Ferme le fichier sur laquelle la sonde ecrit.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ferme le fichier sur laquelle la sonde ecrit.
+ *
+ */
 inline void Sonde::fermer_fichier()
 {
   if (fichier().is_open())
@@ -159,60 +135,30 @@ inline void Sonde::fermer_fichier()
 }
 
 
-// Description:
-//    Fixe la periode avec laquelle on sonde le champ.
-// Precondition:
-// Parametre: double pe
-//    Signification: la periode de sondage du champ
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: on sondera le champ tous les "pe" seconde
+/*! @brief Fixe la periode avec laquelle on sonde le champ.
+ *
+ * @param (double pe) la periode de sondage du champ
+ */
 inline void Sonde::fixer_periode(double pe)
 {
   periode=pe;
 }
 
 
-// Description:
-//    Renvoie le champ associe.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_base&
-//    Signification: le champ associe
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le champ associe.
+ *
+ * @return (Champ_base&) le champ associe
+ */
 inline const Champ_Generique_base& Sonde::le_champ() const
 {
   return mon_champ.valeur();
 }
 
 
-// Description:
-//    Renvoie le tableau des positions du champ qui sont sondees.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: les positions sondees
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le tableau des positions du champ qui sont sondees.
+ *
+ * @return (DoubleTab&) les positions sondees
+ */
 
 inline const DoubleTab& Sonde::les_positions_sondes_initiales() const
 {
@@ -229,60 +175,30 @@ inline const DoubleTab& Sonde::les_positions() const
   return les_positions_;
 }
 
-// Description:
-//    Renvoie le tableau des elements qui sont sondes.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: IntVect&
-//    Signification: les ments qui sont sondes
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Renvoie le tableau des elements qui sont sondes.
+ *
+ * @return (IntVect&) les ments qui sont sondes
+ */
 inline const IntVect& Sonde::les_poly() const
 {
   return elem_;
 }
 
 
-// Description:
-//    Renvoie un flot de sortie Fichier, pointant sur
-//    le fichier de sortie utilise par la sonde.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: SFichier&
-//    Signification: le fichier de sortie utilise par la sonde
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Renvoie un flot de sortie Fichier, pointant sur le fichier de sortie utilise par la sonde.
+ *
+ * @return (SFichier&) le fichier de sortie utilise par la sonde
+ */
 inline SFichier& Sonde::fichier()
 {
   return le_fichier_;
 }
 
-// Description:
-//    Destructeur. Ferme le fichier avant de detruire l'objet.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: le fichier associe a la sonde est ferme
+/*! @brief Destructeur.
+ *
+ * Ferme le fichier avant de detruire l'objet.
+ *
+ */
 inline Sonde::~Sonde()
 {
   fermer_fichier();

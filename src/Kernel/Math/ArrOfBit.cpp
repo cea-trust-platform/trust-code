@@ -21,7 +21,9 @@ Implemente_instanciable_sans_constructeur_ni_destructeur(ArrOfBit,"ArrOfBit",Obj
 const unsigned int ArrOfBit::SIZE_OF_INT_BITS = 5;
 const unsigned int ArrOfBit::DRAPEAUX_INT = 31;
 
-// Description: Constructeur d'un tableau de taille n, non initialise
+/*! @brief Constructeur d'un tableau de taille n, non initialise
+ *
+ */
 ArrOfBit::ArrOfBit(int n)
 {
   taille = 0;
@@ -29,7 +31,9 @@ ArrOfBit::ArrOfBit(int n)
   resize_array(n);
 }
 
-// Description: Destructeur.
+/*! @brief Destructeur.
+ *
+ */
 ArrOfBit::~ArrOfBit()
 {
   if (data)
@@ -37,7 +41,9 @@ ArrOfBit::~ArrOfBit()
   data = 0;
 }
 
-// Description: Constructeur par copie (deep copy)
+/*! @brief Constructeur par copie (deep copy)
+ *
+ */
 ArrOfBit::ArrOfBit(const ArrOfBit& array):Objet_U(array)
 {
   taille = 0;
@@ -45,9 +51,9 @@ ArrOfBit::ArrOfBit(const ArrOfBit& array):Objet_U(array)
   operator=(array);
 }
 
-// Description:
-// Taille en "int" du tableau requis pour stocker un tableau de bits
-// de taille donnees.
+/*! @brief Taille en "int" du tableau requis pour stocker un tableau de bits de taille donnees.
+ *
+ */
 int ArrOfBit::calculer_int_size(int la_taille) const
 {
   assert(la_taille >= 0);
@@ -57,10 +63,13 @@ int ArrOfBit::calculer_int_size(int la_taille) const
   return siz;
 }
 
-// Description: Change la taille du tableau et copie les donnees
-// existantes. Si la taille est plus petite, les donnees sont
-// tronquees, et si la taille est plus grande, les nouveaux elements
-// ne sont pas initialises.
+/*! @brief Change la taille du tableau et copie les donnees existantes.
+ *
+ * Si la taille est plus petite, les donnees sont
+ *  tronquees, et si la taille est plus grande, les nouveaux elements
+ *  ne sont pas initialises.
+ *
+ */
 ArrOfBit& ArrOfBit::resize_array(int n)
 {
   if (taille == n)
@@ -89,7 +98,9 @@ ArrOfBit& ArrOfBit::resize_array(int n)
   return *this;
 }
 
-// Description: Operateur copie (deep copy).
+/*! @brief Operateur copie (deep copy).
+ *
+ */
 ArrOfBit& ArrOfBit::operator=(const ArrOfBit& array)
 {
   int newsize = calculer_int_size(array.taille);
@@ -109,8 +120,9 @@ ArrOfBit& ArrOfBit::operator=(const ArrOfBit& array)
   return *this;
 }
 
-// Description: Si la valeur est non nulle, met la valeur 1 dans
-// tous les elements du tableau, sinon met la valeur 0.
+/*! @brief Si la valeur est non nulle, met la valeur 1 dans tous les elements du tableau, sinon met la valeur 0.
+ *
+ */
 
 ArrOfBit& ArrOfBit::operator=(int val)
 {
@@ -122,9 +134,12 @@ ArrOfBit& ArrOfBit::operator=(int val)
   return *this;
 }
 
-// Description: Ecriture du tableau. Format:
-// n
-// 0 1 0 0 1 0 ... (n valeurs)
+/*! @brief Ecriture du tableau.
+ *
+ * Format: n
+ *  0 1 0 0 1 0 ... (n valeurs)
+ *
+ */
 Sortie& ArrOfBit::printOn(Sortie& os) const
 {
   os << taille << finl;
@@ -145,9 +160,12 @@ Sortie& ArrOfBit::printOn(Sortie& os) const
   return os;
 }
 
-// Description: Lecture du tableau. Format:
-// n
-// 0 1 0 0 1 0 ... (n valeurs)
+/*! @brief Lecture du tableau.
+ *
+ * Format: n
+ *  0 1 0 0 1 0 ... (n valeurs)
+ *
+ */
 Entree& ArrOfBit::readOn(Entree& is)
 {
   int newsize;

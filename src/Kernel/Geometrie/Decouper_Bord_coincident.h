@@ -18,14 +18,14 @@
 
 
 
-//
-// .DESCRIPTION class Decouper_Bord_coincident
-// Realise un maillage en decoupant chaque triangle en 4 nouveaux triangles
-// ou bien chaque tetraedre en 8 nouveaux tetraedres
-// Le maillage obtenu n'a pas de directions preferentielles
-//
-// .SECTION voir aussi
-// Interprete
+/*! @brief class Decouper_Bord_coincident Realise un maillage en decoupant chaque triangle en 4 nouveaux triangles
+ *
+ *  ou bien chaque tetraedre en 8 nouveaux tetraedres
+ *  Le maillage obtenu n'a pas de directions preferentielles
+ *
+ *
+ * @sa Interprete
+ */
 
 #include <Interprete_geometrique_base.h>
 #include <Domaine.h>

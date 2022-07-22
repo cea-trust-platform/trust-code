@@ -17,14 +17,12 @@
 #include <Sortie.h>
 #include <sstream>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//   This derived class of Sortie stacks whatever it receives in an internal binary buffer.
-//   Data can be accessed through get_data().
-// .SECTION voir aussi
-//    SChaine
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief This derived class of Sortie stacks whatever it receives in an internal binary buffer.
+ *
+ * Data can be accessed through get_data().
+ *
+ * @sa SChaine
+ */
 class Sortie_Brute :  public Sortie
 {
 public:

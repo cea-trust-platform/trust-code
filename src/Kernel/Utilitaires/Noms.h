@@ -20,12 +20,9 @@
 
 Declare_vect(Nom);
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     Un tableau de chaine de caracteres (VECT(Nom))
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Un tableau de chaine de caracteres (VECT(Nom))
+ *
+ */
 class Noms : public VECT(Nom)
 {
   Declare_instanciable(Noms);
@@ -38,20 +35,9 @@ public :
 };
 
 
-// Description:
-//    Constructeur
-//    Construit un tableau de i noms
-// Precondition:
-// Parametre: int i
-//    Signification: nombre d'elements du tableau
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Constructeur Construit un tableau de i noms
+ *
+ * @param (int i) nombre d'elements du tableau
+ */
 inline Noms::Noms(int i): VECT(Nom)(i) {}
 #endif

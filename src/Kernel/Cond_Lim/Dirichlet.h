@@ -22,19 +22,16 @@
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Dirichlet
-//    Cette classe est la classe de base de la hierarchie des conditions
-//    aux limites de type Dirichlet.
-//    Une condition aux limites de type Dirichlet impose la valeur
-//    d'un champ inconnue sur une frontiere, ce qui correspond a:
-//     - vitesse imposee pour l'equation de Navier-Stokes
-//     - scalaire impose pour l'equation de transport d'un scalaire
-// .SECTION voir aussi
-//     Cond_lim_base Dirichlet_homogene
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Dirichlet Cette classe est la classe de base de la hierarchie des conditions
+ *
+ *     aux limites de type Dirichlet.
+ *     Une condition aux limites de type Dirichlet impose la valeur
+ *     d'un champ inconnue sur une frontiere, ce qui correspond a:
+ *      - vitesse imposee pour l'equation de Navier-Stokes
+ *      - scalaire impose pour l'equation de transport d'un scalaire
+ *
+ * @sa Cond_lim_base Dirichlet_homogene
+ */
 class Dirichlet  : public Cond_lim_base
 {
 

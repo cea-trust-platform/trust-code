@@ -24,23 +24,14 @@
 Implemente_instanciable(Sous_Zone,"Sous_Zone",Objet_U);
 
 
-// Description:
-//    Ecrit la liste des polyedres de la sous-zone
-//    sur un flot de sortie.
-//    Format:
-//    Liste n1 n2 .. Ni
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Ecrit la liste des polyedres de la sous-zone sur un flot de sortie.
+ *
+ *     Format:
+ *     Liste n1 n2 .. Ni
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Sous_Zone::printOn(Sortie& os) const
 {
   os << "{" << finl;
@@ -51,41 +42,32 @@ Sortie& Sous_Zone::printOn(Sortie& os) const
 }
 
 
-// Description:
-//    Lit les specifications d'une sous-zone dans le jeu
-//    de donnee a partir d'un flot d'entree.
-//    Format:
-//     { Rectangle Origine x0 y0 Cotes lx ly } en dimension 2
-//     { Boite Origine x0 y0 z0 Cotes lx ly lz} en dimension 3
-//      ou
-//     { Liste n n1  ni   nn }
-//      ou
-//     { Intervalle n1 n2 }
-//      ou
-//     { Polynomes {bloc_lecture_poly1 et bloc_lecture_poly_i
-//                  et bloc_lecture_poly_n}
-//     }
-// Precondition: un domaine doit avoir ete associe a la zone
-//               dotn on definit une sous-zone
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: accolade ouvrante attendue
-// Exception: mot clef non reconnu
-// Exception: mot clef "et" ou "}" attendu
-// Exception: En dimension 2, il faut utiliser Rectangle
-// Exception: mot clef "Origine" attendu
-// Exception: mot clef "Cotes" attendu
-// Exception: En dimension 3, il faut utiliser Boite
-// Exception: Erreur TRUST (mot clef reconnu non prevu)
-// Exception: accolade fermante attendue
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit les specifications d'une sous-zone dans le jeu de donnee a partir d'un flot d'entree.
+ *
+ *     Format:
+ *      { Rectangle Origine x0 y0 Cotes lx ly } en dimension 2
+ *      { Boite Origine x0 y0 z0 Cotes lx ly lz} en dimension 3
+ *       ou
+ *      { Liste n n1  ni   nn }
+ *       ou
+ *      { Intervalle n1 n2 }
+ *       ou
+ *      { Polynomes {bloc_lecture_poly1 et bloc_lecture_poly_i
+ *                   et bloc_lecture_poly_n}
+ *      }
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ * @throws accolade ouvrante attendue
+ * @throws mot clef non reconnu
+ * @throws mot clef "et" ou "}" attendu
+ * @throws En dimension 2, il faut utiliser Rectangle
+ * @throws mot clef "Origine" attendu
+ * @throws mot clef "Cotes" attendu
+ * @throws En dimension 3, il faut utiliser Boite
+ * @throws Erreur TRUST (mot clef reconnu non prevu)
+ * @throws accolade fermante attendue
+ */
 Entree& Sous_Zone::readOn(Entree& is)
 {
   Motcles les_mots(12);
@@ -984,20 +966,10 @@ int Sous_Zone::lire_motcle_non_standard(const Motcle& motlu , Entree& is)
 
 
 
-// Description:
-//    Ajoute un polyedre a la sous-zone.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode modifie l'objet
+/*! @brief Ajoute un polyedre a la sous-zone.
+ *
+ * @return (int)
+ */
 int Sous_Zone::add_poly(const int poly)
 {
   assert(0<=poly);
@@ -1015,20 +987,10 @@ int Sous_Zone::add_poly(const int poly)
 }
 
 
-// Description:
-//    Enleve un polyedre a la sous-zone.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode modifie l'objet
+/*! @brief Enleve un polyedre a la sous-zone.
+ *
+ * @return (int)
+ */
 int Sous_Zone::remove_poly(const int poly)
 {
   assert(0<=poly);
@@ -1050,44 +1012,26 @@ int Sous_Zone::remove_poly(const int poly)
 }
 
 
-// Description:
-//    Associe une zone a la sous-zone.
-//    La sous-zone sera une sous-zone de la Zone specifiee.
-// Precondition:
-// Parametre: Zone& zone
-//    Signification: la zone a associe a la sous-zone
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe une zone a la sous-zone.
+ *
+ * La sous-zone sera une sous-zone de la Zone specifiee.
+ *
+ * @param (Zone& zone) la zone a associe a la sous-zone
+ */
 void Sous_Zone::associer_zone(const Zone& une_zone)
 {
   la_zone_=une_zone;
 }
 
 
-// Description:
-//    Associe un Objet_U a la sous-zone.
-//    On controle le type de l'objet a associer
-//    dynamiquement.
-// Precondition:
-// Parametre: Objet_U& ob
-//    Signification: objet a associer a la sous-zone.
-//    Valeurs par defaut:
-//    Contraintes: doit etre un sous-type de Domaine
-//    Acces:
-// Retour: int
-//    Signification: renvoie 1 si l'association a reussi
-//                   0 sinon.
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Associe un Objet_U a la sous-zone.
+ *
+ * On controle le type de l'objet a associer
+ *     dynamiquement.
+ *
+ * @param (Objet_U& ob) objet a associer a la sous-zone.
+ * @return (int) renvoie 1 si l'association a reussi 0 sinon.
+ */
 int Sous_Zone::associer_(Objet_U& ob)
 {
   if( sub_type(Domaine, ob))
@@ -1103,20 +1047,10 @@ int Sous_Zone::associer_(Objet_U& ob)
 
 
 
-// Description:
-//    Donne un nom a la sous-zone.
-// Precondition:
-// Parametre: Nom& nom
-//    Signification: le nom a donner a la sous-zone
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Donne un nom a la sous-zone.
+ *
+ * @param (Nom& nom) le nom a donner a la sous-zone
+ */
 void Sous_Zone::nommer(const Nom& nom)
 {
   nom_=nom;

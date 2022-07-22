@@ -18,12 +18,12 @@
 
 
 
-//
-// .DESCRIPTION class Reorienter_triangle
-// Balaye les triangles du maillage pour qu'ils soient directs.
-//
-// .SECTION voir aussi
-// Interprete
+/*! @brief class Reorienter_triangle Balaye les triangles du maillage pour qu'ils soient directs.
+ *
+ *
+ *
+ * @sa Interprete
+ */
 
 #include <Interprete_geometrique_base.h>
 #include <Domaine.h>

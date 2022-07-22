@@ -20,16 +20,14 @@
 #include <TRUSTArray.h>
 
 
-////////////////////////////////////////
-//
-// CLASS: RTabInt
-//
-// .DESCRIPTION class RTabInt
-//
-//        La classe RTabInt implemente la notion de vecteur
-//        d'entier redimensionnable.
-//
-////////////////////////////////////////
+/*! @brief class RTabInt
+ *
+ *         La classe RTabInt implemente la notion de vecteur
+ *         d'entier redimensionnable.
+ *
+ *
+ *
+ */
 
 class RTabInt : public Objet_U
 {
@@ -63,15 +61,17 @@ private:
   int max_data;
 
 };
-// Description:
-// operateur []
+/*! @brief operateur []
+ *
+ */
 inline int RTabInt::size() const
 {
   return size_r_;
 }
 
-// Description:
-// operateur []
+/*! @brief operateur []
+ *
+ */
 inline void RTabInt::resize(int n)
 {
   if(n>data.size_array())
@@ -85,8 +85,9 @@ inline void RTabInt::resize(int n)
 }
 
 
-// Description:
-// operateur []
+/*! @brief operateur []
+ *
+ */
 inline int& RTabInt::operator[](int i)
 {
   return data[i];
@@ -96,8 +97,9 @@ inline const int& RTabInt::operator[](int i) const
   return data[i];
 }
 
-// Description:
-// idem operator[]
+/*! @brief idem operator[]
+ *
+ */
 inline int& RTabInt::operator()(int i)
 {
   return data[i];

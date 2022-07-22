@@ -16,13 +16,13 @@
 #ifndef Precond_included
 #define Precond_included
 
-//
-// .DESCRIPTION class Precond
-//  Un Precond represente n'importe qu'elle classe
-//  derivee de la classe Precond_base
-//
-// .SECTION voir aussi
-//  SSOR Precond_base
+/*! @brief class Precond Un Precond represente n'importe qu'elle classe
+ *
+ *   derivee de la classe Precond_base
+ *
+ *
+ * @sa SSOR Precond_base
+ */
 
 #include <Precond_base.h>
 #include <Deriv.h>

@@ -32,57 +32,39 @@ using ICoCo::TrioField;
 Implemente_instanciable(Pilote_ICoCo,"Pilote_ICoCo",Interprete);
 
 
-// Description:
-//    Simple appel a:
-//      Interprete::printOn(Sortie&)
-//    Imprime l'interprete sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a: Interprete::printOn(Sortie&)
+ *
+ *     Imprime l'interprete sur un flot de sortie
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Pilote_ICoCo::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
 
-// Description:
-//    Simple appel a:
-//      Interprete::readOn(Entree&)
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Simple appel a: Interprete::readOn(Entree&)
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Pilote_ICoCo::readOn(Entree& is)
 {
   return Interprete::readOn(is);
 }
 
 
-// Description:
-//    Fonction principale de l'interprete:
-//      resoudre un probleme
-//    Le probleme est pilote via l'interface ICoCo
-//    On lui fournit a chaque pas de temps les champs
-//    d'entree "pression_sortie" et "vitesse_entree"
-//    qui sont respectivement un ch_front_input et un ch_front_input_uniforme
-//    Montre l'utilisation de l'avance en temps et des input fields
+/*! @brief Fonction principale de l'interprete: resoudre un probleme
+ *
+ *     Le probleme est pilote via l'interface ICoCo
+ *     On lui fournit a chaque pas de temps les champs
+ *     d'entree "pression_sortie" et "vitesse_entree"
+ *     qui sont respectivement un ch_front_input et un ch_front_input_uniforme
+ *     Montre l'utilisation de l'avance en temps et des input fields
+ *
+ */
 
 //     Utilisation dans le JDD : Pilote_ICoCo_1 pb
 //     Utilise dans le cas test U_in_var_impl_ICoCo
@@ -184,13 +166,14 @@ void main_pilote_icoco_1(Probleme_U& pb_to_solve)
   pb.terminate();
 
 }
-// Description:
-//    Fonction principale de l'interprete:
-//      resoudre un probleme
-//    Le probleme est pilote via l'interface ICoCo.
-//    On lui fournit a chaque pas de temps le champ
-//    d'entree "puissance" qui est un Champ_input_P0
-//    Montre l'utilisation de l'avance en temps et des input fields
+/*! @brief Fonction principale de l'interprete: resoudre un probleme
+ *
+ *     Le probleme est pilote via l'interface ICoCo.
+ *     On lui fournit a chaque pas de temps le champ
+ *     d'entree "puissance" qui est un Champ_input_P0
+ *     Montre l'utilisation de l'avance en temps et des input fields
+ *
+ */
 
 //     Utilisation dans le JDD : Pilote_ICoCo_2 pb
 //     Utilise dans le cas test ChDonXYZ_ICoCo
@@ -290,23 +273,14 @@ void main_pilote_icoco_2(Probleme_U& pb_to_solve)
 
 
 
-// Description:
-//    Fonction principale de l'interprete:
-//      resoudre un probleme
-//    Le probleme est pilote via l'interface ICoCo
-//    Le troisieme pas de temps est effectue deux fois
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour:
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Fonction principale de l'interprete: resoudre un probleme
+ *
+ *     Le probleme est pilote via l'interface ICoCo
+ *     Le troisieme pas de temps est effectue deux fois
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return le flot d'entree modifie
+ */
 void main_abort( Probleme_U& pb_to_solve)
 {
   //  char* pb_name=nom1.getChar();

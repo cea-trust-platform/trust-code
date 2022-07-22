@@ -24,18 +24,16 @@ class Sortie;
 int get_disable_stop();
 void change_disable_stop(int new_stop);
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//   Classe de base de TRUST (notamment Objet_U).
-//   Elle fournit quelques services de base
-//   accessibles de partout dans le code (ces services etaient historiquement
-//   des methodes non statiques, depuis que tous ces services sont statiques,
-//   cette classe n'a plus vraiment d'autre fonction que de ranger ces methodes
-//   quelque part)
-// .SECTION voir aussi
-//   Objet_U
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe de base de TRUST (notamment Objet_U).
+ *
+ * Elle fournit quelques services de base
+ *    accessibles de partout dans le code (ces services etaient historiquement
+ *    des methodes non statiques, depuis que tous ces services sont statiques,
+ *    cette classe n'a plus vraiment d'autre fonction que de ranger ces methodes
+ *    quelque part)
+ *
+ * @sa Objet_U
+ */
 
 class Process
 {

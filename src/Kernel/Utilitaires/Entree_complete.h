@@ -18,14 +18,12 @@
 
 #include <EChaine.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//  Cette classe se comporte comme EChaine tant que l'on n'est pas
-//  a la fin de la chaine. La suite est lue dans entree2 passee en parametre.
-//  check_types() et error_action() sont identiques a ceux de entree2
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Cette classe se comporte comme EChaine tant que l'on n'est pas a la fin de la chaine.
+ *
+ * La suite est lue dans entree2 passee en parametre.
+ *   check_types() et error_action() sont identiques a ceux de entree2
+ *
+ */
 
 class Entree_complete: public Entree
 {

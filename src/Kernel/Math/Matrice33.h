@@ -18,9 +18,12 @@
 #include <TRUSTTabs_forward.h>
 #include <assert.h>
 
-// Description: une matrice 3x3.
-//  Convention pour m(i,j): i est l'indice de ligne, j l'indice de colonne entre 0 et 2 inclus.
-//  Attention: le constructeur par defaut n'initialise pas la matrice !
+/*! @brief une matrice 3x3.
+ *
+ * Convention pour m(i,j): i est l'indice de ligne, j l'indice de colonne entre 0 et 2 inclus.
+ *   Attention: le constructeur par defaut n'initialise pas la matrice !
+ *
+ */
 class Matrice33
 {
 public:

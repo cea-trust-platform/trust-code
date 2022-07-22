@@ -17,14 +17,13 @@
 #define MultipleFiles_included
 #include <Interprete.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe MultipleFiles
-//    Cette classe permet de fixer la limite d'utilisation d'un fichier ecrit par process
-//    Directive:
-//          MultipleFiles integer
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe MultipleFiles Cette classe permet de fixer la limite d'utilisation d'un fichier ecrit par process
+ *
+ *     Directive:
+ *           MultipleFiles integer
+ *
+ *
+ */
 class MultipleFiles : public Interprete
 {
   Declare_instanciable(MultipleFiles);

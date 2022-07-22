@@ -23,22 +23,16 @@
 
 using ICoCo::TrioField;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     This is the base class for all the Fields which can be written by a call to
-//     Problem::setInputField
-//     There are for derived classes for uniform or not / domain or boundary fields.
-//     All are supposed to be time-dependent.
-//
-//     Each Pb_base keeps a list of references to the Champ_Input_Proto it contains.
-//
-// .SECTION voir aussi
-//    Champ_Input
-//    Champ_Input_Uniforme
-//    Champ_Front_Input
-//    Champ_Front_Input_Uniforme
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief This is the base class for all the Fields which can be written by a call to Problem::setInputField
+ *
+ *      There are for derived classes for uniform or not / domain or boundary fields.
+ *      All are supposed to be time-dependent.
+ *
+ *      Each Pb_base keeps a list of references to the Champ_Input_Proto it contains.
+ *
+ *
+ * @sa Champ_Input, Champ_Input_Uniforme, Champ_Front_Input, Champ_Front_Input_Uniforme
+ */
 
 class Champ_Input_Proto
 {

@@ -21,24 +21,16 @@ Implemente_liste(Sonde);
 Implemente_instanciable(Sondes,"Sondes|Probes",LIST(Sonde));
 Implemente_liste(Champ);
 
-// Description:
-//    Lit une liste de sondes a partir d'un flot d'entree
-//    Format:
-//    {
-//      [LIRE UNE SONDE AUTANT DE FOIS QUE NECESSAIRE]
-//    }
-// Precondition: la liste des sondes doit avoir un postraitement associe
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: accolade ouvrante attendue
-// Effets de bord:
-// Postcondition:
+/*! @brief Lit une liste de sondes a partir d'un flot d'entree Format:
+ *
+ *     {
+ *       [LIRE UNE SONDE AUTANT DE FOIS QUE NECESSAIRE]
+ *     }
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ * @throws accolade ouvrante attendue
+ */
 Entree& Sondes::readOn(Entree& s )
 {
   assert(mon_post.non_nul());
@@ -124,20 +116,11 @@ void Sondes::lire_fichier(const Nom& nom_fichier)
   f.close();
 }
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Sondes::printOn(Sortie& s ) const
 {
   return s ;
@@ -167,21 +150,9 @@ void Sondes::completer()
     }
 }
 
-// Description:
-//    Effectue le postraitement sur chacune des sondes de
-//    la liste.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Effectue le postraitement sur chacune des sondes de la liste.
+ *
+ */
 void Sondes::postraiter()
 {
   LIST_CURSEUR(Sonde) curseur=*this;
@@ -220,26 +191,11 @@ REF(Champ_base) Sondes::get_from_cache(REF(Champ_Generique_base)& mon_champ, con
     return sourceList(num);
 }
 
-// Description:
-//    Effectue une mise a jour en temps de chacune
-//    des sondes de la liste.
-// Precondition:
-// Parametre: double temps
-//    Signification: le temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: double tinit
-//    Signification: le temps initial des sondes
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Effectue une mise a jour en temps de chacune des sondes de la liste.
+ *
+ * @param (double temps) le temps de mise a jour
+ * @param (double tinit) le temps initial des sondes
+ */
 void Sondes::mettre_a_jour(double temps, double tinit)
 {
   LIST_CURSEUR(Sonde) curseur=*this;
@@ -252,20 +208,9 @@ void Sondes::mettre_a_jour(double temps, double tinit)
 }
 
 
-// Description:
-//    Associe un postraitement a la liste des sondes.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la liste des sondes a un postraitement associe
+/*! @brief Associe un postraitement a la liste des sondes.
+ *
+ */
 void Sondes::associer_post(const Postraitement& post)
 {
   mon_post = post;

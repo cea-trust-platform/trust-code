@@ -21,19 +21,16 @@
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Champ_front_base
-//     Classe de base pour les Champs aux frontieres instationnaires,
-//     mais uniformes en espace.
-//     Les aspects temporels sont equivalents a ceux de
-//     Ch_front_var_instationnaire.
-//     En revanche, le tableau de valeurs est dimensionne a une seule
-//     valeur et n'a pas d'espace virtuel.
-// .SECTION voir aussi
-//     Champ_front_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Champ_front_base Classe de base pour les Champs aux frontieres instationnaires,
+ *
+ *      mais uniformes en espace.
+ *      Les aspects temporels sont equivalents a ceux de
+ *      Ch_front_var_instationnaire.
+ *      En revanche, le tableau de valeurs est dimensionne a une seule
+ *      valeur et n'a pas d'espace virtuel.
+ *
+ * @sa Champ_front_base
+ */
 class Champ_front_instationnaire_base : public Champ_front_base
 {
 

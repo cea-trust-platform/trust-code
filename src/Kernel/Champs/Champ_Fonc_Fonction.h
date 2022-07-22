@@ -18,17 +18,14 @@
 
 #include <Champ_Fonc_Tabule.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     Classe Champ_Fonc_Fonction
-//     Classe derivee de Champ_Fonc_Tabule qui represente les
-//     champs fonctions d'un autre champ par une fonction
-//     L'objet porte un membre de type Champ_Fonc qui stocke
-//     les valeurs du champ tabule.
-// .SECTION voir aussi
-//     Champ_Fonc_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Champ_Fonc_Fonction Classe derivee de Champ_Fonc_Tabule qui represente les
+ *
+ *      champs fonctions d'un autre champ par une fonction
+ *      L'objet porte un membre de type Champ_Fonc qui stocke
+ *      les valeurs du champ tabule.
+ *
+ * @sa Champ_Fonc_base
+ */
 class Champ_Fonc_Fonction : public Champ_Fonc_Tabule
 {
   Declare_instanciable(Champ_Fonc_Fonction);

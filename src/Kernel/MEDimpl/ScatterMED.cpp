@@ -22,20 +22,11 @@
 Implemente_instanciable(ScatterMED,"ScatterMED",Scatter);
 
 
-// Description:
-//    Simple appel a: Interprete::printOn(Sortie&)
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Simple appel a: Interprete::printOn(Sortie&)
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& ScatterMED::printOn(Sortie& os) const
 {
   return Scatter::printOn(os);
@@ -47,13 +38,14 @@ Entree& ScatterMED::readOn(Entree& is)
 }
 
 
-// Description:
-//  Lit le domaine dans le fichier de nom "nomentree",
-//  de type LecFicDistribueBin ou LecFicDistribue
-//  (selon fichier_zone_format_binaire_)
-//  Le format historique n'est plus supporte.
-//  Format attendu : Domaine::ReadOn
-//  La zone est renommee comme le domaine (pour lance_test_seq_par)
+/*! @brief Lit le domaine dans le fichier de nom "nomentree", de type LecFicDistribueBin ou LecFicDistribue
+ *
+ *   (selon fichier_zone_format_binaire_)
+ *   Le format historique n'est plus supporte.
+ *   Format attendu : Domaine::ReadOn
+ *   La zone est renommee comme le domaine (pour lance_test_seq_par)
+ *
+ */
 void ScatterMED::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
 {
 

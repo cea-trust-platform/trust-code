@@ -18,10 +18,10 @@
 
 #include <TRUSTChamp_Divers_generique.h>
 
-// .DESCRIPTION
-//     classe Champ_Uniforme
-//     Represente un champ constant dans l'espace et dans le temps.
-// .SECTION voir aussi : TRUSTChamp_Divers_generique
+/*! @brief classe Champ_Uniforme Represente un champ constant dans l'espace et dans le temps.
+ *
+ * @sa : TRUSTChamp_Divers_generique
+ */
 class Champ_Uniforme : public TRUSTChamp_Divers_generique<Champ_Divers_Type::UNIFORME>
 {
   Declare_instanciable(Champ_Uniforme);

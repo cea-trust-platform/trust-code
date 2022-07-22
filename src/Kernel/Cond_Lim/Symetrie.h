@@ -19,23 +19,20 @@
 #include <Navier.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Symetrie
-//    Sur les faces de symetrie on a les proprietes suivantes:
-//      - composante normale de la vitesse nulle
-//      - composante tangentielle de la contrainte nulle
-//        (condition de glissement)
-//      - les gradients des grandeurs scalaires sont nuls
-//    Dans une equation de transport d'un scalaire (temperature, concentration,
-//    K, epsilon), la condition Symetrie met les gradients des grandeurs
-//    scalaires a 0.
-//    Dans une equation de Navier_Stokes, elle impose la composante normale
-//    de la vitesse nulle (condition de glissement)
-// .SECTION voir aussi
-//    Cond_lim_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Symetrie Sur les faces de symetrie on a les proprietes suivantes:
+ *
+ *       - composante normale de la vitesse nulle
+ *       - composante tangentielle de la contrainte nulle
+ *         (condition de glissement)
+ *       - les gradients des grandeurs scalaires sont nuls
+ *     Dans une equation de transport d'un scalaire (temperature, concentration,
+ *     K, epsilon), la condition Symetrie met les gradients des grandeurs
+ *     scalaires a 0.
+ *     Dans une equation de Navier_Stokes, elle impose la composante normale
+ *     de la vitesse nulle (condition de glissement)
+ *
+ * @sa Cond_lim_base
+ */
 class Symetrie  : public Navier
 {
   Declare_instanciable(Symetrie);

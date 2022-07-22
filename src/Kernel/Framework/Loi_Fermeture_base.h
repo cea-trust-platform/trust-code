@@ -25,12 +25,15 @@ class Champ_base;
 class Motcle;
 class Discretisation_base;
 
-// .DESCRIPTION: Classe de base des lois de fermetures.
-//  Cette classe calcule des champs qui peuvent dependre
-//  de plusieurs inconnues, de grandeurs physiques du milieu etc.
-//  Les champs de la classe sont rendus accessibles a tout le probleme
-//  a travers la methode get_champ() et leur mise a jour est declanchee
-//  par le probleme, apres la mise a jour du milieu et des equations.
+/*! @brief : Classe de base des lois de fermetures.
+ *
+ * Cette classe calcule des champs qui peuvent dependre
+ *   de plusieurs inconnues, de grandeurs physiques du milieu etc.
+ *   Les champs de la classe sont rendus accessibles a tout le probleme
+ *   a travers la methode get_champ() et leur mise a jour est declanchee
+ *   par le probleme, apres la mise a jour du milieu et des equations.
+ *
+ */
 class Loi_Fermeture_base : public Objet_U, public Champs_compris_interface
 {
   Declare_base(Loi_Fermeture_base);

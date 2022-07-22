@@ -203,7 +203,9 @@ int Champ_Gen_de_Champs_Gen::get_nb_sources() const
   return sources_reference_.size()+sources_.size();
 }
 
-// Description: sauvegarde des differentes sources
+/*! @brief sauvegarde des differentes sources
+ *
+ */
 int Champ_Gen_de_Champs_Gen::sauvegarder(Sortie& os) const
 {
   const int n = sources_.size();
@@ -213,7 +215,9 @@ int Champ_Gen_de_Champs_Gen::sauvegarder(Sortie& os) const
   return bytes;
 }
 
-// Description: reprise des differentes sources
+/*! @brief reprise des differentes sources
+ *
+ */
 int Champ_Gen_de_Champs_Gen::reprendre(Entree& is)
 {
   const int n = sources_.size();

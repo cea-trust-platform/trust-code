@@ -25,11 +25,12 @@
 class Domaine;
 class Zone;
 
-// .DESCRIPTION
-//  Classe outil permettant de generer des sous-domaines pour un calcul parallele
-//  a partir d'un domaine de depart (domaine_global) et d'un tableau de decoupage
-//  des elements de ce domaine (elem_part).
-//  Voir aussi Partitionneur_base.
+/*! @brief Classe outil permettant de generer des sous-domaines pour un calcul parallele a partir d'un domaine de depart (domaine_global) et d'un tableau de decoupage
+ *
+ *   des elements de ce domaine (elem_part).
+ *   Voir aussi Partitionneur_base.
+ *
+ */
 class DomaineCutter : public Objet_U
 {
   Declare_instanciable(DomaineCutter);

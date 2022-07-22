@@ -19,21 +19,11 @@
 Implemente_instanciable_sans_constructeur_ni_destructeur(Table,"Table",Objet_U);
 
 
-// Description:
-//    Constructeur par defaut.
-//    Table vide.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Constructeur par defaut.
+ *
+ * Table vide.
+ *
+ */
 Table::Table() : les_valeurs() , les_parametres(),isf(0)  { }
 
 Table::Table(const Table& t): Objet_U(t),Parser_Eval()
@@ -92,21 +82,11 @@ Entree& Table::lire_fxyzt(Entree& is,const int dim)
   return is;
 }
 
-// Description:
-//    Ecriture sur un flot de Sortie
-//    N'ecrit que le type et le nom de l'objet
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: le flot de sortie a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ecriture sur un flot de Sortie N'ecrit que le type et le nom de l'objet
+ *
+ * @param (Sortie& s) le flot de sortie a utiliser
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Table::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << " " << le_nom();
@@ -114,21 +94,11 @@ Sortie& Table::printOn(Sortie& s ) const
 
 
 
-// Description:
-//    Lecture sur un flot d'entree
-//    Lecture des parametres et des valeurs de la table.
-// Precondition:
-// Parametre: Entree& s
-//    Signification: le flot d'entree a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Lecture sur un flot d'entree Lecture des parametres et des valeurs de la table.
+ *
+ * @param (Entree& s) le flot d'entree a utiliser
+ * @return (Entree&) le flot d'entree modifie
+ */
 Entree& Table::readOn(Entree& s )
 {
   s >> les_parametres;
@@ -241,20 +211,11 @@ double Table::val(const std::vector<double>& vals_param, int ncomp) const
   return 0;
 }
 
-// Description:
-//    Pas encore code. Sort en erreur.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Pas encore code.
+ *
+ * Sort en erreur.
+ *
+ */
 double Table::val(const DoubleVect& val_param) const
 {
   Cerr << "Table::val(const DoubleVect& ) is not coded yet." << finl;
@@ -263,28 +224,15 @@ double Table::val(const DoubleVect& val_param) const
 }
 
 
-// Description:
-//    Retourne les valeurs calculees pour le point val_param (cas du tableau valeurs a 2 dimensions)
-//    Les valeurs sont exacteS si le point correspond a un parametre donne.
-//    Sinon, les valeurs sont interpolees (interp. lineaire d'ordre 1)
-// Precondition:
-// Parametre: DoubleVect& x
-//    Signification: vecteur des valeurs
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Parametre: const double& val_param
-//    Signification: le point en lequel calculer la valeur
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleVect& x
-//    Signification: x modifie
-//    Contraintes:
-// Exception:
-//    Sort en erreur s'il manque des parametres
-// Effets de bord:
-// Postcondition:
+/*! @brief Retourne les valeurs calculees pour le point val_param (cas du tableau valeurs a 2 dimensions) Les valeurs sont exacteS si le point correspond a un parametre donne.
+ *
+ *     Sinon, les valeurs sont interpolees (interp. lineaire d'ordre 1)
+ *
+ * @param (DoubleVect& x) vecteur des valeurs
+ * @param (const double& val_param) le point en lequel calculer la valeur
+ * @return (DoubleVect& x) x modifie
+ * @throws Sort en erreur s'il manque des parametres
+ */
 DoubleVect& Table::valeurs(DoubleVect& x, const double val_param) const
 {
 
@@ -334,20 +282,11 @@ DoubleVect& Table::valeurs(DoubleVect& x, const double val_param) const
   return x;
 }
 
-// Description:
-//    Pas encore code. Sort en erreur.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Pas encore code.
+ *
+ * Sort en erreur.
+ *
+ */
 DoubleVect& Table::valeurs(DoubleVect& x, const DoubleVect& val_param) const
 {
   Cerr << "Table::val(const DoubleVect& ) is not coded yet." << finl;
@@ -364,25 +303,11 @@ DoubleTab& Table::valeurs(const DoubleTab& val_param,const DoubleTab& pos,const 
 
 }
 
-// Description:
-//    Affecte les parametres et les valeurs de la table
-// Precondition:
-// Parametre: const DoubleVect& param
-//    Signification: les parametres
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: const DoubleTab& val
-//    Signification: les valeurs
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Affecte les parametres et les valeurs de la table
+ *
+ * @param (const DoubleVect& param) les parametres
+ * @param (const DoubleTab& val) les valeurs
+ */
 void Table::remplir(const DoubleVect& param,const DoubleTab& aval)
 {
   // on verifie que param est strictement monotone

@@ -90,14 +90,15 @@ Type_info::~Type_info()
     }
 }
 
-// Description:
-//  Recherche le type de nom "nom" dans la liste de types enregistres
-//  par une recherche binaire.
-//  On compare les chaines converties en majuscules.
-//  On range dans "index" l'indice du type, s'il a ete trouve
-//  et sinon l'indice du type juste apres (dans ce cas, on a
-//   les_types[index-1]->n < nom < les_types[index]->n )
-//  Si le type a ete trouve on renvoie 1, sinon 0.
+/*! @brief Recherche le type de nom "nom" dans la liste de types enregistres par une recherche binaire.
+ *
+ *   On compare les chaines converties en majuscules.
+ *   On range dans "index" l'indice du type, s'il a ete trouve
+ *   et sinon l'indice du type juste apres (dans ce cas, on a
+ *    les_types[index-1]->n < nom < les_types[index]->n )
+ *   Si le type a ete trouve on renvoie 1, sinon 0.
+ *
+ */
 int Type_info::search_type_info_name(const char *nom, int& index)
 {
   assert(nom != 0);
@@ -130,31 +131,13 @@ int Type_info::search_type_info_name(const char *nom, int& index)
   index = imax;
   return 0;
 }
-// Description:
-//     Constructeur par un nom, un tableau de meres.
-// Precondition:
-// Parametre: const char* nom
-//    Signification: le nom du type a creer
-//    Valeurs par defaut:
-//    Contraintes: nom != null
-//    Acces: entree
-// Parametre: int nb_base
-//    Signification: le nombre de meres dans le tableau bases
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Parametre: const Type_info* bases[]
-//    Signification: le tableau specifiant les types de bases (meres) du type a creer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-//    Sort en erreur si le nom n'est pas defini (null)
-// Effets de bord:
-// Postcondition:
+/*! @brief Constructeur par un nom, un tableau de meres.
+ *
+ * @param (const char* nom) le nom du type a creer
+ * @param (int nb_base) le nombre de meres dans le tableau bases
+ * @param (const Type_info* bases[]) le tableau specifiant les types de bases (meres) du type a creer
+ * @throws Sort en erreur si le nom n'est pas defini (null)
+ */
 Type_info::Type_info(const char* un_nom, int nb_base, const Type_info** the_bases) :
   names_(un_nom),
   name_((Nom*)0),
@@ -173,37 +156,16 @@ Type_info::Type_info(const char* un_nom, int nb_base, const Type_info** the_base
   ajouter_type(*this);
 }
 
-// Description:
-//     Constructeur par un nom, une fonction et un tableau de meres.
-//     La fonction permet de creer une instance du bon type.
-// Precondition:
-// Parametre: const char* nom
-//    Signification: le nom du type a creer
-//    Valeurs par defaut:
-//    Contraintes: nom != null
-//    Acces: entree
-// Parametre: Objet_U* (*f)()
-//    Signification: fonction pour creer une instance du type considere
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int nb_base
-//    Signification: le nombre de meres dans le tableau bases[]
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Parametre: const Type_info* bases[]
-//    Signification: le tableau specifiant les types de bases (meres) du type a creer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-//    Sort en erreur si le nom donne n'est pas defini (null)
-// Effets de bord:
-// Postcondition:
+/*! @brief Constructeur par un nom, une fonction et un tableau de meres.
+ *
+ * La fonction permet de creer une instance du bon type.
+ *
+ * @param (const char* nom) le nom du type a creer
+ * @param (Objet_U* (*f)()) fonction pour creer une instance du type considere
+ * @param (int nb_base) le nombre de meres dans le tableau bases[]
+ * @param (const Type_info* bases[]) le tableau specifiant les types de bases (meres) du type a creer
+ * @throws Sort en erreur si le nom donne n'est pas defini (null)
+ */
 Type_info::Type_info(const char* un_nom,
                      Objet_U* (*f)(),
                      int nb_base,
@@ -225,10 +187,11 @@ Type_info::Type_info(const char* un_nom,
   ajouter_type(*this);
 }
 
-// Description:
-//  Methode statique appelee par les constructeurs de Type_info pour
-//  ajouter un nouveau type a la liste des types enregistres.
-//  Verifie que le nom du type n'existe pas encore.
+/*! @brief Methode statique appelee par les constructeurs de Type_info pour ajouter un nouveau type a la liste des types enregistres.
+ *
+ *   Verifie que le nom du type n'existe pas encore.
+ *
+ */
 void Type_info::ajouter_type(const Type_info& type_info)
 {
   // Split type_info.names_ into A if | is found (eg: n=A|B)
@@ -335,20 +298,11 @@ void Type_info::ajouter_type(const Type_info& type_info)
     }
 }
 
-// Description:
-//     Ecriture des bases du type considere sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ecriture des bases du type considere sur un flot de sortie
+ *
+ * @param (Sortie& os) flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Type_info::bases(Sortie& os) const
 {
   int i= nb_bases_;
@@ -357,20 +311,11 @@ Sortie& Type_info::bases(Sortie& os) const
   return os << finl;
 }
 
-// Description:
-//     Ecriture de toute la hierarchie du type considere sur un flix de sortie
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Ecriture de toute la hierarchie du type considere sur un flix de sortie
+ *
+ * @param (Sortie& os) flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
 Sortie& Type_info::hierarchie(Sortie& os)
 {
   os << "There is " << nb_classes << " classes:" << finl;
@@ -383,25 +328,15 @@ Sortie& Type_info::hierarchie(Sortie& os)
   return os << flush;
 }
 
-// Description:
-//     Instanciation d'un Objet_U du type indique
-//     S'il existe une classe T dont le Type_info a
-//     le nom typ, alors instance renvoie un pointeur
-//     sur une nouvelle instance de T.
-//     renvoie le pointeur nul sinon.
-// Precondition:
-// Parametre: const char* typ
-//    Signification: chaine de caractere associee a un type
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: Objet_U*
-//    Signification: pointeur sur un nouvel Objet_U du type typ
-//    Contraintes:
-// Exception:
-// Effets de bord:
-//      Creation d'un nouvel Objet_U s'il existe une classe de type typ
-// Postcondition:
+/*! @brief Instanciation d'un Objet_U du type indique S'il existe une classe T dont le Type_info a
+ *
+ *      le nom typ, alors instance renvoie un pointeur
+ *      sur une nouvelle instance de T.
+ *      renvoie le pointeur nul sinon.
+ *
+ * @param (const char* typ) chaine de caractere associee a un type
+ * @return (Objet_U*) pointeur sur un nouvel Objet_U du type typ
+ */
 Objet_U* Type_info::instance(const char* typ)
 {
   const Type_info * le_type = type_info_from_name(typ);
@@ -413,12 +348,9 @@ Objet_U* Type_info::instance(const char* typ)
   return instance;
 }
 
-// Description:
-//  Cree une instance de la classe associee au type_info.
-// Precondition:
-//  La classe doit etre instanciable (sinon arret du programme).
-// Effets de bord:
-//  Creation d'un nouvel Objet_U
+/*! @brief Cree une instance de la classe associee au type_info.
+ *
+ */
 Objet_U* Type_info::instance() const
 {
   if (cree_instance == 0)
@@ -432,55 +364,33 @@ Objet_U* Type_info::instance() const
   return ainstance;
 }
 
-// Description:
-//     Test d'existence d'une classe du type indique
-//     si il existe une classe T dont le Type_info a
-//     le nom nom, alors est_un_type renvoie 1
-//     renvoie le pointeur nul sinon.
-// Precondition:
-// Parametre: const char* nom
-//    Signification: chaine de caractere associee a un type
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: code de retour (0 ou  1)
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Test d'existence d'une classe du type indique si il existe une classe T dont le Type_info a
+ *
+ *      le nom nom, alors est_un_type renvoie 1
+ *      renvoie le pointeur nul sinon.
+ *
+ * @param (const char* nom) chaine de caractere associee a un type
+ * @return (int) code de retour (0 ou  1)
+ */
 int Type_info::est_un_type(const char* nom)
 {
   const Type_info * type = type_info_from_name(nom);
   return (type != 0);
 }
 
-// Description:
-//     Test d'appartenance d'un type dans les types de bases du type considere
-//     si direct == 0
-//     renvoie 1 si (*p) fait partie des bases de (*this)
-//     renvoie 0 sinon.
-//     si direct != 0
-//     renvoie 1 si (*p) fait partie des bases de (*this)
-//     ou des meres directes ou non de (*this)
-//     renvoie 0 sinon.
-// Precondition:
-// Parametre: const Type_info* p
-//    Signification: le pointeur sur le type a rechercher
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Parametre: int direct
-//    Signification: 0 pour une recherche dans toute la hierarchie des bases, non nul pour une recherche directe
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: int
-//    Signification: code de retour (0 ou 1)
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Test d'appartenance d'un type dans les types de bases du type considere si direct == 0
+ *
+ *      renvoie 1 si (*p) fait partie des bases de (*this)
+ *      renvoie 0 sinon.
+ *      si direct != 0
+ *      renvoie 1 si (*p) fait partie des bases de (*this)
+ *      ou des meres directes ou non de (*this)
+ *      renvoie 0 sinon.
+ *
+ * @param (const Type_info* p) le pointeur sur le type a rechercher
+ * @param (int direct) 0 pour une recherche dans toute la hierarchie des bases, non nul pour une recherche directe
+ * @return (int) code de retour (0 ou 1)
+ */
 int Type_info::has_base(const Type_info* p, int direct) const
 {
   //recherche de p->name() dans b
@@ -515,33 +425,20 @@ int Type_info::has_base(const Type_info* p, int direct) const
   return 0;
 }
 
-// Description:
-//     Test d'appartenance d'un type dans les types de bases du type considere
-//     Le type a rechercher est identifie par son nom
-//     si direct == 0
-//     renvoie 1 si le type de nom name fait partie des bases de (*this)
-//     renvoie 0 sinon.
-//     si direct != 0
-//     renvoie 1 si le type de nom name fait partie des bases de (*this)
-//     ou des meres directes ou non de (*this)
-//     renvoie 0 sinon.
-// Precondition:
-// Parametre: const Nom& name
-//    Signification: le nom du type a rechercher
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Parametre: int direct
-//    Signification: 0 pour une recherche dans toute la hierarchie des bases, non nul pour une recherche directe
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: int
-//    Signification: code de retour (0 ou 1)
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Test d'appartenance d'un type dans les types de bases du type considere Le type a rechercher est identifie par son nom
+ *
+ *      si direct == 0
+ *      renvoie 1 si le type de nom name fait partie des bases de (*this)
+ *      renvoie 0 sinon.
+ *      si direct != 0
+ *      renvoie 1 si le type de nom name fait partie des bases de (*this)
+ *      ou des meres directes ou non de (*this)
+ *      renvoie 0 sinon.
+ *
+ * @param (const Nom& name) le nom du type a rechercher
+ * @param (int direct) 0 pour une recherche dans toute la hierarchie des bases, non nul pour une recherche directe
+ * @return (int) code de retour (0 ou 1)
+ */
 int Type_info::has_base(const Nom& aname, int direct) const
 {
   //recherche de aname dans b
@@ -556,41 +453,30 @@ int Type_info::has_base(const Nom& aname, int direct) const
   return resultat;
 }
 
-// Description:
-//     Comparaison sur le nom d'un type
-//     Retourne 1 si les chaines de caracteres des noms du type considere et du nom indique sont identiques
-//     Retour 0 sinon
+/*! @brief Comparaison sur le nom d'un type Retourne 1 si les chaines de caracteres des noms du type considere et du nom indique sont identiques
+ *
+ *      Retour 0 sinon
+ *
+ */
 int Type_info::same(const Nom& other_name) const
 {
   return strcmp(name(),other_name)==0;
 }
 
-// Description:
-//   Renvoie 1 si this==p, 0 sinon.
+/*! @brief Renvoie 1 si this==p, 0 sinon.
+ *
+ */
 int Type_info::same(const Type_info* p) const
 {
   return (this == p);
 }
 
-// Description:
-//     Donne les noms des sous-types, un type mere etant donne
-// Precondition:
-// Parametre: const Type_info& mere
-//    Signification: le type sur lequel rechercher les sous-types
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Parametre: Noms& les_sous_types
-//    Signification: les noms des sous-types
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: int
-//    Signification: nombre de sous-types retournes
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief Donne les noms des sous-types, un type mere etant donne
+ *
+ * @param (const Type_info& mere) le type sur lequel rechercher les sous-types
+ * @param (Noms& les_sous_types) les noms des sous-types
+ * @return (int) nombre de sous-types retournes
+ */
 int Type_info::les_sous_types(const Type_info& mere, Noms& les_sous_types)
 {
   int compteur=0;
@@ -622,26 +508,13 @@ int Type_info::les_sous_types(const Type_info& mere, Noms& les_sous_types)
   return compteur;
 }
 
-// Description:
-//     Donne les noms des sous-types, un type mere etant donne par son nom
-// Precondition:
-// Parametre: const Nom& type
-//    Signification: le nom du type sur lequel rechercher les sous-types
-//    Valeurs par defaut:
-//    Contraintes: le nom doit correspondre a un type existant
-//    Acces: entree
-// Parametre: Noms& les_sous_types
-//    Signification: les noms des sous-types
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: int
-//    Signification: nombre de sous-types retournes
-//    Contraintes:
-// Exception:
-//     Sort en erreur si le nom indique ne correspond pas a un type existant dans TRUST
-// Effets de bord:
-// Postcondition:
+/*! @brief Donne les noms des sous-types, un type mere etant donne par son nom
+ *
+ * @param (const Nom& type) le nom du type sur lequel rechercher les sous-types
+ * @param (Noms& les_sous_types) les noms des sous-types
+ * @return (int) nombre de sous-types retournes
+ * @throws Sort en erreur si le nom indique ne correspond pas a un type existant dans TRUST
+ */
 int Type_info::les_sous_types(const Nom& type, Noms& sous_types)
 {
   if (!est_un_type(type))
@@ -661,10 +534,12 @@ int Type_info::les_sous_types(const Nom& type, Noms& sous_types)
   return 0;
 }
 
-// Description:
-//  Methode statique qui renvoie un pointeur vers le Type_info
-//  dont le nom est "type_name". Si type_name n'est pas un type,
-//  renvoie un pointeur nul.
+/*! @brief Methode statique qui renvoie un pointeur vers le Type_info dont le nom est "type_name".
+ *
+ * Si type_name n'est pas un type,
+ *   renvoie un pointeur nul.
+ *
+ */
 
 const Type_info * Type_info::type_info_from_name(const char * type_name)
 {
@@ -691,9 +566,9 @@ const Type_info * Type_info::type_info_from_name(const char * type_name)
   return type_info;
 }
 
-// Description:
-//  Renvoie 1 si le type associe est instanciable (cree_instance non nul)
-//  renvoie 0 sinon.
+/*! @brief Renvoie 1 si le type associe est instanciable (cree_instance non nul) renvoie 0 sinon.
+ *
+ */
 int Type_info::instanciable() const
 {
   return (cree_instance != 0);
