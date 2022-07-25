@@ -466,16 +466,12 @@ static void creer_md_vect_renum(const IntVect& renum, const MD_Vector_std& src, 
       {
         // nb_item_received_single est le nombre d'items dans items_to_send_ qui seront receptionnes
         //  par items_to_recv_. Les suivants sont recus dans blocs_to_recv_.
-        const int j_limite_bloc = src.nb_items_to_items_[i_pe];
-        int new_j_limite_bloc = 0;
         schema_comm.recv_buffer(src.pe_voisins_[i_pe]) >> tmp;
         const int n = tmp.size_array();
         for (int i = 0; i < n; i++)
           {
             // tmp contient des indices qui pointent dans src.items_to_send_
             int j = tmp[i];
-            if (j >= j_limite_bloc)
-              new_j_limite_bloc++; // Cet item est dans les blocs_to_recv_ de l'autre cote
             // k est l'indice dans l'ancien tableau de l'item a envoyer
             int k = src.items_to_send_(i_pe, j);
             int renum_k = renum[k];
@@ -487,7 +483,6 @@ static void creer_md_vect_renum(const IntVect& renum, const MD_Vector_std& src, 
             dest_items_send_data[count++] = renum_k;
           }
         dest_items_send_index[i_pe+1] = count;
-        nb_items_to_items[i_pe] = new_j_limite_bloc;
       }
     if (error)
       {
@@ -500,6 +495,15 @@ static void creer_md_vect_renum(const IntVect& renum, const MD_Vector_std& src, 
     dest_items_send_data.set_smart_resize(1);
     dest_items_send_data.resize_array(count);
   }
+  schema_comm.end_comm();
+
+  /* nouveau nb_items_to_items */
+  schema_comm.begin_comm();
+  for (int i_pe = 0; i_pe < nb_pe_voisins; i_pe++)
+    schema_comm.send_buffer(src.pe_voisins_[i_pe]) << dest_items_recv_index(i_pe + 1) - dest_items_recv_index(i_pe);
+  schema_comm.echange_taille_et_messages();
+  for (int i_pe = 0; i_pe < nb_pe_voisins; i_pe++)
+    schema_comm.recv_buffer(src.pe_voisins_[i_pe]) >> nb_items_to_items[i_pe];
   schema_comm.end_comm();
 
   // Construction de la liste de processeurs voisins de dest
