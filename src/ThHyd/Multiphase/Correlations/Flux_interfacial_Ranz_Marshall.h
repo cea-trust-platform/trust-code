@@ -28,9 +28,7 @@ class Flux_interfacial_Ranz_Marshall : public Flux_interfacial_base
 {
   Declare_instanciable(Flux_interfacial_Ranz_Marshall);
 public:
-  void coeffs(const double dh, const double *alpha, const double *T, const double p, const double *nv,
-              const double *lambda, const double *mu, const double *rho, const double *Cp, int e,
-              DoubleTab& hi, DoubleTab& dT_hi, DoubleTab& da_hi, DoubleTab& dp_hi) const override;
+  void coeffs(const input_t& in, output_t& out) const override;
   void completer() override;
 
 protected:

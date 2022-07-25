@@ -16,8 +16,8 @@
 #ifndef Flux_interfacial_base_included
 #define Flux_interfacial_base_included
 
-#include <TRUSTTabs_forward.h>
 #include <Correlation_base.h>
+#include <TRUSTTabs.h>
 
 /*! @brief classe Flux_interfacial_base correlations de flux de chaleur interfacial de la forme
  *
@@ -39,14 +39,33 @@
  *
  *
  */
-
 class Flux_interfacial_base : public Correlation_base
 {
   Declare_base(Flux_interfacial_base);
 public:
-  virtual void coeffs(const double dh, const double *alpha, const double *T, const double p, const double *nv,
-                      const double *lambda, const double *mu, const double *rho, const double *Cp, int e,
-                      DoubleTab& hi, DoubleTab& dT_hi, DoubleTab& da_hi, DoubleTab& dp_hi) const = 0;
+  /* parametres d'entree */
+  struct input_t
+  {
+    double dh;           //diametre hyd
+    const double *alpha; //alpha[n] : taux de vide de la phase n
+    const double *T;     //T[n]     : temperature de la phase n
+    double p;            //pression
+    const double *nv;    //nv[N * k + l] : norme de ||v_k - v_l||
+    const double *lambda;//lambda[n]     : conductivite de la phase n
+    const double *mu;    //mu[n]         : viscosite dynamique de la phase n
+    const double *rho;   //rho[n]        : masse volumique de la phase n
+    const double *Cp;    //CP[n]         : capacite calorifique de la phase n
+    int e;               //indice d'element
+  };
+  /* valeurs de sortie */
+  struct output_t
+  {
+    DoubleTab hi;    //hi(k, l)       : coeff d'echange entre la phase k et l'interface avec la phase l (hi(l, k) != hi(k, l) !)
+    DoubleTab dT_hi; //dT_hi(k, l, n) : derivee de hi(k, l) en T[n]
+    DoubleTab da_hi; //da_hi(k, l, n) : derivee de hi(k, l) en a[n]
+    DoubleTab dp_hi; //dp_hi(k, l)    : derivee de hi(k, l) en p
+  };
+  virtual void coeffs(const input_t& input, output_t& output) const = 0;
 };
 
 #endif

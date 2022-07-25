@@ -35,12 +35,9 @@ Entree& Flux_interfacial_Coef_Constant::readOn(Entree& is)
   return is;
 }
 
-void Flux_interfacial_Coef_Constant::coeffs(const double dh, const double *alpha, const double *T, const double p, const double *nv,
-                                            const double *lambda, const double *mu, const double *rho, const double *Cp, int e,
-                                            DoubleTab& hi, DoubleTab& dT_hi, DoubleTab& da_hi, DoubleTab& dp_hi) const
+void Flux_interfacial_Coef_Constant::coeffs(const input_t& in, output_t& out) const
 {
-  int k, l, N = hi.dimension(0);
+  int k, l, N = out.hi.dimension(0);
   for (k = 0; k < N; k++)
-    for (l = 0; l < N; l++) hi(k, l) = h_phase(k); //ne depend que de la phase de depart
-  dT_hi = 0, da_hi = 0, dp_hi = 0; //pas trop dur
+    for (l = 0; l < N; l++) out.hi(k, l) = h_phase(k); //ne depend que de la phase de depart
 }

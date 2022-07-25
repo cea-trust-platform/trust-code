@@ -41,20 +41,18 @@ void Flux_interfacial_Ranz_Marshall::completer()
   if (!pbm->has_champ("diametre_bulles")) Process::exit("Flux_interfacial_Ranz_Mashall : bubble diameter needed !");
 }
 
-void Flux_interfacial_Ranz_Marshall::coeffs(const double dh, const double *alpha, const double *T, const double p, const double *nv,
-                                            const double *lambda, const double *mu, const double *rho, const double *Cp, int e,
-                                            DoubleTab& hi, DoubleTab& dT_hi, DoubleTab& da_hi, DoubleTab& dp_hi) const
+void Flux_interfacial_Ranz_Marshall::coeffs(const input_t& in, output_t& out) const
 {
-  int k, N = hi.dimension(0);
+  int k, N = out.hi.dimension(0), e = in.e;
   const DoubleTab& d_bulles = pb_->get_champ("diametre_bulles").valeurs() ;
   for (k = 0; k < N; k++)
     if (k != n_l)
       {
-        double Re_b = rho[n_l] * nv[N * n_l + k] * d_bulles(e,k)/mu[n_l];
-        double Pr = mu[n_l] * Cp[n_l]/lambda[n_l];
+        double Re_b = in.rho[n_l] * in.nv[N * n_l + k] * d_bulles(e,k) / in.mu[n_l];
+        double Pr = in.mu[n_l] * in.Cp[n_l] / in.lambda[n_l];
         double Nu = 2 + 0.6* std::pow(Re_b, .5)*std::pow(Pr, .3);
-        hi(n_l, k) = Nu * lambda[n_l] / d_bulles(e,k) * 6 * std::max(alpha[k], 1e-3) / d_bulles(e,k) ; // std::max() pour que le flux interfacial sont non nul
-        da_hi(n_l, k, k) = alpha[k] > 1e-3 ? Nu * lambda[n_l] * 6. / (d_bulles(e,k)*d_bulles(e, k)) : 0;
-        hi(k, n_l) = 1e8;
+        out.hi(n_l, k) = Nu * in.lambda[n_l] / d_bulles(e,k) * 6 * std::max(in.alpha[k], 1e-3) / d_bulles(e,k) ; // std::max() pour que le flux interfacial sont non nul
+        out.da_hi(n_l, k, k) = in.alpha[k] > 1e-3 ? Nu * in.lambda[n_l] * 6. / (d_bulles(e,k)*d_bulles(e, k)) : 0;
+        out.hi(k, n_l) = 1e8;
       }
 }

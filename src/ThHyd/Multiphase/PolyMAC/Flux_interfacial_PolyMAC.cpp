@@ -177,7 +177,11 @@ void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
 
   /* elements */
   //coefficients et plein de derivees...
-  DoubleTrav hi(N, N), dT_hi(N, N, N), da_hi(N, N, N), dP_hi(N, N), dT_phi(N), da_phi(N), dT_G(N), da_G(N), nv(N, N);
+  DoubleTrav dT_phi(N), da_phi(N), dT_G(N), da_G(N), nv(N, N);
+  Flux_interfacial_base::input_t in;
+  Flux_interfacial_base::output_t out;
+  DoubleTab& hi = out.hi, &dT_hi = out.dT_hi, &da_hi = out.da_hi, &dP_hi = out.dp_hi;
+  hi.resize(N, N), dT_hi.resize(N, N, N), da_hi.resize(N, N, N), dP_hi.resize(N, N);
   for (e = 0; e < zone.nb_elem(); e++)
     {
       //  double vol = pe(e) * ve(e), x, G = 0, dv_min = 0.1, dh = zone.diametre_hydraulique_elem()(e, 0), dP_G = 0.; // E. Saikali : initialise dP_G ici sinon fuite memoire ...
@@ -189,8 +193,9 @@ void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
       for (n = 0; n < N; n++)
         for (k = 0 ; k<N ; k++) nv(n, k) = std::max(sqrt(nv(n, k)), dv_min);
       //coeffs d'echange vers l'interface (explicites)
-      correlation_fi.coeffs(dh, &alpha(e, 0), &temp(e, 0), press(e, 0), &nv(0, 0),
-                            &lambda(!cL * e, 0), &mu(!cM * e, 0), &rho(!cR * e, 0), &Cp(!cCp * e, 0), e, hi, dT_hi, da_hi, dP_hi);
+      in.dh = dh, in.alpha = &alpha(e, 0), in.T = &temp(e, 0), in.p = press(e, 0), in.nv = &nv(0, 0);
+      in.lambda = &lambda(!cL * e, 0), in.mu = &mu(!cM * e, 0), in.rho = &rho(!cR * e, 0), in.Cp = &Cp(!cCp * e, 0), in.e = e;
+      correlation_fi.coeffs(in, out);
 
       for (k = 0; k < N; k++)
         for (l = k + 1; l < N; l++)
