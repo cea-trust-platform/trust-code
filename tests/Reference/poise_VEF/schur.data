@@ -81,29 +81,24 @@ Read pb
             -ksp_atol 1.e-7
             -ksp_norm_type UNPRECONDITIONED
             -ksp_converged_reason
+            -ksp_monitor
             -pc_type fieldsplit
-# fastest:
-            -pc_fieldsplit_type multiplicative
-            -fieldsplit_P0_ksp_type preonly
-            -fieldsplit_P0_pc_type lu
-            -fieldsplit_P1_ksp_type preonly
-            -fieldsplit_P1_pc_type lu #
-# S = D - C.inv(A).B with precond by D #
+
             -pc_fieldsplit_type schur -pc_fieldsplit_schur_fact_type lower -pc_fieldsplit_schur_precondition selfp
 
+            -fieldsplit_P0_ksp_type preonly
+            -fieldsplit_P0_pc_type lu
+
+#
             -fieldsplit_P0_ksp_type cg
             -fieldsplit_P0_pc_type bjacobi
             -fieldsplit_P0_sub_pc_type icc
             -fieldsplit_P0_ksp_atol 1.e-7
             -fieldsplit_P0_ksp_norm_type UNPRECONDITIONED
             -fieldsplit_P0_ksp_monitor_short ascii:fieldsplit0
-
-            -fieldsplit_P1_ksp_type cg
-            -fieldsplit_P1_pc_type bjacobi
-            -fieldsplit_P1_sub_pc_type icc
-            -fieldsplit_P1_ksp_atol 1.e-7
-            -fieldsplit_P1_ksp_norm_type UNPRECONDITIONED
-            -fieldsplit_P1_ksp_monitor_short ascii:fieldsplit1
+#
+            -fieldsplit_P1_ksp_type preonly
+            -fieldsplit_P1_pc_type lu
         }
         convection { amont }
         diffusion { }
