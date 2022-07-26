@@ -21,7 +21,7 @@
 #include <Sous_Zone.h>
 #include <SFichier.h>
 
-Implemente_instanciable(Create_domain_from_sous_zone,"Create_domain_from_sous_zone",Interprete_geometrique_base);
+Implemente_instanciable(Create_domain_from_sous_zone,"Create_domain_from_sous_zone|Create_domains_from_sous_zones",Interprete_geometrique_base);
 // XD create_domain_from_sous_zone interprete_geometrique_base create_domain_from_sous_zone 1 This keyword fills the domain domaine_final with the subzone par_sous_zone from the domain domaine_init. It is very useful when meshing several mediums with Gmsh. Each medium will be defined as a subzone into Gmsh. A MED mesh file will be saved from Gmsh and read with Lire_Med keyword by the TRUST data file. And with this keyword, a domain will be created for each medium in the TRUST data file.
 // 16/10/2017: desactivation du mot-cle par_sous_zones
 // create_domain_from_sous_zone interprete_geometrique_base create_domain_from_sous_zone 1 This keyword fills the domain domaine_final with the subzone par_sous_zone or with several subzones par_sous_zones from the domain domaine_init. It is very useful when meshing several mediums with Gmsh. Each medium will be defined as a subzone into Gmsh. A MED mesh file will be saved from Gmsh and read with Lire_Med keyword by the TRUST data file. And with this keyword, a domain will be created for each medium in the TRUST data file.
@@ -35,23 +35,35 @@ Entree& Create_domain_from_sous_zone::readOn(Entree& is)
   return Interprete::readOn(is);
 }
 
+int Create_domain_from_sous_zone::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+{
+  if (mot=="domaines")
+    {
+      noms_sous_zones.reset(), noms_doms.reset();
+      Nom ssz, dom;
+      is >> ssz;
+      if (ssz != "{") Process::exit("Create_domaine_from_sous_zone::domaines : { expected");
+      for (is >> ssz; ssz != "}"; is >> ssz)
+        is >> dom, noms_sous_zones.add(ssz), noms_doms.add(dom);
+      return 1;
+    }
+  return 0;
+}
+
 Entree& Create_domain_from_sous_zone::interpreter_(Entree& is)
 {
-  Nom nom_dom,nom_dom_org;
-  Nom nom_sous_zone;
-  Noms vec_nom_ssz;
-
+  Nom nom_dom_org;
+  noms_sous_zones.dimensionner(1), noms_doms.dimensionner(1);
   Param param(que_suis_je());
-  param.ajouter("domaine_final",&nom_dom,Param::REQUIRED); // XD_ADD_P ref_domaine new domain in which faces are stored
-  param.ajouter("par_sous_zone",&nom_sous_zone,Param::REQUIRED); // XD_ADD_P chaine a sub-area allowing to choose the elements
+  param.ajouter("domaine_final",&noms_doms(0)); // XD_ADD_P ref_domaine new domain in which faces are stored
+  param.ajouter("par_sous_zone",&noms_sous_zones(0)); // XD_ADD_P chaine a sub-area allowing to choose the elements
   param.ajouter("domaine_init",&nom_dom_org,Param::REQUIRED); // XD_ADD_P ref_domaine initial domain
+  param.ajouter_non_std("domaines", this);
   // 16/10/2017: desactivation du mot-cle par_sous_zones
   //param.ajouter("par_sous_zones",&vec_nom_ssz); // listchaine several sub-zones allowing to choose the elements
   //param.ajouter_condition("is_read_par_sous_zone_or_is_read_par_sous_zones","Interpreter Create_domain_from_sous_zone: one of the keywords par_sous_zone or par_sous_zones must be specified.");
   param.lire_avec_accolades_depuis(is);
 
-  associer_domaine(nom_dom);
-  Domaine& dom=domaine();
 
   if (nproc()>1)
     {
@@ -60,124 +72,120 @@ Entree& Create_domain_from_sous_zone::interpreter_(Entree& is)
     }
 
   const Domaine& domaine_org=ref_cast(Domaine, objet(nom_dom_org));
-  IntTab marq_elem(domaine_org.zone(0).nb_elem());
 
-  if (vec_nom_ssz.size()==0)
-    vec_nom_ssz.add(Nom(nom_sous_zone));
-  else
-    Cerr << "\nWARNING: par_sous_zones option only available for subzones that do not touch each other!!\n" << finl;
-
-  int nb_poly = 0;
   DomaineCutter cutter;
   Noms vide;
 
-  for ( int i=0; i<vec_nom_ssz.size(); i++ )
+  IntTab index(domaine_org.zone(0).nb_elem()); //0 -> 1er domaine, ..., n_dom + 1 -> le reste
+  int nb_dom = noms_doms.size();
+  index = 0; //par defaut, on ne prend rien
+  for (int i = 0; i < nb_dom; i++)
     {
-      const Sous_Zone& ssz=ref_cast(Sous_Zone,objet(vec_nom_ssz(i)));
-      nb_poly=ssz.nb_elem_tot();
-      for (int pol=0; pol<nb_poly; pol++)
-        marq_elem(ssz[pol])=1;
+      const Sous_Zone& ssz=ref_cast(Sous_Zone,objet(noms_sous_zones(i)));
+      for (int j = 0; j < ssz.nb_elem_tot(); j++) index(ssz(j)) = i + 1;
     }
 
-  cutter.initialiser(domaine_org,marq_elem,2,1,vide,1);
-  cutter.construire_sous_domaine(1,dom);
-
-  Zone& zone=dom.zone(0);
-  Bords& bords=zone.faces_bord();
-
-  if (cutter.bords_internes().size()>0)
-    zone.faces_joint().vide();
-  else
+  cutter.initialiser(domaine_org, index, noms_doms.size() + 1,1,vide,1);
+  for (int i = 0; i < nb_dom; i++)
     {
-      // on transforme les joints en bord
-      Joints& joints= zone.faces_joint();
-      for (int j=joints.size()-1; j>=0; j--)
+      Domaine& dom = ref_cast(Domaine, objet(noms_doms[i]));
+      cutter.construire_sous_domaine(i + 1, dom);
+      Zone& zone=dom.zone(0);
+      Bords& bords=zone.faces_bord();
+
+      if (cutter.bords_internes().size()>0)
+        zone.faces_joint().vide();
+      else
         {
-          Cout <<"The joint"<<j<<" becomes a boundary"<<finl;
-          Bord b;
-          ref_cast(Frontiere,b)=ref_cast(Frontiere,joints(j));
-          b.nommer(Nom("Couture_")+Nom(j));
-          bords.add(b);
+          // on transforme les joints en bord
+          Joints& joints= zone.faces_joint();
+          for (int j=joints.size()-1; j>=0; j--)
+            {
+              Cout <<"The joint"<<j<<" becomes a boundary"<<finl;
+              Bord b;
+              ref_cast(Frontiere,b)=ref_cast(Frontiere,joints(j));
+              b.nommer(Nom("Couture_")+Nom(j));
+              bords.add(b);
 
-          joints.suppr(joints(j));
+              joints.suppr(joints(j));
+            }
         }
-    }
 
-  for (int b=bords.size()-1; b>=0; b--)
-    if (bords(b).nb_faces()==0)
-      {
-        Cout << bords(b).le_nom()<<" deleted"<<finl;
-        bords.suppr(bords(b));
-      }
-  Raccords& listrac=zone.faces_raccord();
+      for (int b=bords.size()-1; b>=0; b--)
+        if (bords(b).nb_faces()==0)
+          {
+            Cout << bords(b).le_nom()<<" deleted"<<finl;
+            bords.suppr(bords(b));
+          }
+      Raccords& listrac=zone.faces_raccord();
 
-  for (int b=bords.size()-1; b>=0; b--)
-    {
-      if (cutter.bords_internes().rang(bords(b).le_nom())>=0)
+      for (int b=bords.size()-1; b>=0; b--)
         {
-          Cout << bords(b).le_nom() <<" becomes a connection "<<finl;
-          Raccord racc_base;
-          racc_base.typer("Raccord_local_homogene");
-          Raccord_base& racc=racc_base.valeur();
-          // on caste en Frontiere pour pouvoir faire la copie ...
-          ref_cast(Frontiere,racc)=ref_cast(Frontiere,bords(b));
-          listrac.add(racc_base);
+          if (cutter.bords_internes().rang(bords(b).le_nom())>=0)
+            {
+              Cout << bords(b).le_nom() <<" becomes a connection "<<finl;
+              Raccord racc_base;
+              racc_base.typer("Raccord_local_homogene");
+              Raccord_base& racc=racc_base.valeur();
+              // on caste en Frontiere pour pouvoir faire la copie ...
+              ref_cast(Frontiere,racc)=ref_cast(Frontiere,bords(b));
+              listrac.add(racc_base);
 
-          bords.suppr(bords(b));
+              bords.suppr(bords(b));
+            }
         }
+
+      //et les sous-zones?
+      const LIST(REF(Sous_Zone)) & liste_sous_zones = domaine_org.ss_zones();
+      int nb_sous_zones = liste_sous_zones.size();
+      const Sous_Zone& ssz=ref_cast(Sous_Zone,objet(noms_sous_zones[i]));
+      ArrOfInt rev_ssz(domaine_org.zone(0).nb_elem());
+      rev_ssz = -1;
+      for (int j = 0; j < ssz.nb_elem_tot(); j++)
+        rev_ssz[ssz[j]] = j;
+
+      Nom jdd(" "), jdd_par(" ");
+      int ecr_jdd = 0;
+      for (int j = 0; j < nb_sous_zones; j++)
+        if (liste_sous_zones[j]->le_nom() != noms_sous_zones[i])
+          {
+            //liste des elements de la sous-sous-zone
+            ArrOfInt polys;
+            polys.set_smart_resize(1);
+            for (int k = 0, l; k < liste_sous_zones[j]->nb_elem_tot(); k++)
+              if ((l = rev_ssz[liste_sous_zones[j].valeur()[k]]) >= 0)
+                polys.append_array(l);
+
+            if (!polys.size_array())
+              continue; //sous-sous-zone vide!
+
+            Nom nom_ssz(noms_doms[i] + "_" + liste_sous_zones[j]->le_nom()), file_ssz(nom_ssz + ".file");
+
+            //contribution aux JDDs des sous-sous-zones
+            jdd += Nom("export Sous_Zone ") + nom_ssz + "\n";
+            jdd += Nom("Associer ") + nom_ssz + " " + noms_doms[i] + "\n";
+            jdd += Nom("Lire ") + nom_ssz + " { fichier " + file_ssz + " }" + "\n";
+            jdd_par += Nom("export Sous_Zone ") + nom_ssz + "\n";
+            jdd_par += Nom("Associer ") + nom_ssz + " " + noms_doms[i] + "\n";
+            jdd_par += Nom("Lire ") + nom_ssz + " { fichier " + nom_ssz + ".ssz }" + "\n";
+            ecr_jdd = 1;
+
+            //fichier de la sous-sous-zone
+            SFichier f_ssz(file_ssz);
+            f_ssz << polys;
+          }
+
+      if (ecr_jdd)
+        {
+          SFichier f_jdd(noms_doms[i] + "_ssz.geo");
+          SFichier f_jdd_par(noms_doms[i] + "_ssz_par.geo");
+          f_jdd << jdd;
+          f_jdd_par << jdd_par;
+        }
+
+      dom.nommer(noms_doms[i]);
+      Scatter::init_sequential_domain(dom);
     }
-
-  //et les sous-zones?
-  const LIST(REF(Sous_Zone)) & liste_sous_zones = domaine_org.ss_zones();
-  int nb_sous_zones = liste_sous_zones.size();
-  const Sous_Zone& ssz=ref_cast(Sous_Zone,objet(vec_nom_ssz(0)));
-  ArrOfInt rev_ssz(domaine_org.zone(0).nb_elem());
-  rev_ssz = -1;
-  for (int i = 0; i < nb_poly; i++)
-    rev_ssz[ssz[i]] = i;
-
-  Nom jdd(" "), jdd_par(" ");
-  int ecr_jdd = 0;
-  for (int i = 0; i < nb_sous_zones; i++)
-    if (liste_sous_zones[i]->le_nom() != nom_sous_zone)
-      {
-        //liste des elements de la sous-sous-zone
-        ArrOfInt polys;
-        polys.set_smart_resize(1);
-        for (int j = 0, k; j < liste_sous_zones[i]->nb_elem_tot(); j++)
-          if ((k = rev_ssz[liste_sous_zones[i].valeur()[j]]) >= 0)
-            polys.append_array(k);
-
-        if (!polys.size_array())
-          continue; //sous-sous-zone vide!
-
-        Nom nom_ssz(nom_dom + "_" + liste_sous_zones[i]->le_nom()), file_ssz(nom_ssz + ".file");
-
-        //contribution aux JDDs des sous-sous-zones
-        jdd += Nom("export Sous_Zone ") + nom_ssz + "\n";
-        jdd += Nom("Associer ") + nom_ssz + " " + nom_dom + "\n";
-        jdd += Nom("Lire ") + nom_ssz + " { fichier " + file_ssz + " }" + "\n";
-        jdd_par += Nom("export Sous_Zone ") + nom_ssz + "\n";
-        jdd_par += Nom("Associer ") + nom_ssz + " " + nom_dom + "\n";
-        jdd_par += Nom("Lire ") + nom_ssz + " { fichier " + nom_ssz + ".ssz }" + "\n";
-        ecr_jdd = 1;
-
-        //fichier de la sous-sous-zone
-        SFichier f_ssz(file_ssz);
-        f_ssz << polys;
-      }
-
-  if (ecr_jdd)
-    {
-      SFichier f_jdd(nom_dom + "_ssz.geo");
-      SFichier f_jdd_par(nom_dom + "_ssz_par.geo");
-      f_jdd << jdd;
-      f_jdd_par << jdd_par;
-    }
-
-  dom.nommer(nom_dom);
-  Scatter::init_sequential_domain(dom);
 
   return is;
-
 }

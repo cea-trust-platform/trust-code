@@ -36,6 +36,9 @@ class Create_domain_from_sous_zone : public Interprete_geometrique_base
   Declare_instanciable(Create_domain_from_sous_zone);
 public :
   Entree& interpreter_(Entree&) override;
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
+private:
+  Noms noms_sous_zones, noms_doms;
 };
 
 #endif
