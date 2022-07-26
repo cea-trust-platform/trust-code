@@ -108,11 +108,13 @@ int Memoire::suppr(int num)
   prems=num;
   data[num].set(0);
   compteur--;
+#ifndef _COMPILE_AVEC_PGCC
   if((size>4*compteur)&&(size>step))
     //if((size-compteur)>step)
     {
-      compacte();
+      compacte(); // Plantage obscur avec le compilateur NVidia a la fin du calcul
     }
+#endif
   /*
     static int deb=0;
     if (compteur >500) deb=1;

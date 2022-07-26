@@ -57,49 +57,27 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
   LDFLAGS=`$TRUST_Awk '/SYSLIBS =/ {gsub("SYSLIBS =","",$0);print $0}' $fic_env`
   export CFLAGS CPPFLAGS CXXFLAGS FFLAGS LDFLAGS
 
-
-  # PL: On utilise cmake par defaut pour MED (merci Adrien). Cela evite des problemes avec libtool
-  USE_CMAKE=1 && [ "`basename $TRUST_CC_BASE`" = nvc++ ] && USE_CMAKE=0
-  if [ "$USE_CMAKE" = 0 ]
+  echo "Configuring with CMake ..."
+  mkdir BUILD
+  cd BUILD
+  USE_MPI=ON && [ "$TRUST_DISABLE_MPI" -eq 1 ] && USE_MPI=OFF
+  MED_INT=int
+  if [ "$TRUST_INT64" = "1" ]
   then
-     echo "Configuring with autotools  ..."  # [ABN] CMake is there too in MED, but for how long?? Eric prefers autotools ...
-     # Options: no Python, static libraries and path to HDF5
-     options="--enable-static --disable-python --enable-installtest --with-hdf5=$TRUST_MED_ROOT"  # TRUST_MED_ROOT is also HDF5 root ...
-     [ "`basename $TRUST_CC_BASE`" = nvc++ ] &&  options="$options -disable-fortran -disable-fc"
-     #INT64
-     if [ "$TRUST_INT64" = "1" ]
-     then
-        options="$options  --with-med_int=long"
-     fi
-     # Ajout de python/lib car parfois zlib pas installe sur la machine (Ubuntu 20)
-     LDFLAGS="" && [ ! -f /usr/lib64/libz.so ] && LDFLAGS="LDFLAGS=-L$TRUST_ROOT/exec/python/lib"
-     #LDFLAGS="--allow-shlib-undefined"
-     env $LDFLAGS CC=$TRUST_cc CXX=$TRUST_CC F77=$TRUST_F77 FC=$TRUST_F77 ./configure --prefix="$actual_install_dir" $options  #   For debug, add:CFLAGS="-g -O0" CXXFLAGS="-g -O0"
-     # Hack sur irene-arm (libtool embarque ne marche pas)
-     [ ${HOST#irene-arm} != $HOST ] && ln -s -f /usr/bin/libtool .
-  else ## With CMAKE
-    echo "Configuring with CMake ..."
-    mkdir BUILD
-    cd BUILD
-    USE_MPI=ON && [ "$TRUST_DISABLE_MPI" -eq 1 ] && USE_MPI=OFF
-    MED_INT=int
-    if [ "$TRUST_INT64" = "1" ]
-    then
-       fic_env=$TRUST_ROOT/env/make.$TRUST_ARCH_CC$OPT
-       [ "`$TRUST_Awk '/-fdefault-integer-8/ {print $0}' $fic_env`" != "" ] && export FFLAGS="${FFLAGS} -fdefault-integer-8"
-       [ "`$TRUST_Awk '/-i8/ {print $0}' $fic_env`" != "" ] && export FFLAGS="${FFLAGS} -i8"
-       MED_INT=long
-    fi
-    [ `uname -s` = Darwin ] && DARWIN_FLAGS="-DCMAKE_OSX_DEPLOYMENT_TARGET=$(sw_vers -productVersion)"
-    echo "Setting FFLAGS=$FFLAGS and MED_INT=$MED_INT ..."
-    env CC=$TRUST_cc CXX=$TRUST_CC F77=$TRUST_F77 FC=$TRUST_F77 cmake ..  -DCMAKE_INSTALL_PREFIX="$actual_install_dir" -DMEDFILE_BUILD_STATIC_LIBS=ON -DMEDFILE_BUILD_SHARED_LIBS=OFF \
-        -DMEDFILE_INSTALL_DOC=OFF -DMEDFILE_BUILD_PYTHON=OFF -DHDF5_ROOT_DIR=$TRUST_MED_ROOT/hdf5_install -DMEDFILE_USE_MPI=$USE_MPI -DMED_MEDINT_TYPE=$MED_INT \
-        -DCMAKE_SHARED_LINKER_FLAGS="$LDFLAGS" -DMEDFILE_BUILD_TESTS=OFF $DARWIN_FLAGS
+     fic_env=$TRUST_ROOT/env/make.$TRUST_ARCH_CC$OPT
+     [ "`$TRUST_Awk '/-fdefault-integer-8/ {print $0}' $fic_env`" != "" ] && export FFLAGS="${FFLAGS} -fdefault-integer-8"
+     [ "`$TRUST_Awk '/-i8/ {print $0}' $fic_env`" != "" ] && export FFLAGS="${FFLAGS} -i8"
+     MED_INT=long
   fi
+  [ `uname -s` = Darwin ] && DARWIN_FLAGS="-DCMAKE_OSX_DEPLOYMENT_TARGET=$(sw_vers -productVersion)"
+  echo "Setting FFLAGS=$FFLAGS and MED_INT=$MED_INT ..."
+  env CC=$TRUST_cc CXX=$TRUST_CC F77=$TRUST_F77 FC=$TRUST_F77 cmake ..  -DCMAKE_INSTALL_PREFIX="$actual_install_dir" -DMEDFILE_BUILD_STATIC_LIBS=ON -DMEDFILE_BUILD_SHARED_LIBS=OFF \
+      -DMEDFILE_INSTALL_DOC=OFF -DMEDFILE_BUILD_PYTHON=OFF -DHDF5_ROOT_DIR=$TRUST_MED_ROOT/hdf5_install -DMEDFILE_USE_MPI=$USE_MPI -DMED_MEDINT_TYPE=$MED_INT \
+      -DCMAKE_SHARED_LINKER_FLAGS="$LDFLAGS" -DMEDFILE_BUILD_TESTS=OFF $DARWIN_FLAGS
 
   $TRUST_MAKE  || exit -1
   make install || exit -1
-  [ "$USE_CMAKE" = 1 ] && cd ..
+  cd ..
 
   # Clean build folder
   (cd .. ; rm -rf med*)

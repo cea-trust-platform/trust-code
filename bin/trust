@@ -602,6 +602,9 @@ fi
 # verifie si le code est compile en parallele ou non
 [ "$TRUST_DISABLE_MPI" = 1 ] && [ "$USE_MPIRUN" = 1 ] && export USE_MPIRUN=0
 
+# MPI NVidia:
+[ "$TRUST_ARCH_CC" = linux_nvc++ ] && USE_MPIRUN=1
+
 # ToDo: check sur orcus
 [ ${HOST#orcus} != $HOST ] && USE_MPIRUN=1
 

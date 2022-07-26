@@ -270,6 +270,10 @@ void Op_Diff_PolyMAC_P0_Elem::dimensionner_blocs(matrices_t matrices, const tabs
 
 void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
+#ifdef _COMPILE_AVEC_PGCC
+  Cerr << "Internal error with nvc++: Internal error: read_memory_region: not all expected entries were read." << finl;
+  Process::exit();
+#else
   init_op_ext(), update_phif();
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   int i, i_eq, i_s, il, j, k, k1, k2, kb, l, e, eb, f, fb, s, sb, sp, m, n, M, n_ext = (int)op_ext.size(), p, pb, n_e, n_ef, nc, nl, n_m, d, db, D = dimension, sgn, sgn_l, nw, un = 1, rk, infoo, it, cv, nonlinear;
@@ -655,6 +659,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                 for (k2 = k1 + 1; k2 < N[0]; k2++)
                   (*pqpi)(e, k1, k2) += Qec(i, t_e, k1, k2);
       }
+#endif
 }
 
 const DoubleTab& Op_Diff_PolyMAC_P0_Elem::d_nucleation() const

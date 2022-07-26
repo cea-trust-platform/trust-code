@@ -879,6 +879,15 @@ then
               i=""
            fi
         fi
+        if [ "$TRUST_USE_AMGX" = 0 ]
+        then
+           if [ "`grep -I -e amgx $REP/* 2>/dev/null | grep -v hierarchie.dump`" != "" ]
+           then
+              echo "Test $i skipped (no AmgX)"
+              liste_skipped=$liste_skipped" $i"
+              i=""
+           fi
+        fi
 	# Discard PETSc test case if no PETSc capabilities
 	if [ "$TRUST_DISABLE_PETSC" = 1 ]
 	then
@@ -927,6 +936,20 @@ then
            [ "$i" = "" ] &&  echo "Test $iisa skipped (no MPI)" && liste_skipped=$liste_skipped" $iisa"
 
 	fi
+	# Discard PolyMAC test cases with NVidia compiler:
+	if [ "$TRUST_ARCH_CC" = linux_nvc++ ] && [ "`grep -i "PolyMAC" $REP/* 2>/dev/null`" != "" ]
+	then
+	    echo "Test $i skipped (PolyMAC build error with nvc++ to fix)"
+	    liste_skipped=$liste_skipped" $i"
+	    i=""
+	fi
+	# Discard test case with python MPI:
+	if [ "$TRUST_DISABLE_MPI4PY" = 1 ] && [ "`grep -i mpirun $REP/* 2>/dev/null | grep -i python`" != "" ]
+	then
+	    echo "Test $i skipped (TRUST is not built with mpi4py support)"
+	    liste_skipped=$liste_skipped" $i"
+	    i=""
+	fi	
         if [ -f $REP/skipped ]
 	then
 	echo "Test $i skipped (file skipped)"

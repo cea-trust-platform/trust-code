@@ -63,8 +63,8 @@ if [ "`basename $TRUST_CC_BASE`" = nvc++ ]
 then
    # Pour nvc++, suppression de 2 flags non supportes:
    find $build_root -name CMakeLists.txt | xargs sed -i "1,$ s?-Wsign-compare -Wconversion??g"
-   USE_PYTHON=OFF # Crash sur JeanZay lors du build de l'API Python
-   export CXXFLAGS=-D__GCC_ATOMIC_TEST_AND_SET_TRUEVAL=1
+   # USE_PYTHON=OFF # Crash sur JeanZay lors du build de l'API Python
+   # export CXXFLAGS=-D__GCC_ATOMIC_TEST_AND_SET_TRUEVAL=1
 else
    export CXXFLAGS=-Wno-narrowing
 fi

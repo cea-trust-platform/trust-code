@@ -35,6 +35,13 @@ then
    cd ${fltk%-source.tar.gz}
    export CC=$TRUST_cc_BASE
    env CFLAGS=-fPIC CXXFLAGS=-fPIC ./configure --enable-xdbe=no --prefix $FLTK_ROOT LIBS='-ldl' || exit -1
+   if [ "$TRUST_ARCH_CC" = "linux_nvc++" ]
+   then
+      for flag in -Os -Wunused -Wno-format-y2k
+      do
+         sed -i "1,$ s?$flag??g" makeinclude || exit -1
+      done
+   fi 
    $TRUST_MAKE || exit -1
    make install || exit -1 
    cd ..
@@ -75,13 +82,16 @@ then
    # gfortran non trouve au link de Gmsh
    #options="-DCMAKE_CXX_LINK_FLAGS=-lgfortran"
    options="-lgfortran"
+elif [ ${TRUST_F77_BASE%nvfortran} != $TRUST_F77_BASE ]
+then
+   options="-DCMAKE_CXX_LINK_FLAGS=-lnvf"
 fi
 
 # By default, all plugins off, except for FLTK GUI (which requires Mesh, Post, Plugins and ONELAB), MED and (since v184) NETGEN.
 plugins="-DDEFAULT=OFF -DENABLE_MED=ON -DENABLE_FLTK=ON -DENABLE_MESH=ON -DENABLE_POST=ON -DENABLE_PLUGINS=ON -DENABLE_ONELAB=ON -DENABLE_PARSER=ON -DENABLE_NETGEN=ON"
 
 # seen on Ub19/20: Adding LIBLAPACK to LD_LIBARY_PATH, otherwise TRUST_lapack not found during install
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$TRUST_ROOT/lib/src/LIBLAPACK
+export LD_LIBRARY_PATH=$TRUST_ROOT/lib/src/LIBLAPACK:$LD_LIBRARY_PATH
 
 # Important: pour utiliser le cmake Python sans l'environnement Python:
 # Specifier CMAKE_SYSTEM_IGNORE_PATH=$TRUST_ROOT/exec/python/lib

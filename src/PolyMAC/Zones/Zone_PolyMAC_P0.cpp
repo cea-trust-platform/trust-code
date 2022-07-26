@@ -139,6 +139,10 @@ void Zone_PolyMAC_P0::init_stencils() const
 void Zone_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntTab& fcl, const DoubleTab *nu, const IntTab *som_ext,
                             int virt, int full_stencil, IntTab& phif_d, IntTab& phif_e, DoubleTab& phif_c) const
 {
+#ifdef _COMPILE_AVEC_PGCC
+  Cerr << "Internal error with nvc++: Internal error: read_memory_region: not all expected entries were read." << finl;
+  Process::exit();
+#else
   const IntTab& f_e = face_voisins(), &e_f = elem_faces(), &f_s = face_sommets();
   const DoubleTab& nf = face_normales(), &xs = zone().domaine().coord_sommets(), &vfd = volumes_entrelaces_dir();
   const DoubleVect& fs = face_surfaces(), &vf = volumes_entrelaces();
@@ -334,4 +338,5 @@ void Zone_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntTab&
     Cerr << zone().domaine().le_nom() << "::fgrad(): " << 100. * count[0] / tot << "% MPFA-O "
          << 100. * count[1] / tot << "% MPFA-O(h) " << 100. * count[2] / tot << "% MPFA-SYM" << finl;
   first_fgrad_ = 0;
+#endif
 }

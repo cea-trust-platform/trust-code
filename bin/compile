@@ -226,7 +226,8 @@ then
    # bin/mklibs pour le link
    # bin/KSH/Createcmakefile.py pour les includes de la librairie
    # env_src/make.all_includes.TRUST pour les includes aussi
-   reps="LIBMFFT LIBMFFT_C LIBSKIT LIBLATAFILTER LIBICOCOAPI $LIBMETIS `[ ${#TRUST_BLAS_LAPACK} = 0 ] && echo LIBLAPACK` LIBMED LIBMEDCOUPLING `[ "${TRUST_ROCALUTION%/LIBROCALUTION}" != $TRUST_ROCALUTION ] && echo LIBROCALUTION` `[ "$TRUST_DISABLE_PETSC" = 0 ] && echo LIBPETSC` `[ "$TRUST_USE_CUDA" = 1 ] && echo LIBAMGX` LIBOSQP `[ "$TRUST_DISABLE_VC" != 1 ] && echo LIBVC`"
+   LIBAMGX="" && [ "$TRUST_USE_AMGX" = 1 ] && LIBAMGX=LIBAMGX # AmgX ne compile toujours avec nvc++ (voir version recente d'AmgX) 
+   reps="LIBMFFT LIBMFFT_C LIBSKIT LIBLATAFILTER LIBICOCOAPI $LIBMETIS `[ ${#TRUST_BLAS_LAPACK} = 0 ] && echo LIBLAPACK` LIBMED LIBMEDCOUPLING `[ "${TRUST_ROCALUTION%/LIBROCALUTION}" != $TRUST_ROCALUTION ] && echo LIBROCALUTION` `[ "$TRUST_DISABLE_PETSC" = 0 ] && echo LIBPETSC` $LIBAMGX  LIBOSQP `[ "$TRUST_DISABLE_VC" != 1 ] && echo LIBVC`"
    time=`date "+%s"`
    for rep in $reps
    do

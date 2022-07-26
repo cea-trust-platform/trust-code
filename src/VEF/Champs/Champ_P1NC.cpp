@@ -348,10 +348,10 @@ void calculer_gradientP1NC(const DoubleTab& variable,
           for (int i=0; i<dimension; i++)
             {
               if (elem1>=0)
-#pragma omp atomic
+                #pragma omp atomic
                 gradient_elem_addr[(elem1*nb_comp)*dimension+i] += face_normales_addr[fac*dimension+i]*variable_addr[fac];
               if (elem2>=0)
-#pragma omp atomic
+                #pragma omp atomic
                 gradient_elem_addr[(elem2*nb_comp)*dimension+i] -= face_normales_addr[fac*dimension+i]*variable_addr[fac];
             }
         }
@@ -416,10 +416,10 @@ void calculer_gradientP1NC(const DoubleTab& variable,
           for (int i=0; i<dimension; i++)
             {
               if (elem1>=0)
-#pragma omp atomic
+                #pragma omp atomic
                 gradient_elem_addr[(elem1*nb_comp)*dimension+i] += face_normales_addr[fac*dimension+i]*variable_addr[fac];
               if (elem2>=0)
-#pragma omp atomic
+                #pragma omp atomic
                 gradient_elem_addr[(elem2*nb_comp)*dimension+i] -= face_normales_addr[fac*dimension+i]*variable_addr[fac];
             }
         }
