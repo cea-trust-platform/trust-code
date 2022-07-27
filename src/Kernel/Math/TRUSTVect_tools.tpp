@@ -134,7 +134,7 @@ inline _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_>& vx, Mp_
       one_bloc[1] = vect_size_tot / line_size;
     }
   else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return (IS_IMAX || IS_IMIN) ? i_min_max : min_max_val;
+    return (IS_IMAX || IS_IMIN) ? i_min_max : (_TYPE_RETURN_)min_max_val;
 
   const _TYPE_ *x_base = vx.addr();
   for (; nblocs_left; nblocs_left--)
@@ -165,7 +165,7 @@ inline _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_>& vx, Mp_
           x_ptr++;
         }
     }
-  return (IS_IMAX || IS_IMIN) ? i_min_max : min_max_val;
+  return (IS_IMAX || IS_IMIN) ? i_min_max : (_TYPE_RETURN_)min_max_val;
 }
 
 template <typename _TYPE_>
