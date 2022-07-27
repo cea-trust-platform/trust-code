@@ -71,16 +71,32 @@ void Op_Diff_PolyMAC_Elem::completer()
 void Op_Diff_PolyMAC_Elem::init_op_ext() const
 {
   if (op_ext.size()) return; //deja fait
+  /* recherche d'operateurs connectes par des Echange_Contact_PolyMAC (eventuellement indirectement) */
+  std::set<const Op_Diff_PolyMAC_Elem*> ops_tbd = { this }, ops; //operateurs a scanner pour remplir op_ext, operateurs trouves
+  while (ops_tbd.size())
+    {
+      const Op_Diff_PolyMAC_Elem* op = *ops_tbd.begin();
+      ops_tbd.erase(ops_tbd.begin()), ops.insert(op);
+      const Conds_lim& cls = op->equation().zone_Cl_dis().les_conditions_limites();
+      for (int i = 0; i < cls.size(); i++)
+        if (sub_type(Echange_contact_PolyMAC, cls[i].valeur()))
+          {
+            const Echange_contact_PolyMAC& cl = ref_cast(Echange_contact_PolyMAC, cls[i].valeur());
+            cl.init_op();
+            if (!ops.count(&cl.o_diff.valeur())) ops_tbd.insert(&cl.o_diff.valeur()); //on a un nouvel operateur a scanner
+          }
+    }
   op_ext = { this };
+  for (auto &&op : ops)
+    if (op != this) op_ext.push_back(op); /* remplissage de op_ext avec l'operateur local en 1er */
+
+  /* remplissage des o_idx des Echange_Contact_PolyMAC connectes */
   const Conds_lim& cls = equation().zone_Cl_dis().les_conditions_limites();
   for (int i = 0; i < cls.size(); i++)
     if (sub_type(Echange_contact_PolyMAC, cls[i].valeur()))
       {
         const Echange_contact_PolyMAC& cl = ref_cast(Echange_contact_PolyMAC, cls[i].valeur());
-        cl.init_op();
-        const Op_Diff_PolyMAC_Elem *o_op = &cl.o_diff.valeur();
-        if (std::find(op_ext.begin(), op_ext.end(), o_op) == op_ext.end()) op_ext.push_back(o_op);
-        cl.o_idx = (int)(std::find(op_ext.begin(), op_ext.end(), o_op) - op_ext.begin());
+        cl.o_idx = (int)(std::find(op_ext.begin(), op_ext.end(), &cl.o_diff.valeur()) - op_ext.begin());
       }
 }
 
