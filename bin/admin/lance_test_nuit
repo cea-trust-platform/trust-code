@@ -225,6 +225,7 @@ check_components()
 	       avx_machines=`liste_machines "\-avx"` # | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       # Machines en mode valgrind
 	       valgrind_machines=`liste_machines "\-check-valgrind"` # | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
+	       valgrind_machines=$valgrind_machines" "`liste_machines "\-ctest_valgrind"`
 	       # Machines en mode gui
 	       gui_machines=`liste_machines "\-gui"` # | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       # Machines en mode check trust
@@ -424,19 +425,19 @@ check_components()
                            [ "$Composant" == "cathare3D" ] && trustversion=1.8.3
                            if  [ "${machine:0:5}" = "orcus" ]
                            then
-		              [ $TRUST_VERSION = 1.8.3 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/trust_trio-public/env_TRUST-'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/trust_trio-public/env_TRUST-'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            elif  [ "${machine:0:9}" = "callisto-" ] || [ "${machine:0:11}" = "irene-ccrt-" ] || [ "${machine:0:7}" = "cobalt-" ]
                            then
                               WORKBETA=""
                            elif [ "${machine:0:10}" = "irene-ccrt" ] || [ "${machine:0:6}" = "topaze" ]
                            then
-		              [ $TRUST_VERSION = 1.8.3 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /ccc/cont002/home/den/triou/env_TRUST-'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /ccc/cont002/home/den/triou/env_TRUST-'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            elif [ "${machine:0:7}" = "cezanne" ]
                            then
-		              [ $TRUST_VERSION = 1.8.3 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /soft/der/sesi/TRUST/env_TRUST-'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /soft/der/sesi/TRUST/env_TRUST-'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            elif  [ "${machine:0:2}" = "is" ]
                            then
-		              [ $TRUST_VERSION = 1.8.3 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/triou/env_TRUST_'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/triou/env_TRUST_'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
 		              [[ "$titania_machines" = *"$machine"* ]] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/trust_trio-public/env_TRUST-'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            fi
                            if [ "$WORKBETA" != "" ]
@@ -1022,13 +1023,13 @@ fi
       then
          git remote update
          git checkout .
-         git checkout Issue0066_portage185
+         git checkout Issue0076_portage191
          git pull 1>tmp.log 2>&1
          if [ $? != 0 ]
          then
-            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull Issue0066_portage185 KO \" $TRUST_MAIL
+            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull Issue0076_portage191 KO \" $TRUST_MAIL
          else
-            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull Issue0066_portage185 OK \" $TRUST_MAIL
+            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull Issue0076_portage191 OK \" $TRUST_MAIL
          fi
          rm tmp.log 1>/dev/null 2>&1
          cd $WORKDIR/tuleap/Maintenance/Composants/$Composant
@@ -3521,8 +3522,9 @@ do
    fi
    echo " "
    other_dest=""
-   other_dest=`[ "$Composant" = "triocfd" ] && echo $triocfd_project_leader`
-   other_dest=`[ "$Composant" = "cathare3D" ] && echo $cathare3D_project_leader`
+   other_dest=`[ "$Composant" = "triocfd" ] && echo $triocfd_PROJECT_LEADER`
+   other_dest=`[ "$Composant" = "cathare3D" ] && echo $cathare3D_PROJECT_LEADER`
+   other_dest=`[ "$Composant" = "flica5" ] && echo $flica5_PROJECT_LEADER`
    if [ $validation_composant = 1 ]
    then
       echo "Release criterion: $Composant OK"
