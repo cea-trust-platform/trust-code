@@ -444,7 +444,6 @@ $TD_CR<A HREF="$CR">$HOST</A>$FTD
 <TD>$vide</TD>
 <TD>$vide</TD>
 <TD>$vide</TD>
-<TD>$vide</TD>
 </TR>" >> $NUIT2
      fi
    done
