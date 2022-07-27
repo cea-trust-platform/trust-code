@@ -1939,9 +1939,14 @@ then
       openmp_target="-foffload=$target $march"
    elif [ "`basename $TRUST_CC_BASE`" = nvc++ ]
    then
+      # See https://www.openmp.org/wp-content/uploads/20210924-OpenMP-update-for-DOE.pdf
       openmp="-mp"
-      #march="-gpu=??"     
-      openmp_target="-target=gpu $march"
+      if [ "$TRUST_USE_CUDA" = 1 ]
+      then 
+         # A partir de HPC SDK 21.3 !
+         openmp_target="-target=gpu $march"
+         #export NVCOMPILER_ACC_NOTIFY = 1|2|3
+      fi
    else
       echo "-openmp not supported for $TRUST_CC_BASE" && exit -1
    fi
