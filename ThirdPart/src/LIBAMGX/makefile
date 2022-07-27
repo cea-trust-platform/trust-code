@@ -1,5 +1,5 @@
 AMGX_DIR=$(TRUST_ROOT)/lib/src/LIBAMGX/AmgX
-AMGX_LIB=$(AMGX_DIR)/lib/libamgx.so
+AMGX_LIB=$(AMGX_DIR)/lib/libamgxsh.so
 AMGXWRAPPER_DIR=$(TRUST_ROOT)/lib/src/LIBAMGX/AmgXWrapper
 AMGXWRAPPER_LIB=$(AMGXWRAPPER_DIR)/lib64/libAmgXWrapper.so
 mpi=$(MPI_INCLUDE)/mpi.h

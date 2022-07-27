@@ -17,6 +17,7 @@
 #include <Matrice_Morse.h>
 #include <ctime>
 #include <communications.h>
+#include <Statistiques.h>
 
 Implemente_instanciable_sans_constructeur(Solv_AMGX,"Solv_AMGX",Solv_Petsc);
 // printOn
@@ -45,9 +46,9 @@ void Solv_AMGX::initialize()
   4. (uppercase) letter: whether the index type is 32-bit int (I) or else (not currently supported).
   typedef enum { AMGX_mode_hDDI, AMGX_mode_hDFI, AMGX_mode_hFFI, AMGX_mode_dDDI, AMGX_mode_dDFI, AMGX_mode_dFFI } AMGX_Mode; */
   Cerr << "Initializing Amgx and reading the " << config() << " file." << finl;
-  std::clock_t start = std::clock();
+  double start = Statistiques::get_time_now();;
   SolveurAmgX_.initialize(PETSC_COMM_WORLD, AmgXmode.getString(), config().getString());
-  Cout << "[AmgX] Time to initialize: " << ( std::clock() - start ) / (double) CLOCKS_PER_SEC << finl;
+  Cout << "[AmgX] Time to initialize: " << Statistiques::get_time_now() - start << finl;
   amgx_initialized_ = true;
   // MPI_Barrier(PETSC_COMM_WORLD); Voir dans https://github.com/barbagroup/AmgXWrapper/pull/30/commits/1554808a3689f51fa43ab81a35c47a9a1525939a
 }
@@ -65,12 +66,12 @@ void Solv_AMGX::Create_objects(const Matrice_Morse& mat_morse, int blocksize)
   if (MatricePetsc_ != NULL) MatDestroy(&MatricePetsc_);
 
   Create_MatricePetsc(MatricePetsc_, mataij_, mat_morse);
-  std::clock_t start = std::clock();
+  double start = Statistiques::get_time_now();
   petscToCSR(MatricePetsc_, SolutionPetsc_, SecondMembrePetsc_);
-  Cout << "[AmgX] Time to create CSR pointers: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
-  start = std::clock();
+  Cout << "[AmgX] Time to create CSR pointers: " << Statistiques::get_time_now() - start << finl;
+  start = Statistiques::get_time_now();
   SolveurAmgX_.setA(nRowsGlobal, nRowsLocal, nNz, rowOffsets, colIndices, values, nullptr);
-  Cout << "[AmgX] Time to set matrix (copy+setup) on GPU: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl; // Attention balise lue par fiche de validation
+  Cout << "[AmgX] Time to set matrix (copy+setup) on GPU: " << Statistiques::get_time_now() - start << finl; // Attention balise lue par fiche de validation
 }
 
 // Fonction de conversion Petsc ->CSR
@@ -128,15 +129,15 @@ PetscErrorCode Solv_AMGX::petscToCSR(Mat& A, Vec& lhs_petsc, Vec& rhs_petsc)
 void Solv_AMGX::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse)
 {
   // La matrice CSR de PETSc a ete mise a jour dans check_stencil
-  std::clock_t start = std::clock();
+  double start = Statistiques::get_time_now();
   SolveurAmgX_.updateA(nRowsLocal, nNz, values);  // ToDo erreur valgrind au premier appel de updateA...
-  Cout << "[AmgX] Time to update matrix (copy+resetup) on GPU: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl; // Attention balise lue par fiche de validation
+  Cout << "[AmgX] Time to update matrix (copy+resetup) on GPU: " << Statistiques::get_time_now() - start << finl; // Attention balise lue par fiche de validation
 }
 
 // Check and return true if new stencil
 bool Solv_AMGX::check_stencil(const Matrice_Morse& mat_morse)
 {
-  std::clock_t start = std::clock();
+  double start = Statistiques::get_time_now();
   // Parcours de la matrice_morse (qui peut contenir des 0 et qui n'est pas triee par colonnes croissantes)
   // si matrice sur le GPU deja construite (qui est sans 0 et qui est triee par colonnes croissantes):
   const ArrOfInt& tab1 = mat_morse.get_tab1();
@@ -190,7 +191,7 @@ bool Solv_AMGX::check_stencil(const Matrice_Morse& mat_morse)
         }
     }
   new_stencil = mp_max(new_stencil);
-  Cout << "[AmgX] Time to check stencil: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+  Cout << "[AmgX] Time to check stencil: " << Statistiques::get_time_now() - start << finl;
   return new_stencil;
 }
 
@@ -214,9 +215,9 @@ int Solv_AMGX::solve(ArrOfDouble& residu)
       return 0;
       //Process::exit();
     }
-  std::clock_t start = std::clock();
+  double start = Statistiques::get_time_now();
   SolveurAmgX_.solve(lhs, rhs, nRowsLocal);
-  Cout << "[AmgX] Time to solve system on GPU: " << ( std::clock() - start ) / (double) CLOCKS_PER_SEC << finl;
+  Cout << "[AmgX] Time to solve system on GPU: " << Statistiques::get_time_now() - start << finl;
   return nbiter(residu);
 }
 
