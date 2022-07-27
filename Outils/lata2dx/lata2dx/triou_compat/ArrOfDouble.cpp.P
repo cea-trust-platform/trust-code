@@ -1,2 +1,0 @@
-#Pinclude(ArrOf_Scalar_Prototype.cpp.P)
-#Pusemacro(DEF_ARRAYOFSCALAR_CPP)(Double,double)

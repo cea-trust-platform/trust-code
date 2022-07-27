@@ -15,6 +15,7 @@
 
 #ifndef arch_include_
 #define arch_include_
-typedef int entier;
-#endif
 
+using entier = int;
+
+#endif /* arch_include_ */
