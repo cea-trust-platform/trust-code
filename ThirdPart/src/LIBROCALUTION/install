@@ -1,6 +1,8 @@
 #!/bin/bash
 # rocALUTION : See https://github.com/ROCmSoftwarePlatform/rocALUTION
-[ "$TRUST_ROCALUTION" = "" ] && echo "TRUST_ROCALUTION empty!" && exit -1
+
+echo $TRUST_ROCALUTION
+[ "$TRUST_ROCALUTION" = "" ] && exit
 
 # On clone avant d'utiliser externalpackages dans le futur:
 [ ! -d rocALUTION ] && git clone https://github.com/ROCmSoftwarePlatform/rocALUTION.git
@@ -28,4 +30,16 @@ echo "`pwd`/benchmark.log created."
 
 # Nettoyage
 rm -r -f $TRUST_ROOT/ThirdPart/src/LIBROCALUTION/rocALUTION
+
+# Creation de l'include:
+echo "#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Woverloaded-virtual"
+#include <rocalution.hpp>
+#pragma GCC diagnostic pop
+#ifdef ROCALUTION_ROCALUTION_HPP_
+using namespace rocalution;
+#endif" > $TRUST_ROCALUTION/include/rocalution_for_kernel.h
+
 exit 0
+
+

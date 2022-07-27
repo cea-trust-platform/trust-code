@@ -51,6 +51,7 @@ Solv_rocALUTION::Solv_rocALUTION(const Solv_rocALUTION& org)
 
 Solv_rocALUTION::~Solv_rocALUTION()
 {
+#ifdef ROCALUTION_ROCALUTION_HPP_
   if (ls!=nullptr)
     {
       ls->Clear();
@@ -71,15 +72,20 @@ Solv_rocALUTION::~Solv_rocALUTION()
       sp_p->Clear();
       delete sp_p;
     }
+#endif
 }
 
 void Solv_rocALUTION::initialize()
 {
+#ifdef ROCALUTION_ROCALUTION_HPP_
   ls = nullptr;
   sp_ls = nullptr;
   p = nullptr;
   sp_p = nullptr;
   write_system_ = false;
+#else
+  Process::exit("Sorry, rocALUTION solvers not available with this build.");
+#endif
 }
 
 double precond_option(Entree& is, const Motcle& motcle)
@@ -104,6 +110,7 @@ double precond_option(Entree& is, const Motcle& motcle)
 }
 
 // Fonction template pour la creation des precond simple ou double precision
+#ifdef ROCALUTION_ROCALUTION_HPP_
 template <typename T>
 Solver<LocalMatrix<T>, LocalVector<T>, T>* create_rocALUTION_precond(EChaine& is)
 {
@@ -210,6 +217,7 @@ IterativeLinearSolver<LocalMatrix<T>, LocalVector<T>, T>* create_rocALUTION_solv
       return nullptr;
     }
 }
+#endif
 
 // Lecture et creation du solveur
 void Solv_rocALUTION::create_solver(Entree& entree)
@@ -340,6 +348,7 @@ void write_matrix(const Matrice_Base& a)
     for (int j=csr.get_tab1()[row]; j<csr.get_tab1()[row+1]; j++)
       mtx << row+1 << " " << csr.get_tab2()[j-1] << " " << csr.get_coeff()[j-1] << finl;
 }
+#ifdef ROCALUTION_ROCALUTION_HPP_
 void write_vectors(const LocalVector<double>& rhs, const LocalVector<double>& sol)
 {
   Nom filename(Objet_U::nom_du_cas());
@@ -390,10 +399,11 @@ double residual_device(const LocalMatrix<double>& a, const LocalVector<double>& 
   e.ScaleAdd(-1.0, b);
   return e.Norm();
 }
+#endif
 
 int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b, DoubleVect& x)
 {
-//#ifdef ROCALUTION_ROCALUTION_HPP_
+#ifdef ROCALUTION_ROCALUTION_HPP_
   if (write_system_) save++;
   double tick;
   if (nouvelle_matrice())
@@ -564,7 +574,7 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
   rhs.Clear();
   if (nb_iter>1) first_solve_ = false;
   return nb_iter;
-  /* #else
-      return -1;
-  #endif */
+#else
+  return -1;
+#endif
 }

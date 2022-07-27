@@ -24,11 +24,7 @@
 #include <Statistiques.h>
 #include <communications.h>
 #include <petsc_for_kernel.h>
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Woverloaded-virtual"
-#include <rocalution.hpp>
-#pragma GCC diagnostic pop
-using namespace rocalution;
+#include <rocalution_for_kernel.h>
 #include <stat_counters.h>
 #include <info_atelier.h>
 #include <unistd.h> // Pour chdir for other compiler

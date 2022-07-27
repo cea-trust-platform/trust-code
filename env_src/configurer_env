@@ -1025,6 +1025,7 @@ then
       [ "$TRUST_DISABLE_PETSC"    != 1 ] && echo "Add -disable-petsc with nvc++ compiler"    && exit=-1  
       [ "$TRUST_DISABLE_VC"       != 1 ] && echo "Add -disable-vc with nvc++ compiler"       && exit=-1  
       [ "$TRUST_FORCE_SYSTEM_MPI" != 1 ] && echo "Add -force_system_mpi with nvc++ compiler" && exit=-1
+      [ "$TRUST_DISABLE_MPI4PY"   != 1 ] && echo "Add -disable-mpi4py with nvc++ compiler"   && exit=-1
       [ "$exit" = -1 ] && exit $exit
    fi   
    e="TRUST_USE_AMGX=\"$TRUST_USE_AMGX\" && export TRUST_USE_AMGX" && m="# Use AmgX ?" && ecrit $m"|"$e"|"$env && eval $e
@@ -1042,26 +1043,6 @@ then
 else
    TRUST_USE_CUDA=0
 fi
-
-##############
-# rocALUTION #
-##############
-if [ "$TRUST_ROCALUTION" = "" ]
-then
-   e="TRUST_ROCALUTION=\"\$TRUST_ROOT/lib/src/LIBROCALUTION/mock\" && export TRUST_ROCALUTION"
-elif [ "$TRUST_ROCALUTION" = install ]
-then
-   e="TRUST_ROCALUTION=\"\$TRUST_ROOT/lib/src/LIBROCALUTION\" && export TRUST_ROCALUTION"
-elif [ -f $TRUST_ROCALUTION/lib/librocalution.so ] && [ -f $TRUST_ROCALUTION/include/rocalution.hpp ]
-then
-   e="TRUST_ROCALUTION=\"$TRUST_ROCALUTION\" && export TRUST_ROCALUTION"
-else
-   echo "Please, specify the good path to rocALUTION:"
-   echo "Don't find $TRUST_ROCALUTION/lib/librocalution.so and $TRUST_ROCALUTION/include/rocalution.hpp"
-   exit -1
-fi
-m="# Path to rocALUTION";ecrit $m"|"$e"|"$env;eval $e
-echo "ADD_LD_LIBRARY_PATH \$TRUST_ROCALUTION/lib" >> $env
 
 #############
 # Debut MPI #
@@ -1415,7 +1396,7 @@ fi
 # Intallation des packages supplementaires avec pip de conda #
 ##############################################################
 pkgs="" # now, we install only mpi4py with pip if mpi enabled, so umpty list
-if [ "$TRUST_DISABLE_MPI" != 1 ] && [ "`basename $TRUST_CC_BASE`" != nvc++ ] && [ "$TRUST_DISABLE_MPI4PY" != 1 ]
+if [ "$TRUST_DISABLE_MPI" != 1 ] && [ "$TRUST_DISABLE_MPI4PY" != 1 ]
 then
    pkgs="mpi4py "$pkgs
 fi
@@ -1993,6 +1974,14 @@ double b[3];
    fi
 fi
 
+##############
+# rocALUTION #
+##############
+if [ "$TRUST_USE_ROCALUTION" = 1 ]
+then
+   m="# PATH to rocALUTION";e="TRUST_ROCALUTION=\"\$TRUST_ROOT/lib/src/LIBROCALUTION\" && export TRUST_ROCALUTION";ecrit $m"|"$e"|"$env
+fi
+
 ############
 # Topology #
 ############
@@ -2237,7 +2226,7 @@ cd $TRUST_ROOT/bin
 includes="
 $TRUST_ROOT/lib/src/LIBAMGX/AmgXWrapper/include/AmgXSolver.hpp
 $TRUST_ROOT/lib/src/LIBAMGX/AmgX/include/amgx_c.h
-$TRUST_ROCALUTION/include/rocalution.hpp
+$TRUST_ROOT/lib/src/LIBROCALUTION/include/rocalution_for_kernel.h
 $TRUST_ROOT/lib/src/LIBMETIS/include/metis.h
 $TRUST_ROOT/lib/src/LIBMED/MED/include/med.h
 $TRUST_ROOT/lib/src/LIBLATAFILTER/include/LataV1_field_definitions.h

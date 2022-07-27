@@ -17,11 +17,7 @@
 #include <sys/types.h>
 #include <stdlib.h>
 #include <mon_main.h>
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Woverloaded-virtual"
-#include <rocalution.hpp>
-#pragma GCC diagnostic pop
-using namespace rocalution;
+#include <rocalution_for_kernel.h>
 #include <EFichier.h>
 #ifdef linux
 #include <fenv.h>

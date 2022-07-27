@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,11 +17,7 @@
 #define Solv_rocALUTION_included
 
 #include <SolveurSys_base.h>
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Woverloaded-virtual"
-#include <rocalution.hpp>
-#pragma GCC diagnostic pop
-using namespace rocalution;
+#include <rocalution_for_kernel.h>
 
 class Solv_rocALUTION : public SolveurSys_base
 {
@@ -40,11 +36,13 @@ public :
 
 private :
   void initialize();
+#ifdef ROCALUTION_ROCALUTION_HPP_
   LocalMatrix<double> mat;
   IterativeLinearSolver<LocalMatrix<double>, LocalVector<double>, double>* ls;
   Solver<LocalMatrix<double>, LocalVector<double>, double>* p;
   IterativeLinearSolver<LocalMatrix<float>, LocalVector<float>, float>* sp_ls;
   Solver<LocalMatrix<float>, LocalVector<float>, float>* sp_p;
+#endif
   double atol_, rtol_;
   bool write_system_;
   bool first_solve_ = true;
