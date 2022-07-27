@@ -138,13 +138,13 @@ help()
    echo "-vtune                        : Run vtune tool (profiling)."
    echo "-perf                         : Run perf tool (profiling)."
    echo "-trace                        : Run traceanalyzer tool (MPI profiling)."
+   [ "`nsys --version 2>/dev/null;echo $?`" = 0 ] && echo "-nsys                         : Run Nsight profiler (GPU profiling)."
    echo "-create_sub_file              : Create a submission file only."
    echo "-prod                         : Create a submission file and submit the job on the main production class with exclusive resource."
    echo "-bigmem                       : Create a submission file and submit the job on the big memory production class."
    echo "-queue queue                  : Create a submission file with the specified queue and submit the job."
-   echo "-c n                          : Allocate n cores per task on each node."
+   echo "-c ncpus                      : Use ncpus CPUs allocated per task for a parallel calculation."
 [ "$TRUST_USE_CUDA" = 1 ] && echo "-gpu                    : Create a submission file and submit the job on production class with GPU cards."
-[ "$TRUST_USE_CUDA" = 1 ] && echo "-gpus_per_node n        : Allocate n GPUs per node."
 #   [ -d /ccc ] && echo "-ipm                    : Use ipm to report MPI statistics."
    echo "datafile -help_trust          : Print options of TRUST_EXECUTABLE [CASE[.data]] [options]."
 
@@ -334,7 +334,7 @@ do
    elif [ "$1" = "-eclipse-baltik" ]
    then
       if [ "$project_directory" = "" ]
-      then 
+      then
          echo "Error: You should load the env_BALTIK.sh of your baltik project"
          exit -1
       elif [ "`pwd`" != "$project_directory" ]
@@ -426,7 +426,7 @@ do
    then 
       MASSIF=1
    elif [ "$1" = "-heaptrack" ]
-   then 
+   then
       HEAPTRACK=1
    elif [ "$1" = "-advisor" ]
    then 
@@ -445,6 +445,9 @@ do
    then 
       export VT_PCTRACE=15
       [ "`type traceanalyzer 2>/dev/null`" = "" ] && echo "traceanalyzer doesn't exist." && exit
+   elif [ "$1" = "-nsys" ]
+   then
+      NSYS=1
    elif [ "$1" = "-gdb" ]
    then
       gdb=gdb.sh && mpirun_options="-gdb"
@@ -523,7 +526,7 @@ do
          else # Baltik
             name=`$TRUST_Awk '/^executable / && /:/ {print $3}' $project_directory/project.cfg`
             OPT=`basename $exec` && OPT=${OPT#$name} && cd $project_directory/build/src/exec$OPT || exit -1
-         fi         
+         fi
          ctest -N | sed "1,$ s/[#:]//g" > $liste_ctest
          for test in $tests
          do
@@ -817,6 +820,11 @@ then
 elif [ "$PERF" = 1 ]
 then
    exec="perf record --call-graph dwarf -o $NOM.perf $binary" # Plus complet 
+elif [ "$NSYS" = 1 ]
+then
+   rm -f $NOM.qdrep
+   export NVCOMPILER_ACC_NOTIFY=3
+   exec="nsys profile -o $NOM.qdrep $binary"
 elif [ "$VT_PCTRACE" != "" ]
 then
    exec="-trace $binary"
@@ -960,14 +968,14 @@ then
 		[ "$noeuds" != "" ] && echo "#SBATCH -N $noeuds"        >> $sub_file    # Number of nodes
 		[ "$cpus_per_task" != "" ] && echo "#SBATCH -c $cpus_per_task"			>> $sub_file	# Number of cores per task
 		[ "$gpus_per_node" != "" ] && echo "#SBATCH --gres=gpu:$gpus_per_node"		>> $sub_file	# Number of GPUs per node
-                # Deux options importantes for jean-zay/IDRIS sinon crashes possibles avec MPI-Cuda-Aware:	
+                # Deux options importantes for jean-zay/IDRIS sinon crashes possibles avec MPI-Cuda-Aware:
 		[ "$hintnomultithread" != "" ] && echo "#SBATCH --hint=nomultithread"		>> $sub_file
 		[ "$hintnomultithread" != "" ] && echo "#SBATCH --ntasks-per-node=$ntasks"	>> $sub_file
 		[ "$node" = 1 ] && echo "#SBATCH --exclusive"		>> $sub_file	# Exclusive use of nodes during production run	
 		[ "$ram" != "" ] && echo "#SBATCH --mem=$ram"           >> $sub_file    # Real memory required per node in MegaBytes
 		echo "##SBATCH --mail-user=email"			>> $sub_file
 		echo "##SBATCH --mail-type=BEGIN,END"			>> $sub_file
-		echo "set -x"				 		>> $sub_file 
+		echo "set -x"				 		>> $sub_file
 		echo "cd \$SLURM_SUBMIT_DIR" 				>> $sub_file    # Submit directory for reprise_auto script
 		;;
    	POE)
@@ -1018,7 +1026,7 @@ then
 		echo "#MSUB -n $NB_PROCS" 					>> $sub_file 
 		[ "$noeuds" != "" ] && echo "#MSUB -N $noeuds" 			>> $sub_file 
 		[ "$cpus_per_task" != "" ] && echo "#MSUB -c $cpus_per_task"	>> $sub_file
-		[ "$node" = 1 ] && echo "#MSUB -x"				>> $sub_file # Exclusive use of nodes during production run	
+		[ "$node" = 1 ] && echo "#MSUB -x"				>> $sub_file # Exclusive use of nodes during production run
 		[ "$ram" != "" ] && echo "#MSUB -M $ram" 			>> $sub_file 
 		[ "$espacedir" != "" ] && echo "#MSUB -m $espacedir"		>> $sub_file
 		echo "##MSUB -@ email:begin,end"				>> $sub_file
@@ -1251,6 +1259,18 @@ then
 elif [ "$VT_PCTRACE" != "" ] && [ -f `basename $binary`.stf ]
 then
    echo "Use -g flag or $exec_gcov binary for source code..." && traceanalyzer `basename $binary`.stf
+fi
+[ "$VTUNE" = 1 ] && vtune-gui `ls -art | grep hs | tail -1`
+[ "$ADVISOR" = 1 ] && advisor-gui `ls -art | grep e0 | tail -1`
+[ "$PERF" = 1 ] && [ -f $NOM.perf ] && perf report -i $NOM.perf
+[ "$VT_PCTRACE" != "" ] && [ -f `basename $binary`.stf ] && echo "Use -g flag or $exec_gcov binary for source code..." && traceanalyzer `basename $binary`.stf
+if [ "$NSYS" = 1 ] && [ -f $NOM.qdrep ]
+then
+   nm -D /lib64/libk5crypto.so.3 2>/dev/null | grep 'U EVP_KDF_ctrl' >/dev/null
+   if [[ ${PIPESTATUS[1]} -eq 0 ]]; then
+      echo "libk5crypto.so.3 requires EVP_KDF_ctrl. Switching to system OpenSSL libraries" >&2
+      LD_PRELOAD=/lib64/libcrypto.so.1.1:/lib64/libssl.so.1.1 nsight-sys $NOM.qdrep
+   fi
 fi
 exit $err
 
