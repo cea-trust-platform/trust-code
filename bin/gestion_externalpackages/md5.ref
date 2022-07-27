@@ -6,7 +6,6 @@ d45ed589f7aeb6898f9ef50f021857de  Gmsh/gmsh-4.4.1-source.tgz
 8fb659d9206dfd85fc1980f6db104087  MED/hdf5-1.10.3.tar.gz
 e7b55a76a4dcf2faf149194cbfff82a2  MED/med-4.1.1.tar.gz
 f414cfa77099cd1fa1a5ae4e22db508a  MPI/mpich-3.2.tar.gz
-0095ceecb19bbb7fb262131cb9c2cdd6  MPI/mvapich2-2.1.tgz
 e88f03a947c03539180b4711adfcf324  MPI/openmpi-2.0.4.tar.gz
 ec1224a216a084684bab6cd0dbf592f8  MPI/osu-micro-benchmarks-3.8.tar
 3143b1116f2d466d9325c206b7de88f7  Miniconda/Miniconda3-py37_4.9.2-Linux-x86_64.sh

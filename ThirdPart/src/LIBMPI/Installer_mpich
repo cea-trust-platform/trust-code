@@ -1,46 +1,31 @@
 #!/bin/bash
-# Install MPICH (standard or Infiniband tuned version)
+# Install MPICH (standard, Infiniband tuned version removed in v1.9.1_beta)
 
-if [ -f /usr/lib64/libibverbs.so ] && [ -f /usr/include/infiniband/verbs.h ] && [ -f /usr/include/infiniband/mad.h ] && false
+#########
+# MPICH #
+#########
+default_version=3.2
+latest_version=4.0.2 # Blocages MUMPS sur Fedora 34 avec 3.4.1
+# Cas ou l'on force la version la plus recente:
+if [ "$TRUST_FORCE_LATEST_MPICH" = 1 ]
 then
-  # Find infiniband so prefer mvapich to mpich: 
-  echo $ECHO_OPTS "Detecting Infiniband. So installing mvapich...\c"
-  ###########
-  # MVAPICH #
-  ###########
-  package=mvapich2-2.1.tgz
-  http=http://mvapich.cse.ohio-state.edu/download/mvapich2
-  src=${package%.tgz}
-  # /usr/include/infiniband/mad.h is important for performance. See:
-  # http://mailman.cse.ohio-state.edu/pipermail/mvapich-discuss/2013-June/004466.html
-  # So don't use --disable-mcast
-  option_configure="--enable-fast=all,O3" # --disable-fc produce an error: "...able to determine Fortran 90 KIND values for either address-sized integers or offset-sized integer"
+   version=$latest_version
+else # ToDo remonter dans le configure ?
+   version=$default_version
+   # Ubuntu 22 et Fedora 34, GNU>=11.0.0
+   if [ "`echo $TRUST_VERSION_GNU | awk -F. '{if ($1*100+$2*10+$3>=1100) print -force_latest_mpich}'`" != "" ]
+   then
+      echo "Error, use -force_latest_mpich cause $version MPICH not supported with GNU compilers >= 11" && exit -1
+   fi
+fi
+package=mpich-$version.tar.gz
+src=${package%.tar.gz}
+http=http://www.mpich.org/static/downloads/$version
+src=${package%.tar.gz}
+if [ "$TRUST_FORCE_LATEST_MPICH" = 1 ]
+then
+   option_configure="--enable-shared --enable-g=meminit --enable-fast=all,O3 --enable-yield=sched_yield --with-device=ch4:ofi"
 else
-  #########
-  # MPICH #
-  #########
-  default_version=3.2
-  latest_version=4.0.2 # Blocages MUMPS sur Fedora 34 avec 3.4.1
-  # Cas ou l'on force la version la plus recente:
-  if [ "$TRUST_FORCE_LATEST_MPICH" = 1 ]
-  then
-     version=$latest_version
-  else # ToDo remonter dans le configure ?
-     version=$default_version
-     # Ubuntu 22 et Fedora 34, GNU>=11.0.0
-     if [ "`echo $TRUST_VERSION_GNU | awk -F. '{if ($1*100+$2*10+$3>=1100) print -force_latest_mpich}'`" != "" ]
-     then
-        echo "Error, use -force_latest_mpich cause $version MPICH not supported with GNU compilers >= 11" && exit -1
-     fi
-  fi
-  package=mpich-$version.tar.gz
-  src=${package%.tar.gz}
-  http=http://www.mpich.org/static/downloads/$version
-  src=${package%.tar.gz}
-  if [ "$TRUST_FORCE_LATEST_MPICH" = 1 ]
-  then
-     option_configure="--enable-shared --enable-g=meminit --enable-fast=all,O3 --enable-yield=sched_yield --with-device=ch4:ofi"
-  else
   # --enable-g=meminit,dbg,mem pour debugger MPICH avec valgrind (ce n'est pas ce que l'on veut)
   # --enable-shared (pour utiliser le MPI wrapper de valgrind)
   # http://lists.mcs.anl.gov/pipermail/mpich-discuss/2011-June/010273.html
@@ -57,7 +42,6 @@ else
   # Try to build MPICH with valgrind include: Nothing is changed to avoid warnings with MPICH&Valgrind in //
   #option_configure="--enable-g=meminit --disable-fc --enable-fast=all,O3 --enable-yield=sched_yield $CPPFLAGS"
   #INCLUDE_VALGRIND=$TRUST_ROOT/exec/valgrind/include/valgrind && [ -d $INCLUDE_VALGRIND ] && option_configure=$option_configure" CPPFLAGS=-I$INCLUDE_VALGRIND"
-  fi
 fi
 
 # Verification que le package present est bien valide (probleme rencontre lors d'un download incorrect)
