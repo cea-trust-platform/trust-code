@@ -2,7 +2,7 @@
 # Script documente de creation d'une fiche de validation
 help()
 {
-   echo "For jupyter's validation forms (new formalism in v1.8.5):"
+   echo "For jupyter's validation forms (new formalism in v1.9.0):"
    echo "Usage: `basename $0` [-help] [-export_pdf] [-exec binary_path] [-doc]"
    echo "Script to build a PDF report file from a Jupyter validation form."
    echo "-help                          : This description."
