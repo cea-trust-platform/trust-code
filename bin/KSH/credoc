@@ -64,21 +64,6 @@ do
    echo $ECHO_OPTS "<CENTER><B><A NAME=$NOM>$NOM</A></B></CENTER>" >> $fichier
    echo $ECHO_OPTS "<CENTER>$com</CENTER>" >> $fichier
    REP_REL="../tests/"$REP
-   if [ -f $REP/$NOM.lml.gif.fin ]
-   then
-      echo $ECHO_OPTS "<CENTER><a href="$REP_REL/$NOM.lml.gif"><img src="$REP_REL/$NOM.lml.gif.fin"></a></CENTER>" >> $fichier
-   elif [ -f $REP/$NOM.coupe.gif.fin ]
-   then
-      echo $ECHO_OPTS "<CENTER><a href="$REP_REL/$NOM.coupe.gif"><img src="$REP_REL/$NOM.coupe.gif.fin"></a></CENTER>" >> $fichier
-   elif [ -f $REP/$NOM.son.gif.fin ]
-   then
-      echo $ECHO_OPTS "<CENTER><a href="$REP_REL/$NOM.son.gif"><img src="$REP_REL/$NOM.son.gif.fin"></a></CENTER>" >> $fichier
-   elif [ -f $REP/$NOM.gif.fin ]
-   then
-      echo $ECHO_OPTS "<CENTER><a href="$REP_REL/$NOM.gif"><img src="$REP_REL/$NOM.gif.fin"></a></CENTER>" >> $fichier
-   else
-      echo $ECHO_OPTS "<CENTER><img src="rien.gif"></CENTER>" >> $fichier
-   fi
    for fic_format in `cd $REP;ls $NOM.data *.geo *.geom *.geom.gz 2>/dev/null`
    do
       if [ -f $REP/$fic_format ]
