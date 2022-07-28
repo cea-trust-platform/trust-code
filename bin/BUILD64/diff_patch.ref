@@ -1,8 +1,3 @@
-diff -r bin/BUILD64/patch/Outils/lata2dx/Makefile ./Outils/lata2dx/Makefile
-11c11
-< 	#(cd lata2dx_reactor;./build_lata2dx_reactor.sh)
----
-> 	(cd lata2dx_reactor;./build_lata2dx_reactor.sh)
 diff -r bin/BUILD64/patch/Outils/lata2dx/lata2dx/commun_triou/LataDB.cpp ./Outils/lata2dx/lata2dx/commun_triou/LataDB.cpp
 400c400
 <     if ((type_ != LataDBDataType::INT64) &&  (type_ != LataDBDataType::INT32)) {
