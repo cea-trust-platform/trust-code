@@ -26,8 +26,14 @@ then
       tar xfz $TRUST_ROOT/externalpackages/AmgX/AmgX_6dba8067ca.tar.gz
    fi
    cd $LIB && mkdir -p build && cd build
+   if [ "$TRUST_VERSION_GNU" != "" ]
+   then
+      AMGX_COMPILERS="-DCMAKE_CXX_COMPILER=$TRUST_CC -DCMAKE_C_COMPILER=$TRUST_cc"
+   else
+      AMGX_COMPILERS="-DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc" # See https://github.com/NVIDIA/AMGX for compilers...
+   fi 
    # Sur jeanzay, $TRUST_MAKE plante (pas assez de memoire sur frontale?) donc on retente avec make:
-   cmake -Wno-dev $CUDA_NVCC_FLAGS -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB -DCMAKE_CXX_COMPILER=$TRUST_CC -DCMAKE_C_COMPILER=$TRUST_cc .. && ($TRUST_MAKE || make) && make install && cp -f ../examples/matrix.mtx $AMGX_DIR/$LIB/lib/examples
+   cmake -Wno-dev $CUDA_NVCC_FLAGS -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB $AMGX_COMPILERS .. && ($TRUST_MAKE || make) && make install && cp -f ../examples/matrix.mtx $AMGX_DIR/$LIB/lib/examples
    [ $? != 0 ] && exit -1
    # Test
    cd $AMGX_DIR/$LIB/lib/examples
@@ -66,9 +72,15 @@ then
    CMAKE_CXX_FLAGS="" && [ "$TRUST_USE_OPENMP" = 1 ] && CMAKE_CXX_FLAGS="-DCMAKE_CXX_FLAGS=-fopenmp"
    #BUILD=DEBUG
    # On specifie CC et CXX car si HPC SDK, nvc et nvc++ pris a la place (orcus):
-   export CC=$TRUST_cc
-   export CXX=$TRUST_CC
-   CMAKE_FLAGS="$CMAKE_CXX_FLAGS -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX -DCMAKE_CUDA_HOST_COMPILER=$TRUST_CC"
+   if [ "$TRUST_VERSION_GNU" != "" ]
+   then
+      export CC=$TRUST_cc
+      export CXX=$TRUST_CC
+   else
+      export CC=gcc
+      export CXX=g++   
+   fi   
+   CMAKE_FLAGS="$CMAKE_CXX_FLAGS -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX -DCMAKE_CUDA_HOST_COMPILER=$CC"
    # cmake (meme recent, 3.20) pas foutu de detecter correctement le nvcc du HPC SDK (cannot find -lcudadevrt -lcudart_static):
    [ "$NVHPC" != "" ] && echo "$CUDA_ROOT/bin/nvcc -L$CUDA_ROOT/lib64 \$*" > nvcc && chmod +x nvcc && CMAKE_FLAGS=$CMAKE_FLAGS" -DCMAKE_CUDA_COMPILER=`pwd`/nvcc"
    # Configure and build:

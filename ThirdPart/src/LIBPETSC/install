@@ -286,6 +286,14 @@ then
    done
    with_gpu=$with_gpu"]"
    CUDAFLAGS="-O3 -ccbin $TRUST_cc_BASE"
+   if [ "$TRUST_VERSION_GNU" = "" ]
+   then
+      # Pour pouvoir compiler AmgX+AmgXWrapper si les compilateurs de TRUST ne sont pas GNU
+      CUDAFLAGS="-O3 -ccbin gcc"
+      COPTFLAGS="-O3 -fPIC"
+      export OMPI_CC=gcc
+      export OMPI_CXX=g++
+   fi
    add_package viennacl
    echo "CUDA support for PETSc with: "$with_gpu
    echo "****************************************"
@@ -547,7 +555,7 @@ do
    export PETSC_DIR=`pwd`
    # On recupere les flags de compilation de TRUST pour etre coherent (oubli de -fPIC dans 1.6.2)
    fic_env=$TRUST_ROOT/env/make.$TRUST_ARCH_CC`[ $debug = 0 ] && echo _opt`
-   COPTFLAGS=`$TRUST_Awk '/ccFLAGS =/ {gsub("ccFLAGS =","",$0);print $0}' $fic_env`
+   [ "$COPTFLAGS" = "" ] && COPTFLAGS=`$TRUST_Awk '/ccFLAGS =/ {gsub("ccFLAGS =","",$0);print $0}' $fic_env`
    # On compile les librairies Fortran (eg:MUMPS) en int32:
    if [ "$TRUST_INT64" = "1" ]
    then
