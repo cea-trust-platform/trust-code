@@ -80,7 +80,7 @@ void Viscosite_turbulente_multiple::reynolds_stress_BIF(DoubleTab& R_ij) const /
   R_ij = 0;
   DoubleTrav R_ij_loc = DoubleTrav(R_ij);
   for (auto &&corr : viscs_turbs)
-    if ((corr.first == "BIF") | (corr.first == "WIF") | (corr.first == "WIT"))
+    if ((corr.first == "BIF") || (corr.first == "WIF") || (corr.first == "WIT"))
       {
         R_ij_loc = 0;
         ref_cast(Viscosite_turbulente_base, corr.second.valeur()).reynolds_stress(R_ij_loc);

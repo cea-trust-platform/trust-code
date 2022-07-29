@@ -597,9 +597,9 @@ void Octree::ranger_elem_3D(ArrOfInt& ok, int elem, int i, int nb_som_elem, cons
 void Octree::construire(int nb_octrees, const ArrOfInt& Tab,
                         const OctreeLoc& loc, Octree* pe)
 {
-  static int nb_octree=0;
+  //static int nb_octree=0;
   static int level=0;
-  nb_octree++;
+  //nb_octree++;
   int nb_elem=Tab.size_array();
   pere=pe;
   les_octrees=new Octree*[nb_octrees];
@@ -1258,8 +1258,8 @@ int OctreeFloor::rang_elem_depuis_loc(const OctreeLoc& loc, int prems, double x,
  */
 void OctreeFloor::construire(Octree* pe, const ArrOfInt& Tab, const OctreeLoc& loc)
 {
-  static int nb_octreefloor=0;
-  nb_octreefloor++;
+  //static int nb_octreefloor=0;
+  //nb_octreefloor++;
   assert(pe!=0);
   pere=pe;
   les_octrees=0;

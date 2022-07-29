@@ -772,16 +772,15 @@ void Zone_VEF_PreP1b::verifie_ok_arete(int nombre_aretes_superflues_prevues_sur_
 
   // Cerr << "Nombre de sommets non periodiques           = " << total_nb_sommets_non_periodiques << finl;
   // Cerr << "Nombre de sommets periodiques               =  " << nb_som_reel-total_nb_sommets_non_periodiques << finl;
-  int nb_aretes_periodiques=0;
-  int nb_aretes_perio_superflues=0;
+  //int nb_aretes_periodiques=0;
+  //int nb_aretes_perio_superflues=0;
   for (int i=0; i<nb_aretes_tot; i++)
     {
       if (renum_arete_perio[i]!=i)
         {
-          nb_aretes_periodiques++;
+          //nb_aretes_periodiques++;
           assert(ok_arete(i)==ok_arete(renum_arete_perio[i]));
-          if (!ok_arete(i))
-            nb_aretes_perio_superflues++;
+          //if (!ok_arete(i)) nb_aretes_perio_superflues++;
         }
     }
   // Cerr << "Nombre d'aretes non periodiques             = " << nb_aretes_tot-nb_aretes_periodiques << finl;

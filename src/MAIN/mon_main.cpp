@@ -20,7 +20,7 @@
 #include <Comm_Group_MPI.h>
 #include <PE_Groups.h>
 #include <Journal.h>
-#include <stdio.h>
+#include <cstdio>
 #include <Statistiques.h>
 #include <communications.h>
 #include <petsc_for_kernel.h>

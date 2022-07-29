@@ -429,13 +429,13 @@ DoubleTab& Terme_Source_Canal_RANS_LES_VEF_Face::ajouter(DoubleTab& resu) const
   double mbf1 = 0.; // mean body force
   double mbf2 = 0.; // mean body force
   double mbf = 0.; //body force
-  static int cpt = 0;
+  //static int cpt = 0;
   double coef=1.;
   double scaling=0.;
 
   if((tps>f_start)||((moyenne==3)&&(tps>dt_min)&&(tps>f_start)))
     {
-      cpt++;
+      //cpt++;
       if (tps < f_tot) coef*=(tps-f_start)/(f_tot-f_start);
 
       for(int num_face = 0 ; num_face<nb_faces ; num_face++)

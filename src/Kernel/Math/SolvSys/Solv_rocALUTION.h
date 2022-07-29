@@ -42,10 +42,10 @@ private :
   Solver<LocalMatrix<double>, LocalVector<double>, double>* p;
   IterativeLinearSolver<LocalMatrix<float>, LocalVector<float>, float>* sp_ls;
   Solver<LocalMatrix<float>, LocalVector<float>, float>* sp_p;
-#endif
   double atol_, rtol_;
   bool write_system_;
   bool first_solve_ = true;
+#endif
 };
 
 #endif

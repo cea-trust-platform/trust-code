@@ -120,7 +120,7 @@ int Op_Diff_RotRot::
 calculer_vorticite(DoubleTab& solution,        const DoubleTab& curl) const
 {
   const Zone& zone = zone_Vef().zone();
-  static int nb_appel2=0;
+  //static int nb_appel2=0;
 
   // Resolution en vorticite: on ne considere que le cas
   // sequentiel pour le moment.
@@ -158,7 +158,7 @@ calculer_vorticite(DoubleTab& solution,        const DoubleTab& curl) const
         solution[sommet] +=
           solution_temporaire[curl_.elements_pour_sommet(sommet,i)];
 
-      nb_appel2++;
+      //nb_appel2++;
 
     }
 
