@@ -32,7 +32,7 @@ protected:
   void construit_matrice_morse_intermediaire(const Matrice_Base&, Matrice_Morse& );
   void construit_renum(const DoubleVect&);
   void MorseSymToMorse(const Matrice_Morse_Sym& MS, Matrice_Morse& M);
-  IntTab renum_;                // Tableau de renumerotation lignes matrice TRUST -> matrice CSR
+  IntTab renum_;                // Tableau de renumerotation globale lignes matrice TRUST -> matrice CSR
   ArrOfBit items_to_keep_;      // Faut t'il conserver dans la matrice CSR la ligne item de la matrice TRUST ?
   int nb_items_to_keep_;        // Nombre local d'items a conserver
   int nb_rows_;                 // Nombre de lignes locales de la matrice TRUST

@@ -1,0 +1,100 @@
+# PARALLEL OK 2 #
+dimension 2
+Pb_hydraulique pb
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 2 2 /* OK avec 2 N aussi mais KO N>2 2 */
+        Longueurs 0.01 0.01
+    }
+    {
+        Bord Gauche X = 0.  0. <= Y <= 0.01
+        Bord Haut Y = 0.01  0. <= X <= 0.01
+        Bord Bas Y = 0.     0. <= X <= 0.01
+        Bord Droit X = 0.01 0. <= Y <= 0.01
+    }
+}
+Trianguler dom
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+Postraiter_domaine { domaine dom fichier dom format lata }
+END SCATTER #
+
+VEFPreP1B dis
+
+Scheme_euler_explicit sch
+Read sch
+{
+    nb_pas_dt_max 5
+    tinit 0.
+    tmax 1.2
+    dt_min 0.00001
+    dt_max 1.
+    dt_impr 0.0001
+    precision_impr 8
+    dt_sauv 100
+    seuil_statio 1.e-8
+
+}
+
+Fluide_Incompressible fluide
+Read fluide
+{
+    mu Champ_Uniforme 1 1.85e-5
+    rho Champ_Uniforme 1 1.17
+}
+
+Champ_Uniforme gravite
+Read gravite 2 0 -9.81
+
+Associate fluide gravite
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Read pb
+{
+    Navier_Stokes_standard
+    {
+        solveur_pression rocALUTION GCP { precond diag { } seuil 1.e-8 impr save_matrix_mtx_format }
+        convection { amont }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 0.
+        }
+        boundary_conditions {
+            Haut frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
+            Bas frontiere_ouverte_vitesse_imposee champ_front_uniforme 2 0. 1.
+            Gauche frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
+            Droit frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
+        }
+    }
+
+    Post_processing
+    {
+        format lml
+        champs dt_post 1e6
+        {
+            pression elem
+        }
+    }
+}
+Solve pb
+
