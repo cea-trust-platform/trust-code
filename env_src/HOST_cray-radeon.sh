@@ -15,6 +15,7 @@ define_modules_config()
    echo "module purge 1>/dev/null" >> $env
    echo "module load $module 1>/dev/null" >> $env
    echo "PATH=\$CRAY_MPICH_PREFIX/bin:\$PATH"  >> $env # Pour trouver mpicxx
+   echo "export TRUST_DEVICES_PER_NODE=6" >> $env # Devices per node
    . $env
    # Creation wrapper qstat -> squeue
    echo "#!/bin/bash

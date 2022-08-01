@@ -110,9 +110,6 @@ static int init_petsc(True_int argc, char **argv, int with_mpi,int& trio_began_m
     }
 #endif
 #endif
-#ifdef ROCALUTION_ROCALUTION_HPP_
-  init_rocalution();
-#endif
   return 1;
 }
 
@@ -232,6 +229,14 @@ void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int chec
 
   if (Process::je_suis_maitre())
     Cerr << arguments_info;
+
+#ifdef ROCALUTION_ROCALUTION_HPP_
+  set_omp_affinity_rocalution(false); // Disable OpenMP thread affinity
+  char* dev_per_node = getenv("TRUST_DEVICES_PER_NODE");
+  init_rocalution(Process::me(), dev_per_node==NULL ? 1 : atoi(dev_per_node));
+  set_omp_threads_rocalution(1); // Disable OpenMP
+  info_rocalution();
+#endif
 }
 
 void mon_main::finalize()
