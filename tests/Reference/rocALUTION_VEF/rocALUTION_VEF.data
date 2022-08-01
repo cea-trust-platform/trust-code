@@ -1,0 +1,118 @@
+# PARALLEL OK 2 #
+dimension 2
+Pb_Thermohydraulique pb
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 4 4
+        Longueurs 0.01 0.01
+    }
+    {
+        Bord Gauche X = 0.  0. <= Y <= 0.01
+        Bord Haut Y = 0.01  0. <= X <= 0.01
+        Bord Bas Y = 0.     0. <= X <= 0.01
+        Bord Droit X = 0.01 0. <= Y <= 0.01
+    }
+}
+Trianguler dom VerifierCoin dom { }
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool metis { Nb_parts 3 }
+    Larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+Postraiter_domaine { domaine dom fichier dom format lata }
+END SCATTER #
+
+VEFPreP1B dis lire dis { P0 }
+
+Scheme_euler_explicit sch
+Read sch
+{
+    nb_pas_dt_max 5
+    tinit 0.
+    tmax 1.2
+    dt_min 0.00001
+    dt_max 1.
+    dt_impr 0.0001
+    precision_impr 8
+    dt_sauv 100
+    seuil_statio 1.e-8
+
+}
+
+Fluide_Incompressible fluide
+Read fluide
+{
+    mu Champ_Uniforme 1 1.85e-5
+    rho Champ_Uniforme 1 1.17
+    lambda Champ_Uniforme 1 0.0262
+    Cp Champ_Uniforme 1 1006
+    beta_th champ_fonc_fonction pb temperature 1 1/(val+273)
+}
+
+Champ_Uniforme gravite
+Read gravite 2 0 -9.81
+
+Associate fluide gravite
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Read pb
+{
+    Navier_Stokes_standard
+    {
+        solveur_pression rocALUTION GCP { precond diag { } seuil 1.e-12 impr }
+        convection { amont }
+        diffusion { }
+        sources { boussinesq_temperature { T0 5. } }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 0.
+        }
+        boundary_conditions {
+            Haut paroi_fixe
+            Bas paroi_fixe
+            Gauche paroi_fixe
+            Droit paroi_fixe
+        }
+    }
+    Convection_Diffusion_Temperature
+    {
+        diffusion { }
+        convection { amont }
+        boundary_conditions
+        {
+            Haut paroi_adiabatique
+            Bas paroi_adiabatique
+            Gauche Paroi_temperature_imposee Champ_Front_Uniforme 1 10.
+            Droit Paroi_temperature_imposee Champ_Front_Uniforme 1 0
+        }
+        initial_conditions { Temperature Champ_Uniforme 1 5. }
+    }
+
+    Post_processing
+    {
+        format lml
+        champs dt_post 1e6
+        {
+            pression elem
+            temperature elem
+        }
+    }
+}
+Solve pb
+

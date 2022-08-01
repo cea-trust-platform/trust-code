@@ -21,6 +21,7 @@
 #include <SFichier.h>
 #include <Comm_Group_MPI.h>
 #include <MD_Vector_std.h>
+#include <MD_Vector_composite.h>
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Solv_rocALUTION_par,"Solv_rocALUTION_par",SolveurSys_base);
 
@@ -531,39 +532,38 @@ void Solv_rocALUTION_par::Create_objects(const Matrice_Morse& csr)
 
   pm.SetGlobalSize(nb_rows_tot_);
   pm.SetLocalSize(nb_rows_);
-  if (sub_type(MD_Vector_std, renum_.get_md_vector().valeur()))
-    {
-      const MD_Vector_std& md = ref_cast(MD_Vector_std, renum_.get_md_vector().valeur());
-      int boundary_nnz = md.items_to_send_.get_data().size_array();
-      const int* bnd = md.items_to_send_.get_data().addr();
-      pm.SetBoundaryIndex(boundary_nnz, bnd);
-      int neighbors = md.pe_voisins_.size_array();
-      const int* recv = md.pe_voisins_.addr();
 
-      if (debug)
-        {
-          Journal() << "Provisoire items_to_recv_:" << finl;
-          md.items_to_recv_.ecrire(Journal());
-          Journal() << "Provisoire blocs_to_recv_:" << finl;
-          md.blocs_to_recv_.ecrire(Journal());
-        }
-      std::vector<int> recv_offset;
-      int offset = 0;
-      recv_offset.push_back(offset);
-      for (int pe=0; pe<md.blocs_to_recv_.get_nb_lists(); pe++)
-        {
-          assert(md.blocs_to_recv_.get_list_size(pe)==2);
-          int index = md.blocs_to_recv_.get_index()[pe];
-          offset += md.blocs_to_recv_.get_data()[index+1] - md.blocs_to_recv_.get_data()[index];
-          recv_offset.push_back(offset);
-        }
-      pm.SetReceivers(neighbors, recv, &recv_offset[0]);
-      const int* sender = md.pe_voisins_.addr();
-      const int* send_offset = md.items_to_send_.get_index().addr();
-      pm.SetSenders(neighbors, sender, send_offset);
+  const MD_Vector_base& mdv = renum_.get_md_vector().valeur();
+  const MD_Vector_std& md = sub_type(MD_Vector_composite, mdv) ? ref_cast(MD_Vector_composite, mdv).global_md_ : ref_cast(MD_Vector_std, mdv);
+
+  int boundary_nnz = md.items_to_send_.get_data().size_array();
+  const int* bnd = md.items_to_send_.get_data().addr();
+  pm.SetBoundaryIndex(boundary_nnz, bnd);
+  int neighbors = md.pe_voisins_.size_array();
+  const int* recv = md.pe_voisins_.addr();
+
+  if (debug)
+    {
+      Journal() << "Provisoire items_to_recv_:" << finl;
+      md.items_to_recv_.ecrire(Journal());
+      Journal() << "Provisoire blocs_to_recv_:" << finl;
+      md.blocs_to_recv_.ecrire(Journal());
     }
-  else
-    Process::exit("ToDo MD_Vector_composite");
+  std::vector<int> recv_offset;
+  int offset = 0;
+  recv_offset.push_back(offset);
+  for (int pe=0; pe<md.blocs_to_recv_.get_nb_lists(); pe++)
+    {
+      assert(md.blocs_to_recv_.get_list_size(pe)==2);
+      int index = md.blocs_to_recv_.get_index()[pe];
+      offset += md.blocs_to_recv_.get_data()[index+1] - md.blocs_to_recv_.get_data()[index];
+      recv_offset.push_back(offset);
+    }
+  pm.SetReceivers(neighbors, recv, &recv_offset[0]);
+  const int* sender = md.pe_voisins_.addr();
+  const int* send_offset = md.items_to_send_.get_index().addr();
+  pm.SetSenders(neighbors, sender, send_offset);
+
   if (debug) pm.WriteFileASCII("pm");
 
   // Fill the GlobalMatrix:
