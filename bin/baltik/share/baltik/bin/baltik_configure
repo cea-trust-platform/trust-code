@@ -450,6 +450,14 @@ printf "\t@echo \"####################################\"\n"     >> $project_make
 printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check $type deps \n"               >> $project_makefile
 printf "\n"                                                     >> $project_makefile
 
+printf "# help ctest_deps_$type \t: Running dependencies test suite in `human_name_from_name $type` mode with ctest\n" >>$project_makefile
+printf "ctest_deps_$type : $type\n"                                  >> $project_makefile
+printf "\t@echo \"####################################\"\n"     >> $project_makefile
+printf "\t@echo \"# Running dependencies test suite in `human_name_from_name $type` mode with ctest #\"\n"     >> $project_makefile
+printf "\t@echo \"####################################\"\n"     >> $project_makefile
+printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_ctest $type deps\n"               >> $project_makefile
+printf "\n"                                                     >> $project_makefile
+
 printf "# help check_all_$type : Running all test suite in `human_name_from_name $type` mode (all test of project = baltik test + dependencies test)\n" >>$project_makefile
 printf "check_all_$type : $type\n"                                  >> $project_makefile
 printf "\t@echo \"####################################\"\n"     >> $project_makefile
@@ -458,6 +466,14 @@ printf "\t@echo \"####################################\"\n"     >> $project_make
 printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check $type all \n"               >> $project_makefile
 printf "\n" >> $project_makefile
 
+printf "# help ctest_all_$type \t: Running all test suite in `human_name_from_name $type` mode (all test of project = baltik test + dependencies test) with ctest\n" >>$project_makefile
+printf "ctest_all_$type : $type\n"                                  >> $project_makefile
+printf "\t@echo \"####################################\"\n"     >> $project_makefile
+printf "\t@echo \"# Running all test suite in `human_name_from_name $type` mode with ctest #\"\n"     >> $project_makefile
+printf "\t@echo \"####################################\"\n"     >> $project_makefile
+printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_ctest $type all\n"               >> $project_makefile
+printf "\n"                                                     >> $project_makefile
+
 printf "# help check_trust_$type : Running TRUST test suite in `human_name_from_name $type` mode (only test of TRUST platform)\n" >>$project_makefile
 printf "check_trust_$type : $type\n"                                  >> $project_makefile
 printf "\t@echo \"####################################\"\n"     >> $project_makefile
@@ -465,6 +481,14 @@ printf "\t@echo \"# Running TRUST test suite in `human_name_from_name $type` mod
 printf "\t@echo \"####################################\"\n"     >> $project_makefile
 printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check $type  trust \n"               >> $project_makefile
 printf "\n" >> $project_makefile
+
+printf "# help ctest_trust_$type \t: Running TRUST test suite in `human_name_from_name $type` mode (all test of TRUST platform) with ctest\n" >>$project_makefile
+printf "ctest_trust_$type : $type\n"                                  >> $project_makefile
+printf "\t@echo \"####################################\"\n"     >> $project_makefile
+printf "\t@echo \"# Running TRUST test suite in `human_name_from_name $type` mode with ctest #\"\n"     >> $project_makefile
+printf "\t@echo \"####################################\"\n"     >> $project_makefile
+printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_ctest $type trust\n"               >> $project_makefile
+printf "\n"                                                     >> $project_makefile
 
 printf "# obsolete check_trio_$type : Running TRUST test suite in `human_name_from_name $type` mode (IMPORTANT: prefer the use of check_trust_$type because it will disappear)\n" >>$project_makefile
 printf "check_trio_$type : check_trust_$type\n"                                  >> $project_makefile
@@ -481,6 +505,14 @@ printf "\t@echo \"# Running full test suite in `human_name_from_name $type` mode
 printf "\t@echo \"####################################\"\n"     >> $project_makefile
 printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check $type full \n"               >> $project_makefile
 printf "\n" >> $project_makefile
+
+printf "# help ctest_full_$type \t: Running full test suite in `human_name_from_name $type` mode (all test of project + all test of TRUST platform) with ctest\n" >>$project_makefile
+printf "ctest_full_$type : $type\n"                                  >> $project_makefile
+printf "\t@echo \"####################################\"\n"     >> $project_makefile
+printf "\t@echo \"# Running full test suite in `human_name_from_name $type` mode with ctest #\"\n"     >> $project_makefile
+printf "\t@echo \"####################################\"\n"     >> $project_makefile
+printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_ctest $type full\n"               >> $project_makefile
+printf "\n"                                                     >> $project_makefile
 
 printf "# help check_last_pb_$type : Running last pb test suite in `human_name_from_name $type` mode (see test in liste_pb.all file)\n" >>$project_makefile
 printf "check_last_pb_$type : $type\n"                                  >> $project_makefile
