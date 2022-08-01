@@ -1,0 +1,11 @@
+#!/bin/bash
+jdd=`pwd`
+jdd=`basename $jdd`
+if [ -f PAR_$jdd.TU ] && [ PAR_$jdd.TU -nt $jdd.TU ]
+then
+   par=`awk '/Iterations/ && /solveur/ {print $NF}' PAR_$jdd.TU`
+   seq=`awk '/Iterations/ && /solveur/ {print $NF}'     $jdd.TU`
+   [ $par = $seq ] && exit 0
+   echo "Number of iterations different in parallel ($par) and sequential ($seq) !" && exit -1 
+fi
+exit 0

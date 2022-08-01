@@ -13,20 +13,27 @@
 *
 *****************************************************************************/
 
-#ifndef Solv_rocALUTION_included
-#define Solv_rocALUTION_included
+#ifndef Solv_rocALUTION_par_included
+#define Solv_rocALUTION_par_included
 
-#include <rocalution_for_kernel.h>
 #include <Solv_Externe.h>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Woverloaded-virtual"
+#include <rocalution.hpp>
+#pragma GCC diagnostic pop
+using namespace rocalution;
 
-class Solv_rocALUTION : public Solv_Externe
+// ToDo: classe provisoire, en attente que GlobalMatrix/Vector marchent en sequentiel:
+// https://github.com/ROCmSoftwarePlatform/rocALUTION/issues/147
+// Cette classe est un copie-colle de la classe rocALUTION
+class Solv_rocALUTION_par : public Solv_Externe
 {
-  Declare_instanciable_sans_constructeur_ni_destructeur(Solv_rocALUTION);
+  Declare_instanciable_sans_constructeur_ni_destructeur(Solv_rocALUTION_par);
 
 public :
-  Solv_rocALUTION();
-  Solv_rocALUTION(const Solv_rocALUTION&);
-  ~Solv_rocALUTION() override;
+  Solv_rocALUTION_par();
+  Solv_rocALUTION_par(const Solv_rocALUTION_par&);
+  ~Solv_rocALUTION_par() override;
 
   inline int solveur_direct() const override { return 0; };
   inline int resoudre_systeme(const Matrice_Base& a, const DoubleVect& b, DoubleVect& x, int niter_max) override { return resoudre_systeme(a,b,x); };
@@ -36,16 +43,16 @@ public :
 
 private :
   void initialize();
-#ifdef ROCALUTION_ROCALUTION_HPP_
-  LocalMatrix<double> mat;
-  IterativeLinearSolver<LocalMatrix<double>, LocalVector<double>, double>* ls;
-  Solver<LocalMatrix<double>, LocalVector<double>, double>* p;
-  IterativeLinearSolver<LocalMatrix<float>, LocalVector<float>, float>* sp_ls;
-  Solver<LocalMatrix<float>, LocalVector<float>, float>* sp_p;
+  void Create_objects(const Matrice_Morse&);
+  ParallelManager pm;
+  GlobalMatrix<double> mat;
+  IterativeLinearSolver<GlobalMatrix<double>, GlobalVector<double>, double>* ls;
+  Solver<GlobalMatrix<double>, GlobalVector<double>, double>* p;
+  IterativeLinearSolver<GlobalMatrix<float>, GlobalVector<float>, float>* sp_ls;
+  Solver<GlobalMatrix<float>, GlobalVector<float>, float>* sp_p;
   double atol_, rtol_;
   bool write_system_;
   bool first_solve_ = true;
-#endif
 };
 
 #endif
