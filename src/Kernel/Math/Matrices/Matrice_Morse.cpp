@@ -17,7 +17,7 @@
 #include <Sparskit.h>
 #include <Matrice_Morse_Sym.h>
 #include <Check_espace_virtuel.h>
-
+#include <SFichier.h>
 #include <Noms.h>
 #include <ArrOfBit.h>
 #include <Array_tools.h>
@@ -193,6 +193,30 @@ Sortie& Matrice_Morse::imprimer_image(Sortie& s, int symetrie) const
   return s;
 }
 
+void Matrice_Morse::WriteFileMTX(const Nom& name) const
+{
+  if (Process::nproc() > 1)
+    {
+      Cerr << "Warning, matrix market format is not available yet in parallel." << finl;
+      return;
+    }
+  Nom filename(Objet_U::nom_du_cas());
+  filename += "_";
+  filename += name;
+  filename += ".mtx";
+  SFichier mtx(filename);
+  mtx.precision(14);
+  mtx.setf(ios::scientific);
+  int rows = nb_lignes();
+  Cerr << "Matrix (" << rows << " lines) written into file: " << filename << " ... " << finl;
+  mtx << "%%MatrixMarket matrix coordinate real " << (sub_type(Matrice_Morse_Sym, *this) ? "symmetric" : "general") << finl;
+  Cerr << "Matrix (" << rows << " lines) written into file: " << filename << finl;
+  mtx << "%%matrix" << finl;
+  mtx << rows << " " << rows << " " << get_tab1()[rows] << finl;
+  for (int row=0; row<rows; row++)
+    for (int j=get_tab1()[row]; j<get_tab1()[row+1]; j++)
+      mtx << row+1 << " " << get_tab2()[j-1] << " " << get_coeff()[j-1] << finl;
+}
 
 /*! @brief Constructeur par copie d'une Matrice_Morse.
  *

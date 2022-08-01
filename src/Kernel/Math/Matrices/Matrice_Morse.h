@@ -69,6 +69,7 @@ public :
   Sortie& imprimer_formatte(Sortie& s, int symetrie) const;
   Sortie& imprimer_image(Sortie& s) const;
   Sortie& imprimer_image(Sortie& s, int symetrie) const;
+  void WriteFileMTX(const Nom&) const;
   int largeur_de_bande() const;         // Retourne la largeur de bande
   void remplir(const IntLists& ,const DoubleLists& ,const DoubleVect& );
   void remplir(const IntLists& ,const DoubleLists&);
