@@ -22,31 +22,29 @@
 
 #ifndef Vitesse_derive_base_included
 #define Vitesse_derive_base_included
-#include <DoubleTab.h>
-#include <Correlation_base.h>
+#include <TRUSTTab.h>
+#include <Vitesse_relative_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
 //    classe Vitesse_derive_base
 //      correlations de vitesse de derive de la forme
-//      v_d = (v_k - v_l)
-//		cette classe definit les composantes de la vitesse de derives v_dx, v_dy, v_dz avec en parametres d'entree :
-//        D_h       -> diametre hydraulique
-//        g         -> gravite
-//        rho[n]  	-> densite des phases
-//
-//    sorties :
-//       C0(k, l)		   -> coefficient de distribution par rapport a la vitesse moyenne des deux phases k et l (v = rho[n_l]*v[n_l] + rho[n_g]*v[n_g])
-//       vg0(k, l, x/y/z)  -> vitesse de separation du gaz (a trois composantes)
+//      ur = 1 / (1 - C0 alpha_g) * ((C0 - 1) * v_l + vg0)
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Vitesse_derive_base : public Correlation_base
+class Vitesse_derive_base : public Vitesse_relative_base
 {
   Declare_base(Vitesse_derive_base);
 public:
-  virtual void vitesse_derive(const double& Dh, const DoubleTab& alpha, const DoubleTab& rho, const DoubleTab& g, DoubleTab& C0, DoubleTab& vg0) const = 0;
+  void vitesse_relative(const double Dh, const DoubleTab& sigma, const DoubleTab& alpha, const DoubleTab& rho, const DoubleTab& v, const DoubleVect& g, DoubleTab& ur) const override;
+
+protected:
+  virtual void evaluate_C0_vg0(const double Dh, const DoubleTab& sigma, const DoubleTab& alpha, const DoubleTab& rho, const DoubleTab& v, const DoubleVect& g) const = 0;
+
+  mutable double C0 = -1;
+  mutable ArrOfDouble vg0;
 };
 
 #endif

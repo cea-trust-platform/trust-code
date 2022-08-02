@@ -14,31 +14,29 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Vitesse_derive_constante.h
+// File:        Vitesse_relative_base.cpp
 // Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Correlations
 // Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Vitesse_derive_constante_included
-#define Vitesse_derive_constante_included
-#include <Vitesse_derive_base.h>
+#include <Vitesse_relative_base.h>
+#include <Pb_Multiphase.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Vitesse_derive_constante
-//      vitesse de derive constante entre une phase gaz et une phase liquide
-//      parametres : non!
-//////////////////////////////////////////////////////////////////////////////
+Implemente_base(Vitesse_relative_base, "Vitesse_relative_base", Correlation_base);
+// XD vitesse_derive source_base frottement_interfacial 0 Source term which corresponds to the drift-velocity between a liquid and a gas phase
 
-class Vitesse_derive_constante : public Vitesse_derive_base
+Sortie& Vitesse_relative_base::printOn(Sortie& os) const { return os; }
+Entree& Vitesse_relative_base::readOn(Entree& is)
 {
-  Declare_instanciable(Vitesse_derive_constante);
+  //identification des phases
+  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, pb_.valeur()) ? &ref_cast(Pb_Multiphase, pb_.valeur()) : NULL;
+  if (!pbm || pbm->nb_phases() == 1) Process::exit(que_suis_je() + " : not needed for single-phase flow!");
+  for (int n = 0; n < pbm->nb_phases(); n++) //recherche des id_composite des phases liquide et gaz
+    if (pbm->nom_phase(n).debute_par("liquide") && (n_l < 0 || pbm->nom_phase(n).finit_par("continu")))  n_l = n;
+    else if (pbm->nom_phase(n).debute_par("gaz") && (n_g < 0 || pbm->nom_phase(n).finit_par("continu"))) n_g = n;
 
-protected:
-  void evaluate_C0_vg0(const double Dh, const DoubleTab& sigma, const DoubleTab& alpha, const DoubleTab& rho, const DoubleTab& v, const DoubleVect& g) const override { }
-
-};
-
-#endif
+  if (n_l < 0) Process::exit(que_suis_je() + " : liquid phase not found!");
+  if (n_g < 0) Process::exit(que_suis_je() + " : gas phase not found!");
+  return is;
+}

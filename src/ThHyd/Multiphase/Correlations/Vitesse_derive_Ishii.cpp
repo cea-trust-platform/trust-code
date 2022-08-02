@@ -21,52 +21,31 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Vitesse_derive_Ishii.h>
-#include <Pb_Multiphase.h>
 #include <cmath>
 
 Implemente_instanciable(Vitesse_derive_Ishii, "Vitesse_derive_Ishii", Vitesse_derive_base);
 
-Sortie& Vitesse_derive_Ishii::printOn(Sortie& os) const
-{
-  return os;
-}
+Sortie& Vitesse_derive_Ishii::printOn(Sortie& os) const { return os; }
 
 Entree& Vitesse_derive_Ishii::readOn(Entree& is)
 {
-  //identification des phases
-  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, pb_.valeur()) ? &ref_cast(Pb_Multiphase, pb_.valeur()) : NULL;
-  if (!pbm || pbm->nb_phases() == 1) Process::exit(que_suis_je() + " : not needed for single-phase flow!");
-  for (int n = 0; n < pbm->nb_phases(); n++) //recherche des id_composite des phases liquide et gaz
-    if (pbm->nom_phase(n).debute_par("liquide") && (n_l < 0 || pbm->nom_phase(n).finit_par("continu")))  n_l = n;
-    else if (pbm->nom_phase(n).debute_par("gaz") && (n_g < 0 || pbm->nom_phase(n).finit_par("continu"))) n_g = n;
-
-  if (n_l < 0) Process::exit(que_suis_je() + " : liquid phase not found!");
-  if (n_g < 0) Process::exit(que_suis_je() + " : gas phase not found!");
+  Vitesse_derive_base::readOn(is);
 
   Param param(que_suis_je());
-  param.ajouter("diametre_hydraulique", &Dh_, Param::REQUIRED);
+  param.ajouter("subcooled_boiling", &sb_, Param::REQUIRED);
   param.lire_avec_accolades_depuis(is);
   return is;
 }
 
-void Vitesse_derive_Ishii::vitesse_derive(const double& Dh, const DoubleTab& alpha, const DoubleTab& rho, const DoubleTab& g, DoubleTab& C0, DoubleTab& vg0) const
+void Vitesse_derive_Ishii::evaluate_C0_vg0(const double Dh, const DoubleTab& sigma, const DoubleTab& alpha, const DoubleTab& rho, const DoubleTab& v, const DoubleVect& g) const
 {
-  double gz = 10.;
-  double D = dimension;
-  double C0_ = 1.2 - 0.2 * std::sqrt(rho(n_g) / rho(n_l));
+  const int D = dimension;
+  const double norm_g = sqrt(local_carre_norme_vect(g));
 
-  // A FAIRE : calculs a modifier selon la valeur de alpha
-  // Note : la derniere dimension donne le sens de l'apesanteur
+  /* distribution parameter */
+  C0 = Cinf + (1.0 - Cinf) * std::sqrt(rho(n_g) / rho(n_l)) * (1.0 - sb_ * exp(-zeta * alpha(n_g)));
 
-  C0(n_g, n_l) = 1 - alpha(n_g) * C0_;
-  C0(n_l, n_g) = -alpha(n_l) * C0_;
-
-  /* vitesse de separation du gaz */
-  vg0(n_g, n_l, D - 1) = 0.35 * std::sqrt(gz * (rho(n_l) - rho(n_g)) * Dh_ / rho(n_l));	// competition entre flottabilite et acceleration
-  vg0(n_l, n_g, D - 1) = vg0(n_g, n_l, D - 1); // la derniere dimension donne le sens de l'apesanteur
-  for (int d = 0; d < D - 1; d++)
-    {
-      vg0(n_g, n_l, d) = 0;
-      vg0(n_l, n_g, d) = 0;
-    }
+  /* drift velocity */
+  double dv = std::sqrt(2.0) * pow((rho(n_l) - rho(n_g)) * norm_g * sigma(n_l, n_g) / rho(n_l) / rho(n_l), 0.25) * pow(1.0 - alpha(n_g), theta);
+  for (int d = 0; d < D; d++) vg0(d) = -dv * g(d) / norm_g;
 }

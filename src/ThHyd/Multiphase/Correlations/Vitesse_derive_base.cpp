@@ -21,15 +21,20 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Vitesse_derive_base.h>
-Implemente_base(Vitesse_derive_base, "Vitesse_derive_base", Correlation_base);
+Implemente_base(Vitesse_derive_base, "Vitesse_derive_base", Vitesse_relative_base);
 // XD vitesse_derive source_base frottement_interfacial 0 Source term which corresponds to the drift-velocity between a liquid and a gas phase
 
-Sortie& Vitesse_derive_base::printOn(Sortie& os) const
-{
-  return os;
-}
+Sortie& Vitesse_derive_base::printOn(Sortie& os) const { return Vitesse_relative_base::printOn(os); }
+Entree& Vitesse_derive_base::readOn(Entree& is) { return Vitesse_relative_base::readOn(is); }
 
-Entree& Vitesse_derive_base::readOn(Entree& is)
+void Vitesse_derive_base::vitesse_relative(const double Dh, const DoubleTab& sigma, const DoubleTab& alpha, const DoubleTab& rho, const DoubleTab& v, const DoubleVect& g, DoubleTab& ur) const
 {
-  return is;
+  evaluate_C0_vg0(Dh, sigma, alpha, rho, v, g);
+
+  ur = 0.0;
+  for (int d = 0; d < dimension; d++)
+    {
+      ur(n_l, n_g, d) = 1.0 / (1.0 - C0 * alpha(n_g)) * ((C0 - 1) * v(n_g) + vg0(d));
+      ur(n_g, n_l, d) = -1.0 / (1.0 - C0 * alpha(n_g)) * ((C0 - 1) * v(n_g) + vg0(d));
+    }
 }

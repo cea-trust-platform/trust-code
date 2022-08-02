@@ -14,31 +14,33 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Vitesse_derive_constante.h
+// File:        Vitesse_relative_base.h
 // Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Correlations
 // Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Vitesse_derive_constante_included
-#define Vitesse_derive_constante_included
-#include <Vitesse_derive_base.h>
+#ifndef Vitesse_relative_base_included
+#define Vitesse_relative_base_included
+#include <TRUSTTab.h>
+#include <Correlation_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//    classe Vitesse_derive_constante
-//      vitesse de derive constante entre une phase gaz et une phase liquide
-//      parametres : non!
+//    classe Vitesse_relative_base
+//      correlations de vitesse relative de la forme
+//      ur = (v_k - v_l)
+//
 //////////////////////////////////////////////////////////////////////////////
 
-class Vitesse_derive_constante : public Vitesse_derive_base
+class Vitesse_relative_base : public Correlation_base
 {
-  Declare_instanciable(Vitesse_derive_constante);
-
+  Declare_base(Vitesse_relative_base);
+public:
+  virtual void vitesse_relative(const double Dh, const DoubleTab& sigma, const DoubleTab& alpha, const DoubleTab& rho, const DoubleTab& v, const DoubleVect& g, DoubleTab& ur) const = 0;
 protected:
-  void evaluate_C0_vg0(const double Dh, const DoubleTab& sigma, const DoubleTab& alpha, const DoubleTab& rho, const DoubleTab& v, const DoubleVect& g) const override { }
-
+  int n_l = -1, n_g = -1; //phases traitees : liquide / gaz continu
 };
 
 #endif

@@ -21,48 +21,21 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Vitesse_derive_constante.h>
-#include <Pb_Multiphase.h>
-#include <cmath>
 
 Implemente_instanciable(Vitesse_derive_constante, "Vitesse_derive_constante", Vitesse_derive_base);
 
-Sortie& Vitesse_derive_constante::printOn(Sortie& os) const
-{
-  return os;
-}
+Sortie& Vitesse_derive_constante::printOn(Sortie& os) const { return os; }
 
 Entree& Vitesse_derive_constante::readOn(Entree& is)
 {
+  Vitesse_derive_base::readOn(is);
 
-  /* identification des phases */
-  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, pb_.valeur()) ? &ref_cast(Pb_Multiphase, pb_.valeur()) : NULL;
-  if (!pbm || pbm->nb_phases() == 1) Process::exit(que_suis_je() + " : not needed for single-phase flow!");
-  for (int n = 0; n < pbm->nb_phases(); n++) //recherche des id_composite des phases liquide et gaz
-    if (pbm->nom_phase(n).debute_par("liquide") && (n_l < 0 || pbm->nom_phase(n).finit_par("continu")))  n_l = n;
-    else if (pbm->nom_phase(n).debute_par("gaz") && (n_g < 0 || pbm->nom_phase(n).finit_par("continu"))) n_g = n;
-
-  if (n_l < 0) Process::exit(que_suis_je() + " : liquid phase not found!");
-  if (n_g < 0) Process::exit(que_suis_je() + " : gas phase not found!");
-
-  /* lecture du nombre de Weber critique */
+  vg0.resize(dimension);
   Param param(que_suis_je());
-  param.ajouter("coefficient_distribution", &C0_, Param::REQUIRED);
-  param.ajouter("vitesse_derive_x", &vg0_x, Param::REQUIRED);
-  if (dimension > 1) param.ajouter("vitesse_derive_y", &vg0_y, Param::REQUIRED);
-  if (dimension == 3) param.ajouter("vitesse_derive_z", &vg0_z, Param::REQUIRED);
+  param.ajouter("C0", &C0, Param::REQUIRED);
+  param.ajouter("vg0_x", &vg0[0], Param::REQUIRED);
+  param.ajouter("vg0_y", &vg0[1], Param::REQUIRED);
+  if (dimension == 3) param.ajouter("vg0_z", &vg0[2], Param::REQUIRED);
   param.lire_avec_accolades_depuis(is);
   return is;
-}
-
-void Vitesse_derive_constante::vitesse_derive(const double& Dh, const DoubleTab& alpha, const DoubleTab& rho, const DoubleTab& g, DoubleTab& C0, DoubleTab& vg0) const
-{
-  // A FAIRE : a modifier selon la valeur de alpha
-  vg0(n_g, n_l, 0) = vg0(n_l, n_g, 0) = vg0_x;
-  if (dimension > 1) vg0(n_g, n_l, 1) = vg0(n_l, n_g, 1) = vg0_y;
-  if (dimension == 3) vg0(n_g, n_l, 2) = vg0(n_l, n_g, 2) = vg0_z;
-
-  C0(n_g, n_l) = (1.0 - alpha(n_g) * C0_);
-  C0(n_l, n_g) = -alpha(n_l) * C0_;
-
-
 }

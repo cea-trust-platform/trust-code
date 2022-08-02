@@ -35,11 +35,15 @@
 class Vitesse_derive_Ishii : public Vitesse_derive_base
 {
   Declare_instanciable(Vitesse_derive_Ishii);
-public:
-  virtual void vitesse_derive(const double& Dh, const DoubleTab& alpha, const DoubleTab& rho, const DoubleTab& g, DoubleTab& C0, DoubleTab& vg0) const;
+
 protected:
-  int n_l = -1, n_g = -1; //phases traitees : liquide / gaz continu
-  double Dh_ = 0; //diametre hydraulique
+  void evaluate_C0_vg0(const double Dh, const DoubleTab& sigma, const DoubleTab& alpha, const DoubleTab& rho, const DoubleTab& v, const DoubleVect& g) const override;
+
+  // parametres de la correlation (circular channel)
+  int sb_ = 0;          // subcooled boing (0 = no, 1 = yes)
+  double Cinf = 1.2;    // asymptotic value of C0
+  double theta = 1.75;
+  double zeta = 18.0;
 };
 
 #endif
