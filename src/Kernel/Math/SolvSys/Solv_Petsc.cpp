@@ -1750,43 +1750,23 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
             }
           else Process::exit("Matrix type not supported.");
           mtx << "%%MatrixMarket matrix coordinate real " << type << finl;
-          bool vectors = false; // Ecriture des vecteurs supporte par AmgX mais cela ne marche pas encore
-          if (vectors)
-            {
-              Cerr << "Matrix (" << rows << " lines) written into file with RHS and solution: " << filename << finl;
-              mtx << "%%matrix rhs solution" << finl;
-            }
-          else
-            {
-              Cerr << "Matrix (" << rows << " lines) written into file: " << filename << finl;
-              mtx << "%%matrix" << finl;
-            }
+          Cerr << "Matrix (" << rows << " lines) written into file: " << filename << finl;
+          mtx << "%%matrix" << finl;
           mtx << rows << " " << rows << " " << ia[rows] << finl;
           for (int row=0; row<rows; row++)
             for (int j=ia[row]; j<ia[row+1]; j++)
               mtx << row+1 << " " << ja[j]+1 << " " << v[j] << finl;
-          if (vectors)
-            {
-              mtx << "%%" << finl << "%% optional rhs " << secmem.size_array() << finl;
-              for (int i = 0; i < secmem.size_array(); i++)
-                mtx << secmem(i) << finl;
-              mtx << "%%" << finl << "%% optional solution " << solution.size_array() << finl;
-              for (int i = 0; i < solution.size_array(); i++)
-                mtx << solution(i) << finl;
-            }
-          else
-            {
-              // Provisoire: sauve un vector Petsc
-              PetscViewer viewer;
-              Nom rhs_filename(Objet_U::nom_du_cas());
-              rhs_filename += "_rhs";
-              rhs_filename += (Nom) instance;
-              rhs_filename += ".petsc";
-              PetscViewerBinaryOpen(PETSC_COMM_WORLD,rhs_filename,FILE_MODE_WRITE,&viewer);
-              VecView(SecondMembrePetsc_, viewer);
-              Cerr << "Save RHS into " << rhs_filename << finl;
-              PetscViewerDestroy(&viewer);
-            }
+          // Provisoire: sauve un vector Petsc au format ASCII pour le RHS
+          PetscViewer viewer;
+          Nom rhs_filename(Objet_U::nom_du_cas());
+          rhs_filename += "_rhs";
+          rhs_filename += (Nom) instance;
+          rhs_filename += ".petsc";
+          PetscViewerASCIIOpen(PETSC_COMM_WORLD,rhs_filename,&viewer);
+          PetscViewerPushFormat(viewer, PETSC_VIEWER_ASCII_MATLAB);
+          VecView(SecondMembrePetsc_, viewer);
+          Cerr << "Save RHS into " << rhs_filename << finl;
+          PetscViewerDestroy(&viewer);
         }
       if (save_matrix_ && verbose) Cout << "[Petsc] Time to write matrix: \t" << Statistiques::get_time_now() - start << finl;
     }
