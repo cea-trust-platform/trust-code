@@ -90,6 +90,7 @@ Entree& SETS::lire(const Motcle& mot, Entree& is)
   else if (mot == "iter_min") is >> iter_min_;
   else if (mot == "iter_max") is >> iter_max_;
   else if (mot == "pression_degeneree") is >> p_degen;
+  else if (mot == "pressure_reduction" || mot == "reduction_pression") is >> pressure_reduction_;
   else return Simpler::lire(mot, is); //la classe mere connait-elle ce mot cle?
   return is;
 }
@@ -297,7 +298,7 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   else semi_impl["vitesse"] = eq_qdm.inconnue().passe();
   eqn.solv_masse().corriger_solution(current, current, 0); //pour PolyMAC_P0 : vf -> ve
 
-  //premier passage : dimensionnement de mat_semi_impl, remplissage de p_degen_
+  //premier passage : dimensionnement de mat_semi_impl et de mdv_semi_impl, remplissage de p_degen_
   if (!mat_semi_impl.nb_lignes())
     {
       mat_semi_impl.dimensionner(n_eq + 1, n_eq + 1);//derniere ligne -> continuite
@@ -306,6 +307,15 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
           mat_semi_impl.get_bloc(i, j).typer("Matrice_Morse"), mats[noms[i]][noms[j]] = &ref_cast(Matrice_Morse, mat_semi_impl.get_bloc(i, j).valeur());
       for (auto &&i_eq : eqs) i_eq.second->dimensionner_blocs(mats[i_eq.first], semi_impl); //option semi-implicite
       eq_qdm.assembleur_pression()->dimensionner_continuite(mats["pression"]);
+      /* si utilisation directe de mat_semi_impl : dimensionnement des blocs vides */
+      if (!pressure_reduction_) for (i = 0; i <= n_eq; i++)
+        for (j = 0; j <= n_eq; j++)
+          if (!mats[noms[i]][noms[j]]->nb_lignes() && !mats[noms[i]][noms[j]]->nb_colonnes())
+            mats[noms[i]][noms[j]]->dimensionner(inco[noms[i]]->valeurs().size_totale(), inco[noms[j]]->valeurs().size_totale(), 0);
+
+      MD_Vector_composite mdc;
+      for (i = 0; i <= n_eq; i++) mdc.add_part(inco[noms[i]]->valeurs().get_md_vector(), inco[noms[i]]->valeurs().line_size());
+      mdv_semi_impl.copy(mdc);
 
       /* reglage de p_degen si non lu : si incompressible sans CLs de pression imposee, alors la pression est degeneree */
       if (p_degen < 0)
@@ -313,10 +323,20 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
           p_degen &= !sub_type(Neumann_val_ext, eq_qdm.zone_Cl_dis().les_conditions_limites(i).valeur());
     }
 
-  /* Newton : assemblage de mat_semi_impl -> assemblage de la matrice en pression -> resolution -> substitution */
-  tabs_t incr, sec; //increments / seconds membres associes
-  for (auto &&n_i : inco) incr[n_i.first] = sec[n_i.first] = n_i.second->valeurs();
+  /* increments et residus pour l'algorithme de Newton */
+  DoubleTrav v_inco, v_incr, v_sec; //format "vecteur complet"
+  MD_Vector_tools::creer_tableau_distribue(mdv_semi_impl, v_incr), MD_Vector_tools::creer_tableau_distribue(mdv_semi_impl, v_sec);
 
+  DoubleTab_parts p_incr(v_incr), p_sec(v_sec);
+  ptabs_t incr, sec;//format "std::map"
+  for (i = 0; i <= n_eq; i++) incr[noms[i]] = &p_incr[i], sec[noms[i]] = &p_sec[i];
+  if (!pressure_reduction_) /* v_inco : rempli en copiant les inconnues si on ne fait pas de reduction en pression */
+    {
+      MD_Vector_tools::creer_tableau_distribue(mdv_semi_impl, v_inco);
+      DoubleTab_parts p_inco(v_inco);
+      for (i = 0; i <= n_eq; i++) p_inco[i] = inco[noms[i]]->valeurs();
+    }
+  /* Newton : assemblage de mat_semi_impl -> assemblage de la matrice en pression -> resolution -> substitution */
   TablePrinter tp(&get_Cerr().get_ostream());
   if (!Process::me())
     {
@@ -329,70 +349,81 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
     {
       /* remplissage par assembler_blocs */
       //equation d'energie en premier pour pouvoir utiliser q_pi dans d'autres equations
-      eqs["temperature"]->assembler_blocs_avec_inertie(mats["temperature"], sec["temperature"], semi_impl);
+      eqs["temperature"]->assembler_blocs_avec_inertie(mats["temperature"], *sec["temperature"], semi_impl);
       //les autres
       for (auto &n_e : eqs)
-        if (n_e.first != "temperature") n_e.second->assembler_blocs_avec_inertie(mats[n_e.first], sec[n_e.first], semi_impl);
+        if (n_e.first != "temperature") n_e.second->assembler_blocs_avec_inertie(mats[n_e.first], *sec[n_e.first], semi_impl);
       //equation de continuite sum_k alpha_k = 1
-      eq_qdm.assembleur_pression()->assembler_continuite(mats["pression"], sec["pression"]);
+      eq_qdm.assembleur_pression()->assembler_continuite(mats["pression"], *sec["pression"]);
 
-      /* expression des autres inconnues (x) en fonction de p : vitesse, puis temperature / pression */
-      tabs_t b_p;
-      std::vector<std::set<std::pair<std::string, int>>> ordre;
-      if (eq_qdm.zone_dis().valeur().le_nom() == "PolyMAC_P0") ordre.push_back({{ "vitesse", 1 }}); //si PolyMAC_P0: on commence par ve
-      ordre.push_back({{ "vitesse", 0 }}), ordre.push_back({}); //puis vf, puis toutes les autres inconnues simultanement
-      for (auto &&nom : noms)
-        if (nom != "vitesse" && nom != "pression") ordre.back().insert({{ nom, 0 }});
-      if (!(ok = eliminer(ordre, "pression", mats, sec, A_p, b_p))) break; //si l'elimination echoue, on sort
-
-      /* assemblage du systeme en pression */
-      DoubleTrav secmem_pression;
-      assembler("pression", A_p, b_p, mats, sec, matrice_pression, secmem_pression, p_degen);
-      SolveurSys& solv_p = eq_qdm.solveur_pression();
-#ifdef PETSCKSP_H
-      if (!cv_ctx && sub_type(Solv_Petsc, solv_p.valeur()))
+      SolveurSys& solv_p = eq_qdm.solveur_pression(); /* on utilise le "solveur_pression" de la QDM */
+      if (pressure_reduction_) /* reduction en pression */
         {
-          init_cv_ctx(secmem_pression, eq_qdm.assembleur_pression()->norme_continuite());
-          ref_cast(Solv_Petsc, solv_p.valeur()).set_convergence_test(convergence_test, cv_ctx, destroy_cvctx);
-        }
+          /* expression des autres inconnues (x) en fonction de p : vitesse, puis temperature / pression */
+          tabs_t b_p;
+          std::vector<std::set<std::pair<std::string, int>>> ordre;
+          if (eq_qdm.zone_dis().valeur().le_nom() == "PolyMAC_P0") ordre.push_back({{ "vitesse", 1 }}); //si PolyMAC_P0: on commence par ve
+          ordre.push_back({{ "vitesse", 0 }}), ordre.push_back({}); //puis vf, puis toutes les autres inconnues simultanément
+          for (auto &&nom : noms)
+            if (nom != "vitesse" && nom != "pression") ordre.back().insert({{ nom, 0 }});
+          if (!(ok = eliminer(ordre, "pression", mats, sec, A_p, b_p))) break; //si l'elimination echoue, on sort
+
+          /* assemblage du systeme en pression */
+          assembler("pression", A_p, b_p, mats, sec, matrice_pression, *sec["pression"], p_degen);
+#ifdef PETSCKSP_H
+          if (!cv_ctx && sub_type(Solv_Petsc, solv_p.valeur()))
+            {
+              init_cv_ctx(*sec["pression"], eq_qdm.assembleur_pression()->norme_continuite());
+              ref_cast(Solv_Petsc, solv_p.valeur()).set_convergence_test(convergence_test, cv_ctx, destroy_cvctx);
+            }
 #endif
 
-      /* resolution : seulement si l'erreur en alpha (dans secmem_pression) depasse un seuil */
-      if (mp_max_abs_vect(secmem_pression) > 1e-16)
-        {
-          matrice_pression.ajouter_multvect(inco["pression"]->valeurs(), secmem_pression); //passage increment -> variable pour faire plaisir aux solveurs iteratifs
-          solv_p.valeur().reinit(), solv_p.valeur().set_return_on_error(1); /* pour eviter un exit() en cas d'echec */
-          ok = (solv_p.resoudre_systeme(matrice_pression, secmem_pression, incr["pression"]) >= 0);
-          if (!ok) break; //le solveur a echoue -> on sort
-          incr["pression"].echange_espace_virtuel();
-          incr["pression"] -= inco["pression"]->valeurs();
-        }
-      else incr["pression"] = 0;
+          /* resolution : seulement si l'erreur en alpha (dans secmem_pression) depasse un seuil */
+          if (mp_max_abs_vect(*sec["pression"]) > 1e-16)
+            {
+              matrice_pression.ajouter_multvect(inco["pression"]->valeurs(), *sec["pression"]); //passage increment -> variable pour faire plaisir aux solveurs iteratifs
+              solv_p.valeur().reinit(), solv_p.valeur().set_return_on_error(1); /* pour eviter un exit() en cas d'echec */
+              ok = (solv_p.resoudre_systeme(matrice_pression, *sec["pression"], *incr["pression"]) >= 0);
+              if (!ok) break; //le solveur a echoue -> on sort
+              incr["pression"]->echange_espace_virtuel();
+              *incr["pression"] -= inco["pression"]->valeurs();
+            }
+          else *incr["pression"] = 0;
 
-      //increments des autres variables
-      for (auto &&n_v : b_p)
-        {
-          incr[n_v.first] = n_v.second; //partie constante
-          A_p[n_v.first].ajouter_multvect(incr["pression"], incr[n_v.first]); //dependance en les increments de pression
-          incr[n_v.first].echange_espace_virtuel();
+          //increments des autres variables
+          for (auto &&n_v : b_p)
+            {
+              *incr[n_v.first] = n_v.second; //partie constante
+              A_p[n_v.first].ajouter_multvect(*incr["pression"], *incr[n_v.first]); //dependance en les increments de pression
+              incr[n_v.first]->echange_espace_virtuel();
+            }
         }
-      eqn.solv_masse().corriger_solution(incr["vitesse"], incr["vitesse"], 1); //pour PolyMAC_P0 : sert a corriger ve
+      else /* pas de reduction en pression : on passe directement par mat_semi_impl */
+        {
+          mat_semi_impl.ajouter_multvect(v_inco, v_sec); //passage increment -> variable pour faire plaisir aux solveurs iteratifs
+          solv_p.valeur().reinit(), solv_p.valeur().set_return_on_error(1); /* pour eviter un exit() en cas d'echec */
+          ok = (solv_p.resoudre_systeme(mat_semi_impl, v_sec, v_incr) >= 0);
+          if (!ok) break; //le solveur a echoue -> on sort
+          v_incr -= v_inco; //retour en increments
+        }
+
+      eqn.solv_masse().corriger_solution(*incr["vitesse"], *incr["vitesse"], 1); //pour PolyMAC_P0 : sert a corriger ve
 
 
       if (!Process::me()) tp << it + 1;
       for (auto &&n_v : incr)
         {
-          double vm = mp_min_vect(n_v.second), vM = mp_max_vect(n_v.second), x = std::fabs(vM) > std::fabs(vm) ? vM : vm;
+          double vm = mp_min_vect(*n_v.second), vM = mp_max_vect(*n_v.second), x = std::fabs(vM) > std::fabs(vm) ? vM : vm;
           if (!Process::me()) tp << x;
         }
 
       /* convergence? */
-      cv = corriger_incr_alpha(inco["alpha"]->valeurs(), incr["alpha"], err_a_sum) < crit_conv["alpha"];
+      cv = corriger_incr_alpha(inco["alpha"]->valeurs(), *incr["alpha"], err_a_sum) < crit_conv["alpha"];
       for (auto && n_v : incr)
-        if (crit_conv.count(n_v.first)) cv &= mp_max_abs_vect(n_v.second) < crit_conv.at(n_v.first);
+        if (crit_conv.count(n_v.first)) cv &= mp_max_abs_vect(*n_v.second) < crit_conv.at(n_v.first);
 
       /* mises a jour : inconnues -> milieu -> champs/conserves -> sources */
-      for (auto && n_i : inco) n_i.second->valeurs() += incr[n_i.first];
+      for (auto && n_i : inco) n_i.second->valeurs() += *incr[n_i.first];
       if (p_degen) inco["pression"]->valeurs() -= mp_min_vect(inco["pression"]->valeurs()); // On prend la pression minimale comme pression de reference afin d'avoir la meme pression de reference en sequentiel et parallele
       if (!(ok = err_a_sum < crit_conv["alpha"] && eq_qdm.milieu().check_unknown_range())) break; //si on a depasse les bornes du milieu sur (p, T) ou si on manque de precision, on doit sortir
       pb.mettre_a_jour(t); //inconnues -> milieu -> champs conserves
@@ -406,7 +437,7 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
         if (pb.equation(i).positive_unkown()==1)
           {
             std::string nom_inco = pb.equation(i).inconnue().le_nom().getString() ;
-            unknown_positivation(inco[nom_inco]->valeurs(), incr[nom_inco]) ;
+            unknown_positivation(inco[nom_inco]->valeurs(), *incr[nom_inco]) ;
           }
 
       pb.mettre_a_jour(t); //inconnues -> milieu -> champs conserves
@@ -429,7 +460,7 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
 }
 
 int SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ordre, const std::string inco_p, const std::map<std::string, matrices_t>& mats,
-                   const tabs_t& sec, std::map<std::string, Matrice_Morse>& A_p, tabs_t& b_p)
+                   const ptabs_t& sec, std::map<std::string, Matrice_Morse>& A_p, tabs_t& b_p)
 {
   int i, j, jb, k, l, lb, m, oMl, oMg, M, n, oNl, oNg, N, prems = !A_p.size(), infoo = 0; //si A_p est vide, premier passage -> on doit dimensionner
   const Matrice_Morse * A;
@@ -440,7 +471,7 @@ int SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ordr
   std::map<std::pair<std::string, int>, std::array<int, 2>> dims; //dims[{inco, bloc}] : dimension 0/ line_size() du bloc k de inco
   for (auto &&n_v : sec)
     {
-      ConstDoubleTab_parts part(n_v.second);
+      ConstDoubleTab_parts part(*n_v.second);
       for (i = 0; i < part.size(); i++)
         {
           offs[ {n_v.first, i}] = offs.count({ n_v.first, i - 1 }) ? offs[ { n_v.first, i - 1 }] + dims[ { n_v.first, i - 1 }][0] * dims[ { n_v.first, i - 1 }][1] : 0;
@@ -477,7 +508,7 @@ int SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ordr
           std::vector<std::set<int>> stencil(calc.size_array()); //stencil[i] -> stencil de l'item i (a demultiplier par le line_size() de chaque variable)
           for (auto &&i_b : bloc)
             for (auto &&v_m : mats.at(i_b.first))
-              if (v_m.second->nb_colonnes())
+              if (v_m.second->nb_coeff())
                 {
                   oMg = offs[i_b], M = dims[i_b][1];
                   if (v_m.first == inco_p) //dependance directe en inco_p
@@ -517,7 +548,7 @@ int SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ordr
                   for (m = 0; m < M; m++)
                     for (auto &&col : stencil[i]) sten.append_line(oMg + M * i + m, col);
               Matrice_Morse mat2;
-              Matrix_tools::allocate_morse_matrix(sec.at(i_bl.first).size_totale(), sec.at(inco_p).size_totale(), sten, mat2);
+              Matrix_tools::allocate_morse_matrix(sec.at(i_bl.first)->size_totale(), sec.at(inco_p)->size_totale(), sten, mat2);
               A_p[i_bl.first].nb_colonnes() ? A_p[i_bl.first] += mat2 : A_p[i_bl.first] = mat2; //A_p peut deja etre partiellement creee
             }
         }
@@ -536,7 +567,7 @@ int SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ordr
 
       for (i = 0; i < nv; i++)
         {
-          Ap[i] = &A_p[vbloc[i]], vsec[i] = &sec.at(vbloc[i]);
+          Ap[i] = &A_p[vbloc[i]], vsec[i] = sec.at(vbloc[i]);
           if (!b_p.count(vbloc[i])) b_p[vbloc[i]] = *vsec[i]; //creation des b_p
           bp[i] = &b_p[vbloc[i]];
           const matrices_t& line = mats.at(vbloc[i]);
@@ -626,9 +657,9 @@ int SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ordr
 }
 
 void SETS::assembler(const std::string inco_p, const std::map<std::string, Matrice_Morse>& A_p, const tabs_t& b_p,
-                     const std::map<std::string, matrices_t>& mats, const tabs_t& sec, Matrice_Morse& P, DoubleTab& secmem, int p_degen)
+                     const std::map<std::string, matrices_t>& mats, const ptabs_t& sec, Matrice_Morse& P, DoubleTab& secmem, int p_degen)
 {
-  secmem = sec.at(inco_p);
+  secmem = *sec.at(inco_p);
   int i, ib, j, k, l, np = secmem.dimension_tot(0), m, M = secmem.line_size(), deb, fin, pos, col;
 
   /* calc(i) = 1 si on doit remplir les lignes [N * i, (N + 1) * i[ de la matrice */

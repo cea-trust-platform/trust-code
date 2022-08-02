@@ -59,7 +59,7 @@ public :
   //                - pour chaque bloc { i_1, i_2 }, la matrice { mats[i_j][i_k] } doit etre diagonale par blocs par rapport a ce MD_Vector
   //                - hors cette diagonale, les inconnues d'un blocs ne peuvent dependre que des blocs precedents et de inco_p
 
-  static int eliminer(const std::vector<std::set<std::pair<std::string, int>>> ordre, const std::string inco_p, const std::map<std::string, matrices_t>& mats, const tabs_t& sec,
+  static int eliminer(const std::vector<std::set<std::pair<std::string, int>>> ordre, const std::string inco_p, const std::map<std::string, matrices_t>& mats, const ptabs_t& sec,
                       std::map<std::string, Matrice_Morse>& A_p, tabs_t& b_p);
 
   /* assemblage d'un systeme en inco_p a partir des expressions d.{inco} : A_p[inco].d{inco_p} + b_p[inco] */
@@ -71,7 +71,7 @@ public :
   //
   //contraintes : toutes les autres inconnues doivent etre exprimees dans A_p / b_p
 
-  static void assembler(const std::string inco_p, const std::map<std::string, Matrice_Morse>& A_p, const tabs_t& b_p, const std::map<std::string, matrices_t>& mats, const tabs_t& sec,
+  static void assembler(const std::string inco_p, const std::map<std::string, Matrice_Morse>& A_p, const tabs_t& b_p, const std::map<std::string, matrices_t>& mats, const ptabs_t& sec,
                         Matrice_Morse& matrice, DoubleTab& secmem, int p_degen);
 
   double get_default_growth_factor() const override /* taux de croissance du pas de temps */
@@ -104,6 +104,7 @@ protected :
 
   int iter_min_ = 1, iter_max_ = 10; //nombre d'iterations min/max de l'etape non-lineaire
   int first_call_;//au tout premier appel, P peut etre tres mauvais -> on ne predit pas v en SETS
+  int pressure_reduction_ = 1; //fait-on la reduction en pression?
 
   /* criteres de convergences par inconnue (en norme Linf), modifiables par le mot-cle "criteres_convergence" */
   std::map<std::string, double> crit_conv;
@@ -111,6 +112,7 @@ protected :
   /* matrices de la resolution semi-implicite */
   std::map<std::string, matrices_t> mats; // matrices : mats[nom de l'inconnue de l'equation][nom de l'autre inconnue] = matrice
   Matrice_Bloc mat_semi_impl; //pour stocker les matrices de mats
+  MD_Vector mdv_semi_impl;    //MD_Vector associe
   std::map<std::string, Matrice_Morse> mat_pred; //matrices de prediction
 
   /* elimination en pression dv = A_p[nom de la variable]. dp + b_p[nom de la variable] */

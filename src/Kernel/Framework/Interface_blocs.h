@@ -28,7 +28,8 @@ class Objet_U;
 //dictionnaire de matrices
 typedef std::map<std::string, Matrice_Morse *> matrices_t;
 //dictionnaires de DoubleTabs
-typedef std::map<std::string, DoubleTab> tabs_t;
+typedef std::map<std::string, DoubleTab >  tabs_t;
+typedef std::map<std::string, DoubleTab*> ptabs_t;
 //calcul d'un Champ_Inc ainsi que de ses derivees et de ses valeurs aux bords
 typedef void (*fonc_calc_t)(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);
 #endif
