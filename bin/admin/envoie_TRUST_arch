@@ -18,6 +18,7 @@ ssh_command()
        scp -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $command $log@$adr:~/command_$machine 1>/dev/null 2>&1
        # Add -X to have DISPLAY ? not on jean-zay cause it hangs
        opt_="-X" && [ "$log" = "ugz82dj" ] && opt_=""
+       [ "${adr#mezel}" != "$adr" ] && opt_=""
        ssh $opt_ -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $log@$adr -n 'chmod +x ~/command_'$machine';~/command_'$machine 2>/dev/null
     fi
     rm -f $command

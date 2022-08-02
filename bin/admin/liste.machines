@@ -22,6 +22,7 @@ linux	rsync_ssh	tache	orcus-intel.intra.cea.fr	-limited	-TrioCFD -IJK-FT -STT -P
 linux	rsync_ssh	tache	orcus-amd.intra.cea.fr		-limited	-TrioCFD -IJK-FT   					-without-doc -without-visit -disable-plot2d 	-benchmark 								# CentOS 7.6	CEA Saclay
 linux	rsync_ssh	tache	orcus-amd-build64.intra.cea.fr		-limited	-TrioCFD -IJK-FT   				-build_64_bit -without-doc -without-visit -disable-plot2d		 								# CentOS 7.6	CEA Saclay
 linux	rsync_ssh	tache	orcus-amd-gpu.intra.cea.fr			-TrioCFD -IJK-FT  					-cuda										# CentOS 7.6	CEA Saclay
+linux	rsync_ssh	tache	mezel.intra.cea.fr	-limited	    				-without-doc -disable-plot2d 	 								# Redhat 8.5	CEA Cad
 linux	rsync_ssh	tache	pegasi2.intra.cea.fr	  	-TrioCFD -IJK-FT  				 		     -force_provided_mpich			# CentOS 7.9 serveur rackable pour validation TrioCFD titania
 linux	rsync_ssh	tache	pegasi3.intra.cea.fr	  	-all  		-GENEPI3 -TrioCFD -IJK-FT 	 		     -force_provided_mpich -without-pdflatex  			# Redhat 8.2 serveur rackable titania
 linux	rsync_ssh	tache	is221715.intra.cea.fr		-all 									-force_provided_mpich -without-pdflatex						# CentOS 7.9	Bat 451	LMEC	bureau TMA FLICA4
@@ -30,7 +31,7 @@ linux	rsync_ssh	tache	is234617-mv-install.intra.cea.fr		-all		  	 	-force_provid
 linux	rsync_ssh	cible	is210968.intra.cea.fr		-all	-TrioCFD -IJK-FT -TRUST_NK 						-semi_opt -force_provided_mpich -without-pdflatex					# CentOS 7.9	Bat 451	LMEC	bureau TMA TRUST
 linux	rsync_ssh	tache	is228817.intra.cea.fr										-xdata		-force_provided_mpich -without-visit 								# Fedora 26	Bat 451 LGLS	Salle serveurs  pce 40
 linux	rsync_ssh	tache	is154727.intra.cea.fr		-all								-check-valgrind	-force_provided_mpich -without-pdflatex								# CentOS 7.9	Bat 451	LGLS	salle de formation
-linux	rsync_ssh	tache	is241483.intra.cea.fr		-all		-MPCube -TrioCFD -IJK-FT -GENEPI3 -STT -PEMFC  			-force_provided_mpich -without-pdflatex 	                					# Debian 11 titania	Bat 451 LGLS	bureau Gilles
+linux	rsync_ssh	tache	is241483.intra.cea.fr		-all		-MPCube -TrioCFD -IJK-FT -SIDES -SCORPIO -GENEPI3 -TRUST_NK -FLICA5 -C3D -STT -PEMFC  			-force_provided_mpich -without-pdflatex 	                					# Debian 11 titania	Bat 451 LGLS	bureau Gilles
 linux	rsync_ssh	tache	is232971.intra.cea.fr				-TRUST -MPCube -PAREX+  -GENEPI3				-force_provided_openmpi  			# Fedora 26 titania 	Bat 451 LGLS	bureau Pierre LEDAC 
 linux	rsync_ssh	non	is226423.intra.cea.fr		-all		-GENEPI3 -IJK-FT 			-g		-force_provided_mpich -download-visit -without-pdflatex -disable-vc 						# Ubuntu 20 titania	Bat 451 LMSF	bureau Michel Filippi
 linux	rsync_ssh	non	is221710.intra.cea.fr			-TRUST -MPCube -GENEPI3 				-force_provided_mpich -without-pdflatex 								# Fedora 24	Bat 454	LMEC	bureau Marc Elmo
