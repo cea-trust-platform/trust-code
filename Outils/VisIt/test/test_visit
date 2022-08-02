@@ -14,9 +14,9 @@ then
    cp -f $TRUST_ROOT/Outils/VisIt/test/*.med .
    gunzip -f -c $TRUST_ROOT/Outils/VisIt/test/test.tar.gz | tar -xf -
    lata=`ls -rt *.lata`
-   echo -e "OpenDatabase(\"$lata\", 0)\nquit()" > quit.py
-   echo -e "OpenDatabase(\"$lata\", 0)\nquit()" > LATA.py
-   echo -e "OpenDatabase(\"mesh.med\", 0)\nquit()" > MED.py
+   echo -e "OpenDatabase(\"$lata\", 0)\nAddPlot(\"Mesh\", \"dom\", 1, 1)\nDrawPlots()\nSaveWindow()\nquit()" > quit.py
+   cp -f quit.py LATA.py
+   echo -e "OpenDatabase(\"mesh.med\", 0)\nAddPlot(\"Mesh\", \"dom\", 1, 1)\nDrawPlots()\nSaveWindow()\nquit()" > MED.py
    visit=$TRUST_ROOT/exec/VisIt/bin/visit
 
    # Pour eviter un blocage avec Alliances
@@ -38,8 +38,8 @@ then
       # -noconfig evite de charger le fichier de configuration du login
       # et permet ainsi d'eviter un blocage potentiel si le fichier est mal configure 
       # Filtrage des problemes de display
-      rm -f err
-      ($visit $np -debug 5 -cli -nowin -noconfig -s quit.py 1>visit.log 2>&1;echo ${PIPESTATUS[0]} > err) &
+      rm -f visit0000.png;echo 1 > err
+      ($visit $np -debug 5 -cli -nowin -noconfig -s quit.py 1>visit.log 2>&1;[ -f visit0000.png ] && echo 0 > err) &
       wait_for $! $timeout
       if [ $? != 0 ]
       then
@@ -72,8 +72,8 @@ then
    do
       for FORMAT in LATA `[ "$new" = 1 ] && echo MED`
       do
-      rm -f err
-      ($visit -debug 5 -cli `[ "$option" = -nowin ] && echo $option` -noconfig -s $FORMAT.py 1>$FORMAT.log 2>&1;echo ${PIPESTATUS[0]} > err) &
+      rm -f visit0000.png;echo 1 > err
+      ($visit -debug 5 -cli `[ "$option" = -nowin ] && echo $option` -noconfig -s $FORMAT.py 1>$FORMAT.log 2>&1;[ -f visit0000.png ] && echo 0 > err) &
       wait_for $! $timeout
       if [ $? != 0 ]
       then
