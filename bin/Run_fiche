@@ -82,7 +82,9 @@ do
       exit 0
    elif [ "$1" = -doc ]
    then
-      prm=$TRUST_ROOT/Validation/Rapports_automatiques/Verification/SampleFormJupyter/SampleFormJupyter.ipynb
+      [ "$TRUST_DISABLE_JUPYTER" = 1 ] && echo "Error: Jupyter not installed while Run_fiche -doc opens a jupyter notebook. Contact TRUST support team." && exit -1
+      cp -r $TRUST_ROOT/Validation/Rapports_automatiques/Verification/SampleFormJupyter $TRUST_TMP/.
+      prm=$TRUST_TMP/SampleFormJupyter/SampleFormJupyter.ipynb
       echo "----------------------------------------------------------------------"
       echo "Launching SampleFormJupyter in your web browser... hit Ctrl-C when you're done."
       echo "  >  jupyter-notebook $prm"
