@@ -811,11 +811,11 @@ then
     # PL: Change le TMPDIR car par defaut sur /tmp et pb si mis a noexec
     TMPDIR=$TRUST_TMP $TRUST_ROOT/externalpackages/Miniconda/./$conda_installer -p $TRUST_ROOT/exec/python/ -b 1>$TRUST_ROOT/exec/conda_python.log 2>&1
     [ $? != 0 ] && echo "Error while installing $conda_installer. See $TRUST_ROOT/exec/conda_python.log" >> $TRUST_ROOT/NON_INSTALLED && exit -1
-    # Vu sur certaines machines conda_installer ne modifie pas correctement le chemin vers python
-    sed -i "s?/usr/bin/env python?$PWD/python?" ./conda
     
     # Installing packages from local channel
     cd $TRUST_ROOT/exec/python/bin
+    # Vu sur certaines machines conda_installer ne modifie pas correctement le chemin vers python
+    sed -i "s?/usr/bin/env python?$PWD/python?" ./conda
     for pkg in $pkgs
     do
       echo "Installing $pkg ... "
