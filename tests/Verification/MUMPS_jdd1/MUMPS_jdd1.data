@@ -1,0 +1,94 @@
+# PARALLEL ONLY 2 #
+dimension 3
+Pb_hydraulique pb
+Domaine dom
+# BEGIN MESH
+Mailler dom
+{
+    Pave Cavite
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 10 10 10
+        Longueurs 0.02 0.01 0.006
+        Facteurs 1. 1.1 1.1
+        Symy Symz
+    }
+    {
+        Bord Inlet X = 0.    0. <= Y <= 0.01 0. <= Z <= 0.006
+        Bord Wall   Y = 0.01  0. <= X <= 0.02 0. <= Z <= 0.006
+        Bord Wall    Y = 0.    0. <= X <= 0.02 0. <= Z <= 0.006
+        Bord Outlet  X = 0.02  0. <= Y <= 0.01 0. <= Z <= 0.006
+        Bord Symmetry    Z = 0.    0. <= X <= 0.02 0. <= Y <= 0.01
+        Bord Symmetry   Z = 0.006 0. <= X <= 0.02 0. <= Y <= 0.01
+    }
+}
+Tetraedriser_homogene dom
+Raffiner_isotrope dom
+END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool Metis { Nb_parts 2 }
+    Larg_joint 2
+    ecrire_lata mesh
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER #
+Scatter DOM.Zones dom
+# END SCATTER #
+
+VEFPreP1B dis
+
+Schema_euler_explicite sch
+Read sch
+{
+    tinit 0.
+	nb_pas_dt_max 3
+    dt_impr 1.e-7
+}
+
+Fluide_Incompressible fluide
+Read fluide
+{
+    mu Champ_Uniforme 1 1.85e-5
+    rho Champ_Uniforme 1 1.17
+}
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Read pb
+{
+    Navier_Stokes_Standard
+    {
+        solveur_pression petsc cholesky 		{ impr cli { -ksp_view  } reduce_ram  }
+        convection { amont }
+        diffusion { }
+        initial_conditions {
+            vitesse champ_fonc_xyz dom 3 y*(0.01-y) 0. 0.
+        }
+        boundary_conditions {
+            Wall 		paroi_fixe
+            Inlet		frontiere_ouverte_vitesse_imposee champ_front_fonc_xyz 3 y*(0.01-y) 0. 0.
+            Outlet 		frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
+            Symmetry 	Symetrie
+        }
+    }
+    Post_processing
+    {
+        format lml
+        fields dt_post 1000
+        {
+            pression elem
+        }
+    }
+}
+
+Solve pb
+End
+
