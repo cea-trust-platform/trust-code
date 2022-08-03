@@ -160,6 +160,22 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
       champs_compris_.ajoute_champ(rho_cp_comme_T_.valeur());
       champs_compris_.ajoute_champ(rho_cp_elem_.valeur());
     }
+
+  if (porosite_milieu.non_nul())
+    {
+      // TODO : FIXME : on suppose que le champ est aux elems ... faut generaliser et utiliser affecter ...
+      double temps = porosite_milieu->temps();
+      DoubleTab tmp_values = porosite_milieu->valeurs();
+      const int is_uniforme = sub_type(Champ_Uniforme,porosite_milieu.valeur());
+      // On discretise
+      dis.discretiser_champ("champ_elem",zone_dis,"porosite_milieu","neant",1 /* n_comp */,temps,porosite_milieu);
+      champs_compris_.ajoute_champ(porosite_milieu.valeur()); // pareil que porosite_volumique ...
+      // On reinitialise
+      const int nb_elem = zone_dis.nb_elem_tot();
+      for (int i = 0; i < nb_elem; i++)
+        if (is_uniforme) porosite_milieu->valeurs()(i,0) = tmp_values(0,0);
+        else porosite_milieu->valeurs() = tmp_values;
+    }
 }
 /*! @brief Lecture d'un milieu sur un flot d'entree.
  *
@@ -190,11 +206,13 @@ void Milieu_base::set_param(Param& param)
   param.ajouter("lambda",&lambda);
   param.ajouter("Cp",&Cp);
   param.ajouter("beta_th",&beta_th);
+  param.ajouter("porosite_milieu",&porosite_milieu);
 }
+
 int Milieu_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
   Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
-  exit();
+  Process::exit();
   return -1;
 }
 
@@ -204,7 +222,7 @@ void Milieu_base::verifier_coherence_champs(int& err,Nom& msg)
     {
       Cerr<<"Error while reading the physical properties of a "<<que_suis_je()<<" medium."<<finl;
       Cerr<<msg<<finl;
-      exit();
+      Process::exit();
     }
   else if (err==2)
     {
@@ -298,28 +316,61 @@ void Milieu_base::calculer_alpha()
       Cerr << "alpha calculation is not possible since lambda is not known." << finl;
     }
 }
+void Milieu_base::update_porosity_values()
+{
+  Zone_VF& zvf = ref_cast_non_const(Zone_VF,porosite_milieu->zone_dis_base());
+
+  // update porosite_elem
+  // TODO : FIXME : on suppose que le champ est aux elems ... faut generaliser et utiliser affecter ...
+  DoubleVect& porosite_elem = zvf.porosite_elem();
+  assert (porosite_elem.size_totale() == porosite_milieu->valeurs().dimension_tot(0));
+  assert (zvf.nb_elem_tot() == porosite_milieu->valeurs().dimension_tot(0));
+  porosite_elem = porosite_milieu->valeurs();
+
+  // update porosite_faces
+  DoubleVect& porosite_face = zvf.porosite_face();
+  const int nb_face_tot = zvf.nb_faces_tot();
+  assert (nb_face_tot == zvf.porosite_face().size_totale());
+  const IntTab& face_voisins = zvf.face_voisins();
+
+  for (int face = 0; face < nb_face_tot; face++)
+    {
+      const int elem1 = face_voisins(face, 1), elem2 = face_voisins(face, 0);
+      if ((elem1 != -1) && (elem2 != -1))
+        porosite_face(face) = 2. / (1. / porosite_milieu->valeurs()(elem1) + 1. / porosite_milieu->valeurs()(elem2));
+      else if (elem1 != -1)
+        porosite_face(face) = porosite_milieu->valeurs()(elem1);
+      else
+        porosite_face(face) = porosite_milieu->valeurs()(elem2);
+    }
+}
+
 void Milieu_base::mettre_a_jour(double temps)
 {
   //Cerr << que_suis_je() << "Milieu_base::mettre_a_jour" << finl;
-  if (rho.non_nul())
-    rho.mettre_a_jour(temps);
-  if (g.non_nul())
-    g.valeur().mettre_a_jour(temps);
-  if (lambda.non_nul())
-    lambda.mettre_a_jour(temps);
-  if (Cp.non_nul())
-    Cp.mettre_a_jour(temps);
-  if (beta_th.non_nul())
-    beta_th.mettre_a_jour(temps);
+  if (rho.non_nul()) rho.mettre_a_jour(temps);
+
+  if (g.non_nul()) g.valeur().mettre_a_jour(temps);
+
+  if (lambda.non_nul()) lambda.mettre_a_jour(temps);
+
+  if (Cp.non_nul()) Cp.mettre_a_jour(temps);
+
+  if (beta_th.non_nul()) beta_th.mettre_a_jour(temps);
 
   if ( (lambda.non_nul()) && (Cp.non_nul()) && (rho.non_nul()) )
     {
       calculer_alpha();
       alpha.valeur().changer_temps(temps);
     }
-  if (rho_cp_comme_T_.non_nul())
-    update_rho_cp(temps);
 
+  if (rho_cp_comme_T_.non_nul()) update_rho_cp(temps);
+
+  if (porosite_milieu.non_nul())
+    {
+      update_porosity_values();
+      porosite_milieu.mettre_a_jour(temps);
+    }
 }
 
 void Milieu_base::update_rho_cp(double temps)
@@ -416,22 +467,30 @@ int Milieu_base::initialiser(const double temps)
 {
   Cerr << que_suis_je() << "Milieu_base:::initialiser" << finl;
   if (sub_type(Champ_Don_base, rho.valeur())) ref_cast(Champ_Don_base, rho.valeur()).initialiser(temps);
-  if (g.non_nul())
-    g.valeur().initialiser(temps);
-  if (lambda.non_nul())
-    lambda.initialiser(temps);
-  if (Cp.non_nul())
-    Cp.initialiser(temps);
-  if (beta_th.non_nul())
-    beta_th.initialiser(temps);
+
+  if (g.non_nul()) g.valeur().initialiser(temps);
+
+  if (lambda.non_nul()) lambda.initialiser(temps);
+
+  if (Cp.non_nul()) Cp.initialiser(temps);
+
+  if (beta_th.non_nul()) beta_th.initialiser(temps);
 
   if ( (lambda.non_nul()) && (Cp.non_nul()) && (rho.non_nul()) )
     {
       calculer_alpha();
       alpha.valeur().changer_temps(temps);
     }
-  if (rho_cp_comme_T_.non_nul())
-    update_rho_cp(temps);
+
+  if (rho_cp_comme_T_.non_nul()) update_rho_cp(temps);
+
+  // TODO : XXX : a voir si ICoCo ? faut l'initialiser dans le main ?
+  if (porosite_milieu.non_nul())
+    {
+      update_porosity_values();
+      porosite_milieu.initialiser(temps);
+    }
+
   return 1;
 }
 
