@@ -1669,7 +1669,7 @@ void LataDB::read_data2_(LataDataFile & f,
             chunk_size = size_in_file - next_line;
             if (chunk_size > 1024)
               chunk_size = 1024;
-            tmp.resize((int)chunk_size, nb_comp_in_file);
+            tmp.resize((entier)chunk_size, nb_comp_in_file);
             bloc_read_skip(f, fld.datatype_.msb_, fld.datatype_.type_, (next_line - current_file_pos) * nb_comp_in_file);
             bloc_read(f, fld.datatype_.msb_, fld.datatype_.type_, tmp);
             current_chunk_pos = next_line;
