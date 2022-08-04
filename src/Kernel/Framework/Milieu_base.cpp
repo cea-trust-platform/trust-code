@@ -13,18 +13,19 @@
 *
 *****************************************************************************/
 
-#include <Milieu_base.h>
-#include <Champ.h>
-#include <Champ_Fonc_Tabule.h>
-#include <Champ_Uniforme.h>
+#include <Discretisation_tools.h>
 #include <Discretisation_base.h>
+#include <Champ_late_input_P0.h>
+#include <Champ_Fonc_Tabule.h>
+#include <Schema_Temps_base.h>
+#include <Champ_Uniforme.h>
+#include <Champ_Fonc_MED.h>
 #include <Probleme_base.h>
 #include <Equation_base.h>
-#include <Param.h>
-#include <Champ_Fonc_MED.h>
-#include <Discretisation_tools.h>
-#include <Schema_Temps_base.h>
+#include <Milieu_base.h>
 #include <EChaine.h>
+#include <Param.h>
+#include <Champ.h>
 
 Implemente_base_sans_constructeur(Milieu_base,"Milieu_base",Objet_U);
 // XD milieu_base objet_u milieu_base -1 Basic class for medium (physics properties of medium).
@@ -164,17 +165,27 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
   if (porosite_milieu.non_nul())
     {
       // TODO : FIXME : on suppose que le champ est aux elems ... faut generaliser et utiliser affecter ...
+      if (sub_type(Champ_late_input_P0,porosite_milieu.valeur()))
+        {
+          Cerr << "We continue reading the Champ_late_input_P0 field ..." << finl;
+          ref_cast(Champ_late_input_P0,porosite_milieu.valeur()).complete_readOn();
+          porosite_milieu->valeurs() = 1.;
+        }
+
       double temps = porosite_milieu->temps();
       DoubleTab tmp_values = porosite_milieu->valeurs();
       const int is_uniforme = sub_type(Champ_Uniforme,porosite_milieu.valeur());
+
       // On discretise
       dis.discretiser_champ("champ_elem",zone_dis,"porosite_milieu","neant",1 /* n_comp */,temps,porosite_milieu);
       champs_compris_.ajoute_champ(porosite_milieu.valeur()); // pareil que porosite_volumique ...
+
       // On reinitialise
       const int nb_elem = zone_dis.nb_elem_tot();
-      for (int i = 0; i < nb_elem; i++)
-        if (is_uniforme) porosite_milieu->valeurs()(i,0) = tmp_values(0,0);
-        else porosite_milieu->valeurs() = tmp_values;
+
+      if (is_uniforme)
+        for (int i = 0; i < nb_elem; i++) porosite_milieu->valeurs()(i,0) = tmp_values(0,0);
+      else porosite_milieu->valeurs() = tmp_values;
     }
 }
 /*! @brief Lecture d'un milieu sur un flot d'entree.
