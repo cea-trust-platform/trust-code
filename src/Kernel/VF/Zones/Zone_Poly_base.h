@@ -126,14 +126,17 @@ public :
 
   void detecter_faces_non_planes() const;
 
-  //quelles structures optionelles on a initialise
-  mutable std::map<std::string, int> is_init;
   //faces "equivalentes" : equiv(f, 0/1, i) = face equivalente a e_f(f_e(f, 0/1), i) de l'autre cote, -1 si il n'y en a pas
-  void init_equiv() const;
-  mutable IntTab equiv;
+  const IntTab& equiv() const;
 
-  void init_som_elem() const;
-  mutable Static_Int_Lists som_elem;
+  //connectivite sommet-elements
+  const Static_Int_Lists& som_elem() const;
+
+  //indexation dans des tableaux de type (element, sommet)
+  const IntTab& elem_som_d() const; //entree du sommet les_elems(e, i) de l'element e : elem_som_d()(e) + i
+
+  //pour chaque element, repartition de son volume entre chacun de ses sommets
+  const DoubleTab& vol_elem_som() const;
 
 // Methodes pour le calcul et l'appel de la distance au bord solide le plus proche ; en entree on met le tableau des CL de la QDM
   void init_dist_paroi_globale(const Conds_lim& conds_lim) override;
@@ -155,6 +158,11 @@ protected:
   void remplir_elem_faces() override {};
   Sortie& ecrit(Sortie& os) const;
   void creer_faces_virtuelles_non_std();
+
+  mutable IntTab equiv_;
+  mutable Static_Int_Lists som_elem_;
+  mutable IntTab elem_som_d_;
+  mutable DoubleTab vol_elem_som_;
 
   DoubleTab n_y_elem_ ; // vecteur normal entre le bord le plus proche et l'element
   DoubleTab n_y_faces_; // vecteur normal entre le bord le plus proche et la face

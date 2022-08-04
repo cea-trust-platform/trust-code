@@ -53,7 +53,6 @@ void Op_Diff_PolyMAC_P0_Face::completer()
   const Zone_PolyMAC_P0& zone = la_zone_poly_.valeur();
   Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue().valeur());
   if (le_champ_inco.non_nul()) ch.init_auxiliary_variables(); // cas flica5 : ce n'est pas l'inconnue qui est utilisee, donc on cree les variables auxiliaires ici
-  zone.init_equiv();
   flux_bords_.resize(zone.premiere_face_int(), dimension * ch.valeurs().line_size());
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 1)
     Cerr << "Op_Diff_PolyMAC_P0_Face : largeur de joint insuffisante (minimum 1)!" << finl, Process::exit();
@@ -93,7 +92,7 @@ void Op_Diff_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs
 {
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
   const Zone_PolyMAC_P0& zone = la_zone_poly_.valeur();
-  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ch.fcl();
+  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ch.fcl(), &equiv = zone.equiv();
   const DoubleTab& nf = zone.face_normales();
   const DoubleVect& fs = zone.face_surfaces();
 
@@ -123,7 +122,7 @@ void Op_Diff_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs
               for (c = (e != f_e(fb, 0)), k = phif_d(fb); k < phif_d(fb + 1); k++)
                 {
                   if ((e_s = phif_e(k)) >= ne_tot) continue; //bord -> pas de terme de matrice
-                  if ((fc = zone.equiv(fb, c, i_f)) >= 0 && fcl(f_s = e_s == e ? f : fc, 0) < 2) /* amont/aval si equivalence : operateur entre faces */
+                  if ((fc = equiv(fb, c, i_f)) >= 0 && fcl(f_s = e_s == e ? f : fc, 0) < 2) /* amont/aval si equivalence : operateur entre faces */
                     for (n = 0; n < N; n++) stencil.append_line(N * f + n, N * f_s + n);
                   /* sinon : elem -> face, avec un traitement particulier de e_s == e pour eviter les modes en echiquier dans la diffusion */
                   for (d = 0; d < D; d++)
@@ -167,7 +166,7 @@ void Op_Diff_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
   const Zone_PolyMAC_P0& zone = la_zone_poly_.valeur();
   const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
-  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ch.fcl();
+  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ch.fcl(), &equiv = zone.equiv();
   const DoubleVect& fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes(), &pf = porosite_f, &pe = porosite_e;
   const DoubleTab& nf = zone.face_normales(), &xp = zone.xp(), &xv = zone.xv(), &vfd = zone.volumes_entrelaces_dir();
   int i, j, i_f, c, e_s, f_s, k, e, f, fb, fc, n, N = inco.line_size(), d, D = dimension, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), sgn;
@@ -200,7 +199,7 @@ void Op_Diff_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                           for (n = 0; n < N; n++)
                             secmem(f, n) -= fac(n) * ref_cast(Dirichlet, cls[fcl(f_s, 1)].valeur()).val_imp(fcl(f_s, 2), N * d + n) * nf(f, d) / fs(f);
                     }
-                  else if (tpfa && (fc = zone.equiv(fb, c, i_f)) >= 0) /* amont/aval si equivalence : operateur entre faces */
+                  else if (tpfa && (fc = equiv(fb, c, i_f)) >= 0) /* amont/aval si equivalence : operateur entre faces */
                     {
                       f_s = e_s == e ? f : fc, sgn = zone.dot(&nf(f_s, 0), &nf(f, 0)) > 0 ? 1 : -1; //sgn = 1 si f et f_s ont la meme orientation par rapport a e / e_s
                       for (n = 0; n < N; n++) secmem(f, n) -= fac(n) * sgn * pf(f_s) / pe(e_s) * inco(f_s, n);

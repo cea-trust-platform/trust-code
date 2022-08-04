@@ -80,8 +80,6 @@ void Op_Conv_EF_Stab_PolyMAC_Face::completer()
   Op_Conv_PolyMAC_base::completer();
   /* au cas ou... */
   const Zone_Poly_base& zone = la_zone_poly_.valeur();
-  zone.init_equiv();
-
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 2)
     Cerr << "Op_Conv_EF_Stab_PolyMAC_Face : largeur de joint insuffisante (minimum 2)!" << finl, Process::exit();
   porosite_f.ref(zone.porosite_face());
@@ -119,7 +117,7 @@ void Op_Conv_EF_Stab_PolyMAC_Face::dimensionner_blocs(matrices_t matrices, const
 {
   const Zone_Poly_base& zone = la_zone_poly_.valeur();
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
-  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ch.fcl();
+  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ch.fcl(), &equiv = zone.equiv();
   const DoubleTab& nf = zone.face_normales(), &inco = ch.valeurs(), &xp = zone.xp(), &xv = zone.xv();
   const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes();
 
@@ -143,7 +141,7 @@ void Op_Conv_EF_Stab_PolyMAC_Face::dimensionner_blocs(matrices_t matrices, const
             for (k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++)
               if (fb < zone.nb_faces())
                 {
-                  if ((fc = zone.equiv(f, i, k)) >= 0) //equivalence : face -> face
+                  if ((fc = equiv(f, i, k)) >= 0) //equivalence : face -> face
                     for (n = 0; n < N; n++)
                       for (m = (corr ? 0 : n); m < (corr ? N : n + 1); m++) stencil.append_line(N * fb + n, N * fc + m);
                   else if (f_e(f, 1) >= 0)
@@ -167,7 +165,7 @@ void Op_Conv_EF_Stab_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
   const Zone_Poly_base& zone = la_zone_poly_.valeur();
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
   const Conds_lim& cls = la_zcl_poly_.valeur().les_conditions_limites();
-  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ch.fcl();
+  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ch.fcl(), &equiv = zone.equiv();
   const DoubleTab& vit = ch.passe(), &nf = zone.face_normales(), &vfd = zone.volumes_entrelaces_dir(), &xp = zone.xp(), &xv = zone.xv();
   const DoubleVect& fs = zone.face_surfaces(), &pe = porosite_e, &pf = porosite_f, &ve = zone.volumes();
 
@@ -203,7 +201,7 @@ void Op_Conv_EF_Stab_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
             for (k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++)
               if (fb < zone.nb_faces())
                 {
-                  if ((fc = zone.equiv(f, i, k)) >= 0 || f_e(f, 1) < 0)
+                  if ((fc = equiv(f, i, k)) >= 0 || f_e(f, 1) < 0)
                     for (j = 0; j < 2; j++) //equivalence : face fd -> face fb
                       {
                         eb = f_e(f, j), fd = (j == i ? fb : fc); //element/face sources

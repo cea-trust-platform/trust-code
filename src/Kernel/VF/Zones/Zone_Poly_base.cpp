@@ -662,9 +662,9 @@ DoubleVect& Zone_Poly_base::dist_norm_bord(DoubleVect& dist, const Nom& nom_bord
   return dist;
 }
 
-void Zone_Poly_base::init_equiv() const
+const IntTab& Zone_Poly_base::equiv() const
 {
-  if (is_init["equiv"]) return;
+  if (equiv_.nb_dim() == 3) return equiv_;
   const IntTab& e_f = elem_faces(), &f_e = face_voisins();
   const DoubleTab& nf = face_normales();
   const DoubleVect& fs = face_surfaces();//, &vf = volumes_entrelaces();
@@ -672,9 +672,9 @@ void Zone_Poly_base::init_equiv() const
 
   IntTrav ntot, nequiv;
   creer_tableau_faces(ntot), creer_tableau_faces(nequiv);
-  equiv.resize(nb_faces_tot(), 2, e_f.dimension(1));
+  equiv_.resize(nb_faces_tot(), 2, e_f.dimension(1));
   Cerr << zone().domaine().le_nom() << " : intializing equiv... ";
-  for (f = 0, equiv = -1; f < nb_faces_tot(); f++)
+  for (f = 0, equiv_ = -1; f < nb_faces_tot(); f++)
     if ((e1 = f_e(f, 0)) >= 0 && (e2 = f_e(f, 1)) >= 0)
       for (i = 0; i < e_f.dimension(1) && (f1 = e_f(e1, i)) >= 0; i++)
         for (j = 0, ntot(f)++; j < e_f.dimension(1) && (f2 = e_f(e2, j)) >= 0; j++)
@@ -682,18 +682,36 @@ void Zone_Poly_base::init_equiv() const
             if (std::fabs(std::fabs(dot(&nf(f1, 0), &nf(f2, 0)) / (fs(f1) * fs(f2))) - 1) > 1e-6) continue; //normales colineaires?
             for (ok = 1, d = 0; d < D; d++) ok &= std::fabs((xv_(f1, d) - xp_(e1, d)) - (xv_(f2, d) - xp_(e2, d))) < 1e-12; //xv - xp identiques?
             if (!ok) continue;
-            equiv(f, 0, i) = f2, equiv(f, 1, j) = f1, nequiv(f)++; //si oui, on a equivalence
+            equiv_(f, 0, i) = f2, equiv_(f, 1, j) = f1, nequiv(f)++; //si oui, on a equivalence
           }
-  Cerr << mp_somme_vect(nequiv) * 100. / mp_somme_vect(ntot) << "% equivalent faces !" << finl;
-  is_init["equiv"] = 1;
+  Cerr << mp_somme_vect(nequiv) * 100. / mp_somme_vect(ntot) << "% equivalent faces!" << finl;
+  return equiv_;
 }
 
-void Zone_Poly_base::init_som_elem() const
+const Static_Int_Lists& Zone_Poly_base::som_elem() const
 {
-  if (is_init["som_elem"]) return;
-  construire_connectivite_som_elem(zone().domaine().nb_som_tot(), zone().les_elems(), som_elem, 1);
-  is_init["som_elem"] = 1;
+  if (som_elem_.get_nb_lists() >= 0) return som_elem_;
+  construire_connectivite_som_elem(zone().domaine().nb_som_tot(), zone().les_elems(), som_elem_, 1);
+  return som_elem_;
 }
+
+const IntTab& Zone_Poly_base::elem_som_d() const
+{
+  if (elem_som_d_.size()) return elem_som_d_;
+  const IntTab& e_s = zone().les_elems();
+  elem_som_d_.resize(nb_som_tot() + 1);
+  for (int e = 0, i; e < nb_elem_tot(); e++)
+    for (elem_som_d_(e + 1) = elem_som_d_(e), i = 0; i < e_s.dimension(1) && e_s(e, i) >= 0; i++)
+      elem_som_d_(e + 1)++;
+  return elem_som_d_;
+}
+
+const DoubleTab& Zone_Poly_base::vol_elem_som() const
+{
+  /*if (vol_elem_som_.size())*/ return vol_elem_som_; //deja fait
+
+}
+
 
 void Zone_Poly_base::init_dist_paroi_globale(const Conds_lim& conds_lim) // Methode inspiree de Raccord_distant_homogene::initialise
 {

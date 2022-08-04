@@ -12,6 +12,13 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:        Op_Grad_PolyMAC_P0_Face.cpp
+// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs
+// Version:     /main/32
+//
+//////////////////////////////////////////////////////////////////////////////
 
 #include <Op_Grad_PolyMAC_P0_Face.h>
 #include <Champ_Elem_PolyMAC_P0.h>
@@ -179,7 +186,7 @@ void Op_Grad_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
   Matrice_Morse *mat_p = !semi_impl.count("pression") && matrices.count("pression") ? matrices.at("pression") : NULL,
                  *mat_v = !semi_impl.count(nom_inc) && matrices.count(nom_inc) ? matrices.at(nom_inc) : NULL;
 
-  DoubleTrav gb(nf_tot, M), gf(N), alpha(N); //-grad p aux bords , alpha |f| (grad p)_f
+  DoubleTrav gb(nf_tot, M), gf(N), a_v(N); //-grad p aux bords , (grad p)_f, produit alpha * vol
   std::map<int, std::map<int, double>> dgp_gb, dgb_v; //dependances vitesses -(dgb_v)-> -grad p aux bords -(dgp_gb)-> grad p ailleurs
   for (f = 0; f < zone.nb_faces_tot(); f++)
     if (fcl(f, 0) > 1)  //Dirichlet/Symetrie : pression du voisin + correction en regardant l'eq de NS dans celui-ci
@@ -203,8 +210,8 @@ void Op_Grad_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
   std::vector<std::map<int, double>> dgf_pe(N), dgf_gb(N); //dependance de [grad p]_f en les pressions aux elements, en les grad p aux faces de bord
   for (f = 0; f < zone.nb_faces_tot(); f++)
     {
-      for (alpha = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-        for (n = 0; n < N; n++) alpha(n) += vfd(f, i) * (alp ? (*alp)(e, n) : 1);
+      for (a_v = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+        for (n = 0; n < N; n++) a_v(n) += vfd(f, i) * (alp ? (*alp)(e, n) : 1);
 
       /* |f| grad p */
       for (gf = 0, i = fgrad_d(f); i < fgrad_d(f + 1); i++)
@@ -220,7 +227,7 @@ void Op_Grad_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
       if (fcl(f, 0) < 2 && f < zone.nb_faces())
         for (n = 0, m = 0; n < N; n++, m += (M > 1))
           {
-            double fac = alpha(n) * pf(f);
+            double fac = a_v(n) * pf(f);
             secmem(f, n) -= fac * gf(n);
             for (auto &&i_c : dgf_pe[n]) (*mat_p)(N * f + n, M * i_c.first + m) += fac * i_c.second;
             for (auto &&i_c : dgf_gb[n]) dgp_gb[N * f + n][M * i_c.first + m] += fac * i_c.second;

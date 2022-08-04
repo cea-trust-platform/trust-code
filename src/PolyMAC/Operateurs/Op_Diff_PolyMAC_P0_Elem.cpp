@@ -141,9 +141,10 @@ void Op_Diff_PolyMAC_P0_Elem::init_op_ext() const
   std::set<std::array<int, 4>> s_pf; // (pb1, f1, pb2, f2)
   std::vector<std::reference_wrapper<const Zone_PolyMAC_P0>> zones;
   std::vector<std::reference_wrapper<const IntTab>> fcl, e_f, f_s;
+  std::vector<std::reference_wrapper<const Static_Int_Lists>> som_elem;
   for (auto &&op : op_ext) zones.push_back(std::ref(ref_cast(Zone_PolyMAC_P0, op->equation().zone_dis().valeur())));
   for (auto &&op : op_ext) fcl.push_back(std::ref(ref_cast(Champ_Elem_PolyMAC_P0, op->equation().inconnue().valeur()).fcl()));
-  for (auto &&zo : zones) zo.get().init_som_elem(), e_f.push_back(std::ref(zo.get().elem_faces())), f_s.push_back(std::ref(zo.get().face_sommets()));
+  for (auto &&zo : zones) e_f.push_back(std::ref(zo.get().elem_faces())), f_s.push_back(std::ref(zo.get().face_sommets())), som_elem.push_back(std::ref(zo.get().som_elem()));
 
   /* autres CLs (hors Echange_contact) devant etre traitees par som_ext : Echange_impose_base, tout si Pb_Multiphase avec Flux_parietal_base */
   const Conds_lim& cls = equation().zone_Cl_dis()->les_conditions_limites();
@@ -158,20 +159,17 @@ void Op_Diff_PolyMAC_P0_Elem::init_op_ext() const
     if ((s = s_op_sb.first) < zone.nb_som())
       {
         //elements
-        for (i = 0; i < zone.som_elem.get_list_size(s); i++)
+        for (i = 0; i < som_elem[0].get().get_list_size(s); i++)
           {
-            std::array<int, 2> arr = { 0, zone.som_elem(s, i) };
+            std::array<int, 2> arr = { 0, som_elem[0](s, i) };
             s_pe.insert({arr}); //cote local
           }
         for (auto &&op_sb : s_op_sb.second) //cotes distants
-          {
-            const Zone_PolyMAC_P0& o_zone = ref_cast(Zone_PolyMAC_P0, op_sb.first->equation().zone_dis().valeur());
-            for (iop = (int)(std::find(op_ext.begin(), op_ext.end(), op_sb.first) - op_ext.begin()), i = 0; i < o_zone.som_elem.get_list_size(op_sb.second); i++)
-              {
-                std::array<int, 2> arr = { iop, o_zone.som_elem(op_sb.second, i) };
-                s_pe.insert({arr});
-              }
-          }
+          for (iop = (int)(std::find(op_ext.begin(), op_ext.end(), op_sb.first) - op_ext.begin()), i = 0; i < som_elem[iop].get().get_list_size(op_sb.second); i++)
+            {
+              std::array<int, 2> arr = { iop, som_elem[iop](op_sb.second, i) };
+              s_pe.insert({arr});
+            }
         //faces : celles des elements de s_pe
         for (auto && iop_e : s_pe)
           for (iop = iop_e[0], e = iop_e[1], s_l = iop ? s_op_sb.second.at(op_ext[iop]) : s, i = 0; i < e_f[iop].get().dimension(1) && (f = e_f[iop](e, i)) >= 0; i++)

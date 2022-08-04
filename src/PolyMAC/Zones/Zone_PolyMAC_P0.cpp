@@ -96,7 +96,7 @@ void Zone_PolyMAC_P0::discretiser()
 //stencil face/face : fsten_f([fsten_d(f, 0), fsten_d(f + 1, 0)[)
 void Zone_PolyMAC_P0::init_stencils() const
 {
-  if (is_init["stencils"]) return;
+  if (fsten_d.size()) return;
   const IntTab& f_s = face_sommets(), &f_e = face_voisins(), &e_s = zone().les_elems();
   int i, e, f, s, ne_tot = nb_elem_tot(), ns_tot = zone().domaine().nb_som_tot();
   fsten_d.set_smart_resize(1), fsten_d.resize(1), fsten_eb.set_smart_resize(1);
@@ -122,7 +122,6 @@ void Zone_PolyMAC_P0::init_stencils() const
       }
 
   CRIMP(fsten_d), CRIMP(fsten_eb);
-  is_init["stencils"] = 1;
 }
 
 //pour u.n champ T aux elements, interpole [n_f.grad T]_f (si nu_grad = 0) ou [n_f.nu.grad T]_f
@@ -143,11 +142,11 @@ void Zone_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntTab&
   const IntTab& f_e = face_voisins(), &e_f = elem_faces(), &f_s = face_sommets();
   const DoubleTab& nf = face_normales(), &xs = zone().domaine().coord_sommets(), &vfd = volumes_entrelaces_dir();
   const DoubleVect& fs = face_surfaces(), &vf = volumes_entrelaces();
+  const Static_Int_Lists& s_e = som_elem();
   int i, i_s, j, k, l, e, f, s, sb, n_f, n_m, n_ef, n_e, n_eb, m, n, ne_tot = nb_elem_tot(), sgn, nw, infoo, d, db, D = dimension, rk, nl, nc, un = 1, il, ok, essai;
   unsigned long ll;
   double x, eps_g = 1e-6, eps = 1e-10, i3[3][3] = { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 }}, fac[3], vol_s;
-  init_som_elem(), init_stencils();
-  phif_d.set_smart_resize(1), phif_e.set_smart_resize(1), phif_e.resize(0), phif_c.resize(fsten_eb.dimension(0), N), phif_c = 0;
+  init_stencils(), phif_d.set_smart_resize(1), phif_e.set_smart_resize(1), phif_e.resize(0), phif_c.resize(fsten_eb.dimension(0), N), phif_c = 0;
 
   std::vector<int> s_eb, s_f; //listes d'elements/bord, de faces autour du sommet
   std::vector<double> surf_fs, vol_es; //surfaces partielles des faces connectees au sommet (meme ordre que s_f)
@@ -164,7 +163,7 @@ void Zone_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntTab&
     for (s = (som_ext && i_s ? (*som_ext)(i_s - 1) + 1 : 0); s < (som_ext && i_s < som_ext->size() ? (*som_ext)(i_s) : (virt ? nb_som_tot() : nb_som())); s++)
       {
         /* elements connectes a s : a partir de som_elem (deja classes) */
-        for (s_eb.clear(), n_e = 0; n_e < som_elem.get_list_size(s); n_e++) s_eb.push_back(som_elem(s, n_e));
+        for (s_eb.clear(), n_e = 0; n_e < s_e.get_list_size(s); n_e++) s_eb.push_back(s_e(s, n_e));
         /* faces et leurs surfaces partielles */
         for (s_f.clear(), surf_fs.clear(), vec_fs.clear(), se_f.resize(std::max(int(se_f.size()), n_e)), i = 0, ok = 1; i < n_e; i++)
           for (se_f[i].clear(), e = s_eb[i], j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)

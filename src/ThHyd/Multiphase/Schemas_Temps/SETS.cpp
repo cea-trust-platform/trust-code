@@ -308,10 +308,11 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       for (auto &&i_eq : eqs) i_eq.second->dimensionner_blocs(mats[i_eq.first], semi_impl); //option semi-implicite
       eq_qdm.assembleur_pression()->dimensionner_continuite(mats["pression"]);
       /* si utilisation directe de mat_semi_impl : dimensionnement des blocs vides */
-      if (!pressure_reduction_) for (i = 0; i <= n_eq; i++)
-        for (j = 0; j <= n_eq; j++)
-          if (!mats[noms[i]][noms[j]]->nb_lignes() && !mats[noms[i]][noms[j]]->nb_colonnes())
-            mats[noms[i]][noms[j]]->dimensionner(inco[noms[i]]->valeurs().size_totale(), inco[noms[j]]->valeurs().size_totale(), 0);
+      if (!pressure_reduction_)
+        for (i = 0; i <= n_eq; i++)
+          for (j = 0; j <= n_eq; j++)
+            if (!mats[noms[i]][noms[j]]->nb_lignes() && !mats[noms[i]][noms[j]]->nb_colonnes())
+              mats[noms[i]][noms[j]]->dimensionner(inco[noms[i]]->valeurs().size_totale(), inco[noms[j]]->valeurs().size_totale(), 0);
 
       MD_Vector_composite mdc;
       for (i = 0; i <= n_eq; i++) mdc.add_part(inco[noms[i]]->valeurs().get_md_vector(), inco[noms[i]]->valeurs().line_size());
