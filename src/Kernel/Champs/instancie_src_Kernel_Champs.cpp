@@ -49,6 +49,7 @@
 #include <Champ_front_vide.h>
 #include <Champ_front_xyz_debit.h>
 #include <Champ_input_P0.h>
+#include <Champ_late_input_P0.h>
 void instancie_src_Kernel_Champs() {
 Cerr << "src_Kernel_Champs" << finl;
 Boundary_field_inward inst1;verifie_pere(inst1);
@@ -98,4 +99,5 @@ Champ_front_uniforme inst44;verifie_pere(inst44);
 Champ_front_vide inst45;verifie_pere(inst45);
 Champ_front_xyz_debit inst46;verifie_pere(inst46);
 Champ_input_P0 inst47;verifie_pere(inst47);
+Champ_late_input_P0 inst48;verifie_pere(inst48);
 }

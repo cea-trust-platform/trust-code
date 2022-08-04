@@ -13,60 +13,42 @@
 *
 *****************************************************************************/
 
+#include <Champ_late_input_P0.h>
+#include <Probleme_base.h>
+#include <Domaine.h>
 
-#ifndef Champ_input_P0_included
-#define Champ_input_P0_included
+Implemente_instanciable(Champ_late_input_P0,"Champ_late_input_P0",Champ_input_P0);
 
+Sortie& Champ_late_input_P0::printOn(Sortie& os) const { return os; }
 
-#include <Champ_Fonc_P0_base.h>
-#include <Champ_Input_Proto.h>
-
-/*! @brief class Champ_input_P0
- *
- *      Cette classe represente un champ accessible par setInputField
- *      defini sur le domane avec une valeur par element.
- *
- *
- * @sa Champ_Input_Proto
- */
-
-class Champ_input_P0 : public Champ_Fonc_P0_base, public Champ_Input_Proto
+Entree& Champ_late_input_P0::readOn(Entree& is)
 {
-  Declare_instanciable(Champ_input_P0);
-
-public:
-
-  friend class Champ_late_input_P0;
-
-  void associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base) override;
-  const Zone_dis_base& zone_dis_base() const override;
-  void mettre_a_jour(double) override {}
-
-  void getTemplate(TrioField& afield) const override;
-  void setValue(const TrioField& afield) override;
-
-protected:
-
-  // Factorisation function between several input field classes
-  void set_nb_comp(int i) override; // calls fixer_nb_comp
-  void set_name(const Nom& ) override; // calls nommer
-  virtual const Nom& get_name() const; // calls le_nom
-
-  REF(Zone_dis_base) zdb_;
-
-private:
-  int nb_elems_reels_sous_zone_; //if sous-zone : number of elements of the sous-zone on this proc
-  int nb_elems_reels_loc_;       //total number of local elements
-};
-
-inline void Champ_input_P0::associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base)
-{
-  zdb_=la_zone_dis_base;
+  sous_zone_ok=true;
+  read(is);
+  return is;
 }
 
-inline const Zone_dis_base& Champ_input_P0::zone_dis_base() const
+void Champ_late_input_P0::complete_readOn()
 {
-  return zdb_.valeur();
-}
+  valeurs_.resize(0, nb_compo_);
+  mon_pb->domaine().zone(0).creer_tableau_elements(valeurs_);
+  associer_zone_dis_base(mon_pb->domaine_dis().zone_dis(0));
+  mon_pb->addInputField(*this);
 
-#endif
+
+  if (initial_value_.size_array()>0)
+    {
+      int nb_elem_tot=valeurs_.dimension_tot(0);
+      for (int ele=0; ele< nb_elem_tot; ele++)
+        for (int c=0; c<nb_compo_; c++)
+          valeurs_(ele,c)=initial_value_[c];
+    }
+
+  if (ma_sous_zone.non_nul())
+    {
+      const Sous_Zone& ssz=ma_sous_zone.valeur();
+      nb_elems_reels_loc_ = mon_pb->domaine().zone(0).les_elems().dimension(0);
+      for (int i = nb_elems_reels_sous_zone_ = 0; i < ssz.nb_elem_tot(); i++)
+        nb_elems_reels_sous_zone_ += (ssz[i] < nb_elems_reels_loc_);
+    }
+}
