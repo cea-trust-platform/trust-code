@@ -29,7 +29,7 @@
 
 #include <LataFilter.h>
 #include <Operator.h>
-//#include <limits>
+#include <limits>
 
 #define verb_level 4
 
@@ -60,7 +60,7 @@ static void retirer_doublons(Tab & tab, const T epsilon)
   int i = 0;
   int j;
   const int n = tab.size_array();
-  T last_tab_i = -1.e40; //std::numeric_limits<T>::min();
+  T last_tab_i = -std::numeric_limits<T>::max();
   for (j = 0; j < n; j++) {
     const T x = tab[j];
     assert(x >= last_tab_i); // Array must be sorted
