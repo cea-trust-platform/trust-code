@@ -75,6 +75,10 @@ public :
   void creer_champs_non_lus() override;
   void discretiser(const Probleme_base& pb, const  Discretisation_base& dis) override;
   virtual void set_h0_T0(double h0, double T0);
+  virtual int is_incompressible() const
+  {
+    return 0;
+  }
 
 protected :
 

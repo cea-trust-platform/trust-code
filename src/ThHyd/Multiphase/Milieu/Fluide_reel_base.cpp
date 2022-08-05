@@ -58,25 +58,37 @@ void Fluide_reel_base::discretiser(const Probleme_base& pb, const  Discretisatio
   /* masse volumique, energie interne, enthalpie : champ_inc */
   Champ_Inc rho_inc, ei_inc, h_inc;
   int nc = pb.equation(0).inconnue()->nb_valeurs_temporelles();
-  dis.discretiser_champ("champ_elem", zone_dis,       "masse_volumique",    "kg/m^3", 1, nc, temps, rho_inc);
+  if (P_ref_ >= 0 && T_ref_ >= 0) /* cas incompressible  -> rho champ uniforme */
+    {
+      EChaine str(Nom("Champ_Uniforme 1 ") + Nom(rho_(T_ref_, P_ref_)));
+      str >> rho;
+      dis.nommer_completer_champ_physique(zone_dis,"masse_volumique","kg/m^3",rho.valeur(),pb);
+    }
+  else
+    dis.discretiser_champ("champ_elem", zone_dis,       "masse_volumique",    "kg/m^3", 1, nc, temps, rho_inc), rho = rho_inc;
   dis.discretiser_champ("champ_elem", zone_dis,       "energie_interne",     "J/kg", 1, nc, temps, ei_inc);
   dis.discretiser_champ("champ_elem", zone_dis,             "enthalpie",     "J/kg", 1, nc, temps, h_inc);
-  rho = rho_inc, e_int = ei_inc, h = h_inc;
+  e_int = ei_inc, h = h_inc;
 
-  dis.discretiser_champ("champ_elem", zone_dis,   "viscosite_dynamique",    "kg/m/s", 1, temps,       mu);
-  dis.discretiser_champ("champ_elem", zone_dis, "viscosite_cinematique",      "m2/s", 1, temps,       nu);
-  dis.discretiser_champ("champ_elem", zone_dis,           "diffusivite",      "m2/s", 1, temps,    alpha);
-  dis.discretiser_champ("champ_elem", zone_dis,          "conductivite",     "W/m/K", 1, temps,   lambda);
-  dis.discretiser_champ("champ_elem", zone_dis,  "capacite_calorifique",    "J/kg/K", 1, temps,       Cp);
+
+  dis.discretiser_champ("champ_elem" , zone_dis,   "viscosite_dynamique",    "kg/m/s", 1, temps,       mu);
+  dis.discretiser_champ("champ_elem" , zone_dis, "viscosite_cinematique",      "m2/s", 1, temps,       nu);
+  dis.discretiser_champ("champ_elem" , zone_dis,           "diffusivite",      "m2/s", 1, temps,    alpha);
+  dis.discretiser_champ("champ_elem" , zone_dis,          "conductivite",     "W/m/K", 1, temps,   lambda);
+  dis.discretiser_champ("champ_elem" , zone_dis,  "capacite_calorifique",    "J/kg/K", 1, temps,       Cp);
+  dis.discretiser_champ("champ_elem" , zone_dis,          "dilatabilite",       "K-1", 1, temps,  beta_th);
+  dis.discretiser_champ("temperature", zone_dis,        "rho_cp_comme_T", "  J/m^3/K", 1, temps, rho_cp_comme_T_);
+  for (auto &&pch : { &rho, &e_int, &h, (Champ *) &mu, (Champ *) &nu, (Champ *) &alpha, (Champ *) &lambda, (Champ *) &Cp, (Champ *) &beta_th, (Champ *) &rho_cp_comme_T_ })
+    champs_compris_.ajoute_champ(pch->valeur());
 }
 
 int Fluide_reel_base::initialiser(const double temps)
 {
   const Equation_base& eqn = equation("temperature");
-  Champ_Inc_base& ch_rho = ref_cast(Champ_Inc_base, rho.valeur()),
+  Champ_Inc_base* pch_rho = sub_type(Champ_Inc_base, rho.valeur()) ? &ref_cast(Champ_Inc_base, rho.valeur()) : NULL,
                   &ch_e   = ref_cast(Champ_Inc_base, e_int.valeur()),
                    &ch_h   = ref_cast(Champ_Inc_base, h.valeur());
-  ch_rho.associer_eqn(eqn), ch_rho.init_champ_calcule(*this, calculer_masse_volumique);
+  if (pch_rho) pch_rho->associer_eqn(eqn), pch_rho->init_champ_calcule(*this, calculer_masse_volumique);
   ch_e.associer_eqn(eqn),   ch_e.init_champ_calcule(*this, calculer_energie_interne);
   ch_h.associer_eqn(eqn),   ch_h.init_champ_calcule(*this, calculer_enthalpie);
 
@@ -85,6 +97,8 @@ int Fluide_reel_base::initialiser(const double temps)
   nu.initialiser(temps);
   alpha.initialiser(temps);
   lambda.initialiser(temps);
+  beta_th.initialiser(temps);
+  rho_cp_comme_T_.initialiser(temps);
   t_init_ = temps;
   return 1;
 }
@@ -97,7 +111,7 @@ void Fluide_reel_base::preparer_calcul()
 
 void Fluide_reel_base::mettre_a_jour(double t)
 {
-  double tp = ref_cast(Champ_Inc_base, rho.valeur()).temps(); //pour savoir si on va tourner la roue
+  double tp = ref_cast(Champ_Inc_base, e_int.valeur()).temps(); //pour savoir si on va tourner la roue
   rho.mettre_a_jour(t);
   e_int.mettre_a_jour(t);
   h.mettre_a_jour(t);
@@ -107,13 +121,16 @@ void Fluide_reel_base::mettre_a_jour(double t)
   lambda.mettre_a_jour(t);
   nu.mettre_a_jour(t);
   alpha.mettre_a_jour(t);
+  beta_th.mettre_a_jour(t);
+  rho_cp_comme_T_.mettre_a_jour(t);
 
   const Champ_Inc_base& ch_T = equation("temperature").inconnue().valeur(), &ch_p = ref_cast(Navier_Stokes_std, equation("vitesse")).pression().valeur();
   const DoubleTab& temp = ch_T.valeurs(), &pres = ch_p.valeurs();
 
-  int i, Ni = mu.valeurs().dimension_tot(0);
-  DoubleTab& tab_Cp = Cp.valeurs(), &tab_mu = mu.valeurs(), &tab_lambda = lambda.valeurs(), &tab_nu = nu.valeurs(), &tab_alpha = alpha.valeurs();
+  DoubleTab& tab_Cp = Cp.valeurs(), &tab_mu = mu.valeurs(), &tab_lambda = lambda.valeurs(), &tab_nu = nu.valeurs(), &tab_alpha = alpha.valeurs(),
+             &tab_beta = beta_th.valeurs(), &tab_rCp = rho_cp_comme_T_.valeurs();
   const DoubleTab& tab_rho = masse_volumique().valeurs();
+  int i, Ni = mu.valeurs().dimension_tot(0), cR = tab_rho.dimension_tot(0) == 1;
   if (t > tp || first_maj_)
     for (i = 0; i < Ni; i++) /* maj uniquement en fin de pas de temps */
       {
@@ -121,15 +138,17 @@ void Fluide_reel_base::mettre_a_jour(double t)
         tab_Cp(i) = cp_(T, P);
         tab_mu(i) = mu_(T, P);
         tab_lambda(i) = lambda_(T, P);
-        tab_nu(i) = tab_mu(i) / tab_rho(i);
-        tab_alpha(i) = tab_lambda(i) / tab_rho(i) / tab_Cp(i);
+        tab_nu(i) = tab_mu(i) / tab_rho(!cR * i);
+        tab_alpha(i) = tab_lambda(i) / tab_rho(!cR * i) / tab_Cp(i);
+        tab_beta(i) = beta_(T, P);
+        tab_rCp(i) = tab_rho(!cR * i) * tab_Cp(i);
       }
   first_maj_ = 0;
 }
 
 int Fluide_reel_base::check_unknown_range() const
 {
-  int ok = 1, zero = 0, nl = rho.valeurs().dimension_tot(0); //on n'impose pas de contraintes aux lignes correspondant a des variables auxiliaires (eg pressions aux faces dans PolyMAC)
+  int ok = 1, zero = 0, nl = e_int.valeurs().dimension_tot(0); //on n'impose pas de contraintes aux lignes correspondant a des variables auxiliaires (eg pressions aux faces dans PolyMAC)
   for (auto &&i_r : unknown_range())
     {
       const DoubleTab& vals = i_r.first == "pression" ? ref_cast(Navier_Stokes_std, equation("vitesse")).pression().valeurs() : equation(i_r.first).inconnue().valeurs();
@@ -155,10 +174,11 @@ bool Fluide_reel_base::initTimeStep(double dt)
   const Schema_Temps_base& sch = equation_.begin()->second->schema_temps(); //on recupere le schema en temps par la 1ere equation
 
   /* champs dont on doit creer des cases */
-  std::vector<Champ_Inc_base *> vch = { &ref_cast(Champ_Inc_base, rho.valeur()), &ref_cast(Champ_Inc_base, e_int.valeur()), &ref_cast(Champ_Inc_base, h.valeur()) };
+  std::vector<Champ_Inc_base *> vch = { sub_type(Champ_Inc_base, rho.valeur()) ?& ref_cast(Champ_Inc_base, rho.valeur()) : NULL, &ref_cast(Champ_Inc_base, e_int.valeur()), &ref_cast(Champ_Inc_base, h.valeur()) };
   for (auto &&pch : vch)
-    for (int i = 1; i <= sch.nb_valeurs_futures(); i++)
-      pch->changer_temps_futur(sch.temps_futur(i), i), pch->futur(i) = pch->valeurs();
+    if (pch)
+      for (int i = 1; i <= sch.nb_valeurs_futures(); i++)
+        pch->changer_temps_futur(sch.temps_futur(i), i), pch->futur(i) = pch->valeurs();
   return true;
 }
 

@@ -16,6 +16,7 @@
 #include <Pb_Thermohydraulique.h>
 #include <Fluide_Ostwald.h>
 #include <Verif_Cl.h>
+#include <Champ_Uniforme.h>
 
 Implemente_instanciable(Pb_Thermohydraulique,"Pb_Thermohydraulique",Pb_Fluide_base);
 
@@ -95,7 +96,6 @@ Equation_base& Pb_Thermohydraulique::equation(int i)
     return eq_thermique;
 }
 
-
 /*! @brief Associe le milieu au probleme Le milieu doit etre de type fluide incompressible
  *
  * @param (Milieu_base& mil) le milieu physique a associer au probleme
@@ -103,7 +103,7 @@ Equation_base& Pb_Thermohydraulique::equation(int i)
  */
 void Pb_Thermohydraulique::associer_milieu_base(const Milieu_base& mil)
 {
-  if (sub_type(Fluide_Incompressible,mil))
+  if (sub_type(Fluide_base,mil) && ref_cast(Fluide_base, mil).is_incompressible())
     {
       eq_hydraulique.associer_milieu_base(mil);
       eq_thermique.associer_milieu_base(mil);
@@ -121,8 +121,6 @@ void Pb_Thermohydraulique::associer_milieu_base(const Milieu_base& mil)
       exit();
     }
 }
-
-
 
 /*! @brief Teste la compatibilite des equations de la thermique et de l'hydraulique.
  *

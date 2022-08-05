@@ -40,7 +40,10 @@ public :
 
   Fluide_Incompressible();
   void verifier_coherence_champs(int& err,Nom& message) override;
-
+  int is_incompressible() const override
+  {
+    return 1;
+  }
 };
 
 #endif

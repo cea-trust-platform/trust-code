@@ -151,45 +151,8 @@ int Convection_Diffusion_Temperature::lire_motcle_non_standard(const Motcle& un_
  */
 void Convection_Diffusion_Temperature::associer_milieu_base(const Milieu_base& un_milieu)
 {
-  if (sub_type(Fluide_Ostwald, un_milieu))
-    {
-      const Fluide_Ostwald& un_fluide = ref_cast(Fluide_Ostwald,un_milieu);
-      if  ((un_fluide.conductivite().non_nul()) &&
-           ((un_fluide.capacite_calorifique().non_nul()) && (un_fluide.beta_t().non_nul())))
-        associer_fluide(un_fluide);
-      else
-        {
-          Cerr << "Vous n'avez pas defini toutes les proprietes physiques du fluide " << finl;
-          Cerr << "necessaires pour resoudre l'equation d'energie " << finl;
-          Cerr << "Verifier que vous avez defini: la conductivite (lambda)"<< finl;
-          Cerr << "                                  la capacite calorifique (Cp)"<< finl;
-          Cerr << "                                  le coefficient de dilatation thermique (beta_th)"<< finl;
-          exit();
-        }
-    }
-  else if (sub_type(Fluide_base,un_milieu))
-    {
-      const Fluide_base& un_fluide = ref_cast(Fluide_base,un_milieu);
-      if  ((un_fluide.conductivite().non_nul()) &&
-           ((un_fluide.capacite_calorifique().non_nul()) && (un_fluide.beta_t().non_nul())))
-        associer_fluide(un_fluide);
-      else
-        {
-          Cerr << "Vous n'avez pas defini toutes les proprietes physiques du fluide " << finl;
-          Cerr << "necessaires pour resoudre l'equation d'energie " << finl;
-          Cerr << "Verifier que vous avez defini: la conductivite (lambda)"<< finl;
-          Cerr << "                                  la capacite calorifique (Cp)"<< finl;
-          Cerr << "                                  le coefficient de dilatation thermique (beta_th)"<< finl;
-
-          exit();
-        }
-    }
-  else
-    {
-      if (Process::je_suis_maitre())
-        Cerr << "le fluide considere n'est un sous fluide de Fluide_base, \n"
-             << "ni un sous fluide de Fluide_Ostwald. " << finl;
-    }
+  if (sub_type(Fluide_base,un_milieu)) associer_fluide(ref_cast(Fluide_base, un_milieu));
+  else Process::exit(que_suis_je() + " : le fluide " + un_milieu.que_suis_je() + " n'est pas de type Fluide_base!");
 }
 
 
@@ -198,6 +161,8 @@ void Convection_Diffusion_Temperature::associer_milieu_base(const Milieu_base& u
  */
 void Convection_Diffusion_Temperature::discretiser()
 {
+
+
   const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
   if (Process::je_suis_maitre())
     Cerr << "Energy equation discretization" << finl;
@@ -205,10 +170,25 @@ void Convection_Diffusion_Temperature::discretiser()
   champs_compris_.ajoute_champ(la_temperature);
 
   Equation_base::discretiser();
+
   if (Process::je_suis_maitre())
     Cerr << "Convection_Diffusion_Temperature::discretiser() ok" << finl;
 }
 
+int Convection_Diffusion_Temperature::preparer_calcul()
+{
+  /* derniere chance pour faire ceci : */
+  if  (!le_fluide->conductivite().non_nul() || !le_fluide->capacite_calorifique().non_nul() || !le_fluide->beta_t().non_nul())
+    {
+      Cerr << "Vous n'avez pas defini toutes les proprietes physiques du fluide " << finl;
+      Cerr << "necessaires pour resoudre l'equation d'energie " << finl;
+      Cerr << "Verifier que vous avez defini: la conductivite (lambda)"<< finl;
+      Cerr << "                                  la capacite calorifique (Cp)"<< finl;
+      Cerr << "                                  le coefficient de dilatation thermique (beta_th)"<< finl;
+      exit();
+    }
+  return Equation_base::preparer_calcul();
+}
 
 /*! @brief Renvoie le milieu physique de l'equation.
  *

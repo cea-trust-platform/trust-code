@@ -46,6 +46,10 @@ public :
   int initialiser(const double temps) override;
   void preparer_calcul() override;
   void set_param(Param& param) override;
+  int is_incompressible() const override
+  {
+    return P_ref_ >= 0 && T_ref_ >= 0;
+  }
 
   //verifie que chaque inconnue "inco" est entre val_min[inco] et val_max[inco]
   int check_unknown_range() const override;

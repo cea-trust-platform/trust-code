@@ -44,6 +44,7 @@ public :
   inline const Champ_Inc& inconnue() const override;
   inline Champ_Inc& inconnue() override;
   void discretiser() override;
+  int preparer_calcul() override;
   const Milieu_base& milieu() const override;
   const Fluide_base& fluide() const;
   Fluide_base& fluide();
