@@ -172,20 +172,8 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
           porosite_milieu->valeurs() = 1.;
         }
 
-      double temps = porosite_milieu->temps();
-      DoubleTab tmp_values = porosite_milieu->valeurs();
-      const int is_uniforme = sub_type(Champ_Uniforme,porosite_milieu.valeur());
-
-      // On discretise
-      dis.discretiser_champ("champ_elem",zone_dis,"porosite_milieu","neant",1 /* n_comp */,temps,porosite_milieu);
-      champs_compris_.ajoute_champ(porosite_milieu.valeur()); // pareil que porosite_volumique ...
-
-      // On reinitialise
-      const int nb_elem = zone_dis.nb_elem_tot();
-
-      if (is_uniforme)
-        for (int i = 0; i < nb_elem; i++) porosite_milieu->valeurs()(i,0) = tmp_values(0,0);
-      else porosite_milieu->valeurs() = tmp_values;
+      dis.nommer_completer_champ_physique(zone_dis,"porosite_milieu","rien",porosite_milieu.valeur(),pb);
+      champs_compris_.ajoute_champ(porosite_milieu.valeur());
     }
 }
 /*! @brief Lecture d'un milieu sur un flot d'entree.
@@ -329,14 +317,20 @@ void Milieu_base::calculer_alpha()
 }
 void Milieu_base::update_porosity_values()
 {
-  Zone_VF& zvf = ref_cast_non_const(Zone_VF,porosite_milieu->zone_dis_base());
+  Zone_VF& zvf = ref_cast_non_const(Zone_VF,rho_cp_comme_T_->zone_dis_base()); // rho_cp_comme_T_ a toujours un zone_dis_base
+  const int is_uniforme = sub_type(Champ_Uniforme,porosite_milieu.valeur());
 
   // update porosite_elem
   // TODO : FIXME : on suppose que le champ est aux elems ... faut generaliser et utiliser affecter ...
   DoubleVect& porosite_elem = zvf.porosite_elem();
-  assert (porosite_elem.size_totale() == porosite_milieu->valeurs().dimension_tot(0));
-  assert (zvf.nb_elem_tot() == porosite_milieu->valeurs().dimension_tot(0));
-  porosite_elem = porosite_milieu->valeurs();
+  if (!is_uniforme)
+    {
+      assert (porosite_elem.size_totale() == porosite_milieu->valeurs().dimension_tot(0));
+      assert (zvf.nb_elem_tot() == porosite_milieu->valeurs().dimension_tot(0));
+      porosite_elem = porosite_milieu->valeurs();
+    }
+  else
+    for (int elem = 0; elem < zvf.nb_elem_tot(); elem++) porosite_elem(elem) = porosite_milieu->valeurs()(0,0);
 
   // update porosite_faces
   DoubleVect& porosite_face = zvf.porosite_face();
@@ -348,11 +342,11 @@ void Milieu_base::update_porosity_values()
     {
       const int elem1 = face_voisins(face, 1), elem2 = face_voisins(face, 0);
       if ((elem1 != -1) && (elem2 != -1))
-        porosite_face(face) = 2. / (1. / porosite_milieu->valeurs()(elem1) + 1. / porosite_milieu->valeurs()(elem2));
+        porosite_face(face) = 2. / (1. / porosite_elem(elem1) + 1. / porosite_elem(elem2));
       else if (elem1 != -1)
-        porosite_face(face) = porosite_milieu->valeurs()(elem1);
+        porosite_face(face) = porosite_elem(elem1);
       else
-        porosite_face(face) = porosite_milieu->valeurs()(elem2);
+        porosite_face(face) = porosite_elem(elem2);
     }
 }
 
