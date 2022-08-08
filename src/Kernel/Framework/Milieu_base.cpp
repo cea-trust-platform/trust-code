@@ -68,6 +68,7 @@ void  Milieu_base::ecrire(Sortie& os) const
   os << "lambda " << lambda << finl;
   os << "Cp " << Cp << finl;
   os << "beta_th " << beta_th << finl;
+  if (porosite_milieu.non_nul()) os << "porosite_milieu " << porosite_milieu << finl;
 }
 
 void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_base& dis)
@@ -164,16 +165,20 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
 
   if (porosite_milieu.non_nul())
     {
+      Nom fld_name = "porosite_milieu", fld_unit = "rien";
       // TODO : FIXME : on suppose que le champ est aux elems ... faut generaliser et utiliser affecter ...
-      if (sub_type(Champ_late_input_P0,porosite_milieu.valeur()))
+      if (sub_type(Champ_late_input_P0, porosite_milieu.valeur()))
         {
           Cerr << "We continue reading the Champ_late_input_P0 field ..." << finl;
           ref_cast(Champ_late_input_P0,porosite_milieu.valeur()).complete_readOn();
-          porosite_milieu->valeurs() = 1.;
+          porosite_milieu->fixer_unite(fld_unit);
+          porosite_milieu->valeurs() = 1.; // On initialise a 1 ...
         }
+      else
+        dis.nommer_completer_champ_physique(zone_dis, fld_name, fld_unit, porosite_milieu.valeur(), pb);
 
-      dis.nommer_completer_champ_physique(zone_dis,"porosite_milieu","rien",porosite_milieu.valeur(),pb);
       champs_compris_.ajoute_champ(porosite_milieu.valeur());
+      assert(mp_min_vect(porosite_milieu->valeurs()) >= 0. && mp_max_vect(porosite_milieu->valeurs()) <= 1.);
     }
 }
 /*! @brief Lecture d'un milieu sur un flot d'entree.
