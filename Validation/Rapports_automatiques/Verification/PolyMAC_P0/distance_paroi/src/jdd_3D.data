@@ -24,7 +24,7 @@ mailler dom
     {
         Origine -1  -2  0.0
         Nombre_de_Noeuds 121 6 11
-        Longueurs 6 1 10 
+        Longueurs 6 1 10
     }
     {
         Bord Sud_ext           Y = -2      -1  <= X <= 5   0 <= Z <= 10
@@ -34,12 +34,12 @@ mailler dom
         Bord Sud               X = 5      -2  <= Y <= -1  0 <= Z <= 10
     } ,
     pave Cavite_Ouest
-    {  
+    {
         Origine -2  -2  0
         Nombre_de_Noeuds 6 21 11
         Longueurs 1 4 10
     }
-    {  
+    {
         Bord Ouest              X = -2  -2  <= Y <= 2   0 <= Z <= 10
         Bord Ouest              Y = 2   -2  <= X <= -1  0 <= Z <= 10
         Bord Ouest              Y = -2  -2  <= X <= -1  0 <= Z <= 10
@@ -88,6 +88,7 @@ Schema_euler_implicite sch
 Read sch
 {
     tinit 0
+    dt_start dt_fixe 1e-3
     nb_pas_dt_max 1
     solveur ice
     {
@@ -143,9 +144,9 @@ Read pb
 	Nord      paroi_fixe
 	Est_ext   frontiere_ouverte_vitesse_imposee_sortie champ_front_uniforme 3 0 0 0
 	Sud_ext   frontiere_ouverte_pression_imposee champ_front_uniforme 1 1e5
-	Nord_sym  symetrie	
+	Nord_sym  symetrie
 	}
-    }            
+    }
     Masse_Multiphase
     {
         initial_conditions { alpha Champ_Fonc_xyz dom 1 1 }
@@ -158,7 +159,7 @@ Read pb
 	Nord      paroi
 	Est_ext   frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
 	Sud_ext   frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
-	Nord_sym  paroi	
+	Nord_sym  paroi
         }
         sources { }
     }
@@ -175,10 +176,10 @@ Read pb
 	Nord      paroi_adiabatique
 	Est_ext   frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
 	Sud_ext   frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
-	Nord_sym  paroi_adiabatique	
+	Nord_sym  paroi_adiabatique
         }
 	sources
-	{   
+	{
         }
     }
     Post_processing

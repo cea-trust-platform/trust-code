@@ -13,10 +13,10 @@ Mailler dom
 		nombre_de_noeuds 11 6
 		}
 		{
-		bord ouvert	X = 0	0 <= Y <= 5	
-		bord ouvert	X = 10	0 <= Y <= 5	
-		bord paroi	Y = 0	0 <= X <= 10	
-		bord ouvert	Y = 5	0 <= X <= 10	
+		bord ouvert	X = 0	0 <= Y <= 5
+		bord ouvert	X = 10	0 <= Y <= 5
+		bord paroi	Y = 0	0 <= X <= 10
+		bord ouvert	Y = 5	0 <= X <= 10
 		}
 }
 
@@ -47,6 +47,7 @@ Schema_euler_implicite sch
 Read sch
 {
     tinit 0
+    dt_start dt_fixe 1e-3
     nb_pas_dt_max 1
     solveur ice
     {
@@ -99,7 +100,7 @@ Read pb
 	paroi     paroi_fixe
 	ouvert    frontiere_ouverte_pression_imposee champ_front_uniforme 1 1e5
 	}
-    }            
+    }
     Masse_Multiphase
     {
         initial_conditions { alpha Champ_Fonc_xyz dom 1 1 }
@@ -122,7 +123,7 @@ Read pb
 	ouvert    frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
         }
 	sources
-	{   
+	{
         }
     }
 
@@ -130,7 +131,7 @@ Read pb
 	{
 
 		sondes			{
-					dist	distance_paroi_globale  periode 1.e8 segment 20  0.25  0.5  9.75   .5  
+					dist	distance_paroi_globale  periode 1.e8 segment 20  0.25  0.5  9.75   .5
 					}
 		format lata
 		champs binaire dt_post 1e6
