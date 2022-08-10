@@ -182,7 +182,7 @@ class Write_notebook:
                     code0 += "visu = visit.Show(\"%s\",\"%s\",\"%s_%s_%s\",mesh=\"%s\")\n" %(plot[1],dico_plots[plot[0]],plot[3],plot[4],plot[2],plot[2])
                     show = 1
                 else:
-                    code1 += "visu.addField(\"%s\",\"%s\",\"%s_%s_%s\")\n" %(plot[1],dico_plots[plot[0]],plot[3],plot[4],plot[2],plot[2])
+                    code1 += "visu.addField(\"%s\",\"%s\",\"%s_%s_%s\",mesh=\"%s\")\n" %(plot[1],dico_plots[plot[0]],plot[3],plot[4],plot[2],plot[2])
 
             if plot[0]=='mesh':
                 if not show:
@@ -423,7 +423,7 @@ class Write_notebook:
         self.inclureTableauNotebook(maitre,Tableau_perf)
         pass
         iter = 0
-        data = "### Plot Data \n \n"
+        data = "### Plot Data \n \n"
         self.nb['cells'] += [nbf.v4.new_markdown_cell(data)]
         for k,i in results.dicoresult.items():
             for k2, v2 in i.items():

@@ -203,6 +203,8 @@ if [ $doclean -ge 2 ]
     then
     echo on efface le repertoire
     [ -d $projet ] && rm -rf $projet  && echo repertoire $projet efface
+    # Cas particulier pour FT_IJK avec liens symboliques, necessite menage
+    [ "$projet" = "Front_tracking_IJK" ] && rm -r ../Turbulence Front_tracking_discontinu && echo repertoire Turbulence pour le projet $projet efface
     if [ $doclean -eq 2 ]  && [ -f $project.tar ]
 	then
 	set -xv

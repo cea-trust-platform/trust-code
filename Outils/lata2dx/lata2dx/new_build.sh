@@ -28,6 +28,10 @@ SWIG_EXECUTABLE=`type -p swig`
 # PL inutile de specifier swig (dans PATH normalement):
 cmake $ORG -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$TRUST_ROOT/exec/lata2dx_install -DCMAKE_C_COMPILER=$TRUST_cc -DCMAKE_CXX_COMPILER=$TRUST_CC -DSWIG_EXECUTABLE=$SWIG_EXECUTABLE
 make -j  $TRUST_NB_PROCS  install || exit -1
+
+echo "Check if compare_lata works"
+tar xzf $TRUST_ROOT/Outils/lata2dx/lata2dx/vdf.tar.gz
+$TRUST_ROOT/exec/lata2dx_install/bin/compare_lata vdf/vdf.lata vdf/vdf.lata || exit -1
 cd ..
 rm -rf lata2dx
 ##
