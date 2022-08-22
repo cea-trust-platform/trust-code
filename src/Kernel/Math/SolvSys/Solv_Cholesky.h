@@ -21,6 +21,7 @@
 #include <SolveurSys_base.h>
 class Matrice_Morse_Sym;
 class Matrice_Morse;
+class Param;
 
 class Solv_Cholesky : public SolveurSys_base
 {
@@ -38,7 +39,11 @@ public :
     return resoudre_systeme(M, A, B);
   }
   inline int solveur_direct() const override { return 1; }
+
 protected :
+  void set_param(Param& param);
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
+
   int Cholesky(const Matrice_Morse_Sym&, const DoubleVect&, DoubleVect& );
   int Fact_Cholesky(const Matrice_Morse_Sym&, const int ); // met a jour matrice_bande_factorisee_fortran_
   int largeur_de_bande_;

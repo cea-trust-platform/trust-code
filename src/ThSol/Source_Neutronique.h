@@ -21,7 +21,7 @@
 #include <Terme_Puissance_Thermique.h>
 #include <Source_base.h>
 #include <Parser_U.h>
-
+class Param;
 
 /*! @brief class Source_Neutronique
  *
@@ -39,7 +39,8 @@ class Source_Neutronique : public Terme_Puissance_Thermique, public Source_base
   Declare_base(Source_Neutronique);
 
 public:
-
+  void set_param(Param& param);
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
 
   double rho(double, double);
   const Nom& repartition() const;

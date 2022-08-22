@@ -22,6 +22,7 @@
 #include <EChaine.h>
 #include <Motcle.h>
 #include <SFichier.h>
+#include <Param.h>
 
 Implemente_base(Source_Neutronique,"Source_Neutronique",Source_base);
 
@@ -37,21 +38,7 @@ Sortie& Source_Neutronique::printOn(Sortie& s ) const
 //
 Entree& Source_Neutronique::readOn(Entree& is )
 {
-  Motcles les_mots(11);
-  {
-    les_mots[0] = "N";
-    les_mots[1] = "lambda";
-    les_mots[2] = "Tvie";
-    les_mots[3] = "beta";
-    les_mots[4] = "rho_cte";
-    les_mots[5] = "P0";
-    les_mots[6] = "dt_impr";
-    les_mots[7] = "schema_temps";
-    les_mots[8] = "rho";
-    les_mots[9] = "repartition";
-    les_mots[10] = "Ci0";
-  }
-
+  Param param(que_suis_je());
   EChaine ec("Champ_Uniforme 1 1");
   ec >> la_puissance;
   Ci0_ok=0;
@@ -61,145 +48,114 @@ Entree& Source_Neutronique::readOn(Entree& is )
   init = 1;
   dt_impr = 1e10;
   faire_un_pas_de_temps =  &Source_Neutronique::faire_un_pas_de_temps_RK;
-  Motcle motlu, accolade_fermee="}", accolade_ouverte="{";
-  is >> motlu;
-  if(motlu!=accolade_ouverte)
-    {
-      Cerr << "On attendait une { a la lecture d'une " << que_suis_je() << finl;
-      Cerr << "et non : " << motlu << finl;
-      exit();
-    }
-  is >> motlu;
-  while (motlu != accolade_fermee)
-    {
-
-      int rang=les_mots.search(motlu);
-      switch(rang)
-        {
-        case 0 :
-          {
-            is >> N;
-            if (N<1)
-              {
-                Cerr << "Le nombre de groupes doit etre >=1 dans  " << que_suis_je() << finl;
-                exit();
-              }
-            break;
-          }
-        case 1 :
-          {
-            if (N<1)
-              {
-                Cerr << "Il faut rentrer le nb de groupes N avant lambda dans  " << que_suis_je() << finl;
-                exit();
-              }
-            lambda.resize(N);
-            for (int i=0; i<N; i++) is>>lambda(i);
-            break;
-          }
-        case 2 :
-          {
-            is >> Tvie;
-            break;
-          }
-        case 3 :
-          {
-            if (N<1)
-              {
-                Cerr << "Il faut rentrer le nb de groupes N avant beta dans  " << que_suis_je() << finl;
-                exit();
-
-              }
-            beta.resize(N);
-            beta_som=0.;
-            for (int i=0; i<N; i++)
-              {
-                is>>beta(i);
-                beta_som+=beta(i);
-              }
-            break;
-          }
-        case 5 :
-          {
-            is >> P0;
-            break;
-          }
-        case 6 :
-          {
-            is >> dt_impr;
-            break;
-          }
-        case 7 :
-          {
-            Motcle nom_sch;
-            is >> nom_sch;
-            if (nom_sch == "euler_explicite")
-              {
-                faire_un_pas_de_temps =  &Source_Neutronique::faire_un_pas_de_temps_EE;
-              }
-            else if (nom_sch == "runge_kutta")
-              {
-                faire_un_pas_de_temps =  &Source_Neutronique::faire_un_pas_de_temps_RK;
-              }
-            else
-              {
-                Cerr << "On ne comprend le mot : " << motlu << "dans " << que_suis_je() << finl;
-                exit();
-              }
-
-            break;
-          }
-        case 8 :
-          {
-            Nom tmp;
-            is >> tmp;
-            Cerr << "Lecture de la reactivite " << tmp << finl;
-            fct_tT.setNbVar(2);
-            fct_tT.setString(tmp);
-            fct_tT.addVar("t");
-            fct_tT.addVar("T");
-            fct_tT.parseString();
-
-            break;
-          }
-        case 9 :
-          {
-            is >> f_xyz;
-            is >> n_ssz;
-            break;
-          }
-        case 10 :
-          {
-            if (N<1)
-              {
-                Cerr << "Il faut rentrer le nb de groupes N avant les Ci initiaux dans  " << que_suis_je() << finl;
-                exit();
-              }
-            Ci0_ok = 1;
-            Ci0.resize(N);
-            for (int i=0; i<N; i++)
-              {
-                is>>Ci0(i);
-              }
-            break;
-          }
-        default :
-          {
-            Cerr << "On ne comprend le mot : " << motlu << "dans " << que_suis_je() << finl;
-            exit();
-          }
-        }
-      is >> motlu;
-    }
-
-  if (N<1)
-    {
-      Cerr << "Il faut rentrer le nb de groupes N  dans  " << que_suis_je() << finl;
-      exit();
-
-    }
-
+  set_param(param);
+  param.lire_avec_accolades_depuis(is);
   return is;
+}
+
+void Source_Neutronique::set_param(Param& param)
+{
+  param.ajouter("N",&N,Param::REQUIRED);
+  param.ajouter_non_std("lambda",(this));
+  param.ajouter("Tvie",&Tvie);
+  param.ajouter("beta",&beta);
+  param.ajouter("P0",&P0);
+  param.ajouter("dt_impr",&dt_impr);
+  param.ajouter_non_std("schema_temps",(this));
+  param.ajouter_non_std("rho",(this));
+  param.ajouter_non_std("repartition",(this));
+  param.ajouter_non_std("Ci0",(this));
+}
+
+int Source_Neutronique::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+{
+  if (mot=="lambda")
+    {
+      if (N<1)
+        {
+          Cerr << "Il faut rentrer le nb de groupes N avant lambda dans  " << que_suis_je() << finl;
+          exit();
+        }
+      lambda.resize(N);
+      for (int i=0; i<N; i++) is>>lambda(i);
+      return 1;
+    }
+  else if (mot=="beta")
+    {
+      if (N<1)
+        {
+          Cerr << "Il faut rentrer le nb de groupes N avant beta dans  " << que_suis_je() << finl;
+          exit();
+
+        }
+      beta.resize(N);
+      beta_som=0.;
+      for (int i=0; i<N; i++)
+        {
+          is>>beta(i);
+          beta_som+=beta(i);
+        }
+      return 1;
+    }
+  else if (mot=="schema_temps")
+    {
+      Motcle nom_sch;
+      is >> nom_sch;
+      if (nom_sch == "euler_explicite")
+        {
+          faire_un_pas_de_temps =  &Source_Neutronique::faire_un_pas_de_temps_EE;
+        }
+      else if (nom_sch == "runge_kutta")
+        {
+          faire_un_pas_de_temps =  &Source_Neutronique::faire_un_pas_de_temps_RK;
+        }
+      else
+        {
+          Cerr << "On ne comprend le mot : " << mot << "dans " << que_suis_je() << finl;
+          exit();
+        }
+      return 1;
+    }
+  else if (mot=="rho")
+    {
+      Nom tmp;
+      is >> tmp;
+      Cerr << "Lecture de la reactivite " << tmp << finl;
+      fct_tT.setNbVar(2);
+      fct_tT.setString(tmp);
+      fct_tT.addVar("t");
+      fct_tT.addVar("T");
+      fct_tT.parseString();
+      return 1;
+    }
+  else if (mot=="repartition")
+    {
+      is >> f_xyz;
+      is >> n_ssz;
+      return 1;
+    }
+  else if (mot=="Ci0")
+    {
+      if (N<1)
+        {
+          Cerr << "Il faut rentrer le nb de groupes N avant les Ci initiaux dans  " << que_suis_je() << finl;
+          exit();
+        }
+      Ci0_ok = 1;
+      Ci0.resize(N);
+      for (int i=0; i<N; i++)
+        {
+          is>>Ci0(i);
+        }
+      return 1;
+    }
+  else
+    {
+      Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
+      exit();
+    }
+
+  return -1;
 }
 
 double Source_Neutronique::rho(double t, double T)

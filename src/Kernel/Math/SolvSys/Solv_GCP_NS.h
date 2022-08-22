@@ -19,7 +19,7 @@
 #include <solv_iteratif.h>
 #include <SolveurSys.h>
 #include <Precond.h>
-
+class Param;
 
 class Solv_GCP_NS : public solv_iteratif
 {
@@ -37,6 +37,8 @@ public :
   }; // Matrice_Morse_Sym non supporte
 
 protected :
+  void set_param(Param& param);
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
 
   SolveurSys solveur_poisson1;
   SolveurSys solveur_poisson0;

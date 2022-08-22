@@ -20,6 +20,7 @@
 #include <SolvElem.h>
 #include <Matrice_Morse.h>
 #include <solv_iteratif.h>
+class Param;
 
 #define _SEUIL_Gen_ 1e-12
 
@@ -40,6 +41,8 @@ public :
   void reinit() override;
 
 protected :
+  void set_param(Param& param);
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
   int solve(const Matrice_Base& matrice, const Matrice_Base& mat_loc, const DoubleVect& secmem, DoubleVect& solution);
 
   Precond le_precond_;

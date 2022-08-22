@@ -25,7 +25,7 @@
  */
 
 #include <Source_base.h>
-#include <Terme_Source_Coriolis.h>
+#include <Terme_Source_Coriolis_base.h>
 #include <Ref_Zone_VDF.h>
 #include <Ref_Zone_Cl_VDF.h>
 #include <TRUSTTabs_forward.h>
@@ -33,7 +33,7 @@
 class Probleme_base;
 class Navier_Stokes_std;
 
-class Terme_Source_Coriolis_VDF_Face : public Source_base, public Terme_Source_Coriolis
+class Terme_Source_Coriolis_VDF_Face : public Terme_Source_Coriolis_base
 {
   Declare_instanciable(Terme_Source_Coriolis_VDF_Face);
 
@@ -44,7 +44,7 @@ public :
   inline const DoubleVect& omega() const ;
   void mettre_a_jour(double temps) override
   {
-    Terme_Source_Coriolis::mettre_a_jour(temps);
+    Terme_Source_Coriolis_base::mettre_a_jour(temps);
   }
   inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
@@ -74,7 +74,7 @@ class Terme_Source_Coriolis_QC_VDF_Face : public Terme_Source_Coriolis_VDF_Face
 
 inline const DoubleVect& Terme_Source_Coriolis_VDF_Face::omega() const
 {
-  return Terme_Source_Coriolis::omega();
+  return Terme_Source_Coriolis_base::omega();
 }
 
 #endif

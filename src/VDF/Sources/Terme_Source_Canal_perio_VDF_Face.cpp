@@ -40,7 +40,7 @@ Sortie& Terme_Source_Canal_perio_VDF_Front_Tracking::printOn(Sortie& s ) const
 
 Entree& Terme_Source_Canal_perio_VDF_Front_Tracking::readOn(Entree& s )
 {
-  return Terme_Source_Canal_perio::lire_donnees(s);
+  return Terme_Source_Canal_perio::readOn(s);
 }
 //
 
@@ -60,7 +60,7 @@ Sortie& Terme_Source_Canal_perio_QC_VDF_Face::printOn(Sortie& s ) const
 
 Entree& Terme_Source_Canal_perio_QC_VDF_Face::readOn(Entree& s )
 {
-  return Terme_Source_Canal_perio::lire_donnees(s);
+  return Terme_Source_Canal_perio::readOn(s);
 }
 //
 
@@ -81,7 +81,7 @@ Sortie& Terme_Source_Canal_perio_VDF_Face::printOn(Sortie& s ) const
 
 Entree& Terme_Source_Canal_perio_VDF_Face::readOn(Entree& s )
 {
-  return Terme_Source_Canal_perio::lire_donnees(s);
+  return Terme_Source_Canal_perio::readOn(s);
 }
 
 void Terme_Source_Canal_perio_VDF_Face::associer_zones(const Zone_dis& zone_dis,

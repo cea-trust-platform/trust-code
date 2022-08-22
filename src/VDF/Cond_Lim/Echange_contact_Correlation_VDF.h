@@ -22,6 +22,7 @@
 class Front_VF;
 class Zone_VDF;
 class Faces;
+class Param;
 
 ////////////////////////////////////////////////////////////////
 
@@ -99,6 +100,9 @@ public :
   }
 
 protected :
+  void set_param(Param& param);
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
+
   void calculer_CL();
   void calculer_Q();
   void calculer_prop_physique();

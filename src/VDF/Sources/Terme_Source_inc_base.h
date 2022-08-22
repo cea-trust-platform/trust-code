@@ -13,39 +13,33 @@
 *
 *****************************************************************************/
 
-#ifndef Terme_Source_inc_included
-#define Terme_Source_inc_included
+#ifndef Terme_Source_inc_base_included
+#define Terme_Source_inc_base_included
 
 #include <Ref_Navier_Stokes_std.h>
 #include <Ref_Champ_Don_base.h>
+#include <Source_base.h>
 
 class Probleme_base;
 class Zone_VF;
+class Param;
 
-class Terme_Source_inc
+class Terme_Source_inc_base : public Source_base
 {
+  Declare_base(Terme_Source_inc_base);
 
 public:
-  void associer_eqn(const Navier_Stokes_std&) ;
-  inline const Navier_Stokes_std& eq_hydraulique() const;
-  void mettre_a_jour(double temps)
-  {
-    ;
-  }
+  inline void associer_eqn(const Navier_Stokes_std& eq_hyd) { eq_hydraulique_ = eq_hyd;  }
+  inline const Navier_Stokes_std& eq_hydraulique() const {  return eq_hydraulique_.valeur();}
+  void mettre_a_jour(double temps) override { }
 
 protected :
+  void set_param(Param& param);
   REF(Navier_Stokes_std) eq_hydraulique_;
   /*   int dir_source,deb; */
   /*    double h,coeff,u_etoile; */
   int impr;
-  Entree& lire_donnees(Entree& );
-
 };
-
-inline const Navier_Stokes_std& Terme_Source_inc::eq_hydraulique() const
-{
-  return eq_hydraulique_.valeur();
-}
 
 
 #endif

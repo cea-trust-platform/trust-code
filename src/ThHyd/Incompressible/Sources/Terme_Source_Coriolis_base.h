@@ -13,42 +13,32 @@
 *
 *****************************************************************************/
 
-#ifndef Terme_Source_Coriolis_included
-#define Terme_Source_Coriolis_included
+#ifndef Terme_Source_Coriolis_base_included
+#define Terme_Source_Coriolis_base_included
 
 #include <Ref_Navier_Stokes_std.h>
+#include <Source_base.h>
 #include <TRUSTVect.h>
 
-class Terme_Source_Coriolis
-{
+class Param;
 
+class Terme_Source_Coriolis_base: public Source_base
+{
+  Declare_base(Terme_Source_Coriolis_base);
 public:
 
-  void associer_eqn(const Navier_Stokes_std&) ;
-  inline const DoubleVect& omega() const;
-  inline const Navier_Stokes_std& eq_hydraulique() const;
-  void mettre_a_jour(double temps) { }
+  inline void associer_eqn(const Navier_Stokes_std& eq_hyd) { eq_hydraulique_ = eq_hyd; }
+  inline const DoubleVect& omega() const { return omega_; }
+  inline const Navier_Stokes_std& eq_hydraulique() const { return eq_hydraulique_.valeur(); }
+  void mettre_a_jour(double temps) override { }
 
 protected :
   DoubleVect omega_;
   REF(Navier_Stokes_std) eq_hydraulique_;
-  Entree& lire_donnees(Entree& );
+  void set_param(Param& param);
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
   double dim;
 
 };
-
-//
-//   Fonctions inline de la classe Terme_Source_Coriolis
-//
-
-inline const DoubleVect& Terme_Source_Coriolis::omega() const
-{
-  return omega_;
-}
-
-inline const Navier_Stokes_std& Terme_Source_Coriolis::eq_hydraulique() const
-{
-  return eq_hydraulique_.valeur();
-}
 
 #endif

@@ -26,10 +26,9 @@
 #include <Schema_Comm.h>
 #include <EFichier.h>
 #include <SFichier.h>
+#include <Param.h>
 
 Implemente_instanciable(Echange_contact_Correlation_VEF,"Paroi_Echange_contact_Correlation_VEF",Temperature_imposee_paroi);
-
-
 
 
 Sortie& Echange_contact_Correlation_VEF::printOn(Sortie& s ) const
@@ -39,187 +38,118 @@ Sortie& Echange_contact_Correlation_VEF::printOn(Sortie& s ) const
 
 Entree& Echange_contact_Correlation_VEF::readOn(Entree& is )
 {
-  //  Motcles les_mots(16);
-  // Rajout Cyril MALOD (14/09/2006)
+  Param param(que_suis_je());
   Reprise_temperature=0;
-  Motcles les_mots(17);
-  {
-    les_mots[0] = "dir";
-    les_mots[1] = "Tinf";
-    les_mots[2] = "Tsup";
-    les_mots[3] = "lambda";
-    les_mots[4] = "rho";
-    les_mots[5] = "Cp";
-    les_mots[6] = "dt_impr";
-    les_mots[7] = "mu";
-    les_mots[8] = "debit";
-    les_mots[9] = "Dh";
-    les_mots[10] = "N";
-    les_mots[11] = "surface";
-    les_mots[12] = "Nu";
-    les_mots[13] = "xinf";
-    les_mots[14] = "xsup";
-    // Le mot cle suivant n'est pas encore commente car les hypotheses sur ce rayonnement sont restrictives
-    les_mots[15] = "emissivite_pour_rayonnement_entre_deux_plaques_quasi_infinies";
-    // Rajout Cyril MALOD (14/09/2006)
-    les_mots[16] = "Reprise_correlation";
-  }
-
   dt_impr = 1e10;
   avec_rayo=0;
-  Motcle motlu, accolade_fermee="}", accolade_ouverte="{";
-  is >> motlu;
-  if(motlu!=accolade_ouverte)
-    {
-      Cerr << "On attendait une { a la lecture d'une " << que_suis_je() << finl;
-      Cerr << "et non : " << motlu << finl;
-      exit();
-    }
-  is >> motlu;
-  while (motlu != accolade_fermee)
-    {
-
-      int rang=les_mots.search(motlu);
-      switch(rang)
-        {
-        case 0 :
-          {
-            is >> dir;
-            if (dir<0 ||dir>2)
-              {
-                Cerr << "La direction doit etre 0, 1 ou 2 dans  " << que_suis_je() << finl;
-                exit();
-              }
-            break;
-          }
-        case 1 :
-          {
-            is >> Tinf;
-            break;
-          }
-        case 2 :
-          {
-            is >> Tsup;
-            break;
-          }
-        case 3 :
-          {
-            Nom tmp;
-            is >> tmp;
-            lambda_T.setNbVar(1);
-            lambda_T.setString(tmp);
-            lambda_T.addVar("T");
-            lambda_T.parseString();
-            break;
-          }
-        case 4 :
-          {
-            Nom tmp;
-            is >> tmp;
-            rho_T.setNbVar(1);
-            rho_T.setString(tmp);
-            rho_T.addVar("T");
-            rho_T.parseString();
-            break;
-          }
-        case 5 :
-          {
-            is >> Cp;
-            break;
-          }
-        case 6 :
-          {
-            is >> dt_impr;
-            break;
-          }
-        case 7 :
-          {
-            Nom tmp;
-            is >> tmp;
-            mu_T.setNbVar(1);
-            mu_T.setString(tmp);
-            mu_T.addVar("T");
-            mu_T.parseString();
-            break;
-          }
-        case 8 :
-          {
-            is >> debit;
-            break;
-          }
-        case 9 :
-          {
-            Nom tmp;
-            is >> tmp;
-            fct_Dh.setNbVar(1);
-            fct_Dh.setString(tmp);
-            fct_Dh.addVar("x");
-            fct_Dh.parseString();
-            break;
-          }
-        case 10 :
-          {
-            is >> N;
-            break;
-          }
-        case 11 :
-          {
-            Nom tmp;
-            is >> tmp;
-            fct_vol.setNbVar(2);
-            fct_vol.setString(tmp);
-            fct_vol.addVar("Dh");
-            fct_vol.addVar("x");
-            fct_vol.parseString();
-            break;
-          }
-        case 12 :
-          {
-            Nom tmp;
-            is >> tmp;
-            fct_Nu.setNbVar(2);
-            fct_Nu.setString(tmp);
-            fct_Nu.addVar("Re");
-            fct_Nu.addVar("Pr");
-            fct_Nu.parseString();
-            break;
-          }
-        case 13 :
-          {
-            is >> xinf;
-            break;
-          }
-        case 14 :
-          {
-            is >> xsup;
-            break;
-          }
-        case 15 :
-          {
-            avec_rayo = 1;
-            is >> emissivite;
-            break;
-          }
-          // Rajout Cyril MALOD (14/09/2006)
-        case 16 :
-          {
-            Reprise_temperature=1;
-            break;
-          }
-        default :
-          {
-            Cerr << "On ne comprend le mot : " << motlu << "dans " << que_suis_je() << finl;
-            exit();
-          }
-        }
-      is >> motlu;
-    }
-
-
+  set_param(param);
+  param.lire_avec_accolades_depuis(is);
 
   champ_front().typer("Champ_front_fonc");
   champ_front()->fixer_nb_comp(1);
-  return is ;
+  return is;
+}
+
+void Echange_contact_Correlation_VEF::set_param(Param& param)
+{
+  param.ajouter("dir",&dir);
+  param.ajouter_condition("(value_of_dir_ge_0)_AND_(value_of_dir_le_2)", "La direction doit etre 0, 1 ou 2 dans Echange_contact_Correlation_VDF");
+  param.ajouter("Tinf",&Tinf);
+  param.ajouter("Tsup",&Tsup);
+  param.ajouter_non_std("lambda",(this));
+  param.ajouter_non_std("rho",(this));
+  param.ajouter("dt_impr",&dt_impr);
+  param.ajouter("Cp",&Cp);
+  param.ajouter_non_std("mu",(this));
+  param.ajouter("debit",&debit);
+  param.ajouter("N",&N);
+  param.ajouter_non_std("Dh",(this));
+  param.ajouter_non_std("surface",(this));
+  param.ajouter("xinf",&xinf);
+  param.ajouter("xsup",&xsup);
+  param.ajouter_non_std("Nu",(this));
+  // Le mot cle suivant n'est pas encore commente car les hypotheses sur ce rayonnement sont restrictives
+  param.ajouter_non_std("emissivite_pour_rayonnement_entre_deux_plaques_quasi_infinies",(this));
+  // Rajout Cyril MALOD (14/09/2006)
+  param.ajouter_flag("Reprise_correlation",&Reprise_temperature);
+}
+
+int Echange_contact_Correlation_VEF::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+{
+  if (mot=="lambda")
+    {
+      Nom tmp;
+      is >> tmp;
+      lambda_T.setNbVar(1);
+      lambda_T.setString(tmp);
+      lambda_T.addVar("T");
+      lambda_T.parseString();
+      return 1;
+    }
+  else if (mot=="rho")
+    {
+      Nom tmp;
+      is >> tmp;
+      rho_T.setNbVar(1);
+      rho_T.setString(tmp);
+      rho_T.addVar("T");
+      rho_T.parseString();
+      return 1;
+    }
+  else if (mot=="mu")
+    {
+      Nom tmp;
+      is >> tmp;
+      mu_T.setNbVar(1);
+      mu_T.setString(tmp);
+      mu_T.addVar("T");
+      mu_T.parseString();
+      return 1;
+    }
+  else if (mot == "Dh")
+    {
+      Nom tmp;
+      is >> tmp;
+      fct_Dh.setNbVar(1);
+      fct_Dh.setString(tmp);
+      fct_Dh.addVar("x");
+      fct_Dh.parseString();
+      return 1;
+    }
+  else if (mot=="surface")
+    {
+      Nom tmp;
+      is >> tmp;
+      fct_vol.setNbVar(2);
+      fct_vol.setString(tmp);
+      fct_vol.addVar("Dh");
+      fct_vol.addVar("x");
+      fct_vol.parseString();
+      return 1;
+    }
+  else if (mot=="Nu")
+    {
+      Nom tmp;
+      is >> tmp;
+      fct_Nu.setNbVar(2);
+      fct_Nu.setString(tmp);
+      fct_Nu.addVar("Re");
+      fct_Nu.addVar("Pr");
+      fct_Nu.parseString();
+      return 1;
+    }
+  else if (mot=="emissivite_pour_rayonnement_entre_deux_plaques_quasi_infinies")
+    {
+      avec_rayo=1;
+      is >> emissivite;
+      return 1;
+    }
+  else
+    {
+      Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
+      exit();
+    }
+  return -1;
 }
 
 

@@ -17,6 +17,7 @@
 #include <Matrice_Bloc_Sym.h>
 #include <TRUSTTab_parts.h>
 #include <Motcle.h>
+#include <Param.h>
 
 Implemente_instanciable(Solv_GCP_NS,"Solv_GCP_NS",solv_iteratif);
 //
@@ -29,75 +30,52 @@ Sortie& Solv_GCP_NS::printOn(Sortie& s ) const
 
 Entree& Solv_GCP_NS::readOn(Entree& is )
 {
-  Motcle accolade_ouverte("{");
-  Motcle accolade_fermee("}");
-  Motcles les_parametres(6);
-  {
-    les_parametres[0] = "seuil";
-    les_parametres[1] = "solveur1";
-    les_parametres[2] = "solveur0";
-    les_parametres[3] = "impr";
-    les_parametres[4] = "precond";
-    les_parametres[5] = "quiet";
-  }
-  int rang;
+  Param param(que_suis_je());
+  set_param(param);
+  param.lire_avec_accolades_depuis(is);
+  return is;
+}
 
-  Motcle motlu;
-  is >> motlu;
-  if (motlu != accolade_ouverte)
+void Solv_GCP_NS::set_param(Param& param)
+{
+  param.ajouter_non_std("impr",(this));
+  param.ajouter("seuil",&seuil_);
+  param.ajouter_non_std("solveur0",(this));
+  param.ajouter_non_std("solveur1",(this));
+  param.ajouter("precond",&le_precond_);
+  param.ajouter_non_std("quiet",(this));
+}
+
+int Solv_GCP_NS::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+{
+  if (mot=="impr")
     {
-      Cerr << "Error when reading the parameters of the conjugate gradient SSOR " << finl;
-      Cerr << "One expected : " << accolade_ouverte << finl;
+      fixer_limpr(1);
+      return 1;
+    }
+  else if (mot=="quiet")
+    {
+      fixer_limpr(-1);
+      return 1;
+    }
+  else if (mot=="solveur0")
+    {
+      is >> solveur_poisson0;
+      solveur_poisson0.nommer("poisson_solver0");
+      return 1;
+    }
+  else if (mot=="solveur1")
+    {
+      is >> solveur_poisson1;
+      solveur_poisson1.nommer("poisson_solver1");
+      return 1;
+    }
+  else
+    {
+      Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
       exit();
     }
-  is >> motlu;
-  while (motlu != accolade_fermee)
-    {
-      rang = les_parametres.search(motlu);
-      switch(rang)
-        {
-        case 0:
-          {
-            is >> seuil_;
-            break;
-          }
-        case 1:
-          {
-            is >> solveur_poisson1;
-            solveur_poisson1.nommer("poisson_solver1");
-            break;
-          }
-        case 2:
-          {
-            is >> solveur_poisson0;
-            solveur_poisson0.nommer("poisson_solver0");
-            break;
-          }
-        case 3:
-          {
-            fixer_limpr(1);
-            break;
-          }
-        case 4:
-          {
-            is >> le_precond_;
-            break;
-          }
-        case 5:
-          {
-            fixer_limpr(-1);
-            break;
-          }
-        default :
-          {
-            Cerr << "Error when reading the parameters of the conjugate gradient SSOR " << finl;
-            Cerr << "One expected " << les_parametres << " instead of " << motlu << finl;
-            exit();
-          }
-        }
-      is >> motlu;
-    }
-  return is;
+  return -1;
 }
 
 static inline void corriger(DoubleVect& X,

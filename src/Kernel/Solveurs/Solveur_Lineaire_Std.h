@@ -19,6 +19,7 @@
 #include <TRUSTTabs_forward.h>
 #include <Solveur_lineaire.h>
 #include <SolveurSys.h>
+class Param;
 
 class Equation_base;
 
@@ -34,6 +35,9 @@ public :
   inline const  SolveurSys& solveur_sys(void)const;
 
 protected :
+  void set_param(Param& param);
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
+
   SolveurSys solveur;
 
 };

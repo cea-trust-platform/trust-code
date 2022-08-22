@@ -16,6 +16,7 @@
 #include <Perte_Charge_Anisotrope_VEF_P1NC.h>
 #include <Motcle.h>
 #include <Equation_base.h>
+#include <Param.h>
 
 Implemente_instanciable(Perte_Charge_Anisotrope_VEF_P1NC,"Perte_Charge_Anisotrope_VEF_P1NC",Perte_Charge_VEF);
 
@@ -33,125 +34,47 @@ Sortie& Perte_Charge_Anisotrope_VEF_P1NC::printOn(Sortie& s ) const
 
 Entree& Perte_Charge_Anisotrope_VEF_P1NC::readOn(Entree& s )
 {
-  Cerr << "Perte_Charge_Anisotrope_VEF_P1NC::readOn " << finl;
-  sous_zone=false;
-  int lambda_ortho_ok=0;
-  int lambda_ok=0;
-
-  // Definition des mots-cles
-  Motcles les_mots(6);
-  les_mots[0] = "lambda";
-  les_mots[1] = "diam_hydr";
-  les_mots[2] = "sous_zone";
-  les_mots[3] = "direction";
-  les_mots[4] = "lambda_ortho";
-  les_mots[5] = "implicite";
-
-  // Lecture et interpretation
-  Motcle motlu, accolade_fermee="}", accolade_ouverte="{";
-  s >> motlu;
-  while (motlu != accolade_ouverte)
-    {
-      Cerr << "On attendait une { a la lecture d'un " << que_suis_je() << finl;
-      Cerr << "et non : " << motlu << finl;
-      exit();
-    }
-  s >> motlu;
-  while (motlu != accolade_fermee)
-    {
-      int rang=les_mots.search(motlu);
-      switch(rang)
-        {
-        case 0 :   // lambda
-          {
-            lambda_ok=1;
-            Nom tmp;
-            s >> tmp;
-            Cerr << "Lecture et interpretation de la fonction " << tmp << " ... ";
-            lambda.setNbVar(2+dimension);
-            lambda.setString(tmp);
-            lambda.addVar("Re");
-            lambda.addVar("t");
-            lambda.addVar("x");
-            if (dimension>1)
-              lambda.addVar("y");
-            if (dimension>2)
-              lambda.addVar("z");
-            lambda.parseString();
-            Cerr << " Ok" << finl;
-            break;
-          }
-        case 1: // diam_hydr
-          s >> diam_hydr;
-          break;
-        case 2: // sous_zone
-          s >> nom_sous_zone;
-          sous_zone=true;
-          break;
-        case 3: // direction
-          s >> v;
-          break;
-        case 4:   // lambda_ortho
-          {
-            lambda_ortho_ok=1;
-            Nom tmp;
-            s >> tmp;
-            Cerr << "Lecture et interpretation de la fonction " << tmp << " ... ";
-            lambda_ortho.setNbVar(2+dimension);
-            lambda_ortho.setString(tmp);
-            lambda_ortho.addVar("Re");
-            lambda_ortho.addVar("t");
-            lambda_ortho.addVar("x");
-            if (dimension>1)
-              lambda_ortho.addVar("y");
-            if (dimension>2)
-              lambda_ortho.addVar("z");
-            lambda_ortho.parseString();
-            Cerr << " Ok" << finl;
-            break;
-          }
-        case 5:
-          {
-            s>>implicite_;
-            break;
-          }
-
-        default : // non compris
-          Cerr << "Mot cle \"" << motlu << "\" non compris lors de la lecture d'un "
-               << que_suis_je() << finl;
-          exit();
-        }
-      s >> motlu;
-    }
-
-  // Verification de la coherence
-  if (lambda_ok==0)
-    {
-      Cerr << "Il faut definir l'expression lamba(Re)" << finl;
-      exit();
-    }
-
-  if (lambda_ortho_ok==0)
-    {
-      Cerr << "Il faut definir l'expression lamba_ortho(Re)" << finl;
-      exit();
-    }
-
-  if (diam_hydr->nb_comp()!=1)
-    {
-      Cerr << "Il faut definir le champ diam_hydr a une composante" << finl;
-      exit();
-    }
-
+  Perte_Charge_VEF::readOn(s);
   if (v->nb_comp()!=dimension)
     {
       Cerr << "Il faut definir le champ direction a " << dimension << " composantes" << finl;
       exit();
     }
-
-
-  Cerr << "Fin de Perte_Charge_Anisotrope_VEF_P1NC::readOn" << finl;
   return s;
+}
+
+void Perte_Charge_Anisotrope_VEF_P1NC::set_param(Param& param)
+{
+  Perte_Charge_VEF::set_param(param);
+  param.ajouter_non_std("lambda_ortho",(this),Param::REQUIRED);
+  param.ajouter("direction",&v,Param::REQUIRED);
+}
+
+int Perte_Charge_Anisotrope_VEF_P1NC::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+{
+  if (mot=="lambda_ortho")
+    {
+      Nom tmp;
+      is >> tmp;
+      Cerr << "Lecture et interpretation de la fonction " << tmp << " ... ";
+      lambda_ortho.setNbVar(2+dimension);
+      lambda_ortho.setString(tmp);
+      lambda_ortho.addVar("Re");
+      lambda_ortho.addVar("t");
+      lambda_ortho.addVar("x");
+      if (dimension>1)
+        lambda_ortho.addVar("y");
+      if (dimension>2)
+        lambda_ortho.addVar("z");
+      lambda_ortho.parseString();
+      Cerr << " Ok" << finl;
+      return 1;
+    }
+  else
+    {
+      return Perte_Charge_VEF::lire_motcle_non_standard(mot,is);
+    }
+  return -1;
 }
 
 ////////////////////////////////////////////////////////////////

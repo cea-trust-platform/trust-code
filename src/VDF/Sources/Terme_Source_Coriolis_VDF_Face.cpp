@@ -37,13 +37,13 @@ Sortie& Terme_Source_Coriolis_QC_VDF_Face::printOn(Sortie& s ) const
 //
 Entree& Terme_Source_Coriolis_QC_VDF_Face::readOn(Entree& s )
 {
-  return Terme_Source_Coriolis::lire_donnees(s);
+  return Terme_Source_Coriolis_base::readOn(s);
 }
 
 
 
 
-Implemente_instanciable(Terme_Source_Coriolis_VDF_Face,"Coriolis_VDF_Face",Source_base);
+Implemente_instanciable(Terme_Source_Coriolis_VDF_Face,"Coriolis_VDF_Face",Terme_Source_Coriolis_base);
 
 //// printOn
 //
@@ -59,7 +59,7 @@ Sortie& Terme_Source_Coriolis_VDF_Face::printOn(Sortie& s ) const
 
 Entree& Terme_Source_Coriolis_VDF_Face::readOn(Entree& s )
 {
-  return Terme_Source_Coriolis::lire_donnees(s);
+  return Terme_Source_Coriolis_base::readOn(s);
 }
 
 void Terme_Source_Coriolis_VDF_Face::associer_pb(const Probleme_base& pb)
@@ -67,7 +67,7 @@ void Terme_Source_Coriolis_VDF_Face::associer_pb(const Probleme_base& pb)
   if (sub_type(Pb_Fluide_base,pb))
     {
       const Navier_Stokes_std& eqn_th = ref_cast(Navier_Stokes_std,pb.equation(0));
-      Terme_Source_Coriolis::associer_eqn(eqn_th);
+      Terme_Source_Coriolis_base::associer_eqn(eqn_th);
     }
   else
     {

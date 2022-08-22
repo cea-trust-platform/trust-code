@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,6 +18,7 @@
 #include <Matrice_Morse_Sym.h>
 #include <Matrice_Bloc.h>
 #include <ILU_SP.h>
+#include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Solv_Gen,"Solv_Gen",solv_iteratif);
 
@@ -50,99 +51,50 @@ Sortie& Solv_Gen::printOn(Sortie& s ) const
 
 Entree& Solv_Gen::readOn(Entree& is )
 {
-  Motcle accolade_ouverte("{");
-  Motcle accolade_fermee("}");
-  Motcles les_parametres(9);
-  {
-    les_parametres[0] = "seuil";
-    les_parametres[1] = "impr";
-    les_parametres[2] = "solv_elem";
-    les_parametres[3] = "precond";
-    les_parametres[4] = "save_matrice|save_matrix";
-    les_parametres[5] = "quiet";
-    les_parametres[6] = "nb_it_max";
-    les_parametres[7] = "force";
-    les_parametres[8] = "return";
-  }
-  int rang;
-
-  Motcle motlu;
-  is >> motlu;
-  if (motlu != accolade_ouverte)
-    {
-      Cerr << "Error when reading the parameters for the generic solver " << finl;
-      Cerr << "One expected : " << accolade_ouverte << finl;
-      exit();
-    }
-  is >> motlu;
-  save_matrice_=0;
-  while (motlu != accolade_fermee)
-    {
-      rang = les_parametres.search(motlu);
-      switch(rang)
-        {
-        case 0:
-          {
-            is >> seuil_;
-            break;
-          }
-        case 1:
-          {
-            fixer_limpr(1);
-            break;
-          }
-        case 2:
-          {
-            is >> le_solveur_elem_;
-            break;
-          }
-        case 3:
-          {
-            is >> le_precond_;
-            break;
-          }
-        case 4:
-          {
-            save_matrice_=1;
-            break;
-          }
-        case 5:
-          {
-            fixer_limpr(-1);
-            break;
-          }
-        case 6:
-          {
-            is>>nb_it_max_;
-            nb_it_max_flag = 1;
-            break;
-          }
-        case 7:
-          {
-            force_ = 1;
-            break;
-          }
-        case 8:
-          {
-            return_on_error_ = 1;
-            break;
-          }
-        default :
-          {
-            Cerr << "Error when reading the parameters of the generic solver " << finl;
-            Cerr << "One expected " << les_parametres << " instead of " << motlu << finl;
-            exit();
-          }
-        }
-      is >> motlu;
-    }
-  if ((nb_it_max_flag ==0) && (force_==1) )
-    {
-      Cerr << "Error while reading the parameters of the generic solver " << finl;
-      Cerr << "When you choose to 'force' negative ipar[5], you should specify nb_it_max in your datafile" << finl;
-      exit();
-    }
+  Param param(que_suis_je());
+  set_param(param);
+  param.lire_avec_accolades_depuis(is);
   return is;
+}
+
+void Solv_Gen::set_param(Param& param)
+{
+  param.ajouter_non_std("impr",(this));
+  param.ajouter("seuil",&seuil_);
+  param.ajouter("solv_elem",&le_solveur_elem_);
+  param.ajouter_flag("save_matrice|save_matrix",&save_matrice_);
+  param.ajouter("precond",&le_precond_);
+  param.ajouter_non_std("quiet",(this));
+  param.ajouter_non_std("nb_it_max",(this));
+  param.ajouter_flag("force",&force_);
+  param.ajouter_flag("return",&return_on_error_);
+}
+
+int Solv_Gen::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+{
+  if (mot=="impr")
+    {
+      fixer_limpr(1);
+      return 1;
+    }
+  else if (mot=="quiet")
+    {
+      fixer_limpr(-1);
+      return 1;
+    }
+  else if (mot=="nb_it_max")
+    {
+      is>>nb_it_max_;
+      nb_it_max_flag = 1;
+      return 1;
+    }
+  else
+    {
+      Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
+      exit();
+    }
+
+  return -1;
 }
 
 int Solv_Gen::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVect& secmem, DoubleVect& solution)

@@ -28,6 +28,7 @@
 #include <Domaine.h>
 
 class Convection_Diffusion_std;
+class Param;
 /*! @brief Classe Terme_Boussinesq_base Cette classe represente le terme de gravite qui figure dans l'equation
  *
  *     de la dynamique divisee par la masse volumique de reference.
@@ -92,6 +93,8 @@ public :
   };
 
 protected :
+  void set_param(Param& param);
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
 
   REF(Champ_Don_base) la_gravite_;
   int verif_;
@@ -100,7 +103,6 @@ protected :
   VECT(Parser_U) fct_Scalaire0_;
   REF(Champ_Don) beta_;
   REF(Convection_Diffusion_std) equation_scalaire_;
-  Entree& lire_donnees(Entree& );
   inline void check() const;
 };
 

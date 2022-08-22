@@ -28,7 +28,7 @@
  */
 
 #include <TRUSTTabs_forward.h>
-#include <Terme_Source_inc.h>
+#include <Terme_Source_inc_base.h>
 #include <Ref_Zone_Cl_VDF.h>
 #include <Ref_Zone_VDF.h>
 #include <Source_base.h>
@@ -36,7 +36,7 @@ class Probleme_base;
 class Navier_Stokes_std;
 
 // La classe derive de Source_base et peut etre d'un terme source
-class Terme_Source_inc_VDF_Face : public Source_base, public Terme_Source_inc
+class Terme_Source_inc_VDF_Face : public Terme_Source_inc_base
 {
   Declare_instanciable(Terme_Source_inc_VDF_Face);
 
@@ -45,7 +45,7 @@ public :
   DoubleTab& calculer(DoubleTab& ) const override;
   void mettre_a_jour(double temps) override
   {
-    Terme_Source_inc::mettre_a_jour(temps);
+    Terme_Source_inc_base::mettre_a_jour(temps);
   }
   /*    void mettre_a_jour( double temps); */
 

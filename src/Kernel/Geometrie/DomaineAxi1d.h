@@ -19,6 +19,7 @@
 #include <Domaine.h>
 #include <Champ.h>
 #include <Ref_DoubleTab.h>
+class Param;
 
 /*! @brief : class DomaineAxi1d
  *
@@ -45,6 +46,7 @@ public :
 
 
 protected :
+  void set_param(Param& param);
 
   Champ champ_orig;
   Ref_DoubleTab ref_origine_;

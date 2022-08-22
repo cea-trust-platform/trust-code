@@ -21,6 +21,7 @@
 
 class Matrice_Morse_Sym;
 class Matrice_Bloc_Sym;
+class Param;
 
 class PrecondA : public Precond_base
 {
@@ -30,6 +31,8 @@ public:
   int supporte_matrice_morse_sym() override { return 0; } // Matrice_Morse_Sym non supporte
 
 protected:
+  void set_param(Param& param);
+
   int preconditionner_(const Matrice_Base&, const DoubleVect& src, DoubleVect& solution) override;
   void prepare_(const Matrice_Base&, const DoubleVect& src) override;
 

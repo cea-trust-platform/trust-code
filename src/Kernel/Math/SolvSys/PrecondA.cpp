@@ -18,6 +18,7 @@
 #include <Matrice_Bloc_Sym.h>
 #include <Motcle.h>
 #include <TRUSTTab_parts.h>
+#include <Param.h>
 
 Implemente_instanciable(PrecondA,"ssor_bloc",Precond_base);
 //
@@ -30,73 +31,20 @@ Sortie& PrecondA::printOn(Sortie& s ) const
 
 Entree& PrecondA::readOn(Entree& is )
 {
-  Motcle accolade_ouverte("{");
-  Motcle accolade_fermee("}");
-  Motcles les_parametres(6);
-  {
-    les_parametres[0] = "precond0";
-    les_parametres[1] = "precond1";
-    les_parametres[2] = "preconda";
-    les_parametres[3] = "alpha_0";
-    les_parametres[4] = "alpha_1";
-    les_parametres[5] = "alpha_a";
-    int rang;
-
-    Motcle motlu;
-    is >> motlu;
-    if (motlu != accolade_ouverte)
-      {
-        Cerr << "Error when reading the parameters of the conjugate gradient PrecondA " << finl;
-        Cerr << "One expected : " << accolade_ouverte << finl;
-        exit();
-      }
-    is >> motlu;
-    while (motlu != accolade_fermee)
-      {
-        rang = les_parametres.search(motlu);
-        switch(rang)
-          {
-          case 0:
-            {
-              is >> le_precond_0;
-              break;
-            }
-          case 1:
-            {
-              is >> le_precond_1;
-              break;
-            }
-          case 2:
-            {
-              is >> le_precond_a;
-              break;
-            }
-          case 3:
-            {
-              is >> alpha_0;
-              break;
-            }
-          case 4:
-            {
-              is >> alpha_1;
-              break;
-            }
-          case 5:
-            {
-              is >> alpha_a;
-              break;
-            }
-          default :
-            {
-              Cerr << "Error when reading the parameters of the preconditioning PrecondA " << finl;
-              Cerr << "On expected " << les_parametres << " instead of " << motlu << finl;
-              exit();
-            }
-          }
-        is >> motlu;
-      }
-  }
+  Param param(que_suis_je());
+  set_param(param);
+  param.lire_avec_accolades_depuis(is);
   return is;
+}
+
+void PrecondA::set_param(Param& param)
+{
+  param.ajouter("precond0",&le_precond_0);
+  param.ajouter("precond1",&le_precond_1);
+  param.ajouter("preconda",&le_precond_a);
+  param.ajouter("alpha_0",&alpha_0);
+  param.ajouter("alpha_1",&alpha_1);
+  param.ajouter("alpha_a",&alpha_a);
 }
 
 static void prepare_precond(Precond& p, const Matrice_Base& m, const DoubleVect& v,

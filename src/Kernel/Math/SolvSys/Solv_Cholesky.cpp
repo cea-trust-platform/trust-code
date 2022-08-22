@@ -19,7 +19,7 @@
 #include <Sparskit.h>
 #include <Lapack.h>
 #include <EFichier.h>
-
+#include <Param.h>
 
 //Solv_Cholesky::deja_factorise_=0;
 
@@ -42,56 +42,38 @@ Entree& Solv_Cholesky::readOn(Entree& is )
       Cerr << "Try using Petsc Cholesky solver." << finl;
       exit();
     }
+  Param param(que_suis_je());
+  set_param(param);
+  param.lire_avec_accolades_depuis(is);
+  return is;
+}
 
-  Motcle accolade_ouverte("{");
-  Motcle accolade_fermee("}");
-  Motcles les_parametres(3);
-  {
-    les_parametres[0] = "impr";
-    les_parametres[1] = "save_matrice|save_matrix";
-    les_parametres[2] = "quiet";
-  }
-  int rang;
+void Solv_Cholesky::set_param(Param& param)
+{
+  param.ajouter_non_std("impr",(this));
+  param.ajouter_flag("save_matrice|save_matrix",&save_matrice_);
+  param.ajouter_non_std("quiet",(this));
+}
 
-  Motcle motlu;
-  is >> motlu;
-  if (motlu != accolade_ouverte)
+int Solv_Cholesky::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+{
+  if (mot=="impr")
     {
-      Cerr << "Error when reading parameters for Cholesky " << finl;
-      Cerr << "One expected : " << accolade_ouverte << finl;
+      fixer_limpr(1);
+      return 1;
+    }
+  else if (mot=="quiet")
+    {
+      fixer_limpr(-1);
+      return 1;
+    }
+  else
+    {
+      Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
       exit();
     }
-  is >> motlu;
-  while (motlu != accolade_fermee)
-    {
-      rang = les_parametres.search(motlu);
-      switch(rang)
-        {
-        case 0:
-          {
-            fixer_limpr(1);
-            break;
-          }
-        case 1:
-          {
-            save_matrice_ = 1;
-            break;
-          }
-        case 2:
-          {
-            fixer_limpr(-1);
-            break;
-          }
-        default :
-          {
-            Cerr << "Error when reading parameters for Cholesky " << finl;
-            Cerr << "On expected " << les_parametres << " instead of " << motlu << finl;
-            exit();
-          }
-        }
-      is >> motlu;
-    }
-  return is;
+
+  return -1;
 }
 
 int Solv_Cholesky::resoudre_systeme(const Matrice_Base& la_matrice,

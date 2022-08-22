@@ -26,7 +26,7 @@
 #include <Navier_Stokes_std.h>
 #include <TRUSTTrav.h>
 
-Implemente_instanciable(Terme_Source_inc_VDF_Face,"inc_VDF_Face",Source_base);
+Implemente_instanciable(Terme_Source_inc_VDF_Face,"inc_VDF_Face",Terme_Source_inc_base);
 
 //// printOn
 //
@@ -42,7 +42,7 @@ Sortie& Terme_Source_inc_VDF_Face::printOn(Sortie& s ) const
 
 Entree& Terme_Source_inc_VDF_Face::readOn(Entree& s )
 {
-  return Terme_Source_inc::lire_donnees(s);
+  return Terme_Source_inc_base::readOn(s);
 }
 
 void Terme_Source_inc_VDF_Face::associer_pb(const Probleme_base& pb)
@@ -50,7 +50,7 @@ void Terme_Source_inc_VDF_Face::associer_pb(const Probleme_base& pb)
   if (sub_type(Pb_Fluide_base,pb))
     {
       const Navier_Stokes_std& eqn_th = ref_cast(Navier_Stokes_std,pb.equation(0));
-      Terme_Source_inc::associer_eqn(eqn_th);
+      Terme_Source_inc_base::associer_eqn(eqn_th);
     }
   else
     {

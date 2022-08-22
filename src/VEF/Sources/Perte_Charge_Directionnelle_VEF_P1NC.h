@@ -17,8 +17,6 @@
 #define Perte_Charge_Directionnelle_VEF_P1NC_included
 
 #include <Perte_Charge_VEF.h>
-#include <Parser_U.h>
-
 
 //!  Perte de charge directionnelle (selon un vecteur unitaire v)
 /**
@@ -48,16 +46,14 @@ public:
   }
 
 protected:
-
+  void set_param(Param& titi) override;
   //! Implemente le calcul effectif de la perte de charge pour un lieu donne
   void coeffs_perte_charge(const DoubleVect& u, const DoubleVect& pos,
                            double t, double norme_u, double dh, double nu, double reynolds,
                            double& coeff_ortho, double& coeff_long, double& u_l, DoubleVect& v_valeur) const override;
 
   Champ_Don v;//!< Vecteur directeur de la perte de charge.
-private:
 
-  mutable Parser_U lambda; //!< Parser cree et detruit par l'objet.
 };
 
 #endif

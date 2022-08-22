@@ -21,6 +21,7 @@
 #include <Source_base.h>
 #include <SFichier.h>
 class Probleme_base;
+class Param;
 
 /*! @brief Source term to keep a constant flow rate in a channel with periodic boundary conditions
  *
@@ -37,7 +38,8 @@ public:
   DoubleTab& calculer(DoubleTab& resu) const override;
 
 protected :
-  Entree& lire_donnees(Entree& );
+  void set_param(Param& param);
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
   void completer() override;
 
   // This one is overridden depending on discret.

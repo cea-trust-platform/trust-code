@@ -21,6 +21,7 @@
 #include <TRUSTVects.h>
 class Matrice_Morse_Sym;
 class Matrice_Morse;
+class Param;
 
 class Solv_Gmres : public solv_iteratif
 {
@@ -36,6 +37,9 @@ public :
   }
 
 protected :
+  void set_param(Param& param);
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
+
   int Gmres(const Matrice_Morse&, const DoubleVect&, DoubleVect& );
 
   DoubleVects v; //espcace Krilov

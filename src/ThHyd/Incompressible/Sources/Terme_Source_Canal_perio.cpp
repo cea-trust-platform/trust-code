@@ -27,6 +27,7 @@
 #include <Operateur_Diff_base.h>
 #include <Navier_Stokes_std.h>
 #include <EFichier.h>
+#include <Param.h>
 
 Implemente_base_sans_constructeur_ni_destructeur(Terme_Source_Canal_perio,"Terme_Source_Canal_perio",Source_base);
 
@@ -59,111 +60,70 @@ Sortie& Terme_Source_Canal_perio::printOn(Sortie& s ) const
 //   //// readOn
 //   //
 
-Entree& Terme_Source_Canal_perio::readOn(Entree& s )
+Entree& Terme_Source_Canal_perio::readOn(Entree& is )
 {
-  return lire_donnees(s);
-}
-
-void Terme_Source_Canal_perio::associer_pb(const Probleme_base& pb)
-{}
-
-Entree& Terme_Source_Canal_perio::lire_donnees(Entree& is)
-{
-  Motcle accolade_ouverte("{");
-  Motcle accolade_fermee("}");
-  Motcle motlu;
+  Param param(que_suis_je());
   // Valeurs par defaut
   u_etoile = 0.;
   h = 1.;
   coeff = 10.;
   velocity_weighting_ = 0;
   // FIN valeurs par defaut
-
-  int verif = 0;
-  Motcles les_mots(7);
-
-  Motcle mot_lu;
-  {
-    les_mots[0]="direction_ecoulement"; // Obsolete
-    les_mots[1]="u_etoile";
-    les_mots[2]="coeff";
-    les_mots[3]="h";
-    les_mots[4]="bord";
-    les_mots[5]="velocity_weighting"; // Energy source term algorithm 0 | 1
-    les_mots[6]="debit_impose";
-  }
-  Motcle acc_ouverte("{");
-  Motcle acc_fermee("}");
-  is >> mot_lu;
-  if(mot_lu != acc_ouverte)
-    {
-      Cerr << "We were expecting a { instead of " << mot_lu << finl;
-    }
-  is >> mot_lu;
   dir_source_.resize(dimension);
   dir_source_=0;
-  while(mot_lu != acc_fermee)
-    {
-      int rang=les_mots.search(mot_lu);
-      switch(rang)
-        {
-        case 0 :
-          Cerr <<"The direction_ecoulement option is obsolete, you must now use the bord option to specify the boundary where periodicity is applied."<<finl;
-          exit();
-          break;
-        case 1  :
-          is >> u_etoile;
-          Cerr << "Friction Velocity : " << u_etoile  << finl;
-          Cerr<<"L'option u_etoile est obsolete, supprimer la du jeu de donnees"<<finl;
-          exit();
-          break;
-        case 2  :
-          is >> coeff;
-          Cerr << "Damping Coefficient is now set : " << coeff << finl;
-          break;
-        case 3  :
-          is >> h;
-          Cerr << "Channel Half-height : " << h << finl;
-          break;
-        case 4  :
-          is >> bord_periodique_;
-          Cerr << "Periodic flow according the " << bord_periodique_ << " boundary." << finl;
-          verif = 1;
-          break;
-        case 6  :
-          is >> debit_impose_;
-          is_debit_impose_=1;
-          break;
-        case 5  :
-          is >> velocity_weighting_;
-          if (velocity_weighting_!=0 && velocity_weighting_!=1)
-            {
-              Cerr << "velocity_weighting value should be 0 or 1." << finl;
-              exit();
-            }
-          if (!sub_type(Convection_Diffusion_std,equation()))
-            {
-              Cerr << "velocity_weighting option is available only for a Canal_perio source term in the energy equation." << finl;
-              exit();
-            }
-          break;
-        default :
-          {
-            Cerr << mot_lu << " is not expected by Terme_Source_Canal_perio" << finl;
-            Cerr << "The possible keywords are : " << les_mots << finl;
-            exit();
-          }
-        }
-      is >> mot_lu;
-    }
+  set_param(param);
+  param.lire_avec_accolades_depuis(is);
+  return is;
+}
 
-  if (verif != 1)
+void Terme_Source_Canal_perio::set_param(Param& param)
+{
+  param.ajouter_non_std("direction_ecoulement",(this));
+  param.ajouter("u_etoile",&u_etoile);
+  param.ajouter("coeff",&coeff);
+  param.ajouter("h",&h);
+  param.ajouter("bord",&bord_periodique_);
+  param.ajouter_non_std("debit_impose",(this));
+  param.ajouter_non_std("velocity_weighting",(this));
+}
+
+void Terme_Source_Canal_perio::associer_pb(const Probleme_base& pb)
+{}
+
+int Terme_Source_Canal_perio::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+{
+  if (mot=="direction_ecoulement")
     {
-      Cerr << "User did not specify flow direction." << finl;
-      Cerr << "trust will now stop !" << finl;
+      Cerr <<"The direction_ecoulement option is obsolete, you must now use the bord option to specify the boundary where periodicity is applied."<<finl;
       exit();
     }
-  return is;
+  else if (mot=="debit_impose")
+    {
+      is >> debit_impose_;
+      is_debit_impose_=1;
+      return 1;
+    }
+  else if (mot=="velocity_weighting")
+    {
+      is >> velocity_weighting_;
+      if (velocity_weighting_!=0 && velocity_weighting_!=1)
+        {
+          Cerr << "velocity_weighting value should be 0 or 1." << finl;
+          exit();
+        }
+      if (!sub_type(Convection_Diffusion_std,equation()))
+        {
+          Cerr << "velocity_weighting option is available only for a Canal_perio source term in the energy equation." << finl;
+          exit();
+        }
+    }
+  else
+    {
+      Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
+      exit();
+    }
+
+  return -1;
 }
 
 void Terme_Source_Canal_perio::completer()

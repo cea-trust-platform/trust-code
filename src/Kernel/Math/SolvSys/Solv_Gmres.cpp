@@ -17,6 +17,7 @@
 #include <Matrice_Morse_Sym.h>
 #include <Matrice_Bloc.h>
 #include <Motcle.h>
+#include <Param.h>
 
 #ifdef CRAY
 #endif
@@ -54,96 +55,56 @@ Sortie& Solv_Gmres::printOn(Sortie& s ) const
 
 Entree& Solv_Gmres::readOn(Entree& is )
 {
-  Motcle accolade_ouverte("{");
-  Motcle accolade_fermee("}");
-  Motcles les_parametres(9);
-  {
-    les_parametres[0] = "impr";
-    les_parametres[1] = "seuil";
-    les_parametres[2] = "diag";
-    les_parametres[3] = "sans_precond";
-    les_parametres[4] = "nb_it_max";
-    les_parametres[5] = "controle_residu";
-    les_parametres[6] = "save_matrice|save_matrix";
-    les_parametres[7] = "dim_espace_krilov";
-    les_parametres[8] = "quiet";
-  }
-  int rang;
+  Param param(que_suis_je());
+  set_param(param);
+  param.lire_avec_accolades_depuis(is);
+  return is;
+}
 
-  Motcle motlu;
-  is >> motlu;
-  if (motlu != accolade_ouverte)
+void Solv_Gmres::set_param(Param& param)
+{
+  param.ajouter_non_std("impr",(this));
+  param.ajouter("seuil",&seuil_);
+  param.ajouter_non_std("diag",(this));
+  param.ajouter_non_std("sans_precond",(this));
+  param.ajouter("nb_it_max",&nb_it_max_);
+  param.ajouter("controle_residu",&controle_residu_);
+  param.ajouter_flag("save_matrice|save_matrix",&save_matrice_);
+  param.ajouter("dim_espace_krilov",&dim_espace_Krilov_);
+  param.ajouter_non_std("quiet",(this));
+}
+
+int Solv_Gmres::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+{
+  if (mot=="impr")
     {
-      Cerr << "Error when reading the GMRES parameters " << finl;
-      Cerr << "One expected " << accolade_ouverte
-           << " instead of : " << motlu << finl;
+      fixer_limpr(1);
+      return 1;
+    }
+  else if (mot=="quiet")
+    {
+      fixer_limpr(-1);
+      return 1;
+    }
+  else if (mot=="diag")
+    {
+      is_local_gmres=1;
+      precond_diag=1;
+      return 1;
+    }
+  else if (mot=="sans_precond")
+    {
+      is_local_gmres=1;
+      precond_diag=0;
+      return 1;
+    }
+  else
+    {
+      Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
       exit();
     }
-  is >> motlu;
-  while (motlu != accolade_fermee)
-    {
-      rang = les_parametres.search(motlu);
-      switch(rang)
-        {
-        case 0:
-          {
-            fixer_limpr(1);
-            break;
-          }
-        case 8:
-          {
-            fixer_limpr(-1);
-            break;
-          }
-        case 1:
-          {
-            is >> seuil_;
-            break;
-          }
-        case 2:
-          {
-            is_local_gmres=1;
-            precond_diag=1;
-            break;
-          }
-        case 3:
-          {
-            is_local_gmres=1;
-            precond_diag=0;
-            break;
-          }
-        case 4:
-          {
-            is>>nb_it_max_;
-            break;
-          }
-        case 5:
-          {
-            is>>controle_residu_;
-            break;
-          }
-        case 6:
-          {
-            save_matrice_=1;
-            break;
-          }
-        case 7:
-          {
-            is >>dim_espace_Krilov_;
-            break;
-          }
 
-        default :
-          {
-            Cerr << "Error when reading the Gmres parameters " << finl;
-            Cerr << "One expected a word among " << les_parametres
-                 << " instead of " << motlu << finl;
-            exit();
-          }
-        }
-      is >> motlu;
-    }
-  return is;
+  return -1;
 }
 
 

@@ -20,6 +20,7 @@
 #include <Matrice_Morse.h>
 #include <Motcle.h>
 #include <Nom.h>
+#include <Param.h>
 
 Implemente_instanciable(Solveur_Lineaire_Std,"Solveur_lineaire_std",Solveur_lineaire);
 
@@ -32,63 +33,38 @@ Sortie& Solveur_Lineaire_Std::printOn(Sortie& os ) const
 Entree& Solveur_Lineaire_Std::readOn(Entree& is )
 {
   Cerr << " The implicit solver used is of type Solveur_Lineaire_Std " << finl;
-  Motcles les_mots(1);
-  {
-    les_mots[0] = "solveur";
-  }
-  Motcle motlu, accolade_fermee="}", accolade_ouverte="{";
-  is >> motlu;
-  if(motlu!=accolade_ouverte)
-    {
-      Cerr << "One expected a { when reading " << que_suis_je() << finl;
-      Cerr << "instead of : " << motlu << finl;
-      exit();
-    }
-  is >> motlu;
-  while(motlu != accolade_fermee )
-    {
-      int rang=les_mots.search(motlu);
-      switch(rang)
-        {
-          //  case 0 : {
-          //       is >> seuil_convg_implicite_;
-          //       break;
-          //     }
-          //     case 1 : {
-          //       is >> seuil_resol_implicite_;
-          //       break;
-          //     }
-        case 0 :
-          {
-            Nom nom_solveur("Solv_");
-
-            Nom type_solv_sys;
-
-            is >> type_solv_sys;
-            nom_solveur+=type_solv_sys;
-            Cerr << "nom_solveur " << nom_solveur << finl;
-            solveur.typer(nom_solveur);
-            is >> solveur.valeur();
-            solveur.nommer("solveur_implicite");
-            break;
-          }
-        default :
-          {
-            Cerr<<"An object of type "<<que_suis_je()<<" cannot read the word "<<motlu<<finl;
-            Cerr<<"One expected a word among :"<<finl<<les_mots<<finl;
-            abort();
-          }
-        }
-      is >> motlu;
-    }
-  if (!solveur.non_nul())
-    {
-      Cerr << "Error among the data given for the implicite time scheme " << finl;
-      Cerr << "The solver has not been specified.  " << finl;
-      exit();
-    }
-
+  Param param(que_suis_je());
+  set_param(param);
+  param.lire_avec_accolades_depuis(is);
   return is;
+}
+
+void Solveur_Lineaire_Std::set_param(Param& param)
+{
+  param.ajouter_non_std("solveur",(this),Param::REQUIRED);
+}
+
+int Solveur_Lineaire_Std::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+{
+  if (mot=="solveur")
+    {
+      Nom nom_solveur("Solv_");
+      Nom type_solv_sys;
+      is >> type_solv_sys;
+      nom_solveur+=type_solv_sys;
+      Cerr << "nom_solveur " << nom_solveur << finl;
+      solveur.typer(nom_solveur);
+      is >> solveur.valeur();
+      solveur.nommer("solveur_implicite");
+      return 1;
+    }
+  else
+    {
+      Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
+      exit();
+    }
+
+  return -1;
 }
 
 bool Solveur_Lineaire_Std::iterer_eqn(Equation_base& equation, const DoubleTab& inconnue, DoubleTab& result, double dt, int numero_iteration, int& ok)

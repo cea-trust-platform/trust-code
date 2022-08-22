@@ -16,6 +16,7 @@
 #include <Source_Darcy_VEF_Face.h>
 #include <Fluide_Incompressible.h>
 #include <Probleme_base.h>
+#include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Source_Darcy_VEF_Face,"Darcy_VEF_P1NC",Terme_Source_VEF_base);
 
@@ -34,51 +35,41 @@ Sortie& Source_Darcy_VEF_Face::printOn(Sortie& s ) const
 
 Entree& Source_Darcy_VEF_Face::readOn(Entree& is )
 {
-  Motcles les_mots(2);
-  {
-    les_mots[0] = "modele_K";
-    les_mots[1] = "porosite";
-  }
-
-  Motcle motlu, accolade_fermee="}", accolade_ouverte="{";
-  is >> motlu;
-  if(motlu!=accolade_ouverte)
-    {
-      Cerr << "On attendait une { a la lecture d'une " << que_suis_je() << finl;
-      Cerr << "et non : " << motlu << finl;
-      exit();
-    }
-  is >> motlu;
-  while (motlu != accolade_fermee)
-    {
-      int rang=les_mots.search(motlu);
-      switch(rang)
-        {
-        case 0 :
-          {
-            Motcle mot;
-            is >> mot;
-            eval().modK.typer(mot);
-            is >> eval().modK.valeur();
-            break;
-          }
-        case 1:
-          {
-            is >> eval().getPorosite();
-            break;
-          }
-        default :
-          {
-            Cerr << "Unknown keyword in Source_Darcy_VEF_Face" << finl;
-            exit();
-          }
-        }
-      is >> motlu;
-    }
+  Param param(que_suis_je());
+  set_param(param);
+  param.lire_avec_accolades_depuis(is);
   set_fichier("Source_Darcy");
   set_description("Darcy term = Integral(-nu/K*vitesse*dv) [m/s2]");
-
   return is;
+}
+
+void Source_Darcy_VEF_Face::set_param(Param& param)
+{
+  param.ajouter_non_std("modele_K",(this),Param::REQUIRED);
+  param.ajouter_non_std("porosite",(this),Param::REQUIRED);
+}
+
+int Source_Darcy_VEF_Face::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+{
+  if (mot=="modele_K")
+    {
+      Motcle motlu;
+      is >> motlu;
+      eval().modK.typer(motlu);
+      is >> eval().modK.valeur();
+      return 1;
+    }
+  else if (mot=="porosite")
+    {
+      is >> eval().getPorosite();
+      return 1;
+    }
+  else
+    {
+      Cerr << "Unknown keyword in Source_Darcy_VEF_Face" << finl;
+      exit();
+    }
+  return -1;
 }
 
 void Source_Darcy_VEF_Face::associer_zones(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)

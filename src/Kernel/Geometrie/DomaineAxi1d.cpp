@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <DomaineAxi1d.h>
+#include <Param.h>
 
 Implemente_instanciable_sans_constructeur( DomaineAxi1d, "DomaineAxi1d", Domaine ) ;
 // XD DomaineAxi1d domaine DomaineAxi1d -1 1D domain
@@ -30,42 +31,15 @@ Sortie& DomaineAxi1d::printOn( Sortie& os ) const
 
 Entree& DomaineAxi1d::readOn( Entree& is )
 {
-  const Motcle accolade_ouverte("{");
-  const Motcle accolade_fermee("}");
-
-  Motcle motlu;
-
-  is >> motlu;
-
-  if (motlu != accolade_ouverte)
-    {
-      Cerr << "Error while reading 1D axi domain " <<  finl;
-      Cerr << "We expected a " << accolade_ouverte << " instead of \n"
-           << motlu << finl;
-      Process::exit();
-    }
-
-  while (1)
-    {
-      is >> motlu;
-
-      if (motlu == accolade_fermee)
-        break;
-
-      if (motlu=="ORIGINE")
-        {
-          is >> champ_orig;
-        }
-      else
-        {
-          Cerr << "Error while reading 1D axi domain " <<  finl;
-          Cerr << "We expected a \"origine\" instead of \n"
-               << motlu << finl;
-          Process::exit();
-        }
-    }
-
+  Param param(que_suis_je());
+  set_param(param);
+  param.lire_avec_accolades_depuis(is);
   return is;
+}
+
+void DomaineAxi1d::set_param(Param& param)
+{
+  param.ajouter("ORIGINE",&champ_orig,Param::REQUIRED);
 }
 
 const Champ& DomaineAxi1d::champ_origine()

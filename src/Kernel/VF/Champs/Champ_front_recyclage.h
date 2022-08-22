@@ -28,6 +28,7 @@ class Milieu_base;
 class Zone_dis_base;
 class Zone_Cl_dis_base;
 class Front_dis_base;
+class Param;
 
 /*! @brief classe Champ_front_recyclage
  *
@@ -162,6 +163,8 @@ public:
   double UPb(double y,Nom nom_fich);
 
 protected :
+  void set_param(Param& param);
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
 
   REF(Champ_Inc_base) l_inconnue1;  //Reference au champ inconnu (ch1) qui sert d evaluateur
   //dans le plan ou l on recupere les valeurs

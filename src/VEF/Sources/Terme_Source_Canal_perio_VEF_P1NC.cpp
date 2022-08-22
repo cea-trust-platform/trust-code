@@ -43,7 +43,7 @@ Sortie& Terme_Source_Canal_perio_QC_VEF_P1NC::printOn(Sortie& s ) const
 
 Entree& Terme_Source_Canal_perio_QC_VEF_P1NC::readOn(Entree& s )
 {
-  return Terme_Source_Canal_perio::lire_donnees(s);
+  return Terme_Source_Canal_perio::readOn(s);
 }
 
 //// printOn
@@ -60,7 +60,7 @@ Sortie& Terme_Source_Canal_perio_VEF_P1NC::printOn(Sortie& s ) const
 
 Entree& Terme_Source_Canal_perio_VEF_P1NC::readOn(Entree& s )
 {
-  return Terme_Source_Canal_perio::lire_donnees(s);
+  return Terme_Source_Canal_perio::readOn(s);
 }
 
 void Terme_Source_Canal_perio_VEF_P1NC::associer_zones(const Zone_dis& zone_dis,

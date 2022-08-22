@@ -30,6 +30,7 @@
 
 class Zone_dis;
 class Zone_Cl_dis;
+class Param;
 
 declare_It_Sou_VEF_Face(Eval_Darcy_VEF_Face)
 
@@ -49,7 +50,8 @@ class Source_Darcy_VEF_Face : public Terme_Source_VEF_base
   Declare_instanciable_sans_constructeur(Source_Darcy_VEF_Face);
 
 public:
-
+  void set_param(Param& param);
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
   inline Source_Darcy_VEF_Face();
   void associer_pb(const Probleme_base& ) override;
   void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;

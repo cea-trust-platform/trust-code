@@ -23,6 +23,7 @@
 #include <Sous_zone_VF.h>
 #include <Champ_P1NC.h>
 #include <Check_espace_virtuel.h>
+#include <Param.h>
 
 Implemente_base_sans_constructeur(Perte_Charge_VEF,"Perte_Charge_VEF",Source_base);
 
@@ -34,14 +35,68 @@ Perte_Charge_VEF::Perte_Charge_VEF():implicite_(1) { }
 Sortie& Perte_Charge_VEF::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << finl;
+
 }
 
 // readOn
 //
 
-Entree& Perte_Charge_VEF::readOn(Entree& s )
+Entree& Perte_Charge_VEF::readOn(Entree& is )
 {
-  return s;
+  Param param(que_suis_je());
+  Cerr << que_suis_je() << "::readOn " << finl;
+  lambda.setNbVar(4+dimension);
+  sous_zone=false;
+  set_param(param);
+  param.lire_avec_accolades_depuis(is);
+  Cerr << "Interpretation de la fonction " << lambda.getString() << " ... ";
+  lambda.parseString();
+  Cerr << " Ok" << finl;
+  if (diam_hydr->nb_comp()!=1)
+    {
+      Cerr << "Il faut definir le champ diam_hydr a une composante" << finl;
+      exit();
+    }
+  return is;
+}
+
+void Perte_Charge_VEF::set_param(Param& param)
+{
+  param.ajouter_non_std("lambda",(this),Param::REQUIRED);
+  param.ajouter("diam_hydr",&diam_hydr,Param::REQUIRED);
+  param.ajouter_non_std("sous_zone",(this));
+  param.ajouter("implicite",&implicite_);
+}
+
+int Perte_Charge_VEF::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+{
+  if (mot=="lambda")
+    {
+      Nom tmp;
+      is >> tmp;
+      lambda.setString(tmp);
+      lambda.addVar("Re");
+      lambda.addVar("t");
+      lambda.addVar("x");
+      if (dimension>1)
+        lambda.addVar("y");
+      if (dimension>2)
+        lambda.addVar("z");
+      return 1;
+    }
+  else if (mot=="sous_zone")
+    {
+      is >> nom_sous_zone;
+      sous_zone=true;
+      return 1;
+    }
+  else // non compris
+    {
+      Cerr << "Mot cle \"" << mot << "\" non compris lors de la lecture d'un "
+           << que_suis_je() << finl;
+      exit();
+    }
+  return -1;
 }
 
 ////////////////////////////////////////////////////////////////

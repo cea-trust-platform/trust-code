@@ -27,6 +27,8 @@
 #include <EcrFicCollecte.h>
 #include <Champ_front_calc.h>
 #include <string> // Pour AIX
+#include <Param.h>
+
 Implemente_instanciable_sans_constructeur(Champ_front_recyclage,"Champ_front_recyclage",Ch_front_var_instationnaire_dep);
 
 Champ_front_recyclage::Champ_front_recyclage()
@@ -62,122 +64,92 @@ Sortie& Champ_front_recyclage::printOn(Sortie& os) const
 
 Entree& Champ_front_recyclage::readOn(Entree& is)
 {
-
-  int dim = Objet_U::dimension;
-  int lu_info_evaluateur = 0;
-  int nbcomp;
-
-  Motcle motlu, accolade_fermee="}", accolade_ouverte="{";
-  Motcles les_mots(8);
-  {
-    les_mots[0] = "pb_champ_evaluateur";
-    les_mots[1] = "distance_plan";
-    les_mots[2] = "ampli_fluctuation";
-    les_mots[3] = "ampli_moyenne_imposee";
-    les_mots[4] = "ampli_moyenne_recyclee";
-    les_mots[5] = "moyenne_imposee";
-    les_mots[6] = "moyenne_recyclee";
-    les_mots[7] = "direction_anisotrope";
-  }
-
-  is >> motlu;
-  if(motlu!=accolade_ouverte)
-    {
-      Cerr << "We expected a { while reading of " << que_suis_je() << finl;
-      Cerr << "and not : " << motlu << finl;
-      exit();
-    }
-
-  is >> motlu;
-  Cerr<<"word read="<<motlu<<finl;
-
-  while (motlu != accolade_fermee)
-    {
-      int rang = les_mots.search(motlu);
-      switch(rang)
-        {
-        case 0 :
-          {
-            is >> nom_pb1 >> nom_inco1 >> nbcomp;
-            lu_info_evaluateur = 1;
-            ampli_fluct_.resize(nbcomp,Array_base::NOCOPY_NOINIT);
-            ampli_moy_imposee_.resize(nbcomp,Array_base::NOCOPY_NOINIT);
-            ampli_moy_recyclee_.resize(nbcomp,Array_base::NOCOPY_NOINIT);
-            ampli_fluct_ = 1.;
-            ampli_moy_imposee_ = 1.;
-            ampli_moy_recyclee_ = 1.;
-            break;
-          }
-        case 1 :
-          {
-            for (int i=0; i<dim; i++)
-              is >> delt_dist(i) ;
-            break;
-          }
-
-        case 2 :
-          {
-            //int nbcomp;
-            is >> nbcomp;
-            ampli_fluct_.resize(nbcomp);
-            for (int i=0; i<nbcomp; i++)
-              is >> ampli_fluct_(i) ;
-            break;
-          }
-        case 3 :
-          {
-            //int nbcomp;
-            is >> nbcomp;
-            ampli_moy_imposee_.resize(nbcomp);
-            for (int i=0; i<nbcomp; i++)
-              is >> ampli_moy_imposee_(i) ;
-            break;
-          }
-        case 4 :
-          {
-            //int nbcomp;
-            is >> nbcomp;
-            ampli_moy_recyclee_.resize(nbcomp);
-            for (int i=0; i<nbcomp; i++)
-              is >> ampli_moy_recyclee_(i) ;
-            break;
-          }
-
-        case 5 :
-          {
-            methode_moy_impos_ = lire_info_moyenne_imposee(is);
-            break;
-          }
-        case 6 :
-          {
-            methode_moy_recycl_ = lire_info_moyenne_recyclee(is);
-            break;
-          }
-        case 7 :
-          {
-            is >> ndir;
-            break;
-          }
-
-        default :
-          {
-            Cerr<<"Champ_front_recyclage::readOn: keyword "<<motlu<<" is not recognized."<<finl;
-            Cerr<<"The recognized keywords are :"<<les_mots<<finl;
-            exit();
-          }
-        }
-      is >> motlu;
-    }
-
-  if (lu_info_evaluateur!=1)
-    {
-      Cerr<<"Keyword pb_champ_evaluateur must be specified with associated data"<<finl;
-      Cerr<<"when Champ_front_recyclage field is used."<<finl;
-      exit();
-    }
-  fixer_nb_comp(nbcomp);
-
+  Param param(que_suis_je());
+  set_param(param);
+  param.lire_avec_accolades_depuis(is);
   return is;
+}
+
+void Champ_front_recyclage::set_param(Param& param)
+{
+  param.ajouter_non_std("pb_champ_evaluateur",(this),Param::REQUIRED);
+  param.ajouter_non_std("distance_plan",(this));
+  param.ajouter_non_std("ampli_fluctuation",(this));
+  param.ajouter_non_std("ampli_moyenne_imposee",(this));
+  param.ajouter_non_std("ampli_moyenne_recyclee",(this));
+  param.ajouter_non_std("moyenne_imposee",(this));
+  param.ajouter_non_std("moyenne_recyclee",(this));
+  param.ajouter("direction_anisotrope",&ndir);
+}
+
+int Champ_front_recyclage::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+{
+  if (mot=="pb_champ_evaluateur")
+    {
+      int nbcomp;
+      is >> nom_pb1 >> nom_inco1 >> nbcomp;
+      ampli_fluct_.resize(nbcomp,Array_base::NOCOPY_NOINIT);
+      ampli_moy_imposee_.resize(nbcomp,Array_base::NOCOPY_NOINIT);
+      ampli_moy_recyclee_.resize(nbcomp,Array_base::NOCOPY_NOINIT);
+      ampli_fluct_ = 1.;
+      ampli_moy_imposee_ = 1.;
+      ampli_moy_recyclee_ = 1.;
+      fixer_nb_comp(nbcomp);
+      return 1;
+    }
+  else if (mot=="distance_plan")
+    {
+      for (int i=0; i<dimension; i++)
+        is >> delt_dist(i) ;
+      return 1;
+    }
+  else if (mot=="ampli_fluctuation")
+    {
+      int nbcomp;
+      is >> nbcomp;
+      ampli_fluct_.resize(nbcomp);
+      for (int i=0; i<nbcomp; i++)
+        is >> ampli_fluct_(i) ;
+      fixer_nb_comp(nbcomp);
+      return 1;
+    }
+  else if (mot=="ampli_moyenne_imposee")
+    {
+      int nbcomp;
+      is >> nbcomp;
+      ampli_moy_imposee_.resize(nbcomp);
+      for (int i=0; i<nbcomp; i++)
+        is >> ampli_moy_imposee_(i) ;
+      fixer_nb_comp(nbcomp);
+      return 1;
+    }
+  else if (mot=="ampli_moyenne_recyclee")
+    {
+      int nbcomp;
+      is >> nbcomp;
+      ampli_moy_recyclee_.resize(nbcomp);
+      for (int i=0; i<nbcomp; i++)
+        is >> ampli_moy_recyclee_(i) ;
+      fixer_nb_comp(nbcomp);
+      return 1;
+    }
+  else if (mot=="moyenne_imposee")
+    {
+      methode_moy_impos_ = lire_info_moyenne_imposee(is);
+      return 1;
+    }
+  else if (mot=="moyenne_recyclee")
+    {
+      methode_moy_recycl_ = lire_info_moyenne_recyclee(is);
+      return 1;
+    }
+  else
+    {
+      Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
+      exit();
+    }
+
+  return -1;
 }
 
 //Lecture des informations necessaires pour evaluer la moyenne imposee

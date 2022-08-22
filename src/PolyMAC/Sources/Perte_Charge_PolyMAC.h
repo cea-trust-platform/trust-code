@@ -23,6 +23,9 @@
 #include <Ref_Champ_Inc_base.h>
 #include <Ref_Zone_Poly_base.h>
 #include <Ref_Zone_Cl_PolyMAC.h>
+#include <Parser_U.h>
+
+class Param;
 
 //! Factorise les fonctionnalites de plusieurs pertes de charge en VEF, vitesse aux faces
 /**
@@ -51,7 +54,8 @@ public:
   void completer() override;
 
 protected:
-
+  virtual void set_param(Param& param);
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
   void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override { };
   //! Appele pour chaque face par ajouter()
   /**
@@ -91,6 +95,8 @@ protected:
   Nom nom_sous_zone; //!< Nom de la sous-zone, initialise dans readOn()
   REF(Sous_Zone) la_sous_zone; //!< Initialise dans completer()
   int implicite_;
+
+  mutable Parser_U lambda;
 };
 
 #endif

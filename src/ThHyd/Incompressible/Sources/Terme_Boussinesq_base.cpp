@@ -18,12 +18,30 @@
 #include <Fluide_base.h>
 #include <Motcle.h>
 #include <algorithm>
+#include <Param.h>
 
 Implemente_base(Terme_Boussinesq_base,"Terme_Boussinesq_base",Source_base);
 
 Sortie& Terme_Boussinesq_base::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 
-Entree& Terme_Boussinesq_base::readOn(Entree& s ) { return lire_donnees(s); }
+// Description:
+// Lit les parametres du terme source a partir d'un flot d'entree.
+Entree& Terme_Boussinesq_base::readOn(Entree& is )
+{
+  Param param(que_suis_je());
+  Cerr << "Reading Boussinesq source term parameters." << finl;
+  verif_=1;
+  set_param(param);
+  param.lire_avec_accolades_depuis(is);
+  return is;
+}
+
+void Terme_Boussinesq_base::set_param(Param& param)
+{
+  param.ajouter_non_std("T0",(this));
+  param.ajouter_non_std("C0",(this));
+  param.ajouter("verif_boussinesq",&verif_);
+}
 
 // Cherche dans le probleme l'equation scalaire
 void Terme_Boussinesq_base::associer_pb(const Probleme_base& pb)
@@ -87,73 +105,34 @@ void read(Entree& is, Parser_U& fct_Scalaire0_)
   fct_Scalaire0_.parseString();
 }
 
-/*! @brief Lit les parametres du terme source a partir d'un flot d'entree.
- *
- */
-Entree& Terme_Boussinesq_base::lire_donnees(Entree& is)
+int Terme_Boussinesq_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
-  Cerr << "Reading Boussinesq source term parameters." << finl;
-  Motcle accolade_ouverte("{");
-  Motcle accolade_fermee("}");
-  Motcle motlu;
-  verif_=1;
-
-  Motcles les_mots(3);
-  {
-    les_mots[0]="T0";
-    les_mots[1]="C0";
-    les_mots[2]="verif_boussinesq";
-  }
-
-  is >> motlu;
-  if (motlu != accolade_ouverte)
+  if (mot=="T0")
     {
-      Cerr << "Error: { is waited instead of " << motlu << finl;
+      // Temperature
+      NomScalaire_="temperature";
+      fct_Scalaire0_.dimensionner(1);
+      Scalaire0_.resize(1);
+      read(is, fct_Scalaire0_[0]);
+      return 1;
+    }
+  else if (mot=="C0")
+    {
+      // Concentration
+      NomScalaire_="concentration";
+      int dim;
+      is >> dim;
+      fct_Scalaire0_.dimensionner(dim);
+      Scalaire0_.resize(dim);
+      for (int i=0; i<dim; i++)
+        read(is, fct_Scalaire0_[i]);
+      return 1;
+    }
+  else
+    {
+      Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
       Process::exit();
     }
-  is >> motlu;
 
-  while (motlu!= accolade_fermee)
-    {
-      int rang = les_mots.search(motlu);
-      switch(rang)
-        {
-        case 0 :
-          {
-            // Temperature
-            NomScalaire_="temperature";
-            fct_Scalaire0_.dimensionner(1);
-            Scalaire0_.resize(1);
-            read(is, fct_Scalaire0_[0]);
-            break;
-          }
-        case 1 :
-          {
-            // Concentration
-            NomScalaire_="concentration";
-            int dim;
-            is >> dim;
-            fct_Scalaire0_.dimensionner(dim);
-            Scalaire0_.resize(dim);
-            for (int i=0; i<dim; i++)
-              read(is, fct_Scalaire0_[i]);
-            break;
-          }
-        case 2 :
-          {
-            is >> verif_;
-            break;
-          }
-        default :
-          {
-            Cerr << "Error: " << motlu << " is not recognized." << finl;
-            Cerr << "Possible keywords:" << finl;
-            Cerr << les_mots << finl;
-            Process::exit();
-          }
-
-        }
-      is >> motlu;
-    }
-  return is;
+  return -1;
 }

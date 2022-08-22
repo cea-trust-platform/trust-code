@@ -13,47 +13,30 @@
 *
 *****************************************************************************/
 
-#include <Terme_Source_inc.h>
+#include <Terme_Source_inc_base.h>
 #include <Motcle.h>
-//
+#include <Param.h>
 
-void Terme_Source_inc::associer_eqn(const Navier_Stokes_std& eq_hyd)
+Implemente_base(Terme_Source_inc_base,"Terme_Source_inc_base",Source_base);
+
+Sortie& Terme_Source_inc_base::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+
+Entree& Terme_Source_inc_base::readOn(Entree& is )
 {
-  eq_hydraulique_ = eq_hyd;
-}
-
-
-Entree& Terme_Source_inc::lire_donnees(Entree& is)
-{
-  Cerr << "Source_inc::lire_donnees" << finl;
+  Cerr << "Source_inc_base::readOn" << finl;
   // Initialisation
   //   u_etoile = 1.;
   //   h = 1.;
   //   coeff = 1;
   //   dir_source = 1;
   impr = 0;
-  // Fin Init
-  Motcle motlu, accolade_fermee="}", accolade_ouverte="{", mot="impr";
-  is >> motlu;
-  if(motlu != accolade_ouverte)
-    {
-      Cerr << "On attendait { a la place de " << motlu
-           << " lors de la lecture de inc " << finl;
-    }
-  is >> motlu;
-  while (motlu != accolade_fermee)
-    {
-      if (motlu==mot)
-        {
-          impr = 1;
-          is >> motlu;
-        }
-      else
-        {
-          Cerr << "Le mot lu : " <<  motlu << " n'est pas compris dans Source_inc" << finl;
-          Cerr << "Le mot compris est :  impr " << finl;
-          Process::exit();
-        }
-    }
+  Param param(que_suis_je());
+  set_param(param);
+  param.lire_avec_accolades_depuis(is);
   return is;
+}
+
+void Terme_Source_inc_base::set_param(Param& param)
+{
+  param.ajouter_flag("impr",&impr);
 }

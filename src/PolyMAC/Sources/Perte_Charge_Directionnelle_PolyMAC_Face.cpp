@@ -16,6 +16,7 @@
 #include <Perte_Charge_Directionnelle_PolyMAC_Face.h>
 #include <Motcle.h>
 #include <Equation_base.h>
+#include <Param.h>
 
 Implemente_instanciable(Perte_Charge_Directionnelle_PolyMAC_Face,"Perte_Charge_Directionnelle_Face_PolyMAC|Perte_Charge_Directionnelle_Face_PolyMAC_P0",Perte_Charge_PolyMAC);
 
@@ -36,97 +37,19 @@ Sortie& Perte_Charge_Directionnelle_PolyMAC_Face::printOn(Sortie& s ) const
 
 Entree& Perte_Charge_Directionnelle_PolyMAC_Face::readOn(Entree& s )
 {
-  Cerr << "Perte_Charge_Directionnelle_PolyMAC_Face::readOn " << finl;
-  sous_zone=false;
-  int lambda_ok=0;
-
-  // Definition des mots-cles
-  Motcles les_mots(5);
-  les_mots[0] = "lambda";
-  les_mots[1] = "diam_hydr";
-  les_mots[2] = "sous_zone";
-  les_mots[3] = "direction";
-  les_mots[4] = "implicite";
-
-  // Lecture et interpretation
-  Motcle motlu, accolade_fermee="}", accolade_ouverte="{";
-  s >> motlu;
-  while (motlu != accolade_ouverte)
-    {
-      Cerr << "On attendait une { a la lecture d'un " << que_suis_je() << finl;
-      Cerr << "et non : " << motlu << finl;
-      exit();
-    }
-  s >> motlu;
-  while (motlu != accolade_fermee)
-    {
-      int rang=les_mots.search(motlu);
-      switch(rang)
-        {
-        case 0 :   // lambda
-          {
-            lambda_ok=1;
-            Nom tmp;
-            s >> tmp;
-            Cerr << "Lecture et interpretation de la fonction " << tmp << " ... ";
-            lambda.setNbVar(2+dimension);
-            lambda.setString(tmp);
-            lambda.addVar("Re");
-            lambda.addVar("t");
-            lambda.addVar("x");
-            if (dimension>1)
-              lambda.addVar("y");
-            if (dimension>2)
-              lambda.addVar("z");
-            lambda.parseString();
-            Cerr << " Ok" << finl;
-            break;
-          }
-        case 1: // diam_hydr
-          s >> diam_hydr;
-          break;
-        case 2: // sous_zone
-          s >> nom_sous_zone;
-          sous_zone=true;
-          break;
-        case 3: // direction
-          s >> v;
-          break;
-        case 4:
-          {
-            s>>implicite_;
-            break;
-          }
-        default : // non compris
-          Cerr << "Mot cle \"" << motlu << "\" non compris lors de la lecture d'un "
-               << que_suis_je() << finl;
-          exit();
-        }
-      s >> motlu;
-    }
-
-  // Verification de la coherence
-  if (lambda_ok==0)
-    {
-      Cerr << "Il faut definir l'expression lamba(Re)" << finl;
-      exit();
-    }
-
-  if (diam_hydr->nb_comp()!=1)
-    {
-      Cerr << "Il faut definir le champ diam_hydr a une composante" << finl;
-      exit();
-    }
-
+  Perte_Charge_PolyMAC::readOn(s);
   if (v->nb_comp()!=dimension)
     {
       Cerr << "Il faut definir le champ direction a " << dimension << " composantes" << finl;
       exit();
     }
-
-
-  Cerr << "Fin de Perte_Charge_Directionnelle_PolyMAC_Face::readOn" << finl;
   return s;
+}
+
+void Perte_Charge_Directionnelle_PolyMAC_Face::set_param(Param& param)
+{
+  Perte_Charge_PolyMAC::set_param(param);
+  param.ajouter("direction",&v,Param::REQUIRED);
 }
 
 ////////////////////////////////////////////////////////////////

@@ -23,10 +23,9 @@
 #include <Solv_TDMA.h>
 #include <communications.h>
 #include <SFichier.h>
+#include <Param.h>
 
 Implemente_instanciable(Echange_contact_Correlation_VDF,"Paroi_Echange_contact_Correlation_VDF",Echange_global_impose);
-
-
 
 
 Sortie& Echange_contact_Correlation_VDF::printOn(Sortie& s ) const
@@ -36,159 +35,99 @@ Sortie& Echange_contact_Correlation_VDF::printOn(Sortie& s ) const
 
 Entree& Echange_contact_Correlation_VDF::readOn(Entree& is )
 {
-  //  Motcles les_mots(12);
-  // Rajout Cyril MALOD (14/09/2006)
+  Param param(que_suis_je());
   Reprise_temperature=0;
-  Motcles les_mots(13);
-  {
-    les_mots[0] = "dir";
-    les_mots[1] = "Tinf";
-    les_mots[2] = "Tsup";
-    les_mots[3] = "lambda";
-    les_mots[4] = "rho";
-    les_mots[5] = "Cp";
-    les_mots[6] = "dt_impr";
-    les_mots[7] = "mu";
-    les_mots[8] = "debit";
-    les_mots[9] = "Dh";
-    les_mots[10] = "volume";
-    les_mots[11] = "Nu";
-    // Rajout Cyril MALOD (14/09/2006)
-    les_mots[12] = "Reprise_correlation";
-  }
-
   dt_impr = 1e10;
-  Motcle motlu, accolade_fermee="}", accolade_ouverte="{";
-  is >> motlu;
-  if(motlu!=accolade_ouverte)
-    {
-      Cerr << "On attendait une { a la lecture d'une " << que_suis_je() << finl;
-      Cerr << "et non : " << motlu << finl;
-      exit();
-    }
-  is >> motlu;
-  while (motlu != accolade_fermee)
-    {
-
-      int rang=les_mots.search(motlu);
-      switch(rang)
-        {
-        case 0 :
-          {
-            is >> dir;
-            if (dir<0 ||dir>2)
-              {
-                Cerr << "La direction doit etre 0, 1 ou 2 dans  " << que_suis_je() << finl;
-                exit();
-              }
-            break;
-          }
-        case 1 :
-          {
-            is >> Tinf;
-            break;
-          }
-        case 2 :
-          {
-            is >> Tsup;
-            break;
-          }
-        case 3 :
-          {
-            Nom tmp;
-            is >> tmp;
-            lambda_T.setNbVar(1);
-            lambda_T.setString(tmp);
-            lambda_T.addVar("T");
-            lambda_T.parseString();
-            break;
-          }
-        case 4 :
-          {
-            Nom tmp;
-            is >> tmp;
-            rho_T.setNbVar(1);
-            rho_T.setString(tmp);
-            rho_T.addVar("T");
-            rho_T.parseString();
-            break;
-          }
-        case 5 :
-          {
-            is >> Cp;
-            break;
-          }
-        case 6 :
-          {
-            is >> dt_impr;
-            break;
-          }
-        case 7 :
-          {
-            Nom tmp;
-            is >> tmp;
-            mu_T.setNbVar(1);
-            mu_T.setString(tmp);
-            mu_T.addVar("T");
-            mu_T.parseString();
-            break;
-          }
-        case 8 :
-          {
-            is >> debit;
-            break;
-          }
-        case 9 :
-          {
-            is >> diam;
-            break;
-          }
-        case 10 :
-          {
-            Nom tmp;
-            is >> tmp;
-            fct_vol.setNbVar(2);
-            fct_vol.setString(tmp);
-            fct_vol.addVar("Dh");
-            fct_vol.addVar("S");
-            fct_vol.parseString();
-            break;
-          }
-        case 11 :
-          {
-            Nom tmp;
-            is >> tmp;
-            fct_Nu.setNbVar(2);
-            fct_Nu.setString(tmp);
-            fct_Nu.addVar("Re");
-            fct_Nu.addVar("Pr");
-            fct_Nu.parseString();
-            break;
-          }
-          // Rajout Cyril MALOD (14/09/2006)
-        case 12 :
-          {
-            Reprise_temperature=1;
-            break;
-          }
-        default :
-          {
-            Cerr << "On ne comprend le mot : " << motlu << "dans " << que_suis_je() << finl;
-            exit();
-          }
-        }
-      is >> motlu;
-    }
-
-
+  set_param(param);
+  param.lire_avec_accolades_depuis(is);
 
   T_ext().typer("Champ_front_fonc");
   T_ext()->fixer_nb_comp(1);
   h_imp_.typer("Champ_front_fonc");
   h_imp_->fixer_nb_comp(1);
-  return is ;
+  return is;
 }
 
+void Echange_contact_Correlation_VDF::set_param(Param& param)
+{
+  param.ajouter("dir",&dir);
+  param.ajouter_condition("(value_of_dir_ge_0)_AND_(value_of_dir_le_2)", "La direction doit etre 0, 1 ou 2 dans Echange_contact_Correlation_VDF");
+  param.ajouter("Tinf",&Tinf);
+  param.ajouter("Tsup",&Tsup);
+  param.ajouter_non_std("lambda",(this));
+  param.ajouter_non_std("rho",(this));
+  param.ajouter("dt_impr",&dt_impr);
+  param.ajouter("Cp",&Cp);
+  param.ajouter_non_std("mu",(this));
+  param.ajouter("debit",&debit);
+  param.ajouter("Dh",&diam);
+  param.ajouter_non_std("volume",(this));
+  param.ajouter_non_std("Nu",(this));
+  // Rajout Cyril MALOD (14/09/2006)
+  param.ajouter_flag("Reprise_correlation",&Reprise_temperature);
+}
+
+int Echange_contact_Correlation_VDF::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+{
+  if (mot=="lambda")
+    {
+      Nom tmp;
+      is >> tmp;
+      lambda_T.setNbVar(1);
+      lambda_T.setString(tmp);
+      lambda_T.addVar("T");
+      lambda_T.parseString();
+      return 1;
+    }
+  else if (mot=="rho")
+    {
+      Nom tmp;
+      is >> tmp;
+      rho_T.setNbVar(1);
+      rho_T.setString(tmp);
+      rho_T.addVar("T");
+      rho_T.parseString();
+      return 1;
+    }
+  else if (mot=="mu")
+    {
+      Nom tmp;
+      is >> tmp;
+      mu_T.setNbVar(1);
+      mu_T.setString(tmp);
+      mu_T.addVar("T");
+      mu_T.parseString();
+      return 1;
+    }
+  else if (mot=="volume")
+    {
+      Nom tmp;
+      is >> tmp;
+      fct_vol.setNbVar(2);
+      fct_vol.setString(tmp);
+      fct_vol.addVar("Dh");
+      fct_vol.addVar("S");
+      fct_vol.parseString();
+      return 1;
+    }
+  else if (mot=="Nu")
+    {
+      Nom tmp;
+      is >> tmp;
+      fct_Nu.setNbVar(2);
+      fct_Nu.setString(tmp);
+      fct_Nu.addVar("Re");
+      fct_Nu.addVar("Pr");
+      fct_Nu.parseString();
+      return 1;
+    }
+  else
+    {
+      Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
+      exit();
+    }
+  return -1;
+}
 
 
 /**

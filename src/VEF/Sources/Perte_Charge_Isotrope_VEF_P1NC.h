@@ -17,8 +17,6 @@
 #define Perte_Charge_Isotrope_VEF_P1NC_included
 
 #include <Perte_Charge_VEF.h>
-#include <Parser_U.h>
-
 
 //!  Perte de charge isotrope (proportionnelle a -u )
 /**
@@ -50,10 +48,6 @@ protected:
   void coeffs_perte_charge(const DoubleVect& u, const DoubleVect& pos,
                            double t, double norme_u, double dh, double nu, double reynolds,
                            double& coeff_ortho, double& coeff_long, double& u_l, DoubleVect& v_valeur) const override;
-
-private:
-
-  mutable Parser_U lambda;
 
 };
 

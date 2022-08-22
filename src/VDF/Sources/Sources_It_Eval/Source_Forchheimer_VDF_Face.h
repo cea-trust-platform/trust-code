@@ -22,6 +22,7 @@
 
 class Zone_Cl_dis;
 class Zone_dis;
+class Param;
 
 declare_It_Sou_VDF_Face(Eval_Forchheimer_VDF_Face)
 /*! @brief class Source_Forchheimer_VDF_Face Cette classe represente le terme de Forchheimer pour les ecoulement en milieux poreux.
@@ -34,6 +35,8 @@ class Source_Forchheimer_VDF_Face : public Terme_Source_VDF_base
 {
   Declare_instanciable_sans_constructeur(Source_Forchheimer_VDF_Face);
 public:
+  void set_param(Param& param);
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
   inline Source_Forchheimer_VDF_Face();
   void associer_pb(const Probleme_base& ) override;
   void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;

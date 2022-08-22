@@ -13,34 +13,36 @@
 *
 *****************************************************************************/
 
-#include <Terme_Source_Coriolis.h>
+#include <Terme_Source_Coriolis_base.h>
 #include <Motcle.h>
+#include <Param.h>
 
-void Terme_Source_Coriolis::associer_eqn(const Navier_Stokes_std& eq_hyd)
+Implemente_base(Terme_Source_Coriolis_base,"Terme_Source_Coriolis_base",Source_base);
+
+Sortie& Terme_Source_Coriolis_base::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+
+Entree& Terme_Source_Coriolis_base::readOn(Entree& is )
 {
-  eq_hydraulique_ = eq_hyd;
+  Param param(que_suis_je());
+  set_param(param);
+  param.lire_avec_accolades_depuis(is);
+  return is;
 }
 
-Entree& Terme_Source_Coriolis::lire_donnees(Entree& is)
+void Terme_Source_Coriolis_base::set_param(Param& param)
 {
-  Motcle accolade_ouverte("{");
-  Motcle accolade_fermee("}");
-  Motcle motlu;
+  param.ajouter_non_std("omega",(this),Param::REQUIRED);
+}
+
+int Terme_Source_Coriolis_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+{
   int dim_pb=Objet_U::dimension;
-  is >> motlu;
-  if (motlu != accolade_ouverte)
-    {
-      Cerr << "Erreur a la lecture des parametres de Terme_Source_Coriolis " << finl;
-      Cerr << "On attendait " << accolade_ouverte << " a la place de "  << motlu << finl;
-      Process::exit();
-    }
-  is >> motlu;
-  if (motlu ==  Motcle("omega") )
+  if (mot ==  Motcle("omega") )
     {
       is >> dim;
       if(dim_pb!=dim)
         {
-          Cerr << "Error in Terme_Source_Coriolis::lire_donnees" << finl;
+          Cerr << "Error in Terme_Source_Coriolis_base::lire_donnees" << finl;
           Cerr << "Warning ! Dimension of vector after key-word 'omega'" << finl;
           Cerr << "is not correct : dimension of PB (" << dim_pb << ")!= " << dim << finl;
           Process::exit();
@@ -49,6 +51,7 @@ Entree& Terme_Source_Coriolis::lire_donnees(Entree& is)
         {
           omega_.resize(1);
           is >> omega_(0);
+          return 1;
         }
       else
         {
@@ -58,10 +61,11 @@ Entree& Terme_Source_Coriolis::lire_donnees(Entree& is)
               is >> omega_(0);
               is >> omega_(1);
               is >> omega_(2);
+              return 1;
             }
           else
             {
-              Cerr << "Erreur a la lecture des parametres de Terme_Source_Coriolis" << finl;
+              Cerr << "Erreur a la lecture des parametres de Terme_Source_Coriolis_base" << finl;
               Cerr << "omega est de dimension 2 ou 3 et vous avez entre " << dim << finl;
               Process::exit();
             }
@@ -69,17 +73,9 @@ Entree& Terme_Source_Coriolis::lire_donnees(Entree& is)
     }
   else
     {
-      Cerr << "Erreur a la lecture des parametres de Terme_Source_Coriolis " << finl;
-      Cerr << "On attendait le mot cle omega a la place de  "  << motlu << finl;
+      Cerr << "Erreur a la lecture des parametres de Terme_Source_Coriolis_base " << finl;
+      Cerr << "On attendait le mot cle omega a la place de  "  << mot << finl;
       Process::exit();
     }
-  is >> motlu;
-  if (motlu != accolade_fermee)
-    {
-      Cerr << "Erreur a la lecture des parametres de Terme_Source_Coriolis " << finl;
-      Cerr << "On attendait " << accolade_fermee << " a la place de "  << motlu << finl;
-      Cerr << "Attention! : en 2D, omega est de dimension 1!!!" << finl;
-      Process::exit();
-    }
-  return is;
+  return -1;
 }

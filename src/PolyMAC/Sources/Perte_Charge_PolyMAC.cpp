@@ -26,6 +26,7 @@
 #include <Champ_Face_PolyMAC.h>
 #include <Pb_Multiphase.h>
 #include <Multiplicateur_diphasique_base.h>
+#include <Param.h>
 
 Implemente_base_sans_constructeur(Perte_Charge_PolyMAC,"Perte_Charge_PolyMAC",Source_base);
 
@@ -42,10 +43,64 @@ Sortie& Perte_Charge_PolyMAC::printOn(Sortie& s ) const
 // readOn
 //
 
-Entree& Perte_Charge_PolyMAC::readOn(Entree& s )
+Entree& Perte_Charge_PolyMAC::readOn(Entree& is )
 {
-  return s;
+  Param param(que_suis_je());
+  Cerr << que_suis_je() << "::readOn " << finl;
+  sous_zone=false;
+  lambda.setNbVar(4+dimension);
+  set_param(param);
+  Cerr << "Interpretation de la fonction " << lambda.getString() << " ... ";
+  lambda.parseString();
+  Cerr << " Ok" << finl;
+  param.lire_avec_accolades_depuis(is);
+  if (diam_hydr->nb_comp()!=1)
+    {
+      Cerr << "Il faut definir le champ diam_hydr a une composante" << finl;
+      exit();
+    }
+  return is;
 }
+
+void Perte_Charge_PolyMAC::set_param(Param& param)
+{
+  param.ajouter_non_std("lambda",(this),Param::REQUIRED);
+  param.ajouter("diam_hydr",&diam_hydr,Param::REQUIRED);
+  param.ajouter_non_std("sous_zone",(this));
+  param.ajouter("implicite",&implicite_);
+}
+
+int Perte_Charge_PolyMAC::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+{
+  if (mot=="lambda")
+    {
+      Nom tmp;
+      is >> tmp;
+      lambda.setString(tmp);
+      lambda.addVar("Re");
+      lambda.addVar("t");
+      lambda.addVar("x");
+      if (dimension>1)
+        lambda.addVar("y");
+      if (dimension>2)
+        lambda.addVar("z");
+      return 1;
+    }
+  else if (mot=="sous_zone")
+    {
+      is >> nom_sous_zone;
+      sous_zone=true;
+      return 1;
+    }
+  else // non compris
+    {
+      Cerr << "Mot cle \"" << mot << "\" non compris lors de la lecture d'un "
+           << que_suis_je() << finl;
+      exit();
+    }
+  return -1;
+}
+
 
 ////////////////////////////////////////////////////////////////
 //                                                            //
