@@ -90,6 +90,20 @@ public :
    */
   void addVar(const char *);
 
+  inline Variable** getVar()
+  {
+    return les_var;
+  }
+
+  inline int getmaxVar()
+  {
+    return maxvar;
+  }
+
+  inline int getNbVar()
+  {
+    return ivar;
+  }
 
 
   inline std::string& getString()

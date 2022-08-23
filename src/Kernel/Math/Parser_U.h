@@ -59,6 +59,16 @@ public :
   inline void setVar(const char* sv, double val);
 
   /**
+   * permet d'obtenir le nombre de variables fixees
+   */
+  inline int getmaxVar();
+
+  /**
+   * permet d'obtenir le nombre de variables enregistrees
+   */
+  inline int getNbVar();
+
+  /**
    * Fixe la valeur de la variable representee par une chaine v.
    */
   inline void setVar(const std::string& v, double val);
@@ -115,6 +125,22 @@ inline void Parser_U::parseString()
 inline double Parser_U::eval()
 {
   return parser->eval();
+}
+
+/**
+ * permet d'obtenir le nombre de variable fixees
+ */
+inline int Parser_U::getmaxVar()
+{
+  return parser->getmaxVar();
+}
+
+/**
+ * permet d'obtenir le nombre de variables enregistrees
+ */
+inline int Parser_U::getNbVar()
+{
+  return parser->getNbVar();
 }
 
 /**
