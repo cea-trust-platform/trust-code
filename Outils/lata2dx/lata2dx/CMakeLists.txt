@@ -67,7 +67,7 @@ ENDFOREACH(dir)
 add_library(${lib} STATIC ${Monosrc})
 
 set(essai lata2dx)
-add_executable (${essai} lata2dx.cpp)
+add_executable (${essai} lata2dx.cpp lata2dx.h)
 target_link_libraries(${essai} ${lib} )
 target_link_libraries(${essai} ${ajout} )
 

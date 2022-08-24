@@ -26,7 +26,6 @@ Lata_tools.C
 LataV1_field_definitions.C
 LataWriter.C
 LmlReader.C
-OpenDXWriter.C
 OperatorBoundary.C
 OperatorDualMesh.C
 OperatorFacesMesh.C

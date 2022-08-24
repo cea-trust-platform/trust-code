@@ -16,6 +16,7 @@
 #ifndef LataWriter_H
 #define LataWriter_H
 #include <LataDB.h>
+
 class Domain;
 class LataField_base;
 
@@ -26,22 +27,17 @@ class LataWriter
 {
 public:
   enum FileSplittingOption { MULTIPLE_FILES, SINGLE_FILE };
-  void init_file(const Nom & path, const Nom & basename,
-                 const LataDBDataType & default_int_format, 
-                 LataDBDataType::Type default_float_type);
-
-  void write_time(double t);
-  void write_geometry(const Domain & dom);
-  void write_component(const LataField_base & field);
-
-  void finish();
   enum ERRORS { InternalError };
 
+  void init_file(const Nom &path, const Nom &basename, const LataDBDataType &default_int_format, LataDBDataType::Type default_float_type);
+  void write_time(double t);
+  void write_geometry(const Domain &dom);
+  void write_component(const LataField_base &field);
+  void finish();
+
 protected:
-  // This is the database where we put all data...
-  LataDB db_;
-  // Basename for files and lata master file:
-  Nom basename_;
-  // FileSplittingOption split_;
+  LataDB db_; // This is the database where we put all data...
+  Nom basename_; // Basename for files and lata master file:
 };
-#endif
+
+#endif /* LataWriter_H */

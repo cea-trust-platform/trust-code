@@ -25,26 +25,23 @@
 //  eps = tolerance in each direction to consider that two nodes are identical
 //  nb_nodes_untouched : do not search duplicate nodes in the "nb_nodes_untouched"
 //   first nodes. The remaining nodes are still compared to all nodes.
-void Reconnect::search_duplicate_nodes(const FloatTab & src_coord,
-                                       ArrOfInt & nodes_renumber,
-                                       double eps,
-                                       entier nb_nodes_untouched)
+void Reconnect::search_duplicate_nodes(const FloatTab &src_coord, ArrOfInt &nodes_renumber, double eps, entier nb_nodes_untouched)
 {
   // Create a temporary DoubleTab (coords are normally float)
   const entier nb_nodes = src_coord.dimension(0);
   const entier dim = src_coord.dimension(1);
   entier i;
   // Build an octree with all coordinates
-  Journal(verb_level+1) << " Building octree" << endl;
+  Journal(verb_level + 1) << " Building octree" << endl;
   DoubleTab coords;
   coords.resize(nb_nodes, dim);
-  for (i = 0; i < nb_nodes; i++) 
+  for (i = 0; i < nb_nodes; i++)
     for (entier j = 0; j < dim; j++)
-      coords(i,j) = src_coord(i,j);
+      coords(i, j) = src_coord(i, j);
   Octree_Double octree;
   octree.build_nodes(coords, 0 /* no virtual nodes */);
-  
-  Journal(verb_level+1) << " Searching duplicate nodes" << endl;
+
+  Journal(verb_level + 1) << " Searching duplicate nodes" << endl;
   nodes_renumber.resize_array(nb_nodes);
   for (i = 0; i < nb_nodes; i++)
     nodes_renumber[i] = i;
@@ -52,50 +49,51 @@ void Reconnect::search_duplicate_nodes(const FloatTab & src_coord,
   ArrOfInt node_list;
   node_list.set_smart_resize(1);
   entier count = 0; // Number of nodes renumbered
-  for (i = 0; i < nb_nodes; i++) {
-    if (nodes_renumber[i] != i)
-      continue; // node already suppressed
+  for (i = 0; i < nb_nodes; i++)
+    {
+      if (nodes_renumber[i] != i)
+        continue; // node already suppressed
 
-    const double x = coords(i, 0);
-    const double y = (dim>1) ? coords(i, 1) : 0.;
-    const double z = (dim>2) ? coords(i, 2) : 0.;
-    octree.search_elements_box(x-eps, y-eps, z-eps,
-                               x+eps, y+eps, z+eps,
-                               node_list);
-    Octree_Double::search_nodes_close_to(x, y, z,
-                                         coords, node_list,
-                                         eps);
-    const entier n = node_list.size_array();
-    if (n > 1) {
-      for (entier j = 0; j < n; j++) {
-        // Change only nodes with rank > i
-        const entier node = node_list[j];
-        if (node > j) {
-          nodes_renumber[node] = i;
-          count++;
+      const double x = coords(i, 0);
+      const double y = (dim > 1) ? coords(i, 1) : 0.;
+      const double z = (dim > 2) ? coords(i, 2) : 0.;
+      octree.search_elements_box(x - eps, y - eps, z - eps, x + eps, y + eps, z + eps, node_list);
+      Octree_Double::search_nodes_close_to(x, y, z, coords, node_list, eps);
+      const entier n = node_list.size_array();
+      if (n > 1)
+        {
+          for (entier j = 0; j < n; j++)
+            {
+              // Change only nodes with rank > i
+              const entier node = node_list[j];
+              if (node > j)
+                {
+                  nodes_renumber[node] = i;
+                  count++;
+                }
+            }
         }
-      }
     }
-  }
-  Journal(verb_level+1) << " " << count << " duplicate nodes will be removed" << endl;
+  Journal(verb_level + 1) << " " << count << " duplicate nodes will be removed" << endl;
 }
 
-void Reconnect::apply_renumbering(const ArrOfInt & nodes_renumber, ArrOfInt & data)
+void Reconnect::apply_renumbering(const ArrOfInt &nodes_renumber, ArrOfInt &data)
 {
   entier ntot = data.size_array();
   entier i;
-  for (i = 0; i < ntot; i++) {
-    const entier node = data[i];
-    const entier n = nodes_renumber[node];
-    if (n != node)
-      data[i] = n;
-  }  
+  for (i = 0; i < ntot; i++)
+    {
+      const entier node = data[i];
+      const entier n = nodes_renumber[node];
+      if (n != node)
+        data[i] = n;
+    }
 }
 
 // Description: updates the elements_ and faces_ arrays of the domain so that
 //  all nodes having the same coordinates are replaced by one unique node
 //  in these arrays. See search_duplicate_nodes for nb_nodes_untouched description.
-void Reconnect::reconnect_geometry(DomainUnstructured & geom, double tolerance, entier nb_nodes_untouched)
+void Reconnect::reconnect_geometry(DomainUnstructured &geom, double tolerance, entier nb_nodes_untouched)
 {
   Journal(verb_level) << "Reconnect domain " << geom.id_.name_ << endl;
 
@@ -103,8 +101,8 @@ void Reconnect::reconnect_geometry(DomainUnstructured & geom, double tolerance, 
   search_duplicate_nodes(geom.nodes_, nodes_renumber, tolerance, nb_nodes_untouched);
 
   apply_renumbering(nodes_renumber, geom.elements_);
-  
-  if (geom.faces_ok()) 
+
+  if (geom.faces_ok())
     apply_renumbering(nodes_renumber, geom.faces_);
 }
 

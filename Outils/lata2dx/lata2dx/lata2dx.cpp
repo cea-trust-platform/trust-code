@@ -13,96 +13,27 @@
 *
 *****************************************************************************/
 
+#include <Rebuild_virtual_layer.h>
+#include <LataWriter.h>
+#include <LmlReader.h>
+#include <lata2dx.h>
+#include <LataDB.h>
+#include <stdlib.h>
 #include <iostream>
 #include <fstream>
-#include <LataDB.h>
-#include <LataFilter.h>
-#include <OpenDXWriter.h>
-#include <LmlReader.h>
-#include <Rebuild_virtual_layer.h>
-#include <stdlib.h>
+
 #ifdef WITH_MED
 #include <MEDWriter.h>
 #endif
-#include <LataWriter.h>
 
 using namespace std;
-
-class Lata2dxOptions: public LataOptions
-{
-public:
-  Lata2dxOptions();
-  void describe();
-  entier parse_option(const Nom & s);
-  void parse_options(int argc, char **argv);
-
-  // Input filter: when reading the input file, timesteps, domains
-  //  and components not mentionned in these vectors are not read.
-  // If empty list, write all items.
-  ArrOfInt input_timesteps_filter;
-  Noms     input_domains_filter;
-  Noms     input_components_filter;
-
-  // Output filter: when writing the output file, domains and components
-  //  not mentionned here are not written. If empty list, write all items.
-  Noms     output_domains_filter;
-  Noms     output_components_filter;
-
-  Noms     merge_files;
-
-  // Which parallel subdomain shall we load (default = -1, load all subdomains)
-  int load_subdomain;
-  // Output file will be written in binary format
-  int binary_out;
-  // For OpenDX: include the output Field object in a group
-  int forcegroup;
-  
-  // Which data processing do we want ?
-  enum ProcessingOption { 
-    WRITE_DX, 
-    WRITE_LATA_MASTER, 
-    WRITE_LATA_ALL, 
-    WRITE_LATA_CONVERT,
-    WRITE_MED,
-    WRITE_PRM
-  };
-  ProcessingOption processing_option;
-
-  enum TimeAverage { NO_TIME_AVERAGE, SIMPLE_TIME_AVERAGE, LINEAR_TIME_AVERAGE, RECTANGLES_TIME_AVERAGE };
-  TimeAverage time_average_;
-
-  Nom output_filename;
-
-  // Shall we dump the list of available timesteps, domains and fields ?
-  int dump_list;
-
-  // Add virtual elements information in the lata file
-  int compute_virtual_elements;
-
-  // Lata output options:
-  // split all: one file for each LataDB entry (one file for mesh nodes, another for mesh elements, etc)
-  enum Lata_file_splitting { DEFAULT, SPLIT_ALL, SPLIT_COMPONENTS, SPLIT_TIMESTEPS, SPLIT_NONE };
-  // default: keep like in source file
-  // split components: one file for each component and for each timestep, merge geometry data into one file
-  // split timesteps: one file for each timestep
-  // split none: one big file with everything
-  Lata_file_splitting lata_file_splitting;
-  // Include fortran blocs markers
-  int fortran_blocs;
-  // Ordering of data in components files
-  int use_fortran_data_ordering; // 1->fortran 0->c
-  // Indexes begin at 1 (fortran_indexing=1) or 0
-  int use_fortran_indexing;
-  // Shall we compute the rms fluctuations ?
-  int rms_fluctuations;
-};
 
 Lata2dxOptions::Lata2dxOptions()
 {
   load_subdomain = -1; // load all subdomains
   binary_out = 1;
   forcegroup = 0;
-  processing_option = WRITE_DX;
+  processing_option = WRITE_LATA_MASTER;
   dump_list = 0;
   lata_file_splitting = DEFAULT;
   compute_virtual_elements = 0;
@@ -147,8 +78,6 @@ void Lata2dxOptions::describe()
   cerr << "  dumplist : Dump available timesteps, domains and components for input and output filtering" << endl;
   cerr << endl;
   cerr << "Output file format selection" << endl;
-  cerr << " writedx                      : output an openDx file to stdout (this is the default)" << endl;
-  cerr << "                                same data processing than writelata option" << endl;
   cerr << " writelata=path/file_with_ext : Write a lata master file and lata data files" << endl;
   cerr << "                                - database filtering (timestep, domain, component)" << endl;
   cerr << "                                - subdomain extraction" << endl;
@@ -227,9 +156,6 @@ entier Lata2dxOptions::parse_option(const Nom & s)
     output_filename = read_string_opt(s);
   } else if (s == "writeprm") {
     processing_option = WRITE_PRM;
-    output_filename = "??";
-  } else if (s == "writedx") {
-    processing_option = WRITE_DX;
     output_filename = "??";
   } else if (s.debute_par("timestep=")) {
     // Internally, first timestep is 1.
@@ -442,47 +368,6 @@ static void write_lata_convert(const LataDB & lata_db, const Lata2dxOptions & op
     }
   }
   dest_db.write_master_file(opt.output_filename);
-}
-
-static void write_dx(LataFilter & filter, const Lata2dxOptions & opt)
-{
-  if (opt.input_timesteps_filter.size_array() != 1) {
-    Journal() << " Error: to export dx data, exactly one timestep must be selected" << endl;
-    exit(-1);
-  }
-  Journal(1) << "Write a DX data file" << endl;
-  OpenDXWriter dx_writer;
-  // The data base has been filtered, there is exactely 1 timestep left
-  const entier lasttstep = filter.get_nb_timesteps() - 1;
-  const double t = filter.get_timestep(lasttstep);
-  dx_writer.init_cout(t, !opt.binary_out);
-  Noms geoms = filter.get_exportable_geometry_names();
-  for (entier i = 0; i < geoms.size(); i++) {
-    if (opt.output_domains_filter.size() > 0 && opt.output_domains_filter.rang(geoms[i]) < 0)
-      continue; // Ignore this geometry
-
-    Domain_Id id(geoms[i], lasttstep, opt.load_subdomain);
-    const Domain & dom = filter.get_geometry(id);
-    dx_writer.write_geometry(dom);
-    
-    Field_UNames fields = filter.get_exportable_field_unames(geoms[i]);
-    for (entier j = 0; j < fields.size(); j++) {
-      const Nom & fieldname = fields[j].get_field_name();
-      const Nom & complete_fieldname = fields[j].build_string();
-      if (opt.output_components_filter.size() > 0 
-          && opt.output_components_filter.rang(fieldname) < 0
-          && opt.output_components_filter.rang(complete_fieldname) < 0)
-        continue; // Ignore this component
-      
-      Journal(3) << "Exporting field " << fieldname << endl;
-      Field_Id id(fields[j], lasttstep, opt.load_subdomain);
-      const LataField_base & field = filter.get_field(id);
-      dx_writer.write_component(field);
-      filter.release_field(field);
-    }
-    filter.release_geometry(dom);
-  }
-  dx_writer.finish(opt.forcegroup);
 }
 
 static void write_med(LataFilter & filter, const Lata2dxOptions & opt)
@@ -863,17 +748,15 @@ int main(int argc,char **argv)
   {
     Motcle mot(argv[1]);
     if (mot.finit_par(".lml")) {
-      if (opt.processing_option != Lata2dxOptions::WRITE_DX) {
         if (opt.processing_option != Lata2dxOptions::WRITE_LATA_CONVERT) {
-          Journal(0) << "Input file " << argv[1] << "is lml format: " << endl;
-          Journal(0) << " lml can only be processed with writelata_convert." << endl;
-          exit(-1);
+            Journal(0) << "Input file " << argv[1] << "is lml format: " << endl;
+            Journal(0) << " lml can only be processed with writelata_convert." << endl;
+            exit(-1);
         }
         Journal(0) << "Input file " << argv[1] << " converted to lata format: " << opt.output_filename << endl;
         Journal(0) << " (note: single lata data file, no database filtering)" << endl;
         lml_to_lata(argv[1], opt.output_filename, !opt.binary_out, opt.fortran_blocs, opt.use_fortran_data_ordering, opt.use_fortran_indexing);
         exit(0);
-      }
     }
   }
   if (opt.merge_files.size() > 0) {
@@ -963,9 +846,6 @@ int main(int argc,char **argv)
     break;
   case Lata2dxOptions::WRITE_LATA_ALL:
     write_lata_all(filter, opt);
-    break;
-  case Lata2dxOptions::WRITE_DX:
-    write_dx(filter, opt);
     break;
   case Lata2dxOptions::WRITE_MED:
     write_med(filter, opt);

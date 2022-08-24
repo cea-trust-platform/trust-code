@@ -25,18 +25,19 @@
 // (utiliser cette classe pour eviter d'avoir a faire des dynamic_cast
 //  compliques et pour ne pas avoir a gerer get_geometry et release_geometry a la main)
 // Exemple d'utilisation: voir interpoler_elem_vers_som()
-Geometry_handle::Geometry_handle()
-{
-}
+Geometry_handle::Geometry_handle() { }
+
 void Geometry_handle::set(LataFilter & lata_filter, const Domain_Id & id)
 {
   lata_filter_ = lata_filter;
   geom_ = lata_filter.get_geometry(id);
 }
+
 Geometry_handle::Geometry_handle(Geometry_handle & handle)
 {
   operator=(handle);
 }
+
 Geometry_handle & Geometry_handle::operator=(Geometry_handle & handle)
 {
   reset();
@@ -45,10 +46,12 @@ Geometry_handle & Geometry_handle::operator=(Geometry_handle & handle)
   geom_ = lata_filter_.valeur().get_geometry(handle.geom_.valeur().id_);
   return *this;
 }
+
 Geometry_handle::~Geometry_handle()
 {
   reset();
 }
+
 void Geometry_handle::reset()
 {
   if (geom_.non_nul())

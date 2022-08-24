@@ -15,6 +15,7 @@
 
 #ifndef UserFields_H
 #define UserFields_H
+
 #include <Lata_tools.h>
 #include <LataStructures.h>
 
@@ -35,15 +36,15 @@ class Geometry_handle
 {
 public:
   Geometry_handle();
-  Geometry_handle(Geometry_handle &);
-  Geometry_handle & operator=(Geometry_handle &);
+  Geometry_handle(Geometry_handle&);
+  Geometry_handle& operator=(Geometry_handle&);
   ~Geometry_handle();
-  void set(LataFilter & filter, const Domain_Id &);
-  const DomainUnstructured & geom();
-  const DomainIJK &          geom_ijk();
-  entier                     test_ijk();
+  void set(LataFilter &filter, const Domain_Id&);
+  const DomainUnstructured& geom();
+  const DomainIJK& geom_ijk();
+  entier test_ijk();
 protected:
-  void                       reset();
+  void reset();
   LataRef<LataFilter> lata_filter_;
   LataRef<const Domain> geom_;
 };
@@ -52,11 +53,10 @@ class UserFields_options
 {
 public:
   UserFields_options();
-  entier parse_option(const Nom &);
-  void   print_help_option() const;
+  entier parse_option(const Nom&);
+  void print_help_option() const;
 
   // Exemple de parametre en option (commentaires bienvenus !)
-
   // demie-largeur du filtre_boite en mailles
   entier demie_largeur_filtre_boite_;
 };
@@ -64,31 +64,31 @@ public:
 class UserFields
 {
 public:
-  void set_options(const UserFields_options & opt) { opt_ = opt; }
+  void set_options(const UserFields_options &opt) { opt_ = opt; }
 
-  void   new_fields_metadata(LataFilter & filter,
-                             LataVector<LataFieldMetaData> & fields_data);
+  void new_fields_metadata(LataFilter &filter, LataVector<LataFieldMetaData> &fields_data);
 
-  FieldType get_field(const Field_Id & id);
+  FieldType get_field(const Field_Id &id);
 
   BigEntier compute_memory_size() { return 0; }
 
 protected:
   // Declaration de methodes outils
-  FieldType get_champ_source(const Field_Id & id);
-  FieldType get_champ(const Nom & nom, const Field_Id & id);
-  FieldType get_champ_loc(const Nom & nom, LataField_base::Elem_som loc, const Field_Id & id);
-  void      get_geometry(const Domain_Id & id, Geometry_handle &);
+  FieldType get_champ_source(const Field_Id &id);
+  FieldType get_champ(const Nom &nom, const Field_Id &id);
+  FieldType get_champ_loc(const Nom &nom, LataField_base::Elem_som loc, const Field_Id &id);
+  void get_geometry(const Domain_Id &id, Geometry_handle&);
 
-  FieldType filtre_boite(const Field_Id & id);
-  FieldType calculer_normale(const Field_Id & id);
-  FieldType calculer_angle(const Field_Id & id);
-  FieldType interpoler_elem_vers_som(const Field_Id & id);
-  FieldType interpoler_faces_vdf_vers_elem(const Field_Id & id);
+  FieldType filtre_boite(const Field_Id &id);
+  FieldType calculer_normale(const Field_Id &id);
+  FieldType calculer_angle(const Field_Id &id);
+  FieldType interpoler_elem_vers_som(const Field_Id &id);
+  FieldType interpoler_faces_vdf_vers_elem(const Field_Id &id);
 
   // Reference a la classe LataFilter (pour recuperer les champs sources)
   LataRef<LataFilter> lata_filter_;
 
   UserFields_options opt_;
 };
-#endif
+
+#endif /* UserFields_H */

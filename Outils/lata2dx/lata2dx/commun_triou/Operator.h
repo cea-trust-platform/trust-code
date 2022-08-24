@@ -25,20 +25,16 @@
 class Reconnect
 {
 public:
-  static void reconnect_geometry(DomainUnstructured & geom, double tolerance, entier nb_nodes_untouched = 0);
-  static void apply_renumbering(const ArrOfInt & nodes_renumber, ArrOfInt & data);
-  static void search_duplicate_nodes(const FloatTab & src_coord,
-                                     ArrOfInt & nodes_renumber,
-                                     double eps,
-                                     entier nb_nodes_untouched = 0);
+  static void reconnect_geometry(DomainUnstructured &geom, double tolerance, entier nb_nodes_untouched = 0);
+  static void apply_renumbering(const ArrOfInt &nodes_renumber, ArrOfInt &data);
+  static void search_duplicate_nodes(const FloatTab &src_coord, ArrOfInt &nodes_renumber, double eps, entier nb_nodes_untouched = 0);
 };
 
-class OperatorClipbox : public Operator
+class OperatorClipbox: public Operator
 {
 public:
-  void build_geometry(const Domain & src_domain, LataDeriv<Domain> & dest) override;
-  void build_field(const Domain & src_domain, const LataField_base & src_field, 
-                   const Domain & dest_domain, LataDeriv<LataField_base> & dest) override;
+  void build_geometry(const Domain &src_domain, LataDeriv<Domain> &dest) override;
+  void build_field(const Domain &src_domain, const LataField_base &src_field, const Domain &dest_domain, LataDeriv<LataField_base> &dest) override;
   // Renumerotation des sommets, elements et faces par rapport aux donnees brutes lues
   // renum_truc_[new_index] = index in lata file;
   // La renumerotation vient de clip_box et de regularize
@@ -47,18 +43,18 @@ public:
   ArrOfInt renum_faces_;
 };
 
-class OperatorBoundary : public Operator
+class OperatorBoundary: public Operator
 {
 public:
-  OperatorBoundary() { geom_init_ = 0; }
-  void build_geometry(const Domain & src_domain, LataDeriv<Domain> & dest) override;
-  void build_field(const Domain & src_domain, const LataField_base & src_field, 
-                   const Domain & dest_domain, LataDeriv<LataField_base> & dest) override;
-  BigEntier compute_memory_size() const override {
-    return
-      memory_size(src_nodes_)
-      + memory_size(src_element_)
-      + memory_size(src_face_);
+  OperatorBoundary()
+  {
+    geom_init_ = 0;
+  }
+  void build_geometry(const Domain &src_domain, LataDeriv<Domain> &dest) override;
+  void build_field(const Domain &src_domain, const LataField_base &src_field, const Domain &dest_domain, LataDeriv<LataField_base> &dest) override;
+  BigEntier compute_memory_size() const override
+  {
+    return memory_size(src_nodes_) + memory_size(src_element_) + memory_size(src_face_);
   }
   // Renumerotation des sommets, elements et faces par rapport aux donnees brutes lues
   // renum_truc_[new_index] = index in lata file;
@@ -69,21 +65,32 @@ public:
   entier geom_init_;
 };
 
-class OperatorRegularize : public Operator
+class OperatorRegularize: public Operator
 {
 public:
-  OperatorRegularize() { tolerance_ = -1.; geom_init_ = 0; extend_layer_ = 0; }
-  void set_tolerance(double epsilon) { tolerance_ = epsilon; }
-  void set_extend_layer(entier n) { if (n >= 0) extend_layer_ = n; else extend_layer_ = 0; }
-  void build_geometry(const Domain & src_domain, LataDeriv<Domain> & dest) override;
-  void build_field(const Domain & src_domain, const LataField_base & src_field, 
-                   const Domain & dest_domain, LataDeriv<LataField_base> & dest) override;
-  
-  BigEntier compute_memory_size() const override {
-    return
-      memory_size(renum_nodes_)
-      + memory_size(renum_elements_)
-      + memory_size(renum_faces_);
+  OperatorRegularize()
+  {
+    tolerance_ = -1.;
+    geom_init_ = 0;
+    extend_layer_ = 0;
+  }
+  void set_tolerance(double epsilon)
+  {
+    tolerance_ = epsilon;
+  }
+  void set_extend_layer(entier n)
+  {
+    if (n >= 0)
+      extend_layer_ = n;
+    else
+      extend_layer_ = 0;
+  }
+  void build_geometry(const Domain &src_domain, LataDeriv<Domain> &dest) override;
+  void build_field(const Domain &src_domain, const LataField_base &src_field, const Domain &dest_domain, LataDeriv<LataField_base> &dest) override;
+
+  BigEntier compute_memory_size() const override
+  {
+    return memory_size(renum_nodes_) + memory_size(renum_elements_) + memory_size(renum_faces_);
   }
   // Renumerotation des sommets, elements et faces par rapport aux donnees brutes lues
   // renum_truc_[old_index] = new_index;
@@ -101,89 +108,99 @@ public:
   entier geom_init_;
 };
 
-class OperatorDualMesh : public Operator
+class OperatorDualMesh: public Operator
 {
 public:
-  void build_geometry(const Domain & src_domain, LataDeriv<Domain> & dest) override;
-  void build_field(const Domain & src_domain, const LataField_base & src_field, 
-                   const Domain & dest_domain, LataDeriv<LataField_base> & dest) override;
-  BigEntier compute_memory_size() const override { return 0; }
+  void build_geometry(const Domain &src_domain, LataDeriv<Domain> &dest) override;
+  void build_field(const Domain &src_domain, const LataField_base &src_field, const Domain &dest_domain, LataDeriv<LataField_base> &dest) override;
+  BigEntier compute_memory_size() const override
+  {
+    return 0;
+  }
 };
-class OperatorFacesMesh : public Operator
+class OperatorFacesMesh: public Operator
 {
 public:
-  void build_geometry(const Domain & src_domain, LataDeriv<Domain> & dest) override;
-  void build_field(const Domain & src_domain, const LataField_base & src_field, 
-                   const Domain & dest_domain, LataDeriv<LataField_base> & dest) override;
-  BigEntier compute_memory_size() const override { return 0; }
+  void build_geometry(const Domain &src_domain, LataDeriv<Domain> &dest) override;
+  void build_field(const Domain &src_domain, const LataField_base &src_field, const Domain &dest_domain, LataDeriv<LataField_base> &dest) override;
+  BigEntier compute_memory_size() const override
+  {
+    return 0;
+  }
 };
 
-class OperatorNCMesh : public Operator
+class OperatorNCMesh: public Operator
 {
 public:
-  void build_geometry(const Domain & src_domain, LataDeriv<Domain> & dest) override;
-  void build_field(const Domain & src_domain, const LataField_base & src_field, 
-                   const Domain & dest_domain, LataDeriv<LataField_base> & dest) override;
-  BigEntier compute_memory_size() const override { return 0; }
+  void build_geometry(const Domain &src_domain, LataDeriv<Domain> &dest) override;
+  void build_field(const Domain &src_domain, const LataField_base &src_field, const Domain &dest_domain, LataDeriv<LataField_base> &dest) override;
+  BigEntier compute_memory_size() const override
+  {
+    return 0;
+  }
 };
 
 // These generic methods just say that the particular function does not exist:
-void build_geometry_(Operator & op, const Domain & src, LataDeriv<Domain> & dest);
-void build_field_(Operator & op, const Domain & src, const Domain & dest, 
-                  const LataField_base & srcf, LataField_base & destf);
+void build_geometry_(Operator &op, const Domain &src, LataDeriv<Domain> &dest);
+void build_field_(Operator &op, const Domain &src, const Domain &dest, const LataField_base &srcf, LataField_base &destf);
 
 template<class Op>
-void apply_geometry(Op & op, const Domain & src_domain, LataDeriv<Domain> & dest)
+void apply_geometry(Op &op, const Domain &src_domain, LataDeriv<Domain> &dest)
 {
   const DomainUnstructured *src1 = dynamic_cast<const DomainUnstructured*>(&src_domain);
   const DomainIJK *src2 = dynamic_cast<const DomainIJK*>(&src_domain);
 
-  if (src1) {
-    build_geometry_(op, *src1, dest);
-  } else if (src2) {
-    build_geometry_(op, *src2, dest);
-  } else {
-    Journal() << "Error in OperatorDualMesh::build_geometry: unsupported domain type" << endl;
-    throw;
-  } 
+  if (src1)
+    {
+      build_geometry_(op, *src1, dest);
+    }
+  else if (src2)
+    {
+      build_geometry_(op, *src2, dest);
+    }
+  else
+    {
+      Journal() << "Error in OperatorDualMesh::build_geometry: unsupported domain type" << endl;
+      throw;
+    }
 }
 
 // See apply_field
-template <class Op, class DomSrc, class DomDest>
-void apply_field3(Op & op, const DomSrc & src_domain, const LataField_base & src_field,
-                  const DomDest & dest_domain, LataDeriv<LataField_base> & dest)
+template<class Op, class DomSrc, class DomDest>
+void apply_field3(Op &op, const DomSrc &src_domain, const LataField_base &src_field, const DomDest &dest_domain, LataDeriv<LataField_base> &dest)
 {
-  const Field<DoubleTab> *src1 = dynamic_cast<const Field<DoubleTab>*> (&src_field);
-  const Field<FloatTab>  *src2 = dynamic_cast<const Field<FloatTab>*> (&src_field);
-  const Field<IntTab>    *src3 = dynamic_cast<const Field<IntTab>*> (&src_field);
-  
+  const Field<DoubleTab> *src1 = dynamic_cast<const Field<DoubleTab>*>(&src_field);
+  const Field<FloatTab> *src2 = dynamic_cast<const Field<FloatTab>*>(&src_field);
+  const Field<IntTab> *src3 = dynamic_cast<const Field<IntTab>*>(&src_field);
+
   if (src1)
     build_field_(op, src_domain, dest_domain, *src1, dest.instancie(Field<DoubleTab> ));
   else if (src2)
     build_field_(op, src_domain, dest_domain, *src2, dest.instancie(Field<FloatTab> ));
   else if (src3)
     build_field_(op, src_domain, dest_domain, *src3, dest.instancie(Field<IntTab> ));
-  else {
-    Journal() << "Error in apply_field3: unsupported field type" << endl;
-    throw;
-  }
+  else
+    {
+      Journal() << "Error in apply_field3: unsupported field type" << endl;
+      throw;
+    }
 }
 
 // See apply_field
-template <class Op, class DomSrc>
-void apply_field2(Op & op, const DomSrc & src_domain, const LataField_base & src_field,
-                  const Domain & dest_domain, LataDeriv<LataField_base> & dest)
+template<class Op, class DomSrc>
+void apply_field2(Op &op, const DomSrc &src_domain, const LataField_base &src_field, const Domain &dest_domain, LataDeriv<LataField_base> &dest)
 {
   const DomainUnstructured *d1 = dynamic_cast<const DomainUnstructured*>(&dest_domain);
-  const DomainIJK          *d2 = dynamic_cast<const DomainIJK*>(&dest_domain);
+  const DomainIJK *d2 = dynamic_cast<const DomainIJK*>(&dest_domain);
   if (d1)
     apply_field3(op, src_domain, src_field, *d1, dest);
   else if (d2)
     apply_field3(op, src_domain, src_field, *d2, dest);
-  else {
-    Journal() << "Error in apply_field2: unsupported destination domain type" << endl;
-    throw;
-  }
+  else
+    {
+      Journal() << "Error in apply_field2: unsupported destination domain type" << endl;
+      throw;
+    }
 }
 
 // This template calls the appropriate "build_field_()" method in the given operator.
@@ -191,20 +208,20 @@ void apply_field2(Op & op, const DomSrc & src_domain, const LataField_base & src
 //  of source domain type, destination domain type and source field type. This template
 //  will call the correct method depending on the effective type of the parameters
 //  (determined with dynamic_cast).
-template <class Op>
-void apply_field(Op & op, const Domain & src_domain, const LataField_base & src_field,
-                 const Domain & dest_domain, LataDeriv<LataField_base> & dest)
+template<class Op>
+void apply_field(Op &op, const Domain &src_domain, const LataField_base &src_field, const Domain &dest_domain, LataDeriv<LataField_base> &dest)
 {
   const DomainUnstructured *d1 = dynamic_cast<const DomainUnstructured*>(&src_domain);
-  const DomainIJK          *d2 = dynamic_cast<const DomainIJK*>(&src_domain);
+  const DomainIJK *d2 = dynamic_cast<const DomainIJK*>(&src_domain);
   if (d1)
     apply_field2(op, *d1, src_field, dest_domain, dest);
   else if (d2)
     apply_field2(op, *d2, src_field, dest_domain, dest);
-  else {
-    Journal() << "Error in apply_field: unsupported source domain type" << endl;
-    throw;
-  }
+  else
+    {
+      Journal() << "Error in apply_field: unsupported source domain type" << endl;
+      throw;
+    }
 }
 
 #endif

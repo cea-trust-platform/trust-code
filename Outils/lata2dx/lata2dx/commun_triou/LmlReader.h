@@ -15,10 +15,13 @@
 
 #ifndef LMLREADER_H
 #define LMLREADER_H
-void lml_reader(const char * lmlfilename, const char * data_filename, LataDB & lata_db);
-void lml_to_lata(const char *lmlfilename, const char *latafilename, 
-                 entier ascii = 0, entier fortran_blocs = 1, entier fortran_ordering = 0, entier fortran_indexing = 1);
-void read_any_format(const char * file, const Nom & path_prefix, LataDB & lata_db);
-void read_any_format_options(const char * file, LataOptions & opt);
-#endif
+
+class LataOptions;
+
+void lml_reader(const char *lmlfilename, const char *data_filename, LataDB &lata_db);
+void lml_to_lata(const char *lmlfilename, const char *latafilename, entier ascii = 0, entier fortran_blocs = 1, entier fortran_ordering = 0, entier fortran_indexing = 1);
+void read_any_format(const char *file, const Nom &path_prefix, LataDB &lata_db);
+void read_any_format_options(const char *file, LataOptions &opt);
+
+#endif /* LMLREADER_H */
 

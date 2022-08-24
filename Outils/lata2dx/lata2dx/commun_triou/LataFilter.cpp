@@ -33,60 +33,66 @@
 static const entier cache_info_level = 5;
 static const entier filter_info_level = 4;
 
-entier LataOptions::read_int_opt(const Nom & s)
+entier LataOptions::read_int_opt(const Nom &s)
 {
   const char *ptr = strstr(s, "=");
-  if (!ptr) 
+  if (!ptr)
     ptr = s;
   errno = 0;
   char *errorptr = 0;
-  entier x = (entier)strtol(ptr+1, &errorptr, 0 /* base 10 par defaut */);
-  if (errno || *errorptr != 0) {
-    Journal() << "LataOptions error reading int parameter: " << s << endl;
-    throw;
-  }
+  entier x = (entier) strtol(ptr + 1, &errorptr, 0 /* base 10 par defaut */);
+  if (errno || *errorptr != 0)
+    {
+      Journal() << "LataOptions error reading int parameter: " << s << endl;
+      throw;
+    }
   return x;
 }
 
-double LataOptions::read_float_opt(const Nom & s)
+double LataOptions::read_float_opt(const Nom &s)
 {
   const char *ptr = strstr(s, "=");
-  if (!ptr) 
+  if (!ptr)
     ptr = s;
   errno = 0;
   char *errorptr = 0;
-  double x = strtod(ptr+1, &errorptr);
-  if (errno || *errorptr != 0) {
-    Journal() << "LataOptions error reading float parameter: " << s << endl;
-    throw;
-  }
+  double x = strtod(ptr + 1, &errorptr);
+  if (errno || *errorptr != 0)
+    {
+      Journal() << "LataOptions error reading float parameter: " << s << endl;
+      throw;
+    }
   return x;
 }
 
-Nom LataOptions::read_string_opt(const Nom & s)
+Nom LataOptions::read_string_opt(const Nom &s)
 {
   const char *ptr = strstr(s, "=");
-  if (!ptr) 
+  if (!ptr)
     return s;
   else
-    return Nom(ptr+1);
+    return Nom(ptr + 1);
 }
 
-Noms extract_list(const Nom & n) 
+Noms extract_list(const Nom &n)
 {
   Noms liste;
   if (n == "")
     return liste;
   const char *ptr = n;
   Nom tmp("");
-  while (*ptr) {
-    if (*ptr == ',') {
-      liste.add(tmp);
-      tmp = "";
-    } else {
-      tmp += Nom(*ptr);
+  while (*ptr)
+    {
+      if (*ptr == ',')
+        {
+          liste.add(tmp);
+          tmp = "";
+        }
+      else
+        {
+          tmp += Nom(*ptr);
+        }
     }
-  }
   liste.add(tmp);
   return liste;
 }
@@ -146,59 +152,99 @@ void LataOptions::describe()
   user_fields_options_.print_help_option();
 }
 
-entier LataOptions::parse_option(const Nom & s)
+entier LataOptions::parse_option(const Nom &s)
 {
-  if (s.debute_par("verbosity=")) {
-    entier level = read_int_opt(s);
-    set_Journal_level(level);
-  } else if (s.debute_par("regularize=")) {
-    regularize = true;
-    regularize_tolerance = (float)read_float_opt(s);
-  } else if (s.debute_par("regularize_polyedre=")) {
-    regularize_polyedre = read_int_opt(s);
-  } else if (s.debute_par("extend_domain=")) {
-    extend_domain = read_int_opt(s);
-  } else if (s == "invalidate") {
-    invalidate = true;
-  } else if (s.debute_par("reconnect=")) {
-    reconnect = true;
-    reconnect_tolerance = (float)read_float_opt(s);
-  } else if (s.debute_par("reconnect_tolerance=")) {
-    reconnect_tolerance = (float)read_float_opt(s);
-  } else if (s == "dualmesh") {
-    dual_mesh = true;
-  } else if (s == "nodualmesh") {
-    dual_mesh = false;
-  } else if (s == "ncmesh") {
-    nc_mesh = true;
-  } else if (s == "facesmesh") {
-    faces_mesh = true;
-  } else if (s == "nofacesmesh") {
-    faces_mesh = false;
-  } else if (s == "boundarymesh") {
-    boundary_mesh = true;
-  } else if (s.debute_par("clipbox=")) {
-    Noms list = extract_list(((const char*)s)+8);
-    if (list.size() != 6) {
-      Journal() << "Error : clipbox parameters expects 6 values" << endl;
-      throw;
+  if (s.debute_par("verbosity="))
+    {
+      entier level = read_int_opt(s);
+      set_Journal_level(level);
     }
-    for (entier i = 0; i < 3; i++) {
-      clipbox_min[i] = read_float_opt(list[i]);
-      clipbox_max[i] = read_float_opt(list[i+3]);
+  else if (s.debute_par("regularize="))
+    {
+      regularize = true;
+      regularize_tolerance = (float) read_float_opt(s);
     }
-  } else if (s == "load_virtual_elements") {
-    load_virtual_elements = true;
-  } else if (s == "user_fields") {
-    user_fields_ = true;
-    Journal() << "Option: User_fields ON" << endl;
-  } else if (s.debute_par("ijk_mesh_nb_parts")) {
-    ijk_mesh_nb_parts_ = read_int_opt(s);
-  } else if (s == "export_fields_at_faces") {
-    export_fields_at_faces_ = 1;
-  } else if (s.debute_par("ijk_virt_layer=")) {
-    ijk_virt_layer = read_int_opt(s);
-  } else
+  else if (s.debute_par("regularize_polyedre="))
+    {
+      regularize_polyedre = read_int_opt(s);
+    }
+  else if (s.debute_par("extend_domain="))
+    {
+      extend_domain = read_int_opt(s);
+    }
+  else if (s == "invalidate")
+    {
+      invalidate = true;
+    }
+  else if (s.debute_par("reconnect="))
+    {
+      reconnect = true;
+      reconnect_tolerance = (float) read_float_opt(s);
+    }
+  else if (s.debute_par("reconnect_tolerance="))
+    {
+      reconnect_tolerance = (float) read_float_opt(s);
+    }
+  else if (s == "dualmesh")
+    {
+      dual_mesh = true;
+    }
+  else if (s == "nodualmesh")
+    {
+      dual_mesh = false;
+    }
+  else if (s == "ncmesh")
+    {
+      nc_mesh = true;
+    }
+  else if (s == "facesmesh")
+    {
+      faces_mesh = true;
+    }
+  else if (s == "nofacesmesh")
+    {
+      faces_mesh = false;
+    }
+  else if (s == "boundarymesh")
+    {
+      boundary_mesh = true;
+    }
+  else if (s.debute_par("clipbox="))
+    {
+      Noms list = extract_list(((const char*) s) + 8);
+      if (list.size() != 6)
+        {
+          Journal() << "Error : clipbox parameters expects 6 values" << endl;
+          throw;
+        }
+      for (entier i = 0; i < 3; i++)
+        {
+          clipbox_min[i] = read_float_opt(list[i]);
+          clipbox_max[i] = read_float_opt(list[i + 3]);
+        }
+    }
+  else if (s == "load_virtual_elements")
+    {
+      load_virtual_elements = true;
+    }
+  else if (s == "user_fields")
+    {
+      user_fields_ = true;
+      Journal() << "Option: User_fields ON" << endl;
+    }
+  else if (s.debute_par("ijk_mesh_nb_parts"))
+    {
+      ijk_mesh_nb_parts_ = read_int_opt(s);
+    }
+  else if (s == "export_fields_at_faces")
+    {
+      export_fields_at_faces_ = 1;
+    }
+  else if (s.debute_par("ijk_virt_layer="))
+    {
+      ijk_virt_layer = read_int_opt(s);
+    }
+  else
     return user_fields_options_.parse_option(s);;
   return 1;
 }
@@ -216,60 +262,66 @@ void LataFilterCache::set_cache_properties(entier clear_on_tstep_change, BigEnti
 //  been used recently.
 //  The entry must be released by release_item() when we are finished working
 //  with it.
-LataDeriv<LataObject> & LataFilterCache::get_item_(const Nom & id, entier tstep)
+LataDeriv<LataObject>& LataFilterCache::get_item_(const Nom &id, entier tstep)
 {
   entier i;
   const entier n = data_.size();
-  for (i = 0; i < n; i++) {
-    const DataCacheItem & item = data_[i];
-    if (item.id_ == id && item.tstep_ == tstep)
-      break;
-  }
-  if (i == n) {
-    // Look for an empty slot:
-    for (i = 0; i < n; i++)
-      if (data_[i].id_ == "??")
+  for (i = 0; i < n; i++)
+    {
+      const DataCacheItem &item = data_[i];
+      if (item.id_ == id && item.tstep_ == tstep)
         break;
-    // No empty slot: create a new slot:
-    if (i == n)
-      data_.add();
-    DataCacheItem & item = data_[i];
-    item.id_ = id;
-    item.tstep_ = tstep;
-    item.lock_ = 0;
-    Journal(cache_info_level) << "LataFilterCache<C>::get " << id << " (new cache entry " << i << ")." << endl;
-  } else {
-    Journal(cache_info_level) << "LataFilterCache<C>::get " << id << " (existing cache entry " << i << ")." << endl;
-  }
+    }
+  if (i == n)
+    {
+      // Look for an empty slot:
+      for (i = 0; i < n; i++)
+        if (data_[i].id_ == "??")
+          break;
+      // No empty slot: create a new slot:
+      if (i == n)
+        data_.add();
+      DataCacheItem &item = data_[i];
+      item.id_ = id;
+      item.tstep_ = tstep;
+      item.lock_ = 0;
+      Journal(cache_info_level) << "LataFilterCache<C>::get " << id << " (new cache entry " << i << ")." << endl;
+    }
+  else
+    {
+      Journal(cache_info_level) << "LataFilterCache<C>::get " << id << " (existing cache entry " << i << ")." << endl;
+    }
   // Mark item and lock it:
-  DataCacheItem & item = data_[i];
+  DataCacheItem &item = data_[i];
   item.last_access_time_ = cache_data_access_count_++;
   item.lock_++;
   return item.item_;
 }
 
-
 // Description: tells that if needed the item can be deleted from cache
 //  (there is no reference to it anymore outside of the cache).
 //  We update the memory size of this item here.
-void LataFilterCache::release_item(const Nom & id)
+void LataFilterCache::release_item(const Nom &id)
 {
   Journal(cache_info_level) << "LataFilterCache::release_item " << id << endl;
   const entier n = data_.size();
   entier i;
-  for (i = 0; i < n; i++) {
-    const DataCacheItem & item = data_[i];
-    if (item.id_ == id)
-      break;
-  }
-  if (i == n) {
-    Journal() << "LataFilterCache::release_item internal error: unknown item " << id << endl;
-    throw;
-  }
-  if (data_[i].lock_ <= 0) {
-    Journal() << "LataFilterCache::release_item internal error: item is already unlocked" << id << endl;
-    throw;
-  }
+  for (i = 0; i < n; i++)
+    {
+      const DataCacheItem &item = data_[i];
+      if (item.id_ == id)
+        break;
+    }
+  if (i == n)
+    {
+      Journal() << "LataFilterCache::release_item internal error: unknown item " << id << endl;
+      throw;
+    }
+  if (data_[i].lock_ <= 0)
+    {
+      Journal() << "LataFilterCache::release_item internal error: item is already unlocked" << id << endl;
+      throw;
+    }
   data_[i].last_access_time_ = cache_data_access_count_++;
   data_[i].lock_--;
   if (data_[i].item_.non_nul())
@@ -283,65 +335,80 @@ void LataFilterCache::release_item(const Nom & id)
 //  if tstep_to_keep > 0, also removes all timesteps except 0 and tstep_to_keep
 void LataFilterCache::cleanup_cache(entier tstep_to_keep)
 {
-  if (clear_cache_on_tstep_change_ && tstep_to_keep > 0) {
-    Journal(cache_info_level) << "LataFilterCache::clear_cache_tsteps except 0 and " << tstep_to_keep << endl;
-    const entier n = data_.size();
-    for (entier i = 0; i < n; i++) {
-      DataCacheItem & item = data_[i];
-      if (item.id_ != "??") {
-        if (item.tstep_ == 0 || item.tstep_ == tstep_to_keep) {
-          Journal(cache_info_level+1) << " item " << item.id_ << " timestep " << item.tstep_ << " kept" << endl;
-        } else if (item.lock_) {
-          Journal(cache_info_level+1) << " item " << item.id_ << " locked" << endl;
-        } else {
+  if (clear_cache_on_tstep_change_ && tstep_to_keep > 0)
+    {
+      Journal(cache_info_level) << "LataFilterCache::clear_cache_tsteps except 0 and " << tstep_to_keep << endl;
+      const entier n = data_.size();
+      for (entier i = 0; i < n; i++)
+        {
+          DataCacheItem &item = data_[i];
+          if (item.id_ != "??")
+            {
+              if (item.tstep_ == 0 || item.tstep_ == tstep_to_keep)
+                {
+                  Journal(cache_info_level + 1) << " item " << item.id_ << " timestep " << item.tstep_ << " kept" << endl;
+                }
+              else if (item.lock_)
+                {
+                  Journal(cache_info_level + 1) << " item " << item.id_ << " locked" << endl;
+                }
+              else
+                {
+                  Journal(cache_info_level) << " deleting item " << item.id_ << " " << item.tstep_ << endl;
+                  item.item_.reset();
+                  item.id_ = "??";
+                  item.tstep_ = -1;
+                }
+            }
+        }
+    }
+  if (cache_memory_limit_ >= 0)
+    {
+      Journal(cache_info_level) << "LataFilterCache::clear_cache_memory " << cache_memory_limit_ << endl;
+      do
+        {
+          const entier n = data_.size();
+          // Scan cached data, looking for the oldest item and summing up memory
+          BigEntier total_memsize = 0;
+          entier oldest = -1;
+          BigEntier oldest_time = cache_data_access_count_;
+          for (entier i = 0; i < n; i++)
+            {
+              const DataCacheItem &item = data_[i];
+              if (item.id_ != "??")
+                {
+                  total_memsize += item.memory_size_;
+                  if (!item.lock_ && item.last_access_time_ < oldest_time)
+                    {
+                      oldest_time = item.last_access_time_;
+                      oldest = i;
+                    }
+                }
+            }
+          if (oldest < 0 || total_memsize < cache_memory_limit_)
+            break;
+
+          DataCacheItem &item = data_[oldest];
           Journal(cache_info_level) << " deleting item " << item.id_ << " " << item.tstep_ << endl;
           item.item_.reset();
           item.id_ = "??";
           item.tstep_ = -1;
         }
-      }
+      while (1);
     }
-  }
-  if (cache_memory_limit_ >= 0) {
-    Journal(cache_info_level) << "LataFilterCache::clear_cache_memory " << cache_memory_limit_ << endl;
-    do {
-      const entier n = data_.size();
-      // Scan cached data, looking for the oldest item and summing up memory
-      BigEntier total_memsize = 0;
-      entier oldest = -1;
-      BigEntier oldest_time = cache_data_access_count_;
-      for (entier i = 0; i < n; i++) {
-        const DataCacheItem & item = data_[i];
-        if (item.id_ != "??") {
-          total_memsize += item.memory_size_;
-          if (!item.lock_ && item.last_access_time_ < oldest_time) {
-            oldest_time = item.last_access_time_;
-            oldest = i;
-          }
-        }
-      }
-      if (oldest < 0 || total_memsize < cache_memory_limit_) 
-        break;
-      
-      DataCacheItem & item = data_[oldest];
-      Journal(cache_info_level) << " deleting item " << item.id_ << " " << item.tstep_ << endl;
-      item.item_.reset();
-      item.id_ = "??";
-      item.tstep_ = -1;
-    } while(1);
-  }
 }
 
 // Description: Cleanup everything, associate the lata_db and fills metadata information.
-void LataFilter::initialize(const LataOptions & opt, const LataDB & lata_db)
+void LataFilter::initialize(const LataOptions &opt, const LataDB &lata_db)
 {
   opt_ = opt;
   data_cache_.reset();
   lataDB__ = &lata_db;
-  if (opt_.user_fields_) {
-    user_fields_.instancie(UserFields);
-    user_fields_.valeur().set_options(opt_.user_fields_options_);
-  }
+  if (opt_.user_fields_)
+    {
+      user_fields_.instancie(UserFields);
+      user_fields_.valeur().set_options(opt_.user_fields_options_);
+    }
 
   get_all_metadata(geoms_metadata_, fields_metadata_);
 }
@@ -368,75 +435,69 @@ double LataFilter::get_timestep(entier i) const
     return lataDB().get_time(i);
 }
 
-static void add_fields_to_metadata_list(const LataDB & lataDB, 
-                                        const Nom & lata_geom, 
-                                        const Nom & dest_geom, 
-                                        const Nom & options,
-                                        entier dim,
-                                        LataVector<LataFieldMetaData> & fields_data,
-                                        const Motcle & source,
-                                        const Nom & source_domain)
+static void add_fields_to_metadata_list(const LataDB &lataDB, const Nom &lata_geom, const Nom &dest_geom, const Nom &options, entier dim, LataVector<LataFieldMetaData> &fields_data,
+                                        const Motcle &source, const Nom &source_domain)
 {
-  if (lataDB.nb_timesteps()<2) return;
+  if (lataDB.nb_timesteps() < 2)
+    return;
   // Query for existing fields in the latadb :
   Field_UNames lata_fields = lataDB.field_unames(1, lata_geom, "*", LataDB::FIRST_AND_CURRENT);
   const entier nb_fields = lata_fields.size();
-  for (entier i_field = 0; i_field < nb_fields; i_field++) {
-    const LataDBField & lata_field = lataDB.get_field(1, lata_fields[i_field], LataDB::FIRST_AND_CURRENT);
-    LataField_base::Elem_som loc = LataField_base::localisation_from_string(lata_field.localisation_);
+  for (entier i_field = 0; i_field < nb_fields; i_field++)
+    {
+      const LataDBField &lata_field = lataDB.get_field(1, lata_fields[i_field], LataDB::FIRST_AND_CURRENT);
+      LataField_base::Elem_som loc = LataField_base::localisation_from_string(lata_field.localisation_);
 
-    // Hidden special fields
-    if (Motcle(lata_field.name_) == "INVALID_CONNECTIONS")
-      continue;
-   if (Motcle(lata_field.name_) == "ELEMENTS")
-      continue;
-   if (Motcle(lata_field.name_) == "FACES")
-      continue;
-   if (Motcle(lata_field.name_) == "ELEM_FACES")
-     continue;
-    LataFieldMetaData data;
-    data.name_ = lata_field.name_;
-    data.geometry_name_ = dest_geom;
-    data.component_names_ = lata_field.component_names_;
-    data.nb_components_ = lata_field.nb_comp_;
-    data.source_localisation_ = lata_field.localisation_;
+      // Hidden special fields
+      if (Motcle(lata_field.name_) == "INVALID_CONNECTIONS")
+        continue;
+      if (Motcle(lata_field.name_) == "ELEMENTS")
+        continue;
+      if (Motcle(lata_field.name_) == "FACES")
+        continue;
+      if (Motcle(lata_field.name_) == "ELEM_FACES")
+        continue;
+      LataFieldMetaData data;
+      data.name_ = lata_field.name_;
+      data.geometry_name_ = dest_geom;
+      data.component_names_ = lata_field.component_names_;
+      data.nb_components_ = lata_field.nb_comp_;
+      data.source_localisation_ = lata_field.localisation_;
 
-    if (options.find("to_vector")>=0) {
-      data.is_vector_ = 1;
-      data.nb_components_ = dim;
-    } else 
-      data.is_vector_ = (lata_field.nature_ == LataDBField::VECTOR);
+      if (options.find("to_vector") >= 0)
+        {
+          data.is_vector_ = 1;
+          data.nb_components_ = dim;
+        }
+      else
+        data.is_vector_ = (lata_field.nature_ == LataDBField::VECTOR);
 
-    if (options.find("to_elem")>=0)
-      data.localisation_ = LataField_base::ELEM;
-    else if (options.find("to_som")>=0)
-      data.localisation_ = LataField_base::SOM;
-    else if (options.find("to_faces")>=0)
-      data.localisation_ = LataField_base::FACES;
-    else
-      data.localisation_ = loc;
+      if (options.find("to_elem") >= 0)
+        data.localisation_ = LataField_base::ELEM;
+      else if (options.find("to_som") >= 0)
+        data.localisation_ = LataField_base::SOM;
+      else if (options.find("to_faces") >= 0)
+        data.localisation_ = LataField_base::FACES;
+      else
+        data.localisation_ = loc;
 
-    data.source_ = source;
-    data.uname_ = Field_UName(data.geometry_name_, 
-                              data.name_, 
-                              LataField_base::localisation_to_string(data.localisation_));
-    data.source_field_ = Field_UName(source_domain,
-                                     data.name_,
-                                     lata_fields[i_field].get_localisation());
+      data.source_ = source;
+      data.uname_ = Field_UName(data.geometry_name_, data.name_, LataField_base::localisation_to_string(data.localisation_));
+      data.source_field_ = Field_UName(source_domain, data.name_, lata_fields[i_field].get_localisation());
 
-    if ((loc == LataField_base::ELEM && options.find("from_elem")>=0)
-        || (loc == LataField_base::SOM && options.find("from_som")>=0)
-        || (loc == LataField_base::FACES && options.find("from_faces")>=0)) {
-      Journal(filter_info_level) << " register field metadata: " << data.uname_ << endl;
-      fields_data.add(data);
+      if ((loc == LataField_base::ELEM && options.find("from_elem") >= 0) || (loc == LataField_base::SOM && options.find("from_som") >= 0)
+          || (loc == LataField_base::FACES && options.find("from_faces") >= 0))
+        {
+          Journal(filter_info_level) << " register field metadata: " << data.uname_ << endl;
+          fields_data.add(data);
+        }
     }
-  }
 }
 
 // Process the content of the source LataDB structure and builds the metadata for
 //  all geometries and fields that the filter can export (depending on options,
 //  for example, provide dual mesh geometry and fields only if dualmesh option is on).
-void LataFilter::get_all_metadata(LataVector<LataGeometryMetaData> & geoms_data, LataVector<LataFieldMetaData> & fields_data)
+void LataFilter::get_all_metadata(LataVector<LataGeometryMetaData> &geoms_data, LataVector<LataFieldMetaData> &fields_data)
 {
   geoms_data.reset();
   fields_data.reset();
@@ -446,220 +507,212 @@ void LataFilter::get_all_metadata(LataVector<LataGeometryMetaData> & geoms_data,
     current_tstep = 0;
   Noms lata_geoms_names = lataDB().geometry_names(current_tstep, LataDB::FIRST_AND_CURRENT);
   const entier nb_geoms = lata_geoms_names.size();
-  for (entier i_geom = 0; i_geom < nb_geoms; i_geom++) {
-    // Name of the current geometry (from lataDB)
-    const Nom & lata_geom_name = lata_geoms_names[i_geom];
-    const LataDBGeometry & lata_geom = lataDB().get_geometry(current_tstep, lata_geom_name, LataDB::FIRST_AND_CURRENT);
-    // Query properties from LataDB:
-    // Is it a dynamic mesh ?
-    const entier dynamic = lata_geom.timestep_ > 0;
-    // Element type ?
-    Domain::Element element_type = Domain::element_type_from_string(lata_geom.elem_type_);
-    // Query for dimension
-    const entier domain_already_ijk = lataDB().field_exists(current_tstep, lata_geom_name, "SOMMETS_IJK_I", LataDB::FIRST_AND_CURRENT);
+  for (entier i_geom = 0; i_geom < nb_geoms; i_geom++)
+    {
+      // Name of the current geometry (from lataDB)
+      const Nom &lata_geom_name = lata_geoms_names[i_geom];
+      const LataDBGeometry &lata_geom = lataDB().get_geometry(current_tstep, lata_geom_name, LataDB::FIRST_AND_CURRENT);
+      // Query properties from LataDB:
+      // Is it a dynamic mesh ?
+      const entier dynamic = lata_geom.timestep_ > 0;
+      // Element type ?
+      Domain::Element element_type = Domain::element_type_from_string(lata_geom.elem_type_);
+      // Query for dimension
+      const entier domain_already_ijk = lataDB().field_exists(current_tstep, lata_geom_name, "SOMMETS_IJK_I", LataDB::FIRST_AND_CURRENT);
 
-    // Do we have faces ?
-    const entier have_faces = 
-      domain_already_ijk ||
-      (lataDB().field_exists(current_tstep, lata_geom_name, "FACES", LataDB::FIRST_AND_CURRENT)
-       && lataDB().field_exists(current_tstep, lata_geom_name, "ELEM_FACES", LataDB::FIRST_AND_CURRENT));
+      // Do we have faces ?
+      const entier have_faces =
+          domain_already_ijk
+              || (lataDB().field_exists(current_tstep, lata_geom_name, "FACES", LataDB::FIRST_AND_CURRENT)
+                  && lataDB().field_exists(current_tstep, lata_geom_name, "ELEM_FACES", LataDB::FIRST_AND_CURRENT));
 
-    entier dim = 1;
-    // Query for number of blocks in the lata file:
-    entier nblocks = 1;
-    if (domain_already_ijk) {
-      if (lataDB().field_exists(current_tstep, lata_geom_name, "SOMMETS_IJK_K", LataDB::FIRST_AND_CURRENT))
-        dim = 3;
+      entier dim = 1;
+      // Query for number of blocks in the lata file:
+      entier nblocks = 1;
+      if (domain_already_ijk)
+        {
+          if (lataDB().field_exists(current_tstep, lata_geom_name, "SOMMETS_IJK_K", LataDB::FIRST_AND_CURRENT))
+            dim = 3;
+          else
+            dim = 2;
+          nblocks = opt_.ijk_mesh_nb_parts_;
+          Nom nom_sommets;
+          if (dim == 2)
+            nom_sommets = "SOMMETS_IJK_J";
+          else
+            nom_sommets = "SOMMETS_IJK_K";
+          const LataDBField &coord = lataDB().get_field(current_tstep, lata_geom_name, nom_sommets, "", LataDB::FIRST_AND_CURRENT);
+          // Nombre d'elements dans la direction du decoupage parallele:
+          const entier nelem = (entier) (coord.size_ - 1);
+          // Si les tranches sont trop petites diminuer le nombre de blocs
+          if (nblocks > (nelem + 3) / 4)
+            nblocks = (nelem + 3) / 4;
+        }
       else
-        dim = 2;
-      nblocks = opt_.ijk_mesh_nb_parts_;
-      Nom nom_sommets;
-      if (dim == 2)
-        nom_sommets = "SOMMETS_IJK_J";
+        {
+          dim = lataDB().get_field(current_tstep, lata_geom_name, "SOMMETS", "*", LataDB::FIRST_AND_CURRENT).nb_comp_;
+          if (lataDB().field_exists(current_tstep, lata_geom_name, "JOINTS_SOMMETS", LataDB::FIRST_AND_CURRENT))
+            nblocks = (entier) lataDB().get_field(current_tstep, lata_geom_name, "JOINTS_SOMMETS", "*", LataDB::FIRST_AND_CURRENT).size_;
+        }
+
+      // Initialize data common to all domains:
+      LataGeometryMetaData data;
+      data.dynamic_ = dynamic;
+      data.dimension_ = dim;
+      data.element_type_ = element_type;
+      data.is_ijk_ = domain_already_ijk;
+
+      // If we reconnect all subdomains, always load all of them:
+      if (!opt_.reconnect)
+        data.nblocks_ = nblocks;
       else
-        nom_sommets = "SOMMETS_IJK_K";
-      const LataDBField & coord = lataDB().get_field(current_tstep, lata_geom_name, nom_sommets, "", LataDB::FIRST_AND_CURRENT);
-      // Nombre d'elements dans la direction du decoupage parallele:
-      const entier nelem = (entier)(coord.size_ - 1);
-      // Si les tranches sont trop petites diminuer le nombre de blocs
-      if (nblocks > (nelem + 3) / 4)
-        nblocks = (nelem + 3) / 4;
-    } else {
-      dim = lataDB().get_field(current_tstep, lata_geom_name, "SOMMETS", "*", LataDB::FIRST_AND_CURRENT).nb_comp_;
-      if (lataDB().field_exists(current_tstep, lata_geom_name, "JOINTS_SOMMETS", LataDB::FIRST_AND_CURRENT))
-        nblocks = (entier)lataDB().get_field(current_tstep, lata_geom_name, "JOINTS_SOMMETS", "*", LataDB::FIRST_AND_CURRENT).size_;
-    }
+        data.nblocks_ = 1;
 
-    // Initialize data common to all domains:
-    LataGeometryMetaData data;
-    data.dynamic_ = dynamic;
-    data.dimension_ = dim;
-    data.element_type_ = element_type;
-    data.is_ijk_=domain_already_ijk;
-     
-    // If we reconnect all subdomains, always load all of them:
-    if (!opt_.reconnect)
-      data.nblocks_ = nblocks;
-    else
-      data.nblocks_ = 1;
-
-    data.internal_name_ = lata_geom_name;
-    data.displayed_name_ = lata_geom_name;
-    
-    Nom separ("boundaries_");
-    int m=data.displayed_name_.find(separ);
-    if (m>0)
-      {
-	const Nom& name= data.displayed_name_;
-	// on remplace boundaries_ par boundaries/
-	const char* jj =name;
-	Nom disp(name);
-	disp.prefix(jj+m-1);
-	// GF le nom du domaine existe t il siuoi on a peut etre postraite sur un bord
-	if  (lata_geoms_names.rang(disp)>-1)
-	  {
-	    Nom bord(jj+m+separ.longueur()-1);
-	    disp+=Nom("_boundaries/");
-	    disp+=bord;
-	    data.displayed_name_=disp;
-	  }
-      }
-    //   cerr<< data.displayed_name_<<endl;
-    data.source_ = "latadb";
-    Journal(filter_info_level) << " metadata: adding geometry " << lata_geom_name << " displayed name=" << data.displayed_name_ << endl;
-    geoms_data.add(data);
-    // Add fields at som and elem:
-    add_fields_to_metadata_list(lataDB(), lata_geom_name, data.internal_name_,
-                                "from_elem,from_som,from_faces", dim, fields_data,
-                                "latadb",
-                                "??");
-    // It is regularizable ?
-    entier regularizable = (((element_type == Domain::quadri)&&(data.dimension_==2)) || ((element_type == Domain::hexa)&&(data.dimension_==3)))
-      && (lata_geom.elem_type_ != "HEXAEDRE_AXI") && (lata_geom.elem_type_ != "RECTANGLE_AXI")
-      && (lata_geom.elem_type_ != "QUADRANGLE") && (lata_geom.elem_type_ != "QUADRANGLE_3D");
-    Journal(filter_info_level) << " metadata: geometry " << lata_geom_name << " element type says regularizable=" << regularizable << endl;
-    // It is dualizable ?
-    entier dualizable = (regularizable && opt_.regularize) || element_type == Domain::triangle || element_type == Domain::tetra;
-    Journal(filter_info_level) << " metadata: geometry " << lata_geom_name << " element type says dualizable=" << dualizable << endl;
-    if (regularizable && ((opt_.regularize_tolerance < 0) || (!opt_.regularize))) {
-      regularizable = 0;
-      Journal(filter_info_level) << " regularize option not set: don't build ijk domain" << endl;
-    }
-    if (regularizable && domain_already_ijk) {
-      regularizable = 0;
-      Journal(filter_info_level) << " domain is already IJK: do not regularize" << endl;
-    }
-
-    // opt_.regularize == 2 means: provide ijk only if faces are present
-    if (regularizable && opt_.regularize == 2) {
-      if (!have_faces) {
-        Journal(filter_info_level) << " regularize option==2 and no faces => do not regularize" << endl;
-        regularizable = 0;
-      }
-    }
-    if (regularizable) {
       data.internal_name_ = lata_geom_name;
-      data.internal_name_ += "_IJK";
-      data.is_ijk_=1;
       data.displayed_name_ = lata_geom_name;
-      data.source_ = "operator_ijk";
-      data.source_domain_ = lata_geom_name;
+
+      Nom separ("boundaries_");
+      int m = data.displayed_name_.find(separ);
+      if (m > 0)
+        {
+          const Nom &name = data.displayed_name_;
+          // on remplace boundaries_ par boundaries/
+          const char *jj = name;
+          Nom disp(name);
+          disp.prefix(jj + m - 1);
+          // GF le nom du domaine existe t il siuoi on a peut etre postraite sur un bord
+          if (lata_geoms_names.rang(disp) > -1)
+            {
+              Nom bord(jj + m + separ.longueur() - 1);
+              disp += Nom("_boundaries/");
+              disp += bord;
+              data.displayed_name_ = disp;
+            }
+        }
+      //   cerr<< data.displayed_name_<<endl;
+      data.source_ = "latadb";
+      Journal(filter_info_level) << " metadata: adding geometry " << lata_geom_name << " displayed name=" << data.displayed_name_ << endl;
       geoms_data.add(data);
-      Journal(filter_info_level) << " metadata: adding geometry " << data.internal_name_ << " displayed name=" << data.displayed_name_ << endl;
       // Add fields at som and elem:
-      add_fields_to_metadata_list(lataDB(), lata_geom_name, data.internal_name_,
-                                  "from_elem,from_som,from_faces", dim, fields_data,
-                                  "operator_ijk",
-                                  data.source_domain_);
-    }
+      add_fields_to_metadata_list(lataDB(), lata_geom_name, data.internal_name_, "from_elem,from_som,from_faces", dim, fields_data, "latadb", "??");
+      // It is regularizable ?
+      entier regularizable = (((element_type == Domain::quadri) && (data.dimension_ == 2)) || ((element_type == Domain::hexa) && (data.dimension_ == 3))) && (lata_geom.elem_type_ != "HEXAEDRE_AXI")
+          && (lata_geom.elem_type_ != "RECTANGLE_AXI") && (lata_geom.elem_type_ != "QUADRANGLE") && (lata_geom.elem_type_ != "QUADRANGLE_3D");
+      Journal(filter_info_level) << " metadata: geometry " << lata_geom_name << " element type says regularizable=" << regularizable << endl;
+      // It is dualizable ?
+      entier dualizable = (regularizable && opt_.regularize) || element_type == Domain::triangle || element_type == Domain::tetra;
+      Journal(filter_info_level) << " metadata: geometry " << lata_geom_name << " element type says dualizable=" << dualizable << endl;
+      if (regularizable && ((opt_.regularize_tolerance < 0) || (!opt_.regularize)))
+        {
+          regularizable = 0;
+          Journal(filter_info_level) << " regularize option not set: don't build ijk domain" << endl;
+        }
+      if (regularizable && domain_already_ijk)
+        {
+          regularizable = 0;
+          Journal(filter_info_level) << " domain is already IJK: do not regularize" << endl;
+        }
 
-    // Provide dual mesh
-    if (dualizable && opt_.dual_mesh && have_faces) {
-      data.internal_name_ = lata_geom_name;
-      
-      // If it's quadri or hexa, we need the regular mesh
-      data.source_domain_ = data.internal_name_;
-      if (regularizable) {
-        data.internal_name_ += "_IJK";
-        data.source_domain_ += "_IJK";
-	data.is_ijk_=1;
-      }
-      data.internal_name_ += "_dual";
-      data.displayed_name_ += "_dual";
-
-      data.source_ = "operator_dual";
-      geoms_data.add(data);
-      Journal(filter_info_level) << " metadata: adding geometry " << data.internal_name_ << " displayed name=" << data.displayed_name_ << endl;
-      // Add fields at faces, localisation will be at elements,
-      //  forced to vector type if vdf:
-      Nom options("from_faces,to_elem");
+      // opt_.regularize == 2 means: provide ijk only if faces are present
+      if (regularizable && opt_.regularize == 2)
+        {
+          if (!have_faces)
+            {
+              Journal(filter_info_level) << " regularize option==2 and no faces => do not regularize" << endl;
+              regularizable = 0;
+            }
+        }
       if (regularizable)
-        options += ",to_vector";
-      add_fields_to_metadata_list(lataDB(), lata_geom_name, data.internal_name_,
-                                  options, dim, fields_data,
-                                  "operator_dual",
-                                  data.source_domain_);      
-    }
+        {
+          data.internal_name_ = lata_geom_name;
+          data.internal_name_ += "_IJK";
+          data.is_ijk_ = 1;
+          data.displayed_name_ = lata_geom_name;
+          data.source_ = "operator_ijk";
+          data.source_domain_ = lata_geom_name;
+          geoms_data.add(data);
+          Journal(filter_info_level) << " metadata: adding geometry " << data.internal_name_ << " displayed name=" << data.displayed_name_ << endl;
+          // Add fields at som and elem:
+          add_fields_to_metadata_list(lataDB(), lata_geom_name, data.internal_name_, "from_elem,from_som,from_faces", dim, fields_data, "operator_ijk", data.source_domain_);
+        }
 
-    // Provide nc mesh if possible
-    if (opt_.nc_mesh && have_faces && !regularizable /* doesn't work for vdf */) {
-      data.internal_name_ = lata_geom_name;
-      data.internal_name_ += "_nc";
-      data.displayed_name_ = data.internal_name_;
-      data.source_ = "operator_nc";
-      data.source_domain_ = lata_geom_name;
-      geoms_data.add(data);
-      Journal(filter_info_level) << " metadata: adding geometry " << data.internal_name_ << " displayed name=" << data.displayed_name_ << endl;
-      // Add fields at faces, localisation will be at nodes
-      Nom options("from_faces,to_som");
-      add_fields_to_metadata_list(lataDB(), lata_geom_name, data.internal_name_,
-                                  options, dim, fields_data,
-                                  "operator_nc",
-                                  data.source_domain_);
-    }
-    // Provide faces mesh if possible
-    if (opt_.faces_mesh && have_faces && !regularizable /* doesn't work for vdf */ &&  !(domain_already_ijk) ) {
-   
-      data.internal_name_ = lata_geom_name;
-      data.internal_name_ += "_centerfaces";
-      data.displayed_name_ = data.internal_name_;
-      data.source_ = "operator_faces";
-      data.source_domain_ = lata_geom_name;
-      if (data.element_type_ == Domain::triangle)
-        data.element_type_=Domain::line;
-      else if ( data.element_type_ == Domain::tetra)
-        data.element_type_=Domain::triangle;
+      // Provide dual mesh
+      if (dualizable && opt_.dual_mesh && have_faces)
+        {
+          data.internal_name_ = lata_geom_name;
 
-      geoms_data.add(data);
-      Journal(filter_info_level) << " metadata: adding geometry " << data.internal_name_ << " displayed name=" << data.displayed_name_ << endl;
-      // Add fields at faces, localisation will be at nodes
-      Nom options("from_faces,to_elem");
-      add_fields_to_metadata_list(lataDB(), lata_geom_name, data.internal_name_,
-                                  options, dim, fields_data,
-                                  "operator_faces",
-                                  data.source_domain_);
+          // If it's quadri or hexa, we need the regular mesh
+          data.source_domain_ = data.internal_name_;
+          if (regularizable)
+            {
+              data.internal_name_ += "_IJK";
+              data.source_domain_ += "_IJK";
+              data.is_ijk_ = 1;
+            }
+          data.internal_name_ += "_dual";
+          data.displayed_name_ += "_dual";
+
+          data.source_ = "operator_dual";
+          geoms_data.add(data);
+          Journal(filter_info_level) << " metadata: adding geometry " << data.internal_name_ << " displayed name=" << data.displayed_name_ << endl;
+          // Add fields at faces, localisation will be at elements,
+          //  forced to vector type if vdf:
+          Nom options("from_faces,to_elem");
+          if (regularizable)
+            options += ",to_vector";
+          add_fields_to_metadata_list(lataDB(), lata_geom_name, data.internal_name_, options, dim, fields_data, "operator_dual", data.source_domain_);
+        }
+
+      // Provide nc mesh if possible
+      if (opt_.nc_mesh && have_faces && !regularizable /* doesn't work for vdf */)
+        {
+          data.internal_name_ = lata_geom_name;
+          data.internal_name_ += "_nc";
+          data.displayed_name_ = data.internal_name_;
+          data.source_ = "operator_nc";
+          data.source_domain_ = lata_geom_name;
+          geoms_data.add(data);
+          Journal(filter_info_level) << " metadata: adding geometry " << data.internal_name_ << " displayed name=" << data.displayed_name_ << endl;
+          // Add fields at faces, localisation will be at nodes
+          Nom options("from_faces,to_som");
+          add_fields_to_metadata_list(lataDB(), lata_geom_name, data.internal_name_, options, dim, fields_data, "operator_nc", data.source_domain_);
+        }
+      // Provide faces mesh if possible
+      if (opt_.faces_mesh && have_faces && !regularizable /* doesn't work for vdf */&& !(domain_already_ijk))
+        {
+
+          data.internal_name_ = lata_geom_name;
+          data.internal_name_ += "_centerfaces";
+          data.displayed_name_ = data.internal_name_;
+          data.source_ = "operator_faces";
+          data.source_domain_ = lata_geom_name;
+          if (data.element_type_ == Domain::triangle)
+            data.element_type_ = Domain::line;
+          else if (data.element_type_ == Domain::tetra)
+            data.element_type_ = Domain::triangle;
+
+          geoms_data.add(data);
+          Journal(filter_info_level) << " metadata: adding geometry " << data.internal_name_ << " displayed name=" << data.displayed_name_ << endl;
+          // Add fields at faces, localisation will be at nodes
+          Nom options("from_faces,to_elem");
+          add_fields_to_metadata_list(lataDB(), lata_geom_name, data.internal_name_, options, dim, fields_data, "operator_faces", data.source_domain_);
+        }
+      // Provide boundary mesh
+      if (opt_.boundary_mesh && (element_type == Domain::hexa || element_type == Domain::tetra))
+        {
+          data.internal_name_ = lata_geom_name;
+          data.internal_name_ += "_Boundary";
+          data.displayed_name_ = data.internal_name_;
+          data.source_ = "operator_boundary";
+          data.source_domain_ = lata_geom_name;
+          geoms_data.add(data);
+          Journal(filter_info_level) << " metadata: adding geometry " << data.internal_name_ << " displayed name=" << data.displayed_name_ << endl;
+          Nom options("from_elem,from_som");
+          add_fields_to_metadata_list(lataDB(), lata_geom_name, data.internal_name_, options, dim, fields_data, "operator_boundary", data.source_domain_);
+          options = "from_faces,to_elem";
+          add_fields_to_metadata_list(lataDB(), lata_geom_name, data.internal_name_, options, dim, fields_data, "operator_boundary", data.source_domain_);
+        }
     }
-    // Provide boundary mesh
-    if (opt_.boundary_mesh && (element_type == Domain::hexa || element_type == Domain::tetra)) {
-      data.internal_name_ = lata_geom_name;
-      data.internal_name_ += "_Boundary";
-      data.displayed_name_ = data.internal_name_;
-      data.source_ = "operator_boundary";
-      data.source_domain_ = lata_geom_name;
-      geoms_data.add(data);
-      Journal(filter_info_level) << " metadata: adding geometry " << data.internal_name_ << " displayed name=" << data.displayed_name_ << endl;
-      Nom options("from_elem,from_som");
-      add_fields_to_metadata_list(lataDB(), lata_geom_name, data.internal_name_,
-                                  options, dim, fields_data,
-                                  "operator_boundary",
-                                  data.source_domain_);
-      options = "from_faces,to_elem";
-      add_fields_to_metadata_list(lataDB(), lata_geom_name, data.internal_name_,
-                                  options, dim, fields_data,
-                                  "operator_boundary",
-                                  data.source_domain_);
-    }
-  }
 
   if (user_fields_.non_nul())
     user_fields_.valeur().new_fields_metadata(*this, fields_data);
@@ -679,24 +732,25 @@ Noms LataFilter::get_exportable_geometry_names() const
 
   // If an IJK domain is here, don't show the original domain:
   Noms names2;
-  for (i = 0; i < names.size(); i++) {
-    Nom n(names[i]);
-    n += "_IJK";
-    if (names.rang(n) < 0)
-      names2.add(names[i]);
-  }
+  for (i = 0; i < names.size(); i++)
+    {
+      Nom n(names[i]);
+      n += "_IJK";
+      if (names.rang(n) < 0)
+        names2.add(names[i]);
+    }
   return names2;
 }
 
 // Description: the same, with field names...
 //  If geometry=="*", returns all fields
 //  Currently, doesn't show fields located at faces...
-Field_UNames LataFilter::get_exportable_field_unames(const char * geometry) const
+Field_UNames LataFilter::get_exportable_field_unames(const char *geometry) const
 {
   Field_UNames unames;
   Motcle geom(geometry);
   for (entier i = 0; i < fields_metadata_.size(); i++)
-    if (geom == fields_metadata_[i].geometry_name_ || geom == "*") 
+    if (geom == fields_metadata_[i].geometry_name_ || geom == "*")
       // Do not show faces located fields to the user...
       if (fields_metadata_[i].localisation_ != LataField_base::FACES || opt_.export_fields_at_faces_)
         unames.add(fields_metadata_[i].uname_);
@@ -706,7 +760,7 @@ Field_UNames LataFilter::get_exportable_field_unames(const char * geometry) cons
 
 // Description: fill "data" for the requested "geometry". "geometry" must be a name
 //  returned by get_exportable_geometry_names()
-const LataGeometryMetaData & LataFilter::get_geometry_metadata(const char * geometry) const
+const LataGeometryMetaData& LataFilter::get_geometry_metadata(const char *geometry) const
 {
   Motcle geom(geometry);
   for (entier i = 0; i < geoms_metadata_.size(); i++)
@@ -714,20 +768,20 @@ const LataGeometryMetaData & LataFilter::get_geometry_metadata(const char * geom
       return geoms_metadata_[i];
 
   Journal() << "Error in LataFilter::get_geometry_metadata: unknown geometry " << geometry << endl;
-  throw LataError(LataError::INVALID_DOMAIN,"unknown geometry");
+  throw LataError(LataError::INVALID_DOMAIN, "unknown geometry");
   return geoms_metadata_[0];
 }
 
 // Description: fill "data" for the requested "geometry/field". "geometry"  and "field" must be names
 //  returned by get_exportable_geometry_names() and get_exportable_field_names()
-const LataFieldMetaData & LataFilter::get_field_metadata(const Field_UName & uname) const
+const LataFieldMetaData& LataFilter::get_field_metadata(const Field_UName &uname) const
 {
   for (entier i = 0; i < fields_metadata_.size(); i++)
     if (fields_metadata_[i].uname_ == uname)
       return fields_metadata_[i];
-  
+
   Journal() << "Error in LataFilter::get_field_metadata: unknown field " << uname << endl;
-  throw LataError(LataError::INVALID_COMPONENT,"unknown field");
+  throw LataError(LataError::INVALID_COMPONENT, "unknown field");
   return fields_metadata_[0];
 }
 
@@ -740,153 +794,171 @@ const LataFieldMetaData & LataFilter::get_field_metadata(const Field_UName & una
 //  The reference is valid until the user calls release_geometry()
 //  The user MUST call release_geometry() to allow the data to be
 //   removed from the data cache.
-const Domain & LataFilter::get_geometry(const Domain_Id & id)
+const Domain& LataFilter::get_geometry(const Domain_Id &id)
 {
-  Journal(filter_info_level) << "LataFilter::get_geometry " 
-                             << id.name_ << " time=" << id.timestep_ 
-                             << " bloc=" << id.block_ << endl;
+  Journal(filter_info_level) << "LataFilter::get_geometry " << id.name_ << " time=" << id.timestep_ << " bloc=" << id.block_ << endl;
   data_cache_.cleanup_cache(id.timestep_);
 
   Domain_Id requested_id(id);
   // Get the real timestep where this domain is stored:
-  const LataGeometryMetaData & geom_metadata = get_geometry_metadata(id.name_);
-  if (geom_metadata.dynamic_) 
+  const LataGeometryMetaData &geom_metadata = get_geometry_metadata(id.name_);
+  if (geom_metadata.dynamic_)
     requested_id.timestep_ = id.timestep_;
   else
     requested_id.timestep_ = 0;
 
-  LataDeriv<Domain> & dom_ptr = get_cached_domain(requested_id);
-  if (!dom_ptr.non_nul()) {
-    if (geom_metadata.source_ == "latadb") {
-      // Request for a native domain : load it from lataDB
-      // If reconnect and loading all subdomains, go ! Don't store the operator in cache since it's
-      //  not required to process fields.
-      
-      // Is it a structured or unstructured mesh ?
-      if (lataDB().field_exists(requested_id.timestep_, requested_id.name_, "SOMMETS")) 
+  LataDeriv<Domain> &dom_ptr = get_cached_domain(requested_id);
+  if (!dom_ptr.non_nul())
+    {
+      if (geom_metadata.source_ == "latadb")
         {
-          DomainUnstructured & dom = dom_ptr.instancie(DomainUnstructured);
-      
-          if (opt_.reconnect) {
-            // Bloc demande, peut etre le bloc 0 ou le bloc -1:
-            const entier req_block = requested_id.block_;
-            if (requested_id.block_ > 0) {
-              Cerr << "Error: requesting block " << requested_id.block_ << " with reconnect option" << endl;
-	      throw;
+          // Request for a native domain : load it from lataDB
+          // If reconnect and loading all subdomains, go ! Don't store the operator in cache since it's
+          //  not required to process fields.
+
+          // Is it a structured or unstructured mesh ?
+          if (lataDB().field_exists(requested_id.timestep_, requested_id.name_, "SOMMETS"))
+            {
+              DomainUnstructured &dom = dom_ptr.instancie(DomainUnstructured);
+
+              if (opt_.reconnect)
+                {
+                  // Bloc demande, peut etre le bloc 0 ou le bloc -1:
+                  const entier req_block = requested_id.block_;
+                  if (requested_id.block_ > 0)
+                    {
+                      Cerr << "Error: requesting block " << requested_id.block_ << " with reconnect option" << endl;
+                      throw;
+                    }
+                  requested_id.block_ = -1; // load all blocks
+                  dom.fill_domain_from_lataDB(lataDB(), requested_id, 1 /* faces */, 0);
+                  Reconnect::reconnect_geometry(dom, opt_.reconnect_tolerance);
+                  dom.id_.block_ = req_block;
+                }
+              else
+                {
+                  dom.fill_domain_from_lataDB(lataDB(), requested_id, 1 /* faces */, opt_.load_virtual_elements ? 1 : 0);
+                  if (opt_.load_virtual_elements && dom.nb_virt_items(LataField_base::ELEM) > 0)
+                    {
+                      Reconnect::reconnect_geometry(dom, opt_.reconnect_tolerance, dom.nb_nodes() - dom.nb_virt_items(LataField_base::SOM));
+                    }
+                }
             }
-            requested_id.block_ = -1; // load all blocks
-            dom.fill_domain_from_lataDB(lataDB(), requested_id, 1 /* faces */, 0);
-            Reconnect::reconnect_geometry(dom, opt_.reconnect_tolerance);
-            dom.id_.block_ = req_block;
-          } else {
-            dom.fill_domain_from_lataDB(lataDB(), requested_id, 1 /* faces */, opt_.load_virtual_elements ? 1 : 0);
-            if (opt_.load_virtual_elements && dom.nb_virt_items(LataField_base::ELEM) > 0) {
-              Reconnect::reconnect_geometry(dom, opt_.reconnect_tolerance,
-                                            dom.nb_nodes() - dom.nb_virt_items(LataField_base::SOM));
+          else
+            {
+              // Structured ijk:
+              DomainIJK &dom = dom_ptr.instancie(DomainIJK);
+              if (opt_.reconnect || requested_id.block_ < 0)
+                {
+                  dom.fill_domain_from_lataDB(lataDB(), requested_id, 1 /* parallel splitting */, 0 /* no virtual elements */);
+                }
+              else
+                {
+                  const entier nparts = opt_.ijk_mesh_nb_parts_;
+                  const entier virtual_size = opt_.load_virtual_elements ? opt_.ijk_virt_layer : 0;
+                  dom.fill_domain_from_lataDB(lataDB(), requested_id, nparts /* parallel splitting */, virtual_size /* with virtual elements */);
+                }
             }
-          }
+        }
+      else if (geom_metadata.source_.debute_par("OPERATOR"))
+        {
+          const Domain &src_domain = get_geometry(Domain_Id(geom_metadata.source_domain_, requested_id.timestep_, requested_id.block_));
+          Operator &op = get_set_operator(requested_id);
+          op.build_geometry(src_domain, dom_ptr);
+          dom_ptr.valeur().id_ = requested_id;
+          release_cached_operator(requested_id);
+          release_geometry(src_domain);
         }
       else
         {
-          // Structured ijk:
-          DomainIJK & dom = dom_ptr.instancie(DomainIJK);
-          if (opt_.reconnect || requested_id.block_ < 0) {
-            dom.fill_domain_from_lataDB(lataDB(), requested_id, 1 /* parallel splitting */, 
-                                        0 /* no virtual elements */);
-          } else {
-            const entier nparts = opt_.ijk_mesh_nb_parts_;
-            const entier virtual_size = opt_.load_virtual_elements ? opt_.ijk_virt_layer : 0;
-            dom.fill_domain_from_lataDB(lataDB(), requested_id, nparts /* parallel splitting */, 
-                                        virtual_size /* with virtual elements */);
-          }
+          Journal() << "Unknown source in geometry metadata " << geom_metadata.source_ << endl;
+          throw;
         }
-    } else if (geom_metadata.source_.debute_par("OPERATOR")) {
-      const Domain & src_domain = get_geometry(Domain_Id(geom_metadata.source_domain_, 
-                                                         requested_id.timestep_,
-                                                         requested_id.block_));
-      Operator & op = get_set_operator(requested_id);
-      op.build_geometry(src_domain, dom_ptr);
-      dom_ptr.valeur().id_ = requested_id;
-      release_cached_operator(requested_id);
-      release_geometry(src_domain);
-    } else {
-      Journal() << "Unknown source in geometry metadata " << geom_metadata.source_ << endl;
-      throw;
     }
-  }
 
   return dom_ptr.valeur();
 }
 
-Operator & LataFilter::get_set_operator(const Domain_Id & id)
+Operator& LataFilter::get_set_operator(const Domain_Id &id)
 {
-  LataDeriv<Operator> & op_ptr  = get_cached_operator(id);
-  if (!op_ptr.non_nul()) {
-    // Operator not in the cache ? Build it:
-    if (id.name_.finit_par("_IJK")) {
-      OperatorRegularize & op = op_ptr.instancie(OperatorRegularize);
-      op.set_tolerance(opt_.regularize_tolerance);
-      op.set_extend_layer(opt_.extend_domain);
-    } else if (id.name_.finit_par("_dual")) {
-      op_ptr.instancie(OperatorDualMesh);
-    } else if (id.name_.finit_par("_Boundary")) {
-      op_ptr.instancie(OperatorBoundary);
-    } else if (id.name_.finit_par("_centerfaces")) {
-      op_ptr.instancie(OperatorFacesMesh);
-    } else {
-      Journal() << "Internal error in LataFilter::get_operator: forgot to implement operator choice for " << id.name_ << endl;
-      throw;
+  LataDeriv<Operator> &op_ptr = get_cached_operator(id);
+  if (!op_ptr.non_nul())
+    {
+      // Operator not in the cache ? Build it:
+      if (id.name_.finit_par("_IJK"))
+        {
+          OperatorRegularize &op = op_ptr.instancie(OperatorRegularize);
+          op.set_tolerance(opt_.regularize_tolerance);
+          op.set_extend_layer(opt_.extend_domain);
+        }
+      else if (id.name_.finit_par("_dual"))
+        {
+          op_ptr.instancie(OperatorDualMesh);
+        }
+      else if (id.name_.finit_par("_Boundary"))
+        {
+          op_ptr.instancie(OperatorBoundary);
+        }
+      else if (id.name_.finit_par("_centerfaces"))
+        {
+          op_ptr.instancie(OperatorFacesMesh);
+        }
+      else
+        {
+          Journal() << "Internal error in LataFilter::get_operator: forgot to implement operator choice for " << id.name_ << endl;
+          throw;
+        }
     }
-  }
   return op_ptr.valeur();
 }
-
 
 // Description: returns the requested field, computing it if it is not
 //  already in the cache. You MUST call release_field() on the returned field
 //  when you don't need it any more...
 //  See also class Field_Id
-const LataField_base & LataFilter::get_field(const Field_Id & id)
+const LataField_base& LataFilter::get_field(const Field_Id &id)
 {
-  Journal(filter_info_level) << "LataFilter::get_field " 
-                             << id.uname_ << " time=" << id.timestep_ 
-                             << " bloc=" << id.block_ << endl;
+  Journal(filter_info_level) << "LataFilter::get_field " << id.uname_ << " time=" << id.timestep_ << " bloc=" << id.block_ << endl;
 
   data_cache_.cleanup_cache(id.timestep_);
 
-  const LataFieldMetaData & field_metadata = get_field_metadata(id.uname_);
+  const LataFieldMetaData &field_metadata = get_field_metadata(id.uname_);
 
-  LataDeriv<LataField_base> & field_ptr = get_cached_field(id);
-  if (!field_ptr.non_nul()) {
-    if (field_metadata.source_ == "latadb") {
-      // Request for a native field : load it from lataDB
-      const Domain & dom = get_geometry(id);
-      dom.fill_field_from_lataDB(lataDB(), id, field_ptr);
-      release_geometry(dom);
-    } else if (field_metadata.source_.debute_par("OPERATOR")) {
-      const Field_Id src_id(field_metadata.source_field_,
-                            id.timestep_,
-                            id.block_);
-      const Domain & src_domain = get_geometry(src_id);
-      const LataField_base & src_field = get_field(src_id);
-      const Domain & dest_domain = get_geometry(id);
-      Operator & op = get_set_operator(dest_domain.id_);
-      op.build_field(src_domain, src_field, dest_domain, field_ptr);
-      field_ptr.valeur().id_ = Field_Id(field_metadata.uname_, src_field.id_.timestep_, src_field.id_.block_);
-      release_field(src_field);
-      release_geometry(src_domain);
-      release_geometry(dest_domain);
-      release_cached_operator(dest_domain.id_);
-    } else if (field_metadata.source_ == "user_fields") {
-      Field<FloatTab> & f = field_ptr.instancie(Field<FloatTab> );
-      f = user_fields_.valeur().get_field(id);
-      // Force field id to correct value:
-      f.id_ = id;
-      f.component_names_ = field_metadata.component_names_;
-      f.nature_ = field_metadata.is_vector_ ? LataDBField::VECTOR : LataDBField::SCALAR;
-      f.localisation_ = field_metadata.localisation_;
+  LataDeriv<LataField_base> &field_ptr = get_cached_field(id);
+  if (!field_ptr.non_nul())
+    {
+      if (field_metadata.source_ == "latadb")
+        {
+          // Request for a native field : load it from lataDB
+          const Domain &dom = get_geometry(id);
+          dom.fill_field_from_lataDB(lataDB(), id, field_ptr);
+          release_geometry(dom);
+        }
+      else if (field_metadata.source_.debute_par("OPERATOR"))
+        {
+          const Field_Id src_id(field_metadata.source_field_, id.timestep_, id.block_);
+          const Domain &src_domain = get_geometry(src_id);
+          const LataField_base &src_field = get_field(src_id);
+          const Domain &dest_domain = get_geometry(id);
+          Operator &op = get_set_operator(dest_domain.id_);
+          op.build_field(src_domain, src_field, dest_domain, field_ptr);
+          field_ptr.valeur().id_ = Field_Id(field_metadata.uname_, src_field.id_.timestep_, src_field.id_.block_);
+          release_field(src_field);
+          release_geometry(src_domain);
+          release_geometry(dest_domain);
+          release_cached_operator(dest_domain.id_);
+        }
+      else if (field_metadata.source_ == "user_fields")
+        {
+          Field<FloatTab> &f = field_ptr.instancie(Field<FloatTab> );
+          f = user_fields_.valeur().get_field(id);
+          // Force field id to correct value:
+          f.id_ = id;
+          f.component_names_ = field_metadata.component_names_;
+          f.nature_ = field_metadata.is_vector_ ? LataDBField::VECTOR : LataDBField::SCALAR;
+          f.localisation_ = field_metadata.localisation_;
+        }
     }
-  }
 
   return field_ptr.valeur();
 }
@@ -895,31 +967,30 @@ const LataField_base & LataFilter::get_field(const Field_Id & id)
 //  already in the cache. You MUST call release_field() on the returned field
 //  when you don't need it any more...
 //  See also class Field_Id
-const FieldFloat & LataFilter::get_float_field(const Field_Id & id) 
+const FieldFloat& LataFilter::get_float_field(const Field_Id &id)
 {
-  const LataField_base & field = get_field(id);
-  const FieldFloat * float_field_ptr = dynamic_cast<const FieldFloat*>(&field);
-  if (! float_field_ptr) { /*assert(! float_field_ptr);*/ throw LataError(LataError::INVALID_COMPONENT,"unknown field");}
-  const FieldFloat & fld = *float_field_ptr;
+  const LataField_base &field = get_field(id);
+  const FieldFloat *float_field_ptr = dynamic_cast<const FieldFloat*>(&field);
+  if (!float_field_ptr)
+    { /*assert(! float_field_ptr);*/
+      throw LataError(LataError::INVALID_COMPONENT, "unknown field");
+    }
+  const FieldFloat &fld = *float_field_ptr;
   return fld;
 }
-void LataFilter::release_geometry(const Domain & dom)
+void LataFilter::release_geometry(const Domain &dom)
 {
-  Journal(filter_info_level) << "LataFilter::release_geometry " 
-                             << dom.id_.name_ << " time=" << dom.id_.timestep_ 
-                             << " bloc=" << dom.id_.block_ << endl;
+  Journal(filter_info_level) << "LataFilter::release_geometry " << dom.id_.name_ << " time=" << dom.id_.timestep_ << " bloc=" << dom.id_.block_ << endl;
   release_cached_domain(dom.id_);
 }
 
-void LataFilter::release_field(const LataField_base & field)
+void LataFilter::release_field(const LataField_base &field)
 {
-  Journal(filter_info_level) << "LataFilter::release_field " 
-                             << field.id_.uname_ << " time=" << field.id_.timestep_ 
-                             << " bloc=" << field.id_.block_ << endl;
+  Journal(filter_info_level) << "LataFilter::release_field " << field.id_.uname_ << " time=" << field.id_.timestep_ << " bloc=" << field.id_.block_ << endl;
   release_cached_field(field.id_);
 }
-  
-void build_mangeld_domain_name(const Domain_Id & id, Nom & name)
+
+void build_mangeld_domain_name(const Domain_Id &id, Nom &name)
 {
   name = id.name_;
   name += "_";
@@ -929,7 +1000,7 @@ void build_mangeld_domain_name(const Domain_Id & id, Nom & name)
   name.majuscule();
 }
 
-void build_mangeld_field_name(const Field_Id & id, Nom & name)
+void build_mangeld_field_name(const Field_Id &id, Nom &name)
 {
   name = id.uname_.build_string();
   name += "_";
@@ -939,62 +1010,62 @@ void build_mangeld_field_name(const Field_Id & id, Nom & name)
   name.majuscule();
 }
 
-LataDeriv<LataField_base> & LataFilter::get_cached_field(const Field_Id& id)
+LataDeriv<LataField_base>& LataFilter::get_cached_field(const Field_Id &id)
 {
   Nom n;
   build_mangeld_field_name(id, n);
   return data_cache_.get_item<LataDeriv<LataField_base> >(n, id.timestep_);
 }
-LataDeriv<Domain> &     LataFilter::get_cached_domain(const Domain_Id& id)
+LataDeriv<Domain>& LataFilter::get_cached_domain(const Domain_Id &id)
 {
   Nom n;
   build_mangeld_domain_name(id, n);
   return data_cache_.get_item<LataDeriv<Domain> >(n, id.timestep_);
 }
-LataDeriv<Operator> &   LataFilter::get_cached_operator(const Domain_Id& id)
+LataDeriv<Operator>& LataFilter::get_cached_operator(const Domain_Id &id)
 {
   Nom n;
   build_mangeld_domain_name(id, n);
   n += "_OP";
-  return data_cache_.get_item<LataDeriv<Operator> >(n, id.timestep_);  
+  return data_cache_.get_item<LataDeriv<Operator> >(n, id.timestep_);
 }
-void LataFilter::release_cached_domain(const Domain_Id& id)
+void LataFilter::release_cached_domain(const Domain_Id &id)
 {
   Nom n;
   build_mangeld_domain_name(id, n);
   data_cache_.release_item(n);
 }
-void LataFilter::release_cached_field(const Field_Id& id)
+void LataFilter::release_cached_field(const Field_Id &id)
 {
   Nom n;
   build_mangeld_field_name(id, n);
   data_cache_.release_item(n);
 }
-void LataFilter::release_cached_operator(const Domain_Id& id)
+void LataFilter::release_cached_operator(const Domain_Id &id)
 {
   Nom n;
   build_mangeld_domain_name(id, n);
   n += "_OP";
-  data_cache_.release_item(n);  
+  data_cache_.release_item(n);
 }
 
-void LataOptions::extract_path_basename(const char * s, Nom & path_prefix, Nom & basename)
+void LataOptions::extract_path_basename(const char *s, Nom &path_prefix, Nom &basename)
 {
   int i;
-  for (i=(int)strlen(s)-1;i>=0;i--)
-    if ((s[i]==PATH_SEPARATOR) ||(s[i]=='\\'))
+  for (i = (int) strlen(s) - 1; i >= 0; i--)
+    if ((s[i] == PATH_SEPARATOR) || (s[i] == '\\'))
       break;
   path_prefix = "";
   int j;
   for (j = 0; j <= i; j++)
     path_prefix += Nom(s[j]);
-  
+
   // Parse basename : if extension given, remove it
-  int n = (int)strlen(s);
-  if (n > 5 && strcmp(s+n-5,".lata") == 0)
+  int n = (int) strlen(s);
+  if (n > 5 && strcmp(s + n - 5, ".lata") == 0)
     n -= 5;
   basename = "";
-  for (j = i+1; j < n; j++)
+  for (j = i + 1; j < n; j++)
     basename += Nom(s[j]);
   //  Journal(9)<<" prefix "<<path_prefix<< " "<<i<<endl;
 }
@@ -1002,7 +1073,7 @@ void LataOptions::extract_path_basename(const char * s, Nom & path_prefix, Nom &
 LataOptions::LataOptions()
 {
   dual_mesh = false;
-  faces_mesh=false;
+  faces_mesh = false;
   nc_mesh = false;
   boundary_mesh = false;
   reconnect = false;
@@ -1016,81 +1087,82 @@ LataOptions::LataOptions()
   ijk_mesh_nb_parts_ = 1;
   ijk_virt_layer = 1;
   export_fields_at_faces_ = 0;
-  regularize_polyedre=0;
+  regularize_polyedre = 0;
 }
 
-void build_geometry_(Operator & op, const Domain & src, LataDeriv<Domain> & dest)
+void build_geometry_(Operator &op, const Domain &src, LataDeriv<Domain> &dest)
 {
   Journal() << "Error in an operator: build_geometry not coded for this Operator/Domain" << endl;
   throw;
 }
 
-void build_field_(Operator & op, const Domain & src, const Domain & dest, 
-                  const LataField_base & srcf, LataField_base & destf)
+void build_field_(Operator &op, const Domain &src, const Domain &dest, const LataField_base &srcf, LataField_base &destf)
 {
   Journal() << "Error in an operator: build_field not coded for this Operator/Domain/Field" << endl;
-  throw;  
+  throw;
 }
 
-void LataDB_apply_input_filter(const LataDB & lata_db, LataDB & filtered_db, 
-                        const ArrOfInt & input_timesteps_filter,
-                        const Noms & input_domains_filter,
-                        const Noms & input_components_filter)
+void LataDB_apply_input_filter(const LataDB &lata_db, LataDB &filtered_db, const ArrOfInt &input_timesteps_filter, const Noms &input_domains_filter, const Noms &input_components_filter)
 {
   ArrOfInt timesteps_filter(input_timesteps_filter);
   Noms domains_filter(input_domains_filter);
   Noms components_filter(input_components_filter);
 
   // Build a list of all available geometries and components
-  Noms list_all_domains = lata_db.geometry_names(lata_db.nb_timesteps()-1, LataDB::FIRST_AND_CURRENT);
+  Noms list_all_domains = lata_db.geometry_names(lata_db.nb_timesteps() - 1, LataDB::FIRST_AND_CURRENT);
   Noms list_all_fields;
-  {
-    Field_UNames fields = lata_db.field_unames(lata_db.nb_timesteps()-1, "*", "*", LataDB::FIRST_AND_CURRENT);
-    for (entier i = 0; i < fields.size(); i++) {
-      const Nom & n = fields[i].get_field_name();
-      if (list_all_fields.rang(n) < 0)
-        list_all_fields.add(n);
+    {
+      Field_UNames fields = lata_db.field_unames(lata_db.nb_timesteps() - 1, "*", "*", LataDB::FIRST_AND_CURRENT);
+      for (entier i = 0; i < fields.size(); i++)
+        {
+          const Nom &n = fields[i].get_field_name();
+          if (list_all_fields.rang(n) < 0)
+            list_all_fields.add(n);
+        }
     }
-  }
 
-  if (timesteps_filter.size_array() == 0) {
-    // Add all timesteps, timestep 0 is implicitely added.
-    entier n = lata_db.nb_timesteps();
-    timesteps_filter.resize_array(n-1);
-    for (entier i = 1; i < n; i++)
-      timesteps_filter[i-1] = i;
-    Journal(3) << " Exporting all " << n-1 << " timesteps" << endl;
-  } else if (timesteps_filter[0] < 0) {
-    timesteps_filter.resize_array(0);
-    Journal(3) << " Request timestep -1: Exporting only global time independent data" << endl;
-  }
-  if (domains_filter.size() == 0) {
-    // Add all geometries
-    domains_filter = list_all_domains;
-    Journal(3) << " Exporting all geometries" << endl;
-  } 
-  if (components_filter.size() == 0) {
-    // Add all fields of the selected geometries
-    components_filter = list_all_fields;
-    Journal(3) << " Exporting all fields:" << endl;
-  } else {
-    // Add all known geometry data fields
-    components_filter.add("SOMMETS");
-    components_filter.add("ELEMENTS");
-    components_filter.add("FACES");
-    components_filter.add("ELEM_FACES");
-    components_filter.add("JOINTS_SOMMETS");
-    components_filter.add("JOINTS_ELEMENTS");
-    components_filter.add("JOINTS_FACES");
-    components_filter.add("VIRTUAL_ELEMENTS");
-    // these are for ijk meshs:
-    components_filter.add("SOMMETS_IJK_I");
-    components_filter.add("SOMMETS_IJK_J");
-    components_filter.add("SOMMETS_IJK_K");
-    components_filter.add("INVALID_CONNECTIONS");
-  }
-  filtered_db.filter_db(lata_db,
-                        noms_to_motcles(domains_filter),
-                        noms_to_motcles(components_filter),
-                        timesteps_filter);
+  if (timesteps_filter.size_array() == 0)
+    {
+      // Add all timesteps, timestep 0 is implicitely added.
+      entier n = lata_db.nb_timesteps();
+      timesteps_filter.resize_array(n - 1);
+      for (entier i = 1; i < n; i++)
+        timesteps_filter[i - 1] = i;
+      Journal(3) << " Exporting all " << n - 1 << " timesteps" << endl;
+    }
+  else if (timesteps_filter[0] < 0)
+    {
+      timesteps_filter.resize_array(0);
+      Journal(3) << " Request timestep -1: Exporting only global time independent data" << endl;
+    }
+  if (domains_filter.size() == 0)
+    {
+      // Add all geometries
+      domains_filter = list_all_domains;
+      Journal(3) << " Exporting all geometries" << endl;
+    }
+  if (components_filter.size() == 0)
+    {
+      // Add all fields of the selected geometries
+      components_filter = list_all_fields;
+      Journal(3) << " Exporting all fields:" << endl;
+    }
+  else
+    {
+      // Add all known geometry data fields
+      components_filter.add("SOMMETS");
+      components_filter.add("ELEMENTS");
+      components_filter.add("FACES");
+      components_filter.add("ELEM_FACES");
+      components_filter.add("JOINTS_SOMMETS");
+      components_filter.add("JOINTS_ELEMENTS");
+      components_filter.add("JOINTS_FACES");
+      components_filter.add("VIRTUAL_ELEMENTS");
+      // these are for ijk meshs:
+      components_filter.add("SOMMETS_IJK_I");
+      components_filter.add("SOMMETS_IJK_J");
+      components_filter.add("SOMMETS_IJK_K");
+      components_filter.add("INVALID_CONNECTIONS");
+    }
+  filtered_db.filter_db(lata_db, noms_to_motcles(domains_filter), noms_to_motcles(components_filter), timesteps_filter);
 }

@@ -18,85 +18,84 @@
 #include <Operator.h>
 #include <Static_Int_Lists.h>
 #include <Rebuild_virtual_layer.h>
-void find_virtual_layer(DomainUnstructured & domain,
-                        IntTab & virtual_elements,
-                        IntTab & joints_virtual_elements,
-                        double tolerance)
+
+void find_virtual_layer(DomainUnstructured &domain, IntTab &virtual_elements, IntTab &joints_virtual_elements, double tolerance)
 {
   Journal(4) << "Searching virtual elements for domain " << domain.id_.name_ << endl;
   // Step 1 : find duplicate nodes
   ArrOfInt nodes_renumber;
-  Reconnect::search_duplicate_nodes(domain.nodes_,
-                                    nodes_renumber,
-                                    tolerance,
-                                    0);
- 
+  Reconnect::search_duplicate_nodes(domain.nodes_, nodes_renumber, tolerance, 0);
+
   // Build reconnected elements
   Reconnect::apply_renumbering(nodes_renumber, domain.elements_);
-  
+
   Static_Int_Lists som_elem;
-  construire_connectivite_som_elem(domain.nb_nodes(),
-                                   domain.elements_,
-                                   som_elem,
-                                   0 /* include virtual */);
+  construire_connectivite_som_elem(domain.nb_nodes(), domain.elements_, som_elem, 0 /* include virtual */);
 
   virtual_elements.resize(0, 1);
   virtual_elements.set_smart_resize(1);
 
   // Step 2 : for each sub_zone, add to virtual_elements list all elements 
   // touching the zone and not included in the zone
-  const IntTab & joints_sommets = domain.get_joints(LataField_base::SOM);
-  const IntTab & joints_elements = domain.get_joints(LataField_base::ELEM);
+  const IntTab &joints_sommets = domain.get_joints(LataField_base::SOM);
+  const IntTab &joints_elements = domain.get_joints(LataField_base::ELEM);
   const entier nprocs = joints_sommets.dimension(0);
   joints_virtual_elements.resize(nprocs, 2);
   ArrOfInt tmp;
   tmp.set_smart_resize(1);
-  for (entier i_proc = 0; i_proc < nprocs; i_proc++) {
-    entier first_elem_zone = joints_elements(i_proc, 0);
-    entier end_elems_zone = first_elem_zone + joints_elements(i_proc, 1);
-    entier first_node_zone = joints_sommets(i_proc, 0);
-    entier end_nodes_zone = first_node_zone + joints_sommets(i_proc, 1);
-    const entier first_virtual_element = virtual_elements.dimension(0);
-    tmp.resize_array(0);
-    for (entier i_node = first_node_zone; i_node < end_nodes_zone; i_node++) {
-      const entier renum_node = nodes_renumber[i_node];
-      const entier nb_elems_voisins = som_elem.get_list_size(renum_node);
-      for (entier i = 0; i < nb_elems_voisins; i++) {
-        const entier elem = som_elem(renum_node, i);
-        if (elem < first_elem_zone || elem >= end_elems_zone)
-          tmp.append_array(elem);
-      }
+  for (entier i_proc = 0; i_proc < nprocs; i_proc++)
+    {
+      entier first_elem_zone = joints_elements(i_proc, 0);
+      entier end_elems_zone = first_elem_zone + joints_elements(i_proc, 1);
+      entier first_node_zone = joints_sommets(i_proc, 0);
+      entier end_nodes_zone = first_node_zone + joints_sommets(i_proc, 1);
+      const entier first_virtual_element = virtual_elements.dimension(0);
+      tmp.resize_array(0);
+      for (entier i_node = first_node_zone; i_node < end_nodes_zone; i_node++)
+        {
+          const entier renum_node = nodes_renumber[i_node];
+          const entier nb_elems_voisins = som_elem.get_list_size(renum_node);
+          for (entier i = 0; i < nb_elems_voisins; i++)
+            {
+              const entier elem = som_elem(renum_node, i);
+              if (elem < first_elem_zone || elem >= end_elems_zone)
+                tmp.append_array(elem);
+            }
+        }
+      // Retirer les doublons
+      tmp.ordonne_array();
+      const entier n = tmp.size_array();
+      entier last = -1;
+      for (entier i = 0; i < n; i++)
+        {
+          const entier elem = tmp[i];
+          if (elem != last)
+            {
+              const entier idx = virtual_elements.dimension(0);
+              virtual_elements.resize(idx + 1, 1);
+              virtual_elements(idx, 0) = elem;
+              last = elem;
+            }
+        }
+      joints_virtual_elements(i_proc, 0) = first_virtual_element;
+      joints_virtual_elements(i_proc, 1) = virtual_elements.dimension(0) - first_virtual_element;
+      Journal(5) << "Zone " << i_proc << " has " << joints_virtual_elements(i_proc, 1) << " virtual elements" << endl;
     }
-    // Retirer les doublons
-    tmp.ordonne_array();
-    const entier n = tmp.size_array();
-    entier last = -1;
-    for (entier i = 0; i < n; i++) {
-      const entier elem = tmp[i];
-      if (elem != last) {
-        const entier idx = virtual_elements.dimension(0);
-        virtual_elements.resize(idx+1, 1);
-        virtual_elements(idx, 0) = elem;
-        last = elem;
-      }
-    }
-    joints_virtual_elements(i_proc, 0) = first_virtual_element;
-    joints_virtual_elements(i_proc, 1) = virtual_elements.dimension(0) - first_virtual_element;
-    Journal(5) << "Zone " << i_proc << " has " << joints_virtual_elements(i_proc, 1) << " virtual elements" << endl;
-  }
 }
 
-entier rebuild_virtual_layer(LataDB & lataDB, Domain_Id id, double reconnect_tolerance)
+entier rebuild_virtual_layer(LataDB &lataDB, Domain_Id id, double reconnect_tolerance)
 {
   Journal(4) << "rebuilt_virtual_layer domain " << id.name_ << " " << id.timestep_ << endl;
-  if (lataDB.field_exists(id.timestep_, id.name_, "VIRTUAL_ELEMENTS")) {
-    Journal(4) << " Virtual elements data already exist. Skip" << endl;
-    return 1;
-  }
-  if (!lataDB.field_exists(id.timestep_, id.name_, "JOINTS_ELEMENTS")) {
-    Journal(4) << " Domain has no processor splitting information. Skip" << endl;
-    return 0;
-  }
+  if (lataDB.field_exists(id.timestep_, id.name_, "VIRTUAL_ELEMENTS"))
+    {
+      Journal(4) << " Virtual elements data already exist. Skip" << endl;
+      return 1;
+    }
+  if (!lataDB.field_exists(id.timestep_, id.name_, "JOINTS_ELEMENTS"))
+    {
+      Journal(4) << " Domain has no processor splitting information. Skip" << endl;
+      return 0;
+    }
   // Load all domain, without faces:
   id.block_ = -1;
   DomainUnstructured dom;
@@ -106,7 +105,7 @@ entier rebuild_virtual_layer(LataDB & lataDB, Domain_Id id, double reconnect_tol
   IntTab virtual_elements;
   find_virtual_layer(dom, virtual_elements, joints_virtual_elements, reconnect_tolerance);
   // Write data to disk
-  const LataDBField & joints = lataDB.get_field(id.timestep_, id.name_, "JOINTS_ELEMENTS", "*");
+  const LataDBField &joints = lataDB.get_field(id.timestep_, id.name_, "JOINTS_ELEMENTS", "*");
   LataDBField fld(joints);
   // Append virtual_elements data to JOINTS_ELEMENTS, same format, etc
   fld.name_ = "JOINTS_VIRTUAL_ELEMENTS";
