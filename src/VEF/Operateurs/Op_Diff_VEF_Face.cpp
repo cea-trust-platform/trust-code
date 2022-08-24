@@ -84,7 +84,7 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue,
   int i,j,num_face;
   int nb_faces = zone_VEF.nb_faces();
   int nb_faces_elem = zone_VEF.zone().nb_faces_elem();
-  double valA,flux;
+  double flux;
   int n_bord, ind_face;
   int nb_bords=zone_VEF.nb_front_Cl();
   // On dimensionne et initialise le tableau des bilans de flux:
@@ -118,7 +118,7 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue,
                     {
                       if ( ( (j= elemfaces(elem,i)) > num_face ) && (j != fac_asso) )
                         {
-                          valA = viscA(num_face,j,elem,nu(elem));
+                          double valA = viscA(num_face,j,elem,nu(elem));
                           resu(num_face)+=valA*inconnue(j);
                           resu(num_face)-=valA*inconnue(num_face);
                           if(j<nb_faces) // face reelle
@@ -145,7 +145,7 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue,
                 {
                   if (( (j= elemfaces(elem,i)) > num_face ) || (ind_face>=nb_faces_bord_reel))
                     {
-                      valA = viscA(num_face,j,elem,nu(elem));
+                      double valA = viscA(num_face,j,elem,nu(elem));
 
                       if (ind_face<nb_faces_bord_reel)
                         {
@@ -193,7 +193,7 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue,
                       }
                     if(contrib)
                       {
-                        valA = viscA(num_face,j,elem,nu(elem));
+                        double valA = viscA(num_face,j,elem,nu(elem));
                         resu(num_face)+=valA*inconnue(j);
                         resu(num_face)-=valA*inconnue(num_face);
                         if(j<nb_faces) // On traite les faces reelles
@@ -283,7 +283,6 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
   int nb_faces = zone_VEF.nb_faces();
   int nb_faces_elem = zone_VEF.zone().nb_faces_elem();
   int n_bord0;
-  double valA;//,flux;
   DoubleVect n(Objet_U::dimension);
   DoubleTrav Tgrad(Objet_U::dimension,Objet_U::dimension);
 
@@ -320,7 +319,7 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
                     {
                       if ( ( (j= elemfaces(elem,i0)) > num_face ) && (j != fac_asso ) )
                         {
-                          valA = viscA(num_face,j,elem,nu(elem));
+                          double valA = viscA(num_face,j,elem,nu(elem));
                           for (int nc=0; nc<nb_comp; nc++)
                             {
                               resu(num_face,nc)+=valA*inconnue(j,nc);
@@ -353,7 +352,7 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
               for (int i=0; i<nb_faces_elem; i++)
                 if (( (j= elemfaces(elem,i)) > num_face ) || (ind_face>=nb_faces_bord_reel))
                   {
-                    valA = viscA(num_face,j,elem,nu(elem));
+                    double valA = viscA(num_face,j,elem,nu(elem));
                     for (int nc=0; nc<nb_comp; nc++)
                       {
                         double flux=valA*(inconnue(j,nc)-inconnue(num_face,nc));
@@ -411,7 +410,7 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
                       for (int dim=0; dim<dimension; dim++)
                         pscal += face_normales_addr[num_face*dimension+dim]*face_normales_addr[j*dimension+dim];
                       int signe = (face_voisins_addr[num_face*2] == face_voisins_addr[j*2]) || (face_voisins_addr[num_face*2+1] == face_voisins_addr[j*2+1]) ? -1 : 1;
-                      valA = signe*(pscal*nu_addr[elem])*inverse_volumes_addr[elem];
+                      double valA = signe*(pscal*nu_addr[elem])*inverse_volumes_addr[elem];
                       for (int nc=0; nc<nb_comp; nc++)
                         {
                           #pragma omp atomic
@@ -459,7 +458,7 @@ void Op_Diff_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
   int nb_faces = zone_VEF.nb_faces();
   int nb_faces_elem = zone_VEF.zone().nb_faces_elem();
   int n_bord;
-  double valA,flux0;
+  double flux0;
   DoubleVect n(Objet_U::dimension);
   DoubleTrav Tgrad(Objet_U::dimension,Objet_U::dimension);
 
@@ -497,7 +496,7 @@ void Op_Diff_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
                         {
                           for (int nc=0; nc<nb_comp; nc++)
                             {
-                              valA = viscA(num_face,j,elem,nu(elem,nc));
+                              double valA = viscA(num_face,j,elem,nu(elem,nc));
                               resu(num_face,nc)+=valA*inconnue(j,nc);
                               resu(num_face,nc)-=valA*inconnue(num_face,nc);
                               if(j<nb_faces) // face reelle
@@ -525,7 +524,7 @@ void Op_Diff_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
                   {
                     for (int nc=0; nc<nb_comp; nc++)
                       {
-                        valA = viscA(num_face,j,elem,nu(elem,nc));
+                        double valA = viscA(num_face,j,elem,nu(elem,nc));
                         if (ind_face<nb_faces_bord_reel)
                           {
                             double flux=valA*(inconnue(j,nc)-inconnue(num_face,nc));
@@ -568,7 +567,7 @@ void Op_Diff_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
                     {
                       for (int nc=0; nc<nb_comp; nc++)
                         {
-                          valA = viscA(num_face,j,elem,nu(elem,nc));
+                          double valA = viscA(num_face,j,elem,nu(elem,nc));
                           resu(num_face,nc)+=valA*inconnue(j,nc);
                           resu(num_face,nc)-=valA*inconnue(num_face,nc);
                           if(j<nb_faces) // On traite les faces reelles

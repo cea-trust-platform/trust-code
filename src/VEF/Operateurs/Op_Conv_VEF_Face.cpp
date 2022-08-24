@@ -398,7 +398,6 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
       const int * traitement_pres_bord_addr = copyToDevice(traitement_pres_bord_);
       const int * face_voisins_addr = copyToDevice(face_voisins);
       const double * gradient_elem_addr = gradient_elem.addr();
-
       #pragma omp target teams distribute parallel for map(to:gradient_elem_addr[0:gradient_elem.size_array()]) map(tofrom:gradient_addr[0:gradient.size_array()])
       for (int fac=premiere_face_int; fac<nb_faces_; fac++)
         {
@@ -477,7 +476,13 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
       // boucle sur les polys
       if(nom_elem=="Tetra_VEF")
         {
-          #pragma omp target teams map(to:KEL_addr[0:KEL.size_array()], normales_facettes_Cl_addr[0:normales_facettes_Cl.size_array()], vecteur_face_facette_Cl_addr[0:vecteur_face_facette_Cl.size_array()], vitesse_addr[0:la_vitesse.valeurs().size_array()], vitesse_face_absolue_addr[0:vitesse_face_absolue.size_array()], gradient_addr[0:gradient.size_array()], transporte_face_addr[0:transporte_face.size_array()]) map(tofrom:flux_b_addr[0:flux_b.size_array()], resu_addr[0:resu.size_array()])
+          bool computeOnDevice = true;
+#ifdef __clang__
+#ifndef __cray__
+          computeOnDevice = false; // Provisoire crash sur clang++ non Cray
+#endif
+#endif
+          #pragma omp target teams if (computeOnDevice) map(to:KEL_addr[0:KEL.size_array()], normales_facettes_Cl_addr[0:normales_facettes_Cl.size_array()], vecteur_face_facette_Cl_addr[0:vecteur_face_facette_Cl.size_array()], vitesse_addr[0:la_vitesse.valeurs().size_array()], vitesse_face_absolue_addr[0:vitesse_face_absolue.size_array()], gradient_addr[0:gradient.size_array()], transporte_face_addr[0:transporte_face.size_array()]) map(tofrom:flux_b_addr[0:flux_b.size_array()], resu_addr[0:resu.size_array()])
           {
             int face[4];
             double vs[3];
@@ -486,7 +491,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
             double cc[3];
             double vsom[12];
             double xsom[12];
-            #pragma omp distribute parallel for firstprivate(alpha)
+            #pragma omp distribute parallel for private(face, vs, vc, xc, cc, vsom, xsom) firstprivate(alpha)
             for (int poly = 0; poly < nb_elem_tot; poly++)
               {
                 int rang = rang_elem_non_std_addr[poly];
@@ -1576,7 +1581,7 @@ void  Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
         double cc[3];
         double vsom[12];
         // boucle sur les polys
-        #pragma omp distribute parallel for
+        #pragma omp distribute parallel for private(face, vs, vc, cc, vsom)
         for (int poly = 0; poly < nb_elem_tot; poly++)
           {
 

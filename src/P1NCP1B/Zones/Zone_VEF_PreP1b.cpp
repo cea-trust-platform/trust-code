@@ -30,7 +30,6 @@
 #include <Check_espace_virtuel.h>
 #include <VEFPreP1B.h>
 #include <Octree_Double.h>
-#include <Device.h>
 
 Implemente_instanciable_sans_constructeur(Zone_VEF_PreP1b,"Zone_VEFPreP1b",Zone_VEF);
 
@@ -84,21 +83,6 @@ void Zone_VEF_PreP1b::discretiser()
         }
     }
   volumes_som.echange_espace_virtuel();
-
-  // Provisoire, tableaux constants sur device (on laisse pour ne pas faire des le premier operateur):
-  // ToDo remonter dans Zone_VEF ou/et Zone_VF::discretiser()
-  copyToDevice(elem_faces());
-  copyToDevice(face_voisins());
-  copyToDevice(face_normales());
-  copyToDevice(zone().les_elems());
-  copyToDevice(facette_normales());
-  copyToDevice(porosite_face());
-  copyToDevice(porosite_elem());
-  copyToDevice(inverse_volumes());
-  copyToDevice(rang_elem_non_std());
-  copyToDevice(vecteur_face_facette());
-  copyToDevice(xv());
-  copyToDevice(zone().domaine().coord_sommets());
 }
 
 void Zone_VEF_PreP1b::discretiser_suite(const VEFPreP1B& discr)

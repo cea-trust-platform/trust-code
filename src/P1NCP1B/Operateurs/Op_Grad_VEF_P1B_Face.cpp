@@ -391,7 +391,7 @@ ajouter_som(const DoubleTab& pre,
   #pragma omp target teams map(to:pre_addr[0:pre.size_array()]) map(tofrom:grad_addr[0:grad.size_array()])
   {
     double sigma[3];
-    #pragma omp distribute parallel for
+    #pragma omp distribute parallel for private(sigma)
     for(int elem=0; elem<nb_elem_tot; elem++)
       {
         for(int indice=0; indice<nfe; indice++)
