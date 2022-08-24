@@ -2196,10 +2196,10 @@ void Equation_base::calculer_champ_conserve(const Objet_U& obj, DoubleTab& val, 
   ConstDoubleTab_parts part(inco.valeurs());
   //valeur du champ lui-meme
   val = part[0];
-  if (coeff) tab_multiply_any_shape(val, coeff->valeurs());
+  if (coeff) tab_multiply_any_shape(val, coeff->valeurs(), VECT_ALL_ITEMS);
 
   bval = inco.valeur_aux_bords();
-  if (coeff) tab_multiply_any_shape(bval, coeff->valeur_aux_bords());
+  if (coeff) tab_multiply_any_shape(bval, coeff->valeur_aux_bords(), VECT_ALL_ITEMS);
 
   DoubleTab& der = deriv[inco.le_nom().getString()];
   if (coeff) der = coeff->valeurs();
