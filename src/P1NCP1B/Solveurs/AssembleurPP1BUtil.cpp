@@ -509,7 +509,7 @@ static double dotproduct_array_fois_inverse_quantitee_entrelacee(const ArrOfDoub
   assert(size == gradE.size_array());
   for (int i=0; i<size; i++) dot+=gradi[i]*gradE[i]*inverse_quantitee_entrelacee(face,i);
   return dot;
-  return  dotproduct_array(gradi,gradE)*inverse_quantitee_entrelacee(face,0);
+  //return  dotproduct_array(gradi,gradE)*inverse_quantitee_entrelacee(face,0);
 }
 
 static void contribuer_matriceP0P1(const Zone_VEF& zone_VEF,

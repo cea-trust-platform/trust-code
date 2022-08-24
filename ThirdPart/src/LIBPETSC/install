@@ -291,7 +291,7 @@ then
       # Pour pouvoir compiler AmgX+AmgXWrapper si les compilateurs de TRUST ne sont pas GNU
       CUDAFLAGS="-O3 -ccbin gcc"
       COPTFLAGS="-O3 -fPIC"
-      export OMPI_CC=gcc
+      [ "`basename $TRUST_cc_BASE`" = clang ] && export OMPI_CC=gcc # Bidouilles sur bidouilles...
       export OMPI_CXX=g++
    fi
    add_package viennacl
@@ -450,7 +450,7 @@ then
    # SUPERLU_DIST: Attention avec OpenMPI natif...
    # SuperLU_dist sur GPU necessite OpenMP ! Argh...
    #[ $minimal_mumps = 0 ] && add_package superlu_dist && [ "$TRUST_USE_CUDA" = 1 ] && [ $PETSC_HAVE_OPENMP = 0 ] && echo "Rerun configure by adding -openmp!" && exit 1
-   [ "$minimal_mumps" = 0 ] && [ "$TRUST_USE_CUDA" = 1 ] && [ "$PETSC_HAVE_OPENMP" = 1 ] && add_package superlu_dist
+   [ "$minimal_mumps" = 0 ] && [ "$TRUST_USE_CUDA" = 1 ] && [ "$PETSC_HAVE_OPENMP" = 1 ] && [ "`basename $TRUST_CC_BASE`" != nvc++ ] && add_package superlu_dist
 
    # New (SuiteSparse/Cholmod):
    if [ "$minimal_mumps" = 0 ]

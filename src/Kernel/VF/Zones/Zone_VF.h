@@ -714,7 +714,7 @@ inline const IntVect& Zone_VF::orientation() const
   Cerr<<"Try using orientation(num_face) instead of orientation() if the mesh is axis oriented."<< finl;
   exit();
   throw;
-  return orientation();
+  //return orientation();
 }
 
 inline int Zone_VF::orientation_si_definie(int num_face) const

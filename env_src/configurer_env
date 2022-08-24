@@ -1022,8 +1022,6 @@ then
    TRUST_USE_AMGX=1
    if [ ${TRUST_CC_BASE%nvc++} != $TRUST_CC_BASE ] # Plusieurs librairies ne compilent pas encore avec NVidia HPC/SDK
    then
-      TRUST_USE_AMGX=0 # AmgX ne compile toujours avec nvc++ (voir version recente d'AmgX) 
-      [ "$TRUST_DISABLE_PETSC"    != 1 ] && echo "Add -disable-petsc with nvc++ compiler"    && exit=-1  
       [ "$TRUST_DISABLE_VC"       != 1 ] && echo "Add -disable-vc with nvc++ compiler"       && exit=-1  
       [ "$TRUST_FORCE_SYSTEM_MPI" != 1 ] && echo "Add -force_system_mpi with nvc++ compiler" && exit=-1
       [ "$TRUST_DISABLE_MPI4PY"   != 1 ] && echo "Add -disable-mpi4py with nvc++ compiler"   && exit=-1
@@ -1704,8 +1702,7 @@ case $TRUST_ARCH_CC in
    linux_pgCC|linux_nvc++) TRUST_SUPPORTED=1
         m="# TMPDIR ?";e="TMPDIR=\"$TRUST_TMP\" && export TMPDIR";ecrit $m"|"$e"|"$env # Plantage vus avec /tmp par defaut
    	Defines="-D_COMPILE_AVEC_PGCC"
-	CppFlags="-O3 -fPIC"
-	#SYSLIBS="-lpgftnrtl -lrt" && [ "`basename $TRUST_F77_BASE`" = pgf90 ] && SYSLIBS="-lpgf90 -lpgf90rtl -lpghpf_mpi -lpghpf2 "$SYSLIBS
+	CppFlags="-O3 -fPIC" && [ "$TRUST_USE_OPENMP" = 1 ] && [ "$TRUST_USE_CUDA" = 1 ] && CppFlags="-O1 -fPIC" # Crash en -O2 et -O3 si -openmp -cuda...
 	F77Flags="-O3 -fPIC"
 	ccFLAGS="-O3 -fPIC"
 	ShLibFlag="\$(TRUST_CC) -shared"

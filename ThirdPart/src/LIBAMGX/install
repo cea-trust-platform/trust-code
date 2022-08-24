@@ -6,7 +6,7 @@ LIB=`basename $1`
 ROOT=`pwd`
 valgrind=$TRUST_ROOT/exec/valgrind/bin/valgrind
 # ToDo: remonter dans configure de TRUST pour partage avec PETSc ?
-[ -d $CUDA_ROOT/../math_libs ] &&  export CUDA_LIB_PATH=$CUDA_ROOT/../math_libs # Ajout sur orcus
+[ -d $CUDA_ROOT/../math_libs ] &&  export CUDA_LIB_PATH=$CUDA_ROOT/../math_libs && CUDA_NVCC_FLAGS="-DCUDA_NVCC_FLAGS=-I$CUDA_LIB_PATH/include;--compiler-options;-fPIC" # Ajout sur orcus
 [ -d $CUDA_ROOT/math_libs ]    &&  export CUDA_LIB_PATH=$CUDA_ROOT/math_libs    && CUDA_NVCC_FLAGS="-DCUDA_NVCC_FLAGS=-I$CUDA_LIB_PATH/include;--compiler-options;-fPIC" # Ajout sur topaze
 # Fin ToDo
 log=$ROOT/perf_$LIB.log && rm -f $log
@@ -82,7 +82,10 @@ then
    fi   
    CMAKE_FLAGS="$CMAKE_CXX_FLAGS -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX -DCMAKE_CUDA_HOST_COMPILER=$CC"
    # cmake (meme recent, 3.20) pas foutu de detecter correctement le nvcc du HPC SDK (cannot find -lcudadevrt -lcudart_static):
-   [ "$NVHPC" != "" ] && echo "$CUDA_ROOT/bin/nvcc -L$CUDA_ROOT/lib64 \$*" > nvcc && chmod +x nvcc && CMAKE_FLAGS=$CMAKE_FLAGS" -DCMAKE_CUDA_COMPILER=`pwd`/nvcc"
+   if [ "$NVHPC" != "" ] || [ "$NVCOMPILERS" != "" ]
+   then
+       echo "$CUDA_ROOT/bin/nvcc -L$CUDA_ROOT/lib64 \$*" > nvcc && chmod +x nvcc && CMAKE_FLAGS=$CMAKE_FLAGS" -DCMAKE_CUDA_COMPILER=`pwd`/nvcc"
+   fi 
    # Configure and build:
    cmake $CMAKE_FLAGS -DCMAKE_INSTALL_LIBDIR=lib64 -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB -DCMAKE_BUILD_TYPE=$BUILD .. && $TRUST_MAKE
    [ $? != 0 ] && exit -1
