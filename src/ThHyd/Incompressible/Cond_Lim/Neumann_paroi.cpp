@@ -48,9 +48,10 @@ int Neumann_paroi::compatible_avec_eqn(const Equation_base& eqn) const
   Motcle indetermine="indetermine",Concentration="Concentration",FracMass="fraction_massique";
   Motcle Fraction_volumique = "Fraction_volumique";
   Motcle Turbulence = "Turbulence";
+  Motcle Interfacial_area = "Interfacial_area";
 
   if ( (dom_app==Thermique) || (dom_app==Thermique_H) || (dom_app==Diphasique) || (dom_app==indetermine)
-       || (dom_app==Concentration) || (dom_app==FracMass) || (dom_app==Fraction_volumique) || (dom_app==Turbulence))
+       || (dom_app==Concentration) || (dom_app==FracMass) || (dom_app==Fraction_volumique) || (dom_app==Turbulence) || (dom_app==Interfacial_area) )
     return 1;
   else
     {

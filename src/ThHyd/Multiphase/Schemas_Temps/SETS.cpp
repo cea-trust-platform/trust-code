@@ -67,7 +67,7 @@ Sortie& SETS::printOn(Sortie& os ) const
 Entree& SETS::readOn(Entree& is )
 {
   /* valeurs par defaut des criteres de convergence */
-  crit_conv = { { "alpha", 1e-2 }, { "temperature", 1e-1 }, { "vitesse", 1e-2 }, { "pression", 100 }, {"k", 1e-2}, {"tau", 1e-2}, {"omega", 1e-2}, {"k_WIT", 1e-2}, {"interfacial_area", 1e-2} };
+  crit_conv = { { "alpha", 1e-2 }, { "temperature", 1e-1 }, { "vitesse", 1e-2 }, { "pression", 100 }, {"k", 1e-2}, {"tau", 1e-2}, {"omega", 1e-2}, {"k_WIT", 1e-2}, {"interfacial_area", 1e2} };
   first_call_ = 1;
   Simpler::readOn(is);
   return is;
