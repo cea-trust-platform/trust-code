@@ -20,7 +20,10 @@
 using std::cerr;
 using std::endl;
 #define Sortie std::ostream
-class ArrOfInt;
+
+template<typename T> class TRUSTArray;
+using ArrOfInt = TRUSTArray<entier>;
+//#include <ArrOfInt.h>
 // for Static_Int_Lists
 inline Sortie& operator<<(Sortie& is, const ArrOfInt& t)
 {

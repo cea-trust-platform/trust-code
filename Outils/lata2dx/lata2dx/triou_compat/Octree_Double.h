@@ -18,7 +18,6 @@
 #define Octree_Double_inclu
 #include <Octree_Int.h>
 #include <ArrOfDouble.h>
-class DoubleTab;
 class FloatTab;
 
 // .DESCRIPTION : Un octree permettant de chercher dans l'espace des elements ou des points

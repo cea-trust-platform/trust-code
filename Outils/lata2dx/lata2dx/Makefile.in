@@ -3,7 +3,7 @@
 # make debug = static not stripped not optimised with debug info
 include $(TRUST_ENV)/make.$(TRUST_ARCH_CC)
 
-SRCS=ArrOfBit.cpp ArrOfDouble.cpp ArrOfFloat.cpp ArrOfInt.cpp Connectivite_som_elem.cpp LataDB.cpp LataFilter.cpp LataStructures.cpp LataV1_field_definitions.cpp LataWriter.cpp Lata_tools.cpp LmlReader.cpp Motcle.cpp Octree_Double.cpp Octree_Int.cpp OperatorBoundary.cpp OperatorDualMesh.cpp OperatorFacesMesh.cpp OperatorReconnect.cpp OperatorRegularize.cpp Rebuild_virtual_layer.cpp Static_Int_Lists.cpp UserFields.cpp
+SRCS=ArrOfBit.cpp ArrOfFloat.cpp Connectivite_som_elem.cpp LataDB.cpp LataFilter.cpp LataStructures.cpp LataV1_field_definitions.cpp LataWriter.cpp Lata_tools.cpp LmlReader.cpp Motcle.cpp Octree_Double.cpp Octree_Int.cpp OperatorBoundary.cpp OperatorDualMesh.cpp OperatorFacesMesh.cpp OperatorReconnect.cpp OperatorRegularize.cpp Rebuild_virtual_layer.cpp Static_Int_Lists.cpp UserFields.cpp
 OBJECTS=$(SRCS:.cpp=.o)
 
 INCDIRS        	= -I .
