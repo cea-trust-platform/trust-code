@@ -1,0 +1,64 @@
+include_directories(.)
+
+#
+# Build lata2dx executable
+#
+set(exec lata2dx)
+add_executable (${exec} lata2dx.cpp)
+target_link_libraries(${exec} ${lib} ${ajout} )
+install(TARGETS ${exec} DESTINATION bin)
+
+#
+# Build compare_lata executable
+#
+set(exec compare_lata)
+add_executable (${exec} compare_lata.cpp )
+target_link_libraries(${exec} ${lib} ${ajout})
+install(TARGETS ${exec} DESTINATION bin)
+
+#
+# Build lataloader if requested
+#
+if (loadercpp)
+  #
+  # Library
+  #
+  set(tgt_ll LataLoader)
+  add_library(${tgt_ll} SHARED LataLoader.cpp)
+  target_link_libraries(${tgt_ll} ${lib}  ${ajout} )
+  install(TARGETS ${tgt_ll} DESTINATION lib)
+
+  #
+  # Test executable
+  #
+  set(tgt_tst test_LataLoader)
+  add_executable (${tgt_tst} test_LataLoader.cpp )
+  install(TARGETS ${tgt_tst} DESTINATION bin)
+  message("la ${paramedmem}")
+  target_link_libraries(${tgt_tst} ${tgt_ll} ${ajout})
+
+  #
+  # Swig
+  #
+  if (loaderpython)
+    find_package(PythonLibs REQUIRED)
+    find_package(PythonInterp REQUIRED)
+    find_package(SWIG REQUIRED)
+    include(${SWIG_USE_FILE})
+    
+    set_source_files_properties(LataLoader.i PROPERTIES CPLUSPLUS ON)
+    set_source_files_properties(LataLoader.i PROPERTIES SWIG_FLAGS "-shadow")
+    SWIG_ADD_MODULE(LataLoader python LataLoader.i)
+    include_directories(${PYTHON_INCLUDE_DIRS})
+    SWIG_LINK_LIBRARIES(LataLoader ${PYTHON_LIBRARIES} ${essai})
+    install(TARGETS _LataLoader  DESTINATION lib)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/LataLoader.py   DESTINATION lib)
+  else()
+    message ("LataLoader.py not compiled, env var TRUST_INT64=1, and not -Dloaderpython=ON ?")
+  endif()
+  configure_file(env.sh.in env.sh @ONLY)
+
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/env.sh DESTINATION . )
+else()
+  message ("LataLoader not compiled, MED_COUPLING_ROOT not set ?")
+endif(loadercpp)

@@ -1,10 +1,11 @@
 env_lata2dx=$(TRUST_ROOT)/exec/lata2dx_install/env.sh
-SRCS=$(wildcard lata2dx/commun_triou/*.cpp lata2dx/commun_triou/*.h lata2dx/triou_compat/*.cpp lata2dx/triou_compat/*.h lata2dx/triou_compat/*.tpp)
+tools_src=src
+SRCS=$(wildcard $(tools_src)/commun_triou/*.cpp $(tools_src)/commun_triou/*.h $(tools_src)/triou_compat/*.cpp $(tools_src)/triou_compat/*.h $(tools_src)/triou_compat/*.tpp)
 
 all: $(env_lata2dx)
  
-$(env_lata2dx): lata2dx/CMakeLists.txt lata2dx/new_build.sh Makefile $(TRUST_MEDCOUPLING_ROOT)/lib/libmedcoupling.a $(SRCS)
-	(cd lata2dx;./new_build.sh)
+$(env_lata2dx): $(tools_src)/CMakeLists.txt $(tools_src)/build.sh Makefile $(TRUST_MEDCOUPLING_ROOT)/lib/libmedcoupling.a $(SRCS)
+	(cd $(tools_src);./build.sh)
 	(cd $(TRUST_ROOT)/exec;ln -sf lata2dx_install/bin/lata2dx .)
 	(cd $(TRUST_ROOT)/exec;ln -sf lata2dx_install/bin/compare_lata .)
 
