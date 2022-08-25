@@ -1,5 +1,5 @@
 env_lata2dx=$(TRUST_ROOT)/exec/lata2dx_install/env.sh
-SRCS=$(wildcard lata2dx/commun_triou/*.cpp lata2dx/commun_triou/*.h lata2dx/triou_compat/*.cpp lata2dx/triou_compat/*.h)
+SRCS=$(wildcard lata2dx/commun_triou/*.cpp lata2dx/commun_triou/*.h lata2dx/triou_compat/*.cpp lata2dx/triou_compat/*.h lata2dx/triou_compat/*.tpp)
 
 all: $(env_lata2dx)
  

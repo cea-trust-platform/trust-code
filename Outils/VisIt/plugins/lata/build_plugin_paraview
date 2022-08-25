@@ -53,7 +53,7 @@ for i in $LATASRC/commun_triou/*.cpp $LATASRC/triou_compat/*.cpp
   do
   ln -sf $i `basename $i .cpp`.C
 done
-for i in $LATASRC/commun_triou/*.h $LATASRC/triou_compat/*.h
+for i in $LATASRC/commun_triou/*.h $LATASRC/triou_compat/*.h $LATASRC/triou_compat/*.tpp
   do
   ln -sf $i `basename $i`
 done

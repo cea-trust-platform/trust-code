@@ -39,7 +39,7 @@ if [ ! -d ${Build} ]
       do
       ln -sf $TRUST_ROOT/$LATASRC/$i `basename $i .cpp`.C
     done
-    for i in `cd $TRUST_ROOT/$LATASRC;ls commun_triou/*.h triou_compat/*.h 2>/dev/null`
+    for i in `cd $TRUST_ROOT/$LATASRC;ls commun_triou/*.h triou_compat/*.h triou_compat/*.tpp 2>/dev/null`
       do
       ln -sf $TRUST_ROOT/$LATASRC/$i `basename $i`
     done
