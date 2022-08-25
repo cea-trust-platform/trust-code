@@ -7,23 +7,23 @@ if [ -f Plan_to_lata_conversion_script_jdd1_SONDE_PX1Z.plan ]
 then
    fold="ref_jdd1"
    # Conversion of .plan files to .lata files
-   python $TRUST_ROOT/Outils/lata2dx/lata2dx/Plan_to_lata.py Plan_to_lata_conversion_script_jdd1_SONDE_PX1Z TwoDimRepresentation -lp 1>/dev/null 2>&1
-   python $TRUST_ROOT/Outils/lata2dx/lata2dx/Plan_to_lata.py Plan_to_lata_conversion_script_jdd1_SONDE_PX1Z.plan Plan_to_lata_conversion_script_jdd1_SONDE_PX1Z 1>/dev/null 2>&1 
-   python $TRUST_ROOT/Outils/lata2dx/lata2dx/Plan_to_lata.py Plan_to_lata_conversion_script_jdd1_SONDE_PXY1  Plan_to_lata_conversion_script_jdd1_SONDE_PXY1.lata 1>/dev/null 2>&1 
-   python $TRUST_ROOT/Outils/lata2dx/lata2dx/Plan_to_lata.py Plan_to_lata_conversion_script_jdd1_SONDE_VXY0 1>/dev/null 2>&1
-   python $TRUST_ROOT/Outils/lata2dx/lata2dx/Plan_to_lata.py Plan_to_lata_conversion_script_jdd1_SONDE_PINCLINED 1>/dev/null 2>&1 
-   python $TRUST_ROOT/Outils/lata2dx/lata2dx/Plan_to_lata.py Plan_to_lata_conversion_script_jdd1_SONDE_PXYZ 1>/dev/null 2>&1 
-   python $TRUST_ROOT/Outils/lata2dx/lata2dx/Plan_to_lata.py Plan_to_lata_conversion_script_jdd1_SONDE_V4YZ -l 1>/dev/null 2>&1
+   python $TRUST_ROOT/Outils/lata_tools/src/scripts/Plan_to_lata.py Plan_to_lata_conversion_script_jdd1_SONDE_PX1Z TwoDimRepresentation -lp 1>/dev/null 2>&1
+   python $TRUST_ROOT/Outils/lata_tools/src/scripts/Plan_to_lata.py Plan_to_lata_conversion_script_jdd1_SONDE_PX1Z.plan Plan_to_lata_conversion_script_jdd1_SONDE_PX1Z 1>/dev/null 2>&1 
+   python $TRUST_ROOT/Outils/lata_tools/src/scripts/Plan_to_lata.py Plan_to_lata_conversion_script_jdd1_SONDE_PXY1  Plan_to_lata_conversion_script_jdd1_SONDE_PXY1.lata 1>/dev/null 2>&1 
+   python $TRUST_ROOT/Outils/lata_tools/src/scripts/Plan_to_lata.py Plan_to_lata_conversion_script_jdd1_SONDE_VXY0 1>/dev/null 2>&1
+   python $TRUST_ROOT/Outils/lata_tools/src/scripts/Plan_to_lata.py Plan_to_lata_conversion_script_jdd1_SONDE_PINCLINED 1>/dev/null 2>&1 
+   python $TRUST_ROOT/Outils/lata_tools/src/scripts/Plan_to_lata.py Plan_to_lata_conversion_script_jdd1_SONDE_PXYZ 1>/dev/null 2>&1 
+   python $TRUST_ROOT/Outils/lata_tools/src/scripts/Plan_to_lata.py Plan_to_lata_conversion_script_jdd1_SONDE_V4YZ -l 1>/dev/null 2>&1
 
    # Projection that will crash since the plan defining SONDE_PINCLINED is inclined ! we cannont project this inclined plane on the (x,y) plane
-   python $TRUST_ROOT/Outils/lata2dx/lata2dx/Plan_to_lata.py Plan_to_lata_conversion_script_jdd1_SONDE_PINCLINED.plan toto.lata -p 1>/dev/null 2>&1
+   python $TRUST_ROOT/Outils/lata_tools/src/scripts/Plan_to_lata.py Plan_to_lata_conversion_script_jdd1_SONDE_PINCLINED.plan toto.lata -p 1>/dev/null 2>&1
    errorp=$?
 elif [ -f Plan_to_lata_conversion_script_jdd2_P_PROBE.plan ]
 then
    fold="ref_jdd2"
    # Conversion of .plan files to .lata files
-   python $TRUST_ROOT/Outils/lata2dx/lata2dx/Plan_to_lata.py Plan_to_lata_conversion_script_jdd2_P_PROBE.plan -l 1>/dev/null 2>&1
-   python $TRUST_ROOT/Outils/lata2dx/lata2dx/Plan_to_lata.py Plan_to_lata_conversion_script_jdd2_V_PROBE.plan toto_obstacle.lata -l 1>/dev/null 2>&1
+   python $TRUST_ROOT/Outils/lata_tools/src/scripts/Plan_to_lata.py Plan_to_lata_conversion_script_jdd2_P_PROBE.plan -l 1>/dev/null 2>&1
+   python $TRUST_ROOT/Outils/lata_tools/src/scripts/Plan_to_lata.py Plan_to_lata_conversion_script_jdd2_V_PROBE.plan toto_obstacle.lata -l 1>/dev/null 2>&1
 else
    echo "Error: It seems that you have renamed the datafile and/or the probes!"
    exit -1

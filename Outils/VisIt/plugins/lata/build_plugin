@@ -2,7 +2,7 @@
 prepsrc=0
 # On initialise l'environnement
 source $TRUST_ROOT/env_TRUST.sh 1>/dev/null 2>&1
-LATASRC=Outils/lata2dx/lata2dx
+LATASRC=Outils/lata_tools/src
 local=$TRUST_ROOT/exec/VisIt/bin
 DIR=`dirname $0`
 DIR=`(cd $DIR;pwd)`
@@ -13,7 +13,7 @@ plugin=lata
 #[ "$TRUST_DOWNLOAD_VISIT" = 1 ] && echo "Sorry, can't update a plugin of a none built VisIt version." && exit 0
 
 plugin_visit=`ls -rt $TRUST_ROOT/exec/VisIt/current/*/plugins/databases/*$plugin"Data"*.so 2>/dev/null | head -1`
-plugin_kernel=`ls -rt build/CMakeFiles/*/*.o $TRUST_ROOT/$LATASRC/Dcommun_triou/*  $TRUST_ROOT/$LATASRC/Dtriou_compat/*  2>/dev/null | tail -1`
+plugin_kernel=`ls -rt build/CMakeFiles/*/*.o $TRUST_ROOT/$LATASRC/Dtrust_commun/*  $TRUST_ROOT/$LATASRC/Dtrust_compat/*  2>/dev/null | tail -1`
 # ls -l  $plugin_kernel $plugin_visit
 
 if [ "$plugin_kernel" != "" ] && [ "$plugin_visit" != "" ] && [ "$plugin_kernel" -nt "$plugin_visit" ]
@@ -35,11 +35,11 @@ if [ ! -d ${Build} ]
     mkdir -p ${Build}
     cd ${Build}
     ln -sf $DIR/src/* . 2>/dev/null
-    for i in `cd $TRUST_ROOT/$LATASRC;ls commun_triou/*.cpp triou_compat/*.cpp 2>/dev/null`
+    for i in `cd $TRUST_ROOT/$LATASRC;ls trust_commun/*.cpp trust_compat/*.cpp 2>/dev/null`
       do
       ln -sf $TRUST_ROOT/$LATASRC/$i `basename $i .cpp`.C
     done
-    for i in `cd $TRUST_ROOT/$LATASRC;ls commun_triou/*.h triou_compat/*.h triou_compat/*.tpp 2>/dev/null`
+    for i in `cd $TRUST_ROOT/$LATASRC;ls trust_commun/*.h trust_compat/*.h trust_compat/*.tpp 2>/dev/null`
       do
       ln -sf $TRUST_ROOT/$LATASRC/$i `basename $i`
     done

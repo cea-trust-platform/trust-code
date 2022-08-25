@@ -5,7 +5,7 @@ if [ -f PAR_3D_P0P1Pa_MED_0000.med ] ; then
 
    source $TRUST_MEDCOUPLING_ROOT/env.sh || exit -1
 
-   python $TRUST_ROOT/Outils/lata2dx/lata2dx/merge_meds.py PAR_3D_P0P1Pa_MED_0000.med 4 PAR_MergeMEDs.med 1>merge_meds.log 2>&1
+   python $TRUST_ROOT/Outils/lata_tools/src/scripts/merge_meds.py PAR_3D_P0P1Pa_MED_0000.med 4 PAR_MergeMEDs.med 1>merge_meds.log 2>&1
    
    compare_lata 3D_P0P1Pa_MED_0000.med PAR_MergeMEDs.med  1>compare_med.log 2>&1
    err=$?

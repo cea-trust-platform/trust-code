@@ -1,5 +1,3 @@
-## source /home/l-fb153746/Logiciels/TrioU171/Trio_U/Outils/lata2dx/lata2dx/install/env.sh
-
 import LataLoader
 import MEDLoader
 

@@ -1,4 +1,4 @@
-diff -r bin/BUILD64/patch/Outils/lata2dx/lata2dx/commun_triou/LataDB.cpp ./Outils/lata2dx/lata2dx/commun_triou/LataDB.cpp
+diff -r bin/BUILD64/patch/Outils/lata_tools/src/trust_commun/LataDB.cpp ./Outils/lata_tools/src/trust_commun/LataDB.cpp
 400c400
 <     if ((type_ != LataDBDataType::INT64) &&  (type_ != LataDBDataType::INT32)) {
 ---

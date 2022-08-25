@@ -14,19 +14,18 @@ cp bin/BUILD64/Modifie bin/BUILD64/replace_int_entier.py bin/BUILD64/GO .
 # ICoCo should also remain out of the process.
 ./Modifie $(find src -type f -not -name "*.f" -not -name "*.txt" -not -name "*.include" -not -name "*.sh" -not -name "arch.h" -not -name "ProblemTrio.*")
 
-./Modifie $(find Outils/lata2dx/lata2dx -not -name "*.py" )
-./Modifie Outils/lata2dx/lata_dx_filter.cpp
+./Modifie $(find Outils/lata_tools/src -not -name "*.py" )
 
 ./Modifie  ThirdPart/src/LIBICOCOAPI/include/ICoCoTrioField.hxx
 ./Modifie  ThirdPart/src/LIBICOCOAPI/src/ICoCoTrioField.cpp
 sed -i "s/connectivity=new int/connectivity=new long/g" Outils/ICoCo/ICoCo_src/share/Validation/Rapports_automatiques/Test_interpolation/src/main.cpp
 
 # Perform supplementary sed on some files
-sed "s/long long long/long long/" -i Outils/lata2dx//lata2dx/commun_triou/LataDB.cpp
-sed "s/long compare_indirect/int compare_indirect/" -i  Outils/lata2dx//lata2dx/commun_triou/Lata_tools.cpp
+sed "s/long long long/long long/" -i Outils/lata_tools/src/trust_commun/LataDB.cpp
+sed "s/long compare_indirect/int compare_indirect/" -i  Outils/lata_tools/src/trust_commun/Lata_tools.cpp
 
-sed "s/long fonction/int fonction/" -i Outils/lata2dx/lata2dx/triou_compat/ArrOf*.cpp 
-sed "s/long main(long/int main(int/" -i  Outils/lata2dx/lata2dx//*cpp
+sed "s/long fonction/int fonction/" -i Outils/lata_tools/src/trust_compat/ArrOf*.cpp 
+sed "s/long main(long/int main(int/" -i  Outils/lata_tools/src/tools/*cpp
 
 sed -i "s/<< type_codage <</<</g" src/Kernel/Framework/Equation_base.cpp
 sed -i "s/%d/%ld/g" src/PolyMAC/Zones/Zone_PolyMAC.cpp
@@ -44,11 +43,11 @@ sed -i "s/std::vector< std::pair< std::pair< long, long >, double > > ts = GetAl
 
 sed -i "s/Cerr << \"Detecting a \" << mesh->getMeshDimension() << \"D mesh in \" << dim << \"D space.\" << finl;/Cerr << \"Detecting a \" << (long)mesh->getMeshDimension() << \"D mesh in \" << dim << \"D space.\" << finl;/" src/Kernel/MEDimpl/LireMED.cpp
 
-sed -i "s/std::vector< std::vector< std::pair<INTERP_KERNEL::NormalizedCellType,long> > > res = MEDCoupling::GetUMeshGlobalInfo(filename, meshname, meshDim, spacedim, nnodes);/std::vector< std::vector< std::pair<INTERP_KERNEL::NormalizedCellType,int> > > res = MEDCoupling::GetUMeshGlobalInfo(filename, meshname, meshDim, spacedim, nnodes);/" Outils/lata2dx/lata2dx/commun_triou/LataDBmed.h
-sed -i "s/void latadb_get_info_mesh_med(const char\* filename,const char\* meshname,med_geometry_type& type_geo,long& ncells,long& nnodes,long& spacedim, long &nbcomp,long& is_structured, std::vector<long>& NIJK)/void latadb_get_info_mesh_med(const char* filename,const char* meshname,med_geometry_type\& type_geo,long\& ncells,long\& nnodes,int\& spacedim, long \&nbcomp,long\& is_structured, std::vector<long>\& NIJK)/" Outils/lata2dx/lata2dx/commun_triou/LataDBmed.h
-sed -i "s/long meshDim;/int meshDim;/" Outils/lata2dx/lata2dx/commun_triou/LataDBmed.h
-sed -i "s/long spacedim;/int spacedim;/" Outils/lata2dx/lata2dx/commun_triou/LataDBmed.h
-sed -i "s/vector<pair< long, long > > iters= MEDCoupling::GetFieldIterations(ltypes\[t\],filename,meshname.getString(),fields\[i\].c_str());/vector<pair< int, int > > iters= MEDCoupling::GetFieldIterations(ltypes[t],filename,meshname.getString(),fields[i].c_str());/" Outils/lata2dx/lata2dx/commun_triou/LataDBmed.h
-sed -i "s/vector<pair<pair<long,long>,double> > vtimes=MEDCoupling::GetAllFieldIterations(filename,\/\*meshname,\*\/fields\[i\].c_str());/vector<pair<pair<int,int>,double> > vtimes=MEDCoupling::GetAllFieldIterations(filename,\/\*meshname,\*\/fields[i].c_str());/" Outils/lata2dx/lata2dx/commun_triou/LataDBmed.h
-sed -i "s/vector<pair<pair<long,long>,double> > vtimes=MEDCoupling::GetAllFieldIterations(fld.filename_.getString(),fieldname.getString());/vector<pair<pair<int,int>,double> > vtimes=MEDCoupling::GetAllFieldIterations(fld.filename_.getString(),fieldname.getString());/" Outils/lata2dx/lata2dx/commun_triou/LataDBmed.h
+sed -i "s/std::vector< std::vector< std::pair<INTERP_KERNEL::NormalizedCellType,long> > > res = MEDCoupling::GetUMeshGlobalInfo(filename, meshname, meshDim, spacedim, nnodes);/std::vector< std::vector< std::pair<INTERP_KERNEL::NormalizedCellType,int> > > res = MEDCoupling::GetUMeshGlobalInfo(filename, meshname, meshDim, spacedim, nnodes);/" Outils/lata_tools/src/trust_commun/LataDBmed.h
+sed -i "s/void latadb_get_info_mesh_med(const char\* filename,const char\* meshname,med_geometry_type& type_geo,long& ncells,long& nnodes,long& spacedim, long &nbcomp,long& is_structured, std::vector<long>& NIJK)/void latadb_get_info_mesh_med(const char* filename,const char* meshname,med_geometry_type\& type_geo,long\& ncells,long\& nnodes,int\& spacedim, long \&nbcomp,long\& is_structured, std::vector<long>\& NIJK)/" Outils/lata_tools/src/trust_commun/LataDBmed.h
+sed -i "s/long meshDim;/int meshDim;/" Outils/lata_tools/src/trust_commun/LataDBmed.h
+sed -i "s/long spacedim;/int spacedim;/" Outils/lata_tools/src/trust_commun/LataDBmed.h
+sed -i "s/vector<pair< long, long > > iters= MEDCoupling::GetFieldIterations(ltypes\[t\],filename,meshname.getString(),fields\[i\].c_str());/vector<pair< int, int > > iters= MEDCoupling::GetFieldIterations(ltypes[t],filename,meshname.getString(),fields[i].c_str());/" Outils/lata_tools/src/trust_commun/LataDBmed.h
+sed -i "s/vector<pair<pair<long,long>,double> > vtimes=MEDCoupling::GetAllFieldIterations(filename,\/\*meshname,\*\/fields\[i\].c_str());/vector<pair<pair<int,int>,double> > vtimes=MEDCoupling::GetAllFieldIterations(filename,\/\*meshname,\*\/fields[i].c_str());/" Outils/lata_tools/src/trust_commun/LataDBmed.h
+sed -i "s/vector<pair<pair<long,long>,double> > vtimes=MEDCoupling::GetAllFieldIterations(fld.filename_.getString(),fieldname.getString());/vector<pair<pair<int,int>,double> > vtimes=MEDCoupling::GetAllFieldIterations(fld.filename_.getString(),fieldname.getString());/" Outils/lata_tools/src/trust_commun/LataDBmed.h
 

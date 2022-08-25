@@ -11,15 +11,15 @@ fi
 
 paste_filenames ()
 {
-	for i in $1/commun_triou/*.cpp $1/triou_compat/*.cpp
+	for i in $1/trust_commun/*.cpp $1/trust_compat/*.cpp
 	do
 		  echo "        " `basename $i .cpp`.C
 	done >>lata.xml
 }
 
-if [ ! -d "$1/commun_triou" ]
+if [ ! -d "$1/trust_commun" ]
 then
-	echo Error: expected parameter lata2dx source directory
+	echo Error: expected parameter lata_tools source directory
 	exit
 fi
 LATASRC=$1

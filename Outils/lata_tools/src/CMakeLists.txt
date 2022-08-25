@@ -4,7 +4,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_INSTALL_MESSAGE LAZY)
 
-project(lata2dx)
+project(lata_tools)
 
 set (loadercpp off)
 option(loaderpython "build swig of lataloer" ON)
@@ -56,7 +56,7 @@ endif(loadercpp)
 # 
 # Building common static library 'liblata.a'
 #
-set(listdir commun_triou triou_compat)
+set(listdir trust_commun trust_compat)
 set(lib lata)
 set(lib_src)
 foreach(dir ${listdir})

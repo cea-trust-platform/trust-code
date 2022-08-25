@@ -7,7 +7,7 @@ then
 	then
 	ROOT=`pwd`/../..
 	echo "Not in TRUST environment. Rootdir=$ROOT"
-	LATASRC=$ROOT/lata2dx
+	LATASRC=$ROOT/lata_tools
 	local=$ROOT/bin
 	else	
 	 prepsrc=1
@@ -18,16 +18,16 @@ then
 else
 	ROOT=$TRUST_ROOT
        	echo "TRUST environment found. Rootdir=$ROOT"
-	LATASRC=$ROOT/Outils/lata2dx/lata2dx
+	LATASRC=$ROOT/Outils/lata_tools/src
 	local=$ROOT/exec/VisIt/bin
 
 fi
 
 
-echo "Checking for lata2dx sources in $LATASRC"	
-if [ ! -d $LATASRC/commun_triou ]
+echo "Checking for lata_tools sources in $LATASRC"	
+if [ ! -d $LATASRC/trust_commun ]
     then
-    echo "Error: lata2dx source tree not found"
+    echo "Error: lata_tools source tree not found"
     exit
 fi
 

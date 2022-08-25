@@ -27,7 +27,6 @@ if (loadercpp)
   add_library(${tgt_ll} SHARED LataLoader.cpp)
   target_link_libraries(${tgt_ll} ${lib}  ${ajout} )
   install(TARGETS ${tgt_ll} DESTINATION lib)
-
   #
   # Test executable
   #
@@ -50,7 +49,7 @@ if (loadercpp)
     set_source_files_properties(LataLoader.i PROPERTIES SWIG_FLAGS "-shadow")
     SWIG_ADD_MODULE(LataLoader python LataLoader.i)
     include_directories(${PYTHON_INCLUDE_DIRS})
-    SWIG_LINK_LIBRARIES(LataLoader ${PYTHON_LIBRARIES} ${essai})
+    SWIG_LINK_LIBRARIES(LataLoader ${PYTHON_LIBRARIES} ${tgt_ll})
     install(TARGETS _LataLoader  DESTINATION lib)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/LataLoader.py   DESTINATION lib)
   else()
