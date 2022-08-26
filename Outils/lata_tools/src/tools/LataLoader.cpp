@@ -28,8 +28,7 @@
 
 using namespace MEDCoupling;
 
-LataLoader::LataLoader(const char *file) throw (LataDBError)
-
+LataLoader::LataLoader(const char *file)
 {
   filename = Nom(file);
   cerr << "LataLoader constructor " << filename << endl;

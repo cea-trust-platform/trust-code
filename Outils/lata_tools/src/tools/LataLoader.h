@@ -28,7 +28,7 @@ class  MEDCouplingFieldDouble;
 class LataLoader
 {
 public:
-  LataLoader(const char*) throw (LataDBError);
+  LataLoader(const char*);
   ~LataLoader();
 
   int GetNTimesteps(void);
