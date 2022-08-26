@@ -16,7 +16,8 @@
 #ifndef TRUSTArray_included
 #define TRUSTArray_included
 
-#include <ArrOfInt.h>
-#include <ArrOfDouble.h>
+#include <TRUSTArray.tpp>
+using ArrOfDouble = TRUSTArray<double>;
+using ArrOfInt = TRUSTArray<entier>;
 
 #endif /* TRUSTArray_included */

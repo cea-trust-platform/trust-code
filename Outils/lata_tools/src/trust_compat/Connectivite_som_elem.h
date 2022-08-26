@@ -13,8 +13,12 @@
 *
 *****************************************************************************/
 
-#include<ArrOfInt.h>
 #include <arch.h>
+
+template <typename _TYPE_> class TRUSTArray;
+template <typename _TYPE_> class TRUSTTab;
+using ArrOfInt = TRUSTArray<entier>;
+using IntTab = TRUSTTab<entier>;
 
 class Static_Int_Lists;
 

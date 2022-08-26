@@ -16,7 +16,8 @@
 #ifndef TRUSTTab_included
 #define TRUSTTab_included
 
-#include <DoubleTab.h>
-#include <IntTab.h>
+#include <TRUSTTab.tpp>
+using DoubleTab = TRUSTTab<double>;
+using IntTab = TRUSTTab<entier>;
 
 #endif /* TRUSTTab_included */

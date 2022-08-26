@@ -16,7 +16,7 @@
 #ifndef Static_Int_Lists_def
 #define Static_Int_Lists_def
 
-#include <ArrOfInt.h>
+#include <TRUSTArray.h>
 
 //  Cette classe permet de stocker des listes d'entiers accessibles en temps constant. La taille des listes ne peut pas changer sans
 //  perdre le contenu (ce sont des listes statiques).

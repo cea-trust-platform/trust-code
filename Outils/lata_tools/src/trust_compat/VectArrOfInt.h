@@ -15,6 +15,8 @@
 
 #ifndef VectArrOfInt_h_inclu
 #define VectArrOfInt_h_inclu
-#include <ArrOfInt.h>
+
+#include <TRUSTArray.h>
 #include <Vect.h>
-#endif
+
+#endif /* VectArrOfInt_h_inclu */
