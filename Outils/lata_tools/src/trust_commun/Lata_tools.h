@@ -63,7 +63,8 @@ const bool mymachine_msb =  false;
 #endif
 
 #include <TRUSTArray.h>
-class ArrOfFloat;
+#include <ArrOfFloat.h>
+//class ArrOfFloat;
 class ArrOfBit;
 BigEntier memory_size(const ArrOfInt &);
 BigEntier memory_size(const ArrOfDouble &);

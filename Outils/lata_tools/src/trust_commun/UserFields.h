@@ -18,9 +18,9 @@
 
 #include <Lata_tools.h>
 #include <LataStructures.h>
+#include <ArrOfFloat.h>
 
 template<class F> class Field;
-class FloatTab;
 typedef Field<FloatTab> FieldType;
 class Field_Id;
 class LataFilter;

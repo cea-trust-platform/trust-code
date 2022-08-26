@@ -13,4 +13,16 @@
 *
 *****************************************************************************/
 
-#include <ArrOfFloat.h>
+#ifndef FloatTab_H
+#define FloatTab_H
+
+/*
+ * Elie Saikali
+ * Oblige de garder le typedef comme ca et pas dans TRUSTTab car la classe FloatTab de TRUST est pas une classe template !
+ */
+
+#include <TRUSTTab.tpp>
+using VFloatdata = VTRUSTdata<float>;
+using FloatTab = TRUSTTab<float>;
+
+#endif /* FloatTab_H */

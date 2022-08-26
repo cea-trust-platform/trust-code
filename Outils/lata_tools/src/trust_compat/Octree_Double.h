@@ -19,7 +19,8 @@
 #include <TRUSTArray.h>
 #include <Octree_Int.h>
 
-class FloatTab;
+template <typename _TITI_> class TRUSTTab;
+using FloatTab = TRUSTTab<float>;
 
 //  Un octree permettant de chercher dans l'espace des elements ou des points decrits par des coordonnees reeles. Cet objet est base sur Octree_Int.
 class Octree_Double
