@@ -41,10 +41,17 @@ prec:strength=AHAT
 
 smoother:relaxation_factor=0.8
 " > config
-NP=2 && DEC="2 1 1"
+NP=1 && DEC="1 1 1"
+#NP=2 && DEC="2 1 1"
 #NP=8 && DEC="2 2 2"
 #NP=512 && DEC="8 8 8"
 # 40x40x40=64000 cells/core
 mesh="40 40 40"
-echo "Running poisson7 on $NP*($mesh) cells with $NP cores:" 
+echo "==========================================================="
+echo "Running poisson7 in DP on $NP*($mesh) cells with $NP cores:" 
+echo "==========================================================="
 trust dummy $NP -mode dDDI -p $mesh $DEC -c config
+echo "==========================================================="
+echo "Running poisson7 in SP on $NP*($mesh) cells with $NP cores:" 
+echo "==========================================================="
+trust dummy $NP -mode dFFI -p $mesh $DEC -c config

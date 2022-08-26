@@ -27,6 +27,7 @@ then
       [ ! -f AmgX_SolverOptions_Classical.info ] && cp $configs/AmgX_SolverOptions_Classical.info .
       log=AmgX_$NGPU"GPU_"$NP"CPU_"$N"x"$N"x"$N.log
       trust -gpu dummy $NP -caseName AmgX_AGG_$N"x"$N"x"$N -mode AmgX_GPU -cfgFileName ./AmgX_SolverOptions_Classical.info -Nx $N -Ny $N -Nz $N 1>$log 2>&1
+      [ $? != 0 ] && cat $log
       timings $log
    done
 else

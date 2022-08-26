@@ -15,54 +15,44 @@ if [ $LIB = AmgX ]
 then
    # Build
    cd $ROOT
-   if [ "$TRUST_AMGX_LATEST" != "" ]
+   if [ "$TRUST_AMGX_COMMIT" != "" ]
    then
-      # Latest:
+      commit=$TRUST_AMGX_COMMIT
       git clone https://github.com/NVIDIA/AMGX.git $LIB
-      cd $LIB && git checkout main && commit=`git rev-parse HEAD` && cd -
-      tar cfz $TRUST_ROOT/externalpackages/AmgX/$LIB"_"$commit.tar.gz --exclude .git $LIB && echo "Creation du package $LIB"_"$commit.tar.gz"
+      cd $LIB && git checkout $commit && cd -
+      PACKAGE=$TRUST_ROOT/externalpackages/AmgX/$LIB"_"$commit.tar.gz
+      tar cfz $PACKAGE --exclude .git $LIB && echo "Creation du package $PACKAGE"
    else
-      #tar xfz $TRUST_ROOT/externalpackages/AmgX/AmgX_9304db908c5ec23ee011edc5418541c69c3fdc02.tar.gz # Regle un pb valgrind mais non convergence suspecte sur fiche validation
-      tar xfz $TRUST_ROOT/externalpackages/AmgX/AmgX_6dba8067ca.tar.gz
+      commit=6dba8067ca
+      commit=v2.3.0 # Verifier la validation (cas test AmgX_Semi_Implicite_jdd3 ecarts aleatoires)
+      tar xfz $TRUST_ROOT/externalpackages/AmgX/AmgX_$commit.tar.gz
    fi
    cd $LIB && mkdir -p build && cd build
    if [ "$TRUST_VERSION_GNU" != "" ]
    then
-      AMGX_COMPILERS="-DCMAKE_CXX_COMPILER=$TRUST_CC -DCMAKE_C_COMPILER=$TRUST_cc"
+      AMGX_COMPILERS="-DCMAKE_CXX_COMPILER=$TRUST_CC_BASE -DCMAKE_C_COMPILER=$TRUST_cc_BASE"
    else
       AMGX_COMPILERS="-DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc" # See https://github.com/NVIDIA/AMGX for compilers...
-   fi 
+   fi
    # Sur jeanzay, $TRUST_MAKE plante (pas assez de memoire sur frontale?) donc on retente avec make:
    cmake -Wno-dev $CUDA_NVCC_FLAGS -DCUDA_TOOLKIT_ROOT_DIR=$CUDA_ROOT -DAMGX_NO_RPATH=1 -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB $AMGX_COMPILERS .. && ($TRUST_MAKE || make) && make install && cp -f ../examples/matrix.mtx $AMGX_DIR/$LIB/lib/examples
    [ $? != 0 ] && exit -1
-   # Test
-   cd $AMGX_DIR/$LIB/lib/examples
-   export LD_LIBRARY_PATH=$AMGX_DIR/$LIB/lib:$LD_LIBRARY_PATH
-   # Test valgrind:
-   #[ "$TRUST_WITHOUT_HOST" = 1 ] && [ -f $valgrind ] && $valgrind ./amgx_capi -m matrix.mtx -c ../configs/core/FGMRES_AGGREGATION.json 2>&1 | tee -a $log
-   if [ -f $TRUST_ENV/card.log ] # On ne teste que si on peut lancer des calculs GPU
-   then
-      exec=./amgx_capi     trust -gpu dummy   -m matrix.mtx -c ../configs/core/FGMRES_AGGREGATION.json 2>&1 | tee -a $log
-      exec=./amgx_mpi_capi trust -gpu dummy 2 -m matrix.mtx -c ../configs/core/FGMRES_AGGREGATION.json 2>&1 | tee -a $log
-   fi
-   # solve: 	amgx_capi  	amgx_mpi_capi
-   # P600 	0.1120s		bizarre
-   # P2000      0.0010s		0.0256s
-   # V100 	0.0011s		0.0153s
-   # Site AmgX	0.0006s		0.0156s
-   cd $ROOT && rm -r -f $LIB # On efface les sources ?	 
+   make install && cp -f ../examples/matrix.mtx $AMGX_DIR/$LIB/lib/examples
+   cd $ROOT && rm -r -f $LIB
 fi
 if [ $LIB = AmgXWrapper ]
 then
    cd $ROOT
-   if [ "$TRUST_AMGXWRAPPER_LATEST" != "" ]
+   if [ "$TRUST_AMGXWRAPPER_COMMIT" != "" ]
    then
-      # Latest:
+      commit=$TRUST_AMGXWRAPPER_COMMIT
       git clone https://github.com/barbagroup/AmgXWrapper.git $LIB
-      cd $LIB && git checkout master && commit=`git rev-parse HEAD` && cd -
-      tar cfz $TRUST_ROOT/$LIB"_"$commit.tar.gz --exclude .git AmgXWrapper && echo "Creation du package \$TRUST_ROOT/$LIB"_"$commit.tar.gz"
+      cd $LIB && git checkout $commit && cd -
+      PACKAGE=$TRUST_ROOT/externalpackages/AmgX/$LIB"_"$commit.tar.gz
+      tar cfz $PACKAGE --exclude .git $LIB && echo "Creation du package $PACKAGE"
    else
-      tar xfz $TRUST_ROOT/externalpackages/AmgX/AmgXWrapper_331eba32db693528749bd2c46158073079d80972.tar.gz
+      commit=331eba32db693528749bd2c46158073079d80972
+      tar xfz $TRUST_ROOT/externalpackages/AmgX/AmgXWrapper_$commit.tar.gz
    fi
    # Hack pour empecher le test des binaires qui ne marche pas cluster (un binaire PETSc compile avec CUDA plantera sur la frontale non gpu)
    sed -i "1,$ s?endif (\${\${runs}})??" AmgXWrapper/cmake-modules/FindPETSc.cmake
@@ -78,8 +68,8 @@ then
       export CXX=$TRUST_CC
    else
       export CC=gcc
-      export CXX=g++   
-   fi   
+      export CXX=g++
+   fi
    CMAKE_FLAGS="$CMAKE_CXX_FLAGS -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX -DCMAKE_CUDA_HOST_COMPILER=$CC -DCMAKE_CUDA_FLAGS=-fPIC"
    # cmake (meme recent, 3.20) pas foutu de detecter correctement le nvcc du HPC SDK (cannot find -lcudadevrt -lcudart_static):
    if [ "$NVHPC" != "" ] || [ "$NVCOMPILERS" != "" ]
@@ -87,7 +77,7 @@ then
        # Sur orcus, besoin d'ajouter -L$CUDA_ROOT/../compilers/lib -lnvc -lnvcpumath avec 21.2 (undefined reference __pgi au link...)
        # echo "$CUDA_ROOT/bin/nvcc -L$CUDA_ROOT/../compilers/lib -lnvc -lnvcpumath -L$CUDA_ROOT/lib64 \$*" > nvcc && chmod +x nvcc && CMAKE_FLAGS=$CMAKE_FLAGS" -DCMAKE_CUDA_COMPILER=`pwd`/nvcc"
        echo "$CUDA_ROOT/bin/nvcc -L$CUDA_ROOT/lib64 \$*" > nvcc && chmod +x nvcc && CMAKE_FLAGS=$CMAKE_FLAGS" -DCMAKE_CUDA_COMPILER=`pwd`/nvcc"
-   fi 
+   fi
    # Configure and build:
    cmake $CMAKE_FLAGS -DCMAKE_INSTALL_LIBDIR=lib64 -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB -DCMAKE_BUILD_TYPE=$BUILD -DBUILD_SHARED_LIBS=OFF .. && $TRUST_MAKE
    [ $? != 0 ] && exit -1
@@ -103,30 +93,10 @@ then
       sed -i "1,$ s?# include <petsctime.h>??g" $ROOT/AmgXWrapper/example/$test/src/solve.cpp || exit -1
       mkdir -p $test && cd $test && cp $ROOT/AmgXWrapper/example/$test/README.md . && cmake $CMAKE_FLAGS $ROOT/AmgXWrapper/example/$test && $TRUST_MAKE && cd .. || exit -1
    done
-   cd $AMGX_DIR/$LIB/example/poisson
-   # Test valgrind:
-   #[ "$TRUST_WITHOUT_HOST" = 1 ] && [ -f $valgrind ] && $valgrind bin/poisson -caseName valgrind -mode AmgX_GPU -cfgFileName configs/AmgX_SolverOptions_Classical.info -Nx 2 -Ny 2 -Nz 2 2>&1 | tee -a
-   if [ -f $TRUST_ENV/card.log ] # On ne teste que si on peut lancer des calculs GPU
-   then
-      N=100 && [ "`grep P400 $TRUST_ROOT/env/card.log 2>/dev/null`" != "" ] && N=85
-      name=$N"x"$N"x"$N
-      exec=bin/poisson trust -gpu dummy 4 -caseName   PETSc_GAMG_$name -mode PETSc    -cfgFileName configs/PETSc_SolverOptions_GAMG.info     -Nx $N -Ny $N -Nz $N 2>&1 | tee -a $log
-      exec=bin/poisson trust -gpu dummy 4 -caseName AmgX_GPU_AGG_$name -mode AmgX_GPU -cfgFileName configs/AmgX_SolverOptions_Classical.info -Nx $N -Ny $N -Nz $N 2>&1 | tee -a $log
-      exec=bin/poisson trust -gpu dummy 4 -caseName AmgX_CSR_AGG_$name -mode AmgX_CSR -cfgFileName configs/AmgX_SolverOptions_Classical.info -Nx $N -Ny $N -Nz $N 2>&1 | tee -a $log
-   fi
-   # ---------------------------------------------------------------------------	  
-   # Machine	NVidia		GFlops	Cuda	Driver	GNU	MPI		solve	GAMG	AmgX_AGG	 
-   # is242981	P400 (2Go)	   	10.2	11.0   10.0.1	OpenMPI 4.0.3   	0.90s   0.78s
-   # is234639	P600 		 1.1	10.0	10.2	7.4.0	OpenMPI 4.0.3		1.83s	0.67s
-   # is225303 	K4000 		 1.2   	 8.0 	 9.0	5.4.0	MPICH 3.2		2.08s	crash Cuda failure: 'invalid device function' dense_lu_solver.cu:698
-   # portable   GTX 1050 Ti     2.1	11.1	11.2	9.3.0   OpenMPI 4.0.3		2.07s	0.46s
-   # is240831	P2000		 3.0	10.1	10.1	7.5.0	MPICH 3.2		1.72s   0.30s
-   # irene	P100-PCIE-12Go	10.6	10.2	10.2	7.3.0	OpenMPI 2.0.4		1.16s	0.11s
-   # cobalt	P100-PCIE-16Go	14.1	10.2	10.2	7.3.0	OpenMPI 2.0.4		1.35s	0.08s
-   # cobalt     V100 ?		14.1	10.2	10.2	7.3.0	OpenMPI 2.0.4		?	?
-   # orcus	V100-PCIE-16Go 	14.1	 9.2 	10.1	6.5.0				1.32s	0.07s
-   # jeanzay	V100-SXM2-16Go	14.0	10.2	10.2	8.3.1	OpenMPI	4.0.2-cuda	1.15s	0.048s (7500Euros...)
-   # topaze	A100-SXM-80GB 	?	11.2		8.3.0	OpenMPI 4.0.5		0.65s	0.039s
-   #cd $ROOT && rm -r -f $LIB # On efface les sources ?	    
+   cd $ROOT && rm -r -f $LIB # On efface les sources ?
+fi
+if [ -f $TRUST_ENV/card.log ] # On ne teste que si on peut lancer des calculs GPU
+then
+   ./test_$LIB.sh | tee -a $log
 fi
 exit 0

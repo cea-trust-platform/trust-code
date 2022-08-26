@@ -1312,7 +1312,8 @@ void Solv_Petsc::create_solver(Entree& entree)
       if (!amgx_option.contient("s:print_solve_stats")) s << "s:print_solve_stats=1" << finl;
       if (!amgx_option.contient("s:obtain_timings"))    s << "s:obtain_timings=1" << finl;
       if (!amgx_option.contient("s:max_iters"))         s << "s:max_iters=10000" << finl; // 100 par defaut trop bas...
-      s << "# determinism_flag=1" << finl; // Plus lent de 15% mais resultat deterministique et repetable
+      s << "# determinism_flag=1" << finl; // Plus lent de 15% mais resultat deterministique et repetable (on l'active pour les tests de NR):
+      if (Process::nproc()<10) s << "determinism_flag=1" << finl;
       s << "# communicator=MPI_DIRECT" << finl; // MPI_CUDA aware
       Cerr << "Writing the AmgX config file: " << config() << finl;
     }

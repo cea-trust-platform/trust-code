@@ -9,7 +9,8 @@ echo "Testing reading $matrix with petsc_matrix.sh..."
 if [ -f PETSC_AMGX.TU ] && [ ! -f PAR_PETSC_AMGX.TU ] && [ "$TRUST_WITHOUT_HOST" = 1 ] && [ -f $TRUST_ROOT/exec/valgrind/bin/valgrind ]
 then
    echo "Quick valgrind check on a smaller test case ..."
-   sed "1,$ s?11 11?3 3?g" $jdd.data > valgrind.data || exit -1
+   sed "1,$ s?11 11?2 2?g" $jdd.data > valgrind.data || exit -1
+   sed -i "1,$ s?tinit?nb_pas_dt_max 2 tinit?g" valgrind.data || exit -1
    trust -valgrind valgrind 1>valgrind.out_err 2>&1
    [ $? != 0 ] && echo "Valgrind errors ! Check `pwd`/valgrind.out_err" && exit -1
 fi
