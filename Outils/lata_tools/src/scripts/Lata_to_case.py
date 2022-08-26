@@ -4,7 +4,7 @@
 
 import LataLoader
 import Lata_to_med
-import MEDLoader
+import medcoupling as mc
 from CaseWriter import CaseWriter
 from optparse import OptionParser
 import os
@@ -26,16 +26,16 @@ def buildMEDFileData(latafile,lasttime):
     liste_fields=a.GetFieldNames()
 
 
-    mfd = MEDLoader.MEDFileData()
+    mfd = mc.MEDFileData()
 
-    mfm = MEDLoader.MEDFileMeshes()
+    mfm = mc.MEDFileMeshes()
 
-    med_file_mesh = MEDLoader.MEDFileUMesh()
+    med_file_mesh = mc.MEDFileUMesh()
     med_file_mesh.setMeshAtLevel(0, mesh)
 
     mfm.pushMesh(med_file_mesh)
 
-    mff = MEDLoader.MEDFileFields()
+    mff = mc.MEDFileFields()
 
     #remplissage de chaque field
     for name in liste_fields:
@@ -43,9 +43,9 @@ def buildMEDFileData(latafile,lasttime):
         #a chaque field est associe un MEDFileField1TS ou MEDFileFieldMultiTS
         if lasttime:
             liste_ite=[a.GetNTimesteps()-1]
-            mf1ts = MEDLoader.MEDFileField1TS()
+            mf1ts = mc.MEDFileField1TS()
 
-        mfmultits = MEDLoader.MEDFileFieldMultiTS()
+        mfmultits = mc.MEDFileFieldMultiTS()
 
         #boucle sur les pas de temps
         for ite in liste_ite:
@@ -121,7 +121,7 @@ if __name__=="__main__":
         mfd=buildMEDFileData(latafile,opts.lasttime)
         cw.setMEDFileDS(mfd)
         listOfWrittenFileNames=cw.write(casefile)
-    except MEDLoader.InterpKernelException as e:
+    except mc.InterpKernelException as e:
         print("An error occurred during the conversion!")
         print("#######################################")
         raise e

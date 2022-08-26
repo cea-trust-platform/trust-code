@@ -1,24 +1,23 @@
 from __future__ import print_function
 import medcoupling as mc
-import MEDLoader as ml
 from optparse import OptionParser
 import sys
 import os
 
 
 def write_mesh():
-    mn = ml.GetMeshNames(FilesList[0])
+    mn = mc.GetMeshNames(FilesList[0])
     wfs = True
     for n in mn:
         print ("Mesh : %s, proc :" %format(n), end=" ")
         meshes = []
         for i, f in enumerate(FilesList):
             print (i, end=" "),
-            mesh = ml.ReadUMeshFromFile(f, n, 0)
+            mesh = mc.ReadUMeshFromFile(f, n, 0)
             meshes.append(mesh)
-        mesh_m = ml.MEDCouplingUMesh.MergeUMeshes(meshes)
+        mesh_m = mc.MEDCouplingUMesh.MergeUMeshes(meshes)
         mesh_m.setName(meshes[0].getName())
-        ml.WriteUMesh(OutputFile, mesh_m, wfs); wfs = False
+        mc.WriteUMesh(OutputFile, mesh_m, wfs); wfs = False
         print ("done")
 
 def write_fields():
@@ -30,13 +29,13 @@ def write_fields():
             f_dt = []
             for i, f in enumerate(FilesList):
                 print (i, end=" "),
-                f_m = ml.MEDFileFieldMultiTS.New(f, n)
+                f_m = mc.MEDFileFieldMultiTS.New(f, n)
                 f_dt.append(f_m[t].getFieldAtLevel(mc.ON_CELLS,0))
             print ("done")
             f_dt_merge = mc.MEDCouplingFieldDouble.MergeFields(f_dt)
             f_dt_merge.setTime(f_dt[0].getTime()[0], f_dt[0].getTime()[1], 0)
             f_dt_merge.setName(f_dt[0].getName())
-            fnp = ml.MEDFileField1TS.New()
+            fnp = mc.MEDFileField1TS.New()
             fnp.setFieldNoProfileSBT(f_dt_merge)
             fnp.write(OutputFile, 0)
 
@@ -71,9 +70,9 @@ if __name__=="__main__":
            print(("\nFatal error: %s file does not exist!" %(FilesList[i])))
            exit(1)
 
-    mff = ml.MEDFileFields(FilesList[0])
+    mff = mc.MEDFileFields(FilesList[0])
     fn = mff.getFieldsNames()
-    n_dt = len(ml.MEDFileFieldMultiTS.New(FilesList[0], fn[0]))
+    n_dt = len(mc.MEDFileFieldMultiTS.New(FilesList[0], fn[0]))
 
     write_mesh()
     write_fields()

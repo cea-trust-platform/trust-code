@@ -1,6 +1,5 @@
 import LataLoader
-import MEDLoader
-
+import medcoupling as mc
 
 EPS=1e-5       # used for merging nodes
 EPS_DUAL=1e-7  # used for merging nodes (dual mesh)
@@ -48,7 +47,7 @@ def BuildMergedMesh( latafile , write_med, medfile, domain_name ):
 
     # Write mesh
     if write_med :
-        MEDLoader.WriteMesh(medfile,mesh,True)
+        mc.WriteMesh(medfile,mesh,True)
 
     meshnamedual=meshname+"_dual"
     if meshnamedual in meshes:
@@ -59,7 +58,7 @@ def BuildMergedMesh( latafile , write_med, medfile, domain_name ):
             if areMerged_dual:
                 print("Merged nodes in the dual domain '%s'" % meshnamedual)
         # Write dual mesh
-        MEDLoader.WriteMesh(medfile,mesh_dual,False)
+        mc.WriteMesh(medfile,mesh_dual,False)
 
     return mesh , indices, newNbNodes, typ_nam
 
@@ -100,9 +99,9 @@ def convert(latafile,medfile,domain_name,mesh_only,lasttime=0):
                         d2 = indices.invertArrayO2N2N2O(newNbNodes)
                         f2.setArray(d[d2])
 
-                    MEDLoader.WriteFieldUsingAlreadyWrittenMesh(medfile,f2)
+                    mc.WriteFieldUsingAlreadyWrittenMesh(medfile,f2)
                 else:
-                    MEDLoader.WriteFieldUsingAlreadyWrittenMesh(medfile,f)
+                    mc.WriteFieldUsingAlreadyWrittenMesh(medfile,f)
                     pass
                 pass
             pass

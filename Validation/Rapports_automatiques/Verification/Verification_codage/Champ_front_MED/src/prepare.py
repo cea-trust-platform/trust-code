@@ -1,20 +1,19 @@
-import MEDLoader as ml
 import medcoupling as mc
 import math
 
 filename = "fields.med"
 # Lecture du maillage
-meshMEDFileRead = ml.MEDFileMesh.New("mesh.med")
+meshMEDFileRead = mc.MEDFileMesh.New("mesh.med")
 mesh = meshMEDFileRead.getMeshAtLevel(0)
 
 ON_CELLS = True
 if ON_CELLS:
-    f = ml.MEDCouplingFieldDouble.New(mc.ON_CELLS, mc.ONE_TIME)
+    f = mc.MEDCouplingFieldDouble.New(mc.ON_CELLS, mc.ONE_TIME)
     f.setName("VITESSE_ELEM_dom")
     coords = mesh.computeCellCenterOfMass()
     print("Creating a velocity field on cells...")
 else:
-    f = ml.MEDCouplingFieldDouble.New(mc.ON_NODES, mc.ONE_TIME)
+    f = mc.MEDCouplingFieldDouble.New(mc.ON_NODES, mc.ONE_TIME)
     f.setName("VITESSE_SOM_dom")
     coords = mesh.getCoords()
     print("Creating a velocity field on nodes...")
@@ -24,7 +23,7 @@ f.setArray(coords)
 f.setMesh(mesh)
 
 print("Writing mesh into file...")
-ml.WriteUMesh(filename,f.getMesh(),True)
+mc.WriteUMesh(filename,f.getMesh(),True)
 
 # Boucle sur plusieurs pas de temps dt=0.1
 dt=0.1
@@ -38,10 +37,10 @@ for i in range(0, 30):
         f.getArray()[node, 1] = 0.0
         f.getArray()[node, 2] = 0.0
     f.setTime(t, i, i)
-    ml.WriteFieldUsingAlreadyWrittenMesh(filename, f)
+    mc.WriteFieldUsingAlreadyWrittenMesh(filename, f)
 
 # Ecriture d'une autre vitesse
 f.setName("PRESSION_ELEM_dom")
 f.setTime(0, 0, 0)
 f.fillFromAnalytic(1, "x*0.0+y*(1-y)+z*0.0") # Bug MEDCoupling, il faut specifier x,y,z !
-ml.WriteFieldUsingAlreadyWrittenMesh(filename, f)
+mc.WriteFieldUsingAlreadyWrittenMesh(filename, f)
