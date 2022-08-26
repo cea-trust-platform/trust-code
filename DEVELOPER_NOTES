@@ -1,6 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.9.1_beta : Changes since version 1.9.0 :
 -------------------------------------------------------------
+26/08/22 (TRUST) No more DX sources in TRUST. Outils/lata2dx is clean now and renamed as Outils/lata_tools.
 26/07/22 (TRUST) Activating compilation flag -Wconversion in TRUST and baltiks (for 32bits version only)
 -------------------------------------------------------------
 Developer notes version 1.9.0 : Changes since version 1.8.4 :

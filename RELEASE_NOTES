@@ -1,6 +1,8 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.1_beta : Enhancements, modifications and corrected bugs since version 1.9.0 :
 --------------------------------------------------------------------------------------------------
+26/08/22 (TRUST)  Change      : Previous lata2dx exec is now called lata_analyzer. It is built in Outils/lata_tools (previous Outils/lata2dx).
+26/08/22 (TRUST)  Change      : TRUST do not support anymore DX visualizations.
 08/08/22 (TRUST)  New option  : Add reduce_ram option for some PETSc direct solvers (MUMPS) to suppress preventive RAM increase.
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.0 : Enhancements, modifications and corrected bugs since version 1.8.4 :
