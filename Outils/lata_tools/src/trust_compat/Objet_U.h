@@ -13,9 +13,9 @@
 *
 *****************************************************************************/
 
-// Class declared for compatibility with TRUST
 #ifndef Objet_U_inclu
 #define Objet_U_inclu
+
 #include <LataJournal.h>
 #include <Sortie.h>
 #include <Entree.h>
@@ -24,4 +24,4 @@
 #define Cerr Journal()
 #define finl std::endl
 
-#endif
+#endif /* Objet_U_inclu */

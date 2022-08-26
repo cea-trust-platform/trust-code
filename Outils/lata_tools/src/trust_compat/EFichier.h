@@ -15,7 +15,9 @@
 
 #ifndef EFichier_H
 #define EFichier_H
+
 #include <Entree.h>
+
 class EFichier : public Entree
 {
 public:
@@ -24,23 +26,14 @@ public:
     is_.open(name);
     return is_.good();
   }
-  operator std::istream& ()
-  {
-    return is_;
-  }
-  int eof()
-  {
-    return is_.eof();
-  }
-  int good()
-  {
-    return is_.good();
-  }
-  std::istream& get_istream()
-  {
-    return is_;
-  }
+
+  operator std::istream& () { return is_; }
+  int eof() { return is_.eof(); }
+  int good() { return is_.good(); }
+  std::istream& get_istream() { return is_; }
+
 private:
   std::ifstream is_;
 };
-#endif
+
+#endif /* EFichier_H */

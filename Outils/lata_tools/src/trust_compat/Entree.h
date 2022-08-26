@@ -15,9 +15,11 @@
 
 #ifndef Entree_H
 #define Entree_H
+
 #include <iostream>
 #include <fstream>
 #include <Motcle.h>
+
 // This class emulates the main functionalities of the Entree and EFichier classes in TRUST
 class Entree
 {
@@ -34,21 +36,25 @@ inline Entree& operator>>(Entree& is, double& t)
   is.get_istream() >> t;
   return is;
 }
+
 inline Entree& operator>>(Entree& is, float& t)
 {
   is.get_istream() >> t;
   return is;
 }
+
 inline Entree& operator>>(Entree& is, Nom& n)
 {
   is.get_istream() >> n;
   return is;
 }
+
 inline Entree& operator>>(Entree& is, Motcle& n)
 {
   is.get_istream() >> n;
   return is;
 }
+
 inline Entree& operator>>(Entree& is, entier& n)
 {
   is.get_istream() >> n;
@@ -58,8 +64,6 @@ inline Entree& operator>>(Entree& is, entier& n)
 template<typename T> class TRUSTArray;
 using ArrOfInt = TRUSTArray<entier>;
 // For Static_Int_Lists:
-inline Entree& operator>>(Entree& is, ArrOfInt& t)
-{
-  throw;
-}
-#endif
+inline Entree& operator>>(Entree& is, ArrOfInt& t) { throw; }
+
+#endif /* Entree_H */

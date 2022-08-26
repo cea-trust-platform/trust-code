@@ -13,12 +13,10 @@
 *
 *****************************************************************************/
 
-#include <arch.h>
-
 #include<ArrOfInt.h>
+#include <arch.h>
 
 class Static_Int_Lists;
 
 void construire_connectivite_som_elem(const entier nb_sommets, const IntTab &les_elems, Static_Int_Lists &som_elem, const entier include_virtual);
-
 void find_adjacent_elements(const Static_Int_Lists &som_elem, const ArrOfInt &sommets_to_find, ArrOfInt &elements);

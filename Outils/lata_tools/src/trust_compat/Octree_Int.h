@@ -15,49 +15,38 @@
 
 #ifndef Octree_Int_inclus
 #define Octree_Int_inclus
-#include <TRUSTTab.h>
+
 #include <VectArrOfInt.h>
+#include <TRUSTTab.h>
 
 struct IntBoxData;
 class ArrOfBit;
 
-// .DESCRIPTION : Un octree permettant de retrouver des objets ponctuels ou
-//   parallelipipediques dans un espace 1D, 2D ou 3D et des coordonnees entieres
+// Un octree permettant de retrouver des objets ponctuels ou parallelipipediques dans un espace 1D, 2D ou 3D et des coordonnees entieres
 class Octree_Int
 {
 public:
-  void   build(const entier dimension, const IntTab& elements_boxes);
-  entier search_elements(entier x, entier y, entier z, entier& floor_elements_index) const;
-  entier search_elements_box(entier xmin, entier ymin, entier zmin,
-                             entier xmax, entier ymax, entier zmax,
-                             ArrOfInt& elements) const;
-  void   reset();
+  void build(const entier dimension, const IntTab &elements_boxes);
+  entier search_elements(entier x, entier y, entier z, entier &floor_elements_index) const;
+  entier search_elements_box(entier xmin, entier ymin, entier zmin, entier xmax, entier ymax, entier zmax, ArrOfInt &elements) const;
+  void reset();
 
-  inline const ArrOfInt& floor_elements() const
-  {
-    return floor_elements_;
-  };
+  inline const ArrOfInt& floor_elements() const { return floor_elements_; }
 
   // Le plus grand entier autorise pour les coordonnees (du type 2^n - 1)
   static const entier coord_max_;
   // Premier entier de la moitie superieure de l'octree root (si coord_max_=2^n-1, half_width_=2^(n-1))
   static const entier root_octree_half_width_;
 protected:
-  entier build_octree_recursively(const entier octree_center_x, const entier octree_center_y, const entier octree_center_z,
-                                  const entier octree_half_width,
-                                  const IntTab& elements_boxes,
-                                  VECT(ArrOfInt) & vect_elements_list,
+  entier build_octree_recursively(const entier octree_center_x, const entier octree_center_y, const entier octree_center_z, const entier octree_half_width, const IntTab &elements_boxes,
+  VECT(ArrOfInt) &vect_elements_list,
                                   const entier level,
-                                  VECT(ArrOfInt) & tmp_elem_flags);
-  entier build_octree_floor(const ArrOfInt& elements_list);
+                                  VECT(ArrOfInt) &tmp_elem_flags);
+  entier build_octree_floor(const ArrOfInt &elements_list);
 
   entier search_octree_floor(entier x_pos, entier y_pos, entier z_pos) const;
-  void   search_elements_box_floor(IntBoxData& boxdata,
-                                   entier octree_floor_id) const;
-  void   search_elements_box_recursively(IntBoxData& boxdata,
-                                         entier octree_id,
-                                         entier cx, entier cy, entier cz,
-                                         entier half_width) const;
+  void search_elements_box_floor(IntBoxData &boxdata, entier octree_floor_id) const;
+  void search_elements_box_recursively(IntBoxData &boxdata, entier octree_id, entier cx, entier cy, entier cz, entier half_width) const;
 
   // Un octree peut etre soit vide, soit subdivise en nb_octrees autres octrees,
   // soit un octree_floor contenant une liste d'elements.
@@ -86,4 +75,4 @@ protected:
   ArrOfInt floor_elements_;
 };
 
-#endif
+#endif /* Octree_Int_inclus */

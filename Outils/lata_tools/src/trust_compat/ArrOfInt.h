@@ -19,26 +19,7 @@
 #include <TRUSTTab.tpp>
 
 using ArrOfInt = TRUSTArray<entier>;
-
 using IntTab = TRUSTTab<entier>;
-
-//class ArrOfInt : public TRUSTArray<entier>
-//{
-//public:
-//  ArrOfInt() : TRUSTArray<entier>() { }
-//  ArrOfInt(entier a,entier b) : TRUSTArray<entier>(a,b) { }
-//
-//  // see https://www.linuxtopia.org/online_books/programming_books/thinking_in_c++/Chapter14_018.html
-//  inline ArrOfInt& operator=(entier x) { TRUSTArray<entier>::operator=(x); return *this; }
-//};
-//
-//
-//class IntTab : public TRUSTTab<entier>
-//{
-//public:
-//  IntTab() : TRUSTTab<entier>() { }
-//  IntTab(const entier i, const entier j) : TRUSTTab<entier>(i,j) { }
-//};
 
 #endif /* ArrOfInt_H */
 

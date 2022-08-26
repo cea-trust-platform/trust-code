@@ -19,9 +19,6 @@
 #include <arch.h>
 
 
-
-
-
 #ifdef WIN32
 #define __BIG_ENDIAN    111
 #define __LITTLE_ENDIAN 121

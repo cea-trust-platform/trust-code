@@ -3,7 +3,6 @@
 %include std_vector.i
 %include std_string.i
 
-
 %{
 #include "LataLoader.h"
 using namespace MEDCoupling;
@@ -17,5 +16,3 @@ using namespace MEDCoupling;
 %include "medcoupling++.h"
 %include "MEDCoupling.i"
 %include "LataLoader.h"
-
-

@@ -15,12 +15,10 @@
 
 #include <ArrOfBit.h>
 #include <string.h>
-//Implemente_instanciable_sans_constructeur_ni_destructeur(ArrOfBit,"ArrOfBit",Objet_U);
 
 const unsigned int ArrOfBit::SIZE_OF_INT_BITS = 5;
 const unsigned int ArrOfBit::DRAPEAUX_INT = 31;
 
-// Description: Constructeur d'un tableau de taille n, non initialise
 ArrOfBit::ArrOfBit(entier n)
 {
   taille = 0;
@@ -28,7 +26,6 @@ ArrOfBit::ArrOfBit(entier n)
   resize_array(n);
 }
 
-// Description: Destructeur.
 ArrOfBit::~ArrOfBit()
 {
   if (data)
@@ -36,7 +33,6 @@ ArrOfBit::~ArrOfBit()
   data = 0;
 }
 
-// Description: Constructeur par copie (deep copy)
 ArrOfBit::ArrOfBit(const ArrOfBit& array)
 {
   taille = 0;
@@ -44,9 +40,6 @@ ArrOfBit::ArrOfBit(const ArrOfBit& array)
   operator=(array);
 }
 
-// Description:
-// Taille en "int" du tableau requis pour stocker un tableau de bits
-// de taille donnees.
 entier ArrOfBit::calculer_int_size(entier taille) const
 {
   assert(taille >= 0);
@@ -56,10 +49,6 @@ entier ArrOfBit::calculer_int_size(entier taille) const
   return siz;
 }
 
-// Description: Change la taille du tableau et copie les donnees
-// existantes. Si la taille est plus petite, les donnees sont
-// tronquees, et si la taille est plus grande, les nouveaux elements
-// ne sont pas initialises.
 ArrOfBit& ArrOfBit::resize_array(entier n)
 {
   if (taille == n)
@@ -88,7 +77,6 @@ ArrOfBit& ArrOfBit::resize_array(entier n)
   return *this;
 }
 
-// Description: Operateur copie (deep copy).
 ArrOfBit& ArrOfBit::operator=(const ArrOfBit& array)
 {
   entier newsize = calculer_int_size(array.taille);
@@ -108,9 +96,6 @@ ArrOfBit& ArrOfBit::operator=(const ArrOfBit& array)
   return *this;
 }
 
-// Description: Si la valeur est non nulle, met la valeur 1 dans
-// tous les elements du tableau, sinon met la valeur 0.
-
 ArrOfBit& ArrOfBit::operator=(entier val)
 {
   unsigned int valeur = val ? (~((unsigned int) 0)) : 0;
@@ -121,15 +106,11 @@ ArrOfBit& ArrOfBit::operator=(entier val)
   return *this;
 }
 
-// Description: Ecriture du tableau. Format:
-// n
-// 0 1 0 0 1 0 ... (n valeurs)
 Sortie& ArrOfBit::printOn(Sortie& os) const
 {
   os << taille << finl;
   entier i;
-  // Un retour a la ligne tous les 32 bits,
-  // Une espace tous les 8 bits
+  // Un retour a la ligne tous les 32 bits, Une espace tous les 8 bits
   for (i = 0; i < taille; i++)
     {
       os << operator[](i);
@@ -144,9 +125,6 @@ Sortie& ArrOfBit::printOn(Sortie& os) const
   return os;
 }
 
-// Description: Lecture du tableau. Format:
-// n
-// 0 1 0 0 1 0 ... (n valeurs)
 Entree& ArrOfBit::readOn(Entree& is)
 {
   entier newsize;

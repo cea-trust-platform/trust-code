@@ -19,30 +19,7 @@
 #include <TRUSTTab.tpp>
 
 using ArrOfDouble = TRUSTArray<double>;
-
 using DoubleTab = TRUSTTab<double>;
-
-//class ArrOfDouble : public TRUSTArray<double>
-//{
-//public:
-//  ArrOfDouble() : TRUSTArray<double>() { }
-//  ArrOfDouble(entier a,double b) : TRUSTArray<double>(a,b) { }
-//
-//  // see https://www.linuxtopia.org/online_books/programming_books/thinking_in_c++/Chapter14_018.html
-//  inline ArrOfDouble& operator=(double x) { TRUSTArray<double>::operator=(x); return *this; }
-//
-//};
-//
-//
-//class DoubleTab : public TRUSTTab<double>
-//{
-//public:
-//  DoubleTab() : TRUSTTab<double>() { }
-//  DoubleTab(const entier i, const entier j) : TRUSTTab<double>(i,j) { }
-//
-//  // see https://www.linuxtopia.org/online_books/programming_books/thinking_in_c++/Chapter14_018.html
-////   inline DoubleTab& operator=(double x) { TRUSTTab<double>::operator=(x); return *this; }
-//};
 
 #endif /* ArrOfDouble_H */
 

@@ -16,28 +16,28 @@
 #ifndef ARROFBIT_H
 #define ARROFBIT_H
 
-#include <assert.h>
 #include <Objet_U.h>
+#include <assert.h>
 
-class ArrOfBit // : public Objet_U
+class ArrOfBit
 {
-// Declare_instanciable_sans_constructeur_ni_destructeur(ArrOfBit);
 protected:
   Entree& readOn(Entree& is);
   Sortie& printOn(Sortie& os) const;
 public:
   ArrOfBit(entier n=0);
-  ArrOfBit(const ArrOfBit& array);              // Constructeur par copie
-  ~ArrOfBit();                                  // Destructeur
-  ArrOfBit& operator=(const ArrOfBit& array);   // Operateur copie
+  ArrOfBit(const ArrOfBit& array);
+  ~ArrOfBit();
+  ArrOfBit& operator=(const ArrOfBit& array);
   ArrOfBit& operator=(entier i);
   inline entier operator[](entier i) const;
   inline void setbit(entier i) const;
   inline entier testsetbit(entier i) const;
   inline void clearbit(entier i) const;
-  inline entier size_array() const;
+  inline entier size_array() const { return taille; }
   ArrOfBit& resize_array(entier n);
   entier calculer_int_size(entier taille) const;
+
 protected:
   entier taille;
   unsigned int *data;
@@ -45,27 +45,22 @@ protected:
   static const unsigned int DRAPEAUX_INT;
 };
 
-// Description: Renvoie 1 si le bit e est mis, 0 sinon.
 inline entier ArrOfBit::operator[](entier e) const
 {
   assert(e >= 0 && e < taille);
-  unsigned int i = (unsigned int) e;
+  unsigned int i = (unsigned int) e, flag = 1 << (i & DRAPEAUX_INT);
   unsigned int x = data[i >> SIZE_OF_INT_BITS];
-  unsigned int flag = 1 << (i & DRAPEAUX_INT);
   entier resultat = ((x & flag) != 0) ? 1 : 0;
   return resultat;
 }
 
-// Description: Met le bit e a 1.
 inline void ArrOfBit::setbit(entier e) const
 {
   assert(e >= 0 && e < taille);
-  unsigned int i = (unsigned int) e;
-  unsigned int flag = 1 << (i & DRAPEAUX_INT);
+  unsigned int i = (unsigned int) e, flag = 1 << (i & DRAPEAUX_INT);
   data[i >> SIZE_OF_INT_BITS] |= flag;
 }
 
-// Description: Renvoie la valeur du bit e, puis met le bit e a 1.
 inline entier ArrOfBit::testsetbit(entier e) const
 {
   assert(e >= 0 && e < taille);
@@ -77,7 +72,6 @@ inline entier ArrOfBit::testsetbit(entier e) const
   return ((old & flag) != 0) ? 1 : 0;
 }
 
-// Description: Met le bit e a 0.
 inline void ArrOfBit::clearbit(entier e) const
 {
   assert(e >= 0 && e < taille);
@@ -86,10 +80,4 @@ inline void ArrOfBit::clearbit(entier e) const
   data[i >> SIZE_OF_INT_BITS] &= ~flag;
 }
 
-// Description: Renvoie la taille du tableau en bits
-inline entier ArrOfBit::size_array() const
-{
-  return taille;
-}
-
-#endif
+#endif /* ARROFBIT_H */

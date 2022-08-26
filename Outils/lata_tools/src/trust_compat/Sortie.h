@@ -15,19 +15,19 @@
 
 #ifndef Sortie_h_inclu
 #define Sortie_h_inclu
+
 #include <ostream>
-//using namespace std;
 using std::cerr;
 using std::endl;
 #define Sortie std::ostream
 
 template<typename T> class TRUSTArray;
 using ArrOfInt = TRUSTArray<entier>;
-//#include <ArrOfInt.h>
 // for Static_Int_Lists
 inline Sortie& operator<<(Sortie& is, const ArrOfInt& t)
 {
   throw;
   return is;
 }
-#endif
+
+#endif /* Sortie_h_inclu */

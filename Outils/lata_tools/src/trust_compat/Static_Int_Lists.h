@@ -18,9 +18,7 @@
 
 #include <ArrOfInt.h>
 
-// .DESCRIPTION
-//  Cette classe permet de stocker des listes d'entiers accessibles
-//  en temps constant. La taille des listes ne peut pas changer sans
+//  Cette classe permet de stocker des listes d'entiers accessibles en temps constant. La taille des listes ne peut pas changer sans
 //  perdre le contenu (ce sont des listes statiques).
 //  Exemple:
 //   Static_Int_List l;
@@ -42,7 +40,7 @@ public:
   inline void   set_value(entier i_liste, entier i_element, entier valeur);
   inline entier operator() (entier i_liste, entier i_element) const;
   inline entier get_list_size(entier i_liste) const;
-  inline entier get_nb_lists() const;
+  inline entier get_nb_lists() const { return index_.size_array() - 1; }
 
   void trier_liste(entier i);
 
@@ -52,13 +50,9 @@ public:
   Sortie& ecrire(Sortie& os) const;
 
 private:
-  // Les listes d'entiers sont stockees de facon contigue
-  // dans le tableau valeurs_.
-  // Le premier element de la liste i est valeurs_[index_[i]]
-  // et le dernier element est valeurs_[index_[i+1]-1]
-  // (c'est comme le stockage morse des matrices).
-  ArrOfInt index_;
-  ArrOfInt valeurs_;
+  // Les listes d'entiers sont stockees de facon contigue dans le tableau valeurs_.
+  // Le premier element de la liste i est valeurs_[index_[i]] et le dernier element est valeurs_[index_[i+1]-1] (c'est comme le stockage morse des matrices).
+  ArrOfInt index_, valeurs_;
 };
 
 // Description: affecte la "valeur" au j-ieme element de la i-ieme liste avec
@@ -70,8 +64,7 @@ inline void Static_Int_Lists::set_value(entier i, entier j, entier valeur)
   valeurs_[index] = valeur;
 }
 
-// Description: renvoie le j-ieme element de la i-ieme liste avec
-//  0 <= i < get_nb_lists()  et  0 <= j < get_list_size(i)
+// Description: renvoie le j-ieme element de la i-ieme liste avec 0 <= i < get_nb_lists()  et  0 <= j < get_list_size(i)
 inline entier Static_Int_Lists::operator() (entier i, entier j) const
 {
   const entier index = index_[i] + j;
@@ -80,17 +73,10 @@ inline entier Static_Int_Lists::operator() (entier i, entier j) const
   return val;
 }
 
-// Description: renvoie le nombre d'elements de la liste i
 inline entier Static_Int_Lists::get_list_size(entier i) const
 {
   const entier size = index_[i+1] - index_[i];
   return size;
 }
 
-// Description: renvoie le nombre de listes stockees
-inline entier Static_Int_Lists::get_nb_lists() const
-{
-  return index_.size_array() - 1;
-}
-
-#endif
+#endif /* Static_Int_Lists_def */

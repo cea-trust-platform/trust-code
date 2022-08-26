@@ -13,62 +13,43 @@
 *
 *****************************************************************************/
 
-
 #ifndef Octree_Double_inclu
 #define Octree_Double_inclu
-#include <Octree_Int.h>
+
 #include <ArrOfDouble.h>
+#include <Octree_Int.h>
 class FloatTab;
 
-// .DESCRIPTION : Un octree permettant de chercher dans l'espace des elements ou des points
-//  decrits par des coordonnees reeles. Cet objet est base sur Octree_Int.
+//  Un octree permettant de chercher dans l'espace des elements ou des points decrits par des coordonnees reeles. Cet objet est base sur Octree_Int.
 class Octree_Double
 {
 public:
   Octree_Double();
-  void   reset();
-  void   build_elements(const FloatTab& coords, const IntTab& elements,
-                        const double epsilon, const entier include_virtual);
-  void   build_elements(const DoubleTab& coords, const IntTab& elements,
-                        const double epsilon, const entier include_virtual);
-  void   build_nodes(const DoubleTab& coords, const entier include_virtual);
-  entier search_elements(double x, double y, double z, entier& index) const;
-  entier search_elements_box(double xmin, double ymin, double zmin,
-                             double xmax, double ymax, double zmax,
-                             ArrOfInt& elements) const;
-  static entier search_nodes_close_to(double x, double y, double z,
-                                      const DoubleTab& coords, ArrOfInt& node_list,
-                                      double epsilon);
-  entier search_elements_box(const ArrOfDouble& center, const double radius,
-                             ArrOfInt& elements) const;
-  static entier search_nodes_close_to(const ArrOfDouble& point,
-                                      const DoubleTab& coords, ArrOfInt& node_list,
-                                      double epsilon);
+  void reset();
+  void build_elements(const FloatTab &coords, const IntTab &elements, const double epsilon, const entier include_virtual);
+  void build_elements(const DoubleTab &coords, const IntTab &elements, const double epsilon, const entier include_virtual);
+  void build_nodes(const DoubleTab &coords, const entier include_virtual);
+  entier search_elements(double x, double y, double z, entier &index) const;
+  entier search_elements_box(double xmin, double ymin, double zmin, double xmax, double ymax, double zmax, ArrOfInt &elements) const;
+  static entier search_nodes_close_to(double x, double y, double z, const DoubleTab &coords, ArrOfInt &node_list, double epsilon);
+  entier search_elements_box(const ArrOfDouble &center, const double radius, ArrOfInt &elements) const;
+  static entier search_nodes_close_to(const ArrOfDouble &point, const DoubleTab &coords, ArrOfInt &node_list, double epsilon);
   entier dimension() const
   {
     assert(dim_ > 0);
     return dim_;
   }
-  inline const ArrOfInt& floor_elements() const
-  {
-    return octree_int_.floor_elements();
-  };
+
+  inline const ArrOfInt& floor_elements() const { return octree_int_.floor_elements(); }
 protected:
-  inline entier integer_position(double x, entier direction, entier& ix) const;
-  inline entier integer_position_clip(double xmin, double xmax,
-                                      entier& x0, entier& x1,
-                                      entier direction) const;
-  void compute_origin_factors(const DoubleTab& coords,
-                              const double epsilon,
-                              const entier include_virtual);
-  void compute_origin_factors(const FloatTab& coords,
-                              const double epsilon,
-                              const entier include_virtual);
+  inline entier integer_position(double x, entier direction, entier &ix) const;
+  inline entier integer_position_clip(double xmin, double xmax, entier &x0, entier &x1, entier direction) const;
+  void compute_origin_factors(const DoubleTab &coords, const double epsilon, const entier include_virtual);
+  void compute_origin_factors(const FloatTab &coords, const double epsilon, const entier include_virtual);
 
   Octree_Int octree_int_;
-  // Ces deux tableaux sont toujours de taille 3 par commodite
-  ArrOfDouble origin_;
-  ArrOfDouble factor_;
+  ArrOfDouble origin_, factor_;
   entier dim_;
 };
-#endif
+
+#endif /* Octree_Double_inclu */

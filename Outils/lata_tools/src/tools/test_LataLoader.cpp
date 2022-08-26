@@ -13,22 +13,19 @@
 *
 *****************************************************************************/
 
-#include <LataLoader.h>
-
-#include <string>
-#include <fstream>
-#include <iostream>
-
-#include <MEDCouplingUMesh.hxx>
-#include <MEDCouplingMemArray.hxx>
-#include <MEDCouplingFieldDouble.hxx>
-#include <MEDCouplingRefCountObject.hxx>
-
-
-#include <LmlReader.h>
 #include <LataJournal.h>
-using namespace MEDCoupling;
+#include <LataLoader.h>
+#include <LmlReader.h>
+#include <iostream>
+#include <fstream>
+#include <string>
 
+#include <MEDCouplingRefCountObject.hxx>
+#include <MEDCouplingFieldDouble.hxx>
+#include <MEDCouplingMemArray.hxx>
+#include <MEDCouplingUMesh.hxx>
+
+using namespace MEDCoupling;
 
 int main(int argc,char ** argv)
 {

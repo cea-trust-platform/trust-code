@@ -13,20 +13,16 @@
 *
 *****************************************************************************/
 
-#include <iostream>
-#include <fstream>
-#include <LataDB.h>
+#include <Octree_Double.h>
 #include <LataFilter.h>
 #include <LmlReader.h>
+#include <LataDB.h>
 #include <stdlib.h>
-#include <Octree_Double.h>
 #include <string.h>
-//#include <strings.h>
+#include <iostream>
+#include <fstream>
 
 using namespace std;
-
-
-//#define connect_max 18
 
 double gepsilon = 1e-05;
 double gepsilon_champs = 1e-05;

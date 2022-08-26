@@ -13,5 +13,5 @@
 *
 *****************************************************************************/
 #ifdef WITH_SIMD
-#include "simd_tools.h"
+#include <simd_tools.h>
 #endif
