@@ -22,7 +22,7 @@ sed -i "s/connectivity=new int/connectivity=new long/g" Outils/ICoCo/ICoCo_src/s
 
 # Perform supplementary sed on some files
 sed "s/long long long/long long/" -i Outils/lata_tools/src/trust_commun/LataDB.cpp
-sed "s/long compare_indirect/int compare_indirect/" -i  Outils/lata_tools/src/trust_commun/Lata_tools.cpp
+sed "s/long compare_indirect/int compare_indirect/" -i  Outils/lata_tools/src/trust_commun/LataTools.cpp
 
 sed "s/long fonction/int fonction/" -i Outils/lata_tools/src/trust_compat/ArrOf*.cpp 
 sed "s/long main(long/int main(int/" -i  Outils/lata_tools/src/tools/*cpp

@@ -720,7 +720,7 @@ entier UserFields_options::parse_option(const Nom & option)
   return 1;
 }
 
-// Cette methode est appelee par lata2dx en ligne de commande pour afficher une aide.
+// Cette methode est appelee par lata_analyzer en ligne de commande pour afficher une aide.
 // On peut decrire toutes les options...
 void UserFields_options::print_help_option() const
 {
@@ -729,9 +729,9 @@ void UserFields_options::print_help_option() const
 }
 
 // Description:
-//  Cette methode est appelee par lata2dx au debut pour connaitre la liste
+//  Cette methode est appelee par lata_analyzer au debut pour connaitre la liste
 //  des champs que UserFields est capable de calculer.
-//  fields_data contient en entree tous les champs deja fournis par lata2dx
+//  fields_data contient en entree tous les champs deja fournis par lata_analyzer
 //   (champs presents dans le fichier .lata, plus les champs resultant des operateurs
 //    standards (regularize, dualmesh etc...)
 //  On doit ajouter dans fields_data la description des champs supplementaires 
@@ -856,7 +856,7 @@ void UserFields::new_fields_metadata(LataFilter & filter,
 }
 
 // Description:
-//  Cette methode publique est appelee par lata2dx pour obtenir les champs declares dans
+//  Cette methode publique est appelee par lata_analyzer pour obtenir les champs declares dans
 //  new_fields_metadata. Il faut tester "id" et calculer le champ demande.
 //  On a le droit d'appeler get_champ() pour obtenir d'autres champs.
 FieldType UserFields::get_field(const Field_Id & id)

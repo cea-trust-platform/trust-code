@@ -1,10 +1,10 @@
 include_directories(.)
 
 #
-# Build lata2dx executable
+# Build lata_analyzer executable
 #
-set(exec lata2dx)
-add_executable (${exec} lata2dx.cpp)
+set(exec lata_analyzer)
+add_executable (${exec} lata_analyzer.cpp)
 target_link_libraries(${exec} ${lib} ${ajout} )
 install(TARGETS ${exec} DESTINATION bin)
 

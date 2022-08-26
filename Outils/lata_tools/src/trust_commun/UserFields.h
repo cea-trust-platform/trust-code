@@ -16,7 +16,7 @@
 #ifndef UserFields_H
 #define UserFields_H
 
-#include <Lata_tools.h>
+#include <LataTools.h>
 #include <LataStructures.h>
 #include <ArrOfFloat.h>
 

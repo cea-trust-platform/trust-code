@@ -22,7 +22,7 @@ avtlataFileFormat.C
 LataDB.C
 LataFilter.C
 LataStructures.C
-Lata_tools.C
+LataTools.C
 LataV1_field_definitions.C
 LataWriter.C
 LmlReader.C

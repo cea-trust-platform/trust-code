@@ -15,7 +15,7 @@
 
 #ifndef LataDB_include_
 #define LataDB_include_
-#include <Lata_tools.h>
+#include <LataTools.h>
 #include <sstream>
 
 // This file describes the LataDB class and all associated data structures.

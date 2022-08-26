@@ -17,7 +17,7 @@
 #define LataStructures_H
 
 #include <ArrOfBit.h>
-#include <Lata_tools.h>
+#include <LataTools.h>
 #include <LataDB.h>
 
 // This file contains definitions of data structures containind meshes and fields

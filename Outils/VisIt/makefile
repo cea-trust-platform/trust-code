@@ -14,7 +14,7 @@ plugins=$(TRUST_ROOT)/exec/VisIt/current/linux-x86_64/plugins/databases/libEsond
 
 all: $(cible) $(plugins)
 
-$(plugins): ./plugins/Sondes/build_plugin ./plugins/lata/build_plugin plugins/triofield/build_plugin $(TRUST_ROOT)/exec/lata2dx
+$(plugins): ./plugins/Sondes/build_plugin ./plugins/lata/build_plugin plugins/triofield/build_plugin $(TRUST_ROOT)/exec/lata_analyzer
 	./install plugins
 	make $(check)
 

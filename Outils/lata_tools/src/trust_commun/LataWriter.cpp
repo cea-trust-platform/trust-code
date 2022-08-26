@@ -26,7 +26,7 @@ void LataWriter::init_file(const Nom &path, const Nom &basename, const LataDBDat
   db_.default_type_int_ = default_int_format;
   db_.default_float_type_ = default_float_type;
   db_.header_ = "Lata V2";
-  db_.case_ = "lata2dx";
+  db_.case_ = "lata_analyzer";
   db_.software_id_ = "Trio_U";
   // Global geometries and fields:
   db_.add_timestep(0.);

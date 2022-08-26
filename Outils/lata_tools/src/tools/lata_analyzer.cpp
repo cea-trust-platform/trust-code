@@ -16,7 +16,7 @@
 #include <Rebuild_virtual_layer.h>
 #include <LataWriter.h>
 #include <LmlReader.h>
-#include <lata2dx.h>
+#include <lata_analyzer.h>
 #include <LataDB.h>
 #include <stdlib.h>
 #include <iostream>
@@ -28,7 +28,7 @@
 
 using namespace std;
 
-Lata2dxOptions::Lata2dxOptions()
+LataAnalyzerOptions::LataAnalyzerOptions()
 {
   load_subdomain = -1; // load all subdomains
   binary_out = 1;
@@ -45,9 +45,9 @@ Lata2dxOptions::Lata2dxOptions()
   rms_fluctuations = 0;
 }
 
-void Lata2dxOptions::describe()
+void LataAnalyzerOptions::describe()
 {
-  cerr << "Usage : lata2dx input_file_name" << endl;
+  cerr << "Usage : lata_analyzer input_file_name" << endl;
   cerr << " [timestep=n]" << endl;
   cerr << " [domain=name]" << endl;
   cerr << " [component=label]" << endl;
@@ -119,7 +119,7 @@ void Lata2dxOptions::describe()
   LataOptions::describe();
 }
 
-entier Lata2dxOptions::parse_option(const Nom & s)
+entier LataAnalyzerOptions::parse_option(const Nom & s)
 {
   if (s == "binout") {
     binary_out = 1;
@@ -185,7 +185,7 @@ entier Lata2dxOptions::parse_option(const Nom & s)
 }
 
 
-void Lata2dxOptions::parse_options(int argc, char **argv) 
+void LataAnalyzerOptions::parse_options(int argc, char **argv)
 {
   if (argc < 2) {
     describe();
@@ -198,7 +198,7 @@ void Lata2dxOptions::parse_options(int argc, char **argv)
 
   for (int i = 2; i < argc; i++) {
     if (!parse_option(argv[i])) {
-      cerr << "Lata2dx : unknown command line option: " << argv[i] << endl;
+      cerr << "lata_analyzer : unknown command line option: " << argv[i] << endl;
       describe();
       exit(-1);
     }
@@ -286,7 +286,7 @@ void write_prmfile(const char *source_file, LataDB & lata_db)
 
 // Rewrite the lata master file in latav2 format (keeping other files untouched)
 // Compute the virtual elements if requested and add it to the database
-static void write_lata_master(const LataDB & lata_db, const Lata2dxOptions & opt)
+static void write_lata_master(const LataDB & lata_db, const LataAnalyzerOptions & opt)
 {
   Journal(1) << "Rewrite a master lata file (no data conversion, no data processing): " 
              << opt.output_filename << endl
@@ -304,7 +304,7 @@ static void write_lata_master(const LataDB & lata_db, const Lata2dxOptions & opt
   dest_db.write_master_file(opt.output_filename);
 }
 
-static void write_lata_convert(const LataDB & lata_db, const Lata2dxOptions & opt)
+static void write_lata_convert(const LataDB & lata_db, const LataAnalyzerOptions & opt)
 {
   Journal(1) << "Rewrite lata master file and all data files with data format conversion "
              << "(no data processing): " <<opt.output_filename << endl
@@ -315,7 +315,7 @@ static void write_lata_convert(const LataDB & lata_db, const Lata2dxOptions & op
   LataOptions::extract_path_basename(opt.output_filename, new_prefix, new_basename);
   dest_db.set_path_prefix(new_prefix);
   dest_db.change_all_data_filenames(opt.basename, new_basename);
-  dest_db.check_all_data_fileoffsets(opt.lata_file_splitting == Lata2dxOptions::SPLIT_ALL);
+  dest_db.check_all_data_fileoffsets(opt.lata_file_splitting == LataAnalyzerOptions::SPLIT_ALL);
   if (opt.binary_out) {
     Journal(3) << " Setting datatypes to binary" << endl;
     LataDBDataType t1, t2;
@@ -362,7 +362,7 @@ static void write_lata_convert(const LataDB & lata_db, const Lata2dxOptions & op
         dest_db.write_data(i, fields[k], tmp_double);
         break;
       default:
-        Journal() << "Error in lata2dx: type not implemented !" << endl;
+        Journal() << "Error in lata_analyzer: type not implemented !" << endl;
         throw;
       }
     }
@@ -370,7 +370,7 @@ static void write_lata_convert(const LataDB & lata_db, const Lata2dxOptions & op
   dest_db.write_master_file(opt.output_filename);
 }
 
-static void write_med(LataFilter & filter, const Lata2dxOptions & opt)
+static void write_med(LataFilter & filter, const LataAnalyzerOptions & opt)
 {
 #ifdef WITH_MED
         MEDWriter writer;
@@ -396,11 +396,11 @@ static void write_med(LataFilter & filter, const Lata2dxOptions & opt)
           filter.release_geometry(dom);
         }
 #else
-        Journal() << "Error: lata2dx compiled without med" << endl;
+        Journal() << "Error: lata_analyzer compiled without med" << endl;
 #endif
 }
 
-static void write_lata_all(LataFilter & filter, const Lata2dxOptions & opt)
+static void write_lata_all(LataFilter & filter, const LataAnalyzerOptions & opt)
 {
   Journal(2) << "Writing fields from LataFilter to lata file" << endl;
 
@@ -432,7 +432,7 @@ static void write_lata_all(LataFilter & filter, const Lata2dxOptions & opt)
   lata_writer.init_file(new_prefix, new_basename,
                         default_int, LataDBDataType::REAL32);
   
-  const entier time_average = (opt.time_average_ != Lata2dxOptions::NO_TIME_AVERAGE);
+  const entier time_average = (opt.time_average_ != LataAnalyzerOptions::NO_TIME_AVERAGE);
   const entier ntimesteps = time_average ? 2 : filter.get_nb_timesteps();
 
   if (time_average && filter.get_nb_timesteps() < 3) {
@@ -512,11 +512,11 @@ static void write_lata_all(LataFilter & filter, const Lata2dxOptions & opt)
                     double f;
                     double total_time = 0.;
                     switch(opt.time_average_) {
-                    case Lata2dxOptions::SIMPLE_TIME_AVERAGE:  
+                    case LataAnalyzerOptions::SIMPLE_TIME_AVERAGE:
                       f = 1. / (nt-1);
                       Journal(1) << "Simple time average: weight = 1 / N  with N = " << nt - 1 << endl;
                       break;
-                    case Lata2dxOptions::LINEAR_TIME_AVERAGE:
+                    case LataAnalyzerOptions::LINEAR_TIME_AVERAGE:
                       total_time = filter.get_timestep(nt-1) - filter.get_timestep(1);
                       if (total_time <= 0.) {
                         Journal() << "Error computing time average: time between first and last timestep is not positive" << endl;
@@ -525,7 +525,7 @@ static void write_lata_all(LataFilter & filter, const Lata2dxOptions & opt)
                       f = 0.5 * (filter.get_timestep(2) - filter.get_timestep(1)) / total_time; 
                       Journal(1) << "Piecewise linear time integral using N = " << nt - 1 << " timesteps" << endl;
                       break;
-                    case Lata2dxOptions::RECTANGLES_TIME_AVERAGE:
+                    case LataAnalyzerOptions::RECTANGLES_TIME_AVERAGE:
                       total_time = filter.get_timestep(nt-1) - filter.get_timestep(1);
                       // First timestep has zero weight.
                       f = 0.;
@@ -537,7 +537,7 @@ static void write_lata_all(LataFilter & filter, const Lata2dxOptions & opt)
                     }
                       
                     const entier sz = data_array.size_array();
-                    if (opt.time_average_ != Lata2dxOptions::RECTANGLES_TIME_AVERAGE)
+                    if (opt.time_average_ != LataAnalyzerOptions::RECTANGLES_TIME_AVERAGE)
                       Journal(3) << "Adding timestep 1, factor " << f << endl;
                     else
                       Journal(3) << "Timestep 1 not used for time integration (only time position)" << endl;
@@ -558,16 +558,16 @@ static void write_lata_all(LataFilter & filter, const Lata2dxOptions & opt)
                       const LataField_base & field = filter.get_field(Field_Id(field_names[j], tstep2, -1));
                       const ArrOfFloat & arr2 = (*dynamic_cast<const Field<FloatTab> *> (&field)).data_;
                       switch(opt.time_average_) {
-                      case Lata2dxOptions::SIMPLE_TIME_AVERAGE:
+                      case LataAnalyzerOptions::SIMPLE_TIME_AVERAGE:
                         break; // f unchanged
-                      case Lata2dxOptions::LINEAR_TIME_AVERAGE:
+                      case LataAnalyzerOptions::LINEAR_TIME_AVERAGE:
                         {
                           // Compute coefficient for this timestep for piecewise linear interpolation
                           const entier x = (tstep2 < nt - 1) ? (tstep2 + 1) : tstep2;
                           f = 0.5 * (filter.get_timestep(x) - filter.get_timestep(tstep2-1)) / total_time;
                           break;
                         }
-                      case Lata2dxOptions::RECTANGLES_TIME_AVERAGE:
+                      case LataAnalyzerOptions::RECTANGLES_TIME_AVERAGE:
                         f = (filter.get_timestep(tstep2) -  filter.get_timestep(tstep2-1)) / total_time;
                         break;
                       default:
@@ -663,7 +663,7 @@ static void merge_tab(const LataVector<LataDB> & lata_db, LataDB & dest_db, cons
   dest_db.write_data(newfield.timestep_, newfield.uname_, tab);
 }
 
-static void merge_lata_geometries(const Lata2dxOptions & opt)
+static void merge_lata_geometries(const LataAnalyzerOptions & opt)
 {
   const Noms & filenames = opt.merge_files;
   if (filenames.size() < 1) {
@@ -689,7 +689,7 @@ static void merge_lata_geometries(const Lata2dxOptions & opt)
   LataOptions::extract_path_basename(opt.output_filename, new_prefix, new_basename);
   dest_db1.set_path_prefix(new_prefix);
   dest_db1.change_all_data_filenames(opt.basename, new_basename);
-  dest_db1.check_all_data_fileoffsets(opt.lata_file_splitting == Lata2dxOptions::SPLIT_ALL);
+  dest_db1.check_all_data_fileoffsets(opt.lata_file_splitting == LataAnalyzerOptions::SPLIT_ALL);
 
   // La difference entre dest_db1 et dest_db est la taille des tableaux
   //  on construit dest_db en recopiant les entrees de dest_db et en modifiant cette taille.
@@ -726,7 +726,7 @@ static void merge_lata_geometries(const Lata2dxOptions & opt)
         merge_tab<DoubleTab>(lata_db, dest_db, fld);
         break;
       default:
-        Journal() << "Error in lata2dx: type not implemented !" << endl;
+        Journal() << "Error in lata_analyzer: type not implemented !" << endl;
         throw;
       }
     }
@@ -736,7 +736,7 @@ static void merge_lata_geometries(const Lata2dxOptions & opt)
 
 int main(int argc,char **argv) 
 {
-  Lata2dxOptions opt;
+  LataAnalyzerOptions opt;
   Journal(8) << "command line ";
   for (int i=0; i<argc; i++)
     Journal(8) << argv[i] << " ";
@@ -748,7 +748,7 @@ int main(int argc,char **argv)
   {
     Motcle mot(argv[1]);
     if (mot.finit_par(".lml")) {
-        if (opt.processing_option != Lata2dxOptions::WRITE_LATA_CONVERT) {
+        if (opt.processing_option != LataAnalyzerOptions::WRITE_LATA_CONVERT) {
             Journal(0) << "Input file " << argv[1] << "is lml format: " << endl;
             Journal(0) << " lml can only be processed with writelata_convert." << endl;
             exit(-1);
@@ -805,15 +805,15 @@ int main(int argc,char **argv)
 
   LataFilter filter;
 
-  if (opt.time_average_ != Lata2dxOptions::NO_TIME_AVERAGE 
-      && opt.processing_option != Lata2dxOptions::WRITE_LATA_ALL) {
+  if (opt.time_average_ != LataAnalyzerOptions::NO_TIME_AVERAGE
+      && opt.processing_option != LataAnalyzerOptions::WRITE_LATA_ALL) {
     Journal() << "Error: timeaverage option specified without the writelata=FILENAME option" << endl;
     exit(-1);
   }
 
-  if (opt.processing_option != Lata2dxOptions::WRITE_PRM 
-      && opt.processing_option != Lata2dxOptions::WRITE_LATA_MASTER
-      && opt.processing_option != Lata2dxOptions::WRITE_LATA_CONVERT) {
+  if (opt.processing_option != LataAnalyzerOptions::WRITE_PRM
+      && opt.processing_option != LataAnalyzerOptions::WRITE_LATA_MASTER
+      && opt.processing_option != LataAnalyzerOptions::WRITE_LATA_CONVERT) {
     filter.initialize(opt, lata_db);
     if (opt.dump_list) {
       // Dump available output geometries and fields
@@ -835,19 +835,19 @@ int main(int argc,char **argv)
   }
 
   switch(opt.processing_option) {
-  case Lata2dxOptions::WRITE_PRM:
+  case LataAnalyzerOptions::WRITE_PRM:
     write_prmfile(argv[1], lata_db);
     break;
-  case Lata2dxOptions::WRITE_LATA_MASTER:
+  case LataAnalyzerOptions::WRITE_LATA_MASTER:
     write_lata_master(lata_db, opt);
     break;
-  case Lata2dxOptions::WRITE_LATA_CONVERT:
+  case LataAnalyzerOptions::WRITE_LATA_CONVERT:
     write_lata_convert(lata_db, opt);
     break;
-  case Lata2dxOptions::WRITE_LATA_ALL:
+  case LataAnalyzerOptions::WRITE_LATA_ALL:
     write_lata_all(filter, opt);
     break;
-  case Lata2dxOptions::WRITE_MED:
+  case LataAnalyzerOptions::WRITE_MED:
     write_med(filter, opt);
     break;
   default:

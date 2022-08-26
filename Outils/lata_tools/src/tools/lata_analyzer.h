@@ -13,15 +13,15 @@
 *
 *****************************************************************************/
 
-#ifndef Lata2dx_H_
-#define Lata2dx_H_
+#ifndef LataAnalyzer_H_
+#define LataAnalyzer_H_
 
 #include <LataFilter.h>
 
-class Lata2dxOptions: public LataOptions
+class LataAnalyzerOptions: public LataOptions
 {
 public:
-  Lata2dxOptions();
+  LataAnalyzerOptions();
   void describe();
   entier parse_option(const Nom &s);
   void parse_options(int argc, char **argv);
@@ -73,4 +73,4 @@ public:
   int rms_fluctuations;
 };
 
-#endif /* Lata2dx_H_ */
+#endif /* LataAnalyzer_H_ */

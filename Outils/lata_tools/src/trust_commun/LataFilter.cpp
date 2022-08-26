@@ -25,7 +25,7 @@
 #include <Static_Int_Lists.h>
 #include <Connectivite_som_elem.h>
 #include <LataDB.h>
-#include <Lata_tools.h>
+#include <LataTools.h>
 #include <Operator.h>
 #include <errno.h>
 #include <UserFields.h>

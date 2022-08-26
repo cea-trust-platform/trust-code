@@ -111,7 +111,7 @@ const Domain& get_domain(LataFilter &filter, Domain_Id &id, Nom &filename)
   return filter.get_geometry(id);
 }
 
-// methode � mettre dans lata2dx, commune compare_lata et lata_to_other
+// methode mettre dans lata_analyzer, commune compare_lata et lata_to_other
 DomainUnstructured convertIJKtoUnstructured(const DomainIJK &ijk)
 {
   cerr << "conversion domaijk ";
@@ -486,11 +486,11 @@ void construit_corres(const DomainUnstructured &dom, const DomainUnstructured &d
 
   if (nb_maille != nb_maille2)
     {
-      printf(" Le nombre de mailles n'est pas le m�me dans le premier fichier que dans le second\n");
+      printf(" Le nombre de mailles n'est pas le meme dans le premier fichier que dans le second\n");
       exit(-1);
     }
 
-  /* On verifie qu'on trouve les m�mes elements sur chaque grille */
+  /* On verifie qu'on trouve les memes elements sur chaque grille */
 
   for (int j = 0; j < nb_maille2; j++)
     {

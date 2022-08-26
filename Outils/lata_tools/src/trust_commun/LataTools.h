@@ -13,8 +13,8 @@
 *
 *****************************************************************************/
 
-#ifndef Lata_tools_include_
-#define Lata_tools_include_
+#ifndef LataTools_include_
+#define LataTools_include_
 #include <assert.h>
 #include <arch.h>
 

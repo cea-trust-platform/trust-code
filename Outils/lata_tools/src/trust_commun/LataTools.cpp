@@ -13,9 +13,9 @@
 *
 *****************************************************************************/
 
-#include <Lata_tools.h>
 #include <TRUSTArray.h>
 #include <ArrOfFloat.h>
+#include <LataTools.h>
 #include <ArrOfBit.h>
 #include <sstream>
 #include <string.h>

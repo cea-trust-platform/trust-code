@@ -6,7 +6,7 @@ all: $(env_lata_tools)
  
 $(env_lata_tools): $(tools_src)/CMakeLists.txt $(tools_src)/build.sh Makefile $(TRUST_MEDCOUPLING_ROOT)/lib/libmedcoupling.a $(SRCS)
 	(cd $(tools_src);./build.sh)
-	(cd $(TRUST_ROOT)/exec;ln -sf lata_tools_install/bin/lata2dx .)
+	(cd $(TRUST_ROOT)/exec;ln -sf lata_tools_install/bin/lata_analyzer .)
 	(cd $(TRUST_ROOT)/exec;ln -sf lata_tools_install/bin/compare_lata .)
 
 clean:

@@ -74,7 +74,7 @@ if [ -f ${REP}$lata ]
 then
    echo $ECHO_OPTS "Chapter {
 	Title \"Visualization via VisIt\" " >> $prm
-   lata2dx ${REP}$lata writeprm 2>&1 | grep -v "] " | grep -v _boundaries | awk '{print "\n\tvisu {\n\t\twidth 8cm\n\t\ttitle \""$4" "$5"\"\n\t\t"$0"\n\t}"}'>> $prm
+   lata_analyzer ${REP}$lata writeprm 2>&1 | grep -v "] " | grep -v _boundaries | awk '{print "\n\tvisu {\n\t\twidth 8cm\n\t\ttitle \""$4" "$5"\"\n\t\t"$0"\n\t}"}'>> $prm
    echo $ECHO_OPTS "}\n" >> $prm
    sed -i "1,$ s?scalar?pseudocolor?g" $prm
    sed -i "1,$ s?title \" \"?title \"MESH\"?g" $prm
