@@ -47,9 +47,15 @@ if (loadercpp)
     
     set_source_files_properties(LataLoader.i PROPERTIES CPLUSPLUS ON)
     set_source_files_properties(LataLoader.i PROPERTIES SWIG_FLAGS "-shadow")
-    SWIG_ADD_MODULE(LataLoader python LataLoader.i)
+    
+    if(${CMAKE_VERSION} VERSION_LESS "3.8.0")
+  		swig_add_module(LataLoader python LataLoader.i)
+	else()
+  		swig_add_library(LataLoader LANGUAGE python SOURCES LataLoader.i)
+	endif()
+    
     include_directories(${PYTHON_INCLUDE_DIRS})
-    SWIG_LINK_LIBRARIES(LataLoader ${PYTHON_LIBRARIES} ${tgt_ll})
+    swig_link_libraries(LataLoader ${PYTHON_LIBRARIES} ${tgt_ll})
     install(TARGETS _LataLoader  DESTINATION lib)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/LataLoader.py   DESTINATION lib)
   else()
