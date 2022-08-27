@@ -34,4 +34,10 @@ then
  fi
 fi
 
+# Chargement lata_tools
+if [ "`echo $PYTHONPATH | grep -i exec/lata_tools`" = "" ]
+then
+  source $TRUST_ROOT/Outils/lata_tools/src/tools/env.sh
+fi
+
 echo "env_for_python.sh successfully loaded."

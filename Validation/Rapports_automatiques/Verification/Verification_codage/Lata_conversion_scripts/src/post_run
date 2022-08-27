@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source $TRUST_ROOT/exec/lata_tools_install/env.sh
+source $TRUST_ROOT/env_for_python.sh
 
 mystudy=$1
 
@@ -10,10 +10,13 @@ mystudyCase=$mystudy".case"
 mystudyCase2=$mystudy"2.case"
 mystudyLastTS=$mystudy"2_LastTS.case"
 
-python $LATALOADER_ROOT/lib/Lata_to_med.py $mystudyLata $mystudyMed 1>/dev/null 2>&1
-$MED_COUPLING_ROOT/bin/med2case $mystudyMed 1>/dev/null 2>&1
-python $LATALOADER_ROOT/lib/Lata_to_case.py $mystudyLata $mystudyCase2 1>/dev/null 2>&1
-python $LATALOADER_ROOT/lib/Lata_to_case.py -l $mystudyLata $mystudyLastTS 1>/dev/null 2>&1
+PATH_FILES=$TRUST_ROOT/exec/lata_tools/lib
+
+
+python $PATH_FILES/Lata_to_med.py $mystudyLata $mystudyMed 1>/dev/null 2>&1
+$TRUST_MEDCOUPLING_ROOT/bin/med2case $mystudyMed 1>/dev/null 2>&1
+python $PATH_FILES/Lata_to_case.py $mystudyLata $mystudyCase2 1>/dev/null 2>&1
+python $PATH_FILES/Lata_to_case.py -l $mystudyLata $mystudyLastTS 1>/dev/null 2>&1
 
 all_files_are_here="FALSE"
 

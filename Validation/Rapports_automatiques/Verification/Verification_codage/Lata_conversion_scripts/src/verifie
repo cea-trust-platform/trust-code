@@ -6,9 +6,7 @@ quit()
    exit -1
 }
 
-source $TRUST_ROOT/lib/src/LIBMEDCOUPLING/install/env.sh
-
-source $TRUST_ROOT/exec/lata_tools_install/env.sh
+source $TRUST_ROOT/env_for_python.sh
 
 mystudy=$1
 mystudyLata=$mystudy".lata"
@@ -17,10 +15,12 @@ mystudyCase=$mystudy".case"
 mystudyCase2=$mystudy"2.case"
 mystudyLastTS=$mystudy"2_LastTS.case"
 
-python $LATALOADER_ROOT/lib/Lata_to_med.py $mystudyLata $mystudyMed 		1>log 2>&1 || quit
-$MED_COUPLING_ROOT/bin/med2case $mystudyMed 					1>log 2>&1 || quit
-python $LATALOADER_ROOT/lib/Lata_to_case.py $mystudyLata $mystudyCase2 		1>log 2>&1 || quit
-python $LATALOADER_ROOT/lib/Lata_to_case.py -l $mystudyLata $mystudyLastTS 	1>log 2>&1 || quit
+PATH_FILES=$TRUST_ROOT/exec/lata_tools/lib
+
+python $PATH_FILES/Lata_to_med.py $mystudyLata $mystudyMed 		1>log 2>&1 || quit
+$TRUST_MEDCOUPLING_ROOT/bin/med2case $mystudyMed			1>log 2>&1 || quit
+python $PATH_FILES/Lata_to_case.py $mystudyLata $mystudyCase2 		1>log 2>&1 || quit
+python $PATH_FILES/Lata_to_case.py -l $mystudyLata $mystudyLastTS 	1>log 2>&1 || quit
 
 for file in $mystudyLata $mystudyMed $mystudyCase $mystudyCase2 $mystudyLastTS
 do
