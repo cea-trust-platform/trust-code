@@ -68,7 +68,7 @@ then
    [ "`grep 'Ubuntu 19'    /etc/issue 2>/dev/null`" != "" ]                     && os=ubuntu19
    [ "`grep 'Ubuntu 20'    /etc/issue 2>/dev/null`" != "" ]                     && os=ubuntu20 && version=3_1_2
    [ "`grep 'Ubuntu 21'    /etc/issue 2>/dev/null`" != "" ]                     && os=ubuntu21 && version=3_2_1
-   [ "`grep 'Jammy Jellyfish' /etc/issue 2>/dev/null`" != "" ]                  && os=ubuntu21 && version=3_2_1 # En attente de Ubuntu 22 officielle...
+   [ "`grep 'Ubuntu 22'    /etc/issue 2>/dev/null`" != "" ]                     && os=ubuntu20 && version=3_3_0 # En attente de Ubuntu 22 officielle (see https://github.com/visit-dav/visit/discussions/18019#discussioncomment-3478214)
    [ "`grep 'Debian GNU/Linux 9'  /etc/issue.net 2>/dev/null`" != "" ]          && os=debian9
    [ "`grep 'Debian GNU/Linux 10' /etc/issue.net 2>/dev/null`" != "" ]          && os=debian10 && version=3_1_3
    [ "`grep 'Debian GNU/Linux 11' /etc/issue.net 2>/dev/null`" != "" ]          && os=debian11 && version=3_3_0
