@@ -21,27 +21,14 @@ cp bin/BUILD64/Modifie bin/BUILD64/replace_int_entier.py bin/BUILD64/GO .
 sed -i "s/connectivity=new int/connectivity=new long/g" Outils/ICoCo/ICoCo_src/share/Validation/Rapports_automatiques/Test_interpolation/src/main.cpp
 
 # Perform supplementary sed on some files
+
+#
+# lata_tools
+#
 sed "s/long long long/long long/" -i Outils/lata_tools/src/trust_commun/LataDB.cpp
 sed "s/long compare_indirect/int compare_indirect/" -i  Outils/lata_tools/src/trust_commun/LataTools.cpp
-
-sed "s/long fonction/int fonction/" -i Outils/lata_tools/src/trust_compat/ArrOf*.cpp 
+sed "s/long fonction/int fonction/" -i Outils/lata_tools/src/trust_compat/TRUSTArray.tpp 
 sed "s/long main(long/int main(int/" -i  Outils/lata_tools/src/tools/*cpp
-
-sed -i "s/<< type_codage <</<</g" src/Kernel/Framework/Equation_base.cpp
-sed -i "s/%d/%ld/g" src/PolyMAC/Zones/Zone_PolyMAC.cpp
-sed -i "s/vector<long> P_c(nv + 1), P_l(nv), A_c, A_l;/vector<long long> P_c(nv + 1), P_l(nv), A_c, A_l;/" src/PolyMAC/Zones/Zone_PolyMAC.cpp
-
-sed -i "s/std::vector< std::pair<long,long> > time_steps_;/std::vector< std::pair<int,int> > time_steps_;/" src/Kernel/MEDimpl/Champ_Fonc_MED.h
-sed -i "s/std::vector< std::pair<long,long> > tst = ft1->getTimeSteps(tps);/std::vector< std::pair<int,int> > tst = ft1->getTimeSteps(tps);/" src/Kernel/MEDimpl/Champ_Fonc_MED_Table_Temps.cpp
-sed -i "s/std::vector<long> nel = file->getNonEmptyLevels();/std::vector<int> nel = file->getNonEmptyLevels();/" src/Kernel/MEDimpl/LireMED.cpp
-sed -i "s/std::vector< std::pair< std::pair< long, long >, double > > ts = GetAllFieldIterations(file_name, field_name);/std::vector< std::pair< std::pair< int, int >, double > > ts = GetAllFieldIterations(file_name, field_name);/" src/Kernel/MEDimpl/EcrMED.cpp
-
-#sed -i "s/long \*p = afield._connectivity = new True_int\[afield._nb_elems \* afield._nodes_per_elem\];/int *p = afield._connectivity = new True_int[afield._nb_elems * afield._nodes_per_elem];/" src/Kernel/Champs/Champ_input_P0.cpp
-#sed -i "s/long \*pf = p + afield._nodes_per_elem; \/\/fin de la ligne/int *pf = p + afield._nodes_per_elem; \/\/fin de la ligne/" src/Kernel/Champs/Champ_input_P0.cpp
-
-#sed -i "s/long \*p = afield._connectivity = new True_int\[afield._nb_elems \* afield._nodes_per_elem\];/int *p = afield._connectivity = new True_int[afield._nb_elems * afield._nodes_per_elem];/" src/Kernel/ICoCo/Convert_ICoCoTrioField.cpp
-
-sed -i "s/Cerr << \"Detecting a \" << mesh->getMeshDimension() << \"D mesh in \" << dim << \"D space.\" << finl;/Cerr << \"Detecting a \" << (long)mesh->getMeshDimension() << \"D mesh in \" << dim << \"D space.\" << finl;/" src/Kernel/MEDimpl/LireMED.cpp
 
 sed -i "s/std::vector< std::vector< std::pair<INTERP_KERNEL::NormalizedCellType,long> > > res = MEDCoupling::GetUMeshGlobalInfo(filename, meshname, meshDim, spacedim, nnodes);/std::vector< std::vector< std::pair<INTERP_KERNEL::NormalizedCellType,int> > > res = MEDCoupling::GetUMeshGlobalInfo(filename, meshname, meshDim, spacedim, nnodes);/" Outils/lata_tools/src/trust_commun/LataDBmed.h
 sed -i "s/void latadb_get_info_mesh_med(const char\* filename,const char\* meshname,med_geometry_type& type_geo,long& ncells,long& nnodes,long& spacedim, long &nbcomp,long& is_structured, std::vector<long>& NIJK)/void latadb_get_info_mesh_med(const char* filename,const char* meshname,med_geometry_type\& type_geo,long\& ncells,long\& nnodes,int\& spacedim, long \&nbcomp,long\& is_structured, std::vector<long>\& NIJK)/" Outils/lata_tools/src/trust_commun/LataDBmed.h
@@ -50,4 +37,16 @@ sed -i "s/long spacedim;/int spacedim;/" Outils/lata_tools/src/trust_commun/Lata
 sed -i "s/vector<pair< long, long > > iters= MEDCoupling::GetFieldIterations(ltypes\[t\],filename,meshname.getString(),fields\[i\].c_str());/vector<pair< int, int > > iters= MEDCoupling::GetFieldIterations(ltypes[t],filename,meshname.getString(),fields[i].c_str());/" Outils/lata_tools/src/trust_commun/LataDBmed.h
 sed -i "s/vector<pair<pair<long,long>,double> > vtimes=MEDCoupling::GetAllFieldIterations(filename,\/\*meshname,\*\/fields\[i\].c_str());/vector<pair<pair<int,int>,double> > vtimes=MEDCoupling::GetAllFieldIterations(filename,\/\*meshname,\*\/fields[i].c_str());/" Outils/lata_tools/src/trust_commun/LataDBmed.h
 sed -i "s/vector<pair<pair<long,long>,double> > vtimes=MEDCoupling::GetAllFieldIterations(fld.filename_.getString(),fieldname.getString());/vector<pair<pair<int,int>,double> > vtimes=MEDCoupling::GetAllFieldIterations(fld.filename_.getString(),fieldname.getString());/" Outils/lata_tools/src/trust_commun/LataDBmed.h
+
+#
+# TRUST src
+#
+sed -i "s/<< type_codage <</<</g" src/Kernel/Framework/Equation_base.cpp
+sed -i "s/%d/%ld/g" src/PolyMAC/Zones/Zone_PolyMAC.cpp
+sed -i "s/vector<long> P_c(nv + 1), P_l(nv), A_c, A_l;/vector<long long> P_c(nv + 1), P_l(nv), A_c, A_l;/" src/PolyMAC/Zones/Zone_PolyMAC.cpp
+sed -i "s/std::vector< std::pair<long,long> > time_steps_;/std::vector< std::pair<int,int> > time_steps_;/" src/Kernel/MEDimpl/Champ_Fonc_MED.h
+sed -i "s/std::vector< std::pair<long,long> > tst = ft1->getTimeSteps(tps);/std::vector< std::pair<int,int> > tst = ft1->getTimeSteps(tps);/" src/Kernel/MEDimpl/Champ_Fonc_MED_Table_Temps.cpp
+sed -i "s/std::vector<long> nel = file->getNonEmptyLevels();/std::vector<int> nel = file->getNonEmptyLevels();/" src/Kernel/MEDimpl/LireMED.cpp
+sed -i "s/std::vector< std::pair< std::pair< long, long >, double > > ts = GetAllFieldIterations(file_name, field_name);/std::vector< std::pair< std::pair< int, int >, double > > ts = GetAllFieldIterations(file_name, field_name);/" src/Kernel/MEDimpl/EcrMED.cpp
+sed -i "s/Cerr << \"Detecting a \" << mesh->getMeshDimension() << \"D mesh in \" << dim << \"D space.\" << finl;/Cerr << \"Detecting a \" << (long)mesh->getMeshDimension() << \"D mesh in \" << dim << \"D space.\" << finl;/" src/Kernel/MEDimpl/LireMED.cpp
 
