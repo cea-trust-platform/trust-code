@@ -46,8 +46,9 @@ inline int TRUSTVect<_TYPE_>::size() const
   return size_reelle();
 }
 
-template<typename _TYPE_>
-inline void TRUSTVect<_TYPE_>::ajoute(double alpha, const TRUSTVect<double>& y, Mp_vect_options opt)
+template<typename _TYPE_> template<typename _T_, typename _SCALAR_TYPE_>
+typename std::enable_if<std::is_convertible<_SCALAR_TYPE_, _T_>::value , void>::type
+inline TRUSTVect<_TYPE_>::ajoute(_SCALAR_TYPE_ alpha, const TRUSTVect<_T_>& y, Mp_vect_options opt)
 {
   ajoute_alpha_v(*this, alpha, y, opt);
   if (opt == VECT_ALL_ITEMS) echange_espace_virtuel();
@@ -209,7 +210,7 @@ inline void TRUSTVect<_TYPE_>::ref_data(_TYPE_* ptr, int new_size)
   if (new_size<0)
     {
       new_size=-new_size;
-      if (ptr[new_size]!=((std::is_same<_TYPE_,double>::value) ? 123456789.123456789 : 123456789))
+      if (ptr[new_size]!=((std::is_same<_TYPE_,int>::value) ? 123456789 : 123456789.123456789 ))
         {
           Cerr << "size in ad" << ptr[new_size]<< " "<<new_size<<finl;
           assert(0);
@@ -327,7 +328,7 @@ inline void TRUSTVect<_TYPE_>::lit(Entree& is, int resize_and_read)
       is >> sz_virt;
       DescStructure toto;
       is >> toto;
-      if (std::is_same<_TYPE_,double>::value)
+      if (!std::is_same<_TYPE_,int>::value) /* double ou float */
         {
           TRUSTArray<int> it_communs;
           is >> it_communs;

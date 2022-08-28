@@ -131,6 +131,7 @@ _TYPE_ max_array(const TRUSTArray<_TYPE_>& dx)
 
 // blablabla ....
 static inline double scalar_abs(double x) { return std::fabs(x); }
+static inline float scalar_abs(float x) { return std::fabs(x); }
 static inline int scalar_abs(int x) { return abs(x); }
 
 /*! @brief Retourne le max des abs(i)

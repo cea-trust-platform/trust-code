@@ -13,8 +13,8 @@
 *
 *****************************************************************************/
 
-#include <Memoire.h>
 #include <TRUSTVect.h>
+#include <Memoire.h>
 
 static int compteur=0;
 Memoire* Memoire::_instance = 0;
@@ -24,35 +24,25 @@ int Memoire::step=4096;
 static int max_sz_mem=0;
 static int min_sz_mem=0;
 
-
 /*! @brief Retourne un pointeur sur l'instance de la memoire Cree un nouvel objet memoire si aucune instance n'a deja ete creee
  *
  * @return (Memoire*) pointeur sur l'instance de la memoire
  */
 Memoire& Memoire::Instance()
 {
-  if (_instance == 0)
-    {
-      _instance = new Memoire;
-    }
+  if (_instance == 0) _instance = new Memoire;
+
   return *_instance;
 }
-
 
 /*! @brief Constructeur Initialize une zone de travail pour les Objet_U, les "double" et les "int"
  *
  */
 Memoire::Memoire() : size(step), data(new Memoire_ptr[step]),
-  trav_double(new Double_ptr_trav()), trav_int(new Int_ptr_trav())
+  trav_double(new Double_ptr_trav()), trav_float(new Float_ptr_trav()), trav_int(new Int_ptr_trav())
 {
-  // Cerr << "prems="<<prems<<" step="<<step<<finl;
-  for(int i=prems; i<size; i++)
-    data[i].next=i+1;
-  //   minfo = mallinfo();
-  //   min_sz_mem = minfo.arena;
-  //   max_sz_mem = min_sz_mem;
+  for(int i=prems; i<size; i++) data[i].next=i+1;
 }
-
 
 /*! @brief Ajoute un Objet_U dans la Memoire de TRUST
  *
@@ -105,7 +95,6 @@ int Memoire::add(Objet_U* obj)
   return old_size;
 }
 
-
 /*! @brief Suppression de la memoire de l'Objet_U de numero num L'Objet_U n'est pas supprime, seul son pointeur dans la memoire l'est.
  *
  * @param (int num) le numero de l'Objet_U a supprimer
@@ -155,6 +144,7 @@ int Memoire::suppr(int num)
         {
           delete[] data;
           delete trav_double;
+          delete trav_float;
           delete trav_int;
           data=0;
           delete _instance;
@@ -309,15 +299,11 @@ const Objet_U* Memoire::objet_u_ptr(int num)const
   return &objet;
 }
 
-
 /*! @brief Compacte la memoire Ce compactage est effectue automatiquement lorsqu'il devient necessaire
  *
  */
 void Memoire::compacte()
 {
-  //   Cerr << "On compacte la memoire " << finl;
-  //   Cerr << "size prems " << size << " " << prems << finl;
-  //   Cerr << "avant" << finl;
   int i, compte=0;
   int* newnum=new int[size];
   if(!newnum)
@@ -351,10 +337,7 @@ void Memoire::compacte()
   for(i=0; i<size; i++)
     data[i].next=i+1;
   verifie();
-  //   Cerr << "la memoire est compactee" << finl;
-  //   Cerr << "size prems " << size << " " << prems << finl;
 }
-
 
 /*! @brief Imprime un etat sur la memoire sur la sortie des erreurs
  *
@@ -397,7 +380,6 @@ int Memoire::imprime() const
   return 1;
 }
 
-
 /*! @brief Verifie le contenu de toutes les cases de la memoire
  *
  * @return (int) code de retour; retourne toujours 1
@@ -419,7 +401,6 @@ int Memoire::verifie() const
     }
   return 1;
 }
-
 
 /*! @brief Operateur d'affichage d'un etat de la memoire mem sur le flot de sortie os
  *
@@ -448,6 +429,7 @@ Sortie& operator << (Sortie& os, const Memoire& mem)
         os << " adresse : " << (long)(&(obj));
 
         const ArrOfInt* intA = dynamic_cast<const ArrOfInt*>(&obj);
+        const ArrOfDouble* intAD = dynamic_cast<const ArrOfDouble*>(&obj);
         if(intA)
           {
             const ArrOfInt& toto = *intA;
@@ -463,37 +445,32 @@ Sortie& operator << (Sortie& os, const Memoire& mem)
               }
             os << "\n";
           }
+        else if (intAD)
+          {
+            const ArrOfDouble& toto = *intAD;
+            tmp = obj.taille_memoire() + (int) ((toto.size_array()*sizeof(double))/toto.ref_count());
+            os << " TAILLE ArrOfDouble : " << tmp<< " octets ";
+            /* PL: Plante en P1Bulle donc je commente
+             * const DoubleVect* intVD = dynamic_cast<const DoubleVect*>(&obj);
+               if(intVD){
+               const DoubleVect& titi = *intVD;
+               tmp1 = obj.taille_memoire() + (int) ((titi.size()*sizeof(double))/titi.ref_count());
+               os << " dont : " << (tmp-tmp1) << " octets virtuels ";
+               } */
+            os << "\n";
+          }
         else
           {
-            const ArrOfDouble* intAD = dynamic_cast<const ArrOfDouble*>(&obj);
-            if(intAD)
+            const TRUSTArray<float>* intAF = dynamic_cast<const TRUSTArray<float>*>(&obj);
+            if(intAF)
               {
-                const ArrOfDouble& toto = *intAD;
-                tmp = obj.taille_memoire() + (int) ((toto.size_array()*sizeof(double))/toto.ref_count());
-                os << " TAILLE ArrOfDouble : " << tmp<< " octets ";
-                /* PL: Plante en P1Bulle donc je commente
-                 * const DoubleVect* intVD = dynamic_cast<const DoubleVect*>(&obj);
-                   if(intVD){
-                   const DoubleVect& titi = *intVD;
-                   tmp1 = obj.taille_memoire() + (int) ((titi.size()*sizeof(double))/titi.ref_count());
-                   os << " dont : " << (tmp-tmp1) << " octets virtuels ";
-                   } */
+                const TRUSTArray<float>& toto = *intAF;
+                tmp = obj.taille_memoire() + (int) ((toto.size_array()*sizeof(float))/toto.ref_count());
+                os << " TAILLE TRUSTArray<float> : " << tmp<< " octets ";
                 os << "\n";
               }
             else
               {
-                /*
-                  if(sub_type(Matrice_Morse_Sym,obj)){
-                  const Matrice_Morse_Sym& toto = ref_cast(Matrice_Morse_Sym,obj);
-                  tmp = obj.taille_memoire() +
-                  (int) (toto.nb_lignes()*sizeof(int)) +
-                  (int) ((toto.nb_coeff()+1)*sizeof(int)) +
-                  (int) (toto.nb_coeff()*sizeof(double));
-                  os << " TAILLE Matrice_Morse_Sym : " << tmp<< " octets ";
-                  os << "\n";
-                  }
-                  else
-                */
                 os << " TAILLE : " << (tmp=obj.taille_memoire())<< " octets \n ";
               }
           }
@@ -506,9 +483,6 @@ Sortie& operator << (Sortie& os, const Memoire& mem)
 
   return os << "Occupation taille memoire totale en Mo: " << total/1024/1024 << finl;
 }
-
-
-
 
 /*! @brief Destruction de la memoire Supprime les zone de travail pour les Objet_U, les double et les int
  *
@@ -534,6 +508,7 @@ Memoire::~Memoire()
 
       delete[] data;
       delete trav_double;
+      delete trav_float;
       delete trav_int;
       data=0;
     }
@@ -543,4 +518,3 @@ Memoire::~Memoire()
   Cerr << "Memory size used in Ko : " << (max_sz_mem-min_sz_mem)/1024 << finl;
   Process::exit();
 }
-

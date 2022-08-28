@@ -46,7 +46,7 @@ inline int operator!=(const TRUSTVect<_TYPE_>& x, const TRUSTVect<_TYPE_>& y)
 template <typename _TYPE_>
 inline void invalidate_data(TRUSTVect<_TYPE_>& resu, Mp_vect_options opt)
 {
-  _TYPE_ invalid = (std::is_same<_TYPE_,double>::value) ? -987654.321 : INT_MAX;
+  _TYPE_ invalid = (std::is_same<_TYPE_,int>::value) ? INT_MAX : -987654.321 ;
 
   const MD_Vector& md = resu.get_md_vector();
   const int line_size = resu.line_size();
@@ -79,6 +79,11 @@ inline double neutral_value_double_(const bool IS_MAX)
   return IS_MAX ? (-HUGE_VAL) : HUGE_VAL;
 }
 
+inline float neutral_value_float_(const bool IS_MAX)
+{
+  return IS_MAX ? (-HUGE_VALF) : HUGE_VALF; // et ouiiiiiiiiiiiiiiii
+}
+
 inline int neutral_value_int_(const bool IS_MAX)
 {
   return IS_MAX ? INT_MIN : INT_MAX;
@@ -93,6 +98,7 @@ inline _TYPE_ neutral_value()
   _TYPE_ neutral_val;
 
   if (std::is_same<_TYPE_, double>::value) neutral_val = (_TYPE_)neutral_value_double_(IS_MAX);
+  else if (std::is_same<_TYPE_, float>::value) neutral_val = (_TYPE_)neutral_value_float_(IS_MAX);
   else neutral_val = (_TYPE_)neutral_value_int_(IS_MAX);
 
   return neutral_val;
@@ -159,7 +165,7 @@ inline _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_>& vx, Mp_
           if (IS_MAX_ABS || IS_MIN_ABS)
             {
               _TYPE_ xx;
-              xx = std::is_same<_TYPE_, double>::value ? (_TYPE_)std::fabs(x) : (_TYPE_)std::abs(x);
+              xx = std::is_same<_TYPE_, int>::value ? (_TYPE_)std::abs(x) : (_TYPE_)std::fabs(x);
               if ((IS_MAX_ABS && xx > min_max_val) || (IS_MIN_ABS && xx < min_max_val)) min_max_val = xx;
             }
 
@@ -433,9 +439,10 @@ inline _TYPE_ mp_prodscal(const TRUSTVect<_TYPE_>& x, const TRUSTVect<_TYPE_>& y
 
 inline int mp_norme_vect(const TRUSTVect<int>& vx) = delete; // forbidden
 
-inline double mp_norme_vect(const TRUSTVect<double>& vx)
+template<typename _TYPE_>
+inline _TYPE_ mp_norme_vect(const TRUSTVect<_TYPE_>& vx)
 {
-  double x = mp_carre_norme_vect(vx);
+  _TYPE_ x = mp_carre_norme_vect(vx);
   x = sqrt(x);
   return x;
 }
@@ -448,9 +455,10 @@ inline _TYPE_ mp_norme_vect_(const TRUSTVect<_TYPE_>& vx)
 
 inline int mp_moyenne_vect(const TRUSTVect<int>& x) = delete; // forbidden
 
-inline double mp_moyenne_vect(const TRUSTVect<double>& x)
+template<typename _TYPE_>
+inline _TYPE_ mp_moyenne_vect(const TRUSTVect<_TYPE_>& x)
 {
-  double s = mp_somme_vect(x), n;
+  _TYPE_ s = mp_somme_vect(x), n;
   const MD_Vector& md = x.get_md_vector();
   if (md.non_nul()) n = md.valeur().nb_items_seq_tot() * x.line_size();
   else
@@ -564,9 +572,10 @@ inline void operator_multiply(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>& 
 
 inline void operator_divide(TRUSTVect<int>& resu, const TRUSTVect<int>& vx, Mp_vect_options opt = VECT_ALL_ITEMS) = delete; // forbidden
 
-inline void operator_divide(TRUSTVect<double>& resu, const TRUSTVect<double>& vx, Mp_vect_options opt = VECT_ALL_ITEMS)
+template <typename _TYPE_>
+inline void operator_divide(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt = VECT_ALL_ITEMS)
 {
-  operator_vect_vect_generic<double,TYPE_OPERATOR_VECT::DIV_>(resu,vx,opt);
+  operator_vect_vect_generic<_TYPE_,TYPE_OPERATOR_VECT::DIV_>(resu,vx,opt);
 }
 
 template <typename _TYPE_>
@@ -629,7 +638,7 @@ inline void operator_vect_single_generic(TRUSTVect<_TYPE_>& resu, const _TYPE_ x
           if (IS_MULT) p_resu *= x;
           if (IS_EGAL) p_resu = x;
           if (IS_NEGATE) p_resu = -p_resu;
-          if (IS_ABS) p_resu = (_TYPE_) (std::is_same<_TYPE_,double>::value ? std::fabs(p_resu) : std::abs(p_resu));
+          if (IS_ABS) p_resu = (_TYPE_) (std::is_same<_TYPE_,int>::value ? std::abs(p_resu) : std::fabs(p_resu));
           if (IS_RACINE_CARRE) p_resu = (_TYPE_) sqrt(p_resu);  // _TYPE_ casting just to pass 'int' instanciation of the template wo triggering -Wconversion warning
           if (IS_CARRE) p_resu *= p_resu;
 
@@ -674,9 +683,10 @@ inline operator_multiply(TRUSTVect<_TYPE_>& resu, const _SCALAR_TYPE_ x, Mp_vect
 
 inline void operator_divide(TRUSTVect<int>& resu, const int x, Mp_vect_options opt = VECT_ALL_ITEMS) = delete; // forbidden (avant c'etait possible ... a voir si besoin)
 
-inline void operator_divide(TRUSTVect<double>& resu, const double x, Mp_vect_options opt = VECT_ALL_ITEMS)
+template <typename _TYPE_>
+inline void operator_divide(TRUSTVect<_TYPE_>& resu, const _TYPE_ x, Mp_vect_options opt = VECT_ALL_ITEMS)
 {
-  operator_vect_single_generic<double,TYPE_OPERATOR_SINGLE::DIV_>(resu,x,opt);
+  operator_vect_single_generic<_TYPE_,TYPE_OPERATOR_SINGLE::DIV_>(resu,x,opt);
 }
 
 template <typename _TYPE_>
@@ -693,9 +703,10 @@ inline void operator_negate(TRUSTVect<_TYPE_>& resu, Mp_vect_options opt = VECT_
 
 inline void operator_inverse(TRUSTVect<int>& resu, Mp_vect_options opt = VECT_ALL_ITEMS) = delete; // forbidden
 
-inline void operator_inverse(TRUSTVect<double>& resu, Mp_vect_options opt = VECT_ALL_ITEMS)
+template <typename _TYPE_>
+inline void operator_inverse(TRUSTVect<_TYPE_>& resu, Mp_vect_options opt = VECT_ALL_ITEMS)
 {
-  operator_vect_single_generic<double,TYPE_OPERATOR_SINGLE::INV_>(resu,0. /* inutile */,opt);
+  operator_vect_single_generic<_TYPE_,TYPE_OPERATOR_SINGLE::INV_>(resu,0. /* inutile */,opt);
 }
 
 template <typename _TYPE_>
@@ -706,14 +717,16 @@ inline void operator_abs(TRUSTVect<_TYPE_>& resu, Mp_vect_options opt = VECT_ALL
 
 inline void racine_carree(TRUSTVect<int>& resu, Mp_vect_options opt = VECT_ALL_ITEMS) = delete; // forbidden
 
-inline void racine_carree(TRUSTVect<double>& resu, Mp_vect_options opt = VECT_ALL_ITEMS)
+template <typename _TYPE_>
+inline void racine_carree(TRUSTVect<_TYPE_>& resu, Mp_vect_options opt = VECT_ALL_ITEMS)
 {
-  operator_vect_single_generic<double,TYPE_OPERATOR_SINGLE::RACINE_CARRE_>(resu,0. /* inutile */,opt);
+  operator_vect_single_generic<_TYPE_,TYPE_OPERATOR_SINGLE::RACINE_CARRE_>(resu,0. /* inutile */,opt);
 }
 
 inline void racine_carree_(TRUSTVect<int>& resu, Mp_vect_options opt = VECT_ALL_ITEMS) = delete; // forbidden
 
-inline void racine_carree_(TRUSTVect<double>& resu, Mp_vect_options opt = VECT_ALL_ITEMS)
+template <typename _TYPE_>
+inline void racine_carree_(TRUSTVect<_TYPE_>& resu, Mp_vect_options opt = VECT_ALL_ITEMS)
 {
   racine_carree(resu,opt);
 }
@@ -740,13 +753,13 @@ enum class TYPE_OPERATION_VECT_SPEC { ADD_ , CARRE_ };
 template <TYPE_OPERATION_VECT_SPEC _TYPE_OP_ >
 inline void ajoute_operation_speciale_generic(TRUSTVect<int>& resu, int alpha, const TRUSTVect<int>& vx, Mp_vect_options opt) = delete; // forbidden ... ajoute si besoin
 
-template <TYPE_OPERATION_VECT_SPEC _TYPE_OP_ >
-inline void ajoute_operation_speciale_generic(TRUSTVect<double>& resu, double alpha, const TRUSTVect<double>& vx, Mp_vect_options opt)
+template <TYPE_OPERATION_VECT_SPEC _TYPE_OP_ ,typename _TYPE_>
+inline void ajoute_operation_speciale_generic(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt)
 {
   static constexpr bool IS_ADD = (_TYPE_OP_ == TYPE_OPERATION_VECT_SPEC::ADD_), IS_CARRE = (_TYPE_OP_ == TYPE_OPERATION_VECT_SPEC::CARRE_);
 
   // Master vect donne la structure de reference, les autres vecteurs doivent avoir la meme structure.
-  const TRUSTVect<double>& master_vect = resu;
+  const TRUSTVect<_TYPE_>& master_vect = resu;
   const int line_size = master_vect.line_size(), vect_size_tot = master_vect.size_totale();
   const MD_Vector& md = master_vect.get_md_vector();
   assert(vx.line_size() == line_size);
@@ -775,20 +788,20 @@ inline void ajoute_operation_speciale_generic(TRUSTVect<double>& resu, double al
   else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
     return;
 
-  double *resu_base = resu.addr();
-  const double *x_base = vx.addr();
+  _TYPE_ *resu_base = resu.addr();
+  const _TYPE_ *x_base = vx.addr();
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
       const int begin_bloc = (*(bloc_ptr++)) * line_size, end_bloc = (*(bloc_ptr++)) * line_size;
       assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-      double *resu_ptr = resu_base + begin_bloc;
-      const double *x_ptr = x_base + begin_bloc;
+      _TYPE_ *resu_ptr = resu_base + begin_bloc;
+      const _TYPE_ *x_ptr = x_base + begin_bloc;
       int count = end_bloc - begin_bloc;
       for (; count; count--)
         {
-          const double x = *x_ptr;
-          double& p_resu = *(resu_ptr++);
+          const _TYPE_ x = *x_ptr;
+          _TYPE_& p_resu = *(resu_ptr++);
 
           if (IS_ADD) p_resu += alpha * x;
           if (IS_CARRE) p_resu += alpha * x * x;
@@ -805,31 +818,35 @@ inline void ajoute_operation_speciale_generic(TRUSTVect<double>& resu, double al
 
 inline void ajoute_alpha_v(TRUSTVect<int>& resu, int alpha, const TRUSTVect<int>& vx, Mp_vect_options opt = VECT_REAL_ITEMS) = delete; // forbidden ... ajoute si besoin
 
-inline void ajoute_alpha_v(TRUSTVect<double>& resu, double alpha, const TRUSTVect<double>& vx, Mp_vect_options opt = VECT_REAL_ITEMS)
+template <typename _TYPE_>
+inline void ajoute_alpha_v(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt = VECT_REAL_ITEMS)
 {
-  ajoute_operation_speciale_generic<TYPE_OPERATION_VECT_SPEC::ADD_>(resu,alpha,vx,opt);
+  ajoute_operation_speciale_generic<TYPE_OPERATION_VECT_SPEC::ADD_,_TYPE_>(resu,alpha,vx,opt);
 }
 
 inline void ajoute_carre(TRUSTVect<int>& resu, int alpha, const TRUSTVect<int>& vx, Mp_vect_options opt = VECT_ALL_ITEMS) = delete; // forbidden ... ajoute si besoin
 
-inline void ajoute_carre(TRUSTVect<double>& resu, double alpha, const TRUSTVect<double>& vx, Mp_vect_options opt = VECT_ALL_ITEMS)
+template <typename _TYPE_>
+inline void ajoute_carre(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt = VECT_ALL_ITEMS)
 {
-  ajoute_operation_speciale_generic<TYPE_OPERATION_VECT_SPEC::CARRE_>(resu,alpha,vx,opt);
+  ajoute_operation_speciale_generic<TYPE_OPERATION_VECT_SPEC::CARRE_,_TYPE_>(resu,alpha,vx,opt);
 }
 
 inline void ajoute_carre_(TRUSTVect<int>& resu, int alpha, const TRUSTVect<int>& vx, Mp_vect_options opt) = delete; // forbidden ... ajoute si besoin
 
-inline void ajoute_carre_(TRUSTVect<double>& resu, double alpha, const TRUSTVect<double>& vx, Mp_vect_options opt)
+template <typename _TYPE_>
+inline void ajoute_carre_(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt)
 {
   ajoute_carre(resu,alpha,vx,opt);
 }
 
 inline void ajoute_produit_scalaire(TRUSTVect<int>& resu, int alpha, const TRUSTVect<int>& vx, const TRUSTVect<int>& vy, Mp_vect_options opt = VECT_ALL_ITEMS) = delete; // forbidden ... ajoute si besoin
 
-inline void ajoute_produit_scalaire(TRUSTVect<double>& resu, double alpha, const TRUSTVect<double>& vx, const TRUSTVect<double>& vy, Mp_vect_options opt = VECT_ALL_ITEMS)
+template <typename _TYPE_>
+inline void ajoute_produit_scalaire(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, const TRUSTVect<_TYPE_>& vx, const TRUSTVect<_TYPE_>& vy, Mp_vect_options opt = VECT_ALL_ITEMS)
 {
   // Master vect donne la structure de reference, les autres vecteurs doivent avoir la meme structure.
-  const TRUSTVect<double>& master_vect = resu;
+  const TRUSTVect<_TYPE_>& master_vect = resu;
   const int line_size = master_vect.line_size(), vect_size_tot = master_vect.size_totale();
   const MD_Vector& md = master_vect.get_md_vector();
   assert(vx.line_size() == line_size && vy.line_size() == line_size);
@@ -858,23 +875,23 @@ inline void ajoute_produit_scalaire(TRUSTVect<double>& resu, double alpha, const
   else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
     return;
 
-  double *resu_base = resu.addr();
-  const double *x_base = vx.addr();
-  const double *y_base = vy.addr();
+  _TYPE_ *resu_base = resu.addr();
+  const _TYPE_ *x_base = vx.addr();
+  const _TYPE_ *y_base = vy.addr();
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
       const int begin_bloc = (*(bloc_ptr++)) * line_size, end_bloc = (*(bloc_ptr++)) * line_size;
       assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-      double *resu_ptr = resu_base + begin_bloc;
-      const double *x_ptr = x_base + begin_bloc;
-      const double *y_ptr = y_base + begin_bloc;
+      _TYPE_ *resu_ptr = resu_base + begin_bloc;
+      const _TYPE_ *x_ptr = x_base + begin_bloc;
+      const _TYPE_ *y_ptr = y_base + begin_bloc;
       int count = end_bloc - begin_bloc;
       for (; count; count--)
         {
-          const double x = *x_ptr;
-          const double y = *(y_ptr++);
-          double& p_resu = *(resu_ptr++);
+          const _TYPE_ x = *x_ptr;
+          const _TYPE_ y = *(y_ptr++);
+          _TYPE_& p_resu = *(resu_ptr++);
           p_resu += alpha * x * y;
           x_ptr++;
         }
@@ -891,13 +908,13 @@ enum class TYPE_OPERATION_VECT_SPEC_GENERIC { MUL_ , DIV_ };
 template <TYPE_OPERATION_VECT_SPEC_GENERIC _TYPE_OP_ >
 inline void operation_speciale_tres_generic(TRUSTVect<int>& resu, const TRUSTVect<int>& vx, Mp_vect_options opt) = delete; // forbidden !!
 
-template <TYPE_OPERATION_VECT_SPEC_GENERIC _TYPE_OP_ >
-inline void operation_speciale_tres_generic(TRUSTVect<double>& resu, const TRUSTVect<double>& vx, Mp_vect_options opt)
+template <TYPE_OPERATION_VECT_SPEC_GENERIC _TYPE_OP_ , typename _TYPE_>
+inline void operation_speciale_tres_generic(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt)
 {
   static constexpr bool IS_MUL = (_TYPE_OP_ == TYPE_OPERATION_VECT_SPEC_GENERIC::MUL_), IS_DIV = (_TYPE_OP_ == TYPE_OPERATION_VECT_SPEC_GENERIC::DIV_);
 
   // Master vect donne la structure de reference, les autres vecteurs doivent avoir la meme structure.
-  const TRUSTVect<double>& master_vect = resu;
+  const TRUSTVect<_TYPE_>& master_vect = resu;
   const int line_size = master_vect.line_size(), line_size_vx = vx.line_size(), vect_size_tot = master_vect.size_totale();
   const MD_Vector& md = master_vect.get_md_vector();
   // Le line_size du vecteur resu doit etre un multiple du line_size du vecteur vx
@@ -928,23 +945,23 @@ inline void operation_speciale_tres_generic(TRUSTVect<double>& resu, const TRUST
   else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
     return;
 
-  double *resu_base = resu.addr();
-  const double *x_base = vx.addr();
+  _TYPE_ *resu_base = resu.addr();
+  const _TYPE_ *x_base = vx.addr();
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
       const int begin_bloc = (*(bloc_ptr++)) * line_size_vx, end_bloc = (*(bloc_ptr++)) * line_size_vx;
       assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-      double *resu_ptr = resu_base + begin_bloc * delta_line_size;
-      const double *x_ptr = x_base + begin_bloc;
+      _TYPE_ *resu_ptr = resu_base + begin_bloc * delta_line_size;
+      const _TYPE_ *x_ptr = x_base + begin_bloc;
       int count = end_bloc - begin_bloc;
       for (; count; count--)
         {
-          const double x = *x_ptr;
+          const _TYPE_ x = *x_ptr;
           // Any shape: pour chaque item de vx, on a delta_line_size items de resu a traiter
           for (int count2 = delta_line_size; count2; count2--)
             {
-              double& p_resu = *(resu_ptr++);
+              _TYPE_& p_resu = *(resu_ptr++);
 
               if (IS_MUL) p_resu *= x;
 
@@ -966,27 +983,30 @@ inline void operation_speciale_tres_generic(TRUSTVect<double>& resu, const TRUST
 
 inline void tab_multiply_any_shape_(TRUSTVect<int>& resu, const TRUSTVect<int>& vx, Mp_vect_options opt) = delete; // forbidden
 
-inline void tab_multiply_any_shape_(TRUSTVect<double>& resu, const TRUSTVect<double>& vx, Mp_vect_options opt)
+template<typename _TYPE_>
+inline void tab_multiply_any_shape_(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt)
 {
-  operation_speciale_tres_generic<TYPE_OPERATION_VECT_SPEC_GENERIC::MUL_>(resu,vx,opt);
+  operation_speciale_tres_generic<TYPE_OPERATION_VECT_SPEC_GENERIC::MUL_,_TYPE_>(resu,vx,opt);
 }
 
 inline void tab_divide_any_shape_(TRUSTVect<int>& resu, const TRUSTVect<int>& vx, Mp_vect_options opt) = delete; // forbidden
 
-inline void tab_divide_any_shape_(TRUSTVect<double>& resu, const TRUSTVect<double>& vx, Mp_vect_options opt)
+template<typename _TYPE_>
+inline void tab_divide_any_shape_(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt)
 {
-  operation_speciale_tres_generic<TYPE_OPERATION_VECT_SPEC_GENERIC::DIV_>(resu,vx,opt);
+  operation_speciale_tres_generic<TYPE_OPERATION_VECT_SPEC_GENERIC::DIV_,_TYPE_>(resu,vx,opt);
 }
 
 // Cette methode permettent de multiplier un tableau a plusieurs dimensions par un tableau de dimension inferieure (par exemple un tableau a trois composantes par un tableau a une composante).
 //  Chaque valeur du tableau vx est utilisee pour plusieurs items consecutifs du tableau resu (le nombre de fois est le rapport des line_size() des deux tableaux).
 //  resu.line_size() doit etre un multiple int de vx.line_size() et les descripteurs doivent etre identiques.
 //  Cas particulier: vx peut contenir une constante unique (size_array() == 1 et descripteur nul), dans ce cas c'est un simple produit par la constante
-inline void tab_multiply_any_shape(TRUSTVect<double>& resu, const TRUSTVect<double>& vx, Mp_vect_options opt = VECT_ALL_ITEMS)
+template<typename _TYPE_>
+inline void tab_multiply_any_shape(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt = VECT_ALL_ITEMS)
 {
   if (vx.size_array() == 1 && !vx.get_md_vector().non_nul()) // Produit par une constante
     {
-      const double x = vx[0];
+      const _TYPE_ x = vx[0];
       operator_multiply(resu, x, opt);
     }
   else if (vx.line_size() == resu.line_size()) // Produit membre a membre
@@ -998,12 +1018,13 @@ inline void tab_multiply_any_shape(TRUSTVect<double>& resu, const TRUSTVect<doub
 inline void tab_multiply_any_shape(TRUSTVect<int>& resu, const TRUSTVect<int>& vx, Mp_vect_options opt = VECT_ALL_ITEMS) = delete; // forbidden
 
 // Idem que tab_multiply_any_shape() mais avec une division
-inline void tab_divide_any_shape(TRUSTVect<double>& resu, const TRUSTVect<double>& vx, Mp_vect_options opt = VECT_ALL_ITEMS)
+template<typename _TYPE_>
+inline void tab_divide_any_shape(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt = VECT_ALL_ITEMS)
 {
   if (vx.size_array() == 1 && !vx.get_md_vector().non_nul()) // division par une constante
     {
       if (vx[0] == 0) error_divide(__func__);
-      const double x = 1. / vx[0];
+      const _TYPE_ x = 1. / vx[0];
       operator_multiply(resu, x, opt);
     }
   else if (vx.line_size() == resu.line_size()) // division membre a membre

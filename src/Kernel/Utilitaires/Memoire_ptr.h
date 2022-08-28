@@ -72,8 +72,9 @@ private :
   TRUST_ptr_trav*         next;
 } ;
 
-typedef TRUST_ptr_trav<double> Double_ptr_trav;
-typedef TRUST_ptr_trav<int> Int_ptr_trav;
+using Double_ptr_trav = TRUST_ptr_trav<double>;
+using Float_ptr_trav = TRUST_ptr_trav<float>;
+using Int_ptr_trav = TRUST_ptr_trav<int>;
 
 /*! @brief Ajout d'elements dans la zone de travail
  *

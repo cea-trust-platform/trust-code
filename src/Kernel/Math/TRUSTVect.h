@@ -112,7 +112,9 @@ public:
   inline void operator*=(const TRUSTVect& v) { operator_multiply(*this, v); }
   inline void operator*= (const _TYPE_ x) { operator_multiply(*this, x); }
 
-  inline void operator/=(const TRUSTVect<double>& v) { operator_divide(*this, v); }
+  template<typename _T_ /* double ou float */>
+  inline void operator/=(const TRUSTVect<_T_>& v) { operator_divide(*this, v); }
+
   inline void operator/=(const TRUSTVect<int>& v) = delete; // forbidden
   inline void operator/= (const _TYPE_ x) { operator_divide(*this, x); }
 
@@ -120,10 +122,22 @@ public:
   inline void abs(Mp_vect_options opt = VECT_ALL_ITEMS) { operator_abs(*this, opt); }
   inline void carre(Mp_vect_options opt = VECT_ALL_ITEMS) { carre_(*this, opt); }
   inline void racine_carree(Mp_vect_options opt = VECT_ALL_ITEMS) { racine_carree_(*this, opt); }
-  inline void ajoute(double alpha, const TRUSTVect<double>& y, Mp_vect_options opt = VECT_ALL_ITEMS);
-  inline void ajoute_sans_ech_esp_virt(double alpha, const TRUSTVect<double>& y, Mp_vect_options opt = VECT_REAL_ITEMS) { ajoute_alpha_v(*this, alpha, y, opt); } // x+=alpha*y sans echange_espace_virtuel
-  inline void ajoute_produit_scalaire(double alpha, const TRUSTVect<double>& x, const TRUSTVect<double>& y, Mp_vect_options opt = VECT_ALL_ITEMS) { ajoute_produit_scalaire(*this, alpha, x, y, opt); } // z+=alpha*x*y;
-  inline void ajoute_carre(double alpha, const TRUSTVect<double>& y, Mp_vect_options opt = VECT_ALL_ITEMS) { ajoute_carre_(*this, alpha, y, opt); }
+
+  template<typename _T_ /* double ou float */, typename _SCALAR_TYPE_>
+  typename std::enable_if<std::is_convertible<_SCALAR_TYPE_, _T_>::value ,void>::type
+  inline ajoute(_SCALAR_TYPE_ alpha, const TRUSTVect<_T_>& y, Mp_vect_options opt = VECT_ALL_ITEMS);
+
+  template<typename _T_ /* double ou float */, typename _SCALAR_TYPE_>
+  typename std::enable_if<std::is_convertible<_SCALAR_TYPE_, _T_>::value ,void>::type
+  inline ajoute_sans_ech_esp_virt(_SCALAR_TYPE_ alpha, const TRUSTVect<_T_>& y, Mp_vect_options opt = VECT_REAL_ITEMS) { ajoute_alpha_v(*this, (_T_)alpha, y, opt); } // x+=alpha*y sans echange_espace_virtuel
+
+  template<typename _T_ /* double ou float */, typename _SCALAR_TYPE_>
+  typename std::enable_if<std::is_convertible<_SCALAR_TYPE_, _T_>::value ,void>::type
+  inline ajoute_produit_scalaire(_SCALAR_TYPE_ alpha, const TRUSTVect<_T_>& x, const TRUSTVect<_T_>& y, Mp_vect_options opt = VECT_ALL_ITEMS) { ajoute_produit_scalaire(*this, (_T_)alpha, x, y, opt); } // z+=alpha*x*y;
+
+  template<typename _T_ /* double ou float */, typename _SCALAR_TYPE_>
+  typename std::enable_if<std::is_convertible<_SCALAR_TYPE_, _T_>::value ,void>::type
+  inline ajoute_carre(_SCALAR_TYPE_ alpha, const TRUSTVect<_T_>& y, Mp_vect_options opt = VECT_ALL_ITEMS) { ajoute_carre_(*this, (_T_)alpha, y, opt); }
 
   inline void ajoute(int alpha, const TRUSTVect<int>& y, Mp_vect_options opt = VECT_ALL_ITEMS) = delete; // forbidden ... a voir si besoin
   inline void ajoute_sans_ech_esp_virt(int alpha, const TRUSTVect<int>& y, Mp_vect_options opt = VECT_REAL_ITEMS) = delete; // forbidden ... a voir si besoin

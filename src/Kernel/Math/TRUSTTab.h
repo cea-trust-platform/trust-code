@@ -223,12 +223,18 @@ public:
   inline _TYPE_& operator()(int i1, int i2, int i3, int i4);
   inline const _TYPE_& operator()(int i1, int i2, int i3, int i4) const ;
 
-  // Juste pour TRUSTTab<double>
-  inline void ajoute_produit_tensoriel(double alpha, const TRUSTTab<double>&, const TRUSTTab<double>&); // z+=alpha*x*y;
-  inline void resoud_LU(int, TRUSTArray<int>&, const TRUSTArray<double>&, TRUSTArray<double>&);
-  inline int inverse_LU(const TRUSTArray<double>&, TRUSTArray<double>&);
-  inline int decomp_LU(int, TRUSTArray<int>&, TRUSTTab<double>&);
-  inline double max_du_u(const TRUSTTab<double>&);
+  // Juste pour TRUSTTab<double/float>
+  template <typename _T_> inline void ajoute_produit_tensoriel(_T_ alpha, const TRUSTTab<_T_>&, const TRUSTTab<_T_>&); // z+=alpha*x*y;
+  template <typename _T_> inline void resoud_LU(int, TRUSTArray<int>&, const TRUSTArray<_T_>&, TRUSTArray<_T_>&);
+  template <typename _T_> inline int inverse_LU(const TRUSTArray<_T_>&, TRUSTArray<_T_>&);
+  template <typename _T_> inline int decomp_LU(int, TRUSTArray<int>&, TRUSTTab<_T_>&);
+  template <typename _T_> inline _T_ max_du_u(const TRUSTTab<_T_>&);
+
+  void ajoute_produit_tensoriel(int alpha, const TRUSTTab<int>&, const TRUSTTab<int>&) = delete; // z+=alpha*x*y;
+  void resoud_LU(int, TRUSTArray<int>&, const TRUSTArray<int>&, TRUSTArray<int>&) = delete;
+  int inverse_LU(const TRUSTArray<int>&, TRUSTArray<int>&) = delete;
+  int decomp_LU(int, TRUSTArray<int>&, TRUSTTab<int>&) = delete;
+  int max_du_u(const TRUSTTab<int>&) = delete;
 
   // methodes virtuelles
   inline virtual void ref(const TRUSTTab&);

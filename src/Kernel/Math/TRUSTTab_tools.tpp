@@ -16,11 +16,14 @@
 #ifndef TRUSTTab_tools_TPP_included
 #define TRUSTTab_tools_TPP_included
 
-inline void local_carre_norme_tab(const TRUSTTab<double>& tableau, TRUSTArray<double>& norme_colonne)
+inline void local_carre_norme_tab(const TRUSTTab<int>& , TRUSTArray<int>& ) = delete;
+
+template <typename _T_>
+inline void local_carre_norme_tab(const TRUSTTab<_T_>& tableau, TRUSTArray<_T_>& norme_colonne)
 {
   const TRUSTArray<int>& blocs = tableau.get_md_vector().valeur().get_items_to_sum();
   const int nblocs = blocs.size_array() >> 1;
-  const TRUSTVect<double>& vect = tableau;
+  const TRUSTVect<_T_>& vect = tableau;
   const int lsize = vect.line_size();
   assert(lsize == norme_colonne.size_array());
   for (int ibloc = 0; ibloc < nblocs; ibloc++)
@@ -31,30 +34,39 @@ inline void local_carre_norme_tab(const TRUSTTab<double>& tableau, TRUSTArray<do
           int k = i * lsize;
           for (int j = 0; j < lsize; j++)
             {
-              const double x = vect[k++];
+              const _T_ x = vect[k++];
               norme_colonne[j] += x*x;
             }
         }
     }
 }
 
-inline void mp_carre_norme_tab(const TRUSTTab<double>& tableau, TRUSTArray<double>& norme_colonne)
+inline void mp_carre_norme_tab(const TRUSTTab<int>& , TRUSTArray<int>& ) = delete;
+
+template <typename _T_>
+inline void mp_carre_norme_tab(const TRUSTTab<_T_>& tableau, TRUSTArray<_T_>& norme_colonne)
 {
   local_carre_norme_tab(tableau, norme_colonne);
   mp_sum_for_each_item(norme_colonne);
 }
 
-inline void mp_norme_tab(const TRUSTTab<double>& tableau, TRUSTArray<double>& norme_colonne)
+inline void mp_norme_tab(const TRUSTTab<int>& , TRUSTArray<int>& ) = delete;
+
+template <typename _T_>
+inline void mp_norme_tab(const TRUSTTab<_T_>& tableau, TRUSTArray<_T_>& norme_colonne)
 {
   mp_carre_norme_tab(tableau,norme_colonne);
   for (int c=0; c<norme_colonne.size_array(); c++) norme_colonne[c] = sqrt(norme_colonne[c]);
 }
 
-inline void local_max_abs_tab(const TRUSTTab<double>& tableau, TRUSTArray<double>& max_colonne)
+inline void local_max_abs_tab(const TRUSTTab<int>& , TRUSTArray<int>& ) = delete;
+
+template <typename _T_>
+inline void local_max_abs_tab(const TRUSTTab<_T_>& tableau, TRUSTArray<_T_>& max_colonne)
 {
   const TRUSTArray<int>& blocs = tableau.get_md_vector().valeur().get_items_to_compute();
   const int nblocs = blocs.size_array() >> 1;
-  const TRUSTVect<double>& vect = tableau;
+  const TRUSTVect<_T_>& vect = tableau;
   const int lsize = vect.line_size();
   for (int j = 0; j < lsize; j++) max_colonne[j] = 0;
   assert(lsize == max_colonne.size_array());
@@ -66,14 +78,17 @@ inline void local_max_abs_tab(const TRUSTTab<double>& tableau, TRUSTArray<double
           int k = i * lsize;
           for (int j = 0; j < lsize; j++)
             {
-              const double x = std::fabs(vect[k++]);
+              const _T_ x = std::fabs(vect[k++]);
               max_colonne[j] = (x > max_colonne[j]) ? x : max_colonne[j];
             }
         }
     }
 }
 
-inline void mp_max_abs_tab(const TRUSTTab<double>& tableau, TRUSTArray<double>& max_colonne)
+inline void mp_max_abs_tab(const TRUSTTab<int>& , TRUSTArray<int>& ) = delete;
+
+template <typename _T_>
+inline void mp_max_abs_tab(const TRUSTTab<_T_>& tableau, TRUSTArray<_T_>& max_colonne)
 {
   local_max_abs_tab(tableau, max_colonne);
   mp_max_for_each_item(max_colonne);

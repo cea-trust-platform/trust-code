@@ -263,10 +263,11 @@ inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::inject_array(const TRUSTArray& so
 }
 
 //  Fonction de comparaison utilisee pour trier le tableau dans ArrOfDouble::trier(). Voir man qsort
+template<typename _TYPE_ /* double ou float */ >
 static True_int fonction_compare_arrofdouble_ordonner(const void * data1, const void * data2)
 {
-  const double x = *(const double*)data1;
-  const double y = *(const double*)data2;
+  const _TYPE_ x = *(const _TYPE_*)data1;
+  const _TYPE_ y = *(const _TYPE_*)data2;
   if (x < y) return -1;
   else if (x > y) return 1;
   else return 0;
@@ -288,14 +289,14 @@ static True_int fonction_compare_arrofint_ordonner(const void * data1, const voi
 
 //  Tri des valeurs du tableau dans l'ordre croissant. La fonction utilisee est qsort de stdlib (elle est en n*log(n)).
 /// \cond DO_NOT_DOCUMENT
-template <>
-inline void TRUSTArray<double>::ordonne_array()
+template <typename _TYPE_ /* double ou float */ >
+inline void TRUSTArray<_TYPE_>::ordonne_array()
 {
   const int size = size_array_;
   if (size > 1)
     {
-      double * data = data_;
-      qsort(data, size, sizeof(double), fonction_compare_arrofdouble_ordonner);
+      _TYPE_ * data = data_;
+      qsort(data, size, sizeof(_TYPE_), fonction_compare_arrofdouble_ordonner<_TYPE_>);
     }
 }
 template <>

@@ -582,15 +582,15 @@ inline void TRUSTTab<_TYPE_>::lit(Entree& is, int resize_and_read)
 }
 
 // ------------------------------------------------------
-// Juste pour double
+// Juste pour double/float
 
 //  Quelqu'un veut-il expliquer ce que fait cette methode ?
-template<typename _TYPE_>
-inline void TRUSTTab<_TYPE_>::ajoute_produit_tensoriel(double alpha, const TRUSTTab<double>& x, const TRUSTTab<double>& y)
+template<typename _TYPE_> template <typename _T_>
+inline void TRUSTTab<_TYPE_>::ajoute_produit_tensoriel(_T_ alpha, const TRUSTTab<_T_>& x, const TRUSTTab<_T_>& y)
 {
   // Tableaux vus comme des tableaux unidimensionnels (pour ne pas avoir a gerer nb_dim)
-  const TRUSTVect<double>& vx = x, &vy = y;
-  TRUSTVect<double>& v = *this;
+  const TRUSTVect<_T_>& vx = x, &vy = y;
+  TRUSTVect<_T_>& v = *this;
 
   const int line_size_x = vx.line_size(), line_size_y = vy.line_size(), line_size_xy = v.line_size();
   assert(line_size_xy == line_size_x * line_size_y);
@@ -618,10 +618,10 @@ inline void TRUSTTab<_TYPE_>::ajoute_produit_tensoriel(double alpha, const TRUST
       for (int i = debut; i < fin; i++)
         for (int j = 0; j < line_size_x; j++)
           {
-            double xval = vx[i * line_size_x + j];
+            _T_ xval = vx[i * line_size_x + j];
             for (int k = 0; k < line_size_y; k++)
               {
-                double yval = vy[i * line_size_y + k];
+                _T_ yval = vy[i * line_size_y + k];
                 v[v_index] += alpha * xval * yval;
                 v_index++;
               }
@@ -630,12 +630,12 @@ inline void TRUSTTab<_TYPE_>::ajoute_produit_tensoriel(double alpha, const TRUST
 }
 
 //  Resolution du systeme Ax=b
-template<typename _TYPE_>
-inline int TRUSTTab<_TYPE_>::inverse_LU(const TRUSTArray<double>& b, TRUSTArray<double>& solution)
+template<typename _TYPE_> template <typename _T_>
+inline int TRUSTTab<_TYPE_>::inverse_LU(const TRUSTArray<_T_>& b, TRUSTArray<_T_>& solution)
 {
   int n = b.size_array();
   TRUSTArray<int> index(n);
-  TRUSTTab<double> lu_dec(n,n);
+  TRUSTTab<_T_> lu_dec(n,n);
   int cvg = (*this).decomp_LU(n,index,lu_dec);
 
   if(cvg == 1) lu_dec.resoud_LU(n,index,b,solution);
@@ -645,12 +645,12 @@ inline int TRUSTTab<_TYPE_>::inverse_LU(const TRUSTArray<double>& b, TRUSTArray<
 
 //  Decomposition d'une matrice en L.U: methode de Crout (diagonale de L =1)
 // Retour: matrice A_ = assemblage (L-diagonale)+U
-template<typename _TYPE_>
-inline int TRUSTTab<_TYPE_>::decomp_LU(int n, TRUSTArray<int>& index, TRUSTTab<double>& matLU)
+template<typename _TYPE_> template <typename _T_>
+inline int TRUSTTab<_TYPE_>::decomp_LU(int n, TRUSTArray<int>& index, TRUSTTab<_T_>& matLU)
 {
-  TRUSTArray<double> vv(n);
+  TRUSTArray<_T_> vv(n);
   int i, j, k,  imax = -1, cvg = 1;
-  double big, dum, sum, temp;
+  _T_ big, dum, sum, temp;
   matLU = (*this);
 
   //Recupere le coeff max d'une ligne, stocke dans vv
@@ -711,11 +711,11 @@ inline int TRUSTTab<_TYPE_>::decomp_LU(int n, TRUSTArray<int>& index, TRUSTTab<d
 }
 
 //  Resolution du systeme A_x=b : A_ contenant le decompostion LU de A (stockee dans une seule matrice)
-template<typename _TYPE_>
-inline void TRUSTTab<_TYPE_>::resoud_LU(int n, TRUSTArray<int>& index, const TRUSTArray<double>& b, TRUSTArray<double>& solution)
+template<typename _TYPE_> template <typename _T_>
+inline void TRUSTTab<_TYPE_>::resoud_LU(int n, TRUSTArray<int>& index, const TRUSTArray<_T_>& b, TRUSTArray<_T_>& solution)
 {
   int i,ii=-1,ip,j;
-  double sum;
+  _T_ sum;
   solution = b;
   for (i=0 ; i<n ; i++)
     {
@@ -739,17 +739,17 @@ inline void TRUSTTab<_TYPE_>::resoud_LU(int n, TRUSTArray<int>& index, const TRU
 
 //  Fonction utilisee pour le calcul du du/u (pour convergence implicite)
 //    renvoie le max de abs(du(i)/u(i)). utilisation    max_ = (u(n+1)-u(n)).max_du_u(u(n))
-template<typename _TYPE_>
-inline double TRUSTTab<_TYPE_>::max_du_u(const TRUSTTab<double>& u)
+template<typename _TYPE_> template <typename _T_>
+inline _T_ TRUSTTab<_TYPE_>::max_du_u(const TRUSTTab<_T_>& u)
 {
   assert(TRUSTVect<_TYPE_>::size_array() == u.size_array());
-  const double *du_ptr = TRUSTVect<_TYPE_>::addr();
-  const double *u_ptr = u.addr();
-  const double epsilon = 1.e-8;
-  double res = 0.;
+  const _T_ *du_ptr = TRUSTVect<_TYPE_>::addr();
+  const _T_ *u_ptr = u.addr();
+  const _T_ epsilon = 1.e-8;
+  _T_ res = 0.;
   for (int n = TRUSTVect<_TYPE_>::size_array(); n; n--)
     {
-      double a = std::fabs(*du_ptr), b = std::fabs(*u_ptr), c = a / (b + epsilon);
+      _T_ a = std::fabs(*du_ptr), b = std::fabs(*u_ptr), c = a / (b + epsilon);
       if (b > 1.e-2 && c > res) res = c;
       du_ptr++;
       u_ptr++;

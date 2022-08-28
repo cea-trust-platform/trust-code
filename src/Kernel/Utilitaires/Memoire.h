@@ -40,12 +40,18 @@ public :
   void compacte();
   ~Memoire();
 
-  inline Double_ptr_trav* add_trav_double(int n);
-  inline Int_ptr_trav* add_trav_int(int n);
+  // Elie : TODO : FIXME
+  inline Double_ptr_trav* add_trav_double(int n) { return trav_double->add(n); }
+  inline Float_ptr_trav* add_trav_float(int n) { return trav_float->add(n); }
+  inline Int_ptr_trav* add_trav_int(int n) { return trav_int->add(n); }
 
   template<typename _TYPE_>
   inline typename std::enable_if<std::is_same<_TYPE_,double>::value, TRUST_ptr_trav<_TYPE_>*>::type
   add_trav(int n) { return add_trav_double(n); }
+
+  template<typename _TYPE_>
+  inline typename std::enable_if<std::is_same<_TYPE_,float>::value, TRUST_ptr_trav<_TYPE_>*>::type
+  add_trav(int n) { return add_trav_float(n); }
 
   template<typename _TYPE_>
   inline typename std::enable_if<std::is_same<_TYPE_,int>::value, TRUST_ptr_trav<_TYPE_>*>::type
@@ -55,37 +61,22 @@ public :
   int imprime() const;
 
 private :
-
   int size;
   Memoire_ptr* data;
   static int step;
   static int prems;
+
+  // Elie : TODO : FIXME
   Double_ptr_trav* trav_double;
+  Float_ptr_trav* trav_float;
   Int_ptr_trav* trav_int;
+
   static Memoire* _instance;
+
 protected :
   Memoire();
 };
 
-
-/*! @brief Ajoute une zone de travail "double" dans la memoire
- *
- * @param (int n) le nombre d'elements dans la zone a creer
- * @return (Double_ptr_trav*) pointeur sur la zone creee
- */
-inline Double_ptr_trav* Memoire::add_trav_double(int n)
-{
-  return trav_double->add(n);
-}
-
-/*! @brief Ajoute une zone de travail "int" dans la memoire
- *
- * @param (int n) le nombre d'elements dans la zone a creer
- * @return (Int_ptr_trav*) pointeur sur la zone creee
- */
-inline Int_ptr_trav* Memoire::add_trav_int(int n)
-{
-  return trav_int->add(n);
-}
 Sortie& operator <<(Sortie& , const Memoire&);
-#endif
+
+#endif /* Memoire_included */
