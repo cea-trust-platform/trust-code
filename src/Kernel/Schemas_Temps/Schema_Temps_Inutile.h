@@ -41,7 +41,7 @@ public :
   double temps_defaut() const override;
 
   int faire_un_pas_de_temps_eqn_base(Equation_base&) override;
-  inline void completer() override {} 
+  inline void completer() override {}
 };
 
 #endif
