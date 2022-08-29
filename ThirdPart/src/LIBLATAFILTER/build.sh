@@ -8,6 +8,9 @@ mkdir -p include build
 
 cd build
 ln -sf ../../../../ThirdPart/src/LIBLATAFILTER/trust_commun/* . 1>/dev/null 2>&1
+
+# If lata_tools srcs are touched, rebuild LIBLATAFILTER !
+[ "$(find  $TRUST_ROOT/Outils/lata_tools/src/trust_commun -type f -newer $ORG/makefile.sa)" != "" ]  && touch $ORG/makefile.sa
 if [ ! -f makefile ] || [ $ORG/makefile.sa -nt makefile ]
 then   
    cp $ORG/makefile.sa makefile
