@@ -43,7 +43,7 @@ public:
   // !!! Cette fonction doit obligatoirement etre appelee simultanement sur tous
   // les processeurs.
   // level : niveau de debug, superieur ou egal a 1 (compteur active si debug_level >= level)
-  // description : description du compteur affichee a la fin du calcul (non nul !)
+  // compteur affichee a la fin du calcul (non nul !)
   //               Attention, on ne fait pas de copie locale de la chaine, le pointeur doit
   //               rester valide jusqu'a la fin de l'execution.
   // family : eventuellement zero, nom d'une famille de compteurs pour grouper les stats.

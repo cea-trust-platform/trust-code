@@ -61,43 +61,28 @@ public :
   // La valeur retournee par defaut est VIA_AJOUTER, pour ne pas perturber le
   // comportement normal des classes de Trio-U en dehors du noyau.
   //
-  enum type_calcul_du_residu { VIA_CONTRIBUER_AU_SECOND_MEMBRE = 0,
-                               VIA_AJOUTER                     = 1
-                             };
-
-  inline virtual type_calcul_du_residu codage_du_calcul_du_residu(void) const
-  {
-    return VIA_AJOUTER;
-  }
+  enum type_calcul_du_residu { VIA_CONTRIBUER_AU_SECOND_MEMBRE = 0, VIA_AJOUTER                     = 1 };
+  inline virtual type_calcul_du_residu codage_du_calcul_du_residu(void) const { return VIA_AJOUTER; }
 
   // FIN MODIF ELI LAUCOIN
-
 
 public :
 
   virtual void discretiser_variables() const;
-  virtual void discretiser_Zone_Cl_dis(const Zone_dis& ,Zone_Cl_dis& ) const;
+  virtual void discretiser_Zone_Cl_dis(const Zone_dis&, Zone_Cl_dis&) const;
   virtual void discretiser(Domaine_dis&) const;
   // pour que l'existant compile
-  virtual void zone_Cl_dis(Zone_dis& , Zone_Cl_dis& ) const =0;
+  virtual void zone_Cl_dis(Zone_dis&, Zone_Cl_dis&) const =0;
 
   // Tentative de codage pour factoriser la discretisation :
 
   // Creation de champs scalaires ou vectoriels (essentiellement appel a la
   // methode generale, ne pas surcharger ces methodes, elles ne sont la que
   // par commodite)
-  void discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
-                         const Nom& nom, const Nom& unite,
-                         int nb_comp, int nb_pas_dt, double temps,
-                         Champ_Inc& champ, const Nom& sous_type = nom_vide) const;
-  void discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
-                         const Nom& nom, const Nom& unite,
-                         int nb_comp, double temps,
-                         Champ_Fonc& champ) const;
-  void discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
-                         const Nom& nom, const Nom& unite,
-                         int nb_comp, double temps,
-                         Champ_Don& champ) const;
+  void discretiser_champ(const Motcle& directive, const Zone_dis_base& z, const Nom& nom, const Nom& unite, int nb_comp, int nb_pas_dt, double temps, Champ_Inc& champ,
+                         const Nom& sous_type = nom_vide) const;
+  void discretiser_champ(const Motcle& directive, const Zone_dis_base& z, const Nom& nom, const Nom& unite, int nb_comp, double temps, Champ_Fonc& champ) const;
+  void discretiser_champ(const Motcle& directive, const Zone_dis_base& z, const Nom& nom, const Nom& unite, int nb_comp, double temps, Champ_Don& champ) const;
 
   // Creation de champs generaux (eventuellement multiscalaires) :
   // * Ces methodes doivent etre surchargees.
@@ -105,45 +90,22 @@ public :
   //   de l'ensembldes des directives comprises (et appelle a l'ancetre avec
   //   le meme motcle).
   // * Si champ scalaire ou vectoriel, le premier nom et la premiere unite sont utilises
-  virtual void discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
-                                 Nature_du_champ nature,
-                                 const Noms& nom, const Noms& unite,
-                                 int nb_comp, int nb_pas_dt, double temps,
+  virtual void discretiser_champ(const Motcle& directive, const Zone_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, int nb_pas_dt, double temps,
                                  Champ_Inc& champ, const Nom& sous_type = nom_vide) const;
-  virtual void discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
-                                 Nature_du_champ nature,
-                                 const Noms& nom, const Noms& unite,
-                                 int nb_comp, double temps,
-                                 Champ_Fonc& champ) const;
-  virtual void discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
-                                 Nature_du_champ nature,
-                                 const Noms& nom, const Noms& unite,
-                                 int nb_comp, double temps,
-                                 Champ_Don& champ) const;
+  virtual void discretiser_champ(const Motcle& directive, const Zone_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, double temps, Champ_Fonc& champ) const;
+  virtual void discretiser_champ(const Motcle& directive, const Zone_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, double temps, Champ_Don& champ) const;
 
-  void nommer_completer_champ_physique(const Zone_dis_base& zone_vdf,const Nom& nom_champ, const Nom& unite, Champ_base& champ,const Probleme_base& pbi) const;
+  void nommer_completer_champ_physique(const Zone_dis_base& zone_vdf, const Nom& nom_champ, const Nom& unite, Champ_base& champ, const Probleme_base& pbi) const;
   int verifie_sous_type(Nom& type, const Nom& sous_type, const Motcle& directive) const;
 
+  void volume_maille(const Schema_Temps_base& sch, const Zone_dis& z, Champ_Fonc& ch) const;
+  virtual void residu(const Zone_dis&, const Champ_Inc&, Champ_Fonc&) const;
 
-  void volume_maille(const Schema_Temps_base& sch,
-                     const  Zone_dis& z,
-                     Champ_Fonc& ch) const   ;
-  virtual void residu(const Zone_dis& , const Champ_Inc&, Champ_Fonc& ) const;
-
-  static void creer_champ(Champ_Inc& ch, const Zone_dis_base& z,
-                          const Nom& type, const Nom& nom, const Nom& unite,
-                          int nb_comp, int nb_ddl, int nb_pas_dt,
-                          double temps, const Nom& directive = nom_vide,
+  static void creer_champ(Champ_Inc& ch, const Zone_dis_base& z, const Nom& type, const Nom& nom, const Nom& unite, int nb_comp, int nb_ddl, int nb_pas_dt, double temps,
+                          const Nom& directive = nom_vide, const Nom& nom_discretisation = nom_vide);
+  static void creer_champ(Champ_Fonc& ch, const Zone_dis_base& z, const Nom& type, const Nom& nom, const Nom& unite, int nb_comp, int nb_ddl, double temps, const Nom& directive = nom_vide,
                           const Nom& nom_discretisation = nom_vide);
-  static void creer_champ(Champ_Fonc& ch, const Zone_dis_base& z,
-                          const Nom& type, const Nom& nom, const Nom& unite,
-                          int nb_comp, int nb_ddl,
-                          double temps, const Nom& directive = nom_vide,
-                          const Nom& nom_discretisation = nom_vide);
-  static void creer_champ(Champ_Don& ch, const Zone_dis_base& z,
-                          const Nom& type, const Nom& nom, const Nom& unite,
-                          int nb_comp, int nb_ddl,
-                          double temps, const Nom& directive = nom_vide,
+  static void creer_champ(Champ_Don& ch, const Zone_dis_base& z, const Nom& type, const Nom& nom, const Nom& unite, int nb_comp, int nb_ddl, double temps, const Nom& directive = nom_vide,
                           const Nom& nom_discretisation = nom_vide);
 
   virtual Nom get_name_of_type_for(const Nom& class_operateur, const Nom& type_operteur,const Equation_base& eqn, const REF(Champ_base)& champ_supp =REF(Champ_base)()) const;
@@ -153,10 +115,7 @@ protected:
   static const Nom nom_vide;
 private:
   void test_demande_description(const Motcle& , const Nom&) const;
-  static void champ_fixer_membres_communs(
-    Champ_base& ch, const Zone_dis_base& z,
-    const Nom& type, const Nom& nom, const Nom& unite,
-    int nb_comp, int nb_ddl, double temps);
+  static void champ_fixer_membres_communs(Champ_base& ch, const Zone_dis_base& z, const Nom& type, const Nom& nom, const Nom& unite, int nb_comp, int nb_ddl, double temps);
 
   virtual void modifier_champ_tabule(const Zone_dis_base& zone_dis,Champ_Fonc_Tabule& ch_tab,const VECT(REF(Champ_base))& ch_inc) const ;
 };

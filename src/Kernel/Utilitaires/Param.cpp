@@ -316,8 +316,9 @@ Param& Param::dictionnaire_param(const char * nom_option, int valeur)
   return last.add_dict(nom_option, valeur,name).valeur();
 }
 
-// Description : renvoit Objet_a_lire correspondant au mot
-//               le rajoute au besoin a la liste
+/*! @brief renvoit Objet_a_lire correspondant au mot le rajoute au besoin a la liste
+ *
+ */
 Objet_a_lire& Param::create_or_get_objet_a_lire(const char * mot)
 {
   LIST(Nom) split_noms=split_mot(Nom(mot));

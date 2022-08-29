@@ -52,9 +52,9 @@ const Nom& Ch_input_uniforme::get_name() const
   return le_nom();
 }
 
-// Description
-// Provides afield with a dummy geometry, a name, a time interval,
-// components, and no field ownership.
+/*! @brief Provides afield with a dummy geometry, a name, a time interval, components, and no field ownership.
+ *
+ */
 void Ch_input_uniforme::getTemplate(TrioField& afield) const
 {
 
@@ -67,8 +67,9 @@ void Ch_input_uniforme::getTemplate(TrioField& afield) const
   afield._nb_field_components=nb_comp();
 }
 
-// Description
-// Uses the first value in afield as uniform value, regardless of geometry.
+/*! @brief Uses the first value in afield as uniform value, regardless of geometry.
+ *
+ */
 void Ch_input_uniforme::setValue(const TrioField& afield)
 {
   Champ_Input_Proto::setValueOnTab(afield, valeurs());

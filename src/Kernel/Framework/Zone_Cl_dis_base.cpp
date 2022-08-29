@@ -302,10 +302,12 @@ void Zone_Cl_dis_base::completer()
   completer(zone_dis());
 }
 
-// Description :
-// Renvoie la condition limite associee a une face reelle donnee.
-// Met dans face_locale le numero de la face dans la frontiere.
-// Provoque une erreur si la face ne porte pas de CL.
+/*! @brief Renvoie la condition limite associee a une face reelle donnee.
+ *
+ * Met dans face_locale le numero de la face dans la frontiere.
+ *  Provoque une erreur si la face ne porte pas de CL.
+ *
+ */
 const Cond_lim_base& Zone_Cl_dis_base::condition_limite_de_la_face_reelle(int face_globale, int& face_locale) const
 {
   for (int i=0; i<nb_cond_lim(); i++)
@@ -322,10 +324,12 @@ const Cond_lim_base& Zone_Cl_dis_base::condition_limite_de_la_face_reelle(int fa
 }
 
 
-// Description :
-// Renvoie la condition limite associee a une face virtuelle donnee.
-// Met dans face_locale le numero de la face dans la frontiere.
-// Provoque une erreur si la face ne porte pas de CL.
+/*! @brief Renvoie la condition limite associee a une face virtuelle donnee.
+ *
+ * Met dans face_locale le numero de la face dans la frontiere.
+ *  Provoque une erreur si la face ne porte pas de CL.
+ *
+ */
 const Cond_lim_base& Zone_Cl_dis_base::condition_limite_de_la_face_virtuelle(int face_globale, int& face_locale) const
 {
   for (int i=0; i<nb_cond_lim(); i++)
@@ -343,9 +347,11 @@ const Cond_lim_base& Zone_Cl_dis_base::condition_limite_de_la_face_virtuelle(int
   return les_conditions_limites(0).valeur(); // Pour compilo
 }
 
-// Description :
-// Renvoie la condition limite associee a une frontiere de nom donne.
-// Provoque une erreur si aucune frontiere ne porte ce nom.
+/*! @brief Renvoie la condition limite associee a une frontiere de nom donne.
+ *
+ * Provoque une erreur si aucune frontiere ne porte ce nom.
+ *
+ */
 Cond_lim_base& Zone_Cl_dis_base::condition_limite_de_la_frontiere(Nom frontiere)
 {
   for (int i=0; i<nb_cond_lim(); i++)
@@ -359,9 +365,11 @@ Cond_lim_base& Zone_Cl_dis_base::condition_limite_de_la_frontiere(Nom frontiere)
   return les_conditions_limites(0).valeur(); // Pour compilo
 }
 
-// Description :
-// Renvoie la condition limite associee a une frontiere de nom donne.
-// Provoque une erreur si aucune frontiere ne porte ce nom.
+/*! @brief Renvoie la condition limite associee a une frontiere de nom donne.
+ *
+ * Provoque une erreur si aucune frontiere ne porte ce nom.
+ *
+ */
 const Cond_lim_base& Zone_Cl_dis_base::condition_limite_de_la_frontiere(Nom frontiere) const
 {
   for (int i=0; i<nb_cond_lim(); i++)
@@ -377,8 +385,9 @@ const Cond_lim_base& Zone_Cl_dis_base::condition_limite_de_la_frontiere(Nom fron
 
 
 
-// Description :
-// Calcule le taux d'accroissement des CLs instationnaires entre t1 et t2.
+/*! @brief Calcule le taux d'accroissement des CLs instationnaires entre t1 et t2.
+ *
+ */
 void Zone_Cl_dis_base::Gpoint(double t1, double t2)
 {
   for (int i=0; i<nb_cond_lim(); i++)

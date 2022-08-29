@@ -25,8 +25,9 @@ Partitionneur_Tranche::Partitionneur_Tranche()
 {
 }
 
-// Description : La syntaxe est
-//  { Tranches nx ny [ nz ] }
+/*! @brief La syntaxe est { Tranches nx ny [ nz ] }
+ *
+ */
 Entree& Partitionneur_Tranche::readOn(Entree& is)
 {
   if (! ref_domaine_.non_nul())

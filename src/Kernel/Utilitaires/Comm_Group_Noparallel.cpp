@@ -20,7 +20,9 @@ Implemente_instanciable_sans_constructeur_ni_destructeur(Comm_Group_Noparallel,"
 
 int Comm_Group_Noparallel::sending_ = 0;
 
-// Description : constructeur pour le groupe Tous
+/*! @brief constructeur pour le groupe Tous
+ *
+ */
 Comm_Group_Noparallel::Comm_Group_Noparallel() { Comm_Group::init_group_trio(1 /* nproc */, 0 /* rank */); }
 Comm_Group_Noparallel::~Comm_Group_Noparallel() { }
 

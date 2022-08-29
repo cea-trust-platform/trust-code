@@ -189,23 +189,12 @@ inline int Elem_geom::est_structure() const
 }
 
 
-// Description
-//    Appel a l'objet sous-jacent
-//    Renvoie le nom de l'element geometrique
-//    au format LML.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Nom&
-//    Signification: le nom de l'element geometrique
-//                   au format LML
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent Renvoie le nom de l'element geometrique
+ *
+ *     au format LML.
+ *
+ * @return (Nom&) le nom de l'element geometrique au format LML
+ */
 inline const Nom& Elem_geom::nom_lml() const
 {
   return valeur().nom_lml();

@@ -27,9 +27,9 @@ Entree& Ch_front_var_instationnaire_indep::readOn(Entree& s)
   return s ;
 }
 
-// Description :
-//    Factorise le fait que l'initialisation est une premiere mise a
-//    jour.
+/*! @brief Factorise le fait que l'initialisation est une premiere mise a jour.
+ *
+ */
 int Ch_front_var_instationnaire_indep::initialiser(double temps, const Champ_Inc_base& inco)
 {
   if (!Champ_front_var_instationnaire::initialiser(temps,inco))

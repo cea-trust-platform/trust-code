@@ -35,19 +35,20 @@ Entree& Aretes::readOn(Entree& s )
   return s ;
 }
 
-// Description :
-// affecte a l'arete numero
-// les faces f1, f2, f3, f4
-// l'arete est de type2_ type ou :
-// type2_ = -1 si arete coin
-// type2_ = 0 si arete bord
-// type2_ = 1 si arete mixte
-// type2_ = 2 si arete interne
-// l'arete est de type1_ dir ou :
-// type1_ = 0 si arete XY
-// type1_ = 1 si arete XZ
-// type1_ = 2 si arete YZ
-// En dimension 2 il n'y a que des aretes XY
+/*! @brief affecte a l'arete numero les faces f1, f2, f3, f4
+ *
+ *  l'arete est de type2_ type ou :
+ *  type2_ = -1 si arete coin
+ *  type2_ = 0 si arete bord
+ *  type2_ = 1 si arete mixte
+ *  type2_ = 2 si arete interne
+ *  l'arete est de type1_ dir ou :
+ *  type1_ = 0 si arete XY
+ *  type1_ = 1 si arete XZ
+ *  type1_ = 2 si arete YZ
+ *  En dimension 2 il n'y a que des aretes XY
+ *
+ */
 void Aretes::affecter(int& numero_a, int dir, int type, int nb_face,
                       int f1, int f2, int f3, int f4, const ArrOfInt& est_une_plaque)
 {
@@ -254,8 +255,9 @@ void Aretes::calculer_centre_de_gravite(Zone_VDF& zone)
     }
 }
 
-// Description :
-// Dimensionne les tableaux.
+/*! @brief Dimensionne les tableaux.
+ *
+ */
 void Aretes::dimensionner(int n)
 {
   faces_.resize(n,4);
@@ -263,9 +265,9 @@ void Aretes::dimensionner(int n)
   type2_.resize(n) ;
 }
 
-// Description :
-// appelee par trier
-// Echange les aretes a1 et a2
+/*! @brief appelee par trier Echange les aretes a1 et a2
+ *
+ */
 void Aretes::swap(int a1, int a2)
 {
   int tmp;
@@ -288,12 +290,13 @@ void Aretes::swap(int a1, int a2)
   type2_(a1)=type2_(a2);
   type2_(a2)=tmp;
 }
-// Description :
-// reoordonne le tableaux des aretes
-// avec d'abord les aretes coins (elles n'ont que deux faces)
-// puis les aretes bord (elles ont trois faces dont deux de bord)
-// puis les aretes mixte (elles ont quatre faces dont deux de bord)
-// puis les aretes_internes (elles ont quatre faces internes)
+/*! @brief reoordonne le tableaux des aretes avec d'abord les aretes coins (elles n'ont que deux faces)
+ *
+ *  puis les aretes bord (elles ont trois faces dont deux de bord)
+ *  puis les aretes mixte (elles ont quatre faces dont deux de bord)
+ *  puis les aretes_internes (elles ont quatre faces internes)
+ *
+ */
 void Aretes::trier(int& nb_aretes_coin, int& nb_aretes_bord,
                    int& nb_aretes_mixte, int& nb_aretes_interne)
 {

@@ -25,7 +25,6 @@ Sortie& Terme_Boussinesq_base::printOn(Sortie& s ) const { return s << que_suis_
 
 Entree& Terme_Boussinesq_base::readOn(Entree& s ) { return lire_donnees(s); }
 
-// Description :
 // Cherche dans le probleme l'equation scalaire
 void Terme_Boussinesq_base::associer_pb(const Probleme_base& pb)
 {

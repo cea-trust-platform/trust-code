@@ -13,31 +13,25 @@
 *
 *****************************************************************************/
 
-
 #ifndef Source_dep_inco_base_included
 #define Source_dep_inco_base_included
 
 #include <Source_base.h>
 
-//
-//  DESCRIPTION class Source_dep_inco_base
-//     Les sources heritant de cette clase doivent coder ajouter_
-//  de facon a permettre d'impliciter le terme en diffusion implicite.
-//  On cherche a obtenir la source sous la forme f(un)*uk
-//  ajouter(resu)=ajouter_(inco,resu), et dans ajouter_ on utilise
-// inco pour uk , inconnue.valeurs() pour Un, voir Perte_Charge_Singuliere_VDF_Face.cpp
-
+/*! @brief class Source_dep_inco_base
+ * Les sources heritant de cette clase doivent coder ajouter_ de facon a permettre d'impliciter le terme en diffusion implicite.
+ * On cherche a obtenir la source sous la forme f(un)*uk
+ * ajouter(resu)=ajouter_(inco,resu), et dans ajouter_ on utilise
+ * inco pour uk , inconnue.valeurs() pour Un, voir Perte_Charge_Singuliere_VDF_Face.cpp
+ *
+ */
 class Source_dep_inco_base : public Source_base
 {
-
   Declare_base(Source_dep_inco_base);
-
 public:
-
   DoubleTab& ajouter(DoubleTab& resu) const override ;
   virtual DoubleTab& ajouter_(const DoubleTab& inco, DoubleTab& resu ) const =0;
   DoubleTab& calculer(DoubleTab& resu) const override ;
-
 };
 
-#endif
+#endif /* Source_dep_inco_base_included */

@@ -297,12 +297,14 @@ void Champ_Face::verifie_valeurs_cl()
   ch_tab.echange_espace_virtuel();
 }
 
-// Description :
-// Renvoie la valeur que devrait avoir le champ sur une face de bord,
-// si on en croit les conditions aux limites. Le numero est compte
-// dans la liste des faces de bord reelles. Le temps considere est le
-// present du Champ_Face
-// L'implementation a change : ces valeurs ne sont plus stockees dans le champ.
+/*! @brief Renvoie la valeur que devrait avoir le champ sur une face de bord, si on en croit les conditions aux limites.
+ *
+ * Le numero est compte
+ *  dans la liste des faces de bord reelles. Le temps considere est le
+ *  present du Champ_Face
+ *  L'implementation a change : ces valeurs ne sont plus stockees dans le champ.
+ *
+ */
 
 double Champ_Face::val_imp_face_bord_private(int face,int comp) const
 {

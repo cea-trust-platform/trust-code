@@ -45,37 +45,32 @@ class EcrFicPartage;
 class Operateur_base : public Objet_U, public MorEqn, public Champs_compris_interface
 {
   Declare_base(Operateur_base);
-public :
-  virtual DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const;
-  virtual DoubleTab& calculer(const DoubleTab&, DoubleTab& ) const;
+public:
+  virtual DoubleTab& ajouter(const DoubleTab&, DoubleTab&) const;
+  virtual DoubleTab& calculer(const DoubleTab&, DoubleTab&) const;
   virtual void associer_champ(const Champ_Inc&);
-  virtual void associer(const Zone_dis&,
-                        const Zone_Cl_dis&,
-                        const Champ_Inc& inco) =0;
+  virtual void associer(const Zone_dis&, const Zone_Cl_dis&, const Champ_Inc& inco) =0;
   virtual void associer_zone_cl_dis(const Zone_Cl_dis_base&);
-  virtual void dimensionner(Matrice_Morse& ) const /* =0 */;
+  virtual void dimensionner(Matrice_Morse&) const /* =0 */;
   virtual void dimensionner_bloc_vitesse(Matrice_Morse& matrice) const;
   virtual void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const /* =0 */;
   virtual void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const /* =0 */;
   /* permet de remplir des dependances en d'autres variables */
   virtual void contribuer_bloc_vitesse(const DoubleTab&, Matrice_Morse&) const;
-  virtual void contribuer_au_second_membre(DoubleTab& ) const /* =0 */;
+  virtual void contribuer_au_second_membre(DoubleTab&) const /* =0 */;
   void tester_contribuer_a_avec(const DoubleTab&, const Matrice_Morse&);
 
   /* interface {dimensionner,ajouter}_blocs -> cf Equation_base.h */
-  virtual int has_interface_blocs() const
-  {
-    return 0;
-  };
-  virtual void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
-  virtual void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
+  virtual int has_interface_blocs() const { return 0; }
+  virtual void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = { }) const;
+  virtual void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = { }) const;
 
   virtual void dimensionner_termes_croises(Matrice_Morse&, const Probleme_base& autre_pb, int nl, int nc) const;
   virtual void ajouter_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, DoubleTab& resu) const;
   virtual void contribuer_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, Matrice_Morse& matrice) const;
 
   virtual double calculer_dt_stab() const;
-  virtual void calculer_dt_local(DoubleTab&) const;//Local time step calculation
+  virtual void calculer_dt_local(DoubleTab&) const; //Local time step calculation
   virtual void completer();
   virtual void mettre_a_jour(double temps);
   virtual void abortTimeStep();
@@ -88,49 +83,31 @@ public :
   inline const Matrice& get_matrice() const;
   inline Matrice& set_matrice();
   inline const SolveurSys& get_solveur() const;
-  inline SolveurSys& set_solveur() ;
+  inline SolveurSys& set_solveur();
   inline Entree& lire_solveur(Entree&);
   virtual int systeme_invariant() const;
-  virtual void ajouter_contribution_explicite_au_second_membre
-  (const Champ_Inc_base& inconnue, DoubleTab& derivee) const;
+  virtual void ajouter_contribution_explicite_au_second_membre(const Champ_Inc_base& inconnue, DoubleTab& derivee) const;
   const Champ_Inc& mon_inconnue() const { return le_champ_inco.valeur(); }
   bool has_champ_inco() const { return le_champ_inco.non_nul(); }
 
-
-  void ouvrir_fichier(SFichier& os,const Nom&, const int flag=1) const;
-  void ouvrir_fichier_partage(EcrFicPartage&, const Nom&, const int flag=1) const;
+  void ouvrir_fichier(SFichier& os, const Nom&, const int flag = 1) const;
+  void ouvrir_fichier_partage(EcrFicPartage&, const Nom&, const int flag = 1) const;
   void set_fichier(const Nom&);
-  inline const Nom fichier() const
-  {
-    return out_;
-  };
-  inline void set_description(const Nom& nom)
-  {
-    description_=nom;
-  };
-  inline const Nom description() const
-  {
-    return description_;
-  };
-  inline DoubleTab& flux_bords()
-  {
-    return flux_bords_;
-  };
-  inline DoubleTab& flux_bords() const
-  {
-    return flux_bords_;
-  };
+  inline const Nom fichier() const { return out_; }
+  inline void set_description(const Nom& nom) { description_ = nom; }
+  inline const Nom description() const { return description_; }
+  inline DoubleTab& flux_bords() { return flux_bords_; }
+  inline DoubleTab& flux_bords() const { return flux_bords_; }
 
   //Methodes de l interface des champs postraitables
   /////////////////////////////////////////////////////
   void creer_champ(const Motcle& motlu) override;
   const Champ_base& get_champ(const Motcle& nom) const override;
-  virtual bool has_champ(const Motcle& nom, REF(Champ_base)& ref_champ) const;
-  void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
+  virtual bool has_champ(const Motcle& nom, REF(Champ_base) &ref_champ) const;
+  void get_noms_champs_postraitables(Noms& nom, Option opt = NONE) const override;
   /////////////////////////////////////////////////////
-  void calculer_pour_post(Champ& espace_stockage,const Nom& option, int comp) const override;
+  void calculer_pour_post(Champ& espace_stockage, const Nom& option, int comp) const override;
   Motcle get_localisation_pour_post(const Nom& option) const override;
-
 
   // Je rajoute deux methodes pour le calcul du flux
   virtual void ajouter_flux(const DoubleTab& inconnue, DoubleTab& contribution) const;
@@ -143,13 +120,13 @@ public :
   virtual void preparer_calcul(void);
   int col_width_; // minimal size of a column for .out files (based on cl name length)
 
-protected :
+protected:
   int decal_temps;
   int nb_ss_pas_de_temps;
   SolveurSys solveur;
   Matrice matrice_;
   Nom out_;                                 // Nom du fichier .out pour l'impression
-  Nom description_;                        // Description de l'operateur
+  Nom description_;
   mutable DoubleTab flux_bords_;         // Tableau contenant les flux sur les bords de l'operateur
 
   Champs_compris champs_compris_;
@@ -173,7 +150,7 @@ int Operateur_base::get_decal_temps() const
 }
 int Operateur_base::set_decal_temps(int i)
 {
-  return decal_temps=i;
+  return decal_temps = i;
 }
 Entree& Operateur_base::lire_solveur(Entree& is)
 {
@@ -193,7 +170,7 @@ int Operateur_base::get_nb_ss_pas_de_temps() const
 }
 int Operateur_base::set_nb_ss_pas_de_temps(int i)
 {
-  return nb_ss_pas_de_temps=i;
+  return nb_ss_pas_de_temps = i;
 }
 const SolveurSys& Operateur_base::get_solveur() const
 {

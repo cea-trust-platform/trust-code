@@ -81,10 +81,12 @@ const Nom& Champ_input_P0::get_name() const
   return le_nom();
 }
 
-// Description
-// Provides afield with a name, a time interval, components, and no field ownership.
-// The geometry includes all nodes of the domain and all elements of the sous_zone or domain.
-// WEC : optimization possible here (recalculated each time)
+/*! @brief Provides afield with a name, a time interval, components, and no field ownership.
+ *
+ * The geometry includes all nodes of the domain and all elements of the sous_zone or domain.
+ *  WEC : optimization possible here (recalculated each time)
+ *
+ */
 void Champ_input_P0::getTemplate(TrioField& afield) const
 {
 
@@ -137,8 +139,9 @@ void Champ_input_P0::getTemplate(TrioField& afield) const
     }
 }
 
-// Description
-// Fills valeurs_ on either the whole domain or a subzone
+/*! @brief Fills valeurs_ on either the whole domain or a subzone
+ *
+ */
 void Champ_input_P0::setValue(const TrioField& afield)
 {
   if (ma_sous_zone.non_nul())

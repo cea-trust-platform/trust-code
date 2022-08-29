@@ -1020,10 +1020,11 @@ void Equation_base::abortTimeStep()
   if (champ_convecte_.non_nul()) champ_convecte_->abortTimeStep();
 }
 
-// Description :
-// methode virtuelle permettant de corriger l'onconnue lors d'iterations implicites
-// par exemple K-eps doivent rester positifs
-// les fractions massqiues entre 0 et 1
+/*! @brief methode virtuelle permettant de corriger l'onconnue lors d'iterations implicites par exemple K-eps doivent rester positifs
+ *
+ *  les fractions massqiues entre 0 et 1
+ *
+ */
 void Equation_base::valider_iteration()
 {
 }
@@ -1397,7 +1398,6 @@ double Equation_base::calculer_pas_de_temps() const
   return dt;
 }
 
-//Description
 // Calculation of local time: Vect of size number of faces of the domain
 // Calculate whether the "steady" option is used in the "Euler implicit"
 // The local time step is a convection temp step

@@ -24,8 +24,10 @@ class Static_Int_Lists;
 class Faces;
 class Frontiere;
 
-// DESCRIPTION: classe outil pour construire les faces d'une zone
-// (utilisee uniquement pour creer les tableau des faces reelles)
+/*! @brief classe outil pour construire les faces d'une zone
+ * (utilisee uniquement pour creer les tableau des faces reelles)
+ *
+ */
 class Faces_builder
 {
 public:
@@ -56,8 +58,9 @@ private:
   // La connectivite elements-sommets (pour chaque sommet, liste des
   // elements adjacents, y compris les sommets et elements virtuels)
   const Static_Int_Lists * connectivite_som_elem_ptr_;
-  // Description des faces de l'element de reference
-  // (voir elem_geom_base::get_tab_faces_sommets_locaux)
+  /*! @brief des faces de l'element de reference (voir elem_geom_base::get_tab_faces_sommets_locaux)
+   *
+   */
   IntTab faces_element_reference_old_;
   int is_polyedre_;
   // pour check_erreur_faces :

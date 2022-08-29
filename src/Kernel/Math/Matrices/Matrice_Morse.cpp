@@ -281,21 +281,16 @@ void Matrice_Morse::dimensionner(int n, int nnz)
 }
 
 
-// Description
-//   Redimensionne la matrice creuse en ajoutant eventuellement
-//   des coefficients non nuls
-//
-//   Parametre : const IntTab &Ind
-//      Signification : tableau de taille nc * 2
-//                      ou nc est le nombre de couples (i,j)
-//                      pour les indices des nouveaux coefficients
-//
-//   Postcondition:
-//      A la sortie, les coefficients non nuls sur une ligne
-//      ne sont plus necessairement trie par ordre croissant
-//      d'indice de colonne (a faire ?)
-// (modif MT)
-//
+/*! @brief Redimensionne la matrice creuse en ajoutant eventuellement des coefficients non nuls
+ *
+ *
+ *    Parametre : const IntTab &Ind
+ *       Signification : tableau de taille nc * 2
+ *                       ou nc est le nombre de couples (i,j)
+ *                       pour les indices des nouveaux coefficients
+ *
+ *
+ */
 void Matrice_Morse::dimensionner(const IntTab& Ind)
 {
   if (Ind.size()==0) return; // On ne fait rien si la structure est vide
@@ -461,9 +456,9 @@ void Matrice_Morse::dimensionner(int n, int m, int nnz)
   morse_matrix_structure_has_changed_=1, sorted_ = 0;
 }
 
-// Description
-//   Initialisation a la matrice unite
-// (modif MT)
+/*! @brief Initialisation a la matrice unite (modif MT)
+ *
+ */
 void Matrice_Morse::unite()
 {
   coeff_ = 0.0;

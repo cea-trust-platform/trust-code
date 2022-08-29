@@ -119,8 +119,9 @@ inline int  Champ_Fonc_Q1NC::remplir_coord_noeuds_et_polys(DoubleTab& positions,
                                                         polys);
 }
 
-// Description :
-// Renvoie la Zone_VEF
+/*! @brief Renvoie la Zone_VEF
+ *
+ */
 inline const Zone_VEF& Champ_Fonc_Q1NC::zone_vef() const
 {
   return la_zone_VEF.valeur();

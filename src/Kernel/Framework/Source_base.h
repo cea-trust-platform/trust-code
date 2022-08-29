@@ -37,88 +37,62 @@ class SFichier;
  *
  */
 
-class Source_base : public Champs_compris_interface, public MorEqn, public Objet_U
+class Source_base: public Champs_compris_interface, public MorEqn, public Objet_U
 {
   Declare_base(Source_base);
 
-public :
+public:
 
-  virtual DoubleTab& ajouter(DoubleTab& ) const;
-  virtual DoubleTab& calculer(DoubleTab& ) const;
+  virtual DoubleTab& ajouter(DoubleTab&) const;
+  virtual DoubleTab& calculer(DoubleTab&) const;
   virtual void mettre_a_jour(double temps);
   virtual void completer();
-  virtual void dimensionner(Matrice_Morse&) const ;
-  virtual void dimensionner_bloc_vitesse(Matrice_Morse&) const ;
-  virtual void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const ;
-  virtual void contribuer_au_second_membre(DoubleTab& ) const ;
+  virtual void dimensionner(Matrice_Morse&) const;
+  virtual void dimensionner_bloc_vitesse(Matrice_Morse&) const;
+  virtual void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
+  virtual void contribuer_au_second_membre(DoubleTab&) const;
   virtual int impr(Sortie& os) const;
   // temporaire : associer_zones sera rendue publique
-  inline void associer_zones_public(const Zone_dis& ,const Zone_Cl_dis& );
+  inline void associer_zones_public(const Zone_dis& zdis, const Zone_Cl_dis& zcldis) { associer_zones(zdis,zcldis); }
   virtual int initialiser(double temps);
   virtual void associer_champ_rho(const Champ_base& champ_rho);
-  virtual int a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base)& ch_ref) const;
-  virtual void contribuer_jacobienne(Matrice_Bloc& , int ) const {}
+  virtual int a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base) &ch_ref) const;
+  virtual void contribuer_jacobienne(Matrice_Bloc&, int) const { }
 
   /* interface {dimensionner,ajouter}_blocs -> cf Equation_base.h */
-  virtual int has_interface_blocs() const
-  {
-    return 0;
-  };
-  virtual void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
-  virtual void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
+  virtual int has_interface_blocs() const { return 0; }
+  virtual void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = { }) const;
+  virtual void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = { }) const;
 
   //Methodes de l interface des champs postraitables
   /////////////////////////////////////////////////////
   void creer_champ(const Motcle& motlu) override;
   const Champ_base& get_champ(const Motcle& nom) const override;
-  virtual bool has_champ(const Motcle& nom, REF(Champ_base)& ref_champ) const;
-  void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
+  virtual bool has_champ(const Motcle& nom, REF(Champ_base) &ref_champ) const;
+  void get_noms_champs_postraitables(Noms& nom, Option opt = NONE) const override;
   /////////////////////////////////////////////////////
 
-  virtual void ouvrir_fichier(SFichier& os,const Nom&, const int flag=1) const;
+  virtual void ouvrir_fichier(SFichier& os, const Nom&, const int flag = 1) const;
   void set_fichier(const Nom&);
-  inline void set_description(const Nom& nom)
-  {
-    description_=nom;
-  };
-  inline const Nom fichier() const
-  {
-    return out_;
-  };
-  inline const Nom description() const
-  {
-    return description_;
-  };
+  inline void set_description(const Nom& nom) { description_ = nom; }
+  inline const Nom fichier() const { return out_; }
+  inline const Nom description() const { return description_; }
 
-  inline DoubleVect& bilan()
-  {
-    return bilan_;
-  };
-  inline DoubleVect& bilan() const
-  {
-    return bilan_;
-  };
-  inline Champs_compris& champs_compris()
-  {
-    return champs_compris_;
-  };
+  inline DoubleVect& bilan() { return bilan_; }
+  inline DoubleVect& bilan() const { return bilan_; }
+  inline Champs_compris& champs_compris() { return champs_compris_; }
 
-protected :
+protected:
 
-  virtual void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) =0;
-  virtual void associer_pb(const Probleme_base& ) =0;
+  virtual void associer_zones(const Zone_dis&, const Zone_Cl_dis&) =0;
+  virtual void associer_pb(const Probleme_base&) =0;
   int col_width_ = 0;
   Nom out_;                  // Nom du fichier .out pour l'impression
-  Nom description_;          // Description du terme source
+  Nom description_;
   mutable DoubleVect bilan_; // Vecteur contenant les valeurs du terme source dans le domaine
 
   Champs_compris champs_compris_;
 
 };
 
-inline void Source_base::associer_zones_public(const Zone_dis& zdis, const Zone_Cl_dis& zcldis)
-{
-  associer_zones(zdis,zcldis);
-}
-
-#endif
+#endif /* Source_base_included */

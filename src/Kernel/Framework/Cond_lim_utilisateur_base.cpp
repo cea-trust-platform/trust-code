@@ -193,9 +193,11 @@ int Cond_lim_utilisateur_base::is_pb_VEF()
   return 0;
 }
 
-// Description renvoit 0 si le pb n'est pas rayonnant
-//                     1 si il est semi_transp
-//                     2 si il est transparent
+/*! @brief renvoit 0 si le pb n'est pas rayonnant 1 si il est semi_transp
+ *
+ *                      2 si il est transparent
+ *
+ */
 
 int Cond_lim_utilisateur_base::is_pb_rayo()
 {

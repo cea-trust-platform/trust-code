@@ -494,7 +494,9 @@ void Polyedre::remplir_Nodes_glob(ArrOfInt& Nodes_glob,const IntTab& les_elems) 
 void Polyedre::reordonner()
 {
 }
-// Description on va ajouter les elements de type new_elem aux elements deja presents dans les_elems et dans new_elems
+/*! @brief on va ajouter les elements de type new_elem aux elements deja presents dans les_elems et dans new_elems
+ *
+ */
 void Polyedre::ajouter_elements(const Elem_geom_base& type_elem, const IntTab& new_elems,IntTab& les_elems)
 {
   // On a joute les new_elems a les_elems

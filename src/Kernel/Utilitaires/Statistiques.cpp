@@ -286,7 +286,9 @@ public:
   unsigned long long counter_nb[MAXCOUNTERS];
   // Cumul des quantites pour chaque compteur
   unsigned long long counter_quantity[MAXCOUNTERS];
-  // Description des compteurs
+  /*! @brief des compteurs
+   *
+   */
   const char * description[MAXCOUNTERS];
   // Famille de chaque compteur
   const char * family[MAXCOUNTERS];

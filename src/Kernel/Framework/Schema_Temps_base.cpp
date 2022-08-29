@@ -472,8 +472,9 @@ int Schema_Temps_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
   return -1;
 }
 
-// Description
-// Lecture du nombre de pas de temps maximal
+/*! @brief Lecture du nombre de pas de temps maximal
+ *
+ */
 Entree& Schema_Temps_base::lire_nb_pas_dt_max(Entree& is)
 {
   if (Process::je_suis_maitre())

@@ -18,7 +18,9 @@
 
 Implemente_base(Solveur_non_lineaire,"Solveur_non_lineaire",Solveur_Implicite_Base);
 
-// Description voir Solveur::printOn
+/*! @brief voir Solveur::printOn
+ *
+ */
 
 Sortie& Solveur_non_lineaire::printOn(Sortie& is) const
 {

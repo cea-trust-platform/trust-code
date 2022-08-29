@@ -65,8 +65,9 @@ int Ch_front_var_stationnaire::reculer(double temps)
   return 1;
 }
 
-// Description :
-// rien a faire pour un champ stationnaire !
+/*! @brief rien a faire pour un champ stationnaire !
+ *
+ */
 void Ch_front_var_stationnaire::changer_temps_futur(double temps,int i)
 {
 }

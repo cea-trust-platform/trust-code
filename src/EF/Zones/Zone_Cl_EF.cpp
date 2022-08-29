@@ -486,8 +486,9 @@ void Zone_Cl_EF::modifie_gradient(ArrOfDouble& grad_mod, const ArrOfDouble& grad
 }
 
 
-// Description :
-// On transforme la_matrice et le secmem pour avoir un secmem normal aux bords , plus la matrice pour assurer que la solution sera correcte
+/*! @brief On transforme la_matrice et le secmem pour avoir un secmem normal aux bords , plus la matrice pour assurer que la solution sera correcte
+ *
+ */
 void  Zone_Cl_EF::imposer_symetrie_matrice_secmem(Matrice_Morse& la_matrice, DoubleTab& secmem) const
 {
   // return;

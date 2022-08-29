@@ -62,12 +62,8 @@ Entree& Discretisation_base::readOn(Entree& is)
 // (exemple pour la vitesse : 1 composante en VDF, 3 en VEF)
 // Si on met nb_comp = -1, la discretisation choisit le nombre
 // approprie, sinon elle utilise la valeur fournie.
-
-
-void Discretisation_base::discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
-                                            const Nom& nom, const Nom& unite,
-                                            int nb_comp, int nb_pas_dt, double temps,
-                                            Champ_Inc& champ, const Nom& sous_type) const
+void Discretisation_base::discretiser_champ(const Motcle& directive, const Zone_dis_base& z, const Nom& nom, const Nom& unite, int nb_comp, int nb_pas_dt, double temps, Champ_Inc& champ,
+                                            const Nom& sous_type) const
 
 {
   Noms noms;
@@ -78,10 +74,7 @@ void Discretisation_base::discretiser_champ(const Motcle& directive, const Zone_
   discretiser_champ(directive, z, scalaire, noms, unites, nb_comp, nb_pas_dt, temps, champ, sous_type);
 }
 
-void Discretisation_base::discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
-                                            const Nom& nom, const Nom& unite,
-                                            int nb_comp, double temps,
-                                            Champ_Fonc& champ) const
+void Discretisation_base::discretiser_champ(const Motcle& directive, const Zone_dis_base& z, const Nom& nom, const Nom& unite, int nb_comp, double temps, Champ_Fonc& champ) const
 {
   Noms noms;
   Noms unites;
@@ -90,10 +83,7 @@ void Discretisation_base::discretiser_champ(const Motcle& directive, const Zone_
 
   discretiser_champ(directive, z, scalaire, noms, unites, nb_comp, temps, champ);
 }
-void Discretisation_base::discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
-                                            const Nom& nom, const Nom& unite,
-                                            int nb_comp, double temps,
-                                            Champ_Don& champ) const
+void Discretisation_base::discretiser_champ(const Motcle& directive, const Zone_dis_base& z, const Nom& nom, const Nom& unite, int nb_comp, double temps, Champ_Don& champ) const
 {
   Noms noms;
   Noms unites;
@@ -136,64 +126,49 @@ void Discretisation_base::test_demande_description(const Motcle& directive,
  *  Voir par exemple VDF_discretisation.cpp et VEF...
  *
  */
-void
-Discretisation_base::discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
-                                       Nature_du_champ nature,
-                                       const Noms& noms, const Noms& unites,
-                                       int nb_comp, int nb_pas_dt, double temps,
-                                       Champ_Inc& champ, const Nom& sous_type) const
+void Discretisation_base::discretiser_champ(const Motcle& directive, const Zone_dis_base& z, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, int nb_pas_dt, double temps,
+                                            Champ_Inc& champ, const Nom& sous_type) const
 {
   test_demande_description(directive, champ.que_suis_je());
   // Appel recursif pour produire l'affichage des directives :
-  if (directive==demande_description)
+  if (directive == demande_description)
     {
       exit();
       throw;
     }
-  discretiser_champ(demande_description, z, nature, noms, unites, nb_comp,
-                    nb_pas_dt, temps, champ, sous_type);
+  discretiser_champ(demande_description, z, nature, noms, unites, nb_comp, nb_pas_dt, temps, champ, sous_type);
 }
 
 /*! @brief idem
  *
  */
-void
-Discretisation_base::discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
-                                       Nature_du_champ nature,
-                                       const Noms& noms, const Noms& unites,
-                                       int nb_comp, double temps,
-                                       Champ_Fonc& champ) const
+void Discretisation_base::discretiser_champ(const Motcle& directive, const Zone_dis_base& z, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, double temps,
+                                            Champ_Fonc& champ) const
 {
   test_demande_description(directive, champ.que_suis_je());
   // Appel recursif pour produire l'affichage des directives :
-  if (directive==demande_description)
+  if (directive == demande_description)
     {
       exit();
       throw;
     }
-  discretiser_champ(demande_description, z, nature, noms, unites, nb_comp,
-                    temps, champ);
+  discretiser_champ(demande_description, z, nature, noms, unites, nb_comp, temps, champ);
 }
 
 /*! @brief idem
  *
  */
-void
-Discretisation_base::discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
-                                       Nature_du_champ nature,
-                                       const Noms& noms, const Noms& unites,
-                                       int nb_comp, double temps,
-                                       Champ_Don& champ) const
+void Discretisation_base::discretiser_champ(const Motcle& directive, const Zone_dis_base& z, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, double temps,
+                                            Champ_Don& champ) const
 {
   test_demande_description(directive, champ.que_suis_je());
   // Appel recursif pour produire l'affichage des directives :
-  if (directive==demande_description)
+  if (directive == demande_description)
     {
       exit();
       throw;
     }
-  discretiser_champ(demande_description, z, nature, noms, unites, nb_comp,
-                    temps, champ);
+  discretiser_champ(demande_description, z, nature, noms, unites, nb_comp, temps, champ);
 }
 
 void Discretisation_base::discretiser_variables() const
@@ -256,17 +231,8 @@ void Discretisation_base::champ_fixer_membres_communs(
  *  utilises pour l'affichage uniquement et sont optionnels
  *
  */
-void Discretisation_base::creer_champ(Champ_Inc& ch,
-                                      const Zone_dis_base& z,
-                                      const Nom& type,
-                                      const Nom& nom,
-                                      const Nom& unite,
-                                      int nb_comp,
-                                      int nb_ddl,
-                                      int nb_pas_dt,
-                                      double temps,
-                                      const Nom& directive,
-                                      const Nom& nom_discretisation)
+void Discretisation_base::creer_champ(Champ_Inc& ch, const Zone_dis_base& z, const Nom& type, const Nom& nom, const Nom& unite, int nb_comp, int nb_ddl, int nb_pas_dt, double temps,
+                                      const Nom& directive, const Nom& nom_discretisation)
 {
   Nom nomd = nom_discretisation; // Pour contourner le probleme du "static" dans type_info::nom()
   ch.typer(type);
@@ -281,15 +247,7 @@ void Discretisation_base::creer_champ(Champ_Inc& ch,
  *  utilises pour l'affichage uniquement et sont optionnels
  *
  */
-void Discretisation_base::creer_champ(Champ_Fonc& ch,
-                                      const Zone_dis_base& z,
-                                      const Nom& type,
-                                      const Nom& nom,
-                                      const Nom& unite,
-                                      int nb_comp,
-                                      int nb_ddl,
-                                      double temps,
-                                      const Nom& directive,
+void Discretisation_base::creer_champ(Champ_Fonc& ch, const Zone_dis_base& z, const Nom& type, const Nom& nom, const Nom& unite, int nb_comp, int nb_ddl, double temps, const Nom& directive,
                                       const Nom& nom_discretisation)
 {
   Nom nomd = nom_discretisation; // Pour contourner le probleme du "static" dans type_info::nom()
@@ -304,15 +262,7 @@ void Discretisation_base::creer_champ(Champ_Fonc& ch,
  *  utilises pour l'affichage uniquement et sont optionnels
  *
  */
-void Discretisation_base::creer_champ(Champ_Don& ch,
-                                      const Zone_dis_base& z,
-                                      const Nom& type,
-                                      const Nom& nom,
-                                      const Nom& unite,
-                                      int nb_comp,
-                                      int nb_ddl,
-                                      double temps,
-                                      const Nom& directive,
+void Discretisation_base::creer_champ(Champ_Don& ch, const Zone_dis_base& z, const Nom& type, const Nom& nom, const Nom& unite, int nb_comp, int nb_ddl, double temps, const Nom& directive,
                                       const Nom& nom_discretisation)
 {
   Nom nomd = nom_discretisation; // Pour contourner le probleme du "static" dans type_info::nom()
@@ -320,8 +270,6 @@ void Discretisation_base::creer_champ(Champ_Don& ch,
   Champ_Don_base& chb = ch.valeur();
   champ_fixer_membres_communs(chb, z, type, nom, unite, nb_comp, nb_ddl, temps);
 }
-
-////////////////////////////////////////////////////////////////////
 
 Entree& Discretisation::readOn(Entree& is)
 {
@@ -640,14 +588,16 @@ Nom Discretisation_base::get_name_of_type_for(const Nom& class_operateur, const 
     }
   return type;
 }
+/*! @brief donne l'extension a utiliser pour la discretisation en fonction de class_oprateur par defaut renvoie type=que_suis_je()
+ *
+ *  Mais par exemple on renverra souvent VEF au lieu de VEFPreP1b (champ_post_interpolation)
+ *
+ */
 /*
-// Description : donne l'extension a utiliser pour la discretisation en fonction de class_oprateur
-// par defaut renvoie type=que_suis_je()
-// Mais par exemple on renverra souvent VEF au lieu de VEFPreP1b (champ_post_interpolation)
 const Nom& Discretisation_base::get_name_of_discretisation_for(const Nom& class_operateur,Nom& type) const
 {
-type=que_suis_je();
-return type;
+  type=que_suis_je();
+  return type;
 }
 
 */

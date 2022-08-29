@@ -64,8 +64,9 @@ Entree& Scatter::readOn(Entree& is)
   return Interprete::readOn(is);
 }
 
-// Description :
-// Renvoi le domaine associe
+/*! @brief Renvoi le domaine associe
+ *
+ */
 Domaine& Scatter::domaine()
 {
   return le_domaine.valeur();
@@ -2802,8 +2803,11 @@ void Scatter::construire_correspondance_sommets_par_coordonnees(Domaine& dom)
   construire_correspondance_items_par_coordonnees(dom.zone(0).faces_joint(), Joint::SOMMET, dom.coord_sommets());
 }
 
-// Description
-// Construction des tableaux joint_item(Joint::ARETE).items_communs de tous les joints de la zone
+/*! @brief Construction des tableaux joint_item(Joint::ARETE).
+ *
+ * items_communs de tous les joints de la zone
+ *
+ */
 
 void Scatter::construire_correspondance_aretes_par_coordonnees(Zone_VF& zvf)
 {
@@ -2824,11 +2828,12 @@ static void init_simple_md_vector(MD_Vector_std& md, const int n)
   md.blocs_items_to_compute_[1] = n;
 }
 
-/// Description
-//  Pour un item geometrique "type_item", remplit le champ nb_items_virtuels_
-//  des joints en fonction du nombre d'items distants :
-//  Le nombre d'items virtuels sur un joint i du processeur j est le
-//  nombre d'items distants du joint j sur le processeur i.
+/*! @brief Pour un item geometrique "type_item", remplit le champ nb_items_virtuels_ des joints en fonction du nombre d'items distants :
+ *
+ *   Le nombre d'items virtuels sur un joint i du processeur j est le
+ *   nombre d'items distants du joint j sur le processeur i.
+ *
+ */
 void Scatter::calculer_nb_items_virtuels(Joints& joints,
                                          const Joint::Type_Item type_item)
 {

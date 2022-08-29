@@ -20,16 +20,10 @@
 Implemente_instanciable(Champ_Fonc_P1_isoP1Bulle,"Champ_Fonc_P1_isoP1Bulle",Champ_Fonc_base);
 
 
-//     printOn()
-/////
-
 Sortie& Champ_Fonc_P1_isoP1Bulle::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
-
-//// readOn
-//
 
 Entree& Champ_Fonc_P1_isoP1Bulle::readOn(Entree& s)
 {
@@ -46,36 +40,21 @@ int Champ_Fonc_P1_isoP1Bulle::fixer_nb_valeurs_nodales(int n)
   return n;
 }
 
-////////////////////////////////////////////////////////////////////
-//
-//   Implementation de fonctions de la classe Champ_Fonc_P1_isoP1Bulle
-//
-////////////////////////////////////////////////////////////////////
-
-// Description :
-// Renvoie la Zone_VEF
 const Zone_dis_base& Champ_Fonc_P1_isoP1Bulle::zone_dis_base() const
 {
   return la_zone_VEFP1B.valeur();
 }
 
-// Description :
-// Verifie que z_dis est une Zone_VEF
-// cree l'association.
 void Champ_Fonc_P1_isoP1Bulle::associer_zone_dis_base(const Zone_dis_base& z_dis)
 {
   la_zone_VEFP1B=ref_cast(Zone_VEF_PreP1b, z_dis);
 }
 
-// Description :
-// sans action !
 void Champ_Fonc_P1_isoP1Bulle::mettre_a_jour(double t)
 {
   Champ_Fonc_base::mettre_a_jour(t);
 }
 
-// Description :
-//Voir Champ_base::trace
 DoubleTab& Champ_Fonc_P1_isoP1Bulle::trace(const Frontiere_dis_base& fr, DoubleTab& x, double tps,int distant) const
 {
   return Champ_P1iP1B_implementation::trace(fr, valeurs(), x,distant);

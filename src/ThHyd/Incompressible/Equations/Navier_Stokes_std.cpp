@@ -1756,7 +1756,7 @@ DoubleTab& Navier_Stokes_std::derivee_en_temps_inco(DoubleTab& derivee)
     }
 }
 
-void Navier_Stokes_std::uzawa(const DoubleTab &secmem, const Matrice_Base &A, SolveurSys &solveur, DoubleTab &U, DoubleTab &P)
+void Navier_Stokes_std::uzawa(const DoubleTab& secmem, const Matrice_Base& A, SolveurSys& solveur, DoubleTab& U, DoubleTab& P)
 {
   // A U + Bt P = secmem
   // B U        = G

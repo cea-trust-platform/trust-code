@@ -124,7 +124,9 @@ int test_solveur(SolveurSys& solveur,  const Matrice_Base& matrice , const Doubl
   temps=best_time;
   return numero_best;
 }
-// Description genere un fichier de solveur a tester different selon si la matrice peut etre resolue avec ou sans GCP
+/*! @brief genere un fichier de solveur a tester different selon si la matrice peut etre resolue avec ou sans GCP
+ *
+ */
 void generate_defaut(const Matrice_Base& matrice, const double seuil, Sortie& sortie, int limpr=0)
 {
   Nom impr(" impr " );
@@ -296,12 +298,14 @@ Entree& Solv_Optimal::readOn(Entree& is )
   return is;
 }
 
-// Description : methode clef de Solv_Optimal
-// a la premiere iteration
-//    genere le fichier fichier_solveur_ contenant la liste des solveurs a tester
-//    prend le premier solveur du fichier
-//    A la 3 ite et avec la frequence freq_recalc_ cherche le solveur le + rapide, en prenant en compte le fait que la matrice a change ou non
-//    appel test_solveur
+/*! @brief methode clef de Solv_Optimal a la premiere iteration
+ *
+ *     genere le fichier fichier_solveur_ contenant la liste des solveurs a tester
+ *     prend le premier solveur du fichier
+ *     A la 3 ite et avec la frequence freq_recalc_ cherche le solveur le + rapide, en prenant en compte le fait que la matrice a change ou non
+ *     appel test_solveur
+ *
+ */
 void Solv_Optimal::prepare_resol(const Matrice_Base& matrice, const DoubleVect& secmem, DoubleVect& solution, int nmax)
 {
   if (n_resol_==0)

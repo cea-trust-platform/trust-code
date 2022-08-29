@@ -46,19 +46,21 @@ private:
 
 };
 
-// Description :
-// Constructeur : dimensionne les tableaux
+/*! @brief Constructeur : dimensionne les tableaux
+ *
+ */
 inline Aretes::Aretes(int n) : faces_(n,4),type1_(n),type2_(n)
 {
 }
 
-// Description :
-// retourne le tableau (IntTab) des faces
-// de dimension nb_aretes,4
-// faces(num_arete,i) 0 <= i <= 3:
-// numeros des 4 faces qui se partagent l'arete num_arete
-// Pour une arete interne les 4 faces existent
-// Pour une arete bord un ou deux des numeros valent -1.
+/*! @brief retourne le tableau (IntTab) des faces de dimension nb_aretes,4
+ *
+ *  faces(num_arete,i) 0 <= i <= 3:
+ *  numeros des 4 faces qui se partagent l'arete num_arete
+ *  Pour une arete interne les 4 faces existent
+ *  Pour une arete bord un ou deux des numeros valent -1.
+ *
+ */
 inline IntTab& Aretes::faces()
 {
   return faces_;

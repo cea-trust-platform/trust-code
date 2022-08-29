@@ -79,9 +79,9 @@ class Param;
 //        Si le tableau de valeurs fourni est a plusieurs entrees,  data doit etre dimensionne en data(nb_ddl)
 
 
-//Description de l utilisation de l interface generique pour realiser une operation de postraitement
-//L enchainement d appel des methodes de l interface pour postraiter un tableau de valeurs d un champ discret a un instant donne
-//est presente ci-dessous (toute methode n est pas forcement necessaire en fonction du format utilise)
+// l utilisation de l interface generique pour realiser une operation de postraitement
+// L enchainement d appel des methodes de l interface pour postraiter un tableau de valeurs d un champ discret a un instant donne
+// est presente ci-dessous (toute methode n est pas forcement necessaire en fonction du format utilise)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // format_post.initialize_by_default(nom_fichier)
 // format_post.test_coherence(champ,stat,dt_ch,dt_stat)

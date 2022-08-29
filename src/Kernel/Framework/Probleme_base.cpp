@@ -863,9 +863,9 @@ void Probleme_base::discretiser(const Discretisation_base& une_discretisation)
 
 }
 
-// Description :
-// Flag le premier et le dernier postraitement pour chaque fichier
-// Et initialise les postraitements
+/*! @brief Flag le premier et le dernier postraitement pour chaque fichier Et initialise les postraitements
+ *
+ */
 void Probleme_base::init_postraitements()
 {
   LIST_CURSEUR(DERIV(Postraitement_base)) curseur = les_postraitements;
@@ -1293,20 +1293,26 @@ const Equation_base& Probleme_base::equation(const Nom& type) const
   return equation(0);
 }
 
-// Description (B.Math):
-//  Methode virtuelle ajoutee pour les problemes ayant plusieurs equations
-//  de meme type (Probleme_FT_Disc_gen). Dans ce cas, le nom de l'equation
-//  n'est pas son type...
+/*! @brief (B.
+ *
+ * Math): Methode virtuelle ajoutee pour les problemes ayant plusieurs equations
+ *   de meme type (Probleme_FT_Disc_gen). Dans ce cas, le nom de l'equation
+ *   n'est pas son type...
+ *
+ */
 const Equation_base& Probleme_base::get_equation_by_name(const Nom& un_nom) const
 {
   return equation(un_nom);
 }
 
-// Description (B.Math):
-//  Methode virtuelle ajoutee pour les problemes ayant plusieurs equations
-//  de meme type (Probleme_FT_Disc_gen). Dans ce cas, le nom de l'equation
-//  n'est pas son type...
-//  Version non const. Cette methode est notamment appelee a la lecture du probleme.
+/*! @brief (B.
+ *
+ * Math): Methode virtuelle ajoutee pour les problemes ayant plusieurs equations
+ *   de meme type (Probleme_FT_Disc_gen). Dans ce cas, le nom de l'equation
+ *   n'est pas son type...
+ *   Version non const. Cette methode est notamment appelee a la lecture du probleme.
+ *
+ */
 Equation_base& Probleme_base::getset_equation_by_name(const Nom& un_nom)
 {
   return equation(un_nom);

@@ -602,8 +602,8 @@ int Matrice_Bloc::nb_bloc_colonnes( void ) const
   return M_;
 }
 
-// // Description
-// // Remplissage d'une Matrice_Morse par une Matrice_Bloc de Matrice_Morse quelconques
+
+// Remplissage d'une Matrice_Morse par une Matrice_Bloc de Matrice_Morse quelconques
 void Matrice_Bloc::BlocToMatMorse( Matrice_Morse& result ) const
 {
   Matrix_tools::convert_to_morse_matrix( (*this), result );

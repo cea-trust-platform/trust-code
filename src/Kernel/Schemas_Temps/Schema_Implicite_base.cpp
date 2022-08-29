@@ -23,7 +23,9 @@
 
 Implemente_base(Schema_Implicite_base,"Schema_Implicite_base",Schema_Temps_base);
 
-// Description voir Solveur::printOn
+/*! @brief voir Solveur::printOn
+ *
+ */
 
 Sortie& Schema_Implicite_base::printOn(Sortie& os) const
 {

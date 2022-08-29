@@ -42,13 +42,17 @@ protected:
 };
 
 
-// Description
+/*! @brief
+ *
+ */
 inline Solveur_Implicite& Schema_Implicite_base::solveur()
 {
   return le_solveur;
 }
 
-// Description
+/*! @brief
+ *
+ */
 inline const Solveur_Implicite& Schema_Implicite_base::solveur() const
 {
   return le_solveur;

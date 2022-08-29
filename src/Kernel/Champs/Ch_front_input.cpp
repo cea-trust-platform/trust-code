@@ -53,10 +53,12 @@ const Nom& Ch_front_input::get_name() const
   return le_nom();
 }
 
-// Description
-// Provides afield with a name, a time interval, components, and no field ownership.
-// The geometry includes all nodes of the domain and all faces of the boundary.
-// WEC : optimization possible here
+/*! @brief Provides afield with a name, a time interval, components, and no field ownership.
+ *
+ * The geometry includes all nodes of the domain and all faces of the boundary.
+ *  WEC : optimization possible here
+ *
+ */
 void Ch_front_input::getTemplate(TrioField& afield) const
 {
 
@@ -134,8 +136,9 @@ void Ch_front_input::buildSommetsFaces() const
 
 }
 
-// Description
-// Uses the first value in afield as uniform value, regardless of geometry.
+/*! @brief Uses the first value in afield as uniform value, regardless of geometry.
+ *
+ */
 void Ch_front_input::setValue(const TrioField& afield)
 {
   for (int i=1; i<les_valeurs->nb_cases(); i++)

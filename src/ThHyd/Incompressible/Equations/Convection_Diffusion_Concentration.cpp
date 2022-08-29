@@ -74,7 +74,6 @@ Entree& Convection_Diffusion_Concentration::readOn(Entree& is)
   return is;
 }
 
-// Description :
 // renvoit la masse_molaire, celle ci doit avoir ete lue avant
 const double& Convection_Diffusion_Concentration::masse_molaire() const
 {

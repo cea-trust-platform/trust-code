@@ -25,8 +25,9 @@ Partitionneur_Partition::Partitionneur_Partition()
   dom_calcul_ = "";
 }
 
-// Description : La syntaxe est
-//  { Domaine NOM_DOM }
+/*! @brief La syntaxe est { Domaine NOM_DOM }
+ *
+ */
 Entree& Partitionneur_Partition::readOn(Entree& is)
 {
   if (! ref_domaine_interpol_.non_nul())

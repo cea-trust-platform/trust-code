@@ -49,7 +49,9 @@ Entree& Op_Diff_VEF_base::readOn(Entree& s )
 }
 
 
-// Description : definit si on calcule div(phi nu grad Psi) ou div(nu grap Phi psi)
+/*! @brief definit si on calcule div(phi nu grad Psi) ou div(nu grap Phi psi)
+ *
+ */
 int Op_Diff_VEF_base::phi_psi_diffuse(const Equation_base& eq) const
 {
   if (eq.inconnue().le_nom()=="vitesse")

@@ -13,7 +13,6 @@
 *
 *****************************************************************************/
 
-
 #include <Chimie.h>
 #include <Probleme_base.h>
 #include <Motcle.h>
@@ -25,15 +24,8 @@
 #include <dlsinterf.h>
 #include <Constituant.h>
 
-
 Implemente_instanciable(Chimie,"Chimie",Objet_U);
 Implemente_vect(REF(Champ_Inc_base));
-
-
-
-
-
-
 
 Sortie& Chimie::printOn(Sortie& os) const
 {
@@ -575,17 +567,13 @@ void Chimie::get_noms_champs_postraitables(Noms& nom,Option opt) const
     Cerr<<finl;
 }
 
-// Description : sauvegarde du terme source de temperature
 int Chimie::sauvegarder(Sortie& fich) const
 {
   return 1;
 }
 
-// Description : reprise du terme source de temperature
-// on est deja bien positionne ????
 int Chimie::reprendre(Entree& is)
 {
   return 1;
-
 }
 

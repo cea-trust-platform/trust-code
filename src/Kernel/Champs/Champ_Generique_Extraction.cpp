@@ -246,7 +246,6 @@ void Champ_Generique_Extraction::nommer_source()
     }
 }
 
-//Description :
 // La methode completer complete le domaine d extraction declare dans le jeu de donnes
 // auquel la classe fait reference:
 // - ajout d une zone (de type Pave)

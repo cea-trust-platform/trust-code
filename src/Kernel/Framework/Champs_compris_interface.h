@@ -37,8 +37,6 @@ enum Option { NONE, DESCRIPTION };
  *         get_champ()
  *         get_noms_champs_postraitables()
  *
- *
- *
  */
 class Champs_compris_interface
 {
@@ -52,7 +50,7 @@ public :
   //Pour illustrer la description des methodes faite ci-dessous, on pourra
   //se referer a leur codage dans Probleme_base, Equation_base et Navier_Stokes_std
 
-  //Description de la methode creer_champ()
+  // la methode creer_champ()
   /////////////////////////////////////////////////////////////////////////////////
   //Cette methode permet de creer un "champ calcule". Ce champ de type Champ_Fonc
   //(ex : vorticite) est estime uniquement pour etre postraite et ne sert pas a
@@ -68,7 +66,7 @@ public :
   //disposent d un objet discretisation.
   //////////////////////////////////////////////////////////////////////////////
 
-  //Description de la methode get_champ()
+  // la methode get_champ()
   ///////////////////////////////////////////////////////////////////////
   //Cette methode permet de lancer une requete pour recuperer une REF a un
   //champ a partir de son identifiant (nom) ou de celui d une de ses composantes
@@ -83,7 +81,7 @@ public :
   //en cas de reponse negative
   ////////////////////////////////////////////////////////////////////////
 
-  //Description de la methode get_noms_champs_postraitables()
+  // la methode get_noms_champs_postraitables()
   ////////////////////////////////////////////////////////////////////////
   //Cette methode permet d informer l utilisateur sur les champs postraitables pour un probleme donne
   //Le principe de balayage des classes est le meme que pour la methode get_champ() (voir ci-dessus)
@@ -93,8 +91,6 @@ public :
   //-Si l'option NONE est activee (valeur par defaut)
   //la liste des noms est ajoutee dans nom
   ////////////////////////////////////////////////////////////////////////
-
-protected :
 
 };
 

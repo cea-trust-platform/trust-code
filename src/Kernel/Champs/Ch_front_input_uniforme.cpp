@@ -49,8 +49,9 @@ const Nom& Ch_front_input_uniforme::get_name() const
   return le_nom();
 }
 
-// Description
-// By default initializes to zero.
+/*! @brief By default initializes to zero.
+ *
+ */
 int Ch_front_input_uniforme::initialiser(double temps, const Champ_Inc_base& inco)
 {
   if (!Champ_front_instationnaire_base::initialiser(temps,inco))
@@ -68,9 +69,9 @@ int Ch_front_input_uniforme::initialiser(double temps, const Champ_Inc_base& inc
   return 1;
 }
 
-// Description
-// Provides afield with a dummy geometry, a name, a time interval,
-// components, and no field ownership.
+/*! @brief Provides afield with a dummy geometry, a name, a time interval, components, and no field ownership.
+ *
+ */
 void Ch_front_input_uniforme::getTemplate(TrioField& afield) const
 {
 
@@ -83,8 +84,9 @@ void Ch_front_input_uniforme::getTemplate(TrioField& afield) const
   afield._nb_field_components=nb_comp();
 }
 
-// Description
-// Uses the first value in afield as uniform value, regardless of geometry.
+/*! @brief Uses the first value in afield as uniform value, regardless of geometry.
+ *
+ */
 void Ch_front_input_uniforme::setValue(const TrioField& afield)
 {
   for (int i=1; i<les_valeurs->nb_cases(); i++)

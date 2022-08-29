@@ -34,11 +34,12 @@
 #include <Periodique.h>
 #include <Symetrie.h>
 
-// Description
-// Dimensionnement de la matrice qui devra recevoir les coefficients provenant de
-// la convection, de la diffusion pour le cas des faces.
-// Cette matrice a une structure de matrice morse.
-// Nous commencons par calculer les tailles des tableaux tab1 et tab2.
+/*! @brief Dimensionnement de la matrice qui devra recevoir les coefficients provenant de la convection, de la diffusion pour le cas des faces.
+ *
+ *  Cette matrice a une structure de matrice morse.
+ *  Nous commencons par calculer les tailles des tableaux tab1 et tab2.
+ *
+ */
 
 void Op_VEF_Face::dimensionner(const Zone_VEF& la_zone,
                                const Zone_Cl_VEF& la_zone_cl,
@@ -171,9 +172,9 @@ void Op_VEF_Face::dimensionner(const Zone_VEF& la_zone,
     }
 }
 
-// Description
-// Modification des coef de la matrice et du second membre pour les conditions
-// de Dirichlet
+/*! @brief Modification des coef de la matrice et du second membre pour les conditions de Dirichlet
+ *
+ */
 
 void Op_VEF_Face::modifier_pour_Cl(const Zone_VEF& la_zone,
                                    const Zone_Cl_VEF& la_zone_cl,
@@ -443,9 +444,9 @@ void Op_VEF_Face::modifier_flux( const Operateur_base& op) const
 
 }
 
-// Description
-// Impression des flux d'un operateur VEF aux faces (ie: diffusion, convection)
-//
+/*! @brief Impression des flux d'un operateur VEF aux faces (ie: diffusion, convection)
+ *
+ */
 int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
 {
   const Zone_VEF& la_zone_vef=ref_cast(Zone_VEF,op.equation().zone_dis().valeur());

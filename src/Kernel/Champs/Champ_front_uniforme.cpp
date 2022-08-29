@@ -113,8 +113,9 @@ int Champ_front_uniforme::reculer(double temps)
   return 1;
 }
 
-// Description :
-// rien a faire pour un champ stationnaire !
+/*! @brief rien a faire pour un champ stationnaire !
+ *
+ */
 void Champ_front_uniforme::changer_temps_futur(double temps,int i)
 {
 }

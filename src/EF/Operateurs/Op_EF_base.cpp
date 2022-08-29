@@ -39,11 +39,12 @@
 
 #include <vector>
 
-// Description
-// Dimensionnement de la matrice qui devra recevoir les coefficients provenant de
-// la convection, de la diffusion pour le cas des faces.
-// Cette matrice a une structure de matrice morse.
-// Nous commencons par calculer les tailles des tableaux tab1 et tab2.
+/*! @brief Dimensionnement de la matrice qui devra recevoir les coefficients provenant de la convection, de la diffusion pour le cas des faces.
+ *
+ *  Cette matrice a une structure de matrice morse.
+ *  Nous commencons par calculer les tailles des tableaux tab1 et tab2.
+ *
+ */
 
 void Op_EF_base::dimensionner(const Zone_EF& la_zone,
                               const Zone_Cl_EF& la_zone_cl,
@@ -241,9 +242,9 @@ void Op_EF_base::dimensionner(const Zone_EF& la_zone,
 
 }
 
-// Description
-// Modification des coef de la matrice et du second membre pour les conditions
-// de Dirichlet
+/*! @brief Modification des coef de la matrice et du second membre pour les conditions de Dirichlet
+ *
+ */
 
 void Op_EF_base::modifier_pour_Cl(const Zone_EF& la_zone,
                                   const Zone_Cl_EF& la_zone_cl,
@@ -365,7 +366,9 @@ void Op_EF_base::modifier_pour_Cl(const Zone_EF& la_zone,
   //  Cerr << "fin de modifier" << finl;
 }
 
-// Description multiplie le flux bordpar rho cp ou rho si necessaire
+/*! @brief multiplie le flux bordpar rho cp ou rho si necessaire
+ *
+ */
 void Op_EF_base::modifier_flux( const Operateur_base& op) const
 {
   controle_modifier_flux_=1;
@@ -391,9 +394,9 @@ void Op_EF_base::modifier_flux( const Operateur_base& op) const
 
 }
 
-// Description
-// Impression des flux d'un operateur EF aux faces (ie: diffusion, convection)
-//
+/*! @brief Impression des flux d'un operateur EF aux faces (ie: diffusion, convection)
+ *
+ */
 int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
 {
   const Zone_EF& la_zone_EF=ref_cast(Zone_EF,op.equation().zone_dis().valeur());

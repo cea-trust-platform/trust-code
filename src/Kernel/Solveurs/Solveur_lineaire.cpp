@@ -18,7 +18,9 @@
 
 Implemente_base(Solveur_lineaire,"Solveur_lineaire",Solveur_Implicite_Base);
 
-// Description voir Solveur::printOn
+/*! @brief voir Solveur::printOn
+ *
+ */
 
 Sortie& Solveur_lineaire::printOn(Sortie& is) const
 {

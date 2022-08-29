@@ -30,21 +30,11 @@ Sortie& Operateur_Div_base::printOn(Sortie& os) const
 }
 
 
-// Description
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification: le flot d'entree
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief NE FAIT RIEN A surcharger dans les classes derivees
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree
+ */
 Entree& Operateur_Div_base::readOn(Entree& is)
 {
   return is;

@@ -18,30 +18,21 @@
 
 #include <Schema_Temps_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Schema_Temps_Inutile
-//     Cette classe represente un schema de temps vide pour utiliser
-//     l'heritage TRUST sur probleme base et postraitement avec Pb_STT
-//
-// .SECTION voir aussi
-//     Schema_Temps_base
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Schema_Temps_Inutile
+ *
+ * Cette classe represente un schema de temps vide pour utiliser l'heritage TRUST sur probleme base et postraitement avec Pb_STT
+ *
+ */
 class Schema_Temps_Inutile: public Schema_Temps_base
 {
-
   Declare_instanciable(Schema_Temps_Inutile);
-
 public :
-
-  int nb_valeurs_temporelles() const override;
-  int nb_valeurs_futures() const override;
-  double temps_futur(int i) const override;
-  double temps_defaut() const override;
-
-  int faire_un_pas_de_temps_eqn_base(Equation_base&) override;
-  inline void completer() override {}
+  inline int nb_valeurs_temporelles() const override { return 0; }
+  inline int nb_valeurs_futures() const override { return 0; }
+  inline int faire_un_pas_de_temps_eqn_base(Equation_base& eqn) override { return 1; }
+  inline double temps_futur(int i) const override { return 0.; }
+  inline double temps_defaut() const override { return 0.; }
+  inline void completer() override { }
 };
 
-#endif
+#endif /* Schema_Temps_Inutile_included */

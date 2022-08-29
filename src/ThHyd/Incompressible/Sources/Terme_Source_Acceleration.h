@@ -56,19 +56,19 @@ private:
   mutable Champ_Fonc terme_source_post_;
 
   // **********************************************************************
-  // Description du champ de vitesse impose au repere mobile (lu optionnellement
+  // champ de vitesse impose au repere mobile (lu optionnellement
   // dans le jeu de donnees, non utilise par le terme source mais potentiellement
   // pour le code pour calculer la vitesse dans le repere fixe)
   Champ_Don champ_vitesse_;
 
-  // Description du champ d'acceleration impose (lu dans le jeu de donnees)
+  // champ d'acceleration impose (lu dans le jeu de donnees)
   // Champ_Don lu dans le jeu de donnees, homogene a d/dt(v) en m/(s^2).
   // Ce doit etre un champ vectoriel uniforme a "dimension" composantes.
   // Si champ_acceleration.non_nul()==0, c'est qu'on n'en a pas mis
   // dans le jeu de donnees.
   Champ_Don champ_acceleration_;
 
-  // Description d'un champ de rotation instationnaire:
+  // champ de rotation instationnaire:
   // Les trois champs suivants peuvent etre nuls (omega_.non_nul()==0).
 
   // Vitesse de rotation: champ uniforme a trois composantes

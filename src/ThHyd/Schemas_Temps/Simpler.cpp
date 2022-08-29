@@ -37,8 +37,6 @@ Entree& Simpler::readOn(Entree& is )
   return Simple::readOn(is);
 }
 
-
-// DEscription:
 // calcul D correction_en_vitesse= E current + resu )
 // avec D diagonale de la matrice et E = D-matrice =-(matrice-D)
 int inverser_par_diagonale(const Matrice_Morse& matrice,const DoubleTrav& resu,const DoubleTab& current,DoubleTrav& correction_en_vitesse)

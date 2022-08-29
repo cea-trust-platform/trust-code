@@ -165,8 +165,9 @@ int Champ_front_base::reculer(double temps)
   return 0;
 }
 
-// Description :
-// Change la valeur du temps pour la ieme valeur temporelle apres le present
+/*! @brief Change la valeur du temps pour la ieme valeur temporelle apres le present
+ *
+ */
 void Champ_front_base::changer_temps_futur(double temps,int i)
 {
   les_valeurs->futur(i).changer_temps(temps);

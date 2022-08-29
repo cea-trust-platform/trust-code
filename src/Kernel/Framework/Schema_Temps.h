@@ -274,22 +274,12 @@ inline void Schema_Temps::imprimer(Sortie& os) const
 {
   valeur().imprimer(os);
 }
-// Description
-//    Appel a l'objet sous-jacent:
-//    Renvoie 1 s'il y a lieu de faire une sauvegarde
-//    0 sinon.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: 1 si il faut faire une sauvegarde 0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+/*! @brief Appel a l'objet sous-jacent: Renvoie 1 s'il y a lieu de faire une sauvegarde
+ *
+ *     0 sinon.
+ *
+ * @return (int) 1 si il faut faire une sauvegarde 0 sinon
+ */
 inline int Schema_Temps::lsauv() const
 {
   return valeur().lsauv();

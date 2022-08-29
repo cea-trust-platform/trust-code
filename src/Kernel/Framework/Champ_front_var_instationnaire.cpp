@@ -166,9 +166,9 @@ int Champ_front_var_instationnaire::reculer(double temps)
   return 0;
 }
 
-// Description :
-//   Calcule le taux d'accroissement du champ entre t1 et t2
-//   et le stocke dans Gpoint_
+/*! @brief Calcule le taux d'accroissement du champ entre t1 et t2 et le stocke dans Gpoint_
+ *
+ */
 void Champ_front_var_instationnaire::Gpoint(double t1, double t2)
 {
   Gpoint_=valeurs_au_temps(t1);

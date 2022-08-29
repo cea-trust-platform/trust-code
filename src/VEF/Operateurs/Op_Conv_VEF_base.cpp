@@ -27,16 +27,10 @@
 
 Implemente_base(Op_Conv_VEF_base,"Op_Conv_VEF_base",Operateur_Conv_base);
 
-//// printOn
-//
-
 Sortie& Op_Conv_VEF_base::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
-
-//// readOn
-//
 
 Entree& Op_Conv_VEF_base::readOn(Entree& s )
 {
@@ -264,7 +258,6 @@ void Op_Conv_VEF_base::remplir_fluent(DoubleVect& tab_fluent) const
 }
 
 
-//Description
 // Calculation of local time: Vect of size number of faces of the domain
 // This is the equivalent of "Op_Conv_VEF_base :: calculer_dt_stab ()"
 void Op_Conv_VEF_base::calculer_dt_local(DoubleTab& dt_face) const

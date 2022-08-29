@@ -38,13 +38,17 @@ protected :
 
 };
 
-// Description
+/*! @brief
+ *
+ */
 inline SolveurSys& Solveur_Lineaire_Std::solveur_sys()
 {
   return solveur;
 }
 
-// Description
+/*! @brief
+ *
+ */
 inline const SolveurSys& Solveur_Lineaire_Std::solveur_sys() const
 {
   return solveur;

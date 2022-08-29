@@ -14,42 +14,8 @@
 *****************************************************************************/
 
 #include <Schema_Temps_Inutile.h>
-#include <Equation.h>
 
 Implemente_instanciable(Schema_Temps_Inutile,"Schema_Temps_Inutile",Schema_Temps_base);
 
-
-Sortie& Schema_Temps_Inutile::printOn(Sortie& s) const
-{
-  return  Schema_Temps_base::printOn(s);
-}
-
-Entree& Schema_Temps_Inutile::readOn(Entree& s)
-{
-  return Schema_Temps_base::readOn(s) ;
-}
-
-int Schema_Temps_Inutile::nb_valeurs_temporelles() const
-{
-  return 0 ;
-}
-
-int Schema_Temps_Inutile::nb_valeurs_futures() const
-{
-  return 0 ;
-}
-
-double Schema_Temps_Inutile::temps_futur(int i) const
-{
-  return 0.;
-}
-
-double Schema_Temps_Inutile::temps_defaut() const
-{
-  return 0.;
-}
-
-int Schema_Temps_Inutile::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
-{
-  return 1;
-}
+Sortie& Schema_Temps_Inutile::printOn(Sortie& s) const { return s; }
+Entree& Schema_Temps_Inutile::readOn(Entree& s) { return s; }

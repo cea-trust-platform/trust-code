@@ -16,10 +16,12 @@
 #include <Triangle.h>
 #include <Domaine.h>
 
-// Description des faces du triangle de reference:
-//  3 faces de deux sommets.
-//  La face i est la face opposee au sommet i
-// (voir get_tab_faces_sommets_locaux)
+/*! @brief des faces du triangle de reference: 3 faces de deux sommets.
+ *
+ *   La face i est la face opposee au sommet i
+ *  (voir get_tab_faces_sommets_locaux)
+ *
+ */
 static int faces_sommets_triangle[3][2] =
 {
   { 1, 2 },

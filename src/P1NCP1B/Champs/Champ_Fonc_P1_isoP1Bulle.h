@@ -30,32 +30,22 @@ class Champ_Fonc_P1_isoP1Bulle: public Champ_Fonc_base, public Champ_P1iP1B_impl
 {
   Declare_instanciable(Champ_Fonc_P1_isoP1Bulle);
 
-public :
+public:
   int fixer_nb_valeurs_nodales(int) override;
   const Zone_dis_base& zone_dis_base() const override;
   void associer_zone_dis_base(const Zone_dis_base&) override;
   inline const Zone_VEF_PreP1b& zone_vef() const override;
-  void mettre_a_jour(double ) override;
-  DoubleTab& trace(const Frontiere_dis_base& , DoubleTab& , double,int distant ) const override;
+  void mettre_a_jour(double) override;
+  DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&, double, int distant) const override;
 
-  inline DoubleVect& valeur_a_elem(const DoubleVect& position,
-                                   DoubleVect& val,
-                                   int le_poly) const override;
-  inline double valeur_a_elem_compo(const DoubleVect& position,
-                                    int le_poly, int ncomp) const override;
-  inline DoubleTab& valeur_aux_elems(const DoubleTab& positions,
-                                     const IntVect& les_polys,
-                                     DoubleTab& tab_valeurs) const override;
-  inline DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions,
-                                            const IntVect& les_polys,
-                                            DoubleVect& tab_valeurs,
-                                            int ncomp) const override ;
+  inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const override;
+  inline double valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const override;
+  inline DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& tab_valeurs) const override;
+  inline DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& tab_valeurs, int ncomp) const override;
   inline DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const override;
-  inline DoubleVect& valeur_aux_sommets_compo(const Domaine&,
-                                              DoubleVect&, int) const override;
+  inline DoubleVect& valeur_aux_sommets_compo(const Domaine&, DoubleVect&, int) const override;
   inline DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const override;
-  inline int remplir_coord_noeuds_et_polys(DoubleTab& positions,
-                                           IntVect& polys) const override;
+  inline int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const override;
 protected:
 
   REF(Zone_VEF_PreP1b) la_zone_VEFP1B;
@@ -76,53 +66,39 @@ inline Champ_base& Champ_Fonc_P1_isoP1Bulle::le_champ()
   return *this;
 }
 
-inline DoubleVect& Champ_Fonc_P1_isoP1Bulle::valeur_a_elem(const DoubleVect& position,
-                                                           DoubleVect& val,
-                                                           int le_poly) const
+inline DoubleVect& Champ_Fonc_P1_isoP1Bulle::valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const
 {
   return Champ_P1iP1B_implementation::valeur_a_elem(position, val, le_poly);
 }
-inline double  Champ_Fonc_P1_isoP1Bulle::valeur_a_elem_compo(const DoubleVect& position,
-                                                             int le_poly, int ncomp) const
+inline double Champ_Fonc_P1_isoP1Bulle::valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const
 {
   return Champ_P1iP1B_implementation::valeur_a_elem_compo(position, le_poly, ncomp);
 }
-inline DoubleTab&  Champ_Fonc_P1_isoP1Bulle::valeur_aux_elems(const DoubleTab& positions,
-                                                              const IntVect& les_polys,
-                                                              DoubleTab& tab_valeurs) const
+inline DoubleTab& Champ_Fonc_P1_isoP1Bulle::valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& tab_valeurs) const
 {
   return Champ_P1iP1B_implementation::valeur_aux_elems(positions, les_polys, tab_valeurs);
 }
-inline DoubleVect&  Champ_Fonc_P1_isoP1Bulle::valeur_aux_elems_compo(const DoubleTab& positions,
-                                                                     const IntVect& les_polys,
-                                                                     DoubleVect& tab_valeurs,
-                                                                     int ncomp) const
+inline DoubleVect& Champ_Fonc_P1_isoP1Bulle::valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& tab_valeurs, int ncomp) const
 {
-  return Champ_P1iP1B_implementation::valeur_aux_elems_compo(positions, les_polys,
-                                                             tab_valeurs, ncomp);
+  return Champ_P1iP1B_implementation::valeur_aux_elems_compo(positions, les_polys, tab_valeurs, ncomp);
 }
-inline DoubleTab&  Champ_Fonc_P1_isoP1Bulle::valeur_aux_sommets(const Domaine& dom, DoubleTab& val) const
+inline DoubleTab& Champ_Fonc_P1_isoP1Bulle::valeur_aux_sommets(const Domaine& dom, DoubleTab& val) const
 {
   return Champ_P1iP1B_implementation::valeur_aux_sommets(dom, val);
 }
-inline DoubleVect&  Champ_Fonc_P1_isoP1Bulle::valeur_aux_sommets_compo(const Domaine& dom,
-                                                                       DoubleVect& val, int comp) const
+inline DoubleVect& Champ_Fonc_P1_isoP1Bulle::valeur_aux_sommets_compo(const Domaine& dom, DoubleVect& val, int comp) const
 {
   return Champ_P1iP1B_implementation::valeur_aux_sommets_compo(dom, val, comp);
 }
-inline DoubleTab&  Champ_Fonc_P1_isoP1Bulle::remplir_coord_noeuds(DoubleTab& positions) const
+inline DoubleTab& Champ_Fonc_P1_isoP1Bulle::remplir_coord_noeuds(DoubleTab& positions) const
 {
   return Champ_P1iP1B_implementation::remplir_coord_noeuds(positions);
 }
-inline int  Champ_Fonc_P1_isoP1Bulle::remplir_coord_noeuds_et_polys(DoubleTab& positions,
-                                                                    IntVect& polys) const
+inline int Champ_Fonc_P1_isoP1Bulle::remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const
 {
-  return Champ_P1iP1B_implementation::remplir_coord_noeuds_et_polys(positions,
-                                                                    polys);
+  return Champ_P1iP1B_implementation::remplir_coord_noeuds_et_polys(positions, polys);
 }
 
-// Description :
-// Renvoie la Zone_VEF
 inline const Zone_VEF_PreP1b& Champ_Fonc_P1_isoP1Bulle::zone_vef() const
 {
   return la_zone_VEFP1B.valeur();

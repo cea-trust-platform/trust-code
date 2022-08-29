@@ -210,7 +210,9 @@ protected:
   REF(Domaine) le_domaine;
   // Type de l'element geometrique de cette Zone
   Elem_geom elem;
-  // Description des elements (pour le multi-element, le tableau peut contenir des -1 !!!)
+  /*! @brief des elements (pour le multi-element, le tableau peut contenir des -1 !!!)
+   *
+   */
   IntTab mes_elems;
   // Definition des aretes des elements (pour chaque arete, indices des deux sommets)
   //  (ce tableau n'est pas toujours rempli, selon la discretisation)
