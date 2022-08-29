@@ -816,8 +816,6 @@ inline void ajoute_operation_speciale_generic(TRUSTVect<_TYPE_>& resu, _TYPE_ al
   return;
 }
 
-inline void ajoute_alpha_v(TRUSTVect<int>& resu, int alpha, const TRUSTVect<int>& vx, Mp_vect_options opt = VECT_REAL_ITEMS) = delete; // forbidden ... ajoute si besoin
-
 template <typename _TYPE_>
 inline void ajoute_alpha_v(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt = VECT_REAL_ITEMS)
 {
@@ -839,8 +837,6 @@ inline void ajoute_carre_(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, const TRUSTVect
 {
   ajoute_carre(resu,alpha,vx,opt);
 }
-
-inline void ajoute_produit_scalaire(TRUSTVect<int>& resu, int alpha, const TRUSTVect<int>& vx, const TRUSTVect<int>& vy, Mp_vect_options opt = VECT_ALL_ITEMS) = delete; // forbidden ... ajoute si besoin
 
 template <typename _TYPE_>
 inline void ajoute_produit_scalaire(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, const TRUSTVect<_TYPE_>& vx, const TRUSTVect<_TYPE_>& vy, Mp_vect_options opt = VECT_ALL_ITEMS)

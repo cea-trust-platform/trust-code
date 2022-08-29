@@ -139,9 +139,6 @@ public:
   typename std::enable_if<std::is_convertible<_SCALAR_TYPE_, _T_>::value ,void>::type
   inline ajoute_carre(_SCALAR_TYPE_ alpha, const TRUSTVect<_T_>& y, Mp_vect_options opt = VECT_ALL_ITEMS) { ajoute_carre_(*this, (_T_)alpha, y, opt); }
 
-  inline void ajoute(int alpha, const TRUSTVect<int>& y, Mp_vect_options opt = VECT_ALL_ITEMS) = delete; // forbidden ... a voir si besoin
-  inline void ajoute_sans_ech_esp_virt(int alpha, const TRUSTVect<int>& y, Mp_vect_options opt = VECT_REAL_ITEMS) = delete; // forbidden ... a voir si besoin
-  inline void ajoute_produit_scalaire(int alpha, const TRUSTVect<int>& x, const TRUSTVect<int>& y, Mp_vect_options opt = VECT_ALL_ITEMS) = delete; // forbidden ... a voir si besoin
   inline void ajoute_carre(int alpha, const TRUSTVect<int>& y, Mp_vect_options opt = VECT_ALL_ITEMS) = delete; // forbidden ... a voir si besoin
 
   // par defaut: min et max sur items reels (compat. 1.5.6):
