@@ -16,8 +16,8 @@
 #ifndef Solv_rocALUTION_included
 #define Solv_rocALUTION_included
 
-#include <rocalution_for_kernel.h>
 #include <Solv_Externe.h>
+#include <rocalution_for_kernel.h>
 
 class Solv_rocALUTION : public Solv_Externe
 {
@@ -36,12 +36,14 @@ public :
 
 private :
   void initialize();
+  void Create_objects(const Matrice_Morse&);
 #ifdef ROCALUTION_ROCALUTION_HPP_
-  LocalMatrix<double> mat;
-  IterativeLinearSolver<LocalMatrix<double>, LocalVector<double>, double>* ls;
-  Solver<LocalMatrix<double>, LocalVector<double>, double>* p;
-  IterativeLinearSolver<LocalMatrix<float>, LocalVector<float>, float>* sp_ls;
-  Solver<LocalMatrix<float>, LocalVector<float>, float>* sp_p;
+  ParallelManager pm;
+  GlobalMatrix<double> mat;
+  IterativeLinearSolver<GlobalMatrix<double>, GlobalVector<double>, double>* ls;
+  Solver<GlobalMatrix<double>, GlobalVector<double>, double>* p;
+  IterativeLinearSolver<GlobalMatrix<float>, GlobalVector<float>, float>* sp_ls;
+  Solver<GlobalMatrix<float>, GlobalVector<float>, float>* sp_p;
   double atol_, rtol_;
   bool write_system_;
   bool first_solve_ = true;

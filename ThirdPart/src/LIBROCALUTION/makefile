@@ -4,6 +4,7 @@ mpi=$(MPI_INCLUDE)/mpi.h
 all:$(ROCALUTION_LIB)
 
 $(ROCALUTION_LIB): install makefile $(mpi)
+	make clean
 	./install
 	
 clean:

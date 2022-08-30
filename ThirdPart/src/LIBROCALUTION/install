@@ -7,7 +7,8 @@ echo $TRUST_ROCALUTION
 # On clone avant d'utiliser externalpackages dans le futur:
 [ ! -d rocALUTION ] && git clone https://github.com/ROCmSoftwarePlatform/rocALUTION.git
 cd rocALUTION
-git checkout eedff42d4badff
+#git checkout eedff42d4badff # Contrat de progres CINES #
+git checkout 985838b4e      # Pour beneficier de GlobalMatrix operationnel en sequentiel
 
 # Build sans OpenMP et avec backend host si rocm pas installe:
 SUPPORT_HIP=ON && [ "$ROCM_PATH" = "" ]        && SUPPORT_HIP=OFF && echo "Warning, ROCm non installe donc pas de support GPU."
@@ -29,7 +30,7 @@ gunzip -c $TRUST_ROOT/ThirdPart/src/LIBROCALUTION/VDF_10x10x10.mtx.gz > VDF_10x1
 echo "`pwd`/benchmark.log created."
 
 # Nettoyage
-rm -r -f $TRUST_ROOT/ThirdPart/src/LIBROCALUTION/rocALUTION
+#rm -r -f $TRUST_ROOT/ThirdPart/src/LIBROCALUTION/rocALUTION
 
 # Creation de l'include:
 echo "#pragma GCC diagnostic push
@@ -40,6 +41,15 @@ echo "#pragma GCC diagnostic push
 using namespace rocalution;
 #endif" > $TRUST_ROCALUTION/include/rocalution_for_kernel.h
 
+# Changement de la structure de rocALUTION:
+cd $TRUST_ROCALUTION/include
+if [ ! -f rocalution.hpp ]
+then
+   for item in rocalution/rocalution.hpp rocalution/version.hpp rocalution/base rocalution/solvers rocalution/utils
+   do
+      ln -s -f $item .
+   done
+fi
 exit 0
 
 
