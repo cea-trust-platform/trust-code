@@ -1,9 +1,9 @@
 diff -r bin/BUILD64/patch/Outils/lata_tools/src/trust_commun/LataDB.cpp ./Outils/lata_tools/src/trust_commun/LataDB.cpp
-400c400
+386c386
 <     if ((type_ != LataDBDataType::INT64) &&  (type_ != LataDBDataType::INT32)) {
 ---
 >     if (type_ != LataDBDataType::INT32) {
-570,571c570
+556,557c556
 <   case LataDBDataType::INT32:
 <   case LataDBDataType::INT64: f.read((LataDBInt32*) 0, size); break;
 ---
