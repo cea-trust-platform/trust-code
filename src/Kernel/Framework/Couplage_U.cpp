@@ -30,6 +30,8 @@ void Couplage_U::initialize()
 {
   for(int i=0; i<nb_problemes(); i++)
     probleme(i).initialize();
+  for(int i=0; i<nb_problemes(); i++)
+    probleme(i).post_initialize();
 }
 
 void Couplage_U::terminate()
