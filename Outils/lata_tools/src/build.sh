@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# Some clean due to the rename of lata2dx to lata_tools
+if [ -d $TRUST_ROOT/exec/lata2dx_install ]
+then
+   rm -rf $TRUST_ROOT/exec/lata2dx_install $TRUST_ROOT/exec/lata2dx_reactor
+   unlink $TRUST_ROOT/exec/lata2dx
+   unlink $TRUST_ROOT/exec/compare_lata
+fi
+
 export MED_COUPLING_ROOT=$TRUST_MEDCOUPLING_ROOT
 ORG=`pwd`
 # Something changed -> we delete all
