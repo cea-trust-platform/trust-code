@@ -19,7 +19,10 @@
 #include <Format_Post.h>
 
 Implemente_instanciable(Ecrire_Champ_MED,"Ecrire_Champ_MED",Interprete);
-
+// XD ecrire_champ_med interprete ecrire_champ_med -1 Keyword to write a field to MED format into a file.
+// XD attr nom_dom ref_domaine nom_dom 0 domain name
+// XD attr nom_chp ref_field_base nom_chp 0 field name
+// XD attr file chaine file 0 file name
 
 /*! @brief Simple appel a: Interprete::printOn(Sortie&)
  *
