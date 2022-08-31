@@ -147,6 +147,7 @@ inline _TYPE_& TRUSTArray<_TYPE_>::operator[](int i)
 //    assert si la valeur sort de l'intervalle : [ -DMAXFLOAT,DMAXFLOAT ]
 //    assert si i n'est pas dans l'intervalle
 /// \cond DO_NOT_DOCUMENT
+#pragma GCC diagnostic ignored "-Wstrict-overflow"
 template<>
 inline double& TRUSTArray<double>::operator[](int i)
 {
