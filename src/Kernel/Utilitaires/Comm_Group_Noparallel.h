@@ -28,6 +28,8 @@ public:
 
   void mp_collective_op(const double *x, double *resu, int n, Collective_Op op) const override { mp_collective_op_template<double>(x,resu,n,op); }
   void mp_collective_op(const double *x, double *resu, const Collective_Op *op, int n) const override { mp_collective_op_template<double>(x,resu,op,n); }
+  void mp_collective_op(const float *x, float *resu, int n, Collective_Op op) const override { mp_collective_op_template<float>(x,resu,n,op); }
+  void mp_collective_op(const float *x, float *resu, const Collective_Op *op, int n) const override { mp_collective_op_template<float>(x,resu,op,n); }
   void mp_collective_op(const int *x, int *resu, int n, Collective_Op op) const override { mp_collective_op_template<int>(x,resu,n,op); }
   void mp_collective_op(const int *x, int *resu, const Collective_Op *op, int n) const override { mp_collective_op_template<int>(x,resu,op,n); }
 
@@ -79,4 +81,3 @@ private:
 };
 
 #endif /* Comm_Group_Noparallel_included */
-

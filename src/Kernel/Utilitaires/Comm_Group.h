@@ -51,6 +51,8 @@ public:
   enum Collective_Op { COLL_SUM, COLL_MIN, COLL_MAX, COLL_PARTIAL_SUM };
   virtual void mp_collective_op(const double *x, double *resu, int n, Collective_Op op) const = 0;
   virtual void mp_collective_op(const double *x, double *resu, const Collective_Op *op, int n) const = 0;
+  virtual void mp_collective_op(const float *x, float *resu, int n, Collective_Op op) const = 0;
+  virtual void mp_collective_op(const float *x, float *resu, const Collective_Op *op, int n) const = 0;
   virtual void mp_collective_op(const int *x, int *resu, int n, Collective_Op op) const = 0;
   virtual void mp_collective_op(const int *x, int *resu, const Collective_Op *op, int n) const = 0;
   virtual void barrier(int tag) const = 0;
@@ -67,7 +69,7 @@ public:
   // le deroulement du programme. C'est donc un mecanisme separe des "assert".
   inline static int check_enabled();
 
-  enum TypeHint { CHAR, INT, DOUBLE };
+  enum TypeHint { CHAR, INT, DOUBLE, FLOAT };
   // Demarre l'echange des buffers.
   // send_list / recv_list = liste de PEs (rangs dans le groupe courant)
   // send_size / recv_size = taille des messages en bytes

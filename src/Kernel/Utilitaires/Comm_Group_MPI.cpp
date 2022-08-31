@@ -197,6 +197,47 @@ void Comm_Group_MPI::mp_collective_op(const double *x, double *resu, const Colle
 #endif
 }
 
+void Comm_Group_MPI::mp_collective_op(const float *x, float *resu, int n, Collective_Op op) const
+{
+#ifdef MPI_
+  if (n <= 0)
+    return;
+  switch(op)
+    {
+      // Note B.M.: cast en non const a cause de l'interface de MPI,
+      // plusieurs posts sur newsgroups incitent a penser que c'est ok
+      // (x ne sera jamais modifie par la librairie, sauf bug !)
+    case COLL_SUM:
+      statistiques().begin_count(mpi_sumfloat_counter_);
+      mpi_error(MPI_Allreduce((int*) x, resu, n, MPI_FLOAT, MPI_SUM, mpi_comm_));
+      statistiques().end_count(mpi_sumfloat_counter_);
+      break;
+    case COLL_MIN:
+      statistiques().begin_count(mpi_minfloat_counter_);
+      mpi_error(MPI_Allreduce((int*) x, resu, n, MPI_FLOAT, MPI_MIN, mpi_comm_));
+      statistiques().end_count(mpi_minfloat_counter_);
+      break;
+    case COLL_MAX:
+      statistiques().begin_count(mpi_maxfloat_counter_);
+      mpi_error(MPI_Allreduce((int*) x, resu, n, MPI_FLOAT, MPI_MAX, mpi_comm_));
+      statistiques().end_count(mpi_maxfloat_counter_);
+      break;
+    case COLL_PARTIAL_SUM:
+      internal_collective(x, resu, n, &op, -1 /* only one operation */, 0 /* recursion level */);
+      break;
+    }
+#endif
+}
+
+void Comm_Group_MPI::mp_collective_op(const float *x, float *resu, const Collective_Op *op, int n) const
+{
+#ifdef MPI_
+  if (n <= 0)
+    return;
+  internal_collective(x, resu, n, op, n /* n different operations */, 0 /* recursion level */);
+#endif
+}
+
 void Comm_Group_MPI::mp_collective_op(const int *x, int *resu, int n, Collective_Op op) const
 {
 #ifdef MPI_
@@ -324,6 +365,10 @@ void Comm_Group_MPI::send_recv_start(const ArrOfInt& send_list,
     case DOUBLE:
       divisor = sizeof(double);
       datatype = MPI_DOUBLE;
+      break;
+    case FLOAT:
+      divisor = sizeof(float);
+      datatype = MPI_FLOAT;
       break;
     default:
       Process::exit();
@@ -705,6 +750,22 @@ void Comm_Group_MPI::internal_collective(const double *x, double *resu, int nx, 
       else
         {
           Cerr << "Error in Comm_Group_MPI: COLL_PARTIAL_SUM not coded for double" << finl;
+          exit();
+        }
+    }
+}
+
+void Comm_Group_MPI::internal_collective(const float *x, float *resu, int nx, const Collective_Op *op, int nop, int level) const
+{
+  // Pour l'instant algo bourrin, a optimiser...
+  for (int i = 0; i < nx; i++)
+    {
+      int j = (nop < 0) ? 0 : i;
+      if (op[j] != COLL_PARTIAL_SUM)
+        mp_collective_op(x+i, resu+i, 1, op[j]);
+      else
+        {
+          Cerr << "Error in Comm_Group_MPI: COLL_PARTIAL_SUM not coded for float" << finl;
           exit();
         }
     }

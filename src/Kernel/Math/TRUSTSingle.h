@@ -40,6 +40,7 @@ private:
 };
 
 using SingleDouble = TRUSTSingle<double>;
+using SingleFloat = TRUSTSingle<float>;
 using SingleInt = TRUSTSingle<int>;
 
 #endif /* TRUSTSingle_included */

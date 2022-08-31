@@ -112,9 +112,11 @@ void MD_Vector_tools::creer_tableau_distribue(const MD_Vector& md, Array_base& v
 
   IntVect* intV = dynamic_cast<IntVect*>(&v);
   DoubleVect* doubleV = dynamic_cast<DoubleVect*>(&v);
+  TRUSTVect<float>* floatV = dynamic_cast<TRUSTVect<float>*>(&v);
 
   if (intV) creer_tableau_distribue_<IntVect, IntTab>(md, *intV, opt);
   else if (doubleV) creer_tableau_distribue_<DoubleVect, DoubleTab>(md, *doubleV, opt);
+  else if (floatV) creer_tableau_distribue_<TRUSTVect<float>, TRUSTTab<float>>(md, *floatV, opt);
   else
     {
       Cerr << "Internal error in MD_Vector_tools::creer_tableau_distribue(const MD_Vector & md, Array_base & v):\n"
@@ -128,7 +130,7 @@ template <typename _TYPE_>
 void echange_espace_virtuel_(const MD_Vector& md, TRUSTVect<_TYPE_>& v, const Echange_EV_Options& opt = echange_ev_opt_default)
 {
   const MD_Vector_base& mdv = md.valeur();
-  const int is_double = (std::is_same<_TYPE_,double>::value) ? 1 : 0;
+  const int is_double = (std::is_same<_TYPE_,int>::value) ? 0 : 1;
 
   if (md == last_md && v.line_size() == last_linesize && last_isdouble == is_double &&  last_opt == opt) { /* Do nothing si double et pas 1er passage */ }
   else
@@ -189,6 +191,7 @@ inline void call_echange_espace_virtuel(TRUSTVect<_TYPE_>& v, MD_Vector_tools::O
 
 void MD_Vector_tools::echange_espace_virtuel(IntVect& v, Operations_echange opt) { call_echange_espace_virtuel<int>(v,opt); }
 void MD_Vector_tools::echange_espace_virtuel(DoubleVect& v, Operations_echange opt) { call_echange_espace_virtuel<double>(v,opt); }
+void MD_Vector_tools::echange_espace_virtuel(TRUSTVect<float>& v, Operations_echange opt) { call_echange_espace_virtuel<float>(v,opt); }
 
 inline void setflag(ArrOfInt& flags, int i) { flags[i] = 1; }
 inline void clearflag(ArrOfInt& flags, int i) { flags[i] = 0; }

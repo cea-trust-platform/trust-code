@@ -43,6 +43,8 @@ public:
 
   void mp_collective_op(const double *x, double *resu, int n, Collective_Op op) const override;
   void mp_collective_op(const double *x, double *resu, const Collective_Op *op, int n) const override;
+  void mp_collective_op(const float *x, float *resu, int n, Collective_Op op) const override;
+  void mp_collective_op(const float *x, float *resu, const Collective_Op *op, int n) const override;
   void mp_collective_op(const int *x, int *resu, int n, Collective_Op op) const override;
   void mp_collective_op(const int *x, int *resu, const Collective_Op *op, int n) const override;
 
@@ -72,18 +74,13 @@ public:
   void ptop_send_recv(const void * send_buf, int send_buf_size, int send_proc,
                       void * recv_buf, int recv_buf_size, int recv_proc) const;
 
-  void set_must_finalize(int flag)
-  {
-    must_finalize_=flag;
-  };
-  MPI_Comm get_mpi_comm() const
-  {
-    return mpi_comm_;
-  };
+  void set_must_finalize(int flag) { must_finalize_=flag; }
+  MPI_Comm get_mpi_comm() const { return mpi_comm_; }
 protected:
   void init_group(const ArrOfInt& pe_list) override;
   void internal_collective(const int *x, int *resu, int nx, const Collective_Op *op, int nop, int level) const;
   void internal_collective(const double *x, double *resu, int nx, const Collective_Op *op, int nop, int level) const;
+  void internal_collective(const float *x, float *resu, int nx, const Collective_Op *op, int nop, int level) const;
   int  mppartial_sum(int x) const;
 
 private:

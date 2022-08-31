@@ -40,8 +40,10 @@ public:
   //   dans la colonne1, envoie toute la ligne au processeur qui possede la ligne.
   enum Operations_echange { ECHANGE_EV, EV_SOMME, EV_SOMME_ECHANGE, EV_MAX, EV_MINCOL1 };
   static void creer_tableau_distribue(const MD_Vector&, Array_base&, Array_base::Resize_Options opt = Array_base::COPY_INIT);
+
   static void echange_espace_virtuel(IntVect&, Operations_echange opt = ECHANGE_EV);
   static void echange_espace_virtuel(DoubleVect&, Operations_echange opt = ECHANGE_EV);
+  static void echange_espace_virtuel(TRUSTVect<float>&, Operations_echange opt = ECHANGE_EV);
 
   // valeur de retour: nombre d'items sequentiels sur ce proc (nombre de flags a un dans le tableau)
   static int get_sequential_items_flags(const MD_Vector&, ArrOfBit& flags, int line_size = 1);
@@ -49,8 +51,10 @@ public:
   static void compute_sequential_items_index(const MD_Vector&, MD_Vector_renumber&, int line_size = 1);
   static void creer_md_vect_renum(const IntVect& renum, MD_Vector& md_vect);
   static void creer_md_vect_renum_auto(IntVect& flags_renum, MD_Vector& md_vect);
+
   static void dump_vector_with_md(const DoubleVect&, Sortie&);
   static void restore_vector_with_md(DoubleVect&, Entree&);
+
   //etend les espaces distants de src pour contenir items et renseigne leurs nouveaux numeros dedans
   static MD_Vector extend(const MD_Vector& src, extra_item_t& items);
 };
