@@ -16,63 +16,13 @@
 #ifndef FloatTab_included
 #define FloatTab_included
 
-#include <ArrOfFloat.h>
+/*
+ * Elie Saikali
+ * Oblige de garder le typedef comme ca et pas dans TRUSTTab car la classe FloatTab de trio (FT) est pas une classe template !
+ */
 
-class FloatTab : public ArrOfFloat
-{
-  Declare_instanciable_sans_constructeur_ni_destructeur(FloatTab);
-public:
-  using value_type = float;
+#include <TRUSTTab.h>
+using VFloatdata = VTRUSTdata<float>;
+using FloatTab = TRUSTTab<float>;
 
-  FloatTab();
-  FloatTab(int ni, int nj);
-  FloatTab(const FloatTab& tab);
-  const FloatTab& operator=(const FloatTab& tab);
-  ~FloatTab() override;
-
-  inline float   operator()(int i, int j) const;
-  inline float& operator()(int i, int j);
-
-  inline int dimension(int i) const;
-  inline int nb_dim() const;
-  inline void resize(int ni, int nj);
-
-protected:
-  int ni_, nj_;
-};
-
-// ***************************************************************
-
-inline float   FloatTab::operator()(int i, int j) const
-{
-  assert(i >= 0 && i < ni_ && j >= 0 && j < nj_);
-  return data_[i*nj_+j];
-}
-
-inline float& FloatTab::operator()(int i, int j)
-{
-  assert(i >= 0 && i < ni_ && j >= 0 && j < nj_);
-  return data_[i*nj_+j];
-}
-
-inline int FloatTab::dimension(int i) const
-{
-  assert(i == 0 || i == 1);
-  return (i == 0) ? ni_ : nj_;
-}
-
-inline int FloatTab::nb_dim() const
-{
-  return 2;
-}
-
-inline void FloatTab::resize(int ni, int nj)
-{
-  assert(ni >= 0 && nj >= 0);
-  int new_size = ni * nj;
-  resize_array(new_size);
-  ni_ = ni;
-  nj_ = nj;
-}
-
-#endif
+#endif /* FloatTab_included */

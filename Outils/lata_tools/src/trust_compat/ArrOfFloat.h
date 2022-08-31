@@ -18,7 +18,7 @@
 
 /*
  * Elie Saikali
- * Oblige de garder le typedef comme ca et pas dans TRUSTArray car la classe ArrOfFloat de TRUST est pas une classe template !
+ * Oblige de garder le typedef comme ca et pas dans TRUSTArray car la classe ArrOfFloat de trio (FT) est pas une classe template !
  */
 
 #include <TRUSTArray.tpp>

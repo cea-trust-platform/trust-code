@@ -16,86 +16,13 @@
 #ifndef ArrOfFloat_included
 #define ArrOfFloat_included
 
-#include <Objet_U.h>
-
-class ArrOfFloat : public Objet_U
-{
-  Declare_instanciable_sans_constructeur_ni_destructeur(ArrOfFloat);
-public:
-  ArrOfFloat();
-  ArrOfFloat(int n);
-  ArrOfFloat(const ArrOfFloat& array);
-  const ArrOfFloat& operator=(const ArrOfFloat& array);
-  ~ArrOfFloat() override;
-
-  inline float& operator[](int i) const;
-  inline float& operator[](int i);
-  void        ordonne_array();
-  ArrOfFloat& inject_array(const ArrOfFloat& source,
-                           int nb_elements = -1,
-                           int first_element_dest = 0,
-                           int first_element_source = 0);
-
-  inline int size_array() const;
-  float * addr();
-  const float * addr() const;
-  inline void resize_array(int size);
-  const ArrOfFloat& operator*= (const float) ;
-  const ArrOfFloat& operator/= (const float) ;
-  const ArrOfFloat& operator=(const float);
-protected:
-  void mem_resize(int size);
-  void invalidate(int first_element, int nb_elements);
-
-  float *data_;
-  int size_;         // Nombre d'elements du tableau
-  int memory_size_;  // Taille allouee ( on a memory_size_ >= size_ )
-  static const int grow_factor_num_;
-  static const int grow_factor_denom_;
-};
-
-// *******************************************************************
-
-/*! @brief Renvoie la i-ieme valeur du tableau (0 <= i < taille)
- *
+/*
+ * Elie Saikali
+ * Oblige de garder le typedef comme ca et pas dans TRUSTArray car la classe ArrOfFloat de trio (FT) est pas une classe template !
  */
-inline float& ArrOfFloat::operator[](int i) const
-{
-  assert(i >= 0 && i < size_);
-  return data_[i];
-}
 
-/*! @brief Renvoie la i-ieme valeur du tableau (0 <= i < taille)
- *
- */
-inline float& ArrOfFloat::operator[](int i)
-{
-  assert(i >= 0 && i < size_);
-  return data_[i];
-}
+#include <TRUSTArray.h>
+using VFloatdata = VTRUSTdata<float>;
+using ArrOfFloat = TRUSTArray<float>;
 
-/*! @brief Renvoie le nombre de valeurs dans le tableau
- *
- */
-inline int ArrOfFloat::size_array() const
-{
-  return size_;
-}
-
-/*! @brief Changement de taille du tableau, en cas d'augmentation, le contenu des nouveaux elements est indefini.
- *
- */
-inline void ArrOfFloat::resize_array(int size)
-{
-  assert(size >= 0);
-  if (size > memory_size_)
-    mem_resize(size);
-#ifndef NDEBUG
-  // En mode debug, on remplit les nouvelles entrees avec des valeurs invalides
-  if (size > size_)
-    invalidate(size_, size - size_);
-#endif
-  size_ = size;
-}
-
-#endif
+#endif /* ArrOfFloat_included */
