@@ -344,7 +344,7 @@ void Navier_Stokes_std::completer()
   assembleur_pression_.associer_zone_cl_dis_base(zone_Cl_dis().valeur());
   assembleur_pression_.completer(*this);
 
-  if (distance_paroi_globale.non_nul())// On initialize la distance au bord au début du calcul si on en a besoin, ce ne sera plus mis a jour par la suite car le maillage est fixe ; on le fait tard car il faut avoir lu les CL
+  if (distance_paroi_globale.non_nul())// On initialize la distance au bord au debut du calcul si on en a besoin, ce ne sera plus mis a jour par la suite car le maillage est fixe ; on le fait tard car il faut avoir lu les CL
     {
       Zone_dis_base& zone = zone_dis().valeur();
       zone.init_dist_paroi_globale(zone_Cl_dis().les_conditions_limites());
