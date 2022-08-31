@@ -18,7 +18,7 @@
 
 #include <LataTools.h>
 #include <LataStructures.h>
-#include <ArrOfFloat.h>
+#include <TRUSTArray.h>
 
 template<class F> class Field;
 typedef Field<FloatTab> FieldType;

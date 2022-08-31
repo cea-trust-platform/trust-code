@@ -18,6 +18,7 @@
 
 #include <TRUSTArray.tpp>
 using ArrOfDouble = TRUSTArray<double>;
+using ArrOfFloat = TRUSTArray<float>;
 using ArrOfInt = TRUSTArray<entier>;
 
 #endif /* TRUSTArray_included */

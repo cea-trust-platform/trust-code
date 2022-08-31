@@ -63,8 +63,6 @@ const bool mymachine_msb =  false;
 #endif
 
 #include <TRUSTArray.h>
-#include <ArrOfFloat.h>
-//class ArrOfFloat;
 class ArrOfBit;
 BigEntier memory_size(const ArrOfInt &);
 BigEntier memory_size(const ArrOfDouble &);
@@ -167,7 +165,6 @@ void split_path_filename(const char *full_name, Nom & path, Nom & filename);
 
 #include <LataJournal.h>
 #include <TRUSTTab.h>
-#include <FloatTab.h>
 #include <Motcle.h>
 #include <Noms.h>
 

@@ -43,7 +43,7 @@ public:
 
   static void echange_espace_virtuel(IntVect&, Operations_echange opt = ECHANGE_EV);
   static void echange_espace_virtuel(DoubleVect&, Operations_echange opt = ECHANGE_EV);
-  static void echange_espace_virtuel(TRUSTVect<float>&, Operations_echange opt = ECHANGE_EV);
+  static void echange_espace_virtuel(FloatVect&, Operations_echange opt = ECHANGE_EV);
 
   // valeur de retour: nombre d'items sequentiels sur ce proc (nombre de flags a un dans le tableau)
   static int get_sequential_items_flags(const MD_Vector&, ArrOfBit& flags, int line_size = 1);

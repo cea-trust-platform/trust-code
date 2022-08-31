@@ -55,7 +55,7 @@ private:
 };
 
 using VDoubledata = VTRUSTdata<double>;
-//using VFloatdata = VTRUSTdata<float>;
+using VFloatdata = VTRUSTdata<float>;
 using VIntdata = VTRUSTdata<entier>;
 
 template<typename _TYPE_>

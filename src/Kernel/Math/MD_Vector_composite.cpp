@@ -347,17 +347,17 @@ void MD_Vector_composite::process_recv_data(const Echange_EV_Options& opt, Schem
   global_md_.process_recv_data(opt, comm, v);
 }
 
-void MD_Vector_composite::initialize_comm(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& comm, TRUSTVect<float>& v) const
+void MD_Vector_composite::initialize_comm(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& comm, FloatVect& v) const
 {
   global_md_.initialize_comm(opt, comm, v);
 }
 
-void MD_Vector_composite::prepare_send_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& comm, TRUSTVect<float>& v) const
+void MD_Vector_composite::prepare_send_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& comm, FloatVect& v) const
 {
   global_md_.prepare_send_data(opt, comm, v);
 }
 
-void MD_Vector_composite::process_recv_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& comm, TRUSTVect<float>& v) const
+void MD_Vector_composite::process_recv_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& comm, FloatVect& v) const
 {
   global_md_.process_recv_data(opt, comm, v);
 }

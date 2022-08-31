@@ -36,9 +36,9 @@ public:
   void prepare_send_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, DoubleVect&) const override;
   void process_recv_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, DoubleVect&) const override;
 
-  void initialize_comm(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, TRUSTVect<float>&) const override;
-  void prepare_send_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, TRUSTVect<float>&) const override;
-  void process_recv_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, TRUSTVect<float>&) const override;
+  void initialize_comm(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, FloatVect&) const override;
+  void prepare_send_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, FloatVect&) const override;
+  void process_recv_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, FloatVect&) const override;
 
   void initialize_comm(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, IntVect&) const override;
   void prepare_send_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, IntVect&) const override;

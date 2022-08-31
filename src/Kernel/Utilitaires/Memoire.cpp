@@ -461,12 +461,12 @@ Sortie& operator << (Sortie& os, const Memoire& mem)
           }
         else
           {
-            const TRUSTArray<float>* intAF = dynamic_cast<const TRUSTArray<float>*>(&obj);
+            const ArrOfFloat* intAF = dynamic_cast<const ArrOfFloat*>(&obj);
             if(intAF)
               {
-                const TRUSTArray<float>& toto = *intAF;
+                const ArrOfFloat& toto = *intAF;
                 tmp = obj.taille_memoire() + (int) ((toto.size_array()*sizeof(float))/toto.ref_count());
-                os << " TAILLE TRUSTArray<float> : " << tmp<< " octets ";
+                os << " TAILLE ArrOfFloat : " << tmp<< " octets ";
                 os << "\n";
               }
             else

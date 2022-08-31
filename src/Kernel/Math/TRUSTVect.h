@@ -195,8 +195,9 @@ private:
   int line_size_;
 };
 
-using IntVect = TRUSTVect<int>;
 using DoubleVect = TRUSTVect<double>;
+using FloatVect = TRUSTVect<float>;
+using IntVect = TRUSTVect<int>;
 
 /* ********************************** *
  * FONCTIONS NON MEMBRES DE TRUSTVect *

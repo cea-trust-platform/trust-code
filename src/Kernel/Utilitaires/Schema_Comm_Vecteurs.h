@@ -91,7 +91,7 @@ protected:
   static int buffer_locked_;
   // Zones temporaires de lecture/ecriture, renvoyees par get_next... et qui pointent dans buffer_
   static ArrOfDouble tmp_area_double_;
-  static TRUSTArray<float> tmp_area_float_;
+  static ArrOfFloat tmp_area_float_;
   static ArrOfInt tmp_area_int_;
   // Classe contenant des tableaux malloc (pour destruction automatique en fin d'execution)
   static Schema_Comm_Vecteurs_Static_Data sdata_;
@@ -209,7 +209,7 @@ inline ArrOfDouble& Schema_Comm_Vecteurs::get_next_area_template<double>(int pe,
 }
 
 template<>
-inline TRUSTArray<float>& Schema_Comm_Vecteurs::get_next_area_template<float>(int pe, int size)
+inline ArrOfFloat& Schema_Comm_Vecteurs::get_next_area_template<float>(int pe, int size)
 {
   ALIGN_SIZE(sdata_.buf_pointers_[pe], sizeof(float));
   assert(check_next_area(pe, BLOCSIZE_FLOAT(size)));

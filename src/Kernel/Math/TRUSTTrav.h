@@ -140,7 +140,8 @@ private:
   static constexpr _TYPE_ TYPE_ZERO = (_TYPE_)0;
 };
 
-using IntTrav = TRUSTTrav<int>;
 using DoubleTrav = TRUSTTrav<double>;
+using FloatTrav = TRUSTTrav<float>;
+using IntTrav = TRUSTTrav<int>;
 
 #endif /* TRUSTTrav_included */

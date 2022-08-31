@@ -19,7 +19,7 @@
 
 int Schema_Comm_Vecteurs::buffer_locked_;
 ArrOfDouble Schema_Comm_Vecteurs::tmp_area_double_;
-TRUSTArray<float> Schema_Comm_Vecteurs::tmp_area_float_;
+ArrOfFloat Schema_Comm_Vecteurs::tmp_area_float_;
 ArrOfInt Schema_Comm_Vecteurs::tmp_area_int_;
 Schema_Comm_Vecteurs_Static_Data Schema_Comm_Vecteurs::sdata_;
 

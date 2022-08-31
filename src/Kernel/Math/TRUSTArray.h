@@ -291,8 +291,9 @@ private:
   Storage storage_type_;
 };
 
-using ArrOfInt = TRUSTArray<int>;
 using ArrOfDouble = TRUSTArray<double>;
+using ArrOfFloat = TRUSTArray<float>;
+using ArrOfInt = TRUSTArray<int>;
 
 /* *********************************** *
  * FONCTIONS NON MEMBRES DE TRUSTArray *

@@ -284,8 +284,9 @@ private:
   }
 };
 
-using IntTab = TRUSTTab<int>;
 using DoubleTab = TRUSTTab<double>;
+using FloatTab = TRUSTTab<float>;
+using IntTab = TRUSTTab<int>;
 
 /* ********************************* *
  * FONCTIONS NON MEMBRES DE TRUSTTab *

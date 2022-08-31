@@ -18,6 +18,7 @@
 
 #include <TRUSTTab.tpp>
 using DoubleTab = TRUSTTab<double>;
+using FloatTab = TRUSTTab<float>;
 using IntTab = TRUSTTab<entier>;
 
 #endif /* TRUSTTab_included */

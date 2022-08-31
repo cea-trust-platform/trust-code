@@ -44,9 +44,9 @@ public:
   virtual void prepare_send_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, DoubleVect&) const = 0;
   virtual void process_recv_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, DoubleVect&) const = 0;
 
-  virtual void initialize_comm(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, TRUSTVect<float>&) const = 0;
-  virtual void prepare_send_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, TRUSTVect<float>&) const = 0;
-  virtual void process_recv_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, TRUSTVect<float>&) const = 0;
+  virtual void initialize_comm(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, FloatVect&) const = 0;
+  virtual void prepare_send_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, FloatVect&) const = 0;
+  virtual void process_recv_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, FloatVect&) const = 0;
 
   virtual void initialize_comm(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, IntVect&) const = 0;
   virtual void prepare_send_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, IntVect&) const = 0;

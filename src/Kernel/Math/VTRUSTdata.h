@@ -81,8 +81,9 @@ private:
   TRUST_ptr_trav<_TYPE_> * d_ptr_trav_;
 };
 
-typedef VTRUSTdata<double> VDoubledata;
-typedef VTRUSTdata<int> VIntdata;
+using VDoubledata = VTRUSTdata<double>;
+using VFloatdata = VTRUSTdata<float>;
+using VIntdata = VTRUSTdata<int>;
 
 /*! @brief Construit un VTRUSTdata de taille size >= 0
  *

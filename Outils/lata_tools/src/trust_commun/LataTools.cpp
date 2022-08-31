@@ -13,8 +13,6 @@
 *
 *****************************************************************************/
 
-#include <TRUSTArray.h>
-#include <ArrOfFloat.h>
 #include <LataTools.h>
 #include <ArrOfBit.h>
 #include <sstream>

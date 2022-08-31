@@ -19,20 +19,25 @@
 template <typename _TYPE_> class TRUSTArray;
 using ArrOfInt = TRUSTArray<int>;
 using ArrOfDouble = TRUSTArray<double>;
+using ArrOfFloat = TRUSTArray<float>;
 
 template<typename _TYPE_> class TRUSTVect;
 using IntVect = TRUSTVect<int>;
 using DoubleVect = TRUSTVect<double>;
+using FloatVect = TRUSTVect<float>;
 
 template<typename _TYPE_> class TRUSTTab;
 using IntTab = TRUSTTab<int>;
 using DoubleTab = TRUSTTab<double>;
+using FloatTab = TRUSTTab<float>;
 
 template<typename _TYPE_> class TRUSTTrav;
 using IntTrav = TRUSTTrav<int>;
 using DoubleTrav = TRUSTTrav<double>;
+using FloatTrav = TRUSTTrav<float>;
 
 // previous VECT macros :-)
+// TODO : FIXME : Add float typedefs ...
 template<template<class> class _TRUST_TABL_,typename _TYPE_> class TRUST_Vector;
 using Vect_ArrOfDouble = TRUST_Vector<TRUSTArray,double>; // remplace VECT(ArrOfDouble)
 using Vect_ArrOfInt = TRUST_Vector<TRUSTArray,int>; // remplace VECT(ArrOfInt)
