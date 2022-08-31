@@ -197,138 +197,49 @@ public :
   inline double seuil_statio() const ;
   inline int nb_pas_dt_max() const ;
   inline int nb_pas_dt() const ;
-  inline double mode_dt_start() const
-  {
-    return mode_dt_start_;
-  } ;
-  inline int indice_tps_final_atteint() const
-  {
-    return ind_tps_final_atteint;
-  } ;
-  inline int indice_nb_pas_dt_max_atteint() const
-  {
-    return ind_nb_pas_dt_max_atteint;
-  } ;
-  inline int lu() const
-  {
-    return lu_;
-  } ;
-  inline int file_allocation() const
-  {
-    return file_allocation_;
-  } ;
+  inline double mode_dt_start() const { return mode_dt_start_; }
+  inline int indice_tps_final_atteint() const { return ind_tps_final_atteint; }
+  inline int indice_nb_pas_dt_max_atteint() const { return ind_nb_pas_dt_max_atteint; }
+  inline int lu() const { return lu_; }
+  inline int file_allocation() const { return file_allocation_; }
 
-  inline double& set_temps_init()
-  {
-    return tinit_;
-  } ;
-  inline double& set_temps_max()
-  {
-    return tmax_;
-  } ;
-  inline double& set_temps_courant()
-  {
-    return temps_courant_;
-  } ;
-  inline double& set_temps_precedent()
-  {
-    return temps_precedent_;
-  } ;
-  inline int& set_nb_pas_dt()
-  {
-    return nb_pas_dt_;
-  } ;
-  inline int& set_nb_pas_dt_max()
-  {
-    return nb_pas_dt_max_;
-  } ;
-  inline double& set_dt_min()
-  {
-    return dt_min_;
-  } ;
+  inline double& set_temps_init() { return tinit_; }
+  inline double& set_temps_max() { return tmax_; }
+  inline double& set_temps_courant() { return temps_courant_; }
+  inline double& set_temps_precedent() { return temps_precedent_; }
+  inline int& set_nb_pas_dt() { return nb_pas_dt_; }
+  inline int& set_nb_pas_dt_max() { return nb_pas_dt_max_; }
+  inline double& set_dt_min() { return dt_min_; }
   inline double& set_dt_max()
   {
     dt_max_str_ = Nom(); //desactive la fonction dt_max = f(t)
     return dt_max_;
   } ;
-  inline double& set_dt_sauv()
-  {
-    return dt_sauv_;
-  } ;
-  inline double& set_dt_impr()
-  {
-    return dt_impr_;
-  } ;
-  inline int& set_precision_impr()
-  {
-    return precision_impr_;
-  } ;
-  inline double& set_dt()
-  {
-    return dt_;
-  } ;
-  inline double& set_facsec()
-  {
-    return facsec_;
-  } ;
-  inline double& set_seuil_statio()
-  {
-    return seuil_statio_;
-  } ;
+  inline double& set_dt_sauv() { return dt_sauv_; }
+  inline double& set_dt_impr() { return dt_impr_; }
+  inline int& set_precision_impr() { return precision_impr_; }
+  inline double& set_dt() { return dt_; }
+  inline double& set_facsec() { return facsec_; }
+  inline double& set_seuil_statio() { return seuil_statio_; }
   inline int& set_stationnaire_atteint()
   {
     if (stationnaire_atteint_==-1)
       stationnaire_atteint_=1;
     return stationnaire_atteint_;
   } ;
-  inline void set_stationnaires_atteints(bool flag)
-  {
-    stationnaires_atteints_=flag;
-  } ;
-  inline int& set_diffusion_implicite()
-  {
-    return ind_diff_impl_;
-  } ;
-  inline double& set_seuil_diffusion_implicite()
-  {
-    return seuil_diff_impl_;
-  } ;
-  inline int& set_niter_max_diffusion_implicite()
-  {
-    return niter_max_diff_impl_;
-  } ;
-  inline double& set_mode_dt_start()
-  {
-    return mode_dt_start_;
-  } ;
-  inline int& set_indice_tps_final_atteint()
-  {
-    return ind_tps_final_atteint;
-  } ;
-  inline int& set_indice_nb_pas_dt_max_atteint()
-  {
-    return ind_nb_pas_dt_max_atteint;
-  } ;
-  inline int& set_lu()
-  {
-    return lu_;
-  } ;
-  inline const double& residu() const
-  {
-    return residu_ ;
-  };
-  inline double& residu()
-  {
-    return residu_ ;
-  };
-  inline int& schema_impr()
-  {
-    return schema_impr_ ;
-  };
-  inline const int& schema_impr() const
-  {
-    return schema_impr_ ;
-  };
+  inline void set_stationnaires_atteints(bool flag) { stationnaires_atteints_=flag; }
+  inline int& set_diffusion_implicite() { return ind_diff_impl_; }
+  inline double& set_seuil_diffusion_implicite() { return seuil_diff_impl_; }
+  inline int& set_niter_max_diffusion_implicite() { return niter_max_diff_impl_; }
+  inline double& set_mode_dt_start() { return mode_dt_start_; }
+  inline int& set_indice_tps_final_atteint() { return ind_tps_final_atteint; }
+  inline int& set_indice_nb_pas_dt_max_atteint() { return ind_nb_pas_dt_max_atteint; }
+  inline int& set_lu() { return lu_; }
+  inline const double& residu() const { return residu_ ; }
+  inline double& residu() { return residu_ ; }
+  inline int& schema_impr() { return schema_impr_ ; }
+  inline const int& schema_impr() const { return schema_impr_ ; }
+
   virtual void associer_pb(const Probleme_base&);
   Probleme_base& pb_base();
   const Probleme_base& pb_base() const;

@@ -18,4 +18,4 @@
 Implemente_instanciable(Schema_Temps_Inutile,"Schema_Temps_Inutile",Schema_Temps_base);
 
 Sortie& Schema_Temps_Inutile::printOn(Sortie& s) const { return s; }
-Entree& Schema_Temps_Inutile::readOn(Entree& s) { return s; }
+Entree& Schema_Temps_Inutile::readOn(Entree& s) { lu_=1; return s; }
