@@ -9,7 +9,7 @@ define_modules_config()
    echo "source /etc/profile" >> $env
    #
    # Load modules
-   module="craype-x86-rome craype-network-ofi PrgEnv-cray/8.1.0 rocm/rocm craype-accel-amd-gfx908 libfabric"
+   module="craype-x86-rome craype-network-ofi PrgEnv-cray/8.3.3 rocm/5.0.2 craype-accel-amd-gfx908 libfabric/1.13.1"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env

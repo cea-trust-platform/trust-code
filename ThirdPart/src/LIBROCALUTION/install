@@ -17,6 +17,13 @@ rm -r -f build
 mkdir -p build
 cd build
 cmake .. -DSUPPORT_HIP=$SUPPORT_HIP -DROCM_PATH=$ROCM_PATH -DSUPPORT_OMP=OFF -DSUPPORT_MPI=$SUPPORT_MPI -DCMAKE_INSTALL_PREFIX=$TRUST_ROCALUTION || exit -1
+# Bidouille pour ROCM anciens...
+if [ -f $ROCM_PATH/include/rocsparse.h ]
+then
+   echo "Creating links for old Rocm version..."
+   mkdir -p include/rocsparse && ln -s -f $ROCM_PATH/include/rocsparse.h include/rocsparse/rocsparse.h
+   mkdir -p include/rocblas   && ln -s -f $ROCM_PATH/include/rocblas.h   include/rocblas/rocblas.h
+fi
 $TRUST_MAKE
 
 # Install et copie des samples
@@ -33,10 +40,14 @@ echo "`pwd`/benchmark.log created."
 #rm -r -f $TRUST_ROOT/ThirdPart/src/LIBROCALUTION/rocALUTION
 
 # Creation de l'include:
-echo "#pragma GCC diagnostic push
+echo "#ifdef _COMPILE_AVEC_GCC_
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Woverloaded-virtual"
 #include <rocalution.hpp>
 #pragma GCC diagnostic pop
+#else
+#include <rocalution.hpp>
+#endif
 #ifdef ROCALUTION_ROCALUTION_HPP_
 using namespace rocalution;
 #endif" > $TRUST_ROCALUTION/include/rocalution_for_kernel.h
