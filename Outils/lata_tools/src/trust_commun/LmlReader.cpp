@@ -316,11 +316,11 @@ void lml_reader(const char *lmlfilename, const char *data_filename, LataDB &lata
           is >> motlu; // type0
           if (!is.good())
             throw LataDBError(LataDBError::READ_ERROR);
-            {
-              int tmp;
-              is >> tmp;
-              field.size_ = tmp; // long long convert
-            }
+          {
+            int tmp;
+            is >> tmp;
+            field.size_ = tmp; // long long convert
+          }
           if (!is.good())
             throw LataDBError(LataDBError::READ_ERROR);
           // By default, 3 components fields are vectors:
