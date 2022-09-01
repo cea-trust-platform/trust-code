@@ -241,10 +241,11 @@ int Schema_Euler_Implicite::Iterer_Pb(Probleme_base& pb,int compteur, int& ok)
       eqn.zone_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
       present=futur;
 
-      // La ligne suivante realise:
+      // La ligne suivante (commentee) realise:
       // MAJ NS (donc MAJ inc)
       // MAJ modele de turbulence donc k-eps
       //   eqn.inconnue().mettre_a_jour(temps);
+
       //   eqn.inconnue().reculer();
       eqn.inconnue().valeur().Champ_base::changer_temps(temps);
       Cout << finl;
