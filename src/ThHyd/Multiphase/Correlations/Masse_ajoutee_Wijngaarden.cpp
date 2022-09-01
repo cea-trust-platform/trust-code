@@ -13,17 +13,17 @@
 *
 *****************************************************************************/
 
-#include <Masse_ajoutee_Coef_Constant.h>
+#include <Masse_ajoutee_Wijngaarden.h>
 #include <Pb_Multiphase.h>
 
-Implemente_instanciable(Masse_ajoutee_Coef_Constant, "Masse_ajoutee_Coef_Constant", Masse_ajoutee_base);
+Implemente_instanciable(Masse_ajoutee_Wijngaarden, "Masse_ajoutee_Wijngaarden", Masse_ajoutee_base);
 
-Sortie& Masse_ajoutee_Coef_Constant::printOn(Sortie& os) const
+Sortie& Masse_ajoutee_Wijngaarden::printOn(Sortie& os) const
 {
   return os;
 }
 
-Entree& Masse_ajoutee_Coef_Constant::readOn(Entree& is)
+Entree& Masse_ajoutee_Wijngaarden::readOn(Entree& is)
 {
   Param param(que_suis_je());
   param.ajouter("beta", &beta);
@@ -40,28 +40,31 @@ Entree& Masse_ajoutee_Coef_Constant::readOn(Entree& is)
   return is;
 }
 
-void Masse_ajoutee_Coef_Constant::ajouter(const double *alpha, const double *rho, DoubleTab& a_r) const
+void Masse_ajoutee_Wijngaarden::ajouter(const double *alpha, const double *rho, DoubleTab& a_r) const
 {
   int k, N = a_r.dimension(0);
   for (k = 0; k < N; k++)
     if (n_l != k)
       {
-        a_r(k,  k ) += std::min(beta * rho[n_l] * alpha[k], limiter_liquid_ * rho[n_l] * alpha[n_l]) ;
-        a_r(k, n_l) -= std::min(beta * rho[n_l] * alpha[k], limiter_liquid_ * rho[n_l] * alpha[n_l]) ;
-        a_r(n_l,n_l)+= std::min(beta * rho[n_l] * alpha[k], limiter_liquid_ * rho[n_l] * alpha[n_l]) ;
-        a_r(n_l, k) -= std::min(beta * rho[n_l] * alpha[k], limiter_liquid_ * rho[n_l] * alpha[n_l]) ;
+        double coeff_loc = beta * ( 1 + 2.78*alpha[k]) ;
+        a_r(k,  k ) += std::min(coeff_loc * rho[n_l] * alpha[k], limiter_liquid_ * rho[n_l] * alpha[n_l]) ;
+        a_r(k, n_l) -= std::min(coeff_loc * rho[n_l] * alpha[k], limiter_liquid_ * rho[n_l] * alpha[n_l]) ;
+        a_r(n_l,n_l)+= std::min(coeff_loc * rho[n_l] * alpha[k], limiter_liquid_ * rho[n_l] * alpha[n_l]) ;
+        a_r(n_l, k) -= std::min(coeff_loc * rho[n_l] * alpha[k], limiter_liquid_ * rho[n_l] * alpha[n_l]) ;
       }
 }
 
-void Masse_ajoutee_Coef_Constant::ajouter_inj(const double *flux_alpha, const double *alpha,  const double *rho, DoubleTab& f_a_r) const
+void Masse_ajoutee_Wijngaarden::ajouter_inj(const double *flux_alpha, const double *alpha,  const double *rho, DoubleTab& f_a_r) const
 {
   int N = f_a_r.dimension(0);
   for (int k = 0; k < N; k++)
     if (n_l != k)
       {
-        f_a_r(k,  k ) += beta * rho[n_l] * flux_alpha[k];
-        f_a_r(k, n_l) -= 0.;
-        f_a_r(n_l,n_l)+= 0.;
-        f_a_r(n_l, k) -= 0.; //beta * rho[n_l] * flux_alpha[k];
+        double coeff_loc = beta * ( 1 + 2.78*alpha[k]) ;
+        double flux_ma = (alpha[k] < 1.e-4) ? coeff_loc * rho[n_l] * flux_alpha[k] : std::min(coeff_loc * rho[n_l] * flux_alpha[k], limiter_liquid_ * rho[n_l] * alpha[n_l] * flux_alpha[k] / alpha[k]) ;
+        f_a_r(k,  k ) += flux_ma ;
+        f_a_r(k, n_l) -= 0. ;
+        f_a_r(n_l,n_l)+= 0. ;
+        f_a_r(n_l, k) -= 0. ;  // test !
       }
 }

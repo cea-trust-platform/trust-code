@@ -13,35 +13,31 @@
 *
 *****************************************************************************/
 
-#ifndef Masse_ajoutee_base_included
-#define Masse_ajoutee_base_included
+#ifndef Masse_ajoutee_Wijngaarden_included
+#define Masse_ajoutee_Wijngaarden_included
 
+#include <Masse_ajoutee_base.h>
 #include <TRUSTTabs_forward.h>
-#include <Correlation_base.h>
 
-/*! @brief classe Masse_ajoutee_base masse ajoutee de la forme
- *
- *       alpha_k rho_k Dv_k / Dt -> alpha_k rho_k Dv_k / Dt + sum_l ma(k, l) Dv_l / Dt
- *       cette classe definit une fonction calculer avec :
- *     entrees :
- *         alpha[n]  -> taux de presence de la phase n
- *         rho[n]    -> masse volumique de la phase n
- *
- *     entree / sortie :
- *        a_r(k, l)   -> a mettre dans l'equation de qdm (par defaut : alpha(k) * rho(k) pour la phase k)
- *
- *     NB: le alpha donnee a la correlation est le alpha passe : pas de derivee a calculer
- */
+//////////////////////////////////////////////////////////////////////////////
+//
+// .DESCRIPTION
+//    Masse ajoutee de la forme
+//    ma(k, l) = +/- beta * alpha_k * alpha_l * rho_m
+//    avec beta un coefficient constant (0.5 par defaut) et rho_m la masse volumique du melange
+//////////////////////////////////////////////////////////////////////////////
 
-class Masse_ajoutee_base : public Correlation_base
+class Masse_ajoutee_Wijngaarden : public Masse_ajoutee_base
 {
-  Declare_base(Masse_ajoutee_base);
+  Declare_instanciable(Masse_ajoutee_Wijngaarden);
+
 public:
-  virtual void ajouter(    const double *alpha, const double *rho, DoubleTab& a_r) const = 0;
-  virtual void ajouter_inj(const double *flux_alpha, const double *alpha, const double *rho, DoubleTab& f_a_r) const = 0;
+  void ajouter(const double *alpha, const double *rho, DoubleTab& a_r) const override;
+  void ajouter_inj(const double *flux_alpha, const double *alpha, const double *rho, DoubleTab& f_a_r) const override;
 
 protected:
-  double limiter_liquid_ = 0.8 ; // Maximum percentage of the liquid that can be entrained by the bubbles
+  double beta = 0.5;
+  int n_l = -1; //liquid phase
 };
 
 #endif
