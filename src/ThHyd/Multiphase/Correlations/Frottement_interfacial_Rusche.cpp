@@ -13,25 +13,21 @@
 *
 *****************************************************************************/
 
-#include <Frottement_interfacial_Tomiyama.h>
+#include <Frottement_interfacial_Rusche.h>
 #include <Pb_Multiphase.h>
 #include <Milieu_composite.h>
 #include <math.h>
 
-Implemente_instanciable(Frottement_interfacial_Tomiyama, "Frottement_interfacial_Tomiyama", Frottement_interfacial_base);
+Implemente_instanciable(Frottement_interfacial_Rusche, "Frottement_interfacial_Rusche", Frottement_interfacial_base);
 
-Sortie& Frottement_interfacial_Tomiyama::printOn(Sortie& os) const
+Sortie& Frottement_interfacial_Rusche::printOn(Sortie& os) const
 {
   return os;
 }
 
-Entree& Frottement_interfacial_Tomiyama::readOn(Entree& is)
+Entree& Frottement_interfacial_Rusche::readOn(Entree& is)
 {
-  Param param(que_suis_je());
-  param.ajouter("constante_gravitation", &g_);
-  param.ajouter("contamination", &contamination_);
-  param.lire_avec_accolades_depuis(is);
-  if (! ((contamination_==0)|(contamination_==1)|(contamination_==2) )) Process::exit("Frottement_interfacial_Tomiyama : only 3 contamination levels exist : 0,1,2 !");
+  frottement_bulle_seule_.typer_lire(pb_.valeur(), "frottement_interfacial", is);
 
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, pb_.valeur()) ? &ref_cast(Pb_Multiphase, pb_.valeur()) : NULL;
 
@@ -40,43 +36,31 @@ Entree& Frottement_interfacial_Tomiyama::readOn(Entree& is)
     if (pbm->nom_phase(n).debute_par("liquide") && (n_l < 0 || pbm->nom_phase(n).finit_par("continu")))  n_l = n;
   if (n_l < 0) Process::exit(que_suis_je() + " : liquid phase not found!");
 
-  for (int k = 0; k < pbm->nb_phases(); k++)
-    if (k != n_l)
-      if (!(ref_cast(Milieu_composite, pbm->milieu()).has_interface(n_l, k))) Process::exit("Frottement_interfacial_Tomiyama : one must define an interface and have a surface tension !");
-
   return is;
 }
 
-void Frottement_interfacial_Tomiyama::completer()
-{
-  if (!pb_->has_champ("diametre_bulles")) Process::exit("Frottement_interfacial_Tomiyama : there must be a bubble diameter field !");
-}
-
-
-void Frottement_interfacial_Tomiyama::coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
-                                                  const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma, double Dh,
-                                                  const DoubleTab& ndv, const DoubleTab& d_bulles, DoubleTab& coeff) const
+void Frottement_interfacial_Rusche::coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
+                                                const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma, double Dh,
+                                                const DoubleTab& ndv, const DoubleTab& d_bulles, DoubleTab& coeff) const
 {
   int N = ndv.dimension(0);
 
   coeff = 0;
 
+  ref_cast(Frottement_interfacial_base, frottement_bulle_seule_.valeur()).coefficient(alpha, p,        T,
+                                                                                      rho,   mu,       sigma,  Dh,
+                                                                                      ndv,   d_bulles, coeff);
+
+
   for (int k = 0; k < N; k++)
     if (k!=n_l)
       {
+        double correction = std::exp(K1_ * alpha(k)) +  std::pow( alpha(k), K2_) ;
 
-        double Re = rho(n_l) * ndv(n_l,k) * d_bulles(k)/mu(n_l) + 1.e-10;
-        double Eo = g_ * std::abs(rho(n_l)-rho(k)) * d_bulles(k)*d_bulles(k)/sigma(n_l,k);
-        double Cd = -1;
-        if (contamination_==0) Cd = std::max( std::min( 16./Re*(1+0.15*std::pow(Re, 0.687)) , 48./Re )   , 8.*Eo/(3.*(Eo+4.)));
-        if (contamination_==1) Cd = std::max( std::min( 24./Re*(1+0.15*std::pow(Re, 0.687)) , 72./Re )   , 8.*Eo/(3.*(Eo+4.)));
-        if (contamination_==2) Cd = std::max(           24./Re*(1+0.15*std::pow(Re, 0.687))              , 8.*Eo/(3.*(Eo+4.)));
-
-        coeff(k, n_l, 1) = alpha(n_l) < 1.e-6 ? 3./4.*Cd/d_bulles(k) * alpha(k) * rho(n_l) * alpha(n_l) * 1.e6
-                           : 3./4.*Cd/d_bulles(k) * alpha(k) * rho(n_l);
-        coeff(k, n_l, 0) = coeff(k, n_l, 1) * ndv(n_l,k);
-        coeff(n_l, k, 0) = coeff(k, n_l, 0);
-        coeff(n_l, k, 1) = coeff(k, n_l, 1);
+        coeff(k, n_l, 1) *= correction ;
+        coeff(k, n_l, 0) *= correction ;
+        coeff(n_l, k, 0) *= correction ;
+        coeff(n_l, k, 1) *= correction ;
 
       }
 }

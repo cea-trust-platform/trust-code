@@ -55,7 +55,7 @@ void Frottement_interfacial_Simonnet::coefficient(const DoubleTab& alpha, const 
   for (int k = 0; k < N; k++)
     if (k!=n_l)
       {
-        double correction = ( alpha(n_l) < 1.e-6 ) ? 0. :
+        double correction = ( alpha(n_l) < 1.e-6 ) ? alpha(n_l) * std::pow(  std::pow(1.e-6,m_)  +  std::pow(4.8*alpha(k)/1.e-6, m_)     , -2./m_) :
                             alpha(n_l) * std::pow(  std::pow(alpha(n_l),m_)  +  std::pow(4.8*alpha(k)/alpha(n_l), m_)     , -2./m_) ;
 
         coeff(k, n_l, 1) *= correction ;
