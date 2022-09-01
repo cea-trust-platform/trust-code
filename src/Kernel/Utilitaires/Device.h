@@ -12,13 +12,7 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Device.h
-// Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
-// Version:     /main/16
-//
-//////////////////////////////////////////////////////////////////////////////
+
 #ifndef Device_included
 #define Device_included
 
@@ -26,18 +20,19 @@
 #include <ctime>
 #include <string>
 #include <Array_base.h>
-static std::clock_t clock_start;
+#include <Statistiques.h>
+static double clock_start;
 static char* clock_on=NULL;
 inline void start_timer()
 {
   clock_on = getenv ("TRUST_CLOCK_ON");
-  if (clock_on!=NULL) clock_start = std::clock();
+  if (clock_on!=NULL) clock_start = Statistiques::get_time_now();
 }
 inline void end_timer(const std::string& str) // Return in [ms]
 {
   if (clock_on!=NULL)
     {
-      printf("[clock] %7.3f ms %15s\n", 1000*(std::clock() - clock_start) / (double) CLOCKS_PER_SEC ,str.c_str());
+      printf("[clock] %7.3f ms %15s\n", Statistiques::get_time_now() - clock_start,str.c_str());
       fflush(stdout);
     }
 }
@@ -45,7 +40,7 @@ inline void end_timer(const std::string& str, int size) // Return in [ms]
 {
   if (clock_on!=NULL)
     {
-      double ms = 1000*(std::clock() - clock_start) / (double) CLOCKS_PER_SEC;
+      double ms = Statistiques::get_time_now() - clock_start;
       int mo = size/1024/1024;
       printf("[clock] %7.3f ms %15s %6d Mo %4.1f Go/s\n", ms ,str.c_str(), mo, mo/ms);
       fflush(stdout);

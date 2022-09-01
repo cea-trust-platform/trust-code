@@ -892,7 +892,7 @@ then
         # Discard rocALUTION test case
         if [ "$TRUST_ROCALUTION" = "" ]
         then
-           if [ "`grep -I -e rocalution $REP/* 2>/dev/null | grep -v hierarchie.dump`" != "" ]
+           if [ "`grep -i -e rocalution $REP/* 2>/dev/null | grep -v hierarchie.dump`" != "" ]
            then
               echo "Test $i skipped (no rocALUTION)"
               liste_skipped=$liste_skipped" $i"

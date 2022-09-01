@@ -385,7 +385,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
 
       #pragma omp target teams map(to:vit_addr[0:vit.size_array()]) map(tofrom:div_addr[0:div.size_array()])
       {
-        double sigma[3];
+        double sigma[3] {};
         #pragma omp distribute parallel for private(sigma)
         for (int elem = 0; elem < nb_elem_tot; elem++)
           {
