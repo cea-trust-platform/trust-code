@@ -150,8 +150,8 @@ void Fluide_Weakly_Compressible::completer(const Probleme_base& pb)
     }
 
   // XXX : On l'a besoin pour initialiser rho ...
-  if ( !use_saved_data() ) initialiser_pth_for_EOS(pb); // soit à initialiser
-  else pression_eos_.valeurs() = Pth_tab_; // soit à reprendre
+  if ( !use_saved_data() ) initialiser_pth_for_EOS(pb); // soit a initialiser
+  else pression_eos_.valeurs() = Pth_tab_; // soit a reprendre
 
 
   Fluide_Dilatable_base::completer(pb);

@@ -2,6 +2,7 @@
 Developer notes version 1.9.1_beta : Changes since version 1.9.0 :
 -------------------------------------------------------------
 31/08/22 (TRUST) No more DX sources in TRUST. Outils/lata2dx is clean now and renamed as Outils/lata_tools.
+30/08/22 (TRUST) Source documentation can be converted to standard Doxygen format using command: python Outils/triou2doxygen/trust_doc.py <fichier_in> <fichier_out>
 26/07/22 (TRUST) Activating compilation flag -Wconversion in TRUST and baltiks (for 32bits version only)
 -------------------------------------------------------------
 Developer notes version 1.9.0 : Changes since version 1.8.4 :

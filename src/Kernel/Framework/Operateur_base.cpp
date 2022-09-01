@@ -540,7 +540,7 @@ void Operateur_base::calculer_flux(const DoubleTab& inconnue, DoubleTab& flux) c
 void Operateur_base::preparer_calcul(void) { }
 
 // Methode pour tester la methode contribuer_a_avec
-// Test activé par une variable d'environnement
+// Test active par une variable d'environnement
 void Operateur_base::tester_contribuer_a_avec(const DoubleTab& inco, const Matrice_Morse& matrice)
 {
   int test_op=0;

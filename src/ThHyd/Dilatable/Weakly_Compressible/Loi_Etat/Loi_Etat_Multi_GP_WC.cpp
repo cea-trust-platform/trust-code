@@ -261,7 +261,7 @@ void Loi_Etat_Multi_GP_WC::calculer_mu_sur_Sc()
   const int n = tab_mu_sur_Sc.size();
 
   // TODO : FIXME : On a tab_mu_sur_Sc.line_size() = 1 :( :/ :(
-  // BUG : il faut avoir line_size = num_espece_ car on peut avoir D qui varie entre espèce
+  // BUG : il faut avoir line_size = num_espece_ car on peut avoir D qui varie entre espece
 
   if (!sub_type(Champ_Uniforme,mu_sur_Sc.valeur()))
     {
@@ -273,7 +273,7 @@ void Loi_Etat_Multi_GP_WC::calculer_mu_sur_Sc()
       else
         for (int i=0 ; i<n ; i++)
           {
-            // TODO : FIXME : j'ai pris D de l'espèce 1 ...
+            // TODO : FIXME : j'ai pris D de l'espece 1 ...
             tab_mu_sur_Sc(i,0) = tab_rho(i,0) * coeff_diffusion_especes()->valeurs()(0,0);
           }
     }
@@ -304,9 +304,9 @@ void Loi_Etat_Multi_GP_WC::calculer_nu_sur_Sc()
   const int n = tab_nu_sur_Sc.size();
 
   // TODO : FIXME : On a tab_nu_sur_Sc.line_size() = 1 :( :/ :(
-  // BUG : il faut avoir line_size = num_espece_ car on peut avoir D qui varie entre espèce
+  // BUG : il faut avoir line_size = num_espece_ car on peut avoir D qui varie entre espece
 
-  // TODO : FIXME : j'ai pris D de l'espèce 1 ...
+  // TODO : FIXME : j'ai pris D de l'espece 1 ...
   for (int i=0 ; i<n ; i++) tab_nu_sur_Sc(i,0) = coeff_diffusion_especes()->valeurs()(0,0);
 
   double temps_champ = le_fluide->masse_volumique().temps();

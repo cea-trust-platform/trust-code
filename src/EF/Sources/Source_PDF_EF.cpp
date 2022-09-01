@@ -1008,7 +1008,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl()
 
           norme_de_la_normale = sqrt(norme_de_la_normale);
           if ( norme_de_la_normale > eps )
-            for(int j = 0; j < nb_comp; j++) normale(0,j) /= norme_de_la_normale; // là on met la norme unité tout en gardant la direction, on normalise quoi
+            for(int j = 0; j < nb_comp; j++) normale(0,j) /= norme_de_la_normale; // la on met la norme unite tout en gardant la direction, on normalise quoi
           else
             {
               for(int j = 0; j < nb_comp; j++) normale(0,j) = 0.;
@@ -1035,17 +1035,17 @@ void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl()
 
           double nu = (flag ? opdiffu.diffusivite().valeurs()(cells) : opdiffu.diffusivite().valeurs()(0,0));
 
-          // On calcule U_tau pour pouvoir calculer les quantitée adimensionées ( y+ ...)
+          // On calcule U_tau pour pouvoir calculer les quantites adimensionees ( y+ ...)
 
           double u_tau = pow ( norme_v_ref_t , (1/(1+B_pwl)) ) * pow ( A_pwl, (-1/(1+B_pwl)) )  * pow ( y_ref , (-B_pwl/(1+B_pwl)) ) * pow ( nu,(B_pwl/(1+B_pwl)) ) ;
 
           double y_plus = u_tau * d1 / nu;
           // Cerr<<"u_tau  d1  nu ="<<u_tau<<" "<<d1<<" "<<nu<<finl;;
 
-          double y_ref_p = y_ref * u_tau  / nu;  //là on a enfin tout ce qu'il faut pour établir la loi polynomiale pour y r+
+          double y_ref_p = y_ref * u_tau  / nu;  //la on a enfin tout ce qu'il faut pour etablir la loi polynomiale pour y r+
           double test_ref;
 
-          if ( y_ref_p > y_c_p_pwl)  // à partir de là commence l'expression de la loi de paroi polynomiale turbulente
+          if ( y_ref_p > y_c_p_pwl)  // a partir de la commence l'expression de la loi de paroi polynomiale turbulente
             {
               for(int j = 0; j < nb_comp; j++) vitesse_imposee_calculee(i,j) =  v_ref_t(0,j) * pow ( d1 / y_ref , B_pwl )  ;
               test_ref = 1.;
@@ -1075,7 +1075,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl()
               yplus_count += 1;
             }
 
-          double test_;  // ici on effectue le test pour savoir si le noeud de frontière et le point fluide se trouvent dans la même zone: si oui ok, si non on impose la vitesse
+          double test_;  // ici on effectue le test pour savoir si le noeud de frontiere et le point fluide se trouvent dans la meme zone: si oui ok, si non on impose la vitesse
           if (y_plus > y_c_p_pwl )
             {
               test_ = 1.;
