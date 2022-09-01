@@ -30,8 +30,11 @@ public:
   void coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
                    const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma, double Dh,
                    const DoubleTab& ndv, const DoubleTab& d_bulles, DoubleTab& coeff) const override;
-  void completer() override ;
+  void coefficient_CD(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
+                      const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma, double Dh,
+                      const DoubleTab& ndv, const DoubleTab& d_bulles, DoubleTab& coeff) const  override;
 
+  void completer() override ;
 
 protected:
   double g_=9.81;

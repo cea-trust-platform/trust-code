@@ -37,7 +37,8 @@ class Masse_ajoutee_base : public Correlation_base
 {
   Declare_base(Masse_ajoutee_base);
 public:
-  virtual void ajouter(    const double *alpha, const double *rho, DoubleTab& a_r) const = 0;
+  virtual void ajouter(const double *alpha, const double *rho, DoubleTab& a_r  ) const = 0;
+  virtual void coefficient(const double *alpha, const double *rho, DoubleTab& coeff) const {Process::exit(que_suis_je() + " : you must define a coefficient function for added mass !");};
   virtual void ajouter_inj(const double *flux_alpha, const double *alpha, const double *rho, DoubleTab& f_a_r) const = 0;
 
 protected:

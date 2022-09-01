@@ -40,6 +40,10 @@ public:
   virtual void coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
                            const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma, double Dh,
                            const DoubleTab& ndv, const DoubleTab& d_bulles, DoubleTab& coeff) const  = 0;
+
+  virtual void coefficient_CD(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
+                              const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma, double Dh,
+                              const DoubleTab& ndv, const DoubleTab& d_bulles, DoubleTab& coeff) const  {Process::exit(que_suis_je() + " : you must calculate CD in your interfacial drag correlation !");};
 };
 
 #endif

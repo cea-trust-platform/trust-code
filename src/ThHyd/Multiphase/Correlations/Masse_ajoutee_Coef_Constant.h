@@ -31,7 +31,8 @@ class Masse_ajoutee_Coef_Constant : public Masse_ajoutee_base
   Declare_instanciable(Masse_ajoutee_Coef_Constant);
 
 public:
-  void ajouter(const double *alpha, const double *rho, DoubleTab& a_r) const override;
+  void ajouter(const double *alpha, const double *rho, DoubleTab& a_r  ) const override;
+  void coefficient(const double *alpha, const double *rho, DoubleTab& coeff) const override;
   void ajouter_inj(const double *flux_alpha, const double *alpha, const double *rho, DoubleTab& f_a_r) const override;
 
 protected:

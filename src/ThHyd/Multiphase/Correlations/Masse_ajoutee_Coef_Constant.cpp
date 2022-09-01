@@ -53,6 +53,17 @@ void Masse_ajoutee_Coef_Constant::ajouter(const double *alpha, const double *rho
       }
 }
 
+void Masse_ajoutee_Coef_Constant::coefficient(  const double *alpha, const double *rho, DoubleTab& coeff) const
+{
+  int k, N = coeff.dimension(0);
+  for (k = 0; k < N; k++)
+    if (n_l != k)
+      {
+        coeff(k) = (alpha[k]>1.e-6) ? std::min(beta, limiter_liquid_ * alpha[n_l] /  alpha[k]) : beta ;
+      }
+}
+
+
 void Masse_ajoutee_Coef_Constant::ajouter_inj(const double *flux_alpha, const double *alpha,  const double *rho, DoubleTab& f_a_r) const
 {
   int N = f_a_r.dimension(0);
