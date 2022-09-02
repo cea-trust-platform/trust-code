@@ -556,7 +556,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                             out.qpk = &qpk, out.dTf_qpk = &dTf_qpk, out.dTp_qpk = &dTp_qpk, out.qpi = &qpi, out.dTp_qpi = &dTp_qpi, out.dTf_qpi = &dTf_qpi, out.nonlinear = &nonlinear, out.d_nuc = &d_nuc;
                             for (d = 0; d < D; d++)
                               for (n = 0; n < N[p]; n++) nv(n) += std::pow(vit(zone[p].get().nb_faces_tot() + D * e + d, n), 2);
-                            for (n = 0; n < N[p]; n++) nv(n) = sqrt(nv(n));
+                            for (n = 0; n < N[p]; n++) nv(n) = sqrt(nv(n)), Tf(n) = Tefs(0, i_efs(i, j, n));
                             //appel : on n'est implicite qu'en les temperatures
                             corr.qp(in, out);
 
@@ -569,8 +569,8 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                             if ((i_eq = i_eq_flux(k, 0)) >= 0)
                               for (k1 = 0; k1 < N[p]; k1++)
                                 for (k2 = k1 + 1; k2 < N[p]; k2++) //partie constante, derivee en Tp
-                                  for (B(0, t_e, i_eq) -= qpi(k1, k2), A(0, i_efs(i, j, M), i_eq) += dTp_qpi(k1, k2), n = 0; n < N[p]; n++)
-                                    A(0, i_efs(i, j, n), i_eq) += dTf_qpi(k1, k2, n);
+                                  for (B(0, t_e, i_eq) += qpi(k1, k2), A(0, i_efs(i, j, M), i_eq) -= dTp_qpi(k1, k2), n = 0; n < N[p]; n++)
+                                    A(0, i_efs(i, j, n), i_eq) -= dTf_qpi(k1, k2, n);
                             for (k1 = 0; k1 < N[p]; k1++)
                               for (k2 = k1 + 1; k2 < N[p]; k2++) //partie constante, derivee en Tp
                                 for (Qec(i, t_e, k1, k2) += surf_fs[k] * qpi(k1, k2), Qf(i, i_efs(i, j, M), k1, k2) += surf_fs[k] * dTp_qpi(k1, k2), m = 0; m < N[p]; m++)
