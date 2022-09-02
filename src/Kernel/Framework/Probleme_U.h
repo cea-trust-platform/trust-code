@@ -67,7 +67,7 @@ public :
   virtual int getOutputIntValue(const Nom& name) const;
 
   virtual void setInputDoubleValue(const Nom& name, const double val);
-  virtual void post_initialize() { };
+  virtual void post_initialize() { }
 
   // Complements a l'API de Problem
 

@@ -369,7 +369,7 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, int& ok)
   int i, j, bs = 0; //bs : linesize commune des tableaux si > 0, 0 sinon
 
   /* cle pour la memoization */
-  std::vector<intptr_t> key(eqs.size());
+  list_of_eq_ptr_t key(eqs.size());
   for (i = 0; i < eqs.size(); i++) key[i] = (intptr_t) &eqs[i].valeur();
 
   int init = !mbloc.count(key); //premier passage

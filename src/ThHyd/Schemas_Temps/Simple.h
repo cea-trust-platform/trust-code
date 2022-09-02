@@ -71,7 +71,9 @@ public :
   bool iterer_eqs(LIST(REF(Equation_base)) eqs, int compteur, int& ok) override;
 
   /* memoization de iterer_eqs: public pour que la puissance iteree de TRUST-NK puisse la partager */
-  std::map<std::vector<intptr_t>, Matrice_Bloc> mbloc;
+  using list_of_eq_ptr_t = std::vector<intptr_t>;  // a list of pointers to equations.
+  std::map<list_of_eq_ptr_t, Matrice_Bloc> mbloc;
+
 protected :
 
   DoubleTab Ustar_old;        //U* = alpha_ U*_new + (1-alpha_)*U*_old   en pratique alpha = 1
