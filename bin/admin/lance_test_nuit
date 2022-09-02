@@ -3680,7 +3680,7 @@ elif [ ! -f $TRUST_ROOT/build/doc/doxygen*.out ]
 then
    validation_doxygen=0 && echo "TRUST Doxygen KO" && echo `ls -la $TRUST_ROOT/build/doc/doxygen*.*` | mail_ -s\"[lance_test_nuit] Validation of Doxygen documentation NOT\" $TRUST_MAIL
 fi
-[ -s $TRUST_ROOT/build/doc/doxygen*.err ] && validation_doxygen=0 && echo "TRUST Doxygen KO" && cat $TRUST_ROOT/build/doc/doxygen*.err | mail_ -s\"[lance_test_nuit] Validation of TRUST Doxygen documentation KO\" $TRUST_MAIL $TMA_PROJECT_LEADER
+[ "`grep 'Doxygen documentation failed' $TRUST_ROOT/build/doc/doxygen*.err 2>/dev/null`" != "" ] && validation_doxygen=0 && echo "TRUST Doxygen KO" && cat $TRUST_ROOT/build/doc/doxygen*.err | mail_ -s\"[lance_test_nuit] Validation of TRUST Doxygen documentation KO\" $TRUST_MAIL $TMA_PROJECT_LEADER
 for Composant in $Composants
 do
    if [[ "$ComposantsOfficial" = *"$Composant"* ]] || [[ "$ComposantsLns" = *"$Composant"* ]] # Test si Composant n est pas dans la liste des composants Beta
@@ -3699,7 +3699,7 @@ do
             validation_doxygen=0 && echo "$Composant Doxygen KO" && echo `ls -la $TRUST_ROOT/../Composants/$Composant/build/doxygen*.*` | mail_ -s\"[lance_test_nuit] Validation of $Composant Doxygen documentation NOT\" $TRUST_MAIL
          fi
          BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
-         [ -s $TRUST_ROOT/../Composants/$Composant/build/doxygen*.err ] && validation_doxygen=0 && echo "$Composant Doxygen KO" && cat $TRUST_ROOT/../Composants/$Composant/build/doxygen*.err | mail_ -s\"[lance_test_nuit] Validation of $Composant Doxygen documentation KO\" $TRUST_MAIL $TMA_PROJECT_LEADER ${!BALTIK_PROJECT_LEADER}
+         [ "`grep 'Doxygen documentation failed' $TRUST_ROOT/../Composants/$Composant/build/doxygen*.err 2>/dev/null`" != "" ] && validation_doxygen=0 && echo "$Composant Doxygen KO" && cat $TRUST_ROOT/../Composants/$Composant/build/doxygen*.err | mail_ -s\"[lance_test_nuit] Validation of $Composant Doxygen documentation KO\" $TRUST_MAIL $TMA_PROJECT_LEADER ${!BALTIK_PROJECT_LEADER}
       fi
    fi
 done

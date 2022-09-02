@@ -100,7 +100,7 @@ void LireMED::lire_geom( Nom& nom_fic,Domaine& dom,const Nom& nom_dom,const Nom&
 // XD attr family_names_from_group_names chaine(into=["family_names_from_group_names"]) family_names_from_group_names 1 The option family_names_from_group_names uses the group names instead of the family names to detect the boundaries into a MED mesh (useful when trying to read a MED mesh file from Gmsh tool which can now read and write MED meshes).
 // XD attr short_family_names chaine(into=["short_family_names"]) short_family_names 1 The option short_family_names is useful to suppress FAM_-*_ from the boundary names of the MED meshes.
 // XD attr nom_dom ref_domaine nom_dom 0 corresponds to the domain name
-// XD attr nom_dom_med chaine nom_dom_med 0 name of the mesh in med file
+// XD attr nom_dom_med chaine nom_dom_med 0 name of the mesh in med file. If keyword --any-- specified, the first mesh will be read.
 // XD attr file chaine file 0 corresponds to the file (written in format MED) containing the mesh
 Entree& LireMED::interpreter_(Entree& is)
 {

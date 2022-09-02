@@ -164,7 +164,12 @@ do
          [ ! -d ${Build} ] && echo Creating ${Build} directory && mkdir -p ${Build}
          echo $ECHO_OPTS "Running doxygen `$doxygen --version` (output in $Build/doxygen$GENERATE_TAGFILE.out|err)... \c" | tee $Build/doxygen$GENERATE_TAGFILE.out
          $doxygen $TRUST_DOXYFILE 1>>$Build/doxygen$GENERATE_TAGFILE.out 2>$Build/doxygen$GENERATE_TAGFILE.err
-         [ $? != 0 ] && echo "Error! See $Build/doxygen$GENERATE_TAGFILE.err" && exit -1
+         if [ $? != 0 ]
+         then
+            echo "Error! See $Build/doxygen$GENERATE_TAGFILE.err"
+            echo "Doxygen documentation failed" >>$Build/doxygen$GENERATE_TAGFILE.err
+            exit -1
+         fi
          if [ "$GENERATE_TAGFILE" = 1 ]
          then
             echo "OK. Project tag is created: $PROJECT_TAG"
