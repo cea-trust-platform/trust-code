@@ -121,5 +121,5 @@ private:
 
 }
 
-#include <TablePrinter.tpp.h>
+#include <TablePrinter.tpp>
 #endif
