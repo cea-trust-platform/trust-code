@@ -1,6 +1,8 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.1_beta : Enhancements, modifications and corrected bugs since version 1.9.0 :
 --------------------------------------------------------------------------------------------------
+02/09/22 (TRUST)  New option  : New domaines keyword added to Create_domain_from_sous_zone which allows to create multiple domains at once.
+02/09/22 (TRUST)  New option  : --any-- keyword added to LireMED (as the mesh name) in order to read automatically the first mesh found in the med file.
 31/08/22 (TRUST)  Change      : Previous lata2dx exec is now called lata_analyzer. It is built in Outils/lata_tools (previously Outils/lata2dx).
 31/08/22 (TRUST)  Change      : TRUST do not support anymore DX visualizations.
 08/08/22 (TRUST)  New option  : Add reduce_ram option for some PETSc direct solvers (MUMPS) to suppress preventive RAM increase.
