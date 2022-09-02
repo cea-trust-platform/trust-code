@@ -87,6 +87,7 @@ void lml_reader(const char *lmlfilename, const char *data_filename, LataDB &lata
   entier file_offset = 0;
   LataDBField sommets;
   FloatTab nodes;
+  int tmp; // tmp variable
   while (1)
     {
       const entier tstep = lata_db.nb_timesteps() - 1;
@@ -105,11 +106,9 @@ void lml_reader(const char *lmlfilename, const char *data_filename, LataDB &lata
           geom.name_ = ((const char*) mottmp) + 7; // retire GRILLE_ du nom
           Journal(lmllevel) << "lml_reader: GRILLE " << geom.name_ << endl;
           is >> sommets.nb_comp_;
-            {
-              int tmp;
-              is >> tmp;
-              sommets.size_ = tmp; // size_ est long long...
-            }
+          is >> tmp;
+          sommets.size_ = tmp; // size_ est long long...
+
           if (!is.good())
             throw LataDBError(LataDBError::READ_ERROR);
           sommets.geometry_ = geom.name_;
@@ -155,11 +154,8 @@ void lml_reader(const char *lmlfilename, const char *data_filename, LataDB &lata
               Journal() << "Error reading TOPOLOGIE: expected MAILLE" << endl;
               throw;
             }
-            {
-              int tmp;
-              is >> tmp; // size_ est long long...
-              elements.size_ = tmp;
-            }
+          is >> tmp; // size_ est long long...
+          elements.size_ = tmp;
           is >> motlu;
           int borne_index_min = 0;
           if (motlu == "TETRA4")
@@ -316,11 +312,8 @@ void lml_reader(const char *lmlfilename, const char *data_filename, LataDB &lata
           is >> motlu; // type0
           if (!is.good())
             throw LataDBError(LataDBError::READ_ERROR);
-          {
-            int tmp;
-            is >> tmp;
-            field.size_ = tmp; // long long convert
-          }
+          is >> tmp;
+          field.size_ = tmp; // long long convert
           if (!is.good())
             throw LataDBError(LataDBError::READ_ERROR);
           // By default, 3 components fields are vectors:
