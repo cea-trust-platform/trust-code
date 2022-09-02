@@ -19,7 +19,7 @@
 // Journal level
 #define verb_level 4
 
-void build_geometry_(OperatorDualMesh &op, const DomainUnstructured &src, LataDeriv<Domain> &dest_domain)
+void build_geometry_(OperatorDualMesh& op, const DomainUnstructured& src, LataDeriv<Domain>& dest_domain)
 {
   Journal(verb_level) << "OperatorDualMesh geometry(unstructured) " << src.id_.name_ << endl;
   if (!src.faces_ok())
@@ -37,7 +37,7 @@ void build_geometry_(OperatorDualMesh &op, const DomainUnstructured &src, LataDe
   const entier nb_elem = src.elem_faces_.dimension(0); // Not elements_, in case elem_faces_ has no virtual data.
   const entier dim = src.dimension();
 
-  DomainUnstructured &dest = dest_domain.instancie(DomainUnstructured);
+  DomainUnstructured& dest = dest_domain.instancie(DomainUnstructured);
   dest.id_ = src.id_;
   dest.id_.name_ += "_dual";
   dest.elt_type_ = src.elt_type_;
@@ -75,7 +75,7 @@ void build_geometry_(OperatorDualMesh &op, const DomainUnstructured &src, LataDe
 // (destination field is located at the elements. the value for an element
 //  is the value associated to the adjacent face of the source domain).
 template<class TabType>
-void build_field_(OperatorDualMesh &op, const DomainUnstructured &src_domain, const DomainUnstructured &dest_domain, const Field<TabType> &src, Field<TabType> &dest)
+void build_field_(OperatorDualMesh& op, const DomainUnstructured& src_domain, const DomainUnstructured& dest_domain, const Field<TabType>& src, Field<TabType>& dest)
 {
   Journal(verb_level) << "OperatorDualMesh field(unstructured) " << src.id_.uname_ << endl;
   dest.component_names_ = src.component_names_;
@@ -98,7 +98,7 @@ void build_field_(OperatorDualMesh &op, const DomainUnstructured &src_domain, co
     }
 }
 
-void build_geometry_(OperatorDualMesh &op, const DomainIJK &src, LataDeriv<Domain> &dest_domain)
+void build_geometry_(OperatorDualMesh& op, const DomainIJK& src, LataDeriv<Domain>& dest_domain)
 {
   Journal(verb_level) << "OperatorDualMesh geometry(ijk) " << src.id_.name_ << endl;
   if (src.elt_type_ != Domain::quadri && src.elt_type_ != Domain::hexa)
@@ -107,13 +107,13 @@ void build_geometry_(OperatorDualMesh &op, const DomainIJK &src, LataDeriv<Domai
       throw;
     }
 
-  DomainIJK &dest = dest_domain.instancie(DomainIJK);
+  DomainIJK& dest = dest_domain.instancie(DomainIJK);
   dest.elt_type_ = src.elt_type_;
   const entier dim = src.dimension();
   for (entier i_dim = 0; i_dim < dim; i_dim++)
     {
-      const ArrOfFloat &c1 = src.coord_[i_dim];
-      ArrOfFloat &c2 = dest.coord_.add(ArrOfFloat());
+      const ArrOfFloat& c1 = src.coord_[i_dim];
+      ArrOfFloat& c2 = dest.coord_.add(ArrOfFloat());
       const int n = c1.size_array() - 1;
       c2.resize_array(n * 2 + 1);
       for (int i = 0; i < n; i++)
@@ -158,7 +158,7 @@ void build_geometry_(OperatorDualMesh &op, const DomainIJK &src, LataDeriv<Domai
 #define IJK(i,j,k) (k*nj_ni_src + j*ni_src + i)
 
 template<class TabType>
-void build_field_(OperatorDualMesh &op, const DomainIJK &src_domain, const DomainIJK &dest_domain, const Field<TabType> &src, Field<TabType> &dest)
+void build_field_(OperatorDualMesh& op, const DomainIJK& src_domain, const DomainIJK& dest_domain, const Field<TabType>& src, Field<TabType>& dest)
 {
   Journal(verb_level) << "OperatorDualMesh field(ijk) " << src.id_.uname_ << endl;
   dest.component_names_ = src.component_names_;
@@ -198,12 +198,12 @@ void build_field_(OperatorDualMesh &op, const DomainIJK &src_domain, const Domai
 
 #undef IJK
 
-void OperatorDualMesh::build_geometry(const Domain &src_domain, LataDeriv<Domain> &dest)
+void OperatorDualMesh::build_geometry(const Domain& src_domain, LataDeriv<Domain>& dest)
 {
   apply_geometry(*this, src_domain, dest);
 }
 
-void OperatorDualMesh::build_field(const Domain &src_domain, const LataField_base &src_field, const Domain &dest_domain, LataDeriv<LataField_base> &dest)
+void OperatorDualMesh::build_field(const Domain& src_domain, const LataField_base& src_field, const Domain& dest_domain, LataDeriv<LataField_base>& dest)
 {
   if (src_field.localisation_ != LataField_base::FACES)
     {

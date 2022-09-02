@@ -33,7 +33,7 @@
 static const entier cache_info_level = 5;
 static const entier filter_info_level = 4;
 
-entier LataOptions::read_int_opt(const Nom &s)
+entier LataOptions::read_int_opt(const Nom& s)
 {
   const char *ptr = strstr(s, "=");
   if (!ptr)
@@ -49,7 +49,7 @@ entier LataOptions::read_int_opt(const Nom &s)
   return x;
 }
 
-double LataOptions::read_float_opt(const Nom &s)
+double LataOptions::read_float_opt(const Nom& s)
 {
   const char *ptr = strstr(s, "=");
   if (!ptr)
@@ -65,7 +65,7 @@ double LataOptions::read_float_opt(const Nom &s)
   return x;
 }
 
-Nom LataOptions::read_string_opt(const Nom &s)
+Nom LataOptions::read_string_opt(const Nom& s)
 {
   const char *ptr = strstr(s, "=");
   if (!ptr)
@@ -74,7 +74,7 @@ Nom LataOptions::read_string_opt(const Nom &s)
     return Nom(ptr + 1);
 }
 
-Noms extract_list(const Nom &n)
+Noms extract_list(const Nom& n)
 {
   Noms liste;
   if (n == "")
@@ -152,7 +152,7 @@ void LataOptions::describe()
   user_fields_options_.print_help_option();
 }
 
-entier LataOptions::parse_option(const Nom &s)
+entier LataOptions::parse_option(const Nom& s)
 {
   if (s.debute_par("verbosity="))
     {
@@ -250,7 +250,7 @@ entier LataOptions::parse_option(const Nom &s)
 }
 
 void LataFilterCache::set_cache_properties(entier clear_on_tstep_change, BigEntier mem_limit)
-{ 
+{
   clear_cache_on_tstep_change_ = clear_on_tstep_change;
   cache_memory_limit_ = mem_limit;
 }
@@ -262,13 +262,13 @@ void LataFilterCache::set_cache_properties(entier clear_on_tstep_change, BigEnti
 //  been used recently.
 //  The entry must be released by release_item() when we are finished working
 //  with it.
-LataDeriv<LataObject>& LataFilterCache::get_item_(const Nom &id, entier tstep)
+LataDeriv<LataObject>& LataFilterCache::get_item_(const Nom& id, entier tstep)
 {
   entier i;
   const entier n = data_.size();
   for (i = 0; i < n; i++)
     {
-      const DataCacheItem &item = data_[i];
+      const DataCacheItem& item = data_[i];
       if (item.id_ == id && item.tstep_ == tstep)
         break;
     }
@@ -281,7 +281,7 @@ LataDeriv<LataObject>& LataFilterCache::get_item_(const Nom &id, entier tstep)
       // No empty slot: create a new slot:
       if (i == n)
         data_.add();
-      DataCacheItem &item = data_[i];
+      DataCacheItem& item = data_[i];
       item.id_ = id;
       item.tstep_ = tstep;
       item.lock_ = 0;
@@ -292,7 +292,7 @@ LataDeriv<LataObject>& LataFilterCache::get_item_(const Nom &id, entier tstep)
       Journal(cache_info_level) << "LataFilterCache<C>::get " << id << " (existing cache entry " << i << ")." << endl;
     }
   // Mark item and lock it:
-  DataCacheItem &item = data_[i];
+  DataCacheItem& item = data_[i];
   item.last_access_time_ = cache_data_access_count_++;
   item.lock_++;
   return item.item_;
@@ -301,14 +301,14 @@ LataDeriv<LataObject>& LataFilterCache::get_item_(const Nom &id, entier tstep)
 // Description: tells that if needed the item can be deleted from cache
 //  (there is no reference to it anymore outside of the cache).
 //  We update the memory size of this item here.
-void LataFilterCache::release_item(const Nom &id)
+void LataFilterCache::release_item(const Nom& id)
 {
   Journal(cache_info_level) << "LataFilterCache::release_item " << id << endl;
   const entier n = data_.size();
   entier i;
   for (i = 0; i < n; i++)
     {
-      const DataCacheItem &item = data_[i];
+      const DataCacheItem& item = data_[i];
       if (item.id_ == id)
         break;
     }
@@ -341,7 +341,7 @@ void LataFilterCache::cleanup_cache(entier tstep_to_keep)
       const entier n = data_.size();
       for (entier i = 0; i < n; i++)
         {
-          DataCacheItem &item = data_[i];
+          DataCacheItem& item = data_[i];
           if (item.id_ != "??")
             {
               if (item.tstep_ == 0 || item.tstep_ == tstep_to_keep)
@@ -374,7 +374,7 @@ void LataFilterCache::cleanup_cache(entier tstep_to_keep)
           BigEntier oldest_time = cache_data_access_count_;
           for (entier i = 0; i < n; i++)
             {
-              const DataCacheItem &item = data_[i];
+              const DataCacheItem& item = data_[i];
               if (item.id_ != "??")
                 {
                   total_memsize += item.memory_size_;
@@ -388,7 +388,7 @@ void LataFilterCache::cleanup_cache(entier tstep_to_keep)
           if (oldest < 0 || total_memsize < cache_memory_limit_)
             break;
 
-          DataCacheItem &item = data_[oldest];
+          DataCacheItem& item = data_[oldest];
           Journal(cache_info_level) << " deleting item " << item.id_ << " " << item.tstep_ << endl;
           item.item_.reset();
           item.id_ = "??";
@@ -399,7 +399,7 @@ void LataFilterCache::cleanup_cache(entier tstep_to_keep)
 }
 
 // Description: Cleanup everything, associate the lata_db and fills metadata information.
-void LataFilter::initialize(const LataOptions &opt, const LataDB &lata_db)
+void LataFilter::initialize(const LataOptions& opt, const LataDB& lata_db)
 {
   opt_ = opt;
   data_cache_.reset();
@@ -435,8 +435,8 @@ double LataFilter::get_timestep(entier i) const
     return lataDB().get_time(i);
 }
 
-static void add_fields_to_metadata_list(const LataDB &lataDB, const Nom &lata_geom, const Nom &dest_geom, const Nom &options, entier dim, LataVector<LataFieldMetaData> &fields_data,
-                                        const Motcle &source, const Nom &source_domain)
+static void add_fields_to_metadata_list(const LataDB& lataDB, const Nom& lata_geom, const Nom& dest_geom, const Nom& options, entier dim, LataVector<LataFieldMetaData>& fields_data,
+                                        const Motcle& source, const Nom& source_domain)
 {
   if (lataDB.nb_timesteps() < 2)
     return;
@@ -445,7 +445,7 @@ static void add_fields_to_metadata_list(const LataDB &lataDB, const Nom &lata_ge
   const entier nb_fields = lata_fields.size();
   for (entier i_field = 0; i_field < nb_fields; i_field++)
     {
-      const LataDBField &lata_field = lataDB.get_field(1, lata_fields[i_field], LataDB::FIRST_AND_CURRENT);
+      const LataDBField& lata_field = lataDB.get_field(1, lata_fields[i_field], LataDB::FIRST_AND_CURRENT);
       LataField_base::Elem_som loc = LataField_base::localisation_from_string(lata_field.localisation_);
 
       // Hidden special fields
@@ -497,7 +497,7 @@ static void add_fields_to_metadata_list(const LataDB &lataDB, const Nom &lata_ge
 // Process the content of the source LataDB structure and builds the metadata for
 //  all geometries and fields that the filter can export (depending on options,
 //  for example, provide dual mesh geometry and fields only if dualmesh option is on).
-void LataFilter::get_all_metadata(LataVector<LataGeometryMetaData> &geoms_data, LataVector<LataFieldMetaData> &fields_data)
+void LataFilter::get_all_metadata(LataVector<LataGeometryMetaData>& geoms_data, LataVector<LataFieldMetaData>& fields_data)
 {
   geoms_data.reset();
   fields_data.reset();
@@ -510,8 +510,8 @@ void LataFilter::get_all_metadata(LataVector<LataGeometryMetaData> &geoms_data, 
   for (entier i_geom = 0; i_geom < nb_geoms; i_geom++)
     {
       // Name of the current geometry (from lataDB)
-      const Nom &lata_geom_name = lata_geoms_names[i_geom];
-      const LataDBGeometry &lata_geom = lataDB().get_geometry(current_tstep, lata_geom_name, LataDB::FIRST_AND_CURRENT);
+      const Nom& lata_geom_name = lata_geoms_names[i_geom];
+      const LataDBGeometry& lata_geom = lataDB().get_geometry(current_tstep, lata_geom_name, LataDB::FIRST_AND_CURRENT);
       // Query properties from LataDB:
       // Is it a dynamic mesh ?
       const entier dynamic = lata_geom.timestep_ > 0;
@@ -522,9 +522,9 @@ void LataFilter::get_all_metadata(LataVector<LataGeometryMetaData> &geoms_data, 
 
       // Do we have faces ?
       const entier have_faces =
-          domain_already_ijk
-              || (lataDB().field_exists(current_tstep, lata_geom_name, "FACES", LataDB::FIRST_AND_CURRENT)
-                  && lataDB().field_exists(current_tstep, lata_geom_name, "ELEM_FACES", LataDB::FIRST_AND_CURRENT));
+        domain_already_ijk
+        || (lataDB().field_exists(current_tstep, lata_geom_name, "FACES", LataDB::FIRST_AND_CURRENT)
+            && lataDB().field_exists(current_tstep, lata_geom_name, "ELEM_FACES", LataDB::FIRST_AND_CURRENT));
 
       entier dim = 1;
       // Query for number of blocks in the lata file:
@@ -541,7 +541,7 @@ void LataFilter::get_all_metadata(LataVector<LataGeometryMetaData> &geoms_data, 
             nom_sommets = "SOMMETS_IJK_J";
           else
             nom_sommets = "SOMMETS_IJK_K";
-          const LataDBField &coord = lataDB().get_field(current_tstep, lata_geom_name, nom_sommets, "", LataDB::FIRST_AND_CURRENT);
+          const LataDBField& coord = lataDB().get_field(current_tstep, lata_geom_name, nom_sommets, "", LataDB::FIRST_AND_CURRENT);
           // Nombre d'elements dans la direction du decoupage parallele:
           const entier nelem = (entier) (coord.size_ - 1);
           // Si les tranches sont trop petites diminuer le nombre de blocs
@@ -575,7 +575,7 @@ void LataFilter::get_all_metadata(LataVector<LataGeometryMetaData> &geoms_data, 
       int m = data.displayed_name_.find(separ);
       if (m > 0)
         {
-          const Nom &name = data.displayed_name_;
+          const Nom& name = data.displayed_name_;
           // on remplace boundaries_ par boundaries/
           const char *jj = name;
           Nom disp(name);
@@ -597,7 +597,7 @@ void LataFilter::get_all_metadata(LataVector<LataGeometryMetaData> &geoms_data, 
       add_fields_to_metadata_list(lataDB(), lata_geom_name, data.internal_name_, "from_elem,from_som,from_faces", dim, fields_data, "latadb", "??");
       // It is regularizable ?
       entier regularizable = (((element_type == Domain::quadri) && (data.dimension_ == 2)) || ((element_type == Domain::hexa) && (data.dimension_ == 3))) && (lata_geom.elem_type_ != "HEXAEDRE_AXI")
-          && (lata_geom.elem_type_ != "RECTANGLE_AXI") && (lata_geom.elem_type_ != "QUADRANGLE") && (lata_geom.elem_type_ != "QUADRANGLE_3D");
+                             && (lata_geom.elem_type_ != "RECTANGLE_AXI") && (lata_geom.elem_type_ != "QUADRANGLE") && (lata_geom.elem_type_ != "QUADRANGLE_3D");
       Journal(filter_info_level) << " metadata: geometry " << lata_geom_name << " element type says regularizable=" << regularizable << endl;
       // It is dualizable ?
       entier dualizable = (regularizable && opt_.regularize) || element_type == Domain::triangle || element_type == Domain::tetra;
@@ -774,7 +774,7 @@ const LataGeometryMetaData& LataFilter::get_geometry_metadata(const char *geomet
 
 // Description: fill "data" for the requested "geometry/field". "geometry"  and "field" must be names
 //  returned by get_exportable_geometry_names() and get_exportable_field_names()
-const LataFieldMetaData& LataFilter::get_field_metadata(const Field_UName &uname) const
+const LataFieldMetaData& LataFilter::get_field_metadata(const Field_UName& uname) const
 {
   for (entier i = 0; i < fields_metadata_.size(); i++)
     if (fields_metadata_[i].uname_ == uname)
@@ -785,7 +785,7 @@ const LataFieldMetaData& LataFilter::get_field_metadata(const Field_UName &uname
   return fields_metadata_[0];
 }
 
-// Description: 
+// Description:
 //  Returns a reference to the requested geometry.
 //  If the geometry is not found at the requested timestep, it
 //  is seached in the first timestep.
@@ -794,20 +794,20 @@ const LataFieldMetaData& LataFilter::get_field_metadata(const Field_UName &uname
 //  The reference is valid until the user calls release_geometry()
 //  The user MUST call release_geometry() to allow the data to be
 //   removed from the data cache.
-const Domain& LataFilter::get_geometry(const Domain_Id &id)
+const Domain& LataFilter::get_geometry(const Domain_Id& id)
 {
   Journal(filter_info_level) << "LataFilter::get_geometry " << id.name_ << " time=" << id.timestep_ << " bloc=" << id.block_ << endl;
   data_cache_.cleanup_cache(id.timestep_);
 
   Domain_Id requested_id(id);
   // Get the real timestep where this domain is stored:
-  const LataGeometryMetaData &geom_metadata = get_geometry_metadata(id.name_);
+  const LataGeometryMetaData& geom_metadata = get_geometry_metadata(id.name_);
   if (geom_metadata.dynamic_)
     requested_id.timestep_ = id.timestep_;
   else
     requested_id.timestep_ = 0;
 
-  LataDeriv<Domain> &dom_ptr = get_cached_domain(requested_id);
+  LataDeriv<Domain>& dom_ptr = get_cached_domain(requested_id);
   if (!dom_ptr.non_nul())
     {
       if (geom_metadata.source_ == "latadb")
@@ -819,7 +819,7 @@ const Domain& LataFilter::get_geometry(const Domain_Id &id)
           // Is it a structured or unstructured mesh ?
           if (lataDB().field_exists(requested_id.timestep_, requested_id.name_, "SOMMETS"))
             {
-              DomainUnstructured &dom = dom_ptr.instancie(DomainUnstructured);
+              DomainUnstructured& dom = dom_ptr.instancie(DomainUnstructured);
 
               if (opt_.reconnect)
                 {
@@ -847,7 +847,7 @@ const Domain& LataFilter::get_geometry(const Domain_Id &id)
           else
             {
               // Structured ijk:
-              DomainIJK &dom = dom_ptr.instancie(DomainIJK);
+              DomainIJK& dom = dom_ptr.instancie(DomainIJK);
               if (opt_.reconnect || requested_id.block_ < 0)
                 {
                   dom.fill_domain_from_lataDB(lataDB(), requested_id, 1 /* parallel splitting */, 0 /* no virtual elements */);
@@ -862,8 +862,8 @@ const Domain& LataFilter::get_geometry(const Domain_Id &id)
         }
       else if (geom_metadata.source_.debute_par("OPERATOR"))
         {
-          const Domain &src_domain = get_geometry(Domain_Id(geom_metadata.source_domain_, requested_id.timestep_, requested_id.block_));
-          Operator &op = get_set_operator(requested_id);
+          const Domain& src_domain = get_geometry(Domain_Id(geom_metadata.source_domain_, requested_id.timestep_, requested_id.block_));
+          Operator& op = get_set_operator(requested_id);
           op.build_geometry(src_domain, dom_ptr);
           dom_ptr.valeur().id_ = requested_id;
           release_cached_operator(requested_id);
@@ -879,15 +879,15 @@ const Domain& LataFilter::get_geometry(const Domain_Id &id)
   return dom_ptr.valeur();
 }
 
-Operator& LataFilter::get_set_operator(const Domain_Id &id)
+Operator& LataFilter::get_set_operator(const Domain_Id& id)
 {
-  LataDeriv<Operator> &op_ptr = get_cached_operator(id);
+  LataDeriv<Operator>& op_ptr = get_cached_operator(id);
   if (!op_ptr.non_nul())
     {
       // Operator not in the cache ? Build it:
       if (id.name_.finit_par("_IJK"))
         {
-          OperatorRegularize &op = op_ptr.instancie(OperatorRegularize);
+          OperatorRegularize& op = op_ptr.instancie(OperatorRegularize);
           op.set_tolerance(opt_.regularize_tolerance);
           op.set_extend_layer(opt_.extend_domain);
         }
@@ -916,31 +916,31 @@ Operator& LataFilter::get_set_operator(const Domain_Id &id)
 //  already in the cache. You MUST call release_field() on the returned field
 //  when you don't need it any more...
 //  See also class Field_Id
-const LataField_base& LataFilter::get_field(const Field_Id &id)
+const LataField_base& LataFilter::get_field(const Field_Id& id)
 {
   Journal(filter_info_level) << "LataFilter::get_field " << id.uname_ << " time=" << id.timestep_ << " bloc=" << id.block_ << endl;
 
   data_cache_.cleanup_cache(id.timestep_);
 
-  const LataFieldMetaData &field_metadata = get_field_metadata(id.uname_);
+  const LataFieldMetaData& field_metadata = get_field_metadata(id.uname_);
 
-  LataDeriv<LataField_base> &field_ptr = get_cached_field(id);
+  LataDeriv<LataField_base>& field_ptr = get_cached_field(id);
   if (!field_ptr.non_nul())
     {
       if (field_metadata.source_ == "latadb")
         {
           // Request for a native field : load it from lataDB
-          const Domain &dom = get_geometry(id);
+          const Domain& dom = get_geometry(id);
           dom.fill_field_from_lataDB(lataDB(), id, field_ptr);
           release_geometry(dom);
         }
       else if (field_metadata.source_.debute_par("OPERATOR"))
         {
           const Field_Id src_id(field_metadata.source_field_, id.timestep_, id.block_);
-          const Domain &src_domain = get_geometry(src_id);
-          const LataField_base &src_field = get_field(src_id);
-          const Domain &dest_domain = get_geometry(id);
-          Operator &op = get_set_operator(dest_domain.id_);
+          const Domain& src_domain = get_geometry(src_id);
+          const LataField_base& src_field = get_field(src_id);
+          const Domain& dest_domain = get_geometry(id);
+          Operator& op = get_set_operator(dest_domain.id_);
           op.build_field(src_domain, src_field, dest_domain, field_ptr);
           field_ptr.valeur().id_ = Field_Id(field_metadata.uname_, src_field.id_.timestep_, src_field.id_.block_);
           release_field(src_field);
@@ -950,7 +950,7 @@ const LataField_base& LataFilter::get_field(const Field_Id &id)
         }
       else if (field_metadata.source_ == "user_fields")
         {
-          Field<FloatTab> &f = field_ptr.instancie(Field<FloatTab> );
+          Field<FloatTab>& f = field_ptr.instancie(Field<FloatTab> );
           f = user_fields_.valeur().get_field(id);
           // Force field id to correct value:
           f.id_ = id;
@@ -967,30 +967,31 @@ const LataField_base& LataFilter::get_field(const Field_Id &id)
 //  already in the cache. You MUST call release_field() on the returned field
 //  when you don't need it any more...
 //  See also class Field_Id
-const FieldFloat& LataFilter::get_float_field(const Field_Id &id)
+const FieldFloat& LataFilter::get_float_field(const Field_Id& id)
 {
-  const LataField_base &field = get_field(id);
+  const LataField_base& field = get_field(id);
   const FieldFloat *float_field_ptr = dynamic_cast<const FieldFloat*>(&field);
   if (!float_field_ptr)
-    { /*assert(! float_field_ptr);*/
+    {
+      /*assert(! float_field_ptr);*/
       throw LataError(LataError::INVALID_COMPONENT, "unknown field");
     }
-  const FieldFloat &fld = *float_field_ptr;
+  const FieldFloat& fld = *float_field_ptr;
   return fld;
 }
-void LataFilter::release_geometry(const Domain &dom)
+void LataFilter::release_geometry(const Domain& dom)
 {
   Journal(filter_info_level) << "LataFilter::release_geometry " << dom.id_.name_ << " time=" << dom.id_.timestep_ << " bloc=" << dom.id_.block_ << endl;
   release_cached_domain(dom.id_);
 }
 
-void LataFilter::release_field(const LataField_base &field)
+void LataFilter::release_field(const LataField_base& field)
 {
   Journal(filter_info_level) << "LataFilter::release_field " << field.id_.uname_ << " time=" << field.id_.timestep_ << " bloc=" << field.id_.block_ << endl;
   release_cached_field(field.id_);
 }
 
-void build_mangeld_domain_name(const Domain_Id &id, Nom &name)
+void build_mangeld_domain_name(const Domain_Id& id, Nom& name)
 {
   name = id.name_;
   name += "_";
@@ -1000,7 +1001,7 @@ void build_mangeld_domain_name(const Domain_Id &id, Nom &name)
   name.majuscule();
 }
 
-void build_mangeld_field_name(const Field_Id &id, Nom &name)
+void build_mangeld_field_name(const Field_Id& id, Nom& name)
 {
   name = id.uname_.build_string();
   name += "_";
@@ -1010,38 +1011,38 @@ void build_mangeld_field_name(const Field_Id &id, Nom &name)
   name.majuscule();
 }
 
-LataDeriv<LataField_base>& LataFilter::get_cached_field(const Field_Id &id)
+LataDeriv<LataField_base>& LataFilter::get_cached_field(const Field_Id& id)
 {
   Nom n;
   build_mangeld_field_name(id, n);
   return data_cache_.get_item<LataDeriv<LataField_base> >(n, id.timestep_);
 }
-LataDeriv<Domain>& LataFilter::get_cached_domain(const Domain_Id &id)
+LataDeriv<Domain>& LataFilter::get_cached_domain(const Domain_Id& id)
 {
   Nom n;
   build_mangeld_domain_name(id, n);
   return data_cache_.get_item<LataDeriv<Domain> >(n, id.timestep_);
 }
-LataDeriv<Operator>& LataFilter::get_cached_operator(const Domain_Id &id)
+LataDeriv<Operator>& LataFilter::get_cached_operator(const Domain_Id& id)
 {
   Nom n;
   build_mangeld_domain_name(id, n);
   n += "_OP";
   return data_cache_.get_item<LataDeriv<Operator> >(n, id.timestep_);
 }
-void LataFilter::release_cached_domain(const Domain_Id &id)
+void LataFilter::release_cached_domain(const Domain_Id& id)
 {
   Nom n;
   build_mangeld_domain_name(id, n);
   data_cache_.release_item(n);
 }
-void LataFilter::release_cached_field(const Field_Id &id)
+void LataFilter::release_cached_field(const Field_Id& id)
 {
   Nom n;
   build_mangeld_field_name(id, n);
   data_cache_.release_item(n);
 }
-void LataFilter::release_cached_operator(const Domain_Id &id)
+void LataFilter::release_cached_operator(const Domain_Id& id)
 {
   Nom n;
   build_mangeld_domain_name(id, n);
@@ -1049,7 +1050,7 @@ void LataFilter::release_cached_operator(const Domain_Id &id)
   data_cache_.release_item(n);
 }
 
-void LataOptions::extract_path_basename(const char *s, Nom &path_prefix, Nom &basename)
+void LataOptions::extract_path_basename(const char *s, Nom& path_prefix, Nom& basename)
 {
   int i;
   for (i = (int) strlen(s) - 1; i >= 0; i--)
@@ -1090,19 +1091,19 @@ LataOptions::LataOptions()
   regularize_polyedre = 0;
 }
 
-void build_geometry_(Operator &op, const Domain &src, LataDeriv<Domain> &dest)
+void build_geometry_(Operator& op, const Domain& src, LataDeriv<Domain>& dest)
 {
   Journal() << "Error in an operator: build_geometry not coded for this Operator/Domain" << endl;
   throw;
 }
 
-void build_field_(Operator &op, const Domain &src, const Domain &dest, const LataField_base &srcf, LataField_base &destf)
+void build_field_(Operator& op, const Domain& src, const Domain& dest, const LataField_base& srcf, LataField_base& destf)
 {
   Journal() << "Error in an operator: build_field not coded for this Operator/Domain/Field" << endl;
   throw;
 }
 
-void LataDB_apply_input_filter(const LataDB &lata_db, LataDB &filtered_db, const ArrOfInt &input_timesteps_filter, const Noms &input_domains_filter, const Noms &input_components_filter)
+void LataDB_apply_input_filter(const LataDB& lata_db, LataDB& filtered_db, const ArrOfInt& input_timesteps_filter, const Noms& input_domains_filter, const Noms& input_components_filter)
 {
   ArrOfInt timesteps_filter(input_timesteps_filter);
   Noms domains_filter(input_domains_filter);
@@ -1111,15 +1112,15 @@ void LataDB_apply_input_filter(const LataDB &lata_db, LataDB &filtered_db, const
   // Build a list of all available geometries and components
   Noms list_all_domains = lata_db.geometry_names(lata_db.nb_timesteps() - 1, LataDB::FIRST_AND_CURRENT);
   Noms list_all_fields;
-    {
-      Field_UNames fields = lata_db.field_unames(lata_db.nb_timesteps() - 1, "*", "*", LataDB::FIRST_AND_CURRENT);
-      for (entier i = 0; i < fields.size(); i++)
-        {
-          const Nom &n = fields[i].get_field_name();
-          if (list_all_fields.rang(n) < 0)
-            list_all_fields.add(n);
-        }
-    }
+  {
+    Field_UNames fields = lata_db.field_unames(lata_db.nb_timesteps() - 1, "*", "*", LataDB::FIRST_AND_CURRENT);
+    for (entier i = 0; i < fields.size(); i++)
+      {
+        const Nom& n = fields[i].get_field_name();
+        if (list_all_fields.rang(n) < 0)
+          list_all_fields.add(n);
+      }
+  }
 
   if (timesteps_filter.size_array() == 0)
     {

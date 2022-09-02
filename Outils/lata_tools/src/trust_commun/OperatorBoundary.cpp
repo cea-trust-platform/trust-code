@@ -21,7 +21,7 @@
 // Journal level for messages
 #define verb_level 4
 
-void build_ref_elem_face(const Domain::Element elt_type, IntTab &ref_elem_face)
+void build_ref_elem_face(const Domain::Element elt_type, IntTab& ref_elem_face)
 {
   static entier faces_sommets_tetra[4][3] = { { 1, 2, 3 }, { 0, 3, 2 }, { 3, 0, 1 }, { 0, 2, 1 } };
   static entier faces_sommets_hexa[6][4] = { { 0, 2, 4, 6 }, { 0, 1, 4, 5 }, { 0, 1, 2, 3 }, { 1, 3, 5, 7 }, { 2, 3, 6, 7 }, { 4, 5, 6, 7 } };
@@ -46,10 +46,10 @@ void build_ref_elem_face(const Domain::Element elt_type, IntTab &ref_elem_face)
     }
 }
 
-void build_geometry_(OperatorBoundary &op, const DomainUnstructured &src, LataDeriv<Domain> &dest_domain)
+void build_geometry_(OperatorBoundary& op, const DomainUnstructured& src, LataDeriv<Domain>& dest_domain)
 {
   Journal(verb_level) << "OperatorBoundary domain " << src.id_.name_ << endl;
-  DomainUnstructured &dest = dest_domain.instancie(DomainUnstructured);
+  DomainUnstructured& dest = dest_domain.instancie(DomainUnstructured);
   switch(src.elt_type_)
     {
     case Domain::tetra:
@@ -149,7 +149,7 @@ void build_geometry_(OperatorBoundary &op, const DomainUnstructured &src, LataDe
 }
 
 template<class TabType>
-void build_field_(OperatorBoundary &op, const DomainUnstructured &src_domain, const DomainUnstructured &dest_domain, const Field<TabType> &src, Field<TabType> &dest)
+void build_field_(OperatorBoundary& op, const DomainUnstructured& src_domain, const DomainUnstructured& dest_domain, const Field<TabType>& src, Field<TabType>& dest)
 {
   if (!op.geom_init_)
     {
@@ -203,12 +203,12 @@ void build_field_(OperatorBoundary &op, const DomainUnstructured &src_domain, co
     }
 }
 
-void OperatorBoundary::build_geometry(const Domain &src_domain, LataDeriv<Domain> &dest)
+void OperatorBoundary::build_geometry(const Domain& src_domain, LataDeriv<Domain>& dest)
 {
   apply_geometry(*this, src_domain, dest);
 }
 
-void OperatorBoundary::build_field(const Domain &src_domain, const LataField_base &src_field, const Domain &dest_domain, LataDeriv<LataField_base> &dest)
+void OperatorBoundary::build_field(const Domain& src_domain, const LataField_base& src_field, const Domain& dest_domain, LataDeriv<LataField_base>& dest)
 {
   apply_field(*this, src_domain, src_field, dest_domain, dest);
 }

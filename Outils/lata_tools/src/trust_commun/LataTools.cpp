@@ -30,15 +30,18 @@ void set_Journal_level(entier level)
 
 static std::ostringstream junk_journal;
 
-std::ostream & Journal(entier level)
+std::ostream& Journal(entier level)
 {
-  if (level <= journal_level) {
-    cerr << "[" << level << "] ";
-    return cerr;
-  } else {
-    junk_journal.seekp(0);
-    return junk_journal;
-  }
+  if (level <= journal_level)
+    {
+      cerr << "[" << level << "] ";
+      return cerr;
+    }
+  else
+    {
+      junk_journal.seekp(0);
+      return junk_journal;
+    }
 }
 
 // Description: this method must return the total memory consumption
@@ -49,43 +52,43 @@ BigEntier LataObject::compute_memory_size() const
   throw;
 }
 
-BigEntier memory_size(const ArrOfInt & tab)
+BigEntier memory_size(const ArrOfInt& tab)
 {
   // On ne tient pas compte du caractere smart_resize ou ref du tableau
   // c'est pas tres grave pour l'instant pour ce qu'on en fait...
   return ((BigEntier)sizeof(tab)) + ((BigEntier)tab.size_array()) * sizeof(entier);
 }
 
-BigEntier memory_size(const ArrOfDouble & tab)
+BigEntier memory_size(const ArrOfDouble& tab)
 {
   // on ne tient pas compte du caractere smart_resize ou ref du tableau
   // c'est pas tres grave pour l'instant pour ce qu'on en fait...
   return ((BigEntier)sizeof(tab)) + ((BigEntier)tab.size_array()) * sizeof(double);
 }
 
-BigEntier memory_size(const ArrOfFloat & tab)
+BigEntier memory_size(const ArrOfFloat& tab)
 {
   // on ne tient pas compte du caractere smart_resize ou ref du tableau
   // c'est pas tres grave pour l'instant pour ce qu'on en fait...
   return ((BigEntier)sizeof(tab)) + ((BigEntier)tab.size_array()) * sizeof(float);
 }
 
-BigEntier memory_size(const ArrOfBit & tab)
+BigEntier memory_size(const ArrOfBit& tab)
 {
-  return ((BigEntier)sizeof(tab)) + ((BigEntier)tab.size_array()) * sizeof(int) / 32; 
+  return ((BigEntier)sizeof(tab)) + ((BigEntier)tab.size_array()) * sizeof(int) / 32;
 }
 
-void split_path_filename(const char *s, Nom & path, Nom & filename)
+void split_path_filename(const char *s, Nom& path, Nom& filename)
 {
   int i;
-  for (i=(int)strlen(s)-1;i>=0;i--)
+  for (i=(int)strlen(s)-1; i>=0; i--)
     if ((s[i]==PATH_SEPARATOR) || (s[i]=='\\'))
       break;
   path = "";
   int j;
   for (j = 0; j <= i; j++)
     path += Nom(s[j]);
-  
+
   // Parse basename : if extension given, remove it
   filename = s+i+1;
 }
@@ -99,7 +102,7 @@ int compare_indirect(const void *ptr1, const void *ptr2)
   return (diff>0) ? 1 : ((diff==0) ? 0 : -1);
 }
 
-void array_sort_indirect(const ArrOfInt & array_to_sort, ArrOfInt & index)
+void array_sort_indirect(const ArrOfInt& array_to_sort, ArrOfInt& index)
 {
   const entier n = array_to_sort.size_array();
   index.set_smart_resize(1);

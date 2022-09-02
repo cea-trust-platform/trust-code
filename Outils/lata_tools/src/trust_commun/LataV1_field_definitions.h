@@ -18,4 +18,4 @@
 // (separated from LataDB.cpp so that changes in this file are
 //  easily identified)
 class Motcle;
-int latav1_component_shape(const Motcle & compo);
+int latav1_component_shape(const Motcle& compo);

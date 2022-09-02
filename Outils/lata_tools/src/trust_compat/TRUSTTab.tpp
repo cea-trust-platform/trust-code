@@ -28,7 +28,7 @@ public:
     dimensions_[1] = 0;
   }
 
-  TRUSTTab(const TRUSTTab<_TYPE_> &tab) : TRUSTArray<_TYPE_>(tab)
+  TRUSTTab(const TRUSTTab<_TYPE_>& tab) : TRUSTArray<_TYPE_>(tab)
   {
     dimensions_[0] = tab.dimensions_[0];
     dimensions_[1] = tab.dimensions_[1];

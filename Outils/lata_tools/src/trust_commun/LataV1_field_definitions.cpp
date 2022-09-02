@@ -16,7 +16,8 @@
 #include <LataV1_field_definitions.h>
 #include <Motcle.h>
 
-typedef struct {
+typedef struct
+{
   const char * name;
   int shape; // Vector size (-1 => dimension of the problem)
 } StdComponents;
@@ -32,39 +33,40 @@ typedef struct {
 // "K_EPS" must be placed before "K", otherwise "K_EPS" will
 // never be found.
 const StdComponents std_components[] =
-  { 
-    { "VITESSE",             -1 },
-    { "primal",              -1 },
-    { "VORTICITE",           -2 },
-    { "MOYENNE_VITESSE",     -1 },
-    { "ECART_TYPE_VITESSE",  -1 },
-    { "MOYENNE_VORTICITE",   -2 },
-    { "ECART_TYPE_VORTICITE", -2 },
-    { "GRADIENT_PRESSION",            -1 },
-    { "DERIVEE_U_ETOILE",             -1 },
-    { "TERME_DIFFUSION_VITESSE",      -1 },
-    { "TERME_CONVECTION_VITESSE",     -1 },
-    { "TERME_SOURCE_VITESSE",         -1 },
-    { "GRAD",         -1 },
-    { "NORMALE_INTERFACE",            -1 },
-    { "K_EPS",                             2 },
-    { "ACCELERATION",        -1 },
-    { "CHAMP_VECTORIEL",     -1},
-    { "2_",     2},
-    { "3_",     3},
-    { "6_",     6},
-    { "9_",     9},
-    { "",                  1 }
-    // Empty label means end of the table
-  };
+{
+  { "VITESSE",             -1 },
+  { "primal",              -1 },
+  { "VORTICITE",           -2 },
+  { "MOYENNE_VITESSE",     -1 },
+  { "ECART_TYPE_VITESSE",  -1 },
+  { "MOYENNE_VORTICITE",   -2 },
+  { "ECART_TYPE_VORTICITE", -2 },
+  { "GRADIENT_PRESSION",            -1 },
+  { "DERIVEE_U_ETOILE",             -1 },
+  { "TERME_DIFFUSION_VITESSE",      -1 },
+  { "TERME_CONVECTION_VITESSE",     -1 },
+  { "TERME_SOURCE_VITESSE",         -1 },
+  { "GRAD",         -1 },
+  { "NORMALE_INTERFACE",            -1 },
+  { "K_EPS",                             2 },
+  { "ACCELERATION",        -1 },
+  { "CHAMP_VECTORIEL",     -1},
+  { "2_",     2},
+  { "3_",     3},
+  { "6_",     6},
+  { "9_",     9},
+  { "",                  1 }
+  // Empty label means end of the table
+};
 
-int latav1_component_shape(const Motcle & compo)
+int latav1_component_shape(const Motcle& compo)
 {
   entier i = 0;
-  while (std_components[i].name[0] != 0) {
-    if (compo.debute_par(std_components[i].name))
-      return std_components[i].shape;
-    i++;
-  }
+  while (std_components[i].name[0] != 0)
+    {
+      if (compo.debute_par(std_components[i].name))
+        return std_components[i].shape;
+      i++;
+    }
   return 1;
 }

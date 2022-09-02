@@ -31,7 +31,7 @@ void Octree_Double::reset()
 
 // Description: Convertit une coordonnees reele en coordonnee entiere pour l'octree_int
 // Valeur de retour: 1 si ok, 0 si coordonnee hors de l'octree
-inline entier Octree_Double::integer_position(double x, entier direction, entier &ix) const
+inline entier Octree_Double::integer_position(double x, entier direction, entier& ix) const
 {
   const double coord_max = (double) Octree_Int::coord_max_;
   double rnd_x = (x - origin_[direction]) * factor_[direction];
@@ -47,7 +47,7 @@ inline entier Octree_Double::integer_position(double x, entier direction, entier
 }
 
 // Valeur de retour: 1 s'il y a une intersection non vide avec l'octree, 0 sinon
-inline entier Octree_Double::integer_position_clip(double xmin, double xmax, entier &x0, entier &x1, entier direction) const
+inline entier Octree_Double::integer_position_clip(double xmin, double xmax, entier& x0, entier& x1, entier direction) const
 {
   const double coord_max = (double) Octree_Int::coord_max_;
   xmin = (xmin - origin_[direction]) * factor_[direction];
@@ -70,7 +70,7 @@ inline entier Octree_Double::integer_position_clip(double xmin, double xmax, ent
 // Description: cherche les elements ou les points contenus dans l'octree_floor qui
 //  contient le point (x,y,z). Renvoie le nombre n de ces elements.
 //  Les indices des elements sont dans floor_elements()[index+i] pour 0 <= i < n
-entier Octree_Double::search_elements(double x, double y, double z, entier &index) const
+entier Octree_Double::search_elements(double x, double y, double z, entier& index) const
 {
   if (dim_ == 0)
     return 0; // octree vide
@@ -88,7 +88,7 @@ entier Octree_Double::search_elements(double x, double y, double z, entier &inde
 
 // Description: methode outil pour build_nodes et build_elements
 //  (calcul des facteurs de conversion entre reels et entiers pour Octree_Int
-void Octree_Double::compute_origin_factors(const DoubleTab &coords, const double epsilon, const entier include_virtual)
+void Octree_Double::compute_origin_factors(const DoubleTab& coords, const double epsilon, const entier include_virtual)
 {
   // Recherche des coordonnees min et max du domaine
   const entier nb_som = include_virtual ? coords.dimension_tot(0) : coords.dimension(0);
@@ -128,7 +128,7 @@ void Octree_Double::compute_origin_factors(const DoubleTab &coords, const double
         factor_[j] = 0.;
     }
 }
-void Octree_Double::compute_origin_factors(const FloatTab &coords, const double epsilon, const entier include_virtual)
+void Octree_Double::compute_origin_factors(const FloatTab& coords, const double epsilon, const entier include_virtual)
 {
   // Recherche des coordonnees min et max du domaine
   const entier nb_som = include_virtual ? coords.dimension_tot(0) : coords.dimension(0);
@@ -172,7 +172,7 @@ void Octree_Double::compute_origin_factors(const FloatTab &coords, const double 
 // Description: construit un octree contenant les points de coordonnees coords.
 //  Si include_virtual=1, on stocke coords.dimension_tot(0) elements, sinon on en
 //  stocke coords.dimension(0)
-void Octree_Double::build_nodes(const DoubleTab &coords, const entier include_virtual)
+void Octree_Double::build_nodes(const DoubleTab& coords, const entier include_virtual)
 {
   octree_int_.reset();
   compute_origin_factors(coords, 0. /* epsilon */, include_virtual);
@@ -203,7 +203,7 @@ void Octree_Double::build_nodes(const DoubleTab &coords, const entier include_vi
 //  element (contenant tous les sommets de l'element) plus une marge de epsilon.
 //  Si include_virtual=1, on stocke elements.dimension_tot(0) elements, sinon on en
 //  stocke elements.dimension(0)
-void Octree_Double::build_elements(const DoubleTab &coords, const IntTab &elements, const double epsilon, const entier include_virtual)
+void Octree_Double::build_elements(const DoubleTab& coords, const IntTab& elements, const double epsilon, const entier include_virtual)
 {
   octree_int_.reset();
   compute_origin_factors(coords, epsilon, include_virtual);
@@ -222,7 +222,8 @@ void Octree_Double::build_elements(const DoubleTab &coords, const IntTab &elemen
             {
               const entier som = elements(i, k);
               if (som >= 0)
-                { // polyedre som peut valoir -1
+                {
+                  // polyedre som peut valoir -1
                   const double x = coords(som, j);
                   xmin = (x < xmin) ? x : xmin;
                   xmax = (x > xmax) ? x : xmax;
@@ -241,7 +242,7 @@ void Octree_Double::build_elements(const DoubleTab &coords, const IntTab &elemen
   octree_int_.build(dim, elements_boxes);
 }
 
-void Octree_Double::build_elements(const FloatTab &coords, const IntTab &elements, const double epsilon, const entier include_virtual)
+void Octree_Double::build_elements(const FloatTab& coords, const IntTab& elements, const double epsilon, const entier include_virtual)
 {
   octree_int_.reset();
   compute_origin_factors(coords, epsilon, include_virtual);
@@ -260,7 +261,8 @@ void Octree_Double::build_elements(const FloatTab &coords, const IntTab &element
             {
               const entier som = elements(i, k);
               if (som >= 0)
-                { // polyedre som peut valoir -1
+                {
+                  // polyedre som peut valoir -1
                   const double x = coords(som, j);
                   xmin = (x < xmin) ? x : xmin;
                   xmax = (x > xmax) ? x : xmax;
@@ -281,7 +283,7 @@ void Octree_Double::build_elements(const FloatTab &coords, const IntTab &element
 
 // Description: cherche tous les elements ou points ayant potentiellement une intersection
 //  non vide avec la boite donnee.
-entier Octree_Double::search_elements_box(double xmin, double ymin, double zmin, double xmax, double ymax, double zmax, ArrOfInt &elements) const
+entier Octree_Double::search_elements_box(double xmin, double ymin, double zmin, double xmax, double ymax, double zmax, ArrOfInt& elements) const
 {
   const entier dim = dim_;
   if (dim == 0)
@@ -306,7 +308,7 @@ entier Octree_Double::search_elements_box(double xmin, double ymin, double zmin,
 
 // Description: cherche tous les elements ou points ayant potentiellement une intersection
 //  non vide avec la boite donnee (centre + ou - radius dans chaque direction)
-entier Octree_Double::search_elements_box(const ArrOfDouble &center, const double radius, ArrOfInt &elements) const
+entier Octree_Double::search_elements_box(const ArrOfDouble& center, const double radius, ArrOfInt& elements) const
 {
   entier dim = center.size_array();
   double x = center[0];
@@ -321,7 +323,7 @@ entier Octree_Double::search_elements_box(const ArrOfDouble &center, const doubl
 //  distance inferieure a epsilon du point (x,y,z). node_list contient des indices de
 //  sommets dans le tableau coords. La liste des noeuds verifiant le critere est mise
 //  dans node_list. On renvoie l'indice dans le tableau coords du sommet le plus proche.
-entier Octree_Double::search_nodes_close_to(double x, double y, double z, const DoubleTab &coords, ArrOfInt &node_list, double epsilon)
+entier Octree_Double::search_nodes_close_to(double x, double y, double z, const DoubleTab& coords, ArrOfInt& node_list, double epsilon)
 {
   const entier n = node_list.size_array();
   double eps2 = epsilon * epsilon;
@@ -352,7 +354,7 @@ entier Octree_Double::search_nodes_close_to(double x, double y, double z, const 
 }
 
 // Description: Idem que search_nodes_close_to(double x, double y, double z, ...)
-entier Octree_Double::search_nodes_close_to(const ArrOfDouble &point, const DoubleTab &coords, ArrOfInt &node_list, double epsilon)
+entier Octree_Double::search_nodes_close_to(const ArrOfDouble& point, const DoubleTab& coords, ArrOfInt& node_list, double epsilon)
 {
   entier dim = point.size_array();
   double x = point[0];

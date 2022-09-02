@@ -45,8 +45,8 @@ public:
   inline entier get_size() const { return size_; }
 
 private:
-  VTRUSTdata(const VTRUSTdata<_TYPE_> &v) = delete;
-  VTRUSTdata& operator=(const VTRUSTdata<_TYPE_> &v) = delete;
+  VTRUSTdata(const VTRUSTdata<_TYPE_>& v) = delete;
+  VTRUSTdata& operator=(const VTRUSTdata<_TYPE_>& v) = delete;
 
   _TYPE_ *data_;
   entier ref_count_;

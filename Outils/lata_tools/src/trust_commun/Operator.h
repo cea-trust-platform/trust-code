@@ -18,23 +18,23 @@
 #include <LataFilter.h>
 
 // A tool to "reconnect" several subdomains of a parallel computation:
-//  reconnect_geometry() searches for duplicate node coordinates and 
+//  reconnect_geometry() searches for duplicate node coordinates and
 //  changes the elements_ and faces_ arrays to use the smallest node
 //  index that has the same coordinate. Hence, we recover the connectivity
 //  between blocks.
 class Reconnect
 {
 public:
-  static void reconnect_geometry(DomainUnstructured &geom, double tolerance, entier nb_nodes_untouched = 0);
-  static void apply_renumbering(const ArrOfInt &nodes_renumber, ArrOfInt &data);
-  static void search_duplicate_nodes(const FloatTab &src_coord, ArrOfInt &nodes_renumber, double eps, entier nb_nodes_untouched = 0);
+  static void reconnect_geometry(DomainUnstructured& geom, double tolerance, entier nb_nodes_untouched = 0);
+  static void apply_renumbering(const ArrOfInt& nodes_renumber, ArrOfInt& data);
+  static void search_duplicate_nodes(const FloatTab& src_coord, ArrOfInt& nodes_renumber, double eps, entier nb_nodes_untouched = 0);
 };
 
 class OperatorClipbox: public Operator
 {
 public:
-  void build_geometry(const Domain &src_domain, LataDeriv<Domain> &dest) override;
-  void build_field(const Domain &src_domain, const LataField_base &src_field, const Domain &dest_domain, LataDeriv<LataField_base> &dest) override;
+  void build_geometry(const Domain& src_domain, LataDeriv<Domain>& dest) override;
+  void build_field(const Domain& src_domain, const LataField_base& src_field, const Domain& dest_domain, LataDeriv<LataField_base>& dest) override;
   // Renumerotation des sommets, elements et faces par rapport aux donnees brutes lues
   // renum_truc_[new_index] = index in lata file;
   // La renumerotation vient de clip_box et de regularize
@@ -50,8 +50,8 @@ public:
   {
     geom_init_ = 0;
   }
-  void build_geometry(const Domain &src_domain, LataDeriv<Domain> &dest) override;
-  void build_field(const Domain &src_domain, const LataField_base &src_field, const Domain &dest_domain, LataDeriv<LataField_base> &dest) override;
+  void build_geometry(const Domain& src_domain, LataDeriv<Domain>& dest) override;
+  void build_field(const Domain& src_domain, const LataField_base& src_field, const Domain& dest_domain, LataDeriv<LataField_base>& dest) override;
   BigEntier compute_memory_size() const override
   {
     return memory_size(src_nodes_) + memory_size(src_element_) + memory_size(src_face_);
@@ -85,8 +85,8 @@ public:
     else
       extend_layer_ = 0;
   }
-  void build_geometry(const Domain &src_domain, LataDeriv<Domain> &dest) override;
-  void build_field(const Domain &src_domain, const LataField_base &src_field, const Domain &dest_domain, LataDeriv<LataField_base> &dest) override;
+  void build_geometry(const Domain& src_domain, LataDeriv<Domain>& dest) override;
+  void build_field(const Domain& src_domain, const LataField_base& src_field, const Domain& dest_domain, LataDeriv<LataField_base>& dest) override;
 
   BigEntier compute_memory_size() const override
   {
@@ -96,7 +96,7 @@ public:
   // renum_truc_[old_index] = new_index;
   ArrOfInt renum_nodes_;
   ArrOfInt renum_elements_;
-  // Pour les faces: les faces de chaque direction du domaine ijk sont numerotees 
+  // Pour les faces: les faces de chaque direction du domaine ijk sont numerotees
   //  separement: faces de normales X entre 0 et N, faces de normales Y entre 0 et N, etc...
   // Le numero d'une face est egal au plus petit des numeros de ses sommets du le maillage ijk.
   // Renum faces contient le codage suivant:
@@ -111,8 +111,8 @@ public:
 class OperatorDualMesh: public Operator
 {
 public:
-  void build_geometry(const Domain &src_domain, LataDeriv<Domain> &dest) override;
-  void build_field(const Domain &src_domain, const LataField_base &src_field, const Domain &dest_domain, LataDeriv<LataField_base> &dest) override;
+  void build_geometry(const Domain& src_domain, LataDeriv<Domain>& dest) override;
+  void build_field(const Domain& src_domain, const LataField_base& src_field, const Domain& dest_domain, LataDeriv<LataField_base>& dest) override;
   BigEntier compute_memory_size() const override
   {
     return 0;
@@ -121,8 +121,8 @@ public:
 class OperatorFacesMesh: public Operator
 {
 public:
-  void build_geometry(const Domain &src_domain, LataDeriv<Domain> &dest) override;
-  void build_field(const Domain &src_domain, const LataField_base &src_field, const Domain &dest_domain, LataDeriv<LataField_base> &dest) override;
+  void build_geometry(const Domain& src_domain, LataDeriv<Domain>& dest) override;
+  void build_field(const Domain& src_domain, const LataField_base& src_field, const Domain& dest_domain, LataDeriv<LataField_base>& dest) override;
   BigEntier compute_memory_size() const override
   {
     return 0;
@@ -132,8 +132,8 @@ public:
 class OperatorNCMesh: public Operator
 {
 public:
-  void build_geometry(const Domain &src_domain, LataDeriv<Domain> &dest) override;
-  void build_field(const Domain &src_domain, const LataField_base &src_field, const Domain &dest_domain, LataDeriv<LataField_base> &dest) override;
+  void build_geometry(const Domain& src_domain, LataDeriv<Domain>& dest) override;
+  void build_field(const Domain& src_domain, const LataField_base& src_field, const Domain& dest_domain, LataDeriv<LataField_base>& dest) override;
   BigEntier compute_memory_size() const override
   {
     return 0;
@@ -141,11 +141,11 @@ public:
 };
 
 // These generic methods just say that the particular function does not exist:
-void build_geometry_(Operator &op, const Domain &src, LataDeriv<Domain> &dest);
-void build_field_(Operator &op, const Domain &src, const Domain &dest, const LataField_base &srcf, LataField_base &destf);
+void build_geometry_(Operator& op, const Domain& src, LataDeriv<Domain>& dest);
+void build_field_(Operator& op, const Domain& src, const Domain& dest, const LataField_base& srcf, LataField_base& destf);
 
 template<class Op>
-void apply_geometry(Op &op, const Domain &src_domain, LataDeriv<Domain> &dest)
+void apply_geometry(Op& op, const Domain& src_domain, LataDeriv<Domain>& dest)
 {
   const DomainUnstructured *src1 = dynamic_cast<const DomainUnstructured*>(&src_domain);
   const DomainIJK *src2 = dynamic_cast<const DomainIJK*>(&src_domain);
@@ -167,7 +167,7 @@ void apply_geometry(Op &op, const Domain &src_domain, LataDeriv<Domain> &dest)
 
 // See apply_field
 template<class Op, class DomSrc, class DomDest>
-void apply_field3(Op &op, const DomSrc &src_domain, const LataField_base &src_field, const DomDest &dest_domain, LataDeriv<LataField_base> &dest)
+void apply_field3(Op& op, const DomSrc& src_domain, const LataField_base& src_field, const DomDest& dest_domain, LataDeriv<LataField_base>& dest)
 {
   const Field<DoubleTab> *src1 = dynamic_cast<const Field<DoubleTab>*>(&src_field);
   const Field<FloatTab> *src2 = dynamic_cast<const Field<FloatTab>*>(&src_field);
@@ -188,7 +188,7 @@ void apply_field3(Op &op, const DomSrc &src_domain, const LataField_base &src_fi
 
 // See apply_field
 template<class Op, class DomSrc>
-void apply_field2(Op &op, const DomSrc &src_domain, const LataField_base &src_field, const Domain &dest_domain, LataDeriv<LataField_base> &dest)
+void apply_field2(Op& op, const DomSrc& src_domain, const LataField_base& src_field, const Domain& dest_domain, LataDeriv<LataField_base>& dest)
 {
   const DomainUnstructured *d1 = dynamic_cast<const DomainUnstructured*>(&dest_domain);
   const DomainIJK *d2 = dynamic_cast<const DomainIJK*>(&dest_domain);
@@ -209,7 +209,7 @@ void apply_field2(Op &op, const DomSrc &src_domain, const LataField_base &src_fi
 //  will call the correct method depending on the effective type of the parameters
 //  (determined with dynamic_cast).
 template<class Op>
-void apply_field(Op &op, const Domain &src_domain, const LataField_base &src_field, const Domain &dest_domain, LataDeriv<LataField_base> &dest)
+void apply_field(Op& op, const Domain& src_domain, const LataField_base& src_field, const Domain& dest_domain, LataDeriv<LataField_base>& dest)
 {
   const DomainUnstructured *d1 = dynamic_cast<const DomainUnstructured*>(&src_domain);
   const DomainIJK *d2 = dynamic_cast<const DomainIJK*>(&src_domain);

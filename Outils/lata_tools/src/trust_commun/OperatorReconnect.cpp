@@ -25,7 +25,7 @@
 //  eps = tolerance in each direction to consider that two nodes are identical
 //  nb_nodes_untouched : do not search duplicate nodes in the "nb_nodes_untouched"
 //   first nodes. The remaining nodes are still compared to all nodes.
-void Reconnect::search_duplicate_nodes(const FloatTab &src_coord, ArrOfInt &nodes_renumber, double eps, entier nb_nodes_untouched)
+void Reconnect::search_duplicate_nodes(const FloatTab& src_coord, ArrOfInt& nodes_renumber, double eps, entier nb_nodes_untouched)
 {
   // Create a temporary DoubleTab (coords are normally float)
   const entier nb_nodes = src_coord.dimension(0);
@@ -77,7 +77,7 @@ void Reconnect::search_duplicate_nodes(const FloatTab &src_coord, ArrOfInt &node
   Journal(verb_level + 1) << " " << count << " duplicate nodes will be removed" << endl;
 }
 
-void Reconnect::apply_renumbering(const ArrOfInt &nodes_renumber, ArrOfInt &data)
+void Reconnect::apply_renumbering(const ArrOfInt& nodes_renumber, ArrOfInt& data)
 {
   entier ntot = data.size_array();
   entier i;
@@ -93,7 +93,7 @@ void Reconnect::apply_renumbering(const ArrOfInt &nodes_renumber, ArrOfInt &data
 // Description: updates the elements_ and faces_ arrays of the domain so that
 //  all nodes having the same coordinates are replaced by one unique node
 //  in these arrays. See search_duplicate_nodes for nb_nodes_untouched description.
-void Reconnect::reconnect_geometry(DomainUnstructured &geom, double tolerance, entier nb_nodes_untouched)
+void Reconnect::reconnect_geometry(DomainUnstructured& geom, double tolerance, entier nb_nodes_untouched)
 {
   Journal(verb_level) << "Reconnect domain " << geom.id_.name_ << endl;
 

@@ -17,6 +17,6 @@
 #define LataJournal_H
 #include <iostream>
 #include <arch.h>
-std::ostream & Journal(entier level=0);
+std::ostream& Journal(entier level=0);
 void set_Journal_level(entier level);
 #endif

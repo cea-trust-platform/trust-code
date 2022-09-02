@@ -19,7 +19,7 @@
 
 #define verb_level 4
 
-template<class T, class Tab> int search_in_ordered_vect(T x, const Tab &v, const T epsilon)
+template<class T, class Tab> int search_in_ordered_vect(T x, const Tab& v, const T epsilon)
 {
   if (!v.size_array())
     return -1;
@@ -43,7 +43,7 @@ template<class T, class Tab> int search_in_ordered_vect(T x, const Tab &v, const
 }
 
 template<class T, class Tab>
-static void retirer_doublons(Tab &tab, const T epsilon)
+static void retirer_doublons(Tab& tab, const T epsilon)
 {
   int i = 0;
   int j;
@@ -63,7 +63,7 @@ static void retirer_doublons(Tab &tab, const T epsilon)
   tab.resize_array(i);
 }
 
-void build_geometry_(OperatorRegularize &op, const DomainUnstructured &src, LataDeriv<Domain> &dest_domain)
+void build_geometry_(OperatorRegularize& op, const DomainUnstructured& src, LataDeriv<Domain>& dest_domain)
 {
   Journal(verb_level) << "OperatorRegularize domain " << src.id_.name_ << endl;
   if (src.elt_type_ != Domain::quadri && src.elt_type_ != Domain::hexa)
@@ -72,52 +72,52 @@ void build_geometry_(OperatorRegularize &op, const DomainUnstructured &src, Lata
       throw;
     }
 
-  DomainIJK &dest = dest_domain.instancie(DomainIJK);
+  DomainIJK& dest = dest_domain.instancie(DomainIJK);
   dest.elt_type_ = src.elt_type_;
   const entier nsom = src.nodes_.dimension(0);
   const entier dim = src.nodes_.dimension(1);
   ArrOfInt nb_som_dir(dim);
-    {
-      double product_n = 1.;
-      for (entier i_dim = 0; i_dim < dim; i_dim++)
-        {
-          ArrOfFloat &coord = dest.coord_.add(ArrOfFloat());
-          coord.resize_array(nsom);
-          entier i;
-          for (i = 0; i < nsom; i++)
-            coord[i] = src.nodes_(i, i_dim);
-          coord.ordonne_array();
-          retirer_doublons(coord, (float) op.tolerance_);
-          product_n *= coord.size_array();
-          // Add extended domain layer:
-          if (coord.size_array() > 1)
-            {
-              const entier n = coord.size_array();
-              const entier l = op.extend_layer_;
-              coord.resize_array(n + l * 2);
-              float x0 = coord[n - 1];
-              float delta = coord[n - 2] - x0;
-              for (i = 1; i <= l; i++)
-                coord[n + l + i] = x0 + delta * (float) i;
-              for (i = l - 1; i >= 0; i--)
-                coord[i + l] = coord[i];
-              x0 = coord[l];
-              delta = coord[l + 1] - x0;
-              for (i = 1; i <= l; i++)
-                coord[l - i] = x0 - delta * (float) i;
-            }
-          nb_som_dir[i_dim] = coord.size_array();
-        }
-      // Verifying that unique has deleted many points...
-      // If well organised, nsom=nx*ny*nz
-      // If chaos, nsom=(nx+ny+nz)/3
-      // We want to verify that we are nearer to organisation than to chaos !
-      if (product_n > (double) nsom * (double) nsom - 1.)
-        {
-          Journal() << "Positions do not seam regular !" << endl;
-          throw;
-        }
-    }
+  {
+    double product_n = 1.;
+    for (entier i_dim = 0; i_dim < dim; i_dim++)
+      {
+        ArrOfFloat& coord = dest.coord_.add(ArrOfFloat());
+        coord.resize_array(nsom);
+        entier i;
+        for (i = 0; i < nsom; i++)
+          coord[i] = src.nodes_(i, i_dim);
+        coord.ordonne_array();
+        retirer_doublons(coord, (float) op.tolerance_);
+        product_n *= coord.size_array();
+        // Add extended domain layer:
+        if (coord.size_array() > 1)
+          {
+            const entier n = coord.size_array();
+            const entier l = op.extend_layer_;
+            coord.resize_array(n + l * 2);
+            float x0 = coord[n - 1];
+            float delta = coord[n - 2] - x0;
+            for (i = 1; i <= l; i++)
+              coord[n + l + i] = x0 + delta * (float) i;
+            for (i = l - 1; i >= 0; i--)
+              coord[i + l] = coord[i];
+            x0 = coord[l];
+            delta = coord[l + 1] - x0;
+            for (i = 1; i <= l; i++)
+              coord[l - i] = x0 - delta * (float) i;
+          }
+        nb_som_dir[i_dim] = coord.size_array();
+      }
+    // Verifying that unique has deleted many points...
+    // If well organised, nsom=nx*ny*nz
+    // If chaos, nsom=(nx+ny+nz)/3
+    // We want to verify that we are nearer to organisation than to chaos !
+    if (product_n > (double) nsom * (double) nsom - 1.)
+      {
+        Journal() << "Positions do not seam regular !" << endl;
+        throw;
+      }
+  }
   int i;
   op.renum_nodes_.resize_array(nsom);
   IntTab ijk_indexes;
@@ -231,7 +231,7 @@ void build_geometry_(OperatorRegularize &op, const DomainUnstructured &src, Lata
 }
 
 template<class TabType>
-void build_field_(OperatorRegularize &op, const DomainUnstructured &src_domain, const DomainIJK &dest_domain, const Field<TabType> &src, Field<TabType> &dest)
+void build_field_(OperatorRegularize& op, const DomainUnstructured& src_domain, const DomainIJK& dest_domain, const Field<TabType>& src, Field<TabType>& dest)
 {
   Journal(verb_level) << "OperatorRegularize field " << src.id_.uname_ << endl;
   if (!op.geom_init_)
@@ -293,12 +293,12 @@ void build_field_(OperatorRegularize &op, const DomainUnstructured &src_domain, 
     }
 }
 
-void OperatorRegularize::build_geometry(const Domain &src_domain, LataDeriv<Domain> &dest)
+void OperatorRegularize::build_geometry(const Domain& src_domain, LataDeriv<Domain>& dest)
 {
   apply_geometry(*this, src_domain, dest);
 }
 
-void OperatorRegularize::build_field(const Domain &src_domain, const LataField_base &src_field, const Domain &dest_domain, LataDeriv<LataField_base> &dest)
+void OperatorRegularize::build_field(const Domain& src_domain, const LataField_base& src_field, const Domain& dest_domain, LataDeriv<LataField_base>& dest)
 {
   apply_field(*this, src_domain, src_field, dest_domain, dest);
 }

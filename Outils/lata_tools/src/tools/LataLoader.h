@@ -19,7 +19,8 @@
 #include <medcoupling++.h>
 #include <vector>
 #include "LataFilter.h"
-namespace MEDCoupling {
+namespace MEDCoupling
+{
 class MEDCouplingMesh;
 class DataArray;
 class  MEDCouplingFieldDouble;
@@ -39,7 +40,7 @@ public:
 
   MEDCoupling::MEDCouplingMesh* GetMesh(const char *varname, int timestate, int block = -1);
   MEDCoupling::DataArray* GetVectorVar(int, int, const char*);
-  void GetTimes(std::vector<double> &times);
+  void GetTimes(std::vector<double>& times);
   inline std::vector<double> getTimes()
   {
     std::vector<double> a;
@@ -56,7 +57,7 @@ protected:
   void PopulateDatabaseMetaData(int);
   void register_fieldname(const char *visit_name, const Field_UName&, int component);
   void register_meshname(const char *visit_name, const char *latafilter_name);
-  void get_field_info_from_visitname(const char *varname, Field_UName&, int &component) const;
+  void get_field_info_from_visitname(const char *varname, Field_UName&, int& component) const;
 
   LataDB lata_db_; // Source database
   LataFilter filter_; // Data processor and cache

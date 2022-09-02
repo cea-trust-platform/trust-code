@@ -64,10 +64,10 @@ const bool mymachine_msb =  false;
 
 #include <TRUSTArray.h>
 class ArrOfBit;
-BigEntier memory_size(const ArrOfInt &);
-BigEntier memory_size(const ArrOfDouble &);
-BigEntier memory_size(const ArrOfFloat &);
-BigEntier memory_size(const ArrOfBit &);
+BigEntier memory_size(const ArrOfInt&);
+BigEntier memory_size(const ArrOfDouble&);
+BigEntier memory_size(const ArrOfFloat&);
+BigEntier memory_size(const ArrOfBit&);
 
 class LataObject
 {
@@ -102,18 +102,21 @@ public:
   entier non_nul() const { return ptr_ != 0; }
   // operator C &() { return valeur(); }
   // operator const C &() const { return valeur(); }
-  C & valeur() { if (!ptr_) throw ERROR_NULL; return *ptr_; }
-  const C & valeur() const { if (!ptr_) throw ERROR_NULL; return *ptr_; }
-  template<class DER_C> DER_C & instancie_(DER_C *ptr) {
+  C& valeur() { if (!ptr_) throw ERROR_NULL; return *ptr_; }
+  const C& valeur() const { if (!ptr_) throw ERROR_NULL; return *ptr_; }
+  template<class DER_C> DER_C& instancie_(DER_C *ptr)
+  {
     reset();
     ptr_ = ptr;
-    if (!dynamic_cast<C*>(ptr_)) {
-      delete ptr_;
-      throw ERROR_TYPE; // DER_C is not a derived type of C
-    }
-    return (DER_C &) (*ptr_); 
+    if (!dynamic_cast<C*>(ptr_))
+      {
+        delete ptr_;
+        throw ERROR_TYPE; // DER_C is not a derived type of C
+      }
+    return (DER_C&) (*ptr_);
   }
-  template<class DER_C> DER_C & refcast_(DER_C *cast_type) {
+  template<class DER_C> DER_C& refcast_(DER_C *cast_type)
+  {
     if (!ptr_)
       throw ERROR_NULL;
     DER_C * x = dynamic_cast<DER_C *>(ptr_);
@@ -123,10 +126,10 @@ public:
   }
   BigEntier compute_memory_size() const override { if (ptr_) return ptr_->compute_memory_size(); else return 0; }
 protected:
-  LataDeriv(const LataDeriv<C> & c) { ptr_ = 0; operator=(c); }
-  LataDeriv(const C & c) { ptr_ = 0; operator=(c); }
-  LataDeriv<C> & operator=(const LataDeriv<C> &);
-  LataDeriv<C> & operator=(const C &);
+  LataDeriv(const LataDeriv<C>& c) { ptr_ = 0; operator=(c); }
+  LataDeriv(const C& c) { ptr_ = 0; operator=(c); }
+  LataDeriv<C>& operator=(const LataDeriv<C>&);
+  LataDeriv<C>& operator=(const C&);
   C *ptr_;
 };
 
@@ -138,22 +141,22 @@ public:
   enum REF_ERROR { ERROR_NULL };
   LataRef() : ptr_(0) { }
   ~LataRef() { ptr_ = 0; }
-  LataRef(const LataRef<C> & x) : ptr_(x.ptr_) { }
-  LataRef(C & x) : ptr_(&x) { }
-  LataRef<C> & operator=(LataRef<C> & x) { ptr_ = x.ptr_; return *this; }
-  LataRef<C> & operator=(C & x) { ptr_ = &x; return *this; }
+  LataRef(const LataRef<C>& x) : ptr_(x.ptr_) { }
+  LataRef(C& x) : ptr_(&x) { }
+  LataRef<C>& operator=(LataRef<C>& x) { ptr_ = x.ptr_; return *this; }
+  LataRef<C>& operator=(C& x) { ptr_ = &x; return *this; }
   void reset() { ptr_ = 0; }
-  operator C&() { if (!ptr_) throw ERROR_NULL; return *ptr_; }  
-  C& valeur() { if (!ptr_) throw ERROR_NULL; return *ptr_; }  
+  operator C& () { if (!ptr_) throw ERROR_NULL; return *ptr_; }
+  C& valeur() { if (!ptr_) throw ERROR_NULL; return *ptr_; }
   entier non_nul() const { return ptr_ != 0; }
 protected:
   C *ptr_;
 };
 
-void array_sort_indirect(const ArrOfInt & array_to_sort, ArrOfInt & index);
+void array_sort_indirect(const ArrOfInt& array_to_sort, ArrOfInt& index);
 
 class Nom;
-void split_path_filename(const char *full_name, Nom & path, Nom & filename);
+void split_path_filename(const char *full_name, Nom& path, Nom& filename);
 
 // To optimize small loops: replace for(i=0;i<n;i++) with n<=3 by
 //  for (i=0; i<loop_max(n,3); i++) {
@@ -168,6 +171,6 @@ void split_path_filename(const char *full_name, Nom & path, Nom & filename);
 #include <Motcle.h>
 #include <Noms.h>
 
-Motcles noms_to_motcles(const Noms & noms);
+  Motcles noms_to_motcles(const Noms& noms);
 
 #endif

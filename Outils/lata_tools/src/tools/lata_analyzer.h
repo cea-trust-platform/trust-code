@@ -23,7 +23,7 @@ class LataAnalyzerOptions: public LataOptions
 public:
   LataAnalyzerOptions();
   void describe();
-  entier parse_option(const Nom &s);
+  entier parse_option(const Nom& s);
   void parse_options(int argc, char **argv);
 
   // Input filter: when reading the input file, timesteps, domains and components not mentionned in these vectors are not read. If empty list, write all items.

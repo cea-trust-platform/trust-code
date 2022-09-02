@@ -18,7 +18,7 @@
 
 // Path, if not empty, must include a trailing '/'
 // basename must not include the .lata extension
-void LataWriter::init_file(const Nom &path, const Nom &basename, const LataDBDataType &default_int_format, LataDBDataType::Type default_float_type)
+void LataWriter::init_file(const Nom& path, const Nom& basename, const LataDBDataType& default_int_format, LataDBDataType::Type default_float_type)
 {
   db_.reset();
   db_.set_path_prefix(path);
@@ -42,7 +42,7 @@ void LataWriter::write_time(double t)
   db_.add_timestep(t);
 }
 
-void LataWriter::write_geometry(const Domain &dom)
+void LataWriter::write_geometry(const Domain& dom)
 {
   // Index of the last timestep:
   const entier tstep = db_.nb_timesteps() - 1;
@@ -65,7 +65,7 @@ void LataWriter::write_geometry(const Domain &dom)
       //  ELEMENTS
       //  [ FACES ]
       //  [ ELEM_FACES ]
-      const DomainUnstructured &domain = *dom1_ptr;
+      const DomainUnstructured& domain = *dom1_ptr;
       LataDBField field;
       // Write nodes
       Nom fieldname = "SOMMETS";
@@ -179,7 +179,7 @@ void LataWriter::write_geometry(const Domain &dom)
       //  the nodes coordinates in each direction:
       //  SOMMETS_IJK_I, SOMMETS_IJK_J, SOMMETS_IJK_K.
 
-      const DomainIJK &domain = *dom2_ptr;
+      const DomainIJK& domain = *dom2_ptr;
       // Write coordinates
       const entier dim = domain.coord_.size();
       if (dim > 3)
@@ -194,13 +194,13 @@ void LataWriter::write_geometry(const Domain &dom)
       for (entier i_dim = 0; i_dim < dim; i_dim++)
         {
           FloatTab coord;
-            {
-              const ArrOfFloat &x = domain.coord_[i_dim];
-              const entier n = x.size_array();
-              coord.resize(n, 1);
-              for (entier i = 0; i < n; i++)
-                coord(i, 0) = x[i];
-            }
+          {
+            const ArrOfFloat& x = domain.coord_[i_dim];
+            const entier n = x.size_array();
+            coord.resize(n, 1);
+            for (entier i = 0; i < n; i++)
+              coord(i, 0) = x[i];
+          }
 
           Nom fieldname = "SOMMETS_IJK_";
           fieldname += dir_names[i_dim];
@@ -272,7 +272,7 @@ void LataWriter::write_geometry(const Domain &dom)
     }
 }
 
-void LataWriter::write_component(const LataField_base &field)
+void LataWriter::write_component(const LataField_base& field)
 {
   // Index of the last timestep:
   const entier tstep = db_.nb_timesteps() - 1;

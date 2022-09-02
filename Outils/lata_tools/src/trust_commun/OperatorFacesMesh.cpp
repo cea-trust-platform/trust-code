@@ -19,7 +19,7 @@
 // Journal level
 #define verb_level 4
 
-void build_geometry_(OperatorFacesMesh &op, const DomainUnstructured &src, LataDeriv<Domain> &dest_domain)
+void build_geometry_(OperatorFacesMesh& op, const DomainUnstructured& src, LataDeriv<Domain>& dest_domain)
 {
   Journal(verb_level) << "OperatorFacesMesh geometry(unstructured) " << src.id_.name_ << endl;
   if (!src.faces_ok())
@@ -37,7 +37,7 @@ void build_geometry_(OperatorFacesMesh &op, const DomainUnstructured &src, LataD
   // const entier nb_elem = src.elem_faces_.dimension(0); // Not elements_, in case elem_faces_ has no virtual data.
   //const entier dim = src.dimension();
 
-  DomainUnstructured &dest = dest_domain.instancie(DomainUnstructured);
+  DomainUnstructured& dest = dest_domain.instancie(DomainUnstructured);
   dest.id_ = src.id_;
   dest.id_.name_ += "_centerfaces";
   if (src.elt_type_ == Domain::triangle || src.elt_type_ == Domain::quadri || src.elt_type_ == Domain::polygone)
@@ -59,7 +59,7 @@ void build_geometry_(OperatorFacesMesh &op, const DomainUnstructured &src, LataD
 // (destination field is located at the elements. the value for an element
 //  is the value associated to the adjacent face of the source domain).
 template<class TabType>
-void build_field_(OperatorFacesMesh &op, const DomainUnstructured &src_domain, const DomainUnstructured &dest_domain, const Field<TabType> &src, Field<TabType> &dest)
+void build_field_(OperatorFacesMesh& op, const DomainUnstructured& src_domain, const DomainUnstructured& dest_domain, const Field<TabType>& src, Field<TabType>& dest)
 {
   Journal(verb_level) << "OperatorFacesMesh field(unstructured) " << src.id_.uname_ << endl;
   dest.component_names_ = src.component_names_;
@@ -70,7 +70,7 @@ void build_field_(OperatorFacesMesh &op, const DomainUnstructured &src_domain, c
 
 }
 
-void build_geometry_(OperatorFacesMesh &op, const DomainIJK &src, LataDeriv<Domain> &dest_domain)
+void build_geometry_(OperatorFacesMesh& op, const DomainIJK& src, LataDeriv<Domain>& dest_domain)
 {
   Journal(verb_level) << "OperatorFacesMesh geometry(ijk) " << src.id_.name_ << endl;
   Journal() << "Error in OperatorFacesMesh::build_geometry: cannot operate on domainIJK" << endl;
@@ -78,19 +78,19 @@ void build_geometry_(OperatorFacesMesh &op, const DomainIJK &src, LataDeriv<Doma
 
 }
 template<class TabType>
-void build_field_(OperatorFacesMesh &op, const DomainIJK &src_domain, const DomainIJK &dest_domain, const Field<TabType> &src, Field<TabType> &dest)
+void build_field_(OperatorFacesMesh& op, const DomainIJK& src_domain, const DomainIJK& dest_domain, const Field<TabType>& src, Field<TabType>& dest)
 {
   Journal(verb_level) << "OperatorFacesMesh field(ijk) " << src.id_.uname_ << endl;
   Journal() << "Error in OperatorFacesMesh::build_geometry: cannot operate on domainIJK" << endl;
   throw;
 }
 
-void OperatorFacesMesh::build_geometry(const Domain &src_domain, LataDeriv<Domain> &dest)
+void OperatorFacesMesh::build_geometry(const Domain& src_domain, LataDeriv<Domain>& dest)
 {
   apply_geometry(*this, src_domain, dest);
 }
 
-void OperatorFacesMesh::build_field(const Domain &src_domain, const LataField_base &src_field, const Domain &dest_domain, LataDeriv<LataField_base> &dest)
+void OperatorFacesMesh::build_field(const Domain& src_domain, const LataField_base& src_field, const Domain& dest_domain, LataDeriv<LataField_base>& dest)
 {
   if (src_field.localisation_ != LataField_base::FACES)
     {

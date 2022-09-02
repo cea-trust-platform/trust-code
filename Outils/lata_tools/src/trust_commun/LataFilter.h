@@ -27,17 +27,17 @@ typedef Field<FloatTab> FieldFloat;
 //  apply operators. Once computed, the data is kept in a data cache
 //  to speed up further access to the same data.
 
-// This class holds the LataFilter configuration (determines which 
+// This class holds the LataFilter configuration (determines which
 //   combination of operators should be applied to the data)
 class LataOptions
 {
 public:
-  static void extract_path_basename(const char *s, Nom &path_prefix, Nom &basename);
-  static entier read_int_opt(const Nom &s);
-  static double read_float_opt(const Nom &s);
-  static Nom read_string_opt(const Nom &s);
+  static void extract_path_basename(const char *s, Nom& path_prefix, Nom& basename);
+  static entier read_int_opt(const Nom& s);
+  static double read_float_opt(const Nom& s);
+  static Nom read_string_opt(const Nom& s);
 
-  Nom basename; // Name of the case. 
+  Nom basename; // Name of the case.
   Nom path_prefix; // Path for the case.
 
   // Generate de the following meshes and associated data, if the flag is set.
@@ -50,7 +50,7 @@ public:
   float reconnect_tolerance;
   int regularize_polyedre; // if 1 Treate polyedre as poyledre extruder
   int regularize;    // Do we want to force regularize the domain ie convert the mesh to a structured ijk (not necessary except for dual-mesh vdf)
-                     // special value 2 means "regularize if faces present and vdf"
+  // special value 2 means "regularize if faces present and vdf"
   int extend_domain; // Extend the regularized domaine by n layers of cells
   float regularize_tolerance;
   bool invalidate; // invalidate unused positions and connections;
@@ -78,8 +78,8 @@ public:
 class Operator: public LataObject
 {
 public:
-  virtual void build_field(const Domain &src_domain, const LataField_base &src_field, const Domain &dest_domain, LataDeriv<LataField_base> &dest) = 0;
-  virtual void build_geometry(const Domain &src_domain, LataDeriv<Domain> &dest) = 0;
+  virtual void build_field(const Domain& src_domain, const LataField_base& src_field, const Domain& dest_domain, LataDeriv<LataField_base>& dest) = 0;
+  virtual void build_geometry(const Domain& src_domain, LataDeriv<Domain>& dest) = 0;
 protected:
 };
 
@@ -136,21 +136,21 @@ public:
     cache_data_access_count_ = 0;
   }
   void set_cache_properties(entier clear_on_tstep_change, BigEntier mem_limit);
-  template<class C> C& get_item(const Nom &id, entier tstep)
+  template<class C> C& get_item(const Nom& id, entier tstep)
   {
-    LataDeriv<LataObject> &obj = get_item_(id, tstep);
+    LataDeriv<LataObject>& obj = get_item_(id, tstep);
     if (obj.non_nul())
       return obj.refcast(C);
     else
       return obj.instancie(C);
   }
-  void release_item(const Nom &id);
-  void remove_item(const Nom &id);
+  void release_item(const Nom& id);
+  void remove_item(const Nom& id);
   void cleanup_cache(entier tstep_to_keep);
 protected:
-  LataDeriv<LataObject>& get_item_(const Nom &id, entier tstep);
+  LataDeriv<LataObject>& get_item_(const Nom& id, entier tstep);
   // Stored data (depends on caching strategy)
-  // data_ grows when needed. 
+  // data_ grows when needed.
   LataVector<DataCacheItem> data_;
   BigEntier cache_data_access_count_;
   // If nonzero, whenever we ask a timestep,
@@ -163,7 +163,7 @@ protected:
 };
 
 // Description: This is the MAIN class for the lata filter tool:
-//  It reads data from a lata database on disk (initialize), 
+//  It reads data from a lata database on disk (initialize),
 //   and proposes several geometries and fields (get_exportable...) to the user.
 //  The user can get them with get_geometry and get_field.
 //  He must then call release_geometry and release_field to free the memory.
@@ -178,12 +178,12 @@ class LataFilter
 {
 public:
   LataFilter() : lataDB__(0) { }
-  void initialize(const LataOptions &opt, const LataDB &db);
+  void initialize(const LataOptions& opt, const LataDB& db);
   void set_cache_properties(BigEntier max_memory, const entier keep_all_timesteps);
   Noms get_exportable_geometry_names() const;
   const LataGeometryMetaData& get_geometry_metadata(const char *geometry) const;
   LataVector<Field_UName> get_exportable_field_unames(const char *geometry) const;
-  const LataFieldMetaData& get_field_metadata(const Field_UName &uname) const;
+  const LataFieldMetaData& get_field_metadata(const Field_UName& uname) const;
   entier get_nb_timesteps() const;
   double get_timestep(entier i) const;
 
@@ -199,15 +199,15 @@ public:
 
   const LataOptions& get_options() const { return opt_; }
 protected:
-  Operator& get_set_operator(const Domain_Id &id);
+  Operator& get_set_operator(const Domain_Id& id);
   LataDeriv<LataField_base>& get_cached_field(const Field_Id&);
   LataDeriv<Domain>& get_cached_domain(const Domain_Id&);
   LataDeriv<Operator>& get_cached_operator(const Domain_Id&);
   void release_cached_domain(const Domain_Id&);
   void release_cached_field(const Field_Id&);
   void release_cached_operator(const Domain_Id&);
-  const Domain& get_geom_field_(const Field_Id &id, LataRef<const LataField_base> &field_result);
-  void get_all_metadata(LataVector<LataGeometryMetaData> &geoms_data, LataVector<LataFieldMetaData> &fields_data);
+  const Domain& get_geom_field_(const Field_Id& id, LataRef<const LataField_base>& field_result);
+  void get_all_metadata(LataVector<LataGeometryMetaData>& geoms_data, LataVector<LataFieldMetaData>& fields_data);
   // LataDB       & lataDB() { return lataDB__; }
   const LataDB& lataDB() const
   {
@@ -221,7 +221,7 @@ protected:
   //  LataDeriv<LataField_base>
   LataFilterCache data_cache_;
 
-  // LataV2 masterfile database 
+  // LataV2 masterfile database
   const LataDB *lataDB__;
   LataOptions opt_;
   // Metadata information for all fields and geometries (built in initialize)
@@ -245,7 +245,7 @@ struct InternalError
   const char *msg_;
 };
 
-void LataDB_apply_input_filter(const LataDB &lata_db, LataDB &filtered_db, const ArrOfInt &input_timesteps_filter, const Noms &input_domains_filter, const Noms &input_components_filter);
+void LataDB_apply_input_filter(const LataDB& lata_db, LataDB& filtered_db, const ArrOfInt& input_timesteps_filter, const Noms& input_domains_filter, const Noms& input_components_filter);
 
 #endif
 

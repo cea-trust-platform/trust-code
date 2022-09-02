@@ -24,22 +24,28 @@ class LataVector
 {
 public:
   LataVector() : n_(0), data_(0) { }
-  LataVector(const LataVector<C> & x) : n_(0), data_(0) { operator=(x); }
+  LataVector(const LataVector<C>& x) : n_(0), data_(0) { operator=(x); }
   LataVector(entier n) : n_(0), data_(0) { for (entier i=0; i<n; i++) add(); }
   ~LataVector() { reset(); }
   void reset() { for (int i=0; i<n_; i++) { delete data_[i]; }; delete[] data_; n_ = 0; data_ = 0; }
-  const C & operator[](entier i) const { assert(i>=0 && i<n_); return *(data_[i]); }
-  C & operator[](entier i) { assert(i>=0 && i<n_); return *(data_[i]); }
-  C & add(const C & item) { return add_item(new C(item)); }
-  C & add() { return add_item(new C); }
+  const C& operator[](entier i) const { assert(i>=0 && i<n_); return *(data_[i]); }
+  C& operator[](entier i) { assert(i>=0 && i<n_); return *(data_[i]); }
+  C& add(const C& item) { return add_item(new C(item)); }
+  C& add() { return add_item(new C); }
   entier size() const { return n_; }
-  entier rang(const C & c) const { for (entier i = 0; i < n_; i++) if (*(data_[i]) == c) return i; return -1; }
-  LataVector<C> & operator=(const LataVector<C> & x) { reset(); for (int i=0; i<x.n_; i++) add(x[i]); return *this; }
+  entier rang(const C& c) const
+  {
+    for (entier i = 0; i < n_; i++)
+      if (*(data_[i]) == c) return i;
+    return -1;
+  }
+  LataVector<C>& operator=(const LataVector<C>& x) { reset(); for (int i=0; i<x.n_; i++) add(x[i]); return *this; }
 private:
-  C & add_item(C* added_item) {
-    C** old = data_; 
-    data_ = new C*[n_+1]; 
-    for (int i=0; i<n_; i++) data_[i] = old[i]; 
+  C& add_item(C* added_item)
+  {
+    C** old = data_;
+    data_ = new C*[n_+1];
+    for (int i=0; i<n_; i++) data_[i] = old[i];
     delete[] old;
     data_[n_++] = added_item;
     return *added_item;

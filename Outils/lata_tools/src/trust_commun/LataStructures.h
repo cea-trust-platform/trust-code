@@ -24,7 +24,7 @@
 //  used by LataFilter.
 
 // Description: Domain_Id is what you need to identify the content
-//  of a Domain object (at this time, the domain name, the timestep and the 
+//  of a Domain object (at this time, the domain name, the timestep and the
 //  parallel sub_block number)
 class Domain_Id
 {
@@ -39,13 +39,13 @@ public:
 };
 
 // Description: Field_Id is what you need to identify the content of a
-//  LataField_base structure (at this time, the field uname, 
+//  LataField_base structure (at this time, the field uname,
 //  the timestep and the parallel sub_block number)
 class Field_Id
 {
 public:
   Field_Id() : timestep_(0) { }
-  Field_Id(const Field_UName &uname, int timestep, int block) : timestep_(timestep), block_(block), uname_(uname) { }
+  Field_Id(const Field_UName& uname, int timestep, int block) : timestep_(timestep), block_(block), uname_(uname) { }
 
   int timestep_;
   int block_;
@@ -84,13 +84,13 @@ public:
   Domain_Id id_;
   enum Element { point, line, triangle, quadri, tetra, hexa, prism6, polyedre, polygone, unspecified };
   enum DomainType { IJK, UNSTRUCTURED };
-  static Element element_type_from_string(const Motcle &type_elem);
+  static Element element_type_from_string(const Motcle& type_elem);
   static Nom element_type_to_string(Element type);
   Element elt_type_;
 
   Domain() :
-      elt_type_(unspecified), decal_nodes_lata_(-1), // -1 indicates: value not set. see lata_block_offset
-      decal_elements_lata_(-1), decal_faces_lata_(-1) { } ;
+    elt_type_(unspecified), decal_nodes_lata_(-1), // -1 indicates: value not set. see lata_block_offset
+    decal_elements_lata_(-1), decal_faces_lata_(-1) { } ;
   DomainType get_domain_type() const;
   const DomainUnstructured& cast_DomainUnstructured() const;
   const DomainIJK& cast_DomainIJK() const;
@@ -102,7 +102,7 @@ public:
   virtual entier lata_block_offset(const LataField_base::Elem_som) const;
   virtual void set_lata_block_offset(const LataField_base::Elem_som, entier n);
 
-  virtual void fill_field_from_lataDB(const LataDB &lataDB, const Field_Id &id, LataDeriv<LataField_base> &field) const = 0;
+  virtual void fill_field_from_lataDB(const LataDB& lataDB, const Field_Id& id, LataDeriv<LataField_base>& field) const = 0;
 
   static Motcle lata_element_name(Domain::Element type);
 
@@ -142,7 +142,7 @@ public:
   entier faces_ok() const { return elem_faces_.dimension(0) == elements_.dimension(0); }
 
   template<typename TabType>
-  void compute_cell_center_coordinates(TabType &coord, entier index_begin) const;
+  void compute_cell_center_coordinates(TabType& coord, entier index_begin) const;
 
   BigEntier compute_memory_size() const override { return memory_size(nodes_) + memory_size(elements_) + memory_size(faces_) + memory_size(elem_faces_); }
   const IntTab& get_joints(LataField_base::Elem_som loc) const
@@ -203,7 +203,7 @@ public:
       }
     return virt_nodes_;
   }
-  void set_virt_items(LataField_base::Elem_som loc, const ArrOfInt &list)
+  void set_virt_items(LataField_base::Elem_som loc, const ArrOfInt& list)
   {
     switch(loc)
       {
@@ -261,8 +261,8 @@ public:
     return nb_virt_nodes_;
   }
 
-  virtual void fill_domain_from_lataDB(const LataDB &lataDB, const Domain_Id &id, entier load_faces = 1, entier merge_virtual_elements = 0);
-  virtual void fill_field_from_lataDB(const LataDB &lataDB, const Field_Id &id, LataDeriv<LataField_base> &field) const override;
+  virtual void fill_domain_from_lataDB(const LataDB& lataDB, const Domain_Id& id, entier load_faces = 1, entier merge_virtual_elements = 0);
+  virtual void fill_field_from_lataDB(const LataDB& lataDB, const Field_Id& id, LataDeriv<LataField_base>& field) const override;
 
 protected:
   // data not always filled:
@@ -348,10 +348,10 @@ public:
       return coord_[dir].size_array() - 1;
   }
 
-  virtual void fill_domain_from_lataDB(const LataDB &lataDB, const Domain_Id &id, const entier split_in_nparts = 1, const entier virt_layer_size = 1);
-  void fill_field_from_lataDB(const LataDB &lataDB, const Field_Id &id, LataDeriv<LataField_base> &field) const override;
+  virtual void fill_domain_from_lataDB(const LataDB& lataDB, const Domain_Id& id, const entier split_in_nparts = 1, const entier virt_layer_size = 1);
+  void fill_field_from_lataDB(const LataDB& lataDB, const Field_Id& id, LataDeriv<LataField_base>& field) const override;
 
-  // when loading fields, we will load elements (i,j,k) with 
+  // when loading fields, we will load elements (i,j,k) with
   //   part_begin_ <= k < part_end_
   // (or j in 2D), part_begin_ and part_end_ include the virtual layer
   entier part_begin_;

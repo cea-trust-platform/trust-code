@@ -63,7 +63,7 @@ int Ecart(double x, double y, double ymax, double gepsilon = 1e-5)
   return (flag);
 }
 
-void open(Nom &filename, LataFilter &filter, LataOptions &opt, LataDB &lata_db)
+void open(Nom& filename, LataFilter& filter, LataOptions& opt, LataDB& lata_db)
 {
   try
     {
@@ -91,7 +91,7 @@ void usage(const char *arg0)
   cerr << "usage " << arg0 << " file1 file2 [--dernier] [--seuil val] [--valmin val] [--max_delta]" << endl;
 }
 
-const Domain& get_domain(LataFilter &filter, Domain_Id &id, Nom &filename)
+const Domain& get_domain(LataFilter& filter, Domain_Id& id, Nom& filename)
 {
   try
     {
@@ -112,14 +112,14 @@ const Domain& get_domain(LataFilter &filter, Domain_Id &id, Nom &filename)
 }
 
 // methode mettre dans lata_analyzer, commune compare_lata et lata_to_other
-DomainUnstructured convertIJKtoUnstructured(const DomainIJK &ijk)
+DomainUnstructured convertIJKtoUnstructured(const DomainIJK& ijk)
 {
   cerr << "conversion domaijk ";
   DomainUnstructured dom;
   dom.elt_type_ = ijk.elt_type_;
   int nx = 1, ny = 1, nz = 1;
 
-  FloatTab &som = dom.nodes_;
+  FloatTab& som = dom.nodes_;
   const int dim = ijk.coord_.size();
   nx = ijk.coord_[0].size_array();
   ny = ijk.coord_[1].size_array();
@@ -140,7 +140,7 @@ DomainUnstructured convertIJKtoUnstructured(const DomainIJK &ijk)
             som(nn, 2) = ijk.coord_[2][k];
         }
 
-  IntTab &elems = dom.elements_;
+  IntTab& elems = dom.elements_;
   int nb_som_elem = 4;
   if (dim == 3)
     {
@@ -182,14 +182,14 @@ DomainUnstructured convertIJKtoUnstructured(const DomainIJK &ijk)
   return dom;
 }
 
-void print(const Noms &geoms)
+void print(const Noms& geoms)
 {
   for (int i = 0; i < geoms.size(); i++)
     cerr << geoms[i] << " ";
   cerr << endl;
 }
 
-Motcle get_long_field_name(const Field_UName &field)
+Motcle get_long_field_name(const Field_UName& field)
 {
   Motcle titi(field.get_field_name());
   titi += "_";
@@ -199,7 +199,7 @@ Motcle get_long_field_name(const Field_UName &field)
   return titi;
 }
 
-void print(const Field_UNames &geoms)
+void print(const Field_UNames& geoms)
 {
   for (int i = 0; i < geoms.size(); i++)
     cerr << get_long_field_name(geoms[i]) << " ";
@@ -220,7 +220,7 @@ int compare_temps(double time, double t)
 
 }
 
-int compare_noms(const Noms &geoms, const Noms &geoms2, Noms &geoms3)
+int compare_noms(const Noms& geoms, const Noms& geoms2, Noms& geoms3)
 {
   int status = 1;
   int size = geoms.size();
@@ -241,7 +241,7 @@ int compare_noms(const Noms &geoms, const Noms &geoms2, Noms &geoms3)
     }
   return status;
 }
-int compare_noms(const Field_UNames &geoms, const Field_UNames &geoms2, Field_UNames &geoms3)
+int compare_noms(const Field_UNames& geoms, const Field_UNames& geoms2, Field_UNames& geoms3)
 {
   int status = 1;
   int size = geoms.size();
@@ -266,20 +266,20 @@ int compare_noms(const Field_UNames &geoms, const Field_UNames &geoms2, Field_UN
   return status;
 }
 
-void construit_corres(const DomainUnstructured &dom, const DomainUnstructured &dom2, ArrOfInt &ielem, ArrOfInt &iseq)
+void construit_corres(const DomainUnstructured& dom, const DomainUnstructured& dom2, ArrOfInt& ielem, ArrOfInt& iseq)
 {
 
   /* On verifie que tous les sommets sont identiques sur chaque grille */
   xmax = 0.0;
   ymax = 0.0;
   zmax = 0.0;
-  const FloatTab &coord1 = dom.nodes_;
-  const FloatTab &coord2 = dom2.nodes_;
+  const FloatTab& coord1 = dom.nodes_;
+  const FloatTab& coord2 = dom2.nodes_;
   int nb_nodes = coord1.dimension(0);
   int nb_nodes2 = coord2.dimension(0);
-  const IntTab &connect = dom.elements_;
+  const IntTab& connect = dom.elements_;
   int nb_maille = connect.dimension(0);
-  const IntTab &connect2 = dom2.elements_;
+  const IntTab& connect2 = dom2.elements_;
   int nb_maille2 = connect2.dimension(0);
   int dimension = coord1.dimension(1);
 
@@ -567,7 +567,7 @@ public:
   LataVector<Ecarts> les_ecarts_;
 };
 
-void compare_fields(const FieldFloat &field, const FieldFloat &field2, Ecarts &ecarts, const ArrOfInt &ielem, const ArrOfInt &isom)
+void compare_fields(const FieldFloat& field, const FieldFloat& field2, Ecarts& ecarts, const ArrOfInt& ielem, const ArrOfInt& isom)
 {
   if (field.localisation_ != field2.localisation_)
     exit(-1);
@@ -576,10 +576,10 @@ void compare_fields(const FieldFloat &field, const FieldFloat &field2, Ecarts &e
       cerr << "compare_fields not coded for this localisation " << LataField_base::localisation_to_string(field.localisation_) << endl;
       exit(-1);
     }
-  const ArrOfInt &renum = (field.localisation_ == LataField_base::ELEM ? ielem : isom);
-  const FloatTab &tab = field.data_;
+  const ArrOfInt& renum = (field.localisation_ == LataField_base::ELEM ? ielem : isom);
+  const FloatTab& tab = field.data_;
   int nv = tab.dimension(0);
-  const FloatTab &tab2 = field2.data_;
+  const FloatTab& tab2 = field2.data_;
   int nv2 = tab2.dimension(0);
   int nc = tab.dimension(1);
   ecarts.dimensionne(nc);
@@ -589,7 +589,7 @@ void compare_fields(const FieldFloat &field, const FieldFloat &field2, Ecarts &e
       float min = 1e30;
       for (int i = 0; i < nv; i++)
         {
-          const double &val = tab(i, c);
+          const double& val = tab(i, c);
           if (val > max)
             max = val;
           if (val < min)
@@ -607,8 +607,8 @@ void compare_fields(const FieldFloat &field, const FieldFloat &field2, Ecarts &e
       for (int i = 0; i < nv2; i++)
         {
           int iseq = renum[i];
-          const float &val = tab(iseq, c);
-          const float &val2 = tab2(i, c);
+          const float& val = tab(iseq, c);
+          const float& val2 = tab2(i, c);
           float dval = fabs(val2 - val);
           if (val2 > max)
             max = val2;
@@ -630,7 +630,7 @@ void compare_fields(const FieldFloat &field, const FieldFloat &field2, Ecarts &e
       //      cerr<<"ici "<<delta<<" " <<min<<" "<<max<<endl;
     }
 }
-int test_nom_champ_vitesse(const Nom &nom_champ, const char Y)
+int test_nom_champ_vitesse(const Nom& nom_champ, const char Y)
 {
   if ((strstr(nom_champ, "vitesse") || strstr(nom_champ, "VITESSE")))
     {
@@ -707,20 +707,20 @@ int main(int argc, char **argv)
   Noms geoms3;
 
   int gnerr = -1;
-    {
-      Noms geoms = filter.get_exportable_geometry_names();
-      Noms geoms2 = filter2.get_exportable_geometry_names();
-      if (compare_noms(geoms, geoms2, geoms3) == 0)
-        {
-          cerr << filename << " has " << geoms.size() << " geometry : ";
-          print(geoms);
-          cerr << filename2 << " has " << geoms2.size() << " geometry : ";
-          print(geoms2);
-          cerr << geoms3.size() << " geometries communs  in " << filename << " and in " << filename2 << " ";
-          print(geoms3);
-          gnerr += 1000;
-        }
-    }
+  {
+    Noms geoms = filter.get_exportable_geometry_names();
+    Noms geoms2 = filter2.get_exportable_geometry_names();
+    if (compare_noms(geoms, geoms2, geoms3) == 0)
+      {
+        cerr << filename << " has " << geoms.size() << " geometry : ";
+        print(geoms);
+        cerr << filename2 << " has " << geoms2.size() << " geometry : ";
+        print(geoms2);
+        cerr << geoms3.size() << " geometries communs  in " << filename << " and in " << filename2 << " ";
+        print(geoms3);
+        gnerr += 1000;
+      }
+  }
   LataVector<EcartField> les_ecarts;
   for (entier i = 0; i < geoms3.size(); i++)
     {
@@ -773,12 +773,12 @@ int main(int argc, char **argv)
     {
       Domain_Id id(geoms3[i], 1, -1);
 
-      const Domain &dom = get_domain(filter, id, filename);
-      const Domain &dom2 = get_domain(filter2, id, filename2);
+      const Domain& dom = get_domain(filter, id, filename);
+      const Domain& dom2 = get_domain(filter2, id, filename2);
       ArrOfInt ielem, isom;
       // on construit les tableux de ocnnectivites elem2 -> elem et som2 -> som
       construit_corres(((dom.get_domain_type() == Domain::UNSTRUCTURED) ? dom.cast_DomainUnstructured() : convertIJKtoUnstructured(dom.cast_DomainIJK())),
-          (dom2.get_domain_type() == Domain::UNSTRUCTURED) ? dom2.cast_DomainUnstructured() : convertIJKtoUnstructured(dom2.cast_DomainIJK()), ielem, isom);
+                       (dom2.get_domain_type() == Domain::UNSTRUCTURED) ? dom2.cast_DomainUnstructured() : convertIJKtoUnstructured(dom2.cast_DomainIJK()), ielem, isom);
 
       /*
        cerr<<dom.get_domain_type()<<endl;
@@ -793,7 +793,7 @@ int main(int argc, char **argv)
 
       for (entier j = 0; j < fields3.size(); j++)
         {
-          EcartField &un_ecart = les_ecarts.add();
+          EcartField& un_ecart = les_ecarts.add();
           un_ecart.name_ = fields3[j];
           un_ecart.les_ecarts_.add();
           //double val_max=0;
@@ -815,11 +815,11 @@ int main(int argc, char **argv)
               Field_Id id2(fields3[j], t2, -1);
               try
                 {
-                  const FieldFloat &field = filter.get_float_field(id);
+                  const FieldFloat& field = filter.get_float_field(id);
                   //	  cerr<<field.id_.uname_<<field.data_.dimension(1)<<endl;
-                  const FieldFloat &field2 = filter2.get_float_field(id2);
+                  const FieldFloat& field2 = filter2.get_float_field(id2);
 
-                  Ecarts &ecarts = un_ecart.les_ecarts_.add();
+                  Ecarts& ecarts = un_ecart.les_ecarts_.add();
                   ecarts.t = filter.get_timestep(t1);
                   compare_fields(field, field2, ecarts, ielem, isom);
 
@@ -843,7 +843,7 @@ int main(int argc, char **argv)
   for (int j = 0; j < les_ecarts.size(); j++)
     {
 
-      const EcartField &un_ecart = les_ecarts[j];
+      const EcartField& un_ecart = les_ecarts[j];
 
       Nom nom_champ = get_long_field_name(un_ecart.name_);
       int nbc = un_ecart.les_ecarts_[1].min.size_array();
@@ -867,7 +867,7 @@ int main(int argc, char **argv)
                     for (int i = 0; i < nbv; i++)
                       {
 
-                        const Ecarts &ecarts = les_ecarts[j - 1 + i].les_ecarts_[t];
+                        const Ecarts& ecarts = les_ecarts[j - 1 + i].les_ecarts_[t];
                         // cerr<<t<<" la "<<ecarts.min[0]<<" "<<ecarts.max[0]<<endl;
                         double p = (ecarts.min[0]);
                         if (p < min)
@@ -878,7 +878,7 @@ int main(int argc, char **argv)
                       }
                     for (int i = 0; i < nbv; i++)
                       {
-                        Ecarts &ecarts = les_ecarts[j - 1 + i].les_ecarts_[t];
+                        Ecarts& ecarts = les_ecarts[j - 1 + i].les_ecarts_[t];
                         ecarts.max[0] = max;
                         ecarts.min[0] = min;
                       }
@@ -891,7 +891,7 @@ int main(int argc, char **argv)
 
   if (les_ecarts.size())
     {
-      const EcartField &un_ecart = les_ecarts[0];
+      const EcartField& un_ecart = les_ecarts[0];
 
       int nbtime = un_ecart.les_ecarts_.size();
       ArrOfFloat max_field(les_ecarts.size());
@@ -900,61 +900,61 @@ int main(int argc, char **argv)
           {
             double em = 0;
             int gnerrf = -1;
-            const EcartField &un_ecart = les_ecarts[j];
+            const EcartField& un_ecart = les_ecarts[j];
 
             // cerr<<un_ecart.name_<<endl;
             int nbc = un_ecart.les_ecarts_[1].min.size_array();
-            float &max = max_field[j];
-              {
-                const Ecarts &ecarts = un_ecart.les_ecarts_[t];
+            float& max = max_field[j];
+            {
+              const Ecarts& ecarts = un_ecart.les_ecarts_[t];
 
-                for (int c = 0; c < nbc; c++)
-                  {
-                    if (max_delta == 0)
+              for (int c = 0; c < nbc; c++)
+                {
+                  if (max_delta == 0)
+                    {
+                      double p = fabs(ecarts.min[c]);
+                      if (p > max)
+                        max = p;
+                      p = fabs(ecarts.max[c]);
+                      if (p > max)
+                        max = p;
+                    }
+                  else
+                    {
+                      double p = (ecarts.max[c] - ecarts.min[c] + 1e-2);
+                      if (p > max)
+                        max = p;
+                    }
+                }
+              int c0 = -1;
+              for (int c = 0; c < nbc; c++)
+                {
+                  // cerr<<t<<" " <<ecarts.t<<" "<<max[c]<<" "<<ecarts.delta[c]<<endl;
+                  if (Ecart(ecarts.val[c], ecarts.val2[c], max, gepsilon_champs))
+                    if (fabs(gerr) >= em)
                       {
-                        double p = fabs(ecarts.min[c]);
-                        if (p > max)
-                          max = p;
-                        p = fabs(ecarts.max[c]);
-                        if (p > max)
-                          max = p;
+                        em = gerr;
+                        c0 = c;
                       }
-                    else
-                      {
-                        double p = (ecarts.max[c] - ecarts.min[c] + 1e-2);
-                        if (p > max)
-                          max = p;
-                      }
-                  }
-                int c0 = -1;
-                for (int c = 0; c < nbc; c++)
-                  {
-                    // cerr<<t<<" " <<ecarts.t<<" "<<max[c]<<" "<<ecarts.delta[c]<<endl;
-                    if (Ecart(ecarts.val[c], ecarts.val2[c], max, gepsilon_champs))
-                      if (fabs(gerr) >= em)
-                        {
-                          em = gerr;
-                          c0 = c;
-                        }
-                    //	      cerr<<gerr<< " ici  "<<gemax<<" "<<un_ecart.name_<<" " <<ecarts.t<<endl;
-                  }
-                if (em > 0.)
-                  {
-                    int c = c0;
-                    Nom type_case(un_ecart.name_.get_localisation());
+                  //	      cerr<<gerr<< " ici  "<<gemax<<" "<<un_ecart.name_<<" " <<ecarts.t<<endl;
+                }
+              if (em > 0.)
+                {
+                  int c = c0;
+                  Nom type_case(un_ecart.name_.get_localisation());
 
-                    printf("Ecarts pour %s au temps:%15.8e Erreur max:%10.3e %s seq %d=%15.8e %s par %d=%15.8e  gmax %15.8e composante %d\n", (const char*) get_long_field_name(un_ecart.name_),
-                        ecarts.t, em, (const char*) type_case, ecarts.loc[c], ecarts.val[c], (const char*) type_case, ecarts.loc2[c], ecarts.val2[c], max, c);
-                    gnerr++;
-                    gnerrf++;
-                    em = 0.0;
-                  }
-                else if (gnerrf != -1)
-                  {
-                    printf("    OK pour %s au temps:%15.8e\n", (const char*) get_long_field_name(un_ecart.name_), ecarts.t);
-                  }
+                  printf("Ecarts pour %s au temps:%15.8e Erreur max:%10.3e %s seq %d=%15.8e %s par %d=%15.8e  gmax %15.8e composante %d\n", (const char*) get_long_field_name(un_ecart.name_),
+                         ecarts.t, em, (const char*) type_case, ecarts.loc[c], ecarts.val[c], (const char*) type_case, ecarts.loc2[c], ecarts.val2[c], max, c);
+                  gnerr++;
+                  gnerrf++;
+                  em = 0.0;
+                }
+              else if (gnerrf != -1)
+                {
+                  printf("    OK pour %s au temps:%15.8e\n", (const char*) get_long_field_name(un_ecart.name_), ecarts.t);
+                }
 
-              }
+            }
 
           }
     }

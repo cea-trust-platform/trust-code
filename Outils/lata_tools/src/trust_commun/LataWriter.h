@@ -29,10 +29,10 @@ public:
   enum FileSplittingOption { MULTIPLE_FILES, SINGLE_FILE };
   enum ERRORS { InternalError };
 
-  void init_file(const Nom &path, const Nom &basename, const LataDBDataType &default_int_format, LataDBDataType::Type default_float_type);
+  void init_file(const Nom& path, const Nom& basename, const LataDBDataType& default_int_format, LataDBDataType::Type default_float_type);
   void write_time(double t);
-  void write_geometry(const Domain &dom);
-  void write_component(const LataField_base &field);
+  void write_geometry(const Domain& dom);
+  void write_component(const LataField_base& field);
   void finish();
 
 protected:

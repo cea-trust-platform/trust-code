@@ -40,7 +40,7 @@ static inline float double_to_float(double x)
 // The path to the data file must be set by lata_db.set_path_prefix() before.
 // If data_filename is a null pointer, data files are not written and file offsets in lata_db will
 //  be wrong (useful for just getting metadata)
-void lml_reader(const char *lmlfilename, const char *data_filename, LataDB &lata_db)
+void lml_reader(const char *lmlfilename, const char *data_filename, LataDB& lata_db)
 {
   Nom filename_in_master_file;
   if (!data_filename)
@@ -228,8 +228,9 @@ void lml_reader(const char *lmlfilename, const char *data_filename, LataDB &lata
                   is >> elems(i, j);
                   if (!is.good())
                     throw LataDBError(LataDBError::READ_ERROR);
-                  elems(i, j)--;if
-(                  elems(i,j) < borne_index_min || elems(i,j) >= sommets.size_ )
+                  elems(i, j)--;
+                  if
+                  (                  elems(i,j) < borne_index_min || elems(i,j) >= sommets.size_ )
                     {
                       Journal() << "Error reading TOPOLOGIE: bad node number elem(" << i << "," << j << ")=" << elems(i,j) << endl;
                       throw;
@@ -398,7 +399,7 @@ void lml_to_lata(const char *lmlname, const char *latafilename, entier ascii, en
 //  path_prefix: the path (used to access lata data files)
 // If dest_file_if_lml is not null, puts lml data into this file...
 // In this case, you must set lata_db.default_type* to tell which format to use.
-void read_any_format(const char *file, const Nom &path_prefix, LataDB &lata_db)
+void read_any_format(const char *file, const Nom& path_prefix, LataDB& lata_db)
 {
   // Is it an lml ?
   Motcle motcle_nom_fic(file);
@@ -431,7 +432,7 @@ void read_any_format(const char *file, const Nom &path_prefix, LataDB &lata_db)
 // Description: if the file is a lata file, read the third line and interprets it as options
 //  if lml format, do nothing
 //  otherwise, error.
-void read_any_format_options(const char *file, LataOptions &opt)
+void read_any_format_options(const char *file, LataOptions& opt)
 {
   Motcle nom_fic(file);
   if (nom_fic.finit_par(".lml"))

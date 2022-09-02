@@ -78,7 +78,7 @@ int LataLoader::GetNTimesteps(void)
   return n;
 }
 
-void LataLoader::GetTimes(std::vector<double> &times)
+void LataLoader::GetTimes(std::vector<double>& times)
 {
   int n;
   try
@@ -193,7 +193,7 @@ void LataLoader::PopulateDatabaseMetaData(int timeState)
     }
 }
 
-void LataLoader::register_fieldname(const char *visit_name, const Field_UName &uname, int component)
+void LataLoader::register_fieldname(const char *visit_name, const Field_UName& uname, int component)
 {
   if (field_username_.rang(visit_name) >= 0)
     {
@@ -243,16 +243,16 @@ MEDCouplingMesh* LataLoader::GetMesh(const char *meshname, int timestate, int bl
           throw;
         }
       Domain_Id id(mesh_latafilter_name_[index], timestate, block);
-      const Domain &geometry = filter_.get_geometry(id);
+      const Domain& geometry = filter_.get_geometry(id);
 
       const DomainUnstructured *geom_ptr = dynamic_cast<const DomainUnstructured*>(&geometry);
       const DomainIJK *ijk_ptr = dynamic_cast<const DomainIJK*>(&geometry);
 
       if (geom_ptr)
         {
-          const DomainUnstructured &geom = *geom_ptr;
+          const DomainUnstructured& geom = *geom_ptr;
 
-          const FloatTab &pos = geom.nodes_;
+          const FloatTab& pos = geom.nodes_;
           const int nnodes = pos.dimension(0);
           //   const int dim3 = pos.dimension(1) == 3;
           const int dim = pos.dimension(1);
@@ -265,7 +265,7 @@ MEDCouplingMesh* LataLoader::GetMesh(const char *meshname, int timestate, int bl
           ugrid->setCoords(points);
           points->decrRef();
 
-          const IntTab &conn = geom.elements_;
+          const IntTab& conn = geom.elements_;
           const int ncells = conn.dimension(0);
           int nverts = conn.dimension(1);
 
@@ -449,7 +449,7 @@ MEDCouplingMesh* LataLoader::GetMesh(const char *meshname, int timestate, int bl
       else if (ijk_ptr)
         {
           //  throw "KKKK";
-          const DomainIJK &geom = *ijk_ptr;
+          const DomainIJK& geom = *ijk_ptr;
 
           // Maillage regulier : on transmet la grille ijk
 
@@ -477,7 +477,7 @@ MEDCouplingMesh* LataLoader::GetMesh(const char *meshname, int timestate, int bl
 
               if (i < dim)
                 {
-                  const ArrOfFloat &coord = geom.coord_[i];
+                  const ArrOfFloat& coord = geom.coord_[i];
                   for (int j = 0; j < n; j++)
                     data[j] = coord[j];
                 }
@@ -531,7 +531,7 @@ DataArray* LataLoader::GetVectorVar(int timestate, int block, const char *varnam
        */
       Field_Id id(field_uname, timestate, block);
 
-      const LataField_base &field = filter_.get_field(id);
+      const LataField_base& field = filter_.get_field(id);
 
       const Field<FloatTab> *float_field_ptr = dynamic_cast<const Field<FloatTab>*>(&field);
       const Field<IntTab> *int_field_ptr = dynamic_cast<const Field<IntTab>*>(&field);
@@ -539,8 +539,8 @@ DataArray* LataLoader::GetVectorVar(int timestate, int block, const char *varnam
       if (float_field_ptr)
         {
           DataArrayDouble *rv = DataArrayDouble::New();
-          const Field<FloatTab> &fld = *float_field_ptr;
-          const FloatTab &values = fld.data_;
+          const Field<FloatTab>& fld = *float_field_ptr;
+          const FloatTab& values = fld.data_;
           int ntuples = values.dimension(0);
           int dim = values.dimension(1);
           rv->alloc(ntuples, dim);
@@ -570,7 +570,7 @@ DataArray* LataLoader::GetVectorVar(int timestate, int block, const char *varnam
   return return_value;
 }
 
-void LataLoader::get_field_info_from_visitname(const char *varname, Field_UName &uname, int &component) const
+void LataLoader::get_field_info_from_visitname(const char *varname, Field_UName& uname, int& component) const
 {
   const int k = field_username_.rang(varname);
   if (k < 0)
@@ -595,23 +595,23 @@ MEDCouplingFieldDouble* LataLoader::GetFieldDouble(const char *varname, int time
   int component;
   get_field_info_from_visitname(varname, field_uname, component);
 
-    {
-      const LataGeometryMetaData data = filter_.get_geometry_metadata(field_uname.get_geometry());
+  {
+    const LataGeometryMetaData data = filter_.get_geometry_metadata(field_uname.get_geometry());
 
-      const LataFieldMetaData data2 = filter_.get_field_metadata(field_uname);
+    const LataFieldMetaData data2 = filter_.get_field_metadata(field_uname);
 
-      switch(data2.localisation_)
-        {
-        case LataField_base::ELEM:
-          cent = ON_CELLS;
-          break;
-        case LataField_base::SOM:
-          cent = ON_NODES;
-          break;
-        default:
-          throw;
-        }
-    }
+    switch(data2.localisation_)
+      {
+      case LataField_base::ELEM:
+        cent = ON_CELLS;
+        break;
+      case LataField_base::SOM:
+        cent = ON_NODES;
+        break;
+      default:
+        throw;
+      }
+  }
 
   double time = filter_.get_timestep(timestate + 1);
   MEDCouplingFieldDouble *ret = MEDCouplingFieldDouble::New(cent, ONE_TIME);
@@ -631,7 +631,7 @@ MEDCouplingFieldDouble* LataLoader::GetFieldDouble(const char *varname, int time
 std::vector<std::string> LataLoader::GetMeshNames()
 {
   std::vector<std::string> names;
-  const Noms &geoms = mesh_username_;
+  const Noms& geoms = mesh_username_;
   for (int i = 0; i < geoms.size(); i++)
     names.push_back(geoms[i].getString());
   return names;
@@ -642,13 +642,13 @@ std::vector<std::string> LataLoader::GetFieldNames()
   std::vector<std::string> names;
   for (int i = 0; i < field_username_.size(); i++)
     {
-      const Nom &name = field_username_[i];
+      const Nom& name = field_username_[i];
       if ((!name.debute_par("mesh_quality/")) && (!name.debute_par("normals/")))
         names.push_back(name.getString());
     }
   return names;
 }
-std::vector<std::string> LataLoader::GetFieldNamesOnMesh(const std::string &domain_name)
+std::vector<std::string> LataLoader::GetFieldNamesOnMesh(const std::string& domain_name)
 {
   std::vector<std::string> names;
   std::vector<std::string> names_tot = GetFieldNames();
@@ -656,7 +656,7 @@ std::vector<std::string> LataLoader::GetFieldNamesOnMesh(const std::string &doma
   test += domain_name.c_str();
   for (int i = 0; i < names_tot.size(); i++)
     {
-      const Nom &name = names_tot[i];
+      const Nom& name = names_tot[i];
       if (name.finit_par(test))
         names.push_back(name.getString());
     }

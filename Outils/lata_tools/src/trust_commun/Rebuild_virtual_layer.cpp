@@ -19,7 +19,7 @@
 #include <Static_Int_Lists.h>
 #include <Rebuild_virtual_layer.h>
 
-void find_virtual_layer(DomainUnstructured &domain, IntTab &virtual_elements, IntTab &joints_virtual_elements, double tolerance)
+void find_virtual_layer(DomainUnstructured& domain, IntTab& virtual_elements, IntTab& joints_virtual_elements, double tolerance)
 {
   Journal(4) << "Searching virtual elements for domain " << domain.id_.name_ << endl;
   // Step 1 : find duplicate nodes
@@ -35,10 +35,10 @@ void find_virtual_layer(DomainUnstructured &domain, IntTab &virtual_elements, In
   virtual_elements.resize(0, 1);
   virtual_elements.set_smart_resize(1);
 
-  // Step 2 : for each sub_zone, add to virtual_elements list all elements 
+  // Step 2 : for each sub_zone, add to virtual_elements list all elements
   // touching the zone and not included in the zone
-  const IntTab &joints_sommets = domain.get_joints(LataField_base::SOM);
-  const IntTab &joints_elements = domain.get_joints(LataField_base::ELEM);
+  const IntTab& joints_sommets = domain.get_joints(LataField_base::SOM);
+  const IntTab& joints_elements = domain.get_joints(LataField_base::ELEM);
   const entier nprocs = joints_sommets.dimension(0);
   joints_virtual_elements.resize(nprocs, 2);
   ArrOfInt tmp;
@@ -83,7 +83,7 @@ void find_virtual_layer(DomainUnstructured &domain, IntTab &virtual_elements, In
     }
 }
 
-entier rebuild_virtual_layer(LataDB &lataDB, Domain_Id id, double reconnect_tolerance)
+entier rebuild_virtual_layer(LataDB& lataDB, Domain_Id id, double reconnect_tolerance)
 {
   Journal(4) << "rebuilt_virtual_layer domain " << id.name_ << " " << id.timestep_ << endl;
   if (lataDB.field_exists(id.timestep_, id.name_, "VIRTUAL_ELEMENTS"))
@@ -105,7 +105,7 @@ entier rebuild_virtual_layer(LataDB &lataDB, Domain_Id id, double reconnect_tole
   IntTab virtual_elements;
   find_virtual_layer(dom, virtual_elements, joints_virtual_elements, reconnect_tolerance);
   // Write data to disk
-  const LataDBField &joints = lataDB.get_field(id.timestep_, id.name_, "JOINTS_ELEMENTS", "*");
+  const LataDBField& joints = lataDB.get_field(id.timestep_, id.name_, "JOINTS_ELEMENTS", "*");
   LataDBField fld(joints);
   // Append virtual_elements data to JOINTS_ELEMENTS, same format, etc
   fld.name_ = "JOINTS_VIRTUAL_ELEMENTS";

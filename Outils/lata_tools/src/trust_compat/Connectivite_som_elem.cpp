@@ -24,7 +24,7 @@
 // La structure dans laquelle on stocke le resultat. L'ancien contenu est perdu. Chaque liste d'elements est triee dans l'ordre croissant
 // 0 => seuls les elements reels sont inclus dans la structure
 // 1 => on inclut les elements virtuels (donc les sommets virtuels)
-void construire_connectivite_som_elem(const entier nb_sommets, const IntTab &les_elems, Static_Int_Lists &som_elem, const entier include_virtual)
+void construire_connectivite_som_elem(const entier nb_sommets, const IntTab& les_elems, Static_Int_Lists& som_elem, const entier include_virtual)
 {
   // Nombre d'elements du domaine
   const entier nb_elem = (include_virtual) ? les_elems.dimension_tot(0) : les_elems.dimension(0);
@@ -77,7 +77,7 @@ void construire_connectivite_som_elem(const entier nb_sommets, const IntTab &les
 // Cherche les elements qui contiennent tous les sommets du tableau sommets_to_find (permet de trouver les elements adjacents a une face ou une arete)
 // Resultat de la recherche: la liste des elements qui contiennent tous les sommets de sommets_to_find.
 // Si sommets_to_find est vide, on renvoie un tableau vide. (en cas d'appels repetes a cette fonction, il est conseille de mettre le drapeau "smart_resize")
-void find_adjacent_elements(const Static_Int_Lists &som_elem, const ArrOfInt &sommets_to_find, ArrOfInt &elements)
+void find_adjacent_elements(const Static_Int_Lists& som_elem, const ArrOfInt& sommets_to_find, ArrOfInt& elements)
 {
   entier nb_som_to_find = sommets_to_find.size_array();
   // on retire les sommets valant -1 (cas ou plusieurs types de faces)
@@ -91,11 +91,11 @@ void find_adjacent_elements(const Static_Int_Lists &som_elem, const ArrOfInt &so
   // Algorithme: on initialise elements avec tous les elements adjacents au premier sommet de la liste.
   //  Puis pour chacun des autres sommets de la liste, on retire du tableau "elements" les elements qui ne sont pas voisins du sommet.
   //  A la fin, il ne reste que les elements qui sont dans toutes les listes.
-    {
-      // Initialisation avec les elements adjacents au premier sommet
-      const entier sommet = sommets_to_find[0];
-      som_elem.copy_list_to_array(sommet, elements);
-    }
+  {
+    // Initialisation avec les elements adjacents au premier sommet
+    const entier sommet = sommets_to_find[0];
+    som_elem.copy_list_to_array(sommet, elements);
+  }
   entier nb_elem_found = elements.size_array();
   entier i_sommet;
   for (i_sommet = 1; i_sommet < nb_som_to_find; i_sommet++)
