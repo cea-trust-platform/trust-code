@@ -60,7 +60,9 @@ void Fluide_reel_base::discretiser(const Probleme_base& pb, const  Discretisatio
   int nc = pb.equation(0).inconnue()->nb_valeurs_temporelles();
   if (is_incompressible()) /* cas incompressible  -> rho champ uniforme */
     {
-      EChaine str(Nom("Champ_Uniforme 1 ") + Nom(rho_(T_ref_, P_ref_)));
+      ArrayD tmp = {-1000.};
+      _rho_(T_ref_, P_ref_,SpanD(tmp));
+      EChaine str(Nom("Champ_Uniforme 1 ") + Nom(tmp[0]));
       str >> rho;
       dis.nommer_completer_champ_physique(zone_dis,"masse_volumique","kg/m^3",rho.valeur(),pb);
     }

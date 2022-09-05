@@ -17,11 +17,11 @@
 #define Fluide_sodium_gaz_included
 
 #include <Fluide_reel_base.h>
+#include <Lois_sodium_span.h>
 
 /*! @brief Classe Fluide_sodium_gaz Cette classe represente un milieu reel
  *
  *     dont les lois viennent de "Lois_Na"
- *
  *
  */
 class Fluide_sodium_gaz: public Fluide_reel_base
@@ -36,19 +36,16 @@ class Fluide_sodium_gaz: public Fluide_reel_base
   }
 
 protected :
-  // densite
-  double     rho_(const double T, const double P) const override;
-  double  dP_rho_(const double T, const double P) const override;
-  double  dT_rho_(const double T, const double P) const override;
-  // enthalpie
-  double       h_(const double T, const double P) const override;
-  double    dP_h_(const double T, const double P) const override;
-  double    dT_h_(const double T, const double P) const override;
-  // lois champs "faibles" -> pas de derivees
-  double      cp_(const double T, const double P) const override;
-  double    beta_(const double T, const double P) const override;
-  double      mu_(const double T, const double P) const override;
-  double  lambda_(const double T, const double P) const override;
+  inline void rho__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { RhoV_span(T,P,res,ncomp,id); }
+  inline void dP_rho__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { DPRhoV_span(T,P,res,ncomp,id); }
+  inline void dT_rho__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { DTRhoV_span(T,P,res,ncomp,id); }
+  inline void h__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { HV_span(T,P,res,ncomp,id); }
+  inline void dP_h__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { DPHV_span(T,P,res,ncomp,id); }
+  inline void dT_h__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { DTHV_span(T,P,res,ncomp,id); }
+  inline void cp__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { DTHV_span(T,P,res,ncomp,id); }
+  inline void beta__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { BETAV_span(T,P,res,ncomp,id); }
+  inline void mu__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { MuV_span(T,res,ncomp,id); } // passe pas P
+  inline void lambda__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { LambdaV_span(T,res,ncomp,id); } // passe pas P
 };
 
-#endif
+#endif /* Fluide_sodium_gaz_included */

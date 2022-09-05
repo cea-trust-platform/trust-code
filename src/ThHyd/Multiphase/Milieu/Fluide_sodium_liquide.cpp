@@ -14,70 +14,11 @@
 *****************************************************************************/
 
 #include <Fluide_sodium_liquide.h>
-#include <Lois_sodium.h>
 
 Implemente_instanciable(Fluide_sodium_liquide, "Fluide_sodium_liquide", Fluide_reel_base);
 // XD Fluide_sodium_liquide fluide_reel_base Fluide_sodium_liquide -1 Class for Fluide_sodium_liquide
 // XD attr P_ref floattant P_ref 1 Use to set the pressure value in the closure law. If not specified, the value of the pressure unknown will be used
 // XD attr T_ref floattant T_ref 1 Use to set the temperature value in the closure law. If not specified, the value of the temperature unknown will be used
 
-Sortie& Fluide_sodium_liquide::printOn(Sortie& os) const
-{
-  return os;
-}
-
-Entree& Fluide_sodium_liquide::readOn(Entree& is)
-{
-  Fluide_reel_base::readOn(is);
-  return is;
-}
-
-double Fluide_sodium_liquide::rho_(const double T, const double P) const
-{
-  return RhoL(T, P);
-}
-
-double Fluide_sodium_liquide::dT_rho_(const double T, const double P) const
-{
-  return DTRhoL(T, P);
-}
-
-double Fluide_sodium_liquide::dP_rho_(const double T, const double P) const
-{
-  return DPRhoL(T, P);
-}
-
-double Fluide_sodium_liquide::h_(const double T, const double P) const
-{
-  return HL(T, P);
-}
-
-double Fluide_sodium_liquide::dT_h_(const double T, const double P) const
-{
-  return DTHL(T, P);
-}
-
-double Fluide_sodium_liquide::dP_h_(const double T, const double P) const
-{
-  return DPHL(T, P);
-}
-
-double Fluide_sodium_liquide::cp_(const double T, const double P) const
-{
-  return DTHL(T, P);
-}
-
-double Fluide_sodium_liquide::mu_(const double T, const double P) const
-{
-  return MuL(T);
-}
-
-double Fluide_sodium_liquide::lambda_(const double T, const double P) const
-{
-  return LambdaL(T);
-}
-
-double Fluide_sodium_liquide::beta_(const double T, const double P) const
-{
-  return DTIRhoL(T) / IRhoL(T);
-}
+Sortie& Fluide_sodium_liquide::printOn(Sortie& os) const { return os; }
+Entree& Fluide_sodium_liquide::readOn(Entree& is) { return Fluide_reel_base::readOn(is); }
