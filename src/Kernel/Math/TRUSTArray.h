@@ -20,6 +20,7 @@
 #include <VTRUSTdata.h>
 #include <Array_base.h>
 #include <Double.h>
+#include <span.hpp>
 #include <climits>
 
 /*! @brief Represente un tableau d'elements de type int/double/float.
@@ -92,6 +93,7 @@ protected:
 public:
   using value_type = _TYPE_; // return int, double ou float
   using Iterator = TRUSTIterator<TRUSTArray<_TYPE_>>;
+  using Span_ = tcb::span<_TYPE_>;
 
   // Iterators
   inline Iterator begin() { return Iterator(data_); }
@@ -281,6 +283,10 @@ public:
   inline void set_dataLocation(dataLocation flag) { dataLocation_ = flag; }
   inline void set_dataLocation(dataLocation flag) const { dataLocation_ = flag; }
 
+  inline virtual Span_ get_span() { return Span_(data_,size_array_); }
+  inline virtual Span_ get_span_tot() { return Span_(data_,size_array_); }
+  inline virtual const Span_ get_span() const { return Span_((_TYPE_*)data_, size_array_); }
+  inline virtual const Span_ get_span_tot() const { return Span_((_TYPE_*)data_, size_array_); }
 protected:
   inline void attach_array(const TRUSTArray& a, int start = 0, int size = -1);
   inline void fill_default_value(Array_base::Resize_Options opt, int first, int nb);

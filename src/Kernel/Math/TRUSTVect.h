@@ -73,6 +73,9 @@ protected:
   }
 
 public:
+
+  using Span_ = tcb::span<_TYPE_>;
+
   virtual ~TRUSTVect() { }
 
   TRUSTVect() : size_reelle_(0), line_size_(1) { }
@@ -165,6 +168,11 @@ public:
   inline void resize_tab(int n, Array_base::Resize_Options opt = Array_base::COPY_INIT) override;
   inline void ref_data(_TYPE_* ptr, int new_size) override;
   inline void ref_array(TRUSTArray<_TYPE_>&, int start = 0, int sz = -1) override;
+
+  inline Span_ get_span() override { return Span_(TRUSTArray<_TYPE_>::addr(),size_reelle()); }
+  inline Span_ get_span_tot() override { return Span_(TRUSTArray<_TYPE_>::addr(),TRUSTArray<_TYPE_>::size_array()); }
+  inline const Span_ get_span() const override { return Span_((_TYPE_*)TRUSTArray<_TYPE_>::addr(), size_reelle()); }
+  inline const Span_ get_span_tot() const override { return Span_((_TYPE_*)TRUSTArray<_TYPE_>::addr(), TRUSTArray<_TYPE_>::size_array()); }
 
   /*! @brief met l'objet dans l'etat obtenu par le constructeur par defaut.
    *
