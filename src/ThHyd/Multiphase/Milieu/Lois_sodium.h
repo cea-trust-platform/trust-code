@@ -20,7 +20,7 @@
 //proprietes physiques
 /* Lois physiques du sodium issues de fits sur DEN/DANS/DM2S/STMF/LMES/RT/12-018/A */
 #define Tk ((T) + 273.15)
-const double Ksil = 1e-9;
+const double Ksil_d = 1e-9;
 
 /* inverse de la densite du liquide (hors pression) */
 inline double IRhoL(double T)
@@ -37,21 +37,21 @@ inline double DTIRhoL(double T)
 /* densite du liquide */
 inline double RhoL(double T, double P)
 {
-  return exp(Ksil * (P - 1e5)) / IRhoL(T);
+  return exp(Ksil_d * (P - 1e5)) / IRhoL(T);
 }
 
 /* enthalpie du liquide */
 inline double HL(double T, double P)
 {
   return (2992600 / Tk - 365487.2 + Tk * (1658.2 + Tk * (-.42395 + Tk * 1.4847e-4)))
-         + (IRhoL(T) - Tk * DTIRhoL(T)) * (1 - exp(Ksil*(1e5 - P))) / Ksil;
+         + (IRhoL(T) - Tk * DTIRhoL(T)) * (1 - exp(Ksil_d*(1e5 - P))) / Ksil_d;
 }
 
 /* derivees */
 inline double DTHL(double T, double P)
 {
   return (-2992600 / (Tk*Tk) + 1658.2 + Tk * (-.42395 * 2 + Tk * 1.4847e-4 * 3))
-         - Tk * (-3.340743e-11 * 2 + Tk * 6.680973e-14 * 6) * (1 - exp(Ksil*(1e5 - P))) / Ksil;
+         - Tk * (-3.340743e-11 * 2 + Tk * 6.680973e-14 * 6) * (1 - exp(Ksil_d*(1e5 - P))) / Ksil_d;
 }
 
 /* inverses par methode de Newton */
@@ -66,17 +66,17 @@ inline double TLh(double h, double T0, double P)
 /* derivees */
 inline double DTRhoL(double T, double P)
 {
-  return - exp(Ksil * (P - 1e5)) * DTIRhoL(T) / (IRhoL(T) * IRhoL(T));
+  return - exp(Ksil_d * (P - 1e5)) * DTIRhoL(T) / (IRhoL(T) * IRhoL(T));
 }
 inline double DPRhoL(double T, double P)
 {
-  return Ksil * RhoL(T, P);
+  return Ksil_d * RhoL(T, P);
 }
 
 /* derivees */
 inline double DPHL(double T, double P)
 {
-  return (IRhoL(T) - Tk * DTIRhoL(T)) * exp(Ksil * (1e5 - P));
+  return (IRhoL(T) - Tk * DTIRhoL(T)) * exp(Ksil_d * (1e5 - P));
 }
 
 /* energie volumique du liquide */
@@ -272,5 +272,5 @@ inline double Rho( double T, double x, double P )
 }
 
 #undef Tk
-#undef Ksil
+#undef Ksil_d
 #endif
