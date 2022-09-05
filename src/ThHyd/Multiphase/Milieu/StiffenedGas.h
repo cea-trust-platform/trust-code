@@ -28,22 +28,20 @@ public:
   StiffenedGas();
   void set_param(Param& param) override;
 
-protected :
-  // densite
-  double     rho_(const double T, const double P) const override;
-  double  dP_rho_(const double T, const double P) const override;
-  double  dT_rho_(const double T, const double P) const override;
-  // enthalpie
-  double       h_(const double T, const double P) const override;
-  double    dP_h_(const double T, const double P) const override;
-  double    dT_h_(const double T, const double P) const override;
-  // lois champs "faibles" -> pas de derivees
-  double      cp_(const double T, const double P) const override;
-  double    beta_(const double T, const double P) const override;
-  double      mu_(const double T, const double P) const override;
-  double  lambda_(const double T, const double P) const override;
+private:
+  double pinf_, Cv_, q_, q_prim_, gamma_, R_, mu___, lambda___;
 
-  double pinf_, Cv_, q_, q_prim_, gamma_, R_, mu__, lambda__;
+protected :
+  void rho__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
+  void dP_rho__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
+  void dT_rho__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
+  void h__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
+  void dP_h__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
+  void dT_h__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
+  void cp__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
+  void beta__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
+  void mu__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
+  void lambda__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
 };
 
 #endif /* StiffenedGas_included */

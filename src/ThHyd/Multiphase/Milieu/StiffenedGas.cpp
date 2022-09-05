@@ -25,7 +25,7 @@ Implemente_instanciable_sans_constructeur(StiffenedGas, "StiffenedGas", Fluide_r
 // XD attr q floattant q 1 Not set TODO : FIXME
 // XD attr q_prim floattant q_prim 1 Not set TODO : FIXME
 
-StiffenedGas::StiffenedGas() : pinf_(0.), Cv_(-1.), q_(0.), q_prim_(0.), gamma_(1.4), R_(8.31446261815324), mu__(0.), lambda__(0.) { }
+StiffenedGas::StiffenedGas() : pinf_(0.), Cv_(-1.), q_(0.), q_prim_(0.), gamma_(1.4), R_(8.31446261815324), mu___(0.), lambda___(0.) { }
 
 Sortie& StiffenedGas::printOn(Sortie& os) const { return os; }
 
@@ -41,59 +41,72 @@ void StiffenedGas::set_param(Param& param)
   Fluide_reel_base::set_param(param);
   param.ajouter("gamma",&gamma_);
   param.ajouter("pinf",&pinf_);
-  param.ajouter("mu",&mu__);
-  param.ajouter("lambda",&lambda__);
+  param.ajouter("mu",&mu___);
+  param.ajouter("lambda",&lambda___);
   param.ajouter("Cv",&Cv_);
   param.ajouter("q",&q_);
   param.ajouter("q_prim",&q_prim_);
 }
 
-double StiffenedGas::rho_(const double T, const double P) const
+#define ind std::distance(res.begin(), &val)
+
+void StiffenedGas::rho__(const SpanD T, const SpanD P, SpanD res, int ncomp, int id) const
 {
-  return  (P + pinf_) / (gamma_ - 1.0) / (T + 273.15) / Cv_;
+  assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )res.size());
+  for (auto& val : res) val = (P[ind] + pinf_) / (gamma_ - 1.0) / (T[ind * ncomp + id] + 273.15) / Cv_;
 }
 
-double StiffenedGas::dT_rho_(const double T, const double P) const
+void StiffenedGas::dP_rho__(const SpanD T, const SpanD P, SpanD res, int ncomp, int id) const
 {
-  return -(P + pinf_) / (gamma_ - 1.0) / Cv_ / (T + 273.15) / (T + 273.15);
+  assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )res.size());
+  for (auto& val : res) val = 1.0 / (gamma_ - 1.0) / Cv_ / (T[ind * ncomp + id] + 273.15);
 }
 
-double StiffenedGas::dP_rho_(const double T, const double P) const
+void StiffenedGas::dT_rho__(const SpanD T, const SpanD P, SpanD res, int ncomp, int id) const
 {
-  return 1.0 / (gamma_ - 1.0) / Cv_ / (T + 273.15);
+  assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )res.size());
+  for (auto& val : res) val = -(P[ind] + pinf_) / (gamma_ - 1.0) / Cv_ / (T[ind * ncomp + id] + 273.15) / (T[ind * ncomp + id] + 273.15);
 }
 
-double StiffenedGas::h_(const double T, const double P) const
+void StiffenedGas::h__(const SpanD T, const SpanD P, SpanD res, int ncomp, int id) const
 {
-  return gamma_ * Cv_  * (T + 273.15) + q_;
+  assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )res.size());
+  for (auto& val : res) val =  gamma_ * Cv_  * (T[ind * ncomp + id] + 273.15) + q_;
 }
 
-double StiffenedGas::dT_h_(const double T, const double P) const
+void StiffenedGas::dP_h__(const SpanD T, const SpanD P, SpanD res, int ncomp, int id) const
 {
-  return cp_(T, P);
+  assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )res.size());
+  for (auto& val : res) val = 0.;
 }
 
-double StiffenedGas::dP_h_(const double T, const double P) const
+void StiffenedGas::dT_h__(const SpanD T, const SpanD P, SpanD res, int ncomp, int id) const
 {
-  return 0;
+  return cp__(T,P,res,ncomp,id);
 }
 
-double StiffenedGas::cp_(const double T, const double P) const
+void StiffenedGas::cp__(const SpanD T, const SpanD P, SpanD res, int ncomp, int id) const
 {
-  return gamma_ * Cv_ ;
+  assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )res.size());
+  for (auto& val : res) val = gamma_ * Cv_;
 }
 
-double StiffenedGas::mu_(const double T, const double P) const
+void StiffenedGas::beta__(const SpanD T, const SpanD P, SpanD res, int ncomp, int id) const
 {
-  return mu__;
+  assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )res.size());
+  for (auto& val : res) val = 1.0 / (T[ind * ncomp + id] + 273.15);
 }
 
-double StiffenedGas::lambda_(const double T, const double P) const
+void StiffenedGas::mu__(const SpanD T, const SpanD P, SpanD res, int ncomp, int id) const
 {
-  return lambda__;
+  assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )res.size());
+  for (auto& val : res) val = mu___;
 }
 
-double StiffenedGas::beta_(const double T, const double P) const
+void StiffenedGas::lambda__(const SpanD T, const SpanD P, SpanD res, int ncomp, int id) const
 {
-  return 1.0 / (T + 273.15);
+  assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )res.size());
+  for (auto& val : res) val = lambda___;
 }
+
+#undef ind
