@@ -233,7 +233,9 @@ void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int chec
 #ifdef ROCALUTION_ROCALUTION_HPP_
   set_omp_affinity_rocalution(false); // Disable OpenMP thread affinity
   char* dev_per_node = getenv("TRUST_DEVICES_PER_NODE");
-  init_rocalution(Process::me(), dev_per_node==NULL ? 1 : atoi(dev_per_node));
+  //init_rocalution(Process::me(), dev_per_node==NULL ? 1 : atoi(dev_per_node));
+  //set_device_rocalution(Process::me());
+  init_rocalution(Process::me(),1); // Lancement sur lumi01 (8 GPUS pour 64 cores, 1 rank MPI/GPU): srun --cpus-per-task=8 --gpus-per-task=1 --threads-per-core=1 -n ...
   set_omp_threads_rocalution(1); // Disable OpenMP
   info_rocalution();
 #endif
@@ -261,6 +263,7 @@ void mon_main::finalize()
     }
 #endif
 #ifdef ROCALUTION_ROCALUTION_HPP_
+  info_rocalution();
   stop_rocalution();
 #endif
 #ifdef MPI_

@@ -10,10 +10,14 @@ define_modules_config()
    #
    # Load modules
    module="craype-x86-rome craype-network-ofi PrgEnv-cray/8.3.3 rocm/5.0.2 craype-accel-amd-gfx908 libfabric/1.13.1"
+   module="craype-x86-rome craype-network-ofi PrgEnv-cray/8.3.3 rocm/4.5.0 craype-accel-amd-gfx908 libfabric/1.13.1"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
    echo "module load $module 1>/dev/null" >> $env
+   echo "module sw cce/13.0.1" >> $env
+   echo "module sw cray-mpich/8.1.13" >> $env
+#   echo "export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:/opt/rocm-5.0.2/hip/lib/:/opt/rocm-4.5.0/lib/" >> $env
    echo "PATH=\$CRAY_MPICH_PREFIX/bin:\$PATH"  >> $env # Pour trouver mpicxx
    echo "export TRUST_DEVICES_PER_NODE=6" >> $env # Devices per node
    . $env
