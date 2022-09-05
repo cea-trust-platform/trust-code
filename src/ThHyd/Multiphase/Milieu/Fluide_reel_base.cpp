@@ -13,14 +13,14 @@
 *
 *****************************************************************************/
 
-#include <Fluide_reel_base.h>
-#include <Equation_base.h>
 #include <Discretisation_base.h>
 #include <Schema_Temps_base.h>
+#include <Fluide_reel_base.h>
+#include <Pb_Multiphase.h>
+#include <Equation_base.h>
 #include <Probleme_base.h>
 #include <EChaine.h>
 #include <Zone_VF.h>
-#include <Pb_Multiphase.h>
 #include <cfloat>
 #include <cmath>
 
@@ -58,7 +58,7 @@ void Fluide_reel_base::discretiser(const Probleme_base& pb, const  Discretisatio
   /* masse volumique, energie interne, enthalpie : champ_inc */
   Champ_Inc rho_inc, ei_inc, h_inc;
   int nc = pb.equation(0).inconnue()->nb_valeurs_temporelles();
-  if (P_ref_ >= 0 && T_ref_ >= 0) /* cas incompressible  -> rho champ uniforme */
+  if (is_incompressible()) /* cas incompressible  -> rho champ uniforme */
     {
       EChaine str(Nom("Champ_Uniforme 1 ") + Nom(rho_(T_ref_, P_ref_)));
       str >> rho;
@@ -66,31 +66,32 @@ void Fluide_reel_base::discretiser(const Probleme_base& pb, const  Discretisatio
     }
   else
     dis.discretiser_champ("champ_elem", zone_dis,       "masse_volumique",    "kg/m^3", 1, nc, temps, rho_inc), rho = rho_inc;
-  dis.discretiser_champ("champ_elem", zone_dis,       "energie_interne",     "J/kg", 1, nc, temps, ei_inc);
-  dis.discretiser_champ("champ_elem", zone_dis,             "enthalpie",     "J/kg", 1, nc, temps, h_inc);
+
+  dis.discretiser_champ("champ_elem", zone_dis, "energie_interne", "J/kg", 1, nc, temps, ei_inc);
+  dis.discretiser_champ("champ_elem", zone_dis, "enthalpie", "J/kg", 1, nc, temps, h_inc);
   e_int = ei_inc, h = h_inc;
 
-
-  dis.discretiser_champ("champ_elem" , zone_dis,   "viscosite_dynamique",    "kg/m/s", 1, temps,       mu);
-  dis.discretiser_champ("champ_elem" , zone_dis, "viscosite_cinematique",      "m2/s", 1, temps,       nu);
-  dis.discretiser_champ("champ_elem" , zone_dis,           "diffusivite",      "m2/s", 1, temps,    alpha);
-  dis.discretiser_champ("champ_elem" , zone_dis,          "conductivite",     "W/m/K", 1, temps,   lambda);
-  dis.discretiser_champ("champ_elem" , zone_dis,  "capacite_calorifique",    "J/kg/K", 1, temps,       Cp);
-  dis.discretiser_champ("champ_elem" , zone_dis,          "dilatabilite",       "K-1", 1, temps,  beta_th);
-  dis.discretiser_champ("temperature", zone_dis,        "rho_cp_comme_T", "  J/m^3/K", 1, temps, rho_cp_comme_T_);
-  for (auto &&pch : { &rho, &e_int, &h, (Champ *) &mu, (Champ *) &nu, (Champ *) &alpha, (Champ *) &lambda, (Champ *) &Cp, (Champ *) &beta_th, (Champ *) &rho_cp_comme_T_ })
+  dis.discretiser_champ("champ_elem", zone_dis, "viscosite_dynamique", "kg/m/s", 1, temps, mu);
+  dis.discretiser_champ("champ_elem", zone_dis, "viscosite_cinematique", "m2/s", 1, temps, nu);
+  dis.discretiser_champ("champ_elem", zone_dis, "diffusivite", "m2/s", 1, temps, alpha);
+  dis.discretiser_champ("champ_elem", zone_dis, "conductivite", "W/m/K", 1, temps, lambda);
+  dis.discretiser_champ("champ_elem", zone_dis, "capacite_calorifique", "J/kg/K", 1, temps, Cp);
+  dis.discretiser_champ("champ_elem", zone_dis, "dilatabilite", "K-1", 1, temps, beta_th);
+  dis.discretiser_champ("temperature", zone_dis, "rho_cp_comme_T", "  J/m^3/K", 1, temps, rho_cp_comme_T_);
+  for (auto &&pch : { &rho, &e_int, &h, (Champ*) &mu, (Champ*) &nu, (Champ*) &alpha, (Champ*) &lambda, (Champ*) &Cp, (Champ*) &beta_th, (Champ*) &rho_cp_comme_T_ })
     champs_compris_.ajoute_champ(pch->valeur());
 }
 
 int Fluide_reel_base::initialiser(const double temps)
 {
   const Equation_base& eqn = equation("temperature");
-  Champ_Inc_base* pch_rho = sub_type(Champ_Inc_base, rho.valeur()) ? &ref_cast(Champ_Inc_base, rho.valeur()) : NULL,
-                  &ch_e   = ref_cast(Champ_Inc_base, e_int.valeur()),
-                   &ch_h   = ref_cast(Champ_Inc_base, h.valeur());
+  Champ_Inc_base *pch_rho = sub_type(Champ_Inc_base, rho.valeur()) ? &ref_cast(Champ_Inc_base, rho.valeur()) : NULL;
+  Champ_Inc_base& ch_e = ref_cast(Champ_Inc_base, e_int.valeur()), &ch_h = ref_cast(Champ_Inc_base, h.valeur());
+
   if (pch_rho) pch_rho->associer_eqn(eqn), pch_rho->init_champ_calcule(*this, calculer_masse_volumique);
-  ch_e.associer_eqn(eqn),   ch_e.init_champ_calcule(*this, calculer_energie_interne);
-  ch_h.associer_eqn(eqn),   ch_h.init_champ_calcule(*this, calculer_enthalpie);
+
+  ch_e.associer_eqn(eqn), ch_e.init_champ_calcule(*this, calculer_energie_interne);
+  ch_h.associer_eqn(eqn), ch_h.init_champ_calcule(*this, calculer_enthalpie);
 
   Cp.initialiser(temps);
   mu.initialiser(temps);
@@ -108,14 +109,12 @@ void Fluide_reel_base::preparer_calcul()
   mettre_a_jour(t_init_);
 }
 
-
 void Fluide_reel_base::mettre_a_jour(double t)
 {
   double tp = ref_cast(Champ_Inc_base, e_int.valeur()).temps(); //pour savoir si on va tourner la roue
   rho.mettre_a_jour(t);
   e_int.mettre_a_jour(t);
   h.mettre_a_jour(t);
-
   Cp.mettre_a_jour(t);
   mu.mettre_a_jour(t);
   lambda.mettre_a_jour(t);
@@ -129,20 +128,38 @@ void Fluide_reel_base::mettre_a_jour(double t)
 
   DoubleTab& tab_Cp = Cp.valeurs(), &tab_mu = mu.valeurs(), &tab_lambda = lambda.valeurs(), &tab_nu = nu.valeurs(), &tab_alpha = alpha.valeurs(),
              &tab_beta = beta_th.valeurs(), &tab_rCp = rho_cp_comme_T_.valeurs();
+
   const DoubleTab& tab_rho = masse_volumique().valeurs();
-  int i, Ni = mu.valeurs().dimension_tot(0), cR = tab_rho.dimension_tot(0) == 1;
+
+  int Ni = mu.valeurs().dimension_tot(0), cR = tab_rho.dimension_tot(0) == 1;
+
+
   if (t > tp || first_maj_)
-    for (i = 0; i < Ni; i++) /* maj uniquement en fin de pas de temps */
-      {
-        const double T = (T_ref_ > 0) ? T_ref_ : temp(i, id_composite), P = (P_ref_ > 0) ? P_ref_ : pres(i);
-        tab_Cp(i) = cp_(T, P);
-        tab_mu(i) = mu_(T, P);
-        tab_lambda(i) = lambda_(T, P);
-        tab_nu(i) = tab_mu(i) / tab_rho(!cR * i);
-        tab_alpha(i) = tab_lambda(i) / tab_rho(!cR * i) / tab_Cp(i);
-        tab_beta(i) = beta_(T, P);
-        tab_rCp(i) = tab_rho(!cR * i) * tab_Cp(i);
-      }
+    {
+      if (is_incompressible())
+        {
+          _cp_(T_ref_, P_ref_, tab_Cp.get_span_tot() /* elem reel + virt */);
+          _mu_(T_ref_, P_ref_, tab_mu.get_span_tot());
+          _lambda_(T_ref_, P_ref_, tab_lambda.get_span_tot());
+          _beta_(T_ref_, P_ref_, tab_beta.get_span_tot());
+        }
+      else
+        {
+          assert (pres.line_size() == 1 && tab_Cp.line_size() == 1 && tab_mu.line_size() == 1 && tab_lambda.line_size() == 1 && tab_beta.line_size() == 1);
+          const int n_comp = temp.line_size(); /* on a temp(xx,id_composite) */
+          cp__(temp.get_span_tot(), pres.get_span_tot(), tab_Cp.get_span_tot(), n_comp, id_composite);
+          mu__(temp.get_span_tot(), pres.get_span_tot(), tab_mu.get_span_tot(), n_comp, id_composite);
+          lambda__(temp.get_span_tot(), pres.get_span_tot(), tab_lambda.get_span_tot(), n_comp, id_composite);
+          beta__(temp.get_span_tot(), pres.get_span_tot(), tab_beta.get_span_tot(), n_comp, id_composite);
+        }
+
+      for (int i = 0; i < Ni; i++) // fill values
+        {
+          tab_nu(i) = tab_mu(i) / tab_rho(!cR * i);
+          tab_alpha(i) = tab_lambda(i) / tab_rho(!cR * i) / tab_Cp(i);
+          tab_rCp(i) = tab_rho(!cR * i) * tab_Cp(i);
+        }
+    }
   first_maj_ = 0;
 }
 
@@ -182,67 +199,102 @@ bool Fluide_reel_base::initTimeStep(double dt)
   return true;
 }
 
-#define rhoc(T, p) (incomp ? rho0 : fl.rho_((T), (p)))
-
 void Fluide_reel_base::calculer_masse_volumique(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv)
 {
   const Fluide_reel_base& fl = ref_cast(Fluide_reel_base, obj);
-  const Champ_Inc_base& ch_T = fl.equation("temperature").inconnue().valeur(),
-                        &ch_p = ref_cast(Navier_Stokes_std, fl.equation("vitesse")).pression().valeur();
-  const DoubleTab& T = ch_T.valeurs(), &p = ch_p.valeurs();
-  int i, zero = 0, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n = std::max(fl.id_composite, zero), m = p.line_size() == T.line_size() ? n : 0,
-         incomp = fl.T_ref_ >= 0 && fl.P_ref_ >= 0;
-  double rho0 = incomp ? fl.rho_(fl.T_ref_, fl.P_ref_) : -1;
-  for (i = 0; i < Ni; i++) val(i) = rhoc(T(i, n), p(i, m));
+  const Champ_Inc_base& ch_T = fl.equation("temperature").inconnue().valeur(), &ch_p = ref_cast(Navier_Stokes_std, fl.equation("vitesse")).pression().valeur();
+  const DoubleTab& T = ch_T.valeurs(), &p = ch_p.valeurs(), &bT = ch_T.valeur_aux_bords(), &bp = ch_p.valeur_aux_bords();
+  int n_comp = T.line_size(), zero = 0, Ni = val.dimension_tot(0), n = std::max(fl.id_composite, zero), m = p.line_size() == T.line_size() ? n : 0;
 
-  const DoubleTab& bT = ch_T.valeur_aux_bords(), &bp = ch_p.valeur_aux_bords();
-  for (i = 0; i < Nb; i++) bval(i) = rhoc(bT(i, n), bp(i, m));
+  if (fl.is_incompressible())
+    {
+      fl._rho_(fl.T_ref_, fl.P_ref_, val.get_span_tot()); /* interne */
+      fl._rho_(fl.T_ref_, fl.P_ref_, bval.get_span_tot()); /* bord */
+    }
+  else
+    {
+      if (m != 0) throw; // TODO : FIXME : a voir si besoin faut surcharger les methodes
+      fl.rho__(T.get_span_tot(), p.get_span_tot(), val.get_span_tot(), n_comp, n); /* interne */
+      fl.rho__(bT.get_span_tot(), bp.get_span_tot(), bval.get_span_tot(), n_comp, n); /* bord */
+    }
 
-  if (incomp) return; //pas de derivees en incompressible
+  if (fl.is_incompressible()) return; //pas de derivees en incompressible
+
+  assert (m == 0);
   DoubleTab& dp_rho = deriv["pression"], &dT_rho = deriv["temperature"];
-  for (dp_rho.resize(Ni, 1), i = 0; i < Ni; i++) dp_rho(i) = fl.dP_rho_(T(i, n), p(i, m));
-  for (dT_rho.resize(Ni, 1), i = 0; i < Ni; i++) dT_rho(i) = fl.dT_rho_(T(i, n), p(i, m));
+  dp_rho.resize(Ni,1);
+  dT_rho.resize(Ni,1);
+  fl.dP_rho__(T.get_span_tot(), p.get_span_tot(), dp_rho.get_span_tot(), n_comp, n); /* interne */
+  fl.dT_rho__(T.get_span_tot(), p.get_span_tot(), dT_rho.get_span_tot(), n_comp, n); /* interne */
 }
-
-#define hc(T, p) (incomp ? h0 + Cp0 * ((T) - fl.T_ref_) : fl.h_((T), (p)))
 
 void Fluide_reel_base::calculer_enthalpie(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv)
 {
   const Fluide_reel_base& fl = ref_cast(Fluide_reel_base, obj);
-  const Champ_Inc_base& ch_T = fl.equation("temperature").inconnue().valeur(),
-                        &ch_p = ref_cast(Navier_Stokes_std, fl.equation("vitesse")).pression().valeur();
-  const DoubleTab& T = ch_T.valeurs(), &p = ch_p.valeurs();
-  int i, zero = 0, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n = std::max(fl.id_composite, zero), m = p.line_size() == T.line_size() ? n : 0,
-         incomp = fl.T_ref_ >= 0 && fl.P_ref_ >= 0;
-  double h0 = incomp ? fl.h_(fl.T_ref_, fl.P_ref_) : -1, Cp0 = incomp ? fl.dT_h_(fl.T_ref_, fl.P_ref_) : -1;
+  const Champ_Inc_base& ch_T = fl.equation("temperature").inconnue().valeur(), &ch_p = ref_cast(Navier_Stokes_std, fl.equation("vitesse")).pression().valeur();
+  const DoubleTab& T = ch_T.valeurs(), &p = ch_p.valeurs(), &bT = ch_T.valeur_aux_bords(), &bp = ch_p.valeur_aux_bords();
 
-  for (i = 0; i < Ni; i++) val(i) = hc(T(i, n), p(i, m));
+  const int n_comp = T.line_size(), zero = 0, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n = std::max(fl.id_composite, zero), m = p.line_size() == T.line_size() ? n : 0;
+  DoubleTab& dT_h = deriv["temperature"];
+  dT_h.resize(Ni, 1);
 
-  const DoubleTab& bT = ch_T.valeur_aux_bords(), &bp = ch_p.valeur_aux_bords();
-  for (i = 0; i < Nb; i++) bval(i) = hc(bT(i, n), bp(i, m));
+  if (fl.is_incompressible())
+    {
+      VectorD H_(Ni), dTH_(Ni), bH_(Nb), bdTH_(Nb); // Je suis desole ....
+      fl._h_(fl.T_ref_, fl.P_ref_, SpanD(H_));
+      fl._dT_h_(fl.T_ref_, fl.P_ref_, SpanD(dTH_));
+      for (int i = 0; i < Ni; i++) val(i) = H_[i] + dTH_[i] * (T(i, n) - fl.T_ref_); /* interne */
 
-  DoubleTab  *dp_h = incomp ? NULL : &deriv["pression"], &dT_h = deriv["temperature"];//une seule derivee en incompressible
-  if (dp_h)
-    for (dp_h->resize(Ni, 1), i = 0; i < Ni; i++) (*dp_h)(i) = fl.dP_h_(T(i, n), p(i, m));
-  for (dT_h.resize(Ni, 1), i = 0; i < Ni; i++) dT_h(i) = incomp ? Cp0 : fl.dT_h_(T(i, n), p(i, m));
+      fl._h_(fl.T_ref_, fl.P_ref_, SpanD(bH_));
+      fl._dT_h_(fl.T_ref_, fl.P_ref_, SpanD(bdTH_));
+      for (int i = 0; i < Nb; i++) bval(i) = bH_[i] + bdTH_[i] * (bT(i, n) - fl.T_ref_); /* bord */
+
+      for (int i = 0; i < Ni; i++) dT_h(i) = dTH_[i]; /* la seule derivee en incompressible */
+    }
+  else
+    {
+      if (m != 0) throw; // TODO : FIXME : a voir si besoin faut surcharger les methodes
+      fl.h__(T.get_span_tot(), p.get_span_tot(), val.get_span_tot(), n_comp, n); /* interne */
+      fl.h__(bT.get_span_tot(), bp.get_span_tot(),bval.get_span_tot(), n_comp, n); /* bord */
+
+      DoubleTab& dp_h = deriv["pression"];
+      dp_h.resize(Ni, 1);
+      fl.dP_h__(T.get_span_tot(), p.get_span_tot(), dp_h.get_span_tot(), n_comp, n); /* interne */
+      fl.dT_h__(T.get_span_tot(), p.get_span_tot(), dT_h.get_span_tot(), n_comp, n); /* interne */
+    }
 }
 
 void Fluide_reel_base::calculer_energie_interne(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv)
 {
   const Fluide_reel_base& fl = ref_cast(Fluide_reel_base, obj);
-  const Champ_Inc_base& ch_T = fl.equation("temperature").inconnue().valeur(),
-                        &ch_p = ref_cast(Navier_Stokes_std, fl.equation("vitesse")).pression().valeur();
+  const Champ_Inc_base& ch_T = fl.equation("temperature").inconnue().valeur(), &ch_p = ref_cast(Navier_Stokes_std, fl.equation("vitesse")).pression().valeur();
   const DoubleTab& T = ch_T.valeurs(), &p = ch_p.valeurs();
-  int i, zero = 0, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n = std::max(fl.id_composite, zero), m = p.line_size() == T.line_size() ? n : 0,
-         incomp = fl.T_ref_ >= 0 && fl.P_ref_ >= 0;
-  if (incomp) return calculer_enthalpie(obj, val, bval, deriv); //en incompressible, on prend e_int = h
+  const int n_comp = T.line_size(), zero = 0, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n = std::max(fl.id_composite, zero), m = p.line_size() == T.line_size() ? n : 0;
 
-  for (i = 0; i < Ni; i++) val(i) = fl.h_(T(i, n), p(i, m)) - p(i, m) / fl.rho_(T(i, n), p(i, m));
+  if (fl.is_incompressible()) return calculer_enthalpie(obj, val, bval, deriv); // en incompressible, on prend e_int = h
 
   const DoubleTab& bT = ch_T.valeur_aux_bords(), &bp = ch_p.valeur_aux_bords();
-  for (i = 0; i < Nb; i++) bval(i) = fl.h_(bT(i, n), bp(i, m)) - bp(i, m) / fl.rho_(bT(i, n), bp(i, m));
+
+  VectorD H_(Ni), Rho_(Ni), bH_(Nb), bRho_(Nb);
+
+  fl.h__(T.get_span_tot(), p.get_span_tot(), SpanD(H_), n_comp, n);
+  fl.rho__(T.get_span_tot(), p.get_span_tot(), SpanD(Rho_), n_comp, n);
+  for (int i = 0; i < Ni; i++) val(i) = H_[i] - p(i, m) / Rho_[i]; /* interne */
+
+  fl.h__(bT.get_span_tot(), bp.get_span_tot(), SpanD(bH_), n_comp, n);
+  fl.rho__(bT.get_span_tot(), bp.get_span_tot(), SpanD(bRho_), n_comp, n);
+  for (int i = 0; i < Nb; i++) bval(i) = bH_[i] -  bp(i, m) / bRho_[i]; /* bord */
 
   DoubleTab& dp_e = deriv["pression"], &dT_e = deriv["temperature"];
-  for (dp_e.resize(Ni, 1), i = 0; i < Ni; i++) dp_e(i) = fl.dP_h_(T(i, n), p(i, m)) - 1. / fl.rho_(T(i, n), p(i, m)) + p(i, m) * fl.dP_rho_(T(i, n), p(i, m)) / std::pow(fl.rho_(T(i, n), p(i, m)), 2);
-  for (dT_e.resize(Ni, 1), i = 0; i < Ni; i++) dT_e(i) = fl.dT_h_(T(i, n), p(i, m)) + p(i, m) * fl.dT_rho_(T(i, n), p(i, m)) / std::pow(fl.rho_(T(i, n), p(i, m)), 2);
+  VectorD dPH_(Ni), dTH_(Ni), dPRho_(Ni), dTRho_(Ni); // idem ...
+
+  fl.dP_h__(T.get_span_tot(), p.get_span_tot(), SpanD(dPH_), n_comp, n);
+  fl.dT_h__(T.get_span_tot(), p.get_span_tot(), SpanD(dTH_), n_comp, n);
+  fl.dP_rho__(T.get_span_tot(), p.get_span_tot(), SpanD(dPRho_), n_comp, n);
+  fl.dT_rho__(T.get_span_tot(), p.get_span_tot(), SpanD(dTRho_), n_comp, n);
+  dp_e.resize(Ni, 1);
+  dT_e.resize(Ni, 1);
+
+  for (int i = 0; i < Ni; i++) dp_e(i) = dPH_[i] - 1. / Rho_[i] + p(i, m) * dPRho_[i] / std::pow(Rho_[i] , 2);
+  for (int i = 0; i < Ni; i++) dT_e(i) = dTH_[i] + p(i, m) * dTRho_[i] / std::pow(Rho_[i] , 2);
 }
