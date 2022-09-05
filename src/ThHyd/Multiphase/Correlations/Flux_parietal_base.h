@@ -24,46 +24,50 @@
  *         flux de chaleur sensible : q_{p}(k)     = F(alpha_f, p, T_f, T_p, v_f, D_h, D_ch)
  *         flux de chaleur latente  : q_{pi}(k, l) = F(alpha_f, p, T_f, T_p, v_f, D_h, D_ch)
  *           (par ex ebullition nucleee : Gamma_{kl} = q_{pi}(k, l) / Lvap)
- *       cette classe definit deux fonctions q_pk, q_pi avec :
- *     entrees :
- *         N : nombre de phases
- *         D_h, D_ch -> diametre hyd, diametre hyd chauffant
- *         alpha[n]  -> taux de presence de la phase n
- *         T[n]      -> temperature de la phase n
- *         p         -> pression
- *         v[n]      -> norme de la vitesse de la phase n
- *         Tp        -> temperature de la paroi (une seule!)
- *         lambda[n], mu[n], rho[n], Cp[n] -> diverses proprietes physiques de la phase n
- *
- *     sorties :
- *         (*qpk)(n)          -> flux de chaleur vers la phase n
- *         (*da_qpk)(n, m)    -> derivee par rapport a alpha_m
- *         (*dp_qpk)(n)       -> derivee par rapport a p
- *         (*dv_qpk)(n, m)    -> derivee par rapport a v[m]
- *         (*dTf_qpk)(n, m)   -> derivee par rapport a T[m]
- *         (*dTp_qpk)(n)      -> derivee par rapport a Tp
- *         (*qpi)(k, l)       -> flux de chaleur fourni au changement de la phase k vers la phase l (a remplir pour k < l)
- *         (*da_qpi)(k, l, m) -> derivee par rapport a alpha_m
- *         (*dp_qpi)(k, l)    -> derivee par rapport a p
- *         (*dv_qpi)(k, l,m)  -> derivee par rapport a v[m]
- *        (*dTf_qpi)(k, l, m) -> derivee par rapport a T[m]
- *        (*dTp_qpi)(k, l)    -> derivee par rapport a Tp
- *        (*d_nucleation)(k)  -> diametre de nucleation de la phase k
- *         nonlinear          -> regler a 1 si q_pk / q_pi est non-lineaire en Tp / Tf; ne pas toucher sinon
- *
- *
+ *       cette classe definit deux fonctions q_pk, q_pi
  */
 
 class Flux_parietal_base : public Correlation_base
 {
   Declare_base(Flux_parietal_base);
 public:
-  virtual void qp(int N, int f, double D_h, double D_ch,
-                  const double *alpha, const double *T, const double p, const double *v, const double Tp,
-                  const double *lambda, const double *mu, const double *rho, const double *Cp,
-                  DoubleTab *qpk, DoubleTab *da_qpk, DoubleTab *dp_qpk, DoubleTab *dv_qpk, DoubleTab *dTf_qpk, DoubleTab *dTp_qpk,
-                  DoubleTab *qpi, DoubleTab *da_qpi, DoubleTab *dp_qpi, DoubleTab *dv_qpi, DoubleTab *dTf_qpi, DoubleTab *dTp_qpi,
-                  DoubleTab *d_nucleation, int& nonlinear) const = 0;
+
+  /* parametres d'entree */
+  struct input_t
+  {
+    int N;                // nombre de phases
+    int f;                //
+    double D_h;           // diametre hyd
+    double D_ch;          // diametre hyd chauffant
+    double p;             // pression
+    double Tp;            // temperature de la paroi (une seule!)
+    const double *alpha;  // alpha[n]  -> taux de presence de la phase n
+    const double *T;      // T[n]      -> temperature de la phase n
+    const double *v;      // v[n]      -> norme de la vitesse de la phase n
+    const double *lambda; // lambda[n] -> conductivite de la phase n
+    const double *mu;     // mu[n]     -> viscosite de la phase n
+    const double *rho;    // rho[n]    -> masse volumique de la phase n
+    const double *Cp;     // Cp[n]     -> capacite calorifique de la phase n
+  };
+  /* valeurs de sortie */
+  struct output_t
+  {
+    DoubleTab *qpk = NULL;     // (*qpk)(n)           -> flux de chaleur vers la phase n
+    DoubleTab *da_qpk = NULL;  // (*da_qpk)(n, m)     -> derivee par rapport a alpha_m
+    DoubleTab *dp_qpk = NULL;  // (*dp_qpk)(n)        -> derivee par rapport a p
+    DoubleTab *dv_qpk = NULL;  // (*dv_qpk)(n, m)     -> derivee par rapport a v[m]
+    DoubleTab *dTf_qpk = NULL; // (*dTf_qpk)(n, m)    -> derivee par rapport a T[m]
+    DoubleTab *dTp_qpk = NULL; // (*dTp_qpk)(n)       -> derivee par rapport a Tp
+    DoubleTab *qpi = NULL;     // (*qpi)(k, l)        -> flux de chaleur fourni au changement de la phase k vers la phase l (a remplir pour k < l)
+    DoubleTab *da_qpi = NULL;  // (*da_qpi)(k, l, m)  -> derivee par rapport a alpha_m
+    DoubleTab *dp_qpi = NULL;  // (*dp_qpi)(k, l)     -> derivee par rapport a p
+    DoubleTab *dv_qpi = NULL;  // (*dv_qpi)(k, l,m)   -> derivee par rapport a v[m]
+    DoubleTab *dTf_qpi = NULL; // (*dTf_qpi)(k, l, m) -> derivee par rapport a T[m]
+    DoubleTab *dTp_qpi = NULL; // (*dTp_qpi)(k, l)    -> derivee par rapport a Tp
+    DoubleTab *d_nuc = NULL;   // (*d_nucleation)(k)  -> diametre de nucleation de la phase k
+    int *nonlinear = NULL;     // nonlinear           -> regler a 1 si q_pk / q_pi est non-lineaire en Tp / Tf; ne pas toucher sinon
+  };
+  virtual void qp(const input_t& input, output_t& output) const = 0;
 
   virtual int calculates_bubble_nucleation_diameter() const {return 0;};
 };
