@@ -3,7 +3,6 @@
 #
 # Installation script for MEDCoupling
 #
-
 archive_mc=$1
 archive_conf=$2
 tool_dir=`readlink -f $(dirname $0)`
@@ -52,7 +51,6 @@ tar zxf $archive_mc
 if [ "$(uname -a | grep CYGWIN)" != "" ]
 then
    (cd $src_dir; tar xvf $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/patch_mc.tar ) || exit 1
-   (cd $src_dir; tar xvf $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/patch_mc2.tar ) || exit 1
 fi
 tar zxf $archive_conf
 
@@ -159,5 +157,3 @@ fi
 mv $MC_ENV_FILE_tmp $MC_ENV_FILE
 
 echo "All done!"
-
-
