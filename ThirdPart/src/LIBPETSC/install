@@ -331,8 +331,14 @@ then
 else
    liste_debug="0" 	# Une seule version construite (optimisee)
 fi
-# Possibilite d'afficher la matrice sous forme graphique uniquement sur PC avec libX11 disponible (-mat_view draw https://petsc.org/main/docs/manualpages/Mat/MatView.html)
-[ "$TRUST_DISABLE_PETSC_WITH_X" != 1 ] && [ "$TRUST_WITHOUT_HOST" = 1 ] && [ "`ls /usr/lib*/libX11.so 2>/dev/null`" != "" ] && options="--with-x=1" # Car --with-x=1 pose probleme pour Insure
+
+if [ "$TRUST_DISABLE_PETSC_OPTIONALS" != 1 ]
+then
+   # Ajout de HDF et
+   options=$options" --with-hdf5-dir=$TRUST_ROOT/lib/src/LIBMED/hdf5_install"
+   # Possibilite d'afficher la matrice sous forme graphique uniquement sur PC avec libX11 disponible (-mat_view draw https://petsc.org/main/docs/manualpages/Mat/MatView.html)
+   [ "$TRUST_WITHOUT_HOST" = 1 ] && [ "`ls /usr/lib*/libX11.so 2>/dev/null`" != "" ] && options="--with-x=1" # Car --with-x=1 pose probleme pour Insure
+fi
 
 #################################################
 # Trilinos Multi Level Preconditionning package #
@@ -521,7 +527,7 @@ fi
 #####
 # Attention: support HDF pour PETSc (actuellement non utilise) peut poser probleme a C3D (conflit avec autre HDF): on desactive
 # [ -d $TRUST_ROOT/lib/src/LIBMED/hdf5_install ] && with_packages=$with_packages" --with-hdf5-dir=$TRUST_ROOT/lib/src/LIBMED/hdf5_install"
- 
+
 #############
 # TRUST_INT64
 #############
@@ -590,7 +596,6 @@ do
    $with_mpi \
    $with_64bit_indices \
    $options || exit -1
-
    #############
    # Compilation
    #############

@@ -1,5 +1,5 @@
 XX/XX/22 (TRUST) Add -fp-model precise flag to Intel compiler for less agressive optimizations and less computations difference than GNU-built TRUST version
-XX/XX/22 (TRUST) Add -disable-petsc-with-x to configure options to disable vizualisation features of PETSc
+XX/XX/22 (TRUST) Add -disable-petsc-optionals to configure options to disable options for Cathare (vizualisation features, HDF5 support, ...)
 -------------------------------------------------------------
 Developer notes version 1.9.1_beta : Changes since version 1.9.0 :
 -------------------------------------------------------------
