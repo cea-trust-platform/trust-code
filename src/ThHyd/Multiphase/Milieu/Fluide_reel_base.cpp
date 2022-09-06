@@ -60,9 +60,7 @@ void Fluide_reel_base::discretiser(const Probleme_base& pb, const  Discretisatio
   int nc = pb.equation(0).inconnue()->nb_valeurs_temporelles();
   if (is_incompressible()) /* cas incompressible  -> rho champ uniforme */
     {
-      ArrayD tmp = {-1000.};
-      _rho_(T_ref_, P_ref_,SpanD(tmp));
-      EChaine str(Nom("Champ_Uniforme 1 ") + Nom(tmp[0]));
+      EChaine str(Nom("Champ_Uniforme 1 ") + Nom(_rho_(T_ref_, P_ref_) /* point-to-point */));
       str >> rho;
       dis.nommer_completer_champ_physique(zone_dis,"masse_volumique","kg/m^3",rho.valeur(),pb);
     }
@@ -135,7 +133,6 @@ void Fluide_reel_base::mettre_a_jour(double t)
 
   int Ni = mu.valeurs().dimension_tot(0), cR = tab_rho.dimension_tot(0) == 1;
 
-
   if (t > tp || first_maj_)
     {
       if (is_incompressible())
@@ -149,10 +146,10 @@ void Fluide_reel_base::mettre_a_jour(double t)
         {
           assert (pres.line_size() == 1 && tab_Cp.line_size() == 1 && tab_mu.line_size() == 1 && tab_lambda.line_size() == 1 && tab_beta.line_size() == 1);
           const int n_comp = temp.line_size(); /* on a temp(xx,id_composite) */
-          cp__(temp.get_span_tot(), pres.get_span_tot(), tab_Cp.get_span_tot(), n_comp, id_composite);
-          mu__(temp.get_span_tot(), pres.get_span_tot(), tab_mu.get_span_tot(), n_comp, id_composite);
-          lambda__(temp.get_span_tot(), pres.get_span_tot(), tab_lambda.get_span_tot(), n_comp, id_composite);
-          beta__(temp.get_span_tot(), pres.get_span_tot(), tab_beta.get_span_tot(), n_comp, id_composite);
+          cp_(temp.get_span_tot(), pres.get_span_tot(), tab_Cp.get_span_tot(), n_comp, id_composite);
+          mu_(temp.get_span_tot(), pres.get_span_tot(), tab_mu.get_span_tot(), n_comp, id_composite);
+          lambda_(temp.get_span_tot(), pres.get_span_tot(), tab_lambda.get_span_tot(), n_comp, id_composite);
+          beta_(temp.get_span_tot(), pres.get_span_tot(), tab_beta.get_span_tot(), n_comp, id_composite);
         }
 
       for (int i = 0; i < Ni; i++) // fill values
@@ -216,8 +213,8 @@ void Fluide_reel_base::calculer_masse_volumique(const Objet_U& obj, DoubleTab& v
   else
     {
       if (m != 0) throw; // TODO : FIXME : a voir si besoin faut surcharger les methodes
-      fl.rho__(T.get_span_tot(), p.get_span_tot(), val.get_span_tot(), n_comp, n); /* interne */
-      fl.rho__(bT.get_span_tot(), bp.get_span_tot(), bval.get_span_tot(), n_comp, n); /* bord */
+      fl.rho_(T.get_span_tot(), p.get_span_tot(), val.get_span_tot(), n_comp, n); /* interne */
+      fl.rho_(bT.get_span_tot(), bp.get_span_tot(), bval.get_span_tot(), n_comp, n); /* bord */
     }
 
   if (fl.is_incompressible()) return; //pas de derivees en incompressible
@@ -226,8 +223,8 @@ void Fluide_reel_base::calculer_masse_volumique(const Objet_U& obj, DoubleTab& v
   DoubleTab& dp_rho = deriv["pression"], &dT_rho = deriv["temperature"];
   dp_rho.resize(Ni,1);
   dT_rho.resize(Ni,1);
-  fl.dP_rho__(T.get_span_tot(), p.get_span_tot(), dp_rho.get_span_tot(), n_comp, n); /* interne */
-  fl.dT_rho__(T.get_span_tot(), p.get_span_tot(), dT_rho.get_span_tot(), n_comp, n); /* interne */
+  fl.dP_rho_(T.get_span_tot(), p.get_span_tot(), dp_rho.get_span_tot(), n_comp, n); /* interne */
+  fl.dT_rho_(T.get_span_tot(), p.get_span_tot(), dT_rho.get_span_tot(), n_comp, n); /* interne */
 }
 
 void Fluide_reel_base::calculer_enthalpie(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv)
@@ -256,13 +253,13 @@ void Fluide_reel_base::calculer_enthalpie(const Objet_U& obj, DoubleTab& val, Do
   else
     {
       if (m != 0) throw; // TODO : FIXME : a voir si besoin faut surcharger les methodes
-      fl.h__(T.get_span_tot(), p.get_span_tot(), val.get_span_tot(), n_comp, n); /* interne */
-      fl.h__(bT.get_span_tot(), bp.get_span_tot(),bval.get_span_tot(), n_comp, n); /* bord */
+      fl.h_(T.get_span_tot(), p.get_span_tot(), val.get_span_tot(), n_comp, n); /* interne */
+      fl.h_(bT.get_span_tot(), bp.get_span_tot(),bval.get_span_tot(), n_comp, n); /* bord */
 
       DoubleTab& dp_h = deriv["pression"];
       dp_h.resize(Ni, 1);
-      fl.dP_h__(T.get_span_tot(), p.get_span_tot(), dp_h.get_span_tot(), n_comp, n); /* interne */
-      fl.dT_h__(T.get_span_tot(), p.get_span_tot(), dT_h.get_span_tot(), n_comp, n); /* interne */
+      fl.dP_h_(T.get_span_tot(), p.get_span_tot(), dp_h.get_span_tot(), n_comp, n); /* interne */
+      fl.dT_h_(T.get_span_tot(), p.get_span_tot(), dT_h.get_span_tot(), n_comp, n); /* interne */
     }
 }
 
@@ -279,21 +276,21 @@ void Fluide_reel_base::calculer_energie_interne(const Objet_U& obj, DoubleTab& v
 
   VectorD H_(Ni), Rho_(Ni), bH_(Nb), bRho_(Nb);
 
-  fl.h__(T.get_span_tot(), p.get_span_tot(), SpanD(H_), n_comp, n);
-  fl.rho__(T.get_span_tot(), p.get_span_tot(), SpanD(Rho_), n_comp, n);
+  fl.h_(T.get_span_tot(), p.get_span_tot(), SpanD(H_), n_comp, n);
+  fl.rho_(T.get_span_tot(), p.get_span_tot(), SpanD(Rho_), n_comp, n);
   for (int i = 0; i < Ni; i++) val(i) = H_[i] - p(i, m) / Rho_[i]; /* interne */
 
-  fl.h__(bT.get_span_tot(), bp.get_span_tot(), SpanD(bH_), n_comp, n);
-  fl.rho__(bT.get_span_tot(), bp.get_span_tot(), SpanD(bRho_), n_comp, n);
+  fl.h_(bT.get_span_tot(), bp.get_span_tot(), SpanD(bH_), n_comp, n);
+  fl.rho_(bT.get_span_tot(), bp.get_span_tot(), SpanD(bRho_), n_comp, n);
   for (int i = 0; i < Nb; i++) bval(i) = bH_[i] -  bp(i, m) / bRho_[i]; /* bord */
 
   DoubleTab& dp_e = deriv["pression"], &dT_e = deriv["temperature"];
   VectorD dPH_(Ni), dTH_(Ni), dPRho_(Ni), dTRho_(Ni); // idem ...
 
-  fl.dP_h__(T.get_span_tot(), p.get_span_tot(), SpanD(dPH_), n_comp, n);
-  fl.dT_h__(T.get_span_tot(), p.get_span_tot(), SpanD(dTH_), n_comp, n);
-  fl.dP_rho__(T.get_span_tot(), p.get_span_tot(), SpanD(dPRho_), n_comp, n);
-  fl.dT_rho__(T.get_span_tot(), p.get_span_tot(), SpanD(dTRho_), n_comp, n);
+  fl.dP_h_(T.get_span_tot(), p.get_span_tot(), SpanD(dPH_), n_comp, n);
+  fl.dT_h_(T.get_span_tot(), p.get_span_tot(), SpanD(dTH_), n_comp, n);
+  fl.dP_rho_(T.get_span_tot(), p.get_span_tot(), SpanD(dPRho_), n_comp, n);
+  fl.dT_rho_(T.get_span_tot(), p.get_span_tot(), SpanD(dTRho_), n_comp, n);
   dp_e.resize(Ni, 1);
   dT_e.resize(Ni, 1);
 

@@ -34,16 +34,16 @@ class Fluide_sodium_liquide: public Fluide_reel_base
   }
 
 protected :
-  inline void rho__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { RhoL_span(T,P,res,ncomp,id); }
-  inline void dP_rho__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { DPRhoL_span(T,P,res,ncomp,id); }
-  inline void dT_rho__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { DTRhoL_span(T,P,res,ncomp,id); }
-  inline void h__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { HL_span(T,P,res,ncomp,id); }
-  inline void dP_h__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { DPHL_span(T,P,res,ncomp,id); }
-  inline void dT_h__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { DTHL_span(T,P,res,ncomp,id); }
-  inline void cp__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { DTHL_span(T,P,res,ncomp,id); }
-  inline void beta__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { BETAL_span(T,res,ncomp,id); } // passe pas P
-  inline void mu__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { MuL_span(T,res,ncomp,id); } // passe pas P
-  inline void lambda__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { LambdaL_span(T,res,ncomp,id); } // passe pas P
+  inline void rho_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { RhoL_span(T,P,res,ncomp,id); }
+  inline void dP_rho_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { DPRhoL_span(T,P,res,ncomp,id); }
+  inline void dT_rho_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { DTRhoL_span(T,P,res,ncomp,id); }
+  inline void h_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { HL_span(T,P,res,ncomp,id); }
+  inline void dP_h_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { DPHL_span(T,P,res,ncomp,id); }
+  inline void dT_h_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { DTHL_span(T,P,res,ncomp,id); }
+  inline void cp_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { DTHL_span(T,P,res,ncomp,id); }
+  inline void beta_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { BETAL_span(T,res,ncomp,id); } // passe pas P
+  inline void mu_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { MuL_span(T,res,ncomp,id); } // passe pas P
+  inline void lambda_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { LambdaL_span(T,res,ncomp,id); } // passe pas P
 };
 
 #endif /* Fluide_sodium_liquide_included */

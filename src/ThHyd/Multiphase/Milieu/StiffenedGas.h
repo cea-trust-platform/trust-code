@@ -29,19 +29,19 @@ public:
   void set_param(Param& param) override;
 
 private:
-  double pinf_, Cv_, q_, q_prim_, gamma_, R_, mu___, lambda___;
+  double pinf_, Cv_, q_, q_prim_, gamma_, R_, mu__, lambda__;
 
 protected :
-  void rho__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
-  void dP_rho__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
-  void dT_rho__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
-  void h__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
-  void dP_h__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
-  void dT_h__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
-  void cp__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
-  void beta__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
-  void mu__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
-  void lambda__(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
+  void rho_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
+  void dP_rho_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
+  void dT_rho_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
+  void h_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
+  void dP_h_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
+  void dT_h_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
+  void cp_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
+  void beta_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
+  void mu_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
+  void lambda_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
 };
 
 #endif /* StiffenedGas_included */
