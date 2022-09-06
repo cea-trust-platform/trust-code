@@ -18,9 +18,8 @@
 
 #include <TRUSTChamp_Divers_generique.h>
 
-/*! @brief class Tayl_Green by: buchal@che41b0.
+/*! @brief class Tayl_Green by: buchal@che41b0.der.edf.fr
  *
- * der.edf.fr
  *    modified version on  Champs/Tourbillon in *.datafile:   Tourbillon kwave
  *     u=sin(kwave*x)*cos(kwave*y) & v=cos(kwave*x)*sin(kwave*y)
  *
