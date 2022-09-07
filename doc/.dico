@@ -9,7 +9,6 @@
  Aretes Aretes Aretes.h
  Array_base Array_base Array_base.h
  ArrOfBit ArrOfBit ArrOfBit.h
- ArrOfFloat ArrOfFloat ArrOfFloat.h
  Asin Asin StdFunction.h
  Assembleur Assembleur Assembleur.h
  Assembleur_base Assembleur_base Assembleur_base.h
@@ -344,7 +343,6 @@
  Faces_Internes Faces_Internes Faces_Internes.h
  Faces_VDF Faces_VDF Faces_VDF.h
  Field_base Field_base Field_base.h
- FloatTab FloatTab FloatTab.h
  Fluide_base Fluide_base Fluide_base.h
  Fluide_Dilatable_base Fluide_Dilatable_base Fluide_Dilatable_base.h
  Fluide_Incompressible Fluide_Incompressible Fluide_Incompressible.h

@@ -1,13 +1,10 @@
 diff -r bin/BUILD64/patch/Outils/lata_tools/src/trust_commun/LataDB.cpp ./Outils/lata_tools/src/trust_commun/LataDB.cpp
-386c386
-<     if ((type_ != LataDBDataType::INT64) &&  (type_ != LataDBDataType::INT32)) {
+468c468
+<       if ((type_ != LataDBDataType::INT64) &&  (type_ != LataDBDataType::INT32))
 ---
->     if (type_ != LataDBDataType::INT32) {
-556,557c556
-<   case LataDBDataType::INT32:
-<   case LataDBDataType::INT64: f.read((LataDBInt32*) 0, size); break;
----
->   case LataDBDataType::INT32: f.read((LataDBInt32*) 0, size); break;
+>       if (type_ != LataDBDataType::INT32)
+672d671
+<     case LataDBDataType::INT64:
 diff -r bin/BUILD64/patch/ThirdPart/src/LIBMFFT/mfftov.f ./ThirdPart/src/LIBMFFT/mfftov.f
 19c19
 <         stop 'uuuu' 

@@ -2191,7 +2191,7 @@ void LataDB::set_path_prefix(const char * s)
 //   old_type.type_ = LataDBDataType::REAL32;
 //   LataDBDataType new_type;
 //   new_type.msb_ = LataDBDataType::REAL64;
-                                                                                   void LataDB::change_all_data_types(const LataDBDataType& old_type, const LataDBDataType& new_type)
+void LataDB::change_all_data_types(const LataDBDataType& old_type, const LataDBDataType& new_type)
   {
     const entier nb_tsteps = timesteps_.size();
     for (entier src_tstep = 0; src_tstep < nb_tsteps; src_tstep++)
