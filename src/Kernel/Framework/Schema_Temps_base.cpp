@@ -607,7 +607,9 @@ int Schema_Temps_base::mettre_a_jour()
   temps_courant_ += dt_;
   nb_pas_dt_++;
   // Compute next time step stability:
+  statistiques().end_count(mettre_a_jour_counter_,0,0);
   mettre_a_jour_dt_stab();
+  statistiques().begin_count(mettre_a_jour_counter_);
   assert_parallel(dt_stab_);
   assert_parallel(temps_courant_);
   if (!ind_tps_final_atteint)
