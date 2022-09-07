@@ -15,15 +15,17 @@
 
 #ifndef Interface_sigma_constant_included
 #define Interface_sigma_constant_included
+
 #include <Interface_base.h>
 
 class Interface_sigma_constant : public Interface_base
 {
   Declare_instanciable(Interface_sigma_constant);
-public:
-
-  double sigma_(const double T, const double P) const override { return sigma__; };
-
+private:
+  void sigma_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override
+  {
+    for (int i =0; i < (int)P.size(); i++) res[i * ncomp + ind] = sigma__;
+  }
 };
 
-#endif
+#endif /* Interface_sigma_constant_included */

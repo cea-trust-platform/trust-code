@@ -15,27 +15,29 @@
 
 #ifndef Saturation_constant_included
 #define Saturation_constant_included
+
 #include <Saturation_base.h>
 #include <Double.h>
 
 class Saturation_constant : public Saturation_base
 {
   Declare_instanciable(Saturation_constant);
-public:
-  double    Tsat_(const double P) const override;
-  double dP_Tsat_(const double P) const override;
-  double    Psat_(const double T) const override;
-  double dT_Psat_(const double T) const override;
-  double    Lvap_(const double P) const override;
-  double dP_Lvap_(const double P) const override;
-  double     Hls_(const double P) const override;
-  double  dP_Hls_(const double P) const override;
-  double     Hvs_(const double P) const override;
-  double  dP_Hvs_(const double P) const override;
-  double   sigma_(const double T, const double P) const override;
 
-protected:
+private:
+  void Tsat_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
+  void dP_Tsat_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
+  void Psat_(const SpanD T, SpanD res, int ncomp = 1, int ind = 0) const override;
+  void dT_Psat_(const SpanD T, SpanD res, int ncomp = 1, int ind = 0) const override;
+  void Lvap_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
+  void dP_Lvap_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
+  void Hls_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
+  void dP_Hls_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
+  void Hvs_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
+  void dP_Hvs_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
+
+  void sigma_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
+
   double tsat_ = -DMAXFLOAT, psat_ = -DMAXFLOAT, lvap_ = -DMAXFLOAT, hls_  = -DMAXFLOAT, hvs_  = -DMAXFLOAT;
 };
 
-#endif
+#endif /* Saturation_constant_included */

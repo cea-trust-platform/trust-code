@@ -115,7 +115,7 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
                 if (milc.has_interface(n,k))
                   {
                     Interface_base& sat = milc.get_interface(n, k);
-                    sigma_l(n,k) += vfd(f, c) / vf(f) * sat.sigma_(temp(e,n),press(e,n * (Np > 1)));
+                    sigma_l(n,k) += vfd(f, c) / vf(f) * sat.sigma(temp(e,n),press(e,n * (Np > 1)));
                   }
 
             for (n = 0; n < N; n++) dh += vfd(f, c) / vf(f) * alpha(e, n) * dh_e(e);
@@ -162,7 +162,7 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
             if(milc.has_interface(n, k))
               {
                 Interface_base& sat = milc.get_interface(n, k);
-                sigma_l(n,k) = sat.sigma_(temp(e,n), press(e,n * (Np > 1)));
+                sigma_l(n,k) = sat.sigma(temp(e,n), press(e,n * (Np > 1)));
               }
         }
       for (n=0; n<N; n++) d_bulles_l(n) = (d_bulles) ? (*d_bulles)(e,n) : 0;

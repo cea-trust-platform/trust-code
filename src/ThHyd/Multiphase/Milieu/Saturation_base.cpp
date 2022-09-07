@@ -24,10 +24,7 @@ void Saturation_base::set_param(Param& param)
   param.ajouter("T_ref", &T_ref_);
 }
 
-Sortie& Saturation_base::printOn(Sortie& os) const
-{
-  return os;
-}
+Sortie& Saturation_base::printOn(Sortie& os) const { return os; }
 
 Entree& Saturation_base::readOn(Entree& is)
 {
@@ -37,54 +34,72 @@ Entree& Saturation_base::readOn(Entree& is)
   return is;
 }
 
-double Saturation_base::get_Pref() const
+void Saturation_base::Tsat(const SpanD P, SpanD res, int ncomp, int ind) const
 {
-  return P_ref_;
+  assert(ncomp * (int )P.size() == (int )res.size());
+  (P_ref_ > 0) ? _Tsat_(P_ref_,res,ncomp,ind) : Tsat_(P,res,ncomp,ind);
 }
 
-double Saturation_base::Tsat(const double Pi) const
+void Saturation_base::dP_Tsat(const SpanD P, SpanD res, int ncomp, int ind) const
 {
-  const double P = P_ref_ > 0 ? P_ref_ : Pi;
-  return Tsat_(P);
-}
-double Saturation_base::dP_Tsat(const double P) const
-{
-  return P_ref_ > 0 ? 0 : dP_Tsat_(P);
-}
-double Saturation_base::Psat(const double Ti) const
-{
-  const double T = T_ref_ > 0 ? T_ref_ : Ti;
-  return Psat_(T);
-}
-double Saturation_base::dT_Psat(const double T) const
-{
-  return T_ref_ > 0 ? 0 : dT_Psat_(T);
-}
-double Saturation_base::Lvap(const double Pi) const
-{
-  const double P = P_ref_ > 0 ? P_ref_ : Pi;
-  return Lvap_(P);
-}
-double Saturation_base::dP_Lvap(const double P) const
-{
-  return P_ref_ > 0 ? 0 : dP_Lvap_(P);
+  assert(ncomp * (int )P.size() == (int )res.size());
+  if (P_ref_ > 0)
+    for (int i =0; i < (int)P.size(); i++) res[i * ncomp + ind] = 0.;
+  else dP_Tsat_(P,res,ncomp,ind);
 }
 
-double Saturation_base::Hls(const double Pi) const
+void Saturation_base::Psat(const SpanD T, SpanD res, int ncomp, int ind) const
 {
-  const double P = P_ref_ > 0 ? P_ref_ : Pi;
-  return Hls_(P);
+  assert((int )T.size() == (int )res.size());
+  (T_ref_ > 0) ? _Psat_(T_ref_,res,ncomp,ind) : Psat_(T,res,ncomp,ind);
 }
-double Saturation_base::dP_Hls(const double P) const
+
+void Saturation_base::dT_Psat(const SpanD T, SpanD res, int ncomp, int ind) const
 {
-  return P_ref_ > 0 ? 0 : dP_Hls_(P);
+  assert((int )T.size() == (int )res.size());
+  if (T_ref_ > 0)
+    for (int i =0; i < (int)T.size() / ncomp; i++) res[i * ncomp + ind] = 0.;
+  else dT_Psat_(T,res,ncomp,ind);
 }
-double Saturation_base::Hvs(const double Pi) const
+
+void Saturation_base::Lvap(const SpanD P, SpanD res, int ncomp, int ind) const
 {
-  const double P = P_ref_ > 0 ? P_ref_ : Pi;
-  return Hvs_(P);
+  assert(ncomp * (int )P.size() == (int )res.size());
+  (P_ref_ > 0) ? _Lvap_(P_ref_,res,ncomp,ind) : Lvap_(P,res,ncomp,ind);
 }
-double Saturation_base::dP_Hvs(const double P) const
+
+void Saturation_base::dP_Lvap(const SpanD P, SpanD res, int ncomp, int ind) const
 {
-  return P_ref_ > 0 ? 0 : dP_Hvs_(P);
+  assert(ncomp * (int )P.size() == (int )res.size());
+  if (P_ref_ > 0)
+    for (int i =0; i < (int)P.size(); i++) res[i * ncomp + ind] = 0.;
+  else dP_Lvap_(P,res,ncomp,ind);
+}
+
+void Saturation_base::Hls(const SpanD P, SpanD res, int ncomp, int ind) const
+{
+  assert(ncomp * (int )P.size() == (int )res.size());
+  (P_ref_ > 0) ? _Hls_(P_ref_,res,ncomp,ind) : Hls_(P,res,ncomp,ind);
+}
+
+void Saturation_base::dP_Hls(const SpanD P, SpanD res, int ncomp, int ind) const
+{
+  assert(ncomp * (int )P.size() == (int )res.size());
+  if (P_ref_ > 0)
+    for (int i =0; i < (int)P.size(); i++) res[i * ncomp + ind] = 0.;
+  else dP_Hls_(P,res,ncomp,ind);
+}
+
+void Saturation_base::Hvs(const SpanD P, SpanD res, int ncomp, int ind) const
+{
+  assert(ncomp * (int )P.size() == (int )res.size());
+  (P_ref_ > 0) ? _Hvs_(P_ref_,res,ncomp,ind) : Hvs_(P,res,ncomp,ind);
+}
+
+void Saturation_base::dP_Hvs(const SpanD P, SpanD res, int ncomp, int ind) const
+{
+  assert(ncomp * (int )P.size() == (int )res.size());
+  if (P_ref_ > 0)
+    for (int i =0; i < (int)P.size(); i++) res[i * ncomp + ind] = 0.;
+  else dP_Hvs_(P,res,ncomp,ind);
 }

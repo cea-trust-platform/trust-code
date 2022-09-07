@@ -23,10 +23,7 @@ Implemente_instanciable(Saturation_constant, "Saturation_constant", Saturation_b
 // XD attr Hlsat floattant Hlsat 1 Liquid saturation enthalpy
 // XD attr Hvsat floattant Hvsat 1 Vapor saturation enthalpy
 
-Sortie& Saturation_constant::printOn(Sortie& os) const
-{
-  return os;
-}
+Sortie& Saturation_constant::printOn(Sortie& os) const { return os; }
 
 Entree& Saturation_constant::readOn(Entree& is)
 {
@@ -48,53 +45,58 @@ Entree& Saturation_constant::readOn(Entree& is)
   return is;
 }
 
-double Saturation_constant::Tsat_(const double P) const
+void Saturation_constant::Tsat_(const SpanD P, SpanD res, int ncomp, int ind) const
 {
-  return tsat_;
-}
-double Saturation_constant::dP_Tsat_(const double P) const
-{
-  return 0;
-}
-double Saturation_constant::Psat_(const double T) const
-{
-  return psat_;
-}
-double Saturation_constant::dT_Psat_(const double T) const
-{
-  return 0;
-}
-double Saturation_constant::Lvap_(const double P) const
-{
-  return lvap_;
-}
-double Saturation_constant::dP_Lvap_(const double P) const
-{
-  return 0;
+  for (int i =0; i < (int)P.size(); i++) res[i * ncomp + ind] = tsat_;
 }
 
-double Saturation_constant::Hls_(const double P) const
+void Saturation_constant::dP_Tsat_(const SpanD P, SpanD res, int ncomp, int ind) const
 {
-  return hls_;
+  for (int i =0; i < (int)P.size(); i++) res[i * ncomp + ind] = 0.;
 }
 
-double Saturation_constant::dP_Hls_(const double P) const
+void Saturation_constant::Psat_(const SpanD T, SpanD res, int ncomp, int ind) const
 {
-  return 0;
+  for (int i =0; i < (int)T.size() / ncomp; i++) res[i * ncomp + ind] = psat_;
 }
 
-double Saturation_constant::Hvs_(const double P) const
+void Saturation_constant::dT_Psat_(const SpanD T, SpanD res, int ncomp, int ind) const
 {
-  return hvs_;
+  for (int i =0; i < (int)T.size() / ncomp; i++) res[i * ncomp + ind] = 0.;
 }
 
-double Saturation_constant::dP_Hvs_(const double P) const
+void Saturation_constant::Lvap_(const SpanD P, SpanD res, int ncomp, int ind) const
 {
-  return 0;
+  for (int i =0; i < (int)P.size(); i++) res[i * ncomp + ind] = lvap_;
 }
 
-double Saturation_constant::sigma_(const double T, const double P) const
+void Saturation_constant::dP_Lvap_(const SpanD P, SpanD res, int ncomp, int ind) const
+{
+  for (int i =0; i < (int)P.size(); i++) res[i * ncomp + ind] = 0.;
+}
+
+void Saturation_constant::Hls_(const SpanD P, SpanD res, int ncomp, int ind) const
+{
+  for (int i =0; i < (int)P.size(); i++) res[i * ncomp + ind] = hls_;
+}
+
+void Saturation_constant::dP_Hls_(const SpanD P, SpanD res, int ncomp, int ind) const
+{
+  for (int i =0; i < (int)P.size(); i++) res[i * ncomp + ind] = 0.;
+}
+
+void Saturation_constant::Hvs_(const SpanD P, SpanD res, int ncomp, int ind) const
+{
+  for (int i =0; i < (int)P.size(); i++) res[i * ncomp + ind] = hvs_;
+}
+
+void Saturation_constant::dP_Hvs_(const SpanD P, SpanD res, int ncomp, int ind) const
+{
+  for (int i =0; i < (int)P.size(); i++) res[i * ncomp + ind] = 0.;
+}
+
+void Saturation_constant::sigma_(const SpanD T, const SpanD P, SpanD res, int ncomp, int ind) const
 {
   if (sigma__ <= 0) Process::exit(que_suis_je() + ": expected positive value of the surface tension");
-  return sigma__;
+  for (int i =0; i < (int)P.size(); i++) res[i * ncomp + ind] = sigma__;
 }

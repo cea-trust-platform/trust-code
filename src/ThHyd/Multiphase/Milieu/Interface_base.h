@@ -15,8 +15,13 @@
 
 #ifndef Interface_base_included
 #define Interface_base_included
-#include <Param.h>
+
 #include <Ref_Pb_Multiphase.h>
+#include <span.hpp>
+#include <Param.h>
+
+using ArrayD = std::array<double,1>;
+using SpanD = tcb::span<double>;
 
 class Interface_base : public Objet_U
 {
@@ -25,13 +30,15 @@ public:
 
   virtual void set_param(Param& param);
 
-  double   sigma(const double T, const double P) const;
+  double sigma(const double T, const double P) const; // can be called if point-to-point calculation is required
+  void sigma(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const;
 
-  virtual double   sigma_(const double T, const double P) const = 0;
+private:
+  virtual void sigma_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const = 0;
 
 protected:
   double sigma__ = -1;
   REF(Pb_Multiphase) pb_multi;
 };
 
-#endif
+#endif /* Interface_base_included */

@@ -14,17 +14,13 @@
 *****************************************************************************/
 
 #include <Interface_base.h>
+
 Implemente_base(Interface_base, "Interface_base", Objet_U);
 // XD saturation_base objet_u saturation_base -1 Basic class for a liquid-gas interface (used in pb_multiphase)
-Sortie& Interface_base::printOn(Sortie& os) const
-{
-  return os;
-}
 
-void Interface_base::set_param(Param& param)
-{
-  param.ajouter("tension_superficielle", &sigma__);
-}
+Sortie& Interface_base::printOn(Sortie& os) const { return os; }
+
+void Interface_base::set_param(Param& param) { param.ajouter("tension_superficielle", &sigma__); }
 
 Entree& Interface_base::readOn(Entree& is)
 {
@@ -34,7 +30,17 @@ Entree& Interface_base::readOn(Entree& is)
   return is;
 }
 
-double  Interface_base::sigma(const double T, const double P) const
+void Interface_base::sigma(const SpanD T, const SpanD P, SpanD res, int ncomp, int ind) const
 {
-  return sigma__ >= 0 ? sigma__ : sigma_(T,P);
+  assert(ncomp * (int )P.size() == (int )res.size() && (int )T.size() == (int )res.size());
+  if (sigma__ >= 0)
+    for (int i =0; i < (int)P.size(); i++) res[i * ncomp + ind] = sigma__;
+  else sigma_(T,P,res,ncomp,ind);
+}
+
+double Interface_base::sigma(const double T, const double P) const
+{
+  ArrayD Tt = {T}, Pp = {P}, res_ = {0.};
+  sigma_(SpanD(Tt),SpanD(Pp),SpanD(res_),1,0);
+  return res_[0];
 }

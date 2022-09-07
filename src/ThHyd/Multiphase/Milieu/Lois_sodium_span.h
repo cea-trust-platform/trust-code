@@ -144,6 +144,17 @@ inline void LambdaL_span(const SpanD T, SpanD res, int ncomp, int id)
     }
 }
 
+/* tension superficielle */
+inline void SigmaL_span(const SpanD T, SpanD res, int ncomp, int id)
+{
+  assert ((int)T.size() == ncomp * (int)res.size()); // FIXME : perdu ....
+  for (auto& val : res)
+    {
+      const double tk = T[i_it * ncomp + id] + 273.15;
+      val = 0.2405 * pow(1 - tk / 2503.7, 1.126);
+    }
+}
+
 /*
  * ****************************
  * **********  GAZ  ***********
@@ -168,6 +179,32 @@ inline void DTsat_Na_span(const SpanD P, SpanD res, int ncomp, int ind)
     {
       const double Tsk = res[i * ncomp + ind] + 273.15; // XXX : need in Kelvin
       res[i * ncomp + ind] = Tsk * Tsk / ( P[i] * sqrt(B*B + 4 * A * C - 4 * C * log(P[i] / 1e6)));
+    }
+}
+
+/* pression de vapeur saturante */
+inline void Psat_Na_span(const SpanD T, SpanD res, int ncomp, int ind)
+{
+  assert ((int)T.size() == (int)res.size());
+  const double A = 7.8130, B = 11209, C = 5.249e5;
+  for (int i =0; i < (int)T.size() / ncomp; i++)
+    {
+      const double tk = T[i * ncomp + ind] + 273.15;
+      res[i * ncomp + ind] = 1.e6 * exp(A - B / tk - C / (tk * tk));
+    }
+}
+
+/* sa derivee */
+inline void DPsat_Na_span(const SpanD T, SpanD res, int ncomp, int ind)
+{
+  assert ((int)T.size() == (int)res.size());
+  const double B = 11209, C = 5.249e5;
+  // attention on utilise resu !
+  Psat_Na_span(T,res,ncomp,ind);
+  for (int i =0; i < (int)T.size() / ncomp; i++)
+    {
+      const double tk = T[i * ncomp + ind] + 273.15;
+      res[i * ncomp + ind] = (B / (tk * tk) + 2 * C / (tk * tk * tk)) * res[i * ncomp + ind];
     }
 }
 
