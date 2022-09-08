@@ -30,7 +30,7 @@ linux	rsync_ssh	tache	is221715.intra.cea.fr		-all 									-force_provided_mpich
 linux	rsync_ssh	tache	is221556.intra.cea.fr												-force_latest_openmpi								# Ubuntu 16	Bat 451 LGLS	bureau a cote de Clarisse Genrault
 linux	rsync_ssh	cible	is246145.intra.cea.fr		-all	-TrioCFD -IJK-FT -TRUST_NK -GENEPI3  						-semi_opt -force_provided_mpich -without-pdflatex					# CentOS 7.9	G+ Bat 451	bureau TMA TRUST titania 
 linux	rsync_ssh	tache	is246145-wopetsc.intra.cea.fr		-all	-TrioCFD -IJK-FT -TRUST_NK -GENEPI3 -FLICA5 -C3D  					-disable-petsc -force_provided_mpich -without-pdflatex					# CentOS 7.9	G+ Bat 451	bureau TMA TRUST titania 
-linux	rsync_ssh	tache	is154727.intra.cea.fr		-all								-check-valgrind	-force_provided_mpich -without-pdflatex								# CentOS 7.9	Bat 451	LGLS	salle de formation
+linux	rsync_ssh	tache	is154727.intra.cea.fr		-all								-check-valgrind	-force_provided_mpich -without-pdflatex								# CentOS 7.9 titania 	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	tache	is241483.intra.cea.fr		-all		-MPCube -TrioCFD -IJK-FT -SIDES -SCORPIO -GENEPI3 -TRUST_NK -FLICA5 -C3D -STT -PEMFC  			-force_provided_mpich -without-pdflatex 	                					# Debian 11 titania	Bat 451 LGLS	bureau Gilles
 linux	rsync_ssh	tache	is232971.intra.cea.fr				-TRUST -MPCube -PAREX+  -GENEPI3				-force_provided_openmpi  			# Fedora 26 titania 	Bat 451 LGLS	bureau Pierre LEDAC 
 linux	rsync_ssh	non	is226423.intra.cea.fr		-all		-GENEPI3 -IJK-FT 			-g		-force_provided_mpich -download-visit -without-pdflatex -disable-vc 						# Ubuntu 20 titania	Bat 451 LMSF	bureau Michel Filippi
@@ -43,8 +43,8 @@ linux	rsync_ssh	non	is154709.intra.cea.fr		-all		-GENEPI3 -FLICA5 -C3D  							-
 linux	rsync_ssh	non	is154710.intra.cea.fr		-all		-TrioCFD -IJK-FT					-disable-petsc -without-pdflatex 						# CentOS 7.9	Bat 451	LGLS	salle de formation titania 
 linux	rsync_ssh	non	is154710-xdata.intra.cea.fr									-xdata  -without-pdflatex 						# CentOS 7.9	Bat 451	LGLS	salle de formation titania 
 linux	rsync_ssh	non	is154711.intra.cea.fr				-TrioCFD -IJK-FT -TrioMC -FLICA5   			-g 		-without-pdflatex						# CentOS 7.9	Bat 451	LGLS	salle de formation
-linux	rsync_ssh	non	is154712.intra.cea.fr		-all		-GENEPI3 							-disable-optionals								# CentOS 7.9	Bat 451	LGLS	salle de formation
-linux	rsync_ssh	non	is154726.intra.cea.fr				-TRUST -MPCube -GENEPI3 			-g 		-enable-petsc-debug -download-salome	-without-pdflatex			# CentOS 7.9	Bat 451	LGLS	salle de formation5
+linux	rsync_ssh	non	is154712.intra.cea.fr		-all		 							-disable-optionals								# CentOS 7.9 titania 	Bat 451	LGLS	salle de formation
+linux	rsync_ssh	non	is154726.intra.cea.fr		-all 		 			-g 		-enable-petsc-debug -download-salome	-without-pdflatex			# CentOS 7.9 titania 	Bat 451	LGLS	salle de formation5
 linux	rsync_ssh	tache   is241482.intra.cea.fr				        	                     -check-valgrind -without-pdflatex -force_provided_mpich 				# CentOS 7.9 Salle de formation titania 
 linux	rsync_ssh	tache	is241480.intra.cea.fr		-all 		-TrioCFD -IJK-FT 				-platform -without-pdflatex				# CentOS 7.9	Bat 451	LMSF	Salle de formation titania 
 linux	rsync_ssh	tache	is241478-build64.intra.cea.fr			-TrioCFD -IJK-FT -STT -PEMFC 				-build_64_bit -force_provided_mpich -without-pdflatex 						# CentOS 7.9	Bat 451	LGLS	salle de formation titania 
