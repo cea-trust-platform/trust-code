@@ -67,6 +67,7 @@ pdf=build/rapport.pdf
 save=""
 ici=`pwd`
 export_pdf=false
+parallel=false
 # Changement par defaut, on utilise -np 2 si parallele et MPI non natif
 #if [ "`echo $MPI_ROOT | grep TRUST`" != "" ]
 if [ "`echo $MPI_ROOT`" != "" ] && [ "$TRUST_WITHOUT_HOST" = 0 ]
@@ -125,10 +126,14 @@ do
       options=$options" "$1
       if [ "$1" = -not_run ]; then
         not_run=1
-      elif [ "$1" = -parallel_run ] && [ "$2" != "" ]
-      then
-         shift
-         TRUST_NB_PROCS=$1
+      elif [ "$1" = -parallel_run ] 
+			then
+				parallel=true
+				if [ "$2" != "" ]
+				then
+					shift
+					TRUST_NB_PROCS=$1
+				fi
       fi
       shift
    elif [ "$1" = -nb_pas_dt_max ]
@@ -288,6 +293,10 @@ then
           echo "  >  jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to pdf --no-input --output $ici/build/rapport.pdf $opt_jy $prm"
           echo "----------------------------------------------------------------------"
           jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to pdf --no-input --output "$ici/build/rapport.pdf" $opt_jy $prm
+          exit $?
+			elif $parallel; then
+					curr_dir=`pwd`
+					env JUPYTER_RUN_OPTIONS="-parallel_run" jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to pdf --no-input --output "$curr_dir/build/rapport.pdf" --execute $prm 2>& 1| tee -a Run.log
           exit $?
       else
           echo "----------------------------------------------------------------------"

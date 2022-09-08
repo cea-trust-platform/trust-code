@@ -222,7 +222,7 @@ then
         then
             chmod +x ./$cmd
             nb_proc_one_case=`sed "${cmd_id}q;d" nb_procs`
-            echo "Commnand: " $SJOB_DIR/Salloc -n $nb_proc_one_case ./$cmd
+            echo "Command: " $SJOB_DIR/Salloc -n $nb_proc_one_case ./$cmd
             $SJOB_DIR/Salloc -n $nb_proc_one_case ./$cmd &
         else
 
@@ -242,7 +242,9 @@ then
                  sleep 1
               done
           }
-          max_bg_procs $TRUST_NB_PROCS
+          if [ $TRUST_WITHOUT_HOST -eq 1 ]; then
+						max_bg_procs $TRUST_NB_PROCS
+					fi
           awk -F'"' '{print $2}' $cmd
           bash ./$cmd &
 

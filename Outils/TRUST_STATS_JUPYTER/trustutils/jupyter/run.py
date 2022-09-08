@@ -92,7 +92,7 @@ def _runCommand(cmd, verbose):
     complProc = subprocess.run(cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     if verbose or complProc.returncode != 0:
         print(cmd)
-        print(complProc.stdout.decode('utf-8'))
+    print(complProc.stdout.decode('utf-8'))
     # Throw if return code non-zero:
     if complProc.returncode:
         # Display message through a custom exception so that jupyter-nbconvert also shows it properly in the console:
@@ -367,7 +367,7 @@ class TRUSTSuite(object):
 
         self.copySrc()
         if runPrepare:
-            self.executeScript("prepare")
+            executeScript("prepare")
 
     def copySrc(self):
         """ Copy content of src directory into build directory.
@@ -377,24 +377,6 @@ class TRUSTSuite(object):
             raise Exception("Not a coherent validation form directory: 'src' subdirectory not found.")
         # Mimick what is done in 'prepare_gen' TRUST script:
         subprocess.run("mkdir -p %s && cp -a src/* %s 2>/dev/null" % (BUILD_DIRECTORY, BUILD_DIRECTORY), shell=True)  # Note the '*' !!
-
-    def executeScript(self, scriptName, verbose=False):
-        """ Execute scriptName if any.
-        """
-        os.chdir(BUILD_DIRECTORY)
-        pth = "./" + scriptName
-        if os.path.exists(pth):
-            cmd = pth
-            subprocess.check_output("chmod u+x %s" % pth, shell=True)
-            _runCommand(cmd, verbose)
-        os.chdir(ORIGIN_DIRECTORY)
-
-    def executeCommand(self, cmd, verbose=False):
-        """ Execute bash command (in the build directory)
-        """
-        os.chdir(BUILD_DIRECTORY)
-        _runCommand(cmd, verbose)
-        os.chdir(ORIGIN_DIRECTORY)
 
     def addCase(self, case):
         self.cases_.append(case)
@@ -433,11 +415,14 @@ class TRUSTSuite(object):
         ## We do so if JUPYTER_RUN_OPTIONS is not there, or if it is there with value '-parallel_sjob'
         ## Hence, s.o. who runs the Sserver on its machine will benefit from it directly, and on the other hand
         ## the validation process can control this finely.
-        runParallel = not preventConcurrent and ((opt == "" or "-parallel_sjob" in opt.split(" ")) and self.detectSserver())
-        extra = {True: "**with Sserver**", False: ""}[runParallel]
-        print("Running %s..." % extra)
+        if "-parallel_run" in opt:
+            runParallel = True
+        else:
+            runParallel = not preventConcurrent and ((opt == "" or "-parallel_sjob" in opt.split(" ")) and self.detectSserver())
+            extra = {True: "**with Sserver**", False: ""}[runParallel]
+            print("Running %s..." % extra)
 
-        from time import time
+        from time import time, sleep
 
         t0 = time()
         stream = os.popen("echo Returned output")
@@ -453,13 +438,31 @@ class TRUSTSuite(object):
         err_msg = "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
         err_msg += "Case '%s/%s.data' FAILED !! Here are the last 20 lines of the log file:\n"
         err_msg += "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
+
         if runParallel:
             salloc = os.path.join(os.environ["TRUST_ROOT"], "bin", "Sjob", "Salloc")
             for case in lstC:
                 (script, logFile,) = case.generateExecScript()  # Generate the shell script doing pre_run, case and post_run
                 log_lst.append(logFile)
-                # Invoke Salloc to schedule test case execution:
-                cmdLst = [salloc, "-n", str(case.nbProcs_), script]
+                if "-parallel_run" in opt:
+                    host = os.environ.get("TRUST_WITHOUT_HOST","")
+                    nb_procs = int(os.environ.get("TRUST_NB_PROCS",""))
+                    # On personnal computer, limit the number of process
+                    while (host=="1"):
+                        current_number = 0
+                        for th in th_lst:
+                            if th.poll() is None:
+                                current_number += case.nbProcs_
+                        if (current_number < nb_procs):
+                            break
+                        if (case.nbProcs_ > nb_procs):
+                            print("Insufficient number of processors to perform parallel calculations.\n Increase TRUST_NB_PROCS")
+                            break
+                        sleep(1)
+                    cmdLst = ["bash", script, "&"]
+                else:
+                    # Invoke Salloc to schedule test case execution:
+                    cmdLst = [salloc, "-n", str(case.nbProcs_), script]
                 #   We don't track Salloc output (should we?)
                 th = subprocess.Popen(cmdLst, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                 th_lst.append(th)
@@ -689,32 +692,20 @@ def getCases():
 def executeScript(scriptName, verbose=False):
     """ Execute a script shell in the BUILD_DIRECTORY
     """
-    global defaultSuite_
-    
-    opt = os.environ.get("JUPYTER_RUN_OPTIONS", None)
-    if not opt is None and "-not_run" in opt:
-        return []
-    if defaultSuite_ is None:
-        print("ERROR: defaultSuite_ is not initialized. Please call initCaseSuite() first.")
-        return []
-    opt = os.environ.get("JUPYTER_RUN_OPTIONS", None)
-    # No additional modification of the results file with new script
-    if not opt is None and "-not_run" in opt:
-        return []
-    return defaultSuite_.executeScript(scriptName, verbose)
+    os.chdir(BUILD_DIRECTORY)
+    pth = "./" + scriptName
+    if os.path.exists(pth):
+        cmd = pth
+        subprocess.check_output("chmod u+x %s" % pth, shell=True)
+        _runCommand(cmd, verbose)
+    os.chdir(ORIGIN_DIRECTORY)
 
 def executeCommand(cmd, verbose=False):
     """ Execute a bash command in the BUILD_DIRECTORY
     """
-    global defaultSuite_
-    if defaultSuite_ is None:
-        print("ERROR: defaultSuite_ is not initialized. Please call initCaseSuite() first.")
-        return []
-    opt = os.environ.get("JUPYTER_RUN_OPTIONS", None)
-    # No additional modification of the results file with new script
-    if not opt is None and "-not_run" in opt:
-        return []
-    return defaultSuite_.executeCommand(cmd, verbose)
+    os.chdir(BUILD_DIRECTORY)
+    _runCommand(cmd, verbose)
+    os.chdir(ORIGIN_DIRECTORY)
 
 
 def printCases():
