@@ -339,7 +339,7 @@ inline void HV(const SpanD T, const SpanD P, SpanD res, int ncomp, int id)
   VectorD Ts_((int)res.size()), Lvap_((int)res.size()); // on peut utiliser res pour l'un de deux mais bon ...
   Tsat_Na(P,SpanD(Ts_),1,0);
   Lvap_Na(P,SpanD(Lvap_),1,0);
-  HL(SpanD(Ts_),P,res,ncomp,id); // XXX : attention on utilise res
+  HL(SpanD(Ts_),P,res,1,0); // XXX : attention on utilise res
   for (auto& val : res)
     {
       const double dT = T[i_it * ncomp + id] - Ts_[i_it]; // XXX : pas meme taille attention
@@ -356,8 +356,8 @@ inline void DPHV(const SpanD T, const SpanD P, SpanD res, int ncomp, int id)
   Tsat_Na(P,SpanD(Ts_),1,0);
   DTsat_Na(P,SpanD(DTs_),1,0);
   DLvap_Na(P,SpanD(DLvap_),1,0);
-  DTHL(SpanD(Ts_),P,SpanD(DTHL_),ncomp,id);
-  DPHL(SpanD(Ts_),P,SpanD(DPHL_),ncomp,id);
+  DTHL(SpanD(Ts_),P,SpanD(DTHL_),1,0);
+  DPHL(SpanD(Ts_),P,SpanD(DPHL_),1,0);
 
   const double Cp0 = 910, k = -4.6e-3;
   for (auto& val : res)
