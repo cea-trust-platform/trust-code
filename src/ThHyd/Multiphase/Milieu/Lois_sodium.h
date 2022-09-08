@@ -12,265 +12,469 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-#ifndef lois_sodium_included
-#define lois_sodium_included
 
+#ifndef lois_sodium_span_included
+#define lois_sodium_span_included
+
+#include <assert.h>
+#include <span.hpp>
+#include <vector>
 #include <cmath>
 
-//proprietes physiques
 /* Lois physiques du sodium issues de fits sur DEN/DANS/DM2S/STMF/LMES/RT/12-018/A */
-#define Tk ((T) + 273.15)
-const double Ksil_d = 1e-9;
+
+// iterator index !
+#define i_it std::distance(res.begin(), &val)
+
+using VectorD = std::vector<double>;
+using SpanD = tcb::span<double>;
+
+const double Ksil = 1e-9;
 
 /* inverse de la densite du liquide (hors pression) */
-inline double IRhoL(double T)
+inline void IRhoL(const SpanD T, SpanD res, int ncomp, int id)
 {
-  return (9.829728e-4 + Tk * (2.641186e-7 + Tk * (-3.340743e-11 + Tk * 6.680973e-14)));
+  for (auto& val : res)
+    {
+      const double tk = T[i_it * ncomp + id] + 273.15;
+      val = (9.829728e-4 + tk * (2.641186e-7 + tk * (-3.340743e-11 + tk * 6.680973e-14)));
+    }
 }
 
 /* sa derivee */
-inline double DTIRhoL(double T)
+inline void DTIRhoL(const SpanD T, SpanD res, int ncomp, int id)
 {
-  return (2.641186e-7 + Tk * (-3.340743e-11 * 2 + Tk * 6.680973e-14 * 3));
+  for (auto& val : res)
+    {
+      const double tk = T[i_it * ncomp + id] + 273.15;
+      val = (2.641186e-7 + tk * (-3.340743e-11 * 2 + tk * 6.680973e-14 * 3));
+    }
 }
 
-/* densite du liquide */
-inline double RhoL(double T, double P)
+inline void RhoL(const SpanD T, const SpanD P, SpanD res, int ncomp, int id)
 {
-  return exp(Ksil_d * (P - 1e5)) / IRhoL(T);
+  assert ((int)T.size() == ncomp * (int)P.size() && (int)T.size() == ncomp * (int)res.size());
+  IRhoL(T,res,ncomp,id); // Attention on utilise res ...
+  for (auto& val : res) val = exp(Ksil * (P[i_it] - 1e5)) / val;
+}
+
+/* derivees */
+inline void DPRhoL(const SpanD T, const SpanD P, SpanD res, int ncomp, int id)
+{
+  assert ((int)T.size() == ncomp * (int)P.size() && (int)T.size() == ncomp * (int)res.size());
+  RhoL(T,P,res,ncomp,id); // Attention on utilise res ...
+  for (auto& val : res) val = Ksil * val;
+}
+
+inline void DTRhoL(const SpanD T, const SpanD P, SpanD res, int ncomp, int id)
+{
+  assert ((int)T.size() == ncomp * (int)P.size() && (int)T.size() == ncomp * (int)res.size());
+  VectorD invRhoL((int)res.size()), DinvRhoL((int)res.size()); // on peut utiliser res pour l'un de deux mais bon ...
+  IRhoL(T,SpanD(invRhoL),ncomp,id);
+  DTIRhoL(T,SpanD(DinvRhoL),ncomp,id);
+  for (auto& val : res) val = - exp(Ksil * (P[i_it] - 1e5)) * DinvRhoL[i_it] / (invRhoL[i_it] * invRhoL[i_it]);
 }
 
 /* enthalpie du liquide */
-inline double HL(double T, double P)
+inline void HL(const SpanD T, const SpanD P, SpanD res, int ncomp, int id)
 {
-  return (2992600 / Tk - 365487.2 + Tk * (1658.2 + Tk * (-.42395 + Tk * 1.4847e-4)))
-         + (IRhoL(T) - Tk * DTIRhoL(T)) * (1 - exp(Ksil_d*(1e5 - P))) / Ksil_d;
+  assert ((int)T.size() == ncomp * (int)P.size() && (int)T.size() == ncomp * (int)res.size());
+  VectorD invRhoL((int)res.size()), DinvRhoL((int)res.size()); // on peut utiliser res pour l'un de deux mais bon ...
+  IRhoL(T,SpanD(invRhoL),ncomp,id);
+  DTIRhoL(T,SpanD(DinvRhoL),ncomp,id);
+  for (auto& val : res)
+    {
+      const double tk = T[i_it * ncomp + id] + 273.15;
+      val = (2992600 / tk - 365487.2 +  tk * (1658.2 + tk * (-.42395 +  tk * 1.4847e-4)))+ (invRhoL[i_it] - tk * DinvRhoL[i_it]) * (1 - exp(Ksil*(1e5 - P[i_it]))) / Ksil;
+    }
 }
 
 /* derivees */
-inline double DTHL(double T, double P)
+inline void DPHL(const SpanD T, const SpanD P, SpanD res, int ncomp, int id)
 {
-  return (-2992600 / (Tk*Tk) + 1658.2 + Tk * (-.42395 * 2 + Tk * 1.4847e-4 * 3))
-         - Tk * (-3.340743e-11 * 2 + Tk * 6.680973e-14 * 6) * (1 - exp(Ksil_d*(1e5 - P))) / Ksil_d;
+  assert ((int)T.size() == ncomp * (int)P.size() && (int)T.size() == ncomp * (int)res.size());
+  VectorD invRhoL((int)res.size()), DinvRhoL((int)res.size()); // on peut utiliser res pour l'un de deux mais bon ...
+  IRhoL(T,SpanD(invRhoL),ncomp,id);
+  DTIRhoL(T,SpanD(DinvRhoL),ncomp,id);
+  for (auto& val : res)
+    {
+      const double tk = T[i_it * ncomp + id] + 273.15;
+      val = (invRhoL[i_it] - tk * DinvRhoL[i_it]) * exp(Ksil * (1e5 - P[i_it]));
+    }
 }
 
-/* inverses par methode de Newton */
-inline double TLh(double h, double T0, double P)
+inline void DTHL(const SpanD T, const SpanD P, SpanD res, int ncomp, int id)
 {
-  double T = T0, sec;
-  int i;
-  for (i = 0; i < 100 && std::abs( sec = HL(T, P) - h ) > 1e-8; i++)
-    T -= sec / DTHL(T, P);
-  return i < 100 ? T : -1e10;
-}
-/* derivees */
-inline double DTRhoL(double T, double P)
-{
-  return - exp(Ksil_d * (P - 1e5)) * DTIRhoL(T) / (IRhoL(T) * IRhoL(T));
-}
-inline double DPRhoL(double T, double P)
-{
-  return Ksil_d * RhoL(T, P);
+  assert ((int)T.size() == ncomp * (int)res.size() && (int)T.size() == ncomp * (int)P.size());
+  for (auto& val : res)
+    {
+      const double tk = T[i_it * ncomp + id] + 273.15;
+      val = (-2992600 / (tk*tk) + 1658.2 + tk * (-.42395 * 2 + tk * 1.4847e-4 * 3))- tk * (-3.340743e-11 * 2 + tk * 6.680973e-14 * 6) * (1 - exp(Ksil*(1e5 - P[i_it]))) / Ksil;
+    }
 }
 
-/* derivees */
-inline double DPHL(double T, double P)
+inline void BETAL(const SpanD T, SpanD res, int ncomp, int id)
 {
-  return (IRhoL(T) - Tk * DTIRhoL(T)) * exp(Ksil_d * (1e5 - P));
-}
-
-/* energie volumique du liquide */
-inline double EL(double T, double P)
-{
-  return HL(T, P) * RhoL(T, P);
-}
-/* derivees */
-inline double DTEL(double T, double P)
-{
-  return DTHL(T, P) * RhoL(T, P) + HL(T, P) * DTRhoL(T, P);
-}
-inline double DPEL(double T, double P)
-{
-  return DPHL(T, P) * RhoL(T, P) + HL(T, P) * DPRhoL(T, P);
-}
-
-inline double TLe(double e, double T0, double P)
-{
-  double T = T0, sec;
-  int i;
-  for (i = 0; i < 100 && std::abs( sec = EL(T, P) - e ) > 1e-3; i++)
-    T -= sec / DTEL(T, P);
-  return i < 100 ? T : -1e10;
+  assert ((int)T.size() == ncomp * (int)res.size());
+  VectorD invRhoL((int)res.size()), DinvRhoL((int)res.size()); // on peut utiliser res pour l'un de deux mais bon ...
+  IRhoL(T,SpanD(invRhoL),ncomp,id);
+  DTIRhoL(T,SpanD(DinvRhoL),ncomp,id);
+  for (auto& val : res) val = DinvRhoL[i_it] / invRhoL[i_it];
 }
 
 /* viscosite du liquide*/
-inline double MuL( double T )
+inline void MuL(const SpanD T, SpanD res, int ncomp, int id)
 {
-  return exp( -6.4406 - 0.3958 * log(Tk) + 556.835 / Tk );
+  assert ((int)T.size() == ncomp * (int)res.size());
+  for (auto& val : res)
+    {
+      const double tk = T[i_it * ncomp + id] + 273.15;
+      val = exp( -6.4406 - 0.3958 * log(tk) + 556.835 / tk );
+    }
 }
+
 /* conductivite du liquide */
-inline double LambdaL( double T )
+inline void LambdaL(const SpanD T, SpanD res, int ncomp, int id)
 {
-  return std::max(124.67 + Tk * (-.11381 + Tk * (5.5226e-5 - Tk * 1.1848e-8)), 0.045);
+  assert ((int)T.size() == ncomp * (int)res.size());
+  for (auto& val : res)
+    {
+      const double tk = T[i_it * ncomp + id] + 273.15;
+      val = std::max(124.67 + tk * (-.11381 + tk * (5.5226e-5 - tk * 1.1848e-8)), 0.045);
+    }
 }
+
 /* tension superficielle */
-inline double SigmaL(double T)
+inline void SigmaL(const SpanD T, SpanD res, int ncomp, int id)
 {
-  return 0.2405 * pow(1 - Tk / 2503.7, 1.126);
+  assert ((int)T.size() == ncomp * (int)res.size()); // FIXME : perdu ....
+  for (auto& val : res)
+    {
+      const double tk = T[i_it * ncomp + id] + 273.15;
+      val = 0.2405 * pow(1 - tk / 2503.7, 1.126);
+    }
 }
-/* Nusselt du liquide -> Skupinski */
-inline double NuL(double T, double P, double w, double Dh)
-{
-  double Pe = RhoL(T, P) * std::abs(w) * Dh * DTHL(T, P) / LambdaL(T);
-  return 4.82 + 0.0185 * pow(Pe, 0.827);
-}
+
+/*
+ * ****************************
+ * **********  GAZ  ***********
+ * ****************************
+ */
+
 /* temperature de saturation */
-inline double Tsat_Na( double P )
+inline void Tsat_Na(const SpanD P, SpanD res, int ncomp, int ind)
 {
-  double A = 7.8130, B = 11209, C = 5.249e5;
-  return 2 * C / ( -B + sqrt(B*B + 4 * A * C - 4 * C * log(P / 1e6))) - 273.15;
-}
-/* sa derivee */
-inline double DTsat_Na( double P )
-{
-  double A = 7.8130, B = 11209, C = 5.249e5, Tsk = Tsat_Na(P) + 273.15;
-  return Tsk * Tsk / ( P * sqrt(B*B + 4 * A * C - 4 * C * log(P / 1e6)));
-}
-/* pression de vapeur saturante */
-inline double Psat_Na( double T )
-{
-  double A = 7.8130, B = 11209, C = 5.249e5;
-  return 1e6 * exp(A - B / Tk - C / (Tk * Tk));
-}
-/* sa derivee */
-inline double DPsat_Na( double T )
-{
-  double B = 11209, C = 5.249e5;
-  return (B / (Tk * Tk) + 2 * C / (Tk * Tk * Tk)) * Psat_Na(T);
-}
-/* enthalpie massique de saturation */
-inline double Hsat( double P )
-{
-  return HL(Tsat_Na(P), P);
-}
-/* sa derivee */
-inline double DHsat( double P )
-{
-  return DTsat_Na(P) * DTHL(Tsat_Na(P), P) + DPHL(Tsat_Na(P), P);
-}
-/* chaleur latente, a prendre a Tsat_Na */
-inline double Lvap_Na( double P )
-{
-  double Tc = 2503.7, Tsk = Tsat_Na(P) + 273.15;
-  return 3.9337e5 * ( 1 - Tsk / Tc) + 4.3986e6 * pow( 1 - Tsk / Tc, .29302);
+  assert (ncomp * (int)P.size() == (int)res.size());
+  const double A = 7.8130, B = 11209, C = 5.249e5;
+  for (int i =0; i < (int)P.size(); i++) res[i * ncomp + ind] =  2 * C / ( -B + sqrt(B*B + 4 * A * C - 4 * C * log(P[i] / 1e6))) - 273.15;
 }
 
 /* sa derivee */
-inline double DLvap_Na( double P )
+inline void DTsat_Na(const SpanD P, SpanD res, int ncomp, int ind)
 {
-  double Tc = 2503.7, Tsk = Tsat_Na(P) + 273.15;
-  return DTsat_Na(P) * (-3.9337e5 / Tc - 4.3986e6  * .29302 * pow( 1 - Tsk / Tc, .29302 - 1) / Tc);
+  assert (ncomp * (int)P.size() == (int)res.size());
+  const double A = 7.8130, B = 11209, C = 5.249e5;
+  Tsat_Na(P,res,ncomp,ind); // XXX : si c'est complique va falloir creer un tableau local ...
+  for (int i =0; i < (int)P.size(); i++)
+    {
+      const double Tsk = res[i * ncomp + ind] + 273.15; // XXX : need in Kelvin
+      res[i * ncomp + ind] = Tsk * Tsk / ( P[i] * sqrt(B*B + 4 * A * C - 4 * C * log(P[i] / 1e6)));
+    }
+}
+
+/* pression de vapeur saturante */
+inline void Psat_Na(const SpanD T, SpanD res, int ncomp, int ind)
+{
+  assert ((int)T.size() == (int)res.size());
+  const double A = 7.8130, B = 11209, C = 5.249e5;
+  for (int i =0; i < (int)T.size() / ncomp; i++)
+    {
+      const double tk = T[i * ncomp + ind] + 273.15;
+      res[i * ncomp + ind] = 1.e6 * exp(A - B / tk - C / (tk * tk));
+    }
+}
+
+/* sa derivee */
+inline void DPsat_Na(const SpanD T, SpanD res, int ncomp, int ind)
+{
+  assert ((int)T.size() == (int)res.size());
+  const double B = 11209, C = 5.249e5;
+  // attention on utilise resu !
+  Psat_Na(T,res,ncomp,ind);
+  for (int i =0; i < (int)T.size() / ncomp; i++)
+    {
+      const double tk = T[i * ncomp + ind] + 273.15;
+      res[i * ncomp + ind] = (B / (tk * tk) + 2 * C / (tk * tk * tk)) * res[i * ncomp + ind];
+    }
+}
+
+/* enthalpie massique de saturation */
+inline void Hsat(const SpanD P, SpanD res, int ncomp, int ind)
+{
+  assert (ncomp * (int)P.size() == (int)res.size());
+  VectorD Ts_((int)P.size()), HL_((int)P.size());
+  Tsat_Na(P,SpanD(Ts_),1,0); // 1D
+  HL(SpanD(Ts_),P,SpanD(HL_),1,0); // 1D
+  for (int i =0; i < (int)P.size(); i++) res[i * ncomp + ind] = HL_[i];
+}
+
+/* sa derivee */
+inline void DHsat(const SpanD P, SpanD res, int ncomp, int ind)
+{
+  assert (ncomp * (int)P.size() == (int)res.size());
+  VectorD Ts_((int)P.size()), DTs_((int)P.size()), DTHL_((int)P.size()), DPHL_((int)P.size());
+  Tsat_Na(P,SpanD(Ts_),1,0); // 1D
+  DTsat_Na(P,SpanD(DTs_),1,0); // 1D
+  DTHL(SpanD(Ts_),P,SpanD(DTHL_),1,0);
+  DPHL(SpanD(Ts_),P,SpanD(DPHL_),1,0);
+  for (int i =0; i < (int)P.size(); i++) res[i * ncomp + ind] = DTs_[i] * DTHL_[i] + DPHL_[i];
 }
 
 /* densite de la vapeur : (gaz parfait) * f1(Tsat_Na) * f2(DTsat_Na)*/
-#define  f1(Ts) (2.49121 + Ts * (-5.53796e-3 + Ts * (7.5465e-6 + Ts * (-4.20217e-9 + Ts * 8.59212e-13))))
-#define Df1(Ts) (-5.53796e-3 + Ts * (2 * 7.5465e-6 + Ts * (-3 * 4.20217e-9 + Ts * 4 * 8.59212e-13)))
-#define  f2(dT) (1 + dT * (-5e-4 + dT * (6.25e-7 - dT * 4.1359e-25)))
-#define Df2(dT) (-5e-4 + dT * (2 * 6.25e-7 - dT * 3 * 4.1359e-25))
-inline double RhoV( double T, double P )
+#define f1 (2.49121 + Tsk * (-5.53796e-3 + Tsk * (7.5465e-6 + Tsk * (-4.20217e-9 + Tsk * 8.59212e-13))))
+#define f2 (1 + dT * (-5e-4 + dT * (6.25e-7 - dT * 4.1359e-25)))
+#define Df1 (-5.53796e-3 + Tsk * (2 * 7.5465e-6 + Tsk * (-3 * 4.20217e-9 + Tsk * 4 * 8.59212e-13)))
+#define Df2 (-5e-4 + dT * (2 * 6.25e-7 - dT * 3 * 4.1359e-25))
+
+inline void RhoV(const SpanD T, const SpanD P, SpanD res, int ncomp, int id)
 {
-  double Tsk = Tsat_Na(P) + 273.15, dT = Tk - Tsk;
-  return P * 2.7650313e-3 * f1(Tsk) * f2(dT) / Tk;
+  assert ((int)T.size() == ncomp * (int)P.size() && (int)T.size() == ncomp * (int)res.size());
+  Tsat_Na(P,res,1,0); // XXX : attention on utilise res
+  for (auto& val : res)
+    {
+      const double Tsk = val + 273.15; // XXX : need in Kelvin
+      const double tk = T[i_it * ncomp + id] + 273.15;
+      const double dT = tk - Tsk;
+      val = P[i_it] * 2.7650313e-3 * f1 * f2 / tk;
+    }
 }
+
 /* ses derivees */
-inline double DTRhoV( double T, double P )
+inline void DPRhoV(const SpanD T, const SpanD P, SpanD res, int ncomp, int id)
 {
-  double Tsk = Tsat_Na(P) + 273.15, dT = Tk - Tsk;
-  return P * 2.7650313e-3 * f1(Tsk) * (Df2(dT) - f2(dT) / Tk) / Tk;
+  assert ((int)T.size() == ncomp * (int)P.size() && (int)T.size() == ncomp * (int)res.size());
+  VectorD Tsk_((int)res.size()), DTsk_((int)res.size()); // on peut utiliser res pour l'un de deux mais bon ...
+  Tsat_Na(P,SpanD(Tsk_),1,0);
+  DTsat_Na(P,SpanD(DTsk_),1,0);
+  for (auto& val : res)
+    {
+      const double Tsk = Tsk_[i_it] + 273.15; // XXX : need in Kelvin
+      const double tk = T[i_it * ncomp + id] + 273.15;
+      const double dT = tk - Tsk;
+      val = 2.7650313e-3 * (f1 * f2 + P[i_it] * DTsk_[i_it] * (Df1 * f2 - f1 * Df2)) / tk;
+    }
 }
-inline double DPRhoV( double T, double P )
+
+inline void DTRhoV(const SpanD T, const SpanD P, SpanD res, int ncomp, int id)
 {
-  double Tsk = Tsat_Na(P) + 273.15, dT = Tk - Tsk;
-  return 2.7650313e-3 * (f1(Tsk) * f2(dT) + P * DTsat_Na(P) * (Df1(Tsk) * f2(dT) - f1(Tsk) * Df2(dT))) / Tk;
+  assert ((int)T.size() == ncomp * (int)P.size() && (int)T.size() == ncomp * (int)res.size());
+  Tsat_Na(P,res,1,0); // XXX : attention on utilise res
+  for (auto& val : res)
+    {
+      const double Tsk = val + 273.15; // XXX : need in Kelvin
+      const double tk = T[i_it * ncomp + id] + 273.15;
+      const double dT = tk - Tsk;
+      val = P[i_it] * 2.7650313e-3 * f1 * (Df2 - f2  / tk) / tk;
+    }
 }
+
 #undef f1
 #undef Df1
 #undef f2
 #undef Df2
-/* inverse de la densite de la vapeur */
-inline double IRhoV( double T, double P )
+
+/* chaleur latente, a prendre a Tsat_Na */
+inline void Lvap_Na(const SpanD P, SpanD res, int ncomp, int ind)
 {
-  return 1 / RhoV(T, P);
-}
-/* ses derivees */
-inline double DTIRhoV( double T, double P )
-{
-  return -DTRhoV(T, P) / (RhoV(T, P) * RhoV(T, P));
-}
-inline double DPIRhoV( double T, double P )
-{
-  return -DPRhoV(T, P) / (RhoV(T, P) * RhoV(T, P));
-}
-/* enthalpie de la vapeur */
-#define  CpVs(Ts) (-1223.89 + Ts * (14.1191 + Ts * (-1.62025e-2 + Ts * 5.76923e-6)))
-#define DCpVs(Ts) (14.1191 + Ts * (- 2 * 1.62025e-2 + Ts * 3 * 5.76923e-6))
-inline double HV( double T, double P)
-{
-  double Ts = Tsat_Na(P), dT = T - Ts, Cp0 = 910, k = -4.6e-3;
-  return HL(Ts, P) + Lvap_Na(P) + Cp0 * dT + (Cp0 - CpVs(Ts)) * (1 - exp(k * dT)) / k;
-}
-/* ses derivees */
-inline double DTHV( double T, double P)
-{
-  double Ts = Tsat_Na(P), dT = T - Ts, Cp0 = 910, k = -4.6e-3;
-  return Cp0 - (Cp0 - CpVs(Ts)) * exp(k * dT);
-}
-inline double DPHV( double T, double P)
-{
-  double Ts = Tsat_Na(P), dT = T - Ts, Cp0 = 910, k = -4.6e-3;
-  return DPHL(Ts, P) + DLvap_Na(P) + DTsat_Na(P) * (DTHL(Ts, P) - Cp0 - DCpVs(Ts) * (1 - exp(k * dT)) / k + (Cp0 - CpVs(Ts)) * exp(k * dT));
-}
-#undef CpVs
-#undef DCpVs
-/* energie volumique de la vapeur */
-inline double EV( double T, double P)
-{
-  return RhoV(T, P) * HV(T, P);
-}
-/* ses derivees */
-inline double DTEV(double T, double P)
-{
-  return DTRhoV(T, P) * HV(T, P) + RhoV(T, P) * DTHV(T, P);
-}
-inline double DPEV(double T, double P)
-{
-  return DPRhoV(T, P) * HV(T, P) + RhoV(T, P) * DPHV(T, P);
+  assert (ncomp * (int)P.size() == (int)res.size());
+  Tsat_Na(P,res,ncomp,ind); // XXX : attention on utilise res. XXX : si c'est complique va falloir creer un tableau local ...
+  const double Tc = 2503.7;
+  for (int i =0; i < (int)P.size(); i++)
+    {
+      const double Tsk =  res[i * ncomp + ind] + 273.15; // XXX : need in Kelvin
+      res[i * ncomp + ind] = 3.9337e5 * ( 1 - Tsk / Tc) + 4.3986e6 * pow( 1 - Tsk / Tc, .29302);
+    }
 }
 
-/* conductivite de la vapeur */
-inline double LambdaV( double T )
+/* sa derivee */
+inline void DLvap_Na(const SpanD P, SpanD res, int ncomp, int ind)
 {
-  return 0.045;
+  assert (ncomp * (int)P.size() == (int)res.size());
+  const double Tc = 2503.7;
+  VectorD Tsk_((int)P.size()), DTsk_((int)P.size());
+  Tsat_Na(P,SpanD(Tsk_),1,0); // 1D
+  DTsat_Na(P,SpanD(DTsk_),1,0); // 1D
+  for (int i =0; i < (int)P.size(); i++)
+    {
+      const double Tsk = Tsk_[i] + 273.15; // XXX : need in Kelvin
+      res[i * ncomp + ind] = DTsk_[i] * (-3.9337e5 / Tc - 4.3986e6  * .29302 * pow( 1 - Tsk / Tc, .29302 - 1) / Tc);
+    }
+}
+
+/* enthalpie massique de saturation (vapeur = Hsat(P) + Lvap_Na(P)) */
+inline void HVsat(const SpanD P, SpanD res, int ncomp, int ind)
+{
+  assert (ncomp * (int)P.size() == (int)res.size());
+  VectorD Hs_((int)P.size()), Lv_((int)P.size());
+  Hsat(P,SpanD(Hs_),1,0);
+  Lvap_Na(P,SpanD(Lv_),1,0);
+  for (int i =0; i < (int)P.size(); i++) res[i * ncomp + ind] = Hs_[i] + Lv_[i];
+}
+
+/* sa derivee (vapeur = DHsat(P) + DLvap_Na(P)) */
+inline void DHVsat(const SpanD P, SpanD res, int ncomp, int ind)
+{
+  assert (ncomp * (int)P.size() == (int)res.size());
+  VectorD DHs_((int)P.size()), DLv_((int)P.size());
+  DHsat(P,SpanD(DHs_),1,0);
+  DLvap_Na(P,SpanD(DLv_),1,0);
+  for (int i =0; i < (int)P.size(); i++) res[i * ncomp + ind] = DHs_[i] + DLv_[i];
+}
+
+/* enthalpie de la vapeur */
+inline void HV(const SpanD T, const SpanD P, SpanD res, int ncomp, int id)
+{
+  assert ((int)T.size() == ncomp * (int)P.size() && (int)T.size() == ncomp * (int)res.size());
+  const double Cp0 = 910, k = -4.6e-3;
+  VectorD Ts_((int)res.size()), Lvap_((int)res.size()); // on peut utiliser res pour l'un de deux mais bon ...
+  Tsat_Na(P,SpanD(Ts_),1,0);
+  Lvap_Na(P,SpanD(Lvap_),1,0);
+  HL(SpanD(Ts_),P,res,ncomp,id); // XXX : attention on utilise res
+  for (auto& val : res)
+    {
+      const double dT = T[i_it * ncomp + id] - Ts_[i_it]; // XXX : pas meme taille attention
+      const double CpVs = (-1223.89 + Ts_[i_it] * (14.1191 + Ts_[i_it] * (-1.62025e-2 + Ts_[i_it] * 5.76923e-6)));
+      val = val + Lvap_[i_it] + Cp0 * dT + (Cp0 - CpVs) * (1 - exp(k * dT)) / k;
+    }
+}
+
+/* ses derivees */
+inline void DPHV(const SpanD T, const SpanD P, SpanD res, int ncomp, int id)
+{
+  assert ((int)T.size() == ncomp * (int)P.size() && (int)T.size() == ncomp * (int)res.size());
+  VectorD DTHL_((int)res.size()), DPHL_((int)res.size()), Ts_((int)res.size()), DTs_((int)res.size()), DLvap_((int)res.size()); // on peut utiliser res pour l'un de deux mais bon ...
+  Tsat_Na(P,SpanD(Ts_),1,0);
+  DTsat_Na(P,SpanD(DTs_),1,0);
+  DLvap_Na(P,SpanD(DLvap_),1,0);
+  DTHL(SpanD(Ts_),P,SpanD(DTHL_),ncomp,id);
+  DPHL(SpanD(Ts_),P,SpanD(DPHL_),ncomp,id);
+
+  const double Cp0 = 910, k = -4.6e-3;
+  for (auto& val : res)
+    {
+      const double dT = T[i_it * ncomp + id] - Ts_[i_it]; // XXX : pas meme taille attention
+      const double CpVs = (-1223.89 + Ts_[i_it] * (14.1191 + Ts_[i_it] * (-1.62025e-2 + Ts_[i_it] * 5.76923e-6))); // TODO : FIXME : a faire une methode
+      const double DCpVs = (14.1191 + Ts_[i_it] * (- 2 * 1.62025e-2 + Ts_[i_it] * 3 * 5.76923e-6));
+      val = DPHL_[i_it] + DLvap_[i_it] + DTs_[i_it] * (DTHL_[i_it] - Cp0 - DCpVs  * (1 - exp(k * dT)) / k + (Cp0 - CpVs) * exp(k * dT));
+    }
+}
+
+inline void DTHV(const SpanD T, const SpanD P, SpanD res, int ncomp, int id)
+{
+  assert ((int)T.size() == ncomp * (int)res.size() && (int)T.size() == ncomp * (int)P.size());
+  const double Cp0 = 910, k = -4.6e-3;
+  Tsat_Na(P,res,1,0); // XXX : attention on utilise res
+  for (auto& val : res)
+    {
+      const double dT = T[i_it * ncomp + id] - val; // XXX : pas meme taille attention : val = res[i_it]
+      const double CpVs = (-1223.89 + val * (14.1191 + val * (-1.62025e-2 + val * 5.76923e-6)));
+      val = Cp0 - (Cp0 - CpVs) * exp(k * dT);
+    }
+}
+
+/* inverse de la densite de la vapeur */
+inline void IRhoV_vec(SpanD T, const SpanD P, SpanD res, int ncomp, int id)
+{
+  RhoV(T,P,res,ncomp,id); // XXX : attention on utilise res
+  for (auto& val : res) val = 1. / val;
+}
+/* ses derivees */
+inline void DTIRhoV_vec(SpanD T, const SpanD P, SpanD res, int ncomp, int id)
+{
+  VectorD RhoV_((int)res.size()), DTRhoV_((int)res.size()); // on peut utiliser res pour l'un de deux mais bon ...
+  RhoV(T,P,SpanD(RhoV_),ncomp,id);
+  DTRhoV(T,P,SpanD(DTRhoV_),ncomp,id);
+  for (auto& val : res) val = -DTRhoV_[i_it] / ( RhoV_[i_it] * RhoV_[i_it] );
+}
+
+inline void DPIRhoV_vec(SpanD T, const SpanD P, SpanD res, int ncomp, int id)
+{
+  VectorD RhoV_((int)res.size()), DPRhoV_((int)res.size()); // on peut utiliser res pour l'un de deux mais bon ...
+  RhoV(T,P,SpanD(RhoV_),ncomp,id);
+  DPRhoV(T,P,SpanD(DPRhoV_),ncomp,id);
+  for (auto& val : res) val = -DPRhoV_[i_it] / ( RhoV_[i_it] * RhoV_[i_it] );
+}
+
+inline void BETAV(SpanD T, const SpanD P, SpanD res, int ncomp, int id)
+{
+  assert ((int)T.size() == ncomp * (int)res.size() && (int)T.size() == ncomp * (int)P.size());
+  VectorD IRhoV_((int)res.size()), DTIRhoV_((int)res.size()); // on peut utiliser res pour l'un de deux mais bon ...
+  IRhoV_vec(T,P,SpanD(IRhoV_),ncomp,id);
+  DTIRhoV_vec(T,P,SpanD(DTIRhoV_),ncomp,id);
+  for (auto& val : res) val = DTIRhoV_[i_it] / IRhoV_[i_it];
 }
 
 /* viscosite de la vapeur */
-inline double MuV( double T )
+inline void MuV(const SpanD T, SpanD res, int ncomp, int id)
 {
-  return 2.5e-6 + 1.5e-8 * Tk;
+  assert ((int)T.size() == ncomp * (int)res.size());
+  for (auto& val : res) val = 2.5e-6 + 1.5e-8 * (T[i_it * ncomp + id] + 273.15);
 }
 
-/* Nusselt de la vapeur -> Dittus/ Boetler */
-inline double NuV(double T, double P, double w, double Dh)
+/* conductivite de la vapeur */
+inline void LambdaV(const SpanD T, SpanD res, int ncomp, int id)
 {
-  double Re = RhoV(T, P) * std::abs(w) * Dh / MuV(T), Pr = MuV(T) * DTHV(T, P) / LambdaV(T);
-  return 0.023 * pow(Re, 0.8) * pow(Pr, 0.4);
+  assert ((int)T.size() == ncomp * (int)res.size());
+  for (auto& val : res) val = 0.045;
 }
 
-inline double Rho( double T, double x, double P )
-{
-  return 1 / ( (1-x)/RhoL(T, P) + x / RhoV(T, P) );
-}
+#undef i_it
+#endif /* lois_sodium_span_included */
 
-#undef Tk
-#undef Ksil_d
-#endif
+//// TODO : FIXME : a recrire en span ... pas utilise pour le moment
+///* Lois physiques du sodium issues de fits sur DEN/DANS/DM2S/STMF/LMES/RT/12-018/A */
+//#define Tk ((T) + 273.15)
+//const double Ksil_d = 1e-9;
+///* inverses par methode de Newton */
+//inline double TLh(double h, double T0, double P)
+//{
+//  double T = T0, sec;
+//  int i;
+//  for (i = 0; i < 100 && std::abs( sec = HL(T, P) - h ) > 1e-8; i++)
+//    T -= sec / DTHL(T, P);
+//  return i < 100 ? T : -1e10;
+//}
+///* energie volumique du liquide */
+//inline double EL(double T, double P) { return HL(T, P) * RhoL(T, P); }
+///* derivees */
+//inline double DTEL(double T, double P) { return DTHL(T, P) * RhoL(T, P) + HL(T, P) * DTRhoL(T, P); }
+//inline double DPEL(double T, double P) { return DPHL(T, P) * RhoL(T, P) + HL(T, P) * DPRhoL(T, P); }
+//inline double TLe(double e, double T0, double P)
+//{
+//  double T = T0, sec;
+//  int i;
+//  for (i = 0; i < 100 && std::abs( sec = EL(T, P) - e ) > 1e-3; i++)
+//    T -= sec / DTEL(T, P);
+//  return i < 100 ? T : -1e10;
+//}
+///* Nusselt du liquide -> Skupinski */
+//inline double NuL(double T, double P, double w, double Dh)
+//{
+//  double Pe = RhoL(T, P) * std::abs(w) * Dh * DTHL(T, P) / LambdaL(T);
+//  return 4.82 + 0.0185 * pow(Pe, 0.827);
+//}
+//
+///* energie volumique de la vapeur */
+//inline double EV( double T, double P) { return RhoV(T, P) * HV(T, P); }
+///* ses derivees */
+//inline double DTEV(double T, double P) { return DTRhoV(T, P) * HV(T, P) + RhoV(T, P) * DTHV(T, P); }
+//inline double DPEV(double T, double P) { return DPRhoV(T, P) * HV(T, P) + RhoV(T, P) * DPHV(T, P); }
+//
+///* Nusselt de la vapeur -> Dittus/ Boetler */
+//inline double NuV(double T, double P, double w, double Dh)
+//{
+//  double Re = RhoV(T, P) * std::abs(w) * Dh / MuV(T), Pr = MuV(T) * DTHV(T, P) / LambdaV(T);
+//  return 0.023 * pow(Re, 0.8) * pow(Pr, 0.4);
+//}
+//
+//inline double Rho( double T, double x, double P ) { return 1 / ( (1-x)/RhoL(T, P) + x / RhoV(T, P) ); }

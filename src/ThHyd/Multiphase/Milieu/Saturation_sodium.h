@@ -16,7 +16,7 @@
 #ifndef Saturation_sodium_included
 #define Saturation_sodium_included
 
-#include <Lois_sodium_span.h>
+#include <Lois_sodium.h>
 #include <Saturation_base.h>
 
 class Saturation_sodium : public Saturation_base
@@ -24,18 +24,18 @@ class Saturation_sodium : public Saturation_base
   Declare_instanciable(Saturation_sodium);
 
 private:
-  void Tsat_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { Tsat_Na_span(P,res,ncomp,ind); }
-  void dP_Tsat_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { DTsat_Na_span(P,res,ncomp,ind); }
-  void Psat_(const SpanD T, SpanD res, int ncomp = 1, int ind = 0) const override { Psat_Na_span(T,res,ncomp,ind); }
-  void dT_Psat_(const SpanD T, SpanD res, int ncomp = 1, int ind = 0) const override { DPsat_Na_span(T,res,ncomp,ind); }
-  void Lvap_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { Lvap_Na_span(P,res,ncomp,ind); }
-  void dP_Lvap_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { DLvap_Na_span(P,res,ncomp,ind); }
-  void Hls_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { Hsat_span(P,res,ncomp,ind); }
-  void dP_Hls_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { DHsat_span(P,res,ncomp,ind); }
-  void Hvs_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { HVsat_span(P,res,ncomp,ind); /* Hsat(P) + Lvap_Na(P) */ }
-  void dP_Hvs_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { DHVsat_span(P,res,ncomp,ind); /* DHsat(P) + DLvap_Na(P) */ }
+  void Tsat_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { Tsat_Na(P,res,ncomp,ind); }
+  void dP_Tsat_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { DTsat_Na(P,res,ncomp,ind); }
+  void Psat_(const SpanD T, SpanD res, int ncomp = 1, int ind = 0) const override { Psat_Na(T,res,ncomp,ind); }
+  void dT_Psat_(const SpanD T, SpanD res, int ncomp = 1, int ind = 0) const override { DPsat_Na(T,res,ncomp,ind); }
+  void Lvap_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { Lvap_Na(P,res,ncomp,ind); }
+  void dP_Lvap_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { DLvap_Na(P,res,ncomp,ind); }
+  void Hls_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { Hsat(P,res,ncomp,ind); }
+  void dP_Hls_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { DHsat(P,res,ncomp,ind); }
+  void Hvs_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { HVsat(P,res,ncomp,ind); /* Hsat(P) + Lvap_Na(P) */ }
+  void dP_Hvs_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { DHVsat(P,res,ncomp,ind); /* DHsat(P) + DLvap_Na(P) */ }
 
-  void sigma_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { SigmaL_span(T,res,ncomp,ind); }
+  void sigma_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { SigmaL(T,res,ncomp,ind); }
 };
 
 #endif /* Saturation_sodium_included */
