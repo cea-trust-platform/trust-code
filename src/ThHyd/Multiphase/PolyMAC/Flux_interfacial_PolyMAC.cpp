@@ -14,24 +14,21 @@
 *****************************************************************************/
 
 #include <Flux_interfacial_PolyMAC.h>
-#include <Zone_PolyMAC.h>
-#include <Champ_Elem_PolyMAC.h>
-#include <Matrix_tools.h>
-#include <Pb_Multiphase.h>
-#include <Champ_Uniforme.h>
+#include <Op_Diff_PolyMAC_P0_Elem.h>
 #include <Flux_interfacial_base.h>
 #include <Changement_phase_base.h>
-#include <Milieu_composite.h>
 #include <Op_Diff_PolyMAC_Elem.h>
-#include <Op_Diff_PolyMAC_P0_Elem.h>
+#include <Champ_Elem_PolyMAC.h>
 #include <Aire_interfaciale.h>
+#include <Milieu_composite.h>
+#include <Champ_Uniforme.h>
+#include <Pb_Multiphase.h>
+#include <Zone_PolyMAC.h>
+#include <Matrix_tools.h>
 
 Implemente_instanciable(Flux_interfacial_PolyMAC,"Flux_interfacial_Elem_PolyMAC|Flux_interfacial_Elem_PolyMAC_P0", Source_base);
 
-Sortie& Flux_interfacial_PolyMAC::printOn(Sortie& os) const
-{
-  return os;
-}
+Sortie& Flux_interfacial_PolyMAC::printOn(Sortie& os) const { return os; }
 
 Entree& Flux_interfacial_PolyMAC::readOn(Entree& is)
 {
@@ -182,6 +179,30 @@ void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
   Flux_interfacial_base::output_t out;
   DoubleTab& hi = out.hi, &dT_hi = out.dT_hi, &da_hi = out.da_hi, &dP_hi = out.dp_hi;
   hi.resize(N, N), dT_hi.resize(N, N, N), da_hi.resize(N, N, N), dP_hi.resize(N, N);
+
+  // Et pour les methodes span de la classe Saturation
+  const int nbelem = zone.nb_elem(), nb_max_sat =  N * (N-1) /2; // oui !! suite arithmetique !!
+  DoubleTrav Ts_tab(nbelem,nb_max_sat), dPTs_tab(nbelem,nb_max_sat), Hvs_tab(nbelem,nb_max_sat), Hls_tab(nbelem,nb_max_sat), dPHvs_tab(nbelem,nb_max_sat), dPHls_tab(nbelem,nb_max_sat);
+
+  // remplir les tabs ...
+  for (k = 0; k < N; k++)
+    for (l = k + 1; l < N; l++)
+      if (milc.has_saturation(k, l))
+        {
+          Saturation_base& z_sat = milc.get_saturation(k, l);
+          const int ind_trav = (k*(N-1)-(k-1)*(k)/2) + (l-k-1); // Et oui ! matrice triang sup !
+          // XXX XXX XXX
+          // Attention c'est dangereux ! on suppose pour le moment que le champ de pression a 1 comp. Par contre la taille de res est nb_max_sat*nbelem !!
+          // Aussi, on passe le Span le nbelem pour le champ de pression et pas nbelem_tot ....
+          assert (press.line_size() == 1);
+          z_sat.Tsat(press.get_span() /* elem reel */, Ts_tab.get_span() ,nb_max_sat,ind_trav);
+          z_sat.dP_Tsat(press.get_span(), dPTs_tab.get_span(),nb_max_sat,ind_trav);
+          z_sat.Hvs(press.get_span(), Hvs_tab.get_span(),nb_max_sat,ind_trav);
+          z_sat.Hls(press.get_span(), Hls_tab.get_span(),nb_max_sat,ind_trav);
+          z_sat.dP_Hvs(press.get_span(), dPHvs_tab.get_span(),nb_max_sat,ind_trav);
+          z_sat.dP_Hls(press.get_span(), dPHls_tab.get_span(),nb_max_sat,ind_trav);
+        }
+
   for (e = 0; e < zone.nb_elem(); e++)
     {
       //  double vol = pe(e) * ve(e), x, G = 0, dv_min = 0.1, dh = zone.diametre_hydraulique_elem()(e, 0), dP_G = 0.; // E. Saikali : initialise dP_G ici sinon fuite memoire ...
@@ -202,12 +223,15 @@ void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
           if (milc.has_saturation(k, l)) //flux phase k <-> phase l si saturation
             {
               Saturation_base& sat = milc.get_saturation(k, l);
+              const int i_sat = (k*(N-1)-(k-1)*(k)/2) + (l-k-1); // Et oui ! matrice triang sup !
+
               if (correlation_G) /* taux de changement de phase par une correlation */
                 G = correlation_G->calculer(k, l, dh, &alpha(e, 0), &temp(e, 0), press(e, 0), &nv(0), &lambda(!cL * e, 0), &mu(!cM * e, 0), &rho(!cM * e, 0), &Cp(!cCp * e, 0),
                                             sat, dT_G, da_G, dP_G);
+
               /* limite thermique */
-              double Tk = temp(e, k), Tl = temp(e, l), p = press(e, 0), Ts = sat.Tsat(p), dP_Ts = sat.dP_Tsat(p), //temperature de chaque cote + Tsat + derivees
-                     phi = hi(k, l) * (Tk - Ts) + hi(l, k) * (Tl - Ts) + qi(e, k, l) / vol, L = (phi < 0 ? h(e, l) : sat.Hvs(p)) - (phi > 0 ? h(e, k) : sat.Hls(p));
+              double Tk = temp(e, k), Tl = temp(e, l), Ts = Ts_tab(e,i_sat), dP_Ts = dPTs_tab(e,i_sat), //temperature de chaque cote + Tsat + derivees
+                     phi = hi(k, l) * (Tk - Ts) + hi(l, k) * (Tl - Ts) + qi(e, k, l) / vol, L = (phi < 0 ? h(e, l) : Hvs_tab(e,i_sat)) - (phi > 0 ? h(e, k) : Hls_tab(e,i_sat));
               if ((is_therm = !correlation_G || std::fabs(G) > std::fabs(phi / L))) G = phi / L;
               /* enthalpies des phases (dans le sens correspondant au mode choisi pour G) */
 
@@ -217,8 +241,8 @@ void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
               if (std::fabs(G) < Glim) n_lim = -1;       //G ne rend pas la phase evanescente -> pas de limitation (n_lim = -2)
               else G = (G > 0 ? 1 : -1) * Glim;//la phase serait evanescente a cause de G -> on le bloque a G_lim (n_lim = k / l)
 
-              double hk = G > 0 ? h(e, k) : sat.Hls(p), dTk_hk = G > 0 && dT_h ? (*dT_h)(e, k) : 0, dP_hk = G > 0 ? (dP_h ? (*dP_h)(e, k) : 0) : sat.dP_Hls(p),
-                       hl = G < 0 ? h(e, l) : sat.Hvs(p), dTl_hl = G < 0 && dT_h ? (*dT_h)(e, l) : 0, dP_hl = G < 0 ? (dP_h ? (*dP_h)(e, l) : 0) : sat.dP_Hvs(p);
+              double hk = G > 0 ? h(e, k) : Hls_tab(e,i_sat), dTk_hk = G > 0 && dT_h ? (*dT_h)(e, k) : 0, dP_hk = G > 0 ? (dP_h ? (*dP_h)(e, k) : 0) : dPHls_tab(e,i_sat),
+                       hl = G < 0 ? h(e, l) : Hvs_tab(e,i_sat), dTl_hl = G < 0 && dT_h ? (*dT_h)(e, l) : 0, dP_hl = G < 0 ? (dP_h ? (*dP_h)(e, l) : 0) : dPHvs_tab(e,i_sat);
               if (n_lim < 0 && is_therm) /* derivees de G en limite thermique */
               {
                   double dP_phi = dP_hi(k, l) * (Tk - Ts) + dP_hi(l, k) * (Tl - Ts) - (hi(k, l) + hi(l, k)) * dP_Ts + dpqi(e, k, l) / vol,

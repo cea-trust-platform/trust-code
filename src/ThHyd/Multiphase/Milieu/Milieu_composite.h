@@ -65,7 +65,7 @@ protected :
   std::pair<std::string, int> check_fluid_name(const Nom& name);
   std::vector<std::vector<Interface_base *>> tab_interface;
   std::map<std::string, std::set<int>> phases_melange;
-  double t_init_;
+  double t_init_ = -1.;
 };
 
 #endif
