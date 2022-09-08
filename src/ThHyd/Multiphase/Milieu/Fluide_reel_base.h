@@ -81,47 +81,45 @@ protected :
   virtual void lambda_(const SpanD T, const SpanD P, SpanD L, int ncomp = 1, int id = 0) const = 0;
 
   // Methods that can be called if point-to-point calculation is required
-  double _rho_(const double T, const double P) const { return double_to_span<&Fluide_reel_base::rho_>(T,P); }
-  double _dP_rho_(const double T, const double P) const { return double_to_span<&Fluide_reel_base::dP_rho_>(T,P); }
-  double _dT_rho_(const double T, const double P) const { return double_to_span<&Fluide_reel_base::dT_rho_>(T,P); }
-  double _h_(const double T, const double P) const { return double_to_span<&Fluide_reel_base::h_>(T,P); }
-  double _dP_h_(const double T, const double P) const { return double_to_span<&Fluide_reel_base::dP_h_>(T,P); }
-  double _dT_h_(const double T, const double P) const { return double_to_span<&Fluide_reel_base::dT_h_>(T,P); }
-  double _cp_(const double T, const double P) const { return double_to_span<&Fluide_reel_base::cp_>(T,P); }
-  double _beta_(const double T, const double P) const { return double_to_span<&Fluide_reel_base::beta_>(T,P); }
-  double _mu_(const double T, const double P) const { return double_to_span<&Fluide_reel_base::mu_>(T,P); }
-  double _lambda_(const double T, const double P) const { return double_to_span<&Fluide_reel_base::lambda_>(T,P); }
+  double _rho_(const double T, const double P) const { return double_to_span(T,P,&Fluide_reel_base::rho_); }
+  double _dP_rho_(const double T, const double P) const { return double_to_span(T,P,&Fluide_reel_base::dP_rho_); }
+  double _dT_rho_(const double T, const double P) const { return double_to_span(T,P,&Fluide_reel_base::dT_rho_); }
+  double _h_(const double T, const double P) const { return double_to_span(T,P,&Fluide_reel_base::h_); }
+  double _dP_h_(const double T, const double P) const { return double_to_span(T,P,&Fluide_reel_base::dP_h_); }
+  double _dT_h_(const double T, const double P) const { return double_to_span(T,P,&Fluide_reel_base::dT_h_); }
+  double _cp_(const double T, const double P) const { return double_to_span(T,P,&Fluide_reel_base::cp_); }
+  double _beta_(const double T, const double P) const { return double_to_span(T,P,&Fluide_reel_base::beta_); }
+  double _mu_(const double T, const double P) const { return double_to_span(T,P,&Fluide_reel_base::mu_); }
+  double _lambda_(const double T, const double P) const { return double_to_span(T,P,&Fluide_reel_base::lambda_); }
 
 private:
-  typedef void(Fluide_reel_base::*function_span_generic)(const SpanD , const SpanD , SpanD , int , int ) const;
+  using state_f_t = std::function<void(const Fluide_reel_base* t, const SpanD , const SpanD , SpanD , int , int )> const;
 
-  template <function_span_generic FUNC>
-  void double_to_span(const double T, const double P, SpanD res) const
+  void double_to_span(const double T, const double P, SpanD res,state_f_t& func ) const
   {
     ArrayD Tt = {T}, Pp = {P}, res_ = {0.};
-    (this->*FUNC)(SpanD(Tt), SpanD(Pp), SpanD(res_),1,0); // fill res_
+    func(this,SpanD(Tt), SpanD(Pp), SpanD(res_),1,0); // fill res_
     for (auto& val : res) val = res_[0]; // fill res
   }
 
-  template <function_span_generic FUNC>
-  double double_to_span(const double T, const double P) const
+  double double_to_span(const double T, const double P,state_f_t& func) const
   {
     ArrayD Tt = {T}, Pp = {P}, res_ = {0.};
-    (this->*FUNC)(SpanD(Tt), SpanD(Pp), SpanD(res_),1,0); // fill res_
+    func(this,SpanD(Tt), SpanD(Pp), SpanD(res_),1,0); // fill res_
     return res_[0];
   }
 
   // pour l'incompressible
-  void _rho_(const double T, const double P, SpanD res) const { double_to_span<&Fluide_reel_base::rho_>(T,P,res); }
-  void _dP_rho_(const double T, const double P, SpanD res) const { double_to_span<&Fluide_reel_base::dP_rho_>(T,P,res); }
-  void _dT_rho_(const double T, const double P, SpanD res) const { double_to_span<&Fluide_reel_base::dT_rho_>(T,P,res); }
-  void _h_(const double T, const double P, SpanD res) const { double_to_span<&Fluide_reel_base::h_>(T,P,res); }
-  void _dP_h_(const double T, const double P, SpanD res) const { double_to_span<&Fluide_reel_base::dP_h_>(T,P,res); }
-  void _dT_h_(const double T, const double P, SpanD res) const { double_to_span<&Fluide_reel_base::dT_h_>(T,P,res); }
-  void _cp_(const double T, const double P, SpanD res) const { double_to_span<&Fluide_reel_base::cp_>(T,P,res); }
-  void _beta_(const double T, const double P, SpanD res) const { double_to_span<&Fluide_reel_base::beta_>(T,P,res); }
-  void _mu_(const double T, const double P, SpanD res) const { double_to_span<&Fluide_reel_base::mu_>(T,P,res); }
-  void _lambda_(const double T, const double P, SpanD res) const { double_to_span<&Fluide_reel_base::lambda_>(T,P,res); }
+  void _rho_(const double T, const double P, SpanD res) const { double_to_span(T,P,res,&Fluide_reel_base::rho_); }
+  void _dP_rho_(const double T, const double P, SpanD res) const { double_to_span(T,P,res,&Fluide_reel_base::dP_rho_); }
+  void _dT_rho_(const double T, const double P, SpanD res) const { double_to_span(T,P,res,&Fluide_reel_base::dT_rho_); }
+  void _h_(const double T, const double P, SpanD res) const { double_to_span(T,P,res,&Fluide_reel_base::h_); }
+  void _dP_h_(const double T, const double P, SpanD res) const { double_to_span(T,P,res,&Fluide_reel_base::dP_h_); }
+  void _dT_h_(const double T, const double P, SpanD res) const { double_to_span(T,P,res,&Fluide_reel_base::dT_h_); }
+  void _cp_(const double T, const double P, SpanD res) const { double_to_span(T,P,res,&Fluide_reel_base::cp_); }
+  void _beta_(const double T, const double P, SpanD res) const { double_to_span(T,P,res,&Fluide_reel_base::beta_); }
+  void _mu_(const double T, const double P, SpanD res) const { double_to_span(T,P,res,&Fluide_reel_base::mu_); }
+  void _lambda_(const double T, const double P, SpanD res) const { double_to_span(T,P,res,&Fluide_reel_base::lambda_); }
 };
 
 #endif /* Fluide_reel_base_included */
