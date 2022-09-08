@@ -9,11 +9,18 @@ INC=$TRUST_ROOT/include && [ ! -d $INC ] && mkdir $INC 2>/dev/null
 cd $INC
 mkdir -p $INC/backward
 
-# Ajout des fichiers deprecated by TRUST 1.8.5:
-for file in ArrOfDouble.h ArrOfInt.h ArrOfFloat.h DoubleVect.h IntVect.h DoubleTab.h IntTab.h FloatTab.h DoubleTrav.h IntTrav.h DoubleList.h IntList.h DoubleLists.h IntLists.h Champ_Tabule_Morceaux.h ConstDoubleTab_parts.h
+# Ajout des fichiers deprecated by TRUST 1.9.0:
+for file in ArrOfDouble.h ArrOfInt.h DoubleVect.h IntVect.h DoubleTab.h IntTab.h DoubleTrav.h IntTrav.h DoubleList.h IntList.h DoubleLists.h IntLists.h Champ_Tabule_Morceaux.h ConstDoubleTab_parts.h
 do
-echo "#error File $file deprecated in TRUST 1.8.5. You SHOULD change the include. See TRUST_ROOT/DEVELOPER_NOTES for more information" > backward/$file
+echo "#error File $file deprecated in TRUST 1.9.0. You SHOULD change the include. See TRUST_ROOT/DEVELOPER_NOTES for more information" > backward/$file
 done
+
+# Ajout des fichiers deprecated by TRUST 1.9.1:
+for file in ArrOfFloat.h FloatTab.h 
+do
+echo "#error File $file deprecated in TRUST 1.9.1. You SHOULD change the include. See TRUST_ROOT/DEVELOPER_NOTES for more information" > backward/$file
+done
+
 
 # Ouverture de $INC
 echo "s?$MPI_INCLUDE/mpi\.h?\$(MPI_INCLUDE)/mpi\.h?g">.tmp
