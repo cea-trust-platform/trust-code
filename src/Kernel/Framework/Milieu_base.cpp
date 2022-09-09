@@ -78,8 +78,8 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
   Champ_Don& ch_lambda = conductivite();
   Champ_Don& ch_alpha = diffusivite();
   Champ_Don& ch_beta_th = beta_t();
-
-  const Zone_dis_base& zone_dis=pb.equation(0).zone_dis();
+  pb_ = pb;
+  const Zone_dis_base& zone_dis=pb_->equation(0).zone_dis();
   // PL: pas le temps de faire plus propre, je fais comme dans Fluide_Incompressible::discretiser
   // pour gerer une conductivite lue dans un fichier MED. Test: Reprise_grossier_fin_VEF
   // ToDo: reecrire ces deux methodes discretiser
@@ -323,7 +323,7 @@ void Milieu_base::calculer_alpha()
 }
 void Milieu_base::update_porosity_values()
 {
-  Zone_VF& zvf = ref_cast_non_const(Zone_VF,rho_cp_comme_T_->zone_dis_base()); // rho_cp_comme_T_ a toujours un zone_dis_base
+  Zone_VF& zvf = ref_cast_non_const(Zone_VF, pb_->equation(0).inconnue().zone_dis_base());
   const int is_uniforme = sub_type(Champ_Uniforme,porosites_champ.valeur());
 
   // update porosite_elem

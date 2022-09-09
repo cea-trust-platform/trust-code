@@ -18,6 +18,7 @@
 
 #include <Champs_compris_interface.h>
 #include <Ref_Champ_Don_base.h>
+#include <Ref_Probleme_base.h>
 #include <Interface_blocs.h>
 #include <Champ_Inc_base.h>
 #include <Champs_compris.h>
@@ -106,6 +107,7 @@ protected:
   Champ_Fonc rho_cp_elem_,rho_cp_comme_T_;
   Nom nom_;
   REF(Champ_Don_base) g;
+  REF(Probleme_base) pb_;
 
   enum Type_rayo { NONRAYO, TRANSP, SEMITRANSP };
 
