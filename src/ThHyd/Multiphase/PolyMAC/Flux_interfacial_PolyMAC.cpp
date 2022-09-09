@@ -53,14 +53,9 @@ void Flux_interfacial_PolyMAC::dimensionner_blocs(matrices_t matrices, const tab
       {
         Matrice_Morse& mat = *n_m.second, mat2;
         const DoubleTab& dep = equation().probleme().get_champ(n_m.first).valeurs();
-        int m, nc = dep.dimension_tot(0), M = dep.line_size();
         IntTrav sten(0, 2);
         sten.set_smart_resize(1);
-        if (n_m.first == "temperature" || n_m.first == "pression" || n_m.first == "alpha" || n_m.first == "interfacial_area" ) /* temperature/pression: dependance locale */
-          for (e = 0; e < zone.nb_elem(); e++)
-            for (n = 0; n < N; n++)
-              for (m = 0; m < M; m++) sten.append_line(N * e + n, M * e + m);
-        else if (mat.nb_colonnes())
+        if (mat.nb_colonnes())
           for (e = 0; e < zone.nb_elem(); e++) /* autres variables: on peut melanger les composantes*/
             {
               for (idx.clear(), n = 0, i = N * e; n < N; n++, i++)
@@ -70,10 +65,9 @@ void Flux_interfacial_PolyMAC::dimensionner_blocs(matrices_t matrices, const tab
                 for (auto &&x : idx) sten.append_line(i, x); //ajout de cette depedance a toutes les lignes
             }
         else continue;
-        Matrix_tools::allocate_morse_matrix(N * zone.nb_elem_tot(), M * nc, sten, mat2);
+        Matrix_tools::allocate_morse_matrix(inco.size_totale(), dep.size_totale(), sten, mat2);
         mat.nb_colonnes() ? mat += mat2 : mat = mat2;
       }
-
 }
 
 void Flux_interfacial_PolyMAC::completer()
