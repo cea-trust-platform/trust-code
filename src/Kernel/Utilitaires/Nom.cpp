@@ -18,6 +18,7 @@
 #include <string>
 #include <math.h>
 #include <algorithm>
+#include <cmath>
 
 int Nom::nb_noms=0;
 

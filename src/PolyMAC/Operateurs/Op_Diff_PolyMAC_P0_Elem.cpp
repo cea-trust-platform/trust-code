@@ -478,7 +478,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                   for (n = 0; n < N[p]; n++) Tefs(!mix * n, i_efs(i, j, mix * n)) = inco[p](e, n); //Tefs de chaque phase
                   if (mix && i_efs(i, j, M) >= 0) Tefs(0, i_efs(i, j, M)) = inco[p](e, 0); //Tparoi : on prend la temperature de la phase 0 faute de mieux
                 }
-            for (it = 0, nonlinear = 0, cv = 0; !cv && it < 10; it++) //Newton sur les Tefs. Si mix = 0 (pas de Pb_Multi), une seule iteration suffit
+            for (it = 0, nonlinear = 0, cv = 0; !cv && it < 100; it++) //Newton sur les Tefs. Si mix = 0 (pas de Pb_Multi), une seule iteration suffit
               {
                 for (A = 0, B = 0, Ff = 0, Fec = 0, Qf = 0, Qec = 0, i = 0; i < n_e; i++)
                   {
@@ -551,8 +551,8 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                                               &rho = pbm.milieu().masse_volumique().passe(), &Cp = pbm.milieu().capacite_calorifique().passe();
                             Flux_parietal_base::input_t in;
                             Flux_parietal_base::output_t out;
-                            DoubleTrav qpk(N[p]), dTf_qpk(N[p], N[p]), dTp_qpk(N[p]), qpi(N[p], N[p]), dTf_qpi(N[p], N[p], N[p]), dTp_qpi(N[p], N[p]), nv(N[p]), d_nuc(N[p]);
-                            in.N = N[p], in.f = f, in.D_h = dh(e), in.D_ch = dh(e), in.alpha = &alpha(e, 0), in.T = &Tefs(0, i_efs(i, j, 0)), in.p = press(e), in.v = nv.addr(), in.Tp = Tefs(0, i_efs(i, j, M)), in.lambda = &lambda(e, 0), in.mu = &mu(e, 0), in.rho = &rho(e, 0), in.Cp = &Cp(e, 0);
+                            DoubleTrav Tf(N[p]), qpk(N[p]), dTf_qpk(N[p], N[p]), dTp_qpk(N[p]), qpi(N[p], N[p]), dTf_qpi(N[p], N[p], N[p]), dTp_qpi(N[p], N[p]), nv(N[p]), d_nuc(N[p]);
+                            in.N = N[p], in.f = f, in.D_h = dh(e), in.D_ch = dh(e), in.alpha = &alpha(e, 0), in.T = &Tf(0), in.p = press(e), in.v = nv.addr(), in.Tp = Tefs(0, i_efs(i, j, M)), in.lambda = &lambda(e, 0), in.mu = &mu(e, 0), in.rho = &rho(e, 0), in.Cp = &Cp(e, 0);
                             out.qpk = &qpk, out.dTf_qpk = &dTf_qpk, out.dTp_qpk = &dTp_qpk, out.qpi = &qpi, out.dTp_qpi = &dTp_qpi, out.dTf_qpi = &dTf_qpi, out.nonlinear = &nonlinear, out.d_nuc = &d_nuc;
                             for (d = 0; d < D; d++)
                               for (n = 0; n < N[p]; n++) nv(n) += std::pow(vit(zone[p].get().nb_faces_tot() + D * e + d, n), 2);
