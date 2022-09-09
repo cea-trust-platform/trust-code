@@ -113,28 +113,15 @@ double nlinear_interpolation(const std::vector<double>& x, const std::vector<std
   const int n = (int)x.size();
 
   // on construit les poids pour chaque sommet de l'hyper-rectangle
-  std::vector<std::pair<double, double>> Wvecs;
+  std::vector<double> weight(n);
   for (int i = 0; i < n; i++)
-    {
-      const double weight = std::min(1.0, std::max(0.0, (x[i] - gridpoints[i].first) / (gridpoints[i].second - gridpoints[i].first)));
-      Wvecs.push_back({1 - weight, weight});
-    }
+    weight[i] = std::min(1.0, std::max(0.0, (x[i] - gridpoints[i].first) / (gridpoints[i].second - gridpoints[i].first)));
 
   // le calcul est effecte en utilisant une representation en bit j (int) -> index (n valeurs 0 ou 1)
   // j=0 -> index=00...000 ; j=1 -> index=00...001 ; j=2 -> index=00...010
-  double interpolant = 0.0;
-  for (int j = 0; j < pow(2, n); j++)
-    {
-      std::vector<int> index(n, 0);
-      for (int k = 0; k < n; k++) index[n - 1 - k] = ((j >> k) & 1);
-      double prodw = 1.0;
-      for (int i = 0; i < n; i++) prodw *= index[i] ? Wvecs[i].second : Wvecs[i].first;
-      // for (int i = 0; i < n; i++) prodw *= std::get<index[i]>(Wvecs[i]);
-      int k = index.back();
-      for (int i = 0; i < n - 1; i++)
-        k += (1 << (n - i - 1)) * index[i]; // 2**(n-i-1) * index[i]
-      interpolant += data[k] * prodw;
-    }
+  double interpolant = 0.0, prod;
+  for (int j = 0, i; j < (1<<n); interpolant += prod, j++)
+    for (prod = data[j], i = 0; i < n; i++) prod *= (j >> i) & 1 ? weight[i] : 1 - weight[i];
   return interpolant;
 }
 
@@ -184,7 +171,7 @@ double Table::val(const std::vector<double>& vals_param, int ncomp) const
           icube.push_back(i_interval - 1);
           gridpoints.push_back({p[i_interval - 1], p[i_interval]});
         }
-      for (int j = 0; j < pow(2, nb_param); j++)
+      for (int j = 0; j < (1 << nb_param); j++)
         {
           std::vector<int> index(nb_param, 0);
           for (int k = 0; k < nb_param; k++) index[nb_param - 1 - k] = icube[nb_param - 1 - k] + ((j >> k) & 1);

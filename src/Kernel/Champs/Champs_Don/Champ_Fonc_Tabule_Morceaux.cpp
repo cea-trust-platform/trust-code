@@ -15,6 +15,9 @@
 
 #include <Champ_Fonc_Tabule_Morceaux.h>
 #include <Domaine.h>
+#include <TRUSTTrav.h>
+#include <Zone_VF.h>
+#include <TRUSTTab_parts.h>
 
 Implemente_instanciable(Champ_Fonc_Tabule_Morceaux, "Champ_Fonc_Tabule_Morceaux|Champ_Tabule_Morceaux", TRUSTChamp_Morceaux_generique<Champ_Morceaux_Type::FONC_TABULE>);
 // XD Champ_Fonc_Tabule_Morceaux champ_don_base Champ_Tabule_Morceaux 0 Field defined by tabulated data in each sub-zone. It makes possible the definition of a field which is a function of other fields.
@@ -26,11 +29,11 @@ Sortie& Champ_Fonc_Tabule_Morceaux::printOn(Sortie& os) const { return os << val
 
 Entree& Champ_Fonc_Tabule_Morceaux::readOn(Entree& is)
 {
-  Nom nom;
+  Nom nom, nom_ch;
   is >> nom;
   interprete_get_domaine(nom);
-  mon_domaine->creer_tableau_elements(table_idx);
-  table_idx = -1; // pour planter si on a oublie une sous-zone
+  mon_domaine->creer_tableau_elements(i_mor);
+  i_mor = -1; // pour planter si on a oublie une sous-zone
 
   int nbcomp;
   is >> nbcomp;
@@ -40,15 +43,13 @@ Entree& Champ_Fonc_Tabule_Morceaux::readOn(Entree& is)
   mon_domaine->creer_tableau_elements(valeurs_);
 
   is >> nom;
-  if(Motcle(nom) != Motcle("{") )
-    {
-      Cerr << "Error while reading a " << que_suis_je() << finl;
-      Cerr << "We expected a { instead of " << nom << finl;
-      Process::exit();
-    }
+  if(nom != "{")
+    Process::exit(que_suis_je() + " : { expected instead of " + nom);
 
-  is >> nom;
-  while (nom != Nom("}"))
+  std::set<std::array<std::string, 2>> s_pb_ch; // couples { probleme, champ } utilises par au moins un probleme
+  std::vector<std::vector<std::array<std::string, 2>>> m_pb_ch; //m_pb_ch[i][j] : { probleme, champ } du parametre j du morceau i
+
+  for (is >> nom; nom != "}"; is >> nom)
     {
       CHTAB ch_lu;
       /* 1. lecture de la sous-zone */
@@ -56,187 +57,102 @@ Entree& Champ_Fonc_Tabule_Morceaux::readOn(Entree& is)
       Sous_Zone& ssz = refssz.valeur();
 
       /* 2. lecture des champs parametres */
-      int old_table_syntax_ = 0;
-      is >> nom;
+      is >> nom, m_pb_ch.push_back({});
       if (nom != "{")
         {
-          ch_lu.noms_champs_parametre_.push_back(nom.getString());
-          old_table_syntax_ = 1;
           Cerr << "Errror reading old syntax: " << que_suis_je() << " " << domaine().le_nom() << " " << nbcomp << " { " << ssz.le_nom() << " " << nom << " 1 { ... } ... }" << finl;
           Cerr << "New syntax is like :       " << que_suis_je() << " " << domaine().le_nom() << " " << nbcomp << " { " << ssz.le_nom() << " { problem_name " << nom << " } { ... } ... }" << finl;
           Cerr << "Check the doc or release notes." << finl;
           Process::exit();
         }
-      else
-        {
-          assert (old_table_syntax_ == 0);
-          while (true)
-            {
-              is >> nom;
-              if (nom == "}") break;
-              ch_lu.noms_pbs_.push_back(nom.getString());
-              is >> nom;
-              ch_lu.noms_champs_parametre_.push_back(nom.getString());
-            }
-        }
-      const int nb_param = (int)ch_lu.noms_champs_parametre_.size();
+      else for (is >> nom; nom != "}"; is >> nom)
+          {
+            is >> nom_ch;
+            std::array<std::string, 2> pb_ch = { nom.getString(), nom_ch.getString() };
+            s_pb_ch.insert(pb_ch), m_pb_ch.back().push_back(pb_ch); //ajout aux listes pour ce morceau et globale
+          }
 
-      if (old_table_syntax_ && ch_lu.noms_pbs_.size() != 0 && nb_param != 1)
-        {
-          Cerr << "What ??? Big problem in Champ_Fonc_Tabule::readOn !!!" << finl;
-          throw;
-        }
+      const int nb_param = (int)m_pb_ch.back().size();
 
       is >> nom;
-      if (nom == "{")
+      if (nom != "{")
+        Process::exit(que_suis_je() + " : { expected instead of " + nom);
+
+      /* 1. lecture de la grille de parametres */
+      DoubleVects params;
+      for (int n = 0; n < nb_param; n++)
         {
-          /* 1. lecture de la grille de parametres */
-          DoubleVects params;
-          for (int n = 0; n < nb_param; n++)
-            {
-              const int nb_val = lire_dimension(is, que_suis_je());
-              DoubleVect param(nb_val);
-              for (int i = 0; i < nb_val; i++) is >> param[i];
-              params.add(param);
-            }
-
-          /* 2. lecture des valeurs des parametres */
-          // taille totale du tableau de valeurs
-          int size = nbcomp;
-          for (int n = 0; n < nb_param; n++) size *= params[n].size();
-
-          // lecture : tout dans un tableau 1D
-          DoubleVect tab_valeurs(size);
-          for (int i = 0; i < size; i++) is >> tab_valeurs[i];
-          ch_lu.la_table.remplir(params, tab_valeurs);
-
-          is >> nom;
-          if (nom != "}")
-            {
-              Cerr << "Error reading from an object of type Champ_Fonc_Tabule" << finl;
-              Cerr << "We expected keyword } instead of " << nom << finl;
-              Process::exit();
-            }
-        }
-      else
-        {
-          Cerr << "Error reading from an object of type Champ_Fonc_Tabule" << finl;
-          Cerr << "We expected keyword { or fonction instead of " << nom << finl;
-          Process::exit();
+          const int nb_val = lire_dimension(is, que_suis_je());
+          DoubleVect param(nb_val);
+          for (int i = 0; i < nb_val; i++) is >> param[i];
+          params.add(param);
         }
 
-      for (int e = 0; e < ssz.nb_elem_tot(); e++) table_idx(ssz(e)) = (int)champs_lus.size();
-      champs_lus.push_back(ch_lu);
+      /* 2. lecture des valeurs des parametres */
+      // taille totale du tableau de valeurs
+      int size = nbcomp;
+      for (int n = 0; n < nb_param; n++) size *= params[n].size();
+
+      // lecture : tout dans un tableau 1D
+      DoubleVect tab_valeurs(size);
+      for (int i = 0; i < size; i++) is >> tab_valeurs[i];
+      ch_lu.la_table.remplir(params, tab_valeurs);
+
       is >> nom;
+      if (nom != "}")
+        Process::exit(que_suis_je() + " : } expected instead of "+ nom);
+      for (int i = 0; i < ssz.nb_elem_tot(); i++) i_mor(ssz(i)) = (int)morceaux.size();
+      morceaux.push_back(ch_lu);
     }
+  if (mp_min_vect(i_mor) == -1)
+    Process::exit(que_suis_je() + " : some pieces of the field are missing!");
+
+  /* remplissage de ch_param (pointeurs vers les champs) et des i_ch (champs utilises par chaque morceau) */
+  std::vector<std::array<std::string, 2>> v_pb_ch(s_pb_ch.begin(), s_pb_ch.end()); //set -> vector
+  for (auto &&pb_ch : v_pb_ch) /* (probleme, champ) -> pointeurs */
+    ch_param.push_back(&ref_cast(Probleme_base, Interprete::objet(Nom(pb_ch[0]))).get_champ(Nom(pb_ch[1])));
+  for (int i = 0; i < (int) m_pb_ch.size(); i++)
+    for (auto && pb_ch : m_pb_ch[i]) /* indices */
+      morceaux[i].i_ch.push_back(std::lower_bound(v_pb_ch.begin(), v_pb_ch.end(), pb_ch) - v_pb_ch.begin());
+
   return is;
 }
 
 void Champ_Fonc_Tabule_Morceaux::mettre_a_jour(double time)
 {
-  if (!init_)
+
+  DoubleTab& tab = valeurs(), vide;
+  std::vector<const DoubleTab* > pval; /* valeurs des parametres */
+  std::vector<DoubleTrav> tval; /* tableaux temporaires */
+  std::vector<bool> is_multi; /* true si le champ correspondant est multi_composantes */
+  pval.reserve(ch_param.size()), tval.reserve(ch_param.size()), is_multi.reserve(ch_param.size());
+  for (auto &&pch : ch_param)
     {
-      initialiser(time);
-      return;
-    }
-  DoubleTab& tab = valeurs();
-  Domaine& le_domaine = mon_domaine.valeur();
-  const IntTab& les_elems = le_domaine.zone(0).les_elems();
-  const int nb_som_elem = le_domaine.zone(0).nb_som_elem(), nb_elem_tot = le_domaine.zone(0).nb_elem_tot();
-
-  // check whether valeur_aux_elems is needed
-  bool calc_centers = false;
-  for (auto && ch : champs_lus)
-    for (int i = 0; i < ch.champs_parametre_.size(); i++)
-      {
-        assert(ch.champs_parametre_[i]->valeurs().dimension(1) == 1 || ch.champs_parametre_[i]->valeurs().dimension(1) == tab.dimension(1));
-        if (tab.get_md_vector() != ch.champs_parametre_[i]->valeurs().get_md_vector())
-          ch.needs_projection.push_back(true), calc_centers = true;
-        else ch.needs_projection.push_back(false);
-      }
-
-  // valeur aux elems : on les stocke dans un map {"pb_champ" : champ_aux_elems, ...}
-  std::map<std::string, DoubleTab> val_params_aux_elems;
-  if (calc_centers)
-    {
-      DoubleTab centres_de_gravites(0, dimension);
-      le_domaine.creer_tableau_elements(centres_de_gravites);
-
-      for (int i = 0; i < le_domaine.zone(0).nb_elem_tot(); i++)
+      ConstDoubleTab_parts part(pch->valeurs()); //pour ignorer les variables aux de PolyMAC
+      if (tab.get_md_vector() == part[0].get_md_vector()) /* on est bien aux elements -> utilisation directe */
+        pval.push_back(&pch->valeurs());
+      else /* sinon -> calcul des valeurs aux elems et stockage dans un tableau de tval */
         {
-          int nb_som = 0, s, r;
-          for (int j = 0; j < nb_som_elem && (s = les_elems(i, j)) >= 0; j++)
-            for (r = 0, nb_som++; r < dimension; r++)
-              centres_de_gravites(i, r) += le_domaine.coord(s, r);
-
-          for (r = 0; r < dimension; r++) centres_de_gravites(i, r) /= nb_som;
+          IntVect polys(tab.dimension_tot(0));
+          for (int i = 0; i < tab.dimension_tot(0); i++) polys[i] = i;
+          tval.push_back(DoubleTab(tab.dimension_tot(0), pch->nb_comp()));
+          pch->valeur_aux_elems(pch->a_une_zone_dis_base() ? ref_cast(Zone_VF, pch->zone_dis_base()).xp() : vide, polys, tval.back());
+          pval.push_back(&tval.back());
         }
-
-      IntVect les_polys(nb_elem_tot);
-      for(int elem = 0; elem < nb_elem_tot; elem++) les_polys(elem) = elem;
-
-      // Estimate the field parameter on cells:
-      for (auto && ch : champs_lus)
-        for (int i = 0; i < ch.champs_parametre_.size(); i++)
+      is_multi.push_back(pval.back()->dimension(1) > 1);
+    }
+  std::vector<double> vals(ch_param.size());
+  for (int e  = 0; e < mon_domaine->zone(0).nb_elem(); e++)
+    {
+      const CHTAB& mor = morceaux[i_mor(e)];
+      int N = tab.dimension(1), M = (int) mor.i_ch.size();
+      if (N == 1 && M == 1)
+        tab(e, 0) = mor.la_table.val_simple((*pval[mor.i_ch[0]])(e, 0));
+      else for (int n = 0, m; n < N; n++)
           {
-            std::string nc = ch.noms_pbs_[i] + "_" + ch.noms_champs_parametre_[i];
-            if (!val_params_aux_elems.count(nc))
-              {
-                if (ch.needs_projection[i])
-                  {
-                    DoubleTab vp(nb_elem_tot, ch.champs_parametre_[i]->valeurs().dimension(1));
-                    ch.champs_parametre_[i]->valeur_aux_elems(centres_de_gravites, les_polys, vp);
-                    val_params_aux_elems[nc] = vp;
-                  }
-                else
-                  val_params_aux_elems[nc] = ch.champs_parametre_[i]->valeurs();
-              }
+            for (vals.clear(), m = 0; m < M; m++) vals.push_back((*pval[mor.i_ch[m]])(e, n * is_multi[mor.i_ch[m]])); /* si le champ parametre est multi-compo, on prend la meme que celle du champ */
+            tab(e, n) = mor.la_table.val(vals, n);
           }
     }
-  else
-    {
-      // Estimate the field parameter on cells:
-      for (auto && ch : champs_lus)
-        for (int i = 0; i < ch.champs_parametre_.size(); i++)
-          {
-            std::string nc = ch.noms_pbs_[i] + "_" + ch.noms_champs_parametre_[i];
-            if (!val_params_aux_elems.count(nc)) val_params_aux_elems[nc] = ch.champs_parametre_[i]->valeurs();
-          }
-    }
-
-  // Compute the field according to the parameter field
-  const int nbcomp = tab.dimension(1);
-  for (int e = 0; e < le_domaine.zone(0).nb_elem(); e++)
-    if (nbcomp == 1 && champs_lus[table_idx(e)].noms_champs_parametre_.size() == 1)
-      {
-        std::string nc = champs_lus[table_idx(e)].noms_pbs_[0] + "_" + champs_lus[table_idx(e)].noms_champs_parametre_[0];
-        const double v = val_params_aux_elems[nc](e, 0);
-        tab(e, 0) = champs_lus[table_idx(e)].la_table.val_simple(v);
-      }
-    else for (int n = 0; n < nbcomp; n++)
-        {
-          std::vector<double> vals;
-          for (unsigned int k = 0; k < champs_lus[table_idx(e)].noms_champs_parametre_.size(); k++)
-            {
-              std::string nc = champs_lus[table_idx(e)].noms_pbs_[k] + "_" + champs_lus[table_idx(e)].noms_champs_parametre_[k];
-              vals.push_back(val_params_aux_elems[nc](e, champs_lus[table_idx(e)].champs_parametre_[k]->valeurs().dimension(1) == 1 ? 0 : n));
-            }
-          tab(e, n) = champs_lus[table_idx(e)].la_table.val(vals, n);
-        }
   tab.echange_espace_virtuel();
-}
-
-int Champ_Fonc_Tabule_Morceaux::initialiser(const double time)
-{
-  for (auto &&ch : champs_lus)
-    for (unsigned int i = 0; i < ch.noms_champs_parametre_.size(); i++)
-      {
-        REF(Champ_base) champ;
-        const Probleme_base& pb_ch = ref_cast(Probleme_base, Interprete::objet(Nom(ch.noms_pbs_[i])));
-        champ = pb_ch.get_champ(Nom(ch.noms_champs_parametre_[i]));
-        ch.champs_parametre_.add(champ);
-      }
-  init_ = true;
-  mettre_a_jour(time);
-  return 1;
 }

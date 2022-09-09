@@ -31,22 +31,18 @@ class Champ_Fonc_Tabule_Morceaux : public TRUSTChamp_Morceaux_generique<Champ_Mo
   Declare_instanciable(Champ_Fonc_Tabule_Morceaux);
 public :
   void mettre_a_jour(double temps) override;
-  int initialiser(const double temps) override;
 
 protected :
 
+  std::vector<const Champ_base *> ch_param; /* liste de champs parametres */
+  /* un morceau de champ */
   typedef struct
   {
-    std::vector<std::string> noms_champs_parametre_;
-    std::vector<std::string> noms_pbs_;
-    VECT(REF(Champ_base)) champs_parametre_;
+    std::vector<int> i_ch; /* indices des champs parametres utilises pour ce morceau */
     Table la_table;
-    std::vector<bool> needs_projection;
   } CHTAB;
-
-  std::vector<CHTAB> champs_lus;
-  IntVect table_idx;        /* parser_idx(i, j) : parser a appeller pour calculer la composante j du champ a la maille i */
-  bool init_ = false;
+  std::vector<CHTAB> morceaux; /* les morceaux */
+  IntVect i_mor; //i_mor[e] : morceau de l'element e
 };
 
 #endif /* Champ_Fonc_Tabule_Morceaux_included */

@@ -55,7 +55,10 @@ public :
   }
   int add_poly(const int poly);
   int remove_poly(const int poly);
-
+  inline const IntVect& les_polys()
+  {
+    return les_polys_;
+  }
 protected :
 
   IntVect les_polys_;
