@@ -382,7 +382,7 @@ class SonSEGFile(SonFile):
             if hdr[3][1] == "SEGMENTPOINTS":
                 nb_pts = int((len(hdr[1]) - 1) / 2 / self._dim)
                 l2 = [float(hdr[1][i + 2]) for i in range(0, nb_pts * self._dim, 2)]
-            elif hdr[3][1] == "SEGMENT" or face.match(hdr[3][1]):
+            elif hdr[3][1] == "SEGMENT" or hdr[3][1] == "CIRCLE" or face.match(hdr[3][1]):
                 l2 = [float(hdr[3][i]) for i in range(2, 2 + 2 * self._dim)]
             else: raise Exception("Invalid SON file type!")
             start, end = l2[: self._dim], l2[-self._dim:]

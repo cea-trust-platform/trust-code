@@ -93,7 +93,12 @@ class Write_notebook:
         #figure.printFichierParametres()
         if len(figure.listeCourbes)>0:  
             code = "from trustutils import plot \n \n"
-            code += "fig = plot.Graph(\"" + chaine2Tex(figure.titre) + "\") \n"
+            titre=""
+            if (figure.titre_figure!='Undefined'):
+                titre=figure.titre_figure
+            elif (figure.titre!='Undefined'):
+                titre=figure.titre
+            code += "fig = plot.Graph(r\"" + chaine2Tex(titre) + "\") \n"
             for courbe in figure.listeCourbes:
                 style = ""
                 if courbe.style!="Undefined":
@@ -104,45 +109,46 @@ class Write_notebook:
                 if (courbe.points!='Undefined'):
                     param = courbe.segment.split()
                     ficSon = get_nom_cas(param[0]) + '_' + (param[1]).upper() + '.son'
-                    label = courbe.legende.replace('"','')
-                    code += "fig.addPoint(\"" + ficSon + "\",label=\"" + label + "\""+ style +") \n" 
+                    code += "fig.addPoint(\"" + ficSon + "\",label=r\"" + chaine2Tex(courbe.legende) + "\""+ style +") \n" 
                 elif (courbe.segment!='Undefined'):
                     param = courbe.segment.split()
                     ficSon = get_nom_cas(param[0]) + '_' + (param[1]).upper() + '.son'
                     
-                    label = courbe.legende.replace('"','')
-                    code += "fig.addSegment(\"" + ficSon + "\",label=\"" + label + "\"" + style +") \n" 
+                    code += "fig.addSegment(\"" + ficSon + "\",label=r\"" +chaine2Tex(courbe.legende) + "\"" + style +") \n" 
                 else:
                     if (courbe.fichier!="Undefined"):
                         code += "data = plot.loadText(\"%s\")\n"%(courbe.fichier)
-                        if (courbe.colonnes):
+                        if (courbe.colonnes != 'Undefined'):
                             indices= [int(s) for s in re.findall(r'\$(\d+)',courbe.colonnes)]
-                           
+                            
                             formule = courbe.colonnes
                             for j in indices:
                                 original_string="$%d"%j
                                 replacement_string="data[%d]"%(j-1) 
-                                formule=formule.replace(original_string, replacement_string)
+                                formule=formule.replace(original_string, replacement_string)        
+                            formule = self.replace_fonction(formule) #TODO a finir
                             
-                            formule = self.replace_fonction(formule)
-                            colonnes=formule.split()
-                            code += "fig.add(%s,%s,label=%s"%(colonnes[0],colonnes[1],courbe.legende) + style + ")\n" #TODO Attention ne permet pas l'existence d'espace dans la formule
+                            colonnes = formule.split()
+                            xdata = colonnes[0]
+                            ydata = colonnes[1]
+                            code += "fig.add(%s,%s,label=r\"%s\""%(xdata,ydata,chaine2Tex(courbe.legende)) + style + ")\n" #TODO Attention ne permet pas l'existence d'espace dans la formule
+                        
                     else:
                         code += "\nimport numpy as np \n"
-                        code += "x = np.linspace(min(data[0]),max(data[0]),100) \n" #TODO pb avec les limites
+                        code += "x = np.linspace(0,1,100) \n" #TODO pb avec les limites
                         fonction = self.replace_fonction(courbe.fonction)
                         code += "y = " + fonction + " \n"
-                        code += "fig.add(x,y,label=r" + chaine2Tex(courbe.legende) + style + ") \n" 
+                        code += "fig.add(x,y,label=r\"" + chaine2Tex(courbe.legende) + "\"" + style + ") \n" 
             if figure.labelX!="Undefined" or figure.labelY!="Undefined":
-                code += "\nfig.label(%s,%s)\n"%(figure.labelX,figure.labelY)
-            if figure.rangeX!="auto" or figure.rangeY!="auto":
-                if figure.rangeX=="auto":
+                code += "\nfig.label(r\"%s\",r\"%s\")\n"%(chaine2Tex(figure.labelX),chaine2Tex(figure.labelY))
+            if figure.rangeX!='auto' or figure.rangeY!='auto':
+                if figure.rangeX=='auto' and figure.rangeY!='auto':
                     rangeY = figure.rangeY.split()
                     code += "\nfig.visu(ymin=%s,ymax=%s)\n"%(rangeY[0],rangeY[1])
-                elif figure.rangeY=="auto":
+                elif figure.rangeY=='auto' and figure.rangeX!='auto':
                     rangeX = figure.rangeX.split()
                     code += "\nfig.visu(xmin=%s,xmax=%s)\n"%(rangeX[0],rangeX[1])
-                else:
+                elif figure.rangeY!='auto' and figure.rangeX!='auto':
                     rangeX = figure.rangeX.split()
                     rangeY = figure.rangeY.split()
                     code += "\nfig.visu(%s,%s,%s,%s)\n"%(rangeX[0],rangeX[1],rangeY[0],rangeY[1])
@@ -198,14 +204,12 @@ class Write_notebook:
             if (plot[0].lower()=='zoom3d'):
                 code1 += "visu.zoom3D([%s,%s,%s])\n"%(plot[1],plot[2],plot[3])
             if (plot[0].lower()=='zoom2d'):
-                code1 += "visu.zoom3D([%s,%s,%s,%s])\n"%(plot[1],plot[2],plot[3],plot[4])
-            if (plot[0].lower()=='zoom2d'):
                 code1 += "visu.zoom2D([%s,%s,%s,%s])\n"%(plot[1],plot[2],plot[3],plot[4])
             if (plot[0].lower()=='operator') or (plot[0].lower()=='operator_to_all') : 
                 if (plot[1].lower()=='slice') or (plot[1].lower()=='slice2d'):
                     code1 += "visu.slice(origin=[%s,%s,%s],normal=[%s,%s,%s],type_op=\"%s\")\n" %(plot[2],plot[3],plot[4],plot[5],plot[6],plot[7],plot[1].lower())
                 else:
-                    code1 += "visu.visuOptions([%s])\n"%plot[1]
+                    code1 += "visu.visuOptions([\"%s\"])\n"%plot[1]
             if (plot[0].lower()=='instruction_visit'):
                 code1 += "visu.executeVisitCmds(%s)\n"%plot[1]
         code += code0 + code1 + "visu.plot()"
@@ -251,10 +255,15 @@ class Write_notebook:
                     except:
                         valeur_f[i]=chaine2Tex(valeur_f[i])
                         #pass
-                code += "tab.addLigne([%s],\"%s\")\n"%(valeur_f,chaine2Tex(ligne.legende))
+                code += "tab.addLigne([%s],r\"%s\")\n"%(valeur_f,chaine2Tex(ligne.legende))
         
             elif ligne.fichier!='Undefined':
-                code += "data = plot.loadText(\"%s\",transpose=False)\n"%(ligne.fichier)
+                code += "data = plot.loadText(\"%s\",transpose=False, dtype=\"str\")\n"%(ligne.fichier)
+                if ligne.derniere_ligne:
+                    code += "tab.addLigne([["
+                    for k in range(tableau.nb_colonnes):
+                        code += "data[%d],"%k 
+                    code += "]],r\"%s\")\n"%(chaine2Tex(ligne.legende))
 
             nb_colonnes_f=tableau.nb_colonnes
             if (ligne.nb_colonnes_fichier): nb_colonnes_f=ligne.nb_colonnes_fichier
@@ -277,7 +286,7 @@ class Write_notebook:
                         pass
                         code+=formule +","
                     pass
-                    code += "]],\"%s\")\n"%(chaine2Tex(ligne.legende))
+                    code += "]],r\"%s\")\n"%(chaine2Tex(ligne.legende))
                 pass
             except:
                 ligne.gestMsg.ecrire(GestionMessages._ERR, 'unable to read %d values in file %s.'% (nb_colonnes_f,ligne.fichier))
@@ -350,6 +359,21 @@ class Write_notebook:
         suite_entete = suite_entete.replace('__DATE__',chaine2Tex(date))
         purp += self.write_text(suite_entete)
         self.nb['cells'] = [nbf.v4.new_markdown_cell(purp)]
+        
+        # cas test a faire tourner ici car trop tard dans inclureResultsNotebook
+        testCases = "from trustutils import run\n \n"
+        for cas in maitre.casTest:
+            from lib import get_detail_cas
+            nomcas,dir,nb_proc,comment=get_detail_cas(cas)
+            ficData=nomcas+'.data'
+            testCases += "run.addCase(\""+ dir + "\",\"" + ficData
+            if nb_proc>1:
+                testCases += "\",nbProcs=" + str(nb_proc) + ")\n"
+            else:
+                testCases += "\")\n"
+            pass
+        testCases += "run.runCases()"
+        self.nb['cells'] += [nbf.v4.new_code_cell(testCases)]
 #
     def inclurePbDescriptionNotebook(self,maitre,pbdescription):
         '''Inclusion du paragraphe Problem Description dans le fichier latex du rapport de validation.'''
@@ -381,7 +405,7 @@ class Write_notebook:
         for sousChapitre in casesetup.listeSSChap:
             self.inclureSSChapitreTex(maitre,sousChapitre)
 #
-    def inclureResultsTex(self,maitre,results):
+    def inclureResultsNotebook(self,maitre,results):
         '''Inclusion du paragraphe Results dans le fichier latex du rapport de validation.'''
         res = "## Results \n"
         res += "### Validation Specific Informations \n"
@@ -401,20 +425,6 @@ class Write_notebook:
                 res += '\t- %s : %s \n' % (chaine2Tex(dir+"/"+ficData), chaine2Tex(comment))
         self.nb['cells'] += [nbf.v4.new_markdown_cell(res)]
 
-        testCases = "from trustutils import run\n \n"
-        for cas in maitre.casTest:
-            from lib import get_detail_cas
-            nomcas,dir,nb_proc,comment=get_detail_cas(cas)
-            ficData=nomcas+'.data'
-            testCases += "run.addCase(\""+ dir + "\",\"" + ficData
-            if nb_proc>1:
-                testCases += "\",nbProcs=" + str(nb_proc) + ")\n"
-            else:
-                testCases += "\")\n"
-            pass
-        testCases += "run.runCases()"
-        self.nb['cells'] += [nbf.v4.new_code_cell(testCases)]
-
         from Tableau import Tableau_performance_nvellevalid
         Tableau_perf=Tableau_performance_nvellevalid(verbose=0, output='')
         fichier=nomcas+'.perf'
@@ -433,7 +443,7 @@ class Write_notebook:
                 if v2 == 'figure':
                     self.inclureObjet(maitre,i["valeur"])
 #
-    def inclureConclusionTex(self,maitre,conclusion):
+    def inclureConclusionNotebook(self,maitre,conclusion):
         '''Inclusion du paragraphe Conclusion dans le fichier latex du rapport de validation.'''
 ##        if not conclusion.description:   - a faire : tester existance du paragrpahe
         ccl = "## Conclusion \n \n"
@@ -474,7 +484,7 @@ class Write_notebook:
             else:
                 liste_ref = "## References: \n \n"
             for ref in maitre.reference:
-                liste_ref += "* : %s \n"% (chaine2Tex(ref))
+                liste_ref += "* %s \n"% (chaine2Tex(ref))
                 pass
             self.nb['cells'] += [nbf.v4.new_markdown_cell(liste_ref)]
             pass
@@ -489,11 +499,15 @@ class Write_notebook:
             for cas in maitre.casTest:
                 from lib import get_detail_cas
                 nomcas,dir,nb_proc,comment=get_detail_cas(cas)
+                ficData=nomcas+'.data'
+                ficData = os.path.join(dir, ficData)
  
                 if ((maitre.inclureData==1) or ((maitre.inclureData==2) and (comment!="") )) :
                     if (first):
                         first=0
-                        code = "run.dumpDataset(\"%s\")"%nomcas
+                        subtitle = "### %s" % (chaine2Tex(nomcas))
+                        self.nb['cells'] += [nbf.v4.new_markdown_cell(subtitle)]
+                        code = "run.dumpDataset(\"%s\")"%ficData
                         self.nb['cells'] += [nbf.v4.new_code_cell(code)]
                         pass
                     pass
@@ -518,9 +532,9 @@ class Write_notebook:
             for casesu in maitre.casesetup:
                 self.inclureCaseSetupNotebook(maitre,casesu)
             for resu in maitre.results:
-                self.inclureResultsTex(maitre,resu)
+                self.inclureResultsNotebook(maitre,resu)
             for conc in maitre.conclusion:
-                self.inclureConclusionTex(maitre,conc)
+                self.inclureConclusionNotebook(maitre,conc)
             self.write_liste_ref(maitre)
 #
 ##############################
@@ -539,8 +553,13 @@ class Write_notebook:
         
         intro = "## Introduction\n \n Validation made by: " + chaine2Tex(maitre.auteur) + "\n \n"
         intro += " Report generated " + chaine2Tex(date)
+        
+        self.nb['cells'] = [nbf.v4.new_markdown_cell(title),
+               nbf.v4.new_markdown_cell(intro)]
 
-        description = "### Description\n \n" + self.write_description(maitre.description)
+        if (maitre.description != []): 
+            description = "### Description\n \n" + self.write_description(maitre.description)
+            self.nb['cells'] = [nbf.v4.new_markdown_cell(description)]
 
         #parameter = "from trustutils import run\nrun.TRUST_parameters()" #TODO option parametre
        
@@ -563,7 +582,4 @@ class Write_notebook:
             pass
         pass
 
-        self.nb['cells'] = [nbf.v4.new_markdown_cell(title),
-                nbf.v4.new_markdown_cell(intro),
-                nbf.v4.new_markdown_cell(description),
-                nbf.v4.new_markdown_cell(parameter)]
+        self.nb['cells'] = [nbf.v4.new_markdown_cell(parameter)]

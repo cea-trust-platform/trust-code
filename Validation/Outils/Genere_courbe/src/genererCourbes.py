@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #script pour generer un fichier pdf contenant les courbes permettant de valider des resultats de calculs pour TRUST.
 #****************************************************************************
 # Copyright (c) 2015 - 2016, CEA
