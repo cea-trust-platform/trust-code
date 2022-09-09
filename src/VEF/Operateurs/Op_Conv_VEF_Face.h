@@ -42,6 +42,7 @@ class Op_Conv_VEF_Face : public Op_Conv_VEF_base
 
 public:
   Op_Conv_VEF_Face() : alpha_(1) {};
+  void completer() override;
   DoubleTab& ajouter(const DoubleTab& , DoubleTab& ) const override;
   void remplir_fluent(DoubleVect& ) const override;
   // Methodes pour l implicite.
@@ -50,7 +51,7 @@ public:
   inline void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
   inline void contribuer_au_second_membre(DoubleTab& ) const override;
   void contribue_au_second_membre(DoubleTab& ) const;
-  void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const;
+  virtual void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const;
 
   void get_ordre(int& ) const;
   void get_type_lim(Motcle& ) const;

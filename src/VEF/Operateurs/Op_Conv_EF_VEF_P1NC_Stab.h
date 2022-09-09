@@ -57,7 +57,7 @@ public:
 
   //Methodes pour l'implicite
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
-  void ajouter_contribution(const DoubleTab&, Matrice_Morse&) const;
+  void ajouter_contribution(const DoubleTab&, Matrice_Morse&) const override;
 
   //test
   void         modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override;

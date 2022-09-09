@@ -123,6 +123,25 @@ Entree& Op_Conv_VEF_Face::readOn(Entree& s )
   return s ;
 }
 
+void Op_Conv_VEF_Face::completer()
+{
+  Op_Conv_VEF_base::completer();
+  // On cherche, pour un elem qui n'est pas de bord (rang==-1),
+  // si un des sommets est sur un bord (tableau des sommets) (C MALOD 17/07/2007)
+  if (type_elem_Cl_.size_array() == 0)
+    {
+      const Zone_VEF& zone_VEF = ref_cast(Zone_VEF, la_zone_vef.valeur());
+      const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
+      const int nb_elem_tot = zone_VEF.nb_elem_tot();
+      const IntVect& rang_elem_non_std = zone_VEF.rang_elem_non_std();
+      type_elem_Cl_.resize(nb_elem_tot);
+      for (int poly = 0; poly < nb_elem_tot; poly++)
+        {
+          int rang = rang_elem_non_std(poly);
+          type_elem_Cl_[poly] = rang == -1 ? 0 : zone_Cl_VEF.type_elem_Cl(rang);
+        }
+    }
+}
 //
 //   Fonctions de la classe Op_Conv_VEF_Face
 //
@@ -1561,17 +1580,6 @@ void  Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
       const double *vitesse_face_addr = vitesse_face.addr();
       double *fluent_addr = fluent_.addr();
 
-      // On cherche, pour un elem qui n'est pas de bord (rang==-1),
-      // si un des sommets est sur un bord (tableau des sommets) (C MALOD 17/07/2007)
-      if (type_elem_Cl_.size_array() == 0)
-        {
-          type_elem_Cl_.resize(nb_elem_tot);
-          for (int poly = 0; poly < nb_elem_tot; poly++)
-            {
-              int rang = rang_elem_non_std(poly);
-              type_elem_Cl_[poly] = rang == -1 ? 0 : zone_Cl_VEF.type_elem_Cl(rang);
-            }
-        }
       const int *type_elem_Cl_addr = copyToDevice(type_elem_Cl_);
       #pragma omp target teams map(to:KEL_addr[0:KEL.size_array()], normales_facettes_Cl_addr[0:normales_facettes_Cl.size_array()], vitesse_face_addr[0:vitesse_face.size_array()]) map(tofrom:fluent_addr[0:fluent_.size_array()])
       {
