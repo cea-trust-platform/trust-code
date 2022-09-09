@@ -102,7 +102,7 @@ public:
 
 protected:
   Champ rho; //peut etre un Champ_Don ou un Champ_Inc
-  Champ_Don alpha, lambda, Cp, beta_th, porosite_milieu;
+  Champ_Don alpha, lambda, Cp, beta_th, porosites_champ;
   Champ_Fonc rho_cp_elem_,rho_cp_comme_T_;
   Nom nom_;
   REF(Champ_Don_base) g;

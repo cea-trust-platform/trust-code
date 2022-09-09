@@ -59,6 +59,7 @@ Sortie& Milieu_base::printOn(Sortie& os) const
  *         - conductivite
  *         - capacite calorifique
  *         - beta_th
+ *         - porosites_champ
  *
  * @param (Sortie& os) le flot de sortie pour l'ecriture
  */
@@ -68,7 +69,7 @@ void  Milieu_base::ecrire(Sortie& os) const
   os << "lambda " << lambda << finl;
   os << "Cp " << Cp << finl;
   os << "beta_th " << beta_th << finl;
-  if (porosite_milieu.non_nul()) os << "porosite_milieu " << porosite_milieu << finl;
+  if (porosites_champ.non_nul()) os << "porosites_champ " << porosites_champ << finl;
 }
 
 void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_base& dis)
@@ -163,22 +164,22 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
       champs_compris_.ajoute_champ(rho_cp_elem_.valeur());
     }
 
-  if (porosite_milieu.non_nul())
+  if (porosites_champ.non_nul())
     {
-      Nom fld_name = "porosite_milieu", fld_unit = "rien";
+      Nom fld_name = "porosites_champ", fld_unit = "rien";
       // TODO : FIXME : on suppose que le champ est aux elems ... faut generaliser et utiliser affecter ...
-      if (sub_type(Champ_late_input_P0, porosite_milieu.valeur()))
+      if (sub_type(Champ_late_input_P0, porosites_champ.valeur()))
         {
           Cerr << "We continue reading the Champ_late_input_P0 field ..." << finl;
-          ref_cast(Champ_late_input_P0,porosite_milieu.valeur()).complete_readOn();
-          porosite_milieu->fixer_unite(fld_unit);
-          porosite_milieu->valeurs() = 1.; // On initialise a 1 ...
+          ref_cast(Champ_late_input_P0,porosites_champ.valeur()).complete_readOn();
+          porosites_champ->fixer_unite(fld_unit);
+          porosites_champ->valeurs() = 1.; // On initialise a 1 ...
         }
       else
-        dis.nommer_completer_champ_physique(zone_dis, fld_name, fld_unit, porosite_milieu.valeur(), pb);
+        dis.nommer_completer_champ_physique(zone_dis, fld_name, fld_unit, porosites_champ.valeur(), pb);
 
-      champs_compris_.ajoute_champ(porosite_milieu.valeur());
-      assert(mp_min_vect(porosite_milieu->valeurs()) >= 0. && mp_max_vect(porosite_milieu->valeurs()) <= 1.);
+      champs_compris_.ajoute_champ(porosites_champ.valeur());
+      assert(mp_min_vect(porosites_champ->valeurs()) >= 0. && mp_max_vect(porosites_champ->valeurs()) <= 1.);
     }
 }
 /*! @brief Lecture d'un milieu sur un flot d'entree.
@@ -210,7 +211,7 @@ void Milieu_base::set_param(Param& param)
   param.ajouter("lambda",&lambda);
   param.ajouter("Cp",&Cp);
   param.ajouter("beta_th",&beta_th);
-  param.ajouter("porosite_milieu",&porosite_milieu);
+  param.ajouter("porosites_champ",&porosites_champ);
 }
 
 int Milieu_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
@@ -323,19 +324,19 @@ void Milieu_base::calculer_alpha()
 void Milieu_base::update_porosity_values()
 {
   Zone_VF& zvf = ref_cast_non_const(Zone_VF,rho_cp_comme_T_->zone_dis_base()); // rho_cp_comme_T_ a toujours un zone_dis_base
-  const int is_uniforme = sub_type(Champ_Uniforme,porosite_milieu.valeur());
+  const int is_uniforme = sub_type(Champ_Uniforme,porosites_champ.valeur());
 
   // update porosite_elem
   // TODO : FIXME : on suppose que le champ est aux elems ... faut generaliser et utiliser affecter ...
   DoubleVect& porosite_elem = zvf.porosite_elem();
   if (!is_uniforme)
     {
-      assert (porosite_elem.size_totale() == porosite_milieu->valeurs().dimension_tot(0));
-      assert (zvf.nb_elem_tot() == porosite_milieu->valeurs().dimension_tot(0));
-      porosite_elem = porosite_milieu->valeurs();
+      assert (porosite_elem.size_totale() == porosites_champ->valeurs().dimension_tot(0));
+      assert (zvf.nb_elem_tot() == porosites_champ->valeurs().dimension_tot(0));
+      porosite_elem = porosites_champ->valeurs();
     }
   else
-    for (int elem = 0; elem < zvf.nb_elem_tot(); elem++) porosite_elem(elem) = porosite_milieu->valeurs()(0,0);
+    for (int elem = 0; elem < zvf.nb_elem_tot(); elem++) porosite_elem(elem) = porosites_champ->valeurs()(0,0);
 
   // update porosite_faces
   DoubleVect& porosite_face = zvf.porosite_face();
@@ -376,10 +377,10 @@ void Milieu_base::mettre_a_jour(double temps)
 
   if (rho_cp_comme_T_.non_nul()) update_rho_cp(temps);
 
-  if (porosite_milieu.non_nul())
+  if (porosites_champ.non_nul())
     {
       update_porosity_values();
-      porosite_milieu.mettre_a_jour(temps);
+      porosites_champ.mettre_a_jour(temps);
     }
 }
 
@@ -495,10 +496,10 @@ int Milieu_base::initialiser(const double temps)
   if (rho_cp_comme_T_.non_nul()) update_rho_cp(temps);
 
   // TODO : XXX : a voir si ICoCo ? faut l'initialiser dans le main ?
-  if (porosite_milieu.non_nul())
+  if (porosites_champ.non_nul())
     {
       update_porosity_values();
-      porosite_milieu.initialiser(temps);
+      porosites_champ.initialiser(temps);
     }
 
   return 1;
