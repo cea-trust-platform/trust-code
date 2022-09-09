@@ -61,6 +61,7 @@ Read eau
     cp Champ_uniforme 1 1000.
     lambda champ_uniforme 1 10.
     beta_th champ_uniforme 1 0.
+    porosites_champ champ_fonc_xyz dom 1 1-0.5*(x>0.2)*(x<0.8)
 }
 
 Champ_Uniforme gravite
@@ -70,7 +71,6 @@ Associate pb sch
 Associate pb eau
 Discretize pb dis
 # Debog pb seq faces 1.e-6 0 #
-porosites_champ pb champ_fonc_xyz dom 1 1-0.5*(x>0.2)*(x<0.8)
 Read pb
 {
     Navier_Stokes_standard

@@ -39,14 +39,13 @@ Read eau
 {
     mu  Champ_Uniforme 1 2.5
     rho Champ_Uniforme 1 1000
+    porosites_champ champ_fonc_xyz dom 1 1-0.5*(y>1)*(y<2)
 }
 
 Associate  pb dom
 Associate  pb sch
 Associate  pb eau
 Discretize pb dis
-
-porosites_champ pb champ_fonc_xyz dom 1 1-0.5*(y>1)*(y<2)
 
 Read pb
 {

@@ -78,6 +78,7 @@ Read fluide
     rho Champ_Uniforme 1 40
     lambda Champ_Uniforme 1 10
     Cp champ_Uniforme 1 1000
+    porosites_champ champ_fonc_xyz dom 1 0.2
 }
 
 
@@ -87,7 +88,6 @@ Associate pb fluide
 Associate pb sch
 Discretize pb dis
 
-porosites_champ pb champ_fonc_xyz dom 1 0.2
 Read pb
 {
     Navier_Stokes_standard

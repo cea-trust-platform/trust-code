@@ -81,6 +81,7 @@ Read eau
 {
     mu Champ_Uniforme 1 0.02
     rho Champ_Uniforme 1 2
+    Porosites_champ champ_uniforme_morceaux dom 1 { defaut 1 sous_zone1 0.5 }
 }
 
 Associate pb dom
@@ -89,7 +90,6 @@ Associate pb eau
 
 Discretize pb dis
 
-Porosites_champ pb champ_uniforme_morceaux dom 1 { defaut 1 sous_zone1 0.5 }
 Read pb
 {
     Navier_Stokes_standard

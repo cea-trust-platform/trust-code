@@ -68,6 +68,7 @@ Read fluide
 {
     mu Champ_Uniforme 1 2
     rho Champ_Uniforme 1 2
+    Porosites_champ champ_uniforme_morceaux dom_pb1 1 { defaut 1 Suz1001 0.5 }
 }
 
 Associate pb dom_pb1
@@ -75,7 +76,6 @@ Associate pb sch
 Associate pb fluide
 Discretize pb dis
 
-Porosites_champ pb champ_uniforme_morceaux dom_pb1 1 { defaut 1 Suz1001 0.5 }
 Read pb
 {
     Navier_Stokes_standard

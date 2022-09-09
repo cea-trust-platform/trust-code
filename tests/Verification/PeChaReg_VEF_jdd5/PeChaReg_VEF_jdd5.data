@@ -58,6 +58,7 @@ Read fluide
 {
     mu Champ_Uniforme 1 4.
     rho Champ_Uniforme 1 5.
+    # Porosites_champ champ_uniforme 1 0.5 #
 }
 
 Associate pb dom

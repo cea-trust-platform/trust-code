@@ -64,6 +64,7 @@ Read sch
 Fluide_Incompressible sodium1
 Read sodium1
 {
+    porosites_champ champ_fonc_xyz dom 1 1-(z>1)*(z<2)*0.74
     mu Champ_Uniforme 1 .000245
     rho Champ_Uniforme 1 840.
     lambda Champ_Uniforme 1 66.
@@ -115,7 +116,6 @@ Discretize pbc dis
 
 
 # Debog pb seq faces 1.e-6 0 #
-porosites_champ pb1 champ_fonc_xyz dom 1 1-(z>1)*(z<2)*0.74
 Read pb1
 {
     Navier_Stokes_standard
