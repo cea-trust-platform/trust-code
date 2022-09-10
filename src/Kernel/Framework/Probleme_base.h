@@ -56,7 +56,6 @@ class Probleme_base : public Champs_compris_interface, public Probleme_U
   Declare_base_sans_constructeur(Probleme_base);
 
 public:
-
   //////////////////////////////////////////////////
   //                                              //
   // Implementation de l'interface de Probleme_U  //
@@ -64,12 +63,10 @@ public:
   //////////////////////////////////////////////////
 
   // interface Problem
-
   void initialize() override;
   void terminate() override;
 
   // interface UnsteadyProblem
-
   double presentTime() const override;
   double computeTimeStep(bool& stop) const override;
   bool initTimeStep(double dt) override;
@@ -80,16 +77,13 @@ public:
   void abortTimeStep() override;
 
   // interface IterativeUnsteadyProblem
-
   bool iterateTimeStep(bool& converged) override;
 
   // interface FieldIO
-
   void getInputFieldsNames(Noms& noms) const override;
   void getOutputFieldsNames(Noms& noms) const override;
 
   // interface Probleme_U
-
   int postraiter(int force=1) override;
   int limpr() const override;
   int lsauv() const override;
@@ -115,29 +109,30 @@ public:
   virtual int nombre_d_equations() const =0;
   virtual const Equation_base& equation(int) const =0;
   virtual Equation_base& equation(int) =0;
+
   // B.Mathieu: j'aurais voulu rendre ces deux methodes virtuelles, mais
   //  alors il faut les surcharger dans tous les problemes (function ... hidden by ...)
   // Rustine: je cree une methode virtuelle avec un autre nom.
   // WEC : pour supprimer equation(Nom), il faudrait toucher a environ 40 classes...
   const Equation_base& equation(const Nom&) const;
   Equation_base& equation(const Nom&);
+  int sauvegarder(Sortie& ) const override;
+  int reprendre(Entree& ) override;
+
   virtual const Equation_base& get_equation_by_name(const Nom&) const;
   virtual Equation_base& getset_equation_by_name(const Nom&);
   virtual const Milieu_base& milieu() const;
   virtual Milieu_base& milieu();
-  int sauvegarder(Sortie& ) const override;
-  int reprendre(Entree& ) override;
   virtual void imprimer(Sortie& os) const; // Appelle imprimer sur chaque equation
   virtual double calculer_pas_de_temps() const;
   virtual void mettre_a_jour(double temps) ;
   virtual void preparer_calcul() ;
 
   // Methodes d'acces aux membres prives.
-
+  int associer_(Objet_U&) override;
   virtual void associer_sch_tps_base(const Schema_Temps_base&);
   virtual void associer_domaine(const Domaine&);
   virtual void associer_milieu_base(const Milieu_base&);
-  int associer_(Objet_U&) override;
   virtual void discretiser(const Discretisation_base&);
   virtual void finir();
 
@@ -155,25 +150,13 @@ public:
   inline void nommer(const Nom&) override;
   inline const Nom& le_nom() const override;
   inline const Discretisation_base& discretisation() const;
-  inline Postraitements& postraitements()
-  {
-    return les_postraitements;
-  };
-  inline const Postraitements& postraitements() const
-  {
-    return les_postraitements;
-  };
+  inline Postraitements& postraitements() { return les_postraitements; }
+  inline const Postraitements& postraitements() const { return les_postraitements; }
   void init_postraitements();
   virtual int expression_predefini(const Motcle& motlu, Nom& expression);
   inline const char* reprise_format_temps() const;
-  inline int& reprise_effectuee()
-  {
-    return reprise_effectuee_;
-  };
-  inline int reprise_effectuee() const
-  {
-    return reprise_effectuee_;
-  };
+  inline int& reprise_effectuee() { return reprise_effectuee_; }
+  inline int reprise_effectuee() const { return reprise_effectuee_; }
 
   //Methodes de l interface des champs postraitables
   /////////////////////////////////////////////////////
@@ -195,14 +178,8 @@ public:
 
   virtual void addInputField(Field_base& f);
   void sauver_xyz(int) const;
-  void set_coupled(int i)
-  {
-    coupled_=i;
-  };
-  int get_coupled() const
-  {
-    return coupled_;
-  };
+  void set_coupled(int i) { coupled_ = i; }
+  int get_coupled() const { return coupled_; }
 
 protected :
   Milieu le_milieu_;
@@ -239,26 +216,19 @@ protected :
   int coupled_;			// Flag to indicate it is a part of a coupled problem
 
   LIST(REF(Loi_Fermeture_base)) liste_loi_fermeture_; // liste des fermetures associees au probleme
-
 };
 
 /*! @brief surcharge Objet_U::nommer(const Nom&) Donne un nom au probleme
  *
  * @param (Nom& name) le nom a donner au probleme
  */
-inline void Probleme_base::nommer(const Nom& name)
-{
-  nom=name;
-}
+inline void Probleme_base::nommer(const Nom& name) { nom=name; }
 
 /*! @brief surcharge Objet_U::le_nom() Renvoie le nom du probleme
  *
  * @return (Nom&) le nom du probleme
  */
-inline const Nom& Probleme_base::le_nom() const
-{
-  return nom;
-}
+inline const Nom& Probleme_base::le_nom() const { return nom; }
 
 /*! @brief Renvoie la discretisation associee au probleme
  *
@@ -291,5 +261,4 @@ inline const char* Probleme_base::reprise_format_temps() const
   return time_format_from(reprise_version_);
 }
 
-#endif
-
+#endif /* Probleme_base_included */

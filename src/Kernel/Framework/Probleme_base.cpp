@@ -422,30 +422,33 @@ inline int version_format_sauvegarde()
 Entree& Probleme_base::readOn(Entree& is)
 {
   Cerr << "Reading of the problem " << le_nom() << finl;
-  format_sauv="binaire";
-  nom_fich=Objet_U::nom_du_cas();
+  format_sauv = "binaire";
+  nom_fich = Objet_U::nom_du_cas();
   // Desormais les fichiers de sauvegarde sont nommes par defaut nomducas_nomdupb.sauv
-  nom_fich+="_";
-  nom_fich+=le_nom();
-  nom_fich+= ".sauv";
+  nom_fich += "_";
+  nom_fich += le_nom();
+  nom_fich += ".sauv";
   Motcle accolade_ouverte("{");
   Motcle accolade_fermee("}");
   Motcle motlu;
-
   is >> motlu;
-
   if (motlu != accolade_ouverte)
     {
       Cerr << "We expected { to start to read the problem" << finl;
       Process::exit();
     }
 
-  // On commence par la lecture du milieu
-  is >> le_milieu_;
+  /* 1 : milieu */
+  is >> le_milieu_; // On commence par la lecture du milieu
+  associer_milieu_base(le_milieu_.valeur()); // On l'associe a chaque equations
 
-  // On lit les equations
+  for (int i = 0; i < nombre_d_equations(); i++) // On discretise ...
+    equation(i).milieu().discretiser((*this), la_discretisation.valeur());
+
+  /* 2 : On lit les equations */
   lire_equations(is, motlu); //"motlu" contient le premier mot apres la lecture des equations
 
+  /* 3 : Les postraitements */
   // Si le postraitement comprend le mot, on en lit un autre...
   while (les_postraitements.lire_postraitements(is, motlu, *this))
     {
@@ -838,24 +841,6 @@ void Probleme_base::discretiser(const Discretisation_base& une_discretisation)
     {
       equation(i).associer_zone_dis(domaine_dis().zone_dis(0));
       equation(i).discretiser();
-      //remontee de l'inconnue vers le milieu
-      equation(i).associer_milieu_equation();
-    }
-  // Discretisation du milieu:
-  //   ATTENTION (BM): il faudra faire quelque chose ici car si on associe deux
-  //   milieux au probleme (fluide_incompressible + constituant), seul
-  //   le premier est discretise.
-  //   Cette facon de faire n'est pas propre !
-  //   Solution probable: gros nettoyage et on met le milieu dans le probleme
-  Noms milieux_deja_discretises;
-  for(int i=0; i<nombre_d_equations(); i++)
-    {
-      const Nom& le_milieu = equation(i).milieu().que_suis_je();
-      if (!milieux_deja_discretises.contient_(le_milieu))
-        {
-          equation(i).milieu().discretiser((*this),une_discretisation);
-          milieux_deja_discretises.add(le_milieu);
-        }
     }
 
   LIST_CURSEUR(REF(Loi_Fermeture_base)) curseur = liste_loi_fermeture_;
@@ -865,7 +850,6 @@ void Probleme_base::discretiser(const Discretisation_base& une_discretisation)
       loi.discretiser(une_discretisation);
       ++curseur;
     }
-
 }
 
 /*! @brief Flag le premier et le dernier postraitement pour chaque fichier Et initialise les postraitements
