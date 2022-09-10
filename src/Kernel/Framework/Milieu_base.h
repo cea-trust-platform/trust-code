@@ -56,6 +56,11 @@ public:
   void nommer(const Nom&) override;
   const Nom& le_nom() const override;
 
+  void discretiser_porosite(const Probleme_base& pb, const Discretisation_base& dis);
+  void set_param_porosite(Param& param);
+  void mettre_a_jour_porosite(double temps);
+  int initialiser_porosite(const double temps);
+
   virtual int est_deja_associe();
   virtual void set_param(Param& param);
   virtual void preparer_calcul();

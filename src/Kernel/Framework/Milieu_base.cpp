@@ -78,8 +78,7 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
   Champ_Don& ch_lambda = conductivite();
   Champ_Don& ch_alpha = diffusivite();
   Champ_Don& ch_beta_th = beta_t();
-  pb_ = pb;
-  const Zone_dis_base& zone_dis=pb_->equation(0).zone_dis();
+  const Zone_dis_base& zone_dis=pb.equation(0).zone_dis();
   // PL: pas le temps de faire plus propre, je fais comme dans Fluide_Incompressible::discretiser
   // pour gerer une conductivite lue dans un fichier MED. Test: Reprise_grossier_fin_VEF
   // ToDo: reecrire ces deux methodes discretiser
@@ -164,16 +163,33 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
       champs_compris_.ajoute_champ(rho_cp_elem_.valeur());
     }
 
+  discretiser_porosite(pb,dis);
+}
+
+// methode utile pour F5 ! F5 n'appelle pas Milieu_base::discretiser mais Milieu_base::discretiser_porosite ...
+void Milieu_base::discretiser_porosite(const Probleme_base& pb, const Discretisation_base& dis)
+{
+  pb_ = pb;
+  const Zone_dis_base& zone_dis = pb_->equation(0).zone_dis();
   if (porosites_champ.non_nul())
     {
       Nom fld_name = "porosites_champ", fld_unit = "rien";
-      // TODO : FIXME : on suppose que le champ est aux elems ... faut generaliser et utiliser affecter ...
       if (sub_type(Champ_late_input_P0, porosites_champ.valeur()))
         {
           Cerr << "We continue reading the Champ_late_input_P0 field ..." << finl;
           ref_cast(Champ_late_input_P0,porosites_champ.valeur()).complete_readOn();
           porosites_champ->fixer_unite(fld_unit);
           porosites_champ->valeurs() = 1.; // On initialise a 1 ...
+        }
+      else if (sub_type(Champ_Fonc_MED,porosites_champ.valeur()))
+        {
+          Cerr<<"Convert Champ_fonc_MED " << fld_name << " to a Champ_Don ..."<<finl;
+          Champ_Don tmp_fld;
+          dis.discretiser_champ("champ_elem",zone_dis,"neant",fld_unit,1,porosites_champ->temps(),tmp_fld);
+          tmp_fld.affecter_(porosites_champ.valeur()); // interpolate ...
+          porosites_champ.detach();
+          dis.discretiser_champ("champ_elem",zone_dis,fld_name,fld_unit,1,tmp_fld->temps(),porosites_champ);
+          porosites_champ->valeurs() = tmp_fld->valeurs();
         }
       else
         dis.nommer_completer_champ_physique(zone_dis, fld_name, fld_unit, porosites_champ.valeur(), pb);
@@ -182,6 +198,7 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
       assert(mp_min_vect(porosites_champ->valeurs()) >= 0. && mp_max_vect(porosites_champ->valeurs()) <= 1.);
     }
 }
+
 /*! @brief Lecture d'un milieu sur un flot d'entree.
  *
  * Format:
@@ -211,6 +228,12 @@ void Milieu_base::set_param(Param& param)
   param.ajouter("lambda",&lambda);
   param.ajouter("Cp",&Cp);
   param.ajouter("beta_th",&beta_th);
+  set_param_porosite(param);
+}
+
+// methode utile pour F5 ! F5 n'appelle pas Milieu_base::set_param mais Milieu_base::set_param_porosite ...
+void Milieu_base::set_param_porosite(Param& param)
+{
   param.ajouter("porosites_champ",&porosites_champ);
 }
 
@@ -321,13 +344,14 @@ void Milieu_base::calculer_alpha()
       Cerr << "alpha calculation is not possible since lambda is not known." << finl;
     }
 }
+
 void Milieu_base::update_porosity_values()
 {
-  Zone_VF& zvf = ref_cast_non_const(Zone_VF, pb_->equation(0).inconnue().zone_dis_base());
+  const Zone_dis_base& zdb = pb_->equation(0).zone_dis().valeur();
+  Zone_VF& zvf = ref_cast_non_const(Zone_VF, zdb);
   const int is_uniforme = sub_type(Champ_Uniforme,porosites_champ.valeur());
 
   // update porosite_elem
-  // TODO : FIXME : on suppose que le champ est aux elems ... faut generaliser et utiliser affecter ...
   DoubleVect& porosite_elem = zvf.porosite_elem();
   if (!is_uniforme)
     {
@@ -354,6 +378,7 @@ void Milieu_base::update_porosity_values()
       else
         porosite_face(face) = porosite_elem(elem2);
     }
+  porosite_face.echange_espace_virtuel();
 }
 
 void Milieu_base::mettre_a_jour(double temps)
@@ -377,9 +402,15 @@ void Milieu_base::mettre_a_jour(double temps)
 
   if (rho_cp_comme_T_.non_nul()) update_rho_cp(temps);
 
+  mettre_a_jour_porosite(temps); // pour F5 !
+}
+
+// methode utile pour F5 ! F5 n'appelle pas Milieu_base::mettre_a_jour mais Milieu_base::mettre_a_jour_porosite ...
+void Milieu_base::mettre_a_jour_porosite(double temps)
+{
   if (porosites_champ.non_nul())
     {
-      update_porosity_values();
+      if (sub_type(Champ_late_input_P0, porosites_champ.valeur())) update_porosity_values();
       porosites_champ.mettre_a_jour(temps);
     }
 }
@@ -495,13 +526,18 @@ int Milieu_base::initialiser(const double temps)
 
   if (rho_cp_comme_T_.non_nul()) update_rho_cp(temps);
 
+  return initialiser_porosite(temps);
+}
+
+// methode utile pour F5 ! F5 n'appelle pas Milieu_base::initialiser mais Milieu_base::initialiser_porosite ...
+int Milieu_base::initialiser_porosite(const double temps)
+{
   // TODO : XXX : a voir si ICoCo ? faut l'initialiser dans le main ?
   if (porosites_champ.non_nul())
     {
       update_porosity_values();
       porosites_champ.initialiser(temps);
     }
-
   return 1;
 }
 
