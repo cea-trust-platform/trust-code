@@ -462,7 +462,7 @@ bool Milieu_base::initTimeStep(double dt)
 void Milieu_base::creer_alpha()
 {
   if (Process::je_suis_maitre())
-    Cerr << que_suis_je() << "Milieu_base::creer_alpha" << finl;
+    Cerr << "Milieu_base::creer_alpha (champ non lu)" << finl;
   assert(lambda.non_nul());
   assert(rho.non_nul());
   assert(Cp.non_nul());

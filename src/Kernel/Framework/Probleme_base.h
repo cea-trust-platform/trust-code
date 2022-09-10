@@ -16,26 +16,25 @@
 #ifndef Probleme_base_included
 #define Probleme_base_included
 
-#include <Probleme_U.h>
-#include <Ref_IntVect.h>
+#include <List_Ref_Loi_Fermeture_base.h>
+#include <Deriv_Sortie_Fichier_base.h>
+#include <Champs_compris_interface.h>
 #include <Ref_Schema_Temps_base.h>
-#include <Domaine_dis.h>
+#include <List_Ref_Field_base.h>
 #include <Discretisation.h>
 #include <Postraitements.h>
-#include <Champs_compris_interface.h>
-#include <List_Ref_Field_base.h>
-#include <Deriv_Sortie_Fichier_base.h>
-#include <List_Ref_Loi_Fermeture_base.h>
-
 #include <Sortie_Brute.h>
+#include <Ref_IntVect.h>
+#include <Domaine_dis.h>
+#include <Probleme_U.h>
+#include <Milieu.h>
 
-
-class Equation_base;
-class Milieu_base;
-class Postraitement;
-class Champ_Fonc;
 class Champ_Generique_base;
 class EcrFicPartageBin;
+class Equation_base;
+class Postraitement;
+class Champ_Fonc;
+
 /*! @brief classe Probleme_base C'est un Probleme_U qui n'est pas un couplage.
  *
  *      Le role d'un Probleme_base est la resolution sur un domaine des
@@ -206,7 +205,7 @@ public:
   };
 
 protected :
-
+  Milieu le_milieu_;
   Domaine_dis le_domaine_dis;
   Postraitements les_postraitements;
   REF(Schema_Temps_base) le_schema_en_temps;

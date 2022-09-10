@@ -13,27 +13,27 @@
 *
 *****************************************************************************/
 
-#include <Probleme_base.h>
-#include <Equation.h>
-#include <Periodique.h>
+#include <Deriv_Entree_Fichier_base.h>
+#include <Champ_Gen_de_Champs_Gen.h>
 #include <Schema_Euler_Implicite.h>
-#include <Milieu_base.h>
+#include <List_Ref_Postraitement.h>
+#include <EcritureLectureSpecial.h>
+#include <Discretisation_base.h>
+#include <Loi_Fermeture_base.h>
 #include <EcrFicCollecteBin.h>
 #include <LecFicDiffuseBin.h>
-#include <EcritureLectureSpecial.h>
-#include <Postraitement.h>
-#include <Discretisation_base.h>
 #include <ICoCoExceptions.h>
-#include <stat_counters.h>
-#include <Debog.h>
-#include <List_Ref_Postraitement.h>
-#include <Champ_Gen_de_Champs_Gen.h>
 #include <communications.h>
-#include <Avanc.h>
-#include <Deriv_Entree_Fichier_base.h>
-#include <sys/stat.h>
-#include <Loi_Fermeture_base.h>
+#include <Probleme_base.h>
+#include <Postraitement.h>
+#include <stat_counters.h>
 #include <FichierHDFPar.h>
+#include <Milieu_base.h>
+#include <Periodique.h>
+#include <sys/stat.h>
+#include <Equation.h>
+#include <Debog.h>
+#include <Avanc.h>
 
 #define CHECK_ALLOCATE 0
 #ifdef CHECK_ALLOCATE
@@ -402,6 +402,7 @@ inline int version_format_sauvegarde()
  *
  *     Format:
  *      {
+ *      nom_milieu bloc de lecture d'un milieu
  *      nom_equation bloc de lecture d'une equation
  *      Postraitement bloc de lecture postraitement
  *      reprise | sauvegarde | sauvegarde_simple
@@ -436,9 +437,13 @@ Entree& Probleme_base::readOn(Entree& is)
   if (motlu != accolade_ouverte)
     {
       Cerr << "We expected { to start to read the problem" << finl;
-      exit();
+      Process::exit();
     }
 
+  // On commence par la lecture du milieu
+  is >> le_milieu_;
+
+  // On lit les equations
   lire_equations(is, motlu); //"motlu" contient le premier mot apres la lecture des equations
 
   // Si le postraitement comprend le mot, on en lit un autre...
