@@ -17,7 +17,6 @@
 #define Milieu_base_included
 
 #include <Champs_compris_interface.h>
-#include <Ref_Champ_Don_base.h>
 #include <Ref_Probleme_base.h>
 #include <Interface_blocs.h>
 #include <Champ_Inc_base.h>
@@ -84,9 +83,9 @@ public:
   virtual Champ_Don& capacite_calorifique();
   virtual const Champ_Don& beta_t() const;
   virtual Champ_Don& beta_t();
+  virtual const Champ_Don& gravite() const;
+  virtual Champ_Don& gravite();
   virtual int a_gravite() const;
-  virtual const Champ_Don_base& gravite() const;
-  virtual Champ_Don_base& gravite();
   virtual void update_rho_cp(double temps);
 
   // equations associees au milieu
@@ -108,10 +107,9 @@ public:
 
 protected:
   Champ rho; //peut etre un Champ_Don ou un Champ_Inc
-  Champ_Don alpha, lambda, Cp, beta_th, porosites_champ;
+  Champ_Don g, alpha, lambda, Cp, beta_th, porosites_champ;
   Champ_Fonc rho_cp_elem_,rho_cp_comme_T_;
   Nom nom_;
-  REF(Champ_Don_base) g;
   REF(Probleme_base) pb_;
 
   enum Type_rayo { NONRAYO, TRANSP, SEMITRANSP };

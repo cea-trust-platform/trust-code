@@ -50,7 +50,7 @@ void Terme_Boussinesq_base::associer_pb(const Probleme_base& pb)
   const Fluide_base& fluide = equation().milieu().que_suis_je() == "Milieu_composite" ? ref_cast(Milieu_composite,equation().milieu()).get_medium_for_incompressible() :
                               ref_cast(Fluide_base, equation().milieu());
 
-  la_gravite_ = fluide.gravite();
+  la_gravite_ = fluide.gravite().valeur();
 
   //this variable indicates if the beta field is valid or not
   int valid_beta_field = 0; // by default it is invalid

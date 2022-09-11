@@ -442,8 +442,10 @@ Entree& Probleme_base::readOn(Entree& is)
   is >> le_milieu_; // On commence par la lecture du milieu
   associer_milieu_base(le_milieu_.valeur()); // On l'associe a chaque equations
 
-  for (int i = 0; i < nombre_d_equations(); i++) // On discretise ...
-    equation(i).milieu().discretiser((*this), la_discretisation.valeur());
+  //  for (int i = 0; i < nombre_d_equations(); i++) // On discretise ...
+  // TODO : FIXME : on discretize le milieu de l'eq 1 seulement
+  // ca c'est fauttttttt ! constituant .... WIP
+  equation(0).milieu().discretiser((*this), la_discretisation.valeur());
 
   /* 2 : On lit les equations */
   lire_equations(is, motlu); //"motlu" contient le premier mot apres la lecture des equations

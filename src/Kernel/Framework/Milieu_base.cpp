@@ -214,7 +214,7 @@ void Milieu_base::discretiser_porosite(const Probleme_base& pb, const Discretisa
  */
 Entree& Milieu_base::readOn(Entree& is)
 {
-  Cerr<<"Reading of data for a "<<que_suis_je()<<" medium"<<finl;
+  Cerr << "Reading of data for a " << que_suis_je() << " medium" << finl;
   Param param(que_suis_je());
   set_param(param);
   param.lire_avec_accolades_depuis(is);
@@ -224,17 +224,18 @@ Entree& Milieu_base::readOn(Entree& is)
 
 void Milieu_base::set_param(Param& param)
 {
-  param.ajouter("rho",&rho);
-  param.ajouter("lambda",&lambda);
-  param.ajouter("Cp",&Cp);
-  param.ajouter("beta_th",&beta_th);
+  param.ajouter("rho", &rho);
+  param.ajouter("lambda", &lambda);
+  param.ajouter("Cp", &Cp);
+  param.ajouter("beta_th", &beta_th);
+  param.ajouter("gravite", &g);
   set_param_porosite(param);
 }
 
 // methode utile pour F5 ! F5 n'appelle pas Milieu_base::set_param mais Milieu_base::set_param_porosite ...
 void Milieu_base::set_param_porosite(Param& param)
 {
-  param.ajouter("porosites_champ",&porosites_champ);
+  param.ajouter("porosites_champ", &porosites_champ);
 }
 
 int Milieu_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
@@ -272,6 +273,14 @@ void Milieu_base::creer_champs_non_lus()
 {
   if (rho.non_nul() && lambda.non_nul() && Cp.non_nul())
     creer_alpha();
+
+  /* je teste la gravite ici ... */
+  if (g.non_nul())
+    if(Objet_U::dimension != g->nb_comp())
+      {
+        Cerr << "The dimension is " << Objet_U::dimension << " and you create a gravity vector with " << g->nb_comp() << " components." << finl;
+        Process::exit();
+      }
 }
 
 /*! @brief Associe la gravite en controlant dynamiquement le type de l'objet a associer.
@@ -284,16 +293,7 @@ void Milieu_base::creer_champs_non_lus()
  */
 int Milieu_base::associer_(Objet_U& ob)
 {
-  if (sub_type(Champ_Don_base,ob))
-    {
-      associer_gravite(ref_cast(Champ_Don_base, ob));
-      return 1;
-    }
-  if (sub_type(Champ_Don,ob))
-    {
-      associer_gravite(ref_cast(Champ_Don, ob).valeur());
-      return 1;
-    }
+  throw;
   return 0;
 }
 
@@ -303,13 +303,7 @@ int Milieu_base::associer_(Objet_U& ob)
  */
 void Milieu_base::associer_gravite(const Champ_Don_base& la_gravite)
 {
-  // On verifie que la gravite est de la bonne dimension
-  if (Objet_U::dimension!=la_gravite.nb_comp())
-    {
-      Cerr << "The dimension is " << Objet_U::dimension << " and you create a gravity vector with " << la_gravite.nb_comp() << " components." << finl;
-      exit();
-    }
-  g = la_gravite;
+  throw;
 }
 
 /*! @brief Calcul de alpha=lambda/(rho*Cp).
@@ -477,32 +471,30 @@ void Milieu_base::creer_alpha()
  * @return (Champ_Don_base&) le champ representant la gravite du milieu
  * @throws pas de gravite associee au milieu
  */
-const Champ_Don_base& Milieu_base::gravite() const
+const Champ_Don& Milieu_base::gravite() const
 {
-  if (g.non_nul())
-    return g.valeur();
-  else
+  if (!g.non_nul())
     {
       Cerr << "The gravity has not been associated with the medium" << finl;
-      exit();
+      Process::exit();
     }
-  return g.valeur(); // pour les compilateurs
+
+  return g;
 }
 
 /*! @brief Renvoie la gravite du milieu si elle a ete associe provoque une erreur sinon.
  *
  * @return (Champ_Don_base&) le champ representant la gravite du milieu
  */
-Champ_Don_base& Milieu_base::gravite()
+Champ_Don& Milieu_base::gravite()
 {
-  if (g.non_nul())
-    return g.valeur();
-  else
+  if (!g.non_nul())
     {
       Cerr << "The gravity has not been associated with the medium" << finl;
-      exit();
+      Process::exit();
     }
-  return g.valeur(); // pour les compilateurs
+
+  return g;
 }
 
 int Milieu_base::initialiser(const double temps)
@@ -647,11 +639,7 @@ Champ_Don& Milieu_base::beta_t()
  */
 int Milieu_base::a_gravite() const
 {
-  if (g.non_nul())
-    {
-      return 1;
-    }
-  return 0;
+  return g.non_nul() ? 1 : 0;
 }
 
 int Milieu_base::is_rayo_semi_transp() const

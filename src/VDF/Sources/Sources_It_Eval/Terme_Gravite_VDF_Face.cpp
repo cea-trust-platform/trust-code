@@ -40,7 +40,7 @@ void Terme_Gravite_VDF_Face::associer_zones(const Zone_dis& zone_dis, const Zone
 void Terme_Gravite_VDF_Face::associer_pb(const Probleme_base& pb)
 {
   const Milieu_base& le_milieu = pb.milieu();
-  const Champ_Don_base& la_gravite = le_milieu.gravite();
+  const Champ_Don_base& la_gravite = le_milieu.gravite().valeur();
   associer_gravite(la_gravite);
 }
 
