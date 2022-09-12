@@ -257,8 +257,10 @@ class Visu:
 
                 ficPlot.write('SetTimeSliderState(cycle0)\n')
 
-                #if (plot[1].split('.')[-1]=="case"):
-                if (directname):
+                if (plot[1].split('.')[-1]=="case"):
+                    ficPlot.write('ok=AddPlot(\"%s\",\"%s\")\n'%(dico_plots[plot[0]],plot[2]))
+                    decal=2
+                elif (directname):
                     field, loc, dom = FileAccumulator.ParseDirectName(plot[2])
                     FileAccumulator.AppendVisuComplex(plot[1], dom, field, loc, self.cycles)  # file / domaine / field / localisation
                     ficPlot.write('ok=AddPlot(\"%s\",\"%s\")\n'%(dico_plots[plot[0]],plot[2]))

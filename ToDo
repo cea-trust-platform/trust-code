@@ -1,4 +1,5 @@
 Version	Qui				Tache
+1.9.1   trust@cea.fr            correction xmax dans Octree_Double.cpp, cf mail de Luc. nb : ce fichier existe a 2 endroits : dans outils et dans src
 1.9.1   trust@cea.fr            empecher d'installer TRUST sur home titania
 1.9.1   trust@cea.fr            mise a jour tuto utilisateur/dev avec jupyter
 1.9.1   pierre.ledac@cea.fr	VisIt sur Ubuntu 22
