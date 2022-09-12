@@ -28,6 +28,7 @@ Sortie& Frottement_interfacial_Tomiyama::printOn(Sortie& os) const
 Entree& Frottement_interfacial_Tomiyama::readOn(Entree& is)
 {
   Param param(que_suis_je());
+  param.ajouter("beta", &beta_);
   param.ajouter("constante_gravitation", &g_);
   param.ajouter("contamination", &contamination_);
   param.lire_avec_accolades_depuis(is);
@@ -68,11 +69,11 @@ void Frottement_interfacial_Tomiyama::coefficient(const DoubleTab& alpha, const 
         double Re = rho(n_l) * ndv(n_l,k) * d_bulles(k)/mu(n_l) + 1.e-10;
         double Eo = g_ * std::abs(rho(n_l)-rho(k)) * d_bulles(k)*d_bulles(k)/sigma(n_l,k);
         double Cd = -1;
-        if (contamination_==0) Cd = std::max( std::min( 16./Re*(1+0.15*std::pow(Re, 0.687)) , 48./Re )   , 8.*Eo/(3.*(Eo+4.)));
-        if (contamination_==1) Cd = std::max( std::min( 24./Re*(1+0.15*std::pow(Re, 0.687)) , 72./Re )   , 8.*Eo/(3.*(Eo+4.)));
-        if (contamination_==2) Cd = std::max(           24./Re*(1+0.15*std::pow(Re, 0.687))              , 8.*Eo/(3.*(Eo+4.)));
+        if (contamination_==0) Cd = beta_ * std::max( std::min( 16./Re*(1+0.15*std::pow(Re, 0.687)) , 48./Re )   , 8.*Eo/(3.*(Eo+4.)));
+        if (contamination_==1) Cd = beta_ * std::max( std::min( 24./Re*(1+0.15*std::pow(Re, 0.687)) , 72./Re )   , 8.*Eo/(3.*(Eo+4.)));
+        if (contamination_==2) Cd = beta_ * std::max(           24./Re*(1+0.15*std::pow(Re, 0.687))              , 8.*Eo/(3.*(Eo+4.)));
 
-        coeff(k, n_l, 1) = alpha(n_l) < 1.e-6 ? 3./4.*Cd/d_bulles(k) * alpha(k) * rho(n_l) * alpha(n_l) * 1.e6
+        coeff(k, n_l, 1) = (alpha(n_l) < 1.e-6) ? 3./4.*Cd/d_bulles(k) * alpha(k) * rho(n_l) * alpha(n_l) * 1.e6
                            : 3./4.*Cd/d_bulles(k) * alpha(k) * rho(n_l);
         coeff(k, n_l, 0) = coeff(k, n_l, 1) * ndv(n_l,k);
         coeff(n_l, k, 0) = coeff(k, n_l, 0);
@@ -97,9 +98,9 @@ void Frottement_interfacial_Tomiyama::coefficient_CD(const DoubleTab& alpha, con
         double Re = rho(n_l) * ndv(n_l,k) * d_bulles(k)/mu(n_l) + 1.e-10;
         double Eo = g_ * std::abs(rho(n_l)-rho(k)) * d_bulles(k)*d_bulles(k)/sigma(n_l,k);
         double Cd = -1;
-        if (contamination_==0) Cd = std::max( std::min( 16./Re*(1+0.15*std::pow(Re, 0.687)) , 48./Re )   , 8.*Eo/(3.*(Eo+4.)));
-        if (contamination_==1) Cd = std::max( std::min( 24./Re*(1+0.15*std::pow(Re, 0.687)) , 72./Re )   , 8.*Eo/(3.*(Eo+4.)));
-        if (contamination_==2) Cd = std::max(           24./Re*(1+0.15*std::pow(Re, 0.687))              , 8.*Eo/(3.*(Eo+4.)));
+        if (contamination_==0) Cd = beta_ * std::max( std::min( 16./Re*(1+0.15*std::pow(Re, 0.687)) , 48./Re )   , 8.*Eo/(3.*(Eo+4.)));
+        if (contamination_==1) Cd = beta_ * std::max( std::min( 24./Re*(1+0.15*std::pow(Re, 0.687)) , 72./Re )   , 8.*Eo/(3.*(Eo+4.)));
+        if (contamination_==2) Cd = beta_ * std::max(           24./Re*(1+0.15*std::pow(Re, 0.687))              , 8.*Eo/(3.*(Eo+4.)));
 
         coeff(k, n_l) = (coeff(n_l, k) = Cd);
       }

@@ -48,6 +48,7 @@ public :
 private:
   Correlation correlation_; //correlation donnant le coeff de portance interfaciale
   int n_l = -1; //phase liquide
+  double beta_ = 1. ; // To adjust the force in .data
 
 };
 

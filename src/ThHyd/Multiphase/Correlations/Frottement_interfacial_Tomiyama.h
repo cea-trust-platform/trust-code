@@ -38,6 +38,7 @@ public:
 
 protected:
   double g_=9.81;
+  double beta_ = 1.;
   int contamination_ = 0 ; // contamination 0 for pure system, 1 for moderate contamination, 2 for high contamination
   int n_l = -1; //liquid phase
 };

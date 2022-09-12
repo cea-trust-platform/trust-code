@@ -48,6 +48,7 @@ public :
 private:
   Correlation correlation_; //correlation donnant le coeff de dispersion turbulente
   int is_turb = 0;
+  double beta_ = 1.; // To adjust the force in .data
 };
 
 #endif

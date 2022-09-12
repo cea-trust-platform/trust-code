@@ -35,6 +35,10 @@ Sortie& Portance_interfaciale_PolyMAC_P0::printOn(Sortie& os) const
 
 Entree& Portance_interfaciale_PolyMAC_P0::readOn(Entree& is)
 {
+  Param param(que_suis_je());
+  param.ajouter("beta", &beta_);
+  param.lire_avec_accolades_depuis(is);
+
   Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
 
   if (!pbm || pbm->nb_phases() == 1) Process::exit(que_suis_je() + " : not needed for single-phase flow!");
@@ -100,7 +104,7 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
         for (l = 0; l < N; l++) dv(k, l) = std::max(ch.v_norm(pvit, pvit, e, -1, k, l, NULL, &ddv(k, l, 0)), dv_min);
       correlation_pi.coefficient(a_l, p_l, T_l, rho_l, mu_l, sigma_l, dv, e, coeff);
 
-      fac_e = pe(e) * ve(e);
+      fac_e = beta_*pe(e) * ve(e);
 
       if (D==2)
         {
@@ -119,7 +123,7 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
               if (fcl(f, 0) < 2)
                 {
                   c = (e == f_e(f,0)) ? 0 : 1 ;
-                  fac_f = pf(f) * vf(f);
+                  fac_f = beta_*pf(f) * vf(f);
                   for (k = 0; k < N; k++)
                     if (k!= n_l) // gas phase
                       {
@@ -151,7 +155,7 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
               if (fcl(f, 0) < 2)
                 {
                   c = (e == f_e(f,0)) ? 0 : 1 ;
-                  fac_f = pf(f) * vf(f);
+                  fac_f = beta_*pf(f) * vf(f);
                   for (k = 0; k < N; k++)
                     if (k!= n_l) // gas phase
                       {

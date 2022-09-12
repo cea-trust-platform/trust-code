@@ -39,6 +39,10 @@ Sortie& Dispersion_bulles_PolyMAC_P0::printOn(Sortie& os) const
 
 Entree& Dispersion_bulles_PolyMAC_P0::readOn(Entree& is)
 {
+  Param param(que_suis_je());
+  param.ajouter("beta", &beta_);
+  param.lire_avec_accolades_depuis(is);
+
   Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
 
   if (!pbm || pbm->nb_phases() == 1) Process::exit(que_suis_je() + " : not needed for single-phase flow!");
@@ -197,7 +201,7 @@ void Dispersion_bulles_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
           for (int l = 0; l < N; l++)
             if (k != l)
               {
-                double fac = pf(f) * vf(f);
+                double fac = beta_*pf(f) * vf(f);
                 secmem(f, k) += fac * ( - coeff(k, l, 0) * grad_f_a(f, k) + coeff(l, k, 0) * grad_f_a(f, l));
 //                if (mat) for (int j = 0; j < 2; j++)
 //                    (*mat)(N * f + k, N * f + (j ? l : k)) -= fac * (j ? -1 : 1) * ( - coeff(k, l, 1) * grad_f_a(f, k) + coeff(l, k, 1) * grad_f_a(f, l)) * ddv(k, l, 3);
@@ -233,7 +237,7 @@ void Dispersion_bulles_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
           for (int l = 0; l < N; l++)
             if (k != l)
               {
-                double fac = pe(e) * ve(e);
+                double fac = beta_*pe(e) * ve(e);
                 secmem(i, k) += fac * ( - coeff(k, l, 0) * grad_f_a(i, k) + coeff(l, k, 0) * grad_f_a(i, l));
 //                if (mat) for (int j = 0; j < 2; j++)
 //                    (*mat)(N * i + k, N * i + l) -= fac * (j ? -1 : 1) * ( - coeff(k, l, 1) * grad_f_a(i, k) + coeff(l, k, 1) * grad_f_a(i, l)) * ddv(k, l, d);
