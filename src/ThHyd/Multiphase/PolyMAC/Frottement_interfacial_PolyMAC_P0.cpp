@@ -21,6 +21,7 @@
 #include <Array_tools.h>
 #include <Matrix_tools.h>
 #include <Pb_Multiphase.h>
+#include <QDM_Multiphase.h>
 #include <Champ_Uniforme.h>
 #include <Frottement_interfacial_base.h>
 
@@ -36,10 +37,25 @@ Sortie& Frottement_interfacial_PolyMAC_P0::printOn(Sortie& os) const
 
 Entree& Frottement_interfacial_PolyMAC_P0::readOn(Entree& is)
 {
+  Param param(que_suis_je());
+  param.ajouter("a_res", &a_res_);
+  param.ajouter("dv_min", &dv_min);
+  param.ajouter("exp_res", &exp_res);
+  param.lire_avec_accolades_depuis(is);
+
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
   if (pbm.has_correlation("frottement_interfacial")) correlation_ = pbm.get_correlation("frottement_interfacial"); //correlation fournie par le bloc correlation
   else correlation_.typer_lire(pbm, "frottement_interfacial", is); //sinon -> on la lit
   return is;
+}
+
+void Frottement_interfacial_PolyMAC_P0::completer()
+{
+  if (a_res_ < 1.e-12)
+    {
+      a_res_ = ref_cast(QDM_Multiphase, equation()).alpha_res();
+      a_res_ = std::max(1.e-4, a_res_*100.);
+    }
 }
 
 void Frottement_interfacial_PolyMAC_P0::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
@@ -94,9 +110,9 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
   DoubleTab const * d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").valeurs() : NULL ;
 
   int e, f, c, i, j, k, l, n, N = inco.line_size(), Np = press.line_size(), d, D = dimension, nf_tot = zone.nb_faces_tot(),
-                              cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), exp_res = 2;
+                              cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1);
   DoubleTrav a_l(N), p_l(N), T_l(N), rho_l(N), mu_l(N), sigma_l(N,N), dv(N, N), ddv(N, N, 4), ddv_c(4), d_bulles_l(N), coeff(N, N, 2); //arguments pour coeff
-  double dv_min = 0.1, dh, a_res = 1e-2;
+  double dh;
   const Frottement_interfacial_base& correlation_fi = ref_cast(Frottement_interfacial_base, correlation_.valeur());
 
   /* faces */
@@ -132,7 +148,7 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
         for (k = 0; k < N; k++)
           for (l = 0; l < N; l++)
             for (j = 0; j < 2; j++)
-              coeff(k, l, j) *= 1 + (a_l(k) > 1e-8 ? std::pow(a_l(k) / a_res, -exp_res) : 0) + (a_l(l) > 1e-8 ? std::pow(a_l(l) / a_res, -exp_res) : 0);
+              coeff(k, l, j) *= 1 + (a_l(k) > 1e-8 ? std::pow(a_l(k) / a_res_, -exp_res) : 0) + (a_l(l) > 1e-8 ? std::pow(a_l(l) / a_res_, -exp_res) : 0);
 
         /* contributions : on prend le max entre les deux cotes */
         for (k = 0; k < N; k++)
@@ -175,7 +191,7 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
       for (k = 0; k < N; k++)
         for (l = 0; l < N; l++)
           for (j = 0; j < 2; j++)
-            coeff(k, l, j) *= 1 + (a_l(k) > 1e-8 ? std::pow(a_l(k) / a_res, -exp_res) : 0) + (a_l(l) > 1e-8 ? std::pow(a_l(l) / a_res, -exp_res) : 0);
+            coeff(k, l, j) *= 1 + (a_l(k) > 1e-8 ? std::pow(a_l(k) / a_res_, -exp_res) : 0) + (a_l(l) > 1e-8 ? std::pow(a_l(l) / a_res_, -exp_res) : 0);
 
       for (d = 0, i = nf_tot + D * e; d < D; d++, i++)
         for (k = 0; k < N; k++)

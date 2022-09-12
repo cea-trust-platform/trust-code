@@ -375,3 +375,12 @@ void QDM_Multiphase::update_y_plus(const DoubleTab& tab)
     for (int i = 0 ; i < tab_y_p.dimension_tot(0) ; i++)
       for (int n = 0 ; n < tab_y_p.dimension_tot(1) ; n++) tab_y_p(i,n) = tab(i,0,n);
 }
+
+double QDM_Multiphase::alpha_res() const
+{
+  const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, probleme());
+  if (pb.nb_phases() == 1) return 0.;
+  if (!evanescence.non_nul()) Process::exit( "QDM_Multiphase::alpha_res : the evanescence operator should have been created already !" );
+  if sub_type(Operateur_Evanescence_base, evanescence.valeur()) return ref_cast(Operateur_Evanescence_base, evanescence.valeur()).alpha_res();
+  return -1.;
+}

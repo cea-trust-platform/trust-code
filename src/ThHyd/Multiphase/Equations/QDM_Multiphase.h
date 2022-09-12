@@ -71,6 +71,7 @@ public :
   void creer_champ(const Motcle& motlu) override;
 
   void update_y_plus(const DoubleTab& tab) ;
+  double alpha_res() const ;
 
 protected:
   Entree& lire_cond_init(Entree&) override; //pour lire la pression

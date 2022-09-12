@@ -41,8 +41,13 @@ public :
   void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override { };
   void associer_pb(const Probleme_base& ) override { };
   void mettre_a_jour(double temps) override { };
+  void completer() override;
+
 private:
   Correlation correlation_; //correlation donnant le coeff de frottement interfacial
+  double a_res_ = -1.;
+  double dv_min = 0.01;
+  int exp_res = 2 ;
 };
 
 #endif
