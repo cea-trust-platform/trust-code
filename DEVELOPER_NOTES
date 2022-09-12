@@ -1,9 +1,9 @@
-XX/XX/22 (TRUST) Add option -enable-rocalution to TRUST configure to build rocALUTION solvers for GPU AMD cards (need ROCm 5.x recent environment)
-XX/XX/22 (TRUST) Build with clang compilers (need to be rebuilt to enable OpenMP offload on GPU cards) is supported (no compute capability minimum)
-XX/XX/22 (TRUST) Build with NVidia HPC SDK compilers is supported with -openmp -cuda configure options. Need a recent NVidia GPU card (compute capability>=7.0)
 -------------------------------------------------------------
 Developer notes version 1.9.1_beta : Changes since version 1.9.0 :
 -------------------------------------------------------------
+12/09/22 (TRUST) Add option -enable-rocalution to TRUST configure to build rocALUTION solvers for GPU AMD cards (need ROCm 5.x recent environment)
+12/09/22 (TRUST) Build with clang compilers (need to be rebuilt to enable OpenMP offload on GPU cards) is supported (no compute capability minimum)
+12/09/22 (TRUST) Build with NVidia HPC SDK compilers is supported with -openmp -cuda configure options. Need a recent NVidia GPU card (compute capability>=7.0)
 06/09/22 (TRUST) ArrOfFloat, FloatVect, FloatTab and FloatTrav follow the template arch.
 31/08/22 (TRUST) No more DX sources in TRUST. Outils/lata2dx is clean now and renamed as Outils/lata_tools.
 30/08/22 (TRUST) Source documentation can be converted to standard Doxygen format using command: python Outils/triou2doxygen/trust_doc.py <fichier_in> <fichier_out>
