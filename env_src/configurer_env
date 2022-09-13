@@ -621,11 +621,14 @@ define_modules_config
 if [ -f configure.env ]
 then
    echo "TRUST_WITHOUT_HOST=$TRUST_WITHOUT_HOST && export TRUST_WITHOUT_HOST	# Disable/enable reading of HOST file"	>> configure.env
-   [ "$TRUST_WITHOUT_HOST" = 0 ] && TRUST_DISABLE_JUPYTER=1
+   if [ "${HOST#irene}" != $HOST ] || [ "${HOST#topaze}" != $HOST ]
+   then
+       TRUST_DISABLE_JUPYTER=1 # sur CCRT, jupyter desactive car ~30k inodes
+   fi
    # TRUST_DISABLE_CHECK_SRC=1 sur clusters (machine de production parfois lente a compiler):
    [ "$TRUST_WITHOUT_HOST" = 0 ] && TRUST_DISABLE_CHECK_SRC=1
    echo "TRUST_DISABLE_CHECK_SRC=$TRUST_DISABLE_CHECK_SRC && export TRUST_DISABLE_CHECK_SRC # No check sources before compiling `[ "$TRUST_WITHOUT_HOST" = 0 ] && echo since TRUST_WITHOUT_HOST=0`" >> configure.env
-   echo "TRUST_DISABLE_JUPYTER=$TRUST_DISABLE_JUPYTER && export TRUST_DISABLE_JUPYTER  # disable jupyter build`[ "$TRUST_WITHOUT_HOST" = 0 ] && echo since TRUST_WITHOUT_HOST=0`." >> configure.env
+   echo "TRUST_DISABLE_JUPYTER=$TRUST_DISABLE_JUPYTER && export TRUST_DISABLE_JUPYTER  # disable jupyter build." >> configure.env
    . ./configure.env
 fi
 
@@ -866,20 +869,22 @@ fi
 # Adding utility package 'trustutils' in PYTHONPATH
 echo "export PYTHONPATH=\$TRUST_ROOT/Outils/TRUST_STATS_JUPYTER:\$PYTHONPATH" >> $env
 
-# Disable autosave in jupyter
-jupyter_config_js=$TRUST_ROOT/exec/python/lib/python3.7/site-packages/notebook/static/custom/custom.js
-if [ "$TRUST_DISABLE_JUPYTER" != 1 ] && [ -f $jupyter_config_js ] && [ "`grep 'Jupyter.notebook.set_autosave_interval(0)' $jupyter_config_js 2>/dev/null`" = "" ]
+if [ "$TRUST_DISABLE_JUPYTER" != 1 ]
 then
-   echo "Disabling autosave in jupyter-notebook"
-   echo "Jupyter.notebook.set_autosave_interval(0); // disable autosave" >> $jupyter_config_js
-fi
+   # Disable autosave in jupyter
+   jupyter_config_js=$TRUST_ROOT/exec/python/lib/python3.7/site-packages/notebook/static/custom/custom.js
+   if [ -f $jupyter_config_js ] && [ "`grep 'Jupyter.notebook.set_autosave_interval(0)' $jupyter_config_js 2>/dev/null`" = "" ]
+   then
+      echo "Disabling autosave in jupyter-notebook"
+      echo "Jupyter.notebook.set_autosave_interval(0); // disable autosave" >> $jupyter_config_js
+   fi
 
-# Install pre_save hook for Jupyter notebook
-jupyter_nb_exe=$TRUST_ROOT/exec/python/bin/jupyter-notebook
-if [ "$TRUST_DISABLE_JUPYTER" != 1 ] && [ "`grep 'sys.argv.append' $jupyter_nb_exe 2>/dev/null`" = "" ]
-then
-   echo "Installing pre_save hook in jupyter-notebook"
-   s="
+   # Install pre_save hook for Jupyter notebook
+   jupyter_nb_exe=$TRUST_ROOT/exec/python/bin/jupyter-notebook
+   if [ "`grep 'sys.argv.append' $jupyter_nb_exe 2>/dev/null`" = "" ]
+   then
+      echo "Installing pre_save hook in jupyter-notebook"
+      s="
     import os
     tr=os.environ['TRUST_ROOT']
     s=os.path.join(tr, 'env_src', 'jupyter_notebook_config.py')
@@ -888,16 +893,31 @@ then
 
     sys.exit(main())
 "
-   $TRUST_Awk -v r="$s" '{gsub(/sys.exit\(main\(\)\)/,r)}1' $jupyter_nb_exe > jupyter-notebook_tmp
-   cat jupyter-notebook_tmp > $jupyter_nb_exe
-   rm -f jupyter-notebook_tmp
-fi
+      $TRUST_Awk -v r="$s" '{gsub(/sys.exit\(main\(\)\)/,r)}1' $jupyter_nb_exe > jupyter-notebook_tmp
+      cat jupyter-notebook_tmp > $jupyter_nb_exe
+      rm -f jupyter-notebook_tmp
+   fi
 
-# Increase number of attemp when connecting to Jupyter Kernel (to avoid exception: "zmq.error.ZMQError: Address already in use"
-jy_kernel_app=$TRUST_ROOT/exec/python/lib/python3.7/site-packages/ipykernel/kernelapp.py
-if [ "$TRUST_DISABLE_JUPYTER" != 1 ] && [ -f $jy_kernel_app ]
-then
-    sed -i "s@max_attempts = 1 if port else 100@max_attempts = 100 if port else 100@" $jy_kernel_app
+   # Increase number of attemp when connecting to Jupyter Kernel (to avoid exception: "zmq.error.ZMQError: Address already in use"
+   jy_kernel_app=$TRUST_ROOT/exec/python/lib/python3.7/site-packages/ipykernel/kernelapp.py
+   if [ -f $jy_kernel_app ]
+   then
+      sed -i "s@max_attempts = 1 if port else 100@max_attempts = 100 if port else 100@" $jy_kernel_app
+   fi
+
+   # Allow to move install
+   jy_nbconvert=$TRUST_ROOT/exec/python/bin/jupyter-nbconvert
+   if [ "`grep "/usr/bin/env" $jy_nbconvert 2>/dev/null`" = "" ]
+   then
+      sed -i "s@$TRUST_ROOT/exec/python/bin/python@/usr/bin/env python@" $jy_nbconvert
+   fi
+
+   # Allow to move install
+   jy_kernel=$TRUST_ROOT/exec/python/share/jupyter/kernels/python3/kernel.json
+   if [ "`grep "/usr/bin/env" $jy_kernel 2>/dev/null`" = "" ]
+   then
+      sed -i "s@$TRUST_ROOT/exec/python/bin/python@/usr/bin/env\",\n  \"python@" $jy_kernel
+   fi
 fi
 
 ####################
@@ -1401,7 +1421,7 @@ then
 fi
 # ld from conda does not recognize openmpi configuration on TGCC and Fed36
 rm_compiler_compat=0 && [ "`grep 'Fedora release 36' /etc/fedora-release 2>/dev/null`" != "" ] && rm_compiler_compat=1
-if [ "${HOST#irene}" != $HOST ] || [ "${HOST#jean-zay}" != $HOST ] || [ "${HOST_BUILD#jean-zay}" != $HOST ] || [ "${HOST#topaze}" != $HOST ] || [ "$rm_compiler_compat" = 1 ]
+if [ "${HOST#irene}" != $HOST ] || [ "${HOST#jean-zay}" != $HOST ] || [ "${HOST#topaze}" != $HOST ] || [ "$rm_compiler_compat" = 1 ]
 then
    rm -rf $TRUST_ROOT/exec/python/compiler_compat && echo "We remove ld from conda on $HOST ..."
 fi
