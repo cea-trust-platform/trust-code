@@ -421,7 +421,7 @@
  Hexa_VEF Hexa_VEF Hexa_VEF.h
  h_conv_Champ_P1NC h_conv_Champ_P1NC h_conv_Champ_P1NC.h
  ICE ICE SETS.h
- ILU ILU ILU.h
+ ILU ILU_SP ILU_SP.h
  Implicite Implicite Piso.h
  Imprimer_flux Imprimer_flux Imprimer_flux.h
  Imprimer_flux_sum Imprimer_flux_sum Imprimer_flux_sum.h
@@ -972,6 +972,7 @@
  Solveur_U_P Solveur_U_P Solveur_U_P.h
  Solv_AMGX Solv_AMGX Solv_AMGX.h
  Solv_Cholesky Solv_Cholesky Solv_Cholesky.h
+ Solv_Externe Solv_Externe Solv_Externe.h
  Solv_GCP Solv_GCP Solv_GCP.h
  Solv_GCP_NS Solv_GCP_NS Solv_GCP_NS.h
  Solv_Gen Solv_Gen Solv_Gen.h

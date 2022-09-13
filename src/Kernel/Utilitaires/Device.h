@@ -42,7 +42,11 @@ inline void end_timer(const std::string& str, int size) // Return in [ms]
     {
       double ms = Statistiques::get_time_now() - clock_start;
       int mo = size/1024/1024;
+#ifndef INT_is_64_
       printf("[clock] %7.3f ms %15s %6d Mo %4.1f Go/s\n", ms ,str.c_str(), mo, mo/ms);
+#else
+      printf("[clock] %7.3f ms %15s %6ld Mo %4.1f Go/s\n", ms ,str.c_str(), mo, mo/ms);
+#endif
       fflush(stdout);
     }
 }
