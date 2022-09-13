@@ -341,7 +341,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
       Champ_P1NC::calcul_gradient(transporte_face,gradient_elem,zone_Cl_VEF);
     }
   DoubleTab gradient;
-  int cas;
+  int cas=1;
   if (type_lim_int==type_lim_minmod) cas=1;
   if (type_lim_int==type_lim_vanleer) cas=2;
   if (type_lim_int==type_lim_vanalbada) cas=3;
