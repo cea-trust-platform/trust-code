@@ -38,7 +38,8 @@ public:
 protected:
   double beta = 0.5;
   int n_l = -1; //liquid phase
-  int inj_ajoutee_ = 1;
+  double inj_ajoutee_liquide_ = 1.;
+  double inj_ajoutee_gaz_ = 1.;
 };
 
 #endif

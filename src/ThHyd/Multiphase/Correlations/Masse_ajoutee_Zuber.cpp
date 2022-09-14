@@ -27,7 +27,8 @@ Entree& Masse_ajoutee_Zuber::readOn(Entree& is)
 {
   Param param(que_suis_je());
   param.ajouter("beta", &beta);
-  param.ajouter("inj_ajoutee", &inj_ajoutee_);
+  param.ajouter("inj_ajoutee_liquide", &inj_ajoutee_liquide_);
+  param.ajouter("inj_ajoutee_gaz", &inj_ajoutee_gaz_);
   param.lire_avec_accolades_depuis(is);
 
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, pb_.valeur()) ? &ref_cast(Pb_Multiphase, pb_.valeur()) : NULL;
@@ -63,9 +64,9 @@ void Masse_ajoutee_Zuber::ajouter_inj(const double *flux_alpha, const double *al
       {
         double coeff_loc = beta * ( 1 + 2*alpha[k]) / std::max( alpha[n_l], 1.e-3 );
         double flux_ma = (alpha[k] < 1.e-3) ? coeff_loc * rho[n_l] * flux_alpha[k] : std::min(coeff_loc * rho[n_l] * flux_alpha[k], limiter_liquid_ * rho[n_l] * alpha[n_l] * flux_alpha[k] / alpha[k]) ;
-        f_a_r(k,  k ) += (inj_ajoutee_>0) ? flux_ma :0. ;
-        f_a_r(k, n_l) -= 0. ;
-        f_a_r(n_l,n_l)+= 0. ;
-        f_a_r(n_l, k) -= (inj_ajoutee_>1) ?flux_ma :0. ;  // test !
+        f_a_r(k,  k ) += inj_ajoutee_gaz_ * flux_ma ;
+        f_a_r(k, n_l) -= 0.;
+        f_a_r(n_l,n_l)+= 0.;
+        f_a_r(n_l, k) -= inj_ajoutee_liquide_ * flux_ma ; //beta * rho[n_l] * flux_alpha[k];
       }
 }
