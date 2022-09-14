@@ -38,7 +38,8 @@ int Champ_Fonc_Face_PolyMAC::fixer_nb_valeurs_nodales(int n)
   // Probleme: nb_comp vaut 2 mais on ne veut qu'une dimension !!!
   // HACK :
   int old_nb_compo = nb_compo_;
-  nb_compo_ = 1;
+  if(nb_compo_ >= dimension) nb_compo_ /= dimension;
+
   creer_tableau_distribue(md);
   nb_compo_ = old_nb_compo;
   return n;
@@ -102,63 +103,76 @@ double Champ_Fonc_Face_PolyMAC::valeur_a_elem_compo(const DoubleVect& position, 
   throw;
 }
 
-DoubleTab& Champ_Fonc_Face_PolyMAC::valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val) const
+
+void Champ_Fonc_Face_PolyMAC::interp_valeurs_elem(const DoubleTab& inco, DoubleTab& val) const
 {
-  const Champ_base& cha = le_champ();
-  int nb_compo = cha.nb_comp();
-  if (val.nb_dim() == 1)
+  const Domaine_PolyMAC& domaine = ref_cast(Domaine_PolyMAC,domaine_vf());
+  const DoubleTab& xv = domaine.xv(), &xp = domaine.xp();
+  const DoubleVect& fs = domaine.face_surfaces(), &ve = domaine.volumes();
+  const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
+  int e, f, j, d, D = dimension, n, N = inco.line_size();
+  assert(val.line_size() == N * D);
+
+  val = 0;
+  for (e = 0; e < val.dimension(0); e++)
     {
-      assert((val.dimension(0) == les_polys.size()) || (val.dimension_tot(0) == les_polys.size()));
-      assert(nb_compo == 1);
+      for (n = 0; n < N * D; n++) val(e, n) = 0;
+      for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
+        for (d = 0; d < D; d++)
+          for (n = 0; n < N; n++)
+            val(e, N * d + n) += fs(f) / ve(e) * (xv(f, d) - xp(e, d)) * (e == f_e(f, 0) ? 1 : -1) * inco(f, n);
     }
-  else if (val.nb_dim() == 2)
+}
+
+DoubleTab& Champ_Fonc_Face_PolyMAC::valeur_aux_elems(const DoubleTab& positions,
+                                                     const IntVect& les_polys,
+                                                     DoubleTab& val) const
+{
+  const Champ_base& cha=le_champ();
+  const Domaine_PolyMAC& domaine_VF = ref_cast(Domaine_PolyMAC, domaine_vf());
+  int nb_compo=cha.nb_comp(), N = cha.valeurs().line_size(), D = dimension, nf_tot = domaine_VF.nb_faces_tot();
+  assert(val.line_size() == nb_compo );
+  // XXX : TODO Check this assert (positions and not val)
+  assert((positions.dimension(0) == les_polys.size())||(positions.dimension_tot(0) == les_polys.size()));
+  assert((val.dimension(0) == les_polys.size())||(val.dimension_tot(0) == les_polys.size()));
+  assert((cha.valeurs().dimension_tot(0)==nf_tot+D*domaine_VF.nb_elem_tot())||(cha.valeurs().dimension_tot(0)==nf_tot));
+
+  if (val.nb_dim() > 2) Process::exit(que_suis_je() + "Le DoubleTab val a plus de 2 entrees");
+  if (nb_compo == 1) Process::exit("TRUST error in Champ_Fonc_Face_PolyMAC::valeur_aux_elems : A scalar field cannot be of Champ_Face type !");
+
+  DoubleTab ve(0, N * D);
+
+  if (cha.valeurs().dimension_tot(0)==nf_tot)
     {
-      assert((val.dimension(0) == les_polys.size()) || (val.dimension_tot(0) == les_polys.size()));
-      assert(val.dimension(1) == nb_compo);
+      domaine_VF.domaine().creer_tableau_elements(ve);
+      interp_valeurs_elem(cha.valeurs(), ve);
+      for (int p = 0; p < les_polys.size(); p++)
+        for (int r = 0, e = les_polys(p); e < domaine_VF.nb_elem() && r < N * D; r++)
+          val(p, r) = (e==-1) ? 0. : ve(e, r);
     }
-  else
-    Process::exit("TRUST error in Champ_Fonc_Face_PolyMAC::valeur_aux_elems() : The DoubleTab val has more than 2 entries !");
+  else if (cha.valeurs().dimension_tot(0)==nf_tot+D*domaine_VF.nb_elem_tot())
+    for (int p = 0; p < les_polys.size(); p++)
+      for (int e = les_polys(p), d = 0; e < domaine_VF.nb_elem() && d < D; d++)
+        for (int n = 0; n < N; n++)
+          val(p, N * d + n) = cha.valeurs()(nf_tot + D * e + d, n);
+  else Process::exit("TRUST error in Champ_Fonc_Face_PolyMAC::valeur_aux_elems : curious number of faces !");
 
-  const Domaine_VF& domaine_VF = ref_cast(Domaine_VF, domaine_vf());
-  const DoubleTab& normales = domaine_VF.face_normales();
-  const IntTab& elem_faces = domaine_VF.elem_faces();
+  return val;
+}
 
-  const DoubleTab& ch = cha.valeurs();
+DoubleTab& Champ_Fonc_Face_PolyMAC::valeur_aux_faces(DoubleTab& val) const
+{
+  const Champ_base& cha=le_champ();
+  int nb_compo=cha.nb_comp(), n, N = cha.valeurs().line_size(), d, D = dimension;
 
-  if (nb_compo == 1)
-    Process::exit("TRUST error in Champ_Fonc_Face_PolyMAC::valeur_aux_elems : A scalar field cannot be of Champ_Face type !");
-  else // (nb_compo != 1)
-    {
-      ArrOfDouble vale(nb_compo), s(nb_compo);
-      for (int rang_poly = 0; rang_poly < les_polys.size(); rang_poly++)
-        {
-          int le_poly = les_polys(rang_poly);
-          if (le_poly == -1)
-            for (int ncomp = 0; ncomp < nb_compo; ncomp++)
-              val(rang_poly, ncomp) = 0;
-          else
-            {
-              vale = 0;
-              s = 0;
-              int nb_faces_elem_max = elem_faces.dimension(1);
+  if (nb_compo == 1) Process::exit("TRUST error in Champ_Fonc_Face_PolyMAC::valeur_aux_faces : A scalar field cannot be of Champ_Face type !");
 
-              for (int nf = 0; nf < nb_faces_elem_max; nf++)
-                {
-                  int face = elem_faces(le_poly, nf);
-                  if (face < 0)
-                    break;
-                  for (int ncomp = 0; ncomp < nb_compo; ncomp++)
-                    {
-                      vale[ncomp] += ch(face) * std::fabs(normales(face, ncomp));
-                      s[ncomp] += std::fabs(normales(face, ncomp));
-                    }
-                }
+  const Domaine_VF& domaine = domaine_vf();
+  val.resize(domaine.nb_faces(), N * D);
 
-              for (int ncomp = 0; ncomp < nb_compo; ncomp++)
-                val(rang_poly, ncomp) = vale[ncomp] / s[ncomp];
-            }
-        }
-    }
+  for (int f = 0; f < domaine.nb_faces(); f++)
+    for (d = 0; d < D; d++)
+      for (n = 0; n < N; n++) val(f, N * d + n) = cha.valeurs()(f, n) * domaine.face_normales(f, d) / domaine.face_surfaces(f);
   return val;
 }
 

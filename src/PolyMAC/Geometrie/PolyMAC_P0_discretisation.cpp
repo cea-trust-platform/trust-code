@@ -125,3 +125,30 @@ void PolyMAC_P0_discretisation::creer_champ_vorticite(const Schema_Temps_base& s
   ch_rot_u.fixer_unite("s-1");
   ch_rot_u.changer_temps(-1); // so it is calculated at time 0
 }
+
+void PolyMAC_P0_discretisation::residu( const Domaine_dis& z, const Champ_Inc& ch_inco, Champ_Fonc& champ ) const
+{
+  Nom ch_name(ch_inco.le_nom());
+  ch_name += "_residu";
+  Cerr << "Discretization of " << ch_name << finl;
+
+  Nom type_ch = ch_inco.valeur().que_suis_je();
+  if (type_ch.debute_par("Champ_Face"))
+    {
+      Motcle loc = "champ_face";
+      Noms nom(1), unites(1);
+      nom[0] = ch_name;
+      unites[0] = "units_not_defined";
+      int nb_comp = ch_inco.valeurs().line_size()*dimension;
+
+      discretiser_champ(loc,z.valeur(), vectoriel, nom ,unites,nb_comp,ch_inco.temps(),champ);
+
+      Champ_Fonc_base& ch_fonc = ref_cast(Champ_Fonc_base,champ.valeur());
+      DoubleTab& tab=ch_fonc.valeurs();
+      tab = -10000.0 ;
+      Cerr << "[Information] Discretisation_base::residu : the residue is set to -10000.0 at initial time" <<finl;
+    }
+
+  else
+    PolyMAC_discretisation::residu(z, ch_inco, champ);
+}
