@@ -438,14 +438,19 @@ Entree& Probleme_base::readOn(Entree& is)
       Process::exit();
     }
 
-  /* 1 : milieu */
-  is >> le_milieu_; // On commence par la lecture du milieu
-  associer_milieu_base(le_milieu_.valeur()); // On l'associe a chaque equations
+  if (!via_associer() && !is_pb_multiphase() && !is_pb_med() )
+    {
+      /* 1 : milieu */
+      is >> le_milieu_; // On commence par la lecture du milieu
+      associer_milieu_base(le_milieu_.valeur()); // On l'associe a chaque equations
 
-  //  for (int i = 0; i < nombre_d_equations(); i++) // On discretise ...
-  // TODO : FIXME : on discretize le milieu de l'eq 1 seulement
-  // ca c'est fauttttttt ! constituant .... WIP
-  equation(0).milieu().discretiser((*this), la_discretisation.valeur());
+      //  for (int i = 0; i < nombre_d_equations(); i++) // On discretise ...
+      // TODO : FIXME : on discretize le milieu de l'eq 1 seulement
+      // ca c'est fauttttttt ! constituant .... WIP
+      equation(0).milieu().discretiser((*this), la_discretisation.valeur());
+    }
+  else
+    assert(!le_milieu_.non_nul());
 
   /* 2 : On lit les equations */
   lire_equations(is, motlu); //"motlu" contient le premier mot apres la lecture des equations
@@ -736,6 +741,30 @@ void Probleme_base::associer()
     equation(i).associer_pb_base(*this);
 }
 
+void Probleme_base::warn_old_syntax()
+{
+  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+  Cerr << finl;
+  Cerr << "*** ATTENTION *** YOU ARE USING THE OLD SYNTAX OF A DATA FILE :-( :-( :-( " << finl;
+  Cerr << "*** ATTENTION *** STARTING FROM TRUST-V1.9.3 : THE MEDIUM SHOULD BE READ INSIDE THE PROBLEM AND NOT VIA ASSOSCIER ... " << finl;
+  Cerr << "*** ATTENTION *** STARTING FROM TRUST-V1.9.3 : THIS OLD SYNTAX WILL NOT BE SUPPORTED ANYMORE ... " << finl;
+  Cerr << "*** ATTENTION *** HAVE A LOOK TO ANY TRUST TEST CASE TO SEE HOW IT SHOULD BE DONE ($TRUST_ROOT/tests/)  ... " << finl;
+  Cerr << finl;
+  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+  Cerr << finl;
+//  throw;
+}
+
 /*! @brief surcharge Objet_U::associer_(Objet_U& ob) Associe differents objets au probleme en controlant
  *
  *      le type de l'objet a associer a l'execution.
@@ -762,6 +791,9 @@ int Probleme_base::associer_(Objet_U& ob)
     }
   if( sub_type(Milieu_base, ob))
     {
+      warn_old_syntax();
+      via_associer_ = true;
+      warn_old_syntax();
       if (!ref_cast(Milieu_base, ob).est_deja_associe())
         return 2;
       associer_milieu_base(ref_cast(Milieu_base, ob));
@@ -843,6 +875,29 @@ void Probleme_base::discretiser(const Discretisation_base& une_discretisation)
     {
       equation(i).associer_zone_dis(domaine_dis().zone_dis(0));
       equation(i).discretiser();
+
+      if (via_associer() || is_pb_multiphase() ) // remontee de l'inconnue vers le milieu
+        equation(i).associer_milieu_equation();
+    }
+
+  if (via_associer() || is_pb_multiphase() )
+    {
+      // Discretisation du milieu:
+      //   ATTENTION (BM): il faudra faire quelque chose ici car si on associe deux
+      //   milieux au probleme (fluide_incompressible + constituant), seul
+      //   le premier est discretise. Cette facon de faire n'est pas propre !
+      //   Solution probable: gros nettoyage et on met le milieu dans le probleme
+      // Elie Saikali : MERCI BENOIT !!!!
+      Noms milieux_deja_discretises;
+      for(int i=0; i<nombre_d_equations(); i++)
+        {
+          const Nom& le_milieu = equation(i).milieu().que_suis_je();
+          if (!milieux_deja_discretises.contient_(le_milieu))
+            {
+              equation(i).milieu().discretiser((*this),une_discretisation);
+              milieux_deja_discretises.add(le_milieu);
+            }
+        }
     }
 
   LIST_CURSEUR(REF(Loi_Fermeture_base)) curseur = liste_loi_fermeture_;

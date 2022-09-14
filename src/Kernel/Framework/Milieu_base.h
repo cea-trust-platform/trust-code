@@ -17,6 +17,7 @@
 #define Milieu_base_included
 
 #include <Champs_compris_interface.h>
+#include <Ref_Champ_Don_base.h>
 #include <Ref_Probleme_base.h>
 #include <Interface_blocs.h>
 #include <Champ_Inc_base.h>
@@ -83,8 +84,8 @@ public:
   virtual Champ_Don& capacite_calorifique();
   virtual const Champ_Don& beta_t() const;
   virtual Champ_Don& beta_t();
-  virtual const Champ_Don& gravite() const;
-  virtual Champ_Don& gravite();
+  virtual const Champ_Don_base& gravite() const;
+  virtual Champ_Don_base& gravite();
   virtual int a_gravite() const;
   virtual void update_rho_cp(double temps);
 
@@ -106,6 +107,19 @@ public:
   int id_composite = -1;
 
 protected:
+  // ***************************************************************************
+  // TODO : XXX:  TEMPORAIRE : on accepte pour le momemnt l'ancienne syntaxe,
+  // i.e. typer_lire xxxx milieu, associer, typer_lire_grav, associer xxxx , ...
+  // a voir plus tard quand ca devient absolete
+
+  bool via_associer_ = false;
+  inline bool g_via_associer() { return via_associer_; }
+  void warn_old_syntax();
+  REF(Champ_Don_base) g_via_associer_;
+
+  // FIN partie TEMPORAIRE
+  // ***************************************************************************
+
   Champ rho; //peut etre un Champ_Don ou un Champ_Inc
   Champ_Don g, alpha, lambda, Cp, beta_th, porosites_champ;
   Champ_Fonc rho_cp_elem_,rho_cp_comme_T_;

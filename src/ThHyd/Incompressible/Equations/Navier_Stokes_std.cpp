@@ -1424,7 +1424,7 @@ void  Navier_Stokes_std::calculer_pression_hydrostatique(Champ_base& pression_hy
       Cerr<<"postprocessing of presion_hydrostatique availabe only for incompressible flow"<<finl;
       exit();
     }
-  const DoubleTab& gravite = milieu().gravite()->valeurs();
+  const DoubleTab& gravite = milieu().gravite().valeurs();
 
   val=rho.valeurs()(0,0);
   const int nb_som=val.dimension(0);

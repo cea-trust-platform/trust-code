@@ -182,6 +182,20 @@ public:
   int get_coupled() const { return coupled_; }
 
 protected :
+  // ***************************************************************************
+  // TODO : XXX:  TEMPORAIRE : on accepte pour le momemnt l'ancienne syntaxe,
+  // i.e. typer_lire xxxx milieu, associer, typer_lire_grav, associer xxxx , ...
+  // a voir plus tard quand ca devient absolete
+
+  bool via_associer_ = false;
+  inline bool via_associer() { return via_associer_; }
+  void warn_old_syntax();
+  inline bool is_pb_multiphase() { return (que_suis_je() == "Pb_Multiphase" || que_suis_je() == "Pb_HEM") ? true : false ; }
+  inline bool is_pb_med() { return (que_suis_je() == "Pb_MED" || que_suis_je() == "Pbc_MED") ? true : false ; }
+
+  // FIN partie TEMPORAIRE
+  // ***************************************************************************
+
   Milieu le_milieu_;
   Domaine_dis le_domaine_dis;
   Postraitements les_postraitements;

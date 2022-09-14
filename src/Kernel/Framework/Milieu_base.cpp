@@ -271,9 +271,6 @@ void Milieu_base::preparer_calcul()
 
 void Milieu_base::creer_champs_non_lus()
 {
-  if (rho.non_nul() && lambda.non_nul() && Cp.non_nul())
-    creer_alpha();
-
   /* je teste la gravite ici ... */
   if (g.non_nul())
     if(Objet_U::dimension != g->nb_comp())
@@ -281,6 +278,33 @@ void Milieu_base::creer_champs_non_lus()
         Cerr << "The dimension is " << Objet_U::dimension << " and you create a gravity vector with " << g->nb_comp() << " components." << finl;
         Process::exit();
       }
+
+  if (rho.non_nul() && lambda.non_nul() && Cp.non_nul())
+    creer_alpha();
+}
+
+void Milieu_base::warn_old_syntax()
+{
+  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+  Cerr << finl;
+  Cerr << "*** ATTENTION *** YOU ARE USING THE OLD SYNTAX OF A DATA FILE :-( :-( :-( " << finl;
+  Cerr << "*** ATTENTION *** STARTING FROM TRUST-V1.9.3 : THE GRAVITY SHOULD BE READ INSIDE THE MEDIUM AND NOT VIA ASSOSCIER ... " << finl;
+  Cerr << "*** ATTENTION *** STARTING FROM TRUST-V1.9.3 : THIS OLD SYNTAX WILL NOT BE SUPPORTED ANYMORE ... " << finl;
+  Cerr << "*** ATTENTION *** HAVE A LOOK TO ANY TRUST TEST CASE TO SEE HOW IT SHOULD BE DONE ($TRUST_ROOT/tests/)  ... " << finl;
+  Cerr << finl;
+  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+  Cerr << finl;
+//  throw;
 }
 
 /*! @brief Associe la gravite en controlant dynamiquement le type de l'objet a associer.
@@ -293,7 +317,22 @@ void Milieu_base::creer_champs_non_lus()
  */
 int Milieu_base::associer_(Objet_U& ob)
 {
-  throw;
+  if (sub_type(Champ_Don_base,ob))
+    {
+      warn_old_syntax();
+      via_associer_ = true;
+      warn_old_syntax();
+      associer_gravite(ref_cast(Champ_Don_base, ob));
+      return 1;
+    }
+  if (sub_type(Champ_Don,ob))
+    {
+      warn_old_syntax();
+      via_associer_ = true;
+      warn_old_syntax();
+      associer_gravite(ref_cast(Champ_Don, ob).valeur());
+      return 1;
+    }
   return 0;
 }
 
@@ -303,7 +342,20 @@ int Milieu_base::associer_(Objet_U& ob)
  */
 void Milieu_base::associer_gravite(const Champ_Don_base& la_gravite)
 {
-  throw;
+  // On verifie que la gravite est de la bonne dimension
+  if (Objet_U::dimension!=la_gravite.nb_comp())
+    {
+      Cerr << "The dimension is " << Objet_U::dimension << " and you create a gravity vector with " << la_gravite.nb_comp() << " components." << finl;
+      exit();
+    }
+  g_via_associer_ = la_gravite;
+
+  if (g_via_associer() && g.non_nul())
+    {
+      assert (g_via_associer_.non_nul());
+      Cerr << "WHAT ?? Remove the associer gravity line from your jdd because it is already in the medium !!!" << finl;
+      Process::exit();
+    }
 }
 
 /*! @brief Calcul de alpha=lambda/(rho*Cp).
@@ -380,7 +432,9 @@ void Milieu_base::mettre_a_jour(double temps)
   //Cerr << que_suis_je() << "Milieu_base::mettre_a_jour" << finl;
   if (rho.non_nul()) rho.mettre_a_jour(temps);
 
-  if (g.non_nul()) g.valeur().mettre_a_jour(temps);
+  if (g.non_nul()) g->mettre_a_jour(temps);
+
+  if (g_via_associer_.non_nul()) g_via_associer_->mettre_a_jour(temps);
 
   if (lambda.non_nul()) lambda.mettre_a_jour(temps);
 
@@ -471,30 +525,30 @@ void Milieu_base::creer_alpha()
  * @return (Champ_Don_base&) le champ representant la gravite du milieu
  * @throws pas de gravite associee au milieu
  */
-const Champ_Don& Milieu_base::gravite() const
+const Champ_Don_base& Milieu_base::gravite() const
 {
-  if (!g.non_nul())
+  if (!g.non_nul() && !g_via_associer_.non_nul())
     {
       Cerr << "The gravity has not been associated with the medium" << finl;
       Process::exit();
     }
 
-  return g;
+  return g.non_nul() ? g.valeur() : g_via_associer_.valeur();
 }
 
 /*! @brief Renvoie la gravite du milieu si elle a ete associe provoque une erreur sinon.
  *
  * @return (Champ_Don_base&) le champ representant la gravite du milieu
  */
-Champ_Don& Milieu_base::gravite()
+Champ_Don_base& Milieu_base::gravite()
 {
-  if (!g.non_nul())
+  if (!g.non_nul() && !g_via_associer_.non_nul())
     {
       Cerr << "The gravity has not been associated with the medium" << finl;
       Process::exit();
     }
 
-  return g;
+  return g.non_nul() ? g.valeur() : g_via_associer_.valeur();
 }
 
 int Milieu_base::initialiser(const double temps)
@@ -502,7 +556,9 @@ int Milieu_base::initialiser(const double temps)
   Cerr << que_suis_je() << "Milieu_base:::initialiser" << finl;
   if (sub_type(Champ_Don_base, rho.valeur())) ref_cast(Champ_Don_base, rho.valeur()).initialiser(temps);
 
-  if (g.non_nul()) g.valeur().initialiser(temps);
+  if (g.non_nul()) g->initialiser(temps);
+
+  if (g_via_associer_.non_nul()) g_via_associer_->initialiser(temps);
 
   if (lambda.non_nul()) lambda.initialiser(temps);
 
@@ -639,7 +695,7 @@ Champ_Don& Milieu_base::beta_t()
  */
 int Milieu_base::a_gravite() const
 {
-  return g.non_nul() ? 1 : 0;
+  return (g.non_nul() || g_via_associer_.non_nul()) ? 1 : 0;
 }
 
 int Milieu_base::is_rayo_semi_transp() const
