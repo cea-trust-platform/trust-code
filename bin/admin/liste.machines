@@ -11,7 +11,7 @@ linux	rsync_ssh	cible	is227246.intra.cea.fr		-all     	-MPCube -TrioCFD -IJK-FT 
 linux	git_ssh    	tache	irene-ccrt.ccc.cea.fr		-limited	-TrioCFD -IJK-FT					-semi_opt -benchmark	-without-doc -disable-plot2d 									# RedHat 7.6	CEA CCRT
 linux	rsync_ssh	tache	altair-nvidia.intra.cea.fr	-all		-TrioCFD				-openmp -force_system_mpi	-disable-vc -disable-petsc -disable-mpi4py
 linux	rsync_ssh	tache	pegasi2-nvidia.intra.cea.fr	-all		-TrioCFD				-cuda -openmp -force_system_mpi	-disable-vc -disable-petsc -disable-mpi4py
-linux	rsync_ssh	tache	is246139.intra.cea.fr		-all		-TrioCFD				-cuda -openmp -force_system_mpi	-disable-vc -disable-mpi4py				# Ubuntu 20	Bat 451 LGLS bureau Luc L.
+linux	rsync_ssh	tache	is246139-gpu.intra.cea.fr	-all		-TrioCFD				-cuda -openmp -force_system_mpi	-disable-vc -disable-mpi4py				# Ubuntu 20	Bat 451 LGLS bureau Luc L.
 linux	rsync_ssh	cible	is210376.intra.cea.fr		-all     	-MPCube -TrioCFD -IJK-FT -GENEPI3 -SIDES -SCORPIO -STT -PEMFC  -force_latest_mpich  							# Fedora 34	Bat 454
 linux	rsync_ssh	tache	is212957.intra.cea.fr		-all		-MPCube -TrioCFD -FLICA5 -C3D -GENEPI3 -TrioMC	-gcov		-force_provided_mpich -without-pdflatex 								# Ubuntu 16	Bat 451 LMEC	bureau TMA FLICA4
 linux	git_ssh    	tache	irene-ccrt.ccc.cea.fr		-limited	-TrioCFD					-semi_opt -benchmark	-without-doc -disable-plot2d 									# RedHat 7.6	CEA CCRT
@@ -25,8 +25,8 @@ linux	git_ssh 	tache	desactive-topaze-gpu.ccc.cea.fr				-TrioCFD -IJK-FT 				-cu
 linux	rsync_ssh	tache	jean-zay.idris.fr   		-limited	-TrioCFD -IJK-FT           						-benchmark -without-doc -disable-plot2d -without-visit                					# RedHat 8.1
 linux	rsync_ssh	tache	jean-zay-gpu.idris.fr   			-TrioCFD -IJK-FT         			-cuda 		-without-doc -disable-plot2d -without-visit                					# RedHat 8.1
 linux	rsync_ssh	tache	jean-zay-build64.idris.fr   -limited	-TrioCFD -IJK-FT          		 		-build_64_bit -without-doc -disable-plot2d -without-visit                					# RedHat 8.1
-linux	rsync_ssh	tache	orcus-intel.intra.cea.fr	-limited	-TrioCFD -IJK-FT -STT -PEMFC -FLICA5    				-without-doc -disable-plot2d 		-benchmark 								# CentOS 7.6	CEA Saclay
-linux	rsync_ssh	tache	orcus-amd.intra.cea.fr		-limited	-TrioCFD -IJK-FT -FLICA5   					-without-doc -without-visit -disable-plot2d 	-benchmark 								# CentOS 7.6	CEA Saclay
+linux	rsync_ssh	tache	orcus-intel.intra.cea.fr	-limited	-TrioCFD -IJK-FT -STT -PEMFC -FLICA5    				 -disable-plot2d 		-benchmark 								# CentOS 7.6	CEA Saclay
+linux	rsync_ssh	tache	orcus-amd.intra.cea.fr		-limited	-TrioCFD -IJK-FT -FLICA5   					 -without-visit -disable-plot2d 	-benchmark 								# CentOS 7.6	CEA Saclay
 linux	rsync_ssh	tache	orcus-amd-build64.intra.cea.fr		-limited	-TrioCFD -IJK-FT   				-build_64_bit -without-doc -without-visit -disable-plot2d		 								# CentOS 7.6	CEA Saclay
 linux	rsync_ssh	tache	orcus-amd-gpu.intra.cea.fr			-TrioCFD -IJK-FT  					-cuda										# CentOS 7.6	CEA Saclay
 linux	rsync_ssh	tache	mezel.intra.cea.fr	-limited	    				-without-doc -disable-plot2d 	 								# Redhat 8.5	CEA Cad
@@ -42,7 +42,8 @@ linux	rsync_ssh	tache	is232971.intra.cea.fr				-TRUST -MPCube -PAREX+  -GENEPI3	
 linux	rsync_ssh	non	is226423.intra.cea.fr		-all		-GENEPI3 -IJK-FT 			-g		-force_provided_mpich -download-visit -without-pdflatex -disable-vc 						# Ubuntu 20 titania	Bat 451 LMSF	bureau Michel Filippi
 linux	rsync_ssh	non	is221710.intra.cea.fr			-TRUST -MPCube -GENEPI3 				-force_provided_mpich -without-pdflatex 								# Fedora 24	Bat 454	LMEC	bureau Marc Elmo
 linux	rsync_ssh	non	is224594-clang.intra.cea.fr			-GENEPI3 -IJK-FT -TrioMC -FLICA5 -C3D 		-clang		-force_provided_openmpi								# Fedora 30	Bat 454 LMEC	bureau Yannick Gorsse
-linux	rsync_ssh	non	is233137-seq.intra.cea.fr				-FLICA5 -C3D 						-disable-mpi 			 -without-pdflatex -without-visit 						# Fedora 34	Bat 451 LMSF titania 	bureau Guillaume Bois
+linux	rsync_ssh	non	is233137-seq.intra.cea.fr				-FLICA5 -C3D 						-disable-mpi 			 -without-pdflatex -without-visit 						# Fedora 34	Bat 451 LMSF titania 	bureau Guillaume B.
+linux	rsync_ssh	non	is233137.intra.cea.fr				-TrioCFD -IJK-FT  						 			 -without-pdflatex -without-visit 						# Fedora 34	Bat 451 LMSF titania 	bureau Guillaume B.
 linux	rsync_ssh	non	is226423-clang.intra.cea.fr			-MPCube						-clang	-force_provided_openmpi -without-visit -without-pdflatex 							# Ubuntu 20 	Bat 451 LMSF	bureau Michel Filippi
 linux	rsync_ssh	non	is212915.intra.cea.fr				-TrioCFD -IJK-FT -SIDES -SCORPIO -STT -PEMFC -C3D  				-g 		-force_provided_mpich	-without-pdflatex					# CentOS 7.9	Bat 451 LMSF	bureau Michel Filippi
 linux	rsync_ssh	non	is154709.intra.cea.fr		-all		-GENEPI3 -FLICA5 -C3D  							-disable-mpi -without-pdflatex							# CentOS 7.9	Bat 451	LGLS	salle de formation5
