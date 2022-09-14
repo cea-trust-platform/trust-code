@@ -341,12 +341,6 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
       Champ_P1NC::calcul_gradient(transporte_face,gradient_elem,zone_Cl_VEF);
     }
   DoubleTab gradient;
-  int cas=1;
-  if (type_lim_int==type_lim_minmod) cas=1;
-  if (type_lim_int==type_lim_vanleer) cas=2;
-  if (type_lim_int==type_lim_vanalbada) cas=3;
-  if (type_lim_int==type_lim_chakravarthy) cas=4;
-  if (type_lim_int==type_lim_superbee) cas=5;
 
   double * gradient_addr = NULL;
   if (type_op==centre)
@@ -356,6 +350,12 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
     }
   else if(type_op==muscl)
     {
+      int cas=1;
+      if (type_lim_int==type_lim_minmod) cas=1;
+      if (type_lim_int==type_lim_vanleer) cas=2;
+      if (type_lim_int==type_lim_vanalbada) cas=3;
+      if (type_lim_int==type_lim_chakravarthy) cas=4;
+      if (type_lim_int==type_lim_superbee) cas=5;
       //  application du limiteur
       gradient.resize(0, ncomp_ch_transporte, dimension);     // (du/dx du/dy dv/dx dv/dy) pour une face
       zone_VEF.creer_tableau_faces(gradient);
