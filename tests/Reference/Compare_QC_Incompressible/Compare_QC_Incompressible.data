@@ -87,20 +87,19 @@ Read sch
     seuil_statio 1.e-8
     precision_impr 5
 }
-Fluide_Incompressible fluide
-Read fluide
-{
-    mu      	Champ_Uniforme 1 1.983e-5
-    rho     	Champ_Uniforme 1 1.177
-}
-
 Associate pb dom
 Associate pb sch
-Associate pb fluide
 Discretize pb dis
 Read pb
 {
-    Navier_Stokes_Standard
+       
+fluide_incompressible {
+     mu      	Champ_Uniforme 1 1.983e-5
+    rho     	Champ_Uniforme 1 1.177
+}
+
+
+Navier_Stokes_Standard
     {
         solveur_pression petsc cholesky { }
         convection { Amont }
@@ -136,3 +135,4 @@ Read pb
 }
 Solve pb
 End
+ 

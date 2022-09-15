@@ -56,11 +56,17 @@ Read sch
     facsec 0.5
 }
 
-Fluide_Quasi_Compressible fluide
-Read fluide
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+Read pb
+{
+Fluide_Quasi_Compressible
 {
     pression 100000.
     traitement_pth CONSERVATION_MASSE
+    gravite Champ_Uniforme 3 0. -9.81 0.
 
     loi_etat binaire_gaz_parfait_QC
     {
@@ -77,17 +83,6 @@ Read fluide
     }
 }
 
-Champ_Uniforme gravite
-Read gravite 3 0. -9.81 0.
-
-Associate fluide gravite
-Associate pb dom
-Associate pb sch
-Associate pb fluide
-Discretize pb dis
-
-Read pb
-{
     Navier_Stokes_QC
     {
         solveur_pression petsc Cholesky {  }

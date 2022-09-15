@@ -57,25 +57,23 @@ Read sch
 
 }
 
-Solide sol
-Read sol
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+Read pb
 {
-    rho    Champ_uniforme  1 1.0
+       
+solide {
+     rho    Champ_uniforme  1 1.0
     /* lambda    Champ_uniforme  1 1.0
       Cp    Champ_uniforme  1 1.0  */
     lambda Champ_fonc_txyz dom 1   sin(t)*sin(x)+1.5
     Cp     Champ_fonc_txyz dom 1   sin(t)*sin(x)+2.0
 
 }
-Associate pb dom
-Associate pb sch
-Associate pb sol
 
-Discretize pb dis
-
-Read pb
-{
-    Conduction
+Conduction
     {
         diffusion { }
         initial_conditions {
@@ -111,3 +109,4 @@ Read pb
 Solve pb
 
 End
+ 

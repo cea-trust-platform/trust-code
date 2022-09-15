@@ -20,19 +20,8 @@ mailler  dom_fluide
 }
 
 
-fluide_incompressible  mil_fluide
-lire  mil_fluide
-{
-    mu       champ_uniforme  1  50.0
-    rho      champ_uniforme  1  2000.0
-}
-
-
 pb_hydraulique  pb_fluide
 associate  pb_fluide  dom_fluide
-associate  pb_fluide  mil_fluide
-
-
 schema_euler_implicite  sch
 lire  sch
 {
@@ -57,7 +46,15 @@ discretize  pb_fluide  dis
 read  pb_fluide
 {
 
-    navier_stokes_standard
+       
+fluide_incompressible {
+     mu       champ_uniforme  1  50.0
+    rho      champ_uniforme  1  2000.0
+}
+
+
+
+navier_stokes_standard
     {
         solveur_pression  petsc  cholesky  { }
         convection  { amont }
@@ -89,3 +86,4 @@ solve  pb_fluide
 
 
 end
+ 

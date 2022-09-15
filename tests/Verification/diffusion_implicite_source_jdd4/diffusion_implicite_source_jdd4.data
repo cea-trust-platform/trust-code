@@ -64,22 +64,20 @@ Read sch
     solveur implicite { solveur gmres { diag seuil 1e-14 impr } }
 }
 
-Fluide_Incompressible eau
-Read eau
-{
-    mu Champ_Uniforme 1 0.02
-    rho Champ_Uniforme 1 2
-}
-
 Associate pb dom
 Associate pb sch
-Associate pb eau
-
 Discretize pb dis
 
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu Champ_Uniforme 1 0.02
+    rho Champ_Uniforme 1 2
+}
+
+
+Navier_Stokes_standard
     {
         solveur_pression GCP {
             precond ssor { omega 1.500000 }
@@ -121,3 +119,4 @@ Read pb
 
 Solve pb
 End
+ 

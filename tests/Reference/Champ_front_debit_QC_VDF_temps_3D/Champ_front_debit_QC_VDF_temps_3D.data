@@ -59,10 +59,16 @@ END SCATTER #
 
 VDF dis
 
-Fluide_Quasi_Compressible fluide
-Read fluide
+Associate pb dom_fluide
+Associate pb sch
+Discretize pb dis
+
+Read pb
 {
-    mu Champ_Uniforme 1 0.001
+       
+fluide_quasi_compressible {
+    gravite champ_uniforme 3 0 -9.81 0
+mu Champ_Uniforme 1 0.001
     pression 84000
     lambda Champ_Uniforme 1 1.0
     loi_etat gaz_parfait_QC
@@ -75,17 +81,8 @@ Read fluide
     Traitement_rho_gravite moins_rho_moyen
 }
 
-Champ_Uniforme gravite
-Read gravite 3 0 -9.81 0
-Associate fluide gravite
-Associate pb dom_fluide
-Associate pb fluide
-Associate pb sch
-Discretize pb dis
 
-Read pb
-{
-    Navier_Stokes_QC
+Navier_Stokes_QC
     {
         solveur_pression Petsc GCP { precond ssor { omega 1.500000 } seuil 1.e-14 impr }
         convection { amont }
@@ -139,3 +136,4 @@ Read pb
 
 Solve pb
 End
+ 

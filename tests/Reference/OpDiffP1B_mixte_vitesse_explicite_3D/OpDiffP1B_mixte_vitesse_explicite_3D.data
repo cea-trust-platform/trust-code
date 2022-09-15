@@ -60,23 +60,22 @@ Read schG
 
 VEFPreP1b cubesregu
 
-Fluide_Incompressible eau
-Read eau
-{
-    rho Champ_Uniforme 1 1.
-    mu Champ_Uniforme 1 1.
-}
 
 
 Associate pbF1 dom_pbF1
-Associate pbF1 eau
 Associate pbF1 schG
 
 Discretize pbF1 cubesregu
 
 Read pbF1
 {
-    Navier_Stokes_standard
+   
+   fluide_incompressible {
+        rho Champ_Uniforme 1 1.
+       mu Champ_Uniforme 1 1.
+   }
+   
+       Navier_Stokes_standard
     {
         solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-12 }
         convection { negligeable }
@@ -122,3 +121,4 @@ Solve pbF1
 End
 
 
+ 

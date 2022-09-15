@@ -1,6 +1,4 @@
 dimension 3
-
-Pb_hydraulique pb
 domaine dom
 
 # BEGIN MESH #

@@ -51,21 +51,21 @@ Read sch
     dt_max 1
 }
 
-Fluide_Incompressible eau
-Read eau
-{
-    mu  Champ_uniforme 1 1.
-    rho Champ_Uniforme 1 1000.
-}
 
 Associate pb dom
 Associate pb sch
-Associate pb eau
+
 
 Discretize pb dis
 
 Read pb
 {
+Fluide_Incompressible
+{
+    mu  Champ_uniforme 1 1.
+    rho Champ_Uniforme 1 1000.
+}
+
     Navier_Stokes_standard
     {
         projection_initiale 0

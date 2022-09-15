@@ -70,29 +70,25 @@ Read sch
     }
 }
 
-Fluide_Incompressible fluide
-Read fluide
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+Read pb
 {
-    mu Champ_Uniforme 1 1.85e-5
+       
+fluide_incompressible {
+    gravite champ_uniforme 3 0 -9.81 0
+
+mu Champ_Uniforme 1 1.85e-5
     rho Champ_Uniforme 1 1.17
     lambda Champ_Uniforme 1 0.0262
     Cp Champ_Uniforme 1 1006
     beta_th Champ_Uniforme 1 3.41e-3
 }
 
-Champ_Uniforme gravite
-Read gravite 3 0 -9.81 0
 
-Associate fluide gravite
-Associate pb dom
-Associate pb sch
-Associate pb fluide
-
-Discretize pb dis
-
-Read pb
-{
-    Navier_Stokes_standard
+Navier_Stokes_standard
     {
 
         solveur_pression petsc cholesky { }
@@ -138,4 +134,4 @@ Read pb
 }
 EcritureLectureSpecial 0
 Solve pb
-End
+End 

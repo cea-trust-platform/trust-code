@@ -55,8 +55,13 @@ Read sch
     seuil_statio 1.e-99
     facsec 0.5
 }
-Fluide_Weakly_Compressible fluide
-Lire fluide
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+Read pb
+{
+Fluide_Weakly_Compressible
 {
     pression_thermo   100000.
     loi_etat Multi_Gaz_Parfait_WC
@@ -69,20 +74,9 @@ Lire fluide
         cp Champ_uniforme 2 1005 1000
         Prandtl 0.71
     }
-
+gravite Champ_Uniforme 3 0. -9.81 0.
 }
 
-Champ_Uniforme gravite
-Read gravite 3 0. -9.81 0.
-
-Associate fluide gravite
-Associate pb dom
-Associate pb sch
-Associate pb fluide
-Discretize pb dis
-
-Read pb
-{
     Navier_Stokes_WC
     {
         solveur_pression Petsc Cholesky {  }

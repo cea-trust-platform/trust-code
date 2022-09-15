@@ -50,25 +50,22 @@ Read sch {
 }
 
 
-Fluide_Incompressible liquide
-Read liquide
-{
-    mu  Champ_Uniforme 1 0.001
-    rho Champ_Uniforme 1 1000.
-}
-
-
 Associate pb DOM
-Associate pb liquide
-
-
 Associate pb sch
 Discretize pb dis
 
 
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu  Champ_Uniforme 1 0.001
+    rho Champ_Uniforme 1 1000.
+}
+
+
+
+Navier_Stokes_standard
     {
         solveur_pression Gcp {
             precond ssor { omega 1.5 }
@@ -127,3 +124,4 @@ Read pb
 
 Solve pb
 End
+ 

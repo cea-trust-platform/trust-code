@@ -44,8 +44,13 @@ Read sch
 VEFPreP1B cubes
 Read cubes { P0 }
 
-Solide ceramique
-Read ceramique
+Associate pb_solide SOLIDE
+Associate pb_solide sch
+Discretize pb_solide cubes
+
+Read pb_solide
+{
+Solide
 {
 
     rho Champ_Uniforme 1 2225.
@@ -53,14 +58,6 @@ Read ceramique
     Cp Champ_Uniforme 1 6
 }
 
-Associate pb_solide SOLIDE
-Associate pb_solide ceramique
-
-Associate pb_solide sch
-Discretize pb_solide cubes
-
-Read pb_solide
-{
     Conduction
     {
         diffusion { }

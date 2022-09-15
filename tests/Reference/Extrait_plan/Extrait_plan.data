@@ -32,16 +32,9 @@ Read sch
     dt_start dt_calc
     seuil_statio 0.001
 }
-fluide_incompressible fluide
-Read fluide
-{
-    mu champ_uniforme  1 0.00054613
-    rho champ_uniforme  1 987.888
-}
 pb_hydraulique pb
 Associate pb dom
 Associate pb sch
-Associate pb fluide
 Discretize pb dis
 postraiter_domaine
 {
@@ -122,7 +115,13 @@ extraire_surface
 Postraiter_domaine { domaine in format lata fichier in }
 Read pb
 {
-    navier_stokes_standard
+       
+fluide_incompressible {
+     mu champ_uniforme  1 0.00054613
+    rho champ_uniforme  1 987.888
+}
+
+navier_stokes_standard
     {
         solveur_pression gcp
         {
@@ -329,3 +328,4 @@ integrer_champ_med
 
 # END MESH #
 End
+ 

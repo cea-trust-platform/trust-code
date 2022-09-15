@@ -32,22 +32,9 @@ Read sch_statio
     Solveur Implicite { seuil_convergence_solveur 1.e-12 }
     nb_pas_dt_max 1
 }
-uniform_field gravity
-Read gravity 3 0. 0.0 0.0
-fluide_incompressible eau
-Associate eau gravity
-Read eau
-{
-    beta_th uniform_field  1 0.00018
-    mu      uniform_field  1 1e-3
-    rho     uniform_field  1 1.
-    cp      uniform_field  1 4182.0
-    lambda  uniform_field  1 0.597
-}
 pb_hydraulique pb
 Associate pb dom
 Associate pb sch_statio
-Associate pb eau
 discretize pb dis
 
 domaine plan_1
@@ -65,7 +52,17 @@ postraiter_domaine
 
 Read pb
 {
-    Navier_stokes_standard
+       
+fluide_incompressible {
+    gravite uniform_field 3 0. 0.0 0.0
+beta_th uniform_field  1 0.00018
+    mu      uniform_field  1 1e-3
+    rho     uniform_field  1 1.
+    cp      uniform_field  1 4182.0
+    lambda  uniform_field  1 0.597
+}
+
+Navier_stokes_standard
     {
         projection_initiale 0
         solveur_pression Petsc Cholesky {  }
@@ -326,3 +323,4 @@ Read pb
 }
 solve pb
 end
+ 

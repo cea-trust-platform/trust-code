@@ -38,22 +38,20 @@ Read sch
     seuil_statio 2.7e-05
 }
 
-Fluide_Incompressible eau
-Read eau
-{
-    mu Champ_Fonc_XYZ dom 1 1.5
-    rho Champ_Uniforme 1 2.
-}
-
 Associate pb dom
 Associate pb sch
-Associate pb eau
-
 Discretize pb dis
 
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu Champ_Fonc_XYZ dom 1 1.5
+    rho Champ_Uniforme 1 2.
+}
+
+
+Navier_Stokes_standard
     {
         methode_calcul_pression_initiale avec_sources_et_operateurs
         solveur_pression GCP {
@@ -93,3 +91,4 @@ Solve pb
 
 End
 
+ 

@@ -64,11 +64,15 @@ Read sch
     dt_sauv 100
     seuil_statio 1.e-12
 }
-Fluide_Incompressible fluide
+Associate pb dom
+Associate pb sch
+Discretize pb dis
 
-Read fluide
+Read pb
 {
-    mu champ_fonc_tabule { pb temperature } 1
+       
+fluide_incompressible {
+     mu champ_fonc_tabule { pb temperature } 1
     {   2
         0        1
         2.0e-6   2.0e-3
@@ -79,15 +83,8 @@ Read fluide
     beta_th Champ_Uniforme 1 1.e-10
 }
 
-Associate pb dom
-Associate pb sch
-Associate pb fluide
 
-Discretize pb dis
-
-Read pb
-{
-    Navier_Stokes_standard
+Navier_Stokes_standard
     {
         solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-8 impr }
         convection { muscl }
@@ -166,3 +163,4 @@ Read pb
 }
 Solve pb
 End
+ 

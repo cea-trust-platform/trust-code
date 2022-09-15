@@ -57,13 +57,18 @@ Read sch
     precision_impr 10
 }
 
-Champ_Uniforme gravite
-Read gravite 2 0. 0.
+Associate pb dom
+Associate pb sch
+Discretize pb dis
 
-Fluide_Quasi_Compressible gaz
-Read gaz
+
+Read pb
 {
-    pression 100000.
+       
+fluide_quasi_compressible {
+    gravite champ_uniforme 2 0. 0.
+
+pression 100000.
     mu champ_uniforme 1 1e-6
 
     loi_etat gaz_parfait_QC {
@@ -75,17 +80,8 @@ Read gaz
 }
 
 
-Associate gaz gravite
-Associate pb dom
-Associate pb sch
-Associate pb gaz
 
-Discretize pb dis
-
-
-Read pb
-{
-    Navier_Stokes_QC
+Navier_Stokes_QC
     {
         solveur_pression Gcp {
             precond ssor { omega 1.5 }
@@ -126,3 +122,4 @@ Read pb
 
 Solve pb
 End
+ 

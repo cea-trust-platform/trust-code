@@ -51,25 +51,23 @@ Read sch
     seuil_statio 1.e-8
 }
 
-Solide sol
-Read sol
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+Read pb
 {
-    rho Champ_Uniforme 1 2
+       
+solide {
+     rho Champ_Uniforme 1 2
     lambda champ_fonc_tabule { pb temperature } 1 {
         3 0. 0.5 1.
         2. 3. 4.
     }
     Cp Champ_Uniforme 1 1
 }
-Associate pb dom
-Associate pb sch
-Associate pb sol
 
-Discretize pb dis
-
-Read pb
-{
-    Conduction
+Conduction
     {
         diffusion { }
         initial_conditions {
@@ -104,3 +102,4 @@ Read pb
 Solve pb
 
 End
+ 

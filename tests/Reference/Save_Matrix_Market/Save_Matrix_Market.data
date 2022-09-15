@@ -67,24 +67,22 @@ Read sch
     impr_extremums 1 # To check the range of unknowns #
 }
 
-Fluide_Incompressible air
-Read air
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+Read pb
 {
-    mu Champ_Uniforme       1 2.21799454e-04
+       
+fluide_incompressible {
+     mu Champ_Uniforme       1 2.21799454e-04
     rho Champ_Uniforme      1 943.112976
     lambda Champ_Uniforme   1 0.806537897
     Cp Champ_Uniforme       1 4238.62106
     beta_th Champ_Uniforme  1 8.6e-4
 }
 
-Associate pb dom
-Associate pb sch
-Associate pb air
 
-Discretize pb dis
-Read pb
-{
-    Navier_Stokes_Standard
+Navier_Stokes_Standard
     {
         solveur_pression petsc gcp { precond ssor { omega 1.6 } seuil 1.e-5 impr save_matrix_mtx_format }
         convection { muscl }
@@ -101,3 +99,4 @@ Read pb
 EcritureLectureSpecial 0
 Solve pb
 End
+ 

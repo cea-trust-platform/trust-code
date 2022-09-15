@@ -46,10 +46,15 @@ Read sch
 
 }
 
-Solide sol
-Read sol
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+Read pb
 {
-    rho Champ_Uniforme 1 2
+       
+solide {
+     rho Champ_Uniforme 1 2
     lambda Champ_Uniforme_morceaux dom 1
     {
         defaut	1.0e10  # pas plus de 1.0e38, sinon assert en debug :-) #
@@ -58,15 +63,8 @@ Read sol
     }
     Cp Champ_Uniforme 1 0.5
 }
-Associate pb dom
-Associate pb sch
-Associate pb sol
 
-Discretize pb dis
-
-Read pb
-{
-    Conduction
+Conduction
     {
         diffusion { }
         initial_conditions {
@@ -112,3 +110,4 @@ Read pb
 Solve pb
 
 End
+ 

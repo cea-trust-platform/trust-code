@@ -21,21 +21,19 @@ Read sch
     facsec 1.0
 }
 
-Fluide_Incompressible fluide
-Read fluide
-{
-    mu  Champ_Uniforme 1 1.0e-5
-    rho Champ_Uniforme 1 1.0
-}
-
 Associate pb dom
 Associate pb sch
-Associate pb fluide
 
 Discretize pb dis
 
 Read pb
 {
+Fluide_Incompressible
+{
+    mu  Champ_Uniforme 1 1.0e-5
+    rho Champ_Uniforme 1 1.0
+}
+
     Navier_Stokes_standard
     {
         solveur_pression GCP {

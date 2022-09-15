@@ -34,15 +34,6 @@ FIN DECOUPAGE #
 Scatter DOM.Zones dom
 END SCATTER #
 
-Solide sol
-Lire sol
-{
-    rho Champ_Uniforme 1 8000.
-    lambda Champ_Uniforme 1 15.
-    Cp Champ_Uniforme 1 500.
-}
-
-
 EF dis
 
 Scheme_euler_implicit schth
@@ -70,12 +61,20 @@ Lire schth
 
 Associer pbth dom
 Associer pbth schth
-Associer pbth sol
 Discretiser pbth dis
 
 Lire pbth
 {
-    Conduction
+       
+solide {
+     rho Champ_Uniforme 1 8000.
+    lambda Champ_Uniforme 1 15.
+    Cp Champ_Uniforme 1 500.
+}
+
+
+
+Conduction
     {
         diffusion { }
         conditions_initiales {
@@ -114,3 +113,4 @@ Lire pbth
 
 Resoudre pbth
 
+ 

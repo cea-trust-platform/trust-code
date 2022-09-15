@@ -69,24 +69,22 @@ Read sch
     nb_pas_dt_max 0
 }
 
-Solide sol
-Read sol
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+Read pb
 {
-    rho Champ_Uniforme 1 50
+       
+solide {
+     rho Champ_Uniforme 1 50
     lambda Champ_Uniforme 1 0.01
     Cp Champ_Uniforme 1 0.5
 }
 
 
-Associate pb dom
-Associate pb sch
-Associate pb sol
 
-Discretize pb dis
-
-Read pb
-{
-    Conduction
+Conduction
     {
         diffusion { }
         initial_conditions {
@@ -132,3 +130,4 @@ Read pb
 Solve pb
 End
 
+ 

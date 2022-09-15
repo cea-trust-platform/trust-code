@@ -63,22 +63,20 @@ Read sch
     seuil_statio 1.e-8
 }
 
-Fluide_Incompressible eau
-Read eau
-{
-    mu Champ_Uniforme 1 0.02
-    rho Champ_Uniforme 1 2
-}
-
 Associate pb dom
 Associate pb sch
-Associate pb eau
-
 Discretize pb dis
 
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu Champ_Uniforme 1 0.02
+    rho Champ_Uniforme 1 2
+}
+
+
+Navier_Stokes_standard
     {
         solveur_pression GCP {
             precond ssor { omega 1.5 }
@@ -131,3 +129,4 @@ Perte_Charge_Reguliere transversale  Y 0.005 d 0.005 CF 0.009  zone
 
 Perte_Charge_Reguliere longitudinale X 0.01 CF 0.4  zone ,
 Perte_Charge_Reguliere transversale  Y 0.005 d 0.005 CF 0.459  zone
+ 

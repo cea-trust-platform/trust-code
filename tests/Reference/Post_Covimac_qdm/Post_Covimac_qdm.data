@@ -70,19 +70,10 @@ Read theScheme
     seuil_statio 1.e-12
 }
 
-# Physical characteristcs of medium #
-Fluide_Incompressible theMedium
-Read theMedium
-{
-    mu  Uniform_Field 1 2.076e-04
-    rho Uniform_Field 1 9.410e+02
-}
 
 # Association between the different objects #
 Associate theProblem theDomain
 Associate theProblem theScheme
-Associate theProblem theMedium
-/* Associate theMedium theGravity */
 
 # Discretization of the problem #
 Discretize theProblem theDiscretization
@@ -90,6 +81,12 @@ Discretize theProblem theDiscretization
 # Problem description #
 Read theProblem
 {
+Fluide_Incompressible
+{
+    mu  Uniform_Field 1 2.076e-04
+    rho Uniform_Field 1 9.410e+02
+}
+
     # mass and momentum balance equations #
     Navier_Stokes_standard
     {

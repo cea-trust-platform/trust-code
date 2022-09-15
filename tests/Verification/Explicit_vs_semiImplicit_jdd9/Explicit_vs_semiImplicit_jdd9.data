@@ -61,24 +61,22 @@ Lire sch
     facsec 0.7
 }
 
-Fluide_Incompressible fluide
-Lire fluide
-{
-    mu Champ_Uniforme	1 1.81e-5
-    rho Champ_Uniforme	1 1.19
-}
-
 Pb_Hydraulique pb
 
 Associer pb dom
 Associer pb sch
-Associer pb fluide
-
 Discretiser pb dis
 
 Lire pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu Champ_Uniforme	1 1.81e-5
+    rho Champ_Uniforme	1 1.19
+}
+
+
+Navier_Stokes_standard
     {
         solveur_pression GCP { precond ssor { omega 1.5 } seuil 1e-9 impr }
         convection { centre }
@@ -131,3 +129,4 @@ Lire pb
 }
 Resoudre pb
 Fin
+ 

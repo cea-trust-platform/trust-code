@@ -73,9 +73,23 @@ Read sch_impl {
 
 VEFPreP1B dis
 
-Fluide_Quasi_Compressible eau
-Read eau {
-    mu Champ_Uniforme 1 0.001
+# Le Probleme #
+Pb_Thermohydraulique_QC pb
+
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+
+
+
+Read pb {
+
+       
+fluide_quasi_compressible {
+    gravite champ_uniforme 2 0 -9.81
+
+mu Champ_Uniforme 1 0.001
     pression 3.5e8
     lambda Champ_Uniforme 1 0.597
     loi_etat gaz_parfait_QC {
@@ -87,24 +101,8 @@ Read eau {
 }
 
 
-# Le Probleme #
-Pb_Thermohydraulique_QC pb
 
-Champ_Uniforme gravite
-Read gravite 2 0 -9.81
-
-Associate eau gravite
-Associate pb dom
-Associate pb sch
-Associate pb eau
-Discretize pb dis
-
-
-
-
-Read pb {
-
-    Navier_Stokes_QC {
+Navier_Stokes_QC {
         methode_calcul_pression_initiale avec_sources
         solveur_pression GCP {
             precond ssor { omega 1.5 }
@@ -178,3 +176,4 @@ Solve pb
 End
 methode_calcul_pression_initiale avec_sources
 sous_zone zone1
+ 

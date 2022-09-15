@@ -50,22 +50,20 @@ Read sch
     }
 }
 
-Solide sol
-Read sol
-{
-    rho    Champ_Uniforme 1 1.
-    lambda Champ_Uniforme 1 1.
-    Cp     Champ_Uniforme 1 1.
-}
 Associate pb dom
 Associate pb sch
-Associate pb sol
-
 Discretize pb dis
 
 Read pb
 {
-    Conduction
+       
+solide {
+     rho    Champ_Uniforme 1 1.
+    lambda Champ_Uniforme 1 1.
+    Cp     Champ_Uniforme 1 1.
+}
+
+Conduction
     {
         diffusion { }
         sources { Puissance_thermique Champ_Fonc_XYZ dom 1 2.*pi*pi*sin(pi*x)*sin(pi*y) }
@@ -110,3 +108,4 @@ Read pb
 Solve pb
 lata_to_other lml NOM_DU_CAS NOM_DU_CAS
 End
+ 

@@ -88,21 +88,7 @@ Read sch_1
     seuil_statio 1.e-12
 }
 
-Solide solide_1
-Read solide_1
-{
-    rho champ_uniforme 1  1
-    cp  champ_uniforme 1 1
-    lambda champ_uniforme 1 0.01
-}
-
-
 Associate pb_1 dom1
-Associate pb_1 solide_1
-
-
-
-
 
 #  #
 Pb_conduction pb_2
@@ -118,17 +104,9 @@ Read sch_2
     seuil_statio 1.e-12
 }
 
-Solide solide_2
-Read solide_2
-{
-    rho champ_uniforme 1  1
-    cp  champ_uniforme 1 1
-    lambda champ_uniforme 1 0.01
-}
 
 
 Associate pb_2 dom2
-Associate pb_2 solide_2
 
 
 Pb_conduction pb_3
@@ -144,17 +122,10 @@ Read sch_3
     seuil_statio 1.e-12
 }
 
-Solide solide_3
-Read solide_3
-{
-    rho champ_uniforme 1  1
-    cp  champ_uniforme 1 1
-    lambda champ_uniforme 1 0.01
-}
+
 
 
 Associate pb_3 dom3
-Associate pb_3 solide_3
 
 
 Pb_conduction pb_4
@@ -170,17 +141,10 @@ Read sch_4
     seuil_statio 1.e-12
 }
 
-Solide solide_4
-Read solide_4
-{
-    rho champ_uniforme 1  1
-    cp  champ_uniforme 1 1
-    lambda champ_uniforme 1 0.01
-}
+
 
 
 Associate pb_4 dom4
-Associate pb_4 solide_4
 
 
 
@@ -196,7 +160,12 @@ Discretize pb_4 dis
 
 Read pb_1
 {
-
+Solide
+{
+    rho champ_uniforme 1  1
+    cp  champ_uniforme 1 1
+    lambda champ_uniforme 1 0.01
+}
     Conduction
     {
         diffusion { }
@@ -236,6 +205,13 @@ Read pb_1
 Read pb_2
 {
 
+Solide
+{
+    rho champ_uniforme 1  1
+    cp  champ_uniforme 1 1
+    lambda champ_uniforme 1 0.01
+}
+
     Conduction
     {
         diffusion { }
@@ -274,7 +250,12 @@ Read pb_2
 }
 Read pb_3
 {
-
+Solide
+{
+    rho champ_uniforme 1  1
+    cp  champ_uniforme 1 1
+    lambda champ_uniforme 1 0.01
+}
     Conduction
     {
         diffusion { }
@@ -313,7 +294,12 @@ Read pb_3
 }
 Read pb_4
 {
-
+Solide
+{
+    rho champ_uniforme 1  1
+    cp  champ_uniforme 1 1
+    lambda champ_uniforme 1 0.01
+}
     Conduction
     {
         diffusion { }

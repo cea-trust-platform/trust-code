@@ -53,23 +53,21 @@ Read sch
     nb_pas_dt_max 1000
 }
 
-Fluide_Incompressible fluide
-Read fluide
-{
-    mu Champ_Uniforme 1 4.
-    rho Champ_Uniforme 1 5.
-    # Porosites_champ champ_uniforme 1 0.5 #
-}
-
 Associate pb dom
 Associate pb sch
-Associate pb fluide
-
 Discretize pb dis
 
 Read pb
 {
-    Navier_Stokes_Standard
+       
+fluide_incompressible {
+     mu Champ_Uniforme 1 4.
+    rho Champ_Uniforme 1 5.
+    # Porosites_champ champ_uniforme 1 0.5 #
+}
+
+
+Navier_Stokes_Standard
     {
         solveur_pression Gcp {
             precond ssor { omega 1.5 }
@@ -107,3 +105,4 @@ Read pb
 Solve pb
 End
 
+ 

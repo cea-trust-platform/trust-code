@@ -25,12 +25,6 @@ VDF dis
 OPTION_VDF { traitement_coins oui p_imposee_aux_faces oui }
 
 # Raffiner_isotrope dom #
-Fluide_incompressible fluide
-Lire fluide
-{
-    rho champ_uniforme 1 1.0
-    mu	champ_uniforme 1 1.0
-}
 Schema_Euler_Implicite sch
 Lire sch
 {
@@ -45,14 +39,19 @@ Lire sch
 }
 
 Associer pb dom
-Associer pb fluide
 Associer pb sch
 Discretiser pb dis
 
 Lire pb
 {
 
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     rho champ_uniforme 1 1.0
+    mu	champ_uniforme 1 1.0
+}
+
+Navier_Stokes_standard
     {
         convection { amont }
         diffusion { negligeable }
@@ -102,3 +101,4 @@ Lire pb
     }
 }
 Resoudre pb
+ 

@@ -24,17 +24,6 @@ FIN DECOUPAGE #
 Scatter DOM.Zones F4MESH
 END SCATTER #
 
-Fluide_incompressible fluide
-Lire fluide
-{
-    mu Champ_fonc_xyz F4MESH 1 1.85e-5
-    rho Champ_Uniforme 1 1.17
-}
-
-Champ_Uniforme gravite
-Lire gravite 3 0. 0. -9.81
-Associer fluide gravite
-
 VDF dis
 
 /* Schema_Euler_explicite sch
@@ -63,12 +52,19 @@ Lire sch
 
 Associer pb sch
 Associer pb F4MESH
-Associer pb fluide
 Discretiser pb dis
 Lire pb
 {
 
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+    gravite champ_uniforme 3 0. 0. -9.81
+mu Champ_fonc_xyz F4MESH 1 1.85e-5
+    rho Champ_Uniforme 1 1.17
+}
+
+
+Navier_Stokes_standard
     {
         solveur_pression petsc cholesky { }
         convection { quick }
@@ -111,3 +107,4 @@ Lire pb
 }
 Resoudre pb
 
+ 

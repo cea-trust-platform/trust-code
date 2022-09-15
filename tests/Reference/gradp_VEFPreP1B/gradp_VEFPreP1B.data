@@ -57,22 +57,20 @@ Read sch
     Nb_pas_dt_max 10
 }
 
-Fluide_Incompressible fluide
-Read fluide
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+Read pb
 {
-    mu Champ_Uniforme 1 2
+       
+fluide_incompressible {
+     mu Champ_Uniforme 1 2
     rho Champ_Uniforme 1 2
 }
 
 
-Associate pb dom
-Associate pb sch
-Associate pb fluide
 
-Discretize pb dis
-Read pb
-{
-    Navier_Stokes_standard
+Navier_Stokes_standard
     {
         solveur_pression Gcp {
             precond ssor { omega 1.5 }
@@ -116,3 +114,4 @@ Read pb
 
 Solve pb
 End
+ 

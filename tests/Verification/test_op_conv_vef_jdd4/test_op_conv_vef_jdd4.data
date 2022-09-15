@@ -58,10 +58,16 @@ Read sch_qc
 
 
 # fluide #
-Fluide_Incompressible fuilde_canal
-Read fuilde_canal
+# Association #
+Associate pb_canal dom_canal
+Associate pb_canal sch_qc
+Discretize pb_canal dis
+
+Read pb_canal
 {
-    mu Champ_uniforme 1 1.461e-6
+       
+fluide_incompressible {
+     mu Champ_uniforme 1 1.461e-6
     rho Champ_uniforme 1 1.
     lambda Champ_uniforme 1 1.
     Cp Champ_uniforme 1 1.
@@ -69,15 +75,8 @@ Read fuilde_canal
 }
 
 
-# Association #
-Associate pb_canal dom_canal
-Associate pb_canal fuilde_canal
-Associate pb_canal sch_qc
-Discretize pb_canal dis
 
-Read pb_canal
-{
-    Navier_Stokes_standard
+Navier_Stokes_standard
     {
         solveur_pression  GCP { precond ssor { omega 1.5 } seuil 1.e+14 }
         projection_initiale 0
@@ -184,3 +183,4 @@ Read pb_canal
 
 Solve pb_canal
 End
+ 

@@ -85,22 +85,21 @@ Read sch
     Precision_impr 12
 }
 
-Solide sodium_liquide_500K
-Read sodium_liquide_500K
-{
-    rho Champ_Uniforme 1 900
-    lambda Champ_Uniforme 1 80
-    Cp Champ_Uniforme 1 1334
-}
 
 Associate pb dom
 Associate pb sch
-Associate pb sodium_liquide_500K
 Discretize pb dis
 
 Read pb
 {
-    Conduction
+   
+   solide {
+        rho Champ_Uniforme 1 900
+       lambda Champ_Uniforme 1 80
+       Cp Champ_Uniforme 1 1334
+   }
+   
+       Conduction
     {
         diffusion		{ }
         initial_conditions 	{ temperature Champ_Uniforme 1 0 }
@@ -139,3 +138,4 @@ Read pb
 Solve pb
 
 End
+ 

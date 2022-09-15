@@ -50,25 +50,8 @@ Read sch
     nb_pas_dt_max 3
 }
 
-Fluide_Incompressible eau
-Read eau
-{
-    mu      Champ_Uniforme 1 0.000134
-    lambda  Champ_Uniforme 1 0.668
-    Cp      Champ_Uniforme 1 4479.
-    rho     Champ_Uniforme 1 866.
-    beta_th Champ_Uniforme 1 0.001279
-}
-
-
-Champ_Uniforme gravite
-Read gravite 2 0. -9.81
-Associate eau gravite
-
 Associate pb dom
 Associate pb sch
-Associate pb eau
-
 Discretize pb dis
 Postraiter_domaine { domaine dom format lata }
 domaine bas
@@ -86,7 +69,19 @@ extraire_surface
 postraiter_domaine { domaine surface format lata_v2 fichier surface }
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+    gravite champ_uniforme 2 0. -9.81
+mu      Champ_Uniforme 1 0.000134
+    lambda  Champ_Uniforme 1 0.668
+    Cp      Champ_Uniforme 1 4479.
+    rho     Champ_Uniforme 1 866.
+    beta_th Champ_Uniforme 1 0.001279
+}
+
+
+
+Navier_Stokes_standard
     {
         solveur_pression Gcp { precond ssor { omega 1.5 } seuil 1.e-05 impr }
         convection { ef_stab { alpha 0.5 } }
@@ -200,3 +195,4 @@ Read pb
 }
 Solve pb
 End
+ 

@@ -46,24 +46,8 @@ Read sch
 }
 
 
-Fluide_Incompressible sodium
-Read sodium
-{
-    mu Champ_Uniforme 1 .000245
-    rho Champ_Uniforme 1 840.
-    lambda Champ_Uniforme 1 66.
-    Cp champ_Uniforme 1 1270.
-    Beta_th Champ_uniforme 1 0.000276
-}
-
-
-Champ_Uniforme gravite
-Read gravite 3 0 0 -9.81
-Associate sodium gravite
-
 Pb_thermohydraulique  pb
 Associate pb interass
-Associate pb sodium
 Associate pb sch
 Discretize pb dis
 
@@ -76,7 +60,19 @@ extraire_surface { domaine coupl_extraction probleme pb avec_certains_bords 1 co
 
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+    gravite champ_uniforme 3 0 0 -9.81
+mu Champ_Uniforme 1 .000245
+    rho Champ_Uniforme 1 840.
+    lambda Champ_Uniforme 1 66.
+    Cp champ_Uniforme 1 1270.
+    Beta_th Champ_uniforme 1 0.000276
+}
+
+
+
+Navier_Stokes_standard
     {
         solveur_pression petsc gcp { precond ssor { } rtol 1.e-6 impr }
         convection { amont }
@@ -119,3 +115,4 @@ Read pb
 
 Solve pb
 End
+ 

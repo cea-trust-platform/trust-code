@@ -58,21 +58,20 @@ Read mon_schema
     seuil_statio 1.e-3
 }
 
-Fluide_Incompressible milieu
-Read milieu
-{
-    mu  Champ_Uniforme 1 0.04
-    rho Champ_Uniforme 1 2.
-}
-
 Associate pb dom
 Associate pb mon_schema
-Associate pb milieu
 Discretize pb ma_discretisation
 
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu  Champ_Uniforme 1 0.04
+    rho Champ_Uniforme 1 2.
+}
+
+
+Navier_Stokes_standard
     {
         solveur_pression petsc gcp { precond ssor { } seuil 1.e-7 impr }
         convection { muscl }
@@ -106,3 +105,4 @@ Read pb
 
 Solve pb
 End
+ 

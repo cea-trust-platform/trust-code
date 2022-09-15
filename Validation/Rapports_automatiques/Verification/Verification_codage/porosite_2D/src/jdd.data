@@ -34,22 +34,21 @@ Read sch
     solveur implicite { solveur petsc cholesky { } }
 }
 
-Fluide_Incompressible eau
-Read eau
-{
-    mu  Champ_Uniforme 1 2.5
-    rho Champ_Uniforme 1 1000
-    porosites_champ champ_fonc_xyz dom 1 1-0.5*(y>1)*(y<2)
-}
-
 Associate  pb dom
 Associate  pb sch
-Associate  pb eau
 Discretize pb dis
 
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu  Champ_Uniforme 1 2.5
+    rho Champ_Uniforme 1 1000
+    porosites_champ champ_fonc_xyz dom 1 1-0.5*(y>1)*(y<2)
+}
+
+
+Navier_Stokes_standard
     {
         solveur_pression petsc cholesky { }
         convection { amont }
@@ -112,3 +111,4 @@ Read pb
 }
 Solve pb
 End
+ 

@@ -61,22 +61,20 @@ Read sch
     facsec 0.5
     diffusion_implicite 0
 }
-Fluide_Incompressible fluide
-Read fluide
-{
-    mu Champ_Fonc_xyz	dom 1 1+cos(x)*cos(y)*cos(z)
-    rho Champ_Uniforme	1 1.
-}
-
 Pb_Hydraulique pb
 Associate pb dom
 Associate pb sch
-Associate pb fluide
-
 Discretize pb dis
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu Champ_Fonc_xyz	dom 1 1+cos(x)*cos(y)*cos(z)
+    rho Champ_Uniforme	1 1.
+}
+
+
+Navier_Stokes_standard
     {
         Solveur_Pression petsc cholesky { }
         convection { muscl }
@@ -106,3 +104,4 @@ Read pb
 }
 Solve pb
 End
+ 

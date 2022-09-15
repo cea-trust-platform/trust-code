@@ -59,10 +59,15 @@ Read sch
     seuil_statio 1.e-8
 }
 
-Fluide_Incompressible fluide
-Read fluide
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+Read pb
 {
-    mu Champ_Uniforme 1 1.
+       
+fluide_incompressible {
+     mu Champ_Uniforme 1 1.
     rho Champ_Uniforme 1 1000.
     lambda Champ_Uniforme 1 1.
     Cp Champ_Uniforme 1 1000.
@@ -70,15 +75,8 @@ Read fluide
 
 }
 
-Associate pb dom
-Associate pb sch
-Associate pb fluide
 
-Discretize pb dis
-
-Read pb
-{
-    Navier_Stokes_Standard
+Navier_Stokes_Standard
     {
         equation_non_resolue t]0
         solveur_pression petsc cholesky { }
@@ -116,3 +114,4 @@ Read pb
 
 Solve pb
 End
+ 

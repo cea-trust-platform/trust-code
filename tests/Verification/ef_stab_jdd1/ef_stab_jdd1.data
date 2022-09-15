@@ -26,22 +26,20 @@ Read sch
 
 
 
-Fluide_Incompressible fluide
-Read fluide
-{
-    mu Champ_Uniforme 1 0.01
-    rho Champ_Uniforme 1 1
-}
-
 Associate pb dom
 Associate pb sch
-Associate pb fluide
-
 Discretize pb dis
 
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu Champ_Uniforme 1 0.01
+    rho Champ_Uniforme 1 1
+}
+
+
+Navier_Stokes_standard
     {
         solveur_pression GCP {
             precond ssor { omega 1.5 }
@@ -98,3 +96,4 @@ traitement_particulier { canal {
         dt_impr_moy_spat 5.e-1
     }
 }
+ 

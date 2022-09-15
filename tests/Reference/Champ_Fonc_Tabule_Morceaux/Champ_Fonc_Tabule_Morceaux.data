@@ -71,10 +71,15 @@ Read sch
     solveur implicite { solveur gmres { diag seuil 1e-15 nb_it_max 5 impr } }
 }
 
-Solide sol
-Read sol
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+Read pb
 {
-    rho Champ_Uniforme 1 50
+       
+solide {
+     rho Champ_Uniforme 1 50
     Cp Champ_Uniforme 1 0.5
     lambda Champ_Fonc_Tabule_Morceaux dom 1
     {
@@ -83,15 +88,8 @@ Read sol
     }
 }
 
-Associate pb dom
-Associate pb sch
-Associate pb sol
 
-Discretize pb dis
-
-Read pb
-{
-    Conduction
+Conduction
     {
         diffusion { }
         initial_conditions
@@ -122,3 +120,4 @@ Read pb
 
 Solve pb
 End
+ 

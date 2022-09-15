@@ -51,29 +51,25 @@ Read sch
 	facsec 1
 	diffusion_implicite 1
 }
-Fluide_Incompressible fluide
-Read fluide
-{
-	mu Champ_Uniforme	1 2.84e-5
-	rho Champ_Uniforme	1 0.0976
-}
 Pb_hydraulique pb
 VEFPreP1b dis
 
 
-Champ_Uniforme gravite
-Read gravite 2 0 0  
-
-Associate fluide gravite
 Associate pb dom
 Associate pb sch
-Associate pb fluide
-
 Discretize pb dis
 
 Read pb
 	{
-	Navier_Stokes_standard
+	   
+fluide_incompressible {
+	gravite champ_uniforme 2 0 0  
+
+mu Champ_Uniforme	1 2.84e-5
+	rho Champ_Uniforme	1 0.0976
+}
+
+Navier_Stokes_standard
 		{
 		solveur_pression petsc cholesky { }
 		convection { negligeable }
@@ -123,3 +119,4 @@ Read pb
 
 Solve pb
 
+ 

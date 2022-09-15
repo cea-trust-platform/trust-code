@@ -60,18 +60,8 @@ Lire sch
     facsec 1.0
 }
 
-Fluide_Incompressible fluid
-
-Read fluid
-{
-    mu  Champ_Uniforme 1 @MU_VAL@
-    rho Champ_Uniforme 1 1.0
-}
-
 Associer pb dom
 Associer pb sch
-Associer pb fluid
-
 Discretiser pb dis
 
 Domaine out_chaud
@@ -90,7 +80,14 @@ extraire_surface
 }
 Lire pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu  Champ_Uniforme 1 @MU_VAL@
+    rho Champ_Uniforme 1 1.0
+}
+
+
+Navier_Stokes_standard
     {
         projection_initiale 0
         methode_calcul_pression_initiale avec_sources
@@ -145,3 +142,4 @@ Lire pb
 }
 resoudre pb
 fin
+ 

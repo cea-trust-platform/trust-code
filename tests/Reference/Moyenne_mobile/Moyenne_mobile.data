@@ -53,24 +53,22 @@ Read sch
     dt_sauv 1
 }
 
-Fluide_Incompressible air
-Read air
-{
-    mu Champ_Uniforme 1 0.01
-    rho Champ_Uniforme 1 1
-}
-
 Associate pb dom
 Associate pb sch
-Associate pb air
-
 Discretize pb dis
 
 # On impose U(t)=1+cos(t*Pi) #
 # Donc Moy(U)(n*dt_integr)=1 et Ect(U)(n*dt_integr)=Sqr(2)/2 #
 Read pb
 {
-    Navier_Stokes_Standard
+       
+fluide_incompressible {
+     mu Champ_Uniforme 1 0.01
+    rho Champ_Uniforme 1 1
+}
+
+
+Navier_Stokes_Standard
     {
         solveur_pression petsc cholesky { }
         convection { negligeable }
@@ -109,3 +107,4 @@ Read pb
 
 Solve pb
 End
+ 

@@ -40,21 +40,20 @@ Read sch
     solveur implicite { solveur petsc cli { } }
 }
 
-Fluide_Incompressible eau
-Read eau
-{
-    mu  Champ_Uniforme 1 $mu
-    rho Champ_Uniforme 1 1000
-}
-
 Associate  pb dom
 Associate  pb sch
-Associate  pb eau
 Discretize pb dis
 
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu  Champ_Uniforme 1 $mu
+    rho Champ_Uniforme 1 1000
+}
+
+
+Navier_Stokes_standard
     {
         methode_calcul_pression_initiale avec_sources_et_operateurs
         solveur_pression petsc cholesky { }
@@ -89,3 +88,4 @@ Read pb
 }
 Solve pb
 End
+ 

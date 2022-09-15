@@ -37,23 +37,7 @@ END SCATTER #
 
 VEFPreP1B dis
 
-Fluide_Incompressible fluide
-Read fluide
-{
-    mu Champ_Uniforme 1 2e-09
-    rho Champ_Uniforme 1 2
-    lambda Champ_Uniforme 1 0.02
-    Cp Champ_Uniforme 1 500
-    beta_th Champ_Uniforme 1 0.003
-}
-
-
-Champ_Uniforme gravite
-Read gravite 3 0. -9.81 0.
-Associate fluide gravite
-
 Associate pb dom_fluide
-Associate pb fluide
 Associate pb sch
 Discretize pb dis
 
@@ -76,7 +60,19 @@ Extraire_plan
 
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+    gravite champ_uniforme 3 0. -9.81 0.
+mu Champ_Uniforme 1 2e-09
+    rho Champ_Uniforme 1 2
+    lambda Champ_Uniforme 1 0.02
+    Cp Champ_Uniforme 1 500
+    beta_th Champ_Uniforme 1 0.003
+}
+
+
+
+Navier_Stokes_standard
     {
         solveur_pression GCP {
             precond ssor { omega 1.5 } seuil 1.e-15
@@ -157,3 +153,4 @@ Read pb
 
 Solve pb
 End
+ 

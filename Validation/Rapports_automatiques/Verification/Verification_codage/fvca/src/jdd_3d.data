@@ -36,21 +36,20 @@ Read sch
     solveur solveur_U_P { solveur petsc cholesky { cli { -mat_mumps_icntl_23 2000 } } }
 }
 
-Fluide_Incompressible eau
-Read eau
-{
-    mu  Champ_Uniforme 1 0.1
-    rho Champ_Uniforme 1 1
-}
-
 Associate  pb dom
 Associate  pb sch
-Associate  pb eau
 Discretize pb dis
 
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu  Champ_Uniforme 1 0.1
+    rho Champ_Uniforme 1 1
+}
+
+
+Navier_Stokes_standard
     {
         methode_calcul_pression_initiale avec_sources_et_operateurs
         solveur_pression petsc cholesky { }
@@ -129,3 +128,4 @@ Read pb
 Solve pb
 lata_to_other lml NOM_DU_CAS NOM_DU_CAS
 End
+ 

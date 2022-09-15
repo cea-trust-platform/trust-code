@@ -53,17 +53,8 @@ Read sch
     facsec 1e4
 }
 
-Solide sol
-Read sol
-{
-    rho Champ_Uniforme 1 1.
-    lambda Champ_Uniforme 1 0.25
-    Cp Champ_Uniforme 1 1.
-}
 Associate pb dom
 Associate pb sch
-Associate pb sol
-
 Discretize pb dis
 
 extraire_surface  { domaine dom2 probleme pb avec_certains_bords 1 Bas }
@@ -71,7 +62,14 @@ ecrire_fichier_formatte dom2 dom2.geom
 End
 Read pb
 {
-    Conduction
+       
+solide {
+     rho Champ_Uniforme 1 1.
+    lambda Champ_Uniforme 1 0.25
+    Cp Champ_Uniforme 1 1.
+}
+
+Conduction
     {
         diffusion { }
         sources {
@@ -107,3 +105,4 @@ Read pb
 Solve pb
 
 End
+ 

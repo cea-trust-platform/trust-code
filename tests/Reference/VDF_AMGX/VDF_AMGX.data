@@ -44,10 +44,21 @@ Lire sch
 
 }
 
-Fluide_Quasi_Compressible air
-Lire air
+Associer pb1 dom
+Associer pb1 sch
+
+option_vdf {
+    p_imposee_aux_faces oui
+}
+Discretiser pb1 dis
+
+Lire pb1
 {
-    pression   100000.
+       
+fluide_quasi_compressible {
+    gravite champ_uniforme 3 0 0. -9.81
+
+pression   100000.
 
     mu Champ_Fonc_Fonction pb1 temperature 1 (0.86269e-5*val*0.02897*(8.0^0.5)*((1.0+(0.0020159/0.02897))^0.5))/(((val*0.02897*(8.0^0.5)*((1.0+(0.0020159/0.02897))^0.5))+(1.0-val)*0.0020159*((1.0+(((0.86269/1.792)^0.5)*((0.02897/0.0020159)^0.25)))^2)))+(1.792e-5*(1.0-val)*0.0020159*(8.0^0.5)*((1.0+(0.02897/0.0020159))^0.5))/((((1.0-val)*0.0020159*(8.0^0.5)*((1.0+(0.02897/0.0020159))^0.5))+(val)*0.02897*((1.0+(((1.792/0.86269)^0.5)*((0.0020159/0.02897)^0.25)))^2)))
 
@@ -65,23 +76,8 @@ Lire air
 }
 
 
-Champ_Uniforme gravite
-Lire gravite 3 0 0. -9.81
 
-Associer air gravite
-
-Associer pb1 dom
-Associer pb1 air
-Associer pb1 sch
-
-option_vdf {
-    p_imposee_aux_faces oui
-}
-Discretiser pb1 dis
-
-Lire pb1
-{
-    Navier_Stokes_QC
+Navier_Stokes_QC
     {
 
         solveur_pression petsc gcp { precond ssor { } seuil 1.e-8 impr }
@@ -136,3 +132,4 @@ Lire pb1
 Resoudre pb1
 Fin
 
+ 

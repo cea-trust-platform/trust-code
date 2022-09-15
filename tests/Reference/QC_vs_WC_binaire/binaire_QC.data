@@ -53,8 +53,16 @@ Lire sch
     nb_pas_dt_max 45
 }
 
-Fluide_Quasi_Compressible air
-Lire air
+Associer pb dom
+Associer pb sch
+
+option_vdf { p_imposee_aux_faces oui }
+
+Discretiser pb dis
+
+Lire pb
+{
+Fluide_Quasi_Compressible
 {
     pression   100000.
     traitement_pth constant
@@ -72,24 +80,9 @@ Lire air
         molar_mass2 18e-3
         mu2 0.0017916
     }
-
+gravite Champ_Uniforme 3 0 0. -9.81
 }
 
-Champ_Uniforme gravite
-Lire gravite 3 0 0. -9.81
-
-Associer air gravite
-
-Associer pb dom
-Associer pb air
-Associer pb sch
-
-option_vdf { p_imposee_aux_faces oui }
-
-Discretiser pb dis
-
-Lire pb
-{
     Navier_Stokes_QC
     {
         parametre_equation parametre_diffusion_implicite

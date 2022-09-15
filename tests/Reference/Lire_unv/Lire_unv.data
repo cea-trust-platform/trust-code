@@ -28,17 +28,22 @@ Read sch
 
 
 
-Champ_Uniforme gravite
-Read gravite 3  0.  0. -9.81
-
-
-
-Fluide_Incompressible helium_plenum
 # Proprietes a T=809K calculees avec Sutherland et Godmann #
 # beta=1/T #
-Read helium_plenum
+Associate pb_plenum dom
+Associate pb_plenum sch
+Discretize pb_plenum dis
+
+# Attention les conditions limites ne sont pas realistes #
+Read pb_plenum
 {
-    rho    Champ_Uniforme 1  3.37
+       
+fluide_incompressible {
+    gravite champ_uniforme 3  0.  0. -9.81
+
+
+
+rho    Champ_Uniforme 1  3.37
     mu     Champ_Uniforme 1  3.93e-5
     lambda Champ_Uniforme 1  0.303
     Cp     Champ_Uniforme 1  5193
@@ -47,17 +52,8 @@ Read helium_plenum
 
 
 
-Associate helium_plenum gravite
-Associate pb_plenum dom
-Associate pb_plenum sch
-Associate pb_plenum helium_plenum
 
-Discretize pb_plenum dis
-
-# Attention les conditions limites ne sont pas realistes #
-Read pb_plenum
-{
-    Navier_Stokes_standard
+Navier_Stokes_standard
     {
         solveur_pression Gcp {
             precond ssor { omega 1.5 }
@@ -135,3 +131,4 @@ Read pb_plenum
 Solve pb_plenum
 End
 
+ 

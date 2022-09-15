@@ -54,21 +54,20 @@ Read sch
     }
 }
 
-Fluide_Incompressible air
-Read air
-{
-    mu  Champ_Uniforme 1 0.01
-    rho Champ_Uniforme 1 1
-}
-
 Associate pb dom
 Associate pb sch
-Associate pb air
 Discretize pb dis
 
 Read pb
 {
-    Navier_Stokes_Standard
+       
+fluide_incompressible {
+     mu  Champ_Uniforme 1 0.01
+    rho Champ_Uniforme 1 1
+}
+
+
+Navier_Stokes_Standard
     {
 
         solveur_pression petsc cholesky { }
@@ -96,3 +95,4 @@ Read pb
 
 Solve pb
 End
+ 

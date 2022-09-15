@@ -35,22 +35,21 @@ Read sch
     seuil_statio 1.e-5
 }
 
-Fluide_Incompressible eau
-Read eau
-{
-    mu Champ_Uniforme 1 1.
-    rho Champ_Uniforme 1 1.
-}
-
 Champ_Uniforme gravite
 Read gravite 2 0 0
 Associate pb dom
 Associate pb sch
-Associate pb eau
 Discretize pb dis
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu Champ_Uniforme 1 1.
+    rho Champ_Uniforme 1 1.
+}
+
+
+Navier_Stokes_standard
     {
         solveur_pression GCP { precond ssor { omega 1.65 } seuil 1.e-16 impr }
         convection { amont }
@@ -86,3 +85,4 @@ Read pb
 }
 Solve pb
 End
+ 

@@ -74,18 +74,8 @@ Read sch
     seuil_statio 1e-8
 }
 
-Fluide_Incompressible eau
-Read eau
-{
-    mu Champ_Uniforme 1 0.02
-    rho Champ_Uniforme 1 2
-}
-
-
 Associate pb dom
 Associate pb sch
-Associate pb eau
-
 Discretize pb dis
 Porosites pb sous_zone1
 {
@@ -95,7 +85,15 @@ Porosites pb sous_zone1
 
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu Champ_Uniforme 1 0.02
+    rho Champ_Uniforme 1 2
+}
+
+
+
+Navier_Stokes_standard
     {
         solveur_pression GCP {
             precond ssor { omega 1.500000 }
@@ -145,3 +143,4 @@ Porosites pb sous_zone1
     VOLUMIQUE 1.0
     SURFACIQUE 2 0.5 0.25
 }
+ 

@@ -53,10 +53,15 @@ Lire sch
     seuil_statio 1e-10
 }
 
-Fluide_quasi_compressible fluide
-Lire fluide
+Associer pb dom
+Associer pb sch
+Discretiser pb dis
+
+Lire pb
 {
-    mu		champ_fonc_xyz dom 1  1/(sin(2*Pi*x)*sin(2*Pi*y)+2)
+       
+fluide_quasi_compressible {
+     mu		champ_fonc_xyz dom 1  1/(sin(2*Pi*x)*sin(2*Pi*y)+2)
     /* mu		champ_fonc_fonction pb temperature 1 1 */
     lambda		champ_fonc_fonction pb temperature 1 1
     pression	1
@@ -71,15 +76,8 @@ Lire fluide
     traitement_pth conservation_masse
 }
 
-Associer pb dom
-Associer pb sch
-Associer pb fluide
 
-Discretiser pb dis
-
-Lire pb
-{
-    Navier_Stokes_QC
+Navier_Stokes_QC
     {
         Projection_initiale	0
         Solveur_pression	PETSC Cholesky { }
@@ -124,3 +122,4 @@ Lire pb
 Resoudre pb
 
 Fin
+ 

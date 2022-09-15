@@ -31,17 +31,9 @@ Read mon_schema
 # The following lines define the PHYSICAL PROPERTIES of the solid or fluid medium #
 # for which the problem will be solved #
 
-Fluide_Incompressible milieu
-Read milieu
-{
-    mu  Champ_Uniforme 1 1.85e-5
-    rho Champ_Uniforme 1 1.
-}
-
 # The following lines define the ASSOCIATION of the previously defined OBJECTS #
 Associate pb dom
 Associate pb mon_schema
-Associate pb milieu
 Discretize pb ma_discretisation
 
 /* The following lines define all the characteristics of the TYPE OF PROBLEM, this includes in particular:
@@ -53,7 +45,14 @@ Discretize pb ma_discretisation
 
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu  Champ_Uniforme 1 1.85e-5
+    rho Champ_Uniforme 1 1.
+}
+
+
+Navier_Stokes_standard
     {
         solveur_pression GCP {
             precond ssor { omega 1.500000 }
@@ -105,3 +104,4 @@ Read pb
 }
 # The last lines launch the solving process and terminate the data file #
 Solve pb
+ 

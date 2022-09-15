@@ -67,22 +67,20 @@ Read sch
     facsec 0.5
 }
 
-Solide sol
-Read sol
-{
-    rho Champ_Uniforme 1 2
-    lambda Champ_Uniforme 1 2.
-    Cp Champ_Uniforme 1 0.5
-}
 Associate pb dom
 Associate pb sch
-Associate pb sol
-
 Discretize pb dis
 
 Read pb
 {
-    Conduction
+       
+solide {
+     rho Champ_Uniforme 1 2
+    lambda Champ_Uniforme 1 2.
+    Cp Champ_Uniforme 1 0.5
+}
+
+Conduction
     {
         diffusion { }
         sources {
@@ -117,5 +115,5 @@ Read pb
 }
 
 Solve pb
-Ecrire sol
 End
+ 

@@ -76,23 +76,21 @@ Read sch
     seuil_statio 1e-8
 }
 
-Fluide_Incompressible eau
-Read eau
-{
-    mu Champ_Uniforme 1 0.02
-    rho Champ_Uniforme 1 2
-    Porosites_champ champ_uniforme_morceaux dom 1 { defaut 1 sous_zone1 0.5 }
-}
-
 Associate pb dom
 Associate pb sch
-Associate pb eau
-
 Discretize pb dis
 
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu Champ_Uniforme 1 0.02
+    rho Champ_Uniforme 1 2
+    Porosites_champ champ_uniforme_morceaux dom 1 { defaut 1 sous_zone1 0.5 }
+}
+
+
+Navier_Stokes_standard
     {
         solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-6 impr }
         convection { amont }
@@ -129,3 +127,4 @@ Read pb
 
 Solve pb
 End
+ 

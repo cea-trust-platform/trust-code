@@ -35,10 +35,17 @@ Read sch
     seuil_statio 1.e-8
 }
 
-Fluide_Quasi_Compressible fluide
-Read fluide
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+Read pb
 {
-    mu Champ_Uniforme 1 1.85e-5
+       
+fluide_quasi_compressible {
+    gravite champ_uniforme 2 0 -9.81
+
+mu Champ_Uniforme 1 1.85e-5
     pression 81385.5334
     lambda Champ_Uniforme 1 0.0262
     loi_etat gaz_parfait_QC {
@@ -50,19 +57,8 @@ Read fluide
     traitement_pth constant
 }
 
-Champ_Uniforme gravite
-Read gravite 2 0 -9.81
 
-Associate fluide gravite
-Associate pb dom
-Associate pb sch
-Associate pb fluide
-
-Discretize pb dis
-
-Read pb
-{
-    Navier_Stokes_QC
+Navier_Stokes_QC
     {
         solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-9 }
         convection { muscl }
@@ -112,3 +108,4 @@ Read pb
 Solve pb
 End
 Sortie frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
+ 

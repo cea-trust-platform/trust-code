@@ -52,22 +52,20 @@ Read sch
     }
 }
 
-Fluide_Incompressible fluide
-Read fluide
-{
-    mu Champ_Uniforme	1 0.54613e-3
-    rho Champ_Uniforme	1 987.888
-}
-
 Associate pb DOM_FLUI
 Associate pb sch
-Associate pb fluide
-
 Discretize pb dis
 
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu Champ_Uniforme	1 0.54613e-3
+    rho Champ_Uniforme	1 987.888
+}
+
+
+Navier_Stokes_standard
     {
         solveur_pression GCP {
             precond ssor { omega 1.5 }
@@ -123,3 +121,4 @@ End
 # nut_max 0.005 #
 # reprise formatte hybou.sauv #
 
+ 

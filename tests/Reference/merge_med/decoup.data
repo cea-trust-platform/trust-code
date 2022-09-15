@@ -1,7 +1,6 @@
 # Hydraulique 2D laminaire avec "trou" dans le maillage #
 # PARALLEL ONLY 4 #
 dimension 2
-Pb_hydraulique pb
 Domaine dom
 
 # BEGIN MESH #

@@ -23,10 +23,16 @@ Scatter DOM2.Zones dom_fluide
 # END SCATTER #
 
 VEFPreP1b dis
-Fluide_Incompressible fluide
-Read fluide
+Associate pb dom_fluide
+Associate pb sch
+Discretize pb dis
+
+Read pb
 {
-    mu Champ_Uniforme 1 0.0018
+       
+fluide_incompressible {
+    gravite champ_uniforme 3 0 0 -9.81
+mu Champ_Uniforme 1 0.0018
     rho Champ_Uniforme 1  10400
     lambda Champ_Uniforme 1 10.09
     Cp Champ_Uniforme 1 146.5
@@ -34,19 +40,8 @@ Read fluide
 }
 
 
-Champ_Uniforme gravite
-Read gravite 3 0 0 -9.81
-Associate fluide gravite
 
-Associate pb dom_fluide
-Associate pb fluide
-
-Associate pb sch
-Discretize pb dis
-
-Read pb
-{
-    Navier_Stokes_standard
+Navier_Stokes_standard
     {
         solveur_pression GCP {
             precond ssor { omega 1.5 }
@@ -116,3 +111,4 @@ Read pb
 
 End
 
+ 

@@ -55,22 +55,21 @@ Read sch
     seuil_statio 1.e-5
 }
 
-Fluide_Incompressible eau
-Read eau
-{
-    mu Champ_Uniforme 1 2
-    rho Champ_Uniforme 1 2
-}
-
 Champ_Uniforme gravite
 Read gravite 2 0 0
 Associate pb dom
 Associate pb sch
-Associate pb eau
 Discretize pb dis
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu Champ_Uniforme 1 2
+    rho Champ_Uniforme 1 2
+}
+
+
+Navier_Stokes_standard
     {
         solveur_pression GCP {
             precond ssor { omega 1.650000 }
@@ -112,3 +111,4 @@ End
 # Sortie frontiere_ouverte_gradient_pression_impose_VEF Champ_Front_Uniforme 1 -2. #
 # Sortie frontiere_ouverte_gradient_pression_impose Champ_Front_Uniforme 1 2 #
 # Sortie frontiere_ouverte_gradient_pression_impose Champ_Front_Uniforme 1 2 #
+ 

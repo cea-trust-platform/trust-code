@@ -54,22 +54,20 @@ Read sch
     nb_pas_dt_max 5
 }
 
-Fluide_Incompressible air
-Read air
-{
-    mu Champ_Uniforme 1 2e-20
-    rho Champ_Uniforme 1 2
-}
-
 Associate pb dom
 Associate pb sch
-Associate pb air
-
 Discretize pb dis
 
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu Champ_Uniforme 1 2e-20
+    rho Champ_Uniforme 1 2
+}
+
+
+Navier_Stokes_standard
 
     {
         solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-8 impr }
@@ -103,3 +101,4 @@ Read pb
 Solve pb
 End
 
+ 

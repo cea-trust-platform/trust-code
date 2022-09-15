@@ -48,29 +48,25 @@ Read sch
     no_check_disk_space
 }
 
-Fluide_Incompressible sodium
-Read sodium
+Pb_thermohydraulique  pb
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+Read pb
 {
-    mu      Champ_Uniforme 1 .000245
+       
+fluide_incompressible {
+    gravite champ_uniforme 3 0 0 -9.81
+mu      Champ_Uniforme 1 .000245
     rho     Champ_Uniforme 1 840.
     lambda  Champ_Uniforme 1 66.
     Cp      Champ_Uniforme 1 1270.
     Beta_th Champ_Uniforme 1 0.000276
 }
 
-Champ_Uniforme gravity
-Read gravity 3 0 0 -9.81
-Associate sodium gravity
 
-Pb_thermohydraulique  pb
-Associate pb dom
-Associate pb sodium
-Associate pb sch
-Discretize pb dis
-
-Read pb
-{
-    Navier_Stokes_standard
+Navier_Stokes_standard
     {
         solveur_pression Petsc Cholesky  { }
         convection { amont }
@@ -116,3 +112,4 @@ Read pb
 Solve pb
 
 End
+ 

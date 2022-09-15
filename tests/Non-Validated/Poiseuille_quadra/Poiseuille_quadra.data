@@ -53,22 +53,20 @@ Read sch
     facsec 1.
 }
 
-Fluide_Incompressible eau
-Read eau
-{
-    mu Champ_Uniforme 1 2
-    rho Champ_Uniforme 1 2
-}
-
 Associate pb dom
 Associate pb sch
-Associate pb eau
-
 Discretize pb dis
 
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu Champ_Uniforme 1 2
+    rho Champ_Uniforme 1 2
+}
+
+
+Navier_Stokes_standard
     {
         solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-12 impr }
         convection { Amont }
@@ -110,3 +108,4 @@ Read pb
 
 Solve pb
 End
+ 

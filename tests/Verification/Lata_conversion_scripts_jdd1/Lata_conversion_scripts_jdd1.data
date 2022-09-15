@@ -71,20 +71,9 @@ Read mon_schema
 Pb_hydraulique pb
 
 # Physical characteristcs of medium #
-Fluide_Incompressible milieu
-Read milieu
-{
-    # hydraulic problem #
-    # Dynamic viscosity [kg/m/s] #
-    mu Champ_Uniforme 1 3.7e-05
-    # Volumic mass [kg/m3] #
-    rho Champ_Uniforme 1 2
-}
-
 # Association between the different objects #
 Associate pb dom
 Associate pb mon_schema
-Associate pb milieu
 Discretize pb ma_discretisation
 
 # New domains for post-treatment #
@@ -93,7 +82,17 @@ Discretize pb ma_discretisation
 # Problem description #
 Read pb
 {
-    # hydraulic problem #
+       
+fluide_incompressible {
+     # hydraulic problem #
+    # Dynamic viscosity [kg/m/s] #
+    mu Champ_Uniforme 1 3.7e-05
+    # Volumic mass [kg/m3] #
+    rho Champ_Uniforme 1 2
+}
+
+
+# hydraulic problem #
     Navier_Stokes_standard
     {
         # Pressure matrix solved with #
@@ -141,3 +140,4 @@ Read pb
 Solve pb
 # Not necessary keyword to finish #
 End
+ 

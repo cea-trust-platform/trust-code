@@ -37,8 +37,16 @@ Read sch
 Pb_thermohydraulique_QC pb_plenum
 VEFPreP1B dis
 
-Fluide_Quasi_Compressible heliumQC_plenum
-Read heliumQC_plenum
+
+Associate pb_plenum dom
+Associate pb_plenum sch
+
+Discretize pb_plenum dis
+
+
+
+Read pb_plenum {
+Fluide_Quasi_Compressible
 {
     pression 7000000.
     Sutherland pb_plenum mu0 1.6E-5 T0 273.15 Slambda 235. C 235.
@@ -50,16 +58,6 @@ Read heliumQC_plenum
     }
     traitement_pth constant
 }
-
-Associate pb_plenum dom
-Associate pb_plenum sch
-Associate pb_plenum heliumQC_plenum
-
-Discretize pb_plenum dis
-
-
-
-Read pb_plenum {
 
     Navier_Stokes_QC
     {

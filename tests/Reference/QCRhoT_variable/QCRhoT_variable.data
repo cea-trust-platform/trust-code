@@ -89,12 +89,18 @@ Read sch
     seuil_statio 1.e-8
 }
 
-Fluide_Quasi_Compressible fluide
-
 # water 50 bar between 50 degree C and 263 degree C #
-Read fluide
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+Read pb
 {
-    pression 5.e6
+       
+fluide_quasi_compressible {
+    gravite champ_uniforme 2 0. 0.
+
+pression 5.e6
     mu     Champ_Fonc_Fonction pb temperature 1  3.64910e-2*val^(-1.06130)
     lambda Champ_Fonc_Fonction pb temperature 1 ((-5.792978E-06*val+1.580872E-03)*val)+5.832125E-01
     loi_etat rhoT_gaz_parfait_QC
@@ -106,19 +112,8 @@ Read fluide
     Traitement_rho_gravite standard
 }
 
-Champ_Uniforme gravite
-Read gravite 2 0. 0.
 
-Associate fluide gravite
-Associate pb dom
-Associate pb sch
-Associate pb fluide
-
-Discretize pb dis
-
-Read pb
-{
-    Navier_Stokes_QC
+Navier_Stokes_QC
     {
         solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-12 }
         convection { ef_stab { alpha 0.3 } }
@@ -184,3 +179,4 @@ Read pb
 Solve pb
 End
 
+ 

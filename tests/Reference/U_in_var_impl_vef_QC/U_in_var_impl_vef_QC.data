@@ -66,10 +66,17 @@ Read sch
 }
 
 
-Fluide_Quasi_compressible eau
-Read eau
+Champ_Uniforme gravite
+Read gravite 2 0 0
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+# Debog pb seq faces 1.e-6 0 #
+Read pb
 {
-    mu Champ_Uniforme 1 1.
+       
+fluide_quasi_compressible {
+     mu Champ_Uniforme 1 1.
     pression 325542.1336
     loi_etat gaz_parfait_QC {
         Prandtl 0.71034351145038165942
@@ -79,16 +86,8 @@ Read eau
     traitement_pth constant
 }
 
-Champ_Uniforme gravite
-Read gravite 2 0 0
-Associate pb dom
-Associate pb sch
-Associate pb eau
-Discretize pb dis
-# Debog pb seq faces 1.e-6 0 #
-Read pb
-{
-    Navier_Stokes_QC
+
+Navier_Stokes_QC
     {
         solveur_pression optimal { seuil 1e-13 }
 
@@ -136,3 +135,4 @@ Read pb
     }
 }
 Solve pb
+ 

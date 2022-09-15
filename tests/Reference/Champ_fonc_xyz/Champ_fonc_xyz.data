@@ -52,27 +52,21 @@ Read sch
     seuil_statio 1.e-6
 }
 
-Fluide_Incompressible air
-Read air
-{
-    mu Champ_fonc_xyz dom 1 1+y
-    rho Champ_Uniforme 1 1.
-}
-
-Champ_Uniforme gravite
-Read gravite 2 0. 0.
-Associate air gravite
-
-
 Associate pb dom
 Associate pb sch
-Associate pb air
-
 Discretize pb dis
 
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+    gravite champ_uniforme 2 0. 0.
+mu Champ_fonc_xyz dom 1 1+y
+    rho Champ_Uniforme 1 1.
+}
+
+
+Navier_Stokes_standard
     {
         projection_initiale 1
         solveur_pression GCP { precond ssor { omega 1.6 } seuil 1.e-8 }
@@ -103,3 +97,4 @@ Read pb
 }
 Solve pb
 End
+ 

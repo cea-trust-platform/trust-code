@@ -59,23 +59,20 @@ Read sch
 }
 
 
-Fluide_Incompressible fluid
-
-Read fluid
-{
-    mu  Champ_Uniforme 1 1.0
-    rho Champ_Uniforme 1 1.0
-}
-
 Associer pb dom
 Associer pb sch
-Associer pb fluid
-
 Discretiser pb dis
 
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu  Champ_Uniforme 1 1.0
+    rho Champ_Uniforme 1 1.0
+}
+
+
+Navier_Stokes_standard
     {
         projection_initiale 1
         postraiter_gradient_pression_sans_masse
@@ -122,3 +119,4 @@ Read pb
 }
 resoudre pb
 fin
+ 

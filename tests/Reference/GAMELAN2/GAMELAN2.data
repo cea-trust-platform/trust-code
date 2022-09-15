@@ -41,8 +41,17 @@ Lire sch
     seuil_diffusion_implicite 1.e-10
 }
 
-Fluide_Quasi_Compressible air
-Lire air
+Associer pb1 dom
+Associer pb1 sch
+
+option_vdf { p_imposee_aux_faces oui }
+
+Discretiser pb1 dis
+
+# debog pb1 seq faces 1.e-5 0 #
+Lire pb1
+{
+Fluide_Quasi_Compressible
 {
     pression   100000.
     traitement_pth constant
@@ -60,25 +69,8 @@ Lire air
         molar_mass2 0.02897
         mu2 1.792e-5
     }
-
+    gravite Champ_Uniforme 3 0 0. -9.81
 }
-
-Champ_Uniforme gravite
-Lire gravite 3 0 0. -9.81
-
-Associer air gravite
-
-Associer pb1 dom
-Associer pb1 air
-Associer pb1 sch
-
-option_vdf { p_imposee_aux_faces oui }
-
-Discretiser pb1 dis
-
-# debog pb1 seq faces 1.e-5 0 #
-Lire pb1
-{
     Navier_Stokes_QC
     {
         solveur_pression Petsc GCP { precond SSOR { omega 1.6 }  seuil 1.e-12 impr   }

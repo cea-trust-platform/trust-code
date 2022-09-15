@@ -55,10 +55,15 @@ Read sch
     nb_pas_dt_max 1
 }
 
-Fluide_Incompressible fluide
-Read fluide
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+Read pb
 {
-    mu Champ_Uniforme 1 1.85e-5
+       
+fluide_incompressible {
+     mu Champ_Uniforme 1 1.85e-5
     rho Champ_Uniforme 1 1.
     lambda Champ_Uniforme 1 0.0262
     Cp Champ_Uniforme 1 100
@@ -66,15 +71,8 @@ Read fluide
 }
 
 
-Associate pb dom
-Associate pb sch
-Associate pb fluide
 
-Discretize pb dis
-
-Read pb
-{
-    Navier_Stokes_standard
+Navier_Stokes_standard
     {
         solveur_pression GCP {
             precond ssor { omega 1.500000 }
@@ -134,3 +132,4 @@ imprimer_flux dom { Gauche }
 Solve pb
 End
 End
+ 

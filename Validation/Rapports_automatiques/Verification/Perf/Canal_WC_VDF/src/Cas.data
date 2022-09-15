@@ -54,12 +54,21 @@ Lire sch
     nb_pas_dt_max 10
 }
 
-Fluide_Weakly_Compressible air
-Lire air
+Associer pb dom
+Associer pb sch
+
+option_vdf { p_imposee_aux_faces oui }
+
+Discretiser pb dis
+
+Lire pb
+{
+Fluide_Weakly_Compressible
 {
     pression_thermo   100000.
     use_total_pressure 1 /* 0 is by default */
     time_activate_ptot 0.00001 /* In seconds : use the total pressure in the EOS */
+    gravite Champ_Uniforme 3 0 0. -9.81
     loi_etat binaire_gaz_parfait_WC
     {
         temperature 373.15
@@ -74,22 +83,6 @@ Lire air
         mu2 0.86269e-5
     }
 }
-
-Champ_Uniforme gravite
-Lire gravite 3 0 0. -9.81
-
-Associer air gravite
-
-Associer pb dom
-Associer pb air
-Associer pb sch
-
-option_vdf { p_imposee_aux_faces oui }
-
-Discretiser pb dis
-
-Lire pb
-{
     Navier_Stokes_WC
     {
         parametre_equation parametre_diffusion_implicite

@@ -56,10 +56,17 @@ Read sch
     seuil_statio 1.e-4
 }
 
-Fluide_Incompressible eau
-Read eau
+Champ_Uniforme gravite
+Read gravite 2 0 0
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+# Debog pb seq faces 1.e-6 0 #
+Read pb
 {
-    mu Champ_Uniforme 1 1.
+       
+fluide_incompressible {
+     mu Champ_Uniforme 1 1.
     rho Champ_Uniforme 1 1.
     cp Champ_uniforme 1 1000.
     lambda champ_uniforme 1 10.
@@ -67,16 +74,8 @@ Read eau
     porosites_champ champ_fonc_xyz dom 1 1-0.5*(x>0.2)*(x<0.8)
 }
 
-Champ_Uniforme gravite
-Read gravite 2 0 0
-Associate pb dom
-Associate pb sch
-Associate pb eau
-Discretize pb dis
-# Debog pb seq faces 1.e-6 0 #
-Read pb
-{
-    Navier_Stokes_standard
+
+Navier_Stokes_standard
     {
         solveur_pression GCP  { precond ssor { omega 1.5 } seuil 1e-08 }
 
@@ -130,3 +129,4 @@ Solve pb
 End
 End
 Entree frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 1.
+ 

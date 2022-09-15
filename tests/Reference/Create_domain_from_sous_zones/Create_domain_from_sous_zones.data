@@ -69,22 +69,21 @@ Read sch
 
 Pb_Conduction pb
 
-Solide sol
-Read sol
-{
-    rho	Champ_Uniforme 1 1000.
-    lambda	Champ_Uniforme 1 250.
-    Cp	Champ_Uniforme 1 100.
-}
-
 Associate pb newdom
 Associate pb sch
-Associate pb sol
 Discretize pb dis
 
 Read pb
 {
-    Conduction
+       
+solide {
+     rho	Champ_Uniforme 1 1000.
+    lambda	Champ_Uniforme 1 250.
+    Cp	Champ_Uniforme 1 100.
+}
+
+
+Conduction
     {
         diffusion { }
         # Doc champ_uniforme_morceaux: Name of the domain to which the sub-areas belong. Here dom and not newdom (sub-area=G_3D_2) #
@@ -110,3 +109,4 @@ Read pb
 
 Solve pb
 End
+ 

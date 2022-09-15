@@ -54,8 +54,16 @@ Lire sch
     nb_pas_dt_max 100
 }
 
-Fluide_Weakly_Compressible air
-Lire air
+Associer pb dom
+Associer pb sch
+
+option_vdf { p_imposee_aux_faces oui }
+
+Discretiser pb dis
+
+Lire pb
+{
+Fluide_Weakly_Compressible
 {
     pression_thermo   100000.
     use_total_pressure 1 /* 0 is by default */
@@ -73,23 +81,9 @@ Lire air
         molar_mass2 0.0020159
         mu2 0.86269e-5
     }
+    gravite Champ_Uniforme 3 0 0. -9.81
 }
 
-Champ_Uniforme gravite
-Lire gravite 3 0 0. -9.81
-
-Associer air gravite
-
-Associer pb dom
-Associer pb air
-Associer pb sch
-
-option_vdf { p_imposee_aux_faces oui }
-
-Discretiser pb dis
-
-Lire pb
-{
     Navier_Stokes_WC
     {
         parametre_equation parametre_diffusion_implicite

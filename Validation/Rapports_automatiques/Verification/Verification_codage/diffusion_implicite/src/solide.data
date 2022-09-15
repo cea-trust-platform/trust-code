@@ -60,26 +60,23 @@ END SCATTER #
 
 VEFPrep1b  dis
 
-Solide sol
-Read sol
+Associate pb1 dom_solide
+Associate pb1 sch
+Discretize pb1 dis
+
+Read pb1
 {
-    rho Champ_Uniforme 1 1000.
+       
+solide {
+     rho Champ_Uniforme 1 1000.
     lambda Champ_Uniforme 1 250.
     Cp Champ_Uniforme 1 100.
 }
 
 
 
-Associate pb1 dom_solide
-Associate pb1 sol
 
-
-Associate pb1 sch
-Discretize pb1 dis
-
-Read pb1
-{
-    Conduction
+Conduction
     {
         diffusion { }
         sources { puissance_thermique champ_fonc_xyz  dom_solide 1  1e5*x }
@@ -118,3 +115,4 @@ Read pb1
 
 Solve pb1
 End
+ 

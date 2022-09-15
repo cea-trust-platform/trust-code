@@ -58,22 +58,20 @@ Read sch
     seuil_statio 1.e-8
     facsec 0.5
 }
-Fluide_Incompressible fluide
-Read fluide
-{
-    mu Champ_Uniforme	1 1.
-    rho Champ_Uniforme	1 1.
-}
-
 Pb_Hydraulique pb
 Associate pb dom
 Associate pb sch
-Associate pb fluide
-
 Discretize pb dis
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu Champ_Uniforme	1 1.
+    rho Champ_Uniforme	1 1.
+}
+
+
+Navier_Stokes_standard
     {
         Solveur_Pression Petsc GCP { precond spai { level 1 epsilon 0.1 } seuil 1.e-10 impr }
         convection { negligeable }
@@ -106,3 +104,4 @@ Read pb
 }
 Solve pb
 End
+ 

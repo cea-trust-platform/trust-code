@@ -49,10 +49,15 @@ Read sch
     seuil_statio 1.e-8
 }
 
-Fluide_Ostwald fluide
-Read fluide
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+Read pb
 {
-    K champ_fonc_tabule { pb temperature } 1  { 9 20. 25. 30. 35. 40. 45. 50. 55. 60. 4.983711 3.842698  2.962919  2.284563  1.761516  1.358222  1.047257  0.807490  0.622616 }
+       
+fluide_ostwald {
+     K champ_fonc_tabule { pb temperature } 1  { 9 20. 25. 30. 35. 40. 45. 50. 55. 60. 4.983711 3.842698  2.962919  2.284563  1.761516  1.358222  1.047257  0.807490  0.622616 }
     rho Champ_Uniforme 1 995
     n Champ_Uniforme 1 0.66
     mu champ_ostwald
@@ -62,15 +67,8 @@ Read fluide
 
 }
 
-Associate pb dom
-Associate pb sch
-Associate pb fluide
 
-Discretize pb dis
-
-Read pb
-{
-    Navier_Stokes_Standard
+Navier_Stokes_Standard
     {
         solveur_pression petsc cholesky { }
         convection { amont }
@@ -117,3 +115,4 @@ Read pb
 
 Solve pb
 End
+ 

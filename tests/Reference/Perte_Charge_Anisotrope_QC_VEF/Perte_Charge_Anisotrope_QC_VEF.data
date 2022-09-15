@@ -73,15 +73,17 @@ Read sch_impl {
 
 VEFPreP1B dis
 
-/* Le Fluide
-Fluide_Incompressible eau
-Read eau {
-	mu Champ_Uniforme 1 0.001
-	rho Champ_Uniforme 1 1000
-} */
 
-Fluide_Quasi_Compressible eau
-Read eau {
+# Le Probleme #
+Pb_Thermohydraulique_QC pb
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+Read pb {
+Fluide_Quasi_Compressible
+{
+gravite Champ_Uniforme 2 0 -9.81
     mu Champ_Uniforme 1 0.001
     pression 3.5e8
     lambda Champ_Uniforme 1 0.597
@@ -92,21 +94,6 @@ Read eau {
     }
     traitement_pth constant
 }
-
-
-# Le Probleme #
-Pb_Thermohydraulique_QC pb
-
-Champ_Uniforme gravite
-Read gravite 2 0 -9.81
-
-Associate eau gravite
-Associate pb dom
-Associate pb sch
-Associate pb eau
-Discretize pb dis
-
-Read pb {
 
     Navier_Stokes_QC {
         methode_calcul_pression_initiale avec_sources

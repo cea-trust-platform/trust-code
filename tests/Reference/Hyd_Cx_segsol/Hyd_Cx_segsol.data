@@ -50,16 +50,8 @@ Read mon_schema
     }
 }
 
-Fluide_Incompressible milieu
-Read milieu
-{
-    mu  Champ_Uniforme 1 0.04
-    rho Champ_Uniforme 1 2.
-}
-
 Associate pb dom
 Associate pb mon_schema
-Associate pb milieu
 Discretize pb ma_discretisation
 
 # We take a ring of the cylindre between z=-2 and z=-1 #
@@ -69,7 +61,14 @@ Extraire_surface { Domaine ring Probleme pb Condition_faces (z+2)*(z+1)*(x^2+y^2
 Domaine Entree
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu  Champ_Uniforme 1 0.04
+    rho Champ_Uniforme 1 2.
+}
+
+
+Navier_Stokes_standard
     {
         solveur_pression GCP {
             precond ssor { omega 1.500000 }
@@ -259,3 +258,4 @@ Read pb
 
 Solve pb
 End
+ 

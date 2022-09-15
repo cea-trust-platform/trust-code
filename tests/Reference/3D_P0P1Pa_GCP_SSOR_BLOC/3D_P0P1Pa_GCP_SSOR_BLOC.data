@@ -60,18 +60,9 @@ Read sch
     seuil_statio 1.e-10
     facsec 0.25
 }
-Fluide_Incompressible fluide
-Read fluide
-{
-    mu Champ_Uniforme	1 1.
-    rho Champ_Uniforme	1 1.
-}
-
 Pb_Hydraulique pb
 Associate pb dom
 Associate pb sch
-Associate pb fluide
-
 /* Solveur_Pression GCP {
 			seuil 1.e-12 impr
 			precond ssor
@@ -83,7 +74,14 @@ Associate pb fluide
 Discretize pb dis
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu Champ_Uniforme	1 1.
+    rho Champ_Uniforme	1 1.
+}
+
+
+Navier_Stokes_standard
     {
         Solveur_Pression GCP {
             seuil 1.e-7 impr
@@ -125,3 +123,4 @@ Read pb
 }
 Solve pb
 End
+ 

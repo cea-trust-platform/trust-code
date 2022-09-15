@@ -53,25 +53,23 @@ Read sch
 }
 
 # --------- DEFINITION DU FLUIDE --------- #
-Fluide_Incompressible fluide
-Read fluide
-{
-    mu Champ_Uniforme       1 0.015
-    rho Champ_Uniforme      1 1500.
-}
-
 # --------- ASSOCIATION --------- #
 Associate pb dom
 Associate pb sch
-Associate pb fluide
-
 Discretize pb dis
 
 
 # --------- LECTURE DES CONDITIONS DE CALCUL --------- #
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu Champ_Uniforme       1 0.015
+    rho Champ_Uniforme      1 1500.
+}
+
+
+Navier_Stokes_standard
     {
         solveur_pression GCP { precond ssor { omega 1.65 } seuil 1.e-12 impr }
         convection { EF transportant_bar 0 transporte_bar 0 filtrer_resu 0 antisym 0 }
@@ -138,3 +136,4 @@ Imprimer_flux dom { reservoir }
 
 # --------- LANCEMENT DU CALCUL --------- #
 Solve pb
+ 

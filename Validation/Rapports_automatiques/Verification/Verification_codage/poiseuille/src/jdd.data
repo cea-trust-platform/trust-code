@@ -36,21 +36,20 @@ Read sch
 }
 
 
-Fluide_Incompressible eau
-Read eau
-{
-    mu  Champ_Uniforme 1 $mu
-    rho Champ_Uniforme 1 10
-}
-
 Associate  pb dom
 Associate  pb sch
-Associate  pb eau
 Discretize pb dis
 
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu  Champ_Uniforme 1 $mu
+    rho Champ_Uniforme 1 10
+}
+
+
+Navier_Stokes_standard
     {
         solveur_pression petsc cholesky { }
         convection { negligeable }
@@ -110,3 +109,4 @@ Read pb
 }
 Solve pb
 End
+ 

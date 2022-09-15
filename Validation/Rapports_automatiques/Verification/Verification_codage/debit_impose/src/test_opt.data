@@ -37,25 +37,21 @@ Read sch
     dt_max 1
 }
 
-Fluide_Incompressible eau
-Read eau
-{
-    mu  Champ_uniforme 1 1.
-    rho Champ_Uniforme 1 1000.
-}
-
 Associate pb dom
 Associate pb sch
-Associate pb eau
-
-
-
 Discretize pb dis
 domaine IN
 extraire_surface { probleme pb domaine IN avec_certains_bords 1 IN }
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu  Champ_uniforme 1 1.
+    rho Champ_Uniforme 1 1000.
+}
+
+
+Navier_Stokes_standard
     {
         methode_calcul_pression_initiale avec_sources
         solveur_pression GCP {
@@ -95,3 +91,4 @@ Read pb
 }
 Solve pb
 End
+ 

@@ -1,7 +1,6 @@
 # Mesh construction with tanh variation in X, Y and Z directions #
 # PARALLEL NOT #
 dimension 3
-Pb_Hydraulique pb
 Domaine dom
 
 Mailler dom

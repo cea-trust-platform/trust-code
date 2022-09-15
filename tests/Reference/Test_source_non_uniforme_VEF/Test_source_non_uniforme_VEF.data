@@ -40,24 +40,23 @@ Lire sch2
 }
 
 
-Solide sol
-Lire sol
-{
-    rho champ_uniforme 1 1
-    lambda champ_uniforme 1 1
-    Cp champ_uniforme 1 1
-}
-
-
 Associer pb2 dom
 Associer pb2 sch2
-Associer pb2 sol
 Discretiser pb2 dis
 
 
 Lire pb2
 {
-    Conduction
+       
+solide {
+     rho champ_uniforme 1 1
+    lambda champ_uniforme 1 1
+    Cp champ_uniforme 1 1
+}
+
+
+
+Conduction
     {
         Diffusion		{ }
         Conditions_initiales	{
@@ -89,3 +88,4 @@ Lire pb2
 Resoudre pb2
 
 Fin
+ 

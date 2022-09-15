@@ -45,24 +45,23 @@ Read mon_schema
 }
 
 # Je definis un milieu #
-Fluide_Incompressible milieu
-Read milieu
+Associate pb dom
+Associate pb mon_schema
+Discretize pb ma_discretisation
+
+Read pb
 {
-    mu  Champ_Uniforme 1 0.01
+       
+fluide_incompressible {
+     mu  Champ_Uniforme 1 0.01
     rho Champ_Uniforme 1 2.
     lambda Champ_Uniforme 1 2
     Cp Champ_Uniforme 1 100.
     beta_th Champ_Uniforme 1 0.
 }
 
-Associate pb dom
-Associate pb mon_schema
-Associate pb milieu
-Discretize pb ma_discretisation
 
-Read pb
-{
-    Navier_Stokes_standard
+Navier_Stokes_standard
     {
         solveur_pression GCP {
             precond ssor { omega 1.65 }
@@ -109,3 +108,4 @@ Read pb
 End
 Solve pb
 
+ 

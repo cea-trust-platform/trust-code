@@ -109,11 +109,21 @@ Lire sch
     seuil_diffusion_implicite 1.e-10 */
 }
 
-Fluide_Quasi_Compressible air
-Lire air
+
+Associer pb dom
+Associer pb sch
+
+option_vdf { p_imposee_aux_faces oui }
+
+Discretiser pb dis
+
+Lire pb
+{
+Fluide_Quasi_Compressible
 {
     pression   100000.
     traitement_pth constant
+    gravite Champ_Uniforme 2 0. -9.81
 
     loi_etat binaire_gaz_parfait_QC
     {
@@ -130,21 +140,6 @@ Lire air
     }
 }
 
-
-Champ_Uniforme gravite
-Lire gravite 2 0. -9.81
-Associer air gravite
-
-Associer pb dom
-Associer pb air
-Associer pb sch
-
-option_vdf { p_imposee_aux_faces oui }
-
-Discretiser pb dis
-
-Lire pb
-{
     Navier_Stokes_QC
     {
         solveur_pression Petsc GCP { precond SSOR { omega 1.6 }  seuil 1.e-12 impr   }

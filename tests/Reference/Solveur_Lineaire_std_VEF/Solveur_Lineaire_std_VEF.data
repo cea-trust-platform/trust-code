@@ -55,23 +55,21 @@ Read sch
     }
 }
 
-Solide sol
-Read sol
-{
-    rho	Champ_Uniforme 1 1.
-    lambda	Champ_Uniforme 1 0.1
-    Cp	Champ_Uniforme 1 0.1
-}
-
 Associate pb dom
 Associate pb sch
-Associate pb sol
-
 Discretize pb dis
 
 Read pb
 {
-    Conduction
+       
+solide {
+     rho	Champ_Uniforme 1 1.
+    lambda	Champ_Uniforme 1 0.1
+    Cp	Champ_Uniforme 1 0.1
+}
+
+
+Conduction
     {
         diffusion { }
         initial_conditions { temperature Champ_Uniforme 1 0. }
@@ -98,3 +96,4 @@ Read pb
 
 Solve pb
 End
+ 

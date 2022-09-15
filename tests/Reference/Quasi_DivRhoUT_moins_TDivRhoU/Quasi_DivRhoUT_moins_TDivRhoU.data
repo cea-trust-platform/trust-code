@@ -55,30 +55,29 @@ Read sch
 Pb_thermohydraulique_QC pb_plenum
 VDF dis
 
-Fluide_Quasi_Compressible heliumQC_plenum
-Read heliumQC_plenum
-{
-    pression 7000000.
-    Sutherland pb_plenum mu0 1.6E-5 T0 273.15 Slambda 235. C 235.
-
-    loi_etat gaz_parfait_QC {
-        Prandtl 0.67
-        Cp 5193.
-        gamma 1.666
-    }
-    traitement_pth constant
-}
 
 Associate pb_plenum dom
 Associate pb_plenum sch
-Associate pb_plenum heliumQC_plenum
 
 Discretize pb_plenum dis
 
 
 
 Read pb_plenum {
-
+   
+   fluide_quasi_compressible {
+        pression 7000000.
+       Sutherland pb_plenum mu0 1.6E-5 T0 273.15 Slambda 235. C 235.
+   
+       loi_etat gaz_parfait_QC {
+           Prandtl 0.67
+           Cp 5193.
+           gamma 1.666
+       }
+       traitement_pth constant
+   }
+   
+   
     Navier_Stokes_QC
     {
 
@@ -135,3 +134,4 @@ Solve pb_plenum
 
 End
 
+ 

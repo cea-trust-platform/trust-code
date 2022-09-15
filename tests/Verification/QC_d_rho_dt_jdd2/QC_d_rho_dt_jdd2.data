@@ -40,8 +40,14 @@ Read sch
     seuil_statio 1.e-12
 }
 
-Fluide_Quasi_Compressible fluide
-Read fluide
+Associate pb_Th dom_fluide
+Associate pb_Th sch
+
+Discretize pb_Th dis
+
+Read pb_Th
+{
+Fluide_Quasi_Compressible
 {
     mu	Champ_Uniforme 1 5.e-5
     lambda	Champ_Uniforme 1 5.e-1
@@ -53,20 +59,9 @@ Read fluide
         gamma     1.5
     }
     Traitement_Pth		constant
+    gravite Champ_Uniforme 2 0 0
 }
 
-Champ_Uniforme gravite
-Read gravite 2 0 0
-
-Associate fluide gravite
-Associate pb_Th dom_fluide
-Associate pb_Th fluide
-Associate pb_Th sch
-
-Discretize pb_Th dis
-
-Read pb_Th
-{
     Navier_Stokes_QC
     {
         solveur_pression petsc cholesky { }

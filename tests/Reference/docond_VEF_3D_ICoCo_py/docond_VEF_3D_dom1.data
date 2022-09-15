@@ -25,27 +25,22 @@ Scatter DOM1.Zones dom_solide
 
 VEFPreP1b dis
 
-Solide sol
-Read sol
-{
-    rho Champ_Uniforme 1 7800.
-    lambda Champ_Uniforme 1 28.8
-    Cp Champ_Uniforme 1 562.69
-}
-
-Champ_Uniforme gravite
-Read gravite 3 0 0 -9.81
-Associate sol gravite
-
 Associate pb dom_solide
-Associate pb sol
-
 Associate pb sch
 Discretize pb dis
 
 Read pb
 {
-    Conduction
+       
+solide {
+    gravite champ_uniforme 3 0 0 -9.81
+rho Champ_Uniforme 1 7800.
+    lambda Champ_Uniforme 1 28.8
+    Cp Champ_Uniforme 1 562.69
+}
+
+
+Conduction
     {
         diffusion { }
         sources { Puissance_Thermique champ_uniforme 1 1000 }
@@ -89,3 +84,4 @@ Read pb
 
 End
 
+ 

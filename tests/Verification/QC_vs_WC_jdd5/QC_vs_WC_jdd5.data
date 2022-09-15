@@ -51,10 +51,19 @@ Read sch
     facsec 1.0
 }
 
-Fluide_Weakly_Compressible fluide
-Read fluide
+Associate pb dom
+Associate pb sch
+option_vdf { p_imposee_aux_faces oui }
+
+Discretize pb dis
+
+Read pb
 {
-    mu champ_fonc_fonction pb temperature 1 5.e-3
+       
+fluide_weakly_compressible {
+    gravite champ_uniforme 2 0. -9.81
+
+mu champ_fonc_fonction pb temperature 1 5.e-3
     lambda champ_fonc_fonction pb temperature 1 5.e-3
     loi_etat gaz_parfait_WC
     {
@@ -66,21 +75,8 @@ Read fluide
     use_hydrostatic_pressure 0 /* 0 is by default */
 }
 
-Champ_Uniforme gravite
-Read gravite 2 0. -9.81
 
-Associate fluide gravite
-Associate pb dom
-Associate pb sch
-Associate pb fluide
-
-option_vdf { p_imposee_aux_faces oui }
-
-Discretize pb dis
-
-Read pb
-{
-    Navier_Stokes_WC
+Navier_Stokes_WC
     {
         solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-7 impr }
         convection { amont }
@@ -134,3 +130,4 @@ Read pb
 }
 Solve pb
 End
+ 

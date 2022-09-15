@@ -51,22 +51,20 @@ Read sch
     seuil_statio 1.e-8
 }
 
-Solide sol
-Read sol
-{
-    rho Champ_Uniforme 1 2
-    lambda Champ_Uniforme 1 0.01
-    Cp Champ_Uniforme 1 0.5
-}
 Associate pb dom
 Associate pb sch
-Associate pb sol
-
 Discretize pb dis
 
 Read pb
 {
-    Conduction
+       
+solide {
+     rho Champ_Uniforme 1 2
+    lambda Champ_Uniforme 1 0.01
+    Cp Champ_Uniforme 1 0.5
+}
+
+Conduction
     {
         diffusion { }
         initial_conditions {
@@ -100,3 +98,4 @@ Read pb
 Solve pb
 
 End
+ 

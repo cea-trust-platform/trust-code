@@ -2,7 +2,6 @@
 # PARALLEL NOT #
 
 dimension 3
-Pb_Hydraulique pb
 Domaine dom
 
 Mailler dom

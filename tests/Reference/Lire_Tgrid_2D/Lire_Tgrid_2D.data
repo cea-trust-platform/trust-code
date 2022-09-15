@@ -20,23 +20,22 @@ Read sch
     seuil_statio 1.e-3
 }
 
-Fluide_Incompressible fluide
-Read fluide
-{
-    mu Champ_Uniforme 1 1.85e-5
-    rho Champ_Uniforme 1 1.17
-    lambda Champ_Uniforme 1 0.0262
-}
-
 Pb_Hydraulique pb1
 Associate pb1 dom1
-Associate pb1 fluide
 Associate pb1 sch
 Discretize pb1 dis
 
 Read pb1
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu Champ_Uniforme 1 1.85e-5
+    rho Champ_Uniforme 1 1.17
+    lambda Champ_Uniforme 1 0.0262
+}
+
+
+Navier_Stokes_standard
     {
         solveur_pression petsc cholesky { }
         convection { muscl }
@@ -83,3 +82,4 @@ Read pb1
 }
 Solve pb1
 End
+ 

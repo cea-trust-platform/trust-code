@@ -58,30 +58,24 @@ Read sch
 
 VEFPreP1b cubesregu
 
+
+Associate pb2 dom_pb2
+Associate pb2 sch
+Discretize pb2 cubesregu
+
+Read pb2
+{
 # Proprietes He vers 700°C #
-Fluide_Incompressible He
-Read He
+Fluide_Incompressible
 {
     mu Champ_Uniforme 1 4.46437e-05
     rho Champ_Uniforme 1 4.40684
     lambda Champ_Uniforme 1 0.344964
     Cp Champ_Uniforme 1 5193.
     beta_th Champ_Uniforme 1 0.0014285714
+    gravite Champ_Uniforme 2 -9 0.
 }
-Champ_Uniforme gravite
-Read gravite 2 -9 0.
-Associate He gravite
 
-Associate pb2 dom_pb2
-Associate pb2 He
-
-
-
-Associate pb2 sch
-Discretize pb2 cubesregu
-
-Read pb2
-{
     Navier_Stokes_standard
     {
         solveur_pression Gcp {

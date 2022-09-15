@@ -50,25 +50,23 @@ Read sch
     seuil_statio 2.22222e-07
 }
 
-Fluide_incompressible fluide
-Read fluide
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+Read pb
 {
-    rho Champ_Uniforme 1 2.
+       
+fluide_incompressible {
+     rho Champ_Uniforme 1 2.
     mu Champ_Uniforme 1 1.
     lambda Champ_Uniforme 1 0.25
     Cp Champ_Uniforme 1 2.
     beta_th Champ_Uniforme 1 1.
 }
 
-Associate pb dom
-Associate pb sch
-Associate pb fluide
 
-Discretize pb dis
-
-Read pb
-{
-    Navier_Stokes_standard
+Navier_Stokes_standard
     {
         methode_calcul_pression_initiale avec_sources_et_operateurs
         solveur_pression GCP {
@@ -135,3 +133,4 @@ solveur_pression GCP {
     seuil 1.e-12
 }
 
+ 

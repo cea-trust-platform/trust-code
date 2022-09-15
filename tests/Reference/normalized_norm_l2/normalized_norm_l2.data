@@ -46,22 +46,20 @@ Read sch
     nb_pas_dt_max 0
 }
 
-Fluide_incompressible fluide
-Read fluide
-{
-    mu  champ_uniforme 1 1.
-    rho champ_uniforme 1 1.
-}
-
 Associate pb dom
 Associate pb sch
-Associate pb fluide
-
 Discretize pb dis
 
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu  champ_uniforme 1 1.
+    rho champ_uniforme 1 1.
+}
+
+
+Navier_Stokes_standard
     {
         Solveur_pression	Petsc Cholesky { impr }
         Convection		{ negligeable }
@@ -120,3 +118,4 @@ Read pb
 
 Solve pb
 End
+ 

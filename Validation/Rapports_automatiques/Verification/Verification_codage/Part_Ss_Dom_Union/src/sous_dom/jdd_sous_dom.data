@@ -2,7 +2,6 @@
 # PARALLEL NOT #
 
 dimension 2
-Pb_Conduction pb
 
 Domaine domaine_glob
 Domaine domaine1

@@ -50,24 +50,22 @@ Read sch
     solveur implicite { solveur gmres { diag seuil 1e-20 nb_it_max 3 } }
 }
 
-Fluide_Incompressible fluide
-Read fluide
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+Read pb
 {
-    mu Champ_Uniforme 1 0.05
+       
+fluide_incompressible {
+     mu Champ_Uniforme 1 0.05
     rho Champ_Uniforme 1 1.2
     # Porosites_champ champ_uniforme 1 0.25 #
 
 }
 
-Associate pb dom
-Associate pb sch
-Associate pb fluide
 
-Discretize pb dis
-
-Read pb
-{
-    Navier_Stokes_standard
+Navier_Stokes_standard
     {
         solveur_pression GCP { seuil 1e-6 precond ssor { omega 1.5 } }
         solveur_pression petsc cholesky { }
@@ -100,3 +98,4 @@ Read pb
 
 Solve pb
 End
+ 

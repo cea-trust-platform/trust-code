@@ -51,14 +51,6 @@ Pb_conduction pb_conduction
 VEFPreP1B dis
 Read dis { P0 }
 
-# --------- DEFINITION DU SOLIDE --------- #
-Solide verre
-Read verre
-{
-    rho Champ_Uniforme 1 2500.
-    lambda Champ_Uniforme 1 1.35
-    Cp Champ_Uniforme 1 720
-}
 
 # --------- SCHEMA EN TEMPS --------- #
 Scheme_euler_explicit sch
@@ -76,7 +68,6 @@ Read sch
 
 # --------- ASSOCIATION --------- #
 Associate pb_conduction assemblage
-Associate pb_conduction verre
 Associate pb_conduction sch
 
 Discretize pb_conduction dis
@@ -84,6 +75,13 @@ Discretize pb_conduction dis
 # --------- LECTURE DES CONDITIONS DE CALCUL CONDUCTION --------- #
 Read pb_conduction
 {
+Solide
+{
+    rho Champ_Uniforme 1 2500.
+    lambda Champ_Uniforme 1 1.35
+    Cp Champ_Uniforme 1 720
+}
+
     Conduction
     {
         diffusion { }

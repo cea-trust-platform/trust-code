@@ -66,10 +66,15 @@ Read sch
     seuil_statio 1.e-15
     facsec 0.5
 }
-Fluide_Incompressible fluide
-Read fluide
+Associate pb dom_pb1
+Associate pb sch
+Discretize pb dis
+
+Read pb
 {
-    mu Champ_Uniforme 1 2
+       
+fluide_incompressible {
+     mu Champ_Uniforme 1 2
     rho Champ_Uniforme 1 2
     lambda Champ_uniforme 1 .5
     Cp Champ_Uniforme 1 3500
@@ -77,14 +82,8 @@ Read fluide
     Porosites_champ champ_uniforme_morceaux dom_pb1 1 { defaut 1 Suz1001 0.5 }
 }
 
-Associate pb dom_pb1
-Associate pb sch
-Associate pb fluide
-Discretize pb dis
 
-Read pb
-{
-    Navier_Stokes_standard
+Navier_Stokes_standard
     {
         solveur_pression GCP {
             precond ssor { omega 1.5 } seuil 1.e-5
@@ -141,3 +140,4 @@ Read pb
 }
 Solve pb
 End
+ 

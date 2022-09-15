@@ -24,14 +24,6 @@ END SCATTER #
 
 VDF dis
 
-Solide sol
-Read sol
-{
-    rho Champ_Uniforme 1 2.0
-    lambda Champ_Uniforme 1 10.
-    Cp Champ_Uniforme 1 5.0
-}
-
 Scheme_euler_explicit sch
 Read sch
 {
@@ -45,12 +37,19 @@ Read sch
 
 Associate pb dom
 Associate pb sch
-Associate pb sol
 Discretize pb dis
 
 Read pb
 {
-    Conduction
+       
+solide {
+     rho Champ_Uniforme 1 2.0
+    lambda Champ_Uniforme 1 10.
+    Cp Champ_Uniforme 1 5.0
+}
+
+
+Conduction
     {
         diffusion { }
         initial_conditions {
@@ -82,3 +81,4 @@ Read pb
 
 Solve pb
 End
+ 

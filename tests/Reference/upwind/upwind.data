@@ -43,22 +43,20 @@ Read sch
     seuil_statio 1.e-8
 }
 
-Fluide_Incompressible eau
-Read eau
-{
-    mu Champ_Uniforme 1 3.7e-05
-    rho Champ_Uniforme 1 2
-}
-
 Associate pb dom
 Associate pb sch
-Associate pb eau
-
 Discretize pb dis
 
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu Champ_Uniforme 1 3.7e-05
+    rho Champ_Uniforme 1 2
+}
+
+
+Navier_Stokes_standard
     {
         solveur_pression GCP {
             precond ssor { omega 1.5 }
@@ -212,3 +210,4 @@ EcritureLectureSpecial EcrFicPartageBin
 Calculer_moments dom centre_de_gravite 0.00 0.22
 Solve pb
 End
+ 

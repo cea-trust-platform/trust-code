@@ -30,24 +30,22 @@ Read sch
     nb_pas_dt_max 110
 }
 
-Fluide_Incompressible fluide
-Read fluide
-{
-    mu Champ_Uniforme 1 0.005
-    rho Champ_Uniforme 1 2
-}
-
 Associate pb dom
 Associate pb sch
-Associate pb fluide
-
 Discretize pb dis
 
 # DEBOG #
 
 Read pb
 {
-    Navier_Stokes_Standard
+       
+fluide_incompressible {
+     mu Champ_Uniforme 1 0.005
+    rho Champ_Uniforme 1 2
+}
+
+
+Navier_Stokes_Standard
     {
         solveur_pression optimal { seuil 1.000000e-09 quiet }
 
@@ -114,3 +112,4 @@ Calculer_moments dom centre_de_gravite 0 0 0
 Solve pb
 End
 
+ 

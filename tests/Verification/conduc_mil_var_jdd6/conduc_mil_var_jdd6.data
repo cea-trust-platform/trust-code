@@ -57,10 +57,15 @@ Read sch
 
 }
 
-Solide sol
-Read sol
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+Read pb
 {
-    rho Champ_tabule_temps 1
+       
+solide {
+     rho Champ_tabule_temps 1
     # 1ere ligne: dimension / 2eme ligne: temps / 3eme ligne: valeurs #
     {
         3
@@ -83,15 +88,8 @@ Read sol
     }
 
 }
-Associate pb dom
-Associate pb sch
-Associate pb sol
 
-Discretize pb dis
-
-Read pb
-{
-    Conduction
+Conduction
     {
         diffusion { }
         initial_conditions {
@@ -122,3 +120,4 @@ Read pb
 Solve pb
 
 End
+ 

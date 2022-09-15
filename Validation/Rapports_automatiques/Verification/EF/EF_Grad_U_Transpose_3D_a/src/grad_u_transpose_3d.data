@@ -45,22 +45,20 @@ Read sch
       facsec 1.
 } */
 
-Fluide_Incompressible eau
-Read eau
-{
-    mu Champ_Fonc_XYZ dom 1 (10.+x+y+z)
-    rho Champ_Uniforme 1 1.
-}
-
 Associate pb dom
 Associate pb sch
-Associate pb eau
-
 Discretize pb dis
 
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu Champ_Fonc_XYZ dom 1 (10.+x+y+z)
+    rho Champ_Uniforme 1 1.
+}
+
+
+Navier_Stokes_standard
     {
         methode_calcul_pression_initiale avec_sources_et_operateurs
         solveur_pression GCP {
@@ -96,3 +94,4 @@ Read pb
 Solve pb
 
 End
+ 

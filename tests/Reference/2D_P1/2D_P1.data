@@ -57,23 +57,21 @@ Read sch
     facsec 0.5
     nb_pas_dt_max 4
 }
-Fluide_Incompressible fluide
-Read fluide
-{
-    mu Champ_Uniforme	1 1.
-    rho Champ_Uniforme	1 1.
-}
-
 Pb_Hydraulique pb
 Associate pb dom
 Associate pb sch
-Associate pb fluide
-
 Discretize pb dis
 Debog pb seq faces 1.e-6 0
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu Champ_Uniforme	1 1.
+    rho Champ_Uniforme	1 1.
+}
+
+
+Navier_Stokes_standard
     {
         dt_projection 1. 1.e-16
         Solveur_Pression GCP {
@@ -138,3 +136,4 @@ Read pb
 
 Solve pb
 End
+ 

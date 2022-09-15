@@ -65,23 +65,21 @@ Read sch
     seuil_statio	1.e-5
 }
 
-Solide sol
-Read sol
-{
-    rho	Champ_Uniforme 1 1000.
-    lambda	Champ_Uniforme 1 250.
-    Cp	Champ_Uniforme 1 100.
-}
-
 Associate pb dom
 Associate pb sch
-Associate pb sol
-
 Discretize pb dis
 
 Read pb
 {
-    Conduction
+       
+solide {
+     rho	Champ_Uniforme 1 1000.
+    lambda	Champ_Uniforme 1 250.
+    Cp	Champ_Uniforme 1 100.
+}
+
+
+Conduction
     {
         sources { Puissance_Thermique Champ_uniforme_Morceaux dom 1 { defaut 0. SSZ 1e5 } }
         diffusion { }
@@ -107,3 +105,4 @@ Read pb
 }
 Solve pb
 End
+ 

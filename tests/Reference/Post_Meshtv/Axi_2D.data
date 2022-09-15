@@ -6,7 +6,6 @@ Domaine dom
 Read_file Hyd_Axi.geo ;
 VDF dis
 Scheme_euler_explicit sch
-Fluide_Incompressible eau
 
 Read sch
 {
@@ -21,20 +20,18 @@ Read sch
     facsec 1.
 }
 Ecrire sch
-Read eau
-{
-    mu Champ_Uniforme 1 1.85e-2
-    rho Champ_Uniforme 1 1.
-}
-Ecrire eau
 Associate pb dom
 Associate pb sch
-Associate pb eau
 
 Discretize pb dis
 
 Read pb
 {
+Fluide_Incompressible
+{
+    mu Champ_Uniforme 1 1.85e-2
+    rho Champ_Uniforme 1 1.
+}
     Navier_Stokes_standard
     {
         solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-8 impr }

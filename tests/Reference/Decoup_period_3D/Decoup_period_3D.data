@@ -42,7 +42,6 @@ END SCATTER #
 
 VEFPreP1B dis
 Scheme_euler_explicit sch
-Fluide_Incompressible eau
 Pb_Hydraulique pb
 Read sch
 {
@@ -56,20 +55,19 @@ Read sch
     nb_pas_dt_max 3
 }
 
-Read eau
-{
-    mu Champ_Uniforme 1 0.002
-    rho Champ_Uniforme 1 2
-}
-
 Associate pb dom
 Associate pb sch
-Associate pb eau
-
 Discretize pb dis
 Read pb
 {
-    Navier_Stokes_standard
+       
+fluide_incompressible {
+     mu Champ_Uniforme 1 0.002
+    rho Champ_Uniforme 1 2
+}
+
+
+Navier_Stokes_standard
     {
         solveur_pression GCP {
             precond_nul
@@ -107,3 +105,4 @@ Read pb
 
 Solve pb
 End
+ 

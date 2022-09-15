@@ -56,22 +56,21 @@ Read sch
     diffusion_implicite 1
 }
 
-Solide medium
-Read medium
-{
-    rho Champ_Uniforme 1 700.
-    cp Champ_uniforme 1 5000.
-    lambda champ_uniforme 1 0.5
-}
-
 Associate pb dom
 Associate pb sch
-Associate pb medium
 Discretize pb dis
 
 Read pb
 {
-    ConDuction
+       
+solide {
+     rho Champ_Uniforme 1 700.
+    cp Champ_uniforme 1 5000.
+    lambda champ_uniforme 1 0.5
+}
+
+
+ConDuction
     {
         diffusion { }
         sources
@@ -106,3 +105,4 @@ Read pb
 
 Solve pb
 End
+ 

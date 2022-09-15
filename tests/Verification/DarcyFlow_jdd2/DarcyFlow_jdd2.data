@@ -34,10 +34,15 @@ Read sch
 }
 Champ_uniforme gravite
 Read gravite 3 0.0 -9.81 0.0
-Fluide_quasi_compressible fluide
-Read fluide
+Pb_thermohydraulique_qc pb
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+Read pb
 {
-    pression 111582.205714
+       
+fluide_quasi_compressible {
+     pression 111582.205714
     loi_etat gaz_parfait_QC
     {
         Cp 1006.8
@@ -49,14 +54,8 @@ Read fluide
     traitement_rho_gravite moins_rho_moyen
     mu champ_uniforme 1 1.33e-05
 }
-Pb_thermohydraulique_qc pb
-Associate pb dom
-Associate pb sch
-Associate pb fluide
-Discretize pb dis
-Read pb
-{
-    Navier_stokes_qc
+
+Navier_stokes_qc
     {
         solveur_pression petsc Cholesky { }
         convection { negligeable }
@@ -108,3 +107,4 @@ Read pb
 Solve pb
 End
 
+ 

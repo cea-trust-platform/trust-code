@@ -65,25 +65,23 @@ Lire sch_impl
     seuil_statio 1e-8
 }
 
-Fluide_quasi_compressible fluide
-Lire fluide
+Associer pb dom
+Associer pb sch_impl
+Discretiser pb dis
+
+Lire pb
 {
-    mu		champ_fonc_xyz dom 1 2+1*cos(2*pi*x)*cos(2*pi*y)
+       
+fluide_quasi_compressible {
+     mu		champ_fonc_xyz dom 1 2+1*cos(2*pi*x)*cos(2*pi*y)
     lambda		champ_fonc_xyz dom 1 1
     pression	1
     loi_etat	rhoT_gaz_parfait_QC { Prandtl 1 Cp 1 rho_xyz champ_fonc_xyz dom 1 1/(2+sin(2*pi*x)*sin(2*pi*y)) }
     traitement_pth conservation_masse
 }
 
-Associer pb dom
-Associer pb sch_impl
-Associer pb fluide
 
-Discretiser pb dis
-
-Lire pb
-{
-    Navier_Stokes_QC
+Navier_Stokes_QC
     {
         Projection_initiale	0
         Solveur_pression	PETSC Cholesky { }
@@ -208,3 +206,4 @@ Lire pb
 Resoudre pb
 
 Fin
+ 

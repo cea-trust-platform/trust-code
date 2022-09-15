@@ -58,22 +58,20 @@ Read sch
 ecrire_champ_med dom ll ll.med
 lambda Champ_fonc_med  last_time ll.med dom ll elem 0. */
 
-Solide sol
-Read sol
-{
-    rho Champ_Uniforme 1 1.
-    lambda champ_fonc_xyz dom 1 0.25+1.125*x
-    Cp Champ_Uniforme 1 1.
-}
 Associate pb dom
 Associate pb sch
-Associate pb sol
-
 Discretize pb dis
 
 Read pb
 {
-    Conduction
+       
+solide {
+     rho Champ_Uniforme 1 1.
+    lambda champ_fonc_xyz dom 1 0.25+1.125*x
+    Cp Champ_Uniforme 1 1.
+}
+
+Conduction
     {
         diffusion { }
         initial_conditions {
@@ -104,3 +102,4 @@ Read pb
 Solve pb
 
 End
+ 

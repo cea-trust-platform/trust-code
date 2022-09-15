@@ -36,29 +36,26 @@ Read sch
     seuil_statio 1.e-10
 }
 
-Fluide_Incompressible fluide
-Read fluide
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+# Solve dU/dt=-grad(P*)-nu.U/K-Cf.U.|U|/sqrt(K1) #
+Read pb
 {
-    mu Champ_Uniforme 1 1.33e-5
+       
+fluide_incompressible {
+    gravite champ_uniforme 3 0 -9.81 0.
+
+mu Champ_Uniforme 1 1.33e-5
     rho Champ_Uniforme 1 1.293
     lambda Champ_Uniforme 1 0.0271
     Cp Champ_Uniforme 1 1006.8
     beta_th Champ_Uniforme 1 3.23e-3
 }
 
-Champ_Uniforme gravite
-Read gravite 3 0 -9.81 0.
 
-Associate fluide gravite
-Associate pb dom
-Associate pb sch
-Associate pb fluide
-Discretize pb dis
-
-# Solve dU/dt=-grad(P*)-nu.U/K-Cf.U.|U|/sqrt(K1) #
-Read pb
-{
-    Navier_Stokes_standard
+Navier_Stokes_standard
     {
         solveur_pression petsc Cholesky { }
         convection { negligeable }
@@ -91,3 +88,4 @@ Read pb
 }
 Solve pb
 End
+ 

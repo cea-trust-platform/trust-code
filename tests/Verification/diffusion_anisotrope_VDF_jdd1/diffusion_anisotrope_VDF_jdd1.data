@@ -56,23 +56,21 @@ Read scheme
     }
 }
 
-solide sol
-read sol
-{
-    rho champ_uniforme 1 1.0
-    lambda champ_fonc_xyz DOM 2 (1.0*(x[0.5)+10.0*(x>0.5)) (4.0*(x[0.5)+2.0*(x>0.5))
-    Cp champ_uniforme 1 1.0
-}
-
 associate pb DOM
 associate pb scheme
-associate pb sol
-
 discretize pb dis
 
 read pb
 {
-    # Resolution div (-grad u) = 0 donc sans source, sans coefficient, steady state #
+       
+solide {
+     rho champ_uniforme 1 1.0
+    lambda champ_fonc_xyz DOM 2 (1.0*(x[0.5)+10.0*(x>0.5)) (4.0*(x[0.5)+2.0*(x>0.5))
+    Cp champ_uniforme 1 1.0
+}
+
+
+# Resolution div (-grad u) = 0 donc sans source, sans coefficient, steady state #
     conduction
     {
         diffusion { }
@@ -142,3 +140,4 @@ lata_to_med NOM_DU_CAS NOM_DU_CAS
 lata_to_other lml NOM_DU_CAS NOM_DU_CAS
 
 end
+ 

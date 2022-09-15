@@ -59,29 +59,25 @@ Read sch
     facsec 1.1
 }
 
-Fluide_Incompressible fluide
-Read fluide
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+Read pb
 {
-    mu Champ_Uniforme 1 0.001094
+       
+fluide_incompressible {
+    gravite champ_uniforme 2 0 -9.81
+
+mu Champ_Uniforme 1 0.001094
     rho Champ_Uniforme 1 2
     lambda Champ_Uniforme 1 2.64e-3
     Cp Champ_Uniforme 1 500
     beta_th Champ_Uniforme 1 3.41e-3
 }
 
-Champ_Uniforme gravite
-Read gravite 2 0 -9.81
 
-Associate fluide gravite
-Associate pb dom
-Associate pb sch
-Associate pb fluide
-
-Discretize pb dis
-
-Read pb
-{
-    Navier_Stokes_standard
+Navier_Stokes_standard
     {
         solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-10 impr }
         convection { muscl }
@@ -134,3 +130,4 @@ Read pb
 
 Solve pb
 End
+ 
