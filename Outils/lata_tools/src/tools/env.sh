@@ -23,5 +23,7 @@ if [ "`echo $PYTHONPATH | grep -i exec/lata_tools`" = "" ]
 then
   export PYTHONPATH=$LATA_TOOLS_INSTALL_DIR/lib:${PYTHONPATH}
   export LD_LIBRARY_PATH=$LATA_TOOLS_INSTALL_DIR/lib:${LD_LIBRARY_PATH}
+  # for cygwin
+  export PATH=$LATA_TOOLS_INSTALL_DIR/lib:${PATH}
 fi
 

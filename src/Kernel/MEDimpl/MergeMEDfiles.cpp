@@ -57,6 +57,7 @@ Entree& MergeMEDfiles::readOn(Entree& is)
 // a list of strings
 std::vector<std::string> glob_med_files(const std::string& fileName)
 {
+#ifndef __CYGWIN__
   glob_t glob_result;
 
   glob(fileName.c_str(),GLOB_TILDE,NULL,&glob_result);
@@ -68,6 +69,9 @@ std::vector<std::string> glob_med_files(const std::string& fileName)
   globfree(&glob_result);
 
   return ls_med;
+#else
+  throw;
+#endif
 }
 
 #ifdef MEDCOUPLING_

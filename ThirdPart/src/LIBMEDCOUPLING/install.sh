@@ -48,7 +48,12 @@ cd $build_root
 [ ! -f $archive_mc ] && echo $archive_mc no such file && exit 1
 [ ! -f $archive_conf ] && echo $archive_conf no such file && exit 1
 tar zxf $archive_mc
-(cd $src_dir; tar xvf $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/patch_mc.tar ) || exit 1
+# On applique les patchs que sur Cygwin:
+if [ "$(uname -a | grep CYGWIN)" != "" ]
+then
+   (cd $src_dir; tar xvf $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/patch_mc.tar ) || exit 1
+   (cd $src_dir; tar xvf $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/patch_mc2.tar ) || exit 1
+fi
 tar zxf $archive_conf
 
 echo "@@@@@@@@@@@@ Configuring, compiling and installing ..."
@@ -117,6 +122,7 @@ MC_ENV_FILE=$install_dir/env.sh
 #echo "export MED_COUPLING_ROOT=$install_dir"> $MC_ENV_FILE_tmp
 echo "export LD_LIBRARY_PATH=\$TRUST_MEDCOUPLING_ROOT/lib:\$TRUST_MED_ROOT/lib:\$TRUST_ROOT/exec/python/lib:\$LD_LIBRARY_PATH" > $MC_ENV_FILE_tmp
 echo "export PYTHONPATH=\$TRUST_MEDCOUPLING_ROOT/bin:\$TRUST_MEDCOUPLING_ROOT/lib/`cd $TRUST_MEDCOUPLING_ROOT/lib;find * -name site-packages`:\$PYTHONPATH" >> $MC_ENV_FILE_tmp
+echo "export PATH=\$TRUST_MED_ROOT/hdf5_install/bin:\$TRUST_MED_ROOT/med_install/bin:\$PATH" >> $MC_ENV_FILE_tmp
 echo "@@@@@@@@@@@@ Testing install ..."
 if [ $status -eq 0 ]  # install was successful
 then

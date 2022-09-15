@@ -62,6 +62,7 @@ mkdir -p build
 cd build
 
 minimal_mumps=0 # && [ $TRUST_ARCH = cygwin ] && minimal_mumps=1
+[ $TRUST_ARCH = cygwin ] && export TRUST_NB_PROCS=1  # mumps KO //
 scotch=1
 [ $minimal_mumps = 1 ] && scotch=0
 
@@ -589,6 +590,7 @@ do
    --with-clean=1 \
    --with-ssl=0 \
    --with-gmsh=0 --with-gmsh-exec=/bin/ls \
+   --with-windows-graphics=0 \
    $with_packages \
    $with_blas \
    $with_gpu --CUDAFLAGS="$CUDAFLAGS" \

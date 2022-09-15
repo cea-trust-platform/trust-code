@@ -27,7 +27,10 @@
 #include <stat_counters.h>
 #include <info_atelier.h>
 #include <unistd.h> // Pour chdir for other compiler
+
+#ifndef __CYGWIN__
 #include <catch_and_trace.h>
+#endif
 
 // Initialisation des compteurs, dans stat_counters.cpp
 extern void declare_stat_counters();
@@ -92,7 +95,9 @@ static int init_petsc(True_int argc, char **argv, int with_mpi,int& trio_began_m
   if (error_handlers)
     {
       Cerr << "Enabling error handlers catching SIGFPE and SIGABORT and giving a trace of where the fault happened." << finl;
+#ifndef __CYGWIN__
       install_handlers();
+#endif
     }
 #else
   // MPI_Init pour les machines ou Petsc n'est pas

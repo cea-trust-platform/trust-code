@@ -92,6 +92,8 @@ make_tools()
 # DEBUT DU SCRIPT #
 ###################
 [ "$TRUST_ROOT" = "" ] && echo "Error. TRUST_ROOT is empty. Initialize TRUST environment." && echo "BUILD_EXEC=KO" && exit -1 
+if [ "$(uname -a | grep CYGWIN)" = "" ] 
+then
 if [ "`grep $TRUST_ROOT/exec/python $TRUST_ROOT/exec/python/bin/conda`" = "" ]
 then
    echo ""
@@ -101,6 +103,7 @@ then
    echo "./configure \$OPTIONS && make # where your previous configure options are OPTIONS=$opts_configure"
    echo ""
    exit -1
+fi
 fi
 # if trust is configured with -enable-petsc-debug option and the user needs only $exec_debug (via make debug)
 # uncomment the following two lines and lines containing only_make_debug_with_petsc_debug in $TRUST_ROOT/ThirdPart/src/LIBPETSC/install

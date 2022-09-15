@@ -15,20 +15,36 @@
 
 #include <arch.h>
 #include <unistd.h>
-#ifdef MICROSOFT
 #include <math.h>
-#include <direct.h>
+#ifdef __CYGWIN__
+#include <cstring>
+
 void srand48(int s)
 {
   srand(s);
   //cerr<< "srand48 not implemented with Visual "<<endl;
   //Process::exit();
 }
+
 double drand48()
 {
   return double(rand())/RAND_MAX;
   // cerr<< "drand48 not implemented with Visual "<<endl;Process::exit();return 1.;
 }
+
+char* strdup(const char* str)
+{
+  size_t len = strlen(str);
+  char* x = (char*)malloc(len + 1); /* 1 for the null terminator */
+  if (!x)
+    return NULL;           /* malloc could not allocate memory */
+  memcpy(x, str, len + 1); /* copy the string into the new buffer */
+  return x;
+}
+#endif
+#ifdef MICROSOFT
+#include <direct.h>
+
 double atanh(const double& x)
 {
   // must be x>-1, x<1, if not return Nan (Not a Number)

@@ -808,6 +808,13 @@ else
    INSTALL_CONDA=1
 fi
 
+if [ "$(uname -a | grep CYGWIN)" != "" ] 
+then
+  INSTALL_CONDA=0
+  mkdir -p $TRUST_ROOT/exec
+  (cd $TRUST_ROOT/exec/; ln -sf $(dirname $(dirname $(which python))) python ) 
+fi
+
 if [ "$INSTALL_CONDA" = 1 ]
 then
     # If a previous installation folder exists, we remove it.

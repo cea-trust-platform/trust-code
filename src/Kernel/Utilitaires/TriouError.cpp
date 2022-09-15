@@ -16,7 +16,7 @@
 #include <TriouError.h>
 #include <cstring>
 #include <stdlib.h>
-
+#include <arch.h>
 
 TriouError::TriouError(const char* s, int pe)
 {
