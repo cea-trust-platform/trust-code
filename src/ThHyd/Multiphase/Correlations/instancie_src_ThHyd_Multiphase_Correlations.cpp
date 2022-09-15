@@ -26,6 +26,7 @@
 #include <Multiplicateur_diphasique_Lottes_Flinn.h>
 #include <Multiplicateur_diphasique_Muhler_Steinhagen.h>
 #include <Multiplicateur_diphasique_homogene.h>
+#include <Portance_interfaciale_Sugrue.h>
 #include <Portance_interfaciale_Tomiyama.h>
 void instancie_src_ThHyd_Multiphase_Correlations() {
 Cerr << "src_ThHyd_Multiphase_Correlations" << finl;
@@ -51,5 +52,6 @@ Multiplicateur_diphasique_Friedel inst19;verifie_pere(inst19);
 Multiplicateur_diphasique_Lottes_Flinn inst20;verifie_pere(inst20);
 Multiplicateur_diphasique_Muhler_Steinhagen inst21;verifie_pere(inst21);
 Multiplicateur_diphasique_homogene inst22;verifie_pere(inst22);
-Portance_interfaciale_Tomiyama inst23;verifie_pere(inst23);
+Portance_interfaciale_Sugrue inst23;verifie_pere(inst23);
+Portance_interfaciale_Tomiyama inst24;verifie_pere(inst24);
 }

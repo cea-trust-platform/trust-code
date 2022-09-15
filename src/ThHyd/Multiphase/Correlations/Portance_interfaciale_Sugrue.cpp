@@ -13,18 +13,18 @@
 *
 *****************************************************************************/
 
-#include <Portance_interfaciale_Tomiyama.h>
+#include <Portance_interfaciale_Sugrue.h>
 #include <Pb_Multiphase.h>
 #include <math.h>
 
-Implemente_instanciable(Portance_interfaciale_Tomiyama, "Portance_interfaciale_Tomiyama", Portance_interfaciale_base);
+Implemente_instanciable(Portance_interfaciale_Sugrue, "Portance_interfaciale_Sugrue", Portance_interfaciale_base);
 
-Sortie& Portance_interfaciale_Tomiyama::printOn(Sortie& os) const
+Sortie& Portance_interfaciale_Sugrue::printOn(Sortie& os) const
 {
   return os;
 }
 
-Entree& Portance_interfaciale_Tomiyama::readOn(Entree& is)
+Entree& Portance_interfaciale_Sugrue::readOn(Entree& is)
 {
   Param param(que_suis_je());
   param.ajouter("constante_gravitation", &g_);
@@ -41,12 +41,11 @@ Entree& Portance_interfaciale_Tomiyama::readOn(Entree& is)
   return is;
 }
 
-void Portance_interfaciale_Tomiyama::coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
-                                                 const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma,
-                                                 const DoubleTab& k_turb, const DoubleTab& d_bulles,
-                                                 const DoubleTab& ndv, int e, DoubleTab& coeff) const
+void Portance_interfaciale_Sugrue::coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
+                                               const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma,
+                                               const DoubleTab& k_turb, const DoubleTab& d_bulles,
+                                               const DoubleTab& ndv, int e, DoubleTab& coeff) const
 {
-  const DoubleTab& diametres = ref_cast(Pb_Multiphase, pb_.valeur()).get_champ("diametre_bulles").valeurs();
   int k, N = ndv.dimension(0);
 
   coeff = 0;
@@ -54,12 +53,11 @@ void Portance_interfaciale_Tomiyama::coefficient(const DoubleTab& alpha, const D
   for (k = 0; k < N; k++)
     if (k!=n_l) // k gas phase
       {
-        double Re = rho(n_l) * ndv(n_l,k) * diametres(e, k)/mu(n_l);
-        double Eo = g_ * std::abs(rho(n_l)-rho(k)) * diametres(e, k)*diametres(e, k)/sigma(n_l,k);
-        double f_Eo = .00105*Eo*Eo*Eo - .0159*Eo*Eo - .0204*Eo + .474;
-        double Cl;
-        if (Eo<4) Cl = std::min( .288*std::tanh( .121*Re ), f_Eo) ;
-        else      Cl = f_Eo ;
+        double Eo = g_ * std::abs(rho(n_l)-rho(k)) * d_bulles(k)*d_bulles(k)/sigma(n_l,k);
+        double Wo = Eo * k_turb(n_l)/(ndv(n_l, k)*ndv(n_l, k));
+        double f_Wo = std::min(0.03, 5.0404 - 5.0781*std::pow(Wo, 0.0108));
+        double f_alp= 1.0155-0.0154*std::exp(8.0506*alpha(k));
+        double Cl = f_Wo*f_alp ;
 
         coeff(k, n_l) = Cl * rho(n_l) * alpha(k) ;
         coeff(n_l, k) =  coeff(k, n_l);

@@ -13,33 +13,29 @@
 *
 *****************************************************************************/
 
-#ifndef Portance_interfaciale_base_included
-#define Portance_interfaciale_base_included
-#include <TRUSTTab.h>
-#include <Correlation_base.h>
+#ifndef Portance_interfaciale_Sugrue_included
+#define Portance_interfaciale_Sugrue_included
+#include <Portance_interfaciale_base.h>
 
-/*! @brief classe Portance_interfaciale_base utilitaire pour les operateurs de frottement interfacial prenant la forme
+/*! @brief classe Portance_interfaciale_Tomiyama coefficients de portance interfaciale d'un ecoulement a bulles deformables
  *
- *       F_{0l} = - F_{l0} = C_{0l} (u_l - u_0) x rot(u_0) ou la phase
- *       0 est la phase porteuse et l != 0 une phase quelconque
- *       cette classe definit une fonction C_{kl} dependant de :
- *         alpha, p, T -> inconnues (une valeur par phase chacune)
- *         rho, mu, sigma -> proprietes physiques (idem)
- *         ndv(k, l) -> ||v_k - v_l||, a remplir pour k < l
- *     sortie :
- *         coeff(k, l, 0/1) -> coefficient C_{kl} et sa derivee en ndv(k, l), rempli pour k < l
+ *       Le coefficient renvoye par cette classe est toujours >0, c'est Portanc_interfaciale_PolyMAC_P0 qui gere les signes
  *
  *
  */
 
-class Portance_interfaciale_base : public Correlation_base
+class Portance_interfaciale_Sugrue : public Portance_interfaciale_base
 {
-  Declare_base(Portance_interfaciale_base);
+  Declare_instanciable(Portance_interfaciale_Sugrue);
 public:
-  virtual void coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
-                           const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma,
-                           const DoubleTab& k_turb, const DoubleTab& d_bulles,
-                           const DoubleTab& ndv, int e, DoubleTab& coeff) const  = 0;
+  void coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
+                   const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma,
+                   const DoubleTab& k_turb, const DoubleTab& d_bulles,
+                   const DoubleTab& ndv, int e, DoubleTab& coeff) const override;
+protected:
+  double g_=9.81;
+  int n_l = -1; //phase liquide
+
 };
 
 #endif

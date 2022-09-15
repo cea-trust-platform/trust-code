@@ -191,8 +191,6 @@ void Dispersion_bulles_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
               for (int l = 0; l < N; l++)
                 {
                   dv(k, l) += vf_dir(f, c)/vf(f) * ch.v_norm(pvit, pvit, e, f, k, l, NULL, &ddv_c(0));
-//                  int i ;
-//                  for (i = 0, dv(k, l) = dv_c; i < 4; i++) ddv(k, l, i) = ddv_c(i);
                 }
           }
         correlation_db.coefficient(a_l, p_l, T_l, rho_l, mu_l, sigma_l, nut_l, k_l, d_b_l, dv, coeff); // correlation identifies the liquid phase
@@ -203,8 +201,6 @@ void Dispersion_bulles_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
               {
                 double fac = beta_*pf(f) * vf(f);
                 secmem(f, k) += fac * ( - coeff(k, l, 0) * grad_f_a(f, k) + coeff(l, k, 0) * grad_f_a(f, l));
-//                if (mat) for (int j = 0; j < 2; j++)
-//                    (*mat)(N * f + k, N * f + (j ? l : k)) -= fac * (j ? -1 : 1) * ( - coeff(k, l, 1) * grad_f_a(f, k) + coeff(l, k, 1) * grad_f_a(f, l)) * ddv(k, l, 3);
               }
       }
 
@@ -239,8 +235,6 @@ void Dispersion_bulles_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
               {
                 double fac = beta_*pe(e) * ve(e);
                 secmem(i, k) += fac * ( - coeff(k, l, 0) * grad_f_a(i, k) + coeff(l, k, 0) * grad_f_a(i, l));
-//                if (mat) for (int j = 0; j < 2; j++)
-//                    (*mat)(N * i + k, N * i + l) -= fac * (j ? -1 : 1) * ( - coeff(k, l, 1) * grad_f_a(i, k) + coeff(l, k, 1) * grad_f_a(i, l)) * ddv(k, l, d);
               }
     }
 }

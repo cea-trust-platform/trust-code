@@ -30,6 +30,7 @@ class Portance_interfaciale_Tomiyama : public Portance_interfaciale_base
 public:
   void coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
                    const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma,
+                   const DoubleTab& k_turb, const DoubleTab& d_bulles,
                    const DoubleTab& ndv, int e, DoubleTab& coeff) const override;
 protected:
   double g_=9.81;

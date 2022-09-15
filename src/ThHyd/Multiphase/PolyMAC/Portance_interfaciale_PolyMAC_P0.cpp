@@ -75,9 +75,13 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
 
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
 
-  int e, f, b, c, i, k, l, n, N = ch.valeurs().line_size(), Np = press.line_size(), D = dimension,
+  DoubleTab const * d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").valeurs() : NULL,
+                    * k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : NULL ;
+
+
+  int e, f, b, c, i, k, l, n, N = ch.valeurs().line_size(), Np = press.line_size(), D = dimension, Nk = (k_turb) ? (*k_turb).dimension(1) : 1 ,
                               cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1);
-  DoubleTrav a_l(N), p_l(N), T_l(N), rho_l(N), mu_l(N), sigma_l(N,N), dv(N, N), ddv(N, N, 4), ddv_c(4), coeff(N, N); //arguments pour coeff
+  DoubleTrav a_l(N), p_l(N), T_l(N), rho_l(N), mu_l(N), sigma_l(N,N), k_l(Nk), d_b_l(N), dv(N, N), ddv(N, N, 4), ddv_c(4), coeff(N, N); //arguments pour coeff
   double dv_min = 0.1, fac_e, fac_f;
   const Portance_interfaciale_base& correlation_pi = ref_cast(Portance_interfaciale_base, correlation_.valeur());
 
@@ -87,9 +91,11 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
       /* arguments de coeff */
       for (n = 0; n < N; n++) a_l(n)   = alpha(e, n);
       for (n = 0; n < N; n++) p_l(n)   = press(e, n * (Np > 1));
-      for (n = 0; n < N; n++) T_l(n)   =  temp(e, n);
-      for (n = 0; n < N; n++) rho_l(n) =   rho(!cR * e, n);
-      for (n = 0; n < N; n++) mu_l(n)  =    mu(!cM * e, n);
+      for (n = 0; n < N; n++) T_l(n)   = temp(e, n);
+      for (n = 0; n < N; n++) rho_l(n) = rho(!cR * e, n);
+      for (n = 0; n < N; n++) mu_l(n)  = mu(!cM * e, n);
+      for (n = 0; n <Nk; n++) k_l(n)   = (k_turb)   ? (*k_turb)(e,0) : 0;
+      for (n = 0; n < N; n++) d_b_l(n) = (d_bulles) ? (*d_bulles)(e,n) : 0;
       for (n = 0; n < N; n++)
         {
           for (k = 0; k < N; k++)
@@ -102,7 +108,7 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
 
       for (k = 0; k < N; k++)
         for (l = 0; l < N; l++) dv(k, l) = std::max(ch.v_norm(pvit, pvit, e, -1, k, l, NULL, &ddv(k, l, 0)), dv_min);
-      correlation_pi.coefficient(a_l, p_l, T_l, rho_l, mu_l, sigma_l, dv, e, coeff);
+      correlation_pi.coefficient(a_l, p_l, T_l, rho_l, mu_l, sigma_l, k_l, d_b_l, dv, e, coeff);
 
       fac_e = beta_*pe(e) * ve(e);
 
