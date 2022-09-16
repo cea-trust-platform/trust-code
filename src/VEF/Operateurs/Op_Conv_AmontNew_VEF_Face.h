@@ -30,14 +30,10 @@
  *   Le champ convecte est scalaire ou vecteur de type Champ_P1NC
  *   Le schema de convection est du type AmontNew
  *   Les methodes pour l'implicite sont codees.
+ * 
  *
+ * @sa Operateur_Conv_base 
  */
-
-//
-// .SECTION voir aussi
-// Operateur_Conv_base
-
-
 class Op_Conv_AmontNew_VEF_Face : public Op_Conv_VEF_base
 {
 

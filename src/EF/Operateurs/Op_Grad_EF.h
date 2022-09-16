@@ -30,16 +30,11 @@
  *   Cette classe represente l'operateur de gradient
  *   La discretisation est EF
  *   On calcule le gradient d'un champ_P0_EF (la pression)
+ * 
+ * 
  *
- *
+ * @sa Operateur_Grad_base 
  */
-
-
-//
-// .SECTION voir aussi
-// Operateur_Grad_base
-//
-
 
 //////////////////////////////////////////////////////////////////////////////
 //

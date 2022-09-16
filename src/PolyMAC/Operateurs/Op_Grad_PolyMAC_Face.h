@@ -28,14 +28,10 @@
  *   Cette classe represente l'operateur de gradient
  *   La discretisation est PolyMAC
  *   On calcule le gradient d'un champ_Elem_PolyMAC (la pression)
+ * 
  *
- *
+ * @sa Operateur_Grad_base 
  */
-
-// .SECTION voir aussi
-// Operateur_Grad_base
-//
-
 class Op_Grad_PolyMAC_Face : public Operateur_Grad_base
 {
 

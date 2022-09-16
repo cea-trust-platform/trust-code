@@ -24,13 +24,10 @@ class Probleme_base;
 #include <Equation.h>
 /*! @brief class Terme_Source_Th_TdivU_VEF_Face
  *
+ * 
+ *
+ * @sa Source_base 
  */
-
-//
-// .SECTION voir aussi Source_base
-//
-//
-
 class Terme_Source_Th_TdivU_VEF_Face : public Source_base, public Terme_Source_Qdm
 {
 

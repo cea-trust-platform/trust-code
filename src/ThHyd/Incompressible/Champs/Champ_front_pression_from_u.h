@@ -31,11 +31,8 @@
  *  Classe derivee de Champ_front_base qui represente les
  *  champs aux frontieres normaux :
  *
+ * @sa Champ_front_base 
  */
-
-//.SECTION voir aussi
-// Champ_front_base
-
 class Champ_front_pression_from_u : public Ch_front_var_instationnaire_dep
 {
   Declare_instanciable(Champ_front_pression_from_u);

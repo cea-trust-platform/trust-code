@@ -23,13 +23,10 @@
 /*! @brief classe Champ_P0_VDF Classe qui represente un champ discret P0 par element
  *
  *  associe a une zone discretisee de type Zone_VDF
+ * 
  *
- *
+ * @sa Champ_P0 
  */
-
-//.SECTION voir aussi
-// Champ_P0
-
 class Champ_P0_VDF: public Champ_Inc_P0_base
 {
 

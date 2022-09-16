@@ -26,12 +26,9 @@
  *      and on which we want profiles in a specific direction and position :
  *          + mean velocity profiles
  *          + fluctuations
+ * 
  *
- *  .SECTION see also
- *       Navier_Stokes_Turbulent, Traitement_particulier_base,
- *       Traitement_particulier_VDF
- *
- *
+ * @sa Navier_Stokes_Turbulent, Traitement_particulier_base,, Traitement_particulier_VDF 
  */
 class Traitement_particulier_NS_Profils_VDF : public Traitement_particulier_NS_Profils
 {

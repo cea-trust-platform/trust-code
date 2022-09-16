@@ -25,14 +25,10 @@
  *   La discretisation est VEF
  *   Le champ convecte est scalaire ou vecteur de type Champ_P1NC
  *   Le schema de convection est du type Centre4
+ * 
  *
+ * @sa Operateur_Conv_base 
  */
-
-//
-// .SECTION voir aussi
-// Operateur_Conv_base
-
-
 class OpVEF_Centre4 : public Op_Conv_kschemas_centre_VEF
 {
 

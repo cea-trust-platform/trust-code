@@ -29,14 +29,9 @@
 /*! @brief class Op_Conv_EF_base
  *
  *  Classe de base des operateurs de convection EF
+ * 
  *
  */
-
-//
-// .SECTION voir aussi
-//
-//
-
 
 //////////////////////////////////////////////////////////////////////////////
 //

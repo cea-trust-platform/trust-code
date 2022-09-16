@@ -25,13 +25,10 @@ class Domaine;
 
 /*! @brief class DP_Impose_PolyMAC_Face
  *
+ * 
+ *
+ * @sa Perte_Charge_PolyMAC_Face 
  */
-
-//
-// .SECTION voir aussi Perte_Charge_PolyMAC_Face
-//
-//
-
 class DP_Impose_PolyMAC_Face : public Perte_Charge_PolyMAC_Face,
   public DP_Impose
 {

@@ -29,14 +29,10 @@
  *   Le champ convecte est scalaire ou vecteur de type Champ_P1NC
  *   Le schema de convection est du type Amont
  *   Les methodes pour l'implicite sont codees.
+ * 
  *
+ * @sa Operateur_Conv_base 
  */
-
-//
-// .SECTION voir aussi
-// Operateur_Conv_base
-
-
 class Op_Conv_Amont_old_VEF_Face : public Op_Conv_VEF_base
 {
 
@@ -62,7 +58,6 @@ protected:
 /*! @brief on dimensionne notre matrice au moyen de la methode dimensionner de la classe Op_VEF_Face.
  *
  */
-
 inline  void Op_Conv_Amont_old_VEF_Face::dimensionner(Matrice_Morse& matrice) const
 {
   Op_VEF_Face::dimensionner(la_zone_vef.valeur(),la_zcl_vef.valeur(), matrice);
@@ -72,7 +67,6 @@ inline  void Op_Conv_Amont_old_VEF_Face::dimensionner(Matrice_Morse& matrice) co
 /*! @brief On modifie le second membre et la matrice dans le cas des conditions de dirichlet.
  *
  */
-
 inline void Op_Conv_Amont_old_VEF_Face::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const
 {
   Op_VEF_Face::modifier_pour_Cl(la_zone_vef.valeur(),la_zcl_vef.valeur(), matrice, secmem);
@@ -82,7 +76,6 @@ inline void Op_Conv_Amont_old_VEF_Face::modifier_pour_Cl(Matrice_Morse& matrice,
 /*! @brief on assemble la matrice des inconnues implicite.
  *
  */
-
 inline void Op_Conv_Amont_old_VEF_Face::contribuer_a_avec(const DoubleTab& inco,
                                                           Matrice_Morse& matrice) const
 {
@@ -92,7 +85,6 @@ inline void Op_Conv_Amont_old_VEF_Face::contribuer_a_avec(const DoubleTab& inco,
 /*! @brief on ajoute la contribution du second membre.
  *
  */
-
 inline void Op_Conv_Amont_old_VEF_Face::contribuer_au_second_membre(DoubleTab& resu) const
 {
   contribue_au_second_membre(resu);

@@ -21,14 +21,10 @@
 /*! @brief class Zone_Cl_EF Cette classe porte les tableaux qui servent a mettre en oeuvre
  *
  *   les condition aux limites dans la formulation EF
+ * 
  *
+ * @sa Zone_Cl_dis_base 
  */
-
-//
-// .SECTION voir aussi
-// Zone_Cl_dis_base
-
-
 #include <Zone_Cl_dis_base.h>
 #include <Champ_Don.h>
 

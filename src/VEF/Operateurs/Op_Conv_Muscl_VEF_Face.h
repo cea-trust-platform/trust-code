@@ -26,14 +26,10 @@
  *   La discretisation est VEF
  *   Le champ convecte est scalaire ou vecteur de type Champ_P1NC
  *   Le schema de convection est du type Muscl
+ * 
  *
+ * @sa Operateur_Conv_base 
  */
-
-//
-// .SECTION voir aussi
-// Operateur_Conv_base
-
-
 class Op_Conv_Muscl_VEF_Face : public Op_Conv_VEF_Face
 {
   Declare_instanciable_sans_constructeur(Op_Conv_Muscl_VEF_Face);

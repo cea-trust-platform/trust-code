@@ -25,13 +25,10 @@ class Probleme_base;
 
 /*! @brief class Source_Qdm_EF
  *
+ * 
+ *
+ * @sa Source_base 
  */
-
-//
-// .SECTION voir aussi Source_base
-//
-//
-
 class Source_Qdm_EF : public Source_base, public Terme_Source_Qdm
 {
 

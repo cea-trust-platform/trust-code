@@ -25,14 +25,9 @@
 /*! @brief class Op_Conv_PolyMAC_base
  *
  *  Classe de base des operateurs de convection VDF
+ * 
  *
  */
-
-//
-// .SECTION voir aussi
-//
-//
-
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -68,12 +63,6 @@ protected:
 
   mutable SFichier Flux, Flux_moment, Flux_sum;
 };
-
-//
-// Fonctions inline de la classe Op_Conv_PolyMAC_base
-//
-
-
 
 /*! @brief calcule la contribution de la convection, la range dans resu renvoie resu
  *

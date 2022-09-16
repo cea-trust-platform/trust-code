@@ -29,13 +29,10 @@
  *  Cette classe represente la force centrifuge
  *  a prendre en compte dans les equations de Navier-Stokes
  *  en coordonnees cylindriques pour une dicretisation VDF
+ * 
  *
- *
+ * @sa Source_base 
  */
-
-// .SECTION voir aussi
-// Source_base
-//
 
 //////////////////////////////////////////////////////////////////////////////
 //

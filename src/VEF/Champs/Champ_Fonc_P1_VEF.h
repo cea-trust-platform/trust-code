@@ -22,11 +22,8 @@
 
 /*! @brief classe Champ_Fonc_P1_VEF
  *
+ * @sa Champ_Fonc_P1 
  */
-
-//.SECTION voir aussi
-// Champ_Fonc_P1
-
 class Champ_Fonc_P1_VEF: public Champ_Fonc_P1_base
 {
 

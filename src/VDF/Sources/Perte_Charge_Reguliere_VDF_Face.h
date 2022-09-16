@@ -23,13 +23,10 @@
 
 /*! @brief class Perte_Charge_Reguliere_VDF_Face
  *
+ * 
+ *
+ * @sa Perte_Charge_VDF_Face 
  */
-
-//
-// .SECTION voir aussi Perte_Charge_VDF_Face
-//
-//
-
 class Perte_Charge_Reguliere_VDF_Face : public Perte_Charge_VDF_Face,
   public Perte_Charge_Reguliere
 
