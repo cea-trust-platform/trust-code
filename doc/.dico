@@ -106,6 +106,7 @@
  Champ_front_bruite Champ_front_bruite Champ_front_bruite.h
  Champ_front_calc Champ_front_calc Champ_front_calc.h
  Champ_front_calc_interne Champ_front_calc_interne Champ_front_calc_interne.h
+ Champ_Front_Composite Champ_Front_Composite Champ_Front_Composite.h
  Champ_front_contact_fictif_VEF Champ_front_contact_fictif_VEF Champ_front_contact_fictif_VEF.h
  Champ_front_contact_VEF Champ_front_contact_VEF Champ_front_contact_VEF.h
  Champ_front_debit Champ_front_debit Champ_front_debit.h
