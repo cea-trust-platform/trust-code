@@ -23,9 +23,9 @@
 
 /*! @brief class Terme_Source_Decroissance_Radioactive_VEF_Face
  *
- * 
  *
- * @sa Source_base 
+ *
+ * @sa Source_base
  */
 class Terme_Source_Decroissance_Radioactive_VEF_Face :  public Source_base
 

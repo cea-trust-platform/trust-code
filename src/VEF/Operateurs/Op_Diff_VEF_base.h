@@ -32,7 +32,7 @@ class Sortie;
 /*! @brief class Op_Diff_VEF_base
  *
  *  Classe de base des operateurs de convection VEF
- * 
+ *
  *
  */
 

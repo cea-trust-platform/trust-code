@@ -21,9 +21,9 @@
 /*! @brief class Zone_Cl_PolyMAC Cette classe porte les tableaux qui servent a mettre en oeuvre
  *
  *   les condition aux limites dans la formulation PolyMAC
- * 
  *
- * @sa Zone_Cl_dis_base 
+ *
+ * @sa Zone_Cl_dis_base
  */
 #include <Zone_Cl_dis_base.h>
 #include <Champ_Don.h>

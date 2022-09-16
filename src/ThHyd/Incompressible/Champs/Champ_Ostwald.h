@@ -30,7 +30,7 @@
  *    Fait reference a un fluide d'Ostwald pour pouvoir utiliser les deux
  *    parametres du fluide d'Ostwald : K et N.
  *
- * @sa Champ_Don_base 
+ * @sa Champ_Don_base
  */
 class Champ_Ostwald : public Champ_Fonc_P0_base
 {

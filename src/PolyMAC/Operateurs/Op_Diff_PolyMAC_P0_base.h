@@ -29,7 +29,7 @@ class Champ_Fonc;
 /*! @brief class Op_Diff_PolyMAC_P0_base
  *
  *  Classe de base des operateurs de diffusion PolyMAC_P0
- * 
+ *
  *
  */
 

@@ -37,7 +37,7 @@ class Zone_Cl_VDF;
  *         sur les faces de bord
  *  Rq : cette classe est specifique au module VDF
  *
- * @sa Champ_Inc_base 
+ * @sa Champ_Inc_base
  */
 class Champ_Face : public Champ_Inc_base, public Champ_Face_implementation
 {

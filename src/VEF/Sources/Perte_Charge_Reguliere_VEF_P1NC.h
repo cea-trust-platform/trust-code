@@ -22,9 +22,9 @@
 
 /*! @brief class Perte_Charge_Reguliere_VEF_P1NC
  *
- * 
  *
- * @sa Perte_Charge_VEF_P1NC 
+ *
+ * @sa Perte_Charge_VEF_P1NC
  */
 class Perte_Charge_Reguliere_VEF_P1NC : public Perte_Charge_VEF_Face,
   public Perte_Charge_Reguliere

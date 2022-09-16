@@ -25,9 +25,9 @@ class Zone_dis;
 class Zone_Cl_dis;
 /*! @brief class Terme_Source_Dirac_VEF_Face
  *
- * 
  *
- * @sa Source_base 
+ *
+ * @sa Source_base
  */
 declare_It_Sou_VEF_Face(Eval_Dirac_VEF_Face)
 class Source_Dirac_VEF_Face : public Terme_Puissance_Thermique_VEF_base

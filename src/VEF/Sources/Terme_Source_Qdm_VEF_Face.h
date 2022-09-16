@@ -25,9 +25,9 @@ class Probleme_base;
 
 /*! @brief class Terme_Source_Qdm_VEF_Face
  *
- * 
  *
- * @sa Source_base 
+ *
+ * @sa Source_base
  */
 class Terme_Source_Qdm_VEF_Face : public Source_base, public Terme_Source_Qdm
 {

@@ -23,7 +23,7 @@
  *  Classe derivee de Champ_front_base qui represente les
  *  champs aux frontieres tangentiels :
  *
- * @sa Champ_front_base 
+ * @sa Champ_front_base
  */
 class Champ_front_tangentiel_VEF : public Champ_front_tangentiel
 {

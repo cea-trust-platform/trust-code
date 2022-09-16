@@ -25,9 +25,9 @@
  *   Le champ convecte est scalaire ou vecteur de type Champ_P1NC
  *   Le schema de convection est du type Centre
  *   On calcule le flux sur la surface a l aide des fonctions de forme
- * 
  *
- * @sa Operateur_Conv_base 
+ *
+ * @sa Operateur_Conv_base
  */
 class Op_Conv_Centre_EF_VEF_Face: public Op_Conv_VEF_base
 {

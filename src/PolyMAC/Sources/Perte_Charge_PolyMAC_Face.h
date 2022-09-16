@@ -31,9 +31,9 @@ class Probleme_base;
 
 /*! @brief class Perte_Charge_PolyMAC_Face
  *
- * 
  *
- * @sa Source_base 
+ *
+ * @sa Source_base
  */
 class Perte_Charge_PolyMAC_Face :  public Source_base,
   public Terme_Source_Qdm

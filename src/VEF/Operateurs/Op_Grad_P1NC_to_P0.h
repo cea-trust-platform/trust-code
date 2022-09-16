@@ -29,9 +29,9 @@
  *   La discretisation est VEF
  *   On calcule le gradient d'un champ_P1NC a une composante (temperature,concentration)
  *    et le champ de sortie est P0 (aux elements)
- * 
  *
- * @sa Operateur_Grad_base 
+ *
+ * @sa Operateur_Grad_base
  */
 
 //////////////////////////////////////////////////////////////////////////////

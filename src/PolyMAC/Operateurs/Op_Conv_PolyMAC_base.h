@@ -25,7 +25,7 @@
 /*! @brief class Op_Conv_PolyMAC_base
  *
  *  Classe de base des operateurs de convection VDF
- * 
+ *
  *
  */
 

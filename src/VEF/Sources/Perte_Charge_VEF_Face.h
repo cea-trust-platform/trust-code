@@ -30,9 +30,9 @@ class Probleme_base;
 
 /*! @brief class Perte_Charge_VEF_Face
  *
- * 
  *
- * @sa Source_base 
+ *
+ * @sa Source_base
  */
 class Perte_Charge_VEF_Face :  public Source_base,
   public Terme_Source_Qdm

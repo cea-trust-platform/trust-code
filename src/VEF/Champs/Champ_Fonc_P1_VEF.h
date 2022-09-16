@@ -22,7 +22,7 @@
 
 /*! @brief classe Champ_Fonc_P1_VEF
  *
- * @sa Champ_Fonc_P1 
+ * @sa Champ_Fonc_P1
  */
 class Champ_Fonc_P1_VEF: public Champ_Fonc_P1_base
 {

@@ -24,7 +24,7 @@
  *
  *  Classe derivee de Champ_front_base
  *
- * @sa Champ_front_base 
+ * @sa Champ_front_base
  */
 class Champ_front_fonc_gradient_VDF : public Champ_front_fonc_gradient
 {

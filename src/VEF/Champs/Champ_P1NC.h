@@ -25,7 +25,7 @@
  *
  *  Rq : cette classe est specifique au module VEF
  *
- * @sa Champ_Inc_base 
+ * @sa Champ_Inc_base
  */
 extern void calculer_gradientP1NC(const DoubleTab& ,
                                   const Zone_VEF&,

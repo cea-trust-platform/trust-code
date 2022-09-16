@@ -26,10 +26,10 @@
  *   Cette classe represente l'operateur de gradient
  *   La discretisation est VEF
  *   On calcule le gradient d'un champ_P1B_VEF (la pression)
- * 
- * 
  *
- * @sa Operateur_Grad_base 
+ *
+ *
+ * @sa Operateur_Grad_base
  */
 class Zone_VEF_PreP1b;
 class Zone_Cl_VEF;

@@ -25,9 +25,9 @@ class Domaine;
 
 /*! @brief class Perte_Charge_Singuliere_VEF_Face
  *
- * 
  *
- * @sa Perte_Charge_VEF_Face 
+ *
+ * @sa Perte_Charge_VEF_Face
  */
 class Perte_Charge_Singuliere_VEF_Face : public Perte_Charge_VEF_Face,
   public Perte_Charge_Singuliere

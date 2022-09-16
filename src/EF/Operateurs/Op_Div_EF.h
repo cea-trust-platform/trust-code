@@ -27,10 +27,10 @@
  *   Cette classe represente l'operateur de divergence
  *   La discretisation est EF
  *   On calcule la divergence d'un champ_P1NC (la vitesse)
- * 
- * 
  *
- * @sa Operateur_Div_base 
+ *
+ *
+ * @sa Operateur_Div_base
  */
 
 //////////////////////////////////////////////////////////////////////////////

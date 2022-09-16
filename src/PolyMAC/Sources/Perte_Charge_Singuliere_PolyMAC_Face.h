@@ -25,9 +25,9 @@ class Domaine;
 
 /*! @brief class Perte_Charge_Singuliere_PolyMAC_Face
  *
- * 
  *
- * @sa Perte_Charge_PolyMAC_Face 
+ *
+ * @sa Perte_Charge_PolyMAC_Face
  */
 class Perte_Charge_Singuliere_PolyMAC_Face : public Perte_Charge_PolyMAC_Face,
   public Perte_Charge_Singuliere

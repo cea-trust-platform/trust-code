@@ -30,7 +30,7 @@
 /*! @brief class Op_Conv_VEF_base
  *
  *  Classe de base des operateurs de convection VEF
- * 
+ *
  *
  */
 

@@ -23,9 +23,9 @@
 
 /*! @brief class Terme_Source_Decroissance_Radioactive_Elem_PolyMAC
  *
- * 
  *
- * @sa Source_base 
+ *
+ * @sa Source_base
  */
 class Terme_Source_Decroissance_Radioactive_Elem_PolyMAC :  public Source_base
 
