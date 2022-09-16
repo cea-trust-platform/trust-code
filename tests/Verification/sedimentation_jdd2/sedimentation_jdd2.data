@@ -93,7 +93,11 @@ Read pb
         sources
         {
             frottement_interfacial bulles { rayon_bulle 0.5e-3 coeff_derive 0.44 } ,
-            source_qdm champ_fonc_xyz dom 4  0 0 -10 -10
+            source_qdm Champ_composite 2 /* champ par phase */
+            {
+               champ_fonc_xyz dom 2  0 -10 
+               champ_fonc_xyz dom 2  0 -10 
+            }
         }
         boundary_conditions
         {

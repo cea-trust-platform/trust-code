@@ -141,7 +141,11 @@ Read pb
         }
         sources
         {
-            puissance_thermique champ_uniforme 2 100000000.0 0 ,
+            puissance_thermique Champ_composite 2 
+            {
+                champ_uniforme 1 100000000.0 
+                champ_uniforme 1 0 
+            } ,
             flux_interfacial
         }
     }
