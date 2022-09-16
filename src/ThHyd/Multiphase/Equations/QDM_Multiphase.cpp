@@ -13,18 +13,19 @@
 *
 *****************************************************************************/
 
+#include <Operateur_Diff_base.h>
+#include <Discretisation_base.h>
+#include <Schema_Temps_base.h>
+#include <Champ_Composite.h>
+#include <TRUSTTab_parts.h>
 #include <QDM_Multiphase.h>
 #include <Pb_Multiphase.h>
 #include <Discret_Thyd.h>
-#include <Discretisation_base.h>
 #include <Fluide_base.h>
-#include <Operateur_Diff_base.h>
-#include <Schema_Temps_base.h>
-#include <Param.h>
 #include <EChaine.h>
-#include <TRUSTTab_parts.h>
-#include <Nom.h>
+#include <Param.h>
 #include <vector>
+#include <Nom.h>
 
 Implemente_instanciable(QDM_Multiphase,"QDM_Multiphase",Navier_Stokes_std);
 // XD QDM_Multiphase eqn_base QDM_Multiphase -1 Momentum conservation equation for a multi-phase problem where the unknown is the velocity
@@ -307,6 +308,14 @@ Entree& QDM_Multiphase::lire_cond_init(Entree& is)
       {
         Champ_Don src;
         is >> src;
+
+        if (src->que_suis_je() == "Champ_Composite")
+          {
+            const int nb_phases = ref_cast(Pb_Multiphase, probleme()).nb_phases(), nb_dim = ref_cast(Champ_Composite,src.valeur()).get_champ_composite_dim();
+            if ( nb_dim != nb_phases)
+              Cerr << que_suis_je() << ": velocity initial condition Champ_Composite should have "<<  nb_phases << " fields and not " << nb_dim << " !" << finl, Process::exit();
+          }
+
         verifie_ch_init_nb_comp(la_vitesse, src.nb_comp());
         la_vitesse->affecter(src), vit_lu = 1;
         la_vitesse->passe() = la_vitesse->valeurs();

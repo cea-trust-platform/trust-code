@@ -47,6 +47,7 @@
  Champs_Fonc Champs_Fonc Champs_Fonc.h
  Champs_front Champs_front Champs_front.h
  Champ_base Champ_base Champ_base.h
+ Champ_Composite Champ_Composite Champ_Composite.h
  Champ_Don Champ_Don Champ_Don.h
  Champ_Don_base Champ_Don_base Champ_Don_base.h
  Champ_Don_Face_lu Champ_Don_Face_lu Champ_Don_Face_lu.h
