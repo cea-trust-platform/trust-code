@@ -8,7 +8,7 @@ define_modules_config()
    # Load modules
    if [ "$TRUST_USE_CUDA" = 1 ]
    then
-      module="gnu3/9.3.0 openmpi/3.1.6-gcc-slurm-cuda cuda/11.1.0"
+      module="gnu7/7.3.0 openmpi/3.1.6-gcc-slurm-cuda cuda/11.1.0"
    else
       module="gnu9/9.3.0 openmpi/3.1.6-gcc"
    fi

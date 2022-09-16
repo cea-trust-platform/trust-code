@@ -54,21 +54,19 @@ Read sch
     dt_impr 1.e-10
 }
 
-Fluide_Incompressible fluide
-Read fluide
-{
-    mu Champ_Uniforme 1 1.85e-5
-    rho Champ_Uniforme 1 1.17
-}
 Associate pb dom
 Associate pb sch
-Associate pb fluide
-
 Discretize pb dis
 
 Read pb
 {
-    Navier_Stokes_Standard
+       
+fluide_incompressible {
+     mu Champ_Uniforme 1 1.85e-5
+    rho Champ_Uniforme 1 1.17
+}
+
+Navier_Stokes_Standard
     {
         solveur_pression Petsc cholesky { }
         parametre_equation parametre_diffusion_implicite { solveur amgx gcp   		{ precond null { }           impr rtol  1.e-4 } }
@@ -97,3 +95,4 @@ Read pb
 Solve pb
 End
 
+ 
