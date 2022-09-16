@@ -15,8 +15,7 @@ define_modules_config()
    intel=1 # On continue a garder intel/intelmpi meme si aocc/hpcx plus scalable (voir avec AG)
    if [ "$TRUST_USE_CUDA" = 1 ]
    then
-      module="slurm compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 nvidia_hpc_sdk/20.7" # Marche pas, libcuda.so non trouvee !
-      module="slurm compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 nvidia_hpc_sdk/21.2 texlive/2020"
+      module="slurm compilers/gcc/9.1.0 nvidia_hpc_sdk/nvhpc/22.1 texlive/2020"
    elif [ $intel = 1 ]
    then
       # Compilateur Intel + MPI IntelMPI
