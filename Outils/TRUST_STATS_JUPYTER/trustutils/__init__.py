@@ -16,7 +16,12 @@ del os
 
 from .files import TrustFile, SonFile, SonPOINTFile, SonSEGFile, OutFile, CSVFile, DTEVFile
 from .jupyter import run
-from .jupyter import plot
+
+try:
+    from .jupyter import plot
+except:
+    print("WARNING: jupyter.plot functionality not available (missing matplotlib?")
+    print("WARNING: Try to import jupyter.plot directly to see missing packages.")
 
 try:
     from .jupyter import widget
