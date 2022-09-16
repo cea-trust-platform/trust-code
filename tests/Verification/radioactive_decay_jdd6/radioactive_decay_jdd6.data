@@ -37,16 +37,8 @@ END PARTITION #
 Scatter DOM2.Zones dom_fluide
 END SCATTER #
 
-fluide_incompressible mil_fluide
-lire mil_fluide
-{
-    mu      champ_uniforme 1 0.0101475
-    rho     champ_uniforme 1 4125
-}
-
 Pb_hydraulique_concentration pb_fluide
 associate pb_fluide dom_fluide
-associate pb_fluide mil_fluide
 
 Schema_euler_implicite sch
 lire sch
@@ -66,18 +58,21 @@ lire sch
 }
 associate  pb_fluide sch
 
-constituant precurseur
-read precurseur
-{
-    coefficient_diffusion champ_uniforme 2 0.01 0.01
-}
-associate  pb_fluide precurseur
-
 PolyMAC_P0  dis
 Discretize pb_fluide dis
 
 Read pb_fluide
 {
+fluide_incompressible
+{
+    mu      champ_uniforme 1 0.0101475
+    rho     champ_uniforme 1 4125
+}
+constituant
+{
+    coefficient_diffusion champ_uniforme 2 0.01 0.01
+}
+
     Navier_Stokes_standard
     {
         solveur_pression petsc cholesky { }

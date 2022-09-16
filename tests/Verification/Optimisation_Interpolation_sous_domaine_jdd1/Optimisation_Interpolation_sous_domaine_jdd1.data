@@ -39,9 +39,6 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-
-
-
 VEFPrep1b dis
 
 Scheme_euler_explicit sch
@@ -58,25 +55,9 @@ Read sch
 }
 
 
-Fluide_Incompressible fluide
-Read fluide
-{
-    mu  Champ_Uniforme 1 0.25
-    rho Champ_Uniforme 1 2.
-}
-Constituant c1
-Lire c1
-{
-    coefficient_diffusion Champ_Uniforme 1 0.5e-9
-}
-
 Associate pb dom
 Associate pb sch
-Associate pb fluide
-associate pb c1
 Discretize pb dis
-
-
 
 domaine corei
 
@@ -88,6 +69,16 @@ extraire_domaine { domaine corei probleme pb
 # La convection est neglige, car les resultats sont mauvais #
 Read pb
 {
+Fluide_Incompressible
+{
+    mu  Champ_Uniforme 1 0.25
+    rho Champ_Uniforme 1 2.
+}
+Constituant
+{
+    coefficient_diffusion Champ_Uniforme 1 0.5e-9
+}
+
     Navier_Stokes_standard
     {
         solveur_pression GCP  { precond ssor { omega 1.65 } seuil 1e-12 impr }
