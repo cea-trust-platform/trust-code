@@ -196,13 +196,14 @@ protected :
   // FIN partie TEMPORAIRE
   // ***************************************************************************
 
-  Milieu le_milieu_;
+  std::vector<Milieu> le_milieu_;
   Domaine_dis le_domaine_dis;
   Postraitements les_postraitements;
   REF(Schema_Temps_base) le_schema_en_temps;
   REF(Discretisation_base) la_discretisation;
   LIST(REF(Field_base)) input_fields; // List of input fields inside this problem.
 
+  void typer_lire_milieu(Entree& is) ;
   mutable DERIV(Sortie_Fichier_base) ficsauv_;
   mutable Sortie_Brute* osauv_hdf_;
 

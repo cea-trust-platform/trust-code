@@ -398,6 +398,51 @@ inline int version_format_sauvegarde()
   return 184;
 }
 
+
+void Probleme_base::typer_lire_milieu(Entree& is)
+{
+  // NOTA BENE :
+  // Normalement on a un milieu par probleme, sauf si le problem contient un equation de concentration
+  // Dans ce cas, on a un milieu supplimentaire : constituant (faut pas demander pourquoi 2 milieu ... car je sais pas !)
+  // a voir si on peut faire mieux ...
+  int nb_milieu = 1;
+
+  // On cherche si c'est un pb avec concentration => avec constituant
+  const std::string conc = "Concentration", nom_pb = que_suis_je().getString();
+  if (nom_pb.find(conc) != std::string::npos) nb_milieu = 2; // pb contient concentration !
+
+  le_milieu_.resize(nb_milieu);
+
+  for (int i = 0; i < nb_milieu; i++)
+    {
+      is >> le_milieu_[i]; // On commence par la lecture du milieu
+      associer_milieu_base(le_milieu_[i].valeur()); // On l'associe a chaque equations (methode virtuelle pour chaque pb ...)
+    }
+
+  const bool is_constituant = nb_milieu == 1 ? false : true;
+
+  // On discretise ...
+  if (is_constituant)
+    {
+      assert (nombre_d_equations() > 1);
+      if (nombre_d_equations() == 2)
+        {
+          equation(1).discretiser(); // on discretize la concentration maintenant car on a besoin du milieu Constituant !
+
+          for (int i = 0; i < nombre_d_equations(); i++) equation(i).milieu().discretiser((*this), la_discretisation.valeur());
+        }
+      else
+        {
+          for (int i = 2; i < nombre_d_equations(); i++) equation(2).discretiser(); // on discretize les concentrations ...
+
+          equation(0).milieu().discretiser((*this), la_discretisation.valeur()); // NS
+          equation(2).milieu().discretiser((*this), la_discretisation.valeur()); // Conc
+        }
+    }
+  else /* On discretize juste eq 1 et c'est tout :-) :-) */
+    equation(0).milieu().discretiser((*this), la_discretisation.valeur());
+}
+
 /*! @brief Lecture d'un probleme dans un flot d'entree, et ouverture du flot de sauvegarde.
  *
  *     Format:
@@ -438,19 +483,14 @@ Entree& Probleme_base::readOn(Entree& is)
       Process::exit();
     }
 
+  /* 1 : milieu : NEW SYNTAX */
   if (!via_associer() && !is_pb_multiphase() && !is_pb_med() )
-    {
-      /* 1 : milieu */
-      is >> le_milieu_; // On commence par la lecture du milieu
-      associer_milieu_base(le_milieu_.valeur()); // On l'associe a chaque equations
-
-      //  for (int i = 0; i < nombre_d_equations(); i++) // On discretise ...
-      // TODO : FIXME : on discretize le milieu de l'eq 1 seulement
-      // ca c'est fauttttttt ! constituant .... WIP
-      equation(0).milieu().discretiser((*this), la_discretisation.valeur());
-    }
+    typer_lire_milieu(is);
   else
-    assert(!le_milieu_.non_nul());
+    {
+      le_milieu_.resize(1);
+      assert(!le_milieu_[0].non_nul());
+    }
 
   /* 2 : On lit les equations */
   lire_equations(is, motlu); //"motlu" contient le premier mot apres la lecture des equations

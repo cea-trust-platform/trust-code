@@ -143,12 +143,17 @@ const Champ_Don& Convection_Diffusion_Concentration::diffusivite_pour_transport(
  */
 void Convection_Diffusion_Concentration::discretiser()
 {
-  const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
-  Cerr << "Transport concentration(s) equation discretization " << finl;
-  nb_constituants_ = constituant().nb_constituants();
-  dis.concentration(schema_temps(), zone_dis(), la_concentration, nb_constituants_);
-  champs_compris_.ajoute_champ(la_concentration);
-  Equation_base::discretiser();
+  if (le_constituant.non_nul())
+    {
+      const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
+      Cerr << "Transport concentration(s) equation discretization " << finl;
+      nb_constituants_ = constituant().nb_constituants();
+      dis.concentration(schema_temps(), zone_dis(), la_concentration, nb_constituants_);
+      champs_compris_.ajoute_champ(la_concentration);
+      Equation_base::discretiser();
+    }
+  else
+    Cerr << "Transport concentration(s) equation will be discretized later after reading the constituant medium ... " << finl;
 }
 
 
