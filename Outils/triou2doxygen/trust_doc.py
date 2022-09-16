@@ -35,7 +35,7 @@ class DocConverter(object):
     ## .h and .hxx files
     ##
     DESC_CLS_TAG = ".DESCRIPTION"
-    SA_CLS_TAG = ".SECTION voir aussi"
+    SA_CLS_TAGS = [".SECTION voir aussi", ".SECTION see also"]
 
     ##
     ## .cpp files
@@ -50,7 +50,7 @@ class DocConverter(object):
     RET_TAG = "Retour:"
 
     # Collection of top level tags
-    OUTER_TAGS = [DESC_CLS_TAG, SA_CLS_TAG, DESC_TAG, PARAM_TAG, PRE_TAG, POST_TAG, EXCEP_TAG, BORD_TAG, RET_TAG]
+    OUTER_TAGS = [DESC_CLS_TAG] + SA_CLS_TAGS + [DESC_TAG, PARAM_TAG, PRE_TAG, POST_TAG, EXCEP_TAG, BORD_TAG, RET_TAG]
 
     # Inner tags:
     SIGNIF_TAG = "Signification:"
@@ -71,6 +71,8 @@ class DocConverter(object):
         elif currTag in [self.DESC_CLS_TAG, self.DESC_TAG]:
             # All description text (be it class description or method description) are stored under the tag DESC_TAG
             res.setdefault(self.DESC_TAG, []).append(currBuffer)
+        elif currTag in self.SA_CLS_TAGS:
+            res.setdefault(self.SA_CLS_TAGS[0], []).append(currBuffer)
         elif currTag != "":
             res.setdefault(currTag, []).append(currBuffer)
         else:  # Text attached to no sub tag, for example what is put before "Description:", or just after "Parametre:" before "Signification:"
@@ -171,7 +173,7 @@ class DocConverter(object):
                 res += " * @throws %s \n" % sep.join(ex)
 
         # See also
-        for sa in dicRes.get(self.SA_CLS_TAG,[]):
+        for sa in dicRes.get(self.SA_CLS_TAGS[0],[]):
             sa = [s.strip() for s in sa if s.strip() != ""]
             if sa != []:
                 res += f" * @sa %s \n" % ", ".join(sa)
@@ -186,13 +188,20 @@ class DocConverter(object):
         lins = open(fNameIn, "r").readlines()
         louts = []
         blk = []
-        inComm = False
+        inComm, wasLong = False, False
         for i, lin in enumerate(lins):
-            isCom = lin.strip().startswith("//")
+            isCom = lin.strip().startswith("//") and not "XD " in lin.strip()
+            if lin.strip() == "" and inComm and (i < len(lins)-1 and not lins[i+1].strip().startswith("/////")):  
+                # A void line when we were in a comment block is counted as being part of the comment, unless it is followed by a '//////////' block ...
+                # Handles situations where '// .SECTION see also ...' is written after a blank line ...
+                isCom = True
             if isCom:
                 inComm = True
                 blk.append(lin)
-            if not isCom or i == len(lins)-1:  # handle last line too!
+            # Trigger for the end of a comment block:
+            #   - either not a comment line anymore
+            #   - or last line
+            if not isCom or i == len(lins)-1: # handle last line too!
                 if inComm:
                     inComm = False
                     dicRes = self.processBlock(blk, self.OUTER_TAGS)
@@ -203,7 +212,7 @@ class DocConverter(object):
                         res = blk
                     louts.extend(res)
                     blk = []
-                if not isCom or i != len(lins)-1:
+                if (not isCom or i != len(lins)-1):# and not isLongCom:
                     louts.append(lin)
 
         with open(fNameOut, "w") as fout:
@@ -223,3 +232,4 @@ if __name__ == "__main__":
     fNameIn, fNameOut = sys.argv[1], sys.argv[2]
     cv = DocConverter()
     cv.convertFile(fNameIn, fNameOut)
+
