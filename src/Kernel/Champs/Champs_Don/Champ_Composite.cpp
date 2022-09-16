@@ -51,7 +51,7 @@ Entree& Champ_Composite::readOn(Entree& is)
       Cerr << "Champ_Composite should define the same field types !" << finl, Process::exit();
 
   // pour la methode valeurs()
-  const int ncompo = z_fld_[0]->nb_comp() * dim_, nnodes = z_fld_[0]->nb_valeurs_nodales();
+  const int ncompo = z_fld_[0]->nb_comp() * dim_, nnodes = z_fld_[0]->valeurs().dimension_tot(0);
   fixer_nb_comp(ncompo);
   fixer_nb_valeurs_nodales(nnodes);
   fill_valeurs_composite();
