@@ -78,8 +78,16 @@ Read pb
         evanescence { homogene { alpha_res 1e-5 } }
         initial_conditions
         {
-            vitesse  Champ_Fonc_xyz dom 4 0 0 0 0
-            pression Champ_Fonc_xyz dom 1  -100*y*(y<0.5)-(45+10*y)*(y>0.5)
+            vitesse Champ_composite 2 /* champ par phase */
+                {
+                    Champ_Fonc_xyz dom 2 0 0
+                    Champ_Fonc_xyz dom 2 0 0
+                }
+                
+            pression Champ_composite 1
+                {
+                    Champ_Fonc_xyz dom 1  -100*y*(y<0.5)-(45+10*y)*(y>0.5)
+                }
         }
         sources
         {
@@ -93,7 +101,14 @@ Read pb
     }
     Masse_Multiphase
     {
-        initial_conditions { alpha Champ_Fonc_xyz dom 2 /* (y<0.5) (y>0.5) */ 0.5 0.5 }
+        initial_conditions
+        {
+            alpha Champ_composite 2 /* champ par phase */
+                {
+                    Champ_Fonc_xyz dom 1 /* (y<0.5) */ 0.5
+                    Champ_Fonc_xyz dom 1 /* (y>0.5) */ 0.5
+                }
+        }
         convection { amont }
         boundary_conditions { boundary paroi }
     }
@@ -101,7 +116,14 @@ Read pb
     {
         diffusion { negligeable }
         convection { amont }
-        initial_conditions { temperature Champ_Uniforme 2 0 0 }
+        initial_conditions
+        {
+            temperature Champ_composite 2 /* champ par phase */
+                {
+                    Champ_Uniforme 1 0
+                    Champ_Uniforme 1 0
+                }
+        }
         boundary_conditions { boundary paroi_adiabatique }
     }
     Post_processing

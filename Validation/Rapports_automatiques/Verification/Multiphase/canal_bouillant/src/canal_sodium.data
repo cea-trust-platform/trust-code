@@ -83,8 +83,16 @@ Read pb
         diffusion  { negligeable }
         initial_conditions
         {
-            vitesse  Champ_Fonc_xyz dom 4 0 0 1 1
-            pression Champ_Fonc_xyz dom 1 100000.0
+            vitesse Champ_composite 2 
+                {
+                    Champ_Fonc_xyz dom 2 0 1
+                    Champ_Fonc_xyz dom 2 0 1
+                }
+                
+            pression Champ_composite 1 
+                {
+                    Champ_Fonc_xyz dom 1 100000.0
+                }
         }
         boundary_conditions
         {
@@ -95,7 +103,14 @@ Read pb
     }
     Masse_Multiphase
     {
-        initial_conditions { alpha Champ_Fonc_xyz dom 2 1 0 }
+        initial_conditions 
+        { 
+            alpha Champ_composite 2
+            {
+                Champ_Fonc_xyz dom 1 1
+                Champ_Fonc_xyz dom 1 0
+            }
+        }
         convection { amont }
         boundary_conditions
         {
@@ -109,7 +124,14 @@ Read pb
     {
         diffusion { negligeable }
         convection { amont }
-        initial_conditions { temperature Champ_Uniforme 2 800 879.9430097752451 }
+        initial_conditions 
+        { 
+            temperature Champ_composite 2
+            {
+                Champ_Uniforme 1 800
+                Champ_Uniforme 1 879.9430097752451
+            }
+        }
         boundary_conditions
         {
             boundary paroi_adiabatique
