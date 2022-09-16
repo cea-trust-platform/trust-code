@@ -97,8 +97,15 @@ Read pb
         boundary_conditions
         {
             boundary symetrie
-            bas  frontiere_ouverte_vitesse_imposee_sortie champ_front_fonc_t 4 0 0 __v__ __v__
-            haut frontiere_ouverte_pression_imposee champ_front_uniforme 1 __p__
+            bas  frontiere_ouverte_vitesse_imposee_sortie champ_front_composite 2 
+                {
+                    champ_front_uniforme 2 0 __v__
+                    champ_front_uniforme 2 0 __v__
+                }
+            haut frontiere_ouverte_pression_imposee champ_front_composite 1
+                {
+                     champ_front_uniforme 1 __p__
+                }
         }
     }
     Masse_Multiphase
@@ -115,8 +122,16 @@ Read pb
         boundary_conditions
         {
             boundary paroi
-            bas  frontiere_ouverte a_ext Champ_Front_Uniforme 2 1 0
-            haut frontiere_ouverte a_ext Champ_Front_Uniforme 2 1 0
+            bas  frontiere_ouverte a_ext champ_front_composite 2
+                {
+                    Champ_Front_Uniforme 1 1
+                    Champ_Front_Uniforme 1 0
+                }
+            haut frontiere_ouverte a_ext champ_front_composite 2
+                {
+                    Champ_Front_Uniforme 1 1
+                    Champ_Front_Uniforme 1 0
+                }
         }
         sources { flux_interfacial }
     }
@@ -135,8 +150,16 @@ Read pb
         boundary_conditions
         {
             boundary paroi_adiabatique
-            bas    frontiere_ouverte T_ext Champ_Front_Uniforme 2 __Tin__ __Tsat__
-            haut   frontiere_ouverte T_ext Champ_Front_Uniforme 2 __Tin__ __Tsat__
+            bas    frontiere_ouverte T_ext champ_front_composite 2
+                {
+                    Champ_Front_Uniforme 1 __Tin__
+                    Champ_Front_Uniforme 1 __Tsat__
+                }
+            haut   frontiere_ouverte T_ext champ_front_composite 2
+                {
+                    Champ_Front_Uniforme 1 __Tin__
+                    Champ_Front_Uniforme 1 __Tsat__
+                }
         }
         sources
         {

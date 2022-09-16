@@ -98,8 +98,15 @@ Read pb
         boundary_conditions
         {
             boundary symetrie
-            bas  frontiere_ouverte_vitesse_imposee_sortie champ_front_fonc_t 4 0 0 1 1
-            haut frontiere_ouverte_pression_imposee champ_front_uniforme 1 100000.0
+            bas  frontiere_ouverte_vitesse_imposee_sortie champ_front_composite 2 
+                {
+                    champ_front_uniforme 2 0 1
+                    champ_front_uniforme 2 0 1
+                }
+            haut frontiere_ouverte_pression_imposee champ_front_composite 1
+                {
+                     champ_front_uniforme 1 100000.0
+                }
         }
     }
     Masse_Multiphase
@@ -116,8 +123,16 @@ Read pb
         boundary_conditions
         {
             boundary paroi
-            bas  frontiere_ouverte a_ext Champ_Front_Uniforme 2 1 0
-            haut frontiere_ouverte a_ext Champ_Front_Uniforme 2 1 0
+            bas  frontiere_ouverte a_ext champ_front_composite 2
+                {
+                    Champ_Front_Uniforme 1 1
+                    Champ_Front_Uniforme 1 0
+                }
+            haut frontiere_ouverte a_ext champ_front_composite 2
+                {
+                    Champ_Front_Uniforme 1 1
+                    Champ_Front_Uniforme 1 0
+                }
         }
         sources { flux_interfacial }
     }
@@ -136,8 +151,16 @@ Read pb
         boundary_conditions
         {
             boundary paroi_adiabatique
-            bas    frontiere_ouverte T_ext Champ_Front_Uniforme 2 800 879.9430097752451
-            haut   frontiere_ouverte T_ext Champ_Front_Uniforme 2 800 879.9430097752451
+            bas    frontiere_ouverte T_ext champ_front_composite 2
+                {
+                    Champ_Front_Uniforme 1 800
+                    Champ_Front_Uniforme 1 879.9430097752451
+                }
+            haut   frontiere_ouverte T_ext champ_front_composite 2
+                {
+                    Champ_Front_Uniforme 1 800
+                    Champ_Front_Uniforme 1 879.9430097752451
+                }
         }
         sources
         {
