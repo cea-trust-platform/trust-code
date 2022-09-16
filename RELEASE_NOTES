@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.1_beta : Enhancements, modifications and corrected bugs since version 1.9.0 :
 --------------------------------------------------------------------------------------------------
+19/09/22 (TRUST)  New keyword : New fields champ_composite and champ_front_composite are available and useful for Pb_Multiphase
 02/09/22 (TRUST)  New option  : New domaines keyword added to Create_domain_from_sous_zone which allows to create multiple domains at once.
 02/09/22 (TRUST)  New option  : --any-- keyword added to LireMED (as the mesh name) in order to read automatically the first mesh found in the med file.
 31/08/22 (TRUST)  Change      : Previous lata2dx exec is now called lata_analyzer. It is built in Outils/lata_tools (previously Outils/lata2dx).
