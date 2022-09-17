@@ -13,14 +13,26 @@
 *
 *****************************************************************************/
 
-#ifndef Pb_Multi_Especes_inclus
-#define Pb_Multi_Especes_inclus
+#ifndef Pb_Multi_Especes_included
+#define Pb_Multi_Especes_included
 
 #include <Pb_Thermohydraulique_QC.h>
 #include <Pb_Thermohydraulique_WC.h>
-#include <MacPbeqsup.h>
+#include <TRUSTProblem_sup_eqns.h>
 
-declare_instanciable_pb_eq_sup(Pb_Thermohydraulique_Especes_QC,Pb_Thermohydraulique_QC)
-declare_instanciable_pb_eq_sup(Pb_Thermohydraulique_Especes_WC,Pb_Thermohydraulique_WC)
+/// \cond DO_NOT_DOCUMENT
+class Pb_Multi_Especes
+{ /* pour check sources */ };
+/// \endcond
 
-#endif /* Pb_Multi_Especes_inclus */
+class Pb_Thermohydraulique_Especes_QC : public TRUSTProblem_sup_eqns<Pb_Thermohydraulique_QC>
+{
+  Declare_instanciable(Pb_Thermohydraulique_Especes_QC);
+};
+
+class Pb_Thermohydraulique_Especes_WC : public TRUSTProblem_sup_eqns<Pb_Thermohydraulique_WC>
+{
+  Declare_instanciable(Pb_Thermohydraulique_Especes_WC);
+};
+
+#endif /* Pb_Multi_Especes_included */

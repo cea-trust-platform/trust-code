@@ -13,18 +13,38 @@
 *
 *****************************************************************************/
 
-#ifndef Problemes_Scalaires_Passifs_inclus
-#define Problemes_Scalaires_Passifs_inclus
+#ifndef Problemes_Scalaires_Passifs_included
+#define Problemes_Scalaires_Passifs_included
 
 #include <Pb_Thermohydraulique_Concentration.h>
 #include <Pb_Hydraulique_Concentration.h>
+#include <TRUSTProblem_sup_eqns.h>
 #include <Pb_Thermohydraulique.h>
 #include <Pb_Conduction.h>
-#include <MacPbeqsup.h>
 
-declare_instanciable_pb_eq_sup(Pb_Thermohydraulique_Concentration_Scalaires_Passifs,Pb_Thermohydraulique_Concentration)
-declare_instanciable_pb_eq_sup(Pb_Hydraulique_Concentration_Scalaires_Passifs,Pb_Hydraulique_Concentration)
-declare_instanciable_pb_eq_sup(Pb_Thermohydraulique_Scalaires_Passifs,Pb_Thermohydraulique)
-declare_instanciable_pb_eq_sup(Pb_Conduction_Scalaires_Passifs,Pb_Conduction)
+/// \cond DO_NOT_DOCUMENT
+class Problemes_Scalaires_Passifs
+{ /* pour check sources */ };
+/// \endcond
 
-#endif /* Problemes_Scalaires_Passifs_inclus */
+class Pb_Thermohydraulique_Concentration_Scalaires_Passifs : public TRUSTProblem_sup_eqns<Pb_Thermohydraulique_Concentration>
+{
+  Declare_instanciable(Pb_Thermohydraulique_Concentration_Scalaires_Passifs);
+};
+
+class Pb_Hydraulique_Concentration_Scalaires_Passifs : public TRUSTProblem_sup_eqns<Pb_Hydraulique_Concentration>
+{
+  Declare_instanciable(Pb_Hydraulique_Concentration_Scalaires_Passifs);
+};
+
+class Pb_Thermohydraulique_Scalaires_Passifs : public TRUSTProblem_sup_eqns<Pb_Thermohydraulique>
+{
+  Declare_instanciable(Pb_Thermohydraulique_Scalaires_Passifs);
+};
+
+class Pb_Conduction_Scalaires_Passifs : public TRUSTProblem_sup_eqns<Pb_Conduction>
+{
+  Declare_instanciable(Pb_Conduction_Scalaires_Passifs);
+};
+
+#endif /* Problemes_Scalaires_Passifs_included */

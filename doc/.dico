@@ -158,6 +158,7 @@
  champ_init_canal_sinal champ_init_canal_sinal champ_init_canal_sinal.h
  Champ_input_P0 Champ_input_P0 Champ_input_P0.h
  Champ_input_uniforme Ch_input_uniforme Ch_input_uniforme.h
+ Champ_late_input_P0 Champ_late_input_P0 Champ_late_input_P0.h
  Champ_Ostwald Champ_Ostwald Champ_Ostwald.h
  Champ_Ostwald_VDF Champ_Ostwald_VDF Champ_Ostwald_VDF.h
  Champ_Ostwald_VEF Champ_Ostwald_VEF Champ_Ostwald_VEF.h
@@ -532,6 +533,7 @@
  MD_Vector_composite MD_Vector_composite MD_Vector_composite.h
  MD_Vector_std MD_Vector_std MD_Vector_std.h
  Merge_MED MergeMEDfiles MergeMEDfiles.h
+ Milieu Milieu Milieu.h
  Milieu_base Milieu_base Milieu_base.h
  Milieu_composite Milieu_composite Milieu_composite.h
  Modele_Permeabilite Modele_Permeabilite Modele_Permeabilite.h
@@ -780,11 +782,13 @@
  Pave Pave Pave.h
  Pbc_MED Pbc_MED Pb_MED.h
  Pb_Conduction Pb_Conduction Pb_Conduction.h
+ Pb_Conduction_Scalaires_Passifs Pb_Conduction_Scalaires_Passifs Problemes_Scalaires_Passifs.h
  Pb_Dilatable_base Pb_Dilatable_base Pb_Dilatable_base.h
  Pb_Fluide_base Pb_Fluide_base Pb_Fluide_base.h
  Pb_HEM Pb_HEM Pb_Multiphase.h
  Pb_Hydraulique Pb_Hydraulique Pb_Hydraulique.h
  Pb_Hydraulique_Concentration Pb_Hydraulique_Concentration Pb_Hydraulique_Concentration.h
+ Pb_Hydraulique_Concentration_Scalaires_Passifs Pb_Hydraulique_Concentration_Scalaires_Passifs Problemes_Scalaires_Passifs.h
  Pb_Hydraulique_Melange_Binaire_QC Pb_Hydraulique_Melange_Binaire_QC Pb_Hydraulique_Melange_Binaire_QC.h
  Pb_Hydraulique_Melange_Binaire_WC Pb_Hydraulique_Melange_Binaire_WC Pb_Hydraulique_Melange_Binaire_WC.h
  Pb_MED Pb_MED Pb_MED.h
@@ -792,7 +796,11 @@
  Pb_QC_base Pb_QC_base Pb_QC_base.h
  Pb_Thermohydraulique Pb_Thermohydraulique Pb_Thermohydraulique.h
  Pb_Thermohydraulique_Concentration Pb_Thermohydraulique_Concentration Pb_Thermohydraulique_Concentration.h
+ Pb_Thermohydraulique_Concentration_Scalaires_Passifs Pb_Thermohydraulique_Concentration_Scalaires_Passifs Problemes_Scalaires_Passifs.h
+ Pb_Thermohydraulique_Especes_QC Pb_Thermohydraulique_Especes_QC Pb_Multi_Especes.h
+ Pb_Thermohydraulique_Especes_WC Pb_Thermohydraulique_Especes_WC Pb_Multi_Especes.h
  Pb_Thermohydraulique_QC Pb_Thermohydraulique_QC Pb_Thermohydraulique_QC.h
+ Pb_Thermohydraulique_Scalaires_Passifs Pb_Thermohydraulique_Scalaires_Passifs Problemes_Scalaires_Passifs.h
  Pb_Thermohydraulique_WC Pb_Thermohydraulique_WC Pb_Thermohydraulique_WC.h
  Pb_WC_base Pb_WC_base Pb_WC_base.h
  PDF_model PDF_model PDF_model.h

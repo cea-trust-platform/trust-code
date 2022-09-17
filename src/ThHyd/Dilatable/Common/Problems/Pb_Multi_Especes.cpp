@@ -15,8 +15,13 @@
 
 #include <Pb_Multi_Especes.h>
 
-implemente_pb_eq_sup(Pb_Thermohydraulique_Especes_QC,"Pb_Thermohydraulique_Especes_QC",Pb_Thermohydraulique_QC,2)
-implemente_pb_eq_sup(Pb_Thermohydraulique_Especes_WC,"Pb_Thermohydraulique_Especes_WC",Pb_Thermohydraulique_WC,2)
+Implemente_instanciable(Pb_Thermohydraulique_Especes_QC,"Pb_Thermohydraulique_Especes_QC",TRUSTProblem_sup_eqns<Pb_Thermohydraulique_QC>);
+Sortie& Pb_Thermohydraulique_Especes_QC::printOn(Sortie& os) const { return TRUSTProblem_sup_eqns<Pb_Thermohydraulique_QC>::printOn(os); }
+Entree& Pb_Thermohydraulique_Especes_QC::readOn(Entree& is) { return TRUSTProblem_sup_eqns<Pb_Thermohydraulique_QC>::readOn(is); }
+
+Implemente_instanciable(Pb_Thermohydraulique_Especes_WC,"Pb_Thermohydraulique_Especes_WC",TRUSTProblem_sup_eqns<Pb_Thermohydraulique_WC>);
+Sortie& Pb_Thermohydraulique_Especes_WC::printOn(Sortie& os) const { return TRUSTProblem_sup_eqns<Pb_Thermohydraulique_WC>::printOn(os); }
+Entree& Pb_Thermohydraulique_Especes_WC::readOn(Entree& is) { return TRUSTProblem_sup_eqns<Pb_Thermohydraulique_WC>::readOn(is); }
 
 // XD pb_thermohydraulique_especes_QC pb_avec_passif pb_thermohydraulique_especes_QC -1 Resolution of thermo-hydraulic problem for a multi-species quasi-compressible fluid.
 // XD attr navier_stokes_QC navier_stokes_QC navier_stokes_QC 0 Navier-Stokes equation for a quasi-compressible fluid.
