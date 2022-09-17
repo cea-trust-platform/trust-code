@@ -138,11 +138,19 @@ Entree& Pb_Multiphase::lire_correlations(Entree& is)
   return is;
 }
 
-void Pb_Multiphase::discretiser(const Discretisation_base& disc)
+void Pb_Multiphase::typer_lire_milieu(Entree& is)
 {
-  if (!noms_phases_.size())
-    Cerr << "Pb_Multiphase : the phases must be set using Phase " << le_nom() << " { ... } before Discretiser" << finl, Process::exit();
-  return Pb_Fluide_base::discretiser(disc);
+  le_milieu_.resize(1); /* Un milieu .. mais composite !! */
+  is >> le_milieu_[0]; // On commence par la lecture du milieu
+  noms_phases_ = ref_cast(Milieu_composite,le_milieu_[0].valeur()).noms_phases();
+  associer_milieu_base(le_milieu_[0].valeur());
+
+  // On discretise les equations maintenant ! voir avec Elie si t'es pas d'accord
+  Probleme_base::discretiser_equations();
+  // remontee de l'inconnue vers le milieu
+  for (int i = 0; i < nombre_d_equations(); i++) equation(i).associer_milieu_equation();
+  // On discretise le milieu composite
+  equation(0).milieu().discretiser((*this), la_discretisation.valeur());
 }
 
 /*! @brief Renvoie le nombre d'equation, Renvoie 2 car il y a 2 equations a un probleme de
@@ -206,24 +214,6 @@ void Pb_Multiphase::associer_milieu_base(const Milieu_base& mil)
   eq_energie.associer_milieu_base(mil);
   eq_masse.associer_milieu_base(mil);
 }
-
-void Pb_Multiphase::creer_milieu(const Noms noms_milieux)
-{
-  DerObjU ref;
-  ref.typer("Milieu_composite");
-  Objet_U& obj = Interprete_bloc::interprete_courant().ajouter("milieu", ref);
-  Milieu_composite& mil = ref_cast(Milieu_composite, obj);
-
-  Nom nmil("{ ");
-  for (int i = 0; i < noms_milieux.size(); i++)
-    nmil += noms_milieux[i] + " ";
-  nmil += "}";
-  EChaine chaine_mil(nmil);
-  chaine_mil >> mil;
-
-  associer_milieu_base(mil);
-}
-
 
 /*! @brief Teste la compatibilite des equations de la thermique et de l'hydraulique.
  *

@@ -402,8 +402,7 @@ void Probleme_base::typer_lire_milieu(Entree& is)
 {
   // NOTA BENE :
   // Normalement on a un milieu par probleme, sauf si le problem contient un equation de concentration
-  // Dans ce cas, on a un milieu supplimentaire : constituant (faut pas demander pourquoi 2 milieu ... car je sais pas !)
-  // a voir si on peut faire mieux ...
+  // Dans ce cas, on a un milieu supplimentaire : constituant (faut pas demander pourquoi 2 milieu ... car je sais pas !). a voir si on peut faire mieux ...
   int nb_milieu = 1;
 
   // On cherche si c'est un pb avec concentration => avec constituant
@@ -418,18 +417,20 @@ void Probleme_base::typer_lire_milieu(Entree& is)
       associer_milieu_base(le_milieu_[i].valeur()); // On l'associe a chaque equations (methode virtuelle pour chaque pb ...)
     }
 
+  // remontee de l'inconnue vers le milieu
+  for (int i = 0; i < nombre_d_equations(); i++) equation(i).associer_milieu_equation();
+
   const bool is_constituant = nb_milieu == 1 ? false : true, is_scal_pass = (nom_pb.find(scal_pass) != std::string::npos) ? true : false;
   const int ns_ou_cond_eq = 0;
   int conc_eq = 1; // pas const !
 
-  // On discretise ...
+  // On discretise le/les milieu/x ... Et l'eq de concentration !
   if (is_constituant)
     {
       assert (nombre_d_equations() > 1);
       if (nombre_d_equations() == 2)
         {
           equation(conc_eq).discretiser(); // on discretize la concentration maintenant car on a besoin du milieu Constituant !
-
           for (int i = 0; i < nombre_d_equations(); i++) equation(i).milieu().discretiser((*this), la_discretisation.valeur());
         }
       else if (nombre_d_equations() == 3)
@@ -453,7 +454,7 @@ void Probleme_base::typer_lire_milieu(Entree& is)
           equation(conc_eq).milieu().discretiser((*this), la_discretisation.valeur()); // Conc
         }
     }
-  else /* On discretize juste eq 1 et c'est tout :-) :-) */
+  else /* On discretise le milieu de l'eq 1 et c'est tout :-) :-) */
     equation(ns_ou_cond_eq).milieu().discretiser((*this), la_discretisation.valeur());
 }
 
@@ -498,13 +499,9 @@ Entree& Probleme_base::readOn(Entree& is)
     }
 
   /* 1 : milieu : NEW SYNTAX */
-  if (!via_associer() && !is_pb_multiphase() && !is_pb_med() )
+  if (!via_associer() && !is_pb_med() )
     typer_lire_milieu(is);
-  else
-    {
-      le_milieu_.resize(1);
-      assert(!le_milieu_[0].non_nul());
-    }
+  else assert((int)le_milieu_.size() == 0);
 
   /* 2 : On lit les equations */
   lire_equations(is, motlu); //"motlu" contient le premier mot apres la lecture des equations
@@ -910,6 +907,16 @@ void Probleme_base::associer_domaine(const Domaine& un_domaine)
 
 }
 
+void Probleme_base::discretiser_equations()
+{
+  Cerr << "Discretization of the equations of problem " << que_suis_je() << " ..." <<  finl;
+  for (int i = 0; i < nombre_d_equations(); i++)
+    {
+      equation(i).associer_zone_dis(domaine_dis().zone_dis(0));
+      equation(i).discretiser();
+    }
+}
+
 /*! @brief Affecte une discretisation au probleme Discretise le Domaine associe au probleme avec la discretisation
  *
  *      Associe la premiere zone du Domaine aux equations du probleme
@@ -921,20 +928,13 @@ void Probleme_base::associer_domaine(const Domaine& un_domaine)
 void Probleme_base::discretiser(const Discretisation_base& une_discretisation)
 {
   associer();
-  la_discretisation=une_discretisation;
+  la_discretisation = une_discretisation;
   Cerr << "Discretization of the domain associated with the problem " << le_nom() << finl;
   une_discretisation.discretiser(le_domaine_dis);
-  Cerr << "Discretization of equations" << finl;
-  for(int i=0; i<nombre_d_equations(); i++)
-    {
-      equation(i).associer_zone_dis(domaine_dis().zone_dis(0));
-      equation(i).discretiser();
 
-      if (via_associer() || is_pb_multiphase() ) // remontee de l'inconnue vers le milieu
-        equation(i).associer_milieu_equation();
-    }
+  discretiser_equations(); // pour pb_multi ... on fera plus tard !
 
-  if (via_associer() || is_pb_multiphase() )
+  if (via_associer())
     {
       // Discretisation du milieu:
       //   ATTENTION (BM): il faudra faire quelque chose ici car si on associe deux
@@ -943,12 +943,13 @@ void Probleme_base::discretiser(const Discretisation_base& une_discretisation)
       //   Solution probable: gros nettoyage et on met le milieu dans le probleme
       // Elie Saikali : MERCI BENOIT !!!!
       Noms milieux_deja_discretises;
-      for(int i=0; i<nombre_d_equations(); i++)
+      for (int i = 0; i < nombre_d_equations(); i++)
         {
+          equation(i).associer_milieu_equation(); // remontee de l'inconnue vers le milieu
           const Nom& le_milieu = equation(i).milieu().que_suis_je();
           if (!milieux_deja_discretises.contient_(le_milieu))
             {
-              equation(i).milieu().discretiser((*this),une_discretisation);
+              equation(i).milieu().discretiser((*this), une_discretisation);
               milieux_deja_discretises.add(le_milieu);
             }
         }
@@ -957,7 +958,7 @@ void Probleme_base::discretiser(const Discretisation_base& une_discretisation)
   LIST_CURSEUR(REF(Loi_Fermeture_base)) curseur = liste_loi_fermeture_;
   while (curseur)
     {
-      Loi_Fermeture_base& loi=curseur.valeur().valeur();
+      Loi_Fermeture_base& loi = curseur.valeur().valeur();
       loi.discretiser(une_discretisation);
       ++curseur;
     }

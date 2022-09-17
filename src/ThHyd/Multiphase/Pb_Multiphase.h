@@ -45,12 +45,12 @@ class Pb_Multiphase : public Pb_Fluide_base
 {
   Declare_instanciable(Pb_Multiphase);
 public:
-  void discretiser(const Discretisation_base&) override;
+  void discretiser_equations() override { /* pour Pb_multi on discretise plus tard ! */ }
+  void typer_lire_milieu(Entree& is) override;
   int nombre_d_equations() const override;
   const Equation_base& equation(int) const override ;
   Equation_base& equation(int) override;
   void associer_milieu_base(const Milieu_base& ) override;
-  void creer_milieu(const Noms);
   virtual Entree& lire_equations(Entree& is, Motcle& dernier_mot) override;
   int verifier() override;
   void mettre_a_jour(double temps) override;
@@ -64,7 +64,6 @@ public:
   int nb_phases() const { return noms_phases_.size(); }
   const Nom& nom_phase(int i) const { return noms_phases_[i]; }
   const Noms& noms_phases() const { return noms_phases_; }
-  void set_noms_phases(Noms& noms) { noms_phases_ = noms; }
 
   QDM_Multiphase eq_qdm;
   Energie_Multiphase eq_energie;

@@ -55,6 +55,7 @@ public :
 
   LIST(Fluide_base) fluides;
   inline const Fluide_base& get_medium_for_incompressible() const { return fluides[0]; }
+  const Noms& noms_phases() const { return noms_phases_; }
 
 protected :
   Champ_Fonc rho_m, h_m;
@@ -66,6 +67,7 @@ protected :
   std::vector<std::vector<Interface_base *>> tab_interface;
   std::map<std::string, std::set<int>> phases_melange;
   double t_init_ = -1.;
+  Noms noms_phases_;
 };
 
 #endif

@@ -33,18 +33,16 @@ Entree& Milieu_composite::readOn(Entree& is)
   Nom mot;
   is >> mot;
   if (mot != "{") Cerr << "Milieu_composite : { expected instead of " << mot << finl, Process::exit();
+
   for (is >> mot; mot != "}"; is >> mot)
     {
-      Cerr << "Milieu_composite : ajout de " << mot << " ... ";
-      if (Interprete::objet_existant(mot))
-        {
-          Fluide_base& fluide = ref_cast(Fluide_base, Interprete::objet(mot));
-          fluide.set_id_composite(i++);
-          fluides.add(fluide);
-          especes.push_back(check_fluid_name(fluide.le_nom()));
-          Cerr << "ok!" << finl;
-        }
-      else Process::exit("not found!");
+      noms_phases_.add(mot);
+      Cerr << "Milieu_composite : ajout de " << mot << " ... " << finl;
+      Milieu fluide;
+      is >> fluide;
+      fluide->set_id_composite(i++);
+      fluides.add(ref_cast(Fluide_base,fluide.valeur()));
+      especes.push_back(check_fluid_name(fluide->le_nom()));
     }
 
   // interfaces

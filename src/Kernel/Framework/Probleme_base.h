@@ -134,6 +134,7 @@ public:
   virtual void associer_domaine(const Domaine&);
   virtual void associer_milieu_base(const Milieu_base&);
   virtual void discretiser(const Discretisation_base&);
+  virtual void discretiser_equations();
   virtual void finir();
 
   const Schema_Temps_base& schema_temps() const;
@@ -190,7 +191,6 @@ protected :
   bool via_associer_ = false;
   inline bool via_associer() { return via_associer_; }
   void warn_old_syntax();
-  inline bool is_pb_multiphase() { return (que_suis_je() == "Pb_Multiphase" || que_suis_je() == "Pb_HEM") ? true : false ; }
   inline bool is_pb_med() { return (que_suis_je() == "Pb_MED" || que_suis_je() == "Pbc_MED") ? true : false ; }
 
   // FIN partie TEMPORAIRE
@@ -203,7 +203,7 @@ protected :
   REF(Discretisation_base) la_discretisation;
   LIST(REF(Field_base)) input_fields; // List of input fields inside this problem.
 
-  void typer_lire_milieu(Entree& is) ;
+  virtual void typer_lire_milieu(Entree& is) ;
   mutable DERIV(Sortie_Fichier_base) ficsauv_;
   mutable Sortie_Brute* osauv_hdf_;
 
