@@ -52,18 +52,18 @@ Read sch
     }
 }
 
-StiffenedGas eau_liquide
-Read eau_liquide { gamma __gamma__ pinf __pinf__ }
-
 Pb_Multiphase pb
-phases pb { liquide { eau } }
-
 Associate  pb dom
 Associate  pb sch
 Discretize pb dis
 
 Read pb
 {
+	Milieu_composite
+	{
+		liquide_eau StiffenedGas { gamma __gamma__ pinf __pinf__ }
+	}
+
     QDM_Multiphase
     {
         solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg }

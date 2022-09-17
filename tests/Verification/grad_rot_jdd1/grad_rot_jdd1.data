@@ -55,28 +55,25 @@ Read sch
     }
 }
 
-Fluide_Incompressible eau_liquide
-Read eau_liquide
-{
-    mu champ_uniforme 1 0.001
-    rho champ_uniforme 1 1000
-    lambda Champ_Uniforme  1 1.
-    Cp Champ_Uniforme      1 1.
-    beta_th Champ_Uniforme 1 0.
-}
 Pb_Multiphase pb
-
-phases pb
-{
-    liquide { eau }
-}
-
 Associate  pb dom
 Associate  pb sch
 Discretize pb dis
 
 Lire pb
 {
+	Milieu_composite
+	{
+		liquide_eau Fluide_Incompressible
+		{
+    		mu champ_uniforme 1 0.001
+    		rho champ_uniforme 1 1000
+    		lambda Champ_Uniforme  1 1.
+    		Cp Champ_Uniforme      1 1.
+    		beta_th Champ_Uniforme 1 0.
+		}
+	}
+	
     correlations
     {
     }

@@ -52,26 +52,20 @@ Read sch
     }
 }
 
-Fluide_sodium_liquide sodium_liquide
-Read sodium_liquide  { }
-Fluide_sodium_gaz sodium_gaz
-Read sodium_gaz { }
-saturation_sodium saturation_sodium
-Read saturation_sodium { }
-
 Pb_Multiphase pb
-phases pb
-{
-    liquide { sodium }
-    gaz     { sodium }
-}
-
 Associate  pb dom
 Associate  pb sch
 Discretize pb dis
 
 Read pb
 {
+	Milieu_composite
+	{
+		liquide_sodium Fluide_sodium_liquide { }
+		saturation_sodium saturation_sodium { } /* test l'ordre du readOn */
+		gaz_sodium Fluide_sodium_gaz { }
+	}
+	
     correlations
     {
         flux_interfacial coef_constant { liquide_sodium 1e10 gaz_sodium 1e10 }

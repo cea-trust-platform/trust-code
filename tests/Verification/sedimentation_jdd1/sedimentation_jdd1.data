@@ -40,37 +40,31 @@ Read sch
     }
 }
 
-Fluide_Incompressible eau_liquide
-Read eau_liquide
-{
-    rho    Champ_Uniforme 1 10
-    mu     Champ_Uniforme 1 1e-3
-    lambda Champ_Uniforme 1 1
-    Cp     Champ_Uniforme 1 1
-}
-
-Fluide_Incompressible eau_gaz
-Read eau_gaz
-{
-    rho    Champ_Uniforme 1 1
-    mu     Champ_Uniforme 1 1e-3
-    lambda Champ_Uniforme 1 1
-    Cp     Champ_Uniforme 1 1
-}
-
-phases pb
-{
-    liquide { eau }
-    gaz     { eau }
-}
-
-
 Associate  pb dom
 Associate  pb sch
 Discretize pb dis
 
 Read pb
 {
+	Milieu_Composite
+	{
+		liquide_eau	Fluide_Incompressible
+			{
+    			rho    Champ_Uniforme 1 10
+    			mu     Champ_Uniforme 1 1e-3
+    			lambda Champ_Uniforme 1 1
+    			Cp     Champ_Uniforme 1 1
+			}
+		
+		gaz_eau Fluide_Incompressible
+			{
+    			rho    Champ_Uniforme 1 1
+    			mu     Champ_Uniforme 1 1e-3
+    			lambda Champ_Uniforme 1 1
+    			Cp     Champ_Uniforme 1 1
+			}
+	}
+
     QDM_Multiphase
     {
         solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg }
