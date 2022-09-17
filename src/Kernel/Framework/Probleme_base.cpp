@@ -398,7 +398,6 @@ inline int version_format_sauvegarde()
   return 184;
 }
 
-
 void Probleme_base::typer_lire_milieu(Entree& is)
 {
   // NOTA BENE :
@@ -408,7 +407,7 @@ void Probleme_base::typer_lire_milieu(Entree& is)
   int nb_milieu = 1;
 
   // On cherche si c'est un pb avec concentration => avec constituant
-  const std::string conc = "Concentration", nom_pb = que_suis_je().getString();
+  const std::string conc = "Concentration", scal_pass = "Scalaires_Passifs", nom_pb = que_suis_je().getString();
   if (nom_pb.find(conc) != std::string::npos) nb_milieu = 2; // pb contient concentration !
 
   le_milieu_.resize(nb_milieu);
@@ -419,7 +418,9 @@ void Probleme_base::typer_lire_milieu(Entree& is)
       associer_milieu_base(le_milieu_[i].valeur()); // On l'associe a chaque equations (methode virtuelle pour chaque pb ...)
     }
 
-  const bool is_constituant = nb_milieu == 1 ? false : true;
+  const bool is_constituant = nb_milieu == 1 ? false : true, is_scal_pass = (nom_pb.find(scal_pass) != std::string::npos) ? true : false;
+  const int ns_ou_cond_eq = 0;
+  int conc_eq = 1; // pas const !
 
   // On discretise ...
   if (is_constituant)
@@ -427,20 +428,33 @@ void Probleme_base::typer_lire_milieu(Entree& is)
       assert (nombre_d_equations() > 1);
       if (nombre_d_equations() == 2)
         {
-          equation(1).discretiser(); // on discretize la concentration maintenant car on a besoin du milieu Constituant !
+          equation(conc_eq).discretiser(); // on discretize la concentration maintenant car on a besoin du milieu Constituant !
 
           for (int i = 0; i < nombre_d_equations(); i++) equation(i).milieu().discretiser((*this), la_discretisation.valeur());
         }
+      else if (nombre_d_equations() == 3)
+        {
+          // On a 2 Cas :
+          // - Pb_Thermohydraulique_Concentration (NS, Thermique, Conc)
+          // - Pb_Hydraulique_Concentration_Scalaires_Passifs (NS, Conc + Equations_Scalaires_Passifs (la lise) !)
+          conc_eq = is_scal_pass ? 1 /* conc_eq */ : 2;
+          equation(conc_eq).discretiser(); // on discretize la concentration maintenant car on a besoin du milieu Constituant !
+          equation(ns_ou_cond_eq).milieu().discretiser((*this), la_discretisation.valeur()); // NS
+          equation(conc_eq).milieu().discretiser((*this), la_discretisation.valeur()); // Conc
+        }
       else
         {
-          for (int i = 2; i < nombre_d_equations(); i++) equation(2).discretiser(); // on discretize les concentrations ...
-
-          equation(0).milieu().discretiser((*this), la_discretisation.valeur()); // NS
-          equation(2).milieu().discretiser((*this), la_discretisation.valeur()); // Conc
+          // Cas rare : Pb_Thermohydraulique_Concentration_Scalaires_Passifs
+          // Ici on a NS, Thermique, Conc + Equations_Scalaires_Passifs (la lise) !
+          assert (nombre_d_equations() == 4);
+          conc_eq = 2;
+          equation(conc_eq).discretiser(); // on discretize la concentration maintenant car on a besoin du milieu Constituant !
+          equation(ns_ou_cond_eq).milieu().discretiser((*this), la_discretisation.valeur()); // NS
+          equation(conc_eq).milieu().discretiser((*this), la_discretisation.valeur()); // Conc
         }
     }
   else /* On discretize juste eq 1 et c'est tout :-) :-) */
-    equation(0).milieu().discretiser((*this), la_discretisation.valeur());
+    equation(ns_ou_cond_eq).milieu().discretiser((*this), la_discretisation.valeur());
 }
 
 /*! @brief Lecture d'un probleme dans un flot d'entree, et ouverture du flot de sauvegarde.
