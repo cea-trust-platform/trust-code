@@ -29,22 +29,41 @@ Implemente_instanciable(Milieu_composite, "Milieu_composite", Fluide_base);
 Entree& Milieu_composite::readOn(Entree& is)
 {
   int i = 0;
-  std::vector<std::pair<std::string, int>> especes;
+  std::vector<std::pair<std::string, int>> especes; // string pour phase_nom. int : 0 pour liquide et 1 pour gaz
   Nom mot;
   is >> mot;
   if (mot != "{") Cerr << "Milieu_composite : { expected instead of " << mot << finl, Process::exit();
 
   for (is >> mot; mot != "}"; is >> mot)
     {
-      noms_phases_.add(mot);
-      Cerr << "Milieu_composite : ajout de " << mot << " ... " << finl;
-      Milieu fluide;
-      is >> fluide;
-      fluide->set_id_composite(i++);
-      fluide->nommer(mot); // XXX
-      fluides.add(ref_cast(Fluide_base,fluide.valeur()));
-      especes.push_back(check_fluid_name(fluide->le_nom()));
+      if (!mot.debute_par("saturation") && !mot.debute_par("interface")) // on ajout les phases
+        {
+          noms_phases_.add(mot);
+          Cerr << "Milieu_composite : ajout la phase " << mot << " ... " << finl;
+          Milieu fluide;
+          is >> fluide;
+          fluide->set_id_composite(i++);
+          fluide->nommer(mot); // XXX
+          fluides.add(ref_cast(Fluide_base,fluide.valeur()));
+          especes.push_back(check_fluid_name(fluide->le_nom()));
+        }
+      else if (mot.debute_par("saturation")) // on ajout la saturation
+        {
+          has_saturation_ = true;
+          Cerr << "Milieu_composite : ajout la saturation " << mot << " ... " << finl;
+          is >> sat_lu;
+        }
+      else // on ajout l'interface
+        {
+          has_interface_ = true;
+          Cerr << "Milieu_composite : ajout l'interface " << mot << " ... " << finl;
+          is >> inter_lu;
+        }
     }
+
+  // Sais pas s'il faut tester ca ou non ... Yannick, Antoine ! help :/
+  if (has_saturation() && has_interface())
+    Cerr << "You define both interface and saturation in Milieu_composite ???" << finl, Process::exit();
 
   // interfaces
   int N = fluides.size();
@@ -55,13 +74,12 @@ Entree& Milieu_composite::readOn(Entree& is)
         {
           const std::string espn = especes[n].first, espm = especes[m].first;
           const int pn = especes[n].second, pm = especes[m].second;
-          Nom mot_inter = Nom((std::string("interface_") + especes[n].first + "_" + especes[m].first)), // "Interface_[...]_[...]"
-              mot_sat   = Nom((std::string("saturation_") + especes[n].first)); //"Saturation_[...]"
-          if ( pn != pm && (Interprete::objet_existant(mot_inter) || (espn == espm &&Interprete::objet_existant(mot_sat))))
+
+          if (pn != pm && (has_interface() || (espn == espm && has_saturation())))
             {
               Cerr << "Interface between fluid " << n << " : " << fluides[n].le_nom() << " and " << m << " : " << fluides[m].le_nom() << finl;
               phases_melange[especes[n].first].insert(n), phases_melange[especes[n].first].insert(m);
-              inter.push_back(&ref_cast(Interface_base, Interprete::objet(Interprete::objet_existant(mot_sat) ? mot_sat : mot_inter)));
+              inter.push_back(&ref_cast(Interface_base, has_saturation_ ? sat_lu.valeur() : inter_lu.valeur()));
               const Saturation_base *sat = sub_type(Saturation_base, *inter.back()) ? &ref_cast(Saturation_base, *inter.back()) : NULL;
               if (sat && sat->get_Pref() > 0) // pour loi en e = e0 + cp * (T - T0)
                 {

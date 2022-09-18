@@ -16,9 +16,8 @@
 #ifndef Interface_included
 #define Interface_included
 
-
-#include <Deriv.h>
 #include <Interface_base.h>
+#include <Deriv.h>
 
 /*! @brief classe Interface Un objet Interface peut referencer n'importe quel objet
  *
@@ -27,17 +26,10 @@
  * @sa Interface_base
  */
 
-class Interface_base;
-
 Declare_deriv(Interface_base);
-
 class Interface : public DERIV(Interface_base)
 {
   Declare_instanciable(Interface);
-
-public:
-  void associer_pb_multiphase(const Pb_Multiphase& pb);
-
 };
 
-#endif
+#endif /* Interface_included */

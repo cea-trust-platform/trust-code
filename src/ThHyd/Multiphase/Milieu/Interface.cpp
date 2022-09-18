@@ -18,17 +18,14 @@
 Implemente_deriv(Interface_base);
 Implemente_instanciable(Interface,"Interface",DERIV(Interface_base));
 
-Sortie& Interface::printOn(Sortie& os) const
-{
-  return DERIV(Interface_base)::printOn(os);
-}
+Sortie& Interface::printOn(Sortie& os) const { return DERIV(Interface_base)::printOn(os); }
 
 Entree& Interface::readOn(Entree& is)
 {
+  Cerr << "Typing the interface ... " << finl;
   Nom nom;
   is >> nom;
   DERIV(Interface_base)::typer(nom);
+  is >> valeur(); // faut lire quand meme :)
   return is;
 }
-
-Declare_ref(Interface_base);

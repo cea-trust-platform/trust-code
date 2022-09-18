@@ -38,7 +38,6 @@ private:
 
 protected:
   double sigma__ = -1;
-  REF(Pb_Multiphase) pb_multi;
 };
 
 #endif /* Interface_base_included */

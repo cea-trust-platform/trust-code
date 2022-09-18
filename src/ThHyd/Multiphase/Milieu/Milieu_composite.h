@@ -39,35 +39,43 @@ class Milieu_composite: public Fluide_base
 {
   Declare_instanciable(Milieu_composite);
 public :
-  void discretiser(const Probleme_base& pb, const  Discretisation_base& dis) override;
-  void mettre_a_jour(double temps) override;
-  int initialiser(const double temps) override;
-  void preparer_calcul() override;
-  void associer_equation(const Equation_base* eqn) const override;
-  bool has_interface(int k, int l) const;
-  Interface_base& get_interface(int k, int l) const;
-  bool has_saturation(int k, int l) const;
-  Saturation_base& get_saturation(int k, int l) const;
-  void abortTimeStep() override;
-  bool initTimeStep(double dt) override;
-
   int check_unknown_range() const override;
+  int initialiser(const double temps) override;
 
-  LIST(Fluide_base) fluides;
+  bool initTimeStep(double dt) override;
+  bool has_saturation(int k, int l) const;
+  bool has_interface(int k, int l) const;
+  inline bool has_saturation() const { return has_saturation_; }
+  inline bool has_interface() const { return has_interface_; }
+
+  void discretiser(const Probleme_base& pb, const  Discretisation_base& dis) override;
+  void abortTimeStep() override;
+  void preparer_calcul() override;
+  void mettre_a_jour(double temps) override;
+  void associer_equation(const Equation_base* eqn) const override;
+
+  Interface_base& get_interface(int k, int l) const;
+  Saturation_base& get_saturation(int k, int l) const;
+
+  inline const Noms& noms_phases() const { return noms_phases_; }
+  inline const LIST(Fluide_base)& get_fluides() const { return fluides; }
   inline const Fluide_base& get_medium_for_incompressible() const { return fluides[0]; }
-  const Noms& noms_phases() const { return noms_phases_; }
 
 protected :
+  LIST(Fluide_base) fluides;
   Champ_Fonc rho_m, h_m;
+  Noms noms_phases_;
+  double t_init_ = -1.;
+  bool has_saturation_ = false, has_interface_ = false;
+  std::vector<std::vector<Interface_base *>> tab_interface;
+  std::map<std::string, std::set<int>> phases_melange;
+  Interface sat_lu, inter_lu;
+
+  std::pair<std::string, int> check_fluid_name(const Nom& name);
   void mettre_a_jour_tabs();
   static void calculer_masse_volumique(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);
   static void calculer_energie_interne(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);
   static void calculer_enthalpie(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);
-  std::pair<std::string, int> check_fluid_name(const Nom& name);
-  std::vector<std::vector<Interface_base *>> tab_interface;
-  std::map<std::string, std::set<int>> phases_melange;
-  double t_init_ = -1.;
-  Noms noms_phases_;
 };
 
-#endif
+#endif /* Milieu_composite_included */
