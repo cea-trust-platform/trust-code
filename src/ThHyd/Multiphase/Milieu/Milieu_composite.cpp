@@ -41,6 +41,7 @@ Entree& Milieu_composite::readOn(Entree& is)
       Milieu fluide;
       is >> fluide;
       fluide->set_id_composite(i++);
+      fluide->nommer(mot); // XXX
       fluides.add(ref_cast(Fluide_base,fluide.valeur()));
       especes.push_back(check_fluid_name(fluide->le_nom()));
     }
@@ -79,8 +80,8 @@ Entree& Milieu_composite::readOn(Entree& is)
 
 std::pair<std::string, int> Milieu_composite::check_fluid_name(const Nom& name)
 {
-  int phase = name.finit_par("gaz");
-  Nom espece = phase ? name.getPrefix("_gaz") : name.getPrefix("_liquide");
+  int phase = name.debute_par("gaz");
+  Nom espece = phase ? name.getSuffix("gaz_") : name.getSuffix("liquide_");
 
   return std::make_pair(espece.getString(), phase);
 }
