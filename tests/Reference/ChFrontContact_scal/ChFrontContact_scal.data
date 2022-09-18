@@ -87,45 +87,8 @@ END SCATTER #
 
 VEFPreP1b dis
 
-Fluide_Incompressible fluide1
-Read fluide1
-{
-    mu Champ_Uniforme 1 0.004
-    rho Champ_Uniforme 1 8.
-}
-
-Fluide_Incompressible fluide2
-Read fluide2
-{
-    mu Champ_Uniforme 1 0.002
-    rho Champ_Uniforme 1 2
-}
-
-Constituant particule1
-Read particule1
-{
-    coefficient_diffusion Champ_Uniforme 1 0.03
-}
-
-Constituant particule2
-Read particule2
-{
-    coefficient_diffusion Champ_Uniforme 1 0.03
-}
-
-
-Champ_Uniforme gravite
-Read gravite 2 0 -9.81
-Associate fluide1 gravite
-Associate fluide2 gravite
-
 Associate pb1 dom_fluide1
-Associate pb1 fluide1
-Associate pb1 particule1
-
 Associate pb2 dom_fluide2
-Associate pb2 fluide2
-Associate pb2 particule2
 
 Probleme_Couple pbc
 Associate pbc pb1
@@ -135,6 +98,17 @@ Discretize pbc dis
 
 Read pb1
 {
+Fluide_Incompressible
+{
+    mu Champ_Uniforme 1 0.004
+    rho Champ_Uniforme 1 8.
+    gravite Champ_Uniforme 2 0 -9.81
+}
+Constituant
+{
+    coefficient_diffusion Champ_Uniforme 1 0.03
+}
+
     Navier_Stokes_standard
     {
         solveur_pression GCP {
@@ -191,6 +165,18 @@ Read pb1
 
 Read pb2
 {
+Fluide_Incompressible
+{
+    mu Champ_Uniforme 1 0.002
+    rho Champ_Uniforme 1 2
+    gravite Champ_Uniforme 2 0 -9.81
+}
+
+Constituant
+{
+    coefficient_diffusion Champ_Uniforme 1 0.03
+}
+
     Navier_Stokes_standard
     {
         solveur_pression GCP {

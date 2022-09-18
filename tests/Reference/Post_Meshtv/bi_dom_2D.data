@@ -63,41 +63,10 @@ Mailler dom_fluide
     }
 }
 
-# Read_file dom_fluide dom_fluide.geom #
-# Read_file dom_solide dom_solide.geom #
-# ecrire_fichier dom_solide dom_solide.geom #
-# ecrire_fichier dom_fluide dom_fluide.geom #
-
 VDF dis
 
-Fluide_Incompressible fluide
-Read fluide
-{
-    mu Champ_Uniforme 1 0.001
-    rho Champ_Uniforme 1 1.
-    lambda Champ_Uniforme 1 1.0
-    Cp Champ_Uniforme 1 1000.
-    beta_th Champ_Uniforme 1 0.0001
-}
-
-Solide sol
-Read sol
-{
-    rho Champ_Uniforme 1 1000.
-    lambda Champ_Uniforme 1 250.
-    Cp Champ_Uniforme 1 100.
-}
-
-Champ_Uniforme gravite
-Read gravite 2 0 -9.81
-Associate sol gravite
-Associate fluide gravite
-
 Associate pb1 dom_solide
-Associate pb1 sol
-
 Associate pb2 dom_fluide
-Associate pb2 fluide
 
 Probleme_Couple pbc
 Associate pbc pb1
@@ -107,6 +76,12 @@ Discretize pbc dis
 
 Read pb1
 {
+Solide
+{
+    rho Champ_Uniforme 1 1000.
+    lambda Champ_Uniforme 1 250.
+    Cp Champ_Uniforme 1 100.
+}
     Conduction
     {
         diffusion { }
@@ -153,6 +128,16 @@ Read pb1
 
 Read pb2
 {
+Fluide_Incompressible
+{
+    mu Champ_Uniforme 1 0.001
+    rho Champ_Uniforme 1 1.
+    lambda Champ_Uniforme 1 1.0
+    Cp Champ_Uniforme 1 1000.
+    beta_th Champ_Uniforme 1 0.0001
+    gravite Champ_Uniforme 2 0 -9.81
+}
+
     Navier_Stokes_standard
     {
         solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-14 impr }

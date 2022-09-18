@@ -71,35 +71,8 @@ Read sch
     seuil_statio 1.e-8
 }
 
-Fluide_Incompressible fluide
-Read fluide
-{
-    mu Champ_Uniforme 1 1.85e-5
-    rho Champ_Uniforme 1 2.
-    lambda Champ_Uniforme 1 0.0262
-    Cp Champ_Uniforme 1 1006.
-    beta_th Champ_Uniforme 1 0.
-}
-Solide sol
-Read sol
-{
-    rho Champ_Uniforme 1 1000.
-    lambda Champ_Uniforme 1 250.
-    Cp Champ_Uniforme 1 100.
-}
-
-
-Champ_Uniforme gravite
-Read gravite 2 0 0
-
-Associate sol gravite
-Associate fluide gravite
-
 Associate pb_solide dom_solide
-Associate pb_solide sol
-
 Associate pb dom
-Associate pb fluide
 
 Probleme_Couple pbc
 Associate pbc pb
@@ -109,6 +82,15 @@ Discretize pbc dis
 
 Read pb
 {
+Fluide_Incompressible
+{
+    mu Champ_Uniforme 1 1.85e-5
+    rho Champ_Uniforme 1 2.
+    lambda Champ_Uniforme 1 0.0262
+    Cp Champ_Uniforme 1 1006.
+    beta_th Champ_Uniforme 1 0.
+    gravite Champ_Uniforme 2 0 0
+}
     Navier_Stokes_Standard
     {
         solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-9 }
@@ -151,6 +133,12 @@ Read pb
 }
 Read pb_solide
 {
+Solide
+{
+    rho Champ_Uniforme 1 1000.
+    lambda Champ_Uniforme 1 250.
+    Cp Champ_Uniforme 1 100.
+}
     Conduction
     {
         diffusion { }

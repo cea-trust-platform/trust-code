@@ -99,34 +99,9 @@ Scatter DOM2.Zones dom_fluide
 END SCATTER #
 
 VEFPreP1b dis
-Fluide_Incompressible fluide
-Read fluide
-{
-    mu Champ_Uniforme 1 0.0018
-    rho Champ_Uniforme 1  10400
-    lambda Champ_Uniforme 1 10.09
-    Cp Champ_Uniforme 1 146.5
-    beta_th Champ_Uniforme 1 0.
-}
-
-Solide sol
-Read sol
-{
-    rho Champ_Uniforme 1 7800.
-    lambda Champ_Uniforme 1 28.8
-    Cp Champ_Uniforme 1 562.69
-}
-
-Champ_Uniforme gravite
-Read gravite 3 0 0 -9.81
-Associate sol gravite
-Associate fluide gravite
 
 Associate pb1 dom_solide
-Associate pb1 sol
-
 Associate pb2 dom_fluide
-Associate pb2 fluide
 
 Probleme_Couple pbc
 Associate pbc pb1
@@ -136,6 +111,13 @@ Discretize pbc dis
 
 Read pb1
 {
+Solide
+{
+    rho Champ_Uniforme 1 7800.
+    lambda Champ_Uniforme 1 28.8
+    Cp Champ_Uniforme 1 562.69
+}
+
     Conduction
     {
         diffusion { }
@@ -179,6 +161,16 @@ Read pb1
 
 Read pb2
 {
+Fluide_Incompressible
+{
+    mu Champ_Uniforme 1 0.0018
+    rho Champ_Uniforme 1  10400
+    lambda Champ_Uniforme 1 10.09
+    Cp Champ_Uniforme 1 146.5
+    gravite Champ_Uniforme 3 0 0 -9.81
+    beta_th Champ_Uniforme 1 0.
+}
+
     Navier_Stokes_standard
     {
         solveur_pression GCP {

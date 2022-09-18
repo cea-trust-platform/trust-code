@@ -87,8 +87,15 @@ Read sch
     seuil_statio 1.e-8
 }
 
-Fluide_Quasi_Compressible fluide
-Read fluide {
+
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+Read pb
+{
+Fluide_Quasi_Compressible 
+{
 
     pression 81385.5334
 
@@ -99,20 +106,9 @@ Read fluide {
     }
     traitement_pth constant
     traitement_rho_gravite moins_rho_moyen
+    gravite Champ_Uniforme 2 0 -9.81
 }
 
-Champ_Uniforme gravite
-Read gravite 2 0 -9.81
-
-Associate fluide gravite
-Associate pb dom
-Associate pb sch
-Associate pb fluide
-
-Discretize pb dis
-
-Read pb
-{
     Navier_Stokes_QC
     {
         solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-12 }

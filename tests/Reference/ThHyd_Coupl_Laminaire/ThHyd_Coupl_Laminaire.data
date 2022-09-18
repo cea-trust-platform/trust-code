@@ -98,40 +98,10 @@ Scatter DOM1.Zones dom_pb1
 Scatter DOM2.Zones dom_pb2
 END SCATTER #
 
-
 VDF cubesregu
 
-# Proprietes He vers 700°C #
-Fluide_Incompressible He
-Read He
-{
-    mu Champ_Uniforme 1 4.46437e-05
-    rho Champ_Uniforme 1 4.40684
-    lambda Champ_Uniforme 1 0.344964
-    Cp Champ_Uniforme 1 5193.
-    beta_th champ_fonc_fonction pb2 temperature 1 1/val
-}
-
-Champ_Uniforme gravite
-Read gravite 2 0. -9.81
-Associate He gravite
 Associate pb2 dom_pb2
-Associate pb2 He
-
-
-Solide ceramique
-Read ceramique
-{
-    rho Champ_Uniforme 1 7009.
-    lambda Champ_Uniforme 1 15.8
-    Cp Champ_Uniforme 1 .527
-}
-# valeur reelle        Cp Champ_Uniforme 1 527. #
-
-
 Associate pb1 dom_pb1
-Associate pb1 ceramique
-
 
 Probleme_Couple Conduccouplethermoh
 Associate Conduccouplethermoh pb2
@@ -141,6 +111,17 @@ Discretize Conduccouplethermoh cubesregu
 
 Read pb2
 {
+# Proprietes He vers 700°C #
+Fluide_Incompressible
+{
+    mu Champ_Uniforme 1 4.46437e-05
+    rho Champ_Uniforme 1 4.40684
+    lambda Champ_Uniforme 1 0.344964
+    Cp Champ_Uniforme 1 5193.
+    beta_th champ_fonc_fonction pb2 temperature 1 1/val
+    gravite Champ_Uniforme 2 0 -9.81
+}
+
     Navier_Stokes_standard
     {
         solveur_pression GCP { precond ssor { omega 1.6 } seuil 1.e-7 }
@@ -204,6 +185,12 @@ Read pb2
 
 Read pb1
 {
+Solide 
+{
+    rho Champ_Uniforme 1 7009.
+    lambda Champ_Uniforme 1 15.8
+    Cp Champ_Uniforme 1 .527
+}
     Conduction
     {
         diffusion { }

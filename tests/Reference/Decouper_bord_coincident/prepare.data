@@ -58,34 +58,8 @@ Read sch
 
 VEFPreP1B dis
 
-Fluide_Incompressible fluide
-Read fluide
-{
-    mu Champ_Uniforme 1 0.002
-    rho Champ_Uniforme 1 2.
-    lambda Champ_Uniforme 1 2.0
-    Cp Champ_Uniforme 1 1000.
-    beta_th Champ_Uniforme 1 0.0001
-}
-
-Solide sol
-Read sol
-{
-    rho Champ_Uniforme 1 1000.
-    lambda Champ_Uniforme 1 250.
-    Cp Champ_Uniforme 1 100.
-}
-
-Champ_Uniforme gravite
-Read gravite 2 0 -9.81
-Associate sol gravite
-Associate fluide gravite
-
 Associate pb_solide dom_solide
-Associate pb_solide sol
-
 Associate pb_fluide dom_fluide
-Associate pb_fluide fluide
 
 Probleme_Couple pbc
 Associate pbc pb_solide
@@ -95,6 +69,12 @@ Discretize pbc dis
 
 Read pb_solide
 {
+Solide
+{
+    rho Champ_Uniforme 1 1000.
+    lambda Champ_Uniforme 1 250.
+    Cp Champ_Uniforme 1 100.
+}
     Conduction
     {
         diffusion { }
@@ -115,6 +95,15 @@ Read pb_solide
 
 Read pb_fluide
 {
+Fluide_Incompressible
+{
+    mu Champ_Uniforme 1 0.002
+    rho Champ_Uniforme 1 2.
+    lambda Champ_Uniforme 1 2.0
+    Cp Champ_Uniforme 1 1000.
+    beta_th Champ_Uniforme 1 0.0001
+    gravite Champ_Uniforme 2 0 -9.81
+}
     Navier_Stokes_standard
     {
         solveur_pression GCP {

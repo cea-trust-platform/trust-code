@@ -77,29 +77,6 @@ Read sch
     facsec 0.2
 }
 
-# On choisit un Solide commun aux deux problemes #
-Solide acier1
-Solide acier2
-Read acier1
-{
-    rho Champ_Uniforme 1 100.
-    lambda Champ_Uniforme 1 100.
-    Cp Champ_Uniforme 1 10.
-}
-Read acier2
-{
-    rho Champ_Uniforme 1 2
-    lambda Champ_Uniforme 1 100.
-    Cp Champ_Uniforme 1 209
-}
-
-Champ_Uniforme gravite
-Read gravite 2 0. 9.81
-Associate acier1 gravite
-Associate acier2 gravite
-
-
-
 # Declaration des problemes #
 Pb_Conduction pb1
 Pb_Conduction pb2
@@ -107,8 +84,6 @@ Pb_Conduction pb2
 # Association des problemes #
 Associate pb1 dom1
 Associate pb2 dom2
-Associate pb1 acier1
-Associate pb2 acier2
 
 # Creation du probleme couple #
 Probleme_Couple pbc
@@ -120,6 +95,13 @@ Discretize pbc dis
 
 Read pb1
 {
+Solide
+{
+    rho Champ_Uniforme 1 100.
+    lambda Champ_Uniforme 1 100.
+    Cp Champ_Uniforme 1 10.
+}
+
     Conduction
     {
         diffusion {  }
@@ -150,6 +132,13 @@ Read pb1
 
 Read pb2
 {
+Solide
+{
+    rho Champ_Uniforme 1 2
+    lambda Champ_Uniforme 1 100.
+    Cp Champ_Uniforme 1 209
+}
+
     Conduction
     {
         diffusion {  }

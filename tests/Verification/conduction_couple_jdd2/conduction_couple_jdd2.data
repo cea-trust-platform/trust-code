@@ -96,29 +96,8 @@ END SCATTER #
 
 VEFPrep1b dis
 
-Fluide_Incompressible fluide
-Read fluide
-{
-    mu Champ_Uniforme 1 0.001
-    rho Champ_Uniforme 1 1.
-    lambda Champ_Uniforme 1 1.
-    Cp Champ_Uniforme 1 1000.
-    beta_th Champ_Uniforme 1 0.
-}
-
-Solide sol
-Read sol
-{
-    rho Champ_Uniforme 1 1.
-    lambda Champ_Uniforme 1 10.
-    Cp Champ_Uniforme 1 100.
-}
-
 Associate pb1 dom_solide
-Associate pb1 sol
-
 Associate pb2 dom_fluide
-Associate pb2 fluide
 
 Probleme_Couple pbc
 Associate pbc pb1
@@ -126,9 +105,16 @@ Associate pbc pb2
 Associate pbc sch
 Discretize pbc dis
 
-
 Read pb2
 {
+Fluide_Incompressible
+{
+    mu Champ_Uniforme 1 0.001
+    rho Champ_Uniforme 1 1.
+    lambda Champ_Uniforme 1 1.
+    Cp Champ_Uniforme 1 1000.
+    beta_th Champ_Uniforme 1 0.
+}
     Navier_Stokes_standard
     {
 
@@ -191,6 +177,12 @@ Read pb2
 }
 Read pb1
 {
+Solide
+{
+    rho Champ_Uniforme 1 1.
+    lambda Champ_Uniforme 1 10.
+    Cp Champ_Uniforme 1 100.
+}
     Conduction
     {
         diffusion { }

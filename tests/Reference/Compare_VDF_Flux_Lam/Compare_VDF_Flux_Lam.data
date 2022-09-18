@@ -75,8 +75,18 @@ Read sch
     seuil_statio 1.e-8
 }
 
-Fluide_Quasi_Compressible fluide
-Read fluide
+Associate pb_solide dom_solide
+Associate pb dom
+
+Probleme_Couple pbc
+Associate pbc pb
+Associate pbc pb_solide
+Associate pbc sch
+Discretize pbc dis
+
+Read pb
+{
+Fluide_Quasi_Compressible
 {
     mu Champ_Uniforme 1 1.85e-5
     pression 162684.57148045
@@ -88,36 +98,8 @@ Read fluide
         rho_constant_pour_debug Champ_uniforme 1 2.
     }
     traitement_pth constant
+    gravite Champ_Uniforme 2 0 0
 }
-Solide sol
-Read sol
-{
-    rho Champ_Uniforme 1 1000.
-    lambda Champ_Uniforme 1 250.
-    Cp Champ_Uniforme 1 100.
-}
-
-
-Champ_Uniforme gravite
-Read gravite 2 0 0
-
-Associate sol gravite
-Associate fluide gravite
-
-Associate pb_solide dom_solide
-Associate pb_solide sol
-
-Associate pb dom
-Associate pb fluide
-
-Probleme_Couple pbc
-Associate pbc pb
-Associate pbc pb_solide
-Associate pbc sch
-Discretize pbc dis
-
-Read pb
-{
     Navier_Stokes_QC
     {
         solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-9 }
@@ -160,6 +142,12 @@ Read pb
 }
 Read pb_solide
 {
+Solide
+{
+    rho Champ_Uniforme 1 1000.
+    lambda Champ_Uniforme 1 250.
+    Cp Champ_Uniforme 1 100.
+}
     Conduction
     {
         diffusion { }

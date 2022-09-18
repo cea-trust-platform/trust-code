@@ -47,37 +47,23 @@ Read sch
     dt_max 0.1
     nb_pas_dt_max 1
 }
-Solide sol_test_sous_zone
-Read sol_test_sous_zone
-{
-    rho Champ_Uniforme 1 2
-    lambda Champ_Uniforme 1 0.01
-    Cp Champ_Uniforme 1 0.5
-}
-Solide sol_champ_med_interpole
-Read sol_champ_med_interpole
-{
-    rho Champ_Uniforme 1 2
-    lambda Champ_Uniforme 1 0.01
-    Cp Champ_Uniforme 1 0.5
-}
+ 
 Associate pb_test_sous_zone dom
-Associate pb_test_sous_zone sol_test_sous_zone
 Associate pbc  pb_test_sous_zone
-
-
 Associate pb_champ_med_interpole dom2
-Associate pb_champ_med_interpole sol_champ_med_interpole
-
-
 Associate pbc pb_champ_med_interpole
 Associate pbc sch
-
 
 Discretize pbc dis
 
 Read pb_test_sous_zone
 {
+Solide
+{
+    rho Champ_Uniforme 1 2
+    lambda Champ_Uniforme 1 0.01
+    Cp Champ_Uniforme 1 0.5
+}
     Conduction
     {
         diffusion { negligeable }
@@ -105,6 +91,13 @@ Read pb_test_sous_zone
 }
 Read pb_champ_med_interpole
 {
+Solide
+{
+    rho Champ_Uniforme 1 2
+    lambda Champ_Uniforme 1 0.01
+    Cp Champ_Uniforme 1 0.5
+}
+
     Conduction
     {
         diffusion { negligeable }

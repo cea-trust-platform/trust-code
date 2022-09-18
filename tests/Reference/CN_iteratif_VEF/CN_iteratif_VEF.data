@@ -76,26 +76,8 @@ Read sch {
     dt_sauv 1000
 }
 
-
-Solide sol1
-Read sol1 {
-    rho Champ_Uniforme 1 10
-    lambda Champ_Uniforme 1 1
-    Cp Champ_Uniforme 1 1000
-}
-
-Solide sol2
-Read sol2 {
-    rho Champ_Uniforme 1 20
-    lambda Champ_Uniforme 1 1
-    Cp Champ_Uniforme 1 1000
-}
-
 Associate pb1 dom1
-Associate pb1 sol1
-
 Associate pb2 dom2
-Associate pb2 sol2
 
 Probleme_Couple pbc
 Associate pbc pb1
@@ -104,6 +86,12 @@ Associate pbc sch
 Discretize pbc dis
 
 Read pb1 {
+Solide
+{
+    rho Champ_Uniforme 1 10
+    lambda Champ_Uniforme 1 1
+    Cp Champ_Uniforme 1 1000
+}
     Conduction {
         diffusion { }
         initial_conditions {
@@ -125,6 +113,12 @@ Read pb1 {
 }
 
 Read pb2 {
+Solide
+{
+    rho Champ_Uniforme 1 20
+    lambda Champ_Uniforme 1 1
+    Cp Champ_Uniforme 1 1000
+}
     Conduction {
         diffusion { }
         initial_conditions {

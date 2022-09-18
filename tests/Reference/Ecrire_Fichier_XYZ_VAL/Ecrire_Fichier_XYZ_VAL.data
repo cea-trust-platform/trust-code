@@ -82,35 +82,8 @@ Read schG
 
 VDF cubesregu
 
-Fluide_Incompressible eau
-Read eau
-{
-    mu Champ_Uniforme 1 1.
-    rho Champ_Uniforme 1 1.
-    lambda Champ_Uniforme 1 1.
-    Cp Champ_Uniforme 1 1.
-    beta_th Champ_Uniforme 1 .01
-}
-
-
-Champ_Uniforme gravite
-Read gravite 2 0.  -9.81
-Associate eau  gravite
 Associate pbF1 dom_pbF1
-Associate pbF1 eau
-
-Solide ceramique
-Read ceramique
-{
-    rho Champ_Uniforme 1 1.
-    lambda Champ_Uniforme 1 1.
-    Cp Champ_Uniforme 1 1.
-}
-
-Associate ceramique  gravite
 Associate pbG dom_pbG
-Associate pbG ceramique
-
 
 Probleme_couple pbMG_global
 Associate pbMG_global pbF1
@@ -119,11 +92,19 @@ Associate pbMG_global schG
 
 Discretize pbMG_global cubesregu
 
-
-
-
 Read pbF1
 {
+Fluide_Incompressible
+{
+    mu Champ_Uniforme 1 1.
+    rho Champ_Uniforme 1 1.
+    lambda Champ_Uniforme 1 1.
+    Cp Champ_Uniforme 1 1.
+    beta_th Champ_Uniforme 1 .01
+    gravite Champ_Uniforme 2 0 -9.81
+}
+
+
     Navier_Stokes_standard
     {
         solveur_pression petsc cholesky { }
@@ -199,6 +180,13 @@ Read pbF1
 
 Read pbG
 {
+Solide
+{
+    rho Champ_Uniforme 1 1.
+    lambda Champ_Uniforme 1 1.
+    Cp Champ_Uniforme 1 1.
+}
+
     Conduction
     {
         diffusion { }

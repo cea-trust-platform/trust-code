@@ -61,50 +61,14 @@ Read sch
     nb_pas_dt_max 2
 }
 
-Fluide_Incompressible sodium1
-Read sodium1
-{
-    porosites_champ champ_fonc_xyz dom 1 1-(z>1)*(z<2)*0.74
-    mu Champ_Uniforme 1 .000245
-    rho Champ_Uniforme 1 840.
-    lambda Champ_Uniforme 1 66.
-    Cp champ_Uniforme 1 1270.
-    Beta_th Champ_uniforme 1 0.000276
-}
-
-Fluide_Incompressible sodium3
-Read sodium3
-{
-    mu Champ_Uniforme 1 .000245
-    rho Champ_Uniforme 1 840.
-    lambda Champ_Uniforme 1 66.
-    Cp champ_Uniforme 1 1270.
-    Beta_th Champ_uniforme 1 0.000276
-}
-
-Solide acier
-Read acier
-{
-    rho     Champ_Uniforme 1 7800.
-    Cp      Champ_Uniforme 1 500.
-    lambda  Champ_Uniforme 1 16.
-}
-
-Champ_Uniforme gravite
-Read gravite 3 0 0 0
-
 Pb_thermohydraulique pb1
 Associate pb1 dom
-Associate pb1 sodium1
 
 Pb_Conduction pb2
 Associate pb2 dom_TH
-Associate pb2 acier
 
 Pb_thermohydraulique pb3
 Associate pb3 dom_IA
-Associate pb3 sodium3
-
 
 Probleme_Couple pbc
 Associate pbc pb1
@@ -113,11 +77,19 @@ Associate pbc pb3
 Associate pbc sch
 Discretize pbc dis
 
-
-
 # Debog pb seq faces 1.e-6 0 #
 Read pb1
 {
+
+Fluide_Incompressible
+{
+    porosites_champ champ_fonc_xyz dom 1 1-(z>1)*(z<2)*0.74
+    mu Champ_Uniforme 1 .000245
+    rho Champ_Uniforme 1 840.
+    lambda Champ_Uniforme 1 66.
+    Cp champ_Uniforme 1 1270.
+    Beta_th Champ_uniforme 1 0.000276
+}
     Navier_Stokes_standard
     {
         solveur_pression GCP  { precond ssor { omega 1.5 } seuil 1e-8 impr }
@@ -164,6 +136,13 @@ Read pb1
 
 Read pb2
 {
+Solide
+{
+    rho     Champ_Uniforme 1 7800.
+    Cp      Champ_Uniforme 1 500.
+    lambda  Champ_Uniforme 1 16.
+}
+
     Conduction
     {
         diffusion { }
@@ -187,6 +166,16 @@ Read pb2
 
 Read pb3
 {
+
+Fluide_Incompressible
+{
+    mu Champ_Uniforme 1 .000245
+    rho Champ_Uniforme 1 840.
+    lambda Champ_Uniforme 1 66.
+    Cp champ_Uniforme 1 1270.
+    Beta_th Champ_uniforme 1 0.000276
+}
+
     Navier_Stokes_standard
     {
         solveur_pression petsc cholesky { }
@@ -231,9 +220,6 @@ Read pb3
         }
     }
 }
-
-
-
 
 Solve pbc
 
