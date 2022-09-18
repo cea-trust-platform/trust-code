@@ -16,6 +16,7 @@
 #ifndef Probleme_base_included
 #define Probleme_base_included
 
+#include <Probleme_base_interface_proto.h>
 #include <List_Ref_Loi_Fermeture_base.h>
 #include <Deriv_Sortie_Fichier_base.h>
 #include <Champs_compris_interface.h>
@@ -29,7 +30,6 @@
 #include <Probleme_U.h>
 #include <Milieu.h>
 
-class Champ_Generique_base;
 class EcrFicPartageBin;
 class Equation_base;
 class Postraitement;
@@ -51,57 +51,12 @@ class Champ_Fonc;
  *
  * @sa Probleme, Classe abstraite dont tous les problemes doivent deriver., Methodes abstraites:, int nombre_d_equations() const, const Equation_base& equation(int) const, Equation_base& equation(int)
  */
-class Probleme_base : public Champs_compris_interface, public Probleme_U
+class Probleme_base : public Champs_compris_interface, public Probleme_U, public Probleme_base_interface_proto
 {
-  Declare_base_sans_constructeur(Probleme_base);
-
+  Declare_base_sans_constructeur_ni_destructeur(Probleme_base);
 public:
-  //////////////////////////////////////////////////
-  //                                              //
-  // Implementation de l'interface de Probleme_U  //
-  //                                              //
-  //////////////////////////////////////////////////
-
-  // interface Problem
-  void initialize() override;
-  void terminate() override;
-
-  // interface UnsteadyProblem
-  double presentTime() const override;
-  double computeTimeStep(bool& stop) const override;
-  bool initTimeStep(double dt) override;
-  bool solveTimeStep() override;
-  void validateTimeStep() override;
-  bool isStationary() const override;
-  void setStationary(bool) override;
-  void abortTimeStep() override;
-
-  // interface IterativeUnsteadyProblem
-  bool iterateTimeStep(bool& converged) override;
-
-  // interface FieldIO
-  void getInputFieldsNames(Noms& noms) const override;
-  void getOutputFieldsNames(Noms& noms) const override;
-
-  // interface Probleme_U
-  int postraiter(int force=1) override;
-  int limpr() const override;
-  int lsauv() const override;
-  void sauver() const override;
-  virtual void allocation() const;
-  bool updateGivenFields() override;
-  double futureTime() const override;
-
-  REF(Field_base) findInputField(const Nom& name) const override;
-  REF(Champ_Generique_base) findOutputField(const Nom& name) const override;
-
-  ///////////////////////////////////////////////////////////
-  //                                                       //
-  // Fin de l'implementation de l'interface de Probleme_U  //
-  //                                                       //
-  ///////////////////////////////////////////////////////////
-
   Probleme_base();
+  ~Probleme_base();
   virtual void associer();
   virtual Entree& lire_equations(Entree& is, Motcle& dernier_mot);
   virtual void completer();
@@ -123,10 +78,10 @@ public:
   virtual Equation_base& getset_equation_by_name(const Nom&);
   virtual const Milieu_base& milieu() const;
   virtual Milieu_base& milieu();
-  virtual void imprimer(Sortie& os) const; // Appelle imprimer sur chaque equation
   virtual double calculer_pas_de_temps() const;
   virtual void mettre_a_jour(double temps) ;
   virtual void preparer_calcul() ;
+  virtual void imprimer(Sortie& os) const; // Appelle imprimer sur chaque equation
 
   // Methodes d'acces aux membres prives.
   int associer_(Objet_U&) override;
@@ -177,10 +132,52 @@ public:
   virtual void lire_postraitement_interfaces(Entree& is);
   virtual void postraiter_interfaces(const Nom& nom_fich, Sortie& s, const Nom& format, double temps);
 
-  virtual void addInputField(Field_base& f);
+  virtual void addInputField(Field_base& f) { addInputField_impl(*this, f); }
   void sauver_xyz(int) const;
   void set_coupled(int i) { coupled_ = i; }
   int get_coupled() const { return coupled_; }
+
+  int postraiter(int force = 1) override;
+  int limpr() const override;
+  int lsauv() const override;
+  void sauver() const override;
+  virtual void allocation() const;
+
+  //////////////////////////////////////////////////
+  //                                              //
+  // Implementation de l'interface de Probleme_U  //
+  //                                              //
+  //////////////////////////////////////////////////
+
+  // interface Problem
+  void initialize() override { initialize_impl(*this); }
+  void terminate() override { terminate_impl(*this); }
+
+  // interface UnsteadyProblem
+  double presentTime() const override { return presentTime_impl(*this); }
+  double computeTimeStep(bool& stop) const override { return computeTimeStep_impl(*this, stop); }
+  bool initTimeStep(double dt) override { return initTimeStep_impl(*this, dt); }
+  bool solveTimeStep() override { return solveTimeStep_impl(*this); }
+  bool solveTimeStep_pbU() { return Probleme_U::solveTimeStep(); }
+  bool isStationary() const override { return isStationary_impl(*this); }
+  void validateTimeStep() override { validateTimeStep_impl(*this); }
+  void setStationary(bool flag) override { schema_temps().set_stationnaires_atteints(flag); }
+  void abortTimeStep() override { abortTimeStep_impl(*this); }
+
+  // interface IterativeUnsteadyProblem
+  bool iterateTimeStep(bool& converged) override { return iterateTimeStep_impl(*this, converged); }
+
+  // interface FieldIO
+  void getInputFieldsNames(Noms& noms) const override { getInputFieldsNames_impl(*this, noms); }
+  void getOutputFieldsNames(Noms& noms) const override { getOutputFieldsNames_impl(*this, noms); }
+
+  // interface Probleme_U
+
+  bool updateGivenFields() override { return updateGivenFields_impl(*this); }
+  double futureTime() const override { return futureTime_impl(*this); }
+
+  REF(Field_base) findInputField(const Nom& name) const override { return findInputField_impl(*this, name); }
+  REF(Champ_Generique_base) findOutputField(const Nom& name) const override { return findOutputField_impl(*this, name); }
 
 protected :
   // ***************************************************************************
@@ -201,25 +198,14 @@ protected :
   Postraitements les_postraitements;
   REF(Schema_Temps_base) le_schema_en_temps;
   REF(Discretisation_base) la_discretisation;
-  LIST(REF(Field_base)) input_fields; // List of input fields inside this problem.
 
   virtual void typer_lire_milieu(Entree& is) ;
+  void lire_sauvegarde_reprise(Entree& is, Motcle& motlu) ;
   mutable DERIV(Sortie_Fichier_base) ficsauv_;
   mutable Sortie_Brute* osauv_hdf_;
 
-  int reprise_effectuee_;
-  int reprise_version_;
-  Nom nom_fich;
-  Nom format_sauv;
-  int restart_file;
-
-  // Flags used to control the calling order and raise exceptions
-  bool initialized;  // true if initialize was called
-  bool terminated;   // true if terminate was called
-  bool dt_defined;   // true if computation interval is defined
-  // set to true by initTimeStep, to false by validateTimeStep & abortTimeStep
-  bool dt_validated; // true if last computation was validated
-  // set to true by validateTimeStep, to false by initTimeStep
+  int reprise_effectuee_, reprise_version_, restart_file, coupled_; // Flag to indicate it is a part of a coupled problem
+  Nom nom_fich, format_sauv;
 
   mutable double tstat_deb_, tstat_fin_;
 
@@ -228,7 +214,6 @@ protected :
   static int nb_pb_total;        // Nombre total de probleme
   static int num_pb;                // numero du probleme
   mutable Nom error;                // Erreur d'allocation
-  int coupled_;			// Flag to indicate it is a part of a coupled problem
 
   LIST(REF(Loi_Fermeture_base)) liste_loi_fermeture_; // liste des fermetures associees au probleme
 };
