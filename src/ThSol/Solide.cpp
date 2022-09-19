@@ -18,11 +18,10 @@
 #include <Param.h>
 
 Implemente_instanciable(Solide,"Solide",Milieu_base);
-// XD Solide milieu_base Solide -1 Solid with cp and/or rho non-uniform.
+// XD solide milieu_base solide -1 Solid with cp and/or rho non-uniform.
 // XD attr rho field_base rho 1 Density (kg.m-3).
 // XD attr cp field_base cp 1 Specific heat (J.kg-1.K-1).
 // XD attr lambda field_base lambda_u 1 Conductivity (W.m-1.K-1).
-// XD ref gravite field_base
 
 /*! @brief Ecrit les caracteristiques du milieu su run flot de sortie.
  *

@@ -86,18 +86,19 @@ Lire sch
 	dt_sauv 1000.
 	seuil_statio 1.e-8
 }
-Fluide_Incompressible fluide
-Lire fluide
-{
-	mu Champ_Uniforme 1 1.85e-5
-	rho Champ_Uniforme 1 1.
-}
+
 Associer pb dom
 Associer pb sch
-Associer pb fluide
+
 Discretiser pb dis
 Lire pb
 {
+    Fluide_Incompressible
+    {
+	    mu Champ_Uniforme 1 1.85e-5
+	    rho Champ_Uniforme 1 1.
+    }
+
 	Navier_Stokes_turbulent
 	{
 		solveur_pression cholesky { }

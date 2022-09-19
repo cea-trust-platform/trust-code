@@ -72,72 +72,18 @@ Bord 2 : defaut, 0,defaut
 
 
 vdf dis 
-champ_uniforme gravite 
-Lire gravite  2 0 -9.81
-solide acier 
-Associer acier gravite
-Lire acier { 
-rho champ_uniforme   1 1000.0
 
-cp champ_uniforme   1 100.0
-
-lambda champ_uniforme   1 250.0
-
- }
-
-solide colis 
-Associer colis gravite
-Lire colis { 
-rho champ_uniforme   1 1000.0
-
-cp champ_uniforme   1 100.0
-
-lambda champ_uniforme   1 250.0
-
- }
-
-solide beton 
-Associer beton gravite
-Lire beton { 
-rho champ_uniforme   1 1000.0
-
-cp champ_uniforme   1 100.0
-
-lambda champ_uniforme   1 250.0
-
- }
-
-
-
-
-fluide_incompressible fluide 
-Associer fluide gravite
-Lire fluide { 
-beta_th champ_uniforme   1 0.0001
-
-mu champ_uniforme   1 0.001
-
-rho champ_uniforme   1 1.0
-
-cp champ_uniforme   1 1000.0
-
-lambda champ_uniforme   1 1.0
-
- }
 pb_conduction pb_acier 
 Associer pb_acier dom_pb2
-Associer pb_acier acier
+
 pb_thermohydraulique pb_fluide 
 Associer pb_fluide dom_pb1
-Associer pb_fluide fluide
+
 pb_conduction pb_colis 
 Associer pb_colis dom_pb4
-Associer pb_colis colis
-
 
  pb_conduction pb_beton	 
 Associer pb_beton dom_pb3
-Associer pb_beton beton
 
 probleme_couple pbc 
 Associer pbc pb_acier
@@ -148,6 +94,15 @@ Associer pbc sch
 
 discretiser  pbc dis
 Lire pb_colis { 
+
+solide
+{ 
+    gravite champ_uniforme 2 0 -9.81
+    rho champ_uniforme   1 1000.0
+    cp champ_uniforme   1 100.0
+    lambda champ_uniforme   1 250.0
+ }
+
 conduction  { 
 diffusion { } 
 conditions_initiales {
@@ -169,6 +124,18 @@ champs   dt_post 10.0 { temperature elem temperature som }
 
  }
 Lire pb_fluide { 
+
+fluide_incompressible 
+{ 
+    gravite champ_uniforme 2 0 -9.81
+    beta_th champ_uniforme   1 0.0001
+    mu champ_uniforme   1 0.001
+    rho champ_uniforme   1 1.0
+    cp champ_uniforme   1 1000.0
+    lambda champ_uniforme   1 1.0
+ }
+
+
 navier_stokes_standard  { 
 solveur_pression gcp  { precond ssor { omega 1.500000 } seuil 1.000000e-14 impr } 
 
@@ -226,7 +193,17 @@ champs   dt_post 10.0 { pression elem pression som vitesse elem vitesse som temp
  }
 
  }
-Lire pb_acier { 
+Lire pb_acier {
+
+solide { 
+
+    gravite champ_uniforme 2 0 -9.81
+    rho champ_uniforme   1 1000.0
+    cp champ_uniforme   1 100.0
+    lambda champ_uniforme   1 250.0
+
+ }
+ 
 conduction  { 
 diffusion { } 
 conditions_initiales {
@@ -249,6 +226,17 @@ champs   dt_post 10.0 { temperature elem temperature som }
  }
 
 Lire pb_beton { 
+
+solide
+{ 
+    gravite champ_uniforme 2 0 -9.81
+    rho champ_uniforme   1 1000.0
+    cp champ_uniforme   1 100.0
+    lambda champ_uniforme   1 250.0
+ }
+
+
+
 conduction  { 
 diffusion { } 
 conditions_initiales {

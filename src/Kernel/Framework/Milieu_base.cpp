@@ -29,7 +29,8 @@
 
 Implemente_base_sans_constructeur(Milieu_base,"Milieu_base",Objet_U);
 // XD milieu_base objet_u milieu_base -1 Basic class for medium (physics properties of medium).
-// XD ref gravite field_base
+// XD attr gravite field_base gravite 1 Gravity field (optional).
+// XD attr porosites_champ field_base porosites_champ 1 Porosity field (optional).
 
 Milieu_base::Milieu_base()
 {

@@ -41,6 +41,7 @@
 Implemente_base_sans_constructeur_ni_destructeur(Probleme_base,"Probleme_base",Probleme_U);
 
 // XD Pb_base pb_gen_base Pb_base -3 Resolution of equations on a domain. A problem is defined by creating an object and assigning the problem type that the user wishes to resolve. To enter values for the problem objects created, the Lire (Read) interpretor is used with a data block.
+// XD  attr milieu milieu_base milieu 1 The medium associated with the problem.
 // XD  attr postraitement|Post_processing corps_postraitement postraitement 1 One post-processing (without name).
 // XD  attr postraitements|Post_processings postraitements postraitements 1 List of Postraitement objects (with name).
 // XD  attr liste_de_postraitements liste_post_ok liste_de_postraitements 1 This
@@ -51,7 +52,6 @@ Implemente_base_sans_constructeur_ni_destructeur(Probleme_base,"Probleme_base",P
 //  XD  attr resume_last_time format_file resume_last_time 1 Keyword to resume a calculation based on the name_file file, resume the calculation at the last time found in the file (tinit is set to last time of saved files).
 //  XD ref domaine domaine
 //  XD ref scheme schema_temps_base
-//  XD ref milieu milieu_base
 //  XD ref loi1 loi_fermeture_base
 //  XD ref loi2 loi_fermeture_base
 //  XD ref loi3 loi_fermeture_base

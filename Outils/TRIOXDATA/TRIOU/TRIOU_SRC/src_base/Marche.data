@@ -58,19 +58,18 @@ dt_sauv 1000.0
 dt_impr 0.1
 seuil_statio 1e-08
  }
-fluide_incompressible fluide 
-Lire fluide { 
-mu champ_uniforme  1 1.85e-05
 
-rho champ_uniforme  1 1.0
-
- }
 pb_hydraulique_turbulent pb 
 Associer pb dom
 Associer pb sch
-Associer pb fluide
 discretiser pb dis
-Lire pb { 
+Lire pb {    
+   fluide_incompressible {  
+       mu champ_uniforme  1 1.85e-05
+       rho champ_uniforme  1 1.0
+   }
+   
+   
 navier_stokes_turbulent { 
 modele_turbulence k_epsilon { 
 transport_k_epsilon { 
@@ -171,3 +170,4 @@ champs  dt_post 20.0 { pression elem vitesse elem vitesse som viscosite_turbulen
  }
 resoudre pb
 fin 
+ 

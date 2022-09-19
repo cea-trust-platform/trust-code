@@ -3,18 +3,18 @@ Syntaxe du fichier trad_2:
 nom_anglais_de_la_classe nom_de_la_classe_mere nom_de_la_class_trio mode description
 
 mode:
-	-1 comme le pere
-	0 n'attend pas d'accolades, les noms des attributs ne servent pas a la lecture et a l'ecriture. ex Champ_Uniforme 3 0. 0. 0. 
-        1 attend des accolades, le nom des attributs servent a savoir ce qu'on lit. ex Lire sch { tinit 0. tmax 0. }
-	-2 comme 0 mais attend d'avoir discretiser pour ecrire la partie Lire
-	-3 comme 1 mais attend d'avoir discretiser pour ecrire la partie Lire.
+    -1 comme le pere
+    0 n'attend pas d'accolades, les noms des attributs ne servent pas a la lecture et a l'ecriture. ex Champ_Uniforme 3 0. 0. 0. 
+    1 attend des accolades, le nom des attributs servent a savoir ce qu'on lit. ex Lire sch { tinit 0. tmax 0. }
+    -2 comme 0 mais attend d'avoir discretiser pour ecrire la partie Lire
+    -3 comme 1 mais attend d'avoir discretiser pour ecrire la partie Lire.
         Ex tous les problemes, il faut avoir discretiser pour les lire.
 
 Suivi de:
 attr mot_francais|mot_anglais type mot_anglais opt description
-	La classe a un attribut de nom mot_trio et de type type
-        Suivi de ref nom type, la classe peut etre associe a une classe de type type
-	opt: 0 non_optionnel 1 optionnel
+    La classe a un attribut de nom mot_trio et de type type
+    Suivi de ref nom type, la classe peut etre associe a une classe de type type
+    opt: 0 non_optionnel 1 optionnel
 
 Cas particulier:
 	-deriv ne sert plus

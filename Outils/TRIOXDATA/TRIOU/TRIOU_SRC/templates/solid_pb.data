@@ -24,18 +24,17 @@ Read sch
     tinit 0.0
     nb_pas_dt_max 3
   }
-solide eau 
-Read eau
-  { 
-    rho uniform_field  1 2.0
-  }
+
 pb_conduction pb 
 Associate pb dom
 Associate pb sch
-Associate pb eau
 discretize pb dis
 Read pb
-  { 
+  {    
+    solide   {  
+       rho uniform_field  1 2.0
+     }
+   
     conduction 
       { 
         diffusion    {   }
@@ -53,3 +52,4 @@ Read pb
   }
 solve pb
 end 
+ 

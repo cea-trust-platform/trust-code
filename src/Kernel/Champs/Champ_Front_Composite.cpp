@@ -17,6 +17,9 @@
 #include <Motcle.h>
 
 Implemente_instanciable(Champ_Front_Composite,"Champ_Front_Composite",Champ_front_base);
+// XD champ_front_composite front_field_base champ_front_composite 0 Composite front field. Used in multiphase problems to associate data to each phase.
+// XD  attr dim int dim 0 Number of field components.
+// XD  attr bloc bloc_lecture bloc 0 Values Various pieces of the field, defined per phase. Part 1 goes to phase 1, etc...
 
 Sortie& Champ_Front_Composite::printOn(Sortie& os) const {  return Champ_front_base::printOn(os); }
 

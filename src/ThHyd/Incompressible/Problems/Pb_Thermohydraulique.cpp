@@ -20,7 +20,6 @@
 
 Implemente_instanciable(Pb_Thermohydraulique,"Pb_Thermohydraulique",Pb_Fluide_base);
 
-
 /*! @brief Simple appel a: Pb_Fluide_base::printOn(Sortie&) Ecrit le probleme sur un flot de sortie.
  *
  * @param (Sortie& os) un flot de sortie

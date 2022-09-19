@@ -17,6 +17,9 @@
 #include <Motcle.h>
 
 Implemente_instanciable(Champ_Composite,"Champ_Composite",Champ_Don_base);
+//XD champ_composite champ_don_base champ_composite 0 Composite field. Used in multiphase problems to associate data to each phase.
+// XD  attr dim int dim 0 Number of field components.
+// XD  attr bloc bloc_lecture bloc 0 Values Various pieces of the field, defined per phase. Part 1 goes to phase 1, etc...
 
 Sortie& Champ_Composite::printOn(Sortie& os) const { return Champ_Don_base::printOn(os); }
 

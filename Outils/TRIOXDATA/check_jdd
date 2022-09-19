@@ -2,6 +2,7 @@
 cd `dirname $0`
 . ./XDATA.sh
 cd XTriou
+echo "Debut de la traduction ..."
 make test_ref_trace >/dev/null 2>&1
 trad=$?
 if [ $trad -ne 0 ] 
@@ -25,9 +26,12 @@ else
 fi
 
 cd ..
+echo "Creation lance_test modifie ..."
 [ "$1" = "-no_lance_test" ] && exit $trad
 cd test_complet
 ./fait_lance_test
+echo "Creation lance_test modifie ... OK"
+echo "Execution des cas tests ... you can monitor test_complet/lance_out to follow progression ..."
 export PAR_F=0
 # Generate list of tests:
 find $TRUST_TESTS -name '*.lml.gz' -follow -exec basename {} .lml.gz \; > liste_cas_xdata

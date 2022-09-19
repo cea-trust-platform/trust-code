@@ -90,19 +90,19 @@ Lire sch
     dt_impr 0.1
     seuil_statio 1e-08
   }
-fluide_incompressible fluide 
-Lire fluide
-  { 
-    mu champ_uniforme  1 3.7e-05
-    rho champ_uniforme  1 2.0
-  }
+
 pb_thermohydraulique_turbulent pb 
 Associer pb dom
 Associer pb sch
-Associer pb fluide
 discretiser pb dis
 Lire pb
-  { 
+  {    
+   fluide_incompressible   {  
+       mu champ_uniforme  1 3.7e-05
+       rho champ_uniforme  1 2.0
+     }
+   
+   
     navier_stokes_turbulent 
       { 
         modele_turbulence k_epsilon 
@@ -196,3 +196,4 @@ Lire pb
   }
 resoudre pb
 fin 
+ 
