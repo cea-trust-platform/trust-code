@@ -454,7 +454,7 @@ Figure {
 	Dimension 2
 	LabelX "x"
 	LabelY ""
-	legend sans
+	# legend sans
 	width 7cm
         include_description_curves 0
 	
@@ -468,6 +468,14 @@ Figure {
 		Version "1.5.3-beta_build_180907"
 		segment ./cond_coup_fictif_vdf_impl/cond_coup_fictif_vdf_impl_old ERREUR_F 
 		Style linespoints
+	}
+	Curve {
+		legend "VDF admaimension par maxv lu dans max.py"
+		origin "TRUST"
+		Version "1.5.3-beta_build_180907"
+		segment ./cond_coup_fictif_vdf_impl/cond_coup_fictif_vdf_impl_old ERREUR_F 
+		Style linespoints
+		colonnes ($1) ($2)/read_value_in_file("maxv","max")
 	}
 }
 

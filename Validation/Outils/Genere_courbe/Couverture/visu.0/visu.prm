@@ -66,7 +66,7 @@ visu {
 visu {
 	Title "test multi cycles"
 description une line bien bien longue pour voir si cela va se decouper ou non.......................
-	instruction_visit print "test"
+	instruction_visit print ("test")
 	width 7cm
 	mesh FTD_all_VEF/post1.lata INTERFACES
 	pseudocolor FTD_all_VEF/post1.lata DOM INDICATRICE_INTERF ELEM

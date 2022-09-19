@@ -34,37 +34,36 @@ list_plot.append('mesh')
 def write_insert_text(ficPlot):
     ficPlot.write(r'''def insert_text(ox,oy,oz,size,text):
 # on cree un fichier sonde
-global sondetmp
-sondetmp+=1
-f=open("sondetmp%d.son"%sondetmp,"w")
-f.write("# sonde pour %s\n"%text)
-f.write("# Temps x= %s y= %s z= %s\n"%(ox,oy,oz))
-f.write("# Champ fictif\n# Type POINTS\n")
-f.write("%d %d\n"%(0.,0.))
-f.close()
-res=OpenDatabase("sondetmp%d.son"%sondetmp)
-if 0:
-ok=AddPlot("Mesh","MESH")
-if (ok==0): 1/0
-m=MeshAttributes()
-m.SetLegendFlag(0)
-m.SetPointSizePixels(10)
-SetPlotOptions(m)
-# DrawPlots()
-if 1:
-ok=AddPlot("Label","value")
-if (ok==0): 1/0
-L=LabelAttributes()
-L.SetFormatTemplate(text)
-L.SetHorizontalJustification(1)
-L.SetLegendFlag(0)
-L.SetTextHeight1(size)
-#print dir(L)
-#print L
-SetPlotOptions(L)
-# ok=DrawPlots()
-# if (ok==0): 1/0
-pass
+  global sondetmp
+  sondetmp+=1
+  f=open("sondetmp%d.son"%sondetmp,"w")
+  f.write("# sonde pour %s\n"%text)
+  f.write("# Temps x= %s y= %s z= %s\n"%(ox,oy,oz))
+  f.write("# Champ fictif\n# Type POINTS\n")
+  f.write("%d %d\n"%(0.,0.))
+  f.close()
+  res=OpenDatabase("sondetmp%d.son"%sondetmp)
+  if 0:
+    ok=AddPlot("Mesh","MESH")
+    if (ok==0): 1/0
+  m=MeshAttributes()
+  m.SetLegendFlag(0)
+  m.SetPointSizePixels(10)
+  SetPlotOptions(m)
+  # DrawPlots()
+  if 1:
+    ok=AddPlot("Label","value")
+  if (ok==0): 1/0
+  L=LabelAttributes()
+  L.SetFormatTemplate(text)
+  L.SetHorizontalJustification(1)
+  L.SetLegendFlag(0)
+  ft=L.GetTextFont1()
+  ft.SetScale(size*100)
+  SetPlotOptions(L)
+  # ok=DrawPlots()
+  # if (ok==0): 1/0
+  pass
 
 ''')
     pass

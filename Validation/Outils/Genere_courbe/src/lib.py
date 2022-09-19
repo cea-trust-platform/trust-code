@@ -343,9 +343,10 @@ def replace_value_in_file(chaine):
         if fin==-1:
             msg=separateur_fin+" non trouve dans "+chaine
             raise Exception(msg)
-        cmd="res+="+separateur_debut+suite[:fin+1]
+        cmd="res22="+separateur_debut+suite[:fin+1]
         # print "read..." ,cmd
         exec(cmd)
+        res+=vars()['res22']
 
         res+=suite[fin+len(separateur_fin):]
         return res
@@ -391,10 +392,9 @@ def chaine2Tex(chaine):
         if fin==-1:
             msg=separateur_fin+" non trouve dans "+chaine
             raise Exception(msg)
-        cmd="res+="+separateur_debut+suite[:fin+1]
-        # print "read..." ,cmd
+        cmd="res22="+separateur_debut+suite[:fin+1]
         exec(cmd)
-
+        res+=vars()["res22"]
         res+=chaine2Tex(suite[fin+len(separateur_fin):])
         return res
     separateur_debut='include_text_file('

@@ -113,7 +113,7 @@ tracee dans le rapport de validation de TRUST.'''
                     FileAccumulator.Append(valeur)
                 elif motcle=='plan':
                     self.plan = valeur
-                    FileAccumulator.AppendFromPlaneProbe(valeur)  # Warning this one is different! A LATA really.
+                    # FileAccumulator.AppendFromPlaneProbe(valeur)  # Warning this one is different! A LATA really.
                 elif motcle=='segment':
                     self.segment = valeur
                     FileAccumulator.AppendFromProbe(valeur)

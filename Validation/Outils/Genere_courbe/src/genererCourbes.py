@@ -223,7 +223,7 @@ TODO
         print("parametres {")
         if self.titre != 'Undefined' : print(dec,"titre" ,self.titre)
         if self.auteur != 'Undefined': print(dec,"auteur" , self.auteur)
-        if self.nvellevalid != 'Undefined': print (dec,'nvellevalidTrio', self.nvellevalid)
+        if self.nvellevalid != 2: print (dec,'nvellevalidTrio', self.nvellevalid)
         print_description(self.description,dec)
 
         for ref in self.reference :print(dec,"reference",ref)
@@ -453,11 +453,11 @@ TODO
             chapitre.afficherParametres()
         for souschapitre in self.listeSSChap:
             souschapitre.afficherParametres()
-        purpose.afficherParametres()
-        pbdescription.afficherParametres()
-        casesetup.afficherParametres()
-        results.afficherParametres()
-        conclusion.afficherParametres()
+        #purpose.afficherParametres()
+        #pbdescription.afficherParametres()
+        #casesetup.afficherParametres()
+        #results.afficherParametres()
+        #conclusion.afficherParametres()
 
 
     #---------------------------------------------
