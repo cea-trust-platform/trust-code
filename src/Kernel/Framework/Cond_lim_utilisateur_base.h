@@ -16,12 +16,10 @@
 #ifndef Cond_lim_utilisateur_base_included
 #define Cond_lim_utilisateur_base_included
 
-
-
 #include <Cond_lim_base.h>
+#include <Motcle.h>
 
-
-
+class Cond_lim;
 
 /*! @brief classe Cond_lim_utilisateur_base: Les classes heritant de cette classe sont des classes utilisaturs
  *
@@ -31,13 +29,9 @@
  *    tout se passe comme si on n avait pas cl_util mais ajout champ...
  *
  */
-class Cond_lim;
-//////////////////////////////////////////////////////////////////////////////
 class Cond_lim_utilisateur_base  : public Cond_lim_base
 {
-
   Declare_base_sans_constructeur(Cond_lim_utilisateur_base);
-
 public:
   void lire(Entree&,Equation_base&,const Nom& nom_bord);
   virtual void complement(Nom&);
@@ -45,9 +39,10 @@ public:
   inline int compatible_avec_eqn(const Equation_base&) const override
   {
     Cerr<<"we should not be here"<<(int)__LINE__<<__FILE__ <<finl;
-    exit();
+    Process::exit();
     return 0;
-  };
+  }
+
   Cond_lim& la_cl();
   Cond_lim_utilisateur_base();
   int is_pb_VDF();
@@ -61,7 +56,6 @@ protected :
   Cond_lim* la_cl_;
   REF(Equation_base) mon_equation;
   Nom nom_bord_;
-
 };
 
 class cl_timp: public Cond_lim_utilisateur_base
@@ -94,14 +88,35 @@ private:
   Nom nom_autre_pb,nom_autre_bord;
 };
 
+class paroi_contact_rayo: public Cond_lim_utilisateur_base
+{
+  Declare_instanciable(paroi_contact_rayo);
+public:
+  void complement(Nom& nom) override;
+private:
+  Nom nom_autre_pb, nom_autre_bord;
+  Motcle type_rayo;
+};
+
 class paroi_contact_fictif: public Cond_lim_utilisateur_base
 {
   Declare_instanciable(paroi_contact_fictif);
 public:
   void complement(Nom& nom) override;
 private:
-  Nom nom_autre_pb,nom_autre_bord;
-  double conduct_fictif,ep_fictif;
+  Nom nom_autre_pb, nom_autre_bord;
+  double conduct_fictif = -100., ep_fictif = -100.;
 };
 
-#endif
+class paroi_contact_fictif_rayo: public Cond_lim_utilisateur_base
+{
+  Declare_instanciable(paroi_contact_fictif_rayo);
+public:
+  void complement(Nom& nom) override;
+private:
+  Nom nom_autre_pb, nom_autre_bord;
+  Motcle type_rayo;
+  double conduct_fictif = -100., ep_fictif = -100.;
+};
+
+#endif /* Cond_lim_utilisateur_base_included */
