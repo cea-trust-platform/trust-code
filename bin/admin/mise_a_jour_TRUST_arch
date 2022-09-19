@@ -377,6 +377,10 @@ option_configure=" -disable-ccache"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_even_unsupported" | grep ^$HOST"\."`" != "" ]		&& option_configure=$option_configure" -force_even_unsupported"
 # Compilation en INT64
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-build_64_bit" | grep ^$HOST"\."`" != "" ] || [ "`echo $HOST | grep build64 2>/dev/null`" != "" ]	&& option_configure=$option_configure" -with-64-bit-indices"
+# mpi4py
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-mpi4py" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -disable-mpi4py"
+# system mpi, for cuda
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_system_mpi" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -force_system_mpi"
 
 ########################
 # Lancement du configure

@@ -509,6 +509,8 @@ do
 
    elif [ "${1#-clean}" != "$1" ]
    then
+      echo "We clean first the install"
+      make clean #2>/dev/null
       export clean="clean"
 
    elif [ "${1#-disable-mpiio}" != "$1" ]
