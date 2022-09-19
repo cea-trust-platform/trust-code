@@ -25,21 +25,14 @@
 
 Implemente_instanciable_sans_constructeur(Champ_front_calc,"Champ_front_calc",Ch_front_var_instationnaire_dep);
 
-Champ_front_calc::Champ_front_calc()
-{
-  set_distant(1);
-}
-
+Champ_front_calc::Champ_front_calc() { set_distant(1); }
 
 /*! @brief NE FAIT RIEN
  *
  * @param (Sortie& os) un flot de sortie
  * @return (Sortie&) le flot de sortie modifie
  */
-Sortie& Champ_front_calc::printOn(Sortie& os) const
-{
-  return os;
-}
+Sortie& Champ_front_calc::printOn(Sortie& os) const { return os; }
 
 /*! @brief Lit le nom d'un probleme, le nom d'un bord et le nom d'un champ inconnue a partir d'un flot d'entree.
  *
@@ -70,15 +63,13 @@ Entree& Champ_front_calc::readOn(Entree& is)
  * @throws pas de probleme du nom specifie
  * @throws le probleme n'a pas de champ du nom specifie
  */
-void Champ_front_calc::creer(const Nom& nom_pb,
-                             const Nom& nom_bord,
-                             const Motcle& nom_inco)
+void Champ_front_calc::creer(const Nom& nom_pb, const Nom& nom_bord, const Motcle& nom_inco)
 {
   nom_autre_pb_ = nom_pb;
   nom_autre_bord_ = nom_bord;
   REF(Probleme_base) autre_pb;
-  Objet_U& ob=Interprete::objet(nom_autre_pb_);
-  if(sub_type(Probleme_base, ob))
+  Objet_U& ob = Interprete::objet(nom_autre_pb_);
+  if (sub_type(Probleme_base, ob))
     {
       autre_pb = ref_cast(Probleme_base, ob);
     }
@@ -89,9 +80,9 @@ void Champ_front_calc::creer(const Nom& nom_pb,
     }
   REF(Champ_base) rch;
   rch = autre_pb->get_champ(nom_inco);
-  if (sub_type(Champ_Inc_base,rch.valeur()))
+  if (sub_type(Champ_Inc_base, rch.valeur()))
     {
-      l_inconnue=ref_cast(Champ_Inc_base, rch.valeur()) ;
+      l_inconnue = ref_cast(Champ_Inc_base, rch.valeur());
       fixer_nb_comp(rch.valeur().nb_comp());
     }
   else
@@ -101,10 +92,12 @@ void Champ_front_calc::creer(const Nom& nom_pb,
     }
 }
 
-void Champ_front_calc::completer()
+int Champ_front_calc::initialiser(double temps, const Champ_Inc_base& inco)
 {
+  Ch_front_var_instationnaire_dep::initialiser(temps, inco);
+
   // Check/initialize Raccord boundaries in parallel:
-  if (nproc()>1)
+  if (nproc() > 1)
     {
       const Zone_dis_base& zone_dis_opposee = front_dis().zone_dis();
       const Zone_dis_base& zone_dis_locale = frontiere_dis().zone_dis();
@@ -118,18 +111,13 @@ void Champ_front_calc::completer()
           Cerr << "Modif_bord_to_raccord " << nom_domaine_oppose << " " << frontiere_opposee.le_nom() << finl;
           exit();
         }
-      if (distant_==1)
+      if (distant_ == 1)
         {
           Raccord_distant_homogene& raccord_distant = ref_cast_non_const(Raccord_distant_homogene, frontiere_opposee);
           if (!raccord_distant.est_initialise())
             raccord_distant.initialise(frontiere_locale, zone_dis_locale, zone_dis_opposee);
         }
     }
-}
-
-int Champ_front_calc::initialiser(double temps, const Champ_Inc_base& inco)
-{
-  Ch_front_var_instationnaire_dep::initialiser(temps, inco);
   return 1;
 }
 
@@ -178,8 +166,6 @@ void Champ_front_calc::mettre_a_jour(double temps)
   DoubleTab& tab=valeurs_au_temps(temps);
   const Frontiere_dis_base& frontiere_dis_opposee = zone_dis().frontiere_dis(nom_bord_oppose());
   l_inconnue->trace(frontiere_dis_opposee,tab,temps,distant_ /* distant */);
-
-
 }
 
 /*! @brief Renvoie le champ inconnue associe

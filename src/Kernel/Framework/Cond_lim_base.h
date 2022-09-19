@@ -39,11 +39,8 @@ class Champ_Inc;
  */
 class Cond_lim_base : public Objet_U
 {
-
   Declare_base(Cond_lim_base);
-
 public:
-
   virtual void completer();
   virtual int initialiser(double temps);
   virtual void mettre_a_jour(double temps);
@@ -51,7 +48,7 @@ public:
   virtual void verifie_ch_init_nb_comp() const;
   virtual inline Frontiere_dis_base& frontiere_dis();
   virtual inline const Frontiere_dis_base& frontiere_dis() const;
-  virtual void associer_fr_dis_base(const Frontiere_dis_base& ) ;
+  virtual void associer_fr_dis_base(const Frontiere_dis_base&);
   inline Zone_Cl_dis_base& zone_Cl_dis();
   inline const Zone_Cl_dis_base& zone_Cl_dis() const;
   // Je transforme cette methode en une methode virtuelle
@@ -66,15 +63,15 @@ public:
 
   //ajout : renvoie les valeurs imposees pour une face
   virtual void champ_front(int, DoubleVect&) const;
-  virtual int compatible_avec_eqn(const Equation_base&) const=0;
+  virtual int compatible_avec_eqn(const Equation_base&) const =0;
   virtual int compatible_avec_discr(const Discretisation_base&) const;
-  virtual void injecter_dans_champ_inc(const Champ_Inc& ) const;
+  virtual void injecter_dans_champ_inc(const Champ_Inc&) const;
 
   virtual int a_mettre_a_jour_ss_pas_dt();
 
   //methode pour positionner le drapeau modifier_val_impl
   inline void set_modifier_val_imp(int);
-  virtual void changer_temps_futur(double temps,int i);
+  virtual void changer_temps_futur(double temps, int i);
   virtual int avancer(double temps);
   virtual int reculer(double temps);
 
@@ -82,11 +79,11 @@ protected:
 
   Champ_front le_champ_front;
   REF(Zone_Cl_dis_base) ma_zone_cl_dis;
-  void err_pas_compatible(const Equation_base& ) const;
-  void err_pas_compatible(const Discretisation_base& ) const;
+  void err_pas_compatible(const Equation_base&) const;
+  void err_pas_compatible(const Discretisation_base&) const;
 
   //ajout drapeau pour modifier ou pas la valeur imposee sur la condition limite
-  int modifier_val_imp;
+  int modifier_val_imp = 0;
 };
 
 

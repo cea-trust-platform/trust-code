@@ -75,43 +75,33 @@ class Cond_lim_base;
  */
 class Champ_front_base : public Field_base, public Champ_Proto
 {
-
   Declare_base_sans_constructeur(Champ_front_base);
-
 public:
-
   Champ_front_base();
-  inline virtual void completer() {};
+  inline virtual void completer() { }
   virtual int initialiser(double temps, const Champ_Inc_base& inco);
-  virtual void associer_fr_dis_base(const Frontiere_dis_base& ) ;
+  virtual void associer_fr_dis_base(const Frontiere_dis_base&);
   using Champ_Proto::valeurs;
   inline DoubleTab& valeurs() override;
   inline const DoubleTab& valeurs() const override;
   virtual DoubleTab& valeurs_au_temps(double temps)=0;
-  virtual const DoubleTab& valeurs_au_temps(double temps) const=0;
+  virtual const DoubleTab& valeurs_au_temps(double temps) const = 0;
   inline const Frontiere_dis_base& frontiere_dis() const;
   inline Frontiere_dis_base& frontiere_dis();
   const Zone_dis_base& zone_dis() const;
-  virtual Champ_front_base& affecter_(const Champ_front_base& ch) =0;
+  virtual Champ_front_base& affecter_(const Champ_front_base& ch) = 0;
   virtual void fixer_nb_valeurs_temporelles(int nb_cases);
   virtual void mettre_a_jour(double temps);
   virtual void calculer_coeffs_echange(double temps);
-  virtual void valeurs_face(int,DoubleVect&) const;
+  virtual void valeurs_face(int, DoubleVect&) const;
   virtual inline void verifier(const Cond_lim_base& la_cl) const;
-  double get_temps_defaut() const
-  {
-    return temps_defaut;
-  }
-  void set_temps_defaut(double temps)
-  {
-    temps_defaut=temps;
-  }
-  virtual void changer_temps_futur(double temps,int i);
+  double get_temps_defaut() const { return temps_defaut; }
+  void set_temps_defaut(double temps) { temps_defaut = temps; }
+  virtual void changer_temps_futur(double temps, int i);
   virtual int avancer(double temps);
   virtual int reculer(double temps);
 
 protected:
-
   double temps_defaut ; // Le temps pris par defaut quand le parametre
   // n'est pas specifie. Ce sera en particulier
   // celui utilise par les operateurs et les

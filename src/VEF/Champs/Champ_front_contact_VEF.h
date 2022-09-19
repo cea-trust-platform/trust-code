@@ -47,7 +47,6 @@ class Champ_front_contact_VEF : public Ch_front_var_instationnaire_dep
   Declare_instanciable(Champ_front_contact_VEF);
 
 public:
-  void completer() override;
   int initialiser(double temps, const Champ_Inc_base& inco) override;
   Champ_front_base& affecter_(const Champ_front_base& ch) override ;
   void mettre_a_jour(double temps) override;

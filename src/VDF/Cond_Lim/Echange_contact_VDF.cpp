@@ -31,24 +31,15 @@ Implemente_instanciable(Echange_contact_VDF,"Paroi_Echange_contact_VDF",Echange_
 
 int meme_point2(const DoubleVect& a,const DoubleVect& b);
 
+Sortie& Echange_contact_VDF::printOn(Sortie& s ) const { return s << que_suis_je() << "\n"; }
 
-Sortie& Echange_contact_VDF::printOn(Sortie& s ) const
+Entree& Echange_contact_VDF::readOn(Entree& s)
 {
-  return s << que_suis_je() << "\n";
-}
-
-Entree& Echange_contact_VDF::readOn(Entree& s )
-{
-  Nom nom_pb, nom_bord;
-  Motcle nom_champ;
-  s >> nom_pb >> nom_bord >> nom_champ >> h_paroi;
+  s >> nom_autre_pb_ >> nom_bord >> nom_champ >> h_paroi;
   T_autre_pb().typer("Champ_front_calc");
-  Champ_front_calc& ch=ref_cast(Champ_front_calc, T_autre_pb().valeur());
-  ch.creer(nom_pb, nom_bord, nom_champ);
   T_ext().typer("Ch_front_var_instationnaire_dep");
   T_ext()->fixer_nb_comp(1);
-  nom_autre_pb_ = nom_pb;
-  return s ;
+  return s;
 }
 
 void Echange_contact_VDF::completer()
@@ -267,14 +258,17 @@ int Echange_contact_VDF::initialiser(double temps)
   if (!Echange_global_impose::initialiser(temps))
     return 0;
 
-  Champ_front_calc& ch=ref_cast(Champ_front_calc, T_autre_pb().valeur());
+  // XXX : On rempli les valeurs ici et pas dans le readOn car le milieu de pb2 ets pas encore lu !!!
+  Champ_front_calc& ch = ref_cast(Champ_front_calc, T_autre_pb().valeur());
+  ch.creer(nom_autre_pb_, nom_bord, nom_champ);
+
   const Equation_base& o_eqn = ch.equation();
   const Front_VF& fvf = ref_cast(Front_VF, frontiere_dis()), o_fvf = ref_cast(Front_VF, ch.front_dis());
   const Zone_VDF& o_zone = ref_cast(Zone_VDF, ch.zone_dis());
   const IntTab& o_f_e = o_zone.face_voisins();
-  const Milieu_base& le_milieu=ch.milieu();
+  const Milieu_base& le_milieu = ch.milieu();
   int nb_comp = le_milieu.conductivite()->nb_comp();
-  Nom nom_racc1=frontiere_dis().frontiere().le_nom();
+  Nom nom_racc1 = frontiere_dis().frontiere().le_nom();
   Zone_dis_base& zone_dis1 = zone_Cl_dis().zone_dis().valeur();
   int nb_faces_raccord1 = zone_dis1.zone().raccord(nom_racc1).valeur().nb_faces();
 

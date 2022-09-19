@@ -19,30 +19,20 @@
 
 Implemente_base_sans_constructeur(Champ_front_base,"Champ_front_base",Field_base);
 
-Champ_front_base::Champ_front_base()
-{
-  temps_defaut = -1.;
-}
+Champ_front_base::Champ_front_base() { temps_defaut = -1.; }
 /*! @brief Imprime le nom du champ sur un flot de sortie
  *
  * @param (Sortie& s) un flot de sortie
  * @return (Sortie&) le flot de sortie modifie
  */
-Sortie& Champ_front_base::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
+Sortie& Champ_front_base::printOn(Sortie& s ) const { return s << que_suis_je() << " " << le_nom(); }
 
 /*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
  *
  * @param (Entree& s) un flot d'entree
  * @return (Entree&) le flot d'entree
  */
-Entree& Champ_front_base::readOn(Entree& s )
-{
-  return s ;
-}
+Entree& Champ_front_base::readOn(Entree& s ) { return s ; }
 
 
 /*! @brief Initialisation en debut de calcul.
@@ -64,7 +54,7 @@ int Champ_front_base::initialiser(double temps, const Champ_Inc_base& inco)
  */
 void Champ_front_base::associer_fr_dis_base(const Frontiere_dis_base& fr)
 {
-  la_frontiere_dis=fr;
+  la_frontiere_dis = fr;
 }
 
 
@@ -144,9 +134,8 @@ const Zone_dis_base& Champ_front_base::zone_dis() const
  */
 int Champ_front_base::avancer(double temps)
 {
-  Cerr << "Champ_front_base::avancer(double temps) should be overloaded"
-       << finl;
-  exit();
+  Cerr << "Champ_front_base::avancer(double temps) should be overloaded" << finl;
+  Process::exit();
   return 0;
 }
 
@@ -159,9 +148,8 @@ int Champ_front_base::avancer(double temps)
  */
 int Champ_front_base::reculer(double temps)
 {
-  Cerr << "Champ_front_base::reculer(double temps) should be overloaded "
-       << "by " << que_suis_je() << finl;
-  exit();
+  Cerr << "Champ_front_base::reculer(double temps) should be overloaded " << "by " << que_suis_je() << finl;
+  Process::exit();
   return 0;
 }
 

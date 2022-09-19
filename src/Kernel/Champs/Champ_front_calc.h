@@ -13,7 +13,6 @@
 *
 *****************************************************************************/
 
-
 #ifndef Champ_front_calc_included
 #define Champ_front_calc_included
 
@@ -36,12 +35,9 @@ class Front_dis_base;
  */
 class Champ_front_calc : public Ch_front_var_instationnaire_dep
 {
-
   Declare_instanciable_sans_constructeur(Champ_front_calc);
-
 public:
   Champ_front_calc();
-  void completer() override;
   int initialiser(double, const Champ_Inc_base&) override;
   void associer_ch_inc_base(const Champ_Inc_base&);
   Champ_front_base& affecter_(const Champ_front_base& ch) override;
@@ -57,14 +53,12 @@ public:
   const Zone_dis_base& zone_dis() const;
   const Zone_Cl_dis_base& zone_Cl_dis() const;
   const Frontiere_dis_base& front_dis() const;
-  inline void set_distant(int d)
-  {
-    distant_=d ;
-  };
+  inline void set_distant(int d) { distant_=d ; }
+
 protected :
   REF(Champ_Inc_base) l_inconnue;          // L'inconnue du probleme oppose
   Nom nom_autre_bord_,nom_autre_pb_;       // Nom du bord et du probleme oppose
   int distant_;                            // par defaut distant_ vaut 1
 };
 
-#endif
+#endif /* Champ_front_calc_included */

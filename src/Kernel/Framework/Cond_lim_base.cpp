@@ -19,8 +19,6 @@
 
 Implemente_base(Cond_lim_base,"Cond_lim_base",Objet_U);
 
-
-
 /*! @brief Surcharge Objet_U::printOn(Sortie&) Imprime la condition au limite sur un flot de sortie.
  *
  *     Seul le champ impose a la frontiere est imprime
@@ -33,7 +31,6 @@ Sortie& Cond_lim_base::printOn(Sortie& s ) const
   return s << le_champ_front ;
 }
 
-
 /*! @brief Lecture d'une condition aux limites a partir d'un flot d'entree Format:
  *
  *       lire un Champ_front
@@ -45,7 +42,6 @@ Entree& Cond_lim_base::readOn(Entree& s )
 {
   return s >> le_champ_front ;
 }
-
 
 /*! @brief NE FAIT RIEN A surcharger dans les classes derivees
  *
@@ -93,7 +89,6 @@ int Cond_lim_base::initialiser(double temps)
   return le_champ_front->initialiser(temps,zone_Cl_dis().inconnue());
 }
 
-
 /*! @brief Effectue une mise a jour en temps de la condition aux limites.
  *
  * @param (double temps) le pas de temps de mise a jour
@@ -102,7 +97,6 @@ void Cond_lim_base::mettre_a_jour(double temps)
 {
   le_champ_front.mettre_a_jour(temps);
 }
-
 
 /*! @brief Cette methode indique si cette condition aux limites doit etre mise a jour dans des sous pas de temps d'un schema en temps tel que RK
  *
@@ -116,7 +110,6 @@ int Cond_lim_base::a_mettre_a_jour_ss_pas_dt()
 {
   return 0;
 }
-
 
 /*! @brief Calcul des coefficient d'echange pour un couplage par Champ_front_contact_VEF.
  *
@@ -175,7 +168,6 @@ void Cond_lim_base::associer_zone_cl_dis_base(const Zone_Cl_dis_base& zcl)
   le_champ_front.valeur().verifier(*this);
 }
 
-
 /*! @brief Renvoie 1 si la condition aux limites est compatible avec la discretisation passee en parametre.
  *
  *     NE FAIT RIEN
@@ -188,7 +180,6 @@ int Cond_lim_base::compatible_avec_discr(const Discretisation_base& ) const
 {
   return 1;
 }
-
 
 /*! @brief Cette methode est appelee quand la condition aux limites n'est pas compatible avec l'equation sur laquelle on essaye
  *
@@ -203,7 +194,6 @@ void Cond_lim_base::err_pas_compatible(const Equation_base& eqn) const
        << finl;
   exit();
 }
-
 
 /*! @brief Cette methode est appelee quand la condition aux limites n'est pas compatible avec la discretisation sur laquelle on essaye
  *
@@ -244,5 +234,4 @@ void Cond_lim_base::set_temps_defaut(double temps)
 void Cond_lim_base::fixer_nb_valeurs_temporelles(int nb_cases)
 {
   champ_front()->fixer_nb_valeurs_temporelles(nb_cases);
-
 }

@@ -49,33 +49,39 @@ Sortie& Champ_front_contact_VEF::printOn(Sortie& os) const
 
 Entree& Champ_front_contact_VEF::readOn(Entree& is)
 {
-
   Motcle nom_inco;
   nom_inco = "temperature";
+  is >> nom_pb1 >> nom_bord1 >> nom_pb2 >> nom_bord2;
 
-  is >> nom_pb1 >> nom_bord1 >> nom_pb2 >> nom_bord2 ;
+  Cerr << "Champ_front_contact_VEF::readOn : " << nom_pb1 << " " << nom_bord1 << " " << nom_inco << finl;
+  Cerr << "      connecte a                : " << nom_pb2 << " " << nom_bord2 << " " << nom_inco << finl;
 
-  creer(nom_pb1, nom_bord1, nom_pb2, nom_bord2, nom_inco);
-
-  Cerr << "Champ_front_contact_VEF::readOn : " << nom_pb1 << nom_bord1 << nom_inco << finl;
-  Cerr << "      connecte a                : " << nom_pb2 << nom_bord2 << nom_inco << finl;
   fixer_nb_comp(1); // prevu pour la temperature.
   if (Process::nproc() > 1)
     connect_est_remplit = 1;
   else
     connect_est_remplit = 0;
-  remplir_elems_voisin_bord();
 
   return is;
 }
 
-void Champ_front_contact_VEF::completer()
+int Champ_front_contact_VEF::initialiser(double temps, const Champ_Inc_base& inco)
 {
+  if (!Ch_front_var_instationnaire_dep::initialiser(temps,inco))
+    return 0;
+
+  // WEC : code repris de calculer_coeffs_echange qui faisait des
+  // iniialisations au premier pas de temps.
+
+  // XXX : On rempli les valeurs ici et pas dans le readOn car le milieu de pb2 ets pas encore lu !!!
+  creer(nom_pb1, nom_bord1, nom_pb2, nom_bord2, "temperature");
+  remplir_elems_voisin_bord();
+
   // Check/initialize Raccord boundaries in parallel:
-  if (Process::nproc()>1)
+  if (Process::nproc() > 1)
     {
       nom_bord = nom_bord2;
-      associer_ch_inc_base(l_inconnue2.valeur()) ;
+      associer_ch_inc_base(l_inconnue2.valeur());
       const Zone_dis_base& zone_dis_opposee = front_dis().zone_dis();
       const Zone_dis_base& zone_dis_locale = frontiere_dis().zone_dis();
       const Frontiere& frontiere_opposee = front_dis().frontiere();
@@ -91,15 +97,6 @@ void Champ_front_contact_VEF::completer()
       Raccord_distant_homogene& raccord_distant = ref_cast_non_const(Raccord_distant_homogene, frontiere_opposee);
       raccord_distant.initialise(frontiere_locale, zone_dis_locale, zone_dis_opposee);
     }
-}
-
-int Champ_front_contact_VEF::initialiser(double temps, const Champ_Inc_base& inco)
-{
-  if (!Ch_front_var_instationnaire_dep::initialiser(temps,inco))
-    return 0;
-
-  // WEC : code repris de calculer_coeffs_echange qui faisait des
-  // iniialisations au premier pas de temps.
 
   // remplissage du tableau de connectivite des numeros de faces de bord
   // entre les deux problemes couples.
@@ -139,9 +136,7 @@ int Champ_front_contact_VEF::initialiser(double temps, const Champ_Inc_base& inc
   return 1;
 }
 
-void Champ_front_contact_VEF::creer(const Nom& nompb1, const Nom& nom1,
-                                    const Nom& nompb2, const Nom& nom2,
-                                    const Motcle& nom_inco)
+void Champ_front_contact_VEF::creer(const Nom& nompb1, const Nom& nom1, const Nom& nompb2, const Nom& nom2, const Motcle& nom_inco)
 {
   nom_bord1 = nom1;
   nom_bord2 = nom2;
@@ -150,40 +145,38 @@ void Champ_front_contact_VEF::creer(const Nom& nompb1, const Nom& nom1,
   nom_inco2 = nom_inco;
 
   REF(Champ_base) rch1;
-  Probleme_base& pb1=ref_cast(Probleme_base, Interprete::objet(nompb1));
+  Probleme_base& pb1 = ref_cast(Probleme_base, Interprete::objet(nompb1));
 
-  if (!sub_type(Pb_Conduction,pb1))
-    if (pb1.equation(1).inconnue().le_nom()!="temperature")
+  if (!sub_type(Pb_Conduction, pb1))
+    if (pb1.equation(1).inconnue().le_nom() != "temperature")
       nom_inco1 = "concentration";
 
   rch1 = pb1.get_champ(nom_inco1);
-  l_inconnue1=ref_cast(Champ_Inc_base, rch1.valeur()) ;
+  l_inconnue1 = ref_cast(Champ_Inc_base, rch1.valeur());
 
-  REF(Champ_base) rch2 ;
-  Probleme_base& pb2=ref_cast(Probleme_base, Interprete::objet(nompb2));
+  REF(Champ_base) rch2;
+  Probleme_base& pb2 = ref_cast(Probleme_base, Interprete::objet(nompb2));
 
-  if (!sub_type(Pb_Conduction,pb2))
-    if (pb2.equation(1).inconnue().le_nom()!="temperature")
+  if (!sub_type(Pb_Conduction, pb2))
+    if (pb2.equation(1).inconnue().le_nom() != "temperature")
       nom_inco2 = "concentration";
 
   rch2 = pb2.get_champ(nom_inco2);
-  l_inconnue2=ref_cast(Champ_Inc_base, rch2.valeur()) ;
+  l_inconnue2 = ref_cast(Champ_Inc_base, rch2.valeur());
 
-  if (nom_inco1!=nom_inco2)
+  if (nom_inco1 != nom_inco2)
     {
-      Cerr<<"Une condition limite de contact est mal specifiee"<<finl;
-      Cerr<<"Il existe une incoherence sur l'inconnue mise en jeu de part et d'autre de la frontiere de contact"<<finl;
+      Cerr << "Une condition limite de contact est mal specifiee" << finl;
+      Cerr << "Il existe une incoherence sur l'inconnue mise en jeu de part et d'autre de la frontiere de contact" << finl;
       exit();
     }
 
 }
 
-
 void Champ_front_contact_VEF::associer_ch_inc_base(const Champ_Inc_base& inco)
 {
   l_inconnue = inco;
 }
-
 
 
 Champ_front_base& Champ_front_contact_VEF::affecter_(const Champ_front_base& ch)

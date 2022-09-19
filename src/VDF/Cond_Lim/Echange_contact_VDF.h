@@ -19,8 +19,9 @@
 #include <Echange_global_impose.h>
 #include <TRUSTTabs_forward.h>
 #include <Ref_Champ_Inc.h>
-
+#include <Motcle.h>
 #include <map>
+
 class Front_VF;
 class Zone_VDF;
 class Faces;
@@ -31,60 +32,46 @@ class Faces;
  *   temporelles qui represente la temperature dans l'autre probleme.
  *
  */
-void calculer_h_local(DoubleTab& tab,const Equation_base& une_eqn,const Zone_VDF& zvdf_2,const Front_VF& front_vf,const    Milieu_base& le_milieu,double invhparoi,int opt);
+void calculer_h_local(DoubleTab& tab, const Equation_base& une_eqn, const Zone_VDF& zvdf_2, const Front_VF& front_vf, const Milieu_base& le_milieu, double invhparoi, int opt);
 
-class Echange_contact_VDF  : public Echange_global_impose
+class Echange_contact_VDF: public Echange_global_impose
 {
-
   Declare_instanciable(Echange_contact_VDF);
-public :
+public:
   void completer() override;
   int initialiser(double temps) override;
-  void mettre_a_jour(double ) override;
-  void calculer_h_autre_pb(DoubleTab& tab,double invhparoi,int opt);
-  void calculer_h_mon_pb(DoubleTab&, double, int);
-  inline virtual Champ_front& T_autre_pb()
-  {
-    return T_autre_pb_;
-  };
-  inline virtual const Champ_front& T_autre_pb() const
-  {
-    return T_autre_pb_;
-  };
-  virtual void calculer_Teta_paroi(DoubleTab& tab_p,const DoubleTab& mon_h,const DoubleTab& autre_h,int is_pb_fluide, double temps);
-  virtual void calculer_Teta_equiv(DoubleTab& Teta_equiv,const DoubleTab& mon_h,const DoubleTab& autre_h,int is_pb_fluide, double temps);
   int verifier_correspondance() const;
-  inline const DoubleTab&  T_wall() const
-  {
-    return T_wall_;
-  };
-  inline const DoubleTab&  h_autre_pb() const
-  {
-    return autre_h;
-  };
-  inline const IntTab& get_remote_elems() const
-  {
-    // renvoie e_pb1 -> e_pb2 pour e voisin d'une face de paroi contact
-    // avec nl, nc  le nombre de lignes et de colonnes de la matrice de couplage entre le pb1 et le pb2
-    return remote_elems_;
-  };
-  inline const Nom& nom_autre_pb() const
-  {
-    return nom_autre_pb_;
-  };
+  void mettre_a_jour(double) override;
+  void calculer_h_autre_pb(DoubleTab& tab, double invhparoi, int opt);
+  void calculer_h_mon_pb(DoubleTab&, double, int);
+  inline virtual Champ_front& T_autre_pb() { return T_autre_pb_; }
+  inline virtual const Champ_front& T_autre_pb() const { return T_autre_pb_; }
+  virtual void calculer_Teta_paroi(DoubleTab& tab_p, const DoubleTab& mon_h, const DoubleTab& autre_h, int is_pb_fluide, double temps);
+  virtual void calculer_Teta_equiv(DoubleTab& Teta_equiv, const DoubleTab& mon_h, const DoubleTab& autre_h, int is_pb_fluide, double temps);
+  inline const DoubleTab& T_wall() const { return T_wall_; }
+  inline const DoubleTab& h_autre_pb() const { return autre_h; }
 
-  void changer_temps_futur(double temps,int i) override;
+  // renvoie e_pb1 -> e_pb2 pour e voisin d'une face de paroi contact
+  // avec nl, nc  le nombre de lignes et de colonnes de la matrice de couplage entre le pb1 et le pb2
+  inline const IntTab& get_remote_elems() const { return remote_elems_; }
+  inline const Nom& nom_autre_pb() const { return nom_autre_pb_; }
+
+  void changer_temps_futur(double temps, int i) override;
   int avancer(double temps) override;
   int reculer(double temps) override;
+
   //item(i) : indice du ieme item dont on a besoin pour la face i de la frontiere
   mutable IntTab item;
-  int monolithic; //1 si on resout la thermique en monolithique
-protected :
-  double h_paroi;
+  int monolithic = 0; //1 si on resout la thermique en monolithique
+
+protected:
+  double h_paroi = -100.;
   DoubleTab autre_h;
   Champ_front T_autre_pb_;
   DoubleTab T_wall_;
-  Nom nom_autre_pb_;
+  Nom nom_autre_pb_, nom_bord;
+  Motcle nom_champ;
   IntTab remote_elems_;
 };
-#endif
+
+#endif /* Echange_contact_VDF_included */
