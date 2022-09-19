@@ -9,7 +9,8 @@ PB_LIST = ["pb_conduction",
            "pb_hydraulique", "pb_thermohydraulique", 
            "pb_thermohydraulique_qc", "pb_thermohydraulique_wc",
            "pb_hydraulique_melange_binaire_qc","pb_hydraulique_melange_binaire_wc",
-           "pb_thermohydraulique_especes_wc"] # exclude pb_couple, pb_multiphase, pb_med
+           "pb_thermohydraulique_especes_wc",
+           "pb_hydraulique_turbulent","pb_thermohydraulique_turbulent"] # exclude pb_couple, pb_multiphase, pb_med
 MIL_LIST = ["solide", 
             "fluide_incompressible", 
             "fluide_quasi_compressible", "fluide_weakly_compressible"]
@@ -258,7 +259,7 @@ class ScriptModifier(object):
                         ])
             startDeclG = self.getNext(self.grav["start"], 2)
             # Create gravity block:
-            gravTxt = ["gravite", self.grav["type"]] + self.tabToken[startDeclG:self.grav["end"]] 
+            gravTxt = ["\n", "     gravite", self.grav["type"]] + self.tabToken[startDeclG:self.grav["end"]] 
             #print("Gravite: ", gravTxt)
         else:  # gravity can be completely ignored
             gravTxt = [""]      
