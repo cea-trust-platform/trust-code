@@ -40,7 +40,7 @@
 #include <MD_Vector_composite.h>
 #include <vector>
 
-Implemente_instanciable_sans_constructeur_ni_destructeur(Solv_Petsc,"Solv_Petsc",SolveurSys_base);
+Implemente_instanciable_sans_constructeur_ni_destructeur(Solv_Petsc,"Solv_Petsc",Solv_Externe);
 
 // printOn
 Sortie& Solv_Petsc::printOn(Sortie& s ) const

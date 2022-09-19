@@ -18,7 +18,7 @@
 #include <Matrice_Morse_Sym.h>
 #include <Matrice_Bloc_Sym.h>
 
-Implemente_base_sans_constructeur_ni_destructeur(Solv_Externe,"Solv_Externe",Objet_U);
+Implemente_base_sans_constructeur_ni_destructeur(Solv_Externe,"Solv_Externe",SolveurSys_base);
 
 Sortie& Solv_Externe::printOn(Sortie& s) const
 {

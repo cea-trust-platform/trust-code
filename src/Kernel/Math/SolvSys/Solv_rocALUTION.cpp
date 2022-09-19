@@ -23,7 +23,7 @@
 #include <MD_Vector_std.h>
 #include <MD_Vector_composite.h>
 
-Implemente_instanciable_sans_constructeur_ni_destructeur(Solv_rocALUTION, "Solv_rocALUTION", SolveurSys_base);
+Implemente_instanciable_sans_constructeur_ni_destructeur(Solv_rocALUTION, "Solv_rocALUTION", Solv_Externe);
 
 // printOn
 Sortie& Solv_rocALUTION::printOn(Sortie& s ) const
@@ -86,8 +86,6 @@ void Solv_rocALUTION::initialize()
   p = nullptr;
   sp_p = nullptr;
   write_system_ = false;
-#else
-  Process::exit("Sorry, rocALUTION solvers not available with this build.");
 #endif
 }
 
@@ -567,6 +565,7 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
   if (nb_iter>1) first_solve_ = false;
   return nb_iter;
 #else
+  Process::exit("Sorry, rocALUTION solvers not available with this build.");
   return -1;
 #endif
 }
