@@ -23,7 +23,7 @@ class Champ_Composite : public Champ_Don_base
   Declare_instanciable(Champ_Composite);
 public:
   // methodes classique
-  void mettre_a_jour(double temps) override;
+  void mettre_a_jour(double tps) override;
   DoubleTab& valeur_aux(const DoubleTab& , DoubleTab& tab_valeurs) const override;
 
   // methodes specifiques

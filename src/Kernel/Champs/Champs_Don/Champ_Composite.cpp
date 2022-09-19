@@ -69,10 +69,10 @@ void Champ_Composite::fill_valeurs_composite()
         valeurs_(i, nbp + j * dim_) = z_fld_[nbp]->valeurs()(i, j);
 }
 
-void Champ_Composite::mettre_a_jour(double temps)
+void Champ_Composite::mettre_a_jour(double tps)
 {
   for (auto &fld : z_fld_)
-    fld->mettre_a_jour(temps);
+    fld->mettre_a_jour(tps);
 }
 
 DoubleTab& Champ_Composite::valeur_aux(const DoubleTab& xv, DoubleTab& tab_valeurs) const
