@@ -732,7 +732,7 @@ class objet_u(XObject):
             cl1 = getattr(sys.modules[__name__], type2_)
             # cmd="cl2="+name_
             # exec(cmd)
-            cl2 = getattr(sys.modules[__name__], name_)            
+            cl2 = getattr(sys.modules[__name__], name_)
             if not issubclass(cl1,cl2):
                 print("Pb ",cl1," not asubclass of ",cl2)
                 raise Exception("erreur de type")
@@ -998,8 +998,8 @@ class objet_u(XObject):
         # print self, "print_lu"
         abs_mode_ecr=abs(self.mode_ecr)
         stri=""
-        # pour ne pas ecrire deux fois les noms des eqn
-        if not isinstance(self,mor_eqn):
+        # pour ne pas ecrire deux fois les noms des eqn et les noms des milieux:
+        if not isinstance(self,mor_eqn) and not isinstance(self, milieu_base):
             stri=getNameTrio(self)
             if (isinstance(self,class_generic)and self in list_class):
                 stri=getNameEn(self)
@@ -1851,7 +1851,7 @@ class listobj_impl(objet_u):
 #                cmd="cl2="+self.__class__.class_type
 #                exec(cmd)
                 cl1 = getattr(sys.modules[__name__], type2_)
-                cl2 = getattr(sys.modules[__name__], self.__class__.class_type)                
+                cl2 = getattr(sys.modules[__name__], self.__class__.class_type)
                 if not issubclass(cl1,cl2):
                     print("Pb ",cl1," not asubclass of ",cl2)
                     raise Exception("erreur de type")
