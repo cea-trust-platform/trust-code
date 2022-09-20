@@ -72,6 +72,53 @@ void  Milieu_base::ecrire(Sortie& os) const
   if (porosites_champ.non_nul()) os << "porosites_champ " << porosites_champ << finl;
 }
 
+/*! @brief Lecture d'un milieu sur un flot d'entree.
+ *
+ * Format:
+ *     {
+ *      grandeur_physique type_champ bloc de lecture du champ
+ *     }
+ *  cf set_param method to know the understood keywords
+ *  cf Param class to know possible options reading
+ *
+ * @param (Entree& is) le flot d'entree pour la lecture des parametres du milieu
+ * @return (Entree&) le flot d'entree modifie
+ * @throws accolade ouvrante attendue
+ */
+Entree& Milieu_base::readOn(Entree& is)
+{
+  Cerr << "Reading of data for a " << que_suis_je() << " medium" << finl;
+  Param param(que_suis_je());
+  set_param(param);
+  param.lire_avec_accolades_depuis(is);
+  creer_champs_non_lus();
+  return is;
+}
+
+void Milieu_base::set_param(Param& param)
+{
+  param.ajouter("rho", &rho);
+  param.ajouter("lambda", &lambda);
+  param.ajouter("Cp", &Cp);
+  param.ajouter("beta_th", &beta_th);
+  param.ajouter("gravite", &g);
+  set_param_porosite(param);
+}
+
+// methode utile pour F5 ! F5 n'appelle pas Milieu_base::set_param mais Milieu_base::set_param_porosite ...
+void Milieu_base::set_param_porosite(Param& param)
+{
+  param.ajouter("porosites_champ", &porosites_champ);
+  param.ajouter("porosites", &porosites_);
+}
+
+int Milieu_base::lire_motcle_non_standard(const Motcle& mot_lu, Entree& is)
+{
+  Cerr << mot_lu << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard" << finl;
+  Process::exit();
+  return -1;
+}
+
 void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_base& dis)
 {
   Cerr << "Medium discretization." << finl;
@@ -171,9 +218,16 @@ void Milieu_base::discretiser_porosite(const Probleme_base& pb, const Discretisa
 {
   pb_ = pb;
   const Zone_dis_base& zone_dis = pb_->equation(0).zone_dis();
-  if (porosites_champ.non_nul())
+  const double temps = pb_->schema_temps().temps_courant();
+  Nom fld_name = "porosite", fld_unit = "rien";
+
+  if (porosites_champ.non_nul()) // Lu par porosites_champ
     {
-      Nom fld_name = "porosites_champ", fld_unit = "rien";
+      assert (!is_user_porosites());
+      if (porosites_.is_read())
+        Cerr << "WHAT ?? You can not define in your medium both porosites_champ & porosites ! Remove one of them !" << finl, Process::exit();
+
+      is_field_porosites_ = true;
       if (sub_type(Champ_late_input_P0, porosites_champ.valeur()))
         {
           Cerr << "We continue reading the Champ_late_input_P0 field ..." << finl;
@@ -185,64 +239,45 @@ void Milieu_base::discretiser_porosite(const Probleme_base& pb, const Discretisa
         {
           Cerr<<"Convert Champ_fonc_MED " << fld_name << " to a Champ_Don ..."<<finl;
           Champ_Don tmp_fld;
-          dis.discretiser_champ("champ_elem",zone_dis,"neant",fld_unit,1,porosites_champ->temps(),tmp_fld);
+          dis.discretiser_champ("champ_elem",zone_dis,"neant",fld_unit,1,temps,tmp_fld);
           tmp_fld.affecter_(porosites_champ.valeur()); // interpolate ...
           porosites_champ.detach();
-          dis.discretiser_champ("champ_elem",zone_dis,fld_name,fld_unit,1,tmp_fld->temps(),porosites_champ);
+          dis.discretiser_champ("champ_elem",zone_dis,fld_name,fld_unit,1,temps,porosites_champ);
           porosites_champ->valeurs() = tmp_fld->valeurs();
         }
       else
         dis.nommer_completer_champ_physique(zone_dis, fld_name, fld_unit, porosites_champ.valeur(), pb);
 
       champs_compris_.ajoute_champ(porosites_champ.valeur());
-      assert(mp_min_vect(porosites_champ->valeurs()) >= 0. && mp_max_vect(porosites_champ->valeurs()) <= 1.);
     }
-}
+  else if (porosites_.is_read()) // via porosites
+    {
+      assert (!is_field_porosites());
+      if (porosites_champ.non_nul())
+        Cerr << "WHAT ?? You can not define in your medium both porosites_champ & porosites ! Remove one of them !" << finl, Process::exit();
 
-/*! @brief Lecture d'un milieu sur un flot d'entree.
- *
- * Format:
- *     {
- *      grandeur_physique type_champ bloc de lecture du champ
- *     }
- *  cf set_param method to know the understood keywords
- *  cf Param class to know possible options reading
- *
- * @param (Entree& is) le flot d'entree pour la lecture des parametres du milieu
- * @return (Entree&) le flot d'entree modifie
- * @throws accolade ouvrante attendue
- */
-Entree& Milieu_base::readOn(Entree& is)
-{
-  Cerr << "Reading of data for a " << que_suis_je() << " medium" << finl;
-  Param param(que_suis_je());
-  set_param(param);
-  param.lire_avec_accolades_depuis(is);
-  creer_champs_non_lus();
-  return is;
-}
+      is_user_porosites_ = true;
+      // On va utiliser porosites_champ maintenant !
+      dis.discretiser_champ("champ_elem", zone_dis, fld_name, fld_unit, 1, temps, porosites_champ);
+      champs_compris_.ajoute_champ(porosites_champ.valeur());
+      Zone_VF& zvf = ref_cast_non_const(Zone_VF, zone_dis);
+      porosites_champ->valeurs() = 1.; // On initialise a 1 ...
+      porosites_.remplir_champ(zvf, porosites_champ.valeur(), zvf.porosite_face());
 
-void Milieu_base::set_param(Param& param)
-{
-  param.ajouter("rho", &rho);
-  param.ajouter("lambda", &lambda);
-  param.ajouter("Cp", &Cp);
-  param.ajouter("beta_th", &beta_th);
-  param.ajouter("gravite", &g);
-  set_param_porosite(param);
-}
-
-// methode utile pour F5 ! F5 n'appelle pas Milieu_base::set_param mais Milieu_base::set_param_porosite ...
-void Milieu_base::set_param_porosite(Param& param)
-{
-  param.ajouter("porosites_champ", &porosites_champ);
-}
-
-int Milieu_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
-{
-  Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
-  Process::exit();
-  return -1;
+      // Et la on modifie ...
+      DoubleVect& porosite_elem = zvf.porosite_elem();
+      assert (porosite_elem.size_totale() == porosites_champ->valeurs().dimension_tot(0));
+      assert (zvf.nb_elem_tot() == porosites_champ->valeurs().dimension_tot(0));
+      porosite_elem = porosites_champ->valeurs();
+    }
+  else // Pas defini par l'utilisateur
+    {
+      // On va utiliser porosites_champ maintenant !
+      dis.discretiser_champ("champ_elem", zone_dis, fld_name, fld_unit, 1, temps, porosites_champ);
+      champs_compris_.ajoute_champ(porosites_champ.valeur());
+      porosites_champ->valeurs() = 1.; // On initialise a 1 ...
+    }
+  assert(mp_min_vect(porosites_champ->valeurs()) >= 0. && mp_max_vect(porosites_champ->valeurs()) <= 1.);
 }
 
 void Milieu_base::verifier_coherence_champs(int& err,Nom& msg)
@@ -393,6 +428,7 @@ void Milieu_base::calculer_alpha()
 
 void Milieu_base::update_porosity_values()
 {
+  assert(is_field_porosites());
   const Zone_dis_base& zdb = pb_->equation(0).zone_dis().valeur();
   Zone_VF& zvf = ref_cast_non_const(Zone_VF, zdb);
   const int is_uniforme = sub_type(Champ_Uniforme,porosites_champ.valeur());
@@ -456,11 +492,11 @@ void Milieu_base::mettre_a_jour(double temps)
 // methode utile pour F5 ! F5 n'appelle pas Milieu_base::mettre_a_jour mais Milieu_base::mettre_a_jour_porosite ...
 void Milieu_base::mettre_a_jour_porosite(double temps)
 {
-  if (porosites_champ.non_nul())
-    {
-      if (sub_type(Champ_late_input_P0, porosites_champ.valeur())) update_porosity_values();
-      porosites_champ.mettre_a_jour(temps);
-    }
+  assert(porosites_champ.non_nul());
+  if (is_field_porosites())
+    if (sub_type(Champ_late_input_P0, porosites_champ.valeur())) update_porosity_values();
+
+  porosites_champ.mettre_a_jour(temps);
 }
 
 void Milieu_base::update_rho_cp(double temps)
@@ -581,11 +617,9 @@ int Milieu_base::initialiser(const double temps)
 int Milieu_base::initialiser_porosite(const double temps)
 {
   // TODO : XXX : a voir si ICoCo ? faut l'initialiser dans le main ?
-  if (porosites_champ.non_nul())
-    {
-      update_porosity_values();
-      porosites_champ.initialiser(temps);
-    }
+  assert(porosites_champ.non_nul());
+  if (is_field_porosites()) update_porosity_values(); /* sinon c'est deja rempli ... */
+  porosites_champ.initialiser(temps);
   return 1;
 }
 

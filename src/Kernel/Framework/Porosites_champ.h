@@ -16,8 +16,11 @@
 #ifndef Porosites_champ_included
 #define Porosites_champ_included
 
-#include <TRUSTTabs_forward.h>
 #include <Interprete.h>
+#include <TRUSTVect.h>
+#include <vector>
+
+class Champ_Don_base;
 
 /*! @brief Porosites_champ nom_pb champ affecte le champ champ a la porosite volumique du domaine du probleme de nom_pb, puis calcule les porosites surfaciques comme moyenne harmonique
  *
@@ -31,4 +34,18 @@ public :
 
 const DoubleTab& modif_par_porosite_si_flag(const DoubleTab& org, DoubleTab& res,int flag,const DoubleVect& porosite);
 
-#endif
+class Porosites : public Objet_U
+{
+  Declare_instanciable(Porosites);
+public:
+  void remplir_champ(Zone_VF& zvf /* TODO : const plus tard */,Champ_Don_base& ch, DoubleVect& porosite_face);
+  const bool& is_read() { return is_read_; }
+
+protected :
+  bool is_read_ = false;
+  std::vector<Nom> les_sous_zones;
+  std::vector<double> porosites_volu;
+  std::vector<DoubleVect> porosites_surf;
+};
+
+#endif /* Porosites_champ_included */

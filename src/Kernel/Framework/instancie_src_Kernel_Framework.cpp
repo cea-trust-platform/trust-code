@@ -38,7 +38,6 @@
 #include <Loi_horaire.h>
 #include <Milieu.h>
 #include <Parametre_equation.h>
-#include <Porosites.h>
 #include <Porosites_champ.h>
 #include <Postraitement.h>
 #include <Postraitement_lata.h>
@@ -105,8 +104,8 @@ Loi_Fermeture_Test inst38;verifie_pere(inst38);
 Loi_horaire inst39;verifie_pere(inst39);
 Milieu inst40;verifie_pere(inst40);
 Parametre_equation inst41;verifie_pere(inst41);
-Porosites inst42;verifie_pere(inst42);
-Porosites_champ inst43;verifie_pere(inst43);
+Porosites_champ inst42;verifie_pere(inst42);
+Porosites inst43;verifie_pere(inst43);
 Postraitement inst44;verifie_pere(inst44);
 Postraitement_lata inst45;verifie_pere(inst45);
 Postraitements inst46;verifie_pere(inst46);

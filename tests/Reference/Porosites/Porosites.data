@@ -77,18 +77,22 @@ Read sch
 Associate pb dom
 Associate pb sch
 Discretize pb dis
-Porosites pb sous_zone1
-{
-    VOLUMIQUE 1.0
-    SURFACIQUE 2 0.5 0.25
-}
 
 Read pb
 {
        
-fluide_incompressible {
+fluide_incompressible 
+{
      mu Champ_Uniforme 1 0.02
     rho Champ_Uniforme 1 2
+    Porosites 
+    {
+    	sous_zone1
+		{
+    		VOLUMIQUE 1.0
+    		SURFACIQUE 2 0.5 0.25
+		}
+    }
 }
 
 

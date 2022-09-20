@@ -19,6 +19,7 @@
 #include <Champs_compris_interface.h>
 #include <Ref_Champ_Don_base.h>
 #include <Ref_Probleme_base.h>
+#include <Porosites_champ.h>
 #include <Interface_blocs.h>
 #include <Champ_Inc_base.h>
 #include <Champs_compris.h>
@@ -107,45 +108,42 @@ public:
   int id_composite = -1;
 
 protected:
+  Champ rho; //peut etre un Champ_Don ou un Champ_Inc
+  Champ_Don g, alpha, lambda, Cp, beta_th, porosites_champ;
+  Champ_Fonc rho_cp_elem_,rho_cp_comme_T_;
+  Champs_compris champs_compris_;
+  Nom nom_;
+  REF(Probleme_base) pb_;
+
+  enum Type_rayo { NONRAYO, TRANSP, SEMITRANSP };
+  Type_rayo indic_rayo_;
+
+  mutable std::map<std::string, const Equation_base *> equation_;
+  virtual void calculer_alpha();
+  void ecrire(Sortie& ) const;
+  void creer_alpha();
+  void creer_derivee_rho();
+
+private:
+  void update_porosity_values();
+  // attribue utile pour porosites (pas porosites_champ) ... a voir si utile sinon a virer ...
+  Porosites porosites_;
+  bool is_user_porosites_ = false, is_field_porosites_ = false;
+  const bool& is_user_porosites() { return is_user_porosites_; }
+  const bool& is_field_porosites() { return is_field_porosites_; }
+
   // ***************************************************************************
   // TODO : XXX:  TEMPORAIRE : on accepte pour le momemnt l'ancienne syntaxe,
   // i.e. typer_lire xxxx milieu, associer, typer_lire_grav, associer xxxx , ...
   // a voir plus tard quand ca devient absolete
 
+  mutable int deja_associe;
   bool via_associer_ = false;
   inline bool g_via_associer() { return via_associer_; }
   void warn_old_syntax();
   REF(Champ_Don_base) g_via_associer_;
-
   // FIN partie TEMPORAIRE
   // ***************************************************************************
-
-  Champ rho; //peut etre un Champ_Don ou un Champ_Inc
-  Champ_Don g, alpha, lambda, Cp, beta_th, porosites_champ;
-  Champ_Fonc rho_cp_elem_,rho_cp_comme_T_;
-  Nom nom_;
-  REF(Probleme_base) pb_;
-
-  enum Type_rayo { NONRAYO, TRANSP, SEMITRANSP };
-
-  Type_rayo indic_rayo_;
-
-  void ecrire(Sortie& ) const;
-  void creer_alpha();
-  void creer_derivee_rho();
-  virtual void calculer_alpha();
-
-  mutable int deja_associe;
-
-  Champs_compris champs_compris_;
-
-  mutable std::map<std::string, const Equation_base *> equation_;
-
-private:
-  void update_porosity_values();
 };
-
-
-
 
 #endif /* Milieu_base_included */

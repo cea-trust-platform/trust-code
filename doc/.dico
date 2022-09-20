@@ -746,6 +746,8 @@
  paroi_adiabatique paroi_adiabatique Cond_lim_utilisateur_base.h
  paroi_contact paroi_contact Cond_lim_utilisateur_base.h
  paroi_contact_fictif paroi_contact_fictif Cond_lim_utilisateur_base.h
+ paroi_contact_fictif_rayo paroi_contact_fictif_rayo Cond_lim_utilisateur_base.h
+ paroi_contact_rayo paroi_contact_rayo Cond_lim_utilisateur_base.h
  Paroi_defilante Dirichlet_paroi_defilante Dirichlet_paroi_defilante.h
  Paroi_Echange_contact_Colburn_VDF Echange_contact_Colburn_VDF Echange_contact_Colburn_VDF.h
  Paroi_Echange_contact_Correlation_VDF Echange_contact_Correlation_VDF Echange_contact_Correlation_VDF.h
@@ -845,7 +847,7 @@
  PolyMAC|PolyMAC_P0P1nc PolyMAC_discretisation PolyMAC_discretisation.h
  Polynome Polynome Polynome.h
  Poly_geom_base Poly_geom_base Poly_geom_base.h
- Porosites Porosites Porosites.h
+ Porosites Porosites Porosites_champ.h
  Porosites_champ Porosites_champ Porosites_champ.h
  Portance_interfaciale_base Portance_interfaciale_base Portance_interfaciale_base.h
  Portance_interfaciale_Face_PolyMAC_P0 Portance_interfaciale_PolyMAC_P0 Portance_interfaciale_PolyMAC_P0.h
