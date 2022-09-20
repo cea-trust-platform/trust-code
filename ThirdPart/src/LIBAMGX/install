@@ -33,13 +33,13 @@ then
       AMGX_COMPILERS="-DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc" # See https://github.com/NVIDIA/AMGX for compilers...
    fi 
    # Sur jeanzay, $TRUST_MAKE plante (pas assez de memoire sur frontale?) donc on retente avec make:
-   cmake -Wno-dev $CUDA_NVCC_FLAGS -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB $AMGX_COMPILERS .. && ($TRUST_MAKE || make) && make install && cp -f ../examples/matrix.mtx $AMGX_DIR/$LIB/lib/examples
+   cmake -Wno-dev $CUDA_NVCC_FLAGS -DCUDA_TOOLKIT_ROOT_DIR=$CUDA_ROOT -DAMGX_NO_RPATH=1 -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB $AMGX_COMPILERS .. && ($TRUST_MAKE || make) && make install && cp -f ../examples/matrix.mtx $AMGX_DIR/$LIB/lib/examples
    [ $? != 0 ] && exit -1
    # Test
    cd $AMGX_DIR/$LIB/lib/examples
    export LD_LIBRARY_PATH=$AMGX_DIR/$LIB/lib:$LD_LIBRARY_PATH
    # Test valgrind:
-   [ "$TRUST_WITHOUT_HOST" = 1 ] && [ -f $valgrind ] && $valgrind ./amgx_capi -m matrix.mtx -c ../configs/core/FGMRES_AGGREGATION.json 2>&1 | tee -a $log
+   #[ "$TRUST_WITHOUT_HOST" = 1 ] && [ -f $valgrind ] && $valgrind ./amgx_capi -m matrix.mtx -c ../configs/core/FGMRES_AGGREGATION.json 2>&1 | tee -a $log
    if [ -f $TRUST_ENV/card.log ] # On ne teste que si on peut lancer des calculs GPU
    then
       exec=./amgx_capi     trust -gpu dummy   -m matrix.mtx -c ../configs/core/FGMRES_AGGREGATION.json 2>&1 | tee -a $log
@@ -87,11 +87,11 @@ then
        echo "$CUDA_ROOT/bin/nvcc -L$CUDA_ROOT/lib64 \$*" > nvcc && chmod +x nvcc && CMAKE_FLAGS=$CMAKE_FLAGS" -DCMAKE_CUDA_COMPILER=`pwd`/nvcc"
    fi 
    # Configure and build:
-   cmake $CMAKE_FLAGS -DCMAKE_INSTALL_LIBDIR=lib64 -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB -DCMAKE_BUILD_TYPE=$BUILD .. && $TRUST_MAKE
+   cmake $CMAKE_FLAGS -DCMAKE_INSTALL_LIBDIR=lib64 -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB -DCMAKE_BUILD_TYPE=$BUILD -DBUILD_SHARED_LIBS=OFF .. && $TRUST_MAKE
    [ $? != 0 ] && exit -1
    make install # Erreur sur la doc on ne fait pas de exit
    # Creation d'une librairie statique en plus de la dynamique libAmgXWrapper.so
-   ar cru $AMGX_DIR/$LIB/lib64/libAmgXWrapper_static.a CMakeFiles/AmgXWrapper.dir/src/*.o || exit -1
+   # ar cru $AMGX_DIR/$LIB/lib64/libAmgXWrapper_static.a CMakeFiles/AmgXWrapper.dir/src/*.o || exit -1
    # Test
    cd $AMGX_DIR/$LIB 
    rm -r -f example && mkdir -p example && cd example
@@ -103,7 +103,7 @@ then
    done
    cd $AMGX_DIR/$LIB/example/poisson
    # Test valgrind:
-   [ "$TRUST_WITHOUT_HOST" = 1 ] && [ -f $valgrind ] && $valgrind bin/poisson -caseName valgrind -mode AmgX_GPU -cfgFileName configs/AmgX_SolverOptions_Classical.info -Nx 2 -Ny 2 -Nz 2 2>&1 | tee -a
+   #[ "$TRUST_WITHOUT_HOST" = 1 ] && [ -f $valgrind ] && $valgrind bin/poisson -caseName valgrind -mode AmgX_GPU -cfgFileName configs/AmgX_SolverOptions_Classical.info -Nx 2 -Ny 2 -Nz 2 2>&1 | tee -a
    if [ -f $TRUST_ENV/card.log ] # On ne teste que si on peut lancer des calculs GPU
    then
       N=100 && [ "`grep P400 $TRUST_ROOT/env/card.log 2>/dev/null`" != "" ] && N=85
