@@ -277,7 +277,7 @@ then
    CUDA_MATH=""
    [ -d $CUDA_ROOT/../math_libs/lib64 ] &&  CUDA_MATH=",-L$CUDA_ROOT/../math_libs/lib64" # Nouveau HPC SDK sur orcus            (fait ch..r)
    [ -d $CUDA_ROOT/math_libs/lib64 ]    &&  CUDA_MATH=",-L$CUDA_ROOT/math_libs/lib64"    # Nouveau topaze                       (fait ch..r)
-   with_gpu=$with_gpu" --with-cuda-lib=[-L$CUDA_ROOT/lib64$CUDA_STUBS$CUDA_MATH,-lcuda,-lcudart,-lcublas,-lcufft,-lcusparse,-lcusolver]"
+   with_gpu=$with_gpu" --with-cuda-lib=[-L$CUDA_ROOT/lib64$CUDA_STUBS$CUDA_MATH,-lcudart,-lcublas,-lcufft,-lcusparse,-lcusolver]"
    CUDA_INCLUDES=`ls $CUDA_ROOT/include/cuda/cuda.h $CUDA_ROOT/include/cuda.h $CUDA_ROOT/math_libs/include/cublas.h $CUDA_ROOT/../math_libs/include/cublas.h 2>/dev/null`
    with_gpu=$with_gpu" --with-cuda-include=["
    for CUDA_INCLUDE in $CUDA_INCLUDES
