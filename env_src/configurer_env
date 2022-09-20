@@ -366,6 +366,11 @@ check_nvidia_cuda()
       echo "sudo dnf install nvidia-driver nvidia-driver-cuda cuda cuda-devel akmod-nvidia nvidia-settings cuda-gcc cuda-gcc-c++ cuda-gcc-gfortran cuda-samples"
       echo "See more there: https://forums.developer.nvidia.com/t/cuda-10-installation-on-fedora-30-with-gcc-9-1-1-20190503/74989/7"
       exit -1
+   elif [ "`$CUDA_NVCC --version 2>/dev/null | awk -F, '/release/ {gsub("release","",$2);print (1*$2>11.4 ? 1 : 0)}'`" != 0 ]
+   then
+      $CUDA_NVCC --version
+      echo "Error, unsupported nvcc version for AmgX for the moment!" 
+      exit -1
    fi
    #########################
    # Detection CUDA run time
