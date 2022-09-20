@@ -6,15 +6,40 @@ ROOT=$TRUST_ROOT/lib/src/LIBAMGX/AmgX
 export exec=$ROOT/lib/examples/amgx_mpi_poisson7
 # Fichier de config:
 echo "config_version=2
-solver(s)=GMRES
-s:convergence=RELATIVE_INI_CORE
-s:tolerance=1.000000e-08
-s:preconditioner(p)=GS
-s:store_res_history=1
-s:monitor_residual=1
-s:print_solve_stats=1
-s:obtain_timings=1
-s:max_iters=10000
+solver(pcgf)=PCG
+determinism_flag=1
+pcgf:preconditioner(prec)=AMG
+pcgf:use_scalar_norm=1
+pcgf:max_iters=10000
+pcgf:convergence=RELATIVE_INI_CORE
+pcgf:tolerance=1e-7
+pcgf:norm=L2
+pcgf:print_solve_stats=1
+pcgf:monitor_residual=1
+pcgf:obtain_timings=1
+
+prec:error_scaling=0
+prec:print_grid_stats=1
+prec:max_iters=1
+prec:cycle=V
+prec:min_coarse_rows=2
+prec:max_levels=100
+
+prec:smoother(smoother)=BLOCK_JACOBI
+prec:presweeps=1
+prec:postsweeps=1
+prec:coarsest_sweeps=1
+
+prec:coarse_solver(c_solver)=DENSE_LU_SOLVER
+prec:dense_lu_num_rows=2
+
+prec:algorithm=CLASSICAL
+prec:selector=HMIS
+prec:interpolator=D2
+prec:strength=AHAT
+
+
+smoother:relaxation_factor=0.8
 " > config
 NP=2 && DEC="2 1 1"
 #NP=8 && DEC="2 2 2"
