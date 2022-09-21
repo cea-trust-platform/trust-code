@@ -18,13 +18,11 @@
 #include <Frottement_interfacial_base.h>
 #include <Correlation.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Frottement_interfacial_Garnier
-//      coefficients de frottement interfacial d'un ecoulement a bulles en prennant en compte la densite
-//////////////////////////////////////////////////////////////////////////////
-
+/*! @brief classe Frottement_interfacial_Garnier coefficients de frottement interfacial d'un ecoulement a bulles en prennant en compte la densite
+ *
+ *
+ *
+ */
 class Frottement_interfacial_Garnier : public Frottement_interfacial_base
 {
   Declare_instanciable(Frottement_interfacial_Garnier);

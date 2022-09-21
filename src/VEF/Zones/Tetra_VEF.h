@@ -161,9 +161,9 @@ inline void calcul_vc_tetra(const int* Face, double *vc, const double * vs, cons
 
 }
 #pragma omp end declare target
-// Description:
-// calcule les coord xg du centre d'un element non standard
-// calcule aussi idirichlet=nb de faces de Dirichlet de l'element
+/*! @brief calcule les coord xg du centre d'un element non standard calcule aussi idirichlet=nb de faces de Dirichlet de l'element
+ *
+ */
 #pragma omp declare target
 inline void calcul_xg_tetra(double * xg, const double *x, const int type_elem_Cl, int& idirichlet,int& n1,int& n2,int& n3)
 {

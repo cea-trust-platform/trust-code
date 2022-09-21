@@ -25,15 +25,12 @@
 #include <Ref_Frontiere_dis_base.h>
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Neumann_loi_paroi
-//    Classe de base pour les flux impose pour une condition aux limites adaptative faible des equations de turbulence
-//    Le flux impose est calcule a partir de la correlation de loi de paroi adaptative.
-// .SECTION voir aussi
-//    Neumann
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief Classe Neumann_loi_paroi Classe de base pour les flux impose pour une condition aux limites adaptative faible des equations de turbulence
+ *
+ *     Le flux impose est calcule a partir de la correlation de loi de paroi adaptative.
+ *
+ * @sa Neumann
+ */
 class Dirichlet_loi_paroi : public Dirichlet
 {
 

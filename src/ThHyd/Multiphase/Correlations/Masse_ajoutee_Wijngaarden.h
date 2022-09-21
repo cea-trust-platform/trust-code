@@ -19,14 +19,12 @@
 #include <Masse_ajoutee_base.h>
 #include <TRUSTTabs_forward.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Masse ajoutee de la forme
-//    ma(k, l) = +/- beta * alpha_k * alpha_l * rho_m
-//    avec beta un coefficient constant (0.5 par defaut) et rho_m la masse volumique du melange
-//////////////////////////////////////////////////////////////////////////////
-
+/*! @brief Masse ajoutee de la forme ma(k, l) = +/- beta * alpha_k * alpha_l * rho_m
+ *
+ *     avec beta un coefficient constant (0.5 par defaut) et rho_m la masse volumique du melange
+ *
+ *
+ */
 class Masse_ajoutee_Wijngaarden : public Masse_ajoutee_base
 {
   Declare_instanciable(Masse_ajoutee_Wijngaarden);
