@@ -60,7 +60,7 @@ Sortie& Milieu_base::printOn(Sortie& os) const
  *         - conductivite
  *         - capacite calorifique
  *         - beta_th
- *         - porosites_champ
+ *         - porosite
  *
  * @param (Sortie& os) le flot de sortie pour l'ecriture
  */
@@ -70,7 +70,7 @@ void  Milieu_base::ecrire(Sortie& os) const
   os << "lambda " << lambda << finl;
   os << "Cp " << Cp << finl;
   os << "beta_th " << beta_th << finl;
-  if (porosites_champ.non_nul()) os << "porosites_champ " << porosites_champ << finl;
+  os << "porosite " << porosites_champ << finl;
 }
 
 /*! @brief Lecture d'un milieu sur un flot d'entree.
@@ -220,7 +220,13 @@ void Milieu_base::discretiser_porosite(const Probleme_base& pb, const Discretisa
   pb_ = pb;
   const Zone_dis_base& zone_dis = pb_->equation(0).zone_dis();
   const double temps = pb_->schema_temps().temps_courant();
-  Nom fld_name = "porosite", fld_unit = "rien";
+  Nom fld_name = "porosite_volumique", fld_unit = "rien";
+
+  // On construit porosite_face_ avec un descripteur parallele
+  const MD_Vector& md = ref_cast(Zone_VF, zone_dis).md_vector_faces();
+  MD_Vector_tools::creer_tableau_distribue(md, porosite_face_, Array_base::NOCOPY_NOINIT);
+  assert (ref_cast(Zone_VF, zone_dis).nb_faces_tot() == porosite_face_.size_totale());
+  porosite_face_ = 1.;
 
   if (porosites_champ.non_nul()) // Lu par porosites_champ
     {
@@ -246,6 +252,13 @@ void Milieu_base::discretiser_porosite(const Probleme_base& pb, const Discretisa
           dis.discretiser_champ("champ_elem",zone_dis,fld_name,fld_unit,1,temps,porosites_champ);
           porosites_champ->valeurs() = tmp_fld->valeurs();
         }
+      else if (sub_type(Champ_Uniforme,porosites_champ.valeur())) // blabla ...
+        {
+          const double val = porosites_champ->valeurs()(0,0);
+          porosites_champ.detach();
+          dis.discretiser_champ("champ_elem",zone_dis,fld_name,fld_unit,1,temps,porosites_champ);
+          porosites_champ->valeurs() = val;
+        }
       else
         dis.nommer_completer_champ_physique(zone_dis, fld_name, fld_unit, porosites_champ.valeur(), pb);
 
@@ -263,13 +276,7 @@ void Milieu_base::discretiser_porosite(const Probleme_base& pb, const Discretisa
       champs_compris_.ajoute_champ(porosites_champ.valeur());
       Zone_VF& zvf = ref_cast_non_const(Zone_VF, zone_dis);
       porosites_champ->valeurs() = 1.; // On initialise a 1 ...
-      porosites_.remplir_champ(zvf, porosites_champ.valeur(), zvf.porosite_face());
-
-      // Et la on modifie ...
-      DoubleVect& porosite_elem = zvf.porosite_elem();
-      assert (porosite_elem.size_totale() == porosites_champ->valeurs().dimension_tot(0));
-      assert (zvf.nb_elem_tot() == porosites_champ->valeurs().dimension_tot(0));
-      porosite_elem = porosites_champ->valeurs();
+      porosites_.remplir_champ(zvf, porosites_champ->valeurs(), porosite_face_);
     }
   else // Pas defini par l'utilisateur
     {
@@ -422,9 +429,7 @@ void Milieu_base::calculer_alpha()
         tab_divide_any_shape(tabalpha,Cp.valeurs());
     }
   else
-    {
-      Cerr << "alpha calculation is not possible since lambda is not known." << finl;
-    }
+    Cerr << "alpha calculation is not possible since lambda is not known." << finl;
 }
 
 void Milieu_base::update_porosity_values()
@@ -432,36 +437,23 @@ void Milieu_base::update_porosity_values()
   assert(is_field_porosites());
   const Zone_dis_base& zdb = pb_->equation(0).zone_dis().valeur();
   Zone_VF& zvf = ref_cast_non_const(Zone_VF, zdb);
-  const int is_uniforme = sub_type(Champ_Uniforme,porosites_champ.valeur());
-
-  // update porosite_elem
-  DoubleVect& porosite_elem = zvf.porosite_elem();
-  if (!is_uniforme)
-    {
-      assert (porosite_elem.size_totale() == porosites_champ->valeurs().dimension_tot(0));
-      assert (zvf.nb_elem_tot() == porosites_champ->valeurs().dimension_tot(0));
-      porosite_elem = porosites_champ->valeurs();
-    }
-  else
-    for (int elem = 0; elem < zvf.nb_elem_tot(); elem++) porosite_elem(elem) = porosites_champ->valeurs()(0,0);
 
   // update porosite_faces
-  DoubleVect& porosite_face = zvf.porosite_face();
   const int nb_face_tot = zvf.nb_faces_tot();
-  assert (nb_face_tot == zvf.porosite_face().size_totale());
+  assert (nb_face_tot == porosite_face_.size_totale());
   const IntTab& face_voisins = zvf.face_voisins();
 
   for (int face = 0; face < nb_face_tot; face++)
     {
       const int elem1 = face_voisins(face, 1), elem2 = face_voisins(face, 0);
       if ((elem1 != -1) && (elem2 != -1))
-        porosite_face(face) = 2. / (1. / porosite_elem(elem1) + 1. / porosite_elem(elem2));
+        porosite_face_(face) = 2. / (1. / porosites_champ->valeurs()(elem1) + 1. / porosites_champ->valeurs()(elem2));
       else if (elem1 != -1)
-        porosite_face(face) = porosite_elem(elem1);
+        porosite_face_(face) = porosites_champ->valeurs()(elem1);
       else
-        porosite_face(face) = porosite_elem(elem2);
+        porosite_face_(face) = porosites_champ->valeurs()(elem2);
     }
-  porosite_face.echange_espace_virtuel();
+  porosite_face_.echange_espace_virtuel();
 }
 
 void Milieu_base::mettre_a_jour(double temps)

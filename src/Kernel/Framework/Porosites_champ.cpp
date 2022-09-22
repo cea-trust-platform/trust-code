@@ -101,12 +101,11 @@ Entree& Porosites::readOn(Entree& is)
   return is;
 }
 
-void Porosites::remplir_champ(Zone_VF& zvf, Champ_Don_base& ch, DoubleVect& porosite_face)
+void Porosites::remplir_champ(const Zone_VF& zvf, DoubleVect& porosite_elem, DoubleVect& porosite_face)
 {
   if (zvf.que_suis_je().debute_par("Zone_VEF"))
     Cerr << "Porosites should no longer be used in VEF. Porosites_champ should be used instead." << finl, Process::exit();
 
-  DoubleTab& porosite_elem = ch.valeurs();
   const IntTab& elem_faces = zvf.elem_faces();
   const int sz = (int)les_sous_zones.size();
   int nb_faces_elem = zvf.zone().nb_faces_elem();

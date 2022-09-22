@@ -1329,16 +1329,6 @@ void Navier_Stokes_std::creer_champ(const Motcle& motlu)
           champs_compris_.ajoute_champ(critere_Q);
         }
     }
-
-  else if (motlu == "porosite_volumique")
-    {
-      if (!porosite_volumique.non_nul())
-        {
-          const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
-          dis.porosite_volumique(zone_dis(),schema_temps(),porosite_volumique);
-          champs_compris_.ajoute_champ(porosite_volumique);
-        }
-    }
   else if (motlu == "y_plus")
     {
       if (!y_plus.non_nul())

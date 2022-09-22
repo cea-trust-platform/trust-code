@@ -150,14 +150,6 @@ void Discret_Thyd::critere_Q(const Zone_dis& ,const Zone_Cl_dis& ,const Champ_In
  * @param (Champ_Inc&)
  * @param (Champ_Fonc&)
  */
-void Discret_Thyd::porosite_volumique(const Zone_dis& z, const Schema_Temps_base& sch , Champ_Fonc& ch ) const
-{
-  Cerr << "Volumic porosity field discretization" << finl;
-  const Zone_VF& zone_VF=ref_cast(Zone_VF, z.valeur());
-  discretiser_champ("champ_elem",zone_VF,"porosite_volumique",".",1,sch.temps_courant(),ch);
-  Champ_Fonc_base& ch_fonc = ref_cast(Champ_Fonc_base,ch.valeur());
-  ch_fonc.valeurs().ref(zone_VF.porosite_elem());
-}
 void Discret_Thyd::diametre_hydraulique_elem(const Zone_dis& z, const Schema_Temps_base& sch , Champ_Fonc& ch ) const
 {
   Cerr << "Hydraulic diameter elem field discretization" << finl;

@@ -53,14 +53,15 @@ public:
   Milieu_base();
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   int associer_(Objet_U&) override;
-
   void nommer(const Nom&) override;
   const Nom& le_nom() const override;
 
-  void discretiser_porosite(const Probleme_base& pb, const Discretisation_base& dis);
-  void set_param_porosite(Param& param);
-  void mettre_a_jour_porosite(double temps);
-  int initialiser_porosite(const double temps);
+  inline DoubleVect& porosite_elem() { return static_cast<DoubleVect&>(porosites_champ->valeurs()); }
+  inline const DoubleVect& porosite_elem() const { return static_cast<const DoubleVect&>(porosites_champ->valeurs()); }
+  inline double porosite_elem(const int i) const { return porosites_champ->valeurs()(i,0); }
+  inline DoubleVect& porosite_face() { return porosite_face_; }
+  inline const DoubleVect& porosite_face() const { return porosite_face_; }
+  inline double porosite_face(const int i) const { return porosite_face_[i]; }
 
   virtual int est_deja_associe();
   virtual void set_param(Param& param);
@@ -112,6 +113,7 @@ protected:
   Champ_Don g, alpha, lambda, Cp, beta_th, porosites_champ;
   Champ_Fonc rho_cp_elem_,rho_cp_comme_T_;
   Champs_compris champs_compris_;
+  DoubleVect porosite_face_;
   Nom nom_;
   REF(Probleme_base) pb_;
 
@@ -123,6 +125,12 @@ protected:
   void ecrire(Sortie& ) const;
   void creer_alpha();
   void creer_derivee_rho();
+
+  // Utile pour F5
+  void discretiser_porosite(const Probleme_base& pb, const Discretisation_base& dis);
+  void set_param_porosite(Param& param);
+  void mettre_a_jour_porosite(double temps);
+  int initialiser_porosite(const double temps);
 
 private:
   void update_porosity_values();

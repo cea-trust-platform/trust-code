@@ -38,7 +38,7 @@ class Porosites : public Objet_U
 {
   Declare_instanciable(Porosites);
 public:
-  void remplir_champ(Zone_VF& zvf /* TODO : const plus tard */,Champ_Don_base& ch, DoubleVect& porosite_face);
+  void remplir_champ(const Zone_VF& zvf, DoubleVect& , DoubleVect& );
   const bool& is_read() { return is_read_; }
 
 protected :
