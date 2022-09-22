@@ -20,9 +20,8 @@
 #include <TRUSTArrays.h>
 #include <Zone_dis.h>
 
-class Faces;
 class Zone_Cl_dis_base;
-
+class Faces;
 
 /*! @brief class Zone_VF
  *
@@ -32,31 +31,15 @@ class Zone_Cl_dis_base;
  *
  * @sa Zone_dis_base
  */
-
 class Zone_VF : public Zone_dis_base
 {
-
   Declare_base(Zone_VF);
-
 public :
-
   virtual double face_normales(int , int ) const =0;
-  void calculer_face_surfaces(const DoubleVect& surfaces)
-  {
-    face_surfaces_ = surfaces;
-  };
-  virtual const DoubleVect& face_surfaces() const
-  {
-    return face_surfaces_;
-  }
-  virtual inline double face_surfaces(int i) const
-  {
-    return face_surfaces_(i);
-  };
-  virtual inline double surface(int i) const
-  {
-    return face_surfaces(i);
-  };
+  void calculer_face_surfaces(const DoubleVect& surfaces) { face_surfaces_ = surfaces; }
+  virtual const DoubleVect& face_surfaces() const { return face_surfaces_; }
+  virtual inline double face_surfaces(int i) const { return face_surfaces_(i); }
+  virtual inline double surface(int i) const { return face_surfaces(i); }
 
   void discretiser() override;
   void infobord();
@@ -75,7 +58,7 @@ public :
   virtual void remplir_face_voisins_fictifs(const Zone_Cl_dis_base& ) ;
   virtual Faces* creer_faces();
   virtual void reordonner(Faces& );
-  inline int nb_joints() const;
+  inline int nb_joints() const { return zone().nb_joints(); }
   inline int premiere_face_int() const;
   inline int nb_faces() const;
   inline int nb_faces_tot() const;
@@ -85,19 +68,19 @@ public :
   inline int premiere_face_bord() const;
   inline int nb_faces_internes() const;
 
-  inline double xv(int ,int ) const;
-  inline double xp(int ,int ) const;
-  inline double xa(int ,int ) const;
-  inline double porosite_face(int ) const;
-  inline double porosite_elem(int ) const;
-  inline double diametre_hydraulique_face(int ) const;
-  inline double section_passage_face(int ) const;
-  inline double coefficient_frottement(int ) const;
-  inline double coefficient_echange_thermique(int ) const;
+  inline double xv(int num_face,int k) const { return xv_(num_face,k); }
+  inline double xp(int num_elem,int k) const { return xp_(num_elem,k); }
+  inline double xa(int num_arete,int k) const { return xa_(num_arete,k); }
+  inline double porosite_face(int i) const { return porosite_face_[i]; }
+  inline double porosite_elem(int i) const { return porosite_elem_[i]; }
+  inline double diametre_hydraulique_face(int i) const { return diametre_hydraulique_face_[i]; }
+  inline double section_passage_face(int i) const { return face_surfaces_[i] * porosite_face_[i]; }
+  inline double coefficient_frottement(int i) const { return coefficient_frottement_[i]; }
+  inline double coefficient_echange_thermique(int i) const { return coefficient_echange_thermique_[i]; }
 
   inline int face_numero_bord(int num_face) const;
-  inline IntTab& face_numero_bord();
-  inline const IntTab& face_numero_bord() const;
+  inline IntTab& face_numero_bord() { return face_numero_bord_; }
+  inline const IntTab& face_numero_bord() const { return face_numero_bord_; }
   void remplir_face_numero_bord();
 
   inline virtual const IntVect& orientation() const;
@@ -105,56 +88,53 @@ public :
   inline virtual int orientation_si_definie(int) const;
 
   DoubleTab normalized_boundaries_outward_vector(int global_face_number, double scale_factor) const;
-  inline DoubleTab& xv();
-  inline const DoubleTab& xv() const;
-  inline DoubleTab& xp();
-  inline const DoubleTab& xp() const;
-  inline DoubleTab& xa();
-  inline const DoubleTab& xa() const;
-  inline DoubleVect& volumes_entrelaces();
-  inline const DoubleVect& volumes_entrelaces() const;
-  inline double volumes_entrelaces(int num_face) const;
-  inline const DoubleTab& volumes_entrelaces_dir() const;
-  inline DoubleTab& volumes_entrelaces_dir();
+  inline DoubleTab& xv() { return xv_;}
+  inline const DoubleTab& xv() const { return xv_;}
+  inline DoubleTab& xp() { return xp_; }
+  inline const DoubleTab& xp() const { return xp_; }
+  inline DoubleTab& xa() { return xa_; }
+  inline const DoubleTab& xa() const { return xa_; }
+  inline DoubleVect& volumes_entrelaces() { return volumes_entrelaces_; }
+  inline const DoubleVect& volumes_entrelaces() const { return volumes_entrelaces_; }
+  inline double volumes_entrelaces(int num_face) const { return volumes_entrelaces_[num_face]; }
+  inline const DoubleTab& volumes_entrelaces_dir() const { return volumes_entrelaces_dir_; }
+  inline DoubleTab& volumes_entrelaces_dir() { return volumes_entrelaces_dir_; } // renvoie le tableau des volumes entrelaces par cote.
 
-  inline DoubleVect& porosite_face();
-  inline const DoubleVect& porosite_face() const;
-  inline DoubleVect& porosite_elem();
-  inline const DoubleVect& porosite_elem() const;
-  inline DoubleVect& diametre_hydraulique_face();
-  inline const DoubleVect& diametre_hydraulique_face() const;
+  inline DoubleVect& porosite_face() { return porosite_face_; }
+  inline const DoubleVect& porosite_face() const { return porosite_face_; }
+  inline DoubleVect& porosite_elem() { return porosite_elem_; }
+  inline const DoubleVect& porosite_elem() const { return porosite_elem_; }
+  inline DoubleVect& diametre_hydraulique_face() { return diametre_hydraulique_face_; }
+  inline const DoubleVect& diametre_hydraulique_face() const { return diametre_hydraulique_face_; }
   inline const DoubleVect section_passage_face() const;
-  inline DoubleTab& diametre_hydraulique_elem();
-  inline const DoubleTab& diametre_hydraulique_elem() const;
-  inline DoubleVect& coefficient_frottement();
-  inline const DoubleVect& coefficient_frottement() const;
-  inline DoubleVect& coefficient_echange_thermique();
-  inline const DoubleVect& coefficient_echange_thermique() const;
+  inline DoubleTab& diametre_hydraulique_elem() { return diametre_hydraulique_elem_; }
+  inline const DoubleTab& diametre_hydraulique_elem() const { return diametre_hydraulique_elem_; }
+  inline DoubleVect& coefficient_frottement() { return coefficient_frottement_; }
+  inline const DoubleVect& coefficient_frottement() const { return coefficient_frottement_; }
+  inline DoubleVect& coefficient_echange_thermique() { return coefficient_echange_thermique_; }
+  inline const DoubleVect& coefficient_echange_thermique() const { return coefficient_echange_thermique_; }
 
-  inline const Joint& joint(int i) const;
-  inline Joint& joint(int i);
+  inline const Joint& joint(int i) const { return zone().joint(i); }
+  inline Joint& joint(int i) { return zone().joint(i); }
 
   inline Frontiere_dis_base& frontiere_dis(int ) override;
   inline const Frontiere_dis_base& frontiere_dis(int ) const override;
 
-  inline int nb_frontiere_dis() const
-  {
-    return les_bords_.size();
-  };
-  inline const Front_VF& front_VF(int ) const;
-  inline double volumes(int i) const;
-  inline double inverse_volumes(int i) const;
+  inline int nb_frontiere_dis() const { return les_bords_.size(); }
+  inline const Front_VF& front_VF(int i) const { return les_bords_[i]; } // renvoie la ieme frontiere_discrete.
+  inline double volumes(int i) const { return volumes_[i]; }
+  inline double inverse_volumes(int i) const { return inverse_volumes_[i]; }
   inline int face_voisins(int num_face,int i) const;
   inline int elem_faces(int i,int j) const;
   inline int face_sommets(int i,int j) const;
 
-  inline DoubleVect& volumes();
-  inline DoubleVect& inverse_volumes();                        // Tableau pour optimiser le code
-  inline const DoubleVect& volumes() const;
-  inline const DoubleVect& inverse_volumes() const;        // Tableau pour optimiser le code
+  inline DoubleVect& volumes() { return volumes_; }
+  inline DoubleVect& inverse_volumes() { return inverse_volumes_; } // Tableau pour optimiser le code
+  inline const DoubleVect& volumes() const { return volumes_; }
+  inline const DoubleVect& inverse_volumes() const { return inverse_volumes_; } // Tableau pour optimiser le code
   inline IntTab& face_voisins() override;
   inline const IntTab& face_voisins() const override;
-  inline const IntTab& face_voisins_fictifs() const;
+  inline const IntTab& face_voisins_fictifs() const { return face_voisins_fictifs_; }
   inline void face_voisins_reel_fictif(int face,int& el0,int& elf) const;
   inline IntTab& elem_faces();
   inline const IntTab& elem_faces() const;
@@ -167,14 +147,11 @@ public :
   int numero_face_local(int face, int elem) const;
   inline int numero_sommet_local(int som, int elem) const;
 
-  inline const IntTab& get_num_fac_loc() const
-  {
-    return num_fac_loc_;
-  };
+  inline const IntTab& get_num_fac_loc() const { return num_fac_loc_; }
   inline int get_num_fac_loc(int, int) const;
   void construire_num_fac_loc();
 
-  inline const ArrOfInt& ind_faces_virt_bord() const;
+  inline const ArrOfInt& ind_faces_virt_bord() const { return zone().ind_faces_virt_bord(); }
   inline int est_une_face_virt_bord(int) const;
   inline int fbord(int f) const //renvoie l'indice de face de bord de f si f est de bord, -1 sinon
   {
@@ -266,97 +243,6 @@ inline int Zone_VF::numero_sommet_local(int som, int elem) const
   return -1;
 }
 
-/*! @brief
- *
- */
-inline double Zone_VF::porosite_face(int i) const
-{
-  return porosite_face_[i];
-}
-
-/*! @brief
- *
- */
-inline DoubleVect& Zone_VF::porosite_face()
-{
-  return porosite_face_;
-}
-
-/*! @brief
- *
- */
-inline const DoubleVect& Zone_VF::porosite_face() const
-{
-  return porosite_face_;
-}
-
-/*! @brief
- *
- */
-inline DoubleVect& Zone_VF::porosite_elem()
-{
-  return porosite_elem_;
-}
-
-/*! @brief
- *
- */
-inline const DoubleVect& Zone_VF::porosite_elem() const
-{
-  return porosite_elem_;
-}
-
-/*! @brief
- *
- */
-inline double Zone_VF::porosite_elem(int i) const
-{
-  return porosite_elem_[i];
-}
-
-/*! @brief
- *
- */
-inline DoubleTab& Zone_VF::diametre_hydraulique_elem()
-{
-  return diametre_hydraulique_elem_;
-}
-
-/*! @brief
- *
- */
-inline const DoubleTab& Zone_VF::diametre_hydraulique_elem() const
-{
-  return diametre_hydraulique_elem_;
-}
-
-/*! @brief
- *
- */
-inline DoubleVect& Zone_VF::diametre_hydraulique_face()
-{
-  return diametre_hydraulique_face_;
-}
-
-/*! @brief
- *
- */
-inline const DoubleVect& Zone_VF::diametre_hydraulique_face() const
-{
-  return diametre_hydraulique_face_;
-}
-
-/*! @brief
- *
- */
-inline double Zone_VF::diametre_hydraulique_face(int i) const
-{
-  return diametre_hydraulique_face_[i];
-}
-
-/*! @brief
- *
- */
 inline const DoubleVect Zone_VF::section_passage_face() const
 {
   // remplissage des sections de passage
@@ -366,114 +252,6 @@ inline const DoubleVect Zone_VF::section_passage_face() const
   return section_passage_face_;
 }
 
-/*! @brief
- *
- */
-inline double Zone_VF::section_passage_face(int i) const
-{
-  return face_surfaces_[i] * porosite_face_[i];
-}
-
-/*! @brief
- *
- */
-inline DoubleVect& Zone_VF::coefficient_frottement()
-{
-  return coefficient_frottement_;
-}
-
-/*! @brief
- *
- */
-inline const DoubleVect& Zone_VF::coefficient_frottement() const
-{
-  return coefficient_frottement_;
-}
-
-/*! @brief
- *
- */
-inline double Zone_VF::coefficient_frottement(int i) const
-{
-  return coefficient_frottement_[i];
-}
-
-/*! @brief
- *
- */
-inline DoubleVect& Zone_VF::coefficient_echange_thermique()
-{
-  return coefficient_echange_thermique_;
-}
-
-/*! @brief
- *
- */
-inline const DoubleVect& Zone_VF::coefficient_echange_thermique() const
-{
-  return coefficient_echange_thermique_;
-}
-
-/*! @brief
- *
- */
-inline double Zone_VF::coefficient_echange_thermique(int i) const
-{
-  return coefficient_echange_thermique_[i];
-}
-
-
-/*! @brief renvoie le ieme joint.
- *
- */
-inline const Joint& Zone_VF::joint(int i) const
-{
-  return zone().joint(i);
-}
-
-/*! @brief renvoie le ieme joint.
- *
- */
-inline Joint& Zone_VF::joint(int i)
-{
-  return zone().joint(i);
-}
-
-/*! @brief renvoie le volume de la maille i.
- *
- */
-inline double Zone_VF::volumes(int i) const
-{
-  return volumes_[i];
-}
-inline double Zone_VF::inverse_volumes(int i) const
-{
-  return inverse_volumes_[i];
-}
-
-/*! @brief renvoie le tableaux des volumes des mailles.
- *
- */
-inline DoubleVect& Zone_VF::volumes()
-{
-  return volumes_;
-}
-inline DoubleVect& Zone_VF::inverse_volumes()
-{
-  return inverse_volumes_;
-}
-
-/*! @brief renvoie le tableaux des volumes des mailles.
- *
- */
-inline const DoubleVect& Zone_VF::volumes() const
-{
-  return volumes_;
-}
-inline const DoubleVect& Zone_VF::inverse_volumes() const
-{
-  return inverse_volumes_;
-}
 /*! @brief renvoie l'element voisin de numface dans la direction i.
  *
  * i=0 : dans le sens oppose de l'axe orthogonal a la face numface.
@@ -506,11 +284,6 @@ inline const IntTab& Zone_VF::face_voisins() const
   return face_voisins_;
 }
 
-inline const IntTab& Zone_VF::face_voisins_fictifs() const
-{
-  return face_voisins_fictifs_;
-}
-
 /*! @brief renvoie dans el0 le numero de l'elt a l'interieur renvoie dans elf le numero de l'elt  fictif (-1 si il n'existe pas)
  *
  *
@@ -528,15 +301,6 @@ inline void  Zone_VF::face_voisins_reel_fictif(int face,int& el0,int& elf) const
     }
   if (elf==-1) elf=face_voisins_fictifs_(face,1);
 
-}
-
-
-/*! @brief renvoie le nombre de joints
- *
- */
-inline int Zone_VF::nb_joints() const
-{
-  return zone().nb_joints();
 }
 
 /*! @brief une face est interne ssi elle separe deux elements.
@@ -589,7 +353,6 @@ inline int Zone_VF::nb_faces_bord() const
 {
   return zone().nb_faces_frontiere();
 }
-
 
 /*! @brief renvoie le numero de la premiere des faces sur lesquelles sont appliquees les conditions limites :
  *
@@ -693,21 +456,6 @@ inline Frontiere_dis_base& Zone_VF::frontiere_dis(int i)
   return les_bords_[i];
 }
 
-/*! @brief renvoie la ieme frontiere_discrete.
- *
- */
-inline const Front_VF& Zone_VF::front_VF(int i) const
-{
-  return les_bords_[i];
-}
-
-/*! @brief
- *
- */
-inline double Zone_VF::xv(int num_face,int k) const
-{
-  return xv_(num_face,k);
-}
 
 inline const IntVect& Zone_VF::orientation() const
 {
@@ -741,113 +489,6 @@ inline int Zone_VF::orientation(int num_face) const
   return -1;
 }
 
-/*! @brief
- *
- */
-inline DoubleTab& Zone_VF::xv()
-{
-  return xv_;
-}
-
-/*! @brief
- *
- */
-inline const DoubleTab& Zone_VF::xv() const
-{
-  return xv_;
-}
-
-/*! @brief
- *
- */
-inline double Zone_VF::xp(int num_elem,int k) const
-{
-  return xp_(num_elem,k);
-}
-
-/*! @brief
- *
- */
-inline DoubleTab& Zone_VF::xp()
-{
-  return xp_;
-}
-
-/*! @brief
- *
- */
-inline const DoubleTab& Zone_VF::xp() const
-{
-  return xp_;
-}
-
-/*! @brief
- *
- */
-inline double Zone_VF::xa(int num_arete,int k) const
-{
-  return xa_(num_arete,k);
-}
-
-/*! @brief
- *
- */
-inline DoubleTab& Zone_VF::xa()
-{
-  return xa_;
-}
-
-/*! @brief
- *
- */
-inline const DoubleTab& Zone_VF::xa() const
-{
-  return xa_;
-}
-
-/*! @brief
- *
- */
-inline DoubleVect& Zone_VF::volumes_entrelaces()
-{
-  return volumes_entrelaces_;
-}
-
-/*! @brief
- *
- */
-inline const DoubleVect& Zone_VF::volumes_entrelaces() const
-{
-  return volumes_entrelaces_;
-}
-
-/*! @brief
- *
- */
-inline double Zone_VF::volumes_entrelaces(int num_face) const
-{
-  return volumes_entrelaces_[num_face];
-}
-
-// Decription:
-// renvoie le tableau des volumes entrelaces par cote.
-inline DoubleTab& Zone_VF::volumes_entrelaces_dir()
-{
-  return volumes_entrelaces_dir_;
-}
-
-// Decription:
-inline const DoubleTab& Zone_VF::volumes_entrelaces_dir() const
-{
-  return volumes_entrelaces_dir_;
-}
-
-inline const ArrOfInt& Zone_VF::ind_faces_virt_bord() const
-{
-  return zone().ind_faces_virt_bord();
-}
-
-
 /*! @brief renvoie 1 si face est une face virtuelle de bord, 0 sinon
  *
  */
@@ -859,34 +500,10 @@ inline int Zone_VF::est_une_face_virt_bord(int face) const
     return 1;
 }
 
-
-/*! @brief
- *
- */
 inline int Zone_VF::face_numero_bord(int num_face) const
 {
   assert(num_face < nb_faces());
   return face_numero_bord_(num_face);
 }
 
-/*! @brief
- *
- */
-inline IntTab& Zone_VF::face_numero_bord()
-{
-  return face_numero_bord_;
-}
-
-/*! @brief
- *
- */
-inline const IntTab& Zone_VF::face_numero_bord() const
-{
-  return face_numero_bord_;
-}
-
-#endif
-
-
-
-
+#endif /* Zone_VF_included */

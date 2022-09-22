@@ -13,16 +13,15 @@
 *
 *****************************************************************************/
 
-
 #ifndef Zone_dis_base_included
 #define Zone_dis_base_included
 
-#include <Zone.h>
 #include <Ref_Domaine_dis.h>
+#include <Zone.h>
 
-class Conds_lim;
 class Frontiere_dis_base;
 class Zone_Cl_dis_base;
+class Conds_lim;
 
 /*! @brief classe Zone_dis_base Cette classe est la base de la hierarchie des zones discretisees.
  *
@@ -34,110 +33,54 @@ class Zone_Cl_dis_base;
  */
 class Zone_dis_base : public Objet_U
 {
-
   Declare_base(Zone_dis_base);
-
 public :
-
+  void ecrire_noms_bords(Sortie&) const;
   void associer_zone(const Zone&);
-  inline const Zone& zone() const;
-  inline Zone& zone();
   void associer_domaine_dis(const Domaine_dis&);
-  inline const Domaine_dis& domaine_dis() const;
-  inline Domaine_dis& domaine_dis();
-  virtual void discretiser() =0;
-  virtual void creer_elements_fictifs(const Zone_Cl_dis_base&);
-  virtual Frontiere_dis_base& frontiere_dis(int ) =0;
-  virtual const Frontiere_dis_base& frontiere_dis(int ) const =0;
   int rang_frontiere(const Nom& );
   int rang_frontiere(const Nom& ) const;
-  Frontiere_dis_base& frontiere_dis(const Nom& );
   const Frontiere_dis_base& frontiere_dis(const Nom& ) const;
-  void ecrire_noms_bords(Sortie&) const;
+  Frontiere_dis_base& frontiere_dis(const Nom& );
 
-  virtual void modifier_pour_Cl(const Conds_lim&) =0;
+  virtual void creer_elements_fictifs(const Zone_Cl_dis_base&);
   virtual IntTab& face_sommets();
   virtual const IntTab& face_sommets() const;
   virtual IntTab& face_voisins();
   virtual const IntTab& face_voisins() const;
 
-  // Raccourcis :
+  virtual void discretiser() =0;
+  virtual void modifier_pour_Cl(const Conds_lim&) =0;
+  virtual Frontiere_dis_base& frontiere_dis(int ) =0;
+  virtual const Frontiere_dis_base& frontiere_dis(int ) const =0;
 
-  inline int nb_elem() const ;
-  inline int nb_elem_tot() const ;
-  inline int nb_som() const ;
-  inline int nb_som_tot() const ;
-  inline int nb_front_Cl() const ;
+  inline const Zone& zone() const { return la_zone.valeur(); }
+  inline Zone& zone() { return la_zone.valeur(); }
+  inline const Domaine_dis& domaine_dis() const { return le_domaine_dis.valeur(); }
+  inline Domaine_dis& domaine_dis() { return le_domaine_dis.valeur(); }
+
+  // Raccourcis :
+  inline int nb_elem() const { return zone().nb_elem(); }
+  inline int nb_elem_tot() const { return zone().nb_elem_tot(); }
+  inline int nb_som() const { return zone().nb_som(); }
+  inline int nb_som_tot() const { return zone().nb_som_tot(); }
+  inline int nb_front_Cl() const { return zone().nb_front_Cl(); }
 
 // Methodes pour le calcul et l'appel de la distance au bord solide le plus proche ; en entree on met le tableau des CL de la QDM
-  virtual inline void init_dist_paroi_globale(const Conds_lim& conds_lim) ;
-  virtual const DoubleTab& y_elem()  const {return y_elem_;} ;
-  virtual const DoubleTab& y_faces() const {return y_faces_;} ;
+  virtual const DoubleTab& y_elem()  const {return y_elem_;}
+  virtual const DoubleTab& y_faces() const {return y_faces_;}
+  virtual inline void init_dist_paroi_globale(const Conds_lim& conds_lim)
+  {
+    Cerr << "Zone_dis_base::init_dist_paroi_globale() does nothing ! " << que_suis_je() << "Needs to overload it !" << finl;
+    Process::exit();
+  }
 
 protected :
-
   REF(Zone) la_zone;
   REF(Domaine_dis) le_domaine_dis;
 
-  DoubleTab y_elem_ ;
-  DoubleTab y_faces_;
   int dist_paroi_initialisee_ = 0;
+  DoubleTab y_elem_, y_faces_;
 };
 
-/*! @brief Renvoie la Zone associee a l'objet.
- *
- * (version const)
- *
- * @return (Zone&) la zone associee a la zone discretisee
- */
-inline const Zone& Zone_dis_base::zone() const
-{
-  return la_zone.valeur();
-}
-
-/*! @brief Renvoie la Zone associee a l'objet.
- *
- * @return (Zone&) la zone associee a la zone discretisee
- */
-inline Zone& Zone_dis_base::zone()
-{
-  return la_zone.valeur();
-}
-
-inline const Domaine_dis& Zone_dis_base::domaine_dis() const
-{
-  return le_domaine_dis.valeur();
-}
-
-inline Domaine_dis& Zone_dis_base::domaine_dis()
-{
-  return le_domaine_dis.valeur();
-}
-
-inline int Zone_dis_base::nb_elem() const
-{
-  return zone().nb_elem();
-}
-inline int Zone_dis_base::nb_elem_tot() const
-{
-  return zone().nb_elem_tot();
-}
-inline int Zone_dis_base::nb_som() const
-{
-  return zone().nb_som();
-}
-inline int Zone_dis_base::nb_som_tot() const
-{
-  return zone().nb_som_tot();
-}
-inline int Zone_dis_base::nb_front_Cl() const
-{
-  return zone().nb_front_Cl();
-}
-inline void Zone_dis_base::init_dist_paroi_globale(const Conds_lim& conds_lim)
-{
-  Cerr << "Zone_dis_base::init_dist_paroi_globale() does nothing ! " << que_suis_je() << "Needs to overload it !" << finl;
-  Process::exit();
-}
-
-#endif
+#endif /* Zone_dis_base_included */
