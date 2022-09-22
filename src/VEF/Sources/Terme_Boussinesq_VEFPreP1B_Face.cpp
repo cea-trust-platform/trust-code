@@ -48,7 +48,7 @@ DoubleTab& Terme_Boussinesq_VEFPreP1B_Face::ajouter(DoubleTab& resu) const
     return Terme_Boussinesq_VEF_Face::ajouter(resu);
 
   const DoubleVect& volumes = zone_VEF.volumes();
-  const DoubleVect& porosite_surf = zone_VEF.porosite_face();
+  const DoubleVect& porosite_surf = equation().milieu().porosite_face();
   const Champ_Inc& le_scalaire = equation_scalaire().inconnue();
   const DoubleVect& g = gravite().valeurs();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zone_Cl_VEF.valeur();

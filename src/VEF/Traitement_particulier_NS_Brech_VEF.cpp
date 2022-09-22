@@ -448,7 +448,7 @@ void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_Richardson
 void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_calcul_pression()
 {
   const Zone_VEF& zvef=ref_cast(Zone_VEF, mon_equation->zone_dis().valeur());
-  const DoubleVect& porosite_face = zvef.porosite_face();
+  const DoubleVect& porosite_face = mon_equation->milieu().porosite_face();
   int i,comp;
   int nb_face = zvef.nb_faces();
   //Champ_Inc la_pression = mon_equation->pression();

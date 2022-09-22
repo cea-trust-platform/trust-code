@@ -460,7 +460,7 @@ int Assembleur_P_VEFPreP1B::modifier_secmem(DoubleTab& b)
       const Zone_VEF_PreP1b& zone_VEF =  zone_Vef();
       const Zone_Cl_VEF& zone_Cl = la_zone_Cl_VEF.valeur();
 
-      const DoubleVect& porosite_face = zone_VEF.porosite_face();
+      const DoubleVect& porosite_face = zone_Cl.equation().milieu().porosite_face();
 
       const int nb_cond_lim = zone_Cl.nb_cond_lim();
 

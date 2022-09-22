@@ -138,7 +138,7 @@ DoubleTab& Op_Dift_VEF_Face_Q1::ajouter(const DoubleTab& inconnue,
 {
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   const Zone_VEF& zone_VEF = la_zone_vef.valeur();
-  const DoubleVect& porosite_face = zone_VEF.porosite_face();
+  const DoubleVect& porosite_face = equation().milieu().porosite_face();
 
   const IntTab& elem_faces = zone_VEF.elem_faces();
   const IntTab& face_voisins = zone_VEF.face_voisins();
@@ -482,7 +482,7 @@ void Op_Dift_VEF_Face_Q1::ajouter_contribution(const DoubleTab& transporte, Matr
 {
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   const Zone_VEF& zone_VEF = la_zone_vef.valeur();
-  const DoubleVect& porosite_face = zone_VEF.porosite_face();
+  const DoubleVect& porosite_face = equation().milieu().porosite_face();
   const IntTab& elem_faces = zone_VEF.elem_faces();
   const IntTab& face_voisins = zone_VEF.face_voisins();
   const IntVect& rang_elem_non_std = zone_VEF.rang_elem_non_std();

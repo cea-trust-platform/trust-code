@@ -15,6 +15,9 @@
 
 #include <Zone_EF_axi.h>
 #include <DomaineAxi1d.h>
+#include <Zone_Cl_dis_base.h>
+#include <Equation_base.h>
+#include <Milieu_base.h>
 
 Implemente_instanciable( Zone_EF_axi, "Zone_EF_axi", Zone_EF ) ;
 
@@ -81,7 +84,7 @@ void Zone_EF_axi::calculer_Bij_gen(DoubleTab& bij)
     }
 }
 
-void Zone_EF_axi::calculer_IPhi()
+void Zone_EF_axi::calculer_IPhi(const Zone_Cl_dis_base& zcl)
 {
   int nbelem=zone().nb_elem();
   int nb_som_elem=zone().nb_som_elem();
@@ -112,7 +115,7 @@ void Zone_EF_axi::calculer_IPhi()
       IPhi_(elem,1) = (M_PI/3.)*(2.*r2*r2-r1*r2-r1*r1);
 
       for (int s=0; s<nb_som_elem; s++)
-        IPhi_thilde_(elem,s)=IPhi_(elem,s)*porosite_elem_(elem);
+        IPhi_thilde_(elem,s)=IPhi_(elem,s)*zcl.equation().milieu().porosite_elem(elem);
     }
 
   IPhi_.echange_espace_virtuel();

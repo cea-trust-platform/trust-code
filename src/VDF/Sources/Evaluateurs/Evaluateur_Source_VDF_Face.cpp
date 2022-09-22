@@ -14,7 +14,8 @@
 *****************************************************************************/
 
 #include <Evaluateur_Source_VDF_Face.h>
-
+#include <Equation_base.h>
+#include <Milieu_base.h>
 
 Evaluateur_Source_VDF_Face::Evaluateur_Source_VDF_Face(const Evaluateur_Source_VDF_Face& eval)
   : Evaluateur_Source_VDF(eval)
@@ -28,5 +29,5 @@ void Evaluateur_Source_VDF_Face::completer()
 {
   orientation.ref(la_zone->orientation());
   volumes_entrelaces.ref(la_zone->volumes_entrelaces());
-  porosite_surf.ref(la_zone->porosite_face());
+  porosite_surf.ref(la_zcl->equation().milieu().porosite_face());
 }

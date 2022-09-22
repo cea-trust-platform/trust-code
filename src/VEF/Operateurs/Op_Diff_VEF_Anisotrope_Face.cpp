@@ -496,8 +496,8 @@ DoubleTab& Op_Diff_VEF_Anisotrope_Face::ajouter(const DoubleTab& inconnue_org, D
   DoubleTab nu;
   DoubleTab tab_inconnue;
   int marq=phi_psi_diffuse(equation());
-  const DoubleVect& porosite_face = zone_VEF.porosite_face();
-  const DoubleVect& porosite_elem = zone_VEF.porosite_elem();
+  const DoubleVect& porosite_face = equation().milieu().porosite_face();
+  const DoubleVect& porosite_elem = equation().milieu().porosite_elem();
   // soit on a div(phi nu grad inco)
   // soit on a div(nu grad phi inco)
   // cela depend si on diffuse phi_psi ou psi
@@ -542,13 +542,13 @@ void Op_Diff_VEF_Anisotrope_Face::ajouter_contribution(const DoubleTab& transpor
 
   DoubleTab nu;
   int marq=phi_psi_diffuse(equation());
-  const DoubleVect& porosite_elem = zone_VEF.porosite_elem();
+  const DoubleVect& porosite_elem = equation().milieu().porosite_elem();
 
   // soit on a div(phi nu grad inco)
   // soit on a div(nu grad phi inco)
   // cela depend si on diffuse phi_psi ou psi
   modif_par_porosite_si_flag(nu_,nu,!marq,porosite_elem);
-  DoubleVect porosite_eventuelle(zone_VEF.porosite_face());
+  DoubleVect porosite_eventuelle(equation().milieu().porosite_face());
   if (!marq)
     porosite_eventuelle=1;
 
@@ -731,13 +731,13 @@ void Op_Diff_VEF_Anisotrope_Face::ajouter_contribution_multi_scalaire(const Doub
 
   DoubleTab nu;
   int marq=phi_psi_diffuse(equation());
-  const DoubleVect& porosite_elem = zone_VEF.porosite_elem();
+  const DoubleVect& porosite_elem = equation().milieu().porosite_elem();
 
   // soit on a div(phi nu grad inco)
   // soit on a div(nu grad phi inco)
   // cela depend si on diffuse phi_psi ou psi
   modif_par_porosite_si_flag(nu_,nu,!marq,porosite_elem);
-  DoubleVect porosite_eventuelle(zone_VEF.porosite_face());
+  DoubleVect porosite_eventuelle(equation().milieu().porosite_face());
   if (!marq)
     porosite_eventuelle=1;
 

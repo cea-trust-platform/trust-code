@@ -15,6 +15,8 @@
 
 #include <Segment_poly.h>
 #include <Domaine.h>
+#include <Equation_base.h>
+#include <Milieu_base.h>
 #include <Zone_Poly_base.h>
 // Tri pour voire si champ_P1...
 #include <Tri_poly.h>
@@ -136,8 +138,7 @@ void Segment_poly::calcul_vc(const ArrOfInt& Face,ArrOfDouble& vc,
                              const ArrOfDouble& vs,const DoubleTab& vsom,
                              const Champ_Inc_base& vitesse,int type_cl) const
 {
-  const Zone_Poly_base& zone_poly = ref_cast(Zone_Poly_base,vitesse.zone_dis_base());
-  const DoubleVect& porosite_face = zone_poly.porosite_face();
+  const DoubleVect& porosite_face = vitesse.equation().milieu().porosite_face();
   //Cerr << " type_cl " <<  type_cl << finl;
   switch(type_cl)
     {

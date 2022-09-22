@@ -28,6 +28,7 @@
 #include <Option_VDF.h>
 #include <Champ_Fonc_Face.h>
 #include <Matrice_Morse_Sym.h>
+#include <Milieu_base.h>
 
 Implemente_instanciable_sans_constructeur(Assembleur_P_VDF,"Assembleur_P_VDF",Assembleur_base);
 
@@ -286,7 +287,7 @@ int Assembleur_P_VDF::remplir(Matrice& la_matrice, const DoubleVect& volumes_ent
   const IntTab& face_voisins = zone_vdf.face_voisins();
   const DoubleVect& face_surfaces = zone_vdf.face_surfaces();
   //const DoubleVect & volumes_entrelaces = zone_vdf.volumes_entrelaces();
-  const DoubleVect& porosite_face = zone_vdf.porosite_face();
+  const DoubleVect& porosite_face = la_zone_Cl_VDF->equation().milieu().porosite_face();
 
 
   const DoubleVect * valeurs_rho = 0;

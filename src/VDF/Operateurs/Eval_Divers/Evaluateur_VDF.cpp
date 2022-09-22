@@ -14,6 +14,9 @@
 *****************************************************************************/
 
 #include <Evaluateur_VDF.h>
+#include <Equation_base.h>
+#include <Milieu_base.h>
+#include <Zone_Cl_VDF.h>
 
 Evaluateur_VDF::Evaluateur_VDF(const Evaluateur_VDF& eval)
   :
@@ -38,7 +41,7 @@ void Evaluateur_VDF::associer_zones(const Zone_VDF& zone_vdf,
   surface.ref(zone_vdf.face_surfaces());
   orientation.ref(zone_vdf.orientation());
   elem_.ref(zone_vdf.face_voisins());
-  porosite.ref(zone_vdf.porosite_face());
+  porosite.ref(la_zcl->equation().milieu().porosite_face());
   volume_entrelaces.ref(zone_vdf.volumes_entrelaces());
   xv.ref(zone_vdf.xv());
 }

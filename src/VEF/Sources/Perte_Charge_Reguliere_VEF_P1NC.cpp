@@ -123,7 +123,7 @@ DoubleTab& Perte_Charge_Reguliere_VEF_P1NC::ajouter(DoubleTab& resu) const
   //Cerr << " Perte_Charge_Reguliere_VEF_P1NC::ajouter " << finl;
   const Zone_VEF& zone_VEF = ref_cast(Zone_VEF,equation().zone_dis().valeur());
   const DoubleVect& volumes_entrelaces = zone_VEF.volumes_entrelaces();
-  const DoubleVect& porosite_face = zone_VEF.porosite_face();
+  const DoubleVect& porosite_face = equation().milieu().porosite_face();
   const DoubleTab& vit = la_vitesse->valeurs();
   const IntTab& face_voisins = zone_VEF.face_voisins();
 
@@ -204,7 +204,7 @@ void  Perte_Charge_Reguliere_VEF_P1NC::contribuer_a_avec(const DoubleTab&, Matri
   //Cerr << " Perte_Charge_Reguliere_VEF_P1NC::ajouter " << finl;
   const Zone_VEF& zone_VEF = ref_cast(Zone_VEF,equation().zone_dis().valeur());
   const DoubleVect& volumes_entrelaces = zone_VEF.volumes_entrelaces();
-  const DoubleVect& porosite_face = zone_VEF.porosite_face();
+  const DoubleVect& porosite_face = equation().milieu().porosite_face();
   const DoubleTab& vit = la_vitesse->valeurs();
   const IntTab& face_voisins = zone_VEF.face_voisins();
 

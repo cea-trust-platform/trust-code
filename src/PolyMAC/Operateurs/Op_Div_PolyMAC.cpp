@@ -102,7 +102,7 @@ void Op_Div_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const
   const Conds_lim& cls = la_zcl_PolyMAC->les_conditions_limites();
   const DoubleTab& inco = ch.valeurs(), &press = ref_cast(Navier_Stokes_std, equation()).pression().valeurs(), &nf = zone.face_normales();
   const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins(), &fcl = ch.fcl();
-  const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face();
+  const DoubleVect& fs = zone.face_surfaces(), &pf = equation().milieu().porosite_face();
   int i, j, e, f, fb, ne_tot = zone.nb_elem_tot(), d, D = dimension;
   Matrice_Morse *matv = matrices.count("vitesse") ? matrices["vitesse"] : NULL, *matp = matrices.count("pression") ? matrices["pression"] : NULL, matv2, matp2;
 
@@ -152,7 +152,7 @@ void Op_Div_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const
 DoubleTab& Op_Div_PolyMAC::ajouter(const DoubleTab& vit, DoubleTab& div) const
 {
   const Zone_PolyMAC& zone = la_zone_PolyMAC.valeur();
-  const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face();
+  const DoubleVect& fs = zone.face_surfaces(), &pf = equation().milieu().porosite_face();
   const DoubleTab& nf = zone.face_normales();
   const Conds_lim& cls = la_zcl_PolyMAC->les_conditions_limites();
   const IntTab& f_e = zone.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur()).fcl();

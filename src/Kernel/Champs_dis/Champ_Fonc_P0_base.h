@@ -51,8 +51,8 @@ public :
   int fixer_nb_valeurs_nodales(int n) override;
   inline void associer_zone_dis_base(const Zone_dis_base&) override;
   const Zone_dis_base& zone_dis_base() const override;
-  double moyenne(int ) const;
-  DoubleVect moyenne() const;
+  double moyenne(const DoubleVect& porosite_elem, int ) const;
+  DoubleVect moyenne(const DoubleVect& porosite_elem) const;
   int imprime(Sortie& , int ) const override;
   void mettre_a_jour(double ) override;
   double valeur_au_bord(int face) const;

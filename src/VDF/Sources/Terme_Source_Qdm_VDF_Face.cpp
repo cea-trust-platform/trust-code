@@ -14,15 +14,17 @@
 *****************************************************************************/
 
 #include <Terme_Source_Qdm_VDF_Face.h>
-#include <Champ_Uniforme.h>
-#include <Zone_Cl_dis.h>
-#include <Zone_VDF.h>
-#include <Zone_Cl_VDF.h>
 #include <Neumann_sortie_libre.h>
-#include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
-#include <Symetrie.h>
+#include <Champ_Uniforme.h>
+#include <Equation_base.h>
+#include <Zone_Cl_VDF.h>
+#include <Zone_Cl_dis.h>
+#include <Milieu_base.h>
 #include <Periodique.h>
+#include <Dirichlet.h>
+#include <Symetrie.h>
+#include <Zone_VDF.h>
 
 Implemente_instanciable(Terme_Source_Qdm_VDF_Face,"Source_Qdm_VDF_Face",Source_base);
 
@@ -71,7 +73,7 @@ void Terme_Source_Qdm_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& re
   const IntTab& face_voisins = zone_VDF.face_voisins();
   const IntVect& orientation = zone_VDF.orientation();
   //  const DoubleTab& xv = zone_VDF.xv();
-  const DoubleVect& porosite_surf = zone_VDF.porosite_face();
+  const DoubleVect& porosite_surf = equation().milieu().porosite_face();
   const DoubleVect& volumes_entrelaces = zone_VDF.volumes_entrelaces();
 
   int ndeb,nfin,ncomp,num_face,elem1,elem2;

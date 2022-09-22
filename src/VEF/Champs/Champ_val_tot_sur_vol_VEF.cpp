@@ -14,10 +14,11 @@
 *****************************************************************************/
 
 #include <Champ_val_tot_sur_vol_VEF.h>
-#include <Sous_Zone.h>
-#include <Zone_VEF.h>
+#include <Equation_base.h>
 #include <Zone_Cl_VEF.h>
 #include <Dirichlet.h>
+#include <Sous_Zone.h>
+#include <Zone_VEF.h>
 
 Implemente_instanciable(Champ_val_tot_sur_vol_VEF,"Valeur_totale_sur_volume_VEF",Champ_val_tot_sur_vol_base);
 
@@ -48,7 +49,7 @@ DoubleVect& Champ_val_tot_sur_vol_VEF::eval_contrib_loc(const Zone_dis_base& zdi
   const DoubleVect& vol_entrelaces = zvef.volumes_entrelaces();
   const DoubleVect& vol_entrelaces_Cl =  zclvef.volumes_entrelaces_Cl();
   const ArrOfInt& faces_doubles = zvef.faces_doubles();
-  const DoubleVect& por_face = zvef.porosite_face();
+  const DoubleVect& por_face = zclvef.equation().milieu().porosite_face();
   int prem_face_std = zvef.premiere_face_std();
   int face_g,face_marq;
   double fac_pond,vol_entrelace;

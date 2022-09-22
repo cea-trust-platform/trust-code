@@ -122,7 +122,7 @@ void Champ_Face_PolyMAC_P0::update_ve(DoubleTab& val) const
 {
   const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0,zone_vf());
   if (valeurs().get_md_vector() != zone.mdv_ch_face) return; //pas de variables auxiliaires -> rien a faire
-  const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes(), &pf = zone.porosite_face(), &pe = zone.porosite_elem();
+  const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes(), &pf = equation().milieu().porosite_face(), &pe = equation().milieu().porosite_elem();
   const DoubleTab& xp = zone.xp(), &xv = zone.xv();
   const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
   int e, f, j, d, D = dimension, n, N = val.line_size(), ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
@@ -146,7 +146,7 @@ void Champ_Face_PolyMAC_P0::init_ve2() const
 #else
   const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0,zone_vf());
   if (ve2d.dimension(0) || valeurs().get_md_vector() != zone.mdv_ch_face) return; //deja initialise ou pas de variables auxiliaires
-  const DoubleVect& pf = zone.porosite_face(), &pe = zone.porosite_elem(), &fs = zone.face_surfaces(), &ve = zone.volumes();
+  const DoubleVect& pf = equation().milieu().porosite_face(), &pe = equation().milieu().porosite_elem(), &fs = zone.face_surfaces(), &ve = zone.volumes();
   const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &nf = zone.face_normales();
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &e_s = zone.zone().les_elems(), &f_s = zone.face_sommets();
   int i, j, jb, k, e, f, s, d, db, D = dimension, nc, nl = D * (D + 1), nw, infoo=0, un = 1, rank;

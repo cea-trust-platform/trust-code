@@ -117,7 +117,7 @@ void Perte_Charge_Singuliere_VDF_Face::ajouter_blocs(matrices_t matrices, Double
 
   const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
   const DoubleVect& volumes_entrelaces = zone_VDF.volumes_entrelaces();
-  const DoubleVect& porosite_surf = zone_VDF.porosite_face();
+  const DoubleVect& porosite_surf = equation().milieu().porosite_face();
   const DoubleTab& vit = la_vitesse->valeurs();
   int ndeb_faces_int = zone_VDF.premiere_face_int();
 

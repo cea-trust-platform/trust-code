@@ -205,7 +205,8 @@ void Champ_Face_PolyMAC::interp_ve(const DoubleTab& inco, DoubleTab& val, bool i
 {
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,zone_vf());
   const DoubleTab& xv = zone.xv(), &xp = zone.xp();
-  const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face(), &pe = zone.porosite_elem(), &ve = zone.volumes();
+  const DoubleVect& fs = zone.face_surfaces(), &pf = ma_zone_cl_dis->valeur().equation().milieu().porosite_face(),
+                    &pe = ma_zone_cl_dis->valeur().equation().milieu().porosite_elem(), &ve = zone.volumes();
   const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
   int e, f, j, r;
 
@@ -223,7 +224,8 @@ void Champ_Face_PolyMAC::interp_ve(const DoubleTab& inco, const IntVect& les_pol
 {
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,zone_vf());
   const DoubleTab& xv = zone.xv(), &xp = zone.xp();
-  const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face(), &pe = zone.porosite_elem(), &ve = zone.volumes();
+  const DoubleVect& fs = zone.face_surfaces(), &pf = ma_zone_cl_dis->valeur().equation().milieu().porosite_face(),
+                    &pe = ma_zone_cl_dis->valeur().equation().milieu().porosite_elem(), &ve = zone.volumes();
   const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
   int e, f, j, d, D = dimension, n, N = inco.line_size();
   assert(ve.line_size() == N * D);

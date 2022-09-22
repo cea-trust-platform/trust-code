@@ -59,7 +59,7 @@ void Terme_Boussinesq_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab
   const IntTab& f_e = zone.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur()).fcl();
   const DoubleTab& rho = equation().milieu().masse_volumique().passe(), &vfd = zone.volumes_entrelaces_dir(), &nf = zone.face_normales(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
-  const DoubleVect& pf = zone.porosite_face(), &pe = zone.porosite_elem(), &ve = zone.volumes(), &fs = zone.face_surfaces(), &grav = gravite().valeurs();
+  const DoubleVect& pf = equation().milieu().porosite_face(), &pe = equation().milieu().porosite_elem(), &ve = zone.volumes(), &fs = zone.face_surfaces(), &grav = gravite().valeurs();
 
   DoubleVect g(dimension);
   g = grav;

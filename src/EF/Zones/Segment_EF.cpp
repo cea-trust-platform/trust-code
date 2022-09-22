@@ -17,6 +17,8 @@
 #include <Domaine.h>
 #include <Zone_EF.h>
 #include <Champ_P1_EF.h>
+#include <Equation_base.h>
+#include <Milieu_base.h>
 
 Implemente_instanciable(Segment_EF,"Segment_EF",Elem_EF_base);
 
@@ -136,8 +138,7 @@ void Segment_EF::calcul_vc(const ArrOfInt& Face,ArrOfDouble& vc,
                            const ArrOfDouble& vs,const DoubleTab& vsom,
                            const Champ_Inc_base& vitesse,int type_cl) const
 {
-  const Zone_EF& zone_EF = ref_cast(Zone_EF,vitesse.zone_dis_base());
-  const DoubleVect& porosite_face = zone_EF.porosite_face();
+  const DoubleVect& porosite_face = vitesse.equation().milieu().porosite_face();
   //Cerr << " type_cl " <<  type_cl << finl;
   switch(type_cl)
     {

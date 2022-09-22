@@ -14,11 +14,8 @@
 *****************************************************************************/
 
 #include <Sortie_libre_pression_imposee_QC.h>
-
 #include <Convection_Diffusion_Temperature.h>
-
 #include <Loi_Etat_Multi_GP_QC.h>
-
 #include <EDO_Pression_th_VDF.h>
 #include <communications.h>
 #include <Zone_Cl_VDF.h>
@@ -97,7 +94,7 @@ void  EDO_Pression_th_VDF::calculer_grad(const DoubleTab& inco, DoubleTab& resu)
   double coef;
   IntTab& face_voisins = la_zone->face_voisins();
   IntVect& orientation = la_zone->orientation();
-  DoubleVect& porosite_surf = la_zone->porosite_face();
+  DoubleVect& porosite_surf = le_fluide_->porosite_face();
   DoubleTab& xp = la_zone->xp();
   DoubleVect& volume_entrelaces = la_zone->volumes_entrelaces();
 

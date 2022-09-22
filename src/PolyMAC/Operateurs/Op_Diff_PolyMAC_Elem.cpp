@@ -107,7 +107,7 @@ double Op_Diff_PolyMAC_Elem::calculer_dt_stab() const
   const DoubleTab& nf = zone.face_normales(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL,
                     &diffu = diffusivite_pour_pas_de_temps().valeurs(), &lambda = diffusivite().valeurs();
-  const DoubleVect& pe = zone.porosite_elem(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes();
+  const DoubleVect& pe = equation().milieu().porosite_elem(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes();
   update_nu();
 
   int i, e, f, n, N = equation().inconnue().valeurs().dimension(1), cD = diffu.dimension(0) == 1, cL = lambda.dimension(0) == 1;
@@ -241,7 +241,7 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
       f_e.push_back(std::ref(zone[i].get().face_voisins())), e_f.push_back(std::ref(zone[i].get().elem_faces())), f_s.push_back(std::ref(zone[i].get().face_sommets()));
       fs.push_back(std::ref(zone[i].get().face_surfaces()));
       xp.push_back(std::ref(zone[i].get().xp())), xv.push_back(std::ref(zone[i].get().xv()));
-      pe.push_back(std::ref(zone[i].get().porosite_elem())), pf.push_back(std::ref(zone[i].get().porosite_face())), ve.push_back(std::ref(zone[i].get().volumes()));
+      pe.push_back(std::ref(equation().milieu().porosite_elem())), pf.push_back(std::ref(equation().milieu().porosite_face())), ve.push_back(std::ref(zone[i].get().volumes()));
       cls.push_back(std::ref(op_ext[i]->equation().zone_Cl_dis().les_conditions_limites()));
       diffu.push_back(ref_cast(Op_Diff_PolyMAC_Elem, *op_ext[i]).nu());
       const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, op_ext[i]->has_champ_inco() ? op_ext[i]->mon_inconnue().valeur() : op_ext[i]->equation().inconnue().valeur());

@@ -14,6 +14,8 @@
 *****************************************************************************/
 
 #include <Champ_val_tot_sur_vol_VDF.h>
+#include <Equation_base.h>
+#include <Milieu_base.h>
 #include <Sous_Zone.h>
 #include <Zone_VF.h>
 
@@ -40,7 +42,7 @@ DoubleVect& Champ_val_tot_sur_vol_VDF::eval_contrib_loc(const Zone_dis_base& zdi
   vol_glob_pond.resize(size_vol);
 
   const DoubleVect& vol = zvf.volumes();
-  const DoubleVect& por_elem = zvf.porosite_elem();
+  const DoubleVect& por_elem = zcldis.equation().milieu().porosite_elem();
 
   int cpt=1;
   LIST_CURSEUR(REF(Sous_Zone)) curseur1 = les_sous_zones;

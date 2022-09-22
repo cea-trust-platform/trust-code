@@ -276,7 +276,7 @@ void Op_Diff_PolyMAC_P0_base::update_nu() const
   for (e = 0; e < zone.nb_elem_tot(); e++)
     for (n = 0, i = 0; n < N; n++)
       for (m = 0; m < mult; m++, i++)
-        nu_.addr()[N_nu * e + i] *= zone.porosite_elem()(e) * (alp ? std::max((*alp)(e, n), 1e-8) : 1);
+        nu_.addr()[N_nu * e + i] *= equation().milieu().porosite_elem()(e) * (alp ? std::max((*alp)(e, n), 1e-8) : 1);
 
   /* modification par une classe fille */
   modifier_nu(nu_);

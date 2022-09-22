@@ -366,7 +366,7 @@ double Perte_Charge_Singuliere::calculate_Q(const Equation_base& eqn, const IntV
   const DoubleTab& vit = eqn.inconnue().valeurs(),
                    &fac = sub_type(Pb_Multiphase, eqn.probleme()) ? ref_cast(Pb_Multiphase, eqn.probleme()).eq_masse.champ_conserve().passe()
                           : eqn.probleme().get_champ("masse_volumique").valeurs(); // get_champ pour flica5 car la masse volumique n'est pas dans le milieu...
-  const DoubleVect& pf = zvf.porosite_face(), &fs = zvf.face_surfaces();
+  const DoubleVect& pf = eqn.milieu().porosite_face(), &fs = zvf.face_surfaces();
   const IntTab& f_e = zvf.face_voisins();
   int cF = fac.dimension_tot(0) == 1, i, n, N = fac.line_size(), d, D = Objet_U::dimension;
 

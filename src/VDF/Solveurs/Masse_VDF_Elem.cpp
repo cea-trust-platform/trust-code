@@ -14,6 +14,8 @@
 *****************************************************************************/
 
 #include <Masse_VDF_Elem.h>
+#include <Equation_base.h>
+#include <Milieu_base.h>
 #include <Zone_Cl_VDF.h>
 #include <Zone_VDF.h>
 
@@ -46,7 +48,7 @@ DoubleTab& Masse_VDF_Elem::appliquer_impl(DoubleTab& sm) const
 {
   const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
   const DoubleVect& volumes = zone_VDF.volumes();
-  const DoubleVect& porosite_elem = zone_VDF.porosite_elem();
+  const DoubleVect& porosite_elem = equation().milieu().porosite_elem();
   int nb_elem = zone_VDF.nb_elem();
   if(nb_elem==0)
     {

@@ -17,6 +17,8 @@
 #include <Domaine.h>
 #include <Zone_EF.h>
 #include <Champ_P1_EF.h>
+#include <Equation_base.h>
+#include <Milieu_base.h>
 
 Implemente_instanciable_sans_constructeur(Tetra_EF,"Tetra_EF",Elem_EF_base);
 
@@ -116,8 +118,7 @@ void Tetra_EF::calcul_vc(const ArrOfInt& Face,ArrOfDouble& vc,
                          const Champ_Inc_base& vitesse,int type_cl) const
 {
   int comp;
-  const Zone_EF& zone_EF = ref_cast(Zone_EF,vitesse.zone_dis_base());
-  const DoubleVect& porosite_face = zone_EF.porosite_face();
+  const DoubleVect& porosite_face = vitesse.equation().milieu().porosite_face();
   switch(type_cl)
     {
 

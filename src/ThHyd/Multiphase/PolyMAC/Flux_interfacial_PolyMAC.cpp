@@ -126,7 +126,7 @@ void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
   // Matrice_Morse *mat = matrices.count(ch.le_nom().getString()) ? matrices.at(ch.le_nom().getString()) : NULL;
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, equation().zone_dis().valeur());
-  const DoubleVect& pe = zone.porosite_elem(), &ve = zone.volumes();
+  const DoubleVect& pe = milc.porosite_elem(), &ve = zone.volumes();
   const tabs_t& der_h = ref_cast(Champ_Inc_base, milc.enthalpie()).derivees();
   const Champ_base& ch_rho = milc.masse_volumique();
   const Champ_Inc_base& ch_alpha = pbm.eq_masse.inconnue().valeur(), &ch_a_r = pbm.eq_masse.champ_conserve(), &ch_vit = pbm.eq_qdm.inconnue().valeur(),

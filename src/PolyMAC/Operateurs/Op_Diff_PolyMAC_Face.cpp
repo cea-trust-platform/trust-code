@@ -60,8 +60,8 @@ void Op_Diff_PolyMAC_Face::completer()
   flux_bords_.resize(zone.premiere_face_int(), dimension * ch.valeurs().line_size());
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 1)
     Cerr << "Op_Diff_PolyMAC_Face : largeur de joint insuffisante (minimum 1)!" << finl, Process::exit();
-  porosite_e.ref(zone.porosite_elem());
-  porosite_f.ref(zone.porosite_face());
+  porosite_e.ref(equation().milieu().porosite_elem());
+  porosite_f.ref(equation().milieu().porosite_face());
   op_ext = { this };
 }
 
@@ -72,7 +72,7 @@ double Op_Diff_PolyMAC_Face::calculer_dt_stab() const
   const DoubleTab& nf = zone.face_normales(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL,
                     *a_r = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.champ_conserve().passe() : (has_champ_masse_volumique() ? &get_champ_masse_volumique().valeurs() : NULL); /* produit alpha * rho */
-  const DoubleVect& pe = zone.porosite_elem(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes();
+  const DoubleVect& pe = equation().milieu().porosite_elem(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes();
   update_nu();
 
   int i, e, f, n, N = equation().inconnue().valeurs().line_size();

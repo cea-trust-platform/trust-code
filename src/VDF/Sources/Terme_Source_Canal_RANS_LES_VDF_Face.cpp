@@ -978,7 +978,7 @@ void Terme_Source_Canal_RANS_LES_VDF_Face::mettre_a_jour(double temps)
 
   compteur_reprise++;
 
-  const DoubleVect& porosite_surf = zone_VDF.porosite_face();
+  const DoubleVect& porosite_surf = equation().milieu().porosite_face();
   const DoubleVect& volumes_entrelaces = zone_VDF.volumes_entrelaces();
 
   DoubleVect force(nb_faces);
@@ -1066,7 +1066,7 @@ void Terme_Source_Canal_RANS_LES_VDF_Face::ajouter_blocs(matrices_t matrices, Do
 {
   const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
   int nb_faces = zone_VDF.nb_faces();
-  const DoubleVect& porosite_surf = zone_VDF.porosite_face();
+  const DoubleVect& porosite_surf = equation().milieu().porosite_face();
   const DoubleVect& volumes_entrelaces = zone_VDF.volumes_entrelaces();
   const double tps = mon_equation->schema_temps().temps_courant();
   const double dt = mon_equation->schema_temps().pas_de_temps();

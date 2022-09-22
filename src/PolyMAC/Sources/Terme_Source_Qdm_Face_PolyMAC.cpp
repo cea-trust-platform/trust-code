@@ -53,7 +53,7 @@ void Terme_Source_Qdm_Face_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab
   const DoubleTab& vals = la_source->valeurs(), &vfd = zone.volumes_entrelaces_dir(),
                    &rho = equation().milieu().masse_volumique().passe(), &nf = zone.face_normales(),
                     *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
-  const DoubleVect& pe = zone.porosite_elem(), &ve = zone.volumes(), &pf = zone.porosite_face(), &vf = zone.volumes_entrelaces(), &fs = zone.face_surfaces();
+  const DoubleVect& pe = equation().milieu().porosite_elem(), &ve = zone.volumes(), &pf = equation().milieu().porosite_face(), &vf = zone.volumes_entrelaces(), &fs = zone.face_surfaces();
   const IntTab& f_e = zone.face_voisins(), &fcl = ch.fcl();
   int e, f, i, cS = (vals.dimension_tot(0) == 1), cR = (rho.dimension_tot(0) == 1), nf_tot = zone.nb_faces_tot(),
                n, N = equation().inconnue().valeurs().line_size(), d, D = dimension, calc_cl = !sub_type(Zone_PolyMAC_P0, zone); //en PolyMAC V1, on calcule aux CL

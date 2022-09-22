@@ -19,6 +19,7 @@
 #include <Periodique.h>
 #include <Navier_Stokes_std.h>
 #include <Champ_Fonc_P0_VEF.h>
+#include <Milieu_base.h>
 
 Implemente_instanciable(Terme_Source_Acceleration_VEF_Face,"Acceleration_VEF_P1NC",Terme_Source_Acceleration);
 
@@ -138,7 +139,7 @@ DoubleTab& Terme_Source_Acceleration_VEF_Face::ajouter(DoubleTab& resu) const
   const Zone_VF&     zone               = la_zone_VEF_.valeur();
   const Zone_Cl_dis_base& zone_Cl       = la_zone_Cl_VEF_.valeur();
   const IntTab&      face_voisins       = zone.face_voisins();
-  const DoubleVect& porosite_surf      = zone.porosite_face();
+  const DoubleVect& porosite_surf      = equation().milieu().porosite_face();
   const DoubleVect& volumes_entrelaces = zone.volumes_entrelaces();
 
   DoubleTab& s_face = get_set_terme_source_post().valeur().valeurs();

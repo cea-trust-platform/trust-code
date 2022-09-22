@@ -80,7 +80,6 @@ double Op_Dift_VEF_Face::calculer_dt_stab() const
   double dt_stab=1.e30;
   double coef;
   const Zone_VEF& la_zone_VEF = la_zone_vef.valeur();
-  //const DoubleVect& porosite_elem = la_zone_VEF.porosite_elem();
 
   const Zone& la_zone= la_zone_VEF.zone();
 
@@ -953,8 +952,8 @@ DoubleTab& Op_Dift_VEF_Face::ajouter(const DoubleTab& inconnue_org,
   DoubleTab nu,nu_turb_m;
   DoubleTab tab_inconnue;
   int marq=phi_psi_diffuse(equation());
-  const DoubleVect& porosite_face = zone_VEF.porosite_face();
-  const DoubleVect& porosite_elem = zone_VEF.porosite_elem();
+  const DoubleVect& porosite_face = equation().milieu().porosite_face();
+  const DoubleVect& porosite_elem = equation().milieu().porosite_elem();
   // soit on a div(phi nu grad inco)
   // soit on a div(nu grad phi inco)
   // cela depend si on diffuse phi_psi ou psi
@@ -1269,14 +1268,14 @@ void Op_Dift_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice
 
   DoubleTab nu,nu_turb;
   int marq=phi_psi_diffuse(equation());
-  const DoubleVect& porosite_elem = zone_VEF.porosite_elem();
+  const DoubleVect& porosite_elem = equation().milieu().porosite_elem();
   // soit on a div(phi nu grad inco)
   // soit on a div(nu grad phi inco)
   // cela depend si on diffuse phi_psi ou psi
   modif_par_porosite_si_flag(nu_,nu,!marq,porosite_elem);
   modif_par_porosite_si_flag(nu_turb_,nu_turb,!marq,porosite_elem);
 
-  DoubleVect porosite_eventuelle(zone_VEF.porosite_face());
+  DoubleVect porosite_eventuelle(equation().milieu().porosite_face());
   if (!marq)
     porosite_eventuelle=1;
 
@@ -1381,14 +1380,14 @@ void Op_Dift_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab& tran
 
   DoubleTab nu,nu_turb;
   int marq=phi_psi_diffuse(equation());
-  const DoubleVect& porosite_elem = zone_VEF.porosite_elem();
+  const DoubleVect& porosite_elem = equation().milieu().porosite_elem();
   // soit on a div(phi nu grad inco)
   // soit on a div(nu grad phi inco)
   // cela depend si on diffuse phi_psi ou psi
   modif_par_porosite_si_flag(nu_,nu,!marq,porosite_elem);
   modif_par_porosite_si_flag(nu_turb_,nu_turb,!marq,porosite_elem);
 
-  DoubleVect porosite_eventuelle(zone_VEF.porosite_face());
+  DoubleVect porosite_eventuelle(equation().milieu().porosite_face());
   if (!marq)
     porosite_eventuelle=1;
   // On traite les faces bord
@@ -1672,8 +1671,8 @@ void Op_Dift_VEF_Face::contribue_au_second_membre(DoubleTab& resu ) const
       DoubleTab nu,nu_turb_m;
       DoubleTab tab_inconnue;
       int marq=phi_psi_diffuse(equation());
-      const DoubleVect& porosite_face = zone_VEF.porosite_face();
-      const DoubleVect& porosite_elem = zone_VEF.porosite_elem();
+      const DoubleVect& porosite_face = equation().milieu().porosite_face();
+      const DoubleVect& porosite_elem = equation().milieu().porosite_elem();
       // soit on a div(phi nu grad inco)
       // soit on a div(nu grad phi inco)
       // cela depend si on diffuse phi_psi ou psi

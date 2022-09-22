@@ -23,6 +23,7 @@
 #include <Symetrie.h>
 #include <TRUSTTrav.h>
 #include <Equation_base.h>
+#include <Milieu_base.h>
 
 
 Implemente_instanciable(Force_Centrifuge_VDF_Face_Axi,"Force_Centrifuge_VDF_Face_Axi",Source_base);
@@ -69,7 +70,7 @@ void Force_Centrifuge_VDF_Face_Axi::associer_zones(const Zone_dis& zone_dis,
   xp.ref(zvdf.xp());
   xv.ref(zvdf.xv());
   volume_entrelaces.ref(zvdf.volumes_entrelaces());
-  porosite_surf.ref(zvdf.porosite_face());
+  porosite_surf.ref(la_zone_Cl_VDF->equation().milieu().porosite_face());
 }
 
 void Force_Centrifuge_VDF_Face_Axi::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const

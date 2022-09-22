@@ -96,7 +96,7 @@ void Terme_Source_Canal_perio_VDF_Face::ajouter_blocs(matrices_t matrices, Doubl
   const Zone_VF& zone_VF = la_zone_VDF.valeur();
   const Zone_Cl_dis_base& zone_Cl_dis = la_zone_Cl_VDF.valeur();
   const IntVect& orientation = la_zone_VDF->orientation();
-  const DoubleVect& porosite_surf = zone_VF.porosite_face();
+  const DoubleVect& porosite_surf = equation().milieu().porosite_face();
   const DoubleVect& volumes_entrelaces = zone_VF.volumes_entrelaces();
   int ncomp;
   ArrOfDouble s(source());
@@ -156,7 +156,7 @@ void Terme_Source_Canal_perio_VDF_Face::calculer_debit(double& debit_e) const
   const Zone_VF& zone_VF = la_zone_VDF.valeur();
   const Zone_Cl_dis_base& zone_Cl_dis = la_zone_Cl_VDF.valeur();
   const DoubleTab& vitesse = equation().inconnue().valeurs();
-  const DoubleVect& porosite_surf = zone_VF.porosite_face();
+  const DoubleVect& porosite_surf = equation().milieu().porosite_face();
   int ndeb,nfin,num_face;
   int nb_bords = zone_VF.nb_front_Cl();
   for (int n_bord=0; n_bord<nb_bords; n_bord++)

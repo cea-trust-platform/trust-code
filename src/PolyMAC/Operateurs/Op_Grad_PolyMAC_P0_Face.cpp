@@ -172,7 +172,7 @@ void Op_Grad_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
   const DoubleTab& nf = zone.face_normales(), &xp = zone.xp(), &xv = zone.xv(), &vfd = zone.volumes_entrelaces_dir(),
                    &press = semi_impl.count("pression") ? semi_impl.at("pression") : (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs()),
                     *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
-  const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes(), &pe = zone.porosite_elem(), &pf = zone.porosite_face();
+  const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes(), &pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face();
   int i, j, e, f, fb, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), d, D = dimension, n, N = secmem.line_size(), m, M = press.line_size();
   update_grad();
   const std::string& nom_inc = ch.le_nom().getString();

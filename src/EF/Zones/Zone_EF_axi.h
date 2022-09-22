@@ -34,7 +34,7 @@ class Zone_EF_axi : public Zone_EF
 
 public :
 
-  void calculer_IPhi() override;
+  void calculer_IPhi(const Zone_Cl_dis_base& zcl) override;
   void calculer_Bij_gen(DoubleTab& bij_) override ;
   void remplir_tableau_origine();
   void discretiser() override;

@@ -317,8 +317,8 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_coefficients_operateur_centre(DoubleTa
 
   const DoubleTab& facette_normales = zone_VEF.facette_normales();
   const DoubleTab& facette_normales_Cl = zone_Cl_VEF.normales_facettes_Cl();
-  const DoubleVect& porosite_elem = zone_VEF.porosite_elem();
-  const DoubleVect& porosite_face = zone_VEF.porosite_face();
+  const DoubleVect& porosite_elem = equation().milieu().porosite_elem();
+  const DoubleVect& porosite_face = equation().milieu().porosite_face();
 
   const IntTab& elem_faces = zone_VEF.elem_faces();
   const IntVect& rang_elem_non_std = zone_VEF.rang_elem_non_std();
@@ -1034,7 +1034,7 @@ DoubleTab& Op_Conv_Muscl_New_VEF_Face::ajouter(const DoubleTab& transporte_2,
   const Zone_VEF& zone_VEF = la_zone_vef.valeur();
   const Champ_P1NC& la_vitesse=ref_cast( Champ_P1NC, vitesse_.valeur());
   const DoubleTab& vitesse_2=la_vitesse.valeurs();
-  const DoubleVect& porosite_face = zone_VEF.porosite_face();
+  const DoubleVect& porosite_face = equation().milieu().porosite_face();
 
   const IntTab& elem_faces = zone_VEF.elem_faces();
 
@@ -1113,7 +1113,7 @@ double Op_Conv_Muscl_New_VEF_Face::calculer_dt_stab() const
       const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
       const Champ_P1NC& la_vitesse=ref_cast( Champ_P1NC, vitesse_.valeur());
       const DoubleTab& vitesse_2=la_vitesse.valeurs();
-      const DoubleVect& porosite_face = zone_VEF.porosite_face();
+      const DoubleVect& porosite_face = equation().milieu().porosite_face();
 
       const IntTab& elem_faces = zone_VEF.elem_faces();
 
@@ -1245,8 +1245,6 @@ DoubleTab& Op_Conv_Muscl_New_VEF_Face::ajouter_partie_compressible(const DoubleT
   //   //Pour tenir compte de la porosite
   //   const int marq = phi_u_transportant(equation());
 
-  //   const DoubleVect& porosite_elem = zone_VEF.porosite_elem();
-  //   const DoubleVect& porosite_face = zone_VEF.porosite_face();
 
   //   DoubleTab vitesse(vitesse_.valeur().valeurs());
   //   for (int i=0; i<vitesse.dimension(0); i++)
@@ -2638,8 +2636,6 @@ void Op_Conv_Muscl_New_VEF_Face::ajouter_contribution_partie_compressible(const 
   //   //Pour tenir compte de la porosite
   //   const int marq = phi_u_transportant(equation());
 
-  //   const DoubleVect& porosite_elem = zone_VEF.porosite_elem();
-  //   const DoubleVect& porosite_face = zone_VEF.porosite_face();
 
   //   DoubleTab vitesse(vitesse_.valeur().valeurs());
   //   for (int i=0; i<vitesse.dimension(0); i++)

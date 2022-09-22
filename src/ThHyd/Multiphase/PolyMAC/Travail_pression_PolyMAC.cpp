@@ -69,7 +69,7 @@ void Travail_pression_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
 {
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, equation().zone_dis().valeur());
-  const DoubleVect& pe = zone.porosite_elem(), &pf = zone.porosite_face(), &fs = zone.face_surfaces(), &ve = zone.volumes();
+  const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(), &fs = zone.face_surfaces(), &ve = zone.volumes();
   const Champ_Inc_base& ch_a = pbm.eq_masse.inconnue().valeur(), &ch_v = pbm.eq_qdm.inconnue().valeur(), &ch_p = pbm.eq_qdm.pression().valeur();
   /* trois tableaux de alpha : present / passe et champ convecte (peut etre semi-implicite) */
   const DoubleTab& alpha = ch_a.valeurs(), &c_alpha = semi_impl.count("alpha") ? semi_impl.at("alpha") : alpha, &p_alpha = ch_a.passe(), &press = ch_p.valeurs(), &vit = ch_v.valeurs();

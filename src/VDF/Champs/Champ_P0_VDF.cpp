@@ -83,10 +83,9 @@ DoubleTab& Champ_P0_VDF::remplir_coord_noeuds(DoubleTab& positions) const
  *
  */
 
-DoubleVect Champ_P0_VDF::moyenne() const
+DoubleVect Champ_P0_VDF::moyenne(const DoubleVect& porosite_elem) const
 {
   const Zone_VDF& zvdf=la_zone_VDF.valeur();
-  const DoubleVect& porosite = zvdf.porosite_elem();
   const DoubleVect& volumes = zvdf.volumes();
   const DoubleTab& val = valeurs();
 
@@ -97,7 +96,7 @@ DoubleVect Champ_P0_VDF::moyenne() const
 
   for (int num_elem=0; num_elem<zvdf.nb_elem(); num_elem++)
     {
-      coef = porosite(num_elem)*volumes(num_elem);
+      coef = porosite_elem(num_elem)*volumes(num_elem);
       for (k=0; k<nb_compo; k++)
         moy[k] += val(num_elem,k)*coef;
       sum_vol += coef;
@@ -110,10 +109,9 @@ DoubleVect Champ_P0_VDF::moyenne() const
 /*! @brief Cette fonction effectue le calcul de la moyenne au sens P0 de la kieme composante du champ
  *
  */
-double Champ_P0_VDF::moyenne(int ncomp) const
+double Champ_P0_VDF::moyenne(const DoubleVect& porosite_elem, int ncomp) const
 {
   const Zone_VDF& zvdf=la_zone_VDF.valeur();
-  const DoubleVect& porosite = zvdf.porosite_elem();
   const DoubleVect& volumes = zvdf.volumes();
   const DoubleTab& val = valeurs();
 
@@ -122,7 +120,7 @@ double Champ_P0_VDF::moyenne(int ncomp) const
 
   for (int num_elem=0; num_elem<zvdf.nb_elem(); num_elem++)
     {
-      coef = porosite(num_elem)*volumes(num_elem);
+      coef = porosite_elem(num_elem)*volumes(num_elem);
       moy += val(num_elem,ncomp)*coef;
       sum_vol += coef;
     }

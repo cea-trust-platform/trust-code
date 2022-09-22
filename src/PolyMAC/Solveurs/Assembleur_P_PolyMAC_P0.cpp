@@ -61,7 +61,7 @@ int  Assembleur_P_PolyMAC_P0::assembler_mat(Matrice& la_matrice,const DoubleVect
   grad.update_grad();
   const DoubleTab& fgrad_c = grad.fgrad_c;
   const IntTab& f_e = zone.face_voisins(), &fgrad_d = grad.fgrad_d, &fgrad_e = grad.fgrad_e;
-  const DoubleVect& pf = zone.porosite_face(), &fs = zone.face_surfaces();
+  const DoubleVect& pf = equation().milieu().porosite_face(), &fs = zone.face_surfaces();
   int i, j, e, eb, f, ne = zone.nb_elem(), ne_tot = zone.nb_elem_tot();
 
   //en l'absence de CLs en pression, on ajoute P(0) = 0 sur le process 0
@@ -126,7 +126,7 @@ void Assembleur_P_PolyMAC_P0::assembler_continuite(matrices_t matrices, DoubleTa
   if (aux_only) return;
   const DoubleTab& alpha = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().valeurs();
   Matrice_Morse& mat = *matrices.at("alpha");
-  const DoubleVect& ve = la_zone_PolyMAC->volumes(), &pe = la_zone_PolyMAC->porosite_elem();
+  const DoubleVect& ve = la_zone_PolyMAC->volumes(), &pe = equation().milieu().porosite_elem();
   int e, n, N = alpha.line_size();
   /* second membre : on multiplie par porosite * volume pour que le systeme en P soit symetrique en cartesien */
   for (e = 0; e < la_zone_PolyMAC->nb_elem(); e++)

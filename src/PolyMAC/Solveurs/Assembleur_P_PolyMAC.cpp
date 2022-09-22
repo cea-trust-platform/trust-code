@@ -72,7 +72,7 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, la_zone_PolyMAC.valeur());
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, mon_equation->inconnue().valeur());
   const IntTab& e_f = zone.elem_faces(), &fcl = ch.fcl();
-  const DoubleVect& pe = zone.porosite_elem(), &pf = zone.porosite_face(), &vf = zone.volumes_entrelaces();
+  const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(), &vf = zone.volumes_entrelaces();
   int i, j, e, f, fb, ne = zone.nb_elem(), ne_tot = zone.nb_elem_tot(), nf = zone.nb_faces(), nf_tot = zone.nb_faces_tot();
 
   DoubleTrav w2; //matrice W2 (de Zone_PolyMAC) par element
@@ -210,7 +210,7 @@ void Assembleur_P_PolyMAC::assembler_continuite(matrices_t matrices, DoubleTab& 
   const DoubleTab *alpha = pbm ? &pbm->eq_masse.inconnue().valeurs() : NULL, &press = equation().probleme().get_champ("pression").valeurs(),
                    &vit = equation().inconnue().valeurs(), *alpha_rho = pbm ? &pbm->eq_masse.champ_conserve().passe() : NULL, &nf = zone.face_normales();
   const IntTab& fcl = ref_cast(Champ_Face_PolyMAC, mon_equation->inconnue().valeur()).fcl(), &e_f = zone.elem_faces();
-  const DoubleVect& ve = zone.volumes(), &pe = zone.porosite_elem(), &fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces();
+  const DoubleVect& ve = zone.volumes(), &pe = equation().milieu().porosite_elem(), &fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces();
   int i, j, e, f, fb, n, N = vit.line_size(), m, M = press.line_size(), ne_tot = zone.nb_elem_tot(), d, D = dimension;
   Matrice_Morse *mat_a = alpha ? matrices.at("alpha") : NULL, &mat_p = *matrices.at("pression"), &mat_v = *matrices.at("vitesse");
   DoubleTrav w2, fac(N);
@@ -282,7 +282,7 @@ void Assembleur_P_PolyMAC::modifier_secmem_pour_incr_p(const DoubleTab& press, c
 /* norme pour assembler_continuite */
 DoubleTab Assembleur_P_PolyMAC::norme_continuite() const
 {
-  const DoubleVect& pe= la_zone_PolyMAC->porosite_elem(), &ve = la_zone_PolyMAC->volumes();
+  const DoubleVect& pe= equation().milieu().porosite_elem(), &ve = la_zone_PolyMAC->volumes();
   DoubleTab norm(la_zone_PolyMAC->nb_elem());
   for (int e = 0; e < la_zone_PolyMAC->nb_elem(); e++) norm(e) = pe(e) * ve(e);
   return norm;

@@ -165,8 +165,8 @@ DoubleTab& Op_Dift_Stab_VEF_Face::ajouter(const DoubleTab& inconnue_org,DoubleTa
   const Zone_VEF& zone_VEF = la_zone_vef.valeur();
 
   const DoubleTab& nu_turb=diffusivite_turbulente()->valeurs();
-  const DoubleVect& porosite_face = zone_VEF.porosite_face();
-  const DoubleVect& porosite_elem = zone_VEF.porosite_elem();
+  const DoubleVect& porosite_face = equation().milieu().porosite_face();
+  const DoubleVect& porosite_elem = equation().milieu().porosite_elem();
 
   const Nature_du_champ nature_champ=equation().inconnue().valeur().nature_du_champ();
 
@@ -1491,14 +1491,14 @@ void Op_Dift_Stab_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Ma
 
       DoubleTab nu,nu_turb;
       int marq=phi_psi_diffuse(equation());
-      const DoubleVect& porosite_elem = zone_VEF.porosite_elem();
+      const DoubleVect& porosite_elem = equation().milieu().porosite_elem();
       // soit on a div(phi nu grad inco)
       // soit on a div(nu grad phi inco)
       // cela depend si on diffuse phi_psi ou psi
       modif_par_porosite_si_flag(nu_,nu,!marq,porosite_elem);
       modif_par_porosite_si_flag(nu_turb_,nu_turb,!marq,porosite_elem);
 
-      DoubleVect porosite_eventuelle(zone_VEF.porosite_face());
+      DoubleVect porosite_eventuelle(equation().milieu().porosite_face());
       if (!marq)
         porosite_eventuelle=1;
 
@@ -1598,14 +1598,14 @@ void Op_Dift_Stab_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab&
 
       DoubleTab nu,nu_turb;
       int marq=phi_psi_diffuse(equation());
-      const DoubleVect& porosite_elem = zone_VEF.porosite_elem();
+      const DoubleVect& porosite_elem = equation().milieu().porosite_elem();
       // soit on a div(phi nu grad inco)
       // soit on a div(nu grad phi inco)
       // cela depend si on diffuse phi_psi ou psi
       modif_par_porosite_si_flag(nu_,nu,!marq,porosite_elem);
       modif_par_porosite_si_flag(nu_turb_,nu_turb,!marq,porosite_elem);
 
-      DoubleVect porosite_eventuelle(zone_VEF.porosite_face());
+      DoubleVect porosite_eventuelle(equation().milieu().porosite_face());
       if (!marq)
         porosite_eventuelle=1;
       // On traite les faces bord

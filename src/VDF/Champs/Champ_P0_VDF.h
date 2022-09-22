@@ -36,8 +36,8 @@ public :
 
   void associer_zone_dis_base(const Zone_dis_base&) override;
   const Zone_dis_base& zone_dis_base() const override;
-  DoubleVect moyenne() const;
-  double moyenne(int ) const;
+  DoubleVect moyenne(const DoubleVect& porosite_elem) const;
+  double moyenne(const DoubleVect& porosite_elem, int ) const;
   double valeur_au_bord(int face) const;
   DoubleTab& remplir_coord_noeuds(DoubleTab& ) const override;
   int imprime(Sortie& os, int nb_compo_) const override;

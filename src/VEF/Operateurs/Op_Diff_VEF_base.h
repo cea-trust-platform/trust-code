@@ -23,6 +23,7 @@
 #include <Ref_Zone_VEF.h>
 #include <Ref_Zone_Cl_VEF.h>
 #include <Op_VEF_Face.h>
+#include <Milieu_base.h>
 #include <Zone_VEF.h>
 class Zone_dis;
 class Zone_Cl_dis;

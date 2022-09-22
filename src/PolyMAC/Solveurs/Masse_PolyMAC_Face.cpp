@@ -64,7 +64,7 @@ DoubleTab& Masse_PolyMAC_Face::appliquer_impl(DoubleTab& sm) const
 {
   const Zone_PolyMAC& zone = la_zone_PolyMAC.valeur();
   const IntTab& f_e = zone.face_voisins();
-  const DoubleVect& pf = zone.porosite_face();
+  const DoubleVect& pf = equation().milieu().porosite_face();
   int i, e, f, n, N = equation().inconnue().valeurs().line_size();
   const DoubleTab *a_r = sub_type(QDM_Multiphase, equation()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.champ_conserve().passe() : NULL,
                    &vfd = zone.volumes_entrelaces_dir();
@@ -111,7 +111,7 @@ void Masse_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, d
   Matrice_Morse *mat = matrices[equation().inconnue().le_nom().getString()]; //facultatif
   const Zone_PolyMAC& zone = la_zone_PolyMAC;
   const IntTab& f_e = zone.face_voisins();
-  const DoubleVect& pf = zone.porosite_face(), &vf = zone.volumes_entrelaces();
+  const DoubleVect& pf = equation().milieu().porosite_face(), &vf = zone.volumes_entrelaces();
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
   const DoubleTab& vfd = zone.volumes_entrelaces_dir(), &rho = equation().milieu().masse_volumique().passe(),
                    *alpha = pbm ? &pbm->eq_masse.inconnue().passe() : NULL, *a_r = pbm ? &pbm->eq_masse.champ_conserve().passe() : NULL;

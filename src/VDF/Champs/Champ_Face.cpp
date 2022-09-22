@@ -379,7 +379,7 @@ double Champ_Face_get_val_imp_face_bord_sym(const DoubleTab& tab_valeurs, const 
 
   const IntTab& face_voisins = zone_vdf.face_voisins();
   const IntTab& elem_faces = zone_vdf.elem_faces();
-  const DoubleVect& porosite = zone_vdf.porosite_face();
+  const DoubleVect& porosite = zclo.equation().milieu().porosite_face();
   int ori = zone_vdf.orientation()(face_globale);
 
   const DoubleTab& vals=cl.champ_front()->valeurs_au_temps(temp);

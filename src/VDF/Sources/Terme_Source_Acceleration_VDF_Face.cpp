@@ -14,11 +14,12 @@
 *****************************************************************************/
 
 #include <Terme_Source_Acceleration_VDF_Face.h>
+#include <Navier_Stokes_std.h>
+#include <Champ_Fonc_P0_VDF.h>
+#include <Milieu_base.h>
 #include <Zone_Cl_dis.h>
 #include <Zone_Cl_VDF.h>
 #include <Periodique.h>
-#include <Navier_Stokes_std.h>
-#include <Champ_Fonc_P0_VDF.h>
 #include <Zone_VDF.h>
 
 Implemente_instanciable(Terme_Source_Acceleration_VDF_Face,"Acceleration_VDF_Face",Terme_Source_Acceleration);
@@ -126,7 +127,7 @@ void Terme_Source_Acceleration_VDF_Face::ajouter_blocs(matrices_t matrices, Doub
   const Zone_Cl_VDF& zone_Cl_VDF        = la_zone_Cl_VDF_.valeur();
   const IntTab&      face_voisins       = zone_VDF.face_voisins();
   const IntVect&     orientation        = zone_VDF.orientation();
-  const DoubleVect& porosite_surf      = zone_VDF.porosite_face();
+  const DoubleVect& porosite_surf      = equation().milieu().porosite_face();
   const DoubleVect& volumes_entrelaces = zone_VDF.volumes_entrelaces();
 
   DoubleTab& s_face = get_set_terme_source_post().valeur().valeurs();

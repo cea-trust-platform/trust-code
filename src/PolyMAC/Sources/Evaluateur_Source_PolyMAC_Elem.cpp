@@ -15,6 +15,8 @@
 
 #include <Evaluateur_Source_PolyMAC_Elem.h>
 #include <Zone_PolyMAC.h>
+#include <Equation_base.h>
+#include <Milieu_base.h>
 
 Evaluateur_Source_PolyMAC_Elem::Evaluateur_Source_PolyMAC_Elem(const Evaluateur_Source_PolyMAC_Elem& eval)
   : Evaluateur_Source_PolyMAC(eval)
@@ -27,5 +29,5 @@ void Evaluateur_Source_PolyMAC_Elem::completer()
 {
   Cerr << "Evaluateur_Source_PolyMAC_Elem::completer()" << finl;
   volumes.ref(la_zone->volumes());
-  porosite_vol.ref(la_zone->porosite_elem());
+  porosite_vol.ref(la_zcl->equation().milieu().porosite_elem());
 }

@@ -78,10 +78,10 @@ double Op_Diff_VEF_Face_Q1::calculer_dt_stab() const
 
 // Fonction utile visc_Q1
 
-double visc_Q1(const Zone_VEF& la_zone,int num_face,int num2,
+double visc_Q1(const Zone_VEF& la_zone,const Zone_Cl_VEF& zcl, int num_face,int num2,
                int num_elem,int dimension,DoubleTab& nu)
 {
-  double constante = nu(num_elem)/la_zone.volumes(num_elem)*la_zone.porosite_elem(num_elem);
+  double constante = nu(num_elem)/la_zone.volumes(num_elem)*zcl.equation().milieu().porosite_elem(num_elem);
   double Valeur=0;
 
   if(dimension==2)
@@ -89,7 +89,7 @@ double visc_Q1(const Zone_VEF& la_zone,int num_face,int num2,
       Valeur=la_zone.face_normales(num_face,0)*
              la_zone.face_normales(num2,1) -
              la_zone.face_normales(num_face,1)*la_zone.face_normales(num2,0);
-      Valeur=constante*std::fabs(Valeur)*(la_zone.porosite_face(num_face)* la_zone.porosite_face(num2));
+      Valeur=constante*std::fabs(Valeur)*(zcl.equation().milieu().porosite_face(num_face)* zcl.equation().milieu().porosite_face(num2));
     }
   else if (dimension == 3)
     {
@@ -99,7 +99,7 @@ double visc_Q1(const Zone_VEF& la_zone,int num_face,int num2,
               la_zone.face_normales(num_face,0)*la_zone.face_normales(num2,2)) +
              (la_zone.face_normales(num_face,0)*la_zone.face_normales(num2,1) -
               la_zone.face_normales(num_face,1)*la_zone.face_normales(num2,0));
-      Valeur=constante*std::fabs(Valeur)*(la_zone.porosite_face(num_face)* la_zone.porosite_face(num2));
+      Valeur=constante*std::fabs(Valeur)*(zcl.equation().milieu().porosite_face(num_face)* zcl.equation().milieu().porosite_face(num2));
     }
   // Cerr << "Valeur " << Valeur << finl;
   return Valeur;
@@ -144,7 +144,7 @@ DoubleTab& Op_Diff_VEF_Face_Q1::ajouter(const DoubleTab& inconnue, DoubleTab& re
                 {
                   if ( ( (j= elem_faces(elem1,i)) > num_face ) && (j != fac_asso ) )
                     {
-                      val = visc_Q1(zone_VEF,num_face,j,elem1,dimension,nu_);
+                      val = visc_Q1(zone_VEF,zone_Cl_VEF,num_face,j,elem1,dimension,nu_);
 
                       for (int nc=0; nc<nb_comp; nc++)
                         {
@@ -160,7 +160,7 @@ DoubleTab& Op_Diff_VEF_Face_Q1::ajouter(const DoubleTab& inconnue, DoubleTab& re
                 {
                   if ( ( (j= elem_faces(elem2,i)) > num_face ) && (j != fac_asso ) )
                     {
-                      val = visc_Q1(zone_VEF,num_face,j,elem2,dimension,nu_);
+                      val = visc_Q1(zone_VEF,zone_Cl_VEF,num_face,j,elem2,dimension,nu_);
                       for (int nc=0; nc<nb_comp; nc++)
                         {
                           resu(num_face,nc)+=val*inconnue(j,nc);
@@ -181,7 +181,7 @@ DoubleTab& Op_Diff_VEF_Face_Q1::ajouter(const DoubleTab& inconnue, DoubleTab& re
                 {
                   if ( (j= elem_faces(elem1,i)) > num_face )
                     {
-                      val = visc_Q1(zone_VEF,num_face,j,elem1,dimension,nu_);
+                      val = visc_Q1(zone_VEF,zone_Cl_VEF,num_face,j,elem1,dimension,nu_);
                       for (int nc=0; nc<nb_comp; nc++)
                         {
                           resu(num_face,nc)+=val*inconnue(j,nc);
@@ -205,7 +205,7 @@ DoubleTab& Op_Diff_VEF_Face_Q1::ajouter(const DoubleTab& inconnue, DoubleTab& re
         {
           if ( (j=elem_faces(elem1,i)) > num_face )
             {
-              val = visc_Q1(zone_VEF,num_face,j,elem1,dimension,nu_);
+              val = visc_Q1(zone_VEF,zone_Cl_VEF,num_face,j,elem1,dimension,nu_);
               for (int nc=0; nc<nb_comp; nc++)
                 {
                   resu(num_face,nc)+=val*inconnue(j,nc);
@@ -217,7 +217,7 @@ DoubleTab& Op_Diff_VEF_Face_Q1::ajouter(const DoubleTab& inconnue, DoubleTab& re
             }
           if ( (j=elem_faces(elem2,i)) > num_face )
             {
-              val = visc_Q1(zone_VEF,num_face,j,elem2,dimension,nu_);
+              val = visc_Q1(zone_VEF,zone_Cl_VEF,num_face,j,elem2,dimension,nu_);
               for (int nc=0; nc<nb_comp; nc++)
                 {
                   resu(num_face,nc)+=val*inconnue(j,nc);
@@ -312,7 +312,7 @@ void Op_Diff_VEF_Face_Q1::ajouter_contribution(const DoubleTab& transporte, Matr
                 {
                   if ( ( (j= elem_faces(elem1,i)) > num_face ) && (j != fac_asso ) )
                     {
-                      val = visc_Q1(zone_VEF,num_face,j,elem1,dimension,nu_);
+                      val = visc_Q1(zone_VEF,zone_Cl_VEF,num_face,j,elem1,dimension,nu_);
                       for (int nc=0; nc<nb_comp; nc++)
                         {
                           for (k=tab1[num_face*nb_comp+nc]-1; k<tab1[num_face*nb_comp+nc+1]-1; k++)
@@ -337,7 +337,7 @@ void Op_Diff_VEF_Face_Q1::ajouter_contribution(const DoubleTab& transporte, Matr
                 {
                   if ( ( (j= elem_faces(elem2,i)) > num_face ) && (j != fac_asso ) )
                     {
-                      val = visc_Q1(zone_VEF,num_face,j,elem2,dimension,nu_);
+                      val = visc_Q1(zone_VEF,zone_Cl_VEF,num_face,j,elem2,dimension,nu_);
                       for (int nc=0; nc<nb_comp; nc++)
                         {
                           for (k=tab1[num_face*nb_comp+nc]-1; k<tab1[num_face*nb_comp+nc+1]-1; k++)
@@ -368,7 +368,7 @@ void Op_Diff_VEF_Face_Q1::ajouter_contribution(const DoubleTab& transporte, Matr
                 {
                   if ( (j= elem_faces(elem1,i)) > num_face )
                     {
-                      val = visc_Q1(zone_VEF,num_face,j,elem1,dimension,nu_);
+                      val = visc_Q1(zone_VEF,zone_Cl_VEF,num_face,j,elem1,dimension,nu_);
                       for (int nc=0; nc<nb_comp; nc++)
                         {
                           for (k=tab1[num_face*nb_comp+nc]-1; k<tab1[num_face*nb_comp+nc+1]-1; k++)
@@ -403,7 +403,7 @@ void Op_Diff_VEF_Face_Q1::ajouter_contribution(const DoubleTab& transporte, Matr
         {
           if ( (j=elem_faces(elem1,i)) > num_face )
             {
-              val = visc_Q1(zone_VEF,num_face,j,elem1,dimension,nu_);
+              val = visc_Q1(zone_VEF,zone_Cl_VEF,num_face,j,elem1,dimension,nu_);
               for (int nc=0; nc<nb_comp; nc++)
                 {
                   for (k=tab1[num_face*nb_comp+nc]-1; k<tab1[num_face*nb_comp+nc+1]-1; k++)
@@ -429,7 +429,7 @@ void Op_Diff_VEF_Face_Q1::ajouter_contribution(const DoubleTab& transporte, Matr
                 {
                   for (int nc=0; nc<nb_comp; nc++)
                     {
-                      val = visc_Q1(zone_VEF,num_face,j,elem2,dimension,nu_);
+                      val = visc_Q1(zone_VEF,zone_Cl_VEF,num_face,j,elem2,dimension,nu_);
                       for (k=tab1[num_face*nb_comp+nc]-1; k<tab1[num_face*nb_comp+nc+1]-1; k++)
                         {
                           if (tab2[k]-1==num_face*nb_comp+nc)
@@ -448,7 +448,7 @@ void Op_Diff_VEF_Face_Q1::ajouter_contribution(const DoubleTab& transporte, Matr
                 }
               else
                 {
-                  val= visc_Q1(zone_VEF,num_face,j,elem1,dimension,nu_);
+                  val= visc_Q1(zone_VEF,zone_Cl_VEF,num_face,j,elem1,dimension,nu_);
                   for (int nc=0; nc<nb_comp; nc++)
                     {
                       for (k=tab1[num_face*nb_comp+nc]-1; k<tab1[num_face*nb_comp+nc+1]-1; k++)

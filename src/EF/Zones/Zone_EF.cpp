@@ -30,6 +30,10 @@
 #include <Hexa_EF.h>
 #include <Domaine.h>
 #include <Scatter.h>
+#include <Zone_Cl_dis_base.h>
+#include <Equation_base.h>
+#include <Milieu_base.h>
+#include <Scatter.h>
 #include <EFichier.h>
 
 #include <interface_INITGAUSS.h>
@@ -98,7 +102,7 @@ Entree& Zone_EF::readOn(Entree& is)
   return is;
 }
 
-void Zone_EF::calculer_IPhi()
+void Zone_EF::calculer_IPhi(const Zone_Cl_dis_base& zcl)
 {
   int nbelem=zone().nb_elem();
   int nb_som_elem=zone().nb_som_elem();
@@ -115,20 +119,20 @@ void Zone_EF::calculer_IPhi()
       for (int s=0; s<nb_som_elem; s++)
         {
           IPhi_(elem,s)=vol;
-          IPhi_thilde_(elem,s)=vol*porosite_elem_(elem);
+          IPhi_thilde_(elem,s)=vol*zcl.equation().milieu().porosite_elem(elem);
         }
     }
   IPhi_.echange_espace_virtuel();
   IPhi_thilde_.echange_espace_virtuel();
 }
 
-void Zone_EF::calculer_volumes_sommets()
+void Zone_EF::calculer_volumes_sommets(const Zone_Cl_dis_base& zcl)
 {
   //  volumes_sommets_thilde_.resize(nb_som());
   //Scatter::creer_tableau_distribue(zone().domaine(), Joint::SOMMET, volumes_sommets_thilde_);
 //  zone().domaine().creer_tableau_sommets(volumes_sommets_thilde_);
 
-  calculer_IPhi();
+  calculer_IPhi(zcl);
 
   // calcul de volumes_sommets_thilde
   const IntTab& les_elems=zone().les_elems() ;
@@ -205,7 +209,7 @@ void Zone_EF::calculer_volumes_sommets()
   volumes_thilde_=volumes_;
   for (int elem=0; elem<zone().nb_elem_tot(); elem++)
     {
-      volumes_thilde_(elem)=volumes_(elem)*porosite_elem_(elem);
+      volumes_thilde_(elem)=volumes_(elem)*zcl.equation().milieu().porosite_elem(elem);
     }
 }
 
@@ -801,7 +805,7 @@ void Zone_EF::modifier_pour_Cl(const Conds_lim& conds_lim)
   if (Bij_.nb_dim()==1)
     {
 
-      calculer_volumes_sommets();
+      calculer_volumes_sommets(conds_lim[0]->zone_Cl_dis());
       Cerr << "La Zone_EF a ete remplie avec succes" << finl;
 
       calculer_h_carre();

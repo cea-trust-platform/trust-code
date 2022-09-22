@@ -26,6 +26,7 @@
 #include <Dirichlet.h>
 #include <Domaine.h>
 #include <Op_VEF_Face.h>
+#include <Milieu_base.h>
 
 /*! @brief class Op_Conv_VEF_base
  *

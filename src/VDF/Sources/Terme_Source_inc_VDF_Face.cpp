@@ -83,7 +83,7 @@ void Terme_Source_inc_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& se
   const IntTab& face_voisins = zone_VDF.face_voisins();
   const IntVect& orientation = zone_VDF.orientation();
   //const DoubleTab& xv = zone_VDF.xv();
-  const DoubleVect& porosite_surf = zone_VDF.porosite_face();
+  const DoubleVect& porosite_surf = equation().milieu().porosite_face();
   const DoubleVect& volumes_entrelaces = zone_VDF.volumes_entrelaces();
   const Zone& zone = la_zone_VDF->zone();
   int nb_elem = zone.nb_elem();

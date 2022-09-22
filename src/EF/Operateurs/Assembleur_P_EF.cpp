@@ -172,8 +172,6 @@ int  Assembleur_P_EF::assembler_mat(Matrice& la_matrice,const DoubleVect& volume
 
   // int premiere_face_std=la_zone.premiere_face_std();
   // Rajout des porosites.
-  // const DoubleVect& porosite_face = la_zone.porosite_face();
-  //const DoubleVect& porosite_face = la_zone.porosite_face();
 
   la_matrice.typer("Matrice_Bloc");
   Matrice_Bloc& matrice=ref_cast(Matrice_Bloc, la_matrice.valeur());

@@ -18,6 +18,7 @@
 #include <Discretisation_base.h>
 #include <Equation_base.h>
 #include <Zone_Cl_VEF.h>
+#include <Milieu_base.h>
 #include <Periodique.h>
 #include <TRUSTTab.h>
 #include <Zone_VEF.h>
@@ -33,7 +34,7 @@ void Source_Fluide_Dilatable_VEF_Proto::associer_zones_impl(const Zone_dis& zone
 void Source_Fluide_Dilatable_VEF_Proto::associer_volume_porosite_impl(const Zone_dis& zone, DoubleVect& volumes, DoubleVect& porosites)
 {
   volumes.ref(ref_cast(Zone_VF,zone.valeur()).volumes_entrelaces());
-  porosites.ref(ref_cast(Zone_VF,zone.valeur()).porosite_face());
+  porosites.ref(la_zone_Cl->equation().milieu().porosite_face());
 }
 
 void Source_Fluide_Dilatable_VEF_Proto::ajouter_impl(const Equation_base& eqn,const DoubleVect& g,
@@ -42,7 +43,7 @@ void Source_Fluide_Dilatable_VEF_Proto::ajouter_impl(const Equation_base& eqn,co
 {
   const int nb_faces = la_zone->nb_faces(), premiere_face_interne = la_zone->premiere_face_int();
   const DoubleVect& volumes_entrelaces = la_zone->volumes_entrelaces();
-  const DoubleVect& porosite_face = la_zone->porosite_face();
+  const DoubleVect& porosite_face = la_zone_Cl->equation().milieu().porosite_face();
   const IntTab& face_voisins = la_zone->face_voisins();
   const DoubleTab& face_normales = la_zone->face_normales(), xp = la_zone->xp(), xv = la_zone->xv();
 

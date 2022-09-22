@@ -15,6 +15,7 @@
 
 #include <Op_Grad_VDF_Face_base.h>
 #include <Zone_Cl_VDF.h>
+#include <Milieu_base.h>
 
 Implemente_base(Op_Grad_VDF_Face_base,"Op_Grad_VDF_Face_base",Operateur_Grad_base);
 
@@ -27,7 +28,7 @@ void Op_Grad_VDF_Face_base::associer(const Zone_dis& zone_dis, const Zone_Cl_dis
   const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur());
   la_zone_vdf = zvdf;
   la_zcl_vdf = zclvdf;
-  porosite_surf.ref(zvdf.porosite_face());
+  porosite_surf.ref(la_zcl_vdf->equation().milieu().porosite_face());
   volume_entrelaces.ref(zvdf.volumes_entrelaces());
   face_voisins.ref(zvdf.face_voisins());
   orientation.ref(zvdf.orientation());

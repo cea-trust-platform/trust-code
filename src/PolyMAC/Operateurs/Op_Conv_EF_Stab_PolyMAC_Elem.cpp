@@ -95,7 +95,7 @@ double Op_Conv_EF_Stab_PolyMAC_Elem::calculer_dt_stab() const
 {
   double dt = 1e10;
   const Zone_Poly_base& zone = la_zone_poly_.valeur();
-  const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face(), &ve = zone.volumes(), &pe = zone.porosite_elem();
+  const DoubleVect& fs = zone.face_surfaces(), &pf = equation().milieu().porosite_face(), &ve = zone.volumes(), &pe = equation().milieu().porosite_elem();
   const DoubleTab& vit = vitesse_->valeurs(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
   const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
@@ -155,7 +155,7 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::ajouter_blocs(matrices_t mats, DoubleTab& sec
 {
   const Zone_Poly_base& zone = la_zone_poly_.valeur();
   const IntTab& f_e = zone.face_voisins(), &fcl = ref_cast(Champ_Elem_PolyMAC, equation().inconnue().valeur()).fcl(), &fcl_v = ref_cast(Champ_Face_PolyMAC, vitesse_.valeur()).fcl();
-  const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face();
+  const DoubleVect& fs = zone.face_surfaces(), &pf = equation().milieu().porosite_face();
   const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco->valeur() : equation().champ_convecte();
   const std::string& nom_cc = cc.le_nom().getString();
   const DoubleTab& vit = vitesse_->valeurs(), &vcc = semi_impl.count(nom_cc) ? semi_impl.at(nom_cc) : cc.valeurs(), bcc = cc.valeur_aux_bords();
@@ -230,7 +230,7 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::mettre_a_jour(double temps)
   const Zone_Poly_base& zone = la_zone_poly_.valeur();
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
   const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().champ_convecte();
-  const DoubleVect& pf = zone.porosite_face(), &pe = zone.porosite_elem(), &fs = zone.face_surfaces(), &ve = zone.volumes();
+  const DoubleVect& pf = equation().milieu().porosite_face(), &pe = equation().milieu().porosite_elem(), &fs = zone.face_surfaces(), &ve = zone.volumes();
   const DoubleTab& vit = vitesse_->valeurs(), &vcc = cc.valeurs(), bcc = cc.valeur_aux_bords(), &xv = zone.xv(), &xp = zone.xp();
   DoubleTab balp;
   if (vd_phases_.size()) balp = equation().inconnue().valeur().valeur_aux_bords();

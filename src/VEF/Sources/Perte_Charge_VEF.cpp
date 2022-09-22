@@ -110,7 +110,7 @@ DoubleTab& Perte_Charge_VEF::ajouter(DoubleTab& resu) const
           double volume=sous_zone?
                         ssz.volumes_entrelaces(face) :
                         zvef.volumes_entrelaces(la_face);
-          volume*=zvef.porosite_face(la_face);
+          volume*=equation().milieu().porosite_face(la_face);
 
           // Calcul du resultat final (ouf)
           double coeff_ortho,coeff_long,u_l;
@@ -215,7 +215,7 @@ void Perte_Charge_VEF::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& m
       double volume=sous_zone?
                     ssz.volumes_entrelaces(face) :
                     zvef.volumes_entrelaces(la_face);
-      volume*=zvef.porosite_face(la_face);
+      volume*=equation().milieu().porosite_face(la_face);
 
       // Calcul du resultat final (ouf)
       double coeff_ortho,coeff_long,u_l;

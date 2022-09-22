@@ -404,7 +404,7 @@ DoubleTab& Terme_Source_Canal_RANS_LES_VEF_Face::ajouter(DoubleTab& resu) const
 {
   const Zone_VEF& zone_VEF = la_zone_VEF.valeur();
   int nb_faces = zone_VEF.nb_faces();
-  const DoubleVect& porosite_surf = zone_VEF.porosite_face();
+  const DoubleVect& porosite_surf = equation().milieu().porosite_face();
   const DoubleVect& volumes_entrelaces = zone_VEF.volumes_entrelaces();
   const double tps = mon_equation->schema_temps().temps_courant();
   const double dt = mon_equation->schema_temps().pas_de_temps();

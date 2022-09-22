@@ -82,7 +82,7 @@ void DP_Impose_PolyMAC_Face::remplir_num_faces(Entree& s)
 void DP_Impose_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Zone_Poly_base& zone_poly = ref_cast(Zone_Poly_base,equation().zone_dis().valeur());
-  const DoubleVect& pf = zone_poly.porosite_face(), &fs = zone_poly.face_surfaces();
+  const DoubleVect& pf = equation().milieu().porosite_face(), &fs = zone_poly.face_surfaces();
   const DoubleTab& vit = equation().inconnue().valeurs();
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;

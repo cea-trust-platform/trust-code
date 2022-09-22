@@ -238,7 +238,7 @@ double Op_Diff_VEFP1NCP1B_Face::calculer_dt_stab() const
   const int nb_faces_tot=zone_VEF.nb_faces_tot();
 
   const DoubleVect& volumes_entrelaces=zone_VEF.volumes_entrelaces();
-  const DoubleVect& porosite_elem = zone_VEF.porosite_elem();
+  const DoubleVect& porosite_elem = equation().milieu().porosite_elem();
 
   DoubleTab coeffOperateur(nb_faces_tot);
   coeffOperateur=0.;
@@ -982,7 +982,7 @@ calculer_laplacien_som(const DoubleTab& nu_som) const
   DoubleVect& coeff=laplacien_p1_.get_set_coeff();
 
   const DoubleTab& inconnue1=equation().inconnue().valeurs();
-  const DoubleVect& porosite_face=zone_VEF.porosite_face();
+  const DoubleVect& porosite_face=equation().milieu().porosite_face();
 
   assert(laplacien_p1_.nb_lignes()>2);
 
@@ -1004,8 +1004,8 @@ ajouter(const DoubleTab& inconnue, DoubleTab& resu) const
 
   //Pour tenir compte de la porosite
   const int marq = phi_psi_diffuse(equation());
-  const DoubleVect& porosite_face = zone_VEF.porosite_face();
-  const DoubleVect& porosite_elem = zone_VEF.porosite_elem();
+  const DoubleVect& porosite_face = equation().milieu().porosite_face();
+  const DoubleVect& porosite_elem = equation().milieu().porosite_elem();
 
   DoubleTab nu,nu_p1,nu_pA;
   modif_par_porosite_si_flag(nu_,nu,!marq,porosite_elem);
@@ -2181,8 +2181,8 @@ ajouter_contribution(const DoubleTab& inconnue,Matrice_Morse& matrice) const
   const int marq=phi_psi_diffuse(equation());
 
   //Lignes pour tenir compte de la porosite
-  const DoubleVect& porosite_elem=zone_VEF.porosite_elem();
-  DoubleVect porosite_face(zone_VEF.porosite_face());
+  const DoubleVect& porosite_elem=equation().milieu().porosite_elem();
+  DoubleVect porosite_face(equation().milieu().porosite_face());
   if (!marq) porosite_face=1.;
 
   //Lignes pour tenir compte de la diffusivite
@@ -3228,8 +3228,8 @@ void Op_Diff_VEFP1NCP1B_Face::test() const
   const int marq=phi_psi_diffuse(equation());
 
   //Lignes pour tenir compte de la porosite
-  const DoubleVect& poroE=zone_VEF.porosite_elem();
-  DoubleVect poroF(zone_VEF.porosite_face());
+  const DoubleVect& poroE=equation().milieu().porosite_elem();
+  DoubleVect poroF(equation().milieu().porosite_face());
   if (!marq) poroF=1.;
 
   //Lignes pour tenir compte de la diffusivite

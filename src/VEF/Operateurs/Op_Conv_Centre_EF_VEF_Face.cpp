@@ -55,7 +55,7 @@ DoubleTab& Op_Conv_Centre_EF_VEF_Face::ajouter(const DoubleTab& transporte,
   const Zone_VEF& zone_VEF = la_zone_vef.valeur();
   const Champ_Inc_base& la_vitesse=vitesse_.valeur();
 
-  const DoubleVect& porosite_face = zone_VEF.porosite_face();
+  const DoubleVect& porosite_face = equation().milieu().porosite_face();
 
   const IntTab& elem_faces = zone_VEF.elem_faces();
   const DoubleTab& face_normales = zone_VEF.face_normales();

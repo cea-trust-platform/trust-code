@@ -418,7 +418,7 @@ DoubleTab& Op_Conv_DI_L2_VEF_Face::ajouter(const DoubleTab& transporte,
   const int nb_elem_tot = zone_VEF.nb_elem_tot();
   const IntVect& rang_elem_non_std = zone_VEF.rang_elem_non_std();
   const IntTab& face_voisins = zone_VEF.face_voisins();
-  const DoubleVect& porosite_face = zone_VEF.porosite_face();
+  const DoubleVect& porosite_face = equation().milieu().porosite_face();
 
   /*  const IntTab& face_voisins = zone_VEF.face_voisins();
       int jjj;

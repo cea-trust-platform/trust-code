@@ -115,7 +115,7 @@ DoubleTab& Op_Conv_EF_VEF_P1NC::ajouter(const DoubleTab& transporte_2,
   const IntTab& elem_faces = zone_VEF.elem_faces();
   const IntTab& face_voisins = zone_VEF.face_voisins();
   const DoubleTab& face_normales=zone_VEF.face_normales();
-  const DoubleVect& porosite_face = zone_VEF.porosite_face();
+  const DoubleVect& porosite_face = equation().milieu().porosite_face();
   const int nb_elem_tot = zone_VEF.nb_elem_tot();
   const int nb_faces_elem=elem_faces.dimension(1);
 

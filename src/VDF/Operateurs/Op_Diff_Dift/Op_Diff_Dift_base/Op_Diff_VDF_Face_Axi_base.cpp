@@ -31,7 +31,7 @@ void Op_Diff_VDF_Face_Axi_base::associer(const Zone_dis& zone_dis, const Zone_Cl
   surface.ref(zvdf.face_surfaces());
   volumes_entrelaces.ref(zvdf.volumes_entrelaces());
   orientation.ref(zvdf.orientation());
-  porosite.ref(zvdf.porosite_face());
+  porosite.ref(la_zcl_vdf->equation().milieu().porosite_face());
   xp.ref(zvdf.xp());
   xv.ref(zvdf.xv());
   Qdm.ref(zvdf.Qdm());

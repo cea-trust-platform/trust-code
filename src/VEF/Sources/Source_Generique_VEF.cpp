@@ -19,6 +19,8 @@
 #include <Zone_Cl_dis.h>
 #include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
+#include <Equation_base.h>
+#include <Milieu_base.h>
 
 Implemente_instanciable(Source_Generique_VEF,"Source_Generique_VEF_P1NC",Source_Generique_base);
 
@@ -43,7 +45,7 @@ DoubleTab& Source_Generique_VEF::ajouter(DoubleTab& resu) const
   int nb_faces = la_zone_VEF->nb_faces();
   const DoubleVect& vol_entrelaces = la_zone_VEF->volumes_entrelaces();
   const DoubleVect& vol_entrelaces_Cl = la_zcl_VEF->volumes_entrelaces_Cl();
-  const DoubleVect& poro_face = la_zone_VEF->porosite_face();
+  const DoubleVect& poro_face = equation().milieu().porosite_face();
   int nb_front_cl = la_zone_VEF->nb_front_Cl();
   int premiere_face_interne = la_zone_VEF->premiere_face_int();
   int num_face;

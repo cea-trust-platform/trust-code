@@ -14,6 +14,8 @@
 *****************************************************************************/
 
 #include <Evaluateur_Source_VEF_Face.h>
+#include <Equation_base.h>
+#include <Milieu_base.h>
 #include <Zone_VEF.h>
 
 Evaluateur_Source_VEF_Face::Evaluateur_Source_VEF_Face(const Evaluateur_Source_VEF_Face& eval)
@@ -33,6 +35,6 @@ void Evaluateur_Source_VEF_Face::completer()
   Cerr << "Evaluateur_Source_VEF_Face::completer()" << finl;
   volumes_entrelaces.ref(la_zone->volumes_entrelaces());
   volumes_entrelaces_Cl.ref(la_zone_cl->volumes_entrelaces_Cl());
-  porosite_surf.ref(la_zone->porosite_face());
+  porosite_surf.ref(la_zone_cl->equation().milieu().porosite_face());
   face_voisins.ref(la_zone->face_voisins());
 }

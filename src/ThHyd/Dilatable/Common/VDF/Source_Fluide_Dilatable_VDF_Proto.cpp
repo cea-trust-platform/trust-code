@@ -15,6 +15,8 @@
 
 #include <Source_Fluide_Dilatable_VDF_Proto.h>
 #include <Dirichlet_homogene.h>
+#include <Equation_base.h>
+#include <Milieu_base.h>
 #include <Zone_Cl_VDF.h>
 #include <Zone_Cl_dis.h>
 #include <Dirichlet.h>
@@ -30,7 +32,7 @@ void Source_Fluide_Dilatable_VDF_Proto::associer_zones_impl(const Zone_dis& zone
 void Source_Fluide_Dilatable_VDF_Proto::associer_volume_porosite_impl(const Zone_dis& zone, DoubleVect& volumes, DoubleVect& porosites)
 {
   volumes.ref(ref_cast(Zone_VF,zone.valeur()).volumes());
-  porosites.ref(ref_cast(Zone_VF,zone.valeur()).porosite_elem());
+  porosites.ref(la_zone_Cl->equation().milieu().porosite_elem());
 }
 
 void Source_Fluide_Dilatable_VDF_Proto::ajouter_impl(const DoubleVect& g,const double rho_m,
@@ -39,7 +41,7 @@ void Source_Fluide_Dilatable_VDF_Proto::ajouter_impl(const DoubleVect& g,const d
 
   const int nb_faces = la_zone->nb_faces(), premiere_face_interne = la_zone->premiere_face_int();
   const IntVect& orientation = la_zone->orientation();
-  const DoubleVect& volumes_entrelaces = la_zone->volumes_entrelaces(), porosite_surf=la_zone->porosite_face();
+  const DoubleVect& volumes_entrelaces = la_zone->volumes_entrelaces(), porosite_surf=la_zone_Cl->equation().milieu().porosite_face();
 
   for (int num_cl=0 ; num_cl<la_zone->nb_front_Cl() ; num_cl++)
     {

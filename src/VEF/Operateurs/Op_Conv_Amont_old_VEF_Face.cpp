@@ -14,9 +14,10 @@
 *****************************************************************************/
 
 #include <Op_Conv_Amont_old_VEF_Face.h>
-#include <Hexaedre_VEF.h>
-#include <Periodique.h>
 #include <Neumann_sortie_libre.h>
+#include <Hexaedre_VEF.h>
+#include <Milieu_base.h>
+#include <Periodique.h>
 
 Implemente_instanciable(Op_Conv_Amont_old_VEF_Face,"Op_Conv_Amont_old_VEF_P1NC",Op_Conv_VEF_base);
 
@@ -115,7 +116,7 @@ DoubleTab& Op_Conv_Amont_old_VEF_Face::ajouter(const DoubleTab& transporte,
   const IntTab& elem_faces = zone_VEF.elem_faces();
   const DoubleTab& face_normales = zone_VEF.face_normales();
   const DoubleTab& facette_normales = zone_VEF.facette_normales();
-  const DoubleVect& porosite_face = zone_VEF.porosite_face();
+  const DoubleVect& porosite_face = equation().milieu().porosite_face();
   const Zone& zone = zone_VEF.zone();
   const Elem_VEF& type_elem=zone_VEF.type_elem();
   const int nfa7 = type_elem.nb_facette();
@@ -404,7 +405,7 @@ void Op_Conv_Amont_old_VEF_Face::ajouter_contribution(const DoubleTab& transport
   const int nfa7 = type_elem.nb_facette();
   const int nb_elem_tot = zone_VEF.nb_elem_tot();
   const IntVect& rang_elem_non_std = zone_VEF.rang_elem_non_std();
-  const DoubleVect& porosite_face = zone_VEF.porosite_face();
+  const DoubleVect& porosite_face = equation().milieu().porosite_face();
   const DoubleTab& normales_facettes_Cl = zone_Cl_VEF.normales_facettes_Cl();
   int nfac = zone.nb_faces_elem(), nsom = zone.nb_som_elem(), nb_som_facette = zone.type_elem().nb_som_face();
 

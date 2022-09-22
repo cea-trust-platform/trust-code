@@ -114,7 +114,7 @@ void Op_Grad_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur()).fcl();
   const DoubleTab& vfd = zone.volumes_entrelaces_dir(), &press = semi_impl.count("pression") ? semi_impl.at("pression") : ref_cast(Navier_Stokes_std, equation()).pression().valeurs(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
-  const DoubleVect& fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces(), &pe = zone.porosite_elem();
+  const DoubleVect& fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces(), &pe = equation().milieu().porosite_elem();
   int i, j, e, eb, f, fb, ne_tot = zone.nb_elem_tot(), n, N = secmem.line_size(), m, M = press.line_size();
 
   Matrice_Morse *mat = !semi_impl.count("pression") && matrices.count("pression") ? matrices.at("pression") : NULL;

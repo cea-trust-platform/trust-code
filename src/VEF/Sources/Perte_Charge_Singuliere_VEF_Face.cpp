@@ -84,7 +84,7 @@ DoubleTab& Perte_Charge_Singuliere_VEF_Face::ajouter(DoubleTab& resu) const
 {
   const Zone_VEF& zone_VEF = la_zone_VEF.valeur();
   //const DoubleVect& volumes_entrelaces = zone_VEF.volumes_entrelaces();
-  const DoubleVect& porosite_surf = zone_VEF.porosite_face();
+  const DoubleVect& porosite_surf = equation().milieu().porosite_face();
   const DoubleTab& vit = la_vitesse->valeurs();
 
   int nb_faces = num_faces.size();
@@ -119,7 +119,7 @@ DoubleTab& Perte_Charge_Singuliere_VEF_Face::calculer(DoubleTab& resu) const
 void Perte_Charge_Singuliere_VEF_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   const Zone_VEF& zone_VEF = la_zone_VEF.valeur();
-  const DoubleVect& porosite_surf = zone_VEF.porosite_face();
+  const DoubleVect& porosite_surf = equation().milieu().porosite_face();
   const DoubleTab& vit = la_vitesse->valeurs();
 
   int nb_faces = num_faces.size();

@@ -14,9 +14,10 @@
 *****************************************************************************/
 
 #include <Assembleur_P_VDF_Q4.h>
-#include <Zone_VDF.h>
-#include <Zone_Cl_VDF.h>
 #include <Matrice_Bloc.h>
+#include <Milieu_base.h>
+#include <Zone_Cl_VDF.h>
+#include <Zone_VDF.h>
 
 Implemente_instanciable(Assembleur_P_VDF_Q4,"Assembleur_P_VDF_Q4",Assembleur_base);
 
@@ -40,7 +41,7 @@ int Assembleur_P_VDF_Q4::assembler(Matrice& la_matrice)
   int face, som0,som1;
   int nbfaces = la_zone_VDF->nb_faces(),  nbsom = la_zone_VDF->nb_som();
   const DoubleVect& volumes_entrelaces = la_zone_VDF->volumes_entrelaces();
-  const DoubleVect& porosite_face = la_zone_VDF->porosite_face();
+  const DoubleVect& porosite_face = eqn_->milieu().porosite_face();
   const DoubleTab& CoordSom = la_zone_VDF->zone().domaine().coord_sommets();
   double surf,vol,por,val, r;
   int ori, elem0,elem1;

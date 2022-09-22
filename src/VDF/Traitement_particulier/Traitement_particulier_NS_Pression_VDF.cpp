@@ -14,10 +14,11 @@
 *****************************************************************************/
 
 #include <Traitement_particulier_NS_Pression_VDF.h>
-#include <Zone_Cl_VDF.h>
 #include <Navier_Stokes_std.h>
-#include <Zone_VDF.h>
+#include <Milieu_base.h>
+#include <Zone_Cl_VDF.h>
 #include <TRUSTTrav.h>
+#include <Zone_VDF.h>
 
 Implemente_instanciable_sans_constructeur(Traitement_particulier_NS_Pression_VDF,"Traitement_particulier_NS_Pression_VDF",Traitement_particulier_NS_Pression);
 
@@ -149,7 +150,7 @@ void Traitement_particulier_NS_Pression_VDF::post_traitement_particulier()
 void Traitement_particulier_NS_Pression_VDF::post_traitement_particulier_calcul_pression()
 {
   const Zone_VDF& zvdf=ref_cast(Zone_VDF, mon_equation->zone_dis().valeur());
-  const DoubleVect& porosite_face = zvdf.porosite_face();
+  const DoubleVect& porosite_face = mon_equation->milieu().porosite_face();
   int i;
   int nb_face = zvdf.nb_faces();
   Champ_Inc gradient_P;

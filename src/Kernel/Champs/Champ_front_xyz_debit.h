@@ -17,10 +17,10 @@
 #ifndef Champ_front_xyz_debit_included
 #define Champ_front_xyz_debit_included
 
+#include <Ref_Champ_Inc_base.h>
 #include <Champ_front_normal.h>
-#include <Parser_U.h>
-
 #include <Champ_front.h>
+#include <Parser_U.h>
 #include <Zone_VF.h>
 
 /*! @brief class Champ_front_xyz_debit
@@ -31,8 +31,19 @@
 class Champ_front_xyz_debit : public Champ_front_normal
 {
   Declare_instanciable(Champ_front_xyz_debit);
+public:
+  int initialiser(double tps, const Champ_Inc_base& inco) override;
+  virtual void update_coeff(double temps) { };
+  void mettre_a_jour(double temps) override;
+  void associer_fr_dis_base(const Frontiere_dis_base& fr) override;
+  void set_temps_defaut(double temps);
+  void fixer_nb_valeurs_temporelles(int nb_cases) override;
+  void changer_temps_futur(double temps,int i) override;
+  int avancer(double temps) override;
+  int reculer(double temps) override;
 
 protected:
+  REF(Champ_Inc_base) ch_inco_;
   Champ_front velocity_profil_;
   Champ_front flow_rate_;
   // in TRUST the normal vector to a surface is stocked weighted by the area of the surface via "face_normales"
@@ -47,18 +58,6 @@ protected:
   virtual void initialiser_coefficient(const Champ_Inc_base& inco, double tps);
   void calculer_normales_et_integrale(const Front_VF& le_bord, DoubleTab& velocity_user);
   void calculer_champ_vitesse(const Front_VF& le_bord, DoubleTab& velocity_field, DoubleTab& velocity_user, double temps);
-
-public:
-  int initialiser(double tps, const Champ_Inc_base& inco) override;
-  virtual void update_coeff(double temps) { };
-  void mettre_a_jour(double temps) override;
-  void associer_fr_dis_base(const Frontiere_dis_base& fr) override;
-  void set_temps_defaut(double temps);
-  void fixer_nb_valeurs_temporelles(int nb_cases) override;
-  void changer_temps_futur(double temps,int i) override;
-  int avancer(double temps) override;
-  int reculer(double temps) override;
-
 };
 
 #endif

@@ -157,7 +157,7 @@ DoubleTab& Terme_Source_Qdm_lambdaup_VEF_Face::ajouter(DoubleTab& resu) const
   static double rapport_old=1.;
   const Zone_VEF& zone_VEF = la_zone_VEF.valeur();
   const DoubleVect& volumes_entrelaces=zone_VEF.volumes_entrelaces();
-  const DoubleVect& porosite_face = zone_VEF.porosite_face();
+  const DoubleVect& porosite_face = equation().milieu().porosite_face();
   const DoubleTab& vitesse=la_vitesse.valeur().valeurs();
   DoubleTab ubar(vitesse);
   DoubleTab uprime(vitesse);

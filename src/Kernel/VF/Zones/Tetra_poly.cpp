@@ -13,9 +13,11 @@
 *
 *****************************************************************************/
 
+#include <Zone_Poly_base.h>
+#include <Equation_base.h>
+#include <Milieu_base.h>
 #include <Tetra_poly.h>
 #include <Domaine.h>
-#include <Zone_Poly_base.h>
 
 Implemente_instanciable_sans_constructeur(Tetra_poly,"Tetra_poly",Elem_poly_base);
 
@@ -115,8 +117,7 @@ void Tetra_poly::calcul_vc(const ArrOfInt& Face,ArrOfDouble& vc,
                            const Champ_Inc_base& vitesse,int type_cl) const
 {
   int comp;
-  const Zone_Poly_base& zone_poly = ref_cast(Zone_Poly_base,vitesse.zone_dis_base());
-  const DoubleVect& porosite_face = zone_poly.porosite_face();
+  const DoubleVect& porosite_face = vitesse.equation().milieu().porosite_face();
   switch(type_cl)
     {
 

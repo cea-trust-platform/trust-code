@@ -287,7 +287,7 @@ ajouter_elem(const DoubleTab& pre,
   assert(zone_VEF.get_alphaE());
   const Zone& zone = zone_VEF.zone();
   const DoubleTab& face_normales = zone_VEF.face_normales();
-  const DoubleVect& porosite_face=zone_VEF.porosite_face();
+  const DoubleVect& porosite_face=equation().milieu().porosite_face();
   const IntTab& elem_faces=zone_VEF.elem_faces();
   const IntTab& face_voisins=zone_VEF.face_voisins();
   int nfe=zone.nb_faces_elem();
@@ -356,7 +356,7 @@ ajouter_som(const DoubleTab& pre,
   const Zone& zone = zone_VEF.zone();
   const Domaine& dom=zone.domaine();
   const DoubleTab& face_normales = zone_VEF.face_normales();
-  const DoubleVect& porosite_face=zone_VEF.porosite_face();
+  const DoubleVect& porosite_face=equation().milieu().porosite_face();
   const IntTab& som_elem=zone.les_elems();
   const IntTab& elem_faces=zone_VEF.elem_faces();
   const IntTab& face_voisins=zone_VEF.face_voisins();
@@ -456,7 +456,7 @@ ajouter_aretes(const DoubleTab& pre,
   const Zone& zone = zone_VEF.zone();
   //const Domaine& dom=zone.domaine();
   const DoubleTab& face_normales = zone_VEF.face_normales();
-  const DoubleVect& porosite_face=zone_VEF.porosite_face();
+  const DoubleVect& porosite_face=equation().milieu().porosite_face();
   const IntTab& som_elem=zone.les_elems();
   const IntTab& elem_faces=zone_VEF.elem_faces();
   const IntTab& face_voisins=zone_VEF.face_voisins();

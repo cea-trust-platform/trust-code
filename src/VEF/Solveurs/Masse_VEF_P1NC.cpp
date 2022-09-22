@@ -21,6 +21,7 @@
 #include <Symetrie.h>
 #include <Equation_base.h>
 #include <Matrice_Morse.h>
+#include <Milieu_base.h>
 #include <Device.h>
 
 Implemente_instanciable(Masse_VEF_P1NC,"Masse_VEF_P1NC",Solveur_Masse_base);
@@ -58,7 +59,7 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& sm) const
   const DoubleVect& volumes_entrelaces = zone_VEF.volumes_entrelaces();
   const DoubleVect& volumes_entrelaces_Cl = zone_Cl_VEF.volumes_entrelaces_Cl();
   const IntTab& face_voisins = zone_VEF.face_voisins();
-  const DoubleVect& porosite_face = zone_VEF.porosite_face();
+  const DoubleVect& porosite_face = equation().milieu().porosite_face();
   int nfa = zone_VEF.nb_faces();
   int num_std = zone_VEF.premiere_face_std();
   int num_int = zone_VEF.premiere_face_int();

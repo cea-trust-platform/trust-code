@@ -14,8 +14,11 @@
 *****************************************************************************/
 
 #include <Source_Generique_P0_Elem.h>
-#include <Zone_VF.h>
 #include <Synonyme_info.h>
+#include <Equation_base.h>
+#include <Milieu_base.h>
+#include <Zone_Cl_dis.h>
+#include <Zone_VF.h>
 
 Implemente_instanciable(Source_Generique_P0_Elem,"Source_Generique_VDF_P0_VDF",Source_Generique_base);
 Add_synonym(Source_Generique_P0_Elem, "Source_Generique_Elem_PolyMAC");
@@ -40,7 +43,7 @@ DoubleTab& Source_Generique_P0_Elem::ajouter(DoubleTab& resu) const
 
   int nb_elem = la_zone->nb_elem();
   const DoubleVect& vol = la_zone->volumes();
-  const DoubleVect& poro_vol = la_zone->porosite_elem();
+  const DoubleVect& poro_vol = la_zone_cl->valeur().equation().milieu().porosite_elem();
 
   for (int elem = 0; elem<nb_elem; elem++)
     resu(elem) += valeurs_calc(elem)*vol(elem)*poro_vol(elem);
@@ -53,6 +56,7 @@ void Source_Generique_P0_Elem::associer_zones(const Zone_dis& zone_dis,
                                               const Zone_Cl_dis& zcl_dis)
 {
   la_zone = ref_cast(Zone_VF,zone_dis.valeur());
+  la_zone_cl = zcl_dis;
 }
 
 Nom Source_Generique_P0_Elem::localisation_source()

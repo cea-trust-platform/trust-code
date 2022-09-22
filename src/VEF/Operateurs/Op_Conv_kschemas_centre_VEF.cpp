@@ -195,7 +195,7 @@ DoubleTab& Op_Conv_kschemas_centre_VEF::ajouter(const DoubleTab& transporte,
   const DoubleTab& normales_facettes_Cl = zone_Cl_VEF.normales_facettes_Cl();
   //  const DoubleVect& volumes_entrelaces_Cl = zone_Cl_VEF.volumes_entrelaces_Cl();
 
-  const DoubleVect& porosite_face = zone_VEF.porosite_face();
+  const DoubleVect& porosite_face = equation().milieu().porosite_face();
   int nfac = zone.nb_faces_elem();
   int nsom = zone.nb_som_elem();
   int nb_som_facette = zone.type_elem().nb_som_face();

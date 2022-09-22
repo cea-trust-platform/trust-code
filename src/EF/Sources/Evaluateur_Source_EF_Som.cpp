@@ -28,5 +28,4 @@ void Evaluateur_Source_EF_Som::completer()
 {
   Cerr << "Evaluateur_Source_EF_Som::completer()" << finl;
   //volumes_.ref(la_zone->volumes());
-  //porosite_surf.ref(la_zone->porosite_face());
 }

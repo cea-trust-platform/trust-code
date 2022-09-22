@@ -14,8 +14,9 @@
 *****************************************************************************/
 
 #include <Traitement_particulier_NS_Pression_VEF.h>
-#include <Zone_Cl_VEF.h>
 #include <Assembleur_base.h>
+#include <Milieu_base.h>
+#include <Zone_Cl_VEF.h>
 
 Implemente_instanciable_sans_constructeur(Traitement_particulier_NS_Pression_VEF,"Traitement_particulier_NS_Pression_VEF",Traitement_particulier_NS_Pression);
 
@@ -148,7 +149,7 @@ void Traitement_particulier_NS_Pression_VEF::post_traitement_particulier()
 void Traitement_particulier_NS_Pression_VEF::post_traitement_particulier_calcul_pression()
 {
   const Zone_VEF& zvef=ref_cast(Zone_VEF, mon_equation->zone_dis().valeur());
-  const DoubleVect& porosite_face = zvef.porosite_face();
+  const DoubleVect& porosite_face = mon_equation->milieu().porosite_face();
   int i,comp;
   int nb_face = zvef.nb_faces();
   Operateur_Div divergence = mon_equation->operateur_divergence();
@@ -198,7 +199,6 @@ void Traitement_particulier_NS_Pression_VEF::post_traitement_particulier_calcul_
   //  Cerr << "la_pression " << mon_equation->pression().valeurs() << finl;
   //   Cerr << "ch_p.valeurs() " << ch_p.valeurs() << finl;
   // const Zone_VEF& zvef=ref_cast(Zone_VEF, mon_equation->zone_dis().valeur());
-  //   const DoubleVect& porosite_face = zvef.porosite_face();
   //   int i,comp;
   //   int nb_face = zvef.nb_faces();
   //   Champ_Inc la_pression = mon_equation->pression();

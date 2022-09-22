@@ -13,11 +13,13 @@
 *
 *****************************************************************************/
 
+#include <Dirichlet_homogene.h>
 #include <Masse_VDF_Face.h>
+#include <Equation_base.h>
+#include <Milieu_base.h>
 #include <Zone_Cl_VDF.h>
 #include <Zone_VDF.h>
 #include <Dirichlet.h>
-#include <Dirichlet_homogene.h>
 #include <Symetrie.h>
 
 Implemente_instanciable(Masse_VDF_Face,"Masse_VDF_Face",Masse_VDF_base);
@@ -52,7 +54,7 @@ DoubleTab& Masse_VDF_Face::appliquer_impl(DoubleTab& sm) const
   assert(la_zone_VDF.non_nul());
   assert(la_zone_Cl_VDF.non_nul());
   const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
-  const DoubleVect& porosite_face = zone_VDF.porosite_face();
+  const DoubleVect& porosite_face = equation().milieu().porosite_face();
   const DoubleVect& volumes_entrelaces = zone_VDF.volumes_entrelaces();
   const int nb_faces = zone_VDF.nb_faces(), N = sm.line_size();
 

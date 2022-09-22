@@ -61,7 +61,7 @@ void Masse_PolyMAC_Elem::preparer_calcul()
 DoubleTab& Masse_PolyMAC_Elem::appliquer_impl(DoubleTab& sm) const
 {
   const Zone_PolyMAC& zone = la_zone_PolyMAC.valeur();
-  const DoubleVect& ve = zone.volumes(), &pe = zone.porosite_elem();
+  const DoubleVect& ve = zone.volumes(), &pe = equation().milieu().porosite_elem();
   const DoubleTab& der = equation().champ_conserve().derivees().at(equation().inconnue().le_nom().getString());
 
   int e, ne_tot = zone.nb_elem_tot(), n, N = sm.line_size();
@@ -109,7 +109,7 @@ void Masse_PolyMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, d
   const Conds_lim& cls = equation().zone_Cl_dis()->les_conditions_limites();
   const IntTab& fcl = ref_cast(Champ_Elem_PolyMAC, equation().inconnue().valeur()).fcl(), &f_e = zone.face_voisins();
   const DoubleTab& present = cc.valeurs(), &passe = cc.passe();
-  const DoubleVect& ve = zone.volumes(), &pe = zone.porosite_elem(), &fs = zone.face_surfaces();
+  const DoubleVect& ve = zone.volumes(), &pe = equation().milieu().porosite_elem(), &fs = zone.face_surfaces();
   int e, f, n, N = cc.valeurs().line_size(), ne = zone.nb_elem();
 
   /* second membre : avec ou sans resolution en increments*/

@@ -14,9 +14,10 @@
 *****************************************************************************/
 
 #include <Op_Conv_AmontNew_VEF_Face.h>
-#include <Hexaedre_VEF.h>
-#include <Periodique.h>
 #include <Neumann_sortie_libre.h>
+#include <Hexaedre_VEF.h>
+#include <Milieu_base.h>
+#include <Periodique.h>
 
 Implemente_base(Op_Conv_AmontNew_VEF_Face,"Op_Conv_AmontNew_VEF_P1NC",Op_Conv_VEF_base);
 
@@ -85,7 +86,7 @@ DoubleTab& Op_Conv_AmontNew_VEF_Face::ajouter(const DoubleTab& transporte, Doubl
   const IntTab& face_voisins = zone_VEF.face_voisins();
   const DoubleTab& face_normales = zone_VEF.face_normales();
   const DoubleTab& facette_normales = zone_VEF.facette_normales();
-  const DoubleVect& porosite_face = zone_VEF.porosite_face();
+  const DoubleVect& porosite_face = equation().milieu().porosite_face();
   const Zone& zone = zone_VEF.zone();
   const Elem_VEF& type_elem=zone_VEF.type_elem();
   const int nfa7 = type_elem.nb_facette();

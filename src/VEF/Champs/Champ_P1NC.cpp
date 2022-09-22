@@ -978,7 +978,7 @@ DoubleTab& Champ_P1NC::calcul_duidxj_paroi(DoubleTab& gij, const DoubleTab& nu, 
   const DoubleTab& face_normale = zone_VEF.face_normales();
   const IntTab& face_voisins = zone_VEF.face_voisins();
 
-  const DoubleVect& porosite_face = zone_VEF.porosite_face();
+  const DoubleVect& porosite_face = zone_Cl_VEF.equation().milieu().porosite_face();
 
   int i,j,fac,num1;
 

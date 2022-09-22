@@ -21,7 +21,7 @@
 #include <Champ_front_instationnaire_base.h>
 #include <Champ_front_var_instationnaire.h>
 #include <Matrice_Bloc.h>
-
+#include <Milieu_base.h>
 #include <Scatter.h>
 
 Implemente_instanciable(Assembleur_P_VEF,"Assembleur_P_VEF",Assembleur_base);
@@ -100,7 +100,7 @@ void Assembleur_P_VEF::calculer_inv_volume(DoubleTab& inv_volumes_entrelaces, co
     }
   else
     {
-      const DoubleVect& porosite_face=la_zone_VEF->porosite_face();
+      const DoubleVect& porosite_face=equation().milieu().porosite_face();
       for (int i=0; i<taille; i++)
         for (int comp=0; comp<Objet_U::dimension; comp++)
           inv_volumes_entrelaces(i,comp)=1./volumes_entrelaces(i)*porosite_face(i);
@@ -155,7 +155,6 @@ int Assembleur_P_VEF::remplir(Matrice& la_matrice, const DoubleTab& inverse_quan
 
   // int premiere_face_std=la_zone.premiere_face_std();
   // Rajout des porosites.
-  //const DoubleVect& porosite_face = la_zone.porosite_face();
 
   la_matrice.typer("Matrice_Bloc"); // En fait Matrice_Bloc_Sym ?
   Matrice_Bloc& matrice=ref_cast(Matrice_Bloc, la_matrice.valeur());

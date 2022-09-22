@@ -50,7 +50,7 @@ DoubleTab& Terme_Boussinesq_VEF_Face::ajouter(DoubleTab& resu) const
   const DoubleTab& face_normales = zone_VEF.face_normales();
   const DoubleTab& xp = zone_VEF.xp();
   const DoubleTab& xv = zone_VEF.xv();
-  const DoubleVect& porosite_surf = zone_VEF.porosite_face();
+  const DoubleVect& porosite_surf = equation().milieu().porosite_face();
   const DoubleTab& param = equation_scalaire().inconnue().valeurs();
   const DoubleTab& beta_valeurs = beta().valeur().valeurs();
   const DoubleVect& g = gravite().valeurs();

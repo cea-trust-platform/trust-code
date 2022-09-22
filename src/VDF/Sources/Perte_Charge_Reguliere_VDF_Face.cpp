@@ -139,7 +139,7 @@ DoubleTab& Perte_Charge_Reguliere_VDF_Face::ajouter_(const DoubleTab& inco,Doubl
   const IntTab& face_voisins = zone_VDF.face_voisins();
   const DoubleVect& volumes_entrelaces = zone_VDF.volumes_entrelaces();
   const IntTab& elem_faces = zone_VDF.elem_faces();
-  const DoubleVect& porosite_surf = zone_VDF.porosite_face();
+  const DoubleVect& porosite_surf = equation().milieu().porosite_face();
   const DoubleTab& vit = la_vitesse->valeurs();
   int ndeb_faces_int = zone_VDF.premiere_face_int();
   // on prend nu et non mu

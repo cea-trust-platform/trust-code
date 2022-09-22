@@ -556,7 +556,7 @@ DoubleTab& Op_Conv_EF_VEF_P1NC_Stab::ajouter(const DoubleTab& transporte_2,
   const Zone_VEF& zone_VEF = la_zone_vef.valeur();
   const Champ_P1NC& la_vitesse=ref_cast( Champ_P1NC, vitesse_.valeur());
   const DoubleTab& vitesse_2=la_vitesse.valeurs();
-  const DoubleVect& porosite_face = zone_VEF.porosite_face();
+  const DoubleVect& porosite_face = equation().milieu().porosite_face();
 
   const IntTab& elem_faces = zone_VEF.elem_faces();
 
@@ -641,8 +641,8 @@ DoubleTab& Op_Conv_EF_VEF_P1NC_Stab::ajouter_partie_compressible(const DoubleTab
 
   //Pour tenir compte de la porosite
   const int marq = phi_u_transportant(equation());
-  const DoubleVect& porosite_elem = zone_VEF.porosite_elem();
-  const DoubleVect& porosite_face = zone_VEF.porosite_face();
+  const DoubleVect& porosite_elem = equation().milieu().porosite_elem();
+  const DoubleVect& porosite_face = equation().milieu().porosite_face();
 
   DoubleTab tab_vitesse(vitesse_.valeur().valeurs());
   for (int i=0; i<tab_vitesse.dimension(0); i++)
@@ -2200,7 +2200,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_contribution(const DoubleTab& transporte_
   //
   const Champ_P1NC& la_vitesse=ref_cast( Champ_P1NC, vitesse_.valeur());
   const DoubleTab& vitesse_2=la_vitesse.valeurs();
-  const DoubleVect& porosite_face = zone_VEF.porosite_face();
+  const DoubleVect& porosite_face = equation().milieu().porosite_face();
   DoubleTab transporte_;
   DoubleTab vitesse_face_;
 
@@ -2476,8 +2476,8 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_contribution_partie_compressible(const Do
 
   //Pour tenir compte de la porosite
   const int marq = phi_u_transportant(equation());
-  const DoubleVect& porosite_elem = zone_VEF.porosite_elem();
-  const DoubleVect& porosite_face = zone_VEF.porosite_face();
+  const DoubleVect& porosite_elem = equation().milieu().porosite_elem();
+  const DoubleVect& porosite_face = equation().milieu().porosite_face();
 
   DoubleTab tab_vitesse(vitesse_.valeur().valeurs());
   for (int i=0; i<tab_vitesse.dimension(0); i++)

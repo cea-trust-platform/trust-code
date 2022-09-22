@@ -18,6 +18,7 @@
 #define Source_Generique_P0_Elem_included
 
 #include <Source_Generique_base.h>
+#include <Ref_Zone_Cl_dis.h>
 #include <Ref_Zone_VF.h>
 
 /*! @brief class Source_Generique_VDF_Elem
@@ -38,6 +39,7 @@ public:
 protected:
 
   REF(Zone_VF) la_zone;
+  REF(Zone_Cl_dis) la_zone_cl;
 };
 
 #endif

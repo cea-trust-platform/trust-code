@@ -73,10 +73,9 @@ DoubleTab& Champ_Fonc_P0_base::trace(const Frontiere_dis_base& fr, DoubleTab& x,
   return Champ_implementation_P0::trace(fr, valeurs(), x,distant);
 }
 
-double Champ_Fonc_P0_base::moyenne(int ncomp) const
+double Champ_Fonc_P0_base::moyenne(const DoubleVect& porosite_elem, int ncomp) const
 {
   const Zone_VF& zvf = la_zone_VF.valeur();
-  const DoubleVect& porosite = zvf.porosite_elem();
   const DoubleVect& volumes = zvf.volumes();
   const DoubleTab& val = valeurs();
 
@@ -84,7 +83,7 @@ double Champ_Fonc_P0_base::moyenne(int ncomp) const
 
   for (int e = 0; e < zvf.nb_elem(); e++)
     {
-      const double coef = porosite(e) * volumes(e);
+      const double coef = porosite_elem(e) * volumes(e);
       moy += val(e, ncomp) * coef;
       sum_vol += coef;
     }
@@ -99,10 +98,9 @@ const Zone_dis_base& Champ_Fonc_P0_base::zone_dis_base() const
   return la_zone_VF.valeur();
 }
 
-DoubleVect Champ_Fonc_P0_base::moyenne() const
+DoubleVect Champ_Fonc_P0_base::moyenne(const DoubleVect& porosite_elem) const
 {
   const Zone_VF& zvf = la_zone_VF.valeur();
-  const DoubleVect& porosite = zvf.porosite_elem();
   const DoubleVect& volumes = zvf.volumes();
   const DoubleTab& val = valeurs();
 
@@ -113,7 +111,7 @@ DoubleVect Champ_Fonc_P0_base::moyenne() const
 
   for (int e = 0; e < zvf.nb_elem(); e++)
     {
-      const double coef = porosite(e) * volumes(e);
+      const double coef = porosite_elem(e) * volumes(e);
       for (int k = 0; k < nb_compo; k++)
         moy[k] += val(e, k) * coef;
       sum_vol += coef;

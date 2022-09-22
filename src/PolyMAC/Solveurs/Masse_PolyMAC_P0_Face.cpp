@@ -70,7 +70,7 @@ DoubleTab& Masse_PolyMAC_P0_Face::appliquer_impl(DoubleTab& sm) const
 {
   const Zone_PolyMAC_P0& zone = la_zone_PolyMAC_P0.valeur();
   const IntTab& f_e = zone.face_voisins();
-  const DoubleVect& pf = zone.porosite_face(), &pe = zone.porosite_elem(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes();
+  const DoubleVect& pf = equation().milieu().porosite_face(), &pe = equation().milieu().porosite_elem(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes();
   int i, e, f, nf_tot = zone.nb_faces_tot(), n, N = equation().inconnue().valeurs().line_size(), d, D = dimension;
   const DoubleTab *a_r = sub_type(QDM_Multiphase, equation()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.champ_conserve().passe() : NULL, &vfd = zone.volumes_entrelaces_dir();
   double fac;
@@ -129,7 +129,7 @@ void Masse_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
   const Zone_PolyMAC_P0& zone = la_zone_PolyMAC_P0;
   const Conds_lim& cls = la_Zone_Cl_PolyMAC->les_conditions_limites();
   const IntTab& f_e = zone.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur()).fcl();
-  const DoubleVect& pf = zone.porosite_face(), &pe = zone.porosite_elem(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes(), &fs = zone.face_surfaces();
+  const DoubleVect& pf = equation().milieu().porosite_face(), &pe = equation().milieu().porosite_elem(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes(), &fs = zone.face_surfaces();
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
   const DoubleTab& nf = zone.face_normales(), &rho = equation().milieu().masse_volumique().passe(),
                    *alpha = pbm ? &pbm->eq_masse.inconnue().passe() : NULL, *a_r = pbm ? &pbm->eq_masse.champ_conserve().passe() : NULL, &vfd = zone.volumes_entrelaces_dir();

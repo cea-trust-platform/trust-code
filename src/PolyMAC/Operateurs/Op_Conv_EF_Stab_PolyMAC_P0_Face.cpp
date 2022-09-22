@@ -59,8 +59,8 @@ void Op_Conv_EF_Stab_PolyMAC_P0_Face::completer()
   const Zone_Poly_base& zone = la_zone_poly_.valeur();
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 2)
     Cerr << "Op_Conv_EF_Stab_PolyMAC_P0_Face : largeur de joint insuffisante (minimum 2)!" << finl, Process::exit();
-  porosite_f.ref(zone.porosite_face());
-  porosite_e.ref(zone.porosite_elem());
+  porosite_f.ref(equation().milieu().porosite_face());
+  porosite_e.ref(equation().milieu().porosite_elem());
 }
 
 double Op_Conv_EF_Stab_PolyMAC_P0_Face::calculer_dt_stab() const
@@ -68,7 +68,7 @@ double Op_Conv_EF_Stab_PolyMAC_P0_Face::calculer_dt_stab() const
   double dt = 1e10;
   const Zone_Poly_base& zone = la_zone_poly_.valeur();
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
-  const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face(), &ve = zone.volumes(), &pe = zone.porosite_elem(), &vf = zone.volumes_entrelaces();
+  const DoubleVect& fs = zone.face_surfaces(), &pf = equation().milieu().porosite_face(), &ve = zone.volumes(), &pe = equation().milieu().porosite_elem(), &vf = zone.volumes_entrelaces();
   const DoubleTab& vit = vitesse_->valeurs(), &vfd = zone.volumes_entrelaces_dir(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
   const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins(), &fcl = ch.fcl();

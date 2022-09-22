@@ -163,7 +163,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
   const Zone_VEF& zone_VEF = ref_cast(Zone_VEF, la_zone_vef.valeur());
   const Champ_Inc_base& la_vitesse=vitesse();
   const DoubleTab& vitesse_face_absolue=la_vitesse.valeurs();
-  const DoubleVect& porosite_face = zone_VEF.porosite_face();
+  const DoubleVect& porosite_face = equation().milieu().porosite_face();
 
   int marq=phi_u_transportant(equation());
   DoubleTab transporte_face_;
@@ -287,7 +287,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
   if ((nom_elem=="Tetra_VEF")||(nom_elem=="Tri_VEF"))
     istetra=1;
 
-  const DoubleVect& porosite_elem = zone_VEF.porosite_elem();
+  const DoubleVect& porosite_elem = equation().milieu().porosite_elem();
   int ncomp_ch_transporte=(transporte_face.nb_dim() == 1?1:transporte_face.dimension(1));
 
   // Traitement particulier pour les faces de periodicite
@@ -1179,8 +1179,8 @@ void Op_Conv_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice
   const IntVect& rang_elem_non_std = zone_VEF.rang_elem_non_std();
   const IntTab& les_elems=zone.les_elems();
 
-  const DoubleVect& porosite_face = zone_VEF.porosite_face();
-  const DoubleVect& porosite_elem = zone_VEF.porosite_elem();
+  const DoubleVect& porosite_face = equation().milieu().porosite_face();
+  const DoubleVect& porosite_elem = equation().milieu().porosite_elem();
   const DoubleTab& normales_facettes_Cl = zone_Cl_VEF.normales_facettes_Cl();
 
   int nfac = zone.nb_faces_elem();
@@ -1520,7 +1520,7 @@ void  Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
   // on force a calculer un pas de temps sans "porosite"
   marq=0;
 
-  const DoubleVect& porosite_face = zone_VEF.porosite_face();
+  const DoubleVect& porosite_face = equation().milieu().porosite_face();
   const DoubleTab& vitesse_face = vitesse().valeurs();
   const IntTab& elem_faces = zone_VEF.elem_faces();
   const DoubleTab& face_normales = zone_VEF.face_normales();
@@ -1552,7 +1552,7 @@ void  Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
   Nom nom_elem=type_elemvef.que_suis_je();
   if ((nom_elem=="Tetra_VEF")||(nom_elem=="Tri_VEF"))
     istetra=1;
-  const DoubleVect& porosite_elem = zone_VEF.porosite_elem();
+  const DoubleVect& porosite_elem = equation().milieu().porosite_elem();
 
 
   // Dimensionnement du tableau des flux convectifs au bord du domaine de calcul

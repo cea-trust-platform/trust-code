@@ -78,7 +78,7 @@ DoubleTab& Op_Conv_Centre_old_VEF_Face::ajouter(const DoubleTab& transporte,
   const DoubleTab& normales_facettes_Cl = zone_Cl_VEF.normales_facettes_Cl();
   //  const DoubleVect& volumes_entrelaces_Cl = zone_Cl_VEF.volumes_entrelaces_Cl();
 
-  const DoubleVect& porosite_face = zone_VEF.porosite_face();
+  const DoubleVect& porosite_face = equation().milieu().porosite_face();
   DoubleVect& fluent_ = fluent;
 
   int nfac = zone.nb_faces_elem();

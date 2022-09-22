@@ -14,11 +14,13 @@
 *****************************************************************************/
 
 #include <Source_Generique_VDF_Face.h>
-#include <Zone_VDF.h>
+#include <Dirichlet_homogene.h>
+#include <Equation_base.h>
 #include <Zone_Cl_VDF.h>
 #include <Zone_Cl_dis.h>
+#include <Milieu_base.h>
 #include <Dirichlet.h>
-#include <Dirichlet_homogene.h>
+#include <Zone_VDF.h>
 
 Implemente_instanciable(Source_Generique_VDF_Face,"Source_Generique_VDF_Face",Source_Generique_base);
 
@@ -42,7 +44,7 @@ void Source_Generique_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& se
 
   int nb_faces = la_zone_VDF->nb_faces();
   const DoubleVect& vol_entrelaces = la_zone_VDF->volumes_entrelaces();
-  const DoubleVect& poro_face = la_zone_VDF->porosite_face();
+  const DoubleVect& poro_face = equation().milieu().porosite_face();
   int nb_front_cl = la_zone_VDF->nb_front_Cl();
   int premiere_face_interne = la_zone_VDF->premiere_face_int();
   int num_face;

@@ -108,7 +108,7 @@ void Perte_Charge_Singuliere_PolyMAC_Face::ajouter_blocs(matrices_t matrices, Do
 {
   const Zone_Poly_base& zone = ref_cast(Zone_Poly_base, equation().zone_dis().valeur());
   //const DoubleVect& volumes_entrelaces = zone_PolyMAC.volumes_entrelaces();
-  const DoubleVect& pf = zone.porosite_face(), &fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces();
+  const DoubleVect& pf = equation().milieu().porosite_face(), &fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces();
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
   const DoubleTab& vit = la_vitesse->valeurs(), &nf = zone.face_normales(), &vfd = zone.volumes_entrelaces_dir(), &xv = zone.xv(), &xp = zone.xp(),
                    *alpha = pbm ? &pbm->eq_masse.inconnue().passe() : NULL, *a_r = pbm ? &pbm->eq_masse.champ_conserve().passe() : NULL;

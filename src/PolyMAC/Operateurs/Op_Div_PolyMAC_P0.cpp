@@ -81,7 +81,7 @@ void Op_Div_PolyMAC_P0::dimensionner(Matrice_Morse& matrice) const
 DoubleTab& Op_Div_PolyMAC_P0::ajouter(const DoubleTab& vit, DoubleTab& div) const
 {
   const Zone_PolyMAC_P0& zone = la_zone_PolyMAC_P0.valeur();
-  const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face();
+  const DoubleVect& fs = zone.face_surfaces(), &pf = equation().milieu().porosite_face();
   const IntTab& f_e = zone.face_voisins();
   int i, e, f, n, N = vit.line_size();
   assert(div.line_size() == N);
@@ -107,7 +107,7 @@ void Op_Div_PolyMAC_P0::contribuer_a_avec(const DoubleTab&,Matrice_Morse& mat) c
 {
   const Zone_PolyMAC_P0& zone = la_zone_PolyMAC_P0.valeur();
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
-  const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face();
+  const DoubleVect& fs = zone.face_surfaces(), &pf = equation().milieu().porosite_face();
   const IntTab& f_e = zone.face_voisins();
   int i, e, f, n, N = ch.valeurs().line_size();
 

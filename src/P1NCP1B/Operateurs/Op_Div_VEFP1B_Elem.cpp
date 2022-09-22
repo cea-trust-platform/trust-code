@@ -660,7 +660,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter(const DoubleTab& vitesse_face_absolue, Do
         }// sub_type Perio
     }
 #endif
-  const DoubleVect& porosite_face = zone_VEF.porosite_face();
+  const DoubleVect& porosite_face = equation().milieu().porosite_face();
   DoubleTab phi_vitesse_face_;
   const DoubleTab& vit=modif_par_porosite_si_flag(vitesse_face_absolue,phi_vitesse_face_,1,porosite_face);
 

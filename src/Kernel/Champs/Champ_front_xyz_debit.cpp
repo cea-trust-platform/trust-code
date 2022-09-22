@@ -13,12 +13,15 @@
 *
 *****************************************************************************/
 
-#include <Champ_front_xyz_debit.h>
-#include <Param.h>
-#include <Champ_front_uniforme.h>
 #include <Ch_front_input_uniforme.h>
-#include <Champ_front_t.h>
+#include <Champ_front_xyz_debit.h>
+#include <Champ_front_uniforme.h>
 #include <Champ_front_Tabule.h>
+#include <Champ_Inc_base.h>
+#include <Champ_front_t.h>
+#include <Equation_base.h>
+#include <Milieu_base.h>
+#include <Param.h>
 
 
 Implemente_instanciable(Champ_front_xyz_debit,"Champ_front_xyz_debit",Champ_front_normal);
@@ -45,6 +48,7 @@ int Champ_front_xyz_debit::initialiser(double tps, const Champ_Inc_base& inco)
 //  Cerr << "Champ_front_xyz_debit::initialiser" << finl;
   if (!Champ_front_normal::initialiser(tps,inco))
     return 0;
+  ch_inco_ = inco;
   const Front_VF& le_bord= ref_cast(Front_VF,frontiere_dis());
   flow_rate_.valeur().initialiser(tps,inco);
   if ( !sub_type(Champ_front_uniforme,flow_rate_.valeur()) && !sub_type(Ch_front_input_uniforme,flow_rate_.valeur()) && !sub_type(Champ_front_t,flow_rate_.valeur()) && !sub_type(Champ_front_Tabule,flow_rate_.valeur()))
@@ -104,7 +108,7 @@ void Champ_front_xyz_debit::calculer_normales_et_integrale(const Front_VF& le_bo
               normal_vectors_(i, j) = -zone_VF.normalized_boundaries_outward_vector(f, 1.)(j); // inward normal
               u_scal_n += normal_vectors_(i, j) * (velocity_user.size() ? velocity_user(velocity_user.size() > dimension ? i : 0, j) : normal_vectors_(i, j));
             }
-          if (i < le_bord.nb_faces()) integrale_(n) += dS * u_scal_n / coeff_(i, n) * zone_VF.porosite_face(f); //real faces only
+          if (i < le_bord.nb_faces()) integrale_(n) += dS * u_scal_n / coeff_(i, n) * ch_inco_->equation().milieu().porosite_face(f); //real faces only
         }
     }
   for (int n = 0; n < N; ++n)

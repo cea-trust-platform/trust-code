@@ -163,7 +163,7 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
   const DoubleTab& tab_rhon = le_fluide().loi_etat()->rho_n();
   const DoubleTab& tab_rhonp1 = le_fluide().loi_etat()->rho_np1();
   DoubleTab tab_rhonP1_,tab_rhonp1P1_;
-  const DoubleVect& porosite_face = la_zone->porosite_face();
+  const DoubleVect& porosite_face = le_fluide().porosite_face();
   const DoubleTab& tab_rhonP1=modif_par_porosite_si_flag(tab_rhon,tab_rhonP1_,1,porosite_face);
   const DoubleTab& tab_rhonp1P1=modif_par_porosite_si_flag(tab_rhonp1,tab_rhonp1P1_,1,porosite_face);
   const IntTab& elem_faces = la_zone->elem_faces();

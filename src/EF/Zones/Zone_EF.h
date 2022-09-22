@@ -88,8 +88,8 @@ public :
   inline int oriente_normale(int face_opp, int elem2)const;
   inline const ArrOfInt& ind_faces_virt_non_std() const;
   void calculer_volumes_entrelaces();
-  void calculer_volumes_sommets();
-  virtual void calculer_IPhi();
+  void calculer_volumes_sommets(const Zone_Cl_dis_base& zcl);
+  virtual void calculer_IPhi(const Zone_Cl_dis_base& zcl);
   virtual void calculer_Bij(DoubleTab& bij_) ;
   virtual void calculer_Bij_gen(DoubleTab& bij);
 
