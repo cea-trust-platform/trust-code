@@ -47,7 +47,6 @@ public :
   //void creer_face_voisins_virt();
   //void creer_elem_faces_virt();
   //void creer_face_sommets_virt();
-  void calculer_porosites();
   void calculer_diametres_hydrauliques();
   void calculer_sections_passage();
   void calculer_coefficient_echange_thermique();
@@ -71,10 +70,8 @@ public :
   inline double xv(int num_face,int k) const { return xv_(num_face,k); }
   inline double xp(int num_elem,int k) const { return xp_(num_elem,k); }
   inline double xa(int num_arete,int k) const { return xa_(num_arete,k); }
-  inline double porosite_face(int i) const { return porosite_face_[i]; }
-  inline double porosite_elem(int i) const { return porosite_elem_[i]; }
   inline double diametre_hydraulique_face(int i) const { return diametre_hydraulique_face_[i]; }
-  inline double section_passage_face(int i) const { return face_surfaces_[i] * porosite_face_[i]; }
+//  inline double section_passage_face(int i) const { return face_surfaces_[i] * porosite_face_[i]; }
   inline double coefficient_frottement(int i) const { return coefficient_frottement_[i]; }
   inline double coefficient_echange_thermique(int i) const { return coefficient_echange_thermique_[i]; }
 
@@ -100,13 +97,9 @@ public :
   inline const DoubleTab& volumes_entrelaces_dir() const { return volumes_entrelaces_dir_; }
   inline DoubleTab& volumes_entrelaces_dir() { return volumes_entrelaces_dir_; } // renvoie le tableau des volumes entrelaces par cote.
 
-  inline DoubleVect& porosite_face() { return porosite_face_; }
-  inline const DoubleVect& porosite_face() const { return porosite_face_; }
-  inline DoubleVect& porosite_elem() { return porosite_elem_; }
-  inline const DoubleVect& porosite_elem() const { return porosite_elem_; }
   inline DoubleVect& diametre_hydraulique_face() { return diametre_hydraulique_face_; }
   inline const DoubleVect& diametre_hydraulique_face() const { return diametre_hydraulique_face_; }
-  inline const DoubleVect section_passage_face() const;
+//  inline const DoubleVect section_passage_face() const;
   inline DoubleTab& diametre_hydraulique_elem() { return diametre_hydraulique_elem_; }
   inline const DoubleTab& diametre_hydraulique_elem() const { return diametre_hydraulique_elem_; }
   inline DoubleVect& coefficient_frottement() { return coefficient_frottement_; }
@@ -181,10 +174,6 @@ protected:
   DoubleVect volumes_entrelaces_;            // volumes entrelaces pour l'integration des Qdm
   DoubleTab volumes_entrelaces_dir_;        // volumes entrelaces par cote
 
-  DoubleVect porosite_elem_;                 // Porosites volumiques pour les volumes de
-  // controle de masse
-  DoubleVect porosite_face_;              // Porosites surfaciques en masse et volumiques
-
   // en quantite de mouvement
   DoubleVect diametre_hydraulique_face_;  //diametres hydrauliques des faces
   DoubleTab diametre_hydraulique_elem_;  //diametres hydrauliques des elements
@@ -243,14 +232,14 @@ inline int Zone_VF::numero_sommet_local(int som, int elem) const
   return -1;
 }
 
-inline const DoubleVect Zone_VF::section_passage_face() const
-{
-  // remplissage des sections de passage
-  DoubleVect section_passage_face_(face_surfaces_);
-  for (int i=0; i<face_surfaces_.size_array(); i++)
-    section_passage_face_[i] = section_passage_face(i);
-  return section_passage_face_;
-}
+//inline const DoubleVect Zone_VF::section_passage_face() const
+//{
+//  // remplissage des sections de passage
+//  DoubleVect section_passage_face_(face_surfaces_);
+//  for (int i=0; i<face_surfaces_.size_array(); i++)
+//    section_passage_face_[i] = section_passage_face(i);
+//  return section_passage_face_;
+//}
 
 /*! @brief renvoie l'element voisin de numface dans la direction i.
  *

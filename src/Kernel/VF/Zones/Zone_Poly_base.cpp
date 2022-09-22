@@ -493,7 +493,6 @@ void Zone_Poly_base::discretiser()
       volumes_entrelaces_dir_(f, i) = std::fabs(dot(&xp_(e, 0), &face_normales_(f, 0), &xv_(f, 0)));
   volumes_entrelaces_.echange_espace_virtuel(), volumes_entrelaces_dir_.echange_espace_virtuel();
 
-  Zone_VF::calculer_porosites();
   Zone_VF::calculer_diametres_hydrauliques();
   // calculer_h_carre();
   /* ordre canonique dans elem_faces_ */

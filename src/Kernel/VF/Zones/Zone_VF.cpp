@@ -64,8 +64,6 @@ Sortie& Zone_VF::printOn(Sortie& os) const
   os << "les_bords_ : " << finl;
   os << les_bords_ <<finl;
 
-  porosite_elem_.ecrit(os);
-  porosite_face_.ecrit(os);
   return os ;
 }
 
@@ -86,8 +84,6 @@ Entree& Zone_VF::readOn(Entree& is)
   int nb_faces_unused;
   is >> nb_faces_unused;
   is >> les_bords_;
-  porosite_elem_.lit(is);
-  porosite_face_.lit(is);
   return is ;
 }
 
@@ -374,20 +370,6 @@ int Zone_VF::numero_face_local(int face, int elem) const
       return face_loc;
   return -1;
 }
-
-
-// remplissage des porosites
-void Zone_VF::calculer_porosites()
-{
-  // Les porosites volumiques et surfacique valent 1
-
-  zone().creer_tableau_elements(porosite_elem_, Array_base::NOCOPY_NOINIT);
-  porosite_elem_ = 1;
-
-  creer_tableau_faces(porosite_face_, Array_base::NOCOPY_NOINIT);
-  porosite_face_ = 1;
-}
-
 
 // remplissage des diametres hydrauliques
 void Zone_VF::calculer_diametres_hydrauliques()

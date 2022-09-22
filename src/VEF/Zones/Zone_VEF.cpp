@@ -378,8 +378,6 @@ void Zone_VEF::discretiser()
   Cerr << "Informations of the Zone VEF of the domain " << zone().domaine().le_nom() << " : " << finl;
 
   calculer_h_carre();
-  // Calcul des porosites
-  Zone_VF::calculer_porosites();
 }
 
 void Zone_VEF::calculer_h_carre()

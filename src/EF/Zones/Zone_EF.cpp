@@ -535,9 +535,6 @@ void Zone_EF::discretiser()
       }
   }
 
-  Zone_VF::calculer_porosites();
-  //calculer_volumes_entrelaces();
-
   zone().domaine().creer_tableau_sommets(volumes_sommets_thilde_);
 }
 
