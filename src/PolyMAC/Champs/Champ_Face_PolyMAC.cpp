@@ -205,8 +205,7 @@ void Champ_Face_PolyMAC::interp_ve(const DoubleTab& inco, DoubleTab& val, bool i
 {
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,zone_vf());
   const DoubleTab& xv = zone.xv(), &xp = zone.xp();
-  const DoubleVect& fs = zone.face_surfaces(), &pf = ma_zone_cl_dis->valeur().equation().milieu().porosite_face(),
-                    &pe = ma_zone_cl_dis->valeur().equation().milieu().porosite_elem(), &ve = zone.volumes();
+  const DoubleVect& fs = zone.face_surfaces(), *ppf = mon_equation_non_nul() ? &equation().milieu().porosite_face() : NULL, *ppe = ppf ? &equation().milieu().porosite_elem() : NULL, &ve = zone.volumes();
   const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
   int e, f, j, r;
 
@@ -214,7 +213,7 @@ void Champ_Face_PolyMAC::interp_ve(const DoubleTab& inco, DoubleTab& val, bool i
   for (e = 0; e < val.dimension(0); e++)
     for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
       {
-        const double coef = is_vit ? pf(f) / pe(e) : 1.0;
+        const double coef = is_vit && ppf ? (*ppf)(f) / (*ppe)(e) : 1.0;
         for (r = 0; r < dimension; r++) val(e, r) += fs(f) / ve(e) * (xv(f, r) - xp(e, r)) * (e == f_e(f, 0) ? 1 : -1) * inco(f) * coef;
       }
 }
@@ -224,8 +223,7 @@ void Champ_Face_PolyMAC::interp_ve(const DoubleTab& inco, const IntVect& les_pol
 {
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,zone_vf());
   const DoubleTab& xv = zone.xv(), &xp = zone.xp();
-  const DoubleVect& fs = zone.face_surfaces(), &pf = ma_zone_cl_dis->valeur().equation().milieu().porosite_face(),
-                    &pe = ma_zone_cl_dis->valeur().equation().milieu().porosite_elem(), &ve = zone.volumes();
+  const DoubleVect& fs = zone.face_surfaces(), *ppf = mon_equation_non_nul() ? &equation().milieu().porosite_face() : NULL, *ppe = ppf ? &equation().milieu().porosite_elem() : NULL, &ve = zone.volumes();
   const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
   int e, f, j, d, D = dimension, n, N = inco.line_size();
   assert(ve.line_size() == N * D);
@@ -236,7 +234,7 @@ void Champ_Face_PolyMAC::interp_ve(const DoubleTab& inco, const IntVect& les_pol
         for (n = 0; n < N * D; n++) val(e, n) = 0;
         for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
           {
-            const double coef = is_vit ? pf(f) / pe(e) : 1.0;
+            const double coef = is_vit && ppf ? (*ppf)(f) / (*ppe)(e) : 1.0;
             for (d = 0; d < D; d++)
               for (n = 0; n < N; n++) val(e, N * d + n) += fs(f) / ve(e) * (xv(f, d) - xp(e, d)) * (e == f_e(f, 0) ? 1 : -1) * inco(f, n) * coef;
           }
