@@ -361,7 +361,24 @@ void Matrice_Bloc::build_stencil( void )
   is_stencil_up_to_date_ = true ;
 }
 
-void Matrice_Bloc::get_stencil_and_coefficients( IntTab& stencil, ArrOfDouble& coefficients ) const
+// Local template method: copy either values or ptrs to value!
+namespace
+{
+template<typename _TAB_T_> static inline void _get_sub_stencil_coeff(const Matrice_Base& mat, IntTab& sten, _TAB_T_& coeff);
+
+template<> inline void _get_sub_stencil_coeff<ArrOfDouble>(const Matrice_Base& mat, IntTab& sten, ArrOfDouble& coeff)
+{
+  mat.get_stencil_and_coefficients( sten, coeff );
+}
+
+template<> inline void _get_sub_stencil_coeff<std::vector<const double*>>(const Matrice_Base& mat, IntTab& sten, std::vector<const double*>& coeff)
+{
+  mat.get_stencil_and_coeff_ptrs( sten, coeff );
+}
+}
+
+template<typename _TAB_T_, typename _VAL_T_>
+void Matrice_Bloc::get_stencil_coeff_templ( IntTab& stencil, _TAB_T_& coeff_sp) const
 {
   assert_check_block_matrix_structure( );
   const int nb_line_blocks   = nb_bloc_lignes( );
@@ -376,11 +393,9 @@ void Matrice_Bloc::get_stencil_and_coefficients( IntTab& stencil, ArrOfDouble& c
     {
       stencil = stencil_;
       ArrOfInt offsets = offsets_;
-      const int stencil_size = stencil_.dimension(0);
-      coefficients.resize_array( stencil_size );
 
       IntTab      local_stencil;
-      ArrOfDouble local_coeff;
+      _TAB_T_     local_coeff;
 
       for ( int i=0; i<nb_line_blocks; ++i )
         {
@@ -391,16 +406,15 @@ void Matrice_Bloc::get_stencil_and_coefficients( IntTab& stencil, ArrOfDouble& c
               imax = imin + local_matrix.nb_lignes( );
               jmax = jmin + local_matrix.nb_colonnes( );
 
-              local_matrix.get_stencil_and_coefficients( local_stencil, local_coeff );
+              _get_sub_stencil_coeff<_TAB_T_>(local_matrix, local_stencil, local_coeff);
 
               const int size = local_stencil.dimension( 0 );
               for ( int k=0; k<size; ++k )
                 {
                   const int line           = local_stencil( k, 0 ) + imin;
-                  const double coefficient = local_coeff[ k ];
                   const int index          = offsets[ line ];
 
-                  coefficients[ index ] = coefficient;
+                  coeff_sp[index] = local_coeff[ k ];
 
                   offsets[ line ] += 1;
                 }
@@ -413,11 +427,8 @@ void Matrice_Bloc::get_stencil_and_coefficients( IntTab& stencil, ArrOfDouble& c
     }
   const int nb_stencils      =  nb_line_blocks * nb_column_blocks;
 
-  VECT( IntTab ) vect_local_stencils;
-  vect_local_stencils.dimensionner( nb_stencils );
-
-  VECT( ArrOfDouble ) vect_local_coefficients;
-  vect_local_coefficients.dimensionner( nb_stencils );
+  std::vector<IntTab> vect_local_stencils(nb_stencils);
+  std::vector<_TAB_T_> vect_local_coefficients(nb_stencils);
 
   for ( int i=0; i<nb_line_blocks; ++i )
     {
@@ -429,8 +440,9 @@ void Matrice_Bloc::get_stencil_and_coefficients( IntTab& stencil, ArrOfDouble& c
           jmax = jmin + local_matrix.nb_colonnes( );
 
           IntTab&      local_stencil = vect_local_stencils[ i * nb_column_blocks + j ];
-          ArrOfDouble& local_coefficients = vect_local_coefficients[i * nb_column_blocks + j ];
-          local_matrix.get_stencil_and_coefficients( local_stencil, local_coefficients );
+          _TAB_T_& local_coefficients = vect_local_coefficients[i * nb_column_blocks + j ];
+
+          _get_sub_stencil_coeff<_TAB_T_>(local_matrix, local_stencil, local_coefficients);
 
           const int size = local_stencil.dimension( 0 );
           for ( int k=0; k<size; ++k )
@@ -460,7 +472,6 @@ void Matrice_Bloc::get_stencil_and_coefficients( IntTab& stencil, ArrOfDouble& c
         }
     }
 
-
   for ( int i=0; i<nb_lines; ++i )
     {
       offsets[ i + 1 ] += offsets[ i ];
@@ -468,23 +479,21 @@ void Matrice_Bloc::get_stencil_and_coefficients( IntTab& stencil, ArrOfDouble& c
 
   const int stencil_size = offsets[ nb_lines ];
   stencil.resize( stencil_size, 2 );
-  coefficients.resize_array( stencil_size );
+  coeff_sp.resize(stencil_size);  // LUCKILY both ArrOfDouble and std::vector<> have resize() method !
 
   stencil = -1;
 
   for ( int i=0; i<nb_stencils; ++i )
     {
       const IntTab&      local_stencil= vect_local_stencils[ i ];
-      const ArrOfDouble& local_coefficients = vect_local_coefficients[ i ];
+      const _TAB_T_& local_coefficients = vect_local_coefficients[ i ];
 
       const int size = local_stencil.dimension( 0 );
-      assert( local_coefficients.size_array( ) == size );
 
       for ( int k=0; k<size; ++k )
         {
           const int line        = local_stencil( k, 0 );
           const int column      = local_stencil( k, 1 );
-          const double coefficient = local_coefficients[ k ];
           const int index       = offsets[ line ];
 
           assert( stencil( index, 0 ) < 0 );
@@ -493,14 +502,38 @@ void Matrice_Bloc::get_stencil_and_coefficients( IntTab& stencil, ArrOfDouble& c
 
           stencil( index, 0 )   = line;
           stencil( index, 1 )   = column;
-          coefficients[ index ] = coefficient;
+
+          coeff_sp[index] = local_coefficients[ k ];
 
           offsets[ line ] += 1;
         }
     }
 }
 
+void Matrice_Bloc::get_stencil_and_coeff_ptrs(IntTab& stencil, std::vector<const double *>& coeff_ptr) const
+{
+  if( is_stencil_up_to_date_ )
+    {
+      Cerr << "Error in Matrice_Morse::get_stencil_and_coeff_ptrs( )"<<finl;
+      Cerr << "  stencil up to date - function not impl. in this case."<<finl;
+      Cerr << "  Aborting..." << finl;
+      Process::abort( );
+      return;
+    }
 
+  get_stencil_coeff_templ<std::vector<const double *>, const double *>(stencil, coeff_ptr);
+}
+
+void Matrice_Bloc::get_stencil_and_coefficients(IntTab& stencil, ArrOfDouble& coefficients) const
+{
+  if( is_stencil_up_to_date_ )
+    {
+      const int stencil_size = stencil_.dimension(0);
+      coefficients.resize_array( stencil_size );
+    }
+
+  get_stencil_coeff_templ<ArrOfDouble, double>(stencil, coefficients);
+}
 
 Sortie& Matrice_Bloc::imprimer( Sortie& os ) const
 {
@@ -602,12 +635,25 @@ int Matrice_Bloc::nb_bloc_colonnes( void ) const
   return M_;
 }
 
+/*!
+ * Remplissage d'une Matrice_Morse par une Matrice_Bloc de Matrice_Morse quelconques
+ */
+void Matrice_Bloc::block_to_morse( Matrice_Morse& result ) const
+{
+  Matrix_tools::convert_to_morse_matrix( (*this), result );
+}
 
-// Remplissage d'une Matrice_Morse par une Matrice_Bloc de Matrice_Morse quelconques
+void Matrice_Bloc::block_to_morse_with_ptr( Matrice_Morse& result, std::vector<const double *>& coeffs) const
+{
+  Matrix_tools::convert_to_morse_matrix_with_ptrs( (*this), result, coeffs );
+}
+
+
 void Matrice_Bloc::BlocToMatMorse( Matrice_Morse& result ) const
 {
   Matrix_tools::convert_to_morse_matrix( (*this), result );
 }
+
 
 //Produit matrice-vecteur
 

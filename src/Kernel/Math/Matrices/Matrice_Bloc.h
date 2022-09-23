@@ -64,6 +64,8 @@ public :
 
   void get_stencil( IntTab& stencil ) const override;
   void get_stencil_and_coefficients(IntTab& stencil, ArrOfDouble& coefficients) const override;
+  void get_stencil_and_coeff_ptrs(IntTab& stencil, std::vector<const double *>& coeff_ptr) const override;
+
 
   // Impression
   Sortie& imprimer( Sortie& s ) const override;
@@ -97,7 +99,11 @@ public :
   void remplir(const IntLists& voisins, const DoubleLists& valeurs, const DoubleVect& terme_diag, const int i, const int n, const int j, const int m);
 
   // // Conversion vers une Matrice_Morse
+  void block_to_morse( Matrice_Morse& matrix ) const;
+  void block_to_morse_with_ptr( Matrice_Morse& result, std::vector<const double *>& coeffs) const;
+
   void BlocToMatMorse( Matrice_Morse& matrix ) const;
+
 
   Matrice_Bloc& operator *=( double x);
 
@@ -112,6 +118,9 @@ protected :
   int nb_blocs_;                   // nb total des blocs de A (= N_ * M_)
 
   ArrOfInt offsets_;
+
+  template<typename _TAB_T_, typename _VAL_T_>
+  void get_stencil_coeff_templ( IntTab& stencil, _TAB_T_& coeff_sp) const;
 };
 
 #endif

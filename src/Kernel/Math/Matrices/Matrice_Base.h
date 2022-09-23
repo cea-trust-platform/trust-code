@@ -66,6 +66,7 @@ public :
   virtual void get_symmetric_stencil(IntTab& stencil) const;
 
   virtual void get_stencil_and_coefficients(IntTab& stencil, ArrOfDouble& coefficients) const;
+  virtual void get_stencil_and_coeff_ptrs(IntTab& stencil, std::vector<const double *>& coeff_ptr) const;
 
   virtual void get_symmetric_stencil_and_coefficients(IntTab& stencil, ArrOfDouble& coefficients) const;
 

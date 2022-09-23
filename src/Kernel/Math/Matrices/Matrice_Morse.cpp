@@ -1774,11 +1774,96 @@ void Matrice_Morse::get_stencil( IntTab& stencil ) const
   stencil.set_smart_resize( 0 );
 }
 
-void Matrice_Morse::get_stencil_and_coefficients( IntTab&      stencil,
-                                                  ArrOfDouble& coefficients ) const
+// Local template method : copy either value or ptr to value!
+namespace
+{
+template<typename _T_> static inline void _fill_slot(_T_& dest, const double& src);
+template<> inline void _fill_slot<double>(double& dest, const double& src)
+{
+  dest = src;
+}
+template<> inline void _fill_slot<const double *>(const double*& dest, const double& src)
+{
+  dest = &src;
+}
+}
+
+
+template<typename _TAB_T_, typename _VALUE_T_>
+inline void Matrice_Morse::get_stencil_coeff_templ( IntTab& stencil, _TAB_T_& coeffs_span) const
+{
+  coeffs_span.resize( 0 );
+  coeffs_span.resize(tab2_.size_array());
+
+  stencil.resize( 0, 2 );
+  stencil.resize(tab2_.size_array(), 2);
+  stencil.set_smart_resize( 1 );
+
+  IntTab tmp1(0);
+  tmp1.set_smart_resize( 1 );
+
+  std::vector<_VALUE_T_> tmp2;
+
+  ArrOfInt index;
+
+  int compteur = 0;
+
+  const int nb_lines = nb_lignes( );
+  for ( int i=0; i<nb_lines; ++i )
+    {
+      int k0   = tab1_( i ) - 1;
+      int k1   = tab1_( i + 1 ) - 1;
+      int size = k1 - k0;
+
+      tmp1.resize( size );
+      tmp2.resize( size );
+
+      index.resize_array( 0 );
+
+      for ( int k=0; k<size; ++k )
+        {
+          tmp1( k ) = tab2_( k + k0 ) - 1;
+          ::_fill_slot<_VALUE_T_>(tmp2[k], coeff_(k+k0));
+        }
+
+      tri_lexicographique_tableau_indirect( tmp1, index );
+
+      for ( int k=0; k<size; ++k )
+        {
+          int l = index[ k ];
+          stencil( compteur + k , 0 ) = i;
+          stencil( compteur + k , 1 ) = tmp1[ l ];
+          coeffs_span[ compteur + k ] = tmp2[ l ];
+        }
+      compteur += size;
+    }
+
+  stencil.set_smart_resize( 0 );
+}
+
+
+void Matrice_Morse::get_stencil_and_coeff_ptrs(IntTab& stencil,
+                                               std::vector<const double *>& coeff_ptr) const
 {
   assert_check_morse_matrix_structure( );
 
+  if( is_stencil_up_to_date_ )
+    {
+      Cerr << "Error in Matrice_Morse::get_symmetric_stencil_and_coeff_ptrs( )"<<finl;
+      Cerr << "  stencil up to date - function not impl. in this case."<<finl;
+      Cerr << "  Aborting..." << finl;
+      Process::abort( );
+      return;
+    }
+
+  get_stencil_coeff_templ< std::vector<const double *>, const double *>(stencil, coeff_ptr);
+  assert( (int)coeff_ptr.size( ) == stencil.dimension( 0 ));
+}
+
+
+void Matrice_Morse::get_stencil_and_coefficients( IntTab&      stencil,
+                                                  ArrOfDouble& coefficients ) const
+{
   if( is_stencil_up_to_date_ )
     {
       if( coeff_.size( ) == 0 )
@@ -1793,64 +1878,12 @@ void Matrice_Morse::get_stencil_and_coefficients( IntTab&      stencil,
       return;
     }
 
-  stencil.resize( 0, 2 );
-  stencil.resize(tab2_.size_array(), 2);
-  stencil.set_smart_resize( 1 );
-
-  coefficients.resize( 0 );
   coefficients.set_smart_resize( 1 );
-  coefficients.resize(tab2_.size_array());
 
-  IntTab tmp1(0);
-  tmp1.set_smart_resize( 1 );
-
-  ArrOfDouble tmp2;
-  tmp2.set_smart_resize( 1 );
-
-  ArrOfInt index;
-  index.set_smart_resize( 1 );
-
-  int compteur = 0;
-
-  const int nb_lines = nb_lignes( );
-  for ( int i=0; i<nb_lines; ++i )
-    {
-      int k0   = tab1_( i ) - 1;
-      int k1   = tab1_( i + 1 ) - 1;
-      int size = k1 - k0;
-
-      tmp1.resize( 0 );
-      tmp1.resize( size );
-
-      tmp2.resize_array( 0 );
-      tmp2.resize_array( size );
-
-      index.resize_array( 0 );
-
-      for ( int k=0; k<size; ++k )
-        {
-          tmp1( k ) = tab2_( k + k0 ) - 1;
-          tmp2[ k ] = coeff_( k + k0 );
-        }
-
-      tri_lexicographique_tableau_indirect( tmp1, index );
-
-      for ( int k=0; k<size; ++k )
-        {
-          int l = index[ k ];
-          stencil( compteur + k , 0 ) = i;
-          stencil( compteur + k , 1 ) = tmp1[ l ];
-          coefficients[ compteur + k ] = tmp2[ l ];
-        }
-      compteur += size;
-    }
-
+  get_stencil_coeff_templ<ArrOfDouble, double>(stencil, coefficients);
   assert( coefficients.size_array( ) == stencil.dimension( 0 ));
-
-  stencil.set_smart_resize( 0 );
-
-  coefficients.set_smart_resize( 0 );
 }
+
 
 /*! @brief Operateur de division (de tous les elements) d'une matrice par un scalaire.
  *

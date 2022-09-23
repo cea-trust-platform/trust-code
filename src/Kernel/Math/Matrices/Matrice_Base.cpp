@@ -87,6 +87,15 @@ void Matrice_Base::get_stencil_and_coefficients( IntTab&      stencil,
   Process::exit( );
 }
 
+void Matrice_Base::get_stencil_and_coeff_ptrs(IntTab& stencil, std::vector<const double *>& coeff_ptr) const
+{
+  Cerr << "Error in 'Matrice_Base::get_stencil_and_coeff_ptrs( )':" << finl;
+  Cerr << "  This method should be implemented in derived class" << finl;
+  Cerr << "  Exiting..." << finl;
+  Process::exit( );
+}
+
+
 void Matrice_Base::get_symmetric_stencil_and_coefficients( IntTab&      stencil,
                                                            ArrOfDouble& coefficients ) const
 {

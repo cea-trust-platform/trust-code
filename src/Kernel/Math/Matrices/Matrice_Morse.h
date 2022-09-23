@@ -136,6 +136,7 @@ public :
   void get_stencil( IntTab& stencil ) const override;
 
   void get_stencil_and_coefficients(IntTab& stencil, ArrOfDouble& coefficients) const override;
+  void get_stencil_and_coeff_ptrs(IntTab& stencil, std::vector<const double *>& coeff_ptr) const override;
 
   Matrice_Morse& operator /=(double );
   Matrice_Morse& operator *=(const DoubleVect& );
@@ -195,6 +196,9 @@ protected :
   int m_;          // Number of columns
   int symetrique_; // Pour inliner operator()(i,j) afin d'optimiser
 
+  template<typename _TAB_T_, typename _VALUE_T_>
+  inline void get_stencil_coeff_templ( IntTab& stencil, _TAB_T_& coeffs_span) const;
+
 private :
   double zero_;
 };
@@ -250,4 +254,6 @@ inline double& Matrice_Morse::operator()(int i, int j)
   exit();
   return coeff_[0];     // On ne passe jamais ici
 }
+
 #endif
+

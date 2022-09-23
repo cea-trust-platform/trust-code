@@ -18,6 +18,8 @@
 
 #include <TRUSTTabs_forward.h>
 
+#include <vector>
+
 class Matrice;
 class Matrice_Base;
 class Matrice_Morse;
@@ -28,6 +30,10 @@ class Matrix_tools
 public :
   // conversion to morse format
   static void convert_to_morse_matrix(const Matrice_Base& in, Matrice_Morse& out);
+
+  // conversion to Morse format keeping pointers to initial coefficients to later more efficiently update them
+  static void convert_to_morse_matrix_with_ptrs( const Matrice_Base& in, Matrice_Morse&      out,
+                                                 std::vector<const double *>& coeffs);
 
   // conversion to symetric morse format
   static void convert_to_symmetric_morse_matrix(const Matrice_Base& in, Matrice_Morse_Sym& out);

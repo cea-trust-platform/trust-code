@@ -23,6 +23,8 @@
 #include <TRUSTTab.h>
 #include <Array_tools.h>
 
+#include <algorithm>
+
 // conversion to morse format
 void Matrix_tools::convert_to_morse_matrix( const Matrice_Base& in,
                                             Matrice_Morse&      out )
@@ -39,6 +41,28 @@ void Matrix_tools::convert_to_morse_matrix( const Matrice_Base& in,
                                     out );
 }
 
+// conversion to morse format, storing initial location of coefficients pointers
+void Matrix_tools::convert_to_morse_matrix_with_ptrs( const Matrice_Base& in,
+                                                      Matrice_Morse&      out,
+                                                      std::vector<const double *>& coeffs)
+{
+  IntTab stencil;
+  ArrOfDouble coefficients;
+
+  in.get_stencil_and_coeff_ptrs( stencil, coeffs);
+
+  // Copy coefficients into ArrOfDouble
+  coefficients.resize_array((int)coeffs.size());
+  auto deref_fun = [](const double* src) { return *src; };
+
+  std::transform(coeffs.begin(), coeffs.end(), coefficients.addr(), deref_fun);
+
+  Matrix_tools::build_morse_matrix( in.nb_lignes( ),
+                                    in.nb_colonnes( ),
+                                    stencil,
+                                    coefficients,
+                                    out );
+}
 
 
 // conversion to symetric morse format
