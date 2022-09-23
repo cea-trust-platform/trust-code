@@ -150,7 +150,7 @@ export PATH=$BALTIK_ROOT/bin:${PATH}
 
 cd ${project_directory}/build/src/exec$OPT
 cmake .
-ctest -j$TRUST_NB_PHYSICAL_CORES
+ctest -j$TRUST_NB_PHYSICAL_CORES --output-on-failure
 exit $?
 
 #echo $liste_cas | lance_test -nomail $project_executable_name $project_test_directory | tee lance_test_out
