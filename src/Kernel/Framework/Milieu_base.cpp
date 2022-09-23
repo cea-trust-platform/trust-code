@@ -217,15 +217,17 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
 // methode utile pour F5 ! F5 n'appelle pas Milieu_base::discretiser mais Milieu_base::discretiser_porosite ...
 void Milieu_base::discretiser_porosite(const Probleme_base& pb, const Discretisation_base& dis)
 {
-  pb_ = pb;
-  const Zone_dis_base& zone_dis = pb_->equation(0).zone_dis();
-  const double temps = pb_->schema_temps().temps_courant();
+  zdb_ = pb.equation(0).zone_dis();
+  const double temps = pb.schema_temps().temps_courant();
   Nom fld_name = "porosite_volumique", fld_unit = "rien";
 
   // On construit porosite_face_ avec un descripteur parallele
-  const MD_Vector& md = ref_cast(Zone_VF, zone_dis).md_vector_faces();
-  MD_Vector_tools::creer_tableau_distribue(md, porosite_face_, Array_base::NOCOPY_NOINIT);
-  assert (ref_cast(Zone_VF, zone_dis).nb_faces_tot() == porosite_face_.size_totale());
+  const MD_Vector& md = ref_cast(Zone_VF, zdb_.valeur()).md_vector_faces();
+  if (!porosite_face_.get_md_vector().non_nul())
+    {
+      MD_Vector_tools::creer_tableau_distribue(md, porosite_face_, Array_base::NOCOPY_NOINIT);
+      assert (ref_cast(Zone_VF, zdb_.valeur()).nb_faces_tot() == porosite_face_.size_totale());
+    }
   porosite_face_ = 1.;
 
   if (porosites_champ.non_nul()) // Lu par porosites_champ
@@ -246,21 +248,21 @@ void Milieu_base::discretiser_porosite(const Probleme_base& pb, const Discretisa
         {
           Cerr<<"Convert Champ_fonc_MED " << fld_name << " to a Champ_Don ..."<<finl;
           Champ_Don tmp_fld;
-          dis.discretiser_champ("champ_elem",zone_dis,"neant",fld_unit,1,temps,tmp_fld);
+          dis.discretiser_champ("champ_elem",zdb_.valeur(),"neant",fld_unit,1,temps,tmp_fld);
           tmp_fld.affecter_(porosites_champ.valeur()); // interpolate ...
           porosites_champ.detach();
-          dis.discretiser_champ("champ_elem",zone_dis,fld_name,fld_unit,1,temps,porosites_champ);
+          dis.discretiser_champ("champ_elem",zdb_.valeur(),fld_name,fld_unit,1,temps,porosites_champ);
           porosites_champ->valeurs() = tmp_fld->valeurs();
         }
       else if (sub_type(Champ_Uniforme,porosites_champ.valeur())) // blabla ...
         {
           const double val = porosites_champ->valeurs()(0,0);
           porosites_champ.detach();
-          dis.discretiser_champ("champ_elem",zone_dis,fld_name,fld_unit,1,temps,porosites_champ);
+          dis.discretiser_champ("champ_elem",zdb_.valeur(),fld_name,fld_unit,1,temps,porosites_champ);
           porosites_champ->valeurs() = val;
         }
       else
-        dis.nommer_completer_champ_physique(zone_dis, fld_name, fld_unit, porosites_champ.valeur(), pb);
+        dis.nommer_completer_champ_physique(zdb_.valeur(), fld_name, fld_unit, porosites_champ.valeur(), pb);
 
       champs_compris_.ajoute_champ(porosites_champ.valeur());
     }
@@ -272,16 +274,16 @@ void Milieu_base::discretiser_porosite(const Probleme_base& pb, const Discretisa
 
       is_user_porosites_ = true;
       // On va utiliser porosites_champ maintenant !
-      dis.discretiser_champ("champ_elem", zone_dis, fld_name, fld_unit, 1, temps, porosites_champ);
+      dis.discretiser_champ("champ_elem", zdb_.valeur(), fld_name, fld_unit, 1, temps, porosites_champ);
       champs_compris_.ajoute_champ(porosites_champ.valeur());
-      Zone_VF& zvf = ref_cast_non_const(Zone_VF, zone_dis);
+      Zone_VF& zvf = ref_cast_non_const(Zone_VF, zdb_.valeur());
       porosites_champ->valeurs() = 1.; // On initialise a 1 ...
       porosites_.remplir_champ(zvf, porosites_champ->valeurs(), porosite_face_);
     }
   else // Pas defini par l'utilisateur
     {
       // On va utiliser porosites_champ maintenant !
-      dis.discretiser_champ("champ_elem", zone_dis, fld_name, fld_unit, 1, temps, porosites_champ);
+      dis.discretiser_champ("champ_elem", zdb_.valeur(), fld_name, fld_unit, 1, temps, porosites_champ);
       champs_compris_.ajoute_champ(porosites_champ.valeur());
       porosites_champ->valeurs() = 1.; // On initialise a 1 ...
     }
@@ -329,26 +331,29 @@ void Milieu_base::creer_champs_non_lus()
 
 void Milieu_base::warn_old_syntax()
 {
-  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-  Cerr << finl;
-  Cerr << "*** ATTENTION *** YOU ARE USING THE OLD SYNTAX OF A DATA FILE :-( :-( :-( " << finl;
-  Cerr << "*** ATTENTION *** STARTING FROM TRUST-V1.9.3 : THE GRAVITY SHOULD BE READ INSIDE THE MEDIUM AND NOT VIA ASSOSCIER ... " << finl;
-  Cerr << "*** ATTENTION *** STARTING FROM TRUST-V1.9.3 : THIS OLD SYNTAX WILL NOT BE SUPPORTED ANYMORE ... " << finl;
-  Cerr << "*** ATTENTION *** HAVE A LOOK TO ANY TRUST TEST CASE TO SEE HOW IT SHOULD BE DONE ($TRUST_ROOT/tests/)  ... " << finl;
-  Cerr << finl;
-  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-  Cerr << finl;
-//  throw;
+  if (que_suis_je() != "Fluide_Diphasique")
+    {
+      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+      Cerr << finl;
+      Cerr << "*** ATTENTION *** YOU ARE USING THE OLD SYNTAX OF A DATA FILE :-( :-( :-( " << finl;
+      Cerr << "*** ATTENTION *** STARTING FROM TRUST-V1.9.3 : THE GRAVITY SHOULD BE READ INSIDE THE MEDIUM AND NOT VIA ASSOSCIER ... " << finl;
+      Cerr << "*** ATTENTION *** STARTING FROM TRUST-V1.9.3 : THIS OLD SYNTAX WILL NOT BE SUPPORTED ANYMORE ... " << finl;
+      Cerr << "*** ATTENTION *** HAVE A LOOK TO ANY TRUST TEST CASE TO SEE HOW IT SHOULD BE DONE ($TRUST_ROOT/tests/)  ... " << finl;
+      Cerr << finl;
+      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+      Cerr << finl;
+      //  throw;
+    }
 }
 
 /*! @brief Associe la gravite en controlant dynamiquement le type de l'objet a associer.
@@ -436,8 +441,7 @@ void Milieu_base::calculer_alpha()
 void Milieu_base::update_porosity_values()
 {
   assert(is_field_porosites());
-  const Zone_dis_base& zdb = pb_->equation(0).zone_dis().valeur();
-  const Zone_VF& zvf = ref_cast(Zone_VF, zdb);
+  const Zone_VF& zvf = ref_cast(Zone_VF, zdb_.valeur());
 
   // update porosite_faces
   const int nb_face_tot = zvf.nb_faces_tot();
@@ -620,8 +624,7 @@ int Milieu_base::initialiser_porosite(const double temps)
 
 void Milieu_base::fill_section_passage_face()
 {
-  const Zone_dis_base& zdb = pb_->equation(0).zone_dis().valeur();
-  const Zone_VF& zvf = ref_cast(Zone_VF, zdb);
+  const Zone_VF& zvf = ref_cast(Zone_VF, zdb_.valeur());
   const DoubleVect& fs = zvf.face_surfaces();
   section_passage_face_.resize(fs.size_array());
   for (int i = 0; i < fs.size_array(); i++) section_passage_face_[i] = fs[i] * porosite_face_[i];

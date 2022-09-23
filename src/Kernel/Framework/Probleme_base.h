@@ -189,6 +189,8 @@ protected :
   inline bool via_associer() { return via_associer_; }
   void warn_old_syntax();
   inline bool is_pb_med() { return (que_suis_je() == "Pb_MED" || que_suis_je() == "Pbc_MED") ? true : false ; }
+  inline bool is_pb_FT() { return (que_suis_je() == "Probleme_FT_Disc_gen") ? true : false ; }
+  inline bool is_pb_rayo() { return (que_suis_je() == "Modele_rayo_semi_transp" || que_suis_je().debute_par("Pb_Rayo")) ? true : false ; } /* Oui c'est un pb avec un nom : Modele ... */
 
   // FIN partie TEMPORAIRE
   // ***************************************************************************

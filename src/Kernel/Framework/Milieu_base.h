@@ -18,7 +18,7 @@
 
 #include <Champs_compris_interface.h>
 #include <Ref_Champ_Don_base.h>
-#include <Ref_Probleme_base.h>
+#include <Ref_Zone_dis_base.h>
 #include <Porosites_champ.h>
 #include <Interface_blocs.h>
 #include <Champ_Inc_base.h>
@@ -111,13 +111,13 @@ public:
   int id_composite = -1;
 
 protected:
+  REF(Zone_dis_base) zdb_;
   Champ rho; //peut etre un Champ_Don ou un Champ_Inc
   Champ_Don g, alpha, lambda, Cp, beta_th, porosites_champ;
   Champ_Fonc rho_cp_elem_,rho_cp_comme_T_;
   Champs_compris champs_compris_;
   DoubleVect porosite_face_, section_passage_face_ /* pour F5 */;
   Nom nom_;
-  REF(Probleme_base) pb_;
 
   enum Type_rayo { NONRAYO, TRANSP, SEMITRANSP };
   Type_rayo indic_rayo_;
