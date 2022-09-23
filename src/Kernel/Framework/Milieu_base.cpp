@@ -286,6 +286,7 @@ void Milieu_base::discretiser_porosite(const Probleme_base& pb, const Discretisa
       porosites_champ->valeurs() = 1.; // On initialise a 1 ...
     }
   assert(mp_min_vect(porosites_champ->valeurs()) >= 0. && mp_max_vect(porosites_champ->valeurs()) <= 1.);
+
 }
 
 void Milieu_base::verifier_coherence_champs(int& err,Nom& msg)
@@ -436,7 +437,7 @@ void Milieu_base::update_porosity_values()
 {
   assert(is_field_porosites());
   const Zone_dis_base& zdb = pb_->equation(0).zone_dis().valeur();
-  Zone_VF& zvf = ref_cast_non_const(Zone_VF, zdb);
+  const Zone_VF& zvf = ref_cast(Zone_VF, zdb);
 
   // update porosite_faces
   const int nb_face_tot = zvf.nb_faces_tot();
@@ -613,7 +614,17 @@ int Milieu_base::initialiser_porosite(const double temps)
   assert(porosites_champ.non_nul());
   if (is_field_porosites()) update_porosity_values(); /* sinon c'est deja rempli ... */
   porosites_champ.initialiser(temps);
+  fill_section_passage_face();
   return 1;
+}
+
+void Milieu_base::fill_section_passage_face()
+{
+  const Zone_dis_base& zdb = pb_->equation(0).zone_dis().valeur();
+  const Zone_VF& zvf = ref_cast(Zone_VF, zdb);
+  const DoubleVect& fs = zvf.face_surfaces();
+  section_passage_face_.resize(fs.size_array());
+  for (int i = 0; i < fs.size_array(); i++) section_passage_face_[i] = fs[i] * porosite_face_[i];
 }
 
 /*! @brief Renvoie la masse volumique du milieu.

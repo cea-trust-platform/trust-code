@@ -62,6 +62,8 @@ public:
   inline DoubleVect& porosite_face() { return porosite_face_; }
   inline const DoubleVect& porosite_face() const { return porosite_face_; }
   inline double porosite_face(const int i) const { return porosite_face_[i]; }
+  inline const DoubleVect& section_passage_face() const { return section_passage_face_; }
+  inline double section_passage_face(int i) const { return section_passage_face_[i]; }
 
   virtual int est_deja_associe();
   virtual void set_param(Param& param);
@@ -113,7 +115,7 @@ protected:
   Champ_Don g, alpha, lambda, Cp, beta_th, porosites_champ;
   Champ_Fonc rho_cp_elem_,rho_cp_comme_T_;
   Champs_compris champs_compris_;
-  DoubleVect porosite_face_;
+  DoubleVect porosite_face_, section_passage_face_ /* pour F5 */;
   Nom nom_;
   REF(Probleme_base) pb_;
 
@@ -130,7 +132,9 @@ protected:
   void discretiser_porosite(const Probleme_base& pb, const Discretisation_base& dis);
   void set_param_porosite(Param& param);
   void mettre_a_jour_porosite(double temps);
+  void fill_section_passage_face();
   int initialiser_porosite(const double temps);
+
 
 private:
   void update_porosity_values();

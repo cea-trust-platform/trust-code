@@ -71,7 +71,6 @@ public :
   inline double xp(int num_elem,int k) const { return xp_(num_elem,k); }
   inline double xa(int num_arete,int k) const { return xa_(num_arete,k); }
   inline double diametre_hydraulique_face(int i) const { return diametre_hydraulique_face_[i]; }
-//  inline double section_passage_face(int i) const { return face_surfaces_[i] * porosite_face_[i]; }
   inline double coefficient_frottement(int i) const { return coefficient_frottement_[i]; }
   inline double coefficient_echange_thermique(int i) const { return coefficient_echange_thermique_[i]; }
 
@@ -99,7 +98,6 @@ public :
 
   inline DoubleVect& diametre_hydraulique_face() { return diametre_hydraulique_face_; }
   inline const DoubleVect& diametre_hydraulique_face() const { return diametre_hydraulique_face_; }
-//  inline const DoubleVect section_passage_face() const;
   inline DoubleTab& diametre_hydraulique_elem() { return diametre_hydraulique_elem_; }
   inline const DoubleTab& diametre_hydraulique_elem() const { return diametre_hydraulique_elem_; }
   inline DoubleVect& coefficient_frottement() { return coefficient_frottement_; }
@@ -231,15 +229,6 @@ inline int Zone_VF::numero_sommet_local(int som, int elem) const
     }
   return -1;
 }
-
-//inline const DoubleVect Zone_VF::section_passage_face() const
-//{
-//  // remplissage des sections de passage
-//  DoubleVect section_passage_face_(face_surfaces_);
-//  for (int i=0; i<face_surfaces_.size_array(); i++)
-//    section_passage_face_[i] = section_passage_face(i);
-//  return section_passage_face_;
-//}
 
 /*! @brief renvoie l'element voisin de numface dans la direction i.
  *
