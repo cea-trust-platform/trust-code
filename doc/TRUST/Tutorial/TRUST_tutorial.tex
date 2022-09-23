@@ -169,13 +169,13 @@ CEA Saclay \\ % Your institution for the title page
 \frametitle{Initialization}
 \begin{block}{}
 
-To initialize the TRUST environment. 
+To initialize TRUST environment:
 \begin{itemize}
-\item On new CEA Saclay PCs, TRUST versions are available with (e.g. X.Y.Z=1.9.0):\\
+\item On CEA Saclay PCs, TRUST version is available with:\\
 %\vspace{0.2cm}
-\textbf{source  /home/trust\_trio-public/env\_TRUST-X.Y.Z.sh}
+\textbf{source  /home/trust\_trio-public/env\_TRUST-1.9.0.sh}
 %\vspace{0.5cm}
-\item On your own computer, download and install the latest version of TRUST in your local folder \$MyPathToTRUSTversion (unless this was already performed), then write on the terminal:\\
+\item On your own computer, download and install the latest version of TRUST in your local folder \$MyPathToTRUSTversion (unless this was already performed), then run on your terminal:\\
 %\vspace{0.2cm}
 \textbf{source  \$MyPathToTRUSTversion/env\_TRUST.sh}
 %\vspace{0.5cm}
@@ -189,7 +189,7 @@ To initialize the TRUST environment.
 \begin{frame}
 \frametitle{Text editor configuration}
 \begin{block}{}
-Several editors (\textbf{vim}, \textbf{emacs}, \textbf{nedit}, \textbf{gedit}) can be configured to highlight TRUST keywords in the data files. 
+Several editors (\textbf{vim}, \textbf{emacs}, \textbf{nedit}, \textbf{gedit}) can be configured to highlight TRUST keywords when editing data files.
 
 \begin{itemize}
  \item If you prefer using \textbf{nedit}, please do the following:
@@ -200,7 +200,7 @@ Several editors (\textbf{vim}, \textbf{emacs}, \textbf{nedit}, \textbf{gedit}) c
 
  \item If you prefer using \textbf{gedit}, run:
     \begin{itemize}
-    \item [$\circ$] \textbf{trust -config\index{trust -config} gedit}.
+    \item [$\circ$] \textbf{trust -config\index{trust -config} gedit}
     \end{itemize}
 
 \end{itemize}
@@ -764,19 +764,6 @@ NB: On CEA Clusters, TRUST is already installed and the procedure of launching c
 \item Check job status with: \textbf{"squeue"} or \textbf{"squeue -u yourlogin"}
 
 \item To vizualize your results, use TurboVNC as described on Users training presentation.
-%\item You could run VisIt from the cluster but it is not recommended.
-
-%\item So you can run VisIt on your PC and access/visualize the result file on callisto cluster.
-%        \begin{itemize}
-%        \item Open your .bashrc file (or create it if needed).
-%        \item Add the following lines:\\
-%        if [[ \${HOSTNAME:0:8} == "callisto" ]] \\
-%        then\\
-%           source /panfs/ixion/home/triou/TRUST/TRUST-X.Y.Z/env\_TRUST.sh \\
-%        fi
-%        \item Open VisIt on your computer, then access to your files on callisto with:\\
-%        File $\rightarrow$ Open File and select callisto in the localhost menu.
-%        \end{itemize}
 
 \end{itemize}
 
@@ -1299,11 +1286,8 @@ Top and bottom walls: No-slip wall ($U=0$) and $k$ standard flux, $\varepsilon$ 
 \item Initialize TrioCFD full environment to get access to TRUST\&TrioCFD tests.\\
 {\small{
 \begin{itemize}
-\item On new CEA Saclay computers:\\
+\item On CEA Saclay computers:\\
 \textbf{source /home/trust\_trio-public/\textcolor{red}{full}\_env\_\textcolor{blue}{TrioCFD}-X.Y.Z.sh }
-
-\item On old CEA Saclay computers:\\
-\textbf{source /home/triou/\textcolor{red}{full}\_env\_\textcolor{blue}{TrioCFD}\_X.Y.Z.sh }
 
 \item On your own computer:\\
 \textbf{source PathToTrioCFD/\textcolor{red}{full}\_env\_\textcolor{blue}{TrioCFD}.sh}
@@ -1421,11 +1405,8 @@ Goals:
 \item First initialize TrioCFD environment:\\
 {\small{
 \begin{itemize}
-\item On new CEA Saclay computers:\\
+\item On CEA Saclay computers:\\
 \textbf{source /home/trust\_trio-public/\textcolor{red}{full}\_env\_\textcolor{blue}{TrioCFD}-X.Y.Z.sh }
-
-\item On old CEA Saclay computers:\\
-\textbf{source /home/triou/\textcolor{red}{full}\_env\_\textcolor{blue}{TrioCFD}\_X.Y.Z.sh }
 
 \item On your own computer:\\
 \textbf{source PathToTrioCFD/\textcolor{red}{full}\_env\_\textcolor{blue}{TrioCFD}.sh}
@@ -1568,11 +1549,8 @@ Outlet: $P_0=0$
 \item First initialize TrioCFD environment:\\
 {\small{
 \begin{itemize}
-\item On new CEA Saclay computers:\\
+\item On CEA Saclay computers:\\
 \textbf{source /home/trust\_trio-public/env\_\textcolor{blue}{TrioCFD}-X.Y.Z.sh }
-
-\item On old CEA Saclay computers:\\
-\textbf{source /home/triou/env\_\textcolor{blue}{TrioCFD}\_X.Y.Z.sh }
 
 \item On your own computer:\\
 \textbf{source PathToTrioCFD/env\_\textcolor{blue}{TrioCFD}.sh}
@@ -1886,11 +1864,8 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 \item First initialize TrioCFD environment:\\
 {\small{
 \begin{itemize}
-\item On new CEA Saclay computers:\\
+\item On CEA Saclay computers:\\
 \textbf{source /home/trust\_trio-public/env\_\textcolor{blue}{TrioCFD}-X.Y.Z.sh }
-
-\item On old CEA Saclay computers:\\
-\textbf{source /home/triou/env\_\textcolor{blue}{TrioCFD}\_X.Y.Z.sh }
 
 \item On your own computer:\\
 \textbf{source PathToTrioCFD/env\_\textcolor{blue}{TrioCFD}.sh}
@@ -3214,241 +3189,161 @@ See an example of notebook in \\
 \small{\$TRUST\_ROOT/Validation/Rapports\_automatiques/Verification/SampleFormJupyter/} \\
 or run on terminal:\\
 Run\_fiche -doc
-%\begin{figure}
-%\includegraphics[width=0.3\textwidth]{PICTURES/valid1.jpg}
-%\includegraphics[width=0.3\textwidth]{PICTURES/valid2.jpg}
-%\includegraphics[width=0.3\textwidth]{PICTURES/valid3.jpg}
-%%\caption{Obstacle}
-%\end{figure}
-
 \end{block}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\begin{frame}
-%\frametitle{Validation form}
-%\begin{block}{}
-%
-%\begin{itemize}
-%\item First copy the validation form named Source\_canal\_perio:\\
-%{\small{
-%\textbf{mkdir -p Formation\_TRUST/yourname/validation} \\
-%\textbf{cd  Formation\_TRUST/yourname/validation} \\
-%\textbf{VERIF=\$TRUST\_ROOT/Validation/Rapports\_automatiques/Verification} \\
-%\textbf{cp -r \$VERIF/Verification\_codage/Source\_canal\_perio \, .} \\
-%\textbf{cd Source\_canal\_perio}
-% }}\\
-%
-%\item Display Run\_fiche script options:\\
-%\textbf{Run\_fiche -help\index{Run\_fiche -help}}
-%
-%\item Build the report with:\\
-%\textbf{Run\_fiche\index{Run\_fiche} -xpdf} \\
-%or\\
-%\textbf{Run\_fiche\index{Run\_fiche}} \\
-%\textbf{evince build/rapport.pdf \&} 
-%\end{itemize}
-%
-%\end{block}
-%\end{frame}
+\begin{frame}
+\frametitle{Validation form}
+\begin{block}{}
+
+\begin{itemize}
+\item First copy the validation form named Source\_canal\_perio:\\
+{\small{
+\textbf{mkdir -p Formation\_TRUST/yourname/validation} \\
+\textbf{cd  Formation\_TRUST/yourname/validation} \\
+\textbf{VERIF=\$TRUST\_ROOT/Validation/Rapports\_automatiques/Verification} \\
+\textbf{cp -r \$VERIF/Verification\_codage/Source\_canal\_perio \, .} \\
+\textbf{cd Source\_canal\_perio}
+ }}\\
+
+\item Display Run\_fiche script options:\\
+\textbf{Run\_fiche -help\index{Run\_fiche -help}}
+
+\item Build the PDF report with:\\
+\textbf{Run\_fiche -export\_pdf}\\
+then, open the report with:\\
+\textbf{evince build/rapport.pdf}
+\end{itemize}
+
+\end{block}
+\end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\begin{frame}
-%\frametitle{Validation form}
-%\begin{block}{}
-%
-%\begin{itemize}
-%\item Now, we are going to change the validation form (Examples are given in pages 10 \& 11 of the HowTo\_Validation.pdf note):\\
-%\textbf{nedit src/Canal.prm \&}
-%    \begin{itemize}
-%    \item [$\circ$] Add the mesh plot in the report. For this, at end of .prm file, introduce a new block with "visu" keyword:\\
-%    \textbf{Chapter \{ }  \\
-%    \hspace{0.3cm} \textbf{Title Additional information} \\
-%    \hspace{0.3cm} \textbf{Visu \{ } \\
-%    \hspace{0.6cm} \textbf{Title "Mesh visualization" } \\
-%    \hspace{0.6cm} \textbf{Mesh} \textit {lata\_file\_name  domain\_name [color]} \\
-%    \hspace{0.3cm} \textbf{\} } \\
-%    \textbf{\} } \\
-%    \item [$\circ$] You can help with:
-%        \begin{itemize}
-%        \item [$\diamond$] {\scriptsize{\$TRUST\_ROOT/Validation/Outils/Genere\_courbe/doc/manuel.xhtml\#paramVisu}}
-%        \item [$\diamond$] {\scriptsize{\$TRUST\_ROOT/Validation/Outils/Genere\_courbe/doc/exemples/visu.prm}}
-%        \end{itemize}
-%    \item [$\circ$] Save the .prm file and re-build the report without running the calculations:\\
-%    \textbf{Run\_fiche\index{Run\_fiche} \, -not\_run} \\
-%    \end{itemize}
-%\end{itemize}
-%
-%\end{block}
-%\end{frame}
+\begin{frame}
+\frametitle{Validation form}
+\begin{block}{}
+
+\begin{itemize}
+\item Now, we are going to change the validation form (Examples are given in SampleFormJupyter Validation form):\\
+\textbf{Run\_fiche \&}
+    \begin{itemize}
+    \item [$\circ$] Add the mesh plot in the report. For this, at end of the notebook, add a new Markdown cell for a title:\\
+    \textbf{\#\#Additional information\\
+    \#\#\#Mesh visualization } \\
+    \item Add a new code cell to plot mesh \\
+    \small{fig=visit.Show("./std.lata", "Mesh", "dom", plotmesh=True,title="Mesh")}\\
+    \small{fig.plot()}
+    \end{itemize}
+\end{itemize}
+
+\end{block}
+\end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\begin{frame}
-%\frametitle{Validation form}
-%\begin{block}{}
-%
-%\begin{itemize}
-%\item Add the evolution of residuals in the report in log scale (see .dt\_ev file). For this, introduce a new block with "Figure" and "Curve" keywords:
-%    \begin{itemize}
-%    \item [$\circ$] Complete the chapter "Additional information" with a new block "Figure":\\
-%    {\scriptsize{
-%%    \textbf{Chapter \{}  \\
-%%    \hspace{.3cm} \textbf{Title "Additional information"}  \\
-%    \hspace{.3cm} \textbf{Figure \{}  \\
-%    \hspace{.6cm} \textbf{Title "Residuals evolution"}  \\
-%    \hspace{.6cm} \textbf{LabelX "Time (s)"}  \\
-%    \hspace{.6cm} \textbf{LabelY "Residual"}  \\
-%    \hspace{.6cm} \textbf{LogX}  \\
-%    \hspace{.6cm} \textbf{LogY}  \\
-%    \hspace{.6cm} \textbf{Include\_description\_Curves 0}  \\
-%    \hspace{.6cm} \textbf{Curve \{ }  \\
-%    \hspace{.8cm} \textbf{legend} \textit{data\_file\_name.data}  \\
-%    \hspace{.8cm} \textbf{file} \textit{data\_file\_name.dt\_ev} \\
-%    \hspace{.8cm} \textbf{columns \, \$}\textit{column\_number\_for\_x} \, \textbf{\$}\textit{column\_number\_for\_y }  \\
-%    \hspace{.8cm} \textbf{style lines} \\
-%    \hspace{0.6cm} \textbf{\}}  \\
-%    \hspace{0.6cm} \textbf{...}  \\
-%    \hspace{.3cm} \textbf{\}}  \\
-%%    \textbf{\}}  \\
-%    }}
-%    \item [$\circ$] If you need help, see:
-%        \begin{itemize}
-%        \item [$\diamond$] {\scriptsize{\$TRUST\_ROOT/Validation/Outils/Genere\_courbe/doc/manuel.xhtml\#paramFigure}}
-%        \item [$\diamond$] {\scriptsize{\$TRUST\_ROOT/Validation/Outils/Genere\_courbe/doc/manuel.xhtml\#paramCourbe}}
-%        \item [$\diamond$] {\scriptsize{\$TRUST\_ROOT/Validation/Outils/Genere\_courbe/doc/exemples/impl.prm}}
-%        \end{itemize}
-%    \end{itemize}
-%\end{itemize}
-%
-%\end{block}
-%\end{frame}
+\begin{frame}
+\frametitle{Validation form}
+\begin{block}{}
+
+\begin{itemize}
+\item Add the evolution of residuals in the report in log scale (see .dt\_ev file). For this, introduce a new Jupyter text cell and write:\\
+\textbf{\#\# Residual plot}\\
+then, on another cell plot residual using:\\
+\textbf{Graph = plot.Graph("Residual plot")} \\
+\textbf{Graph.addResidu("std.dt\_ev",label="Residu")} \\
+\textbf{Graph.scale(yscale='log')}
+\end{itemize}
+
+\end{block}
+\end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\begin{frame}
-%\frametitle{Validation form}
-%\begin{block}{}
-%
-%\hspace{1cm} $\color{darkblue}\circ$ {\small{Visualize the pressure field at the last time: complete the chapter "Additional \\
-%\hspace{1.3cm} information" with a new block "Visu" using "PseudoColor" keywords. The \\
-%\hspace{1.3cm} name of the field and its localization must be uppercase letter: }}
-%
-%{\footnotesize{
-%%\hspace{1.5cm} \textbf{Chapter \{ } \\
-%\hspace{1.3cm} \textbf{Visu \{ } \\
-%\hspace{1.6cm} \textbf{Title "Visualization of pressure field at the last time" } \\
-%\hspace{1.6cm} \textbf{Description "Pressure field..."} \\
-%\hspace{1.6cm} \textbf{Pseudocolor} \textit{data\_file\_name.lata domain\_name FIELD POSITION} \\
-%\hspace{1.6cm} \textbf{Cycles}  \textit{cycle\_numbers}\\
-%\hspace{1.6cm} \textbf{Width} \textit{size\_in\_cm} \\
-%\hspace{1.3cm} \textbf{\}} \\
-%%\hspace{1.5cm} \textbf{\}} \\
-%}}
-%{\small{
-%\hspace{1.3cm} NB: Cycle '-1' correspond to the last time. \\
-%\hspace{1.3cm} NB: You can use the "magnitude" keyword to visualize the velocity field \\
-%\hspace{1.3cm} without using arrows (\small{Syntax: Pseudocolor data\_file\_name.lata dom\_magnitude VITESSE SOM}).
-%}}
-%\vspace{0.2cm}
-%
-%\hspace{1cm} $\color{darkblue}\circ$ {\small{ Save and close the .prm file and build the report with the options:\\
-%\hspace{1.3cm} (Options are given in page 7 of the HowTo\_Validation.pdf note) }}\\
-%\hspace{1.3cm} {\small{\textbf{Run\_fiche\index{Run\_fiche} -xpdf -not\_run}}}
-%
-%\end{block}
-%\end{frame}
+\begin{frame}
+\frametitle{Validation form}
+\begin{block}{}
+
+\hspace{1cm} $\color{darkblue}\circ$ {Visualize the pressure field at the last time: complete the section "Additional information" with a new cell "Visualizing fields" }
+
+\hspace{1cm} $\color{darkblue}\circ$ Then try to find how to display that field on \textbf{SampleFormJupyter} available with \textbf{Run\_fiche -doc}
+
+\end{block}
+\end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\begin{frame}
-%\frametitle{Validation form}
-%\begin{block}{}
-%
-%\begin{itemize}
-%\item Now, we are going to extract the number of cells and the last time from three .err files and write it in .dat files via a post\_run script.
-%
-%    \begin{itemize}
-%    \item [$\circ$] Create a "post\_run" file in the src directory containing:\\
-%    {\footnotesize{
-%    \textbf{nb1=\` \,grep "Total number of elements" std.err $|$ awk '\{print \$NF\}' \`} \\
-%    \textbf{nb2=\` \,grep "Total number of elements" debit.err $|$ awk '\{print \$NF\}' \`} \\
-%    \textbf{nb3=\` \,grep "Total number of elements" debit2.err $|$ awk '\{print \$NF\}' \`} \\
-%    \textbf{echo \$nb1 \$nb2 \$nb3 $>$ nbcells.dat} \\
-%    \textbf{tp1=\` \,grep "Backup of the field" std.err $|$ awk '\{print \$NF\}' $|$ head -n 1 \`} \\
-%    \textbf{tp2=\` \,grep "Backup of the field" debit.err $|$ awk '\{print \$NF\}' $|$ head -n 1 \`} \\
-%    \textbf{tp3=\` \,grep "Backup of the field" debit2.err $|$ awk '\{print \$NF\}' $|$ head -n 1 \`} \\
-%    \textbf{echo \$tp1 \$tp2 \$tp3 $>$ lasttime.dat} \\
-%    }}
-%
-%    \item [$\circ$] Add a table to display the results of .dat files: complete the chapter "Additional information" by introducing a new block with "table" and "line" keywords.\\
-%    If you need help, see:
-%        \begin{itemize}
-%        \item [$\diamond$] {\scriptsize{\$TRUST\_ROOT/Validation/Outils/Genere\_courbe/doc/manuel.xhtml\#paramTableau}}
-%        \item [$\diamond$] {\scriptsize{\$TRUST\_ROOT/Validation/Outils/Genere\_courbe/doc/manuel.xhtml\#paramLigne}}
-%        \item [$\diamond$] {\scriptsize{\$TRUST\_ROOT/Validation/Outils/Genere\_courbe/doc/exemples/tableau.prm}}
-%        \end{itemize}
-%    \end{itemize}
-%\end{itemize}
-%
-%\end{block}
-%\end{frame}
+\begin{frame}
+\frametitle{Validation form}
+\begin{block}{}
+
+\begin{itemize}
+\item Now, we are going to extract the number of cells and the last time from three .err files and write it in .dat files via a post\_run script.
+
+    \begin{itemize}
+    \item [$\circ$] Create a "post\_run" file in the src directory containing:\\
+    {\footnotesize{
+    \textbf{nb1=\` \,grep "Total number of elements" std.err $|$ awk '\{print \$NF\}' \`} \\
+    \textbf{nb2=\` \,grep "Total number of elements" debit.err $|$ awk '\{print \$NF\}' \`} \\
+    \textbf{nb3=\` \,grep "Total number of elements" debit2.err $|$ awk '\{print \$NF\}' \`} \\
+    \textbf{echo \$nb1 \$nb2 \$nb3 $>$ nbcells.dat} \\
+    \textbf{tp1=\` \,grep "Backup of the field" std.err $|$ awk '\{print \$NF\}' $|$ head -n 1 \`} \\
+    \textbf{tp2=\` \,grep "Backup of the field" debit.err $|$ awk '\{print \$NF\}' $|$ head -n 1 \`} \\
+    \textbf{tp3=\` \,grep "Backup of the field" debit2.err $|$ awk '\{print \$NF\}' $|$ head -n 1 \`} \\
+    \textbf{echo \$tp1 \$tp2 \$tp3 $>$ lasttime.dat} \\
+    }}
+
+    \item [$\circ$] Add a table to display the results of .dat files: complete the chapter "Additional information" by introducing new cells.\\
+    Tip: look on the next slide for an example of table plot.
+    \end{itemize}
+
+\end{itemize}
+
+\end{block}
+\end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\begin{frame}
-%\frametitle{Validation form}
-%\begin{block}{}
-%
-%\hspace{1cm} $\color{darkblue}\circ$ {\small{ The table block will look like:\\
-%{\footnotesize{
-%%\textbf{Chapter \{ } \\
-%%\hspace{0.3cm} \textbf{Title "Additional information"} \\
-%\hspace{1.4cm} \textbf{Table \{} \\
-%\hspace{1.7cm} \textbf{Title "Number of cells and last time results"} \\
-%\hspace{1.7cm} \textbf{Nb\_columns} number\_of\_colomns\_without\_the\_first\_one \\
-%\hspace{1.7cm} \textbf{Label} label\_of\_the\_first\_column $|$ label\_of\_the\_second\_column ...\\
-%\hspace{1.7cm} \textbf{Line \{} \\
-%\hspace{2cm} \textbf{legend} title\_of\_the\_first\_line\\
-%\hspace{2cm} \textbf{file} name\_of\_the\_file.dat\\
-%\hspace{1.7cm} \textbf{\}} \\
-%\hspace{1.7cm} \textbf{...} \\
-%\hspace{1.4cm} \textbf{\}} \\
-%%\textbf{\}} \\
-%}}
-%}}
-%
-%\hspace{1cm} $\color{darkblue}\circ$ {\small{ Save the .prm file in src directory and build the report with a new option:\\
-%\hspace{1.4cm} \textbf{Run\_fiche\index{Run\_fiche} -xpdf -post\_run}
-%}}
-%
-%\end{block}
-%\end{frame}
+\begin{frame}
+\frametitle{Validation form}
+\begin{block}{}
+
+Here is an example of a Jupyter cell for displaying a table.
+
+\begin{figure}
+ \includegraphics[width=1.\textwidth]{PICTURES/jupyter_table.png}
+\end{figure}
+
+
+\end{block}
+\end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\begin{frame}
-%\frametitle{Validation form}
-%\begin{block}{}
-%
-%\begin{itemize}
-%\item Now we are going to modify the "prepare" file in "src" directory in order to add a fourth test case: "debit4"
-%    \begin{itemize}
-%    \item [$\circ$] "debit4" correspond to "std" test case with zero initial velocity and imposed flow rate to $2 m^3/s$ on "periox" boundary.
-%    \item [$\circ$] Add a line in the "prepare" file using the "sed" command to create the new data file like the other ones:\\
-%    \textbf{nedit src/prepare \& }
-%    \end{itemize}
-%
-%\item We are going to update the validation form.
-%    \begin{itemize}
-%    \item [$\circ$] Modify the "Canal.prm" file in "src" directory to take into account the new test case debit4. Add in the \textbf{Parameters} block:\\
-%    \hspace{0.3cm} \textbf{TestCase . Debit4.data}\\
-%
-%    \item [$\circ$] Build the report by running the 4 test cases simultaneously (not sequentially):\\
-%    \textbf{Run\_fiche\index{Run\_fiche} -parallel\_run -xpdf}
-%    \item [$\circ$] You can add the results of this test case to your "visu" and "table".
-%    \end{itemize}
-%
-%\end{itemize}
-%
-%\end{block}
-%\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Validation form}
+\begin{block}{}
+
+\begin{itemize}
+\item Now we are going to modify the "prepare" script in "src" directory in order to add a fourth test case: "debit4"
+    \begin{itemize}
+    \item [$\circ$] "debit4" corresponds to "std" test case with zero initial velocity and imposed flow rate to $2 m^3/s$ on "periox" boundary.
+    \item [$\circ$] Add a line in the "prepare" file using the "sed" command to create the new data file like the other ones:\\
+    \textbf{nedit src/prepare \& }
+    \end{itemize}
+
+\item We are going to update the validation form.
+    \begin{itemize}
+    \item [$\circ$] Modify your validation form to run this new test case in addition to the previous test cases
+
+    \item [$\circ$] Re-build the whole validation form by clicking on the icone corresponding to the \"restart of the Jupyter kernel and run of the whole notebook\":
+
+    \item [$\circ$] build the pdf report using: \\
+
+    \textbf{Run\_fiche\index{Run\_fiche} -export\_pdf}
+    \item [$\circ$] NB: You can add the results of this test case to your "visualization" and to the "table".
+    \end{itemize}
+
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 \section{{\bf{Annex: Unix Quick Reference}}}
