@@ -1542,6 +1542,31 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
   double start = Statistiques::get_time_now();
   if (nouvelle_matrice())
     {
+      // Changement de la taille de matrice, on detruit les objets dont la taille change:
+      int hasChanged = mp_max((int)(secmem_sz_!=secmem.size_array()));
+      if (MatricePetsc_!=NULL || hasChanged != 0)
+        {
+          // Destruction de la matrice de preconditionnement:
+          KSPSetOperators(SolveurPetsc_, MatricePetsc_, NULL);
+          // Destruction des vecteurs
+          VecDestroy(&SecondMembrePetsc_);
+          SecondMembrePetsc_ = NULL;
+          VecDestroy(&SolutionPetsc_);
+          SolutionPetsc_ = NULL;
+          if (LocalSolutionPetsc_!=NULL)
+            {
+              VecDestroy(&LocalSolutionPetsc_);
+              LocalSolutionPetsc_ = NULL;
+              VecScatterDestroy(&VecScatter_);
+            }
+          // Destruction matrice
+          MatDestroy(&MatricePetsc_);
+          MatricePetsc_ = NULL;
+          // Destruction DM
+          if (dm_!=NULL)
+            DMDestroy(&dm_);
+        }
+
       matrice_symetrique_ = 1;      // On suppose que la matrice est symetrique
 
       // Construction de la numerotation globale:

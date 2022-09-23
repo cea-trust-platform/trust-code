@@ -26,8 +26,13 @@ class Solv_Externe : public SolveurSys_base
 {
   Declare_base_sans_constructeur_ni_destructeur(Solv_Externe);
 public:
-  Solv_Externe():SolveurSys_base::SolveurSys_base() {};
-  ~Solv_Externe() {};
+  Solv_Externe() : SolveurSys_base::SolveurSys_base(),
+    nb_items_to_keep_(-1), nb_rows_(-1), nb_rows_tot_(-1),
+    decalage_local_global_(-1),
+    matrice_symetrique_(-1),
+    secmem_sz_(-1)
+  {}
+  ~Solv_Externe() {}
 protected:
   void construit_matrice_morse_intermediaire(const Matrice_Base&, Matrice_Morse& );
   void construit_renum(const DoubleVect&);
@@ -39,6 +44,7 @@ protected:
   int nb_rows_tot_;             // Nombre de lignes globales de la matrice TRUST
   int decalage_local_global_;   // Decalage numerotation local/global pour matrice CSR et vecteur
   int matrice_symetrique_;      // Drapeau sur la symetrie de la matrice
+  int secmem_sz_;               // (Local) second member size
 };
 
 
