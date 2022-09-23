@@ -13,16 +13,15 @@
 *
 *****************************************************************************/
 
-#include <Milieu_composite.h>
-#include <Equation_base.h>
 #include <Discretisation_base.h>
 #include <Schema_Temps_base.h>
-#include <Probleme_base.h>
-#include <EChaine.h>
-#include <Zone_VF.h>
-#include <Pb_Multiphase.h>
+#include <Milieu_composite.h>
 #include <Champ_Uniforme.h>
+#include <Equation_base.h>
+#include <Probleme_base.h>
+#include <Pb_Multiphase.h>
 #include <Interprete.h>
+#include <Zone_VF.h>
 
 Implemente_instanciable(Milieu_composite, "Milieu_composite", Fluide_base);
 
@@ -36,7 +35,10 @@ Entree& Milieu_composite::readOn(Entree& is)
 
   for (is >> mot; mot != "}"; is >> mot)
     {
-      if (!mot.debute_par("saturation") && !mot.debute_par("interface")) // on ajout les phases
+      if (Motcle(mot) == "POROSITES_CHAMP") is >> porosites_champ;
+      else if (Motcle(mot) == "POROSITES") Cerr << "You should use porosites_champ and not porosites ! Call the 911 !" << finl, Process::exit();
+      else if (Motcle(mot) == "GRAVITE") is >> g;
+      else if (!mot.debute_par("saturation") && !mot.debute_par("interface")) // on ajout les phases
         {
           noms_phases_.add(mot);
           Cerr << "Milieu_composite : ajout la phase " << mot << " ... " << finl;
@@ -65,7 +67,7 @@ Entree& Milieu_composite::readOn(Entree& is)
   if (has_saturation() && has_interface())
     Cerr << "You define both interface and saturation in Milieu_composite ???" << finl, Process::exit();
 
-  // interfaces
+  // Traitement pour les interfaces
   int N = fluides.size();
   for (int n = 0; n < N; n++)
     {
@@ -144,6 +146,9 @@ int Milieu_composite::initialiser(const double temps)
   ch_e.associer_eqn(eqn),   ch_e.init_champ_calcule(*this, calculer_energie_interne);
   ch_h.associer_eqn(eqn),   ch_h.init_champ_calcule(*this, calculer_enthalpie);
   t_init_ = temps;
+
+  Milieu_base::initialiser_porosite(temps);
+  if (g.non_nul()) g->initialiser(temps);
   return 1;
 }
 
@@ -195,6 +200,9 @@ void Milieu_composite::discretiser(const Probleme_base& pb, const  Discretisatio
   champs_compris_.ajoute_champ(Cp.valeur());
   champs_compris_.ajoute_champ(e_int);
   champs_compris_.ajoute_champ(h);
+
+  // Finalement, on discretise la porosite
+  Milieu_base::discretiser_porosite(pb,dis);
 }
 
 void Milieu_composite::mettre_a_jour(double temps)
@@ -214,6 +222,9 @@ void Milieu_composite::mettre_a_jour(double temps)
   if (h_m.non_nul()) h_m.mettre_a_jour(temps);
   mettre_a_jour_tabs();
   // Fluide_base::mettre_a_jour(temps);
+
+  Milieu_base::mettre_a_jour_porosite(temps);
+  if (g.non_nul()) g->mettre_a_jour(temps);
 }
 
 void Milieu_composite::mettre_a_jour_tabs()
