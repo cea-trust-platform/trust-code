@@ -172,27 +172,27 @@ void Dispersion_bulles_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
         int e;
         for (int c = 0; c < 2 && (e = f_e(f, c)) >= 0; c++)
           {
-            for (int n = 0; n < N; n++) a_l(n)   += vf_dir(f, c)/vf(f) * alpha(e, n);
-            for (int n = 0; n < N; n++) p_l(n)   += vf_dir(f, c)/vf(f) * press(e, n * (Np > 1));
-            for (int n = 0; n < N; n++) T_l(n)   += vf_dir(f, c)/vf(f) * temp(e, n);
-            for (int n = 0; n < N; n++) rho_l(n) += vf_dir(f, c)/vf(f) * rho(!cR * e, n);
-            for (int n = 0; n < N; n++) mu_l(n)  += vf_dir(f, c)/vf(f) * mu(!cM * e, n);
-            for (int n = 0; n < N; n++) nut_l(n) += is_turb    ? vf_dir(f, c)/vf(f) * nut(e,n) : 0;
-            for (int n = 0; n <Nk; n++) k_l(n)   += (k_turb)   ? vf_dir(f, c)/vf(f) * (*k_turb)(e,0) : 0;
-            for (int n = 0; n < N; n++) d_b_l(n) += (d_bulles) ? vf_dir(f, c)/vf(f) * (*d_bulles)(e,n) : 0;
             for (int n = 0; n < N; n++)
-              for (int k = 0; k < N; k++)
-                if (milc.has_interface(n,k))
-                  {
-                    Interface_base& sat = milc.get_interface(n, k);
-                    sigma_l(n,k) += vf_dir(f, c)/vf(f) * sat.sigma(temp(e,n),press(e,n * (Np > 1)));
-                  }
-            for (int k = 0; k < N; k++)
-              for (int l = 0; l < N; l++)
-                {
-                  dv(k, l) += vf_dir(f, c)/vf(f) * ch.v_norm(pvit, pvit, e, f, k, l, NULL, &ddv_c(0));
-                }
+              {
+                a_l(n)   += vf_dir(f, c)/vf(f) * alpha(e, n);
+                p_l(n)   += vf_dir(f, c)/vf(f) * press(e, n * (Np > 1));
+                T_l(n)   += vf_dir(f, c)/vf(f) * temp(e, n);
+                rho_l(n) += vf_dir(f, c)/vf(f) * rho(!cR * e, n);
+                mu_l(n)  += vf_dir(f, c)/vf(f) * mu(!cM * e, n);
+                nut_l(n) += is_turb    ? vf_dir(f, c)/vf(f) * nut(e,n) : 0;
+                d_b_l(n) += (d_bulles) ? vf_dir(f, c)/vf(f) * (*d_bulles)(e,n) : 0;
+                for (int k = 0; k < N; k++)
+                  if (milc.has_interface(n,k))
+                    {
+                      Interface_base& sat = milc.get_interface(n, k);
+                      sigma_l(n,k) += vf_dir(f, c)/vf(f) * sat.sigma(temp(e,n),press(e,n * (Np > 1)));
+                    }
+                for (int k = 0; k < N; k++)
+                  dv(k, n) += vf_dir(f, c)/vf(f) * ch.v_norm(pvit, pvit, e, f, k, n, NULL, &ddv_c(0));
+              }
+            for (int n = 0; n <Nk; n++) k_l(n)   += (k_turb)   ? vf_dir(f, c)/vf(f) * (*k_turb)(e,0) : 0;
           }
+
         correlation_db.coefficient(a_l, p_l, T_l, rho_l, mu_l, sigma_l, nut_l, k_l, d_b_l, dv, coeff); // correlation identifies the liquid phase
 
         for (int k = 0; k < N; k++)
@@ -208,24 +208,27 @@ void Dispersion_bulles_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
   for (int e = 0; e < ne_tot; e++)
     {
       /* arguments de coeff */
-      for (int n = 0; n < N; n++) a_l(n)   = alpha(e, n);
-      for (int n = 0; n < N; n++) p_l(n)   = press(e, n * (Np > 1));
-      for (int n = 0; n < N; n++) T_l(n)   =  temp(e, n);
-      for (int n = 0; n < N; n++) rho_l(n) =   rho(!cR * e, n);
-      for (int n = 0; n < N; n++) mu_l(n)  =    mu(!cM * e, n);
-      for (int n = 0; n < N; n++) nut_l(n) = is_turb    ? nut(e,n) : 0;
-      for (int n = 0; n <Nk; n++) k_l(n)   = (k_turb)   ? (*k_turb)(e,0) : 0;
-      for (int n = 0; n < N; n++) d_b_l(n) = (d_bulles) ? (*d_bulles)(e,n) : 0;
       for (int n = 0; n < N; n++)
-        for (int k = 0; k < N; k++)
-          if (milc.has_interface(n,k))
-            {
-              Interface_base& sat = milc.get_interface(n, k);
-              sigma_l(n,k) = sat.sigma(temp(e,n),press(e,n * (Np > 1)));
-            }
+        {
+          a_l(n)   = alpha(e, n);
+          p_l(n)   = press(e, n * (Np > 1));
+          T_l(n)   =  temp(e, n);
+          rho_l(n) =   rho(!cR * e, n);
+          mu_l(n)  =    mu(!cM * e, n);
+          nut_l(n) = is_turb    ? nut(e,n) : 0;
+          d_b_l(n) = (d_bulles) ? (*d_bulles)(e,n) : 0;
+          for (int k = 0; k < N; k++)
+            if (milc.has_interface(n,k))
+              {
+                Interface_base& sat = milc.get_interface(n, k);
+                sigma_l(n,k) = sat.sigma(temp(e,n),press(e,n * (Np > 1)));
+              }
 
-      for (int k = 0; k < N; k++)
-        for (int l = 0; l < N; l++) dv(k, l) = ch.v_norm(pvit, pvit, e, -1, k, l, NULL, &ddv(k, l, 0));
+          for (int k = 0; k < N; k++)
+            dv(k, n) = ch.v_norm(pvit, pvit, e, -1, k, n, NULL, &ddv(k, n, 0));
+        }
+      for (int n = 0; n <Nk; n++) k_l(n)   = (k_turb)   ? (*k_turb)(e,0) : 0;
+
       correlation_db.coefficient(a_l, p_l, T_l, rho_l, mu_l, sigma_l, nut_l, k_l, d_b_l, dv, coeff);
 
       for (int d = 0, i = nf_tot + D * e; d < D; d++, i++)

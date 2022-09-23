@@ -89,25 +89,25 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
   for (e = 0; e < zone.nb_elem_tot(); e++)
     {
       /* arguments de coeff */
-      for (n = 0; n < N; n++) a_l(n)   = alpha(e, n);
-      for (n = 0; n < N; n++) p_l(n)   = press(e, n * (Np > 1));
-      for (n = 0; n < N; n++) T_l(n)   = temp(e, n);
-      for (n = 0; n < N; n++) rho_l(n) = rho(!cR * e, n);
-      for (n = 0; n < N; n++) mu_l(n)  = mu(!cM * e, n);
-      for (n = 0; n <Nk; n++) k_l(n)   = (k_turb)   ? (*k_turb)(e,0) : 0;
-      for (n = 0; n < N; n++) d_b_l(n) = (d_bulles) ? (*d_bulles)(e,n) : 0;
       for (n = 0; n < N; n++)
         {
+          a_l(n)   = alpha(e, n);
+          p_l(n)   = press(e, n * (Np > 1));
+          T_l(n)   = temp(e, n);
+          rho_l(n) = rho(!cR * e, n);
+          mu_l(n)  = mu(!cM * e, n);
+          d_b_l(n) = (d_bulles) ? (*d_bulles)(e,n) : 0;
           for (k = 0; k < N; k++)
             if(milc.has_interface(n, k))
               {
                 Interface_base& sat = milc.get_interface(n, k);
                 sigma_l(n,k) = sat.sigma(temp(e,n), press(e,n * (Np > 1)));
               }
+          for (k = 0; k < N; k++)
+            dv(k, n) = std::max(ch.v_norm(pvit, pvit, e, -1, k, n, NULL, &ddv(k, n, 0)), dv_min);
         }
+      for (n = 0; n < Nk; n++)  k_l(n)   = (k_turb)   ? (*k_turb)(e,0) : 0;
 
-      for (k = 0; k < N; k++)
-        for (l = 0; l < N; l++) dv(k, l) = std::max(ch.v_norm(pvit, pvit, e, -1, k, l, NULL, &ddv(k, l, 0)), dv_min);
       correlation_pi.coefficient(a_l, p_l, T_l, rho_l, mu_l, sigma_l, k_l, d_b_l, dv, e, coeff);
 
       fac_e = beta_*pe(e) * ve(e);

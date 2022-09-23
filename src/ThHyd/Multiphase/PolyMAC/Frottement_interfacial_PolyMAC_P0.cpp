@@ -120,30 +120,29 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
     if (fcl(f, 0) < 2)
       {
         for (a_l = 0, p_l = 0, T_l = 0, rho_l = 0, mu_l = 0, dh = 0, sigma_l = 0, dv = dv_min, ddv = 0, d_bulles_l=0, c = 0; c < 2 && (e = f_e(f, c)) >= 0; c++)
-          {
-            for (n = 0; n < N; n++) a_l(n)   += vfd(f, c) / vf(f) * alpha(e, n);
-            for (n = 0; n < N; n++) p_l(n)   += vfd(f, c) / vf(f) * press(e, n * (Np > 1));
-            for (n = 0; n < N; n++) T_l(n)   += vfd(f, c) / vf(f) * temp(e, n);
-            for (n = 0; n < N; n++) rho_l(n) += vfd(f, c) / vf(f) * rho(!cR * e, n);
-            for (n = 0; n < N; n++) mu_l(n)  += vfd(f, c) / vf(f) * mu(!cM * e, n);
-            for (n = 0; n < N; n++)
+          for (n = 0; n < N; n++)
+            {
+              a_l(n)   += vfd(f, c) / vf(f) * alpha(e, n);
+              p_l(n)   += vfd(f, c) / vf(f) * press(e, n * (Np > 1));
+              T_l(n)   += vfd(f, c) / vf(f) * temp(e, n);
+              rho_l(n) += vfd(f, c) / vf(f) * rho(!cR * e, n);
+              mu_l(n)  += vfd(f, c) / vf(f) * mu(!cM * e, n);
               for (k = 0; k < N; k++)
                 if (milc.has_interface(n,k))
                   {
                     Interface_base& sat = milc.get_interface(n, k);
                     sigma_l(n,k) += vfd(f, c) / vf(f) * sat.sigma(temp(e,n),press(e,n * (Np > 1)));
                   }
-
-            for (n = 0; n < N; n++) dh += vfd(f, c) / vf(f) * alpha(e, n) * dh_e(e);
-            for (k = 0; k < N; k++)
-              for (l = 0; l < N; l++)
+              dh += vfd(f, c) / vf(f) * alpha(e, n) * dh_e(e);
+              for (k = 0; k < N; k++)
                 {
-                  double dv_c = ch.v_norm(pvit, pvit, e, f, k, l, NULL, &ddv_c(0));
-                  if (dv_c > dv(k, l))
-                    for (dv(k, l) = dv_c, i = 0; i < 4; i++) ddv(k, l, i) = ddv_c(i);
+                  double dv_c = ch.v_norm(pvit, pvit, e, f, k, n, NULL, &ddv_c(0));
+                  if (dv_c > dv(k, n))
+                    for (dv(k, n) = dv_c, i = 0; i < 4; i++) ddv(k, n, i) = ddv_c(i);
                 }
-            for (n=0; n<N; n++) d_bulles_l(n) += (d_bulles) ? vfd(f, c) / vf(f) * (*d_bulles)(e,n) : 0;
-          }
+              d_bulles_l(n) += (d_bulles) ? vfd(f, c) / vf(f) * (*d_bulles)(e,n) : 0;
+            }
+
         correlation_fi.coefficient(a_l, p_l, T_l, rho_l, mu_l, sigma_l, dh, dv, d_bulles_l, coeff);
         for (k = 0; k < N; k++)
           for (l = 0; l < N; l++)
@@ -167,31 +166,34 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
   for (e = 0; e < zone.nb_elem_tot(); e++)
     {
       /* arguments de coeff */
-      for (n = 0; n < N; n++) a_l(n)   = alpha(e, n);
-      for (n = 0; n < N; n++) p_l(n)   = press(e, n * (Np > 1));
-      for (n = 0; n < N; n++) T_l(n)   =  temp(e, n);
-      for (n = 0; n < N; n++) rho_l(n) =   rho(!cR * e, n);
-      for (n = 0; n < N; n++) mu_l(n)  =    mu(!cM * e, n);
       for (n = 0; n < N; n++)
         {
+          a_l(n)   = alpha(e, n);
+          p_l(n)   = press(e, n * (Np > 1));
+          T_l(n)   =  temp(e, n);
+          rho_l(n) =   rho(!cR * e, n);
+          mu_l(n)  =    mu(!cM * e, n);
           for (k = 0; k < N; k++)
             if(milc.has_interface(n, k))
               {
                 Interface_base& sat = milc.get_interface(n, k);
                 sigma_l(n,k) = sat.sigma(temp(e,n), press(e,n * (Np > 1)));
               }
+          d_bulles_l(n) = (d_bulles) ? (*d_bulles)(e,n) : 0;
+
+          for (k = 0; k < N; k++) dv(k, n) = std::max(ch.v_norm(pvit, pvit, e, -1, k, n, NULL, &ddv(k, n, 0)), dv_min);
+
         }
-      for (n=0; n<N; n++) d_bulles_l(n) = (d_bulles) ? (*d_bulles)(e,n) : 0;
+
+      correlation_fi.coefficient(a_l, p_l, T_l, rho_l, mu_l, sigma_l, dh_e(e), dv, d_bulles_l, coeff);
 
       for (k = 0; k < N; k++)
-        for (l = 0; l < N; l++) dv(k, l) = std::max(ch.v_norm(pvit, pvit, e, -1, k, l, NULL, &ddv(k, l, 0)), dv_min);
-      correlation_fi.coefficient(a_l, p_l, T_l, rho_l, mu_l, sigma_l, dh_e(e), dv, d_bulles_l, coeff);
-      for (k = 0; k < N; k++)
-        for (l = 0; l < N; l++) coeff(k, l, 1) *= (dv(k, l) > dv_min); //pas de derivee si dv < dv_min
-      for (k = 0; k < N; k++)
         for (l = 0; l < N; l++)
-          for (j = 0; j < 2; j++)
-            coeff(k, l, j) *= 1 + (a_l(k) > 1e-8 ? std::pow(a_l(k) / a_res_, -exp_res) : 0) + (a_l(l) > 1e-8 ? std::pow(a_l(l) / a_res_, -exp_res) : 0);
+          {
+            coeff(k, l, 1) *= (dv(k, l) > dv_min); //pas de derivee si dv < dv_min
+            for (j = 0; j < 2; j++)
+              coeff(k, l, j) *= 1 + (a_l(k) > 1e-8 ? std::pow(a_l(k) / a_res_, -exp_res) : 0) + (a_l(l) > 1e-8 ? std::pow(a_l(l) / a_res_, -exp_res) : 0);
+          }
 
       for (d = 0, i = nf_tot + D * e; d < D; d++, i++)
         for (k = 0; k < N; k++)
