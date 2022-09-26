@@ -603,6 +603,7 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
       Process::exit();
     }
   Cout << "[rocALUTION] Time to solve: " << (rocalution_time() - tick) / 1e6 << finl;
+  tick = rocalution_time();
 
   int nb_iter = ls->GetIterationCount();
   double res_final = ls->GetCurrentResidual();
@@ -640,6 +641,7 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
   //rhs.Clear();
   //e.Clear();
   if (nb_iter>1) first_solve_ = false;
+  Cout << "[rocALUTION] Time to get solution: " << (rocalution_time() - tick) / 1e6 << finl;
   return nb_iter;
 #else
   Process::exit("Sorry, rocALUTION solvers not available with this build.");

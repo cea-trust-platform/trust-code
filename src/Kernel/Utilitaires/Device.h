@@ -101,5 +101,9 @@ inline void copyFromDevice(TRUSTArray<_TYPE_>& tab)
     }
 #endif
 }
-
+// Pour disabler
+inline bool computeOnDevice()
+{
+  return getenv("TRUST_DISABLE_DEVICE") == NULL ? true : false;
+}
 #endif

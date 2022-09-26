@@ -78,7 +78,7 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& sm) const
   const double * volumes_entrelaces_Cl_addr = copyToDevice(volumes_entrelaces_Cl);
   const double * volumes_entrelaces_addr = copyToDevice(volumes_entrelaces);
   double * sm_addr = sm.addr();
-  #pragma omp target teams distribute parallel for map(tofrom:sm_addr[0:sm.size_array()])
+  #pragma omp target teams distribute parallel for if (computeOnDevice()) map(tofrom:sm_addr[0:sm.size_array()])
   for (int face=num_std; face<nfa; face++)
     for (int comp=0; comp<nbcomp; comp++)
       sm_addr[face*nbcomp+comp] /= (volumes_entrelaces_addr[face]*porosite_face_addr[face]);
@@ -144,7 +144,7 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& sm) const
     }
 
   // On traite les faces internes non standard
-  #pragma omp target teams distribute parallel for map(tofrom:sm_addr[0:sm.size_array()])
+  #pragma omp target teams distribute parallel for if (computeOnDevice()) map(tofrom:sm_addr[0:sm.size_array()])
   for (int face=num_int; face<num_std; face++)
     for (int comp=0; comp<nbcomp; comp++)
       sm_addr[face*nbcomp+comp] /= (volumes_entrelaces_Cl_addr[face]*porosite_face_addr[face]);
