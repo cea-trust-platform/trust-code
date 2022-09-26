@@ -113,7 +113,7 @@ double precond_option(Entree& is, const Motcle& motcle)
 // Fonction template pour la creation des precond simple ou double precision
 #ifdef ROCALUTION_ROCALUTION_HPP_
 template <typename T>
-Solver<GlobalMatrix<T>, GlobalVector<T>, T>* create_rocALUTION_precond(EChaine& is)
+Solver<GlobalMatrix<T>, GlobalVector<T>, T>* create_rocALUTION_precond(EChaine& is, Solver<LocalMatrix<T>, LocalVector<T>, T>* lp)
 {
   Solver<GlobalMatrix<T>, GlobalVector<T>, T>* p;
   Motcle precond;
@@ -124,6 +124,86 @@ Solver<GlobalMatrix<T>, GlobalVector<T>, T>* create_rocALUTION_precond(EChaine& 
     {
       p = new Jacobi<GlobalMatrix<T>, GlobalVector<T>, T>();
       precond_option(is, "");
+    }
+  else if (precond==(Motcle)"PairwiseAMG") //
+    {
+      p = new PairwiseAMG<GlobalMatrix<T>, GlobalVector<T>, T>();
+      auto& pairwiseamg = dynamic_cast<PairwiseAMG<GlobalMatrix<T>, GlobalVector<T>, T> &>(*p);
+      pairwiseamg.SetCoarseningFactor(0.1); // [0-20]
+      pairwiseamg.SetOrdering(MIS);
+      pairwiseamg.InitMaxIter(1);
+      pairwiseamg.Verbose(3);
+      pairwiseamg.SetKcycleFull(true);
+      //pairwiseamg.SetBeta(..);
+      //
+      //pairwiseamg....
+      precond_option(is, "");
+    }
+  else if (precond==(Motcle)"null")
+    {
+      p = nullptr;
+      precond_option(is, ""); // Pas de preconditionnement
+    }
+  else
+    {
+      // Local preconditionners with BlockJacobi preconditionner:
+      p = new BlockJacobi<GlobalMatrix<T>, GlobalVector<T>, T>();
+      if (precond == (Motcle) "MultiColoredGS")  //
+        {
+          lp = new MultiColoredGS<LocalMatrix<T>, LocalVector<T>, T>(); // Attention converge avec BICGSTAB pas CG...
+          double omega = ::precond_option(is, "omega");
+          if (omega >= 0) dynamic_cast<MultiColoredGS<LocalMatrix<T>, LocalVector<T>, T> &>(*lp).SetRelaxation(omega);
+        }
+      else if (precond == (Motcle) "ILU")  //
+        {
+          lp = new ILU<LocalMatrix<T>, LocalVector<T>, T>(); // Converge pas non plus donc probleme...
+          int level = (int) precond_option(is, "level");
+          if (level >= 0)
+            dynamic_cast<ILU<LocalMatrix<T>, LocalVector<T>, T> &>(*lp).Set(level, true);
+        }
+      else if (precond == (Motcle) "SAAMG" || precond == (Motcle) "SA-AMG")  // Converge avec BICGStab (setup SAAMG desormais sur GPU)
+        {
+          lp = new SAAMG<LocalMatrix<T>, LocalVector<T>, T>();
+          auto& saamg = dynamic_cast<SAAMG<LocalMatrix<T>, LocalVector<T>, T> &>(*lp);
+          saamg.SetCoarseningStrategy(CoarseningStrategy::PMIS);
+          saamg.SetLumpingStrategy(LumpingStrategy::AddWeakConnections); // Ameliore convergence d'apres sample ?
+          saamg.SetCoarsestLevel(200);
+          saamg.SetCouplingStrength(0.001);
+          //saamg.SetHostLevels(2); // Force deux grilles les plus laches sur HOST...
+          //saamg.SetSmootherPreIter(1);
+          //saamg.SetSmootherPostIter(1);
+          saamg.InitMaxIter(1);
+          precond_option(is, "");
+        }
+      else if (precond==(Motcle)"RugeStuebenAMG" || precond==(Motcle)"C-AMG")  // Equivalent a C-AMG ?
+        {
+          lp = new RugeStuebenAMG<LocalMatrix<T>, LocalVector<T>, T>();
+          auto& rsamg = dynamic_cast<RugeStuebenAMG<LocalMatrix<T>, LocalVector<T>, T> &>(*lp);
+          rsamg.SetCoarseningStrategy(CoarseningStrategy::PMIS);
+          rsamg.SetInterpolationType(InterpolationType::Direct);
+          //rsamg.InitMaxIter(1);
+          precond_option(is, "");
+        }
+      else if (precond==(Motcle)"UAAMG" || precond==(Motcle)"UA-AMG")  // Converge en ? its
+        {
+          lp = new UAAMG<LocalMatrix<T>, LocalVector<T>, T>();
+          auto& uuamg = dynamic_cast<UAAMG<LocalMatrix<T>, LocalVector<T>, T> &>(*lp);
+          uuamg.InitMaxIter(1);
+          precond_option(is, "");
+        }
+      else if (precond == (Motcle) "GS")  //
+        {
+          lp = new GS<LocalMatrix<T>, LocalVector<T>, T>(); // ???
+          precond_option(is, "");
+        }
+      else
+        {
+          Cerr << "Error! Unknown rocALUTION preconditionner: " << precond << finl;
+          Process::exit();
+          return nullptr;
+        }
+      lp->Verbose(0);
+      dynamic_cast<BlockJacobi<GlobalMatrix<T>, GlobalVector<T>, T> &>(*p).Set(*lp);
     }
   /* ToDo: precond sequentiels !
   else if (precond==(Motcle)"ILUT") // OK en 78 its
@@ -136,29 +216,6 @@ Solver<GlobalMatrix<T>, GlobalVector<T>, T>* create_rocALUTION_precond(EChaine& 
       p = new SPAI<GlobalMatrix<T>, GlobalVector<T>, T>();
       precond_option(is, "");
     }
-  else if (precond==(Motcle)"ILU") // OK en ~123 its (level 0), 76 its (level 1)
-    {
-      p = new ILU<GlobalMatrix<T>, GlobalVector<T>, T>();
-      int level = (int)precond_option(is, "level");
-      if (level>=0) dynamic_cast<ILU<GlobalMatrix<T>, GlobalVector<T>, T> &>(*p).Set(level, true);
-    }
-  else if (precond==(Motcle)"MultiColoredSGS") // OK en ~150 its (mais 183 omega 1.6!) (semble equivalent a GCP/SSOR mais 3 fois plus lent)
-    {
-      p = new MultiColoredSGS<GlobalMatrix<T>, GlobalVector<T>, T>();
-      double omega = precond_option(is, "omega");
-      if (omega>=0) dynamic_cast<MultiColoredSGS<GlobalMatrix<T>, GlobalVector<T>, T> &>(*p).SetRelaxation(omega);
-    }
-  else if (precond==(Motcle)"GS") // Converge pas
-    {
-      p = new GS<GlobalMatrix<T>, GlobalVector<T>, T>();
-      precond_option(is, "");
-    }
-  else if (precond==(Motcle)"MultiColoredGS") // Converge pas
-    {
-      p = new MultiColoredGS<GlobalMatrix<T>, GlobalVector<T>, T>();
-      double omega = ::precond_option(is, "omega");
-      if (omega>=0) dynamic_cast<MultiColoredGS<GlobalMatrix<T>, GlobalVector<T>, T> &>(*p).SetRelaxation(omega);
-    }
   else if (precond==(Motcle)"SGS") // Converge pas
     {
       p = new SGS<GlobalMatrix<T>, GlobalVector<T>, T>();
@@ -169,34 +226,7 @@ Solver<GlobalMatrix<T>, GlobalVector<T>, T>* create_rocALUTION_precond(EChaine& 
       p = new BlockPreconditioner<GlobalMatrix<T>, GlobalVector<T>, T>();
       precond_option(is, "");
     }
-  else if (precond==(Motcle)"SAAMG" || precond==(Motcle)"SA-AMG")  // Converge en 100 its
-    {
-      p = new SAAMG<GlobalMatrix<T>, GlobalVector<T>, T>();
-      precond_option(is, "");
-    }
-  else if (precond==(Motcle)"UAAMG" || precond==(Motcle)"UA-AMG")  // Converge en 120 its
-    {
-      p = new UAAMG<GlobalMatrix<T>, GlobalVector<T>, T>();
-      precond_option(is, "");
-      dynamic_cast<UAAMG<GlobalMatrix<T>, GlobalVector<T>, T> &>(*p).Verbose(0);
-    }
-  else if (precond==(Motcle)"PairwiseAMG")  // Converge pas
-    {
-      p = new PairwiseAMG<GlobalMatrix<T>, GlobalVector<T>, T>();
-      precond_option(is, "");
-      dynamic_cast<PairwiseAMG<GlobalMatrix<T>, GlobalVector<T>, T> &>(*p).Verbose(0);
-    }
-  else if (precond==(Motcle)"RugeStuebenAMG" || precond==(Motcle)"C-AMG")  // Converge en 57 its (equivalent a C-AMG ?)
-    {
-      p = new RugeStuebenAMG<GlobalMatrix<T>, GlobalVector<T>, T>();
-      precond_option(is, "");
-    } */
-  else
-    {
-      Cerr << "Error! Unknown rocALUTION preconditionner: " << precond << finl;
-      Process::exit();
-      return nullptr;
-    }
+  */
   return p;
 }
 
@@ -211,6 +241,10 @@ IterativeLinearSolver<GlobalMatrix<T>, GlobalVector<T>, T>* create_rocALUTION_so
   else if (solver==(Motcle)"GMRES")
     {
       return new GMRES<GlobalMatrix<T>, GlobalVector<T>, T>();
+    }
+  else if (solver==(Motcle)"BICGSTAB")
+    {
+      return new BiCGStab<GlobalMatrix<T>, GlobalVector<T>, T>();
     }
   else
     {
@@ -304,9 +338,9 @@ void Solv_rocALUTION::create_solver(Entree& entree)
     }
   else
     {
-      p = create_rocALUTION_precond<double>(precond);
+      p = create_rocALUTION_precond<double>(precond, lp);
       ls = create_rocALUTION_solver<double>(solver);
-      ls->SetPreconditioner(*p);
+      if (p!= nullptr) ls->SetPreconditioner(*p);
     }
   ls->InitTol(atol_, rtol_, div_tol);
   //p->FlagPrecond();

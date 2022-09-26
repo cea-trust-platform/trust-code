@@ -40,8 +40,12 @@ private :
 #ifdef ROCALUTION_ROCALUTION_HPP_
   ParallelManager pm;
   GlobalMatrix<double> mat;
+  // Solver:
   IterativeLinearSolver<GlobalMatrix<double>, GlobalVector<double>, double>* ls;
-  Solver<GlobalMatrix<double>, GlobalVector<double>, double>* p;
+  // Preconditioners:
+  Solver<GlobalMatrix<double>, GlobalVector<double>, double>* p; // parallel global
+  Solver<LocalMatrix<double>, LocalVector<double>, double>* lp;  // local
+  // Mixed-precision solver:
   IterativeLinearSolver<GlobalMatrix<float>, GlobalVector<float>, float>* sp_ls;
   Solver<GlobalMatrix<float>, GlobalVector<float>, float>* sp_p;
   double atol_, rtol_;
