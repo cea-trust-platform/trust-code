@@ -3,7 +3,7 @@
 help()
 {
    echo "For jupyter's validation forms (new formalism in v1.9.0):"
-   echo "Usage: `basename $0` [-help] [-export_pdf] [-exec binary_path] [-doc]"
+   echo "Usage: `basename $0` [path] [-help] [-export_pdf] [-exec binary_path] [-doc]"
    echo "Script to build a PDF report file from a Jupyter validation form."
    echo "-help                          : This description."
    echo "-doc                           : Open jupyter's validation forms documentation (opens SampleFormJupyter notebook)."
@@ -13,7 +13,7 @@ help()
    echo "-create                        : Build a minimal .ipynb with data files found in the src directory."
    echo
    echo "For .prm validation forms:"
-   echo "Usage: `basename $0` [-help] [-not_run] [-post_run] [-parallel_run] [-parallel_sjob] [-nb_pas_dt_max N] [-visit_np np] [-dest path_build] [-d text|figure_number] [-o name_rapport.pdf] [-xpdf] [-remote login@machine:PATH] [-exec binary_path] [-save]"
+   echo "Usage: `basename $0` [path] [-help] [-not_run] [-post_run] [-parallel_run] [-parallel_sjob] [-nb_pas_dt_max N] [-visit_np np] [-dest path_build] [-d text|figure_number] [-o name_rapport.pdf] [-xpdf] [-remote login@machine:PATH] [-exec binary_path] [-save]"
    echo "Script to build a PDF report file from an automated validation test case (.prm file)." 
    echo "-help                          : This description."
    echo "-doc_prm                       : Open the prm file documentation."
@@ -76,7 +76,11 @@ then
 fi
 while [ "$1" != "" ]
 do
-   if [ "$1" = -help ]
+   if [ "${1#-}" = $1 ] && [ -d $1 ] 
+   then
+      cd $1
+      shift
+   elif [ "$1" = -help ]
    then
       help
       exit 0
