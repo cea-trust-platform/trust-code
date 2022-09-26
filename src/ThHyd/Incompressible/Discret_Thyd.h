@@ -51,7 +51,7 @@ public :
   // void diametre_hydraulique(const Zone_dis&, const Schema_Temps_base&, Champ_Fonc&) const;
   void diametre_hydraulique_elem(const Zone_dis&, const Schema_Temps_base&, Champ_Fonc&) const;
   void diametre_hydraulique_face(const Zone_dis&, const Schema_Temps_base&, Champ_Fonc&) const;
-  void section_passage(const Zone_dis&, const Zone_Cl_dis&, const Schema_Temps_base&, Champ_Fonc&) const;
+  void section_passage(const Zone_dis&, const DoubleVect&, const Schema_Temps_base&, Champ_Fonc&) const;
 
   // Methodes virtuelles
   virtual void creer_champ_vorticite(const Schema_Temps_base&, const Champ_Inc&, Champ_Fonc&) const;

@@ -130,7 +130,7 @@ Entree& Probleme_base::readOn(Entree& is)
     }
 
   /* 1 : milieu : NEW SYNTAX */
-  if (!via_associer() && !is_pb_med() && !is_pb_FT() && !is_pb_rayo())
+  if (!milieu_via_associer() && !is_pb_med() && !is_pb_FT() && !is_pb_rayo())
     typer_lire_milieu(is);
   else assert((int)le_milieu_.size() == 0);
 
@@ -300,7 +300,7 @@ int Probleme_base::associer_(Objet_U& ob)
   if( sub_type(Milieu_base, ob))
     {
       warn_old_syntax();
-      via_associer_ = true;
+      milieu_via_associer_ = true;
       warn_old_syntax();
       if (!ref_cast(Milieu_base, ob).est_deja_associe())
         return 2;
@@ -391,7 +391,7 @@ void Probleme_base::discretiser(const Discretisation_base& une_discretisation)
 
   discretiser_equations(); // pour pb_multi ... on fera plus tard !
 
-  if (via_associer() || is_pb_FT())
+  if (milieu_via_associer() || is_pb_FT())
     {
       // Discretisation du milieu:
       //   ATTENTION (BM): il faudra faire quelque chose ici car si on associe deux

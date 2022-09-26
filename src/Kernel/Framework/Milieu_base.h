@@ -130,14 +130,13 @@ protected:
 
   // Utile pour F5
   void discretiser_porosite(const Probleme_base& pb, const Discretisation_base& dis);
-  void set_param_porosite(Param& param);
+  virtual void set_param_porosite(Param& param);
+  virtual void calculate_face_porosity();
   void mettre_a_jour_porosite(double temps);
   void fill_section_passage_face();
   int initialiser_porosite(const double temps);
 
-
 private:
-  void update_porosity_values();
   // attribue utile pour porosites (pas porosites_champ) ... a voir si utile sinon a virer ...
   Porosites porosites_;
   bool is_user_porosites_ = false, is_field_porosites_ = false;

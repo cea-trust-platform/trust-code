@@ -179,14 +179,15 @@ public:
   REF(Field_base) findInputField(const Nom& name) const override { return findInputField_impl(*this, name); }
   REF(Champ_Generique_base) findOutputField(const Nom& name) const override { return findOutputField_impl(*this, name); }
 
+  inline bool milieu_via_associer() { return milieu_via_associer_; }
+
 protected :
   // ***************************************************************************
   // TODO : XXX:  TEMPORAIRE : on accepte pour le momemnt l'ancienne syntaxe,
   // i.e. typer_lire xxxx milieu, associer, typer_lire_grav, associer xxxx , ...
   // a voir plus tard quand ca devient absolete
 
-  bool via_associer_ = false;
-  inline bool via_associer() { return via_associer_; }
+  bool milieu_via_associer_ = false;
   void warn_old_syntax();
   inline bool is_pb_med() { return (que_suis_je() == "Pb_MED" || que_suis_je() == "Pbc_MED") ? true : false ; }
   inline bool is_pb_FT() { return (que_suis_je() == "Probleme_FT_Disc_gen") ? true : false ; }

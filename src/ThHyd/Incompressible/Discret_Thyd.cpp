@@ -126,15 +126,14 @@ void Discret_Thyd::diametre_hydraulique_face(const Zone_dis& z, const Schema_Tem
   ch_fonc.valeurs().ref(zone_VF.diametre_hydraulique_face());
 }
 
-void Discret_Thyd::section_passage(const Zone_dis& z, const Zone_Cl_dis& zcl, const Schema_Temps_base& sch, Champ_Fonc& ch) const
+void Discret_Thyd::section_passage(const Zone_dis& z, const DoubleVect& section_passage_face, const Schema_Temps_base& sch, Champ_Fonc& ch) const
 {
   Cerr << "Section passage field discretization" << finl;
   const Zone_VF& zone_VF = ref_cast(Zone_VF, z.valeur());
   discretiser_champ("champ_face", zone_VF, "section_passage", "m2", dimension, sch.temps_courant(), ch);
   Champ_Fonc_base& ch_fonc = ref_cast(Champ_Fonc_base, ch.valeur());
   DoubleVect& tab = ch_fonc.valeurs();
-  const DoubleVect& spf = zcl->equation().milieu().section_passage_face();
-  tab.inject_array(spf);
+  tab.inject_array(section_passage_face);
   //tab = zone_VF.section_passage_face();
 }
 

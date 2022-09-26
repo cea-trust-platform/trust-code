@@ -102,7 +102,6 @@ void Milieu_base::set_param(Param& param)
   param.ajouter("lambda", &lambda);
   param.ajouter("Cp", &Cp);
   param.ajouter("beta_th", &beta_th);
-  param.ajouter("gravite", &g);
   set_param_porosite(param);
 }
 
@@ -111,6 +110,7 @@ void Milieu_base::set_param_porosite(Param& param)
 {
   param.ajouter("porosites_champ", &porosites_champ);
   param.ajouter("porosites", &porosites_);
+  param.ajouter("gravite", &g); // pour F5 je mets la gravite ici ...
 }
 
 int Milieu_base::lire_motcle_non_standard(const Motcle& mot_lu, Entree& is)
@@ -287,8 +287,16 @@ void Milieu_base::discretiser_porosite(const Probleme_base& pb, const Discretisa
       champs_compris_.ajoute_champ(porosites_champ.valeur());
       porosites_champ->valeurs() = 1.; // On initialise a 1 ...
     }
-  assert(mp_min_vect(porosites_champ->valeurs()) >= 0. && mp_max_vect(porosites_champ->valeurs()) <= 1.);
 
+//  assert(mp_min_vect(porosites_champ->valeurs()) >= 0. && mp_max_vect(porosites_champ->valeurs()) <= 1.);
+  // XXX : Elie Saikali
+  // tomber sur un cas F5 avec printf("%.9g\n", 1.0 - mp_max_vect) = -2.88657986e-15
+  // essayer de comparer avec std::numeric_limits<double>::epsilon() mais l'overflow est > !!  du coup je teste comme ca pour le moment
+  assert(mp_min_vect(porosites_champ->valeurs()) >= -1.e-12 && mp_max_vect(porosites_champ->valeurs()) <= 1. + 1.e-12);
+
+  if (is_field_porosites()) calculate_face_porosity(); /* sinon c'est deja rempli ... */
+
+  fill_section_passage_face();
 }
 
 void Milieu_base::verifier_coherence_champs(int& err,Nom& msg)
@@ -438,7 +446,7 @@ void Milieu_base::calculer_alpha()
     Cerr << "alpha calculation is not possible since lambda is not known." << finl;
 }
 
-void Milieu_base::update_porosity_values()
+void Milieu_base::calculate_face_porosity()
 {
   assert(is_field_porosites());
   const Zone_VF& zvf = ref_cast(Zone_VF, zdb_.valeur());
@@ -492,7 +500,7 @@ void Milieu_base::mettre_a_jour_porosite(double temps)
 {
   assert(porosites_champ.non_nul());
   if (is_field_porosites())
-    if (sub_type(Champ_late_input_P0, porosites_champ.valeur())) update_porosity_values();
+    if (sub_type(Champ_late_input_P0, porosites_champ.valeur())) calculate_face_porosity();
 
   porosites_champ.mettre_a_jour(temps);
 }
@@ -616,9 +624,7 @@ int Milieu_base::initialiser_porosite(const double temps)
 {
   // TODO : XXX : a voir si ICoCo ? faut l'initialiser dans le main ?
   assert(porosites_champ.non_nul());
-  if (is_field_porosites()) update_porosity_values(); /* sinon c'est deja rempli ... */
   porosites_champ.initialiser(temps);
-  fill_section_passage_face();
   return 1;
 }
 
