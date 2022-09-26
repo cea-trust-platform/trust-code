@@ -111,7 +111,7 @@ int Format_Post_Med::ecrire_entete(const double temps_courant,const int reprise,
 
 }
 
-int Format_Post_Med::finir(int& est_le_dernier_post)
+int Format_Post_Med::finir(const int est_le_dernier_post)
 {
   Nom nom_fic_base(med_basename_);
   nom_fic_base += ".med";

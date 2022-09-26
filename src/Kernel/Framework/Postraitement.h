@@ -70,6 +70,9 @@ public:
   int reprendre(Entree& is) override;
   void completer() override;
   void completer_sondes() override;
+  void init() override;
+  void set_param(Param& param) override;
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
 
   //
   // Methodes specifiques :
@@ -82,9 +85,6 @@ public:
   inline Probleme_base& probleme() { return mon_probleme.valeur(); }
   inline const Probleme_base& probleme() const { return mon_probleme.valeur(); }
 
-  void init() override;
-  void set_param(Param& param) override;
-  int lire_motcle_non_standard(const Motcle&, Entree&) override;
   int postraiter_sondes();
   int traiter_sondes();
   int postraiter_champs();

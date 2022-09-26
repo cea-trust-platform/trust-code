@@ -62,7 +62,7 @@ public:
   int ecrire_entete(const double temps_courant,const int reprise,const int est_le_premier_post) override;
   int completer_post(const Domaine& dom, const int axi, const Nature_du_champ& nature, const int nb_compo, const Noms& noms_compo, const Motcle& loc_post, const Nom& le_nom_champ_post) override;
   int preparer_post(const Nom& id_du_domaine, const int est_le_premier_post, const int reprise, const double t_init) override;
-  int finir(int& est_le_dernier_post) override;
+  int finir(const int est_le_dernier_post) override;
   int ecrire_domaine(const Domaine& domaine,const int est_le_premier_post) override;
   int ecrire_domaine_dis(const Domaine& domaine,const REF(Zone_dis_base)& zone_dis_base,const int est_le_premier_post) override;
   int ecrire_temps(const double temps) override;

@@ -15,7 +15,7 @@
 #include <Decouper.h>
 #include <Domaine.h>
 #include <DomaineCutter.h>
-#include <Postraitement_lata.h>
+#include <Format_Post_Lata.h>
 #include <EChaine.h>
 #include <SFichier.h>
 #include <Param.h>
@@ -103,34 +103,50 @@ static void postraiter_decoupage(const Nom& nom_fichier_lata,
                                  const Domaine& domaine,
                                  const IntVect& elem_part)
 {
-  Cerr << "Postprocessing of the splitting at the lata format: " << nom_fichier_lata << finl;
-  Postraitement_lata::Format format = Postraitement_lata::BINAIRE;
-  Postraitement_lata::ecrire_entete(nom_fichier_lata,
-                                    "Discretisation_inconnue",
-                                    format);
-  Postraitement_lata::ecrire_zone(nom_fichier_lata,
-                                  domaine.zone(0),
-                                  format);
+  Cerr << "Postprocessing of the splitting at the lata (V2) format: " << nom_fichier_lata << finl;
 
-  Postraitement_lata::ecrire_temps(nom_fichier_lata,
-                                   0.,
-                                   format);
+  Format_Post_Lata post;
+
+  constexpr int IS_FIRST = 1;
+  // Check and strip ".lata" :
+  Nom basename;
+  if (nom_fichier_lata.finit_par(".lata"))
+    {
+      basename = nom_fichier_lata;
+      basename.prefix(".lata");
+    }
+  else
+    Process::exit("Decouper: postraiter_decoupage(): the file name for postprocessing the domain should end with extension '.lata'!!");
+  post.initialize_lata(basename, Format_Post_Lata::BINAIRE, Format_Post_Lata::SINGLE_FILE);
+  post.ecrire_entete(0.0, 0, IS_FIRST);
+  post.ecrire_domaine(domaine, IS_FIRST);
+  post.ecrire_temps(0.0);
+
+  // Compute dummy field indicating partitioning:
   const int n = elem_part.size_reelle();
   DoubleTab data(n);
   for (int i = 0; i < n; i++)
     data(i) = elem_part[i];
-  Postraitement_lata::ecrire_champ(nom_fichier_lata,
-                                   Nom("partition"),
-                                   Postraitement_lata::CHAMP,
-                                   'I',
-                                   domaine.le_nom(),
-                                   "pb",
-                                   0., /* temps */
-                                   Postraitement_base::ELEMENTS,
-                                   data,
-                                   format);
 
-  Postraitement_lata::finir_lata(nom_fichier_lata);
+  // Write it down:
+  Noms units, noms_compo;
+  units.add("");
+  noms_compo.add("I");
+
+  post.ecrire_champ(domaine,
+                    units,
+                    noms_compo,
+                    1,           // ncomp,
+                    0.0,         //temps,
+                    0.0,         //temps_courant,
+                    "partition", // id_du_champ,
+                    domaine.le_nom(), // id_du_domaine
+                    "ELEM",      // localisation,
+                    "scalar",    //nature,
+                    data         // valeurs
+                   );
+
+  post.finir(1);
 }
 
 static void ecrire_sous_zones(const Nom& nom_zones_decoup,

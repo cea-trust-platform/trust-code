@@ -76,7 +76,7 @@ int Format_Post_base::ecrire_entete(const double temps_courant,const int reprise
   return 0;
 }
 
-int Format_Post_base::finir(int& est_le_dernier_post)
+int Format_Post_base::finir(const int est_le_dernier_post)
 {
   Cerr << "Format_Post_base::finir method not coded for " << que_suis_je() << finl;
   return 0;

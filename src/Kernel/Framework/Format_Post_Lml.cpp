@@ -102,7 +102,7 @@ int Format_Post_Lml::ecrire_entete(const double temps_courant,const int reprise,
 
 }
 
-int Format_Post_Lml::finir(int& est_le_dernier_post)
+int Format_Post_Lml::finir(const int est_le_dernier_post)
 {
 
   Nom nom_fich(lml_basename_);

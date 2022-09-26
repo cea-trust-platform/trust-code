@@ -24,7 +24,6 @@
 #include <Faces_builder.h>
 #include <Zone_VF.h>
 #include <Reordonner_faces_periodiques.h>
-#include <Postraitement_lata.h>
 #include <communications.h>
 #include <MD_Vector_tools.h>
 #include <MD_Vector_std.h>
@@ -34,6 +33,7 @@
 #include <Comm_Group_MPI.h>
 #include <FichierHDFPar.h>
 #include <LecFicDiffuse.h>
+#include <Format_Post_Lata.h>
 
 #include <EFichierBin.h>
 
@@ -74,43 +74,41 @@ Domaine& Scatter::domaine()
 
 static void dump_lata(const Domaine& dom)
 {
+  Format_Post_Lata post;  // Lata V2
+  Nom nom_fichier_lata("espaces_virtuels");
+
   const Zone& zone = dom.zone(0);
   const int nb_joints = zone.nb_joints();
+  constexpr int IS_FIRST = 1;
 
-  const Comm_Group *cg = 0;
-  Nom nom_fichier_lata("espaces_virtuels");
-  Postraitement_lata::Format format = Postraitement_lata::BINAIRE;
-  Postraitement_lata::ecrire_entete(nom_fichier_lata,
-                                    "Discretisation_inconnue",
-                                    format, cg);
-  Postraitement_lata::ecrire_zone(nom_fichier_lata,
-                                  zone,
-                                  format, cg);
+  post.initialize_lata(nom_fichier_lata, Format_Post_Lata::BINAIRE, Format_Post_Lata::SINGLE_FILE);
+  post.ecrire_entete(0.0, 0, IS_FIRST);
+  post.ecrire_domaine(dom, IS_FIRST);
+  post.ecrire_temps(0.0);
 
-  Postraitement_lata::ecrire_temps(nom_fichier_lata,
-                                   0.,
-                                   format, cg);
-  const int n = zone.nb_elem();
-  DoubleTab data(n);
+  Noms units, noms_compo;
+  units.add("");
+  noms_compo.add("I");
+  DoubleTab data(zone.nb_elem());
   for(int ij = 0; ij < nb_joints; ij++)
     {
       const ArrOfInt& t1 = zone.joint(ij).joint_item(Joint::ELEMENT).items_distants();
       data = 0.;
-      {
-        const int nt1 = t1.size_array();
-        for (int i = 0; i < nt1; i++)
-          data[t1[i]] += 1;
-      }
-      Postraitement_lata::ecrire_champ(nom_fichier_lata,
-                                       Nom("partition") + Nom(zone.joint(ij).PEvoisin()),
-                                       Postraitement_lata::CHAMP,
-                                       'I',
-                                       dom.le_nom(),
-                                       "pb",
-                                       0., /* temps */
-                                       Postraitement_base::ELEMENTS,
-                                       data,
-                                       format);
+      const int nt1 = t1.size_array();
+      for (int i = 0; i < nt1; i++) data[t1[i]] += 1;
+
+      post.ecrire_champ(dom,
+                        units,
+                        noms_compo,
+                        1,           // ncomp,
+                        0.0,         // temps,
+                        0.0,         // temps_courant,
+                        Nom("partition") + Nom(zone.joint(ij).PEvoisin()), // id_du_champ,
+                        dom.le_nom(), // id_du_domaine
+                        "ELEM",       // localisation,
+                        "scalar",     // nature,
+                        data          // valeurs
+                       );
     }
 }
 

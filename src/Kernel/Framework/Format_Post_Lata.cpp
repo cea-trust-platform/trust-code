@@ -1282,7 +1282,8 @@ int Format_Post_Lata::ecrire_temps_lata(const double temps,double& temps_format,
     }
   return 1;
 }
-int Format_Post_Lata::finir(int& est_le_dernier_post)
+
+int Format_Post_Lata::finir(const int est_le_dernier_post)
 {
   if (est_le_dernier_post)
     {

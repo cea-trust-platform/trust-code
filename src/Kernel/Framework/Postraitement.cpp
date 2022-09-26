@@ -547,21 +547,23 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
  *     par defaut 1e6. Et aucun postraitement n'est demande.
  *
  */
-Postraitement::Postraitement()
+Postraitement::Postraitement():
+  est_le_premier_postraitement_pour_nom_fich_(-1), est_le_dernier_postraitement_pour_nom_fich_(-1),
+  dt_post_ch_ (1.e6),
+  dt_post_stat_(1.e6),
+  dt_post_tab(1.e6),
+  nb_pas_dt_post_((int)(pow(2.0,(double)((sizeof(True_int)*8)-1))-1)),
+  nb_champs_stat_(0),
+  tstat_deb_(-1), tstat_fin_(-1), tstat_dernier_calcul_(-1),
+  lserie_(0),
+  dt_integr_serie_(1.e6),
+  sondes_demande_(0), champs_demande_(0), stat_demande_(0), stat_demande_definition_champs_(0),
+  binaire(-1), tableaux_demande_(0),
+  nom_fich_(nom_du_cas()),
+  format("lml"),
+  option_para("SIMPLE"),
+  temps_(-1.), dernier_temps(-1.)
 {
-  est_le_premier_postraitement_pour_nom_fich_=-1;
-  est_le_dernier_postraitement_pour_nom_fich_=-1;
-  temps_=-1;
-  dt_post_ch_=dt_post_stat_=dt_post_tab=dt_integr_serie_=1.e6;
-  nb_pas_dt_post_ = (int)(pow(2.0,(double)((sizeof(True_int)*8)-1))-1);
-  sondes_demande_ = champs_demande_ = stat_demande_ = stat_demande_definition_champs_ =tableaux_demande_=0;
-  binaire=-1;
-  tstat_deb_=tstat_fin_=tstat_dernier_calcul_=-1;
-  nb_champs_stat_=0;
-  lserie_=0;
-  option_para="SIMPLE";
-  nom_fich_ = nom_du_cas();
-  format="lml";
 }
 
 int Postraitement::sauvegarder(Sortie& os) const

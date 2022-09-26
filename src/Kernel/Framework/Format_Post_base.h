@@ -117,7 +117,7 @@ public:
   virtual int init_ecriture(double temps_courant, double temps_post, int est_le_premier_postraitement_pour_nom_fich_, const Domaine& domaine);
 
   virtual int finir_ecriture(double temps_courant);
-  virtual int finir(int& est_le_dernier_post);
+  virtual int finir(const int est_le_dernier_post);
 
   virtual int ecrire_domaine(const Domaine& domaine,const int est_le_premier_post);
   virtual int ecrire_domaine_dis(const Domaine& domaine,const REF(Zone_dis_base)& zone_dis_base,const int est_le_premier_post);

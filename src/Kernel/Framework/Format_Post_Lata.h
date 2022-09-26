@@ -68,7 +68,7 @@ public:
   int ecrire_domaine(const Domaine& domaine, const int est_le_premier_post) override;
   int ecrire_temps(const double temps) override;
 
-  int finir(int& est_le_dernier_post) override;
+  int finir(const int est_le_dernier_post) override;
 
   int ecrire_champ(const Domaine& domaine, const Noms& unite_, const Noms& noms_compo, int ncomp, double temps_, double temps_courant, const Nom& id_du_champ, const Nom& id_du_domaine,
                    const Nom& localisation, const Nom& nature, const DoubleTab& data) override;

@@ -99,7 +99,7 @@ Navier_Stokes_standard
     {
         Premier_post
         {
-            Format lata_v1
+            Format lata
             fields dt_post 0.1
             {
                 vitesse		elem

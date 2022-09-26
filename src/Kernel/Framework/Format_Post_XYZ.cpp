@@ -102,7 +102,7 @@ int Format_Post_XYZ::ecrire_entete(double temps_courant,int reprise,const int es
 
 }
 
-int Format_Post_XYZ::finir(int& est_le_dernier_post)
+int Format_Post_XYZ::finir(const int est_le_dernier_post)
 {
 
   Nom nom_fich(xyz_basename_);

@@ -40,12 +40,12 @@ public:
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   virtual void postraiter(int forcer) = 0;
   virtual void mettre_a_jour(double temps);
-  virtual void init() {};
-  virtual void finir() {};
+  virtual void init() {}
+  virtual void finir() {}
   int sauvegarder(Sortie& os) const override;
   int reprendre(Entree& is) override;
   virtual void completer() = 0;
-  virtual void completer_sondes() {};
+  virtual void completer_sondes() {}
 
   enum Format { ASCII, BINAIRE };
   enum Type_Champ { CHAMP=0, STATISTIQUE=1 };
