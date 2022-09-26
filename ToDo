@@ -1,8 +1,10 @@
 Version	Qui				Tache
+1.9.1   trust@cea.fr            Ajouter --output-on-failure pour ctest afin d'afficher le log du cas qui a plante
+1.9.1   trust@cea.fr            Voir si on peut retirer .dico de git
 1.9.1   trust@cea.fr            correction xmax dans Octree_Double.cpp, cf mail de Luc. nb : ce fichier existe a 2 endroits : dans outils et dans src
 1.9.1   trust@cea.fr            empecher d'installer TRUST sur home titania
 1.9.1   trust@cea.fr            mise a jour tuto utilisateur/dev avec jupyter
-1.9.1   pierre.ledac@cea.fr	VisIt sur Ubuntu 22
+1.9.1   pierre.ledac@cea.fr	VisIt sur Ubuntu 22 (plugin med)
 1.9.1   pierre.ledac@cea.fr     [PETSC_AMGX] Corriger erreur valgrind sur machine gpu en mettant a jour AMGX*
 1.9.1   pierre.ledac@cea.fr     Modifier scripts Baltik pour qu un Baltik quelconque puisse etre deplace sans souci apres installation
 1.9.1   anida.khizar@cea.fr     coder la resolution en increment dans le solveur_masse

@@ -594,7 +594,8 @@ ComposantsLns="Test_Baltik equation_convection_diffusion ICoCo Front_tracking_IJ
 ComposantsOfficial="triocfd mpcube genepi3 flica5 TRUST_NK cathare3D"
 # 14/10/2020 : je retire mathys et triomc sur decision RPL
 #export ComposantsBeta="triomc mathys sides scorpio pemfc"
-export ComposantsBeta="sides scorpio sympy_to_TRUST pemfc flica5 cathare3D"
+#export ComposantsBeta="sides scorpio sympy_to_TRUST pemfc flica5 cathare3D"
+export ComposantsBeta="sides scorpio sympy_to_TRUST flica5 cathare3D"
 ComposantsGit=$ComposantsOfficial" "$ComposantsBeta
 ComposantsGit=`echo $ComposantsGit | xargs -n1 | sort -u | xargs`
 export Composants=$ComposantsLns" "$ComposantsGit
