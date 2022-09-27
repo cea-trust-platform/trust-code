@@ -424,6 +424,7 @@ Entree& Schema_Temps_base::readOn(Entree& is)
 int Schema_Temps_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
   Motcle motlu;
+  int retval = 1;
   if (mot=="dt_start")
     {
       is>>motlu;
@@ -465,11 +466,9 @@ int Schema_Temps_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
   else if (mot=="no_check_disk_space")
     file_allocation_=0;
   else
-    {
-      Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
-      exit();
-    }
-  return -1;
+    retval = -1;
+
+  return retval;
 }
 
 /*! @brief Lecture du nombre de pas de temps maximal

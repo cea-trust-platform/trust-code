@@ -57,11 +57,7 @@ int Parametre_diffusion_implicite::lire_motcle_non_standard(const Motcle& mot, E
     {
       is >> solveur_;
       solveur_.nommer("solveur_diffusion_implicite");
-    }
-  else
-    {
-      Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
-      exit();
+      return 1;
     }
   return -1;
 }

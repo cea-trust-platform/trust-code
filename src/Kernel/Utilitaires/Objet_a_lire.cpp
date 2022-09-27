@@ -198,6 +198,7 @@ double Objet_a_lire::get_value() const
 
 void Objet_a_lire::read(Motcle const& motcle, Entree& is)
 {
+  int ret = -1;
   switch (type)
     {
     case INTEGER :
@@ -236,7 +237,12 @@ void Objet_a_lire::read(Motcle const& motcle, Entree& is)
       (*flag_a_lire)=1;
       break;
     case NON_STD :
-      (*objet_lu).lire_motcle_non_standard(motcle,is);
+      ret = (*objet_lu).lire_motcle_non_standard(motcle,is);
+      if (ret < 0)
+        {
+          Cerr << "Error while reading keyword: '" << motcle << "'. Not recognized!" << finl;
+          Process::exit(-1);
+        }
       break;
     case DERIV   :
       {

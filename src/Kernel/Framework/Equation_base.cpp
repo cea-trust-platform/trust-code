@@ -334,11 +334,7 @@ int Equation_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
         is >> eq_non_resolue_input_;
       else
         equation_non_resolue_.parseString();
-    }
-  else
-    {
-      Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
-      exit();
+      return 1;
     }
   return -1;
 }

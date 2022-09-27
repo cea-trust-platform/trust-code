@@ -533,11 +533,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
 
       return 1;
     }
-  else
-    {
-      Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
-      exit();
-    }
+
   return -1;
 }
 

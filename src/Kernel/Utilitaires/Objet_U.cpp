@@ -146,7 +146,7 @@ Entree& Objet_U::readOn(Entree& s)
  *
  * @param (Motcle& motlu) le nom du terme a lire
  * @param (Entree& is) un flot d'entree
- * @return (int)
+ * @return (int) negative value if the keyword is not understood, otherwise positive value.
  */
 int Objet_U::lire_motcle_non_standard(const Motcle& motlu, Entree& is)
 {

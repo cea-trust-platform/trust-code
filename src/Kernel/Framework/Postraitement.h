@@ -87,7 +87,7 @@ public:
 
   int postraiter_sondes();
   int traiter_sondes();
-  int postraiter_champs();
+  virtual int postraiter_champs();
   int traiter_champs();
   int lire_champs_a_postraiter(Entree& );                //Lance eventuellement la creation de champs generiques par macro
   //et construit la liste noms_champs_a_post_ des champs post-traites
