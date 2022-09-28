@@ -13,8 +13,13 @@
 *
 *****************************************************************************/
 
-#include <Solide.h>
+#include <Discretisation_base.h>
+#include <Schema_Temps_base.h>
 #include <Champ_Uniforme.h>
+#include <Champ_Fonc_MED.h>
+#include <Probleme_base.h>
+#include <Equation_base.h>
+#include <Solide.h>
 #include <Param.h>
 
 Implemente_instanciable(Solide,"Solide",Milieu_base);
@@ -22,6 +27,7 @@ Implemente_instanciable(Solide,"Solide",Milieu_base);
 // XD attr rho field_base rho 1 Density (kg.m-3).
 // XD attr cp field_base cp 1 Specific heat (J.kg-1.K-1).
 // XD attr lambda field_base lambda_u 1 Conductivity (W.m-1.K-1).
+// XD attr user_field field_base user_field 1 user defined field.
 
 /*! @brief Ecrit les caracteristiques du milieu su run flot de sortie.
  *
@@ -30,10 +36,7 @@ Implemente_instanciable(Solide,"Solide",Milieu_base);
  * @param (Sortie& os) un flot de sortie
  * @return (Sortie&) le flot de sortie modifie
  */
-Sortie& Solide::printOn(Sortie& os) const
-{
-  return Milieu_base::printOn(os);
-}
+Sortie& Solide::printOn(Sortie& os) const { return Milieu_base::printOn(os); }
 
 /*! @brief Lit les caracteristiques du milieu a partir d'un flot d'entree.
  *
@@ -42,11 +45,7 @@ Sortie& Solide::printOn(Sortie& os) const
  * @param (Entree& is) un flot d'entree
  * @return (Entree& is) le flot d'entree modifie
  */
-Entree& Solide::readOn(Entree& is)
-{
-  Milieu_base::readOn(is);
-  return is;
-}
+Entree& Solide::readOn(Entree& is) { return Milieu_base::readOn(is); }
 
 void Solide::set_param(Param& param)
 {
@@ -54,6 +53,7 @@ void Solide::set_param(Param& param)
   param.ajouter_condition("is_read_rho","Density (rho) has not been read for a Solide type medium.");
   param.ajouter_condition("is_read_Cp","Heat capacity (Cp) has not been read for a Solide type medium.");
   param.ajouter_condition("is_read_lambda","Conductivity (lambda) has not been read for a Solide type medium.");
+  param.ajouter_non_std("user_field",(this));
 }
 
 /*! @brief Verifie que les champs caracterisant le milieu solide qui on ete lu par readOn(Entree&) sont coherents.
@@ -76,4 +76,47 @@ void Solide::verifier_coherence_champs(int& err,Nom& msg)
     }
 
   Milieu_base::verifier_coherence_champs(err,msg);
+}
+
+int Solide::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+{
+  if (mot == "user_field")
+    {
+      is >> nom_champ_;
+      is >> mon_champ_;
+      return 1;
+    }
+  else return Milieu_base::lire_motcle_non_standard(mot,is);
+}
+
+void Solide::discretiser(const Probleme_base& pb, const Discretisation_base& dis)
+{
+  Milieu_base::discretiser(pb,dis);
+  if (mon_champ_.non_nul())
+    {
+      is_user_defined_ = true;
+      const Zone_dis_base& zone_dis=pb.equation(0).zone_dis();
+      const double temps = pb.schema_temps().temps_courant();
+      if (sub_type(Champ_Fonc_MED,mon_champ_.valeur()))
+        {
+          Cerr<<"Convert Champ_fonc_MED " << nom_champ_ << " to a Champ_Don ..."<<finl;
+          Champ_Don tmp_fld;
+          dis.discretiser_champ("champ_elem",zone_dis,"neant","neant",1,temps,tmp_fld);
+          tmp_fld.affecter_(mon_champ_.valeur()); // interpolate ...
+          mon_champ_.detach();
+          dis.discretiser_champ("champ_elem",zone_dis,nom_champ_,"neant",1,temps,mon_champ_);
+          mon_champ_->valeurs() = tmp_fld->valeurs();
+        }
+      else if (sub_type(Champ_Uniforme,mon_champ_.valeur())) // blabla ...
+        {
+          const double val = mon_champ_->valeurs()(0,0);
+          mon_champ_.detach();
+          dis.discretiser_champ("champ_elem",zone_dis,nom_champ_,"neant",1,temps,mon_champ_);
+          mon_champ_->valeurs() = val;
+        }
+      else
+        dis.nommer_completer_champ_physique(zone_dis, nom_champ_, "neant", mon_champ_.valeur(), pb);
+
+      champs_compris_.ajoute_champ(mon_champ_.valeur());
+    }
 }

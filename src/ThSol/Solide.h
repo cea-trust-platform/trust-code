@@ -25,12 +25,20 @@
 class Solide : public Milieu_base
 {
   Declare_instanciable(Solide);
-
 public:
-
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
   void set_param(Param& param) override;
   void verifier_coherence_champs(int& err,Nom& message) override;
+  void discretiser(const Probleme_base& pb, const Discretisation_base& dis) override;
 
+  inline const DoubleTab& get_user_champ() const { return mon_champ_->valeurs(); }
+  inline const bool& is_user_defined() const { return is_user_defined_; }
+  inline const Motcle& get_user_champ_name() const { return nom_champ_; }
+
+private:
+  bool is_user_defined_ = false;
+  Motcle nom_champ_;
+  Champ_Don mon_champ_;
 };
 
-#endif
+#endif /* Solide_included */
