@@ -495,10 +495,12 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
       // boucle sur les polys
       if(nom_elem=="Tetra_VEF")
         {
-          bool computeOnDevice = true;
 #ifdef __clang__
 #ifndef __cray__
+#ifndef __APPLE__
+          bool computeOnDevice = true;
           computeOnDevice = false; // Provisoire crash sur clang++ non Cray
+#endif
 #endif
 #endif
           #pragma omp target teams if (computeOnDevice) map(to:KEL_addr[0:KEL.size_array()], normales_facettes_Cl_addr[0:normales_facettes_Cl.size_array()], vecteur_face_facette_Cl_addr[0:vecteur_face_facette_Cl.size_array()], vitesse_addr[0:la_vitesse.valeurs().size_array()], vitesse_face_absolue_addr[0:vitesse_face_absolue.size_array()], gradient_addr[0:gradient.size_array()], transporte_face_addr[0:transporte_face.size_array()]) map(tofrom:flux_b_addr[0:flux_b.size_array()], resu_addr[0:resu.size_array()])
