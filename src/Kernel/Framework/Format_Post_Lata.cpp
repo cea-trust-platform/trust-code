@@ -794,30 +794,16 @@ int Format_Post_Lata::finir_sans_reprise(const Nom file_basename)
   return 1;
 }
 
-/*! @brief voir Format_Post_base::ecrire_domaine On accepte l'ecriture d'un domaine dans un pas de temps, mais
+/*! @brief Low level routine to write a mesh into a LATA file.
  *
- *   les id_domaines doivent etre tous distincts.
- *   Ecrit le fichier "basename(_XXXXX).lata.nom_domaine", qui contient
- *   la liste des sommets et la liste des elements.
- *   Si le PE est maitre, ouvre le fichier maitre en mode APPEND et
- *   ajoute une reference a ce fichier.
- *
+ * Also called directly in TrioCFD, by Postraitement_ft_lata for interface writing.
  */
-int Format_Post_Lata::ecrire_domaine(const Domaine& domaine,const int est_le_premier_post)
+int Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const DoubleTab& sommets, const IntTab& elements, const Motcle& type_element)
 {
-  if (status == RESET)
-    {
-      Cerr << "Error in Format_Post_Lata::ecrire_domaine\n"
-           << " status = RESET. Uninitialized object" << finl;
-      exit();
-    }
-  const Nom& id_domaine = domaine.le_nom();
-  const DoubleTab& sommets = domaine.les_sommets();
-  const IntTab& elements = domaine.zone(0).les_elems();
-  Motcle type_elem = domaine.zone(0).type_elem().valeur().que_suis_je();
+  int dim = sommets.dimension(1);
+  Motcle type_elem(type_element);
   // GF Pour assuerer la lecture avec le plugin lata
-  if (type_elem=="PRISME") type_elem="PRISM6" ;
-  int dim = domaine.les_sommets().dimension(1);
+  if (type_element=="PRISME") type_elem="PRISM6" ;
 
   int nb_som_tot;  // Nombre de sommets dans le fichier
   int nb_elem_tot; // Nombre d'elements dans le fichier
@@ -971,6 +957,32 @@ int Format_Post_Lata::ecrire_domaine(const Domaine& domaine,const int est_le_pre
                         data,
                         0); /* reference_size */
       }
+  return 1;
+}
+
+/*! @brief voir Format_Post_base::ecrire_domaine On accepte l'ecriture d'un domaine dans un pas de temps, mais
+ *
+ *   les id_domaines doivent etre tous distincts.
+ *   Ecrit le fichier "basename(_XXXXX).lata.nom_domaine", qui contient
+ *   la liste des sommets et la liste des elements.
+ *   Si le PE est maitre, ouvre le fichier maitre en mode APPEND et
+ *   ajoute une reference a ce fichier.
+ *
+ */
+int Format_Post_Lata::ecrire_domaine(const Domaine& domaine,const int est_le_premier_post)
+{
+  if (status == RESET)
+    {
+      Cerr << "Error in Format_Post_Lata::ecrire_domaine\n"
+           << " status = RESET. Uninitialized object" << finl;
+      exit();
+    }
+  const Nom& id_domaine = domaine.le_nom();
+  const DoubleTab& sommets = domaine.les_sommets();
+  const IntTab& elements = domaine.zone(0).les_elems();
+  Motcle type_elem = domaine.zone(0).type_elem().valeur().que_suis_je();
+
+  ecrire_domaine_low_level(domaine.le_nom(), domaine.les_sommets(), domaine.zone(0).les_elems(), type_elem);
 
   // Si on a des frontieres domaine, on les ecrit egalement
   const LIST(REF(Domaine)) bords= domaine.domaines_frontieres();

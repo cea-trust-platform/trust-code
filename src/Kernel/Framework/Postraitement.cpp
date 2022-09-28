@@ -1336,13 +1336,25 @@ int Postraitement::postraiter_champs()
         }
     }
 
+  write_extra_mesh(); // For FT for example, this will write INTERFACES.
+
   format_post->init_ecriture(temps_courant,temps_,est_le_premier_postraitement_pour_nom_fich_,dom);
 
   if (temps_ < temps_courant)
     temps_=temps_courant;
 
-  LIST_CURSEUR(Nom) curseur1 = noms_champs_a_post_;
+  postprocess_field_values();
 
+  format_post->finir_ecriture(temps_courant);
+  return 1;
+}
+
+void Postraitement::postprocess_field_values()
+{
+  double temps_courant = mon_probleme->schema_temps().temps_courant();
+  const Domaine& dom=le_domaine.valeur();
+
+  LIST_CURSEUR(Nom) curseur1 = noms_champs_a_post_;
   while(curseur1)
     {
       const Champ_Generique_base& champ = get_champ_post(curseur1.valeur());
@@ -1377,9 +1389,6 @@ int Postraitement::postraiter_champs()
       postraiter(dom,unites,noms_compo,ncomp,temps_champ,temps_courant,curseur1.valeur(),localisation,nature,valeurs_post,tenseur);
       ++curseur1;
     }
-
-  format_post->finir_ecriture(temps_courant);
-  return 1;
 }
 
 int Postraitement::postraiter_tableaux()

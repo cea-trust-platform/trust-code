@@ -66,6 +66,7 @@ public:
 
   int preparer_post(const Nom& id_du_domaine, const int est_le_premier_post, const int reprise, const double t_init) override;
   int ecrire_domaine(const Domaine& domaine, const int est_le_premier_post) override;
+  int ecrire_domaine_low_level(const Nom& id_dom, const DoubleTab& sommets, const IntTab& elements, const Motcle& type_elem);
   int ecrire_temps(const double temps) override;
 
   int finir(const int est_le_dernier_post) override;

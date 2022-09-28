@@ -87,7 +87,10 @@ public:
 
   int postraiter_sondes();
   int traiter_sondes();
-  virtual int postraiter_champs();
+  int postraiter_champs();
+  // Called by postraiter_champs - only deal with the writing of the field values, not the geometrical parts:
+  virtual void postprocess_field_values();
+
   int traiter_champs();
   int lire_champs_a_postraiter(Entree& );                //Lance eventuellement la creation de champs generiques par macro
   //et construit la liste noms_champs_a_post_ des champs post-traites
@@ -166,6 +169,12 @@ public:
   inline const double& tstat_deb() const;
   inline const double& tstat_fin() const;
   int cherche_stat_dans_les_sources(const Champ_Gen_de_Champs_Gen& ch, Motcle nom);
+
+  /*! Calls by postraiter_champs() and allows a derived class to write extra meshes if needed
+   * @return -1 if nothing more was written, 1 otherwise.
+   */
+  virtual int write_extra_mesh() { return -1; }
+
   int DeprecatedKeepDuplicatedProbes=0; // Ancien format des sondes dans les .son qui autorise les sondes dupliquees
 
 protected:
