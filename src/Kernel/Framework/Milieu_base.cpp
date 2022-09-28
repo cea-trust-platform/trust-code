@@ -288,15 +288,41 @@ void Milieu_base::discretiser_porosite(const Probleme_base& pb, const Discretisa
       porosites_champ->valeurs() = 1.; // On initialise a 1 ...
     }
 
-//  assert(mp_min_vect(porosites_champ->valeurs()) >= 0. && mp_max_vect(porosites_champ->valeurs()) <= 1.);
   // XXX : Elie Saikali
+  // Avant on testait ca :
+  // assert(mp_min_vect(porosites_champ->valeurs()) >= 0. && mp_max_vect(porosites_champ->valeurs()) <= 1.);
   // tomber sur un cas F5 avec printf("%.9g\n", 1.0 - mp_max_vect) = -2.88657986e-15
-  // essayer de comparer avec std::numeric_limits<double>::epsilon() mais l'overflow est > !!  du coup je teste comme ca pour le moment
-  assert(mp_min_vect(porosites_champ->valeurs()) >= -1.e-12 && mp_max_vect(porosites_champ->valeurs()) <= 1. + 1.e-12);
+  // essayer de comparer avec std::numeric_limits<double>::epsilon() mais l'overflow est > !!
+  // du coup je nettoie le champ comme ca pour le moment ... si c'est raisonable !
+  const double min_por = mp_min_vect(porosites_champ->valeurs()), max_por = mp_max_vect(porosites_champ->valeurs());
+
+  if (min_por >= 0.0 && max_por <= 1.0) { /* do nothing */ }
+  else if (min_por >= -1.e-12 && max_por <= 1. + 1.e-12 ) nettoie_champ_porosites();
+  else Cerr << "WHAT ?? Your porosity field contains values < 0 or > 1 !!!! You should do something !" << finl, Process::exit();
 
   if (is_field_porosites()) calculate_face_porosity(); /* sinon c'est deja rempli ... */
 
   fill_section_passage_face();
+}
+
+void Milieu_base::nettoie_champ_porosites()
+{
+  Cerr << "************************************************************************" << finl;
+  Cerr << " We detected some element-porosity values which are slighly < 0 or > 1 !" << finl;
+  Cerr << finl;
+  printf("Overflow : 1 - MAX = %.9g\n", 1.0 - mp_max_vect(porosites_champ->valeurs()));
+  printf("Overflow : MIN - 0 = %.9g\n", mp_min_vect(porosites_champ->valeurs()) - 0.);
+  Cerr << finl;
+  Cerr << " We will clean the field to prevent overflows and numerical issues ... " << finl;
+  Cerr << "************************************************************************" << finl;
+
+  for (int i = 0; i < porosites_champ->valeurs().dimension_tot(0); i++)
+    {
+      if (porosites_champ->valeurs()(i) < 0.) porosites_champ->valeurs()(i) = 0.;
+      if (porosites_champ->valeurs()(i) > 1.) porosites_champ->valeurs()(i) = 1.;
+    }
+
+  assert(mp_min_vect(porosites_champ->valeurs()) >= 0.0 && mp_max_vect(porosites_champ->valeurs()) <= 1.0);
 }
 
 void Milieu_base::verifier_coherence_champs(int& err,Nom& msg)
