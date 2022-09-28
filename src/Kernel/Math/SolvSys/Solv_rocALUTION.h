@@ -18,6 +18,8 @@
 
 #include <Solv_Externe.h>
 #include <rocalution_for_kernel.h>
+#include <Motcle.h>
+class EChaine;
 
 class Solv_rocALUTION : public Solv_Externe
 {
@@ -38,19 +40,26 @@ private :
   void initialize();
   void Create_objects(const Matrice_Morse&);
 #ifdef ROCALUTION_ROCALUTION_HPP_
+  template <typename T>
+  Solver<GlobalMatrix<T>, GlobalVector<T>, T>* create_rocALUTION_precond(EChaine& is);
+  template <typename T>
+  IterativeLinearSolver<GlobalMatrix<T>, GlobalVector<T>, T>* create_rocALUTION_solver(const Motcle& solver);
+
   ParallelManager pm;
   GlobalMatrix<double> mat;
   // Solver:
   IterativeLinearSolver<GlobalMatrix<double>, GlobalVector<double>, double>* ls;
   // Preconditioners:
-  Solver<GlobalMatrix<double>, GlobalVector<double>, double>* p; // parallel global
-  Solver<LocalMatrix<double>, LocalVector<double>, double>* lp;  // local
+  Solver<GlobalMatrix<double>, GlobalVector<double>, double>* gp; // global parallel precond
+  Solver<LocalMatrix<double>, LocalVector<double>, double>* lp;  // local precond
   // Mixed-precision solver:
   IterativeLinearSolver<GlobalMatrix<float>, GlobalVector<float>, float>* sp_ls;
   Solver<GlobalMatrix<float>, GlobalVector<float>, float>* sp_p;
   double atol_, rtol_;
   bool write_system_;
   bool first_solve_ = true;
+  int precond_verbosity_;
+  Motcle smoother_= "JACOBI";
 #endif
 };
 
