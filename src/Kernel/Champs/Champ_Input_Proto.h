@@ -44,6 +44,7 @@ public:
   virtual void setValue(const TrioField& afield)=0;
   void setInitialValue(const ArrOfDouble& vo);
   virtual void setDoubleValue(const double val);
+  const Probleme_base& z_probleme() const { return mon_pb.valeur(); }
 
 protected:
 

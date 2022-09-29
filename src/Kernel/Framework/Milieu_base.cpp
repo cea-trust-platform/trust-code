@@ -13,9 +13,9 @@
 *
 *****************************************************************************/
 
+#include <Champ_Input_P0_Composite.h>
 #include <Discretisation_tools.h>
 #include <Discretisation_base.h>
-#include <Champ_input_P0.h>
 #include <Champ_Fonc_Tabule.h>
 #include <Schema_Temps_base.h>
 #include <Champ_Uniforme.h>
@@ -237,11 +237,17 @@ void Milieu_base::discretiser_porosite(const Probleme_base& pb, const Discretisa
         Cerr << "WHAT ?? You can not define in your medium both porosites_champ & porosites ! Remove one of them !" << finl, Process::exit();
 
       is_field_porosites_ = true;
+
       if (sub_type(Champ_input_P0, porosites_champ.valeur()))
+        Cerr << "To control the porosity field from ICoCo, please use Champ_Input_P0_Composite and not Champ_input_P0 !" << finl, Process::exit();
+      else if (sub_type(Champ_Input_P0_Composite, porosites_champ.valeur()))
         {
-          porosites_champ->add_synonymous(fld_name); // So that it can be known also ;-)
+          Champ_Input_P0_Composite& ch_in = ref_cast(Champ_Input_P0_Composite, porosites_champ.valeur());
+          if (!ch_in.is_initialized())
+            Cerr << "To control the porosity field from ICoCo, please define the initial field in your Champ_Input_P0_Composite !" << finl, Process::exit();
+
           porosites_champ->fixer_unite(fld_unit);
-          porosites_champ->valeurs() = 1.; // On initialise a 1 ...
+          porosites_champ->valeurs() = ch_in.initial_values(); // On initialise !
         }
       else if (sub_type(Champ_Fonc_MED,porosites_champ.valeur()))
         {
@@ -284,12 +290,16 @@ void Milieu_base::discretiser_porosite(const Probleme_base& pb, const Discretisa
     }
 
   // On ajoute pour tous les cas
-  champs_compris_.ajoute_champ(porosites_champ.valeur());
+  if (sub_type(Champ_Input_P0_Composite, porosites_champ.valeur()))
+    {
+      Champ_input_P0& ch_in = ref_cast(Champ_input_P0,ref_cast(Champ_Input_P0_Composite, porosites_champ.valeur()).input_field());
+      ch_in.add_synonymous(fld_name); // So that it can be known also ;-)
+      champs_compris_.ajoute_champ(ch_in);
+    }
+  else champs_compris_.ajoute_champ(porosites_champ.valeur());
 
   verifie_champ_porosites();
-
   if (is_field_porosites()) calculate_face_porosity(); /* sinon c'est deja rempli ... */
-
   fill_section_passage_face();
 }
 
@@ -528,7 +538,7 @@ void Milieu_base::mettre_a_jour_porosite(double temps)
 {
   assert(porosites_champ.non_nul());
   if (is_field_porosites())
-    if (sub_type(Champ_input_P0, porosites_champ.valeur()))
+    if (sub_type(Champ_Input_P0_Composite, porosites_champ.valeur()))
       {
         Cerr << "Updating porosity values since Champ_input_P0 !! We update also the face_porosity & section_passage fields ..." << finl;
         verifie_champ_porosites();
@@ -539,7 +549,7 @@ void Milieu_base::mettre_a_jour_porosite(double temps)
         // porosites_champ->valeurs().echange_espace_virtuel();
       }
 
-  porosites_champ.mettre_a_jour(temps); /* ne fait rien si Champ_input_P0 */
+  porosites_champ.mettre_a_jour(temps); /* ne fait rien si Champ_Input_P0_Composite */
 }
 
 void Milieu_base::update_rho_cp(double temps)

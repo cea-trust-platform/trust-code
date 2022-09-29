@@ -13,46 +13,45 @@
 *
 *****************************************************************************/
 
+#ifndef Champ_Input_P0_Composite_included
+#define Champ_Input_P0_Composite_included
 
-#ifndef Champ_input_P0_included
-#define Champ_input_P0_included
+#include <Champ_input_P0.h>
+#include <Champ_Don.h>
+using ICoCo::TrioField;
 
-
-#include <Champ_Fonc_P0_base.h>
-#include <Champ_Input_Proto.h>
-
-/*! @brief class Champ_input_P0
- *
- *      Cette classe represente un champ accessible par setInputField
- *      defini sur le domane avec une valeur par element.
- *
- *
- * @sa Champ_Input_Proto
- */
-
-class Champ_input_P0 : public Champ_Fonc_P0_base, public Champ_Input_Proto
+class Champ_Input_P0_Composite : public Champ_Fonc_P0_base
 {
-  Declare_instanciable(Champ_input_P0);
+  Declare_instanciable(Champ_Input_P0_Composite);
 public:
-  friend class Champ_Input_P0_Composite;
+  // champ utilise pour l'initialisation
+  bool is_initialized() { return champ_initial_.non_nul(); }
+  const DoubleTab& initial_values() { return champ_initial_->valeurs(); }
 
-  inline void associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base) override { zdb_ = la_zone_dis_base; }
-  inline const Zone_dis_base& zone_dis_base() const override { return zdb_.valeur(); }
+  // champ input classique (faut plus des methodes pt etre ?)
+  using Champ_Proto::valeurs;
+
+  Champ_input_P0& input_field() { return champ_input_; }
+  DoubleTab& valeurs() override { return champ_input_.valeurs(); }
+  const DoubleTab& valeurs() const override { return champ_input_.valeurs(); }
+
   void mettre_a_jour(double) override { }
+  int initialiser(const double temps) override { return champ_input_.initialiser(temps); }
+  double changer_temps(const double t) override { return champ_input_.changer_temps(t); }
 
-  void getTemplate(TrioField& afield) const override;
-  void setValue(const TrioField& afield) override;
+  const Nom& fixer_unite(const Nom& unit) override { return champ_input_.fixer_unite(unit); }
+  const Nom& fixer_unite(int i, const Nom& unit) override { return champ_input_.fixer_unite(i,unit); }
 
-protected:
-  // Factorisation function between several input field classes
-  void set_nb_comp(int i) override; // calls fixer_nb_comp
-  void set_name(const Nom&) override; // calls nommer
-  virtual const Nom& get_name() const; // calls le_nom
+  void associer_zone_dis_base(const Zone_dis_base& zdb) override { champ_input_.associer_zone_dis_base(zdb); }
+  const Zone_dis_base& zone_dis_base() const override { return champ_input_.zone_dis_base(); }
+
+  void getTemplate(TrioField& afield) const { champ_input_.getTemplate(afield); }
+  void setValue(const TrioField& afield) { champ_input_.setValue(afield); }
+  void setDoubleValue(const double val) { champ_input_.setDoubleValue(val); }
 
 private:
-  REF(Zone_dis_base) zdb_;
-  int nb_elems_reels_sous_zone_; //if sous-zone : number of elements of the sous-zone on this proc
-  int nb_elems_reels_loc_;       //total number of local elements
+  Champ_input_P0 champ_input_;
+  Champ_Don champ_initial_;
 };
 
-#endif /* Champ_input_P0_included */
+#endif /* Champ_Input_P0_Composite_included */

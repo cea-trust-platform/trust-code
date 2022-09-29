@@ -29,7 +29,6 @@
 
 class Discretisation_base;
 class Probleme_base;
-class Champ_Don;
 class Motcle;
 class Param;
 
