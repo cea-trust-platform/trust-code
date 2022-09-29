@@ -152,7 +152,7 @@ Read pb
                         last_time
                     }
                     impr nb_histo_boxes_impr 5
-		    formulation_linear_pwl 0
+                    formulation_u_tau 0
                 }
             }
         }

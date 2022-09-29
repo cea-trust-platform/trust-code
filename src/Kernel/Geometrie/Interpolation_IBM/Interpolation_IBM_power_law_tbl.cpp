@@ -36,5 +36,5 @@ Entree& Interpolation_IBM_power_law_tbl::readOn( Entree& is )
 void Interpolation_IBM_power_law_tbl::set_param(Param& param)
 {
   Interpolation_IBM_elem_fluid::set_param( param );
-  param.ajouter("formulation_linear_pwl",&formulation_linear_pwl_,Param::OPTIONAL);  // XD_ADD_P Choix formulation lineaire ou non
+  param.ajouter("formulation_u_tau",&formulation_u_tau_,Param::OPTIONAL);  // XD_ADD_P Choix formulation vitesse ou u_tau
 }
