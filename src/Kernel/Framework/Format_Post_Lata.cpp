@@ -898,6 +898,8 @@ int Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const Doub
         sfichier << "CHAMP SOMMETS "<< remove_path(nom_fichier_geom);
         sfichier << " geometrie="<<id_domaine;
 #ifdef INT_is_64_
+        // The string "INT64\n" is written in clear text at the begining of each sub-file when we are 64bits.
+        // This makes 6 bytes that we have to skip to get to the core of the (binary) data.
         sfichier << " file_offset=6";
 #endif
         sfichier << " size=" << nb_som_tot;
@@ -908,6 +910,8 @@ int Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const Doub
 #endif
         sfichier << " geometrie="<<id_domaine;
 #ifdef INT_is_64_
+        // The string "INT64\n" is written in clear text at the begining of each sub-file when we are 64bits.
+        // This makes 6 bytes that we have to skip to get to the core of the (binary) data.
         sfichier << " file_offset=6";
 #endif
         sfichier << " size=" << nb_elem_tot<<" composantes="<<elements.dimension(1);
@@ -1071,6 +1075,8 @@ int Format_Post_Lata::ecrire_champ(const Domaine& domaine, const Noms& unite_, c
       sfichier << remove_path(filename_champ);
       sfichier << " geometrie=" << id_du_domaine;
 #ifdef INT_is_64_
+      // The string "INT64\n" is written in clear text at the begining of each sub-file when we are 64bits.
+      // This makes 6 bytes that we have to skip to get to the core of the (binary) data.
       sfichier << " file_offset=6";
 #endif
       sfichier << " localisation=" << localisation;
@@ -1163,6 +1169,8 @@ int Format_Post_Lata::ecrire_item_int(//const Nom    & id_champ,
         sfichier << remove_path(filename_champ);
         sfichier << " geometrie=" << id_du_domaine;
 #ifdef INT_is_64_
+        // The string "INT64\n" is written in clear text at the begining of each sub-file when we are 64bits.
+        // This makes 6 bytes that we have to skip to get to the core of the (binary) data.
         sfichier << " file_offset=6";
 #endif
         if (localisation!="")
