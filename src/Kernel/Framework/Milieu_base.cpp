@@ -15,7 +15,7 @@
 
 #include <Discretisation_tools.h>
 #include <Discretisation_base.h>
-#include <Champ_late_input_P0.h>
+#include <Champ_input_P0.h>
 #include <Champ_Fonc_Tabule.h>
 #include <Schema_Temps_base.h>
 #include <Champ_Uniforme.h>
@@ -237,10 +237,9 @@ void Milieu_base::discretiser_porosite(const Probleme_base& pb, const Discretisa
         Cerr << "WHAT ?? You can not define in your medium both porosites_champ & porosites ! Remove one of them !" << finl, Process::exit();
 
       is_field_porosites_ = true;
-      if (sub_type(Champ_late_input_P0, porosites_champ.valeur()))
+      if (sub_type(Champ_input_P0, porosites_champ.valeur()))
         {
-          Cerr << "We continue reading the Champ_late_input_P0 field ..." << finl;
-          ref_cast(Champ_late_input_P0,porosites_champ.valeur()).complete_readOn();
+          porosites_champ->add_synonymous(fld_name); // So that it can be known also ;-)
           porosites_champ->fixer_unite(fld_unit);
           porosites_champ->valeurs() = 1.; // On initialise a 1 ...
         }
@@ -263,8 +262,6 @@ void Milieu_base::discretiser_porosite(const Probleme_base& pb, const Discretisa
         }
       else
         dis.nommer_completer_champ_physique(zdb_.valeur(), fld_name, fld_unit, porosites_champ.valeur(), pb);
-
-      champs_compris_.ajoute_champ(porosites_champ.valeur());
     }
   else if (porosites_.is_read()) // via porosites
     {
@@ -275,7 +272,6 @@ void Milieu_base::discretiser_porosite(const Probleme_base& pb, const Discretisa
       is_user_porosites_ = true;
       // On va utiliser porosites_champ maintenant !
       dis.discretiser_champ("champ_elem", zdb_.valeur(), fld_name, fld_unit, 1, temps, porosites_champ);
-      champs_compris_.ajoute_champ(porosites_champ.valeur());
       Zone_VF& zvf = ref_cast_non_const(Zone_VF, zdb_.valeur());
       porosites_champ->valeurs() = 1.; // On initialise a 1 ...
       porosites_.remplir_champ(zvf, porosites_champ->valeurs(), porosite_face_);
@@ -284,12 +280,22 @@ void Milieu_base::discretiser_porosite(const Probleme_base& pb, const Discretisa
     {
       // On va utiliser porosites_champ maintenant !
       dis.discretiser_champ("champ_elem", zdb_.valeur(), fld_name, fld_unit, 1, temps, porosites_champ);
-      champs_compris_.ajoute_champ(porosites_champ.valeur());
       porosites_champ->valeurs() = 1.; // On initialise a 1 ...
     }
 
-  // XXX : Elie Saikali
-  // Avant on testait ca :
+  // On ajoute pour tous les cas
+  champs_compris_.ajoute_champ(porosites_champ.valeur());
+
+  verifie_champ_porosites();
+
+  if (is_field_porosites()) calculate_face_porosity(); /* sinon c'est deja rempli ... */
+
+  fill_section_passage_face();
+}
+
+void Milieu_base::verifie_champ_porosites()
+{
+  // XXX : Elie Saikali : Avant on testait ca :
   // assert(mp_min_vect(porosites_champ->valeurs()) >= 0. && mp_max_vect(porosites_champ->valeurs()) <= 1.);
   // tomber sur un cas F5 avec printf("%.9g\n", 1.0 - mp_max_vect) = -2.88657986e-15
   // essayer de comparer avec std::numeric_limits<double>::epsilon() mais l'overflow est > !!
@@ -299,10 +305,6 @@ void Milieu_base::discretiser_porosite(const Probleme_base& pb, const Discretisa
   if (min_por >= 0.0 && max_por <= 1.0) { /* do nothing */ }
   else if (min_por >= -1.e-12 && max_por <= 1. + 1.e-12 ) nettoie_champ_porosites();
   else Cerr << "WHAT ?? Your porosity field contains values < 0 or > 1 !!!! You should do something !" << finl, Process::exit();
-
-  if (is_field_porosites()) calculate_face_porosity(); /* sinon c'est deja rempli ... */
-
-  fill_section_passage_face();
 }
 
 void Milieu_base::nettoie_champ_porosites()
@@ -526,9 +528,18 @@ void Milieu_base::mettre_a_jour_porosite(double temps)
 {
   assert(porosites_champ.non_nul());
   if (is_field_porosites())
-    if (sub_type(Champ_late_input_P0, porosites_champ.valeur())) calculate_face_porosity();
+    if (sub_type(Champ_input_P0, porosites_champ.valeur()))
+      {
+        Cerr << "Updating porosity values since Champ_input_P0 !! We update also the face_porosity & section_passage fields ..." << finl;
+        verifie_champ_porosites();
+        calculate_face_porosity();
+        fill_section_passage_face();
+        porosites_champ->changer_temps(temps);
+        /* pas besoin je crois mais je laisse en commentaire ;-) */
+        // porosites_champ->valeurs().echange_espace_virtuel();
+      }
 
-  porosites_champ.mettre_a_jour(temps);
+  porosites_champ.mettre_a_jour(temps); /* ne fait rien si Champ_input_P0 */
 }
 
 void Milieu_base::update_rho_cp(double temps)

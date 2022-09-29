@@ -140,6 +140,7 @@ private:
   // attribue utile pour porosites (pas porosites_champ) ... a voir si utile sinon a virer ...
   Porosites porosites_;
   bool is_user_porosites_ = false, is_field_porosites_ = false;
+  void verifie_champ_porosites();
   void nettoie_champ_porosites();
   const bool& is_user_porosites() { return is_user_porosites_; }
   const bool& is_field_porosites() { return is_field_porosites_; }

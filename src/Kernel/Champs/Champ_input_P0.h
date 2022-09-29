@@ -33,40 +33,24 @@
 class Champ_input_P0 : public Champ_Fonc_P0_base, public Champ_Input_Proto
 {
   Declare_instanciable(Champ_input_P0);
-
 public:
-
-  friend class Champ_late_input_P0;
-
-  void associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base) override;
-  const Zone_dis_base& zone_dis_base() const override;
-  void mettre_a_jour(double) override {}
+  inline void associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base) override { zdb_ = la_zone_dis_base; }
+  inline const Zone_dis_base& zone_dis_base() const override { return zdb_.valeur(); }
+  void mettre_a_jour(double) override { }
 
   void getTemplate(TrioField& afield) const override;
   void setValue(const TrioField& afield) override;
 
 protected:
-
   // Factorisation function between several input field classes
   void set_nb_comp(int i) override; // calls fixer_nb_comp
-  void set_name(const Nom& ) override; // calls nommer
+  void set_name(const Nom&) override; // calls nommer
   virtual const Nom& get_name() const; // calls le_nom
 
-  REF(Zone_dis_base) zdb_;
-
 private:
+  REF(Zone_dis_base) zdb_;
   int nb_elems_reels_sous_zone_; //if sous-zone : number of elements of the sous-zone on this proc
   int nb_elems_reels_loc_;       //total number of local elements
 };
 
-inline void Champ_input_P0::associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base)
-{
-  zdb_=la_zone_dis_base;
-}
-
-inline const Zone_dis_base& Champ_input_P0::zone_dis_base() const
-{
-  return zdb_.valeur();
-}
-
-#endif
+#endif /* Champ_input_P0_included */
