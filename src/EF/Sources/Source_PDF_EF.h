@@ -58,11 +58,9 @@ public:
   //  void imprimer_ustar_yplus__mean_only(Sortie&, const Nom& ) const override;
 
   // Methodes de l interface des champs postraitables
-//
   void creer_champ(const Motcle& motlu) override;
   const Champ_base& get_champ(const Motcle& nom) const override;
   void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
-//
 
 protected:
   Champ_Don champ_nodal_;

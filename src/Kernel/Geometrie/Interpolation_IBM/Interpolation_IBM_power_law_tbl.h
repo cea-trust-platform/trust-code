@@ -19,7 +19,7 @@
 #include <Interpolation_IBM_elem_fluid.h>
 #include <Interpolation_IBM_power_law_tbl_proto.h>
 #include <Champ_Don.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Param.h>
 
 /*! @brief : class Interpolation_IBM_power_law_tbl

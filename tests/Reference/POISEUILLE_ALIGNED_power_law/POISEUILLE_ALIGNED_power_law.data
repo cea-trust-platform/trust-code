@@ -1,18 +1,18 @@
 # PARALLEL OK #
 # Hydraulique 2D laminaire POISEUILLE_ALIGNED_power_law
-Re = (rho*U_max*L)/mu
-     rho = 1.0 kg/m^3
-           U_max = 1 m/s
-                   L = 1 m
-                       Re = 1
-                            mu = (rho*U_max*L)/Re
-                                 A.N.
-                                 mu = 1.0 #
+  Re = (rho*U_max*L)/mu
+  rho = 1.0 kg/m^3
+  U_max = 1 m/s
+  L = 1 m                  
+  Re = 1
+  mu = (rho*U_max*L)/Re
+  A.N.
+  mu = 1.0 #
 
-                                      dimension 3
-                                      Pb_Hydraulique pb
-                                      Domaine dom
-                                      system "mkdir -p results"
+dimension 3
+Pb_Hydraulique pb
+Domaine dom
+system "mkdir -p results"
 
 # DEBUT MAILLAGE #
 Read_MED {
@@ -26,17 +26,17 @@ regroupebord dom Sortie { OUT }
 regroupebord dom Entree { IN }
 # FIN MAILLAGE #
 
-# DEBUT DECOUPAGE
+# DEBUT DECOUPAGE 
 Partition dom
 {
-    Partition_tool tranche { tranches 2 2 1 }
-    Larg_joint 2
-    zones_name DOM
+	Partition_tool tranche { tranches 2 2 1 }
+	Larg_joint 2
+	zones_name DOM
 }
 End
 FIN DECOUPAGE #
 
-# BEGIN SCATTER
+# BEGIN SCATTER 
 Scatter DOM.Zones dom
 END SCATTER #
 
@@ -69,19 +69,22 @@ Read sch
 }
 
 
+Fluide_Incompressible fluid
+
+Read fluid
+{
+    mu  Champ_Uniforme 1 1.0
+    rho Champ_Uniforme 1 1.0
+}
+
 Associer pb dom
 Associer pb sch
+Associer pb fluid
+
 Discretiser pb dis
 
 Read pb
 {
-
-    fluide_incompressible {
-        mu  Champ_Uniforme 1 1.0
-        rho Champ_Uniforme 1 1.0
-    }
-
-
     Navier_Stokes_standard
     {
         correction_matrice_projection_initiale 0
@@ -105,18 +108,8 @@ Read pb
         {
             Source_PDF
             {
-                aire Champ_Fonc_MED {
-                    domain domain_mesh
-                    file res_domain_mesh_40_pl_mesh_1.med
-                    field aire
-                    last_time
-                }
-                rotation Champ_Fonc_MED {
-                    domain domain_mesh
-                    file res_domain_mesh_40_pl_mesh_1.med
-                    field rotation
-                    last_time
-                }
+                aire Champ_Fonc_MED last_time res_domain_mesh_40_pl_mesh_1.med domain_mesh aire elem 0.
+                rotation Champ_Fonc_MED last_time res_domain_mesh_40_pl_mesh_1.med domain_mesh rotation elem 0.
                 modele
                 {
                     eta 1.0e-12
@@ -124,35 +117,12 @@ Read pb
                 }
                 interpolation IBM_power_law_tbl
                 {
-                    points_fluides Champ_Fonc_MED {
-                        domain domain_mesh
-                        file res_domain_mesh_40_pl_mesh_1.med
-                        field projection_Fluid
-                        loc som
-                        last_time
-                    }
-                    points_solides Champ_Fonc_MED {
-                        domain domain_mesh
-                        file res_domain_mesh_40_pl_mesh_1.med
-                        field projection_Solid
-                        loc som
-                        last_time
-                    }
-                    elements_fluides Champ_Fonc_MED {
-                        domain domain_mesh
-                        file res_domain_mesh_40_pl_mesh_1.med
-                        field fl_elem_number
-                        loc som
-                        last_time
-                    }
-                    correspondance_elements Champ_Fonc_MED {
-                        domain domain_mesh
-                        file res_domain_mesh_40_pl_mesh_1.med
-                        field TRUST_SALOME_correspondance
-                        last_time
-                    }
-                    impr nb_histo_boxes_impr 5
-                    formulation_linear_pwl 0
+                    points_fluides Champ_Fonc_MED last_time res_domain_mesh_40_pl_mesh_1.med domain_mesh projection_Fluid som 0.
+                    points_solides Champ_Fonc_MED last_time res_domain_mesh_40_pl_mesh_1.med domain_mesh projection_Solid som 0.
+                    elements_fluides Champ_Fonc_MED last_time res_domain_mesh_40_pl_mesh_1.med domain_mesh fl_elem_number som 0.
+                    correspondance_elements Champ_Fonc_MED last_time res_domain_mesh_40_pl_mesh_1.med domain_mesh TRUST_SALOME_correspondance elem 0.
+		    impr nb_histo_boxes_impr 5
+		    formulation_linear_pwl 0
                 }
             }
         }
