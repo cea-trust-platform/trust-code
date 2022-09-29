@@ -385,7 +385,7 @@ void Moyenne_volumique::traiter_champs(const Motcles& noms_champs,
       post.ecrire_champ(dom_post,
                         champ.unites(),
                         champ.noms_compo(),
-                        -1 /* ecrire toutes les composantes */, temps, temps,
+                        -1 /* ecrire toutes les composantes */, temps,
                         noms_champs[i_champ], nom_dom, localisation,nature, extrait);
 
       count += nb_compo;
@@ -406,7 +406,7 @@ void Moyenne_volumique::traiter_champs(const Motcles& noms_champs,
   Cout << "Porosity post writing" << finl;
 
   post.ecrire_champ(dom_post, unites, noms_compo, -1 /* ecrire toutes les composantes */,
-                    temps, temps,
+                    temps,
                     nom_moyenne, nom_dom, localisation, "scalar",extrait);
 }
 

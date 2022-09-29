@@ -178,7 +178,7 @@ void traite_bord(const Zone& zone,IntVect& ch_som,IntVect& ch_elem3,int num2, Fa
   Noms unites(1);
   unites[0]="1";
   //Cerr<<Process::me() <<" ch_elem2 size"<<fichier<< " "<<nom_dom<<" " <<nom_bord<<" "<<ch_elem2.dimension(0)<<finl;
-  post.ecrire_champ(dom,unites,noms_post,-1,0.,0.,nom_bord, nom_dom, "ELEM","scalar",ch_elem2);
+  post.ecrire_champ(dom,unites,noms_post,-1,0.,nom_bord, nom_dom, "ELEM","scalar",ch_elem2);
 }
 /*! @brief Fonction principale de l'interprete.
  *
@@ -387,7 +387,7 @@ void Postraiter_domaine::ecrire(Nom& nom_pdb)
               DoubleTab ch_som2(nb_som,1);
               for (int j=0; j<nb_som; j++)
                 ch_som2(j,0)=(ch_som(j));
-              post.ecrire_champ(dom,unites,noms_post,-1,0.,0.,noms_post[0], nom_dom, "SOM","scalar",ch_som2);
+              post.ecrire_champ(dom,unites,noms_post,-1,0.,noms_post[0], nom_dom, "SOM","scalar",ch_som2);
             }
 
           //////////////////////

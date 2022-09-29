@@ -101,7 +101,7 @@ Entree& Ecrire_Champ_MED::interpreter(Entree& is)
   //chp.postraiter_champ(dom, tps, nom_champ, "ELEM", post);
   // la nature ne sert pas en MED
   Nom Nature("pas_defini");
-  post.ecrire_champ(dom,chp.unites(),chp.noms_compo(),-1,tps,tps,Motcle(chp.le_nom()),dom.le_nom(),Motcle("elem"),Nature,chp.valeurs());
+  post.ecrire_champ(dom,chp.unites(),chp.noms_compo(),-1,tps,Motcle(chp.le_nom()),dom.le_nom(),Motcle("elem"),Nature,chp.valeurs());
   int fin=1;
   post.finir(fin);
   return is;

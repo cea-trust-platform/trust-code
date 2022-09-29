@@ -67,7 +67,7 @@ public:
   int ecrire_domaine_dis(const Domaine& domaine,const REF(Zone_dis_base)& zone_dis_base,const int est_le_premier_post) override;
   int ecrire_temps(const double temps) override;
 
-  int ecrire_champ(const Domaine& domaine, const Noms& unite_, const Noms& noms_compo, int ncomp, double temps_, double temps_courant, const Nom& id_du_champ, const Nom& id_du_domaine,
+  int ecrire_champ(const Domaine& domaine, const Noms& unite_, const Noms& noms_compo, int ncomp, double temps_, const Nom& id_du_champ, const Nom& id_du_domaine,
                    const Nom& localisation, const Nom& nature, const DoubleTab& data) override;
 
   int ecrire_item_int(const Nom& id_item, const Nom& id_du_domaine, const Nom& id_zone, const Nom& localisation, const Nom& reference, const IntVect& data, const int reference_size) override;

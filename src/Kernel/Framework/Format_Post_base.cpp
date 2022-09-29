@@ -182,7 +182,7 @@ int Format_Post_base::ecrire_temps(const double temps)
  */
 
 int Format_Post_base::ecrire_champ(const Domaine& domaine,const Noms& unite_,const Noms& noms_compo,
-                                   int ncomp, double temps_,double temps_courant,
+                                   int ncomp, double temps_,
                                    const Nom&   id_du_champ,
                                    const Nom&         id_du_domaine,
                                    const Nom&         localisation,
@@ -196,7 +196,7 @@ int Format_Post_base::ecrire_champ(const Domaine& domaine,const Noms& unite_,con
 
 // Surcharge de la methode precedente pour le format XYZ : donner les coordonees de postraitement en argument
 int Format_Post_base::ecrire_champ2(const Domaine& domaine,const Noms& unite_,const Noms& noms_compo,
-                                    int ncomp, double temps_,double temps_courant,
+                                    int ncomp, double temps_,
                                     const Nom&   id_du_champ,
                                     const Nom&         id_du_domaine,
                                     const Nom&         localisation,
@@ -340,7 +340,7 @@ void Format_Post_base::postraiter_debug_valeurs_un_instant(const Nom& nom_fich,
   init_ecriture(temps_courant,temps_post,est_le_premier_post,dom);
   Nom nature("scalar");
   if (nature_champ==vectoriel) nature="vector";
-  ecrire_champ(dom,unites,noms_compos,ncomp,temps_champ,temps_courant,id_champ_post,id_domaine,loc_post,nature,valeurs_tmp);
+  ecrire_champ(dom,unites,noms_compos,ncomp,temps_champ,id_champ_post,id_domaine,loc_post,nature,valeurs_tmp);
   finir_ecriture(temps_courant);
   finir(est_le_dernier_post);
 

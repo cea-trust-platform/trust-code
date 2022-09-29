@@ -301,16 +301,8 @@ int Format_Post_Lata::preparer_post(const Nom& id_du_domaine, const int est_le_p
  *   plusieurs fichiers en parallel).
  *   nb_colonnes est rempli avec le produit des tab.dimension(i) pour i>0
  *
- *   bloc_number et nb_blocs sont utilises pour les valeurs aux sommets en 2D
- *   pour le format lataV1 : on ecrit deux fois le nombre de sommets dans le meme bloc
- *   (bloc_number = le numero du bloc courant en cours d'ecriture,
- *    nb_blocs = le nombre total de blocs ecrits. Le tag de debut et de fin
- *    est ecrit au debut du premier bloc et a la fin du dernier et le nombre est
- *    la taille du tableau multiplie par le nombre de blocs (on suppose que tous
- *    les blocs sont identiques)).
- *
  */
-int Format_Post_Lata::write_doubletab(Fichier_Lata& fichier, const DoubleTab& tab, int& nb_colonnes, const Options_Para& option, const int bloc_number, const int nb_blocs)
+int Format_Post_Lata::write_doubletab(Fichier_Lata& fichier, const DoubleTab& tab, int& nb_colonnes, const Options_Para& option)
 {
   int line_size = 1;
   int nb_lignes = tab.dimension(0);
@@ -328,7 +320,7 @@ int Format_Post_Lata::write_doubletab(Fichier_Lata& fichier, const DoubleTab& ta
       nb_lignes_tot = Process::mp_sum(nb_lignes);
       // En parallele, tous les tableaux doivent avoir le meme nombre
       // de colonnes (ou etre vides).
-      nb_colonnes = (int) Process::mp_max(line_size); // Zut. Pas de mp_max(int) !!!
+      nb_colonnes = Process::mp_max(line_size);
       nb_octets = nb_colonnes*nb_lignes_tot * (int)sizeof(float);
       assert(nb_lignes == 0 || line_size == nb_colonnes);
       break;
@@ -344,8 +336,8 @@ int Format_Post_Lata::write_doubletab(Fichier_Lata& fichier, const DoubleTab& ta
   SFichier& sfichier = fichier.get_SFichier();
 
   // Debut de bloc fortran
-  if (fichier.is_master() && bloc_number == 0)
-    sfichier << nb_octets * nb_blocs << finl;
+  if (fichier.is_master())
+    sfichier << nb_octets << finl;
 
   // Ecriture des donnees.
   if (sub_type(EcrFicPartageMPIIO, sfichier))
@@ -357,8 +349,8 @@ int Format_Post_Lata::write_doubletab(Fichier_Lata& fichier, const DoubleTab& ta
       sfichier.put(tmp, tab_size, line_size);
       delete[] tmp;
       // Fin de bloc fortran
-      if (fichier.is_master() && bloc_number == nb_blocs - 1)
-        sfichier << nb_octets * nb_blocs << finl;
+      if (fichier.is_master())
+        sfichier << nb_octets << finl;
     }
   else
     {
@@ -384,8 +376,8 @@ int Format_Post_Lata::write_doubletab(Fichier_Lata& fichier, const DoubleTab& ta
       delete[] tmp;
       fichier.syncfile();
       // Fin de bloc fortran
-      if (fichier.is_master() && bloc_number == nb_blocs - 1)
-        sfichier << nb_octets * nb_blocs << finl;
+      if (fichier.is_master())
+        sfichier << nb_octets << finl;
       fichier.syncfile();
     }
 
@@ -403,6 +395,7 @@ int Format_Post_Lata::write_doubletab(Fichier_Lata& fichier, const DoubleTab& ta
  *   processeurs ecrivent sur le meme fichier ou pas).
  *
  */
+
 int Format_Post_Lata::write_inttab(Fichier_Lata& fichier, int decalage, int decalage_partiel, const IntTab& tab, int& nb_colonnes, const Options_Para& option)
 {
   assert(decalage_partiel>=decalage);
@@ -424,9 +417,8 @@ int Format_Post_Lata::write_inttab(Fichier_Lata& fichier, int decalage, int deca
     case Format_Post_Lata::SINGLE_FILE_MPIIO:
     case Format_Post_Lata::SINGLE_FILE:
       nb_lignes_tot = Process::mp_sum(nb_lignes);
-      // En parallele, tous les tableaux doivent avoir le meme nombre
-      // de colonnes (ou etre vides).
-      nb_colonnes = (int) Process::mp_max(line_size); // Zut. Pas de mp_max(int) !!!
+      // En parallele, tous les tableaux doivent avoir le meme nombre de colonnes (ou etre vides).
+      nb_colonnes = Process::mp_max(line_size);
       nb_octets = nb_colonnes*nb_lignes_tot * (int)sizeof(_LATA_INT_TYPE_);
       assert(nb_lignes == 0 || line_size == nb_colonnes);
       break;
@@ -1010,7 +1002,7 @@ int Format_Post_Lata::ecrire_temps(const double temps)
 /*! @brief voir Format_Post_base::ecrire_champ
  *
  */
-int Format_Post_Lata::ecrire_champ(const Domaine& domaine, const Noms& unite_, const Noms& noms_compo, int ncomp, double temps, double temps_courant, const Nom& id_du_champ, const Nom& id_du_domaine,
+int Format_Post_Lata::ecrire_champ(const Domaine& domaine, const Noms& unite_, const Noms& noms_compo, int ncomp, double temps, const Nom& id_du_champ, const Nom& id_du_domaine,
                                    const Nom& localisation, const Nom& nature, const DoubleTab& valeurs)
 {
 

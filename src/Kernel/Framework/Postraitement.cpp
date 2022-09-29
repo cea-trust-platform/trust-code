@@ -1376,7 +1376,6 @@ void Postraitement::postprocess_field_values()
       const Noms nom_post = champ.get_property("nom");
       const Noms& unites = champ.get_property("unites");
       const Noms& noms_compo = champ.get_property("composantes");
-      const double temps_champ = champ.get_time();
       int tenseur = champ.get_info_type_post();
 
       //Etape pour savoir si on doit postraiter un champ ou une de ses composantes
@@ -1386,7 +1385,7 @@ void Postraitement::postprocess_field_values()
       //La distinction du type de postraitement (tableau ou tenseur) est fait dans la methode postraiter par la valeur de tenseur
       Nom nature("scalar");
       if (champ_ecriture.nature_du_champ()==vectoriel) nature="vector";
-      postraiter(dom,unites,noms_compo,ncomp,temps_champ,temps_courant,curseur1.valeur(),localisation,nature,valeurs_post,tenseur);
+      postraiter(dom,unites,noms_compo,ncomp,temps_courant,curseur1.valeur(),localisation,nature,valeurs_post,tenseur);
       ++curseur1;
     }
 }
@@ -1492,21 +1491,21 @@ int Postraitement::traiter_sondes()
 }
 
 int Postraitement::postraiter(const Domaine& dom,const Noms& unites,const Noms& noms_compo,const int ncomp,
-                              const double temps_champ,double& temps_courant,
+                              const double temps,
                               Nom nom_post,const Nom& localisation,const Nom& nature,const DoubleTab& valeurs,int tenseur)
 
 {
 
   if (!tenseur)
-    postraiter_tableau(dom,unites,noms_compo,ncomp,temps_champ,temps_courant,nom_post,localisation,nature,valeurs);
+    postraiter_tableau(dom,unites,noms_compo,ncomp,temps,nom_post,localisation,nature,valeurs);
   else
-    postraiter_tenseur(dom,unites,noms_compo,ncomp,temps_champ,temps_courant,nom_post,localisation,nature,valeurs);
+    postraiter_tenseur(dom,unites,noms_compo,ncomp,temps,nom_post,localisation,nature,valeurs);
 
   return 1;
 }
 
 int Postraitement::postraiter_tableau(const Domaine& dom,const Noms& unites,const Noms& noms_compo,const int ncomp,
-                                      const double temps_champ,double& temps_courant,
+                                      const double temps,
                                       Nom nom_post,const Nom& localisation,const Nom& nature,const DoubleTab& valeurs)
 {
   const Nom& id_du_domaine = dom.le_nom();
@@ -1529,41 +1528,35 @@ int Postraitement::postraiter_tableau(const Domaine& dom,const Noms& unites,cons
       if (localisation == "SOM")
         {
           const DoubleTab coord = dom.coord_sommets();
-          format_post->ecrire_champ2(dom,unites,noms_compo,ncomp,temps_champ,temps_courant,id_champ_ecrit,id_du_domaine,localisation,nature,val_post_ecrit,coord);
+          format_post->ecrire_champ2(dom,unites,noms_compo,ncomp,temps,id_champ_ecrit,id_du_domaine,localisation,nature,val_post_ecrit,coord);
         }
       else if (localisation == "ELEM")
         {
-          /*  Cerr << "Coucou Lamia 1" << finl;
-            const Zone_VF& zone_vf = ref_cast(Zone_VF, zone_dis_pour_faces.valeur());
-            Cerr << "Coucou Lamia 2" << finl;
-            const DoubleTab coord = zone_vf.xp();
-            Cerr << "Coucou Lamia 3" << finl;
-          */
           const Zone& zone=dom.zone(0);
           DoubleTab coord;
           zone.calculer_centres_gravite(coord);
-          format_post->ecrire_champ2(dom,unites,noms_compo,ncomp,temps_champ,temps_courant,id_champ_ecrit,id_du_domaine,localisation,nature,val_post_ecrit,coord);
+          format_post->ecrire_champ2(dom,unites,noms_compo,ncomp,temps,id_champ_ecrit,id_du_domaine,localisation,nature,val_post_ecrit,coord);
         }
       else if (localisation == "FACES")
         {
           const Zone_VF& zone_vf = ref_cast(Zone_VF, zone_dis_pour_faces.valeur());
           const DoubleTab coord = zone_vf.xv();
-          format_post->ecrire_champ2(dom,unites,noms_compo,ncomp,temps_champ,temps_courant,id_champ_ecrit,id_du_domaine,localisation,nature,val_post_ecrit,coord);
+          format_post->ecrire_champ2(dom,unites,noms_compo,ncomp,temps,id_champ_ecrit,id_du_domaine,localisation,nature,val_post_ecrit,coord);
         }
     }
   else
-    format_post->ecrire_champ(dom,unites,noms_compo,ncomp,temps_champ,temps_courant,id_champ_ecrit,id_du_domaine,localisation,nature,val_post_ecrit);
+    format_post->ecrire_champ(dom,unites,noms_compo,ncomp,temps,id_champ_ecrit,id_du_domaine,localisation,nature,val_post_ecrit);
   return 1;
 }
 
 int Postraitement::postraiter_tenseur(const Domaine& dom,const Noms& unites,const Noms& noms_compo,const int ncomp,
-                                      const double temps_champ,double& temps_courant,
+                                      const double temps,
                                       Nom nom_post,const Nom& localisation,const Nom& nature,const DoubleTab& valeurs)
 {
 
   int nb_comp = noms_compo.size();
   for (int comp=0; comp<nb_comp; comp++)
-    postraiter_tableau(dom,unites,noms_compo,comp,temps_champ,temps_courant,noms_compo[comp],localisation,nature,valeurs);
+    postraiter_tableau(dom,unites,noms_compo,comp,temps,noms_compo[comp],localisation,nature,valeurs);
   return 1;
 }
 

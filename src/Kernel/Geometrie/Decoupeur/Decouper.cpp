@@ -138,7 +138,6 @@ static void postraiter_decoupage(const Nom& nom_fichier_lata,
                     noms_compo,
                     1,           // ncomp,
                     0.0,         //temps,
-                    0.0,         //temps_courant,
                     "partition", // id_du_champ,
                     domaine.le_nom(), // id_du_domaine
                     "ELEM",      // localisation,

@@ -172,7 +172,7 @@ int Format_Post_Lml::ecrire_temps(const double temps)
  *
  */
 int Format_Post_Lml::ecrire_champ(const Domaine& domaine,const Noms& unite_, const Noms& noms_compo,
-                                  int ncomp,double temps_,double temps_courant,
+                                  int ncomp,double temps_,
                                   const Nom& id_champ,
                                   const Nom& id_du_domaine,
                                   const Nom& localisation,

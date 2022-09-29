@@ -238,7 +238,7 @@ void Corriger_frontiere_periodique::corriger_coordonnees_sommets_perio(Domaine& 
       if (dim==3) compos.add("dz");
       post.ecrire_champ(domaine_bord,
                         unites, compos, -1 /* ecrire toutes les composantes */,
-                        0., 0., /* temps */
+                        0., /* temps */
                         "vitesse", domaine_bord.le_nom(), "SOM","vector", delta);
       int fin=1;
       post.finir(fin);

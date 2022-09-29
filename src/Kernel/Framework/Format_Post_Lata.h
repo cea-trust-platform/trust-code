@@ -71,7 +71,7 @@ public:
 
   int finir(const int est_le_dernier_post) override;
 
-  int ecrire_champ(const Domaine& domaine, const Noms& unite_, const Noms& noms_compo, int ncomp, double temps_, double temps_courant, const Nom& id_du_champ, const Nom& id_du_domaine,
+  int ecrire_champ(const Domaine& domaine, const Noms& unite_, const Noms& noms_compo, int ncomp, double temps_, const Nom& id_du_champ, const Nom& id_du_domaine,
                    const Nom& localisation, const Nom& nature, const DoubleTab& data) override;
 
   int ecrire_item_int(const Nom& id_item, const Nom& id_du_domaine, const Nom& id_zone, const Nom& localisation, const Nom& reference, const IntVect& data, const int reference_size) override;
@@ -111,7 +111,7 @@ public:
 
 protected:
 
-  static int write_doubletab(Fichier_Lata& fichier, const DoubleTab& tab, int& nb_colonnes, const Options_Para& option, const int bloc_number = 0, const int nb_blocs = 1);
+  static int write_doubletab(Fichier_Lata& fichier, const DoubleTab& tab, int& nb_colonnes, const Options_Para& option);
 
   static int write_inttab(Fichier_Lata& fichier, int decalage, int decalage_partiel, const IntTab& tab, int& nb_colonnes, const Options_Para& option);
 

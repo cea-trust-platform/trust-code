@@ -124,15 +124,15 @@ public:
 
   //On distingue le postraitement d un tableau et d un tenseur
   int postraiter(const Domaine& dom,const Noms& unites,const Noms& noms_compo,const int ncomp,
-                 const double temps_champs,double& temps_courant,
+                 const double temps,
                  Nom nom_post,const Nom& localisation,const Nom& nature,const DoubleTab& valeurs,int tenseur);
 
   int postraiter_tableau(const Domaine& dom,const Noms& unites,const Noms& noms_compo,const int ncomp,
-                         const double temps_champs,double& temps_courant,
+                         const double temps,
                          Nom nom_post,const Nom& localisation,const Nom& nature,const DoubleTab& valeurs);
 
   int postraiter_tenseur(const Domaine& dom,const Noms& unites,const Noms& noms_compo,const int ncomp,
-                         const double temps_champs,double& temps_courant,
+                         const double temps,
                          Nom nom_post,const Nom& localisation,const Nom& nature,const DoubleTab& valeurs);
 
 

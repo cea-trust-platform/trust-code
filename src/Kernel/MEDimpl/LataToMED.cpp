@@ -15,19 +15,13 @@
 
 #include <LataToMED.h>
 #include <Domaine.h>
-//#include <EcrMED.h>
 #include <EFichierBin.h>
-
 #include <EChaine.h>
-
-
 #include <PE_Groups.h>
-
 #include <SFichier.h>
-
 #include <LataFilter.h>
 #include <LmlReader.h>
-#include  <Format_Post.h>
+#include <Format_Post.h>
 #include <list>
 
 Implemente_instanciable(LataToMED,"Lata_To_MED",Interprete);
@@ -57,11 +51,6 @@ Entree& LataToMED::readOn(Entree& is)
 
 void convert_domain_to_Domaine(  const Domain& dom , Domaine& dom_trio)
 {
-
-
-
-
-
   //      dom_trio.les_sommets()=geom.nodes_;
   // mais geom.nodes est un FloatTab
   DoubleTab& som= dom_trio.les_sommets();
@@ -82,7 +71,6 @@ void convert_domain_to_Domaine(  const Domain& dom , Domaine& dom_trio)
       const DomainIJK& geom = dom.cast_DomainIJK();
       const int dim = geom.coord_.size();
 
-
       nx=geom.coord_[0].size_array();
       ny=geom.coord_[1].size_array();
       nz=1;
@@ -100,7 +88,6 @@ void convert_domain_to_Domaine(  const Domain& dom , Domaine& dom_trio)
               if (dim>2)
                 som(nn,2)=geom.coord_[2][k];
             }
-
     }
 
   Zone zone_bidon;
@@ -121,7 +108,6 @@ void convert_domain_to_Domaine(  const Domain& dom , Domaine& dom_trio)
     }
   else
     {
-
       zone.les_elems().resize((nx-1)*(ny-1)*(nz-1),zone.nb_som_elem());
       IntTab& elems=zone.les_elems();
       for (int i=0; i<nx-1; i++)
@@ -144,15 +130,11 @@ void convert_domain_to_Domaine(  const Domain& dom , Domaine& dom_trio)
   zone.faces_raccord().associer_zone(zone);
   zone.faces_joint().associer_zone(zone);
 
-
   zone.type_elem().associer_zone(zone);
   zone.fixer_premieres_faces_frontiere();
 
-
-
   if (dom.id_.timestep_!=0)
     dom_trio.deformable()=1;
-
 }
 
 // XD format_lata_to_med objet_lecture nul 0 not_set
@@ -354,7 +336,7 @@ Entree& latatoother::interpreter(Entree& is)
                         //exit();
                         //meddrive.ecrire_champ(type,nom_fic,geoms[i],fields[j].get_field_name(),values,unites,type_elem   ,time,0);
 
-                        post.ecrire_champ(dom_trio,unites,noms_post,-1,time,time,nom_post,geoms[i],nom_type,"iii",values);
+                        post.ecrire_champ(dom_trio,unites,noms_post,-1,time,nom_post,geoms[i],nom_type,"iii",values);
                         filter.release_field(field);
                       }
                     catch(...)
