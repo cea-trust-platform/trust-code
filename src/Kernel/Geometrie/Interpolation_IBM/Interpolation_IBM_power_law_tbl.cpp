@@ -26,6 +26,15 @@ Sortie& Interpolation_IBM_power_law_tbl::printOn( Sortie& os ) const
 
 Entree& Interpolation_IBM_power_law_tbl::readOn( Entree& is )
 {
-  Interpolation_IBM_elem_fluid::readOn( is );
+  Param param(que_suis_je());
+  set_param(param);
+  // Interpolation_IBM_elem_fluid::readOn( is );
+  param.lire_avec_accolades_depuis(is);
   return is;
+}
+
+void Interpolation_IBM_power_law_tbl::set_param(Param& param)
+{
+  Interpolation_IBM_elem_fluid::set_param( param );
+  param.ajouter("formulation_u_tau",&formulation_u_tau_,Param::OPTIONAL);  // XD_ADD_P Choix formulation vitesse ou u_tau
 }

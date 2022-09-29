@@ -41,6 +41,10 @@ public:
   {
     return impr_;
   };
+  inline int get_N_histo()
+  {
+    return N_histo_;
+  };
   void set_param(Param&);
 protected:
 
@@ -50,6 +54,7 @@ protected:
   Champ_Don corresp_elems_lu_;
   Champ_Don corresp_elems_;
   int impr_=0;  // Default value
+  int N_histo_=10;  // Default value for number of histogram boxes for printed data
 };
 
 #endif /* Interpolation_IBM_base_included */

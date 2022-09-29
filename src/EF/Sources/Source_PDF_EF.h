@@ -54,6 +54,14 @@ public:
   void test(Matrice&) const;
   void updateChampRho();
   int impr(Sortie&) const override;
+
+  // Methodes de l interface des champs postraitables
+//
+  void creer_champ(const Motcle& motlu) override;
+  const Champ_base& get_champ(const Motcle& nom) const override;
+  void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
+//
+
 protected:
   Champ_Don champ_nodal_;
   void compute_vitesse_imposee_projete(const DoubleTab&, const DoubleTab&, double, double) override;
@@ -67,6 +75,11 @@ protected:
   REF(Zone_Cl_EF) la_zone_Cl_EF;
   void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
   void compute_indicateur_nodal_champ_aire() override;
+
+  DoubleVect tab_u_star_ibm_;                //!< valeurs des u* IBM calculees localement
+  DoubleVect tab_y_plus_ibm_;                //!< valeurs des d+ IBM calculees localement
+  mutable Champ_Fonc champ_u_star_ibm_;          //!< Champ pour postraitement
+  mutable Champ_Fonc champ_y_plus_ibm_;          //!< Champ pour postraitement
 };
 
 #endif

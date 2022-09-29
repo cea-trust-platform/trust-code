@@ -48,10 +48,19 @@ public :
     return y_c_p_pwl_;
   };
 
+  inline int get_formulation_u_tau()
+  {
+    return formulation_u_tau_;
+  };
+
+  void set_param(Param&);
+
 protected :
   double A_pwl_ = 8.3;
   double B_pwl_ = 1./7. ;
   double y_c_p_pwl_ = 11.81;
+
+  int formulation_u_tau_ = 0; // Choix formulation vitesse ou u_tau
 };
 
 #endif /* Interpolation_IBM_power_law_tbl_included */

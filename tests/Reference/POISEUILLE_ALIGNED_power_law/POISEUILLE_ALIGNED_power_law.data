@@ -151,7 +151,8 @@ Read pb
                         field TRUST_SALOME_correspondance
                         last_time
                     }
-                    impr
+                    impr nb_histo_boxes_impr 5
+		    formulation_u_tau 0
                 }
             }
         }
@@ -166,24 +167,26 @@ Read pb
 
     Post_processings
     {
-        med {
-            format med
-            fichier results/postdom
-            Champs binaire dt_post 1e0
-            {
-                pression elem
-                vitesse som
-            }
-        }
-        lml
-        {
-            format lml fichier POISEUILLE_ALIGNED_power_law
-            Champs dt_post 1e0
-            {
-                pression elem
-                vitesse som
-            }
-        }
+	med {
+	        format med
+        	fichier results/postdom
+        	Champs binaire dt_post 1e0
+        	{
+            		pression elem
+            		vitesse som
+        	}
+	} 
+	lml
+	{
+		format lml fichier POISEUILLE_ALIGNED_power_law
+        	Champs dt_post 1e0
+        	{
+            		pression elem
+            		vitesse som
+			y_plus_ibm som
+			u_star_ibm som
+        	}
+	}
     }
 }
 resoudre pb

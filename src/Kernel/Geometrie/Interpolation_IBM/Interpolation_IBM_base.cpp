@@ -36,5 +36,6 @@ Entree& Interpolation_IBM_base::readOn( Entree& is )
 void Interpolation_IBM_base::set_param(Param& param)
 {
   param.ajouter_flag("impr",&impr_);  // XD_ADD_P flag To print IBM-related data
+  param.ajouter("nb_histo_boxes_impr",&N_histo_,Param::OPTIONAL);  // XD_ADD_P number of histogram boxes for printed data
 }
 

@@ -34,8 +34,14 @@
 #include <Navier_Stokes_std.h>
 #include <Op_Conv_EF.h>
 
-Implemente_instanciable(Source_PDF_EF,"Source_PDF_EF",Source_PDF_base);
+Implemente_instanciable_sans_constructeur(Source_PDF_EF,"Source_PDF_EF",Source_PDF_base);
 // XD source_pdf source_pdf_base source_pdf 1 Source term for Penalised Direct Forcing (PDF) method.
+
+Source_PDF_EF::Source_PDF_EF()
+{
+  champs_compris_.ajoute_nom_compris("u_star_ibm");
+  champs_compris_.ajoute_nom_compris("y_plus_ibm");
+}
 
 /*##################################################################################################
 ####################################################################################################
@@ -52,6 +58,81 @@ Entree& Source_PDF_EF::readOn(Entree& s)
 Sortie& Source_PDF_EF::printOn(Sortie& s ) const
 {
   return s << que_suis_je();
+}
+
+void Source_PDF_EF::creer_champ(const Motcle& motlu)
+{
+  if (motlu=="u_star_ibm" && !champ_u_star_ibm_.non_nul())
+    {
+      int nb_comp = 1;
+      Noms noms(1);
+      noms[0]="u_star_ibm";
+      Noms unites(1);
+      unites[0] = "m/s";
+      double temps=0.;
+      const Discretisation_base& discr = equation().probleme().discretisation();
+      discr.discretiser_champ("champ_sommets",equation().zone_dis(),scalaire,noms,unites,nb_comp,temps,champ_u_star_ibm_);
+      champs_compris_.ajoute_champ(champ_u_star_ibm_);
+    }
+  else if (motlu=="y_plus_ibm" && !champ_y_plus_ibm_.non_nul())
+    {
+      int nb_comp = 1;
+      Noms noms(1);
+      noms[0]="y_plus_ibm";
+      Noms unites(1);
+      unites[0] = "-";
+      double temps=0.;
+      const Discretisation_base& discr = equation().probleme().discretisation();
+      discr.discretiser_champ("champ_sommets",equation().zone_dis(),scalaire,noms,unites,nb_comp,temps,champ_y_plus_ibm_);
+      champs_compris_.ajoute_champ(champ_y_plus_ibm_);
+    }
+}
+
+const Champ_base& Source_PDF_EF::get_champ(const Motcle& nom) const
+{
+  if (nom=="u_star_ibm")
+    {
+      if (!champ_u_star_ibm_.non_nul())  throw Champs_compris_erreur();
+      // Initialisation a 0 du champ volumique u_star
+      DoubleTab& valeurs = champ_u_star_ibm_->valeurs();
+      valeurs=0;
+      if (tab_u_star_ibm_.size_array()>0)
+        {
+          const Zone_EF& zone_EF = la_zone_EF.valeur();
+          int nb_som=zone_EF.zone().nb_som();
+          for (int num_node=0; num_node<nb_som; num_node++)
+            valeurs(num_node)=tab_u_star_ibm_(num_node);
+        }
+      valeurs.echange_espace_virtuel();
+      // Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,champ_u_star_ibm_);
+      champ_u_star_ibm_.mettre_a_jour(equation().probleme().schema_temps().temps_courant());
+      return champs_compris_.get_champ(nom);
+    }
+  else if (nom=="y_plus_ibm")
+    {
+      if (!champ_y_plus_ibm_.non_nul())  throw Champs_compris_erreur();
+      // Initialisation a 0 du champ volumique u_star
+      DoubleTab& valeurs = champ_y_plus_ibm_->valeurs();
+      valeurs=0;
+      if (tab_y_plus_ibm_.size_array()>0)
+        {
+          const Zone_EF& zone_EF = la_zone_EF.valeur();
+          int nb_som=zone_EF.zone().nb_som();
+          for (int num_node=0; num_node<nb_som; num_node++)
+            valeurs(num_node)=tab_y_plus_ibm_(num_node);
+        }
+      valeurs.echange_espace_virtuel();
+      // Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,champ_y_plus_ibm_);
+      champ_y_plus_ibm_.mettre_a_jour(equation().probleme().schema_temps().temps_courant());
+      return champs_compris_.get_champ(nom);
+    }
+  else
+    return champs_compris_.get_champ(nom);
+}
+
+void Source_PDF_EF::get_noms_champs_postraitables(Noms& nom,Option opt) const
+{
+  Source_base::get_noms_champs_postraitables(nom,opt);
 }
 
 /*##################################################################################################
@@ -75,7 +156,7 @@ void Source_PDF_EF::associer_pb(const Probleme_base& pb)
   pb.discretisation().discretiser_champ("champ_elem",la_zone_EF,"aire","m-1",1,0., champ_aire_);
   champ_aire_.valeur().affecter(champ_aire_lu_);
   pb.discretisation().discretiser_champ("champ_elem",la_zone_EF,"rho","kg.m-3",1,0., champ_rho_);
-  champ_rho_.valeur().affecter(champ_aire_lu_);
+  Source_PDF_base::updateChampRho();
   if (transpose_rotation_)
     {
 
@@ -147,6 +228,10 @@ void Source_PDF_EF::associer_pb(const Probleme_base& pb)
   pb.discretisation().discretiser_champ("champ_sommets",la_zone_EF,"","",1,0., champ_nodal_);
 
   compute_indicateur_nodal_champ_aire();
+
+  int nb_som=la_zone_EF.valeur().zone().nb_som();
+  tab_u_star_ibm_.resize(nb_som);
+  tab_y_plus_ibm_.resize(nb_som);
 }
 
 void Source_PDF_EF::compute_indicateur_nodal_champ_aire()
@@ -821,6 +906,13 @@ void Source_PDF_EF::calculer_vitesse_imposee_mean_grad()
                 }
             }
         }
+      else
+        {
+          for(int j = 0; j < nb_comp; j++)
+            {
+              vitesse_imposee_calculee(i,j) = vitesse_imposee_mod(i,j);
+            }
+        }
     }
   //vitesse_imposee_calculee.echange_espace_virtuel();
   //Cerr<<"Min/max/norme : nb_vois "<< mp_min_vect(nb_vois) << " " << mp_max_vect(nb_vois) << " " << mp_norme_vect(nb_vois) << finl;
@@ -981,7 +1073,20 @@ void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl()
   double yplus_ref_min = 1.0e+10;
   double yplus_ref_max = 0.0;
   double yplus_ref_mean = 0.0;
+  double u_tau_ref_min = 1.0e+10;
+  double u_tau_ref_max = 0.0;
+  double u_tau_ref_mean = 0.0;
+  double h_yplus_min = 1.0e+10;
+  double h_yplus_max = 0.0;
+  double h_yplus_mean = 0.0;
   int yplus_count=0 ;
+
+  int N = interp.get_N_histo();
+  DoubleTab tab_h(1, nb_som);
+  DoubleTab abs_h(1, N+1);
+  DoubleTab compteur_h(1, N);
+  compteur_h = 0.;
+  tab_h = 0.;
 
   for (int i = 0; i < nb_som; i++)
     {
@@ -1022,7 +1127,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl()
             }
 
           cells(0) = int(fluid_elems(i));
-          champ_vitesse_inconnue.value_interpolation(xf,cells, val_vitesse_inconnue, vf); // vf la vitesse totale
+          champ_vitesse_inconnue.value_interpolation(xf,cells, val_vitesse_inconnue, vf); // vf la vitesse totale interpolée au pt fluide
           double Vn = 0.;
           for(int j = 0; j < nb_comp; j++) Vn +=vf(0, j) * normale(0,j);
           DoubleTab v_ref_t(1, nb_comp);
@@ -1035,14 +1140,13 @@ void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl()
 
           double nu = (flag ? opdiffu.diffusivite().valeurs()(cells) : opdiffu.diffusivite().valeurs()(0,0));
 
-          // On calcule U_tau pour pouvoir calculer les quantites adimensionees ( y+ ...)
+          // On calcule U_tau_ref pour pouvoir calculer les quantites adimensionees ( y+ ...)
 
-          double u_tau = pow ( norme_v_ref_t , (1/(1+B_pwl)) ) * pow ( A_pwl, (-1/(1+B_pwl)) )  * pow ( y_ref , (-B_pwl/(1+B_pwl)) ) * pow ( nu,(B_pwl/(1+B_pwl)) ) ;
+          double u_tau_ref = pow ( norme_v_ref_t , (1/(1+B_pwl)) ) * pow ( A_pwl, (-1/(1+B_pwl)) )  * pow ( y_ref , (-B_pwl/(1+B_pwl)) ) * pow ( nu,(B_pwl/(1+B_pwl)) ) ;
 
-          double y_plus = u_tau * d1 / nu;
-          // Cerr<<"u_tau  d1  nu ="<<u_tau<<" "<<d1<<" "<<nu<<finl;;
+          // Cerr<<"u_tau_ref y_ref   nu ="<<u_tau_ref<<" "<<y_ref<<" "<<nu<<finl;;
 
-          double y_ref_p = y_ref * u_tau  / nu;  //la on a enfin tout ce qu'il faut pour etablir la loi polynomiale pour y r+
+          double y_ref_p = y_ref * u_tau_ref  / nu;  //la on a enfin tout ce qu'il faut pour etablir la loi polynomiale pour y r+
           double test_ref;
 
           if ( y_ref_p > y_c_p_pwl)  // a partir de la commence l'expression de la loi de paroi polynomiale turbulente
@@ -1058,6 +1162,18 @@ void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl()
               // Cerr << "zone lineaire/sous-couche visqueuse" << finl;
             }                   // Fin LdPturb
 
+          double norme_v_imp_c = 0;
+          for(int j=0 ; j < nb_comp; j++) norme_v_imp_c += vitesse_imposee_calculee(i ,j) * vitesse_imposee_calculee(i ,j);
+          norme_v_imp_c = sqrt( norme_v_imp_c );
+
+          double u_tau = pow ( norme_v_imp_c , (1/(1+B_pwl)) ) * pow ( A_pwl, (-1/(1+B_pwl)) )  * pow ( d1 , (-B_pwl/(1+B_pwl)) ) * pow ( nu,(B_pwl/(1+B_pwl)) ) ;
+
+          // Cerr<<"u_tau d1   nu ="<<u_tau<<" "<<d1<<" "<<nu<<finl;;
+          double y_plus = u_tau * d1 / nu;
+
+          tab_u_star_ibm_(i) = u_tau;
+          tab_y_plus_ibm_(i) = y_plus;
+
           if (impr_yplus && itisok && (indicateur_nodal_champ_aire_(i)==1.))
             {
               if (d1 > d1_max) d1_max = d1;
@@ -1066,12 +1182,20 @@ void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl()
               if (y_plus > yplus_max) yplus_max = y_plus;
               if (y_plus < yplus_min) yplus_min = y_plus;
               yplus_mean +=  y_plus;
-              if (y_ref_p > yplus_ref_max) yplus_ref_max = y_ref_p;
-              if (y_ref_p < yplus_ref_min) yplus_ref_min = y_ref_p;
-              yplus_ref_mean += y_ref_p;
               if (u_tau > u_tau_max) u_tau_max = u_tau;
               if (u_tau < u_tau_min) u_tau_min = u_tau;
               u_tau_mean += u_tau;
+              if (y_ref_p > yplus_ref_max) yplus_ref_max = y_ref_p;
+              if (y_ref_p < yplus_ref_min) yplus_ref_min = y_ref_p;
+              yplus_ref_mean += y_ref_p;
+              if (u_tau_ref > u_tau_ref_max) u_tau_ref_max = u_tau_ref;
+              if (u_tau_ref < u_tau_ref_min) u_tau_ref_min = u_tau_ref;
+              u_tau_ref_mean += u_tau_ref;
+              // Distribution des y+ au voisinage des parois
+              if (y_plus > h_yplus_max) h_yplus_max = y_plus;
+              if (y_plus < h_yplus_min) h_yplus_min = y_plus;
+              h_yplus_mean += y_plus;
+              tab_h(0,yplus_count) = y_plus;
               yplus_count += 1;
             }
 
@@ -1111,10 +1235,31 @@ void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl()
       yplus_mean /= yplus_count;
       yplus_ref_mean /= yplus_count;
       u_tau_mean /= yplus_count;
+      u_tau_ref_mean /= yplus_count;
       Cerr<<"min mean max y  = "<<d1_min<<" "<<d1_mean<<" "<<d1_max<<finl;
       Cerr<<"min mean max y+ = "<<yplus_min<<" "<<yplus_mean<<" "<<yplus_max<<finl;
-      Cerr<<"min mean max y+_ref = "<<yplus_ref_min<<" "<<yplus_ref_mean<<" "<<yplus_ref_max<<finl;
       Cerr<<"min mean u_tau = "<<u_tau_min<<" "<<u_tau_mean<<" "<<u_tau_max<<finl;
+      Cerr<<"min mean max y+_ref = "<<yplus_ref_min<<" "<<yplus_ref_mean<<" "<<yplus_ref_max<<finl;
+      Cerr<<"min mean u_tau_ref = "<<u_tau_ref_min<<" "<<u_tau_ref_mean<<" "<<u_tau_ref_max<<finl;
+
+      h_yplus_mean /= yplus_count;
+      double range = ( h_yplus_max - h_yplus_min)/N;
+      for (int k = 0; k < N+1; k++) abs_h(0,k) = (h_yplus_min + k*range);
+      for (int i=0; i < yplus_count; i++)
+        {
+          for (int j = 0; j < N; j++)
+            {
+              if ( abs_h(0,j) < tab_h(0,i) &&  tab_h(0,i) <= abs_h(0,j+1) ) compteur_h(0,j) +=1;
+            }
+        }
+      Cerr<<"histogramme y+ compteur =";
+      for (int j = 0; j < N; j++) Cerr<<" "<<compteur_h(0,j)<<" ";
+      Cerr<<finl;
+      Cerr<<"histogramme y+ abscisse =";
+      for (int j = 0; j < N+1; j++) Cerr<<" "<<abs_h(0,j)<<" ";
+      Cerr<<finl;
+      Cerr<<"histogramme y+ : min = "<<h_yplus_min<<" - mean = "<<h_yplus_mean<<" - max =  "<<h_yplus_max<<finl;
+
       Cerr<<"Moyenne sur "<<yplus_count<<" points"<<finl;
     }
 }
