@@ -51,9 +51,11 @@ void Flux_interfacial_Zeitoun::coeffs(const input_t& in, output_t& out) const
         int ind_trav = (k>n_l) ? (n_l*(N-1)-(n_l-1)*(n_l)/2) + (k-n_l-1) : (k*(N-1)-(k-1)*(k)/2) + (n_l-k-1);
         double Ja = in.rho[n_l] * in.Cp[n_l] * (in.T[k] -  in.T[n_l]) / (in.rho[k] * in.Lvap[ind_trav] );
         double Re_b = in.rho[n_l] * in.nv[N * n_l + k] * d_bulles(e,k) / in.mu[n_l];
-        double Nu = 2.04* std::pow(Re_b, .61)*std::pow(in.alpha[k], 0.328)* std::pow(Ja, -.308);
-        out.hi(n_l, k) = Nu * in.lambda[n_l] / d_bulles(e,k) * 6 * std::max(in.alpha[k], 1e-3) / d_bulles(e,k) ; // std::max() pour que le flux interfacial sont non nul
-        out.da_hi(n_l, k, k) = in.alpha[k] > 1e-3 ? Nu * in.lambda[n_l] * 6. / (d_bulles(e,k)*d_bulles(e, k)) : 0;
+        double Nu = 2.04* std::pow(Re_b, .61)*std::pow(std::max(in.alpha[k], 1e-4), 0.328)* std::pow(Ja, -.308);
+        out.hi(n_l, k) = Nu * in.lambda[n_l] / d_bulles(e,k) * 6 * std::max(in.alpha[k], 1e-4) / d_bulles(e,k) ; // std::max() pour que le flux interfacial sont non nul
+        out.da_hi(n_l, k, k) = in.alpha[k] > 1e-4 ? 
+              Nu * in.lambda[n_l] * 6. / (d_bulles(e,k)*d_bulles(e, k)) * 1.328 / in.alpha[k]: 
+              0. ;
         out.hi(k, n_l) = 1e8;
       }
 }

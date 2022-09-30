@@ -13,22 +13,22 @@
 *
 *****************************************************************************/
 
-#include <Flux_interfacial_Chen_Mayinger.h>
+#include <Flux_interfacial_Kim_Park.h>
 #include <Pb_Multiphase.h>
 
-Implemente_instanciable(Flux_interfacial_Chen_Mayinger, "Flux_interfacial_Chen_Mayinger", Flux_interfacial_base);
+Implemente_instanciable(Flux_interfacial_Kim_Park, "Flux_interfacial_Kim_Park", Flux_interfacial_base);
 // XD flux_interfacial source_base flux_interfacial 0 Source term of mass transfer between phases connected by the saturation object defined in saturation_xxxx
-Sortie& Flux_interfacial_Chen_Mayinger::printOn(Sortie& os) const
+Sortie& Flux_interfacial_Kim_Park::printOn(Sortie& os) const
 {
   return os;
 }
 
-Entree& Flux_interfacial_Chen_Mayinger::readOn(Entree& is)
+Entree& Flux_interfacial_Kim_Park::readOn(Entree& is)
 {
   return is;
 }
 
-void Flux_interfacial_Chen_Mayinger::completer()
+void Flux_interfacial_Kim_Park::completer()
 {
   Pb_Multiphase *pbm = sub_type(Pb_Multiphase, pb_.valeur()) ? &ref_cast(Pb_Multiphase, pb_.valeur()) : NULL;
 
@@ -41,16 +41,18 @@ void Flux_interfacial_Chen_Mayinger::completer()
   if (!pbm->has_champ("diametre_bulles")) Process::exit("Flux_interfacial_Ranz_Mashall : bubble diameter needed !");
 }
 
-void Flux_interfacial_Chen_Mayinger::coeffs(const input_t& in, output_t& out) const
+void Flux_interfacial_Kim_Park::coeffs(const input_t& in, output_t& out) const
 {
   int k, N = out.hi.dimension(0), e = in.e;
   const DoubleTab& d_bulles = pb_->get_champ("diametre_bulles").valeurs() ;
   for (k = 0; k < N; k++)
     if (k != n_l)
       {
+        int ind_trav = (k>n_l) ? (n_l*(N-1)-(n_l-1)*(n_l)/2) + (k-n_l-1) : (k*(N-1)-(k-1)*(k)/2) + (n_l-k-1);
         double Re_b = in.rho[n_l] * in.nv[N * n_l + k] * d_bulles(e,k) / in.mu[n_l];
         double Pr = in.mu[n_l] * in.Cp[n_l] / in.lambda[n_l];
-        double Nu = 0.185 * std::pow(Re_b, .7)*std::pow(Pr, .5);
+        double Ja = in.rho[n_l] * in.Cp[n_l] * (in.T[k] -  in.T[n_l]) / (in.rho[k] * in.Lvap[ind_trav] );
+        double Nu = 0.2575 * std::pow(Re_b, .7)*std::pow(Pr, -.4564)*std::pow(Ja, -.2043);
         out.hi(n_l, k) = Nu * in.lambda[n_l] / d_bulles(e,k) * 6 * std::max(in.alpha[k], 1e-4) / d_bulles(e,k) ; // std::max() pour que le flux interfacial sont non nul
         out.da_hi(n_l, k, k) = in.alpha[k] > 1e-4 ? Nu * in.lambda[n_l] * 6. / (d_bulles(e,k)*d_bulles(e, k)) : 0;
         out.hi(k, n_l) = 1e8;
