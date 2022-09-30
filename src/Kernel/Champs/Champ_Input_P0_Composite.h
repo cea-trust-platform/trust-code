@@ -36,7 +36,7 @@ public:
   const DoubleTab& valeurs() const override { return champ_input_.valeurs(); }
 
   void mettre_a_jour(double) override { }
-  int initialiser(const double temps) override { return champ_input_.initialiser(temps); }
+  int initialiser(const double t) override { return champ_input_.initialiser(t); }
   double changer_temps(const double t) override { return champ_input_.changer_temps(t); }
 
   const Nom& fixer_unite(const Nom& unit) override { return champ_input_.fixer_unite(unit); }
