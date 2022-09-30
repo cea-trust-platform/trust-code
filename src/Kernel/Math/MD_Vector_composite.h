@@ -12,10 +12,12 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+
 #ifndef MD_Vector_composite_included
 #define MD_Vector_composite_included
+
+#include <Vect_MD_Vector.h>
 #include <MD_Vector_std.h>
-#include <VectMD_Vector.h>
 #include <TRUSTTabs.h>
 #include <Noms.h>
 
@@ -62,4 +64,4 @@ public:
   Noms names_;
 };
 
-#endif
+#endif /* MD_Vector_composite_included */

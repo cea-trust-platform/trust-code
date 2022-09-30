@@ -17,8 +17,6 @@
 #include <Array_tools.h>
 #include <Param.h>
 
-implemente_vect_no_obj(MD_Vector)
-
 Implemente_instanciable(MD_Vector_composite,"MD_Vector_composite",MD_Vector_base2);
 
 /*! @brief method used to dump/restore a descriptor in a file Each process writes a different descriptor.
