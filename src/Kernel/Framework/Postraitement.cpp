@@ -294,17 +294,20 @@ Entree& Postraitement::readOn(Entree& s )
       && (Motcle(format)!="MEDFILE")
       && (Motcle(format)!="MED_MAJOR")
       && (Motcle(format)!="LATA")
-      && (Motcle(format)!="LATA_V1")
       && (Motcle(format)!="LATA_V2")
       && (Motcle(format)!="XYZ"))
     {
       Cerr<<"The postprocessing format " << format << " is not recognized"<<finl;
-      Cerr<<"The recognized formats are lml, meshtv, med, medfile, med_major, xyz, lata, lata_V1 and lata_V2"<<finl;
+      Cerr<<"The recognized formats are lml, meshtv, med, medfile, med_major, xyz, lata and lata_V2"<<finl;
       exit();
     }
-  // Changement pour la 1.6.4, le format LATA par defaut est LATA_V2
-  if (Motcle(format)=="LATA") format="lata_V2";
-  if (Motcle(format)=="LATA_V1") format="lata";
+  if (Motcle(format)=="LATA_V2") format="lata";
+  // Verstion 1.9.1 - Lata_V1 is no more supported:
+  if (Motcle(format)=="LATA_V1")
+    {
+      Cerr<<"The postprocessing format 'lata_v1' is not supported anymore! Switch to 'lata' (version 2)."<<finl;
+      exit();
+    }
 
   nom_fich_+=".";
   nom_fich_+=format;
@@ -316,12 +319,8 @@ Entree& Postraitement::readOn(Entree& s )
   les_sondes_.completer();
 
   //On type l objet Format_Post
-
   Nom type_format = "Format_Post_";
   type_format += format;
-  if (Motcle(format)=="LATA")
-    type_format +="_V1";
-
   format_post.typer_direct(type_format);
 
   Nom base_name(nom_fich_);
@@ -342,7 +341,7 @@ void Postraitement::set_param(Param& param)
 // XD postraitement postraitement_base postraitement -1 An object of post-processing (without name).
 //  attr interfaces champs_posts interfaces 1 Keyword to read all the caracteristics of the interfaces. Different kind of interfaces exist as well as different interface intitialisations.
   param.ajouter("Fichier",&nom_fich_); // XD_ADD_P chaine Name of file.
-  param.ajouter("Format",&format); // XD_ADD_P chaine(into=["lml","lata","lata_v1","lata_v2","med","med_major"]) This optional parameter specifies the format of the output file. The basename used for the output file is the basename of the data file. For the fmt parameter, choices are lml or lata. A short description of each format can be found below. The default value is lml.
+  param.ajouter("Format",&format); // XD_ADD_P chaine(into=["lml","lata","lata_v2","med","med_major"]) This optional parameter specifies the format of the output file. The basename used for the output file is the basename of the data file. For the fmt parameter, choices are lml or lata. A short description of each format can be found below. The default value is lml.
   param.ajouter_non_std("Domaine",(this)); // XD_ADD_P chaine This optional parameter specifies the domain on which the data should be interpolated before it is written in the output file. The default is to write the data on the domain of the current problem (no interpolation).
   param.ajouter("Parallele",&option_para); // XD_ADD_P chaine(into=["simple","multiple","mpi-io"]) Select simple (single file, sequential write), multiple (several files, parallel write), or mpi-io (single file, parallel write) for LATA format
   param.ajouter_non_std("Definition_champs",(this));// XD_ADD_P definition_champs  Keyword to create new or more complex field for advanced postprocessing.

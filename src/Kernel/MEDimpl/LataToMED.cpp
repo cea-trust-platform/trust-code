@@ -139,10 +139,10 @@ void convert_domain_to_Domaine(  const Domain& dom , Domaine& dom_trio)
 
 // XD format_lata_to_med objet_lecture nul 0 not_set
 // XD attr mot chaine(into=["format_post_sup"]) mot 0 not_set
-// XD attr format chaine(into=["lml","lata","lata_v1","lata_v2","med"]) format 1 generated file post_med.data use format (MED or LATA or LML keyword).
+// XD attr format chaine(into=["lml","lata","lata_v2","med"]) format 1 generated file post_med.data use format (MED or LATA or LML keyword).
 
 // XD lata_to_other interprete lata_to_other -1 To convert results file written with LATA format to MED or LML format. Warning: Fields located at faces are not supported yet.
-// XD attr format chaine(into=["lml","lata","lata_v1","lata_v2","med"]) format 1 Results format (MED or LATA or LML keyword).
+// XD attr format chaine(into=["lml","lata","lata_v2","med"]) format 1 Results format (MED or LATA or LML keyword).
 // XD attr file chaine file 0 LATA file to convert to the new format.
 // XD attr file_post chaine file_post 0 Name of file post.
 Entree& latatoother::interpreter(Entree& is)
@@ -152,7 +152,7 @@ Entree& latatoother::interpreter(Entree& is)
   Nom format_post_supp;
   is >>format_post_supp>> nom_lata>>nom_fic ;
 
-  std::set<std::string> formats( { "LML", "LATA", "LATA_V1", "LATA_V2", "MED" });
+  std::set<std::string> formats( { "LML", "LATA", "LATA_V2", "MED" });
   Nom tmp = format_post_supp;
   if(formats.count(tmp.majuscule().getString())==0)
     {
@@ -205,8 +205,8 @@ Entree& latatoother::interpreter(Entree& is)
 
       Nom nom_pdb(nom_fic);
       Nom format_post_(format_post_supp);
-      if (format_post_=="lata")
-        format_post_+="_V1";
+      if (format_post_=="lata_v2")
+        format_post_="lata";
 
       // copie de Postraiter_domaine
 

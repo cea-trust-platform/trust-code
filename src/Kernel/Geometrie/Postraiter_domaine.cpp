@@ -220,8 +220,8 @@ Entree& Postraiter_domaine::interpreter_(Entree& is)
       nom_pdb+=".";
       nom_pdb+=format_post_;
     }
-  if (format_post_=="lata")
-    format_post_+="_V2";
+  if (format_post_ == "lata_v2")
+    format_post_ = "lata";
 
   // On deplace la boucle sur les domaines lus
   ecrire(nom_pdb);
@@ -324,7 +324,7 @@ void Postraiter_domaine::ecrire(Nom& nom_pdb)
       // En format LATA V2, les frontieres et joints
       // sont ecrits par defaut depuis la 1.6.6 lors
       // de l'ecriture des domaines si le domaine a ete discretise <=> indice_domaines_frontieres>0
-      if (format_post_!="lata_V2" || dom.domaines_frontieres().size()==0)
+      if (format_post_!="lata" || dom.domaines_frontieres().size()==0)
         {
           if (dom.domaines_frontieres().size()==0) Cerr << "Warning: it could be faster and nicer to discretize your domain before using Postraiter_domaine." << finl;
           //////////////////////////

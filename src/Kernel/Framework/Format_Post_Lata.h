@@ -20,7 +20,7 @@
 
 class Fichier_Lata;
 
-/*! @brief : Classe de postraitement des champs euleriens au format lata.
+/*! @brief : Classe de postraitement des champs euleriens au format lata(version 2)
  *
  */
 

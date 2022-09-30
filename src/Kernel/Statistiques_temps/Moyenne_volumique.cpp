@@ -472,8 +472,8 @@ Entree& Moyenne_volumique::interpreter(Entree& is)
           barrier();
           exit();
         }
-      if (format_post == "lata")
-        format_post = "lata_v1";
+      if (format_post == "lata_v2")
+        format_post = "lata";
       // Astuce pour permettre le cas test de non regression en sequentiel et en parallele:
       //  (il faut que le nom du fichier de sortie soit le nom du cas)
       if (nom_fichier_post == "NOM_DU_CAS")

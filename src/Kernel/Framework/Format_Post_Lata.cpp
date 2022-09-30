@@ -22,7 +22,7 @@
 #include <sys/stat.h>
 #include <string> // Necessaire avec xlC pour std::getline
 
-Implemente_instanciable_sans_constructeur(Format_Post_Lata,"Format_Post_Lata_V2",Format_Post_base);
+Implemente_instanciable_sans_constructeur(Format_Post_Lata,"Format_Post_Lata",Format_Post_base);
 
 #define _LATA_INT_TYPE_ int
 
