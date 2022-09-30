@@ -16,12 +16,11 @@
 #ifndef Conds_lim_included
 #define Conds_lim_included
 
-
-
-
+#include <TRUST_Vector.h>
 #include <Cond_lim.h>
 
 class Zone_dis;
+using Vect_Cond_lim = TRUST_Vector<Cond_lim>;
 
 /*! @brief classe Conds_lim Cette classe represente un vecteur de conditions aux limites.
  *
@@ -31,12 +30,9 @@ class Zone_dis;
  *
  * @sa Cond_lim Zone_Cl_dis_base
  */
-Declare_vect(Cond_lim);
 class Conds_lim : public VECT(Cond_lim)
 {
-
   Declare_instanciable(Conds_lim);
-
 public:
 
   inline int initialiser(double temps);
@@ -47,7 +43,6 @@ public:
   inline int compatible_avec_discr(const Discretisation_base&) const;
 
   inline void set_modifier_val_imp(int);
-
 };
 
 
@@ -69,7 +64,6 @@ inline void Conds_lim::mettre_a_jour(double temps)
     (*this)[i].mettre_a_jour(temps);
 }
 
-
 /*! @brief Calcul des coefficients d'echange pour toutes les conditions aux limites du vecteur.
  *
  * @param (double temps) le pas de temps de mise a jour
@@ -79,8 +73,6 @@ inline void Conds_lim::calculer_coeffs_echange(double temps)
   for (int i=0; i<size(); i++)
     (*this)[i].calculer_coeffs_echange(temps);
 }
-
-
 
 /*! @brief Renvoie si TOUTES les conditions aux limites du vecteurs sont compatibles avec l'equation passee en parametre.
  *
@@ -94,7 +86,6 @@ inline int Conds_lim::compatible_avec_eqn(const Equation_base& eqn) const
     ok*=(*this)[i].compatible_avec_eqn(eqn);
   return ok;
 }
-
 
 /*! @brief Renvoie si TOUTES les conditions aux limites du vecteurs sont compatibles avec la discretisation passee en parametre.
  *
@@ -119,4 +110,4 @@ inline void Conds_lim::set_modifier_val_imp(int drap)
     (*this)[i].set_modifier_val_imp(drap);
 }
 
-#endif
+#endif /* Conds_lim_included */

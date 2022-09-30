@@ -16,8 +16,9 @@
 #ifndef Vect_Matrice_included
 #define Vect_Matrice_included
 
-#include <Vect.h>
+#include <TRUST_Vector.h>
 #include <Matrice.h>
-Declare_vect( Matrice ) ;
+
+using Vect_Matrice = TRUST_Vector<Matrice>;
 
 #endif /* Vect_Matrice_included */

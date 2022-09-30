@@ -19,15 +19,12 @@
 #include <EChaine.h>
 #include <SChaine.h>
 #include <TriouError.h>
-
+#include <TRUST_Vector.h>
 
 #include <Bord.h>
 #include <Noms.h>
-#include <Vect.h>
 
-Declare_vect(Bord);
-Implemente_vect(Bord);
-
+using Vect_Bord = TRUST_Vector<Bord>;
 
 class VectTest: public CPPUNIT_NS::TestFixture
 {

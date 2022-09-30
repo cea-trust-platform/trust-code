@@ -16,12 +16,9 @@
 #ifndef Vect_Front_VF_included
 #define Vect_Front_VF_included
 
-
-
-/*! @brief class VECT(Front_VF)
- *
- */
-
+#include <TRUST_Vector.h>
 #include <Front_VF.h>
-Declare_vect(Front_VF);
-#endif
+
+using Vect_Front_VF = TRUST_Vector<Front_VF>;
+
+#endif /* Vect_Front_VF_included */

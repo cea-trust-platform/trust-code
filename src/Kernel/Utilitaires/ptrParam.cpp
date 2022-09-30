@@ -18,20 +18,11 @@
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(ptrParam,"objet_interne_ptrPram",Objet_U);
-Implemente_vect(ptrParam);
 
-Entree& ptrParam::readOn(Entree& is)
-{
-  return Objet_U::readOn(is);
-}
-Sortie& ptrParam::printOn(Sortie& os) const
-{
-  return Objet_U::printOn(os);
-}
+Entree& ptrParam::readOn(Entree& is) { return Objet_U::readOn(is); }
+Sortie& ptrParam::printOn(Sortie& os) const { return Objet_U::printOn(os); }
 
-ptrParam::ptrParam() :param_(0)
-{
-}
+ptrParam::ptrParam() :param_(0) { }
 ptrParam::~ptrParam()
 {
   delete param_;
@@ -42,22 +33,16 @@ void ptrParam::create(const char*  name)
 {
   param_=new Param(name);
 }
+
 Param& ptrParam::valeur()
 {
-  if (param_==0)
-    {
-      Cerr<<"param not defined" <<finl;
-      exit();
-    }
+  if (param_==0) Cerr<<"param not defined" <<finl, Process::exit();
   return *param_;
 }
+
 const Param& ptrParam::valeur() const
 {
-  if (param_==0)
-    {
-      Cerr<<"param not defined" <<finl;
-      exit();
-    }
+  if (param_==0) Cerr<<"param not defined" <<finl, Process::exit();
   return *param_;
 }
 
@@ -67,6 +52,7 @@ ptrParam::ptrParam(const ptrParam& p):Objet_U(p)
     abort();
   param_=0;
 }
+
 const ptrParam& ptrParam::operator=(const ptrParam& p)
 {
   abort();

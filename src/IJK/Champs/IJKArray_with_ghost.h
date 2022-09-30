@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,13 +16,14 @@
 #ifndef IJKArray_with_ghost_included
 #define IJKArray_with_ghost_included
 
-#include <simd_tools.h>
+#include <IJK_communications.h>
 #include <communications.h>
 #include <stat_counters.h>
-#include <Statistiques.h>
-#include <TRUSTVect.h>
 #include <IJK_Splitting.h>
-#include <IJK_communications.h>
+#include <Statistiques.h>
+#include <TRUST_Vector.h>
+#include <simd_tools.h>
+#include <TRUSTVect.h>
 
 /*! @brief This is an array with [] operator.
  *
@@ -70,9 +71,9 @@ protected:
 };
 
 using ArrOfFloat_with_ghost = IJKArray_with_ghost<float,ArrOfFloat>;
-Declare_vect(ArrOfFloat_with_ghost);
+using Vect_ArrOfFloat_with_ghost = TRUST_Vector<ArrOfFloat_with_ghost>;
 using ArrOfDouble_with_ghost = IJKArray_with_ghost<double,ArrOfDouble>;
-Declare_vect(ArrOfDouble_with_ghost);
+using Vect_ArrOfDouble_with_ghost= TRUST_Vector<ArrOfDouble_with_ghost>;
 
 template<typename _TYPE_, typename _TYPE_ARRAY_>
 void IJKArray_with_ghost<_TYPE_,_TYPE_ARRAY_>::echange_espace_virtuel(int pe_min, int pe_max)

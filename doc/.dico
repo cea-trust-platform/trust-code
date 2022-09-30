@@ -46,7 +46,6 @@
  Champ Champ Champ.h
  Champs_compris Champs_compris Champs_compris.h
  Champs_Fonc Champs_Fonc Champs_Fonc.h
- Champs_front Champs_front Champs_front.h
  Champ_base Champ_base Champ_base.h
  Champ_Composite Champ_Composite Champ_Composite.h
  Champ_Don Champ_Don Champ_Don.h
@@ -1071,7 +1070,6 @@
  Source_WC_Gravite_VDF Source_WC_Gravite_VDF Source_WC_Gravite_VDF.h
  Source_WC_Gravite_VEF Source_WC_Gravite_VEF Source_WC_Gravite_VEF.h
  Sous_Zone Sous_Zone Sous_Zone.h
- Sous_zones_dis Sous_zones_dis Sous_zones_dis.h
  Sous_zone_dis Sous_zone_dis Sous_zone_dis.h
  Sous_zone_dis_base Sous_zone_dis_base Sous_zone_dis_base.h
  Sous_zone_VF Sous_zone_VF Sous_zone_VF.h
@@ -1172,7 +1170,7 @@
  Valeur_totale_sur_volume_VEF Champ_val_tot_sur_vol_VEF Champ_val_tot_sur_vol_VEF.h
  Value_Input_Int Value_Input_Int Value_Input_Int.h
  VDF VDF_discretisation VDF_discretisation.h
- vect_impl vect_impl vect_impl.h
+ Vect_impl Vect_impl Vect_impl.h
  VEF VEF_discretisation VEF_discretisation.h
  VEFPreP1B VEFPreP1B VEFPreP1B.h
  VEF_1D VEF_1D VEF_1D.h
@@ -1186,7 +1184,6 @@
  Y_plus_Champ_P1NC Y_plus_Champ_P1NC Y_plus_Champ_P1NC.h
  Zone Zone Zone.h
  Zones Zones Zones.h
- Zones_dis Zones_dis Zones_dis.h
  Zone_Cl_dis Zone_Cl_dis Zone_Cl_dis.h
  Zone_Cl_dis_base Zone_Cl_dis_base Zone_Cl_dis_base.h
  Zone_Cl_EF Zone_Cl_EF Zone_Cl_EF.h

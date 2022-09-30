@@ -17,7 +17,6 @@
 
 #include <TRUSTTabs_forward.h>
 #include <TRUSTArray.h>
-#include <Vect.h>
 
 /*! @brief Cette classe permet de stocker des listes d'entiers accessibles en temps constant.
  *

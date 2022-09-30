@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,17 +17,14 @@
 
 Implemente_base(Coarsen_Operator_base, "Coarsen_Operator_base", Objet_U);
 Implemente_deriv(Coarsen_Operator_base);
-Implemente_vect(DERIV(Coarsen_Operator_base));
 
 Entree& Coarsen_Operator_base::readOn(Entree& is)
 {
   Param param(que_suis_je());
   ajouter_param(param);
   param.lire_avec_accolades(is);
-
   return is;
 }
-
 
 Sortie& Coarsen_Operator_base::printOn(Sortie& os) const
 {

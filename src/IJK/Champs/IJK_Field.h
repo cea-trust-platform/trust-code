@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,17 +17,19 @@
 #define IJK_Field_included
 
 #include <IJK_Field_tools.h>
+#include <TRUST_Vector.h>
 
 using IJK_Field_float = IJK_Field_template<float,ArrOfFloat>;
-Declare_vect(IJK_Field_float);
+using Vect_IJK_Field_float = TRUST_Vector<IJK_Field_float>;
 
 using IJK_Field_double = IJK_Field_template<double,ArrOfDouble>;
-Declare_vect(IJK_Field_double);
+using Vect_IJK_Field_double = TRUST_Vector<IJK_Field_double>;
 
 using IJK_Field_int = IJK_Field_template<int,ArrOfInt>;
+using Vect_IJK_Field_int = TRUST_Vector<IJK_Field_int>;
 
 using IJK_Field_local = IJK_Field_local_double;
 using IJK_Field = IJK_Field_double;
 using VECT(IJK_Field) = VECT(IJK_Field_double);
 
-#endif
+#endif /* IJK_Field_included */

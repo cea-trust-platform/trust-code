@@ -19,7 +19,6 @@
 #include <communications_array.h>
 #include <TRUSTTabs_forward.h>
 #include <type_traits>
-#include <Vect.h>
 #include <vector>
 
 // Pour Objet_U ... on buffer !!

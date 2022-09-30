@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,7 +16,6 @@
 #ifndef IJK_Field_tools_included
 #define IJK_Field_tools_included
 
-#include <Vect.h>
 #include <Static_Int_Lists.h>
 #include <TRUSTLists.h>
 #include <TRUSTVect.h>

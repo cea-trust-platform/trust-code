@@ -13,5 +13,59 @@
 *
 *****************************************************************************/
 
-#include <Vect_Ref_Probleme_base.h>
-Implemente_vect(REF(Probleme_base));
+#ifndef Vect_impl_included
+#define Vect_impl_included
+
+#include <DerOu_.h>
+#include <assert.h>
+#include <Nom.h>
+
+class Vect_impl : public Objet_U
+{
+  Declare_instanciable_sans_constructeur_ni_destructeur(Vect_impl);
+
+public :
+  Vect_impl();
+  inline int size() const;
+  void build_vect_impl(int );
+  inline const Objet_U& operator[](int) const;
+  inline Objet_U& operator[](int);
+  Vect_impl(const Vect_impl&);
+  ~Vect_impl() override;
+  Vect_impl& operator=(const Vect_impl& );
+  void dimensionner(int) ;
+  void dimensionner_force(int);
+  void reset();
+  Vect_impl& add(const Objet_U&);
+  Vect_impl& add(const Vect_impl&);
+  Entree& lit(Entree& );
+
+protected :
+  virtual Objet_U* cree_une_instance() const;
+  int sz;
+  DerObjU* data;
+
+};
+/* Size of the VECT */
+inline int Vect_impl::size() const
+{
+  return sz;
+}
+/* Returns the ith VECT element */
+inline const Objet_U& Vect_impl::operator[](int i) const
+{
+  assert( (i>=0) && (i<sz) );
+  assert(sz>=0);
+  if(sz) assert(data!=0);
+  return (const Objet_U&)data[i].valeur();
+}
+/* Returns the ith VECT element */
+inline Objet_U& Vect_impl::operator[](int i)
+{
+  assert( (i>=0) && (i<sz) );
+  assert(sz>=0);
+  if(sz) assert(data!=0);
+  return (Objet_U&)data[i].valeur();
+}
+
+#endif /* Vect_impl_included */

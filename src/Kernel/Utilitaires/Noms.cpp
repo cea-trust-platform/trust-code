@@ -14,7 +14,6 @@
 *****************************************************************************/
 
 #include <Noms.h>
-Implemente_vect(Nom);
 Implemente_instanciable(Noms,"Noms",VECT(Nom));
 
 

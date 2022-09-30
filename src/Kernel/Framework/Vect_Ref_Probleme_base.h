@@ -15,7 +15,10 @@
 
 #ifndef Vect_Ref_Probleme_base_included
 #define Vect_Ref_Probleme_base_included
+
 #include <Ref_Probleme_base.h>
-#include <Vect.h>
-Declare_vect(REF(Probleme_base));
-#endif
+#include <TRUST_Vector.h>
+
+using Vect_Ref_Probleme_base = TRUST_Vector<Ref_Probleme_base>;
+
+#endif /* Vect_Ref_Probleme_base_included */

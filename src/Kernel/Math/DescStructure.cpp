@@ -17,11 +17,6 @@
 
 Implemente_instanciable(DescStructure,"DescStructure",Objet_U);
 
-#include <Esp_Virt.h>
-#include <Esp_Dist.h>
-Implemente_vect(Esp_Virt);
-Implemente_vect(Esp_Dist);
-
 /*! @brief Lecture d'un descripteur de structure Un descripteur de structure est constitue d'un
  *
  *     identificateur, d'un vecteur d'espaces virtuels,
@@ -31,11 +26,7 @@ Implemente_vect(Esp_Dist);
  */
 Entree& DescStructure::readOn(Entree& is)
 {
-//  VectEsp_Virt virt_data_;
-//  VectEsp_Dist dist_data_;
   VECT(Descripteur) desc_;
-  //  is >> identificateur_;
-  // is >> virt_data_;
   VECT(Esp_Virt) virt;
   virt.lit(is);
   VECT(Esp_Dist) dist;
@@ -46,7 +37,6 @@ Entree& DescStructure::readOn(Entree& is)
     desc_.dimensionner_force(i);
     while(i--)
       is>>desc_[i];
-    //    assert(desc_.size()>=0); if(desc_.size()) assert(desc_!=0);
   }
   return is;
 }
@@ -56,7 +46,6 @@ Entree& DescStructure::readOn(Entree& is)
  */
 Sortie& DescStructure::printOn(Sortie& os) const
 {
-  Cerr<<"DescStructure::printOn no more used" <<finl;
-  exit();
+  Cerr<<"DescStructure::printOn no more used" <<finl, Process::exit();
   return os;
 }

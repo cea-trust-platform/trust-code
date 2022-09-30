@@ -17,16 +17,9 @@
 #define Sous_zones_dis_included
 
 #include <Sous_zone_dis.h>
+#include <TRUST_Vector.h>
 
-Declare_vect(Sous_zone_dis);
+using Vect_Sous_zone_dis = TRUST_Vector<Sous_zone_dis>;
+using Sous_zones_dis = Vect_Sous_zone_dis;
 
-//! Cette classe represente un vecteur d'objets de type Sous_zone_dis
-
-class Sous_zones_dis : public VECT(Sous_zone_dis)
-{
-
-  Declare_instanciable(Sous_zones_dis);
-
-};
-
-#endif
+#endif /* Sous_zones_dis_included */

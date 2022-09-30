@@ -16,7 +16,9 @@
 #ifndef Vect_Schema_Temps_included
 #define Vect_Schema_Temps_included
 
-#include <Vect.h>
+#include <TRUST_Vector.h>
 #include <Schema_Temps.h>
-Declare_vect(Schema_Temps);
-#endif
+
+using Vect_Schema_Temps = TRUST_Vector<Schema_Temps>;
+
+#endif /* Vect_Schema_Temps_included */

@@ -16,7 +16,6 @@
 #include <Motcle.h>
 #include <Noms.h>
 
-Implemente_vect(Motcle);
 Implemente_instanciable_sans_constructeur(Motcle,"Motcle",Nom);
 Implemente_instanciable(Motcles,"Motcles",VECT(Motcle));
 

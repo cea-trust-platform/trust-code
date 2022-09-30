@@ -16,15 +16,9 @@
 #ifndef DescStructure_included
 #define DescStructure_included
 
-
-#include <Objet_U.h>
-#include <Vect.h>
-
-class Esp_Virt;
-class Esp_Dist;
-
-Declare_vect(Esp_Virt);
-Declare_vect(Esp_Dist);
+#include <TRUST_Vector.h>
+#include <Esp_Virt.h>
+#include <Esp_Dist.h>
 
 /*! @brief Sert a relire ancinne structure parallele
  *
@@ -34,4 +28,7 @@ class DescStructure : public Objet_U
   Declare_instanciable(DescStructure);
 };
 
-#endif
+using Vect_Esp_Virt = TRUST_Vector<Esp_Virt>;
+using Vect_Esp_Dist = TRUST_Vector<Esp_Dist>;
+
+#endif /* DescStructure_included */

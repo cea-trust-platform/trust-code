@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,8 +16,9 @@
 #ifndef Grid_Level_Data_template_included
 #define Grid_Level_Data_template_included
 
-#include <IJK_Field.h>
 #include <IJK_Splitting.h>
+#include <TRUST_Vector.h>
+#include <IJK_Field.h>
 
 // Data for each grid
 template<typename _TYPE_>
@@ -97,8 +98,9 @@ protected:
 
 using Grid_Level_Data_double = Grid_Level_Data_template<double>;
 using Grid_Level_Data_float = Grid_Level_Data_template<float>;
-Declare_vect(Grid_Level_Data_double);
-Declare_vect(Grid_Level_Data_float);
+using Vect_Grid_Level_Data_double = TRUST_Vector<Grid_Level_Data_double>;
+using Vect_Grid_Level_Data_float = TRUST_Vector<Grid_Level_Data_float>;
 
 #include <Grid_Level_Data_template.tpp>
+
 #endif

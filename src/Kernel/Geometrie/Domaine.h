@@ -18,7 +18,6 @@
 
 #include <List_Ref_Sous_Zone.h>
 #include <Zones.h>
-#include <Vect.h>
 #include <Interprete_geometrique_base.h>
 #include <medcoupling++.h>
 #ifdef MEDCOUPLING_

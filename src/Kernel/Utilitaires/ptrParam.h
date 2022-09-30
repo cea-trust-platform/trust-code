@@ -15,8 +15,10 @@
 
 #ifndef ptrParam_included
 #define ptrParam_included
+
+#include <TRUST_Vector.h>
 #include <Objet_U.h>
-#include <Vect.h>
+
 class Param;
 /*! @brief class Objet_a_lire : contient un nom, et une reference vers un int,double,flag,un Objet_U a lire,ou un Objet_u sur lequel il faut appeler lire_motcle_non_standard
  *
@@ -29,15 +31,15 @@ public:
   ~ptrParam() override;
   ptrParam(const ptrParam&);
   const ptrParam& operator=(const ptrParam&);
-  inline int non_nul() const
-  {
-    return (param_!=0);
-  } ;
+  inline int non_nul() const { return (param_!=0); }
   void create(const char*);
   Param& valeur();
   const Param& valeur() const;
+
 protected:
   Param* param_;
 };
-Declare_vect(ptrParam);
-#endif
+
+using Vect_ptrParam = TRUST_Vector<ptrParam>;
+
+#endif /* ptrParam_included */

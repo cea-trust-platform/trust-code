@@ -12,9 +12,13 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+
 #ifndef Vect_Precond_included
 #define Vect_Precond_included
-#include <Vect.h>
+
+#include <TRUST_Vector.h>
 #include <Precond.h>
-Declare_vect(Precond);
-#endif
+
+using Vect_Precond = TRUST_Vector<Precond>;
+
+#endif /* Vect_Precond_included */

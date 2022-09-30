@@ -15,6 +15,10 @@
 
 #ifndef Vect_Parser_U_included
 #define Vect_Parser_U_included
+
+#include <TRUST_Vector.h>
 #include <Parser_U.h>
-Declare_vect(Parser_U);
-#endif
+
+using Vect_Parser_U = TRUST_Vector<Parser_U>;
+
+#endif /* Vect_Parser_U_included */

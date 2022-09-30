@@ -15,13 +15,9 @@
 #ifndef Vect_Descripteur_included
 #define Vect_Descripteur_included
 
+#include <TRUST_Vector.h>
 #include <Descripteur.h>
-#include <Vect.h>
 
-/*! @brief class VectDescripteur
- *
- * @sa Descripteur
- */
-Declare_vect(Descripteur);
+using Vect_Descripteur = TRUST_Vector<Descripteur>;
 
-#endif //Descripteur_H
+#endif /* Descripteur_H */

@@ -13,29 +13,13 @@
 *
 *****************************************************************************/
 
-
 #ifndef Champs_front_included
 #define Champs_front_included
 
-
+#include <TRUST_Vector.h>
 #include <Champ_front.h>
 
-Declare_vect(Champ_front);
+using Vect_Champ_front = TRUST_Vector<Champ_front>;
+using Champs_front = Vect_Champ_front;
 
-
-
-/*! @brief classe Champs_front Cette classe represente un vecteur de Champ_front
- *
- * @sa Champ_front
- */
-class Champs_front : public VECT(Champ_front)
-{
-
-  Declare_instanciable(Champs_front);
-
-
-};
-
-
-
-#endif
+#endif /* Champs_front_included */

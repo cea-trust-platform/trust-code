@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,9 @@
 
 #ifndef Coarsen_Operator_base_included
 #define Coarsen_Operator_base_included
+
 #include <Grid_Level_Data_template.h>
+#include <TRUST_Vector.h>
 #include <Param.h>
 
 // Describes refine and coarsening operators
@@ -40,6 +42,6 @@ protected:
 };
 
 Declare_deriv(Coarsen_Operator_base);
-Declare_vect(DERIV(Coarsen_Operator_base));
+using Vect_Deriv_Coarsen_Operator_base = TRUST_Vector<DERIV(Coarsen_Operator_base)>;
 
 #endif

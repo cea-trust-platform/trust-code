@@ -19,11 +19,12 @@
 
 #include <Convection_Diffusion_std.h>
 #include <Ref_Fluide_base.h>
+#include <TRUST_Vector.h>
 #include <Fluide_base.h>
 #include <Champ_Fonc.h>
 #include <TRUSTTabs.h>
 
-Declare_vect(RefObjU);
+using Vect_RefObjU = TRUST_Vector<RefObjU>;
 
 /*! @brief classe Convection_Diffusion_Temperature Cas particulier de Convection_Diffusion_std
  *

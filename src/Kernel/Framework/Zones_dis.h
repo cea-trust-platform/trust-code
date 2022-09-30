@@ -13,27 +13,13 @@
 *
 *****************************************************************************/
 
-
-
 #ifndef Zones_dis_included
 #define Zones_dis_included
 
+#include <TRUST_Vector.h>
 #include <Zone_dis.h>
 
-Declare_vect(Zone_dis);
+using Vect_Zone_dis = TRUST_Vector<Zone_dis>;
+using Zones_dis = Vect_Zone_dis;
 
-/*! @brief classe Zones_dis La classe Zones_dis represente un vecteur contenant des objets de la
- *
- *      classe Zone_dis. Une classe representant un vecteur d'objet est
- *      declaree grace a la macro VECT(classe_X).
- *
- * @sa Zone_dis
- */
-class Zones_dis : public VECT(Zone_dis)
-{
-
-  Declare_instanciable(Zones_dis);
-
-};
-
-#endif
+#endif /* Zones_dis_included */

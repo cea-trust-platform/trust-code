@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,12 +16,11 @@
 #ifndef Turbulence_paroi_included
 #define Turbulence_paroi_included
 
-
 #include <Turbulence_paroi_base.h>
+#include <TRUST_Vector.h>
+
 class Pb_Hydraulique;
 class Probleme_base;
-
-
 
 Declare_deriv(Turbulence_paroi_base);
 
@@ -63,6 +62,7 @@ protected:
   REF(Mod_turb_hyd_base) mon_modele_turb_hyd;
 };
 
+using Vect_Turbulence_paroi = TRUST_Vector<Turbulence_paroi>;
 
 /*! @brief Operateur d'affectation d'un objet Turbulence_paroi_base dans un objet Turbulence_paroi.
  *

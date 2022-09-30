@@ -15,7 +15,10 @@
 
 #ifndef Vect_Ref_Champ_base_included
 #define Vect_Ref_Champ_base_included
+
 #include <Ref_Champ_base.h>
-#include <Vect.h>
-Declare_vect(REF(Champ_base));
-#endif
+#include <TRUST_Vector.h>
+
+using Vect_Ref_Champ_base = TRUST_Vector<Ref_Champ_base>;
+
+#endif /* Vect_Ref_Champ_base_included */

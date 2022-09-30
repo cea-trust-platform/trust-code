@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -186,8 +186,8 @@ private:
   VECT(DERIV(Coarsen_Operator_base)) coarsen_operators_;
 
   // Data for each grid (number of grids = number of coarsening operators + 1)
-  TRUST_Vector<Grid_Level_Data_template, float> grids_data_float_;
-  TRUST_Vector<Grid_Level_Data_template, double>  grids_data_double_;
+  TRUST_Vector<Grid_Level_Data_template<float>> grids_data_float_;
+  TRUST_Vector<Grid_Level_Data_template<double>>  grids_data_double_;
 };
 
 #include<Multigrille_Adrien.tpp>

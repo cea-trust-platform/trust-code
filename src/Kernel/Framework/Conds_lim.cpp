@@ -13,38 +13,17 @@
 *
 *****************************************************************************/
 
-
-#include <Conds_lim.h>
 #include <Frontiere_dis_base.h>
-#include <Domaine.h>
-#include <Equation_base.h>
 #include <Schema_Temps_base.h>
+#include <Equation_base.h>
+#include <Conds_lim.h>
+#include <Domaine.h>
 
-Implemente_vect(Cond_lim);
 Implemente_instanciable(Conds_lim,"Conds_lim",VECT(Cond_lim));
 
+Sortie& Conds_lim::printOn(Sortie& s ) const { return s << que_suis_je() << " " << le_nom(); }
 
-/*! @brief Surcharge Objet_U::printOn(Sortie&) Imprime seulement le nom du tableau  des conditions aux limites.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Conds_lim::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-
-/*! @brief NE FAIT RIEN
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& Conds_lim::readOn(Entree& s )
-{
-  return s ;
-}
-
+Entree& Conds_lim::readOn(Entree& s ) { return s ; }
 
 /*! @brief Appel Cond_lim::completer() sur chaque condition aux llimites du vecteur.
  *

@@ -33,7 +33,6 @@ extern Stat_Counter_Id assemblage_sys_counter_;
 extern Stat_Counter_Id source_counter_;
 
 Implemente_instanciable_sans_constructeur(Convection_Diffusion_Temperature,"Convection_Diffusion_Temperature",Convection_Diffusion_std);
-Implemente_vect(RefObjU);
 
 Convection_Diffusion_Temperature::Convection_Diffusion_Temperature()
 {

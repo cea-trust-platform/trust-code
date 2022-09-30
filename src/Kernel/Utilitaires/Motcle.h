@@ -16,7 +16,8 @@
 #ifndef Motcle_included
 #define Motcle_included
 
-#include <Vect.h>
+#include <TRUST_Vector.h>
+#include <Nom.h>
 
 /*! @brief Une chaine de caractere (Nom) en majuscules
  *
@@ -55,8 +56,7 @@ public:
   friend int operator !=(const Nom& , const Motcle& ) ;
 };
 
-Declare_vect(Motcle);
-
+using Vect_Motcle = TRUST_Vector<Motcle>;
 
 /*! @brief Un tableau d'objets de la classe Motcle
  *

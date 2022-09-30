@@ -15,6 +15,7 @@
 
 #include <LecFicDistribue.h>
 #include <communications.h>
+#include <Nom.h>
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(LecFicDistribue,"LecFicDistribue",EFichier);
 

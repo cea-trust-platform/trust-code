@@ -15,10 +15,11 @@
 
 #ifndef Noms_included
 #define Noms_included
-#include <Vect.h>
 
+#include <TRUST_Vector.h>
+#include <Nom.h>
 
-Declare_vect(Nom);
+using Vect_Nom = TRUST_Vector<Nom>;
 
 /*! @brief Un tableau de chaine de caracteres (VECT(Nom))
  *

@@ -16,7 +16,7 @@
 #ifndef TRUST_Vector_included
 #define TRUST_Vector_included
 
-#include <vect_impl.h>
+#include <Vect_impl.h>
 
 /*! @brief 2 classes templates
  *
@@ -36,7 +36,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename _CLASSE_>
-class TRUST_Vector: public vect_impl
+class TRUST_Vector: public Vect_impl
 {
 protected:
   inline unsigned taille_memoire() const override { throw; }
@@ -54,37 +54,37 @@ protected:
     return instan;
   }
 
-  Sortie& printOn(Sortie& s) const override { return vect_impl::printOn(s); }
-  Entree& readOn(Entree& s) override { return vect_impl::readOn(s); }
+  Sortie& printOn(Sortie& s) const override { return Vect_impl::printOn(s); }
+  Entree& readOn(Entree& s) override { return Vect_impl::readOn(s); }
 
 public:
-  TRUST_Vector() : vect_impl() { }
+  TRUST_Vector() : Vect_impl() { }
   TRUST_Vector(int i) { build_vect_impl(i); }
-  TRUST_Vector(const TRUST_Vector& avect) : vect_impl(avect) { }
+  TRUST_Vector(const TRUST_Vector& avect) : Vect_impl(avect) { }
 
   /* Returns the ith VECT element */
-  const _CLASSE_& operator[](int i) const { return static_cast<const _CLASSE_&>(vect_impl::operator[](i)); }
-  _CLASSE_& operator[](int i) { return static_cast<_CLASSE_&>(vect_impl::operator[](i)); }
+  const _CLASSE_& operator[](int i) const { return static_cast<const _CLASSE_&>(Vect_impl::operator[](i)); }
+  _CLASSE_& operator[](int i) { return static_cast<_CLASSE_&>(Vect_impl::operator[](i)); }
 
   const _CLASSE_& operator()(int i) const { return operator[](i); }
   _CLASSE_& operator()(int i) { return operator[](i); }
 
   TRUST_Vector& operator=(const TRUST_Vector& avect)
   {
-    vect_impl::operator=(avect);
+    Vect_impl::operator=(avect);
     return *this;
   }
 
-  Entree& lit(Entree& s) { return vect_impl::lit(s); }
+  Entree& lit(Entree& s) { return Vect_impl::lit(s); }
 
   _CLASSE_& add(const _CLASSE_& data_to_add)
   {
-    vect_impl::add(data_to_add);
+    Vect_impl::add(data_to_add);
     return (*this)[size() - 1];
   }
 
   _CLASSE_& add() { return add(_CLASSE_()); }
-  void add(const TRUST_Vector& data_to_add) { vect_impl::add(data_to_add); }
+  void add(const TRUST_Vector& data_to_add) { Vect_impl::add(data_to_add); }
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -92,7 +92,7 @@ public:
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<template<typename> class _TRUST_TABL_,typename _TYPE_>
-class TRUSTTabs_Vector: public vect_impl
+class TRUSTTabs_Vector: public Vect_impl
 {
 protected:
   inline unsigned taille_memoire() const override { throw; }
@@ -110,37 +110,37 @@ protected:
     return instan;
   }
 
-  Sortie& printOn(Sortie& s) const override { return vect_impl::printOn(s); }
-  Entree& readOn(Entree& s) override { return vect_impl::readOn(s); }
+  Sortie& printOn(Sortie& s) const override { return Vect_impl::printOn(s); }
+  Entree& readOn(Entree& s) override { return Vect_impl::readOn(s); }
 
 public:
-  TRUSTTabs_Vector() : vect_impl() { }
+  TRUSTTabs_Vector() : Vect_impl() { }
   TRUSTTabs_Vector(int i) { build_vect_impl(i); }
-  TRUSTTabs_Vector(const TRUSTTabs_Vector& avect) : vect_impl(avect) { }
+  TRUSTTabs_Vector(const TRUSTTabs_Vector& avect) : Vect_impl(avect) { }
 
   /* Returns the ith VECT element */
-  const _TRUST_TABL_<_TYPE_>& operator[](int i) const { return static_cast<const _TRUST_TABL_<_TYPE_>&>(vect_impl::operator[](i)); }
-  _TRUST_TABL_<_TYPE_>& operator[](int i) { return static_cast<_TRUST_TABL_<_TYPE_>&>(vect_impl::operator[](i)); }
+  const _TRUST_TABL_<_TYPE_>& operator[](int i) const { return static_cast<const _TRUST_TABL_<_TYPE_>&>(Vect_impl::operator[](i)); }
+  _TRUST_TABL_<_TYPE_>& operator[](int i) { return static_cast<_TRUST_TABL_<_TYPE_>&>(Vect_impl::operator[](i)); }
 
   const _TRUST_TABL_<_TYPE_>& operator()(int i) const { return operator[](i); }
   _TRUST_TABL_<_TYPE_>& operator()(int i) { return operator[](i); }
 
   TRUSTTabs_Vector& operator=(const TRUSTTabs_Vector& avect)
   {
-    vect_impl::operator=(avect);
+    Vect_impl::operator=(avect);
     return *this;
   }
 
-  Entree& lit(Entree& s) { return vect_impl::lit(s); }
+  Entree& lit(Entree& s) { return Vect_impl::lit(s); }
 
   _TRUST_TABL_<_TYPE_>& add(const _TRUST_TABL_<_TYPE_>& data_to_add)
   {
-    vect_impl::add(data_to_add);
+    Vect_impl::add(data_to_add);
     return (*this)[size() - 1];
   }
 
   _TRUST_TABL_<_TYPE_>& add() { return add(_TRUST_TABL_<_TYPE_>()); }
-  void add(const TRUSTTabs_Vector& data_to_add) { vect_impl::add(data_to_add); }
+  void add(const TRUSTTabs_Vector& data_to_add) { Vect_impl::add(data_to_add); }
 };
 
 #endif /* TRUST_Vector_included */

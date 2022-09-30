@@ -16,15 +16,17 @@
 #ifndef Reaction_included
 #define Reaction_included
 
-#include <List.h>
+#include <Ref_Champ_Inc_base.h>
+#include <TRUST_Vector.h>
 #include <TRUSTArray.h>
 #include <Champ_Fonc.h>
-#include <Ref_Champ_Inc_base.h>
+#include <List.h>
+
 class Motcles;
 class Champ_base;
 class Probleme_base;
 
-Declare_vect(REF(Champ_Inc_base));
+using Vect_Ref_Champ_Inc_base = TRUST_Vector<Ref_Champ_Inc_base>;
 
 class Reaction: public Objet_U
 {

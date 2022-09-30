@@ -16,7 +16,9 @@
 #ifndef Vect_Champ_Don_included
 #define Vect_Champ_Don_included
 
-#include <Vect.h>
+#include <TRUST_Vector.h>
 #include <Champ_Don.h>
-Declare_vect(Champ_Don);
-#endif
+
+using Vect_Champ_Don = TRUST_Vector<Champ_Don>;
+
+#endif /* Vect_Champ_Don_included */

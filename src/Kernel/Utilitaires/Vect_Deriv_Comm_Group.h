@@ -12,9 +12,13 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+
 #ifndef Vect_Deriv_Comm_Group_included
 #define Vect_Deriv_Comm_Group_included
-#include <Vect.h>
+
 #include <Deriv_Comm_Group.h>
-Declare_vect(DERIV(Comm_Group));
-#endif
+#include <TRUST_Vector.h>
+
+using Vect_Deriv_Comm_Group = TRUST_Vector<Deriv_Comm_Group>;
+
+#endif /* Vect_Deriv_Comm_Group_included */

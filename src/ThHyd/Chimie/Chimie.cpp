@@ -25,7 +25,6 @@
 #include <Constituant.h>
 
 Implemente_instanciable(Chimie,"Chimie",Objet_U);
-Implemente_vect(REF(Champ_Inc_base));
 
 Sortie& Chimie::printOn(Sortie& os) const
 {
