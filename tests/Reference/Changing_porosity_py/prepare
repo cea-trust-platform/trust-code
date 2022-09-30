@@ -1,0 +1,12 @@
+#!/bin/bash
+
+source $TRUST_ROOT/env_for_python.sh
+python main.py > main.out
+
+if [ $? -eq 0 ]
+then
+   echo OK > is_ok
+else
+   rm -f is_ok
+fi
+

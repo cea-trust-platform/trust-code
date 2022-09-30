@@ -1,0 +1,98 @@
+dimension 2
+Domaine dom
+Nom ICoCoProblemName Lire ICoCoProblemName pb
+Pb_hydraulique pb
+
+Mailler dom
+{
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 21 5
+        Longueurs 2 1.
+    }
+    {
+        Bord entree  X = 0.            0. <= Y <= 1
+        Bord sortie  X = 2.            0. <= Y <= 1
+        Bord paroi   Y = 0.            0. <= X <= 2
+        Bord paroi   Y = 1.            0. <= X <= 2
+    }
+}
+
+Sous_zone interface
+Associate interface dom
+Read interface {
+    Rectangle
+    Origine 0.8  0
+    Cotes   0.4  1
+}
+
+VDF dis
+
+Scheme_euler_explicit sch
+Read sch
+{
+    tinit 0
+    tmax 100000
+    dt_min 1.e-6
+    dt_start dt_calc
+    dt_max 1.0
+    dt_sauv 100
+    dt_impr 0.2
+    facsec 1.
+    nb_pas_dt_max 10000
+    seuil_statio 1.e-10
+}
+
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+Read pb
+{
+	Fluide_Incompressible
+	{
+    	mu Champ_Uniforme 1 1.
+    	rho Champ_Uniforme 1 40
+    	lambda Champ_Uniforme 1 10
+    	Cp champ_Uniforme 1 1000
+    	porosites_champ champ_input_P0_composite
+    	{
+	  initial_field  champ_fonc_xyz dom 1 1-0.5*(x>0.2)*(x<0.8)
+    	  input_field { nom POROSITY_INN nb_comp 1 probleme pb } 
+    	}
+    	
+	}
+
+    Navier_Stokes_standard
+    {
+        projection_initiale 1
+        solveur_pression GCP  { precond ssor { omega 1.5 } seuil 1e-12 impr }
+        convection { amont }
+        diffusion { }
+        sources {
+            Perte_Charge_Singuliere { dir KX coeff 0.5 surface {  X = 1 interface  } }
+        }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 0.
+        }
+        boundary_conditions {
+            entree  frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2 1. 0.
+            sortie  frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+            paroi   paroi_fixe
+        }
+    }
+    Post_processing
+    {
+        format lml
+        fields dt_post 25
+        {
+            vitesse elem
+            /* porosite_volumique elem */
+            POROSITY_INN elem
+        }
+    }
+}
+/* Solve pb */
+End
+
