@@ -15,7 +15,7 @@
     getline
     if (ns == ncomp) {
         printf("%d %g\n",0,1)
-        while ($1=="IterationControl") {
+        while ($1=="IterationControl" && NF==3) {
            res=$NF
            gsub("residual=","",res);
            iter=$2

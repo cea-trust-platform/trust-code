@@ -60,6 +60,9 @@ private :
   bool first_solve_ = true;
   int precond_verbosity_;
   Motcle smoother_= "JACOBI";
+  Motcle coarse_grid_solver_ = "LU";
+  ArrOfDouble x_,b_;
+  GlobalVector<double> sol, rhs, e;
 #endif
 };
 

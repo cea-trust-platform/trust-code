@@ -112,7 +112,7 @@ double precond_option(Entree& is, const Motcle& motcle)
 }
 
 enum Verbosity { No, Limited, High};
-static LU<LocalMatrix<double>, LocalVector<double>, double>* direct_solver; // ToDo attribut?
+static Solver<LocalMatrix<double>, LocalVector<double>, double>* local_solver; // ToDo attribut?
 // Fonction template pour la creation des precond simple ou double precision
 #ifdef ROCALUTION_ROCALUTION_HPP_
 template <typename T>
@@ -128,18 +128,16 @@ Solver<GlobalMatrix<T>, GlobalVector<T>, T>* Solv_rocALUTION::create_rocALUTION_
       p = new Jacobi<GlobalMatrix<T>, GlobalVector<T>, T>();
       precond_option(is, "");
     }
-  else if (precond==(Motcle)"PairwiseAMG") //
+  else if (precond==(Motcle)"PairwiseAMG" || precond == (Motcle) "Pairwise-AMG") //
     {
       p = new PairwiseAMG<GlobalMatrix<T>, GlobalVector<T>, T>();
       auto& pairwiseamg = dynamic_cast<PairwiseAMG<GlobalMatrix<T>, GlobalVector<T>, T> &>(*p);
-      pairwiseamg.SetCoarseningFactor(0.1); // [0-20]
-      pairwiseamg.SetOrdering(MIS);
+      pairwiseamg.SetBeta(0.25); // [0-1] default 0.25
+      pairwiseamg.SetCoarsestLevel(10000); // Sinon boucle indefiniment...
+      pairwiseamg.SetOrdering(MIS); // default
+      pairwiseamg.SetCoarseningFactor(10); // [0-20] default 4
+      pairwiseamg.SetKcycleFull(true); // default true
       pairwiseamg.InitMaxIter(1);
-      pairwiseamg.Verbose(3);
-      pairwiseamg.SetKcycleFull(true);
-      //pairwiseamg.SetBeta(..);
-      //
-      //pairwiseamg....
       precond_option(is, "");
     }
   else if (precond==(Motcle)"null")
@@ -169,34 +167,22 @@ Solver<GlobalMatrix<T>, GlobalVector<T>, T>* Solv_rocALUTION::create_rocALUTION_
           lp = new SAAMG<LocalMatrix<T>, LocalVector<T>, T>();
           auto& saamg = dynamic_cast<SAAMG<LocalMatrix<T>, LocalVector<T>, T> &>(*lp);
           saamg.InitMaxIter(1);
-          saamg.SetCoarseningStrategy(CoarseningStrategy::PMIS);
+          saamg.SetCoarseningStrategy(CoarseningStrategy::PMIS); // Atttention peut etre couteux en P0P1...
           saamg.SetLumpingStrategy(LumpingStrategy::AddWeakConnections); // Ameliore convergence d'apres sample ?
           saamg.SetCoarsestLevel(200);
           saamg.SetCouplingStrength(0.001);
-          // Coearse solver
-          direct_solver = new LU<LocalMatrix<T>, LocalVector<T>, T>();
-          direct_solver->Verbose(precond_verbosity_);
-          saamg.SetManualSolver(true);
-          saamg.SetSolver(*direct_solver);
           precond_option(is, "");
         }
       else if (precond==(Motcle)"UAAMG" || precond==(Motcle)"UA-AMG")  // Converge en ? its
-      {
+        {
           lp = new UAAMG<LocalMatrix<T>, LocalVector<T>, T>();
           auto& uuamg = dynamic_cast<UAAMG<LocalMatrix<T>, LocalVector<T>, T> &>(*lp);
           uuamg.InitMaxIter(1);
           uuamg.SetCoarseningStrategy(CoarseningStrategy::PMIS);
           uuamg.SetCoarsestLevel(200);
           uuamg.SetCouplingStrength(0.001);
-          // Coarse solver
-          // *** warning: LocalMatrix::LUFactorize() is performed in DENSE format
-          // *** warning: LocalMatrix::LUFactorize() is performed on the host
-          direct_solver = new LU<LocalMatrix<T>, LocalVector<T>, T>();
-          direct_solver->Verbose(precond_verbosity_);
-          uuamg.SetManualSolver(true);
-          uuamg.SetSolver(*direct_solver);
           precond_option(is, "");
-      }
+        }
       else if (precond==(Motcle)"RugeStuebenAMG" || precond==(Motcle)"C-AMG")  // Equivalent a C-AMG ?
         {
           lp = new RugeStuebenAMG<LocalMatrix<T>, LocalVector<T>, T>();
@@ -211,16 +197,41 @@ Solver<GlobalMatrix<T>, GlobalVector<T>, T>* Solv_rocALUTION::create_rocALUTION_
           lp = new GS<LocalMatrix<T>, LocalVector<T>, T>(); // ???
           precond_option(is, "");
         }
+      else if (precond == (Motcle) "SGS")  //
+        {
+          lp = new SGS<LocalMatrix<T>, LocalVector<T>, T>(); // ???
+          precond_option(is, "");
+        }
       else
         {
           Cerr << "Error! Unknown rocALUTION preconditionner: " << precond << finl;
           Process::exit();
           return nullptr;
         }
-      p->Verbose(precond_verbosity_);
-      lp->Verbose(precond_verbosity_);
+      // Coarse solver for local AMG
+      if (coarse_grid_solver_=="LU")
+        {
+          try
+            {
+              // *** warning: LocalMatrix::LUFactorize() is performed in DENSE format
+              // *** warning: LocalMatrix::LUFactorize() is performed on the host
+              auto& base_amg = dynamic_cast<BaseAMG<LocalMatrix<T>, LocalVector<T>, T> &>(*lp);
+              local_solver = new LU<LocalMatrix<T>, LocalVector<T>, T>();
+              local_solver->Verbose(precond_verbosity_);
+              base_amg.SetManualSolver(true);
+              base_amg.SetSolver(*local_solver);
+            }
+          catch (const std::bad_cast& error) {}
+        }
+      else if (coarse_grid_solver_!="JACOBI")
+        {
+          Process::exit("LU or JACOBI solver can be used on coarse grid.");
+        }
+      // Set local preconditionner to BlockJacobi global one
       dynamic_cast<BlockJacobi<GlobalMatrix<T>, GlobalVector<T>, T> &>(*p).Set(*lp);
     }
+  p->Verbose(precond_verbosity_);
+  if (lp!= nullptr)  lp->Verbose(precond_verbosity_);
   return p;
 }
 
@@ -231,6 +242,10 @@ IterativeLinearSolver<GlobalMatrix<T>, GlobalVector<T>, T>* Solv_rocALUTION::cre
   if (solver==(Motcle)"GCP")
     {
       return new CG<GlobalMatrix<T>, GlobalVector<T>, T>();
+    }
+  else if (solver==(Motcle)"FGCP")
+    {
+      return new FCG<GlobalMatrix<T>, GlobalVector<T>, T>();
     }
   else if (solver==(Motcle)"GMRES")
     {
@@ -297,11 +312,13 @@ void Solv_rocALUTION::create_solver(Entree& entree)
           while (motlu!=accolade_fermee)
             {
               if (motlu==(Motcle)"impr")
-                  precond_verbosity_ = Verbosity::High;
+                precond_verbosity_ = Verbosity::High;
               else if (motlu==(Motcle)"smoother")
-                  is >> smoother_;
+                is >> smoother_;
+              else if (motlu==(Motcle)"coarse_grid_solver")
+                is >> coarse_grid_solver_;
               else
-                 str+=motlu+" ";
+                str+=motlu+" ";
               is >> motlu;
             }
           str+=motlu;
@@ -450,6 +467,18 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
       // Fixe le nombre d'iterations max:
       ls->InitMaxIter(nb_rows_tot_);
     }
+  else
+    {
+      try
+        {
+          // Provisoire pourquoi rebuild pour pairwise amg ?
+          auto& mg = dynamic_cast<PairwiseAMG<GlobalMatrix<double>, GlobalVector<double>, double> &>(*gp);
+          tick = rocalution_time();
+          ls->ReBuildNumeric();
+          Cout << "[rocALUTION] Time to rebuild solver: " << (rocalution_time() - tick) / 1e6 << finl;
+        }
+      catch (const std::bad_cast& error) {}
+    }
   bool debug = b.size_array() < 100;
   if (debug)
     {
@@ -458,14 +487,22 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
     }
   // Build rhs and initial solution:
   tick = rocalution_time();
-  GlobalVector<double> sol(pm), rhs(pm), e(pm); // ToDo mettre en attribut
-  long N = pm.GetGlobalNrow();
-  sol.Allocate("a", N);
-  rhs.Allocate("rhs", N);
-  e.Allocate("e", N);
 
+
+  long N = pm.GetGlobalNrow();
   int size=b.size_array();
-  ArrOfDouble x_(size), b_(size); // ToDo mettre en attribut
+  if (b_.size_array()==0)
+    {
+      // Allocation initiale
+      x_.resize(size);
+      b_.resize(size);
+      sol.SetParallelManager(pm);
+      rhs.SetParallelManager(pm);
+      e.SetParallelManager(pm);
+      sol.Allocate("a", N);
+      rhs.Allocate("rhs", N);
+      e.Allocate("e", N);
+    }
   int row=0;
   int row_ghost=nb_rows_;
   for (int i=0; i<size; i++)
@@ -514,12 +551,12 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
   Cout << "[rocALUTION] Time to move vectors on device: " << (rocalution_time() - tick) / 1e6 << finl;
   if (write_system_) write_vectors(rhs, sol);
   sol.Info();
-
 #ifndef NDEBUG
   // Check before solves:
   pm.Status();
   assert(rhs.Check()); // ToDo signaler au support rocALUTION que Check() ne renvoie pas un boolean
   assert(sol.Check());
+  assert(e.Check());
   check(x, sol, "Before solve ||x||");
   check(b, rhs, "Before solve ||b||");
 #endif
@@ -559,7 +596,12 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
   double res_initial = first_solve_ ? residual(a, b, x) : residual_device(mat, rhs, sol, e);
   ls->Solve(rhs, &sol);
   if (ls->GetSolverStatus()==3) Process::exit("Divergence for solver.");
-  if (ls->GetSolverStatus()==4) Cout << "Maximum number of iterations reached." << finl;
+  if (ls->GetSolverStatus()==4)
+    {
+      Cout << "Error, maximum number of iterations reached." << finl;
+      Cout << "If you used GCP, try BiCGSTAB solver." << finl;
+      Process::exit();
+    }
   Cout << "[rocALUTION] Time to solve: " << (rocalution_time() - tick) / 1e6 << finl;
 
   int nb_iter = ls->GetIterationCount();
@@ -594,8 +636,9 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
       Cout << finl << "Final residue: " << res_final << " ( " << residu_relatif << " )"<<finl;
     }
   fixer_nouvelle_matrice(0);
-  sol.Clear();
-  rhs.Clear();
+  //sol.Clear();
+  //rhs.Clear();
+  //e.Clear();
   if (nb_iter>1) first_solve_ = false;
   return nb_iter;
 #else
@@ -781,47 +824,50 @@ void Solv_rocALUTION::Create_objects(const Matrice_Morse& csr)
       mp_ls.Set(*sp_ls);
        */
     }
-    // AMG smoothers On doit le faire apres le SetOperator(mat) pour avoir les differentes grilles:
-    // Default: FixedPoint/Jacobi ?
-        try {
-            auto &mg = dynamic_cast<SAAMG<LocalMatrix<double>, LocalVector<double>, double> &>(*lp);
-            mg.SetOperator(mat.GetInterior());
-            mg.BuildHierarchy();
-            mg.SetManualSmoothers(true);
-            // Smoother for each level
-            mg.SetSmootherPreIter(1);
-            mg.SetSmootherPostIter(1);
-            int levels = mg.GetNumLevels();
-            auto **sm = new IterativeLinearSolver<LocalMatrix<double>, LocalVector<double>, double> *[levels - 1];
-            auto **gs = new Preconditioner<LocalMatrix<double>, LocalVector<double>, double> *[levels - 1];
-            for (int i = 0; i < levels - 1; ++i) {
-                FixedPoint<LocalMatrix<double>, LocalVector<double>, double> *fp;
-                fp = new FixedPoint<LocalMatrix<double>, LocalVector<double>, double>;
-                sm[i] = fp;
-                if (smoother_=="GS")
-                   gs[i] = new GS<LocalMatrix<double>, LocalVector<double>, double>;    // Converge mieux avec BICGstab mais plus lent que Jacobi
-                else
-                   gs[i] = new Jacobi<LocalMatrix<double>, LocalVector<double>, double>;
-                //fp->SetRelaxation(0.7);
-                sm[i]->SetPreconditioner(*gs[i]);
-                sm[i]->Verbose(precond_verbosity_);
-            }
-            Cout << "Setting smoother on the " << levels << " levels: ";
-            gs[0]->Print();
-            mg.SetSmoother(sm);
-            mg.Verbose(precond_verbosity_);
+  // AMG smoothers On doit le faire apres le SetOperator(mat) pour avoir les differentes grilles:
+  // Default: FixedPoint/Jacobi ?
+  try
+    {
+      auto& mg = dynamic_cast<SAAMG<LocalMatrix<double>, LocalVector<double>, double> &>(*lp);
+      mg.SetOperator(mat.GetInterior());
+      mg.BuildHierarchy();
+      mg.SetManualSmoothers(true);
+      // Smoother for each level
+      mg.SetSmootherPreIter(1);
+      mg.SetSmootherPostIter(1);
+      int levels = mg.GetNumLevels();
+      auto **sm = new IterativeLinearSolver<LocalMatrix<double>, LocalVector<double>, double> *[levels - 1];
+      auto **gs = new Preconditioner<LocalMatrix<double>, LocalVector<double>, double> *[levels - 1];
+      for (int i = 0; i < levels - 1; ++i)
+        {
+          FixedPoint<LocalMatrix<double>, LocalVector<double>, double> *fp;
+          fp = new FixedPoint<LocalMatrix<double>, LocalVector<double>, double>;
+          sm[i] = fp;
+          if (smoother_=="GS")
+            gs[i] = new GS<LocalMatrix<double>, LocalVector<double>, double>;    // Converge mieux avec BICGstab mais plus lent que Jacobi
+          else
+            gs[i] = new Jacobi<LocalMatrix<double>, LocalVector<double>, double>;
+          //fp->SetRelaxation(0.7);
+          sm[i]->SetPreconditioner(*gs[i]);
+          sm[i]->Verbose(precond_verbosity_);
         }
-        catch (const std::bad_cast &e) {
-            //Cout << "precond is:" << finl;
-            //lp->Print();
-        };
+      Cout << "Setting smoother on the " << levels << " levels: ";
+      gs[0]->Print();
+      mg.SetSmoother(sm);
+      mg.Verbose(precond_verbosity_);
+    }
+  catch (const std::bad_cast& error)
+    {
+      //Cout << "precond is:" << finl;
+      //lp->Print();
+    };
 
-    ls->Build();
-    ls->Print();
-    /*
-    if (sp_ls!=nullptr) sp_ls->Print();
-    if (p!=nullptr) p->Print();
-    if (sp_p!=nullptr) sp_p->Print(); */
-  Cout << "[rocALUTION] Time to build solver on device: " << (rocalution_time() - tick) / 1e6 << finl;
+  ls->Build();
+  ls->Print();
+  /*
+  if (sp_ls!=nullptr) sp_ls->Print();
+  if (p!=nullptr) p->Print();
+  if (sp_p!=nullptr) sp_p->Print(); */
+  Cout << "[rocALUTION] Time to build solver: " << (rocalution_time() - tick) / 1e6 << finl;
 #endif
 }
