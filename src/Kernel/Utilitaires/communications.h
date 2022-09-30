@@ -39,8 +39,8 @@ int is_parallel_object(const Objet_U& obj);
 int is_parallel_object(const double x);
 int is_parallel_object(const int x);
 
-int envoyer_all_to_all(const TRUST_Vector<TRUSTTab,double>& src, TRUST_Vector<TRUSTTab,double>& dest);
-int envoyer_all_to_all(const TRUST_Vector<TRUSTArray,int>& src, TRUST_Vector<TRUSTArray,int>& dest);
+int envoyer_all_to_all(const TRUSTTabs_Vector<TRUSTTab,double>& src, TRUSTTabs_Vector<TRUSTTab,double>& dest);
+int envoyer_all_to_all(const TRUSTTabs_Vector<TRUSTArray,int>& src, TRUSTTabs_Vector<TRUSTArray,int>& dest);
 int envoyer_all_to_all(std::vector<long long>& src, std::vector<long long>& dest);
 void envoyer_all_to_all(const DoubleTab& src, DoubleTab& dest);
 

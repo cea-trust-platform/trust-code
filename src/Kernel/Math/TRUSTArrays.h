@@ -17,10 +17,11 @@
 #define TRUSTArrays_included
 
 #include <TRUST_Vector.h>
+#include <TRUSTArray.h>
 
 // BYE BYE MACRO !! ahahaha
-using Vect_ArrOfDouble = TRUST_Vector<TRUSTArray,double>; // remplace VECT(ArrOfDouble)
-using Vect_ArrOfInt = TRUST_Vector<TRUSTArray,int>; // remplace VECT(ArrOfInt)
+using Vect_ArrOfDouble = TRUSTTabs_Vector<TRUSTArray,double>; // remplace VECT(ArrOfDouble)
+using Vect_ArrOfInt = TRUSTTabs_Vector<TRUSTArray,int>; // remplace VECT(ArrOfInt)
 using ArrsOfDouble = Vect_ArrOfDouble;
 using ArrsOfInt = Vect_ArrOfInt;
 

@@ -206,12 +206,12 @@ int envoyer_all_to_all_(const T& src, T& dest)
   return 1;
 }
 
-int envoyer_all_to_all(const TRUST_Vector<TRUSTTab,double>& src, TRUST_Vector<TRUSTTab,double>& dest)
+int envoyer_all_to_all(const TRUSTTabs_Vector<TRUSTTab,double>& src, TRUSTTabs_Vector<TRUSTTab,double>& dest)
 {
   return envoyer_all_to_all_(src, dest);
 }
 
-int envoyer_all_to_all(const TRUST_Vector<TRUSTArray,int>& src, TRUST_Vector<TRUSTArray,int>& dest)
+int envoyer_all_to_all(const TRUSTTabs_Vector<TRUSTArray,int>& src, TRUSTTabs_Vector<TRUSTArray,int>& dest)
 {
   return envoyer_all_to_all_(src, dest);
 }

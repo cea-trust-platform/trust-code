@@ -42,7 +42,7 @@ private:
   TRUSTTab_parts& operator=(const TRUSTTab_parts&) = delete;
   TRUSTTab_parts(const TRUSTTab_parts&) = delete;
   // parts_[i] is initialized by adopter() to point to a sub_part of the source array.
-  TRUST_Vector<TRUSTTab,_TYPE_> parts_; // Et ouiiiiiiiiiiiiiiii
+  TRUSTTabs_Vector<TRUSTTab,_TYPE_> parts_; // Et ouiiiiiiiiiiiiiiii
 };
 
 using DoubleTab_parts = TRUSTTab_parts<double>;
@@ -69,7 +69,7 @@ private:
   ConstTRUSTTab_parts& operator=(const ConstTRUSTTab_parts&) = delete;
   ConstTRUSTTab_parts(const ConstTRUSTTab_parts&) = delete;
   // parts_[i] is initialized by adopter() to point to a sub_part of the source array.
-  TRUST_Vector<TRUSTTab,_TYPE_> parts_; // Et ouiiiiiiiiiiiiiiii
+  TRUSTTabs_Vector<TRUSTTab,_TYPE_> parts_; // Et ouiiiiiiiiiiiiiiii
 };
 
 using ConstDoubleTab_parts = ConstTRUSTTab_parts<double>;

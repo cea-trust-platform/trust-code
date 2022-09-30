@@ -17,14 +17,19 @@
 #define TRUST_Vector_included
 
 #include <vect_impl.h>
-#include <TRUSTTab.h>
+
+
+class TRUST_Vector
+{
+
+};
 
 // Elie Saikali : mai 2022
 // J'ajoute cette classe temporairement (enfin j'espere)
 // a virer le jour ou le macro VECT devient / ou accepte des templates
 // Pourquoi ? car dans Const_DoubleTab_parts on a VECT(IntTab) et VECT(DoubleTab) .... boom, comment je peux faire sinon ?
 template<template<typename> class _TRUST_TABL_,typename _TYPE_>
-class TRUST_Vector: public vect_impl
+class TRUSTTabs_Vector: public vect_impl
 {
 protected:
 
@@ -32,7 +37,7 @@ protected:
 
   inline int duplique() const override
   {
-    TRUST_Vector *xxx = new TRUST_Vector(*this);
+    TRUSTTabs_Vector *xxx = new TRUSTTabs_Vector(*this);
     if (!xxx)
       {
         Cerr << "Not enough memory " << finl;
@@ -52,9 +57,9 @@ protected:
   Entree& readOn(Entree& s) override { return vect_impl::readOn(s); }
 
 public:
-  TRUST_Vector() : vect_impl() { }
-  TRUST_Vector(int i) { build_vect_impl(i); }
-  TRUST_Vector(const TRUST_Vector& avect) : vect_impl(avect) { }
+  TRUSTTabs_Vector() : vect_impl() { }
+  TRUSTTabs_Vector(int i) { build_vect_impl(i); }
+  TRUSTTabs_Vector(const TRUSTTabs_Vector& avect) : vect_impl(avect) { }
 
   /* Returns the ith VECT element */
   const _TRUST_TABL_<_TYPE_>& operator[](int i) const { return static_cast<const _TRUST_TABL_<_TYPE_>&>(vect_impl::operator[](i)); }
@@ -63,7 +68,7 @@ public:
   const _TRUST_TABL_<_TYPE_>& operator()(int i) const { return operator[](i); }
   _TRUST_TABL_<_TYPE_>& operator()(int i) { return operator[](i); }
 
-  TRUST_Vector& operator=(const TRUST_Vector& avect)
+  TRUSTTabs_Vector& operator=(const TRUSTTabs_Vector& avect)
   {
     vect_impl::operator=(avect);
     return *this;
@@ -78,7 +83,8 @@ public:
   }
 
   _TRUST_TABL_<_TYPE_>& add() { return add(_TRUST_TABL_<_TYPE_>()); }
-  void add(const TRUST_Vector& data_to_add) { vect_impl::add(data_to_add); }
+  void add(const TRUSTTabs_Vector& data_to_add) { vect_impl::add(data_to_add); }
 };
+
 
 #endif /* TRUST_Vector_included */
