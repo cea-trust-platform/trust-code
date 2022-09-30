@@ -223,7 +223,7 @@ const DoubleTab& Zone_PolyMAC::surf_elem_arete() const
         for (j = 0; j < f_s.dimension(1) && (s = f_s(f, j)) >= 0; j++) //3D: une contribution par couple (f, a)
           {
             sb = f_s(f, j + 1 < f_s.dimension(1) && f_s(f, j + 1) >= 0 ? j + 1 : 0); //autre sommet
-            a = som_arete[s].at(sb), k = std::find(&e_a(e, 0), &e_a(e, 0) + ea_d(e + 1) - ea_d(e), a) - &e_a(e, 0) + ea_d(e); //arete, son indice dans e_a
+            a = som_arete[s].at(sb), k = (int)(std::find(&e_a(e, 0), &e_a(e, 0) + ea_d(e + 1) - ea_d(e), a) - &e_a(e, 0) + ea_d(e)); //arete, son indice dans e_a
             auto vec = cross(D, D, &xf(f, 0), &xa_(a, 0), &xe(e, 0), &xe(e, 0)); //non oriente
             for (sgn = dot(&vec[0], &ta_(a, 0)) >= 0 ? 1 : -1, d = 0; d < D; d++) surf_elem_arete_(k, d) += sgn * vec[d] / 2;
           }

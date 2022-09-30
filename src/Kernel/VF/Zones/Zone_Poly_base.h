@@ -139,7 +139,7 @@ public :
   //pour chaque element, repartition de son volume entre chacun de ses sommets
   const DoubleTab& vol_elem_som() const;
   //pour chaque sommet, produit porosite * volume
-  const DoubleTab& pvol_som() const;
+  const DoubleTab& pvol_som(const DoubleVect& poro) const;
 
 // Methodes pour le calcul et l'appel de la distance au bord solide le plus proche ; en entree on met le tableau des CL de la QDM
   void init_dist_paroi_globale(const Conds_lim& conds_lim) override;

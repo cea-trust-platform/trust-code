@@ -732,12 +732,12 @@ const DoubleTab& Zone_Poly_base::vol_elem_som() const
           auto vec = cross(D, D, &xv_(f, 0), &xs(s, 0), &xp_(e, 0), &xp_(e, 0));
           double x = std::abs(D < 3 ? vec[2] : dot(&xs(sb, 0), &vec[0], &xp_(e, 0))); //volume du parallelepipede
           for (k = 0; k < D - 1; k++) //contribution au volume de s (2D) ou a ceux de s / sb (3D)
-            vol(es_d(e) + (std::find(&e_s(e, 0), &e_s(e, 0) + es_d(e + 1) - es_d(e), k ? sb : s) - &e_s(e, 0))) += x / (D < 3 ? 2 : 12);
+            vol(es_d(e) + (int)(std::find(&e_s(e, 0), &e_s(e, 0) + es_d(e + 1) - es_d(e), k ? sb : s) - &e_s(e, 0))) += x / (D < 3 ? 2 : 12);
         }
   return vol;
 }
 
-const DoubleTab& Zone_Poly_base::pvol_som() const
+const DoubleTab& Zone_Poly_base::pvol_som(const DoubleVect& porosite_elem) const
 {
   if (pvol_som_.size()) return pvol_som_; //deja fait
   const IntTab& es_d = elem_som_d(), &e_s = zone().les_elems();
@@ -745,7 +745,7 @@ const DoubleTab& Zone_Poly_base::pvol_som() const
   zone().domaine().creer_tableau_sommets(pvol_som_);
   for (int e = 0; e < nb_elem_tot(); e++)
     for (int i = 0, j = es_d(e); j < es_d(e + 1); i++, j++)
-      pvol_som_(e_s(e, i)) += porosite_elem_(e) * v_es(j);
+      pvol_som_(e_s(e, i)) += porosite_elem(e) * v_es(j);
   pvol_som_.echange_espace_virtuel();
   return pvol_som_;
 }

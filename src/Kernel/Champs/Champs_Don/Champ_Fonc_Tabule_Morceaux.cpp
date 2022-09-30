@@ -113,7 +113,7 @@ Entree& Champ_Fonc_Tabule_Morceaux::readOn(Entree& is)
     ch_param.push_back(&ref_cast(Probleme_base, Interprete::objet(Nom(pb_ch[0]))).get_champ(Nom(pb_ch[1])));
   for (int i = 0; i < (int) m_pb_ch.size(); i++)
     for (auto && pb_ch : m_pb_ch[i]) /* indices */
-      morceaux[i].i_ch.push_back(std::lower_bound(v_pb_ch.begin(), v_pb_ch.end(), pb_ch) - v_pb_ch.begin());
+      morceaux[i].i_ch.push_back((int)(std::lower_bound(v_pb_ch.begin(), v_pb_ch.end(), pb_ch) - v_pb_ch.begin()));
 
   return is;
 }
