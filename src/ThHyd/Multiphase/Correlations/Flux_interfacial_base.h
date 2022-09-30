@@ -55,6 +55,7 @@ public:
     const double *mu;     // mu[n]         : viscosite dynamique de la phase n
     const double *rho;    // rho[n]        : masse volumique de la phase n
     const double *Cp;     // CP[n]         : capacite calorifique de la phase n
+    const double *Lvap;  //Lvap[n,k]     : chaleur latente changement de phase n=>k
     const double *h;      // h[n]          : enthalpie de la phase n
     const double *dP_h;   // dP_h[n]       : derivee en pression de l'enthalpie de la phase n
     const double *dT_h;   // dT_h[n]       : deritee en temperature de la phase n de l'enthalpie de la phase n

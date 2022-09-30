@@ -182,7 +182,7 @@ void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
 
   // Et pour les methodes span de la classe Saturation
   const int nbelem = zone.nb_elem(), nb_max_sat =  N * (N-1) /2; // oui !! suite arithmetique !!
-  DoubleTrav Ts_tab(nbelem,nb_max_sat), dPTs_tab(nbelem,nb_max_sat), Hvs_tab(nbelem,nb_max_sat), Hls_tab(nbelem,nb_max_sat), dPHvs_tab(nbelem,nb_max_sat), dPHls_tab(nbelem,nb_max_sat);
+  DoubleTrav Ts_tab(nbelem,nb_max_sat), dPTs_tab(nbelem,nb_max_sat), Hvs_tab(nbelem,nb_max_sat), Hls_tab(nbelem,nb_max_sat), dPHvs_tab(nbelem,nb_max_sat), dPHls_tab(nbelem,nb_max_sat), Lvap_tab(nbelem,nb_max_sat);
 
   // remplir les tabs ...
   for (k = 0; k < N; k++)
@@ -201,6 +201,7 @@ void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
           z_sat.Hls(press.get_span(), Hls_tab.get_span(),nb_max_sat,ind_trav);
           z_sat.dP_Hvs(press.get_span(), dPHvs_tab.get_span(),nb_max_sat,ind_trav);
           z_sat.dP_Hls(press.get_span(), dPHls_tab.get_span(),nb_max_sat,ind_trav);
+          z_sat.Hls(press.get_span(), Lvap_tab.get_span(),nb_max_sat,ind_trav);
         }
 
   for (e = 0; e < zone.nb_elem(); e++)
@@ -218,7 +219,7 @@ void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
         for (k = 0 ; k<N ; k++) nv(n, k) = std::max(sqrt(nv(n, k)), dv_min);
       //coeffs d'echange vers l'interface (explicites)
       in.dh = dh, in.alpha = &alpha(e, 0), in.T = &temp(e, 0), in.p = press(e, 0), in.nv = &nv(0, 0), in.h = &h(e, 0), in.dT_h = dT_h ? &(*dT_h)(e, 0) : NULL, in.dP_h = dP_h ? &(*dP_h)(e, 0) : NULL;
-      in.lambda = &lambda(!cL * e, 0), in.mu = &mu(!cM * e, 0), in.rho = &rho(!cR * e, 0), in.Cp = &Cp(!cCp * e, 0), in.e = e;
+      in.lambda = &lambda(!cL * e, 0), in.mu = &mu(!cM * e, 0), in.rho = &rho(!cR * e, 0), in.Cp = &Cp(!cCp * e, 0), in.e = e, in.Lvap = &Lvap_tab(e, 0);
       correlation_fi.coeffs(in, out);
 
       for (k = 0; k < N; k++)
