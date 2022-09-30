@@ -157,8 +157,8 @@
  Champ_Inc_Q1_base Champ_Inc_Q1_base Champ_Inc_Q1_base.h
  champ_init_canal_sinal champ_init_canal_sinal champ_init_canal_sinal.h
  Champ_input_P0 Champ_input_P0 Champ_input_P0.h
+ Champ_Input_P0_Composite Champ_Input_P0_Composite Champ_Input_P0_Composite.h
  Champ_input_uniforme Ch_input_uniforme Ch_input_uniforme.h
- Champ_late_input_P0 Champ_late_input_P0 Champ_late_input_P0.h
  Champ_Ostwald Champ_Ostwald Champ_Ostwald.h
  Champ_Ostwald_VDF Champ_Ostwald_VDF Champ_Ostwald_VDF.h
  Champ_Ostwald_VEF Champ_Ostwald_VEF Champ_Ostwald_VEF.h

@@ -1,11 +1,11 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.1_beta : Enhancements, modifications and corrected bugs since version 1.9.0 :
 --------------------------------------------------------------------------------------------------
-xx/10/22 (TRUST)  New feature : Champ_Input_P0_Composite is now available and can be used to initialize the input field before starting the time scheme.
-xx/10/22 (TRUST)  Major Change: Previous Phases interpret is no more available in Pb_multiphase. Milieu_composite class should now be used and should be placed as well in the problem.
-xx/10/22 (TRUST)  Major Change: Medium is no more read and associated to a problem. It is read directly in the begining of each problem bloc.
-xx/10/22 (TRUST)  Major Change: Gravity is no more read and associated to a medium. It is read directly in the medium.
-xx/10/22 (TRUST)  Major Change: Previous porosites_champ and porosites interpret are no more available. They are now fields read in the medium.
+30/09/22 (TRUST)  New feature : Champ_Input_P0_Composite is now available and can be used to initialize the input field before starting the time scheme.
+30/09/22 (TRUST)  Major Change: Previous Phases interpret is no more available in Pb_multiphase. Milieu_composite class should now be used and should be placed as well in the problem.
+30/09/22 (TRUST)  Major Change: Medium is no more read and associated to a problem. It is read directly in the begining of each problem bloc.
+30/09/22 (TRUST)  Major Change: Gravity is no more read and associated to a medium. It is read directly in the medium.
+30/09/22 (TRUST)  Major Change: Previous porosites_champ and porosites interpret are no more available. They are now fields read in the medium.
 19/09/22 (TRUST)  New keyword : New fields champ_composite and champ_front_composite are available and useful for Pb_Multiphase
 02/09/22 (TRUST)  New option  : New domaines keyword added to Create_domain_from_sous_zone which allows to create multiple domains at once.
 02/09/22 (TRUST)  New option  : --any-- keyword added to LireMED (as the mesh name) in order to read automatically the first mesh found in the med file.
