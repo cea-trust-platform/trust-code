@@ -205,6 +205,7 @@ void print(const Field_UNames& geoms)
     cerr << get_long_field_name(geoms[i]) << " ";
   cerr << endl;
 }
+
 int compare_temps(double time, double t)
 {
   if (t == 0.0)
@@ -213,13 +214,13 @@ int compare_temps(double time, double t)
         return 1;
     }
   else if (fabs(t - time) / t <= gepsilon)
-    {
-      return 1;
-    }
+    return 1;
   return 0;
-
 }
 
+/*! @brief Compare two lists and put the common part in geoms3
+ *
+ */
 int compare_noms(const Noms& geoms, const Noms& geoms2, Noms& geoms3)
 {
   int status = 1;
@@ -235,12 +236,14 @@ int compare_noms(const Noms& geoms, const Noms& geoms2, Noms& geoms3)
           status = 0;
         }
       else
-        {
-          geoms3.add(geoms[i]);
-        }
+        geoms3.add(geoms[i]);
     }
   return status;
 }
+
+/*! @brief Compare two lists and put the common part in geoms3
+ *
+ */
 int compare_noms(const Field_UNames& geoms, const Field_UNames& geoms2, Field_UNames& geoms3)
 {
   int status = 1;
@@ -259,9 +262,7 @@ int compare_noms(const Field_UNames& geoms, const Field_UNames& geoms2, Field_UN
           status = 0;
         }
       else
-        {
-          geoms3.add(geoms[i]);
-        }
+        geoms3.add(geoms[i]);
     }
   return status;
 }
@@ -540,9 +541,8 @@ void construit_corres(const DomainUnstructured& dom, const DomainUnstructured& d
   xp.resize(0, 0);
 }
 
-class Ecarts
+struct Ecarts
 {
-public:
   ArrOfFloat min, max, min2, max2, delta, val, val2;
   ArrOfInt loc, loc2;
   double t;
@@ -558,11 +558,10 @@ public:
     val2.resize_array(n);
     loc2.resize_array(n);
   }
-  ;
 };
-class EcartField
+
+struct EcartField
 {
-public:
   Field_UName name_;
   LataVector<Ecarts> les_ecarts_;
 };
@@ -653,6 +652,9 @@ int main(int argc, char **argv)
   LataFilter filter, filter2;
   Nom filename, filename2;
 
+  //
+  // Parse command line options
+  //
   if (argc < 3)
     {
       usage(argv[0]);
@@ -702,8 +704,9 @@ int main(int argc, char **argv)
   open(filename, filter, opt, lata_db);
   open(filename2, filter2, opt2, lata_db2);
 
+  //
   // Nom des domaines
-
+  //
   Noms geoms3;
 
   int gnerr = -1;
@@ -721,7 +724,10 @@ int main(int argc, char **argv)
         gnerr += 1000;
       }
   }
-  LataVector<EcartField> les_ecarts;
+
+  //
+  // Nom des champs
+  //
   for (entier i = 0; i < geoms3.size(); i++)
     {
       Domain_Id id(geoms3[i], 1, -1);
@@ -740,6 +746,10 @@ int main(int argc, char **argv)
           gnerr += 100;
         }
     }
+
+  //
+  // Pas de temps
+  //
   int nbtimes = filter.get_nb_timesteps();
   // timestep
   if (dernier_only == 0)
@@ -769,6 +779,10 @@ int main(int argc, char **argv)
         }
     }
 
+  //
+  // Comparaison domaines et champs
+  //
+  LataVector<EcartField> les_ecarts;
   for (entier i = 0; i < geoms3.size(); i++)
     {
       Domain_Id id(geoms3[i], 1, -1);
@@ -777,6 +791,7 @@ int main(int argc, char **argv)
       const Domain& dom2 = get_domain(filter2, id, filename2);
       ArrOfInt ielem, isom;
       // on construit les tableux de ocnnectivites elem2 -> elem et som2 -> som
+      // C'est aussi la que se fait la comparaison des geometries:
       construit_corres(((dom.get_domain_type() == Domain::UNSTRUCTURED) ? dom.cast_DomainUnstructured() : convertIJKtoUnstructured(dom.cast_DomainIJK())),
                        (dom2.get_domain_type() == Domain::UNSTRUCTURED) ? dom2.cast_DomainUnstructured() : convertIJKtoUnstructured(dom2.cast_DomainIJK()), ielem, isom);
 
@@ -821,6 +836,9 @@ int main(int argc, char **argv)
 
                   Ecarts& ecarts = un_ecart.les_ecarts_.add();
                   ecarts.t = filter.get_timestep(t1);
+                  //
+                  // Comparaison des champs:
+                  //
                   compare_fields(field, field2, ecarts, ielem, isom);
 
                   filter2.release_field(field2);
@@ -833,16 +851,13 @@ int main(int argc, char **argv)
                 }
             }
         }
-
       filter.release_geometry(dom);
       filter2.release_geometry(dom2);
-
     }
 
   // on regarde si "par hasard" on n' a pas un vecteur cache...
   for (int j = 0; j < les_ecarts.size(); j++)
     {
-
       const EcartField& un_ecart = les_ecarts[j];
 
       Nom nom_champ = get_long_field_name(un_ecart.name_);
@@ -885,10 +900,10 @@ int main(int argc, char **argv)
                   }
                 //exit(-1);
               }
-
         }
     }
 
+  // Traitement des ecarts:
   if (les_ecarts.size())
     {
       const EcartField& un_ecart = les_ecarts[0];

@@ -22,7 +22,12 @@ cd $Build
 # Better detection of SWIG on Ubuntu 16
 SWIG_EXECUTABLE=`type -p swig`
 # PL inutile de specifier swig (dans PATH normalement):
-cmake $ORG -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$TRUST_ROOT/exec/lata_tools -DCMAKE_C_COMPILER=$TRUST_cc -DCMAKE_CXX_COMPILER=$TRUST_CC -DSWIG_EXECUTABLE=$SWIG_EXECUTABLE
+build_mode="Release"
+if [ "x$exec" == "x$exec_debug" ] || [ "x$OPT" == "x" ]; then 
+   echo "lata_tools will be built in DEBUG mode!!"
+   build_mode="Debug" 
+fi 
+cmake $ORG -DCMAKE_BUILD_TYPE=$build_mode -DCMAKE_INSTALL_PREFIX=$TRUST_ROOT/exec/lata_tools -DCMAKE_C_COMPILER=$TRUST_cc -DCMAKE_CXX_COMPILER=$TRUST_CC -DSWIG_EXECUTABLE=$SWIG_EXECUTABLE
 make -j  $TRUST_NB_PROCS  install || exit -1
 
 echo "Check if compare_lata works"
