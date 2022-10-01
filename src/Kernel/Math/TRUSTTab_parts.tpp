@@ -17,7 +17,7 @@
 #define TRUSTTab_parts_TPP_included
 
 template<typename _TYPE_>
-inline void init_parts(TRUSTVect<_TYPE_>& vect, TRUSTTabs_Vector<TRUSTTab,_TYPE_>& parts, TRUSTTab<_TYPE_> *dummy_type_ptr)
+inline void init_parts(TRUSTVect<_TYPE_>& vect, TRUST_Vector<TRUSTTab<_TYPE_>>& parts, TRUSTTab<_TYPE_> *dummy_type_ptr)
 {
   const MD_Vector& md = vect.get_md_vector();
   TRUSTTab<_TYPE_>* Tab_ptr = dynamic_cast<TRUSTTab<_TYPE_>*>(&vect);

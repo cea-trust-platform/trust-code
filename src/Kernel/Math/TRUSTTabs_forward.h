@@ -38,17 +38,17 @@ using FloatTrav = TRUSTTrav<float>;
 
 // previous VECT macros :-)
 // TODO : FIXME : Add float typedefs ...
-template<template<class> class _TRUST_TABL_,typename _TYPE_> class TRUSTTabs_Vector;
-using Vect_ArrOfDouble = TRUSTTabs_Vector<TRUSTArray,double>; // remplace VECT(ArrOfDouble)
-using Vect_ArrOfInt = TRUSTTabs_Vector<TRUSTArray,int>; // remplace VECT(ArrOfInt)
+template<typename _TYPE_> class TRUST_Vector;
+using Vect_ArrOfDouble = TRUST_Vector<TRUSTArray<double>>; // remplace VECT(ArrOfDouble)
+using Vect_ArrOfInt = TRUST_Vector<TRUSTArray<int>>; // remplace VECT(ArrOfInt)
 using ArrsOfDouble = Vect_ArrOfDouble;
 using ArrsOfInt = Vect_ArrOfInt;
-using Vect_DoubleVect = TRUSTTabs_Vector<TRUSTVect,double>; // remplace VECT(DoubleVect)
-using Vect_IntVect = TRUSTTabs_Vector<TRUSTVect,int>; // remplace VECT(IntVect)
+using Vect_DoubleVect = TRUST_Vector<TRUSTVect<double>>; // remplace VECT(DoubleVect)
+using Vect_IntVect = TRUST_Vector<TRUSTVect<int>>; // remplace VECT(IntVect)
 using DoubleVects = Vect_DoubleVect;
 using IntVects = Vect_IntVect;
-using Vect_DoubleTab = TRUSTTabs_Vector<TRUSTTab,double>; // remplace VECT(DoubleTab)
-using Vect_IntTab = TRUSTTabs_Vector<TRUSTTab,int>; // remplace VECT(IntTab)
+using Vect_DoubleTab = TRUST_Vector<TRUSTTab<double>>; // remplace VECT(DoubleTab)
+using Vect_IntTab = TRUST_Vector<TRUSTTab<int>>; // remplace VECT(IntTab)
 using DoubleTabs = Vect_DoubleTab;
 using IntTabs = Vect_IntTab;
 

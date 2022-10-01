@@ -20,8 +20,8 @@
 #include <TRUSTVect.h>
 
 // BYE BYE MACRO !! ahahaha
-using Vect_DoubleVect = TRUSTTabs_Vector<TRUSTVect,double>; // remplace VECT(DoubleVect)
-using Vect_IntVect = TRUSTTabs_Vector<TRUSTVect,int>; // remplace VECT(IntVect)
+using Vect_DoubleVect = TRUST_Vector<TRUSTVect<double>>; // remplace VECT(DoubleVect)
+using Vect_IntVect = TRUST_Vector<TRUSTVect<int>>; // remplace VECT(IntVect)
 using IntVects = Vect_IntVect;
 using DoubleVects = Vect_DoubleVect;
 

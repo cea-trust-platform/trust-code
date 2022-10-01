@@ -18,22 +18,18 @@
 
 #include <Vect_impl.h>
 
-/*! @brief 2 classes templates
+/*! @brief classe TRUST_Vector
  *
- *  - TRUST_Vector pour n'importe quelle classe
- *      Utilisation : using Vect_Milieu_base = TRUST_Vector<Milieu_base>
+ *  - La classe template TRUST_Vector est utilisable pour n'importe quelle classe
+ *      Utilisation (par exemple):
  *
- *  - TRUSTTabs_Vector pour les classes templates TRUSTArray, TRUSTVect, TRUSTTab et TRUSTTrav ...
- *      Utilisation : using Vect_ArrOfDouble = TRUSTTabs_Vector<TRUSTArray,double>
+ *        - using Vect_Milieu_base = TRUST_Vector<Milieu_base>
+ *        - using Vect_ArrOfDouble = TRUST_Vector<TRUSTArray<double>>
  *
  */
 
-// MACRO to replace VECT(THECLASS) by Vect_THECLASS
+// MACRO to replace VECT(THECLASS) by Vect_THECLASS & keep previous syntax for some developers
 #define VECT(_TYPE_) name2(Vect_,_TYPE_)
-
-/////////////////////////////////////////////////////////////////////////////////////////
-// =================================================================================== //
-/////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename _CLASSE_>
 class TRUST_Vector: public Vect_impl
@@ -51,6 +47,7 @@ protected:
   Objet_U* cree_une_instance() const override
   {
     _CLASSE_ *instan = new _CLASSE_();
+    if (!instan) Cerr << "Not enough memory " << finl, Process::exit();
     return instan;
   }
 
@@ -85,62 +82,6 @@ public:
 
   _CLASSE_& add() { return add(_CLASSE_()); }
   void add(const TRUST_Vector& data_to_add) { Vect_impl::add(data_to_add); }
-};
-
-/////////////////////////////////////////////////////////////////////////////////////////
-// =================================================================================== //
-/////////////////////////////////////////////////////////////////////////////////////////
-
-template<template<typename> class _TRUST_TABL_,typename _TYPE_>
-class TRUSTTabs_Vector: public Vect_impl
-{
-protected:
-  inline unsigned taille_memoire() const override { throw; }
-
-  inline int duplique() const override
-  {
-    TRUSTTabs_Vector *xxx = new TRUSTTabs_Vector(*this);
-    if (!xxx) Cerr << "Not enough memory " << finl, Process::exit();
-    return xxx->numero();
-  }
-
-  Objet_U* cree_une_instance() const override
-  {
-    _TRUST_TABL_<_TYPE_> *instan = new _TRUST_TABL_<_TYPE_>();
-    return instan;
-  }
-
-  Sortie& printOn(Sortie& s) const override { return Vect_impl::printOn(s); }
-  Entree& readOn(Entree& s) override { return Vect_impl::readOn(s); }
-
-public:
-  TRUSTTabs_Vector() : Vect_impl() { }
-  TRUSTTabs_Vector(int i) { build_vect_impl(i); }
-  TRUSTTabs_Vector(const TRUSTTabs_Vector& avect) : Vect_impl(avect) { }
-
-  /* Returns the ith VECT element */
-  const _TRUST_TABL_<_TYPE_>& operator[](int i) const { return static_cast<const _TRUST_TABL_<_TYPE_>&>(Vect_impl::operator[](i)); }
-  _TRUST_TABL_<_TYPE_>& operator[](int i) { return static_cast<_TRUST_TABL_<_TYPE_>&>(Vect_impl::operator[](i)); }
-
-  const _TRUST_TABL_<_TYPE_>& operator()(int i) const { return operator[](i); }
-  _TRUST_TABL_<_TYPE_>& operator()(int i) { return operator[](i); }
-
-  TRUSTTabs_Vector& operator=(const TRUSTTabs_Vector& avect)
-  {
-    Vect_impl::operator=(avect);
-    return *this;
-  }
-
-  Entree& lit(Entree& s) { return Vect_impl::lit(s); }
-
-  _TRUST_TABL_<_TYPE_>& add(const _TRUST_TABL_<_TYPE_>& data_to_add)
-  {
-    Vect_impl::add(data_to_add);
-    return (*this)[size() - 1];
-  }
-
-  _TRUST_TABL_<_TYPE_>& add() { return add(_TRUST_TABL_<_TYPE_>()); }
-  void add(const TRUSTTabs_Vector& data_to_add) { Vect_impl::add(data_to_add); }
 };
 
 #endif /* TRUST_Vector_included */
