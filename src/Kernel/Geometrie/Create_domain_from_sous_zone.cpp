@@ -82,7 +82,12 @@ Entree& Create_domain_from_sous_zone::interpreter_(Entree& is)
   for (int i = 0; i < nb_dom; i++)
     {
       const Sous_Zone& ssz=ref_cast(Sous_Zone,objet(noms_sous_zones(i)));
-      for (int j = 0; j < ssz.nb_elem_tot(); j++) index(ssz(j)) = i + 1;
+      for (int j = 0; j < ssz.nb_elem_tot(); j++)
+        {
+          if (index(ssz(j))) /* element deja pris -> erreur */
+            Process::exit(Nom("Create_domain_from_sous_zone : collision detected between ") + noms_sous_zones[i] + " and " + noms_sous_zones[index(ssz(j)) - 1] + " !");
+          index(ssz(j)) = i + 1;
+        }
     }
 
   cutter.initialiser(domaine_org, index, noms_doms.size() + 1,1,vide,1);
