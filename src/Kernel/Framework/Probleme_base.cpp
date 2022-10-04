@@ -42,6 +42,7 @@ Implemente_base_sans_constructeur_ni_destructeur(Probleme_base,"Probleme_base",P
 
 // XD Pb_base pb_gen_base Pb_base -3 Resolution of equations on a domain. A problem is defined by creating an object and assigning the problem type that the user wishes to resolve. To enter values for the problem objects created, the Lire (Read) interpretor is used with a data block.
 // XD  attr milieu milieu_base milieu 1 The medium associated with the problem.
+// XD  attr constituant constituant constituant 1 Constituent.
 // XD  attr postraitement|Post_processing corps_postraitement postraitement 1 One post-processing (without name).
 // XD  attr postraitements|Post_processings postraitements postraitements 1 List of Postraitement objects (with name).
 // XD  attr liste_de_postraitements liste_post_ok liste_de_postraitements 1 This
@@ -161,8 +162,8 @@ Entree& Probleme_base::readOn(Entree& is)
 void Probleme_base::typer_lire_milieu(Entree& is)
 {
   // NOTA BENE :
-  // Normalement on a un milieu par probleme, sauf si le problem contient un equation de concentration
-  // Dans ce cas, on a un milieu supplimentaire : constituant (faut pas demander pourquoi 2 milieu ... car je sais pas !). a voir si on peut faire mieux ...
+  // Normalement on a un milieu par probleme, sauf si le problem contient une equation de concentration
+  // Dans ce cas, on a un milieu supplementaire : constituant (faut pas demander pourquoi 2 milieu ... car je sais pas !). a voir si on peut faire mieux ...
   int nb_milieu = 1;
 
   // On cherche si c'est un pb avec concentration => avec constituant

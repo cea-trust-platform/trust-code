@@ -926,14 +926,15 @@ convection_diffusion_concentration eqn_base convection_diffusion_concentration -
   attr masse_molaire floattant masse_molaire 1 not_set
   attr alias chaine alias 1 not_set
 pb_hydraulique_concentration Pb_base pb_hydraulique_concentration -1 Resolution of Navier-Stokes/multiple constituent transport equations.
+  attr constituant constituant constituant 1 Constituents.
   attr navier_stokes_standard navier_stokes_standard navier_stokes_standard 1 Navier-Stokes equations.
   attr convection_diffusion_concentration convection_diffusion_concentration convection_diffusion_concentration 1 Constituent transport vectorial equation (concentration diffusion convection).
-  ref constituant constituant
 pb_thermohydraulique_concentration Pb_base pb_thermohydraulique_concentration -1 Resolution of Navier-Stokes/energy/multiple constituent transport equations.
+  attr fluide_incompressible fluide_incompressible fluide_incompressible 0 The fluid medium associated with the problem.
+  attr constituant constituant constituant 1 Constituents.
   attr navier_stokes_standard navier_stokes_standard navier_stokes_standard 1 Navier-Stokes equations.
   attr convection_diffusion_concentration convection_diffusion_concentration convection_diffusion_concentration 1 Constituent transport equations (concentration diffusion convection).
   attr convection_diffusion_temperature convection_diffusion_temperature convection_diffusion_temperature 1 Energy equation (temperature diffusion convection).
-  ref constituant constituant
 darcy source_base darcy 0 Class for calculation in a porous media with source term of Darcy -nu/K*V. This keyword must be used with a permeability model. For the moment there are two models : permeability constant or Ergun\'s law. Darcy source term is available for quasi compressible calculation. A new keyword is aded for porosity (porosite).
   attr bloc bloc_lecture bloc 0 Description.
 forchheimer source_base forchheimer 0 Class to add the source term of Forchheimer -Cf/sqrt(K)*V2 in the Navier-Stokes equations. We must precise a permeability model : constant or Ergun\'s law. Moreover we can give the constant Cf : by default its value is 1. Forchheimer source term is available also for quasi compressible calculation. A new keyword is aded for porosity (porosite).
