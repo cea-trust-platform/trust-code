@@ -122,7 +122,7 @@ void Champ_Face_PolyMAC_P0::update_ve(DoubleTab& val) const
 {
   const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0,zone_vf());
   if (valeurs().get_md_vector() != zone.mdv_ch_face) return; //pas de variables auxiliaires -> rien a faire
-  const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes(), &pf = equation().milieu().porosite_face(), &pe = equation().milieu().porosite_elem();
+  const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes(), *pf = mon_equation_non_nul() ? &equation().milieu().porosite_face() : NULL , *pe = pf ? &equation().milieu().porosite_elem() : NULL;
   const DoubleTab& xp = zone.xp(), &xv = zone.xv();
   const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
   int e, f, j, d, D = dimension, n, N = val.line_size(), ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
@@ -132,7 +132,7 @@ void Champ_Face_PolyMAC_P0::update_ve(DoubleTab& val) const
       for (d = 0; d < D; d++)
         for (n = 0; n < N; n++) val(nf_tot + D * e + d, n) = 0;
       for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
-        for (fac = (e == f_e(f, 0) ? 1 : -1) * pf(f) * fs(f) / (pe(e) * ve(e)), d = 0; d < D; d++)
+        for (fac = (e == f_e(f, 0) ? 1 : -1) * ( pf ? (*pf)(f) : 1.0) * fs(f) / ((pe ? (*pe)(e) : 1.0) * ve(e)), d = 0; d < D; d++)
           for (n = 0; n < N; n++) val(nf_tot + D * e + d, n) += fac * (xv(f, d) - xp(e, d)) * val(f, n);
     }
 }
