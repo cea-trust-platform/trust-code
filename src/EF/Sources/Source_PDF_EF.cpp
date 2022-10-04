@@ -29,6 +29,7 @@
 #include <Interpolation_IBM_mean_gradient.h>
 #include <Interpolation_IBM_hybrid.h>
 #include <Interpolation_IBM_power_law_tbl.h>
+#include <Interpolation_IBM_power_law_tbl_u_star.h>
 #include <Dirichlet.h>
 #include <SFichier.h>
 #include <Navier_Stokes_std.h>
@@ -852,7 +853,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_mean_grad()
 
   vitesse_imposee_mod.echange_espace_virtuel();
 
-  DoubleTrav nb_vois(is_dirichlet);
+  // DoubleTrav nb_vois(is_dirichlet);
   for (int i = 0; i < nb_som; i++)
     {
       if (is_dirichlet(i) > 0.0)
@@ -874,7 +875,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_mean_grad()
                   ArrOfDouble mean_grad(nb_comp);
                   mean_grad = 0.0;
                   int taille = voisins.size();
-                  nb_vois(i) = taille * 1.0 ;
+                  // nb_vois(i) = taille * 1.0 ;
                   int nb_contrib = 0;
                   for (int k = 0; k < taille; k++)
                     {
@@ -1261,6 +1262,262 @@ void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl()
       Cerr<<"histogramme y+ : min = "<<h_yplus_min<<" - mean = "<<h_yplus_mean<<" - max =  "<<h_yplus_max<<finl;
 
       Cerr<<"Moyenne sur "<<yplus_count<<" points"<<finl;
+    }
+}
+
+void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl_u_star()
+{
+  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  int nb_som=zone_EF.zone().nb_som();
+  int nb_comp = dimension;
+  const Domaine& dom = zone_EF.zone().domaine();
+  DoubleTab& vitesse_imposee_mod = modele_lu_.vitesse_imposee_.valeur().valeurs();
+  DoubleTab& vitesse_imposee_calculee = vitesse_imposee_;
+  Interpolation_IBM_power_law_tbl_u_star& interp = ref_cast(Interpolation_IBM_power_law_tbl_u_star,interpolation_lue_.valeur());
+  DoubleTab& is_dirichlet = interp.is_dirichlet_.valeur().valeurs();
+  DoubleTab& solid_points = interp.solid_points_.valeur().valeurs();
+  DoubleTab& solid_elems = interp.solid_elems_.valeur().valeurs();
+  double A_pwl = interp.get_A_pwl();
+  double B_pwl = interp.get_B_pwl();
+  double y_c_p_pwl = interp.get_y_c_p_pwl();
+  int impr_yplus = interp.get_impr() ;
+  DoubleTab& vitesse_inconnue = equation().inconnue().valeur().valeurs();
+
+  ArrOfInt cells(1);
+
+  // operateur(0) : diffusivite
+  if (equation().nombre_d_operateurs()<1)
+    {
+      Cerr << "Source_PDF_EF : nombre_d_operateurs = "<<equation().nombre_d_operateurs()<<" < 1"<<finl;
+      exit();
+    }
+  int flag = 0;
+  const Op_Diff_EF_base& opdiffu = ref_cast(Op_Diff_EF_base,equation().operateur(0).l_op_base());
+  flag = opdiffu.diffusivite().valeurs().dimension(0)>1 ? 1 : 0;
+
+  double eps = 1e-12;
+  double d1_min = 1.0e+10;
+  double d1_max = 0.0;
+  double d1_mean = 0.0;
+  double yplus_min = 1.0e+10;
+  double yplus_max = 0.0;
+  double yplus_mean = 0.0;
+  double u_tau_min = 1.0e+10;
+  double u_tau_max = 0.0;
+  double u_tau_mean = 0.0;
+  double yplus_ref_min = 1.0e+10;
+  double yplus_ref_max = 0.0;
+  double yplus_ref_mean = 0.0;
+  double u_tau_ref_min = 1.0e+10;
+  double u_tau_ref_max = 0.0;
+  double u_tau_ref_mean = 0.0;
+  double h_yplus_min = 1.0e+10;
+  double h_yplus_max = 0.0;
+  double h_yplus_mean = 0.0;
+  int yplus_count=0 ;
+  int yplus_ref_count=0 ;
+
+  int N = interp.get_N_histo();
+  DoubleTab tab_h(1, nb_som);
+  DoubleTab abs_h(1, N+1);
+  DoubleTab compteur_h(1, N);
+  compteur_h = 0.;
+  tab_h = 0.;
+
+  vitesse_imposee_mod.echange_espace_virtuel();
+  // DoubleTrav nb_vois(is_dirichlet);
+
+  for (int i = 0; i < nb_som; i++)
+    {
+      double x = 0.;
+      if (is_dirichlet(i) > 0.0)
+        {
+          int itisok_P = 1;
+          double d1P = 0.0;
+          DoubleTab normaleP(1, nb_comp);
+          double norme_de_la_normaleP= 0.0;
+          //  normal et distance normale au point P
+          for(int j = 0; j < nb_comp; j++)
+            {
+              vitesse_imposee_calculee(i,j) = vitesse_imposee_mod(i,j);
+              x = dom.coord(i,j);
+              double xp = solid_points(i,j);
+              normaleP(0,j) = x - xp;
+              norme_de_la_normaleP += normaleP(0,j)*normaleP(0,j);
+            }
+          norme_de_la_normaleP = sqrt(norme_de_la_normaleP);
+          d1P = norme_de_la_normaleP;
+          for(int j = 0; j < nb_comp; j++) normaleP(0,j) /= norme_de_la_normaleP;
+
+          cells(0) = int(solid_elems(i)); //pour definir la viscosite laminaire
+          double nu = (flag ? opdiffu.diffusivite().valeurs()(cells) : opdiffu.diffusivite().valeurs()(0,0));
+
+          double u_tau = 0.;
+          double y_plus = 0.;
+          if (d1P > eps)
+            //le point P n'est pas sur la frontiere immergee
+            {
+              IntList& voisins = interp.getSommetsVoisinsOf(i);
+              if (!(voisins.est_vide()))
+                // il y a une liste de dof voisins
+                {
+                  DoubleTab mean_u_tau_neighbour(1, nb_comp); // moyenne de u_tau vectoriel sur les dof voisins
+                  mean_u_tau_neighbour = 0.0;
+                  int taille = voisins.size();
+                  // nb_vois(i) = taille * 1.0 ;
+                  double pond_tot = 0.;
+                  double ponderation_k;
+                  for (int k = 0; k < taille; k++)
+                    // boucle sur les dof voisins
+                    {
+                      int num_som = voisins[k];
+                      int itisok = 1;
+                      double d1 = 0.0;
+                      DoubleTab a(1, nb_comp);
+                      DoubleTab b(1, nb_comp);
+                      double norme_a = 0.0;
+                      double norme_b = 0.0;
+
+                      for (int j = 0; j < nb_comp; j++)
+                        {
+                          double xf = dom.coord(num_som,j);
+                          double xpf = solid_points(num_som,j);
+                          d1 += (xf - xpf)*(xf - xpf);
+                          a(0,j) = (xf - x);
+                          b(0,j) = (xf - x)*normaleP(0,j);
+                          norme_a += a(0,j)*a(0,j);
+                          norme_b += b(0,j)*b(0,j);
+                        }
+                      d1 = sqrt(d1);
+                      if ( d1 < eps ) itisok = 0;
+
+                      if ( (norme_a - norme_b) > eps )
+                        ponderation_k = 1/(sqrt(norme_a - norme_b));
+                      else
+                        ponderation_k = 1./eps;
+
+                      double u_tau_ref = 0.;
+                      double y_plus_ref = 0.;
+                      if (itisok)
+                        {
+                          // normale et tangente vitesse vis a vis de normalP
+                          double Vn = 0.;
+                          for(int j = 0; j < nb_comp; j++) Vn += vitesse_inconnue(num_som,j) * normaleP(0,j);
+                          DoubleTab vtf_k(1, nb_comp);
+                          for(int j = 0; j < nb_comp; j++) vtf_k(0, j) = vitesse_inconnue(num_som, j) - Vn * normaleP(0,j);
+                          double norme_vtf_k = 0.;
+                          for(int j = 0; j < nb_comp; j++) norme_vtf_k += vtf_k(0, j)*vtf_k(0,j);
+                          norme_vtf_k = sqrt(norme_vtf_k);
+                          u_tau_ref = pow ( norme_vtf_k , (1/(1+B_pwl)) ) * pow ( A_pwl, (-1/(1+B_pwl)) ) * pow ( d1 , (-B_pwl/(1+B_pwl)) ) * pow ( nu,(B_pwl/(1+B_pwl)) ) ;  // vitesse de frottement power law au point fluide k
+                          y_plus_ref = d1 * u_tau_ref / nu;
+
+                          // On moyenne les vecteurs vitesses de frottement tangents (vis a vis de P) par l'inverse des distances
+                          if (norme_vtf_k > eps)
+                            {
+                              for(int j = 0; j < nb_comp; j++) mean_u_tau_neighbour(0,j) += (u_tau_ref * vtf_k(0, j) / norme_vtf_k) * ponderation_k;
+                              pond_tot += ponderation_k;
+                            }
+                        }
+
+                      if (impr_yplus && itisok)
+                        {
+                          if (y_plus_ref > yplus_ref_max) yplus_ref_max = y_plus_ref;
+                          if (y_plus_ref < yplus_ref_min) yplus_ref_min = y_plus_ref;
+                          yplus_ref_mean += y_plus_ref;
+                          if (u_tau_ref > u_tau_ref_max) u_tau_ref_max = u_tau_ref;
+                          if (u_tau_ref < u_tau_ref_min) u_tau_ref_min = u_tau_ref;
+                          u_tau_ref_mean += u_tau_ref;
+                          yplus_ref_count += 1;
+                        }
+
+                    }
+
+                  // On calcul u_tau moyen, y_plus et la vitesse tangente au point force P
+                  if (pond_tot > 0.)
+                    {
+                      mean_u_tau_neighbour /= pond_tot; // u_tau moyen vectoriel
+                      u_tau = 0. ;
+                      for(int j = 0; j < nb_comp; j++) u_tau += mean_u_tau_neighbour(0,j) * mean_u_tau_neighbour(0,j);
+                      u_tau = sqrt(u_tau); // u_tau = norme de u_tau moyen vectoriel
+                      y_plus = u_tau * d1P / nu;
+
+                      mean_u_tau_neighbour /= u_tau; // tangente en P
+                      double vit_coeff = A_pwl * pow (d1P, B_pwl) / pow (nu, B_pwl);
+                      for (int j = 0; j < nb_comp; j++) vitesse_imposee_calculee(i,j) = pow (u_tau, (1+B_pwl)) * vit_coeff * mean_u_tau_neighbour(0,j);
+                    }
+                  // il n y a pas de contribution des dof voisins
+                  else itisok_P = 0;
+                }
+              else
+                // il n y a pas de liste des dof voisins
+                itisok_P = 0;
+            }
+
+          if(itisok_P)
+            {
+              // pour post-pro
+              tab_u_star_ibm_(i) = u_tau;
+              tab_y_plus_ibm_(i) = y_plus;
+            }
+
+          if (impr_yplus && itisok_P)
+            {
+              if (d1P > d1_max) d1_max = d1P;
+              if (d1P < d1_min) d1_min = d1P;
+              d1_mean +=  d1P;
+              if (y_plus > yplus_max) yplus_max = y_plus;
+              if (y_plus < yplus_min) yplus_min = y_plus;
+              yplus_mean +=  y_plus;
+              if (u_tau > u_tau_max) u_tau_max = u_tau;
+              if (u_tau < u_tau_min) u_tau_min = u_tau;
+              u_tau_mean += u_tau;
+              // Distribution des y+ au voisinage des parois
+              if (y_plus > h_yplus_max) h_yplus_max = y_plus;
+              if (y_plus < h_yplus_min) h_yplus_min = y_plus;
+              h_yplus_mean += y_plus;
+              tab_h(0,yplus_count) = y_plus;
+              yplus_count += 1;
+            }
+        }
+      else
+        {
+          for(int j = 0; j < nb_comp; j++) vitesse_imposee_calculee(i,j) = vitesse_imposee_mod(i,j);
+        }
+    }
+  //vitesse_imposee_calculee.echange_espace_virtuel();
+
+  if (impr_yplus && (yplus_count >= 1) && (yplus_ref_count >= 1) )
+    {
+      d1_mean /= yplus_count;
+      yplus_mean /= yplus_count;
+      yplus_ref_mean /= yplus_ref_count;
+      u_tau_mean /= yplus_count;
+      u_tau_ref_mean /= yplus_ref_count;
+      Cerr<<"min mean max y  = "<<d1_min<<" "<<d1_mean<<" "<<d1_max<<finl;
+      Cerr<<"min mean max y+ = "<<yplus_min<<" "<<yplus_mean<<" "<<yplus_max<<finl;
+      Cerr<<"min mean u_tau = "<<u_tau_min<<" "<<u_tau_mean<<" "<<u_tau_max<<finl;
+      Cerr<<"min mean max y+_ref = "<<yplus_ref_min<<" "<<yplus_ref_mean<<" "<<yplus_ref_max<<finl;
+      Cerr<<"min mean u_tau_ref = "<<u_tau_ref_min<<" "<<u_tau_ref_mean<<" "<<u_tau_ref_max<<finl;
+
+      h_yplus_mean /= yplus_count;
+      double range = ( h_yplus_max - h_yplus_min)/N;
+      for (int k = 0; k < N+1; k++) abs_h(0,k) = (h_yplus_min + k*range);
+      for (int i=0; i < yplus_count; i++)
+        {
+          for (int j = 0; j < N; j++)
+            {
+              if ( abs_h(0,j) < tab_h(0,i) &&  tab_h(0,i) <= abs_h(0,j+1) ) compteur_h(0,j) +=1;
+            }
+        }
+      Cerr<<"histogramme y+ compteur =";
+      for (int j = 0; j < N; j++) Cerr<<" "<<compteur_h(0,j)<<" ";
+      Cerr<<finl;
+      Cerr<<"histogramme y+ abscisse =";
+      for (int j = 0; j < N+1; j++) Cerr<<" "<<abs_h(0,j)<<" ";
+      Cerr<<finl;
+      Cerr<<"histogramme y+ : min = "<<h_yplus_min<<" - mean = "<<h_yplus_mean<<" - max =  "<<h_yplus_max<<finl;
+
+      Cerr<<"Moyenne sur "<<yplus_count<<" points forces et "<<yplus_ref_count<<" points references"<<finl;
     }
 }
 

@@ -13,39 +13,39 @@
 *
 *****************************************************************************/
 
-#ifndef Interpolation_IBM_power_law_tbl_included
-#define Interpolation_IBM_power_law_tbl_included
+#ifndef Interpolation_IBM_power_law_tbl_proto_included
+#define Interpolation_IBM_power_law_tbl_proto_included
 
-#include <Interpolation_IBM_elem_fluid.h>
-#include <Interpolation_IBM_power_law_tbl_proto.h>
-#include <Champ_Don.h>
-#include <Zone.h>
-#include <Param.h>
 
-/*! @brief : class Interpolation_IBM_power_law_tbl
+/*! @brief : class Interpolation_IBM_power_law_tbl_proto
  *
- *  <Description of class Interpolation_IBM_power_law_tbl>
+ *  Pure C++ class to allow multiple inheritance in Interpolation_IBM_power_law_tbl
  *
  *
  *
  */
 
-class Interpolation_IBM_power_law_tbl : public Interpolation_IBM_elem_fluid, public Interpolation_IBM_power_law_tbl_proto
+class Interpolation_IBM_power_law_tbl_proto
 {
 
-  Declare_instanciable( Interpolation_IBM_power_law_tbl ) ;
-
 public :
-
-  inline int get_formulation_linear_pwl()
+  inline double get_A_pwl()
   {
-    return formulation_linear_pwl_;
+    return  A_pwl_;
+  };
+  inline double get_B_pwl()
+  {
+    return  B_pwl_;
+  };
+  inline double get_y_c_p_pwl()
+  {
+    return y_c_p_pwl_;
   };
 
-  void set_param(Param&);
-
 protected :
-  int formulation_linear_pwl_ = 0; // Choix formulation lineaire ou non
+  double A_pwl_ = 8.3;
+  double B_pwl_ = 1./7. ;
+  double y_c_p_pwl_ = 11.81;
 };
 
-#endif /* Interpolation_IBM_power_law_tbl_included */
+#endif /* Interpolation_IBM_power_law_tbl_proto_included */

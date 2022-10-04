@@ -84,6 +84,7 @@ protected:
   virtual void calculer_vitesse_imposee_elem_fluid();
   virtual void calculer_vitesse_imposee_mean_grad();
   virtual void calculer_vitesse_imposee_power_law_tbl();
+  virtual void calculer_vitesse_imposee_power_law_tbl_u_star();
   virtual void rotate_imposed_velocity(DoubleTab&);
   ArrOfDouble get_tuvw_local() const;
   void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;

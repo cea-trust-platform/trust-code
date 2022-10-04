@@ -13,39 +13,35 @@
 *
 *****************************************************************************/
 
-#ifndef Interpolation_IBM_power_law_tbl_included
-#define Interpolation_IBM_power_law_tbl_included
+#ifndef Interpolation_IBM_power_law_tbl_u_star_included
+#define Interpolation_IBM_power_law_tbl_u_star_included
 
-#include <Interpolation_IBM_elem_fluid.h>
+#include <Interpolation_IBM_mean_gradient.h>
 #include <Interpolation_IBM_power_law_tbl_proto.h>
-#include <Champ_Don.h>
-#include <Zone.h>
-#include <Param.h>
+#include <TRUSTLists.h>
 
-/*! @brief : class Interpolation_IBM_power_law_tbl
+/*! @brief : class Interpolation_IBM_power_law_tbl_u_star
  *
- *  <Description of class Interpolation_IBM_power_law_tbl>
+ *  <Description of class Interpolation_IBM_power_law_tbl_u_star>
  *
  *
  *
  */
 
-class Interpolation_IBM_power_law_tbl : public Interpolation_IBM_elem_fluid, public Interpolation_IBM_power_law_tbl_proto
+class Interpolation_IBM_power_law_tbl_u_star : public Interpolation_IBM_mean_gradient, public Interpolation_IBM_power_law_tbl_proto
 {
 
-  Declare_instanciable( Interpolation_IBM_power_law_tbl ) ;
+  Declare_instanciable( Interpolation_IBM_power_law_tbl_u_star ) ;
 
 public :
+  void discretise(const Discretisation_base&, Zone_dis_base& la_zone_EF) override;
 
-  inline int get_formulation_linear_pwl()
+  inline IntList& getSommetsVoisinsOf(int i)
   {
-    return formulation_linear_pwl_;
+    return sommets_voisins_[i];
   };
 
-  void set_param(Param&);
-
 protected :
-  int formulation_linear_pwl_ = 0; // Choix formulation lineaire ou non
 };
 
-#endif /* Interpolation_IBM_power_law_tbl_included */
+#endif /* Interpolation_IBM_power_law_tbl_u_star_included */

@@ -246,6 +246,12 @@ void Source_PDF_base::calculer_vitesse_imposee_power_law_tbl()
   abort();
 }
 
+void Source_PDF_base::calculer_vitesse_imposee_power_law_tbl_u_star()
+{
+  Cerr << "Source_PDF_base: Not implemented for current discretisation. Aborting..." << finl;
+  abort();
+}
+
 void Source_PDF_base::calculer_vitesse_imposee()
 {
   if (interpolation_bool_)
@@ -265,6 +271,10 @@ void Source_PDF_base::calculer_vitesse_imposee()
       else if (interpolation_lue_.valeur().que_suis_je() == "Interpolation_IBM_power_law_tbl")
         {
           calculer_vitesse_imposee_power_law_tbl();
+        }
+      else if (interpolation_lue_.valeur().que_suis_je() == "Interpolation_IBM_power_law_tbl_u_star")
+        {
+          calculer_vitesse_imposee_power_law_tbl_u_star();
         }
     }
 }

@@ -69,6 +69,7 @@ protected:
   void calculer_vitesse_imposee_elem_fluid() override;
   void calculer_vitesse_imposee_mean_grad() override;
   void calculer_vitesse_imposee_power_law_tbl() override;
+  void calculer_vitesse_imposee_power_law_tbl_u_star() override;
   void rotate_imposed_velocity(DoubleTab&) override;
   DoubleTab compute_pond(const DoubleTab&, const DoubleTab&, const DoubleVect&, int&, int&) const ;
   REF(Zone_EF) la_zone_EF;

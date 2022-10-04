@@ -13,39 +13,5 @@
 *
 *****************************************************************************/
 
-#ifndef Interpolation_IBM_power_law_tbl_included
-#define Interpolation_IBM_power_law_tbl_included
-
-#include <Interpolation_IBM_elem_fluid.h>
 #include <Interpolation_IBM_power_law_tbl_proto.h>
-#include <Champ_Don.h>
-#include <Zone.h>
-#include <Param.h>
 
-/*! @brief : class Interpolation_IBM_power_law_tbl
- *
- *  <Description of class Interpolation_IBM_power_law_tbl>
- *
- *
- *
- */
-
-class Interpolation_IBM_power_law_tbl : public Interpolation_IBM_elem_fluid, public Interpolation_IBM_power_law_tbl_proto
-{
-
-  Declare_instanciable( Interpolation_IBM_power_law_tbl ) ;
-
-public :
-
-  inline int get_formulation_linear_pwl()
-  {
-    return formulation_linear_pwl_;
-  };
-
-  void set_param(Param&);
-
-protected :
-  int formulation_linear_pwl_ = 0; // Choix formulation lineaire ou non
-};
-
-#endif /* Interpolation_IBM_power_law_tbl_included */
