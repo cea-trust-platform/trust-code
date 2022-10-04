@@ -361,15 +361,7 @@ check_nvidia_cuda()
    if [ "`$CUDA_NVCC --version 2>/dev/null`" = "" ]
    then
       echo "Error, no nvcc cuda compiler found."
-      echo "On Fedora, for instance you will install CUDA runtime with:"
-      echo "dnf config-manager --add-repo=https://negativo17.org/repos/fedora-nvidia.repo"
-      echo "sudo dnf install nvidia-driver nvidia-driver-cuda cuda cuda-devel akmod-nvidia nvidia-settings cuda-gcc cuda-gcc-c++ cuda-gcc-gfortran cuda-samples"
-      echo "See more there: https://forums.developer.nvidia.com/t/cuda-10-installation-on-fedora-30-with-gcc-9-1-1-20190503/74989/7"
-      exit -1
-   elif [ "`$CUDA_NVCC --version 2>/dev/null | awk -F, '/release/ {gsub("release","",$2);print (1*$2>11.4 ? 1 : 0)}'`" != 0 ]
-   then
-      $CUDA_NVCC --version
-      echo "Error, unsupported nvcc version for AmgX for the moment!" 
+      echo "Load Cuda module or NVidia HPC SDK module or download it."
       exit -1
    fi
    #########################
@@ -649,14 +641,18 @@ case $arch in
 	TRUST_CC_BASE=" crayCC  FCC icpc  armclang++ "$cuda"g++      g++"
 	TRUST_F77_BASE="crayftn frt ifort armflang   "$cuda"gfortran gfortran"
 	TRUST_cc_BASE=" craycc  fc  icc   armclang   "$cuda"gcc      gcc"
-	if [ "$TRUST_USE_OPENMP" = 1 ] && [ "$TRUST_USE_CUDA" = 1 ]
-	then
-    	   # On place les compilateurs NVidia en premier pour l'offloading GPU avec OpenMP. Attention, cartes au dessus de compute_capability 70
+	# On n'utilise pas de compilateurs supportant l'offload OpenMP sur GPU NVidia pour compiler tout le code (trop difficile)
+	# Pour forcer quand meme -c++=nvc++ -cc=nvc -fc=nvfortran (attention necessite compute_capability 70)
+	# Pour forcer quand meme -c++=clang++ -cc=clang (attention necessite de recompiler clang avec driver nvidia)
+	# On vise a utiliser les compilateurs habituels et ne compiler QUE les sources TRUST OpenMP avec les compilos offload OpenMP
+	#if [ "$TRUST_USE_OPENMP" = 1 ] && [ "$TRUST_USE_CUDA" = 1 ]
+	#then
+     # On place les compilateurs NVidia en premier pour l'offloading GPU avec OpenMP. Attention, cartes au dessus de compute_capability 70
 	   # On place ensuite le compilateur clang++ qu'il faut compiler...
-	   TRUST_CC_BASE="nvc++ clang++ "$TRUST_CC_BASE
-    	   TRUST_F77_BASE="nvfortran "$TRUST_F77_BASE
-	   TRUST_cc_BASE="nvc clang "$TRUST_cc_BASE
-	fi
+     #TRUST_CC_BASE="nvc++ clang++ "$TRUST_CC_BASE
+     #TRUST_F77_BASE="nvfortran "$TRUST_F77_BASE
+     #TRUST_cc_BASE="nvc clang "$TRUST_cc_BASE
+	#fi
 	# On rajoute les autres compilateurs
 	TRUST_CC_BASE=$TRUST_CC_BASE" pgCC"
 	TRUST_F77_BASE=$TRUST_F77_BASE" pgf90 f90 pgf77 f77"
@@ -843,7 +839,7 @@ fi
 rm -r $TRUST_ROOT/exec/python/pkgs
 mkdir $TRUST_ROOT/exec/python/pkgs
 # We touch all conda files, otherwise it will be deleted from SCRATCH of clusters (e.g. jean-zay)
-[ "${TRUST_ROOT#*scratch}" != "$TRUST_ROOT" ] && find $TRUST_ROOT/exec/python -exec touch {} +
+[ "${TRUST_ROOT#*scratch/}" != "$TRUST_ROOT" ] && find $TRUST_ROOT/exec/python -exec touch {} +
 # export PATH
 PYTHON_ROOT=$TRUST_ROOT/exec/python/bin
 echo "export PYTHONLIBS_ROOT_DIR=\$TRUST_ROOT/exec/python" >> $env

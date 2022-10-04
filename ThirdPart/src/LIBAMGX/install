@@ -84,6 +84,8 @@ then
    # cmake (meme recent, 3.20) pas foutu de detecter correctement le nvcc du HPC SDK (cannot find -lcudadevrt -lcudart_static):
    if [ "$NVHPC" != "" ] || [ "$NVCOMPILERS" != "" ]
    then
+       # Sur orcus, besoin d'ajouter -L$CUDA_ROOT/../compilers/lib -lnvc -lnvcpumath avec 21.2 (undefined reference __pgi au link...)
+       # echo "$CUDA_ROOT/bin/nvcc -L$CUDA_ROOT/../compilers/lib -lnvc -lnvcpumath -L$CUDA_ROOT/lib64 \$*" > nvcc && chmod +x nvcc && CMAKE_FLAGS=$CMAKE_FLAGS" -DCMAKE_CUDA_COMPILER=`pwd`/nvcc"
        echo "$CUDA_ROOT/bin/nvcc -L$CUDA_ROOT/lib64 \$*" > nvcc && chmod +x nvcc && CMAKE_FLAGS=$CMAKE_FLAGS" -DCMAKE_CUDA_COMPILER=`pwd`/nvcc"
    fi 
    # Configure and build:
