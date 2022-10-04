@@ -481,7 +481,7 @@ void Solv_Petsc::create_solver(Entree& entree)
   if (motlu==accolade_ouverte)
     {
       // Temporaire essayer de faire converger les noms de parametres des differentes solveurs (GCP, GMRES,...)
-      Motcles les_parametres_solveur(29);
+      Motcles les_parametres_solveur(30);
       {
         les_parametres_solveur[0] = "impr";
         les_parametres_solveur[1] = "seuil"; // Seuil absolu (atol)
@@ -512,6 +512,7 @@ void Solv_Petsc::create_solver(Entree& entree)
         les_parametres_solveur[26] = "save_matrix_mtx_format";
         les_parametres_solveur[27] = "reuse_precond";
         les_parametres_solveur[28] = "reduce_ram";
+        les_parametres_solveur[29] = "reorder_matrix";
       }
       option_double omega("omega",amgx_ ? 0.9 : 1.5);
       option_int    level("level",1);
@@ -893,6 +894,10 @@ void Solv_Petsc::create_solver(Entree& entree)
             case 28:
               reduce_ram_ = true;
               break;
+            case 29:
+              is >> flag;
+              reorder_matrix_ = (bool)flag;
+              break;
             default:
               {
                 Cerr << motlu << " : unrecognized option from those available in the Petsc solver:" << finl;
@@ -919,7 +924,7 @@ void Solv_Petsc::create_solver(Entree& entree)
         les_precond[3] = "EISENSTAT";          // Symetric Successive Over Relaxation avec Eiseinstat trick
         les_precond[4] = "SPAI";               // Sparse Approximate Inverse
         les_precond[5] = "PILUT";              // Dual-threshold incomplete LU factorisation
-        les_precond[6] = "DIAG";               // Diagonal precondtioner
+        les_precond[6] = "DIAG|JACOBI";        // Diagonal (Jacobi) precondtioner
         les_precond[7] = "BOOMERAMG";          // Multigrid preconditioner
         les_precond[8] = "BLOCK_JACOBI_ICC";   // Block Jacobi ICC preconditioner (code dans PETSc, optimise)
         les_precond[9] = "BLOCK_JACOBI_ILU";   // Block Jacobi ILU preconditioner (code dans PETSc, optimise)
@@ -1643,6 +1648,11 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
   VecAssemblyEnd(SecondMembrePetsc_);
   VecAssemblyBegin(SolutionPetsc_);
   VecAssemblyEnd(SolutionPetsc_);
+  if (reorder_matrix_)
+    {
+      VecPermute(SecondMembrePetsc_, colperm, PETSC_FALSE);
+      VecPermute(SolutionPetsc_, colperm, PETSC_FALSE);
+    }
   if (verbose) Cout << "[Petsc] Time to update vectors: \t" << Statistiques::get_time_now() - start << finl;
 
 //  VecView(SecondMembrePetsc_,PETSC_VIEWER_STDOUT_WORLD);
@@ -1720,9 +1730,10 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
       double residu_relatif=(residu[0]>0?residu[nbiter]/residu[0]:residu[nbiter]);
       Cout << finl << "Final residue: " << residu[nbiter] << " ( " << residu_relatif << " )"<<finl;
     }
-
   // Recuperation de la solution
   start = Statistiques::get_time_now();
+  if (reorder_matrix_)
+    VecPermute(SolutionPetsc_, rowperm, PETSC_TRUE);
   // ToDo un seul VecGetValues comme VecSetValues
   if (different_partition_)
     {
@@ -1867,6 +1878,9 @@ void Solv_Petsc::check_aij(const Matrice_Morse& mat)
   // Matrice non symetrique, on utilise le format aij et non sbaij:
   if (!matrice_symetrique_) mataij_=1;
 
+  // Matrice reordonee necessite le format aij
+  if (reorder_matrix_) mataij_=1;
+
   // Je n'arrive pas a faire marcher le stockage symetrique avec le preconditionneur PCEISENSTAT
   // qui est interessant car necessite 2 fois moins d'operations que le SSOR
   if (type_pc_==PCEISENSTAT) mataij_=1;
@@ -1950,6 +1964,9 @@ void Solv_Petsc::Create_objects(const Matrice_Morse& mat, int blocksize)
   if (matrice_symetrique_ && (type_pc_=="hypre" || type_pc_=="spai")) */
   if (matrice_symetrique_ && type_pc_ == "hypre")
     preconditionnement_non_symetrique_ = 1;
+  if (mataij_==1) preconditionnement_non_symetrique_ = 0;
+
+
 
   if (preconditionnement_non_symetrique_)
     Create_MatricePetsc(MatricePrecondionnementPetsc, 1, mat);
@@ -1976,7 +1993,6 @@ void Solv_Petsc::Create_objects(const Matrice_Morse& mat, int blocksize)
      Cerr << min_nb_rows << " " << max_nb_rows << " " << min_new_nb_rows << " " << max_new_nb_rows << finl;
   }
   */
-
   /*****************************************************************************/
   /* Changement du preconditionneur pour profiter de la symetrie de la matrice */
   /*****************************************************************************/
@@ -2517,6 +2533,17 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
 
   // Fill the matrix
   Solv_Petsc::Update_matrix(MatricePetsc, mat_morse);
+
+  // Reorder the matrix
+  if (reorder_matrix_)
+    {
+      Mat Aperm;
+      MatOrderingType ordering = MATORDERINGRCM;
+      MatGetOrdering(MatricePetsc_, ordering, &rowperm, &colperm);
+      MatPermute(MatricePetsc_, rowperm, colperm, &Aperm);
+      MatDestroy(&MatricePetsc_);
+      MatricePetsc_ = Aperm;
+    }
 }
 
 void Solv_Petsc::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse)

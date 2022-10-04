@@ -75,7 +75,7 @@ fluide_incompressible {
 Navier_Stokes_standard
     {
         # Solveur_Pression Petsc GCP { seuil 1.e-10 precond pilut { level 20 epsilon 0.01 } impr } #
-        Solveur_Pression Petsc GCP { seuil 1.e-10 precond ssor { omega 1.65 } impr }
+        Solveur_Pression Petsc GCP { seuil 1.e-10 precond ssor { omega 1.65 } impr reorder_matrix 1 }
         convection { muscl }
         diffusion  { }
 

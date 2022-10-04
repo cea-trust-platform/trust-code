@@ -157,6 +157,8 @@ protected :
   bool clean_matrix_;
   bool reduce_ram_;
   bool verbose = false; // Timing
+  bool reorder_matrix_;
+  IS rowperm = NULL, colperm = NULL;
 };
 
 #define NB_IT_MAX_DEFINED 10000
@@ -243,6 +245,7 @@ inline void Solv_Petsc::initialize()
   rebuild_matrix_ = false;
   allow_realloc_ = true;
   clean_matrix_ = true;
+  reorder_matrix_ = false;
   reduce_ram_ = false;
   if (instance==-1)
     {
