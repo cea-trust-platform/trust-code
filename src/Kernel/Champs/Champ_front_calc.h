@@ -58,6 +58,8 @@ public:
 protected :
   REF(Champ_Inc_base) l_inconnue;          // L'inconnue du probleme oppose
   Nom nom_autre_bord_,nom_autre_pb_;       // Nom du bord et du probleme oppose
+  Motcle nom_inco_;
+  bool via_readon_ = false;
   int distant_;                            // par defaut distant_ vaut 1
 };
 

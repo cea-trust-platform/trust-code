@@ -13,13 +13,13 @@
 *
 *****************************************************************************/
 
-#include <Champ_front_calc.h>
-#include <Interprete.h>
-#include <Equation_base.h>
-#include <Probleme_Couple.h>
-#include <Frontiere_dis_base.h>
-#include <Probleme_base.h>
 #include <Raccord_distant_homogene.h>
+#include <Frontiere_dis_base.h>
+#include <Champ_front_calc.h>
+#include <Probleme_Couple.h>
+#include <Equation_base.h>
+#include <Probleme_base.h>
+#include <Interprete.h>
 #include <Domaine.h>
 #include <Zone_VF.h>
 
@@ -27,11 +27,6 @@ Implemente_instanciable_sans_constructeur(Champ_front_calc,"Champ_front_calc",Ch
 
 Champ_front_calc::Champ_front_calc() { set_distant(1); }
 
-/*! @brief NE FAIT RIEN
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Champ_front_calc::printOn(Sortie& os) const { return os; }
 
 /*! @brief Lit le nom d'un probleme, le nom d'un bord et le nom d'un champ inconnue a partir d'un flot d'entree.
@@ -45,9 +40,9 @@ Sortie& Champ_front_calc::printOn(Sortie& os) const { return os; }
  */
 Entree& Champ_front_calc::readOn(Entree& is)
 {
-  Motcle nom_inco;
-  is >> nom_autre_pb_ >> nom_autre_bord_ >> nom_inco;
-  creer(nom_autre_pb_, nom_autre_bord_, nom_inco);
+  is >> nom_autre_pb_ >> nom_autre_bord_ >> nom_inco_;
+  via_readon_ = true;
+  (nom_inco_ == "VITESSE") ? fixer_nb_comp(dimension) : fixer_nb_comp(1);
   return is;
 }
 
@@ -94,6 +89,9 @@ void Champ_front_calc::creer(const Nom& nom_pb, const Nom& nom_bord, const Motcl
 
 int Champ_front_calc::initialiser(double temps, const Champ_Inc_base& inco)
 {
+  // 1er chose a faire : la c'est bon ! on creer le champ
+  if (via_readon_) creer(nom_autre_pb_, nom_autre_bord_, nom_inco_);
+
   Ch_front_var_instationnaire_dep::initialiser(temps, inco);
 
   // Check/initialize Raccord boundaries in parallel:
