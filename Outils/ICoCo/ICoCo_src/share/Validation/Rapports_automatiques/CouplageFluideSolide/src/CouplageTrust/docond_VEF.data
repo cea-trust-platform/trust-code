@@ -72,34 +72,12 @@ trianguler_fin dom_fluide
 
 VEFPreP1B dis
 
-Fluide_Incompressible fluide
-Read fluide
-{
-    mu Champ_Uniforme 1 0.002
-    rho Champ_Uniforme 1 2.
-    lambda Champ_Uniforme 1 2.0
-    Cp Champ_Uniforme 1 1000.
-    beta_th Champ_Uniforme 1 0.0001
-}
 
-Solide sol
-Read sol
-{
-    rho Champ_Uniforme 1 1000.
-    lambda Champ_Uniforme 1 250.
-    Cp Champ_Uniforme 1 100.
-}
 
-Champ_Uniforme gravite
-Read gravite 2 0 -9.81
-Associate sol gravite
-Associate fluide gravite
 
 Associate pb1 dom_solide
-Associate pb1 sol
 
 Associate pb2 dom_fluide
-Associate pb2 fluide
 
 Probleme_Couple pbc
 Associate pbc pb1
@@ -109,7 +87,15 @@ Discretize pbc dis
 
 Read pb1
 {
-    Conduction
+
+   solide {
+        gravite champ_uniforme 2 0 -9.81
+       rho Champ_Uniforme 1 1000.
+       lambda Champ_Uniforme 1 250.
+       Cp Champ_Uniforme 1 100.
+   }
+   
+       Conduction
     {
         diffusion { }
         initial_conditions {
@@ -143,7 +129,17 @@ Read pb1
 
 Read pb2
 {
-    Navier_Stokes_standard
+
+   fluide_incompressible {
+        gravite champ_uniforme 2 0 -9.81
+       mu Champ_Uniforme 1 0.002
+       rho Champ_Uniforme 1 2.
+       lambda Champ_Uniforme 1 2.0
+       Cp Champ_Uniforme 1 1000.
+       beta_th Champ_Uniforme 1 0.0001
+   }
+   
+       Navier_Stokes_standard
     {
         solveur_pression cholesky { }
         solveur_pression petsc cholesky { }
@@ -210,3 +206,4 @@ Read pb2
 }
 Solve pbc
 End
+ 

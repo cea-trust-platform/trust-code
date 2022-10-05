@@ -43,29 +43,26 @@ trianguler_fin dom_fluide
 
 VEFPreP1B dis
 
-Fluide_Incompressible fluide
-Read fluide
-{
-    mu Champ_Uniforme 1 0.002
-    rho Champ_Uniforme 1 2.
-    lambda Champ_Uniforme 1 2.0
-    Cp Champ_Uniforme 1 1000.
-    beta_th Champ_Uniforme 1 0.0001
-}
 
-Champ_Uniforme gravite
-Read gravite 2 0 -9.81
-Associate fluide gravite
 
 Associate pb2 dom_fluide
-Associate pb2 fluide
 
 Associate pb2 sch
 Discretize pb2 dis
 
 Read pb2
 {
-    Navier_Stokes_standard
+
+   fluide_incompressible {
+        gravite champ_uniforme 2 0 -9.81
+       mu Champ_Uniforme 1 0.002
+       rho Champ_Uniforme 1 2.
+       lambda Champ_Uniforme 1 2.0
+       Cp Champ_Uniforme 1 1000.
+       beta_th Champ_Uniforme 1 0.0001
+   }
+   
+       Navier_Stokes_standard
     {
         solveur_pression cholesky { }
         solveur_pression petsc cholesky { }
@@ -148,3 +145,4 @@ Read pb2
 
 # Solve pb2 #
 End
+ 

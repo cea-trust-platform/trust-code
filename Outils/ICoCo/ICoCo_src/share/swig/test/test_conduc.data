@@ -59,26 +59,20 @@ Read sch0
   }
 
 
-solide sol 
-Read sol
-  { 
-    rho uniform_field  1 7800. 
-    cp uniform_field  1 500.
-    lambda champ_fonc_xyz dom 1 15.
-  }
-Read sol
-  { 
-    rho uniform_field  1 1.e-0
-    cp uniform_field  1 500.
-    lambda champ_fonc_xyz dom 1 15.
-  }
+
 pb_conduction pb 
 Associate pb dom
 Associate pb sch
-Associate pb sol
 discretize pb dis
 Read pb
   { 
+   solide   {  
+       rho uniform_field  1 1.e-0
+       cp uniform_field  1 500.
+       lambda champ_fonc_xyz dom 1 15.
+     }
+   
+   
     conduction 
       {
 				equation_non_resolue input_int_value { nom non_resolue probleme pb initial_value 0 }
@@ -131,3 +125,4 @@ Read pb
 end 
 resoudre pb
 
+ 

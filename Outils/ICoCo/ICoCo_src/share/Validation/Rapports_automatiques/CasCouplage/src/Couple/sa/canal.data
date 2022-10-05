@@ -20,28 +20,27 @@ Scatter canal.Zones canal
 
 VEFpreP1B dis
 
-Fluide_Incompressible Eau
-Read Eau
-{
-        mu Champ_Uniforme 1 1e-04
-        lambda  Champ_Uniforme 1 1.e-9
-        rho Champ_Uniforme 1 1000
-        Cp Champ_Uniforme 1 5000.
-        beta_th Champ_Uniforme 1 0.
-}
 
 
 Pb_Hydraulique pb
 Probleme_Couple pb_ch
 Associate pb_ch pb
 Associate pb canal
-Associate pb Eau
 Associate pb_ch sch
 Discretize pb_ch dis
 
 Read pb
 {
- Navier_Stokes_standard
+
+   fluide_incompressible {
+            mu Champ_Uniforme 1 1e-04
+           lambda  Champ_Uniforme 1 1.e-9
+           rho Champ_Uniforme 1 1000
+           Cp Champ_Uniforme 1 5000.
+           beta_th Champ_Uniforme 1 0.
+   }
+   
+    Navier_Stokes_standard
  {
        methode_calcul_pression_initiale avec_les_cl
        # Two pressure solvers to let a chance for a run w/o PETSc -- see prepare #
@@ -89,3 +88,4 @@ Post_processings
 }
 sauvegarde binaire test.sauv
 }
+ 
