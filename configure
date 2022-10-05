@@ -264,7 +264,7 @@ echo "[-force_provided_openmpi]         Use the provided OpenMPI `awk -F= '/defa
 echo "[-force_latest_openmpi]           Download and use the OpenMPI `awk -F= '/latest_version=/ {print $2}' ThirdPart/src/LIBMPI/Installer_openmpi` version (default with -cuda)."
 echo "[-force_system_mpi]               Use the system-provided MPI library."
 echo "[-force_even_unsupported]         Force the configure even the compiler/OS is not supported."
-echo "[-cuda]                           Activate the CUDA support into several libraries for GPU computing (experimental). It activates OpenMP support."
+echo "[-cuda[=path to nvcc]]            Activate the CUDA support into several libraries for GPU computing (experimental)."
 echo "[-enable-rocalution]              Install rocALUTION library for GPU computing on AMD Radeon (experimental)"
 echo "[-openmp]                         Enable OpenMP support (use of threaded BLAS like Mkl or OpenBlas and build PETSc with OpenMP support."
 echo "[-disable-petsc]                  Disable PETSc library installation."
@@ -452,6 +452,7 @@ do
    elif [ "${1#-cuda}" != "$1" ]
    then
       export TRUST_USE_CUDA=1
+      CUDA_NVCC=${1#-cuda=} && [ -f $CUDA_NVCC ] && export PATH=`dirname $CUDA_NVCC`:$PATH
 
    elif [ "${1#-enable-rocalution}" != "$1" ]
    then
