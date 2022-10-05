@@ -28,16 +28,16 @@ Soit environ 1000 octets/maille (Resolution avec gradient conjugue).
 <HR><h1>Performances TRUST sur differents GPU</h1><HR>
 Comparaison temps calcul (donne par la balise clock: Total execution) sur test gpu_3D (125000 mailles):
 -------------------------------------------------------------------------------------------------------
-Arch  Model  PhysicalCores@frequency    GPU/Cuda/Mem   	Processor     1MPI+1GPU	Machine                 (Compiler version)         2MPI+1GPU 2GPU 	TestCase version  1MPI (Petsc)
-Linux x86_64 	2*64@1.5-3.5Ghz	     4*A100/11.2/320Go	AMD Epyc 7763	10.5s	topaze.ccc.cea.fr	(g++ 8.3.0, OpenMPI 4.0.5)	 7.8 12.0 	gpu_3D   v1.8.3
-Linux x86_64	2*20@2.5-3.9Ghz	     4*V100/10.2/64Go	Xeon Gold 6248	14.4s	jean-zay1.idris.fr 	(g++ 8.3.1, OpenMPI 4.0.2-cuda) 11.2 14.1 	gpu_3D   v1.8.3   	 # GPU direct non active 
-Linux x86_64	2*24@2.4-4.0Ghz	     4*A100/11.2/160Go	Xeon Gold 6240	15.0s	jean-zay1.idris.fr 	(g++ 8.3.1, OpenMPI 4.0.5-cuda) 16.6 23.2 	gpu_3D   v1.8.3   ???.?s # A100 Tres decevant sur JeanZay
-Linux x86_64	2*20@2.5-3.9Ghz	     4*V100/11.2/64Go	Xeon Gold 6248	16.5s	jean-zay1.idris.fr 	(g++ 8.3.1, OpenMPI 4.0.5-cuda) ??.? ??.? 	gpu_3D   v1.8.3   159.8s # Moins bien avec Cuda 11?
-Linux x86_64	2*16@2.1-2.7Ghz	     2*V100/11.1/32Go	AMD Epyc 7281	16.9s	orcus-amd.intra.cea.fr 	(g++ 9.1.0, OpenMPI 3.1.4)    	??.? 14.6       gpu_3D   v1.8.3
-Linux x86_64     1*?@2.9-?.?Ghz	    6*RTX2060/11.2    	Xeon i5-9400F    60.3s	pc fixe (wsl2)   (g++ 9.3.0, OpenMPI 4.1.0-cuda)	    		gpu_3D   v1.8.3
-Linux x86_64 	2*64@2.5-3.3Ghz	     4*V100/10.2/64Go	AMD Epyc 7502	17.9s	irene-amd.ccc.cea.fr	(g++ 8.3.1, OpenMPI 4.0.2)	12.4 15.2	gpu_3D   v1.8.3	  138.2s
-Linux x86_64	 1*6@2.9-4.1Ghz	  1*RTX2060/11.2/6Go	Xeon i5-9400F	50.4s	pc fixe	(wsl2)		(g++ 9.3.0, OpenMPI 4.1.0-cuda) 42.5  --	gpu_3D	 v1.8.3	  126.8S		
-Linux x86_64     1*8@3.0-4.7Ghz      1*P400/11.0/2Go	Xeon i7-9700    64.4s	is242981.intra.cea.fr   (g++ 10.0.1,OpenMPI 4.1.0-cuda)	63.7  --	gpu_3D   v1.8.3	  101.8s
+Arch  Model     GPU/Cuda/Mem   		   SP/DP/BW      1MPI+1GPU	Machine                 (Compiler version) 	   2MPI+1GPU 2GPU 	TestCase version Processor PhysicalCores@freq 	1MPI (Petsc)
+Linux x86_64 	4*A100/11.2/320Go	19.5/9.7/2039		10.5s	topaze.ccc.cea.fr	(g++ 8.3.0, OpenMPI 4.0.5)	 7.8 12.0 	gpu_3D   v1.8.3	AMD Epyc 7763 	2*64@1.5-3.5Ghz
+Linux x86_64	4*V100/10.2/64Go				14.4s	jean-zay1.idris.fr 	(g++ 8.3.1, OpenMPI 4.0.2-cuda) 11.2 14.1 	gpu_3D   v1.8.3 Xeon Gold 6248 	2*20@2.5-3.9Ghz  	 # GPU direct non active 
+Linux x86_64	4*A100/11.2/160Go				15.0s	jean-zay1.idris.fr 	(g++ 8.3.1, OpenMPI 4.0.5-cuda) 16.6 23.2 	gpu_3D   v1.8.3 Xeon Gold 6240 	2*24@2.4-4.0Ghz	???.?s # A100 Tres decevant sur JeanZay
+Linux x86_64	4*V100/11.2/64Go				16.5s	jean-zay1.idris.fr 	(g++ 8.3.1, OpenMPI 4.0.5-cuda) ??.? ??.? 	gpu_3D   v1.8.3 Xeon Gold 6248 	2*20@2.5-3.9Ghz	159.8s # Moins bien avec Cuda 11?
+Linux x86_64	2*V100-PCIE/11.2/32Go	 7.0/14.1/897		15.7s	orcus-amd.intra.cea.fr 	(g++ 9.1.0, OpenMPI 3.1.4)    	??.? 15.1       gpu_3D   v1.9.0 AMD Epyc 7281 	2*16@2.1-2.7Ghz	
+Linux x86_64	1*RTX5000/11.1/16Go	11.0/0.38/448 		21.9s   is240831.intra.cea.fr   (g++ 7.5.0, OpenMPI 4.1.0-cuda)	17.2 --		gpu_3D   v1.9.0	Xeon Bronze3106 1*16@1.7Ghz  	238.6s
+Linux x86_64	4*V100/10.2/64Go				17.9s	irene-amd.ccc.cea.fr	(g++ 8.3.1, OpenMPI 4.0.2)	12.4 15.2	gpu_3D   v1.8.3	AMD Epyc 7502 	2*64@2.5-3.3Ghz	138.2s
+Linux x86_64	1*RTX2060/11.2/6Go	 6.4/0.20/336		50.4s	pc fixe	(wsl2)		(g++ 9.3.0, OpenMPI 4.1.0-cuda) 42.5 --		gpu_3D	 v1.8.3	Xeon i5-9400F 	1*6@2.9-4.1Ghz 	126.8S		
+Linux x86_64    1*P400/11.0/2Go	 	 0.6/0.02/32   		64.4s	is242981.intra.cea.fr   (g++ 10.0.1,OpenMPI 4.1.0-cuda)	63.7 --		gpu_3D   v1.8.3	Xeon i7-9700 	1*8@3.0-4.7Ghz 	101.8s
 
 <HR><h1>Performances TRUST sur differentes machines</h1><HR>
 Comparaison temps calcul (donne par la balise clock: Total execution) sur test cpu_3D (125000 mailles):			

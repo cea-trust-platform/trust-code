@@ -967,30 +967,34 @@ do
 	 echo Kernel_Gmsh2Trio_U >> liste_cherche 
 	 [ "${HOST:0:6}" != cobalt ] && [ "${HOST:0:8}" != is233136 ] && echo Extrait_plan >> liste_cherche # Test provisoire : en attente d une solution via SLURM
 	 # Test MED_COUPLING_PYTHON
-         echo Lata_conversion_scripts_jdd1 >> liste_cherche
-         echo MED_major_jdd1 >> liste_cherche
-         # GPU
-         echo "PETSC_CUDA PETSC_AMGX gpu_3D" > liste_cherche_gpu
+	 echo Lata_conversion_scripts_jdd1 >> liste_cherche
+	 echo MED_major_jdd1 >> liste_cherche
+	 # CUDA
+	 trust -search amgx
+	 mv liste_cherche liste_cherche_gpu
+	 trust -search petsc_gpu
+	 cat liste_cherche >> liste_cherche_gpu
+	 echo PETSC_CUDA >> liste_cherche_gpu
 	 # Ensuite selon les options, on affine:
 	 teste=0
 	 if [ "`$TRUST_ROOT/bin/admin/liste_machines "\-without_run" | grep ^$HOST_BUILD"\."`" ]
 	 then
-            NUM=cpu_3D
+	    NUM=cpu_3D
 	 elif [ "`$TRUST_ROOT/bin/admin/liste_machines "\-seq" | grep ^$HOST_BUILD"\."`" ]
 	 then
-            [ $NUIT = 1 ] || [ $teste = 1 ] && NUM=liste_cherche && cherche.ksh PARALLEL@NOT      
+	    [ $NUIT = 1 ] || [ $teste = 1 ] && NUM=liste_cherche && cherche.ksh PARALLEL@NOT      
 	 elif [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable " | grep ^$HOST_BUILD"\."`" ]
 	 then
 	    [ $NUIT = 1 ] && NUM=0
 	 elif [ "`$TRUST_ROOT/bin/admin/liste_machines "\-all" | grep ^$HOST_BUILD"\."`" ]
 	 then
-            [ $NUIT = 1 ] || [ $teste = 1 ] && NUM=0
-         elif [ "`$TRUST_ROOT/bin/admin/liste_machines "\-limited_seq" | grep ^$HOST_BUILD"\."`" ]
-         then
+	    [ $NUIT = 1 ] || [ $teste = 1 ] && NUM=0
+	 elif [ "`$TRUST_ROOT/bin/admin/liste_machines "\-limited_seq" | grep ^$HOST_BUILD"\."`" ]
+	 then
 	    [ $NUIT = 1 ] || [ $teste = 1 ] && NUM=Th_Axi
 	 elif [ "`$TRUST_ROOT/bin/admin/liste_machines "\-limited" | grep ^$HOST_BUILD"\."`" ]
 	 then
-            [ $NUIT = 1 ] || [ $teste = 1 ] && NUM=cpu_3D
+	    [ $NUIT = 1 ] || [ $teste = 1 ] && NUM=cpu_3D
 	 elif [ "`$TRUST_ROOT/bin/admin/liste_machines "\-cuda" | grep ^$HOST_BUILD"\."`" ]
 	 then
 	    [ $NUIT = 1 ] || [ $teste = 1 ] && NUM=liste_cherche_gpu
@@ -1008,7 +1012,7 @@ do
 	 # On efface le CR
 	 CR_TESTS=$TRUST_TMP/tests/.tests_`basename $lance_test_exec`
 	 rm -f $CR_TESTS
-         echo "--------------------------------------------------------" 
+	 echo "--------------------------------------------------------" 
 	 echo "Start of launch $MODULE tests on $HOST_BUILD with `basename $lance_test_exec` at `date`..."
 	 echo "echo $NUM | lance_test $lance_test_exec"
 	 echo $NUM | lance_test $lance_test_exec 1>lance_test.log 2>&1
