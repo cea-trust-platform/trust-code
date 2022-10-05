@@ -14,41 +14,20 @@
 *****************************************************************************/
 
 #include <Extraire_surface.h>
-#include <Domaine.h>
-#include <Param.h>
 #include <Probleme_base.h>
 #include <Equation_base.h>
-#include <Zone_VF.h>
 #include <NettoieNoeuds.h>
 #include <Parser_U.h>
+#include <Domaine.h>
+#include <Zone_VF.h>
+#include <Param.h>
 
 Implemente_instanciable(Extraire_surface,"Extraire_surface",Interprete_geometrique_base);
 
-/*! @brief Simple appel a: Interprete::printOn(Sortie&)
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Extraire_surface::printOn(Sortie& os) const
-{
-  return Interprete::printOn(os);
-}
+Sortie& Extraire_surface::printOn(Sortie& os) const { return Interprete::printOn(os); }
 
-/*! @brief Simple appel a: Interprete::readOn(Entree&)
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& Extraire_surface::readOn(Entree& is)
-{
-  return Interprete::readOn(is);
-}
+Entree& Extraire_surface::readOn(Entree& is) { return Interprete::readOn(is); }
 
-/*! @brief Fonction principale de l'interprete.
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree
- */
 Entree& Extraire_surface::interpreter_(Entree& is)
 {
   Nom nom_pb;
@@ -84,13 +63,12 @@ Entree& Extraire_surface::interpreter_(Entree& is)
       exit();
     }
   Probleme_base& pb=ref_cast(Probleme_base, objet(nom_pb));
-  const Zone_VF& zone_vf=ref_cast(Zone_VF,pb.equation(0).zone_dis().valeur());
+  const Zone_VF& zone_vf=ref_cast(Zone_VF,pb.domaine_dis().zone_dis(0).valeur());
   const Domaine& domaine_volumique = zone_vf.zone().domaine();
 
   extraire_surface(domaine_surfacique,domaine_volumique,nom_domaine_surfacique,zone_vf,expr_elements,expr_faces,avec_les_bords,noms_des_bords);
 
   return is;
-
 }
 
 void calcul_normal(const ArrOfDouble& origine,const ArrOfDouble& point1, const ArrOfDouble& point2,ArrOfDouble& normal);
@@ -326,14 +304,3 @@ void Extraire_surface::extraire_surface(Domaine& domaine_surfacique,const Domain
   assert(nb==nb_t);
   NettoieNoeuds::nettoie(domaine_surfacique);
 }
-
-
-
-
-
-
-
-
-
-
-

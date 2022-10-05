@@ -14,32 +14,20 @@
 *****************************************************************************/
 
 #include <Extraire_domaine.h>
-#include <Domaine.h>
-#include <Param.h>
 #include <Probleme_base.h>
 #include <Equation_base.h>
-#include <Zone_VF.h>
 #include <NettoieNoeuds.h>
-#include <Parser_U.h>
-#include <Scatter.h>
 #include <Sous_Zone.h>
+#include <Parser_U.h>
+#include <Zone_VF.h>
+#include <Domaine.h>
+#include <Scatter.h>
+#include <Param.h>
 
 Implemente_instanciable(Extraire_domaine,"Extraire_Domaine",Interprete_geometrique_base);
 
-Sortie& Extraire_domaine::printOn(Sortie& os) const
-{
-  return Interprete::printOn(os);
-}
-Entree& Extraire_domaine::readOn(Entree& is)
-{
-  return Interprete::readOn(is);
-}
-
-
-
-
-
-
+Sortie& Extraire_domaine::printOn(Sortie& os) const { return Interprete::printOn(os); }
+Entree& Extraire_domaine::readOn(Entree& is) { return Interprete::readOn(is); }
 
 Entree& Extraire_domaine::interpreter_(Entree& is)
 {
@@ -78,7 +66,7 @@ Entree& Extraire_domaine::interpreter_(Entree& is)
       exit();
     }
   Probleme_base& pb=ref_cast(Probleme_base, objet(nom_pb));
-  const Zone_VF& zone_vf=ref_cast(Zone_VF,pb.equation(0).zone_dis().valeur());
+  const Zone_VF& zone_vf=ref_cast(Zone_VF,pb.domaine_dis().zone_dis(0).valeur());
   dom.les_sommets()=zone_vf.zone().domaine().les_sommets();
   //const DoubleTab& coord=dom.les_sommets();
   Zone zone__;
@@ -229,11 +217,8 @@ Entree& Extraire_domaine::interpreter_(Entree& is)
   zone.type_elem().associer_zone(zone);
   zone.fixer_premieres_faces_frontiere();
 
-
-
   assert(nb==nb_t);
   NettoieNoeuds::nettoie(dom);
 
   return is;
-
 }

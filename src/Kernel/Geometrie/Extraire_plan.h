@@ -13,10 +13,6 @@
 *
 *****************************************************************************/
 
-
-
-
-
 #ifndef Extraire_plan_included
 #define Extraire_plan_included
 
@@ -36,4 +32,5 @@ class Extraire_plan : public Interprete_geometrique_base
 public :
   Entree& interpreter_(Entree&) override;
 };
-#endif
+
+#endif /* Extraire_plan_included */

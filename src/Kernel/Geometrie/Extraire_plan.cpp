@@ -13,39 +13,22 @@
 *
 *****************************************************************************/
 
-#include <Extraire_plan.h>
-#include <Domaine.h>
-#include <Param.h>
+#include <Extraire_surface.h>
 #include <Probleme_base.h>
+#include <Extraire_plan.h>
 #include <Equation_base.h>
-#include <Zone_VF.h>
 #include <NettoieNoeuds.h>
+#include <Zone_VF.h>
 #include <EChaine.h>
 #include <SChaine.h>
-#include <Extraire_surface.h>
+#include <Domaine.h>
+#include <Param.h>
 
 Implemente_instanciable(Extraire_plan,"Extraire_plan",Interprete_geometrique_base);
 
-/*! @brief Simple appel a: Interprete::printOn(Sortie&)
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Extraire_plan::printOn(Sortie& os) const
-{
-  return Interprete::printOn(os);
-}
+Sortie& Extraire_plan::printOn(Sortie& os) const { return Interprete::printOn(os); }
 
-/*! @brief Simple appel a: Interprete::readOn(Entree&)
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& Extraire_plan::readOn(Entree& is)
-{
-  return Interprete::readOn(is);
-}
-
+Entree& Extraire_plan::readOn(Entree& is) { return Interprete::readOn(is); }
 
 void calcul_normal(const ArrOfDouble& origine,const ArrOfDouble& point1, const ArrOfDouble& point2,ArrOfDouble& normal)
 {
@@ -61,13 +44,6 @@ void calcul_normal_norme(const ArrOfDouble& org,const ArrOfDouble& point1, const
   normal/=norme_array(normal);
 }
 
-
-
-/*! @brief Fonction principale de l'interprete.
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree
- */
 Entree& Extraire_plan::interpreter_(Entree& is)
 {
   Nom nom_pb;
@@ -191,7 +167,7 @@ Entree& Extraire_plan::interpreter_(Entree& is)
       exit();
     }
   Probleme_base& pb=ref_cast(Probleme_base, objet(nom_pb));
-  const Zone_VF& zone_vf=ref_cast(Zone_VF,pb.equation(0).zone_dis().valeur());
+  const Zone_VF& zone_vf=ref_cast(Zone_VF,pb.domaine_dis().zone_dis(0).valeur());
   dom.les_sommets()=zone_vf.zone().domaine().les_sommets();
   const DoubleTab& coord=dom.les_sommets();
   Zone zone__;
@@ -328,10 +304,4 @@ Entree& Extraire_plan::interpreter_(Entree& is)
   NettoieNoeuds::nettoie(dom);
 
   return is;
-
 }
-
-
-
-
-

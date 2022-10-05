@@ -13,15 +13,12 @@
 *
 *****************************************************************************/
 
-
-
-
-
 #ifndef Extraire_surface_included
 #define Extraire_surface_included
 
 #include <Interprete_geometrique_base.h>
 #include <List_Nom.h>
+
 class Nom;
 class Domaine;
 class Zone_VF;
@@ -37,4 +34,5 @@ public :
   Entree& interpreter_(Entree&) override;
   static void extraire_surface(Domaine& dom,const Domaine& domaine_volumique, const Nom& nom_domaine_surfacique, const Zone_VF& zone_vf, const Nom& expr_elements,const Nom& expr_faces, int avec_les_bords, const Noms& noms_des_bords) ;
 };
-#endif
+
+#endif /* Extraire_surface_included */

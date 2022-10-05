@@ -13,10 +13,6 @@
 *
 *****************************************************************************/
 
-
-
-
-
 #ifndef Extraire_domaine_included
 #define Extraire_domaine_included
 
@@ -38,4 +34,4 @@ public :
   Entree& interpreter_(Entree&) override;
 };
 
-#endif
+#endif /* Extraire_domaine_included */
