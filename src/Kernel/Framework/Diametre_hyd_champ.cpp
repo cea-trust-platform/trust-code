@@ -60,13 +60,13 @@ Entree& Diametre_hyd_champ::interpreter(Entree& is)
     }
 
   // On passe par la zone_VF
-  Zone_VF& zvf=ref_cast(Zone_VF, pb.equation(0).zone_dis().valeur());
+  Zone_VF& zvf=ref_cast(Zone_VF, pb.domaine_dis().zone_dis(0).valeur());
   DoubleTab& dh_elem = zvf.diametre_hydraulique_elem();
 
   // on discretise des champs equivalents pour pouvoir faire affecter
   // puis on recopie les valeurs
   Champ_Don dh_elem_p;
-  pb.discretisation().discretiser_champ("CHAMP_ELEM", pb.equation(0).zone_dis(), "pp", "1",1,0., dh_elem_p);
+  pb.discretisation().discretiser_champ("CHAMP_ELEM", pb.domaine_dis().zone_dis(0), "pp", "1",1,0., dh_elem_p);
 
   dh_elem_p.valeur().valeurs()=0;
   dh_elem_p.valeur().affecter(le_champ);
