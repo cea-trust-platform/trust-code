@@ -45,7 +45,6 @@ class Pb_Multiphase : public Pb_Fluide_base
 {
   Declare_instanciable(Pb_Multiphase);
 public:
-  void discretiser_equations() override { /* pour Pb_multi on discretise plus tard ! */ }
   void typer_lire_milieu(Entree& is) override;
   int nombre_d_equations() const override;
   const Equation_base& equation(int) const override ;

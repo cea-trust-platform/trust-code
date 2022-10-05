@@ -149,11 +149,11 @@ Entree& Probleme_base::readOn(Entree& is)
   completer();
   Cerr << "Step verification of data being read in progress..." << finl;
 
-  /* 4 : On verifie ... */
+  /* 5 : On verifie ... */
   verifier();
   Cerr << "The read data are coherent" << finl;
 
-  /* 5 : gestion sauvegarde/reprise ... */
+  /* 6 : gestion sauvegarde/reprise ... */
   lire_sauvegarde_reprise(is,motlu);
 
   return is ;
@@ -178,6 +178,9 @@ void Probleme_base::typer_lire_milieu(Entree& is)
       associer_milieu_base(le_milieu_[i].valeur()); // On l'associe a chaque equations (methode virtuelle pour chaque pb ...)
     }
 
+  // Milieu(x) lu(s) ... Lets go ! On discretise les equations
+  discretiser_equations();
+
   // remontee de l'inconnue vers le milieu
   for (int i = 0; i < nombre_d_equations(); i++) equation(i).associer_milieu_equation();
 
@@ -190,17 +193,13 @@ void Probleme_base::typer_lire_milieu(Entree& is)
     {
       assert (nombre_d_equations() > 1);
       if (nombre_d_equations() == 2)
-        {
-          equation(conc_eq).discretiser(); // on discretize la concentration maintenant car on a besoin du milieu Constituant !
-          for (int i = 0; i < nombre_d_equations(); i++) equation(i).milieu().discretiser((*this), la_discretisation.valeur());
-        }
+        for (int i = 0; i < nombre_d_equations(); i++) equation(i).milieu().discretiser((*this), la_discretisation.valeur());
       else if (nombre_d_equations() == 3)
         {
           // On a 2 Cas :
           // - Pb_Thermohydraulique_Concentration (NS, Thermique, Conc)
           // - Pb_Hydraulique_Concentration_Scalaires_Passifs (NS, Conc + Equations_Scalaires_Passifs (la lise) !)
           conc_eq = is_scal_pass ? 1 /* conc_eq */ : 2;
-          equation(conc_eq).discretiser(); // on discretize la concentration maintenant car on a besoin du milieu Constituant !
           equation(ns_ou_cond_eq).milieu().discretiser((*this), la_discretisation.valeur()); // NS
           equation(conc_eq).milieu().discretiser((*this), la_discretisation.valeur()); // Conc
         }
@@ -210,7 +209,6 @@ void Probleme_base::typer_lire_milieu(Entree& is)
           // Ici on a NS, Thermique, Conc + Equations_Scalaires_Passifs (la lise) !
           assert (nombre_d_equations() == 4);
           conc_eq = 2;
-          equation(conc_eq).discretiser(); // on discretize la concentration maintenant car on a besoin du milieu Constituant !
           equation(ns_ou_cond_eq).milieu().discretiser((*this), la_discretisation.valeur()); // NS
           equation(conc_eq).milieu().discretiser((*this), la_discretisation.valeur()); // Conc
         }
@@ -390,10 +388,9 @@ void Probleme_base::discretiser(const Discretisation_base& une_discretisation)
   Cerr << "Discretization of the domain associated with the problem " << le_nom() << finl;
   une_discretisation.discretiser(le_domaine_dis);
 
-  discretiser_equations(); // pour pb_multi ... on fera plus tard !
-
   if (milieu_via_associer() || is_pb_FT())
     {
+      discretiser_equations();
       // Discretisation du milieu:
       //   ATTENTION (BM): il faudra faire quelque chose ici car si on associe deux
       //   milieux au probleme (fluide_incompressible + constituant), seul

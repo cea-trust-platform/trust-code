@@ -14,29 +14,19 @@
 *****************************************************************************/
 
 #include <Convection_Diffusion_Concentration.h>
+#include <Frontiere_dis_base.h>
 #include <Navier_Stokes_std.h>
 #include <Probleme_base.h>
-#include <Constituant.h>
 #include <Discret_Thyd.h>
-#include <Frontiere_dis_base.h>
-#include <Param.h>
+#include <Constituant.h>
 #include <EChaine.h>
+#include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Convection_Diffusion_Concentration,"Convection_Diffusion_Concentration",Convection_Diffusion_std);
 
-Convection_Diffusion_Concentration::Convection_Diffusion_Concentration():masse_molaire_(-1.)
-{
-  //On dimensionne liste_noms_compris et on remplit dans readOn()
-}
-/*! @brief Simple appel a: Convection_Diffusion_std::printOn(Sortie&)
- *
- * @param (Sortie& is) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Convection_Diffusion_Concentration::printOn(Sortie& is) const
-{
-  return Convection_Diffusion_std::printOn(is);
-}
+Convection_Diffusion_Concentration::Convection_Diffusion_Concentration():nb_constituants_(-1), masse_molaire_(-1.) { }
+
+Sortie& Convection_Diffusion_Concentration::printOn(Sortie& is) const { return Convection_Diffusion_std::printOn(is); }
 
 /*! @brief Verifie si l'equation a une concentration et un constituant associe et appelle Convection_Diffusion_std::readOn(Entree&).
  *
@@ -143,19 +133,14 @@ const Champ_Don& Convection_Diffusion_Concentration::diffusivite_pour_transport(
  */
 void Convection_Diffusion_Concentration::discretiser()
 {
-  if (le_constituant.non_nul())
-    {
-      const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
-      Cerr << "Transport concentration(s) equation discretization " << finl;
-      nb_constituants_ = constituant().nb_constituants();
-      dis.concentration(schema_temps(), zone_dis(), la_concentration, nb_constituants_);
-      champs_compris_.ajoute_champ(la_concentration);
-      Equation_base::discretiser();
-    }
-  else
-    Cerr << "Transport concentration(s) equation will be discretized later after reading the constituant medium ... " << finl;
+  assert(le_constituant.non_nul());
+  const Discret_Thyd& dis = ref_cast(Discret_Thyd, discretisation());
+  Cerr << "Transport concentration(s) equation discretization " << finl;
+  nb_constituants_ = constituant().nb_constituants();
+  dis.concentration(schema_temps(), zone_dis(), la_concentration, nb_constituants_);
+  champs_compris_.ajoute_champ(la_concentration);
+  Equation_base::discretiser();
 }
-
 
 /*! @brief Renvoie le milieu physique de l'equation.
  *
