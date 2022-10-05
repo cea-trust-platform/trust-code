@@ -190,10 +190,8 @@ CEA Saclay \\ % Your institution for the title page
 \begin{itemize}
 \item Load TRUST environment:
 \begin{itemize}
-\item On CEA Saclay PCs, TRUST versions are available with (e.g. X.Y.Z=1.8.3):\\
-\textbf{source  /home/triou/env\_TRUST\_X.Y.Z.sh}\\
-or \\
-\textbf{source  /home/trust\_trio-public/env\_TRUST-X.Y.Z.sh}
+\item On CEA Saclay PCs, TRUST versions are available with:\\
+\textbf{source  /home/trust\_trio-public/env\_TRUST-1.9.0.sh}
 %
 \item On your own computer, download and install the latest version of TRUST in your local folder \$MyPathToTRUSTversion (unless this was done), then write on the terminal:\\
 %
@@ -238,9 +236,9 @@ Replace "format lml" by "format lata" in the data file\\
 \begin{exampleblock}{Download Eclipse}
 \begin{itemize}
 \item Visit the Eclipse Foundation website: \url{http://www.eclipse.org/downloads/eclipse-packages/}
-\item In "More Downloads", select version  \textbf{Eclipse 2020-12 (4.18)}.
+\item In "More Downloads", select version  \textbf{Eclipse 2022-06 (4.24)}.
 \item Select \textbf{Eclipse IDE for C/C++ Developers} $\rightarrow$ \textbf{Linux 64-bits}
-\item Download the \textbf{eclipse-cpp-2020-12-R-linux-gtk-x86\_64.tar.gz} package in your directory \texttt{Formation\_TRUST/yourname}
+\item Download the \textbf{eclipse-cpp-2022-06-R-linux-gtk-x86\_64.tar.gz} package in your directory \texttt{Formation\_TRUST/yourname}
 %\item For OS older than CentOs7, Ubuntu16.04 and Fedora22, download \textbf{Eclipse Mars} version: \textbf{eclipse-cpp-mars-2-linux-gtk-x86\_64.tar.gz}
 \end{itemize}
 \end{exampleblock}
@@ -2234,7 +2232,46 @@ From the "Project Explorer" tab, right click MY\_BALTIK $\rightarrow$ Index $\ri
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\subsection{\bf{TPP files in Eclipse}}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\begin{columns}[c] 
+\column{.45\textwidth}
+\tableofcontents[sections={1-4},currentsection, currentsubsection]
+\column{.5\textwidth} 
+\tableofcontents[sections={5-10},currentsection, currentsubsection]
+\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{TPP files in Eclipse}
+
+\begin{block}{}
+tpp format in TRUST is not natively recognized by eclipse and code is not highlighted. If you want to edit tpp files, you can:
+\begin{itemize}
+\item open Eclipse
+\item click on "Window" then select "Preferences"
+\item search for "File Associations" and add *.tpp to the list
+\item search for "File types" and add *.tpp to pattern the select for type "C++ header file"
+\item save preferences
+\end{itemize}
+\end{block}
+
+\begin{exampleblock}{Launch Eclipse}
+\texttt{\$ mkdir -p Formation\_TRUST/yourname/workspace}\\
+\texttt{\$ cd Formation\_TRUST/yourname/eclipse}\\
+\texttt{\$ ./eclipse \&}
+%
+\begin{itemize}
+\item Workspace: Browse the directory \texttt{Formation\_TRUST/yourname/workspace} 
+\item Welcome : close x button
+\end{itemize}
+%
+\end{exampleblock}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
