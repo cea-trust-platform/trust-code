@@ -76,22 +76,21 @@ Lire sch
 	seuil_statio 1e-8
 }
 
-Fluide_Incompressible eau
-Lire eau
-{
-	mu Champ_Uniforme 1 0.02
-	rho Champ_Uniforme 1 2
-}
 
 Associer pb dom
 Associer pb sch
-Associer pb eau
 
 Discretiser pb dis
 
 Lire pb
 {
-	Navier_Stokes_standard
+
+   fluide_incompressible {
+    	mu Champ_Uniforme 1 0.02
+   	rho Champ_Uniforme 1 2
+   }
+   
+   	Navier_Stokes_standard
 	{
 		solveur_pression GCP { 
 			precond ssor { omega 1.5 } 
@@ -153,3 +152,4 @@ Lire pb
 
 Fin
 
+ 
