@@ -27,6 +27,7 @@
 Implemente_base(Fluide_reel_base, "Fluide_reel_base", Fluide_base);
 // XD fluide_reel_base fluide_base fluide_reel_base -1 Class for real fluids.
 
+Sortie& Fluide_reel_base::printOn(Sortie& os) const { return os; }
 Entree& Fluide_reel_base::readOn(Entree& is)
 {
   Param param(que_suis_je());
@@ -41,11 +42,7 @@ void Fluide_reel_base::set_param(Param& param)
 {
   param.ajouter("T_ref",&T_ref_);
   param.ajouter("P_ref",&P_ref_);
-}
-
-Sortie& Fluide_reel_base::printOn(Sortie& os) const
-{
-  return os;
+  set_param_porosite(param);
 }
 
 void Fluide_reel_base::discretiser(const Probleme_base& pb, const  Discretisation_base& dis)
@@ -80,6 +77,8 @@ void Fluide_reel_base::discretiser(const Probleme_base& pb, const  Discretisatio
   dis.discretiser_champ("temperature", zone_dis, "rho_cp_comme_T", "  J/m^3/K", 1, temps, rho_cp_comme_T_);
   for (auto &&pch : { &rho, &e_int, &h, (Champ*) &mu, (Champ*) &nu, (Champ*) &alpha, (Champ*) &lambda, (Champ*) &Cp, (Champ*) &beta_th, (Champ*) &rho_cp_comme_T_ })
     champs_compris_.ajoute_champ(pch->valeur());
+
+  if (id_composite == -1) Milieu_base::discretiser_porosite(pb, dis);
 }
 
 int Fluide_reel_base::initialiser(const double temps)
@@ -101,6 +100,8 @@ int Fluide_reel_base::initialiser(const double temps)
   beta_th.initialiser(temps);
   rho_cp_comme_T_.initialiser(temps);
   t_init_ = temps;
+  if (id_composite == -1) Milieu_base::initialiser_porosite(temps);
+  if (id_composite < 0 && g.non_nul()) g->initialiser(temps);
   return 1;
 }
 
@@ -160,10 +161,12 @@ void Fluide_reel_base::mettre_a_jour(double t)
         }
     }
   first_maj_ = 0;
+  if (id_composite == -1) Milieu_base::mettre_a_jour_porosite(t);
 }
 
 int Fluide_reel_base::check_unknown_range() const
 {
+  if (is_incompressible()) return 1;
   int ok = 1, zero = 0, nl = e_int.valeurs().dimension_tot(0); //on n'impose pas de contraintes aux lignes correspondant a des variables auxiliaires (eg pressions aux faces dans PolyMAC)
   for (auto &&i_r : unknown_range())
     {

@@ -44,6 +44,10 @@ Entree& Milieu_composite::readOn(Entree& is)
           Cerr << "Milieu_composite : ajout la phase " << mot << " ... " << finl;
           Milieu fluide;
           is >> fluide;
+          if (fluide->get_porosites_champ().non_nul())
+            Cerr << que_suis_je() + " : porosity should be defined only once in the milieu_composite block, not in " + fluide->que_suis_je() << finl, Process::exit();
+          if (fluide->a_gravite())
+            Cerr << que_suis_je() + " : gravity should be defined only once in the milieu_composite block, not in " + fluide->que_suis_je() << finl, Process::exit();
           fluide->set_id_composite(i++);
           fluide->nommer(mot); // XXX
           fluides.add(ref_cast(Fluide_base,fluide.valeur()));

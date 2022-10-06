@@ -60,6 +60,7 @@ public:
   inline double porosite_elem(const int i) const { return porosites_champ->valeurs()(i,0); }
   inline DoubleVect& porosite_face() { return porosite_face_; }
   inline const DoubleVect& porosite_face() const { return porosite_face_; }
+  inline const Champ_Don& get_porosites_champ() const { return porosites_champ; }
   inline double porosite_face(const int i) const { return porosite_face_[i]; }
   inline const DoubleVect& section_passage_face() const { return section_passage_face_; }
   inline double section_passage_face(int i) const { return section_passage_face_[i]; }
