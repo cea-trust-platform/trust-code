@@ -787,7 +787,7 @@ DoubleTab Champ_Inc_base::valeur_aux_bords() const
             result(fb, n) = ref_cast(Neumann_val_ext, cls[i].valeur()).val_ext(j, n);
       else if (sub_type(Champ_Inc_P0_base, *this))
         for (j = 0; j < fr.nb_faces_tot(); j++) //Champ P0 : on peut prendre la valeur en l'element
-          for (f = fr.num_face(j), fb = zone.fbord(f), n = 0; n < N; n++) result(fb, n) = valeurs()(f_e(f, 0), n);
+          for (f = fr.num_face(j), fb = zone.fbord(f), n = 0; n < N; n++) result(fb, n) = valeurs()(f_e(f, f_e(f, 0) == -1), n);
       else Process::exit("Champ_Inc_base::valeur_aux_bords() : mus code something!");
     }
   return result;
