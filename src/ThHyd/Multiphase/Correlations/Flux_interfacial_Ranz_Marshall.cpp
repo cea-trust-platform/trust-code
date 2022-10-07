@@ -18,15 +18,8 @@
 
 Implemente_instanciable(Flux_interfacial_Ranz_Marshall, "Flux_interfacial_Ranz_Marshall", Flux_interfacial_base);
 // XD flux_interfacial source_base flux_interfacial 0 Source term of mass transfer between phases connected by the saturation object defined in saturation_xxxx
-Sortie& Flux_interfacial_Ranz_Marshall::printOn(Sortie& os) const
-{
-  return os;
-}
-
-Entree& Flux_interfacial_Ranz_Marshall::readOn(Entree& is)
-{
-  return is;
-}
+Sortie& Flux_interfacial_Ranz_Marshall::printOn(Sortie& os) const { return Flux_interfacial_base::printOn(os); }
+Entree& Flux_interfacial_Ranz_Marshall::readOn(Entree& is) { return Flux_interfacial_base::readOn(is); }
 
 void Flux_interfacial_Ranz_Marshall::completer()
 {
@@ -43,6 +36,7 @@ void Flux_interfacial_Ranz_Marshall::completer()
 
 void Flux_interfacial_Ranz_Marshall::coeffs(const input_t& in, output_t& out) const
 {
+  out.hi = 0.0, out.da_hi = 0.0;
   int k, N = out.hi.dimension(0), e = in.e;
   const DoubleTab& d_bulles = pb_->get_champ("diametre_bulles").valeurs() ;
   for (k = 0; k < N; k++)
@@ -50,9 +44,9 @@ void Flux_interfacial_Ranz_Marshall::coeffs(const input_t& in, output_t& out) co
       {
         double Re_b = in.rho[n_l] * in.nv[N * n_l + k] * d_bulles(e,k) / in.mu[n_l];
         double Pr = in.mu[n_l] * in.Cp[n_l] / in.lambda[n_l];
-        double Nu = 2 + 0.6* std::pow(Re_b, .5)*std::pow(Pr, .3);
-        out.hi(n_l, k) = Nu * in.lambda[n_l] / d_bulles(e,k) * 6 * std::max(in.alpha[k], 1e-2) / d_bulles(e,k) ; // std::max() pour que le flux interfacial sont non nul
-        out.da_hi(n_l, k, k) = in.alpha[k] > 1e-2 ? Nu * in.lambda[n_l] * 6. / (d_bulles(e,k)*d_bulles(e, k)) : 0;
+        double Nu = 2.0 + 0.6* std::pow(Re_b, 0.5)*std::pow(Pr, 0.3);
+        out.hi(n_l, k) = Nu * in.lambda[n_l] / d_bulles(e,k) * 6.0 * std::max(in.alpha[k], a_min) / d_bulles(e,k); // std::max() pour que le flux interfacial sont non nul
+        out.da_hi(n_l, k, k) = in.alpha[k] > a_min ? Nu * in.lambda[n_l] * 6.0 / (d_bulles(e, k) * d_bulles(e, k)) : 0;
         out.hi(k, n_l) = 1e8;
       }
 }

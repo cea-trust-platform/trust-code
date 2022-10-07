@@ -33,6 +33,7 @@ public:
 
 protected:
   int n_l = -1; //number of the liquid phase
+  double a_min = 1e-2;
 };
 
 #endif
