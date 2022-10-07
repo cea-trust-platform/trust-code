@@ -268,6 +268,7 @@ echo "[-cuda[=path to nvcc]]            Activate the CUDA support into several l
 echo "[-disable-rocalution]             Disable rocALUTION library for GPU computing on AMD Radeon (experimental)"
 echo "[-openmp]                         Enable OpenMP support (use of threaded BLAS like Mkl or OpenBlas and build PETSc with OpenMP support."
 echo "[-disable-petsc]                  Disable PETSc library installation."
+echo "[-disable-petsc-with-x]           Disable visualization features for PETSc."
 echo "[-enable-petsc-debug]             Enable PETSc library debug only with \$exec_debug of TRUST."
 #echo "[-with-med=dir]                   Force Using external MED library"
 #echo "[-with-hdf=dir]                   Force Using external HDF library"
@@ -338,6 +339,7 @@ do
   command=TRUST_DISABLE_$THIRD_PARTY=0
   eval $command
 done
+export TRUST_DISABLE_PETSC_WITH_X=0
 export TRUST_ENABLE_PETSC_DEBUG=0
 export TRUST_DISABLE_MPIIO=0
 export TRUST_DISABLE_CHECK_SRC=0
@@ -445,6 +447,10 @@ do
    elif [ "${1#-force_system_mpi}" != "$1" ]
    then
       export TRUST_FORCE_SYSTEM_MPI=1
+
+   elif [ "${1#-disable-petsc-with-x}" != "$1" ]
+   then
+      export TRUST_DISABLE_PETSC_WITH_X=1
 
    elif [ "${1#-enable-petsc-debug}" != "$1" ]
    then
@@ -591,6 +597,7 @@ do
    echo "$VAR=${!VAR} && export $VAR 	# Disable/enable $THIRD_PARTY"  					>> $var
 done
 echo "TRUST_DISABLE_MPIIO=$TRUST_DISABLE_MPIIO && export TRUST_DISABLE_MPIIO	# Disable/enable MPI-IO mode for writing of binary output file"	>> $var
+echo "TRUST_DISABLE_PETSC_WITH_X=$TRUST_DISABLE_PETSC_WITH_X && export TRUST_DISABLE_PETSC_WITH_X	# Disable/enable PETSc visualization features"	>> $var
 echo "TRUST_ENABLE_PETSC_DEBUG=$TRUST_ENABLE_PETSC_DEBUG && export TRUST_ENABLE_PETSC_DEBUG	# Disable/enable PETSc debug"	>> $var
 echo "TRUST_DISABLE_CHECKS=$TRUST_DISABLE_CHECKS && export TRUST_DISABLE_CHECKS	# Disable/enable checks for external packages, sources, disk space and speed" >> $var
 echo "TRUST_INT64=$TRUST_INT64 && export TRUST_INT64	# Build in 64 bits integer indices." >> $var

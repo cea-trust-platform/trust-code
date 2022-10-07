@@ -332,7 +332,7 @@ else
    liste_debug="0" 	# Une seule version construite (optimisee)
 fi
 # Possibilite d'afficher la matrice sous forme graphique uniquement sur PC avec libX11 disponible (-mat_view draw https://petsc.org/main/docs/manualpages/Mat/MatView.html)
-[ "`ls /usr/lib*/libX11.so 2>/dev/null`" != "" ] && [ "$TRUST_WITHOUT_HOST" = 1 ] && options="--with-x=1" # Car --with-x=1 pose probleme pour Insure
+[ "$TRUST_DISABLE_PETSC_WITH_X" != 1 ] && [ "$TRUST_WITHOUT_HOST" = 1 ] && [ "`ls /usr/lib*/libX11.so 2>/dev/null`" != "" ] && options="--with-x=1" # Car --with-x=1 pose probleme pour Insure
 
 #################################################
 # Trilinos Multi Level Preconditionning package #
