@@ -10,7 +10,8 @@ def readSrc(src_dir):
         for file in files:
             if file.endswith(".cpp"):
                 lines+=["New_file "+ file]
-                lines_file = open(os.path.join(root, file)).read().splitlines()
+                #lines_file = open(os.path.join(root, file)).read().splitlines()
+                lines_file = open(os.path.join(root, file), encoding='utf-8').read().splitlines()
                 lines+=lines_file
                 pass
             pass

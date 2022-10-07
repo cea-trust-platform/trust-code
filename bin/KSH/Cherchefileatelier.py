@@ -57,7 +57,8 @@ def create_dico(dirs):
     dico[".cpp"]=dico_cpp
     for fi,fifull in srcs:
         # print fifull
-        f=open(fifull,"r")
+        #f=open(fifull,"r")
+        f=open(fifull,"r", encoding='utf-8')
 
         lines=f.readlines()
         lines=list(filter(expr.match,lines))
