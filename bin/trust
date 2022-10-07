@@ -1254,7 +1254,7 @@ then
 elif [ "$HEAPTRACK" = 1 ]
 then
    echo "Heaptrack log ?.* are created."
-   heaptrack --analyze `find . -newer $NOM.log -name heaptrack.'*'`
+   heaptrack --analyze `find . -newer $NOM.log -name heaptrack.'*'.rst*`
 elif [ "$VTUNE" = 1 ]
 then
    vtune-gui `ls -art | grep hs | tail -1`
