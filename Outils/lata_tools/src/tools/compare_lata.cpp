@@ -21,6 +21,7 @@
 #include <string.h>
 #include <iostream>
 #include <fstream>
+#include <map>
 
 using namespace std;
 
@@ -786,10 +787,17 @@ int main(int argc, char **argv)
   for (entier i = 0; i < geoms3.size(); i++)
     {
       Domain_Id id(geoms3[i], 1, -1);
-
+      const bool is_fixed_domain = (geoms3[i] != Nom("INTERFACES"));
       const Domain& dom = get_domain(filter, id, filename);
       const Domain& dom2 = get_domain(filter2, id, filename2);
-      ArrOfInt ielem, isom;
+
+      // Most of the time the domain is fixed, but if not this structure holds the vertex and element correspondance
+      // for each timestep:
+      std::map<int, ArrOfInt> map_ielem, map_isom;
+      map_ielem[-1] = ArrOfInt();
+      map_isom[-1] = ArrOfInt();
+
+      ArrOfInt &ielem = map_ielem[-1], &isom=map_isom[-1];
       // on construit les tableux de ocnnectivites elem2 -> elem et som2 -> som
       // C'est aussi la que se fait la comparaison des geometries:
       construit_corres(((dom.get_domain_type() == Domain::UNSTRUCTURED) ? dom.cast_DomainUnstructured() : convertIJKtoUnstructured(dom.cast_DomainIJK())),
@@ -826,6 +834,26 @@ int main(int argc, char **argv)
                   t2 = filter2.get_nb_timesteps() - 1;
                   i = t1;
                 }
+              // Rebuild vertex/elem correspondances if needed
+              if (!is_fixed_domain)
+                {
+                  map_ielem[i] = ArrOfInt();
+                  map_isom[i] = ArrOfInt();
+
+                  Domain_Id id_t(geoms3[i], i, -1);
+                  const Domain& dom_t = get_domain(filter, id_t, filename);
+                  const Domain& dom_t_2 = get_domain(filter2, id_t, filename2);
+
+                  ArrOfInt &ielem2 = map_ielem[i], &isom2=map_isom[i];
+                  // on construit les tableux de ocnnectivites elem2 -> elem et som2 -> som
+                  // C'est aussi la que se fait la comparaison des geometries:
+                  construit_corres(((dom_t.get_domain_type() == Domain::UNSTRUCTURED) ? dom_t.cast_DomainUnstructured() : convertIJKtoUnstructured(dom_t.cast_DomainIJK())),
+                                   (dom_t_2.get_domain_type() == Domain::UNSTRUCTURED) ? dom_t_2.cast_DomainUnstructured() : convertIJKtoUnstructured(dom_t_2.cast_DomainIJK()),
+                                    ielem2, isom2);
+                }
+              int key = is_fixed_domain ? -1 : i; // fixed domain
+              ArrOfInt &ielem3 = map_ielem[key], &isom3=map_isom[key];
+
               Field_Id id(fields3[j], t1, -1);
               Field_Id id2(fields3[j], t2, -1);
               try
@@ -839,7 +867,7 @@ int main(int argc, char **argv)
                   //
                   // Comparaison des champs:
                   //
-                  compare_fields(field, field2, ecarts, ielem, isom);
+                  compare_fields(field, field2, ecarts, ielem3, isom3);
 
                   filter2.release_field(field2);
                   filter.release_field(field);
