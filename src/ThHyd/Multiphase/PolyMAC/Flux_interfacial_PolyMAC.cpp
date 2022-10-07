@@ -172,7 +172,7 @@ void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
   Flux_interfacial_base::input_t in;
   Flux_interfacial_base::output_t out;
   DoubleTab& hi = out.hi, &dT_hi = out.dT_hi, &da_hi = out.da_hi, &dP_hi = out.dp_hi;
-  hi.resize(N, N), dT_hi.resize(N, N, N), da_hi.resize(N, N, N), dP_hi.resize(N, N);
+  hi.resize(N, N), dT_hi.resize(N, N, N), da_hi.resize(N, N, N), dP_hi.resize(N, N), in.v.resize(N, D);
 
   // Et pour les methodes span de la classe Saturation
   const int nbelem = zone.nb_elem(), nb_max_sat =  N * (N-1) /2; // oui !! suite arithmetique !!
@@ -202,13 +202,16 @@ void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
       //  double vol = pe(e) * ve(e), x, G = 0, dv_min = 0.1, dh = zone.diametre_hydraulique_elem()(e, 0), dP_G = 0.; // E. Saikali : initialise dP_G ici sinon fuite memoire ...
       // PL ToDo: Uniformiser diametre_hydraulique_elem (vecteur) pour C3D et F5
       double vol = pe(e) * ve(e), x, G = 0, dv_min = 0.1, dh = zone.diametre_hydraulique_elem()(e), dP_G = 0.; // E. Saikali : initialise dP_G ici sinon fuite memoire ...
+      for (in.v = 0, d = 0; d < D; d++)
+        for (n = 0; n < N; n++)
+          in.v(n, d) = pvit(nf_tot + D * e + d, n);
       for (nv = 0, d = 0; d < D; d++)
         for (n = 0; n < N; n++)
           for (k = 0 ; k<N ; k++) nv(n, k) += std::pow( pvit(nf_tot + D * e + d, n) - ((n!=k) ? pvit(nf_tot + D * e + d, k) : 0) , 2); // nv(n,n) = ||v(n)||, nv(n, k!=n) = ||v(n)-v(k)||
       for (n = 0; n < N; n++)
         for (k = 0 ; k<N ; k++) nv(n, k) = std::max(sqrt(nv(n, k)), dv_min);
       //coeffs d'echange vers l'interface (explicites)
-      in.dh = dh, in.alpha = &alpha(e, 0), in.T = &temp(e, 0), in.p = press(e, 0), in.nv = &nv(0, 0);
+      in.dh = dh, in.alpha = &alpha(e, 0), in.T = &temp(e, 0), in.p = press(e, 0), in.nv = &nv(0, 0), in.h = &h(e, 0), in.dT_h = &(*dT_h)(e, 0), in.dP_h = &(*dP_h)(e, 0);
       in.lambda = &lambda(!cL * e, 0), in.mu = &mu(!cM * e, 0), in.rho = &rho(!cR * e, 0), in.Cp = &Cp(!cCp * e, 0), in.e = e;
       correlation_fi.coeffs(in, out);
 

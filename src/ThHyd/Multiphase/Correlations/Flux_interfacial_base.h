@@ -46,16 +46,20 @@ public:
   /* parametres d'entree */
   struct input_t
   {
-    double dh;           //diametre hyd
-    const double *alpha; //alpha[n] : taux de vide de la phase n
-    const double *T;     //T[n]     : temperature de la phase n
-    double p;            //pression
-    const double *nv;    //nv[N * k + l] : norme de ||v_k - v_l||
-    const double *lambda;//lambda[n]     : conductivite de la phase n
-    const double *mu;    //mu[n]         : viscosite dynamique de la phase n
-    const double *rho;   //rho[n]        : masse volumique de la phase n
-    const double *Cp;    //CP[n]         : capacite calorifique de la phase n
-    int e;               //indice d'element
+    double dh;            // diametre hyd
+    const double *alpha;  // alpha[n] : taux de vide de la phase n
+    const double *T;      // T[n]     : temperature de la phase n
+    double p;             // pression
+    const double *nv;     // nv[N * k + l] : norme de ||v_k - v_l||
+    const double *lambda; // lambda[n]     : conductivite de la phase n
+    const double *mu;     // mu[n]         : viscosite dynamique de la phase n
+    const double *rho;    // rho[n]        : masse volumique de la phase n
+    const double *Cp;     // CP[n]         : capacite calorifique de la phase n
+    const double *h;      // h[n]          : enthalpie de la phase n
+    const double *dP_h;   // dP_h[n]       : derivee en pression de l'enthalpie de la phase n
+    const double *dT_h;   // dT_h[n]       : deritee en temperature de la phase n de l'enthalpie de la phase n
+    DoubleTab v;          // v(n, d)       : vitesse de la phase n dans la direction d
+    int e;                // indice d'element
   };
   /* valeurs de sortie */
   struct output_t
