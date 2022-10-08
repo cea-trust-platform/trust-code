@@ -75,6 +75,7 @@ public:
   virtual void ouvrir_fichier(SFichier& os, const Nom&, const int flag = 1) const;
   void set_fichier(const Nom&);
   inline void set_description(const Nom& nom) { description_ = nom; }
+  inline void set_col_names(const Noms& col_names) { col_names_ = col_names; }
   inline const Nom fichier() const { return out_; }
   inline const Nom description() const { return description_; }
 
@@ -89,6 +90,7 @@ protected:
   int col_width_ = 0;
   Nom out_;                  // Nom du fichier .out pour l'impression
   Nom description_;
+  Noms col_names_;            //nom des colonnes (optionnel)
   mutable DoubleVect bilan_; // Vecteur contenant les valeurs du terme source dans le domaine
 
   Champs_compris champs_compris_;

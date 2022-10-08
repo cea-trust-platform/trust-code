@@ -305,6 +305,8 @@ void Source_base::ouvrir_fichier(SFichier& os,const Nom& type, const int flag) c
       os.set_col_width(wcol - !gnuplot_header);
       fic.add_col("Time");
       os.set_col_width(wcol);
+      for (int i = 0; i < col_names_.size(); i++)
+        fic.add_col(col_names_[i]);
       fic << finl;
     }
   // Sinon on l'ouvre
