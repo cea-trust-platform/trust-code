@@ -1550,7 +1550,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
     {
       // Changement de la taille de matrice, on detruit les objets dont la taille change:
       int hasChanged = mp_max((int)(secmem_sz_!=secmem.size_array()));
-      if (MatricePetsc_!=NULL || hasChanged != 0)
+      if (MatricePetsc_!=NULL && hasChanged != 0)
         {
           // Destruction de la matrice de preconditionnement:
           KSPSetOperators(SolveurPetsc_, MatricePetsc_, NULL);
