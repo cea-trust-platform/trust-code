@@ -25,6 +25,7 @@
 #include <Pb_Multiphase.h>
 #include <Zone_PolyMAC.h>
 #include <Matrix_tools.h>
+#include <Array_tools.h>
 
 Implemente_instanciable(Flux_interfacial_PolyMAC,"Flux_interfacial_Elem_PolyMAC|Flux_interfacial_Elem_PolyMAC_P0", Source_base);
 
@@ -53,8 +54,13 @@ void Flux_interfacial_PolyMAC::dimensionner_blocs(matrices_t matrices, const tab
       {
         Matrice_Morse& mat = *n_m.second, mat2;
         const DoubleTab& dep = equation().probleme().get_champ(n_m.first).valeurs();
+        const int M = dep.line_size();
         IntTrav sten(0, 2);
         sten.set_smart_resize(1);
+        if (n_m.first == "temperature" || n_m.first == "pression" || n_m.first == "alpha" || n_m.first == "interfacial_area" ) /* temperature/pression: dependance locale */
+          for (e = 0; e < zone.nb_elem(); e++)
+            for (n = 0; n < N; n++)
+              for (int m = 0; m < M; m++) sten.append_line(N * e + n, M * e + m);
         if (mat.nb_colonnes())
           for (e = 0; e < zone.nb_elem(); e++) /* autres variables: on peut melanger les composantes*/
             {
@@ -64,7 +70,7 @@ void Flux_interfacial_PolyMAC::dimensionner_blocs(matrices_t matrices, const tab
               for (n = 0, i = N * e; n < N; n++, i++)
                 for (auto &&x : idx) sten.append_line(i, x); //ajout de cette depedance a toutes les lignes
             }
-        else continue;
+        tableau_trier_retirer_doublons(sten);
         Matrix_tools::allocate_morse_matrix(inco.size_totale(), dep.size_totale(), sten, mat2);
         mat.nb_colonnes() ? mat += mat2 : mat = mat2;
       }
@@ -211,7 +217,7 @@ void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
       for (n = 0; n < N; n++)
         for (k = 0 ; k<N ; k++) nv(n, k) = std::max(sqrt(nv(n, k)), dv_min);
       //coeffs d'echange vers l'interface (explicites)
-      in.dh = dh, in.alpha = &alpha(e, 0), in.T = &temp(e, 0), in.p = press(e, 0), in.nv = &nv(0, 0), in.h = &h(e, 0), in.dT_h = &(*dT_h)(e, 0), in.dP_h = &(*dP_h)(e, 0);
+      in.dh = dh, in.alpha = &alpha(e, 0), in.T = &temp(e, 0), in.p = press(e, 0), in.nv = &nv(0, 0), in.h = &h(e, 0), in.dT_h = dT_h ? &(*dT_h)(e, 0) : NULL, in.dP_h = dP_h ? &(*dP_h)(e, 0) : NULL;
       in.lambda = &lambda(!cL * e, 0), in.mu = &mu(!cM * e, 0), in.rho = &rho(!cR * e, 0), in.Cp = &Cp(!cCp * e, 0), in.e = e;
       correlation_fi.coeffs(in, out);
 
