@@ -13,22 +13,26 @@
 *
 *****************************************************************************/
 
-#include <Flux_interfacial_Zeitoun.h>
+#include <Flux_interfacial_Wolfert_composant.h>
 #include <Pb_Multiphase.h>
 
-Implemente_instanciable(Flux_interfacial_Zeitoun, "Flux_interfacial_Zeitoun", Flux_interfacial_base);
+Implemente_instanciable(Flux_interfacial_Wolfert_composant, "Flux_interfacial_Wolfert_composant", Flux_interfacial_base);
 // XD flux_interfacial source_base flux_interfacial 0 Source term of mass transfer between phases connected by the saturation object defined in saturation_xxxx
-Sortie& Flux_interfacial_Zeitoun::printOn(Sortie& os) const
+Sortie& Flux_interfacial_Wolfert_composant::printOn(Sortie& os) const
 {
   return os;
 }
 
-Entree& Flux_interfacial_Zeitoun::readOn(Entree& is)
+Entree& Flux_interfacial_Wolfert_composant::readOn(Entree& is)
 {
+  Param param(que_suis_je());
+  param.ajouter("Pr_t", &Pr_t_);
+  param.lire_avec_accolades_depuis(is);
+
   return is;
 }
 
-void Flux_interfacial_Zeitoun::completer()
+void Flux_interfacial_Wolfert_composant::completer()
 {
   Pb_Multiphase *pbm = sub_type(Pb_Multiphase, pb_.valeur()) ? &ref_cast(Pb_Multiphase, pb_.valeur()) : NULL;
 
@@ -41,7 +45,7 @@ void Flux_interfacial_Zeitoun::completer()
   if (!pbm->has_champ("diametre_bulles")) Process::exit("Flux_interfacial_Ranz_Mashall : bubble diameter needed !");
 }
 
-void Flux_interfacial_Zeitoun::coeffs(const input_t& in, output_t& out) const
+void Flux_interfacial_Wolfert_composant::coeffs(const input_t& in, output_t& out) const
 {
   int k, N = out.hi.dimension(0), e = in.e;
   const DoubleTab& d_bulles = pb_->get_champ("diametre_bulles").valeurs() ;
@@ -50,11 +54,15 @@ void Flux_interfacial_Zeitoun::coeffs(const input_t& in, output_t& out) const
       {
         int ind_trav = (k>n_l) ? (n_l*(N-1)-(n_l-1)*(n_l)/2) + (k-n_l-1) : (k*(N-1)-(k-1)*(k)/2) + (n_l-k-1);
         double Ja = in.rho[n_l] * in.Cp[n_l] * (in.T[k] -  in.T[n_l]) / (in.rho[k] * in.Lvap[ind_trav] );
-        double Re_b = in.rho[n_l] * in.nv[N * n_l + k] * d_bulles(e,k) / in.mu[n_l];
-        double Nu = 2.04* std::pow(Re_b, .61)*std::pow(std::max(in.alpha[k], 1e-4), 0.328)* std::pow(Ja, -.308);
+        double Pe = in.rho[n_l] * in.Cp[n_l] * in.nv[N * n_l + k] * d_bulles(e,k) / in.lambda[n_l];
+        double U_tau = 0.1987 * in.nv[N * n_l + n_l] * std::pow(in.dh * in.rho[n_l] * in.nv[N * n_l + n_l]/ in.mu[n_l], -1./8.)  ; //Blasius correlation
+        double lambda_turb = Pr_t_  * 0.06 * U_tau * in.dh ;
+
+        double Nu = 12./M_PI*Ja  + 2/std::sqrt(M_PI)*(1+lambda_turb/in.lambda[n_l])*std::sqrt(Pe);
+
         out.hi(n_l, k) = Nu * in.lambda[n_l] / d_bulles(e,k) * 6 * std::max(in.alpha[k], 1e-4) / d_bulles(e,k) ; // std::max() pour que le flux interfacial sont non nul
         out.da_hi(n_l, k, k) = in.alpha[k] > 1e-4 ?
-                               Nu * in.lambda[n_l] * 6. / (d_bulles(e,k)*d_bulles(e, k)) * 1.328 / in.alpha[k]:
+                               Nu * in.lambda[n_l] * 6. / (d_bulles(e,k)*d_bulles(e, k)) :
                                0. ;
         out.hi(k, n_l) = 1e8;
       }
