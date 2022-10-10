@@ -54,7 +54,7 @@ void Portance_interfaciale_Sugrue::coefficient(const DoubleTab& alpha, const Dou
     if (k!=n_l) // k gas phase
       {
         double Eo = g_ * std::abs(rho(n_l)-rho(k)) * d_bulles(k)*d_bulles(k)/sigma(n_l,k);
-        double Wo = Eo * k_turb(n_l)/(ndv(n_l, k)*ndv(n_l, k));
+        double Wo = Eo * k_turb(n_l)/std::max((ndv(n_l, k)*ndv(n_l, k)), 1.e-8);
         double f_Wo = std::min(0.03, 5.0404 - 5.0781*std::pow(Wo, 0.0108));
         double f_alp= 1.0155-0.0154*std::exp(8.0506*alpha(k));
         double Cl = f_Wo*f_alp ;

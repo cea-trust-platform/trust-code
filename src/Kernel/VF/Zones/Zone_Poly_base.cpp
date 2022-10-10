@@ -916,17 +916,20 @@ void Zone_Poly_base::init_dist_paroi_globale(const Conds_lim& conds_lim) // Meth
         int nb_faces_cl   = conds_lim(ind_cl).frontiere_dis().frontiere().nb_faces();
 
         for (int f=num_face_1_cl ; f < nb_faces_cl+num_face_1_cl ; f++)
-          if ( dist_face_elem0(f, face_voisins(f, 0)) < y_elem_(face_voisins(f, 0)) ) // Prise en compte du cas ou l'element a plusieurs faces de bord
-            {
-              y_elem_(face_voisins(f, 0)) = dist_face_elem0(f, face_voisins(f, 0)) ;
-              for (int d = 0 ; d<D ; d++)
-                {
+          {
+            if ( dist_face_elem0(f, face_voisins(f, 0)) < y_elem_(face_voisins(f, 0)) ) // Prise en compte du cas ou l'element a plusieurs faces de bord
+              {
+                y_elem_(face_voisins(f, 0)) = dist_face_elem0(f, face_voisins(f, 0)) ;
+                for (int d = 0 ; d<D ; d++)
                   n_y_elem_(face_voisins(f, 0), d) = -face_normales(f,  d)/face_surfaces(f);
-                  n_y_faces_ = -face_normales(f,  d)/face_surfaces(f);
-                }
-            }
+              }
+            for (int d = 0 ; d<D ; d++)
+              n_y_faces_(f, d)                 = -face_normales(f,  d)/face_surfaces(f); // Coherent normal vector for border faces
+          }
       }
 
+  n_y_faces_.echange_espace_virtuel();
+  n_y_elem_.echange_espace_virtuel();
   y_faces_.echange_espace_virtuel();
   y_elem_.echange_espace_virtuel();
   dist_paroi_initialisee_ = 1;

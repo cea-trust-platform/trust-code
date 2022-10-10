@@ -46,7 +46,6 @@ void Portance_interfaciale_Tomiyama::coefficient(const DoubleTab& alpha, const D
                                                  const DoubleTab& k_turb, const DoubleTab& d_bulles,
                                                  const DoubleTab& ndv, int e, DoubleTab& coeff) const
 {
-  const DoubleTab& diametres = ref_cast(Pb_Multiphase, pb_.valeur()).get_champ("diametre_bulles").valeurs();
   int k, N = ndv.dimension(0);
 
   coeff = 0;
@@ -54,8 +53,8 @@ void Portance_interfaciale_Tomiyama::coefficient(const DoubleTab& alpha, const D
   for (k = 0; k < N; k++)
     if (k!=n_l) // k gas phase
       {
-        double Re = rho(n_l) * ndv(n_l,k) * diametres(e, k)/mu(n_l);
-        double Eo = g_ * std::abs(rho(n_l)-rho(k)) * diametres(e, k)*diametres(e, k)/sigma(n_l,k);
+        double Re = rho(n_l) * ndv(n_l,k) * d_bulles(k)/mu(n_l);
+        double Eo = g_ * std::abs(rho(n_l)-rho(k)) * d_bulles(k)*d_bulles(k)/sigma(n_l,k);
         double f_Eo = .00105*Eo*Eo*Eo - .0159*Eo*Eo - .0204*Eo + .474;
         double Cl;
         if (Eo<4) Cl = std::min( .288*std::tanh( .121*Re ), f_Eo) ;
