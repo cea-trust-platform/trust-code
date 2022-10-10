@@ -15,7 +15,7 @@
 #
 #*****************************************************************************
 
-import sys, os, getopt, shutil
+import sys, os, argparse, shutil
 
 try:
     sys.dont_write_bytecode = True
@@ -39,13 +39,6 @@ from SousChapitre import SousChapitre
 from Conclusion import Conclusion
 from filelist import FileAccumulator
 
-def Usage(gestMsg):
-    '''Renvoie l usage du script.'''
-    import sys
-    gestMsg.ecrire(GestionMessages._DEBOG, 'DEBUT %s' % getNomFonction(), niveau=15)
-    usage = sys.modules[__name__].__doc__
-    return usage
-
 def getOptions(argv, gestMsg):
     '''Lecture des options de ligne de commande.'''
     global display_figure
@@ -60,62 +53,37 @@ def getOptions(argv, gestMsg):
     noprereq = False
     notebook = False
     #recuperation des options
-    try:
-        options,arguments = getopt.getopt(argv, 'g:hfp:nt:v:o:d:c:Dn:nv:np', 
-                                          ['get_cmd_to_run=','help', 'format', 'parametres=', 'notebook', 'verbose=', 
-                                           'output=','debug_figure=','compare=','DEBOG','nodisplay', 
-                                           'no_visit', 'no_prereq'])
-    except getopt.GetoptError:
-        gestMsg.ecrire(GestionMessages._ERR, '-> Error, unknown option. Options list is %s' % (argv), arret=True, usage=True, texteUsage=Usage(gestMsg))
-
-    # balayage pour extraire les options utiles
-    if (arguments):
-        gestMsg.ecrire(GestionMessages._ERR, '-> Error, unknown option. Options list is %s' % (arguments), arret=True, usage=True)
-
-
-    for opt, arg in options:
-        if opt in ('-h', '--help'):
-            gestMsg.ecrire(GestionMessages._INFO, '-- Help --', arret=True, usage=True, texteUsage=Usage(gestMsg))
-        elif opt in('-g','--get_cmd_to_run'):
-            get_cmd_to_run=arg
-        elif opt in ('-f', '--format'):
-            gestMsg.ecrire(GestionMessages._INFO, '-- Help --', arret=True, usage=True, texteUsage=genererCourbes.__format_fichier__)
-        elif opt in ('-v', '--verbose'):
-            if arg.isdigit():
-                verbose = int(arg)
-            else:
-                gestMsg.ecrire(GestionMessages._ERR, 'The verbosity argument should be an integer (and not \'%s\') !' % arg, texteUsage=Usage(gestMsg))
-        elif opt in ('-p', '--parametres'):
-            ficParametres = arg
-        elif opt in ('--notebook'):
-            notebook = True
-        elif opt in ('-o', '--output'):
-            sortie = arg
-        elif opt in ('--compare'):
-            if arg[-1]!='/': arg=arg+'/'
-            old_path.append(arg)
-        elif opt in ('-D','--DEBOG'):
-            old_path.append('PAR_')
-        elif opt in ('-d','--debug_figure'):
-            if (arg=="text"): arg="-2"
-            debug_figure=int(arg)
-        elif opt in ('--nodisplay'):
-            display_figure=False
-        elif opt in ('--no_visit'):
-            novisit=True
-        elif opt in ('--no_prereq'):
-            noprereq = True
+    parser = argparse.ArgumentParser(description='Tool used to generate a validation report from TRUST simulation and reference curves.')
+    parser.add_argument("-p",'--parameters' , metavar="prm File", required=True, help = "to give the path of the parameters file.")
+    parser.add_argument("-g", "--get_cmd_to_run", help="=yes to show command lines to execute to run cases \n =post_run to show command lines to execute to run post_run")
+    #parser.add_argument("-f", "--format", help="to show the parameters file description.")
+    parser.add_argument("-v", "--verbose", type=int, metavar="int", default=0, help="increase output verbosity")
+    parser.add_argument("-o",'--output' , metavar="pdf File", default="rapport.pdf", help = "to specify a output file path")
+    parser.add_argument("-c",'--compare' , metavar="File", help = "to generate a rapport including the courbes of the old_path")
+    parser.add_argument("-d",'--debug_figure' , metavar="int or text", help = "to debug the figure n (-1 all figures, text ou -2 only text)")
+    parser.add_argument("-D",'--DEBOG', action="store_true", help="to generate a rapport including the courbes from parallel calculation")
+    parser.add_argument('--notebook', action="store_true", help="to convert a prm file into a notebook jupyter")
+    parser.add_argument('--no_display', action="store_false")
+    parser.add_argument('--no_visit', action="store_true")
+    parser.add_argument('--no_prereq', action="store_true")
+    args = parser.parse_args()
+    
+    if (args.compare): 
+        arg = args.compare
+        if arg[-1]!='/': arg=arg+'/'
+        old_path.append(arg)
+    if (args.DEBOG):
+        old_path.append('PAR_')
+    if (args.debug_figure):
+        if (args.debug_figure=="text"):
+            debug_figure=-2
         else:
-            print("codage manquant pour "+str(opt))
-            1/0
+            debug_figure=int(args.debug_figure)
 
-        if os.getenv("PRM_NO_VISIT"):
-            novisit=True
+    if os.getenv("PRM_NO_VISIT"):
+        novisit=True
 
-    if ficParametres=='':
-        gestMsg.ecrire(GestionMessages._ERR, 'The parameter file has not been given !', texteUsage=Usage(gestMsg))
-
-    return verbose, ficParametres, notebook, sortie, get_cmd_to_run,debug_figure,old_path, novisit, noprereq
+    return args.verbose, args.parameters, args.notebook, args.output, args.get_cmd_to_run,debug_figure,old_path, args.no_visit, args.no_prereq
 
 class GenererCourbes(object):
     '''
