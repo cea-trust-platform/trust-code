@@ -121,7 +121,8 @@ double nlinear_interpolation(const std::vector<double>& x, const std::vector<std
   // j=0 -> index=00...000 ; j=1 -> index=00...001 ; j=2 -> index=00...010
   double interpolant = 0.0, prod;
   for (int j = 0, i; j < (1<<n); interpolant += prod, j++)
-    for (prod = data[j], i = 0; i < n; i++) prod *= (j >> i) & 1 ? weight[i] : 1 - weight[i];
+    for (prod = data[j], i = 0; i < n; i++) prod *= (j >> (n - 1 - i)) & 1 ? weight[i] : 1.0 - weight[i];
+
   return interpolant;
 }
 
