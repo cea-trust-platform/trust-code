@@ -42,7 +42,7 @@ public:
   virtual void ajouter_inj(const double *flux_alpha, const double *alpha, const double *rho, DoubleTab& f_a_r) const = 0;
 
 protected:
-  double limiter_liquid_ = 0.8 ; // Maximum percentage of the liquid that can be entrained by the bubbles
+  double limiter_liquid_ = 0.5 ; // Maximum percentage of the liquid that can be entrained by the bubbles
 };
 
 #endif

@@ -29,6 +29,7 @@ Entree& Masse_ajoutee_Coef_Constant::readOn(Entree& is)
   param.ajouter("beta", &beta);
   param.ajouter("inj_ajoutee_liquide", &inj_ajoutee_liquide_);
   param.ajouter("inj_ajoutee_gaz", &inj_ajoutee_gaz_);
+  param.ajouter("limiter_liquid", &limiter_liquid_);
   param.lire_avec_accolades_depuis(is);
 
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, pb_.valeur()) ? &ref_cast(Pb_Multiphase, pb_.valeur()) : NULL;
