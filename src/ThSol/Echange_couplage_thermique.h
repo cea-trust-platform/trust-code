@@ -46,10 +46,10 @@ public :
   int initialiser(double temps) override;
 
   double champ_exterieur(int i,int j, const Champ_front& champ_ext) const override;
-  double champ_exterieur(int i, const Champ_front& champ_ext) const override;
+  inline double champ_exterieur(int i, const Champ_front& champ_ext) const override { return champ_exterieur(i, 0, champ_ext); };
 
-  double flux_exterieur_impose(int i) const override;
-  double flux_exterieur_impose(int i,int j) const override;
+  inline double flux_exterieur_impose(int i) const override { return couplage_*champ_exterieur(i,phi_ext()); }
+  inline double flux_exterieur_impose(int i,int j) const override { return couplage_*champ_exterieur(i,j,phi_ext()); };
 
   inline Champ_front& T_p();
   inline const Champ_front& T_p() const;
@@ -73,7 +73,6 @@ public :
   inline const Champ_front& T_eff() const;
 
 protected :
-  void get_dRho_dCp(int i, double& dRho, double& dCp) const;
 
   double couplage_;
   Champ_front coeff_ap;
@@ -82,6 +81,7 @@ protected :
   Champ_front temperature_Teff;
   Lecture_Champ lec_champs;
   bool reprise_;
+  bool divise_par_rho_cp_=true;
 };
 
 inline const Champ_front& Echange_couplage_thermique::T_p() const
