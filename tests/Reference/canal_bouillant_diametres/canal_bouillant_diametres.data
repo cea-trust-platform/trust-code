@@ -52,26 +52,19 @@ Read sch
     }
 }
 
-Fluide_sodium_liquide sodium_liquide
-Read sodium_liquide  { P_ref 100000.0 T_ref 800  }
-Fluide_sodium_gaz sodium_gaz
-Read sodium_gaz { P_ref 100000.0 T_ref 879.9430097752451 }
-saturation_sodium saturation_sodium
-Read saturation_sodium { P_ref 100000.0 T_ref 879.9430097752451 }
-
 Pb_Multiphase pb
-phases pb
-{
-    liquide { sodium }
-    gaz     { sodium }
-}
-
 Associate  pb dom
 Associate  pb sch
 Discretize pb dis
 
 Read pb
 {
+    milieu_composite
+    {
+        liquide_sodium Fluide_sodium_liquide { P_ref 100000.0 T_ref 800  }
+        gaz_sodium Fluide_sodium_gaz { P_ref 100000.0 T_ref 879.9430097752451 }
+        saturation_sodium saturation_sodium { P_ref 100000.0 T_ref 879.9430097752451 }
+    }
     correlations
     {
         flux_interfacial coef_constant { liquide_sodium 1e10 gaz_sodium 1e10 }
@@ -85,13 +78,13 @@ Read pb
         diffusion  { negligeable }
         initial_conditions
         {
-            vitesse Champ_composite 2 
+            vitesse Champ_composite 2
                 {
                     Champ_Fonc_xyz dom 2 0 1
                     Champ_Fonc_xyz dom 2 0 1
                 }
-                
-            pression Champ_composite 1 
+
+            pression Champ_composite 1
                 {
                     Champ_Fonc_xyz dom 1 100000.0
                 }
@@ -99,7 +92,7 @@ Read pb
         boundary_conditions
         {
             boundary symetrie
-            bas  frontiere_ouverte_vitesse_imposee_sortie champ_front_composite 2 
+            bas  frontiere_ouverte_vitesse_imposee_sortie champ_front_composite 2
                 {
                     champ_front_uniforme 2 0 1
                     champ_front_uniforme 2 0 1
@@ -112,8 +105,8 @@ Read pb
     }
     Masse_Multiphase
     {
-        initial_conditions 
-        { 
+        initial_conditions
+        {
             alpha Champ_composite 2
             {
                 Champ_Fonc_xyz dom 1 1
@@ -141,8 +134,8 @@ Read pb
     {
         diffusion { negligeable }
         convection { amont }
-        initial_conditions 
-        { 
+        initial_conditions
+        {
             temperature Champ_composite 2
             {
                 Champ_Uniforme 1 800
@@ -165,10 +158,10 @@ Read pb
         }
         sources
         {
-            puissance_thermique Champ_composite 2 
+            puissance_thermique Champ_composite 2
             {
-                champ_uniforme 1 100000000.0 
-                champ_uniforme 1 0 
+                champ_uniforme 1 100000000.0
+                champ_uniforme 1 0
             } ,
             flux_interfacial
         }
@@ -176,7 +169,7 @@ Read pb
     Post_processing
     {
 		Definition_champs 	{
-    					d_bulles	refChamp { Pb_champ pb diametre_bulles } 
+    					d_bulles	refChamp { Pb_champ pb diametre_bulles }
     					}
         Format lml
         fields dt_post 1e-2
@@ -197,7 +190,7 @@ Read pb
             enthalpie elem
             masse_volumique_sodium_melange elem
             enthalpie_sodium_melange elem
-	    diametre_bulles elem 
+	    diametre_bulles elem
         }
     }
 }
