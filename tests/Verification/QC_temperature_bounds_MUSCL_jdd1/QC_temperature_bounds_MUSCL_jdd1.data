@@ -1,0 +1,134 @@
+# PARALLEL OK #
+dimension 3
+
+pb_thermohydraulique_QC pb
+
+domaine dom
+
+# BEGIN MESH #
+lire_fichier dom maillage.geom
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+lire dis { P0 P1 changement_de_base_P1bulle 1 CL_pression_sommet_faible 0 modif_div_face_dirichlet 0 }
+
+Runge_Kutta_rationnel_ordre_2 sch
+lire sch
+{
+	tinit 0
+	nb_pas_dt_max 3
+	tmax 5.0
+	dt_start dt_fixe 0.0031
+	dt_max 0.0031
+	dt_impr 1e-6
+	facsec 1
+	diffusion_implicite 1
+	impr_diffusion_implicite 1
+	precision_impr 8
+	dt_sauv -1
+}
+
+fluide_quasi_compressible fluide
+# water/ethanol water/saccarose mixture #
+lire fluide
+{
+	mu		champ_fonc_fonction temperature 1 ((val*0.00109+(1-val)*0.00245)_MAX_0.00109)_MIN_0.00245
+	lambda		champ_fonc_fonction temperature 1 1.77e-6
+	pression	1
+	loi_etat	rhoT_gaz_parfait_QC { Prandtl 1 Cp 1 rho_T ((T*1064.7+(1-T)*956.54)_MAX_956.54)_MIN_1064.7 }
+	traitement_pth constant
+	traitement_rho_gravite standard
+	omega_relaxation_drho_dt 0.9
+	temps_debut_prise_en_compte_drho_dt 1e-6
+}
+
+champ_uniforme gravite
+lire gravite 3 0 -9.81 0
+associer fluide gravite
+
+associer pb dom
+associer pb sch
+associer pb fluide
+
+discretiser pb dis
+
+lire pb
+{
+	Navier_Stokes_QC
+	{
+		parametre_equation	parametre_diffusion_implicite	{
+									Crank 1
+									niter_max_diffusion_implicite 300
+									preconditionnement_diag 1
+									seuil_diffusion_implicite 1e-10
+									}
+		solveur_pression	petsc Cholesky { impr }
+		convection		{ MUSCL }
+		diffusion		{ }
+		conditions_initiales	{ vitesse champ_uniforme 3 0 0 0 }
+		conditions_limites	{
+					Paroi_tube	paroi_fixe
+					Reservoir_froid	paroi_fixe
+					Reservoir_chaud	paroi_fixe
+					Sortie		frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
+					} 
+	}
+
+	Convection_diffusion_chaleur_QC
+	{
+		parametre_equation	parametre_diffusion_implicite	{
+									Crank 1
+									niter_max_diffusion_implicite 300
+									preconditionnement_diag 1
+									seuil_diffusion_implicite 1e-10
+									}
+		convection		{ MUSCL }
+		diffusion		{ }
+		conditions_initiales	{ temperature champ_fonc_xyz dom 1 (x<0)*(1)+(x>0)*(0) }
+		conditions_limites	{
+					Paroi_tube	paroi_adiabatique
+					Reservoir_froid	paroi_adiabatique
+					Reservoir_chaud	paroi_adiabatique
+					Sortie		frontiere_ouverte T_ext champ_front_uniforme 1 1
+					}
+	}
+
+	Postraitement
+	{
+		definition_champs	{
+					Vmin	reduction_0D { methode min source refChamp { pb_champ pb vitesse } }
+					Vmax	reduction_0D { methode max source refChamp { pb_champ pb vitesse } }
+					Tmin	reduction_0D { methode min source refChamp { pb_champ pb temperature } }
+					Tmax	reduction_0D { methode max source refChamp { pb_champ pb temperature } }
+					}
+		sondes                  {
+					Vmin Vmin periode 1e-6 numero_elem_sur_maitre 0
+					Vmax Vmax periode 1e-6 numero_elem_sur_maitre 0
+					Tmin Tmin periode 1e-6 numero_elem_sur_maitre 0
+					Tmax Tmax periode 1e-6 numero_elem_sur_maitre 0
+					}
+		format lml
+		champs dt_post 1	{
+					vitesse elem
+					temperature elem
+					}
+	}
+}
+
+resoudre pb
+
+fin

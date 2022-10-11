@@ -29,7 +29,7 @@
  *   transport d'un scalaire.
  *   La discretisation est VEF
  *   Le champ convecte est scalaire ou vecteur de type Champ_P1NC
- *   Le schema de convection est isu du papier
+ *   Le schema de convection est issu du papier
  *   "High-resolution FEM-TVD schemes based on a fully multidimensional flux limiter"
  *    D.Kuzmin and S.Turek.
  *   On herite de Op pour recuperer l'implicitation amont
@@ -73,7 +73,6 @@ private :
   void calculer_flux_operateur_centre(DoubleTab&,const DoubleTab&,const DoubleTab&,const DoubleTab&,const DoubleTab&,const int,const DoubleTab&,const DoubleTab&) const;
   void modifier_flux_operateur_centre(DoubleTab&,const DoubleTab&,const DoubleTab&,const DoubleTab&,const DoubleTab&,const int,const DoubleTab&,const DoubleTab&) const;
 
-  DoubleTab& ajouter_partie_compressible(const DoubleTab&, DoubleTab&, const DoubleTab& vitesse) const;
   DoubleTab& ajouter_operateur_centre(const DoubleTab&,const DoubleTab&, const DoubleTab&, DoubleTab&) const;
   DoubleTab& ajouter_diffusion(const DoubleTab&,const DoubleTab&, const DoubleTab&, DoubleTab&) const;
   DoubleTab& ajouter_antidiffusion(const DoubleTab&, const DoubleTab&, const DoubleTab&, DoubleTab&) const;
@@ -84,31 +83,16 @@ private :
   inline void calculer_senseur_v1(const DoubleTab&, const DoubleTab&, const DoubleVect&, const int, const int, const IntTab&, const IntTab&, const IntTab&, ArrOfDouble&, ArrOfDouble&, ArrOfDouble&, ArrOfDouble&) const;
   inline void calculer_senseur_v2(const DoubleTab&, const DoubleTab&, const DoubleVect&, const int, const int, const IntTab&, const IntTab&, const IntTab&, ArrOfDouble&, ArrOfDouble&, ArrOfDouble&, ArrOfDouble&) const;
   void mettre_a_jour_pour_periodicite(const DoubleTab&,const DoubleTab&,DoubleTab&) const;
-  void ajouter_old(const DoubleTab& , DoubleTab&, const DoubleTab& vitesse) const;
   void calculer_data_pour_dirichlet();
-
-  //Methodes pour l'implicite
-  void ajouter_contribution_operateur_centre(const DoubleTab&, const DoubleTab&, Matrice_Morse&) const;
-  void ajouter_contribution_diffusion(const DoubleTab&, const DoubleTab&, Matrice_Morse&) const;
-  void ajouter_contribution_antidiffusion(const DoubleTab&,const DoubleTab&,Matrice_Morse&) const;
-  void ajouter_contribution_partie_compressible(const DoubleTab&,const DoubleTab&,Matrice_Morse&) const;
-
-  //Methodes de test
-  void test(const DoubleTab&,const DoubleTab&, const DoubleTab& vitesse) const;
-  void test_difference_Kij(const DoubleTab&,DoubleTab&,DoubleTab&, const DoubleTab& vitesse) const;
-  void test_difference_resu(const DoubleTab&,const DoubleTab&,const DoubleTab&,const DoubleTab&,const DoubleTab& vitesse) const;
-  void test_implicite() const;
 
   //Attributs de la classe
   IntTab is_element_for_upwinding_;
   IntTab is_dirichlet_faces_;
 
-
   ArrOfDouble alpha_tab;
   ArrOfDouble beta; // vaut zero pour les faces ou l'on souhaite degenerer en Amont.
   //  mutable DoubleTab limiteurs_;//tableau stockant pour chaque face la moyenne algebrique du limiteur
 
-  double alpha_;
   double max_limiteur_;
   int centered_;
   int upwind_;

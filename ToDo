@@ -6,6 +6,7 @@ Version	Qui				Tache
 1.9.1   pierre.ledac@cea.fr	VisIt sur Ubuntu 22 (plugin med)
 1.9.1   pierre.ledac@cea.fr     [PETSC_AMGX] Corriger erreur valgrind sur machine gpu en mettant a jour AMGX*
 1.9.1   pierre.ledac@cea.fr     Modifier scripts Baltik pour qu un Baltik quelconque puisse etre deplace sans souci apres installation
+1.9.1 	pierre.ledac@cea.fr	Port muscl_new sur GPU avec OpenMP et optimisation du code (3 fois plus lent que muscl actuellement). Trouver nom adequat.
 1.9.1   anida.khizar@cea.fr     coder la resolution en increment dans le solveur_masse
 1.9.1   adrien.bruneton@cea.fr  Revoir installation de mpi4py au TGCC
 1.9.1   adrien.bruneton@cea.fr  Try to add Champ_Uniform into Champ_implementation_P0.cpp
