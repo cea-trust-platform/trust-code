@@ -13,6 +13,7 @@
 *
 *****************************************************************************/
 
+#include <Fluide_Incompressible.h>
 #include <Discretisation_base.h>
 #include <Schema_Temps_base.h>
 #include <Milieu_composite.h>
@@ -108,6 +109,14 @@ std::pair<std::string, int> Milieu_composite::check_fluid_name(const Nom& name)
   Nom espece = phase ? name.getSuffix("gaz_") : name.getSuffix("liquide_");
 
   return std::make_pair(espece.getString(), phase);
+}
+
+const Fluide_base& Milieu_composite::get_medium_for_incompressible(const int i) const
+{
+  assert(i > 0 && i < (int)fluides.size());
+  if (!sub_type(Fluide_Incompressible, fluides[i]))
+    Cerr << "Error in Milieu_composite::get_medium_for_incompressible ! The resquested fluid is not incompressible !!" << finl, Process::exit();
+  return fluides[i];
 }
 
 bool Milieu_composite::has_interface(int k, int l) const

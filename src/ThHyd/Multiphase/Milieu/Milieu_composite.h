@@ -57,9 +57,9 @@ public :
   Interface_base& get_interface(int k, int l) const;
   Saturation_base& get_saturation(int k, int l) const;
 
+  const Fluide_base& get_medium_for_incompressible(const int i) const;
   inline const Noms& noms_phases() const { return noms_phases_; }
   inline const LIST(Fluide_base)& get_fluides() const { return fluides; }
-  inline const Fluide_base& get_medium_for_incompressible() const { return fluides[0]; }
 
 protected :
   LIST(Fluide_base) fluides;

@@ -47,8 +47,8 @@ void Terme_Boussinesq_base::associer_pb(const Probleme_base& pb)
 
   // Fill la_gravite_ and beta_ attributes
   // Elie Saikali : compat with pb_multiphase
-  const Fluide_base& fluide = equation().milieu().que_suis_je() == "Milieu_composite" ? ref_cast(Milieu_composite,equation().milieu()).get_medium_for_incompressible() :
-                              ref_cast(Fluide_base, equation().milieu());
+  const Fluide_base& fluide = ref_cast(Fluide_base, equation().milieu());
+  const Fluide_base& fluide_incomp = equation().milieu().que_suis_je() == "Milieu_composite" ? ref_cast(Milieu_composite,equation().milieu()).get_medium_for_incompressible(0) : fluide;
 
   la_gravite_ = fluide.gravite();
 
@@ -58,15 +58,15 @@ void Terme_Boussinesq_base::associer_pb(const Probleme_base& pb)
 
   if (NomScalaire_=="temperature")
     {
-      valid_beta_field = fluide.beta_t( ).non_nul( );
+      valid_beta_field = fluide_incomp.beta_t( ).non_nul( );
       beta_field_name = "thermal expansion value (beta_th)";
-      beta_=fluide.beta_t();
+      beta_=fluide_incomp.beta_t();
     }
   else if (NomScalaire_=="concentration")
     {
-      valid_beta_field = fluide.beta_c( ).non_nul( );
+      valid_beta_field = fluide_incomp.beta_c( ).non_nul( );
       beta_field_name = "volume expansion coefficient values in concentration (beta_co)";
-      beta_=fluide.beta_c();
+      beta_=fluide_incomp.beta_c();
     }
 
   if( ! valid_beta_field )
