@@ -54,6 +54,8 @@ public:
   void test(Matrice&) const;
   void updateChampRho();
   int impr(Sortie&) const override;
+  // void ouvrir_fichier_partage(EcrFicPartage&, const Nom&, const Nom&) const;
+  //  void imprimer_ustar_yplus__mean_only(Sortie&, const Nom& ) const override;
 
   // Methodes de l interface des champs postraitables
 //
