@@ -15,6 +15,8 @@
 
 #include <LireMED.h>
 #include <Domaine.h>
+#include <Param.h>
+#include <EChaine.h>
 #include <med++.h>
 #include <NettoieNoeuds.h>
 #include <sys/stat.h>
@@ -94,22 +96,27 @@ void LireMED::lire_geom( Nom& nom_fic,Domaine& dom,const Nom& nom_dom,const Nom&
   med_non_installe();
 }
 #else
-// XD Read_MED interprete lire_med -1 Keyword to read MED mesh files where domain_name corresponds to the domain name, filename.med corresponds to the file (written in format MED) containing the mesh named mesh_name. NL2 Note about naming boundaries: When reading filename.med, TRUST will detect boundaries between domain (Raccord) when the name of the boundary begins by type_raccord_. For example, a boundary named type_raccord_wall in filename.med will be considered by TRUST as a boundary named wall between two domains. NL2 NB: To read several domains from a mesh issued from a MED file, use Read_Med to read the mesh then use Create_domain_from_sous_zone keyword. NL2 NB: If the MED file contains one or several subzone defined as a group of volumes, then Read_MED will read it and will create two files domain_name_ssz.geo and domain_name_ssz_par.geo defining the subzones for sequential and/or parallel calculations. These subzones will be read in sequential in the datafile by including (after Read_Med keyword) something like: NL2 Read_Med .... NL2 Read_file domain_name_ssz.geo ; NL2 During the parallel calculation, you will include something: NL2 Scatter { ... } NL2 Read_file domain_name_ssz_par.geo ;
-// XD attr vef chaine(into=["vef"]) vef 1 Option vef is obsolete and is kept for backward compatibility.
-// XD attr convertAllToPoly chaine(into=["convertAllToPoly"]) convertAllToPoly 1 Option to convert mesh with mixed cells into polyhedras/polygons cells
-// XD attr family_names_from_group_names chaine(into=["family_names_from_group_names"]) family_names_from_group_names 1 The option family_names_from_group_names uses the group names instead of the family names to detect the boundaries into a MED mesh (useful when trying to read a MED mesh file from Gmsh tool which can now read and write MED meshes).
-// XD attr short_family_names chaine(into=["short_family_names"]) short_family_names 1 The option short_family_names is useful to suppress FAM_-*_ from the boundary names of the MED meshes.
-// XD attr nom_dom ref_domaine nom_dom 0 corresponds to the domain name
-// XD attr nom_dom_med chaine nom_dom_med 0 name of the mesh in med file. If keyword --any-- specified, the first mesh will be read.
-// XD attr file chaine file 0 corresponds to the file (written in format MED) containing the mesh
-Entree& LireMED::interpreter_(Entree& is)
+
+namespace
 {
-  Cerr << "Syntax: Lire_MED [ vef|convertAllToPoly  ] [ family_names_from_group_names | short_family_names ] domaine_name mesh_name filename.med" << finl;
-  int isvefforce=0;
-  int convertAllToPoly=0;
-  int isfamilyshort = 0;
-  Nom nom_dom_trio,nom_dom, nom_fic;
-  is >> nom_dom_trio ;
+void interp_old_syntax(Entree& is, int& isvefforce, int& convertAllToPoly, int& isfamilyshort, Nom& nom_dom_trio, Nom& nom_mesh, Nom& nom_fic)
+{
+  //Cerr << "Syntax: Lire_MED [ vef|convertAllToPoly  ] [ family_names_from_group_names | short_family_names ] domaine_name mesh_name filename.med" << finl;
+
+  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+  Cerr << "!!!!!!! WARNING: you're using the old syntax for the keyword 'Lire_MED' / 'Read_MED'" << finl;
+  Cerr << "!!!!!!! It will be deprecated in version 1.9.3. Please update your dataset with the following syntax:" << finl;
+  Cerr << "    Read_MED {" << finl;
+  Cerr << "        domaine dom" << finl;
+  Cerr << "        file the_file.med" << finl;
+  Cerr << "        [mesh my_mesh_in_file]" << finl;
+  Cerr << "    }" << finl;
+  Cerr << "!!!!!!! See documentation for a comprehensive list of possible options." << finl;
+  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+
+  // Warning, in the old syntax, this is set to 0:
+  isfamilyshort = 0;
+
   if (Motcle(nom_dom_trio)=="vef")
     {
       isvefforce=1;
@@ -130,9 +137,55 @@ Entree& LireMED::interpreter_(Entree& is)
       isfamilyshort = 1;
       is>>nom_dom_trio;
     }
-  lire_nom_med(nom_dom,is);
+
+  lire_nom_med(nom_mesh,is);
   is >> nom_fic;
-  // on retire _0000 si il existe et on cree le bon fichier
+}
+}
+
+
+// XD Read_MED interprete lire_med -1 Keyword to read MED mesh files where 'domain' corresponds to the domain name, 'file' corresponds to the file (written in the MED format) containing the mesh named mesh_name. NL2 Note about naming boundaries: When reading 'file', TRUST will detect boundaries between domains (Raccord) when the name of the boundary begins by type_raccord_. For example, a boundary named type_raccord_wall in 'file' will be considered by TRUST as a boundary named 'wall' between two domains. NL2 NB: To read several domains from a mesh issued from a MED file, use Read_Med to read the mesh then use Create_domain_from_sous_zone keyword. NL2 NB: If the MED file contains one or several subzone defined as a group of volumes, then Read_MED will read it and will create two files domain_name_ssz.geo and domain_name_ssz_par.geo defining the subzones for sequential and/or parallel calculations. These subzones will be read in sequential in the datafile by including (after Read_Med keyword) something like: NL2 Read_Med .... NL2 Read_file domain_name_ssz.geo ; NL2 During the parallel calculation, you will include something: NL2 Scatter { ... } NL2 Read_file domain_name_ssz_par.geo ;
+Entree& LireMED::interpreter_(Entree& is)
+{
+  int isvefforce=-1;
+  int convertAllToPoly=-1;
+  int isfamilyshort=-1;
+  Nom nom_dom_trio,nom_mesh("--any--"), nom_fic;
+
+  is >> nom_dom_trio;
+  if (nom_dom_trio == "{") // New syntax !!
+    {
+      Nom s = "{ ";
+      int cnt = 1;
+      while (cnt)
+        {
+          Nom motlu;
+          is >> motlu;
+          if (motlu == "{") cnt++;
+          if (motlu == "}") cnt --;
+          s += Nom(" ") + motlu;
+        }
+      int nfnfgn = -1;
+      Param param(que_suis_je());
+      param.ajouter_flag("convertAllToPoly", &convertAllToPoly); // XD attr convertAllToPoly chaine(into=["convertAllToPoly"]) convertAllToPoly 1 Option to convert mesh with mixed cells into polyhedras/polygons cells
+
+      // Awful option just to keep naked family names from MED file. Rarely used, to be removed very soon.
+      // In the new syntax, we implicitely assume that the former option 'family_names_from_group_names' is always set.
+      param.ajouter_flag("no_family_names_from_group_names", &nfnfgn); // XD attr TODO
+
+      param.ajouter("domain|domaine", &nom_dom_trio, Param::REQUIRED); // XD attr domain ref_domaine domaine 0 corresponds to the domain name.
+      param.ajouter("file|fichier", &nom_fic, Param::REQUIRED);  // XD attr file chaine fichier 0  file (written in the MED format, with extension '.med') containing the mesh
+
+      param.ajouter("mesh|maillage", &nom_mesh); // XD attr mesh chaine maillage 0 name of the mesh in med file. If not specified, the first mesh will be read.
+
+      EChaine is2(s);
+      param.lire_avec_accolades(is2);
+      isfamilyshort = nfnfgn ? 0 : 2;  // will be 2 most of the time in the new syntax.
+    }
+  else // Boooh: old syntax :-(
+    interp_old_syntax(is, isvefforce, convertAllToPoly, isfamilyshort, nom_dom_trio, nom_mesh, nom_fic);
+
+  // Strip _0000 if there, and create proper file name
   Nom nom_fic2(nom_fic);
   nom_fic2.prefix(".med");
   if (nom_fic2==nom_fic)
@@ -149,7 +202,7 @@ Entree& LireMED::interpreter_(Entree& is)
     }
   associer_domaine(nom_dom_trio);
   Domaine& dom=domaine();
-  lire_geom(nom_fic,dom,nom_dom,nom_dom_trio,isvefforce,convertAllToPoly,isfamilyshort);
+  lire_geom(nom_fic,dom,nom_mesh,nom_dom_trio,isvefforce,convertAllToPoly,isfamilyshort);
   return is;
 }
 
