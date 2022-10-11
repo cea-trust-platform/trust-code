@@ -17,6 +17,7 @@
 #include <Domaine.h>
 #include <Zone_VF.h>
 #include <Champ_base.h>
+#include <TRUSTTrav.h>
 
 DoubleVect& Champ_implementation_sommet_base::valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const
 {
@@ -78,6 +79,24 @@ DoubleVect& Champ_implementation_sommet_base::valeur_aux_elems_compo(const Doubl
     result(i)=resu(i,0);
   return result;
 }
+
+DoubleTab Champ_implementation_sommet_base::valeur_aux_bords() const
+{
+  const Zone_VF& zone = get_zone_dis();
+  const IntTab& f_s = zone.face_sommets();
+  const DoubleTab& val = le_champ().valeurs();
+  int i, f, fb, s, ns, n, N = val.line_size();
+  DoubleTrav result(zone.xv_bord().dimension_tot(0), N);
+  for (f = 0; f < zone.nb_faces_tot(); f++)
+    if ((fb = zone.fbord(f)) >= 0)
+      {
+        for (ns = 0, i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
+          for (ns++, n = 0; n < N; n++) result(fb, n) += val(s, n);
+        for (n = 0; n < N; n++) result(fb, n) /= ns;
+      }
+  return result;
+}
+
 
 DoubleTab& Champ_implementation_sommet_base::remplir_coord_noeuds(DoubleTab& positions) const
 {

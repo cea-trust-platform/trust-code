@@ -48,7 +48,7 @@ public:
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const override;
 
-private:
+protected:
 
   REF(Zone_PolyMAC) la_zone_PolyMAC;
   REF(Zone_Cl_PolyMAC) la_zone_Cl_PolyMAC;

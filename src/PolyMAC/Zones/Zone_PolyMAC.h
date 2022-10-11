@@ -104,11 +104,14 @@ public :
   //som_arete[som1][som2 > som1] -> arete correspondant a (som1, som2)
   std::vector<std::map<int, int> > som_arete;
 
+  //pour chaque element, normale * surface duale liee a chacune de ses aretes (orientee comme l'arete)
+  const DoubleTab& surf_elem_arete() const;
+
   //matrices locales par elements (operateurs de Hodge) permettant de faire des interpolations :
   void M2(const DoubleTab *nu, int e, DoubleTab& m2) const; //normales aux faces -> tangentes aux faces duales :   (nu x_ef.v)    = m2 (|f|n_ef.v)
   void W2(const DoubleTab *nu, int e, DoubleTab& w2) const; //tangentes aux faces duales -> normales aux faces :   (nu |f|n_ef.v) = w2 (x_ef.v)
   void M1(const DoubleTab *nu, int e, DoubleTab& m1) const; //normales aux aretes duales -> tangentes aux aretes : (nu|a|t_a.v)   = m1 (S_ea.v)
-  void W1(const DoubleTab *nu, int e, DoubleTab& w1) const; //tangentes aux aretes -> normales aux aretes duales : (nu S_ea.v)    = w1 (|a|t_a.v)
+  void W1(const DoubleTab *nu, int e, DoubleTab& w1, DoubleTab& v_e, DoubleTab& v_ea) const; //tangentes aux aretes -> normales aux aretes duales : (nu S_ea.v)    = w1 (|a|t_a.v)
   //possibilite pour le tenseur nu :
   //nul -> nu = Id ci-dessous
   //isotrope -> nu(n_e, N) avec n_e = 1 (tenseur constant) / nb_elem_tot() (tenseur par element), et N un nombre de composantes
@@ -119,8 +122,8 @@ public :
   mutable MD_Vector mdv_elems_faces, mdv_faces_aretes;
 
 private:
-  DoubleVect longueur_aretes_; //longueur des aretes
-  mutable DoubleTab ta_;       //vecteurs tangents aux aretes
+  DoubleVect longueur_aretes_;             //longueur des aretes
+  mutable DoubleTab ta_, surf_elem_arete_; //vecteurs tangents aux aretes, normale * surface duale
 };
 
 #endif

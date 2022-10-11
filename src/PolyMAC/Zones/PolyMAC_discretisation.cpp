@@ -14,7 +14,6 @@
 *****************************************************************************/
 
 #include <PolyMAC_discretisation.h>
-#include <Zone_PolyMAC.h>
 #include <Champ_Fonc_Tabule.h>
 //#include <Ch_Fonc_Som_PolyMAC.h>
 #include <Champ_Fonc_Elem_PolyMAC.h>
@@ -77,11 +76,9 @@ void PolyMAC_discretisation::discretiser_champ(
   motcles[6] = "champ_sommets"; // Creer un champ aux sommets (type P1)
 
   // Le type de champ de vitesse depend du type d'element :
-  Nom type_champ_vitesse = Nom("Champ_Face_") + que_suis_je();
-  Nom type_elem = Nom("Champ_Elem_") + que_suis_je();
-  Nom type;
-  int default_nb_comp = 0; // Valeur par defaut du nombre de composantes
-  int rang = motcles.search(directive);
+  int zp1 = false, default_nb_comp = 0, rang = motcles.search(directive);
+  Nom type_elem = Nom("Champ_Elem_") + que_suis_je(), type_som = "Champ_Som_PolyMAC", type_champ_scal = zp1 ? type_som : type_elem,
+      type_champ_vitesse = zp1 ? "Champ_Arete_PolyMAC" : Nom("Champ_Face_") + que_suis_je(), type;
   switch(rang)
     {
     case 0:
@@ -92,8 +89,15 @@ void PolyMAC_discretisation::discretiser_champ(
     case 1:
     case 2:
     case 3:
+      type = type_champ_scal;
+      default_nb_comp = 1;
+      break;
     case 5:
       type = type_elem;
+      default_nb_comp = 1;
+      break;
+    case 6:
+      type = type_som;
       default_nb_comp = 1;
       break;
     default:
@@ -120,8 +124,8 @@ void PolyMAC_discretisation::discretiser_champ(
   // Calcul du nombre de ddl
   int nb_ddl = 0;
   if (type.debute_par(type_elem)) nb_ddl = z.nb_elem();
-  else if (type.debute_par(type_champ_vitesse)) nb_ddl = zone_PolyMAC.nb_faces();
-  else if (type.debute_par("Champ_P1_PolyMAC")) nb_ddl = zone_PolyMAC.nb_som();
+  else if (type.debute_par(type_som)) nb_ddl = zone_PolyMAC.nb_som();
+  else if (type.debute_par(type_champ_vitesse)) nb_ddl = zp1 ? zone_PolyMAC.zone().nb_aretes() : zone_PolyMAC.nb_faces();
   else assert(0);
 
   // Si c'est un champ multiscalaire, uh !
@@ -141,7 +145,6 @@ void PolyMAC_discretisation::discretiser_champ(
       champ.valeur().fixer_unites(unites);
       champ.valeur().fixer_noms_compo(noms);
     }
-
 }
 
 /*! @brief Idem que PolyMAC_discretisation::discretiser_champ(.
@@ -207,36 +210,39 @@ void PolyMAC_discretisation::discretiser_champ_fonc_don(
   motcles[1] = "temperature"; // Choix standard pour la temperature
   motcles[2] = "divergence_vitesse"; // Le type de champ obtenu en calculant div v
   motcles[3] = "champ_elem";  // Creer un champ aux elements (de type P0)
-  motcles[6] = "champ_sommets";  // Creer un champ aux elements (de type P1)
   motcles[4] = "vitesse";     // Choix standard pour la vitesse
-  motcles[7] = "champ_face";     // Choix standard pour la vitesse
   motcles[5] = "gradient_pression";  // Le type de champ obtenu en calculant grad P
+  motcles[6] = "champ_sommets";  // Creer un champ aux elements (de type P1)
+  motcles[7] = "champ_face";     // Choix standard pour la vitesse
 
   // Le type de champ de vitesse depend du type d'element :
-  Nom type_champ_vitesse("Champ_Fonc_Face_PolyMAC");
-  Nom type_elem("Champ_Fonc_Elem_PolyMAC");
-
-  Nom type;
-  int default_nb_comp = 0; // Valeur par defaut du nombre de composantes
-  int rang = motcles.search(directive);
+  int zp1 = false, default_nb_comp = 0, rang = motcles.search(directive);
+  Nom type_elem("Champ_Fonc_Elem_PolyMAC"), type_som("Champ_Fonc_Som_PolyMAC"), type_scal = zp1 ? type_som : type_elem,
+                                                                                type_champ_vitesse(zp1 ? "Champ_Fonc_Arete_PolyMAC" : "Champ_Fonc_Face_PolyMAC"), type;
   switch(rang)
     {
     case 0:
     case 1:
     case 2:
-    case 3:
-      type = type_elem;
+      type = type_scal;
       default_nb_comp = 1;
       break;
     case 4:
     case 5:
-    case 7:
       type = type_champ_vitesse;
       default_nb_comp = 3;
       break;
-    case 6:
-      type = "Champ_Fonc_Som_PolyMAC";
+    case 3:
+      type = type_elem;
       default_nb_comp = 1;
+      break;
+    case 6:
+      type = type_som;
+      default_nb_comp = 1;
+      break;
+    case 7:
+      type = "Champ_Fonc_Face_PolyMAC";
+      default_nb_comp = 3;
       break;
     default:
       assert(rang < 0);
@@ -263,10 +269,12 @@ void PolyMAC_discretisation::discretiser_champ_fonc_don(
   int nb_ddl = 0;
   if (type == "Champ_Fonc_Elem_PolyMAC")
     nb_ddl = z.nb_elem();
-  else if (type == type_champ_vitesse)
+  else if (type == "Champ_Fonc_Face_PolyMAC")
     nb_ddl = zone_PolyMAC.nb_faces();
   else if (type == "Champ_Fonc_Som_PolyMAC")
     nb_ddl = zone_PolyMAC.nb_som();
+  else if (type == "Champ_Fonc_Arete_PolyMAC")
+    nb_ddl = zone_PolyMAC.zone().nb_aretes();
   else
     assert(0);
 
@@ -573,10 +581,10 @@ Nom  PolyMAC_discretisation::get_name_of_type_for(const Nom& class_operateur, co
 {
   Nom type;
   Nom type_ch=eqn.inconnue()->que_suis_je();
-  if (type_ch.debute_par("Champ_Elem"))
-    type_ch = "_Elem";
-  if (type_ch.debute_par("Champ_Face"))
-    type_ch = "_Face";
+  if (type_ch.debute_par("Champ_Elem")) type_ch = "_Elem";
+  else if (type_ch.debute_par("Champ_Som")) type_ch = "_Som";
+  else if (type_ch.debute_par("Champ_Face")) type_ch = "_Face";
+  else if (type_ch.debute_par("Champ_Arete")) type_ch = "_Arete";
 
   if (class_operateur=="Source")
     type = type_operateur + type_ch +  "_" + que_suis_je();

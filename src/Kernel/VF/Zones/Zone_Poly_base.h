@@ -132,11 +132,14 @@ public :
   //connectivite sommet-elements
   const Static_Int_Lists& som_elem() const;
 
-  //indexation dans des tableaux de type (element, sommet)
+  //indexation dans des tableaux de type (element, sommet) et (element, arete)
   const IntTab& elem_som_d() const; //entree du sommet les_elems(e, i) de l'element e : elem_som_d()(e) + i
+  const IntTab& elem_arete_d() const; //entree de l'arete elem_arete(e, i) de l'element e : elem_arete_d()(e) + i
 
   //pour chaque element, repartition de son volume entre chacun de ses sommets
   const DoubleTab& vol_elem_som() const;
+  //pour chaque sommet, produit porosite * volume
+  const DoubleTab& pvol_som() const;
 
 // Methodes pour le calcul et l'appel de la distance au bord solide le plus proche ; en entree on met le tableau des CL de la QDM
   void init_dist_paroi_globale(const Conds_lim& conds_lim) override;
@@ -161,8 +164,8 @@ protected:
 
   mutable IntTab equiv_;
   mutable Static_Int_Lists som_elem_;
-  mutable IntTab elem_som_d_;
-  mutable DoubleTab vol_elem_som_;
+  mutable IntTab elem_som_d_, elem_arete_d_;
+  mutable DoubleTab vol_elem_som_, pvol_som_;
 
   DoubleTab n_y_elem_ ; // vecteur normal entre le bord le plus proche et l'element
   DoubleTab n_y_faces_; // vecteur normal entre le bord le plus proche et la face

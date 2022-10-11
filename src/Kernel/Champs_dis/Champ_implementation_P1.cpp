@@ -16,6 +16,7 @@
 #include <Champ_implementation_P1.h>
 #include <Domaine.h>
 #include <Octree_Double.h>
+#include <Zone_Poly_base.h>
 
 double Champ_implementation_P1::form_function(const ArrOfDouble& position, const IntTab& les_elems, const DoubleTab& nodes, ArrOfInt& index, int cell, int ddl) const
 {
@@ -109,42 +110,67 @@ double Champ_implementation_P1::form_function(const ArrOfDouble& position, const
 void Champ_implementation_P1::value_interpolation(const DoubleTab& positions, const ArrOfInt& cells, const DoubleTab& values, DoubleTab& resu, int ncomp) const
 {
   const Zone&      zone              = get_zone_geom();
+  const Zone_Poly_base*    zpoly     = sub_type(Zone_Poly_base, get_zone_dis()) ? &ref_cast(Zone_Poly_base, get_zone_dis()) : NULL;
   const IntTab&    les_elems         = zone.les_elems();
   const DoubleTab& nodes = zone.domaine().les_sommets();
   const int nb_nodes_per_cell = zone.nb_som_elem(), N = resu.line_size();
   ArrOfInt index(nb_nodes_per_cell);
   ArrOfDouble position(Objet_U::dimension);
   resu = 0;
-  for (int ic=0; ic<cells.size_array(); ic++)
+  if (zpoly) //polyedred -> interpolation ponderee par les volumes
     {
-      int cell = cells[ic];
-      if (cell<0) continue;
-      for (int k=0; k<Objet_U::dimension; k++)
-        position[k] = positions(ic,k);
-
-      assert(cell >= 0);
-      assert(cell < les_elems.dimension_tot(0));
-      if (ncomp != -1)
+      const DoubleTab& v_es = zpoly->vol_elem_som();
+      const DoubleVect& ve = zpoly->volumes();
+      const IntTab& es_d = zpoly->elem_som_d();
+      for (int ic=0; ic<cells.size_array(); ic++)
         {
-          for (int j = 0; j < nb_nodes_per_cell; j++)
+          int cell = cells[ic];
+          if (cell<0) continue;
+          assert(cell >= 0);
+          assert(cell < les_elems.dimension_tot(0));
+          if (ncomp != -1)
+            for (int j = 0, k = es_d(cell); k < es_d(cell + 1); j++, k++)
+              resu(ic) += values(les_elems(cell ,j), ncomp) * v_es(k) / ve(cell);
+          else
             {
-              int node = les_elems(cell, j);
-              resu(ic) += values(node, ncomp) * form_function(position,les_elems,nodes,index,cell,j);
+              assert(values.line_size() == N);
+              for (int j = 0, k = es_d(cell); k < es_d(cell + 1); k++)
+                for (int n = 0, s = les_elems(cell, j); n < N; n++)
+                  resu(ic, n) += values(s, n) * v_es(k) / ve(cell);
             }
-        }
-      else
-        {
 
-          assert(values.line_size() == N);
-          for (int j = 0; j < nb_nodes_per_cell; j++)
-            {
-              double weight = form_function(position,les_elems,nodes,index,cell,j);
-              int node = les_elems(cell, j);
-              for (int k = 0; k < N; k++)
-                resu(ic, k) += values(node, k) * weight;
-            }
         }
     }
+  else for (int ic=0; ic<cells.size_array(); ic++)
+      {
+        int cell = cells[ic];
+        if (cell<0) continue;
+        for (int k=0; k<Objet_U::dimension; k++)
+          position[k] = positions(ic,k);
+
+        assert(cell >= 0);
+        assert(cell < les_elems.dimension_tot(0));
+        if (ncomp != -1)
+          {
+            for (int j = 0; j < nb_nodes_per_cell; j++)
+              {
+                int node = les_elems(cell, j);
+                resu(ic) += values(node, ncomp) * form_function(position,les_elems,nodes,index,cell,j);
+              }
+          }
+        else
+          {
+
+            assert(values.line_size() == N);
+            for (int j = 0; j < nb_nodes_per_cell; j++)
+              {
+                double weight = form_function(position,les_elems,nodes,index,cell,j);
+                int node = les_elems(cell, j);
+                for (int k = 0; k < N; k++)
+                  resu(ic, k) += values(node, k) * weight;
+              }
+          }
+      }
 }
 
 /*! @brief Initialise le tableau de valeurs aux sommets du domaine dom a partir de valeurs lues dans "input".

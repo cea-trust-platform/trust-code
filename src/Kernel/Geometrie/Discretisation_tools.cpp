@@ -68,9 +68,8 @@ void Discretisation_tools::cells_to_nodes(const Champ_base& He,  Champ_base& Hn)
   int N = tabHn.line_size();
 
   for (int e = 0; e < nb_elem_tot; e++)
-    for (int s = 0; s < nb_som_elem; s++)
+    for (int s = 0, sglob; s < nb_som_elem && (sglob = les_elems(e, s)) >= 0; s++)
       {
-        int sglob = les_elems(e, s);
         for (int n = 0; n < N; n++)
           tabHn(sglob, n) += tabHe(e, n) * volumes(e);
         vsom(sglob) += volumes(e);

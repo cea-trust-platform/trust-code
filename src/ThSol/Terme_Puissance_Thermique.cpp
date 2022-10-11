@@ -36,10 +36,10 @@ void Terme_Puissance_Thermique::lire_donnees(Entree& is,const Equation_base& eqn
 
   Motcle type;
   is >> type;
+  const Zone_dis_base& zdis = eqn.zone_dis().valeur();
+  const Nom& type_zdis = zdis.que_suis_je();
   if (type=="Valeur_totale_sur_volume")
     {
-      const Zone_dis_base& zdis = eqn.zone_dis().valeur();
-      const Nom& type_zdis = zdis.que_suis_je();
       if (type_zdis.debute_par("Zone_VDF"))
         type += "_VDF";
       else  if (type_zdis.debute_par("Zone_VEF"))
@@ -50,7 +50,7 @@ void Terme_Puissance_Thermique::lire_donnees(Entree& is,const Equation_base& eqn
   is >> ch_puissance_lu;
   const int nb_comp = ch_puissance_lu.nb_comp();
 
-  eqn.probleme().discretisation().discretiser_champ("CHAMP_ELEM", eqn.zone_dis(), "pp", "1",nb_comp,0., la_puissance);
+  eqn.probleme().discretisation().discretiser_champ(type_zdis.debute_par("Zone_PolyMAC") ? "temperature" : "champ_elem", eqn.zone_dis(), "pp", "1",nb_comp,0., la_puissance);
   la_puissance_lu->fixer_nb_comp(nb_comp);
   if (ch_puissance_lu.le_nom()=="anonyme") ch_puissance_lu.nommer("Puissance_volumique");
 

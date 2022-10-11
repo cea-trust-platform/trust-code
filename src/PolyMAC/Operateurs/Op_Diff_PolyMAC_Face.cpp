@@ -115,9 +115,9 @@ void Op_Diff_PolyMAC_Face::dimensionner_blocs_ext(int aux_only, matrices_t matri
 
   /* blocs (aretes, faces) et (aretes, aretes) : avec M2 et W1 dans chaque element */
   Matrice33 L(0, 0, 0, 0, 0, 0, 0, 0, D < 3), iL; //tenseur de diffusion dans chaque element, son inverse
-  DoubleTrav inu, m2, w1; //au format compris par zone.nu_dot
+  DoubleTrav inu, m2, w1, v_e, v_ea; //au format compris par zone.nu_dot
   nu_.nb_dim() == 2 ? inu.resize(1, N) : nu_.nb_dim() == 3 ? inu.resize(1, N, D) : inu.resize(1, N, D, D);
-  m2.set_smart_resize(1), w1.set_smart_resize(1);
+  m2.set_smart_resize(1), w1.set_smart_resize(1), v_e.set_smart_resize(1), v_ea.set_smart_resize(1);
   if (!semi)
     for (e = 0; e < zone.nb_elem_tot(); e++)
       {
@@ -133,7 +133,7 @@ void Op_Diff_PolyMAC_Face::dimensionner_blocs_ext(int aux_only, matrices_t matri
                 for (db = 0; db < D; db++) inu(0, n, d, db) = iL(d, db);
             }
         zone.M2(&inu, e, m2);
-        if (D > 2) zone.W1(&nu_, e, w1); //uniquement en 3D: en 2D, matrice diagonale
+        if (D > 2) zone.W1(&nu_, e, w1, v_e, v_ea); //uniquement en 3D: en 2D, matrice diagonale
 
         //bloc (aretes, faces): en parcourant les aretes de chaque face
         if (!aux_only)
@@ -201,9 +201,9 @@ void Op_Diff_PolyMAC_Face::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
 
   /* blocs (aretes, faces) et (aretes, aretes) : avec M2 et W1 dans chaque element */
   Matrice33 L(0, 0, 0, 0, 0, 0, 0, 0, D < 3), iL; //tenseur de diffusion dans chaque element, son inverse et le carre de celui-ci
-  DoubleTrav dL(N), inu, m2, w1; //determinant, inverse (au format compris par zone.nu_dot), matrices M2(iL) / W1(L)
+  DoubleTrav dL(N), inu, m2, w1, v_e, v_ea; //determinant, inverse (au format compris par zone.nu_dot), matrices M2(iL) / W1(L)
   nu_.nb_dim() == 2 ? inu.resize(1, N) : nu_.nb_dim() == 3 ? inu.resize(1, N, D) : inu.resize(1, N, D, D);
-  m2.set_smart_resize(1), w1.set_smart_resize(1);
+  m2.set_smart_resize(1), w1.set_smart_resize(1), v_e.set_smart_resize(1), v_ea.set_smart_resize(1);
   if (!aux_only && mat && semi)
     for (a = 0; a < xa.dimension(0); a++)
       for (n = 0; n < N; n++) /* en semi-implicite : egalites w_a^+ = var_aux */
@@ -228,7 +228,7 @@ void Op_Diff_PolyMAC_Face::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
                 for (db = 0; db < D; db++) inu(0, n, d, db) = iL(d, db);
             }
         zone.M2(&inu, e, m2);
-        if (D > 2) zone.W1(&nu_, e, w1); //uniquement en 3D: en 2D, matrice diagonale
+        if (D > 2) zone.W1(&nu_, e, w1, v_e, v_ea); //uniquement en 3D: en 2D, matrice diagonale
 
         //bloc (aretes, faces): en parcourant les aretes de chaque face
         for (i = 0; i < m2.dimension(0); i++)

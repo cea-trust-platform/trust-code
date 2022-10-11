@@ -28,7 +28,7 @@
 #include <Front_VF.h>
 #include <cmath>
 
-Implemente_instanciable(Echange_contact_PolyMAC,"Paroi_Echange_contact_PolyMAC",Echange_externe_impose);
+Implemente_instanciable(Echange_contact_PolyMAC,"Paroi_Echange_contact_PolyMAC|Paroi_Echange_contact_PolyMAC_P1",Echange_externe_impose);
 using namespace MEDCoupling;
 
 Sortie& Echange_contact_PolyMAC::printOn(Sortie& s ) const

@@ -45,7 +45,7 @@ public :
   double valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const override;
   DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const override;
   DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& result, int ncomp) const override;
-
+  DoubleTab valeur_aux_bords() const;
   DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const override;
   int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const override;
 

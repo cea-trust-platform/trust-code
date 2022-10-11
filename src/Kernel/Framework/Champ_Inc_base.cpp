@@ -17,6 +17,7 @@
 #include <Scalaire_impose_paroi.h>
 #include <Schema_Temps_base.h>
 #include <Champ_Inc_P0_base.h>
+#include <Champ_Inc_P1_base.h>
 #include <Neumann_val_ext.h>
 #include <MD_Vector_tools.h>
 #include <Champ_Inc_base.h>
@@ -768,11 +769,11 @@ DoubleTab Champ_Inc_base::valeur_aux_bords() const
     }
   //sinon, calcul a partir des CLs
   const Zone_VF& zone = ref_cast(Zone_VF, zone_dis_base());
-  const IntTab& f_e = zone.face_voisins();
+  const IntTab& f_e = zone.face_voisins(), &f_s = zone.face_sommets();
   DoubleTrav result(zone.xv_bord().dimension_tot(0), valeurs().line_size());
 
   const Conds_lim& cls = zone_Cl_dis().valeur().les_conditions_limites();
-  int i, j, f, fb, n, N = result.line_size(), is_p = (le_nom().debute_par("pression") || le_nom().debute_par("pressure"));
+  int i, j, k, f, fb, s, n, N = result.line_size(), is_p = (le_nom().debute_par("pression") || le_nom().debute_par("pressure")), n_som;
   for (i = 0; i < cls.size(); i++)
     {
       const Front_VF& fr = ref_cast(Front_VF, cls[i].valeur().frontiere_dis());
@@ -788,6 +789,15 @@ DoubleTab Champ_Inc_base::valeur_aux_bords() const
       else if (sub_type(Champ_Inc_P0_base, *this))
         for (j = 0; j < fr.nb_faces_tot(); j++) //Champ P0 : on peut prendre la valeur en l'element
           for (f = fr.num_face(j), fb = zone.fbord(f), n = 0; n < N; n++) result(fb, n) = valeurs()(f_e(f, f_e(f, 0) == -1), n);
+      else if (sub_type(Champ_Inc_P1_base, *this))
+        for (j = 0; j < fr.nb_faces_tot(); j++) //Champ P1 : moyenne des valeurs aux sommets
+          {
+            f = fr.num_face(j), fb = zone.fbord(f);
+            for (n_som = 0; n_som < f_s.dimension(1) && f_s(f, n_som) >= 0; ) n_som++;
+            for (n = 0; n < N; n++) result(fb, n) = 0;
+            for (k = 0; k < n_som; k++)
+              for (s = f_s(f, k), n = 0; n < N; n++) result(fb, n) += valeurs()(s, n) / n_som;
+          }
       else Process::exit("Champ_Inc_base::valeur_aux_bords() : mus code something!");
     }
   return result;

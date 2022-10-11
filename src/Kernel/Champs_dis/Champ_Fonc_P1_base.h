@@ -41,6 +41,7 @@ public :
   inline double valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const override;
   inline DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const override;
   inline DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& result, int ncomp) const override;
+  inline DoubleTab valeur_aux_bords() const override;
 
   inline DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const override;
   inline int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const override;
@@ -70,6 +71,11 @@ inline DoubleTab& Champ_Fonc_P1_base::valeur_aux_elems(const DoubleTab& position
 inline DoubleVect& Champ_Fonc_P1_base::valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& result, int ncomp) const
 {
   return Champ_implementation_P1::valeur_aux_elems_compo(positions,polys,result,ncomp);
+}
+
+inline DoubleTab Champ_Fonc_P1_base::valeur_aux_bords() const
+{
+  return Champ_implementation_P1::valeur_aux_bords();
 }
 
 inline DoubleTab& Champ_Fonc_P1_base::remplir_coord_noeuds(DoubleTab& positions) const

@@ -698,17 +698,56 @@ const IntTab& Zone_Poly_base::elem_som_d() const
 {
   if (elem_som_d_.size()) return elem_som_d_;
   const IntTab& e_s = zone().les_elems();
-  elem_som_d_.resize(nb_som_tot() + 1);
+  elem_som_d_.resize(nb_elem_tot() + 1);
   for (int e = 0, i; e < nb_elem_tot(); e++)
     for (elem_som_d_(e + 1) = elem_som_d_(e), i = 0; i < e_s.dimension(1) && e_s(e, i) >= 0; i++)
       elem_som_d_(e + 1)++;
   return elem_som_d_;
 }
 
+const IntTab& Zone_Poly_base::elem_arete_d() const
+{
+  if (elem_arete_d_.size()) return elem_arete_d_;
+  const IntTab& e_a = dimension < 3 ? elem_faces() : zone().elem_aretes();
+  elem_arete_d_.resize(nb_elem_tot() + 1);
+  for (int e = 0, i; e < nb_elem_tot(); e++)
+    for (elem_arete_d_(e + 1) = elem_arete_d_(e), i = 0; i < e_a.dimension(1) && e_a(e, i) >= 0; i++)
+      elem_arete_d_(e + 1)++;
+  return elem_arete_d_;
+}
+
 const DoubleTab& Zone_Poly_base::vol_elem_som() const
 {
-  /*if (vol_elem_som_.size())*/ return vol_elem_som_; //deja fait
+  if (vol_elem_som_.size()) return vol_elem_som_; //deja fait
+  const IntTab& es_d = elem_som_d(), &e_f = elem_faces(), &f_s = face_sommets(), &e_s = zone().les_elems();
+  const DoubleTab& xs = zone().domaine().coord_sommets();
+  DoubleTab& vol = vol_elem_som_;
+  vol.resize(es_d(nb_elem_tot()));
+  int e, s, f, i, j, k, D = dimension;
+  for (e = 0; e < nb_elem_tot(); e++)
+    for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
+      for (j = 0; j < f_s.dimension(1) && (s = f_s(f, j)) >= 0; j++)
+        {
+          int sb = D < 3 ? -1 : f_s(f, j + 1 < f_s.dimension(1) && f_s(f, j + 1) >= 0 ? j + 1 : 0); //sommet suivant sur l'arete (3D)
+          auto vec = cross(D, D, &xv_(f, 0), &xs(s, 0), &xp_(e, 0), &xp_(e, 0));
+          double x = std::abs(D < 3 ? vec[2] : dot(&xs(sb, 0), &vec[0], &xp_(e, 0))); //volume du parallelepipede
+          for (k = 0; k < D - 1; k++) //contribution au volume de s (2D) ou a ceux de s / sb (3D)
+            vol(es_d(e) + (std::find(&e_s(e, 0), &e_s(e, 0) + es_d(e + 1) - es_d(e), k ? sb : s) - &e_s(e, 0))) += x / (D < 3 ? 2 : 12);
+        }
+  return vol;
+}
 
+const DoubleTab& Zone_Poly_base::pvol_som() const
+{
+  if (pvol_som_.size()) return pvol_som_; //deja fait
+  const IntTab& es_d = elem_som_d(), &e_s = zone().les_elems();
+  const DoubleTab& v_es = vol_elem_som();
+  zone().domaine().creer_tableau_sommets(pvol_som_);
+  for (int e = 0; e < nb_elem_tot(); e++)
+    for (int i = 0, j = es_d(e); j < es_d(e + 1); i++, j++)
+      pvol_som_(e_s(e, i)) += porosite_elem_(e) * v_es(j);
+  pvol_som_.echange_espace_virtuel();
+  return pvol_som_;
 }
 
 
