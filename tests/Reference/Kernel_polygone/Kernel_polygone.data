@@ -7,6 +7,7 @@ domaine dom
 Lire_MED { 
    domain dom 
    file maillage_simple_grp.med 
+   no_family_names_from_group_names
 }
 
 Ecrire_fichier_formatte dom dom.geom
@@ -15,6 +16,7 @@ Ecrire_med dom toto.med
 Lire_MED { 
    domain dom2 
    file toto.med 
+   no_family_names_from_group_names
 }
 Ecrire_fichier_formatte dom2 dom2.geom
 # END MESH #

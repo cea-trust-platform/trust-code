@@ -7,6 +7,7 @@ Domaine dom
 Lire_MED { 
    domain dom 
    file mesh.med 
+   mesh mesh
 }
 regroupebord dom wall { left right front back down up wall wall_dup }
 # END MESH #
@@ -32,11 +33,13 @@ domaine surf1
 domaine surf2
 Lire_MED { 
    domain surf1 
-   file mesh.med 
+   file mesh.med
+   mesh surf1
 }
 Lire_MED { 
    domain surf2 
-   file mesh.med 
+   file mesh.med
+   mesh surf2
 }
 
 Schema_euler_implicite sch
