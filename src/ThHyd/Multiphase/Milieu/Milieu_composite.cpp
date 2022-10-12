@@ -38,7 +38,7 @@ Entree& Milieu_composite::readOn(Entree& is)
     {
       if (Motcle(mot) == "POROSITES_CHAMP") is >> porosites_champ;
       else if (Motcle(mot) == "POROSITES") Cerr << "You should use porosites_champ and not porosites ! Call the 911 !" << finl, Process::exit();
-      else if (Motcle(mot) == "GRAVITE") is >> g;
+      else if (Motcle(mot) == "GRAVITE") Cerr << que_suis_je() << " : gravity should not be defined in Pb_Multiphase ! Use source_qdm if you want gravity in QDM equation !" << finl, Process::exit();
       else if (!mot.debute_par("saturation") && !mot.debute_par("interface")) // on ajout les phases
         {
           noms_phases_.add(mot);
@@ -111,14 +111,6 @@ std::pair<std::string, int> Milieu_composite::check_fluid_name(const Nom& name)
   return std::make_pair(espece.getString(), phase);
 }
 
-const Fluide_base& Milieu_composite::get_medium_for_incompressible(const int i) const
-{
-  assert(i > 0 && i < (int)fluides.size());
-  if (!sub_type(Fluide_Incompressible, fluides[i]))
-    Cerr << "Error in Milieu_composite::get_medium_for_incompressible ! The resquested fluid is not incompressible !!" << finl, Process::exit();
-  return fluides[i];
-}
-
 bool Milieu_composite::has_interface(int k, int l) const
 {
   if (tab_interface[k][l]) return true;
@@ -160,9 +152,7 @@ int Milieu_composite::initialiser(const double temps)
   ch_h.associer_eqn(eqn),   ch_h.init_champ_calcule(*this, calculer_enthalpie);
   t_init_ = temps;
 
-  Milieu_base::initialiser_porosite(temps);
-  if (g.non_nul()) g->initialiser(temps);
-  return 1;
+  return Milieu_base::initialiser_porosite(temps);
 }
 
 void Milieu_composite::preparer_calcul()
@@ -237,7 +227,6 @@ void Milieu_composite::mettre_a_jour(double temps)
   // Fluide_base::mettre_a_jour(temps);
 
   Milieu_base::mettre_a_jour_porosite(temps);
-  if (g.non_nul()) g->mettre_a_jour(temps);
 }
 
 void Milieu_composite::mettre_a_jour_tabs()
