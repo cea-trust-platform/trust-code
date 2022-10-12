@@ -1730,9 +1730,10 @@ case $TRUST_ARCH_CC in
 	ShLibFlag="\$(TRUST_CC) -shared"
 	;;
    linux_icpc) TRUST_SUPPORTED=1
-	Cpp_flag_optim="-O3" && [ "$VT_ROOT" != "" ] && Cpp_flag_optim="-g -O3" # -g pour Itac, traceanalyzer
+	# -fp-model precise (default fast=1) pour avoir memes resultats que GNU
+	flag_optim="-O3 -fp-model precise" && [ "$VT_ROOT" != "" ] && flag_optim="-g "$flag_optim # -g pour Itac, traceanalyzer
 	Defines="-D_COMPILE_AVEC_INTEL"
-	CppFlags="$Cpp_flag_optim -std=c++11 -fPIC -unroll"
+	CppFlags="$flag_optim -std=c++11 -fPIC -unroll -Wno-unknown-pragmas"
 	LIB_INTEL=`dirname $TRUST_F77_BASE`
 	# Recherche du repertoire /lib
 	for lib in lib compiler/lib
@@ -1741,8 +1742,8 @@ case $TRUST_ARCH_CC in
         done
 	#SYSLIBS="-L$LIB_INTEL -lifcore -lirc -lsvml -limf -lstdc++ -liomp5"
 	SYSLIBS="-L$LIB_INTEL -lifcore -lirc -lsvml -limf -liomp5"
-	F77Flags="-O3 -fPIC" && [ "$TRUST_INT64" = "1" ] && F77Flags=$F77Flags" -i8"
-	ccFLAGS="-O3 -fPIC -unroll"
+	F77Flags="$flag_optim -fPIC" && [ "$TRUST_INT64" = "1" ] && F77Flags=$F77Flags" -i8"
+	ccFLAGS="$flag_optim -fPIC -unroll"
 	ShLibFlag="\$(TRUST_CC) -shared"
 	cherche_include_systeme
 	;;
@@ -2071,7 +2072,7 @@ fi
 #######################
 # Ecriture des fichiers
 #######################
-Defines=$Defines" $COMFLAGS -D\$(TRUST_ARCH) -D_INLINE_EVALUATEURS_ -DNDEBUG"
+Defines=$Defines" $COMFLAGS -D\$(TRUST_ARCH) -DNDEBUG"
 
 #####################################################
 # Ajout de variables eventuelles creees par configure
@@ -2096,8 +2097,8 @@ SL_EXTENSION = $SL_EXTENSION
 LINK_MALIB = $LINK_MALIB" > $tmp
    update_file $tmp make.$suffixe
 
-   # On supprime -D_INLINE_EVALUATEURS_ -DNDEBUG
-   Defines=${Defines% -D_INLINE_EVALUATEURS_ -DNDEBUG}
+   # On supprime -DNDEBUG
+   Defines=${Defines% -DNDEBUG}
    # On remplace -O par -g
    O=`echo $CppFlags | awk '{print $1}'`
    CppFlags="-g -O0"${CppFlags#$O}
@@ -2170,7 +2171,8 @@ echo $ECHO_OPTS "1,$ s?-DNDEBUG??g\nw"  | ed $tmp 1>/dev/null 2>&1
 # PL: Ajout sur GNU semi_opt de -fsanitize=address : https://www.osc.edu/resources/getting_started/howto/howto_use_address_sanitizer
 # Non affreusement lent a l'execution
 # fsan="" && [ "$GNU_VERSION" != "" ] && fsan=-fsanitize=address
-echo $ECHO_OPTS "1,$ s?-O3?-g -O3 $fsan?g\nw" | ed $tmp 1>/dev/null 2>&1
+# On ne met pas -g car augmente la taille du semi-opt et de toutes les facons variables non debugable -> optimized-out
+#echo $ECHO_OPTS "1,$ s?-O3?-g -O3 $fsan?g\nw" | ed $tmp 1>/dev/null 2>&1
 suffixe4=$TRUST_ARCH_CC"_semi_opt"
 update_file $tmp make.$suffixe4
 
