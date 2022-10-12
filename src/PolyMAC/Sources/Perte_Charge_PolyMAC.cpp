@@ -120,8 +120,8 @@ void Perte_Charge_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
           for (n = 0; n < N; n++)
             {
               double fac = pf(f) * vfd(f, e != f_e(f, 0)) * 0.5 / dh_e,
-                     fac_n = fac * mult(n, 0) * Cf(n) * G(n) / rho(!cR * e, n),
-                     fac_m = fac * mult(n, 1) * Cf_t(n) * Gm / rho(!cR * e, n);
+                     fac_n = fac * mult(n, 0) * Cf(n) * G(n),
+                     fac_m = fac * mult(n, 1) * Cf_t(n) * Gm;
               for (m = 0; m < N; m++) secmem(f, n) -= ((m == n) * fac_n + fac_m) * (alp ? (*alp)(e, m) : 1) * (pbm ? rho(!cR * e, m) : 1) * vit(f, m);
               if (mat)
                 for (m = 0; m < N; m++) (*mat)(N * f + n, N * f + m) += ((m == n) * fac_n +  fac_m) * (alp ? (*alp)(e, m) : 1) * (pbm ? rho(!cR * e, m) : 1);
@@ -132,8 +132,8 @@ void Perte_Charge_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
           for (n = 0; n < N; n++) /* PolyMAC V2: contributions aux equations aux elements */
             {
               double fac = pe(e) * ve(e) * 0.5 / dh_e,
-                     fac_n = fac * mult(n, 0) * Cf(n) * G(n) / rho(!cR * e, n),
-                     fac_m = fac * mult(n, 1) * Cf_t(n) * Gm / rho(!cR * e, n);
+                     fac_n = fac * mult(n, 0) * Cf(n) * G(n),
+                     fac_m = fac * mult(n, 1) * Cf_t(n) * Gm;
               for (m = 0; m < N; m++) secmem(k, n) -= ((m == n) * fac_n + fac_m) * (alp ? (*alp)(e, m) : 1) * (pbm ? rho(!cR * e, m) : 1) * vit(k, m);
               if (mat)
                 for (m = 0; m < N; m++) (*mat)(N * k + n, N * k + m) += ((m == n) * fac_n + fac_m) * (alp ? (*alp)(e, m) : 1) * (pbm ? rho(!cR * e, m) : 1);
