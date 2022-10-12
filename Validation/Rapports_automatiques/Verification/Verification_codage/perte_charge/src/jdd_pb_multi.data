@@ -1,0 +1,138 @@
+# PARALLEL OK #
+dimension 2
+Domaine dom
+
+# BEGIN MESH #
+mailler  dom
+{
+    pave carre
+    {
+        origine  0.0  0.0
+        nombre_de_noeuds  2 101
+        longueurs 0.1 1
+    }
+    {
+        bord  bas       Y = 0.0    0.0 <= X <= 0.1
+        bord  haut      Y = 1.0    0.0 <= X <= 0.1
+        bord  boundary  X = 0.0    0.0 <= Y <= 1.0
+        bord  boundary  X = 0.1    0.0 <= Y <= 1.0
+    }
+}
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool tranche { tranches 2 1 }
+    larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+$dis dis
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+    seuil_statio 1e-3
+    dt_start dt_fixe 1e-3
+    solveur ice
+    {
+        criteres_convergence { alpha 1e-5 }
+        solveur petsc cli { }
+        seuil_convergence_implicite 1e30
+    }
+}
+
+Pb_Multiphase pb
+Associate  pb dom
+Associate  pb sch
+Discretize pb dis
+
+sous_zone grille associate grille dom read grille { fonction_sous_zone (y>($zb))*(y<($zt)) }
+
+Read pb
+{
+	Milieu_composite
+	{
+		liquide_eau fluide_incompressible
+        {
+            rho    Champ_Uniforme 1 1000
+            mu     Champ_Uniforme 1 1e-3
+            cp     Champ_Uniforme 1 100
+            lambda Champ_Uniforme 1 1
+        }
+	}
+
+    QDM_Multiphase
+    {
+        solveur_pression petsc cholesky { }
+        convection { amont }
+        diffusion  { negligeable }
+        initial_conditions
+        {
+            vitesse Champ_Uniforme 2 0 0
+            pression champ_uniforme 1 0
+        }
+        boundary_conditions
+        {
+            bas frontiere_ouverte_vitesse_imposee_sortie champ_front_fonc_t 2 0 (t_min_1)*1
+            haut frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
+            boundary symetrie
+        }
+        sources
+        {
+            $pdc
+        }
+    }
+    Masse_Multiphase
+    {
+        initial_conditions
+        {
+            alpha champ_uniforme 1 1
+        }
+        convection { amont }
+        boundary_conditions
+        {
+            boundary paroi
+            bas  frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
+            haut frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
+        }
+    }
+    Energie_Multiphase
+    {
+        diffusion { negligeable }
+        convection { amont }
+        initial_conditions
+        {
+            temperature Champ_Uniforme 1 0
+        }
+        boundary_conditions
+        {
+            boundary paroi_adiabatique
+            bas    frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
+            haut   frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
+        }
+    }
+    Post_processing
+    {
+        Probes
+        {
+            p grav pression periode 1e8 segment 1000 0.05 0 0.05 1
+        }
+        format Lata
+        fields dt_post 30.
+        {
+            vitesse elem
+            pression elem
+        }
+    }
+}
+Solve pb
+End

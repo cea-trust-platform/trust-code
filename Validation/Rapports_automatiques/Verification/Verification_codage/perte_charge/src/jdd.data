@@ -1,0 +1,118 @@
+# PARALLEL OK #
+dimension 2
+Pb_hydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+mailler  dom
+{
+    pave carre
+    {
+        origine  0.0  0.0
+        nombre_de_noeuds  2 101
+        longueurs 0.1 1
+    }
+    {
+        bord  bas       Y = 0.0    0.0 <= X <= 0.1
+        bord  haut      Y = 1.0    0.0 <= X <= 0.1
+        bord  boundary  X = 0.0    0.0 <= Y <= 1.0
+        bord  boundary  X = 0.1    0.0 <= Y <= 1.0
+    }
+}
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool tranche { tranches 2 1 }
+    larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+$dis dis
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+    dt_max  1e-2
+    facsec 1e8
+    seuil_statio 1e-8
+    solveur implicite
+    {
+        solveur petsc cli { }
+    }
+}
+
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+sous_zone grille associate grille dom read grille { fonction_sous_zone (y>($zb))*(y<($zt)) }
+
+Read pb
+{
+
+    fluide_incompressible
+    {
+        rho    Champ_Uniforme 1 1000
+        mu     Champ_Uniforme 1 1e-3
+    }
+
+    Navier_stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection { amont }
+        diffusion { }
+        sources
+        {
+            $pdc
+        }
+        initial_conditions { vitesse Champ_Uniforme 2 0 0 }
+        boundary_conditions
+        {
+            bas frontiere_ouverte_vitesse_imposee_sortie champ_front_fonc_t 2 0 (t_min_1)*1
+            haut frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
+            boundary symetrie
+        }
+    }
+
+    Post_processing
+    {
+        # Definition_champs
+        {
+            erreur_T transformation
+            {
+                methode formule expression 1 abs(Temp-sin(pi*x)*sin(pi*y)) sources
+                {
+                    refChamp { pb_champ pb temperature nom_source Temp }
+                }
+            }
+            max_erreur_T reduction_0D
+            {
+                methode max source_reference erreur_T
+            }
+        } #
+
+        Probes
+        {
+            p grav pression_pa periode 1e8 segment 1000 0.05 0 0.05 1
+        }
+        format Lata
+        fields dt_post 30.
+        {
+            vitesse elem
+            pression_pa elem
+        }
+    }
+}
+
+Solve pb
+lata_to_other lml NOM_DU_CAS NOM_DU_CAS
+End
