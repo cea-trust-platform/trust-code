@@ -46,9 +46,6 @@ Entree& Champ_Fonc_Tabule_Morceaux::readOn(Entree& is)
   if(nom != "{")
     Process::exit(que_suis_je() + " : { expected instead of " + nom);
 
-  std::set<std::array<std::string, 2>> s_pb_ch; // couples { probleme, champ } utilises par au moins un probleme
-  std::vector<std::vector<std::array<std::string, 2>>> m_pb_ch; //m_pb_ch[i][j] : { probleme, champ } du parametre j du morceau i
-
   for (is >> nom; nom != "}"; is >> nom)
     {
       CHTAB ch_lu;
@@ -107,6 +104,11 @@ Entree& Champ_Fonc_Tabule_Morceaux::readOn(Entree& is)
   if (mp_min_vect(i_mor) == -1)
     Process::exit(que_suis_je() + " : some pieces of the field are missing!");
 
+  return is;
+}
+
+int Champ_Fonc_Tabule_Morceaux::initialiser(const double temps)
+{
   /* remplissage de ch_param (pointeurs vers les champs) et des i_ch (champs utilises par chaque morceau) */
   std::vector<std::array<std::string, 2>> v_pb_ch(s_pb_ch.begin(), s_pb_ch.end()); //set -> vector
   for (auto &&pb_ch : v_pb_ch) /* (probleme, champ) -> pointeurs */
@@ -115,7 +117,10 @@ Entree& Champ_Fonc_Tabule_Morceaux::readOn(Entree& is)
     for (auto && pb_ch : m_pb_ch[i]) /* indices */
       morceaux[i].i_ch.push_back((int)(std::lower_bound(v_pb_ch.begin(), v_pb_ch.end(), pb_ch) - v_pb_ch.begin()));
 
-  return is;
+  m_pb_ch.clear();
+  s_pb_ch.clear();
+
+  return TRUSTChamp_Morceaux_generique<Champ_Morceaux_Type::FONC_TABULE>::initialiser(temps);
 }
 
 void Champ_Fonc_Tabule_Morceaux::mettre_a_jour(double time)

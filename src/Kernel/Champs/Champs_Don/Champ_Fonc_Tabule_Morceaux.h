@@ -31,10 +31,15 @@ class Champ_Fonc_Tabule_Morceaux : public TRUSTChamp_Morceaux_generique<Champ_Mo
   Declare_instanciable(Champ_Fonc_Tabule_Morceaux);
 public :
   void mettre_a_jour(double temps) override;
+  int initialiser(const double temps) override;
 
 protected :
+  using ArrStr = std::array<std::string, 2>;
 
+  std::set<ArrStr> s_pb_ch; // couples { probleme, champ } utilises par au moins un probleme
+  std::vector<std::vector<ArrStr>> m_pb_ch; //m_pb_ch[i][j] : { probleme, champ } du parametre j du morceau i
   std::vector<const Champ_base *> ch_param; /* liste de champs parametres */
+
   /* un morceau de champ */
   typedef struct
   {

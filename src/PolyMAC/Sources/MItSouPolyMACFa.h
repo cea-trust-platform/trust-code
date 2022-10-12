@@ -22,12 +22,6 @@
 #include <Champ_Uniforme.h>
 #include <Milieu_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS Iterateur_Source_PolyMAC_Face
-//
-//////////////////////////////////////////////////////////////////////////////
-
 #define declare_It_Sou_PolyMAC_Face(_TYPE_)                                        \
   class It_Sou_PolyMAC_Face(_TYPE_) : public Iterateur_Source_PolyMAC_base        \
   {                                                                        \

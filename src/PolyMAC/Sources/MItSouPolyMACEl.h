@@ -19,12 +19,6 @@
 #include <Zone_PolyMAC.h>
 #include <Champ_Uniforme.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS Iterateur_Source_PolyMAC_Elem
-//
-//////////////////////////////////////////////////////////////////////////////
-
 #define declare_It_Sou_PolyMAC_Elem(_TYPE_)                                        \
   class It_Sou_PolyMAC_Elem(_TYPE_) : public Iterateur_Source_PolyMAC_base        \
   {                                                                        \
