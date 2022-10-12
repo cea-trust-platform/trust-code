@@ -6,7 +6,10 @@ Domaine dom
 
 # DEBUT MAILLAGE #
 
-lire_med family_names_from_group_names dom FineMesh fuel_geom1.med
+Lire_MED { 
+   domain dom 
+   file fuel_geom1.med 
+}
 reordonner dom
 discretiser_domaine dom
 

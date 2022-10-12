@@ -17,7 +17,10 @@ system "mkdir -p results"
 
 # DEBUT SEQ #
 
-read_MED short_family_names dom domain_mesh res_domain_mesh_40_cyl_mesh_250fact12.med
+Lire_MED { 
+   domain dom 
+   file res_domain_mesh_40_cyl_mesh_250fact12.med 
+}
 
 regroupebord dom Wall { TOP }
 regroupebord dom Postpro { BOTTOM }

@@ -50,9 +50,18 @@ dimension 2
 Domaine rectangle
 Domaine triangle
 Domaine quadrangle
-lire_med rectangle rectangle rectangle.med
-lire_med triangle triangle triangle.med
-lire_med quadrangle quadrangle quadrangle.med
+Lire_MED { 
+   domain rectangle 
+   file rectangle.med 
+}
+Lire_MED { 
+   domain triangle 
+   file triangle.med 
+}
+Lire_MED { 
+   domain quadrangle 
+   file quadrangle.med 
+}
 postraiter_domaine {
     domaines { rectangle triangle quadrangle }
     format lata

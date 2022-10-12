@@ -11,7 +11,10 @@ system "gmsh -2 -order 1 -clscale 1. -format med forme.geo||echo .gmshrc old ?"
 # Read the MED mesh by TRUST #
 dimension 2
 domaine dom
-Lire_med family_names_from_group_names dom forme forme.med
+Lire_MED { 
+   domain dom 
+   file forme.med 
+}
 Discretiser_domaine dom
 # Write the TRUST mesh to post process it and check the boundaries #
 Postraiter_domaine { domaine dom format lata fichier Kernel_Gmsh2Trio_U }

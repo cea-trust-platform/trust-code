@@ -3,7 +3,10 @@
 dimension 2
 domaine dom 
 # BEGIN MESH #
-read_med family_names_from_group_names dom dom2 mesh.med
+Lire_MED { 
+   domain dom 
+   file mesh.med 
+}
 # END MESH #
 # BEGIN PARTITION 
 Partition dom 

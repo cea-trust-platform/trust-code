@@ -4,11 +4,18 @@ dimension 3
 Domaine dom
 
 Domaine interf
-Lire_MED short_family_names interf Ksing Ksing.med
+Lire_MED { 
+   domain interf 
+   file Ksing.med 
+}
 
 # BEGIN MESH #
 Lire_MEDfile short_family_names dom Mesh_1 MeshCFD.med /* First read with deprecated MEDFile */
-Lire_MED short_family_names dom Mesh_1 MeshCFD.med /* Second read with MEDCoupling */
+Lire_MED { 
+   domain dom 
+   file MeshCFD.med 
+}
+/* Second read with MEDCoupling */
 VerifierCoin dom { }
 # END MESH #
 

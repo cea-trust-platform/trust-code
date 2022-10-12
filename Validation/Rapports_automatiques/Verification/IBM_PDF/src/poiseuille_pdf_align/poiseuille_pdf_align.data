@@ -13,7 +13,10 @@ Pb_Hydraulique pb
 Domaine dom
 
 # BEGIN MESH #
-read_MED short_family_names dom domain_mesh ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1.med
+Lire_MED { 
+   domain dom 
+   file ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1.med 
+}
 regroupebord dom Wall { TOP DOWN UP }
 regroupebord dom Postpro { BOTTOM }
 regroupebord dom Sortie { OUT }

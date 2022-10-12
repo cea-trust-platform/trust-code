@@ -4,7 +4,10 @@ dimension 3
 domaine dom
 
 # BEGIN MESH #
-Read_MED short_family_names dom Mesh_perio_fine_3 cylindre_perio_fine_3.med
+Lire_MED { 
+   domain dom 
+   file cylindre_perio_fine_3.med 
+}
 dilate dom 0.001
 # END MESH #
 

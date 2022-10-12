@@ -6,7 +6,10 @@ Pb_conduction pb
 Domaine dom
 
 # BEGIN MESH #
-Lire_med family_names_from_group_names dom med_domain_2D domain_2D.med
+Lire_MED { 
+   domain dom 
+   file domain_2D.med 
+}
 Read_file dom_ssz.geo ;
 
 # END MESH #

@@ -24,7 +24,10 @@ Mailler dom
     }
 }
 END MESH #
-Lire_med family_names_from_group_names dom mesh mesh.med
+Lire_MED { 
+   domain dom 
+   file mesh.med 
+}
 
 # BEGIN PARTITION
 Partition dom

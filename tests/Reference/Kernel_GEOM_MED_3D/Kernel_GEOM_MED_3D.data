@@ -54,9 +54,18 @@ dimension 3
 Domaine hexaedre
 Domaine tetra
 Domaine hexaedre_vef
-lire_med hexaedre hexaedre hexaedre.med
-lire_med tetra tetra tetra.med
-lire_med hexaedre_vef hexaedre_vef hexaedre_vef.med
+Lire_MED { 
+   domain hexaedre 
+   file hexaedre.med 
+}
+Lire_MED { 
+   domain tetra 
+   file tetra.med 
+}
+Lire_MED { 
+   domain hexaedre_vef 
+   file hexaedre_vef.med 
+}
 postraiter_domaine {
     domaines { hexaedre tetra hexaedre_vef }
     fichier Kernel_GEOM_MED_3D.lata
@@ -69,7 +78,11 @@ postraiter_domaine {
 }
 
 Domaine FluidVolMesh
-lire_med family_names_from_group_names FluidVolMesh FluidVolMesh mesh_with_several_groups_on_a_family.med # Fichier .med mal lu par TRUST 1.8.1 #
+Lire_MED { 
+   domain FluidVolMesh 
+   file mesh_with_several_groups_on_a_family.med 
+}
+# Fichier .med mal lu par TRUST 1.8.1 #
 discretiser_domaine FluidVolMesh
 
 End

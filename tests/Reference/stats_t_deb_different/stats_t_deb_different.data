@@ -2,7 +2,10 @@ Dimension 3
 Pb_hydraulique pb
 
 Domaine dom
-Lire_med family_names_from_group_names dom mesh_hexa_3 cube.med
+Lire_MED { 
+   domain dom 
+   file cube.med 
+}
 
 VDF dis
 

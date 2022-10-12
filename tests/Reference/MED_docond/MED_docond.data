@@ -51,7 +51,10 @@ Mailler tmp
     }
 }
 Ecrire_MED tmp solide.med
-Lire_MED dom_solide tmp solide.med
+Lire_MED { 
+   domain dom_solide 
+   file solide.med 
+}
 Mailler dom_fluide
 {
     Pave Cavite3

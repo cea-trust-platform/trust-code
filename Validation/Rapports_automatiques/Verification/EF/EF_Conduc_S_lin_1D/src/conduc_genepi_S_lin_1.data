@@ -12,7 +12,10 @@ Domaine dom
 Read_file dom dom2_mod.geom
 ecrire_med dom dom.med
 domaine dom2
-lire_med dom2 dom dom.med
+Lire_MED { 
+   domain dom2 
+   file dom.med 
+}
 # END MESH #
 # BEGIN PARTITION
 Partition dom

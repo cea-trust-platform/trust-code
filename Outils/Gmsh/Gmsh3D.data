@@ -1,7 +1,10 @@
 # 3D Cavite pour test Gmsh #
 dimension 3
 Domaine cavite
-Lire_MED family_names_from_group_names cavite Gmsh3D Gmsh3D.med
+Lire_MED { 
+   domain cavite 
+   file Gmsh3D.med 
+}
 Discretiser_domaine cavite
 Fin
 

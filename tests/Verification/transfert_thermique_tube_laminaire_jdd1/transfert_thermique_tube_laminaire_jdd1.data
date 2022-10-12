@@ -5,7 +5,10 @@ pb_Multiphase pb
 Domaine dom
 
 # BEGIN MESH #
-Lire_med family_names_from_group_names dom mesh channel.med
+Lire_MED { 
+   domain dom 
+   file channel.med 
+}
 # END MESH #
 
 # BEGIN PARTITION

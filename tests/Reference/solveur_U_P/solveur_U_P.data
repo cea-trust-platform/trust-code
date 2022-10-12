@@ -4,7 +4,10 @@ dimension 2
 Pb_hydraulique pb
 Domaine dom
 # BEGIN MESH #
-Lire_med family_names_from_group_names dom mesh pour_trust.med
+Lire_MED { 
+   domain dom 
+   file pour_trust.med 
+}
 
 
 # END MESH #

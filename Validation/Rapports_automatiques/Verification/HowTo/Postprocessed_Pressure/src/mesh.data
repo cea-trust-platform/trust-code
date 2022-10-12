@@ -2,7 +2,10 @@ dimension 3
 domaine dom
 
 # BEGIN MESH #
-Lire_med family_names_from_group_names dom mesh_gmsh mesh_gmsh.med
+Lire_MED { 
+   domain dom 
+   file mesh_gmsh.med 
+}
 
 extruder { domaine dom direction 0.1 0 0 nb_tranches 4 }
 RegroupeBord dom Inlet { devant }

@@ -5,7 +5,10 @@ Pb_hydraulique pb
 Domaine dom
 
 # BEGIN MESH #
-Lire_med family_names_from_group_names dom FluidMesh_1 NC_hexaedrons_fluidmesh_polyhedra.med
+Lire_MED { 
+   domain dom 
+   file NC_hexaedrons_fluidmesh_polyhedra.med 
+}
 ecrire_fichier_formatte dom dom.geom
 # END MESH #
 

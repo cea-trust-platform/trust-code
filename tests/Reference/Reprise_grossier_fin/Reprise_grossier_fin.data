@@ -4,7 +4,10 @@ dimension 2
 Pb_Hydraulique pb
 Domaine dom
 # BEGIN MESH #
-Lire_med dom dom grossier.med
+Lire_MED { 
+   domain dom 
+   file grossier.med 
+}
 Raffiner_isotrope dom
 # END MESH #
 # BEGIN PARTITION

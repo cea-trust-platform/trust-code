@@ -7,7 +7,10 @@ Domaine domaine_glob
 Domaine domaine1
 Domaine domaine2
 
-Lire_med family_names_from_group_names domaine_glob domaine_glob domaine_glob.med
+Lire_MED { 
+   domain domaine_glob 
+   file domaine_glob.med 
+}
 Read_file domaine_glob_ssz.geo ;
 Create_domain_from_sous_zone
 {

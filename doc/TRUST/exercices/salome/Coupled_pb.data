@@ -8,7 +8,10 @@ Pb_thermohydraulique pb_fluide
 Pb_conduction pb_solide
 
 # BEGIN MESH #
-Read_med family_names_from_group_names dom Mesh_1 Mesh_1.med
+Lire_MED { 
+   domain dom 
+   file Mesh_1.med 
+}
 Read_file dom_ssz.geo ;
 Create_domain_from_sous_zone { domaine_final dom_solide par_sous_zone Solid domaine_init dom }
 Create_domain_from_sous_zone { domaine_final dom_fluide par_sous_zone Fluid domaine_init dom }

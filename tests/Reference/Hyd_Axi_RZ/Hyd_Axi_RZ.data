@@ -30,7 +30,10 @@ end */
 
 Bidim_Axi
 # BEGIN MESH #
-Lire_Med dom dom rectangle.med
+Lire_MED { 
+   domain dom 
+   file rectangle.med 
+}
 # END MESH #
 # BEGIN PARTITION
 Partition dom

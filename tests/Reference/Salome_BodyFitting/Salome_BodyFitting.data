@@ -6,7 +6,11 @@ dimension 3
 Pb_hydraulique pb
 Domaine dom
 # BEGIN MESH #
-Read_MED convertAllToPoly family_names_from_group_names dom BodyFitting BodyFitting.med
+Lire_MED { 
+   domain dom 
+   file BodyFitting.med 
+   convertAllToPoly
+}
 # END MESH #
 # BEGIN PARTITION
 Postraiter_domaine

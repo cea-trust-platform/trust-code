@@ -5,7 +5,10 @@ domaine dom
 # Lecture du maillage genere par salome voir cas Lire_unv #
 # Kernel_med_shorty #
 # test de ecrire_champ_med #
-lire_med short_family_names dom essai ess.med
+Lire_MED { 
+   domain dom 
+   file ess.med 
+}
 ecrire_fichier dom ess.geom
 discretiser_domaine dom
 champ_fonc_xyz fct

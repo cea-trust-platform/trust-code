@@ -5,7 +5,10 @@ Domaine F4MESH
 
 /* Le maillage contient une plaque de frontieres wall1_dup et wall1 */
 # DEBUT MAILLAGE #
-lire_med family_names_from_group_names F4MESH F4MESH fluid_mesh_wall.med
+Lire_MED { 
+   domain F4MESH 
+   file fluid_mesh_wall.med 
+}
 reordonner F4MESH
 postraiter_domaine { domaine F4MESH fichier fluid_mesh_wall format lata }
 # FIN MAILLAGE #

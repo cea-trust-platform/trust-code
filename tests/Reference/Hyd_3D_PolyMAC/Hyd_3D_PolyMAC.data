@@ -6,7 +6,11 @@ dimension 3
 Pb_hydraulique pb
 Domaine dom
 # BEGIN MESH #
-Read_MED convertAllToPoly family_names_from_group_names dom --any-- MG-Hybrid.med
+Lire_MED { 
+   domain dom 
+   file MG-Hybrid.med 
+   convertAllToPoly
+}
 /* --any-- keyword will tell Read_MED to read the first mesh found in med file */
 /* Read_MED convertAllToPoly family_names_from_group_names dom MG-Hybrid MG-Hybrid.med */
 Postraiter_domaine { domaine dom fichier mesh format med }

@@ -11,7 +11,10 @@ postraiter_domaine { domaine dom format lml fichier dom.lml }
 
 postraiter_domaine { domaine dom format lata fichier dom.lata }
 ecrire_med dom dom.med
-lire_med dom dom dom.med
+Lire_MED { 
+   domain dom 
+   file dom.med 
+}
 ecrire_fichier dom mod.geom
 discretiser_domaine dom
 postraiter_domaine { domaine dom format lml fichier Kernel_penta.lml }

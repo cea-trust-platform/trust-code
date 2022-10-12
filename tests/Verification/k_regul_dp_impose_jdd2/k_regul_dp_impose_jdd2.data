@@ -4,7 +4,10 @@ dimension 3
 Pb_hydraulique pb
 Domaine dom
 # BEGIN MESH #
-Lire_med family_names_from_group_names dom mesh mesh.med
+Lire_MED { 
+   domain dom 
+   file mesh.med 
+}
 regroupebord dom wall { left right front back down up wall wall_dup }
 # END MESH #
 
@@ -27,8 +30,14 @@ option_vdf { p_imposee_aux_faces oui }
 
 domaine surf1
 domaine surf2
-Lire_MED short_family_names surf1 surf1 mesh.med
-Lire_MED short_family_names surf2 surf2 mesh.med
+Lire_MED { 
+   domain surf1 
+   file mesh.med 
+}
+Lire_MED { 
+   domain surf2 
+   file mesh.med 
+}
 
 Schema_euler_implicite sch
 Read sch

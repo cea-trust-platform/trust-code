@@ -14,7 +14,10 @@ Domaine dom
 EcritureLectureSpecial 0
 
 # BEGIN MESH #
-read_MED short_family_names dom domain_mesh ../MESHES_CYLINDER/res_domain_mesh_160_exact.med
+Lire_MED { 
+   domain dom 
+   file ../MESHES_CYLINDER/res_domain_mesh_160_exact.med 
+}
 regroupebord dom Wall { TOP DOWN UP }
 regroupebord dom Postpro { BOTTOM }
 regroupebord dom Entree { IN }

@@ -7,7 +7,10 @@ Pb_conduction pb2
 Domaine dom
 
 # BEGIN MESH #
-Lire_med family_names_from_group_names dom mesh_tri_1 mesh_tri_1.med
+Lire_MED { 
+   domain dom 
+   file mesh_tri_1.med 
+}
 # END MESH #
 # BEGIN PARTITION
 Partition dom
