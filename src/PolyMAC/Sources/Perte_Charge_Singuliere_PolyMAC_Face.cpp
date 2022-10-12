@@ -14,31 +14,26 @@
 *****************************************************************************/
 
 #include <Perte_Charge_Singuliere_PolyMAC_Face.h>
+#include <Op_Grad_PolyMAC_Face.h>
+#include <Champ_Face_PolyMAC.h>
 #include <Zone_PolyMAC_P0.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
-#include <Pb_Multiphase.h>
-#include <Array_tools.h>
-#include <Matrix_tools.h>
-#include <Champ_Face_PolyMAC.h>
-#include <Op_Grad_PolyMAC_Face.h>
-#include <Motcle.h>
-#include <Domaine.h>
 #include <Matrice_Morse.h>
+#include <Pb_Multiphase.h>
+#include <Pb_Multiphase.h>
+#include <Matrix_tools.h>
+#include <Array_tools.h>
+#include <Domaine.h>
+#include <Motcle.h>
 #include <Param.h>
 
 Implemente_instanciable(Perte_Charge_Singuliere_PolyMAC_Face,"Perte_Charge_Singuliere_Face_PolyMAC|Perte_Charge_Singuliere_Face_PolyMAC_P0",Perte_Charge_PolyMAC_Face);
-
-//// printOn
-//
 
 Sortie& Perte_Charge_Singuliere_PolyMAC_Face::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
-
-//// readOn
-//
 
 Entree& Perte_Charge_Singuliere_PolyMAC_Face::readOn(Entree& s)
 {
@@ -53,14 +48,12 @@ Entree& Perte_Charge_Singuliere_PolyMAC_Face::readOn(Entree& s)
   return s;
 }
 
-
-/////////////////////////////////////////////////////////////////////
-//
-//                    Implementation des fonctions
-//
-//               de la classe Perte_Charge_Singuliere_PolyMAC_Face
-//
-////////////////////////////////////////////////////////////////////
+void Perte_Charge_Singuliere_PolyMAC_Face::completer()
+{
+  Perte_Charge_PolyMAC_Face::completer();
+  // eq_masse besoin de champ_conserve !
+  if (sub_type(Pb_Multiphase, mon_equation->probleme())) ref_cast(Pb_Multiphase, mon_equation->probleme()).eq_masse.init_champ_conserve();
+}
 
 void Perte_Charge_Singuliere_PolyMAC_Face::remplir_num_faces(Entree& s)
 {
@@ -77,7 +70,7 @@ void Perte_Charge_Singuliere_PolyMAC_Face::remplir_num_faces(Entree& s)
       Cerr << "Error when defining the surface plane for the singular porosity :" << finl;
       Cerr << "No mesh faces has been found for the surface plane." << finl;
       Cerr << "Check the coordinate of the surface plane which should match mesh coordinates." << finl;
-      exit();
+      Process::exit();
     }
 }
 
