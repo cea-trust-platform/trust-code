@@ -4,9 +4,9 @@ The validation forms of TRUST can now be either written in the (legacy) PRM form
 or using the Jupyter notebook functionality. This new format will be pushed forward
 in the coming versions of TRUST.
 
-A first example (and good starting point) can be found in 
+A first example (and good starting point) can be run with
 ```sh
-        $TRUST_ROOT/Validation/Rapports_automatiques/Verification/SampleFormJupyter/SampleFormJupyter.ipynb
+        Run_fiche -doc
 ```
 
 To run a Jupyter validation forms, you need a specific environment:
@@ -35,13 +35,9 @@ To run a Jupyter validation forms, you need a specific environment:
         cd Verification/SampleFormJupyter
         Run_fiche
 ```
-    This will open a browser showing you the form.
+    This will open a browser showing you the form and run/add cells.
     
-  - or you can run:
-```sh
-        Run_fiche -doc
-```
-    This will open a browser showing you the form.
+  - **WARNING** : DO NOT EDIT *.ipynb notebook using text editor
 
   - to directly export the Jupyter notebook into a PDF file, you can do:
 ```sh

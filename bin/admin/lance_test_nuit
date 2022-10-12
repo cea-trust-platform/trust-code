@@ -63,7 +63,7 @@ check_components()
 	    then
 	       make_option="make check_all_optim check_trust_optim"
             fi
-            if [ "$Composant" = flica5 ] || [ "$Composant" = Front_tracking_IJK ]
+            if [ "$Composant" = flica5 ]
             then
                make_option="make check_optim"
             fi
@@ -384,7 +384,8 @@ check_components()
 	                      check_option=""
 			   fi
 	                else
-	                   check_option="--check-all" && [ "$Composant" = Front_tracking_IJK ] && check_option="" # IJK modifie le FT (modification PL 15/05/2020) donc on ne fait plus que make check_optim
+	                   check_option="--check-all" #&& [ "$Composant" = Front_tracking_IJK ] && check_option="" # IJK modifie le FT (modification PL 15/05/2020) donc on ne fait plus que make check_optim
+	                                              # ND 26/09/2022 : IJK est dans triocfd, et ne modifie plus le FT
 		           if [[ "$updated_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines updated
 		           then
 			      if [ "`date '+%u'`" -gt 5 ] || ([ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 17 ])
@@ -594,8 +595,7 @@ ComposantsLns="Test_Baltik equation_convection_diffusion ICoCo Front_tracking_IJ
 ComposantsOfficial="triocfd mpcube genepi3 flica5 TRUST_NK cathare3D"
 # 14/10/2020 : je retire mathys et triomc sur decision RPL
 #export ComposantsBeta="triomc mathys sides scorpio pemfc"
-#export ComposantsBeta="sides scorpio sympy_to_TRUST pemfc flica5 cathare3D"
-export ComposantsBeta="sides scorpio sympy_to_TRUST flica5 cathare3D"
+export ComposantsBeta="sides scorpio sympy_to_TRUST pemfc flica5 cathare3D"
 ComposantsGit=$ComposantsOfficial" "$ComposantsBeta
 ComposantsGit=`echo $ComposantsGit | xargs -n1 | sort -u | xargs`
 export Composants=$ComposantsLns" "$ComposantsGit
@@ -1822,9 +1822,9 @@ echo "Release criteria of the $new version:" >> $MESSAGES_NUIT
 criteres_remplis=0
 total_criteres=0
 baltik_ok=0
-#total_baltik=`echo $ComposantsOfficial | wc -w`
-nb=$(echo $ComposantsOfficial-1 | wc -w) # nb de baltik test\E9s pour les versions (beta, RC ou officielle)
-total_baltik=$(echo $nb-1 | bc -l)       # on retire Front_tracking_IJK du d\E9compte car il n'est pas encore au point
+total_baltik=`echo $ComposantsOfficial | wc -w`
+#nb=$(echo $ComposantsOfficial-1 | wc -w) # nb de baltik test\E9s pour les versions (beta, RC ou officielle)
+#total_baltik=$(echo $nb-1 | bc -l)       # on retire Front_tracking_IJK du d\E9compte car il n'est pas encore au point
 
 ######################
 # Tests d'installation
@@ -3580,7 +3580,7 @@ do
       fi
    fi
 #   if [[ "$ComposantsOfficial" = *"$Composant"* ]] || [[ "$ComposantsLns" = *"$Composant"* ]] # Test si Composant n est pas dans la liste des composants Beta
-   if [ "$Composant" != Front_tracking_IJK ] && [[ "$ComposantsBeta" != *"$Composant"* ]] # Test si Composant n est pas dans la liste des composants Beta ou pas Front_tracking_IJK
+   if [[ "$ComposantsBeta" != *"$Composant"* ]] # Test si Composant n est pas dans la liste des composants Beta
    then
       let total_criteres=$total_criteres+1
       let criteres_remplis=$criteres_remplis+$validation_composant
@@ -3686,7 +3686,7 @@ for Composant in $Composants
 do
    if [[ "$ComposantsOfficial" = *"$Composant"* ]] || [[ "$ComposantsLns" = *"$Composant"* ]] # Test si Composant n est pas dans la liste des composants Beta
    then
-      if [ "$Composant" != Test_Baltik ] && [ "$Composant" != Front_tracking_IJK ] # on retire Front_tracking_IJK du critere de livraison TRUST/TrioCFD
+      if [ "$Composant" != Test_Baltik ] # on retire Test_Baltik du critere de livraison TRUST/TrioCFD. ND 26/09/2022 : on remet ijk
       then
          echo " "
          echo "Search of $TRUST_ROOT/../Composants/$Composant/build/doxygen*.err file"
