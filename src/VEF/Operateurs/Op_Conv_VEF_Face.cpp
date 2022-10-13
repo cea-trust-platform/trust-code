@@ -1512,8 +1512,6 @@ void Op_Conv_VEF_Face::contribue_au_second_membre(DoubleTab& resu ) const
 
 void  Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
 {
-
-  assert((type_op==amont) || (type_op==muscl) || (type_op==centre));
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   const Zone_VEF& zone_VEF = ref_cast(Zone_VEF, la_zone_vef.valeur());
   int marq=phi_u_transportant(equation());
