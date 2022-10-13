@@ -35,8 +35,8 @@ class Terme_Source_Qdm_Face_PolyMAC : public Source_base, public Terme_Source_Qd
   Declare_instanciable(Terme_Source_Qdm_Face_PolyMAC);
 
 public:
-
-  void associer_pb(const Probleme_base& ) override;
+  int initialiser(double temps) override;
+  void associer_pb(const Probleme_base& ) override { }
   int has_interface_blocs() const override
   {
     return 1;

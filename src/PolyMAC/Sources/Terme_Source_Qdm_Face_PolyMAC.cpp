@@ -24,6 +24,7 @@
 #include <Equation_base.h>
 #include <Milieu_base.h>
 #include <Pb_Multiphase.h>
+#include <Discretisation_base.h>
 
 Implemente_instanciable(Terme_Source_Qdm_Face_PolyMAC,"Source_Qdm_face_PolyMAC|Source_Qdm_face_PolyMAC_P0",Source_base);
 
@@ -41,10 +42,6 @@ Entree& Terme_Source_Qdm_Face_PolyMAC::readOn(Entree& s )
   return s ;
 }
 
-void Terme_Source_Qdm_Face_PolyMAC::associer_pb(const Probleme_base& )
-{
-  ;
-}
 
 void Terme_Source_Qdm_Face_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
@@ -106,4 +103,11 @@ void Terme_Source_Qdm_Face_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab
 void Terme_Source_Qdm_Face_PolyMAC::mettre_a_jour(double temps)
 {
   la_source->mettre_a_jour(temps);
+}
+
+int Terme_Source_Qdm_Face_PolyMAC::initialiser(double temps)
+{
+  equation().discretisation().nommer_completer_champ_physique(equation().zone_dis(), "source_qdm", "", la_source.valeur(), equation().probleme());
+  la_source->initialiser(temps);
+  return Source_base::initialiser(temps);
 }
