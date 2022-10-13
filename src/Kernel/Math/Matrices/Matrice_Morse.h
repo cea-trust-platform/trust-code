@@ -213,11 +213,14 @@ inline double Matrice_Morse::operator()(int i, int j) const
   if ((symetrique_==1) && ((j-i)<0)) std::swap(i,j);
   int k1=tab1_[i]-1;
   int k2=tab1_[i+1]-1;
-  int k = (int)(std::lower_bound(tab2_.addr() + k1, tab2_.addr() + k2, j + 1) - tab2_.addr());
-  if (sorted_ && k < k2 && tab2_[k] == j + 1)
-    return coeff_[k];
-  else if (!sorted_)
-    for (k=k1; k<k2; k++)
+  if (sorted_)
+    {
+      int k = (int) (std::lower_bound(tab2_.addr() + k1, tab2_.addr() + k2, j + 1) - tab2_.addr());
+      if (k < k2 && tab2_[k] == j + 1)
+        return coeff_[k];
+    }
+  else
+    for (int k=k1; k<k2; k++)
       if (tab2_[k]-1 == j) return(coeff_[k]);
   // Si coefficient non trouve c'est qu'il est nul:
   return(0);
@@ -232,11 +235,14 @@ inline double& Matrice_Morse::operator()(int i, int j)
   if ((symetrique_==1) && ((j-i)<0)) std::swap(i,j);
   int k1=tab1_[i]-1;
   int k2=tab1_[i+1]-1;
-  int k = (int) (std::lower_bound(tab2_.addr() + k1, tab2_.addr() + k2, j + 1) - tab2_.addr());
-  if (sorted_ && k < k2 && tab2_[k] == j + 1)
-    return coeff_[k];
-  else if (!sorted_)
-    for (k=k1; k<k2; k++)
+  if (sorted_)
+    {
+      int k = (int) (std::lower_bound(tab2_.addr() + k1, tab2_.addr() + k2, j + 1) - tab2_.addr());
+      if (k < k2 && tab2_[k] == j + 1)
+        return coeff_[k];
+    }
+  else
+    for (int k=k1; k<k2; k++)
       if (tab2_[k]-1 == j) return(coeff_[k]);
   if (symetrique_==2) return zero_; // Pour Matrice_Morse_Diag, on ne verifie pas si la case est definie et l'on renvoie 0
 #ifndef NDEBUG
