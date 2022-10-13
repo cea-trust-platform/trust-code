@@ -368,8 +368,7 @@
  Forchheimer_VEF_P1NC Source_Forchheimer_VEF_Face Source_Forchheimer_VEF_Face.h
  Format_Post Format_Post Format_Post.h
  Format_Post_base Format_Post_base Format_Post_base.h
- Format_Post_Lata_V1 Format_Post_Lata_V1 Format_Post_Lata_V1.h
- Format_Post_Lata_V2 Format_Post_Lata Format_Post_Lata.h
+ Format_Post_Lata Format_Post_Lata Format_Post_Lata.h
  Format_Post_Lml Format_Post_Lml Format_Post_Lml.h
  Format_Post_Med Format_Post_Med Format_Post_Med.h
  Format_Post_Medfile Format_Post_Medfile Format_Post_Medfile.h
@@ -854,7 +853,6 @@
  Portance_interfaciale_Tomiyama Portance_interfaciale_Tomiyama Portance_interfaciale_Tomiyama.h
  Postraitements|Post_processings Postraitements Postraitements.h
  Postraitement_base Postraitement_base Postraitement_base.h
- Postraitement_lata Postraitement_lata Postraitement_lata.h
  Postraitement|Post_processing Postraitement Postraitement.h
  Postraiter_domaine Postraiter_domaine Postraiter_domaine.h
  PrecisionGeom PrecisionGeom PrecisionGeom.h

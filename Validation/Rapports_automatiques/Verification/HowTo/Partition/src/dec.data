@@ -20,7 +20,7 @@ Partition dom
     Partition_tool Metis { Nb_parts 25 }
     Larg_joint 2
     zones_name metis
-    ecrire_lata metis
+    ecrire_lata metis.lata
     reorder 0
     single_hdf
 }
@@ -29,7 +29,7 @@ Partition dom
     Partition_tool Metis { Nb_parts 25 }
     Larg_joint 2
     zones_name metis_reorder
-    ecrire_lata metis_reorder
+    ecrire_lata metis_reorder.lata
     reorder 1
     single_hdf
 }
@@ -38,7 +38,7 @@ Partition dom
     Partition_tool tranche { tranches 5 5 }
     Larg_joint 2
     zones_name tranche
-    ecrire_lata tranche
+    ecrire_lata tranche.lata
     reorder 0
     single_hdf
 }
@@ -47,7 +47,7 @@ Partition dom
     Partition_tool tranche { tranches 5 5 }
     Larg_joint 2
     zones_name tranche_reorder
-    ecrire_lata tranche_reorder
+    ecrire_lata tranche_reorder.lata
     reorder 1
     single_hdf
 }

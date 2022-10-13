@@ -13,7 +13,7 @@ Partition interass
 {
     Partition_tool metis { nb_parts 4 }
     Larg_joint 2
-    ecrire_lata mesh
+    ecrire_lata mesh.lata
     zones_name DOM_interass
 }
 End

@@ -16,7 +16,7 @@ Partition dom
     Partition_tool Tranche { tranches 2 2 2 }
     Larg_joint 2
     zones_name dom
-    ecrire_lata dom
+    ecrire_lata dom.lata
     reorder 1
     single_hdf
 }
