@@ -1,0 +1,176 @@
+# Hydraulique 3D laminaire : schema upwind #
+# PARALLEL ONLY 2 #
+dimension 3
+Probleme_FT_Disc_gen pb
+Domaine dom
+Scatter dom.Zones dom
+
+VDF dis
+
+Schema_Euler_explicite  sch
+Read sch
+{
+	tinit 0.0
+	nb_pas_dt_max 3
+	tmax  0.1
+	dt_min 1.e-10
+	dt_max 9.e-4
+	dt_impr 0.2
+	dt_sauv 0.1
+	seuil_statio -1.e-8
+	facsec 0.78
+}
+
+Fluide_Incompressible eau
+Read eau
+{
+	mu Champ_Uniforme 1 1.e-5
+	rho Champ_Uniforme 1 1000.
+}
+
+Fluide_Incompressible air
+Read air
+{
+	mu Champ_Uniforme 1 1.e-7
+	rho Champ_Uniforme 1 1.
+}
+
+Fluide_Diphasique fluide
+Read fluide
+{
+	fluide0 eau
+	fluide1 air
+	sigma Champ_Uniforme 1 0.07
+}
+
+Champ_Uniforme gravite
+Read gravite 3 0. 0. 0.
+Associate fluide gravite
+
+Navier_Stokes_FT_Disc              hydraulique
+Transport_Interfaces_FT_Disc       interf
+
+Associate pb hydraulique
+Associate pb interf
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+System "mkdir -p lata"
+
+Discretize pb dis
+Read pb
+{
+hydraulique
+{
+	modele_turbulence sous_maille_wale
+        {
+           Cw               0.
+           turbulence_paroi negligeable
+        }
+
+	solveur_pression GCP { precond ssor { omega 1.6 } seuil 1.e-10 impr }
+	convection           { amont }
+	diffusion            { }
+	conditions_initiales { vitesse champ_uniforme 3 0. 0. 0. }
+	equation_interfaces_proprietes_fluide interf
+	boundary_conditions
+	{
+		haut	Sortie_libre_rho_variable champ_front_uniforme 1 0.
+		gauche	paroi_fixe
+		droite	paroi_fixe
+		bas	paroi_fixe
+		devant	paroi_fixe
+		fond	paroi_fixe
+	}
+	terme_gravite rho_g
+}
+interf
+{
+	conditions_initiales {
+		fonction 0.0016*0.0016-((x-0.005)*(x-0.005)/1.21+(y-0.005)*(y-0.005)*1.21+(z-0.005)*(z-0.005))
+        }
+	methode_transport vitesse_interpolee hydraulique
+        iterations_correction_volume 2
+        n_iterations_distance 2
+	remaillage {
+                pas 1e-8
+                nb_iter_remaillage 5
+                critere_arete 0.35
+                critere_remaillage 0.35
+                pas_lissage 1e-8
+                lissage_courbure_iterations_systematique 1 lissage_courbure_iterations_si_remaillage 5
+                lissage_courbure_coeff -0.05
+                nb_iter_barycentrage 25
+                relax_barycentrage 1.
+                facteur_longueur_ideale 1.
+                nb_iter_correction_volume 1
+                seuil_dvolume_residuel 1e-15		
+	}
+	boundary_conditions
+	{
+		gauche	Paroi_FT_disc symetrie
+		droite	Paroi_FT_disc symetrie
+		haut	Paroi_FT_disc symetrie
+		bas	Paroi_FT_disc symetrie
+		devant	Paroi_FT_disc symetrie
+		fond	Paroi_FT_disc symetrie
+	}
+}
+postraitement  {
+	Sondes
+	{
+		sonde_pression nodes pression periode 2.e-3 Points 2 0.005 0.005 0.005 0.009 0.009 0.009
+	}
+	champs dt_post 1. {
+		vitesse elem
+		indicatrice_interf
+	}
+}	
+liste_postraitements {
+	postraitement_ft_lata post1 { 
+    format Lata 
+    fichier lata/post 
+    champs dt_post 0.002 { 
+        indicatrice_interf elem 
+    } 
+    interfaces interf { 
+        courbure som 
+    } 
+}
+}	
+sauvegarde binaire Oscillation_bulle3.rep
+}
+
+Solve pb
+End
+
+
+postraitement {
+	Sondes
+	{
+		sonde_vitesse  nodes vitesse             periode 2.e-3 Segment 51 0. 0.005 0.0025 0.0025
+		sonde_pression nodes pression            periode 2.e-3 Segment 51 0. 0.005 0.0025 0.0025
+		sonde_rho      nodes indicatrice_interf  periode 2.e-3 Segment 51 0. 0.005 0.0025 0.0025
+	}
+	champs dt_post 1. {
+		vitesse elem
+		indicatrice_interf
+	}
+}
+
+liste_postraitements {
+	postraitement_ft_lata post1 { 
+    format Lata 
+    fichier lata/post2DVDF 
+    champs dt_post 0.002 { 
+        indicatrice_interf elem 
+        pression som 
+        vitesse faces 
+    } 
+    interfaces interf { 
+        pe som 
+        courbure som 
+    } 
+}
+}

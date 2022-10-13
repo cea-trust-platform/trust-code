@@ -1,0 +1,157 @@
+# PARALLEL OK 2 #
+dimension 3
+Probleme_Diphasique_4eqs pb
+Domaine dom
+# DEBUT MAILLAGE #
+Mailler dom
+{
+        Pave Entree
+               {
+                Origine 0.  0. 0.
+                Nombre_de_Noeuds  2 2 11
+                Longueurs 1.4 1.4 4.2
+                }
+                {
+                bord Zbas  Z = 0.   0. <= X <= 1.4   0. <= Y <= 1.4
+                bord Zhaut Z = 4.2  0. <= X <= 1.4   0. <= Y <= 1.4
+                bord Xbas  X = 0.   0. <= Y <= 1.4   0. <= Z <= 4.2
+                bord Xhaut X = 1.4  0. <= Y <= 1.4   0. <= Z <= 4.2
+                bord Ybas  Y = 0.   0. <= X <= 1.4   0. <= Z <= 4.2
+                bord Yhaut Y = 1.4  0. <= X <= 1.4   0. <= Z <= 4.2
+                }
+}
+
+Ecrire_fichier dom dom.geom
+
+# FIN MAILLAGE #
+# DEBUT DECOUPAGE
+Decouper dom
+{
+partitionneur metis { nb_parts 2 }
+Larg_joint 1
+Nom_Zones DOM
+}
+end
+FIN DECOUPAGE #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+Sous_Zone zone
+Associate zone dom
+Lire zone {
+      Boite
+      Origine -0.1 -0.1 -0.1
+      Cotes   2.5 2.5 5.3 }
+
+
+VDF dis
+Schema_Implicite_4eqs sch
+
+Lire sch
+{
+    tinit 0.0
+    facsec 1.
+    seuil_statio 1e-2
+    type_solveur jacobienne_complete
+    Solveur  petsc	cholesky { }
+}
+
+
+
+Associer pb dom
+Associer pb sch
+Discretiser pb dis
+
+diametre_hyd_champ pb champ_uniforme 1 1.4
+
+Lire pb
+{
+
+   milieu_diphasique_1 {
+      loi_etat_diphasique Loi_Flica4_Melange { stiff.gas.10-210bar:200kJ.xdr }
+   }
+   
+   
+  Systeme_Diphasique_4eqs
+  {
+     convection_scal { amont }
+     convection_vit { amont_sans_porosite }
+     diffusion_scal { negligeable }
+     diffusion_vit { negligeable }
+          conditions_initiales {
+             pression Champ_Uniforme 1 155.0e+05
+             concentration Champ_Uniforme 1 0.0
+             enthalpie_liquide  Champ_Uniforme 1 1.3e6
+             enthalpie_vapeur  Champ_Uniforme 1 2.6e+06
+             vitesse_liquide Champ_Uniforme 3 0. 0. 1.
+             vitesse_vapeur Champ_Uniforme 3 0. 0. 1.
+             }
+          conditions_limites
+          {
+            Zbas Entree_fluide_diphasique {
+                            concentration      Champ_Front_Uniforme 1 0.
+                            enthalpie_liquide  Champ_Front_Uniforme 1 1.3e6
+                            enthalpie_vapeur   Champ_Front_Uniforme 1 2.6e+06
+                            vitesse_liquide    Champ_Front_Uniforme 3 0. 0. 1.
+                            vitesse_vapeur     Champ_Front_Uniforme 3 0. 0. 1.
+                           }
+            Zhaut Sortie_libre_diphasique { pression Champ_Front_Uniforme 1 155e+05 }
+
+            Ybas Symetrie
+            Yhaut Symetrie
+            Xbas Symetrie
+            Xhaut Symetrie
+          }
+          sources
+          {
+             Perte_Charge_Reguliere longitudinale Z CF 1000.  zone
+          }
+          modelisation
+          {
+            direction_principale_ecoulement 2
+            correlations
+            {
+              Transfert_Masse_Relaxation
+              {
+                Modele_Recondensation_F3 { }
+                Modele_Vaporisation_F3 { }
+              }
+              Ecart_Vitesse_HOMOGENE
+            }
+          }
+      }
+   Postraitement
+   {
+		format lata
+		Sondes
+		{
+			sonde_P grav pression periode 100. segment 10 0.7 0.7 0. 0.7 0.7 4.2
+			sonde_V vitesse_melangez periode 100. segment 10 0.7 0.7 0. 0.7 0.7 4.2
+			sonde_C grav concentration periode 100. segment 10 0.7 0.7 0. 0.7 0.7 4.2
+			sonde_HM grav enthalpie_melange periode 100. segment 10 0.7 0.7 0. 0.7 0.7 4.2
+			sonde_RHOM grav densite_melange periode 100. segment 10 0.7 0.7 0. 0.7 0.7 4.2
+			sonde_RHOL grav densite_liquide periode 100. segment 10 0.7 0.7 0. 0.7 0.7 4.2
+			sonde_RHOV grav densite_vapeur periode 100. segment 10 0.7 0.7 0. 0.7 0.7 4.2
+			sonde_TV grav taux_de_vide periode 100. segment 10 0.7 0.7 0. 0.7 0.7 4.2
+			sonde_TL grav temperature_liquide periode 100. segment 10 0.7 0.7 0. 0.7 0.7 4.2
+			sonde_HL grav enthalpie_liquide periode 100. segment 10 0.7 0.7 0. 0.7 0.7 4.2
+			sonde_DH diametre_hydraulique periode 100. segment 10 0.7 0.7 0. 0.7 0.7 4.2
+		}
+        	champs dt_post 1.E+7
+		{
+                        pression elem
+                        concentration elem
+                        taux_de_vide elem
+                        densite_melange elem
+                        enthalpie_melange elem
+                        vitesse_melange elem
+                        enthalpie_liquide elem
+                        densite_liquide elem
+                        temperature_liquide elem
+		}
+   }
+}
+
+Resoudre pb

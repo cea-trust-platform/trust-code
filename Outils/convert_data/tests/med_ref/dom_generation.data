@@ -1,0 +1,24 @@
+# !!! This part of the TRUST dataset was generated automatically by the #
+# !!! createUnstructTestCaseCode() method. Do not edit manually! #
+# !!! This is generated in the file 'dom_generation.data' - You must copy/paste it in your main datafile. #
+# BEGIN MESH #
+Lire_MED { 
+   domain All 
+   file region_All.med 
+}
+# END MESH #
+# BEGIN PARTITION 
+Partition All
+{
+    Partition_tool metis { nb_parts 2 }
+    Larg_joint 1
+    ecrire_decoupage All.txt
+    zones_name All
+}
+END PARTITION #
+# BEGIN SCATTER 
+Scatter All.Zones All
+END SCATTER #
+
+# End of the automatically generated part #
+

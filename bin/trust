@@ -147,6 +147,7 @@ help()
 [ "$TRUST_USE_CUDA" = 1 ] && echo "-gpu                    : Create a submission file and submit the job on production class with GPU cards."
 #   [ -d /ccc ] && echo "-ipm                    : Use ipm to report MPI statistics."
    echo "datafile -help_trust          : Print options of TRUST_EXECUTABLE [CASE[.data]] [options]."
+   echo "convert_data data             : Convert a data file to the new 1.9.1 syntax (milieu, interfaces, read_med)."
 
    exit 0
 }
@@ -451,6 +452,11 @@ do
    elif [ "$1" = "-gdb" ]
    then
       gdb=gdb.sh && mpirun_options="-gdb"
+   elif [ "$1" = "-convert_data" ]
+   then
+      conv_scr=$TRUST_ROOT/Outils/convert_data/convert.sh
+      $conv_scr $2
+      exit $?
    elif [ "$1" = "-prm" ]
    then
       prm=1 
