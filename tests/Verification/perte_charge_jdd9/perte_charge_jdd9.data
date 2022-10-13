@@ -34,12 +34,13 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-$dis dis
+PolyMAC_P0 dis
 
 Schema_euler_implicite sch
 Read sch
 {
     tinit 0
+	nb_pas_dt_max 3
     seuil_statio 1e-3
     dt_start dt_fixe 1e-3
     solveur ice
@@ -55,7 +56,7 @@ Associate  pb dom
 Associate  pb sch
 Discretize pb dis
 
-sous_zone grille associate grille dom read grille { fonction_sous_zone (y>($zb))*(y<($zt)) }
+sous_zone grille associate grille dom read grille { fonction_sous_zone (y>(0.4))*(y<(0.6)) }
 
 Read pb
 {
@@ -88,7 +89,7 @@ Read pb
         }
         sources
         {
-            $pdc
+            perte_charge_singuliere { dir KY coeff 10.0 surface { y = 0.5 grille orientation Champ_Uniforme 2 0 1 } }
         }
     }
     Masse_Multiphase
@@ -126,7 +127,7 @@ Read pb
         {
             p grav pression periode 1e8 segment 1000 0.05 0 0.05 1
         }
-        format lata
+        format lml
         fields dt_post 30.
         {
             vitesse elem
