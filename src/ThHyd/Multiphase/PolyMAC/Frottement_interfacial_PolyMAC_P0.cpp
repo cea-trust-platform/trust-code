@@ -98,7 +98,7 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
   Matrice_Morse *mat = matrices.count(ch.le_nom().getString()) ? matrices.at(ch.le_nom().getString()) : NULL;
   const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0, equation().zone_dis().valeur());
   const IntTab& f_e = zone.face_voisins(), &fcl = ch.fcl();
-  const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(), &ve = zone.volumes(), &vf = zone.volumes_entrelaces(), &dh_e = zone.diametre_hydraulique_elem();
+  const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(), &ve = zone.volumes(), &vf = zone.volumes_entrelaces(), &dh_e = equation().milieu().diametre_hydraulique_elem();
   const DoubleTab& inco = ch.valeurs(), &pvit = ch.passe(), &vfd = zone.volumes_entrelaces_dir(),
                    &alpha = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe(),
                     &press = ref_cast(QDM_Multiphase, equation()).pression().passe(),

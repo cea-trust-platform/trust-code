@@ -91,6 +91,12 @@ int Solide::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 
 void Solide::discretiser(const Probleme_base& pb, const Discretisation_base& dis)
 {
+  if (has_hydr_diam())
+    {
+      Cerr << "WHAT ?? It makes no sense to define diametre_hyd_champ in a Solid medium !!!" << finl;
+      Process::exit();
+    }
+
   Milieu_base::discretiser(pb,dis);
   if (mon_champ_.non_nul())
     {

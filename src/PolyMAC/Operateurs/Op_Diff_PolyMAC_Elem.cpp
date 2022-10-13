@@ -321,7 +321,7 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
         const Echange_contact_PolyMAC *ech = fcl[0](f, 0) == 3 ? &ref_cast(Echange_contact_PolyMAC, cls[0].get()[fcl[0](f, 1)].valeur()) : NULL;
         int o_p = ech ? ech->o_idx : -1, o_f = ech ? ech->f_dist(fcl[0](f, 2)) : -1;
         const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
-        const DoubleTab& alpha = pbm.eq_masse.inconnue().passe(), &dh = zone[0].get().diametre_hydraulique_elem(), &press = pbm.eq_qdm.pression().passe(),
+        const DoubleTab& alpha = pbm.eq_masse.inconnue().passe(), &dh = pbm.milieu().diametre_hydraulique_elem(), &press = pbm.eq_qdm.pression().passe(),
                          &vit = pbm.eq_qdm.inconnue().passe(), &lambda = pbm.milieu().conductivite().passe(), &mu = ref_cast(Fluide_base, pbm.milieu()).viscosite_dynamique().passe(),
                           &rho = pbm.milieu().masse_volumique().passe(), &Cp = pbm.milieu().capacite_calorifique().passe();
         Flux_parietal_base::input_t in;
@@ -368,7 +368,7 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
         if (corr[o_p] || N[o_p] != N[0]) /* correlation de l'autre cote */
           {
             const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, op_ext[o_p]->equation().probleme());
-            const DoubleTab& alpha = pbm.eq_masse.inconnue().passe(), &dh = zone[o_p].get().diametre_hydraulique_elem(), &press = pbm.eq_qdm.pression().passe(),
+            const DoubleTab& alpha = pbm.eq_masse.inconnue().passe(), &dh = pbm.milieu().diametre_hydraulique_elem(), &press = pbm.eq_qdm.pression().passe(),
                              &vit = pbm.eq_qdm.inconnue().passe(), &lambda = pbm.milieu().conductivite().passe(), &mu = ref_cast(Fluide_base, pbm.milieu()).viscosite_dynamique().passe(),
                               &rho = pbm.milieu().masse_volumique().passe(), &Cp = pbm.milieu().capacite_calorifique().passe();
             DoubleTrav qpk(N[o_p]), dTf_qpk(N[o_p], N[o_p]), dTp_qpk(N[o_p]), qpi(N[o_p], N[o_p]), dTf_qpi(N[o_p], N[o_p], N[o_p]), dTp_qpi(N[o_p], N[o_p]), v(N[o_p], D), nv(N[o_p]);

@@ -42,7 +42,7 @@ void Fluide_reel_base::set_param(Param& param)
 {
   param.ajouter("T_ref",&T_ref_);
   param.ajouter("P_ref",&P_ref_);
-  set_param_porosite(param);
+  set_additional_params(param);
 }
 
 void Fluide_reel_base::discretiser(const Probleme_base& pb, const  Discretisation_base& dis)

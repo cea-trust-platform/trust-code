@@ -553,7 +553,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                             //equations sur les correlations
                             const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, op_ext[p]->equation().probleme());
                             const Flux_parietal_base& corr = ref_cast(Flux_parietal_base, pbm.get_correlation("Flux_parietal").valeur());
-                            const DoubleTab& alpha = pbm.eq_masse.inconnue().passe(), &dh = zone[p].get().diametre_hydraulique_elem(), &press = pbm.eq_qdm.pression().passe(),
+                            const DoubleTab& alpha = pbm.eq_masse.inconnue().passe(), &dh = pbm.milieu().diametre_hydraulique_elem(), &press = pbm.eq_qdm.pression().passe(),
                                              &vit = pbm.eq_qdm.inconnue().passe(), &lambda = pbm.milieu().conductivite().passe(), &mu = ref_cast(Fluide_base, pbm.milieu()).viscosite_dynamique().passe(),
                                               &rho = pbm.milieu().masse_volumique().passe(), &Cp = pbm.milieu().capacite_calorifique().passe();
                             Flux_parietal_base::input_t in;

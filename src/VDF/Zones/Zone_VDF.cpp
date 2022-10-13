@@ -284,7 +284,6 @@ void Zone_VDF::discretiser()
   }
 
   calculer_volumes_entrelaces();
-  Zone_VF::calculer_diametres_hydrauliques();
   Zone_VF::calculer_coefficient_echange_thermique();
   Zone_VF::calculer_coefficient_frottement();
   genere_aretes();

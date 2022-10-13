@@ -31,6 +31,7 @@ Implemente_base_sans_constructeur(Milieu_base,"Milieu_base",Objet_U);
 // XD milieu_base objet_u milieu_base -1 Basic class for medium (physics properties of medium).
 // XD attr gravite field_base gravite 1 Gravity field (optional).
 // XD attr porosites_champ field_base porosites_champ 1 Porosity field (optional).
+// XD attr diametre_hyd_champ field_base diametre_hyd_champ 1 Hydraulic diameter field (optional).
 
 Milieu_base::Milieu_base()
 {
@@ -102,12 +103,13 @@ void Milieu_base::set_param(Param& param)
   param.ajouter("lambda", &lambda);
   param.ajouter("Cp", &Cp);
   param.ajouter("beta_th", &beta_th);
-  set_param_porosite(param);
+  set_additional_params(param);
 }
 
-// methode utile pour F5 ! F5 n'appelle pas Milieu_base::set_param mais Milieu_base::set_param_porosite ...
-void Milieu_base::set_param_porosite(Param& param)
+// methode utile pour F5 ! F5 n'appelle pas Milieu_base::set_param mais Milieu_base::set_additional_params ...
+void Milieu_base::set_additional_params(Param& param)
 {
+  param.ajouter("diametre_hyd_champ", &diametre_hyd_champ);
   param.ajouter("porosites_champ", &porosites_champ);
   param.ajouter("porosites", &porosites_);
   param.ajouter("gravite", &g); // pour F5 je mets la gravite ici ...
@@ -210,6 +212,7 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
     }
 
   discretiser_porosite(pb,dis);
+  discretiser_diametre_hydro(pb,dis);
 }
 
 // methode utile pour F5 ! F5 n'appelle pas Milieu_base::discretiser mais Milieu_base::discretiser_porosite ...
@@ -311,6 +314,73 @@ void Milieu_base::discretiser_porosite(const Probleme_base& pb, const Discretisa
   verifie_champ_porosites();
   if (is_field_porosites()) calculate_face_porosity(); /* sinon c'est deja rempli ... */
   fill_section_passage_face();
+}
+
+void Milieu_base::discretiser_diametre_hydro(const Probleme_base& pb, const Discretisation_base& dis)
+{
+  const Zone_dis_base& zone_dis = pb.equation(0).zone_dis().valeur();
+  const double temps = pb.schema_temps().temps_courant();
+  Nom fld_name = "diametre_hydraulique", fld_unit = "m";
+
+  // On construit porosite_face_ avec un descripteur parallele
+  const MD_Vector& md = ref_cast(Zone_VF, zone_dis).md_vector_faces();
+  if (!diametre_hydraulique_face_.get_md_vector().non_nul())
+    {
+      MD_Vector_tools::creer_tableau_distribue(md, diametre_hydraulique_face_, Array_base::NOCOPY_NOINIT);
+      assert (ref_cast(Zone_VF, zone_dis).nb_faces_tot() == diametre_hydraulique_face_.size_totale());
+    }
+  diametre_hydraulique_face_ = 0.; /* les diametres hydrauliques valent 0 */
+
+  if (diametre_hyd_champ.non_nul()) // Lu par diametre_hyd_champ
+    {
+      has_hydr_diam_ = true;
+      if (sub_type(Champ_Fonc_MED, diametre_hyd_champ.valeur()))
+        {
+          Cerr << "Convert Champ_fonc_MED " << fld_name << " to a Champ_Don ..." << finl;
+          Champ_Don tmp_fld;
+          dis.discretiser_champ("champ_elem", zone_dis, "neant", fld_unit, 1, temps, tmp_fld);
+          tmp_fld.affecter_(diametre_hyd_champ.valeur()); // interpolate ...
+          diametre_hyd_champ.detach();
+          dis.discretiser_champ("champ_elem", zone_dis, fld_name, fld_unit, 1, temps, diametre_hyd_champ);
+          diametre_hyd_champ->valeurs() = tmp_fld->valeurs();
+        }
+      else if (sub_type(Champ_Uniforme, diametre_hyd_champ.valeur())) // blabla ...
+        {
+          const double val = diametre_hyd_champ->valeurs()(0, 0);
+          diametre_hyd_champ.detach();
+          dis.discretiser_champ("champ_elem", zone_dis, fld_name, fld_unit, 1, temps, diametre_hyd_champ);
+          diametre_hyd_champ->valeurs() = val;
+        }
+      else
+        dis.nommer_completer_champ_physique(zone_dis, fld_name, fld_unit, diametre_hyd_champ.valeur(), pb);
+    }
+  else // Pas defini par l'utilisateur
+    {
+      dis.discretiser_champ("champ_elem", zone_dis, fld_name, fld_unit, 1, temps, diametre_hyd_champ);
+      diametre_hyd_champ->valeurs() = 0.; // On initialise a 0 ...
+    }
+
+  champs_compris_.ajoute_champ(diametre_hyd_champ.valeur());
+
+  if (has_hydr_diam_) /* sinon c'est deja rempli ... */
+    {
+      const Zone_VF& zvf = ref_cast(Zone_VF, zone_dis);
+      const IntTab& f_e = zvf.face_voisins();
+      const int nb_face_tot = zvf.nb_faces_tot();
+      assert(diametre_hydraulique_face_.size_totale() == nb_face_tot);
+      int e;
+      for (int f = 0; f < nb_face_tot; f++)
+        {
+          double nv = 0.0;
+          for (int i = 0; i < 2; i++)
+            if ((e = f_e(f, i)) > -1)
+              {
+                diametre_hydraulique_face_(f) += diametre_hyd_champ->valeurs()(e);
+                nv += 1.0;
+              }
+          diametre_hydraulique_face_(f) /= nv;
+        }
+    }
 }
 
 void Milieu_base::verifie_champ_porosites()

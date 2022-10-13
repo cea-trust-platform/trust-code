@@ -65,6 +65,13 @@ public:
   inline const DoubleVect& section_passage_face() const { return section_passage_face_; }
   inline double section_passage_face(int i) const { return section_passage_face_[i]; }
 
+  inline DoubleTab& diametre_hydraulique_elem() { return diametre_hyd_champ->valeurs(); }
+  inline const DoubleTab& diametre_hydraulique_elem() const { return diametre_hyd_champ->valeurs(); }
+
+  inline DoubleVect& diametre_hydraulique_face() { return diametre_hydraulique_face_; }
+  inline const DoubleVect& diametre_hydraulique_face() const { return diametre_hydraulique_face_; }
+  inline double diametre_hydraulique_face(int i) const { return diametre_hydraulique_face_[i]; }
+
   virtual int est_deja_associe();
   virtual void set_param(Param& param);
   virtual void preparer_calcul();
@@ -113,10 +120,10 @@ public:
 protected:
   REF(Zone_dis_base) zdb_;
   Champ rho; //peut etre un Champ_Don ou un Champ_Inc
-  Champ_Don g, alpha, lambda, Cp, beta_th, porosites_champ;
+  Champ_Don g, alpha, lambda, Cp, beta_th, porosites_champ, diametre_hyd_champ;
   Champ_Fonc rho_cp_elem_,rho_cp_comme_T_;
   Champs_compris champs_compris_;
-  DoubleVect porosite_face_, section_passage_face_ /* pour F5 */;
+  DoubleVect porosite_face_, section_passage_face_ /* pour F5 */, diametre_hydraulique_face_;
   Nom nom_;
 
   enum Type_rayo { NONRAYO, TRANSP, SEMITRANSP };
@@ -130,16 +137,18 @@ protected:
 
   // Utile pour F5
   void discretiser_porosite(const Probleme_base& pb, const Discretisation_base& dis);
-  virtual void set_param_porosite(Param& param);
+  void discretiser_diametre_hydro(const Probleme_base& pb, const Discretisation_base& dis);
+  virtual void set_additional_params(Param& param);
   virtual void calculate_face_porosity();
   void mettre_a_jour_porosite(double temps);
   void fill_section_passage_face();
   int initialiser_porosite(const double temps);
+  const bool& has_hydr_diam() { return has_hydr_diam_; }
 
 private:
   // attribue utile pour porosites (pas porosites_champ) ... a voir si utile sinon a virer ...
   Porosites porosites_;
-  bool is_user_porosites_ = false, is_field_porosites_ = false;
+  bool is_user_porosites_ = false, is_field_porosites_ = false, has_hydr_diam_ = false;
   void verifie_champ_porosites();
   void nettoie_champ_porosites();
   const bool& is_user_porosites() { return is_user_porosites_; }

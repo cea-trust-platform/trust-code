@@ -47,7 +47,6 @@ public :
   //void creer_face_voisins_virt();
   //void creer_elem_faces_virt();
   //void creer_face_sommets_virt();
-  void calculer_diametres_hydrauliques();
   void calculer_sections_passage();
   void calculer_coefficient_echange_thermique();
   void calculer_coefficient_frottement();
@@ -70,7 +69,6 @@ public :
   inline double xv(int num_face,int k) const { return xv_(num_face,k); }
   inline double xp(int num_elem,int k) const { return xp_(num_elem,k); }
   inline double xa(int num_arete,int k) const { return xa_(num_arete,k); }
-  inline double diametre_hydraulique_face(int i) const { return diametre_hydraulique_face_[i]; }
   inline double coefficient_frottement(int i) const { return coefficient_frottement_[i]; }
   inline double coefficient_echange_thermique(int i) const { return coefficient_echange_thermique_[i]; }
 
@@ -96,10 +94,6 @@ public :
   inline const DoubleTab& volumes_entrelaces_dir() const { return volumes_entrelaces_dir_; }
   inline DoubleTab& volumes_entrelaces_dir() { return volumes_entrelaces_dir_; } // renvoie le tableau des volumes entrelaces par cote.
 
-  inline DoubleVect& diametre_hydraulique_face() { return diametre_hydraulique_face_; }
-  inline const DoubleVect& diametre_hydraulique_face() const { return diametre_hydraulique_face_; }
-  inline DoubleTab& diametre_hydraulique_elem() { return diametre_hydraulique_elem_; }
-  inline const DoubleTab& diametre_hydraulique_elem() const { return diametre_hydraulique_elem_; }
   inline DoubleVect& coefficient_frottement() { return coefficient_frottement_; }
   inline const DoubleVect& coefficient_frottement() const { return coefficient_frottement_; }
   inline DoubleVect& coefficient_echange_thermique() { return coefficient_echange_thermique_; }
@@ -173,8 +167,6 @@ protected:
   DoubleTab volumes_entrelaces_dir_;        // volumes entrelaces par cote
 
   // en quantite de mouvement
-  DoubleVect diametre_hydraulique_face_;  //diametres hydrauliques des faces
-  DoubleTab diametre_hydraulique_elem_;  //diametres hydrauliques des elements
   DoubleVect coefficient_echange_thermique_;           // remplissage des coefficients d'echange_thermique
   DoubleVect coefficient_frottement_;                          // remplissage des coefficient de frottement
 
