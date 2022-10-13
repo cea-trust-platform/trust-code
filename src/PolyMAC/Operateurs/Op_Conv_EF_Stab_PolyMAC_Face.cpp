@@ -81,7 +81,10 @@ void Op_Conv_EF_Stab_PolyMAC_Face::completer()
   /* au cas ou... */
   const Zone_Poly_base& zone = la_zone_poly_.valeur();
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 2)
-    Cerr << "Op_Conv_EF_Stab_PolyMAC_Face : largeur de joint insuffisante (minimum 2)!" << finl, Process::exit();
+    {
+      Cerr << "Op_Conv_EF_Stab_PolyMAC_Face : largeur de joint insuffisante (minimum 2)!" << finl;
+      Process::exit();
+    }
   porosite_f.ref(equation().milieu().porosite_face());
   porosite_e.ref(equation().milieu().porosite_elem());
 }

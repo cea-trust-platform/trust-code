@@ -527,7 +527,11 @@ void Zone_Poly_base::detecter_faces_non_planes() const
   double theta = asin(sqrt(sin2)) * 180 / M_PI;
   Cerr << "Zone_Poly_base : angle sommet/face max " << theta << " deg (proc " << j << " , face ";
   Cerr << face(j) << " , elems " << elem1(j) << " / " << elem2(j) << " )" << finl;
-  if (theta > 1) Cerr << "Zone_Poly_base : non-planar face detected ! Please fix your mesh or call 911 ..." << finl, Process::exit();
+  if (theta > 1)
+    {
+      Cerr << "Zone_Poly_base : non-planar face detected ! Please fix your mesh or call 911 ..." << finl;
+      Process::exit();
+    }
 }
 
 void Zone_Poly_base::calculer_h_carre()

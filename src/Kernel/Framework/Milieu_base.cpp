@@ -232,17 +232,26 @@ void Milieu_base::discretiser_porosite(const Probleme_base& pb, const Discretisa
     {
       assert (!is_user_porosites());
       if (porosites_.is_read())
-        Cerr << "WHAT ?? You can not define in your medium both porosites_champ & porosites ! Remove one of them !" << finl, Process::exit();
+        {
+          Cerr << "WHAT ?? You can not define in your medium both porosites_champ & porosites ! Remove one of them !" << finl;
+          Process::exit();
+        }
 
       is_field_porosites_ = true;
 
       if (sub_type(Champ_input_P0, porosites_champ.valeur()))
-        Cerr << "To control the porosity field from ICoCo, please use Champ_Input_P0_Composite and not Champ_input_P0 !" << finl, Process::exit();
+        {
+          Cerr << "To control the porosity field from ICoCo, please use Champ_Input_P0_Composite and not Champ_input_P0 !" << finl;
+          Process::exit();
+        }
       else if (sub_type(Champ_Input_P0_Composite, porosites_champ.valeur()))
         {
           Champ_Input_P0_Composite& ch_in = ref_cast(Champ_Input_P0_Composite, porosites_champ.valeur());
           if (!ch_in.is_initialized())
-            Cerr << "To control the porosity field from ICoCo, please define the initial field in your Champ_Input_P0_Composite !" << finl, Process::exit();
+            {
+              Cerr << "To control the porosity field from ICoCo, please define the initial field in your Champ_Input_P0_Composite !" << finl;
+              Process::exit();
+            }
 
           porosites_champ->fixer_unite(fld_unit);
           porosites_champ->valeurs() = ch_in.initial_values(); // On initialise !
@@ -271,7 +280,10 @@ void Milieu_base::discretiser_porosite(const Probleme_base& pb, const Discretisa
     {
       assert (!is_field_porosites());
       if (porosites_champ.non_nul())
-        Cerr << "WHAT ?? You can not define in your medium both porosites_champ & porosites ! Remove one of them !" << finl, Process::exit();
+        {
+          Cerr << "WHAT ?? You can not define in your medium both porosites_champ & porosites ! Remove one of them !" << finl;
+          Process::exit();
+        }
 
       is_user_porosites_ = true;
       // On va utiliser porosites_champ maintenant !
@@ -312,7 +324,11 @@ void Milieu_base::verifie_champ_porosites()
 
   if (min_por >= 0.0 && max_por <= 1.0) { /* do nothing */ }
   else if (min_por >= -1.e-12 && max_por <= 1. + 1.e-12 ) nettoie_champ_porosites();
-  else Cerr << "WHAT ?? Your porosity field contains values < 0 or > 1 !!!! You should do something !" << finl, Process::exit();
+  else
+    {
+      Cerr << "WHAT ?? Your porosity field contains values < 0 or > 1 !!!! You should do something !" << finl;
+      Process::exit();
+    }
 }
 
 void Milieu_base::nettoie_champ_porosites()
@@ -836,7 +852,10 @@ void Milieu_base::associer_equation(const Equation_base *eqn) const
   // E. Saikali
   // At the initialization step, FT problem can have several equations with same unknown name "concentration"
   if (equation_.count(nom_inco) && eqn->probleme().que_suis_je() != "Probleme_FT_Disc_gen")
-    Cerr << que_suis_je() << " multiple equations solve the unknown " << eqn->inconnue().le_nom() << " !" << finl, Process::exit();
+    {
+      Cerr << que_suis_je() << " multiple equations solve the unknown " << eqn->inconnue().le_nom() << " !" << finl;
+      Process::exit();
+    }
   equation_[nom_inco] = eqn;
 }
 

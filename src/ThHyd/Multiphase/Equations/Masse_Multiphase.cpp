@@ -93,13 +93,21 @@ int Masse_Multiphase::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 
 const Operateur& Masse_Multiphase::operateur(int i) const
 {
-  if (i) Cerr << "Masse_Multiphase : wrong operator number " << i << finl, Process::exit();
+  if (i)
+    {
+      Cerr << "Masse_Multiphase : wrong operator number " << i << finl;
+      Process::exit();
+    }
   return terme_convectif;
 }
 
 Operateur& Masse_Multiphase::operateur(int i)
 {
-  if (i) Cerr << "Masse_Multiphase : wrong operator number " << i << finl, Process::exit();
+  if (i)
+    {
+      Cerr << "Masse_Multiphase : wrong operator number " << i << finl;
+      Process::exit();
+    }
   return terme_convectif;
 }
 

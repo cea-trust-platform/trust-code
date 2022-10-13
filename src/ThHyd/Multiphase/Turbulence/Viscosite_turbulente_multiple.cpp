@@ -34,7 +34,11 @@ Entree& Viscosite_turbulente_multiple::readOn(Entree& is)
 {
   Motcle mot;
   is >> mot;
-  if (mot != "{") Cerr << "Multiple turbulent viscosities : { expected instead of " << mot << finl, Process::exit();
+  if (mot != "{")
+    {
+      Cerr << "Multiple turbulent viscosities : { expected instead of " << mot << finl;
+      Process::exit();
+    }
 
   for (is >> mot; mot != "}"; is >> mot)
     if (viscs_turbs.count(mot.getString())) Process::exit(que_suis_je() + " : a correlation already exists for " + mot + " !");

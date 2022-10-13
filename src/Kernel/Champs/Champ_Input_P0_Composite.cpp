@@ -40,7 +40,10 @@ Entree& Champ_Input_P0_Composite::readOn(Entree& is)
   if ( is_initialized() )
     {
       if (champ_initial_->nb_comp() != champ_input_.nb_comp())
-        Cerr << "WHAT ?? Go to the Champ_Input_P0_Composite field and define the same number of components for the fields !!!" << finl, Process::exit();
+        {
+          Cerr << "WHAT ?? Go to the Champ_Input_P0_Composite field and define the same number of components for the fields !!!" << finl;
+          Process::exit();
+        }
 
       const Discretisation_base& disc = champ_input_.z_probleme().discretisation();
       const int ncomp = champ_initial_->nb_comp();

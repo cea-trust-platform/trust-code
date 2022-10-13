@@ -166,7 +166,11 @@ void Champ_Elem_PolyMAC::init_fcl() const
                 + 4 * sub_type(Neumann_paroi, cls[n].valeur())      + 5 * (sub_type(Neumann_homogene, cls[n].valeur()) || sub_type(Neumann_sortie_libre, cls[n].valeur()) || sub_type(Symetrie, cls[n].valeur()))
                 + 6 * sub_type(Dirichlet, cls[n].valeur())          + 7 * sub_type(Dirichlet_homogene, cls[n].valeur());
       if (sub_type(Echange_contact_PolyMAC, cls[n].valeur()) || sub_type(Echange_contact_PolyMAC_P0, cls[n].valeur())) idx = 3;
-      if (!idx) Cerr << "Champ_Elem_PolyMAC : CL non codee rencontree!" << finl, Process::exit();
+      if (!idx)
+        {
+          Cerr << "Champ_Elem_PolyMAC : CL non codee rencontree!" << finl;
+          Process::exit();
+        }
       for (i = 0; i < fvf.nb_faces_tot(); i++)
         f = fvf.num_face(i), fcl_(f, 0) = idx, fcl_(f, 1) = n, fcl_(f, 2) = i;
     }

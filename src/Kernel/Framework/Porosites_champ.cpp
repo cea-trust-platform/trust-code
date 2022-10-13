@@ -62,7 +62,11 @@ Entree& Porosites::readOn(Entree& is)
   double vol = 1.;
   DoubleVect surf;
 
-  if (mot != "{") Cerr << "Porosites : { expected after porosites instead of " << mot << finl, Process::exit();
+  if (mot != "{")
+    {
+      Cerr << "Porosites : { expected after porosites instead of " << mot << finl;
+      Process::exit();
+    }
   for (is >> mot; mot != "}"; is >> mot)
     {
       // 1er truc a lire : nom sous-zone
@@ -70,7 +74,10 @@ Entree& Porosites::readOn(Entree& is)
       // 2eme truc a lire : accolade
       is >> mot;
       if (mot != "{")
-        Cerr << "Porosites : { expected after the sous zone instead of " << mot << finl, Process::exit();
+        {
+          Cerr << "Porosites : { expected after the sous zone instead of " << mot << finl;
+          Process::exit();
+        }
       for (is >> motcle; motcle != "}"; is >> motcle)
         {
           if (motcle == "VOLUMIQUE")
@@ -84,7 +91,10 @@ Entree& Porosites::readOn(Entree& is)
               porosites_surf.push_back(surf);
             }
           else
-            Cerr << "Porosites : " << motcle << " is not known !! Use either VOLUMIQUE or SURFACIQUE" << finl, Process::exit();
+            {
+              Cerr << "Porosites : " << motcle << " is not known !! Use either VOLUMIQUE or SURFACIQUE" << finl;
+              Process::exit();
+            }
         }
     }
   assert(les_sous_zones.size() == porosites_volu.size() && les_sous_zones.size() == porosites_surf.size());
@@ -92,11 +102,17 @@ Entree& Porosites::readOn(Entree& is)
   // quelques tests !
   for (const auto &sz : les_sous_zones)
     if (!sub_type(Sous_Zone, Interprete::objet(sz)))
-      Cerr << sz << " is of type " << Interprete::objet(sz).que_suis_je() << ". We waited an object of type Sous_Zone" << finl, Process::exit();
+      {
+        Cerr << sz << " is of type " << Interprete::objet(sz).que_suis_je() << ". We waited an object of type Sous_Zone" << finl;
+        Process::exit();
+      }
 
   for (const auto &val : porosites_surf)
     if (val.local_min_vect() <= 0)
-      Cerr << "You entered a negative surfacic porosity ! " << finl, Process::exit();
+      {
+        Cerr << "You entered a negative surfacic porosity ! " << finl;
+        Process::exit();
+      }
 
   return is;
 }
@@ -104,7 +120,10 @@ Entree& Porosites::readOn(Entree& is)
 void Porosites::remplir_champ(const Zone_VF& zvf, DoubleVect& porosite_elem, DoubleVect& porosite_face)
 {
   if (zvf.que_suis_je().debute_par("Zone_VEF"))
-    Cerr << "Porosites should no longer be used in VEF. Porosites_champ should be used instead." << finl, Process::exit();
+    {
+      Cerr << "Porosites should no longer be used in VEF. Porosites_champ should be used instead." << finl;
+      Process::exit();
+    }
 
   const IntTab& elem_faces = zvf.elem_faces();
   const int sz = (int)les_sous_zones.size();

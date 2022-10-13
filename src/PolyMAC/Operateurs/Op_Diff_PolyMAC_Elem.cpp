@@ -64,7 +64,10 @@ void Op_Diff_PolyMAC_Elem::completer()
   ch.init_auxiliary_variables();
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 1)
-    Cerr << "Op_Diff_PolyMAC_Elem : largeur de joint insuffisante (minimum 1)!" << finl, Process::exit();
+    {
+      Cerr << "Op_Diff_PolyMAC_Elem : largeur de joint insuffisante (minimum 1)!" << finl;
+      Process::exit();
+    }
   flux_bords_.resize(zone.premiere_face_int(), ch.valeurs().line_size());
 }
 

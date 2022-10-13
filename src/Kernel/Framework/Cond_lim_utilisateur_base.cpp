@@ -179,7 +179,10 @@ Entree& paroi_contact_rayo::readOn(Entree& s )
   s >> type_rayo; /* pour l'autre probleme */
 
   if (type_rayo != "TRANSP" && type_rayo != "SEMI_TRANSP")
-    Cerr << "type_rayo should be TRANSP or SEMI_TRANSP and not " << type_rayo << finl, Process::exit();
+    {
+      Cerr << "type_rayo should be TRANSP or SEMI_TRANSP and not " << type_rayo << finl;
+      Process::exit();
+    }
 
   return s ;
 }
@@ -202,7 +205,10 @@ Entree& paroi_contact_fictif_rayo::readOn(Entree& s )
   s >> type_rayo; /* pour l'autre probleme */
 
   if (type_rayo != "TRANSP" && type_rayo != "SEMI_TRANSP")
-    Cerr << "type_rayo should be TRANSP or SEMI_TRANSP and not " << type_rayo << finl, Process::exit();
+    {
+      Cerr << "type_rayo should be TRANSP or SEMI_TRANSP and not " << type_rayo << finl;
+      Process::exit();
+    }
 
   return s ;
 }

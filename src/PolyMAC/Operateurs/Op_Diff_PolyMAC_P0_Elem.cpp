@@ -72,7 +72,10 @@ void Op_Diff_PolyMAC_P0_Elem::completer()
   const Champ_Elem_PolyMAC_P0& ch = ref_cast(Champ_Elem_PolyMAC_P0, eq.inconnue().valeur());
   const Zone_PolyMAC_P0& zone = la_zone_poly_.valeur();
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 1)
-    Cerr << "Op_Diff_PolyMAC_P0_Elem : largeur de joint insuffisante (minimum 1)!" << finl, Process::exit();
+    {
+      Cerr << "Op_Diff_PolyMAC_P0_Elem : largeur de joint insuffisante (minimum 1)!" << finl;
+      Process::exit();
+    }
   flux_bords_.resize(zone.premiere_face_int(), ch.valeurs().line_size());
 
   const Pb_Multiphase* pbm = sub_type(Pb_Multiphase, eq.probleme()) ? &ref_cast(Pb_Multiphase, eq.probleme()) : NULL;
@@ -425,8 +428,12 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
               for (j = 0; j < 2; j++)
                 if (sub_type(Energie_Multiphase, op_ext[p12[j]]->equation()) //si flux parietal et CL non Neumann, il n'y a qu'une valeur en paroi
                     && ref_cast(Pb_Multiphase, op_ext[p12[j]]->equation().probleme()).has_correlation("flux_parietal")) n12[j] = 1;
-            if (n12[0] != n12[1]) Cerr << "Op_Diff_PolyMAC_P0_Elem : incompatibility between " << op_ext[p1]->equation().probleme().le_nom()
-                                         << " and " << op_ext[p2]->equation().probleme().le_nom() << " ( " << n12[0] << " vs " << n12[1] << " components)!" << finl, Process::exit();
+            if (n12[0] != n12[1])
+              {
+                Cerr << "Op_Diff_PolyMAC_P0_Elem : incompatibility between " << op_ext[p1]->equation().probleme().le_nom()
+                     << " and " << op_ext[p2]->equation().probleme().le_nom() << " ( " << n12[0] << " vs " << n12[1] << " components)!" << finl;
+                Process::exit();
+              }
             //equations de flux : tous types sauf Dirichlet et Echange_impose_base
             if (type_f[i] != 6 && type_f[i] != 7 && type_f[i] != 1 && type_f[i] != 2)
               for (n = 0; n < (mix ? n12[0] : 1); n++) i_eq_flux(i, n) = k, k++;
@@ -608,7 +615,11 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                   for (i = 0, cv = 1; i < t_eq; i++) Tefs(n, i) += B(n, t_e, i), cv &= !nonlinear || std::fabs(B(n, t_e, i)) < 1e-3;
               }
             if (!cv && essai < 2) continue; //T_efs pas converge avec flux non coercif -> on essaie de stabiliser
-            else if (!cv) Cerr << "non-convergence des T_efs!" << finl, Process::exit();
+            else if (!cv)
+              {
+                Cerr << "non-convergence des T_efs!" << finl;
+                Process::exit();
+              }
 
             /* subbstitution dans des u_efs^n dans Fec et Qec */
             for (n = 0; n < Nm; n++)
@@ -667,8 +678,12 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
 
 const DoubleTab& Op_Diff_PolyMAC_P0_Elem::d_nucleation() const
 {
-  if (!d_nuc_a_jour_) Cerr << "Op_Diff_PolyMAC_P0_Elem : attempt to access d_nucleation (nucleate bubble diameter) before ajouter_blocs() has been called!" << finl
-                             << "Please call assembler_blocs() on Energie_Multiphase before calling it on Masse_Multiphase." << finl, Process::exit();
+  if (!d_nuc_a_jour_)
+    {
+      Cerr << "Op_Diff_PolyMAC_P0_Elem : attempt to access d_nucleation (nucleate bubble diameter) before ajouter_blocs() has been called!" << finl
+           << "Please call assembler_blocs() on Energie_Multiphase before calling it on Masse_Multiphase." << finl;
+      Process::exit();
+    }
   return d_nuc_;
 }
 

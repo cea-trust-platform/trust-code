@@ -267,7 +267,10 @@ Entree& Champ_Fonc_MED::readOn(Entree& s)
           for (int i = 0; i < dec.size_array(); i++)
             if (dec[i] == Process::me()) filter.append_array(i + 1);//les indices commencent a 1
           if (field_size != dec.size_array())
-            Cerr << "Champ_Fonc_MED on parallel domain : inconsistency between 'decoup' file and field!" << finl, Process::exit();
+            {
+              Cerr << "Champ_Fonc_MED on parallel domain : inconsistency between 'decoup' file and field!" << finl;
+              Process::exit();
+            }
         }
       else // Cas ou le maillage .med suit la numerotation du maillage decoupe
         {
@@ -279,10 +282,16 @@ Entree& Champ_Fonc_MED::readOn(Entree& s)
       filter.set_smart_resize(0), filter.resize(filter.size_array());
       Cerr << "Creating a filter to access efficiently values in " << nom_fichier_med_ << finl;
       if (filter.size_array() != le_champ().valeurs().dimension(0))
-        Cerr << "Champ_Fonc_MED on parallel domain : inconsistency between filter and domain!" << finl, Process::exit();
+        {
+          Cerr << "Champ_Fonc_MED on parallel domain : inconsistency between filter and domain!" << finl;
+          Process::exit();
+        }
     }
   else if (field_size != le_champ().valeurs().dimension(0))
-    Cerr << "Champ_Fonc_MED on existing domain : inconsistency between domain file and field!" << finl, Process::exit();
+    {
+      Cerr << "Champ_Fonc_MED on existing domain : inconsistency between domain file and field!" << finl;
+      Process::exit();
+    }
 
   le_champ().nommer(nom_champ);
   le_champ().corriger_unite_nom_compo();
@@ -481,7 +490,10 @@ void Champ_Fonc_MED::lire(double t, int given_it)
               med_filter flt = MED_FILTER_INIT;
               if(MEDfilterEntityCr(fid, size, 1, le_champ().valeurs().nb_dim() > 1 ? le_champ().valeurs().dimension(1) : 1, MED_ALL_CONSTITUENT,
                                    MED_FULL_INTERLACE, MED_COMPACT_STMODE, MED_ALLENTITIES_PROFILE, filter.size_array(), filter.addr(), &flt) < 0)
-                Cerr << "Champ_Fonc_MED on parallel domain : error at filter creation!" << finl, Process::exit();
+                {
+                  Cerr << "Champ_Fonc_MED on parallel domain : error at filter creation!" << finl;
+                  Process::exit();
+                }
               ret = MEDfieldValueAdvancedRd(fid,le_nom_du_champ,numdt,numo,type_ent,type_geo,&flt,(unsigned char*)le_champ().valeurs().addr());
             }
           else if (le_champ().valeurs().dimension(0) > 0)//lecture complete

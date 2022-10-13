@@ -129,13 +129,21 @@ void Aire_interfaciale::associer_fluide(const Fluide_base& un_fluide)
 
 const Operateur& Aire_interfaciale::operateur(int i) const
 {
-  if (i) Cerr << "Aire_interfaciale : wrong operator number " << i << finl, Process::exit();
+  if (i)
+    {
+      Cerr << "Aire_interfaciale : wrong operator number " << i << finl;
+      Process::exit();
+    }
   return terme_convectif;
 }
 
 Operateur& Aire_interfaciale::operateur(int i)
 {
-  if (i) Cerr << "Aire_interfaciale : wrong operator number " << i << finl, Process::exit();
+  if (i)
+    {
+      Cerr << "Aire_interfaciale : wrong operator number " << i << finl;
+      Process::exit();
+    }
   return terme_convectif;
 }
 

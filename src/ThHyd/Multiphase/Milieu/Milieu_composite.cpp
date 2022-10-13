@@ -32,13 +32,25 @@ Entree& Milieu_composite::readOn(Entree& is)
   std::vector<std::pair<std::string, int>> especes; // string pour phase_nom. int : 0 pour liquide et 1 pour gaz
   Nom mot;
   is >> mot;
-  if (mot != "{") Cerr << "Milieu_composite : { expected instead of " << mot << finl, Process::exit();
+  if (mot != "{")
+    {
+      Cerr << "Milieu_composite : { expected instead of " << mot << finl;
+      Process::exit();
+    }
 
   for (is >> mot; mot != "}"; is >> mot)
     {
       if (Motcle(mot) == "POROSITES_CHAMP") is >> porosites_champ;
-      else if (Motcle(mot) == "POROSITES") Cerr << "You should use porosites_champ and not porosites ! Call the 911 !" << finl, Process::exit();
-      else if (Motcle(mot) == "GRAVITE") Cerr << que_suis_je() << " : gravity should not be defined in Pb_Multiphase ! Use source_qdm if you want gravity in QDM equation !" << finl, Process::exit();
+      else if (Motcle(mot) == "POROSITES")
+        {
+          Cerr << "You should use porosites_champ and not porosites ! Call the 911 !" << finl;
+          Process::exit();
+        }
+      else if (Motcle(mot) == "GRAVITE")
+        {
+          Cerr << que_suis_je() << " : gravity should not be defined in Pb_Multiphase ! Use source_qdm if you want gravity in QDM equation !" << finl;
+          Process::exit();
+        }
       else if (!mot.debute_par("saturation") && !mot.debute_par("interface")) // on ajout les phases
         {
           noms_phases_.add(mot);
@@ -46,9 +58,15 @@ Entree& Milieu_composite::readOn(Entree& is)
           Milieu fluide;
           is >> fluide;
           if (fluide->get_porosites_champ().non_nul())
-            Cerr << que_suis_je() + " : porosity should be defined only once in the milieu_composite block, not in " + fluide->que_suis_je() << finl, Process::exit();
+            {
+              Cerr << que_suis_je() + " : porosity should be defined only once in the milieu_composite block, not in " + fluide->que_suis_je() << finl;
+              Process::exit();
+            }
           if (fluide->a_gravite())
-            Cerr << que_suis_je() + " : gravity should be defined only once in the milieu_composite block, not in " + fluide->que_suis_je() << finl, Process::exit();
+            {
+              Cerr << que_suis_je() + " : gravity should be defined only once in the milieu_composite block, not in " + fluide->que_suis_je() << finl;
+              Process::exit();
+            }
           fluide->set_id_composite(i++);
           fluide->nommer(mot); // XXX
           fluides.add(ref_cast(Fluide_base,fluide.valeur()));
@@ -70,7 +88,10 @@ Entree& Milieu_composite::readOn(Entree& is)
 
   // Sais pas s'il faut tester ca ou non ... Yannick, Antoine ! help :/
   if (has_saturation() && has_interface())
-    Cerr << "You define both interface and saturation in Milieu_composite ???" << finl, Process::exit();
+    {
+      Cerr << "You define both interface and saturation in Milieu_composite ???" << finl;
+      Process::exit();
+    }
 
   // Traitement pour les interfaces
   int N = fluides.size();

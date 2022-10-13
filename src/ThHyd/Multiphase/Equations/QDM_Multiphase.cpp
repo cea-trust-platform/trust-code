@@ -324,7 +324,11 @@ Entree& QDM_Multiphase::lire_cond_init(Entree& is)
   Cerr << "Reading of initial conditions\n";
   Nom nom;
   is >> nom;
-  if (nom != "{") Cerr << que_suis_je() << ": expected { instead of " << nom << finl, Process::exit();
+  if (nom != "{")
+    {
+      Cerr << que_suis_je() << ": expected { instead of " << nom << finl;
+      Process::exit();
+    }
   int vit_lu = 0, press_lu = 0;
   for (is >> nom; nom != "}"; is >> nom)
     if (nom == "vitesse" || nom == "velocity")
@@ -336,7 +340,10 @@ Entree& QDM_Multiphase::lire_cond_init(Entree& is)
           {
             const int nb_phases = ref_cast(Pb_Multiphase, probleme()).nb_phases(), nb_dim = ref_cast(Champ_Composite,src.valeur()).get_champ_composite_dim();
             if ( nb_dim != nb_phases)
-              Cerr << que_suis_je() << ": velocity initial condition Champ_Composite should have "<<  nb_phases << " fields and not " << nb_dim << " !" << finl, Process::exit();
+              {
+                Cerr << que_suis_je() << ": velocity initial condition Champ_Composite should have "<<  nb_phases << " fields and not " << nb_dim << " !" << finl;
+                Process::exit();
+              }
           }
 
         verifie_ch_init_nb_comp(la_vitesse, src.nb_comp());
@@ -351,10 +358,22 @@ Entree& QDM_Multiphase::lire_cond_init(Entree& is)
         la_pression_en_pa->passe() = la_pression_en_pa->valeurs() = la_pression->passe() = la_pression->valeurs();
         press_lu = 1;
       }
-    else Cerr << que_suis_je() << ": expected vitesse|velocity|pression|pressure instead of " << nom << finl, Process::exit();
+    else
+      {
+        Cerr << que_suis_je() << ": expected vitesse|velocity|pression|pressure instead of " << nom << finl;
+        Process::exit();
+      }
 
-  if (!vit_lu)   Cerr << que_suis_je() << ": velocity initial condition not found." << finl, Process::exit();
-  if (!press_lu) Cerr << que_suis_je() << ": pressure initial condition not found." << finl, Process::exit();
+  if (!vit_lu)
+    {
+      Cerr << que_suis_je() << ": velocity initial condition not found." << finl;
+      Process::exit();
+    }
+  if (!press_lu)
+    {
+      Cerr << que_suis_je() << ": pressure initial condition not found." << finl;
+      Process::exit();
+    }
 
   return is;
 }

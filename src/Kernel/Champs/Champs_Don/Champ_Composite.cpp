@@ -51,7 +51,10 @@ Entree& Champ_Composite::readOn(Entree& is)
   // XXX : On verifie qu'on a lu les memes types de champs ...
   for (int i = 1; i < dim_ ; i++)
     if (z_fld_[i]->que_suis_je() != z_fld_[0]->que_suis_je())
-      Cerr << "Champ_Composite should define the same field types !" << finl, Process::exit();
+      {
+        Cerr << "Champ_Composite should define the same field types !" << finl;
+        Process::exit();
+      }
 
   // pour la methode valeurs()
   const int ncompo = z_fld_[0]->nb_comp() * dim_, nnodes = z_fld_[0]->valeurs().dimension_tot(0);

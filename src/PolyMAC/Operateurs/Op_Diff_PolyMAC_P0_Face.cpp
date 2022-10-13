@@ -55,7 +55,10 @@ void Op_Diff_PolyMAC_P0_Face::completer()
   if (le_champ_inco.non_nul()) ch.init_auxiliary_variables(); // cas flica5 : ce n'est pas l'inconnue qui est utilisee, donc on cree les variables auxiliaires ici
   flux_bords_.resize(zone.premiere_face_int(), dimension * ch.valeurs().line_size());
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 1)
-    Cerr << "Op_Diff_PolyMAC_P0_Face : largeur de joint insuffisante (minimum 1)!" << finl, Process::exit();
+    {
+      Cerr << "Op_Diff_PolyMAC_P0_Face : largeur de joint insuffisante (minimum 1)!" << finl;
+      Process::exit();
+    }
   porosite_e.ref(equation().milieu().porosite_elem());
   porosite_f.ref(equation().milieu().porosite_face());
 }

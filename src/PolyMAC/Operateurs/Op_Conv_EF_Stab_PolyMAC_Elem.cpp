@@ -88,7 +88,10 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::preparer_calcul()
   flux_bords_.resize(zone.premiere_face_int(), (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : equation().inconnue().valeurs()).line_size());
 
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 2)
-    Cerr << "Op_Conv_EF_Stab_PolyMAC_Elem : largeur de joint insuffisante (minimum 2)!" << finl, Process::exit();
+    {
+      Cerr << "Op_Conv_EF_Stab_PolyMAC_Elem : largeur de joint insuffisante (minimum 2)!" << finl;
+      Process::exit();
+    }
 }
 
 double Op_Conv_EF_Stab_PolyMAC_Elem::calculer_dt_stab() const

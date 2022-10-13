@@ -39,7 +39,10 @@ Entree& DP_Impose_PolyMAC_Face::readOn(Entree& s)
   DP_Impose::lire_donnees(s);
   remplir_num_faces(s);
   if (!mp_max(sgn.size()))
-    Cerr << "DP_Impose_PolyMAC_Face : champ d'orientation non renseigne!" << finl, Process::exit();
+    {
+      Cerr << "DP_Impose_PolyMAC_Face : champ d'orientation non renseigne!" << finl;
+      Process::exit();
+    }
   //fichier de sortie
   set_fichier(Nom("DP_") + identifiant_);
   set_description(Nom("DP impose sur la surface ") + identifiant_ + "\nt DP dDP/dQ Q Q0");

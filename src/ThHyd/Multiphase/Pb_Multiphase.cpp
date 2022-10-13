@@ -132,7 +132,11 @@ Entree& Pb_Multiphase::lire_correlations(Entree& is)
 {
   Motcle mot;
   is >> mot;
-  if (mot != "{") Cerr << "correlations : { expected instead of " << mot << finl, Process::exit();
+  if (mot != "{")
+    {
+      Cerr << "correlations : { expected instead of " << mot << finl;
+      Process::exit();
+    }
   for (is >> mot; mot != "}"; is >> mot)
     if (correlations.count(mot.getString())) Process::exit(que_suis_je() + " : a correlation already exists for " + mot + " !");
     else correlations[mot.getString()].typer_lire(*this, mot, is);
@@ -181,7 +185,11 @@ const Equation_base& Pb_Multiphase::equation(int i) const
   else if (i == 1) return eq_masse;
   else if (i == 2) return eq_energie;
   else if (i < 3 + eq_opt.size()) return eq_opt[i - 3].valeur();
-  else Cerr << "Pb_Multiphase::equation() : Wrong equation number" << i << "!" << finl, Process::exit();
+  else
+    {
+      Cerr << "Pb_Multiphase::equation() : Wrong equation number" << i << "!" << finl;
+      Process::exit();
+    }
   return eq_qdm; //pour renvoyer quelque chose
 }
 
@@ -198,7 +206,11 @@ Equation_base& Pb_Multiphase::equation(int i)
   else if (i == 1) return eq_masse;
   else if (i == 2) return eq_energie;
   else if (i < 3 + eq_opt.size()) return eq_opt[i - 3].valeur();
-  else Cerr << "Pb_Multiphase::equation() : Wrong equation number" << i << "!" << finl, Process::exit();
+  else
+    {
+      Cerr << "Pb_Multiphase::equation() : Wrong equation number" << i << "!" << finl;
+      Process::exit();
+    }
   return eq_qdm; //pour renvoyer quelque chose
 }
 

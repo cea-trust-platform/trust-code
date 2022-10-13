@@ -14,13 +14,6 @@
 *****************************************************************************/
 
 #include <Dirichlet_loi_paroi.h>
-#include <Motcle.h>
-#include <Equation_base.h>
-#include <Probleme_base.h>
-#include <Convection_Diffusion_Concentration.h>
-#include <Frontiere_dis_base.h>
-#include <Frontiere.h>
-#include <math.h>
 
 Implemente_base(Dirichlet_loi_paroi,"Dirichlet_loi_paroi",Dirichlet);
 

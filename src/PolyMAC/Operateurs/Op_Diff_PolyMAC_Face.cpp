@@ -59,7 +59,10 @@ void Op_Diff_PolyMAC_Face::completer()
   ch.init_auxiliary_variables(); /* ajout des inconnues auxiliaires (vorticites aux aretes) */
   flux_bords_.resize(zone.premiere_face_int(), dimension * ch.valeurs().line_size());
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 1)
-    Cerr << "Op_Diff_PolyMAC_Face : largeur de joint insuffisante (minimum 1)!" << finl, Process::exit();
+    {
+      Cerr << "Op_Diff_PolyMAC_Face : largeur de joint insuffisante (minimum 1)!" << finl;
+      Process::exit();
+    }
   porosite_e.ref(equation().milieu().porosite_elem());
   porosite_f.ref(equation().milieu().porosite_face());
   op_ext = { this };

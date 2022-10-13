@@ -77,7 +77,10 @@ void Op_Grad_PolyMAC_Face::completer()
     ref_cast(Champ_Face_PolyMAC, ref_cast(Navier_Stokes_std, equation()).grad_P().valeur()).init_auxiliary_variables();
   /* besoin d'un joint de 1 */
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 1)
-    Cerr << "Op_Grad_PolyMAC_Face : largeur de joint insuffisante (minimum 1)!" << finl, Process::exit();
+    {
+      Cerr << "Op_Grad_PolyMAC_Face : largeur de joint insuffisante (minimum 1)!" << finl;
+      Process::exit();
+    }
 }
 
 void Op_Grad_PolyMAC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
