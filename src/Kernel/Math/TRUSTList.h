@@ -39,6 +39,7 @@ public :
   {
     min_data = std::is_same<_TYPE_, double>::value ? DMAXFLOAT : IMAX;
     max_data = std::is_same<_TYPE_, double>::value ? -DMAXFLOAT : -IMAX;
+    size_ = 0;
     dernier_ = this;
   }
 
@@ -47,6 +48,7 @@ public :
   {
     min_data = a_list.min_data;
     max_data = a_list.max_data;
+    size_ = a_list.size_;
     if (a_list.est_vide()) this->suivant_ = this;
     else
       {
@@ -64,7 +66,7 @@ public :
   inline Sortie& printOn(Sortie& os) const;
   inline Entree& readOn(Entree& is);
 
-  inline int size() const;
+  inline int size() const { return size_; };
   inline int contient(_TYPE_) const;
   inline int rang(_TYPE_) const;
 
@@ -91,6 +93,7 @@ public :
 private:
   TRUSTListElem<_TYPE_>* dernier_;
   _TYPE_ min_data, max_data;
+  int size_;
 };
 
 /*! @brief : List_Curseur de reels int/double precision
@@ -100,6 +103,7 @@ template<typename _TYPE_>
 class TRUSTList_Curseur
 {
 public :
+  TRUSTList_Curseur() {};
   TRUSTList_Curseur(const TRUSTList<_TYPE_>& a_list) : curseur(&(TRUSTListElem<_TYPE_>&) a_list) { if (a_list.est_vide()) curseur = 0; }
   TRUSTList_Curseur(const TRUSTListElem<_TYPE_>& a_list) : curseur(&(TRUSTListElem<_TYPE_>&) a_list) { if (a_list.est_vide()) curseur = 0; }
 

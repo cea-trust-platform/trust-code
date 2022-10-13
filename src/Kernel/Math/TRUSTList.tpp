@@ -86,7 +86,7 @@ inline TRUSTList<_TYPE_>& TRUSTList<_TYPE_>::add(_TYPE_ value_to_add)
 {
   if (value_to_add < min_data) min_data = value_to_add;
   if (value_to_add > max_data) max_data = value_to_add;
-
+  size_++;
   if (TRUSTListElem<_TYPE_>::est_vide())
     {
       this->data = value_to_add;
@@ -108,23 +108,6 @@ inline TRUSTList<_TYPE_>& TRUSTList<_TYPE_>::add(_TYPE_ value_to_add)
         }
       return *this;
     }
-}
-
-/*! @brief Renvoie la taille de la liste (Une liste vide est de taille nulle)
- *
- */
-template<typename _TYPE_>
-inline int TRUSTList<_TYPE_>::size() const
-{
-  if (TRUSTListElem<_TYPE_>::est_vide()) return 0;
-  int i = 0;
-  TRUSTList_Curseur<_TYPE_> curseur(*this);
-  while (curseur)
-    {
-      ++i;
-      ++curseur;
-    }
-  return i;
 }
 
 /*! @brief Ajout d'un element a la liste ssi il n'existe pas deja
@@ -240,6 +223,7 @@ inline void TRUSTList<_TYPE_>::suppr(_TYPE_ obj)
           dernier_ = this;
         }
       calcule_min_max();
+      size_--;
       return;
     }
   TRUSTList_Curseur<_TYPE_> curseur_pre = *this;
@@ -256,6 +240,7 @@ inline void TRUSTList<_TYPE_>::suppr(_TYPE_ obj)
 
           delete next;
           calcule_min_max();
+          size_--;
           return;
         }
       ++curseur;
@@ -291,6 +276,7 @@ inline void TRUSTList<_TYPE_>::vide()
   this->suivant_ = this;
   dernier_ = this;
   calcule_min_max();
+  size_=0;
 }
 
 #endif /* TRUSTList_TPP_included */
