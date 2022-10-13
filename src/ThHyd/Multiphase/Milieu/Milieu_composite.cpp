@@ -41,6 +41,7 @@ Entree& Milieu_composite::readOn(Entree& is)
   for (is >> mot; mot != "}"; is >> mot)
     {
       if (Motcle(mot) == "POROSITES_CHAMP") is >> porosites_champ;
+      else if (Motcle(mot) == "DIAMETRE_HYD_CHAMP") is >> diametre_hyd_champ;
       else if (Motcle(mot) == "POROSITES")
         {
           Cerr << "You should use porosites_champ and not porosites ! Call the 911 !" << finl;
@@ -67,6 +68,12 @@ Entree& Milieu_composite::readOn(Entree& is)
               Cerr << que_suis_je() + " : gravity should be defined only once in the milieu_composite block, not in " + fluide->que_suis_je() << finl;
               Process::exit();
             }
+          if (fluide->has_hydr_diam())
+            {
+              Cerr << que_suis_je() + " : diametre_hyd_champ should be defined only once in the milieu_composite block, not in " + fluide->que_suis_je() << finl;
+              Process::exit();
+            }
+
           fluide->set_id_composite(i++);
           fluide->nommer(mot); // XXX
           fluides.add(ref_cast(Fluide_base,fluide.valeur()));
@@ -225,8 +232,9 @@ void Milieu_composite::discretiser(const Probleme_base& pb, const  Discretisatio
   champs_compris_.ajoute_champ(e_int);
   champs_compris_.ajoute_champ(h);
 
-  // Finalement, on discretise la porosite
+  // Finalement, on discretise la porosite + diametre_hydro
   Milieu_base::discretiser_porosite(pb,dis);
+  Milieu_base::discretiser_diametre_hydro(pb,dis);
 }
 
 void Milieu_composite::mettre_a_jour(double temps)

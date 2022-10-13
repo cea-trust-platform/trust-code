@@ -380,6 +380,7 @@ void Milieu_base::discretiser_diametre_hydro(const Probleme_base& pb, const Disc
               }
           diametre_hydraulique_face_(f) /= nv;
         }
+      // diametre_hydraulique_face_.echange_espace_virtuel(); // Elie : a voir si utile ... je l'utilise pas pour l'instant
     }
 }
 
@@ -620,7 +621,7 @@ void Milieu_base::mettre_a_jour(double temps)
 // methode utile pour F5 ! F5 n'appelle pas Milieu_base::mettre_a_jour mais Milieu_base::mettre_a_jour_porosite ...
 void Milieu_base::mettre_a_jour_porosite(double temps)
 {
-  assert(porosites_champ.non_nul());
+  assert(porosites_champ.non_nul() && diametre_hyd_champ.non_nul());
   if (is_field_porosites())
     if (sub_type(Champ_Input_P0_Composite, porosites_champ.valeur()))
       {
@@ -634,6 +635,7 @@ void Milieu_base::mettre_a_jour_porosite(double temps)
       }
 
   porosites_champ.mettre_a_jour(temps); /* ne fait rien si Champ_Input_P0_Composite */
+  diametre_hyd_champ.mettre_a_jour(temps);
 }
 
 void Milieu_base::update_rho_cp(double temps)
@@ -754,8 +756,9 @@ int Milieu_base::initialiser(const double temps)
 int Milieu_base::initialiser_porosite(const double temps)
 {
   // TODO : XXX : a voir si ICoCo ? faut l'initialiser dans le main ?
-  assert(porosites_champ.non_nul());
+  assert(porosites_champ.non_nul() && diametre_hyd_champ.non_nul());
   porosites_champ.initialiser(temps);
+  diametre_hyd_champ.initialiser(temps);
   return 1;
 }
 

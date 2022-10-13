@@ -65,9 +65,9 @@ public:
   inline const DoubleVect& section_passage_face() const { return section_passage_face_; }
   inline double section_passage_face(int i) const { return section_passage_face_[i]; }
 
+  // TODO : FIXME : DoubleVect peut etre ??
   inline DoubleTab& diametre_hydraulique_elem() { return diametre_hyd_champ->valeurs(); }
   inline const DoubleTab& diametre_hydraulique_elem() const { return diametre_hyd_champ->valeurs(); }
-
   inline DoubleVect& diametre_hydraulique_face() { return diametre_hydraulique_face_; }
   inline const DoubleVect& diametre_hydraulique_face() const { return diametre_hydraulique_face_; }
   inline double diametre_hydraulique_face(int i) const { return diametre_hydraulique_face_[i]; }
@@ -114,6 +114,7 @@ public:
   void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
   /////////////////////////////////////////////////////
 
+  const bool& has_hydr_diam() { return has_hydr_diam_; }
   void set_id_composite(const int i);
   int id_composite = -1;
 
@@ -143,7 +144,6 @@ protected:
   void mettre_a_jour_porosite(double temps);
   void fill_section_passage_face();
   int initialiser_porosite(const double temps);
-  const bool& has_hydr_diam() { return has_hydr_diam_; }
 
 private:
   // attribue utile pour porosites (pas porosites_champ) ... a voir si utile sinon a virer ...

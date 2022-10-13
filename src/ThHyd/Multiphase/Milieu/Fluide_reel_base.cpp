@@ -78,7 +78,11 @@ void Fluide_reel_base::discretiser(const Probleme_base& pb, const  Discretisatio
   for (auto &&pch : { &rho, &e_int, &h, (Champ*) &mu, (Champ*) &nu, (Champ*) &alpha, (Champ*) &lambda, (Champ*) &Cp, (Champ*) &beta_th, (Champ*) &rho_cp_comme_T_ })
     champs_compris_.ajoute_champ(pch->valeur());
 
-  if (id_composite == -1) Milieu_base::discretiser_porosite(pb, dis);
+  if (id_composite == -1)
+    {
+      Milieu_base::discretiser_porosite(pb, dis);
+      Milieu_base::discretiser_diametre_hydro(pb,dis);
+    }
 }
 
 int Fluide_reel_base::initialiser(const double temps)
