@@ -41,8 +41,6 @@ Entree& Postraitement_base::readOn(Entree& is)
 
 int Postraitement_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
-  Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
-  exit();
   return -1;
 }
 

@@ -327,18 +327,15 @@ void Decouper::ecrire(IntVect& elem_part, const Static_Int_Lists* som_raccord)
 
 int Decouper::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
+  int retval = 1;
   Motcle motlu;
   if (mot=="partitionneur|partition_tool")
     {
       Cerr<<"domaine = "<<nom_domaine<<finl;
       const Domaine& domaine = find_domain(nom_domaine);
       lire_partitionneur(deriv_partitionneur,domaine,is);
-      return 1;
     }
-  else
-    {
-      Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
-      exit();
-    }
-  return -1;
+  else retval = -1;
+
+  return retval;
 }

@@ -115,8 +115,6 @@ void Milieu_base::set_param_porosite(Param& param)
 
 int Milieu_base::lire_motcle_non_standard(const Motcle& mot_lu, Entree& is)
 {
-  Cerr << mot_lu << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard" << finl;
-  Process::exit();
   return -1;
 }
 

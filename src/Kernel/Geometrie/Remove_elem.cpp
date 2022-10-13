@@ -34,6 +34,7 @@ Entree& Remove_elem::readOn(Entree& is)
 
 int Remove_elem::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
+  int retval = 1;
   if (mot=="liste")
     {
       int nb_elem,elem;
@@ -43,14 +44,10 @@ int Remove_elem::lire_motcle_non_standard(const Motcle& mot, Entree& is)
           is >> elem;
           listelem.add(elem);
         }
-      return 1;
     }
-  else
-    {
-      Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
-      exit();
-    }
-  return 0;
+  else retval = -1;
+
+  return retval;
 }
 Entree& Remove_elem::interpreter_(Entree& is)
 {

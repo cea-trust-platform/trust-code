@@ -95,12 +95,12 @@ void Mod_turb_hyd_base::set_param(Param& param)
 int Mod_turb_hyd_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
   Motcle motlu;
+  int retval = 1;
   if (mot=="turbulence_paroi")
     {
       loipar.associer_modele(*this);
       is >> loipar;
       is >> loipar.valeur();
-      return 1;
     }
   else if (loipar.valeur().que_suis_je()!="negligeable_VDF" && loipar.valeur().que_suis_je()!="negligeable_VEF" && !loipar.valeur().que_suis_je().debute_par("negligeable_PolyMAC"))
     {
@@ -189,12 +189,9 @@ int Mod_turb_hyd_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
         }
     } // fin loi paroi negligeable
 
-  else
-    {
-      Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
-      exit();
-    }
-  return -1;
+  else retval = -1;
+
+  return retval;
 }
 
 /*! @brief Associe l'equation passe en parametre au modele de turbulence.

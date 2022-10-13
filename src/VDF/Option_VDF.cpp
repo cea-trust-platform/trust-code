@@ -82,6 +82,7 @@ Entree& Option_VDF::interpreter(Entree& is)
 int Option_VDF::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
   Motcle motlu;
+  int retval = 1;
   if (mot=="traitement_coins")
     {
       is >>motlu;
@@ -92,7 +93,6 @@ int Option_VDF::lire_motcle_non_standard(const Motcle& mot, Entree& is)
         }
       else
         Option_VDF::traitement_coins=0;
-      return 1;
     }
   else if (mot=="P_imposee_aux_faces")
     {
@@ -105,12 +105,8 @@ int Option_VDF::lire_motcle_non_standard(const Motcle& mot, Entree& is)
         }
       else
         Option_VDF::coeff_P_neumann=1.;
-      return 1;
     }
-  else
-    {
-      Cerr << mot << "is not a keyword understood by " << que_suis_je() << "in methode lire_motcle_non_standard"<< finl;
-      exit();
-    }
-  return -1;
+  else retval = -1;
+
+  return retval;
 }
