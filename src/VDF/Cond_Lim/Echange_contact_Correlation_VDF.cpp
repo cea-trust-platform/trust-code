@@ -69,6 +69,8 @@ void Echange_contact_Correlation_VDF::set_param(Param& param)
 
 int Echange_contact_Correlation_VDF::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
+  int retval = 1;
+
   if (mot=="lambda")
     {
       Nom tmp;
@@ -77,7 +79,6 @@ int Echange_contact_Correlation_VDF::lire_motcle_non_standard(const Motcle& mot,
       lambda_T.setString(tmp);
       lambda_T.addVar("T");
       lambda_T.parseString();
-      return 1;
     }
   else if (mot=="rho")
     {
@@ -87,7 +88,6 @@ int Echange_contact_Correlation_VDF::lire_motcle_non_standard(const Motcle& mot,
       rho_T.setString(tmp);
       rho_T.addVar("T");
       rho_T.parseString();
-      return 1;
     }
   else if (mot=="mu")
     {
@@ -97,7 +97,6 @@ int Echange_contact_Correlation_VDF::lire_motcle_non_standard(const Motcle& mot,
       mu_T.setString(tmp);
       mu_T.addVar("T");
       mu_T.parseString();
-      return 1;
     }
   else if (mot=="volume")
     {
@@ -108,7 +107,6 @@ int Echange_contact_Correlation_VDF::lire_motcle_non_standard(const Motcle& mot,
       fct_vol.addVar("Dh");
       fct_vol.addVar("S");
       fct_vol.parseString();
-      return 1;
     }
   else if (mot=="Nu")
     {
@@ -119,14 +117,10 @@ int Echange_contact_Correlation_VDF::lire_motcle_non_standard(const Motcle& mot,
       fct_Nu.addVar("Re");
       fct_Nu.addVar("Pr");
       fct_Nu.parseString();
-      return 1;
     }
-  else
-    {
-      Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
-      exit();
-    }
-  return -1;
+  else retval = -1;
+
+  return retval;
 }
 
 

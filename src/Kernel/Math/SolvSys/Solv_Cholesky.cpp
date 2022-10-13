@@ -57,23 +57,13 @@ void Solv_Cholesky::set_param(Param& param)
 
 int Solv_Cholesky::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
-  if (mot=="impr")
-    {
-      fixer_limpr(1);
-      return 1;
-    }
-  else if (mot=="quiet")
-    {
-      fixer_limpr(-1);
-      return 1;
-    }
-  else
-    {
-      Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
-      exit();
-    }
+  int retval = 1;
 
-  return -1;
+  if (mot=="impr") fixer_limpr(1);
+  else if (mot=="quiet") fixer_limpr(-1);
+  else retval = -1;
+
+  return retval;
 }
 
 int Solv_Cholesky::resoudre_systeme(const Matrice_Base& la_matrice,

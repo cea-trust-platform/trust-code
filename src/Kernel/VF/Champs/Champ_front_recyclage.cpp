@@ -84,6 +84,7 @@ void Champ_front_recyclage::set_param(Param& param)
 
 int Champ_front_recyclage::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
+  int retval = 1;
   if (mot=="pb_champ_evaluateur")
     {
       int nbcomp;
@@ -95,61 +96,46 @@ int Champ_front_recyclage::lire_motcle_non_standard(const Motcle& mot, Entree& i
       ampli_moy_imposee_ = 1.;
       ampli_moy_recyclee_ = 1.;
       fixer_nb_comp(nbcomp);
-      return 1;
     }
   else if (mot=="distance_plan")
     {
-      for (int i=0; i<dimension; i++)
-        is >> delt_dist(i) ;
-      return 1;
+      for (int i=0; i<dimension; i++) is >> delt_dist(i) ;
     }
   else if (mot=="ampli_fluctuation")
     {
       int nbcomp;
       is >> nbcomp;
       ampli_fluct_.resize(nbcomp);
-      for (int i=0; i<nbcomp; i++)
-        is >> ampli_fluct_(i) ;
+      for (int i=0; i<nbcomp; i++) is >> ampli_fluct_(i) ;
       fixer_nb_comp(nbcomp);
-      return 1;
     }
   else if (mot=="ampli_moyenne_imposee")
     {
       int nbcomp;
       is >> nbcomp;
       ampli_moy_imposee_.resize(nbcomp);
-      for (int i=0; i<nbcomp; i++)
-        is >> ampli_moy_imposee_(i) ;
+      for (int i=0; i<nbcomp; i++) is >> ampli_moy_imposee_(i) ;
       fixer_nb_comp(nbcomp);
-      return 1;
     }
   else if (mot=="ampli_moyenne_recyclee")
     {
       int nbcomp;
       is >> nbcomp;
       ampli_moy_recyclee_.resize(nbcomp);
-      for (int i=0; i<nbcomp; i++)
-        is >> ampli_moy_recyclee_(i) ;
+      for (int i=0; i<nbcomp; i++) is >> ampli_moy_recyclee_(i) ;
       fixer_nb_comp(nbcomp);
-      return 1;
     }
   else if (mot=="moyenne_imposee")
     {
       methode_moy_impos_ = lire_info_moyenne_imposee(is);
-      return 1;
     }
   else if (mot=="moyenne_recyclee")
     {
       methode_moy_recycl_ = lire_info_moyenne_recyclee(is);
-      return 1;
     }
-  else
-    {
-      Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
-      exit();
-    }
+  else retval = -1;
 
-  return -1;
+  return retval;
 }
 
 //Lecture des informations necessaires pour evaluer la moyenne imposee

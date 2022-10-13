@@ -92,16 +92,17 @@ void Terme_Source_Canal_perio::associer_pb(const Probleme_base& pb)
 
 int Terme_Source_Canal_perio::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
+  int retval = 1;
+
   if (mot=="direction_ecoulement")
     {
       Cerr <<"The direction_ecoulement option is obsolete, you must now use the bord option to specify the boundary where periodicity is applied."<<finl;
-      exit();
+      Process::exit();
     }
   else if (mot=="debit_impose")
     {
       is >> debit_impose_;
       is_debit_impose_=1;
-      return 1;
     }
   else if (mot=="velocity_weighting")
     {
@@ -109,21 +110,17 @@ int Terme_Source_Canal_perio::lire_motcle_non_standard(const Motcle& mot, Entree
       if (velocity_weighting_!=0 && velocity_weighting_!=1)
         {
           Cerr << "velocity_weighting value should be 0 or 1." << finl;
-          exit();
+          Process::exit();
         }
       if (!sub_type(Convection_Diffusion_std,equation()))
         {
           Cerr << "velocity_weighting option is available only for a Canal_perio source term in the energy equation." << finl;
-          exit();
+          Process::exit();
         }
     }
-  else
-    {
-      Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
-      exit();
-    }
+  else retval = -1;
 
-  return -1;
+  return retval;
 }
 
 void Terme_Source_Canal_perio::completer()

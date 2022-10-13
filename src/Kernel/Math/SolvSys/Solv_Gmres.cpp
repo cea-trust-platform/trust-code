@@ -76,35 +76,23 @@ void Solv_Gmres::set_param(Param& param)
 
 int Solv_Gmres::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
-  if (mot=="impr")
-    {
-      fixer_limpr(1);
-      return 1;
-    }
-  else if (mot=="quiet")
-    {
-      fixer_limpr(-1);
-      return 1;
-    }
+  int retval = 1;
+
+  if (mot=="impr") fixer_limpr(1);
+  else if (mot=="quiet") fixer_limpr(-1);
   else if (mot=="diag")
     {
       is_local_gmres=1;
       precond_diag=1;
-      return 1;
     }
   else if (mot=="sans_precond")
     {
       is_local_gmres=1;
       precond_diag=0;
-      return 1;
     }
-  else
-    {
-      Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
-      exit();
-    }
+  else retval = -1;
 
-  return -1;
+  return retval;
 }
 
 

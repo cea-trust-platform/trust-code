@@ -91,6 +91,10 @@ public :
         Scalaire0_[i] = fct_Scalaire0_[i].eval();
       }
   };
+  inline const ArrOfDouble getScalaire0() const
+  {
+    return Scalaire0_;
+  }
 
 protected :
   void set_param(Param& param);

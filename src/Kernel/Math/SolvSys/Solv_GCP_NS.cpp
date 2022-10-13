@@ -48,34 +48,23 @@ void Solv_GCP_NS::set_param(Param& param)
 
 int Solv_GCP_NS::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
-  if (mot=="impr")
-    {
-      fixer_limpr(1);
-      return 1;
-    }
-  else if (mot=="quiet")
-    {
-      fixer_limpr(-1);
-      return 1;
-    }
+  int retval = 1;
+
+  if (mot=="impr") fixer_limpr(1);
+  else if (mot=="quiet") fixer_limpr(-1);
   else if (mot=="solveur0")
     {
       is >> solveur_poisson0;
       solveur_poisson0.nommer("poisson_solver0");
-      return 1;
     }
   else if (mot=="solveur1")
     {
       is >> solveur_poisson1;
       solveur_poisson1.nommer("poisson_solver1");
-      return 1;
     }
-  else
-    {
-      Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
-      exit();
-    }
-  return -1;
+  else retval = -1;
+
+  return retval;
 }
 
 static inline void corriger(DoubleVect& X,

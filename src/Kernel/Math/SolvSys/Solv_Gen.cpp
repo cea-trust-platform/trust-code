@@ -72,29 +72,18 @@ void Solv_Gen::set_param(Param& param)
 
 int Solv_Gen::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
-  if (mot=="impr")
-    {
-      fixer_limpr(1);
-      return 1;
-    }
-  else if (mot=="quiet")
-    {
-      fixer_limpr(-1);
-      return 1;
-    }
+  int retval = 1;
+
+  if (mot=="impr") fixer_limpr(1);
+  else if (mot=="quiet") fixer_limpr(-1);
   else if (mot=="nb_it_max")
     {
       is>>nb_it_max_;
       nb_it_max_flag = 1;
-      return 1;
     }
-  else
-    {
-      Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
-      exit();
-    }
+  else retval = -1;
 
-  return -1;
+  return retval;
 }
 
 int Solv_Gen::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVect& secmem, DoubleVect& solution)

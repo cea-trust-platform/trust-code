@@ -107,6 +107,8 @@ void read(Entree& is, Parser_U& fct_Scalaire0_)
 
 int Terme_Boussinesq_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
+  int retval = 1;
+
   if (mot=="T0")
     {
       // Temperature
@@ -114,7 +116,6 @@ int Terme_Boussinesq_base::lire_motcle_non_standard(const Motcle& mot, Entree& i
       fct_Scalaire0_.dimensionner(1);
       Scalaire0_.resize(1);
       read(is, fct_Scalaire0_[0]);
-      return 1;
     }
   else if (mot=="C0")
     {
@@ -124,15 +125,9 @@ int Terme_Boussinesq_base::lire_motcle_non_standard(const Motcle& mot, Entree& i
       is >> dim;
       fct_Scalaire0_.dimensionner(dim);
       Scalaire0_.resize(dim);
-      for (int i=0; i<dim; i++)
-        read(is, fct_Scalaire0_[i]);
-      return 1;
+      for (int i=0; i<dim; i++) read(is, fct_Scalaire0_[i]);
     }
-  else
-    {
-      Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
-      Process::exit();
-    }
+  else retval = -1;
 
-  return -1;
+  return retval;
 }

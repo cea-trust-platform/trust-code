@@ -50,10 +50,10 @@ Entree& Perte_Charge_PolyMAC::readOn(Entree& is )
   sous_zone=false;
   lambda.setNbVar(4+dimension);
   set_param(param);
+  param.lire_avec_accolades_depuis(is);
   Cerr << "Interpretation de la fonction " << lambda.getString() << " ... ";
   lambda.parseString();
   Cerr << " Ok" << finl;
-  param.lire_avec_accolades_depuis(is);
   if (diam_hydr->nb_comp()!=1)
     {
       Cerr << "Il faut definir le champ diam_hydr a une composante" << finl;

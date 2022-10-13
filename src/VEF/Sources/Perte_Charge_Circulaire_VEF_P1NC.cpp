@@ -67,6 +67,7 @@ int Perte_Charge_Circulaire_VEF_P1NC::lire_motcle_non_standard(const Motcle& mot
       lambda.addVar("Re_tot");
       lambda.addVar("Re_long");
       Perte_Charge_VEF::lire_motcle_non_standard(mot,is);
+      return 1;
     }
   else if (mot=="lambda_ortho")
     {

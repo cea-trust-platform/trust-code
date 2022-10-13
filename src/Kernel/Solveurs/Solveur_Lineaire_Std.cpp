@@ -46,6 +46,7 @@ void Solveur_Lineaire_Std::set_param(Param& param)
 
 int Solveur_Lineaire_Std::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
+  int retval = 1;
   if (mot=="solveur")
     {
       Nom nom_solveur("Solv_");
@@ -56,15 +57,10 @@ int Solveur_Lineaire_Std::lire_motcle_non_standard(const Motcle& mot, Entree& is
       solveur.typer(nom_solveur);
       is >> solveur.valeur();
       solveur.nommer("solveur_implicite");
-      return 1;
     }
-  else
-    {
-      Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
-      exit();
-    }
+  else retval = -1;
 
-  return -1;
+  return retval;
 }
 
 bool Solveur_Lineaire_Std::iterer_eqn(Equation_base& equation, const DoubleTab& inconnue, DoubleTab& result, double dt, int numero_iteration, int& ok)

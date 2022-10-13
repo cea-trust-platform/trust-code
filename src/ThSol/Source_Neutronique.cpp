@@ -69,6 +69,8 @@ void Source_Neutronique::set_param(Param& param)
 
 int Source_Neutronique::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
+  int retval = 1;
+
   if (mot=="lambda")
     {
       if (N<1)
@@ -78,7 +80,6 @@ int Source_Neutronique::lire_motcle_non_standard(const Motcle& mot, Entree& is)
         }
       lambda.resize(N);
       for (int i=0; i<N; i++) is>>lambda(i);
-      return 1;
     }
   else if (mot=="beta")
     {
@@ -95,7 +96,6 @@ int Source_Neutronique::lire_motcle_non_standard(const Motcle& mot, Entree& is)
           is>>beta(i);
           beta_som+=beta(i);
         }
-      return 1;
     }
   else if (mot=="schema_temps")
     {
@@ -114,7 +114,6 @@ int Source_Neutronique::lire_motcle_non_standard(const Motcle& mot, Entree& is)
           Cerr << "On ne comprend le mot : " << mot << "dans " << que_suis_je() << finl;
           exit();
         }
-      return 1;
     }
   else if (mot=="rho")
     {
@@ -126,13 +125,11 @@ int Source_Neutronique::lire_motcle_non_standard(const Motcle& mot, Entree& is)
       fct_tT.addVar("t");
       fct_tT.addVar("T");
       fct_tT.parseString();
-      return 1;
     }
   else if (mot=="repartition")
     {
       is >> f_xyz;
       is >> n_ssz;
-      return 1;
     }
   else if (mot=="Ci0")
     {
@@ -147,15 +144,10 @@ int Source_Neutronique::lire_motcle_non_standard(const Motcle& mot, Entree& is)
         {
           is>>Ci0(i);
         }
-      return 1;
     }
-  else
-    {
-      Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
-      exit();
-    }
+  else retval = -1;
 
-  return -1;
+  return retval;
 }
 
 double Source_Neutronique::rho(double t, double T)
