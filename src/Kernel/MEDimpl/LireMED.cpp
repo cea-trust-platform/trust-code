@@ -171,7 +171,7 @@ Entree& LireMED::interpreter_(Entree& is)
 
       // Awful option just to keep naked family names from MED file. Rarely used, to be removed very soon.
       // In the new syntax, we implicitely assume that the former option 'family_names_from_group_names' is always set.
-      param.ajouter_flag("no_family_names_from_group_names", &nfnfgn); // XD attr TODO
+      param.ajouter_flag("no_family_names_from_group_names", &nfnfgn); // XD attr no_family_names_from_group_names entier no_family_names_from_group_names 0 Awful option just to keep naked family names from MED file. Rarely used, to be removed very soon.
 
       param.ajouter("domain|domaine", &nom_dom_trio, Param::REQUIRED); // XD attr domain ref_domaine domaine 0 corresponds to the domain name.
       param.ajouter("file|fichier", &nom_fic, Param::REQUIRED);  // XD attr file chaine fichier 0  file (written in the MED format, with extension '.med') containing the mesh

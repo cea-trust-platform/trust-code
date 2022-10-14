@@ -16,33 +16,9 @@
 #include <LireMEDfile.h>
 
 Implemente_instanciable_sans_constructeur(LireMEDfile,"Lire_MEDfile",LireMED);
-// XD Read_MEDfile interprete lire_medfile -1 Obsolete keyword to read a mesh with MED file API
 
-LireMEDfile::LireMEDfile()
-{
-  use_medcoupling_ = false;
-}
+// XD Read_MEDfile Read_MED lire_medfile -1 Obsolete keyword to read a mesh with MED file API
 
-/*! @brief Simple appel a: Interprete::printOn(Sortie&)
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& LireMEDfile::printOn(Sortie& os) const
-{
-  return LireMED::printOn(os);
-}
-
-
-/*! @brief Simple appel a: Interprete::readOn(Entree&)
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& LireMEDfile::readOn(Entree& is)
-{
-  return LireMED::readOn(is);
-}
-
-
-
+LireMEDfile::LireMEDfile() { use_medcoupling_ = false; }
+Sortie& LireMEDfile::printOn(Sortie& os) const { return LireMED::printOn(os); }
+Entree& LireMEDfile::readOn(Entree& is) { return LireMED::readOn(is); }
