@@ -41,7 +41,7 @@ Schema_euler_implicite sch
 Read sch
 {
     tinit 0
-    dt_max  1e-2
+    dt_max  1e-3
     facsec 1e8
     seuil_statio 1e-8
     solveur implicite
