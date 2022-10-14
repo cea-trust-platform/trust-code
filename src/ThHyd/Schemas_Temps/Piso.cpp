@@ -248,6 +248,16 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   else
     divergence.calculer(current,secmem);
   secmem *= -1;
+  // <IBM> Taking into account zero velocity divergence for Immersed Boundary Method
+  if ((i_source_PDF != -1) && (eqnNS.get_correction_matrice_pression()==1))
+    {
+      Cerr<<"(IBM) Immersed Interface: velocity divergence is zero for crossed elements."<<finl;
+      DoubleTrav coeff;
+      coeff = eqnNS.get_champ_coeff_pdf_som();
+      Source_PDF_base& src = dynamic_cast<Source_PDF_base&>((eqnNS.sources())[i_source_PDF].valeur());
+      src.correct_incr_pressure(coeff, secmem);
+    }
+  // <IBM>
   secmem.echange_espace_virtuel();
   Debog::verifier("Piso::iterer_NS secmem",secmem);
 
