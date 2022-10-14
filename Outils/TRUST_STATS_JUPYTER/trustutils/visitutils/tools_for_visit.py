@@ -176,7 +176,7 @@ class Show(object):
     """
 
     def __init__(
-        self, fichier="", field="", name="", nX=1, nY=1, mesh="dom", plotmesh=True, time=-1, empty=False, size=10, title="", max=None, min=None, active=True, visitLog=False, verbose=0, show=True,
+        self, fichier="", field="", name="", nX=1, nY=1, mesh="dom", plotmesh=True, time=-1, empty=False, size=10, title="", subtitle="", max=None, min=None, active=True, visitLog=False, verbose=0, show=True,
     ):
         """
         Constructeur
@@ -201,6 +201,8 @@ class Show(object):
             Size of the image.  
         title : str 
             title of the plot. 
+        subtitle : str 
+            title of the first subplot. 
         max : float
             Maximun value ploted.  
         min : float
@@ -260,6 +262,10 @@ class Show(object):
         self.size = size
         # title plot
         self.title = title
+        if (nX==1 and nY==1):
+            self.subtitle = title
+        else:
+            self.subtitle=subtitle
         # max/min des valeurs du plot.
         self.max = max
         self.min = min
@@ -290,7 +296,9 @@ class Show(object):
             if self.nX * self.nY != 1:
                 for ax in self.axs.reshape(-1):
                     ax.axis("off")
-        self.addPlot(self.coordonee(), self.title)
+                plt.subplots_adjust(top=0.95)
+                self.fig.suptitle(self.title, fontsize=24)
+        self.addPlot(self.coordonee(), self.subtitle)
 
     def _genAddPlot(self, arg1, arg2, arg3):
         s = "try:\n"
@@ -356,8 +364,8 @@ class Show(object):
 
             self.subplot.grid()
             if title != "":
-                self.title = title
-                self.subplot.set_title(self.title)
+                self.subtitle = title
+                self.subplot.set_title(self.subtitle)
         
     def addField(self, fichier=None, field=None, name=None, mesh=None, plotmesh=True, min=None, max=None):
         """ 
@@ -608,11 +616,11 @@ class Show(object):
         self.time = time
         self.mesh = mesh
         self.plotmesh = plotmesh
-        self.title = title
+        self.subtitle = title
         self.max = max
         self.min = min
 
-        self.addPlot(self.coordonee(), self.title)
+        self.addPlot(self.coordonee(), self.subtitle)
 
     def plot(self, show=True):
         """

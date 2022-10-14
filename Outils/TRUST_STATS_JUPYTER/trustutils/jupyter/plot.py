@@ -182,9 +182,9 @@ class Graph:
         Parameters
         --------- 
         title : str 
-            title of the plot. 
+            title of the Graph 
         subtitle : str 
-            subtitle of the first subplot. 
+            title of the first subplot. 
         nX : int 
             number of plot in the x axe. 
         nY : int 
@@ -204,10 +204,12 @@ class Graph:
             self.title = ""
         else:
             self.title = title
-        if subtitle == None:
+        if (nX==1 and nY==1):
+            self.subtitle = title
+        elif subtitle == None:
             self.subtitle = ""
         else:
-            self.subtitle = subtitle
+            self.subtitle=subtitle
         self.flag = False
         self._reset()
 
@@ -245,8 +247,8 @@ class Graph:
         if self.nX * self.nY != 1:
             for ax in self.axs.reshape(-1):
                 ax.axis("off")
-            self.fig.suptitle(self.subtitle, fontsize=24)
-        self.addPlot(self.coordonee())
+            self.fig.suptitle(self.title, fontsize=24)
+        self.addPlot(self.coordonee(), self.subtitle)
 
     def add(self, x, y, marker="-", label=None, title=None, xIndice=None, yIndice=None, **kwargs):
         """
@@ -273,14 +275,12 @@ class Graph:
             properties of line for matplotlib.pyplot.plot
             
         """
-        if not title is None:
-            self.title = title
         if not xIndice is None:
             self.xIndice = xIndice
         if not yIndice is None:
             self.yIndice = yIndice
 
-        self.addPlot(self.coordonee())
+        self.addPlot(self.coordonee(), title)
 
         ### On plot les données ###
         self.subplot.plot(x, y, marker, label=label, **kwargs)
@@ -304,8 +304,7 @@ class Graph:
             Title of the plot. 
             
         """
-        if title != "":
-            self.title = title
+        self.subtitle = title
 
         if self.nX == 1 & self.nY == 1:
             self.flag = True
@@ -322,7 +321,7 @@ class Graph:
 
         self.subplot.axis("on")
         self.subplot.grid(visible=True)
-        self.subplot.set_title(self.title)
+        self.subplot.set_title(self.subtitle)
 
     def addPoint(self, data, marker="-", compo=0, label="", func=None, **kwargs):
         """

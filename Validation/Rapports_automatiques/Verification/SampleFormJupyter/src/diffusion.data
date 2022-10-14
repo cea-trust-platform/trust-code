@@ -1,0 +1,143 @@
+# PARALLEL OK #
+dimension 2
+Pb_conduction pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds $number $number
+        Longueurs 1. 1.
+    }
+    {
+				Bord Gauche  X = 0.0   0.0  <= Y <= 1.0
+        Bord Bas     Y = 0.0   0.0  <= X <= 1.0
+        Bord Droit   X = 1.0   0.0  <= Y <= 1.0
+        Bord Haut    Y = 1.0   0.0  <= X <= 1.0
+    }
+}
+# END MESH #
+
+# BEGIN PARTITION
+Postraiter_domaine
+{
+    fichier mesh.lata
+    format lata
+    domaine dom
+}
+
+Partition dom
+{
+    partitionneur metis { Nb_parts 4 }
+    nb_parts_tot 4
+    larg_joint 1
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VDF dis
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+    dt_max  1e-2
+    dt_impr 1e-10
+    seuil_statio 1e-8
+    facsec 1e8
+    solveur implicite
+    {
+        solveur petsc cli
+        {
+            -pc_type hypre
+            -pc_hypre_type boomeramg
+            -pc_hypre_boomeramg_strong_threshold 0.8
+            -pc_hypre_boomeramg_agg_nl 4
+            -pc_hypre_boomeramg_agg_num_paths 5
+            -pc_hypre_boomeramg_max_levels 25
+            -pc_hypre_boomeramg_coarsen_type PMIS
+            -pc_hypre_boomeramg_interp_type ext+i
+            -pc_hypre_boomeramg_P_max 2
+            -pc_hypre_boomeramg_truncfactor 0.5
+            -ksp_type fgmres
+        }
+/*
+        solveur petsc cholesky { cli { -ksp_reuse_preconditioner } }
+*/
+    }
+}
+
+Solide sol
+Read sol
+{
+    rho    Champ_Uniforme 1 1.
+    lambda Champ_Uniforme 1 1.
+    Cp     Champ_Uniforme 1 1.
+}
+Associate pb dom
+Associate pb sch
+Associate pb sol
+
+Discretize pb dis
+
+Read pb
+{
+    Conduction
+    {
+        diffusion { }
+        sources { Puissance_thermique Champ_Fonc_XYZ dom 1 2.*pi*pi*sin(pi*x)*sin(pi*y) }
+        initial_conditions { temperature Champ_Fonc_XYZ dom 1 0*sin(pi*x)*sin(pi*y) }
+        boundary_conditions
+        {
+            Haut paroi_temperature_imposee Champ_Front_Uniforme 1 0
+            Bas paroi_temperature_imposee Champ_Front_Uniforme 1 0
+            Gauche paroi_temperature_imposee Champ_Front_Uniforme 1 0
+            Droit paroi_temperature_imposee Champ_Front_Uniforme 1 0
+        }
+    }
+
+    Post_processing
+    {
+        Definition_champs
+        {
+            erreur_T transformation
+            {
+                methode formule expression 1 abs(Temp-sin(pi*x)*sin(pi*y)) sources
+                {
+                    refChamp { pb_champ pb temperature nom_source Temp }
+                }
+            }
+            max_erreur_T reduction_0D
+            {
+                methode l2_norm source_reference erreur_T
+            }
+        }
+
+        Probes
+        {
+            sonde temperature periode 0.2 points 1 0.45 0.45
+            temperature_diag grav temperature periode 1e8 segment 100 0. 1. 1. 0. 
+            temperature_X grav temperature periode 1e8 segment 100 0. 1. 1. 0.
+            norme_linf max_erreur_T periode 1e-7 numero_elem_sur_maitre 0
+        }
+        format Lata
+        fields dt_post 30.
+        {
+            temperature elem
+            temperature som
+            erreur_T
+        }
+    }
+}
+
+Solve pb
+lata_to_other lml NOM_DU_CAS NOM_DU_CAS
+End

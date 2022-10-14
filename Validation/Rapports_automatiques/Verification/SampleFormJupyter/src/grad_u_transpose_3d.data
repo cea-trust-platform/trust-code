@@ -90,7 +90,7 @@ Read pb
         }
         Probes
         {
-            sonde_v     nodes vitesse   periode 1. segment 10 -1. -1. -1. 1. 1. 1.
+            sonde_v     nodes vitesse   periode 1. segment 10 0. 0. 0. 1. 1. 1.
         }
     }
 }

@@ -92,7 +92,7 @@ def _runCommand(cmd, verbose):
     complProc = subprocess.run(cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     if verbose or complProc.returncode != 0:
         print(cmd)
-    print(complProc.stdout.decode('utf-8'))
+        print(complProc.stdout.decode('utf-8'))
     # Throw if return code non-zero:
     if complProc.returncode:
         # Display message through a custom exception so that jupyter-nbconvert also shows it properly in the console:
@@ -652,13 +652,16 @@ def addCase(directoryOrTRUSTCase, datasetName="", nbProcs=1):
         if datasetName != "":
             raise ValueError("addCase() method can either be called with a single argument (a TRUSTCase object) or with at least 2 arguments (directory and case name)")
         tc = directoryOrTRUSTCase
+        initCaseSuite()
+        defaultSuite_.addCase(tc)
+        return 
     elif isinstance(directoryOrTRUSTCase, str):
         if datasetName == "":
             raise ValueError("addCase() method can either be called with a single argument (a TRUSTCase object) or with at least 2 arguments (directory and case name)")
         tc = TRUSTCase(directoryOrTRUSTCase, datasetName, nbProcs)
-    initCaseSuite()
-    defaultSuite_.addCase(tc)
-    return tc
+        initCaseSuite()
+        defaultSuite_.addCase(tc)
+        return tc
 
 def initCaseSuite():
     """ Instantiate a default suite of cases """
