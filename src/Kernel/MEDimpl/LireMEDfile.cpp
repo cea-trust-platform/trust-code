@@ -16,7 +16,7 @@
 #include <LireMEDfile.h>
 
 Implemente_instanciable_sans_constructeur(LireMEDfile,"Lire_MEDfile",LireMED);
-// XD Read_MEDfile Read_MED lire_medfile -1 Obsolete keyword to read a mesh with MED file API
+// XD Read_MEDfile interprete lire_medfile -1 Obsolete keyword to read a mesh with MED file API
 
 LireMEDfile::LireMEDfile()
 {
