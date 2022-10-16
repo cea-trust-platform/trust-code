@@ -13,9 +13,15 @@
 *
 *****************************************************************************/
 
-#include <List_Fluide_base.h>
+#ifndef Fluide_included
+#define Fluide_included
 
-// #include <VectDeDouble.h>
+#include <Fluide_base.h>
 
+Declare_deriv(Fluide_base);
+class Fluide : public DERIV(Fluide_base)
+{
+  Declare_instanciable(Fluide);
+};
 
-Implemente_liste(Fluide_base);
+#endif /* Fluide_included */

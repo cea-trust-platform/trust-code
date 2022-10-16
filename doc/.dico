@@ -347,6 +347,7 @@
  Faces_Internes Faces_Internes Faces_Internes.h
  Faces_VDF Faces_VDF Faces_VDF.h
  Field_base Field_base Field_base.h
+ Fluide Fluide Fluide.h
  Fluide_base Fluide_base Fluide_base.h
  Fluide_Dilatable_base Fluide_Dilatable_base Fluide_Dilatable_base.h
  Fluide_Incompressible Fluide_Incompressible Fluide_Incompressible.h

@@ -16,9 +16,9 @@
 #ifndef Milieu_composite_included
 #define Milieu_composite_included
 
-#include <List_Fluide_base.h>
 #include <Saturation_base.h>
 #include <Interface.h>
+#include <Fluide.h>
 #include <vector>
 #include <set>
 
@@ -57,17 +57,17 @@ public :
   Interface_base& get_interface(int k, int l) const;
   Saturation_base& get_saturation(int k, int l) const;
 
+  const Fluide_base& get_fluid(const int i) const;
   inline const Noms& noms_phases() const { return noms_phases_; }
-  inline const LIST(Fluide_base)& get_fluides() const { return fluides; }
 
 protected :
-  LIST(Fluide_base) fluides;
   Champ_Fonc rho_m, h_m;
   Noms noms_phases_;
   double t_init_ = -1.;
   bool has_saturation_ = false, has_interface_ = false;
   std::vector<std::vector<Interface_base *>> tab_interface;
   std::map<std::string, std::set<int>> phases_melange;
+  std::vector<Fluide> fluides;
   Interface sat_lu, inter_lu;
 
   std::pair<std::string, int> check_fluid_name(const Nom& name);

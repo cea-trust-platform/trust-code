@@ -13,22 +13,18 @@
 *
 *****************************************************************************/
 
+#include <Fluide.h>
 
-#ifndef List_Fluide_base_included
-#define List_Fluide_base_included
+Implemente_deriv(Fluide_base);
+Implemente_instanciable(Fluide,"Fluide",DERIV(Fluide_base));
 
-
-
-#include <Fluide_base.h>
-
-/*! @brief classe List_Fluide_base Represente une liste d'Fluide_bases
- *
- *
- *
- */
-
-
-Declare_liste(Fluide_base);
-
-
-#endif
+Sortie& Fluide::printOn(Sortie& os) const { return DERIV(Fluide_base)::printOn(os); }
+Entree& Fluide::readOn(Entree& is)
+{
+  Cerr << "Typing the fluid medium ... " << finl;
+  Nom type_milieu;
+  is >> type_milieu;
+  DERIV(Fluide_base)::typer(type_milieu); // on type
+  is >> valeur(); // et on lit :)
+  return is;
+}

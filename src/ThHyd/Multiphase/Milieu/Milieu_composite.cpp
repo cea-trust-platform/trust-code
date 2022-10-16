@@ -56,7 +56,7 @@ Entree& Milieu_composite::readOn(Entree& is)
         {
           noms_phases_.add(mot);
           Cerr << "Milieu_composite : ajout la phase " << mot << " ... " << finl;
-          Milieu fluide;
+          Fluide fluide;
           is >> fluide;
           if (fluide->get_porosites_champ().non_nul())
             {
@@ -73,10 +73,15 @@ Entree& Milieu_composite::readOn(Entree& is)
               Cerr << que_suis_je() + " : diametre_hyd_champ should be defined only once in the milieu_composite block, not in " + fluide->que_suis_je() << finl;
               Process::exit();
             }
+          if (!sub_type(Fluide_base,fluide.valeur()))
+            {
+              Cerr << que_suis_je() + " : only real fluids should be read and not a fluid of type " + fluide->que_suis_je() << finl;
+              Process::exit();
+            }
 
           fluide->set_id_composite(i++);
           fluide->nommer(mot); // XXX
-          fluides.add(ref_cast(Fluide_base,fluide.valeur()));
+          fluides.push_back(fluide);
           especes.push_back(check_fluid_name(fluide->le_nom()));
         }
       else if (mot.debute_par("saturation")) // on ajout la saturation
@@ -101,7 +106,7 @@ Entree& Milieu_composite::readOn(Entree& is)
     }
 
   // Traitement pour les interfaces
-  int N = fluides.size();
+  const int N = (int)fluides.size();
   for (int n = 0; n < N; n++)
     {
       std::vector<Interface_base *> inter;
@@ -112,7 +117,7 @@ Entree& Milieu_composite::readOn(Entree& is)
 
           if (pn != pm && (has_interface() || (espn == espm && has_saturation())))
             {
-              Cerr << "Interface between fluid " << n << " : " << fluides[n].le_nom() << " and " << m << " : " << fluides[m].le_nom() << finl;
+              Cerr << "Interface between fluid " << n << " : " << fluides[n]->le_nom() << " and " << m << " : " << fluides[m]->le_nom() << finl;
               phases_melange[especes[n].first].insert(n), phases_melange[especes[n].first].insert(m);
               inter.push_back(&ref_cast(Interface_base, has_saturation_ ? sat_lu.valeur() : inter_lu.valeur()));
               const Saturation_base *sat = sub_type(Saturation_base, *inter.back()) ? &ref_cast(Saturation_base, *inter.back()) : NULL;
@@ -121,7 +126,7 @@ Entree& Milieu_composite::readOn(Entree& is)
                   const double hn = pn ? sat->Hvs(sat->get_Pref()) : sat->Hls(sat->get_Pref()),
                                hm = pm ? sat->Hvs(sat->get_Pref()) : sat->Hls(sat->get_Pref()),
                                T0 = sat->Tsat(sat->get_Pref());
-                  fluides[n].set_h0_T0(hn, T0), fluides[m].set_h0_T0(hm, T0);
+                  fluides[n]->set_h0_T0(hn, T0), fluides[m]->set_h0_T0(hm, T0);
                 }
             }
           else inter.push_back(NULL);
@@ -166,18 +171,21 @@ Sortie& Milieu_composite::printOn(Sortie& os) const
   return os;
 }
 
+const Fluide_base& Milieu_composite::get_fluid(const int i) const
+{
+  assert(i > 0 && i < (int )fluides.size());
+  return fluides[i].valeur();
+}
+
 int Milieu_composite::initialiser(const double temps)
 {
-  for (int i = 0; i < fluides.size(); i++)
-    fluides[i].initialiser(temps);
+  for (auto &itr : fluides) itr->initialiser(temps);
 
   const Equation_base& eqn = equation("temperature");
-  Champ_Inc_base& ch_rho = ref_cast(Champ_Inc_base, rho.valeur()),
-                  &ch_e   = ref_cast(Champ_Inc_base, e_int.valeur()),
-                   &ch_h   = ref_cast(Champ_Inc_base, h.valeur());
+  Champ_Inc_base& ch_rho = ref_cast(Champ_Inc_base, rho.valeur()), &ch_e = ref_cast(Champ_Inc_base, e_int.valeur()), &ch_h = ref_cast(Champ_Inc_base, h.valeur());
   ch_rho.associer_eqn(eqn), ch_rho.init_champ_calcule(*this, calculer_masse_volumique);
-  ch_e.associer_eqn(eqn),   ch_e.init_champ_calcule(*this, calculer_energie_interne);
-  ch_h.associer_eqn(eqn),   ch_h.init_champ_calcule(*this, calculer_enthalpie);
+  ch_e.associer_eqn(eqn), ch_e.init_champ_calcule(*this, calculer_energie_interne);
+  ch_h.associer_eqn(eqn), ch_h.init_champ_calcule(*this, calculer_enthalpie);
   t_init_ = temps;
 
   return Milieu_base::initialiser_porosite(temps);
@@ -192,33 +200,31 @@ void Milieu_composite::discretiser(const Probleme_base& pb, const  Discretisatio
 {
   Cerr << "Composite medium discretization." << finl;
 
-  const int N = fluides.size(), nc = pb.equation(0).inconnue()->nb_valeurs_temporelles();
+  const int N = (int)fluides.size(), nc = pb.equation(0).inconnue()->nb_valeurs_temporelles();
   const Zone_dis_base& zone_dis = pb.equation(0).zone_dis();
   const double temps = pb.schema_temps().temps_courant();
 
-  // Fluide_base::discretiser(pb, dis);
-  for (int n = 0; n < N; n++)
-    fluides[n].discretiser(pb, dis);
+  for (auto& itr : fluides) itr->discretiser(pb, dis);
 
   /* masse volumique, energie interne, enthalpie : champ_inc */
   Champ_Inc rho_inc, ei_inc, h_inc;
-  dis.discretiser_champ("champ_elem", zone_dis,       "masse_volumique",    "kg/m^3", N, nc, temps, rho_inc);
-  dis.discretiser_champ("champ_elem", zone_dis,       "energie_interne",     "J/m^3", N, nc, temps, ei_inc);
-  dis.discretiser_champ("champ_elem", zone_dis,             "enthalpie",     "J/m^3", N, nc, temps, h_inc);
+  dis.discretiser_champ("champ_elem", zone_dis, "masse_volumique", "kg/m^3", N, nc, temps, rho_inc);
+  dis.discretiser_champ("champ_elem", zone_dis, "energie_interne", "J/m^3", N, nc, temps, ei_inc);
+  dis.discretiser_champ("champ_elem", zone_dis, "enthalpie", "J/m^3", N, nc, temps, h_inc);
   rho = rho_inc, e_int = ei_inc, h = h_inc;
 
   /* autres champs : champ_fonc */
-  dis.discretiser_champ("champ_elem", zone_dis,   "viscosite_dynamique",    "kg/m/s", N, temps,       mu);
-  dis.discretiser_champ("champ_elem", zone_dis, "viscosite_cinematique",      "m2/s", N, temps,       nu);
-  dis.discretiser_champ("champ_elem", zone_dis,           "diffusivite",      "m2/s", N, temps,    alpha);
-  dis.discretiser_champ("champ_elem", zone_dis,          "conductivite",     "W/m/K", N, temps,   lambda);
-  dis.discretiser_champ("champ_elem", zone_dis,  "capacite_calorifique",    "J/kg/K", N, temps,       Cp);
+  dis.discretiser_champ("champ_elem", zone_dis, "viscosite_dynamique", "kg/m/s", N, temps, mu);
+  dis.discretiser_champ("champ_elem", zone_dis, "viscosite_cinematique", "m2/s", N, temps, nu);
+  dis.discretiser_champ("champ_elem", zone_dis, "diffusivite", "m2/s", N, temps, alpha);
+  dis.discretiser_champ("champ_elem", zone_dis, "conductivite", "W/m/K", N, temps, lambda);
+  dis.discretiser_champ("champ_elem", zone_dis, "capacite_calorifique", "J/kg/K", N, temps, Cp);
 
   /* champs de quantites melange */
   for (auto &&kv : phases_melange)
     {
-      dis.discretiser_champ("champ_elem", zone_dis,   Nom("masse_volumique_") + kv.first + "_melange", "kg/m^3", 1, temps, rho_m);
-      dis.discretiser_champ("champ_elem", zone_dis,         Nom("enthalpie_") + kv.first + "_melange",  "J/m^3", 1, temps,   h_m);
+      dis.discretiser_champ("champ_elem", zone_dis, Nom("masse_volumique_") + kv.first + "_melange", "kg/m^3", 1, temps, rho_m);
+      dis.discretiser_champ("champ_elem", zone_dis, Nom("enthalpie_") + kv.first + "_melange", "J/m^3", 1, temps, h_m);
       champs_compris_.ajoute_champ(rho_m);
       champs_compris_.ajoute_champ(h_m);
     }
@@ -239,8 +245,8 @@ void Milieu_composite::discretiser(const Probleme_base& pb, const  Discretisatio
 
 void Milieu_composite::mettre_a_jour(double temps)
 {
-  for (int i = 0; i < fluides.size(); i++)
-    fluides[i].mettre_a_jour(temps);
+  for (auto& itr : fluides) itr->mettre_a_jour(temps);
+
   rho.mettre_a_jour(temps);
   e_int.mettre_a_jour(temps);
   h.mettre_a_jour(temps);
@@ -253,14 +259,13 @@ void Milieu_composite::mettre_a_jour(double temps)
   if (rho_m.non_nul()) rho_m.mettre_a_jour(temps);
   if (h_m.non_nul()) h_m.mettre_a_jour(temps);
   mettre_a_jour_tabs();
-  // Fluide_base::mettre_a_jour(temps);
 
   Milieu_base::mettre_a_jour_porosite(temps);
 }
 
 void Milieu_composite::mettre_a_jour_tabs()
 {
-  const int N = fluides.size();
+  const int N = (int)fluides.size();
 
   /* viscosite dynamique */
   {
@@ -268,7 +273,7 @@ void Milieu_composite::mettre_a_jour_tabs()
     const int Nl = mu.valeurs().dimension_tot(0);
     for (int n = 0; n < N; n++)
       {
-        const Champ_base& ch_n = fluides[n].viscosite_dynamique();
+        const Champ_base& ch_n = fluides[n]->viscosite_dynamique();
         const int cch = sub_type(Champ_Uniforme, ch_n);
         for (int i = 0; i < Nl; i++) tab(i, n) = ch_n.valeurs()(!cch * i, 0);
       }
@@ -280,7 +285,7 @@ void Milieu_composite::mettre_a_jour_tabs()
     const int Nl = nu.valeurs().dimension_tot(0);
     for (int n = 0; n < N; n++)
       {
-        const Champ_base& ch_n = fluides[n].viscosite_cinematique();
+        const Champ_base& ch_n = fluides[n]->viscosite_cinematique();
         const int cch = sub_type(Champ_Uniforme, ch_n);
         for (int i = 0; i < Nl; i++) tab(i, n) = ch_n.valeurs()(!cch * i, 0);
       }
@@ -292,7 +297,7 @@ void Milieu_composite::mettre_a_jour_tabs()
     const int Nl = alpha.valeurs().dimension_tot(0);
     for (int n = 0; n < N; n++)
       {
-        const Champ_base& ch_n = fluides[n].diffusivite();
+        const Champ_base& ch_n = fluides[n]->diffusivite();
         const int cch = sub_type(Champ_Uniforme, ch_n);
         for (int i = 0; i < Nl; i++) tab(i, n) = ch_n.valeurs()(!cch * i, 0);
       }
@@ -304,7 +309,7 @@ void Milieu_composite::mettre_a_jour_tabs()
     const int Nl = lambda.valeurs().dimension_tot(0);
     for (int n = 0; n < N; n++)
       {
-        const Champ_base& ch_n = fluides[n].conductivite();
+        const Champ_base& ch_n = fluides[n]->conductivite();
         const int cch = sub_type(Champ_Uniforme, ch_n);
         for (int i = 0; i < Nl; i++) tab(i, n) = ch_n.valeurs()(!cch * i, 0);
       }
@@ -316,7 +321,7 @@ void Milieu_composite::mettre_a_jour_tabs()
     const int Nl = Cp.valeurs().dimension_tot(0);
     for (int n = 0; n < N; n++)
       {
-        const Champ_base& ch_n = fluides[n].capacite_calorifique();
+        const Champ_base& ch_n = fluides[n]->capacite_calorifique();
         const int cch = sub_type(Champ_Uniforme, ch_n);
         for (int i = 0; i < Nl; i++) tab(i, n) = ch_n.valeurs()(!cch * i, 0);
       }
@@ -346,14 +351,13 @@ void Milieu_composite::associer_equation(const Equation_base *eqn) const
 {
   Fluide_base::associer_equation(eqn);
   // on fait suivre aux milieux sous-jacents (les fluide_reel en ont besoin!)
-  for (int i = 0; i < fluides.size(); i++)
-    fluides[i].associer_equation(eqn);
+  for (const auto& itr : fluides) itr->associer_equation(eqn);
 }
 
 int Milieu_composite::check_unknown_range() const
 {
   int ok = 1;
-  for (int i = 0; ok && i < fluides.size(); i++) ok &= fluides[i].check_unknown_range(); //chaque fluide controle
+  for (int i = 0; ok && i < (int)fluides.size(); i++) ok &= fluides[i]->check_unknown_range(); //chaque fluide controle
   return ok;
 }
 
@@ -361,23 +365,23 @@ void Milieu_composite::calculer_masse_volumique(const Objet_U& obj, DoubleTab& v
 {
   const Milieu_composite& mil = ref_cast(Milieu_composite, obj);
   const Zone_VF& zvf = ref_cast(Zone_VF, mil.equation_.begin()->second->zone_dis().valeur());
-  int i, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n, N = mil.fluides.size();
+  int i, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n, N = (int)mil.fluides.size();
   std::vector<const DoubleTab *> split(N);
-  for (n = 0; n < N; n++) split[n] = &mil.fluides[n].masse_volumique().valeurs();
+  for (n = 0; n < N; n++) split[n] = &mil.fluides[n]->masse_volumique().valeurs();
   for (i = 0; i < Ni; i++)
     for (n = 0; n < N; n++) val(i, n) = (*split[n])(i * (split[n]->dimension(0) > 1), 0);
 
   std::vector<DoubleTab> bsplit(N);
   for (n = 0; n < N; n++)
-    if (mil.fluides[n].masse_volumique()->a_une_zone_dis_base())
-      bsplit[n] = mil.fluides[n].masse_volumique()->valeur_aux_bords();
-    else bsplit[n].resize(bval.dimension_tot(0), 1), mil.fluides[n].masse_volumique()->valeur_aux(zvf.xv_bord(), bsplit[n]);
+    if (mil.fluides[n]->masse_volumique()->a_une_zone_dis_base())
+      bsplit[n] = mil.fluides[n]->masse_volumique()->valeur_aux_bords();
+    else bsplit[n].resize(bval.dimension_tot(0), 1), mil.fluides[n]->masse_volumique()->valeur_aux(zvf.xv_bord(), bsplit[n]);
   for (i = 0; i < Nb; i++)
     for (n = 0; n < N; n++) bval(i, n) = bsplit[n](i * (split[n]->dimension(0) > 1), 0);
 
   /* derivees */
   std::vector<const tabs_t *> split_der(N);
-  for (n = 0; n < N; n++) split_der[n] = sub_type(Champ_Inc_base, mil.fluides[n].masse_volumique().valeur()) ? &ref_cast(Champ_Inc_base, mil.fluides[n].masse_volumique().valeur()).derivees() : NULL;
+  for (n = 0; n < N; n++) split_der[n] = sub_type(Champ_Inc_base, mil.fluides[n]->masse_volumique().valeur()) ? &ref_cast(Champ_Inc_base, mil.fluides[n]->masse_volumique().valeur()).derivees() : NULL;
   std::set<std::string> noms_der;
   for (n = 0; n < N; n++)
     if (split_der[n])
@@ -394,20 +398,20 @@ void Milieu_composite::calculer_masse_volumique(const Objet_U& obj, DoubleTab& v
 void Milieu_composite::calculer_energie_interne(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv)
 {
   const Milieu_composite& mil = ref_cast(Milieu_composite, obj);
-  int i, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n, N = mil.fluides.size();
+  int i, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n, N = (int)mil.fluides.size();
   std::vector<const DoubleTab *> split(N);
-  for (n = 0; n < N; n++) split[n] = &mil.fluides[n].energie_interne().valeurs();
+  for (n = 0; n < N; n++) split[n] = &mil.fluides[n]->energie_interne().valeurs();
   for (i = 0; i < Ni; i++)
     for (n = 0; n < N; n++) val(i, n) = (*split[n])(i * (split[n]->dimension(0) > 1), 0);
 
   std::vector<DoubleTab> bsplit(N);
-  for (n = 0; n < N; n++) bsplit[n] = mil.fluides[n].energie_interne().valeur_aux_bords();
+  for (n = 0; n < N; n++) bsplit[n] = mil.fluides[n]->energie_interne().valeur_aux_bords();
   for (i = 0; i < Nb; i++)
     for (n = 0; n < N; n++) bval(i, n) = bsplit[n](i * (split[n]->dimension(0) > 1), 0);
 
   /* derivees */
   std::vector<const tabs_t *> split_der(N);
-  for (n = 0; n < N; n++) split_der[n] = sub_type(Champ_Inc_base, mil.fluides[n].energie_interne()) ? &ref_cast(Champ_Inc_base, mil.fluides[n].energie_interne()).derivees() : NULL;
+  for (n = 0; n < N; n++) split_der[n] = sub_type(Champ_Inc_base, mil.fluides[n]->energie_interne()) ? &ref_cast(Champ_Inc_base, mil.fluides[n]->energie_interne()).derivees() : NULL;
   std::set<std::string> noms_der;
   for (n = 0; n < N; n++)
     if (split_der[n])
@@ -424,20 +428,20 @@ void Milieu_composite::calculer_energie_interne(const Objet_U& obj, DoubleTab& v
 void Milieu_composite::calculer_enthalpie(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv)
 {
   const Milieu_composite& mil = ref_cast(Milieu_composite, obj);
-  int i, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n, N = mil.fluides.size();
+  int i, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n, N = (int)mil.fluides.size();
   std::vector<const DoubleTab *> split(N);
-  for (n = 0; n < N; n++) split[n] = &mil.fluides[n].enthalpie().valeurs();
+  for (n = 0; n < N; n++) split[n] = &mil.fluides[n]->enthalpie().valeurs();
   for (i = 0; i < Ni; i++)
     for (n = 0; n < N; n++) val(i, n) = (*split[n])(i * (split[n]->dimension(0) > 1), 0);
 
   std::vector<DoubleTab> bsplit(N);
-  for (n = 0; n < N; n++) bsplit[n] = mil.fluides[n].enthalpie().valeur_aux_bords();
+  for (n = 0; n < N; n++) bsplit[n] = mil.fluides[n]->enthalpie().valeur_aux_bords();
   for (i = 0; i < Nb; i++)
     for (n = 0; n < N; n++) bval(i, n) = bsplit[n](i * (split[n]->dimension(0) > 1), 0);
 
   /* derivees */
   std::vector<const tabs_t *> split_der(N);
-  for (n = 0; n < N; n++) split_der[n] = sub_type(Champ_Inc_base, mil.fluides[n].enthalpie()) ? &ref_cast(Champ_Inc_base, mil.fluides[n].enthalpie()).derivees() : NULL;
+  for (n = 0; n < N; n++) split_der[n] = sub_type(Champ_Inc_base, mil.fluides[n]->enthalpie()) ? &ref_cast(Champ_Inc_base, mil.fluides[n]->enthalpie()).derivees() : NULL;
   std::set<std::string> noms_der;
   for (n = 0; n < N; n++)
     if (split_der[n])
@@ -460,8 +464,8 @@ void Milieu_composite::abortTimeStep()
 
 bool Milieu_composite::initTimeStep(double dt)
 {
-  for (int i = 0; i < fluides.size(); i++)
-    fluides[i].initTimeStep(dt);
+  for (auto& itr : fluides) itr->initTimeStep(dt);
+
   if (!equation_.size()) return true; //pas d'equation associee -> ???
   const Schema_Temps_base& sch = equation_.begin()->second->schema_temps(); //on recupere le schema en temps par la 1ere equation
 
