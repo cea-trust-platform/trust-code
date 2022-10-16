@@ -5,79 +5,48 @@ Update TRUST dataset to use new 'Lire_MED' syntax.
 
 Authors: A Bruneton, E Saikali
 """
-from tparser import TRUSTParser, TObject
-
-class LireMEDBlock(TObject):
-    """ A single Lire_MED block
-    """    
-    def __init__(self):
-        super().__init__()
-        self.file = ""
-        self.mesh = ""
-        self.dom = ""
-        self.catp = False # ConvertAllToPoly
-    
-    def createNewLireMED(self):
-        lm =  ["Lire_MED", "{", "\n"]
-        lm += ["   domain", self.dom, "\n"]
-        lm += ["   file", self.file, "\n"]
-#        if self.mesh != "--any--":
-#            lm += ["   mesh", self.mesh, "\n"]
-        if self.catp:
-            lm += ["   convertAllToPoly\n"]
-        lm += ["}\n"]
-        return lm
+from tparser import TRUSTParser
 
 class LireMEDConverter(TRUSTParser):
+    """
+    Former syntax: 
+        Lire_MED [ vef|convertAllToPoly  ] [ family_names_from_group_names | short_family_names ] domaine_name mesh_name filename.med
+        
+    New syntax:
+       lire_med {
+          domaine dom
+          file toto.med
+          mesh the_mesh_in_file  // optional - if not there, first mesh taken.
+          [convertAllToPoly]
+       }
+    """  
+    LIST_PARAMS = [("convertalltopoly", bool),
+                  ("family_names_from_group_names", bool),
+                  ("short_family_names", bool),
+                  ("dom", str), 
+                  ("mesh", str), 
+                  ("file", str)
+                   ]
+
     def __init__(self):
         super().__init__()
         self.lire_med = []
-        
+    
     def loadLireMED(self):
-        off = 0
-        # Google translate :-)
-        for i, t in enumerate(self.tabTokenLow):
-            if t == "read_med":  self.tabTokenLow[i] = "lire_med"
-        # Now for the real processing:
-        while True:   # Yummi :-)
-            lmb = LireMEDBlock()
-            _, idx = self.getObjName("lire_med", off)
-            lmb.start = idx
-            idx = self.getNext(idx, 1)            
-            firstArgL = self.tabTokenLow[idx]
-            if firstArgL == "{":
-                print("It seems your dataset already has the correct Lire_MED format!")
-                return False
-            if lmb.start != -1:
-                # "Syntax: Lire_MED [ vef|convertAllToPoly  ] [ family_names_from_group_names | short_family_names ] domaine_name mesh_name filename.med" << finl;
-                if firstArgL == "convertalltopoly":
-                    lmb.catp = True
-                    idx = self.getNext(idx, 1)
-                    firstArgL = self.tabTokenLow[idx]
-                if firstArgL == "family_names_from_group_names":
-                    # Skip silently
-                    idx = self.getNext(idx, 1)
-                    firstArgL = self.tabTokenLow[idx]
-                if firstArgL == "short_family_names":
-                    print("WHAAT? Using keyword 'short_family_names' - clean this up!")
-                    # Skip silently
-                    idx = self.getNext(idx, 1)
-                    firstArgL = self.tabTokenLow[idx]
-                # Domain - case sensitive
-                lmb.dom = self.tabToken[idx]
-                idx = self.getNext(idx, 1)
-                # Mesh name - case sensitive
-                lmb.mesh = self.tabToken[idx].strip()
-                idx = self.getNext(idx, 1)
-                # File name - case sensitive
-                lmb.file = self.tabToken[idx].strip()
+        ok, self.lire_med = self.loadNoCurlyBraceGeneric(["lire_med", "read_med"])
+        return ok
 
-                lmb.end = self.getNextJustAfter(idx, 1)
-                self.lire_med.append(lmb)
-                off = idx
-            else:
-                break
-        return len(self.lire_med) != 0
+    def createNewLireMED(self, it):
+        dom, file, mesh, catp = it["dom"], it["file"], it["mesh"], it["convertalltopoly"]
+        lm =  ["Lire_MED", "{", "\n"]
+        lm += ["   domain", dom, "\n"]
+        lm += ["   file", file, "\n"]
+#        if mesh != "--any--":
+#            lm += ["   mesh", mesh, "\n"]
+        if catp:
+            lm += ["   convertAllToPoly\n"]
+        lm += ["}\n"]
+        return lm
         
     def outputData(self, fNameO):
         """ Write everything out.
@@ -85,14 +54,14 @@ class LireMEDConverter(TRUSTParser):
         tt = self.tabToken       
         newData, prev = [], 0
         for lmb in self.lire_med:
-            newData.extend(tt[prev:lmb.start])
+            newData.extend(tt[prev:lmb["start"]])
             # New Lire_MED block
-            lm = lmb.createNewLireMED()
+            lm = self.createNewLireMED(lmb)
             newData.extend(lm)
-            prev = lmb.end
+            prev = lmb["end"]
         # Finish writing:
         newData.extend(tt[prev:])
-        self.unTokenize(newData, fNameO)
+        self.unTokenizeAndWrite(newData, fNameO)
         
 if __name__ == "__main__":
     import sys
@@ -101,7 +70,7 @@ if __name__ == "__main__":
         sys.exit(-1)
     fNameI, fNameO = sys.argv[1], sys.argv[2]
     dm = LireMEDConverter()
-    dm.tokenize(fNameI)
+    dm.readAndTokenize(fNameI)
     if dm.loadLireMED():
         dm.outputData(fNameO)    
         print("File '%s' written!" % fNameO)

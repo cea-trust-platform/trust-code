@@ -1,0 +1,34 @@
+# PARALLEL ONLY 2 #
+dimension 2
+
+DOMaine DOM
+
+Pb_conduction pb
+
+# BEGIN MESH
+Lire_MED { 
+   domain DOM 
+   file Mesh_1.med 
+}
+END MESH #
+
+Scatter DOM.Zones DOM
+
+vefprep1b dis
+
+read pb
+{
+       
+solide {
+     rho champ_uniforme 1 1.0
+    lambda Champ_Fonc_MED_tabule { domain DOM 
+                                   file conduc2d_iso.med 
+                                   field CONDUCTIVITY_ELEM_dom 
+                                   last_time 
+                                   decoup toto.dec 
+                                   }
+    Cp champ_uniforme 1 1.0
+}
+
+End
+

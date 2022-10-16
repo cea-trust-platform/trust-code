@@ -250,7 +250,7 @@ class MilieuModifier(TRUSTParser):
             prev = pbStartInside
         # Finish writing:
         newData.extend(tt[pbStartInside:])
-        self.unTokenize(newData, fNameO)
+        self.unTokenizeAndWrite(newData, fNameO)
             
 if __name__ == "__main__":
     import sys
@@ -259,7 +259,7 @@ if __name__ == "__main__":
         sys.exit(-1)
     fNameI, fNameO = sys.argv[1], sys.argv[2]
     dm = MilieuModifier()
-    dm.tokenize(fNameI)
+    dm.readAndTokenize(fNameI)
     dm.identifyProblems()
     if dm.identifyMilieu():
         dm.identifyGravity()

@@ -177,7 +177,7 @@ class FTConvert(TRUSTParser):
             prev = ftb.postEnd
         # Finish writing:
         newData.extend(tt[prev:])
-        self.unTokenize(newData, fNameO)
+        self.unTokenizeAndWrite(newData, fNameO)
 
 if __name__ == "__main__":
     import sys
@@ -186,7 +186,7 @@ if __name__ == "__main__":
         sys.exit(-1)
     fNameI, fNameO = sys.argv[1], sys.argv[2]
     dm = FTConvert()
-    dm.tokenize(fNameI)
+    dm.readAndTokenize(fNameI)
     if dm.loadPostFT():
         dm.outputData(fNameO)    
         print("File '%s' written!" % fNameO)

@@ -52,31 +52,30 @@ class TRUSTParser(object):
                     return i
         return -1
 
-    def tokenize(self, fNameI):
+    def tokenize(self, txtIn):
         """ Split dataset on spaces, tabs and line returns, but keep the line returns in the original tokens
         to be able to reproduce a dataset with them at the end.
         """
         import re
-        with open(fNameI, "r") as fIn:
-            txtIn = fIn.read()
-            tmp = re.split(' ', txtIn)
-            for t in tmp:
-                ts = t.split('\t')
-                if len(ts) > 1:
-                    ts2 = [a + "\t" for a in ts[:-1]]
-                    ts2.append(ts[-1])
+        tmp = re.split(' ', txtIn)
+        self.tabToken, self.tabTokenLow = [], []
+        for t in tmp:
+            ts = t.split('\t')
+            if len(ts) > 1:
+                ts2 = [a + "\t" for a in ts[:-1]]
+                ts2.append(ts[-1])
+            else:
+                ts2 = ts
+            ts4 = []
+            for t2 in ts2:    
+                ts3 = t2.split('\n')
+                if len(ts3) > 1:
+                    ts4 = [a + "\n" for a in ts3[:-1]]
+                    ts4.append(ts3[-1])
                 else:
-                    ts2 = ts
-                ts4 = []
-                for t2 in ts2:    
-                    ts3 = t2.split('\n')
-                    if len(ts3) > 1:
-                        ts4 = [a + "\n" for a in ts3[:-1]]
-                        ts4.append(ts3[-1])
-                    else:
-                        ts4 = ts3
-                    self.tabToken.extend(ts4)  
-            self.tabTokenLow = [t.lower().strip() for t in self.tabToken]
+                    ts4 = ts3
+                self.tabToken.extend(ts4)  
+        self.tabTokenLow = [t.lower().strip() for t in self.tabToken]
 
         # Now validate the tokens, and empty slots of tabTokenLow where we have comments
         valid = True
@@ -89,7 +88,12 @@ class TRUSTParser(object):
             if t in ["*/", "#"] and not valid: valid = True
         #print(self.tabTokenLow)
     
-    def unTokenize(self, data, fNameO):
+    def readAndTokenize(self, fNameI):
+        with open(fNameI, "r") as fIn:
+            txtIn = fIn.read()
+            self.tokenize(txtIn)    
+    
+    def unTokenize(self, data):
         """ Inverse operation of self.tokenize() :-)
         """
         out, acc = [], []
@@ -101,9 +105,12 @@ class TRUSTParser(object):
                 out.append(''.join(acc))
                 acc = []
         d = ' '.join(out[:-1])
+        return d
+        
+    def unTokenizeAndWrite(self, data, fNameO):
+        d = self.unTokenize(data)
         with open(fNameO, "w") as fOut:
             fOut.write(d)
-        
     
     def getNext(self, start, off):
         """ Get index of (valid) token located 'off' slots after 'start', skipping
@@ -111,12 +118,17 @@ class TRUSTParser(object):
         This always return the index of a valid non empty token.
         """
         mult = -1 if off < 0 else 1
-        cnt, cnt2 = 0, 0
+        cnt, cnt2, valid = 0, 0, start
         while cnt < abs(off):
             cnt2 = cnt2+1
-            if self.tabTokenLow[start+mult*cnt2] == "": continue
+            # Too far away - stick to last valid token
+            if start+mult*cnt2 >= len(self.tabTokenLow):
+                return valid
+            if self.tabTokenLow[start+mult*cnt2] == "":
+                continue
+            valid = start+mult*cnt2
             cnt = cnt+1
-        return start+mult*cnt2
+        return valid
 
     def getNextJustAfter(self, start, off):
         """ Same as above, but instead of returning index of next valid token, 
@@ -157,4 +169,71 @@ class TRUSTParser(object):
         except:
             print("WHAAT?? 'dimension' keyword not found in dataset!!")
             return -1
+
+    def _handleOneParam(self, param_nam, typ, idx):
+        """ Handle a single non-flag parameter when processing data with 
+            loadNoCurlyBraceGeneric()
+            @return the parsed value, and the number of tokens consummed.
+        """
+        val = typ(self.tabToken[idx].strip())  # preserve case! so do not 'typ(currTok)'
+        shift = 1
+        return val, shift
+            
+    def loadNoCurlyBraceGeneric(self, keywords):
+        """ Load any TRUST keyword for which the syntax is defined by an (ordered) list of 
+        flags and parameters.
+        The class deriving TRUSTParser must have a member named LIST_PARAMS of the form:
+            [("param_name1", type1),
+             ("param_name2", type2), 
+             ...]
+        If 'type' is bool the parameter is considered as an optional flag.
+        Otherwise, it is used to convert the string read in the datafile directly: 
+            it must be a callable returning a tuple like
+                (value, shift)
+            value is the actual value to be stored, shift is the number of tokens consumed.
+        @param keywords a list of keywords (for synonyms), for example ["Lire_MED", "Read_MED"]
+        @return a list of dictionnary. Keys are the keys from LIST_PARAMS
+        """
+        # Handle synonyms by putting the first keyword everywhere - Google translate :-)
+        keywords = [s.lower() for s in keywords]
+        mainKW = keywords[0]
+        for i, t in enumerate(self.tabTokenLow):
+            if t in keywords[1:]:
+                self.tabTokenLow[i] = mainKW
+        # Now for the real processing:
+        ret_lst, off, noMoreBool, idx2 = [], 0, False, 0
+        while True:   # Yummi :-)
+            data = {}
+            _, idx = self.getObjName(mainKW, off)
+            data["start"] = idx
+            if data["start"] != -1:
+                idx = self.getNext(idx, 1)
+                currTok = self.tabTokenLow[idx]
+                if currTok == "{":
+                    print("It seems your dataset already has the correct '%s' format!" % keywords[0])
+                    return False, ret_lst
+                for param_nam, typ in self.LIST_PARAMS:
+                    if noMoreBool and typ is bool:
+                        raise ValueError("Error: the specified LIST_PARAMS contains a bool parameter after a non-bool parameter ... not supported yet. All flags should come first.")
+                    if typ is bool:
+                        if currTok == param_nam:
+                            data[param_nam] = True
+                            # Move to next token
+                            idx, idx2 = self.getNext(idx, 1), self.getNextJustAfter(idx, 1)
+                            currTok = self.tabTokenLow[idx]
+                        else:
+                            data[param_nam] = False
+                    else:
+                        data[param_nam], shift = self._handleOneParam(param_nam, typ, idx)
+                        if shift > 0:
+                            idx, idx2 = self.getNext(idx, shift), self.getNextJustAfter(idx, shift)
+                            currTok = self.tabTokenLow[idx]
+                # To avoid handling specifically the last iteration in the for loop
+                data["end"] = idx2
+                ret_lst.append(data)
+                off = idx
+            else:    # if ret["start"] != -1:
+                break
+        return (len(ret_lst) != 0, ret_lst)
+
 
