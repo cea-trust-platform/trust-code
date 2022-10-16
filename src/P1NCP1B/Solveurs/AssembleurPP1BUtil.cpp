@@ -33,22 +33,23 @@
 static int face_associee=-1;
 
 //static ArrOfDouble coef_som;
-
+static ArrOfDouble gradi(3);
+static ArrOfDouble gradj(3);
 static inline void
-projette(ArrOfDouble& gradi, int face, const DoubleTab& normales)
+projette(ArrOfDouble& grad, int face, const DoubleTab& normales)
 {
   double psc=0, norm=0;
   int dimension=Objet_U::dimension, comp;
   for(comp=0; comp<dimension; comp++)
     {
-      psc+=gradi[comp]*normales(face,comp);
+      psc+=grad[comp]*normales(face,comp);
       norm+=normales(face,comp)*normales(face,comp);
     }
   // psc/=norm; // Fixed bug: Arithmetic exception
   if (std::fabs(norm)>=DMINFLOAT) psc/=norm;
   for(comp=0; comp<dimension; comp++)
     {
-      gradi[comp]-=psc*normales(face,comp);
+      grad[comp]-=psc*normales(face,comp);
     }
   psc=0;
   //   for(comp=0; comp<dimension; comp++)
@@ -502,14 +503,13 @@ static void calculer_grad_arete(int face,
     }
 }
 
-static double dotproduct_array_fois_inverse_quantitee_entrelacee(const ArrOfDouble& gradi,const ArrOfDouble& gradE,const DoubleTab& inverse_quantitee_entrelacee, int face )
+static double dotproduct_array_fois_inverse_quantitee_entrelacee(const ArrOfDouble& grad1,const ArrOfDouble& grad2,const DoubleTab& inverse_quantitee_entrelacee, int face )
 {
   double dot=0;
-  int size=gradi.size_array();
-  assert(size == gradE.size_array());
-  for (int i=0; i<size; i++) dot+=gradi[i]*gradE[i]*inverse_quantitee_entrelacee(face,i);
+  int size=inverse_quantitee_entrelacee.dimension(1);
+  for (int i=0; i<size; i++) dot+=grad1[i]*grad2[i]*inverse_quantitee_entrelacee(face,i);
   return dot;
-  //return  dotproduct_array(gradi,gradE)*inverse_quantitee_entrelacee(face,0);
+  //return  dotproduct_array(gradi,gradj)*inverse_quantitee_entrelacee(face,0);
 }
 
 static void contribuer_matriceP0P1(const Zone_VEF& zone_VEF,
@@ -531,8 +531,6 @@ static void contribuer_matriceP0P1(const Zone_VEF& zone_VEF,
   double psc;
   //double coeff_som=1./(dimension)/(dimension+1);
 
-  ArrOfDouble gradi(dimension);
-  ArrOfDouble gradE(dimension);
 
   for(int i=0; i<dplusdeux; i++)
     {
@@ -541,8 +539,8 @@ static void contribuer_matriceP0P1(const Zone_VEF& zone_VEF,
       calculer_grad(face_voisins, elem1, elem2,coef_som, si, faces_op1[i],
                     faces_op2[i], normales, gradi);
       for(int k=0; k<dimension; k++)
-        gradE[k]=normales(face,k);
-      psc=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradE,
+        gradj[k]=normales(face,k);
+      psc=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradj,
                                                              inverse_quantitee_entrelacee,face);
       int rang1=voisins[elem1].rang(si);
       if(rang1==-1)
@@ -601,8 +599,6 @@ static void update_matriceP0P1(const Zone_VEF& zone_VEF,
       dplusdeux=dimension+2;
   double psc;
   //double coeff_som=1./(dimension)/(dimension+1);
-  ArrOfDouble gradi(dimension);
-  ArrOfDouble gradE(dimension);
 
   int nb_elem=zone_VEF.nb_elem();
   int nb_som=zone_VEF.nb_som();
@@ -613,8 +609,8 @@ static void update_matriceP0P1(const Zone_VEF& zone_VEF,
       calculer_grad(face_voisins, elem1, elem2, coef_som,si, faces_op1[i],
                     faces_op2[i], normales, gradi);
       for(int k=0; k<dimension; k++)
-        gradE[k]=normales(face,k);
-      psc=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradE,
+        gradj[k]=normales(face,k);
+      psc=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradj,
                                                              inverse_quantitee_entrelacee,face);
       range(elem1,nb_elem,si,nb_som,ARR,ARV,AVR,AVV,psc);
       if (elem2!=-1)
@@ -638,8 +634,6 @@ static void contribuer_matriceP1P1(const Zone_VEF& zone_VEF,
   double psc;
   //double coeff_som=1./(dimension)/(dimension+1);
   //coeff_som*=coeff_som;
-  ArrOfDouble gradi(dimension);
-  ArrOfDouble gradj(dimension);
   int i,j;
 
   // On ne traite pas les sommets -1 qui
@@ -694,8 +688,6 @@ static void update_matriceP1P1(const Zone_VEF& zone_VEF,
   double psc;
   //double coeff_som=1./(dimension)/(dimension+1);
   //coeff_som*=coeff_som;
-  ArrOfDouble gradi(dimension);
-  ArrOfDouble gradj(dimension);
   int nb_som_tot=zone_VEF.nb_som();
   int i,j;
 
@@ -752,8 +744,8 @@ static void contribuer_matricePaPa(const Zone_VEF_PreP1b& zone_VEF,
   //while (sommets(dplusdeux-1)==-1)
   //   dplusdeux--;
 
-  ArrOfDouble grad1(3);
-  ArrOfDouble grad2(3);
+
+
   int jmax=5;
   if(elem2==-1) jmax=4;
   for(i=0; i<3; i++)
@@ -776,8 +768,8 @@ static void contribuer_matricePaPa(const Zone_VEF_PreP1b& zone_VEF,
                                   elem1, elem2,
                                   faces_op1[i], faces_op2[i],
                                   faces_op1[j], faces_op2[j],
-                                  normales, grad1);
-              diag[arete1]+=dotproduct_array_fois_inverse_quantitee_entrelacee(grad1,grad1,
+                                  normales, gradi);
+              diag[arete1]+=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradi,
                                                                                inverse_quantitee_entrelacee,face);
               int jj=j;
               for(k=i; k<3; k++)
@@ -802,8 +794,8 @@ static void contribuer_matricePaPa(const Zone_VEF_PreP1b& zone_VEF,
                                               elem1, elem2,
                                               faces_op1[k], faces_op2[k],
                                               faces_op1[l], faces_op2[l],
-                                              normales, grad2);
-                          psc=dotproduct_array_fois_inverse_quantitee_entrelacee(grad1,grad2,
+                                              normales, gradj);
+                          psc=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradj,
                                                                                  inverse_quantitee_entrelacee,face);
                           int tmp=arete1;
                           if(arete1>arete2) swap(arete1, arete2);
@@ -848,8 +840,8 @@ static void update_matricePaPa(const Zone_VEF_PreP1b& zone_VEF,
   //while (sommets(dplusdeux-1)==-1)
   //   dplusdeux--;
 
-  ArrOfDouble grad1(3);
-  ArrOfDouble grad2(3);
+
+
   int jmax=5;
   if(elem2==-1) jmax=4;
   for(i=0; i<3; i++)
@@ -872,9 +864,9 @@ static void update_matricePaPa(const Zone_VEF_PreP1b& zone_VEF,
                                   elem1, elem2,
                                   faces_op1[i], faces_op2[i],
                                   faces_op1[j], faces_op2[j],
-                                  normales, grad1);
+                                  normales, gradi);
               if(arete1<nb_aretes_tot)
-                ARR(arete1,arete1)+=dotproduct_array_fois_inverse_quantitee_entrelacee(grad1,grad1,
+                ARR(arete1,arete1)+=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradi,
                                                                                        inverse_quantitee_entrelacee,face);
               int jj=j;
               for(k=i; k<3; k++)
@@ -899,8 +891,8 @@ static void update_matricePaPa(const Zone_VEF_PreP1b& zone_VEF,
                                               elem1, elem2,
                                               faces_op1[k], faces_op2[k],
                                               faces_op1[l], faces_op2[l],
-                                              normales, grad2);
-                          psc=dotproduct_array_fois_inverse_quantitee_entrelacee(grad1,grad2,
+                                              normales, gradj);
+                          psc=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradj,
                                                                                  inverse_quantitee_entrelacee,face);
                           int tmp=arete1;
                           if(arete1>arete2) swap(arete1, arete2);
@@ -938,8 +930,8 @@ contribuer_matrice_NeumannP0P1(const Zone_VEF& zone_VEF,
   double unsurdim=1./Objet_U::dimension;
   double psc;
   //  double coeff_som=1./(dimension)/(dplusun);
-  ArrOfDouble gradi(dimension);
-  ArrOfDouble gradE(dimension);
+
+
   for(int i=0; i<dplusun; i++)
     {
       int si=sommets[i];
@@ -949,8 +941,8 @@ contribuer_matrice_NeumannP0P1(const Zone_VEF& zone_VEF,
         for (int comp=0; comp<dimension; comp++)
           gradi[comp]+=normales(face,comp)*unsurdim;
       for(int k=0; k<dimension; k++)
-        gradE[k]=normales(face,k);
-      psc=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradE,
+        gradj[k]=normales(face,k);
+      psc=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradj,
                                                              inverse_quantitee_entrelacee,face);
       int rang1=voisins[elem].rang(si);
       if(rang1==-1)
@@ -985,8 +977,8 @@ update_matrice_NeumannP0P1(const Zone_VEF& zone_VEF,
   double unsurdim=1./Objet_U::dimension;
   double psc;
   //  double coeff_som=1./(dimension)/(dplusun);
-  ArrOfDouble gradi(dimension);
-  ArrOfDouble gradE(dimension);
+
+
   for(int i=0; i<dplusun; i++)
     {
       int si=sommets[i];
@@ -996,8 +988,8 @@ update_matrice_NeumannP0P1(const Zone_VEF& zone_VEF,
         for (int comp=0; comp<dimension; comp++)
           gradi[comp]+= normales(face,comp)*unsurdim;
       for(int k=0; k<dimension; k++)
-        gradE[k]=normales(face,k);
-      psc=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradE,
+        gradj[k]=normales(face,k);
+      psc=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradj,
                                                              inverse_quantitee_entrelacee,face);
       if(elem<nb_elem_tot)
         if(si<nb_som_tot)
@@ -1028,8 +1020,8 @@ contribuer_matrice_NeumannP1P1(const Zone_VEF& zone_VEF,
   double psc;
   //  double coeff_som=1./(dimension)/(dplusun);
   //coeff_som*=coeff_som;
-  ArrOfDouble gradi(dimension);
-  ArrOfDouble gradj(dimension);
+
+
   int i,j;
   for(i=0; i<dplusun; i++)
     {
@@ -1084,8 +1076,8 @@ update_matrice_NeumannP1P1(const Zone_VEF& zone_VEF,
   double psc;
   //  double coeff_som=1./(dimension)/(dplusun);
   //coeff_som*=coeff_som;
-  ArrOfDouble gradi(dimension);
-  ArrOfDouble gradj(dimension);
+
+
   int nb_som_tot=zone_VEF.nb_som();
   int i,j;
   for(i=0; i<dplusun; i++)
@@ -1138,8 +1130,8 @@ contribuer_matrice_SymetrieP1P1(const Zone_VEF& zone_VEF,
   double psc;
   //  double coeff_som=1./(dimension)/(dplusun);
   //  coeff_som*=coeff_som;
-  ArrOfDouble gradi(dimension);
-  ArrOfDouble gradj(dimension);
+
+
   int i,j;
   for(i=0; i<dplusun; i++)
     {
@@ -1190,8 +1182,8 @@ update_matrice_SymetrieP1P1(const Zone_VEF& zone_VEF,
   double psc;
   //  double coeff_som=1./(dimension)/(dplusun);
   //coeff_som*=coeff_som;
-  ArrOfDouble gradi(dimension);
-  ArrOfDouble gradj(dimension);
+
+
   int nb_som_tot=zone_VEF.nb_som();
   int i,j;
   for(i=0; i<dplusun; i++)
@@ -1239,8 +1231,8 @@ contribuer_matrice_NeumannPaPa(const Zone_VEF_PreP1b& zone_VEF,
   const DoubleTab& normales = zone_VEF.face_normales();
   int i, j, k, l;
   double psc;
-  ArrOfDouble grad1(3);
-  ArrOfDouble grad2(3);
+
+
   for(i=0; i<3; i++)
     {
       int si=sommets[i];
@@ -1256,8 +1248,8 @@ contribuer_matrice_NeumannPaPa(const Zone_VEF_PreP1b& zone_VEF,
                                   elem, -1,
                                   faces_op1[i], -1,
                                   faces_op1[j], -1,
-                                  normales, grad1);
-              diag[arete1]+=dotproduct_array_fois_inverse_quantitee_entrelacee(grad1,grad1,
+                                  normales, gradi);
+              diag[arete1]+=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradi,
                                                                                inverse_quantitee_entrelacee,face);
               int jj=j;
               for(k=i; k<3; k++)
@@ -1276,8 +1268,8 @@ contribuer_matrice_NeumannPaPa(const Zone_VEF_PreP1b& zone_VEF,
                                               elem, -1,
                                               faces_op1[k], -1,
                                               faces_op1[l], -1,
-                                              normales, grad2);
-                          psc=dotproduct_array_fois_inverse_quantitee_entrelacee(grad1,grad2,
+                                              normales, gradj);
+                          psc=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradj,
                                                                                  inverse_quantitee_entrelacee,face);
                           int tmp=arete1;
                           if(arete1>arete2) swap(arete1, arete2);
@@ -1319,8 +1311,8 @@ update_matrice_NeumannPaPa(const Zone_VEF_PreP1b& zone_VEF,
 
   int i, j, k, l;
   double psc;
-  ArrOfDouble grad1(3);
-  ArrOfDouble grad2(3);
+
+
   for(i=0; i<3; i++)
     {
       int si=sommets[i];
@@ -1336,9 +1328,9 @@ update_matrice_NeumannPaPa(const Zone_VEF_PreP1b& zone_VEF,
                                   elem, -1,
                                   faces_op1[i], -1,
                                   faces_op1[j], -1,
-                                  normales, grad1);
+                                  normales, gradi);
               if(arete1<nb_aretes_tot)
-                ARR(arete1,arete1)+=dotproduct_array_fois_inverse_quantitee_entrelacee(grad1,grad1,
+                ARR(arete1,arete1)+=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradi,
                                                                                        inverse_quantitee_entrelacee,face);
               int jj=j;
               for(k=i; k<3; k++)
@@ -1357,8 +1349,8 @@ update_matrice_NeumannPaPa(const Zone_VEF_PreP1b& zone_VEF,
                                               elem, -1,
                                               faces_op1[k], -1,
                                               faces_op1[l], -1,
-                                              normales, grad2);
-                          psc=dotproduct_array_fois_inverse_quantitee_entrelacee(grad1,grad2,
+                                              normales, gradj);
+                          psc=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradj,
                                                                                  inverse_quantitee_entrelacee,face);
                           int tmp=arete1;
                           if(arete1>arete2) swap(arete1, arete2);
@@ -1396,8 +1388,8 @@ contribuer_matrice_SymetriePaPa(const Zone_VEF_PreP1b& zone_VEF,
   const DoubleTab& normales = zone_VEF.face_normales();
   int i, j, k, l;
   double psc;
-  ArrOfDouble grad1(3);
-  ArrOfDouble grad2(3);
+
+
   for(i=0; i<3; i++)
     {
       int si=sommets[i];
@@ -1413,9 +1405,9 @@ contribuer_matrice_SymetriePaPa(const Zone_VEF_PreP1b& zone_VEF,
                                   elem, -1,
                                   faces_op1[i], -1,
                                   faces_op1[j], -1,
-                                  normales, grad1);
-              projette(grad1, face, normales);
-              diag[arete1]+=dotproduct_array_fois_inverse_quantitee_entrelacee(grad1,grad1,
+                                  normales, gradi);
+              projette(gradi, face, normales);
+              diag[arete1]+=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradi,
                                                                                inverse_quantitee_entrelacee,face);
               int jj=j;
               for(k=i; k<3; k++)
@@ -1434,9 +1426,9 @@ contribuer_matrice_SymetriePaPa(const Zone_VEF_PreP1b& zone_VEF,
                                               elem, -1,
                                               faces_op1[k], -1,
                                               faces_op1[l], -1,
-                                              normales, grad2);
-                          projette(grad2, face, normales);
-                          psc=dotproduct_array_fois_inverse_quantitee_entrelacee(grad1,grad2,
+                                              normales, gradj);
+                          projette(gradj, face, normales);
+                          psc=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradj,
                                                                                  inverse_quantitee_entrelacee,face);
                           int tmp=arete1;
                           if(arete1>arete2) swap(arete1, arete2);
@@ -1478,8 +1470,8 @@ update_matrice_SymetriePaPa(const Zone_VEF_PreP1b& zone_VEF,
   int nb_aretes_tot=zone_VEF.zone().nb_aretes();
 
   double psc;
-  ArrOfDouble grad1(3);
-  ArrOfDouble grad2(3);
+
+
   for(i=0; i<3; i++)
     {
       int si=sommets[i];
@@ -1495,10 +1487,10 @@ update_matrice_SymetriePaPa(const Zone_VEF_PreP1b& zone_VEF,
                                   elem, -1,
                                   faces_op1[i], -1,
                                   faces_op1[j], -1,
-                                  normales, grad1);
-              projette(grad1, face, normales);
+                                  normales, gradi);
+              projette(gradi, face, normales);
               if(arete1<nb_aretes_tot)
-                ARR(arete1,arete1)+=dotproduct_array_fois_inverse_quantitee_entrelacee(grad1,grad1,
+                ARR(arete1,arete1)+=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradi,
                                                                                        inverse_quantitee_entrelacee,face);
               int jj=j;
               for(k=i; k<3; k++)
@@ -1517,9 +1509,9 @@ update_matrice_SymetriePaPa(const Zone_VEF_PreP1b& zone_VEF,
                                               elem, -1,
                                               faces_op1[k], -1,
                                               faces_op1[l], -1,
-                                              normales, grad2);
-                          projette(grad2, face, normales);
-                          psc=dotproduct_array_fois_inverse_quantitee_entrelacee(grad1,grad2,
+                                              normales, gradj);
+                          projette(gradj, face, normales);
+                          psc=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradj,
                                                                                  inverse_quantitee_entrelacee,face);
                           int tmp=arete1;
                           if(arete1>arete2) swap(arete1, arete2);
@@ -1559,8 +1551,8 @@ static void contribuer_matriceP0Pa(const Zone_VEF_PreP1b& zone_VEF,
   const DoubleTab& normales = zone_VEF.face_normales();
   int i, j;
   double psc;
-  ArrOfDouble grad1(3);
-  ArrOfDouble grad2(3);
+
+
   int jmax=5;
   if(elem2==-1) jmax=4;
   for(i=0; i<3; i++)
@@ -1582,10 +1574,10 @@ static void contribuer_matriceP0Pa(const Zone_VEF_PreP1b& zone_VEF,
                                   elem1, elem2,
                                   faces_op1[i], faces_op2[i],
                                   faces_op1[j], faces_op2[j],
-                                  normales, grad1);
+                                  normales, gradi);
               psc=0;
               for(int comp=0; comp<3; comp++)
-                psc+=grad1[comp]*normales(face, comp)*
+                psc+=gradi[comp]*normales(face, comp)*
                      (-inverse_quantitee_entrelacee(face,comp));
               int rang=voisins[elem1].rang(arete1);
               if(rang==-1)
@@ -1637,8 +1629,8 @@ static void update_matriceP0Pa(const Zone_VEF_PreP1b& zone_VEF,
 
   int i, j;
   double psc;
-  ArrOfDouble grad1(3);
-  ArrOfDouble grad2(3);
+
+
   int jmax=5;
   if(elem2==-1) jmax=4;
   for(i=0; i<3; i++)
@@ -1660,10 +1652,10 @@ static void update_matriceP0Pa(const Zone_VEF_PreP1b& zone_VEF,
                                   elem1, elem2,
                                   faces_op1[i], faces_op2[i],
                                   faces_op1[j], faces_op2[j],
-                                  normales, grad1);
+                                  normales, gradi);
               psc=0;
               for(int comp=0; comp<3; comp++)
-                psc+=grad1[comp]*normales(face, comp)
+                psc+=gradi[comp]*normales(face, comp)
                      *(-inverse_quantitee_entrelacee(face,comp));
               if(elem1<nb_elem_tot)
                 if(arete1<nb_aretes_tot)
@@ -1710,8 +1702,8 @@ contribuer_matrice_NeumannP0Pa(const Zone_VEF_PreP1b& zone_VEF,
   const DoubleTab& normales = zone_VEF.face_normales();
   int i, j;
   double psc;
-  ArrOfDouble grad1(3);
-  ArrOfDouble grad2(3);
+
+
   for(i=0; i<3; i++)
     {
       int si=sommets[i];
@@ -1727,10 +1719,10 @@ contribuer_matrice_NeumannP0Pa(const Zone_VEF_PreP1b& zone_VEF,
                                   elem, -1,
                                   faces_op1[i], -1,
                                   faces_op1[j], -1,
-                                  normales, grad1);
+                                  normales, gradi);
               psc=0;
               for(int comp=0; comp<3; comp++)
-                psc+=grad1[comp]*normales(face, comp)
+                psc+=gradi[comp]*normales(face, comp)
                      *(-inverse_quantitee_entrelacee(face,comp));
               int rang=voisins[elem].rang(arete1);
               if(rang==-1)
@@ -1767,8 +1759,8 @@ update_matrice_NeumannP0Pa(const Zone_VEF_PreP1b& zone_VEF,
 
   int i, j;
   double psc;
-  ArrOfDouble grad1(3);
-  ArrOfDouble grad2(3);
+
+
   for(i=0; i<3; i++)
     {
       int si=sommets[i];
@@ -1784,10 +1776,10 @@ update_matrice_NeumannP0Pa(const Zone_VEF_PreP1b& zone_VEF,
                                   elem, -1,
                                   faces_op1[i], -1,
                                   faces_op1[j], -1,
-                                  normales, grad1);
+                                  normales, gradi);
               psc=0;
               for(int comp=0; comp<3; comp++)
-                psc+=grad1[comp]*normales(face, comp)
+                psc+=gradi[comp]*normales(face, comp)
                      *(-inverse_quantitee_entrelacee(face,comp));
               if(elem<nb_elem_tot)
                 if(arete1<nb_aretes_tot)
@@ -1823,8 +1815,8 @@ static void contribuer_matriceP1Pa(const Zone_VEF_PreP1b& zone_VEF,
   const DoubleTab& normales = zone_VEF.face_normales();
   int i, j, k;
   double psc;
-  ArrOfDouble grad1(3);
-  ArrOfDouble grad2(3);
+
+
   int jmax=5;
   if(elem2==-1) jmax=4;
   for(i=0; i<3; i++)
@@ -1846,14 +1838,14 @@ static void contribuer_matriceP1Pa(const Zone_VEF_PreP1b& zone_VEF,
                                   elem1, elem2,
                                   faces_op1[i], faces_op2[i],
                                   faces_op1[j], faces_op2[j],
-                                  normales, grad1);
+                                  normales, gradi);
               for(k=0; k<jmax; k++)
                 {
                   int sk=sommets[k];
                   calculer_grad(face_voisins, elem1, elem2, coef_som, sk,
                                 faces_op1[k], faces_op2[k],
-                                normales, grad2);
-                  psc=-dotproduct_array_fois_inverse_quantitee_entrelacee(grad1,grad2,
+                                normales, gradj);
+                  psc=-dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradj,
                                                                           inverse_quantitee_entrelacee,face);
                   int rang1=voisins[sk].rang(arete1);
                   if(rang1==-1)
@@ -1894,8 +1886,8 @@ static void update_matriceP1Pa(const Zone_VEF_PreP1b& zone_VEF,
 
   int i, j, k;
   double psc;
-  ArrOfDouble grad1(3);
-  ArrOfDouble grad2(3);
+
+
   int jmax=5;
   if(elem2==-1) jmax=4;
   for(i=0; i<3; i++)
@@ -1917,14 +1909,14 @@ static void update_matriceP1Pa(const Zone_VEF_PreP1b& zone_VEF,
                                   elem1, elem2,
                                   faces_op1[i], faces_op2[i],
                                   faces_op1[j], faces_op2[j],
-                                  normales, grad1);
+                                  normales, gradi);
               for(k=0; k<jmax; k++)
                 {
                   int sk=sommets[k];
                   calculer_grad(face_voisins, elem1, elem2, coef_som, sk,
                                 faces_op1[k], faces_op2[k],
-                                normales, grad2);
-                  psc=-dotproduct_array_fois_inverse_quantitee_entrelacee(grad1,grad2,
+                                normales, gradj);
+                  psc=-dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradj,
                                                                           inverse_quantitee_entrelacee,face);
                   if(sk<nb_som_tot)
                     if(arete1<nb_aretes_tot)
@@ -1962,8 +1954,8 @@ contribuer_matrice_NeumannP1Pa(const Zone_VEF_PreP1b& zone_VEF,
   const DoubleTab& normales = zone_VEF.face_normales();
   int i, j, k;
   double psc;
-  ArrOfDouble grad1(3);
-  ArrOfDouble grad2(3);
+
+
   for(i=0; i<3; i++)
     {
       int si=sommets[i];
@@ -1979,17 +1971,17 @@ contribuer_matrice_NeumannP1Pa(const Zone_VEF_PreP1b& zone_VEF,
                                   elem, -1,
                                   faces_op1[i], -1,
                                   faces_op1[j], -1,
-                                  normales, grad1);
+                                  normales, gradi);
               for(k=0; k<4; k++)
                 {
                   int sk=sommets[k];
                   calculer_grad(face_voisins, elem, -1, coef_som, sk,
                                 faces_op1[k], -1,
-                                normales, grad2);
+                                normales, gradj);
                   if(faces_op1[k]!=face)
                     for (int comp=0; comp<dimension; comp++)
-                      grad2[comp]+= normales(face,comp)*unsurdim;
-                  psc=-dotproduct_array_fois_inverse_quantitee_entrelacee(grad1,grad2,
+                      gradj[comp]+= normales(face,comp)*unsurdim;
+                  psc=-dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradj,
                                                                           inverse_quantitee_entrelacee,face);
                   int rang1=voisins[sk].rang(arete1);
                   if(rang1==-1)
@@ -2031,8 +2023,8 @@ update_matrice_NeumannP1Pa(const Zone_VEF_PreP1b& zone_VEF,
 
   int i, j, k;
   double psc;
-  ArrOfDouble grad1(3);
-  ArrOfDouble grad2(3);
+
+
   for(i=0; i<3; i++)
     {
       int si=sommets[i];
@@ -2048,17 +2040,17 @@ update_matrice_NeumannP1Pa(const Zone_VEF_PreP1b& zone_VEF,
                                   elem, -1,
                                   faces_op1[i], -1,
                                   faces_op1[j], -1,
-                                  normales, grad1);
+                                  normales, gradi);
               for(k=0; k<4; k++)
                 {
                   int sk=sommets[k];
                   calculer_grad(face_voisins, elem, -1,  coef_som,sk,
                                 faces_op1[k], -1,
-                                normales, grad2);
+                                normales, gradj);
                   if(faces_op1[k]!=face)
                     for (int comp=0; comp<dimension; comp++)
-                      grad2[comp]+= normales(face,comp)*unsurdim;
-                  psc=-dotproduct_array_fois_inverse_quantitee_entrelacee(grad1,grad2,
+                      gradj[comp]+= normales(face,comp)*unsurdim;
+                  psc=-dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradj,
                                                                           inverse_quantitee_entrelacee,face);
                   if(sk<nb_som_tot)
                     if(arete1<nb_aretes_tot)
@@ -2095,8 +2087,8 @@ contribuer_matrice_SymetrieP1Pa(const Zone_VEF_PreP1b& zone_VEF,
   const DoubleTab& normales = zone_VEF.face_normales();
   int i, j, k;
   double psc;
-  ArrOfDouble grad1(3);
-  ArrOfDouble grad2(3);
+
+
   for(i=0; i<3; i++)
     {
       int si=sommets[i];
@@ -2112,16 +2104,16 @@ contribuer_matrice_SymetrieP1Pa(const Zone_VEF_PreP1b& zone_VEF,
                                   elem, -1,
                                   faces_op1[i], -1,
                                   faces_op1[j], -1,
-                                  normales, grad1);
-              projette(grad1, face, normales);
+                                  normales, gradi);
+              projette(gradi, face, normales);
               for(k=0; k<4; k++)
                 {
                   int sk=sommets[k];
                   calculer_grad(face_voisins, elem, -1, coef_som, sk,
                                 faces_op1[k], -1,
-                                normales, grad2);
-                  projette(grad2, face, normales);
-                  psc=-dotproduct_array_fois_inverse_quantitee_entrelacee(grad1,grad2,
+                                normales, gradj);
+                  projette(gradj, face, normales);
+                  psc=-dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradj,
                                                                           inverse_quantitee_entrelacee,face);
                   int rang1=voisins[sk].rang(arete1);
                   if(rang1==-1)
@@ -2162,8 +2154,8 @@ update_matrice_SymetrieP1Pa(const Zone_VEF_PreP1b& zone_VEF,
 
   int i, j, k;
   double psc;
-  ArrOfDouble grad1(3);
-  ArrOfDouble grad2(3);
+
+
   for(i=0; i<3; i++)
     {
       int si=sommets[i];
@@ -2179,16 +2171,16 @@ update_matrice_SymetrieP1Pa(const Zone_VEF_PreP1b& zone_VEF,
                                   elem, -1,
                                   faces_op1[i], -1,
                                   faces_op1[j], -1,
-                                  normales, grad1);
-              projette(grad1, face, normales);
+                                  normales, gradi);
+              projette(gradi, face, normales);
               for(k=0; k<4; k++)
                 {
                   int sk=sommets[k];
                   calculer_grad(face_voisins, elem, -1,  coef_som,sk,
                                 faces_op1[k], -1,
-                                normales, grad2);
-                  projette(grad2, face, normales);
-                  psc=-dotproduct_array_fois_inverse_quantitee_entrelacee(grad1,grad2,
+                                normales, gradj);
+                  projette(gradj, face, normales);
+                  psc=-dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradj,
                                                                           inverse_quantitee_entrelacee,face);
                   if(sk<nb_som_tot)
                     if(arete1<nb_aretes_tot)
