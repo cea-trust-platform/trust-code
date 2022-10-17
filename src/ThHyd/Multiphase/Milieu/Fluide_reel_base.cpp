@@ -104,6 +104,7 @@ int Fluide_reel_base::initialiser(const double temps)
   beta_th.initialiser(temps);
   rho_cp_comme_T_.initialiser(temps);
   t_init_ = temps;
+  if (is_incompressible()) mettre_a_jour(temps); // ne depend pas de p et T : on peut terminer l'initialisation
   if (id_composite == -1) Milieu_base::initialiser_porosite(temps);
   if (id_composite < 0 && g.non_nul()) g->initialiser(temps);
   return 1;
