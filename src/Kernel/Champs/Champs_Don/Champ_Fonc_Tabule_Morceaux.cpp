@@ -107,7 +107,7 @@ Entree& Champ_Fonc_Tabule_Morceaux::readOn(Entree& is)
   return is;
 }
 
-int Champ_Fonc_Tabule_Morceaux::initialiser(const double temps)
+int Champ_Fonc_Tabule_Morceaux::initialiser(const double tps)
 {
   /* remplissage de ch_param (pointeurs vers les champs) et des i_ch (champs utilises par chaque morceau) */
   std::vector<std::array<std::string, 2>> v_pb_ch(s_pb_ch.begin(), s_pb_ch.end()); //set -> vector
@@ -120,7 +120,7 @@ int Champ_Fonc_Tabule_Morceaux::initialiser(const double temps)
   m_pb_ch.clear();
   s_pb_ch.clear();
 
-  return TRUSTChamp_Morceaux_generique<Champ_Morceaux_Type::FONC_TABULE>::initialiser(temps);
+  return TRUSTChamp_Morceaux_generique<Champ_Morceaux_Type::FONC_TABULE>::initialiser(tps);
 }
 
 void Champ_Fonc_Tabule_Morceaux::mettre_a_jour(double time)
