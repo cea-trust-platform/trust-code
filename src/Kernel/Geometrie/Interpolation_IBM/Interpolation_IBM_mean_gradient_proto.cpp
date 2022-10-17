@@ -146,7 +146,7 @@ void Interpolation_IBM_mean_gradient_proto::computeSommetsVoisins(Zone_dis_base&
                       //    considere (on interpole; on n'extrapole pas; critere de
                       //    distance : d1 = 2.0^2 fois d2)
                       // *) le point fluide voisin appartienne a au moins un element totalement fluide
-                      if (is_dirichlet(num_som_2) < 0.0 && d > 0.0 && (4.0*d2) < d1 && is_node_voisin_elem_fluide(num_som_2) == 1.0)
+                      if (is_dirichlet(num_som_2) < 0.0 && d > 0.0 && (3.0*d2) < d1 && is_node_voisin_elem_fluide(num_som_2) == 1.0)
                         {
                           // Element contenant le projete du point fluide
                           int elems_xpf = (int)lrint(elems_solid_ref(num_som_2));
