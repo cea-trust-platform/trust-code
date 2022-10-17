@@ -1477,7 +1477,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl_u_star()
             }
           norme_de_la_normaleP = sqrt(norme_de_la_normaleP);
           d1P = norme_de_la_normaleP;
-          for(int j = 0; j < nb_comp; j++) normaleP(0,j) /= norme_de_la_normaleP;
+          if (d1P > eps) for(int j = 0; j < nb_comp; j++) normaleP(0,j) /= norme_de_la_normaleP; else normaleP(0,j) = 0.;
 
           cells(0) = int(solid_elems(i)); //pour definir la viscosite laminaire
           double nu = (flag ? opdiffu.diffusivite().valeurs()(cells) : opdiffu.diffusivite().valeurs()(0,0));
@@ -1552,7 +1552,8 @@ void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl_u_star()
                             }
 
                           // On moyenne les vecteurs vitesses de frottement tangents (vis a vis de P) par l'inverse des distances
-                          if (norme_vtf_k > eps && itisok)
+                          if (norme_vtf_k < eps) itisok = 0;
+                          if (itisok)
                             {
                               for(int j = 0; j < nb_comp; j++) mean_u_tau_neighbour(0,j) += (u_tau_ref * vtf_k(0, j) / norme_vtf_k) * ponderation_k;
                               pond_tot += ponderation_k;
@@ -1580,16 +1581,15 @@ void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl_u_star()
                       for(int j = 0; j < nb_comp; j++) u_tau += mean_u_tau_neighbour(0,j) * mean_u_tau_neighbour(0,j);
                       u_tau = sqrt(u_tau); // u_tau = norme de u_tau moyen vectoriel
                       y_plus = u_tau * d1P / nu;
+		      if (u_tau > eps) mean_u_tau_neighbour /= u_tau; else mean_u_tau_neighbour = 0. ;// tangente en P
                       if (y_plus > y_c_p_pwl ) // loi polynomiale
                         {
-                          if (u_tau > eps) mean_u_tau_neighbour /= u_tau;
-                          else mean_u_tau_neighbour = 0. ;// tangente en P
                           double vit_coeff = A_pwl * pow (d1P, B_pwl) / pow (nu, B_pwl);
                           for (int j = 0; j < nb_comp; j++) vitesse_imposee_calculee(i,j) = pow (u_tau, (1+B_pwl)) * vit_coeff * mean_u_tau_neighbour(0,j);
                         }
                       else // loi lineaire
                         {
-                          for (int j = 0; j < nb_comp; j++) vitesse_imposee_calculee(i,j) = d1P * u_tau * u_tau / nu;
+                          for (int j = 0; j < nb_comp; j++) vitesse_imposee_calculee(i,j) = (d1P * u_tau * u_tau / nu) * mean_u_tau_neighbour(0,j);
                         }
                     }
                   // il n y a pas de contribution des dof voisins
