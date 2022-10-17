@@ -2,7 +2,7 @@
 Release notes version 1.9.1_beta : Enhancements, modifications and corrected bugs since version 1.9.0 :
 --------------------------------------------------------------------------------------------------
 17/10/22 (TRUST)  Syntax      : Previous 'diametre_hyd_champ' interpret is no more available. It is now read as part of the medium.
-17/10/22 (TRUST)  Syntax      : Champ_Fonc_MED/Champ_Fonc_MED_tabule has a new syntax using { } and key/value pairs. See reference manual. Old syntax supported until 1.9.3.
+17/10/22 (TRUST)  Syntax      : Champ_Fonc_MED* keywords have a new syntax using { } and key/value pairs. See reference manual. Old syntax supported until 1.9.3.
 13/10/22 (TRUST)  Syntax      : Read_MED/Lire_MED has a new syntax using { } and key/value pairs. See reference manual. Old syntax supported until 1.9.3.
 12/10/22 (TRUST)  Change      : Lata_V1 is not supported anymore. Only Lata_V2 (option 'lata') remains. Domain and Zone postprocessing in Lata_V2.
 30/09/22 (TRUST)  New feature : Champ_Input_P0_Composite is now available and can be used to initialize the input field before starting the time scheme.

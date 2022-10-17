@@ -19,14 +19,12 @@
 #include <Champ_Fonc_MED.h>
 #include <Table.h>
 
+class Param;
+
 /*! @brief : class Champ_Fonc_MED_Table_Temps
  *
  *  <Description of class Champ_Fonc_MED_Table_Temps>
- *
- *
- *
  */
-
 class Champ_Fonc_MED_Table_Temps : public Champ_Fonc_MED
 {
 
@@ -39,6 +37,8 @@ public :
 
   void lire(double tps,int given_iteration=-1) override;
 protected :
+
+  void set_param(Param& param) override;
 
   inline virtual const Champ_Fonc_base& le_champ0() const;
   inline virtual Champ_Fonc_base& le_champ0();

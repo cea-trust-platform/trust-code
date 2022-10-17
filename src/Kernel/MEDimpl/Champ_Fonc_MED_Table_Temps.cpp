@@ -15,6 +15,7 @@
 
 #include <Champ_Fonc_MED_Table_Temps.h>
 #include <Lecture_Table.h>
+#include <Param.h>
 #ifdef MEDCOUPLING_
 #include <MEDLoader.hxx>
 #include <MEDCouplingFieldDouble.hxx>
@@ -34,6 +35,13 @@ Sortie& Champ_Fonc_MED_Table_Temps::printOn( Sortie& os ) const
   Champ_Fonc_MED::printOn( os );
   return os;
 }
+
+void Champ_Fonc_MED_Table_Temps::set_param(Param& param)
+{
+  param.ajouter("table_temps",&la_table,Param::REQUIRED);
+  Champ_Fonc_MED::set_param(param);
+}
+
 
 Entree& Champ_Fonc_MED_Table_Temps::readOn( Entree& is )
 {

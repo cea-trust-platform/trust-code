@@ -23,6 +23,7 @@
 #include <Champ_Fonc.h>
 #include <Zone_VF_inst.h>
 #include <TRUSTArray.h>
+#include <Param.h>
 #include <med++.h>
 #include <medcoupling++.h>
 #ifdef MEDCOUPLING_
@@ -88,12 +89,20 @@ public :
 
 
 protected:
+  // Parameters read in the dataset:
+  Nom nom_fichier_med_;
+  Nom nom_champ_, nom_decoup_, nom_dom_;
+  Motcle loc_;
+  int use_existing_domain_=0;
+  double temps_;
+  int last_time_only_=0;
+
+  // Other:
   REF(Domaine) mon_dom;
   Domaine dom_med_;
   Zone_VF_inst zonebidon_inst;
   int numero_ch;
   int nb_dt;
-  Nom nom_fichier_med_;
 #ifdef MED_
   med_entity_type type_ent;
   med_geometry_type type_geo;
@@ -107,8 +116,10 @@ protected:
   Nom nom_champ_dans_fichier_med_;
   ArrOfInt filter;
   ArrOfDouble temps_sauv_;
-  int last_time_only_;
   bool use_medcoupling_;
+
+  virtual void set_param(Param& param);
+  void readOn_old_syntax(Entree& is, Nom& chaine_lue, bool& nom_decoup_lu);
 };
 
 inline void Champ_Fonc_MED::associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base)
