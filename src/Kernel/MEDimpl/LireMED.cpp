@@ -114,7 +114,7 @@ void interp_old_syntax(Entree& is, int& isvefforce, int& convertAllToPoly, int& 
   Cerr << "!!!!!!! See documentation for a comprehensive list of possible options." << finl;
   Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
 
-  // Warning, in the old syntax, this is set to 0:
+  // Warning, in the old syntax, this is set to 0 by default:
   isfamilyshort = 0;
 
   if (Motcle(nom_dom_trio)=="vef")
@@ -147,9 +147,9 @@ void interp_old_syntax(Entree& is, int& isvefforce, int& convertAllToPoly, int& 
 // XD Read_MED interprete lire_med -1 Keyword to read MED mesh files where 'domain' corresponds to the domain name, 'file' corresponds to the file (written in the MED format) containing the mesh named mesh_name. NL2 Note about naming boundaries: When reading 'file', TRUST will detect boundaries between domains (Raccord) when the name of the boundary begins by type_raccord_. For example, a boundary named type_raccord_wall in 'file' will be considered by TRUST as a boundary named 'wall' between two domains. NL2 NB: To read several domains from a mesh issued from a MED file, use Read_Med to read the mesh then use Create_domain_from_sous_zone keyword. NL2 NB: If the MED file contains one or several subzone defined as a group of volumes, then Read_MED will read it and will create two files domain_name_ssz.geo and domain_name_ssz_par.geo defining the subzones for sequential and/or parallel calculations. These subzones will be read in sequential in the datafile by including (after Read_Med keyword) something like: NL2 Read_Med .... NL2 Read_file domain_name_ssz.geo ; NL2 During the parallel calculation, you will include something: NL2 Scatter { ... } NL2 Read_file domain_name_ssz_par.geo ;
 Entree& LireMED::interpreter_(Entree& is)
 {
-  int isvefforce=-1;
-  int convertAllToPoly=-1;
-  int isfamilyshort=-1;
+  int isvefforce=0;
+  int convertAllToPoly=0;
+  int isfamilyshort=0;
   Nom nom_dom_trio,nom_mesh("--any--"), nom_fic;
 
   is >> nom_dom_trio;
@@ -165,7 +165,7 @@ Entree& LireMED::interpreter_(Entree& is)
           if (motlu == "}") cnt --;
           s += Nom(" ") + motlu;
         }
-      int nfnfgn = -1;
+      int nfnfgn = 0;
       Param param(que_suis_je());
       param.ajouter_flag("convertAllToPoly", &convertAllToPoly); // XD attr convertAllToPoly chaine(into=["convertAllToPoly"]) convertAllToPoly 1 Option to convert mesh with mixed cells into polyhedras/polygons cells
 
