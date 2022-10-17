@@ -1493,8 +1493,11 @@ void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl_u_star()
               if (!(voisins.est_vide()))
                 // il y a une liste de dof voisins
                 {
+                  double u_tau_ref;
+                  double y_plus_ref;
                   DoubleTab mean_u_tau_neighbour(1, nb_comp); // moyenne de u_tau vectoriel sur les dof voisins
                   mean_u_tau_neighbour = 0.0;
+                  double mean_y_plus_neighbour = 0.; // moyenne de y_plus sur les dof voisins
                   int taille = voisins.size();
                   // nb_vois(i) = taille * 1.0 ;
                   double pond_tot = 0.;
@@ -1528,8 +1531,8 @@ void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl_u_star()
                       else
                         ponderation_k = 1./eps;
 
-                      double u_tau_ref = 0.;
-                      double y_plus_ref = 0.;
+                      u_tau_ref = 0.;
+                      y_plus_ref = 0.;
                       if (itisok)
                         {
                           // normale et tangente vitesse vis a vis de normalP
@@ -1558,6 +1561,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl_u_star()
                           if (itisok)
                             {
                               for(int j = 0; j < nb_comp; j++) mean_u_tau_neighbour(0,j) += (u_tau_ref * vtf_k(0, j) / norme_vtf_k) * ponderation_k;
+                              mean_y_plus_neighbour += y_plus_ref * ponderation_k;
                               pond_tot += ponderation_k;
                             }
                         }
@@ -1579,6 +1583,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl_u_star()
                   if (pond_tot > 0.)
                     {
                       mean_u_tau_neighbour /= pond_tot; // u_tau moyen vectoriel
+                      mean_y_plus_neighbour /= pond_tot; // y_plus moyen
                       u_tau = 0. ;
                       for(int j = 0; j < nb_comp; j++) u_tau += mean_u_tau_neighbour(0,j) * mean_u_tau_neighbour(0,j);
                       u_tau = sqrt(u_tau); // u_tau = norme de u_tau moyen vectoriel
@@ -1587,12 +1592,20 @@ void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl_u_star()
                       else mean_u_tau_neighbour = 0. ;// tangente en P
                       if (y_plus > y_c_p_pwl ) // loi polynomiale
                         {
-                          double vit_coeff = A_pwl * pow (d1P, B_pwl) / pow (nu, B_pwl);
-                          for (int j = 0; j < nb_comp; j++) vitesse_imposee_calculee(i,j) = pow (u_tau, (1+B_pwl)) * vit_coeff * mean_u_tau_neighbour(0,j);
+                          if (mean_y_plus_neighbour > y_c_p_pwl ) // coherence loi polynomiale
+                            {
+                              double vit_coeff = A_pwl * pow (d1P, B_pwl) / pow (nu, B_pwl);
+                              for (int j = 0; j < nb_comp; j++) vitesse_imposee_calculee(i,j) = pow (u_tau, (1+B_pwl)) * vit_coeff * mean_u_tau_neighbour(0,j);
+                            }
+                          else itisok_P = 0; // non coherence loi polynomiale
                         }
                       else // loi lineaire
                         {
-                          for (int j = 0; j < nb_comp; j++) vitesse_imposee_calculee(i,j) = (d1P * u_tau * u_tau / nu) * mean_u_tau_neighbour(0,j);
+                          if (mean_y_plus_neighbour < y_c_p_pwl ) // coherence loi lineaire
+                            {
+                              for (int j = 0; j < nb_comp; j++) vitesse_imposee_calculee(i,j) = (d1P * u_tau * u_tau / nu) * mean_u_tau_neighbour(0,j);
+                            }
+                          else itisok_P = 0; // non coherence loi lineaire
                         }
                     }
                   // il n y a pas de contribution des dof voisins
