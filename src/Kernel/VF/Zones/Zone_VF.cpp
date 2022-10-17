@@ -371,24 +371,6 @@ int Zone_VF::numero_face_local(int face, int elem) const
   return -1;
 }
 
-// remplissage des coefficients d'echange_thermique
-void Zone_VF::calculer_coefficient_echange_thermique()
-{
-  // coefficient d'echange_thermique a 0
-  int nbfaces = xv_.dimension(0);
-  coefficient_echange_thermique_.resize(nbfaces);
-  coefficient_echange_thermique_ = 0;
-}
-
-// remplissage des coefficient de frottement
-void Zone_VF::calculer_coefficient_frottement()
-{
-  // coefficient de frottement a 0
-  int nbfaces = xv_.dimension(0);
-  coefficient_frottement_.resize(nbfaces);
-  coefficient_frottement_= 0;
-}
-
 /*! @brief Remplissage du tableau face_virt_pe_num_ (voir commentaire dans Zone_VF.
  *
  * h)

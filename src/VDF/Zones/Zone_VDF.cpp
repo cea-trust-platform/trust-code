@@ -284,8 +284,6 @@ void Zone_VDF::discretiser()
   }
 
   calculer_volumes_entrelaces();
-  Zone_VF::calculer_coefficient_echange_thermique();
-  Zone_VF::calculer_coefficient_frottement();
   genere_aretes();
   calcul_h();
   Cerr << "L'objet de type Zone_VDF a ete rempli avec succes " << finl;
