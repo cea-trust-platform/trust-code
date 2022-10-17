@@ -470,7 +470,10 @@ class Show(object):
         """
         from ..jupyter.run import BUILD_DIRECTORY
 
+        import re
         name = self.name.replace("/", "_")
+        name = name.replace("(", "_")
+        name = name.replace(")", "_")
         with open(visitTmpFile_(), "a") as f:
             f.write("# on retire le nom du user sur les images \n")
             f.write("annotation=GetAnnotationAttributes()\nannotation.SetUserInfoFlag(0)\nSetAnnotationAttributes(annotation)\n")
@@ -485,8 +488,14 @@ class Show(object):
         origin = os.getcwd()
         os.chdir(BUILD_DIRECTORY)
         outp = subprocess.run("visit -nowin -cli -s %s 1>> visit.log 2>&1" % visitTmpFile_(justFile=True), shell=True)
-        os.chdir(origin)
-        if outp.returncode != 0:
+
+        pattern = os.path.join(os.getcwd(), self.fichier.split("./")[-1] + name + str(self.time) + "_\d\d\d\d.png")
+        error = 0
+        for top, dirs, files in os.walk(os.getcwd()):
+            for file in files:
+                if (re.search(pattern,os.path.join(top,file))):
+                    error+=1
+        if error==0:
             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             print("VisIt execution error!! See tail of the VisIt output below.")
             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
@@ -494,9 +503,8 @@ class Show(object):
             self._dumpLogTail()
         if self.visitLog:
             self._dumpLogTail()
-
-    #         else   :
-    #             os.system("visit -nowin -cli -s  tmp.py") # Faire sa independante de cette methode
+        
+        os.chdir(origin)
 
     def coordonee(self):
         """
@@ -535,6 +543,8 @@ class Show(object):
         from ..jupyter.run import BUILD_DIRECTORY
 
         name = self.name.replace("/", "_")
+        name = name.replace("(", "_")
+        name = name.replace(")", "_")
         fName = self.fichier + name + str(self.time)  # +"_0000.png"
         from glob import glob
 
