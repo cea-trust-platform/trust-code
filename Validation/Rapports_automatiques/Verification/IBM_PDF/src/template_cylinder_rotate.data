@@ -101,8 +101,16 @@ Navier_Stokes_standard
         {
             Source_PDF
             {
-                aire Champ_Fonc_MED last_time ../MESHES_CYLINDER/res_domain_mesh_160_exact.med domain_mesh aire elem 0.
-                rotation Champ_Fonc_MED last_time ../MESHES_CYLINDER/res_domain_mesh_160_exact.med domain_mesh rotation elem 0.
+                aire Champ_Fonc_MED { domain domain_mesh 
+                                      file ../MESHES_CYLINDER/res_domain_mesh_160_exact.med 
+                                      field aire 
+                                      last_time 
+                                      }
+                rotation Champ_Fonc_MED { domain domain_mesh 
+                                          file ../MESHES_CYLINDER/res_domain_mesh_160_exact.med 
+                                          field rotation 
+                                          last_time 
+                                          }
                 modele
                 {
                     eta 1.E-12
@@ -111,12 +119,46 @@ Navier_Stokes_standard
                 }
                 interpolation @INTERP_TYPE@
                 {
-                    @EST_DIRICHLET@ est_dirichlet Champ_Fonc_MED last_time ../MESHES_CYLINDER/res_domain_mesh_160_exact.med domain_mesh is_node_dirichlet som 0. @EST_DIRICHLET@
-                    @POINTS_FLUIDES@ points_fluides Champ_Fonc_MED last_time ../MESHES_CYLINDER/res_domain_mesh_160_exact.med domain_mesh projection_Fluid som 0. @POINTS_FLUIDES@
-                    @POINTS_SOLIDES@ points_solides Champ_Fonc_MED last_time ../MESHES_CYLINDER/res_domain_mesh_160_exact.med domain_mesh projection_Solid som 0. @POINTS_SOLIDES@
-                    @ELEMENTS_FLUIDES@ elements_fluides Champ_Fonc_MED last_time ../MESHES_CYLINDER/res_domain_mesh_160_exact.med domain_mesh fl_elem_number som 0. @ELEMENTS_FLUIDES@
-                    @ELEMENTS_SOLIDES@ elements_solides Champ_Fonc_MED last_time ../MESHES_CYLINDER/res_domain_mesh_160_exact.med domain_mesh so_elem_number som 0. @ELEMENTS_SOLIDES@
-                    correspondance_elements Champ_Fonc_MED last_time ../MESHES_CYLINDER/res_domain_mesh_160_exact.med domain_mesh TRUST_SALOME_correspondance elem 0.
+                    @EST_DIRICHLET@ est_dirichlet Champ_Fonc_MED { domain domain_mesh 
+                                                                   file ../MESHES_CYLINDER/res_domain_mesh_160_exact.med 
+                                                                   field is_node_dirichlet 
+                                                                   loc som 
+                                                                   last_time 
+                                                                   }
+@EST_DIRICHLET@
+                    @POINTS_FLUIDES@ points_fluides Champ_Fonc_MED { domain domain_mesh 
+                                                                     file ../MESHES_CYLINDER/res_domain_mesh_160_exact.med 
+                                                                     field projection_Fluid 
+                                                                     loc som 
+                                                                     last_time 
+                                                                     }
+@POINTS_FLUIDES@
+                    @POINTS_SOLIDES@ points_solides Champ_Fonc_MED { domain domain_mesh 
+                                                                     file ../MESHES_CYLINDER/res_domain_mesh_160_exact.med 
+                                                                     field projection_Solid 
+                                                                     loc som 
+                                                                     last_time 
+                                                                     }
+@POINTS_SOLIDES@
+                    @ELEMENTS_FLUIDES@ elements_fluides Champ_Fonc_MED { domain domain_mesh 
+                                                                         file ../MESHES_CYLINDER/res_domain_mesh_160_exact.med 
+                                                                         field fl_elem_number 
+                                                                         loc som 
+                                                                         last_time 
+                                                                         }
+@ELEMENTS_FLUIDES@
+                    @ELEMENTS_SOLIDES@ elements_solides Champ_Fonc_MED { domain domain_mesh 
+                                                                         file ../MESHES_CYLINDER/res_domain_mesh_160_exact.med 
+                                                                         field so_elem_number 
+                                                                         loc som 
+                                                                         last_time 
+                                                                         }
+@ELEMENTS_SOLIDES@
+                    correspondance_elements Champ_Fonc_MED { domain domain_mesh 
+                                                             file ../MESHES_CYLINDER/res_domain_mesh_160_exact.med 
+                                                             field TRUST_SALOME_correspondance 
+                                                             last_time 
+                                                             }
                 }
             }
         }

@@ -1,13 +1,20 @@
 # differents tests de lecture de champ MED #
 # PARALLEL OK #
 dimension 2
-
 # lecture du champ par le temps #
-champ_Fonc_med ch
-Read ch cInit_tDiffu.med Face concentrationInitialeC1 elem  0.
+Champ_Fonc_MED ch
+read ch { domain Face 
+                 file cInit_tDiffu.med 
+                 field concentrationInitialeC1 
+                 time 0. 
+                 }
 # lecture du champ par numero de pas de temps (ici 1 ) #
-champ_Fonc_med ch2
-Read ch2 cInit_tDiffu.med Face concentrationInitialeC1 elem  -1
+Champ_Fonc_MED ch2
+read ch2 { domain Face 
+                 file cInit_tDiffu.med 
+                 field concentrationInitialeC1 
+                 time -1 
+                 }
 
 domaine dom
 domaine dom2
@@ -105,7 +112,11 @@ Solide
     {
         diffusion { negligeable }
         initial_conditions {
-            temperature   Champ_Fonc_MED last_time cInit_tDiffu.med Face concentrationInitialeC1 elem  1000.
+            temperature   Champ_Fonc_MED { domain Face 
+                                           file cInit_tDiffu.med 
+                                           field concentrationInitialeC1 
+                                           last_time 
+                                           }
         }
         boundary_conditions {
             FAM_-4_GAUCHE  paroi_adiabatique

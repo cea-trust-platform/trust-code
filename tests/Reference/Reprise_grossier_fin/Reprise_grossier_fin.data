@@ -54,7 +54,12 @@ Navier_Stokes_standard
         convection { Amont }
         diffusion { }
         initial_conditions {
-            vitesse Champ_fonc_med last_time grossier.med dom vitesse som 0.
+            vitesse Champ_Fonc_MED { domain dom 
+                                     file grossier.med 
+                                     field vitesse 
+                                     loc som 
+                                     last_time 
+                                     }
         }
         boundary_conditions {
             Haut1 Paroi_Fixe

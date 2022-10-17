@@ -103,8 +103,16 @@ Navier_Stokes_standard
         {
             Source_PDF
             {
-                aire Champ_Fonc_MED last_time res_domain_mesh_40_cyl_mesh_250fact12.med domain_mesh aire elem 0.
-                rotation Champ_Fonc_MED last_time res_domain_mesh_40_cyl_mesh_250fact12.med domain_mesh rotation elem 0.
+                aire Champ_Fonc_MED { domain domain_mesh 
+                                      file res_domain_mesh_40_cyl_mesh_250fact12.med 
+                                      field aire 
+                                      last_time 
+                                      }
+                rotation Champ_Fonc_MED { domain domain_mesh 
+                                          file res_domain_mesh_40_cyl_mesh_250fact12.med 
+                                          field rotation 
+                                          last_time 
+                                          }
                 modele
                 {
                     eta 1.E-12

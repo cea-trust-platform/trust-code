@@ -40,7 +40,11 @@ read pb
 solide {
      rho champ_uniforme 1 1.0
     /* You can use champ_fonc_xyz, but here its just an illustration of med coupling */
-    lambda champ_fonc_med last_time conduc2d_aniso.med Mesh_1 CONDUCTIVITY_ELEM_dom elem 0
+    lambda Champ_Fonc_MED { domain Mesh_1 
+                            file conduc2d_aniso.med 
+                            field CONDUCTIVITY_ELEM_dom 
+                            last_time 
+                            }
     Cp champ_uniforme 1 1.0
 }
 

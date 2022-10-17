@@ -53,9 +53,19 @@ Navier_Stokes_standard
         boundary_conditions {
             Wall   paroi_fixe
             Outlet frontiere_ouverte_pression_imposee Champ_front_MED
-            Champ_fonc_MED use_existing_domain fields.med dom pression elem 0.
+            Champ_Fonc_MED { domain dom 
+                             file fields.med 
+                             field pression 
+                             use_existing_domain 
+                             time 0. 
+                             }
             Inlet  frontiere_ouverte_vitesse_imposee Champ_front_MED
-            Champ_fonc_MED_Tabule use_existing_domain fields.med dom vitesse elem -1
+            Champ_Fonc_MED_tabule { domain dom 
+                                    file fields.med 
+                                    field vitesse 
+                                    use_existing_domain 
+                                    time -1 
+                                    }
         }
     }
     Post_processing

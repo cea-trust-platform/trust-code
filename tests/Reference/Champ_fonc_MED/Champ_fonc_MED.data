@@ -82,7 +82,12 @@ Navier_Stokes_standard
         diffusion { }
         sources { boussinesq_temperature { T0 5.*(1+t) } }
         initial_conditions {
-            vitesse Champ_Fonc_MED last_time prepare.med dom vitesse ELEM 0
+            vitesse Champ_Fonc_MED { domain dom 
+                                     file prepare.med 
+                                     field vitesse 
+                                     loc ELEM 
+                                     last_time 
+                                     }
         }
         boundary_conditions {
             Haut paroi_fixe
@@ -102,7 +107,12 @@ Navier_Stokes_standard
             Gauche Paroi_temperature_imposee Champ_Front_Uniforme 1 10.
             Droit Paroi_temperature_imposee Champ_Front_Uniforme 1 0
         }
-        initial_conditions { Temperature Champ_Fonc_MED last_time prepare.med dom temperature elem 0 }
+        initial_conditions { Temperature Champ_Fonc_MED { domain dom 
+                                                          file prepare.med 
+                                                          field temperature 
+                                                          last_time 
+                                                          }
+}
     }
 
     Post_processings
@@ -116,7 +126,9 @@ Navier_Stokes_standard
                 sonde_vit vitesse periode 0.01 segment 11 0.0005 0. 0.0005 0.01
                 sonde_temp temperature periode 0.01 segment 21 0. 0.0055 0.01 0.0055
             }
-            fichier Champ_fonc_MED format lml fields dt_post 0.01
+            fichier Champ_fonc_MED 
+            format lml 
+            fields dt_post 0.01
             {
                 pression elem
                 pression som
@@ -127,7 +139,9 @@ Navier_Stokes_standard
         }
         lata
         {
-            fichier Champ_fonc_MED format lata fields dt_post 0.01
+            fichier Champ_fonc_MED 
+            format lata 
+            fields dt_post 0.01
             {
                 vitesse elem
                 temperature elem

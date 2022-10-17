@@ -73,7 +73,12 @@ Conduction
         diffusion { }
         initial_conditions {
             # temperature Champ_Uniforme_morceaux dom 1 { defaut 1.0e10 left_elem 20.0 right_elem 10.0 } #
-            temperature Champ_Fonc_med domain.med med_domain T_init som 0.0
+            temperature Champ_Fonc_MED { domain med_domain 
+                                         file domain.med 
+                                         field T_init 
+                                         loc som 
+                                         time 0.0 
+                                         }
             # temperature Champ_Fonc_xyz dom 1 (x<0.0)*5.0+(x<0.0001)*5.0+10.0 #
         }
         boundary_conditions {

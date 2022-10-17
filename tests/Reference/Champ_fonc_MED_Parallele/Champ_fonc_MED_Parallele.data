@@ -48,7 +48,12 @@ Navier_Stokes_standard
         diffusion { }
         sources { boussinesq_temperature { T0 5. } }
         initial_conditions {
-            vitesse Champ_Fonc_MED last_time multiple_files.med dom vitesse som 0
+            vitesse Champ_Fonc_MED { domain dom 
+                                     file multiple_files.med 
+                                     field vitesse 
+                                     loc som 
+                                     last_time 
+                                     }
         }
         boundary_conditions {
             Haut paroi_fixe
@@ -68,7 +73,13 @@ Navier_Stokes_standard
             Gauche paroi_temperature_imposee Champ_Front_Uniforme 1 10.
             Droit  paroi_temperature_imposee Champ_Front_Uniforme 1 0.
         }
-        initial_conditions { Temperature Champ_Fonc_MED last_time multiple_files.med dom temperature som 0 }
+        initial_conditions { Temperature Champ_Fonc_MED { domain dom 
+                                                          file multiple_files.med 
+                                                          field temperature 
+                                                          loc som 
+                                                          last_time 
+                                                          }
+}
     }
     Post_processings
     {

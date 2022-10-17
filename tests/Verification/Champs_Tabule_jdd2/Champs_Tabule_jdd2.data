@@ -75,7 +75,7 @@ Conduction
             Gauche paroi_adiabatique
         }
         Sources {
-            puissance_thermique champ_fonc_med_tabule use_existing_domain Puissance.med dom PUISSANCE_VOLUMIQUE elem -1000.
+            puissance_thermique champ_fonc_med_tabule { use_existing_domain file Puissance.med domain dom  field PUISSANCE_VOLUMIQUE time -1000. }
         }
     }
 
