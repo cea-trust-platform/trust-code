@@ -1,0 +1,80 @@
+# Hydraulique 2D laminaire avec "trou" dans le maillage #
+# PARALLEL OK #
+dimension 3
+Pb_melange pb
+Domaine dom
+EcritureLectureSpecial 1
+Domaine MAILLAGE_GENEPI
+Lire_MED { 
+   domain MAILLAGE_GENEPI 
+   file maigro.med 
+}
+# DEBUT MAILLAGE #
+
+Lire_MED { 
+   domain dom 
+   file tface.med 
+}
+discretiser_domaine dom
+
+regroupebord dom Wall { WALL_01 }
+regroupebord dom Entree_branche_chaude { INLET_03 }
+regroupebord dom Entree_branche_froide { INLET_02 }
+regroupebord dom Sortie { OUTLET_04 }
+
+# FIN MAILLAGE #
+#  lire_fichier dom clo.geom  #
+# DEBUT DECOUPAGE
+
+Decouper dom
+{
+	/* on coupe dans ce sens pour tester le // du champ debit */
+	Partitionneur tranche { tranches 4 1  1 }
+	Larg_joint 1
+	Nom_Zones DOM
+}
+Fin
+FIN DECOUPAGE #
+
+# DEBUT LECTURE
+Scatter DOM.Zones dom
+FIN LECTURE #
+
+EF dis
+
+champ_fonc_med ch_toto
+Schema_Euler_explicite sch
+Lire sch
+{
+        tinit 0
+	nb_pas_dt_max 1
+        dt_min 5.e-9
+        dt_impr 5.e-1
+        dt_sauv 1
+        seuil_statio 1.e-8
+dt_start dt_calc
+facsec 2.5
+}
+
+lire ch_toto { domain MAILLAGE_GENEPI 
+                file betan_betae.med 
+                field POROSITE_2 
+                use_existing_domain 
+                last_time 
+                }
+
+Fluide_Melange freon
+
+Lire freon
+{
+type_fluide fr_114_9_12b
+pression_reference 9.39e+05 
+Porosites_champ Champ_Fonc_MED { domain MAILLAGE_GENEPI 
+                                 file betan_betae.med 
+                                 field POROSITE_2 
+                                 use_existing_domain 
+                                 last_time 
+                                 }
+}
+
+

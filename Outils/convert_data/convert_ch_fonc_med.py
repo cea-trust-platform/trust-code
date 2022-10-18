@@ -98,9 +98,15 @@ class ChampFoncMEDConverter(TRUSTParser):
         withLR = True   # Whether to create a new block with line returns
         
         lr = ["\n"] if withLR else []
-        indent = self.computeIndent(it["start"], kw) if withLR else []
         dom, file, field, loc, tim = it["dom"], it["file"], it["field"], it["loc"], it["time"]
-        lm =  [kw, "{"]
+        if it.get("name", "") != "":
+            indent_kw = ""
+            lm =  ["{"]
+        else:
+            indent_kw = kw
+            lm =  [kw, "{"]
+        indent = self.computeIndent(it["start"], indent_kw) if withLR else []
+        
         lm += ["domain", dom] + lr
         lm += indent + ["file", file] + lr
         lm += indent + ["field", field] + lr

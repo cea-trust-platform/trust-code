@@ -78,14 +78,16 @@ class TRUSTParser(object):
         self.tabTokenLow = [t.lower().strip() for t in self.tabToken]
 
         # Now validate the tokens, and empty slots of tabTokenLow where we have comments
-        valid = True
+        valid, expectedClose = True, None
         for i, t in enumerate(self.tabTokenLow):
             if t in ["/*", "#"] and valid: 
                 valid = False
                 self.tabTokenLow[i] = ""
+                # End of the comment for a specific pattern:
+                expectedClose = "*/" if t == "/*" else "#"
                 continue
             if not valid: self.tabTokenLow[i] = ""
-            if t in ["*/", "#"] and not valid: valid = True
+            if t == expectedClose and not valid: valid = True
         #print(self.tabTokenLow)
     
     def readAndTokenize(self, fNameI):
@@ -204,7 +206,7 @@ class TRUSTParser(object):
         ret_lst, off, noMoreBool, idx2 = [], 0, False, 0
         while True:   # Yummi :-)
             data = {}
-            _, idx = self.getObjName(mainKW, off)
+            nam, idx = self.getObjName(mainKW, off)
             data["start"] = idx
             if data["start"] != -1:
                 idx = self.getNext(idx, 1)
@@ -212,6 +214,14 @@ class TRUSTParser(object):
                 if currTok == "{":
                     print("It seems your dataset already has the correct '%s' format!" % keywords[0])
                     return False, ret_lst
+                idxRead = self.findReadBlock(nam)
+                # The keyword is loaded with 'lire' syntax: type nom_obj <other other>.....<other other> lire nom_obj
+                if idxRead != -1:
+                    idx = self.getNext(idxRead, 2)
+                    data["start"] = idx
+                    data["name"] = nam
+                    currTok = self.tabTokenLow[idx]
+                print(self.tabTokenLow[idx-1:idx+1])
                 for param_nam, typ in self.LIST_PARAMS:
                     if noMoreBool and typ is bool:
                         raise ValueError("Error: the specified LIST_PARAMS contains a bool parameter after a non-bool parameter ... not supported yet. All flags should come first.")
