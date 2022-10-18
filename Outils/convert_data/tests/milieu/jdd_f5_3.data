@@ -1,0 +1,274 @@
+# PARALLEL NOT #
+dimension 3
+Probleme_Diphasique_4eqs pb
+Pb_conduction_combustible1d pbth
+Domaine F4MESH
+
+DomaineAxi1d FineMesh 
+
+# DEBUT MAILLAGE #
+lire_med family_names_from_group_names F4MESH F4MESH fluid_mesh.med
+
+lire_med family_names_from_group_names FineMesh FineMesh fuel_mesh.med
+Read_file FineMesh_ssz.geo ;
+
+ModifyDomaineAxi1D FineMesh { origine Champ_Fonc_MED_Tabule use_existing_domain fields.med FineMesh AxisOrigin elem 0 } 
+# FIN MAILLAGE #
+# DEBUT DECOUPAGE
+Decouper F4MESH
+{
+partitionneur metis { nb_parts 2 }
+Larg_joint 1
+Nom_Zones DOM
+}
+end
+FIN DECOUPAGE #
+
+# BEGIN SCATTER
+Scatter DOM.Zones F4MESH
+END SCATTER #
+
+Couplage_volume_combustible cvc
+Lire cvc F4MESH FineMesh fields.med FuelHeatingSurface
+
+Milieu_Diphasique_1 fluide
+Lire fluide
+{
+  loi_etat_diphasique Loi_Flica4_Melange { eau.10-210bar:4500kJ.xdr }
+}
+
+Solide sol
+Read sol
+{
+    rho Champ_Uniforme 1 1000.0
+    lambda Champ_Uniforme_morceaux FineMesh 1
+    {
+            defaut      1.0e10  # pas plus de 1.0e38, sinon assert en debug :-) #
+            UO2 16.
+            ZR4 34.
+        }
+    Cp Champ_Uniforme 1 100.0 
+} 
+
+Champ_Uniforme gravite
+Lire gravite 3 0. 0. -9.81
+Associer fluide gravite
+
+Sous_zone zone_tot
+Associate zone_tot F4MESH
+Lire zone_tot { fonction_sous_zone 1 }
+
+VDF dis
+
+EF_axi dis1
+
+Schema_Implicite_4eqs sch
+
+Lire sch
+{
+    tinit 0.0
+	nb_pas_dt_max 3
+    mult_seuils_newton 1.0
+    facsec 1
+    seuil_statio 1e-2
+    Solveur  petsc	cholesky { }
+    type_solveur jacobienne_complete
+    diffusion_implicite 1
+}
+
+Scheme_euler_implicit schth
+Lire schth
+{
+    tinit 0
+	nb_pas_dt_max 3
+    facsec 1e10
+    seuil_statio 1e-2
+    Solveur Solveur_lineaire_std { Solveur Gmres { } }
+}
+
+Associer pb F4MESH
+Associer pb fluide
+Associer pb sch
+Associer pb cvc
+Discretiser pb dis
+
+Associer pbth FineMesh
+Associer pbth schth
+Associer pbth sol
+Associer pbth cvc
+Discretiser pbth dis1
+
+Pb_Couple_ThHyd_Th1D pbc
+Associer pbc pbth
+Associer pbc pb
+
+
+porosites_champ pb champ_fonc_med last_time fields.med F4MESH POROSITE_VOLUMIQUE elem 0
+porosite_surf_champ pb fields.med F4MESH FluidSections
+diametre_hyd_champ pb champ_fonc_med { domain F4MESH
+                                       file fields.med 
+                                       field DIAMETRE_HYDRAULIQUE 
+                                       loc elem 
+                                       last_time } # ooooh a comment #
+
+Lire pb
+{
+
+  Systeme_Diphasique_4eqs
+  {
+     convection_scal { amont }
+     convection_vit { amont_sans_porosite }
+     diffusion_scal {  }
+     diffusion_vit { sans_modele_turbulence }
+     conditions_initiales_type flica4
+        {
+          precision 1e-8
+          nb_iter_max 10
+        } 
+
+          conditions_initiales {
+
+             pression Champ_Uniforme 1 155e5
+             concentration Champ_Uniforme 1 0.0
+             enthalpie_liquide  Champ_Uniforme 1 0.978575E+06
+             enthalpie_vapeur  Champ_Uniforme 1 2.6e6
+             vitesse_massique_liquide Champ_Uniforme 3 0. 0. 1000.0 
+             vitesse_massique_vapeur Champ_Uniforme 3 0. 0. 0.
+
+             }
+          conditions_limites
+          {
+            inlet Entree_fluide_diphasique {
+                            concentration      Champ_Front_Uniforme 1 0.
+                            vitesse_massique_vapeur     Champ_Front_Uniforme 3 0. 0. 0.
+                            enthalpie_liquide  Champ_Front_Uniforme 1 0.978575E+06
+                            enthalpie_vapeur   Champ_Front_Uniforme 1 2.6e6
+                            vitesse_massique_liquide    Champ_Front_Uniforme 3 0. 0. 1000.0
+
+
+                           }
+
+            outlet Sortie_libre_diphasique { pression Champ_front_uniforme 1 155e5 }
+
+            walls Symetrie
+          }
+
+          sources
+          {
+             Perte_Charge_Reguliere longitudinale X   zone_tot ,
+             Perte_Charge_Reguliere longitudinale Y   zone_tot ,
+             Perte_Charge_Reguliere longitudinale Z   zone_tot , 
+             Couplage_Thermique pbth outside
+          }
+          modelisation
+          {
+            direction_principale_ecoulement 2
+            flux_thermique_constant 1
+            correlations
+            {
+              Transfert_Masse_Relaxation
+              {
+                Modele_Recondensation_F3 { }
+                Modele_Vaporisation_F3 { }
+              }
+              Frottement_Isotherme_F3 { ATURB 0.3164 BTURB 0.25 }
+              Frottement_Diphasique_Friedel { }
+              Frottement_Paroi_Chauffante { A1 0. A2 0. A3 1. A4 1. }
+              Ecart_Vitesse_Ishii { }
+              Vaporisation_Paroi_F3
+              Echange_Thermique_Ebullition_Nucleee_JENS_LOTTES { }
+              Echange_Thermique_Simple_Phase_DITTUS_BOELTER { }
+              Dispersion_Vapeur_Iso { D0 0.01 }
+              Conductivite_Turbulente_Iso { D0 0.01 BD 1. CD 0. }
+              Viscosite_Turbulente_Iso {  D0 0.01 BD 1. CD 0. }
+            }
+          }
+   }
+   Postraitement
+   {
+		format lml 
+                Definition_champs
+                {
+                        hm                       refchamp { pb_champ pb enthalpie_melange }
+                        hl                       refchamp { pb_champ pb enthalpie_liquide }
+                        hv                       refchamp { pb_champ pb enthalpie_vapeur }
+                        hlsat                    refchamp { pb_champ pb enthalpie_saturation_liquide }
+                        hvsat                    refchamp { pb_champ pb enthalpie_saturation_vapeur }
+
+                        titre                    transformation { methode formule
+                                                 expression 1 (hm-hlsat)/(hvsat-hlsat) 
+                                                 sources_reference { hm , hlsat , hvsat } }
+                }
+		Sondes_fichier
+		{
+		 fichier fluid.prob 
+  }
+        	champs dt_post 1.E+7
+		{
+                        pression elem
+                        concentration elem
+                        taux_de_vide elem
+                        densite_melange elem
+                        densite_liquide elem
+                        densite_vapeur elem
+                        enthalpie_melange elem
+                        enthalpie_liquide elem
+                        enthalpie_saturation_liquide elem
+                        enthalpie_vapeur elem
+                        enthalpie_saturation_vapeur elem
+                        temperature_liquide elem
+                        temperature_vapeur elem
+                        temperature_saturation elem
+                        vitesse_melange elem
+                        vitesse_liquide elem
+                        vitesse_vapeur elem
+                        gamma_lv elem
+                        gamma_paroi_maille elem
+                        debit_melange elem
+                        porosite_volumique elem
+                        phi_maille elem
+		}
+   }
+
+}
+
+Lire pbth
+{
+	Conduction_Combustible
+	{
+		diffusion { }
+
+                conditions_initiales { temperature champ_uniforme 1 400. } 
+
+                conditions_limites
+                {
+                  outside Echange_couplage_thermique { }
+                  inside Neumann_Paroi_adiabatique
+                  gap Paroi_echange_interne_global_impose h_gap Champ_front_uniforme 1 1e4 
+                }
+
+              sources { Puissance_Thermique Champ_Fonc_MED_Tabule use_existing_domain fields.med FineMesh FuelPowerDensityOnElements elem 0 }
+
+	}
+
+	Postraitement
+	{
+        format lml 
+
+
+		Sondes_fichier
+		{
+		  fichier fuel.prob 
+  }
+	
+ fields dt_post 1e7 
+	{
+			temperature som
+	}      
+     }
+}
+
+
+
+Resoudre pbc
+

@@ -64,13 +64,13 @@ Associer pb dom
 Associer pb sch
 Discretiser pb dis
 
-diametre_hyd_champ pb champ_uniforme 1 1.4
 
 Lire pb
 {
 
    milieu_diphasique_1 {
-      loi_etat_diphasique Loi_Flica4_Melange { stiff.gas.10-210bar:200kJ.xdr }
+         diametre_hyd_champ champ_uniforme 1 1.4 
+     loi_etat_diphasique Loi_Flica4_Melange { stiff.gas.10-210bar:200kJ.xdr }
    }
    
    

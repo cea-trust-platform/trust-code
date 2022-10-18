@@ -35,12 +35,27 @@ MIL_LIST = ["solide",
             "milieu_diphasique_1"]
 GRAVITE = ["gravite", "gravity"] # Strong assumption, gravity field is always called gravite/gravity
 
+#
+# Utility functions
+#
+def is_float(s):
+    try:
+        float(s)
+        return True
+    except:
+        return False
 
+#
+# Small container classes:
+#
 class Milieu(TObject):
     def __init__(self):
         super().__init__()
         self.assPb = -1     # Token index of the 'associate' directive (with pb)
-        self.assGrav = -1 # Token index of the gravity 'associate' directive
+        self.assGrav = -1   # Token index of the gravity 'associate' directive
+        self.poro = {}      # Token indices of a possible "porosites_champs" directive
+        self.poroSurf = {}  # Token indices of a possible "porosite_surf_champ" directive
+        self.diamHyd = {}   # Token indices of a possible "diametre_hyd_champ" directive
         self.newText = []
         
 class Problem(TObject):
@@ -54,6 +69,8 @@ class Gravite(TObject):
         self.newText = []
 
 class MilieuModifier(TRUSTParser):
+    """ Main class.
+    """
     def __init__(self):
         super().__init__()
         self.mediums = {}      # A dictionnary of Milieu()
@@ -167,6 +184,54 @@ class MilieuModifier(TRUSTParser):
         # No gravity association found, gravity is irrelevant:
         if not found:  
             g = None
+
+    def _identifyGen(self, kw):
+        """ Identify and create the new text for 'porosites_champs' and/or 'porosite_surf_champ' 
+            and/or 'diametre_hyd_champ'
+        """
+        pbNam, idx = self.getObjName(kw)
+        if idx != -1:
+            if pbNam not in self.problems:
+                raise ValueError(f"Error handling keyword '{kw}': associated problem '{pbNam}' not found!")
+            milNam = self.problems[pbNam].medName
+            mil = self.mediums.get(milNam, None)
+            if mil is None:
+                raise ValueError(f"Error handling keyword '{kw}': associated problem '{pbNam}' has no associated medium!")
+            # Not proud of this:
+            att = {"porosites_champ": mil.poro,
+                   "porosite_surf_champ": mil.poroSurf,
+                   "diametre_hyd_champ": mil.diamHyd }[kw]
+            att["start"] = idx
+            # This one is easy: always 3 tokens
+            if kw == "porosite_surf_champ": 
+                att["end"] = self.getNextJustAfter(idx, 2+3)
+            else:
+                # Find last float value or closing '}' ... because a field definition will always end like this ...
+                idx = self.getNext(idx, 3)
+                if self.tabTokenLow[idx] == '{':
+                    att["end"] = self.getNextJustAfter(self.findBlockEnd(idx), 1)
+                else:
+                    # HACK HACK!! Find end of field instanciation ... hiiic. We look for the last float
+                    idx = self.getNext(idx, 1)  # at least 2 tokens in a field instanciation
+                    while not is_float(self.tabTokenLow[idx]):  
+                        idx = self.getNext(idx, 1)
+                    while is_float(self.tabTokenLow[idx]):
+                        idx = self.getNext(idx, 1)
+                    # Rewind to catch last float:
+                    idx = self.getNext(idx, -1)
+                    att["end"] = self.getNextJustAfter(idx,  1)
+            return True
+        else:
+            return False
+
+    def identifyPorosite(self):
+        return self._identifyGen("porosites_champ")
+
+    def identifyPorositeSurf(self):
+        return self._identifyGen("porosite_surf_champ")
+    
+    def identifyDiamHyd(self):
+        return self._identifyGen("diametre_hyd_champ")
           
     def indent(self, tkLst):
         """ Indent some lines """
@@ -180,7 +245,7 @@ class MilieuModifier(TRUSTParser):
         return res
 
     def createNewGravity(self):
-        """ Remove gravity from data file and produce piece of text that will go into each medium
+        """ Produce piece of text that will go into each medium for gravity
         """
         gravTxt = [""]
         g = self.gravite
@@ -189,6 +254,20 @@ class MilieuModifier(TRUSTParser):
             gravTxt = ["     gravite", g.type] + self.tabToken[startDeclG:g.end]
             #print("Gravite: ", ' '.join(gravTxt))
             g.newText = gravTxt    
+            
+    def createExtraFields(self, medium):
+        """ Create new text for extra entries in medium, like porosites_champs, etc ...
+        """
+        tt = self.tabToken
+        ret = []
+        for att, kw in zip([medium.poro, medium.poroSurf, medium.diamHyd], 
+                           ["porosites_champs", "porosite_surf_champ", "diametre_hyd_champ"]):
+            if len(att):
+                s, e = att["start"], att["end"]
+                s2 = self.getNext(s, 2)
+                # Strip last token to handle "\n" properly and only have a single line return:
+                ret.extend(["    ", kw] + tt[s2:e-1] + [tt[e-1].strip(), "\n"])
+        return ret
 
     def createNewMediumBlocks(self):
         """ Create all new medium blocks that will be inserted into the problems
@@ -197,9 +276,10 @@ class MilieuModifier(TRUSTParser):
         tt = self.tabToken
         for mName, m in self.mediums.items():
             gt = gravTxt if m.assGrav != -1 else [""]
+            extra = self.createExtraFields(m)
             justAfterAcc = self.getNextJustAfter(m.start, 3)  # After the '{' in 'read mil ...'
             milImplI = self.getNextJustAfter(m.start, 2)  # skip 'read mil'
-            mil = ['\n', m.type] + tt[milImplI:justAfterAcc] + gt + tt[justAfterAcc:m.end] + ['\n']
+            mil = ['\n', m.type] + tt[milImplI:justAfterAcc] + gt + extra + tt[justAfterAcc:m.end] + ['\n']
             mil = self.indent(mil)
             #print("Milieu: ", ' '.join(mil))
             self.mediums[mName].newText = mil
@@ -223,6 +303,11 @@ class MilieuModifier(TRUSTParser):
             # Also skip association betw milieu and gravite if it is there:
             if m.assGrav != -1:
                 skip.append((m.assGrav,self.getNextJustAfter(m.assGrav, 3)))
+            # And finally skip porosites_champs, etc ... if there:
+            for att in [m.poro, m.poroSurf, m.diamHyd]:
+                if len(att) == 0: continue
+                skip.append((att["start"], att["end"]))
+                
         # Be sure to remove various blocks in the right order:
         skip.sort()
 
@@ -264,6 +349,9 @@ if __name__ == "__main__":
     if dm.identifyMilieu():
         dm.identifyGravity()
         dm.createNewGravity()
+        dm.identifyPorosite()
+        dm.identifyPorositeSurf()
+        dm.identifyDiamHyd()
         dm.createNewMediumBlocks()
         dm.outputData(fNameO)
         print("File '%s' written!" % fNameO)
