@@ -261,7 +261,7 @@ echo "[-native]                         Add compiler optimizations relative to n
 echo "[-force_provided_mpich]           Use the provided MPICH `awk -F= '/default_version=/ {print $2}' ThirdPart/src/LIBMPI/Installer_mpich` version (default, except on cluster/batch system)."
 echo "[-force_latest_mpich]             Download and use the MPICH `awk -F= '/latest_version=/ {print $2}' ThirdPart/src/LIBMPI/Installer_mpich` version."
 echo "[-force_provided_openmpi]         Use the provided OpenMPI `awk -F= '/default_version=/ {print $2}' ThirdPart/src/LIBMPI/Installer_openmpi` version."
-echo "[-force_latest_openmpi]           Download and use the OpenMPI `awk -F= '/latest_version=/ {print $2}' ThirdPart/src/LIBMPI/Installer_openmpi` version (default with -cuda)."
+echo "[-force_latest_openmpi]           Download and use the OpenMPI `awk -F= '/latest_version=/ {print $2}' ThirdPart/src/LIBMPI/Installer_openmpi` version."
 echo "[-force_system_mpi]               Use the system-provided MPI library."
 echo "[-force_even_unsupported]         Force the configure even the compiler/OS is not supported."
 echo "[-cuda[=path to nvcc]]            Activate the CUDA support into several libraries for GPU computing (experimental)."

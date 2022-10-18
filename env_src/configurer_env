@@ -1077,10 +1077,10 @@ if [ "$TRUST_FORCE_PROVIDED_OPENMPI" != 1 ] && [ "$TRUST_FORCE_LATEST_OPENMPI" !
 then
    if [ "$BATCH_SYSTEM_DETECTED" = 0 ] && [ "$TRUST_WITHOUT_HOST" = 1 ]
    then
-      if [ "$TRUST_USE_CUDA" = 1 ]
-      then
-         export TRUST_FORCE_LATEST_OPENMPI=1 # OpenMPI Cuda-Aware
-      elif [ "`echo $TRUST_VERSION_GNU | awk -F. '{if ($1*100+$2*10+$3>=1100) print -force_latest_mpich}'`" != "" ]
+      #if [ "$TRUST_USE_CUDA" = 1 ]
+      #then
+      #   export TRUST_FORCE_LATEST_OPENMPI=1 # OpenMPI Cuda-Aware
+      if [ "`echo $TRUST_VERSION_GNU | awk -F. '{if ($1*100+$2*10+$3>=1100) print -force_latest_mpich}'`" != "" ]
       then
          export TRUST_FORCE_LATEST_MPICH=1
       else

@@ -625,6 +625,8 @@ if [ "`echo $PETSC_OPTIONS | grep -i cusp`" != "" ]
 then
    gpu=1 # Activate also GPU option if some gpu option is passed through the command line option:
 fi
+# Si MPI n'est pas MPI-Aware (test un peu bourrin...) on evite un stop avec PETSc:
+[ "$TRUST_USE_CUDA" = 1 ] && [ "`grep -i cuda $MPI_ROOT/lib/* 2>/dev/null`" = "" ] && PETSC_OPTIONS=$PETSC_OPTIONS" -use_gpu_aware_mpi 0"
 
 ###########################################
 # Lancement en interactif avec monitoring #
