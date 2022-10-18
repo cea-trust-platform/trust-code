@@ -88,18 +88,13 @@ class SpatialPostProcessing(StatisticalPostProcessing):
         -------
         None
 
-        Examples
-        --------
-        
-        .. literalinclude:: ../../tests/stats/trust_statistical_examples/Spatial/plot_example.py
-   
         """
-        save_path = kwargs.get("save_path")
+        _save_path = kwargs.get("save_path")
 
-        if save_path == None:
-            save_path = "profileResults/"
+        if _save_path == None:
+            _save_path = "profileResults/"
 
-        kwargs["save_path"] = save_path
+        kwargs["save_path"] = _save_path
         StatisticalPostProcessing._plot(self, x1, y1, label1=label1, linestyle1=linestyle1, linewidth1=linewidth1, **kwargs)
 
     def extract_profile(self, lata, field, start_point, end_point, name, frame=-1):
@@ -127,18 +122,13 @@ class SpatialPostProcessing(StatisticalPostProcessing):
         -------
         None
 
-        Examples
-        --------
-
-        .. literalinclude:: ../../tests/stats/trust_statistical_examples/Spatial/extract_profile_example.py
-
         """
         StatisticalPostProcessing._checkPath(self, lata)
         StatisticalPostProcessing._checkName(self, name)
         if not os.path.exists(self.temp_folder):
             os.mkdir(self.temp_folder)
 
-        StatisticalPostProcessing.COUNT_CURVE_FILES += 1
+        StatisticalPostProcessing._COUNT_CURVE_FILES += 1
         elb = export_lata_base(lata, "Pseudocolor", field, self.temp_folder + name, frame=frame)
         SpatialPostProcessing.L_NAME += [name]
         # elb.lineout(start_point,end_point)
@@ -190,12 +180,6 @@ class SpatialPostProcessing(StatisticalPostProcessing):
             Distance.
         Y : array
             Field.
-
-        Examples
-        --------
-        How to use this method.
-
-        .. literalinclude:: ../../tests/stats/trust_statistical_examples/Spatial/getSpatialValues_example.py
 
         """
         X, Y = self._getValuesFromCurve(name)
@@ -262,12 +246,6 @@ class SpatialPostProcessing(StatisticalPostProcessing):
         Yfit : array
             The parabola fit, only if ``fit = True``
 
-        Examples
-        --------
-        How to use this method.
-
-        .. literalinclude:: ../../tests/stats/trust_statistical_examples/Spatial/spatialAutoCorrelation_example.py
-
         """
         dist, autocorr = StatisticalPostProcessing._computeAutocorrelation(self, X, Y, max_lag)
         res = [dist, autocorr]
@@ -295,13 +273,6 @@ class SpatialPostProcessing(StatisticalPostProcessing):
         power : array 
             Energy.
         
-        Examples
-        --------
-        How to use this method.
-
-        
-        .. literalinclude:: ../../tests/stats/trust_statistical_examples/Spatial/spatialEnergySpectrum_example.py
-
         """
         lambd, power = StatisticalPostProcessing._computeWelch(self, X, Y)
         return (lambd, power)
@@ -327,19 +298,13 @@ class SpatialPostProcessing(StatisticalPostProcessing):
         -------
         None
 
-        Examples
-        --------
-
-        .. literalinclude:: ../../tests/stats/trust_statistical_examples/Spatial/extract_profile_example.py
-
-
         """
         StatisticalPostProcessing._checkPath(self, lata)
         StatisticalPostProcessing._checkName(self, name)
         if not os.path.exists(self.temp_folder):
             os.mkdir(self.temp_folder)
 
-        # StatisticalPostProcessing.COUNT_CURVE_FILES += 1
+        # StatisticalPostProcessing._COUNT_CURVE_FILES += 1
         elb = export_lata_base(lata, "Pseudocolor", field, self.temp_folder + name)
         elb.setFrame(frame)
         SpatialPostProcessing.L_NAME += [name]

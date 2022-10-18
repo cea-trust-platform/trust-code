@@ -30,7 +30,7 @@ pd.DataFrame._repr_latex_ = _repr_latex_ # To display pandas table as latex tabl
 
 def saveFileAccumulator(data):
     """
-    Method for saving files.
+    Method for saving files for testing non-regression.
         
     Parameters
     --------- 
@@ -60,15 +60,15 @@ def loadText(data, index_column=0, nb_column=-1, transpose=True, dtype="float", 
     data : str 
         name of the file we want to save. 
     index_column : int 
-        Index of the first column. 
+        Index of the first column (default=0) 
     nb_column : int 
-        Number of columns loaded. 
+        Number of columns loaded (default=None) 
     transpose : bool
-        if we transpose the matrix.
+        if we transpose the matrix (default=True)
     dtype : str
-        type of the data.
+        type of the data (default="float")
     skiprows : int
-        lines skip when reading.
+        initial lines skip when reading (default=0)
 
     Returns
     ------- 
@@ -168,7 +168,7 @@ def timeArray(name):
 
 class Graph:
 
-    r"""
+    """
     
     Graph is a class to plot .son file
     
@@ -186,11 +186,11 @@ class Graph:
         subtitle : str 
             title of the first subplot. 
         nX : int 
-            number of plot in the x axe. 
+            number of plot in the x axe (default=1) 
         nY : int 
-            number of plot in the Y axe. 
-        size : float*2 
-            Image's size (x,y) of the plot. 
+            number of plot in the Y axe (default=1)
+        size : [float,float] 
+            Image's size (x,y) of the plot (default=[12,10])
         
         """
         self.x_label = ""
@@ -260,19 +260,19 @@ class Graph:
         x : float array
             x coordinates.  
         y : float array
-            y coordinates.  
-        coordonee : int or int array
-            coordinates in the subplotlist.  
+            data to plot.  
+        marker : str
+            symbol of the ploted line (default="-")
         label : str
             label of the curve.
         title : str
             title of the curve.  
-        xlabel : str
-            label of the xaxis.
-        ylabel : str
-            label of the yaxis.
+        xIndice : int
+            first coordinates of the subplot list 
+        yIndice : int
+            second coordinates of the subplot list 
         kwargs : dictionary
-            properties of line for matplotlib.pyplot.plot
+            additional properties available in matplotlib.pyplot.plot
             
         """
         if not xIndice is None:
@@ -333,15 +333,15 @@ class Graph:
         data : str
             Adress of the file.
         marker : str
-            symbol of the ploted line.
+            symbol of the ploted line (default="-")
         compo :  str
-            component we want to plot (for vector fields).
+            component we want to plot (for vector fields) (default=0)
         label : str
             title of the curve .
         func : function
             function to apply to data before plot (ex: computation of error)
         kwargs : dictionary
-            properties of line for matplotlib.pyplot.plot
+            additional properties available in matplotlib.pyplot.plot
 
         """
         path = os.path.join(BUILD_DIRECTORY, data)
@@ -387,17 +387,17 @@ class Graph:
         time : double
             time of the parameter. If None, it equals to zero.
         marker: str
-            symbol of the ploted line.
+            symbol of the ploted line (default="-")
         label : str
             title of the curve .
         compo :  str
-            component we want to plot (for vector fields).
-        nb : float
-            erreur tolerated between the comparaison to find the right data.
-        func : function
+            component we want to plot (for vector fields) (default=0)
+        func : function Y = func(X,Y)
             function to apply to data before plot (ex: computation of error)
+        funcX : function X = funcX(X)
+            function to apply to xcoordinates before plot
         kwargs : dictionary
-            properties of line for matplotlib.pyplot.plot
+            additional properties available in matplotlib.pyplot.plot
 
         Returns
         ------- 
@@ -454,18 +454,18 @@ class Graph:
         --------- 
         data : str
             Adress of the file.
-        color : str
-            Color of the curve.
         marker : str
             symbol of the ploted line.
         var :  str
-            coordinate we want to plot.
+            coordinate we want to plot (default="residu=max|Ri|")
         start : float
             Time start.
         end :  float
             Time end.
         label : str
             title of the curve .
+        kwargs : dictionary
+            additional properties available in matplotlib.pyplot.plot
             
         """
 
@@ -476,7 +476,6 @@ class Graph:
         donne = tf.DTEVFile(path, None)
 
         saveFileAccumulator(data)
-        # filelist.FileAccumulator.AppendFromProbe("build/"+data)
         ### On recupere le nom des variables ###
         self.y_label = var
         self.x_label = donne.getXLabel()
@@ -496,9 +495,9 @@ class Graph:
     def scale(self, xscale="linear", yscale="linear"):
         """
         xscale : str
-            The axis scale type to apply to the x-axis
+            The axis scale type to apply to the x-axis (default="linear")
         yscale : str
-            The axis scale type to apply to the y-axis
+            The axis scale type to apply to the y-axis (default="linear")
         """
 
         self.subplot.set_xscale(xscale)
@@ -535,8 +534,10 @@ class Graph:
         ---------  
         x_label : str 
             Label of x.
-        y_label :str
+        y_label : str
             Label of y.
+        kwargs : dictionary
+            additional properties available in matplotlib.pyplot.subplot
         
         Returns
         ------- 
@@ -551,10 +552,8 @@ class Graph:
 
         Parameters
         ---------  
-        coordonee : 
-            coordinates in the subplotlist.
         **kwargs :
-            option of ax.legend
+            option of matplotlib.pyplot.legend
 
         Returns
         ------- 
@@ -602,7 +601,7 @@ class Table:  # ancien tableau
 
         Parameters
         --------- 
-        data : ligne
+        ligne : list
             Row of the board.
         name : str 
             Name of the board. 

@@ -107,11 +107,6 @@ class TemporalPostProcessing(StatisticalPostProcessing):
         label : str
             Label of the field (can be used as label in plot method)
 
-        Examples
-        --------
-
-        .. literalinclude:: ../../tests/stats/trust_statistical_examples/Temporal/instantaneousValues_example.py
-
 
         """
         X, Y, label = StatisticalPostProcessing._getInstantaneous(self, sonFiles, x, y, z, component)
@@ -138,12 +133,6 @@ class TemporalPostProcessing(StatisticalPostProcessing):
             An array of time values
         Y : array
             An array of the chosen entry: Residuals, time step, ...
-
-        Examples
-        --------
-
-        .. literalinclude:: ../../tests/stats/trust_statistical_examples/Temporal/getdtValues_example.py
-
 
         """
         X, Y = StatisticalPostProcessing._getTimeStepEvolution(self, sonFiles, entry)
@@ -179,11 +168,6 @@ class TemporalPostProcessing(StatisticalPostProcessing):
             Fluctuations values
         label : str
             Label of the field (can be used as label in plot method)
-
-        Examples
-        --------
-
-        .. literalinclude:: ../../tests/stats/trust_statistical_examples/Temporal/temporalFluctuations_example.py
 
         """
         X, Y, label = StatisticalPostProcessing._getFluctuation(self, sonFiles, x, y, z, startTime, component)
@@ -228,11 +212,6 @@ class TemporalPostProcessing(StatisticalPostProcessing):
         label : str
             Label of the field (can be used as label in plot method)
 
-        Examples
-        --------
-
-        .. literalinclude:: ../../tests/stats/trust_statistical_examples/Temporal/temporalAverageWindows_example.py
-
         """
         X, Y, label = StatisticalPostProcessing._getAverageWindows(self, sonFiles, x, y, z, component, startTime, endTime, window, mode)
         return (X, Y, label)
@@ -255,11 +234,6 @@ class TemporalPostProcessing(StatisticalPostProcessing):
             Spatial average on segment.
         label : str
             Label of the field (can be used as label in plot method)
-
-        Examples
-        --------
-
-        .. literalinclude:: ../../tests/stats/trust_statistical_examples/Temporal/temporalSegmentSpatialMean_example.py
 
         """
         X, Y, label = StatisticalPostProcessing._getSegmentSpatialMean(self, sonFiles, component)
@@ -313,11 +287,6 @@ class TemporalPostProcessing(StatisticalPostProcessing):
         label : str
             Label of the field (can be used as label in plot method)
 
-        Examples
-        --------
-
-        .. literalinclude:: ../../tests/stats/trust_statistical_examples/Temporal/temporalAutoCorrelation_example.py
- 
 
         """
 
@@ -362,11 +331,6 @@ class TemporalPostProcessing(StatisticalPostProcessing):
         label : str
             Label of the field (can be used as label in plot method)
 
-        Examples
-        --------
-
-        .. literalinclude:: ../../tests/stats/trust_statistical_examples/Temporal/energySpectrum_example.py
- 
         """
         if hanning:
             X, Y, label, ts, han = StatisticalPostProcessing._getTemporalWelch(self, sonFiles, x, y, z, component, startTime, hanning=True)

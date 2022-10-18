@@ -1,31 +1,11 @@
 trustutils package
-==================
-
-Subpackages
------------
+===================
 
 .. toctree::
    :maxdepth: 4
+   :caption: Contents:
 
    trustutils.jupyter
-   trustutils.stats
    trustutils.visitutils
+   trustutils.files
 
-Submodules
-----------
-
-trustutils.files module
-----------------------------
-
-.. automodule:: trustutils.files
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: trustutils
-   :members:
-   :undoc-members:
-   :show-inheritance:

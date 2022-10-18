@@ -28,79 +28,44 @@ def visitTmpFile_(justFile=False):
 
     return os.path.join(BUILD_DIRECTORY, file)
 
-
-def checkProbe(lata, son, sizepoint=0.05):
-    """
-
-    Method used to plot the probes.
-
-    Parameters
-    ---------
-    lata: str
-        adress of the lata file.
-    son: str
-        adress of the son file (probe).
-    taillepoint: float
-        size of the probe.
-
-    Returns
-    -------
-
-    """
-    # Visualisation du maillage
-    S = Show(lata, "Mesh", "dom", plotmesh=False)
-    # Visualisation du probe
-    S.visitCommand("dbs = ('" + son + "')")
-    S.visitCommand("ActivateDatabase(dbs) ")
-    S.visitCommand("AddPlot('Pseudocolor','value')")
-    S.visitCommand("DrawPlots()")
-    S.visitCommand("pc=PseudocolorAttributes()")
-    # type de points
-    S.visitCommand("pc.pointType=pc.Octahedron")
-    # taille des points
-    S.visitCommand("pc.pointSize=" + str(taillepoint))
-    S.visitCommand("print(pc)")
-    S.visitCommand("SetPlotOptions(pc)")
-
-    S.plot()
-
-
-def setFrame(self, numero=-1):
+def setFrame(self, time=-1):
     """
 
     To set frame in visit
 
     Parameters
     ---------
-    numero: int
-        If numero = -1, the last frame chosen, else it select the frame in visit.
+    time: int
+        If time = -1, the last frame chosen, else it select the frame in visit.
 
     Returns
     -------
 
     """
-    self.time = str(numero)
+    self.time = str(time)
     with open(visitTmpFile_(), "a") as f:
         if numero == -1:  # last frame
             f.write("SetTimeSliderState(TimeSliderGetNStates()-1)\n")
         else:
-            f.write("SetTimeSliderState(" + str(numero) + ")\n")
+            f.write("SetTimeSliderState(" + str(time) + ")\n")
     f.close()
 
 
 def saveFile(file, field, name, time, active=False):
     """
 
-    Save the used fie in the build directory(Visitfile).
+    Save files for testing non-regression.
 
     Parameters
     --------- 
-    fichier : str
+    file : str
         The .lata file we want to plot its mesh with visit.  
     field : str
         The field we want to plot.  
     name : str
         The name of the field.  
+    time : int
+        number of the time frame 
 
     Returns
     -------
@@ -136,7 +101,7 @@ def showMesh(fichier, mesh="dom"):
     fichier : str
         The .lata file we want to plot its mesh with visit.  
     mesh : str
-        name of the mesh.  
+        name of the mesh (default="dom") 
             
     Returns
     -------
@@ -147,7 +112,7 @@ def showMesh(fichier, mesh="dom"):
     field.plot()
 
 
-def showField(fichier, field, name, mesh="dom", plotmesh=True, time=-1, size=10, max=None, min=None):
+def showField(fichier, field, name, mesh="dom", plotmesh=True, title="", time=-1, size=10, max=None, min=None):
     """
     Methods to plot a field from a .lata file.
 
@@ -160,13 +125,26 @@ def showField(fichier, field, name, mesh="dom", plotmesh=True, time=-1, size=10,
     name : str
         The name of the field.  
     mesh : str
-        The name of the mesh.  
+        The name of the mesh (default="dom")  
+    plotmesh : bool
+        display the mesh (default=True)  
+    title : str 
+        title of the plot. 
+    time : int
+        number of the time frame (default=-1)  
+    size : int
+        Size of the image.  
+    max : float
+        Maximun value ploted.  
+    min : float
+        Minimum value ploted.  
+         
             
     Returns
     -------
         a Visit plot 
     """
-    field = Show(fichier, field, name, mesh=mesh, plotmesh=plotmesh, time=time, size=size, max=max, min=min)
+    field = Show(fichier, field, name, mesh=mesh, plotmesh=plotmesh, title=title, time=time, size=size, max=max, min=min)
     field.plot()
 
 
@@ -190,13 +168,13 @@ class Show(object):
         name : str
             The name of the field.  
         mesh : str
-            The name of the mesh.  
+            The name of the mesh (default="dom")   
         plotmesh : bool
-            If true plot the mesh asociate with .lata file.  
+            If true plot the mesh asociate with .lata file (default=True) 
         time : int
-            Time of the plot. 
+            Time frame of the plot. 
         empty : bool
-            If True returns a empty plot.  
+            If True returns a empty plot (default=False) 
         size : int
             Size of the image.  
         title : str 
@@ -324,7 +302,8 @@ class Show(object):
         ---------
         coordonee : array int
             Coordonée du plot
-        
+        title : str 
+            title of the plot.  
 
         Returns
         -------
@@ -371,6 +350,7 @@ class Show(object):
         """ 
         
         Method for adding a Field to a plot.
+
         Parameters
         ---------
         fichier : str
@@ -382,7 +362,7 @@ class Show(object):
         mesh : str
             The name of the mesh.  
         plotmesh : bool
-            If true plot the mesh asociate with .lata file.  
+            If true plot the mesh asociate with .lata file (default=True) 
         min : float
             Minimum value ploted.  
         max : float
@@ -456,25 +436,13 @@ class Show(object):
         visLog = os.path.join(BUILD_DIRECTORY, "visit.log")
         with open(visLog) as f:
             txt = f.readlines()
-            txt = "".join(txt[-7:])
+            txt = "".join(txt[-10:])
             print(txt)
 
     def executeVisitCmds(self):
         """
-
         Display the visit plot in Jupyter.
 
-        Parameters
-        ---------
-        field : str
-            The field we want to plot.  
-        name : str
-            The name of the field.  
-
-
-        Returns
-        -------
-        
         """
         from ..jupyter.run import BUILD_DIRECTORY
 
@@ -525,7 +493,7 @@ class Show(object):
         Returns
         -------
         coordonne : array int
-            Coordonné.
+            Coordinates
         
         """
         if (self.nX == 1) & (self.nY == 1):
@@ -569,6 +537,40 @@ class Show(object):
         self.subplot.axis("off")
         return True
 
+    def checkProbe(self, sonFile, sizePoint=10, color="black"):
+        """
+
+        Method used to plot the probes.
+
+        Parameters
+        ---------
+        son: str
+            adress of the son file (probe).
+        sizePoint: float
+            size of the point
+        color:
+            color of the point
+
+        Returns
+        -------
+
+        """
+        # Visualisation du maillage
+        listcolor = ["red", "green", "blue", "black"]
+        if color not in listcolor:
+            # from string import join
+            self.gestMsg.ecrire(GestionMessages._ERR, "color expected in %s and not %s" % (listcolor, color))
+        with open(visitTmpFile_(), "a") as f:
+            f.write("red=(255,0,0,255);green=(0,255,0,255);black=(0,0,0,255);blue=(0,0,255,255)\n")
+            f.write("dbs = ('" + sonFile + "')\n")
+            f.write("ActivateDatabase(dbs)\n")
+            f.write("AddPlot('Mesh','MESH')\n")
+            f.write("DrawPlots()\n")
+        f.close()
+        self.meshColor(color)
+        self.visitCommand('MeshAtts.pointSizePixels=%d' %sizePoint)
+        self.visitCommand('SetPlotOptions(MeshAtts)')
+
     def add(
         self, fichier, field, name, xIndice=0, yIndice=0, time=-1, mesh="dom", title="", plotmesh=True, max=None, min=None,
     ):
@@ -589,7 +591,7 @@ class Show(object):
         yIndice : int
             Indice of the y axe.
         mesh : str
-            The name of the mesh.  
+            The name of the mesh (default="dom") 
         plotmesh : bool
             If true plot the mesh asociate with .lata file.  
         time : int
@@ -659,29 +661,42 @@ class Show(object):
             f.write("DrawPlots() \n")
         f.close()
 
-    def pas(self, numero=0):
+    def pas(self, time=0):
         """
 
         Increase the time step.
 
         Parameters
         ---------
-        field : str
-            The field we want to plot.  
-        name : str
-            The name of the field.  
-
+        time: int
+            choice of the time frame
 
         Returns
         -------
         
         """
-        self.time = str(numero)
+        self.time = str(time)
         with open(visitTmpFile_(), "a") as f:
-            f.write("SetTimeSliderState(" + str(numero) + ")\n")
+            f.write("SetTimeSliderState(" + str(time) + ")\n")
         f.close()
 
     def slice(self, origin=[0, 0, 0], normal=[1, 0, 0], var=None, all=0, type_op="slice"):
+        """
+        slice through the point origin in the direction normale.
+
+        Parameters
+        ---------
+        origin: float array
+            coordinates of the origin point
+        normal: float array
+            coordinates of the normale
+        var: "x", "y" or "z"
+            to impose the normal to the var axis
+
+        Returns
+        -------
+        """
+
 
         with open(visitTmpFile_(), "a") as f:
             f.write('AddOperator("Slice",%d)\n' % all)
@@ -751,11 +766,12 @@ class Show(object):
 
         Parameters
         ---------
-        field : str
-            The field we want to plot.  
-        name : str
-            The name of the field.  
-
+        x: float
+         coordinates z
+        y: float
+         coordinates z
+        z: float
+         coordinates z
 
         Returns
         -------
@@ -767,6 +783,19 @@ class Show(object):
         f.close()
 
     def zoom2D(self, coords=[]):
+        """
+
+        Zoom on 2D plot
+
+        Parameters
+        ---------
+        coords: float array (4 terms)
+            values of x_min, x_max, y_min, y_max
+
+        Returns
+        -------
+        
+        """
 
         if len(coords) != 4:
             self.gestMsg.ecrire(GestionMessages._ERR, "4 parameters expected in zoom2D options")
@@ -778,6 +807,18 @@ class Show(object):
         f.close()
 
     def zoom3D(self, var=[]):
+        """
+
+        Zoom on 3D plot
+
+        Parameters
+        ---------
+        var: float array (3 terms)
+            Image pan px and py and scale Image zoom
+
+        Returns
+        -------
+        """
 
         if len(var) != 3:
             self.gestMsg.ecrire(GestionMessages._ERR, "3 parameters expected in zoom3D options")
@@ -790,6 +831,18 @@ class Show(object):
         f.close()
 
     def rotation3D(self, angle=[]):
+        """
+
+        Rotation of the 3D view
+
+        Parameters
+        ---------
+        angle: float array (3 terms)
+            rotated angles
+
+        Returns
+        -------
+        """
 
         if len(angle) != 3:
             self.gestMsg.ecrire(GestionMessages._ERR, "3 parameters expected in rotation3D options")
@@ -806,6 +859,18 @@ class Show(object):
         f.close()
 
     def normal3D(self, vector=[]):
+        """
+
+        Normal to the 3D view
+
+        Parameters
+        ---------
+        vector: float array (3 terms)
+            coordinates [nx, ny, nz]
+
+        Returns
+        -------
+        """
 
         if len(vector) != 3:
             self.gestMsg.ecrire(GestionMessages._ERR, "3 parameters expected in normal3D options")
@@ -817,6 +882,18 @@ class Show(object):
         f.close()
 
     def up3D(self, coords=[]):
+        """
+
+        Vertical vector to the 3D view
+
+        Parameters
+        ---------
+        coords: float array (3 terms)
+            Up vector [nx, ny, nz]
+
+        Returns
+        -------
+        """
 
         if len(coords) != 3:
             self.gestMsg.ecrire(GestionMessages._ERR, "3 parameters expected in up3D options")
@@ -828,6 +905,21 @@ class Show(object):
         f.close()
 
     def visuOptions(self, operator=[]):
+        """
+        To apply visu Options
+
+        Parameters
+        --------- 
+        list of possible operators:
+           - no_axes: disables the plotting of the axis. 
+           - no_triad: disables the plotting of the triad
+           - no_bounding_box:  disables the plotting of the bounding box. 
+           - no_databaseinfo: disables the plotting of the info about the database. 
+           - no_legend: disables the plotting of the legend. 
+
+        Results
+        ------
+        """
 
         list_base = {"no_axes": 0, "no_triad": 0, "no_bounding_box": 0, "no_databaseinfo": 0, "no_legend": 0}
         lst = list(list_base.keys())
@@ -872,6 +964,9 @@ class Show(object):
         f.close()
 
     def blackVector(self):
+        """
+        The vector (variable) is plotted in black
+        """
 
         with open(visitTmpFile_(), "a") as f:
             f.write("vb=VectorAttributes()\nvb.SetColorByMag(0)\nvb.SetUseLegend(0)\n")
@@ -879,6 +974,23 @@ class Show(object):
         f.close()
 
     def visuHistogram(self, min, max, numBins):
+        """
+        Option of the histogram
+
+        Parameters
+        --------
+
+        min: float
+            minimum of x range
+        max: float
+            maximum of x range
+        numBins: int
+            number of Bins
+            
+        Results
+        ------
+
+        """
 
         with open(visitTmpFile_(), "a") as f:
             f.write("p=HistogramAttributes()\n")
@@ -897,6 +1009,9 @@ class Show(object):
 
         Parameters
         --------- 
+        
+        color: str
+            color of the mesh ("red","green", "blue", "black" available)
 
         Returns
         -------
@@ -921,11 +1036,6 @@ class Show(object):
 
         Parameters
         ---------
-        field : str
-            The field we want to plot.  
-        name : str
-            The name of the field.  
-
 
         Returns
         -------
@@ -1075,7 +1185,7 @@ class export_lata_base:
         res = [int(r) - 1 for r in res]
         return res
 
-    def addPlot(self, field, name, frame):
+    def addPlot(self, field, name, time):
         """
 
         Add a new field to the plot.
@@ -1086,7 +1196,8 @@ class export_lata_base:
             The field we want to plot.  
         name : str
             The name of the field.  
-
+        time : int
+            number of the time frame 
 
         Returns
         -------
@@ -1094,11 +1205,11 @@ class export_lata_base:
         
         """
         with open(visitTmpFile_(), "a") as f:
-            f.write(self._genAddPlot("'%s'" % field, "'%s'" % name, frame))
+            f.write(self._genAddPlot("'%s'" % field, "'%s'" % name, time))
             f.write("DrawPlots() \n")
         f.close()
         
-        saveFile(self.fichier, field, name, frame, active=True)
+        saveFile(self.fichier, field, name, time, active=True)
 
     def _genAddPlot(self, arg1, arg2, arg3):
         s = "try:\n"
@@ -1115,15 +1226,15 @@ class export_lata_base:
 
         return s
 
-    def setFrame(self, numero=-1):
+    def setFrame(self, time=-1):
         """
 
         To set frame in visit
 
         Parameters
         ---------
-        numero: int
-            If numero = -1, the last frame chosen, else it select the frame in visit
+        time: int
+            If time = -1, the last frame chosen, else it select the frame in visit
 
         Returns
         -------
@@ -1131,10 +1242,10 @@ class export_lata_base:
         """
 
         with open(visitTmpFile_(), "a") as f:
-            if numero == -1:  # last frame
+            if time == -1:  # last frame
                 f.write("SetTimeSliderState(TimeSliderGetNStates()-1)\n")
             else:
-                f.write("SetTimeSliderState(" + str(numero) + ")\n")
+                f.write("SetTimeSliderState(" + str(time) + ")\n")
         f.close()
 
     def lineout(self, a, b):
@@ -1230,7 +1341,7 @@ class export_lata_base:
         -------
         None
         """
-        self.setFrame(numero=-1)
+        self.setFrame(time=-1)
         with open(visitTmpFile_(), "a") as f:
             f.write('Query("Max", use_actual_data=1) \n')
             f.write('f=open("' + name + self.saveFile + '","w") \n')
@@ -1251,13 +1362,13 @@ class export_lata_base:
         name : str
             It tells if we should return the max or the min. 
         time : int
-            Momment we calcule the max/min.. 
+            Moment we calcule the max/min.. 
 
         Returns
         -------
         None
         """
-        self.setFrame(numero=-1)
+        self.setFrame(time=-1)
         with open(visitTmpFile_(), "a") as f:
             f.write('Query("Min", use_actual_data=1) \n')
             f.write('f=open("' + name + self.saveFile + '","w") \n')

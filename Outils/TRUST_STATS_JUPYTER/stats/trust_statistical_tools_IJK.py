@@ -490,12 +490,12 @@ class IJK_PostProcessing(StatisticalPostProcessing):
 
         """
 
-        save_path = kwargs.get("save_path")
+        _save_path = kwargs.get("save_path")
 
-        if save_path == None:
-            save_path = "medPostProcessing/"
+        if _save_path == None:
+            _save_path = "medPostProcessing/"
 
-        kwargs["save_path"] = save_path
+        kwargs["save_path"] = _save_path
 
         StatisticalPostProcessing._plot(self, x1, y1, label1, linestyle1, linewidth1, **kwargs)
 

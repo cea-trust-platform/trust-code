@@ -10,7 +10,7 @@ This work is based on the files package (a TRUST package that reads the son file
 
 """
 
-from .. import files as tf
+from trustutils import files as tf
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import interpolate, signal, optimize
@@ -30,10 +30,10 @@ class StatisticalPostProcessing:
 
     """
 
-    COUNT = 0  # counting figures
-    COUNT_CURVE_FILES = 0  # To count .curve files
-    COUNT_PARAB = 0
-    save_path = "./"
+    _COUNT = 0  # counting figures
+    _COUNT_CURVE_FILES = 0  # To count .curve files
+    _COUNT_PARAB = 0
+    _save_path = "./"
 
     def __init__(self):
         """Constructor of the class StatisticalPostProcessing.
@@ -963,7 +963,7 @@ class StatisticalPostProcessing:
         ymin = kwargs.get("ymin")
         ymax = kwargs.get("ymax")
         name = kwargs.get("name")
-        save_path = kwargs.get("save_path")
+        _save_path = kwargs.get("save_path")
         loc = kwargs.get("loc")
         borderpad = kwargs.get("label_size")
         format = kwargs.get("format")
@@ -971,8 +971,8 @@ class StatisticalPostProcessing:
         # Setting default values
         if title == None:
             title = ""
-        if save_path == None:
-            save_path = "results/"
+        if _save_path == None:
+            _save_path = "results/"
         if (xscale) == (None):
             xscale = "linear"
         if (yscale) == (None):
@@ -1000,12 +1000,12 @@ class StatisticalPostProcessing:
         plt.yscale(yscale)
         plt.grid(True, which="both", ls="-", color="0.65")
         plt.legend(loc=loc, borderpad=borderpad, fontsize=11)
-        if save_path != None and not os.path.exists(save_path):
-            os.mkdir(save_path)
+        if _save_path != None and not os.path.exists(_save_path):
+            os.mkdir(_save_path)
         if (name) == None:
-            StatisticalPostProcessing.COUNT += 1
+            StatisticalPostProcessing._COUNT += 1
             plt.savefig(
-                save_path + "fig_" + str(StatisticalPostProcessing.COUNT) + "." + format, format=format, bbox_inches="tight",
+                _save_path + "fig_" + str(StatisticalPostProcessing._COUNT) + "." + format, format=format, bbox_inches="tight",
             )
         else:
             plt.savefig(save_path + name + "." + format, format=format, bbox_inches="tight")

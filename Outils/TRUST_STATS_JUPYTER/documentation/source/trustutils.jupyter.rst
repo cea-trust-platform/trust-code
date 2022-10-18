@@ -1,29 +1,19 @@
-trustutils.jupyter package
-==========================
+trustutils.jupyter
+===================
 
-Submodules
-----------
-
-trustutils.jupyter.plot module
-------------------------------
+trustutils.jupyter.plot
+------------------------
 
 .. automodule:: trustutils.jupyter.plot
    :members:
    :undoc-members:
    :show-inheritance:
 
-trustutils.jupyter.run module
------------------------------
+trustutils.jupyter.run 
+----------------------
 
 .. automodule:: trustutils.jupyter.run
    :members:
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: trustutils.jupyter
-   :members:
-   :undoc-members:
-   :show-inheritance:

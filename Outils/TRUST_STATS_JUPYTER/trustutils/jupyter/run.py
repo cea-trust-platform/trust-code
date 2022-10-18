@@ -106,20 +106,34 @@ def _runCommand(cmd, verbose):
 ######## End PRIVATE STUFF #########
 
 class TRUSTCase(object):
-    """ Class which allows the user to load and execute a validation case
+    """ 
+    Class which allows the user to load and execute a validation case
     """
 
-    UNIQ_ID_START = -1
+    _UNIQ_ID_START = -1
 
     def __init__(self, directory, datasetName, nbProcs=1, record=False):
-        """ Initialisation of the class
-        @param directory: str : Path of the file
-        @param dataName: str: Path of the case we want to run, relatively to the 'src' folder.
-        @param nbProcs : int : Number of processors to use to run the case.
-        @param record : bool : whether to add the case to the global list of cases to run
+        """ 
+        Initialisation of the class
+
+        Parameters
+        ---------
+
+        directory: str 
+            Path of the file
+        datasetName: str
+            Path of the case we want to run, relatively to the 'src' folder.
+        nbProcs : int
+            Number of processors to use to run the case.
+        record : bool 
+            whether to add the case to the global list of cases to run
+
+        Returns
+        ------
+
         """
-        TRUSTCase.UNIQ_ID_START += 1
-        self.id_ = TRUSTCase.UNIQ_ID_START  # Unique ID
+        TRUSTCase._UNIQ_ID_START += 1
+        self.id_ = TRUSTCase._UNIQ_ID_START  # Unique ID
         self.dir_ = os.path.normpath(directory)
         self.name_ = datasetName.split(".data")[0]  # always w/o the trailing .data
         self.nbProcs_ = nbProcs
@@ -128,25 +142,33 @@ class TRUSTCase(object):
         if record:
             self._ListCases.append(self)
 
-    def fullDir(self):
+    def _fullDir(self):
         """
-        @return full directory of the test case
+        full directory of the test case
         """
         return os.path.normpath(os.path.join(BUILD_DIRECTORY, self.dir_))
 
-    def fullPath(self):
+    def _fullPath(self):
         """
-        @return full path of the test case in the build directory
+        full path of the test case in the build directory
         """
-        fullPath = os.path.join(self.fullDir(), self.name_)
+        fullPath = os.path.join(self._fullDir(), self.name_)
         return fullPath + ".data"
 
     def substitute(self, find, replace):
-        """ Substitute (in place and in the build directory) a part of the dataset
-        @param find : str : Text we want to substitute.
-        @param replace : str: Text to insert in replacement.
+        """ 
+        Substitute (in place and in the build directory) a part of the dataset
+
+        Parameters
+        ---------
+
+        find: str 
+            Text we want to substitute.
+        replace: str
+            Text to insert in replacement.
+
         """
-        path = self.fullPath()
+        path = self._fullPath()
         text_out = ""
         with open(path, "r") as f:
             text_in = f.read()
@@ -156,16 +178,32 @@ class TRUSTCase(object):
             f.write(text_out)
 
     def substitute_template(self, subs_dict):
-        """ Substitute (in place and in the build directory) a part of the dataset
-        @param subs_dict : dict : Text we want to substitute.
+        """ 
+        Substitute (in place and in the build directory) a part of the dataset
+
+        Parameters
+        --------
+
+        subs_dict: dict 
+            Text we want to substitute.
         """
-        path = self.fullPath()
+        path = self._fullPath()
         with open(path, "r") as file: filedata = Template(file.read())
         result = filedata.substitute(subs_dict)
         with open(path, "w") as file: file.write(result)
 
     def copy(self, targetName, directory=None, nbProcs=1):
-        """ Copy a TRUST Case.
+        """ 
+            Copy a TRUST Case
+
+        Parameters
+        ---------
+
+        targetName: str
+            New name
+        nbProcs: int
+            number of procs
+
         """
         if directory is None:
             directory = self.dir_
@@ -177,13 +215,19 @@ class TRUSTCase(object):
         # And copy the .data file:TRUSTSuite
         from shutil import copyfile
 
-        copyfile(self.fullPath(), pthTgt)
+        copyfile(self._fullPath(), pthTgt)
 
         return TRUSTCase(directory, targetName, nbProcs=nbProcs, record=False)
 
     def dumpDataset(self, user_keywords=[]):
-        """ Print out the .data file. TODO handle upper / lower case
-        @param list_Trust_user_words : list(str) : List of word the user wants to color in red.
+        """ 
+        Print out the .data file. TODO handle upper / lower case
+
+        Parameters
+        --------
+        
+        list_Trust_user_words: list(str) 
+            List of word the user wants to color in red.
         """
         ###############################################################
         # Voici un lien qui explique comment on manipule les couleurs #
@@ -220,7 +264,7 @@ class TRUSTCase(object):
         f.close()
 
         ### Import and Underline important words of the data file  ###
-        f = open(self.fullPath(), "r")
+        f = open(self._fullPath(), "r")
         tmp = f.readlines()
         test = []
         for j in tmp:
@@ -255,13 +299,13 @@ class TRUSTCase(object):
             cmd = "%s %s" % (pth, self.name_)
             _runCommand(cmd, verbose)
 
-    def preRun(self, verbose):
+    def _preRun(self, verbose):
         self._runScript("pre_run", verbose)
 
-    def postRun(self, verbose):
+    def _postRun(self, verbose):
         self._runScript("post_run", verbose)
 
-    def generateExecScript(self):
+    def _generateExecScript(self):
         """ Generate a shell script doing the
             - pre_run
             - launching the case
@@ -292,19 +336,23 @@ class TRUSTCase(object):
         return scriptFl, fullL
 
     def runCase(self, verbose=False):
-        """ Move to the case directory and execute the current test case:
+        """ 
+        Move to the case directory and execute the current test case:
         - calls pre_run if any
         - run the case
         - calls post_run if any
-        @param verbose
-        @return None
+
+        Parameters
+        ---------
+        verbose: bool
+        
         The results of the run are stored in members self.last_run_ok_ and self.last_run_err_
         """
         ok, err = True, ""
-        os.chdir(self.fullDir())
+        os.chdir(self._fullDir())
 
         ### Run pre_run ###
-        self.preRun(verbose)
+        self._preRun(verbose)
 
         ### Run Case ###
         err_file = self.name_ + ".err"
@@ -320,18 +368,18 @@ class TRUSTCase(object):
 
         ### Run post_run ###
         if ok:
-            self.postRun(verbose)
+            self._postRun(verbose)
 
         ### Return to initial directory ###
         os.chdir(ORIGIN_DIRECTORY)
         self.last_run_ok_, self.last_run_err_ = ok, err
         return ok, err
 
-    def addPerfToTable(self, zeTable):
+    def _addPerfToTable(self, zeTable):
         """ Extract performances for this case and add it to the global table
             passed in parameter.
         """
-        os.chdir(self.fullDir())
+        os.chdir(self._fullDir())
  
         opt = os.environ.get("JUPYTER_RUN_OPTIONS", None)
         # Very specific to the validation process - we need to keep build there:
@@ -402,9 +450,13 @@ class TRUSTSuite(object):
 
     def runCases(self, verbose=False, preventConcurrent=False):
         """ Launch all cases for the current suite.
-        @param verbose: bool : whether to print the console output of the run.
-        @param preventConcurrent: run the cases in the order they were provided, even if the Sserver is up and running, and the -parallel_sjob option
-        was passed.
+        
+        Parameters
+        ---------
+        verbose: bool 
+            whether to print the console output of the run.
+        preventConcurrent: bool 
+            run the cases in the order they were provided, even if the Sserver is up and running, and the -parallel_sjob option was passed.
         """
         opt = os.environ.get("JUPYTER_RUN_OPTIONS", "")
         # Very specific to the validation process. Sometimes we want the core
@@ -442,7 +494,7 @@ class TRUSTSuite(object):
         if runParallel:
             salloc = os.path.join(os.environ["TRUST_ROOT"], "bin", "Sjob", "Salloc")
             for case in lstC:
-                (script, logFile,) = case.generateExecScript()  # Generate the shell script doing pre_run, case and post_run
+                (script, logFile,) = case._generateExecScript()  # Generate the shell script doing pre_run, case and post_run
                 log_lst.append(logFile)
                 if "-parallel_run" in opt:
                     host = os.environ.get("TRUST_WITHOUT_HOST","")
@@ -492,7 +544,7 @@ class TRUSTSuite(object):
                 # Extract total time for all the runs of datasets
                 tr = os.environ.get("TRUST_ROOT", "")
                 gtt = os.path.join(tr, "Validation", "Outils", "Genere_courbe", "scripts", "get_total_time")
-                l = [c.fullPath() for c in lstC]
+                l = [c._fullPath() for c in lstC]
                 cmd = gtt + " " + " ".join(l)
                 os.chdir(BUILD_DIRECTORY)
                 _runCommand(cmd, False)
@@ -516,8 +568,12 @@ def readFile(data):
     saveFileAccumulator(data)
 
 def saveFileAccumulator(data):
-    """ Method for saving files.
-    @param data : str : name of the file we want to save.
+    """ Method for saving files for the Non Regression test
+
+    Parameters
+    ---------
+    data: str
+        name of the file we want to save.
     """
     from .filelist import FileAccumulator
 
@@ -532,7 +588,14 @@ def saveFileAccumulator(data):
 
 def introduction(auteur, creationDate=None):
     """ Function that creates an introduction cell Mardown
-    @param auteur : str : Name of the author of the test case.
+
+    Parameters
+    ---------
+
+    author: str 
+        Name of the author of the test case.
+    creationDate: date 
+        format dd/mm/YYYY 
     """
     from datetime import datetime
 
@@ -553,16 +616,27 @@ def introduction(auteur, creationDate=None):
 
 
 def description(text):
-    """ Function that creates a Description cell Mardown
-    @param text : str : Description test.
+    """ 
+    Function that creates a Description cell Mardown
+
+    Parameters
+    ---------
+    text: str 
+        Description test.
     """
     displayMD("### Description \n" + text)
 
 
 def TRUST_parameters(version="", param=[]):
     """ Function that creates a cell Mardown giving TRUST parameters (version, binary)
-    @param version : str : version of trust - if void TRUST_VERSION read
-    @param : str list : List of Parameter used in this test case
+    
+    Parameters
+    ----------
+
+    version: str 
+        version of TRUST - if void TRUST_VERSION read
+    param: list(str) 
+        List of Parameter used in this test case
     """
     # Validation process - we do not output variable information:
     builtOn = BUILD_DIRECTORY
@@ -580,9 +654,15 @@ def TRUST_parameters(version="", param=[]):
 
 
 def dumpDataset(fiche, list_Trust_user_words=[]):
-    """ Print out the .data file.
-    @param fiche: str : Path of the file
-    @param list_Trust_user_words : list(str) : List of word the user wants to color in red.
+    """ 
+    Print out the .data file.
+
+    Parameters
+    ---------
+    fiche: str 
+        Path of the file
+    list_Trust_user_words: list(str) 
+        List of word the user wants to color in red.
     """
     c = TRUSTCase(directory=BUILD_DIRECTORY, datasetName=fiche)
     c.dumpDataset(list_Trust_user_words)
@@ -590,7 +670,11 @@ def dumpDataset(fiche, list_Trust_user_words=[]):
 
 def dumpData(fiche, list_keywords=[]):
     """ Print out the file.
-    @param fiche: str : Path of the file
+
+    Parameters
+    --------
+    fiche: str 
+        Path of the file
     """
     ## Save the file
     name = os.path.join(BUILD_DIRECTORY, fiche)
@@ -617,10 +701,19 @@ def dumpData(fiche, list_keywords=[]):
 
 def addCaseFromTemplate(datasetName, directory, d, nbProcs=1):
     """ Add a case to run to the list of globally recorded cases.
-    @param directoryOrTRUSTCase: str : directory where the case is stored (relative to build/)
-    @param datasetName: str : Name of the case we want to run.
-    @param nbProcs : int : Number of proceseurs
-    @return case: a TRUSTcase instance. Trust we want to launch.
+    
+    Parameters
+    ----------
+    directory: str 
+        directory where the case is stored (relative to build/)
+    datasetName: str 
+        Name of the case we want to run.
+    nbProcs : int 
+        Number of processors
+
+    Returns
+    -------
+    a new TRUSTcase instance we want to launch.
     """
     global defaultSuite_
     if defaultSuite_ is None:
@@ -641,11 +734,22 @@ def addCaseFromTemplate(datasetName, directory, d, nbProcs=1):
 
 
 def addCase(directoryOrTRUSTCase, datasetName="", nbProcs=1):
-    """ Add a case to run to the list of globally recorded cases.
-    @param directoryOrTRUSTCase: str : directory where the case is stored (relative to build/)
-    @param datasetName: str : Name of the case we want to run.
-    @param nbProcs : int : Number of proceseurs
-    @return case: a TRUSTcase instance. Trust we want to launch.
+    """ 
+    Add a case to run to the list of globally recorded cases.
+
+    Parameters
+    ---------
+
+    directoryOrTRUSTCase: str 
+        directory where the case is stored (relative to build/)
+    datasetName: str 
+        Name of the case we want to run.
+    nbProcs : int 
+        Number of processors
+
+    Returns
+    -------
+    TRUSTcase instance we want to launch.
     """
     global defaultSuite_
     if isinstance(directoryOrTRUSTCase, TRUSTCase):
@@ -663,7 +767,7 @@ def addCase(directoryOrTRUSTCase, datasetName="", nbProcs=1):
         defaultSuite_.addCase(tc)
         return tc
 
-def initCaseSuite():
+def _initCaseSuite():
     """ Instantiate a default suite of cases """
     global defaultSuite_
     if defaultSuite_ is None:
@@ -671,7 +775,8 @@ def initCaseSuite():
         defaultSuite_ = TRUSTSuite()
 
 def reset():
-    """ Wipe out build directory completly and reset default suite.
+    """ 
+    Wipe out build directory completly and reset default suite.
     """
     opt = os.environ.get("JUPYTER_RUN_OPTIONS", None)
     # Very specific to the validation process - we need to keep build there:
@@ -693,7 +798,15 @@ def getCases():
     return defaultSuite_.getCases()
 
 def executeScript(scriptName, verbose=False):
-    """ Execute a script shell in the BUILD_DIRECTORY
+    """ 
+    Execute a script shell in the BUILD_DIRECTORY
+
+    Parameters
+    ----------
+
+    scriptName: str
+        Name of the exec script
+    verbose: bool
     """
     os.chdir(BUILD_DIRECTORY)
     pth = "./" + scriptName
@@ -712,6 +825,9 @@ def executeCommand(cmd, verbose=False):
 
 
 def printCases():
+    """
+    display testCases
+    """
     text = "### Test cases \n"
     for c in getCases():
         text += "* " + c.dir_ + "/" + c.name_ + ".data : \n"
@@ -719,10 +835,11 @@ def printCases():
     
 
 def extractNRCases():
-    """ Prints out the list of cases in a suitable format for processing by validation and lance_test
-    tools.
-    WARNING: do not modify this without looking at scripts get_list_cas_nr and get_nb_cas_nr in
-       Validation/Outils/Genere_Courbe/scripts
+    """ 
+    Prints out the list of cases in a suitable format for processing by validation and lance_test tools.
+
+    WARNING: 
+    do not modify this without looking at scripts get_list_cas_nr and get_nb_cas_nr in Validation/Outils/Genere_Courbe/scripts
     """
     import numpy as np
 
@@ -744,9 +861,13 @@ def extractNRCases():
 
 def runCases(verbose=False, preventConcurrent=False):
     """ Launch all TRUST cases for the current validation form.
-    @param verbose: bool : whether to print the console output of the run.
-    @param preventConcurrent: run the cases in the order they were provided, even if the Sserver is up and running, and the -parallel_sjob option
-    was passed.
+
+    Parameters
+    ---------
+    verbose: bool 
+        whether to print the console output of the run.
+    preventConcurrent: bool
+        run the cases in the order they were provided, even if the Sserver is up and running, and the -parallel_sjob option was passed.
     """
     global defaultSuite_
     if defaultSuite_ is None:
@@ -763,46 +884,10 @@ def tablePerf():
     zeTable = plot.Table(columns)
     for case in getCases():
         try:
-            case.addPerfToTable(zeTable)
+            case._addPerfToTable(zeTable)
         except Exception as e:
             raise e
 
     zeTable.sum("Total CPU Time")
 
     return zeTable.df
-
-
-def extractHistogram(domain, Out, file):
-    """
-    Extract the histogram.
-
-    @param domain : str : domain name
-    @param out    : str: Output.
-    @param file   :str : file in which we save the data.
-    """
-    raise NotImplementedError  # TODO TODO review the code for this one ...
-
-    os.chdir(BUILD_DIRECTORY)
-
-    tmp = ""
-    flag = False
-    document = open(Out, "r")
-    lines = document.readlines()
-    text = "Histogram of the largest angle of each element found into the mesh %s :\n" % (domain)
-
-    for i in lines:
-        if flag:
-            tmp = tmp + i
-        if i == text:
-            flag = True
-        if i == "\n":
-            flag = False
-
-    if os.path.exists(file):
-        os.remove(file)
-
-    f = open(file, "a")
-    f.write(tmp)
-    f.close()
-
-    os.chdir(ORIGIN_DIRECTORY)
