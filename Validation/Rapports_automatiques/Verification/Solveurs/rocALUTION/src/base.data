@@ -9,8 +9,7 @@ Mailler coarse_dom
     Pave Cavite
     {
         Origine 0. 0. 0.
-        Nombre_de_Noeuds 31 31 10 /* Nombre mailles sur le calcul parallele = (Nx-1)*(Ny-1)*(Nz-1)*40*8 */ 
-        Nombre_de_Noeuds 11 11 3 /* Nombre mailles sur le calcul parallele = (Nx-1)*(Ny-1)*(Nz-1)*40*8 */ 
+        Nombre_de_Noeuds _MESH_ /* Nombre mailles sur le calcul parallele = (Nx-1)*(Ny-1)*(Nz-1)*40*8 */ 
         Longueurs 10 10 3
     }
     {
@@ -32,7 +31,7 @@ Raffiner_isotrope dom
 # BEGIN PARTITION
 Partition coarse_dom
 {
-    Partition_tool Metis { Nb_parts 4 }
+    Partition_tool Metis { Nb_parts 2 }
     Larg_joint 2
     zones_name COARSE_DOM
 }
@@ -90,8 +89,8 @@ Read pb
             sortie    Frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
             paroi     paroi_fixe
         }
-	Sources { Forchheimer { porosite 0.4 Cf 1. modele_K ErgunForchheimer { diametre 1.5e-3 } } }
     }
+    Postraitement { Champs dt_post 1e8 { pression elem } }
 }
 EcritureLectureSpecial 0
 Solve pb
