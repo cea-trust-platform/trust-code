@@ -22,6 +22,7 @@
 #include <Comm_Group_MPI.h>
 #include <MD_Vector_std.h>
 #include <MD_Vector_composite.h>
+#include <Device.h>
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Solv_rocALUTION, "Solv_rocALUTION", Solv_Externe);
 
@@ -60,20 +61,36 @@ Solv_rocALUTION::~Solv_rocALUTION()
       ls->Clear();
       delete ls;
     }
-  if (sp_ls!=nullptr)
-    {
-      sp_ls->Clear();
-      delete sp_ls;
-    }
   if (gp!=nullptr)
     {
       gp->Clear();
       delete gp;
     }
+  if (lp!=nullptr)
+    {
+      lp->Clear();
+      delete lp;
+    }
+  if (local_solver!=nullptr)
+    {
+      local_solver->Clear();
+      delete local_solver;
+    }
+  if (sp_ls!=nullptr)
+    {
+      sp_ls->Clear();
+      delete sp_ls;
+    }
   if (sp_p!=nullptr)
     {
       sp_p->Clear();
       delete sp_p;
+    }
+  rocalution_initialized--;
+  if (rocalution_initialized==0)
+    {
+      info_rocalution();
+      stop_rocalution();
     }
 #endif
 }
@@ -82,10 +99,11 @@ void Solv_rocALUTION::initialize()
 {
 #ifdef ROCALUTION_ROCALUTION_HPP_
   ls = nullptr;
-  sp_ls = nullptr;
   gp = nullptr;
-  sp_p = nullptr;
   lp = nullptr;
+  local_solver = nullptr;
+  sp_ls = nullptr;
+  sp_p = nullptr;
   write_system_ = false;
 #endif
 }
@@ -112,7 +130,6 @@ double precond_option(Entree& is, const Motcle& motcle)
 }
 
 enum Verbosity { No, Limited, High};
-static Solver<LocalMatrix<double>, LocalVector<double>, double>* local_solver; // ToDo attribut?
 // Fonction template pour la creation des precond simple ou double precision
 #ifdef ROCALUTION_ROCALUTION_HPP_
 template <typename T>
@@ -791,11 +808,30 @@ void Solv_rocALUTION::Create_objects(const Matrice_Morse& csr)
 
   // Fill the GlobalMatrix:
   mat.SetParallelManager(pm);
-  mat.SetLocalDataPtrCSR(reinterpret_cast<int **>(&tab1_c), reinterpret_cast<int **>(&tab2_c),
-                         reinterpret_cast<double **>(&coeff_c), "mat", (int)coeff_c.size());   // LocalMatrix
+
+  int* row_offset = new int[tab1_c.size()];
+  int* col = new int[tab2_c.size()];
+  double* val = new double[coeff_c.size()];
+  std::copy(tab1_c.begin(), tab1_c.end(), row_offset);
+  std::copy(tab2_c.begin(), tab2_c.end(), col);
+  std::copy(coeff_c.begin(), coeff_c.end(), val);
+  mat.SetLocalDataPtrCSR(&row_offset, &col, &val, "mat", (int)coeff_c.size());
+  if (Process::nproc()>1)
+    {
+      row_offset = new int[ghost_tab1_c.size()];
+      col = new int[ghost_tab2_c.size()];
+      val = new double[ghost_coeff_c.size()];
+      std::copy(ghost_tab1_c.begin(), ghost_tab1_c.end(), row_offset);
+      std::copy(ghost_tab2_c.begin(), ghost_tab2_c.end(), col);
+      std::copy(ghost_coeff_c.begin(), ghost_coeff_c.end(), val);
+      mat.SetGhostDataPtrCSR(&row_offset, &col, &val, "ghost", (int) ghost_coeff_c.size());    // LocalMatrix ghost
+    }
+  /* Cela serait plus simple en passant les std::vector mais valgrind rale lors d'un free_host a la fin lors de ~GlobalMatrix :-(
+  mat.SetLocalDataPtrCSR(reinterpret_cast<int **>(&tab1_c), reinterpret_cast<int **>(&tab2_c), reinterpret_cast<double **>(&coeff_c), "mat", (int)coeff_c.size());   // LocalMatrix
   if (Process::nproc()>1)
     mat.SetGhostDataPtrCSR(reinterpret_cast<int **>(&ghost_tab1_c), reinterpret_cast<int **>(&ghost_tab2_c),
                            reinterpret_cast<double **>(&ghost_coeff_c), "ghost", (int)ghost_coeff_c.size());    // LocalMatrix ghost
+  */
   mat.Sort();
 
   if (debug)
@@ -828,41 +864,41 @@ void Solv_rocALUTION::Create_objects(const Matrice_Morse& csr)
     }
   // AMG smoothers On doit le faire apres le SetOperator(mat) pour avoir les differentes grilles:
   // Default: FixedPoint/Jacobi ?
-  try
+  if (lp!=nullptr)
     {
-      auto& mg = dynamic_cast<SAAMG<LocalMatrix<double>, LocalVector<double>, double> &>(*lp);
-      mg.SetOperator(mat.GetInterior());
-      mg.BuildHierarchy();
-      mg.SetManualSmoothers(true);
-      // Smoother for each level
-      mg.SetSmootherPreIter(1);
-      mg.SetSmootherPostIter(1);
-      int levels = mg.GetNumLevels();
-      auto **sm = new IterativeLinearSolver<LocalMatrix<double>, LocalVector<double>, double> *[levels - 1];
-      auto **gs = new Preconditioner<LocalMatrix<double>, LocalVector<double>, double> *[levels - 1];
-      for (int i = 0; i < levels - 1; ++i)
+      try
         {
-          FixedPoint<LocalMatrix<double>, LocalVector<double>, double> *fp;
-          fp = new FixedPoint<LocalMatrix<double>, LocalVector<double>, double>;
-          sm[i] = fp;
-          if (smoother_=="GS")
-            gs[i] = new GS<LocalMatrix<double>, LocalVector<double>, double>;    // Converge mieux avec BICGstab mais plus lent que Jacobi
-          else
-            gs[i] = new Jacobi<LocalMatrix<double>, LocalVector<double>, double>;
-          //fp->SetRelaxation(0.7);
-          sm[i]->SetPreconditioner(*gs[i]);
-          sm[i]->Verbose(precond_verbosity_);
+          auto& mg = dynamic_cast<SAAMG<LocalMatrix<double>, LocalVector<double>, double> &>(*lp);
+          mg.SetOperator(mat.GetInterior());
+          mg.BuildHierarchy();
+          mg.SetManualSmoothers(true);
+          // Smoother for each level
+          mg.SetSmootherPreIter(1);
+          mg.SetSmootherPostIter(1);
+          int levels = mg.GetNumLevels();
+          auto **sm = new IterativeLinearSolver<LocalMatrix<double>, LocalVector<double>, double> *[levels - 1];
+          auto **gs = new Preconditioner<LocalMatrix<double>, LocalVector<double>, double> *[levels - 1];
+          for (int i = 0; i < levels - 1; ++i)
+            {
+              FixedPoint<LocalMatrix<double>, LocalVector<double>, double> *fp;
+              fp = new FixedPoint<LocalMatrix<double>, LocalVector<double>, double>;
+              sm[i] = fp;
+              if (smoother_ == "GS")
+                gs[i] = new GS<LocalMatrix<double>, LocalVector<double>, double>;    // Converge mieux avec BICGstab mais plus lent que Jacobi
+              else
+                gs[i] = new Jacobi<LocalMatrix<double>, LocalVector<double>, double>;
+              //fp->SetRelaxation(0.7);
+              sm[i]->SetPreconditioner(*gs[i]);
+              sm[i]->Verbose(precond_verbosity_);
+            }
+          Cout << "Setting smoother on the " << levels << " levels: ";
+          gs[0]->Print();
+          mg.SetSmoother(sm);
+          mg.Verbose(precond_verbosity_);
         }
-      Cout << "Setting smoother on the " << levels << " levels: ";
-      gs[0]->Print();
-      mg.SetSmoother(sm);
-      mg.Verbose(precond_verbosity_);
+      catch (const std::bad_cast& error)
+        {};
     }
-  catch (const std::bad_cast& error)
-    {
-      //Cout << "precond is:" << finl;
-      //lp->Print();
-    };
 
   ls->Build();
   ls->Print();

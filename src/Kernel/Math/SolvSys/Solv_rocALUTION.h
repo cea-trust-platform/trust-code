@@ -19,13 +19,37 @@
 #include <Solv_Externe.h>
 #include <rocalution_for_kernel.h>
 #include <Motcle.h>
+#include <Device.h>
 class EChaine;
+
+// Initializer de rocALUTION inclus dans la classe pour ne pas l'appeler depuis main.cpp de TRUST
+static int rocalution_initialized = 0;
+struct rocalution_initializer
+{
+  rocalution_initializer()
+  {
+    if (rocalution_initialized==0)
+      {
+        disable_accelerator_rocalution(!computeOnDevice()); // TRUST_DISABLE_DEVICE=1 $exec pour desactiver la version GPU de rocALUTION
+        set_omp_affinity_rocalution(false); // Disable OpenMP thread affinity
+        //char* dev_per_node = getenv("TRUST_DEVICES_PER_NODE");
+        //init_rocalution(Process::me(), dev_per_node==NULL ? 1 : atoi(dev_per_node));
+        //set_device_rocalution(Process::me());
+        init_rocalution(Process::me(),
+                        1); // Lancement sur lumi01 (8 GPUS pour 64 cores, 1 rank MPI/GPU): srun --cpus-per-task=8 --gpus-per-task=1 --threads-per-core=1 -n ...
+        set_omp_threads_rocalution(1); // Disable OpenMP
+        info_rocalution();
+      }
+    rocalution_initialized++;
+  }
+};
 
 class Solv_rocALUTION : public Solv_Externe
 {
   Declare_instanciable_sans_constructeur_ni_destructeur(Solv_rocALUTION);
 
 public :
+  rocalution_initializer rocalution_initializer_;
   Solv_rocALUTION();
   Solv_rocALUTION(const Solv_rocALUTION&);
   ~Solv_rocALUTION() override;
@@ -52,6 +76,7 @@ private :
   // Preconditioners:
   Solver<GlobalMatrix<double>, GlobalVector<double>, double>* gp; // global parallel precond
   Solver<LocalMatrix<double>, LocalVector<double>, double>* lp;  // local precond
+  Solver<LocalMatrix<double>, LocalVector<double>, double>* local_solver; // local solver for multigrid
   // Mixed-precision solver:
   IterativeLinearSolver<GlobalMatrix<float>, GlobalVector<float>, float>* sp_ls;
   Solver<GlobalMatrix<float>, GlobalVector<float>, float>* sp_p;

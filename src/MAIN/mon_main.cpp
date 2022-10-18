@@ -24,12 +24,10 @@
 #include <Statistiques.h>
 #include <communications.h>
 #include <petsc_for_kernel.h>
-#include <rocalution_for_kernel.h>
 #include <stat_counters.h>
 #include <info_atelier.h>
 #include <unistd.h> // Pour chdir for other compiler
 #include <catch_and_trace.h>
-#include <Device.h>
 
 // Initialisation des compteurs, dans stat_counters.cpp
 extern void declare_stat_counters();
@@ -231,16 +229,6 @@ void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int chec
   if (Process::je_suis_maitre())
     Cerr << arguments_info;
 
-#ifdef ROCALUTION_ROCALUTION_HPP_
-  disable_accelerator_rocalution(!computeOnDevice()); // TRUST_DISABLE_DEVICE=1 $exec pour desactiver la version GPU de rocALUTION
-  set_omp_affinity_rocalution(false); // Disable OpenMP thread affinity
-  //char* dev_per_node = getenv("TRUST_DEVICES_PER_NODE");
-  //init_rocalution(Process::me(), dev_per_node==NULL ? 1 : atoi(dev_per_node));
-  //set_device_rocalution(Process::me());
-  init_rocalution(Process::me(),1); // Lancement sur lumi01 (8 GPUS pour 64 cores, 1 rank MPI/GPU): srun --cpus-per-task=8 --gpus-per-task=1 --threads-per-core=1 -n ...
-  set_omp_threads_rocalution(1); // Disable OpenMP
-  info_rocalution();
-#endif
 }
 
 void mon_main::finalize()
@@ -263,10 +251,6 @@ void mon_main::finalize()
 #endif
       PetscFinalize();
     }
-#endif
-#ifdef ROCALUTION_ROCALUTION_HPP_
-  info_rocalution();
-  stop_rocalution();
 #endif
 #ifdef MPI_
   if (trio_began_mpi_)
