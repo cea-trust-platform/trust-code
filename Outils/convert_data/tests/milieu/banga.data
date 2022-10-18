@@ -1,0 +1,178 @@
+dimension 3
+
+Pb_hydraulique_turbulent pb1
+Pb_hydraulique_turbulent box
+export domaine dom_pb1
+export domaine dom_box
+
+# DEBUT LECTURE #
+Scatter DOM1.Zones dom_pb1
+Scatter DOMbox.Zones dom_box
+# FIN LECTURE #
+
+VDF dis
+
+Runge_Kutta_ordre_3 sch
+Lire sch
+{
+	nb_pas_dt_max 10
+	tinit 0.
+	tmax 0.5
+	dt_min 1e-07
+	dt_max 25.
+	dt_impr 5.
+	dt_sauv 1.
+	seuil_statio -1
+	facsec 1.
+}
+
+Fluide_Incompressible fluidepb1
+Lire fluidepb1
+{
+	mu  Champ_Uniforme 1 0.001
+ 	rho Champ_Uniforme 1 1000
+}
+
+Fluide_Incompressible fluidebox
+Lire fluidebox
+{
+	mu  Champ_Uniforme 1 0.001
+ 	rho Champ_Uniforme 1 1000
+}
+
+Champ_Uniforme gravite
+Lire gravite 3 0. 0. -9.81
+Associer fluidepb1 gravite
+Associer fluidebox gravite
+
+Associer pb1 dom_pb1
+Associer pb1 fluidepb1
+
+Associer box dom_box
+Associer box fluidebox
+
+Probleme_Couple pbc
+Associer pbc box
+Associer pbc pb1
+Associer pbc sch
+Discretiser pbc dis
+
+Lire box
+{
+	navier_stokes_turbulent
+	{
+		modele_turbulence    sous_maille_wale
+		{
+			 Cw 0.5
+			 turbulence_paroi negligeable
+		}
+		solveur_pression petsc Cholesky { }
+		# solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-8 impr } #
+                convection { centre }
+		diffusion            {  }
+		Sources { Canal_perio { bord perio } }
+		conditions_initiales { vitesse Champ_fonc_xyz dom_pb1 3 0.15 0. 0. }
+		conditions_limites
+		{		
+			surface symetrie
+			perio periodique
+			par_ois paroi_fixe
+			defaut paroi_fixe
+		}
+
+	}
+	Postraitements
+	{
+		ecrit_3d
+		{
+			Definition_champs
+                	{
+                 		vitesse_moyenne Moyenne {
+					t_deb 0. t_fin 500.
+					source refChamp { Pb_champ box vitesse } }
+				vitesse_rms Ecart_type  {
+					t_deb 0. t_fin 500.
+					source refChamp { Pb_champ box vitesse } }
+                 	} 
+			format lata
+			domaine dom_box
+			fichier box3d
+			Champs dt_post 100.0
+			{
+				vitesse elem
+				vorticite elem
+				vitesse_moyenne elem
+				vitesse_rms elem
+				critere_q elem
+				y_plus elem
+			}
+		}
+			
+	} 
+	Sauvegarde binaire box.sauv
+}
+
+ Lire pb1
+{
+	navier_stokes_turbulent
+	{
+		modele_turbulence    sous_maille_wale
+		{
+			 Cw 0.5
+			 turbulence_paroi negligeable
+		}
+		solveur_pression petsc Cholesky { }
+		# solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-7 impr } #
+		convection { centre }
+		diffusion            {  }
+		conditions_initiales { vitesse Champ_fonc_xyz dom_pb1 3 0. 0. 0. } 
+		conditions_limites
+		{		
+			entree frontiere_ouverte_vitesse_imposee Champ_front_recyclage
+                                        { pb_champ_evaluateur box vitesse 3
+					  ampli_moyenne_imposee 3 0. 0. 0.
+					  ampli_moyenne_recyclee 3 0. 0. 0. 
+					  ampli_fluctuation 3 1. 1. 1. }
+			sortie Frontiere_ouverte_vitesse_imposee Champ_front_fonc_TXYZ 3  0.15 0. 0.
+			zone_aspi frontiere_ouverte_pression_imposee champ_front_Uniforme 1 0.
+			par_ois paroi_fixe
+			surface symetrie
+			tube paroi_fixe
+			defaut paroi_fixe
+			marche paroi_fixe
+		}
+	}
+	Postraitements
+	{
+		ecrit_3d
+		{
+		   	Definition_champs
+                	{
+                 		vitesse_moyenne Moyenne {
+					t_deb 100. t_fin 500.
+					source refChamp { Pb_champ pb1 vitesse } }
+				vitesse_rms Ecart_type  {
+					t_deb 100. t_fin 500.
+					source refChamp { Pb_champ pb1 vitesse } }
+                 	} 
+			format lata
+			domaine dom_pb1
+			fichier pb13d
+			Champs dt_post 100.0
+			{
+				vitesse elem
+				vorticite elem
+				vitesse_moyenne elem
+				vitesse_rms elem
+			}
+		}
+			
+	} 
+	Sauvegarde binaire calcul1.sauv
+} 
+
+Resoudre pbc
+
+# resoudre box #
+
+Fin

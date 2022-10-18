@@ -38,6 +38,11 @@ class FTBlock(object):
         #    self.champs_std["pressure"] = "elem"
         #f = self.data.get("format", "Lata")  # upper 'L' in Lata to avoid being replaced by 'lml' in lance_test
         #if f == "binaire": 
+        if not len(self.champs_std) and "dt_post" in self.data:
+            msg = "!!WARNING: for block '%s', dt_post option is present, but no regular field is being post-processed!\n" % self.postNam
+            msg += "  In the new syntax, dt_post can not be specified for interface only.\n" 
+            msg += "  You might want to add sth like 'champs dt_post xxx { pressure elem }' to ensure the original 'dt_post' is kept."
+            print(msg)
         f = "Lata"
         ret.extend([SPC, "format", f, "\n"])
         if self.data.get("nom_fichier", "") != "": 

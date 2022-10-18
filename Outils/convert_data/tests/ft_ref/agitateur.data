@@ -1,0 +1,282 @@
+# Reacteur a bain de verre fondu avec agitateur #
+
+dimension 3
+Probleme_FT_Disc_gen pb
+
+export domaine DOM
+
+# 6350400 mailles ~ 6.4 millions de maille #        
+# DEBUT MAILLAGE
+Mailler DOM
+{ 
+	Pave pave
+	{ 
+		origine 		-0.400 -0.400 0.
+		longueurs 		 0.800  0.800 0.550
+		nombre_de_noeuds 	211 	211 	145
+	}
+	{ 
+		bord bord 	X = -0.400   	-0.400 <= Y <= 0.400 	 0. <= Z <= 0.550
+		bord bord 	X =  0.400	-0.400 <= Y <= 0.400 	 0. <= Z <= 0.550
+		bord bord 	Y = -0.400   	-0.400 <= X <= 0.400 	 0. <= Z <= 0.550
+		bord bord 	Y =  0.400    	-0.400 <= X <= 0.400 	 0. <= Z <= 0.550
+		bord fond 	Z =  0. 	-0.400 <= X <= 0.400 	-0.400 <= Y <= 0.400
+		bord haut_p 	Z = 0.550	-0.400 <= X <= -0.370 	-0.400 <= Y <= -0.370
+		bord haut_s 	Z = 0.550	-0.370 <= X <= 0.400   	-0.400 <= Y <= -0.370
+		bord haut_s 	Z = 0.550	-0.400 <= X <= 0.400    -0.370 <= Y <= 0.400
+	}
+}
+
+FIN MAILLAGE #
+# Calcul parallele pour 128 processeurs # 
+# DEBUT DECOUPAGE 
+Decouper DOM
+{
+   Partitionneur tranche { tranches 8 4 4 }
+   Larg_joint 2
+   Nom_Zones DOM
+}
+Fin
+FIN DECOUPAGE #
+
+# DEBUT LECTURE # 
+Scatter DOM.Zones DOM
+# FIN LECTURE #
+
+export domaine ANCRE 
+
+# type de discretisation spatiale #
+
+VDF dis
+
+# 1 tour d'agitateur egal 1.00000000000000000000 sec ( 60 tr/mn ) #
+#    pas de temps environ: 1.e-03 # 
+#    pas de temps de diffusion environ:  3.0e-03 #
+#    pas de temps de convection environ: 8.7e-03 #
+
+Runge_Kutta_ordre_4_D3P sch
+Lire sch
+{
+	nb_pas_dt_max 50
+	tinit 	0.
+	tmax 	15.00000000000000000000
+	dt_start dt_fixe 4.5e-3
+	dt_max  0.01
+	dt_impr 1.e-10
+	dt_sauv 5
+	seuil_statio -1
+	facsec 4
+	diffusion_implicite 1
+}
+# Creation d'un repertoire pour les fichiers lata #
+system "mkdir -p lata"
+
+# Definition du fluide #
+Fluide_Incompressible huile
+Lire huile
+{
+	rho Champ_Uniforme 1 973
+	mu  Champ_Uniforme 1 3.89200000000000000000 # 3.892 -> nu=4000cS     8.69862 -> nu=8940cs #
+}
+
+Champ_Uniforme gravite
+Lire gravite 3 0. 0. -9.81
+Associer huile gravite
+
+Navier_Stokes_FT_Disc eq_hydraulique
+Transport_Interfaces_FT_Disc agit
+Transport_Interfaces_FT_Disc cuve
+
+Associer pb eq_hydraulique
+Associer pb agit
+Associer pb cuve
+
+Associer pb DOM
+Associer pb sch
+Associer pb huile
+
+Discretiser pb dis
+
+Lire pb
+{
+    eq_hydraulique
+    {
+	    modele_turbulence sous_maille_wale
+	    {
+	       Cw               1.e-16
+	       turbulence_paroi negligeable
+	    } 
+	    solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-12 impr }
+	    convection           { quick }
+	    diffusion            { }
+	    conditions_initiales { vitesse champ_uniforme 3 0. 0. 0. }
+	    equations_interfaces_vitesse_imposee 2 agit cuve
+	    # Options de penalisation
+	    penalisation_forcage { pression_reference 0. } #
+	    conditions_limites
+	    {
+		    haut_s 	symetrie
+		    haut_p 	frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.
+		    fond 	paroi_fixe
+		    bord 	paroi_fixe
+	    }
+    }
+    agit
+    {
+	    conditions_initiales {
+        	 fichier_geom {
+		      fichier_geom ancre_position_metre.geom  
+                      point_phase 0 -0.3 0. 0.   # Huile phase 0 #
+                      default_phase 1
+                 } 
+            } 
+	    remaillage {
+                pas -1e8
+                nb_iter_remaillage 5
+                critere_arete 0.5
+                critere_remaillage 0.2
+                pas_lissage -1
+                nb_iter_barycentrage 5
+                relax_barycentrage 1
+                facteur_longueur_ideale 0.5
+            }
+
+	    conditions_limites
+	    {
+		    haut_p 	paroi_ft_disc symetrie
+		    haut_s 	paroi_ft_disc symetrie
+		    fond 	paroi_ft_disc symetrie
+		    bord 	paroi_ft_disc symetrie
+	    }
+	    # L'agitateur tourne dans le sens horaire #
+	    methode_transport vitesse_imposee	
+	            6.28318530717958647688*(0.1325748+y*cos(22.0*3.141592653/180.)-z*sin(22.0*3.141592653/180.))      
+		    -6.28318530717958647688*x*cos(22.0*3.141592653/180.)
+        	    6.28318530717958647688*x*sin(22.0*3.141592653/180.)
+	    # Options module Baltik penalisation   
+	    interpolation_champ_face base { }
+	    n_iterations_interpolation_ibc 1 #
+
+    }
+    cuve
+    {
+            conditions_initiales { fonction (x*x+y*y)^0.5-(0.5*0.650) } # Cuve de 0.650 m de diametre # 
+	    remaillage {
+                pas -1e8
+                nb_iter_remaillage 5
+                critere_arete 0.5
+                critere_remaillage 0.2
+                pas_lissage -1
+                nb_iter_barycentrage 5
+                relax_barycentrage 1
+                facteur_longueur_ideale 0.5
+            }
+	    conditions_limites
+	    {
+		    haut_p 	paroi_ft_disc symetrie
+		    haut_s 	paroi_ft_disc symetrie
+		    fond 	paroi_ft_disc symetrie
+		    bord 	paroi_ft_disc symetrie
+	    }
+	    methode_transport vitesse_imposee 
+		    0.0 
+		    0.0 
+		    0.0
+	    # Options module Baltik penalisation 		   
+	    interpolation_champ_face base { }
+	    n_iterations_interpolation_ibc 1	#    
+    }
+
+    liste_postraitements
+    {
+	    Postraitement huile
+	    {	    	  
+	    	   Definition_champs 
+		   {	
+			Energie_cinetique_fluide Reduction_0D {
+		  	 	methode moyenne_ponderee source Transformation 
+				{
+		  	 		methode formule expression 1 0.5*973*3.141592653*0.650*0.550*u2_plus_v2_plus_w2*(1-indicatrice_cuve)*(1-indicatrice_agit)
+			 	 	sources {
+				  		Transformation 
+						{ 
+							methode produit_scalaire sources 
+							{
+			 					Interpolation {
+						 			localisation elem
+			  						source refChamp { Pb_champ pb vitesse } } ,
+			 					Interpolation {
+			 						localisation elem
+			  						source refChamp { Pb_champ pb vitesse } }
+							}
+							nom_source u2_plus_v2_plus_w2
+						} ,
+				  		refChamp { Pb_champ pb indicatrice_cuve nom_source indicatrice_cuve } ,
+				  		refChamp { Pb_champ pb indicatrice_agit nom_source indicatrice_agit }
+					} 			 
+		  		} 		 
+		  	} 
+			Reynolds_Maille_Min 	Reduction_0D { methode min 	source Interpolation { localisation elem source refChamp { Pb_Champ pb Reynolds_maille } } }
+			Reynolds_Maille_Max 	Reduction_0D { methode max 	source Interpolation { localisation elem source refChamp { Pb_Champ pb Reynolds_maille } } }
+			Reynolds_Maille_Mean	Reduction_0D { methode moyenne 	source Interpolation { localisation elem source refChamp { Pb_Champ pb Reynolds_maille } } }
+			Courant_Maille_Min 	Reduction_0D { methode min 	source Interpolation { localisation elem source refChamp { Pb_Champ pb Courant_maille } } }
+			Courant_Maille_Max 	Reduction_0D { methode max 	source Interpolation { localisation elem source refChamp { Pb_Champ pb Courant_maille } } }
+			Courant_Maille_Mean 	Reduction_0D { methode moyenne 	source Interpolation { localisation elem source refChamp { Pb_Champ pb Courant_maille } } }
+		    }
+		    Sondes 
+		    {
+		    		# Impression energie cinetique fluide (attention couteux en temps CPU donc bien choisir periode) #
+		    		Sonde_ec 	Energie_cinetique_fluide Periode .06250000000000000000 Point 1 0. 0. 0.
+				
+				# Impression des valeurs sur Reynolds et Courant de maille #
+				Sonde_ReMin 	Reynolds_Maille_Min 	Periode .06250000000000000000 Point 1 0. 0. 0.
+				Sonde_ReMax	Reynolds_Maille_Max 	Periode .06250000000000000000 Point 1 0. 0. 0.
+				Sonde_ReMean	Reynolds_Maille_Mean 	Periode .06250000000000000000 Point 1 0. 0. 0.
+				Sonde_CoMin 	Courant_Maille_Min 	Periode .06250000000000000000 Point 1 0. 0. 0.
+				Sonde_CoMax	Courant_Maille_Max 	Periode .06250000000000000000 Point 1 0. 0. 0.
+				Sonde_CoMean	Courant_Maille_Mean 	Periode .06250000000000000000 Point 1 0. 0. 0.				
+
+    				# dy=dz~0.01542851 #
+    				plan_vitesse moyenne_vitesse periode .06250000000000000000 plan 36 29	0.180 -0.2683573914 0.005156991482 
+												0.180 +0.2716404419 0.005156991482
+												0.180 -0.2683573914 0.4371552734
+				# Sonde de vitesse dans le plan de mesure pres du maximum #
+				Sonde_vitesse		vitesse	     periode 1.e-10	point 1 	0.180 -0.100 0.130
+				# Sonde de vitesse situee au centre du plan de mesure #
+				Sonde_vitesse_centre	vitesse	     periode 1.e-10	point 1 	0.180  0.000 0.250
+		    }
+		    format lata_v2
+		    fichier lata/huile
+                    champs dt_post .06250000000000000000
+                    {
+                            	vitesse			elem
+                            	pression		elem
+                    }
+		    Statistiques dt_post .06250000000000000000
+		    {
+                       		t_deb 10.00000000000000000000 t_fin 15.00000000000000000000
+                       		moyenne vitesse	elem
+		    }
+		    
+	    } 
+
+	    postraitement_ft_lata ancre { 
+    format Lata 
+    fichier lata/ancre 
+    interfaces agit { 
+        courbure som 
+    } 
+}
+
+	    postraitement_ft_lata cuve { 
+    format Lata 
+    fichier lata/cuve 
+    interfaces cuve { 
+        courbure som 
+    } 
+}
+    }
+    sauvegarde xyz reprise.xyz 
+}
+Resoudre pb
+Fin

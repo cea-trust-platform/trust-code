@@ -90,8 +90,11 @@ class MilieuModifier(TRUSTParser):
         """
         pbName = ""
         for p in PB_LIST: 
-            pbName, _ = self.getObjName(p)
-            if pbName != "": 
+            off = 0
+            while True: 
+                pbName, idx = self.getObjName(p, off)
+                if pbName == "": break
+                off = idx+1
                 pb = Problem()
                 pb.name = pbName
                 pb.start = self.getNext(self.findReadBlock(pbName), 2)
@@ -107,14 +110,15 @@ class MilieuModifier(TRUSTParser):
         e = self.findBlockEnd(self.getNext(mil.start, 2))
         mil.end = self.getNextJustAfter(e,1)
 
-        # Find associate - NB !: only one associate supported
+        # Find associate - NB: only one associate supported
         mil.assPb = self.findAssociate(mil.name)
         if mil.assPb == -1:
             raise ValueError("WHAAAT? No medium association found for milieu %s ..." % mil.name)
         # Read associated pb
         pb = self.tabToken[self.getNext(mil.assPb, 1)]
         if pb not in self.problems:
-            raise ValueError("WHAAAT? Medium association is buggy! Problem '%s' not found ..." % pb)
+            print("!!Warning!! Medium association might be buggy, or problem type is not supported (Front-Tracking?) ! Problem '%s' not found/covered ..." % pb)
+            return None
         self.problems[pb].medName = mil.name
         return mil
 
@@ -123,18 +127,26 @@ class MilieuModifier(TRUSTParser):
         """
         # Spot various milieu blocks of data
         for m in MIL_LIST:
-            milName, idx = self.getObjName(m)
-            if milName != "":
-                if not self.checkName(milName):
-                    print("It seems that your datafile is already in the new 'milieu' syntax!")
-                    return False
-                mil = Milieu()
-                mil.name = milName
-                mil.type = m
-                mil.decl = idx
-                mil = self._completeSingleMedium(mil)
-                self.mediums[milName] = mil
-                print("Milieu '%s' of type '%s' found at index %d" % (mil.name, m, idx))
+            idx = 0
+            # We can have several medium with the same type:
+            while idx != -1:
+                milName, idx = self.getObjName(m, idx)
+                if milName != "":
+                    if not self.checkName(milName):
+                        print("It seems that your datafile is already in the new 'milieu' syntax!")
+                        return False
+                    mil = Milieu()
+                    mil.name = milName
+                    mil.type = m
+                    mil.decl = idx
+                    mil = self._completeSingleMedium(mil)
+                    # Skip some types of problems, like FT:
+                    idx = idx + 1
+                    if mil is None:
+                        continue
+                    self.mediums[milName] = mil
+                    print("Milieu '%s' of type '%s' found at index %d" % (mil.name, m, idx))
+                    
         if len(self.mediums) == 0:
             print("No 'milieu' found!!")
             return False
