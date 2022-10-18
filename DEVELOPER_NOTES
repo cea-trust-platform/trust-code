@@ -6,7 +6,6 @@ Developer notes version 1.9.1_beta : Changes since version 1.9.0 :
 23/09/22 (TRUST) Matrice_base: new functionality get_stencil_and_coeff_ptrs() allowing to save initial coefficient pointers. 
 23/09/22 (TRUST) Solv_Petsc::resoudre_systeme() now supports matrix size change.
 19/09/22 (TRUST) Span implementations for Fluide_Reel_base and Saturation classes (no more point--to-point calculation)
-12/09/22 (TRUST) Add option -enable-rocalution to TRUST configure to build rocALUTION solvers for GPU AMD cards (need ROCm 5.x recent environment)
 12/09/22 (TRUST) Build with clang compilers (need to be rebuilt to enable OpenMP offload on GPU cards) is supported (no compute capability minimum)
 12/09/22 (TRUST) Build with NVidia HPC SDK compilers is supported with -openmp -cuda configure options. Need a recent NVidia GPU card (compute capability>=7.0)
 06/09/22 (TRUST) ArrOfFloat, FloatVect, FloatTab and FloatTrav follow the template arch.

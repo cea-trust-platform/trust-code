@@ -2015,11 +2015,11 @@ fi
 ##############
 # rocALUTION #
 ##############
-if [ "$TRUST_USE_ROCALUTION" = 1 ]
-then
+#if [ "$TRUST_USE_ROCALUTION" = 1 ]
+#then
    m="# PATH to rocALUTION";e="TRUST_ROCALUTION=\"\$TRUST_ROOT/lib/src/LIBROCALUTION\" && export TRUST_ROCALUTION";ecrit $m"|"$e"|"$env
    echo "ADD_LD_LIBRARY_PATH \$TRUST_ROCALUTION/lib" >> $env
-fi
+#fi
 
 ############
 # Topology #

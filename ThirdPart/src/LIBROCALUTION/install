@@ -4,11 +4,20 @@
 echo $TRUST_ROCALUTION
 [ "$TRUST_ROCALUTION" = "" ] && exit
 
-# On clone avant d'utiliser externalpackages dans le futur:
-[ ! -d rocALUTION ] && git clone https://github.com/ROCmSoftwarePlatform/rocALUTION.git
+rm -r -f rocALUTION
+if [ "$TRUST_ROCALUTION_COMMIT" != "" ]
+then
+   commit=$TRUST_ROCALUTION_COMMIT
+   git clone https://github.com/ROCmSoftwarePlatform/rocALUTION.git
+   cd rocALUTION && git checkout $commit && cd -
+   PACKAGE=$TRUST_ROOT/externalpackages/rocALUTION-$commit.tar.gz
+   tar cfz $PACKAGE --exclude .git rocALUTION && echo "Creation du package $PACKAGE"
+else
+   commit=eedff42d4 # Contrat de progres CINES
+   commit=985838b4e # Pour beneficier de GlobalMatrix operationnel en sequentiel
+   tar xfz $TRUST_ROOT/externalpackages/rocALUTION-$commit.tar.gz
+fi
 cd rocALUTION
-#git checkout eedff42d4badff # Contrat de progres CINES #
-git checkout 985838b4e      # Pour beneficier de GlobalMatrix operationnel en sequentiel
 
 # Build sans OpenMP et avec backend host si rocm pas installe:
 SUPPORT_HIP=ON && [ "$ROCM_PATH" = "" ]        && SUPPORT_HIP=OFF && echo "Warning, ROCm non installe donc pas de support GPU."
@@ -18,7 +27,8 @@ sed -i "1,$ s?#ifdef ROCALUTION_HIP_PINNED_MEMORY?#ifndef ROCALUTION_HIP_PINNED_
 rm -r -f build
 mkdir -p build
 cd build
-cmake .. -DSUPPORT_HIP=$SUPPORT_HIP -DROCM_PATH=$ROCM_PATH -DSUPPORT_OMP=OFF -DSUPPORT_MPI=$SUPPORT_MPI -DCMAKE_INSTALL_PREFIX=$TRUST_ROCALUTION || exit -1
+# rocALUTION se construit avec GNU/HP-CRAY/INTEL
+CXX=$TRUST_CC_BASE cmake .. -DSUPPORT_HIP=$SUPPORT_HIP -DROCM_PATH=$ROCM_PATH -DSUPPORT_OMP=OFF -DSUPPORT_MPI=$SUPPORT_MPI -DCMAKE_INSTALL_PREFIX=$TRUST_ROCALUTION || exit -1
 # Bidouille pour ROCM anciens...
 if [ -f $ROCM_PATH/include/rocsparse.h ]
 then

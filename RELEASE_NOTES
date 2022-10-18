@@ -1,3 +1,4 @@
+XX/10/22 (TRUST)  New solvers : Add rocALUTION library for CPU and/or AMD GPU (need ROCm 5.x recent environment). Syntax: solveur_pression rocALUTION gcp|gmres|... { precond ... { ... } seuil ... }
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.1_beta : Enhancements, modifications and corrected bugs since version 1.9.0 :
 --------------------------------------------------------------------------------------------------
