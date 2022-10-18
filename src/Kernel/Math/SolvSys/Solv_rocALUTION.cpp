@@ -145,7 +145,7 @@ Solver<GlobalMatrix<T>, GlobalVector<T>, T>* Solv_rocALUTION::create_rocALUTION_
       p = new Jacobi<GlobalMatrix<T>, GlobalVector<T>, T>();
       precond_option(is, "");
     }
-  else if (precond==(Motcle)"PairwiseAMG" || precond == (Motcle) "Pairwise-AMG") //
+  else if (precond==(Motcle)"PairwiseAMG" || precond == (Motcle) "Pairwise-AMG") // Converge pas sur P0P1...
     {
       p = new PairwiseAMG<GlobalMatrix<T>, GlobalVector<T>, T>();
       auto& pairwiseamg = dynamic_cast<PairwiseAMG<GlobalMatrix<T>, GlobalVector<T>, T> &>(*p);
@@ -164,22 +164,36 @@ Solver<GlobalMatrix<T>, GlobalVector<T>, T>* Solv_rocALUTION::create_rocALUTION_
     }
   else
     {
+      // See https://github.com/ROCmSoftwarePlatform/rocALUTION/wiki/functionality-table
       // Local preconditionners with BlockJacobi preconditionner:
       p = new BlockJacobi<GlobalMatrix<T>, GlobalVector<T>, T>();
-      if (precond == (Motcle) "MultiColoredGS")  //
+      if (precond == (Motcle) "MCSGS|MultiColoredSGS|SSOR")  // GPU build/solver
+        {
+          lp = new MultiColoredSGS<LocalMatrix<T>, LocalVector<T>, T>();
+          double omega = ::precond_option(is, "omega");
+          if (omega >= 0) dynamic_cast<MultiColoredSGS<LocalMatrix<T>, LocalVector<T>, T> &>(*lp).SetRelaxation(omega);
+        }
+      else if (precond == (Motcle) "MCGS|MultiColoredGS|SOR")  // GPU build/solve
         {
           lp = new MultiColoredGS<LocalMatrix<T>, LocalVector<T>, T>(); // Attention converge avec BICGSTAB pas CG...
           double omega = ::precond_option(is, "omega");
           if (omega >= 0) dynamic_cast<MultiColoredGS<LocalMatrix<T>, LocalVector<T>, T> &>(*lp).SetRelaxation(omega);
+          try
+            {
+              auto& solver = dynamic_cast<CG<GlobalMatrix<double>, GlobalVector<double>, double> &>(*ls);
+              Process::exit("Error, non symmetric Gauss Seidel preconditioners should be used with BiCGSTab solver, not CG.");
+            }
+          catch (const std::bad_cast& error) {}
         }
-      else if (precond == (Motcle) "ILU")  //
+      else if (precond == (Motcle) "ILU")  // ILU(0) sur GPU build/solver
         {
           lp = new ILU<LocalMatrix<T>, LocalVector<T>, T>(); // Converge pas non plus donc probleme...
           int level = (int) precond_option(is, "level");
           if (level >= 0)
             dynamic_cast<ILU<LocalMatrix<T>, LocalVector<T>, T> &>(*lp).Set(level, true);
         }
-      else if (precond == (Motcle) "SAAMG" || precond == (Motcle) "SA-AMG")  // Converge avec BICGStab (setup SAAMG desormais sur GPU)
+      // Aucun AMG n'a un build sur GPU donc lenteur possible a changement de matrice...
+      else if (precond == (Motcle) "SAAMG|SA-AMG")  // Converge avec BICGStab (setup SAAMG desormais sur GPU mais bloque ou TRES lent sur GPU4...)
         {
           lp = new SAAMG<LocalMatrix<T>, LocalVector<T>, T>();
           auto& saamg = dynamic_cast<SAAMG<LocalMatrix<T>, LocalVector<T>, T> &>(*lp);
@@ -190,7 +204,7 @@ Solver<GlobalMatrix<T>, GlobalVector<T>, T>* Solv_rocALUTION::create_rocALUTION_
           saamg.SetCouplingStrength(0.001);
           precond_option(is, "");
         }
-      else if (precond==(Motcle)"UAAMG" || precond==(Motcle)"UA-AMG")  // Converge en ? its
+      else if (precond==(Motcle)"UAAMG|UA-AMG")  // Setup rapide mais sur CPU
         {
           lp = new UAAMG<LocalMatrix<T>, LocalVector<T>, T>();
           auto& uuamg = dynamic_cast<UAAMG<LocalMatrix<T>, LocalVector<T>, T> &>(*lp);
@@ -200,7 +214,7 @@ Solver<GlobalMatrix<T>, GlobalVector<T>, T>* Solv_rocALUTION::create_rocALUTION_
           uuamg.SetCouplingStrength(0.001);
           precond_option(is, "");
         }
-      else if (precond==(Motcle)"RugeStuebenAMG" || precond==(Motcle)"C-AMG")  // Equivalent a C-AMG ?
+      else if (precond==(Motcle)"RugeStuebenAMG|RSAMG|RS-AMG|C-AMG")  // Setup rapide sur CPU. Converge vite.
         {
           lp = new RugeStuebenAMG<LocalMatrix<T>, LocalVector<T>, T>();
           auto& rsamg = dynamic_cast<RugeStuebenAMG<LocalMatrix<T>, LocalVector<T>, T> &>(*lp);
@@ -209,14 +223,24 @@ Solver<GlobalMatrix<T>, GlobalVector<T>, T>* Solv_rocALUTION::create_rocALUTION_
           rsamg.SetCoarsestLevel(200);
           precond_option(is, "");
         }
-      else if (precond == (Motcle) "GS")  //
+      else if (precond == (Motcle) "SPAI")  // ??
         {
-          lp = new GS<LocalMatrix<T>, LocalVector<T>, T>(); // ???
+          lp = new SPAI<LocalMatrix<T>, LocalVector<T>, T>();
           precond_option(is, "");
         }
-      else if (precond == (Motcle) "SGS")  //
+      else if (precond == (Motcle) "FSAI")  // ??
         {
-          lp = new SGS<LocalMatrix<T>, LocalVector<T>, T>(); // ???
+          lp = new FSAI<LocalMatrix<T>, LocalVector<T>, T>();
+          precond_option(is, "");
+        }
+      else if (precond == (Motcle) "GS")  // Non, CPU seulement
+        {
+          lp = new GS<LocalMatrix<T>, LocalVector<T>, T>();
+          precond_option(is, "");
+        }
+      else if (precond == (Motcle) "SGS")  // Non, CPU seulement
+        {
+          lp = new SGS<LocalMatrix<T>, LocalVector<T>, T>();
           precond_option(is, "");
         }
       else
@@ -226,29 +250,27 @@ Solver<GlobalMatrix<T>, GlobalVector<T>, T>* Solv_rocALUTION::create_rocALUTION_
           return nullptr;
         }
       // Coarse solver for local AMG
-      if (coarse_grid_solver_=="LU")
+      try
         {
-          try
-            {
-              // *** warning: LocalMatrix::LUFactorize() is performed in DENSE format
-              // *** warning: LocalMatrix::LUFactorize() is performed on the host
-              auto& base_amg = dynamic_cast<BaseAMG<LocalMatrix<T>, LocalVector<T>, T> &>(*lp);
-              local_solver = new LU<LocalMatrix<T>, LocalVector<T>, T>();
-              local_solver->Verbose(precond_verbosity_);
-              base_amg.SetManualSolver(true);
-              base_amg.SetSolver(*local_solver);
-            }
-          catch (const std::bad_cast& error) {}
+          auto& base_amg = dynamic_cast<BaseAMG<LocalMatrix<T>, LocalVector<T>, T> &>(*lp);
+          if (coarse_grid_solver_=="LU") // Solveur direct construit et inverse sur CPU
+            local_solver = new LU<LocalMatrix<T>, LocalVector<T>, T>();
+          else if (coarse_grid_solver_=="INVERSION") // Solveur direct construit et inverse sur GPU
+            local_solver = new Inversion<LocalMatrix<T>, LocalVector<T>, T>();
+          else if (coarse_grid_solver_!="JACOBI")
+            Process::exit("LU or JACOBI solver can be used on coarse grid.");
+          local_solver->Verbose(precond_verbosity_);
+          base_amg.SetManualSolver(true);
+          base_amg.SetSolver(*local_solver);
+          //base_amg.SetHostLevels(0); // Par defaut 0 (donc tous les levels sur GPU)
         }
-      else if (coarse_grid_solver_!="JACOBI")
-        {
-          Process::exit("LU or JACOBI solver can be used on coarse grid.");
-        }
+      catch (const std::bad_cast& error) {}
+
       // Set local preconditionner to BlockJacobi global one
       dynamic_cast<BlockJacobi<GlobalMatrix<T>, GlobalVector<T>, T> &>(*p).Set(*lp);
     }
-  p->Verbose(precond_verbosity_);
-  if (lp!= nullptr)  lp->Verbose(precond_verbosity_);
+  if (lp != nullptr) lp->Verbose(precond_verbosity_);
+  if (p != nullptr) p->Verbose(precond_verbosity_);
   return p;
 }
 
@@ -267,6 +289,14 @@ IterativeLinearSolver<GlobalMatrix<T>, GlobalVector<T>, T>* Solv_rocALUTION::cre
   else if (solver==(Motcle)"GMRES")
     {
       return new GMRES<GlobalMatrix<T>, GlobalVector<T>, T>();
+    }
+  else if (solver==(Motcle)"FGMRES")
+    {
+      return new FGMRES<GlobalMatrix<T>, GlobalVector<T>, T>();
+    }
+  else if (solver==(Motcle)"FP|FIXEDPOINT")
+    {
+      return new FixedPoint<GlobalMatrix<T>, GlobalVector<T>, T>();
     }
   else if (solver==(Motcle)"BICGSTAB")
     {
@@ -372,8 +402,8 @@ void Solv_rocALUTION::create_solver(Entree& entree)
     }
   else
     {
-      gp = create_rocALUTION_precond<double>(precond);
       ls = create_rocALUTION_solver<double>(solver);
+      gp = create_rocALUTION_precond<double>(precond);
       if (gp!= nullptr) ls->SetPreconditioner(*gp);
     }
   ls->InitTol(atol_, rtol_, div_tol);
@@ -880,16 +910,31 @@ void Solv_rocALUTION::Create_objects(const Matrice_Morse& csr)
           auto **gs = new Preconditioner<LocalMatrix<double>, LocalVector<double>, double> *[levels - 1];
           for (int i = 0; i < levels - 1; ++i)
             {
-              FixedPoint<LocalMatrix<double>, LocalVector<double>, double> *fp;
-              fp = new FixedPoint<LocalMatrix<double>, LocalVector<double>, double>;
-              sm[i] = fp;
-              if (smoother_ == "GS")
-                gs[i] = new GS<LocalMatrix<double>, LocalVector<double>, double>;    // Converge mieux avec BICGstab mais plus lent que Jacobi
+              if (smoother_=="CHEBYSHEV")
+                {
+                  Chebyshev<LocalMatrix<double>, LocalVector<double>, double> *krylov;    // GPU build/solve
+                  krylov = new Chebyshev<LocalMatrix<double>, LocalVector<double>, double>;
+                  sm[i] = krylov;
+                  //sm[i]->SetPreconditioner(*gs[i]);
+                  sm[i]->Verbose(precond_verbosity_);
+                }
               else
-                gs[i] = new Jacobi<LocalMatrix<double>, LocalVector<double>, double>;
-              //fp->SetRelaxation(0.7);
-              sm[i]->SetPreconditioner(*gs[i]);
-              sm[i]->Verbose(precond_verbosity_);
+                {
+                  FixedPoint<LocalMatrix<double>, LocalVector<double>, double> *fp;
+                  fp = new FixedPoint<LocalMatrix<double>, LocalVector<double>, double>;
+                  sm[i] = fp;
+                  if (smoother_ == "GS")
+                    gs[i] = new GS<LocalMatrix<double>, LocalVector<double>, double>;    // Non, CPU only
+                  else if (smoother_ == "MCGS|SOR")
+                    gs[i] = new MultiColoredGS<LocalMatrix<double>, LocalVector<double>, double>;    // GPU build/solve
+                  else if (smoother_ == "MCSGS|SSOR")
+                    gs[i] = new MultiColoredSGS<LocalMatrix<double>, LocalVector<double>, double>;    // GPU build/solve
+                  else
+                    gs[i] = new Jacobi<LocalMatrix<double>, LocalVector<double>, double>;
+                  //fp->SetRelaxation(omega);
+                  sm[i]->SetPreconditioner(*gs[i]);
+                  sm[i]->Verbose(precond_verbosity_);
+                }
             }
           Cout << "Setting smoother on the " << levels << " levels: ";
           gs[0]->Print();
@@ -897,7 +942,10 @@ void Solv_rocALUTION::Create_objects(const Matrice_Morse& csr)
           mg.Verbose(precond_verbosity_);
         }
       catch (const std::bad_cast& error)
-        {};
+        {
+          //Cout << "precond is:" << finl;
+          //lp->Print();
+        };
     }
 
   ls->Build();
