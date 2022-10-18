@@ -279,25 +279,25 @@
    <CUBLAS_LIB>
    Memcheck:Leak
    ...
-   obj:/usr/lib64/libcublasLt.so.*
+   obj:*/libcublasLt.so.*
 }
 {
    <CUSOLVER_LIB>
    Memcheck:Leak
    ...
-   obj:/usr/lib64/libcusolver.so.*
+   obj:*/libcusolver.so.*
 }
 {
    <CUBLAS_LIB>
    Memcheck:Leak
    ...
-   obj:/usr/lib64/libcublas.so.*
+   obj:*/libcublas.so.*
 }
 {
    <CUDA_LIB>
    Memcheck:Leak
    ...
-   obj:/usr/lib64/libcuda.so.*
+   obj:*/libcuda.so.*
 }
 {
    <OPENMPI_LIB>
