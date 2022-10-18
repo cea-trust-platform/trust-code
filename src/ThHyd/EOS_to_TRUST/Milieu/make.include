@@ -1,0 +1,15 @@
+Includes = -I. -I$(TRUST_ROOT)/include/backward\
+	-I$(TRUST_ROOT)/src/Kernel/Math\
+	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
+	-I$(TRUST_ROOT)/src/Kernel/Champs\
+	-I$(TRUST_ROOT)/src/Kernel/Champs/Champs_Don\
+	-I$(TRUST_ROOT)/src/Kernel/Framework\
+	-I$(TRUST_ROOT)/src/Kernel/VF/Geometrie\
+	-I$(TRUST_ROOT)/src/Kernel/Geometrie\
+	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Milieu\
+	-I$(TRUST_ROOT)/src/ThHyd/Multiphase\
+	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Milieu\
+	-I$(TRUST_ROOT)/src/ThHyd/EOS_to_TRUST/Interface\
+
+
+Lib = $(TRUST_LIB)/libeos2trust_milieu

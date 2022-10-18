@@ -67,6 +67,7 @@ void instancie_src_ThHyd_Dilatable_Weakly_Compressible_Milieu();
 void instancie_src_ThHyd_Dilatable_Weakly_Compressible_Problems();
 void instancie_src_ThHyd_Dilatable_Weakly_Compressible_VDF();
 void instancie_src_ThHyd_Dilatable_Weakly_Compressible_VEF();
+void instancie_src_ThHyd_EOS_to_TRUST_Milieu();
 void instancie_src_ThHyd_Incompressible();
 void instancie_src_ThHyd_Incompressible_Champs();
 void instancie_src_ThHyd_Incompressible_Cond_Lim();
