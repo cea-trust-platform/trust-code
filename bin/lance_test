@@ -391,7 +391,7 @@ add_test_case_from_validation()
       #############################################################################
 
       for FICHE_ROOT in `cd ${Rapports_auto_root} 2>/dev/null && find  Validation/Rapports_automatiques -follow -name '*'.prm | $TRUST_Awk -F/src '!/build/ {print $1}';
-	                     cd ${Rapports_auto_root} 2>/dev/null && find  Validation/Rapports_automatiques -follow -name '*'.ipynb -not -path "*/.ipynb_checkpoints*" | xargs dirname`
+	                     cd ${Rapports_auto_root} 2>/dev/null && find  Validation/Rapports_automatiques -follow -name '*'.ipynb -not -path "*/.ipynb_checkpoints*" | xargs dirname 2>/dev/null`
       do
      ####################
 	 # Nouveau cas test #

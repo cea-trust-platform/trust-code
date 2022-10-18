@@ -140,7 +140,7 @@ Navier_Stokes_standard
             vecteur_source_faces Transformation {
                 methode vecteur expression  2 pression_natif_dom y
                 source refChamp { Pb_champ pb pression }
-                localisation faces
+                localisation Faces
             }
 
             compo_vitessex Transformation {
