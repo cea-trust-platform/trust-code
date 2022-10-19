@@ -1330,7 +1330,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
 #ifdef MEDCOUPLING_
   if (use_medcoupling_)
     {
-      Cerr << "-> Using MEDCoupling API... If it fails, please contact Trust support and give a try to the MEDFile API with Lire_MEDFile keyword." << finl;
+      Cerr << "-> Using MEDCoupling API... If it fails, please contact Trust support." << finl;
       // MEDCoupling
       std::string fileName = nom_fic.getString();
       std::string meshName = nom_dom.getString();

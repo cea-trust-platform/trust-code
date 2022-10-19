@@ -94,7 +94,7 @@ protected:
   Nom nom_champ_, nom_decoup_, nom_dom_;
   Motcle loc_;
   int use_existing_domain_=0;
-  double temps_;
+  double temps_=0.0;
   int last_time_only_=0;
 
   // Other:

@@ -153,10 +153,24 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
 
       EChaine is2(s);
       loc_ = "";
+      constexpr double MIN_INF = -1.0e+300;
+      temps_ = MIN_INF;
       param.lire_avec_accolades(is2);
       // Localisation is elem by default
       if (loc_ == "") loc_ = "elem";
       if (nom_decoup_ != "") nom_decoup_lu = true;
+      // At least one time needed!
+      if (!last_time_only_ && temps_ == MIN_INF) // no time was provided
+        {
+          Cerr << "ERROR: reading 'Champ_fonc_MED': no time was provided! Either 'last_time' or 'time' parameter must be specified!" << finl;
+          Process::exit(-1);
+        }
+      if (last_time_only_ && temps_ != MIN_INF) // too many time options
+        {
+          Cerr << "ERROR: reading 'Champ_fonc_MED': both 'time' and 'last_time' were provided! Choose only one!" << finl;
+          Process::exit(-1);
+        }
+
     }
   else  // Old syntax!!
     readOn_old_syntax(is, chaine_lue, nom_decoup_lu);
@@ -168,9 +182,6 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
     nom_decoup_ = Nom("decoup/") + nom_dom_ + ".txt"; //valeur par defaut de nom_decoup
 
   traite_nom_fichier_med(nom_fichier_med_);
-  // MEDCoupling:
-  if (use_medcoupling_)
-    Cerr << "Using MEDCoupling API. To switch to the MEDFile API, use Champ_Fonc_MEDfile keyword." << finl;
   // La lecture de fichiers multiples .med fonctionne: voir cas test Champ_fonc_MED_Parallele
   // Un test est fait plus loin pour bien verifier que les partitionnement se recouvrent pour cela
   int multiple_med = 0;
@@ -277,7 +288,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
     {
       if (domain_exist && !use_existing_domain_)
         {
-          Cerr<<"INFO: You can use Champ_fonc_med use_existing_domain "<< nom_fichier_med_<<" "<<nom_dom_<<" "<<nom_champ_<<" "<<loc_<<" "<<temps_<<" to optimize."<<finl;
+          Cerr<<"INFO: You can toggle the flag 'use_existing_domain' in 'Champ_Fonc_MED' to optimize reading since it seems that the domain already exists."<<finl;
         }
       LireMED liremed;
       dom_med_.nommer(nom_dom_);
