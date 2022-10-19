@@ -14,5 +14,7 @@ using namespace MEDCoupling;
 #endif
 
 %include "medcoupling++.h"
-#%include "MEDCoupling.i"
+#ifndef __CYGWIN__
+%include "MEDCoupling.i"
+#endif
 %include "LataLoader.h"
