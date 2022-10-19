@@ -1,8 +1,8 @@
-XX/XX/22 (TRUST) Add -fp-model precise flag to Intel compiler for less agressive optimizations and less computations difference than GNU-built TRUST version
-XX/XX/22 (TRUST) Add -disable-petsc-optionals to configure options to disable options for Cathare (vizualisation features, HDF5 support, ...)
 -------------------------------------------------------------
 Developer notes version 1.9.1_beta : Changes since version 1.9.0 :
 -------------------------------------------------------------
+19/10/22 (TRUST) Add -fp-model precise flag to Intel compiler for less agressive optimizations and less computations difference than GNU-built TRUST version
+19/10/22 (TRUST) Add -disable-petsc-optionals to configure options to disable options for Cathare (vizualisation features, HDF5 support, ...)
 30/09/22 (TRUST) Porosity_elem() & porosity_face() are now accessed from the medium and not anymore from the zone
 30/09/22 (TRUST) Huge clean-up done in Probleme/Milieu_base. Gravity & porosity read in medium, medium read in problem
 23/09/22 (TRUST) Matrice_base: new functionality get_stencil_and_coeff_ptrs() allowing to save initial coefficient pointers. 

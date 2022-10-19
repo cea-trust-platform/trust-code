@@ -3,18 +3,25 @@
 # Permet de stoker les sources de TRUST modifiees par le projet
 # util pour le portage 
 org=`mktemp_ -d `
-for f in `ls build/src/*.{cpp,h,f}| grep -v info_atelier`
+list_patch=""
+rm -rf org
+for f in `ls build/src/*.{cpp,h,f} 2>/dev/null | grep -v info_atelier`
 do
   f2=`Find.sh $(basename $f)`
- [ "$f2" != "" ] &&  cp $f2 $org; 
+ [ "$f2" != "" ] && f3=`find -name $(basename $f) | grep -v build | grep -v kernel_official_sources` &&  cp $f2 $org && [ "$f3" != "" ] && list_patch=$f3" "$list_patch; 
 done
+
+echo "List of patched files:"
+echo $list_patch | sed "s/ /\n/g"
+echo ""
+
 
 diff -r $org share/kernel_official_sources 2>&1 1>/dev/null
 status=$?
 if [ $status -ne 0 ]
 then
-    rm -rf org
     mv $org org
+    echo "Differences may be:"
     diff -r org share/kernel_official_sources
 else
     rm -rf $org

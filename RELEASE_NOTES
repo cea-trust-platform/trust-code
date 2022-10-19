@@ -1,9 +1,9 @@
-XX/XX/22 (TRUST)  Portability : Cygwin build on Windows is supported (but not regularly tested yet)
-XX/XX/22 (TRUST)  New keyword : Keyword "muscl_new" VEF convective scheme which really respect monotonicity contrary to "muscl" one, though at higher CPU cost for the moment: see QC_temperature_bounds_MUSCL validation sheet   
-XX/10/22 (TRUST)  New solvers : Add rocALUTION library for CPU and/or AMD GPU (need ROCm 5.x recent environment). Syntax: solveur_pression rocALUTION gcp|gmres|... { precond ... { ... } seuil ... }
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.1_beta : Enhancements, modifications and corrected bugs since version 1.9.0 :
 --------------------------------------------------------------------------------------------------
+19/10/22 (TRUST)  Portability : Cygwin build on Windows is supported (but not regularly tested yet)
+19/10/22 (TRUST)  New keyword : Keyword "muscl_new" VEF convective scheme which really respect monotonicity contrary to "muscl" one, though at higher CPU cost for the moment: see QC_temperature_bounds_MUSCL validation sheet
+19/10/22 (TRUST)  New solvers : Add rocALUTION library for CPU and/or AMD GPU (need ROCm 5.x recent environment). Syntax: solveur_pression rocALUTION gcp|gmres|... { precond ... { ... } seuil ... }
 18/10/22 (TRUST)  Syntax      : Champ_Fonc_MED* keywords have a new syntax using { } and key/value pairs. See reference manual. Old syntax supported until 1.9.3.
 17/10/22 (TRUST)  Syntax      : Previous 'diametre_hyd_champ' interpret is no more available. It is now read as part of the medium.
 13/10/22 (TRUST)  Syntax      : Read_MED/Lire_MED has a new syntax using { } and key/value pairs. See reference manual. Old syntax supported until 1.9.3.
