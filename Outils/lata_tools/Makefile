@@ -1,6 +1,6 @@
 trg=$(TRUST_ROOT)/exec/lata_tools/bin/compare_lata
 tools_src=src
-SRCS=$(wildcard $(tools_src)/trust_commun/*.cpp $(tools_src)/trust_commun/*.h $(tools_src)/trust_compat/*.cpp $(tools_src)/trust_compat/*.h $(tools_src)/trust_compat/*.tpp)
+SRCS=$(wildcard $(tools_src)/trust_commun/*.cpp $(tools_src)/trust_commun/*.h $(tools_src)/trust_compat/*.cpp $(tools_src)/trust_compat/*.h $(tools_src)/trust_compat/*.tpp $(tools_src)/tools/*.i $(tools_src)/tools/*.h $(tools_src)/tools/*.cpp)
 
 all: $(trg)
  
