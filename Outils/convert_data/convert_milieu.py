@@ -218,13 +218,35 @@ class MilieuModifier(TRUSTParser):
             if kw == "porosite_surf_champ": 
                 att["end"] = self.getNextJustAfter(idx, 2+3)
             else:
-                # Find last float value or closing '}' ... because a field definition will always end like this ...
-                idx = self.getNext(idx, 3)
+                #
+                # HACK HACK!! Find end of field instanciation ... hiiic. Number of tokens depend on field type ...
+                # We look for the last float or some other magical heuristic ...
+                #
+                idx = self.getNext(idx, 2)
+                fld_typ = self.tabTokenLow[idx]
+                print(fld_typ)
+                idx = self.getNext(idx, 1)
                 if self.tabTokenLow[idx] == '{':
                     att["end"] = self.getNextJustAfter(self.findBlockEnd(idx), 1)
                 else:
-                    # HACK HACK!! Find end of field instanciation ... hiiic. We look for the last float
                     idx = self.getNext(idx, 1)  # at least 2 tokens in a field instanciation
+                    # For champ_uniforme_morceaux, we might still have a '{' ... so try a little harder:
+                    if self.tabTokenLow[idx] == '{':
+                        att["end"] = self.getNextJustAfter(self.findBlockEnd(idx), 1)
+                        return True
+                    idx2 = self.getNext(idx, 1)
+                    if self.tabTokenLow[idx2] == '{':
+                        att["end"] = self.getNextJustAfter(self.findBlockEnd(idx2), 1)
+                        return True
+                    
+                    if fld_typ in ["champ_fonc_fonction", "champ_fonc_xyz", "champ_fonc_txyz"]:
+                        nb_tok = int(self.tabTokenLow[idx])
+                        print(nb_tok)
+                        idx = self.getNext(idx, nb_tok)
+                        att["end"] = self.getNextJustAfter(idx, 1)
+                        return True
+                    
+                    # Last resort, look for last float ...
                     while not is_float(self.tabTokenLow[idx]):  
                         idx = self.getNext(idx, 1)
                     while is_float(self.tabTokenLow[idx]):
