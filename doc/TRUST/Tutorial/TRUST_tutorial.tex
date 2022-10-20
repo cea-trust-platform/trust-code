@@ -1319,7 +1319,7 @@ in the directory Formation\_TRUST/yourname. It is also possible to use \textbf{"
 \item Edit your data file in the Marche directory. First, rename the problem in order to add concentration equations (look for the adequate keywords in the TrioCFD Reference Manual).\\
 \textbf{triocfd -index\index{triocfd -index}} then click on \textbf{Reference manual}
 
-\item Add 3 constituents of equal diffusivities ($\alpha=1m/s$) and associate the constituents to the problem.
+\item Add 3 constituents of equal diffusivities ($\alpha=1m/s$) after the fluid definition (in the problem block).
 
 \item Define the concentration equation into the problem (remember that concentrations will be a vector of 3 components) with correct initial ($C_1=0, C_2=0, C_3=0$) and boundary conditions.
 
@@ -2113,7 +2113,7 @@ Select the Mesh\_1 object then Right Click $\rightarrow$ Export $\rightarrow$ ME
 \hline 
 \textbf{dimension 3 }\tabularnewline
 \textbf{domaine dom }\tabularnewline
-\textbf{Read\_med family\_names\_from\_group\_names dom Mesh\_1 Mesh\_1.med }\tabularnewline
+\textbf{Read\_MED \{ domain dom file Mesh\_1.med \} }\tabularnewline
 \textbf{Postraiter\_domaine\index{Postraiter\_domaine} \{ domaine dom fichier mesh format lata\index{format lata}
 \}}\tabularnewline
 \hline 
@@ -3152,7 +3152,7 @@ Physical Volume("dom") = \{1\};
         \begin{itemize}
         \item [$\circ$] copy the data file of the first exercise into a Obstacle\_VEF.data file, \\
         \item [$\circ$] read the MED file:\\
-                        \textbf{Lire\_med family\_names\_from\_group\_names dom file file.med } \\
+                        \textbf{Read\_MED \{ domain dom file file.med \} } \\
                         Notice that by default with Gmsh, the mesh name is the name of the file!
         \item [$\circ$] change the discretization type,
         \item [$\circ$] be careful to the choice of the convection scheme for your VEF calculation,
