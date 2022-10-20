@@ -798,7 +798,7 @@ DoubleTab Champ_Inc_base::valeur_aux_bords() const
             for (k = 0; k < n_som; k++)
               for (s = f_s(f, k), n = 0; n < N; n++) result(fb, n) += valeurs()(s, n) / n_som;
           }
-      else Process::exit("Champ_Inc_base::valeur_aux_bords() : mus code something!");
+      else Process::exit("Champ_Inc_base::valeur_aux_bords() : must code something!");
     }
   return result;
 }
