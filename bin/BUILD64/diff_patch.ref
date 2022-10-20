@@ -28,23 +28,23 @@ diff -r bin/BUILD64/patch/src/Kernel/Utilitaires/arch.h ./src/Kernel/Utilitaires
 ---
 > #define IOS_OPEN_MODE int
 > #define IOS_FORMAT int
-57c57
+63c63
 < void srand48(long) ;
 ---
 > void srand48(int) ;
-75,76c75,76
+81,82c81,82
 < // on definit les integer comme des long (4 octets)
 < // et non plus des long long (4 octets sur 32bits ou 8 octets sur 64bits)
 ---
 > // on definit les integer comme des int (4 octets)
 > // et non plus des long int (4 octets sur 32bits ou 8 octets sur 64bits)
-78,79c78,79
+84,85c84,85
 < typedef long entier;
 < typedef long integer;
 ---
 > typedef int entier;
 > typedef int integer;
-81c81
+87c87
 < #define INT_is_64_
 ---
 > //#define INT_is_64_

@@ -53,6 +53,12 @@
 #endif
 #endif
 
+#ifdef __CYGWIN__
+void srand48(int) ;
+double drand48();
+char* strdup(const char* s);
+#endif
+
 #ifdef MICROSOFT
 void srand48(long) ;
 double drand48();
