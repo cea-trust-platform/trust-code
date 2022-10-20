@@ -5,7 +5,15 @@ To define the problem dimension, we use the following keyword:
     \begin{center}
     \fbox{ \begin{minipage}[c]{0.5\textwidth}
     \begin{alltt}
-    {\bf{Dimension}}  \textit{2}  or {\bf{Dimension}}  \textit{3}
+    {\bf{Dimension}}  \textit{2}
+    \end{alltt}
+    \end{minipage}}
+    \end{center}
+or
+    \begin{center}
+    \fbox{ \begin{minipage}[c]{0.5\textwidth}
+    \begin{alltt}
+    {\bf{Dimension}}  \textit{3}
     \end{alltt}
     \end{minipage}}
     \end{center}
@@ -31,6 +39,7 @@ Here are some of the available problem types:
 %\item \textbf{Pb\_Hydraulique\_Concentration$\left[\mbox{\_Turbulent}\right]$}
 \item for incompressible flow: \textbf{Pb\_$\left[\mbox{\textcolor{magenta}{Thermo}}\right]$hydraulique$\left[\mbox{\textcolor{darkblue}{\_Concentration}}\right]\hspace{-0.15cm}\left[\mbox{\textcolor{Greeen}{\_Turbulent}}\right]$},
 \item for quasi-compressible flow: \textbf{Pb\_Thermohydraulique$\left[\mbox{\textcolor{Greeen}{\_Turbulent}}\right]$\_QC}, 
+\item for weakly compressible flow: \textbf{Pb\_Thermohydraulique$\left[\mbox{\textcolor{Greeen}{\_Turbulent}}\right]$\_WC}, 
 %\item for quasi-compressible flow:\\
 %    \textbf{Pb\_Thermohydraulique$\left[\mbox{\textcolor{Greeen}{\_Turbulent}}\right]$\_QC$\left[\mbox{\textcolor{mauve}{\_fraction\_massique}}\right]$}, 
 \item for solid: \textbf{Pb\_Conduction},
@@ -40,12 +49,13 @@ Here are some of the available problem types:
 
 where:
 \begin{itemize}
-\item \textbf{hydraulique}: means that we will solve Navier Stokes equations without energy equation,
-\item \textbf{\textcolor{magenta}{Thermo}}: means that we will solve Navier Stokes equations with energy equation,
+\item \textbf{hydraulique}: means that we will solve Navier-Stokes equations without energy equation,
+\item \textbf{\textcolor{magenta}{Thermo}}: means that we will solve Navier-Stokes equations with energy equation,
 \item \textbf{\textcolor{darkblue}{Concentration}}: that we will solve multiple constituent transportation equations,
-\item \textbf{\textcolor{Greeen}{Turbulent}}: that we will simulate a turbulent flow and specify a turbulent model (RANS or LES). (Since version v1.8.0, \textcolor{Greeen}{Turbulence} models are in TrioCFD not in TRUST).
+\item \textbf{\textcolor{Greeen}{Turbulent}}: that we will simulate a turbulent flow and specify a turbulent model (RANS or LES). (Since version v1.8.0, \textcolor{Greeen}{Turbulence} models are in TrioCFD and not anymore in TRUST).
 \item \textbf{Conduction}: resolution of the heat equation,
 \item \textbf{QC}: Navier Stokes equations with energy equation for quasi-compressible fluid under low Mach approach,
+\item \textbf{WC}: Navier Stokes equations with energy equation for weakly compressible fluid under low Mach approach.
 %\item \textbf{\textcolor{mauve}{fraction\_massique}}: hydraulic and energy equations are solved and a list of passive scalar equations may be added.
 \end{itemize}
 
@@ -82,7 +92,7 @@ Notice the presence of the tags:
 \textcolor{blue}{\# END MESH \#}
 \end{alltt}
 in the data file of section \ref{data}.
-This is necessary for parallel calculation (see section \ref{parallel}).
+This is useful for parallel calculation (see section \ref{parallel}) if well placed in datafile.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Allowed meshes}
@@ -355,7 +365,7 @@ Here is an example of this kind of data file:
 
 {\bf{discretiser\_domaine}} \textit{my\_domain}
 
-{\bf{postraiter\_domaine}} \{ {\bf{domaine}} \textit{my\_domain} {\bf{format lata}} \}
+{\bf{postraiter\_domaine}} \{ {\bf{domaine}} \textit{my\_domain} {\bf{fichier}} \textit{file} {\bf{format lata}} \}
 
 {\bf{End}}
     \end{alltt}
@@ -368,7 +378,7 @@ To use it, launch in a bash terminal:
 > source $my_path_to_TRUST_installation/env_TRUST.sh
 # then
 > trust my_data_file
-> visit -o my_data_file.lata &
+> visit -o file.lata &
 \end{verbatim}
 
 To see how to use VisIt, look at the first \trust tutorial exercise: \href{TRUST_tutorial.pdf\#exo1}{Flow around an obstacle}.\\
@@ -638,9 +648,7 @@ To specify the medium or fluid, you must add the following block.
     \begin{center}
     \fbox{ \begin{minipage}[c]{0.5\textwidth}
     \begin{alltt}
-    {\bf{\textit{Fluid\_type}}} \textit{my\_medium}
-
-    {\bf{Read}} \textit{my\_medium} \{ ... \}
+    {\bf{\textit{Fluid\_type}}} \{ ... \}
     \end{alltt}
     \end{minipage}}
     \end{center}
@@ -649,13 +657,14 @@ To specify the medium or fluid, you must add the following block.
 \begin{itemize}
 \item \href{\REFERENCEMANUAL\#fluideincompressible}{\textbf{Fluide\_incompressible}}
 \item \href{\REFERENCEMANUAL\#fluidequasicompressible}{\textbf{Fluide\_quasi\_compressible}}
+\item Fluide\_Weakly\_Compressible
 %\item \textbf{Fluide\_Ostwald}
 %\item \textbf{Constituant}
 \item \href{\REFERENCEMANUAL\#solide}{\textbf{Solide}}
 \item for other types and more information see \href{\REFERENCEMANUAL\#milieubase}{\trustref Reference Manual}.
 \end{itemize}
 
-If you want to use more than one medium, you can add another blocks for each medium or fluid.\\
+Since TRUST v1.9.1, the medium should be read in the begining of the problem definition (before equations). If you want to solve a coupled problem, each medium should be read in the corresponding problem.\\
 
 
 
@@ -665,17 +674,12 @@ If you want to use more than one medium, you can add another blocks for each med
 \section{Add gravity}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 If needed, you can add a gravity term to your simulation. This is done by adding
-a uniform field, no matter his name. For example in 2D:
+a uniform field, in the medium block since V1.9.1. For example in 2D:
 
     \begin{center}
     \fbox{ \begin{minipage}[c]{0.5\textwidth}
     \begin{alltt}
-    \textcolor{blue}{\# Gavity vector definition \#}
-
-    {\bf{Uniform\_field}} \textit{my\_gravity}
-
-    {\bf{Read}} \textit{my\_gravity 2 0 -9.81}
-
+    \bf{gravity} {\bf{Uniform\_field}} \textit{2 0 -9.81}
     \end{alltt}
     \end{minipage}}
     \end{center}
@@ -699,10 +703,6 @@ For this, we must use the \href{\REFERENCEMANUAL\#associate}{\textbf{Associate}}
     {\bf{Associate}} \textit{my\_problem my\_domain}
 
     {\bf{Associate}} \textit{my\_problem my\_time\_scheme}
-
-    {\bf{Associate}} \textit{my\_problem my\_medium}
-
-    [{\bf{Associate}} \textit{my\_medium my\_gravity}]
     \end{alltt}
     \end{minipage}}
     \end{center}
@@ -724,18 +724,7 @@ Then you must discretize your domain using the \href{\REFERENCEMANUAL\#discretiz
 
 The problem \textit{my\_problem} is discretized according to the \textit{my\_discretization} discretization.\\
 
-IMPORTANT: A number of objects must be already associated (a domain, time scheme, central object) prior to invoking the \textbf{Discretize} keyword. The physical properties of this central object must also have been read.\\
+IMPORTANT: A number of objects must be already associated (a domain, time scheme, ...) prior to invoking the \textbf{Discretize} keyword.\\
 
 \Note that when the discretization step succeeds, the mesh is validated by the code.\\
-
-At this level of your data file, you can visualize your mesh with the "\textbf{-mesh}" option of the trust script, it will directly open your mesh with VisIt.
-\begin{verbatim}
-# if not already done
-> source $my_path_to_TRUST_installation/env_TRUST.sh
-# then
-> trust -mesh my_data_file
-\end{verbatim}
-It will only run the mesh and stop, the problem will not be solved.
-
-
 

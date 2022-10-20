@@ -8,7 +8,7 @@ FILE6=chap6_post_processing
 FILE7=chap7_parallel
 
 all: ../TRUST_$(FILE).pdf 
-../TRUST_$(FILE).pdf: $(FILE).tex $(FILE2).tex $(FILE3).tex $(FILE4).tex $(FILE5).tex $(FILE6).tex chap1_intro.tex mini.tex fieldnames.tex Makefile
+../TRUST_$(FILE).pdf: $(FILE).tex $(FILE2).tex $(FILE3).tex $(FILE4).tex $(FILE5).tex $(FILE6).tex $(FILE7).tex chap1_intro.tex mini.tex fieldnames.tex Makefile
 ifeq (, $(shell which pdflatex))
 	@echo "No pdflatex command, consider installing texlive package"
 else

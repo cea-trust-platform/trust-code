@@ -43,6 +43,10 @@ where: $\displaystyle{P^*=\frac{P}{\rho} + g z}$, $Q$ is the heat source term, a
 
 \{
 
+\hspace{1cm}    \textcolor{blue}{\# Define medium and its properties + gravity if any \#}
+
+\hspace{1cm}    \bf{Fluide\_incompressible} \{ ... \}
+
 \hspace{1cm}    \textcolor{blue}{\# Navier Stokes equations with/without turbulent model \#}
 
 \hspace{1cm}    {\bf{Navier\_Stokes$\overbrace{\mbox{\_Standard}}^{\mbox{\textcolor{Greeen}{\_Turbulent}}}$} }
@@ -191,6 +195,11 @@ where: $P_0=\rho R T$, $Q$ is a heat source term, and:
 
 \{
 
+\hspace{1cm}    \textcolor{blue}{\# Define medium and its properties + gravity if any \#}
+
+\hspace{1cm}    \bf{Fluide\_Quasi\_compressible} \{ ... \}
+
+
 \hspace{1cm}    \textcolor{blue}{\# Navier Stokes equations for quasi-compressible fluid under \#}
 
 \hspace{1cm}    \textcolor{blue}{\# low Mach numbers with/without turbulent model \#}
@@ -280,6 +289,11 @@ In your data file, you will have:
 
 \{
 
+\hspace{1cm}    \textcolor{blue}{\# Define medium and its properties \#}
+
+\hspace{1cm}    \bf{Solide} \{ ... \}
+
+
 \hspace{1cm}    \textcolor{blue}{\# Resolution of the heat equation \#}
 
 \hspace{1cm}    {\bf{Conduction}}
@@ -334,25 +348,10 @@ To couple two problems, we define two problems \textit{my\_problem\_1} and \text
 
 {\bf{Read\_file}} \textit{my\_mesh\_2.geo} ;
 
-
-{\bf{Fluide_Incompressible}} \textit{my\_medium\_1}
-
-{\bf{Read}} \textit{my\_medium\_1} \{ ... \}
-
-
-{\bf{Fluide_Incompressible}} \textit{my\_medium\_2}
-
-{\bf{Read}} \textit{my\_medium\_2} \{ ... \}
-
-
 {\bf{Associate}} \textit{my\_problem\_1} \textit{my\_domain\_1}
-
-{\bf{Associate}} \textit{my\_problem\_1} \textit{my\_medium\_1}
 
 
 {\bf{Associate}} \textit{my\_problem\_2} \textit{my\_domain\_2}
-
-{\bf{Associate}} \textit{my\_problem\_2} \textit{my\_medium\_2}
 \end{alltt}
 \end{minipage}}
 \end{center}
@@ -388,9 +387,26 @@ Then we discretize and solve everything:
 \begin{alltt}
 {\bf{Discretize}} \textit{my\_coupled\_problem} \textit{my\_discretization}
 
-{\bf{Read}} \textit{my\_problem\_1} \{ ... \}
+{\bf{Read}} \textit{my\_problem\_1}
 
-{\bf{Read}} \textit{my\_problem\_2} \{ ... \}
+\hspace{1cm}   \{ 
+
+\hspace{2cm}   {\bf{Fluide_Incompressible}} \{ ... \}
+
+\hspace{2cm}   ...
+
+\hspace{1cm} \}
+
+{\bf{Read}} \textit{my\_problem\_2}
+
+\hspace{1cm}   \{ 
+
+\hspace{2cm}   {\bf{Fluide_Incompressible}} \{ ... \}
+
+\hspace{2cm}   ...
+
+\hspace{1cm} \}
+
 
 {\bf{Solve}} \textit{my\_coupled\_problem}
 
@@ -406,12 +422,11 @@ You can see the documentation of this kind of problem in the \href{\REFERENCEMAN
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Other problems}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\trust can also solve the following types of problems:
+\trust \& TrioCFD can also solve the following types of problems (Turbulence models in TrioCFD):
 \begin{itemize}
 %\item \href{\REFERENCEMANUAL\#problemeftdiscgen}{Front-Tracking problems},
 %\item \href{\REFERENCEMANUAL\#pbphasefield}{Problems to solve local instantaneous incompressible-two-phase-flows},
-\item \href{\REFERENCEMANUAL\#pbthermohydrauliqueconcentrationscalairespassifs}{Resolution of NAVIER STOKES/energy/multiple constituent transportation equations, with the additional passive scalar equations}, and
-\item \href{\REFERENCEMANUAL\#chimie}{describe the chemical reactions}.
+\item \href{\REFERENCEMANUAL\#pbthermohydrauliqueconcentrationscalairespassifs}{Resolution of NAVIER STOKES/energy/multiple constituent transportation equations, with the additional passive scalar equations}.
 \end{itemize}
 
 
@@ -715,7 +730,7 @@ Here is a list of post-processable fields, but it is not the only ones.
 \normalsize
 
 \begin{remark}
-Physical properties (conductivity, diffusivity,...) can also be interrogated.
+Physical properties (conductivity, diffusivity,...) can also be post-processed.
 \end{remark}
 
 
@@ -956,7 +971,7 @@ where \textbf{"faces"} , \textbf{"elem"} and \textbf{"som"} are keywords allowed
 
 \Note that \underline{when you don't specify the location of the field}, the default value is \textbf{"som"} for values at the vertices. So fields are post-processed at the vertices of the mesh.\\
 
-To visualize your post-processed fields, you can use open source softwares like: \href{https://wci.llnl.gov/simulation/computer-codes/visit}{VisIt} (included in \trust package) for lata files, or for med files: \href{http://www.salome-platform.org}{Salom\'e} or \href{http://www.paraview.org}{Paraview}.\\
+To visualize your post-processed fields, you can use open source softwares like: \href{https://wci.llnl.gov/simulation/computer-codes/visit}{VisIt} (included in \trust package) for lata and med files, or for med files: \href{http://www.salome-platform.org}{Salom\'e} or \href{http://www.paraview.org}{Paraview}.\\
 
 You can see the \href{\REFERENCEMANUAL\#corpspostraitement}{complete syntax} and \href{\REFERENCEMANUAL\#champsposts}{all options} in the \href{\REFERENCEMANUAL}{\trustref Reference Manual}.
 

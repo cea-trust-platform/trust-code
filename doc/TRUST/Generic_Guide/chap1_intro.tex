@@ -203,7 +203,8 @@ The project starts in 1994 and improved versions were built ever since:
 \item 02/2006: v1.5 (VDF/VEF Front Tracking)
 \item 10/2009: v1.6 (data structure revamped)
 \item 06/2015: v1.7 (cut into \trust and \textbf{TrioCFD} + switch to open source)
-\item 11/2019: v1.8 (Turbulence features are moved from \trust to \textbf{TrioCFD})
+\item 11/2019: v1.8 (Turbulence features are moved from \trust to \textbf{TrioCFD} + PolyMAC discretization)
+\item 06/2022: v1.9 (Pb\_Multiphase in \trust + PolyMAC V2 discretization + Pb\_HEM in \textbf{TrioCFD})
 \end{itemize}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -426,7 +427,6 @@ To use \trust, your shell must be "bash". So ensure you are in the right shell:
 To run your data file, you must initialize the TRUST environment using the following command:
 \begin{verbatim}
 > source $my_path_to_TRUST_installation/env_TRUST.sh
-source $my_path_to_TRUST_installation/env/env_TRUST.sh
 TRUST vX.Y.Z support : trust@cea.fr
 Loading personal configuration /$path_to_my_home_directory/.perso_TRUST.env
 \end{verbatim}
@@ -456,36 +456,45 @@ Here is a panel of available options:
 Usage: trust [option] datafile [nb_cpus] [1>file.out] [2>file.err]
 Where option may be:
 -help|-h                      : List options.
--baltik [baltik_name]         : Instanciate a empty Baltik project.
+-baltik [baltik_name]         : Instanciate an empty Baltik project.
 -index                        : Access to the TRUST ressource index.
 -doc                          : Access to the TRUST manual (Generic Guide).
--config nedit|vim|emacs|gedit : Configure nedit or vim or emacs with TRUST keywords.
+-html                         : Access to the doxygen documentation.
+-config nedit|vim|emacs|gedit : Configure nedit or vim or emacs or gedit with TRUST keywords.
 -edit                         : Edit datafile.
 -xcheck                       : Check the datafile's keywords with xdata.
--partition                    : Partition the mesh to prepare a parallel calculation 
-                                (Creation of the .Zones files).
+-xdata                        : Check and run the datafile's keywords with xdata.
+-partition                    : Partition the mesh to prepare a parallel calculation (Creation of the .Zones files).
 -mesh                         : Visualize the mesh(es) contained in the data file.
+-eclipse-trust                : Generate Eclipse configuration files to import TRUST sources.
+-eclipse-baltik               : Generate Eclipse configuration files to import BALTIK sources (TRUST project should have been configured under Eclipse).
 -probes                       : Monitor the TRUST calculation only.
 -evol                         : Monitor the TRUST calculation (GUI).
--prm                          : Write a prm file.
--clean                        : Clean the current directory from all the generated 
-                                files by TRUST.
--search keywords              : Know the list of test cases from the data bases which 
-                                contain keywords.
--copy                         : Copy the test case datafile from the TRUST database 
-                                under the present directory. 
--check all|testcase|list      : Check the non regression of all the test cases or a 
-                                single test case or a list of tests cases specified 
-                                in a file.
--check function|class|class::method : Check the non regression of a list of tests cases
-                                covering a function, a class or a class method.
+-prm                          : Write a prm file (deprecated).
+-jupyter                      : Create basic jupyter notebook file.
+-clean                        : Clean the current directory from all the generated files by TRUST.
+-search keywords              : Know the list of test cases from the data bases which contain keywords.
+-copy                         : Copy the test case datafile from the TRUST database under the present directory.
+-check|-ctest all|testcase|list            : Check|ctest the non regression of all the test cases or a single test case or a list of tests cases specified in a file.
+-check|-ctest function|class|class::method : Check|ctest the non regression of a list of tests cases covering a function, a class or a class method.
 -gdb                          : Run under gdb debugger.
 -valgrind                     : Run under valgrind.
--valgrind_strict              : Run under valgrind with no suppressions. 
--create_sub_file              : Create a submission file only. 
--prod                         : Create a submission file and submit the job on the 
-                                main production class with exclusive resource. 
-datafile -help_trust          : Print options of TRUST_EXECUTABLE [CASE[.data]] [options]. 
+-valgrind_strict              : Run under valgrind with no suppressions.
+-callgrind                    : Run callgrind tool (profiling) from valgrind.
+-massif                       : Run massif tool (heap profile) from valgrind.
+-heaptrack                    : Run heaptrack (heap profile). Better than massif.
+-advisor                      : Run advisor tool (vectorization).
+-vtune                        : Run vtune tool (profiling).
+-perf                         : Run perf tool (profiling).
+-trace                        : Run traceanalyzer tool (MPI profiling).
+-create_sub_file              : Create a submission file only.
+-prod                         : Create a submission file and submit the job on the main production class with exclusive resource.
+-bigmem                       : Create a submission file and submit the job on the big memory production class.
+-queue queue                  : Create a submission file with the specified queue and submit the job.
+-c ncpus                      : Use ncpus CPUs allocated per task for a parallel calculation.
+datafile -help_trust          : Print options of TRUST_EXECUTABLE [CASE[.data]] [options].
+-convert_data datafile        : Convert a data file to the new 1.9.1 syntax (milieu, interfaces, read_med and champ_fonc_med).
+
 \end{verbatim}
 
 %-monitor                : Run and monitor the progress of the TRUST calculation.
@@ -576,10 +585,10 @@ You may have obtained files named \textit{DOM\_000n}\textbf{.Zones} which contai
 
 
 \item \textbf{\textcolor{darkblue}{Read the sub-domains}}\\
-To see your sub-domains, you can run:
-\begin{alltt} 
-> trust -mesh Calculation
-\end{alltt}
+%To see your sub-domains, you can run:
+%\begin{alltt} 
+%> trust -mesh Calculation
+%\end{alltt}
 
 The \textit{Calculation.data} file contains the domain definition, the block which will read the sub-domains and the problem definition (as in sequential calculation).
 \begin{center}
@@ -595,6 +604,7 @@ The \textit{Calculation.data} file contains the domain definition, the block whi
 
 {\bf{Domaine}} \textit{my\_domain}
 
+{\bf{Pb\_Hydraulique}} \textit{my\_problem}
 
 \textcolor{blue}{\# BEGIN SCATTER \#}
 
@@ -611,29 +621,21 @@ The \textit{Calculation.data} file contains the domain definition, the block whi
 {\bf{Read}} \textit{my\_scheme} \{ ... \}
 
 
-{\bf{Fluide\_Incompressible}} \textit{my\_medium}
-
-{\bf{Read}} \textit{my\_medium} \{ ... \}
-
-
-{\bf{Uniform\_field}} \textit{my\_gravity}
-
-{\bf{Read}} \textit{my\_gravity 2 0 -9.81}
-
-
 {\bf{Associate}} \textit{my\_problem my\_domain}
 
 {\bf{Associate}} \textit{my\_problem my\_scheme}
-
-{\bf{Associate}} \textit{my\_problem my\_medium}
-
-{\bf{Associate}} \textit{my\_medium my\_gravity}
 
 
 {\bf{Discretize}} \textit{my\_problem my\_discretization}
 
 
-{\bf{Read}} \textit{my\_problem} \{ ... \}
+{\bf{Read}} \textit{my\_problem} \{ 
+
+\hspace{1cm} {\bf{Fluide\_Incompressible}} \{ ... \}
+
+\hspace{1cm} ... 
+
+\}
 
 
 {\bf{Solve}} \textit{my\_problem}
@@ -662,6 +664,6 @@ For more information, you can see this \href{TRUST_tutorial.pdf\#exo_para_1}{exe
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Visualization}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-To learn how to use the "\textbf{-evol}" option, you can go to see the first exercise of the \trust tutorial: \href{TRUST_tutorial.pdf\#exo1}{Flow around an obstacle}.
+To learn how to use the "\textbf{-evol}" option, you can see the first exercise of the \trust tutorial: \href{TRUST_tutorial.pdf\#exo1}{Flow around an obstacle}.
 
 
