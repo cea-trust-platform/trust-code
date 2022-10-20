@@ -51,7 +51,7 @@ void dimensionne_char_ptr_taille(Char_ptr& nom ,int taille_d_un_mot,int nb)
   nom.allocate(taille_d_un_mot*nb);
 }
 
-
+// XD Read_MED interprete lire_med 1 Keyword to read MED mesh files where 'domain' corresponds to the domain name, 'file' corresponds to the file (written in the MED format) containing the mesh named mesh_name. NL2 Note about naming boundaries: When reading 'file', TRUST will detect boundaries between domains (Raccord) when the name of the boundary begins by type_raccord_. For example, a boundary named type_raccord_wall in 'file' will be considered by TRUST as a boundary named 'wall' between two domains. NL2 NB: To read several domains from a mesh issued from a MED file, use Read_Med to read the mesh then use Create_domain_from_sous_zone keyword. NL2 NB: If the MED file contains one or several subzone defined as a group of volumes, then Read_MED will read it and will create two files domain_name_ssz.geo and domain_name_ssz_par.geo defining the subzones for sequential and/or parallel calculations. These subzones will be read in sequential in the datafile by including (after Read_Med keyword) something like: NL2 Read_Med .... NL2 Read_file domain_name_ssz.geo ; NL2 During the parallel calculation, you will include something: NL2 Scatter { ... } NL2 Read_file domain_name_ssz_par.geo ;
 Implemente_instanciable_sans_constructeur(LireMED,"Lire_MED",Interprete_geometrique_base);
 Add_synonym(LireMED,"Read_med");
 
@@ -144,7 +144,6 @@ void interp_old_syntax(Entree& is, int& isvefforce, int& convertAllToPoly, int& 
 }
 
 
-// XD Read_MED interprete lire_med -1 Keyword to read MED mesh files where 'domain' corresponds to the domain name, 'file' corresponds to the file (written in the MED format) containing the mesh named mesh_name. NL2 Note about naming boundaries: When reading 'file', TRUST will detect boundaries between domains (Raccord) when the name of the boundary begins by type_raccord_. For example, a boundary named type_raccord_wall in 'file' will be considered by TRUST as a boundary named 'wall' between two domains. NL2 NB: To read several domains from a mesh issued from a MED file, use Read_Med to read the mesh then use Create_domain_from_sous_zone keyword. NL2 NB: If the MED file contains one or several subzone defined as a group of volumes, then Read_MED will read it and will create two files domain_name_ssz.geo and domain_name_ssz_par.geo defining the subzones for sequential and/or parallel calculations. These subzones will be read in sequential in the datafile by including (after Read_Med keyword) something like: NL2 Read_Med .... NL2 Read_file domain_name_ssz.geo ; NL2 During the parallel calculation, you will include something: NL2 Scatter { ... } NL2 Read_file domain_name_ssz_par.geo ;
 Entree& LireMED::interpreter_(Entree& is)
 {
   int isvefforce=0;
@@ -167,16 +166,16 @@ Entree& LireMED::interpreter_(Entree& is)
         }
       int nfnfgn = 0;
       Param param(que_suis_je());
-      param.ajouter_flag("convertAllToPoly", &convertAllToPoly); // XD attr convertAllToPoly chaine(into=["convertAllToPoly"]) convertAllToPoly 1 Option to convert mesh with mixed cells into polyhedras/polygons cells
+      param.ajouter_flag("convertAllToPoly", &convertAllToPoly);       // XD_ADD_P flag Option to convert mesh with mixed cells into polyhedral/polygonal cells
 
       // Awful option just to keep naked family names from MED file. Rarely used, to be removed very soon.
       // In the new syntax, we implicitely assume that the former option 'family_names_from_group_names' is always set.
-      param.ajouter_flag("no_family_names_from_group_names", &nfnfgn); // XD attr no_family_names_from_group_names entier no_family_names_from_group_names 0 Awful option just to keep naked family names from MED file. Rarely used, to be removed very soon.
+      param.ajouter_flag("no_family_names_from_group_names", &nfnfgn); // XD_ADD_P flag Awful option just to keep naked family names from MED file. Rarely used, to be removed very soon.
 
-      param.ajouter("domain|domaine", &nom_dom_trio, Param::REQUIRED); // XD attr domain ref_domaine domaine 0 corresponds to the domain name.
-      param.ajouter("file|fichier", &nom_fic, Param::REQUIRED);  // XD attr file chaine fichier 0  file (written in the MED format, with extension '.med') containing the mesh
+      param.ajouter("domain|domaine", &nom_dom_trio, Param::REQUIRED); // XD_ADD_P ref_domaine Corresponds to the domain name.
+      param.ajouter("file|fichier", &nom_fic, Param::REQUIRED);        // XD_ADD_P chaine File (written in the MED format, with extension '.med') containing the mesh
 
-      param.ajouter("mesh|maillage", &nom_mesh); // XD attr mesh chaine maillage 0 name of the mesh in med file. If not specified, the first mesh will be read.
+      param.ajouter("mesh|maillage", &nom_mesh);                       // XD_ADD_P chaine Name of the mesh in med file. If not specified, the first mesh will be read.
 
       EChaine is2(s);
       param.lire_avec_accolades(is2);

@@ -13,10 +13,6 @@
 *
 *****************************************************************************/
 
-/*! @brief
- *
- */
-
 #ifndef Champ_Fonc_MED_included
 #define Champ_Fonc_MED_included
 
@@ -31,13 +27,10 @@
 #endif
 
 
-/*! @brief classe Champ_Fonc_MED
+/*! @brief classe Champ_Fonc_MED Load a field from a MED file for a given time.
  *
+ * @sa Champ_Fonc_P0
  */
-
-//.SECTION voir aussi
-// Champ_Fonc_P0
-
 class Champ_Fonc_MED: public Champ_Fonc_base
 {
 

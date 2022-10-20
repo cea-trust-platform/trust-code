@@ -36,19 +36,7 @@ using MEDCoupling::MEDFileFieldMultiTS;
 using MEDCoupling::MEDFileField1TS;
 #endif
 
-// XD champ_fonc_med field_base champ_fonc_med 0 Field to read a data field in a MED-format file .med at a specified time. It is very useful, for example, to resume a calculation with a new or refined geometry. The field post-processed on the new geometry at med format is used as initial condition for the resume.
-// XD attr use_existing_domain chaine(into=["use_existing_domain"]) use_existing_domain 1 not_set
-// XD attr last_time chaine(into=["last_time"]) last_time 1 to use the last time of the MED file instead of the specified time.
-// XD attr option decoup option 1 Keyword for a partition file
-// XD attr filename chaine filename 0 Name of the .med file.
-// XD attr domain_name chaine domain_name 0 Name of the domain.
-// XD attr field_name chaine field_name 0 Name of the problem unknown.
-// XD attr location chaine(into=["som","elem"]) location 0 To indicate where the field has been post-processed.
-// XD attr time floattant time 0 Time of the field in the .med file.
-
-// XD decoup objet_lecture nul 0 Optional keyword
-// XD attr key chaine(into=["decoup"]) key 0 Name of for a partition file
-// XD attr nom chaine nom 0 Name of for a partition file
+// XD champ_fonc_med field_base champ_fonc_med 1 Field to read a data field in a MED-format file .med at a specified time. It is very useful, for example, to resume a calculation with a new or refined geometry. The field post-processed on the new geometry at med format is used as initial condition for the resume.
 Implemente_instanciable_sans_constructeur(Champ_Fonc_MED,"Champ_Fonc_MED",Champ_Fonc_base);
 
 Champ_Fonc_MED::Champ_Fonc_MED():Champ_Fonc_base::Champ_Fonc_base()
@@ -69,14 +57,18 @@ Sortie& Champ_Fonc_MED::printOn(Sortie& s) const
 
 void Champ_Fonc_MED::set_param(Param& param)
 {
-  param.ajouter_flag("use_existing_domain", &use_existing_domain_);
-  param.ajouter_flag("last_time", &last_time_only_);
-  param.ajouter("decoup", &nom_decoup_, Param::OPTIONAL);
-  param.ajouter("domain", &nom_dom_, Param::REQUIRED);
-  param.ajouter("file", &nom_fichier_med_, Param::REQUIRED);
-  param.ajouter("field", &nom_champ_, Param::REQUIRED);
-  param.ajouter("loc", &loc_, Param::OPTIONAL);
-  param.ajouter("time", &temps_, Param::OPTIONAL);
+  param.ajouter_flag("use_existing_domain", &use_existing_domain_); // XD_ADD_P flag whether to optimize the field loading by indicating that the field is supported by the same mesh that was initially loaded as the domain
+  param.ajouter_flag("last_time", &last_time_only_);                // XD_ADD_P flag to use the last time of the MED file instead of the specified time. Mutually exclusive with 'time' parameter.
+  param.ajouter("decoup", &nom_decoup_, Param::OPTIONAL);           // XD_ADD_P decoup specify a partition file (only functional with Champ_Fonc_MEDFile for now ...)
+  param.ajouter("domain", &nom_dom_, Param::REQUIRED);              // XD_ADD_P chaine Name of the domain supporting the field. This is the name of the mesh in the MED file, and if this mesh was also used to create the TRUST domain, loading can be optimized with option 'use_existing_domain'.
+  param.ajouter("file", &nom_fichier_med_, Param::REQUIRED);        // XD_ADD_P chaine Name of the .med file.
+  param.ajouter("field", &nom_champ_, Param::REQUIRED);             // XD_ADD_P chaine Name of field to load.
+  param.ajouter("loc", &loc_, Param::OPTIONAL);                     // XD_ADD_P chaine(into=["som","elem"]) To indicate where the field is localised. Default to 'elem'.
+  param.ajouter("time", &temps_, Param::OPTIONAL);                  // XD_ADD_P double Timestep to load from the MED file. Mutually exclusive with 'last_time' flag.
+
+  // XD decoup objet_lecture nul 0 Optional keyword
+  // XD attr key chaine(into=["decoup"]) key 0 Parameter for a partition file
+  // XD attr nom chaine nom 0 Name of a partition file
 }
 
 void Champ_Fonc_MED::readOn_old_syntax(Entree& is, Nom& chaine_lue, bool& nom_decoup_lu)

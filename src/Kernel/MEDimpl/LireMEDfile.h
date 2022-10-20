@@ -18,9 +18,6 @@
 
 /*! @brief Classe LireMEDfile Lit un fichier MED (avec MEDfile)
  *
- *
- *
- *
  */
 #include <LireMED.h>
 
