@@ -26,29 +26,10 @@
 Implemente_base_sans_constructeur(Masse_VDF_base,"Masse_VDF_base",Solveur_Masse_base);
 Masse_VDF_base::Masse_VDF_base() : penalisation_matrice_(0),penalisation_secmem_(0) {}
 
+Sortie& Masse_VDF_base::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-//     printOn()
-/////
+Entree& Masse_VDF_base::readOn(Entree& s) { return s ; }
 
-Sortie& Masse_VDF_base::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-//// readOn
-//
-
-Entree& Masse_VDF_base::readOn(Entree& s)
-{
-  return s ;
-}
-
-
-///////////////////////////////////////////////////////////////
-//
-//  Implementation des fonctions de la classe Masse_VDF_base
-//
-//////////////////////////////////////////////////////////////
 
 void Masse_VDF_base::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {

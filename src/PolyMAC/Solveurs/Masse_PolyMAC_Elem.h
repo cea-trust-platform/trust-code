@@ -16,47 +16,16 @@
 #ifndef Masse_PolyMAC_Elem_included
 #define Masse_PolyMAC_Elem_included
 
+#include <Masse_PolyMAC_base.h>
 
-#include <Solveur_Masse.h>
-#include <Ref_Zone_PolyMAC.h>
-#include <Ref_Zone_Cl_PolyMAC.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Masse_PolyMAC_Elem
-//
-//////////////////////////////////////////////////////////////////////////////
-
-class Masse_PolyMAC_Elem : public Solveur_Masse_base
+class Masse_PolyMAC_Elem : public Masse_PolyMAC_base
 {
-
   Declare_instanciable(Masse_PolyMAC_Elem);
-
 public:
-
-  void associer_zone_dis_base(const Zone_dis_base& ) override;
-  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& ) override;
   void preparer_calcul() override;
-
   DoubleTab& appliquer_impl(DoubleTab& ) const override;
-
-  /* interface {dimensionner,ajouter}_blocs -> cf Equation_base.h */
-  int has_interface_blocs() const override
-  {
-    return 1;
-  };
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const override;
-
-protected:
-
-  REF(Zone_PolyMAC) la_zone_PolyMAC;
-  REF(Zone_Cl_PolyMAC) la_zone_Cl_PolyMAC;
 };
 
-#endif
-
-
-
-
-
+#endif /* Masse_PolyMAC_Elem_included */

@@ -16,50 +16,16 @@
 #ifndef Masse_PolyMAC_Face_included
 #define Masse_PolyMAC_Face_included
 
+#include <Masse_PolyMAC_base.h>
 
-#include <Solveur_Masse.h>
-#include <Ref_Zone_PolyMAC.h>
-#include <Ref_Zone_Cl_PolyMAC.h>
-#include <TRUSTTab.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Masse_PolyMAC_Face
-//
-//////////////////////////////////////////////////////////////////////////////
-
-class Masse_PolyMAC_Face : public Solveur_Masse_base
+class Masse_PolyMAC_Face : public Masse_PolyMAC_base
 {
-
   Declare_instanciable(Masse_PolyMAC_Face);
-
 public:
-
-  void associer_zone_dis_base(const Zone_dis_base& ) override;
-  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& ) override;
-
   DoubleTab& appliquer_impl(DoubleTab& ) const override;
-
   virtual DoubleTab& corriger_solution(DoubleTab& x, const DoubleTab& y, int incr = 0) const override;
-
-  /* interface ajouter_blocs */
-  int has_interface_blocs() const override
-  {
-    return 1;
-  };
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const override;
-
-  void check_multiphase_compatibility() const override { };
-private:
-
-  REF(Zone_PolyMAC) la_zone_PolyMAC;
-  REF(Zone_Cl_PolyMAC) la_zone_Cl_PolyMAC;
 };
 
-#endif
-
-
-
-
-
+#endif /* Masse_PolyMAC_Face_included */

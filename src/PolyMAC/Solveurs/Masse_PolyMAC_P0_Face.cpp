@@ -34,29 +34,9 @@
 
 Implemente_instanciable(Masse_PolyMAC_P0_Face,"Masse_PolyMAC_P0_Face",Solveur_Masse_base);
 
+Sortie& Masse_PolyMAC_P0_Face::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-//     printOn()
-/////
-
-Sortie& Masse_PolyMAC_P0_Face::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-//// readOn
-//
-
-Entree& Masse_PolyMAC_P0_Face::readOn(Entree& s)
-{
-  return s ;
-}
-
-
-///////////////////////////////////////////////////////////////
-//
-//  Implementation des fonctions de la classe Masse_PolyMAC_P0_Face
-//
-//////////////////////////////////////////////////////////////
+Entree& Masse_PolyMAC_P0_Face::readOn(Entree& s) { return s ; }
 
 void Masse_PolyMAC_P0_Face::completer()
 {
@@ -131,7 +111,7 @@ void Masse_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
   const DoubleTab& inco = equation().inconnue().valeurs(), &passe = equation().inconnue().passe();
   Matrice_Morse *mat = matrices[equation().inconnue().le_nom().getString()]; //facultatif
   const Zone_PolyMAC_P0& zone = la_zone_PolyMAC_P0;
-  const Conds_lim& cls = la_Zone_Cl_PolyMAC->les_conditions_limites();
+  const Conds_lim& cls = la_zone_Cl_PolyMAC->les_conditions_limites();
   const IntTab& f_e = zone.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur()).fcl();
   const DoubleVect& pf = equation().milieu().porosite_face(), &pe = equation().milieu().porosite_elem(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes(), &fs = zone.face_surfaces();
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
@@ -185,15 +165,9 @@ void Masse_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
   i++;
 }
 
-//
 void Masse_PolyMAC_P0_Face::associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base)
 {
   la_zone_PolyMAC_P0 = ref_cast(Zone_PolyMAC_P0, la_zone_dis_base);
-}
-
-void Masse_PolyMAC_P0_Face::associer_zone_cl_dis_base(const Zone_Cl_dis_base& la_zone_Cl_dis_base)
-{
-  la_Zone_Cl_PolyMAC = ref_cast(Zone_Cl_PolyMAC, la_zone_Cl_dis_base);
 }
 
 //sert a remettre en coherence la partie aux elements avec la partie aux faces

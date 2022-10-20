@@ -36,29 +36,9 @@
 
 Implemente_instanciable(Masse_PolyMAC_Face,"Masse_PolyMAC_Face",Solveur_Masse_base);
 
+Sortie& Masse_PolyMAC_Face::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-//     printOn()
-/////
-
-Sortie& Masse_PolyMAC_Face::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-//// readOn
-//
-
-Entree& Masse_PolyMAC_Face::readOn(Entree& s)
-{
-  return s ;
-}
-
-
-///////////////////////////////////////////////////////////////
-//
-//  Implementation des fonctions de la classe Masse_PolyMAC_Face
-//
-//////////////////////////////////////////////////////////////
+Entree& Masse_PolyMAC_Face::readOn(Entree& s) { return s ; }
 
 DoubleTab& Masse_PolyMAC_Face::appliquer_impl(DoubleTab& sm) const
 {
@@ -139,17 +119,6 @@ void Masse_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, d
               if (masse(n, m)) (*mat)(N * f + n, N * f + m) += pf(f) / dt * masse(n, m);
         }
     }
-}
-
-//
-void Masse_PolyMAC_Face::associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base)
-{
-  la_zone_PolyMAC = ref_cast(Zone_PolyMAC, la_zone_dis_base);
-}
-
-void Masse_PolyMAC_Face::associer_zone_cl_dis_base(const Zone_Cl_dis_base& la_zone_Cl_dis_base)
-{
-  la_zone_Cl_PolyMAC = ref_cast(Zone_Cl_PolyMAC, la_zone_Cl_dis_base);
 }
 
 //sert a imposer les CLs de Dirichlet en multiphase (ou la variation de P_bord ne permet de corriger que v_melange)

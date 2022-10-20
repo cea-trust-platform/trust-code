@@ -13,26 +13,23 @@
 *
 *****************************************************************************/
 
-#ifndef Masse_PolyMAC_P0_Face_included
-#define Masse_PolyMAC_P0_Face_included
+#include <Masse_PolyMAC_base.h>
+#include <Zone_Cl_PolyMAC.h>
+#include <Zone_PolyMAC.h>
 
-#include <Ref_Zone_PolyMAC_P0.h>
-#include <Masse_PolyMAC_Face.h>
+Implemente_base(Masse_PolyMAC_base,"Masse_PolyMAC_base",Solveur_Masse_base);
 
-class Masse_PolyMAC_P0_Face : public Masse_PolyMAC_Face
+Sortie& Masse_PolyMAC_base::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
+Entree& Masse_PolyMAC_base::readOn(Entree& s) { return s ; }
+
+void Masse_PolyMAC_base::associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base)
 {
-  Declare_instanciable(Masse_PolyMAC_P0_Face);
-public:
-  void associer_zone_dis_base(const Zone_dis_base& ) override;
-  void completer() override;
+  la_zone_PolyMAC = ref_cast(Zone_PolyMAC, la_zone_dis_base);
+}
 
-  DoubleTab& appliquer_impl(DoubleTab& ) const override;
-  DoubleTab& corriger_solution(DoubleTab& x, const DoubleTab& y, int incr = 0) const override;
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override;
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const override;
+void Masse_PolyMAC_base::associer_zone_cl_dis_base(const Zone_Cl_dis_base& la_zone_Cl_dis_base)
+{
+  la_zone_Cl_PolyMAC = ref_cast(Zone_Cl_PolyMAC, la_zone_Cl_dis_base);
+}
 
-private:
-  REF(Zone_PolyMAC_P0) la_zone_PolyMAC_P0;
-};
 
-#endif

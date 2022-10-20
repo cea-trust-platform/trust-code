@@ -13,26 +13,26 @@
 *
 *****************************************************************************/
 
-#ifndef Masse_PolyMAC_P0_Face_included
-#define Masse_PolyMAC_P0_Face_included
+#ifndef Masse_PolyMAC_base_included
+#define Masse_PolyMAC_base_included
 
-#include <Ref_Zone_PolyMAC_P0.h>
-#include <Masse_PolyMAC_Face.h>
+#include <Ref_Zone_Cl_PolyMAC.h>
+#include <TRUSTTabs_forward.h>
+#include <Ref_Zone_PolyMAC.h>
+#include <Solveur_Masse.h>
 
-class Masse_PolyMAC_P0_Face : public Masse_PolyMAC_Face
+class Masse_PolyMAC_base : public Solveur_Masse_base
 {
-  Declare_instanciable(Masse_PolyMAC_P0_Face);
+  Declare_base(Masse_PolyMAC_base);
 public:
+  int has_interface_blocs() const override { return 1; }
   void associer_zone_dis_base(const Zone_dis_base& ) override;
-  void completer() override;
+  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& ) override;
+  void check_multiphase_compatibility() const override { };
 
-  DoubleTab& appliquer_impl(DoubleTab& ) const override;
-  DoubleTab& corriger_solution(DoubleTab& x, const DoubleTab& y, int incr = 0) const override;
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override;
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const override;
-
-private:
-  REF(Zone_PolyMAC_P0) la_zone_PolyMAC_P0;
+protected:
+  REF(Zone_Cl_PolyMAC) la_zone_Cl_PolyMAC;
+  REF(Zone_PolyMAC) la_zone_PolyMAC;
 };
 
-#endif
+#endif /* Masse_PolyMAC_base_included */

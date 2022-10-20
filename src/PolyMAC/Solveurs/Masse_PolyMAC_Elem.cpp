@@ -32,26 +32,9 @@
 
 Implemente_instanciable(Masse_PolyMAC_Elem,"Masse_PolyMAC_Elem|Masse_PolyMAC_P0_Elem",Solveur_Masse_base);
 
+Sortie& Masse_PolyMAC_Elem::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-//     printOn()
-/////
-
-Sortie& Masse_PolyMAC_Elem::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-Entree& Masse_PolyMAC_Elem::readOn(Entree& s)
-{
-  return s ;
-}
-
-
-////////////////////////////////////////////////////////////////
-//
-//  Implementation des fonctions de la classe Masse_PolyMAC_Elem
-//
-////////////////////////////////////////////////////////////////
+Entree& Masse_PolyMAC_Elem::readOn(Entree& s) { return s ; }
 
 void Masse_PolyMAC_Elem::preparer_calcul()
 {
@@ -134,14 +117,4 @@ void Masse_PolyMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, d
           for (n = 0, m = 0; n < N; n++, m += (M > 1))
             (*i_m.second)(N * e + n, M * e + m) += pe(e) * ve(e) * der(e, n) / dt;
       }
-}
-
-void Masse_PolyMAC_Elem::associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base)
-{
-  la_zone_PolyMAC = ref_cast(Zone_PolyMAC, la_zone_dis_base);
-}
-
-void Masse_PolyMAC_Elem::associer_zone_cl_dis_base(const Zone_Cl_dis_base& la_zone_Cl_dis_base)
-{
-  la_zone_Cl_PolyMAC = ref_cast(Zone_Cl_PolyMAC, la_zone_Cl_dis_base);
 }
