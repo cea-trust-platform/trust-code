@@ -14,6 +14,7 @@ echo "Converting dataset '$1' to 1.9.1 syntax ..."
 echo ""
 echo ""
 
+sth_done=0
 conv_mil=$TRUST_ROOT/Outils/convert_data/convert_milieu.py
 conv_interf=$TRUST_ROOT/Outils/convert_data/convert_interf.py
 conv_liremed=$TRUST_ROOT/Outils/convert_data/convert_liremed.py
@@ -32,27 +33,32 @@ then
 fi
 
 echo "*** Converting 'milieu' ..."
-python $conv_mil "$1" $ze_d/after_mil.data || cp "$1" $ze_d/after_mil.data
+python $conv_mil "$1" $ze_d/after_mil.data || ( cp "$1" $ze_d/after_mil.data && sth_done=1 )
 
 echo ""
 echo ""
 echo "*** Converting 'interfaces' ..."
-python $conv_interf $ze_d/after_mil.data $ze_d/after_interf.data  || cp $ze_d/after_mil.data $ze_d/after_interf.data
+python $conv_interf $ze_d/after_mil.data $ze_d/after_interf.data  || ( cp $ze_d/after_mil.data $ze_d/after_interf.data && sth_done=1 )
 
 echo ""
 echo ""
 echo "*** Converting 'read_med' ..."
-python $conv_liremed $ze_d/after_interf.data $ze_d/after_liremed.data  || cp $ze_d/after_interf.data $ze_d/after_liremed.data 
+python $conv_liremed $ze_d/after_interf.data $ze_d/after_liremed.data  || ( cp $ze_d/after_interf.data $ze_d/after_liremed.data && sth_done=1 )
 
 echo ""
 echo ""
 echo "*** Converting 'champ_fonc_med' and 'champ_fonc_med_tabule' ..."
-python $conv_chf $ze_d/after_liremed.data $ze_d/after_chf.data  || cp $ze_d/after_liremed.data $ze_d/after_chf.data 
+python $conv_chf $ze_d/after_liremed.data $ze_d/after_chf.data  || ( cp $ze_d/after_liremed.data $ze_d/after_chf.data && sth_done=1 )
 
-cp $ze_d/after_chf.data "$1".new
 echo ""
 echo ""
-echo "=> All done! File '$1.new' has been written."
+
+if [ "$sth_done" = "1" ]; then
+    cp $ze_d/after_chf.data "$1".new
+    echo "=> All done! File '$1.new' has been written."
+else
+    echo "=> No change applied. Nothing written."
+fi
 
 rm -rf $ze_d
 
