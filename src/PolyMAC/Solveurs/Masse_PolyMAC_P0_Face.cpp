@@ -40,6 +40,7 @@ Entree& Masse_PolyMAC_P0_Face::readOn(Entree& s) { return s ; }
 
 void Masse_PolyMAC_P0_Face::completer()
 {
+  Solveur_Masse_Face_proto::associer_masse_proto(*this,la_zone_PolyMAC_P0.valeur());
   Solveur_Masse_base::completer();
   Equation_base& eq = equation();
   Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, eq.inconnue().valeur());
@@ -48,23 +49,15 @@ void Masse_PolyMAC_P0_Face::completer()
 
 DoubleTab& Masse_PolyMAC_P0_Face::appliquer_impl(DoubleTab& sm) const
 {
-  const Zone_PolyMAC_P0& zone = la_zone_PolyMAC_P0.valeur();
-  const IntTab& f_e = zone.face_voisins();
-  const DoubleVect& pf = equation().milieu().porosite_face(), &pe = equation().milieu().porosite_elem(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes();
-  int i, e, f, nf_tot = zone.nb_faces_tot(), n, N = equation().inconnue().valeurs().line_size(), d, D = dimension;
-  const DoubleTab *a_r = sub_type(QDM_Multiphase, equation()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.champ_conserve().passe() : NULL, &vfd = zone.volumes_entrelaces_dir();
-  double fac;
-
   //vitesses aux faces
-  for (f = 0; f < zone.nb_faces(); f++)
-    for (n = 0; n < N; n++)
-      {
-        for (fac = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) fac += vfd(f, i) / vf(f) * (a_r ? (*a_r)(e, n) : 1);
-        if (fac > 1e-10) sm(f, n) /= pf(f) * vf(f) * fac; //vitesse calculee
-        else sm(f, n) = 0; //cas d'une evanescence
-      }
+  Solveur_Masse_Face_proto::appliquer_impl_proto(sm);
 
   //vitesses aux elements
+  const Zone_PolyMAC_P0& zone = la_zone_PolyMAC_P0.valeur();
+  int e, nf_tot = zone.nb_faces_tot(), d, D = dimension, n, N = equation().inconnue().valeurs().line_size();
+  const DoubleTab *a_r = sub_type(QDM_Multiphase, equation()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.champ_conserve().passe() : NULL;
+  const DoubleVect& pe = equation().milieu().porosite_elem(), &ve = zone.volumes();
+
   if (sm.dimension_tot(0) > nf_tot)
     for (e = 0; e < zone.nb_elem(); e++)
       for (d = 0; d < D; d++)
@@ -80,23 +73,21 @@ DoubleTab& Masse_PolyMAC_P0_Face::appliquer_impl(DoubleTab& sm) const
 
 void Masse_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const std::string& nom_inc = equation().inconnue().le_nom().getString();
-  if (!matrices.count(nom_inc)) return; //rien a faire
-  Matrice_Morse& mat = *matrices.at(nom_inc), mat2;
-  const Zone_PolyMAC_P0& zone = la_zone_PolyMAC_P0;
-  const DoubleTab& inco = equation().inconnue().valeurs();
-  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
-  const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee").valeur()) : NULL;
-  int i, e, f, nf_tot = zone.nb_faces_tot(), m, n, N = inco.line_size(), d, D = dimension;
-
   IntTrav sten(0, 2);
   sten.set_smart_resize(1);
-  for (f = 0, i = 0; f < zone.nb_faces(); f++)
-    for (n = 0; n < N; n++, i++) //faces reelles
-      if (corr)
-        for (m = 0; m < N; m++) sten.append_line(i, N * f + m);
-      else sten.append_line(i, i);
-  for (e = 0, i = N * nf_tot; e < zone.nb_elem_tot(); e++)
+  // faces
+  Solveur_Masse_Face_proto::dimensionner_blocs_proto(matrices, semi_impl, false /* dont allocate */, sten);
+
+  // elems
+  const std::string& nom_inc = equation().inconnue().le_nom().getString();
+  Matrice_Morse& mat = *matrices.at(nom_inc), mat2;
+
+  const DoubleTab& inco = equation().inconnue().valeurs();
+  int i, e, nf_tot = la_zone_PolyMAC_P0->nb_faces_tot(), m, n, N = inco.line_size(), d, D = dimension;
+  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
+  const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee").valeur()) : NULL;
+
+  for (e = 0, i = N * nf_tot; e < la_zone_PolyMAC_P0->nb_elem_tot(); e++)
     for (d = 0; d < D; d++)
       for (n = 0; n < N; n++, i++) //tous les elems (pour Op_Grad_PolyMAC_P0_Face)
         if (corr)
@@ -106,6 +97,7 @@ void Masse_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs_t
   mat.nb_colonnes() ? mat += mat2 : mat = mat2;
 }
 
+// XXX : a voir si on peut utiliser Solveur_Masse_Face_proto::ajouter_blocs_proto ...
 void Masse_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const
 {
   const DoubleTab& inco = equation().inconnue().valeurs(), &passe = equation().inconnue().passe();

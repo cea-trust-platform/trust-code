@@ -16,12 +16,14 @@
 #ifndef Masse_PolyMAC_Face_included
 #define Masse_PolyMAC_Face_included
 
+#include <Solveur_Masse_Face_proto.h>
 #include <Masse_PolyMAC_base.h>
 
-class Masse_PolyMAC_Face : public Masse_PolyMAC_base
+class Masse_PolyMAC_Face : public Masse_PolyMAC_base, public Solveur_Masse_Face_proto
 {
   Declare_instanciable(Masse_PolyMAC_Face);
 public:
+  void completer() override;
   DoubleTab& appliquer_impl(DoubleTab& ) const override;
   virtual DoubleTab& corriger_solution(DoubleTab& x, const DoubleTab& y, int incr = 0) const override;
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override;

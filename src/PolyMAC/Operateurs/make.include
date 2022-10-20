@@ -19,6 +19,7 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/PolyMAC/Zones\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible\
+	-I$(TRUST_ROOT)/src/ThHyd/Solveurs\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Cond_Lim\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Equations\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Milieu\

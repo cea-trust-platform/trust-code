@@ -40,6 +40,12 @@ Sortie& Masse_PolyMAC_Face::printOn(Sortie& s) const { return s << que_suis_je()
 
 Entree& Masse_PolyMAC_Face::readOn(Entree& s) { return s ; }
 
+void Masse_PolyMAC_Face::completer()
+{
+  Solveur_Masse_Face_proto::associer_masse_proto(*this,la_zone_PolyMAC.valeur());
+}
+
+// XXX : a voir si on peut utiliser Solveur_Masse_Face_proto::appliquer_impl_proto ...
 DoubleTab& Masse_PolyMAC_Face::appliquer_impl(DoubleTab& sm) const
 {
   const Zone_PolyMAC& zone = la_zone_PolyMAC.valeur();
@@ -64,61 +70,14 @@ DoubleTab& Masse_PolyMAC_Face::appliquer_impl(DoubleTab& sm) const
 
 void Masse_PolyMAC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const std::string& nom_inc = equation().inconnue().le_nom().getString();
-  if (!matrices.count(nom_inc)) return; //rien a faire
-  Matrice_Morse& mat = *matrices.at(nom_inc), mat2;
-  const Zone_PolyMAC& zone = la_zone_PolyMAC;
-  const DoubleTab& inco = equation().inconnue().valeurs();
-  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
-  const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee").valeur()) : NULL;
-  int i, f, m, n, N = inco.line_size();
-
   IntTrav sten(0, 2);
   sten.set_smart_resize(1);
-  for (f = 0, i = 0; f < zone.nb_faces(); f++)
-    for (n = 0; n < N; n++, i++) //faces reelles
-      if (corr)
-        for (m = 0; m < N; m++) sten.append_line(i, N * f + m);
-      else sten.append_line(i, i);
-
-  Matrix_tools::allocate_morse_matrix(inco.size_totale(), inco.size_totale(), sten, mat2);
-  mat.nb_colonnes() ? mat += mat2 : mat = mat2;
+  Solveur_Masse_Face_proto::dimensionner_blocs_proto(matrices, semi_impl, true /* allocate too */, sten);
 }
 
 void Masse_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const
 {
-  const DoubleTab& inco = equation().inconnue().valeurs(), &passe = equation().inconnue().passe();
-  Matrice_Morse *mat = matrices[equation().inconnue().le_nom().getString()]; //facultatif
-  const Zone_PolyMAC& zone = la_zone_PolyMAC;
-  const IntTab& f_e = zone.face_voisins();
-  const DoubleVect& pf = equation().milieu().porosite_face(), &vf = zone.volumes_entrelaces();
-  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
-  const DoubleTab& vfd = zone.volumes_entrelaces_dir(), &rho = equation().milieu().masse_volumique().passe(),
-                   *alpha = pbm ? &pbm->eq_masse.inconnue().passe() : NULL, *a_r = pbm ? &pbm->eq_masse.champ_conserve().passe() : NULL;
-  const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee").valeur()) : NULL;
-  int i, e, f, m, n, N = inco.line_size(), cR = rho.dimension_tot(0) == 1;
-
-  /* faces : si CLs, pas de produit par alpha * rho en multiphase */
-  DoubleTrav masse(N, N), masse_e(N, N); //masse alpha * rho, contribution
-  for (f = 0; f < zone.nb_faces(); f++) //faces reelles
-    {
-      if (!pbm)
-        for (masse = 0, n = 0; n < N; n++) masse(n, n) = vf(f); //pas Pb_Multiphase ou CL -> pas de alpha * rho
-      else for (masse = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-          {
-            for (masse_e = 0, n = 0; n < N; n++) masse_e(n, n) = (*a_r)(e, n); //partie diagonale
-            if (corr) corr->ajouter(&(*alpha)(e, 0), &rho(!cR * e, 0), masse_e); //partie masse ajoutee
-            for (n = 0; n < N; n++)
-              for (m = 0; m < N; m++) masse(n, m) += vfd(f, i) * masse_e(n, m); //contribution au alpha * rho de la face
-          }
-      for (n = 0; n < N; n++)
-        {
-          for (m = 0; m < N; m++) secmem(f, n) += pf(f) / dt * masse(n, m) * (passe(f, m) - resoudre_en_increments * inco(f, m));
-          if (mat)
-            for (m = 0; m < N; m++)
-              if (masse(n, m)) (*mat)(N * f + n, N * f + m) += pf(f) / dt * masse(n, m);
-        }
-    }
+  Solveur_Masse_Face_proto::ajouter_blocs_proto( matrices, secmem,  dt,semi_impl, resoudre_en_increments);
 }
 
 //sert a imposer les CLs de Dirichlet en multiphase (ou la variation de P_bord ne permet de corriger que v_melange)

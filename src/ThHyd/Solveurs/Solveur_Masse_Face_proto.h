@@ -13,33 +13,25 @@
 *
 *****************************************************************************/
 
-#ifndef Masse_VDF_base_included
-#define Masse_VDF_base_included
+#ifndef Solveur_Masse_Face_proto_included
+#define Solveur_Masse_Face_proto_included
 
-#include <Ref_Zone_Cl_VDF.h>
-#include <Solveur_Masse.h>
-#include <Ref_Zone_VDF.h>
+#include <Ref_Solveur_Masse_base.h>
+#include <TRUSTTabs_forward.h>
+#include <Interface_blocs.h>
+#include <Ref_Zone_VF.h>
 
-class Masse_VDF_base : public Solveur_Masse_base
+class Solveur_Masse_Face_proto
 {
-  Declare_base(Masse_VDF_base);
 public:
-  void check_multiphase_compatibility() const override { } /* Et ouiiiiiiiiiii */
-  void associer_zone_dis_base(const Zone_dis_base& ) override;
-  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& ) override;
-  inline int has_interface_blocs() const override { return 1; }
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override;
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const override;
+  void associer_masse_proto(const Solveur_Masse_base& , const Zone_VF&) ;
+  DoubleTab& appliquer_impl_proto(DoubleTab& ) const;
+  void dimensionner_blocs_proto(matrices_t matrices, const tabs_t& semi_impl,const bool allocate, IntTrav&) const;
+  void ajouter_blocs_proto(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const ;
 
 protected:
-  mutable double penalisation_matrice_, penalisation_secmem_;
-  REF(Zone_Cl_VDF) la_zone_Cl_VDF;
-  REF(Zone_VDF) la_zone_VDF;
+  REF(Solveur_Masse_base) solv_mass_;
+  REF(Zone_VF) la_zone_;
 };
 
-#endif /* Masse_VDF_base_included */
-
-
-
-
-
+#endif /* Solveur_Masse_Face_proto_included */
