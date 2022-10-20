@@ -20,6 +20,7 @@ __pycache__
 .check_sources.ok
 make.lock
 .ipynb_checkpoints/
+instancie_src_*.cpp
 
 # XDATA stuff
 

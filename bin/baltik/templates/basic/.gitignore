@@ -8,3 +8,4 @@ README.BALTIK
 .tests_*
 .gitignore
 
+instancie_src_*.cpp
