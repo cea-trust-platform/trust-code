@@ -43,23 +43,23 @@ Discretize pb dis
 
 Read pb
 {
-       
-fluide_quasi_compressible {
-    gravite champ_uniforme 2 0 -9.81
 
-mu Champ_Uniforme 1 1.85e-5
-    pression 93539.4608571
-    lambda Champ_Uniforme 1 0.0262
-    loi_etat gaz_parfait_QC {
-        Prandtl 0.71034351145038165942
-        Cp 1006.
-        gamma 1.4
+    fluide_quasi_compressible {
+        gravite champ_uniforme 2 0 -9.81
+
+        mu Champ_Uniforme 1 1.85e-5
+        pression 93539.4608571
+        lambda Champ_Uniforme 1 0.0262
+        loi_etat gaz_parfait_QC {
+            Prandtl 0.71034351145038165942
+            Cp 1006.
+            gamma 1.4
+        }
+        Traitement_pth conservation_masse
     }
-    Traitement_pth conservation_masse
-}
 
 
-Navier_Stokes_QC
+    Navier_Stokes_QC
     {
         solveur_pression GCP { precond ssor { omega 1.5 } seuil 1e-11 impr }
         convection { amont }
@@ -119,4 +119,3 @@ nb_pas_dt_max 100
 convection { amont }
 convection { amont }
 Scheme_euler_explicit sch
- 

@@ -60,16 +60,16 @@ Discretize pb dis
 
 Read pb
 {
-       
-fluide_incompressible {
-    gravite champ_uniforme 3 0 -9.81 0
 
-mu Champ_Uniforme 1 1.85e-5
-    rho Champ_Uniforme 1 1.17
-}
+    fluide_incompressible {
+        gravite champ_uniforme 3 0 -9.81 0
+
+        mu Champ_Uniforme 1 1.85e-5
+        rho Champ_Uniforme 1 1.17
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-16 impr }
         convection { Amont }
@@ -108,4 +108,3 @@ Navier_Stokes_standard
 
 Solve pb
 End
- 

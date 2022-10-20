@@ -27,15 +27,15 @@ Discretize pb1 dis
 
 Read pb1
 {
-       
-fluide_incompressible {
-     mu Champ_Uniforme 1 1.85e-5
-    rho Champ_Uniforme 1 1.17
-    lambda Champ_Uniforme 1 0.0262
-}
+
+    fluide_incompressible {
+        mu Champ_Uniforme 1 1.85e-5
+        rho Champ_Uniforme 1 1.17
+        lambda Champ_Uniforme 1 0.0262
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         solveur_pression petsc cholesky { }
         convection { muscl }
@@ -82,4 +82,3 @@ Navier_Stokes_standard
 }
 Solve pb1
 End
- 

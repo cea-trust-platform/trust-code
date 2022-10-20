@@ -65,17 +65,17 @@ Associate pb sch
 Discretize pb dis
 Read pb
 {
-       
-fluide_incompressible {
-     mu Champ_Uniforme       1 2.21799454e-04
-    rho Champ_Uniforme      1 943.112976
-    lambda Champ_Uniforme   1 0.806537897
-    Cp Champ_Uniforme       1 4238.62106
-    beta_th Champ_Uniforme  1 8.6e-4
-}
+
+    fluide_incompressible {
+        mu Champ_Uniforme       1 2.21799454e-04
+        rho Champ_Uniforme      1 943.112976
+        lambda Champ_Uniforme   1 0.806537897
+        Cp Champ_Uniforme       1 4238.62106
+        beta_th Champ_Uniforme  1 8.6e-4
+    }
 
 
-Navier_Stokes_Standard
+    Navier_Stokes_Standard
     {
         solveur_pression petsc gcp { precond spai { } seuil 1.e-8 impr }
         convection { muscl }
@@ -91,4 +91,3 @@ Navier_Stokes_Standard
 EcritureLectureSpecial 0
 Solve pb
 End
- 

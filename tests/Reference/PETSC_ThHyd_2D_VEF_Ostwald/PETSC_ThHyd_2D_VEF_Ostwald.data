@@ -56,20 +56,20 @@ Discretize pb dis
 
 Read pb
 {
-       
-fluide_ostwald {
-     K champ_fonc_tabule { pb temperature } 1  { 2 0. 60. 17.1e-6 17.1e-6 }
-    rho Champ_Uniforme 1 1.277
-    n Champ_Uniforme 1 1.0
-    mu Champ_Ostwald
-    lambda Champ_Uniforme 1 0.0262
-    Cp Champ_Uniforme 1 1006
-    beta_th Champ_Uniforme 1 1.e-6
 
-}
+    fluide_ostwald {
+        K champ_fonc_tabule { pb temperature } 1  { 2 0. 60. 17.1e-6 17.1e-6 }
+        rho Champ_Uniforme 1 1.277
+        n Champ_Uniforme 1 1.0
+        mu Champ_Ostwald
+        lambda Champ_Uniforme 1 0.0262
+        Cp Champ_Uniforme 1 1006
+        beta_th Champ_Uniforme 1 1.e-6
+
+    }
 
 
-Navier_Stokes_Standard
+    Navier_Stokes_Standard
     {
         disable_equation_residual 0
         solveur_pression Petsc Cholesky { save_matrix save_matrix_petsc_format }
@@ -121,4 +121,3 @@ Navier_Stokes_Standard
 
 Solve pb
 End
- 

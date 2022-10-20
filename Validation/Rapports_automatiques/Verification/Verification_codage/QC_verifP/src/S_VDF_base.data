@@ -58,24 +58,24 @@ Discretize pb dis
 
 Read pb
 {
-       
-fluide_quasi_compressible {
-    gravite champ_uniforme 2 0  -.7450005651e-2
+
+    fluide_quasi_compressible {
+        gravite champ_uniforme 2 0  -.7450005651e-2
 
 
-Sutherland pb mu0  5.0134715e-5 T0 1. Slambda 0.368 C 1.
-    pression 1.
-    loi_etat gaz_parfait_QC {
-        Prandtl 0.71
+        Sutherland pb mu0  5.0134715e-5 T0 1. Slambda 0.368 C 1.
+        pression 1.
+        loi_etat gaz_parfait_QC {
+            Prandtl 0.71
 
-        Cp 3.5
-        gamma 1.4
+            Cp 3.5
+            gamma 1.4
+        }
+        Traitement_pth conservation_masse
     }
-    Traitement_pth conservation_masse
-}
 
 
-Navier_Stokes_QC
+    Navier_Stokes_QC
     {
         solveur_pression petsc Cholesky { }
         convection { amont }
@@ -127,4 +127,3 @@ Navier_Stokes_QC
 
 Solve pb
 End
- 

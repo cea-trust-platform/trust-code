@@ -54,16 +54,16 @@ Discretize pb dis
 
 Read pb
 {
-       
-fluide_incompressible {
-    gravite champ_uniforme 2 0 -9.81
 
-mu Champ_Uniforme 1 1.e-5
-    rho Champ_Uniforme 1 0.01
-}
+    fluide_incompressible {
+        gravite champ_uniforme 2 0 -9.81
+
+        mu Champ_Uniforme 1 1.e-5
+        rho Champ_Uniforme 1 0.01
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         solveur_pression GCP { precond ssor { omega 1.651 } seuil 1.e-12 }
         convection { muscl }
@@ -112,4 +112,3 @@ Calculer_moments dom centre_de_gravite 0.005 0.005
 Imprimer_flux dom { cl_1 cl_2 }
 Solve pb
 End
- 

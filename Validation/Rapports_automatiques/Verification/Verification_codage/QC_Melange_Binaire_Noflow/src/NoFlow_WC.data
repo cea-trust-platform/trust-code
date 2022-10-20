@@ -61,21 +61,21 @@ Discretize pb dis
 
 Read pb
 {
-Fluide_Weakly_Compressible
-{
-    pression_thermo   100000.
-    loi_etat Multi_Gaz_Parfait_WC
+    Fluide_Weakly_Compressible
     {
+        pression_thermo   100000.
+        loi_etat Multi_Gaz_Parfait_WC
+        {
 
-        Species_number 2
-        diffusion_coeff Champ_uniforme 2 0.001268 0.001268
-        molar_mass Champ_uniforme 2 0.01 10.
-        mu Champ_uniforme 2 0.001 0.001
-        cp Champ_uniforme 2 1005 1000
-        Prandtl 0.71
+            Species_number 2
+            diffusion_coeff Champ_uniforme 2 0.001268 0.001268
+            molar_mass Champ_uniforme 2 0.01 10.
+            mu Champ_uniforme 2 0.001 0.001
+            cp Champ_uniforme 2 1005 1000
+            Prandtl 0.71
+        }
+        gravite Champ_Uniforme 3 0. -9.81 0.
     }
-gravite Champ_Uniforme 3 0. -9.81 0.
-}
 
     Navier_Stokes_WC
     {

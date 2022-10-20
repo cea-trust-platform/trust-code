@@ -2,10 +2,10 @@
 # PARALLEL NOT #
 dimension 2
 domaine dom
-Lire_MED { 
-   domain dom 
-   file logo_trust.med 
-   convertAllToPoly
+Lire_MED {
+    domain dom
+    file logo_trust.med
+    convertAllToPoly
 }
 Transformer dom x/(94.8028+81.14334615222) (y+81.14334615222)/(94.8028+81.14334615222)
 Discretiser_domaine dom

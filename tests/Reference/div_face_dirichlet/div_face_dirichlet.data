@@ -71,19 +71,19 @@ extraire_surface
 
 Read pb
 {
-       
-fluide_incompressible {
-    gravite champ_uniforme 2 0 -9.81
 
-mu Champ_Uniforme 1 1.85e-5
-    rho Champ_Uniforme 1 1.17
-    lambda Champ_Uniforme 1 0.0262
-    Cp Champ_Uniforme 1 1006
-    beta_th champ_fonc_fonction temperature 1 1/(val+273)
-}
+    fluide_incompressible {
+        gravite champ_uniforme 2 0 -9.81
+
+        mu Champ_Uniforme 1 1.85e-5
+        rho Champ_Uniforme 1 1.17
+        lambda Champ_Uniforme 1 0.0262
+        Cp Champ_Uniforme 1 1006
+        beta_th champ_fonc_fonction temperature 1 1/(val+273)
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-12 impr }
         convection { generic amont }
@@ -121,11 +121,11 @@ Navier_Stokes_standard
             fields dt_post 0.01
             {
                 temperature faces
-		temperature elem
-		temperature som
-		vitesse faces
-		vitesse elem
-		vitesse som
+                temperature elem
+                temperature som
+                vitesse faces
+                vitesse elem
+                vitesse som
             }
         }
         first_post {
@@ -164,7 +164,8 @@ Navier_Stokes_standard
                     localisation elem
                     sources {
                         Gradient {
-                            source refChamp { Pb_champ pb temperature } } ,
+                            source refChamp { Pb_champ pb temperature }
+                        } ,
                         refChamp { Pb_champ pb pression }
                     }
                 }
@@ -271,12 +272,12 @@ Navier_Stokes_standard
                 diffU_X Interpolation {
                     domaine front
                     localisation elem
-                    source Predefini { pb_champ pb viscous_force_x } 
+                    source Predefini { pb_champ pb viscous_force_x }
                 }
                 diffU_Y Interpolation {
                     domaine front
                     localisation elem
-                    source Predefini { pb_champ pb viscous_force_y } 
+                    source Predefini { pb_champ pb viscous_force_y }
                 }
                 convU_X Interpolation {
                     domaine front
@@ -372,4 +373,3 @@ Calculer_moments dom calcul
 Solve pb
 End
 
- 

@@ -54,30 +54,30 @@ discretize pb dis
 
 Read pb
 {
-       
-fluide_incompressible {
-     rho      champ_uniforme 1  2000.0
-    cp       champ_uniforme 1  3075.0
-    beta_th  champ_fonc_tabule   {
-        pb viscosite_dynamique
-        pb conductivite
+
+    fluide_incompressible {
+        rho      champ_uniforme 1  2000.0
+        cp       champ_uniforme 1  3075.0
+        beta_th  champ_fonc_tabule   {
+            pb viscosite_dynamique
+            pb conductivite
+        }
+        1
+        {
+            2 0 1 # viscosite #
+            2 0 1 # conductivite #
+
+            # valeurs_v_c #
+            0 # v = 0 c = 0 #
+            1 # v = 0 c = 1 #
+            2 3 # pareil pour v = 1 #
+        }
+        mu       champ_fonc_xyz dom 1 x
+        lambda   champ_fonc_xyz dom 1 y
     }
-    1
-    {
-        2 0 1 # viscosite #
-        2 0 1 # conductivite #
-
-        # valeurs_v_c #
-        0 # v = 0 c = 0 #
-        1 # v = 0 c = 1 #
-        2 3 # pareil pour v = 1 #
-    }
-    mu       champ_fonc_xyz dom 1 x
-    lambda   champ_fonc_xyz dom 1 y
-}
 
 
-navier_stokes_standard
+    navier_stokes_standard
     {
         solveur_pression petsc cholesky { }
         convection  { amont }
@@ -128,4 +128,3 @@ navier_stokes_standard
 
 Solve pb
 End
- 

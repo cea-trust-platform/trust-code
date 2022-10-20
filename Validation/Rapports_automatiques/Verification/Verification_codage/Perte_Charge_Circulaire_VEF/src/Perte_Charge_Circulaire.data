@@ -84,15 +84,15 @@ Discretize pb dis
 
 Read pb {
 
-       
-fluide_incompressible {
-     mu Champ_Uniforme 1 0.001
-    rho Champ_Uniforme 1 1000
-}
+
+    fluide_incompressible {
+        mu Champ_Uniforme 1 0.001
+        rho Champ_Uniforme 1 1000
+    }
 
 
 
-Navier_Stokes_standard {
+    Navier_Stokes_standard {
         methode_calcul_pression_initiale avec_sources
         solveur_pression GCP {
             precond ssor { omega 1.5 }
@@ -188,4 +188,3 @@ Perte_charge_anisotrope {
     direction champ_uniforme 2 1 1
 }
 
- 

@@ -74,13 +74,13 @@ extraire_surface
 
 Read pb
 {
-       
-fluide_incompressible {
-     mu champ_uniforme  1 0.00054613
-    rho champ_uniforme  1 987.888
-}
 
-navier_stokes_standard
+    fluide_incompressible {
+        mu champ_uniforme  1 0.00054613
+        rho champ_uniforme  1 987.888
+    }
+
+    navier_stokes_standard
     {
         solveur_pression gcp
         {
@@ -213,4 +213,3 @@ Solve pb
 # BEGIN MESH #
 # END MESH #
 End
- 

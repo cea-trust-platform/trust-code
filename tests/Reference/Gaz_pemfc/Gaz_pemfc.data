@@ -63,26 +63,26 @@ Discretiser pb dis
 
 Lire pb
 {
-Fluide_Weakly_Compressible
-{
-    pression_thermo   100000.
-    use_total_pressure 1 /* 0 is by default */
-    time_activate_ptot 0.00001 /* In seconds : use the total pressure in the EOS */
-    loi_etat binaire_gaz_parfait_WC
+    Fluide_Weakly_Compressible
     {
-        temperature 373.15
-        diffusion_coeff 20.2e-6
+        pression_thermo   100000.
+        use_total_pressure 1 /* 0 is by default */
+        time_activate_ptot 0.00001 /* In seconds : use the total pressure in the EOS */
+        loi_etat binaire_gaz_parfait_WC
+        {
+            temperature 373.15
+            diffusion_coeff 20.2e-6
 
-        # H20 rho 0.580168818959181 #
-        molar_mass1 18e-3
-        mu1 0.0017916
+            # H20 rho 0.580168818959181 #
+            molar_mass1 18e-3
+            mu1 0.0017916
 
-        # H2 rho 0.06497568456332292 #
-        molar_mass2 0.0020159
-        mu2 0.86269e-5
+            # H2 rho 0.06497568456332292 #
+            molar_mass2 0.0020159
+            mu2 0.86269e-5
+        }
+        gravite Champ_Uniforme 3 0 0. -9.81
     }
-    gravite Champ_Uniforme 3 0 0. -9.81
-}
 
     Navier_Stokes_WC
     {

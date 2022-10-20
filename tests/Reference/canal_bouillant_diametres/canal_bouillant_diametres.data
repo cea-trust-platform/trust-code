@@ -42,7 +42,7 @@ Schema_euler_implicite sch
 Read sch
 {
     tinit 0
-	nb_pas_dt_max 3
+    nb_pas_dt_max 3
     seuil_statio 1e-3
     solveur ice
     {
@@ -68,7 +68,7 @@ Read pb
     correlations
     {
         flux_interfacial coef_constant { liquide_sodium 1e10 gaz_sodium 1e10 }
-     	diametre_bulles champ champ_fonc_xyz dom 2 0 0.001
+        diametre_bulles champ champ_fonc_xyz dom 2 0 0.001
     }
     QDM_Multiphase
     {
@@ -79,28 +79,28 @@ Read pb
         initial_conditions
         {
             vitesse Champ_composite 2
-                {
-                    Champ_Fonc_xyz dom 2 0 1
-                    Champ_Fonc_xyz dom 2 0 1
-                }
+            {
+                Champ_Fonc_xyz dom 2 0 1
+                Champ_Fonc_xyz dom 2 0 1
+            }
 
             pression Champ_composite 1
-                {
-                    Champ_Fonc_xyz dom 1 100000.0
-                }
+            {
+                Champ_Fonc_xyz dom 1 100000.0
+            }
         }
         boundary_conditions
         {
             boundary symetrie
             bas  frontiere_ouverte_vitesse_imposee_sortie champ_front_composite 2
-                {
-                    champ_front_uniforme 2 0 1
-                    champ_front_uniforme 2 0 1
-                }
+            {
+                champ_front_uniforme 2 0 1
+                champ_front_uniforme 2 0 1
+            }
             haut frontiere_ouverte_pression_imposee champ_front_composite 1
-                {
-                     champ_front_uniforme 1 100000.0
-                }
+            {
+                champ_front_uniforme 1 100000.0
+            }
         }
     }
     Masse_Multiphase
@@ -118,15 +118,15 @@ Read pb
         {
             boundary paroi
             bas  frontiere_ouverte a_ext champ_front_composite 2
-                {
-                    Champ_Front_Uniforme 1 1
-                    Champ_Front_Uniforme 1 0
-                }
+            {
+                Champ_Front_Uniforme 1 1
+                Champ_Front_Uniforme 1 0
+            }
             haut frontiere_ouverte a_ext champ_front_composite 2
-                {
-                    Champ_Front_Uniforme 1 1
-                    Champ_Front_Uniforme 1 0
-                }
+            {
+                Champ_Front_Uniforme 1 1
+                Champ_Front_Uniforme 1 0
+            }
         }
         sources { flux_interfacial }
     }
@@ -146,15 +146,15 @@ Read pb
         {
             boundary paroi_adiabatique
             bas    frontiere_ouverte T_ext champ_front_composite 2
-                {
-                    Champ_Front_Uniforme 1 800
-                    Champ_Front_Uniforme 1 879.9430097752451
-                }
+            {
+                Champ_Front_Uniforme 1 800
+                Champ_Front_Uniforme 1 879.9430097752451
+            }
             haut   frontiere_ouverte T_ext champ_front_composite 2
-                {
-                    Champ_Front_Uniforme 1 800
-                    Champ_Front_Uniforme 1 879.9430097752451
-                }
+            {
+                Champ_Front_Uniforme 1 800
+                Champ_Front_Uniforme 1 879.9430097752451
+            }
         }
         sources
         {
@@ -168,9 +168,9 @@ Read pb
     }
     Post_processing
     {
-		Definition_champs 	{
-    					d_bulles	refChamp { Pb_champ pb diametre_bulles }
-    					}
+        Definition_champs 	{
+            d_bulles	refChamp { Pb_champ pb diametre_bulles }
+        }
         Format lml
         fields dt_post 1e-2
         {
@@ -190,7 +190,7 @@ Read pb
             enthalpie elem
             masse_volumique_sodium_melange elem
             enthalpie_sodium_melange elem
-	    diametre_bulles elem
+            diametre_bulles elem
         }
     }
 }

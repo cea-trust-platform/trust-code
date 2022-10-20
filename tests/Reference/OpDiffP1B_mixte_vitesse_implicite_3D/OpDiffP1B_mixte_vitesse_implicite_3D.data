@@ -72,11 +72,11 @@ Discretize pbF1 cubesregu
 
 Read pbF1
 {
-Fluide_Incompressible
-{
-    rho Champ_Uniforme 1 1.
-    mu Champ_Uniforme 1 1.
-}
+    Fluide_Incompressible
+    {
+        rho Champ_Uniforme 1 1.
+        mu Champ_Uniforme 1 1.
+    }
 
 
     Navier_Stokes_standard

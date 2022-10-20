@@ -60,19 +60,19 @@ extraire_surface { domaine coupl_extraction probleme pb avec_certains_bords 1 co
 
 Read pb
 {
-       
-fluide_incompressible {
-    gravite champ_uniforme 3 0 0 -9.81
-mu Champ_Uniforme 1 .000245
-    rho Champ_Uniforme 1 840.
-    lambda Champ_Uniforme 1 66.
-    Cp champ_Uniforme 1 1270.
-    Beta_th Champ_uniforme 1 0.000276
-}
+
+    fluide_incompressible {
+        gravite champ_uniforme 3 0 0 -9.81
+        mu Champ_Uniforme 1 .000245
+        rho Champ_Uniforme 1 840.
+        lambda Champ_Uniforme 1 66.
+        Cp champ_Uniforme 1 1270.
+        Beta_th Champ_uniforme 1 0.000276
+    }
 
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         solveur_pression petsc gcp { precond ssor { } rtol 1.e-6 impr }
         convection { amont }
@@ -115,4 +115,4 @@ Navier_Stokes_standard
 
 Solve pb
 End
- 
+

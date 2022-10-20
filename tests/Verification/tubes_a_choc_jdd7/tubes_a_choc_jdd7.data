@@ -60,10 +60,10 @@ Discretize pb dis
 
 Read pb
 {
-	Milieu_composite
-	{
-		liquide_eau StiffenedGas { gamma 1.58 pinf 353637173.0 }
-	}
+    Milieu_composite
+    {
+        liquide_eau StiffenedGas { gamma 1.58 pinf 353637173.0 }
+    }
 
     QDM_Multiphase
     {

@@ -39,16 +39,16 @@ Discretize pb dis
 
 Read pb
 {
-   
-fluide_incompressible {
-    gravite champ_uniforme 2 0 -9.81
 
-mu Champ_Uniforme 1 1.85e-5
-    rho Champ_Uniforme 1 1.17
-    lambda Champ_Uniforme 1 0.0262
-    Cp Champ_Uniforme 1 1006
-    beta_th Champ_Uniforme 1 3.41e-3
-}
+    fluide_incompressible {
+        gravite champ_uniforme 2 0 -9.81
+
+        mu Champ_Uniforme 1 1.85e-5
+        rho Champ_Uniforme 1 1.17
+        lambda Champ_Uniforme 1 0.0262
+        Cp Champ_Uniforme 1 1006
+        beta_th Champ_Uniforme 1 3.41e-3
+    }
 
 
 # On resout du/dt = S(x,y,z) #
@@ -109,4 +109,3 @@ mu Champ_Uniforme 1 1.85e-5
 Solve pb
 
 
- 

@@ -92,14 +92,14 @@ Associate pb sch
 Discretize pb dis
 Read pb
 {
-       
-fluide_incompressible {
-     mu      	Champ_Uniforme 1 1.983e-5
-    rho     	Champ_Uniforme 1 1.177
-}
+
+    fluide_incompressible {
+        mu      	Champ_Uniforme 1 1.983e-5
+        rho     	Champ_Uniforme 1 1.177
+    }
 
 
-Navier_Stokes_Standard
+    Navier_Stokes_Standard
     {
         solveur_pression petsc cholesky { }
         convection { Amont }
@@ -135,4 +135,3 @@ Navier_Stokes_Standard
 }
 Solve pb
 End
- 

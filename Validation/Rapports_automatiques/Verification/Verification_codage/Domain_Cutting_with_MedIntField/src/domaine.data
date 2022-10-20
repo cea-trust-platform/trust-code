@@ -3,9 +3,9 @@ dimension 3
 domaine dom
 
 # BEGIN MESH #
-Lire_MED { 
-   domain dom 
-   file mesh.med 
+Lire_MED {
+    domain dom
+    file mesh.med
 }
 # END MESH #
 

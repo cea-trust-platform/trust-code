@@ -71,20 +71,20 @@ Discretize pb dis
 # Debog pb seq faces 1.e-6 0 #
 Read pb
 {
-       
-fluide_quasi_compressible {
-     mu Champ_Uniforme 1 1.
-    pression 325542.1336
-    loi_etat gaz_parfait_QC {
-        Prandtl 0.71034351145038165942
-        Cp 1006.
-        gamma 1.4
+
+    fluide_quasi_compressible {
+        mu Champ_Uniforme 1 1.
+        pression 325542.1336
+        loi_etat gaz_parfait_QC {
+            Prandtl 0.71034351145038165942
+            Cp 1006.
+            gamma 1.4
+        }
+        traitement_pth constant
     }
-    traitement_pth constant
-}
 
 
-Navier_Stokes_QC
+    Navier_Stokes_QC
     {
         solveur_pression optimal  { seuil 1e-13 }
 
@@ -136,4 +136,3 @@ Navier_Stokes_QC
 Solve pb
 End
 
- 

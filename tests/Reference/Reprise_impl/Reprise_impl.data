@@ -67,16 +67,16 @@ Discretize pb dis
 # Debog pb seq faces 1.e-6 0 #
 Read pb
 {
-       
-fluide_incompressible {
-    gravite champ_uniforme 2 0 -9.81
 
-mu Champ_Uniforme 1 1.e-5
-    rho Champ_Uniforme 1 1.
-}
+    fluide_incompressible {
+        gravite champ_uniforme 2 0 -9.81
+
+        mu Champ_Uniforme 1 1.e-5
+        rho Champ_Uniforme 1 1.
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         solveur_pression GCP {
             precond ssor { omega 1.500000 }
@@ -116,4 +116,3 @@ Solve pb
 
 
 
- 

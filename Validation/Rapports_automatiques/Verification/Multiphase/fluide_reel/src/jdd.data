@@ -54,7 +54,7 @@ Discretize pb dis
 
 Read pb
 {
-	Fluide_sodium_liquide
+    Fluide_sodium_liquide
     {
         P_ref 1e5 T_ref 500
         porosites_champ champ_fonc_xyz dom 1 1-0.5*(y>0.5)

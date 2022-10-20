@@ -81,20 +81,20 @@ Discretize pb_fluide dis
 
 Read pb_fluide
 {
-       
-fluide_incompressible {
-    gravite champ_uniforme 2  0. -9.81
 
-mu Champ_Uniforme 1  0.00089
-    rho Champ_Uniforme 1 997.05
-    lambda Champ_Uniforme 1 0.6071
-    Cp Champ_Uniforme 1 4181.6
-    beta_th Champ_Uniforme 1 0.000257
-}
+    fluide_incompressible {
+        gravite champ_uniforme 2  0. -9.81
+
+        mu Champ_Uniforme 1  0.00089
+        rho Champ_Uniforme 1 997.05
+        lambda Champ_Uniforme 1 0.6071
+        Cp Champ_Uniforme 1 4181.6
+        beta_th Champ_Uniforme 1 0.000257
+    }
 
 
 
-Navier_Stokes_Standard
+    Navier_Stokes_Standard
     {
         parametre_equation parametre_diffusion_implicite { solveur petsc gcp { precond diag { } rtol 1.e-10 impr } }
         solveur_pression petsc Cholesky { }
@@ -143,4 +143,3 @@ Navier_Stokes_Standard
 }
 Solve pb_fluide
 
- 

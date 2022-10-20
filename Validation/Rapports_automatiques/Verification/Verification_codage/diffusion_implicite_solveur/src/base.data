@@ -44,17 +44,17 @@ Discretize pb ma_discretisation
 
 Read pb
 {
-       
-fluide_incompressible {
-     mu  Champ_Uniforme 1 0.01
-    rho Champ_Uniforme 1 2.
-    lambda Champ_Uniforme 1 2
-    Cp Champ_Uniforme 1 100.
-    beta_th Champ_Uniforme 1 0.
-}
+
+    fluide_incompressible {
+        mu  Champ_Uniforme 1 0.01
+        rho Champ_Uniforme 1 2.
+        lambda Champ_Uniforme 1 2
+        Cp Champ_Uniforme 1 100.
+        beta_th Champ_Uniforme 1 0.
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         parametre_equation parametre_diffusion_implicite { }
         solveur_pression Petsc Cholesky { }
@@ -97,4 +97,4 @@ Navier_Stokes_standard
     }
 }
 Solve pb
- 
+

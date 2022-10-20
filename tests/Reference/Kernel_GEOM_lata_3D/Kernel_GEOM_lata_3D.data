@@ -55,17 +55,17 @@ dimension 3
 Domaine hexaedre
 Domaine tetra
 Domaine hexaedre_vef
-Lire_MED { 
-   domain hexaedre 
-   file hexaedre.med 
+Lire_MED {
+    domain hexaedre
+    file hexaedre.med
 }
-Lire_MED { 
-   domain tetra 
-   file tetra.med 
+Lire_MED {
+    domain tetra
+    file tetra.med
 }
-Lire_MED { 
-   domain hexaedre_vef 
-   file hexaedre_vef.med 
+Lire_MED {
+    domain hexaedre_vef
+    file hexaedre_vef.med
 }
 
 postraiter_domaine {

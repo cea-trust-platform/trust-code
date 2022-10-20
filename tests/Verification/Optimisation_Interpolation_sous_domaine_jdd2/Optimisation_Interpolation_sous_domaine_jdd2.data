@@ -69,15 +69,15 @@ extraire_domaine { domaine corei probleme pb
 # La convection est neglige, car les resultats sont mauvais #
 Read pb
 {
-Fluide_Incompressible
-{
-    mu  Champ_Uniforme 1 0.25
-    rho Champ_Uniforme 1 2.
-}
-Constituant
-{
-    coefficient_diffusion Champ_Uniforme 1 0.5e-9
-}
+    Fluide_Incompressible
+    {
+        mu  Champ_Uniforme 1 0.25
+        rho Champ_Uniforme 1 2.
+    }
+    Constituant
+    {
+        coefficient_diffusion Champ_Uniforme 1 0.5e-9
+    }
 
     Navier_Stokes_standard
     {

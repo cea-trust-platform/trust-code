@@ -61,14 +61,14 @@ Discretize pb dis
 # Debog pb seq faces 1.e-6 0 #
 Read pb
 {
-       
-fluide_incompressible {
-     mu Champ_Uniforme	1 1.
-    rho Champ_Uniforme	1 1.
-}
+
+    fluide_incompressible {
+        mu Champ_Uniforme	1 1.
+        rho Champ_Uniforme	1 1.
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         dt_projection 1.e5 1.e-10
 
@@ -131,4 +131,3 @@ Navier_Stokes_standard
 }
 Solve pb
 End
- 

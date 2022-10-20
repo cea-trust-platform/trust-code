@@ -51,14 +51,14 @@ Discretize pb dis
 
 Read pb
 {
-       
-fluide_incompressible {
-     mu Champ_Fonc_XYZ dom 1 (10.+x+y+z)
-    rho Champ_Uniforme 1 1.
-}
+
+    fluide_incompressible {
+        mu Champ_Fonc_XYZ dom 1 (10.+x+y+z)
+        rho Champ_Uniforme 1 1.
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         methode_calcul_pression_initiale avec_sources_et_operateurs
         solveur_pression GCP {
@@ -112,4 +112,3 @@ boundary_conditions {
     Devant   frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
 }
 Devant frontiere_ouverte_pression_imposee Champ_front_fonc_tXYZ 1 (4.*x-2.*y-2.*z-(10.+x+y+z)*(4.))
- 

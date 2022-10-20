@@ -4,9 +4,9 @@ dimension 3
 domaine dom
 
 # BEGIN MESH #
-Lire_MED { 
-   domain dom 
-   file cylindre_perio_fine_3.med 
+Lire_MED {
+    domain dom
+    file cylindre_perio_fine_3.med
 }
 dilate dom 0.001
 # END MESH #
@@ -55,17 +55,17 @@ postraiter_domaine
 
 Read pb
 {
-       
-fluide_incompressible {
-    gravite uniform_field 3 0. 0.0 0.0
-beta_th uniform_field  1 0.00018
-    mu      uniform_field  1 1e-3
-    rho     uniform_field  1 1.
-    cp      uniform_field  1 4182.0
-    lambda  uniform_field  1 0.597
-}
 
-Navier_stokes_standard
+    fluide_incompressible {
+        gravite uniform_field 3 0. 0.0 0.0
+        beta_th uniform_field  1 0.00018
+        mu      uniform_field  1 1e-3
+        rho     uniform_field  1 1.
+        cp      uniform_field  1 4182.0
+        lambda  uniform_field  1 0.597
+    }
+
+    Navier_stokes_standard
     {
         projection_initiale 0
         solveur_pression Petsc Cholesky {  }
@@ -326,4 +326,3 @@ Navier_stokes_standard
 }
 solve pb
 end
- 

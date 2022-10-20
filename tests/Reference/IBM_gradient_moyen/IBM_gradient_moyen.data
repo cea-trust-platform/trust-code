@@ -17,9 +17,9 @@ system "mkdir -p results"
 
 # DEBUT SEQ #
 
-Lire_MED { 
-   domain dom 
-   file res_domain_mesh_40_cyl_mesh_250fact12.med 
+Lire_MED {
+    domain dom
+    file res_domain_mesh_40_cyl_mesh_250fact12.med
 }
 
 regroupebord dom Wall { TOP }
@@ -77,14 +77,14 @@ extraire_surface
 }
 Lire pb
 {
-       
-fluide_incompressible {
-     mu  Champ_Uniforme 1 0.25
-    rho Champ_Uniforme 1 1.0
-}
+
+    fluide_incompressible {
+        mu  Champ_Uniforme 1 0.25
+        rho Champ_Uniforme 1 1.0
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         correction_matrice_projection_initiale 0
         correction_calcul_pression_initiale 0
@@ -104,16 +104,18 @@ Navier_Stokes_standard
             Source_PDF
             {
                 transpose_rotation
-                aire Champ_Fonc_MED { domain domain_mesh 
-                                      file res_domain_mesh_40_cyl_mesh_250fact12.med 
-                                      field aire 
-                                      last_time 
-                                      }
-                rotation Champ_Fonc_MED { domain domain_mesh 
-                                          file res_domain_mesh_40_cyl_mesh_250fact12.med 
-                                          field rotation 
-                                          last_time 
-                                          }
+                aire Champ_Fonc_MED {
+                    domain domain_mesh
+                    file res_domain_mesh_40_cyl_mesh_250fact12.med
+                    field aire
+                    last_time
+                }
+                rotation Champ_Fonc_MED {
+                    domain domain_mesh
+                    file res_domain_mesh_40_cyl_mesh_250fact12.med
+                    field rotation
+                    last_time
+                }
                 modele
                 {
                     echelle_relaxation_coefficient_pdf 1
@@ -125,23 +127,26 @@ Navier_Stokes_standard
                 interpolation IBM_gradient_moyen
                 {
                     est_dirichlet Champ_Uniforme 1 0
-                    points_solides Champ_Fonc_MED { domain domain_mesh 
-                                                    file res_domain_mesh_40_cyl_mesh_250fact12.med 
-                                                    field projection_Solid 
-                                                    loc som 
-                                                    last_time 
-                                                    }
-                    elements_solides Champ_Fonc_MED { domain domain_mesh 
-                                                      file res_domain_mesh_40_cyl_mesh_250fact12.med 
-                                                      field fl_elem_number 
-                                                      loc som 
-                                                      last_time 
-                                                      }
-                    correspondance_elements Champ_Fonc_MED { domain domain_mesh 
-                                                             file res_domain_mesh_40_cyl_mesh_250fact12.med 
-                                                             field TRUST_SALOME_correspondance 
-                                                             last_time 
-                                                             }
+                    points_solides Champ_Fonc_MED {
+                        domain domain_mesh
+                        file res_domain_mesh_40_cyl_mesh_250fact12.med
+                        field projection_Solid
+                        loc som
+                        last_time
+                    }
+                    elements_solides Champ_Fonc_MED {
+                        domain domain_mesh
+                        file res_domain_mesh_40_cyl_mesh_250fact12.med
+                        field fl_elem_number
+                        loc som
+                        last_time
+                    }
+                    correspondance_elements Champ_Fonc_MED {
+                        domain domain_mesh
+                        file res_domain_mesh_40_cyl_mesh_250fact12.med
+                        field TRUST_SALOME_correspondance
+                        last_time
+                    }
                 }
             }
         }
@@ -168,4 +173,3 @@ Navier_Stokes_standard
 }
 resoudre pb
 fin
- 

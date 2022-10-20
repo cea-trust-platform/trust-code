@@ -82,15 +82,15 @@ Discretize pb dis
 
 Read pb
 {
-       
-fluide_incompressible {
-     mu Champ_Uniforme 1 0.02
-    rho Champ_Uniforme 1 2
-    Porosites_champ champ_uniforme_morceaux dom 1 { defaut 1 sous_zone1 0.5 }
-}
+
+    fluide_incompressible {
+        mu Champ_Uniforme 1 0.02
+        rho Champ_Uniforme 1 2
+        Porosites_champ champ_uniforme_morceaux dom 1 { defaut 1 sous_zone1 0.5 }
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-6 impr }
         convection { amont }
@@ -127,4 +127,3 @@ Navier_Stokes_standard
 
 Solve pb
 End
- 

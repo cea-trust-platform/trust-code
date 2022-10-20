@@ -60,16 +60,16 @@ sous_zone grille associate grille dom read grille { fonction_sous_zone (y>(0.4))
 
 Read pb
 {
-	Milieu_composite
-	{
-		liquide_eau fluide_incompressible
+    Milieu_composite
+    {
+        liquide_eau fluide_incompressible
         {
             rho    Champ_Uniforme 1 1000
             mu     Champ_Uniforme 1 1e-3
             cp     Champ_Uniforme 1 100
             lambda Champ_Uniforme 1 1
         }
-	}
+    }
 
     QDM_Multiphase
     {

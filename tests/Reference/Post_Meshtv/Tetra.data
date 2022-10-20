@@ -28,11 +28,11 @@ Discretize pb dis
 
 Read pb
 {
-Fluide_Incompressible
-{
-    mu  Champ_Uniforme 1 1.0e-5
-    rho Champ_Uniforme 1 1.0
-}
+    Fluide_Incompressible
+    {
+        mu  Champ_Uniforme 1 1.0e-5
+        rho Champ_Uniforme 1 1.0
+    }
 
     Navier_Stokes_standard
     {

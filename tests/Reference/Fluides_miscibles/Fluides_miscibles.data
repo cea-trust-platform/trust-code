@@ -64,19 +64,19 @@ Read pb
 # beta=1-800/1000=0.2 So change beta if alcohol density changes #
 # Use a fraction dependant law: mu=mu(water)+(mu(alcohol)-mu(water))*C #
 # 2.e-3 is an example, not the real value! #
-Fluide_Incompressible
-{
-    mu champ_fonc_tabule { pb concentration } 1 { 2 0 1 1.7e-3 2.e-3 }
-    rho Champ_Uniforme 1 1000
-    beta_co Champ_Uniforme 1 0.2
-    gravite Champ_Uniforme 2 0 -9.81
-}
+    Fluide_Incompressible
+    {
+        mu champ_fonc_tabule { pb concentration } 1 { 2 0 1 1.7e-3 2.e-3 }
+        rho Champ_Uniforme 1 1000
+        beta_co Champ_Uniforme 1 0.2
+        gravite Champ_Uniforme 2 0 -9.81
+    }
 
 # We need the diffusivity of alocol in water (0.1 is an example, not the real value!) #
-Constituant
-{
-    coefficient_diffusion Champ_Uniforme 1 0.1
-}
+    Constituant
+    {
+        coefficient_diffusion Champ_Uniforme 1 0.1
+    }
     Navier_Stokes_standard
     {
         solveur_pression GCP {

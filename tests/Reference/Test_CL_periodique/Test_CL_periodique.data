@@ -4,9 +4,9 @@ Pb_Hydraulique_Turbulent pb
 Domaine dom
 
 # BEGIN MESH #
-Lire_MED { 
-   domain dom 
-   file geometry.med 
+Lire_MED {
+    domain dom
+    file geometry.med
 }
 Tetraedriser_homogene_fin dom
 Regroupebord dom section { INLET OUTLET }

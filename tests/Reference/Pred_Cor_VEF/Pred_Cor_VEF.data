@@ -70,21 +70,21 @@ Discretize pb dis
 
 Read pb
 {
-       
-fluide_incompressible {
-     mu champ_fonc_tabule { pb temperature } 1
-    {   2
-        0        1
-        2.0e-6   2.0e-3
+
+    fluide_incompressible {
+        mu champ_fonc_tabule { pb temperature } 1
+        {   2
+            0        1
+            2.0e-6   2.0e-3
+        }
+        rho Champ_Uniforme 1 2
+        lambda  Champ_Uniforme 1 0.597
+        Cp Champ_Uniforme 1 2091
+        beta_th Champ_Uniforme 1 1.e-10
     }
-    rho Champ_Uniforme 1 2
-    lambda  Champ_Uniforme 1 0.597
-    Cp Champ_Uniforme 1 2091
-    beta_th Champ_Uniforme 1 1.e-10
-}
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-8 impr }
         convection { muscl }
@@ -163,4 +163,3 @@ Navier_Stokes_standard
 }
 Solve pb
 End
- 

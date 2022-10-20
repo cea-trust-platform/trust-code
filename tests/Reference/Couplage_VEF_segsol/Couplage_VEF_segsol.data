@@ -105,15 +105,15 @@ Discretize pbc dis
 
 Read pb2
 {
-Fluide_Incompressible
-{
-    mu Champ_Uniforme 1 0.001
-    rho Champ_Uniforme 1 1.
-    lambda Champ_Uniforme 1 1.
-    Cp Champ_Uniforme 1 1000.
-    beta_th Champ_Uniforme 1 0.0036
-    gravite Champ_Uniforme 2 0 -9.81
-}
+    Fluide_Incompressible
+    {
+        mu Champ_Uniforme 1 0.001
+        rho Champ_Uniforme 1 1.
+        lambda Champ_Uniforme 1 1.
+        Cp Champ_Uniforme 1 1000.
+        beta_th Champ_Uniforme 1 0.0036
+        gravite Champ_Uniforme 2 0 -9.81
+    }
 
     Navier_Stokes_standard
     {
@@ -181,12 +181,12 @@ Fluide_Incompressible
 
 Read pb1
 {
-Solide
-{
-    rho Champ_Uniforme 1 1.
-    lambda Champ_Uniforme 1 10.
-    Cp Champ_Uniforme 1 100.
-}
+    Solide
+    {
+        rho Champ_Uniforme 1 1.
+        lambda Champ_Uniforme 1 10.
+        Cp Champ_Uniforme 1 100.
+    }
 
     Conduction
     {

@@ -64,14 +64,14 @@ extraire_surface { probleme pb domaine inlet avec_certains_bords 1 inlet }
 
 Read pb
 {
-       
-fluide_incompressible {
-     mu  Champ_uniforme 1 1.
-    rho Champ_Uniforme 1 1000.
-}
+
+    fluide_incompressible {
+        mu  Champ_uniforme 1 1.
+        rho Champ_Uniforme 1 1000.
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         methode_calcul_pression_initiale avec_sources
         solveur_pression GCP {
@@ -122,4 +122,3 @@ Navier_Stokes_standard
 }
 Solve pb
 End
- 

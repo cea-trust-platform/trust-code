@@ -71,14 +71,14 @@ Discretize pb ma_discretisation
 
 Read pb
 {
-       
-fluide_incompressible {
-     mu  Champ_Uniforme 1 0.04
-    rho Champ_Uniforme 1 2.
-}
+
+    fluide_incompressible {
+        mu  Champ_Uniforme 1 0.04
+        rho Champ_Uniforme 1 2.
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         solveur_pression gcp { precond ssor { } seuil 1.e-7 quiet }
         convection { muscl }
@@ -112,4 +112,3 @@ Navier_Stokes_standard
 
 Solve pb
 End
- 

@@ -4,9 +4,9 @@ dimension 2
 Pb_hydraulique pb
 Domaine dom
 # BEGIN MESH #
-Lire_MED { 
-   domain dom 
-   file pour_trust.med 
+Lire_MED {
+    domain dom
+    file pour_trust.med
 }
 
 
@@ -64,14 +64,14 @@ Discretize pb dis
 
 Read pb
 {
-       
-fluide_incompressible {
-     mu Champ_Uniforme 1 3.7e-05
-    rho Champ_Uniforme 1 2
-}
+
+    fluide_incompressible {
+        mu Champ_Uniforme 1 3.7e-05
+        rho Champ_Uniforme 1 2
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         solveur_pression petsc cholesky { }
         convection {  negligeable  }
@@ -115,4 +115,3 @@ Navier_Stokes_standard
 Solve pb
 lata_to_other lml NOM_DU_CAS NOM_DU_CAS
 End
- 

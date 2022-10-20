@@ -101,12 +101,12 @@ Discretize pbc dis
 Debog pb2 seq faces 1.e-6 0
 Read pb1
 {
-Solide
-{
-    rho Champ_Uniforme 1 1000.
-    lambda Champ_Uniforme 1 250.
-    Cp Champ_Uniforme 1 100
-}
+    Solide
+    {
+        rho Champ_Uniforme 1 1000.
+        lambda Champ_Uniforme 1 250.
+        Cp Champ_Uniforme 1 100
+    }
 
     Conduction
     {
@@ -148,15 +148,15 @@ Solide
 
 Read pb2
 {
-Fluide_Incompressible
-{
-    mu Champ_Uniforme 1 0.002
-    rho Champ_Uniforme 1 2
-    lambda Champ_Uniforme 1 1.0
-    Cp Champ_Uniforme 1 500
-    beta_th Champ_Uniforme 1 0.0001
-    gravite Champ_Uniforme 2 0 -9.81
-}
+    Fluide_Incompressible
+    {
+        mu Champ_Uniforme 1 0.002
+        rho Champ_Uniforme 1 2
+        lambda Champ_Uniforme 1 1.0
+        Cp Champ_Uniforme 1 500
+        beta_th Champ_Uniforme 1 0.0001
+        gravite Champ_Uniforme 2 0 -9.81
+    }
 
     Navier_Stokes_standard
     {

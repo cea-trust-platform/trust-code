@@ -80,24 +80,24 @@ Discretize pb dis
 
 Read pb
 {
-       
-fluide_incompressible 
-{
-     mu Champ_Uniforme 1 0.02
-    rho Champ_Uniforme 1 2
-    Porosites 
+
+    fluide_incompressible
     {
-    	sous_zone1
-		{
-    		VOLUMIQUE 1.0
-    		SURFACIQUE 2 0.5 0.25
-		}
+        mu Champ_Uniforme 1 0.02
+        rho Champ_Uniforme 1 2
+        Porosites
+        {
+            sous_zone1
+            {
+                VOLUMIQUE 1.0
+                SURFACIQUE 2 0.5 0.25
+            }
+        }
     }
-}
 
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         solveur_pression GCP {
             precond ssor { omega 1.500000 }
@@ -147,4 +147,4 @@ Porosites pb sous_zone1
     VOLUMIQUE 1.0
     SURFACIQUE 2 0.5 0.25
 }
- 
+

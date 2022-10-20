@@ -56,13 +56,13 @@ Associate pb sch
 Discretize pb dis
 Read pb
 {
-       
-fluide_incompressible {
-     mu Champ_Uniforme 1 1
-    rho Champ_Uniforme 1 1
-}
 
-Navier_Stokes_standard
+    fluide_incompressible {
+        mu Champ_Uniforme 1 1
+        rho Champ_Uniforme 1 1
+    }
+
+    Navier_Stokes_standard
     {
         solveur_pression Gcp {
             precond ssor
@@ -108,4 +108,3 @@ Navier_Stokes_standard
 }
 Solve pb
 End
- 

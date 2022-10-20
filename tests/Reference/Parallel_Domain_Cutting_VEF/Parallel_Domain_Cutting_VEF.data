@@ -67,14 +67,14 @@ Associate pb sch
 Discretize pb dis
 Read pb
 {
-       
-fluide_incompressible {
-     mu Champ_Uniforme	1 1.
-    rho Champ_Uniforme	1 1.
-}
+
+    fluide_incompressible {
+        mu Champ_Uniforme	1 1.
+        rho Champ_Uniforme	1 1.
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         Solveur_Pression GCP_NS {
             seuil 1.e-8 quiet
@@ -135,4 +135,3 @@ Navier_Stokes_standard
 }
 Solve pb
 End
- 

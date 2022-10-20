@@ -51,26 +51,26 @@ Discretiser pb1 dis
 # debog pb1 seq faces 1.e-5 0 #
 Lire pb1
 {
-Fluide_Quasi_Compressible
-{
-    pression   100000.
-    traitement_pth constant
-
-    loi_etat Binaire_Gaz_Parfait_QC
+    Fluide_Quasi_Compressible
     {
-        temperature 284.15
-        diffusion_coeff 7.72e-5
+        pression   100000.
+        traitement_pth constant
 
-        # H2 #
-        molar_mass1 0.0020159
-        mu1 0.86269e-5
+        loi_etat Binaire_Gaz_Parfait_QC
+        {
+            temperature 284.15
+            diffusion_coeff 7.72e-5
 
-        # air #
-        molar_mass2 0.02897
-        mu2 1.792e-5
+            # H2 #
+            molar_mass1 0.0020159
+            mu1 0.86269e-5
+
+            # air #
+            molar_mass2 0.02897
+            mu2 1.792e-5
+        }
+        gravite Champ_Uniforme 3 0 0. -9.81
     }
-    gravite Champ_Uniforme 3 0 0. -9.81
-}
     Navier_Stokes_QC
     {
         solveur_pression Petsc GCP { precond SSOR { omega 1.6 }  seuil 1.e-12 impr   }

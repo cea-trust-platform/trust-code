@@ -13,9 +13,9 @@ Pb_Hydraulique pb
 Domaine dom
 
 # BEGIN MESH #
-Lire_MED { 
-   domain dom 
-   file ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_@TILT@.med 
+Lire_MED {
+    domain dom
+    file ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_@TILT@.med
 }
 regroupebord dom Wall { TOP }
 regroupebord dom Postpro { BOTTOM }
@@ -68,14 +68,14 @@ Discretiser pb dis
 
 Lire pb
 {
-       
-fluide_incompressible {
-     mu  Champ_Uniforme 1 1.0
-    rho Champ_Uniforme 1 1.0
-}
+
+    fluide_incompressible {
+        mu  Champ_Uniforme 1 1.0
+        rho Champ_Uniforme 1 1.0
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         projection_initiale 0
         postraiter_gradient_pression_sans_masse
@@ -87,16 +87,18 @@ Navier_Stokes_standard
         {
             Source_PDF
             {
-                aire Champ_Fonc_MED { domain domain_mesh 
-                                      file ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_@TILT@.med 
-                                      field aire 
-                                      last_time 
-                                      }
-                rotation Champ_Fonc_MED { domain domain_mesh 
-                                          file ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_@TILT@.med 
-                                          field rotation 
-                                          last_time 
-                                          }
+                aire Champ_Fonc_MED {
+                    domain domain_mesh
+                    file ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_@TILT@.med
+                    field aire
+                    last_time
+                }
+                rotation Champ_Fonc_MED {
+                    domain domain_mesh
+                    file ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_@TILT@.med
+                    field rotation
+                    last_time
+                }
                 modele
                 {
                     eta 1.0e-12
@@ -104,46 +106,52 @@ Navier_Stokes_standard
                 }
                 interpolation @INTERP_TYPE@
                 {
-                    @EST_DIRICHLET@ est_dirichlet Champ_Fonc_MED { domain domain_mesh 
-                                                                   file ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_@TILT@.med 
-                                                                   field is_node_dirichlet 
-                                                                   loc som 
-                                                                   last_time 
-                                                                   }
-@EST_DIRICHLET@
-                    @POINTS_FLUIDES@ points_fluides Champ_Fonc_MED { domain domain_mesh 
-                                                                     file ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_@TILT@.med 
-                                                                     field projection_Fluid 
-                                                                     loc som 
-                                                                     last_time 
-                                                                     }
-@POINTS_FLUIDES@
-                    @POINTS_SOLIDES@ points_solides Champ_Fonc_MED { domain domain_mesh 
-                                                                     file ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_@TILT@.med 
-                                                                     field projection_Solid 
-                                                                     loc som 
-                                                                     last_time 
-                                                                     }
-@POINTS_SOLIDES@
-                    @ELEMENTS_FLUIDES@ elements_fluides Champ_Fonc_MED { domain domain_mesh 
-                                                                         file ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_@TILT@.med 
-                                                                         field fl_elem_number 
-                                                                         loc som 
-                                                                         last_time 
-                                                                         }
-@ELEMENTS_FLUIDES@
-                    @ELEMENTS_SOLIDES@ elements_solides Champ_Fonc_MED { domain domain_mesh 
-                                                                         file ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_@TILT@.med 
-                                                                         field so_elem_number 
-                                                                         loc som 
-                                                                         last_time 
-                                                                         }
-@ELEMENTS_SOLIDES@
-                    correspondance_elements Champ_Fonc_MED { domain domain_mesh 
-                                                             file ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_@TILT@.med 
-                                                             field TRUST_SALOME_correspondance 
-                                                             last_time 
-                                                             }
+                    @EST_DIRICHLET@ est_dirichlet Champ_Fonc_MED {
+                        domain domain_mesh
+                        file ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_@TILT@.med
+                        field is_node_dirichlet
+                        loc som
+                        last_time
+                    }
+                    @EST_DIRICHLET@
+                    @POINTS_FLUIDES@ points_fluides Champ_Fonc_MED {
+                        domain domain_mesh
+                        file ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_@TILT@.med
+                        field projection_Fluid
+                        loc som
+                        last_time
+                    }
+                    @POINTS_FLUIDES@
+                    @POINTS_SOLIDES@ points_solides Champ_Fonc_MED {
+                        domain domain_mesh
+                        file ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_@TILT@.med
+                        field projection_Solid
+                        loc som
+                        last_time
+                    }
+                    @POINTS_SOLIDES@
+                    @ELEMENTS_FLUIDES@ elements_fluides Champ_Fonc_MED {
+                        domain domain_mesh
+                        file ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_@TILT@.med
+                        field fl_elem_number
+                        loc som
+                        last_time
+                    }
+                    @ELEMENTS_FLUIDES@
+                    @ELEMENTS_SOLIDES@ elements_solides Champ_Fonc_MED {
+                        domain domain_mesh
+                        file ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_@TILT@.med
+                        field so_elem_number
+                        loc som
+                        last_time
+                    }
+                    @ELEMENTS_SOLIDES@
+                    correspondance_elements Champ_Fonc_MED {
+                        domain domain_mesh
+                        file ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_@TILT@.med
+                        field TRUST_SALOME_correspondance
+                        last_time
+                    }
                 }
             }
         }
@@ -155,17 +163,19 @@ Navier_Stokes_standard
         {
             Wall Symetrie
             Postpro Symetrie
-            Entree frontiere_ouverte_vitesse_imposee Champ_front_MED Champ_Fonc_MED { domain domain_mesh 
-                                                                                      file ../MESHES_POISEUILLE/velocity_BC_80_theta_@TILT@.med 
-                                                                                      field velocity 
-                                                                                      loc som 
-                                                                                      last_time 
-                                                                                      }
-            Sortie frontiere_ouverte_pression_imposee Champ_front_MED Champ_Fonc_MED { domain domain_mesh 
-                                                                                       file ../MESHES_POISEUILLE/pressure_BC_80_theta_@TILT@.med 
-                                                                                       field pressure 
-                                                                                       last_time 
-                                                                                       }
+            Entree frontiere_ouverte_vitesse_imposee Champ_front_MED Champ_Fonc_MED {
+                domain domain_mesh
+                file ../MESHES_POISEUILLE/velocity_BC_80_theta_@TILT@.med
+                field velocity
+                loc som
+                last_time
+            }
+            Sortie frontiere_ouverte_pression_imposee Champ_front_MED Champ_Fonc_MED {
+                domain domain_mesh
+                file ../MESHES_POISEUILLE/pressure_BC_80_theta_@TILT@.med
+                field pressure
+                last_time
+            }
         }
     }
 
@@ -182,4 +192,3 @@ Navier_Stokes_standard
 
 resoudre pb
 fin
- 

@@ -90,25 +90,25 @@ Discretize pb dis
 
 Read pb
 {
-       
-fluide_quasi_compressible {
-    gravite champ_uniforme 3 0. -9.81 0.
 
-mu champ_fonc_fonction pb temperature 1 (1.461e-6*(val^1.5)/(val+111.))
-    pression 100000.
-    lambda champ_fonc_fonction pb temperature 1 (2.06803521126761000000e-3*(val^1.5)/(val+111.))
-    loi_etat gaz_parfait_qc
-    {
-        Prandtl 0.71
-        Cp 1005
-        gamma 1.4
+    fluide_quasi_compressible {
+        gravite champ_uniforme 3 0. -9.81 0.
+
+        mu champ_fonc_fonction pb temperature 1 (1.461e-6*(val^1.5)/(val+111.))
+        pression 100000.
+        lambda champ_fonc_fonction pb temperature 1 (2.06803521126761000000e-3*(val^1.5)/(val+111.))
+        loi_etat gaz_parfait_qc
+        {
+            Prandtl 0.71
+            Cp 1005
+            gamma 1.4
+        }
+        traitement_pth conservation_masse
+        Traitement_rho_gravite moins_rho_moyen
     }
-    traitement_pth conservation_masse
-    Traitement_rho_gravite moins_rho_moyen
-}
 
 
-Navier_Stokes_QC
+    Navier_Stokes_QC
     {
         solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-13 impr }
         projection_initiale 0
@@ -167,4 +167,3 @@ Navier_Stokes_QC
 
 Solve pb
 End
- 

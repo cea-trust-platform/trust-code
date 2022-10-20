@@ -2,9 +2,9 @@ dimension 3
 domaine dom
 
 # BEGIN MESH #
-Lire_MED { 
-   domain dom 
-   file mesh_gmsh.med 
+Lire_MED {
+    domain dom
+    file mesh_gmsh.med
 }
 
 extruder { domaine dom direction 0.1 0 0 nb_tranches 4 }

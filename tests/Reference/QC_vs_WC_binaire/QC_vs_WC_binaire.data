@@ -62,24 +62,24 @@ Discretiser pb dis
 
 Lire pb
 {
-Fluide_Weakly_Compressible
-{
-    pression_thermo   100000.
-    loi_etat BINAIRE_GAZ_PARFAIT_WC
+    Fluide_Weakly_Compressible
     {
-        temperature 373.15
-        diffusion_coeff 20.2e-6
+        pression_thermo   100000.
+        loi_etat BINAIRE_GAZ_PARFAIT_WC
+        {
+            temperature 373.15
+            diffusion_coeff 20.2e-6
 
-        # O2 rho 1.087902314582734 #
-        molar_mass1 32e-3
-        mu1 2.32e-5
+            # O2 rho 1.087902314582734 #
+            molar_mass1 32e-3
+            mu1 2.32e-5
 
-        # H20 rho 0.580168818959181 #
-        molar_mass2 18e-3
-        mu2 0.0017916
+            # H20 rho 0.580168818959181 #
+            molar_mass2 18e-3
+            mu2 0.0017916
+        }
+        gravite Champ_Uniforme 3 0 0. -9.81
     }
-gravite Champ_Uniforme 3 0 0. -9.81
-}
 
     Navier_Stokes_WC
     {

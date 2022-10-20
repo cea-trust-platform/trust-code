@@ -54,30 +54,30 @@ Discretiser pb1 dis
 
 Lire pb1
 {
-       
-fluide_quasi_compressible {
-    gravite champ_uniforme 3 0 0. -9.81
 
-pression   100000.
+    fluide_quasi_compressible {
+        gravite champ_uniforme 3 0 0. -9.81
 
-    mu Champ_Fonc_Fonction pb1 temperature 1 (0.86269e-5*val*0.02897*(8.0^0.5)*((1.0+(0.0020159/0.02897))^0.5))/(((val*0.02897*(8.0^0.5)*((1.0+(0.0020159/0.02897))^0.5))+(1.0-val)*0.0020159*((1.0+(((0.86269/1.792)^0.5)*((0.02897/0.0020159)^0.25)))^2)))+(1.792e-5*(1.0-val)*0.0020159*(8.0^0.5)*((1.0+(0.02897/0.0020159))^0.5))/((((1.0-val)*0.0020159*(8.0^0.5)*((1.0+(0.02897/0.0020159))^0.5))+(val)*0.02897*((1.0+(((1.792/0.86269)^0.5)*((0.0020159/0.02897)^0.25)))^2)))
+        pression   100000.
 
-    lambda Champ_Fonc_Fonction pb1 temperature 1 7.72e-5*(100000.0*0.02897)/(8.314472*284.15*((((0.02897/0.0020159)-1.0)*val)+1.00))
+        mu Champ_Fonc_Fonction pb1 temperature 1 (0.86269e-5*val*0.02897*(8.0^0.5)*((1.0+(0.0020159/0.02897))^0.5))/(((val*0.02897*(8.0^0.5)*((1.0+(0.0020159/0.02897))^0.5))+(1.0-val)*0.0020159*((1.0+(((0.86269/1.792)^0.5)*((0.02897/0.0020159)^0.25)))^2)))+(1.792e-5*(1.0-val)*0.0020159*(8.0^0.5)*((1.0+(0.02897/0.0020159))^0.5))/((((1.0-val)*0.0020159*(8.0^0.5)*((1.0+(0.02897/0.0020159))^0.5))+(val)*0.02897*((1.0+(((1.792/0.86269)^0.5)*((0.0020159/0.02897)^0.25)))^2)))
 
-    loi_etat gaz_parfait_QC {
+        lambda Champ_Fonc_Fonction pb1 temperature 1 7.72e-5*(100000.0*0.02897)/(8.314472*284.15*((((0.02897/0.0020159)-1.0)*val)+1.00))
 
-        Prandtl 0.189301713586576
-        Cp 1.
-        gamma 1.4
+        loi_etat gaz_parfait_QC {
+
+            Prandtl 0.189301713586576
+            Cp 1.
+            gamma 1.4
+        }
+
+        traitement_pth constant
+
     }
 
-    traitement_pth constant
-
-}
 
 
-
-Navier_Stokes_QC
+    Navier_Stokes_QC
     {
 
         solveur_pression petsc gcp { precond ssor { } seuil 1.e-8 impr }
@@ -132,4 +132,3 @@ Navier_Stokes_QC
 Resoudre pb1
 Fin
 
- 

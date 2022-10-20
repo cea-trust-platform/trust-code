@@ -69,24 +69,24 @@ Discretize pb dis
 
 Read pb
 {
-       
-fluide_quasi_compressible {
-    gravite champ_uniforme 2 0. 0.
 
-pression 100000.
-    mu champ_uniforme 1 1e-6
+    fluide_quasi_compressible {
+        gravite champ_uniforme 2 0. 0.
 
-    loi_etat gaz_parfait_QC {
-        Prandtl 1.
-        Cp 1000.
-        gamma 1.666
+        pression 100000.
+        mu champ_uniforme 1 1e-6
+
+        loi_etat gaz_parfait_QC {
+            Prandtl 1.
+            Cp 1000.
+            gamma 1.666
+        }
+        traitement_pth conservation_masse
     }
-    traitement_pth conservation_masse
-}
 
 
 
-Navier_Stokes_QC
+    Navier_Stokes_QC
     {
         solveur_pression Gcp {
             precond ssor { omega 1.5 }
@@ -127,4 +127,3 @@ Navier_Stokes_QC
 
 Solve pb
 End
- 

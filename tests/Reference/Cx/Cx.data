@@ -60,17 +60,17 @@ Extraire_surface { Domaine ring Probleme pb Condition_faces (z+2)*(z+1)*(x^2+y^2
 Domaine Entree
 Read pb
 {
-       
-fluide_incompressible {
-     mu  Champ_Uniforme 1 0.01
-    rho Champ_Uniforme 1 2.
-    lambda Champ_Uniforme 1 2
-    Cp Champ_Uniforme 1 100.
-    beta_th Champ_Uniforme 1 0.
-}
+
+    fluide_incompressible {
+        mu  Champ_Uniforme 1 0.01
+        rho Champ_Uniforme 1 2.
+        lambda Champ_Uniforme 1 2
+        Cp Champ_Uniforme 1 100.
+        beta_th Champ_Uniforme 1 0.
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         solveur_pression Petsc Cholesky { impr }
         convection { muscl }
@@ -242,4 +242,3 @@ Navier_Stokes_standard
 }
 Imprimer_flux dom { Cylindre }
 Solve pb
- 

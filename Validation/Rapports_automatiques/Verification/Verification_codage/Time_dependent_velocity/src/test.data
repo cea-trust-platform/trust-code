@@ -48,13 +48,13 @@ extraire_surface
 
 Read pb
 {
-       
-fluide_incompressible {
-     mu Champ_Uniforme 1 3.7e-05
-    rho Champ_Uniforme 1 1000
-}
 
-Navier_Stokes_standard
+    fluide_incompressible {
+        mu Champ_Uniforme 1 3.7e-05
+        rho Champ_Uniforme 1 1000
+    }
+
+    Navier_Stokes_standard
     {
         solveur_pression petsc cholesky { }
         convection { negligeable }
@@ -97,4 +97,3 @@ Navier_Stokes_standard
 
 Solve pb
 End
- 

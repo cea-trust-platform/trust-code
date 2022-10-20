@@ -5,9 +5,9 @@ Domaine F4MESH
 
 /* Le maillage contient une plaque de frontieres wall1_dup et wall1 */
 # DEBUT MAILLAGE #
-Lire_MED { 
-   domain F4MESH 
-   file fluid_mesh_wall.med 
+Lire_MED {
+    domain F4MESH
+    file fluid_mesh_wall.med
 }
 reordonner F4MESH
 postraiter_domaine { domaine F4MESH fichier fluid_mesh_wall format lata }
@@ -59,15 +59,15 @@ Discretiser pb dis
 Lire pb
 {
 
-       
-fluide_incompressible {
-    gravite champ_uniforme 3 0. 0. -9.81
-mu Champ_fonc_xyz F4MESH 1 1.85e-5
-    rho Champ_Uniforme 1 1.17
-}
+
+    fluide_incompressible {
+        gravite champ_uniforme 3 0. 0. -9.81
+        mu Champ_fonc_xyz F4MESH 1 1.85e-5
+        rho Champ_Uniforme 1 1.17
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         solveur_pression petsc cholesky { }
         convection { quick }
@@ -110,4 +110,3 @@ Navier_Stokes_standard
 }
 Resoudre pb
 
- 

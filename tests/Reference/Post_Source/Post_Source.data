@@ -58,17 +58,17 @@ Discretize pb dis
 
 Read pb
 {
-Fluide_Incompressible
-{
-    mu	Champ_Uniforme 1 1.85e-5
-    rho	Champ_Uniforme 1 1.17
-    gravite Champ_Uniforme 2 0 -9.81
-}
+    Fluide_Incompressible
+    {
+        mu	Champ_Uniforme 1 1.85e-5
+        rho	Champ_Uniforme 1 1.17
+        gravite Champ_Uniforme 2 0 -9.81
+    }
 
-Constituant
-{
-    coefficient_diffusion Champ_Uniforme 2 1e-5 1e-4
-}
+    Constituant
+    {
+        coefficient_diffusion Champ_Uniforme 2 1e-5 1e-4
+    }
 
     Navier_Stokes_standard
     {

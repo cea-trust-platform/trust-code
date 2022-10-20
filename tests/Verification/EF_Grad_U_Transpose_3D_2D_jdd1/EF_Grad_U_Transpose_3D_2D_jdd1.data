@@ -46,14 +46,14 @@ Discretize pb dis
 
 Read pb
 {
-       
-fluide_incompressible {
-     mu Champ_Fonc_XYZ dom 1 (y+z)
-    rho Champ_Uniforme 1 2.
-}
+
+    fluide_incompressible {
+        mu Champ_Fonc_XYZ dom 1 (y+z)
+        rho Champ_Uniforme 1 2.
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         methode_calcul_pression_initiale avec_sources_et_operateurs
         solveur_pression GCP {
@@ -96,4 +96,3 @@ Navier_Stokes_standard
 Solve pb
 
 End
- 

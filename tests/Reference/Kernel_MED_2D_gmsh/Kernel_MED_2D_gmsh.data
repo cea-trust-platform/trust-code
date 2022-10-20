@@ -2,9 +2,9 @@
 dimension 2
 # PARALLEL NOT #
 domaine dom
-Lire_MED { 
-   domain dom 
-   file 2D.med 
+Lire_MED {
+    domain dom
+    file 2D.med
 }
 discretiser_domaine dom
 postraiter_domaine { domaine dom format lml  }
@@ -13,9 +13,9 @@ analyse_angle dom 36
 
 dimension 3
 domaine dom3d
-Lire_MED { 
-   domain dom3d 
-   file 2D.med 
+Lire_MED {
+    domain dom3d
+    file 2D.med
 }
 # on ne peut pas Discretize ce domaine #
 # mais on peut le postraiter #

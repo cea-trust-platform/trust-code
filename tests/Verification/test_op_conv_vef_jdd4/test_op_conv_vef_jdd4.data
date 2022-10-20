@@ -65,18 +65,18 @@ Discretize pb_canal dis
 
 Read pb_canal
 {
-       
-fluide_incompressible {
-     mu Champ_uniforme 1 1.461e-6
-    rho Champ_uniforme 1 1.
-    lambda Champ_uniforme 1 1.
-    Cp Champ_uniforme 1 1.
-    beta_th Champ_uniforme 1 1.
-}
+
+    fluide_incompressible {
+        mu Champ_uniforme 1 1.461e-6
+        rho Champ_uniforme 1 1.
+        lambda Champ_uniforme 1 1.
+        Cp Champ_uniforme 1 1.
+        beta_th Champ_uniforme 1 1.
+    }
 
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         solveur_pression  GCP { precond ssor { omega 1.5 } seuil 1.e+14 }
         projection_initiale 0
@@ -183,4 +183,3 @@ Navier_Stokes_standard
 
 Solve pb_canal
 End
- 

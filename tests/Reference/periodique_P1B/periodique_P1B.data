@@ -56,13 +56,13 @@ Associate pb sch
 Discretize pb dis
 Read pb
 {
-       
-fluide_incompressible {
-     mu Champ_Uniforme 1 0.02
-    rho Champ_Uniforme 1 2
-}
 
-Navier_Stokes_standard
+    fluide_incompressible {
+        mu Champ_Uniforme 1 0.02
+        rho Champ_Uniforme 1 2
+    }
+
+    Navier_Stokes_standard
     {
         solveur_pression gcp { precond ssor { omega 1.6 } seuil 1.e-10 impr }
         convection { muscl }
@@ -112,4 +112,3 @@ Navier_Stokes_standard
 }
 Solve pb
 End
- 

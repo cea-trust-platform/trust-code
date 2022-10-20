@@ -2,9 +2,9 @@ Dimension 3
 Pb_hydraulique pb
 
 Domaine dom
-Lire_MED { 
-   domain dom 
-   file cube.med 
+Lire_MED {
+    domain dom
+    file cube.med
 }
 
 VDF dis
@@ -24,14 +24,14 @@ Discretiser pb dis
 
 Lire pb
 {
-       
-fluide_incompressible {
-     mu champ_uniforme 1 1
-    rho champ_uniforme 1 1
-}
+
+    fluide_incompressible {
+        mu champ_uniforme 1 1
+        rho champ_uniforme 1 1
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         Solveur_pression	PETSC Cholesky { }
         Convection		{ negligeable }
@@ -98,4 +98,3 @@ Navier_Stokes_standard
 
 Resoudre pb
 Fin
- 

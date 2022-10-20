@@ -63,33 +63,33 @@ Discretize pb dis
 
 Read pb
 {
-       
-solide {
-     rho Champ_tabule_temps 1
-    # 1ere ligne: dimension / 2eme ligne: temps / 3eme ligne: valeurs #
-    {
-        3
-        0     24    25
-        2.0   2.0   2.0
-    }
-    lambda Champ_tabule_temps 1
-    # 1ere ligne: dimension / 2eme ligne: temps / 3eme ligne: valeurs #
-    {
-        3
-        0     149   150
-        0.01  0.01  0.04
-    }
-    Cp Champ_tabule_temps 1
-    # 1ere ligne: dimension / 2eme ligne: temps / 3eme ligne: valeurs #
-    {
-        3
-        0     24    25
-        0.5   0.5   0.5
+
+    solide {
+        rho Champ_tabule_temps 1
+        # 1ere ligne: dimension / 2eme ligne: temps / 3eme ligne: valeurs #
+        {
+            3
+            0     24    25
+            2.0   2.0   2.0
+        }
+        lambda Champ_tabule_temps 1
+        # 1ere ligne: dimension / 2eme ligne: temps / 3eme ligne: valeurs #
+        {
+            3
+            0     149   150
+            0.01  0.01  0.04
+        }
+        Cp Champ_tabule_temps 1
+        # 1ere ligne: dimension / 2eme ligne: temps / 3eme ligne: valeurs #
+        {
+            3
+            0     24    25
+            0.5   0.5   0.5
+        }
+
     }
 
-}
-
-Conduction
+    Conduction
     {
         diffusion { }
         initial_conditions {
@@ -120,4 +120,3 @@ Conduction
 Solve pb
 
 End
- 

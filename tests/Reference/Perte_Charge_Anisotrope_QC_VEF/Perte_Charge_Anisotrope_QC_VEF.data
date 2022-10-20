@@ -81,19 +81,19 @@ Associate pb sch
 Discretize pb dis
 
 Read pb {
-Fluide_Quasi_Compressible
-{
-gravite Champ_Uniforme 2 0 -9.81
-    mu Champ_Uniforme 1 0.001
-    pression 3.5e8
-    lambda Champ_Uniforme 1 0.597
-    loi_etat gaz_parfait_QC {
-        Prandtl 7.0050251256281415024
-        Cp 4182.
-        gamma 1.4
+    Fluide_Quasi_Compressible
+    {
+        gravite Champ_Uniforme 2 0 -9.81
+        mu Champ_Uniforme 1 0.001
+        pression 3.5e8
+        lambda Champ_Uniforme 1 0.597
+        loi_etat gaz_parfait_QC {
+            Prandtl 7.0050251256281415024
+            Cp 4182.
+            gamma 1.4
+        }
+        traitement_pth constant
     }
-    traitement_pth constant
-}
 
     Navier_Stokes_QC {
         methode_calcul_pression_initiale avec_sources

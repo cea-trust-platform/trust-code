@@ -9,7 +9,7 @@ Mailler coarse_dom
     Pave Cavite
     {
         Origine 0. 0. 0.
-        Nombre_de_Noeuds 10 10 3 /* Nombre mailles sur le calcul parallele = (Nx-1)*(Ny-1)*(Nz-1)*40*8 */ 
+        Nombre_de_Noeuds 10 10 3 /* Nombre mailles sur le calcul parallele = (Nx-1)*(Ny-1)*(Nz-1)*40*8 */
         Longueurs 10 10 3
     }
     {
@@ -24,7 +24,7 @@ Mailler coarse_dom
 Dilate coarse_dom 1.e-3
 Tetraedriser_homogene coarse_dom
 Ecrire_fichier coarse_dom coarse_dom.geom
-Lire_fichier dom coarse_dom.geom  
+Lire_fichier dom coarse_dom.geom
 Raffiner_isotrope dom
 # END MESH #
 
@@ -39,7 +39,7 @@ End
 END PARTITION #
 
 # BEGIN SCATTER
-Raffiner_isotrope_parallele { name_of_initial_zones COARSE_DOM name_of_new_zones DOM } 
+Raffiner_isotrope_parallele { name_of_initial_zones COARSE_DOM name_of_new_zones DOM }
 Scatter DOM.Zones dom
 END SCATTER #
 
@@ -65,17 +65,17 @@ Associate pb sch
 Discretize pb dis
 Read pb
 {
-       
-fluide_incompressible {
-     mu Champ_Uniforme       1 2.21799454e-04
-    rho Champ_Uniforme      1 943.112976
-    lambda Champ_Uniforme   1 0.806537897
-    Cp Champ_Uniforme       1 4238.62106
-    beta_th Champ_Uniforme  1 8.6e-4
-}
+
+    fluide_incompressible {
+        mu Champ_Uniforme       1 2.21799454e-04
+        rho Champ_Uniforme      1 943.112976
+        lambda Champ_Uniforme   1 0.806537897
+        Cp Champ_Uniforme       1 4238.62106
+        beta_th Champ_Uniforme  1 8.6e-4
+    }
 
 
-Navier_Stokes_Standard
+    Navier_Stokes_Standard
     {
         # solveur_pression gcp { precond ssor { omega 1.6 } seuil 1.e-7 impr } #
         solveur_pression rocalution gcp { precond jacobi { } seuil 1.e-7 impr }
@@ -87,11 +87,10 @@ Navier_Stokes_Standard
             sortie    Frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
             paroi     paroi_fixe
         }
-	Sources { Forchheimer { porosite 0.4 Cf 1. modele_K ErgunForchheimer { diametre 1.5e-3 } } }
+        Sources { Forchheimer { porosite 0.4 Cf 1. modele_K ErgunForchheimer { diametre 1.5e-3 } } }
     }
-    Postraitement { format lml Champs dt_post 1e9 { pression elem } } 
+    Postraitement { format lml Champs dt_post 1e9 { pression elem } }
 }
 EcritureLectureSpecial 0
 Solve pb
 End
- 

@@ -56,17 +56,17 @@ Discretize pb dis
 
 Read pb
 {
-       
-fluide_incompressible {
-     rho Champ_Uniforme 1 2.
-    mu Champ_Uniforme 1 1.
-    lambda Champ_Uniforme 1 0.25
-    Cp Champ_Uniforme 1 2.
-    beta_th Champ_Uniforme 1 1.
-}
+
+    fluide_incompressible {
+        rho Champ_Uniforme 1 2.
+        mu Champ_Uniforme 1 1.
+        lambda Champ_Uniforme 1 0.25
+        Cp Champ_Uniforme 1 2.
+        beta_th Champ_Uniforme 1 1.
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         methode_calcul_pression_initiale avec_sources_et_operateurs
         solveur_pression GCP {
@@ -133,4 +133,3 @@ solveur_pression GCP {
     seuil 1.e-12
 }
 
- 

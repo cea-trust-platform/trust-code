@@ -66,15 +66,15 @@ discretize pb dis
 
 read pb
 {
-       
-solide {
-     rho champ_uniforme 1 1.0
-    lambda champ_fonc_xyz DOM 2 (y*y+0.001*x*x)  (x*x+0.001*y*y)
-    Cp champ_uniforme 1 1.0
-}
+
+    solide {
+        rho champ_uniforme 1 1.0
+        lambda champ_fonc_xyz DOM 2 (y*y+0.001*x*x)  (x*x+0.001*y*y)
+        Cp champ_uniforme 1 1.0
+    }
 
 
-conduction
+    conduction
     {
         diffusion { }
         initial_conditions { temperature champ_uniforme 1 0. }
@@ -140,4 +140,3 @@ lata_to_med NOM_DU_CAS NOM_DU_CAS
 lata_to_other lml NOM_DU_CAS NOM_DU_CAS
 
 end
- 

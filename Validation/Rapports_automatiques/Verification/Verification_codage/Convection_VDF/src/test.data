@@ -45,13 +45,13 @@ Discretiser pb dis
 Lire pb
 {
 
-       
-fluide_incompressible {
-     rho champ_uniforme 1 1.0
-    mu	champ_uniforme 1 1.0
-}
 
-Navier_Stokes_standard
+    fluide_incompressible {
+        rho champ_uniforme 1 1.0
+        mu	champ_uniforme 1 1.0
+    }
+
+    Navier_Stokes_standard
     {
         convection { amont }
         diffusion { negligeable }
@@ -101,4 +101,3 @@ Navier_Stokes_standard
     }
 }
 Resoudre pb
- 

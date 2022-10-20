@@ -45,14 +45,14 @@ Discretize pb ma_discretisation
 
 Read pb
 {
-       
-fluide_incompressible {
-     mu  Champ_Uniforme 1 1.85e-5
-    rho Champ_Uniforme 1 1.
-}
+
+    fluide_incompressible {
+        mu  Champ_Uniforme 1 1.85e-5
+        rho Champ_Uniforme 1 1.
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         solveur_pression GCP {
             precond ssor { omega 1.500000 }
@@ -104,4 +104,3 @@ Navier_Stokes_standard
 }
 # The last lines launch the solving process and terminate the data file #
 Solve pb
- 

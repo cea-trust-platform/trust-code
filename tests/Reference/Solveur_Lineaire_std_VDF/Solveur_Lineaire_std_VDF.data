@@ -60,15 +60,15 @@ Discretize pb dis
 
 Read pb
 {
-       
-solide {
-     rho	Champ_Uniforme 1 1.
-    lambda	Champ_Uniforme 1 0.1
-    Cp	Champ_Uniforme 1 0.1
-}
+
+    solide {
+        rho	Champ_Uniforme 1 1.
+        lambda	Champ_Uniforme 1 0.1
+        Cp	Champ_Uniforme 1 0.1
+    }
 
 
-Conduction
+    Conduction
     {
         diffusion { }
         initial_conditions { temperature Champ_Uniforme 1 0. }
@@ -95,4 +95,3 @@ Conduction
 
 Solve pb
 End
- 

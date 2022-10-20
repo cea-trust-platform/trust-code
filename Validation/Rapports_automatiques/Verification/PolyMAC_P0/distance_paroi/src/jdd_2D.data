@@ -60,10 +60,10 @@ mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-        /* Choose Nb_parts so to have ~ 25000 cells per processor */
-        Partition_tool metis { nb_parts 4 }
-        Larg_joint 2
-        zones_name DOM
+    /* Choose Nb_parts so to have ~ 25000 cells per processor */
+    Partition_tool metis { nb_parts 4 }
+    Larg_joint 2
+    zones_name DOM
 }
 Fin
 END PARTITION #
@@ -98,18 +98,18 @@ Discretize pb dis
 
 Read pb
 {
-	Milieu_composite
-	{
-		liquide_eau Fluide_Incompressible /* 20 degrees */
-		{
-	mu champ_uniforme      1 1.002e-3
- 	rho champ_uniforme     1 998.30
-	lambda Champ_Uniforme  1 0.604
-        Cp Champ_Uniforme      1 75.366
-        beta_th Champ_Uniforme 1 0
-		}
-	}
-	
+    Milieu_composite
+    {
+        liquide_eau Fluide_Incompressible /* 20 degrees */
+        {
+            mu champ_uniforme      1 1.002e-3
+            rho champ_uniforme     1 998.30
+            lambda Champ_Uniforme  1 0.604
+            Cp Champ_Uniforme      1 75.366
+            beta_th Champ_Uniforme 1 0
+        }
+    }
+
     correlations
     {
     }
@@ -125,15 +125,15 @@ Read pb
             pression Champ_Fonc_xyz dom 1 1e5
         }
         boundary_conditions
-	{
-	Est       paroi_fixe
-	Sud       paroi_fixe
-	Ouest     paroi_fixe
-	Nord      paroi_fixe
-	Est_ext   frontiere_ouverte_vitesse_imposee_sortie champ_front_uniforme 2 0 0
-	Sud_ext   frontiere_ouverte_pression_imposee champ_front_uniforme 1 1e5
-	Nord_sym  symetrie
-	}
+        {
+            Est       paroi_fixe
+            Sud       paroi_fixe
+            Ouest     paroi_fixe
+            Nord      paroi_fixe
+            Est_ext   frontiere_ouverte_vitesse_imposee_sortie champ_front_uniforme 2 0 0
+            Sud_ext   frontiere_ouverte_pression_imposee champ_front_uniforme 1 1e5
+            Nord_sym  symetrie
+        }
     }
     Masse_Multiphase
     {
@@ -141,13 +141,13 @@ Read pb
         convection { amont }
         boundary_conditions
         {
-	Est       paroi
-	Sud       paroi
-	Ouest     paroi
-	Nord      paroi
-	Est_ext   frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
-	Sud_ext   frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
-	Nord_sym  paroi
+            Est       paroi
+            Sud       paroi
+            Ouest     paroi
+            Nord      paroi
+            Est_ext   frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
+            Sud_ext   frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
+            Nord_sym  paroi
         }
         sources { }
     }
@@ -158,32 +158,32 @@ Read pb
         initial_conditions { temperature Champ_Uniforme 1 0 }
         boundary_conditions
         {
-	Est       paroi_adiabatique
-	Sud       paroi_adiabatique
-	Ouest     paroi_adiabatique
-	Nord      paroi_adiabatique
-	Est_ext   frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
-	Sud_ext   frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
-	Nord_sym  paroi_adiabatique
+            Est       paroi_adiabatique
+            Sud       paroi_adiabatique
+            Ouest     paroi_adiabatique
+            Nord      paroi_adiabatique
+            Est_ext   frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
+            Sud_ext   frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
+            Nord_sym  paroi_adiabatique
         }
-	sources
-	{
+        sources
+        {
         }
     }
     Post_processing
     {
         probes
-	{
-	     Nord        distance_paroi_globale  periode 1.e8 segment 40  -.975  1.5  	.975   1.5
-	     Ouest       distance_paroi_globale  periode 1.e8 segment 5    -1.9   0.  	-1.1   0.
-	     Sud1	 distance_paroi_globale   periode 1.e8 segment 5      0. -1.9  	 0.   -1.1
-	     Sud2	 distance_paroi_globale   periode 1.e8 segment 100  .025  -1.9	4.975 -1.9
-	     Est	 distance_paroi_globale   periode 1.e8 segment 60  2.025 1.975	4.975 -.975
+        {
+            Nord        distance_paroi_globale  periode 1.e8 segment 40  -.975  1.5  	.975   1.5
+            Ouest       distance_paroi_globale  periode 1.e8 segment 5    -1.9   0.  	-1.1   0.
+            Sud1	 distance_paroi_globale   periode 1.e8 segment 5      0. -1.9  	 0.   -1.1
+            Sud2	 distance_paroi_globale   periode 1.e8 segment 100  .025  -1.9	4.975 -1.9
+            Est	 distance_paroi_globale   periode 1.e8 segment 60  2.025 1.975	4.975 -.975
         }
-	format lata
+        format lata
         fields dt_post 1.
         {
-	    distance_paroi_globale elem
+            distance_paroi_globale elem
         }
     }
 }

@@ -100,14 +100,14 @@ Discretize pb dis
 
 Read pb
 {
-       
-solide {
-     rho Champ_Uniforme 1 2
-    lambda Champ_Uniforme 1 2.
-    Cp Champ_Uniforme 1 0.5
-}
 
-Conduction
+    solide {
+        rho Champ_Uniforme 1 2
+        lambda Champ_Uniforme 1 2.
+        Cp Champ_Uniforme 1 0.5
+    }
+
+    Conduction
     {
         diffusion { }
         sources {
@@ -144,4 +144,4 @@ End
 Droit  paroi_temperature_impose Champ_Front_Uniforme 1 1.
 Gauche  paroi_temperature_imposee Champ_Front_Uniforme 1 0.
 
- 
+

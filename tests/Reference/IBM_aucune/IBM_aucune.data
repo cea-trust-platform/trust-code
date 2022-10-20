@@ -18,9 +18,9 @@ system "mkdir -p results"
 
 # DEBUT SEQ #
 
-Lire_MED { 
-   domain dom 
-   file res_domain_mesh_40_cyl_mesh_250fact12.med 
+Lire_MED {
+    domain dom
+    file res_domain_mesh_40_cyl_mesh_250fact12.med
 }
 
 regroupebord dom Wall { TOP }
@@ -78,14 +78,14 @@ extraire_surface
 }
 Lire pb
 {
-       
-fluide_incompressible {
-     mu  Champ_Uniforme 1 0.25
-    rho Champ_Uniforme 1 1.0
-}
+
+    fluide_incompressible {
+        mu  Champ_Uniforme 1 0.25
+        rho Champ_Uniforme 1 1.0
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         correction_matrice_projection_initiale 0
         correction_calcul_pression_initiale 0
@@ -103,16 +103,18 @@ Navier_Stokes_standard
         {
             Source_PDF
             {
-                aire Champ_Fonc_MED { domain domain_mesh 
-                                      file res_domain_mesh_40_cyl_mesh_250fact12.med 
-                                      field aire 
-                                      last_time 
-                                      }
-                rotation Champ_Fonc_MED { domain domain_mesh 
-                                          file res_domain_mesh_40_cyl_mesh_250fact12.med 
-                                          field rotation 
-                                          last_time 
-                                          }
+                aire Champ_Fonc_MED {
+                    domain domain_mesh
+                    file res_domain_mesh_40_cyl_mesh_250fact12.med
+                    field aire
+                    last_time
+                }
+                rotation Champ_Fonc_MED {
+                    domain domain_mesh
+                    file res_domain_mesh_40_cyl_mesh_250fact12.med
+                    field rotation
+                    last_time
+                }
                 modele
                 {
                     eta 1.E-12
@@ -146,4 +148,3 @@ Navier_Stokes_standard
 }
 resoudre pb
 fin
- 

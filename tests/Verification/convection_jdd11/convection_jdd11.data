@@ -40,27 +40,29 @@ Discretiser pb dis
 Lire pb
 {
 
-       
-fluide_incompressible {
-     rho champ_uniforme 1 1.0
-    mu	champ_uniforme 1 1.0
-}
+
+    fluide_incompressible {
+        rho champ_uniforme 1 1.0
+        mu	champ_uniforme 1 1.0
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         solveur_pression petsc cholesky { }
         convection { amont }
         diffusion { negligeable }
-        conditions_initiales { vitesse champ_fonc_xyz dom 2 (cos(pi/4)+sin(pi/4))*exp((cos(pi/4)-sin(pi/4))*x-(sin(pi/4)+cos(pi/4))*y)
-                                                            (cos(pi/4)-sin(pi/4))*exp((cos(pi/4)-sin(pi/4))*x-(sin(pi/4)+cos(pi/4))*y) }
+        conditions_initiales {
+            vitesse champ_fonc_xyz dom 2 (cos(pi/4)+sin(pi/4))*exp((cos(pi/4)-sin(pi/4))*x-(sin(pi/4)+cos(pi/4))*y)
+            (cos(pi/4)-sin(pi/4))*exp((cos(pi/4)-sin(pi/4))*x-(sin(pi/4)+cos(pi/4))*y)
+        }
         conditions_limites
         {
-           left  frontiere_ouverte_vitesse_imposee 	champ_front_fonc_txyz 2 (cos(pi/4)+sin(pi/4))*exp((cos(pi/4)-sin(pi/4))*x-(sin(pi/4)+cos(pi/4))*y)
-                                                                            (cos(pi/4)-sin(pi/4))*exp((cos(pi/4)-sin(pi/4))*x-(sin(pi/4)+cos(pi/4))*y)
-           right frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
-           down  frontiere_ouverte_vitesse_imposee champ_front_fonc_txyz 2 2*sin(pi/4)*exp(-2*sin(pi/4)*y) 0
-           up    frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
+            left  frontiere_ouverte_vitesse_imposee 	champ_front_fonc_txyz 2 (cos(pi/4)+sin(pi/4))*exp((cos(pi/4)-sin(pi/4))*x-(sin(pi/4)+cos(pi/4))*y)
+            (cos(pi/4)-sin(pi/4))*exp((cos(pi/4)-sin(pi/4))*x-(sin(pi/4)+cos(pi/4))*y)
+            right frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
+            down  frontiere_ouverte_vitesse_imposee champ_front_fonc_txyz 2 2*sin(pi/4)*exp(-2*sin(pi/4)*y) 0
+            up    frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
         }
     }
     Postraitement
@@ -89,10 +91,9 @@ Navier_Stokes_standard
         {
             erreur_v_x
             erreur_v_y
-    	    pression elem
-	        vitesse elem
+            pression elem
+            vitesse elem
         }
     }
 }
 Resoudre pb
- 

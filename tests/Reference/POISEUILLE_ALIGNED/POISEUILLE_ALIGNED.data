@@ -1,23 +1,23 @@
 # PARALLEL OK #
 # Hydraulique 2D laminaire POISEUILLE_ALIGNED
-  Re = (rho*U_max*L)/mu
-  rho = 1.0 kg/m^3
-  U_max = 1 m/s
-  L = 1 m                  
-  Re = 1
-  mu = (rho*U_max*L)/Re
-  A.N.
-  mu = 1.0 #
+Re = (rho*U_max*L)/mu
+     rho = 1.0 kg/m^3
+           U_max = 1 m/s
+                   L = 1 m
+                       Re = 1
+                            mu = (rho*U_max*L)/Re
+                                 A.N.
+                                 mu = 1.0 #
 
-dimension 3
-Pb_Hydraulique pb
-Domaine dom
-system "mkdir -p results"
+                                      dimension 3
+                                      Pb_Hydraulique pb
+                                      Domaine dom
+                                      system "mkdir -p results"
 
 # DEBUT MAILLAGE #
-Lire_MED { 
-   domain dom 
-   file res_domain_mesh_40_pl_mesh_1.med 
+Lire_MED {
+    domain dom
+    file res_domain_mesh_40_pl_mesh_1.med
 }
 
 regroupebord dom Wall { TOP DOWN UP }
@@ -26,17 +26,17 @@ regroupebord dom Sortie { OUT }
 regroupebord dom Entree { IN }
 # FIN MAILLAGE #
 
-# DEBUT DECOUPAGE 
+# DEBUT DECOUPAGE
 Partition dom
 {
-	Partition_tool tranche { tranches 2 2 1 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool tranche { tranches 2 2 1 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 FIN DECOUPAGE #
 
-# BEGIN SCATTER 
+# BEGIN SCATTER
 Scatter DOM.Zones dom
 END SCATTER #
 
@@ -75,14 +75,14 @@ Discretiser pb dis
 
 Read pb
 {
-       
-fluide_incompressible {
-     mu  Champ_Uniforme 1 1.0
-    rho Champ_Uniforme 1 1.0
-}
+
+    fluide_incompressible {
+        mu  Champ_Uniforme 1 1.0
+        rho Champ_Uniforme 1 1.0
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         correction_matrice_projection_initiale 0
         correction_calcul_pression_initiale 0
@@ -105,16 +105,18 @@ Navier_Stokes_standard
         {
             Source_PDF
             {
-                aire Champ_Fonc_MED { domain domain_mesh 
-                                      file res_domain_mesh_40_pl_mesh_1.med 
-                                      field aire 
-                                      last_time 
-                                      }
-                rotation Champ_Fonc_MED { domain domain_mesh 
-                                          file res_domain_mesh_40_pl_mesh_1.med 
-                                          field rotation 
-                                          last_time 
-                                          }
+                aire Champ_Fonc_MED {
+                    domain domain_mesh
+                    file res_domain_mesh_40_pl_mesh_1.med
+                    field aire
+                    last_time
+                }
+                rotation Champ_Fonc_MED {
+                    domain domain_mesh
+                    file res_domain_mesh_40_pl_mesh_1.med
+                    field rotation
+                    last_time
+                }
                 modele
                 {
                     eta 1.0e-12
@@ -122,29 +124,33 @@ Navier_Stokes_standard
                 }
                 interpolation IBM_element_fluide
                 {
-                    points_fluides Champ_Fonc_MED { domain domain_mesh 
-                                                    file res_domain_mesh_40_pl_mesh_1.med 
-                                                    field projection_Fluid 
-                                                    loc som 
-                                                    last_time 
-                                                    }
-                    points_solides Champ_Fonc_MED { domain domain_mesh 
-                                                    file res_domain_mesh_40_pl_mesh_1.med 
-                                                    field projection_Solid 
-                                                    loc som 
-                                                    last_time 
-                                                    }
-                    elements_fluides Champ_Fonc_MED { domain domain_mesh 
-                                                      file res_domain_mesh_40_pl_mesh_1.med 
-                                                      field fl_elem_number 
-                                                      loc som 
-                                                      last_time 
-                                                      }
-                    correspondance_elements Champ_Fonc_MED { domain domain_mesh 
-                                                             file res_domain_mesh_40_pl_mesh_1.med 
-                                                             field TRUST_SALOME_correspondance 
-                                                             last_time 
-                                                             }
+                    points_fluides Champ_Fonc_MED {
+                        domain domain_mesh
+                        file res_domain_mesh_40_pl_mesh_1.med
+                        field projection_Fluid
+                        loc som
+                        last_time
+                    }
+                    points_solides Champ_Fonc_MED {
+                        domain domain_mesh
+                        file res_domain_mesh_40_pl_mesh_1.med
+                        field projection_Solid
+                        loc som
+                        last_time
+                    }
+                    elements_fluides Champ_Fonc_MED {
+                        domain domain_mesh
+                        file res_domain_mesh_40_pl_mesh_1.med
+                        field fl_elem_number
+                        loc som
+                        last_time
+                    }
+                    correspondance_elements Champ_Fonc_MED {
+                        domain domain_mesh
+                        file res_domain_mesh_40_pl_mesh_1.med
+                        field TRUST_SALOME_correspondance
+                        last_time
+                    }
                 }
             }
         }
@@ -181,4 +187,3 @@ Navier_Stokes_standard
 }
 resoudre pb
 fin
- 

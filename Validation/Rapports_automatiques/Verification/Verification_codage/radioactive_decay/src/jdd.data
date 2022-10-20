@@ -62,15 +62,15 @@ Discretize pb_fluide dis
 
 Read pb_fluide
 {
-fluide_incompressible
-{
-    mu      champ_uniforme 1 0.0101475
-    rho     champ_uniforme 1 4125
-}
-constituant
-{
-    coefficient_diffusion champ_uniforme 2 0.01 0.01
-}
+    fluide_incompressible
+    {
+        mu      champ_uniforme 1 0.0101475
+        rho     champ_uniforme 1 4125
+    }
+    constituant
+    {
+        coefficient_diffusion champ_uniforme 2 0.01 0.01
+    }
 
     Navier_Stokes_standard
     {

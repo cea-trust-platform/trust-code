@@ -58,12 +58,12 @@ Discretize pb dis
 
 Read pb
 {
-	Milieu_composite
-	{
-		liquide_sodium Fluide_sodium_liquide { P_ref __p__ T_ref __Tin__  }
-		gaz_sodium Fluide_sodium_gaz { P_ref __p__ T_ref __Tsat__ }
-		saturation_sodium saturation_sodium { P_ref __p__ T_ref __Tsat__ }
-	}
+    Milieu_composite
+    {
+        liquide_sodium Fluide_sodium_liquide { P_ref __p__ T_ref __Tin__  }
+        gaz_sodium Fluide_sodium_gaz { P_ref __p__ T_ref __Tsat__ }
+        saturation_sodium saturation_sodium { P_ref __p__ T_ref __Tsat__ }
+    }
 
     correlations
     {
@@ -77,35 +77,35 @@ Read pb
         diffusion  { negligeable }
         initial_conditions
         {
-            vitesse Champ_composite 2 
-                {
-                    Champ_Fonc_xyz dom 2 0 __v__
-                    Champ_Fonc_xyz dom 2 0 __v__
-                }
-                
-            pression Champ_composite 1 
-                {
-                    Champ_Fonc_xyz dom 1 __p__
-                }
+            vitesse Champ_composite 2
+            {
+                Champ_Fonc_xyz dom 2 0 __v__
+                Champ_Fonc_xyz dom 2 0 __v__
+            }
+
+            pression Champ_composite 1
+            {
+                Champ_Fonc_xyz dom 1 __p__
+            }
         }
         boundary_conditions
         {
             boundary symetrie
-            bas  frontiere_ouverte_vitesse_imposee_sortie champ_front_composite 2 
-                {
-                    champ_front_uniforme 2 0 __v__
-                    champ_front_uniforme 2 0 __v__
-                }
+            bas  frontiere_ouverte_vitesse_imposee_sortie champ_front_composite 2
+            {
+                champ_front_uniforme 2 0 __v__
+                champ_front_uniforme 2 0 __v__
+            }
             haut frontiere_ouverte_pression_imposee champ_front_composite 1
-                {
-                     champ_front_uniforme 1 __p__
-                }
+            {
+                champ_front_uniforme 1 __p__
+            }
         }
     }
     Masse_Multiphase
     {
-        initial_conditions 
-        { 
+        initial_conditions
+        {
             alpha Champ_composite 2
             {
                 Champ_Fonc_xyz dom 1 1
@@ -117,15 +117,15 @@ Read pb
         {
             boundary paroi
             bas  frontiere_ouverte a_ext champ_front_composite 2
-                {
-                    Champ_Front_Uniforme 1 1
-                    Champ_Front_Uniforme 1 0
-                }
+            {
+                Champ_Front_Uniforme 1 1
+                Champ_Front_Uniforme 1 0
+            }
             haut frontiere_ouverte a_ext champ_front_composite 2
-                {
-                    Champ_Front_Uniforme 1 1
-                    Champ_Front_Uniforme 1 0
-                }
+            {
+                Champ_Front_Uniforme 1 1
+                Champ_Front_Uniforme 1 0
+            }
         }
         sources { flux_interfacial }
     }
@@ -133,8 +133,8 @@ Read pb
     {
         diffusion { negligeable }
         convection { amont }
-        initial_conditions 
-        { 
+        initial_conditions
+        {
             temperature Champ_composite 2
             {
                 Champ_Uniforme 1 __Tin__
@@ -145,22 +145,22 @@ Read pb
         {
             boundary paroi_adiabatique
             bas    frontiere_ouverte T_ext champ_front_composite 2
-                {
-                    Champ_Front_Uniforme 1 __Tin__
-                    Champ_Front_Uniforme 1 __Tsat__
-                }
+            {
+                Champ_Front_Uniforme 1 __Tin__
+                Champ_Front_Uniforme 1 __Tsat__
+            }
             haut   frontiere_ouverte T_ext champ_front_composite 2
-                {
-                    Champ_Front_Uniforme 1 __Tin__
-                    Champ_Front_Uniforme 1 __Tsat__
-                }
+            {
+                Champ_Front_Uniforme 1 __Tin__
+                Champ_Front_Uniforme 1 __Tsat__
+            }
         }
         sources
         {
-            puissance_thermique Champ_composite 2 
+            puissance_thermique Champ_composite 2
             {
-                champ_uniforme 1 __power__ 
-                champ_uniforme 1 0 
+                champ_uniforme 1 __power__
+                champ_uniforme 1 0
             } ,
             flux_interfacial
         }

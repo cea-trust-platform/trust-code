@@ -6,9 +6,9 @@ DOMaine DOM
 Pb_conduction pb
 
 # BEGIN MESH #
-Lire_MED { 
-   domain DOM 
-   file Mesh_1.med 
+Lire_MED {
+    domain DOM
+    file Mesh_1.med
 }
 # END MESH #
 
@@ -40,19 +40,20 @@ discretize pb dis
 
 read pb
 {
-       
-solide {
-     rho champ_uniforme 1 1.0
-    lambda Champ_Fonc_MED { domain DOM 
-                            file conduc2d_aniso.med 
-                            field CONDUCTIVITY_ELEM_dom 
-                            last_time 
-                            }
-    Cp champ_uniforme 1 1.0
-}
+
+    solide {
+        rho champ_uniforme 1 1.0
+        lambda Champ_Fonc_MED {
+            domain DOM
+            file conduc2d_aniso.med
+            field CONDUCTIVITY_ELEM_dom
+            last_time
+        }
+        Cp champ_uniforme 1 1.0
+    }
 
 
-conduction
+    conduction
     {
         diffusion { }
         initial_conditions { temperature champ_uniforme 1 0. }
@@ -109,4 +110,3 @@ lata_to_med NOM_DU_CAS NOM_DU_CAS
 lata_to_other lml NOM_DU_CAS NOM_DU_CAS
 
 end
- 

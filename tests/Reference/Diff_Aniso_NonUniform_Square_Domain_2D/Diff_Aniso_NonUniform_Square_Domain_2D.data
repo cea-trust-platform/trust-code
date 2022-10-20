@@ -8,9 +8,9 @@ DOMaine DOM
 Pb_conduction pb
 
 # BEGIN MESH #
-Lire_MED { 
-   domain DOM 
-   file Mesh_1.med 
+Lire_MED {
+    domain DOM
+    file Mesh_1.med
 }
 # END MESH #
 
@@ -57,15 +57,15 @@ discretize pb dis
 
 read pb
 {
-       
-solide {
-     rho champ_uniforme 1 1.0
-    lambda champ_fonc_xyz DOM 4 (y*y+0.01*x*x) (x*y*(0.01-1.0)) (x*y*(0.01-1.0)) (x*x+0.01*y*y)
-    Cp champ_uniforme 1 1.0
-}
+
+    solide {
+        rho champ_uniforme 1 1.0
+        lambda champ_fonc_xyz DOM 4 (y*y+0.01*x*x) (x*y*(0.01-1.0)) (x*y*(0.01-1.0)) (x*x+0.01*y*y)
+        Cp champ_uniforme 1 1.0
+    }
 
 
-conduction
+    conduction
     {
         diffusion { }
         initial_conditions { temperature champ_uniforme 1 0. }
@@ -113,4 +113,3 @@ conduction
 solve pb
 
 end
- 

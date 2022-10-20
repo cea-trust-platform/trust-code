@@ -60,14 +60,14 @@ Discretize pb dis
 
 Read pb
 {
-       
-fluide_incompressible {
-     mu  Champ_Uniforme 1 0.01
-    rho Champ_Uniforme 1 1
-}
+
+    fluide_incompressible {
+        mu  Champ_Uniforme 1 0.01
+        rho Champ_Uniforme 1 1
+    }
 
 
-Navier_Stokes_Standard
+    Navier_Stokes_Standard
     {
 
         solveur_pression petsc cholesky { }
@@ -95,4 +95,3 @@ Navier_Stokes_Standard
 
 Solve pb
 End
- 

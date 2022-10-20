@@ -4,9 +4,9 @@ Pb_hydraulique pb
 Domaine dom
 
 # BEGIN MESH #
-Lire_MED { 
-   domain dom 
-   file mesh.med 
+Lire_MED {
+    domain dom
+    file mesh.med
 }
 # END MESH #
 
@@ -43,14 +43,14 @@ Discretize pb dis
 
 Read pb
 {
-       
-fluide_incompressible {
-     mu  Champ_Uniforme 1 2.5
-    rho Champ_Uniforme 1 10
-}
+
+    fluide_incompressible {
+        mu  Champ_Uniforme 1 2.5
+        rho Champ_Uniforme 1 10
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         solveur_pression petsc cholesky { }
         convection { negligeable }
@@ -93,4 +93,3 @@ Navier_Stokes_standard
 }
 Solve pb
 End
- 

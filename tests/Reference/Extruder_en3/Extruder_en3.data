@@ -81,15 +81,15 @@ Discretize pbc dis
 Read pb1
 {
 
-Fluide_Incompressible
-{
-    porosites_champ champ_fonc_xyz dom 1 1-(z>1)*(z<2)*0.74
-    mu Champ_Uniforme 1 .000245
-    rho Champ_Uniforme 1 840.
-    lambda Champ_Uniforme 1 66.
-    Cp champ_Uniforme 1 1270.
-    Beta_th Champ_uniforme 1 0.000276
-}
+    Fluide_Incompressible
+    {
+        porosites_champ champ_fonc_xyz dom 1 1-(z>1)*(z<2)*0.74
+        mu Champ_Uniforme 1 .000245
+        rho Champ_Uniforme 1 840.
+        lambda Champ_Uniforme 1 66.
+        Cp champ_Uniforme 1 1270.
+        Beta_th Champ_uniforme 1 0.000276
+    }
     Navier_Stokes_standard
     {
         solveur_pression GCP  { precond ssor { omega 1.5 } seuil 1e-8 impr }
@@ -136,12 +136,12 @@ Fluide_Incompressible
 
 Read pb2
 {
-Solide
-{
-    rho     Champ_Uniforme 1 7800.
-    Cp      Champ_Uniforme 1 500.
-    lambda  Champ_Uniforme 1 16.
-}
+    Solide
+    {
+        rho     Champ_Uniforme 1 7800.
+        Cp      Champ_Uniforme 1 500.
+        lambda  Champ_Uniforme 1 16.
+    }
 
     Conduction
     {
@@ -167,14 +167,14 @@ Solide
 Read pb3
 {
 
-Fluide_Incompressible
-{
-    mu Champ_Uniforme 1 .000245
-    rho Champ_Uniforme 1 840.
-    lambda Champ_Uniforme 1 66.
-    Cp champ_Uniforme 1 1270.
-    Beta_th Champ_uniforme 1 0.000276
-}
+    Fluide_Incompressible
+    {
+        mu Champ_Uniforme 1 .000245
+        rho Champ_Uniforme 1 840.
+        lambda Champ_Uniforme 1 66.
+        Cp champ_Uniforme 1 1270.
+        Beta_th Champ_uniforme 1 0.000276
+    }
 
     Navier_Stokes_standard
     {

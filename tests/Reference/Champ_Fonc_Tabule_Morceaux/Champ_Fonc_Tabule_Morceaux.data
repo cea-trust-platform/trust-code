@@ -77,19 +77,19 @@ Discretize pb dis
 
 Read pb
 {
-       
-solide {
-     rho Champ_Uniforme 1 50
-    Cp Champ_Uniforme 1 0.5
-    lambda Champ_Fonc_Tabule_Morceaux dom 1
-    {
-        sz1 { pb temperature } { 2 100 300 0.1 0.01 }
-        sz2 { pb temperature } {  2 100 300 0.001 0.5 }
+
+    solide {
+        rho Champ_Uniforme 1 50
+        Cp Champ_Uniforme 1 0.5
+        lambda Champ_Fonc_Tabule_Morceaux dom 1
+        {
+            sz1 { pb temperature } { 2 100 300 0.1 0.01 }
+            sz2 { pb temperature } {  2 100 300 0.001 0.5 }
+        }
     }
-}
 
 
-Conduction
+    Conduction
     {
         diffusion { }
         initial_conditions
@@ -120,4 +120,3 @@ Conduction
 
 Solve pb
 End
- 

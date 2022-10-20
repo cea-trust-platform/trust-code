@@ -69,19 +69,19 @@ extraire_surface
 postraiter_domaine { domaine surface format lata_v2 fichier surface }
 Read pb
 {
-       
-fluide_incompressible {
-    gravite champ_uniforme 2 0. -9.81
-mu      Champ_Uniforme 1 0.000134
-    lambda  Champ_Uniforme 1 0.668
-    Cp      Champ_Uniforme 1 4479.
-    rho     Champ_Uniforme 1 866.
-    beta_th Champ_Uniforme 1 0.001279
-}
+
+    fluide_incompressible {
+        gravite champ_uniforme 2 0. -9.81
+        mu      Champ_Uniforme 1 0.000134
+        lambda  Champ_Uniforme 1 0.668
+        Cp      Champ_Uniforme 1 4479.
+        rho     Champ_Uniforme 1 866.
+        beta_th Champ_Uniforme 1 0.001279
+    }
 
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         solveur_pression Gcp { precond ssor { omega 1.5 } seuil 1.e-05 impr }
         convection { ef_stab { alpha 0.5 } }
@@ -195,4 +195,3 @@ Navier_Stokes_standard
 }
 Solve pb
 End
- 

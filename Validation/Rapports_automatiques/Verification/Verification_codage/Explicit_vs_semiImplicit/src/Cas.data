@@ -68,14 +68,14 @@ Discretiser pb dis
 
 Lire pb
 {
-       
-fluide_incompressible {
-     mu Champ_Uniforme	1 1.81e-5
-    rho Champ_Uniforme	1 1.19
-}
+
+    fluide_incompressible {
+        mu Champ_Uniforme	1 1.81e-5
+        rho Champ_Uniforme	1 1.19
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         solveur_pression GCP { precond ssor { omega 1.5 } seuil 1e-9 impr }
         convection { centre }
@@ -128,4 +128,3 @@ Navier_Stokes_standard
 }
 Resoudre pb
 Fin
- 

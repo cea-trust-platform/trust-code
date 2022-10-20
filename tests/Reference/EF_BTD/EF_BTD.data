@@ -16,9 +16,9 @@ system "mkdir -p results"
 
 
 # DEBUT MAILLAGE #
-Lire_MED { 
-   domain dom 
-   file res_domain_mesh_40_pl_mesh_1.med 
+Lire_MED {
+    domain dom
+    file res_domain_mesh_40_pl_mesh_1.med
 }
 
 regroupebord dom Wall { DOWN UP }
@@ -76,17 +76,17 @@ Discretiser pb dis
 
 Read pb
 {
-       
-fluide_incompressible {
-     mu  Champ_Uniforme 1 2.0
-    rho Champ_Uniforme 1 1.0
-    lambda Champ_Uniforme 1 1.0
-    cp Champ_Uniforme 1 1.0
-    beta_th champ_fonc_fonction pb temperature 1 1.0
-}
+
+    fluide_incompressible {
+        mu  Champ_Uniforme 1 2.0
+        rho Champ_Uniforme 1 1.0
+        lambda Champ_Uniforme 1 1.0
+        cp Champ_Uniforme 1 1.0
+        beta_th champ_fonc_fonction pb temperature 1 1.0
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         projection_initiale 1
         postraiter_gradient_pression_sans_masse
@@ -136,4 +136,3 @@ Navier_Stokes_standard
 }
 resoudre pb
 fin
- 

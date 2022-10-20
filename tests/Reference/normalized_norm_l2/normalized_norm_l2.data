@@ -52,14 +52,14 @@ Discretize pb dis
 
 Read pb
 {
-       
-fluide_incompressible {
-     mu  champ_uniforme 1 1.
-    rho champ_uniforme 1 1.
-}
+
+    fluide_incompressible {
+        mu  champ_uniforme 1 1.
+        rho champ_uniforme 1 1.
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         Solveur_pression	Petsc Cholesky { impr }
         Convection		{ negligeable }
@@ -118,4 +118,3 @@ Navier_Stokes_standard
 
 Solve pb
 End
- 

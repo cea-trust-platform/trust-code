@@ -4,10 +4,10 @@ dimension 3
 Pb_hydraulique pb
 Domaine dom
 # BEGIN MESH #
-Lire_MED { 
-   domain dom 
-   file mesh.med 
-   mesh mesh
+Lire_MED {
+    domain dom
+    file mesh.med
+    mesh mesh
 }
 regroupebord dom wall { left right front back down up wall wall_dup }
 # END MESH #
@@ -31,15 +31,15 @@ option_vdf { p_imposee_aux_faces oui }
 
 domaine surf1
 domaine surf2
-Lire_MED { 
-   domain surf1 
-   file mesh.med
-   mesh surf1
+Lire_MED {
+    domain surf1
+    file mesh.med
+    mesh surf1
 }
-Lire_MED { 
-   domain surf2 
-   file mesh.med
-   mesh surf2
+Lire_MED {
+    domain surf2
+    file mesh.med
+    mesh surf2
 }
 
 Schema_euler_implicite sch
@@ -58,14 +58,14 @@ Discretize pb dis
 
 Read pb
 {
-       
-fluide_incompressible {
-     mu  Champ_Uniforme 1 2.5
-    rho Champ_Uniforme 1 1000
-}
+
+    fluide_incompressible {
+        mu  Champ_Uniforme 1 2.5
+        rho Champ_Uniforme 1 1000
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         solveur_pression petsc cholesky { }
         convection { amont }
@@ -99,4 +99,4 @@ Navier_Stokes_standard
 Solve pb
 lata_to_other lml NOM_DU_CAS NOM_DU_CAS
 End
- 
+

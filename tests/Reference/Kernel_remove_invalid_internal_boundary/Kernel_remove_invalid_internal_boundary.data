@@ -29,11 +29,11 @@ Read_file domain_ssz_par.geo ;
 END SCATTER #
 
 Champ_Fonc_MED field
-read field { domain COUPLEX1 
-             file data.med 
-             field HEAD 
-             last_time 
-            }
+read field { domain COUPLEX1
+             file data.med
+             field HEAD
+             last_time
+           }
 
 discretiser_domaine domain
 postraiter_domaine { domaine domain format lml ecrire_frontiere 0 }

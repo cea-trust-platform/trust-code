@@ -6,9 +6,9 @@ Pb_hydraulique pb
 Domaine dom
 
 # BEGIN MESH #
-Lire_MED { 
-   domain dom 
-   file mesh.med 
+Lire_MED {
+    domain dom
+    file mesh.med
 }
 # END MESH #
 
@@ -45,14 +45,14 @@ Discretize pb dis
 
 Read pb
 {
-       
-fluide_incompressible {
-     mu  Champ_Uniforme 1 0.1
-    rho Champ_Uniforme 1 1
-}
+
+    fluide_incompressible {
+        mu  Champ_Uniforme 1 0.1
+        rho Champ_Uniforme 1 1
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         methode_calcul_pression_initiale avec_sources_et_operateurs
         solveur_pression petsc cholesky { }
@@ -131,4 +131,3 @@ Navier_Stokes_standard
 Solve pb
 lata_to_other lml NOM_DU_CAS NOM_DU_CAS
 End
- 

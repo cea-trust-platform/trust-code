@@ -62,23 +62,23 @@ Discretiser pb dis
 
 Lire pb
 {
-Fluide_Weakly_Compressible
-{
-    pression_thermo   100000.
-    traitement_pth constant
-
-    loi_etat Multi_Gaz_Parfait_WC
+    Fluide_Weakly_Compressible
     {
+        pression_thermo   100000.
+        traitement_pth constant
 
-        Species_number 2
-        diffusion_coeff Champ_uniforme 2 20.2e-6 20.2e-6
-        molar_mass Champ_uniforme 2 32e-3 18e-3
-        mu Champ_uniforme 2 2.32e-5 0.0017916
-        cp Champ_uniforme 2 1005 1000
-        Prandtl 0.71
+        loi_etat Multi_Gaz_Parfait_WC
+        {
+
+            Species_number 2
+            diffusion_coeff Champ_uniforme 2 20.2e-6 20.2e-6
+            molar_mass Champ_uniforme 2 32e-3 18e-3
+            mu Champ_uniforme 2 2.32e-5 0.0017916
+            cp Champ_uniforme 2 1005 1000
+            Prandtl 0.71
+        }
+        gravite Champ_Uniforme 3 0 0. -9.81
     }
-gravite Champ_Uniforme 3 0 0. -9.81
-}
     Navier_Stokes_WC
     {
         parametre_equation parametre_diffusion_implicite

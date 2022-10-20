@@ -119,26 +119,26 @@ Discretiser pb dis
 
 Lire pb
 {
-Fluide_Quasi_Compressible
-{
-    pression   100000.
-    traitement_pth constant
-    gravite Champ_Uniforme 2 0. -9.81
-
-    loi_etat binaire_gaz_parfait_QC
+    Fluide_Quasi_Compressible
     {
-        temperature 284.15
-        diffusion_coeff 7.72e-5
+        pression   100000.
+        traitement_pth constant
+        gravite Champ_Uniforme 2 0. -9.81
 
-        # air #
-        molar_mass1 0.02897
-        mu1 1.792e-5
+        loi_etat binaire_gaz_parfait_QC
+        {
+            temperature 284.15
+            diffusion_coeff 7.72e-5
 
-        # air #
-        molar_mass2 0.02897
-        mu2 1.792e-5
+            # air #
+            molar_mass1 0.02897
+            mu1 1.792e-5
+
+            # air #
+            molar_mass2 0.02897
+            mu2 1.792e-5
+        }
     }
-}
 
     Navier_Stokes_QC
     {

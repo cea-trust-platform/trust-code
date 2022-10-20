@@ -37,23 +37,23 @@ Discretize pb_plenum dis
 # Attention les conditions limites ne sont pas realistes #
 Read pb_plenum
 {
-       
-fluide_incompressible {
-    gravite champ_uniforme 3  0.  0. -9.81
+
+    fluide_incompressible {
+        gravite champ_uniforme 3  0.  0. -9.81
 
 
 
-rho    Champ_Uniforme 1  3.37
-    mu     Champ_Uniforme 1  3.93e-5
-    lambda Champ_Uniforme 1  0.303
-    Cp     Champ_Uniforme 1  5193
-    beta_th Champ_Uniforme 1 1.24e-3
-}
+        rho    Champ_Uniforme 1  3.37
+        mu     Champ_Uniforme 1  3.93e-5
+        lambda Champ_Uniforme 1  0.303
+        Cp     Champ_Uniforme 1  5193
+        beta_th Champ_Uniforme 1 1.24e-3
+    }
 
 
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         solveur_pression Gcp {
             precond ssor { omega 1.5 }
@@ -131,4 +131,3 @@ Navier_Stokes_standard
 Solve pb_plenum
 End
 
- 

@@ -47,20 +47,20 @@ Discretize pb_Th dis
 
 Read pb_Th
 {
-Fluide_Quasi_Compressible
-{
-    mu	Champ_Uniforme 1 5.e-5
-    lambda	Champ_Uniforme 1 5.e-1
-    pression 1000.
-    loi_etat gaz_parfait_QC
+    Fluide_Quasi_Compressible
     {
-        Prandtl   0.0003
-        Cp        3.
-        gamma     1.5
+        mu	Champ_Uniforme 1 5.e-5
+        lambda	Champ_Uniforme 1 5.e-1
+        pression 1000.
+        loi_etat gaz_parfait_QC
+        {
+            Prandtl   0.0003
+            Cp        3.
+            gamma     1.5
+        }
+        Traitement_Pth		constant
+        gravite Champ_Uniforme 2 0 0
     }
-    Traitement_Pth		constant
-    gravite Champ_Uniforme 2 0 0
-}
 
     Navier_Stokes_QC
     {

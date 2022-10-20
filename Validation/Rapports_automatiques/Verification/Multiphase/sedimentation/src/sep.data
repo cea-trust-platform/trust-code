@@ -4,9 +4,9 @@ Pb_multiphase pb
 Domaine dom
 
 # BEGIN MESH #
-Lire_MED { 
-   domain dom 
-   file mesh.med 
+Lire_MED {
+    domain dom
+    file mesh.med
 }
 # END MESH #
 
@@ -48,24 +48,24 @@ Discretize pb dis
 
 Read pb
 {
-	Milieu_Composite
-	{
-		liquide_eau	Fluide_Incompressible
-			{
-    			rho    Champ_Uniforme 1 10
-    			mu     Champ_Uniforme 1 1e-3
-    			lambda Champ_Uniforme 1 1
-    			Cp     Champ_Uniforme 1 1
-			}
-		
-		gaz_eau Fluide_Incompressible
-			{
-    			rho    Champ_Uniforme 1 1
-    			mu     Champ_Uniforme 1 1e-3
-    			lambda Champ_Uniforme 1 1
-    			Cp     Champ_Uniforme 1 1
-			}
-	}
+    Milieu_Composite
+    {
+        liquide_eau	Fluide_Incompressible
+        {
+            rho    Champ_Uniforme 1 10
+            mu     Champ_Uniforme 1 1e-3
+            lambda Champ_Uniforme 1 1
+            Cp     Champ_Uniforme 1 1
+        }
+
+        gaz_eau Fluide_Incompressible
+        {
+            rho    Champ_Uniforme 1 1
+            mu     Champ_Uniforme 1 1e-3
+            lambda Champ_Uniforme 1 1
+            Cp     Champ_Uniforme 1 1
+        }
+    }
 
     QDM_Multiphase
     {
@@ -76,23 +76,23 @@ Read pb
         initial_conditions
         {
             vitesse Champ_composite 2 /* champ par phase */
-                {
-                    Champ_Fonc_xyz dom 2 0 0
-                    Champ_Fonc_xyz dom 2 0 0
-                }
-                
+            {
+                Champ_Fonc_xyz dom 2 0 0
+                Champ_Fonc_xyz dom 2 0 0
+            }
+
             pression Champ_composite 1
-                {
-                    Champ_Fonc_xyz dom 1  -100*y*(y<0.5)-(45+10*y)*(y>0.5)
-                }
+            {
+                Champ_Fonc_xyz dom 1  -100*y*(y<0.5)-(45+10*y)*(y>0.5)
+            }
         }
         sources
         {
             frottement_interfacial { a_res 1.e-2 dv_min 0.1 } bulles { rayon_bulle 0.5e-3 coeff_derive 0.44 } ,
             source_qdm Champ_composite 2 /* champ par phase */
             {
-               champ_fonc_xyz dom 2  0 -10 
-               champ_fonc_xyz dom 2  0 -10 
+                champ_fonc_xyz dom 2  0 -10
+                champ_fonc_xyz dom 2  0 -10
             }
         }
         boundary_conditions
@@ -105,10 +105,10 @@ Read pb
         initial_conditions
         {
             alpha Champ_composite 2 /* champ par phase */
-                {
-                    Champ_Fonc_xyz dom 1 /* (y<0.5) */ 0.5
-                    Champ_Fonc_xyz dom 1 /* (y>0.5) */ 0.5
-                }
+            {
+                Champ_Fonc_xyz dom 1 /* (y<0.5) */ 0.5
+                Champ_Fonc_xyz dom 1 /* (y>0.5) */ 0.5
+            }
         }
         convection { amont }
         boundary_conditions { boundary paroi }
@@ -120,10 +120,10 @@ Read pb
         initial_conditions
         {
             temperature Champ_composite 2 /* champ par phase */
-                {
-                    Champ_Uniforme 1 0
-                    Champ_Uniforme 1 0
-                }
+            {
+                Champ_Uniforme 1 0
+                Champ_Uniforme 1 0
+            }
         }
         boundary_conditions { boundary paroi_adiabatique }
     }

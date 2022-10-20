@@ -3,9 +3,9 @@ dimension 3
 Pb_Hydraulique pb
 Domaine dom
 # BEGIN MESH #
-Lire_MED { 
-   domain dom 
-   file mesh.med 
+Lire_MED {
+    domain dom
+    file mesh.med
 }
 # END MESH #
 # BEGIN PARTITION
@@ -38,13 +38,13 @@ Associate pb sch
 Discretize pb dis
 Read pb
 {
-       
-fluide_incompressible {
-     mu Champ_Uniforme 1 3.7e-05
-    rho Champ_Uniforme 1 1.0
-}
 
-Navier_Stokes_standard
+    fluide_incompressible {
+        mu Champ_Uniforme 1 3.7e-05
+        rho Champ_Uniforme 1 1.0
+    }
+
+    Navier_Stokes_standard
     {
         solveur_pression petsc cholesky { }
         convection { Amont }
@@ -53,19 +53,21 @@ Navier_Stokes_standard
         boundary_conditions {
             Wall   paroi_fixe
             Outlet frontiere_ouverte_pression_imposee Champ_front_MED
-            Champ_Fonc_MED { domain dom 
-                             file fields.med 
-                             field pression 
-                             use_existing_domain 
-                             time 0. 
-                             }
+            Champ_Fonc_MED {
+                domain dom
+                file fields.med
+                field pression
+                use_existing_domain
+                time 0.
+            }
             Inlet  frontiere_ouverte_vitesse_imposee Champ_front_MED
-            Champ_Fonc_MED_tabule { domain dom 
-                                    file fields.med 
-                                    field vitesse 
-                                    use_existing_domain 
-                                    time -1 
-                                    }
+            Champ_Fonc_MED_tabule {
+                domain dom
+                file fields.med
+                field vitesse
+                use_existing_domain
+                time -1
+            }
         }
     }
     Post_processing
@@ -84,4 +86,3 @@ Navier_Stokes_standard
 }
 Solve pb
 
- 

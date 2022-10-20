@@ -4,10 +4,10 @@ dimension 3
 domaine dom
 
 # BEGIN MESH #
-Lire_MED { 
-   domain dom 
-   file all.med
-   no_family_names_from_group_names
+Lire_MED {
+    domain dom
+    file all.med
+    no_family_names_from_group_names
 }
 /* Creation de sous zones */
 Read_file dom_ssz.geo ;

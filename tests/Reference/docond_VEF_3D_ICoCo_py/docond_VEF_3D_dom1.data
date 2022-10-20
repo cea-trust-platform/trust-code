@@ -31,16 +31,16 @@ Discretize pb dis
 
 Read pb
 {
-       
-solide {
-    gravite champ_uniforme 3 0 0 -9.81
-rho Champ_Uniforme 1 7800.
-    lambda Champ_Uniforme 1 28.8
-    Cp Champ_Uniforme 1 562.69
-}
+
+    solide {
+        gravite champ_uniforme 3 0 0 -9.81
+        rho Champ_Uniforme 1 7800.
+        lambda Champ_Uniforme 1 28.8
+        Cp Champ_Uniforme 1 562.69
+    }
 
 
-Conduction
+    Conduction
     {
         diffusion { }
         sources { Puissance_Thermique champ_uniforme 1 1000 }
@@ -84,4 +84,3 @@ Conduction
 
 End
 
- 

@@ -58,18 +58,18 @@ Discretize pb dis
 
 Read pb
 {
-       
-fluide_incompressible {
-     mu Champ_Uniforme 1 1.
-    rho Champ_Uniforme 1 1000.
-    lambda Champ_Uniforme 1 1.
-    Cp Champ_Uniforme 1 1000.
-    beta_th Champ_Uniforme 1 1.e-6
 
-}
+    fluide_incompressible {
+        mu Champ_Uniforme 1 1.
+        rho Champ_Uniforme 1 1000.
+        lambda Champ_Uniforme 1 1.
+        Cp Champ_Uniforme 1 1000.
+        beta_th Champ_Uniforme 1 1.e-6
+
+    }
 
 
-Navier_Stokes_Standard
+    Navier_Stokes_Standard
     {
         equation_non_resolue 1
         solveur_pression GCP { precond ssor { omega 1.6 } seuil 1.e-5 impr }
@@ -107,4 +107,3 @@ Navier_Stokes_Standard
 
 Solve pb
 End
- 

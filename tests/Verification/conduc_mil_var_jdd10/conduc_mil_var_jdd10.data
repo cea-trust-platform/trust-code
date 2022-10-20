@@ -63,17 +63,17 @@ Discretize pb dis
 
 Read pb
 {
-       
-solide {
-     rho    Champ_uniforme  1 1.0
-    /* lambda    Champ_uniforme  1 1.0
-      Cp    Champ_uniforme  1 1.0  */
-    lambda Champ_fonc_txyz dom 1   sin(t)*sin(x)+1.5
-    Cp     Champ_fonc_txyz dom 1   sin(t)*sin(x)+2.0
 
-}
+    solide {
+        rho    Champ_uniforme  1 1.0
+        /* lambda    Champ_uniforme  1 1.0
+          Cp    Champ_uniforme  1 1.0  */
+        lambda Champ_fonc_txyz dom 1   sin(t)*sin(x)+1.5
+        Cp     Champ_fonc_txyz dom 1   sin(t)*sin(x)+2.0
 
-Conduction
+    }
+
+    Conduction
     {
         diffusion { }
         initial_conditions {
@@ -109,4 +109,3 @@ Conduction
 Solve pb
 
 End
- 

@@ -112,15 +112,15 @@ Discretize Conduccouplethermoh cubesregu
 Read pb2
 {
 # Proprietes He vers 700°C #
-Fluide_Incompressible
-{
-    mu Champ_Uniforme 1 4.46437e-05
-    rho Champ_Uniforme 1 4.40684
-    lambda Champ_Uniforme 1 0.344964
-    Cp Champ_Uniforme 1 5193.
-    beta_th champ_fonc_fonction pb2 temperature 1 1/val
-    gravite Champ_Uniforme 2 0 -9.81
-}
+    Fluide_Incompressible
+    {
+        mu Champ_Uniforme 1 4.46437e-05
+        rho Champ_Uniforme 1 4.40684
+        lambda Champ_Uniforme 1 0.344964
+        Cp Champ_Uniforme 1 5193.
+        beta_th champ_fonc_fonction pb2 temperature 1 1/val
+        gravite Champ_Uniforme 2 0 -9.81
+    }
 
     Navier_Stokes_standard
     {
@@ -185,12 +185,12 @@ Fluide_Incompressible
 
 Read pb1
 {
-Solide 
-{
-    rho Champ_Uniforme 1 7009.
-    lambda Champ_Uniforme 1 15.8
-    Cp Champ_Uniforme 1 .527
-}
+    Solide
+    {
+        rho Champ_Uniforme 1 7009.
+        lambda Champ_Uniforme 1 15.8
+        Cp Champ_Uniforme 1 .527
+    }
     Conduction
     {
         diffusion { }

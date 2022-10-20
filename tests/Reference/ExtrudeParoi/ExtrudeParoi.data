@@ -79,14 +79,14 @@ Discretize pb dis
 
 Read pb
 {
-       
-fluide_incompressible {
-     mu Champ_Uniforme 1 0.00514
-    rho Champ_Uniforme 1 2
-}
+
+    fluide_incompressible {
+        mu Champ_Uniforme 1 0.00514
+        rho Champ_Uniforme 1 2
+    }
 
 
-Navier_Stokes_Standard
+    Navier_Stokes_Standard
     {
         solveur_pression Gcp { precond ssor { omega 1.5 } seuil 1.e-08 impr }
         convection { amont }
@@ -119,4 +119,3 @@ entree frontiere_ouverte_vitesse_imposee champ_front_uniforme 3  2. 0. 0.
 sortie frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
 ExtrudeParoi { domaine dom nom_bord paroi epaisseur_relative 2 0.5 0.2 }
 ExtrudeParoi { domaine dom nom_bord paroi epaisseur 2 0.2 0.2 critere_absolu }
- 

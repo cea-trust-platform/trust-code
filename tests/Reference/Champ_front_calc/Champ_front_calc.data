@@ -95,12 +95,12 @@ Discretize pbc dis
 Debog pb1 seq faces 1.e-6 0
 Read pb1
 {
-Solide
-{
-    rho Champ_Uniforme 1 100.
-    lambda Champ_Uniforme 1 100.
-    Cp Champ_Uniforme 1 10.
-}
+    Solide
+    {
+        rho Champ_Uniforme 1 100.
+        lambda Champ_Uniforme 1 100.
+        Cp Champ_Uniforme 1 10.
+    }
     Conduction
     {
         diffusion {  }
@@ -130,12 +130,12 @@ Solide
 
 Read pb2
 {
-Solide
-{
-    rho Champ_Uniforme 1 2
-    lambda Champ_Uniforme 1 100.
-    Cp Champ_Uniforme 1 209
-}
+    Solide
+    {
+        rho Champ_Uniforme 1 2
+        lambda Champ_Uniforme 1 100.
+        Cp Champ_Uniforme 1 209
+    }
     Conduction
     {
         diffusion {  }

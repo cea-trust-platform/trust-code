@@ -62,18 +62,18 @@ Discretize pb dis
 
 Read pb
 {
-       
-fluide_incompressible {
-    gravite champ_uniforme 2 0 -9.81
-mu Champ_Uniforme 1 0.002
-    rho Champ_Uniforme 1 2
-    lambda Champ_Uniforme 1 1.0
-    Cp Champ_Uniforme 1 500
-    beta_th Champ_Uniforme 1 0.0001
-}
+
+    fluide_incompressible {
+        gravite champ_uniforme 2 0 -9.81
+        mu Champ_Uniforme 1 0.002
+        rho Champ_Uniforme 1 2
+        lambda Champ_Uniforme 1 1.0
+        Cp Champ_Uniforme 1 500
+        beta_th Champ_Uniforme 1 0.0001
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         solveur_pression petsc cholesky { }
         convection { amont }
@@ -130,4 +130,3 @@ Navier_Stokes_standard
 }
 Solve pb
 End
- 

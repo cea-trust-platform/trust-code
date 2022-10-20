@@ -5,20 +5,20 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-	pave bloc
-	{
-		origine 0 0 0
-		longueurs 1 1 1
-		nombre_de_noeuds 21 21 21
-		}
-		{
-		bord periox	X = 0	0 <= Y <= 1	0 <= Z <= 1
-		bord periox	X = 1	0 <= Y <= 1	0 <= Z <= 1
-		bord perioy	Y = 0	0 <= X <= 1	0 <= Z <= 1
-		bord perioy	Y = 1	0 <= X <= 1	0 <= Z <= 1
-		bord perioz	Z = 0	0 <= X <= 1	0 <= Y <= 1
-		bord perioz	Z = 1	0 <= X <= 1	0 <= Y <= 1
-		}
+    pave bloc
+    {
+        origine 0 0 0
+        longueurs 1 1 1
+        nombre_de_noeuds 21 21 21
+    }
+    {
+        bord periox	X = 0	0 <= Y <= 1	0 <= Z <= 1
+        bord periox	X = 1	0 <= Y <= 1	0 <= Z <= 1
+        bord perioy	Y = 0	0 <= X <= 1	0 <= Z <= 1
+        bord perioy	Y = 1	0 <= X <= 1	0 <= Z <= 1
+        bord perioz	Z = 0	0 <= X <= 1	0 <= Y <= 1
+        bord perioz	Z = 1	0 <= X <= 1	0 <= Y <= 1
+    }
 }
 
 Polyedriser dom
@@ -62,18 +62,18 @@ Discretize pb dis
 
 Lire pb
 {
-	Milieu_composite
-	{
-		liquide_eau Fluide_Incompressible
-		{
-    		mu champ_uniforme 1 0.001
-    		rho champ_uniforme 1 1000
-    		lambda Champ_Uniforme  1 1.
-    		Cp Champ_Uniforme      1 1.
-    		beta_th Champ_Uniforme 1 0.
-		}
-	}
-	
+    Milieu_composite
+    {
+        liquide_eau Fluide_Incompressible
+        {
+            mu champ_uniforme 1 0.001
+            rho champ_uniforme 1 1000
+            lambda Champ_Uniforme  1 1.
+            Cp Champ_Uniforme      1 1.
+            beta_th Champ_Uniforme 1 0.
+        }
+    }
+
     correlations
     {
     }

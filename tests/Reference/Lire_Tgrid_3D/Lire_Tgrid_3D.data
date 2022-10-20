@@ -38,8 +38,8 @@ Read sch
     seuil_statio 1.e-3
 }
 
- 
- 
+
+
 
 Pb_Hydraulique pb1
 Pb_Hydraulique pb2
@@ -54,12 +54,12 @@ Discretize pbc dis
 
 Read pb1
 {
-Fluide_Incompressible
-{
-    mu Champ_Uniforme 1 1.85e-5
-    rho Champ_Uniforme 1 1.17
-    lambda Champ_Uniforme 1 0.0262
-}
+    Fluide_Incompressible
+    {
+        mu Champ_Uniforme 1 1.85e-5
+        rho Champ_Uniforme 1 1.17
+        lambda Champ_Uniforme 1 0.0262
+    }
 
 
     Navier_Stokes_standard
@@ -108,12 +108,12 @@ Fluide_Incompressible
 }
 Read pb2
 {
-Fluide_Incompressible
-{
-    mu Champ_Uniforme 1 1.85e-5
-    rho Champ_Uniforme 1 1.17
-    lambda Champ_Uniforme 1 0.0262
-}
+    Fluide_Incompressible
+    {
+        mu Champ_Uniforme 1 1.85e-5
+        rho Champ_Uniforme 1 1.17
+        lambda Champ_Uniforme 1 0.0262
+    }
 
     Navier_Stokes_standard
     {

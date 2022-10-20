@@ -64,14 +64,14 @@ Associate pb sch
 Discretize pb dis
 Read pb
 {
-       
-fluide_incompressible {
-     mu Champ_Uniforme	1 1.
-    rho Champ_Uniforme	1 1.
-}
+
+    fluide_incompressible {
+        mu Champ_Uniforme	1 1.
+        rho Champ_Uniforme	1 1.
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         Solveur_Pression Petsc GCP { precond spai { level 1 epsilon 0.1 } seuil 1.e-10 impr }
         convection { negligeable }
@@ -104,4 +104,3 @@ Navier_Stokes_standard
 }
 Solve pb
 End
- 

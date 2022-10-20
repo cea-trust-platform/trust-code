@@ -6,9 +6,9 @@ Domaine dom
 
 # DEBUT MAILLAGE #
 
-Lire_MED { 
-   domain dom 
-   file fuel_geom1.med 
+Lire_MED {
+    domain dom
+    file fuel_geom1.med
 }
 reordonner dom
 discretiser_domaine dom
@@ -68,16 +68,16 @@ Discretiser pbth dis
 
 Lire pbth
 {
-       
-solide {
-     rho Champ_Uniforme 1 8000.
-    lambda Champ_Uniforme 1 15.
-    Cp Champ_Uniforme 1 500.
-}
+
+    solide {
+        rho Champ_Uniforme 1 8000.
+        lambda Champ_Uniforme 1 15.
+        Cp Champ_Uniforme 1 500.
+    }
 
 
 
-Conduction
+    Conduction
     {
         diffusion { }
         conditions_initiales {
@@ -116,4 +116,3 @@ Conduction
 
 Resoudre pbth
 
- 

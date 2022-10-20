@@ -82,14 +82,14 @@ Discretize pb ma_discretisation
 # Problem description #
 Read pb
 {
-       
-fluide_incompressible {
-     # hydraulic problem #
-    # Dynamic viscosity [kg/m/s] #
-    mu Champ_Uniforme 1 3.7e-05
-    # Volumic mass [kg/m3] #
-    rho Champ_Uniforme 1 2
-}
+
+    fluide_incompressible {
+        # hydraulic problem #
+        # Dynamic viscosity [kg/m/s] #
+        mu Champ_Uniforme 1 3.7e-05
+        # Volumic mass [kg/m3] #
+        rho Champ_Uniforme 1 2
+    }
 
 
 # hydraulic problem #
@@ -140,4 +140,3 @@ fluide_incompressible {
 Solve pb
 # Not necessary keyword to finish #
 End
- 

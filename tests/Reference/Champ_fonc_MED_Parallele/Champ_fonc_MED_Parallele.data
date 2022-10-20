@@ -28,19 +28,19 @@ Discretize pb dis
 
 Read pb
 {
-       
-fluide_incompressible {
-    gravite champ_uniforme 2 0 -9.81
 
-mu Champ_Uniforme 1 1.85e-5
-    rho Champ_Uniforme 1 1.17
-    lambda Champ_Uniforme 1 0.0262
-    Cp Champ_Uniforme 1 1006
-    beta_th Champ_Uniforme 1 3.41e-3
-}
+    fluide_incompressible {
+        gravite champ_uniforme 2 0 -9.81
+
+        mu Champ_Uniforme 1 1.85e-5
+        rho Champ_Uniforme 1 1.17
+        lambda Champ_Uniforme 1 0.0262
+        Cp Champ_Uniforme 1 1006
+        beta_th Champ_Uniforme 1 3.41e-3
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         projection_initiale 0
         solveur_pression petsc cholesky { }
@@ -48,12 +48,13 @@ Navier_Stokes_standard
         diffusion { }
         sources { boussinesq_temperature { T0 5. } }
         initial_conditions {
-            vitesse Champ_Fonc_MED { domain dom 
-                                     file multiple_files.med 
-                                     field vitesse 
-                                     loc som 
-                                     last_time 
-                                     }
+            vitesse Champ_Fonc_MED {
+                domain dom
+                file multiple_files.med
+                field vitesse
+                loc som
+                last_time
+            }
         }
         boundary_conditions {
             Haut paroi_fixe
@@ -73,13 +74,15 @@ Navier_Stokes_standard
             Gauche paroi_temperature_imposee Champ_Front_Uniforme 1 10.
             Droit  paroi_temperature_imposee Champ_Front_Uniforme 1 0.
         }
-        initial_conditions { Temperature Champ_Fonc_MED { domain dom 
-                                                          file multiple_files.med 
-                                                          field temperature 
-                                                          loc som 
-                                                          last_time 
-                                                          }
-}
+        initial_conditions {
+            Temperature Champ_Fonc_MED {
+                domain dom
+                file multiple_files.med
+                field temperature
+                loc som
+                last_time
+            }
+        }
     }
     Post_processings
     {
@@ -97,4 +100,3 @@ Solve pb
 lata_to_other lml NOM_DU_CAS Champ_fonc_MED_Parallele
 End
 
- 

@@ -61,14 +61,14 @@ Discretize pb dis
 # Donc Moy(U)(n*dt_integr)=1 et Ect(U)(n*dt_integr)=Sqr(2)/2 #
 Read pb
 {
-       
-fluide_incompressible {
-     mu Champ_Uniforme 1 0.01
-    rho Champ_Uniforme 1 1
-}
+
+    fluide_incompressible {
+        mu Champ_Uniforme 1 0.01
+        rho Champ_Uniforme 1 1
+    }
 
 
-Navier_Stokes_Standard
+    Navier_Stokes_Standard
     {
         solveur_pression petsc cholesky { }
         convection { negligeable }
@@ -107,4 +107,3 @@ Navier_Stokes_Standard
 
 Solve pb
 End
- 

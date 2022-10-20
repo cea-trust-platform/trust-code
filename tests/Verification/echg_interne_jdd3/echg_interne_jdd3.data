@@ -6,9 +6,9 @@ Pb_conduction pb
 Domaine dom
 
 # BEGIN MESH #
-Lire_MED { 
-   domain dom 
-   file domain.med 
+Lire_MED {
+    domain dom
+    file domain.med
 }
 read_file dom_ssz.geo ;
 # END MESH #
@@ -55,19 +55,19 @@ Discretize pb dis
 
 Read pb
 {
-       
-solide {
-     rho Champ_Uniforme 1 2
-    lambda Champ_Uniforme_morceaux dom 1
-    {
-        defaut	1.0e10  # pas plus de 1.0e38, sinon assert en debug :-) #
-        left_elem 0.01
-        right_elem 0.03
-    }
-    Cp Champ_Uniforme 1 0.5
-}
 
-Conduction
+    solide {
+        rho Champ_Uniforme 1 2
+        lambda Champ_Uniforme_morceaux dom 1
+        {
+            defaut	1.0e10  # pas plus de 1.0e38, sinon assert en debug :-) #
+            left_elem 0.01
+            right_elem 0.03
+        }
+        Cp Champ_Uniforme 1 0.5
+    }
+
+    Conduction
     {
         diffusion { }
         initial_conditions {
@@ -113,4 +113,3 @@ Conduction
 Solve pb
 
 End
- 

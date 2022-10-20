@@ -57,16 +57,16 @@ Discretize pb dis
 
 Read pb
 {
-       
-fluide_incompressible {
-    gravite champ_uniforme 3 0 -9.81 0
 
-mu Champ_Uniforme 1 1.85e-5
-    rho Champ_Uniforme 1 1.17
-}
+    fluide_incompressible {
+        gravite champ_uniforme 3 0 -9.81 0
+
+        mu Champ_Uniforme 1 1.85e-5
+        rho Champ_Uniforme 1 1.17
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         solveur_pression amgx GCP { precond c-amg { } seuil 1.000000e-20 impr }
         convection { negligeable }
@@ -87,4 +87,3 @@ Navier_Stokes_standard
 EcritureLectureSpecial 0
 Solve pb
 End
- 

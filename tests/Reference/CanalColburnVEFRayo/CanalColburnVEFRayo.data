@@ -75,12 +75,12 @@ Discretize pb_conduction dis
 # --------- LECTURE DES CONDITIONS DE CALCUL CONDUCTION --------- #
 Read pb_conduction
 {
-Solide
-{
-    rho Champ_Uniforme 1 2500.
-    lambda Champ_Uniforme 1 1.35
-    Cp Champ_Uniforme 1 720
-}
+    Solide
+    {
+        rho Champ_Uniforme 1 2500.
+        lambda Champ_Uniforme 1 1.35
+        Cp Champ_Uniforme 1 720
+    }
 
     Conduction
     {

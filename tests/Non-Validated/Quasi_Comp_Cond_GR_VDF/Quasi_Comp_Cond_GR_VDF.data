@@ -57,26 +57,26 @@ Associate pb sch
 Discretize pb dis
 Read pb
 {
-       
-fluide_quasi_compressible {
-    gravite champ_uniforme 3 0. 0. -9.81
 
-mu Champ_Uniforme 1 2.9e-5
-    pression 50.e5
-    lambda Champ_Uniforme 1 0.0167
-    loi_etat rhoT_gaz_reel_QC {
-        Prandtl 0.68
-        Poly_T 2 2       15.37959054             0.6278911456e-4
-        -0.1610686344e-5         0.2350537605e-12
-        Poly_rho 3 2     15.19671318             0.3288659188e-5
-        -0.1305337678e-4        -0.6177287039e-12
-        0.2304347936e-11        0.
-        masse_molaire 1.4
+    fluide_quasi_compressible {
+        gravite champ_uniforme 3 0. 0. -9.81
+
+        mu Champ_Uniforme 1 2.9e-5
+        pression 50.e5
+        lambda Champ_Uniforme 1 0.0167
+        loi_etat rhoT_gaz_reel_QC {
+            Prandtl 0.68
+            Poly_T 2 2       15.37959054             0.6278911456e-4
+            -0.1610686344e-5         0.2350537605e-12
+            Poly_rho 3 2     15.19671318             0.3288659188e-5
+            -0.1305337678e-4        -0.6177287039e-12
+            0.2304347936e-11        0.
+            masse_molaire 1.4
+        }
     }
-}
 
 
-Navier_Stokes_QC
+    Navier_Stokes_QC
     {
         solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-6 }
         convection { amont }
@@ -131,4 +131,3 @@ Navier_Stokes_QC
 }
 Solve pb
 End
- 

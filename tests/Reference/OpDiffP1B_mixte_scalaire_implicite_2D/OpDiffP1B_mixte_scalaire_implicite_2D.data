@@ -70,12 +70,12 @@ Discretize pbF1 cubesregu
 
 Read pbF1
 {
-Solide
-{
-    rho Champ_Uniforme 1 1.
-    lambda Champ_Uniforme 1 1.
-    Cp Champ_Uniforme 1 1.
-}
+    Solide
+    {
+        rho Champ_Uniforme 1 1.
+        lambda Champ_Uniforme 1 1.
+        Cp Champ_Uniforme 1 1.
+    }
 
 
     Conduction

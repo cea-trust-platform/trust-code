@@ -67,17 +67,17 @@ Discretize pb1 dis
 
 Read pb1
 {
-       
-solide {
-     rho Champ_Uniforme 1 1000.
-    lambda Champ_Uniforme 1 250.
-    Cp Champ_Uniforme 1 100.
-}
+
+    solide {
+        rho Champ_Uniforme 1 1000.
+        lambda Champ_Uniforme 1 250.
+        Cp Champ_Uniforme 1 100.
+    }
 
 
 
 
-Conduction
+    Conduction
     {
         diffusion { }
         sources { puissance_thermique champ_fonc_xyz  dom_solide 1  1e5*x }
@@ -116,4 +116,3 @@ Conduction
 
 Solve pb1
 End
- 

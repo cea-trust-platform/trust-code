@@ -77,17 +77,17 @@ Discretize pb dis
 
 Read pb
 {
-       
-fluide_incompressible {
-     mu Champ_Uniforme 1 0.02
-    rho Champ_Uniforme 1 2
-    lambda Champ_Uniforme 1 0.1
-    Cp Champ_Uniforme 1 0.5
-    beta_th Champ_Uniforme 1 0.0
-}
+
+    fluide_incompressible {
+        mu Champ_Uniforme 1 0.02
+        rho Champ_Uniforme 1 2
+        lambda Champ_Uniforme 1 0.1
+        Cp Champ_Uniforme 1 0.5
+        beta_th Champ_Uniforme 1 0.0
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         solveur_pression GCP {
             precond ssor { omega 1.5 }
@@ -165,4 +165,3 @@ Champ_Front_Uniforme 2  0. 1.
 Entree2 frontiere_ouverte_vitesse_imposee
 Champ_Front_Uniforme 2  0. 1.
 vitesse som
- 

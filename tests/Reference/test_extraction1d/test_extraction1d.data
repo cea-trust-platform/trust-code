@@ -55,15 +55,15 @@ Discretiser pbth dis1
 
 Lire pbth
 {
-       
-solide {
-     rho Champ_Uniforme 1 8000.
-    lambda Champ_Uniforme 1 20.
-    Cp Champ_Uniforme 1 300.
-}
+
+    solide {
+        rho Champ_Uniforme 1 8000.
+        lambda Champ_Uniforme 1 20.
+        Cp Champ_Uniforme 1 300.
+    }
 
 
-Conduction
+    Conduction
     {
         diffusion { }
         conditions_limites
@@ -103,4 +103,3 @@ Conduction
 
 Resoudre pbth
 
- 

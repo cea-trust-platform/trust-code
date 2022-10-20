@@ -6,9 +6,9 @@ Pb_conduction pb
 Domaine dom
 
 # BEGIN MESH #
-Lire_MED { 
-   domain dom 
-   file domain.med 
+Lire_MED {
+    domain dom
+    file domain.med
 }
 Read_file dom_ssz.geo ;
 # END MESH #
@@ -54,32 +54,33 @@ Discretize pb dis
 
 Read pb
 {
-       
-solide {
-     rho Champ_Uniforme_morceaux dom 1 { defaut	1.0e10 left_elem 2.0 right_elem 0.5 }
-    # rho Champ_Uniforme_morceaux dom 1 { defaut	1.0e10 left_elem 2.0 right_elem 0.5 } #
 
-    lambda Champ_Uniforme_morceaux dom 1
-    {
-        defaut	1.0e10  # pas plus de 1.0e38, sinon assert en debug :-) #
-        left_elem 0.01
-        right_elem 0.03
+    solide {
+        rho Champ_Uniforme_morceaux dom 1 { defaut	1.0e10 left_elem 2.0 right_elem 0.5 }
+        # rho Champ_Uniforme_morceaux dom 1 { defaut	1.0e10 left_elem 2.0 right_elem 0.5 } #
+
+        lambda Champ_Uniforme_morceaux dom 1
+        {
+            defaut	1.0e10  # pas plus de 1.0e38, sinon assert en debug :-) #
+            left_elem 0.01
+            right_elem 0.03
+        }
+        Cp Champ_Uniforme_morceaux dom 1 { defaut	1.0e10 left_elem 0.5 right_elem 2.0 }
+        # Cp Champ_Uniforme_morceaux dom 1 { defaut	1.0e10 left_elem 0.5 right_elem 2.0 } #
     }
-    Cp Champ_Uniforme_morceaux dom 1 { defaut	1.0e10 left_elem 0.5 right_elem 2.0 }
-    # Cp Champ_Uniforme_morceaux dom 1 { defaut	1.0e10 left_elem 0.5 right_elem 2.0 } #
-}
 
-Conduction
+    Conduction
     {
         diffusion { }
         initial_conditions {
             # temperature Champ_Uniforme_morceaux dom 1 { defaut 1.0e10 left_elem 20.0 right_elem 10.0 } #
-            temperature Champ_Fonc_MED { domain med_domain 
-                                         file domain.med 
-                                         field T_init 
-                                         loc som 
-                                         time 0.0 
-                                         }
+            temperature Champ_Fonc_MED {
+                domain med_domain
+                file domain.med
+                field T_init
+                loc som
+                time 0.0
+            }
             # temperature Champ_Fonc_xyz dom 1 (x<0.0)*5.0+(x<0.0001)*5.0+10.0 #
         }
         boundary_conditions {
@@ -114,4 +115,3 @@ Conduction
 Solve pb
 
 End
- 

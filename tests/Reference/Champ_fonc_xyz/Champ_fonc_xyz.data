@@ -58,15 +58,15 @@ Discretize pb dis
 
 Read pb
 {
-       
-fluide_incompressible {
-    gravite champ_uniforme 2 0. 0.
-mu Champ_fonc_xyz dom 1 1+y
-    rho Champ_Uniforme 1 1.
-}
+
+    fluide_incompressible {
+        gravite champ_uniforme 2 0. 0.
+        mu Champ_fonc_xyz dom 1 1+y
+        rho Champ_Uniforme 1 1.
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         projection_initiale 1
         solveur_pression GCP { precond ssor { omega 1.6 } seuil 1.e-8 }
@@ -97,4 +97,3 @@ Navier_Stokes_standard
 }
 Solve pb
 End
- 

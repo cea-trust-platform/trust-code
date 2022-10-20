@@ -160,12 +160,12 @@ Discretize pb_4 dis
 
 Read pb_1
 {
-Solide
-{
-    rho champ_uniforme 1  1
-    cp  champ_uniforme 1 1
-    lambda champ_uniforme 1 0.01
-}
+    Solide
+    {
+        rho champ_uniforme 1  1
+        cp  champ_uniforme 1 1
+        lambda champ_uniforme 1 0.01
+    }
     Conduction
     {
         diffusion { }
@@ -205,12 +205,12 @@ Solide
 Read pb_2
 {
 
-Solide
-{
-    rho champ_uniforme 1  1
-    cp  champ_uniforme 1 1
-    lambda champ_uniforme 1 0.01
-}
+    Solide
+    {
+        rho champ_uniforme 1  1
+        cp  champ_uniforme 1 1
+        lambda champ_uniforme 1 0.01
+    }
 
     Conduction
     {
@@ -250,12 +250,12 @@ Solide
 }
 Read pb_3
 {
-Solide
-{
-    rho champ_uniforme 1  1
-    cp  champ_uniforme 1 1
-    lambda champ_uniforme 1 0.01
-}
+    Solide
+    {
+        rho champ_uniforme 1  1
+        cp  champ_uniforme 1 1
+        lambda champ_uniforme 1 0.01
+    }
     Conduction
     {
         diffusion { }
@@ -294,12 +294,12 @@ Solide
 }
 Read pb_4
 {
-Solide
-{
-    rho champ_uniforme 1  1
-    cp  champ_uniforme 1 1
-    lambda champ_uniforme 1 0.01
-}
+    Solide
+    {
+        rho champ_uniforme 1  1
+        cp  champ_uniforme 1 1
+        lambda champ_uniforme 1 0.01
+    }
     Conduction
     {
         diffusion { }

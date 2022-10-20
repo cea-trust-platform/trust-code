@@ -47,14 +47,14 @@ Discretize pb dis
 EcritureLectureSpecial EFichierBin
 Read pb
 {
-       
-fluide_incompressible {
-     mu Champ_Uniforme 1 2e-05
-    rho Champ_Uniforme 1 2
-}
+
+    fluide_incompressible {
+        mu Champ_Uniforme 1 2e-05
+        rho Champ_Uniforme 1 2
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         projection_initiale 0
         solveur_pression GCP {
@@ -96,4 +96,3 @@ Navier_Stokes_standard
 EcritureLectureSpecial EcrFicPartageBin
 Solve pb
 End
- 

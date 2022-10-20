@@ -39,27 +39,29 @@ Discretiser pb dis
 Lire pb
 {
 
-       
-fluide_incompressible {
-     rho champ_uniforme 1 1.0
-    mu	champ_uniforme 1 1.0
-}
+
+    fluide_incompressible {
+        rho champ_uniforme 1 1.0
+        mu	champ_uniforme 1 1.0
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         solveur_pression petsc cholesky { }
         convection { amont }
         diffusion { negligeable }
-        conditions_initiales { vitesse champ_fonc_xyz dom 2 (cos($theta)+sin($theta))*exp((cos($theta)-sin($theta))*x-(sin($theta)+cos($theta))*y)
-                                                            (cos($theta)-sin($theta))*exp((cos($theta)-sin($theta))*x-(sin($theta)+cos($theta))*y) }
+        conditions_initiales {
+            vitesse champ_fonc_xyz dom 2 (cos($theta)+sin($theta))*exp((cos($theta)-sin($theta))*x-(sin($theta)+cos($theta))*y)
+            (cos($theta)-sin($theta))*exp((cos($theta)-sin($theta))*x-(sin($theta)+cos($theta))*y)
+        }
         conditions_limites
         {
-           left  frontiere_ouverte_vitesse_imposee 	champ_front_fonc_txyz 2 (cos($theta)+sin($theta))*exp((cos($theta)-sin($theta))*x-(sin($theta)+cos($theta))*y)
-                                                                            (cos($theta)-sin($theta))*exp((cos($theta)-sin($theta))*x-(sin($theta)+cos($theta))*y)
-           right frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
-           down  $cl_down
-           up    $cl_up
+            left  frontiere_ouverte_vitesse_imposee 	champ_front_fonc_txyz 2 (cos($theta)+sin($theta))*exp((cos($theta)-sin($theta))*x-(sin($theta)+cos($theta))*y)
+            (cos($theta)-sin($theta))*exp((cos($theta)-sin($theta))*x-(sin($theta)+cos($theta))*y)
+            right frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
+            down  $cl_down
+            up    $cl_up
         }
     }
     Postraitement
@@ -88,10 +90,9 @@ Navier_Stokes_standard
         {
             erreur_v_x faces
             erreur_v_y faces
-    	    pression elem
-	        vitesse elem
+            pression elem
+            vitesse elem
         }
     }
 }
 Resoudre pb
- 

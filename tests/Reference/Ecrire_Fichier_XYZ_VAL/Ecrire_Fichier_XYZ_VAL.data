@@ -94,15 +94,15 @@ Discretize pbMG_global cubesregu
 
 Read pbF1
 {
-Fluide_Incompressible
-{
-    mu Champ_Uniforme 1 1.
-    rho Champ_Uniforme 1 1.
-    lambda Champ_Uniforme 1 1.
-    Cp Champ_Uniforme 1 1.
-    beta_th Champ_Uniforme 1 .01
-    gravite Champ_Uniforme 2 0 -9.81
-}
+    Fluide_Incompressible
+    {
+        mu Champ_Uniforme 1 1.
+        rho Champ_Uniforme 1 1.
+        lambda Champ_Uniforme 1 1.
+        Cp Champ_Uniforme 1 1.
+        beta_th Champ_Uniforme 1 .01
+        gravite Champ_Uniforme 2 0 -9.81
+    }
 
 
     Navier_Stokes_standard
@@ -180,12 +180,12 @@ Fluide_Incompressible
 
 Read pbG
 {
-Solide
-{
-    rho Champ_Uniforme 1 1.
-    lambda Champ_Uniforme 1 1.
-    Cp Champ_Uniforme 1 1.
-}
+    Solide
+    {
+        rho Champ_Uniforme 1 1.
+        lambda Champ_Uniforme 1 1.
+        Cp Champ_Uniforme 1 1.
+    }
 
     Conduction
     {

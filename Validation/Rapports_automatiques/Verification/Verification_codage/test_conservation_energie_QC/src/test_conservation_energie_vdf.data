@@ -44,18 +44,18 @@ Discretize pb_plenum dis
 
 
 Read pb_plenum {
-Fluide_Quasi_Compressible
-{
-    pression 7000000.
-    Sutherland pb_plenum mu0 1.6E-5 T0 273.15 Slambda 235. C 235.
+    Fluide_Quasi_Compressible
+    {
+        pression 7000000.
+        Sutherland pb_plenum mu0 1.6E-5 T0 273.15 Slambda 235. C 235.
 
-    loi_etat gaz_parfait_QC {
-        Prandtl 0.67
-        Cp 5193.
-        gamma 1.666
+        loi_etat gaz_parfait_QC {
+            Prandtl 0.67
+            Cp 5193.
+            gamma 1.666
+        }
+        traitement_pth constant
     }
-    traitement_pth constant
-}
 
     Navier_Stokes_QC
     {

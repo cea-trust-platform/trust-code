@@ -39,22 +39,22 @@ Associate pb sch
 Discretize pb dis
 Read pb
 {
-       
-fluide_quasi_compressible {
-     pression 111582.205714
-    loi_etat gaz_parfait_QC
-    {
-        Cp 1006.8
-        gamma 1.4
-        Prandtl 0.494112177122
-        rho_constant_pour_debug champ_uniforme 1 1.293
-    }
-    traitement_pth constant
-    traitement_rho_gravite moins_rho_moyen
-    mu champ_uniforme 1 1.33e-05
-}
 
-Navier_stokes_qc
+    fluide_quasi_compressible {
+        pression 111582.205714
+        loi_etat gaz_parfait_QC
+        {
+            Cp 1006.8
+            gamma 1.4
+            Prandtl 0.494112177122
+            rho_constant_pour_debug champ_uniforme 1 1.293
+        }
+        traitement_pth constant
+        traitement_rho_gravite moins_rho_moyen
+        mu champ_uniforme 1 1.33e-05
+    }
+
+    Navier_stokes_qc
     {
         solveur_pression petsc Cholesky { }
         convection { negligeable }
@@ -106,4 +106,3 @@ Navier_stokes_qc
 Solve pb
 End
 
- 

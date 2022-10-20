@@ -59,24 +59,24 @@ Discretize pb dis
 
 Read pb
 {
-       
-fluide_weakly_compressible {
-    gravite champ_uniforme 2 0. -9.81
 
-mu champ_fonc_fonction pb temperature 1 5.e-3
-    lambda champ_fonc_fonction pb temperature 1 5.e-3
-    loi_etat gaz_parfait_WC
-    {
-        Prandtl 0.71
-        Cp 1005.
-        gamma 1.4
+    fluide_weakly_compressible {
+        gravite champ_uniforme 2 0. -9.81
+
+        mu champ_fonc_fonction pb temperature 1 5.e-3
+        lambda champ_fonc_fonction pb temperature 1 5.e-3
+        loi_etat gaz_parfait_WC
+        {
+            Prandtl 0.71
+            Cp 1005.
+            gamma 1.4
+        }
+        pression_thermo 1.E5
+        use_hydrostatic_pressure 0 /* 0 is by default */
     }
-    pression_thermo 1.E5
-    use_hydrostatic_pressure 0 /* 0 is by default */
-}
 
 
-Navier_Stokes_WC
+    Navier_Stokes_WC
     {
         solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-7 impr }
         convection { amont }
@@ -130,4 +130,3 @@ Navier_Stokes_WC
 }
 Solve pb
 End
- 

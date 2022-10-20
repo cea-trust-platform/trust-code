@@ -69,17 +69,17 @@ Discretiser pb dis
 
 Lire pb
 {
-       
-fluide_quasi_compressible {
-     mu		champ_fonc_xyz dom 1 _MU_
-    lambda		champ_fonc_xyz dom 1 1
-    pression	1
-    loi_etat	rhoT_gaz_parfait_QC { Prandtl 1 Cp 1 rho_xyz champ_fonc_xyz dom 1 _RHO_ }
-    traitement_pth conservation_masse
-}
+
+    fluide_quasi_compressible {
+        mu		champ_fonc_xyz dom 1 _MU_
+        lambda		champ_fonc_xyz dom 1 1
+        pression	1
+        loi_etat	rhoT_gaz_parfait_QC { Prandtl 1 Cp 1 rho_xyz champ_fonc_xyz dom 1 _RHO_ }
+        traitement_pth conservation_masse
+    }
 
 
-Navier_Stokes_QC
+    Navier_Stokes_QC
     {
         Projection_initiale	0
         Solveur_pression	PETSC Cholesky { }
@@ -204,4 +204,3 @@ Navier_Stokes_QC
 Resoudre pb
 
 Fin
- 

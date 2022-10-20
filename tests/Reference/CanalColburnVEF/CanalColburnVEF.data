@@ -50,13 +50,13 @@ Discretize pb_solide cubes
 
 Read pb_solide
 {
-Solide
-{
+    Solide
+    {
 
-    rho Champ_Uniforme 1 2225.
-    lambda Champ_Uniforme 1 59.48
-    Cp Champ_Uniforme 1 6
-}
+        rho Champ_Uniforme 1 2225.
+        lambda Champ_Uniforme 1 59.48
+        Cp Champ_Uniforme 1 6
+    }
 
     Conduction
     {

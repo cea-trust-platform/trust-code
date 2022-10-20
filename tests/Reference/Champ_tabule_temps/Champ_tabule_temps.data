@@ -59,14 +59,14 @@ Discretize pb dis
 
 Read pb
 {
-       
-fluide_incompressible {
-     mu  Champ_Uniforme 1 1.e-3
-    rho Champ_Uniforme 1 1000
-}
+
+    fluide_incompressible {
+        mu  Champ_Uniforme 1 1.e-3
+        rho Champ_Uniforme 1 1000
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         solveur_pression GCP
         {
@@ -138,4 +138,3 @@ est equivalent a
 					0.	0.
 				}
 */
- 

@@ -13,9 +13,9 @@ Pb_Hydraulique pb
 Domaine dom
 
 # BEGIN MESH #
-Lire_MED { 
-   domain dom 
-   file ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1.med 
+Lire_MED {
+    domain dom
+    file ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1.med
 }
 regroupebord dom Wall { TOP DOWN UP }
 regroupebord dom Postpro { BOTTOM }
@@ -68,14 +68,14 @@ Discretiser pb dis
 
 Read pb
 {
-       
-fluide_incompressible {
-     mu  Champ_Uniforme 1 1.0
-    rho Champ_Uniforme 1 1.0
-}
+
+    fluide_incompressible {
+        mu  Champ_Uniforme 1 1.0
+        rho Champ_Uniforme 1 1.0
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         projection_initiale 1
         postraiter_gradient_pression_sans_masse
@@ -91,16 +91,18 @@ Navier_Stokes_standard
         {
             Source_PDF
             {
-                aire Champ_Fonc_MED { domain domain_mesh 
-                                      file ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1.med 
-                                      field aire 
-                                      last_time 
-                                      }
-                rotation Champ_Fonc_MED { domain domain_mesh 
-                                          file ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1.med 
-                                          field rotation 
-                                          last_time 
-                                          }
+                aire Champ_Fonc_MED {
+                    domain domain_mesh
+                    file ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1.med
+                    field aire
+                    last_time
+                }
+                rotation Champ_Fonc_MED {
+                    domain domain_mesh
+                    file ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1.med
+                    field rotation
+                    last_time
+                }
                 modele
                 {
                     eta 1.0e-12
@@ -130,4 +132,3 @@ Navier_Stokes_standard
 }
 resoudre pb
 fin
- 

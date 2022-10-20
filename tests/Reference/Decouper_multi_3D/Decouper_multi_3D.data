@@ -34,7 +34,7 @@ Decouper_multi
         Larg_joint 2
         Nom_Zones decoup/dom2
         ecrire_decoupage decoup/dom2.txt
-    }  
+    }
 }
 Fin
 END PARTITION #
@@ -71,12 +71,12 @@ Discretize pbc dis
 
 Read pb1
 {
-Fluide_Incompressible
-{
-    mu Champ_Uniforme 1 1.85e-5
-    rho Champ_Uniforme 1 1.17
-    lambda Champ_Uniforme 1 0.0262
-}
+    Fluide_Incompressible
+    {
+        mu Champ_Uniforme 1 1.85e-5
+        rho Champ_Uniforme 1 1.17
+        lambda Champ_Uniforme 1 0.0262
+    }
 
 
     Navier_Stokes_standard
@@ -97,22 +97,22 @@ Fluide_Incompressible
 
     Post_processing
     {
-            format lml
-            fields dt_post 0.01
-            {
-                pression elem
-                vitesse som
-            }
+        format lml
+        fields dt_post 0.01
+        {
+            pression elem
+            vitesse som
+        }
     }
 }
 Read pb2
 {
-Fluide_Incompressible
-{
-    mu Champ_Uniforme 1 1.85e-5
-    rho Champ_Uniforme 1 1.17
-    lambda Champ_Uniforme 1 0.0262
-}
+    Fluide_Incompressible
+    {
+        mu Champ_Uniforme 1 1.85e-5
+        rho Champ_Uniforme 1 1.17
+        lambda Champ_Uniforme 1 0.0262
+    }
 
     Navier_Stokes_standard
     {
@@ -132,12 +132,12 @@ Fluide_Incompressible
 
     Post_processing
     {
-            format lml
-            fields dt_post 0.01
-            {
-                pression elem
-                vitesse som
-            }
+        format lml
+        fields dt_post 0.01
+        {
+            pression elem
+            vitesse som
+        }
     }
 }
 Solve pbc

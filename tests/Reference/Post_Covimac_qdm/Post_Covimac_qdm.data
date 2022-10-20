@@ -81,11 +81,11 @@ Discretize theProblem theDiscretization
 # Problem description #
 Read theProblem
 {
-Fluide_Incompressible
-{
-    mu  Uniform_Field 1 2.076e-04
-    rho Uniform_Field 1 9.410e+02
-}
+    Fluide_Incompressible
+    {
+        mu  Uniform_Field 1 2.076e-04
+        rho Uniform_Field 1 9.410e+02
+    }
 
     # mass and momentum balance equations #
     Navier_Stokes_standard

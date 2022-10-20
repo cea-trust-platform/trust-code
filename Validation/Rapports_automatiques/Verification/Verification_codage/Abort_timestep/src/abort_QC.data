@@ -120,22 +120,22 @@ Discretize pb1 dis
 
 Read pb1
 {
-       
-fluide_quasi_compressible {
-    gravite champ_uniforme 2 0 -9.81
 
-pression 7000000.
-    Sutherland pb1 mu0 1.6E-5 T0 273.15 Slambda 235. C 235.
+    fluide_quasi_compressible {
+        gravite champ_uniforme 2 0 -9.81
 
-    loi_etat gaz_parfait_QC {
-        Prandtl 1.
-        Cp 5193.
-        gamma 1.666
+        pression 7000000.
+        Sutherland pb1 mu0 1.6E-5 T0 273.15 Slambda 235. C 235.
+
+        loi_etat gaz_parfait_QC {
+            Prandtl 1.
+            Cp 5193.
+            gamma 1.666
+        }
+        traitement_pth conservation_masse
     }
-    traitement_pth conservation_masse
-}
 
-Navier_Stokes_QC
+    Navier_Stokes_QC
     {
         solveur_pression GCP {
             precond ssor { omega 1.5 }
@@ -232,4 +232,3 @@ Navier_Stokes_QC
 Pilote_ICoCo { Pb_name  pb1 main abort_time_step }
 
 End
- 

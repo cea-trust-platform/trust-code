@@ -72,18 +72,18 @@ Discretize pb dis
 
 Read pb
 {
-       
-fluide_incompressible {
-     mu Champ_Uniforme 1 2
-    rho Champ_Uniforme 1 2
-    lambda Champ_uniforme 1 .5
-    Cp Champ_Uniforme 1 3500
-    beta_th Champ_Uniforme 1 0.0043
-    Porosites_champ champ_uniforme_morceaux dom_pb1 1 { defaut 1 Suz1001 0.5 }
-}
+
+    fluide_incompressible {
+        mu Champ_Uniforme 1 2
+        rho Champ_Uniforme 1 2
+        lambda Champ_uniforme 1 .5
+        Cp Champ_Uniforme 1 3500
+        beta_th Champ_Uniforme 1 0.0043
+        Porosites_champ champ_uniforme_morceaux dom_pb1 1 { defaut 1 Suz1001 0.5 }
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         solveur_pression GCP {
             precond ssor { omega 1.5 } seuil 1.e-5
@@ -140,4 +140,3 @@ Navier_Stokes_standard
 }
 Solve pb
 End
- 

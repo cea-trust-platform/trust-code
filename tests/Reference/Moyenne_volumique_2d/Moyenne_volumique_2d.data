@@ -64,17 +64,17 @@ Associate pb sch
 Discretize pb dis
 Read pb
 {
-       
-fluide_incompressible {
-     mu Champ_Uniforme 1 0.05
-    rho Champ_Uniforme 1 1.
-    lambda Champ_Uniforme 1 0.05
-    Cp Champ_Uniforme 1 1.
-    beta_th Champ_Uniforme 1 0.0001
-}
+
+    fluide_incompressible {
+        mu Champ_Uniforme 1 0.05
+        rho Champ_Uniforme 1 1.
+        lambda Champ_Uniforme 1 0.05
+        Cp Champ_Uniforme 1 1.
+        beta_th Champ_Uniforme 1 0.0001
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         solveur_pression GCP {
             precond ssor { omega 1.500000 }
@@ -134,4 +134,3 @@ Moyenne_volumique {
 }
 
 End
- 

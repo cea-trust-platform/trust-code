@@ -115,13 +115,13 @@ extraire_surface
 Postraiter_domaine { domaine in format lata fichier in }
 Read pb
 {
-       
-fluide_incompressible {
-     mu champ_uniforme  1 0.00054613
-    rho champ_uniforme  1 987.888
-}
 
-navier_stokes_standard
+    fluide_incompressible {
+        mu champ_uniforme  1 0.00054613
+        rho champ_uniforme  1 987.888
+    }
+
+    navier_stokes_standard
     {
         solveur_pression gcp
         {
@@ -251,48 +251,48 @@ Solve pb
 # BEGIN MESH #
 lata_to_med plan.lata plan.med
 champ_fonc_med champ_plan
-read champ_plan { domain plan 
-                 file plan.med 
-                 field vitesse 
-                 last_time 
-                 }
+read champ_plan { domain plan
+                  file plan.med
+                  field vitesse
+                  last_time
+                }
 lata_to_med plan_in.lata plan_in.med
 champ_fonc_med champ_plan_in
-read champ_plan_in { domain plan_in 
-                 file plan_in.med 
-                 field vitesse 
-                 last_time 
-                 }
+read champ_plan_in { domain plan_in
+                     file plan_in.med
+                     field vitesse
+                     last_time
+                   }
 lata_to_med plan_qcq.lata plan_qcq.med
 champ_fonc_med champ_plan_qcq
-read champ_plan_qcq { domain plan_qcq 
-                 file plan_qcq.med 
-                 field vitesse 
-                 last_time 
-                 }
+read champ_plan_qcq { domain plan_qcq
+                      file plan_qcq.med
+                      field vitesse
+                      last_time
+                    }
 
 
 lata_to_med surface.lata surface.med
 champ_fonc_med champ_surface
-read champ_surface { domain surface 
-                 file surface.med 
-                 field vitesse 
-                 last_time 
-                 }
+read champ_surface { domain surface
+                     file surface.med
+                     field vitesse
+                     last_time
+                   }
 lata_to_med surface_out.lata surface_out.med
 champ_fonc_med champ_surface_out
-read champ_surface_out { domain surface_out 
-                 file surface_out.med 
-                 field vitesse 
-                 last_time 
-                 }
+read champ_surface_out { domain surface_out
+                         file surface_out.med
+                         field vitesse
+                         last_time
+                       }
 lata_to_med surface_qcq.lata surface_qcq.med
 champ_fonc_med champ_surface_qcq
-read champ_surface_qcq { domain surface_qcq 
-                 file surface_qcq.med 
-                 field vitesse 
-                 last_time 
-                 }
+read champ_surface_qcq { domain surface_qcq
+                         file surface_qcq.med
+                         field vitesse
+                         last_time
+                       }
 
 integrer_champ_med
 {
@@ -352,4 +352,4 @@ integrer_champ_med
 
 # END MESH #
 End
- 
+

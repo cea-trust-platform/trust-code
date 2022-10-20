@@ -5,9 +5,9 @@ pb_Multiphase pb
 Domaine dom
 
 # BEGIN MESH #
-Lire_MED { 
-   domain dom 
-   file channel.med 
+Lire_MED {
+    domain dom
+    file channel.med
 }
 # END MESH #
 
@@ -53,17 +53,17 @@ Discretize pb dis
 
 Read pb
 {
-	Milieu_composite
-	{
-		liquide_eau Fluide_Incompressible
-		{
-    		mu  Champ_Uniforme     1 .1
-    		rho Champ_Uniforme     1 1.
-   	 		lambda Champ_Uniforme  1 1.
-    		Cp Champ_Uniforme      1 100.
-    		beta_th Champ_Uniforme 1 0.
-		}
-	}
+    Milieu_composite
+    {
+        liquide_eau Fluide_Incompressible
+        {
+            mu  Champ_Uniforme     1 .1
+            rho Champ_Uniforme     1 1.
+            lambda Champ_Uniforme  1 1.
+            Cp Champ_Uniforme      1 100.
+            beta_th Champ_Uniforme 1 0.
+        }
+    }
 
     correlations
     {

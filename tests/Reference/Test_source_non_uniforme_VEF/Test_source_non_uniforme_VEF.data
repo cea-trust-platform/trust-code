@@ -7,9 +7,9 @@ Pb_conduction pb2
 Domaine dom
 
 # BEGIN MESH #
-Lire_MED { 
-   domain dom 
-   file mesh_tri_1.med 
+Lire_MED {
+    domain dom
+    file mesh_tri_1.med
 }
 # END MESH #
 # BEGIN PARTITION
@@ -50,16 +50,16 @@ Discretiser pb2 dis
 
 Lire pb2
 {
-       
-solide {
-     rho champ_uniforme 1 1
-    lambda champ_uniforme 1 1
-    Cp champ_uniforme 1 1
-}
+
+    solide {
+        rho champ_uniforme 1 1
+        lambda champ_uniforme 1 1
+        Cp champ_uniforme 1 1
+    }
 
 
 
-Conduction
+    Conduction
     {
         Diffusion		{ }
         Conditions_initiales	{
@@ -91,4 +91,3 @@ Conduction
 Resoudre pb2
 
 Fin
- 

@@ -76,19 +76,19 @@ Discretize pb dis
 
 Read pb
 {
-       
-solide {
-     rho Champ_Uniforme 1 2
-    lambda Champ_Uniforme_Morceaux dom 1
-    {
-        defaut 0.5
-        zone1 2
-        zone2 1
-    }
-    Cp Champ_Uniforme 1 0.5
-}
 
-Conduction
+    solide {
+        rho Champ_Uniforme 1 2
+        lambda Champ_Uniforme_Morceaux dom 1
+        {
+            defaut 0.5
+            zone1 2
+            zone2 1
+        }
+        Cp Champ_Uniforme 1 0.5
+    }
+
+    Conduction
     {
         diffusion { }
         initial_conditions {
@@ -120,4 +120,4 @@ Conduction
 
 Solve pb
 End
- 
+

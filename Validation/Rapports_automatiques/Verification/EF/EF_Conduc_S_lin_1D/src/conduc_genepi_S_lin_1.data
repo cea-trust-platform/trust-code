@@ -12,9 +12,9 @@ Domaine dom
 Read_file dom dom2_mod.geom
 ecrire_med dom dom.med
 domaine dom2
-Lire_MED { 
-   domain dom2 
-   file dom.med 
+Lire_MED {
+    domain dom2
+    file dom.med
 }
 # END MESH #
 # BEGIN PARTITION
@@ -50,14 +50,14 @@ Discretize pb dis
 
 Read pb
 {
-       
-solide {
-     rho Champ_Uniforme 1 1.
-    lambda Champ_Uniforme 1 0.25
-    Cp Champ_Uniforme 1 1.
-}
 
-Conduction
+    solide {
+        rho Champ_Uniforme 1 1.
+        lambda Champ_Uniforme 1 0.25
+        Cp Champ_Uniforme 1 1.
+    }
+
+    Conduction
     {
         diffusion { }
         sources {
@@ -93,4 +93,3 @@ Conduction
 Solve pb
 
 End
- 

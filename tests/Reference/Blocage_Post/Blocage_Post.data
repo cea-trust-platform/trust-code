@@ -51,14 +51,14 @@ Read dis { P0 P1 cl_pression_sommet_faible 0 changement_de_base_P1bulle 1 }
 Discretize pb dis
 Read pb
 {
-       
-fluide_incompressible {
-     mu Champ_Uniforme 1 1.e-5
-    rho Champ_Uniforme 1 1
-}
+
+    fluide_incompressible {
+        mu Champ_Uniforme 1 1.e-5
+        rho Champ_Uniforme 1 1
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         solveur_pression GCP { precond ssor { omega 1.65 } seuil 1.e-7 impr }
         convection { muscl }
@@ -94,4 +94,3 @@ Solve pb
 End
 
 
- 
