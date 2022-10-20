@@ -13,18 +13,32 @@
 *
 *****************************************************************************/
 
-#include <Travail_pression_PolyMAC.h>
-#include <Op_Conv_EF_Stab_PolyMAC_Elem.h>
+#ifndef Travail_pression_Elem_base_included
+#define Travail_pression_Elem_base_included
 
-Implemente_instanciable(Travail_pression_PolyMAC, "Travail_pression_Elem_PolyMAC|Travail_pression_Elem_PolyMAC_P0", Travail_pression_Elem_base);
-// XD travail_pression source_base travail_pression 0 Source term which corresponds to the additional pressure work term that appears when dealing with compressible multiphase fluids
+#include <Source_base.h>
 
-Sortie& Travail_pression_PolyMAC::printOn(Sortie& os) const { return Travail_pression_Elem_base::printOn(os); }
-Entree& Travail_pression_PolyMAC::readOn(Entree& is) { return Travail_pression_Elem_base::readOn(is); }
-
-void Travail_pression_PolyMAC::completer()
+/*! @brief Classe Travail_pression_Elem_base Cette classe implemente le travail de la pression
+ *
+ *     - p (d alpha_k / dt + div(alpha_k v_k) )
+ *     dans l'equation d'energie ecrite en energie interne (cf. CATHARE 3D)
+ *
+ */
+class Travail_pression_Elem_base: public Source_base
 {
-  Travail_pression_Elem_base::completer();
-  const Op_Conv_EF_Stab_PolyMAC_Elem *op_conv = sub_type(Op_Conv_EF_Stab_PolyMAC_Elem, equation().operateur(1).l_op_base()) ? &ref_cast(Op_Conv_EF_Stab_PolyMAC_Elem, equation().operateur(1).l_op_base()) : NULL;
-  alp = op_conv ? op_conv->alpha : 1; /* meme decentrement que l'operateur de convection si il existe, amont sinon */
-}
+  Declare_base(Travail_pression_Elem_base);
+public :
+  int has_interface_blocs() const override { return 1; }
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+  void check_multiphase_compatibility() const override {}; //of course
+
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override { };
+  void associer_pb(const Probleme_base& ) override { };
+  void mettre_a_jour(double temps) override { };
+
+protected:
+  double alp = 1.0; /* decentrament de l'operateur de convection */
+};
+
+#endif

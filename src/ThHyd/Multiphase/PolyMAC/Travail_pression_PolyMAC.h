@@ -16,7 +16,7 @@
 #ifndef Travail_pression_PolyMAC_included
 #define Travail_pression_PolyMAC_included
 
-#include <Source_base.h>
+#include <Travail_pression_Elem_base.h>
 
 /*! @brief Classe Travail_pression_PolyMAC Cette classe implemente dans PolyMAC le travail de la pression
  *
@@ -25,21 +25,12 @@
  *
  * @sa Operateur_PolyMAC_base Operateur_base
  */
-class Travail_pression_PolyMAC: public Source_base
+class Travail_pression_PolyMAC : public Travail_pression_Elem_base
 {
   Declare_instanciable(Travail_pression_PolyMAC);
-public :
-  int has_interface_blocs() const override
-  {
-    return 1;
-  }
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
-  void check_multiphase_compatibility() const override {}; //of course
 
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override { };
-  void associer_pb(const Probleme_base& ) override { };
-  void mettre_a_jour(double temps) override { };
+public:
+  void completer() override;
 };
 
 #endif
