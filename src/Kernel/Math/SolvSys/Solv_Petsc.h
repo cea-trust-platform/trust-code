@@ -202,6 +202,11 @@ inline void Solv_Petsc::reset()
       // Destruction DM
       if (dm_!=NULL)
         DMDestroy(&dm_);
+      // Destruction IS
+      if (rowperm!=NULL)
+        ISDestroy(&rowperm);
+      if (colperm!=NULL)
+        ISDestroy(&colperm);
     }
   initialize();
 #endif
