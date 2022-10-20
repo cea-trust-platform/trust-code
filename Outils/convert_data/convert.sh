@@ -20,6 +20,17 @@ conv_liremed=$TRUST_ROOT/Outils/convert_data/convert_liremed.py
 conv_chf=$TRUST_ROOT/Outils/convert_data/convert_ch_fonc_med.py
 
 ze_d=`mktemp_ -d`
+
+if [ "`file $1 | grep ISO-8859`" != "" ]
+then
+   echo "*** Converting datafile to utf-8"
+   tmpf=`mktemp_`
+   iconv -f ISO-8859-15 -t UTF-8//TRANSLIT -o $1 $tmpf || exit -1
+   mv -f $tmpf $1
+   echo ""
+   echo ""
+fi
+
 echo "*** Converting 'milieu' ..."
 python $conv_mil "$1" $ze_d/after_mil.data || cp "$1" $ze_d/after_mil.data
 
