@@ -22,6 +22,10 @@
 #include <Symetrie.h>
 #include <Dirichlet_homogene.h>
 #include <Neumann_homogene.h>
+#include <Echange_externe_impose.h>
+#include <Echange_global_impose.h>
+#include <Neumann_paroi.h>
+#include <Neumann_val_ext.h>
 
 Implemente_base(Champ_Inc_P0_base,"Champ_Inc_P0_base",Champ_Inc_base);
 
@@ -78,10 +82,10 @@ void Champ_Inc_P0_base::init_fcl() const
   for (n = 0; n < cls.size(); n++)
     {
       const Front_VF& fvf = ref_cast(Front_VF, cls[n].frontiere_dis());
-      int idx = (cls[n].valeur().que_suis_je() == "Paroi_echange_externe_impose") + 2 * (cls[n].valeur().que_suis_je() == "Paroi_echange_global_impose")
-                + 4 * (cls[n].valeur().que_suis_je() == "Neumann_paroi")          + 5 * (sub_type(Neumann_homogene, cls[n].valeur()) || (cls[n].valeur().que_suis_je() == "Frontiere_ouverte") || sub_type(Symetrie, cls[n].valeur()))
-                + 6 * sub_type(Dirichlet, cls[n].valeur())                        + 7 * sub_type(Dirichlet_homogene, cls[n].valeur());
-      if ((cls[n].valeur().que_suis_je() == "Paroi_Echange_contact_PolyMAC") || (cls[n].valeur().que_suis_je() == "Paroi_Echange_contact_PolyMAC_P0") || (cls[n].valeur().que_suis_je() == "Echange_contact_VDF"))
+      int idx = sub_type(Echange_externe_impose, cls[n].valeur()) + 2 * sub_type(Echange_global_impose, cls[n].valeur())
+                + 4 * sub_type(Neumann_paroi, cls[n].valeur())      + 5 * (sub_type(Neumann_homogene, cls[n].valeur()) || sub_type(Neumann_val_ext, cls[n].valeur()) || sub_type(Symetrie, cls[n].valeur()))
+                + 6 * sub_type(Dirichlet, cls[n].valeur())          + 7 * sub_type(Dirichlet_homogene, cls[n].valeur());
+      if (cls[n].valeur().que_suis_je().debute_par("Paroi_Echange_contact"))
         idx = 3;
       if (!idx)
         {
