@@ -28,9 +28,6 @@ Read mon_schema
     seuil_statio 1.e-8
 }
 
-# The following lines define the PHYSICAL PROPERTIES of the solid or fluid medium #
-# for which the problem will be solved #
-
 # The following lines define the ASSOCIATION of the previously defined OBJECTS #
 Associate pb dom
 Associate pb mon_schema
@@ -45,7 +42,8 @@ Discretize pb ma_discretisation
 
 Read pb
 {
-
+    # The following lines define the PHYSICAL PROPERTIES of the solid or fluid medium #
+    # for which the problem will be solved #
     fluide_incompressible {
         mu  Champ_Uniforme 1 1.85e-5
         rho Champ_Uniforme 1 1.

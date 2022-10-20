@@ -236,9 +236,9 @@ Replace "format lml" by "format lata" in the data file\\
 \begin{exampleblock}{Download Eclipse}
 \begin{itemize}
 \item Visit the Eclipse Foundation website: \url{http://www.eclipse.org/downloads/eclipse-packages/}
-\item In "More Downloads", select version  \textbf{Eclipse 2022-06 (4.24)}.
+\item In "More Downloads", select version  \textbf{Eclipse 2022-09 (4.25)}.
 \item Select \textbf{Eclipse IDE for C/C++ Developers} $\rightarrow$ \textbf{Linux 64-bits}
-\item Download the \textbf{eclipse-cpp-2022-06-R-linux-gtk-x86\_64.tar.gz} package in your directory \texttt{Formation\_TRUST/yourname}
+\item Download the \textbf{eclipse-cpp-2022-09-R-linux-gtk-x86\_64.tar.gz} package in your directory \texttt{Formation\_TRUST/yourname}
 %\item For OS older than CentOs7, Ubuntu16.04 and Fedora22, download \textbf{Eclipse Mars} version: \textbf{eclipse-cpp-mars-2-linux-gtk-x86\_64.tar.gz}
 \end{itemize}
 \end{exampleblock}
@@ -307,7 +307,7 @@ Replace "format lml" by "format lata" in the data file\\
 \texttt{\$ trust -eclipse-trust}
 
 \item Then, follow the instructions displayed on the terminal to import TRUST sources.\\
-\item (You can follow instructions in the appendix to manually configure TRUST project under eclipse instead of using the -eclipse-trust option.)
+%\item (You can follow instructions in the appendix to manually configure TRUST project under eclipse instead of using the -eclipse-trust option.)
 
 \end{itemize}
 \end{exampleblock}
@@ -327,16 +327,14 @@ Replace "format lml" by "format lata" in the data file\\
   \begin{itemize}
   \item The "Main" tab tells Eclipse which binary will be used: \\
   $\Rightarrow$ Project: your project's name \\
-  $\Rightarrow$ "C/C++ Application": point to the TRUST \$exec\_debug \\
+  $\Rightarrow$ "C/C++ Application": points to the TRUST \$exec\_debug \\
   \vspace{0.1cm}
   \item The "Arguments" tab tells Eclipse which datafile to run:\\
-  $\Rightarrow$ "Program arguments" $\rightarrow$ specify datafile's name (here upwind) \\
-  $\Rightarrow$ "Working directory" $\rightarrow$ uncheck "Use default" and type path to datafile \\
-  $\Rightarrow$ "Apply"
+  $\Rightarrow$ "Program arguments" $\rightarrow$ specifies datafile's name (here upwind) \\
+  $\Rightarrow$ "Working directory" $\rightarrow$ contains path to datafile \\
   \end{itemize}
   \vspace{0.1cm}
   $\Rightarrow$ "Debug" : your datafile will be run with the specified executable
-\item NB: If you generated the project with the trust -eclipse-trust command, a similar debug configuration is already set up for you.
 \end{itemize}
 \end{exampleblock}
 
@@ -469,7 +467,7 @@ this command launches both scripts: the "baltik\_build\_configure" and "configur
 
 \begin{itemize}
 \item Check the status of your git repository with the "-\,-ignored" option to see the status of all files:\\
-\texttt{\$ git status -\,-ignored}\\
+\texttt{\$ git status}\\
 
 \item You can see that 
 \begin{itemize}
@@ -612,7 +610,7 @@ Notice that TRUST optimized binary for profiling or a TRUST optimized binary for
 
 \begin{exampleblock}{Create the project}
 \texttt{\$ trust -eclipse-baltik} \\
-then follow the instructions displayed on the terminal. If you want to manually configure your baltik project, follow the instructions in the Appendix. 
+then follow the instructions displayed on the terminal.
 \end{exampleblock}
 
 \end{frame}
@@ -627,15 +625,15 @@ then follow the instructions displayed on the terminal. If you want to manually 
   \begin{itemize}
   \item In the "Main" tab:\\
   $\Rightarrow$ Project: MY\_BALTIK \\
-  $\Rightarrow$ C/C++ Application: \texttt{\$\{workspace\_loc:/MY\_BALTIK\}/../my\_project} or copy the string matching \texttt{\$exec\_debug} \\
+  $\Rightarrow$ C/C++ Application: contains path to \texttt{\$exec\_debug} \\
   $\Rightarrow$ "Apply" 
   \item In the "Arguments" tab:\\
-  $\Rightarrow$ Program arguments $\rightarrow$ specify the name of your datafile (upwind) \\
-  $\Rightarrow$ Working directory $\rightarrow$ uncheck "Use default" and type path to datafile's directory \\
+  $\Rightarrow$ Program arguments: contains datafile's name (upwind) \\
+  $\Rightarrow$ Working directory: path to datafile's directory \\
   $\Rightarrow$ "Apply"
   \end{itemize}
   $\Rightarrow$ Debug
-\item NB: If you generated the project with the trust -eclipse-baltik command, a similar debug configuration is already set up for you.
+
 \end{itemize}
 \end{exampleblock}
 
@@ -655,12 +653,15 @@ then follow the instructions displayed on the terminal. If you want to manually 
 \vspace{0.2cm}
 \begin{itemize} 
 \item Open a cpp file from Project Explorer tab: \\
-  Double click on TRUST-X.Y.Z $\rightarrow$ Kernel $\rightarrow$ Framework $\rightarrow$ Probleme\_base.cpp \\ \vspace{0.2cm}
+  Double click on TRUST-1.9.0 $\rightarrow$ Kernel $\rightarrow$ Framework $\rightarrow$ Probleme\_base.cpp \\ \vspace{0.2cm}
 \item In the cpp file: Right click on method "initialize()" \\
   $\Rightarrow$ F3: Opens Declaration \\
   $\Rightarrow$ F4: Open Type Hierarchy \\
   $\Rightarrow$ Ctrl+Alt+H: Open Call Hierarchy \\
   $\Rightarrow$ "Ctrl+PageUp" and "Ctrl+PageDown": Move from a tab to another
+\item you can also: \\
+  $\Rightarrow$ search files by name using: "Ctrl+R" \\
+  $\Rightarrow$ serach attributes/methods/functions/... using: "Ctrl+T"
 \end{itemize}
 \end{exampleblock}
 
@@ -751,7 +752,7 @@ instead of "Objet\_U".
 So:
     \begin{itemize}
     \item [$\circ$] add an "\#include <Interprete\_geometrique\_base.h>" in my\_first\_class.h,
-    \item [$\circ$] switch "Objet\_U" to "Interprete\_geometrique\_base" in the .h and .cpp files,
+    \item [$\circ$] replace "Objet\_U" to "Interprete\_geometrique\_base" in the .h and .cpp files,
     \item [$\circ$] rebuild your application.\\
     \item [$\circ$] An error will occur!
     \end{itemize}
@@ -780,7 +781,7 @@ This error indicates that a pure virtual function ("interpreter\_") should be im
 \item Define the public method "interpreter\_(Entree\&)" in the include file and implement it
 (just print a message with "Cerr" like "- My first keyword!") into the cpp file. \\
 "Entree" is a TRUST class to read an input stream (from a file for example):\\
-"virtual Entree\& interpreter\_(Entree\&);"
+"virtual Entree\& interpreter\_(Entree\&) override;"
 
 \item Rebuild your project and fix your files until the binary of your project is built %(named
 %my\_project if you have not changed the name in the project.cfg file)\\
@@ -804,7 +805,7 @@ ERROR...
 \begin{block}{Test your new class}
 
 \begin{itemize}
-\item The error occurs because this test case is not in your baltik but in TRUST project. To be able to copy it, you have to load the full environment (TRUST+our baltik).\\
+\item The error occurs because this test case is not in your baltik but in TRUST project. To be able to copy it, you have to load the full environment (TRUST+your baltik).\\
 \texttt{\$ source ../full\_env\_my\_project.sh}\\
 \texttt{\$ trust -copy Cx}\\
 \texttt{\$ cd Cx}\\
@@ -832,7 +833,7 @@ NB: Instead of "End", you can reduce the number of time steps to only 1.\\
     $\rightarrow$ In "Arguments" tab, fill "Program arguments:" with "Cx"\\
     $\rightarrow$ "Working directory:" Copy the path to datafile matching \$project\_directory/build/Cx\\
     $\rightarrow$ "Apply" and "Debug"\\
-    $\rightarrow$ Click on "Yes" to change the kind of view\\
+    $\rightarrow$ Click on "Yes" to switch to the debug view\\
     $\rightarrow$ Click on "Resume" button to run the calculation until the end\\
 \end{exampleblock}    
 
@@ -849,7 +850,7 @@ then it calls "my\_first\_class::interpreter\_()" method.
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{{\bf{Modify your cpp class}}}
+\subsection{{\bf{Modify your cpp class(Part 1)}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -862,24 +863,20 @@ then it calls "my\_first\_class::interpreter\_()" method.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Modify your cpp class}
-\begin{block}{Part 1}
+\frametitle{Modify your cpp class (Part 1)}
+\begin{block}{}
 
 \begin{itemize}
 \item To be able to read object parameters from the datafile using the following syntaxe for example:
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.9\textwidth}
 \begin{alltt}
-{\bf{A}} a\\
-{\bf{Read}} a \{ {\bf{dimension}} 3 {\bf{option}} fast \}
+ my\_new\_keyword \{ {\bf{dimension}} 3 {\bf{option}} fast \}
 \end{alltt}
 \end{minipage}}
 \end{center}
-it is recommended to use \textbf{Param} objects as shown on the next slide. \\
-Here, the reading of parameters is done by the readOn method.
+it is recommended to use \textbf{Param} objects as shown on the next slide.
 
-\item \textbf{Param} use is the recommended choice in this case (even though many current TRUST classes are still using the old fashion to read parameters), because it
-greatly simplifies the coding.
 \end{itemize}
 
 \end{block}
@@ -887,15 +884,15 @@ greatly simplifies the coding.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Modify your cpp class}
-\begin{block}{Part 1: Example of Param use}
+\frametitle{Modify your cpp class (Part 1)}
+\begin{block}{Example of Param use}
 %\vspace{-0.8cm}
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.98\textwidth}
 \begin{alltt}
 \small{
 \#include <Param.h>\\
-Entree\& A::readOn(Entree\& is)\\
+Entree\& Class::method(Entree\& is)\\
 \{\\
 {\bf{Nom}} opt;\\
 {\bf{int}} dim;\\
@@ -922,12 +919,12 @@ return is;\\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Modify your cpp class}
-\begin{block}{Part 1}
+\frametitle{Modify your cpp class (Part 1)}
+\begin{block}{}
 
 \begin{itemize}
 
-\item In our case, the read of the parameters will be done by the interpreter() method so the syntax in the data file will be the following:
+\item In our case, the read of the parameters will be done by the interpreter() method. We want to read this syntax from the data:
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.9\textwidth}
 \begin{alltt}
@@ -937,7 +934,7 @@ return is;\\
 \end{minipage}}
 \end{center}
 
-\item Have a look at the "Interprete\_geometrique\_base" sub-class "Extruder" which is very similar to what we want. The data file syntax is:
+ Have a look at the "Interprete\_geometrique\_base" sub-class "Extruder" which is very similar to what we want. The data file syntax is:
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.9\textwidth}
 \begin{alltt}
@@ -955,8 +952,8 @@ return is;\\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Modify your cpp class}
-\begin{block}{Part 1}
+\frametitle{Modify your cpp class (Part 1)}
+\begin{block}{}
 
 \begin{itemize}
 
@@ -967,7 +964,7 @@ return is;\\
 \begin{itemize}
 \item You can have a look at the following method: \\
 Interprete\_geometrique\_base::associer\_domaine ( Nom \& nom\_dom)
-\item Look the HTML documentation.\\
+\item Look for this method on the HTML documentation or via Eclipse.\\
  What is the task of this method? 
 \end{itemize}
 
@@ -979,7 +976,7 @@ Interprete\_geometrique\_base::associer\_domaine ( Nom \& nom\_dom)
 \fbox{ \begin{minipage}[c]{0.9\textwidth}
 \begin{alltt}
 {\bf{Cerr}} <\textcompwordmark{}< "Option number " <\textcompwordmark{}< option\_number <\textcompwordmark{}< " has been read on the
-domain named " <\textcompwordmark{}< ??? <\textcompwordmark{}< {\bf{finl}};
+domain's named " <\textcompwordmark{}< ??? <\textcompwordmark{}< {\bf{finl}};
 \end{alltt}
 \end{minipage}}
 \end{center}
@@ -990,9 +987,9 @@ domain named " <\textcompwordmark{}< ??? <\textcompwordmark{}< {\bf{finl}};
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Modify your cpp class}
+\frametitle{Modify your cpp class (Part 1)}
 
-\begin{block}{Part 1}
+\begin{block}{}
 \begin{itemize}
 \item With Eclipse:
 
@@ -1021,9 +1018,10 @@ domain named " <\textcompwordmark{}< ??? <\textcompwordmark{}< {\bf{finl}};
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{{\bf{Modify your cpp class(Part 2)}}}
 \begin{frame}
-\frametitle{Modify your cpp class}
-\begin{block}{Part 2: Display information about domain boundaries}
+\frametitle{Modify your cpp class (Part 2)}
+\begin{block}{Display information about domain boundaries}
 
 \begin{itemize}
 
@@ -1052,8 +1050,8 @@ Print these information with something like:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Modify your cpp class}
-\begin{block}{Part 2: Compute the sum of the control volumes of a domain discretized in VEF}
+\frametitle{Modify your cpp class (Part 2)}
+\begin{block}{Compute the sum of the control volumes of a domain discretized in VEF}
 \begin{itemize}
 \item Information about control volumes is in the "Zone\_VF" class (a "Zone\_dis" discretized zone) which can't be accessed 
 from the domain, but only from the problem. 
@@ -1084,8 +1082,8 @@ So, you need to read another parameter in your data file:\\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Modify your cpp class}
-\begin{block}{Part 2}
+\frametitle{Modify your cpp class (Part 2)}
+\begin{block}{}
 
 \begin{itemize}
 \item You will need to cast the discretized zone returned by the \textbf{zone\_dis()} method into a "Zone\_VF" object.

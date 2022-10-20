@@ -70,7 +70,7 @@ Read mon_schema
 # Problem definition #
 Pb_hydraulique pb
 
-# Physical characteristcs of medium #
+
 # Association between the different objects #
 Associate pb dom
 Associate pb mon_schema
@@ -83,6 +83,7 @@ Discretize pb ma_discretisation
 Read pb
 {
 
+# Physical characteristcs of medium #
     fluide_incompressible {
         # hydraulic problem #
         # Dynamic viscosity [kg/m/s] #

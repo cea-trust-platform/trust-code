@@ -1,6 +1,6 @@
 dir,paquet,"Outil librairie",Qui,License,"site du produit ","lien pour telecharger",remarque
 General,make-4.0.tar.gz,outil,GF,GPL,http://www.gnu.org/software/make,http://ftp.gnu.org/gnu/make/make-4.0.tar.gz,
-General,ccache-3.1.4.tar.gz,outil,GF,GPL,http://ccache.samba.org,https://ftp.samba.org/pub/ccache/ccache-3.1.4.tar.gz,
+General,ccache-3.1.4.tar.gz,outil,GF,GPL,https://github.com/ccache/ccache,https://github.com/ccache/ccache/releases/download/v3.1.4/ccache-3.1.4.tar.gz,
 General,cppunit-1.12.1.tar.gz,outil,GF,GPL,https://sourceforge.net/projects/cppunit,http://sourceforge.net/projects/cppunit/files/cppunit/1.12.1/cppunit-1.12.1.tar.gz/download,
 General,valgrind-3.18.1.tar.bz2,outil,GF,GPL,http://valgrind.org/info/,https://sourceware.org/ftp/valgrind/valgrind-3.18.1.tar.bz2,
 General,astyle_2.03_linux.tar.gz,outil,GF,LGPL,http://astyle.sourceforge.net/,https://sourceforge.net/projects/astyle/files/astyle/astyle%202.03/astyle_2.03_linux.tar.gz/download,
@@ -8,6 +8,7 @@ General,doxygen-1.7.4.linux.bin.tar.gz,outil,GF,GPL,https://sourceforge.net/proj
 General,doxygen-1.9.3.src.tar.gz,outil,ND,GPL,https://sourceforge.net/projects/doxygen/,https://www.doxygen.nl/files/doxygen-1.9.3.src.tar.gz,
 General,hwloc-2.7.1.tar.gz,,GF,BSD,http://www.open-mpi.org/projects/hwloc/,https://download.open-mpi.org/release/hwloc/v2.7/hwloc-2.7.1.tar.gz,
 General,Vc-1.4.2.tar.gz,,AK,"BSD-3 Clause",https://github.com/VcDevel/Vc,https://github.com/VcDevel/Vc/releases/download/1.4.2/Vc-1.4.2.tar.gz,
+General,rocALUTION-985838b4e.tar.gz,,PL,"MIT License",https://rocalution.readthedocs.io/en/master/,https://github.com/ROCmSoftwarePlatform/rocALUTION,
 MPI,openmpi-2.0.4.tar.gz,,GF,BSD,https://www.open-mpi.org/,https://download.open-mpi.org/release/open-mpi/v2.0/openmpi-2.0.4.tar.gz,
 MPI,mpich-3.2.tar.gz,,SV,"BSD-like license",https://www.mpich.org/,http://www.mpich.org/static/downloads/3.2/mpich-3.2.tar.gz,"pour la licence, verifiez. j'ai tire l'info de http://lists.mpich.org/pipermail/discuss/2014-October/003306.html"
 MPI,osu-micro-benchmarks-3.8.tar,,SV,BSD,https://www.nersc.gov/,https://www.nersc.gov/assets/Trinity--NERSC-8-RFP/Benchmarks/July12/osu-micro-benchmarks-3.8-July12.tar,"Note : pour le site je ne sais si celui ci est mieux ou pas : https://www.nersc.gov/users/computational-systems/cori/nersc-8-procurement/trinity-nersc-8-rfp/nersc-8-trinity-benchmarks/omb-mpi-tests et pour la licence j'ai regarde sur http://mvapich.cse.ohio-state.edu/benchmarks/ "
@@ -62,7 +63,7 @@ petsc,MUMPS_5.3.3-p2.tar.gz,,GF,CeCILL-C,http://mumps.enseeiht.fr/index.php?page
 petsc,scalapack-2.1.0-p2.tgz,,PL,"BSD modified",http://www.netlib.org/scalapack/,http://www.netlib.org/scalapack/scalapack-2.1.0.tgz,
 petsc,metis-5.1.0-p10.tar.gz,,PL,Apache,http://glaros.dtc.umn.edu/gkhome/metis/metis/overview,https://bitbucket.org/petsc/pkg-metis/get/v5.1.0-p10.tar.gz,
 AmgX,AmgXWrapper_331eba32db693528749bd2c46158073079d80972.tar.gz,,PL,MIT,https://github.com/barbagroup/AmgXWrapper
-AmgX,AmgX_6dba8067ca.tar.gz,,PL,BSD 3,https://github.com/NVIDIA/AMGX
+AmgX,AmgX_v2.3.0.tar.gz,,PL,BSD 3,https://github.com/NVIDIA/AMGX
 AmgX,nvc_get_devices.tgz,,GF,LGPL,http://files.salome-platform.org,http://downloads.sourceforge.net/project/trust-platform/1.7.3/extra/nvc_get_devices.tgz,
 gnuplot,gnuplot-5.2.7.tar.gz,outil,AC,specifique,http://gnuplot.sourceforge.net/,http://sourceforge.net/projects/gnuplot/files/gnuplot/5.2.7/gnuplot-5.2.7.tar.gz/download,
 SALOME,medcoupling-9.9.0.tar.gz,,abn,LGPL,http://files.salome-platform.org,,

@@ -94,26 +94,16 @@ Scatter DOM1.Zones dom_solide
 Scatter DOM2.Zones dom_fluide
 END SCATTER #
 {\bf{VEFPreP1B dis}}
-Fluide_Incompressible fluide
-Read fluide
+Fluide_Incompressible
 \{
     mu Champ_Uniforme 1 0.002
     rho Champ_Uniforme 1 2
     lambda Champ_Uniforme 1 1.0 
     Cp Champ_Uniforme 1 500
     beta_th Champ_Uniforme 1 0.0001
+    gravite Uniform_field 2 0 -9.81
 \}
-Solide sol
-Read sol
-\{
-    rho Uniform_Field 1 1000.
-    lambda Champ_Uniforme 1 250.
-    Cp Champ_Uniforme 1 100
-\}
-Uniform_field gravite
-Read gravite 2 0 -9.81
-Associate sol gravite
-Associate fluide gravite
+
 Associate pb1 dom_solide
 Associate pb1 sol
 Associate pb2 dom_fluide
@@ -125,6 +115,12 @@ Associate pbc sch
 Discretize pbc dis
 Read pb1
 \{
+    Solide
+    \{
+        rho Uniform_Field 1 1000.
+        lambda Champ_Uniforme 1 250.
+        Cp Champ_Uniforme 1 100
+    \}
     Conduction
     \{
         diffusion \{ \}
