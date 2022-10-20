@@ -24,30 +24,9 @@
 
 Implemente_instanciable(Masse_VDF_Face,"Masse_VDF_Face",Masse_VDF_base);
 
+Sortie& Masse_VDF_Face::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-//     printOn()
-/////
-
-Sortie& Masse_VDF_Face::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-//// readOn
-//
-
-Entree& Masse_VDF_Face::readOn(Entree& s)
-{
-  return s ;
-}
-
-
-///////////////////////////////////////////////////////////////
-//
-//  Implementation des fonctions de la classe Masse_VDF_Face
-//
-//////////////////////////////////////////////////////////////
-
+Entree& Masse_VDF_Face::readOn(Entree& s) { return s ; }
 
 DoubleTab& Masse_VDF_Face::appliquer_impl(DoubleTab& sm) const
 {

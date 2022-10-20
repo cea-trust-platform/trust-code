@@ -28,7 +28,7 @@ public:
   int has_interface_blocs() const override { return 1; }
   void associer_zone_dis_base(const Zone_dis_base& ) override;
   void associer_zone_cl_dis_base(const Zone_Cl_dis_base& ) override;
-  void check_multiphase_compatibility() const override { };
+  void check_multiphase_compatibility() const override { }
 
 protected:
   REF(Zone_Cl_PolyMAC) la_zone_Cl_PolyMAC;

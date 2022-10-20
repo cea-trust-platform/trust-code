@@ -16,9 +16,10 @@
 #ifndef Masse_PolyMAC_Elem_included
 #define Masse_PolyMAC_Elem_included
 
+#include <Solveur_Masse_Elem_proto.h>
 #include <Masse_PolyMAC_base.h>
 
-class Masse_PolyMAC_Elem : public Masse_PolyMAC_base
+class Masse_PolyMAC_Elem : public Masse_PolyMAC_base, public Solveur_Masse_Elem_proto
 {
   Declare_instanciable(Masse_PolyMAC_Elem);
 public:

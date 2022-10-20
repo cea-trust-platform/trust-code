@@ -16,17 +16,14 @@
 #ifndef Masse_VDF_base_included
 #define Masse_VDF_base_included
 
+#include <Ref_Zone_Cl_VDF.h>
 #include <Solveur_Masse.h>
 #include <Ref_Zone_VDF.h>
-#include <Ref_Zone_Cl_VDF.h>
 
 class Masse_VDF_base : public Solveur_Masse_base
 {
-
   Declare_base(Masse_VDF_base);
-
 public:
-
   void associer_zone_dis_base(const Zone_dis_base& ) override;
   void associer_zone_cl_dis_base(const Zone_Cl_dis_base& ) override;
   inline int has_interface_blocs() const override { return 1; }
@@ -34,11 +31,9 @@ public:
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const override;
 
 protected:
-
-  REF(Zone_VDF) la_zone_VDF;
+  mutable double penalisation_matrice_, penalisation_secmem_;
   REF(Zone_Cl_VDF) la_zone_Cl_VDF;
-  mutable double penalisation_matrice_;
-  mutable double penalisation_secmem_;
+  REF(Zone_VDF) la_zone_VDF;
 };
 
 #endif /* Masse_VDF_base_included */

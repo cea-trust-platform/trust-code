@@ -13,34 +13,11 @@
 *
 *****************************************************************************/
 
-#include <Masse_PolyMAC_Elem.h>
-#include <Zone_Cl_PolyMAC.h>
-#include <Equation_base.h>
-#include <Zone_PolyMAC.h>
+#ifndef Ref_Solveur_Masse_base_included
+#define Ref_Solveur_Masse_base_included
 
-Implemente_instanciable(Masse_PolyMAC_Elem,"Masse_PolyMAC_Elem|Masse_PolyMAC_P0_Elem",Solveur_Masse_base);
+#include <Ref.h>
+class Solveur_Masse_base;
+Declare_ref(Solveur_Masse_base);
 
-Sortie& Masse_PolyMAC_Elem::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
-
-Entree& Masse_PolyMAC_Elem::readOn(Entree& s) { return s ; }
-
-void Masse_PolyMAC_Elem::preparer_calcul()
-{
-  associer_masse_proto(*this, la_zone_PolyMAC.valeur());
-  preparer_calcul_proto();
-}
-
-DoubleTab& Masse_PolyMAC_Elem::appliquer_impl(DoubleTab& sm) const
-{
-  return appliquer_impl_proto(sm);
-}
-
-void Masse_PolyMAC_Elem::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
-{
-  dimensionner_blocs_proto(matrices,semi_impl);
-}
-
-void Masse_PolyMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const
-{
-  ajouter_blocs_proto(matrices, secmem, dt, semi_impl, resoudre_en_increments);
-}
+#endif /* Ref_Solveur_Masse_base_included */

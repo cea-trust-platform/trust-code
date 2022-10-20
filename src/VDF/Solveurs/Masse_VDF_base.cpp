@@ -30,7 +30,6 @@ Sortie& Masse_VDF_base::printOn(Sortie& s) const { return s << que_suis_je() << 
 
 Entree& Masse_VDF_base::readOn(Entree& s) { return s ; }
 
-
 void Masse_VDF_base::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   const std::string& nom_inc = equation().inconnue().le_nom().getString();
@@ -45,7 +44,6 @@ void Masse_VDF_base::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_
       indice(i,0) = indice(i,1) = i;
     }
   mat.dimensionner(indice);
-
 }
 
 void Masse_VDF_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const

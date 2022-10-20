@@ -16,30 +16,17 @@
 #ifndef Masse_VDF_Elem_included
 #define Masse_VDF_Elem_included
 
-
+#include <Solveur_Masse_Elem_proto.h>
 #include <Masse_VDF_base.h>
 
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Masse_VDF_Elem
-//
-//////////////////////////////////////////////////////////////////////////////
-
-class Masse_VDF_Elem : public Masse_VDF_base
+class Masse_VDF_Elem : public Masse_VDF_base, public Solveur_Masse_Elem_proto
 {
-
   Declare_instanciable(Masse_VDF_Elem);
-
 public:
+  void preparer_calcul() override;
   DoubleTab& appliquer_impl(DoubleTab& ) const override;
-
-
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const override;
 };
 
-#endif
-
-
-
-
-
+#endif /* Masse_VDF_Elem_included */

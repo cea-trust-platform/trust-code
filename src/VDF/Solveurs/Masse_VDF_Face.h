@@ -16,28 +16,13 @@
 #ifndef Masse_VDF_Face_included
 #define Masse_VDF_Face_included
 
-
 #include <Masse_VDF_base.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Masse_VDF_Face
-//
-//////////////////////////////////////////////////////////////////////////////
 
 class Masse_VDF_Face : public Masse_VDF_base
 {
-
   Declare_instanciable(Masse_VDF_Face);
-
 public:
   DoubleTab& appliquer_impl(DoubleTab& ) const override;
-
 };
 
-#endif
-
-
-
-
-
+#endif /* Masse_VDF_Face_included */
