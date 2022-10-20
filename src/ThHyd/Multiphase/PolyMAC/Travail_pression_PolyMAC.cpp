@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Travail_pression_PolyMAC.h>
-#include <Zone_PolyMAC.h>
+#include <Zone_VF.h>
 #include <Champ_Elem_PolyMAC.h>
 #include <Array_tools.h>
 #include <Matrix_tools.h>
@@ -25,19 +25,12 @@
 Implemente_instanciable(Travail_pression_PolyMAC,"Travail_pression_Elem_PolyMAC|Travail_pression_Elem_PolyMAC_P0", Source_base);
 // XD travail_pression source_base travail_pression 0 Source term which corresponds to the additional pressure work term that appears when dealing with compressible multiphase fluids
 
-Sortie& Travail_pression_PolyMAC::printOn(Sortie& os) const
-{
-  return os;
-}
-
-Entree& Travail_pression_PolyMAC::readOn(Entree& is)
-{
-  return is;
-}
+Sortie& Travail_pression_PolyMAC::printOn(Sortie& os) const { return os; }
+Entree& Travail_pression_PolyMAC::readOn(Entree& is) { return is; }
 
 void Travail_pression_PolyMAC::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, equation().zone_dis().valeur());
+  const Zone_VF& zone = ref_cast(Zone_VF, equation().zone_dis().valeur());
   const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
   const DoubleTab& inco = equation().inconnue().valeurs();
   int i, j, e, eb, ne = zone.nb_elem(), f,n, N = inco.line_size(), m, M = ref_cast(Pb_Multiphase, equation().probleme()).eq_qdm.pression().valeurs().line_size();
@@ -68,12 +61,12 @@ void Travail_pression_PolyMAC::dimensionner_blocs(matrices_t matrices, const tab
 void Travail_pression_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
-  const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, equation().zone_dis().valeur());
+  const Zone_VF& zone = ref_cast(Zone_VF, equation().zone_dis().valeur());
   const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(), &fs = zone.face_surfaces(), &ve = zone.volumes();
   const Champ_Inc_base& ch_a = pbm.eq_masse.inconnue().valeur(), &ch_v = pbm.eq_qdm.inconnue().valeur(), &ch_p = pbm.eq_qdm.pression().valeur();
   /* trois tableaux de alpha : present / passe et champ convecte (peut etre semi-implicite) */
   const DoubleTab& alpha = ch_a.valeurs(), &c_alpha = semi_impl.count("alpha") ? semi_impl.at("alpha") : alpha, &p_alpha = ch_a.passe(), &press = ch_p.valeurs(), &vit = ch_v.valeurs();
-  const IntTab& fcl = ref_cast(Champ_Elem_PolyMAC, ch_a).fcl(), &f_e = zone.face_voisins();
+  const IntTab& fcl = ref_cast(Champ_Inc_P0_base, ch_a).fcl(), &f_e = zone.face_voisins();
   DoubleTab b_alpha = ch_a.valeur_aux_bords();
   Matrice_Morse *Mp = matrices.count("pression") ? matrices.at("pression") : NULL,
                  *Ma = matrices.count("alpha") && !semi_impl.count("alpha") ? matrices.at("alpha") : NULL,
