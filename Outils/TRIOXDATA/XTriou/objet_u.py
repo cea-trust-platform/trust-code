@@ -1661,8 +1661,7 @@ def write_file_data(name,listclass):
     listproech=[]
     # print "write",listclass
     # Identify 'phases' object if any. It should be written in the 'data' file just before the discretize keyword.
-    pos_phase, pos_discr = -1, -1
-    for idx, c in enumerate(listclass):
+    for c in listclass:
         # print c
         if  isinstance(c,objet_u):
             # is_associate=isinstance(c,associate)
@@ -1670,10 +1669,6 @@ def write_file_data(name,listclass):
 
             if isinstance(c,read) or is_associate:
                 pass
-            elif isinstance(c, phases):
-                pos_phase = idx
-            elif isinstance(c, discretize):
-                pos_discr = idx
             else:
                 c.mode_ecr=c.mode_ecr/abs(c.mode_ecr)
                 # print "mode_ecr",c.name_u,c,c.mode_ecr
@@ -1683,26 +1678,12 @@ def write_file_data(name,listclass):
             print(c)
             throw("pas une classe objet_u ?????")
 
-    if pos_phase != -1 and pos_phase > pos_discr:
-        # [ABN] 'Phases' object should always appear before discretize (block where the forward declaration of the problem is written)
-        # so that  we can write it at the proper place (i.e. just before keyword 'discretize")
-        listclass[pos_phase], listclass[pos_discr]= listclass[pos_discr], listclass[pos_phase]
-
-    phases_txt = None
     for c in listclass:
         # is_associate=isinstance(c,associate)
         is_associate=(c.__class__.name_=="associate")
 
         if isinstance(c,read) or is_associate:
             continue
-        if isinstance(c, phases):
-            phases_txt = c.print_lu(listclass)
-            continue
-        if isinstance(c, discretize) and (pos_phase != -1):
-            discr_txt = c.print_lu(listclass)
-            arr = discr_txt.split("\n")
-            arr.insert(len(arr)-2, phases_txt)
-            s.write("\n".join(arr))
 
         # a=c.print_lu(listclass)
         # print c,a,"l"
