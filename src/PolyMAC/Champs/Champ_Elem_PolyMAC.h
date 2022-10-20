@@ -17,12 +17,8 @@
 #define Champ_Elem_PolyMAC_included
 
 #include <Champ_Inc_P0_base.h>
-#include <Ref_Zone_VF.h>
-#include <Zone_PolyMAC.h>
 #include <Operateur.h>
 #include <Op_Diff_PolyMAC_base.h>
-
-class Zone_PolyMAC;
 
 /*! @brief : class Champ_Elem_PolyMAC
  *
@@ -38,9 +34,6 @@ class Champ_Elem_PolyMAC : public Champ_Inc_P0_base
 
 public :
 
-  const Zone_PolyMAC&        zone_PolyMAC() const;
-  void                         associer_zone_dis_base(const Zone_dis_base&) override;
-  virtual const Zone_dis_base& zone_dis_base() const override;
   Champ_base& affecter_(const Champ_base& ch) override;
   int                       imprime(Sortie& , int ) const override;
 
@@ -52,29 +45,6 @@ public :
   /* fonctions reconstruisant de maniere plus precise le champ aux faces */
   DoubleTab& valeur_aux_faces(DoubleTab& vals) const override;
   inline DoubleTab& trace(const Frontiere_dis_base& fr, DoubleTab& x, double t, int distant) const override;
-
-  //tableaux utilitaires sur les CLs : fcl(f, .) = (type de la CL, no de la CL, indice dans la CL)
-  //types de CL : 0 -> pas de CL
-  //              1 -> Echange_externe_impose
-  //              2 -> Echange_global_impose
-  //              3 -> Echange_contact_PolyMAC
-  //              4 -> Neumann_paroi
-  //              5 -> Neumann_val_ext
-  //              6 -> Dirichlet
-  //              7 -> Dirichlet_homogene
-  inline const IntTab& fcl() const
-  {
-    if (!fcl_init_) init_fcl();
-    return fcl_;
-  }
-
-protected :
-
-  REF(Zone_VF) la_zone_VF;
-
-  void init_fcl() const;
-  mutable IntTab fcl_;
-  mutable int fcl_init_ = 0;
 };
 
 inline DoubleTab& Champ_Elem_PolyMAC::trace(const Frontiere_dis_base& fr, DoubleTab& x, double t, int distant) const
@@ -82,7 +52,7 @@ inline DoubleTab& Champ_Elem_PolyMAC::trace(const Frontiere_dis_base& fr, Double
   /* dimensionnement du tableau de destination x si necessaire */
   const DoubleTab& src = valeurs();
   const Front_VF& fvf = ref_cast(Front_VF, fr);
-  const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, zone_dis_base());
+  const Zone_VF& zone = ref_cast(Zone_VF, zone_dis_base());
   const IntTab& f_e = zone.face_voisins();
 
   DoubleTrav dst; //reconstruction du champ aux faces (on ne le remplit que sur le bord concerne)

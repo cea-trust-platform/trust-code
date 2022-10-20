@@ -17,6 +17,11 @@
 #include <Domaine.h>
 #include <Zone_dis_base.h>
 #include <Frontiere_dis_base.h>
+#include <Zone_Cl_dis.h>
+#include <Dirichlet.h>
+#include <Symetrie.h>
+#include <Dirichlet_homogene.h>
+#include <Neumann_homogene.h>
 
 Implemente_base(Champ_Inc_P0_base,"Champ_Inc_P0_base",Champ_Inc_base);
 
@@ -30,16 +35,6 @@ Entree& Champ_Inc_P0_base::readOn(Entree& is)
 {
   lire_donnees(is) ;
   return is;
-}
-
-Champ_base& Champ_Inc_P0_base::le_champ(void)
-{
-  return *this;
-}
-
-const Champ_base& Champ_Inc_P0_base::le_champ(void) const
-{
-  return *this;
 }
 
 int Champ_Inc_P0_base::fixer_nb_valeurs_nodales(int n)
@@ -71,4 +66,30 @@ Champ_base& Champ_Inc_P0_base::affecter_(const Champ_base& ch)
 DoubleTab& Champ_Inc_P0_base::trace(const Frontiere_dis_base& fr, DoubleTab& x, double tps,int distant) const
 {
   return Champ_implementation_P0::trace(fr, valeurs(tps), x,  distant);
+}
+
+//utilitaires pour CL
+void Champ_Inc_P0_base::init_fcl() const
+{
+  const Conds_lim& cls = ma_zone_cl_dis.valeur().les_conditions_limites();
+  int i, f, n;
+
+  fcl_.resize(la_zone_VF.valeur().nb_faces_tot(), 3);
+  for (n = 0; n < cls.size(); n++)
+    {
+      const Front_VF& fvf = ref_cast(Front_VF, cls[n].frontiere_dis());
+      int idx = (cls[n].valeur().que_suis_je() == "Paroi_echange_externe_impose") + 2 * (cls[n].valeur().que_suis_je() == "Paroi_echange_global_impose")
+                + 4 * (cls[n].valeur().que_suis_je() == "Neumann_paroi")          + 5 * (sub_type(Neumann_homogene, cls[n].valeur()) || (cls[n].valeur().que_suis_je() == "Frontiere_ouverte") || sub_type(Symetrie, cls[n].valeur()))
+                + 6 * sub_type(Dirichlet, cls[n].valeur())                        + 7 * sub_type(Dirichlet_homogene, cls[n].valeur());
+      if ((cls[n].valeur().que_suis_je() == "Paroi_Echange_contact_PolyMAC") || (cls[n].valeur().que_suis_je() == "Paroi_Echange_contact_PolyMAC_P0") || (cls[n].valeur().que_suis_je() == "Echange_contact_VDF"))
+        idx = 3;
+      if (!idx)
+        {
+          Cerr << "Champ_Inc_P0_base : CL non codee rencontree! " << cls[n].valeur().que_suis_je() << finl;
+          Process::exit();
+        }
+      for (i = 0; i < fvf.nb_faces_tot(); i++)
+        f = fvf.num_face(i), fcl_(f, 0) = idx, fcl_(f, 1) = n, fcl_(f, 2) = i;
+    }
+  fcl_init_ = 1;
 }

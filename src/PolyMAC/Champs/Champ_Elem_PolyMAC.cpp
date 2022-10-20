@@ -17,12 +17,6 @@
 #include <Zone_Cl_dis.h>
 #include <Zone_Cl_PolyMAC.h>
 #include <Domaine.h>
-#include <Dirichlet.h>
-#include <Symetrie.h>
-#include <Dirichlet_homogene.h>
-#include <Neumann_paroi.h>
-#include <Echange_contact_PolyMAC.h>
-#include <Echange_contact_PolyMAC_P0.h>
 #include <Connectivite_som_elem.h>
 #include <Dirichlet_homogene.h>
 #include <Champ_Elem_PolyMAC.h>
@@ -30,10 +24,10 @@
 #include <MD_Vector_base.h>
 #include <Neumann_paroi.h>
 #include <Equation_base.h>
-#include <Zone_Cl_dis.h>
 #include <Dirichlet.h>
 #include <Symetrie.h>
 #include <array>
+#include <Zone_PolyMAC.h>
 
 Implemente_instanciable(Champ_Elem_PolyMAC,"Champ_Elem_PolyMAC",Champ_Inc_P0_base);
 
@@ -43,31 +37,6 @@ Entree& Champ_Elem_PolyMAC::readOn(Entree& s)
 {
   lire_donnees(s) ;
   return s ;
-}
-
-/*! @brief
- *
- */
-const Zone_dis_base& Champ_Elem_PolyMAC::zone_dis_base() const
-{
-  return la_zone_VF.valeur();
-}
-/*! @brief
- *
- * @return (z_dis) la zone discretise
- */
-void Champ_Elem_PolyMAC::associer_zone_dis_base(const Zone_dis_base& z_dis)
-{
-  la_zone_VF=ref_cast(Zone_VF, z_dis);
-}
-
-/*! @brief
- *
- * @return (la_zone_PolyMAC_P0.valeur())
- */
-const Zone_PolyMAC& Champ_Elem_PolyMAC::zone_PolyMAC() const
-{
-  return ref_cast(Zone_PolyMAC, la_zone_VF.valeur());
 }
 
 int Champ_Elem_PolyMAC::imprime(Sortie& os, int ncomp) const
@@ -149,32 +118,6 @@ Champ_base& Champ_Elem_PolyMAC::affecter_(const Champ_base& ch)
       valeurs().echange_espace_virtuel();
     }
   return *this;
-}
-
-//utilitaires pour CL
-void Champ_Elem_PolyMAC::init_fcl() const
-{
-  const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,la_zone_VF.valeur());
-  const Conds_lim& cls = ma_zone_cl_dis.valeur().les_conditions_limites();
-  int i, f, n;
-
-  fcl_.resize(zone.nb_faces_tot(), 3);
-  for (n = 0; n < cls.size(); n++)
-    {
-      const Front_VF& fvf = ref_cast(Front_VF, cls[n].frontiere_dis());
-      int idx = sub_type(Echange_externe_impose, cls[n].valeur()) + 2 * sub_type(Echange_global_impose, cls[n].valeur())
-                + 4 * sub_type(Neumann_paroi, cls[n].valeur())      + 5 * (sub_type(Neumann_homogene, cls[n].valeur()) || sub_type(Neumann_sortie_libre, cls[n].valeur()) || sub_type(Symetrie, cls[n].valeur()))
-                + 6 * sub_type(Dirichlet, cls[n].valeur())          + 7 * sub_type(Dirichlet_homogene, cls[n].valeur());
-      if (sub_type(Echange_contact_PolyMAC, cls[n].valeur()) || sub_type(Echange_contact_PolyMAC_P0, cls[n].valeur())) idx = 3;
-      if (!idx)
-        {
-          Cerr << "Champ_Elem_PolyMAC : CL non codee rencontree!" << finl;
-          Process::exit();
-        }
-      for (i = 0; i < fvf.nb_faces_tot(); i++)
-        f = fvf.num_face(i), fcl_(f, 0) = idx, fcl_(f, 1) = n, fcl_(f, 2) = i;
-    }
-  fcl_init_ = 1;
 }
 
 DoubleTab& Champ_Elem_PolyMAC::valeur_aux_faces(DoubleTab& dst) const

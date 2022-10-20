@@ -18,6 +18,8 @@
 
 #include <Champ_Inc_base.h>
 #include <Champ_implementation_P0.h>
+#include <Ref_Zone_VF.h>
+#include <Zone_VF.h>
 
 /*! @brief : class Champ_Inc_P0_base
  *
@@ -32,11 +34,20 @@ class Champ_Inc_P0_base : public Champ_Inc_base, public Champ_implementation_P0
 
   Declare_base(Champ_Inc_P0_base);
 
-protected :
-  Champ_base& le_champ(void) override      ;
-  const Champ_base& le_champ(void) const override;
+protected:
+  Champ_base& le_champ(void) override { return *this; }
+  const Champ_base& le_champ(void) const override { return *this; }
+
+  REF(Zone_VF)
+  la_zone_VF;
+  virtual void init_fcl() const;
+  mutable IntTab fcl_;
+  mutable int fcl_init_ = 0;
 
 public :
+  const Zone_dis_base& zone_dis_base() const override { return la_zone_VF.valeur(); }
+  void associer_zone_dis_base(const Zone_dis_base& z_dis) override { la_zone_VF = ref_cast(Zone_VF, z_dis); }
+
   inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const override;
   inline double valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const override;
   inline DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const override;
@@ -48,6 +59,22 @@ public :
   DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&, double,int distant ) const override;
   Champ_base& affecter_(const Champ_base& ) override ;
   int fixer_nb_valeurs_nodales(int n) override;
+
+  //tableaux utilitaires sur les CLs : fcl(f, .) = (type de la CL, no de la CL, indice dans la CL)
+  //types de CL : 0 -> pas de CL
+  //              1 -> Echange_externe_impose
+  //              2 -> Echange_global_impose
+  //              3 -> Echange_contact_PolyMAC
+  //              4 -> Neumann_paroi
+  //              5 -> Neumann_val_ext
+  //              6 -> Dirichlet
+  //              7 -> Dirichlet_homogene
+  inline const IntTab& fcl() const
+  {
+    if (!fcl_init_) init_fcl();
+    return fcl_;
+  }
+
 };
 
 inline DoubleVect& Champ_Inc_P0_base::valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const
