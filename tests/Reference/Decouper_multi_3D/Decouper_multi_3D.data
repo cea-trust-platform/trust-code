@@ -1,0 +1,144 @@
+# Lecture de plusieurs maillages issus de Fluent #
+# PARALLEL OK 4 #
+dimension 3
+
+# Lecture du premier fichier Tgrid #
+domaine dom1
+# lecture du second fichier Tgrid #
+domaine dom2
+
+# BEGIN MESH #
+lire_tgrid dom1 cylindre-tetra.msh
+lire_tgrid dom2 cylindre-hexa.msh
+Precisiongeom 1.e-5
+tetraedriser_homogene_compact dom2
+VerifierCoin dom1 { }
+# END MESH #
+
+# BEGIN PARTITION
+system "rm -rf decoup; mkdir -p decoup"
+Decouper_multi
+{
+    domaine dom1
+    {
+        partitionneur metis { nb_parts 2 }
+        nb_parts_tot 2
+        Larg_joint 2
+        Nom_Zones decoup/dom1
+        ecrire_decoupage decoup/dom1.txt
+    }
+    domaine dom2
+    {
+        partitionneur metis { nb_parts 2 }
+        nb_parts_tot 2
+        Larg_joint 2
+        Nom_Zones decoup/dom2
+        ecrire_decoupage decoup/dom2.txt
+    }  
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter decoup/dom1.Zones dom1
+Scatter decoup/dom2.Zones dom2
+END SCATTER #
+
+VEFPreP1B dis
+Scheme_euler_explicit sch
+Read sch
+{
+    nb_pas_dt_max 2
+    tinit 0.
+    tmax 1200
+    dt_min 0.001
+    dt_max 1
+    dt_impr 0.01
+    dt_sauv 100
+    seuil_statio 1.e-3
+}
+
+Pb_Hydraulique pb1
+Pb_Hydraulique pb2
+Associate pb1 dom1
+Associate pb2 dom2
+
+Probleme_Couple pbc
+Associate pbc pb1
+Associate pbc pb2
+Associate pbc sch
+Discretize pbc dis
+
+Read pb1
+{
+Fluide_Incompressible
+{
+    mu Champ_Uniforme 1 1.85e-5
+    rho Champ_Uniforme 1 1.17
+    lambda Champ_Uniforme 1 0.0262
+}
+
+
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP { precond ssor { omega 1.65 } seuil 1.e-12 }
+        convection { muscl }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Uniforme 3 0 0 0
+        }
+        boundary_conditions {
+            wall_lateral paroi_fixe
+            inlet frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 3 1 0 0
+            outlet frontiere_ouverte_pression_imposee Champ_Front_Uniforme  1 0
+            cylindre paroi_fixe
+        }
+    }
+
+    Post_processing
+    {
+            format lml
+            fields dt_post 0.01
+            {
+                pression elem
+                vitesse som
+            }
+    }
+}
+Read pb2
+{
+Fluide_Incompressible
+{
+    mu Champ_Uniforme 1 1.85e-5
+    rho Champ_Uniforme 1 1.17
+    lambda Champ_Uniforme 1 0.0262
+}
+
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP { precond ssor { omega 1.65 } seuil 1.e-12 }
+        convection { muscl }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Uniforme 3 0 0 0
+        }
+        boundary_conditions {
+            wall paroi_fixe
+            inlet frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 3 1 0 0
+            outlet frontiere_ouverte_pression_imposee Champ_Front_Uniforme  1 0
+            cylindre paroi_fixe
+        }
+    }
+
+    Post_processing
+    {
+            format lml
+            fields dt_post 0.01
+            {
+                pression elem
+                vitesse som
+            }
+    }
+}
+Solve pbc
+End
