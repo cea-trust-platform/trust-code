@@ -38,8 +38,7 @@ protected:
   Champ_base& le_champ(void) override { return *this; }
   const Champ_base& le_champ(void) const override { return *this; }
 
-  REF(Zone_VF)
-  la_zone_VF;
+  REF(Zone_VF) la_zone_VF;
   virtual void init_fcl() const;
   mutable IntTab fcl_;
   mutable int fcl_init_ = 0;

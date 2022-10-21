@@ -29,13 +29,12 @@
 #include <Champ_Fonc_Face.h>
 #include <Matrice_Morse_Sym.h>
 #include <Milieu_base.h>
+#include <Matrix_tools.h>
+#include <Pb_Multiphase.h>
 
 Implemente_instanciable_sans_constructeur(Assembleur_P_VDF,"Assembleur_P_VDF",Assembleur_base);
 
-Assembleur_P_VDF::Assembleur_P_VDF() :
-  has_P_ref(0)
-{
-}
+Assembleur_P_VDF::Assembleur_P_VDF() : has_P_ref(0) { }
 
 Sortie& Assembleur_P_VDF::printOn(Sortie& s ) const
 {
@@ -778,6 +777,34 @@ int Assembleur_P_VDF::assembler_QC(const DoubleTab& tab_rho, Matrice& matrice)
     }
   return 1;
 }
+
+/* equation sum_k alpha_k = 1 en Pb_Multiphase */
+void Assembleur_P_VDF::dimensionner_continuite(matrices_t matrices, int aux_only) const
+{
+  if (aux_only) return; //rien a faire
+  int e, n, N = ref_cast(Pb_Multiphase, la_zone_Cl_VDF->equation().probleme()).nb_phases(), ne_tot = la_zone_VDF->nb_elem_tot();
+  IntTrav stencil(0, 2);
+  stencil.set_smart_resize(1);
+  for (e = 0; e < la_zone_VDF->nb_elem(); e++)
+    for (n = 0; n < N; n++) stencil.append_line(e, N * e + n);
+  Matrix_tools::allocate_morse_matrix(ne_tot, N * ne_tot, stencil, *matrices.at("alpha"));
+}
+
+void Assembleur_P_VDF::assembler_continuite(matrices_t matrices, DoubleTab& secmem, int aux_only) const
+{
+  if (aux_only) return;
+  const DoubleTab& alpha = ref_cast(Pb_Multiphase, la_zone_Cl_VDF->equation().probleme()).eq_masse.inconnue().valeurs();
+  Matrice_Morse& mat = *matrices.at("alpha");
+  const DoubleVect& ve = la_zone_VDF->volumes(), &pe = la_zone_Cl_VDF->equation().milieu().porosite_elem();
+  int e, n, N = alpha.line_size();
+  /* second membre : on multiplie par porosite * volume pour que le systeme en P soit symetrique en cartesien */
+  for (e = 0; e < la_zone_VDF->nb_elem(); e++)
+    for (secmem(e) = -pe(e) * ve(e), n = 0; n < N; n++) secmem(e) += pe(e) * ve(e) * alpha(e, n);
+  /* matrice */
+  for (e = 0; e < la_zone_VDF->nb_elem(); e++)
+    for (n = 0; n < N; n++) mat(e, N * e + n) = -pe(e) * ve(e);
+}
+
 
 const Zone_dis_base& Assembleur_P_VDF::zone_dis_base() const
 {

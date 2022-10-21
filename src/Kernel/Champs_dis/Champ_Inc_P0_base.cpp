@@ -15,6 +15,7 @@
 
 #include <Champ_Inc_P0_base.h>
 #include <Domaine.h>
+#include <Equation_base.h>
 #include <Zone_dis_base.h>
 #include <Frontiere_dis_base.h>
 #include <Zone_Cl_dis.h>
@@ -78,7 +79,8 @@ void Champ_Inc_P0_base::init_fcl() const
   const Conds_lim& cls = ma_zone_cl_dis.valeur().les_conditions_limites();
   int i, f, n;
 
-  fcl_.resize(la_zone_VF.valeur().nb_faces_tot(), 3);
+  const Zone_VF& zone = ref_cast(Zone_VF, mon_equation->zone_dis().valeur());
+  fcl_.resize(zone.nb_faces_tot(), 3);
   for (n = 0; n < cls.size(); n++)
     {
       const Front_VF& fvf = ref_cast(Front_VF, cls[n].frontiere_dis());

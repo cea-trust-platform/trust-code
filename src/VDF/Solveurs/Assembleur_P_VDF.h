@@ -30,32 +30,30 @@ class Neumann_sortie_libre;
 class Entree_fluide_vitesse_imposee;
 class Front_VF;
 
-class Assembleur_P_VDF : public Assembleur_base
+class Assembleur_P_VDF: public Assembleur_base
 {
   Declare_instanciable(Assembleur_P_VDF);
 
 public:
-  void associer_zone_dis_base(const Zone_dis_base& ) override                ;
-  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& ) override          ;
-  const Zone_dis_base& zone_dis_base() const override                        ;
-  const Zone_Cl_dis_base& zone_Cl_dis_base() const override                  ;
-  int assembler(Matrice&) override                                        ;
-  int assembler_mat(Matrice&,const DoubleVect&,int incr_pression,int resoudre_en_u) override ;
+  void associer_zone_dis_base(const Zone_dis_base&) override;
+  void associer_zone_cl_dis_base(const Zone_Cl_dis_base&) override;
+  const Zone_dis_base& zone_dis_base() const override;
+  const Zone_Cl_dis_base& zone_Cl_dis_base() const override;
+  int assembler(Matrice&) override;
+  int assembler_mat(Matrice&, const DoubleVect&, int incr_pression, int resoudre_en_u) override;
   int assembler_rho_variable(Matrice&, const Champ_Don_base& rho) override;
-  int assembler_QC(const DoubleTab&, Matrice&) override                   ;
-  int modifier_secmem(DoubleTab&) override                                ;
-  int modifier_solution(DoubleTab&) override                              ;
-  void completer(const Equation_base& ) override                             ;
+  int assembler_QC(const DoubleTab&, Matrice&) override;
+  int modifier_secmem(DoubleTab&) override;
+  int modifier_solution(DoubleTab&) override;
+  void completer(const Equation_base&) override;
+  void dimensionner_continuite(matrices_t matrices, int aux_only = 0) const override;
+  void assembler_continuite(matrices_t matrices, DoubleTab& secmem, int aux_only = 0) const override;
 
 protected:
   int construire(Matrice& la_matrice);
-  int remplir   (Matrice& la_matrice, const DoubleVect& volumes_entrelaces,const Champ_Don_base * rho_ptr);
-  void modifier_secmem_pression_imposee(const Neumann_sortie_libre& cond_lim,
-                                        const Front_VF& frontiere_vf,
-                                        DoubleTab& secmem);
-  void modifier_secmem_vitesse_imposee(const Entree_fluide_vitesse_imposee& cond_lim,
-                                       const Front_VF& frontiere_vf,
-                                       DoubleTab& secmem);
+  int remplir(Matrice& la_matrice, const DoubleVect& volumes_entrelaces, const Champ_Don_base *rho_ptr);
+  void modifier_secmem_pression_imposee(const Neumann_sortie_libre& cond_lim, const Front_VF& frontiere_vf, DoubleTab& secmem);
+  void modifier_secmem_vitesse_imposee(const Entree_fluide_vitesse_imposee& cond_lim, const Front_VF& frontiere_vf, DoubleTab& secmem);
   int liste_faces_periodiques(ArrOfInt& faces);
 
   REF(Zone_VDF) la_zone_VDF;
