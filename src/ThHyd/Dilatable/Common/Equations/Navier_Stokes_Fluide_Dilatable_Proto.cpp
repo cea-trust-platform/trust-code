@@ -284,11 +284,7 @@ void Navier_Stokes_Fluide_Dilatable_Proto::assembler_blocs_avec_inertie(const Na
   // on resout en rho u on stocke donc rho u dans present
   rho_vitesse_impl(tab_rho_face_np1,present,ref_cast_non_const(DoubleTab,present));
   mat->ajouter_multvect(present,secmem);
-
-  DoubleTab tmp(secmem);
-  tmp = 0.0;
-  eqn.operateur_gradient().valeur().ajouter_blocs(matrices, tmp, semi_impl);
-  secmem-=tmp;
+  eqn.operateur_gradient().valeur().ajouter_blocs(matrices, secmem, semi_impl);
 
   /*
    * contribution a la matrice de l'inertie :
