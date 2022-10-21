@@ -25,6 +25,7 @@
 #include <Zone_VF.h>
 
 Implemente_instanciable(Milieu_composite, "Milieu_composite", Fluide_base);
+// XD liste_mil listobj liste_mil -1 milieu_base 0 Composite medium made of several sub mediums.
 
 Entree& Milieu_composite::readOn(Entree& is)
 {

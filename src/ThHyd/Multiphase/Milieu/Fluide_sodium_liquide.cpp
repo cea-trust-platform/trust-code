@@ -16,7 +16,7 @@
 #include <Fluide_sodium_liquide.h>
 
 Implemente_instanciable(Fluide_sodium_liquide, "Fluide_sodium_liquide", Fluide_reel_base);
-// XD Fluide_sodium_liquide fluide_reel_base Fluide_sodium_liquide -1 Class for Fluide_sodium_liquide
+// XD fluide_sodium_liquide fluide_reel_base fluide_sodium_liquide -1 Class for Fluide_sodium_liquide
 // XD attr P_ref floattant P_ref 1 Use to set the pressure value in the closure law. If not specified, the value of the pressure unknown will be used
 // XD attr T_ref floattant T_ref 1 Use to set the temperature value in the closure law. If not specified, the value of the temperature unknown will be used
 

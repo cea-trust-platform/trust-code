@@ -60,23 +60,23 @@ Read sch
     nb_pas_dt_max 10
 }
 
-Fluide_Incompressible air
-Read air
-{
-    mu Champ_Uniforme       1 2.21799454e-04
-    rho Champ_Uniforme      1 943.112976
-    lambda Champ_Uniforme   1 0.806537897
-    Cp Champ_Uniforme       1 4238.62106
-    beta_th Champ_Uniforme  1 8.6e-4
-}
+
 
 Associate pb dom
 Associate pb sch
-Associate pb air
 
 Discretize pb dis
 Read pb
 {
+    Fluide_Incompressible
+    {
+        mu Champ_Uniforme       1 2.21799454e-04
+        rho Champ_Uniforme      1 943.112976
+        lambda Champ_Uniforme   1 0.806537897
+        Cp Champ_Uniforme       1 4238.62106
+        beta_th Champ_Uniforme  1 8.6e-4
+    }
+
     Navier_Stokes_Standard
     {
 solveur_pression petsc gcp { precond ssor { omega 1.6 } _reorder_matrix_ rtol 1.e-8 impr cli { -mat_view draw:image:matrix } }

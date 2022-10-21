@@ -37,17 +37,20 @@ Entree& Pb_Conduction_Scalaires_Passifs::readOn(Entree& is) { return TRUSTProble
 
 // XD pb_thermohydraulique_concentration_scalaires_passifs pb_avec_passif pb_thermohydraulique_concentration_scalaires_passifs -1 Resolution of Navier-Stokes/energy/multiple constituent transport equations, with the additional passive scalar equations.
 // XD attr fluide_incompressible fluide_incompressible fluide_incompressible 0 The fluid medium associated with the problem.
+// XD attr constituant constituant constituant 1 Constituents.
 // XD attr navier_stokes_standard navier_stokes_standard navier_stokes_standard 1 Navier-Stokes equations.
 // XD attr convection_diffusion_concentration convection_diffusion_concentration convection_diffusion_concentration 1 Constituent transport equations (concentration diffusion convection).
 // XD attr convection_diffusion_temperature convection_diffusion_temperature convection_diffusion_temperature 1 Energy equations (temperature diffusion convection).
 
 // XD pb_thermohydraulique_scalaires_passifs pb_avec_passif pb_thermohydraulique_scalaires_passifs -1 Resolution of thermohydraulic problem, with the additional passive scalar equations.
 // XD attr fluide_incompressible fluide_incompressible fluide_incompressible 0 The fluid medium associated with the problem.
+// XD attr constituant constituant constituant 1 Constituents.
 // XD attr navier_stokes_standard navier_stokes_standard navier_stokes_standard 1 Navier-Stokes equations.
 // XD attr convection_diffusion_temperature convection_diffusion_temperature convection_diffusion_temperature 1 Energy equations (temperature diffusion convection).
 
 // XD pb_hydraulique_concentration_scalaires_passifs pb_avec_passif pb_hydraulique_concentration_scalaires_passifs -1 Resolution of Navier-Stokes/multiple constituent transport equations with the additional passive scalar equations.
 // XD attr fluide_incompressible fluide_incompressible fluide_incompressible 0 The fluid medium associated with the problem.
+// XD attr constituant constituant constituant 1 Constituents.
 // XD attr navier_stokes_standard navier_stokes_standard navier_stokes_standard 1 Navier-Stokes equations.
 // XD attr convection_diffusion_concentration convection_diffusion_concentration convection_diffusion_concentration 1 Constituent transport equations (concentration diffusion convection).
 

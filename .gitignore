@@ -87,3 +87,9 @@ doc/tmp_files
 # Jupyter
 .ipynb_checkpoints/
 
+# Various
+Outils/VisIt/visit-install3_3_0/
+ThirdPart/src/LIBROCALUTION/rocALUTION/
+Outils/valgrind/configure.help
+Outils/valgrind/valgrind-3.18.1/
+

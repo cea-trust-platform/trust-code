@@ -454,7 +454,10 @@ penalisation_l2_ftd listobj pp 1 penalisation_l2_ftd_lec 0 not_set
 convection_diffusion_temperature eqn_base convection_diffusion_temperature -1 Energy equation (temperature diffusion convection).
   attr penalisation_l2_ftd penalisation_l2_ftd penalisation_l2_ftd 1 to activate or not (the default is Direct Forcing method) the Penalized Direct Forcing method to impose the specified temperature on the solid-fluid interface.
 pb_thermohydraulique Pb_base pb_thermohydraulique -1 Resolution of thermohydraulic problem.
-  attr fluide_incompressible fluide_incompressible fluide_incompressible 0 The fluid medium associated with the problem.
+  attr fluide_incompressible fluide_incompressible fluide_incompressible 1 The fluid medium associated with the problem (only one possibility).
+  attr fluide_ostwald fluide_ostwald fluide_ostwald 1 The fluid medium associated with the problem (only one possibility).
+  attr fluide_sodium_liquide fluide_sodium_liquide fluide_sodium_liquide 1 The fluid medium associated with the problem (only one possibility).
+  attr fluide_sodium_gaz fluide_sodium_gaz fluide_sodium_gaz 1 The fluid medium associated with the problem (only one possibility).
   attr navier_stokes_standard navier_stokes_standard navier_stokes_standard 1 Navier-Stokes equations.
   attr convection_diffusion_temperature convection_diffusion_temperature convection_diffusion_temperature 1 Energy equation (temperature diffusion convection).
 pb_hydraulique Pb_base pb_hydraulique -1 Resolution of the Navier-Stokes equations.
@@ -926,6 +929,7 @@ convection_diffusion_concentration eqn_base convection_diffusion_concentration -
   attr masse_molaire floattant masse_molaire 1 not_set
   attr alias chaine alias 1 not_set
 pb_hydraulique_concentration Pb_base pb_hydraulique_concentration -1 Resolution of Navier-Stokes/multiple constituent transport equations.
+  attr fluide_incompressible fluide_incompressible fluide_incompressible 0 The fluid medium associated with the problem.
   attr constituant constituant constituant 1 Constituents.
   attr navier_stokes_standard navier_stokes_standard navier_stokes_standard 1 Navier-Stokes equations.
   attr convection_diffusion_concentration convection_diffusion_concentration convection_diffusion_concentration 1 Constituent transport vectorial equation (concentration diffusion convection).
