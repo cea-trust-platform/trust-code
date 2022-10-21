@@ -38,6 +38,7 @@ class Op_Conv_Amont_VDF_Face : public Op_Conv_VDF_base, public Op_Conv_VDF<Op_Co
   Declare_instanciable_sans_constructeur(Op_Conv_Amont_VDF_Face);
 public:
   Op_Conv_Amont_VDF_Face();
+  void check_multiphase_compatibility() const override { }
   inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { modifier_pour_Cl_face(matrice,secmem); }
   inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd,const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_CONV_FACE,Eval_Amont_VDF_Face>(zd,zcd,ch); }
   inline void associer_vitesse(const Champ_base& ch_vit) override { associer_vitesse_impl<Eval_Amont_VDF_Face>(ch_vit); }
@@ -50,6 +51,11 @@ public:
     dimensionner_face(mat2);
     mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
   }
+  void set_incompressible(const int flag) override
+  {
+    incompressible_ = flag;
+  }
+
 };
 
 declare_It_VDF_Face(Eval_Centre_VDF_Face)

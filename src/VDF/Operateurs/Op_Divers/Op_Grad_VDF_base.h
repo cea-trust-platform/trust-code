@@ -28,6 +28,7 @@ class Op_Grad_VDF_base : public Operateur_Grad_base
 public:
   inline Op_Grad_VDF_base(const Iterateur_VDF_base& iter_base) : iter(iter_base) { }
 
+  void check_multiphase_compatibility() const override { }
   void completer() override;
   int impr(Sortie& os) const override;
 
