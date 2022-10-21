@@ -28,6 +28,11 @@
 #include <Operateur.h>
 #include <Param.h>
 #include <LecFicDiffuse_JDD.h>
+#include <Create_domain_from_sous_zone.h>
+#include <Sous_Zone.h>
+#include <EChaine.h>
+#include <Interprete_bloc.h>
+
 
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Postraitement,"Postraitement|Post_processing",Postraitement_base);
@@ -343,6 +348,7 @@ void Postraitement::set_param(Param& param)
   param.ajouter("Fichier",&nom_fich_); // XD_ADD_P chaine Name of file.
   param.ajouter("Format",&format); // XD_ADD_P chaine(into=["lml","lata","lata_v2","med","med_major"]) This optional parameter specifies the format of the output file. The basename used for the output file is the basename of the data file. For the fmt parameter, choices are lml or lata. A short description of each format can be found below. The default value is lml.
   param.ajouter_non_std("Domaine",(this)); // XD_ADD_P chaine This optional parameter specifies the domain on which the data should be interpolated before it is written in the output file. The default is to write the data on the domain of the current problem (no interpolation).
+  param.ajouter_non_std("Sous_zone",(this)); // XD_ADD_P chaine This optional parameter specifies the sous_zone on which the data should be interpolated before it is written in the output file. The default is to write the data on the whole domain of the current problem (no interpolation).
   param.ajouter("Parallele",&option_para); // XD_ADD_P chaine(into=["simple","multiple","mpi-io"]) Select simple (single file, sequential write), multiple (several files, parallel write), or mpi-io (single file, parallel write) for LATA format
   param.ajouter_non_std("Definition_champs",(this));// XD_ADD_P definition_champs  Keyword to create new or more complex field for advanced postprocessing.
   param.ajouter_non_std("Definition_champs_fichier|Definition_champs_file",(this));// XD_ADD_P Definition_champs_fichier  Definition_champs read from file.
@@ -466,6 +472,51 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
       Nom nom_du_domaine;
       s >> nom_du_domaine;
       le_domaine=ref_cast(Domaine,Interprete::objet(nom_du_domaine));
+      return 1;
+    }
+  else if (mot=="Sous_zone")
+    {
+      // Sanity check
+      if ((champs_demande_) || (stat_demande_))
+        {
+          Cerr<<"The sous_zone must be specified before reading Champs and Statistiques blocks "<<finl;
+          exit();
+        }
+
+      // Recuperation de la sous-zone
+      Nom nom_de_la_sous_zone;
+      s >> nom_de_la_sous_zone;
+      Sous_Zone la_sous_zone;
+      if (!Interprete_bloc::objet_global_existant(nom_de_la_sous_zone))
+        {
+          Cerr << "Unknown sous_zone : " << nom_de_la_sous_zone << finl;
+          Process::exit();
+        }
+      la_sous_zone=ref_cast(Sous_Zone,Interprete_bloc::objet_global(nom_de_la_sous_zone));
+
+      // Declaration du domaine
+      Nom nom_du_dom("dom_");
+      nom_du_dom += nom_de_la_sous_zone;
+
+      Nom in("domaine ");
+      in += nom_du_dom;
+
+      EChaine IN(in);
+      Interprete_bloc::interprete_courant().interpreter_bloc(IN, Interprete_bloc::BLOC_EOF, 0);
+
+      // Definition du domaine a partir de la sous-zone
+      in = "Create_domain_from_sous_zone { domaine_final ";
+      in += nom_du_dom;
+      in += " par_sous_zone ";
+      in += nom_de_la_sous_zone;
+      in += " domaine_init ";
+      in += la_sous_zone.zone().domaine().le_nom();
+      in += " } ";
+
+      EChaine IN2(in);
+      Interprete_bloc::interprete_courant().interpreter_bloc(IN2, Interprete_bloc::BLOC_EOF, 0);
+      le_domaine=ref_cast(Domaine,Interprete_bloc::objet_global(nom_du_dom));
+
       return 1;
     }
   else if (mot=="Sondes_Int")

@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.1_beta : Enhancements, modifications and corrected bugs since version 1.9.0 :
 --------------------------------------------------------------------------------------------------
+24/10/22 (TRUST)  New option  : Post-processing can now be done on a sub-zone of the domain
 19/10/22 (TRUST)  Portability : Cygwin build on Windows is supported (but not regularly tested yet)
 19/10/22 (TRUST)  New keyword : Keyword "muscl_new" VEF convective scheme which really respect monotonicity contrary to "muscl" one, though at higher CPU cost for the moment: see QC_temperature_bounds_MUSCL validation sheet
 19/10/22 (TRUST)  New solvers : Add rocALUTION library for CPU and/or AMD GPU (need ROCm 5.x recent environment). Syntax: solveur_pression rocALUTION gcp|gmres|... { precond ... { ... } seuil ... }
