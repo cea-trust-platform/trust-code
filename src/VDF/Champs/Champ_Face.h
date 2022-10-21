@@ -58,20 +58,11 @@ public:
   inline DoubleTab& tau_diag() { return tau_diag_; }
   inline DoubleTab& tau_croises() { return tau_croises_; }
   void dimensionner_tenseur_Grad();
-  void calculer_dercov_axi(const Zone_Cl_VDF&);
   void calculer_rotationnel_ordre2_centre_element(DoubleTab&) const;
   int imprime(Sortie&, int) const override;
   DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&, double, int distant) const override;
   void mettre_a_jour(double temps) override;
 
-  inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const override;
-  inline double valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const override;
-  inline DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& tab_valeurs) const override;
-  inline DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& tab_valeurs, int ncomp) const override;
-  inline DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const override;
-  inline DoubleVect& valeur_aux_sommets_compo(const Domaine&, DoubleVect&, int) const override;
-  inline DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const override;
-  inline int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const override;
   void calculer_dscald_centre_element(DoubleTab&) const;
 
   void calcul_critere_Q(DoubleTab&, const Zone_Cl_VDF&);
@@ -82,6 +73,48 @@ public:
   DoubleTab& calcul_duidxj(const DoubleTab&, DoubleTab&, const Zone_Cl_VDF&) const;
   DoubleVect& calcul_S_barre(const DoubleTab&, DoubleVect&, const Zone_Cl_VDF&) const;
   DoubleVect& calcul_S_barre_sans_contrib_paroi(const DoubleTab&, DoubleVect&, const Zone_Cl_VDF&) const;
+  void calculer_dercov_axi(const Zone_Cl_VDF&);
+
+  // methodes inlines
+  inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const override
+  {
+    return Champ_Face_implementation::valeur_a_elem(position, val, le_poly);
+  }
+
+  inline double valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const override
+  {
+    return Champ_Face_implementation::valeur_a_elem_compo(position, le_poly, ncomp);
+  }
+
+  inline DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& tab_valeurs) const override
+  {
+    return Champ_Face_implementation::valeur_aux_elems(positions, les_polys, tab_valeurs);
+  }
+
+  inline DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& tab_valeurs, int ncomp) const override
+  {
+    return Champ_Face_implementation::valeur_aux_elems_compo(positions, les_polys, tab_valeurs, ncomp);
+  }
+
+  inline DoubleTab& valeur_aux_sommets(const Domaine& dom, DoubleTab& val) const override
+  {
+    return Champ_Face_implementation::valeur_aux_sommets(dom, val);
+  }
+
+  inline DoubleVect& valeur_aux_sommets_compo(const Domaine& dom, DoubleVect& val, int comp) const override
+  {
+    return Champ_Face_implementation::valeur_aux_sommets_compo(dom, val, comp);
+  }
+
+  inline DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const override
+  {
+    return Champ_Face_implementation::remplir_coord_noeuds(positions);
+  }
+
+  inline int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const override
+  {
+    return Champ_Face_implementation::remplir_coord_noeuds_et_polys(positions, polys);
+  }
 
 private:
   double val_imp_face_bord_private(int face, int comp) const;
@@ -96,38 +129,5 @@ private:
 double Champ_Face_get_val_imp_face_bord_sym(const DoubleTab& tab_valeurs, const double temp,int face,int comp, const Zone_Cl_VDF& zclo);
 double Champ_Face_get_val_imp_face_bord( const double temp,int face,int comp, const Zone_Cl_VDF& zclo) ;
 double Champ_Face_get_val_imp_face_bord( const double temp,int face,int comp, int comp2, const Zone_Cl_VDF& zclo) ;
-
-inline DoubleVect& Champ_Face::valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const
-{
-  return Champ_Face_implementation::valeur_a_elem(position, val, le_poly);
-}
-inline double Champ_Face::valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const
-{
-  return Champ_Face_implementation::valeur_a_elem_compo(position, le_poly, ncomp);
-}
-inline DoubleTab& Champ_Face::valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& tab_valeurs) const
-{
-  return Champ_Face_implementation::valeur_aux_elems(positions, les_polys, tab_valeurs);
-}
-inline DoubleVect& Champ_Face::valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& tab_valeurs, int ncomp) const
-{
-  return Champ_Face_implementation::valeur_aux_elems_compo(positions, les_polys, tab_valeurs, ncomp);
-}
-inline DoubleTab& Champ_Face::valeur_aux_sommets(const Domaine& dom, DoubleTab& val) const
-{
-  return Champ_Face_implementation::valeur_aux_sommets(dom, val);
-}
-inline DoubleVect& Champ_Face::valeur_aux_sommets_compo(const Domaine& dom, DoubleVect& val, int comp) const
-{
-  return Champ_Face_implementation::valeur_aux_sommets_compo(dom, val, comp);
-}
-inline DoubleTab& Champ_Face::remplir_coord_noeuds(DoubleTab& positions) const
-{
-  return Champ_Face_implementation::remplir_coord_noeuds(positions);
-}
-inline int Champ_Face::remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const
-{
-  return Champ_Face_implementation::remplir_coord_noeuds_et_polys(positions, polys);
-}
 
 #endif /* Champ_Face_included */
