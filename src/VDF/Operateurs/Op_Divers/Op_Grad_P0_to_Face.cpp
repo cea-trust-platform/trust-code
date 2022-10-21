@@ -56,7 +56,7 @@ void Op_Grad_P0_to_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, c
             {
               n0 = face_voisins(num_face,0), n1 = face_voisins(num_face,1);
               dist = volume_entrelaces(num_face) / face_surfaces(num_face);
-              secmem(num_face) += ((inco(n1) - inco(n0)))/dist;
+              secmem(num_face) -= ((inco(n1) - inco(n0)))/dist;
             }
         }
       else
@@ -73,7 +73,7 @@ void Op_Grad_P0_to_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, c
               n1 = face_voisins(face_opposee,0);
               if (n1==n0) n1 = face_voisins(face_opposee,1);
 
-              secmem(num_face) += (inco(n1)-inco(n0)) / (xp(n1,ori)- xp(n0,ori));
+              secmem(num_face) -= (inco(n1)-inco(n0)) / (xp(n1,ori)- xp(n0,ori));
             }
         }
     }
@@ -82,7 +82,7 @@ void Op_Grad_P0_to_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, c
   for (int num_face = zvdf.premiere_face_int(); num_face < zvdf.nb_faces(); num_face++)
     {
       n0 = face_voisins(num_face,0), n1 = face_voisins(num_face,1), ori = orientation(num_face);
-      secmem(num_face) += (inco(n1)-inco(n0))/(xp(n1,ori)- xp(n0,ori));
+      secmem(num_face) -= (inco(n1)-inco(n0))/(xp(n1,ori)- xp(n0,ori));
     }
 
   secmem.echange_espace_virtuel();
