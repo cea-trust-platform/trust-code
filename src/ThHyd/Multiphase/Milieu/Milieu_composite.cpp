@@ -27,6 +27,8 @@
 Implemente_instanciable(Milieu_composite, "Milieu_composite", Fluide_base);
 // XD liste_mil listobj liste_mil -1 milieu_base 0 Composite medium made of several sub mediums.
 
+Sortie& Milieu_composite::printOn(Sortie& os) const { return os; }
+
 Entree& Milieu_composite::readOn(Entree& is)
 {
   int i = 0;
@@ -119,7 +121,6 @@ Entree& Milieu_composite::readOn(Entree& is)
           if (pn != pm && (has_interface() || (espn == espm && has_saturation())))
             {
               Cerr << "Interface between fluid " << n << " : " << fluides[n]->le_nom() << " and " << m << " : " << fluides[m]->le_nom() << finl;
-              phases_melange[especes[n].first].insert(n), phases_melange[especes[n].first].insert(m);
               inter.push_back(&ref_cast(Interface_base, has_saturation_ ? sat_lu.valeur() : inter_lu.valeur()));
               const Saturation_base *sat = sub_type(Saturation_base, *inter.back()) ? &ref_cast(Saturation_base, *inter.back()) : NULL;
               if (sat && sat->get_Pref() > 0) // pour loi en e = e0 + cp * (T - T0)
@@ -165,11 +166,6 @@ bool Milieu_composite::has_saturation(int k, int l) const
 Saturation_base& Milieu_composite::get_saturation(int k, int l) const
 {
   return ref_cast(Saturation_base, *(tab_interface[k][l]));
-}
-
-Sortie& Milieu_composite::printOn(Sortie& os) const
-{
-  return os;
 }
 
 const Fluide_base& Milieu_composite::get_fluid(const int i) const
@@ -220,24 +216,15 @@ void Milieu_composite::discretiser(const Probleme_base& pb, const  Discretisatio
   dis.discretiser_champ("champ_elem", zone_dis, "diffusivite", "m2/s", N, temps, alpha);
   dis.discretiser_champ("champ_elem", zone_dis, "conductivite", "W/m/K", N, temps, lambda);
   dis.discretiser_champ("champ_elem", zone_dis, "capacite_calorifique", "J/kg/K", N, temps, Cp);
-
-  /* champs de quantites melange */
-  for (auto &&kv : phases_melange)
-    {
-      dis.discretiser_champ("champ_elem", zone_dis, Nom("masse_volumique_") + kv.first + "_melange", "kg/m^3", 1, temps, rho_m);
-      dis.discretiser_champ("champ_elem", zone_dis, Nom("enthalpie_") + kv.first + "_melange", "J/m^3", 1, temps, h_m);
-      champs_compris_.ajoute_champ(rho_m);
-      champs_compris_.ajoute_champ(h_m);
-    }
+  dis.discretiser_champ("champ_elem", zone_dis, "masse_volumique_melange", "kg/m^3", 1, temps, rho_m);
+  dis.discretiser_champ("champ_elem", zone_dis, "enthalpie_melange", "J/m^3", 1, temps, h_m);
 
   champs_compris_.ajoute_champ(rho);
-  champs_compris_.ajoute_champ(mu.valeur());
-  champs_compris_.ajoute_champ(nu.valeur());
-  champs_compris_.ajoute_champ(alpha.valeur());
-  champs_compris_.ajoute_champ(lambda.valeur());
-  champs_compris_.ajoute_champ(Cp.valeur());
   champs_compris_.ajoute_champ(e_int);
   champs_compris_.ajoute_champ(h);
+
+  std::vector<Champ_Don* > fields = {&mu, &nu, &lambda, &alpha, &Cp, &rho_m, &h_m};
+  for (auto && f: fields) champs_compris_.ajoute_champ((*f).valeur());
 
   // Finalement, on discretise la porosite + diametre_hydro
   Milieu_base::discretiser_porosite(pb,dis);
@@ -252,13 +239,9 @@ void Milieu_composite::mettre_a_jour(double temps)
   e_int.mettre_a_jour(temps);
   h.mettre_a_jour(temps);
 
-  mu.mettre_a_jour(temps);
-  nu.mettre_a_jour(temps);
-  lambda.mettre_a_jour(temps);
-  alpha.mettre_a_jour(temps);
-  Cp.mettre_a_jour(temps);
-  if (rho_m.non_nul()) rho_m.mettre_a_jour(temps);
-  if (h_m.non_nul()) h_m.mettre_a_jour(temps);
+  std::vector<Champ_Don* > fields = {&mu, &nu, &lambda, &alpha, &Cp, &rho_m, &h_m};
+  for (auto && f: fields) (*f).mettre_a_jour(temps);
+
   mettre_a_jour_tabs();
 
   Milieu_base::mettre_a_jour_porosite(temps);
@@ -328,24 +311,21 @@ void Milieu_composite::mettre_a_jour_tabs()
       }
   }
 
-  if (rho_m.non_nul() && h_m.non_nul())
-    {
-      DoubleTab& trm = rho_m.valeurs(), &thm = h_m.valeurs();
-      trm = 0, thm = 0;
+  /* calcul des quantites melange */
+  DoubleTab& trm = rho_m.valeurs(), &thm = h_m.valeurs();
+  trm = 0, thm = 0;
 
-      const Equation_base& eqn = equation("alpha");
-      const DoubleTab& a = eqn.inconnue().valeurs(),
-                       &r = rho.valeurs(), &ent = h.valeurs();
-      const Nom ph = (rho_m.le_nom().getSuffix("masse_volumique_")).getPrefix("_melange");
-      const int Nl = rho_m.valeurs().dimension_tot(0);
-      // masse volumique melange
-      for (auto n : phases_melange[ph.getString()])
-        for (int i = 0; i < Nl; i++) trm(i) += a(i, n) * r(i, n);
-      // enthalpie melange
-      for (auto n : phases_melange[ph.getString()])
-        for (int i = 0; i < Nl; i++) thm(i) += a(i, n) * r(i, n) * ent(i, n);
-      for (int i = 0; i < Nl; i++) thm(i) /= trm(i);
-    }
+  const DoubleTab& a = equation("alpha").inconnue().valeurs(), &r = rho.valeurs(), &ent = h.valeurs();
+  const int Nl = rho_m.valeurs().dimension_tot(0);
+
+  // masse volumique
+  for (int n = 0; n < N; n++)
+    for (int i = 0; i < Nl; i++) trm(i) += a(i, n) * r(i, n);
+
+  // enthalpie
+  for (int n = 0; n < N; n++)
+    for (int i = 0; i < Nl; i++) thm(i) += a(i, n) * r(i, n) * ent(i, n);
+  for (int i = 0; i < Nl; i++) thm(i) /= trm(i);
 }
 
 void Milieu_composite::associer_equation(const Equation_base *eqn) const

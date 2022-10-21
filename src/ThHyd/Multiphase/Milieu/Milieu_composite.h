@@ -61,12 +61,11 @@ public :
   inline const Noms& noms_phases() const { return noms_phases_; }
 
 protected :
-  Champ_Fonc rho_m, h_m;
+  Champ_Don rho_m, h_m;
   Noms noms_phases_;
   double t_init_ = -1.;
   bool has_saturation_ = false, has_interface_ = false;
   std::vector<std::vector<Interface_base *>> tab_interface;
-  std::map<std::string, std::set<int>> phases_melange;
   std::vector<Fluide> fluides;
   Interface sat_lu, inter_lu;
 
