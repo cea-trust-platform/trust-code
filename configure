@@ -468,6 +468,8 @@ do
    elif [ "${1#-with-64-bit-indices}" != "$1" ]
    then
       export TRUST_INT64=1
+      echo "Disabling rocALUTION library (no integer 64 bits support yet)..."
+      export TRUST_USE_ROCALUTION=0
 
    elif [ "${1#-disable-mpi4py}" != "$1" ]
    then
