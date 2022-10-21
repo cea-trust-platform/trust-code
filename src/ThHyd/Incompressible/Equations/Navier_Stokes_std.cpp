@@ -1657,15 +1657,7 @@ void Navier_Stokes_std::dimensionner_blocs(matrices_t matrices, const tabs_t& se
 void Navier_Stokes_std::assembler_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   Equation_base::assembler_blocs(matrices, secmem, semi_impl);
-  if (!discretisation().que_suis_je().debute_par("PolyMAC"))
-    {
-      DoubleTab tmp(secmem);
-      tmp = 0.0;
-      gradient.valeur().ajouter_blocs(matrices, tmp, semi_impl);
-      secmem-=tmp;
-    }
-  else
-    gradient.valeur().ajouter_blocs(matrices, secmem, semi_impl);
+  gradient.valeur().ajouter_blocs(matrices, secmem, semi_impl);
 }
 
 DoubleTab& Navier_Stokes_std::derivee_en_temps_inco(DoubleTab& derivee)

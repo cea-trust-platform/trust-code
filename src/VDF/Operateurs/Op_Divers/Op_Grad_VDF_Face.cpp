@@ -290,15 +290,15 @@ void Op_Grad_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, con
               if (n0 != -1)
                 {
                   coef = face_surfaces(num_face)*porosite_surf(num_face) * Option_VDF::coeff_P_neumann;
-                  if(mat) (*mat)(num_face, n0) += coef;
-                  secmem(num_face) += (coef*(P_imp - inco(n0)));
+                  if(mat) (*mat)(num_face, n0) -= coef;
+                  secmem(num_face) -= coef * (P_imp - inco(n0));
                 }
               else
                 {
                   n1 = face_voisins(num_face,1);
                   coef = face_surfaces(num_face)*porosite_surf(num_face) * Option_VDF::coeff_P_neumann;
-                  if(mat) (*mat)(num_face, n1) -= coef;
-                  secmem(num_face) += (coef*(inco(n1) - P_imp));
+                  if(mat) (*mat)(num_face, n1) += coef;
+                  secmem(num_face) -= coef * (inco(n1) - P_imp);
                 }
             }
         }
@@ -308,7 +308,7 @@ void Op_Grad_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, con
             {
               n0 = face_voisins(num_face,0), n1 = face_voisins(num_face,1);
               coef = face_surfaces(num_face)*porosite_surf(num_face);
-              secmem(num_face) += (coef*(inco(n1) - inco(n0)));
+              secmem(num_face) -= coef * (inco(n1) - inco(n0));
             }
         }
       else if (sub_type(Symetrie,la_cl.valeur())) { /* Do nothing */ }
@@ -320,10 +320,9 @@ void Op_Grad_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, con
     {
       n0 = face_voisins(num_face,0), n1 = face_voisins(num_face,1);
       coef = face_surfaces(num_face)*porosite_surf(num_face);
-      if(mat) (*mat)(num_face, n0) += coef;
-      if(mat) (*mat)(num_face, n1) -= coef;
-      secmem(num_face) += coef*(inco(n1)-inco(n0));
-
+      if(mat) (*mat)(num_face, n0) -= coef;
+      if(mat) (*mat)(num_face, n1) += coef;
+      secmem(num_face) -= coef * (inco(n1) - inco(n0));
     }
   secmem.echange_espace_virtuel();
   statistiques().end_count(gradient_counter_);
