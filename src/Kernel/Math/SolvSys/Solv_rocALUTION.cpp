@@ -481,8 +481,10 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
   if (write_system_) save++;
   double tick;
 
+#ifdef MPI_
   MPI_Comm comm = MPI_COMM_WORLD;
   pm.SetMPICommunicator(&comm);
+#endif
   if (nouvelle_matrice())
     {
       // Conversion matrice stockage symetrique vers matrice stockage general:

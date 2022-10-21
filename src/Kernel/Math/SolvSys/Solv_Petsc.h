@@ -158,7 +158,9 @@ protected :
   bool reduce_ram_;
   bool verbose = false; // Timing
   bool reorder_matrix_;
+#ifdef PETSCKSP_H
   IS rowperm = NULL, colperm = NULL;
+#endif
 };
 
 #define NB_IT_MAX_DEFINED 10000
