@@ -685,6 +685,9 @@ petsc solveur_sys_base petsc 0 Solver via Petsc API NL2 \input{{solvpetsc}}
 amgx petsc amgx 0 Solver via AmgX API
   attr solveur chaine solveur 0 not_set
   attr option_solveur bloc_lecture option_solveur 0 not_set
+rocalution petsc rocalution 0 Solver via rocALUTION API
+  attr solveur chaine solveur 0 not_set
+  attr option_solveur bloc_lecture option_solveur 0 not_set
 solv_gcp solveur_sys_base gcp 1 Preconditioned conjugated gradient.
   attr precond precond_base precond 1 Keyword to define system preconditioning in order to accelerate resolution by the conjugated gradient. Many parallel preconditioning methods are not equivalent to their sequential counterpart, and you should therefore expect differences, especially when you select a high value of the final residue (seuil). The result depends on the number of processors and on the mesh splitting. It is sometimes useful to run the solver with no preconditioning at all. In particular: NL2 - when the solver does not converge during initial projection, NL2 - when comparing sequential and parallel computations. NL2 With no preconditioning, except in some particular cases (no open boundary), the sequential and the parallel computations should provide exactly the same results within fpu accuracy. If not, there might be a coding error or the system of equations is singular.
   attr precond_nul rien precond_nul 1 Keyword to not use a preconditioning method.
