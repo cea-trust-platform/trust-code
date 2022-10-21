@@ -179,7 +179,7 @@ Read pb
                 methode formule expression 1 abs(h-h_ex)
                 sources
                 {
-                    refChamp { Pb_champ pb enthalpie_sodium_melange nom_source h } ,
+                    refChamp { Pb_champ pb enthalpie_melange nom_source h } ,
                     transformation
                     {
                         methode formule expression 1 1112202.375281125+y*100000000.0/763.0630276367231/1 localisation elem nom_source h_ex source refChamp { Pb_champ pb pression }
@@ -196,8 +196,8 @@ Read pb
         probes
         {
             erreur_h_trust                       erreur_h periode 1e8 segment 500 0.5 0 0.5 1
-            rho_m_trust masse_volumique_sodium_melange periode 1e8 segment 500 0.5 0 0.5 1
-            h_m_trust       enthalpie_sodium_melange periode 1e8 segment 500 0.5 0 0.5 1
+            rho_m_trust masse_volumique_melange periode 1e8 segment 500 0.5 0 0.5 1
+            h_m_trust       enthalpie_melange periode 1e8 segment 500 0.5 0 0.5 1
             h_m_analytique                   h_analytique periode 1e8 segment 500 0.5 0 0.5 1
             pression_trust                    pression_pa periode 1e8 segment 500 0.5 0 0.5 1
             alpha_trust               alpha_gaz_sodium periode 1e8 segment 500 0.5 0 0.5 1
@@ -224,8 +224,8 @@ Read pb
             capacite_calorifique elem
             energie_interne elem
             enthalpie elem
-            masse_volumique_sodium_melange elem
-            enthalpie_sodium_melange elem
+            masse_volumique_melange elem
+            enthalpie_melange elem
             h_analytique elem
             a_analytique elem
         }

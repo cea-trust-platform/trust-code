@@ -188,8 +188,8 @@ Read pb
             capacite_calorifique elem
             energie_interne elem
             enthalpie elem
-            masse_volumique_sodium_melange elem
-            enthalpie_sodium_melange elem
+            masse_volumique_melange elem
+            enthalpie_melange elem
             diametre_bulles elem
         }
     }
