@@ -233,7 +233,7 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ(Champ& espace_stockage
       for (int comp=0; comp<nb_comp; comp++)
         {
           int size_vect = valeurs_source.dimension(0);
-          if (nb_dim!=nb_comp) //Cas des Champ_Face
+          if (nb_dim!=nb_comp) //Cas des Champ_Face_VDF
             {
               size_vect=0;
               //const IntVect& ori = zvf.orientation();

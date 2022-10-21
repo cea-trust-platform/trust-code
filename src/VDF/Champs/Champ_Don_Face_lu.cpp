@@ -33,7 +33,7 @@ int meme_point(const ArrOfInt& x, const DoubleTab& tab, int rang_tab)
   return (k == dime);
 }
 
-Implemente_instanciable(Champ_Don_Face_lu,"Champ_Don_Face_lu",Champ_Fonc_Face);
+Implemente_instanciable(Champ_Don_Face_lu,"Champ_Don_Face_lu",Champ_Fonc_Face_VDF);
 
 
 /*! @brief Imprime les valeurs du champ sur un flot de sortie

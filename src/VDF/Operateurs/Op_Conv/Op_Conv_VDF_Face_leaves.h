@@ -29,7 +29,7 @@ class Op_Conv_VDF_Face_leaves
 declare_It_VDF_Face(Eval_Amont_VDF_Face)
 /*! @brief class Op_Conv_Amont_VDF_Face Cette classe represente l'operateur de convection associe a une equation de la quantite de mouvement.
  *
- *   La discretisation est VDF. Le champ convecte est de type Champ_Face. Le schema de convection est du type Amont
+ *   La discretisation est VDF. Le champ convecte est de type Champ_Face_VDF. Le schema de convection est du type Amont
  *   L'iterateur associe est de type Iterateur_VDF_Face. L'evaluateur associe est de type Eval_Amont_VDF_Face
  *
  */
@@ -61,7 +61,7 @@ public:
 declare_It_VDF_Face(Eval_Centre_VDF_Face)
 /*! @brief class Op_Conv_Centre_VDF_Face Cette classe represente l'operateur de convection associe a une equation de la quantite de mouvement.
  *
- *   La discretisation est VDF. Le champ convecte est de type Champ_Face. Le schema de convection est du type Centre
+ *   La discretisation est VDF. Le champ convecte est de type Champ_Face_VDF. Le schema de convection est du type Centre
  *   L'iterateur associe est de type Iterateur_VDF_Face. L'evaluateur associe est de type Eval_Centre_VDF_Face
  *
  */
@@ -88,7 +88,7 @@ public:
 declare_It_VDF_Face(Eval_Centre4_VDF_Face)
 /*! @brief class Op_Conv_Centre4_VDF_Face Cette classe represente l'operateur de convection associe a une equation de la quantite de mouvement.
  *
- *   La discretisation est VDF. Le champ convecte est de type Champ_Face. Le schema de convection est du type centre4 (centre sur 4 points)
+ *   La discretisation est VDF. Le champ convecte est de type Champ_Face_VDF. Le schema de convection est du type centre4 (centre sur 4 points)
  *   L'iterateur associe est de type Iterateur_VDF_Face. L'evaluateur associe est de type Eval_Centre4_VDF_Face
  *
  */
@@ -106,7 +106,7 @@ public:
 declare_It_VDF_Face(Eval_Quick_VDF_Face_Axi)
 /*! @brief class Op_Conv_Quick_VDF_Face Cette classe represente l'operateur de convection associe a une equation de la quantite de mouvement.
  *
- *   La discretisation est VDF. Le champ convecte est de type Champ_Face
+ *   La discretisation est VDF. Le champ convecte est de type Champ_Face_VDF
  *   Le schema de convection est du type Quick. L'iterateur associe est de type Iterateur_VDF_Face. L'evaluateur associe est de type Eval_Quick_VDF_Face
  *
  */
@@ -124,7 +124,7 @@ public:
 declare_It_VDF_Face(Eval_Quick_VDF_Face)
 /*! @brief class Op_Conv_Quick_VDF_Face Cette classe represente l'operateur de convection associe a une equation de la quantite de mouvement.
  *
- *   La discretisation est VDF. Le champ convecte est de type Champ_Face. Le schema de convection est du type Quick
+ *   La discretisation est VDF. Le champ convecte est de type Champ_Face_VDF. Le schema de convection est du type Quick
  *   L'iterateur associe est de type Iterateur_VDF_Face. L'evaluateur associe est de type Eval_Quick_VDF_Face
  *
  */

@@ -32,7 +32,7 @@ class Op_Diff_VDF_Face_leaves
 declare_It_VDF_Face(Eval_Diff_VDF_const_Face)
 /*! @brief class Op_Diff_VDF_Face Cette classe represente l'operateur de diffusion associe a une equation de la quantite de mouvement.
  *
- *   La discretisation est VDF. Le champ diffuse est un Champ_Face. Le champ de diffusivite est uniforme
+ *   La discretisation est VDF. Le champ diffuse est un Champ_Face_VDF. Le champ de diffusivite est uniforme
  *   L'iterateur associe est de type Iterateur_VDF_Face. L'evaluateur associe est de type Eval_Diff_VDF_const_Face
  *
  */
@@ -49,7 +49,7 @@ public:
 
 /*! @brief class Op_Diff_VDF_Face_Axi Cette classe represente l'operateur de diffusion associe aux equations de quantite de mouvement en coordonnees cylindriques.
  *
- *   La discretisation est VDF. Le champ diffuse est un Champ_Face. Le champ de diffusivite est uniforme
+ *   La discretisation est VDF. Le champ diffuse est un Champ_Face_VDF. Le champ de diffusivite est uniforme
  *   Cette classe n'utilise ni iterateur ni evaluateur (il y avait trop de termes supplementaires dus aux coordonnees cylindriques)
  *
  */
@@ -72,7 +72,7 @@ protected:
 declare_It_VDF_Face(Eval_Diff_VDF_var_Face)
 /*! @brief class Op_Diff_VDF_var_Face Cette classe represente l'operateur de diffusion associe a une equation de la quantite de mouvement.
  *
- *   La discretisation est VDF. Le champ diffuse est un Champ_Face. Le champ de diffusivite n'est pas uniforme
+ *   La discretisation est VDF. Le champ diffuse est un Champ_Face_VDF. Le champ de diffusivite n'est pas uniforme
  *   L'iterateur associe est de type Iterateur_VDF_Face. L'evaluateur associe est de type Eval_Diff_VDF_var_Face
  *
  */
@@ -89,7 +89,7 @@ public:
 
 /*! @brief class Op_Diff_VDF_var_Face_Axi Cette classe represente l'operateur de diffusion associe aux equations de quantite de mouvement en coordonnees cylindriques.
  *
- *   La discretisation est VDF. Le champ diffuse est un Champ_Face. Le champ de diffusivite n'est pas uniforme
+ *   La discretisation est VDF. Le champ diffuse est un Champ_Face_VDF. Le champ de diffusivite n'est pas uniforme
  *   Cette classe n'utilise ni iterateur ni evaluateur (il y avait trop de termes supplementaires dus aux coordonnees cylindriques)
  *
  */

@@ -18,7 +18,7 @@
 
 #include <CL_Types_Aretes_enum.h> // For SFINAE later ...
 #include <Ref_Champ_base.h>
-#include <Champ_Face.h>
+#include <Champ_Face_VDF.h>
 #include <type_traits> // For SFINAE later ...
 
 /*! @brief class Eval_VDF_Face Cette classe represente le prototype fonctionnel des evaluateurs
@@ -41,8 +41,8 @@ protected:
 
 inline void Eval_VDF_Face::associer_inconnue(const Champ_base& inco)
 {
-  assert(sub_type(Champ_Face,inco));
-  inconnue=ref_cast(Champ_Face,inco);
+  assert(sub_type(Champ_Face_VDF,inco));
+  inconnue=ref_cast(Champ_Face_VDF,inco);
 }
 
 #endif /* Eval_VDF_Face_included */

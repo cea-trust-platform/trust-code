@@ -19,7 +19,7 @@
 
 #include <TRUSTTabs_forward.h>
 #include <Ref_Zone_Cl_VDF.h>
-#include <Ref_Champ_Face.h>
+#include <Ref_Champ_Face_VDF.h>
 #include <Ref_Zone_VDF.h>
 #include <Source_base.h>
 
@@ -67,7 +67,7 @@ protected:
 
   REF(Zone_VDF) la_zone_VDF;
   REF(Zone_Cl_VDF) la_zone_Cl_VDF;
-  REF(Champ_Face) la_vitesse;
+  REF(Champ_Face_VDF) la_vitesse;
 
   IntTab elem_faces;
   IntVect orientation;

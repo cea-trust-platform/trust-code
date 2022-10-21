@@ -49,14 +49,14 @@ protected:
   associer_impl(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis, const Champ_Inc& ch_vit)
   {
     constexpr bool is_QUICK = std::is_same<EVAL_TYPE,Eval_Quick_VDF_Face>::value, is_CENTRE4 = std::is_same<EVAL_TYPE,Eval_Centre4_VDF_Face>::value;
-    const Champ_Face& vit = ref_cast(Champ_Face,ch_vit.valeur());
+    const Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF,ch_vit.valeur());
     associer_<EVAL_TYPE,is_QUICK,is_CENTRE4>(zone_dis,zone_cl_dis).associer_inconnue(vit); // Cheerssssssssss !!!
   }
 
   template <typename EVAL_TYPE>
   void associer_vitesse_impl(const Champ_base& ch_vit)
   {
-    const Champ_Face& vit = ref_cast(Champ_Face, ch_vit);
+    const Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF, ch_vit);
     EVAL_TYPE& eval_conv = static_cast<EVAL_TYPE&>(iter_()->evaluateur());
     eval_conv.associer(vit);
   }

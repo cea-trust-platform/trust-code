@@ -22,7 +22,7 @@
 
 /*! @brief class Eval_Diff_VDF_Face Evaluateur VDF pour la diffusion
  *
- *  Le champ diffuse est un Champ_Face
+ *  Le champ diffuse est un Champ_Face_VDF
  *
  * @sa Eval_VDF_Face, Evaluateur_VDF
  */

@@ -19,12 +19,12 @@
 #include <Dirichlet_paroi_fixe.h>
 #include <Mod_turb_hyd_base.h>
 #include <Champ_Uniforme.h>
+#include <Champ_Face_VDF.h>
 #include <distances_VDF.h>
 #include <Equation_base.h>
 #include <Champ_Don_lu.h>
 #include <Fluide_base.h>
 #include <Zone_Cl_VDF.h>
-#include <Champ_Face.h>
 #include <Periodique.h>
 #include <Symetrie.h>
 
@@ -117,7 +117,7 @@ double Champ_Face_get_val_imp_face_bord(const double temp, int face, int comp, c
 
 double Champ_Face_get_val_imp_face_bord(const double temp, int face, int comp, int comp2, const Zone_Cl_VDF& zclo)
 {
-  Cerr << "Champ_Face::val_imp_face_bord(,,) exit" << finl;
+  Cerr << "Champ_Face_VDF::val_imp_face_bord(,,) exit" << finl;
   Process::exit();
   return 0; // For compilers
 }
@@ -1226,17 +1226,18 @@ void caldscaldcentelemdim3(DoubleTab& dscald, const DoubleTab& val, const Zone_V
 /*           FIN METHODES UTILES HORS CLASSE             */
 /* ***************************************************** */
 
-Implemente_instanciable(Champ_Face,"Champ_Face",Champ_Face_base);
+// XXX : Elie Saikali : je garde Champ_Face aussi sinon faut changer typer et reprise dans bcp des endroits ...
+Implemente_instanciable(Champ_Face_VDF,"Champ_Face|Champ_Face_VDF",Champ_Face_base);
 
-Sortie& Champ_Face::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
+Sortie& Champ_Face_VDF::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-Entree& Champ_Face::readOn(Entree& s)
+Entree& Champ_Face_VDF::readOn(Entree& s)
 {
   lire_donnees (s) ;
   return s ;
 }
 
-int Champ_Face::fixer_nb_valeurs_nodales(int nb_noeuds)
+int Champ_Face_VDF::fixer_nb_valeurs_nodales(int nb_noeuds)
 {
   assert(nb_noeuds == zone_vdf().nb_faces());
   const MD_Vector& md = zone_vdf().md_vector_faces();
@@ -1249,13 +1250,13 @@ int Champ_Face::fixer_nb_valeurs_nodales(int nb_noeuds)
   return nb_noeuds;
 }
 
-void Champ_Face::dimensionner_tenseur_Grad()
+void Champ_Face_VDF::dimensionner_tenseur_Grad()
 {
   tau_diag_.resize(zone_vdf().nb_elem(), dimension);
   tau_croises_.resize(zone_vdf().nb_aretes(), 2);
 }
 
-Champ_base& Champ_Face::affecter_(const Champ_base& ch)
+Champ_base& Champ_Face_VDF::affecter_(const Champ_base& ch)
 {
   const DoubleTab& v = ch.valeurs();
   DoubleTab& val = valeurs();
@@ -1357,7 +1358,7 @@ Champ_base& Champ_Face::affecter_(const Champ_base& ch)
   return *this;
 }
 
-const Champ_Proto& Champ_Face::affecter(const double x1, const double x2)
+const Champ_Proto& Champ_Face_VDF::affecter(const double x1, const double x2)
 {
   const IntVect& orientation = zone_vdf().orientation();
   DoubleTab& val = valeurs();
@@ -1377,7 +1378,7 @@ const Champ_Proto& Champ_Face::affecter(const double x1, const double x2)
   return *this;
 }
 
-const Champ_Proto& Champ_Face::affecter(const double x1, const double x2, const double x3)
+const Champ_Proto& Champ_Face_VDF::affecter(const double x1, const double x2, const double x3)
 {
   const IntVect& orientation = zone_vdf().orientation();
   DoubleTab& val = valeurs();
@@ -1400,7 +1401,7 @@ const Champ_Proto& Champ_Face::affecter(const double x1, const double x2, const 
   return *this;
 }
 
-const Champ_Proto& Champ_Face::affecter(const DoubleTab& v)
+const Champ_Proto& Champ_Face_VDF::affecter(const DoubleTab& v)
 {
   const IntVect& orientation = zone_vdf().orientation();
   DoubleTab& val = valeurs();
@@ -1414,17 +1415,17 @@ const Champ_Proto& Champ_Face::affecter(const DoubleTab& v)
               val(num_face) = v(num_face, orientation(num_face));
           else
             {
-              Cerr << "Erreur TRUST dans Champ_Face::affecter(const DoubleTab& )" << finl;
+              Cerr << "Erreur TRUST dans Champ_Face_VDF::affecter(const DoubleTab& )" << finl;
               Cerr << "les dimensions du DoubleTab passe en parametre sont incompatibles " << finl;
-              Cerr << "avec celles du Champ_Face " << finl;
+              Cerr << "avec celles du Champ_Face_VDF " << finl;
               Process::exit();
             }
         }
       else
         {
-          Cerr << "Erreur TRUST dans Champ_Face::affecter(const DoubleTab& )" << finl;
+          Cerr << "Erreur TRUST dans Champ_Face_VDF::affecter(const DoubleTab& )" << finl;
           Cerr << "les dimensions du DoubleTab passe en parametre sont incompatibles " << finl;
-          Cerr << "avec celles du Champ_Face " << finl;
+          Cerr << "avec celles du Champ_Face_VDF " << finl;
           Process::exit();
         }
     }
@@ -1433,7 +1434,7 @@ const Champ_Proto& Champ_Face::affecter(const DoubleTab& v)
 
 //-Cas CL periodique : assure que les valeurs sur des faces periodiques
 // en vis a vis sont identiques. Pour cela on prend la demi somme des deux valeurs.
-void Champ_Face::verifie_valeurs_cl()
+void Champ_Face_VDF::verifie_valeurs_cl()
 {
   const Zone_Cl_dis_base& zcl = zone_Cl_dis().valeur();
   int nb_cl = zcl.nb_cond_lim();
@@ -1475,16 +1476,16 @@ void Champ_Face::verifie_valeurs_cl()
  *  L'implementation a change : ces valeurs ne sont plus stockees dans le champ.
  *
  */
-double Champ_Face::val_imp_face_bord_private(int face, int comp) const
+double Champ_Face_VDF::val_imp_face_bord_private(int face, int comp) const
 {
   const Zone_Cl_VDF& zclo = ref_cast(Zone_Cl_VDF, equation().zone_Cl_dis().valeur());
   return Champ_Face_get_val_imp_face_bord_sym(valeurs(), temps(), face, comp, zclo);
 }
 
 // WEC : jamais appele !!
-double Champ_Face::val_imp_face_bord_private(int face, int comp1, int comp2) const
+double Champ_Face_VDF::val_imp_face_bord_private(int face, int comp1, int comp2) const
 {
-  Cerr << "Champ_Face::val_imp_face_bord(,,) exit" << finl;
+  Cerr << "Champ_Face_VDF::val_imp_face_bord(,,) exit" << finl;
   Process::exit();
   return 0; // For compilers
 }
@@ -1492,7 +1493,7 @@ double Champ_Face::val_imp_face_bord_private(int face, int comp1, int comp2) con
 // Cette fonction retourne :
 //   1 si le fluide est sortant sur la face num_face
 //   0 si la face correspond a une reentree de fluide
-int Champ_Face::compo_normale_sortante(int num_face) const
+int Champ_Face_VDF::compo_normale_sortante(int num_face) const
 {
   int signe = 1;
   double vit_norm;
@@ -1504,17 +1505,17 @@ int Champ_Face::compo_normale_sortante(int num_face) const
   return (vit_norm > 0);
 }
 
-DoubleTab& Champ_Face::trace(const Frontiere_dis_base& fr, DoubleTab& x, double tps, int distant) const
+DoubleTab& Champ_Face_VDF::trace(const Frontiere_dis_base& fr, DoubleTab& x, double tps, int distant) const
 {
-  return Champ_Face_implementation::trace(fr, valeurs(tps), x, distant);
+  return Champ_Face_VDF_implementation::trace(fr, valeurs(tps), x, distant);
 }
 
-void Champ_Face::mettre_a_jour(double un_temps)
+void Champ_Face_VDF::mettre_a_jour(double un_temps)
 {
   Champ_Inc_base::mettre_a_jour(un_temps);
 }
 
-void Champ_Face::calculer_rotationnel_ordre2_centre_element(DoubleTab& rot) const
+void Champ_Face_VDF::calculer_rotationnel_ordre2_centre_element(DoubleTab& rot) const
 {
   const DoubleTab& val = valeurs();
   const Zone_VDF& zone_VDF = zone_vdf();
@@ -1528,13 +1529,13 @@ void Champ_Face::calculer_rotationnel_ordre2_centre_element(DoubleTab& rot) cons
     calrotord2centelemdim3(rot, val, zone_VDF, nb_elem, face_voisins, elem_faces);
 }
 
-int Champ_Face::imprime(Sortie& os, int ncomp) const
+int Champ_Face_VDF::imprime(Sortie& os, int ncomp) const
 {
   imprime_Face(os, ncomp);
   return 1;
 }
 
-void Champ_Face::calcul_critere_Q(DoubleTab& Q, const Zone_Cl_VDF& zone_Cl_VDF)
+void Champ_Face_VDF::calcul_critere_Q(DoubleTab& Q, const Zone_Cl_VDF& zone_Cl_VDF)
 {
   // Q=0.5*(\Omega_{ij}*\Omega_{ij}-S_{ij}*S_{ij})=-0.25*du_i/dx_j*du_j/dx_i
 
@@ -1547,7 +1548,7 @@ void Champ_Face::calcul_critere_Q(DoubleTab& Q, const Zone_Cl_VDF& zone_Cl_VDF)
   DoubleTab gradient_elem(nb_elem_tot, dimension, dimension);
   gradient_elem = 0.;
 
-  Champ_Face& vit = *this;
+  Champ_Face_VDF& vit = *this;
   const DoubleTab& vitesse = valeurs();
 
   vit.calcul_duidxj(vitesse, gradient_elem, zone_Cl_VDF);
@@ -1567,7 +1568,7 @@ void Champ_Face::calcul_critere_Q(DoubleTab& Q, const Zone_Cl_VDF& zone_Cl_VDF)
     }
 }
 
-void Champ_Face::calcul_y_plus(DoubleTab& y_plus, const Zone_Cl_VDF& zone_Cl_VDF)
+void Champ_Face_VDF::calcul_y_plus(DoubleTab& y_plus, const Zone_Cl_VDF& zone_Cl_VDF)
 {
   // On initialise le champ y_plus avec une valeur negative,
   // comme ca lorsqu'on veut visualiser le champ pres de la paroi,
@@ -1578,7 +1579,7 @@ void Champ_Face::calcul_y_plus(DoubleTab& y_plus, const Zone_Cl_VDF& zone_Cl_VDF
   double norm_tau, u_etoile, norm_v = 0, dist, val0, val1, val2, d_visco = 0, visco = 1.;
   y_plus = -1.;
 
-  const Champ_Face& vit = *this;
+  const Champ_Face_VDF& vit = *this;
   const Zone_VDF& zone_VDF = zone_vdf();
   const IntTab& face_voisins = zone_VDF.face_voisins();
   const IntVect& orientation = zone_VDF.orientation();
@@ -1693,9 +1694,9 @@ void Champ_Face::calcul_y_plus(DoubleTab& y_plus, const Zone_Cl_VDF& zone_Cl_VDF
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-DoubleTab& Champ_Face::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gij, const Zone_Cl_VDF& zone_Cl_VDF) const
+DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gij, const Zone_Cl_VDF& zone_Cl_VDF) const
 {
-  const Champ_Face& vit = ref_cast(Champ_Face, mon_equation->inconnue().valeur());
+  const Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF, mon_equation->inconnue().valeur());
   const Zone_VDF& zone_VDF = zone_vdf();
   int nb_elem = zone_VDF.zone().nb_elem_tot();
   const IntTab& face_voisins = zone_VDF.face_voisins();
@@ -1982,7 +1983,7 @@ DoubleTab& Champ_Face::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gij, c
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-DoubleTab& Champ_Face::calcul_duidxj(const DoubleTab& in_vel, DoubleTab& gij) const
+DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& in_vel, DoubleTab& gij) const
 {
 
   const Zone_VDF& zone_VDF = zone_vdf();
@@ -2078,7 +2079,7 @@ DoubleTab& Champ_Face::calcul_duidxj(const DoubleTab& in_vel, DoubleTab& gij) co
 
 //Methode qui renvoie SMA_barre aux elements a partir de la vitesse aux faces
 //SMA_barre = Sij*Sij (sommation sur les indices i et j)
-DoubleVect& Champ_Face::calcul_S_barre_sans_contrib_paroi(const DoubleTab& vitesse, DoubleVect& SMA_barre, const Zone_Cl_VDF& zone_Cl_VDF) const
+DoubleVect& Champ_Face_VDF::calcul_S_barre_sans_contrib_paroi(const DoubleTab& vitesse, DoubleVect& SMA_barre, const Zone_Cl_VDF& zone_Cl_VDF) const
 {
   // On calcule directement S_barre(num_elem)!!!!!!!!!!
   // Le parametre contribution_paroi (ici fixe a 0) permet de ne pas prendre en compte
@@ -2087,7 +2088,7 @@ DoubleVect& Champ_Face::calcul_S_barre_sans_contrib_paroi(const DoubleTab& vites
   int contribution_paroi;
   contribution_paroi = 0;
 
-  const Champ_Face& vit = ref_cast(Champ_Face, mon_equation->inconnue().valeur());
+  const Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF, mon_equation->inconnue().valeur());
   const Zone_VDF& zone_VDF = zone_vdf();
 
   int nb_elem = zone_VDF.zone().nb_elem();
@@ -2357,7 +2358,7 @@ DoubleVect& Champ_Face::calcul_S_barre_sans_contrib_paroi(const DoubleTab& vites
   return SMA_barre;
 }
 
-DoubleVect& Champ_Face::calcul_S_barre(const DoubleTab& vitesse, DoubleVect& SMA_barre, const Zone_Cl_VDF& zone_Cl_VDF) const
+DoubleVect& Champ_Face_VDF::calcul_S_barre(const DoubleTab& vitesse, DoubleVect& SMA_barre, const Zone_Cl_VDF& zone_Cl_VDF) const
 {
   const Zone_VDF& zone_VDF = zone_vdf();
   const int nb_elem_tot = zone_VDF.nb_elem_tot();
@@ -2387,7 +2388,7 @@ DoubleVect& Champ_Face::calcul_S_barre(const DoubleTab& vitesse, DoubleVect& SMA
 
 }
 
-void Champ_Face::calcul_grad_u(const DoubleTab& vitesse, DoubleTab& grad_u, const Zone_Cl_VDF& zone_Cl_VDF)
+void Champ_Face_VDF::calcul_grad_u(const DoubleTab& vitesse, DoubleTab& grad_u, const Zone_Cl_VDF& zone_Cl_VDF)
 {
   const Zone_VDF& zone_VDF = zone_vdf();
   const int nb_elem = zone_VDF.nb_elem();
@@ -2410,7 +2411,7 @@ void Champ_Face::calcul_grad_u(const DoubleTab& vitesse, DoubleTab& grad_u, cons
     }
 }
 
-void Champ_Face::calculer_dscald_centre_element(DoubleTab& dscald) const
+void Champ_Face_VDF::calculer_dscald_centre_element(DoubleTab& dscald) const
 {
   const DoubleTab& val = valeurs();
   const Zone_VDF& zone_VDF = zone_vdf();
@@ -2426,7 +2427,7 @@ void Champ_Face::calculer_dscald_centre_element(DoubleTab& dscald) const
 
 // Fonctions de calcul des composantes du tenseur GradU (derivees covariantes de la vitesse)
 // dans le repere des coordonnees cylindriques
-void Champ_Face::calculer_dercov_axi(const Zone_Cl_VDF& zone_Cl_VDF)
+void Champ_Face_VDF::calculer_dercov_axi(const Zone_Cl_VDF& zone_Cl_VDF)
 {
   const Zone_VDF& zone_VDF = zone_vdf();
   const DoubleTab& inco = valeurs();

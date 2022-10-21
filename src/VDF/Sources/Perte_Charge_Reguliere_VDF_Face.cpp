@@ -15,7 +15,7 @@
 
 #include <Perte_Charge_Reguliere_VDF_Face.h>
 #include <Zone_VDF.h>
-#include <Champ_Face.h>
+#include <Champ_Face_VDF.h>
 #include <Fluide_Incompressible.h>
 #include <Probleme_base.h>
 #include <Champ_Uniforme.h>

@@ -29,7 +29,7 @@ class Eval_Dift_VDF_Face_leaves : public Eval_Diff_VDF_Face<Eval_Dift_VDF_Face_l
 
 /*! @brief class Eval_Dift_VDF_const_Face Evaluateur VDF pour la diffusion totale (laminaire et turbulente)
  *
- *  Le champ diffuse est un Champ_Face
+ *  Le champ diffuse est un Champ_Face_VDF
  *  Le champ de diffusivite est constant.
  *
  */
@@ -75,7 +75,7 @@ inline double Eval_Dift_VDF_const_Face::tau_tan_impl(int face, int k) const
 
 /*! @brief class Eval_Dift_VDF_var_Face Evaluateur VDF pour la diffusion totale (laminaire et turbulente)
  *
- *  Le champ diffuse est un Champ_Face
+ *  Le champ diffuse est un Champ_Face_VDF
  *  Le champ de diffusivite n'est pas constant.
  *
  */

@@ -18,7 +18,7 @@
 
 
 #include <Champ_Fonc_P0_VDF.h>
-#include <Ref_Champ_Face.h>
+#include <Ref_Champ_Face_VDF.h>
 #include <Ref_Zone_Cl_VDF.h>
 
 /*! @brief classe grad_U_Champ_Face
@@ -34,7 +34,7 @@ class grad_U_Champ_Face : public Champ_Fonc_P0_VDF
 public:
 
   inline void mettre_a_jour(double ) override;
-  void associer_champ(const Champ_Face& );
+  void associer_champ(const Champ_Face_VDF& );
   void me_calculer(double );
 
   inline void associer_zone_Cl_dis_base(const Zone_Cl_dis_base&);
@@ -42,7 +42,7 @@ public:
 protected:
 
   REF(Zone_Cl_VDF) la_zone_Cl_VDF;
-  REF(Champ_Face) vitesse_;
+  REF(Champ_Face_VDF) vitesse_;
 };
 
 inline void grad_U_Champ_Face::mettre_a_jour(double tps)

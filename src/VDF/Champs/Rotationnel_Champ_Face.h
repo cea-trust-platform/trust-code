@@ -19,7 +19,7 @@
 
 #include <Champ_Rotationnel.h>
 #include <Champ_Fonc_P0_VDF.h>
-#include <Ref_Champ_Face.h>
+#include <Ref_Champ_Face_VDF.h>
 
 /*! @brief classe Rotationnel_Champ_Face
  *
@@ -35,17 +35,17 @@ class Rotationnel_Champ_Face : public Champ_Rotationnel,
 
 public:
 
-  inline const Champ_Face& mon_champ() const;
+  inline const Champ_Face_VDF& mon_champ() const;
   inline void mettre_a_jour(double ) override;
-  void associer_champ(const Champ_Face& );
+  void associer_champ(const Champ_Face_VDF& );
   void me_calculer(double ) override;
 
 protected:
 
-  REF(Champ_Face) mon_champ_;
+  REF(Champ_Face_VDF) mon_champ_;
 };
 
-inline const Champ_Face& Rotationnel_Champ_Face::mon_champ() const
+inline const Champ_Face_VDF& Rotationnel_Champ_Face::mon_champ() const
 {
   return mon_champ_.valeur();
 }

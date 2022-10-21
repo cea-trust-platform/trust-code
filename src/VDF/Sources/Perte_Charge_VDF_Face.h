@@ -17,10 +17,10 @@
 #define Perte_Charge_VDF_Face_included
 
 #include <Source_dep_inco_base.h>
+#include <Ref_Champ_Face_VDF.h>
 #include <TRUSTTabs_forward.h>
 #include <Ref_Zone_Cl_VDF.h>
 #include <Ref_Fluide_base.h>
-#include <Ref_Champ_Face.h>
 #include <Ref_Zone_VDF.h>
 
 class Probleme_base;
@@ -38,7 +38,7 @@ public:
   };
 
 protected:
-  REF(Champ_Face) la_vitesse;
+  REF(Champ_Face_VDF) la_vitesse;
   REF(Fluide_base) le_fluide;
   REF(Zone_VDF) la_zone_VDF;
   REF(Zone_Cl_VDF) la_zone_Cl_VDF;

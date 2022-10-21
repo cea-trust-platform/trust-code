@@ -13,8 +13,8 @@
 *
 *****************************************************************************/
 
-#ifndef Champ_Face_implementation_included
-#define Champ_Face_implementation_included
+#ifndef Champ_Face_VDF_implementation_included
+#define Champ_Face_VDF_implementation_included
 
 #include <Champ_implementation.h>
 
@@ -22,7 +22,7 @@ class Frontiere_dis_base;
 class Zone_VDF;
 class Sortie;
 
-class Champ_Face_implementation : public Champ_implementation
+class Champ_Face_VDF_implementation : public Champ_implementation
 {
 public:
   DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const override;
@@ -41,4 +41,4 @@ protected :
   DoubleTab& trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x,int distant) const;
 };
 
-#endif
+#endif /* Champ_Face_VDF_implementation_included */

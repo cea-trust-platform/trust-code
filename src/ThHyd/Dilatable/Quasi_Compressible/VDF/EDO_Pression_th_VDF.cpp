@@ -19,7 +19,7 @@
 #include <EDO_Pression_th_VDF.h>
 #include <communications.h>
 #include <Zone_Cl_VDF.h>
-#include <Champ_Face.h>
+#include <Champ_Face_VDF.h>
 #include <Zone_VDF.h>
 #include <TRUSTTab.h>
 #include <Debog.h>

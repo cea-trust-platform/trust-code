@@ -13,40 +13,40 @@
 *
 *****************************************************************************/
 
-#include <Champ_Fonc_Face.h>
+#include <Champ_Fonc_Face_VDF.h>
 #include <Champ_Uniforme.h>
 #include <Champ_Don_lu.h>
 #include <Champ_Uniforme_Morceaux.h>
 #include <Zone_VDF.h>
 
-Implemente_instanciable(Champ_Fonc_Face,"Champ_Fonc_Face",Champ_Fonc_base);
+Implemente_instanciable(Champ_Fonc_Face_VDF,"Champ_Fonc_Face|Champ_Fonc_Face_VDF",Champ_Fonc_base);
 
 
-Sortie& Champ_Fonc_Face::printOn(Sortie& s ) const
+Sortie& Champ_Fonc_Face_VDF::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
-Entree& Champ_Fonc_Face::readOn(Entree& s )
+Entree& Champ_Fonc_Face_VDF::readOn(Entree& s )
 {
   return s ;
 }
 
-const Zone_dis_base& Champ_Fonc_Face::zone_dis_base() const
+const Zone_dis_base& Champ_Fonc_Face_VDF::zone_dis_base() const
 {
   return la_zone_VDF.valeur();
 }
 
-void Champ_Fonc_Face::associer_zone_dis_base(const Zone_dis_base& z_dis)
+void Champ_Fonc_Face_VDF::associer_zone_dis_base(const Zone_dis_base& z_dis)
 {
   la_zone_VDF=ref_cast(Zone_VDF, z_dis);
 }
 
-int Champ_Fonc_Face::fixer_nb_valeurs_nodales(int nb_noeuds)
+int Champ_Fonc_Face_VDF::fixer_nb_valeurs_nodales(int nb_noeuds)
 {
   assert(nb_noeuds == zone_vdf().nb_faces());
   const MD_Vector& md = zone_vdf().md_vector_faces();
-  // HACK (le meme que dans Champ_Face.cpp)
+  // HACK (le meme que dans Champ_Face_VDF.cpp)
   int old_nb_comp = nb_compo_;
   nb_compo_ = 1;
   creer_tableau_distribue(md);
@@ -54,23 +54,23 @@ int Champ_Fonc_Face::fixer_nb_valeurs_nodales(int nb_noeuds)
   return nb_noeuds;
 }
 
-void Champ_Fonc_Face::mettre_a_jour(double t)
+void Champ_Fonc_Face_VDF::mettre_a_jour(double t)
 {
   Champ_Fonc_base::mettre_a_jour(t);
 }
 
-DoubleTab& Champ_Fonc_Face::trace(const Frontiere_dis_base& fr, DoubleTab& x, double tps, int distant) const
+DoubleTab& Champ_Fonc_Face_VDF::trace(const Frontiere_dis_base& fr, DoubleTab& x, double tps, int distant) const
 {
-  return Champ_Face_implementation::trace(fr, valeurs(), x, distant);
+  return Champ_Face_VDF_implementation::trace(fr, valeurs(), x, distant);
 }
 
-int Champ_Fonc_Face::imprime(Sortie& os, int ncomp) const
+int Champ_Fonc_Face_VDF::imprime(Sortie& os, int ncomp) const
 {
   imprime_Face(os, ncomp);
   return 1;
 }
 
-Champ_base& Champ_Fonc_Face::affecter_(const Champ_base& ch)
+Champ_base& Champ_Fonc_Face_VDF::affecter_(const Champ_base& ch)
 {
   const DoubleTab& v = ch.valeurs();
   DoubleTab& val = valeurs();
@@ -172,7 +172,7 @@ Champ_base& Champ_Fonc_Face::affecter_(const Champ_base& ch)
   return *this;
 }
 
-DoubleVect& Champ_Fonc_Face::valeur_aux_compo(const DoubleTab& positions, DoubleVect& tab_valeurs, int ncomp) const
+DoubleVect& Champ_Fonc_Face_VDF::valeur_aux_compo(const DoubleTab& positions, DoubleVect& tab_valeurs, int ncomp) const
 {
   const Zone& mazone = zone_dis_base().zone();
   IntVect les_polys(positions.dimension(0));

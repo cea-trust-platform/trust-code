@@ -37,7 +37,7 @@
 
 #include <Neumann_sortie_libre.h>
 #include <Ref_Champ_P0_VDF.h>
-#include <Ref_Champ_Face.h>
+#include <Ref_Champ_Face_VDF.h>
 #include <Ref_Zone_VDF.h>
 
 class Sortie_libre_Pression_imposee_Orlansky : public Neumann_sortie_libre
@@ -58,7 +58,7 @@ protected:
 
   REF(Zone_VDF)  la_zone_VDF;
   REF(Champ_P0_VDF)  pression_interne;
-  REF(Champ_Face)  vitesse_interne;
+  REF(Champ_Face_VDF)  vitesse_interne;
 
   DoubleVect pression_temps_moins_un;
   DoubleVect pression_temps_moins_deux;

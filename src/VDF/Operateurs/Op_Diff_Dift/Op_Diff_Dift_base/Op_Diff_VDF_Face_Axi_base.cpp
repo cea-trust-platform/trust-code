@@ -24,7 +24,7 @@ void Op_Diff_VDF_Face_Axi_base::associer(const Zone_dis& zone_dis, const Zone_Cl
 {
   const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
   const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF,zone_cl_dis.valeur());
-  const Champ_Face& inco = ref_cast(Champ_Face,ch_transporte.valeur());
+  const Champ_Face_VDF& inco = ref_cast(Champ_Face_VDF,ch_transporte.valeur());
   la_zone_vdf = zvdf;
   la_zcl_vdf = zclvdf;
   inconnue = inco;

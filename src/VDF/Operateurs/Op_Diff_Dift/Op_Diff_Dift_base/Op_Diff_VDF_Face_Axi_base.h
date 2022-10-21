@@ -17,7 +17,7 @@
 #define Op_Diff_VDF_Face_Axi_base_included
 
 #include <Op_Diff_VDF_Face_base.h>
-#include <Ref_Champ_Face.h>
+#include <Ref_Champ_Face_VDF.h>
 
 class Op_Diff_VDF_Face_Axi_base : public Op_Diff_VDF_Face_base
 {
@@ -35,7 +35,7 @@ public:
 
 protected:
   static constexpr double deux_pi = M_PI*2.0;
-  REF(Champ_Face) inconnue;
+  REF(Champ_Face_VDF) inconnue;
   REF(Zone_VDF) la_zone_vdf;
   REF(Zone_Cl_VDF) la_zcl_vdf;
   IntVect orientation, type_arete_bord;
@@ -66,7 +66,7 @@ private:
   inline void not_implemented(const char * nom_funct) const
   {
     std::cerr << "Erreur dans : " << nom_funct << std::endl;
-    std::cerr << "On ne sait pas traiter la diffusion d'un Champ_Face a plusieurs inconnues ! " << std::endl;
+    std::cerr << "On ne sait pas traiter la diffusion d'un Champ_Face_VDF a plusieurs inconnues ! " << std::endl;
     throw;
   }
 };

@@ -56,16 +56,17 @@
  Champ_Don_lu Champ_Don_lu Champ_Don_lu.h
  Champ_Elem_PolyMAC Champ_Elem_PolyMAC Champ_Elem_PolyMAC.h
  Champ_Elem_PolyMAC_P0 Champ_Elem_PolyMAC_P0 Champ_Elem_PolyMAC_P0.h
- Champ_Face Champ_Face Champ_Face.h
+ Champ_Face_base Champ_Face_base Champ_Face_base.h
  Champ_Face_PolyMAC Champ_Face_PolyMAC Champ_Face_PolyMAC.h
  Champ_Face_PolyMAC_P0 Champ_Face_PolyMAC_P0 Champ_Face_PolyMAC_P0.h
+ Champ_Face|Champ_Face_VDF Champ_Face_VDF Champ_Face_VDF.h
  Champ_Fonc Champ_Fonc Champ_Fonc.h
  Champ_Fonc_base Champ_Fonc_base Champ_Fonc_base.h
  Champ_Fonc_Elem_PolyMAC Champ_Fonc_Elem_PolyMAC Champ_Fonc_Elem_PolyMAC.h
  Champ_Fonc_Elem_PolyMAC_P0_rot Champ_Fonc_Elem_PolyMAC_P0_rot Champ_Fonc_Elem_PolyMAC_P0_rot.h
  Champ_Fonc_Elem_PolyMAC_P0_TC Champ_Fonc_Elem_PolyMAC_P0_TC Champ_Fonc_Elem_PolyMAC_P0_TC.h
- Champ_Fonc_Face Champ_Fonc_Face Champ_Fonc_Face.h
  Champ_Fonc_Face_PolyMAC Champ_Fonc_Face_PolyMAC Champ_Fonc_Face_PolyMAC.h
+ Champ_Fonc_Face|Champ_Fonc_Face_VDF Champ_Fonc_Face_VDF Champ_Fonc_Face_VDF.h
  Champ_Fonc_Fonction Champ_Fonc_Fonction Champ_Fonc_Fonction.h
  Champ_Fonc_Fonction_txyz Champ_Fonc_Fonction_txyz Champ_Fonc_Fonction_txyz.h
  Champ_Fonc_Fonction_txyz_Morceaux Champ_Fonc_Fonction_txyz_Morceaux Champ_Fonc_Fonction_txyz_Morceaux.h
@@ -533,6 +534,7 @@
  Masse_ajoutee_Zuber Masse_ajoutee_Zuber Masse_ajoutee_Zuber.h
  Masse_EF Solveur_Masse_EF Solveur_Masse_EF.h
  Masse_Multiphase Masse_Multiphase Masse_Multiphase.h
+ Masse_PolyMAC_base Masse_PolyMAC_base Masse_PolyMAC_base.h
  Masse_PolyMAC_Elem|Masse_PolyMAC_P0_Elem Masse_PolyMAC_Elem Masse_PolyMAC_Elem.h
  Masse_PolyMAC_Face Masse_PolyMAC_Face Masse_PolyMAC_Face.h
  Masse_PolyMAC_P0_Face Masse_PolyMAC_P0_Face Masse_PolyMAC_P0_Face.h
@@ -1151,7 +1153,9 @@
  Transformer Transformer Transformer.h
  Transport_Interfaces_base Transport_Interfaces_base Transport_Interfaces_base.h
  Transport_turbulent_base Transport_turbulent_base Transport_turbulent_base.h
+ Travail_pression_Elem_base Travail_pression_Elem_base Travail_pression_Elem_base.h
  Travail_pression_Elem_PolyMAC|Travail_pression_Elem_PolyMAC_P0 Travail_pression_PolyMAC Travail_pression_PolyMAC.h
+ travail_pression_VDF_P0_VDF Travail_pression_VDF Travail_pression_VDF.h
  Triangle Triangle Triangle.h
  Triangulation_base Triangulation_base Triangulation_base.h
  Trianguler Trianguler Trianguler.h

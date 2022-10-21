@@ -19,7 +19,7 @@
 #include <Ref_Champ_Uniforme.h>
 #include <Champ_Uniforme.h>
 #include <Eval_Diff_VDF.h>
-#include <Champ_Face.h>
+#include <Champ_Face_VDF.h>
 #include <Champ_base.h>
 #include <Zone_VDF.h>
 class Champ_base;

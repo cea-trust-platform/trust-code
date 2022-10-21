@@ -16,7 +16,7 @@
 #ifndef Champ_Don_Face_lu_included
 #define Champ_Don_Face_lu_included
 
-#include <Champ_Fonc_Face.h>
+#include <Champ_Fonc_Face_VDF.h>
 
 /*! @brief class Champ_Don_Face_lu Cette classe represente un champ de donnees que l'on lit
  *
@@ -33,7 +33,7 @@
  * @sa Champ_Don_base
  */
 
-class Champ_Don_Face_lu : public Champ_Fonc_Face
+class Champ_Don_Face_lu : public Champ_Fonc_Face_VDF
 {
 
   Declare_instanciable(Champ_Don_Face_lu);

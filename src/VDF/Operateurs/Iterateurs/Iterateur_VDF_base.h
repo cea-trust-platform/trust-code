@@ -19,10 +19,10 @@
 #include <Ref_Operateur_base.h>
 #include <CL_Types_include.h>
 #include <Evaluateur_VDF.h>
+#include <Champ_Face_VDF.h>
 #include <Matrice_Morse.h>
 #include <Zone_Cl_VDF.h>
 #include <Zone_Cl_dis.h>
-#include <Champ_Face.h>
 #include <Zone_VDF.h>
 
 enum class Type_Operateur { Op_CONV_ELEM , Op_CONV_FACE , Op_DIFF_ELEM , Op_DIFT_ELEM , Op_DIFF_FACE , Op_DIFT_FACE } ; // ne touche pas !

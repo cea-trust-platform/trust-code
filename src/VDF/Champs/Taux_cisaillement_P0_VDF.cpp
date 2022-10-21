@@ -15,7 +15,7 @@
 
 #include <Taux_cisaillement_P0_VDF.h>
 #include <Zone_VF.h>
-#include <Champ_Face.h>
+#include <Champ_Face_VDF.h>
 #include <Zone_Cl_VDF.h>
 
 Implemente_instanciable(Taux_cisaillement_P0_VDF,"Taux_cisaillement_P0_VDF",Champ_Fonc_P0_VDF);
@@ -37,7 +37,7 @@ Entree& Taux_cisaillement_P0_VDF::readOn(Entree& s)
   return s ;
 }
 
-void Taux_cisaillement_P0_VDF::associer_champ(const Champ_Face& la_vitesse, const Zone_Cl_dis_base& la_zone_Cl_dis_base)
+void Taux_cisaillement_P0_VDF::associer_champ(const Champ_Face_VDF& la_vitesse, const Zone_Cl_dis_base& la_zone_Cl_dis_base)
 {
   la_zone_Cl_VDF  = ref_cast(Zone_Cl_VDF, la_zone_Cl_dis_base);
   vitesse_= la_vitesse;

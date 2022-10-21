@@ -19,7 +19,7 @@
 
 #include <Champ_y_plus.h>
 #include <Champ_Fonc_P0_VDF.h>
-#include <Ref_Champ_Face.h>
+#include <Ref_Champ_Face_VDF.h>
 #include <Ref_Zone_Cl_VDF.h>
 #include <Zone_Cl_dis_base.h>
 
@@ -37,9 +37,9 @@ class Y_plus_Champ_Face : public Champ_y_plus,
 
 public:
 
-  inline const Champ_Face& mon_champ() const;
+  inline const Champ_Face_VDF& mon_champ() const;
   inline void mettre_a_jour(double ) override;
-  void associer_champ(const Champ_Face& );
+  void associer_champ(const Champ_Face_VDF& );
   void me_calculer(double ) override;
 
   inline void associer_zone_Cl_dis_base(const Zone_Cl_dis_base&);
@@ -48,11 +48,11 @@ public:
 
 protected:
 
-  REF(Champ_Face) mon_champ_;
+  REF(Champ_Face_VDF) mon_champ_;
   REF(Zone_Cl_VDF) la_zone_Cl_VDF;
 };
 
-inline const Champ_Face& Y_plus_Champ_Face::mon_champ() const
+inline const Champ_Face_VDF& Y_plus_Champ_Face::mon_champ() const
 {
   return mon_champ_.valeur();
 }

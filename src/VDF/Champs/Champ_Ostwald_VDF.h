@@ -16,10 +16,10 @@
 #ifndef Champ_Ostwald_VDF_included
 #define Champ_Ostwald_VDF_included
 
-#include <Ref_Champ_Face.h>
+#include <Ref_Champ_Face_VDF.h>
 #include <Champ_Ostwald.h>
 #include <Ref_Zone_VDF.h>
-#include <Champ_Face.h>
+#include <Champ_Face_VDF.h>
 
 /*! @brief classe Champ_Ostwald_VDF Represente un champ en discretisation VDF qui varie en fonction
  *
@@ -37,9 +37,9 @@ class Champ_Ostwald_VDF : public Champ_Ostwald
 
 public :
 
-  inline const Champ_Face& mon_champs() const;
+  inline const Champ_Face_VDF& mon_champs() const;
   //   inline const Fluide_Ostwald& mon_fluide() const;
-  inline void associer_champ(const Champ_Face&);
+  inline void associer_champ(const Champ_Face_VDF&);
 
   inline void associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base) override;
 
@@ -54,13 +54,13 @@ public :
 protected :
 
   void calculer_mu(DoubleTab& );
-  REF(Champ_Face) mon_champ_;  // pour calculer D::D
+  REF(Champ_Face_VDF) mon_champ_;  // pour calculer D::D
   REF(Zone_VDF) la_zone_VDF;
 
 };
 
 
-inline const Champ_Face& Champ_Ostwald_VDF::mon_champs() const
+inline const Champ_Face_VDF& Champ_Ostwald_VDF::mon_champs() const
 {
   return mon_champ_.valeur();
 }
@@ -72,7 +72,7 @@ inline const Champ_Face& Champ_Ostwald_VDF::mon_champs() const
   }*/
 
 
-inline void Champ_Ostwald_VDF::associer_champ(const Champ_Face& un_champ)
+inline void Champ_Ostwald_VDF::associer_champ(const Champ_Face_VDF& un_champ)
 {
   mon_champ_ = un_champ;
 }

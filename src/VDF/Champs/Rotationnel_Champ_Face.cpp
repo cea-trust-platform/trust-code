@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Rotationnel_Champ_Face.h>
-#include <Champ_Face.h>
+#include <Champ_Face_VDF.h>
 
 Implemente_instanciable(Rotationnel_Champ_Face,"Rotationnel_Champ_Face",Champ_Fonc_P0_VDF);
 
@@ -35,7 +35,7 @@ Entree& Rotationnel_Champ_Face::readOn(Entree& s)
   return s ;
 }
 
-void Rotationnel_Champ_Face::associer_champ(const Champ_Face& un_champ)
+void Rotationnel_Champ_Face::associer_champ(const Champ_Face_VDF& un_champ)
 {
   mon_champ_= un_champ;
 }

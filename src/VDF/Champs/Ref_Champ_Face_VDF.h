@@ -13,12 +13,12 @@
 *
 *****************************************************************************/
 
-#ifndef Ref_Champ_Face_included
-#define Ref_Champ_Face_included
+#ifndef Ref_Champ_Face_VDF_included
+#define Ref_Champ_Face_VDF_included
 
 #include <Ref.h>
 
-class Champ_Face;
-Declare_ref(Champ_Face);
+class Champ_Face_VDF;
+Declare_ref(Champ_Face_VDF);
 
-#endif
+#endif /* Ref_Champ_Face_VDF_included */

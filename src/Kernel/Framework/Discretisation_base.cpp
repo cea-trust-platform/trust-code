@@ -348,242 +348,204 @@ void Discretisation_base::nommer_completer_champ_physique(const Zone_dis_base& z
 Nom Discretisation_base::get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur,const Equation_base& eqn ,const REF(Champ_base)& champ_sup) const
 {
   Nom type;
-  if (class_operateur=="Source")
+  if (class_operateur == "Source")
     {
       type = type_operateur;
       Nom disc = eqn.discretisation().que_suis_je();
 
-      int isQC=eqn.probleme().is_dilatable();
+      int isQC = eqn.probleme().is_dilatable();
 
-      if ((isQC) && ((eqn.que_suis_je()!="Transport_K_Eps")
-                     && (eqn.que_suis_je()!="Transport_K_Eps_Bas_Reynolds")
-                     && (eqn.que_suis_je()!="Transport_K_Eps_Realisable")
-                     && (eqn.que_suis_je()!="Transport_K_Eps_V2")))
-        type+="_QC";
+      if ((isQC) && ((eqn.que_suis_je() != "Transport_K_Eps") && (eqn.que_suis_je() != "Transport_K_Eps_Bas_Reynolds") &&
+                     (eqn.que_suis_je() != "Transport_K_Eps_Realisable") && (eqn.que_suis_je() != "Transport_K_Eps_V2")))
+        type += "_QC";
 
       // sauf pour le term boussinesq
-      if( disc=="VEFPreP1B" )
+      if (disc == "VEFPreP1B")
         {
-          if ( (Motcle(type_operateur) == "boussinesq_temperature") || (Motcle(type_operateur) == "boussinesq_concentration") || (Motcle(type_operateur) == "boussinesq") )
-            {
-              disc="VEFPreP1B" ;
-            }
+          if ((Motcle(type_operateur) == "boussinesq_temperature") || (Motcle(type_operateur) == "boussinesq_concentration") || (Motcle(type_operateur) == "boussinesq"))
+            disc = "VEFPreP1B";
           else
-            {
-              disc="VEF";
-            }
+            disc = "VEF";
         }
-      Nom champ = (eqn.inconnue()->que_suis_je());
-      if (champ == "Champ_Q1NC")
-        champ = "Champ_P1NC";
 
-      champ.suffix("Champ_");
-      type+="_";
-      type+=disc;
-      {
-        type+="_";
-        type+=champ;
-      }
+      Nom type_ch = (eqn.inconnue()->que_suis_je());
+      if (type_ch == "Champ_Q1NC") type_ch = "Champ_P1NC";
+
+      type_ch.suffix("Champ_");
+      type += "_";
+      type += disc;
+      type += "_";
+      type += type_ch;
       return type;
     }
-  else if (class_operateur=="Solveur_Masse")
+  else if (class_operateur == "Solveur_Masse")
     {
-      type="Masse_";
+      type = "Masse_";
 
-      Nom discr=eqn.discretisation().que_suis_je();
+      Nom discr = eqn.discretisation().que_suis_je();
       // le Solveur est commun aux discretisations VEF et VEFP1B
-      if(discr=="VEFPreP1B" )
-        discr="VEF";
+      if (discr == "VEFPreP1B") discr = "VEF";
 
-      type+=discr;
+      type += discr;
 
-      Nom type_ch=eqn.inconnue()->que_suis_je();
-      if (type_ch == "Champ_Q1NC")
-        type_ch = "Champ_P1NC";
-
-      if (type_ch.debute_par("Champ_P0_VDF"))
-        type_ch = "Champ_P0_VDF";
-
-      if (type_ch.debute_par("Champ_Face"))
-        type_ch = "Champ_Face";
+      Nom type_ch = eqn.inconnue()->que_suis_je();
+      if (type_ch == "Champ_Q1NC")  type_ch = "Champ_P1NC";
+      if (type_ch.debute_par("Champ_P0_VDF")) type_ch = "Champ_P0_VDF";
+      if (type_ch.debute_par("Champ_Face")) type_ch = "Champ_Face";
 
       type_ch.suffix("Champ");
-      type+=type_ch;
-
+      type += type_ch;
+      return type;
     }
-  else if (class_operateur=="Operateur_Grad")
+  else if (class_operateur == "Operateur_Grad")
     {
-      type="Op_Grad_";
-
+      type = "Op_Grad_";
       Nom type_pb = eqn.probleme().que_suis_je();
-      if (type_pb=="Probleme_SG")
+      if (type_pb == "Probleme_SG")
         {
-          type+=(type_pb.suffix("Probleme_"));
-          type+="_";
+          type += (type_pb.suffix("Probleme_"));
+          type += "_";
         }
 
-      Nom discr=eqn.discretisation().que_suis_je();
+      Nom discr = eqn.discretisation().que_suis_je();
 
-      type+=discr;
-      type+="_";
-      Nom type_inco=eqn.inconnue()->que_suis_je();
-      if (type_inco == "Champ_Q1NC")
-        type_inco = "Champ_P1NC";
+      type += discr;
+      type += "_";
+      Nom type_inco = eqn.inconnue()->que_suis_je();
 
-      type+=(type_inco.suffix("Champ_"));
+      if (type_inco == "Champ_Q1NC") type_inco = "Champ_P1NC";
 
+      type += (type_inco.suffix("Champ_"));
 
       //Test pour appliquer un gradient a un Champ_P1NC a une composante en VEF
       //Typage a revoir (revison des operateurs)
-      if ((eqn.inconnue()->le_nom()!="vitesse") && (eqn.inconnue()->que_suis_je()=="Champ_P1NC"))
-        type="Op_Grad_P1NC_to_P0";
+      if ((eqn.inconnue()->le_nom() != "vitesse") && (eqn.inconnue()->que_suis_je() == "Champ_P1NC"))
+        type = "Op_Grad_P1NC_to_P0";
 
       //Test pour appliquer un gradient a un Champ_P0 a une composante en VDF
       //Typage a revoir (revison des operateurs)
-      if ((eqn.inconnue()->le_nom()!="vitesse") && (eqn.inconnue()->que_suis_je()=="Champ_P0_VDF"))
-        type="Op_Grad_P0_to_Face";
+      if ((eqn.inconnue()->le_nom() != "vitesse") && (eqn.inconnue()->que_suis_je() == "Champ_P0_VDF"))
+        type = "Op_Grad_P0_to_Face";
 
       return type;
     }
   else if (class_operateur=="Operateur_Div")
     {
+      type = "Op_Div_";
 
-      type="Op_Div_";
+      Nom discr = eqn.discretisation().que_suis_je();
+      Nom type_inco = eqn.inconnue()->que_suis_je();
+      type += discr;
 
-      Nom discr=eqn.discretisation().que_suis_je();
-      Nom type_inco=eqn.inconnue()->que_suis_je();
+      type += "_";
+      if (type_inco == "Champ_Q1NC") type_inco = "Champ_P1NC";
 
-      type+=discr;
-
-
-      type+="_";
-      if (type_inco == "Champ_Q1NC")
-        type_inco = "Champ_P1NC";
-      type+=(type_inco.suffix("Champ_"));
+      type += (type_inco.suffix("Champ_"));
+      return type;
     }
   else if (class_operateur=="Operateur_Diff")
     {
       Nom typ(type_operateur);
-      if (typ=="standard") typ="";
+      if (typ == "standard") typ = "";
 
-      Cerr << "We treat the diffusive operator of : "
-           << eqn.que_suis_je() << finl;
-      type="Op_Diff_";
+      Cerr << "We treat the diffusive operator of : " << eqn.que_suis_je() << finl;
+      type = "Op_Diff_";
       //const Discretisation_base& discr=eqn.discretisation();
-      Nom nom_discr=que_suis_je();
-      Cerr << "The discretization used is : "
-           << nom_discr << finl;
+      Nom nom_discr = que_suis_je();
+      Cerr << "The discretization used is : " << nom_discr << finl;
       assert(champ_sup.non_nul());
-      const Champ_base& diffusivite=champ_sup.valeur();
+      const Champ_base& diffusivite = champ_sup.valeur();
       // Typage en fonction de la discretisation
 
-
-
       // les operateurs de diffusion sont communs aux discretisations VEF et VEFP1B
-      if(nom_discr=="VEFPreP1B")
-        nom_discr="VEF";
-      type+=nom_discr;
-      type+=typ;
+      if (nom_discr == "VEFPreP1B")
+        nom_discr = "VEF";
+      type += nom_discr;
+      type += typ;
 
       // MODIF ELI LAUCOIN (10/12/2007) :
       // Je conserve le comportement normal pour le VEF et le VDF
-      if ( (nom_discr == "VDF") || (nom_discr == "VEF") )
+      if ((nom_discr == "VDF") || (nom_discr == "VEF"))
         {
           Nom nb_inc;
           // Modif Elie Saikali (Nov 2020)
-          if (diffusivite.nb_comp() == 1 && nom_discr=="VDF")
+          if (diffusivite.nb_comp() == 1 && nom_discr == "VDF")
             nb_inc = "_";
           else if (diffusivite.nb_comp() > 1 && diffusivite.le_nom() == "conductivite")
             nb_inc = "ANISOTROPE_";
           else
             {
-              if (nom_discr=="VEF")
-                nb_inc = "_";
-              else
-                nb_inc = "_Multi_inco_";
+              if (nom_discr == "VEF") nb_inc = "_";
+              else nb_inc = "_Multi_inco_";
             }
 
-          type+= nb_inc ;
+          type += nb_inc;
 
           Nom type_diff;
-          if(sub_type(Champ_Uniforme,diffusivite))
-            type_diff="const_";
-          else
-            type_diff="var_";
-          type+= type_diff;
+          if (sub_type(Champ_Uniforme, diffusivite)) type_diff = "const_";
+          else type_diff = "var_";
+
+          type += type_diff;
         }
       else
         {
-          // par contre, je modifie le cas general pour
-          // eviter de rajouter des cas particuliers
+          // par contre, je modifie le cas general pour eviter de rajouter des cas particuliers
           type += "_";
         }
 
-      Nom type_inco=eqn.inconnue()->que_suis_je();
-      type+=(type_inco.suffix("Champ_"));
-      if (axi == 1)
-        {
-          type += "_Axi";
-        }
+      Nom type_inco = eqn.inconnue()->que_suis_je();
 
+      type += (type_inco.suffix("Champ_"));
+      if (axi == 1) type += "_Axi";
 
       return type;
     }
-  else if (class_operateur=="Operateur_Conv")
+  else if (class_operateur == "Operateur_Conv")
     {
-      if (Motcle(type_operateur)==Motcle("ALE"))
+      if (Motcle(type_operateur) == Motcle("ALE"))
         {
-          type="Op_Conv_";
-          type+=type_operateur;
-          Nom tiret="_";
-          type+= tiret;
-          Nom discr=que_suis_je();
+          type = "Op_Conv_";
+          type += type_operateur;
+          Nom tiret = "_";
+          type += tiret;
+          Nom discr = que_suis_je();
 
-          if(discr=="VEFPreP1B")
-            discr="VEF";
-          type+=discr;
+          if (discr == "VEFPreP1B") discr = "VEF";
+          type += discr;
           return type;
         }
       else
         {
-          type="Op_Conv_";
-          type+=type_operateur;
-          Nom tiret="_";
-          type+= tiret;
-          Nom discr=que_suis_je();
+          type = "Op_Conv_";
+          type += type_operateur;
+          Nom tiret = "_";
+          type += tiret;
+          Nom discr = que_suis_je();
 
           // les operateurs de diffusion sont communs aux discretisations VEF et VEFP1B
-          if(discr=="VEFPreP1B" )
-            discr="VEF";
-          type+=discr;
-          if (type_operateur!="KEps_Comp")
+          if (discr == "VEFPreP1B") discr = "VEF";
+
+          type += discr;
+          if (type_operateur != "KEps_Comp")
             {
-              type+= tiret;
-              Nom type_inco=eqn.inconnue()->que_suis_je();
-              if (type_inco == "Champ_Q1NC")
-                type_inco = "Champ_P1NC";
+              type += tiret;
+              Nom type_inco = eqn.inconnue()->que_suis_je();
+              if (type_inco == "Champ_Q1NC") type_inco = "Champ_P1NC";
+              if (type_inco.debute_par("Champ_P0_VDF")) type_inco = "Champ_P0_VDF";
+              if (type_inco.debute_par("Champ_Face")) type_inco = "Champ_Face";
 
-              if (type_inco.debute_par("Champ_P0_VDF"))
-                type_inco = "Champ_P0_VDF";
-
-              if (type_inco.debute_par("Champ_Face"))
-                type_inco = "Champ_Face";
-
-              type+=(type_inco.suffix("Champ_"));
+              type += (type_inco.suffix("Champ_"));
 
               if (axi == 1)
-                {
-                  if(  type_operateur== "quick" )
-                    type += "_Axi";
-                }
+                if (type_operateur == "quick") type += "_Axi";
             }
-
+          return type;
         }
     }
   else
     {
-      Cerr<<class_operateur<< " not understood in get_name_of_type_for of  "<<que_suis_je()<<finl;
-      Cerr<<__FILE__<<" "<<(int)__LINE__<<finl;
+      Cerr << class_operateur << " not understood in get_name_of_type_for of  " << que_suis_je() << finl;
+      Cerr << __FILE__ << " " << (int) __LINE__ << finl;
       Process::exit();
     }
   return type;

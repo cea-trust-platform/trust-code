@@ -18,8 +18,7 @@
 
 #include <Op_Dift_VDF_Face_base.h>
 #include <Ref_Mod_turb_hyd_base.h>
-
-#include <Ref_Champ_Face.h>
+#include <Ref_Champ_Face_VDF.h>
 
 class Op_Dift_VDF_Face_Axi_base : public Op_Dift_VDF_Face_base
 {
@@ -42,7 +41,7 @@ public:
 
 protected:
   REF(Mod_turb_hyd_base) le_modele_turbulence;
-  REF(Champ_Face) inconnue;
+  REF(Champ_Face_VDF) inconnue;
   REF(Zone_VDF) la_zone_vdf;
   REF(Zone_Cl_VDF) la_zcl_vdf;
   IntVect orientation, type_arete_bord;

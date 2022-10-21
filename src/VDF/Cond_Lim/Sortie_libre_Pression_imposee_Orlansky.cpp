@@ -16,7 +16,7 @@
 #include <Sortie_libre_Pression_imposee_Orlansky.h>
 #include <Navier_Stokes_std.h>
 #include <Champ_P0_VDF.h>
-#include <Champ_Face.h>
+#include <Champ_Face_VDF.h>
 #include <Zone_VDF.h>
 #include <Debog.h>
 #include <Discretisation_base.h>
@@ -60,7 +60,7 @@ void Sortie_libre_Pression_imposee_Orlansky::completer()
   const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,eqn);
   const Zone_VDF& zone_vdf = ref_cast(Zone_VDF,eqn.zone_dis().valeur());
   const Champ_P0_VDF& pression = ref_cast(Champ_P0_VDF,eqn_hydr.pression().valeur());
-  const Champ_Face& vitesse = ref_cast(Champ_Face,eqn_hydr.inconnue().valeur());
+  const Champ_Face_VDF& vitesse = ref_cast(Champ_Face_VDF,eqn_hydr.inconnue().valeur());
   //  const IntTab& face_voisins  = zone_vdf.face_voisins();
   //  const DoubleVect& volumes_entrelaces = zone_vdf.volumes_entrelaces();
   //  const DoubleVect& face_surfaces = zone_vdf.face_surfaces();

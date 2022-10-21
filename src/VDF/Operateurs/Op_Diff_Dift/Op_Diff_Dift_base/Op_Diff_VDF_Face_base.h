@@ -26,7 +26,7 @@ class Champ_Inc;
 
 /*! @brief class Op_Diff_VDF_Face_base Cette classe represente l'operateur de diffusion associe a une equation de la quantite de mouvement.
  *
- *   La discretisation est VDF. Le champ diffuse est un Champ_Face. Le champ de diffusivite est uniforme
+ *   La discretisation est VDF. Le champ diffuse est un Champ_Face_VDF. Le champ de diffusivite est uniforme
  *   L'iterateur associe est de type Iterateur_VDF_Face. L'evaluateur associe est de type Eval_Diff_VDF_const_Face
  *
  */

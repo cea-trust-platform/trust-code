@@ -18,7 +18,7 @@
 
 
 #include <Champ_Fonc_P0_VDF.h>
-#include <Ref_Champ_Face.h>
+#include <Ref_Champ_Face_VDF.h>
 #include <Ref_Zone_Cl_VDF.h>
 
 /*! @brief classe Taux_cisaillement_P0_VDF
@@ -34,12 +34,12 @@ class Taux_cisaillement_P0_VDF : public Champ_Fonc_P0_VDF
 public:
 
   void mettre_a_jour(double ) override;
-  void associer_champ(const Champ_Face&, const Zone_Cl_dis_base&);
+  void associer_champ(const Champ_Face_VDF&, const Zone_Cl_dis_base&);
 
 private:
 
   REF(Zone_Cl_VDF) la_zone_Cl_VDF;
-  REF(Champ_Face) vitesse_;
+  REF(Champ_Face_VDF) vitesse_;
 };
 
 #endif

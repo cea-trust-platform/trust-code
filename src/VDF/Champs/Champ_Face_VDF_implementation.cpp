@@ -13,14 +13,14 @@
 *
 *****************************************************************************/
 
-#include <Champ_Face_implementation.h>
+#include <Champ_Face_VDF_implementation.h>
 #include <Champ_Inc_base.h>
 #include <Zone_VDF.h>
 #include <LecFicDiffuse.h>
 #include <Frontiere_dis_base.h>
 #include <TRUSTTab.h>
 
-DoubleTab& Champ_Face_implementation::valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val) const
+DoubleTab& Champ_Face_VDF_implementation::valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val) const
 {
   const Champ_base& cha=le_champ();
   int nb_compo_=cha.nb_comp();
@@ -31,7 +31,7 @@ DoubleTab& Champ_Face_implementation::valeur_aux_elems(const DoubleTab& position
     }
   else
     {
-      Cerr << "Erreur TRUST dans Champ_Face_implementation::valeur_aux_elems()" << finl;
+      Cerr << "Erreur TRUST dans Champ_Face_VDF_implementation::valeur_aux_elems()" << finl;
       Cerr << "Le DoubleTab val n'a pas 2 entrees" << finl;
       Process::exit();
     }
@@ -99,7 +99,7 @@ DoubleTab& Champ_Face_implementation::valeur_aux_elems(const DoubleTab& position
   return val;
 }
 
-double Champ_Face_implementation::interpolation(const double val1, const double val2, const double psi) const
+double Champ_Face_VDF_implementation::interpolation(const double val1, const double val2, const double psi) const
 {
   double epsilon=1.e-12;
   if (std::fabs(psi) < epsilon)
@@ -110,7 +110,7 @@ double Champ_Face_implementation::interpolation(const double val1, const double 
     return val1 + psi * (val2-val1) ;
 }
 
-DoubleVect& Champ_Face_implementation::valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& val, int ncomp) const
+DoubleVect& Champ_Face_VDF_implementation::valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& val, int ncomp) const
 {
   const Champ_base& cha = le_champ();
   int nb_compo_ = cha.nb_comp();
@@ -128,7 +128,7 @@ DoubleVect& Champ_Face_implementation::valeur_aux_elems_compo(const DoubleTab& p
 
   if (nb_compo_ == 1)
     {
-      Cerr<<"Champ_Face_implementation::valeur_aux_elems_compo"<<finl;
+      Cerr<<"Champ_Face_VDF_implementation::valeur_aux_elems_compo"<<finl;
       Cerr <<"A scalar field cannot be of Champ_Face type." << finl;
       Process::exit();
     }
@@ -155,7 +155,7 @@ DoubleVect& Champ_Face_implementation::valeur_aux_elems_compo(const DoubleTab& p
   return val;
 }
 
-DoubleVect& Champ_Face_implementation::valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const
+DoubleVect& Champ_Face_VDF_implementation::valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const
 {
   const Zone_VDF& zone_VDF = zone_vdf();
   const Zone& zone_geom = zone();
@@ -171,7 +171,7 @@ DoubleVect& Champ_Face_implementation::valeur_a_elem(const DoubleVect& position,
 
   if (nb_compo_ == 1)
     {
-      Cerr<<"Champ_Face_implementation::valeur_a_elem"<<finl;
+      Cerr<<"Champ_Face_VDF_implementation::valeur_a_elem"<<finl;
       Cerr <<"A scalar field cannot be of Champ_Face type." << finl;
       Process::exit();
     }
@@ -199,7 +199,7 @@ DoubleVect& Champ_Face_implementation::valeur_a_elem(const DoubleVect& position,
 }
 
 
-double Champ_Face_implementation::valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const
+double Champ_Face_VDF_implementation::valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const
 {
   const Zone_VDF& zone_VDF = zone_vdf();
   const Zone& zone_geom = zone();
@@ -216,7 +216,7 @@ double Champ_Face_implementation::valeur_a_elem_compo(const DoubleVect& position
 
   if (nb_compo_ == 1)
     {
-      Cerr<<"Champ_Face_implementation::valeur_a_elem_compo"<<finl;
+      Cerr<<"Champ_Face_VDF_implementation::valeur_a_elem_compo"<<finl;
       Cerr <<"A scalar field cannot be of Champ_Face type." << finl;
       Process::exit();
     }
@@ -240,7 +240,7 @@ double Champ_Face_implementation::valeur_a_elem_compo(const DoubleVect& position
   return val;
 }
 
-DoubleTab& Champ_Face_implementation::valeur_aux_sommets(const Domaine& dom, DoubleTab& ch_som) const
+DoubleTab& Champ_Face_VDF_implementation::valeur_aux_sommets(const Domaine& dom, DoubleTab& ch_som) const
 {
   //  const Champ_base& cha_tmp=le_champ();
   //  const DoubleTab& ch_tmp = cha_tmp.valeurs();
@@ -262,7 +262,7 @@ DoubleTab& Champ_Face_implementation::valeur_aux_sommets(const Domaine& dom, Dou
 
   if (nb_compo_ == 1)
     {
-      Cerr<<"Champ_Face_implementation::valeur_aux_sommets"<<finl;
+      Cerr<<"Champ_Face_VDF_implementation::valeur_aux_sommets"<<finl;
       Cerr <<"A scalar field cannot be of Champ_Face type." << finl;
       Process::exit();
     }
@@ -293,9 +293,9 @@ DoubleTab& Champ_Face_implementation::valeur_aux_sommets(const Domaine& dom, Dou
 
   return ch_som;
 }
-DoubleVect& Champ_Face_implementation::valeur_aux_sommets_compo(const Domaine& dom,
-                                                                DoubleVect& ch_som,
-                                                                int ncomp) const
+DoubleVect& Champ_Face_VDF_implementation::valeur_aux_sommets_compo(const Domaine& dom,
+                                                                    DoubleVect& ch_som,
+                                                                    int ncomp) const
 {
   const Champ_base& cha=le_champ();
   int nb_compo_=cha.nb_comp();
@@ -313,7 +313,7 @@ DoubleVect& Champ_Face_implementation::valeur_aux_sommets_compo(const Domaine& d
 
   if (nb_compo_ == 1)
     {
-      Cerr<<"Champ_Face_implementation::valeur_aux_sommets_compo"<<finl;
+      Cerr<<"Champ_Face_VDF_implementation::valeur_aux_sommets_compo"<<finl;
       Cerr <<"A scalar field cannot be of Champ_Face type." << finl;
       Process::exit();
     }
@@ -339,7 +339,7 @@ DoubleVect& Champ_Face_implementation::valeur_aux_sommets_compo(const Domaine& d
   return ch_som;
 }
 
-DoubleTab& Champ_Face_implementation::remplir_coord_noeuds(DoubleTab& positions) const
+DoubleTab& Champ_Face_VDF_implementation::remplir_coord_noeuds(DoubleTab& positions) const
 {
   const Zone_VDF& la_zone_vdf = ref_cast(Zone_VDF,zone_dis_base());
   const DoubleTab& xv = la_zone_vdf.xv();
@@ -355,8 +355,8 @@ DoubleTab& Champ_Face_implementation::remplir_coord_noeuds(DoubleTab& positions)
   return positions;
 }
 
-int Champ_Face_implementation::remplir_coord_noeuds_et_polys(DoubleTab& positions,
-                                                             IntVect& polys) const
+int Champ_Face_VDF_implementation::remplir_coord_noeuds_et_polys(DoubleTab& positions,
+                                                                 IntVect& polys) const
 {
   const IntTab& face_voisins = zone_vdf().face_voisins();
   int nb_faces=zone_vdf().nb_faces();
@@ -369,7 +369,7 @@ int Champ_Face_implementation::remplir_coord_noeuds_et_polys(DoubleTab& position
   return 1;
 }
 
-int Champ_Face_implementation::imprime_Face(Sortie& os, int ncomp) const
+int Champ_Face_VDF_implementation::imprime_Face(Sortie& os, int ncomp) const
 {
   const Champ_base& champ=le_champ();
   int ni,nj,nk=-1;
@@ -495,7 +495,7 @@ int Champ_Face_implementation::imprime_Face(Sortie& os, int ncomp) const
   return 1;
 }
 
-DoubleTab& Champ_Face_implementation::trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x,int distant) const
+DoubleTab& Champ_Face_VDF_implementation::trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x,int distant) const
 {
   assert(distant==0);
   const Front_VF& fr_vf=ref_cast(Front_VF, fr);

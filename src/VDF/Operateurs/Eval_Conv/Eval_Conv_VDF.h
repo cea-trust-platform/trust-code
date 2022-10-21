@@ -18,8 +18,8 @@
 
 #include <Eval_Conv_VDF_tools.h>
 #include <Evaluateur_VDF.h>
-#include <Ref_Champ_Face.h>
-#include <Champ_Face.h>
+#include <Ref_Champ_Face_VDF.h>
+#include <Champ_Face_VDF.h>
 
 class Champ_Inc_base;
 
@@ -35,7 +35,7 @@ public:
   inline Eval_Conv_VDF() {}
   inline Eval_Conv_VDF(const Eval_Conv_VDF& eval) : Evaluateur_VDF(eval), vitesse_(eval.vitesse_) { dt_vitesse.ref(eval.dt_vitesse); }
 
-  inline void associer(const Champ_Face& );
+  inline void associer(const Champ_Face_VDF& );
   inline void mettre_a_jour( ) { dt_vitesse.ref(vitesse_->valeurs()); }
   inline const Champ_Inc_base& vitesse() const { return vitesse_.valeur(); }
   inline Champ_Inc_base& vitesse() { return vitesse_.valeur(); }
@@ -51,14 +51,14 @@ public:
   inline const Zone_Cl_VDF& get_la_zcl() const { return la_zcl.valeur(); }
 
 protected:
-  REF(Champ_Face) vitesse_;
+  REF(Champ_Face_VDF) vitesse_;
   DoubleTab dt_vitesse;
 };
 
 /*! @brief associe le champ de vitesse transportante
  *
  */
-inline void Eval_Conv_VDF::associer(const Champ_Face& vit)
+inline void Eval_Conv_VDF::associer(const Champ_Face_VDF& vit)
 {
   vitesse_=vit;
   dt_vitesse.ref(vit.valeurs());

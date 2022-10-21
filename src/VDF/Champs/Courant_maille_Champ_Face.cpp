@@ -15,10 +15,10 @@
 
 #include <Courant_maille_Champ_Face.h>
 #include <Zone_VDF.h>
-#include <Champ_Face.h>
+#include <Champ_Face_VDF.h>
 #include <Schema_Temps_base.h>
 
-Implemente_instanciable(Courant_maille_Champ_Face,"Courant_maille_Champ_Face",Champ_Fonc_Face);
+Implemente_instanciable(Courant_maille_Champ_Face,"Courant_maille_Champ_Face",Champ_Fonc_Face_VDF);
 
 
 //     printOn()
@@ -37,7 +37,7 @@ Entree& Courant_maille_Champ_Face::readOn(Entree& s)
   return s ;
 }
 
-void Courant_maille_Champ_Face::associer_champ(const Champ_Face& la_vitesse, const Schema_Temps_base& sch)
+void Courant_maille_Champ_Face::associer_champ(const Champ_Face_VDF& la_vitesse, const Schema_Temps_base& sch)
 {
   vitesse_= la_vitesse;
   sch_ = sch;

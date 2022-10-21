@@ -15,10 +15,10 @@
 
 #include <Reynolds_maille_Champ_Face.h>
 #include <Zone_VDF.h>
-#include <Champ_Face.h>
+#include <Champ_Face_VDF.h>
 #include <Champ_Don.h>
 
-Implemente_instanciable(Reynolds_maille_Champ_Face,"Reynolds_maille_Champ_Face",Champ_Fonc_Face);
+Implemente_instanciable(Reynolds_maille_Champ_Face,"Reynolds_maille_Champ_Face",Champ_Fonc_Face_VDF);
 
 
 //     printOn()
@@ -37,7 +37,7 @@ Entree& Reynolds_maille_Champ_Face::readOn(Entree& s)
   return s ;
 }
 
-void Reynolds_maille_Champ_Face::associer_champ(const Champ_Face& la_vitesse, const Champ_Don& la_viscosite_cinematique)
+void Reynolds_maille_Champ_Face::associer_champ(const Champ_Face_VDF& la_vitesse, const Champ_Don& la_viscosite_cinematique)
 {
   vitesse_= la_vitesse;
   nu_ = la_viscosite_cinematique;

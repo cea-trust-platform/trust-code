@@ -16,7 +16,7 @@
 #include <EOS_Tools_VDF.h>
 #include <Zone_VDF.h>
 #include <Debog.h>
-#include <Champ_Face.h>
+#include <Champ_Face_VDF.h>
 #include <Fluide_Dilatable_base.h>
 #include <Equation_base.h>
 #include <Schema_Temps.h>
@@ -40,7 +40,7 @@ void  EOS_Tools_VDF::associer_zones(const Zone_dis& zone, const Zone_Cl_dis& zon
 {
   la_zone = ref_cast(Zone_VDF,zone.valeur());
   la_zone_Cl = zone_cl;
-  Champ_Face toto;
+  Champ_Face_VDF toto;
   toto.associer_zone_dis_base(zone.valeur());
   toto.fixer_nb_comp(1);
   toto.fixer_nb_valeurs_nodales(la_zone->nb_faces());

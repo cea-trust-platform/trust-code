@@ -15,7 +15,7 @@
 
 #include <Perte_Charge_Singuliere_VDF_Face.h>
 #include <Zone_VDF.h>
-#include <Champ_Face.h>
+#include <Champ_Face_VDF.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
 #include <Motcle.h>

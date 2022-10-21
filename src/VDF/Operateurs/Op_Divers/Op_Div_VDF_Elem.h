@@ -23,7 +23,7 @@
 declare_It_VDF_Elem(Eval_Div_VDF_Elem)
 /*! @brief class Op_Div_VDF_Elem Cette classe represente l'operateur de divergence
  *
- *   La discretisation est VDF. On calcule la divergence d'un champ de type Champ_Face
+ *   La discretisation est VDF. On calcule la divergence d'un champ de type Champ_Face_VDF
  *   L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Div_VDF_Elem
  *
  */

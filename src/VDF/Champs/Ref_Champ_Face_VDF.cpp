@@ -14,6 +14,6 @@
 *****************************************************************************/
 
 
-#include <Ref_Champ_Face.h>
-#include <Champ_Face.h>
-Implemente_ref(Champ_Face);
+#include <Ref_Champ_Face_VDF.h>
+#include <Champ_Face_VDF.h>
+Implemente_ref(Champ_Face_VDF);

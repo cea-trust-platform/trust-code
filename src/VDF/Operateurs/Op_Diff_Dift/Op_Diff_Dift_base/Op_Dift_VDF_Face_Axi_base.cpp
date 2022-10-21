@@ -25,7 +25,7 @@ void Op_Dift_VDF_Face_Axi_base::associer(const Zone_dis& zone_dis, const Zone_Cl
 {
   const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
   const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF,zone_cl_dis.valeur());
-  const Champ_Face& inco = ref_cast(Champ_Face,ch_transporte.valeur());
+  const Champ_Face_VDF& inco = ref_cast(Champ_Face_VDF,ch_transporte.valeur());
   la_zone_vdf = zvdf;
   la_zcl_vdf = zclvdf;
   inconnue = inco;
@@ -45,7 +45,7 @@ void Op_Dift_VDF_Face_Axi_base::completer()
 {
   Op_Dift_VDF_base::completer();
   Equation_base& eqn_hydr = equation();
-  Champ_Face& vitesse = ref_cast(Champ_Face,eqn_hydr.inconnue().valeur());
+  Champ_Face_VDF& vitesse = ref_cast(Champ_Face_VDF,eqn_hydr.inconnue().valeur());
   vitesse.dimensionner_tenseur_Grad();
   const RefObjU& modele_turbulence = eqn_hydr.get_modele(TURBULENCE);
   const Mod_turb_hyd_base& mod_turb = ref_cast(Mod_turb_hyd_base,modele_turbulence.valeur());
@@ -306,7 +306,7 @@ DoubleTab& Op_Dift_VDF_Face_Axi_base::ajouter(const DoubleTab& inco, DoubleTab& 
   const Zone_Cl_VDF& zclvdf = la_zcl_vdf.valeur();
   const DoubleVect& visco_turb = diffusivite_turbulente()->valeurs();
   const DoubleTab& tau_diag = inconnue->tau_diag(), &tau_croises = inconnue->tau_croises();
-  ref_cast_non_const(Champ_Face,inconnue.valeur()).calculer_dercov_axi(zclvdf);
+  ref_cast_non_const(Champ_Face_VDF,inconnue.valeur()).calculer_dercov_axi(zclvdf);
 
   ajouter_elem(visco_turb,tau_diag,resu); // Boucle sur les elements pour traiter les facettes situees a l'interieur des elements
   if (dimension == 3) ajouter_elem_3D(visco_turb,tau_diag,resu);
@@ -564,7 +564,7 @@ void Op_Dift_VDF_Face_Axi_base::ajouter_contribution(const DoubleTab& inco, Matr
   const Zone_Cl_VDF& zclvdf = la_zcl_vdf.valeur();
   const DoubleVect& visco_turb = diffusivite_turbulente()->valeurs();
   const DoubleTab& tau_diag = inconnue->tau_diag();
-  ref_cast_non_const(Champ_Face,inconnue.valeur()).calculer_dercov_axi(zclvdf);
+  ref_cast_non_const(Champ_Face_VDF,inconnue.valeur()).calculer_dercov_axi(zclvdf);
 
   ajouter_contribution_elem(visco_turb,tau_diag,matrice); // Boucle sur les elements pour traiter les facettes situees a l'interieur des elements
   if (dimension == 3) ajouter_contribution_elem_3D(visco_turb,tau_diag,matrice);

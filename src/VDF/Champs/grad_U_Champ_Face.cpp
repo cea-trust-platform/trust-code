@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <grad_U_Champ_Face.h>
-#include <Champ_Face.h>
+#include <Champ_Face_VDF.h>
 #include <Zone_Cl_VDF.h>
 
 Implemente_instanciable(grad_U_Champ_Face,"grad_U_Champ_Face",Champ_Fonc_P0_VDF);
@@ -36,7 +36,7 @@ Entree& grad_U_Champ_Face::readOn(Entree& s)
   return s ;
 }
 
-void grad_U_Champ_Face::associer_champ(const Champ_Face& la_vitesse)
+void grad_U_Champ_Face::associer_champ(const Champ_Face_VDF& la_vitesse)
 {
   vitesse_= la_vitesse;
 }

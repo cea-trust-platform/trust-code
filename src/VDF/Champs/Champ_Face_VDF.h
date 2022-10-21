@@ -13,18 +13,18 @@
 *
 *****************************************************************************/
 
-#ifndef Champ_Face_included
-#define Champ_Face_included
+#ifndef Champ_Face_VDF_included
+#define Champ_Face_VDF_included
 
-#include <Champ_Face_implementation.h>
+#include <Champ_Face_VDF_implementation.h>
 #include <Champ_Face_base.h>
 #include <Zone_VDF.h>
 
 class Zone_Cl_VDF;
 
-/*! @brief class Champ_Face Cette classe sert a representer un champ vectoriel dont on ne calcule
+/*! @brief class Champ_Face_VDF Cette classe sert a representer un champ vectoriel dont on ne calcule
  *
- *   que les composantes normales aux faces.Il n'y a donc qu'un degre de
+ *   que les composantes normales aux faces en VDF.Il n'y a donc qu'un degre de
  *   liberte par face et l'attribut nb_comp_ d'un objet de type Champ_Face
  *   vaut 1. On peut neammoins imposer toutes les composantes du champ sur
  *   le bord. Si n est le nombre de faces total de la zone et nb_faces_bord
@@ -37,11 +37,9 @@ class Zone_Cl_VDF;
  *
  * @sa Champ_Inc_base
  */
-class Champ_Face : public Champ_Face_base, public Champ_Face_implementation
+class Champ_Face_VDF : public Champ_Face_base, public Champ_Face_VDF_implementation
 {
-
-  Declare_instanciable(Champ_Face);
-
+  Declare_instanciable(Champ_Face_VDF);
 public:
   int fixer_nb_valeurs_nodales(int) override;
 
@@ -78,42 +76,42 @@ public:
   // methodes inlines
   inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const override
   {
-    return Champ_Face_implementation::valeur_a_elem(position, val, le_poly);
+    return Champ_Face_VDF_implementation::valeur_a_elem(position, val, le_poly);
   }
 
   inline double valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const override
   {
-    return Champ_Face_implementation::valeur_a_elem_compo(position, le_poly, ncomp);
+    return Champ_Face_VDF_implementation::valeur_a_elem_compo(position, le_poly, ncomp);
   }
 
   inline DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& tab_valeurs) const override
   {
-    return Champ_Face_implementation::valeur_aux_elems(positions, les_polys, tab_valeurs);
+    return Champ_Face_VDF_implementation::valeur_aux_elems(positions, les_polys, tab_valeurs);
   }
 
   inline DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& tab_valeurs, int ncomp) const override
   {
-    return Champ_Face_implementation::valeur_aux_elems_compo(positions, les_polys, tab_valeurs, ncomp);
+    return Champ_Face_VDF_implementation::valeur_aux_elems_compo(positions, les_polys, tab_valeurs, ncomp);
   }
 
   inline DoubleTab& valeur_aux_sommets(const Domaine& dom, DoubleTab& val) const override
   {
-    return Champ_Face_implementation::valeur_aux_sommets(dom, val);
+    return Champ_Face_VDF_implementation::valeur_aux_sommets(dom, val);
   }
 
   inline DoubleVect& valeur_aux_sommets_compo(const Domaine& dom, DoubleVect& val, int comp) const override
   {
-    return Champ_Face_implementation::valeur_aux_sommets_compo(dom, val, comp);
+    return Champ_Face_VDF_implementation::valeur_aux_sommets_compo(dom, val, comp);
   }
 
   inline DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const override
   {
-    return Champ_Face_implementation::remplir_coord_noeuds(positions);
+    return Champ_Face_VDF_implementation::remplir_coord_noeuds(positions);
   }
 
   inline int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const override
   {
-    return Champ_Face_implementation::remplir_coord_noeuds_et_polys(positions, polys);
+    return Champ_Face_VDF_implementation::remplir_coord_noeuds_et_polys(positions, polys);
   }
 
 private:
@@ -130,4 +128,4 @@ double Champ_Face_get_val_imp_face_bord_sym(const DoubleTab& tab_valeurs, const 
 double Champ_Face_get_val_imp_face_bord( const double temp,int face,int comp, const Zone_Cl_VDF& zclo) ;
 double Champ_Face_get_val_imp_face_bord( const double temp,int face,int comp, int comp2, const Zone_Cl_VDF& zclo) ;
 
-#endif /* Champ_Face_included */
+#endif /* Champ_Face_VDF_included */

@@ -23,7 +23,7 @@
 #include <Periodique.h>
 #include <Champ_Inc.h>
 #include <Champ_P0_VDF.h>
-#include <Champ_Face.h>
+#include <Champ_Face_VDF.h>
 #include <Option_VDF.h>
 #include <Champ_front_var_instationnaire.h>
 #include <Debog.h>
@@ -376,9 +376,9 @@ void Zone_Cl_VDF::imposer_cond_lim(Champ_Inc& ch, double temps)
     ;
   else if(ch_base.nature_du_champ()==scalaire)
     ;
-  else if (sub_type(Champ_Face,ch_base))
+  else if (sub_type(Champ_Face_VDF,ch_base))
     {
-      Champ_Face& ch_face = ref_cast(Champ_Face, ch_base);
+      Champ_Face_VDF& ch_face = ref_cast(Champ_Face_VDF, ch_base);
       const Zone_VDF& ma_zone_VDF = ch_face.zone_vdf();
       int ndeb,nfin, num_face;
 

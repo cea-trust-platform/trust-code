@@ -43,7 +43,7 @@ protected:
   inline typename std::enable_if<_TYPE_ == Type_Operateur::Op_DIFF_FACE || _TYPE_ == Type_Operateur::Op_DIFT_FACE, void>::type
   associer_impl(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis, const Champ_Inc& ch_diffuse)
   {
-    const Champ_Face& inco = ref_cast(Champ_Face,ch_diffuse.valeur());
+    const Champ_Face_VDF& inco = ref_cast(Champ_Face_VDF,ch_diffuse.valeur());
     associer_<EVAL_TYPE>(zone_dis,zone_cl_dis).associer_inconnue(inco);
   }
 
