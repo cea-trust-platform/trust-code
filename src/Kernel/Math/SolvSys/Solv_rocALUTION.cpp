@@ -532,7 +532,7 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
   if (debug)
     {
       Journal() << "pm.GetLocalNrow()=" << pm.GetLocalNrow() << " <> b.size_array()=" << b.size_array() << finl;
-      Journal() << "mat.GetN()=" << mat.GetM() << " mat.GetLocalN()=" << mat.GetLocalN() << " mat.GetGhostN()=" << mat.GetGhostN() << finl;
+      Journal() << "mat.GetN()=" << mat.GetN() << " mat.GetLocalN()=" << mat.GetLocalN() << " mat.GetGhostN()=" << mat.GetGhostN() << finl;
     }
   // Build rhs and initial solution:
   tick = rocalution_time();

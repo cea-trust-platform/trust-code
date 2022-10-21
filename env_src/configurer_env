@@ -2023,11 +2023,15 @@ fi
 ##############
 # rocALUTION #
 ##############
-#if [ "$TRUST_USE_ROCALUTION" = 1 ]
-#then
-   m="# PATH to rocALUTION";e="TRUST_ROCALUTION=\"\$TRUST_ROOT/lib/src/LIBROCALUTION\" && export TRUST_ROCALUTION";ecrit $m"|"$e"|"$env
-   echo "ADD_LD_LIBRARY_PATH \$TRUST_ROCALUTION/lib" >> $env
-#fi
+if [ "$TRUST_ROCALUTION" = 0 ]
+then
+   echo "unset TRUST_ROCALUTION" >> $env
+   rm -r -f $TRUST_ROOT/lib/src/LIBROCALUTION
+else   
+   [ "$TRUST_ROCALUTION" = 1 ] && TRUST_ROCALUTION=\""\$TRUST_ROOT/lib/src/LIBROCALUTION"\"
+   m="# PATH to rocALUTION";e="TRUST_ROCALUTION=$TRUST_ROCALUTION && export TRUST_ROCALUTION";ecrit $m"|"$e"|"$env
+   echo "ADD_LD_LIBRARY_PATH $TRUST_ROCALUTION/lib" >> $env
+fi
 
 ############
 # Topology #

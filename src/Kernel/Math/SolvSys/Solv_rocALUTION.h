@@ -23,6 +23,7 @@
 class EChaine;
 
 // Initializer de rocALUTION inclus dans la classe pour ne pas l'appeler depuis main.cpp de TRUST
+#ifdef ROCALUTION_ROCALUTION_HPP_
 static int rocalution_initialized = 0;
 struct rocalution_initializer
 {
@@ -43,13 +44,13 @@ struct rocalution_initializer
     rocalution_initialized++;
   }
 };
+#endif
 
 class Solv_rocALUTION : public Solv_Externe
 {
   Declare_instanciable_sans_constructeur_ni_destructeur(Solv_rocALUTION);
 
 public :
-  rocalution_initializer rocalution_initializer_;
   Solv_rocALUTION();
   Solv_rocALUTION(const Solv_rocALUTION&);
   ~Solv_rocALUTION() override;
@@ -64,6 +65,7 @@ private :
   void initialize();
   void Create_objects(const Matrice_Morse&);
 #ifdef ROCALUTION_ROCALUTION_HPP_
+  rocalution_initializer rocalution_initializer_;
   template <typename T>
   Solver<GlobalMatrix<T>, GlobalVector<T>, T>* create_rocALUTION_precond(EChaine& is);
   template <typename T>

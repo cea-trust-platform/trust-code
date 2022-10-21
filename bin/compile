@@ -230,7 +230,7 @@ then
    # bin/KSH/Createcmakefile.py pour les includes de la librairie
    # env_src/make.all_includes.TRUST pour les includes aussi
    LIBAMGX="" && [ "$TRUST_USE_AMGX" = 1 ] && LIBAMGX=LIBAMGX
-   LIBROCALUTION="" && [ "$TRUST_ROCALUTION" != "" ] && LIBROCALUTION=LIBROCALUTION
+   LIBROCALUTION="" && [ "$TRUST_ROCALUTION" = $TRUST_ROOT/lib/src/LIBROCALUTION ] && LIBROCALUTION=LIBROCALUTION
    reps="LIBMFFT LIBMFFT_C LIBSKIT LIBLATAFILTER LIBICOCOAPI $LIBMETIS `[ ${#TRUST_BLAS_LAPACK} = 0 ] && echo LIBLAPACK` LIBMED LIBMEDCOUPLING  `[ "$TRUST_DISABLE_PETSC" = 0 ] && echo LIBPETSC` $LIBAMGX $LIBROCALUTION LIBOSQP `[ "$TRUST_DISABLE_VC" != 1 ] && echo LIBVC`"
    time=`date "+%s"`
    for rep in $reps
