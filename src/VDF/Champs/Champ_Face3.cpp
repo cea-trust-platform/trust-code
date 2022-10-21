@@ -491,7 +491,7 @@ void calrotord2centelemdim3(DoubleTab& rot, const DoubleTab& val, const Zone_VDF
 void Champ_Face::calculer_rotationnel_ordre2_centre_element(DoubleTab& rot) const
 {
   const DoubleTab& val = valeurs();
-  const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
+  const Zone_VDF& zone_VDF = zone_vdf();
   int nb_elem = zone_VDF.nb_elem();
   const IntTab& face_voisins = zone_VDF.face_voisins();
   const IntTab& elem_faces = zone_VDF.elem_faces();
@@ -513,7 +513,7 @@ void Champ_Face::calcul_critere_Q(DoubleTab& Q, const Zone_Cl_VDF& zone_Cl_VDF)
 {
   // Q=0.5*(\Omega_{ij}*\Omega_{ij}-S_{ij}*S_{ij})=-0.25*du_i/dx_j*du_j/dx_i
 
-  const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
+  const Zone_VDF& zone_VDF = zone_vdf();
   const int nb_elem = zone_VDF.nb_elem();
   const int nb_elem_tot = zone_VDF.nb_elem_tot();
   int num_elem,i,j;
@@ -557,7 +557,7 @@ void Champ_Face::calcul_y_plus(DoubleTab& y_plus, const Zone_Cl_VDF& zone_Cl_VDF
   y_plus=-1.;
 
   const Champ_Face& vit = *this;
-  const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
+  const Zone_VDF& zone_VDF = zone_vdf();
   const IntTab& face_voisins = zone_VDF.face_voisins();
   const IntVect& orientation = zone_VDF.orientation();
   const Equation_base& eqn_hydr = equation();
@@ -596,7 +596,7 @@ void Champ_Face::calcul_y_plus(DoubleTab& y_plus, const Zone_Cl_VDF& zone_Cl_VDF
       const Turbulence_paroi_base& loipar = mod_turb.loi_paroi();
       if( loipar.use_shear( ) )
         {
-          yplus_faces.resize( la_zone_VDF->nb_faces_tot( ) );
+          yplus_faces.resize( zone_vdf().nb_faces_tot( ) );
           yplus_faces.ref( loipar.tab_d_plus( ) );
           yplus_already_computed = 1;
         }
@@ -676,7 +676,7 @@ DoubleTab& Champ_Face::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gij, c
 {
 
   const Champ_Face& vit = ref_cast(Champ_Face, mon_equation->inconnue().valeur());
-  const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
+  const Zone_VDF& zone_VDF = zone_vdf();
   int nb_elem = zone_VDF.zone().nb_elem_tot();
   const IntTab& face_voisins = zone_VDF.face_voisins();
   const IntTab& elem_faces = zone_VDF.elem_faces();
@@ -987,7 +987,7 @@ DoubleTab& Champ_Face::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gij, c
 DoubleTab& Champ_Face::calcul_duidxj(const DoubleTab& in_vel, DoubleTab& gij) const
 {
 
-  const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
+  const Zone_VDF& zone_VDF = zone_vdf();
   int nb_elem_tot = zone_VDF.zone().nb_elem_tot();
   const IntTab& face_voisins = zone_VDF.face_voisins();
   const IntTab& elem_faces = zone_VDF.elem_faces();
@@ -1094,7 +1094,7 @@ DoubleTab& Champ_Face::calcul_duidxj(const DoubleTab& in_vel, DoubleTab& gij) co
 DoubleTab& Champ_Face::calcul_Sij(const DoubleTab& duidxj, DoubleTab& Sij, const Zone_Cl_VDF& zone_Cl_VDF)
 {
 
-const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
+const Zone_VDF& zone_VDF = zone_vdf();
 const int nb_elem_tot = zone_VDF.nb_elem_tot();
 int i,j,elem;
 
@@ -1128,7 +1128,7 @@ DoubleVect& Champ_Face::calcul_S_barre_sans_contrib_paroi(const DoubleTab& vites
   contribution_paroi=0;
 
   const Champ_Face& vit = ref_cast(Champ_Face, mon_equation->inconnue().valeur());
-  const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
+  const Zone_VDF& zone_VDF = zone_vdf();
 
   int nb_elem = zone_VDF.zone().nb_elem();
   const IntTab& face_voisins = zone_VDF.face_voisins();
@@ -1419,7 +1419,7 @@ DoubleVect& Champ_Face::calcul_S_barre_sans_contrib_paroi(const DoubleTab& vites
 
 DoubleVect& Champ_Face::calcul_S_barre(const DoubleTab& vitesse,DoubleVect& SMA_barre,const Zone_Cl_VDF& zone_Cl_VDF) const
 {
-  const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
+  const Zone_VDF& zone_VDF = zone_vdf();
   const int nb_elem_tot = zone_VDF.nb_elem_tot();
   const int nb_elem = zone_VDF.nb_elem();
 
@@ -1449,7 +1449,7 @@ DoubleVect& Champ_Face::calcul_S_barre(const DoubleTab& vitesse,DoubleVect& SMA_
 
 void Champ_Face::calcul_grad_u(const DoubleTab& vitesse, DoubleTab& grad_u, const Zone_Cl_VDF& zone_Cl_VDF)
 {
-  const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
+  const Zone_VDF& zone_VDF = zone_vdf();
   const int nb_elem = zone_VDF.nb_elem();
   const int nb_elem_tot = zone_VDF.nb_elem_tot();
 

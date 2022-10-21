@@ -16,12 +16,10 @@
 #ifndef Champ_Ostwald_VDF_included
 #define Champ_Ostwald_VDF_included
 
-
-
-
-#include <Champ_Ostwald.h>
-#include <Champ_Face.h>
 #include <Ref_Champ_Face.h>
+#include <Champ_Ostwald.h>
+#include <Ref_Zone_VDF.h>
+#include <Champ_Face.h>
 
 /*! @brief classe Champ_Ostwald_VDF Represente un champ en discretisation VDF qui varie en fonction
  *

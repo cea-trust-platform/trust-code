@@ -17,7 +17,6 @@
 #include <Champ_Uniforme_Morceaux.h>
 #include <Champ_Uniforme.h>
 #include <Champ_Don_lu.h>
-#include <Zone_VDF.h>
 #include <Zone_Cl_VDF.h>
 #include <Equation_base.h>
 #include <Periodique.h>
@@ -26,39 +25,14 @@
 #include <Dirichlet_paroi_fixe.h>
 #include <Dirichlet_paroi_defilante.h>
 
-Implemente_instanciable(Champ_Face,"Champ_Face",Champ_Inc_base);
+Implemente_instanciable(Champ_Face,"Champ_Face",Champ_Face_base);
 
-// printOn
-
-
-Sortie& Champ_Face::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-// readOn
-
+Sortie& Champ_Face::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
 Entree& Champ_Face::readOn(Entree& s)
 {
   lire_donnees (s) ;
   return s ;
-}
-
-/////////////////////////////////////////////////////////////////////
-//
-//   Implementation des fonctions de la classe Champ_Face
-//
-//////////////////////////////////////////////////////////////////////
-
-const Zone_dis_base& Champ_Face::zone_dis_base() const
-{
-  return la_zone_VDF.valeur();
-}
-
-void Champ_Face::associer_zone_dis_base(const Zone_dis_base& z_dis)
-{
-  la_zone_VDF=ref_cast(Zone_VDF, z_dis);
 }
 
 int Champ_Face::fixer_nb_valeurs_nodales(int nb_noeuds)
@@ -76,15 +50,15 @@ int Champ_Face::fixer_nb_valeurs_nodales(int nb_noeuds)
 
 void Champ_Face::dimensionner_tenseur_Grad()
 {
-  tau_diag_.resize(la_zone_VDF->nb_elem(),dimension);
-  tau_croises_.resize(la_zone_VDF->nb_aretes(),2);
+  tau_diag_.resize(zone_vdf().nb_elem(),dimension);
+  tau_croises_.resize(zone_vdf().nb_aretes(),2);
 }
 
 Champ_base& Champ_Face::affecter_(const Champ_base& ch)
 {
   const DoubleTab& v = ch.valeurs();
   DoubleTab& val = valeurs();
-  const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
+  const Zone_VDF& zone_VDF = zone_vdf();
   int nb_faces = zone_VDF.nb_faces();
   const IntVect& orientation = zone_VDF.orientation();
   int ori, n0, n1;
@@ -185,8 +159,7 @@ Champ_base& Champ_Face::affecter_(const Champ_base& ch)
 
 const Champ_Proto& Champ_Face::affecter(const double x1,const double x2)
 {
-  const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
-  const IntVect& orientation = zone_VDF.orientation();
+  const IntVect& orientation = zone_vdf().orientation();
   DoubleTab& val = valeurs();
   for (int num_face=0; num_face<val.size(); num_face++)
     {
@@ -207,8 +180,7 @@ const Champ_Proto& Champ_Face::affecter(const double x1,const double x2)
 const Champ_Proto& Champ_Face::affecter(const double x1,const double x2,
                                         const double x3)
 {
-  const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
-  const IntVect& orientation = zone_VDF.orientation();
+  const IntVect& orientation = zone_vdf().orientation();
   DoubleTab& val = valeurs();
   for (int num_face=0; num_face<val.size(); num_face++)
     {
@@ -231,8 +203,7 @@ const Champ_Proto& Champ_Face::affecter(const double x1,const double x2,
 
 const Champ_Proto& Champ_Face::affecter(const DoubleTab& v)
 {
-  const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
-  const IntVect& orientation = zone_VDF.orientation();
+  const IntVect& orientation = zone_vdf().orientation();
   DoubleTab& val = valeurs();
 
   if (v.nb_dim() == 2)
@@ -444,12 +415,11 @@ double Champ_Face_get_val_imp_face_bord( const double temp,int face,int comp, in
 
 int Champ_Face::compo_normale_sortante(int num_face) const
 {
-  const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
   int signe =1;
   double vit_norm;
   // signe vaut -1 si face_voisins(num_face,0) est a l'exterieur
   // signe vaut  1 si face_voisins(num_face,1) est a l'exterieur
-  if (zone_VDF.face_voisins(num_face,0) == -1)
+  if (zone_vdf().face_voisins(num_face,0) == -1)
     signe = -1;
   vit_norm= (*this)(num_face)*signe;
   return (vit_norm > 0);

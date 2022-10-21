@@ -793,7 +793,7 @@ void caldscaldcentelemdim3(DoubleTab& dscald, const DoubleTab& val, const Zone_V
 void Champ_Face::calculer_dscald_centre_element(DoubleTab& dscald) const
 {
   const DoubleTab& val = valeurs();
-  const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
+  const Zone_VDF& zone_VDF = zone_vdf();
   int nb_elem = zone_VDF.nb_elem();
   const IntTab& face_voisins = zone_VDF.face_voisins();
   const IntTab& elem_faces = zone_VDF.elem_faces();

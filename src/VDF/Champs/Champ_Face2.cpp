@@ -23,7 +23,7 @@
 
 void Champ_Face::calculer_dercov_axi(const Zone_Cl_VDF& zone_Cl_VDF)
 {
-  const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
+  const Zone_VDF& zone_VDF = zone_vdf();
   const DoubleTab& inco = valeurs();
   const IntVect& orientation = zone_VDF.orientation();
   const IntTab& elem_faces = zone_VDF.elem_faces();

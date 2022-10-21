@@ -16,9 +16,7 @@
 #ifndef Champ_Face_PolyMAC_included
 #define Champ_Face_PolyMAC_included
 
-#include <Champ_Inc_base.h>
-#include <Zone_VF.h>
-#include <Ref_Zone_VF.h>
+#include <Champ_Face_base.h>
 #include <SolveurSys.h>
 #include <Zone_PolyMAC.h>
 
@@ -30,23 +28,10 @@
  *
  */
 
-class Champ_Face_PolyMAC : public Champ_Inc_base
+class Champ_Face_PolyMAC : public Champ_Face_base
 {
-
   Declare_instanciable(Champ_Face_PolyMAC) ;
-
-protected :
-  virtual       Champ_base& le_champ(void);
-  virtual const Champ_base& le_champ(void) const;
-
 public :
-
-  void    associer_zone_dis_base(const Zone_dis_base&) override;
-  const Zone_dis_base& zone_dis_base() const override
-  {
-    return ref_zone_vf_.valeur();
-  } ;
-
   DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const override;
   double valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const override;
   DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const override;
@@ -56,43 +41,23 @@ public :
   int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const override;
 
   DoubleTab& valeur_aux_faces(DoubleTab& result) const override;
-  DoubleTab& trace(const Frontiere_dis_base& , DoubleTab& , double, int distant ) const override;
+  DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&, double, int distant) const override;
 
-  Champ_base& affecter_(const Champ_base& ) override;
+  Champ_base& affecter_(const Champ_base&) override;
   int nb_valeurs_nodales() const override;
-
-  const Zone_VF& zone_vf() const
-  {
-    return ref_zone_vf_.valeur();
-  };
 
   int fixer_nb_valeurs_nodales(int n) override;
 
   virtual void init_auxiliary_variables(); /* demande l'ajout des variables auxiliaires ( [lambda rot u] aux aretes )*/
   int reprendre(Entree& fich) override;
 
-  //tableaux de correspondance lies aux CLs : fcl(f, .) = { type de CL, num de la CL, indice de la face dans la CL }
-  //types de CL : 0 -> pas de CL
-  //              1 -> Neumann ou Neumann_homogene
-  //              2 -> Navier
-  //              3 -> Dirichlet
-  //              4 -> Dirichlet_homogene
-  inline const IntTab& fcl() const
-  {
-    if (!fcl_init_) init_fcl();
-    return fcl_;
-  }
-
   //interpolations aux elements : vitesse val(e, i) = v_i, gradient vals(e, i, j) = dv_i / dx_j
-  void interp_ve (const DoubleTab& inco, DoubleTab& val, bool is_vit=true) const;
-  void interp_ve (const DoubleTab& inco, const IntVect&, DoubleTab& val, bool is_vit=true) const;
+  void interp_ve(const DoubleTab& inco, DoubleTab& val, bool is_vit = true) const;
+  void interp_ve(const DoubleTab& inco, const IntVect&, DoubleTab& val, bool is_vit = true) const;
 
 protected:
-  REF(Zone_VF) ref_zone_vf_;
-
-  void init_fcl() const;
-  mutable IntTab fcl_;
-  mutable int fcl_init_ = 0;
+  virtual Champ_base& le_champ(void);
+  virtual const Champ_base& le_champ(void) const;
 };
 
 

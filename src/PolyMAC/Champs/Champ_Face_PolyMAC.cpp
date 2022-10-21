@@ -15,19 +15,15 @@
 
 #include <Linear_algebra_tools_impl.h>
 #include <Connectivite_som_elem.h>
-#include <Dirichlet_homogene.h>
 #include <Champ_Fonc_reprise.h>
 #include <Champ_Face_PolyMAC.h>
 #include <Schema_Temps_base.h>
-#include <Zone_Cl_PolyMAC.h>
 #include <Champ_Uniforme.h>
 #include <TRUSTTab_parts.h>
 #include <Probleme_base.h>
 #include <Equation_base.h>
 #include <Matrix_tools.h>
 #include <Zone_PolyMAC.h>
-#include <Zone_Cl_dis.h>
-#include <Dirichlet.h>
 #include <Symetrie.h>
 #include <EChaine.h>
 #include <Domaine.h>
@@ -38,7 +34,7 @@
 #include <Op_Diff_PolyMAC_base.h>
 #include <MD_Vector_base.h>
 
-Implemente_instanciable(Champ_Face_PolyMAC,"Champ_Face_PolyMAC",Champ_Inc_base) ;
+Implemente_instanciable(Champ_Face_PolyMAC,"Champ_Face_PolyMAC",Champ_Face_base) ;
 
 Sortie& Champ_Face_PolyMAC::printOn(Sortie& os) const
 {
@@ -46,10 +42,7 @@ Sortie& Champ_Face_PolyMAC::printOn(Sortie& os) const
   return os;
 }
 
-Entree& Champ_Face_PolyMAC::readOn(Entree& is)
-{
-  return is;
-}
+Entree& Champ_Face_PolyMAC::readOn(Entree& is) { return is; }
 
 Champ_base& Champ_Face_PolyMAC::le_champ(void)
 {
@@ -60,12 +53,6 @@ const Champ_base& Champ_Face_PolyMAC::le_champ(void) const
 {
   return *this;
 }
-
-void Champ_Face_PolyMAC::associer_zone_dis_base(const Zone_dis_base& z_dis)
-{
-  ref_zone_vf_=ref_cast(Zone_VF, z_dis);
-}
-
 
 int Champ_Face_PolyMAC::fixer_nb_valeurs_nodales(int n)
 {
@@ -176,32 +163,6 @@ double Champ_Face_PolyMAC::valeur_a_elem_compo(const DoubleVect& position, int p
 {
   throw;
   //return Champ_implementation_RT0::valeur_a_elem_compo(position,poly,ncomp);
-}
-
-//tableaux de correspondance pour les CLs
-void Champ_Face_PolyMAC::init_fcl() const
-{
-  const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,zone_vf());
-  const Conds_lim& cls = zone_Cl_dis().les_conditions_limites();
-  int i, f, n;
-
-  fcl_.resize(zone.nb_faces_tot(), 3);
-  for (n = 0; n < cls.size(); n++)
-    {
-      const Front_VF& fvf = ref_cast(Front_VF, cls[n].frontiere_dis());
-      int idx = sub_type(Neumann, cls[n].valeur())
-                + 2 * sub_type(Navier, cls[n].valeur())
-                + 3 * sub_type(Dirichlet, cls[n].valeur()) + 3 * sub_type(Neumann_homogene, cls[n].valeur())
-                + 4 * sub_type(Dirichlet_homogene, cls[n].valeur());
-      if (!idx)
-        {
-          Cerr << "Champ_Face_PolyMAC : CL non codee rencontree!" << finl;
-          Process::exit();
-        }
-      for (i = 0; i < fvf.nb_faces_tot(); i++)
-        f = fvf.num_face(i), fcl_(f, 0) = idx, fcl_(f, 1) = n, fcl_(f, 2) = i;
-    }
-  fcl_init_ = 1;
 }
 
 /* vitesse aux elements */
