@@ -10,6 +10,8 @@ fi
 
 [ $err = 1 ] && echo "Error: cannot load env_for_python.sh. TRUST not yet installed!" && return 1
 
+ok=1
+
 # Chargement TRUST ICoCo swig
 if [ "`echo $PYTHONPATH | grep -i Outils/ICoCo/ICoCo_src/share/swig/install/lib`" = "" ] && [ "$TRUST_DISABLE_MPI" -eq 0 ]
 then
@@ -17,8 +19,8 @@ then
   then
      source $TRUST_ROOT/Outils/ICoCo/ICoCo_src/share/swig/env.sh
   else
-     echo "Error: cannot load env_for_python.sh. trusticoco not yet installed!"
-     return 1
+     echo "Error: cannot load 'trusticoco', not yet installed!"
+     ok=0
   fi
 fi
 
@@ -29,8 +31,8 @@ then
   then
      source $TRUST_MEDCOUPLING_ROOT/env.sh
   else
-     echo "Error: cannot load env_for_python.sh. MEDCoupling not yet installed!"
-     return 1
+     echo "Error: cannot load MEDCoupling, not yet installed!"
+     ok=01
  fi
 fi
 
@@ -40,4 +42,8 @@ then
   source $TRUST_ROOT/Outils/lata_tools/src/tools/env.sh
 fi
 
-echo "env_for_python.sh successfully loaded."
+if [ $ok = 1 ]; then 
+   echo "env_for_python.sh successfully loaded."
+else
+   echo "env_for_python.sh only partially loaded!!"
+fi
