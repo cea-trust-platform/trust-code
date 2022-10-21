@@ -3,3 +3,6 @@
 cd XTriou
 make doc || exit -1
 make update_xd || exit -1
+cd ../test_complet
+./fait_lance_test || exit -1
+

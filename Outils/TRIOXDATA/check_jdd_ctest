@@ -1,0 +1,14 @@
+#!/bin/bash
+cd `dirname $0`
+. ./XDATA.sh
+
+
+cd $TRUST_ROOT/MonoDir_mpi_opt || exit -1
+mkdir -p xdata
+cd xdata
+cp ../src/CTestTestfile.cmake .
+sed -i 's/-check/-xdata/' CTestTestfile.cmake
+
+ctest -j$TRUST_NB_PHYSICAL_CORES 
+exit $?
+
