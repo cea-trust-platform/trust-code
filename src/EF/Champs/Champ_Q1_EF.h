@@ -21,28 +21,19 @@
 
 class Zone_EF;
 
-class Champ_Q1_EF : public Champ_Inc_Q1_base
+class Champ_Q1_EF: public Champ_Inc_Q1_base
 {
   Declare_instanciable(Champ_Q1_EF);
-
-public :
-
+public:
   const Zone_EF& zone_EF() const;
   void associer_zone_dis_base(const Zone_dis_base&) override;
   const Zone_dis_base& zone_dis_base() const override;
-  int  imprime(Sortie& , int ) const override;
+  int imprime(Sortie&, int) const override;
   void gradient(DoubleTab&);
   void cal_rot_ordre1(DoubleTab&);
 
-protected :
-
+protected:
   REF(Zone_VF) la_zone_VF;
-
-
 };
 
-#endif
-
-
-
-
+#endif /* Champ_Q1_EF_included */

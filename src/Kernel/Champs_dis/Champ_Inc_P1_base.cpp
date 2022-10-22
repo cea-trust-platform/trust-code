@@ -15,30 +15,15 @@
 
 #include <Champ_Inc_P1_base.h>
 #include <Domaine.h>
-#include <Zone_dis_base.h>
 
 Implemente_base(Champ_Inc_P1_base,"Champ_Inc_P1_base",Champ_Inc_base);
 
-Sortie& Champ_Inc_P1_base::printOn(Sortie& os) const
-{
-  os << que_suis_je() << " " << le_nom();
-  return os;
-}
+Sortie& Champ_Inc_P1_base::printOn(Sortie& os) const { return os << que_suis_je() << " " << le_nom(); }
 
 Entree& Champ_Inc_P1_base::readOn(Entree& is)
 {
-  lire_donnees(is) ;
+  lire_donnees(is);
   return is;
-}
-
-Champ_base& Champ_Inc_P1_base::le_champ(void)
-{
-  return *this;
-}
-
-const Champ_base& Champ_Inc_P1_base::le_champ(void) const
-{
-  return *this;
 }
 
 int Champ_Inc_P1_base::fixer_nb_valeurs_nodales(int nb_noeuds)
@@ -52,7 +37,7 @@ int Champ_Inc_P1_base::fixer_nb_valeurs_nodales(int nb_noeuds)
 /*! @brief Trace du champ P0 sur la frontiere
  *
  */
-DoubleTab& Champ_Inc_P1_base::trace(const Frontiere_dis_base& fr, DoubleTab& x, double tps,int distant) const
+DoubleTab& Champ_Inc_P1_base::trace(const Frontiere_dis_base& fr, DoubleTab& x, double tps, int distant) const
 {
-  return Champ_implementation_sommet_base::trace(fr, valeurs(tps), x,  distant);
+  return Champ_implementation_sommet_base::trace(fr, valeurs(tps), x, distant);
 }

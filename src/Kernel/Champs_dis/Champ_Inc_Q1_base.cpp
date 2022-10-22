@@ -15,7 +15,6 @@
 
 #include <Champ_Inc_Q1_base.h>
 #include <Domaine.h>
-#include <Zone_dis_base.h>
 #include <Scatter.h>
 
 Implemente_base(Champ_Inc_Q1_base,"Champ_Inc_Q1_base",Champ_Inc_base);
@@ -30,16 +29,6 @@ Entree& Champ_Inc_Q1_base::readOn(Entree& is)
 {
   lire_donnees(is) ;
   return is;
-}
-
-Champ_base& Champ_Inc_Q1_base::le_champ(void)
-{
-  return *this;
-}
-
-const Champ_base& Champ_Inc_Q1_base::le_champ(void) const
-{
-  return *this;
 }
 
 int Champ_Inc_Q1_base::fixer_nb_valeurs_nodales(int nb_noeuds)

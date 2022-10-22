@@ -29,31 +29,8 @@
 
 Implemente_base_sans_constructeur(Champ_Inc_base,"Champ_Inc_base",Champ_base);
 
-/*! @brief Surcharge Champ_base::printOn(Sortie&) const Imprime le champ sur un flot de sortie.
- *
- *     Simple appel a Champ_base::printOn(Sortie&) const
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Champ_Inc_base::printOn(Sortie& os) const
-{
-  return Champ_base::printOn(os);
-}
-
-
-/*! @brief Lit un champ inconnue sur un flot d'entree.
- *
- * Simple appel a Champ_base::readOn(Entree&)
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& Champ_Inc_base::readOn(Entree& is)
-{
-  return Champ_base::readOn(is);
-}
-
+Sortie& Champ_Inc_base::printOn(Sortie& os) const { return Champ_base::printOn(os); }
+Entree& Champ_Inc_base::readOn(Entree& is) { return Champ_base::readOn(is); }
 
 /*! @brief Fixe le nombre de valeurs temporelles a conserver.
  *
@@ -68,7 +45,6 @@ int Champ_Inc_base::fixer_nb_valeurs_temporelles(int i)
   return les_valeurs->fixer_nb_cases(i);
 }
 
-
 /*! @brief Renvoie le nombre de valeurs temporelles actuellement conservees.
  *
  * Cette valeur est stockee par la Roue du Champ_Inc_base
@@ -79,8 +55,6 @@ int Champ_Inc_base::nb_valeurs_temporelles() const
 {
   return les_valeurs->nb_cases();
 }
-
-
 
 /*! @brief Lit les valeurs du champs a partir d'un flot d'entree.
  *
@@ -96,22 +70,21 @@ int Champ_Inc_base::lire_donnees(Entree& is)
 {
   int n;
   is >> n;
-  if (n != les_valeurs->valeurs().size() )
+  if (n != les_valeurs->valeurs().size())
     {
       Cerr << " the file does not contain the correct number of values to fill the field" << finl;
-      exit();
+      Process::exit();
     }
   DoubleVect& tab = les_valeurs->valeurs();
-  for (int i=0; i<n; i++)
+  for (int i = 0; i < n; i++)
     is >> tab[i];
   return 1;
 }
 
 int Champ_Inc_base::fixer_nb_valeurs_nodales(int nb_noeuds)
 {
-  Cerr << "Internal error in Champ_Inc_base::fixer_nb_valeurs_nodales: method has not been implemented for class "
-       << que_suis_je() << finl;
-  exit();
+  Cerr << "Internal error in Champ_Inc_base::fixer_nb_valeurs_nodales: method has not been implemented for class " << que_suis_je() << finl;
+  Process::exit();
   return nb_noeuds;
 }
 
@@ -133,9 +106,8 @@ void Champ_Inc_base::creer_tableau_distribue(const MD_Vector& md, Array_base::Re
         {
           if (tab.get_md_vector().non_nul())
             {
-              Cerr << "Internal error in Champ_Inc_base::creer_tableau_distribue:\n"
-                   << " array has alreary a (wrong) parallel descriptor" << finl;
-              exit();
+              Cerr << "Internal error in Champ_Inc_base::creer_tableau_distribue:\n" << " array has alreary a (wrong) parallel descriptor" << finl;
+              Process::exit();
             }
           MD_Vector_tools::creer_tableau_distribue(md, tab, opt);
         }
@@ -188,35 +160,35 @@ DoubleTab& Champ_Inc_base::valeurs(double tps)
 // Le comportement est maintenant plus explicite : un WARNING est
 // affiche des que le present est renvoye a la place du temps demande.
 {
-  if (temps()==tps)
+  if (temps() == tps)
     return valeurs();
   else
     {
-      Roue& la_roue=les_valeurs.valeur();
-      if(temps()<tps)
+      Roue& la_roue = les_valeurs.valeur();
+      if (temps() < tps)
         {
-          for(int i=0; i<nb_valeurs_temporelles(); i++)
+          for (int i = 0; i < nb_valeurs_temporelles(); i++)
             {
-              if(la_roue.futur(i).temps()==tps)
+              if (la_roue.futur(i).temps() == tps)
                 return la_roue.futur(i).valeurs();
-              else if(la_roue.futur(i).temps()<temps())
+              else if (la_roue.futur(i).temps() < temps())
                 break;
             }
         }
-      else if(temps()>tps)
+      else if (temps() > tps)
         {
-          for(int i=0; i<nb_valeurs_temporelles(); i++)
+          for (int i = 0; i < nb_valeurs_temporelles(); i++)
             {
-              if(la_roue.passe(i).temps()==tps)
+              if (la_roue.passe(i).temps() == tps)
                 return la_roue.passe(i).valeurs();
-              else if(la_roue.passe(i).temps()>temps())
+              else if (la_roue.passe(i).temps() > temps())
                 break;
             }
         }
     }
   Cerr << "ERROR : in Champ_Inc_base::valeurs(double), time " << tps << " not found, returns the present?" << finl;
   Cerr << "Contact TRUST support." << finl;
-  exit();
+  Process::exit();
   return valeurs();
 }
 
@@ -228,38 +200,38 @@ DoubleTab& Champ_Inc_base::valeurs(double tps)
 const DoubleTab& Champ_Inc_base::valeurs(double tps) const
 // See above !
 {
-  if (temps()==tps)
+  if (temps() == tps)
     return valeurs();
   else
     {
-      const Roue& la_roue=les_valeurs.valeur();
+      const Roue& la_roue = les_valeurs.valeur();
 
-      if(temps()<tps)
+      if (temps() < tps)
         {
           // Futur ?
-          for(int i=0; i<nb_valeurs_temporelles(); i++)
+          for (int i = 0; i < nb_valeurs_temporelles(); i++)
             {
-              if(la_roue.futur(i).temps()==tps)
+              if (la_roue.futur(i).temps() == tps)
                 return la_roue.futur(i).valeurs();
-              else if(la_roue.futur(i).temps()<temps())
+              else if (la_roue.futur(i).temps() < temps())
                 break;
             }
         }
-      else if(temps()>tps)
+      else if (temps() > tps)
         {
           // Passe ?
-          for(int i=1; i<nb_valeurs_temporelles(); i++)
+          for (int i = 1; i < nb_valeurs_temporelles(); i++)
             {
-              if(la_roue.passe(i).temps()==tps)
+              if (la_roue.passe(i).temps() == tps)
                 return la_roue.passe(i).valeurs();
-              else if(la_roue.passe(i).temps()>temps())
+              else if (la_roue.passe(i).temps() > temps())
                 break;
             }
         }
     }
   Cerr << "ERROR : in Champ_Inc_base::valeurs(double), time " << tps << " not found, returns the present?" << finl;
   Cerr << "Contact TRUST support." << finl;
-  exit();
+  Process::exit();
   return valeurs();
 }
 /*! @brief Renvoie les valeurs du champs a l'instant t+i.
@@ -284,7 +256,6 @@ const DoubleTab& Champ_Inc_base::futur(int i) const
   return les_valeurs->futur(i).valeurs();
 }
 
-
 /*! @brief Renvoie les valeurs du champs a l'instant t-i.
  *
  * @param (int i) le pas de temps passe auquel on veut les valeurs du champ
@@ -294,7 +265,6 @@ DoubleTab& Champ_Inc_base::passe(int i)
 {
   return les_valeurs->passe(i).valeurs();
 }
-
 
 /*! @brief Renvoie les valeurs du champs a l'instant t-i.
  *
@@ -308,7 +278,6 @@ const DoubleTab& Champ_Inc_base::passe(int i) const
   return les_valeurs->passe(i).valeurs();
 }
 
-
 /*! @brief Avance le pointeur courant de i pas de temps, dans la liste des valeurs temporelles conservees.
  *
  * @param (int i) le nombre de pas de temps dont on avance
@@ -316,12 +285,11 @@ const DoubleTab& Champ_Inc_base::passe(int i) const
  */
 Champ_Inc_base& Champ_Inc_base::avancer(int i)
 {
-  while(i--)
+  while (i--)
     les_valeurs->avancer(les_valeurs);
-  temps_=les_valeurs->temps();
+  temps_ = les_valeurs->temps();
   return *this;
 }
-
 
 /*! @brief Recule le pointeur courant de i pas de temps, dans la liste des valeurs temporelles conservees.
  *
@@ -330,9 +298,9 @@ Champ_Inc_base& Champ_Inc_base::avancer(int i)
  */
 Champ_Inc_base& Champ_Inc_base::reculer(int i)
 {
-  while(i--)
+  while (i--)
     les_valeurs->reculer(les_valeurs);
-  temps_=les_valeurs->temps();
+  temps_ = les_valeurs->temps();
   return *this;
 }
 
@@ -347,17 +315,18 @@ void Champ_Inc_base::mettre_a_jour(double un_temps)
 {
   // Champ a plusieurs valeurs temporelle :
   // On avance a la bonne valeur temporelle.
-  if (les_valeurs->nb_cases()>1)
+  if (les_valeurs->nb_cases() > 1)
     {
-      for(int i=0; i<les_valeurs->nb_cases(); i++)
+      for (int i = 0; i < les_valeurs->nb_cases(); i++)
         {
-          if(les_valeurs[i].temps()==un_temps)
+          if (les_valeurs[i].temps() == un_temps)
             {
               avancer(i);
-              temps_=un_temps;
+              temps_ = un_temps;
               //Inutile:
               //valeurs().echange_espace_virtuel();
-              if (fonc_calc_) fonc_calc_(obj_calc_.valeur(), valeurs(), val_bord_, deriv_);
+              if (fonc_calc_)
+                fonc_calc_(obj_calc_.valeur(), valeurs(), val_bord_, deriv_);
               /* premier calcul d'un Champ_Fonc_Calc -> on copie les valeurs calculees dans toutes les cases */
               if (fonc_calc_ && !fonc_calc_init_)
                 for (int j = 1; j < les_valeurs->nb_cases(); j++, fonc_calc_init_ = 1)
@@ -368,16 +337,17 @@ void Champ_Inc_base::mettre_a_jour(double un_temps)
       Cerr << "In Champ_Inc_base::mettre_a_jour(double), " << finl;
       Cerr << "time " << un_temps << " not found in field " << le_nom() << finl;
       Cerr << "The times available are :" << finl;
-      for(int i=0; i<les_valeurs->nb_cases(); i++)
+      for (int i = 0; i < les_valeurs->nb_cases(); i++)
         Cerr << "  " << les_valeurs[i].temps() << finl;
-      exit();
+      Process::exit();
     }
   // Champ a une seule valeur temporelle :
   // On change le temps associe.
   else
     {
       changer_temps(un_temps);
-      if (fonc_calc_) fonc_calc_(obj_calc_.valeur(), valeurs(), val_bord_, deriv_);
+      if (fonc_calc_)
+        fonc_calc_(obj_calc_.valeur(), valeurs(), val_bord_, deriv_);
       //Inutile:
       //valeurs().echange_espace_virtuel();
     }
@@ -390,11 +360,10 @@ void Champ_Inc_base::mettre_a_jour(double un_temps)
  */
 double Champ_Inc_base::changer_temps_futur(double t, int i)
 {
-  Roue& la_roue=les_valeurs.valeur();
+  Roue& la_roue = les_valeurs.valeur();
   la_roue.futur(i).changer_temps(t);
   return t;
 }
-
 
 /*! @brief Fixe le temps du ieme champ passe.
  *
@@ -403,7 +372,7 @@ double Champ_Inc_base::changer_temps_futur(double t, int i)
  */
 double Champ_Inc_base::changer_temps_passe(double t, int i)
 {
-  Roue& la_roue=les_valeurs.valeur();
+  Roue& la_roue = les_valeurs.valeur();
   la_roue.passe(i).changer_temps(t);
   return t;
 }
@@ -415,10 +384,9 @@ double Champ_Inc_base::changer_temps_passe(double t, int i)
  */
 double Champ_Inc_base::recuperer_temps_futur(int i) const
 {
-  const Roue& la_roue=les_valeurs.valeur();
+  const Roue& la_roue = les_valeurs.valeur();
   return la_roue.futur(i).temps();
 }
-
 
 /*! @brief Retourne le temps du ieme champ passe.
  *
@@ -427,7 +395,7 @@ double Champ_Inc_base::recuperer_temps_futur(int i) const
  */
 double Champ_Inc_base::recuperer_temps_passe(int i) const
 {
-  const Roue& la_roue=les_valeurs.valeur();
+  const Roue& la_roue = les_valeurs.valeur();
   return la_roue.passe(i).temps();
 }
 
@@ -442,22 +410,22 @@ double Champ_Inc_base::recuperer_temps_passe(int i) const
 int Champ_Inc_base::sauvegarder(Sortie& fich) const
 {
   // en mode ecriture special seul le maitre ecrit l'entete
-  int a_faire,special;
-  EcritureLectureSpecial::is_ecriture_special(special,a_faire);
+  int a_faire, special;
+  EcritureLectureSpecial::is_ecriture_special(special, a_faire);
 
   if (a_faire)
     {
       Nom mon_ident(nom_);
       mon_ident += que_suis_je();
       mon_ident += equation().probleme().domaine().le_nom();
-      mon_ident += Nom(temps_,"%e");
+      mon_ident += Nom(temps_, "%e");
       fich << mon_ident << finl;
       fich << que_suis_je() << finl;
       fich << temps_ << finl;
     }
   int bytes = 0;
   if (special)
-    bytes = EcritureLectureSpecial::ecriture_special(*this,fich);
+    bytes = EcritureLectureSpecial::ecriture_special(*this, fich);
   else
     {
       bytes = 8 * valeurs().size_array();
@@ -469,20 +437,19 @@ int Champ_Inc_base::sauvegarder(Sortie& fich) const
       fich.flush();
     }
   if (Process::je_suis_maitre())
-    Cerr << "Backup of the field " << nom_ << " performed on time : " << Nom(temps_,"%e") << finl;
+    Cerr << "Backup of the field " << nom_ << " performed on time : " << Nom(temps_, "%e") << finl;
 
 #ifndef NDEBUG
-  if (!est_egal(temps_,equation().probleme().schema_temps().temps_courant()))
+  if (!est_egal(temps_, equation().probleme().schema_temps().temps_courant()))
     {
       Cerr.precision(12);
       Cerr << "Problem in Champ_Inc_base::sauvegarder, temps_=" << temps_ << " temps_courant()=" << equation().probleme().schema_temps().temps_courant() << finl;
-      exit();
+      Process::exit();
     }
 #endif
   // Return the number of bytes written
   return bytes;
 }
-
 
 /*! @brief Lecture d'un champ inconnue a partir d'un flot d'entree en vue d'une reprise.
  *
@@ -492,23 +459,23 @@ int Champ_Inc_base::sauvegarder(Sortie& fich) const
 int Champ_Inc_base::reprendre(Entree& fich)
 {
   double un_temps;
-  int special= EcritureLectureSpecial::is_lecture_special();
+  int special = EcritureLectureSpecial::is_lecture_special();
   if (nom_ != Nom("anonyme")) // lecture pour reprise
     {
       fich >> un_temps;
       int nb_val_nodales_old = nb_valeurs_nodales();
       if (special)
-        EcritureLectureSpecial::lecture_special(*this,fich);
+        EcritureLectureSpecial::lecture_special(*this, fich);
       else
         valeurs().lit(fich);
       if (nb_val_nodales_old != nb_valeurs_nodales())
         {
-          Cerr << "Problem in the resumption "<< finl;
+          Cerr << "Problem in the resumption " << finl;
           Cerr << "The field wich is read, does not have same number of nodal values" << finl;
           Cerr << "that the field created by the discretization " << finl;
-          exit();
+          Process::exit();
         }
-      Cerr << "Resume of the field " <<nom_ << " performed." << finl;
+      Cerr << "Resume of the field " << nom_ << " performed." << finl;
     }
   else // lecture pour sauter le bloc
     {
@@ -519,17 +486,15 @@ int Champ_Inc_base::reprendre(Entree& fich)
   return 1;
 }
 
-
 /*! @brief Calcule les valeurs du champs inconnue aux positions specifiees.
  *
  * @param (DoubleTab& positions) les positions ou l'ont doit calculer le champ inconnues
  * @param (DoubleTab& valeurs) le tableau des valeurs du champ inconnue aux positions voulues
  * @return (DoubleTab&) le tableau des valeurs du champ inconnue aux positions voulues
  */
-DoubleTab& Champ_Inc_base::valeur_aux(const DoubleTab& positions,
-                                      DoubleTab& tab_valeurs) const
+DoubleTab& Champ_Inc_base::valeur_aux(const DoubleTab& positions, DoubleTab& tab_valeurs) const
 {
-  const Zone& zone=zone_dis_base().zone();
+  const Zone& zone = zone_dis_base().zone();
   IntVect les_polys;
   les_polys.resize(tab_valeurs.dimension_tot(0), Array_base::NOCOPY_NOINIT);
 
@@ -538,7 +503,6 @@ DoubleTab& Champ_Inc_base::valeur_aux(const DoubleTab& positions,
   return valeur_aux_elems(positions, les_polys, tab_valeurs);
 }
 
-
 /*! @brief Calcule les valeurs du champs inconnue aux positions specifiees, pour une certaine composante du champ.
  *
  * @param (DoubleTab& positions) les positions ou l'ont doit calculer le champ inconnues
@@ -546,16 +510,13 @@ DoubleTab& Champ_Inc_base::valeur_aux(const DoubleTab& positions,
  * @param (int) l'index de la composante du champ a calculer
  * @return (DoubleVect&) le tableau des valeurs de la composante du champ specifiee aux positions voulues
  */
-DoubleVect& Champ_Inc_base::valeur_aux_compo(const DoubleTab& positions,
-                                             DoubleVect& tab_valeurs,
-                                             int ncomp) const
+DoubleVect& Champ_Inc_base::valeur_aux_compo(const DoubleTab& positions, DoubleVect& tab_valeurs, int ncomp) const
 {
-  const Zone& zone=zone_dis_base().zone();
+  const Zone& zone = zone_dis_base().zone();
   IntVect les_polys(positions.dimension(0));
   zone.chercher_elements(positions, les_polys);
   return valeur_aux_elems_compo(positions, les_polys, tab_valeurs, ncomp);
 }
-
 
 /*! @brief Calcule la valeur du champs inconnue a la position specifiee.
  *
@@ -563,15 +524,13 @@ DoubleVect& Champ_Inc_base::valeur_aux_compo(const DoubleTab& positions,
  * @param (DoubleVect& les_valeurs) la valeur du champ inconnue a la position specifiee
  * @return (DoubleVect&) la valeur du champ inconnue a la position specifiee
  */
-DoubleVect& Champ_Inc_base::valeur_a(const DoubleVect& position,
-                                     DoubleVect& tab_valeurs) const
+DoubleVect& Champ_Inc_base::valeur_a(const DoubleVect& position, DoubleVect& tab_valeurs) const
 {
-  const Zone& zone=zone_dis_base().zone();
+  const Zone& zone = zone_dis_base().zone();
   IntVect le_poly(1);
   zone.chercher_elements(position, le_poly);
   return valeur_a_elem(position, tab_valeurs, le_poly(0));
 }
-
 
 /*! @brief Affectation d'un Champ generique (Champ_base) dans un champ inconnue.
  *
@@ -593,16 +552,16 @@ Champ_base& Champ_Inc_base::affecter_(const Champ_base& ch)
       ch.valeur_aux(pos, val);
       //copie dans toutes les cases
       valeurs().echange_espace_virtuel();
-      for(int i=1; i<les_valeurs->nb_cases(); i++) les_valeurs[i].valeurs() = valeurs();
+      for (int i = 1; i < les_valeurs->nb_cases(); i++)
+        les_valeurs[i].valeurs() = valeurs();
     }
   else
     {
       Cerr << "Champ_Inc_base::affecter_ not coded if size_reelle_ok()==0" << finl;
-      exit();
+      Process::exit();
     }
   return *this;
 }
-
 
 //-Cas CL periodique : assure que les valeurs sur des faces periodiques
 // en vis a vis sont identiques. Pour cela on prend la demi somme des deux valeurs.
@@ -618,12 +577,11 @@ void Champ_Inc_base::verifie_valeurs_cl()
  * @param (int compo) l'index de la composante a affecter
  * @return (Champ_base&) le resultat de l'affectation (avec upcast)
  */
-Champ_base& Champ_Inc_base::affecter_compo(const Champ_base& ch,
-                                           int compo)
+Champ_base& Champ_Inc_base::affecter_compo(const Champ_base& ch, int compo)
 {
   DoubleTab noeuds;
   IntVect polys;
-  if(!remplir_coord_noeuds_et_polys_compo(noeuds, polys, compo))
+  if (!remplir_coord_noeuds_et_polys_compo(noeuds, polys, compo))
     {
       remplir_coord_noeuds_compo(noeuds, compo);
       ch.valeur_aux_compo(noeuds, valeurs(), compo);
@@ -632,8 +590,6 @@ Champ_base& Champ_Inc_base::affecter_compo(const Champ_base& ch,
     ch.valeur_aux_elems_compo(noeuds, polys, valeurs(), compo);
   return *this;
 }
-
-
 
 /*! @brief voir Champ_base Cas particulier (malheureusement) du Champ_P0_VDF :
  *
@@ -644,12 +600,11 @@ Champ_base& Champ_Inc_base::affecter_compo(const Champ_base& ch,
  *
  */
 
-DoubleTab& Champ_Inc_base::trace(const Frontiere_dis_base& , DoubleTab& x , double tps,int distant) const
+DoubleTab& Champ_Inc_base::trace(const Frontiere_dis_base&, DoubleTab& x, double tps, int distant) const
 {
   Cerr << que_suis_je() << "did not overloaded Champ_Inc_base::trace" << finl;
   return x;
 }
-
 
 /*! @brief NE FAIT RIEN Methode a surcharger
  *
@@ -668,12 +623,10 @@ int Champ_Inc_base::remplir_coord_noeuds_et_polys(DoubleTab&, IntVect&) const
  * @param (int) l'index de la composante a modifier
  * @return (DoubleTab&)
  */
-DoubleTab& Champ_Inc_base::remplir_coord_noeuds_compo(DoubleTab& coord,
-                                                      int ) const
+DoubleTab& Champ_Inc_base::remplir_coord_noeuds_compo(DoubleTab& coord, int) const
 {
   return remplir_coord_noeuds(coord);
 }
-
 
 /*! @brief Simple appel a: Champ_Inc_base::remplir_coord_noeuds_et_polys(DoubleTab&,IntVect& poly)
  *
@@ -682,9 +635,7 @@ DoubleTab& Champ_Inc_base::remplir_coord_noeuds_compo(DoubleTab& coord,
  * @param (int)
  * @return (int) code de retour propage
  */
-int Champ_Inc_base::remplir_coord_noeuds_et_polys_compo(DoubleTab& coord,
-                                                        IntVect& poly,
-                                                        int ) const
+int Champ_Inc_base::remplir_coord_noeuds_et_polys_compo(DoubleTab& coord, IntVect& poly, int) const
 {
   return remplir_coord_noeuds_et_polys(coord, poly);
 }
@@ -697,14 +648,14 @@ const Domaine& Champ_Inc_base::domaine() const
 int Champ_Inc_base::imprime(Sortie& os, int ncomp) const
 {
   Cerr << que_suis_je() << "::imprime not coded." << finl;
-  exit();
+  Process::exit();
   return 1;
 }
 
 double Champ_Inc_base::integrale_espace(int ncomp) const
 {
   Cerr << que_suis_je() << "::integrale_espace not coded." << finl;
-  exit();
+  Process::exit();
   return 0.;
 }
 
@@ -732,7 +683,7 @@ void Champ_Inc_base::associer_eqn(const Equation_base& eqn)
 
 void Champ_Inc_base::associer_zone_cl_dis(const Zone_Cl_dis& zcl)
 {
-  ma_zone_cl_dis=zcl;
+  ma_zone_cl_dis = zcl;
 }
 
 const Zone_Cl_dis& Champ_Inc_base::zone_Cl_dis() const
@@ -756,7 +707,6 @@ void Champ_Inc_base::init_champ_calcule(const Objet_U& obj, fonc_calc_t fonc)
   obj_calc_ = obj, fonc_calc_ = fonc, fonc_calc_init_ = 0;
   val_bord_.resize(ref_cast(Zone_VF, zone_dis_base()).xv_bord().dimension_tot(0), valeurs().line_size());
 }
-
 
 DoubleTab Champ_Inc_base::valeur_aux_bords() const
 {
@@ -788,17 +738,22 @@ DoubleTab Champ_Inc_base::valeur_aux_bords() const
             result(fb, n) = ref_cast(Neumann_val_ext, cls[i].valeur()).val_ext(j, n);
       else if (sub_type(Champ_Inc_P0_base, *this))
         for (j = 0; j < fr.nb_faces_tot(); j++) //Champ P0 : on peut prendre la valeur en l'element
-          for (f = fr.num_face(j), fb = zone.fbord(f), n = 0; n < N; n++) result(fb, n) = valeurs()(f_e(f, f_e(f, 0) == -1), n);
+          for (f = fr.num_face(j), fb = zone.fbord(f), n = 0; n < N; n++)
+            result(fb, n) = valeurs()(f_e(f, f_e(f, 0) == -1), n);
       else if (sub_type(Champ_Inc_P1_base, *this))
         for (j = 0; j < fr.nb_faces_tot(); j++) //Champ P1 : moyenne des valeurs aux sommets
           {
             f = fr.num_face(j), fb = zone.fbord(f);
-            for (n_som = 0; n_som < f_s.dimension(1) && f_s(f, n_som) >= 0; ) n_som++;
-            for (n = 0; n < N; n++) result(fb, n) = 0;
+            for (n_som = 0; n_som < f_s.dimension(1) && f_s(f, n_som) >= 0;)
+              n_som++;
+            for (n = 0; n < N; n++)
+              result(fb, n) = 0;
             for (k = 0; k < n_som; k++)
-              for (s = f_s(f, k), n = 0; n < N; n++) result(fb, n) += valeurs()(s, n) / n_som;
+              for (s = f_s(f, k), n = 0; n < N; n++)
+                result(fb, n) += valeurs()(s, n) / n_som;
           }
-      else Process::exit("Champ_Inc_base::valeur_aux_bords() : must code something!");
+      else
+        Process::exit("Champ_Inc_base::valeur_aux_bords() : must code something!");
     }
   return result;
 }

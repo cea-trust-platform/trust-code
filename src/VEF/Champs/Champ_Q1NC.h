@@ -19,123 +19,74 @@
 #include <Champ_Inc_base.h>
 #include <Champ_Q1NC_impl.h>
 #include <Ref_Zone_VEF.h>
+
 class Domaine;
 
 class Champ_Q1NC: public Champ_Inc_base, public Champ_Q1NC_impl
 {
-
   Declare_instanciable(Champ_Q1NC);
-
-public :
+public:
   const Zone_dis_base& zone_dis_base() const override;
   void associer_zone_dis_base(const Zone_dis_base&) override;
   void verifie_valeurs_cl() override;
-  inline const Zone_VEF& zone_vef() const override;
-  int compo_normale_sortante(int ) const;
-  DoubleTab& trace(const Frontiere_dis_base& , DoubleTab& , double ,int distant) const override;
+  int fixer_nb_valeurs_nodales(int n) override;
+  int compo_normale_sortante(int) const;
+  DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&, double, int distant) const override;
   void cal_rot_ordre1(DoubleTab&);
   void gradient(DoubleTab&);
 
+  // Methodes inlines
+  inline const Zone_VEF& zone_vef() const override { return la_zone_VEF.valeur(); }
 
-  inline DoubleVect& valeur_a_elem(const DoubleVect& position,
-                                   DoubleVect& val,
-                                   int le_poly) const override;
-  inline double valeur_a_elem_compo(const DoubleVect& position,
-                                    int le_poly, int ncomp) const override;
-  inline double valeur_a_sommet_compo(int num_som, int le_poly, int ncomp) const override;
-  inline DoubleTab& valeur_aux_elems(const DoubleTab& positions,
-                                     const IntVect& les_polys,
-                                     DoubleTab& tab_valeurs) const override;
-  inline DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions,
-                                            const IntVect& les_polys,
-                                            DoubleVect& tab_valeurs,
-                                            int ncomp) const override ;
-  inline DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const override;
-  inline DoubleVect& valeur_aux_sommets_compo(const Domaine&,
-                                              DoubleVect&, int) const override;
-  inline DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const override;
-  inline int remplir_coord_noeuds_et_polys(DoubleTab& positions,
-                                           IntVect& polys) const override;
-  int fixer_nb_valeurs_nodales(int n) override;
+  inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const override
+  {
+    return Champ_Q1NC_impl::valeur_a_elem(position, val, le_poly);
+  }
+
+  inline double valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const override
+  {
+    return Champ_Q1NC_impl::valeur_a_elem_compo(position, le_poly, ncomp);
+  }
+
+  inline double valeur_a_sommet_compo(int num_som, int le_poly, int ncomp) const override
+  {
+    return Champ_Q1NC_impl::valeur_a_sommet_compo(num_som, le_poly, ncomp);
+  }
+
+  inline DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& tab_valeurs) const override
+  {
+    return Champ_Q1NC_impl::valeur_aux_elems(positions, les_polys, tab_valeurs);
+  }
+
+  inline DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& tab_valeurs, int ncomp) const override
+  {
+    return Champ_Q1NC_impl::valeur_aux_elems_compo(positions, les_polys, tab_valeurs, ncomp);
+  }
+
+  inline DoubleTab& valeur_aux_sommets(const Domaine& dom, DoubleTab& val) const override
+  {
+    return Champ_Q1NC_impl::valeur_aux_sommets(dom, val);
+  }
+
+  inline DoubleVect& valeur_aux_sommets_compo(const Domaine& dom, DoubleVect& val, int comp) const override
+  {
+    return Champ_Q1NC_impl::valeur_aux_sommets_compo(dom, val, comp);
+  }
+
+  inline DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const override
+  {
+    return Champ_Q1NC_impl::remplir_coord_noeuds(positions);
+  }
+
+  inline int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const override
+  {
+    return Champ_Q1NC_impl::remplir_coord_noeuds_et_polys(positions, polys);
+  }
+
 private:
-
+  inline const Champ_base& le_champ() const override { return *this; }
+  inline Champ_base& le_champ() override { return *this; }
   REF(Zone_VEF) la_zone_VEF;
-  inline const Champ_base& le_champ() const override;
-  inline Champ_base& le_champ() override;
-
-
 };
 
-inline const Champ_base& Champ_Q1NC::le_champ() const
-{
-  return *this;
-}
-
-inline Champ_base& Champ_Q1NC::le_champ()
-{
-  return *this;
-}
-
-inline DoubleVect& Champ_Q1NC::valeur_a_elem(const DoubleVect& position,
-                                             DoubleVect& val,
-                                             int le_poly) const
-{
-  return Champ_Q1NC_impl::valeur_a_elem(position, val, le_poly);
-}
-
-inline double  Champ_Q1NC::valeur_a_elem_compo(const DoubleVect& position,
-                                               int le_poly, int ncomp) const
-{
-  return Champ_Q1NC_impl::valeur_a_elem_compo(position, le_poly, ncomp);
-}
-
-inline double  Champ_Q1NC::valeur_a_sommet_compo(int num_som,
-                                                 int le_poly, int ncomp) const
-{
-  return Champ_Q1NC_impl::valeur_a_sommet_compo(num_som, le_poly, ncomp);
-}
-
-inline DoubleTab& Champ_Q1NC::valeur_aux_elems(const DoubleTab& positions,
-                                               const IntVect& les_polys,
-                                               DoubleTab& tab_valeurs) const
-{
-  return Champ_Q1NC_impl::valeur_aux_elems(positions, les_polys, tab_valeurs);
-}
-
-inline DoubleVect& Champ_Q1NC::valeur_aux_elems_compo(const DoubleTab& positions,
-                                                      const IntVect& les_polys,
-                                                      DoubleVect& tab_valeurs,
-                                                      int ncomp) const
-{
-  return Champ_Q1NC_impl::valeur_aux_elems_compo(positions, les_polys, tab_valeurs, ncomp);
-}
-
-inline DoubleTab& Champ_Q1NC::valeur_aux_sommets(const Domaine& dom, DoubleTab& val) const
-{
-  return Champ_Q1NC_impl::valeur_aux_sommets(dom, val);
-}
-
-inline DoubleVect& Champ_Q1NC::valeur_aux_sommets_compo(const Domaine& dom,
-                                                        DoubleVect& val, int comp) const
-{
-  return Champ_Q1NC_impl::valeur_aux_sommets_compo(dom, val, comp);
-}
-
-inline DoubleTab& Champ_Q1NC::remplir_coord_noeuds(DoubleTab& positions) const
-{
-  return Champ_Q1NC_impl::remplir_coord_noeuds(positions);
-}
-
-inline int Champ_Q1NC::remplir_coord_noeuds_et_polys(DoubleTab& positions,
-                                                     IntVect& polys) const
-{
-  return Champ_Q1NC_impl::remplir_coord_noeuds_et_polys(positions, polys);
-}
-
-inline const Zone_VEF& Champ_Q1NC::zone_vef() const
-{
-  return la_zone_VEF.valeur();
-}
-
-#endif
-
+#endif /* Champ_Q1NC_included */

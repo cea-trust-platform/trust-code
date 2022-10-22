@@ -21,33 +21,13 @@
 
 Implemente_instanciable(Champ_Q1NC,"Champ_Q1NC",Champ_Inc_base);
 
-
-// printOn
-
-Sortie& Champ_Q1NC::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-// readOn
+Sortie& Champ_Q1NC::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
 Entree& Champ_Q1NC::readOn(Entree& s)
 {
   lire_donnees(s) ;
   return s ;
 }
-
-//////////////////////////////////////////////////////////////
-//
-//   Implementation des fonctions de la classe Champ_Q1NC
-//
-//////////////////////////////////////////////////////////////
-
-// Fonction compo_normale_sortante()
-//
-// Cette fonction retourne :
-//   1 si le fluide est sortant sur la face num_face
-//   0 si la face correspond a une reentree de fluide
 
 const Zone_dis_base& Champ_Q1NC::zone_dis_base() const
 {
@@ -67,30 +47,30 @@ void Champ_Q1NC::verifie_valeurs_cl()
   int nb_cl = zcl.nb_cond_lim();
   DoubleTab& ch_tab = valeurs();
   int nb_compo = nb_comp();
-  int ndeb,nfin,num_face;
+  int ndeb, nfin, num_face;
 
-  for (int i=0; i<nb_cl; i++)
+  for (int i = 0; i < nb_cl; i++)
     {
       const Cond_lim_base& la_cl = zcl.les_conditions_limites(i).valeur();
-      if (sub_type(Periodique,la_cl))
+      if (sub_type(Periodique, la_cl))
         {
-          const Periodique& la_cl_perio = ref_cast(Periodique,la_cl);
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Periodique& la_cl_perio = ref_cast(Periodique, la_cl);
+          const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
           ndeb = le_bord.num_premiere_face();
           nfin = ndeb + le_bord.nb_faces();
           int voisine;
           double moy;
 
-          for (num_face=ndeb; num_face<nfin; num_face++)
+          for (num_face = ndeb; num_face < nfin; num_face++)
             {
-              voisine = la_cl_perio.face_associee(num_face-ndeb) + ndeb;
-              for (int comp=0; comp<nb_compo; comp++)
+              voisine = la_cl_perio.face_associee(num_face - ndeb) + ndeb;
+              for (int comp = 0; comp < nb_compo; comp++)
                 {
-                  if (ch_tab(num_face,comp) != ch_tab(voisine,comp))
+                  if (ch_tab(num_face, comp) != ch_tab(voisine, comp))
                     {
-                      moy = 0.5*(ch_tab(num_face,comp) + ch_tab(voisine,comp));
-                      ch_tab(num_face,comp) = moy;
-                      ch_tab(voisine,comp) = moy;
+                      moy = 0.5 * (ch_tab(num_face, comp) + ch_tab(voisine, comp));
+                      ch_tab(num_face, comp) = moy;
+                      ch_tab(voisine, comp) = moy;
                     }
                 }
             }
@@ -102,15 +82,15 @@ void Champ_Q1NC::verifie_valeurs_cl()
 int Champ_Q1NC::compo_normale_sortante(int num_face) const
 {
   const Zone_VEF& zone_VEF = la_zone_VEF.valeur();
-  double vit_norm =0;
-  for (int ncomp=0; ncomp<nb_comp(); ncomp++)
-    vit_norm += (*this)(num_face,ncomp)*zone_VEF.face_normales(num_face,ncomp);
+  double vit_norm = 0;
+  for (int ncomp = 0; ncomp < nb_comp(); ncomp++)
+    vit_norm += (*this)(num_face, ncomp) * zone_VEF.face_normales(num_face, ncomp);
   return (vit_norm > 0);
 }
 
-DoubleTab& Champ_Q1NC::trace(const Frontiere_dis_base& fr, DoubleTab& x, double tps,int distant) const
+DoubleTab& Champ_Q1NC::trace(const Frontiere_dis_base& fr, DoubleTab& x, double tps, int distant) const
 {
-  return Champ_Q1NC_impl::trace(fr, valeurs(tps), x,distant);
+  return Champ_Q1NC_impl::trace(fr, valeurs(tps), x, distant);
 }
 
 void Champ_Q1NC::cal_rot_ordre1(DoubleTab& vorticite)
@@ -123,32 +103,32 @@ void Champ_Q1NC::cal_rot_ordre1(DoubleTab& vorticite)
   zone_VEF.zone().creer_tableau_elements(gradient_elem, Array_base::NOCOPY_NOINIT);
 
   gradient(gradient_elem);
-  Debog::verifier("apres calcul gradient",gradient_elem);
+  Debog::verifier("apres calcul gradient", gradient_elem);
   int num_elem;
 
   switch(dimension)
     {
-    case 2 :
+    case 2:
       {
-        for (num_elem=0; num_elem<nb_elem; num_elem++)
+        for (num_elem = 0; num_elem < nb_elem; num_elem++)
           {
-            vorticite(num_elem)=gradient_elem(num_elem,1,0)-gradient_elem(num_elem,0,1);
+            vorticite(num_elem) = gradient_elem(num_elem, 1, 0) - gradient_elem(num_elem, 0, 1);
           }
       }
       break;
-    case 3 :
+    case 3:
       {
-        for (num_elem=0; num_elem<nb_elem; num_elem++)
+        for (num_elem = 0; num_elem < nb_elem; num_elem++)
           {
-            vorticite(num_elem,0)=gradient_elem(num_elem,2,1)-gradient_elem(num_elem,1,2);
-            vorticite(num_elem,1)=gradient_elem(num_elem,0,2)-gradient_elem(num_elem,2,0);
-            vorticite(num_elem,2)=gradient_elem(num_elem,1,0)-gradient_elem(num_elem,0,1);
+            vorticite(num_elem, 0) = gradient_elem(num_elem, 2, 1) - gradient_elem(num_elem, 1, 2);
+            vorticite(num_elem, 1) = gradient_elem(num_elem, 0, 2) - gradient_elem(num_elem, 2, 0);
+            vorticite(num_elem, 2) = gradient_elem(num_elem, 1, 0) - gradient_elem(num_elem, 0, 1);
           }
       }
     }
 
-  Debog::verifier("apres calcul vort",vorticite);
-  return ;
+  Debog::verifier("apres calcul vort", vorticite);
+  return;
 }
 
 void Champ_Q1NC::gradient(DoubleTab& gradient_elem)
@@ -168,32 +148,29 @@ void Champ_Q1NC::gradient(DoubleTab& gradient_elem)
   assert(gradient_elem.dimension(1) == dimension);
   assert(gradient_elem.dimension(2) == dimension);
   operator_egal(gradient_elem, 0.); // Espace reel uniquement
-  int icomp,fac,i,elem1,elem2;
+  int icomp, fac, i, elem1, elem2;
 
   // Boucle sur les faces
 
-  for (fac=0; fac< premiere_face_int; fac++)
+  for (fac = 0; fac < premiere_face_int; fac++)
     {
-      elem1=face_voisins(fac,0);
-      for (icomp=0; icomp<dimension; icomp++)
-        for (i=0; i<dimension; i++)
+      elem1 = face_voisins(fac, 0);
+      for (icomp = 0; icomp < dimension; icomp++)
+        for (i = 0; i < dimension; i++)
           {
-            gradient_elem(elem1, icomp, i) +=
-              face_normales(fac,i)*vitesse(fac,icomp);
+            gradient_elem(elem1, icomp, i) += face_normales(fac, i) * vitesse(fac, icomp);
           }
     }
-  for (; fac<nb_faces; fac++)
+  for (; fac < nb_faces; fac++)
     {
-      elem1=face_voisins(fac,0);
-      elem2=face_voisins(fac,1);
-      for (icomp=0; icomp<dimension; icomp++)
-        for (i=0; i<dimension; i++)
+      elem1 = face_voisins(fac, 0);
+      elem2 = face_voisins(fac, 1);
+      for (icomp = 0; icomp < dimension; icomp++)
+        for (i = 0; i < dimension; i++)
           {
-            gradient_elem(elem1, icomp, i) +=
-              face_normales(fac,i)*vitesse(fac,icomp);
-            if(elem2<nb_elem)
-              gradient_elem(elem2, icomp, i) -=
-                face_normales(fac,i)*vitesse(fac,icomp);
+            gradient_elem(elem1, icomp, i) += face_normales(fac, i) * vitesse(fac, icomp);
+            if (elem2 < nb_elem)
+              gradient_elem(elem2, icomp, i) -= face_normales(fac, i) * vitesse(fac, icomp);
           }
     }
 

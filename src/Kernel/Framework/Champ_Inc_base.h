@@ -23,10 +23,11 @@
 #include <TRUSTTrav.h>
 #include <MorEqn.h>
 #include <Roue.h>
+
 class Frontiere_dis_base;
+class Zone_dis_base;
 class MD_Vector;
 class Zone_dis;
-class Zone_dis_base;
 class Domaine;
 
 /*! @brief Classe Champ_Inc_base Classe de base des champs inconnues qui sont les champs calcules
@@ -52,21 +53,18 @@ class Domaine;
 class Champ_Inc_base : public Champ_base, public MorEqn
 {
   Declare_base_sans_constructeur(Champ_Inc_base);
-
 public:
   Champ_Inc_base() : fonc_calc_(NULL) { } //par defaut : pas de fonc_calc_
-  //
+
   // Methode reimplementees
-  //
   int fixer_nb_valeurs_nodales(int) override;
   double changer_temps(const double temps) override;
   void mettre_a_jour(double temps) override;
   int reprendre(Entree&) override;
   int sauvegarder(Sortie&) const override;
   Champ_base& affecter_compo(const Champ_base&, int compo) override;
-  //
+
   // Methodes viruelles pures implementees ici
-  //
   Champ_base& affecter_(const Champ_base&) override;
   virtual void verifie_valeurs_cl();
   DoubleTab& valeurs() override;
@@ -76,9 +74,7 @@ public:
   DoubleTab& valeur_aux(const DoubleTab& positions, DoubleTab& valeurs) const override;
   DoubleVect& valeur_aux_compo(const DoubleTab& positions, DoubleVect& valeurs, int ncomp) const override;
 
-  //
   // Nouvelles methodes
-  //
   int nb_valeurs_nodales() const override;
   virtual int fixer_nb_valeurs_temporelles(int);
   virtual int nb_valeurs_temporelles() const;
@@ -88,6 +84,7 @@ public:
   double recuperer_temps_passe(int i = 1) const;
   DoubleTab& valeurs(double temps) override;
   const DoubleTab& valeurs(double temps) const override;
+
   // Operateurs de conversion implicite
   operator DoubleTab& () = delete;
   operator const DoubleTab& () const = delete;
@@ -108,8 +105,7 @@ public:
 
   const Zone_Cl_dis& zone_Cl_dis() const;
   Zone_Cl_dis& zone_Cl_dis();
-  // methode supprimee volontairement
-  //DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&,int distant) const;
+
   DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&, double, int distant) const override;
   virtual int remplir_coord_noeuds_et_polys(DoubleTab&, IntVect&) const;
   virtual int remplir_coord_noeuds_et_polys_compo(DoubleTab&, IntVect&, int) const;
@@ -126,10 +122,7 @@ public:
   //champ dependant d'autres Champ_Inc : reglage de la fonciton de calcul, initialisation de val_bord_
   void init_champ_calcule(const Objet_U& obj, fonc_calc_t fonc);
   //pour forcer le calcul de toutes les cases au prochain mettre_a_jour() (normalement fait une seule fois)
-  void reset_champ_calcule()
-  {
-    fonc_calc_init_ = 0;
-  }
+  void reset_champ_calcule() { fonc_calc_init_ = 0; }
 
   //utilise les conditions aux limites (au lieu de valeur_aux() dans Champ_base)
   //result n'est rempli que pour les faces de bord dont la CL impose une valeur (val_imp ou val_ext)
@@ -153,5 +146,4 @@ protected:
   tabs_t deriv_;        //derivees au temps courant
 };
 
-#endif
-
+#endif /* Champ_Inc_base_included */
