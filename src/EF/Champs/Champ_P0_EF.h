@@ -17,30 +17,20 @@
 #define Champ_P0_EF_included
 
 #include <Champ_Inc_P0_base.h>
-#include <Ref_Zone_VF.h>
 
 class Zone_EF;
 
-class Champ_P0_EF : public Champ_Inc_P0_base
+/*! @brief classe Champ_P0_EF Classe qui represente un champ discret P0 par element
+ *  associe a une zone discretisee de type Zone_EF
+ *
+ * @sa Champ_Inc_P0_base
+ */
+class Champ_P0_EF: public Champ_Inc_P0_base
 {
   Declare_instanciable(Champ_P0_EF);
-
-public :
-
-  const Zone_EF&        zone_EF() const;
-  void                         associer_zone_dis_base(const Zone_dis_base&) override;
-  const Zone_dis_base& zone_dis_base() const override;
-  int                       imprime(Sortie& , int ) const override;
-
-protected :
-
-  REF(Zone_VF) la_zone_VF;
-
-
+public:
+  const Zone_EF& zone_EF() const;
+  int imprime(Sortie&, int) const override;
 };
 
-#endif
-
-
-
-
+#endif /* Champ_P0_EF_included */

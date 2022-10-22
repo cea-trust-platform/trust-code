@@ -16,26 +16,21 @@
 #ifndef Champ_Elem_PolyMAC_included
 #define Champ_Elem_PolyMAC_included
 
+#include <Op_Diff_PolyMAC_base.h>
 #include <Champ_Inc_P0_base.h>
 #include <Operateur.h>
-#include <Op_Diff_PolyMAC_base.h>
 
 /*! @brief : class Champ_Elem_PolyMAC
  *
  *  Champ correspondant a une inconnue scalaire (type temperature ou pression)
  *  Degres de libertes : valeur aux elements + flux aux faces
- *
- *
  */
-
 class Champ_Elem_PolyMAC : public Champ_Inc_P0_base
 {
   Declare_instanciable(Champ_Elem_PolyMAC);
-
 public :
-
   Champ_base& affecter_(const Champ_base& ch) override;
-  int                       imprime(Sortie& , int ) const override;
+  int imprime(Sortie&, int) const override;
 
   int fixer_nb_valeurs_nodales(int n) override; //valeurs aux elements
   int nb_valeurs_nodales() const override;

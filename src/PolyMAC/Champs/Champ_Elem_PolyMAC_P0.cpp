@@ -13,34 +13,19 @@
 *
 *****************************************************************************/
 
-
 #include <Champ_Elem_PolyMAC_P0.h>
-#include <Zone_Cl_dis.h>
-#include <Zone_Cl_PolyMAC.h>
-#include <Zone_PolyMAC_P0.h>
-#include <Domaine.h>
-#include <Dirichlet.h>
-#include <Symetrie.h>
-#include <Dirichlet_homogene.h>
-#include <Neumann_paroi.h>
-#include <Echange_contact_PolyMAC_P0.h>
 #include <Connectivite_som_elem.h>
+#include <Zone_PolyMAC_P0.h>
+#include <Zone_Cl_PolyMAC.h>
 #include <TRUSTTab_parts.h>
 #include <Equation_base.h>
+#include <Domaine.h>
 #include <array>
 #include <cmath>
 
 Implemente_instanciable(Champ_Elem_PolyMAC_P0,"Champ_Elem_PolyMAC_P0",Champ_Elem_PolyMAC);
 
-// printOn
-
-Sortie& Champ_Elem_PolyMAC_P0::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-
-// readOn
+Sortie& Champ_Elem_PolyMAC_P0::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
 Entree& Champ_Elem_PolyMAC_P0::readOn(Entree& s)
 {
@@ -48,10 +33,6 @@ Entree& Champ_Elem_PolyMAC_P0::readOn(Entree& s)
   return s ;
 }
 
-/*! @brief
- *
- * @return (la_zone_PolyMAC_P0_P0.valeur())
- */
 const Zone_PolyMAC_P0& Champ_Elem_PolyMAC_P0::zone_PolyMAC_P0() const
 {
   return ref_cast(Zone_PolyMAC_P0, la_zone_VF.valeur());
@@ -59,25 +40,25 @@ const Zone_PolyMAC_P0& Champ_Elem_PolyMAC_P0::zone_PolyMAC_P0() const
 
 inline void Champ_Elem_PolyMAC_P0::mettre_a_jour(double tps)
 {
-  if (tps_last_calc_grad_ != tps) grad_a_jour = 0 ;
+  if (tps_last_calc_grad_ != tps) grad_a_jour = 0;
   Champ_Inc_P0_base::mettre_a_jour(tps);
 }
 
 void Champ_Elem_PolyMAC_P0::init_grad(int full_stencil) const
 {
   if (fgrad_d.size()) return;
-  const IntTab&             f_cl = fcl();
-  const Zone_PolyMAC_P0&    zone = ref_cast(Zone_PolyMAC_P0, la_zone_VF.valeur());
-  const Conds_lim&           cls = zone_Cl_dis().les_conditions_limites(); // CAL du champ à dériver
+  const IntTab& f_cl = fcl();
+  const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0, la_zone_VF.valeur());
+  const Conds_lim& cls = zone_Cl_dis().les_conditions_limites(); // CAL du champ à dériver
   zone.fgrad(1, 0, cls, f_cl, NULL, NULL, 1, full_stencil, fgrad_d, fgrad_e, fgrad_w);
 }
 
 void Champ_Elem_PolyMAC_P0::calc_grad(int full_stencil) const
 {
   if (grad_a_jour) return;
-  const IntTab&             f_cl = fcl();
-  const Zone_PolyMAC_P0&    zone = ref_cast(Zone_PolyMAC_P0, la_zone_VF.valeur());
-  const Conds_lim&           cls = zone_Cl_dis().les_conditions_limites(); // CAL du champ à dériver
+  const IntTab& f_cl = fcl();
+  const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0, la_zone_VF.valeur());
+  const Conds_lim& cls = zone_Cl_dis().les_conditions_limites(); // CAL du champ à dériver
   zone.fgrad(1, 0, cls, f_cl, NULL, NULL, 1, full_stencil, fgrad_d, fgrad_e, fgrad_w);
   grad_a_jour = 1;
   tps_last_calc_grad_ = temps();

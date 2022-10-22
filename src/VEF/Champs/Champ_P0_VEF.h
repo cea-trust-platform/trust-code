@@ -13,35 +13,24 @@
 *
 *****************************************************************************/
 
-
 #ifndef Champ_P0_VEF_included
 #define Champ_P0_VEF_included
 
 #include <Champ_Inc_P0_base.h>
-#include <Ref_Zone_VEF.h>
+
+class Zone_VEF;
 
 /*! @brief classe Champ_P0_VEF Classe qui represente un champ discret P0 par element
- *
  *  associe a une zone discretisee de type Zone_VEF
  *
- *
- * @sa Champ_P0
+ * @sa Champ_Inc_P0_base
  */
 class Champ_P0_VEF: public Champ_Inc_P0_base
 {
-
   Declare_instanciable(Champ_P0_VEF);
-
 public :
-
-  void associer_zone_dis_base(const Zone_dis_base&) override;
-  const Zone_dis_base& zone_dis_base() const override;
-  double valeur_au_bord(int face) const;
+  const Zone_VEF& zone_VEF() const;
   int imprime(Sortie& , int ) const override;
-
-private:
-
-  REF(Zone_VEF) la_zone_VEF;
 };
 
-#endif
+#endif /* Champ_P0_VEF_included */

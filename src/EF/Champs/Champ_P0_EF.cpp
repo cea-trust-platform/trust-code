@@ -13,23 +13,13 @@
 *
 *****************************************************************************/
 
-
 #include <Champ_P0_EF.h>
 #include <Zone_EF.h>
 #include <Domaine.h>
 
-
 Implemente_instanciable(Champ_P0_EF,"Champ_P0_EF",Champ_Inc_P0_base);
 
-// printOn
-
-Sortie& Champ_P0_EF::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-
-// readOn
+Sortie& Champ_P0_EF::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
 Entree& Champ_P0_EF::readOn(Entree& s)
 {
@@ -37,26 +27,6 @@ Entree& Champ_P0_EF::readOn(Entree& s)
   return s ;
 }
 
-/*! @brief
- *
- */
-const Zone_dis_base& Champ_P0_EF::zone_dis_base() const
-{
-  return la_zone_VF.valeur();
-}
-/*! @brief
- *
- * @return (z_dis) la zone discretise
- */
-void Champ_P0_EF::associer_zone_dis_base(const Zone_dis_base& z_dis)
-{
-  la_zone_VF=ref_cast(Zone_VF, z_dis);
-}
-
-/*! @brief
- *
- * @return (la_zone_EF_P0.valeur())
- */
 const Zone_EF& Champ_P0_EF::zone_EF() const
 {
   return ref_cast(Zone_EF, la_zone_VF.valeur());

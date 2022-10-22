@@ -13,39 +13,28 @@
 *
 *****************************************************************************/
 
-
 #ifndef Champ_P0_VDF_included
 #define Champ_P0_VDF_included
 
 #include <Champ_Inc_P0_base.h>
-#include <Ref_Zone_VDF.h>
+
+class Zone_VDF;
 
 /*! @brief classe Champ_P0_VDF Classe qui represente un champ discret P0 par element
- *
  *  associe a une zone discretisee de type Zone_VDF
  *
- *
- * @sa Champ_P0
+ * @sa Champ_Inc_P0_base
  */
 class Champ_P0_VDF: public Champ_Inc_P0_base
 {
-
   Declare_instanciable(Champ_P0_VDF);
-
 public :
-
-  void associer_zone_dis_base(const Zone_dis_base&) override;
-  const Zone_dis_base& zone_dis_base() const override;
+  const Zone_VDF& zone_VDF() const;
   DoubleVect moyenne(const DoubleVect& porosite_elem) const;
   double moyenne(const DoubleVect& porosite_elem, int ) const;
-  double valeur_au_bord(int face) const;
   DoubleTab& remplir_coord_noeuds(DoubleTab& ) const override;
   int imprime(Sortie& os, int nb_compo_) const override;
   double integrale_espace(int ncomp) const override;
-
-private:
-
-  REF(Zone_VDF) la_zone_VDF;
 };
 
-#endif
+#endif /* Champ_P0_VDF_included */

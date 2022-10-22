@@ -15,10 +15,11 @@
 #ifndef Op_Rot_VEFP1B_included
 #define Op_Rot_VEFP1B_included
 
-#include <Operateur_base.h>
-#include <Op_Grad_VEF_Face.h>
-#include <Champ_P1_isoP1Bulle.h>
 #include <Ref_Champ_P1_isoP1Bulle.h>
+#include <Champ_P1_isoP1Bulle.h>
+#include <Op_Grad_VEF_Face.h>
+#include <Operateur_base.h>
+#include <Ref_Zone_VEF.h>
 
 class Zone_VEF_PreP1b;
 

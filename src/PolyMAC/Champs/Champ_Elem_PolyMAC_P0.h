@@ -17,8 +17,6 @@
 #define Champ_Elem_PolyMAC_P0_included
 
 #include <Champ_Elem_PolyMAC.h>
-#include <Ref_Zone_VF.h>
-#include <Zone_PolyMAC_P0.h>
 #include <Operateur.h>
 
 class Zone_PolyMAC_P0;
@@ -28,18 +26,16 @@ class Zone_PolyMAC_P0;
  *  Champ correspondant a une inconnue scalaire (type temperature ou pression)
  *  Degres de libertes : valeur aux elements + flux aux faces
  *
- *
  */
-
-class Champ_Elem_PolyMAC_P0 : public Champ_Elem_PolyMAC
+class Champ_Elem_PolyMAC_P0: public Champ_Elem_PolyMAC
 {
   Declare_instanciable(Champ_Elem_PolyMAC_P0);
 
-public :
+public:
 
-  const Zone_PolyMAC_P0&        zone_PolyMAC_P0() const;
+  const Zone_PolyMAC_P0& zone_PolyMAC_P0() const;
 
-  void init_auxiliary_variables() override { };
+  void init_auxiliary_variables() override { }
   Champ_base& affecter_(const Champ_base& ch) override { return Champ_Inc_P0_base::affecter_(ch); }
 
   // Fonctions pour le calcul des coefficients du gradient
@@ -47,12 +43,12 @@ public :
   mutable DoubleTab fgrad_w;
   void init_grad(int full_stencil) const;      // Call to initialise the tables ; no updates necessary
   void calc_grad(int full_stencil) const;      // Call to calculate the tables ; updates necessary
-  void mettre_a_jour(double tps) override ;
+  void mettre_a_jour(double tps) override;
 
-protected :
+protected:
 
   mutable int grad_a_jour = 0;
-  mutable double tps_last_calc_grad_ = -1.e8 ;
+  mutable double tps_last_calc_grad_ = -1.e8;
 };
 
 #endif

@@ -18,46 +18,13 @@
 
 Implemente_instanciable(Champ_P0_VEF,"Champ_P0_VEF",Champ_Inc_P0_base);
 
+Sortie& Champ_P0_VEF::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-//     printOn()
-/////
+Entree& Champ_P0_VEF::readOn(Entree& s) { return s ; }
 
-Sortie& Champ_P0_VEF::printOn(Sortie& s) const
+const Zone_VEF& Champ_P0_VEF::zone_VEF() const
 {
-  return s << que_suis_je() << " " << le_nom();
-}
-
-//// readOn
-//
-
-Entree& Champ_P0_VEF::readOn(Entree& s)
-{
-  return s ;
-}
-
-void Champ_P0_VEF::associer_zone_dis_base(const Zone_dis_base& zone_dis)
-{
-  la_zone_VEF = ref_cast(Zone_VEF, zone_dis);
-}
-
-double Champ_P0_VEF::valeur_au_bord(int face) const
-{
-  double val_bord;
-  const DoubleTab& val = valeurs();
-  assert(la_zone_VEF.non_nul());
-  const Zone_VEF& zone_VEF=la_zone_VEF.valeur();
-
-  int n0 = zone_VEF.face_voisins(face,0);
-  if (n0 != -1)
-    val_bord = val[n0];
-  else
-    val_bord = val[zone_VEF.face_voisins(face,1)];
-  return val_bord;
-}
-
-const Zone_dis_base& Champ_P0_VEF::zone_dis_base() const
-{
-  return la_zone_VEF.valeur();
+  return ref_cast(Zone_VEF, la_zone_VF.valeur());
 }
 
 int Champ_P0_VEF::imprime(Sortie& os, int ncomp) const
@@ -65,4 +32,3 @@ int Champ_P0_VEF::imprime(Sortie& os, int ncomp) const
   imprime_P0(os,ncomp);
   return 1;
 }
-

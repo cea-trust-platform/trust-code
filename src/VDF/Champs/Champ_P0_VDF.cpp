@@ -13,59 +13,26 @@
 *
 *****************************************************************************/
 
+#include <LecFicDiffuse.h>
 #include <Champ_P0_VDF.h>
 #include <Zone_VDF.h>
-#include <LecFicDiffuse.h>
 
 Implemente_instanciable(Champ_P0_VDF,"Champ_P0_VDF",Champ_Inc_P0_base);
 
-//     printOn()
-/////
+Sortie& Champ_P0_VDF::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
+Entree& Champ_P0_VDF::readOn(Entree& s) { return s ; }
 
-Sortie& Champ_P0_VDF::printOn(Sortie& s) const
+const Zone_VDF& Champ_P0_VDF::zone_VDF() const
 {
-  return s << que_suis_je() << " " << le_nom();
-}
-
-//// readOn
-//
-
-Entree& Champ_P0_VDF::readOn(Entree& s)
-{
-  return s ;
-}
-
-void Champ_P0_VDF::associer_zone_dis_base(const Zone_dis_base& zone_dis)
-{
-  la_zone_VDF = ref_cast(Zone_VDF, zone_dis);
-}
-
-double Champ_P0_VDF::valeur_au_bord(int face) const
-{
-  double val_bord;
-  const DoubleTab& val = valeurs();
-  assert(la_zone_VDF.non_nul());
-  const Zone_VDF& zone_VDF=la_zone_VDF.valeur();
-
-  int n0 = zone_VDF.face_voisins(face,0);
-  if (n0 != -1)
-    val_bord = val[n0];
-  else
-    val_bord = val[zone_VDF.face_voisins(face,1)];
-  return val_bord;
-}
-
-const Zone_dis_base& Champ_P0_VDF::zone_dis_base() const
-{
-  return la_zone_VDF.valeur();
+  return ref_cast(Zone_VDF, la_zone_VF.valeur());
 }
 
 DoubleTab& Champ_P0_VDF::remplir_coord_noeuds(DoubleTab& positions) const
 {
-  const Zone_VDF& zone_vdf = ref_cast(Zone_VDF,zone_dis_base());
+  const Zone_VDF& zone_vdf = ref_cast(Zone_VDF, zone_dis_base());
   const DoubleTab& xp = zone_vdf.xp();
   int nb_poly = zone_vdf.nb_elem();
-  if ( (xp.dimension(0) == nb_poly ) && (xp.dimension(1) == dimension) )
+  if ((xp.dimension(0) == nb_poly) && (xp.dimension(1) == dimension))
     positions.ref(xp);
   else
     {
@@ -82,23 +49,21 @@ DoubleTab& Champ_P0_VDF::remplir_coord_noeuds(DoubleTab& positions) const
  *  multipliees par les volumes des elements
  *
  */
-
 DoubleVect Champ_P0_VDF::moyenne(const DoubleVect& porosite_elem) const
 {
-  const Zone_VDF& zvdf=la_zone_VDF.valeur();
-  const DoubleVect& volumes = zvdf.volumes();
+  const DoubleVect& volumes = zone_VDF().volumes();
   const DoubleTab& val = valeurs();
 
-  int k,nb_compo = nb_comp();
+  int k, nb_compo = nb_comp();
   DoubleVect moy(nb_compo);
-  moy =0;
-  double coef,sum_vol=0;
+  moy = 0;
+  double coef, sum_vol = 0;
 
-  for (int num_elem=0; num_elem<zvdf.nb_elem(); num_elem++)
+  for (int num_elem = 0; num_elem < zone_VDF().nb_elem(); num_elem++)
     {
-      coef = porosite_elem(num_elem)*volumes(num_elem);
-      for (k=0; k<nb_compo; k++)
-        moy[k] += val(num_elem,k)*coef;
+      coef = porosite_elem(num_elem) * volumes(num_elem);
+      for (k = 0; k < nb_compo; k++)
+        moy[k] += val(num_elem, k) * coef;
       sum_vol += coef;
     }
 
@@ -111,17 +76,16 @@ DoubleVect Champ_P0_VDF::moyenne(const DoubleVect& porosite_elem) const
  */
 double Champ_P0_VDF::moyenne(const DoubleVect& porosite_elem, int ncomp) const
 {
-  const Zone_VDF& zvdf=la_zone_VDF.valeur();
-  const DoubleVect& volumes = zvdf.volumes();
+  const DoubleVect& volumes = zone_VDF().volumes();
   const DoubleTab& val = valeurs();
 
-  double moy=0;
-  double coef,sum_vol=0;
+  double moy = 0;
+  double coef, sum_vol = 0;
 
-  for (int num_elem=0; num_elem<zvdf.nb_elem(); num_elem++)
+  for (int num_elem = 0; num_elem < zone_VDF().nb_elem(); num_elem++)
     {
-      coef = porosite_elem(num_elem)*volumes(num_elem);
-      moy += val(num_elem,ncomp)*coef;
+      coef = porosite_elem(num_elem) * volumes(num_elem);
+      moy += val(num_elem, ncomp) * coef;
       sum_vol += coef;
     }
   moy /= sum_vol;
@@ -261,17 +225,15 @@ int Champ_P0_VDF::imprime(Sortie& os, int ncomp) const
  */
 double Champ_P0_VDF::integrale_espace(int ncomp) const
 {
-  // Cerr << "Champ_P0_VDF::integrale_espace " << finl;
-  double integr=0.;
-  const Zone_VDF& zone_vdf=la_zone_VDF.valeur();
-  const DoubleVect& volumes = zone_vdf.volumes();
-  int nb_elem =zone_vdf.nb_elem();
+  double integr = 0.;
+  const DoubleVect& volumes = zone_VDF().volumes();
+  int nb_elem = zone_VDF().nb_elem();
   int elem;
   const DoubleTab& val = valeurs();
   assert(ncomp < val.line_size());
 
-  for (elem=0; elem<nb_elem; elem++)
-    integr+= val(elem,ncomp)*volumes(elem);
+  for (elem = 0; elem < nb_elem; elem++)
+    integr += val(elem, ncomp) * volumes(elem);
 
   return integr;
 }

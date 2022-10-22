@@ -13,21 +13,17 @@
 *
 *****************************************************************************/
 
-#include <Champ_Elem_PolyMAC.h>
-#include <Zone_Cl_dis.h>
-#include <Zone_Cl_PolyMAC.h>
-#include <Domaine.h>
 #include <Connectivite_som_elem.h>
-#include <Dirichlet_homogene.h>
 #include <Champ_Elem_PolyMAC.h>
+#include <Champ_Elem_PolyMAC.h>
+#include <Zone_Cl_PolyMAC.h>
 #include <TRUSTTab_parts.h>
 #include <MD_Vector_base.h>
-#include <Neumann_paroi.h>
 #include <Equation_base.h>
-#include <Dirichlet.h>
-#include <Symetrie.h>
-#include <array>
 #include <Zone_PolyMAC.h>
+#include <Zone_Cl_dis.h>
+#include <Domaine.h>
+#include <array>
 
 Implemente_instanciable(Champ_Elem_PolyMAC,"Champ_Elem_PolyMAC",Champ_Inc_P0_base);
 
