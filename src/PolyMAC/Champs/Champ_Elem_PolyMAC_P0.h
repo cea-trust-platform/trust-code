@@ -51,4 +51,4 @@ protected:
   mutable double tps_last_calc_grad_ = -1.e8;
 };
 
-#endif
+#endif /* Champ_Elem_PolyMAC_P0_included */

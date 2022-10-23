@@ -14,32 +14,15 @@
 *****************************************************************************/
 
 #include <Champ_Fonc_Q1_base.h>
-#include <Domaine.h>
 #include <Zone_dis_base.h>
+#include <Domaine.h>
 #include <Scatter.h>
 
-Implemente_base(Champ_Fonc_Q1_base,"Champ_Fonc_Q1_base",Champ_Fonc_base);
+Implemente_base(Champ_Fonc_Q1_base, "Champ_Fonc_Q1_base", Champ_Fonc_base);
 
-Sortie& Champ_Fonc_Q1_base::printOn(Sortie& os) const
-{
-  os << que_suis_je() << " " << le_nom();
-  return os;
-}
+Sortie& Champ_Fonc_Q1_base::printOn(Sortie& os) const { return os << que_suis_je() << " " << le_nom(); }
 
-Entree& Champ_Fonc_Q1_base::readOn(Entree& is)
-{
-  return is;
-}
-
-Champ_base& Champ_Fonc_Q1_base::le_champ(void)
-{
-  return *this;
-}
-
-const Champ_base& Champ_Fonc_Q1_base::le_champ(void) const
-{
-  return *this;
-}
+Entree& Champ_Fonc_Q1_base::readOn(Entree& is) { return is; }
 
 int Champ_Fonc_Q1_base::fixer_nb_valeurs_nodales(int nb_noeuds)
 {

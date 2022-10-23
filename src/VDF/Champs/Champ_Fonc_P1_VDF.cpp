@@ -15,20 +15,11 @@
 
 #include <Champ_Fonc_P1_VDF.h>
 
-Implemente_instanciable(Champ_Fonc_P1_VDF,"Champ_Fonc_P1_VDF",Champ_Fonc_P1_base);
+Implemente_instanciable(Champ_Fonc_P1_VDF, "Champ_Fonc_P1_VDF", Champ_Fonc_P1_base);
 
+Sortie& Champ_Fonc_P1_VDF::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-//printOn()
-Sortie& Champ_Fonc_P1_VDF::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-//readOn
-Entree& Champ_Fonc_P1_VDF::readOn(Entree& s)
-{
-  return s ;
-}
+Entree& Champ_Fonc_P1_VDF::readOn(Entree& s) { return s; }
 
 void Champ_Fonc_P1_VDF::mettre_a_jour(double t)
 {

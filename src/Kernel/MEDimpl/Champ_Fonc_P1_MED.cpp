@@ -14,39 +14,25 @@
 *****************************************************************************/
 
 #include <Champ_Fonc_P1_MED.h>
+
 Implemente_instanciable(Champ_Fonc_P1_MED,"Champ_Fonc_P1_MED",Champ_Fonc_P1_base);
 
+Sortie& Champ_Fonc_P1_MED::printOn(Sortie& s ) const { return s << que_suis_je() << " " << le_nom(); }
 
-/*! @brief Ecrit le type et le nom du Champ sur un flot de sortie
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Champ_Fonc_P1_MED::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
+Entree& Champ_Fonc_P1_MED::readOn(Entree& s ) { return s ; }
 
-
-/*! @brief NE FAIT RIEN
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree
- */
-Entree& Champ_Fonc_P1_MED::readOn(Entree& s )
-{
-  return s ;
-}
 void Champ_Fonc_P1_MED::mettre_a_jour(double t)
 {
-  Cerr<<"Champ_Fonc_P1_MED::mettre_a_jour must be overloaded"<<finl;
-  exit();
+  Cerr << "Champ_Fonc_P1_MED::mettre_a_jour must be overloaded" << finl;
+  Process::exit();
 }
+
 const Zone_dis_base& Champ_Fonc_P1_MED::zone_dis_base() const
 {
   return zonebidon.valeur();
 }
+
 void Champ_Fonc_P1_MED::associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base)
 {
-  zonebidon=la_zone_dis_base;
+  zonebidon = la_zone_dis_base;
 }

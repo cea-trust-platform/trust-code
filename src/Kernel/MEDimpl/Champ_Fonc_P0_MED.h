@@ -16,17 +16,11 @@
 #ifndef Champ_Fonc_P0_MED_included
 #define Champ_Fonc_P0_MED_included
 
-
-
 #include <Champ_Fonc_P0_base.h>
-
 
 /*! @brief classe Champ_Fonc_P0_MED permet de faire un champ P0 pour le post med
  *
- *
- *
  */
-
 class Champ_Fonc_P0_MED: public Champ_Fonc_P0_base
 {
   Declare_instanciable(Champ_Fonc_P0_MED);
@@ -34,8 +28,10 @@ class Champ_Fonc_P0_MED: public Champ_Fonc_P0_base
 public:
   void associer_zone_dis_base(const Zone_dis_base&) override;
   const Zone_dis_base& zone_dis_base() const override;
-  void mettre_a_jour(double ) override;
+  void mettre_a_jour(double) override;
+
 private:
   REF(Zone_dis_base) zonebidon;
 };
-#endif
+
+#endif /* Champ_Fonc_P0_MED_included */

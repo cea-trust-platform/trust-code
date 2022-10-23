@@ -13,10 +13,8 @@
 *
 *****************************************************************************/
 
-
 #ifndef Champ_input_P0_included
 #define Champ_input_P0_included
-
 
 #include <Champ_Fonc_P0_base.h>
 #include <Champ_Input_Proto.h>

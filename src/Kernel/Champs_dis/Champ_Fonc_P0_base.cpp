@@ -14,33 +14,16 @@
 *****************************************************************************/
 
 #include <Champ_Fonc_P0_base.h>
-#include <Domaine.h>
-#include <Zone_dis_base.h>
 #include <Frontiere_dis_base.h>
+#include <Zone_dis_base.h>
+#include <Domaine.h>
 #include <Zone_VF.h>
 
-Implemente_base(Champ_Fonc_P0_base,"Champ_Fonc_P0_base",Champ_Fonc_base);
+Implemente_base(Champ_Fonc_P0_base, "Champ_Fonc_P0_base", Champ_Fonc_base);
 
-Sortie& Champ_Fonc_P0_base::printOn(Sortie& os) const
-{
-  os << que_suis_je() << " " << le_nom();
-  return os;
-}
+Sortie& Champ_Fonc_P0_base::printOn(Sortie& os) const { return os << que_suis_je() << " " << le_nom(); }
 
-Entree& Champ_Fonc_P0_base::readOn(Entree& is)
-{
-  return is;
-}
-
-Champ_base& Champ_Fonc_P0_base::le_champ(void)
-{
-  return *this;
-}
-
-const Champ_base& Champ_Fonc_P0_base::le_champ(void) const
-{
-  return *this;
-}
+Entree& Champ_Fonc_P0_base::readOn(Entree& is) { return is; }
 
 int Champ_Fonc_P0_base::fixer_nb_valeurs_nodales(int n)
 {
@@ -56,21 +39,17 @@ int Champ_Fonc_P0_base::fixer_nb_valeurs_nodales(int n)
 Champ_base& Champ_Fonc_P0_base::affecter_(const Champ_base& ch)
 {
   if (Champ_implementation_P0::affecter_(ch))
-    {
-      return *this;
-    }
+    return *this;
   else
-    {
-      return Champ_Fonc_base::affecter_(ch);
-    }
+    return Champ_Fonc_base::affecter_(ch);
 }
 
 /*! @brief Trace du champ P0 sur la frontiere
  *
  */
-DoubleTab& Champ_Fonc_P0_base::trace(const Frontiere_dis_base& fr, DoubleTab& x, double tps,int distant) const
+DoubleTab& Champ_Fonc_P0_base::trace(const Frontiere_dis_base& fr, DoubleTab& x, double tps, int distant) const
 {
-  return Champ_implementation_P0::trace(fr, valeurs(), x,distant);
+  return Champ_implementation_P0::trace(fr, valeurs(), x, distant);
 }
 
 double Champ_Fonc_P0_base::moyenne(const DoubleVect& porosite_elem, int ncomp) const
@@ -79,7 +58,7 @@ double Champ_Fonc_P0_base::moyenne(const DoubleVect& porosite_elem, int ncomp) c
   const DoubleVect& volumes = zvf.volumes();
   const DoubleTab& val = valeurs();
 
-  double moy = 0, sum_vol=0;
+  double moy = 0, sum_vol = 0;
 
   for (int e = 0; e < zvf.nb_elem(); e++)
     {
@@ -107,7 +86,7 @@ DoubleVect Champ_Fonc_P0_base::moyenne(const DoubleVect& porosite_elem) const
   const int nb_compo = nb_comp();
   DoubleVect moy(nb_compo);
   moy = 0;
-  double sum_vol=0;
+  double sum_vol = 0;
 
   for (int e = 0; e < zvf.nb_elem(); e++)
     {
@@ -136,12 +115,12 @@ double Champ_Fonc_P0_base::valeur_au_bord(int face) const
 {
   double val_bord;
   const DoubleTab& val = valeurs();
-  const Zone_VF& zvf=la_zone_VF.valeur();
+  const Zone_VF& zvf = la_zone_VF.valeur();
 
-  int n0 = zvf.face_voisins(face,0);
+  int n0 = zvf.face_voisins(face, 0);
   if (n0 != -1)
     val_bord = val[n0];
   else
-    val_bord = val[zvf.face_voisins(face,1)];
+    val_bord = val[zvf.face_voisins(face, 1)];
   return val_bord;
 }

@@ -16,31 +16,21 @@
 #ifndef Champ_Fonc_Tabule_P0_EF_included
 #define Champ_Fonc_Tabule_P0_EF_included
 
-#include <Champ_Fonc_P0_EF.h>
 #include <Vect_Ref_Champ_base.h>
+#include <Champ_Fonc_P0_EF.h>
 #include <Ref_Table.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Champ_Fonc_Tabule_P0_EF
-//
-//////////////////////////////////////////////////////////////////////////////
-
-class Champ_Fonc_Tabule_P0_EF : public Champ_Fonc_P0_EF
+class Champ_Fonc_Tabule_P0_EF: public Champ_Fonc_P0_EF
 {
   Declare_instanciable(Champ_Fonc_Tabule_P0_EF);
-
 public:
-
-  void associer_param(const VECT(REF(Champ_base))&, const Table& );
-  void mettre_a_jour(double ) override;
+  void associer_param(const VECT(REF(Champ_base))&, const Table&);
+  void mettre_a_jour(double) override;
   int initialiser(const double temps) override;
 
 protected:
-
   VECT(REF(Champ_base)) les_ch_param;
   REF(Table) la_table;
 };
 
-
-#endif
+#endif /* Champ_Fonc_Tabule_P0_EF_included */

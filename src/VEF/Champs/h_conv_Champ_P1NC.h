@@ -16,72 +16,38 @@
 #ifndef h_conv_Champ_P1NC_included
 #define h_conv_Champ_P1NC_included
 
-
-#include <Champ_h_conv.h>
 #include <Champ_Fonc_P0_VEF.h>
-#include <Ref_Champ_P1NC.h>
 #include <Ref_Zone_Cl_VEF.h>
+#include <Ref_Champ_P1NC.h>
+#include <Champ_h_conv.h>
 #include <Zone_Cl_VEF.h>
 
 /*! @brief classe h_conv_Champ_P1NC
  *
  * @sa Champ_h_conv Champ_Fonc_P0_VEF
  */
-
-class h_conv_Champ_P1NC : public Champ_h_conv,
-  public Champ_Fonc_P0_VEF
-
+class h_conv_Champ_P1NC: public Champ_h_conv, public Champ_Fonc_P0_VEF
 {
-
   Declare_instanciable(h_conv_Champ_P1NC);
-
 public:
-
-  inline const Champ_P1NC& mon_champ() const;
-  inline int& temp_ref();
-  inline const int& temp_ref() const;
-  inline void mettre_a_jour(double ) override;
-  void associer_champ(const Champ_P1NC& );
-  void me_calculer(double ) override;
-
-  inline void associer_zone_Cl_dis_base(const Zone_Cl_dis_base&);
+  void mettre_a_jour(double) override;
+  void associer_champ(const Champ_P1NC&);
+  void me_calculer(double) override;
   const Zone_Cl_dis_base& zone_Cl_dis_base() const;
 
+  inline const Champ_P1NC& mon_champ() const { return mon_champ_.valeur(); }
+  inline int& temp_ref() { return temp_ref_; }
+  inline const int& temp_ref() const { return temp_ref_; }
+
+  inline void associer_zone_Cl_dis_base(const Zone_Cl_dis_base& la_zone_Cl_dis_base)
+  {
+    la_zone_Cl_VEF = (const Zone_Cl_VEF&) la_zone_Cl_dis_base;
+  }
 
 protected:
-
   REF(Champ_P1NC) mon_champ_;
   REF(Zone_Cl_VEF) la_zone_Cl_VEF;
-  int temp_ref_;
+  int temp_ref_ = -1;
 };
 
-inline const Champ_P1NC& h_conv_Champ_P1NC::mon_champ() const
-{
-  return mon_champ_.valeur();
-}
-
-inline int& h_conv_Champ_P1NC::temp_ref()
-{
-  return temp_ref_;
-}
-inline const int& h_conv_Champ_P1NC::temp_ref() const
-{
-  return temp_ref_;
-}
-
-
-inline void h_conv_Champ_P1NC::mettre_a_jour(double tps)
-{
-  me_calculer(tps);
-  changer_temps(tps);
-  Champ_Fonc_base::mettre_a_jour(tps);
-}
-
-inline void h_conv_Champ_P1NC::associer_zone_Cl_dis_base(const Zone_Cl_dis_base& la_zone_Cl_dis_base)
-{
-  la_zone_Cl_VEF  = (const Zone_Cl_VEF&) la_zone_Cl_dis_base;
-}
-
-
-
-#endif
+#endif /* h_conv_Champ_P1NC_included */

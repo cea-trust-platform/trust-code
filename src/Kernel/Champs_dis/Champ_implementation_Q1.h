@@ -22,23 +22,17 @@
  *
  *  Decrire ici la classe Champ_implementation_Q1
  *
- *
- *
  */
-
-class Champ_implementation_Q1 : public Champ_implementation_sommet_base
+class Champ_implementation_Q1: public Champ_implementation_sommet_base
 {
+public:
+  inline ~Champ_implementation_Q1() override { }
+  void value_interpolation(const DoubleTab& positions, const ArrOfInt& cells, const DoubleTab& values, DoubleTab& resu, int ncomp = -1) const override;
 
-public :
-  Champ_base& le_champ(void)       override =0;
-  const Champ_base& le_champ(void) const override =0;
-
-public :
-  inline ~Champ_implementation_Q1() override { };
-  void value_interpolation(const DoubleTab& positions, const ArrOfInt& cells, const DoubleTab& values, DoubleTab& resu, int ncomp=-1) const override;
-
-private :
+private:
   virtual double form_function(const ArrOfDouble& position, int cell, int ddl) const;
+  Champ_base& le_champ() override =0;
+  const Champ_base& le_champ() const override =0;
 };
 
 #endif /* Champ_implementation_Q1_inclus */

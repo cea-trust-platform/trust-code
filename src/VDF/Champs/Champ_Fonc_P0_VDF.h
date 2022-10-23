@@ -13,7 +13,6 @@
 *
 *****************************************************************************/
 
-
 #ifndef Champ_Fonc_P0_VDF_included
 #define Champ_Fonc_P0_VDF_included
 
@@ -30,4 +29,4 @@ public :
   int imprime(Sortie& , int ) const override ;
 };
 
-#endif
+#endif /* Champ_Fonc_P0_VDF_included */

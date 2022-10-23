@@ -14,28 +14,28 @@
 *****************************************************************************/
 
 #include <Champ_implementation_P1.h>
-#include <Domaine.h>
-#include <Octree_Double.h>
 #include <Zone_Poly_base.h>
+#include <Octree_Double.h>
+#include <Domaine.h>
 
 double Champ_implementation_P1::form_function(const ArrOfDouble& position, const IntTab& les_elems, const DoubleTab& nodes, ArrOfInt& index, int cell, int ddl) const
 {
   int nb_nodes_per_cell = les_elems.dimension(1);
   assert(ddl < nb_nodes_per_cell);
 
-  for (int i=0; i<nb_nodes_per_cell; i++)
-    index[i] = les_elems(cell,(i+ddl)%nb_nodes_per_cell);
+  for (int i = 0; i < nb_nodes_per_cell; i++)
+    index[i] = les_elems(cell, (i + ddl) % nb_nodes_per_cell);
 
-  if (nb_nodes_per_cell==2)
+  if (nb_nodes_per_cell == 2)
     {
-      double num=0.;
-      double den=0.;
-      for (int d=0; d<Objet_U::dimension; d++)
+      double num = 0.;
+      double den = 0.;
+      for (int d = 0; d < Objet_U::dimension; d++)
         {
-          num+=(position[d]-nodes(index[0],d))*(position[d]-nodes(index[0],d));
-          den+=(nodes(index[1],d)-nodes(index[0],d))*(nodes(index[1],d)-nodes(index[0],d));
+          num += (position[d] - nodes(index[0], d)) * (position[d] - nodes(index[0], d));
+          den += (nodes(index[1], d) - nodes(index[0], d)) * (nodes(index[1], d) - nodes(index[0], d));
         }
-      double res= 1.-sqrt(num/den);
+      double res = 1. - sqrt(num / den);
       // Cerr<<"ii "<<res<<" "<<index[0]<<" "<<ddl<<" "<<(ddl)%nb_nodes_per_cell<<finl;
       return res;
     }
@@ -44,39 +44,27 @@ double Champ_implementation_P1::form_function(const ArrOfDouble& position, const
 
   if (Objet_U::dimension == 2)
     {
-      den = (nodes(index[2],0) - nodes(index[1],0)) * (nodes(index[0],1) - nodes(index[1],1))
-            - (nodes(index[2],1) - nodes(index[1],1)) * (nodes(index[0],0) - nodes(index[1],0));
+      den = (nodes(index[2], 0) - nodes(index[1], 0)) * (nodes(index[0], 1) - nodes(index[1], 1)) - (nodes(index[2], 1) - nodes(index[1], 1)) * (nodes(index[0], 0) - nodes(index[1], 0));
 
-      num = (nodes(index[2],0) - nodes(index[1],0)) * (position[1] - nodes(index[1],1))
-            - (nodes(index[2],1) - nodes(index[1],1)) * (position[0] - nodes(index[1],0));
+      num = (nodes(index[2], 0) - nodes(index[1], 0)) * (position[1] - nodes(index[1], 1)) - (nodes(index[2], 1) - nodes(index[1], 1)) * (position[0] - nodes(index[1], 0));
     }
   else if (Objet_U::dimension == 3)
     {
-      double xp = (nodes(index[2],1) - nodes(index[1],1)) * (nodes(index[0],2) - nodes(index[1],2))
-                  - (nodes(index[2],2) - nodes(index[1],2)) * (nodes(index[0],1) - nodes(index[1],1));
+      double xp = (nodes(index[2], 1) - nodes(index[1], 1)) * (nodes(index[0], 2) - nodes(index[1], 2)) - (nodes(index[2], 2) - nodes(index[1], 2)) * (nodes(index[0], 1) - nodes(index[1], 1));
 
-      double yp = (nodes(index[2],2) - nodes(index[1],2)) * (nodes(index[0],0) - nodes(index[1],0))
-                  - (nodes(index[2],0) - nodes(index[1],0)) * (nodes(index[0],2) - nodes(index[1],2));
+      double yp = (nodes(index[2], 2) - nodes(index[1], 2)) * (nodes(index[0], 0) - nodes(index[1], 0)) - (nodes(index[2], 0) - nodes(index[1], 0)) * (nodes(index[0], 2) - nodes(index[1], 2));
 
-      double zp = (nodes(index[2],0) - nodes(index[1],0)) * (nodes(index[0],1) - nodes(index[1],1))
-                  - (nodes(index[2],1) - nodes(index[1],1)) * (nodes(index[0],0) - nodes(index[1],0));
+      double zp = (nodes(index[2], 0) - nodes(index[1], 0)) * (nodes(index[0], 1) - nodes(index[1], 1)) - (nodes(index[2], 1) - nodes(index[1], 1)) * (nodes(index[0], 0) - nodes(index[1], 0));
 
-      den = xp * (nodes(index[3],0) - nodes(index[1],0))
-            + yp * (nodes(index[3],1) - nodes(index[1],1))
-            + zp * (nodes(index[3],2) - nodes(index[1],2));
+      den = xp * (nodes(index[3], 0) - nodes(index[1], 0)) + yp * (nodes(index[3], 1) - nodes(index[1], 1)) + zp * (nodes(index[3], 2) - nodes(index[1], 2));
 
-      xp = (nodes(index[2],1) - nodes(index[1],1)) * (position[2] - nodes(index[1],2))
-           - (nodes(index[2],2) - nodes(index[1],2)) * (position[1] - nodes(index[1],1));
+      xp = (nodes(index[2], 1) - nodes(index[1], 1)) * (position[2] - nodes(index[1], 2)) - (nodes(index[2], 2) - nodes(index[1], 2)) * (position[1] - nodes(index[1], 1));
 
-      yp = (nodes(index[2],2) - nodes(index[1],2)) * (position[0] - nodes(index[1],0))
-           - (nodes(index[2],0) - nodes(index[1],0)) * (position[2] - nodes(index[1],2));
+      yp = (nodes(index[2], 2) - nodes(index[1], 2)) * (position[0] - nodes(index[1], 0)) - (nodes(index[2], 0) - nodes(index[1], 0)) * (position[2] - nodes(index[1], 2));
 
-      zp = (nodes(index[2],0) - nodes(index[1],0)) * (position[1] - nodes(index[1],1))
-           - (nodes(index[2],1) - nodes(index[1],1)) * (position[0] - nodes(index[1],0));
+      zp = (nodes(index[2], 0) - nodes(index[1], 0)) * (position[1] - nodes(index[1], 1)) - (nodes(index[2], 1) - nodes(index[1], 1)) * (position[0] - nodes(index[1], 0));
 
-      num = xp * (nodes(index[3],0) - nodes(index[1],0))
-            + yp * (nodes(index[3],1) - nodes(index[1],1))
-            + zp * (nodes(index[3],2) - nodes(index[1],2));
+      num = xp * (nodes(index[3], 0) - nodes(index[1], 0)) + yp * (nodes(index[3], 1) - nodes(index[1], 1)) + zp * (nodes(index[3], 2) - nodes(index[1], 2));
     }
   else
     {
@@ -85,9 +73,9 @@ double Champ_implementation_P1::form_function(const ArrOfDouble& position, const
     }
 
   assert(den != 0.);
-  double result = num/den;
+  double result = num / den;
 
-  if ((result < -Objet_U::precision_geom) || (result > 1.+Objet_U::precision_geom))
+  if ((result < -Objet_U::precision_geom) || (result > 1. + Objet_U::precision_geom))
     {
       Cerr << "WARNING: The barycentric coordinate of point :" << finl;
       Cerr << "x= " << position[0] << " y=" << position[1];
@@ -109,9 +97,9 @@ double Champ_implementation_P1::form_function(const ArrOfDouble& position, const
 }
 void Champ_implementation_P1::value_interpolation(const DoubleTab& positions, const ArrOfInt& cells, const DoubleTab& values, DoubleTab& resu, int ncomp) const
 {
-  const Zone&      zone              = get_zone_geom();
-  const Zone_Poly_base*    zpoly     = sub_type(Zone_Poly_base, get_zone_dis()) ? &ref_cast(Zone_Poly_base, get_zone_dis()) : NULL;
-  const IntTab&    les_elems         = zone.les_elems();
+  const Zone& zone = get_zone_geom();
+  const Zone_Poly_base *zpoly = sub_type(Zone_Poly_base, get_zone_dis()) ? &ref_cast(Zone_Poly_base, get_zone_dis()) : NULL;
+  const IntTab& les_elems = zone.les_elems();
   const DoubleTab& nodes = zone.domaine().les_sommets();
   const int nb_nodes_per_cell = zone.nb_som_elem(), N = resu.line_size();
   ArrOfInt index(nb_nodes_per_cell);
@@ -122,15 +110,16 @@ void Champ_implementation_P1::value_interpolation(const DoubleTab& positions, co
       const DoubleTab& v_es = zpoly->vol_elem_som();
       const DoubleVect& ve = zpoly->volumes();
       const IntTab& es_d = zpoly->elem_som_d();
-      for (int ic=0; ic<cells.size_array(); ic++)
+      for (int ic = 0; ic < cells.size_array(); ic++)
         {
           int cell = cells[ic];
-          if (cell<0) continue;
+          if (cell < 0)
+            continue;
           assert(cell >= 0);
           assert(cell < les_elems.dimension_tot(0));
           if (ncomp != -1)
             for (int j = 0, k = es_d(cell); k < es_d(cell + 1); j++, k++)
-              resu(ic) += values(les_elems(cell ,j), ncomp) * v_es(k) / ve(cell);
+              resu(ic) += values(les_elems(cell, j), ncomp) * v_es(k) / ve(cell);
           else
             {
               assert(values.line_size() == N);
@@ -141,12 +130,14 @@ void Champ_implementation_P1::value_interpolation(const DoubleTab& positions, co
 
         }
     }
-  else for (int ic=0; ic<cells.size_array(); ic++)
+  else
+    for (int ic = 0; ic < cells.size_array(); ic++)
       {
         int cell = cells[ic];
-        if (cell<0) continue;
-        for (int k=0; k<Objet_U::dimension; k++)
-          position[k] = positions(ic,k);
+        if (cell < 0)
+          continue;
+        for (int k = 0; k < Objet_U::dimension; k++)
+          position[k] = positions(ic, k);
 
         assert(cell >= 0);
         assert(cell < les_elems.dimension_tot(0));
@@ -155,7 +146,7 @@ void Champ_implementation_P1::value_interpolation(const DoubleTab& positions, co
             for (int j = 0; j < nb_nodes_per_cell; j++)
               {
                 int node = les_elems(cell, j);
-                resu(ic) += values(node, ncomp) * form_function(position,les_elems,nodes,index,cell,j);
+                resu(ic) += values(node, ncomp) * form_function(position, les_elems, nodes, index, cell, j);
               }
           }
         else
@@ -164,7 +155,7 @@ void Champ_implementation_P1::value_interpolation(const DoubleTab& positions, co
             assert(values.line_size() == N);
             for (int j = 0; j < nb_nodes_per_cell; j++)
               {
-                double weight = form_function(position,les_elems,nodes,index,cell,j);
+                double weight = form_function(position, les_elems, nodes, index, cell, j);
                 int node = les_elems(cell, j);
                 for (int k = 0; k < N; k++)
                   resu(ic, k) += values(node, k) * weight;
@@ -183,8 +174,7 @@ void Champ_implementation_P1::value_interpolation(const DoubleTab& positions, co
  *   x y [z] compo1 [compo2 [compo3 ... ]]   (type double)
  *
  */
-void Champ_implementation_P1::init_from_file(DoubleTab& val, const Domaine& dom,
-                                             int nb_comp, double tolerance, Entree& input)
+void Champ_implementation_P1::init_from_file(DoubleTab& val, const Domaine& dom, int nb_comp, double tolerance, Entree& input)
 {
   val.resize(0, nb_comp);
   dom.creer_tableau_sommets(val, Array_base::NOCOPY_NOINIT);
@@ -216,9 +206,7 @@ void Champ_implementation_P1::init_from_file(DoubleTab& val, const Domaine& dom,
       const int n = node_list.size_array();
       if (n > 1)
         {
-          Cerr << "Error in Champ_som_lu::readOn: point " << node_coord
-               << " corresponds to " << node_list.size_array()
-               << " nodes in the geometry within the specified tolerance" << finl;
+          Cerr << "Error in Champ_som_lu::readOn: point " << node_coord << " corresponds to " << node_list.size_array() << " nodes in the geometry within the specified tolerance" << finl;
           Process::exit();
         }
       if (n == 1)
@@ -256,23 +244,20 @@ void Champ_implementation_P1::init_from_file(DoubleTab& val, const Domaine& dom,
  * @throws erreur arithmetique, denominateur nul
  * @throws erreur de calcul, coordonnee barycentrique invalide
  */
-double coord_barycentrique_P1(const IntTab& polys,
-                              const DoubleTab& coord,
-                              double x, double y, int le_poly, int i)
+double coord_barycentrique_P1(const IntTab& polys, const DoubleTab& coord, double x, double y, int le_poly, int i)
 {
   int nb_som_elem = polys.dimension(1);
   //Distinction du calcul de la coordonnee barycentrique en fonction du type de l element
   //Cas Triangle
-  if (nb_som_elem==3)
-    return coord_barycentrique_P1_triangle(polys,coord,x,y,le_poly,i);
+  if (nb_som_elem == 3)
+    return coord_barycentrique_P1_triangle(polys, coord, x, y, le_poly, i);
   //Cas Rectangle
-  else if (nb_som_elem==4)
-    return coord_barycentrique_P1_rectangle(polys,coord,x,y,le_poly,i);
-  Cerr<<"The number of nodes by element " <<nb_som_elem<<" does not correspond to a treated situation in the coord_barycentrique_P1 function."<<finl;
+  else if (nb_som_elem == 4)
+    return coord_barycentrique_P1_rectangle(polys, coord, x, y, le_poly, i);
+  Cerr << "The number of nodes by element " << nb_som_elem << " does not correspond to a treated situation in the coord_barycentrique_P1 function." << finl;
   Process::exit();
   return 0.;
 }
-
 
 /*! @brief Calcule la coordonnee barycentrique d'un point (x,y,z) par rapport au sommet specifie d'un tetraedre ou d'un hexaedre (un element)
  *
@@ -291,19 +276,16 @@ double coord_barycentrique_P1(const IntTab& polys,
  * @throws erreur arithmetique, denominateur nul
  * @throws erreur de calcul, coordonnee barycentrique invalide
  */
-double coord_barycentrique_P1(const IntTab& polys,
-                              const DoubleTab& coord,
-                              double x, double y, double z,
-                              int le_poly, int i)
+double coord_barycentrique_P1(const IntTab& polys, const DoubleTab& coord, double x, double y, double z, int le_poly, int i)
 {
   int nb_som_elem = polys.dimension(1);
   //Distinction du calcul de la coordonnee barycentrique en fonction du type de l element
   //Cas Tetraedre
-  if (nb_som_elem==4)
+  if (nb_som_elem == 4)
     return coord_barycentrique_P1_tetraedre(polys, coord, x, y, z, le_poly, i);
-  else if (nb_som_elem==8)
+  else if (nb_som_elem == 8)
     return coord_barycentrique_P1_hexaedre(polys, coord, x, y, z, le_poly, i);
-  Cerr<<"The number of nodes by element " <<nb_som_elem<<" does not correspond to a treated situation in the coord_barycentrique_P1 function."<<finl;
+  Cerr << "The number of nodes by element " << nb_som_elem << " does not correspond to a treated situation in the coord_barycentrique_P1 function." << finl;
   Process::exit();
   return 0.;
 }

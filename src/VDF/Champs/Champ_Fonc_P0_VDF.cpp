@@ -17,23 +17,11 @@
 #include <LecFicDiffuse.h>
 #include <Zone_VF.h>
 
-Implemente_instanciable(Champ_Fonc_P0_VDF,"Champ_Fonc_P0_VDF",Champ_Fonc_P0_base);
+Implemente_instanciable(Champ_Fonc_P0_VDF, "Champ_Fonc_P0_VDF", Champ_Fonc_P0_base);
 
-//     printOn()
-/////
+Sortie& Champ_Fonc_P0_VDF::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-Sortie& Champ_Fonc_P0_VDF::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-//// readOn
-//
-
-Entree& Champ_Fonc_P0_VDF::readOn(Entree& s)
-{
-  return s ;
-}
+Entree& Champ_Fonc_P0_VDF::readOn(Entree& s) { return s; }
 
 /*! @brief Ecrit le champ sous la forme IJK
  *
@@ -51,100 +39,100 @@ int Champ_Fonc_P0_VDF::imprime(Sortie& os, int ncomp) const
   // J=10 Vij
   // J=9
   // ...
-  int ni,nj,nk=-1;
-  int ii,jj,k;
-  int np,elem;
-  int cmax=7;
-  DoubleVect xi,yj,zk;
+  int ni, nj, nk = -1;
+  int ii, jj, k;
+  int np, elem;
+  int cmax = 7;
+  DoubleVect xi, yj, zk;
   DoubleTab Grille;
   //Lecture de xi,yj,zk dans un fichier .xiyjzk
   Nom nomfic(nom_du_cas());
-  nomfic+=".xiyjzk";
+  nomfic += ".xiyjzk";
   LecFicDiffuse ficijk(nomfic);
   ficijk >> xi;
-  ni=xi.size();
+  ni = xi.size();
   ficijk >> yj;
-  nj=yj.size();
-  if (dimension==3)
+  nj = yj.size();
+  if (dimension == 3)
     {
       ficijk >> zk;
-      nk=zk.size();
+      nk = zk.size();
     }
   if (ncomp == 1)
     {
-      if (dimension==3)
+      if (dimension == 3)
         {
           // Grille ordonnee sur les centres des elements
-          np=(ni-1)*(nj-1)*(nk-1);
-          Grille.resize(np,dimension);
-          for(k=0; k<nk-1; k++)
-            for(ii=0; ii<ni-1; ii++)
-              for(jj=0; jj<nj-1; jj++)
+          np = (ni - 1) * (nj - 1) * (nk - 1);
+          Grille.resize(np, dimension);
+          for (k = 0; k < nk - 1; k++)
+            for (ii = 0; ii < ni - 1; ii++)
+              for (jj = 0; jj < nj - 1; jj++)
                 {
-                  elem=jj+(nj-1)*(ii+k*(ni-1));
-                  Grille(elem,0)=0.5*(xi(ii)+xi(ii+1));
-                  Grille(elem,1)=0.5*(yj(jj)+yj(jj+1));
-                  Grille(elem,2)=0.5*(zk(k)+zk(k+1));
+                  elem = jj + (nj - 1) * (ii + k * (ni - 1));
+                  Grille(elem, 0) = 0.5 * (xi(ii) + xi(ii + 1));
+                  Grille(elem, 1) = 0.5 * (yj(jj) + yj(jj + 1));
+                  Grille(elem, 2) = 0.5 * (zk(k) + zk(k + 1));
                 }
           DoubleTab tab_valeurs(np, nb_compo_);
           valeur_aux(Grille, tab_valeurs);
-          for(k=0; k<nk-1; k++)
+          for (k = 0; k < nk - 1; k++)
             {
               os << finl;
               os << "Coupe a K= " << k << finl;
-              int n1=0,n2=0;
-              while (n2<ni-1)
+              int n1 = 0, n2 = 0;
+              while (n2 < ni - 1)
                 {
-                  n1=n2;
-                  n2=std::min(ni-1,n2+cmax);
+                  n1 = n2;
+                  n2 = std::min(ni - 1, n2 + cmax);
                   os << finl;
                   os << "I=     ";
-                  for(int i=n1; i<n2; i++)
+                  for (int i = n1; i < n2; i++)
                     os << i << "              ";
                   os << finl;
-                  for(int j=nj-2; j>-1; j--)
+                  for (int j = nj - 2; j > -1; j--)
                     {
                       os << "J= " << j << " ";
-                      for(int i=n1; i<n2; i++)
+                      for (int i = n1; i < n2; i++)
                         {
-                          elem=j+(nj-1)*(i+k*(ni-1));
-                          os << tab_valeurs(elem,0) << " ";
+                          elem = j + (nj - 1) * (i + k * (ni - 1));
+                          os << tab_valeurs(elem, 0) << " ";
                         }
                       os << finl;
                     }
                 }
             }
         }
-      else if (dimension==2)
+      else if (dimension == 2)
         {
-          np=(ni-1)*(nj-1);
-          Grille.resize(np,dimension);
-          for(ii=0; ii<ni-1; ii++)
-            for(jj=0; jj<nj-1; jj++)
+          np = (ni - 1) * (nj - 1);
+          Grille.resize(np, dimension);
+          for (ii = 0; ii < ni - 1; ii++)
+            for (jj = 0; jj < nj - 1; jj++)
               {
-                elem=jj+(nj-1)*ii;
-                Grille(elem,0)=0.5*(xi(ii)+xi(ii+1));
-                Grille(elem,1)=0.5*(yj(jj)+yj(jj+1));
+                elem = jj + (nj - 1) * ii;
+                Grille(elem, 0) = 0.5 * (xi(ii) + xi(ii + 1));
+                Grille(elem, 1) = 0.5 * (yj(jj) + yj(jj + 1));
               }
           DoubleTab tab_valeurs(np, nb_compo_);
           valeur_aux(Grille, tab_valeurs);
-          int n1=0,n2=0;
-          while (n2<ni-1)
+          int n1 = 0, n2 = 0;
+          while (n2 < ni - 1)
             {
-              n1=n2;
-              n2=std::min(ni-1,n2+cmax);
+              n1 = n2;
+              n2 = std::min(ni - 1, n2 + cmax);
               os << finl;
               os << "I=     ";
-              for(int i=n1; i<n2; i++)
+              for (int i = n1; i < n2; i++)
                 os << i << "              ";
               os << finl;
-              for(int j=nj-2; j>-1; j--)
+              for (int j = nj - 2; j > -1; j--)
                 {
                   os << "J= " << j << " ";
-                  for(int i=n1; i<n2; i++)
+                  for (int i = n1; i < n2; i++)
                     {
-                      elem=j+(nj-1)*i;
-                      os << tab_valeurs(elem,0) << " ";
+                      elem = j + (nj - 1) * i;
+                      os << tab_valeurs(elem, 0) << " ";
                     }
                   os << finl;
                 }

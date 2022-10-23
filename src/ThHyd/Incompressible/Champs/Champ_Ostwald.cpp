@@ -12,92 +12,37 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//   Classe mere qui gere le champ utilise pour le fluide d'Ostwald dans les deux
-//   discretisations.
-//   Possede les fonctions generiques aux deux discretisations.
-//   Fait reference a un fluide d'Ostwald pour pouvoir utiliser les deux
-//   parametres du fluide d'Ostwald : K et N.
 
 #include <Champ_Ostwald.h>
 #include <Zone_dis_base.h>
 
 Implemente_instanciable(Champ_Ostwald,"Champ_Ostwald",Champ_Fonc_P0_base);
 
+Sortie& Champ_Ostwald::printOn(Sortie& os) const { return os; }
 
-/*! @brief Imprime le champ sur un flot de sortie.
- *
- * Imprime le nb_de composantes.
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Champ_Ostwald::printOn(Sortie& os) const
-{
-  //const int nb_compo = valeurs()(0,0);
-  //os << nb_compo;
-  return os;
-}
+Entree& Champ_Ostwald::readOn(Entree& is) { return is; }
 
-
-/*! @brief Lit un champ a partir d'un flot d'entree.
- *
- * On lit le nombre de composante du champ (nb_comp)
- *     Format:
- *       Champ_Ostwald nb_comp
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& Champ_Ostwald::readOn(Entree& is)
-{
-  return is;
-}
-
-
-/*! @brief NE FAIT RIEN, provoque une erreur A surcharger dans les classes derivees.
- *
- * @param (double)
- */
-void Champ_Ostwald::mettre_a_jour(double )
+void Champ_Ostwald::mettre_a_jour(double)
 {
   Cerr << "Champ_Ostwald::mettre_a_jour() ne fait rien" << finl;
-  Cerr <<  que_suis_je() << "doit la surcharger !" << finl;
-  exit();
+  Cerr << que_suis_je() << "doit la surcharger !" << finl;
+  Process::exit();
 }
 
-/*! @brief NE FAIT RIEN, provoque une erreur A surcharger dans les classes derivees.
- *
- */
 int Champ_Ostwald::initialiser(const double un_temps)
 {
   Cerr << "Champ_Ostwald::initialiser(temps) must be overloaded" << finl;
   Cerr << " by " << que_suis_je() << finl;
-  exit();
+  Process::exit();
   return 0;
 }
 
-/*! @brief NE FAIT RIEN, provoque une erreur A surcharger dans les classes derivees.
- *
- * @param (double) tps ou se fait le calcul
- */
 void Champ_Ostwald::me_calculer(double tps)
 {
   Cerr << "Champ_Ostwald::me_calculer() ne fait rien" << finl;
-  Cerr <<  que_suis_je() << "doit la surcharger !" << finl;
-  exit();
+  Cerr << que_suis_je() << "doit la surcharger !" << finl;
+  Process::exit();
 }
-
-/*! @brief NE FAIT RIEN, provoque une erreur A surcharger dans les classes derivees.
- *
- * @param (Champ_base) un des champs derives
- */
-/*
-  void Champ_Ostwald::associer_champ(const Champ_base& ch)
-  {
-  Cerr << "Champ_Ostwald::associer_champ() ne fait rien" << finl;
-  Cerr <<  que_suis_je() << "doit la surcharger !" << finl;
-  exit();
-  }*/
 
 /*! @brief Fixe le nombre de degres de liberte par composante
  *
@@ -113,7 +58,7 @@ int Champ_Ostwald::fixer_nb_valeurs_nodales(int nb_noeuds)
 
   assert(nb_noeuds == zone.nb_elem());
 
-  if(nb_compo_==1)
+  if (nb_compo_ == 1)
     valeurs_.resize(0);
   else
     valeurs_.resize(0, nb_compo_);
@@ -121,24 +66,18 @@ int Champ_Ostwald::fixer_nb_valeurs_nodales(int nb_noeuds)
   return nb_noeuds;
 }
 
-
-/*! @brief NE FAIT RIEN, provoque une erreur A surcharger dans les classes derivees.
- *
- */
-
 void Champ_Ostwald::associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base)
 {
   Cerr << "Champ_Ostwald::associer_zone_dis_base() ne fait rien" << finl;
-  Cerr <<  que_suis_je() << "doit la surcharger !" << finl;
-  exit();
+  Cerr << que_suis_je() << "doit la surcharger !" << finl;
+  Process::exit();
 }
 
-// Postcondition:
 Champ_base& Champ_Ostwald::affecter_(const Champ_base& ch)
 {
   DoubleTab noeuds;
   IntVect polys;
-  if(!remplir_coord_noeuds_et_polys(noeuds, polys))
+  if (!remplir_coord_noeuds_et_polys(noeuds, polys))
     {
       remplir_coord_noeuds(noeuds);
       ch.valeur_aux(noeuds, valeurs());
@@ -148,11 +87,9 @@ Champ_base& Champ_Ostwald::affecter_(const Champ_base& ch)
   return *this;
 }
 
-
 const Zone_dis_base& Champ_Ostwald::zone_dis_base() const
 {
-  Cerr<<"const Zone_dis_base& Champ_Ostwald::zone_dis_base() const non code"<<finl;
-  exit();
-  throw;
-  return zone_dis_base() ;
+  Cerr << "const Zone_dis_base& Champ_Ostwald::zone_dis_base() const non code" << finl;
+  Process::exit();
+  return zone_dis_base();
 }

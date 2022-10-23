@@ -16,65 +16,34 @@
 #ifndef Champ_Fonc_Elem_PolyMAC_P0_TC_included
 #define Champ_Fonc_Elem_PolyMAC_P0_TC_included
 
-#include <Champ_Fonc_Face_PolyMAC.h>
 #include <Champ_Fonc_Elem_PolyMAC.h>
-#include <Champ_Fonc.h>
-#include <Ref_Zone_Cl_PolyMAC.h>
 #include <Ref_Champ_Face_PolyMAC_P0.h>
 #include <Champ_Face_PolyMAC_P0.h>
-#include <Champ_Fonc.h>
-#include <Ref_Champ_Fonc.h>
 
-/*! @brief class Champ_Fonc_Elem_PolyMAC_P0_TC for the calculation of the shear rate (taux de cisaillement) This field is a Champ_Fonc_Elem_PolyMAC_P0 with 1 value per element and per phase :
+/*! @brief class Champ_Fonc_Elem_PolyMAC_P0_TC for the calculation of the shear rate (taux de cisaillement)
+ *
+ *    This field is a Champ_Fonc_Elem_PolyMAC_P0 with 1 value per element and per phase :
  *
  *       Champ_Fonc_Elem_PolyMAC_P0_TC::valeurs()(e, n) returns the value of phase n in element e
  *       The shear rate is calculated using
  *         shear rate = sqrt(2*Sij*Sij)
  *         Sij = 1/2(grad(u)+t grad(u))
  *
- *
- *
  */
 
-class Champ_Fonc_Elem_PolyMAC_P0_TC : public Champ_Fonc_Elem_PolyMAC
-
+class Champ_Fonc_Elem_PolyMAC_P0_TC: public Champ_Fonc_Elem_PolyMAC
 {
-
   Declare_instanciable(Champ_Fonc_Elem_PolyMAC_P0_TC);
-
 public:
-
-  inline void mettre_a_jour(double ) override;
-  inline void associer_champ(const Champ_Face_PolyMAC_P0& );
+  void mettre_a_jour(double) override;
   void me_calculer(double tps);
 
-  inline virtual       Champ_Face_PolyMAC_P0& champ_a_deriver()      ;
-  inline virtual const Champ_Face_PolyMAC_P0& champ_a_deriver() const;
+  inline void associer_champ(const Champ_Face_PolyMAC_P0& ch) { champ_ = ch; }
+  inline virtual Champ_Face_PolyMAC_P0& champ_a_deriver() { return champ_.valeur(); }
+  inline virtual const Champ_Face_PolyMAC_P0& champ_a_deriver() const { return champ_.valeur(); }
 
 protected:
-
   REF(Champ_Face_PolyMAC_P0) champ_;
 };
 
-inline void Champ_Fonc_Elem_PolyMAC_P0_TC::mettre_a_jour(double tps)
-{
-  if (temps()!=tps) me_calculer(tps);
-  Champ_Fonc_base::mettre_a_jour(tps);
-}
-
-inline void Champ_Fonc_Elem_PolyMAC_P0_TC::associer_champ(const Champ_Face_PolyMAC_P0& ch)
-{
-  Cerr << "On associe le taux de cisaillement au champ de vitesse " << finl ;
-  champ_= ch;
-}
-
-inline Champ_Face_PolyMAC_P0& Champ_Fonc_Elem_PolyMAC_P0_TC::champ_a_deriver()
-{
-  return champ_.valeur();
-}
-inline const Champ_Face_PolyMAC_P0& Champ_Fonc_Elem_PolyMAC_P0_TC::champ_a_deriver() const
-{
-  return champ_.valeur();
-}
-
-#endif
+#endif /* Champ_Fonc_Elem_PolyMAC_P0_TC_included */

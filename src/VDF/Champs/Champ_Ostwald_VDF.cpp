@@ -18,37 +18,11 @@
 #include <Fluide_Ostwald.h>
 #include <Zone_VDF.h>
 
-Implemente_instanciable(Champ_Ostwald_VDF,"Champ_Ostwald_VDF",Champ_Ostwald);
+Implemente_instanciable(Champ_Ostwald_VDF, "Champ_Ostwald_VDF", Champ_Ostwald);
 
+Sortie& Champ_Ostwald_VDF::printOn(Sortie& os) const { return os << valeurs()(0, 0); }
 
-/*! @brief Imprime le champ sur un flot de sortie.
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Champ_Ostwald_VDF::printOn(Sortie& os) const
-{
-  //  const int nb_compo = valeurs()(0,0);
-  os << valeurs()(0,0);
-  return os;
-}
-
-
-/*! @brief Ne sert a rien Format:
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-
-Entree& Champ_Ostwald_VDF::readOn(Entree& is)
-{
-  return is;
-}
-
-/*! @brief met le parametre mu a jour
- *
- * @param (double)
- */
+Entree& Champ_Ostwald_VDF::readOn(Entree& is) { return is; }
 
 void Champ_Ostwald_VDF::mettre_a_jour(double tps)
 {
@@ -56,8 +30,6 @@ void Champ_Ostwald_VDF::mettre_a_jour(double tps)
   changer_temps(tps);
   Champ_Don_base::mettre_a_jour(tps);
 }
-
-
 
 /*! @brief Calcul la viscosite mu en fonction de la consistance et de l'indice de structure en utilisant la loi d'Ostwald.
  *
@@ -69,33 +41,32 @@ void Champ_Ostwald_VDF::mettre_a_jour(double tps)
 
 void Champ_Ostwald_VDF::calculer_mu(DoubleTab& mu_tab)
 {
-  const double d_n = mon_fluide_->indice_struct().valeurs()(0,0);
+  const double d_n = mon_fluide_->indice_struct().valeurs()(0, 0);
 
-  for (int i=0 ; i<nb_valeurs_nodales() ; i++)
+  for (int i = 0; i < nb_valeurs_nodales(); i++)
     {
       if (sub_type(Champ_Uniforme, mon_fluide_->consistance().valeur()))
         {
-          const double d_k = mon_fluide_->consistance().valeurs()(0,0);
-          if ( mu_tab[i] < 1.E-4 )
-            mu_tab[i] = d_k * pow( 0.5 * 1.E-4 , (d_n - 1.) / 2.);
-          else if ( mu_tab[i] > 1.E16 )
-            mu_tab[i] = d_k * pow( 0.5 * 1.E16 , (d_n - 1.) / 2.);
+          const double d_k = mon_fluide_->consistance().valeurs()(0, 0);
+          if (mu_tab[i] < 1.E-4)
+            mu_tab[i] = d_k * pow(0.5 * 1.E-4, (d_n - 1.) / 2.);
+          else if (mu_tab[i] > 1.E16)
+            mu_tab[i] = d_k * pow(0.5 * 1.E16, (d_n - 1.) / 2.);
           else
-            mu_tab[i] = d_k * pow( 0.5 * mu_tab[i] , (d_n - 1.) / 2.);
+            mu_tab[i] = d_k * pow(0.5 * mu_tab[i], (d_n - 1.) / 2.);
         }
       else  // K varie en fonction de la temperature
         {
           const DoubleTab& K_tab = mon_fluide_->consistance().valeurs();
-          if ( mu_tab[i] < 1.E-4 )
-            mu_tab[i] = K_tab[i] * pow( 0.5 * 1.E-4 , (d_n - 1.) / 2.);
-          else if ( mu_tab[i] > 1.E16 )
-            mu_tab[i] = K_tab[i] * pow( 0.5 * 1.E16 , (d_n - 1.) / 2.);
+          if (mu_tab[i] < 1.E-4)
+            mu_tab[i] = K_tab[i] * pow(0.5 * 1.E-4, (d_n - 1.) / 2.);
+          else if (mu_tab[i] > 1.E16)
+            mu_tab[i] = K_tab[i] * pow(0.5 * 1.E16, (d_n - 1.) / 2.);
           else
-            mu_tab[i] = K_tab[i] * pow( 0.5 * mu_tab[i] , (d_n - 1.) / 2.);
+            mu_tab[i] = K_tab[i] * pow(0.5 * mu_tab[i], (d_n - 1.) / 2.);
         }
     }
 }
-
 
 /*! @brief Calcul le champ Ostwald : calcul de D::D
  *
@@ -122,7 +93,6 @@ int Champ_Ostwald_VDF::initialiser(const double un_temps)
   mettre_a_jour(un_temps);
   return 1;
 }
-
 
 const Zone_dis_base& Champ_Ostwald_VDF::zone_dis_base() const
 {

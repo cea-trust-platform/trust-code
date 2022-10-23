@@ -14,43 +14,29 @@
 *****************************************************************************/
 
 #include <Taux_cisaillement_P0_VEF.h>
-#include <Zone_VF.h>
-#include <Champ_P1NC.h>
 #include <Zone_Cl_VEF.h>
+#include <Champ_P1NC.h>
+#include <Zone_VF.h>
 
-Implemente_instanciable(Taux_cisaillement_P0_VEF,"Taux_cisaillement_P0_VEF",Champ_Fonc_P0_VEF);
+Implemente_instanciable(Taux_cisaillement_P0_VEF, "Taux_cisaillement_P0_VEF", Champ_Fonc_P0_VEF);
 
+Sortie& Taux_cisaillement_P0_VEF::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-//     printOn()
-/////
-
-Sortie& Taux_cisaillement_P0_VEF::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-//// readOn
-//
-
-Entree& Taux_cisaillement_P0_VEF::readOn(Entree& s)
-{
-  return s ;
-}
+Entree& Taux_cisaillement_P0_VEF::readOn(Entree& s) { return s; }
 
 void Taux_cisaillement_P0_VEF::associer_champ(const Champ_P1NC& la_vitesse, const Zone_Cl_dis_base& la_zone_Cl_dis_base)
 {
-  la_zone_Cl_VEF  = ref_cast(Zone_Cl_VEF, la_zone_Cl_dis_base);
-  vitesse_= la_vitesse;
+  la_zone_Cl_VEF = ref_cast(Zone_Cl_VEF, la_zone_Cl_dis_base);
+  vitesse_ = la_vitesse;
 }
 
 void Taux_cisaillement_P0_VEF::mettre_a_jour(double tps)
 {
   int nb_elem = la_zone_VF->nb_elem();
   DoubleVect tmp(nb_elem);
-  vitesse_->calcul_S_barre(vitesse_.valeur().valeurs(),tmp,la_zone_Cl_VEF.valeur());
+  vitesse_->calcul_S_barre(vitesse_.valeur().valeurs(), tmp, la_zone_Cl_VEF.valeur());
   DoubleTab& S = valeurs(); // Shear rate
-  for (int i=0; i<nb_elem; i++)
-    S(i) = sqrt(tmp(i));
+  for (int i = 0; i < nb_elem; i++) S(i) = sqrt(tmp(i));
   changer_temps(tps);
   Champ_Fonc_base::mettre_a_jour(tps);
 }

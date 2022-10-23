@@ -17,30 +17,18 @@
 #define Champ_implementation_sommet_base_included
 
 #include <Champ_implementation_base.h>
-#include <Frontiere.h>
 #include <Frontiere_dis_base.h>
+#include <Frontiere.h>
 
 /*! @brief : class Champ_implementation_sommet_base
  *
  *  Decrire ici la classe Champ_implementation_sommet_base
  *
- *
- *
  */
-
-class Champ_implementation_sommet_base : public Champ_implementation_base
+class Champ_implementation_sommet_base: public Champ_implementation_base
 {
-
-public :
-  Champ_base& le_champ(void)       override =0;
-  const Champ_base& le_champ(void) const override =0;
-
-protected :
-  virtual void value_interpolation(const DoubleTab& positions, const ArrOfInt& cells, const DoubleTab& values, DoubleTab& resu, int ncomp=-1) const =0;
-public :
-  inline ~Champ_implementation_sommet_base() override { };
-
-public :
+public:
+  ~Champ_implementation_sommet_base() override { }
   DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const override;
   double valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const override;
   DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const override;
@@ -49,11 +37,13 @@ public :
   DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const override;
   int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const override;
 
-protected :
+protected:
   DoubleTab& valeur_aux_sommets_impl(DoubleTab& result) const override;
   DoubleVect& valeur_aux_sommets_compo_impl(DoubleVect& result, int ncomp) const override;
-  inline DoubleTab& trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x,int distant) const;
-
+  inline DoubleTab& trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x, int distant) const;
+  virtual void value_interpolation(const DoubleTab& positions, const ArrOfInt& cells, const DoubleTab& values, DoubleTab& resu, int ncomp = -1) const =0;
+  Champ_base& le_champ() override =0;
+  const Champ_base& le_champ() const override =0;
 };
 
 inline DoubleTab& Champ_implementation_sommet_base::trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x,int distant) const

@@ -14,34 +14,28 @@
 *****************************************************************************/
 
 #include <Champ_Fonc_Elem_PolyMAC_P0_TC.h>
-#include <Champ_Fonc_Elem_PolyMAC.h>
-#include <Champ_Face_PolyMAC_P0.h>
 #include <grad_Champ_Face_PolyMAC_P0.h>
-#include <Zone_Cl_PolyMAC.h>
-#include <Zone_Cl_dis_base.h>
-#include <Zone_Cl_dis.h>
-#include <Champ_Fonc.h>
 #include <Navier_Stokes_std.h>
-#include <cmath>
+#include <Zone_Cl_PolyMAC.h>
+#include <Champ_Fonc.h>
 
+Implemente_instanciable(Champ_Fonc_Elem_PolyMAC_P0_TC, "Champ_Fonc_Elem_PolyMAC_P0_TC", Champ_Fonc_Elem_PolyMAC);
 
-Implemente_instanciable(Champ_Fonc_Elem_PolyMAC_P0_TC,"Champ_Fonc_Elem_PolyMAC_P0_TC",Champ_Fonc_Elem_PolyMAC);
+Sortie& Champ_Fonc_Elem_PolyMAC_P0_TC::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-Sortie& Champ_Fonc_Elem_PolyMAC_P0_TC::printOn(Sortie& s) const
+Entree& Champ_Fonc_Elem_PolyMAC_P0_TC::readOn(Entree& s) { return s; }
+
+void Champ_Fonc_Elem_PolyMAC_P0_TC::mettre_a_jour(double tps)
 {
-  return s << que_suis_je() << " " << le_nom();
-}
-
-Entree& Champ_Fonc_Elem_PolyMAC_P0_TC::readOn(Entree& s)
-{
-  return s ;
+  if (temps() != tps) me_calculer(tps);
+  Champ_Fonc_base::mettre_a_jour(tps);
 }
 
 void Champ_Fonc_Elem_PolyMAC_P0_TC::me_calculer(double tps) //See Pope 2000 page 367 for ref
 {
-  const Champ_Face_PolyMAC_P0& vitesse = ref_cast(Champ_Face_PolyMAC_P0,champ_.valeur());
-  const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0,vitesse.zone_vf());
-  int e, d_U, d_X, n ;
+  const Champ_Face_PolyMAC_P0& vitesse = ref_cast(Champ_Face_PolyMAC_P0, champ_.valeur());
+  const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0, vitesse.zone_vf());
+  int e, d_U, d_X, n;
   int D = dimension, N = champ_a_deriver().valeurs().line_size();
   int ne = zone.nb_elem(), nf_tot = zone.nb_faces_tot();
 
@@ -57,14 +51,14 @@ void Champ_Fonc_Elem_PolyMAC_P0_TC::me_calculer(double tps) //See Pope 2000 page
         for (d_U = 0; d_U < D; d_U++)
           for (d_X = 0; d_X < D; d_X++)
             {
-              double Sij = 0.5 * (tab_grad(nf_tot + d_X + e * D , D * n + d_U) + tab_grad(nf_tot + d_U + e * D , D * n + d_X)) ;
+              double Sij = 0.5 * (tab_grad(nf_tot + d_X + e * D, D * n + d_U) + tab_grad(nf_tot + d_U + e * D, D * n + d_X));
               if (d_U == d_X)
-                for (int i = 0 ; i <D ; i++) Sij += -1./D*tab_grad(nf_tot + i + e * D , D * n + i) ; // Substract the divergence : this term is zero in incompressible NS
-              tab_tc(e, n) += Sij * Sij ;
+                for (int i = 0; i < D; i++)
+                  Sij += -1. / D * tab_grad(nf_tot + i + e * D, D * n + i); // Substract the divergence : this term is zero in incompressible NS
+              tab_tc(e, n) += Sij * Sij;
             }
         tab_tc(e, n) = sqrt(2 * tab_tc(e, n));
       }
 
   tab_tc.echange_espace_virtuel();
 }
-

@@ -19,28 +19,17 @@
 #include <Champ_Fonc_Q1_base.h>
 #include <Ref_Zone_VF.h>
 
-//class Zone_VDF;
-
-class Champ_Fonc_Q1_VDF : public Champ_Fonc_Q1_base
+class Champ_Fonc_Q1_VDF: public Champ_Fonc_Q1_base
 {
   Declare_instanciable(Champ_Fonc_Q1_VDF);
-
-public :
-
-  //const Zone_VDF&        zone_VDF() const;
-  void                         associer_zone_dis_base(const Zone_dis_base&) override;
+public:
+  void associer_zone_dis_base(const Zone_dis_base&) override;
   const Zone_dis_base& zone_dis_base() const override;
-  int                       imprime(Sortie& , int ) const override;
-  void mettre_a_jour(double ) override;
-protected :
+  int imprime(Sortie&, int) const override;
+  void mettre_a_jour(double) override;
 
+protected:
   REF(Zone_VF) la_zone_VF;
-
-
 };
 
-#endif
-
-
-
-
+#endif /* Champ_Fonc_Q1_VDF_included */

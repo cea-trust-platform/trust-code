@@ -16,59 +16,35 @@
 #ifndef Y_plus_Champ_Face_included
 #define Y_plus_Champ_Face_included
 
-
-#include <Champ_y_plus.h>
-#include <Champ_Fonc_P0_VDF.h>
 #include <Ref_Champ_Face_VDF.h>
-#include <Ref_Zone_Cl_VDF.h>
+#include <Champ_Fonc_P0_VDF.h>
 #include <Zone_Cl_dis_base.h>
+#include <Ref_Zone_Cl_VDF.h>
+#include <Champ_y_plus.h>
 
 /*! @brief classe Y_plus_Champ_Face
  *
  * @sa Champ_y_plus Champ_Fonc_P0_VDF
  */
-
-class Y_plus_Champ_Face : public Champ_y_plus,
-  public Champ_Fonc_P0_VDF
-
+class Y_plus_Champ_Face: public Champ_y_plus, public Champ_Fonc_P0_VDF
 {
-
   Declare_instanciable(Y_plus_Champ_Face);
-
 public:
-
-  inline const Champ_Face_VDF& mon_champ() const;
-  inline void mettre_a_jour(double ) override;
-  void associer_champ(const Champ_Face_VDF& );
-  void me_calculer(double ) override;
-
-  inline void associer_zone_Cl_dis_base(const Zone_Cl_dis_base&);
+  void mettre_a_jour(double) override;
+  void associer_champ(const Champ_Face_VDF&);
+  void me_calculer(double) override;
   const Zone_Cl_dis_base& zone_Cl_dis_base() const;
 
+  inline const Champ_Face_VDF& mon_champ() const { return mon_champ_.valeur(); }
+
+  inline void associer_zone_Cl_dis_base(const Zone_Cl_dis_base& la_zone_Cl_dis_base)
+  {
+    la_zone_Cl_VDF = (const Zone_Cl_VDF&) la_zone_Cl_dis_base;
+  }
 
 protected:
-
   REF(Champ_Face_VDF) mon_champ_;
   REF(Zone_Cl_VDF) la_zone_Cl_VDF;
 };
 
-inline const Champ_Face_VDF& Y_plus_Champ_Face::mon_champ() const
-{
-  return mon_champ_.valeur();
-}
-
-inline void Y_plus_Champ_Face::mettre_a_jour(double tps)
-{
-  me_calculer(tps);
-  changer_temps(tps);
-  Champ_Fonc_base::mettre_a_jour(tps);
-}
-
-inline void Y_plus_Champ_Face::associer_zone_Cl_dis_base(const Zone_Cl_dis_base& la_zone_Cl_dis_base)
-{
-  la_zone_Cl_VDF  = (const Zone_Cl_VDF&) la_zone_Cl_dis_base;
-}
-
-
-
-#endif
+#endif /* Y_plus_Champ_Face_included */

@@ -13,7 +13,6 @@
 *
 *****************************************************************************/
 
-
 #ifndef Champ_Fonc_P0_EF_included
 #define Champ_Fonc_P0_EF_included
 
@@ -28,4 +27,4 @@ class Champ_Fonc_P0_EF: public Champ_Fonc_P0_base
   Declare_instanciable(Champ_Fonc_P0_EF);
 };
 
-#endif
+#endif /* Champ_Fonc_P0_EF_included */

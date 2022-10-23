@@ -13,7 +13,6 @@
 *
 *****************************************************************************/
 
-
 #ifndef Champ_Fonc_P1_VDF_included
 #define Champ_Fonc_P1_VDF_included
 
@@ -27,17 +26,13 @@
  */
 class Champ_Fonc_P1_VDF: public Champ_Fonc_P1_base
 {
-
   Declare_instanciable(Champ_Fonc_P1_VDF);
-
-public :
-
+public:
   inline void associer_zone_dis_base(const Zone_dis_base&) override;
   const Zone_dis_base& zone_dis_base() const override;
-  void mettre_a_jour(double ) override;
+  void mettre_a_jour(double) override;
 
 protected:
-
   REF(Zone_VDF) la_zone_VDF;
 };
 
@@ -46,4 +41,4 @@ inline void Champ_Fonc_P1_VDF::associer_zone_dis_base(const Zone_dis_base& la_zo
   la_zone_VDF = (const Zone_VDF&) la_zone_dis_base;
 }
 
-#endif
+#endif /* Champ_Fonc_P1_VDF_included */

@@ -16,32 +16,24 @@
 #include <Rotationnel_Champ_Q1NC.h>
 #include <Champ_Q1NC.h>
 
-Implemente_instanciable(Rotationnel_Champ_Q1NC,"Rotationnel_Champ_Q1NC",Champ_Fonc_P0_VEF);
+Implemente_instanciable(Rotationnel_Champ_Q1NC, "Rotationnel_Champ_Q1NC", Champ_Fonc_P0_VEF);
 
+Sortie& Rotationnel_Champ_Q1NC::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-//     printOn()
-/////
-
-Sortie& Rotationnel_Champ_Q1NC::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-//// readOn
-//
-
-Entree& Rotationnel_Champ_Q1NC::readOn(Entree& s)
-{
-  return s ;
-}
+Entree& Rotationnel_Champ_Q1NC::readOn(Entree& s) { return s; }
 
 void Rotationnel_Champ_Q1NC::associer_champ(const Champ_Q1NC& un_champ)
 {
-  mon_champ_= un_champ;
+  mon_champ_ = un_champ;
 }
 
 void Rotationnel_Champ_Q1NC::me_calculer(double tps)
 {
-  //      mon_champ_->calculer_rotationnel_ordre2_centre_element(valeurs());
   mon_champ_->cal_rot_ordre1(valeurs());
+}
+
+void Rotationnel_Champ_Q1NC::mettre_a_jour(double tps)
+{
+  me_calculer(tps);
+  changer_temps(tps);
 }

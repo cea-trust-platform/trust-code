@@ -13,50 +13,26 @@
 *
 *****************************************************************************/
 
-
 #include <Champ_Fonc_Q1_EF.h>
 #include <Zone_EF.h>
 #include <Domaine.h>
 
+Implemente_instanciable(Champ_Fonc_Q1_EF, "Champ_Fonc_Q1_EF", Champ_Fonc_Q1_base);
 
-Implemente_instanciable(Champ_Fonc_Q1_EF,"Champ_Fonc_Q1_EF",Champ_Fonc_Q1_base);
+Sortie& Champ_Fonc_Q1_EF::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-// printOn
+Entree& Champ_Fonc_Q1_EF::readOn(Entree& s) {  return s; }
 
-Sortie& Champ_Fonc_Q1_EF::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-
-// readOn
-
-Entree& Champ_Fonc_Q1_EF::readOn(Entree& s)
-{
-
-  return s ;
-}
-
-/*! @brief
- *
- */
 const Zone_dis_base& Champ_Fonc_Q1_EF::zone_dis_base() const
 {
   return la_zone_VF.valeur();
 }
-/*! @brief
- *
- * @return (z_dis) la zone discretise
- */
+
 void Champ_Fonc_Q1_EF::associer_zone_dis_base(const Zone_dis_base& z_dis)
 {
-  la_zone_VF=ref_cast(Zone_VF, z_dis);
+  la_zone_VF = ref_cast(Zone_VF, z_dis);
 }
 
-/*! @brief
- *
- * @return (la_zone_EF_P1.valeur())
- */
 const Zone_EF& Champ_Fonc_Q1_EF::zone_EF() const
 {
   return ref_cast(Zone_EF, la_zone_VF.valeur());
@@ -71,21 +47,21 @@ int Champ_Fonc_Q1_EF::imprime(Sortie& os, int ncomp) const
 {
   const Zone_dis_base& zone_dis = zone_dis_base();
   const Zone& zone = zone_dis.zone();
-  const DoubleTab& coord=zone.domaine().coord_sommets();
+  const DoubleTab& coord = zone.domaine().coord_sommets();
   const int nb_som = zone.domaine().nb_som();
   const DoubleTab& val = valeurs();
   int som;
   os << nb_som << finl;
-  for (som=0; som<nb_som; som++)
+  for (som = 0; som < nb_som; som++)
     {
-      if (dimension==3)
-        os << coord(som,0) << " " << coord(som,1) << " " << coord(som,2) << " " ;
-      if (dimension==2)
-        os << coord(som,0) << " " << coord(som,1) << " " ;
+      if (dimension == 3)
+        os << coord(som, 0) << " " << coord(som, 1) << " " << coord(som, 2) << " ";
+      if (dimension == 2)
+        os << coord(som, 0) << " " << coord(som, 1) << " ";
       if (nb_compo_ == 1)
         os << val(som) << finl;
       else
-        os << val(som,ncomp) << finl;
+        os << val(som, ncomp) << finl;
     }
   os << finl;
   Cout << "Champ_Fonc_Q1_EF::imprime FIN >>>>>>>>>> " << finl;

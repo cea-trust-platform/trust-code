@@ -16,41 +16,21 @@
 #ifndef Rotationnel_Champ_P1_EF_included
 #define Rotationnel_Champ_P1_EF_included
 
-//
 #include <Champ_Rotationnel.h>
 #include <Champ_Fonc_P0_EF.h>
 #include <Ref_Champ_P1_EF.h>
 
-
-class Rotationnel_Champ_P1_EF : public Champ_Rotationnel,
-  public Champ_Fonc_P0_EF
+class Rotationnel_Champ_P1_EF: public Champ_Rotationnel, public Champ_Fonc_P0_EF
 {
   Declare_instanciable(Rotationnel_Champ_P1_EF);
-
 public:
+  void associer_champ(const Champ_P1_EF&);
+  void me_calculer(double) override;
+  void mettre_a_jour(double) override;
 
-  inline const Champ_P1_EF& mon_champ() const;
-  inline void mettre_a_jour(double ) override;
-  void associer_champ(const Champ_P1_EF& );
-  void me_calculer(double ) override;
-
+  inline const Champ_P1_EF& mon_champ() const { return mon_champ_.valeur(); }
 protected:
-
   REF(Champ_P1_EF) mon_champ_;
 };
 
-inline const Champ_P1_EF& Rotationnel_Champ_P1_EF::mon_champ() const
-{
-  return mon_champ_.valeur();
-}
-
-inline void Rotationnel_Champ_P1_EF::mettre_a_jour(double tps)
-{
-  me_calculer(tps);
-  changer_temps(tps);
-}
-
-
-
-#endif
-
+#endif /* Rotationnel_Champ_P1_EF_included */

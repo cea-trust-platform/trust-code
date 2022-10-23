@@ -17,28 +17,15 @@
 #include <Champ_Face_VDF.h>
 #include <Zone_Cl_VDF.h>
 
-Implemente_instanciable(grad_U_Champ_Face,"grad_U_Champ_Face",Champ_Fonc_P0_VDF);
+Implemente_instanciable(grad_U_Champ_Face, "grad_U_Champ_Face", Champ_Fonc_P0_VDF);
 
+Sortie& grad_U_Champ_Face::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-//     printOn()
-/////
-
-Sortie& grad_U_Champ_Face::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-//// readOn
-//
-
-Entree& grad_U_Champ_Face::readOn(Entree& s)
-{
-  return s ;
-}
+Entree& grad_U_Champ_Face::readOn(Entree& s) { return s; }
 
 void grad_U_Champ_Face::associer_champ(const Champ_Face_VDF& la_vitesse)
 {
-  vitesse_= la_vitesse;
+  vitesse_ = la_vitesse;
 }
 
 void grad_U_Champ_Face::me_calculer(double tps)
@@ -46,4 +33,9 @@ void grad_U_Champ_Face::me_calculer(double tps)
   vitesse_->calcul_grad_u(vitesse_.valeur().valeurs(), valeurs(), la_zone_Cl_VDF.valeur());
 }
 
-
+void grad_U_Champ_Face::mettre_a_jour(double tps)
+{
+  me_calculer(tps);
+  changer_temps(tps);
+  Champ_Fonc_base::mettre_a_jour(tps);
+}

@@ -16,28 +16,15 @@
 #include <Champ_Fonc_Elem_PolyMAC.h>
 #include <Zone_VF.h>
 
-Implemente_instanciable(Champ_Fonc_Elem_PolyMAC,"Champ_Fonc_Elem_PolyMAC",Champ_Fonc_P0_base);
+Implemente_instanciable(Champ_Fonc_Elem_PolyMAC, "Champ_Fonc_Elem_PolyMAC", Champ_Fonc_P0_base);
 
+Sortie& Champ_Fonc_Elem_PolyMAC::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-//     printOn()
-/////
-
-Sortie& Champ_Fonc_Elem_PolyMAC::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-//// readOn
-//
-
-Entree& Champ_Fonc_Elem_PolyMAC::readOn(Entree& s)
-{
-  return s ;
-}
+Entree& Champ_Fonc_Elem_PolyMAC::readOn(Entree& s) { return s; }
 
 Champ_base& Champ_Fonc_Elem_PolyMAC::affecter_(const Champ_base& ch)
 {
-  const Zone_VF& zone = ref_cast(Zone_VF,la_zone_VF.valeur());
+  const Zone_VF& zone = ref_cast(Zone_VF, la_zone_VF.valeur());
   ch.valeur_aux(zone.xp(), valeurs());
   return *this;
 }

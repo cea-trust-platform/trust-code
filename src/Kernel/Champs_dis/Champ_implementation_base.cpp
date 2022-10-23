@@ -21,10 +21,10 @@
 
 DoubleTab& Champ_implementation_base::valeur_aux_sommets(const Domaine& domain, DoubleTab& result) const
 {
-  Nom domain_name  = domain.le_nom();
+  Nom domain_name = domain.le_nom();
   Nom support_name = get_zone_geom().domaine().le_nom();
 
-  if(domain_name == support_name)
+  if (domain_name == support_name)
     {
       valeur_aux_sommets_impl(result);
     }
@@ -39,12 +39,12 @@ DoubleTab& Champ_implementation_base::valeur_aux_sommets(const Domaine& domain, 
 
 DoubleVect& Champ_implementation_base::valeur_aux_sommets_compo(const Domaine& domain, DoubleVect& result, int ncomp) const
 {
-  Nom domain_name  = domain.le_nom();
+  Nom domain_name = domain.le_nom();
   Nom support_name = get_zone_geom().domaine().le_nom();
 
-  if(domain_name == support_name)
+  if (domain_name == support_name)
     {
-      valeur_aux_sommets_compo_impl(result,ncomp);
+      valeur_aux_sommets_compo_impl(result, ncomp);
     }
   else
     {
@@ -55,23 +55,23 @@ DoubleVect& Champ_implementation_base::valeur_aux_sommets_compo(const Domaine& d
   return result;
 }
 
-const Zone_VF& Champ_implementation_base::get_zone_dis(void)  const
+const Zone_VF& Champ_implementation_base::get_zone_dis(void) const
 {
   const Champ_base& ch_base = le_champ();
 
-  if(sub_type(Champ_Inc_base, ch_base))
+  if (sub_type(Champ_Inc_base, ch_base))
     {
       const Champ_Inc_base& ch_inc = ref_cast(Champ_Inc_base, ch_base);
-      return ref_cast(Zone_VF,ch_inc.zone_dis_base());
+      return ref_cast(Zone_VF, ch_inc.zone_dis_base());
     }
-  else if(sub_type(Champ_Fonc_base, ch_base))
+  else if (sub_type(Champ_Fonc_base, ch_base))
     {
       const Champ_Fonc_base& ch_fonc = ref_cast(Champ_Fonc_base, ch_base);
-      return ref_cast(Zone_VF,ch_fonc.zone_dis_base());
+      return ref_cast(Zone_VF, ch_fonc.zone_dis_base());
     }
   else
     {
-      Cerr << le_champ().que_suis_je() << "do not know refer a Zone_VF" << finl;
+      Cerr << le_champ().que_suis_je() << " do not know refer a Zone_VF" << finl;
       Process::exit();
       return get_zone_dis();
     }

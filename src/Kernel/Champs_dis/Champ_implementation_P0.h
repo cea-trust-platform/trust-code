@@ -17,45 +17,32 @@
 #define Champ_implementation_P0_included
 
 #include <Champ_implementation_base.h>
-#include <Frontiere.h>
 #include <Frontiere_dis_base.h>
+#include <Frontiere.h>
 
-/*! @brief : class Champ_implementation_P0
- *
- *  Decrire ici la classe Champ_implementation_P0
- *
- *
- *
- */
-
-class Champ_implementation_P0 : public Champ_implementation_base
+class Champ_implementation_P0: public Champ_implementation_base
 {
-
-protected :
-  Champ_base& le_champ(void)       override =0;
-  const Champ_base& le_champ(void) const override =0;
-
-public :
-  inline ~Champ_implementation_P0() override { };
-
-public :
+public:
+  ~Champ_implementation_P0() override { }
   DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const override;
   double valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const override;
   DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const override;
   DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& result, int ncomp) const override;
-
   DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const override;
   int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const override;
-  int imprime_P0(Sortie& , int ) const;
+  int imprime_P0(Sortie&, int) const;
 
-protected :
+protected:
   DoubleTab& valeur_aux_sommets_impl(DoubleTab& result) const override;
   DoubleVect& valeur_aux_sommets_compo_impl(DoubleVect& result, int ncomp) const override;
-  int affecter_(const Champ_base& ) ;
-  inline DoubleTab& trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x,int distant) const;
+  int affecter_(const Champ_base&);
+  inline DoubleTab& trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x, int distant) const;
+
+  Champ_base& le_champ() override =0;
+  const Champ_base& le_champ() const override =0;
 };
 
-inline DoubleTab& Champ_implementation_P0::trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x,int distant) const
+inline DoubleTab& Champ_implementation_P0::trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x, int distant) const
 {
   if (distant)
     fr.frontiere().trace_elem_distant(y, x);

@@ -18,17 +18,10 @@
 
 Implemente_instanciable(Rotationnel_Champ_P1_EF,"Rotationnel_Champ_P1_EF",Champ_Fonc_P0_EF);
 
-
-//     printOn()
-/////
-
 Sortie& Rotationnel_Champ_P1_EF::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
-
-//// readOn
-//
 
 Entree& Rotationnel_Champ_P1_EF::readOn(Entree& s)
 {
@@ -40,11 +33,14 @@ void Rotationnel_Champ_P1_EF::associer_champ(const Champ_P1_EF& un_champ)
   mon_champ_= un_champ;
 }
 
+void Rotationnel_Champ_P1_EF::mettre_a_jour(double tps)
+{
+  me_calculer(tps);
+  changer_temps(tps);
+}
+
 void Rotationnel_Champ_P1_EF::me_calculer(double tps)
 {
-  //  Cerr<<"Rotationnel_Champ_P1_EF::me_calculer"<<finl;
-  //      mon_champ_->calculer_rotationnel_ordre2_centre_element(valeurs());
-  //mon_champ_->cal_rot_ordre1(valeurs());
   Cerr << __FILE__ << (int)__LINE__ << "Rotationnel_Champ_P1_EF::me_calculer : ERROR : the curl of a P1 vector fields in a FE context has not been implemented yet." << finl;
   abort();
 }

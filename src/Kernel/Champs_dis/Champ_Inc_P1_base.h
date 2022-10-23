@@ -67,8 +67,8 @@ public:
   }
 
 protected:
-  Champ_base& le_champ(void) override { return *this; }
-  const Champ_base& le_champ(void) const override { return *this; }
+  Champ_base& le_champ() override { return *this; }
+  const Champ_base& le_champ() const override { return *this; }
 };
 
 #endif /* Champ_Inc_P1_base_inclus */

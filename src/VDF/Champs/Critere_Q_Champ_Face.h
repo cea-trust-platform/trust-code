@@ -16,7 +16,6 @@
 #ifndef Critere_Q_Champ_Face_included
 #define Critere_Q_Champ_Face_included
 
-
 #include <Champ_Critere_Q.h>
 #include <Champ_Fonc_P0_VDF.h>
 #include <Ref_Champ_Face_VDF.h>
@@ -27,48 +26,25 @@
  *
  * @sa Champ_Critere_Q Champ_Fonc_P0_VDF
  */
-
-class Critere_Q_Champ_Face : public Champ_Critere_Q,
-  public Champ_Fonc_P0_VDF
-
+class Critere_Q_Champ_Face: public Champ_Critere_Q, public Champ_Fonc_P0_VDF
 {
-
   Declare_instanciable(Critere_Q_Champ_Face);
-
 public:
+  void mettre_a_jour(double) override;
+  void associer_champ(const Champ_Face_VDF&);
+  void me_calculer(double) override;
 
-  inline const Champ_Face_VDF& mon_champ() const;
-  inline void mettre_a_jour(double ) override;
-  void associer_champ(const Champ_Face_VDF& );
-  void me_calculer(double ) override;
-
-  inline void associer_zone_Cl_dis_base(const Zone_Cl_dis_base&);
   const Zone_Cl_dis_base& zone_Cl_dis_base() const;
 
+  inline const Champ_Face_VDF& mon_champ() const { return mon_champ_.valeur(); }
+  inline void associer_zone_Cl_dis_base(const Zone_Cl_dis_base& la_zone_Cl_dis_base)
+  {
+    la_zone_Cl_VDF = (const Zone_Cl_VDF&) la_zone_Cl_dis_base;
+  }
 
 protected:
-
   REF(Champ_Face_VDF) mon_champ_;
   REF(Zone_Cl_VDF) la_zone_Cl_VDF;
 };
 
-inline const Champ_Face_VDF& Critere_Q_Champ_Face::mon_champ() const
-{
-  return mon_champ_.valeur();
-}
-
-inline void Critere_Q_Champ_Face::mettre_a_jour(double tps)
-{
-  me_calculer(tps);
-  changer_temps(tps);
-  Champ_Fonc_base::mettre_a_jour(tps);
-}
-
-inline void Critere_Q_Champ_Face::associer_zone_Cl_dis_base(const Zone_Cl_dis_base& la_zone_Cl_dis_base)
-{
-  la_zone_Cl_VDF  = (const Zone_Cl_VDF&) la_zone_Cl_dis_base;
-}
-
-
-
-#endif
+#endif /* Critere_Q_Champ_Face_included */

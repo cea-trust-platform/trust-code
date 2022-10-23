@@ -29,7 +29,3 @@ public:
 };
 
 #endif /* Champ_P1_EF_included */
-
-
-
-

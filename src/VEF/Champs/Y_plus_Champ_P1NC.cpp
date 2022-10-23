@@ -16,34 +16,27 @@
 #include <Y_plus_Champ_P1NC.h>
 #include <Champ_P1NC.h>
 
-Implemente_instanciable(Y_plus_Champ_P1NC,"Y_plus_Champ_P1NC",Champ_Fonc_P0_VEF);
+Implemente_instanciable(Y_plus_Champ_P1NC, "Y_plus_Champ_P1NC", Champ_Fonc_P0_VEF);
 
+Sortie& Y_plus_Champ_P1NC::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
+Entree& Y_plus_Champ_P1NC::readOn(Entree& s) { return s; }
 
-Sortie& Y_plus_Champ_P1NC::printOn(Sortie& s) const
+void Y_plus_Champ_P1NC::mettre_a_jour(double tps)
 {
-  return s << que_suis_je() << " " << le_nom();
+  me_calculer(tps);
+  changer_temps(tps);
+  Champ_Fonc_base::mettre_a_jour(tps);
 }
-
-
-
-Entree& Y_plus_Champ_P1NC::readOn(Entree& s)
-{
-  return s ;
-}
-
-
 
 void Y_plus_Champ_P1NC::associer_champ(const Champ_P1NC& un_champ)
 {
-  mon_champ_= un_champ;
+  mon_champ_ = un_champ;
 }
-
-
 
 void Y_plus_Champ_P1NC::me_calculer(double tps)
 {
-  mon_champ_->calcul_y_plus(la_zone_Cl_VEF.valeur(),valeurs());
+  mon_champ_->calcul_y_plus(la_zone_Cl_VEF.valeur(), valeurs());
 }
 
 const Zone_Cl_dis_base& Y_plus_Champ_P1NC::zone_Cl_dis_base() const

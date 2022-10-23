@@ -14,62 +14,46 @@
 *****************************************************************************/
 
 #include <Champ_Fonc_Elem_PolyMAC_P0_rot.h>
-#include <Champ_Fonc_Elem_PolyMAC.h>
-#include <Champ_Face_PolyMAC_P0.h>
 #include <grad_Champ_Face_PolyMAC_P0.h>
-#include <Zone_Cl_PolyMAC.h>
-#include <Zone_Cl_dis_base.h>
-#include <Zone_Cl_dis.h>
-#include <Champ_Fonc.h>
+#include <Champ_Face_PolyMAC_P0.h>
 #include <Navier_Stokes_std.h>
+#include <Zone_Cl_PolyMAC.h>
 
+Implemente_instanciable(Champ_Fonc_Elem_PolyMAC_P0_rot, "Champ_Fonc_Elem_PolyMAC_P0_rot", Champ_Fonc_Elem_PolyMAC);
 
-Implemente_instanciable(Champ_Fonc_Elem_PolyMAC_P0_rot,"Champ_Fonc_Elem_PolyMAC_P0_rot",Champ_Fonc_Elem_PolyMAC);
+Sortie& Champ_Fonc_Elem_PolyMAC_P0_rot::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-
-//     printOn()
-/////
-
-Sortie& Champ_Fonc_Elem_PolyMAC_P0_rot::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-//// readOn
-//
-
-Entree& Champ_Fonc_Elem_PolyMAC_P0_rot::readOn(Entree& s)
-{
-  return s ;
-}
+Entree& Champ_Fonc_Elem_PolyMAC_P0_rot::readOn(Entree& s) { return s; }
 
 void Champ_Fonc_Elem_PolyMAC_P0_rot::mettre_a_jour(double tps)
 {
-  if (temps()!=tps)
+  if (temps() != tps)
     {
-      if (dimension == 2) me_calculer_2D();
-      if (dimension == 3) me_calculer_3D();
+      if (dimension == 2)
+        me_calculer_2D();
+      if (dimension == 3)
+        me_calculer_3D();
     }
   Champ_Fonc_base::mettre_a_jour(tps);
 }
 
 void Champ_Fonc_Elem_PolyMAC_P0_rot::me_calculer_2D()
 {
-  const Champ_Face_PolyMAC_P0& vit = ref_cast(Champ_Face_PolyMAC_P0,champ_a_deriver());
-  const Zone_PolyMAC_P0&          zone = ref_cast(Zone_PolyMAC_P0,vit.zone_vf());
-  int e, n ;
+  const Champ_Face_PolyMAC_P0& vit = ref_cast(Champ_Face_PolyMAC_P0, champ_a_deriver());
+  const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0, vit.zone_vf());
+  int e, n;
   int D = dimension, N = champ_a_deriver().valeurs().line_size();
   int ne = zone.nb_elem(), nf_tot = zone.nb_faces_tot();
 
   const Navier_Stokes_std& eq = ref_cast(Navier_Stokes_std, vit.equation());
-  DoubleTab&          tab_rot = valeurs();
+  DoubleTab& tab_rot = valeurs();
   const grad_Champ_Face_PolyMAC_P0& grad = ref_cast(grad_Champ_Face_PolyMAC_P0, eq.get_champ("gradient_vitesse"));
   const DoubleTab& tab_grad = grad.valeurs();
 
-  for (n = 0 ; n<N ; n++)
+  for (n = 0; n < N; n++)
     for (e = 0; e < ne; e++)
       {
-        tab_rot(e, n) = tab_grad(nf_tot + D * e + 0 , 1 + n * D) - tab_grad(nf_tot + D * e + 1 , 0 + n * D); // dUy/dx - dUx/dy
+        tab_rot(e, n) = tab_grad(nf_tot + D * e + 0, 1 + n * D) - tab_grad(nf_tot + D * e + 1, 0 + n * D); // dUy/dx - dUx/dy
       }
 
   tab_rot.echange_espace_virtuel();
@@ -77,25 +61,24 @@ void Champ_Fonc_Elem_PolyMAC_P0_rot::me_calculer_2D()
 
 void Champ_Fonc_Elem_PolyMAC_P0_rot::me_calculer_3D()
 {
-  const Champ_Face_PolyMAC_P0& vit = ref_cast(Champ_Face_PolyMAC_P0,champ_a_deriver());
-  const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0,vit.zone_vf());
-  int e, n ;
+  const Champ_Face_PolyMAC_P0& vit = ref_cast(Champ_Face_PolyMAC_P0, champ_a_deriver());
+  const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0, vit.zone_vf());
+  int e, n;
   int D = dimension, N = champ_a_deriver().valeurs().line_size();
   int ne = zone.nb_elem(), nf_tot = zone.nb_faces_tot();
 
   const Navier_Stokes_std& eq = ref_cast(Navier_Stokes_std, vit.equation());
-  DoubleTab&          tab_rot = valeurs();
+  DoubleTab& tab_rot = valeurs();
   const grad_Champ_Face_PolyMAC_P0& grad = ref_cast(grad_Champ_Face_PolyMAC_P0, eq.get_champ("gradient_vitesse"));
   const DoubleTab& tab_grad = grad.valeurs();
 
-  for (n = 0 ; n<N ; n++)
+  for (n = 0; n < N; n++)
     for (e = 0; e < ne; e++)
       {
-        tab_rot(e, 0 + n * D) = tab_grad(nf_tot + D * e + 1 , 2 + n * D) - tab_grad(nf_tot + D * e + 2 , 1 + n * D); // dUz/dy - dUy/dz
-        tab_rot(e, 1 + n * D) = tab_grad(nf_tot + D * e + 2 , 0 + n * D) - tab_grad(nf_tot + D * e + 0 , 2 + n * D); // dUx/dz - dUz/dx
-        tab_rot(e, 2 + n * D) = tab_grad(nf_tot + D * e + 0 , 1 + n * D) - tab_grad(nf_tot + D * e + 1 , 0 + n * D); // dUy/dx - dUx/dy
+        tab_rot(e, 0 + n * D) = tab_grad(nf_tot + D * e + 1, 2 + n * D) - tab_grad(nf_tot + D * e + 2, 1 + n * D); // dUz/dy - dUy/dz
+        tab_rot(e, 1 + n * D) = tab_grad(nf_tot + D * e + 2, 0 + n * D) - tab_grad(nf_tot + D * e + 0, 2 + n * D); // dUx/dz - dUz/dx
+        tab_rot(e, 2 + n * D) = tab_grad(nf_tot + D * e + 0, 1 + n * D) - tab_grad(nf_tot + D * e + 1, 0 + n * D); // dUy/dx - dUx/dy
       }
 
   tab_rot.echange_espace_virtuel();
 }
-

@@ -13,7 +13,6 @@
 *
 *****************************************************************************/
 
-
 #ifndef Champ_Fonc_P0_VEF_included
 #define Champ_Fonc_P0_VEF_included
 
@@ -28,4 +27,4 @@ class Champ_Fonc_P0_VEF: public Champ_Fonc_P0_base
   Declare_instanciable(Champ_Fonc_P0_VEF);
 };
 
-#endif
+#endif /* Champ_Fonc_P0_VEF_included */

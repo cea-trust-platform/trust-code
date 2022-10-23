@@ -92,8 +92,8 @@ public :
   }
 
 protected:
-  Champ_base& le_champ(void) override { return *this; }
-  const Champ_base& le_champ(void) const override { return *this; }
+  Champ_base& le_champ() override { return *this; }
+  const Champ_base& le_champ() const override { return *this; }
 
   virtual void init_fcl() const;
   mutable IntTab fcl_;

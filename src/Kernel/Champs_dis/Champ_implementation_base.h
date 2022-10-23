@@ -17,26 +17,16 @@
 #define Champ_implementation_base_included
 
 #include <TRUSTTabs_forward.h>
+
+class Champ_base;
+class Zone_VF;
 class Domaine;
 class Zone;
-class Zone_VF;
-class Champ_base;
-
-/*! @brief : class Champ_implementation_base
- *
- *  Decrire ici la classe Champ_implementation_base
- *
- *
- *
- */
 
 class Champ_implementation_base
 {
-
 public:
   inline virtual ~Champ_implementation_base() { }
-
-public:
   virtual DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const =0;
   virtual double valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const =0;
   virtual DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const =0;
@@ -54,7 +44,6 @@ protected:
 
   virtual Champ_base& le_champ(void) =0;
   virtual const Champ_base& le_champ(void) const =0;
-
 };
 
 #endif /* Champ_implementation_base_inclus */

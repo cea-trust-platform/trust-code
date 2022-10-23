@@ -14,31 +14,18 @@
 *****************************************************************************/
 
 #include <Critere_Q_Champ_Face.h>
-#include <Zone_Cl_VDF.h>
 #include <Champ_Face_VDF.h>
+#include <Zone_Cl_VDF.h>
 
-Implemente_instanciable(Critere_Q_Champ_Face,"Critere_Q_Champ_Face",Champ_Fonc_P0_VDF);
+Implemente_instanciable(Critere_Q_Champ_Face, "Critere_Q_Champ_Face", Champ_Fonc_P0_VDF);
 
+Sortie& Critere_Q_Champ_Face::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-//     printOn()
-/////
-
-Sortie& Critere_Q_Champ_Face::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-//// readOn
-//
-
-Entree& Critere_Q_Champ_Face::readOn(Entree& s)
-{
-  return s ;
-}
+Entree& Critere_Q_Champ_Face::readOn(Entree& s) { return s; }
 
 void Critere_Q_Champ_Face::associer_champ(const Champ_Face_VDF& un_champ)
 {
-  mon_champ_= un_champ;
+  mon_champ_ = un_champ;
 }
 
 void Critere_Q_Champ_Face::me_calculer(double tps)
@@ -51,4 +38,9 @@ const Zone_Cl_dis_base& Critere_Q_Champ_Face::zone_Cl_dis_base() const
   return la_zone_Cl_VDF.valeur();
 }
 
-
+void Critere_Q_Champ_Face::mettre_a_jour(double tps)
+{
+  me_calculer(tps);
+  changer_temps(tps);
+  Champ_Fonc_base::mettre_a_jour(tps);
+}

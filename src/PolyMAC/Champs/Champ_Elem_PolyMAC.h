@@ -66,4 +66,4 @@ inline DoubleTab& Champ_Elem_PolyMAC::trace(const Frontiere_dis_base& fr, Double
   return x;
 }
 
-#endif
+#endif /* Champ_Elem_PolyMAC_included */

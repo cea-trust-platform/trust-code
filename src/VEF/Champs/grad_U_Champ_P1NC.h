@@ -16,7 +16,6 @@
 #ifndef grad_U_Champ_P1NC_included
 #define grad_U_Champ_P1NC_included
 
-
 #include <Champ_Fonc_P0_VEF.h>
 #include <Ref_Champ_P1NC.h>
 #include <Ref_Zone_Cl_VEF.h>
@@ -25,23 +24,21 @@
 /*! @brief classe grad_U_Champ_P1NC
  *
  */
-
-class grad_U_Champ_P1NC : public Champ_Fonc_P0_VEF
-
+class grad_U_Champ_P1NC: public Champ_Fonc_P0_VEF
 {
-
   Declare_instanciable(grad_U_Champ_P1NC);
-
 public:
-
-  inline const Champ_P1NC& mon_champ() const;
-  inline void mettre_a_jour(double ) override;
-  void associer_champ(const Champ_P1NC& );
-  void me_calculer(double );
-
-  inline void associer_zone_Cl_dis_base(const Zone_Cl_dis_base&);
+  void mettre_a_jour(double) override;
+  void associer_champ(const Champ_P1NC&);
+  void me_calculer(double);
   const Zone_Cl_dis_base& zone_Cl_dis_base() const;
 
+  inline const Champ_P1NC& mon_champ() const { return mon_champ_.valeur(); }
+
+  inline void associer_zone_Cl_dis_base(const Zone_Cl_dis_base& la_zone_Cl_dis_base)
+  {
+    la_zone_Cl_VEF = (const Zone_Cl_VEF&) la_zone_Cl_dis_base;
+  }
 
 protected:
 
@@ -49,23 +46,4 @@ protected:
   REF(Zone_Cl_VEF) la_zone_Cl_VEF;
 };
 
-inline const Champ_P1NC& grad_U_Champ_P1NC::mon_champ() const
-{
-  return mon_champ_.valeur();
-}
-
-inline void grad_U_Champ_P1NC::mettre_a_jour(double tps)
-{
-  me_calculer(tps);
-  changer_temps(tps);
-  Champ_Fonc_base::mettre_a_jour(tps);
-}
-
-inline void grad_U_Champ_P1NC::associer_zone_Cl_dis_base(const Zone_Cl_dis_base& la_zone_Cl_dis_base)
-{
-  la_zone_Cl_VEF  = (const Zone_Cl_VEF&) la_zone_Cl_dis_base;
-}
-
-
-
-#endif
+#endif /* grad_U_Champ_P1NC_included */

@@ -14,23 +14,9 @@
 *****************************************************************************/
 
 #include <Champ_Fonc_P0_EF.h>
-#include <Zone_VF.h>
 
-Implemente_instanciable(Champ_Fonc_P0_EF,"Champ_Fonc_P0_EF",Champ_Fonc_P0_base);
+Implemente_instanciable(Champ_Fonc_P0_EF, "Champ_Fonc_P0_EF", Champ_Fonc_P0_base);
 
+Sortie& Champ_Fonc_P0_EF::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-//     printOn()
-/////
-
-Sortie& Champ_Fonc_P0_EF::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-//// readOn
-//
-
-Entree& Champ_Fonc_P0_EF::readOn(Entree& s)
-{
-  return s ;
-}
+Entree& Champ_Fonc_P0_EF::readOn(Entree& s) { return s; }

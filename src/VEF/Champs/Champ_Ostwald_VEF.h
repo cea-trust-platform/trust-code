@@ -22,8 +22,6 @@
 #include <Ref_Zone_VEF.h>
 #include <Champ_P1NC.h>
 
-class Navier_Stokes_std;
-
 /*! @brief classe Champ_Ostwald_VEF Represente un champ en discretisation VEF qui varie en fonction
  *
  *         de la consistance et de l'indice de structure.
@@ -37,54 +35,29 @@ class Navier_Stokes_std;
  */
 class Champ_Ostwald_VEF : public Champ_Ostwald
 {
-
   Declare_instanciable(Champ_Ostwald_VEF);
-
 public :
-
-  inline const Champ_P1NC& mon_champs() const;
-  inline void associer_champ(const Champ_P1NC&);
-
-  inline void associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base) override;
-
   void associer_eqn(const Navier_Stokes_std& );
   const Zone_dis_base& zone_dis_base() const override;
-
   void mettre_a_jour(double temps) override;
   void me_calculer(double tps) override;
   int initialiser(const double temps) override;
   void init_mu(DoubleTab& );
   void calculer_dscald(DoubleTab&);
 
-protected :
+  inline const Champ_P1NC& mon_champs() const { return mon_champ_.valeur(); }
+  inline void associer_champ(const Champ_P1NC& un_champ) { mon_champ_ = un_champ; }
 
+  inline void associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base) override
+  {
+    la_zone_VEF = (const Zone_VEF&) la_zone_dis_base;
+  }
+
+protected :
   void calculer_mu(DoubleTab& );
-  REF(Champ_P1NC) mon_champ_;  // pour calculer D::D
+  REF(Champ_P1NC) mon_champ_;
   REF(Zone_VEF) la_zone_VEF;
   REF(Navier_Stokes_std) eq_hydraulique;
-
-  //  REF(Fluide_Ostwald) mon_fluide_;  // pour obtenir K et N
-
 };
 
-
-inline const Champ_P1NC& Champ_Ostwald_VEF::mon_champs() const
-{
-  return mon_champ_.valeur();
-}
-
-inline void Champ_Ostwald_VEF::associer_champ(const Champ_P1NC& un_champ)
-{
-  mon_champ_ = un_champ;
-}
-
-
-inline void Champ_Ostwald_VEF::associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base)
-{
-  Cerr<<"on est dans  Champ_Ostwald_VEF::associer_zone_dis_base "<<finl;
-  la_zone_VEF = (const Zone_VEF&) la_zone_dis_base;
-}
-
-
-#endif
-
+#endif /* Champ_Ostwald_VEF_included */

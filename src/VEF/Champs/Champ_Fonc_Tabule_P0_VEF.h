@@ -20,27 +20,17 @@
 #include <Vect_Ref_Champ_base.h>
 #include <Ref_Table.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Champ_Fonc_Tabule_P0_VEF
-//
-//////////////////////////////////////////////////////////////////////////////
-
 class Champ_Fonc_Tabule_P0_VEF : public Champ_Fonc_P0_VEF
 {
   Declare_instanciable(Champ_Fonc_Tabule_P0_VEF);
-
 public:
-
   void associer_param(const VECT(REF(Champ_base))&, const Table& );
   void mettre_a_jour(double ) override;
   int initialiser(const double temps) override;
 
 protected:
-
   VECT(REF(Champ_base)) les_ch_param;
   REF(Table) la_table;
 };
 
-
-#endif
+#endif /* Champ_Fonc_Tabule_P0_VEF_included */

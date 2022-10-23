@@ -16,38 +16,28 @@
 #include <h_conv_Champ_P1NC.h>
 #include <Champ_P1NC.h>
 
-Implemente_instanciable(h_conv_Champ_P1NC,"h_conv_Champ_P1NC",Champ_Fonc_P0_VEF);
+Implemente_instanciable(h_conv_Champ_P1NC, "h_conv_Champ_P1NC", Champ_Fonc_P0_VEF);
 
+Sortie& h_conv_Champ_P1NC::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-
-Sortie& h_conv_Champ_P1NC::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-
-
-Entree& h_conv_Champ_P1NC::readOn(Entree& s)
-{
-  return s ;
-}
-
-
+Entree& h_conv_Champ_P1NC::readOn(Entree& s) { return s; }
 
 void h_conv_Champ_P1NC::associer_champ(const Champ_P1NC& un_champ)
 {
-  mon_champ_= un_champ;
+  mon_champ_ = un_champ;
 }
 
-
+void h_conv_Champ_P1NC::mettre_a_jour(double tps)
+{
+  me_calculer(tps);
+  changer_temps(tps);
+  Champ_Fonc_base::mettre_a_jour(tps);
+}
 
 void h_conv_Champ_P1NC::me_calculer(double tps)
 {
   if (temps_ != tps)
-    {
-      ////mon_champ_->calcul_h_conv(la_zone_Cl_VEF.valeur(),valeurs());
-      mon_champ_->calcul_h_conv(la_zone_Cl_VEF.valeur(),valeurs(),temp_ref());
-    }
+    mon_champ_->calcul_h_conv(la_zone_Cl_VEF.valeur(), valeurs(), temp_ref());
 }
 
 const Zone_Cl_dis_base& h_conv_Champ_P1NC::zone_Cl_dis_base() const

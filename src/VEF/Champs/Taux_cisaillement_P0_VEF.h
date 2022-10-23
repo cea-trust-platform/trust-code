@@ -16,7 +16,6 @@
 #ifndef Taux_cisaillement_P0_VEF_included
 #define Taux_cisaillement_P0_VEF_included
 
-
 #include <Champ_Fonc_P0_VEF.h>
 #include <Ref_Champ_P1NC.h>
 #include <Ref_Zone_Cl_VEF.h>
@@ -24,21 +23,16 @@
 /*! @brief classe Taux_cisaillement_P0_VEF
  *
  */
-
 class Taux_cisaillement_P0_VEF : public Champ_Fonc_P0_VEF
 {
-
   Declare_instanciable(Taux_cisaillement_P0_VEF);
-
 public:
-
   void mettre_a_jour(double ) override;
   void associer_champ(const Champ_P1NC&, const Zone_Cl_dis_base&);
 
 private:
-
   REF(Zone_Cl_VEF) la_zone_Cl_VEF;
   REF(Champ_P1NC) vitesse_;
 };
 
-#endif
+#endif /* Taux_cisaillement_P0_VEF_included */

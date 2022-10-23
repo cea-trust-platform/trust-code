@@ -16,59 +16,33 @@
 #ifndef Champ_Fonc_Elem_PolyMAC_P0_rot_included
 #define Champ_Fonc_Elem_PolyMAC_P0_rot_included
 
-#include <Champ_Fonc_Face_PolyMAC.h>
-#include <Champ_Fonc_Elem_PolyMAC.h>
-#include <Champ_Fonc.h>
-#include <Ref_Zone_Cl_PolyMAC.h>
 #include <Ref_Champ_Face_PolyMAC_P0.h>
+#include <Champ_Fonc_Elem_PolyMAC.h>
 #include <Champ_Face_PolyMAC_P0.h>
-#include <Champ_Fonc.h>
-#include <Ref_Champ_Fonc.h>
 
-/*! @brief class Champ_Fonc_Elem_PolyMAC_P0_rot for the calculation of the vorticity This field is a Champ_Fonc_Elem_PolyMAC_P0 with 1 value per element and per phase in 2D and 3 in 3D
+/*! @brief class Champ_Fonc_Elem_PolyMAC_P0_rot for the calculation of the vorticity
+ *       This field is a Champ_Fonc_Elem_PolyMAC_P0 with 1 value per element and per phase in 2D and 3 in 3D
  *
  *       It isn't a Champ_Fonc_Face_PolyMAC_P0 as there is no physical justification to project the vorticity on a face
  *       In 3D, Champ_Fonc_Elem_PolyMAC_P0_TC::valeurs()(e, n*D + d) returns the value of phase n in element e along the d component
  *       The vorticity is calculated by hand in 2D and 3D using the values of the gradient
  *
- *
- *
  */
 
-class Champ_Fonc_Elem_PolyMAC_P0_rot : public Champ_Fonc_Elem_PolyMAC
-
+class Champ_Fonc_Elem_PolyMAC_P0_rot: public Champ_Fonc_Elem_PolyMAC
 {
-
   Declare_instanciable(Champ_Fonc_Elem_PolyMAC_P0_rot);
-
 public:
-
   void mettre_a_jour(double tps) override;
-  inline void associer_champ(const Champ_Face_PolyMAC_P0& cha);
   void me_calculer_2D();
   void me_calculer_3D();
 
-  inline virtual       Champ_Face_PolyMAC_P0& champ_a_deriver()      ;
-  inline virtual const Champ_Face_PolyMAC_P0& champ_a_deriver() const;
+  inline void associer_champ(const Champ_Face_PolyMAC_P0& cha) { champ_ = cha; }
+  inline virtual Champ_Face_PolyMAC_P0& champ_a_deriver() { return champ_.valeur(); }
+  inline virtual const Champ_Face_PolyMAC_P0& champ_a_deriver() const { return champ_.valeur(); }
 
 protected:
-
   REF(Champ_Face_PolyMAC_P0) champ_;
 };
 
-inline void Champ_Fonc_Elem_PolyMAC_P0_rot::associer_champ(const Champ_Face_PolyMAC_P0& cha)
-{
-  Cout << "On associe la vorticite au champ de vitesse " << finl ;
-  champ_= cha;
-}
-
-inline Champ_Face_PolyMAC_P0& Champ_Fonc_Elem_PolyMAC_P0_rot::champ_a_deriver()
-{
-  return champ_.valeur();
-}
-inline const Champ_Face_PolyMAC_P0& Champ_Fonc_Elem_PolyMAC_P0_rot::champ_a_deriver() const
-{
-  return champ_.valeur();
-}
-
-#endif
+#endif /* Champ_Fonc_Elem_PolyMAC_P0_rot_included */

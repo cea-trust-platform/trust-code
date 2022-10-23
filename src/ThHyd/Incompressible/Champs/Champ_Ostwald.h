@@ -16,10 +16,9 @@
 #ifndef Champ_Ostwald_included
 #define Champ_Ostwald_included
 
-
-#include <Champ_Don_base.h>
 #include <Ref_Fluide_Ostwald.h>
 #include <Champ_Fonc_P0_base.h>
+#include <Champ_Don_base.h>
 
 /*! @brief classe Champ_Ostwald Represente un champ qui varie en fonction de la consistance et
  *
@@ -34,42 +33,25 @@
  */
 class Champ_Ostwald : public Champ_Fonc_P0_base
 {
-
   Declare_instanciable(Champ_Ostwald);
-
 public :
   void mettre_a_jour(double temps) override;
-  virtual void me_calculer(double tps);
   int initialiser(const double temps) override;
-  //     virtual void associer_champ(const Champ_base& );
-  inline virtual const Fluide_Ostwald& mon_fluide() const;
-  inline virtual void associer_fluide(const Fluide_Ostwald&);
-
-  void associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base) override;
-
   int fixer_nb_valeurs_nodales(int nb_noeuds) override;
+  void associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base) override;
   Champ_base& affecter_(const Champ_base& ) override;
-
   const Zone_dis_base& zone_dis_base() const override;
+  virtual void me_calculer(double tps);
+
+  inline virtual const Fluide_Ostwald& mon_fluide() const { return mon_fluide_.valeur(); }
+
+  inline void associer_fluide(const Fluide_Ostwald& le_fluide)
+  {
+    mon_fluide_ = le_fluide;
+  }
 
 protected:
   REF(Fluide_Ostwald) mon_fluide_;  // pour obtenir K et N
-
-private :
 };
 
-
-
-inline const Fluide_Ostwald& Champ_Ostwald::mon_fluide() const
-{
-  return mon_fluide_.valeur();
-}
-
-
-inline void Champ_Ostwald::associer_fluide(const Fluide_Ostwald& le_fluide)
-{
-  mon_fluide_ = le_fluide;
-}
-
-
-#endif
+#endif /* Champ_Ostwald_included */

@@ -13,60 +13,10 @@
 *
 *****************************************************************************/
 
-#include <Champ_implementation_Q1.h>
-#include <Domaine.h>
-#include <Linear_algebra_tools.h>
 #include <Linear_algebra_tools_impl.h>
-
-
-#if 0
-
-void Champ_implementation_Q1::value_interpolation(const ArrOfDouble& position, int cell, const DoubleTab& values, ArrOfDouble& resu,int ncomp) const
-{
-  const Zone&      zone              = get_zone_geom();
-  const IntTab&    cells             = zone.les_elems();
-  const int     nb_nodes_per_cell = zone.nb_som_elem();
-
-  assert(cell>=0);
-  assert(cell < cells.dimension_tot(0));
-
-  if (ncomp!=-1)
-    {
-      for (int j=0; j< nb_nodes_per_cell; j++)
-        {
-          int node = cells(cell,j);
-          resu(0) += values(node,ncomp) * form_function(position,cell,j);
-        }
-    }
-  else
-    {
-      if (values.nb_dim()==1)
-        {
-          assert(resu.size_array()==1);
-          for (int j=0; j< nb_nodes_per_cell; j++)
-            {
-              int node = cells(cell,j);
-              resu(0) += values(node) * form_function(position,cell,j);
-            }
-        }
-      else
-        {
-          int nb_components=resu.size_array();
-          assert(values.nb_dim() == 2);
-          assert(values.dimension(1) == nb_components);
-          for (int j=0; j<nb_nodes_per_cell; j++)
-            {
-              double weight = form_function(position, cell, j);
-              int node   = cells(cell,j);
-              for (int k=0; k<nb_components; k++)
-                {
-                  resu(k) += values(node,k) * weight;
-                }
-            }
-        }
-    }
-}
-#else
+#include <Champ_implementation_Q1.h>
+#include <Linear_algebra_tools.h>
+#include <Domaine.h>
 
 static int faces_sommets_quadra[4][2] =
 {
@@ -76,23 +26,19 @@ static int faces_sommets_quadra[4][2] =
   { 2, 3 }
 };
 
-
-
-
-void calcul_plan_quadra(Vecteur3& coeff_plan,double& d,int cell,const IntTab& cells,const DoubleTab& nodes,int dir)
+void calcul_plan_quadra(Vecteur3& coeff_plan, double& d, int cell, const IntTab& cells, const DoubleTab& nodes, int dir)
 {
   // Plan 012
-  int s0=cells(cell,faces_sommets_quadra[dir][0]);
-  int s1=cells(cell,faces_sommets_quadra[dir][1]);
-  double S0x=nodes(s0,0);
-  double S0y=nodes(s0,1);
-  double SOS1x=nodes(s1,0)-S0x;
-  double SOS1y=nodes(s1,1)-S0y;
-  double len=sqrt(SOS1x*SOS1x+SOS1y*SOS1y);
+  int s0 = cells(cell, faces_sommets_quadra[dir][0]);
+  int s1 = cells(cell, faces_sommets_quadra[dir][1]);
+  double S0x = nodes(s0, 0);
+  double S0y = nodes(s0, 1);
+  double SOS1x = nodes(s1, 0) - S0x;
+  double SOS1y = nodes(s1, 1) - S0y;
+  double len = sqrt(SOS1x * SOS1x + SOS1y * SOS1y);
 
-  coeff_plan.set(-SOS1y/len,SOS1x/len,0);
-  d=-(S0x*coeff_plan[0]+S0y*coeff_plan[1]);
-
+  coeff_plan.set(-SOS1y / len, SOS1x / len, 0);
+  d = -(S0x * coeff_plan[0] + S0y * coeff_plan[1]);
 
 }
 
@@ -106,26 +52,25 @@ static int faces_sommets_hexa[6][4] =
   { 4, 5, 6, 7 }
 };
 
-void calcul_plan_hexa(Vecteur3& coeff_plan,double& d,int cell,const IntTab& cells,const DoubleTab& nodes,int dir)
+void calcul_plan_hexa(Vecteur3& coeff_plan, double& d, int cell, const IntTab& cells, const DoubleTab& nodes, int dir)
 {
   // Plan 012
-  int s0=cells(cell,faces_sommets_hexa[dir][0]);
-  int s1=cells(cell,faces_sommets_hexa[dir][1]);
-  int s2=cells(cell,faces_sommets_hexa[dir][2]);
+  int s0 = cells(cell, faces_sommets_hexa[dir][0]);
+  int s1 = cells(cell, faces_sommets_hexa[dir][1]);
+  int s2 = cells(cell, faces_sommets_hexa[dir][2]);
 
-
-  Vecteur3 S0(nodes(s0,0),nodes(s0,1),nodes(s0,2));
-  Vecteur3 S0S1(nodes(s1,0)-S0[0],nodes(s1,1)-S0[1],nodes(s1,2)-S0[2]);
-  Vecteur3 S0S2(nodes(s2,0)-S0[0],nodes(s2,1)-S0[1],nodes(s2,2)-S0[2]);
-  Vecteur3::produit_vectoriel(S0S1,S0S2,coeff_plan);
-  coeff_plan*=(1./coeff_plan.length());
-  d=-Vecteur3::produit_scalaire(coeff_plan,S0);
+  Vecteur3 S0(nodes(s0, 0), nodes(s0, 1), nodes(s0, 2));
+  Vecteur3 S0S1(nodes(s1, 0) - S0[0], nodes(s1, 1) - S0[1], nodes(s1, 2) - S0[2]);
+  Vecteur3 S0S2(nodes(s2, 0) - S0[0], nodes(s2, 1) - S0[1], nodes(s2, 2) - S0[2]);
+  Vecteur3::produit_vectoriel(S0S1, S0S2, coeff_plan);
+  coeff_plan *= (1. / coeff_plan.length());
+  d = -Vecteur3::produit_scalaire(coeff_plan, S0);
 }
 
 void Champ_implementation_Q1::value_interpolation(const DoubleTab& positions, const ArrOfInt& cells, const DoubleTab& values, DoubleTab& resu, int ncomp) const
 {
-  const Zone&      zone  = get_zone_geom();
-  const IntTab&    les_elems = zone.les_elems();
+  const Zone& zone = get_zone_geom();
+  const IntTab& les_elems = zone.les_elems();
   const DoubleTab& nodes = zone.domaine().les_sommets();
   const int nb_nodes_per_cell = les_elems.dimension(1);
   ArrOfDouble position(Objet_U::dimension);
@@ -136,10 +81,11 @@ void Champ_implementation_Q1::value_interpolation(const DoubleTab& positions, co
   Vecteur3 coord_bar;
 
   resu = 0;
-  for (int ic=0; ic<cells.size_array(); ic++)
+  for (int ic = 0; ic < cells.size_array(); ic++)
     {
       int cell = cells[ic];
-      if (cell<0) continue;
+      if (cell < 0)
+        continue;
       for (int k = 0; k < Objet_U::dimension; k++)
         position[k] = positions(ic, k);
 
@@ -152,7 +98,8 @@ void Champ_implementation_Q1::value_interpolation(const DoubleTab& positions, co
                 cell3D(0, 2 * i) = les_elems(cell, i);
               calcul_plan_hexa(coeff_plan, d, 0, cell3D, nodes, 0);
               double A = d;
-              for (int i = 0; i < Objet_U::dimension; i++) A += coeff_plan[i] * position[i];
+              for (int i = 0; i < Objet_U::dimension; i++)
+                A += coeff_plan[i] * position[i];
               if (std::fabs(A) > std::fabs(d) * 1e-5)
                 {
                   Cerr << "Error point not in the plane " << finl;
@@ -166,10 +113,12 @@ void Champ_implementation_Q1::value_interpolation(const DoubleTab& positions, co
 
                 calcul_plan_quadra(coeff_plan, d, cell, les_elems, nodes, dir);
                 double A = d;
-                for (int i = 0; i < Objet_U::dimension; i++) A += coeff_plan[i] * position[i];
+                for (int i = 0; i < Objet_U::dimension; i++)
+                  A += coeff_plan[i] * position[i];
                 calcul_plan_quadra(coeff_plan, d, cell, les_elems, nodes, dir + 2);
                 double B = d;
-                for (int i = 0; i < Objet_U::dimension; i++) B += coeff_plan[i] * position[i];
+                for (int i = 0; i < Objet_U::dimension; i++)
+                  B += coeff_plan[i] * position[i];
                 assert(inf_ou_egal((A * B), 0, 1e-10));
                 coord_bar[dir] = A / (A - B);
               }
@@ -182,10 +131,12 @@ void Champ_implementation_Q1::value_interpolation(const DoubleTab& positions, co
 
               calcul_plan_hexa(coeff_plan, d, cell, les_elems, nodes, dir);
               double A = d;
-              for (int i = 0; i < 3; i++) A += coeff_plan[i] * position[i];
+              for (int i = 0; i < 3; i++)
+                A += coeff_plan[i] * position[i];
               calcul_plan_hexa(coeff_plan, d, cell, les_elems, nodes, dir + 3);
               double B = d;
-              for (int i = 0; i < 3; i++) B += coeff_plan[i] * position[i];
+              for (int i = 0; i < 3; i++)
+                B += coeff_plan[i] * position[i];
               assert(inf_ou_egal((A * B), 0, 1e-10));
               coord_bar[dir] = A / (A - B);
             }
@@ -231,8 +182,7 @@ void Champ_implementation_Q1::value_interpolation(const DoubleTab& positions, co
               double unmi = 1. - i;
               double unmj = 1. - j;
 
-              res = unmj * (unmi * val[0] + i * val[1])
-                    + j * (unmi * val[2] + i * val[3]);
+              res = unmj * (unmi * val[0] + i * val[1]) + j * (unmi * val[2] + i * val[3]);
             }
           else
             {
@@ -243,27 +193,21 @@ void Champ_implementation_Q1::value_interpolation(const DoubleTab& positions, co
               double unmi = 1. - i;
               double unmj = 1. - j;
               double unmk = 1. - kk;
-              res = unmk * (unmj * (unmi * val[0] + i * val[1])
-                            + j * (unmi * val[2] + i * val[3]))
-                    + kk * (unmj * (unmi * val[4] + i * val[5])
-                            + j * (unmi * val[6] + i * val[7]));
+              res = unmk * (unmj * (unmi * val[0] + i * val[1]) + j * (unmi * val[2] + i * val[3])) + kk * (unmj * (unmi * val[4] + i * val[5]) + j * (unmi * val[6] + i * val[7]));
             }
-          if (nb_dim==1)
+          if (nb_dim == 1)
             resu(ic) = res;
           else
             resu(ic, k) = res;
         }
     }
 }
-#endif
 
-
-
-static int info=0;
+static int info = 0;
 
 double Champ_implementation_Q1::form_function(const ArrOfDouble& position, int cell, int ddl) const
 {
-  if (info==0)
+  if (info == 0)
     {
       Cerr << "***********************************************************************" << finl;
       Cerr << "Warning : shape functions of the Q1 elements are not coded !" << finl;
@@ -272,46 +216,44 @@ double Champ_implementation_Q1::form_function(const ArrOfDouble& position, int c
       Cerr << "It returns the average value on the element, ie the point value" << finl;
       Cerr << "at the barycenter of the element" << finl;
       Cerr << finl;
-      Cerr << "It is therefore recommended to postprocess the Q1 fields only"<< finl;
+      Cerr << "It is therefore recommended to postprocess the Q1 fields only" << finl;
       Cerr << "on mesh nodes." << finl;
       Cerr << "***********************************************************************" << finl;
-      info=1;
+      info = 1;
     }
 
-
   const Zone& zone_geom = get_zone_geom();
-  int test_sommet=1;
+  int test_sommet = 1;
   if (test_sommet)
     {
-      const IntTab& cells    = zone_geom.les_elems();
+      const IntTab& cells = zone_geom.les_elems();
       const DoubleTab& nodes = zone_geom.domaine().les_sommets();
 
       int nb_nodes_per_cell = cells.dimension(1);
-      int sc=-1;
-      double l=Objet_U::precision_geom*Objet_U::precision_geom;
-      for (int s=0; s<nb_nodes_per_cell; s++)
+      int sc = -1;
+      double l = Objet_U::precision_geom * Objet_U::precision_geom;
+      for (int s = 0; s < nb_nodes_per_cell; s++)
         {
-          int som=cells(cell,s);
-          double dist=0;
-          for (int j=0; j<Objet_U::dimension; j++)
+          int som = cells(cell, s);
+          double dist = 0;
+          for (int j = 0; j < Objet_U::dimension; j++)
             {
-              double dx=(nodes(som,j)-position[j]);
-              dist+=dx*dx;
+              double dx = (nodes(som, j) - position[j]);
+              dist += dx * dx;
             }
-          if (dist<l)
-            sc=s;
+          if (dist < l)
+            sc = s;
         }
-      if (sc!=-1)
+      if (sc != -1)
         {
           //Cerr<< ddl<< " sc "<< sc <<finl;
-          if (ddl==sc)
+          if (ddl == sc)
             return 1;
           else
             return 0;
         }
 
     }
-  double factor = 1./zone_geom.nb_som_elem();
+  double factor = 1. / zone_geom.nb_som_elem();
   return factor;
 }
-
