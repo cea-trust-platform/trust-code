@@ -50,14 +50,9 @@ Champ_P1NC_implementation::Champ_P1NC_implementation()
   solveur_H1.typer("Solv_GCP");
   ref_cast(Solv_GCP,solveur_H1.valeur()).set_precond(p);
   solveur_H1.nommer("solveur_H1");
-
-
-
 }
 
 static const double coeff_penalisation = 1e9;
-
-
 
 /*! @brief Projection du champ P1NC "cha" sur l'espace des champs P1.
  *

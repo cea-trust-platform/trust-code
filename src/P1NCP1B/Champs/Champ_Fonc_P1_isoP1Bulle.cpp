@@ -13,26 +13,17 @@
 *
 *****************************************************************************/
 
-
 #include <Champ_Fonc_P1_isoP1Bulle.h>
 #include <Zone_VEF_PreP1b.h>
 
 Implemente_instanciable(Champ_Fonc_P1_isoP1Bulle,"Champ_Fonc_P1_isoP1Bulle",Champ_Fonc_base);
 
+Sortie& Champ_Fonc_P1_isoP1Bulle::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-Sortie& Champ_Fonc_P1_isoP1Bulle::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-Entree& Champ_Fonc_P1_isoP1Bulle::readOn(Entree& s)
-{
-  return s ;
-}
+Entree& Champ_Fonc_P1_isoP1Bulle::readOn(Entree& s) { return s ; }
 
 int Champ_Fonc_P1_isoP1Bulle::fixer_nb_valeurs_nodales(int n)
 {
-  // On ne doit pas specifier nb_ddl !
   assert(n < 0);
   const Zone_VEF_PreP1b& zvef = zone_vef();
   const MD_Vector& md = zvef.md_vector_p1b();

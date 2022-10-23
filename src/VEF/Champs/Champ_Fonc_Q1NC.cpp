@@ -18,15 +18,9 @@
 
 Implemente_instanciable(Champ_Fonc_Q1NC,"Champ_Fonc_Q1NC",Champ_Fonc_base);
 
-Sortie& Champ_Fonc_Q1NC::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
+Sortie& Champ_Fonc_Q1NC::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-Entree& Champ_Fonc_Q1NC::readOn(Entree& s)
-{
-  return s;
-}
+Entree& Champ_Fonc_Q1NC::readOn(Entree& s) { return s; }
 
 const Zone_dis_base& Champ_Fonc_Q1NC::zone_dis_base() const
 {
@@ -55,4 +49,3 @@ DoubleTab& Champ_Fonc_Q1NC::trace(const Frontiere_dis_base& fr, DoubleTab& x, do
 {
   return Champ_Q1NC_impl::trace(fr, valeurs(), x, distant);
 }
-

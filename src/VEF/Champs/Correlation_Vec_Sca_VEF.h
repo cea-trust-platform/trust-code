@@ -16,43 +16,26 @@
 #ifndef Correlation_Vec_Sca_VEF_included
 #define Correlation_Vec_Sca_VEF_included
 
-
 #include <Champ_Fonc_P1NC.h>
 
 /*! @brief classe Correlation_Vec_Sca_VEF
  *
  * @sa Champ_Fonc_P1NC Correlation_Vec_Sca_VEF
  */
-
-class Correlation_Vec_Sca_VEF : public Champ_Fonc_P1NC
-
+class Correlation_Vec_Sca_VEF: public Champ_Fonc_P1NC
 {
-
   Declare_instanciable(Correlation_Vec_Sca_VEF);
-
 public:
+  void associer_champ_Vec(const Champ_base&);
+  void associer_champ_Sca(const Champ_base&);
 
-  inline const Champ_base& mon_champ_Vec() const;
-  inline const Champ_base& mon_champ_Sca() const;
-  inline void mettre_a_jour(double ) override;
-  void associer_champ_Vec(const Champ_base& );
-  void associer_champ_Sca(const Champ_base& );
+  inline const Champ_base& mon_champ_Vec() const { return mon_champ_Vec_.valeur(); }
+  inline const Champ_base& mon_champ_Sca() const { return mon_champ_Sca_.valeur(); }
+  inline void mettre_a_jour(double) override;
 
 protected:
-
-  REF(Champ_base) mon_champ_Vec_;
-  REF(Champ_base) mon_champ_Sca_;
+  REF(Champ_base) mon_champ_Vec_, mon_champ_Sca_;
 };
-
-inline const Champ_base& Correlation_Vec_Sca_VEF::mon_champ_Vec() const
-{
-  return mon_champ_Vec_.valeur();
-}
-
-inline const Champ_base& Correlation_Vec_Sca_VEF::mon_champ_Sca() const
-{
-  return mon_champ_Sca_.valeur();
-}
 
 inline void Correlation_Vec_Sca_VEF::mettre_a_jour(double tps)
 {
@@ -62,44 +45,15 @@ inline void Correlation_Vec_Sca_VEF::mettre_a_jour(double tps)
 
   DoubleTab& correlation = valeurs();
   int face, ncom;
-  for (face=0; face<nb_faces; face++)
+  for (face = 0; face < nb_faces; face++)
     {
-      correlation(face,0) = valeurs_Sca(face);
-      for (ncom=0; ncom<dimension; ncom++)
-        correlation(face,ncom+1) = valeurs_Vec(face,ncom);
+      correlation(face, 0) = valeurs_Sca(face);
+      for (ncom = 0; ncom < dimension; ncom++)
+        correlation(face, ncom + 1) = valeurs_Vec(face, ncom);
     }
 
   changer_temps(tps);
   Champ_Fonc_base::mettre_a_jour(tps);
-
-  /*  int nb_elem=zone().nb_elem();
-      DoubleTab centres_de_gravites(nb_elem, dimension);
-      zone().calculer_centres_gravite(centres_de_gravites);
-
-      DoubleTab& correlation = valeurs();
-      int elem, ncom;
-
-      // Interpolation du champ scalaire de la correlation au
-      // centre des mailles.
-      DoubleTab valeurs_Sca(nb_elem, mon_champ_Sca_->nb_comp());
-      mon_champ_Sca_->valeur_aux(centres_de_gravites, valeurs_Sca);
-
-      // Interpolation du champ vecteur de la correlation au
-      // centre des mailles.
-      DoubleTab valeurs_Vec(nb_elem, mon_champ_Vec_->nb_comp());
-      mon_champ_Vec_->valeur_aux(centres_de_gravites, valeurs_Vec);
-
-      for(elem=0; elem<nb_elem; elem++)
-      {
-      correlation(elem,0) = valeurs_Sca(elem,0);
-      for (ncom=0; ncom<dimension; ncom++)
-      correlation(elem,ncom+1) = valeurs_Vec(elem,ncom);
-      }
-
-      changer_temps(tps);
-      Champ_Fonc_base::mettre_a_jour(tps);*/
 }
 
-
-
-#endif
+#endif /* Correlation_Vec_Sca_VEF_included */

@@ -18,32 +18,28 @@
 #include <Champ_Fonc_base.h>
 #include <Zone_dis.h>
 
-//
-// printOn et readOn
-
 const Zone& Champ_implementation::zone() const
 {
   return zone_dis_base_impl().zone();
 }
+
 const Zone_dis_base& Champ_implementation::zone_dis_base_impl() const
 {
-  const Champ_base& chbase=le_champ();
-  if(sub_type(Champ_Inc_base, chbase))
+  const Champ_base& chbase = le_champ();
+  if (sub_type(Champ_Inc_base, chbase))
     {
-      const Champ_Inc_base& chi=ref_cast(Champ_Inc_base, chbase);
+      const Champ_Inc_base& chi = ref_cast(Champ_Inc_base, chbase);
       return chi.zone_dis_base();
     }
-  else if(sub_type(Champ_Fonc_base, chbase))
+  else if (sub_type(Champ_Fonc_base, chbase))
     {
-      const Champ_Fonc_base& chf=ref_cast(Champ_Fonc_base, chbase);
+      const Champ_Fonc_base& chf = ref_cast(Champ_Fonc_base, chbase);
       return chf.zone_dis_base();
     }
   else
     {
-      Cerr << le_champ().que_suis_je() << "do not know refer a Zone_dis_base" << finl;
+      Cerr << le_champ().que_suis_je() << " do not know refer a Zone_dis_base" << finl;
       Process::exit();
-      // Pour les compilos :
       return zone_dis_base_impl();
     }
 }
-

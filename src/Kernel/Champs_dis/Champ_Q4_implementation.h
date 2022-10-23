@@ -19,7 +19,7 @@
 #include <Champ_implementation.h>
 #include <TRUSTTab.h>
 
-class Champ_Q4_implementation : public Champ_implementation
+class Champ_Q4_implementation: public Champ_implementation
 {
 public:
 
@@ -50,55 +50,53 @@ public:
  */
 inline double coord_barycentrique(const IntTab& polys, const DoubleTab& coord, double x, double y, int le_poly, int i)
 {
-  int som0,som1,som2;
+  int som0, som1, som2;
   int nb_som_elem = polys.dimension(1);
   //Distinction du calcul de la coordonnee barycentrique en fonction du type de l element
   //Cas Triangle
-  if (nb_som_elem==3)
+  if (nb_som_elem == 3)
     {
       switch(i)
         {
-        case 0 :
+        case 0:
           {
-            som0=polys(le_poly , 0);
-            som1=polys(le_poly , 1);
-            som2=polys(le_poly , 2);
+            som0 = polys(le_poly, 0);
+            som1 = polys(le_poly, 1);
+            som2 = polys(le_poly, 2);
             break;
           }
-        case 1 :
+        case 1:
           {
-            som0=polys(le_poly , 1);
-            som1=polys(le_poly , 2);
-            som2=polys(le_poly , 0);
+            som0 = polys(le_poly, 1);
+            som1 = polys(le_poly, 2);
+            som2 = polys(le_poly, 0);
             break;
           }
-        case 2 :
+        case 2:
           {
-            som0=polys(le_poly , 2);
-            som1=polys(le_poly , 0);
-            som2=polys(le_poly , 1);
+            som0 = polys(le_poly, 2);
+            som1 = polys(le_poly, 0);
+            som2 = polys(le_poly, 1);
             break;
           }
-        default :
+        default:
           {
-            som0=-1;
-            som1=-1;
-            som2=-1;
+            som0 = -1;
+            som1 = -1;
+            som2 = -1;
             Cerr << "Error in Champ_P1::coord_barycentrique : " << finl;
             Cerr << "A triangle does not have " << i << "nodes " << finl;
             Process::exit();
           }
 
         }
-      double den = (coord(som2,0)-coord(som1,0))*(coord(som0,1)-coord(som1,1))
-                   - (coord(som2,1)-coord(som1,1))*(coord(som0,0)-coord(som1,0));
+      double den = (coord(som2, 0) - coord(som1, 0)) * (coord(som0, 1) - coord(som1, 1)) - (coord(som2, 1) - coord(som1, 1)) * (coord(som0, 0) - coord(som1, 0));
 
-      double num = (coord(som2,0)-coord(som1,0))*(y-coord(som1,1))
-                   - (coord(som2,1)-coord(som1,1))*(x-coord(som1,0));
+      double num = (coord(som2, 0) - coord(som1, 0)) * (y - coord(som1, 1)) - (coord(som2, 1) - coord(som1, 1)) * (x - coord(som1, 0));
 
-      assert (den != 0.);
-      double coord_bary=num/den;
-      if ((coord_bary < -Objet_U::precision_geom) || (coord_bary > 1.+Objet_U::precision_geom))
+      assert(den != 0.);
+      double coord_bary = num / den;
+      if ((coord_bary < -Objet_U::precision_geom) || (coord_bary > 1. + Objet_U::precision_geom))
         {
           Cerr << "WARNING: The barycentric coordinate of point :" << finl;
           Cerr << "x= " << x << " y=" << y << finl;
@@ -108,45 +106,45 @@ inline double coord_barycentrique(const IntTab& polys, const DoubleTab& coord, d
       return coord_bary;
     }
   //Cas Rectangle
-  else if (nb_som_elem==4)
+  else if (nb_som_elem == 4)
     {
-      double alpha_x=0.;
-      double alpha_y=0.;
+      double alpha_x = 0.;
+      double alpha_y = 0.;
       double delta_x, delta_y;
 //      int som0,som1,som2;
-      double x0,y0;
+      double x0, y0;
 
       switch(i)
         {
-        case 0 :
+        case 0:
           {
             alpha_x = -1.;
             alpha_y = -1;
 
             break;
           }
-        case 1 :
+        case 1:
           {
             alpha_x = 1.;
             alpha_y = -1.;
 
             break;
           }
-        case 2 :
+        case 2:
           {
             alpha_x = -1.;
             alpha_y = 1.;
 
             break;
           }
-        case 3 :
+        case 3:
           {
             alpha_x = 1.;
             alpha_y = 1.;
 
             break;
           }
-        default :
+        default:
           {
             Cerr << "Error in Champ_P1::coord_barycentrique : " << finl;
             Process::exit();
@@ -154,17 +152,16 @@ inline double coord_barycentrique(const IntTab& polys, const DoubleTab& coord, d
 
         }
 
-      som0=polys(le_poly , 0);
-      som1=polys(le_poly , 1);
-      som2=polys(le_poly , 2);
-      delta_x = coord(som1,0)-coord(som0,0);
-      delta_y = coord(som2,1)-coord(som0,1);
-      x0 = coord(som0,0)+delta_x/2.;
-      y0 = coord(som0,1)+delta_y/2.;
-      double coord_bary = 0.25*(1.+2.*alpha_x*(x-x0)/delta_x)*(1.+2.*alpha_y*(y-y0)/delta_y);
+      som0 = polys(le_poly, 0);
+      som1 = polys(le_poly, 1);
+      som2 = polys(le_poly, 2);
+      delta_x = coord(som1, 0) - coord(som0, 0);
+      delta_y = coord(som2, 1) - coord(som0, 1);
+      x0 = coord(som0, 0) + delta_x / 2.;
+      y0 = coord(som0, 1) + delta_y / 2.;
+      double coord_bary = 0.25 * (1. + 2. * alpha_x * (x - x0) / delta_x) * (1. + 2. * alpha_y * (y - y0) / delta_y);
 
-
-      if ((coord_bary < -Objet_U::precision_geom) || (coord_bary > 1.+Objet_U::precision_geom))
+      if ((coord_bary < -Objet_U::precision_geom) || (coord_bary > 1. + Objet_U::precision_geom))
         {
           Cerr << "WARNING: The barycentric coordinate of point :" << finl;
           Cerr << "x= " << x << " y=" << y << finl;
@@ -174,7 +171,7 @@ inline double coord_barycentrique(const IntTab& polys, const DoubleTab& coord, d
       return coord_bary;
     }
 
-  Cerr<<"The number of nodes by element " <<nb_som_elem<<" does not correspond to a treated situation."<<finl;
+  Cerr << "The number of nodes by element " << nb_som_elem << " does not correspond to a treated situation." << finl;
   Process::exit();
   return 0.;
 }
@@ -198,81 +195,71 @@ inline double coord_barycentrique(const IntTab& polys, const DoubleTab& coord, d
  */
 inline double coord_barycentrique(const IntTab& polys, const DoubleTab& coord, double x, double y, double z, int le_poly, int i)
 {
-  int som0,som1,som2,som3;
+  int som0, som1, som2, som3;
   int nb_som_elem = polys.dimension(1);
   //Distinction du calcul de la coordonnee barycentrique en fonction du type de l element
   //Cas Tetraedre
-  if (nb_som_elem==4)
+  if (nb_som_elem == 4)
     {
       switch(i)
         {
-        case 0 :
+        case 0:
           {
-            som0=polys(le_poly , 0);
-            som1=polys(le_poly , 1);
-            som2=polys(le_poly , 2);
-            som3=polys(le_poly , 3);
+            som0 = polys(le_poly, 0);
+            som1 = polys(le_poly, 1);
+            som2 = polys(le_poly, 2);
+            som3 = polys(le_poly, 3);
             break;
           }
-        case 1 :
+        case 1:
           {
-            som0=polys(le_poly , 1);
-            som1=polys(le_poly , 2);
-            som2=polys(le_poly , 3);
-            som3=polys(le_poly , 0);
+            som0 = polys(le_poly, 1);
+            som1 = polys(le_poly, 2);
+            som2 = polys(le_poly, 3);
+            som3 = polys(le_poly, 0);
             break;
           }
-        case 2 :
+        case 2:
           {
-            som0=polys(le_poly , 2);
-            som1=polys(le_poly , 3);
-            som2=polys(le_poly , 0);
-            som3=polys(le_poly , 1);
+            som0 = polys(le_poly, 2);
+            som1 = polys(le_poly, 3);
+            som2 = polys(le_poly, 0);
+            som3 = polys(le_poly, 1);
             break;
           }
-        case 3 :
+        case 3:
           {
-            som0=polys(le_poly , 3);
-            som1=polys(le_poly , 0);
-            som2=polys(le_poly , 1);
-            som3=polys(le_poly , 2);
+            som0 = polys(le_poly, 3);
+            som1 = polys(le_poly, 0);
+            som2 = polys(le_poly, 1);
+            som3 = polys(le_poly, 2);
             break;
           }
-        default :
+        default:
           {
-            som0=-1;
-            som1=-1;
-            som2=-1;
-            som3=-1;
+            som0 = -1;
+            som1 = -1;
+            som2 = -1;
+            som3 = -1;
             Cerr << "Error in Champ_P1::coord_barycentrique : " << finl;
             Cerr << "A tetrahedron does not have " << i << "nodes " << finl;
             Process::exit();
           }
         }
 
-      double xp = (coord(som2,1)-coord(som1,1))*(coord(som0,2)-coord(som1,2))
-                  - (coord(som2,2)-coord(som1,2))*(coord(som0,1)-coord(som1,1));
-      double yp = (coord(som2,2)-coord(som1,2))*(coord(som0,0)-coord(som1,0))
-                  - (coord(som2,0)-coord(som1,0))*(coord(som0,2)-coord(som1,2));
-      double zp = (coord(som2,0)-coord(som1,0))*(coord(som0,1)-coord(som1,1))
-                  - (coord(som2,1)-coord(som1,1))*(coord(som0,0)-coord(som1,0));
-      double den = xp * (coord(som3,0)-coord(som1,0))
-                   + yp * (coord(som3,1)-coord(som1,1))
-                   + zp * (coord(som3,2)-coord(som1,2));
+      double xp = (coord(som2, 1) - coord(som1, 1)) * (coord(som0, 2) - coord(som1, 2)) - (coord(som2, 2) - coord(som1, 2)) * (coord(som0, 1) - coord(som1, 1));
+      double yp = (coord(som2, 2) - coord(som1, 2)) * (coord(som0, 0) - coord(som1, 0)) - (coord(som2, 0) - coord(som1, 0)) * (coord(som0, 2) - coord(som1, 2));
+      double zp = (coord(som2, 0) - coord(som1, 0)) * (coord(som0, 1) - coord(som1, 1)) - (coord(som2, 1) - coord(som1, 1)) * (coord(som0, 0) - coord(som1, 0));
+      double den = xp * (coord(som3, 0) - coord(som1, 0)) + yp * (coord(som3, 1) - coord(som1, 1)) + zp * (coord(som3, 2) - coord(som1, 2));
 
-      xp = (coord(som2,1)-coord(som1,1))*(z-coord(som1,2))
-           - (coord(som2,2)-coord(som1,2))*(y-coord(som1,1));
-      yp = (coord(som2,2)-coord(som1,2))*(x-coord(som1,0))
-           - (coord(som2,0)-coord(som1,0))*(z-coord(som1,2));
-      zp = (coord(som2,0)-coord(som1,0))*(y-coord(som1,1))
-           - (coord(som2,1)-coord(som1,1))*(x-coord(som1,0));
-      double num = xp * (coord(som3,0)-coord(som1,0))
-                   + yp * (coord(som3,1)-coord(som1,1))
-                   + zp * (coord(som3,2)-coord(som1,2));
+      xp = (coord(som2, 1) - coord(som1, 1)) * (z - coord(som1, 2)) - (coord(som2, 2) - coord(som1, 2)) * (y - coord(som1, 1));
+      yp = (coord(som2, 2) - coord(som1, 2)) * (x - coord(som1, 0)) - (coord(som2, 0) - coord(som1, 0)) * (z - coord(som1, 2));
+      zp = (coord(som2, 0) - coord(som1, 0)) * (y - coord(som1, 1)) - (coord(som2, 1) - coord(som1, 1)) * (x - coord(som1, 0));
+      double num = xp * (coord(som3, 0) - coord(som1, 0)) + yp * (coord(som3, 1) - coord(som1, 1)) + zp * (coord(som3, 2) - coord(som1, 2));
 
-      assert (den != 0.);
-      double coord_bary = num/den;
-      if ((coord_bary < -Objet_U::precision_geom) || (coord_bary > 1.+Objet_U::precision_geom))
+      assert(den != 0.);
+      double coord_bary = num / den;
+      if ((coord_bary < -Objet_U::precision_geom) || (coord_bary > 1. + Objet_U::precision_geom))
         {
           Cerr << "WARNING: The barycentric coordinate of point :" << finl;
           Cerr << "x= " << x << " y=" << y << " z=" << z << finl;
@@ -282,107 +269,106 @@ inline double coord_barycentrique(const IntTab& polys, const DoubleTab& coord, d
       return coord_bary;
     }
   //Cas Hexaedre
-  else if (nb_som_elem==8)
+  else if (nb_som_elem == 8)
     {
-      double alpha_x=0.;
-      double alpha_y=0.;
-      double alpha_z=0.;
+      double alpha_x = 0.;
+      double alpha_y = 0.;
+      double alpha_z = 0.;
       double delta_x, delta_y, delta_z;
       //int som0,som1,som2;
-      double x0,y0,z0;
+      double x0, y0, z0;
 
       switch(i)
         {
-        case 0 :
+        case 0:
           {
             alpha_x = -1.;
             alpha_y = -1.;
             alpha_z = -1.;
             break;
           }
-        case 1 :
+        case 1:
           {
             alpha_x = 1.;
             alpha_y = -1.;
             alpha_z = -1.;
             break;
           }
-        case 2 :
+        case 2:
           {
             alpha_x = -1.;
             alpha_y = 1.;
             alpha_z = -1.;
             break;
           }
-        case 3 :
+        case 3:
           {
             alpha_x = 1.;
             alpha_y = 1.;
             alpha_z = -1.;
             break;
           }
-        case 4 :
+        case 4:
           {
             alpha_x = -1.;
             alpha_y = -1;
             alpha_z = 1.;
             break;
           }
-        case 5 :
+        case 5:
           {
             alpha_x = 1.;
             alpha_y = -1.;
             alpha_z = 1.;
             break;
           }
-        case 6 :
+        case 6:
           {
             alpha_x = -1.;
             alpha_y = 1.;
             alpha_z = 1.;
             break;
           }
-        case 7 :
+        case 7:
           {
             alpha_x = 1.;
             alpha_y = 1.;
             alpha_z = 1.;
             break;
           }
-        default :
+        default:
           {
             Cerr << "Error in Champ_P1::coord_barycentrique : " << finl;
             Process::exit();
           }
         }
 
-      som0=polys(le_poly , 0);
-      som1=polys(le_poly , 1);
-      som2=polys(le_poly , 2);
-      som3=polys(le_poly , 4);
+      som0 = polys(le_poly, 0);
+      som1 = polys(le_poly, 1);
+      som2 = polys(le_poly, 2);
+      som3 = polys(le_poly, 4);
 
-      delta_x = coord(som1,0)-coord(som0,0);
-      delta_y = coord(som2,1)-coord(som0,1);
-      delta_z = coord(som3,2)-coord(som0,2);
+      delta_x = coord(som1, 0) - coord(som0, 0);
+      delta_y = coord(som2, 1) - coord(som0, 1);
+      delta_z = coord(som3, 2) - coord(som0, 2);
 
-      x0 = coord(som0,0)+delta_x/2.;
-      y0 = coord(som0,1)+delta_y/2.;
-      z0 = coord(som0,2)+delta_z/2.;
+      x0 = coord(som0, 0) + delta_x / 2.;
+      y0 = coord(som0, 1) + delta_y / 2.;
+      z0 = coord(som0, 2) + delta_z / 2.;
 
-      double coord_bary = (1./8.)*(1.+2.*alpha_x*(x-x0)/delta_x)*(1.+2.*alpha_y*(y-y0)/delta_y)*(1.+2.*alpha_z*(z-z0)/delta_z);
+      double coord_bary = (1. / 8.) * (1. + 2. * alpha_x * (x - x0) / delta_x) * (1. + 2. * alpha_y * (y - y0) / delta_y) * (1. + 2. * alpha_z * (z - z0) / delta_z);
 
-
-      if ((coord_bary < -Objet_U::precision_geom) || (coord_bary > 1.+Objet_U::precision_geom))
+      if ((coord_bary < -Objet_U::precision_geom) || (coord_bary > 1. + Objet_U::precision_geom))
         {
           Cerr << "WARNING: The barycentric coordinate of point :" << finl;
-          Cerr << "x= " << x << " y=" << y <<" z="<< z <<finl;
+          Cerr << "x= " << x << " y=" << y << " z=" << z << finl;
           Cerr << "is not between 0 and 1 : " << coord_bary << finl;
           Cerr << "On the element " << le_poly << " of the processor " << Process::me() << finl;
         }
       return coord_bary;
     }
 
-  Cerr<<"The number of nodes by element " <<nb_som_elem<<" does not correspond to a treated situation."<<finl;
+  Cerr << "The number of nodes by element " << nb_som_elem << " does not correspond to a treated situation." << finl;
   Process::exit();
   return 0.;
 }

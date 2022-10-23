@@ -35,10 +35,10 @@ public:
   int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const override;
   int imprime_Face(Sortie&, int) const;
 
-protected :
-  virtual const Zone_VDF& zone_vdf() const=0;
-  double interpolation(const double , const double , const double ) const;
-  DoubleTab& trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x,int distant) const;
+protected:
+  virtual const Zone_VDF& zone_vdf() const = 0;
+  double interpolation(const double, const double, const double) const;
+  DoubleTab& trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x, int distant) const;
 };
 
 #endif /* Champ_Face_VDF_implementation_included */

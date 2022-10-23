@@ -16,34 +16,21 @@
 #ifndef Courant_maille_Champ_Face_included
 #define Courant_maille_Champ_Face_included
 
-
+#include <Ref_Schema_Temps_base.h>
 #include <Champ_Fonc_Face_VDF.h>
 #include <Ref_Champ_Face_VDF.h>
-#include <Ref_Schema_Temps_base.h>
 
-/*! @brief classe Courant_maille_Champ_Face
- *
- */
-
-class Courant_maille_Champ_Face : public Champ_Fonc_Face_VDF
-
+class Courant_maille_Champ_Face: public Champ_Fonc_Face_VDF
 {
-
   Declare_instanciable(Courant_maille_Champ_Face);
-
 public:
-
-  inline const Champ_Face_VDF& vitesse() const
-  {
-    return vitesse_.valeur();
-  };
-  void mettre_a_jour(double ) override;
-  void associer_champ(const Champ_Face_VDF&, const Schema_Temps_base& );
+  inline const Champ_Face_VDF& vitesse() const { return vitesse_.valeur(); }
+  void mettre_a_jour(double) override;
+  void associer_champ(const Champ_Face_VDF&, const Schema_Temps_base&);
 
 protected:
-
   REF(Champ_Face_VDF) vitesse_;
   REF(Schema_Temps_base) sch_;
 };
 
-#endif
+#endif /* Courant_maille_Champ_Face_included */

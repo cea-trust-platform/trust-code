@@ -14,47 +14,32 @@
 *****************************************************************************/
 
 #include <Reynolds_maille_Champ_Face.h>
-#include <Zone_VDF.h>
 #include <Champ_Face_VDF.h>
 #include <Champ_Don.h>
+#include <Zone_VDF.h>
 
-Implemente_instanciable(Reynolds_maille_Champ_Face,"Reynolds_maille_Champ_Face",Champ_Fonc_Face_VDF);
+Implemente_instanciable(Reynolds_maille_Champ_Face, "Reynolds_maille_Champ_Face", Champ_Fonc_Face_VDF);
 
+Sortie& Reynolds_maille_Champ_Face::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-//     printOn()
-/////
-
-Sortie& Reynolds_maille_Champ_Face::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-//// readOn
-//
-
-Entree& Reynolds_maille_Champ_Face::readOn(Entree& s)
-{
-  return s ;
-}
+Entree& Reynolds_maille_Champ_Face::readOn(Entree& s) { return s; }
 
 void Reynolds_maille_Champ_Face::associer_champ(const Champ_Face_VDF& la_vitesse, const Champ_Don& la_viscosite_cinematique)
 {
-  vitesse_= la_vitesse;
+  vitesse_ = la_vitesse;
   nu_ = la_viscosite_cinematique;
 }
 
 // Methode de calcul de la valeur sur une face d'un champ uniforme ou non a plusieurs composantes
 inline double valeur(const DoubleTab& champ, const int face, const int compo, const Zone_VDF& la_zone_VDF)
 {
-  if (champ.dimension(0)==1)
-    return champ(0,compo); // Champ uniforme
+  if (champ.dimension(0) == 1) return champ(0, compo); // Champ uniforme
   else
     {
-      int elem0 = la_zone_VDF.face_voisins(face,0);
-      int elem1 = la_zone_VDF.face_voisins(face,1);
-      if (elem0<0) elem0 = elem1; // face frontiere
-      if (elem1<0) elem1 = elem0; // face frontiere
-      return 0.5*(champ(elem0,compo)+champ(elem1,compo));
+      int elem0 = la_zone_VDF.face_voisins(face, 0), elem1 = la_zone_VDF.face_voisins(face, 1);
+      if (elem0 < 0) elem0 = elem1; // face frontiere
+      if (elem1 < 0) elem1 = elem0; // face frontiere
+      return 0.5 * (champ(elem0, compo) + champ(elem1, compo));
     }
 }
 
@@ -62,8 +47,7 @@ void Reynolds_maille_Champ_Face::mettre_a_jour(double tps)
 {
   const int nb_faces = zone_vdf().nb_faces();
   DoubleTab& re = valeurs(); // Reynolds de maille
-  // Boucle sur les faces
-  for (int face=0; face<nb_faces; face++)
+  for (int face = 0; face < nb_faces; face++)
     {
       // Calcul de la viscosite face
       double nu_face = valeur(nu_->valeurs(), face, 0, zone_vdf());
@@ -76,4 +60,3 @@ void Reynolds_maille_Champ_Face::mettre_a_jour(double tps)
   changer_temps(tps);
   Champ_Fonc_base::mettre_a_jour(tps);
 }
-

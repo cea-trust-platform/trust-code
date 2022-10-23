@@ -18,48 +18,20 @@
 
 Implemente_instanciable(Champ_Fonc_P1NC,"Champ_Fonc_P1NC",Champ_Fonc_base);
 
+Sortie& Champ_Fonc_P1NC::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-//     printOn()
-/////
+Entree& Champ_Fonc_P1NC::readOn(Entree& s) { return s ; }
 
-Sortie& Champ_Fonc_P1NC::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-//// readOn
-//
-
-Entree& Champ_Fonc_P1NC::readOn(Entree& s)
-{
-  return s ;
-}
-
-////////////////////////////////////////////////////////////////////
-//
-//   Implementation de fonctions de la classe Champ_Fonc_P1NC
-//
-////////////////////////////////////////////////////////////////////
-
-/*! @brief Renvoie la Zone_VEF
- *
- */
 const Zone_dis_base& Champ_Fonc_P1NC::zone_dis_base() const
 {
   return la_zone_VEF.valeur();
 }
 
-/*! @brief Verifie que z_dis est une Zone_VEF cree l'association.
- *
- */
 void Champ_Fonc_P1NC::associer_zone_dis_base(const Zone_dis_base& z_dis)
 {
   la_zone_VEF=ref_cast(Zone_VEF, z_dis);
 }
 
-/*! @brief
- *
- */
 int Champ_Fonc_P1NC::fixer_nb_valeurs_nodales(int nb_noeuds)
 {
   assert(nb_noeuds == zone_vef().nb_faces());
@@ -71,17 +43,11 @@ int Champ_Fonc_P1NC::fixer_nb_valeurs_nodales(int nb_noeuds)
   return nb_noeuds;
 }
 
-/*! @brief sans action !
- *
- */
 void Champ_Fonc_P1NC::mettre_a_jour(double t)
 {
   Champ_Fonc_base::mettre_a_jour(t);
 }
 
-/*! @brief Voir Champ_base::trace
- *
- */
 DoubleTab& Champ_Fonc_P1NC::trace(const Frontiere_dis_base& fr, DoubleTab& x, double tps,int distant) const
 {
   return Champ_P1NC_implementation::trace(fr, valeurs(), x,distant);

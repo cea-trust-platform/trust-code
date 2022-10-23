@@ -26,7 +26,6 @@ class Zone_VEF_PreP1b;
 
 class Champ_P1iP1B_implementation : public Champ_implementation
 {
-
 public:
   Champ_P1iP1B_implementation()
   {
@@ -57,7 +56,6 @@ public:
   int Condition_Neumann_imposee_;        // Drapeau pour savoir s'il y'a des CL de Neumann (influe sur le filtrage)
 
 protected:
-
   mutable DoubleTab champ_filtre_;                // Contient les valeurs du champ filtre
   mutable Matrice matrice_filtrage_;                // Contient la matrice necessaire au filtrage (evite d'avoir a la recalculer)
   mutable double temps_filtrage_;                // Temps du dernier filtrage         (va servir a ne pas refiltrer inutilement)
@@ -68,4 +66,5 @@ protected:
   virtual const Zone_VEF_PreP1b& zone_vef() const =0;
   DoubleTab& trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x, int distant) const;
 };
-#endif
+
+#endif /* Champ_P1iP1B_implementation_included */

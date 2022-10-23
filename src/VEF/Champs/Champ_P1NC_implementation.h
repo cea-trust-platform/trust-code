@@ -24,17 +24,15 @@
 #include <SolveurSys.h>
 #include <TRUSTTab.h>
 
-class Zone_VEF;
-class Champ_P1NC;
 class Champ_Fonc_P1NC;
+class Champ_P1NC;
+class Zone_VEF;
 
 class Champ_P1NC_implementation: public Champ_implementation
 {
-
 public:
-
   Champ_P1NC_implementation();
-  ~Champ_P1NC_implementation() override {};
+  ~Champ_P1NC_implementation() override { }
 
   int fixer_nb_valeurs_nodales(int);
 
@@ -57,7 +55,6 @@ public:
   {
     return coord_barycentrique_P1_tetraedre(sommet_poly, coord, x, y, z, le_poly, face);
   }
-
 
   // Retourne dans val la valeur du champ interpole aux coordonnees position de l'element le_poly
   DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const override;
@@ -85,40 +82,15 @@ public:
   void filtrer_H1(DoubleTab& ) const;
   void filtrer_resu(DoubleTab& ) const;
 
-  DoubleTab& ch_som()
-  {
-    return ch_som_;
-  };
-  DoubleVect& ch_som_vect()
-  {
-    return ch_som_vect_;
-  };
+  DoubleTab& ch_som() { return ch_som_; }
+  DoubleVect& ch_som_vect() { return ch_som_vect_; }
 
-  const Matrice_Morse_Sym& get_MatP1NC2P1_L2() const;
-  const SolveurSys& get_solveur_L2() const;
-
-  //////////////////////////////////////////////////
-  // Fonctions rajoutees.
-  /////////////////////////////////////////////////
-  void filtrer_L2_H1(DoubleTab&) const;
-
-  const Matrice_Morse_Sym& get_MatP1NC2P1_L2_H1() const;
-  const Matrice_Morse_Sym& get_MatP1NC2P1_H1() const;
-
-  const SolveurSys& get_solveur_L2_H1() const;
-  const SolveurSys& get_solveur_H1() const;
-
-  //  int construire_MatP1NC2P1_L2(Champ_P1NC&,const Domaine&);
-  //  int construire_MatP1NC2P1_H1(Champ_P1NC&,const Domaine&,const DoubleTab&,double&);
-
-  //  int construire_secmem_L2(Champ_P1NC&,const Domaine&,DoubleTab&) const;
-  //  int construire_secmem_H1(Champ_P1NC&,const Domaine&,DoubleTab&,
-  //                           const DoubleTab&,const double&) const;
-
-  /////////////////////////////////////////////////
-  // Fin des fonctions rajoutees.
-  /////////////////////////////////////////////////
-
+  inline const Matrice_Morse_Sym& get_MatP1NC2P1_L2() const { return MatP1NC2P1_L2; }
+  inline const SolveurSys& get_solveur_L2() const { return solveur_L2; }
+  inline const Matrice_Morse_Sym& get_MatP1NC2P1_L2_H1() const { return MatP1NC2P1_L2_H1; }
+  inline const Matrice_Morse_Sym& get_MatP1NC2P1_H1() const { return MatP1NC2P1_H1; }
+  inline const SolveurSys& get_solveur_L2_H1() const { return solveur_L2_H1; }
+  inline const SolveurSys& get_solveur_H1() const { return solveur_H1; }
 
   int nb_colonnes_tot();
   int nb_colonnes();
@@ -126,7 +98,6 @@ public:
   void Mat_Morse_to_Mat_Bloc(Matrice& matrice_tmp);
 
 protected :
-
   Matrice_Morse_Sym MatP1NC2P1_L2;
   // Matrice pour le parallele
   Matrice MatP1NC2P1_L2_Parallele;
@@ -142,9 +113,6 @@ protected :
   DoubleVect ch_som_vect_;
   int filtrer_L2_deja_appele_;
 
-  //////////////////////////////////////////////////////////
-  // Membres rajoutes
-  //////////////////////////////////////////////////////////
   friend int construire_MatP1NC2P1_L2(Champ_P1NC&, const Domaine&);
   friend int construire_MatP1NC2P1_H1(Champ_P1NC&, const Domaine&, double&);
 
@@ -158,41 +126,7 @@ protected :
   friend int test(Champ_P1NC&,const Domaine&);
 
   inline DoubleTab& trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x,int distant) const;
-  //////////////////////////////////////////////////////////////
-  // FIn des membres rajoutes
-  //////////////////////////////////////////////////////////////
 };
-
-
-inline const Matrice_Morse_Sym& Champ_P1NC_implementation::get_MatP1NC2P1_L2() const
-{
-  return MatP1NC2P1_L2;
-}
-
-inline const Matrice_Morse_Sym& Champ_P1NC_implementation::get_MatP1NC2P1_H1() const
-{
-  return MatP1NC2P1_H1;
-}
-
-inline const Matrice_Morse_Sym& Champ_P1NC_implementation::get_MatP1NC2P1_L2_H1() const
-{
-  return MatP1NC2P1_L2_H1;
-}
-
-inline const SolveurSys& Champ_P1NC_implementation::get_solveur_L2() const
-{
-  return solveur_L2;
-}
-
-inline const SolveurSys& Champ_P1NC_implementation::get_solveur_H1() const
-{
-  return solveur_H1;
-}
-
-inline const SolveurSys& Champ_P1NC_implementation::get_solveur_L2_H1() const
-{
-  return solveur_L2_H1;
-}
 
 inline DoubleTab& Champ_P1NC_implementation::trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x,int distant) const
 {
@@ -205,4 +139,5 @@ inline DoubleTab& Champ_P1NC_implementation::trace(const Frontiere_dis_base& fr,
     }
   return x;
 }
-#endif
+
+#endif /* Champ_P1NC_implementation_included */

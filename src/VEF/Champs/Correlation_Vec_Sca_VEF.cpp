@@ -17,22 +17,9 @@
 
 Implemente_instanciable(Correlation_Vec_Sca_VEF,"Correlation_Vec_Sca_VEF",Champ_Fonc_P1NC);
 
+Sortie& Correlation_Vec_Sca_VEF::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-//     printOn()
-/////
-
-Sortie& Correlation_Vec_Sca_VEF::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-//// readOn
-//
-
-Entree& Correlation_Vec_Sca_VEF::readOn(Entree& s)
-{
-  return s ;
-}
+Entree& Correlation_Vec_Sca_VEF::readOn(Entree& s) { return s ; }
 
 void Correlation_Vec_Sca_VEF::associer_champ_Vec(const Champ_base& le_champ_Vec)
 {

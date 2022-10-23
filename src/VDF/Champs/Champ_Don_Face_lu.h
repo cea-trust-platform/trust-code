@@ -35,11 +35,7 @@
 
 class Champ_Don_Face_lu : public Champ_Fonc_Face_VDF
 {
-
   Declare_instanciable(Champ_Don_Face_lu);
-
 };
 
-
-#endif
-
+#endif /* Champ_Don_Face_lu_included */

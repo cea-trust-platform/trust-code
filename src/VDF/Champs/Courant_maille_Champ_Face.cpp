@@ -14,64 +14,49 @@
 *****************************************************************************/
 
 #include <Courant_maille_Champ_Face.h>
-#include <Zone_VDF.h>
-#include <Champ_Face_VDF.h>
 #include <Schema_Temps_base.h>
+#include <Champ_Face_VDF.h>
+#include <Zone_VDF.h>
 
 Implemente_instanciable(Courant_maille_Champ_Face,"Courant_maille_Champ_Face",Champ_Fonc_Face_VDF);
 
+Sortie& Courant_maille_Champ_Face::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-//     printOn()
-/////
-
-Sortie& Courant_maille_Champ_Face::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-//// readOn
-//
-
-Entree& Courant_maille_Champ_Face::readOn(Entree& s)
-{
-  return s ;
-}
+Entree& Courant_maille_Champ_Face::readOn(Entree& s) { return s ; }
 
 void Courant_maille_Champ_Face::associer_champ(const Champ_Face_VDF& la_vitesse, const Schema_Temps_base& sch)
 {
-  vitesse_= la_vitesse;
+  vitesse_ = la_vitesse;
   sch_ = sch;
 }
 
+// XXX : Elie Saikali : pas utilise ... commente
 // Methode de calcul de la valeur sur une face d'un champ uniforme ou non a plusieurs composantes
-inline double valeur(const DoubleTab& champ, const int face, const int compo, const Zone_VDF& la_zone_VDF)
-{
-  if (champ.dimension(0)==1)
-    return champ(0,compo); // Champ uniforme
-  else
-    {
-      int elem0 = la_zone_VDF.face_voisins(face,0);
-      int elem1 = la_zone_VDF.face_voisins(face,1);
-      if (elem1<0) elem1 = elem0; // face frontiere
-      return 0.5*(champ(elem0,compo)+champ(elem1,compo));
-    }
-}
+//inline double valeur(const DoubleTab &champ, const int face, const int compo, const Zone_VDF &la_zone_VDF)
+//{
+//  if (champ.dimension(0) == 1) return champ(0, compo); // Champ uniforme
+//  else
+//    {
+//      int elem0 = la_zone_VDF.face_voisins(face, 0);
+//      int elem1 = la_zone_VDF.face_voisins(face, 1);
+//      if (elem1 < 0) elem1 = elem0; // face frontiere
+//      return 0.5 * (champ(elem0, compo) + champ(elem1, compo));
+//    }
+//}
 
 void Courant_maille_Champ_Face::mettre_a_jour(double tps)
 {
   const int nb_faces = zone_vdf().nb_faces();
   DoubleTab& co = valeurs(); // Courant de maille
   double dt = sch_->pas_de_temps();
-  // Boucle sur les faces
-  for (int face=0; face<nb_faces; face++)
+  for (int face = 0; face < nb_faces; face++)
     {
       // Calcul de la taille de maille entourant la face
       double taille_maille = zone_vdf().volumes_entrelaces()(face) / zone_vdf().face_surfaces(face);
       // Calcul du Courant de maille
-      co(face) = std::fabs(vitesse_->valeurs()(face)) * dt / taille_maille ; // Courant_maille = |Uface| * dt / taille_maille
+      co(face) = std::fabs(vitesse_->valeurs()(face)) * dt / taille_maille; // Courant_maille = |Uface| * dt / taille_maille
     }
 
   changer_temps(tps);
   Champ_Fonc_base::mettre_a_jour(tps);
 }
-

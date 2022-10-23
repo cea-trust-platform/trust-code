@@ -25,19 +25,13 @@ class Zone_VEF;
 
 class Champ_Q1NC_impl: public Champ_implementation
 {
-
 public:
-
   ~Champ_Q1NC_impl() override { }
   inline double fonction_forme_2D(double x, double y, int le_poly, int face);
-
   inline static double fonction_forme_2D_normalise(double x, double y, int face);
-
   inline double fonction_forme_3D(double x, double y, double z, int le_poly, int face);
   inline static double fonction_forme_3D_normalise(double x, double y, double z, int face);
-
   static DoubleTab& Derivee_fonction_forme_2D_normalise(double u, double v, DoubleTab& DF);
-
   static DoubleTab& Derivee_fonction_forme_3D_normalise(double u, double v, double w, DoubleTab& DF);
 
   DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const override;
@@ -59,39 +53,36 @@ protected:
   //  virtual void dimensionner_array() = 0;
   //  DoubleVect dummy;
   DoubleTab tab_param;
-
 };
 
-inline double Champ_Q1NC_impl::fonction_forme_2D(double x, double y, int le_poly,  int face)
+inline double Champ_Q1NC_impl::fonction_forme_2D(double x, double y, int le_poly, int face)
 {
-  double ksi,eta;
-  ksi=tab_param(le_poly,0)*x+tab_param(le_poly,1)*y+tab_param(le_poly,2);
-  eta=tab_param(le_poly,3)*x+tab_param(le_poly,4)*y+tab_param(le_poly,5);
-  double fonction_de_forme=1.;
-  fonction_de_forme*=fonction_forme_2D_normalise(ksi,eta,face);
+  double ksi, eta;
+  ksi = tab_param(le_poly, 0) * x + tab_param(le_poly, 1) * y + tab_param(le_poly, 2);
+  eta = tab_param(le_poly, 3) * x + tab_param(le_poly, 4) * y + tab_param(le_poly, 5);
+  double fonction_de_forme = 1.;
+  fonction_de_forme *= fonction_forme_2D_normalise(ksi, eta, face);
   // Cerr << "fonction_de_forme " << fonction_de_forme << finl;
   return fonction_de_forme;
 }
 
-inline double Champ_Q1NC_impl::fonction_forme_3D(double x, double y, double z,
-                                                 int le_poly, int face)
+inline double Champ_Q1NC_impl::fonction_forme_3D(double x, double y, double z, int le_poly, int face)
 {
-  double ksi,eta,psi;
+  double ksi, eta, psi;
 
-  ksi=tab_param(le_poly,0)*x+tab_param(le_poly,1)*y+tab_param(le_poly,2)*z+tab_param(le_poly,3);
-  eta=tab_param(le_poly,4)*x+tab_param(le_poly,5)*y+tab_param(le_poly,6)*z+tab_param(le_poly,7);
-  psi=tab_param(le_poly,8)*x+tab_param(le_poly,9)*y+tab_param(le_poly,10)*z+tab_param(le_poly,11);
-  double fonction_de_forme=1.;
+  ksi = tab_param(le_poly, 0) * x + tab_param(le_poly, 1) * y + tab_param(le_poly, 2) * z + tab_param(le_poly, 3);
+  eta = tab_param(le_poly, 4) * x + tab_param(le_poly, 5) * y + tab_param(le_poly, 6) * z + tab_param(le_poly, 7);
+  psi = tab_param(le_poly, 8) * x + tab_param(le_poly, 9) * y + tab_param(le_poly, 10) * z + tab_param(le_poly, 11);
+  double fonction_de_forme = 1.;
 
-  fonction_de_forme*=fonction_forme_3D_normalise(ksi,eta,psi,face);
-
+  fonction_de_forme *= fonction_forme_3D_normalise(ksi, eta, psi, face);
 
   // Cerr << "ksi " << ksi << " eta " << eta << " psi " << psi << finl;
   return fonction_de_forme;
 
 }
 
-inline double Champ_Q1NC_impl::fonction_forme_2D_normalise(double ksi, double eta, int face )
+inline double Champ_Q1NC_impl::fonction_forme_2D_normalise(double ksi, double eta, int face)
 {
   // la fonction de forme est calculer dans la base (ksi), (eta).
   // aux milieu des faces.
@@ -100,42 +91,42 @@ inline double Champ_Q1NC_impl::fonction_forme_2D_normalise(double ksi, double et
   // Psi3(x,y) = 0.25 + 0.5ksi + 0.25(ksi^2 - eta^2)
   // Psi4(x,y) = 0.25 + 0.5eta - 0.25(ksi^2 - eta^2)
 
-  double fonction_de_forme_normalisee, carre_ksi=ksi*ksi, carre_eta=eta*eta ;
+  double fonction_de_forme_normalisee, carre_ksi = ksi * ksi, carre_eta = eta * eta;
 
   switch(face)
     {
     case 0:
       {
-        fonction_de_forme_normalisee = 0.25 - 0.5*ksi + 0.25*(carre_ksi - carre_eta);
+        fonction_de_forme_normalisee = 0.25 - 0.5 * ksi + 0.25 * (carre_ksi - carre_eta);
         break;
       }
     case 1:
       {
-        fonction_de_forme_normalisee = 0.25 - 0.5*eta - 0.25*(carre_ksi - carre_eta);
+        fonction_de_forme_normalisee = 0.25 - 0.5 * eta - 0.25 * (carre_ksi - carre_eta);
         break;
       }
     case 2:
       {
-        fonction_de_forme_normalisee = 0.25 + 0.5*ksi + 0.25*(carre_ksi - carre_eta);
+        fonction_de_forme_normalisee = 0.25 + 0.5 * ksi + 0.25 * (carre_ksi - carre_eta);
         break;
       }
     case 3:
       {
-        fonction_de_forme_normalisee = 0.25 + 0.5*eta - 0.25*(carre_ksi - carre_eta);
+        fonction_de_forme_normalisee = 0.25 + 0.5 * eta - 0.25 * (carre_ksi - carre_eta);
         break;
       }
-    default :
+    default:
       {
         Cerr << "Erreur dans Champ_Q1NC_impl::fonction_forme_2D : " << finl;
         Cerr << "Un quadrangle n'a pas " << face << " faces" << finl;
         Process::exit();
-        fonction_de_forme_normalisee=-1;
+        fonction_de_forme_normalisee = -1;
       }
     }
   return fonction_de_forme_normalisee;
 }
 
-inline double Champ_Q1NC_impl::fonction_forme_3D_normalise(double ksi, double eta, double psi, int face )
+inline double Champ_Q1NC_impl::fonction_forme_3D_normalise(double ksi, double eta, double psi, int face)
 {
   // la fonction de forme est calculer dans la base (ksi), (eta), (psi).
   // aux milieu des faces.
@@ -149,53 +140,52 @@ inline double Champ_Q1NC_impl::fonction_forme_3D_normalise(double ksi, double et
   // Psi4(x,y,z) = 1/6. + 0.5eta - 1/6.(ksi^2 - eta^2) + 1/6.(eta^2 - psi^2)
   // Psi5(x,y,z) = 1/6. + 0.5psi - 1/6.(ksi^2 - eta^2) + 1/6.(eta^2 - psi^2)
 
-
-  double fonction_de_forme_normalisee ;
-  double six=1./6., tier=1./3., carre_ksi=ksi*ksi, carre_eta=eta*eta, carre_psi=psi*psi;
+  double fonction_de_forme_normalisee;
+  double six = 1. / 6., tier = 1. / 3., carre_ksi = ksi * ksi, carre_eta = eta * eta, carre_psi = psi * psi;
   switch(face)
     {
     case 0:
       {
-        fonction_de_forme_normalisee = six - 0.5*ksi + tier*(carre_ksi - carre_eta) + six*(carre_eta - carre_psi);
+        fonction_de_forme_normalisee = six - 0.5 * ksi + tier * (carre_ksi - carre_eta) + six * (carre_eta - carre_psi);
         break;
       }
     case 1:
       {
-        fonction_de_forme_normalisee = six - 0.5*eta - six*(carre_ksi - carre_eta) + six*(carre_eta - carre_psi);
+        fonction_de_forme_normalisee = six - 0.5 * eta - six * (carre_ksi - carre_eta) + six * (carre_eta - carre_psi);
         break;
       }
     case 2:
       {
-        fonction_de_forme_normalisee = six - 0.5*psi - six*(carre_ksi - carre_eta) - tier*(carre_eta - carre_psi);
+        fonction_de_forme_normalisee = six - 0.5 * psi - six * (carre_ksi - carre_eta) - tier * (carre_eta - carre_psi);
         break;
       }
     case 3:
       {
-        fonction_de_forme_normalisee = six + 0.5*ksi + tier*(carre_ksi - carre_eta) + six*(carre_eta - carre_psi);
+        fonction_de_forme_normalisee = six + 0.5 * ksi + tier * (carre_ksi - carre_eta) + six * (carre_eta - carre_psi);
         break;
       }
     case 4:
       {
-        fonction_de_forme_normalisee = six + 0.5*eta - six*(carre_ksi - carre_eta) + six*(carre_eta - carre_psi);
+        fonction_de_forme_normalisee = six + 0.5 * eta - six * (carre_ksi - carre_eta) + six * (carre_eta - carre_psi);
         break;
       }
     case 5:
       {
-        fonction_de_forme_normalisee = six + 0.5*psi - six*(carre_ksi - carre_eta) - tier*(carre_eta - carre_psi);
+        fonction_de_forme_normalisee = six + 0.5 * psi - six * (carre_ksi - carre_eta) - tier * (carre_eta - carre_psi);
         break;
       }
-    default :
+    default:
       {
         Cerr << "Erreur dans Champ_Q1NC_impl::fonction_forme_2D : " << finl;
         Cerr << "Un quadrangle n'a pas " << face << " faces" << finl;
-        fonction_de_forme_normalisee=-1;
+        fonction_de_forme_normalisee = -1;
         Process::exit();
       }
     }
   return fonction_de_forme_normalisee;
 }
 
-inline DoubleTab& Champ_Q1NC_impl::trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x,int distant) const
+inline DoubleTab& Champ_Q1NC_impl::trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x, int distant) const
 {
   if (distant)
     fr.frontiere().trace_face_distant(y, x);
