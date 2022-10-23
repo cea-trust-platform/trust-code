@@ -37,16 +37,11 @@ Implemente_instanciable(Champ_Fonc_reprise,"Champ_Fonc_reprise",Champ_Fonc_base)
 // XD attr fonction fonction_champ_reprise fonction 1 Optional keyword to apply a function on the field being read in the save file (e.g. to read a temperature field in Celsius units and convert it for the calculation on Kelvin units, you will use: fonction 1 273.+val )
 // XD attr temps chaine time 0 Time of the saved field in the save file or last_time. If you give the keyword last_time instead, the last time saved in the save file will be used.
 
-//     printOn()
-/////
-
 Sortie& Champ_Fonc_reprise::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
-//// readOn
-//
 Entree& Champ_Fonc_reprise::readOn(Entree& s)
 {
   Cerr<<"Usage : Champ_Fonc_reprise [xyz|formatte|binaire|single_hdf] fichier.xyz nom_pb nom_inco [fonction n f1(val) f2(val) ... fn(val)] [temps|last_time]"<<finl;
@@ -445,12 +440,5 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
 
 void Champ_Fonc_reprise::mettre_a_jour(double t)
 {
-
   Champ_Fonc_base::mettre_a_jour(t);
-
-}
-
-const Zone_dis_base& Champ_Fonc_reprise::zone_dis_base() const
-{
-  return zone_dis;
 }

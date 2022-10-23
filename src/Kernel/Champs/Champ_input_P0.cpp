@@ -105,7 +105,7 @@ void Champ_input_P0::getTemplate(TrioField& afield) const
   affecte_double_avec_doubletab(&afield._coords,sommets);
 
   /* connectivites */
-  const Zone_VF& zvf = ref_cast(Zone_VF, zone_dis_base());
+  const Zone_VF& zvf = zone_vf();
   afield._nb_elems = ma_sous_zone.non_nul() ? nb_elems_reels_sous_zone_ : zvf.nb_elem();
   Motcle type_elem = zvf.zone().type_elem()->que_suis_je();
   if (type_elem != "POLYEDRE") //cas simple -> il suffit de copier les_elems

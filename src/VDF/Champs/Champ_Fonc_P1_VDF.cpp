@@ -25,8 +25,3 @@ void Champ_Fonc_P1_VDF::mettre_a_jour(double t)
 {
   Champ_Fonc_base::mettre_a_jour(t);
 }
-
-const Zone_dis_base& Champ_Fonc_P1_VDF::zone_dis_base() const
-{
-  return la_zone_VDF.valeur();
-}

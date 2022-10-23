@@ -16,7 +16,6 @@
 #include <Champ_Ostwald_VDF.h>
 #include <Champ_Uniforme.h>
 #include <Fluide_Ostwald.h>
-#include <Zone_VDF.h>
 
 Implemente_instanciable(Champ_Ostwald_VDF, "Champ_Ostwald_VDF", Champ_Ostwald);
 
@@ -92,9 +91,4 @@ int Champ_Ostwald_VDF::initialiser(const double un_temps)
 {
   mettre_a_jour(un_temps);
   return 1;
-}
-
-const Zone_dis_base& Champ_Ostwald_VDF::zone_dis_base() const
-{
-  return la_zone_VDF.valeur();
 }

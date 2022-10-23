@@ -18,7 +18,7 @@
 
 #include <Champ_Face_VDF_implementation.h>
 #include <Champ_Fonc_base.h>
-#include <Ref_Zone_VDF.h>
+#include <Zone_VDF.h>
 
 /*! @brief classe Champ_Fonc_Face_VDF
  *
@@ -28,8 +28,6 @@ class Champ_Fonc_Face_VDF : public Champ_Fonc_base, public Champ_Face_VDF_implem
 {
   Declare_instanciable(Champ_Fonc_Face_VDF);
 public:
-  const Zone_dis_base& zone_dis_base() const override;
-  void associer_zone_dis_base(const Zone_dis_base&) override;
   int fixer_nb_valeurs_nodales(int) override;
   int imprime(Sortie& os, int ncomp) const override;
   void mettre_a_jour(double) override;
@@ -37,7 +35,9 @@ public:
   Champ_base& affecter_(const Champ_base&) override;
   DoubleVect& valeur_aux_compo(const DoubleTab& positions, DoubleVect& tab_valeurs, int ncomp) const override;
 
-  inline const Zone_VDF& zone_vdf() const override { return la_zone_VDF.valeur(); }
+  // Methodes inlines
+  inline const Zone_VDF& zone_vdf() const override { return ref_cast(Zone_VDF, la_zone_VF.valeur()); }
+
   inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const override
   {
     return Champ_Face_VDF_implementation::valeur_a_elem(position, val, le_poly);
@@ -81,7 +81,6 @@ public:
 private :
   inline const Champ_base& le_champ() const override { return *this; }
   inline Champ_base& le_champ() override { return *this; }
-  REF(Zone_VDF) la_zone_VDF;
 };
 
 #endif /* Champ_Fonc_Face_VDF_included */

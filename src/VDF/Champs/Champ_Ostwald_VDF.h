@@ -19,7 +19,6 @@
 #include <Ref_Champ_Face_VDF.h>
 #include <Champ_Face_VDF.h>
 #include <Champ_Ostwald.h>
-#include <Ref_Zone_VDF.h>
 
 /*! @brief classe Champ_Ostwald_VDF Represente un champ en discretisation VDF qui varie en fonction
  *
@@ -34,7 +33,6 @@ class Champ_Ostwald_VDF : public Champ_Ostwald
 {
   Declare_instanciable(Champ_Ostwald_VDF);
 public :
-  const Zone_dis_base& zone_dis_base() const override;
   void mettre_a_jour(double temps) override;
   void me_calculer(double tps) override;
   int initialiser(const double temps) override;
@@ -42,15 +40,9 @@ public :
   inline const Champ_Face_VDF& mon_champs() const { return mon_champ_.valeur(); }
   inline void associer_champ(const Champ_Face_VDF& un_champ) { mon_champ_ = un_champ; }
 
-  inline void associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base) override
-  {
-    la_zone_VDF = (const Zone_VDF&) la_zone_dis_base;
-  }
-
 protected :
   void calculer_mu(DoubleTab& );
   REF(Champ_Face_VDF) mon_champ_;
-  REF(Zone_VDF) la_zone_VDF;
 };
 
 #endif /* Champ_Ostwald_VDF_included */

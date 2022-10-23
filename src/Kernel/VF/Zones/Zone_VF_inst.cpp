@@ -15,23 +15,8 @@
 
 #include <Zone_VF_inst.h>
 
-Implemente_instanciable(Zone_VF_inst,"Zone_VF_inst",Zone_VF);
+Implemente_instanciable(Zone_VF_inst, "Zone_VF_inst", Zone_VF);
 
+Sortie& Zone_VF_inst::printOn(Sortie& os) const { return Zone_VF::printOn(os); }
 
-
-Sortie& Zone_VF_inst::printOn(Sortie& os) const
-{
-  Zone_VF::printOn(os);
-  return os;
-
-}
-
-//// readOn
-//
-
-Entree& Zone_VF_inst::readOn(Entree& is)
-{
-  Zone_VF::readOn(is);
-
-  return is ;
-}
+Entree& Zone_VF_inst::readOn(Entree& is) { return Zone_VF::readOn(is); }

@@ -24,7 +24,7 @@ Implemente_instanciable(Champ_Fonc_Tabule,"Champ_Fonc_Tabule",Champ_Fonc_base);
 // XD  attr dim int dim 0 Number of field components.
 // XD  attr bloc bloc_lecture bloc 0 Values (the table (the value of the field at any time is calculated by linear interpolation from this table) or the analytical expression (with keyword expression to use an analytical expression)).
 
-void Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax(const char * nom_class, const Nom& val1, const Nom& val2, int& dim, Nom& param)
+void Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax(const char *nom_class, const Nom& val1, const Nom& val2, int& dim, Nom& param)
 {
   const bool isNum = Check_if_int(val1);
   if (!isNum) // val1 is not a num - this is the correct new syntax
@@ -44,7 +44,7 @@ void Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax(const char * nom_class, const N
     }
 }
 
-void Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax_V_184(const char * nom_class, const Nom& val,int& dim, int& old_synt)
+void Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax_V_184(const char *nom_class, const Nom& val, int& dim, int& old_synt)
 {
   const bool isNum = Check_if_int(val);
   if (isNum) // old syntax
@@ -59,9 +59,10 @@ void Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax_V_184(const char * nom_class, c
 
 bool Champ_Fonc_Tabule::Check_if_int(const Nom& val)
 {
-  std::string s((const char*)val);
+  std::string s((const char*) val);
   // lambda checking whehter a char is not a digit:
-  auto checkNotDig = [](unsigned char c) {  return !std::isdigit(c); };
+  auto checkNotDig = [](unsigned char c)
+  { return !std::isdigit(c);};
   return (!s.empty() && std::find_if(s.begin(), s.end(), checkNotDig) == s.end());
 }
 
@@ -99,11 +100,12 @@ Entree& Champ_Fonc_Tabule::readOn(Entree& is)
     }
   else
     {
-      assert (old_table_syntax_ == 0);
+      assert(old_table_syntax_ == 0);
       while (true)
         {
           is >> motlu;
-          if (motlu == "}") break;
+          if (motlu == "}")
+            break;
           noms_pbs_.add(motlu);
           is >> motlu;
           noms_champs_parametre_.add(motlu);
@@ -128,18 +130,21 @@ Entree& Champ_Fonc_Tabule::readOn(Entree& is)
         {
           const int nb_val = lire_dimension(is, que_suis_je());
           DoubleVect param(nb_val);
-          for (int i = 0; i < nb_val; i++) is >> param[i];
+          for (int i = 0; i < nb_val; i++)
+            is >> param[i];
           params.add(param);
         }
 
       /* 2. lecture des valeurs des parametres */
       // taille totale du tableau de valeurs
       int size = nbcomp;
-      for (int n = 0; n < nb_param; n++) size *= params[n].size();
+      for (int n = 0; n < nb_param; n++)
+        size *= params[n].size();
 
       // lecture : tout dans un tableau 1D
       DoubleVect tab_valeurs(size);
-      for (int i = 0; i < size; i++) is >> tab_valeurs[i];
+      for (int i = 0; i < size; i++)
+        is >> tab_valeurs[i];
       la_table.remplir(params, tab_valeurs);
 
       is >> motlu;
@@ -150,13 +155,13 @@ Entree& Champ_Fonc_Tabule::readOn(Entree& is)
           exit();
         }
     }
-  else if (motlu=="fonction")
+  else if (motlu == "fonction")
     {
-      Cerr<<"The syntax has changed..." << finl;
-      Cerr<<"The syntax is now Champ_Fonc_fonction 1 field_expression"<<finl;
+      Cerr << "The syntax has changed..." << finl;
+      Cerr << "The syntax is now Champ_Fonc_fonction 1 field_expression" << finl;
       exit();
-      Cerr<<"We read the analytic function "<<finl;
-      la_table.lire_f(is,0);
+      Cerr << "We read the analytic function " << finl;
+      la_table.lire_f(is, 0);
     }
   else
     {
@@ -169,16 +174,14 @@ Entree& Champ_Fonc_Tabule::readOn(Entree& is)
 
 Champ_base& Champ_Fonc_Tabule::affecter_(const Champ_base& ch)
 {
-  if(!le_champ_tabule_discretise().non_nul())
-    Cerr << le_nom() << "type : " << que_suis_je()
-         << " can not be assigned to " << ch.le_nom()
-         << " because " << le_nom() << " is incomplete " << finl;
+  if (!le_champ_tabule_discretise().non_nul())
+    Cerr << le_nom() << "type : " << que_suis_je() << " can not be assigned to " << ch.le_nom() << " because " << le_nom() << " is incomplete " << finl;
   else
     {
-      if(sub_type(Champ_Uniforme, ch))
-        valeurs()=ch.valeurs()(0,0);
+      if (sub_type(Champ_Uniforme, ch))
+        valeurs() = ch.valeurs()(0, 0);
       else
-        valeurs()=ch.valeurs();
+        valeurs() = ch.valeurs();
     }
   return *this;
 }

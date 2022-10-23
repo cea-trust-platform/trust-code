@@ -23,16 +23,6 @@ Sortie& Champ_Fonc_P1_EF::printOn(Sortie& s) const { return s << que_suis_je() <
 
 Entree& Champ_Fonc_P1_EF::readOn(Entree& s) { return s; }
 
-const Zone_dis_base& Champ_Fonc_P1_EF::zone_dis_base() const
-{
-  return la_zone_VF.valeur();
-}
-
-void Champ_Fonc_P1_EF::associer_zone_dis_base(const Zone_dis_base& z_dis)
-{
-  la_zone_VF = ref_cast(Zone_VF, z_dis);
-}
-
 const Zone_EF& Champ_Fonc_P1_EF::zone_EF() const
 {
   return ref_cast(Zone_EF, la_zone_VF.valeur());

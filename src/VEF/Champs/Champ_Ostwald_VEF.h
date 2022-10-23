@@ -38,7 +38,6 @@ class Champ_Ostwald_VEF : public Champ_Ostwald
   Declare_instanciable(Champ_Ostwald_VEF);
 public :
   void associer_eqn(const Navier_Stokes_std& );
-  const Zone_dis_base& zone_dis_base() const override;
   void mettre_a_jour(double temps) override;
   void me_calculer(double tps) override;
   int initialiser(const double temps) override;
@@ -48,15 +47,9 @@ public :
   inline const Champ_P1NC& mon_champs() const { return mon_champ_.valeur(); }
   inline void associer_champ(const Champ_P1NC& un_champ) { mon_champ_ = un_champ; }
 
-  inline void associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base) override
-  {
-    la_zone_VEF = (const Zone_VEF&) la_zone_dis_base;
-  }
-
 protected :
   void calculer_mu(DoubleTab& );
   REF(Champ_P1NC) mon_champ_;
-  REF(Zone_VEF) la_zone_VEF;
   REF(Navier_Stokes_std) eq_hydraulique;
 };
 

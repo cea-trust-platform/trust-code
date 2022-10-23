@@ -23,16 +23,6 @@ Sortie& Champ_Fonc_Som_PolyMAC::printOn(Sortie& s) const { return s << que_suis_
 
 Entree& Champ_Fonc_Som_PolyMAC::readOn(Entree& s) { return s; }
 
-const Zone_dis_base& Champ_Fonc_Som_PolyMAC::zone_dis_base() const
-{
-  return la_zone_VF.valeur();
-}
-
-void Champ_Fonc_Som_PolyMAC::associer_zone_dis_base(const Zone_dis_base& z_dis)
-{
-  la_zone_VF = ref_cast(Zone_VF, z_dis);
-}
-
 const Zone_PolyMAC& Champ_Fonc_Som_PolyMAC::zone_PolyMAC() const
 {
   return ref_cast(Zone_PolyMAC, la_zone_VF.valeur());

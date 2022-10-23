@@ -23,16 +23,6 @@ Sortie& Champ_Fonc_Q1_VEF::printOn(Sortie& s) const { return s << que_suis_je() 
 
 Entree& Champ_Fonc_Q1_VEF::readOn(Entree& s) { return s; }
 
-const Zone_dis_base& Champ_Fonc_Q1_VEF::zone_dis_base() const
-{
-  return la_zone_VF.valeur();
-}
-
-void Champ_Fonc_Q1_VEF::associer_zone_dis_base(const Zone_dis_base& z_dis)
-{
-  la_zone_VF = ref_cast(Zone_VF, z_dis);
-}
-
 void Champ_Fonc_Q1_VEF::mettre_a_jour(double t)
 {
   Champ_Fonc_base::mettre_a_jour(t);

@@ -18,7 +18,7 @@
 
 #include <Champ_Fonc_base.h>
 #include <Champ_Q1NC_impl.h>
-#include <Ref_Zone_VEF.h>
+#include <Zone_VEF.h>
 
 /*! @brief classe Champ_Fonc_Q1NC
  *
@@ -29,14 +29,12 @@ class Champ_Fonc_Q1NC: public Champ_Fonc_base, public Champ_Q1NC_impl
 {
   Declare_instanciable(Champ_Fonc_Q1NC);
 public:
-  const Zone_dis_base& zone_dis_base() const override;
-  void associer_zone_dis_base(const Zone_dis_base&) override;
   int fixer_nb_valeurs_nodales(int) override;
   void mettre_a_jour(double) override;
   DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&, double, int distant) const override;
 
   // Methodes inlines
-  inline const Zone_VEF& zone_vef() const override { return la_zone_VEF.valeur(); }
+  inline const Zone_VEF& zone_vef() const override { return ref_cast(Zone_VEF, la_zone_VF.valeur()); }
 
   inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const override
   {
@@ -81,7 +79,6 @@ public:
 protected:
   inline const Champ_base& le_champ() const override { return *this; }
   inline Champ_base& le_champ() override { return *this; }
-  REF(Zone_VEF) la_zone_VEF;
 };
 
 #endif /* Champ_Fonc_Q1NC_included */

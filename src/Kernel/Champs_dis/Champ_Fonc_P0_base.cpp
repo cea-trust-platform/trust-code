@@ -72,11 +72,6 @@ double Champ_Fonc_P0_base::moyenne(const DoubleVect& porosite_elem, int ncomp) c
   return moy;
 }
 
-const Zone_dis_base& Champ_Fonc_P0_base::zone_dis_base() const
-{
-  return la_zone_VF.valeur();
-}
-
 DoubleVect Champ_Fonc_P0_base::moyenne(const DoubleVect& porosite_elem) const
 {
   const Zone_VF& zvf = la_zone_VF.valeur();

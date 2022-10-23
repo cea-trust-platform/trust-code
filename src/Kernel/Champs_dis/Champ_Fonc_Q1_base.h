@@ -16,8 +16,8 @@
 #ifndef Champ_Fonc_Q1_base_included
 #define Champ_Fonc_Q1_base_included
 
-#include <Champ_Fonc_base.h>
 #include <Champ_implementation_Q1.h>
+#include <Champ_Fonc_base.h>
 
 /*! @brief : class Champ_Fonc_Q1_base
  *

@@ -22,16 +22,6 @@ Sortie& Champ_Fonc_Q1NC::printOn(Sortie& s) const { return s << que_suis_je() <<
 
 Entree& Champ_Fonc_Q1NC::readOn(Entree& s) { return s; }
 
-const Zone_dis_base& Champ_Fonc_Q1NC::zone_dis_base() const
-{
-  return la_zone_VEF.valeur();
-}
-
-void Champ_Fonc_Q1NC::associer_zone_dis_base(const Zone_dis_base& z_dis)
-{
-  la_zone_VEF = ref_cast(Zone_VEF, z_dis);
-}
-
 int Champ_Fonc_Q1NC::fixer_nb_valeurs_nodales(int nb_noeuds)
 {
   assert(nb_noeuds == zone_vef().nb_faces());

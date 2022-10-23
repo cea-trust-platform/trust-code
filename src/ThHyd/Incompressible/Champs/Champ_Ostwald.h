@@ -38,9 +38,7 @@ public :
   void mettre_a_jour(double temps) override;
   int initialiser(const double temps) override;
   int fixer_nb_valeurs_nodales(int nb_noeuds) override;
-  void associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base) override;
   Champ_base& affecter_(const Champ_base& ) override;
-  const Zone_dis_base& zone_dis_base() const override;
   virtual void me_calculer(double tps);
 
   inline virtual const Fluide_Ostwald& mon_fluide() const { return mon_fluide_.valeur(); }

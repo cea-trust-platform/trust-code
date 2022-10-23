@@ -16,9 +16,9 @@
 #ifndef Champ_Fonc_MED_included
 #define Champ_Fonc_MED_included
 
-#include <Champ_Fonc.h>
 #include <Zone_VF_inst.h>
 #include <TRUSTArray.h>
+#include <Champ_Fonc.h>
 #include <Param.h>
 #include <med++.h>
 #include <medcoupling++.h>
@@ -33,18 +33,13 @@
  */
 class Champ_Fonc_MED: public Champ_Fonc_base
 {
-
   Declare_instanciable(Champ_Fonc_MED);
-
 public :
   inline void associer_zone_dis_base(const Zone_dis_base&) override;
   const Zone_dis_base& zone_dis_base() const override;
+  const Zone_VF& zone_vf() const override { throw; }
+
   void mettre_a_jour(double ) override;
-  /*  double valeur_au_bord(int face) const;
-      DoubleVect moyenne() const;
-      double moyenne(int ) const;
-      int imprime(Sortie& , int ) const ;
-  */
   int creer(const Nom&,const Domaine& dom,const Motcle& localisation,ArrOfDouble& temps_sauv);
 
 #ifdef MEDCOUPLING_
@@ -54,15 +49,9 @@ public :
                                   ArrOfDouble& temps_sauv, int& size, int& nbcomp, Nom& type_champ);
 #endif
 
-  const Domaine& domaine() const
-  {
-    return mon_dom;
-  }
+  const Domaine& domaine() const { return mon_dom; }
   virtual void lire(double tps,int given_iteration=-1);
-  int nb_pas_temps()
-  {
-    return nb_dt;
-  }
+  int nb_pas_temps() { return nb_dt; }
   using Champ_Fonc_base::valeurs;
   inline DoubleTab& valeurs() override;
   inline  const DoubleTab& valeurs() const override;
@@ -79,7 +68,6 @@ public :
   inline virtual const Champ_Fonc_base& le_champ() const;
   inline virtual Champ_Fonc_base& le_champ();
   const ArrOfDouble& get_saved_times(void) const;
-
 
 protected:
   // Parameters read in the dataset:
@@ -165,10 +153,7 @@ inline DoubleVect& Champ_Fonc_MED::valeur_a_elem(const DoubleVect& position, Dou
   return le_champ().valeur_a(position,tab_valeurs);
 }
 
-inline DoubleVect& Champ_Fonc_MED::valeur_aux_elems_compo(const DoubleTab& positions,
-                                                          const IntVect& les_polys,
-                                                          DoubleVect& tab_valeurs,
-                                                          int ncomp) const
+inline DoubleVect& Champ_Fonc_MED::valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& tab_valeurs, int ncomp) const
 {
   return le_champ().valeur_aux_elems_compo(positions, les_polys, tab_valeurs, ncomp);
 }
@@ -178,8 +163,7 @@ inline DoubleTab& Champ_Fonc_MED::valeur_aux_sommets(const Domaine& un_dom, Doub
   return le_champ().valeur_aux_sommets(un_dom, sommets);
 }
 
-inline DoubleVect& Champ_Fonc_MED::valeur_aux_sommets_compo(const Domaine& un_dom,
-                                                            DoubleVect& sommets, int compo) const
+inline DoubleVect& Champ_Fonc_MED::valeur_aux_sommets_compo(const Domaine& un_dom, DoubleVect& sommets, int compo) const
 {
   return le_champ().valeur_aux_sommets_compo(un_dom, sommets, compo);
 }
@@ -201,4 +185,5 @@ class Champ_Fonc_MEDfile: public Champ_Fonc_MED
 {
   Declare_instanciable(Champ_Fonc_MEDfile);
 };
+
 #endif

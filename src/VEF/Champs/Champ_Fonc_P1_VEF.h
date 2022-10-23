@@ -17,7 +17,6 @@
 #define Champ_Fonc_P1_VEF_included
 
 #include <Champ_Fonc_P1_base.h>
-#include <Ref_Zone_VEF.h>
 
 /*! @brief classe Champ_Fonc_P1_VEF
  *
@@ -27,17 +26,7 @@ class Champ_Fonc_P1_VEF: public Champ_Fonc_P1_base
 {
   Declare_instanciable(Champ_Fonc_P1_VEF);
 public:
-  inline void associer_zone_dis_base(const Zone_dis_base&) override;
-  const Zone_dis_base& zone_dis_base() const override;
   void mettre_a_jour(double) override;
-
-protected:
-  REF(Zone_VEF) la_zone_VEF;
 };
-
-inline void Champ_Fonc_P1_VEF::associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base)
-{
-  la_zone_VEF = (const Zone_VEF&) la_zone_dis_base;
-}
 
 #endif /* Champ_Fonc_P1_VEF_included */

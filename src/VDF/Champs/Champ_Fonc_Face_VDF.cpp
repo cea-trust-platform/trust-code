@@ -13,34 +13,16 @@
 *
 *****************************************************************************/
 
+#include <Champ_Uniforme_Morceaux.h>
 #include <Champ_Fonc_Face_VDF.h>
 #include <Champ_Uniforme.h>
 #include <Champ_Don_lu.h>
-#include <Champ_Uniforme_Morceaux.h>
-#include <Zone_VDF.h>
 
-Implemente_instanciable(Champ_Fonc_Face_VDF,"Champ_Fonc_Face|Champ_Fonc_Face_VDF",Champ_Fonc_base);
+Implemente_instanciable(Champ_Fonc_Face_VDF, "Champ_Fonc_Face|Champ_Fonc_Face_VDF", Champ_Fonc_base);
 
+Sortie& Champ_Fonc_Face_VDF::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-Sortie& Champ_Fonc_Face_VDF::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-Entree& Champ_Fonc_Face_VDF::readOn(Entree& s )
-{
-  return s ;
-}
-
-const Zone_dis_base& Champ_Fonc_Face_VDF::zone_dis_base() const
-{
-  return la_zone_VDF.valeur();
-}
-
-void Champ_Fonc_Face_VDF::associer_zone_dis_base(const Zone_dis_base& z_dis)
-{
-  la_zone_VDF=ref_cast(Zone_VDF, z_dis);
-}
+Entree& Champ_Fonc_Face_VDF::readOn(Entree& s) { return s; }
 
 int Champ_Fonc_Face_VDF::fixer_nb_valeurs_nodales(int nb_noeuds)
 {
@@ -74,7 +56,7 @@ Champ_base& Champ_Fonc_Face_VDF::affecter_(const Champ_base& ch)
 {
   const DoubleTab& v = ch.valeurs();
   DoubleTab& val = valeurs();
-  const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
+  const Zone_VDF& zone_VDF = zone_vdf();
   int nb_faces = zone_VDF.nb_faces();
   const IntVect& orientation = zone_VDF.orientation();
   int ori, n0, n1;

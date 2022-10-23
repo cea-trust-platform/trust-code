@@ -31,16 +31,6 @@ int Champ_Fonc_P1_isoP1Bulle::fixer_nb_valeurs_nodales(int n)
   return n;
 }
 
-const Zone_dis_base& Champ_Fonc_P1_isoP1Bulle::zone_dis_base() const
-{
-  return la_zone_VEFP1B.valeur();
-}
-
-void Champ_Fonc_P1_isoP1Bulle::associer_zone_dis_base(const Zone_dis_base& z_dis)
-{
-  la_zone_VEFP1B=ref_cast(Zone_VEF_PreP1b, z_dis);
-}
-
 void Champ_Fonc_P1_isoP1Bulle::mettre_a_jour(double t)
 {
   Champ_Fonc_base::mettre_a_jour(t);

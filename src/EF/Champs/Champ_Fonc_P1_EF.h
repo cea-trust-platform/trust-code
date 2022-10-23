@@ -17,7 +17,6 @@
 #define Champ_Fonc_P1_EF_included
 
 #include <Champ_Fonc_P1_base.h>
-#include <Ref_Zone_VF.h>
 
 class Zone_EF;
 
@@ -26,13 +25,8 @@ class Champ_Fonc_P1_EF: public Champ_Fonc_P1_base
   Declare_instanciable(Champ_Fonc_P1_EF);
 public:
   const Zone_EF& zone_EF() const;
-  void associer_zone_dis_base(const Zone_dis_base&) override;
-  const Zone_dis_base& zone_dis_base() const override;
   int imprime(Sortie&, int) const override;
   void mettre_a_jour(double) override;
-
-protected:
-  REF(Zone_VF) la_zone_VF;
 };
 
 #endif /* Champ_Fonc_P1_EF_included */

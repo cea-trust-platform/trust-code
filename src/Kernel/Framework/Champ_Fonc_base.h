@@ -16,14 +16,12 @@
 #ifndef Champ_Fonc_base_included
 #define Champ_Fonc_base_included
 
-
-
 #include <Champ_Don_base.h>
-#include <Ref_Zone_dis_base.h>
+#include <Ref_Zone_VF.h>
 
-class Zone_dis;
-class Domaine;
+class Zone_dis_base;
 class MD_Vector;
+class Domaine;
 
 /*! @brief classe Champ_Fonc_base Classe de base des champs qui sont fonction d'une grandeur calculee
  *
@@ -34,34 +32,32 @@ class MD_Vector;
 class Champ_Fonc_base : public Champ_Don_base
 {
   Declare_base(Champ_Fonc_base);
-
-public :
-
+public:
   void mettre_a_jour(double temps) override;
   int fixer_nb_valeurs_nodales(int nb_noeuds) override;
-  int reprendre(Entree& ) override;
-  int sauvegarder(Sortie& ) const override;
+  int reprendre(Entree&) override;
+  int sauvegarder(Sortie&) const override;
 
-  Champ_base& affecter_(const Champ_base& ) override;
-  Champ_base& affecter_compo(const Champ_base& , int compo) override;
+  Champ_base& affecter_(const Champ_base&) override;
+  Champ_base& affecter_compo(const Champ_base&, int compo) override;
   virtual int remplir_coord_noeuds_et_polys(DoubleTab&, IntVect&) const;
   virtual int remplir_coord_noeuds_et_polys_compo(DoubleTab&, IntVect&, int) const;
-  virtual DoubleTab& remplir_coord_noeuds(DoubleTab& ) const;
-  virtual DoubleTab& remplir_coord_noeuds_compo(DoubleTab&, int ) const;
-  DoubleTab& valeur_aux(const DoubleTab& , DoubleTab& ) const override;
+  virtual DoubleTab& remplir_coord_noeuds(DoubleTab&) const;
+  virtual DoubleTab& remplir_coord_noeuds_compo(DoubleTab&, int) const;
+  DoubleTab& valeur_aux(const DoubleTab&, DoubleTab&) const override;
   const Domaine& domaine() const;
-  int a_une_zone_dis_base() const override
-  {
-    return 1;
-  };
+  int a_une_zone_dis_base() const override { return 1; }
   // Obsolete method: signature changed in order to generate a compiler error if old code is not removed
-  virtual void creer_espace_distant(int dummy) { };
+  virtual void creer_espace_distant(int dummy) { }
+
+  void associer_zone_dis_base(const Zone_dis_base&) override;
+  const Zone_dis_base& zone_dis_base() const override;
+  virtual const Zone_VF& zone_vf() const;
+
 protected:
   // Par defaut on initialise les valeurs a zero
-  virtual void creer_tableau_distribue(const MD_Vector&,
-                                       Array_base::Resize_Options = Array_base::COPY_INIT);
-
+  virtual void creer_tableau_distribue(const MD_Vector&, Array_base::Resize_Options = Array_base::COPY_INIT);
+  REF(Zone_VF) la_zone_VF;
 };
 
-
-#endif
+#endif /* Champ_Fonc_base_included */

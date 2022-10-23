@@ -17,7 +17,7 @@
 #define Champ_Fonc_P1_isoP1Bulle_included
 
 #include <Champ_P1iP1B_implementation.h>
-#include <Ref_Zone_VEF_PreP1b.h>
+#include <Zone_VEF_PreP1b.h>
 #include <Champ_Fonc_base.h>
 
 /*! @brief classe Champ_Fonc_P1_isoP1Bulle
@@ -29,13 +29,11 @@ class Champ_Fonc_P1_isoP1Bulle: public Champ_Fonc_base, public Champ_P1iP1B_impl
   Declare_instanciable(Champ_Fonc_P1_isoP1Bulle);
 public:
   int fixer_nb_valeurs_nodales(int) override;
-  const Zone_dis_base& zone_dis_base() const override;
-  void associer_zone_dis_base(const Zone_dis_base&) override;
   void mettre_a_jour(double) override;
   DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&, double, int distant) const override;
 
   // Methodes inlines
-  inline const Zone_VEF_PreP1b& zone_vef() const override { return la_zone_VEFP1B.valeur(); }
+  inline const Zone_VEF_PreP1b& zone_vef() const override { return ref_cast(Zone_VEF_PreP1b,la_zone_VF.valeur()); }
 
   inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const override
   {
@@ -81,7 +79,6 @@ protected:
   void completer(const Zone_Cl_dis_base& zcl) override;
   inline const Champ_base& le_champ() const override { return *this; }
   inline Champ_base& le_champ() override { return *this; }
-  REF(Zone_VEF_PreP1b) la_zone_VEFP1B;
 };
 
 #endif /* Champ_Fonc_P1_isoP1Bulle_included */

@@ -16,49 +16,32 @@
 #ifndef Zone_VF_inst_included
 #define Zone_VF_inst_included
 
-
-
 #include <Zone_VF.h>
 #include <Domaine.h>
 class Geometrie;
 
 /*! @brief class Zone_VF_inst
  *
- *          Classe instanciable qui derive de Zone_VF.
- *       Cette classe ne sait rien faire !!!!
+ *       Classe instanciable qui derive de Zone_VF. Cette classe ne sait rien faire !!!!
  *       Elle permet juste d'appeler des methodes de type Champ_Inc_base::affecter avec une zone_dis contenant une reference a une zone.
  *
- *
- *
  */
-
 class Zone_VF_inst : public Zone_VF
 {
-
   Declare_instanciable(Zone_VF_inst);
-
 public :
-
   inline double face_normales(int , int ) const override
   {
     Cerr<<"face_normales not coded in "<<que_suis_je()<<finl;
-    exit();
+    Process::exit();
     return -1;
   };
 
 private:
-
   inline void remplir_elem_faces() override
   {
     Cerr<<"remplir_elem_faces not coded in "<<que_suis_je()<<finl;
-  };
-
+  }
 };
 
-
-
-#endif
-
-
-
-
+#endif /* Zone_VF_inst_included */

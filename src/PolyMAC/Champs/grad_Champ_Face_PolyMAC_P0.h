@@ -16,16 +16,11 @@
 #ifndef grad_Champ_Face_PolyMAC_P0_included
 #define grad_Champ_Face_PolyMAC_P0_included
 
-
-#include <Champ_Fonc_Face_PolyMAC.h>
-#include <Champ_Fonc_Elem_PolyMAC.h>
-#include <Champ_Fonc.h>
-#include <Ref_Zone_Cl_PolyMAC.h>
 #include <Ref_Champ_Face_PolyMAC_P0.h>
+#include <Champ_Fonc_Face_PolyMAC.h>
 #include <Champ_Face_PolyMAC_P0.h>
-#include <Champ_Fonc.h>
-#include <Ref_Champ_Fonc.h>
-#include <Conds_lim.h>
+#include <Ref_Zone_Cl_PolyMAC.h>
+#include <Zone_Cl_PolyMAC.h>
 
 /*! @brief class grad_Champ_Face_PolyMAC_P0 for the calculation of the gradient This field is a Champ_Fonc_Face_PolyMAC_P0 that calculates the gradient of a velocity field
  *
@@ -38,79 +33,42 @@
  *                   |   grad_u(nf_tot + e*D + 0, n*D + 1)   grad_u(nf_tot + e*D + 1, n*D + 1)   |
  *
  *       The gradient is calculated using past values of the velocity
- *         We compute the gradient at the faces for all velocity components,
- *           then interpolate it to obtain the gradient at the elements
- *
- *
+ *         We compute the gradient at the faces for all velocity components, then interpolate it to obtain the gradient at the elements
  *
  */
-
-class grad_Champ_Face_PolyMAC_P0 : public Champ_Fonc_Face_PolyMAC
-
+class grad_Champ_Face_PolyMAC_P0: public Champ_Fonc_Face_PolyMAC
 {
-
   Declare_instanciable(grad_Champ_Face_PolyMAC_P0);
-
 public:
-
   int fixer_nb_valeurs_nodales(int n) override;
-  inline void mettre_a_jour(double ) override;
-  inline void associer_champ(const Champ_Face_PolyMAC_P0& );
-  void me_calculer(double );
+  void mettre_a_jour(double) override;
+  void me_calculer(double);
 
-  inline void associer_zone_Cl_dis_base(const Zone_Cl_dis_base&);
-
-  inline virtual       Champ_Face_PolyMAC_P0& champ_a_deriver()      ;
-  inline virtual const Champ_Face_PolyMAC_P0& champ_a_deriver() const;
+  inline virtual Champ_Face_PolyMAC_P0& champ_a_deriver() { return champ_.valeur(); }
+  inline virtual const Champ_Face_PolyMAC_P0& champ_a_deriver() const { return champ_.valeur(); }
+  inline void associer_champ(const Champ_Face_PolyMAC_P0& ch) { champ_ = ch; }
+  inline void associer_zone_Cl_dis_base(const Zone_Cl_dis_base& la_zone_Cl_dis_base)
+  {
+    la_Zone_Cl_PolyMAC = static_cast<const Zone_Cl_PolyMAC&>(la_zone_Cl_dis_base);
+  }
 
   // Interpolation du gradient de la vitesse
   mutable IntTab gradve_d, gradve_e;           // Tables utilisees dans fgrad pour obtenir le grad aux faces de la vitesse aux elems
   mutable DoubleTab gradve_w;
   void update_tab_grad(int full_stencil);      // Mise a jour des tables utilisees dans fgrad
-  void calc_gradfve()     ;                  // Mise a jour du gradient aux faces de la vitesse aux elements
-  void update_ge() ;                           // Calcul du gradient aux elements a partir du gradient aux faces ; base sur la methode similaire de Champ_Face_PolyMAC_P0
-  void init_grad() ;
+  void calc_gradfve();                  // Mise a jour du gradient aux faces de la vitesse aux elements
+  void update_ge();                           // Calcul du gradient aux elements a partir du gradient aux faces ; base sur la methode similaire de Champ_Face_PolyMAC_P0
+  void init_grad();
 
 protected:
-
   REF(Zone_Cl_PolyMAC) la_Zone_Cl_PolyMAC;
   REF(Champ_Face_PolyMAC_P0) champ_;
 
-//  Conds_lim cls_g ;
-//  IntTab fcl_g ;
   int is_init = 0;
-
   void init_ge2() const; //ordre 2 -> avec une matrice
   mutable IntTab ve2d, ve2j, ve2bj;
   mutable DoubleTab ve2c, ve2bc;
   void update_ge2(DoubleTab& val, int incr = 0) const;
-
 };
 
-inline void grad_Champ_Face_PolyMAC_P0::mettre_a_jour(double tps)
-{
-  if (temps()!=tps) me_calculer(tps) ;
-  Champ_Fonc_base::mettre_a_jour(tps);
-}
-
-inline void grad_Champ_Face_PolyMAC_P0::associer_champ(const Champ_Face_PolyMAC_P0& ch)
-{
-  Cerr << "On associe le gradient de U au champ de vitesse " << finl ;
-  champ_= ch;
-}
-
-inline void grad_Champ_Face_PolyMAC_P0::associer_zone_Cl_dis_base(const Zone_Cl_dis_base& la_zone_Cl_dis_base)
-{
-  la_Zone_Cl_PolyMAC  = (const Zone_Cl_PolyMAC&) la_zone_Cl_dis_base;
-}
-
-inline Champ_Face_PolyMAC_P0& grad_Champ_Face_PolyMAC_P0::champ_a_deriver()
-{
-  return champ_.valeur();
-}
-inline const Champ_Face_PolyMAC_P0& grad_Champ_Face_PolyMAC_P0::champ_a_deriver() const
-{
-  return champ_.valeur();
-}
-
-#endif
+#endif /* grad_Champ_Face_PolyMAC_P0_included */

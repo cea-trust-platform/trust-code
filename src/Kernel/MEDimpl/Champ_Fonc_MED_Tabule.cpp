@@ -15,20 +15,17 @@
 
 #include <Champ_Fonc_MED_Tabule.h>
 
-Implemente_instanciable( Champ_Fonc_MED_Tabule, "Champ_Fonc_MED_Tabule", Champ_Fonc_MED ) ;
+Implemente_instanciable( Champ_Fonc_MED_Tabule, "Champ_Fonc_MED_Tabule", Champ_Fonc_MED );
 // XD Champ_Fonc_MED_Tabule champ_fonc_med Champ_Fonc_MED_Tabule -1 not_set
-Sortie& Champ_Fonc_MED_Tabule::printOn( Sortie& os ) const
+Sortie& Champ_Fonc_MED_Tabule::printOn(Sortie& os) const
 {
-  Champ_Fonc_MED::printOn( os );
+  Champ_Fonc_MED::printOn(os);
   return os;
 }
 
-Entree& Champ_Fonc_MED_Tabule::readOn( Entree& is )
+Entree& Champ_Fonc_MED_Tabule::readOn(Entree& is)
 {
-  temps1_=-1e9;
-  temps2_=-1e9;
-  temps_calc_=-2e9;
-  Champ_Fonc_MED::readOn( is );
+  Champ_Fonc_MED::readOn(is);
   return is;
 }
 
@@ -36,60 +33,58 @@ void Champ_Fonc_MED_Tabule::mettre_a_jour(double le_temps)
 {
 
   // temps1_ temps2_ tel que temps [temps1_ , temps2_[
-  if (est_egal(le_temps,temps_calc_))
+  if (est_egal(le_temps, temps_calc_))
     return;
 
-  if ((temps2_<-1e8)||(le_temps<=temps_calc_))
+  if ((temps2_ < -1e8) || (le_temps <= temps_calc_))
     {
       // initialisation   de -1e9 a T[0] on met la meme chose
       lire(temps_sauv_[0]);
-      tab1_=valeurs();
-      tab2_=valeurs();
-      temps2_=temps_sauv_[0];
+      tab1_ = valeurs();
+      tab2_ = valeurs();
+      temps2_ = temps_sauv_[0];
     }
-  if (le_temps>=temps2_)
+  if (le_temps >= temps2_)
     {
-      int i,nbt=temps_sauv_.size_array();
-      int trouve=0;
-      for (i=0; i<nbt-1; i++)
+      int i, nbt = temps_sauv_.size_array();
+      int trouve = 0;
+      for (i = 0; i < nbt - 1; i++)
         {
-          if ((le_temps>=temps_sauv_[i])&&(le_temps<=temps_sauv_[i+1]))
+          if ((le_temps >= temps_sauv_[i]) && (le_temps <= temps_sauv_[i + 1]))
             {
-              trouve=1;
-              temps1_=temps_sauv_[i];
+              trouve = 1;
+              temps1_ = temps_sauv_[i];
               lire(temps1_);
-              tab1_=valeurs();
-              temps2_=temps_sauv_[i+1];
+              tab1_ = valeurs();
+              temps2_ = temps_sauv_[i + 1];
               lire(temps2_);
-              tab2_=valeurs();
+              tab2_ = valeurs();
             }
         }
-      if (trouve==0)
+      if (trouve == 0)
         {
-          temps1_=temps_sauv_[nbt-1];
-          assert(le_temps>=temps_sauv_[nbt-1]);
+          temps1_ = temps_sauv_[nbt - 1];
+          assert(le_temps >= temps_sauv_[nbt - 1]);
           lire(temps1_);
-          tab1_=valeurs();
-          tab2_=tab1_;
-          temps2_=DMAXFLOAT;
+          tab1_ = valeurs();
+          tab2_ = tab1_;
+          temps2_ = DMAXFLOAT;
         }
     }
 
-  if ((le_temps>=temps1_) && (le_temps<temps2_))
+  if ((le_temps >= temps1_) && (le_temps < temps2_))
     {
-      valeurs()=tab2_;
-      valeurs()-=tab1_;
-      valeurs()*=(le_temps-temps1_)/(temps2_-temps1_);
-      valeurs()+=tab1_;
-      temps_calc_=le_temps;
+      valeurs() = tab2_;
+      valeurs() -= tab1_;
+      valeurs() *= (le_temps - temps1_) / (temps2_ - temps1_);
+      valeurs() += tab1_;
+      temps_calc_ = le_temps;
       //  Cerr<<temps_calc_<<" YYYYYY "<<valeurs()[0]<<" "<< tab2_[0]<< " "<<tab1_[0]<<finl;
     }
   else
     {
-      Cerr<<"internal error"<<finl;
+      Cerr << "internal error" << finl;
       exit();
     }
 
 }
-
-

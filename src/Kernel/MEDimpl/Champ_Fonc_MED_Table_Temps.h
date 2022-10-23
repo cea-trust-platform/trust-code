@@ -27,35 +27,19 @@ class Param;
  */
 class Champ_Fonc_MED_Table_Temps : public Champ_Fonc_MED
 {
-
   Declare_instanciable( Champ_Fonc_MED_Table_Temps ) ;
+public:
+  void lire_donnees_champ(const std::string& fileName, const std::string& meshName, const std::string& fieldName, ArrOfDouble& temps_sauv, int& size, int& nbcomp, Nom& type_champ) override;
+  void lire(double tps, int given_iteration = -1) override;
 
-public :
-
-  void lire_donnees_champ(const std::string& fileName, const std::string& meshName, const std::string& fieldName,
-                          ArrOfDouble& temps_sauv, int& size, int& nbcomp, Nom& type_champ) override;
-  void lire(double tps,int given_iteration=-1) override;
 protected :
-
   void set_param(Param& param) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
-
-  inline virtual const Champ_Fonc_base& le_champ0() const;
-  inline virtual Champ_Fonc_base& le_champ0();
+  inline virtual const Champ_Fonc_base& le_champ0() const { return vrai_champ0_.valeur(); }
+  inline virtual Champ_Fonc_base& le_champ0() { return vrai_champ0_.valeur(); }
 
   Table la_table;
   Champ_Fonc vrai_champ0_;
-
 };
-
-inline const Champ_Fonc_base& Champ_Fonc_MED_Table_Temps::le_champ0() const
-{
-  return vrai_champ0_.valeur();
-}
-
-inline Champ_Fonc_base& Champ_Fonc_MED_Table_Temps::le_champ0()
-{
-  return vrai_champ0_.valeur();
-}
 
 #endif /* Champ_Fonc_MED_Table_Temps_included */

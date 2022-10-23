@@ -80,7 +80,7 @@ void Champ_Ostwald_VEF::associer_eqn(const Navier_Stokes_std& eq)
 
 void Champ_Ostwald_VEF::calculer_dscald(DoubleTab& dscald)
 {
-  const Zone_VEF& zone_VEF = la_zone_VEF.valeur();
+  const Zone_VEF& zone_VEF = ref_cast(Zone_VEF,zone_vf());
   const Zone_Cl_VEF& zcl_VEF = ref_cast(Zone_Cl_VEF, eq_hydraulique->zone_Cl_dis().valeur());
   const DoubleTab& vit = eq_hydraulique->inconnue().valeurs();
   int nb_elem = zone_VEF.nb_elem();
@@ -119,8 +119,6 @@ void Champ_Ostwald_VEF::me_calculer(double tps)
 {
   if (temps_ != tps)
     {
-      //Cerr<< "Calcul de Mu Ostwald"<<finl;
-
       calculer_dscald(valeurs());
       calculer_mu(valeurs());
     }
@@ -132,17 +130,11 @@ void Champ_Ostwald_VEF::me_calculer(double tps)
 void Champ_Ostwald_VEF::init_mu(DoubleTab& mu_tab)
 {
   const DoubleTab& K_tab = mon_fluide_->consistance().valeurs();
-  for (int i = 0; i < nb_valeurs_nodales(); i++)
-    mu_tab[i] = K_tab[i];
+  for (int i = 0; i < nb_valeurs_nodales(); i++) mu_tab[i] = K_tab[i];
 }
 
 int Champ_Ostwald_VEF::initialiser(const double un_temps)
 {
   mettre_a_jour(un_temps);
   return 1;
-}
-
-const Zone_dis_base& Champ_Ostwald_VEF::zone_dis_base() const
-{
-  return la_zone_VEF.valeur();
 }

@@ -28,13 +28,9 @@ using MEDCoupling::MCAuto;
 using MEDCoupling::MEDFileFieldMultiTS;
 #endif
 
-Implemente_instanciable( Champ_Fonc_MED_Table_Temps, "Champ_Fonc_MED_Table_Temps", Champ_Fonc_MED ) ;
+Implemente_instanciable( Champ_Fonc_MED_Table_Temps, "Champ_Fonc_MED_Table_Temps", Champ_Fonc_MED );
 
-Sortie& Champ_Fonc_MED_Table_Temps::printOn( Sortie& os ) const
-{
-  Champ_Fonc_MED::printOn( os );
-  return os;
-}
+Sortie& Champ_Fonc_MED_Table_Temps::printOn(Sortie& os) const { return Champ_Fonc_MED::printOn(os); }
 
 void Champ_Fonc_MED_Table_Temps::set_param(Param& param)
 {
@@ -42,7 +38,7 @@ void Champ_Fonc_MED_Table_Temps::set_param(Param& param)
   param.ajouter_non_std("table_temps",(this),Param::REQUIRED);
 }
 
-Entree& Champ_Fonc_MED_Table_Temps::readOn( Entree& is )
+Entree& Champ_Fonc_MED_Table_Temps::readOn(Entree& is)
 {
   Champ_Fonc_MED::readOn( is );
   return is;
@@ -50,18 +46,18 @@ Entree& Champ_Fonc_MED_Table_Temps::readOn( Entree& is )
 
 int Champ_Fonc_MED_Table_Temps::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
-  if (mot=="table_temps")
+  if (mot == "table_temps")
     {
       Lecture_Table lec_table;
-      lec_table.lire_table(is,la_table);
+      lec_table.lire_table(is, la_table);
     }
   else
     return Champ_Fonc_MED::lire_motcle_non_standard(mot,is);
   return 1;
 }
 
-void Champ_Fonc_MED_Table_Temps::lire_donnees_champ(const std::string& fileName, const std::string& meshName, const std::string& fieldName,
-                                                    ArrOfDouble& temps_sauv, int& size, int& nbcomp, Nom& type_champ)
+void Champ_Fonc_MED_Table_Temps::lire_donnees_champ(const std::string& fileName, const std::string& meshName, const std::string& fieldName, ArrOfDouble& temps_sauv, int& size, int& nbcomp,
+                                                    Nom& type_champ)
 {
 #ifdef MEDCOUPLING_
   MCAuto<MEDFileFieldMultiTS> ft1(MEDFileFieldMultiTS::New(fileName,fieldName));
@@ -126,14 +122,14 @@ void Champ_Fonc_MED_Table_Temps::lire(double t, int given_it)
 #endif
 #endif
 
-  if (zonebidon_inst.nb_elem()>0)
+  if (zonebidon_inst.nb_elem() > 0)
     {
       double frac = la_table.val(t);
       const DoubleTab& vals0 = le_champ0().valeurs();
       DoubleTab& vals = le_champ().valeurs();
 
       vals = vals0;
-      vals *=frac;
+      vals *= frac;
     }
   Champ_Fonc_base::mettre_a_jour(t);
   le_champ().Champ_Fonc_base::mettre_a_jour(t);

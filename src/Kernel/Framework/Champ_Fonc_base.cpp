@@ -13,36 +13,33 @@
 *
 *****************************************************************************/
 
-#include <Champ_Fonc_base.h>
-#include <Zone_dis.h>
-#include <Domaine.h>
 #include <EcritureLectureSpecial.h>
+#include <Champ_Fonc_base.h>
 #include <MD_Vector_tools.h>
+#include <Zone_VF.h>
+#include <Domaine.h>
 
-Implemente_base(Champ_Fonc_base,"Champ_Fonc_base",Champ_Don_base);
+Implemente_base(Champ_Fonc_base, "Champ_Fonc_base", Champ_Don_base);
 
+Sortie& Champ_Fonc_base::printOn(Sortie& s) const { return s; }
 
-/*! @brief NE FAIT RIEN A surcharger dans les classes derivees
- *
- * @param (Sortie& s)
- * @return (Sortie&)
- */
-Sortie& Champ_Fonc_base::printOn(Sortie& s ) const
+Entree& Champ_Fonc_base::readOn(Entree& s) { return s; }
+
+void Champ_Fonc_base::associer_zone_dis_base(const Zone_dis_base& z_dis)
 {
-  return s ;
+  la_zone_VF = ref_cast(Zone_VF, z_dis);
 }
 
-
-/*! @brief NE FAIT RIEN A surcharger dans les classes derivees
- *
- * @param (Entree& s)
- * @return (Entree&)
- */
-Entree& Champ_Fonc_base::readOn(Entree& s )
+const Zone_dis_base& Champ_Fonc_base::zone_dis_base() const
 {
-  return s ;
+  return la_zone_VF.non_nul() ? la_zone_VF.valeur() : Champ_Don_base::zone_dis_base() /* throw */;
 }
 
+const Zone_VF& Champ_Fonc_base::zone_vf() const
+{
+  assert (la_zone_VF.non_nul());
+  return la_zone_VF.valeur();
+}
 
 /*! @brief Mise a jour en temps du champ.
  *
@@ -56,9 +53,8 @@ void Champ_Fonc_base::mettre_a_jour(double un_temps)
 
 int Champ_Fonc_base::fixer_nb_valeurs_nodales(int nb_noeuds)
 {
-  Cerr << "Error in Champ_Fonc_base::fixer_nb_valeurs_nodales: method not reimplemented for the class "
-       << que_suis_je() << finl;
-  exit();
+  Cerr << "Error in Champ_Fonc_base::fixer_nb_valeurs_nodales: method not reimplemented for the class " << que_suis_je() << finl;
+  Process::exit();
   return nb_noeuds;
 }
 
@@ -77,9 +73,8 @@ void Champ_Fonc_base::creer_tableau_distribue(const MD_Vector& md, Array_base::R
     {
       if (valeurs_.get_md_vector().non_nul())
         {
-          Cerr << "Internal error in Champ_Fonc_base::creer_tableau_distribue:\n"
-               << " array has alreary a (wrong) parallel descriptor" << finl;
-          exit();
+          Cerr << "Internal error in Champ_Fonc_base::creer_tableau_distribue:\n" << " array has already a (wrong) parallel descriptor" << finl;
+          Process::exit();
         }
       MD_Vector_tools::creer_tableau_distribue(md, valeurs_, opt);
     }
@@ -93,22 +88,22 @@ void Champ_Fonc_base::creer_tableau_distribue(const MD_Vector& md, Array_base::R
 int Champ_Fonc_base::sauvegarder(Sortie& fich) const
 {
   // en mode ecriture special seul le maitre ecrit l'entete
-  int a_faire,special;
-  EcritureLectureSpecial::is_ecriture_special(special,a_faire);
+  int a_faire, special;
+  EcritureLectureSpecial::is_ecriture_special(special, a_faire);
 
   if (a_faire)
     {
       Nom mon_ident(nom_);
       mon_ident += que_suis_je();
       mon_ident += zone_dis_base().zone().domaine().le_nom();
-      mon_ident += Nom(temps_,"%e");
+      mon_ident += Nom(temps_, "%e");
       fich << mon_ident << finl;
       fich << que_suis_je() << finl;
       fich << temps_ << finl;
     }
   int bytes = 0;
   if (special)
-    bytes = EcritureLectureSpecial::ecriture_special(*this,fich);
+    bytes = EcritureLectureSpecial::ecriture_special(*this, fich);
   else
     {
       bytes = 8 * valeurs().size_array();
@@ -120,11 +115,10 @@ int Champ_Fonc_base::sauvegarder(Sortie& fich) const
       fich.flush();
     }
   if (Process::je_suis_maitre())
-    Cerr << "Backup of the field " << nom_ << " performed on time : " << Nom(temps_,"%e") << finl;
+    Cerr << "Backup of the field " << nom_ << " performed on time : " << Nom(temps_, "%e") << finl;
 
   return bytes;
 }
-
 
 /*! @brief Reprise a partir d'un flot d'entree Lit le temps et les valeurs du champ.
  *
@@ -136,15 +130,15 @@ int Champ_Fonc_base::sauvegarder(Sortie& fich) const
 int Champ_Fonc_base::reprendre(Entree& fich)
 {
   double un_temps;
-  int special= EcritureLectureSpecial::is_lecture_special();
+  int special = EcritureLectureSpecial::is_lecture_special();
   if (nom_ != Nom("anonyme")) // lecture pour reprise
     {
       fich >> un_temps;
       if (special)
-        EcritureLectureSpecial::lecture_special(*this,fich);
+        EcritureLectureSpecial::lecture_special(*this, fich);
       else
         valeurs().lit(fich);
-      Cerr << "Resume of the field " <<nom_<< " performed " << finl;
+      Cerr << "Resume of the field " << nom_ << " performed " << finl;
     }
   else // lecture pour sauter le bloc
     {
@@ -154,7 +148,6 @@ int Champ_Fonc_base::reprendre(Entree& fich)
     }
   return 1;
 }
-
 
 /*! @brief Affecte un Champ_base dans un Champ_Fonc_base.
  *
@@ -170,19 +163,17 @@ Champ_base& Champ_Fonc_base::affecter_(const Champ_base& ch)
   return *this;
 }
 
-
 /*! @brief Affecte une composante d'un Champ_base dans la meme composnate d'un Champ_Fonc_base.
  *
  * @param (Champ_base& ch) le champ partie droite de l'affectation
  * @param (int compo) l'indice de la composante a affecter
  * @return (Champ_base&) le resultat de l'affectation (*this) (avec upcast)
  */
-Champ_base& Champ_Fonc_base::affecter_compo(const Champ_base& ch,
-                                            int compo)
+Champ_base& Champ_Fonc_base::affecter_compo(const Champ_base& ch, int compo)
 {
   DoubleTab noeuds;
   IntVect polys;
-  if(!remplir_coord_noeuds_et_polys_compo(noeuds, polys, compo))
+  if (!remplir_coord_noeuds_et_polys_compo(noeuds, polys, compo))
     {
       remplir_coord_noeuds_compo(noeuds, compo);
       ch.valeur_aux_compo(noeuds, valeurs(), compo);
@@ -191,7 +182,6 @@ Champ_base& Champ_Fonc_base::affecter_compo(const Champ_base& ch,
     ch.valeur_aux_elems_compo(noeuds, polys, valeurs(), compo);
   return *this;
 }
-
 
 /*! @brief NE FAIT RIEN A surcharger dans les classes derivees
  *
@@ -204,7 +194,6 @@ int Champ_Fonc_base::remplir_coord_noeuds_et_polys(DoubleTab&, IntVect&) const
   return 0;
 }
 
-
 /*! @brief NE FAIT RIEN A surcharger dans les classes derivees
  *
  * @param (DoubleTab& coord)
@@ -212,10 +201,8 @@ int Champ_Fonc_base::remplir_coord_noeuds_et_polys(DoubleTab&, IntVect&) const
  */
 DoubleTab& Champ_Fonc_base::remplir_coord_noeuds(DoubleTab& coord) const
 {
-  // Ne retourne rien
   return coord;
 }
-
 
 /*! @brief NE FAIT RIEN A surcharger dans les classes derivees
  *
@@ -223,13 +210,10 @@ DoubleTab& Champ_Fonc_base::remplir_coord_noeuds(DoubleTab& coord) const
  * @param (int)
  * @return (DoubleTab&) renvoie toujours le parametre coord
  */
-DoubleTab& Champ_Fonc_base::remplir_coord_noeuds_compo(DoubleTab& coord,
-                                                       int ) const
+DoubleTab& Champ_Fonc_base::remplir_coord_noeuds_compo(DoubleTab& coord, int) const
 {
-  // Ne retourne rien
   return coord;
 }
-
 
 /*! @brief NE FAIT RIEN A surcharger dans les classes derivees
  *
@@ -238,26 +222,20 @@ DoubleTab& Champ_Fonc_base::remplir_coord_noeuds_compo(DoubleTab& coord,
  * @param (int)
  * @return (int) renvoie toujours 0
  */
-int Champ_Fonc_base::remplir_coord_noeuds_et_polys_compo(DoubleTab& ,
-                                                         IntVect& ,
-                                                         int ) const
+int Champ_Fonc_base::remplir_coord_noeuds_et_polys_compo(DoubleTab&, IntVect&, int) const
 {
   return 0;
 }
-
 
 const Domaine& Champ_Fonc_base::domaine() const
 {
   return zone_dis_base().zone().domaine();
 }
 
-DoubleTab& Champ_Fonc_base::valeur_aux(const DoubleTab& positions,
-                                       DoubleTab& tab_valeurs) const
+DoubleTab& Champ_Fonc_base::valeur_aux(const DoubleTab& positions, DoubleTab& tab_valeurs) const
 {
-  const Zone& zone=zone_dis_base().zone();
+  const Zone& zone = zone_dis_base().zone();
   IntVect les_polys(positions.dimension(0));
   zone.chercher_elements(positions, les_polys);
   return valeur_aux_elems(positions, les_polys, tab_valeurs);
 }
-
-

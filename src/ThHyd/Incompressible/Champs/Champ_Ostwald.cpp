@@ -66,13 +66,6 @@ int Champ_Ostwald::fixer_nb_valeurs_nodales(int nb_noeuds)
   return nb_noeuds;
 }
 
-void Champ_Ostwald::associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base)
-{
-  Cerr << "Champ_Ostwald::associer_zone_dis_base() ne fait rien" << finl;
-  Cerr << que_suis_je() << "doit la surcharger !" << finl;
-  Process::exit();
-}
-
 Champ_base& Champ_Ostwald::affecter_(const Champ_base& ch)
 {
   DoubleTab noeuds;
@@ -85,11 +78,4 @@ Champ_base& Champ_Ostwald::affecter_(const Champ_base& ch)
   else
     ch.valeur_aux_elems(noeuds, polys, valeurs());
   return *this;
-}
-
-const Zone_dis_base& Champ_Ostwald::zone_dis_base() const
-{
-  Cerr << "const Zone_dis_base& Champ_Ostwald::zone_dis_base() const non code" << finl;
-  Process::exit();
-  return zone_dis_base();
 }

@@ -34,10 +34,7 @@ class Champ_input_P0 : public Champ_Fonc_P0_base, public Champ_Input_Proto
 public:
   friend class Champ_Input_P0_Composite;
 
-  inline void associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base) override { zdb_ = la_zone_dis_base; }
-  inline const Zone_dis_base& zone_dis_base() const override { return zdb_.valeur(); }
   void mettre_a_jour(double) override { }
-
   void getTemplate(TrioField& afield) const override;
   void setValue(const TrioField& afield) override;
 
@@ -48,7 +45,6 @@ protected:
   virtual const Nom& get_name() const; // calls le_nom
 
 private:
-  REF(Zone_dis_base) zdb_;
   int nb_elems_reels_sous_zone_; //if sous-zone : number of elements of the sous-zone on this proc
   int nb_elems_reels_loc_;       //total number of local elements
 };

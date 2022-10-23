@@ -20,23 +20,16 @@
 
 /*! @brief : class Champ_Fonc_MED_Tabule
  *
- *  <Description of class Champ_Fonc_MED_Tabule>
- *
- *
- *
  */
-
 class Champ_Fonc_MED_Tabule : public Champ_Fonc_MED
 {
-
   Declare_instanciable( Champ_Fonc_MED_Tabule ) ;
-
 public :
   void mettre_a_jour(double temps) override;
-protected :
-  DoubleTab tab1_,tab2_;
-  double temps1_,temps2_,temps_calc_;
 
+protected:
+  DoubleTab tab1_, tab2_;
+  double temps1_ = -1e9, temps2_ = -1e9, temps_calc_ = -2e9;
 };
 
 #endif /* Champ_Fonc_MED_Tabule_included */

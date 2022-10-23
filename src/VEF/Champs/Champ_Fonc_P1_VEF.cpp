@@ -14,7 +14,6 @@
 *****************************************************************************/
 
 #include <Champ_Fonc_P1_VEF.h>
-#include <Zone_VEF.h>
 
 Implemente_instanciable(Champ_Fonc_P1_VEF, "Champ_Fonc_P1_VEF", Champ_Fonc_P1_base);
 
@@ -25,9 +24,4 @@ Entree& Champ_Fonc_P1_VEF::readOn(Entree& s) { return s; }
 void Champ_Fonc_P1_VEF::mettre_a_jour(double t)
 {
   Champ_Fonc_base::mettre_a_jour(t);
-}
-
-const Zone_dis_base& Champ_Fonc_P1_VEF::zone_dis_base() const
-{
-  return la_zone_VEF.valeur();
 }

@@ -13,19 +13,8 @@
 *
 *****************************************************************************/
 
-/*! @brief
- *
- */
-
-// .SECTION voir aussi
-//
-//
-///////////////////////////////////////////////////////////////////////////
-
 #ifndef Champ_Fonc_reprise_included
 #define Champ_Fonc_reprise_included
-
-
 
 #include <Champ_Fonc_base.h>
 #include <Champ_Inc.h>
@@ -36,107 +25,55 @@
  *  champ passe en argument
  *
  */
-
-//.SECTION voir aussi
-// Champ_Fonc_P0
-
 class Champ_Fonc_reprise: public Champ_Fonc_base
 {
-
   Declare_instanciable(Champ_Fonc_reprise);
-
-public :
-
-  inline void associer_zone_dis_base(const Zone_dis_base&) override;
-  const Zone_dis_base& zone_dis_base() const override;
-  void mettre_a_jour(double ) override;
+public:
+  void mettre_a_jour(double) override;
 
   using Champ_Fonc_base::valeurs;
-  inline const DoubleTab& valeurs() const override;
-  inline  DoubleTab& valeurs() override ;
-  inline DoubleTab& valeur_aux_elems(const DoubleTab& positions,
-                                     const IntVect& les_polys,
-                                     DoubleTab& les_valeurs) const override;
-  inline DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions,
-                                            const IntVect& les_polys,
-                                            DoubleVect& les_valeurs,
-                                            int ncomp) const override ;
-  inline DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const override;
-  inline DoubleVect& valeur_aux_sommets_compo(const Domaine&,
-                                              DoubleVect&, int) const override;
-  inline DoubleTab& remplir_coord_noeuds(DoubleTab& ) const override;
-  inline int remplir_coord_noeuds_et_polys(DoubleTab&, IntVect&) const override;
-  inline  DoubleVect& valeur_aux_compo(const DoubleTab& tab,DoubleVect& les_valeurs, int comp) const override;
+  inline const DoubleTab& valeurs() const override { return le_champ().valeurs(); }
+  inline DoubleTab& valeurs() override { return le_champ().valeurs(); }
+
+  inline DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& les_valeurs) const override
+  {
+    return le_champ().valeur_aux_elems(positions, les_polys, les_valeurs);
+  }
+
+  inline DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& les_valeurs, int ncomp) const override
+  {
+    return le_champ().valeur_aux_elems_compo(positions, les_polys, les_valeurs, ncomp);
+  }
+
+  inline DoubleTab& valeur_aux_sommets(const Domaine& dom, DoubleTab& sommets) const override
+  {
+    return le_champ().valeur_aux_sommets(dom, sommets);
+  }
+
+  inline DoubleVect& valeur_aux_sommets_compo(const Domaine& dom, DoubleVect& sommets, int compo) const override
+  {
+    return le_champ().valeur_aux_sommets_compo(dom, sommets, compo);
+  }
+
+  inline DoubleTab& remplir_coord_noeuds(DoubleTab& coord) const override
+  {
+    return le_champ().remplir_coord_noeuds(coord);
+  }
+
+  inline int remplir_coord_noeuds_et_polys(DoubleTab& coord, IntVect& elems) const override
+  {
+    return le_champ().remplir_coord_noeuds_et_polys(coord, elems);
+  }
+
+  inline DoubleVect& valeur_aux_compo(const DoubleTab& tab, DoubleVect& les_valeurs, int comp) const override
+  {
+    return le_champ().valeur_aux_compo(tab, les_valeurs, comp);
+  }
 
 private:
-
-  REF(Zone_dis_base) zone_dis;
-
   Champ_Inc vrai_champ_;
-  inline virtual const Champ_Inc_base& le_champ() const;
-  inline virtual Champ_Inc_base& le_champ();
+  inline virtual const Champ_Inc_base& le_champ() const { return vrai_champ_.valeur(); }
+  inline virtual Champ_Inc_base& le_champ() { return vrai_champ_.valeur(); }
 };
 
-inline void Champ_Fonc_reprise::associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base)
-{
-  zone_dis=la_zone_dis_base;
-}
-inline const Champ_Inc_base& Champ_Fonc_reprise::le_champ() const
-{
-  return vrai_champ_.valeur();
-}
-
-inline Champ_Inc_base& Champ_Fonc_reprise::le_champ()
-{
-  return vrai_champ_.valeur();
-}
-
-inline const DoubleTab& Champ_Fonc_reprise::valeurs() const
-{
-  return le_champ().valeurs();
-}
-inline DoubleTab& Champ_Fonc_reprise::valeurs()
-{
-  return le_champ().valeurs();
-}
-
-inline DoubleTab& Champ_Fonc_reprise::valeur_aux_elems(const DoubleTab& positions,
-                                                       const IntVect& les_polys,
-                                                       DoubleTab& les_valeurs) const
-{
-  return le_champ().valeur_aux_elems(positions, les_polys, les_valeurs);
-}
-
-inline DoubleVect& Champ_Fonc_reprise::valeur_aux_elems_compo(const DoubleTab& positions,
-                                                              const IntVect& les_polys,
-                                                              DoubleVect& les_valeurs,
-                                                              int ncomp) const
-{
-  return le_champ().valeur_aux_elems_compo(positions, les_polys, les_valeurs, ncomp);
-}
-
-inline DoubleTab& Champ_Fonc_reprise::valeur_aux_sommets(const Domaine& dom, DoubleTab& sommets) const
-{
-  return le_champ().valeur_aux_sommets(dom, sommets);
-}
-
-inline DoubleVect& Champ_Fonc_reprise::valeur_aux_sommets_compo(const Domaine& dom,
-                                                                DoubleVect& sommets, int compo) const
-{
-  return le_champ().valeur_aux_sommets_compo(dom, sommets, compo);
-}
-
-inline DoubleTab& Champ_Fonc_reprise::remplir_coord_noeuds(DoubleTab& coord) const
-{
-  return le_champ().remplir_coord_noeuds(coord);
-}
-
-inline int Champ_Fonc_reprise::remplir_coord_noeuds_et_polys(DoubleTab& coord, IntVect& elems) const
-{
-  return le_champ().remplir_coord_noeuds_et_polys(coord, elems);
-}
-inline DoubleVect&   Champ_Fonc_reprise::valeur_aux_compo(const DoubleTab& tab,DoubleVect& les_valeurs, int comp) const
-{
-  return le_champ().valeur_aux_compo(tab,les_valeurs,comp);
-}
-#endif
+#endif /* Champ_Fonc_reprise_included */

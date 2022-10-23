@@ -18,7 +18,6 @@
 
 #include <Champ_implementation_P0.h>
 #include <Champ_Fonc_base.h>
-#include <Ref_Zone_VF.h>
 
 class Champ_Fonc_P0_base: public Champ_Fonc_base, public Champ_implementation_P0
 {
@@ -27,18 +26,13 @@ public:
   DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&, double, int distant) const override;
   Champ_base& affecter_(const Champ_base&) override;
   int fixer_nb_valeurs_nodales(int n) override;
-  const Zone_dis_base& zone_dis_base() const override;
   double moyenne(const DoubleVect& porosite_elem, int) const;
   DoubleVect moyenne(const DoubleVect& porosite_elem) const;
   int imprime(Sortie&, int) const override;
   void mettre_a_jour(double) override;
   double valeur_au_bord(int face) const;
 
-  inline void associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base) override
-  {
-    la_zone_VF = (const Zone_VF&) la_zone_dis_base;
-  }
-
+  // Methodes inlines
   inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const override
   {
     return Champ_implementation_P0::valeur_a_elem(position, result, poly);
@@ -82,7 +76,6 @@ public:
 protected:
   Champ_base& le_champ() override { return *this; }
   const Champ_base& le_champ() const override { return *this; }
-  REF(Zone_VF) la_zone_VF;
 };
 
 #endif /* Champ_Fonc_P0_base_inclus*/
