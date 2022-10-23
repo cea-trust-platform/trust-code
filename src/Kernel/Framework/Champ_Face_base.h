@@ -17,16 +17,11 @@
 #define Champ_Face_base_included
 
 #include <Champ_Inc_base.h>
-#include <Ref_Zone_VF.h>
-#include <Zone_VF.h>
 
 class Champ_Face_base : public Champ_Inc_base
 {
   Declare_base(Champ_Face_base) ;
 public:
-  void associer_zone_dis_base(const Zone_dis_base&) override;
-  const Zone_dis_base& zone_dis_base() const override { return ref_zone_vf_.valeur(); }
-  const Zone_VF& zone_vf() const { return ref_zone_vf_.valeur(); }
   //tableaux de correspondance lies aux CLs : fcl(f, .) = { type de CL, num de la CL, indice de la face dans la CL }
   //types de CL : 0 -> pas de CL
   //              1 -> Neumann ou Neumann_homogene
@@ -40,7 +35,6 @@ public:
   }
 
 protected:
-  REF(Zone_VF) ref_zone_vf_;
   void init_fcl() const;
   mutable IntTab fcl_;
   mutable int fcl_init_ = 0;

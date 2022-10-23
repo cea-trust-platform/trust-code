@@ -30,8 +30,6 @@ class Champ_Inc_P0_base : public Champ_Inc_base, public Champ_implementation_P0
 {
   Declare_base(Champ_Inc_P0_base);
 public :
-  const Zone_dis_base& zone_dis_base() const override { return la_zone_VF.valeur(); }
-  void associer_zone_dis_base(const Zone_dis_base& z_dis) override { la_zone_VF = ref_cast(Zone_VF, z_dis); }
   double valeur_au_bord(int face) const;
 
   DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&, double,int distant ) const override;
@@ -97,7 +95,6 @@ protected:
   Champ_base& le_champ(void) override { return *this; }
   const Champ_base& le_champ(void) const override { return *this; }
 
-  REF(Zone_VF) la_zone_VF;
   virtual void init_fcl() const;
   mutable IntTab fcl_;
   mutable int fcl_init_ = 0;

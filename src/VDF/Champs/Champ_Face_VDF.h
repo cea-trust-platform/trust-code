@@ -43,7 +43,7 @@ class Champ_Face_VDF : public Champ_Face_base, public Champ_Face_VDF_implementat
 public:
   int fixer_nb_valeurs_nodales(int) override;
 
-  inline const Zone_VDF& zone_vdf() const override { return ref_cast(Zone_VDF, ref_zone_vf_.valeur()); }
+  inline const Zone_VDF& zone_vdf() const override { return ref_cast(Zone_VDF, la_zone_VF.valeur()); }
   Champ_base& affecter_(const Champ_base&) override;
   virtual const Champ_Proto& affecter(const double x1, const double x2);
   virtual const Champ_Proto& affecter(const double x1, const double x2, const double x3);

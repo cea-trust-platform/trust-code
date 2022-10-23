@@ -341,7 +341,7 @@ DoubleVect& Champ_Face_VDF_implementation::valeur_aux_sommets_compo(const Domain
 
 DoubleTab& Champ_Face_VDF_implementation::remplir_coord_noeuds(DoubleTab& positions) const
 {
-  const Zone_VDF& la_zone_vdf = ref_cast(Zone_VDF,zone_dis_base());
+  const Zone_VDF& la_zone_vdf = ref_cast(Zone_VDF,zone_dis_base_impl());
   const DoubleTab& xv = la_zone_vdf.xv();
   int nb_fac = la_zone_vdf.nb_faces_tot();
   if ( (xv.dimension(0) == nb_fac ) && (xv.dimension(1) == Objet_U::dimension) )

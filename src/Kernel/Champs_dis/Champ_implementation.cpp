@@ -23,9 +23,9 @@
 
 const Zone& Champ_implementation::zone() const
 {
-  return zone_dis_base().zone();
+  return zone_dis_base_impl().zone();
 }
-const Zone_dis_base& Champ_implementation::zone_dis_base() const
+const Zone_dis_base& Champ_implementation::zone_dis_base_impl() const
 {
   const Champ_base& chbase=le_champ();
   if(sub_type(Champ_Inc_base, chbase))
@@ -43,7 +43,7 @@ const Zone_dis_base& Champ_implementation::zone_dis_base() const
       Cerr << le_champ().que_suis_je() << "do not know refer a Zone_dis_base" << finl;
       Process::exit();
       // Pour les compilos :
-      return zone_dis_base();
+      return zone_dis_base_impl();
     }
 }
 

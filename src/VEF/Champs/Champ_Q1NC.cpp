@@ -14,10 +14,9 @@
 *****************************************************************************/
 
 #include <Champ_Q1NC.h>
-#include <Zone_VEF.h>
+#include <Periodique.h>
 #include <Equation.h>
 #include <Debog.h>
-#include <Periodique.h>
 
 Implemente_instanciable(Champ_Q1NC,"Champ_Q1NC",Champ_Inc_base);
 
@@ -27,16 +26,6 @@ Entree& Champ_Q1NC::readOn(Entree& s)
 {
   lire_donnees(s) ;
   return s ;
-}
-
-const Zone_dis_base& Champ_Q1NC::zone_dis_base() const
-{
-  return la_zone_VEF.valeur();
-}
-
-void Champ_Q1NC::associer_zone_dis_base(const Zone_dis_base& z_dis)
-{
-  la_zone_VEF=ref_cast(Zone_VEF, z_dis);
 }
 
 //-Cas CL periodique : assure que les valeurs sur des faces periodiques
@@ -81,10 +70,9 @@ void Champ_Q1NC::verifie_valeurs_cl()
 
 int Champ_Q1NC::compo_normale_sortante(int num_face) const
 {
-  const Zone_VEF& zone_VEF = la_zone_VEF.valeur();
   double vit_norm = 0;
   for (int ncomp = 0; ncomp < nb_comp(); ncomp++)
-    vit_norm += (*this)(num_face, ncomp) * zone_VEF.face_normales(num_face, ncomp);
+    vit_norm += (*this)(num_face, ncomp) * zone_vef().face_normales(num_face, ncomp);
   return (vit_norm > 0);
 }
 
@@ -95,12 +83,11 @@ DoubleTab& Champ_Q1NC::trace(const Frontiere_dis_base& fr, DoubleTab& x, double 
 
 void Champ_Q1NC::cal_rot_ordre1(DoubleTab& vorticite)
 {
-  const Zone_VEF& zone_VEF = la_zone_VEF.valeur();
-  const int nb_elem = zone_VEF.nb_elem();
+  const int nb_elem = zone_vef().nb_elem();
 
   DoubleTab gradient_elem(0, dimension, dimension);
   // le tableau est initialise dans la methode gradient():
-  zone_VEF.zone().creer_tableau_elements(gradient_elem, Array_base::NOCOPY_NOINIT);
+  zone_vef().zone().creer_tableau_elements(gradient_elem, Array_base::NOCOPY_NOINIT);
 
   gradient(gradient_elem);
   Debog::verifier("apres calcul gradient", gradient_elem);
@@ -134,7 +121,7 @@ void Champ_Q1NC::cal_rot_ordre1(DoubleTab& vorticite)
 void Champ_Q1NC::gradient(DoubleTab& gradient_elem)
 {
   // Calcul du gradient de la vitesse pour le calcul de la vorticite
-  const Zone_VEF& zone_VEF = la_zone_VEF.valeur();
+  const Zone_VEF& zone_VEF = zone_vef();
   const DoubleTab& vitesse = equation().inconnue().valeurs();
 
   const DoubleTab& face_normales = zone_VEF.face_normales();

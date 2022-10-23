@@ -1763,7 +1763,7 @@ valeur_aux_sommets_compo(const Domaine& dom,
                          DoubleVect& champ_som,
                          int ncomp) const
 {
-  const Zone_dis_base& zone_dis = zone_dis_base();
+  const Zone_dis_base& zone_dis = zone_dis_base_impl();
   const Zone& mazone = zone_dis.zone();
   const DoubleTab& ch = le_champ().valeurs();
 

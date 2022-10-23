@@ -17,7 +17,6 @@
 #define Champ_P1_isoP1Bulle_included
 
 #include <Champ_P1iP1B_implementation.h>
-#include <Ref_Zone_VEF_PreP1b.h>
 #include <Zone_VEF_PreP1b.h>
 #include <Champ_Inc_base.h>
 
@@ -26,8 +25,6 @@ class Champ_P1_isoP1Bulle: public Champ_Inc_base, public Champ_P1iP1B_implementa
   Declare_instanciable(Champ_P1_isoP1Bulle);
 public:
   int fixer_nb_valeurs_nodales(int) override;
-  const Zone_dis_base& zone_dis_base() const override;
-  void associer_zone_dis_base(const Zone_dis_base&) override;
   DoubleTab& remplir_coord_noeuds(DoubleTab&) const override;
   DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const override;
 
@@ -40,7 +37,8 @@ public:
   Champ_base& affecter_(const Champ_base&) override;
   double norme_L2(const Domaine& dom) const;
 
-  inline const Zone_VEF_PreP1b& zone_vef() const override { return la_Zone_VEF_PreP1b.valeur(); }
+  inline const Zone_VEF_PreP1b& zone_vef() const override { return ref_cast(Zone_VEF_PreP1b, la_zone_VF.valeur()); }
+
   inline DoubleTab& valeur_aux_sommets(const Domaine& dom, DoubleTab& sommets) const override
   {
     return Champ_P1iP1B_implementation::valeur_aux_sommets(dom, sommets);
@@ -52,7 +50,6 @@ public:
   }
 
 protected:
-  REF(Zone_VEF_PreP1b) la_Zone_VEF_PreP1b;
   void completer(const Zone_Cl_dis_base& zcl) override;
 
 private:

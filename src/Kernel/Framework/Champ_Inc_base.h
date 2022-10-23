@@ -16,11 +16,13 @@
 #ifndef Champ_Inc_base_included
 #define Champ_Inc_base_included
 
-#include <Ref_Zone_Cl_dis.h>
 #include <Interface_blocs.h>
+#include <Ref_Zone_Cl_dis.h>
+#include <Ref_Zone_VF.h>
 #include <Ref_Objet_U.h>
 #include <Champ_base.h>
 #include <TRUSTTrav.h>
+#include <Zone_VF.h>
 #include <MorEqn.h>
 #include <Roue.h>
 
@@ -97,14 +99,17 @@ public:
   Champ_Inc_base& reculer(int i = 1);
 
   int lire_donnees(Entree&);
-
-  virtual void associer_eqn(const Equation_base&);
-  virtual void associer_zone_cl_dis(const Zone_Cl_dis&);
   int imprime(Sortie&, int) const override;
   int a_une_zone_dis_base() const override { return 1; }
 
+  virtual void associer_eqn(const Equation_base&);
+  virtual void associer_zone_cl_dis(const Zone_Cl_dis&);
+  void associer_zone_dis_base(const Zone_dis_base&) override;
+
   const Zone_Cl_dis& zone_Cl_dis() const;
   Zone_Cl_dis& zone_Cl_dis();
+  const Zone_dis_base& zone_dis_base() const override { return la_zone_VF.valeur(); }
+  const Zone_VF& zone_vf() const { return la_zone_VF.valeur(); }
 
   DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&, double, int distant) const override;
   virtual int remplir_coord_noeuds_et_polys(DoubleTab&, IntVect&) const;
@@ -137,6 +142,7 @@ protected:
 
   Roue_ptr les_valeurs;
   REF(Zone_Cl_dis) ma_zone_cl_dis;
+  REF(Zone_VF) la_zone_VF;
 
   /* pour les champs dependant d'autres Champ_Inc */
   fonc_calc_t fonc_calc_;  //fonction de calcul

@@ -16,8 +16,8 @@
 #ifndef Cond_lim_base_included
 #define Cond_lim_base_included
 
-#include <Champ_front.h>
 #include <Ref_Zone_Cl_dis_base.h>
+#include <Champ_front.h>
 #include <Champ_Inc.h>
 
 class Equation_base;

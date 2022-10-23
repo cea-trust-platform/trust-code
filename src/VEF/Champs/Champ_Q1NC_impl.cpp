@@ -242,7 +242,7 @@ DoubleTab& Champ_Q1NC_impl::valeur_aux_sommets(const Domaine& dom,
                                                DoubleTab& ch_som) const
 {
   // Cerr << "Champ_Q1NC_impl::valeur_aux_sommets " << finl;
-  const Zone_dis_base& zone_dis = zone_dis_base();
+  const Zone_dis_base& zone_dis = zone_dis_base_impl();
   const Zone& ma_zone = zone_dis.zone();
   int nb_elem_tot = ma_zone.nb_elem_tot(), nb_som = ma_zone.nb_som(), nb_som_elem = ma_zone.nb_som_elem();
   const Champ_base& cha=le_champ();
@@ -283,7 +283,7 @@ DoubleVect& Champ_Q1NC_impl::valeur_aux_sommets_compo(const Domaine& dom,
                                                       int ncomp) const
 {
   // Cerr << "Champ_Q1NC_impl::valeur_aux_sommets_compo " << finl;
-  const Zone_dis_base& zone_dis = zone_dis_base();
+  const Zone_dis_base& zone_dis = zone_dis_base_impl();
   const Zone& ma_zone = zone_dis.zone();
   int nb_elem_tot = ma_zone.nb_elem_tot(), nb_som = ma_zone.nb_som(), nb_som_elem = ma_zone.nb_som_elem();
   IntVect compteur(nb_som);

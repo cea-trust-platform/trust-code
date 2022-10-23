@@ -44,16 +44,6 @@ Sortie& Champ_Face_PolyMAC::printOn(Sortie& os) const
 
 Entree& Champ_Face_PolyMAC::readOn(Entree& is) { return is; }
 
-Champ_base& Champ_Face_PolyMAC::le_champ(void)
-{
-  return *this;
-}
-
-const Champ_base& Champ_Face_PolyMAC::le_champ(void) const
-{
-  return *this;
-}
-
 int Champ_Face_PolyMAC::fixer_nb_valeurs_nodales(int n)
 {
 
@@ -82,20 +72,19 @@ int Champ_Face_PolyMAC::fixer_nb_valeurs_nodales(int n)
 
 void Champ_Face_PolyMAC::init_auxiliary_variables()
 {
-  const Zone_PolyMAC& zone = ref_cast( Zone_PolyMAC,ref_zone_vf_.valeur());
   for (int n = 0; n < nb_valeurs_temporelles(); n++)
     if (futur(n).size_reelle_ok())
       {
         DoubleTab& vals = futur(n);
         vals.set_md_vector(MD_Vector()); //on enleve le MD_Vector...
-        vals.resize_dim0(zone.mdv_faces_aretes.valeur().get_nb_items_tot()); //...on dimensionne a la bonne taille...
-        vals.set_md_vector(zone.mdv_faces_aretes); //...et on remet le bon MD_Vector
+        vals.resize_dim0(zone_PolyMAC().mdv_faces_aretes.valeur().get_nb_items_tot()); //...on dimensionne a la bonne taille...
+        vals.set_md_vector(zone_PolyMAC().mdv_faces_aretes); //...et on remet le bon MD_Vector
       }
 }
 
 int Champ_Face_PolyMAC::reprendre(Entree& fich)
 {
-  const Zone_PolyMAC* zone = ref_zone_vf_.non_nul() ? &ref_cast( Zone_PolyMAC,ref_zone_vf_.valeur()) : NULL;
+  const Zone_PolyMAC* zone = la_zone_VF.non_nul() ? &ref_cast( Zone_PolyMAC,la_zone_VF.valeur()) : NULL;
   valeurs().set_md_vector(MD_Vector()); //on enleve le MD_Vector...
   valeurs().resize(0);
   int ret = Champ_Inc_base::reprendre(fich);
@@ -109,7 +98,7 @@ Champ_base& Champ_Face_PolyMAC::affecter_(const Champ_base& ch)
   const DoubleTab& v = ch.valeurs();
   DoubleTab_parts parts(valeurs());
   DoubleTab& val = parts[0]; //partie vitesses
-  const Zone_PolyMAC& zone = ref_cast( Zone_PolyMAC,ref_zone_vf_.valeur());
+  const Zone_PolyMAC& zone = zone_PolyMAC();
   int nb_faces = zone.nb_faces();
   const DoubleVect& surface = zone.face_surfaces();
   const DoubleTab& normales = zone.face_normales();
@@ -168,7 +157,7 @@ double Champ_Face_PolyMAC::valeur_a_elem_compo(const DoubleVect& position, int p
 /* vitesse aux elements */
 void Champ_Face_PolyMAC::interp_ve(const DoubleTab& inco, DoubleTab& val, bool is_vit) const
 {
-  const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,zone_vf());
+  const Zone_PolyMAC& zone = zone_PolyMAC();
   const DoubleTab& xv = zone.xv(), &xp = zone.xp();
   const DoubleVect& fs = zone.face_surfaces(), *ppf = mon_equation_non_nul() ? &equation().milieu().porosite_face() : NULL, *ppe = ppf ? &equation().milieu().porosite_elem() : NULL, &ve = zone.volumes();
   const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
@@ -186,7 +175,7 @@ void Champ_Face_PolyMAC::interp_ve(const DoubleTab& inco, DoubleTab& val, bool i
 /* vitesse aux elements sur une liste d'elements */
 void Champ_Face_PolyMAC::interp_ve(const DoubleTab& inco, const IntVect& les_polys, DoubleTab& val, bool is_vit) const
 {
-  const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,zone_vf());
+  const Zone_PolyMAC& zone = zone_PolyMAC();
   const DoubleTab& xv = zone.xv(), &xp = zone.xp();
   const DoubleVect& fs = zone.face_surfaces(), *ppf = mon_equation_non_nul() ? &equation().milieu().porosite_face() : NULL, *ppe = ppf ? &equation().milieu().porosite_elem() : NULL, &ve = zone.volumes();
   const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
@@ -231,13 +220,12 @@ DoubleTab& Champ_Face_PolyMAC::valeur_aux_elems(const DoubleTab& positions, cons
     }
 
   //on interpole ve sur tous les elements, puis on se restreint a les_polys
-  const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,zone_vf());
   DoubleTrav ve(0, N * D);
-  zone.zone().domaine().creer_tableau_elements(ve);
+  zone_PolyMAC().zone().domaine().creer_tableau_elements(ve);
   bool is_vit = cha.le_nom().debute_par("vitesse") && !cha.le_nom().debute_par("vitesse_debitante");
   interp_ve(cha.valeurs(), ve, is_vit);
   for (int p = 0; p < les_polys.size(); p++)
-    for (int r = 0, e = les_polys(p); e < zone.nb_elem() && r < N * D; r++) val(p, r) = (e==-1) ? 0. : ve(e, r);
+    for (int r = 0, e = les_polys(p); e < zone_PolyMAC().nb_elem() && r < N * D; r++) val(p, r) = (e==-1) ? 0. : ve(e, r);
   return val;
 }
 
@@ -247,9 +235,8 @@ DoubleVect& Champ_Face_PolyMAC::valeur_aux_elems_compo(const DoubleTab& position
   assert(val.size() == polys.size());
 
   //on interpole ve sur tous les elements, puis on se restreint a les_polys
-  const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,zone_vf());
   DoubleTrav ve(0, dimension * cha.valeurs().line_size());
-  zone.zone().domaine().creer_tableau_elements(ve);
+  zone_PolyMAC().zone().domaine().creer_tableau_elements(ve);
   interp_ve(cha.valeurs(), ve);
 
   for (int p = 0; p < polys.size(); p++) val(p) = (polys(p) == -1) ? 0. : ve(polys(p), ncomp);
@@ -283,7 +270,7 @@ DoubleTab& Champ_Face_PolyMAC::valeur_aux_faces(DoubleTab& val) const
       Process::exit();
     }
 
-  const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,zone_vf());
+  const Zone_PolyMAC& zone = zone_PolyMAC();
   val.resize(zone.nb_faces(), N * D);
 
   for (int f = 0; f < zone.nb_faces(); f++)
@@ -304,12 +291,11 @@ DoubleTab& Champ_Face_PolyMAC::trace(const Frontiere_dis_base& fr, DoubleTab& x,
   const DoubleTab& val = valeurs(t);
   int n, N = val.line_size(), d, D = dimension, dim = vectoriel ? D : 1;
   const Front_VF& fr_vf = ref_cast(Front_VF, fr);
-  const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,zone_vf());
-  const IntTab& face_voisins = zone.face_voisins();
+  const IntTab& face_voisins = zone_PolyMAC().face_voisins();
   DoubleTrav ve(0, N * D);
   if (vectoriel)
     {
-      zone.zone().domaine().creer_tableau_elements(ve);
+      zone_PolyMAC().zone().domaine().creer_tableau_elements(ve);
       interp_ve(val, ve);
     }
 
@@ -332,5 +318,5 @@ DoubleTab& Champ_Face_PolyMAC::trace(const Frontiere_dis_base& fr, DoubleTab& x,
 
 int Champ_Face_PolyMAC::nb_valeurs_nodales() const
 {
-  return ref_cast(Zone_PolyMAC,zone_vf()).nb_faces(); //on ignore les variables auxiliaires
+  return zone_PolyMAC().nb_faces(); //on ignore les variables auxiliaires
 }

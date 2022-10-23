@@ -184,16 +184,6 @@ Champ_base& Champ_P1_isoP1Bulle::affecter_(const Champ_base& ch)
 
 }
 
-const Zone_dis_base& Champ_P1_isoP1Bulle::zone_dis_base() const
-{
-  return la_Zone_VEF_PreP1b.valeur();
-}
-
-void Champ_P1_isoP1Bulle::associer_zone_dis_base(const Zone_dis_base& une_zone_dis_base)
-{
-  la_Zone_VEF_PreP1b = ref_cast(Zone_VEF_PreP1b, une_zone_dis_base);
-}
-
 DoubleTab& Champ_P1_isoP1Bulle::remplir_coord_noeuds(DoubleTab& coord) const
 {
   return Champ_P1iP1B_implementation::remplir_coord_noeuds(coord);
@@ -235,7 +225,7 @@ DoubleTab& Champ_P1_isoP1Bulle::trace(const Frontiere_dis_base& fr, DoubleTab& x
 double Champ_P1_isoP1Bulle::valeur_au_bord(int face) const
 {
   const DoubleTab& val = valeurs();
-  const Zone_VEF_PreP1b& zone_VEF = la_Zone_VEF_PreP1b.valeur();
+  const Zone_VEF_PreP1b& zone_VEF = zone_vef();
   const IntTab& face_voisins = zone_VEF.face_voisins();
   const IntTab& som_elem = zone_VEF.zone().les_elems();
   int nps = zone_VEF.numero_premier_sommet();
@@ -245,7 +235,7 @@ double Champ_P1_isoP1Bulle::valeur_au_bord(int face) const
     {
       Cerr << "Erreur dans Champ_P1_isoP1Bulle::valeur_au_bord." << finl;
       Cerr << "La face n'est pas une face de bord." << finl;
-      exit();
+      Process::exit();
     }
 
   int som_opp = zone_VEF.get_num_fac_loc(face, 0);

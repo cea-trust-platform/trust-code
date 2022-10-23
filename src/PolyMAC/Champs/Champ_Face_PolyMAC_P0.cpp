@@ -36,16 +36,9 @@
 
 Implemente_instanciable(Champ_Face_PolyMAC_P0,"Champ_Face_PolyMAC_P0",Champ_Face_PolyMAC) ;
 
-Sortie& Champ_Face_PolyMAC_P0::printOn(Sortie& os) const
-{
-  os << que_suis_je() << " " << le_nom();
-  return os;
-}
+Sortie& Champ_Face_PolyMAC_P0::printOn(Sortie& os) const { return os << que_suis_je() << " " << le_nom(); }
 
-Entree& Champ_Face_PolyMAC_P0::readOn(Entree& is)
-{
-  return is;
-}
+Entree& Champ_Face_PolyMAC_P0::readOn(Entree& is) { return is; }
 
 int Champ_Face_PolyMAC_P0::fixer_nb_valeurs_nodales(int n)
 {
@@ -58,9 +51,7 @@ int Champ_Face_PolyMAC_P0::fixer_nb_valeurs_nodales(int n)
   // pour recuperer la zone discrete...
 
   const Champ_Inc_base& self = ref_cast(Champ_Inc_base, *this);
-  const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0,self.zone_dis_base());
-
-  assert(n == zone.nb_faces() || n < 0);
+  assert(n == zone_PolyMAC_P0().nb_faces() || n < 0);
 
   // Probleme: nb_comp vaut dimension mais on ne veut qu'une dimension !!!
   // HACK :
@@ -69,27 +60,26 @@ int Champ_Face_PolyMAC_P0::fixer_nb_valeurs_nodales(int n)
 
 
   /* variables : valeurs normales aux faces, puis valeurs aux elements par blocs -> pour que line_size() marche */
-  creer_tableau_distribue(zone.md_vector_faces());
+  creer_tableau_distribue(zone_PolyMAC_P0().md_vector_faces());
   nb_compo_ = old_nb_compo;
   return n;
 }
 
 void Champ_Face_PolyMAC_P0::init_auxiliary_variables()
 {
-  const Zone_PolyMAC_P0& zone = ref_cast( Zone_PolyMAC_P0,ref_zone_vf_.valeur());
   for (int n = 0; n < nb_valeurs_temporelles(); n++)
     {
       DoubleTab& vals = futur(n);
       vals.set_md_vector(MD_Vector()); //on enleve le MD_Vector...
-      vals.resize_dim0(zone.mdv_ch_face.valeur().get_nb_items_tot()); //...on dimensionne a la bonne taille...
-      vals.set_md_vector(zone.mdv_ch_face); //...et on remet le bon MD_Vector
+      vals.resize_dim0(zone_PolyMAC_P0().mdv_ch_face.valeur().get_nb_items_tot()); //...on dimensionne a la bonne taille...
+      vals.set_md_vector(zone_PolyMAC_P0().mdv_ch_face); //...et on remet le bon MD_Vector
       update_ve(vals);
     }
 }
 
 Champ_base& Champ_Face_PolyMAC_P0::affecter_(const Champ_base& ch)
 {
-  const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0,ref_zone_vf_.valeur());
+  const Zone_PolyMAC_P0& zone = zone_PolyMAC_P0();
   const DoubleVect& fs = zone.face_surfaces();
   const DoubleTab& nf = zone.face_normales(), &xv = zone.xv();
   DoubleTab& val = valeurs(), eval;
@@ -120,7 +110,7 @@ Champ_base& Champ_Face_PolyMAC_P0::affecter_(const Champ_base& ch)
 
 void Champ_Face_PolyMAC_P0::update_ve(DoubleTab& val) const
 {
-  const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0,zone_vf());
+  const Zone_PolyMAC_P0& zone = zone_PolyMAC_P0();
   if (valeurs().get_md_vector() != zone.mdv_ch_face) return; //pas de variables auxiliaires -> rien a faire
   const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes(), *pf = mon_equation_non_nul() ? &equation().milieu().porosite_face() : NULL , *pe = pf ? &equation().milieu().porosite_elem() : NULL;
   const DoubleTab& xp = zone.xp(), &xv = zone.xv();
@@ -144,7 +134,7 @@ void Champ_Face_PolyMAC_P0::init_ve2() const
   Cerr << "Internal error with nvc++: Internal error: read_memory_region: not all expected entries were read." << finl;
   Process::exit();
 #else
-  const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0,zone_vf());
+  const Zone_PolyMAC_P0& zone = zone_PolyMAC_P0();
   if (ve2d.dimension(0) || valeurs().get_md_vector() != zone.mdv_ch_face) return; //deja initialise ou pas de variables auxiliaires
   const DoubleVect& pf = equation().milieu().porosite_face(), &pe = equation().milieu().porosite_elem(), &fs = zone.face_surfaces(), &ve = zone.volumes();
   const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &nf = zone.face_normales();
@@ -246,7 +236,7 @@ void Champ_Face_PolyMAC_P0::init_ve2() const
 /* met en coherence les composantes aux elements avec les vitesses aux faces : interpole sur phi * v */
 void Champ_Face_PolyMAC_P0::update_ve2(DoubleTab& val, int incr) const
 {
-  const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0,zone_vf());
+  const Zone_PolyMAC_P0& zone = zone_PolyMAC_P0();
   if (valeurs().get_md_vector() != zone.mdv_ch_face) return; //pas de variables auxiliaires -> on sort
   const Conds_lim& cls = zone_Cl_dis().les_conditions_limites();
   int i, j, e, ed, d, D = dimension, n, N = val.line_size(), nf_tot = zone.nb_faces_tot();
@@ -272,7 +262,7 @@ void Champ_Face_PolyMAC_P0::update_ve2(DoubleTab& val, int incr) const
 
 DoubleTab& Champ_Face_PolyMAC_P0::valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val) const
 {
-  const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0,zone_vf());
+  const Zone_PolyMAC_P0& zone = zone_PolyMAC_P0();
   if (valeurs().get_md_vector() != zone.mdv_ch_face) return Champ_Face_PolyMAC::valeur_aux_elems(positions, les_polys, val);
   const Champ_base& cha=le_champ();
   int nb_compo=cha.nb_comp(), nf_tot = zone.nb_faces_tot(), d, D = dimension, n, N = valeurs().line_size();
@@ -304,9 +294,8 @@ DoubleTab& Champ_Face_PolyMAC_P0::valeur_aux_elems(const DoubleTab& positions, c
 
 DoubleVect& Champ_Face_PolyMAC_P0::valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& val, int ncomp) const
 {
-  const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0,zone_vf());
-  if (valeurs().get_md_vector() != zone.mdv_ch_face) return Champ_Face_PolyMAC::valeur_aux_elems_compo(positions, polys, val, ncomp);
-  int nf_tot = zone.nb_faces_tot(), D = dimension, N = valeurs().line_size();
+  if (valeurs().get_md_vector() != zone_PolyMAC_P0().mdv_ch_face) return Champ_Face_PolyMAC::valeur_aux_elems_compo(positions, polys, val, ncomp);
+  int nf_tot = zone_PolyMAC_P0().nb_faces_tot(), D = dimension, N = valeurs().line_size();
   assert(val.size() == polys.size());
 
   DoubleTab vfe(valeurs());
@@ -320,7 +309,7 @@ DoubleVect& Champ_Face_PolyMAC_P0::valeur_aux_elems_compo(const DoubleTab& posit
 DoubleTab& Champ_Face_PolyMAC_P0::trace(const Frontiere_dis_base& fr, DoubleTab& x, double t, int distant) const
 {
   assert(distant==0);
-  const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0,zone_vf());
+  const Zone_PolyMAC_P0& zone = zone_PolyMAC_P0();
   if (valeurs().get_md_vector() != zone.mdv_ch_face) return Champ_Face_PolyMAC::trace(fr, x, t, distant);
   const bool vectoriel = (le_champ().nb_comp() > 1);
   const int dim = vectoriel ? dimension : 1, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();

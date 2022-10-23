@@ -17,11 +17,8 @@
 #define Champ_Face_PolyMAC_P0_included
 
 #include <Champ_Face_PolyMAC.h>
-#include <Zone_VF.h>
-#include <Ref_Zone_VF.h>
-
-#include <SolveurSys.h>
 #include <Zone_PolyMAC_P0.h>
+#include <SolveurSys.h>
 
 /*! @brief : class Champ_Face_PolyMAC_P0
  *
@@ -34,10 +31,10 @@
 
 class Champ_Face_PolyMAC_P0 : public Champ_Face_PolyMAC
 {
-
   Declare_instanciable(Champ_Face_PolyMAC_P0) ;
 
 public :
+  inline const Zone_PolyMAC_P0& zone_PolyMAC_P0() const { return ref_cast(Zone_PolyMAC_P0, la_zone_VF.valeur()); }
 
   int fixer_nb_valeurs_nodales(int n) override;
   void init_auxiliary_variables() override; /* demande l'ajout des variables auxiliaires (\vec v aux elements) */
@@ -61,7 +58,7 @@ public :
   */
   inline double v_norm(const DoubleTab& val, const DoubleTab& val_f, int e, int f, int k, int l, double *v_ext, double *dnv) const
   {
-    const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0, zone_dis_base());
+    const Zone_PolyMAC_P0& zone = zone_PolyMAC_P0();
     int d, D = dimension, nf_tot = zone.nb_faces_tot();
     const DoubleTab& nf = zone.face_normales();
     const DoubleVect& fs = zone.face_surfaces();

@@ -541,7 +541,7 @@ void VDF_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch,
   if (sub_type(Champ_Face_VDF,ch_vitesse.valeur()))
     {
       const Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF,ch_vitesse.valeur());
-      const Zone_VDF& zone_VDF = ref_cast(Zone_VDF,vit.zone_vf());
+      const Zone_VDF& zone_VDF = ref_cast(Zone_VDF,vit.zone_dis_base());
       ch.typer("Rotationnel_Champ_Face");
       Rotationnel_Champ_Face& ch_W=ref_cast(Rotationnel_Champ_Face,ch.valeur());
       ch_W.associer_zone_dis_base(zone_VDF);

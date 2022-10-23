@@ -26,15 +26,10 @@ Implemente_base(Champ_Face_base,"Champ_Face_base",Champ_Inc_base) ;
 Sortie& Champ_Face_base::printOn(Sortie& os) const { return os; }
 Entree& Champ_Face_base::readOn(Entree& is) { return is; }
 
-void Champ_Face_base::associer_zone_dis_base(const Zone_dis_base& z_dis)
-{
-  ref_zone_vf_ = ref_cast(Zone_VF, z_dis);
-}
-
 //tableaux de correspondance pour les CLs
 void Champ_Face_base::init_fcl() const
 {
-  const Zone_VF& zone = ref_cast(Zone_VF,ref_zone_vf_.valeur());
+  const Zone_VF& zone = ref_cast(Zone_VF,la_zone_VF.valeur());
   const Conds_lim& cls = zone_Cl_dis().les_conditions_limites();
   int i, f, n;
 

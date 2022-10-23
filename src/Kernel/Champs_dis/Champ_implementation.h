@@ -23,7 +23,6 @@ class Zone;
 class Zone_dis_base;
 class Champ_base;
 
-//
 class Champ_implementation
 {
 public:
@@ -40,7 +39,7 @@ protected:
   virtual const Champ_base& le_champ() const =0;
   virtual Champ_base& le_champ() =0;
   const Zone& zone() const;
-  virtual const Zone_dis_base& zone_dis_base() const;
+  virtual const Zone_dis_base& zone_dis_base_impl() const;
 };
 
 #endif

@@ -17,21 +17,21 @@
 #define Champ_Face_PolyMAC_included
 
 #include <Champ_Face_base.h>
-#include <SolveurSys.h>
 #include <Zone_PolyMAC.h>
+#include <SolveurSys.h>
 
 /*! @brief : class Champ_Face_PolyMAC
  *
  *  Champ correspondant a une inconnue decrite par ses flux aux faces (type vitesse)
  *  Degres de libertes : composante normale aux faces + composante tangentielle aux aretes de la vorticite
  *
- *
  */
-
 class Champ_Face_PolyMAC : public Champ_Face_base
 {
   Declare_instanciable(Champ_Face_PolyMAC) ;
 public :
+  inline const Zone_PolyMAC& zone_PolyMAC() const { return ref_cast(Zone_PolyMAC, la_zone_VF.valeur()); }
+
   DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const override;
   double valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const override;
   DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const override;
@@ -56,8 +56,8 @@ public :
   void interp_ve(const DoubleTab& inco, const IntVect&, DoubleTab& val, bool is_vit = true) const;
 
 protected:
-  virtual Champ_base& le_champ(void);
-  virtual const Champ_base& le_champ(void) const;
+  virtual Champ_base& le_champ() { return *this; }
+  virtual const Champ_base& le_champ() const { return *this; }
 };
 
 

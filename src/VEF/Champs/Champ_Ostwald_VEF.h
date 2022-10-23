@@ -16,14 +16,11 @@
 #ifndef Champ_Ostwald_VEF_included
 #define Champ_Ostwald_VEF_included
 
-
-
-
-#include <Champ_Ostwald.h>
-#include <Champ_P1NC.h>
-#include <Ref_Champ_P1NC.h>
 #include <Ref_Navier_Stokes_std.h>
-
+#include <Ref_Champ_P1NC.h>
+#include <Champ_Ostwald.h>
+#include <Ref_Zone_VEF.h>
+#include <Champ_P1NC.h>
 
 class Navier_Stokes_std;
 

@@ -17,10 +17,11 @@
 #define Champ_P1NC_included
 
 #include <Champ_P1NC_implementation.h>
-#include <Ref_Zone_VEF.h>
 #include <Zone_Cl_VEF.h>
+#include <Zone_VEF.h>
 #include <Champ_Inc.h>
 #include <Ok_Perio.h>
+
 /*! @brief class Champ_P1NC
  *
  *  Rq : cette classe est specifique au module VEF
@@ -41,8 +42,6 @@ public:
   void calcul_grad_T(const Zone_Cl_VEF&, DoubleTab&) const;
   void calcul_grad_U(const Zone_Cl_VEF&, DoubleTab&) const;
   void calcul_h_conv(const Zone_Cl_VEF&, DoubleTab&, int temp_ref) const;
-  void associer_zone_dis_base(const Zone_dis_base&) override;
-  const Zone_dis_base& zone_dis_base() const override;
   int compo_normale_sortante(int) const;
   DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&, double, int distant) const override;
   void cal_rot_ordre1(DoubleTab&) const;
@@ -63,7 +62,7 @@ public:
   static double calculer_integrale_volumique(const Zone_VEF&, const DoubleVect&, Ok_Perio ok);
 
   // Methodes inlines
-  inline const Zone_VEF& zone_vef() const override { return la_zone_VEF.valeur(); }
+  inline const Zone_VEF& zone_vef() const override { return ref_cast(Zone_VEF, la_zone_VF.valeur()); }
   inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const override
   {
     return Champ_P1NC_implementation::valeur_a_elem(position, val, le_poly);
@@ -134,9 +133,7 @@ public:
     Champ_P1NC_implementation::filtrer_resu(x);
   }
 
-
 private:
-  REF(Zone_VEF) la_zone_VEF;
   inline const Champ_base& le_champ() const override { return *this; }
   inline Champ_base& le_champ() override { return *this; }
 };

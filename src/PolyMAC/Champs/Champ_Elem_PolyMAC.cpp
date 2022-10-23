@@ -35,6 +35,11 @@ Entree& Champ_Elem_PolyMAC::readOn(Entree& s)
   return s ;
 }
 
+const Zone_PolyMAC& Champ_Elem_PolyMAC::zone_PolyMAC() const
+{
+  return ref_cast(Zone_PolyMAC, la_zone_VF.valeur());
+}
+
 int Champ_Elem_PolyMAC::imprime(Sortie& os, int ncomp) const
 {
   const Zone_dis_base& zone_dis = zone_dis_base();
@@ -74,7 +79,7 @@ int Champ_Elem_PolyMAC::nb_valeurs_nodales() const
 
 void Champ_Elem_PolyMAC::init_auxiliary_variables()
 {
-  const Zone_PolyMAC& zone = ref_cast( Zone_PolyMAC,la_zone_VF.valeur());
+  const Zone_PolyMAC& zone = zone_PolyMAC();
   const IntTab& f_e = zone.face_voisins();
   for (int n = 0; n < nb_valeurs_temporelles(); n++)
     if (futur(n).size_reelle_ok())
@@ -104,7 +109,7 @@ int Champ_Elem_PolyMAC::reprendre(Entree& fich)
 
 Champ_base& Champ_Elem_PolyMAC::affecter_(const Champ_base& ch)
 {
-  const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,la_zone_VF.valeur());
+  const Zone_PolyMAC& zone = zone_PolyMAC();
   if (ch.valeurs().dimension_tot(0) > zone.nb_elem_tot())
     init_auxiliary_variables(), valeurs() = ch.valeurs();
   else
@@ -118,7 +123,7 @@ Champ_base& Champ_Elem_PolyMAC::affecter_(const Champ_base& ch)
 
 DoubleTab& Champ_Elem_PolyMAC::valeur_aux_faces(DoubleTab& dst) const
 {
-  const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, zone_dis_base());
+  const Zone_PolyMAC& zone = zone_PolyMAC();
   const IntTab& f_e = zone.face_voisins();
   const DoubleTab& src = valeurs();
 

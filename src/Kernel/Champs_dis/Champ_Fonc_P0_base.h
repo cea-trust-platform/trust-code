@@ -22,17 +22,10 @@
 
 /*! @brief : class Champ_Fonc_P0_base
  *
- *  Decrire ici la classe Champ_Fonc_P0_base
- *
- *
- *
  */
-
 class Champ_Fonc_P0_base : public Champ_Fonc_base, public Champ_implementation_P0
 {
-
   Declare_base(Champ_Fonc_P0_base);
-
 protected :
   Champ_base& le_champ(void) override      ;
   const Champ_base& le_champ(void) const override;

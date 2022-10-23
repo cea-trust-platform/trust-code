@@ -29,6 +29,8 @@ class Champ_Elem_PolyMAC : public Champ_Inc_P0_base
 {
   Declare_instanciable(Champ_Elem_PolyMAC);
 public :
+  const Zone_PolyMAC& zone_PolyMAC() const;
+
   Champ_base& affecter_(const Champ_base& ch) override;
   int imprime(Sortie&, int) const override;
 

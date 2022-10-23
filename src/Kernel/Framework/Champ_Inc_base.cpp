@@ -686,6 +686,11 @@ void Champ_Inc_base::associer_zone_cl_dis(const Zone_Cl_dis& zcl)
   ma_zone_cl_dis = zcl;
 }
 
+void Champ_Inc_base::associer_zone_dis_base(const Zone_dis_base& z_dis)
+{
+  la_zone_VF = ref_cast(Zone_VF, z_dis);
+}
+
 const Zone_Cl_dis& Champ_Inc_base::zone_Cl_dis() const
 {
   if (!ma_zone_cl_dis.non_nul())

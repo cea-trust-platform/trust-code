@@ -13,22 +13,13 @@
 *
 *****************************************************************************/
 
-/*! @brief Reference a une Frontiere
- *
- */
-
-
 #ifndef RefFrontiere_inclus
 #define RefFrontiere_inclus
 
 #include <Ref.h>
 #include <List.h>
-// Pour Ref<Frontiere>
 class Frontiere;
 Declare_ref(Frontiere);
 Declare_liste(REF(Frontiere));
-
-// .SECTION voir aussi
-// Frontiere
 
 #endif
