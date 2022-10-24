@@ -208,7 +208,18 @@ bool SETS::iterer_eqn(Equation_base& eqn, const DoubleTab& inut, DoubleTab& curr
 
   /* equations non resolues directement : Masse_Multiphase (toujours), Energie_Multiphase (en ICE), Convection_Diffusion_std i.e. quantites turbulentes (en ICE) */
   if (sub_type(Masse_Multiphase, eqn) || (!sets_ && sub_type(Energie_Multiphase, eqn))|| (!sets_ && sub_type(Convection_Diffusion_std, eqn)))
-    return true;
+    {
+      if (eqn.positive_unkown()==1)
+        {
+          DoubleTrav incr ;
+          incr = current;
+          incr -= eqn.inconnue()->valeurs();
+          unknown_positivation(eqn.inconnue()->valeurs(), incr);
+          incr += eqn.inconnue()->valeurs();
+          current = incr;
+        }
+      return true;
+    }
 
   /* QDM_Multiphase: resolue par iterer_NS */
   if (sub_type(QDM_Multiphase, eqn))
