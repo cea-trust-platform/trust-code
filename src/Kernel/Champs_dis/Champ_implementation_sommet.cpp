@@ -13,13 +13,13 @@
 *
 *****************************************************************************/
 
-#include <Champ_implementation_sommet_base.h>
+#include <Champ_implementation_sommet.h>
 #include <Champ_base.h>
 #include <TRUSTTrav.h>
 #include <Zone_VF.h>
 #include <Domaine.h>
 
-DoubleVect& Champ_implementation_sommet_base::valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const
+DoubleVect& Champ_implementation_sommet::valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const
 {
   const Champ_base& ch_base = le_champ();
   int nb_components = ch_base.nb_comp();
@@ -36,7 +36,7 @@ DoubleVect& Champ_implementation_sommet_base::valeur_a_elem(const DoubleVect& po
   return result;
 }
 
-double Champ_implementation_sommet_base::valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const
+double Champ_implementation_sommet::valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const
 {
   const Champ_base& ch_base = le_champ();
   const DoubleTab& values = ch_base.valeurs();
@@ -52,7 +52,7 @@ double Champ_implementation_sommet_base::valeur_a_elem_compo(const DoubleVect& p
   return resu(0, 0);
 }
 
-DoubleTab& Champ_implementation_sommet_base::valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const
+DoubleTab& Champ_implementation_sommet::valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const
 {
   const Champ_base& ch_base = le_champ();
   const DoubleTab& values = ch_base.valeurs();
@@ -62,7 +62,7 @@ DoubleTab& Champ_implementation_sommet_base::valeur_aux_elems(const DoubleTab& p
   return result;
 }
 
-DoubleVect& Champ_implementation_sommet_base::valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& result, int ncomp) const
+DoubleVect& Champ_implementation_sommet::valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& result, int ncomp) const
 {
   const Champ_base& ch_base = le_champ();
   const DoubleTab& values = ch_base.valeurs();
@@ -78,7 +78,7 @@ DoubleVect& Champ_implementation_sommet_base::valeur_aux_elems_compo(const Doubl
   return result;
 }
 
-DoubleTab Champ_implementation_sommet_base::valeur_aux_bords() const
+DoubleTab Champ_implementation_sommet::valeur_aux_bords() const
 {
   const Zone_VF& zone = get_zone_dis();
   const IntTab& f_s = zone.face_sommets();
@@ -96,7 +96,7 @@ DoubleTab Champ_implementation_sommet_base::valeur_aux_bords() const
   return result;
 }
 
-DoubleTab& Champ_implementation_sommet_base::remplir_coord_noeuds(DoubleTab& positions) const
+DoubleTab& Champ_implementation_sommet::remplir_coord_noeuds(DoubleTab& positions) const
 {
   const Zone& zone = get_zone_geom();
   positions.resize(zone.nb_som(), Objet_U::dimension);
@@ -104,7 +104,7 @@ DoubleTab& Champ_implementation_sommet_base::remplir_coord_noeuds(DoubleTab& pos
   return positions;
 }
 
-int Champ_implementation_sommet_base::remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const
+int Champ_implementation_sommet::remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const
 {
   const Zone& zone = get_zone_geom();
   positions.resize(zone.nb_som(), Objet_U::dimension);
@@ -113,7 +113,7 @@ int Champ_implementation_sommet_base::remplir_coord_noeuds_et_polys(DoubleTab& p
   return 1;
 }
 
-DoubleTab& Champ_implementation_sommet_base::valeur_aux_sommets_impl(DoubleTab& result) const
+DoubleTab& Champ_implementation_sommet::valeur_aux_sommets_impl(DoubleTab& result) const
 {
   const Champ_base& ch_base = le_champ();
   const DoubleTab& values = ch_base.valeurs();
@@ -128,7 +128,7 @@ DoubleTab& Champ_implementation_sommet_base::valeur_aux_sommets_impl(DoubleTab& 
   return result;
 }
 
-DoubleVect& Champ_implementation_sommet_base::valeur_aux_sommets_compo_impl(DoubleVect& result, int ncomp) const
+DoubleVect& Champ_implementation_sommet::valeur_aux_sommets_compo_impl(DoubleVect& result, int ncomp) const
 {
   const Champ_base& ch_base = le_champ();
   const DoubleTab& values = ch_base.valeurs();

@@ -57,12 +57,12 @@ public:
 
   inline DoubleTab& valeur_aux_sommets(const Domaine& domain, DoubleTab& result) const override
   {
-    return Champ_implementation_base::valeur_aux_sommets(domain, result);
+    return Champ_implementation::valeur_aux_sommets(domain, result);
   }
 
   inline DoubleVect& valeur_aux_sommets_compo(const Domaine& domain, DoubleVect& result, int ncomp) const override
   {
-    return Champ_implementation_base::valeur_aux_sommets_compo(domain, result, ncomp);
+    return Champ_implementation::valeur_aux_sommets_compo(domain, result, ncomp);
   }
 
 protected :

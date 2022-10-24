@@ -27,21 +27,25 @@ class Champ_implementation
 {
 public:
   virtual ~Champ_implementation() { }
-  virtual DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const = 0;
-  virtual double valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const = 0;
-  virtual DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const = 0;
-  virtual DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const = 0;
-  virtual DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const = 0;
-  virtual DoubleVect& valeur_aux_sommets_compo(const Domaine&, DoubleVect&, int) const = 0;
-  virtual DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const = 0;
-  virtual int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const = 0;
+  virtual DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const =0;
+  virtual double valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const =0;
+  virtual DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const =0;
+  virtual DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& result, int ncomp) const =0;
+  virtual DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const =0;
+  virtual int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const =0;
+
+  // pas pure ...
+  virtual DoubleTab& valeur_aux_sommets(const Domaine& domain, DoubleTab& result) const;
+  virtual DoubleVect& valeur_aux_sommets_compo(const Domaine& domain, DoubleVect& result, int ncomp) const;
 
 protected:
   const Zone_VF& get_zone_dis() const;
   const Zone& get_zone_geom() const;
 
-  virtual Champ_base& le_champ() = 0;
-  virtual const Champ_base& le_champ() const = 0;
+  virtual Champ_base& le_champ() =0;
+  virtual const Champ_base& le_champ() const =0;
+  virtual DoubleTab& valeur_aux_sommets_impl(DoubleTab& result) const =0;
+  virtual DoubleVect& valeur_aux_sommets_compo_impl(DoubleVect& result, int ncomp) const =0;
 };
 
-#endif /* Champ_implementation_included */
+#endif /* Champ_implementation_inclus */

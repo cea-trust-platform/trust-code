@@ -13,20 +13,20 @@
 *
 *****************************************************************************/
 
-#ifndef Champ_Q1NC_impl_included
-#define Champ_Q1NC_impl_included
+#ifndef Champ_Q1NC_implementation_included
+#define Champ_Q1NC_implementation_included
 
-#include <Champ_implementation.h>
+#include <Champ_implementation_divers.h>
 #include <Frontiere_dis_base.h>
 #include <Frontiere.h>
 #include <TRUSTTab.h>
 
 class Zone_VEF;
 
-class Champ_Q1NC_impl: public Champ_implementation
+class Champ_Q1NC_implementation: public Champ_implementation_divers
 {
 public:
-  ~Champ_Q1NC_impl() override { }
+  ~Champ_Q1NC_implementation() override { }
   inline double fonction_forme_2D(double x, double y, int le_poly, int face);
   inline static double fonction_forme_2D_normalise(double x, double y, int face);
   inline double fonction_forme_3D(double x, double y, double z, int le_poly, int face);
@@ -55,7 +55,7 @@ protected:
   DoubleTab tab_param;
 };
 
-inline double Champ_Q1NC_impl::fonction_forme_2D(double x, double y, int le_poly, int face)
+inline double Champ_Q1NC_implementation::fonction_forme_2D(double x, double y, int le_poly, int face)
 {
   double ksi, eta;
   ksi = tab_param(le_poly, 0) * x + tab_param(le_poly, 1) * y + tab_param(le_poly, 2);
@@ -66,7 +66,7 @@ inline double Champ_Q1NC_impl::fonction_forme_2D(double x, double y, int le_poly
   return fonction_de_forme;
 }
 
-inline double Champ_Q1NC_impl::fonction_forme_3D(double x, double y, double z, int le_poly, int face)
+inline double Champ_Q1NC_implementation::fonction_forme_3D(double x, double y, double z, int le_poly, int face)
 {
   double ksi, eta, psi;
 
@@ -82,7 +82,7 @@ inline double Champ_Q1NC_impl::fonction_forme_3D(double x, double y, double z, i
 
 }
 
-inline double Champ_Q1NC_impl::fonction_forme_2D_normalise(double ksi, double eta, int face)
+inline double Champ_Q1NC_implementation::fonction_forme_2D_normalise(double ksi, double eta, int face)
 {
   // la fonction de forme est calculer dans la base (ksi), (eta).
   // aux milieu des faces.
@@ -117,7 +117,7 @@ inline double Champ_Q1NC_impl::fonction_forme_2D_normalise(double ksi, double et
       }
     default:
       {
-        Cerr << "Erreur dans Champ_Q1NC_impl::fonction_forme_2D : " << finl;
+        Cerr << "Erreur dans Champ_Q1NC_implementation::fonction_forme_2D : " << finl;
         Cerr << "Un quadrangle n'a pas " << face << " faces" << finl;
         Process::exit();
         fonction_de_forme_normalisee = -1;
@@ -126,7 +126,7 @@ inline double Champ_Q1NC_impl::fonction_forme_2D_normalise(double ksi, double et
   return fonction_de_forme_normalisee;
 }
 
-inline double Champ_Q1NC_impl::fonction_forme_3D_normalise(double ksi, double eta, double psi, int face)
+inline double Champ_Q1NC_implementation::fonction_forme_3D_normalise(double ksi, double eta, double psi, int face)
 {
   // la fonction de forme est calculer dans la base (ksi), (eta), (psi).
   // aux milieu des faces.
@@ -176,7 +176,7 @@ inline double Champ_Q1NC_impl::fonction_forme_3D_normalise(double ksi, double et
       }
     default:
       {
-        Cerr << "Erreur dans Champ_Q1NC_impl::fonction_forme_2D : " << finl;
+        Cerr << "Erreur dans Champ_Q1NC_implementation::fonction_forme_2D : " << finl;
         Cerr << "Un quadrangle n'a pas " << face << " faces" << finl;
         fonction_de_forme_normalisee = -1;
         Process::exit();
@@ -185,7 +185,7 @@ inline double Champ_Q1NC_impl::fonction_forme_3D_normalise(double ksi, double et
   return fonction_de_forme_normalisee;
 }
 
-inline DoubleTab& Champ_Q1NC_impl::trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x, int distant) const
+inline DoubleTab& Champ_Q1NC_implementation::trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x, int distant) const
 {
   if (distant)
     fr.frontiere().trace_face_distant(y, x);

@@ -13,13 +13,13 @@
 *
 *****************************************************************************/
 
-#include <Champ_Q1NC_impl.h>
+#include <Champ_Q1NC_implementation.h>
 #include <Domaine.h>
 #include <Zone_VEF.h>
 #include <Champ_Inc_base.h>
 #include <verif_cast.h>
 
-DoubleTab& Champ_Q1NC_impl::Derivee_fonction_forme_2D_normalise(double u, double v, DoubleTab& DF)
+DoubleTab& Champ_Q1NC_implementation::Derivee_fonction_forme_2D_normalise(double u, double v, DoubleTab& DF)
 {
   DF(0, 0) = -0.5 + 0.5 * u;
   DF(0, 1) = -0.5 * u;
@@ -35,7 +35,7 @@ DoubleTab& Champ_Q1NC_impl::Derivee_fonction_forme_2D_normalise(double u, double
 
 }
 
-DoubleTab& Champ_Q1NC_impl::Derivee_fonction_forme_3D_normalise(double u, double v, double w, DoubleTab& DF)
+DoubleTab& Champ_Q1NC_implementation::Derivee_fonction_forme_3D_normalise(double u, double v, double w, DoubleTab& DF)
 {
   double tier = 1. / 3.;
   DF(0, 0) = -0.5 + 2 * tier * u;
@@ -63,7 +63,7 @@ DoubleTab& Champ_Q1NC_impl::Derivee_fonction_forme_3D_normalise(double u, double
 
 }
 
-DoubleVect& Champ_Q1NC_impl::valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const
+DoubleVect& Champ_Q1NC_implementation::valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const
 {
   const Champ_base& cha = le_champ();
   int face, nb_compo_ = cha.nb_comp();
@@ -72,9 +72,9 @@ DoubleVect& Champ_Q1NC_impl::valeur_a_elem(const DoubleVect& position, DoubleVec
   const Zone_VEF& zone_VEF = zone_vef();
   int init = tab_param.size(), D = Objet_U::dimension;
   if (init == 0 && D == 2)
-    (verif_cast(Champ_Q1NC_impl&, *this)).transforme_coord2D();
+    (verif_cast(Champ_Q1NC_implementation&, *this)).transforme_coord2D();
   if (init == 0 && D == 3)
-    (verif_cast(Champ_Q1NC_impl&, *this)).transforme_coord3D();
+    (verif_cast(Champ_Q1NC_implementation&, *this)).transforme_coord3D();
 
   val = 0;
   if (le_poly != -1)
@@ -88,23 +88,23 @@ DoubleVect& Champ_Q1NC_impl::valeur_a_elem(const DoubleVect& position, DoubleVec
           face = zone_VEF.elem_faces(le_poly, i);
           for (int ncomp = 0; ncomp < nb_compo_; ncomp++)
             val(ncomp) += ch(face, ncomp)
-                          * ((D == 2) ? (verif_cast(Champ_Q1NC_impl&, *this)).fonction_forme_2D(xs, ys, le_poly, i) : (verif_cast(Champ_Q1NC_impl&, *this)).fonction_forme_3D(xs, ys, zs, le_poly, i));
+                          * ((D == 2) ? (verif_cast(Champ_Q1NC_implementation&, *this)).fonction_forme_2D(xs, ys, le_poly, i) : (verif_cast(Champ_Q1NC_implementation&, *this)).fonction_forme_3D(xs, ys, zs, le_poly, i));
         }
 
     }
   return val;
 }
 
-double Champ_Q1NC_impl::calcule_valeur_a_elem_compo(double xs, double ys, double zs, int le_poly, int ncomp) const
+double Champ_Q1NC_implementation::calcule_valeur_a_elem_compo(double xs, double ys, double zs, int le_poly, int ncomp) const
 {
   const Zone_VEF& zone_VEF = zone_vef();
   const DoubleTab& ch = le_champ().valeurs();
   int face, init = tab_param.size(), D = Objet_U::dimension;
 
   if (init == 0 && D == 2)
-    (verif_cast(Champ_Q1NC_impl&, *this)).transforme_coord2D();
+    (verif_cast(Champ_Q1NC_implementation&, *this)).transforme_coord2D();
   if (init == 0 && D == 3)
-    (verif_cast(Champ_Q1NC_impl&, *this)).transforme_coord3D();
+    (verif_cast(Champ_Q1NC_implementation&, *this)).transforme_coord3D();
 
   double val;
 
@@ -118,13 +118,13 @@ double Champ_Q1NC_impl::calcule_valeur_a_elem_compo(double xs, double ys, double
         {
           face = zone_VEF.elem_faces(le_poly, i);
           val += ch(face, ncomp)
-                 * ((D == 2) ? (verif_cast(Champ_Q1NC_impl&, *this)).fonction_forme_2D(xs, ys, le_poly, i) : (verif_cast(Champ_Q1NC_impl&, *this)).fonction_forme_3D(xs, ys, zs, le_poly, i));
+                 * ((D == 2) ? (verif_cast(Champ_Q1NC_implementation&, *this)).fonction_forme_2D(xs, ys, le_poly, i) : (verif_cast(Champ_Q1NC_implementation&, *this)).fonction_forme_3D(xs, ys, zs, le_poly, i));
         }
     }
   return val;
 }
 
-double Champ_Q1NC_impl::valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const
+double Champ_Q1NC_implementation::valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const
 {
   double xs, ys, zs = 0;
   xs = position(0);
@@ -134,9 +134,9 @@ double Champ_Q1NC_impl::valeur_a_elem_compo(const DoubleVect& position, int le_p
   return calcule_valeur_a_elem_compo(xs, ys, zs, le_poly, ncomp);
 }
 
-double Champ_Q1NC_impl::valeur_a_sommet_compo(int num_som, int le_poly, int ncomp) const
+double Champ_Q1NC_implementation::valeur_a_sommet_compo(int num_som, int le_poly, int ncomp) const
 {
-  //Cerr << "Champ_Q1NC_impl::valeur_a_sommet_compo" << finl;
+  //Cerr << "Champ_Q1NC_implementation::valeur_a_sommet_compo" << finl;
   // Contrairement au Champ_P1NC les fonctions de forme
   // ne sont pas triviales au sommet des hexas... On repasse
   // par calcule_valeur_a_elem_compo
@@ -149,7 +149,7 @@ double Champ_Q1NC_impl::valeur_a_sommet_compo(int num_som, int le_poly, int ncom
   return calcule_valeur_a_elem_compo(xs, ys, zs, le_poly, ncomp);
 }
 
-DoubleTab& Champ_Q1NC_impl::valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val) const
+DoubleTab& Champ_Q1NC_implementation::valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val) const
 {
   const Champ_base& cha = le_champ();
   int face, nb_compo_ = cha.nb_comp();
@@ -158,13 +158,13 @@ DoubleTab& Champ_Q1NC_impl::valeur_aux_elems(const DoubleTab& positions, const I
   int init = tab_param.size(), D = Objet_U::dimension;
 
   if (init == 0 && D == 2)
-    (verif_cast(Champ_Q1NC_impl&, *this)).transforme_coord2D();
+    (verif_cast(Champ_Q1NC_implementation&, *this)).transforme_coord2D();
   if (init == 0 && D == 3)
-    (verif_cast(Champ_Q1NC_impl&, *this)).transforme_coord3D();
+    (verif_cast(Champ_Q1NC_implementation&, *this)).transforme_coord3D();
 
   if (val.nb_dim() > 2)
     {
-      Cerr << "Erreur TRUST dans Champ_Q1NC_impl::valeur_aux_elems()\n";
+      Cerr << "Erreur TRUST dans Champ_Q1NC_implementation::valeur_aux_elems()\n";
       Cerr << "Le DoubleTab val a plus de 2 entrees\n";
       Process::exit();
     }
@@ -190,7 +190,7 @@ DoubleTab& Champ_Q1NC_impl::valeur_aux_elems(const DoubleTab& positions, const I
                 {
                   face = zone_VEF.elem_faces(le_poly, i);
                   val(rang_poly, ncomp) += ch(face, ncomp)
-                                           * ((D == 2) ? (verif_cast(Champ_Q1NC_impl&, *this)).fonction_forme_2D(xs, ys, le_poly, i) : (verif_cast(Champ_Q1NC_impl&, *this)).fonction_forme_3D(xs, ys, zs, le_poly, i));
+                                           * ((D == 2) ? (verif_cast(Champ_Q1NC_implementation&, *this)).fonction_forme_2D(xs, ys, le_poly, i) : (verif_cast(Champ_Q1NC_implementation&, *this)).fonction_forme_3D(xs, ys, zs, le_poly, i));
                 }
             }
         }
@@ -198,9 +198,9 @@ DoubleTab& Champ_Q1NC_impl::valeur_aux_elems(const DoubleTab& positions, const I
   return val;
 }
 
-DoubleVect& Champ_Q1NC_impl::valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& val, int ncomp) const
+DoubleVect& Champ_Q1NC_implementation::valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& val, int ncomp) const
 {
-  // Cerr << "Champ_Q1NC_impl::valeur_aux_elems_compo " << finl;
+  // Cerr << "Champ_Q1NC_implementation::valeur_aux_elems_compo " << finl;
   const Champ_base& cha = le_champ();
   double xs, ys, zs;
   int face;
@@ -211,9 +211,9 @@ DoubleVect& Champ_Q1NC_impl::valeur_aux_elems_compo(const DoubleTab& positions, 
   int init = tab_param.size(), D = Objet_U::dimension;
 
   if (init == 0 && D == 2)
-    (verif_cast(Champ_Q1NC_impl&, *this)).transforme_coord2D();
+    (verif_cast(Champ_Q1NC_implementation&, *this)).transforme_coord2D();
   if (init == 0 && D == 3)
-    (verif_cast(Champ_Q1NC_impl&, *this)).transforme_coord3D();
+    (verif_cast(Champ_Q1NC_implementation&, *this)).transforme_coord3D();
 
   for (int rang_poly = 0; rang_poly < les_polys.size(); rang_poly++)
     {
@@ -231,16 +231,16 @@ DoubleVect& Champ_Q1NC_impl::valeur_aux_elems_compo(const DoubleTab& positions, 
             {
               face = zone_VEF.elem_faces(le_poly, i);
               val(rang_poly) += ch(face, ncomp)
-                                * ((D == 2) ? (verif_cast(Champ_Q1NC_impl&, *this)).fonction_forme_2D(xs, ys, le_poly, i) : (verif_cast(Champ_Q1NC_impl&, *this)).fonction_forme_3D(xs, ys, zs, le_poly, i));
+                                * ((D == 2) ? (verif_cast(Champ_Q1NC_implementation&, *this)).fonction_forme_2D(xs, ys, le_poly, i) : (verif_cast(Champ_Q1NC_implementation&, *this)).fonction_forme_3D(xs, ys, zs, le_poly, i));
             }
         }
     }
   return val;
 }
 
-DoubleTab& Champ_Q1NC_impl::valeur_aux_sommets(const Domaine& dom, DoubleTab& ch_som) const
+DoubleTab& Champ_Q1NC_implementation::valeur_aux_sommets(const Domaine& dom, DoubleTab& ch_som) const
 {
-  // Cerr << "Champ_Q1NC_impl::valeur_aux_sommets " << finl;
+  // Cerr << "Champ_Q1NC_implementation::valeur_aux_sommets " << finl;
   const Zone_dis_base& zone_dis = get_zone_dis();
   const Zone& ma_zone = zone_dis.zone();
   int nb_elem_tot = ma_zone.nb_elem_tot(), nb_som = ma_zone.nb_som(), nb_som_elem = ma_zone.nb_som_elem();
@@ -277,9 +277,9 @@ DoubleTab& Champ_Q1NC_impl::valeur_aux_sommets(const Domaine& dom, DoubleTab& ch
 
   return ch_som;
 }
-DoubleVect& Champ_Q1NC_impl::valeur_aux_sommets_compo(const Domaine& dom, DoubleVect& ch_som, int ncomp) const
+DoubleVect& Champ_Q1NC_implementation::valeur_aux_sommets_compo(const Domaine& dom, DoubleVect& ch_som, int ncomp) const
 {
-  // Cerr << "Champ_Q1NC_impl::valeur_aux_sommets_compo " << finl;
+  // Cerr << "Champ_Q1NC_implementation::valeur_aux_sommets_compo " << finl;
   const Zone_dis_base& zone_dis = get_zone_dis();
   const Zone& ma_zone = zone_dis.zone();
   int nb_elem_tot = ma_zone.nb_elem_tot(), nb_som = ma_zone.nb_som(), nb_som_elem = ma_zone.nb_som_elem();
@@ -308,7 +308,7 @@ DoubleVect& Champ_Q1NC_impl::valeur_aux_sommets_compo(const Domaine& dom, Double
   return ch_som;
 }
 
-DoubleTab& Champ_Q1NC_impl::remplir_coord_noeuds(DoubleTab& noeuds) const
+DoubleTab& Champ_Q1NC_implementation::remplir_coord_noeuds(DoubleTab& noeuds) const
 {
   const Zone_VEF& zvef = zone_vef();
   const DoubleTab& xv = zvef.xv();
@@ -317,14 +317,14 @@ DoubleTab& Champ_Q1NC_impl::remplir_coord_noeuds(DoubleTab& noeuds) const
     noeuds.ref(xv);
   else
     {
-      Cerr << "Erreur dans Champ_Q1NC_impl::remplir_coord_noeuds()" << finl;
+      Cerr << "Erreur dans Champ_Q1NC_implementation::remplir_coord_noeuds()" << finl;
       Cerr << "Les centres de gravite des faces n'ont pas ete calcules" << finl;
       Process::exit();
     }
   return noeuds;
 }
 
-int Champ_Q1NC_impl::remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const
+int Champ_Q1NC_implementation::remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const
 {
   remplir_coord_noeuds(positions);
   const Zone_VEF& zvef = zone_vef();
@@ -341,9 +341,9 @@ int Champ_Q1NC_impl::remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect
 //
 // cree un tableau des parametres geometrique
 // (tab_param) au debut du calcul pour le fonction_form
-// (vois les inlines dans Champ_Q1NC_impl.h)
+// (vois les inlines dans Champ_Q1NC_implementation.h)
 //
-void Champ_Q1NC_impl::transforme_coord2D()
+void Champ_Q1NC_implementation::transforme_coord2D()
 {
   //  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
   const Zone_VEF& zone_VEF = zone_vef();
@@ -411,7 +411,7 @@ void Champ_Q1NC_impl::transforme_coord2D()
     }
 }
 
-void Champ_Q1NC_impl::transforme_coord3D()
+void Champ_Q1NC_implementation::transforme_coord3D()
 {
   const Zone_VEF& zone_VEF = zone_vef();
   const Zone& zone_geom = get_zone_geom();

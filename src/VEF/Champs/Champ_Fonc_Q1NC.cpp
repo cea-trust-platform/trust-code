@@ -37,5 +37,5 @@ void Champ_Fonc_Q1NC::mettre_a_jour(double t)
 
 DoubleTab& Champ_Fonc_Q1NC::trace(const Frontiere_dis_base& fr, DoubleTab& x, double tps, int distant) const
 {
-  return Champ_Q1NC_impl::trace(fr, valeurs(), x, distant);
+  return Champ_Q1NC_implementation::trace(fr, valeurs(), x, distant);
 }

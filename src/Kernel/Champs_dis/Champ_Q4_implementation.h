@@ -16,10 +16,10 @@
 #ifndef Champ_Q4_implementation_included
 #define Champ_Q4_implementation_included
 
-#include <Champ_implementation.h>
+#include <Champ_implementation_divers.h>
 #include <TRUSTTab.h>
 
-class Champ_Q4_implementation: public Champ_implementation
+class Champ_Q4_implementation: public Champ_implementation_divers
 {
 public:
 

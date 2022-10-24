@@ -16,14 +16,14 @@
 #ifndef Champ_implementation_Q1_included
 #define Champ_implementation_Q1_included
 
-#include <Champ_implementation_sommet_base.h>
+#include <Champ_implementation_sommet.h>
 
 /*! @brief : class Champ_implementation_Q1
  *
  *  Decrire ici la classe Champ_implementation_Q1
  *
  */
-class Champ_implementation_Q1: public Champ_implementation_sommet_base
+class Champ_implementation_Q1: public Champ_implementation_sommet
 {
 public:
   inline ~Champ_implementation_Q1() override { }

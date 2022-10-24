@@ -17,6 +17,43 @@
 #include <Champ_Fonc_base.h>
 #include <Champ_Inc_base.h>
 #include <Zone_VF.h>
+#include <Domaine.h>
+
+DoubleTab& Champ_implementation::valeur_aux_sommets(const Domaine& domain, DoubleTab& result) const
+{
+  Nom domain_name = domain.le_nom();
+  Nom support_name = get_zone_geom().domaine().le_nom();
+
+  if (domain_name == support_name)
+    {
+      valeur_aux_sommets_impl(result);
+    }
+  else
+    {
+      const DoubleTab& positions = domain.coord_sommets();
+      le_champ().valeur_aux(positions, result);
+    }
+
+  return result;
+}
+
+DoubleVect& Champ_implementation::valeur_aux_sommets_compo(const Domaine& domain, DoubleVect& result, int ncomp) const
+{
+  Nom domain_name = domain.le_nom();
+  Nom support_name = get_zone_geom().domaine().le_nom();
+
+  if (domain_name == support_name)
+    {
+      valeur_aux_sommets_compo_impl(result, ncomp);
+    }
+  else
+    {
+      const DoubleTab& positions = domain.coord_sommets();
+      le_champ().valeur_aux_compo(positions, result, ncomp);
+    }
+
+  return result;
+}
 
 const Zone_VF& Champ_implementation::get_zone_dis() const
 {

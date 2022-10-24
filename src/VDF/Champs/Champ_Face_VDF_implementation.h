@@ -16,13 +16,13 @@
 #ifndef Champ_Face_VDF_implementation_included
 #define Champ_Face_VDF_implementation_included
 
-#include <Champ_implementation.h>
+#include <Champ_implementation_divers.h>
 
 class Frontiere_dis_base;
 class Zone_VDF;
 class Sortie;
 
-class Champ_Face_VDF_implementation : public Champ_implementation
+class Champ_Face_VDF_implementation : public Champ_implementation_divers
 {
 public:
   DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const override;

@@ -16,7 +16,7 @@
 #ifndef Champ_P1iP1B_implementation_included
 #define Champ_P1iP1B_implementation_included
 
-#include <Champ_implementation.h>
+#include <Champ_implementation_divers.h>
 #include <TRUSTTab.h>
 #include <Matrice.h>
 
@@ -24,7 +24,7 @@ class Frontiere_dis_base;
 class Zone_Cl_dis_base;
 class Zone_VEF_PreP1b;
 
-class Champ_P1iP1B_implementation : public Champ_implementation
+class Champ_P1iP1B_implementation : public Champ_implementation_divers
 {
 public:
   Champ_P1iP1B_implementation()

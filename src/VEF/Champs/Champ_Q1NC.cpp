@@ -78,7 +78,7 @@ int Champ_Q1NC::compo_normale_sortante(int num_face) const
 
 DoubleTab& Champ_Q1NC::trace(const Frontiere_dis_base& fr, DoubleTab& x, double tps, int distant) const
 {
-  return Champ_Q1NC_impl::trace(fr, valeurs(tps), x, distant);
+  return Champ_Q1NC_implementation::trace(fr, valeurs(tps), x, distant);
 }
 
 void Champ_Q1NC::cal_rot_ordre1(DoubleTab& vorticite)

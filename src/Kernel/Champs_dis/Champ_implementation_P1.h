@@ -16,10 +16,10 @@
 #ifndef Champ_implementation_P1_included
 #define Champ_implementation_P1_included
 
-#include <Champ_implementation_sommet_base.h>
+#include <Champ_implementation_sommet.h>
 #include <TRUSTTab.h>
 
-class Champ_implementation_P1: public Champ_implementation_sommet_base
+class Champ_implementation_P1: public Champ_implementation_sommet
 {
 public:
   ~Champ_implementation_P1() override { }

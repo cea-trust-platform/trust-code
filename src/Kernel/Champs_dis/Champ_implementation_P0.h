@@ -16,11 +16,11 @@
 #ifndef Champ_implementation_P0_included
 #define Champ_implementation_P0_included
 
-#include <Champ_implementation_base.h>
+#include <Champ_implementation.h>
 #include <Frontiere_dis_base.h>
 #include <Frontiere.h>
 
-class Champ_implementation_P0: public Champ_implementation_base
+class Champ_implementation_P0: public Champ_implementation
 {
 public:
   ~Champ_implementation_P0() override { }
@@ -37,9 +37,6 @@ protected:
   DoubleVect& valeur_aux_sommets_compo_impl(DoubleVect& result, int ncomp) const override;
   int affecter_(const Champ_base&);
   inline DoubleTab& trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x, int distant) const;
-
-  Champ_base& le_champ() override =0;
-  const Champ_base& le_champ() const override =0;
 };
 
 inline DoubleTab& Champ_implementation_P0::trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x, int distant) const
