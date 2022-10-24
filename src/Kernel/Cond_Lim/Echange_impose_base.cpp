@@ -14,40 +14,19 @@
 *****************************************************************************/
 
 #include <Echange_impose_base.h>
-#include <Motcle.h>
-#include <Equation_base.h>
 #include <Discretisation_base.h>
+#include <Equation_base.h>
+#include <Probleme_base.h>
 #include <Milieu_base.h>
 
-#include <Probleme_base.h>
+Implemente_base_sans_constructeur(Echange_impose_base, "Echange_impose_base", Cond_lim_base);
 
+Sortie& Echange_impose_base::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 
-Implemente_base_sans_constructeur(Echange_impose_base,"Echange_impose_base",Cond_lim_base);
-
-
-/*! @brief Ecrit le type de l'objet sur un flot de sortie
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Echange_impose_base::printOn(Sortie& s ) const
+Entree& Echange_impose_base::readOn(Entree& s)
 {
-  return s << que_suis_je() << finl;
-}
+  if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("Neutronique"), Motcle("fraction_massique"), Motcle("indetermine") };
 
-/*! @brief Lecture d'une condition aux limite de type Echange_impose_base a partir d'un flot d'entree.
- *
- *     On doit lire le coefficient d'echange global H_imp et la temperature
- *     a la frontiere T_ext.
- *     Format:
- *         "h_imp" type_champ_front bloc de lecture champ
- *         "T_ext" type_champ_front bloc de lecture champ
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& Echange_impose_base::readOn(Entree& s )
-{
   Motcle motlu;
   Motcles les_motcles(2);
   {
@@ -76,7 +55,7 @@ Entree& Echange_impose_base::readOn(Entree& s )
         default:
           {
             Cerr << "Erreur a la lecture de la condition aux limites de type Echange_impose " << finl;
-            Cerr << "On attendait " << les_motcles << "a la place de " <<  motlu << finl;
+            Cerr << "On attendait " << les_motcles << "a la place de " << motlu << finl;
             exit();
           }
         }
@@ -85,7 +64,7 @@ Entree& Echange_impose_base::readOn(Entree& s )
 
     }
 
-  return s ;
+  return s;
 }
 
 /*! @brief Renvoie la valeur de la temperature imposee sur la i-eme composante du champ de frontiere.
@@ -95,10 +74,10 @@ Entree& Echange_impose_base::readOn(Entree& s )
  */
 double Echange_impose_base::T_ext(int i) const
 {
-  if (T_ext().valeurs().size()==1)
-    return T_ext()(0,0);
-  else if (T_ext().valeurs().dimension(1)==1)
-    return T_ext()(i,0);
+  if (T_ext().valeurs().size() == 1)
+    return T_ext()(0, 0);
+  else if (T_ext().valeurs().dimension(1) == 1)
+    return T_ext()(i, 0);
   else
     {
       Cerr << "Echange_impose_base::T_ext erreur" << finl;
@@ -108,7 +87,6 @@ double Echange_impose_base::T_ext(int i) const
   return 0.;
 }
 
-
 /*! @brief Renvoie la valeur de la temperature imposee sur la (i,j)-eme composante du champ de frontiere.
  *
  * @param (int i)
@@ -117,12 +95,11 @@ double Echange_impose_base::T_ext(int i) const
  */
 double Echange_impose_base::T_ext(int i, int j) const
 {
-  if (T_ext().valeurs().dimension(0)==1)
-    return T_ext()(0,j);
+  if (T_ext().valeurs().dimension(0) == 1)
+    return T_ext()(0, j);
   else
-    return T_ext()(i,j);
+    return T_ext()(i, j);
 }
-
 
 /*! @brief Renvoie la valeur du coefficient d'echange de chaleur impose sur la i-eme composante
  *
@@ -134,18 +111,16 @@ double Echange_impose_base::T_ext(int i, int j) const
 double Echange_impose_base::h_imp(int i) const
 {
 
-
-  if (h_imp_.valeurs().size()==1)
-    return h_imp_(0,0);
-  else if (h_imp_.valeurs().dimension(1)==1)
-    return h_imp_(i,0);
+  if (h_imp_.valeurs().size() == 1)
+    return h_imp_(0, 0);
+  else if (h_imp_.valeurs().dimension(1) == 1)
+    return h_imp_(i, 0);
   else
     Cerr << "Echange_impose_base::h_imp erreur" << finl;
 
   exit();
   return 0.;
 }
-
 
 /*! @brief Renvoie la valeur du coefficient d'echange de chaleur impose sur la i-eme composante
  *
@@ -158,14 +133,12 @@ double Echange_impose_base::h_imp(int i) const
 double Echange_impose_base::h_imp(int i, int j) const
 {
 
-  if (h_imp_.valeurs().dimension(0)==1)
-    return h_imp_(0,j);
+  if (h_imp_.valeurs().dimension(0) == 1)
+    return h_imp_(0, j);
   else
-    return h_imp_(i,j);
+    return h_imp_(i, j);
 
 }
-
-
 
 /*! @brief Effectue une mise a jour en temps des conditions aux limites.
  *
@@ -183,19 +156,14 @@ void Echange_impose_base::mettre_a_jour(double temps)
 int Echange_impose_base::initialiser(double temps)
 {
   if (h_imp_.non_nul())
-    h_imp_.valeur().initialiser(temps,zone_Cl_dis().equation().inconnue()), h_imp_.mettre_a_jour(temps);
+    h_imp_.valeur().initialiser(temps, zone_Cl_dis().equation().inconnue()), h_imp_.mettre_a_jour(temps);
   return Cond_lim_base::initialiser(temps);
 }
 
 int Echange_impose_base::compatible_avec_discr(const Discretisation_base& discr) const
 {
-  if ((discr.que_suis_je() == "VDF")
-      || (discr.que_suis_je() == "VDF_Interface")
-      || (discr.que_suis_je() == "VDF_Front_Tracking")
-      || (discr.que_suis_je() == "VEFPreP1B")
-      || (discr.que_suis_je() == "VEFPreP1B")
-      || (discr.que_suis_je() == "PolyMAC")
-      || (discr.que_suis_je() == "PolyMAC_P0") )
+  if ((discr.que_suis_je() == "VDF") || (discr.que_suis_je() == "VDF_Interface") || (discr.que_suis_je() == "VDF_Front_Tracking") || (discr.que_suis_je() == "VEFPreP1B")
+      || (discr.que_suis_je() == "VEFPreP1B") || (discr.que_suis_je() == "PolyMAC") || (discr.que_suis_je() == "PolyMAC_P0"))
     return 1;
   else
     {
@@ -204,64 +172,40 @@ int Echange_impose_base::compatible_avec_discr(const Discretisation_base& discr)
     }
 }
 
-
-/*! @brief Verifie la compatibilite des conditions aux limites avec l'equation passee en parametre.
- *
- *    Les conditions aux limites de type Ech_imp_base  sont
- *    compatibles avec des equations de type:
- *          - Thermique
- *          - indetermine
- *
- * @param (Equation_base& eqn) l'equation avec laquelle on doit verifier la compatibilite
- * @return (int) valeur booleenne, 1 si compatible 0 sinon
- */
-int Echange_impose_base::compatible_avec_eqn(const Equation_base& eqn) const
-{
-  Motcle dom_app=eqn.domaine_application();
-  Motcle Thermique = "Thermique", Neutronique = "Neutronique", indetermine = "indetermine", FracMass="fraction_massique";
-  if ( (dom_app == Thermique) || (dom_app == Neutronique) || (dom_app == indetermine) || (dom_app==FracMass))
-    return 1;
-  else
-    {
-      err_pas_compatible(eqn);
-      return 0;
-    }
-}
 // ajout de methode pour ne pas operer directement su le champ_front
-void  Echange_impose_base::set_temps_defaut(double temps)
+void Echange_impose_base::set_temps_defaut(double temps)
 {
   if (h_imp_.non_nul())
     h_imp_.valeur().set_temps_defaut(temps);
   Cond_lim_base::set_temps_defaut(temps);
 }
-void  Echange_impose_base::fixer_nb_valeurs_temporelles(int nb_cases)
+void Echange_impose_base::fixer_nb_valeurs_temporelles(int nb_cases)
 {
   if (h_imp_.non_nul())
     h_imp_.valeur().fixer_nb_valeurs_temporelles(nb_cases);
   Cond_lim_base::fixer_nb_valeurs_temporelles(nb_cases);
 }
 //
-void  Echange_impose_base::changer_temps_futur(double temps,int i)
+void Echange_impose_base::changer_temps_futur(double temps, int i)
 {
   if (h_imp_.non_nul())
-    h_imp_.valeur().changer_temps_futur(temps,i);
-  Cond_lim_base::changer_temps_futur(temps,i);
+    h_imp_.valeur().changer_temps_futur(temps, i);
+  Cond_lim_base::changer_temps_futur(temps, i);
 }
-int  Echange_impose_base::avancer(double temps)
+int Echange_impose_base::avancer(double temps)
 {
   if (h_imp_.non_nul())
     h_imp_.valeur().avancer(temps);
   return Cond_lim_base::avancer(temps);
 }
 
-
-int  Echange_impose_base::reculer(double temps)
+int Echange_impose_base::reculer(double temps)
 {
   if (h_imp_.non_nul())
     h_imp_.valeur().reculer(temps);
   return Cond_lim_base::reculer(temps);
 }
-void  Echange_impose_base::associer_fr_dis_base(const Frontiere_dis_base& fr)
+void Echange_impose_base::associer_fr_dis_base(const Frontiere_dis_base& fr)
 {
   if (h_imp_.non_nul())
     h_imp_.valeur().associer_fr_dis_base(fr);

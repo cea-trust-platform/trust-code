@@ -13,58 +13,41 @@
 *
 *****************************************************************************/
 
-
-
 #include <Sortie_libre_Gradient_Pression_impose_VEF.h>
-#include <Navier_Stokes_std.h>
-#include <Milieu_base.h>
-#include <Champ_P0_VEF.h>
 #include <Discretisation_base.h>
+#include <Navier_Stokes_std.h>
+#include <Champ_P0_VEF.h>
 
-Implemente_instanciable(Sortie_libre_Gradient_Pression_impose_VEF,"Frontiere_ouverte_Gradient_Pression_impose_VEF",Neumann_sortie_libre);
+Implemente_instanciable(Sortie_libre_Gradient_Pression_impose_VEF, "Frontiere_ouverte_Gradient_Pression_impose_VEF", Neumann_sortie_libre);
 
-
-//// printOn
-//
-
-Sortie& Sortie_libre_Gradient_Pression_impose_VEF::printOn(Sortie& s ) const
+Sortie& Sortie_libre_Gradient_Pression_impose_VEF::printOn(Sortie& s) const
 {
   return s << que_suis_je() << finl;
 }
 
-//// readOn
-//
-
-Entree& Sortie_libre_Gradient_Pression_impose_VEF::readOn(Entree& s )
+Entree& Sortie_libre_Gradient_Pression_impose_VEF::readOn(Entree& s)
 {
+  if (app_domains.size() == 0) app_domains = { Motcle("Hydraulique"), Motcle("indetermine") };
+
   s >> le_champ_front;
   le_champ_ext.typer("Champ_front_uniforme");
-  le_champ_ext.valeurs().resize(1,dimension);
+  le_champ_ext.valeurs().resize(1, dimension);
   return s;
 }
 
-////////////////////////////////////////////////////////////////
-//
-//           Implementation de fonctions
-//
-//     de la classe Sortie_libre_Gradient_Pression_impose_VEF
-//
-////////////////////////////////////////////////////////////////
-
-
 double Sortie_libre_Gradient_Pression_impose_VEF::flux_impose(int face) const
 {
-  if (le_champ_front.valeurs().size()==1)
+  if (le_champ_front.valeurs().size() == 1)
     {
       double a1 = trace_pression_int[face];
       double a2 = coeff[face];
-      double a3 = le_champ_front(0,0);
-      double Pimp  = a1 + a2*a3;
-      return Pimp ;
+      double a3 = le_champ_front(0, 0);
+      double Pimp = a1 + a2 * a3;
+      return Pimp;
     }
-  else if (le_champ_front.valeurs().line_size()==1)
+  else if (le_champ_front.valeurs().line_size() == 1)
     {
-      return (trace_pression_int[face] + coeff[face]*le_champ_front(face,0));
+      return (trace_pression_int[face] + coeff[face] * le_champ_front(face, 0));
     }
   else
     Cerr << "Sortie_libre_Gradient_Pression_impose_VEF::flux_impose erreur" << finl;
@@ -72,26 +55,9 @@ double Sortie_libre_Gradient_Pression_impose_VEF::flux_impose(int face) const
   return 0.;
 }
 
-double Sortie_libre_Gradient_Pression_impose_VEF::flux_impose(int  , int ) const
+double Sortie_libre_Gradient_Pression_impose_VEF::flux_impose(int, int) const
 {
   Cerr << "Sortie_libre_Gradient_Pression_impose_VEF::flux_impose(int  , int )" << finl;
   Cerr << "On ne sait imposer que la composante normale du gradient" << finl;
   return 0.;
 }
-
-int Sortie_libre_Gradient_Pression_impose_VEF::
-compatible_avec_eqn(const Equation_base& eqn) const
-{
-  Motcle dom_app=eqn.domaine_application();
-  Motcle Hydraulique="Hydraulique";
-  Motcle indetermine="indetermine";
-  if ( (dom_app==Hydraulique) || (dom_app==indetermine) )
-    return 1;
-  else
-    {
-      err_pas_compatible(eqn);
-      return 0;
-    }
-}
-
-

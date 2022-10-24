@@ -19,9 +19,7 @@
 #include <Temperature_imposee_paroi.h>
 #include <Ref_Fluide_Dilatable_base.h>
 
-/*! @brief classe Temperature_imposee_paroi_H Impose la temperature de la paroi dans une equation de type
- *
- *     Convection_Diffusion_Enthalpie
+/*! @brief classe Temperature_imposee_paroi_H Impose la temperature de la paroi dans une equation de type Convection_Diffusion_Enthalpie
  *
  * @sa Dirichlet Convection_Diffusion_Enthalpie_QC
  */
@@ -29,10 +27,8 @@
 class Temperature_imposee_paroi_H  : public Temperature_imposee_paroi
 {
   Declare_instanciable(Temperature_imposee_paroi_H);
-
 public :
   void completer() override;
-  int compatible_avec_eqn(const Equation_base& ) const override;
   double val_imp(int i) const override;
   double val_imp(int i, int j) const override;
 

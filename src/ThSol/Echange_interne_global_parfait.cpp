@@ -28,12 +28,14 @@ Implemente_instanciable(Echange_interne_global_parfait,"Paroi_echange_interne_gl
  */
 Sortie& Echange_interne_global_parfait::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 
 Entree& Echange_interne_global_parfait::readOn(Entree& s )
 {
+  if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("Neutronique"), Motcle("fraction_massique"), Motcle("indetermine") };
+
   EChaine e("Champ_front_uniforme 1 1.0");
   e >> h_imp_;        // won't be used anyway
   init();

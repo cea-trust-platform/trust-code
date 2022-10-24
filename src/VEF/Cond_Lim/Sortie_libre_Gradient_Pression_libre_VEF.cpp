@@ -13,64 +13,45 @@
 *
 *****************************************************************************/
 
-
-
 #include <Sortie_libre_Gradient_Pression_libre_VEF.h>
+#include <Discretisation_base.h>
 #include <Navier_Stokes_std.h>
 #include <Champ_Uniforme.h>
-#include <Milieu_base.h>
-#include <Champ_P0_VEF.h>
-#include <Discretisation_base.h>
-#include <Zone_VEF.h>
 #include <distances_VEF.h>
+#include <Champ_P0_VEF.h>
+#include <Milieu_base.h>
+#include <Zone_VEF.h>
 
-Implemente_instanciable(Sortie_libre_Gradient_Pression_libre_VEF,"Frontiere_ouverte_Gradient_Pression_libre_VEF",Neumann_sortie_libre);
+Implemente_instanciable(Sortie_libre_Gradient_Pression_libre_VEF, "Frontiere_ouverte_Gradient_Pression_libre_VEF", Neumann_sortie_libre);
 
+Sortie& Sortie_libre_Gradient_Pression_libre_VEF::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 
-//// printOn
-//
-
-Sortie& Sortie_libre_Gradient_Pression_libre_VEF::printOn(Sortie& s ) const
+Entree& Sortie_libre_Gradient_Pression_libre_VEF::readOn(Entree& s)
 {
-  return s << que_suis_je() << finl;
-}
+  if (app_domains.size() == 0) app_domains = { Motcle("Hydraulique"), Motcle("indetermine") };
 
-//// readOn
-//
-//
-Entree& Sortie_libre_Gradient_Pression_libre_VEF::readOn(Entree& s )
-{
   le_champ_front.typer("Champ_front_uniforme");
-  le_champ_front.valeurs().resize(1,dimension);
+  le_champ_front.valeurs().resize(1, dimension);
   le_champ_front->fixer_nb_comp(1);
   le_champ_ext.typer("Champ_front_uniforme");
-  le_champ_ext.valeurs().resize(1,dimension);
+  le_champ_ext.valeurs().resize(1, dimension);
   return s;
 }
-//
-////////////////////////////////////////////////////////////////
-//
-//           Implementation de fonctions
-//
-//     de la classe Sortie_libre_Gradient_Pression_libre_VEF
-//
-////////////////////////////////////////////////////////////////
 
 void Sortie_libre_Gradient_Pression_libre_VEF::completer()
 {
-
   Cerr << "Sortie_libre_Gradient_Pression_libre_VEF::completer()" << finl;
   const Zone_Cl_dis_base& la_zone_Cl = zone_Cl_dis();
   const Equation_base& eqn = la_zone_Cl.equation();
-  const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,eqn);
+  const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std, eqn);
 
   //  const Zone_VEF& la_zone_VEF = ref_cast(Zone_VEF,eqn.zone_dis().valeur());
 
-  const Champ_P0_VEF& pression = ref_cast(Champ_P0_VEF,eqn_hydr.pression().valeur());
+  const Champ_P0_VEF& pression = ref_cast(Champ_P0_VEF, eqn_hydr.pression().valeur());
 
   pression_interne = pression;
 
-  const Front_VF& le_bord = ref_cast(Front_VF,frontiere_dis());
+  const Front_VF& le_bord = ref_cast(Front_VF, frontiere_dis());
   int nb_faces_loc = le_bord.nb_faces();
 
   trace_pression_int.resize(nb_faces_loc);
@@ -81,63 +62,62 @@ void Sortie_libre_Gradient_Pression_libre_VEF::completer()
 int Sortie_libre_Gradient_Pression_libre_VEF::initialiser(double temps)
 {
 
-  int ok=Cond_lim_base::initialiser(temps);
+  int ok = Cond_lim_base::initialiser(temps);
 
   const Zone_Cl_dis_base& la_zone_Cl = zone_Cl_dis();
   const Equation_base& eqn = la_zone_Cl.equation();
   //      const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,eqn);
-  const Zone_VEF& ma_zone_VEF = ref_cast(Zone_VEF,eqn.zone_dis().valeur());
-  const IntTab& face_voisins  = ma_zone_VEF.face_voisins();
+  const Zone_VEF& ma_zone_VEF = ref_cast(Zone_VEF, eqn.zone_dis().valeur());
+  const IntTab& face_voisins = ma_zone_VEF.face_voisins();
   //      const Zone_Cl_VEF& zone_Cl_VEF = ref_cast(Zone_Cl_VEF,ma_zone_cl_dis.valeur());
   //      const DoubleVect& volumes_entrelaces_Cl = zone_Cl_VEF.volumes_entrelaces_Cl();
   //      const DoubleTab& face_normale = la_zone_VEF.face_normales();
-  const Front_VF& le_bord = ref_cast(Front_VF,frontiere_dis());
+  const Front_VF& le_bord = ref_cast(Front_VF, frontiere_dis());
   int nb_faces_loc = le_bord.nb_faces();
   int ndeb = le_bord.num_premiere_face();
   int nfin = ndeb + nb_faces_loc;
   int face;
   coeff.resize(nb_faces_loc);
   if (dimension == 2)
-    for (face=ndeb; face<nfin ; face++)
+    for (face = ndeb; face < nfin; face++)
       {
-        int elem=face_voisins(face,0);
+        int elem = face_voisins(face, 0);
         if (elem != -1)
-          coeff[face-ndeb] = distance_2D(face,elem,ma_zone_VEF);
+          coeff[face - ndeb] = distance_2D(face, elem, ma_zone_VEF);
         else
           {
-            elem=face_voisins(face,1);
-            coeff[face-ndeb] = -distance_2D(face,elem,ma_zone_VEF);
+            elem = face_voisins(face, 1);
+            coeff[face - ndeb] = -distance_2D(face, elem, ma_zone_VEF);
           }
       }
   if (dimension == 3)
-    for (face=ndeb; face<nfin ; face++)
+    for (face = ndeb; face < nfin; face++)
       {
-        int elem=face_voisins(face,0);
+        int elem = face_voisins(face, 0);
         if (elem != -1)
-          coeff[face-ndeb] = distance_3D(face,elem,ma_zone_VEF);
+          coeff[face - ndeb] = distance_3D(face, elem, ma_zone_VEF);
         else
           {
-            elem=face_voisins(face,1);
-            coeff[face-ndeb] = -distance_3D(face,elem,ma_zone_VEF);
+            elem = face_voisins(face, 1);
+            coeff[face - ndeb] = -distance_3D(face, elem, ma_zone_VEF);
           }
       }
   return ok;
 }
 
-
 void Sortie_libre_Gradient_Pression_libre_VEF::mettre_a_jour(double temps)
 {
   Cond_lim_base::mettre_a_jour(temps);
 
-  const Front_VF& le_bord = ref_cast(Front_VF,frontiere_dis());
+  const Front_VF& le_bord = ref_cast(Front_VF, frontiere_dis());
   int ndeb = le_bord.num_premiere_face();
   int nb_faces_loc = le_bord.nb_faces();
   int nfin = ndeb + nb_faces_loc;
 
   assert(pression_interne.non_nul());
-  for (int face=ndeb; face<nfin; face++)
+  for (int face = ndeb; face < nfin; face++)
     {
-      trace_pression_int[face-ndeb] = pression_interne->valeur_au_bord(face);
+      trace_pression_int[face - ndeb] = pression_interne->valeur_au_bord(face);
     }
 
 }
@@ -146,50 +126,50 @@ double Sortie_libre_Gradient_Pression_libre_VEF::flux_impose(int face) const
 {
   const Zone_Cl_dis_base& la_zone_Cl = zone_Cl_dis();
   const Equation_base& eqn = la_zone_Cl.equation();
-  const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,eqn);
-  const Zone_VEF& ma_zone_VEF = ref_cast(Zone_VEF,eqn.zone_dis().valeur());
-  const IntTab& face_voisins  = ma_zone_VEF.face_voisins();
+  const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std, eqn);
+  const Zone_VEF& ma_zone_VEF = ref_cast(Zone_VEF, eqn.zone_dis().valeur());
+  const IntTab& face_voisins = ma_zone_VEF.face_voisins();
   //  const Zone_Cl_VEF& zone_Cl_VEF = ref_cast(Zone_Cl_VEF,ma_zone_cl_dis.valeur());
   //  const Front_VF& le_bord = ref_cast(Front_VF,frontiere_dis());
-  const IntTab& elem_faces    = ma_zone_VEF.elem_faces();
+  const IntTab& elem_faces = ma_zone_VEF.elem_faces();
   const DoubleTab& face_normales = ma_zone_VEF.face_normales();
-  const Champ_P0_VEF& pre = ref_cast(Champ_P0_VEF,eqn_hydr.pression().valeur());
+  const Champ_P0_VEF& pre = ref_cast(Champ_P0_VEF, eqn_hydr.pression().valeur());
 
-  double Pimp, diff, grad ;
+  double Pimp, diff, grad;
 
-  int elem1, elem2, face_adj, face_face_adj ;
+  int elem1, elem2, face_adj, face_face_adj;
 
   double a1 = trace_pression_int[face];
   double a2 = coeff[face];
 
-  double a3 = 0. ;
+  double a3 = 0.;
 
-  elem1 = face_voisins(face,0);
+  elem1 = face_voisins(face, 0);
 
-  for (face_adj=0; face_adj<dimension; face_adj++)
+  for (face_adj = 0; face_adj < dimension; face_adj++)
     {
-      face_face_adj= elem_faces(elem1,face_adj);
+      face_face_adj = elem_faces(elem1, face_adj);
 
-      elem2 = face_voisins(face_face_adj,0);
+      elem2 = face_voisins(face_face_adj, 0);
       if (elem2 != elem1)
         {
           diff = pre(elem2) - pre(elem1);
 
-          for (int comp=0; comp < dimension; comp++)
+          for (int comp = 0; comp < dimension; comp++)
             {
-              grad = diff*face_normales(face_face_adj,comp);
-              a3 += grad ;
+              grad = diff * face_normales(face_face_adj, comp);
+              a3 += grad;
             }
         }
     }
 
-  a3 /= double(dimension) ;
-  Pimp  = a1 + a2 * a3 ;
-  return Pimp ;
+  a3 /= double(dimension);
+  Pimp = a1 + a2 * a3;
+  return Pimp;
 
 }
 
-double Sortie_libre_Gradient_Pression_libre_VEF::flux_impose(int  , int ) const
+double Sortie_libre_Gradient_Pression_libre_VEF::flux_impose(int, int) const
 {
   Cerr << "Sortie_libre_Gradient_Pression_libre_VEF::flux_impose(int  , int )" << finl;
   Cerr << "On ne sait imposer que la composante normale du gradient" << finl;
@@ -198,21 +178,20 @@ double Sortie_libre_Gradient_Pression_libre_VEF::flux_impose(int  , int ) const
 
 double Sortie_libre_Gradient_Pression_libre_VEF::Grad_P_lib_VEF(int face) const
 {
-  const Milieu_base& mil=ma_zone_cl_dis->equation().milieu();
-  const Champ_Uniforme& rho=ref_cast(Champ_Uniforme,mil.masse_volumique().valeur());
-  double d_rho = rho(0,0);
-  if (le_champ_front.valeurs().size()==1)
-    return le_champ_front(0,0)/d_rho;
-  else if (le_champ_front.valeurs().line_size()==1)
-    return le_champ_front(face,0)/d_rho;
+  const Milieu_base& mil = ma_zone_cl_dis->equation().milieu();
+  const Champ_Uniforme& rho = ref_cast(Champ_Uniforme, mil.masse_volumique().valeur());
+  double d_rho = rho(0, 0);
+  if (le_champ_front.valeurs().size() == 1)
+    return le_champ_front(0, 0) / d_rho;
+  else if (le_champ_front.valeurs().line_size() == 1)
+    return le_champ_front(face, 0) / d_rho;
   else
     Cerr << "Sortie_libre_Gradient_Pression_libre_VEF::Grad_P_lib_VEF() erreur" << finl;
   exit();
   return 0.;
 }
 
-int Sortie_libre_Gradient_Pression_libre_VEF::
-compatible_avec_discr(const Discretisation_base& discr) const
+int Sortie_libre_Gradient_Pression_libre_VEF::compatible_avec_discr(const Discretisation_base& discr) const
 {
   if (discr.que_suis_je() == "VEF")
     return 1;
@@ -222,20 +201,3 @@ compatible_avec_discr(const Discretisation_base& discr) const
       return 0;
     }
 }
-
-int Sortie_libre_Gradient_Pression_libre_VEF::
-compatible_avec_eqn(const Equation_base& eqn) const
-{
-  Motcle dom_app=eqn.domaine_application();
-  Motcle Hydraulique="Hydraulique";
-  Motcle indetermine="indetermine";
-  if ( (dom_app==Hydraulique) || (dom_app==indetermine) )
-    return 1;
-  else
-    {
-      err_pas_compatible(eqn);
-      return 0;
-    }
-}
-
-

@@ -13,12 +13,10 @@
 *
 *****************************************************************************/
 
-
 #ifndef Entree_fluide_Fluctu_Temperature_imposee_included
 #define Entree_fluide_Fluctu_Temperature_imposee_included
 
 #include <Dirichlet_entree_fluide.h>
-
 
 /*! @brief classe Entree_fluide_concentration_imposee Cas particulier de la classe Dirichlet_entree_fluide
  *
@@ -27,14 +25,9 @@
  *
  * @sa Dirichlet_entree_fluide Convection_Diffusion_Concentration, CLASS: Entree_fluide_Fluctu_temperature_imposee :, Cas particulier de la classe Dirichlet_entree_fluide, pour le taux de disspation et la variance de temperature imposee
  */
-class Entree_fluide_Fluctu_Temperature_imposee  : public Dirichlet_entree_fluide
+class Entree_fluide_Fluctu_Temperature_imposee: public Dirichlet_entree_fluide
 {
-
   Declare_instanciable(Entree_fluide_Fluctu_Temperature_imposee);
-
-public :
-  int compatible_avec_eqn(const Equation_base&) const override;
-
 };
 
 #endif

@@ -14,51 +14,13 @@
 *****************************************************************************/
 
 #include <Entree_fluide_alpha_impose.h>
-#include <Motcle.h>
-#include <Equation_base.h>
 
-Implemente_instanciable(Entree_fluide_alpha_impose,"Frontiere_ouverte_alpha_impose",Dirichlet_entree_fluide);
+Implemente_instanciable(Entree_fluide_alpha_impose, "Frontiere_ouverte_alpha_impose", Dirichlet_entree_fluide);
 
+Sortie& Entree_fluide_alpha_impose::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 
-/*! @brief Ecrit le type de l'objet sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Entree_fluide_alpha_impose::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << "\n";
-}
-
-/*! @brief Simple appel a: Cond_lim_base::readOn(Entree& )
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree& s) le flot d'entree modifie
- */
 Entree& Entree_fluide_alpha_impose::readOn(Entree& s)
 {
+  if (app_domains.size() == 0) app_domains = { Motcle("Fraction_volumique"), Motcle("indetermine") };
   return Cond_lim_base::readOn(s);
-}
-
-/*! @brief Renvoie un booleen indiquant la compatibilite des conditions aux limites avec l'equation specifiee en parametre.
- *
- *     Des CL de type Entree_fluide_alpha_impose sont compatibles
- *     avec une equation dont le domaine est une fraction volumique
- *     ou bien indetermine.
- *
- * @param (Equation_base& eqn) l'equation avec laquelle il faut verifier la compatibilite
- * @return (int) valeur booleenne, 1 si les CL sont compatibles avec l'equation 0 sinon
- */
-int Entree_fluide_alpha_impose::compatible_avec_eqn(const Equation_base& eqn) const
-{
-  Motcle dom_app=eqn.domaine_application();
-  Motcle Concentration="Fraction_volumique";
-  Motcle indetermine="indetermine";
-  if ( (dom_app==Concentration) || (dom_app==indetermine) )
-    return 1;
-  else
-    {
-      err_pas_compatible(eqn);
-      return 0;
-    }
 }

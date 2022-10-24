@@ -18,7 +18,6 @@
 
 #include <Neumann_homogene.h>
 
-
 /*! @brief Classe Neumann_paroi_adiabatique Cette condition limite correspond a une paroi adiabatique dans une
  *
  *     equation de type Convection_Diffusion_Temperature.
@@ -26,14 +25,9 @@
  *
  * @sa Neumann_homogene
  */
-class Neumann_paroi_adiabatique : public Neumann_homogene
+class Neumann_paroi_adiabatique: public Neumann_homogene
 {
-
   Declare_instanciable(Neumann_paroi_adiabatique);
-
-public :
-  int compatible_avec_eqn(const Equation_base&) const override;
-
 };
 
 #endif

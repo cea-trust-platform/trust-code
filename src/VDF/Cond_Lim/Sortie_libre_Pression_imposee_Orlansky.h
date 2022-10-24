@@ -16,68 +16,43 @@
 #ifndef Sortie_libre_Pression_imposee_Orlansky_included
 #define Sortie_libre_Pression_imposee_Orlansky_included
 
-
-
 /*! @brief Sortie_libre_Pression_imposee_Orlansky
  *
  *  Cette classe derive de la classe Neumann_sortie_libre
  *
- *     Elle represente une frontiere ouverte avec condition
- *     de gradient de pression impose.
- *     L'objet de type Champ_front le_champ_front contient le gradient
- *     impose. La fonction flux_impose() renvoie une valeur de pression
- *     a l'exterieur calculee a partir du gradient de pression impose
- *     et de la pression a l'interieur du domaine.
+ *     Elle represente une frontiere ouverte avec condition de gradient de pression impose.
+ *     L'objet de type Champ_front le_champ_front contient le gradient impose. La fonction flux_impose() renvoie une valeur de pression
+ *     a l'exterieur calculee a partir du gradient de pression impose et de la pression a l'interieur du domaine.
  *
- *
- *
- * @sa Milieu_base
  */
-
 
 #include <Neumann_sortie_libre.h>
 #include <Ref_Champ_P0_VDF.h>
 #include <Ref_Champ_Face_VDF.h>
 #include <Ref_Zone_VDF.h>
 
-class Sortie_libre_Pression_imposee_Orlansky : public Neumann_sortie_libre
+class Sortie_libre_Pression_imposee_Orlansky: public Neumann_sortie_libre
 {
-
   Declare_instanciable(Sortie_libre_Pression_imposee_Orlansky);
-
 public:
-
   void completer() override;
-  void mettre_a_jour(double ) override;
-  double flux_impose(int ) const override;
-  double flux_impose(int , int ) const override;
-  int compatible_avec_eqn(const Equation_base&) const override;
-  int compatible_avec_discr(const Discretisation_base& ) const override;
+  void mettre_a_jour(double) override;
+  double flux_impose(int) const override;
+  double flux_impose(int, int) const override;
+  int compatible_avec_discr(const Discretisation_base&) const override;
 
 protected:
+  REF(Zone_VDF) la_zone_VDF;
+  REF(Champ_P0_VDF) pression_interne;
+  REF(Champ_Face_VDF) vitesse_interne;
 
-  REF(Zone_VDF)  la_zone_VDF;
-  REF(Champ_P0_VDF)  pression_interne;
-  REF(Champ_Face_VDF)  vitesse_interne;
+  DoubleVect pression_temps_moins_un, pression_temps_moins_deux;
+  DoubleVect pression_moins_un_temps_moins_un, pression_moins_un_temps_moins_deux;
+  DoubleVect pression_moins_deux_temps_moins_un, pression_moins_un, pression_moins_deux, VPhiP;
 
-  DoubleVect pression_temps_moins_un;
-  DoubleVect pression_temps_moins_deux;
-  DoubleVect pression_moins_un_temps_moins_un;
-  DoubleVect pression_moins_un_temps_moins_deux;
-  DoubleVect pression_moins_deux_temps_moins_un;
-  DoubleVect pression_moins_un;
-  DoubleVect pression_moins_deux;
-  DoubleVect VPhiP;
-
-  DoubleTab vitesse_temps_moins_un;
-  DoubleTab vitesse_temps_moins_deux;
-  DoubleTab vitesse_moins_un_temps_moins_un;
-  DoubleTab vitesse_moins_un_temps_moins_deux;
-  DoubleTab vitesse_moins_deux_temps_moins_un;
-  DoubleTab vitesse_moins_un;
-  DoubleTab vitesse_moins_deux;
-  DoubleTab VPhiV;
-
+  DoubleTab vitesse_temps_moins_un, vitesse_temps_moins_deux;
+  DoubleTab vitesse_moins_un_temps_moins_un, vitesse_moins_un_temps_moins_deux;
+  DoubleTab vitesse_moins_deux_temps_moins_un, vitesse_moins_un, vitesse_moins_deux, VPhiV;
 };
 
 #endif

@@ -16,27 +16,14 @@
 #include <Entree_fluide_temperature_imposee_H.h>
 #include <Fluide_Dilatable_base.h>
 #include <Equation_base.h>
-#include <Motcle.h>
 
-Implemente_instanciable(Entree_fluide_temperature_imposee_H,"Entree_temperature_imposee_H",Entree_fluide_temperature_imposee);
+Implemente_instanciable(Entree_fluide_temperature_imposee_H, "Entree_temperature_imposee_H", Entree_fluide_temperature_imposee);
 
-/*! @brief Ecrit le type de l'objet sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Entree_fluide_temperature_imposee_H::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << finl;
-}
+Sortie& Entree_fluide_temperature_imposee_H::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 
-/*! @brief Simple appel a: Cond_lim_base::readOn(Entree& )
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree& s) le flot d'entree modifie
- */
 Entree& Entree_fluide_temperature_imposee_H::readOn(Entree& s)
 {
+  if (app_domains.size() == 0) app_domains = { Motcle("Thermique_H") };
   return Entree_fluide_temperature_imposee::readOn(s);
 }
 
@@ -45,30 +32,8 @@ Entree& Entree_fluide_temperature_imposee_H::readOn(Entree& s)
  */
 void Entree_fluide_temperature_imposee_H::completer()
 {
-  le_fluide = ref_cast(Fluide_Dilatable_base,ma_zone_cl_dis->equation().milieu());
+  le_fluide = ref_cast(Fluide_Dilatable_base, ma_zone_cl_dis->equation().milieu());
   modifier_val_imp = 1;
-}
-
-/*! @brief Renvoie un booleen indiquant la compatibilite des conditions aux limites avec l'equation specifiee en parametre.
- *
- *     Des CL de type Entree_fluide_temperature_imposee sont compatibles
- *     avec une equation dont le domaine est la Thermique
- *     ou bien indetermine.
- *
- * @param (Equation_base& eqn) l'equation avec laquelle il faut verifier la compatibilite
- * @return (int) valeur booleenne, 1 si les CL sont compatibles avec l'equation 0 sinon
- */
-int Entree_fluide_temperature_imposee_H::compatible_avec_eqn(const Equation_base& eqn) const
-{
-  Motcle dom_app=eqn.domaine_application();
-  Motcle Thermique="Thermique_H";
-  if ( (dom_app==Thermique))
-    return 1;
-  else
-    {
-      err_pas_compatible(eqn);
-      return 0;
-    }
 }
 
 /*! @brief Renvoie la valeur imposee sur la i-eme composante du champ a la frontiere.
@@ -79,19 +44,19 @@ int Entree_fluide_temperature_imposee_H::compatible_avec_eqn(const Equation_base
  */
 double Entree_fluide_temperature_imposee_H::val_imp(int i) const
 {
-  if (le_champ_front.valeurs().size()==1)
+  if (le_champ_front.valeurs().size() == 1)
     {
-      if (modifier_val_imp==1)
-        return le_fluide->calculer_H(le_champ_front(0,0));
+      if (modifier_val_imp == 1)
+        return le_fluide->calculer_H(le_champ_front(0, 0));
       else
-        return le_champ_front(0,0);
+        return le_champ_front(0, 0);
     }
-  else if (le_champ_front.valeurs().dimension(1)==1)
+  else if (le_champ_front.valeurs().dimension(1) == 1)
     {
-      if (modifier_val_imp==1)
-        return le_fluide->calculer_H(le_champ_front(i,0));
+      if (modifier_val_imp == 1)
+        return le_fluide->calculer_H(le_champ_front(i, 0));
       else
-        return le_champ_front(i,0);
+        return le_champ_front(i, 0);
     }
   else
     Cerr << "Temperature_imposee_paroi_H::val_imp erreur" << finl;
@@ -108,18 +73,18 @@ double Entree_fluide_temperature_imposee_H::val_imp(int i) const
  */
 double Entree_fluide_temperature_imposee_H::val_imp(int i, int j) const
 {
-  if (le_champ_front.valeurs().dimension(0)==1)
+  if (le_champ_front.valeurs().dimension(0) == 1)
     {
-      if (modifier_val_imp==1)
-        return le_fluide->calculer_H(le_champ_front(0,j));
+      if (modifier_val_imp == 1)
+        return le_fluide->calculer_H(le_champ_front(0, j));
       else
-        return le_champ_front(0,j);
+        return le_champ_front(0, j);
     }
   else
     {
-      if (modifier_val_imp==1)
-        return le_fluide->calculer_H(le_champ_front(i,j));
+      if (modifier_val_imp == 1)
+        return le_fluide->calculer_H(le_champ_front(i, j));
       else
-        return le_champ_front(i,j);
+        return le_champ_front(i, j);
     }
 }

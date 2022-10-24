@@ -13,40 +13,29 @@
 *
 *****************************************************************************/
 
-
 #ifndef Dirichlet_included
 #define Dirichlet_included
 
 #include <Cond_lim_base.h>
 
-
-
-
-/*! @brief classe Dirichlet Cette classe est la classe de base de la hierarchie des conditions
+/*! @brief classe Dirichlet Cette classe est la classe de base de la hierarchie des conditions aux limites de type Dirichlet.
  *
- *     aux limites de type Dirichlet.
- *     Une condition aux limites de type Dirichlet impose la valeur
- *     d'un champ inconnue sur une frontiere, ce qui correspond a:
+ *     Une condition aux limites de type Dirichlet impose la valeur d'un champ inconnue sur une frontiere, ce qui correspond a:
+ *
  *      - vitesse imposee pour l'equation de Navier-Stokes
  *      - scalaire impose pour l'equation de transport d'un scalaire
  *
  * @sa Cond_lim_base Dirichlet_homogene
  */
-class Dirichlet  : public Cond_lim_base
+class Dirichlet: public Cond_lim_base
 {
-
   Declare_base(Dirichlet);
-
 public:
-
   virtual double val_imp(int i) const;
   virtual double val_imp(int i, int j) const;
   virtual double val_imp_au_temps(double temps, int i) const;
   virtual double val_imp_au_temps(double temps, int i, int j) const;
   void verifie_ch_init_nb_comp() const override;
 };
-
-
-
 
 #endif

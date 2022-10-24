@@ -16,19 +16,13 @@
 #ifndef Sortie_libre_Gradient_Pression_impose_VEFPreP1B_included
 #define Sortie_libre_Gradient_Pression_impose_VEFPreP1B_included
 
-
 /*! @brief Sortie_libre_Gradient_Pression_impose_VEFPreP1B
  *
  *  Cette classe derive de la classe Neumann_sortie_libre
  *
- *     Elle represente une frontiere ouverte avec condition
- *     de gradient de pression impose.
- *     L'objet de type Champ_front le_champ_front contient le gradient
- *     impose. La fonction flux_impose() renvoie une valeur de pression
- *     a l'exterieur calculee a partir du gradient de pression impose
- *     et de la pression a l'interieur du domaine.
- *
- *
+ *     Elle represente une frontiere ouverte avec condition de gradient de pression impose.
+ *     L'objet de type Champ_front le_champ_front contient le gradient impose. La fonction flux_impose() renvoie une valeur de pression
+ *     a l'exterieur calculee a partir du gradient de pression impose et de la pression a l'interieur du domaine.
  *
  * @sa Milieu_base
  */
@@ -36,21 +30,17 @@
 #include <Sortie_libre_Gradient_Pression_impose_VEF.h>
 #include <Ref_Champ_P1_isoP1Bulle.h>
 
-class Sortie_libre_Gradient_Pression_impose_VEFPreP1B : public Sortie_libre_Gradient_Pression_impose_VEF
+class Sortie_libre_Gradient_Pression_impose_VEFPreP1B: public Sortie_libre_Gradient_Pression_impose_VEF
 {
-
   Declare_instanciable(Sortie_libre_Gradient_Pression_impose_VEFPreP1B);
-
 public:
-
   int initialiser(double temps) override;
-  void mettre_a_jour(double ) override;
+  void mettre_a_jour(double) override;
   virtual int calculer_trace_pression();
-  int compatible_avec_discr(const Discretisation_base& ) const override;
+  int compatible_avec_discr(const Discretisation_base&) const override;
 
 protected:
-
-  REF(Champ_P1_isoP1Bulle)  pression_interne;
+  REF(Champ_P1_isoP1Bulle) pression_interne;
 };
 
 #endif

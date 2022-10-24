@@ -35,6 +35,8 @@ Sortie& Echange_contact_VDF::printOn(Sortie& s ) const { return s << que_suis_je
 
 Entree& Echange_contact_VDF::readOn(Entree& s)
 {
+  if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("Neutronique"), Motcle("fraction_massique"), Motcle("indetermine") };
+
   s >> nom_autre_pb_ >> nom_bord >> nom_champ >> h_paroi;
   T_autre_pb().typer("Champ_front_calc");
   T_ext().typer("Ch_front_var_instationnaire_dep");

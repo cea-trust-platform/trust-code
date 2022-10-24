@@ -18,49 +18,10 @@
 Implemente_base(Neumann_homogene,"Neumann_homogene",Cond_lim_base);
 // XD Neumann_homogene condlim_base Neumann_homogene -1 Homogeneous neumann boundary condition
 
+Sortie& Neumann_homogene::printOn(Sortie& s ) const { return s << que_suis_je() << finl; }
 
-/*! @brief Ecrit le type de l'objet sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Neumann_homogene::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << finl;
-}
-
-/*! @brief Type le champ a la frontiere en "Champ_front_uniforme" N'ecrit rien sur le flot passe en parametre
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree& s) le flot d'entree
- */
 Entree& Neumann_homogene::readOn(Entree& s )
 {
   le_champ_front.typer("Champ_front_uniforme");
   return s ;
-}
-
-/*! @brief Renvoie la valeur du flux impose sur la i-eme composante du champ representant le flux a la frontiere.
- *
- *     Toujours 0 pour Neumann homogene.
- *
- * @param (int) indice suivant la premiere dimension du champ
- * @return (double) la valeur du flux imposee sur la composante specifiee
- */
-double Neumann_homogene::flux_impose(int ) const
-{
-  return 0;
-}
-
-/*! @brief Renvoie la valeur du flux impose sur la (i,j)-eme composante du champ representant le flux a la frontiere.
- *
- *     Toujours 0 pour Neumann homogene.
- *
- * @param (int) indice suivant la premiere dimension du champ
- * @param (int) indice suivant la deuxieme dimension du champ
- * @return (double) la valeur imposee sur la composante specifiee
- */
-double Neumann_homogene::flux_impose(int ,int ) const
-{
-  return 0;
 }

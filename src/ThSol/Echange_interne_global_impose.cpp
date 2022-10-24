@@ -34,7 +34,7 @@ Implemente_instanciable(Echange_interne_global_impose,"Paroi_echange_interne_glo
  */
 Sortie& Echange_interne_global_impose::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 /*! @brief Simple appel a Echange_impose_base::readOn(Entree&) Lit les specifications des conditions aux limites
@@ -46,6 +46,8 @@ Sortie& Echange_interne_global_impose::printOn(Sortie& s ) const
  */
 Entree& Echange_interne_global_impose::readOn(Entree& s )
 {
+  if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("Neutronique"), Motcle("fraction_massique"), Motcle("indetermine") };
+
   Motcle motlu;
   Motcle motcle("h_gap");
 

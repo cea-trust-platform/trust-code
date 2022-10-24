@@ -18,31 +18,23 @@
 
 #include <Neumann_sortie_libre.h>
 
-
 /*! @brief classe Sortie_libre_pression_imposee Cette classe derive de Neumann_sortie_libre
  *
  *     Elle represente une frontiere ouverte avec condition de pression imposee.
- *     L'objet de type Champ_bord le_champ_bord contient la pression et la
- *     fonction flux_impose() renvoie les valeurs de cette pression.
- *     champ_ext contient une valeur de la vitesse du fluide a l'exterieur
- *     accessible par la methode val_ext()
+ *     L'objet de type Champ_bord le_champ_bord contient la pression et la fonction flux_impose() renvoie les valeurs de cette pression.
+ *     champ_ext contient une valeur de la vitesse du fluide a l'exterieur accessible par la methode val_ext()
  *
  * @sa Neumann_sortie_libre
  */
-class Sortie_libre_pression_imposee : public Neumann_sortie_libre
+class Sortie_libre_pression_imposee: public Neumann_sortie_libre
 {
-
   Declare_instanciable(Sortie_libre_pression_imposee);
-
-public :
-
-  int compatible_avec_eqn(const Equation_base&) const override;
+public:
   double flux_impose(int i) const override;
-  double flux_impose(int i,int j) const override;
+  double flux_impose(int i, int j) const override;
   void completer() override;
 
 protected:
-
   double d_rho;
 };
 

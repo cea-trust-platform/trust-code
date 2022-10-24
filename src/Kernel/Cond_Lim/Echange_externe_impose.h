@@ -17,7 +17,6 @@
 #define Echange_externe_impose_included
 
 #include <Echange_impose_base.h>
-#include <Ref_Milieu_base.h>
 
 /*! @brief Classe Echange_externe_impose: Cette classe represente le cas particulier de la classe
  *
@@ -43,13 +42,11 @@
  *
  * @sa Echange_impose_base Echange_global_impose
  */
-class Echange_externe_impose  : public Echange_impose_base
+class Echange_externe_impose: public Echange_impose_base
 {
-
   Declare_instanciable(Echange_externe_impose);
-  int compatible_avec_discr(const Discretisation_base& ) const override;
+  int compatible_avec_discr(const Discretisation_base&) const override;
   void verifie_ch_init_nb_comp() const override;
 };
-
 
 #endif

@@ -13,49 +13,21 @@
 *
 *****************************************************************************/
 
+#include <Reordonner_faces_periodiques.h>
+#include <Zone_Cl_dis.h>
 #include <Periodique.h>
 #include <Domaine.h>
-#include <Zone_Cl_dis.h>
 #include <Zone_VF.h>
-#include <Reordonner_faces_periodiques.h>
 #include <Scatter.h>
 
-Implemente_instanciable(Periodique,"Periodique",Cond_lim_base);
+Implemente_instanciable(Periodique, "Periodique", Cond_lim_base);
 
+Sortie& Periodique::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 
-/*! @brief Ecrit le type de l'objet sur un flot de sortie
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Periodique::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << finl ;
-}
-
-
-
-/*! @brief
- *
- */
 Entree& Periodique::readOn(Entree& s)
 {
   le_champ_front.typer("Champ_front_uniforme");
   return s;
-}
-
-/*! @brief Renvoie toujours 1
- *
- */
-int Periodique::compatible_avec_eqn(const Equation_base&) const
-{
-  return 1;
-}
-/*! @brief
- *
- */
-void Periodique::mettre_a_jour(double temps)
-{
 }
 
 void Periodique::completer()
@@ -65,10 +37,7 @@ void Periodique::completer()
 
   // Recherche de la direction de periodicite:
   ArrOfDouble erreur;
-  int ok = Reordonner_faces_periodiques::check_faces_periodiques(frontiere,
-                                                                 direction_perio_,
-                                                                 erreur,
-                                                                 1 /* verbose */);
+  int ok = Reordonner_faces_periodiques::check_faces_periodiques(frontiere, direction_perio_, erreur, 1 /* verbose */);
   if (!ok)
     exit();
 
@@ -118,10 +87,7 @@ void Periodique::completer()
     }
   const MD_Vector& md_faces_front = tab_face_associee.get_md_vector();
   // On echange espace virtuel avec traduction des indices:
-  Scatter::construire_espace_virtuel_traduction(md_faces_front,
-                                                md_faces_front,
-                                                tab_face_associee,
-                                                1 /* erreurs fatales */);
+  Scatter::construire_espace_virtuel_traduction(md_faces_front, md_faces_front, tab_face_associee, 1 /* erreurs fatales */);
   // Tableau qui donne pour chaque face virtuelle de la zone, -1 si ce n'est pas une
   // face frontiere, sinon son indice dans les les frontieres.
   const ArrOfInt& ind_faces_virt_bord = zone.ind_faces_virt_bord();
@@ -129,7 +95,7 @@ void Periodique::completer()
   // l'indice de la face dans la frontiere periodique courante (-1 sinon)
   const int nb_faces_front_tot = tab_face_associee.size_totale();
   ArrOfInt index(nb_faces_front_tot);
-  index= -2;
+  index = -2;
   const int nb_faces_zone = zone_Cl_dis().zone_dis().valeur().face_sommets().dimension(0);
   for (i = 0; i < nb_faces_virt; i++)
     {
@@ -172,18 +138,11 @@ void Periodique::completer()
     }
 }
 
-double Periodique::distance() const
-{
-  return distance_;
-}
-
 int Periodique::direction_periodicite() const
 {
   if (!est_periodique_selon_un_axe())
     {
-      Cerr << "Error in Periodique::direction_periodicite():\n"
-           << " An algorithm seems to assume that the periodic direction is aligned in X, Y or Z\n"
-           << " and this is not the case !" << finl;
+      Cerr << "Error in Periodique::direction_periodicite():\n" << " An algorithm seems to assume that the periodic direction is aligned in X, Y or Z\n" << " and this is not the case !" << finl;
       exit();
     }
   return direction_xyz_;

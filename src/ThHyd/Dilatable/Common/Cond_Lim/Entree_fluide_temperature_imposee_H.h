@@ -19,9 +19,7 @@
 #include <Entree_fluide_temperature_imposee.h>
 #include <Ref_Fluide_Dilatable_base.h>
 
-/*! @brief classe Entree_fluide_temperature_imposee_H Cas particulier de la classe Entree_fluide_temperature_imposee
- *
- *     pour une equation ayant l'enthalpie en inconnue
+/*! @brief classe Entree_fluide_temperature_imposee_H Cas particulier de la classe Entree_fluide_temperature_imposee pour une equation ayant l'enthalpie en inconnue
  *
  * @sa Dirichlet_entree_fluide
  */
@@ -29,10 +27,8 @@
 class Entree_fluide_temperature_imposee_H  : public Entree_fluide_temperature_imposee
 {
   Declare_instanciable(Entree_fluide_temperature_imposee_H);
-
 public :
   void completer() override;
-  int compatible_avec_eqn(const Equation_base&) const override;
   double val_imp(int i) const override;
   double val_imp(int i, int j) const override;
 

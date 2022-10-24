@@ -15,25 +15,8 @@
 
 #include <Entree_fluide_vitesse_imposee_libre.h>
 
-Implemente_instanciable(Entree_fluide_vitesse_imposee_libre,"Frontiere_ouverte_vitesse_imposee_sortie",Entree_fluide_vitesse_imposee);
+Implemente_instanciable(Entree_fluide_vitesse_imposee_libre, "Frontiere_ouverte_vitesse_imposee_sortie", Entree_fluide_vitesse_imposee);
 
+Sortie& Entree_fluide_vitesse_imposee_libre::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 
-/*! @brief Ecrit le type de l'objet sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Entree_fluide_vitesse_imposee_libre::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << finl;
-}
-
-/*! @brief Simple appel a: Cond_lim_base::readOn(Entree& )
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree& s) le flot d'entree modifie
- */
-Entree& Entree_fluide_vitesse_imposee_libre::readOn(Entree& s)
-{
-  return Cond_lim_base::readOn(s);
-}
+Entree& Entree_fluide_vitesse_imposee_libre::readOn(Entree& s) { return Entree_fluide_vitesse_imposee::readOn(s); }

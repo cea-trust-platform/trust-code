@@ -29,11 +29,9 @@
  *
  * @sa Echange_impose_base Echange_global_impose
  */
-class Echange_interne_impose  : public Echange_externe_impose
+class Echange_interne_impose: public Echange_externe_impose
 {
-
   Declare_instanciable(Echange_interne_impose);
-
 public:
   int initialiser(double temps) override;
   void completer() override;
@@ -46,20 +44,15 @@ public:
   // Overriden in Echange_interne_parfait to have h_gap=+infinity:
   virtual double calcul_h_imp(const double h_gap, const double invLambda) const;
 
-  const DoubleTab& inv_lambda() const
-  {
-    return inv_lambda_;
-  }
+  const DoubleTab& inv_lambda() const { return inv_lambda_; }
 
   // re-implemented to account for the second Champ_front in the class (h_gap_):
-  //
-  void  set_temps_defaut(double temps) override;
-  void  fixer_nb_valeurs_temporelles(int nb_cases) override;
-  void  changer_temps_futur(double temps,int i) override;
-  int   avancer(double temps) override;
-  int   reculer(double temps) override;
-  void  associer_fr_dis_base(const Frontiere_dis_base& fr) override;
-  //
+  void set_temps_defaut(double temps) override;
+  void fixer_nb_valeurs_temporelles(int nb_cases) override;
+  void changer_temps_futur(double temps, int i) override;
+  int avancer(double temps) override;
+  int reculer(double temps) override;
+  void associer_fr_dis_base(const Frontiere_dis_base& fr) override;
 
 protected:
   virtual void update_inv_lambda();
@@ -67,8 +60,6 @@ protected:
   Champ_front h_gap_;
   REF(Champ_Don) lambda_ref_;   // reference to the field of thermic conductivity
   DoubleTab inv_lambda_;        // = e/lambda on the internal boundary
-
 };
-
 
 #endif

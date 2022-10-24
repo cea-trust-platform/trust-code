@@ -14,50 +14,21 @@
 *****************************************************************************/
 
 #include <Neumann_paroi.h>
-#include <Motcle.h>
 #include <Equation_base.h>
+#include <Probleme_base.h>
 #include <Milieu_base.h>
 
-#include <Probleme_base.h>
+Implemente_instanciable(Neumann_paroi, "Neumann_paroi", Neumann);
 
-Implemente_instanciable(Neumann_paroi,"Neumann_paroi",Neumann);
+Sortie& Neumann_paroi::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 
-Sortie& Neumann_paroi::printOn(Sortie& s ) const
+Entree& Neumann_paroi::readOn(Entree& s)
 {
-  return s << que_suis_je() << finl;
-}
+  if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("Thermique_H"), Motcle("diphasique_moyenne"), Motcle("Concentration"), Motcle("fraction_massique"),
+                                                 Motcle("Fraction_volumique"), Motcle("Turbulence"), Motcle("Interfacial_area"), Motcle("indetermine")
+                                               };
 
-Entree& Neumann_paroi::readOn(Entree& s )
-{
-  return Cond_lim_base::readOn(s) ;
-}
-
-/*! @brief Renvoie un booleen indiquant la compatibilite des conditions aux limites avec l'equation specifiee en parametre.
- *
- *     Des CL de type Neumann_paroi sont compatibles
- *     avec une equation dont le domaine est la Thermique
- *     ou bien indetermine.
- *
- * @param (Equation_base& eqn) l'equation avec laquelle il faut verifier la compatibilite
- * @return (int) valeur booleenne, 1 si les CL sont compatibles avec l'equation 0 sinon
- */
-int Neumann_paroi::compatible_avec_eqn(const Equation_base& eqn) const
-{
-  Motcle dom_app=eqn.domaine_application();
-  Motcle Thermique="Thermique", Thermique_H ="Thermique_H",Diphasique="diphasique_moyenne";
-  Motcle indetermine="indetermine",Concentration="Concentration",FracMass="fraction_massique";
-  Motcle Fraction_volumique = "Fraction_volumique";
-  Motcle Turbulence = "Turbulence";
-  Motcle Interfacial_area = "Interfacial_area";
-
-  if ( (dom_app==Thermique) || (dom_app==Thermique_H) || (dom_app==Diphasique) || (dom_app==indetermine)
-       || (dom_app==Concentration) || (dom_app==FracMass) || (dom_app==Fraction_volumique) || (dom_app==Turbulence) || (dom_app==Interfacial_area) )
-    return 1;
-  else
-    {
-      err_pas_compatible(eqn);
-      return 0;
-    }
+  return Neumann::readOn(s);
 }
 
 void Neumann_paroi::verifie_ch_init_nb_comp() const
@@ -66,29 +37,28 @@ void Neumann_paroi::verifie_ch_init_nb_comp() const
     {
       const Equation_base& eq = zone_Cl_dis().equation();
       const int nb_comp = le_champ_front.valeur().nb_comp();
-      eq.verifie_ch_init_nb_comp_cl(eq.inconnue(),nb_comp, *this);
+      eq.verifie_ch_init_nb_comp_cl(eq.inconnue(), nb_comp, *this);
     }
 }
 
 double Neumann_paroi::flux_impose(int i) const
 {
-  if (le_champ_front.valeurs().size()==1)
-    return le_champ_front(0,0);
-  else if (le_champ_front.valeurs().dimension(1)==1)
-    return le_champ_front(i,0);
+  if (le_champ_front.valeurs().size() == 1)
+    return le_champ_front(0, 0);
+  else if (le_champ_front.valeurs().dimension(1) == 1)
+    return le_champ_front(i, 0);
   else
     Cerr << "Neumann_paroi::flux_impose erreur" << finl;
   Process::exit();
   return 0.;
 }
 
-double Neumann_paroi::flux_impose(int i,int j) const
+double Neumann_paroi::flux_impose(int i, int j) const
 {
-  if (le_champ_front.valeurs().dimension(0)==1)
-    return le_champ_front(0,j);
+  if (le_champ_front.valeurs().dimension(0) == 1)
+    return le_champ_front(0, j);
   else
-    return le_champ_front(i,j);
-
+    return le_champ_front(i, j);
 }
 
 void Neumann_paroi::mettre_a_jour(double temps)

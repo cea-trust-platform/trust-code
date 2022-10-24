@@ -14,63 +14,16 @@
 *****************************************************************************/
 
 #include <Neumann_paroi_flux_nul.h>
-#include <Motcle.h>
-#include <Equation_base.h>
 
-Implemente_instanciable(Neumann_paroi_flux_nul,"Paroi",Neumann_paroi_adiabatique);
+Implemente_instanciable(Neumann_paroi_flux_nul, "Paroi", Neumann_paroi_adiabatique);
 
+Sortie& Neumann_paroi_flux_nul::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 
-/*! @brief Ecrit le type de l'objet sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Neumann_paroi_flux_nul::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << finl;
-}
-
-/*! @brief Simple appel a: Neumann_homogene::readOn(Entree& )
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree& s) le flot d'entree modifie
- */
 Entree& Neumann_paroi_flux_nul::readOn(Entree& s )
 {
+  if (app_domains.size() == 0) app_domains = { Motcle("Concentration"), Motcle("Fraction_massique"), Motcle("Transport_Keps"), Motcle("Transport_Keps_V2"), Motcle("Interfacial_area"),
+                                                 Motcle("Transport_Keps_Rea"), Motcle("Transport_V2"), Motcle("Diphasique_moyenne"), Motcle("Fraction_volumique"), Motcle("indetermine")
+                                               };
+
   return Neumann_homogene::readOn(s) ;
-}
-
-/*! @brief Renvoie un booleen indiquant la compatibilite des conditions aux limites avec l'equation specifiee en parametre.
- *
- *     Des CL de type Neumann_paroi_flux_nul sont compatibles
- *     avec une equation dont le domaine est la Concentration, la Fraction_massique
- *     le Transport_Keps, le Transport_Keps_V2, le Transport_V2, le Diphasique_moyenne
- *     ou bien indetermine.
- *
- * @param (Equation_base& eqn) l'equation avec laquelle il faut verifier la compatibilite
- * @return (int) valeur booleenne, 1 si les CL sont compatibles avec l'equation 0 sinon
- */
-int Neumann_paroi_flux_nul::compatible_avec_eqn(const Equation_base& eqn) const
-{
-  Motcle dom_app=eqn.domaine_application();
-
-  Motcle Concentration      ="Concentration";
-  Motcle Fraction_massique  ="Fraction_massique";
-  Motcle K_Eps              ="Transport_Keps";
-  Motcle K_Eps_V2           ="Transport_Keps_V2";
-  Motcle K_Eps_Rea          ="Transport_Keps_Rea";
-  Motcle V2                 ="Transport_V2";
-  Motcle Diphasique         ="Diphasique_moyenne";
-  Motcle Fraction_volumique ="Fraction_volumique";
-  Motcle Aire_interfaciale  ="Interfacial_area";
-  Motcle indetermine        ="indetermine";
-
-  if ( (dom_app==Concentration) || (dom_app==K_Eps) || (dom_app==K_Eps_Rea) || (dom_app==K_Eps_V2) || (dom_app==V2) ||
-       (dom_app==Diphasique) || (dom_app==indetermine) || (dom_app==Fraction_massique) || (dom_app==Fraction_volumique) || (dom_app==Aire_interfaciale) )
-    return 1;
-  else
-    {
-      err_pas_compatible(eqn);
-      return 0;
-    }
 }

@@ -16,62 +16,34 @@
 #ifndef Sortie_libre_Text_H_ext_included
 #define Sortie_libre_Text_H_ext_included
 
-
-#include <Neumann.h>
 #include <Ref_Champ_Inc.h>
-
+#include <Neumann.h>
 
 /*! @brief classe  Neumann_sortie_libre Cette classe represente une frontiere ouverte sans vitesse imposee
  *
- *     Pour les equations de Navier_Stokes on impose necessairement
- *     la pression sur une telle frontiere
- *     Pour traiter l'hydraulique, on derive donc de la classe
- *     Neumann_sortie_libre la classe Sortie_libre_pression_imposee
- *     Les conditions aux limites de type Neumann_sortie_libre ou des
- *     types derives se traduisent par des flux diffusifs nuls.
- *     En revanche, le traitement des flux convectifs impose de connaitre
- *     le champ convecte a l'exterieur de la frontiere en cas de re-entree
- *     de fluide. C'est pourquoi la classe porte un Champ_front
- *     (membre le_champ_ext).
- *     Dans les operateurs de calcul, les conditions aux limites
- *     de type Neumann_sortie_libre et des types derives seront traites
- *     de maniere identique
+ *     Pour les equations de Navier_Stokes on impose necessairement la pression sur une telle frontiere
+ *     Pour traiter l'hydraulique, on derive donc de la classe Neumann_sortie_libre la classe Sortie_libre_pression_imposee
+ *     Les conditions aux limites de type Neumann_sortie_libre ou des types derives se traduisent par des flux diffusifs nuls.
+ *     En revanche, le traitement des flux convectifs impose de connaitre le champ convecte a l'exterieur de la frontiere en cas de re-entree
+ *     de fluide. C'est pourquoi la classe porte un Champ_front (membre le_champ_ext).
+ *     Dans les operateurs de calcul, les conditions aux limites de type Neumann_sortie_libre et des types derives seront traites de maniere identique
  *
- * @sa Neumann Sortie_libre_pression_imposee
+ * @sa Neumann
  */
-class Sortie_libre_Text_H_ext : public Neumann
+class Sortie_libre_Text_H_ext: public Neumann
 {
-
   Declare_instanciable(Sortie_libre_Text_H_ext);
-
 public:
-
   virtual double val_ext(int i) const;
-  virtual double val_ext(int i,int j) const;
-  int compatible_avec_eqn(const Equation_base&) const override;
-  inline void bascule_cond_lim_en_enthalpie();
-  inline void bascule_cond_lim_en_temperature();
+  virtual double val_ext(int i, int j) const;
+  inline void bascule_cond_lim_en_enthalpie() { type_cond_lim = 1; }
+  inline void bascule_cond_lim_en_temperature() { type_cond_lim = 0; }
   double flux_impose(int i) const override;
-  double flux_impose(int i,int j) const override;
+  double flux_impose(int i, int j) const override;
 
 protected:
-
-  Champ_front le_champ_Text;
-  Champ_front le_champ_hext;
-  int type_cond_lim;
-
+  Champ_front le_champ_Text, le_champ_hext;
+  int type_cond_lim = -1;
 };
-
-
-inline void Sortie_libre_Text_H_ext::bascule_cond_lim_en_enthalpie()
-{
-  type_cond_lim = 1;
-}
-
-inline void Sortie_libre_Text_H_ext::bascule_cond_lim_en_temperature()
-{
-  type_cond_lim = 0;
-}
-
 
 #endif

@@ -14,53 +14,15 @@
 *****************************************************************************/
 
 #include <Neumann_paroi_adiabatique.h>
-#include <Motcle.h>
-#include <Equation_base.h>
 
-Implemente_instanciable(Neumann_paroi_adiabatique,"Neumann_Paroi_adiabatique",Neumann_homogene);
+Implemente_instanciable(Neumann_paroi_adiabatique, "Neumann_Paroi_adiabatique", Neumann_homogene);
 // XD Neumann_paroi_adiabatique Neumann_homogene Neumann_paroi_adiabatique -1 Adiabatic wall neumann boundary condition
 
-/*! @brief Ecrit le type de l'objet sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Neumann_paroi_adiabatique::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << finl;
-}
+Sortie& Neumann_paroi_adiabatique::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 
-/*! @brief Simple appel a: Neumann_homogene::readOn(Entree& )
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree& s) le flot d'entree modifie
- */
-Entree& Neumann_paroi_adiabatique::readOn(Entree& s )
+Entree& Neumann_paroi_adiabatique::readOn(Entree& s)
 {
-  return Neumann_homogene::readOn(s) ;
-}
+  if (app_domains.size() == 0) app_domains = { Motcle("Diphasique_moyenne"), Motcle("Thermique"), Motcle("Thermique_H"), Motcle("indetermine") };
 
-/*! @brief Renvoie un booleen indiquant la compatibilite des conditions aux limites avec l'equation specifiee en parametre.
- *
- *     Des CL de type Neumann_paroi sont compatibles
- *     avec une equation dont le domaine est la Thermique
- *     ou bien indetermine.
- *
- * @param (Equation_base& eqn) l'equation avec laquelle il faut verifier la compatibilite
- * @return (int) valeur booleenne, 1 si les CL sont compatibles avec l'equation 0 sinon
- */
-int Neumann_paroi_adiabatique::compatible_avec_eqn(const Equation_base& eqn) const
-{
-  Motcle dom_app=eqn.domaine_application();
-  Motcle Thermique="Thermique";
-  Motcle Diphasique="Diphasique_moyenne";
-  Motcle Thermique_H="Thermique_H";
-  Motcle indetermine="indetermine";
-  if ( (dom_app==Thermique) || (dom_app==Diphasique) || (dom_app==Thermique_H) || (dom_app==indetermine) )
-    return 1;
-  else
-    {
-      err_pas_compatible(eqn);
-      return 0;
-    }
+  return Neumann_homogene::readOn(s);
 }

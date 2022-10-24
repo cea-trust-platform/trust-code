@@ -30,9 +30,7 @@
  */
 class Entree_fluide_vitesse_imposee_libre  : public Entree_fluide_vitesse_imposee
 {
-
   Declare_instanciable(Entree_fluide_vitesse_imposee_libre);
-
 };
 
 #endif

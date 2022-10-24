@@ -13,28 +13,20 @@
 *
 *****************************************************************************/
 
-
 #ifndef Dirichlet_paroi_defilante_included
 #define Dirichlet_paroi_defilante_included
 
 #include <Dirichlet.h>
 
-
-
 /*! @brief classe Dirichlet_paroi_defilante Impose la vitesse de paroi dnas une equation de type Navier_Stokes.
  *
  * @sa Dirichlet, Objet compatible avec des equations du domaine de l'Hydraulique, ou indetermine. (voir compatible_avec_eqn(const Equation_base&) const)
  */
-class Dirichlet_paroi_defilante : public Dirichlet
+class Dirichlet_paroi_defilante: public Dirichlet
 {
-
   Declare_instanciable(Dirichlet_paroi_defilante);
-
-public :
-
-  int compatible_avec_eqn(const Equation_base&) const override;
-  void completer() override;
+public:
+  void completer() override { }
 };
-
 
 #endif

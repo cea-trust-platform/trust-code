@@ -13,7 +13,6 @@
 *
 *****************************************************************************/
 
-
 #ifndef Periodique_included
 #define Periodique_included
 
@@ -30,40 +29,27 @@ class Faces;
  *
  * @sa Cond_lim_base, Toutes les faces de la frontiere associee a cette condition doivent, avoir la meme orientation
  */
-class Periodique  : public Cond_lim_base
+class Periodique: public Cond_lim_base
 {
-
   Declare_instanciable(Periodique);
-
 public:
-
-  void mettre_a_jour(double temps) override;
-  int face_associee(int i) const
-  {
-    return face_front_associee_[i];
-  }
-  double distance() const;
-  inline const ArrOfDouble& direction_perio() const
-  {
-    return direction_perio_;
-  };
+  void mettre_a_jour(double temps) override { }
+  int face_associee(int i) const { return face_front_associee_[i]; }
+  double distance() const { return distance_; }
+  inline const ArrOfDouble& direction_perio() const { return direction_perio_; }
   int direction_periodicite() const;
-  inline int est_periodique_selon_un_axe() const
-  {
-    return  direction_xyz_ >= 0;
-  };
+  inline int est_periodique_selon_un_axe() const { return direction_xyz_ >= 0; }
 
 protected:
   // Tableau de taille nb_faces() + nb_faces_virt()
-  // face_front_associee_[i] est l'indice de la face opposee sur cette frontiere
-  // (vaut -1 si la face opposee n'existe pas pour une face virtuelle)
+  // face_front_associee_[i] est l'indice de la face opposee sur cette frontiere (vaut -1 si la face opposee n'existe pas pour une face virtuelle)
   ArrOfInt face_front_associee_;
   ArrOfDouble direction_perio_;
-  double distance_;
+  double distance_ = -500.;
   // -1, 0, 1, ou 2
-  int direction_xyz_;
-  int compatible_avec_eqn(const Equation_base&) const override;
-  void   completer() override;
+  int direction_xyz_ = -100;
+  int compatible_avec_eqn(const Equation_base&) const override { return 1; }
+  void completer() override;
 };
 
 #endif

@@ -13,26 +13,18 @@
 *
 *****************************************************************************/
 
-
 #ifndef Dirichlet_paroi_fixe_included
 #define Dirichlet_paroi_fixe_included
 
 #include <Dirichlet_homogene.h>
 
-
-
-
-
 /*! @brief classe Dirichlet_paroi_fixe Represente une paroi immobile dans une equation de type Navier_Stokes.
  *
  * @sa Dirichlet_homogene, Objet compatible avec des equations du domaine de l'Hydraulique, ou indetermine. (voir compatible_avec_eqn(const Equation_base&) const)
  */
-class Dirichlet_paroi_fixe  : public Dirichlet_homogene
+class Dirichlet_paroi_fixe: public Dirichlet_homogene
 {
-
   Declare_instanciable(Dirichlet_paroi_fixe);
-public :
-  int compatible_avec_eqn(const Equation_base&) const override;
-
 };
+
 #endif

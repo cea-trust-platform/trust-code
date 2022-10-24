@@ -16,14 +16,8 @@
 #ifndef Echange_global_impose_included
 #define Echange_global_impose_included
 
-
-
-
 #include <Echange_impose_base.h>
 #include <Ref_Milieu_base.h>
-
-
-
 
 /*! @brief Classe Echange_global_impose Cette classe represente le cas particulier de la classe
  *
@@ -42,7 +36,7 @@
  *
  * @sa Echange_impose_base Echange_externe_impose
  */
-class Echange_global_impose : public Echange_impose_base
+class Echange_global_impose: public Echange_impose_base
 {
 
   Declare_instanciable(Echange_global_impose);
@@ -57,49 +51,25 @@ public:
   void mettre_a_jour(double temps) override;
   int initialiser(double temps) override;
 
-  inline Champ_front& derivee_phi_ext();
-  inline const Champ_front& derivee_phi_ext() const;
+  inline Champ_front& derivee_phi_ext() { return derivee_phi_ext_; }
+  inline const Champ_front& derivee_phi_ext() const { return derivee_phi_ext_; }
+  inline Champ_front& phi_ext() { return phi_ext_; }
+  inline const Champ_front& phi_ext() const { return phi_ext_; }
 
-  inline Champ_front& phi_ext();
-  inline const Champ_front& phi_ext() const;
-
-  virtual double champ_exterieur(int i,int j, const Champ_front& champ_ext) const;
+  virtual double champ_exterieur(int i, int j, const Champ_front& champ_ext) const;
   virtual double champ_exterieur(int i, const Champ_front& champ_ext) const;
 
   virtual double flux_exterieur_impose(int i) const;
-  virtual double flux_exterieur_impose(int i,int j) const;
+  virtual double flux_exterieur_impose(int i, int j) const;
 
   virtual double derivee_flux_exterieur_imposee(int i) const;
-  virtual double derivee_flux_exterieur_imposee(int i,int j) const;
+  virtual double derivee_flux_exterieur_imposee(int i, int j) const;
 
-  const bool& has_phi_ext() const { return phi_ext_lu_; };
+  const bool& has_phi_ext() const { return phi_ext_lu_; }
 
-protected :
-
+protected:
   bool phi_ext_lu_;
-  Champ_front derivee_phi_ext_;
-  Champ_front phi_ext_;
-
+  Champ_front derivee_phi_ext_, phi_ext_;
 };
-
-inline const Champ_front& Echange_global_impose::derivee_phi_ext() const
-{
-  return derivee_phi_ext_;
-}
-
-inline Champ_front& Echange_global_impose::derivee_phi_ext()
-{
-  return derivee_phi_ext_;
-}
-
-inline const Champ_front& Echange_global_impose::phi_ext() const
-{
-  return phi_ext_;
-}
-
-inline Champ_front& Echange_global_impose::phi_ext()
-{
-  return phi_ext_;
-}
 
 #endif

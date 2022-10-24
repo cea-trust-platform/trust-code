@@ -14,53 +14,13 @@
 *****************************************************************************/
 
 #include <Temperature_imposee_paroi.h>
-#include <Motcle.h>
-#include <Equation_base.h>
-#include <Discretisation_base.h>
 
-Implemente_instanciable(Temperature_imposee_paroi,"Temperature_imposee_paroi",Scalaire_impose_paroi);
+Implemente_instanciable(Temperature_imposee_paroi, "Temperature_imposee_paroi", Scalaire_impose_paroi);
 
+Sortie& Temperature_imposee_paroi::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 
-/*! @brief Ecrit le type de l'objet sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Temperature_imposee_paroi::printOn(Sortie& s ) const
+Entree& Temperature_imposee_paroi::readOn(Entree& s)
 {
-  return s << que_suis_je() << finl;
-}
-
-/*! @brief Simple appel a: Dirichlet::readOn(Entree& )
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree& s) le flot d'entree modifie
- */
-Entree& Temperature_imposee_paroi::readOn(Entree& s )
-{
-  return Dirichlet::readOn(s) ;
-}
-
-/*! @brief Renvoie un booleen indiquant la compatibilite des conditions aux limites avec l'equation specifiee en parametre.
- *
- *     Des CL de type Temperature_imposee_paroi sont compatibles
- *     avec une equation dont le domaine est la Thermique
- *     ou bien indetermine.
- *
- * @param (Equation_base& eqn) l'equation avec laquelle il faut verifier la compatibilite
- * @return (int) valeur booleenne, 1 si les CL sont compatibles avec l'equation 0 sinon
- */
-int Temperature_imposee_paroi::compatible_avec_eqn(const Equation_base& eqn) const
-{
-  Motcle dom_app=eqn.domaine_application();
-  Motcle Thermique="Thermique";
-  Motcle indetermine="indetermine";
-
-  if ( (dom_app==Thermique) || (dom_app==indetermine) )
-    return 1;
-  else
-    {
-      err_pas_compatible(eqn);
-      return 0;
-    }
+  if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("indetermine") };
+  return Dirichlet::readOn(s);
 }

@@ -16,30 +16,11 @@
 #include <Echange_externe_impose.h>
 #include <Equation_base.h>
 
-Implemente_instanciable(Echange_externe_impose,"Paroi_echange_externe_impose",Echange_impose_base);
+Implemente_instanciable(Echange_externe_impose, "Paroi_echange_externe_impose", Echange_impose_base);
 
+Sortie& Echange_externe_impose::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 
-/*! @brief Ecrit le type de l'objet sur un flot de sortie
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Echange_externe_impose::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << finl;
-}
-
-/*! @brief Simple appel a Echange_impose_base::readOn(Entree&) Lit les specifications des conditions aux limites
- *
- *     a partir d'un flot d'entree.
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree&) le flot de sortie modifie
- */
-Entree& Echange_externe_impose::readOn(Entree& s )
-{
-  return Echange_impose_base::readOn(s) ;
-}
+Entree& Echange_externe_impose::readOn(Entree& s) { return Echange_impose_base::readOn(s); }
 
 int Echange_externe_impose::compatible_avec_discr(const Discretisation_base& discr) const
 {
@@ -52,6 +33,6 @@ void Echange_externe_impose::verifie_ch_init_nb_comp() const
     {
       const Equation_base& eq = zone_Cl_dis().equation();
       const int nb_comp = le_champ_front.valeur().nb_comp();
-      eq.verifie_ch_init_nb_comp_cl(eq.inconnue(),nb_comp, *this);
+      eq.verifie_ch_init_nb_comp_cl(eq.inconnue(), nb_comp, *this);
     }
 }

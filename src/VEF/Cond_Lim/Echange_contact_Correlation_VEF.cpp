@@ -15,29 +15,26 @@
 
 #include <Echange_contact_Correlation_VEF.h>
 #include <Champ_front_calc.h>
-#include <Probleme_base.h>
-#include <Zone_VEF.h>
-#include <Milieu_base.h>
-
-#include <Champ_Uniforme.h>
-#include <Domaine.h>
-#include <Solv_TDMA.h>
 #include <communications.h>
+#include <Champ_Uniforme.h>
+#include <Probleme_base.h>
+#include <Milieu_base.h>
 #include <Schema_Comm.h>
+#include <Solv_TDMA.h>
+#include <Zone_VEF.h>
 #include <EFichier.h>
 #include <SFichier.h>
+#include <Domaine.h>
 #include <Param.h>
 
 Implemente_instanciable(Echange_contact_Correlation_VEF,"Paroi_Echange_contact_Correlation_VEF",Temperature_imposee_paroi);
 
-
-Sortie& Echange_contact_Correlation_VEF::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << finl;
-}
+Sortie& Echange_contact_Correlation_VEF::printOn(Sortie& s ) const { return s << que_suis_je() << finl; }
 
 Entree& Echange_contact_Correlation_VEF::readOn(Entree& is )
 {
+  if (app_domains.size() == 0) app_domains = { Motcle("Thermique") };
+
   Param param(que_suis_je());
   Reprise_temperature=0;
   dt_impr = 1e10;
@@ -829,17 +826,6 @@ void Echange_contact_Correlation_VEF::mettre_a_jour(double temps)
   Temperature_imposee_paroi::mettre_a_jour(temps);
 
   Echange_contact_Correlation_VEF_sauvegarder(Fichier_sauv_nom, temps, T);
-}
-
-int Echange_contact_Correlation_VEF::compatible_avec_eqn(const Equation_base& eqn) const
-{
-  if ( sub_type(Conduction, eqn) )
-    return 1;
-  else
-    {
-      err_pas_compatible(eqn);
-      return 0;
-    }
 }
 
 

@@ -13,31 +13,14 @@
 *
 *****************************************************************************/
 
-
 #ifndef Entree_fluide_fraction_massique_imposee_included
 #define Entree_fluide_fraction_massique_imposee_included
 
 #include <Dirichlet_entree_fluide.h>
 
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Entree_fluide_fraction_massique_imposee :
-//
-// Cas particulier de la classe Dirichlet_entree_fluide
-// pour la fraction massique imposee
-//
-//////////////////////////////////////////////////////////////////////////////
-
-class Entree_fluide_fraction_massique_imposee  : public Dirichlet_entree_fluide
+class Entree_fluide_fraction_massique_imposee: public Dirichlet_entree_fluide
 {
-
   Declare_instanciable(Entree_fluide_fraction_massique_imposee);
-
-public :
-  int compatible_avec_eqn(const Equation_base&) const override;
-
 };
 
 #endif
-

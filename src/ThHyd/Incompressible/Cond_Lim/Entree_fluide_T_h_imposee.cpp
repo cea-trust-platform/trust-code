@@ -14,21 +14,10 @@
 *****************************************************************************/
 
 #include <Entree_fluide_T_h_imposee.h>
-#include <Motcle.h>
-#include <Equation_base.h>
 
-Implemente_instanciable(Entree_fluide_T_h_imposee,"Frontiere_ouverte_T_h_imposee",Dirichlet_entree_fluide);
+Implemente_instanciable(Entree_fluide_T_h_imposee, "Frontiere_ouverte_T_h_imposee", Dirichlet_entree_fluide);
 
-
-/*! @brief Ecrit le type de l'objet sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Entree_fluide_T_h_imposee::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << finl;
-}
+Sortie& Entree_fluide_T_h_imposee::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 
 /*! @brief Type le_champ_front en "Champ_front_uniforme".
  *
@@ -41,8 +30,10 @@ Sortie& Entree_fluide_T_h_imposee::printOn(Sortie& s ) const
  * @throws type de champ exterieur non reconnu,
  * les types reconnus sont: "T_ext", "C_ext", "Y_ext" ou "K_Eps_ext"
  */
-Entree& Entree_fluide_T_h_imposee::readOn(Entree& s )
+Entree& Entree_fluide_T_h_imposee::readOn(Entree& s)
 {
+  if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("indetermine") };
+
   le_champ_front.typer("Champ_front_uniforme");
   le_champ_Text.typer("Champ_front_uniforme");
   le_champ_hext.typer("Champ_front_uniforme");
@@ -56,8 +47,8 @@ Entree& Entree_fluide_T_h_imposee::readOn(Entree& s )
     les_motcles[4] = "Y_ext";
   }
 
-  Motcle accfermee="}";
-  Motcle accouverte="{";
+  Motcle accfermee = "}";
+  Motcle accouverte = "{";
   s >> motlu;
   int rang;
   if (motlu != accouverte)
@@ -66,7 +57,7 @@ Entree& Entree_fluide_T_h_imposee::readOn(Entree& s )
       exit();
     }
   s >> motlu;
-  while(motlu != accfermee)
+  while (motlu != accfermee)
     {
       rang = les_motcles.search(motlu);
       switch(rang)
@@ -88,7 +79,7 @@ Entree& Entree_fluide_T_h_imposee::readOn(Entree& s )
           {
             Cerr << "Erreur a la lecture de la condition aux limites de type: " << finl;
             Cerr << que_suis_je() << finl;
-            Cerr << "On attendait " << les_motcles << " a la place de " <<  motlu << finl;
+            Cerr << "On attendait " << les_motcles << " a la place de " << motlu << finl;
             exit();
           }
         }
@@ -96,30 +87,6 @@ Entree& Entree_fluide_T_h_imposee::readOn(Entree& s )
     }
 
   return s;
-}
-
-/*! @brief Renvoie un booleen indiquant la compatibilite des conditions aux limites avec l'equation specifiee en parametre.
- *
- *     Des CL de type Entree_fluide_temperature_imposee sont compatibles
- *     avec une equation dont le domaine est la Thermique
- *     ou bien indetermine.
- *
- * @param (Equation_base& eqn) l'equation avec laquelle il faut verifier la compatibilite
- * @return (int) valeur booleenne, 1 si les CL sont compatibles avec l'equation 0 sinon
- */
-int Entree_fluide_T_h_imposee::compatible_avec_eqn(const Equation_base& eqn) const
-{
-  Motcle dom_app=eqn.domaine_application();
-  Motcle Thermique="Thermique";
-  Motcle indetermine="indetermine";
-  Cerr<<"Entree_fluide_T_h_imposee::compatible_avec_eqn"<<finl;
-  if ( (dom_app==Thermique) || (dom_app==indetermine) )
-    return 1;
-  else
-    {
-      err_pas_compatible(eqn);
-      return 0;
-    }
 }
 
 /*! @brief Renvoie la valeur de la i-eme composante du champ impose a l'exterieur de la frontiere.
@@ -133,10 +100,10 @@ double Entree_fluide_T_h_imposee::val_imp(int i) const
   if (type_cond_lim == 0)
     {
       //      Cerr<<"Entree_fluide_T_h_imposee Condition limite en temperature"<<finl;
-      if (le_champ_Text.valeurs().size()==1)
-        return le_champ_Text(0,0);
-      else if (le_champ_Text.valeurs().dimension(1)==1)
-        return le_champ_Text(i,0);
+      if (le_champ_Text.valeurs().size() == 1)
+        return le_champ_Text(0, 0);
+      else if (le_champ_Text.valeurs().dimension(1) == 1)
+        return le_champ_Text(i, 0);
       else
         Cerr << "Entree_fluide_T_h_imposee::val_ext" << finl;
       exit();
@@ -145,10 +112,10 @@ double Entree_fluide_T_h_imposee::val_imp(int i) const
   else
     {
       //      Cerr<<"Entree_fluide_T_h_imposee Condition limite en enthalpie"<<finl;
-      if (le_champ_hext.valeurs().size()==1)
-        return le_champ_hext(0,0);
-      else if (le_champ_hext.valeurs().dimension(1)==1)
-        return le_champ_hext(i,0);
+      if (le_champ_hext.valeurs().size() == 1)
+        return le_champ_hext(0, 0);
+      else if (le_champ_hext.valeurs().dimension(1) == 1)
+        return le_champ_hext(i, 0);
       else
         Cerr << "Entree_fluide_T_h_imposee::val_ext" << finl;
       exit();
@@ -162,24 +129,22 @@ double Entree_fluide_T_h_imposee::val_imp(int i) const
  * @param (int j) indice suivant la deuxieme dimension du champ
  * @return (double) la valeur imposee sur la composante du champ specifiee
  */
-double Entree_fluide_T_h_imposee::val_imp(int i,int j) const
+double Entree_fluide_T_h_imposee::val_imp(int i, int j) const
 {
   if (type_cond_lim == 0)
     {
       // Condition limite en temperature
-      //     Cerr<<"Entree_fluide_T_h_imposee Condition limite en temperature2 "<<finl;
-      if (le_champ_Text.valeurs().dimension(0)==1)
-        return le_champ_Text(0,j);
+      if (le_champ_Text.valeurs().dimension(0) == 1)
+        return le_champ_Text(0, j);
       else
-        return le_champ_Text(i,j);
+        return le_champ_Text(i, j);
     }
   else
     {
       // Condition limite en enthalpie
-      //      Cerr<<"Entree_fluide_T_h_imposee Condition limite en enthalpie2 "<<finl;
-      if (le_champ_hext.valeurs().dimension(0)==1)
-        return le_champ_hext(0,j);
+      if (le_champ_hext.valeurs().dimension(0) == 1)
+        return le_champ_hext(0, j);
       else
-        return le_champ_hext(i,j);
+        return le_champ_hext(i, j);
     }
 }

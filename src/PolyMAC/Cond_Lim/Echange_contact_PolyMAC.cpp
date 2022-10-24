@@ -38,6 +38,8 @@ Sortie& Echange_contact_PolyMAC::printOn(Sortie& s ) const
 
 Entree& Echange_contact_PolyMAC::readOn(Entree& s )
 {
+  if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("Neutronique"), Motcle("fraction_massique"), Motcle("indetermine") };
+
   Nom nom_bord;
   Motcle nom_champ;
   s >> nom_autre_pb_ >> nom_bord_ >> nom_champ_ >> invh_paroi;

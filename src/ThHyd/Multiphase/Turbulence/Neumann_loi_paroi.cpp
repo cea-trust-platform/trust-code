@@ -32,5 +32,8 @@ Sortie& Neumann_loi_paroi::printOn(Sortie& s ) const
 
 Entree& Neumann_loi_paroi::readOn(Entree& s )
 {
+  if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("Thermique_H"), Motcle("diphasique_moyenne"), Motcle("Concentration"), Motcle("fraction_massique"),
+                                                 Motcle("Fraction_volumique"), Motcle("Turbulence"), Motcle("Interfacial_area"), Motcle("indetermine")
+                                               };
   return s;
 }

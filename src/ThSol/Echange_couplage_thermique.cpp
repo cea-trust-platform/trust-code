@@ -37,14 +37,12 @@ Echange_couplage_thermique::Echange_couplage_thermique()
   phi_ext_lu_ = true;
 }
 
-Sortie& Echange_couplage_thermique::printOn( Sortie& os ) const
-{
-  Echange_global_impose::printOn( os );
-  return os;
-}
+Sortie& Echange_couplage_thermique::printOn( Sortie& os ) const { return Echange_global_impose::printOn( os ); }
 
 Entree& Echange_couplage_thermique::readOn( Entree& is )
 {
+  if (app_domains.size() == 0) app_domains = { Motcle("Thermique") };
+
   Cerr << "Reading of coupled boundary\n";
 
   EChaine ech1("Ch_front_var_instationnaire_dep 1");
@@ -60,19 +58,6 @@ Entree& Echange_couplage_thermique::readOn( Entree& is )
   reprise_ = lec_champs.champs_lus();
 
   return is;
-}
-
-int Echange_couplage_thermique::compatible_avec_eqn(const Equation_base& eqn) const
-{
-  Motcle dom_app = eqn.domaine_application();
-
-  if ( (dom_app=="Thermique"))
-    return 1;
-  else
-    {
-      err_pas_compatible(eqn);
-      return 0;
-    }
 }
 
 int Echange_couplage_thermique::compatible_avec_discr(const Discretisation_base& discr) const

@@ -13,13 +13,10 @@
 *
 *****************************************************************************/
 
-
 #ifndef Paroi_Knudsen_non_negligeable_included
 #define Paroi_Knudsen_non_negligeable_included
 
 #include <Dirichlet_paroi_defilante.h>
-
-
 
 /*! @brief classe Paroi_Knudsen_non_negligeable Impose un saut de vitesse de paroi dans une equation de type Navier_Stokes
  *
@@ -27,22 +24,17 @@
  *
  * @sa Dirichlet, Objet compatible avec des equations du domaine de l'Hydraulique, ou indetermine. (voir compatible_avec_eqn(const Equation_base&) const)
  */
-class Paroi_Knudsen_non_negligeable : public Dirichlet_paroi_defilante
+class Paroi_Knudsen_non_negligeable: public Dirichlet_paroi_defilante
 {
 
   Declare_instanciable(Paroi_Knudsen_non_negligeable);
 
-public :
-  inline const DoubleTab& vitesse_paroi() const
-  {
-    return vitesse_paroi_.valeurs();
-  };
-  inline const DoubleTab& k() const
-  {
-    return k_.valeurs();
-  } ;
-  int compatible_avec_eqn(const Equation_base&) const override;
+public:
+  inline const DoubleTab& vitesse_paroi() const { return vitesse_paroi_.valeurs(); }
+  inline const DoubleTab& k() const { return k_.valeurs(); }
   void completer() override;
+
+protected:
   Champ_front vitesse_paroi_;
   Champ_front k_;
 };

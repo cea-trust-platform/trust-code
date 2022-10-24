@@ -14,34 +14,19 @@
 *****************************************************************************/
 
 #include <Scalaire_impose_paroi.h>
-#include <Motcle.h>
-#include <Equation_base.h>
 #include <Discretisation_base.h>
 
-Implemente_instanciable(Scalaire_impose_paroi,"Scalaire_impose_paroi",Dirichlet);
+Implemente_instanciable(Scalaire_impose_paroi, "Scalaire_impose_paroi", Dirichlet);
 // XD scalaire_impose_paroi dirichlet scalaire_impose_paroi 0 Imposed temperature condition at the wall called bord (edge).
 // XD   attr ch front_field_base ch 0 Boundary field type.
 
-/*! @brief Ecrit le type de l'objet sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Scalaire_impose_paroi::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << finl;
-}
+Sortie& Scalaire_impose_paroi::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 
-/*! @brief Simple appel a: Dirichlet::readOn(Entree& )
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree& s) le flot d'entree modifie
- */
-Entree& Scalaire_impose_paroi::readOn(Entree& s )
+Entree& Scalaire_impose_paroi::readOn(Entree& s)
 {
-  return Dirichlet::readOn(s) ;
+  if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("Concentration"), Motcle("Turbulence"), Motcle("indetermine") };
+  return Dirichlet::readOn(s);
 }
-
 
 /*! @brief Verifie que les conditions aux limites sont compatiblea avec la discretisation specifiees en parametre.
  *
@@ -53,7 +38,7 @@ Entree& Scalaire_impose_paroi::readOn(Entree& s )
  */
 int Scalaire_impose_paroi::compatible_avec_discr(const Discretisation_base& discr) const
 {
-  Nom type_discr=discr.que_suis_je();
+  Nom type_discr = discr.que_suis_je();
   if (type_discr == "VEF")
     return 1;
   else if (type_discr == "EF")
@@ -71,33 +56,6 @@ int Scalaire_impose_paroi::compatible_avec_discr(const Discretisation_base& disc
   else
     {
       err_pas_compatible(discr);
-      return 0;
-    }
-}
-
-
-/*! @brief Renvoie un booleen indiquant la compatibilite des conditions aux limites avec l'equation specifiee en parametre.
- *
- *     Des CL de type Scalaire_imposee_paroi sont compatibles
- *     avec une equation dont le domaine est la Thermique, la Concentration
- *     ou bien indetermine.
- *
- * @param (Equation_base& eqn) l'equation avec laquelle il faut verifier la compatibilite
- * @return (int) valeur booleenne, 1 si les CL sont compatibles avec l'equation 0 sinon
- */
-int Scalaire_impose_paroi::compatible_avec_eqn(const Equation_base& eqn) const
-{
-  Motcle dom_app=eqn.domaine_application();
-  Motcle Thermique="Thermique";
-  Motcle Concentration="Concentration";
-  Motcle Turbulence="Turbulence";
-  Motcle indetermine="indetermine";
-
-  if ( (dom_app==Thermique) || (dom_app==Concentration) || (dom_app==indetermine) || (dom_app==Turbulence) )
-    return 1;
-  else
-    {
-      err_pas_compatible(eqn);
       return 0;
     }
 }

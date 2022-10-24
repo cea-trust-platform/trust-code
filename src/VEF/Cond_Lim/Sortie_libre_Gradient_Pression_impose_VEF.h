@@ -16,46 +16,32 @@
 #ifndef Sortie_libre_Gradient_Pression_impose_VEF_included
 #define Sortie_libre_Gradient_Pression_impose_VEF_included
 
-
 /*! @brief Sortie_libre_Gradient_Pression_impose_VEF
  *
  *  Cette classe derive de la classe Neumann_sortie_libre
  *
- *     Elle represente une frontiere ouverte avec condition
- *     de gradient de pression impose.
- *     L'objet de type Champ_front le_champ_front contient le gradient
- *     impose. La fonction flux_impose() renvoie une valeur de pression
- *     a l'exterieur calculee a partir du gradient de pression impose
- *     et de la pression a l'interieur du domaine.
+ *     Elle represente une frontiere ouverte avec condition de gradient de pression impose.
+ *     L'objet de type Champ_front le_champ_front contient le gradient impose. La fonction flux_impose() renvoie une valeur de pression
+ *     a l'exterieur calculee a partir du gradient de pression impose et de la pression a l'interieur du domaine.
  *
- *
- *
- * @sa Milieu_base
  */
-
 
 #include <Neumann_sortie_libre.h>
 #include <Ref_Champ_P0_VEF.h>
 #include <Ref_Zone_VEF.h>
 
-class Sortie_libre_Gradient_Pression_impose_VEF : public Neumann_sortie_libre
+class Sortie_libre_Gradient_Pression_impose_VEF: public Neumann_sortie_libre
 {
-
   Declare_instanciable(Sortie_libre_Gradient_Pression_impose_VEF);
-
 public:
-
-  double flux_impose(int ) const override;
-  double flux_impose(int , int ) const override;
-  int compatible_avec_eqn(const Equation_base&) const override;
+  double flux_impose(int) const override;
+  double flux_impose(int, int) const override;
 
 protected:
-
-  REF(Zone_VEF)  la_zone_VEF;
-  REF(Champ_P0_VEF)  pression_interne;
+  REF(Zone_VEF) la_zone_VEF;
+  REF(Champ_P0_VEF) pression_interne;
   DoubleVect trace_pression_int;   // pression interne sur les mailles de bord
   DoubleVect coeff;
-
 };
 
 #endif

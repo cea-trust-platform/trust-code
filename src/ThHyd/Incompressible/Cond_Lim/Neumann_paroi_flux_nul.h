@@ -18,18 +18,13 @@
 
 #include <Neumann_paroi_adiabatique.h>
 
-
 /*! @brief Classe Neumann_paroi_flux_nul Cette condition limite flux nul a la frontiere.
  *
  * @sa Neumann_homogene Neumann_paroi_adiabatique
  */
-class Neumann_paroi_flux_nul : public Neumann_paroi_adiabatique
+class Neumann_paroi_flux_nul: public Neumann_paroi_adiabatique
 {
-
   Declare_instanciable(Neumann_paroi_flux_nul);
-
-public :
-  int compatible_avec_eqn(const Equation_base&) const override;
 };
 
 #endif

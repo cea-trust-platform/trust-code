@@ -15,25 +15,8 @@
 
 #include <Dirichlet_entree_fluide.h>
 
-Implemente_base(Dirichlet_entree_fluide,"Dirichlet_entree_fluide",Dirichlet);
+Implemente_base(Dirichlet_entree_fluide, "Dirichlet_entree_fluide", Dirichlet);
 
+Sortie& Dirichlet_entree_fluide::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 
-/*! @brief Ecrit le type de l'objet sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Dirichlet_entree_fluide::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << finl;
-}
-
-/*! @brief Simple appel a: Cond_lim_base::readOn(Entree& )
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree& s) le flot d'entree modifie
- */
-Entree& Dirichlet_entree_fluide::readOn(Entree& s)
-{
-  return Cond_lim_base::readOn(s);
-}
+Entree& Dirichlet_entree_fluide::readOn(Entree& s) { return Cond_lim_base::readOn(s); }

@@ -14,71 +14,19 @@
 *****************************************************************************/
 
 #include <Dirichlet_paroi_fixe.h>
-#include <Motcle.h>
-#include <Equation_base.h>
 
-Implemente_instanciable(Dirichlet_paroi_fixe,"Paroi_fixe",Dirichlet_homogene);
+Implemente_instanciable(Dirichlet_paroi_fixe, "Paroi_fixe", Dirichlet_homogene);
 
+Sortie& Dirichlet_paroi_fixe::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 
-/*! @brief Ecrit le type de l'objet sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Dirichlet_paroi_fixe::printOn(Sortie& s ) const
+Entree& Dirichlet_paroi_fixe::readOn(Entree& s)
 {
-  return s << que_suis_je() << finl;
-}
+  if (app_domains.size() == 0) app_domains = { Motcle("Hydraulique"), Motcle("Thermique"), Motcle("Transport_Keps_V2"), Motcle("Transport_Keps_Bas_Re"),
+                                                 Motcle("Transport_Keps_Rea"), Motcle("Transport_Keps"), Motcle("Turbulence"), Motcle("indetermine")
+                                               };
 
-
-/*! @brief Simple appel a: Dirichlet_homogene::readOn(Entree& )
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree& s) le flot d'entree modifie
- */
-Entree& Dirichlet_paroi_fixe::readOn(Entree& s )
-{
-  Dirichlet_homogene::readOn(s) ;
+  Dirichlet_homogene::readOn(s);
   int nb_comp = Objet_U::dimension;
   le_champ_front.valeur().fixer_nb_comp(nb_comp);
   return s;
 }
-
-
-
-/*! @brief Renvoie un booleen indiquant la compatibilite des conditions aux limites avec l'equation specifiee en parametre.
- *
- *     Des CL de type Dirichlet_paroi_fixe sont compatibles
- *     avec une equation dont le domaine est l'hydraulique (Navier_Stokes)
- *     ou bien indetermine.
- *
- * @param (Equation_base& eqn) l'equation avec laquelle il faut verifier la compatibilite
- * @return (int) valeur booleenne, 1 si les CL sont compatibles avec l'equation 0 sinon
- */
-int Dirichlet_paroi_fixe::compatible_avec_eqn(const Equation_base& eqn) const
-{
-  Motcle dom_app=eqn.domaine_application();
-
-  Motcle Hydraulique  ="Hydraulique";
-  Motcle Thermique    ="Thermique";
-  Motcle K_Eps_V2     ="Transport_Keps_V2";
-  Motcle K_Eps_Bas_Re ="Transport_Keps_Bas_Re";
-  Motcle K_Eps_Rea    ="Transport_Keps_Rea";
-  Motcle indetermine  ="indetermine";
-  Motcle turbulence   = "Turbulence";
-
-  if ( (dom_app==Hydraulique) || (dom_app==indetermine) ||
-       (dom_app==Thermique) || (dom_app=="Transport_Keps") || (dom_app==K_Eps_V2) || (dom_app==K_Eps_Bas_Re) || (dom_app==K_Eps_Rea) || dom_app == turbulence)
-    return 1;
-  else
-    {
-      err_pas_compatible(eqn);
-      return 0;
-    }
-}
-
-
-
-
-
-

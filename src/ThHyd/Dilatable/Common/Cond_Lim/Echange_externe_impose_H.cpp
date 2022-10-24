@@ -16,30 +16,16 @@
 #include <Echange_externe_impose_H.h>
 #include <Fluide_Dilatable_base.h>
 #include <Equation_base.h>
-#include <Motcle.h>
 
-Implemente_instanciable(Echange_externe_impose_H,"Paroi_echange_externe_impose_H",Echange_externe_impose);
+Implemente_instanciable(Echange_externe_impose_H, "Paroi_echange_externe_impose_H", Echange_externe_impose);
 
-/*! @brief Ecrit le type de l'objet sur un flot de sortie
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Echange_externe_impose_H::printOn(Sortie& s ) const
+Sortie& Echange_externe_impose_H::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
+
+Entree& Echange_externe_impose_H::readOn(Entree& s)
 {
-  return s << que_suis_je() << finl;
-}
+  if (app_domains.size() == 0) app_domains = { Motcle("Thermique_H") };
 
-/*! @brief Simple appel a Echange_impose_base::readOn(Entree&) Lit les specifications des conditions aux limites
- *
- *     a partir d'un flot d'entree.
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree&) le flot de sortie modifie
- */
-Entree& Echange_externe_impose_H::readOn(Entree& s )
-{
-  return Echange_externe_impose::readOn(s) ;
+  return Echange_externe_impose::readOn(s);
 }
 
 /*! @brief Complete les conditions aux limites.
@@ -48,7 +34,7 @@ Entree& Echange_externe_impose_H::readOn(Entree& s )
 void Echange_externe_impose_H::completer()
 {
   Echange_impose_base::completer();
-  le_fluide = ref_cast(Fluide_Dilatable_base,ma_zone_cl_dis->equation().milieu());
+  le_fluide = ref_cast(Fluide_Dilatable_base, ma_zone_cl_dis->equation().milieu());
   modifier_val_imp = 1;
 }
 
@@ -59,19 +45,19 @@ void Echange_externe_impose_H::completer()
  */
 double Echange_externe_impose_H::T_ext(int i) const
 {
-  if (le_champ_front.valeurs().size()==1)
+  if (le_champ_front.valeurs().size() == 1)
     {
-      if (modifier_val_imp==1)
-        return le_fluide->calculer_H(le_champ_front(0,0));
+      if (modifier_val_imp == 1)
+        return le_fluide->calculer_H(le_champ_front(0, 0));
       else
-        return le_champ_front(0,0);
+        return le_champ_front(0, 0);
     }
-  else if (le_champ_front.valeurs().dimension(1)==1)
+  else if (le_champ_front.valeurs().dimension(1) == 1)
     {
-      if (modifier_val_imp==1)
-        return le_fluide->calculer_H(le_champ_front(i,0));
+      if (modifier_val_imp == 1)
+        return le_fluide->calculer_H(le_champ_front(i, 0));
       else
-        return le_champ_front(i,0);
+        return le_champ_front(i, 0);
     }
   else
     Cerr << "Echange_impose_base::T_ext erreur" << finl;
@@ -88,40 +74,18 @@ double Echange_externe_impose_H::T_ext(int i) const
  */
 double Echange_externe_impose_H::T_ext(int i, int j) const
 {
-  if (le_champ_front.valeurs().dimension(0)==1)
+  if (le_champ_front.valeurs().dimension(0) == 1)
     {
-      if (modifier_val_imp==1)
-        return le_fluide->calculer_H(le_champ_front(0,j));
+      if (modifier_val_imp == 1)
+        return le_fluide->calculer_H(le_champ_front(0, j));
       else
-        return le_champ_front(0,j);
+        return le_champ_front(0, j);
     }
   else
     {
-      if (modifier_val_imp==1)
-        return le_fluide->calculer_H(le_champ_front(i,j));
+      if (modifier_val_imp == 1)
+        return le_fluide->calculer_H(le_champ_front(i, j));
       else
-        return le_champ_front(i,j);
-    }
-}
-
-/*! @brief Verifie la compatibilite des conditions aux limites avec l'equation passee en parametre.
- *
- *    Les conditions aux limites de type Ech_imp_base  sont
- *    compatibles avec des equations de type:
- *          - Thermique_H  (thermique avec inconnue = enthalpie)
- *
- * @param (Equation_base& eqn) l'equation avec laquelle on doit verifier la compatibilite
- * @return (int) valeur booleenne, 1 si compatible 0 sinon
- */
-int Echange_externe_impose_H::compatible_avec_eqn(const Equation_base& eqn) const
-{
-  Motcle dom_app=eqn.domaine_application();
-  Motcle Thermique="Thermique_H";
-  if ( (dom_app==Thermique))
-    return 1;
-  else
-    {
-      err_pas_compatible(eqn);
-      return 0;
+        return le_champ_front(i, j);
     }
 }

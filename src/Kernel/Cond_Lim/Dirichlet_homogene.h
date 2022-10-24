@@ -13,62 +13,26 @@
 *
 *****************************************************************************/
 
-
 #ifndef Dirichlet_homogene_included
 #define Dirichlet_homogene_included
 
 #include <Cond_lim_base.h>
 
-
-/*! @brief Classe Dirichlet_homogene Cette classe est la classe de base de la hierarchie des conditions
+/*! @brief Classe Dirichlet_homogene Cette classe est la classe de base de la hierarchie des conditions aux limites de type Dirichlet homogene.
  *
- *     aux limites de type Dirichlet homogene.
- *     Une condition aux limites de type Dirichlet homogene impose une valeur
- *     nulle au champ inconnue sur une frontiere, ce qui correspond a:
+ *     Une condition aux limites de type Dirichlet homogene impose une valeur nulle au champ inconnue sur une frontiere, ce qui correspond a:
+ *
  *      - vitesse imposee a zero pour l'equation de Navier-Stokes
  *      - scalaire impose a zero pour l'equation de transport d'un scalaire
  *
  * @sa Cond_lim_base Dirichlet
  */
-class Dirichlet_homogene  : public Cond_lim_base
+class Dirichlet_homogene: public Cond_lim_base
 {
-
   Declare_base(Dirichlet_homogene);
-
 public:
-
-  inline double val_imp(int i) const;
-  inline double val_imp(int i,int j) const;
-
+  inline double val_imp(int i) const { return 0; }
+  inline double val_imp(int i, int j) const { return 0; }
 };
-
-
-/*! @brief Renvoie la valeur imposee sur la i-eme composante du champ a la frontiere.
- *
- *     Toujours 0 pour Dirichlet homogene.
- *
- * @param (int) indice suivant la premiere dimension du champ
- * @return (double) la valeur imposee sur la composante du champ specifiee
- */
-inline double Dirichlet_homogene::val_imp(int ) const
-{
-  return 0;
-}
-
-
-/*! @brief Renvoie la valeur imposee sur la (i,j)-eme composante du champ a la frontiere.
- *
- *     Toujours 0 pour Dirichlet homogene.
- *
- * @param (int) indice suivant la premiere dimension du champ
- * @param (int) indice suivant la deuxieme dimension du champ
- * @return (double) la valeur imposee sur la composante du champ specifiee
- */
-inline double Dirichlet_homogene::val_imp(int ,int ) const
-{
-  return 0;
-}
-
-
 
 #endif

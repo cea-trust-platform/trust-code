@@ -18,7 +18,6 @@
 
 #include <Cond_lim_base.h>
 
-
 /*! @brief classe Navier Condition aux limites sur la vitesse de type "Navier" :
  *
  *       - composante normale de la vitesse nulle
@@ -28,15 +27,11 @@
  *
  * @sa Cond_lim_base
  */
-class Navier  : public Cond_lim_base
+class Navier: public Cond_lim_base
 {
-
   Declare_base(Navier);
-
-public :
-
-  int compatible_avec_eqn(const Equation_base&) const override;
-
+public:
+  int compatible_avec_eqn(const Equation_base&) const override { return 1; }
 };
 
 #endif

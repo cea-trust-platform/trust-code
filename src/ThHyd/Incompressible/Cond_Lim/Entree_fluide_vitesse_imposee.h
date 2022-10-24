@@ -13,28 +13,20 @@
 *
 *****************************************************************************/
 
-
 #ifndef Entree_fluide_vitesse_imposee_included
 #define Entree_fluide_vitesse_imposee_included
 
 #include <Dirichlet_entree_fluide.h>
 
-
 /*! @brief classe Entree_fluide_vitesse_imposee Cas particulier de la classe Dirichlet_entree_fluide
  *
- *     pour la vitesse imposee: impose la vitesse d'entree du fluide dans
- *     une equation de type Navier_Stokes
+ *     pour la vitesse imposee: impose la vitesse d'entree du fluide dans une equation de type Navier_Stokes
  *
  * @sa Dirichlet_entree_fluide Navier_Stokes_std
  */
-class Entree_fluide_vitesse_imposee  : public Dirichlet_entree_fluide
+class Entree_fluide_vitesse_imposee: public Dirichlet_entree_fluide
 {
-
   Declare_instanciable(Entree_fluide_vitesse_imposee);
-
-public :
-  int compatible_avec_eqn(const Equation_base&) const override;
-
 };
 
 #endif

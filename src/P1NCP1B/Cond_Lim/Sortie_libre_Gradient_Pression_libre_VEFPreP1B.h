@@ -16,60 +16,46 @@
 #ifndef Sortie_libre_Gradient_Pression_libre_VEFPreP1B_included
 #define Sortie_libre_Gradient_Pression_libre_VEFPreP1B_included
 
-
 /*! @brief Sortie_libre_Gradient_Pression_libre_VEFPreP1B
  *
  *  Cette classe derive de la classe Neumann_sortie_libre
  *
- *     Elle represente une frontiere ouverte avec condition
- *     de gradient de pression calculer.
- *     La fonction flux_impose() renvoie une valeur de pression
- *     a l'exterieur calculee a partir du gradient de pression impose
+ *     Elle represente une frontiere ouverte avec condition de gradient de pression calculer.
+ *     La fonction flux_impose() renvoie une valeur de pression a l'exterieur calculee a partir du gradient de pression impose
  *     et de la pression a l'interieur du domaine.
  *
- *
- *
- * @sa Milieu_base
  */
-
-
 #include <Neumann_sortie_libre.h>
 #include <Ref_Champ_P1_isoP1Bulle.h>
 #include <Ref_Zone_VEF.h>
 
-class Sortie_libre_Gradient_Pression_libre_VEFPreP1B : public Neumann_sortie_libre
+class Sortie_libre_Gradient_Pression_libre_VEFPreP1B: public Neumann_sortie_libre
 {
-
   Declare_instanciable(Sortie_libre_Gradient_Pression_libre_VEFPreP1B);
-
 public:
-
   void completer() override;
   int initialiser(double temps) override;
   void mettre_a_jour(double temps) override;
-  double flux_impose(int ) const override;
-  double flux_impose(int , int ) const override;
-  virtual double Grad_P_lib_VEFPreP1B(int ) const;
-  int compatible_avec_eqn(const Equation_base&) const override;
-  int compatible_avec_discr(const Discretisation_base& ) const override;
+  double flux_impose(int) const override;
+  double flux_impose(int, int) const override;
+  virtual double Grad_P_lib_VEFPreP1B(int) const;
+  int compatible_avec_discr(const Discretisation_base&) const override;
 
 protected:
-
-  REF(Zone_VEF)  la_zone_VEF;
-  REF(Champ_P1_isoP1Bulle)  pression_interne;
+  REF(Zone_VEF) la_zone_VEF;
+  REF(Champ_P1_isoP1Bulle) pression_interne;
 
   DoubleVect pression_temps_moins_un;
   DoubleVect pression_temps_moins_deux;
   DoubleVect pression_moins_un_temps_moins_un;
   DoubleVect pression_moins_un_temps_moins_deux;
   DoubleVect pression_moins_deux_temps_moins_un;
-  DoubleTab  pression_moins_un;
-  DoubleTab  pression_moins_deux;
+  DoubleTab pression_moins_un;
+  DoubleTab pression_moins_deux;
 
-  DoubleVect Pimp ;
+  DoubleVect Pimp;
   DoubleVect coeff;
-  int init;
-
+  int init = -1;
 };
 
 #endif

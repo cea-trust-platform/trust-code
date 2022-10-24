@@ -16,32 +16,25 @@
 #ifndef Echange_externe_impose_H_included
 #define Echange_externe_impose_H_included
 
-#include <Echange_externe_impose.h>
 #include <Ref_Fluide_Dilatable_base.h>
+#include <Echange_externe_impose.h>
 
-/*! @brief Classe Echange_externe_impose_H: Cette classe represente le cas particulier de la classe
- *
- *     Echange_externe_impose pour une equation en enthalpie..
- *
+/*! @brief Classe Echange_externe_impose_H: Cette classe represente le cas particulier de la classe Echange_externe_impose pour une equation en enthalpie..
  *
  * @sa Echange_impose_base Echange_externe_impose
  */
-class Echange_externe_impose_H  : public Echange_externe_impose
+class Echange_externe_impose_H: public Echange_externe_impose
 {
   Declare_instanciable(Echange_externe_impose_H);
-
 public:
   void completer() override;
-  int compatible_avec_eqn(const Equation_base&) const override;
   double T_ext(int num) const override;
-  double T_ext(int num,int k) const override;
+  double T_ext(int num, int k) const override;
 
-  // Methodes inlines
-  // Renvoie le champ T_ext de temperature imposee a la frontiere.
   inline Champ_front& T_ext() override { return le_champ_front; }
   inline const Champ_front& T_ext() const override { return le_champ_front; }
 
-protected :
+protected:
   REF(Fluide_Dilatable_base) le_fluide;
 };
 

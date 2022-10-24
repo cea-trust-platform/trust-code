@@ -37,13 +37,10 @@
  *
  * @sa Cond_lim_base Echange_externe_impose Echange_global_impose
  */
-class Echange_impose_base  : public Cond_lim_base
+class Echange_impose_base : public Cond_lim_base
 {
-
   Declare_base_sans_constructeur(Echange_impose_base);
-
 public:
-
   virtual double h_imp(int num) const;
   virtual double h_imp(int num,int k) const;
   virtual double h_imp_grad(int num) const { Process::exit(que_suis_je()+ " : h_imp_grad must be overloaded !" ) ; return -1.e10 ;};
@@ -52,11 +49,7 @@ public:
   virtual double T_ext(int num,int k) const;
   void mettre_a_jour(double ) override;
   int initialiser(double temps) override;
-  int a_mettre_a_jour_ss_pas_dt() override
-  {
-    return 1;
-  };
-
+  int a_mettre_a_jour_ss_pas_dt() override { return 1; }
 
   // ajout de methode pour ne pas operer directement sur champ_front
   void set_temps_defaut(double temps) override;
@@ -72,14 +65,12 @@ public:
   inline virtual Champ_front& h_imp();
   inline virtual const Champ_front& h_imp() const;
 
-  int compatible_avec_eqn(const Equation_base&) const override;
   int compatible_avec_discr(const Discretisation_base& ) const override;
 
   // Utilise dans les CAL de calcul des flux pour les lois de paroi
   virtual void liste_faces_loi_paroi(IntTab&) {};
 
 protected :
-
   Champ_front h_imp_;
 };
 

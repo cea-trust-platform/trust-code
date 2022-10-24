@@ -19,14 +19,6 @@ Implemente_instanciable( Dirichlet_paroi_fixe_iso_Genepi2, "paroi_fixe_iso_Genep
 
 // XD paroi_fixe_iso_Genepi2_sans_contribution_aux_vitesses_sommets paroi_fixe paroi_fixe_iso_Genepi2_sans_contribution_aux_vitesses_sommets -1 Boundary condition to obtain iso Geneppi2, without interest
 
-Sortie& Dirichlet_paroi_fixe_iso_Genepi2::printOn( Sortie& os ) const
-{
-  Dirichlet_paroi_fixe::printOn( os );
-  return os;
-}
+Sortie& Dirichlet_paroi_fixe_iso_Genepi2::printOn( Sortie& os ) const { return Dirichlet_paroi_fixe::printOn( os ); }
 
-Entree& Dirichlet_paroi_fixe_iso_Genepi2::readOn( Entree& is )
-{
-  Dirichlet_paroi_fixe::readOn( is );
-  return is;
-}
+Entree& Dirichlet_paroi_fixe_iso_Genepi2::readOn( Entree& is ) { return Dirichlet_paroi_fixe::readOn( is ); }

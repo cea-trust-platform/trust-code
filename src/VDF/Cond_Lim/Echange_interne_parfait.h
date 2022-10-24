@@ -27,13 +27,9 @@
  */
 class Echange_interne_parfait  : public Echange_interne_impose
 {
-
   Declare_instanciable(Echange_interne_parfait);
-
 public:
-  // Override to have h_gap=+infinity:
   double calcul_h_imp(const double h_gap, const double invLambda) const override;
 };
-
 
 #endif

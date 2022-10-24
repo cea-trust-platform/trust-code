@@ -13,35 +13,15 @@
 *
 *****************************************************************************/
 
+#include <Discretisation_base.h>
 #include <Cond_lim_base.h>
 #include <Equation_base.h>
-#include <Discretisation_base.h>
 
-Implemente_base(Cond_lim_base,"Cond_lim_base",Objet_U);
+Implemente_base(Cond_lim_base, "Cond_lim_base", Objet_U);
 
-/*! @brief Surcharge Objet_U::printOn(Sortie&) Imprime la condition au limite sur un flot de sortie.
- *
- *     Seul le champ impose a la frontiere est imprime
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Cond_lim_base::printOn(Sortie& s ) const
-{
-  return s << le_champ_front ;
-}
+Sortie& Cond_lim_base::printOn(Sortie& s) const { return s << le_champ_front; }
 
-/*! @brief Lecture d'une condition aux limites a partir d'un flot d'entree Format:
- *
- *       lire un Champ_front
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& Cond_lim_base::readOn(Entree& s )
-{
-  return s >> le_champ_front ;
-}
+Entree& Cond_lim_base::readOn(Entree& s) { return s >> le_champ_front; }
 
 /*! @brief NE FAIT RIEN A surcharger dans les classes derivees
  *
@@ -51,12 +31,28 @@ void Cond_lim_base::completer()
   champ_front()->completer();
 }
 
+int Cond_lim_base::compatible_avec_eqn(const Equation_base& eqn) const
+{
+  if (app_domains.size() == 0)
+    {
+      Cerr << "You call Cond_lim_base::compatible_avec_eqn but the std::vector app_domains is not filled ! Check your readOn !!" << finl;
+      Process::exit();
+    }
+
+  Motcle dom_app = eqn.domaine_application();
+  for (const auto &itr : app_domains)
+    if (itr == dom_app) return 1;
+
+  err_pas_compatible(eqn);
+  return 0;
+}
+
 /*! @brief Change le i-eme temps futur de la CL.
  *
  */
-void Cond_lim_base::changer_temps_futur(double temps,int i)
+void Cond_lim_base::changer_temps_futur(double temps, int i)
 {
-  champ_front()->changer_temps_futur(temps,i);
+  champ_front()->changer_temps_futur(temps, i);
 }
 
 /*! @brief Tourne la roue de la CL
@@ -86,7 +82,7 @@ int Cond_lim_base::reculer(double temps)
  */
 int Cond_lim_base::initialiser(double temps)
 {
-  return le_champ_front->initialiser(temps,zone_Cl_dis().inconnue());
+  return le_champ_front->initialiser(temps, zone_Cl_dis().inconnue());
 }
 
 /*! @brief Effectue une mise a jour en temps de la condition aux limites.
@@ -127,7 +123,6 @@ void Cond_lim_base::calculer_coeffs_echange(double temps)
   le_champ_front.calculer_coeffs_echange(temps);
 }
 
-
 /*! @brief Appel la verification du champ lu par l intermediaire de l equation pour laquelle on considere la condition limite
  *
  *  La methode est surchargee dans les cas ou l utilisateur doit
@@ -154,7 +149,6 @@ void Cond_lim_base::associer_fr_dis_base(const Frontiere_dis_base& fr)
   modifier_val_imp = 0;
 }
 
-
 /*! @brief Associe la Zone_Cl_dis_base (Zone des conditions aux limites discretisees) a l'objet.
  *
  * Cette Zone_Cl_dis_base stocke (reference) toutes les conditions
@@ -164,7 +158,7 @@ void Cond_lim_base::associer_fr_dis_base(const Frontiere_dis_base& fr)
  */
 void Cond_lim_base::associer_zone_cl_dis_base(const Zone_Cl_dis_base& zcl)
 {
-  ma_zone_cl_dis=zcl;
+  ma_zone_cl_dis = zcl;
   le_champ_front.valeur().verifier(*this);
 }
 
@@ -176,7 +170,7 @@ void Cond_lim_base::associer_zone_cl_dis_base(const Zone_Cl_dis_base& zcl)
  * @param (Discretisation_base&) la discretisation avec laquelle on veut verifier la compatibilite
  * @return (int) renvoie toujours 1
  */
-int Cond_lim_base::compatible_avec_discr(const Discretisation_base& ) const
+int Cond_lim_base::compatible_avec_discr(const Discretisation_base&) const
 {
   return 1;
 }
@@ -189,9 +183,7 @@ int Cond_lim_base::compatible_avec_discr(const Discretisation_base& ) const
  */
 void Cond_lim_base::err_pas_compatible(const Equation_base& eqn) const
 {
-  Cerr << "The boundary condition " << que_suis_je() << " can't apply to " << finl
-       << "the equation of kind " << eqn.que_suis_je()
-       << finl;
+  Cerr << "The boundary condition " << que_suis_je() << " can't apply to " << finl << "the equation of kind " << eqn.que_suis_je() << finl;
   exit();
 }
 
@@ -203,18 +195,16 @@ void Cond_lim_base::err_pas_compatible(const Equation_base& eqn) const
  */
 void Cond_lim_base::err_pas_compatible(const Discretisation_base& discr) const
 {
-  Cerr << "The boundary condition " << que_suis_je() << " can't be used with " << finl
-       << "the discretization of kind " << discr.que_suis_je()
-       << finl;
+  Cerr << "The boundary condition " << que_suis_je() << " can't be used with " << finl << "the discretization of kind " << discr.que_suis_je() << finl;
   exit();
 }
 
 void Cond_lim_base::champ_front(int face, DoubleVect& var) const
 {
-  le_champ_front->valeurs_face(face,var);
+  le_champ_front->valeurs_face(face, var);
 }
 
-void Cond_lim_base::injecter_dans_champ_inc(const Champ_Inc& ) const
+void Cond_lim_base::injecter_dans_champ_inc(const Champ_Inc&) const
 {
   Cerr << "Cond_lim_base::injecter_dans_champ_inc()" << finl;
   Cerr << "this method does nothing and must be overloaded " << finl;

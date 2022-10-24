@@ -13,31 +13,21 @@
 *
 *****************************************************************************/
 
-
 #ifndef Entree_fluide_V2_impose_included
 #define Entree_fluide_V2_impose_included
 
 #include <Dirichlet_entree_fluide.h>
 
-
-/*! @brief classe Entree_fluide_V2_impose Cas particulier de la classe Dirichlet_entree_fluide
+/*! @brief classe Entree_fluide_V2_impose Cas particulier de la classe Dirichlet_entree_fluide pour les fluctuation de vitesse du modele K_Eps_V2 imposee.
  *
- *     pour les fluctuation de vitesse du modele K_Eps_V2 imposee.
- *     C'est le meme type de classe que Entree_fluide_concentration_imposee
- *     en imposant des grandeurs turbulentes.
- *     Impose les valeurs de V2  d'entree du fluide dans une
- *     equation de type Transport_V2
+ *     C'est le meme type de classe que Entree_fluide_concentration_imposee en imposant des grandeurs turbulentes.
+ *     Impose les valeurs de V2  d'entree du fluide dans une equation de type Transport_V2
  *
  * @sa Dirichlet_entree_fluide Entree_fluide_concentration_imposee, Transport_V2
  */
-class Entree_fluide_V2_impose  : public Dirichlet_entree_fluide
+class Entree_fluide_V2_impose: public Dirichlet_entree_fluide
 {
-
   Declare_instanciable(Entree_fluide_V2_impose);
-
-public :
-  int compatible_avec_eqn(const Equation_base&) const override;
-
 };
 
 #endif

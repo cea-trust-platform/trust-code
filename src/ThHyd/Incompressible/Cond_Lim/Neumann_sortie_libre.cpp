@@ -14,22 +14,12 @@
 *****************************************************************************/
 
 #include <Neumann_sortie_libre.h>
-#include <Motcle.h>
-#include <Equation_base.h>
 #include <Navier_Stokes_std.h>
+#include <Equation_base.h>
 
-Implemente_instanciable(Neumann_sortie_libre,"Frontiere_ouverte",Neumann_val_ext);
+Implemente_instanciable(Neumann_sortie_libre, "Frontiere_ouverte", Neumann_val_ext);
 
-
-/*! @brief Ecrit le type de l'objet sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Neumann_sortie_libre::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << finl;
-}
+Sortie& Neumann_sortie_libre::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 
 /*! @brief Type le_champ_front en "Champ_front_uniforme".
  *
@@ -42,9 +32,13 @@ Sortie& Neumann_sortie_libre::printOn(Sortie& s ) const
  * @throws type de champ exterieur non reconnu,
  * les types reconnus sont: "T_ext", "C_ext", "Y_ext", "K_Eps_ext" ou "F_M_ext"
  */
-Entree& Neumann_sortie_libre::readOn(Entree& s )
+Entree& Neumann_sortie_libre::readOn(Entree& s)
 {
-  //   le_champ_front.typer("Champ_front_uniforme");
+  if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("Thermique_H"), Motcle("Transport_Keps"), Motcle("Transport_Keps_V2"), Motcle("Transport_Keps_Bas_Re"),
+                                                 Motcle("Transport_Keps_Rea"), Motcle("Concentration"), Motcle("Fraction_massique"), Motcle("Fraction_volumique"),
+                                                 Motcle("Transport_V2"), Motcle("Turbulence"), Motcle("Interfacial_area"), Motcle("indetermine")
+                                               };
+
   Motcle motlu;
   Motcles les_motcles(13);
   {
@@ -65,12 +59,13 @@ Entree& Neumann_sortie_libre::readOn(Entree& s )
   }
   s >> motlu;
   int rang = les_motcles.search(motlu);
-  if (rang >= 0) s >> le_champ_ext;
+  if (rang >= 0)
+    s >> le_champ_ext;
   else
     {
       Cerr << "Erreur a la lecture de la condition aux limites de type: " << finl;
       Cerr << que_suis_je() << finl;
-      Cerr << "On attendait " << les_motcles << " a la place de " <<  motlu << finl;
+      Cerr << "On attendait " << les_motcles << " a la place de " << motlu << finl;
       exit();
     }
 
@@ -90,13 +85,13 @@ void Neumann_sortie_libre::verifie_ch_init_nb_comp() const
       const Equation_base& eq = zone_Cl_dis().equation();
       const int nb_comp = le_champ_front.valeur().nb_comp();
 
-      if ((que_suis_je()=="Frontiere_ouverte") || (que_suis_je()=="Frontiere_ouverte_rayo_semi_transp")
-          || (que_suis_je()=="Frontiere_Ouverte_Rayo_transp") || (que_suis_je()=="Sortie_libre_temperature_imposee_H"))
-        eq.verifie_ch_init_nb_comp_cl(eq.inconnue(),nb_comp, *this);
+      if ((que_suis_je() == "Frontiere_ouverte") || (que_suis_je() == "Frontiere_ouverte_rayo_semi_transp") || (que_suis_je() == "Frontiere_Ouverte_Rayo_transp")
+          || (que_suis_je() == "Sortie_libre_temperature_imposee_H"))
+        eq.verifie_ch_init_nb_comp_cl(eq.inconnue(), nb_comp, *this);
       else
         {
-          const Navier_Stokes_std& eq_ns = ref_cast(Navier_Stokes_std,eq);
-          eq.verifie_ch_init_nb_comp_cl(eq_ns.pression(),nb_comp, *this);
+          const Navier_Stokes_std& eq_ns = ref_cast(Navier_Stokes_std, eq);
+          eq.verifie_ch_init_nb_comp_cl(eq_ns.pression(), nb_comp, *this);
 
         }
     }
@@ -110,14 +105,14 @@ void Neumann_sortie_libre::verifie_ch_init_nb_comp() const
  */
 double Neumann_sortie_libre::val_ext(int i) const
 {
-  if (le_champ_ext.valeurs().size()==1)
-    return le_champ_ext(0,0);
-  else if (le_champ_ext.valeurs().dimension(1)==1)
-    return le_champ_ext(i,0);
+  if (le_champ_ext.valeurs().size() == 1)
+    return le_champ_ext(0, 0);
+  else if (le_champ_ext.valeurs().dimension(1) == 1)
+    return le_champ_ext(i, 0);
   else
     {
       Cerr << "Neumann_sortie_libre::val_ext" << finl;
-      Cerr<<le_champ_ext<<finl;
+      Cerr << le_champ_ext << finl;
     }
   exit();
   return 0.;
@@ -127,7 +122,7 @@ int Neumann_sortie_libre::initialiser(double temps)
 {
   Cond_lim_base::initialiser(temps);
   assert(le_champ_ext.non_nul());
-  return le_champ_ext->initialiser(temps,zone_Cl_dis().equation().inconnue());
+  return le_champ_ext->initialiser(temps, zone_Cl_dis().equation().inconnue());
   return 1;
 }
 
@@ -145,51 +140,12 @@ void Neumann_sortie_libre::associer_fr_dis_base(const Frontiere_dis_base& fr)
  * @param (int j) indice suivant la deuxieme dimension du champ
  * @return (double) la valeur imposee sur la composante du champ specifiee
  */
-double Neumann_sortie_libre::val_ext(int i,int j) const
+double Neumann_sortie_libre::val_ext(int i, int j) const
 {
-  if (le_champ_ext.valeurs().dimension(0)==1)
-    return le_champ_ext(0,j);
+  if (le_champ_ext.valeurs().dimension(0) == 1)
+    return le_champ_ext(0, j);
   else
-    return le_champ_ext(i,j);
-}
-
-/*! @brief Renvoie un booleen indiquant la compatibilite des conditions aux limites avec l'equation specifiee en parametre.
- *
- *     Des CL de type Neumann_sortie_libre sont compatibles
- *     avec une equation dont le domaine est la Thermique, le Transport_Keps,
- *     la Concentration, la Fraction_massique ou bien indetermine.
- *
- * @param (Equation_base& eqn) l'equation avec laquelle il faut verifier la compatibilite
- * @return (int) valeur booleenne, 1 si les CL sont compatibles avec l'equation 0 sinon
- */
-int Neumann_sortie_libre::compatible_avec_eqn(const Equation_base& eqn) const
-{
-  Motcle dom_app=eqn.domaine_application();
-
-  Motcle KEPS               ="Transport_Keps";
-  Motcle KEPS_V2            ="Transport_Keps_V2";
-  Motcle K_Eps_Bas_Re       ="Transport_Keps_Bas_Re";
-  Motcle K_Eps_Rea          ="Transport_Keps_Rea";
-  Motcle Thermique          ="Thermique";
-  Motcle Thermique_H        ="Thermique_H";
-  Motcle Concentration      ="Concentration";
-  Motcle Fraction_massique  ="Fraction_massique";
-  Motcle Fraction_volumique ="Fraction_volumique";
-  Motcle V2                 ="Transport_V2";
-  Motcle indetermine        ="indetermine";
-  Motcle turbulence         = "Turbulence";
-  Motcle aire_interfaciale  = "Interfacial_area";
-
-  if ( (dom_app==KEPS) || (dom_app==K_Eps_Bas_Re) || (dom_app==K_Eps_Rea) || (dom_app==indetermine) ||
-       (dom_app==Thermique) || (dom_app==Concentration) ||
-       (dom_app==Thermique_H) || (dom_app==V2) || (dom_app==KEPS_V2) ||
-       (dom_app==Fraction_massique) || (dom_app==Fraction_volumique) || (dom_app == turbulence) || (dom_app == aire_interfaciale))
-    return 1;
-  else
-    {
-      err_pas_compatible(eqn);
-      return 0;
-    }
+    return le_champ_ext(i, j);
 }
 
 const DoubleTab& Neumann_sortie_libre::tab_ext() const
@@ -222,18 +178,16 @@ void Neumann_sortie_libre::set_temps_defaut(double temps)
 
 void Neumann_sortie_libre::changer_temps_futur(double temps, int i)
 {
-  Neumann::changer_temps_futur(temps,i);
-  le_champ_ext->changer_temps_futur(temps,i);
+  Neumann::changer_temps_futur(temps, i);
+  le_champ_ext->changer_temps_futur(temps, i);
 }
 
 int Neumann_sortie_libre::avancer(double temps)
 {
-  return Neumann::avancer(temps)
-         && le_champ_ext->avancer(temps);
+  return Neumann::avancer(temps) && le_champ_ext->avancer(temps);
 }
 
 int Neumann_sortie_libre::reculer(double temps)
 {
-  return Neumann::reculer(temps)
-         && le_champ_ext->reculer(temps);
+  return Neumann::reculer(temps) && le_champ_ext->reculer(temps);
 }

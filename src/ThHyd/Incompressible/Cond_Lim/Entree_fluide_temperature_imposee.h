@@ -13,28 +13,20 @@
 *
 *****************************************************************************/
 
-
 #ifndef Entree_fluide_temperature_imposee_included
 #define Entree_fluide_temperature_imposee_included
 
 #include <Dirichlet_entree_fluide.h>
 
-
-/*! @brief classe Entree_fluide_temperature_imposee Cas particulier de la classe Dirichlet_entree_fluide
+/*! @brief classe Entree_fluide_temperature_imposee Cas particulier de la classe Dirichlet_entree_fluide pour la temperature imposee
  *
- *     pour la temperature imposee: impose la temperature d'entree du fluide
- *     dans une equation de type Convection_Diffusion_Temperature
+ *   impose la temperature d'entree du fluide dans une equation de type Convection_Diffusion_Temperature
  *
  * @sa Dirichlet_entree_fluide Convection_Diffusion_Temperature
  */
-class Entree_fluide_temperature_imposee  : public Dirichlet_entree_fluide
+class Entree_fluide_temperature_imposee: public Dirichlet_entree_fluide
 {
-
   Declare_instanciable(Entree_fluide_temperature_imposee);
-
-public :
-  int compatible_avec_eqn(const Equation_base&) const override;
-
 };
 
 #endif

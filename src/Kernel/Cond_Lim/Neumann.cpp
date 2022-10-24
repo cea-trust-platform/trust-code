@@ -15,28 +15,11 @@
 
 #include <Neumann.h>
 
-Implemente_base(Neumann,"Neumann",Cond_lim_base);
+Implemente_base(Neumann, "Neumann", Cond_lim_base);
 
+Sortie& Neumann::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 
-/*! @brief Ecrit le type de l'objet sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Neumann::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << finl;
-}
-
-/*! @brief Simple appel a: Cond_lim_base::readOn(Entree& )
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree& s) le flot d'entree modifie
- */
-Entree& Neumann::readOn(Entree& s )
-{
-  return Cond_lim_base::readOn(s);
-}
+Entree& Neumann::readOn(Entree& s) { return Cond_lim_base::readOn(s); }
 
 /*! @brief Renvoie la valeur du flux impose sur la i-eme composante du champ representant le flux a la frontiere.
  *
@@ -46,10 +29,10 @@ Entree& Neumann::readOn(Entree& s )
  */
 double Neumann::flux_impose(int i) const
 {
-  if (le_champ_front.valeurs().size()==1)
-    return le_champ_front(0,0);
-  else if (le_champ_front.valeurs().dimension(1)==1)
-    return le_champ_front(i,0);
+  if (le_champ_front.valeurs().size() == 1)
+    return le_champ_front(0, 0);
+  else if (le_champ_front.valeurs().dimension(1) == 1)
+    return le_champ_front(i, 0);
   else
     Cerr << "Neumann::flux_impose error" << finl;
   exit();
@@ -62,10 +45,10 @@ double Neumann::flux_impose(int i) const
  * @param (int j) indice suivant la deuxieme dimension du champ
  * @return (double) la valeur imposee sur la composante du champ specifiee
  */
-double Neumann::flux_impose(int i,int j) const
+double Neumann::flux_impose(int i, int j) const
 {
-  if (le_champ_front.valeurs().dimension(0)==1)
-    return le_champ_front(0,j);
+  if (le_champ_front.valeurs().dimension(0) == 1)
+    return le_champ_front(0, j);
   else
-    return le_champ_front(i,j);
+    return le_champ_front(i, j);
 }

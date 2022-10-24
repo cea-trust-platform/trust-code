@@ -13,12 +13,10 @@
 *
 *****************************************************************************/
 
-
 #ifndef Entree_fluide_T_h_imposee_included
 #define Entree_fluide_T_h_imposee_included
 
 #include <Dirichlet_entree_fluide.h>
-
 
 /*! @brief classe Entree_fluide_temperature_imposee Cas particulier de la classe Dirichlet_entree_fluide
  *
@@ -27,35 +25,19 @@
  *
  * @sa Dirichlet_entree_fluide Convection_Diffusion_Temperature
  */
-class Entree_fluide_T_h_imposee  : public Dirichlet_entree_fluide
+class Entree_fluide_T_h_imposee: public Dirichlet_entree_fluide
 {
-
   Declare_instanciable(Entree_fluide_T_h_imposee);
-
-public :
+public:
   double val_imp(int i) const override;
-  double val_imp(int i,int j) const override;
-  int compatible_avec_eqn(const Equation_base&) const override;
-  inline void bascule_cond_lim_en_enthalpie();
-  inline void bascule_cond_lim_en_temperature();
+  double val_imp(int i, int j) const override;
+  inline void bascule_cond_lim_en_enthalpie() { type_cond_lim = 1; }
+  inline void bascule_cond_lim_en_temperature() { type_cond_lim = 0; }
 
 protected:
-
-  Champ_front le_champ_Text;
-  Champ_front le_champ_hext;
-  int type_cond_lim;
-
+  Champ_front le_champ_Text, le_champ_hext;
+  int type_cond_lim = -1;
 };
-
-inline void Entree_fluide_T_h_imposee::bascule_cond_lim_en_enthalpie()
-{
-  type_cond_lim = 1;
-}
-
-inline void Entree_fluide_T_h_imposee::bascule_cond_lim_en_temperature()
-{
-  type_cond_lim = 0;
-}
 
 #endif
 

@@ -18,23 +18,9 @@
 
 #include <Dirichlet_paroi_fixe.h>
 
-/*! @brief : class Dirichlet_paroi_fixe_iso_Genepi2
- *
- *  <Description of class Dirichlet_paroi_fixe_iso_Genepi2>
- *
- *
- *
- */
-
-class Dirichlet_paroi_fixe_iso_Genepi2 : public Dirichlet_paroi_fixe
+class Dirichlet_paroi_fixe_iso_Genepi2: public Dirichlet_paroi_fixe
 {
-
-  Declare_instanciable( Dirichlet_paroi_fixe_iso_Genepi2 ) ;
-
-public :
-
-protected :
-
+  Declare_instanciable( Dirichlet_paroi_fixe_iso_Genepi2 );
 };
 
 #endif /* Dirichlet_paroi_fixe_iso_Genepi2_included */

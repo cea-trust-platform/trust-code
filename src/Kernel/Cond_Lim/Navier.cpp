@@ -15,35 +15,8 @@
 
 #include <Navier.h>
 
-Implemente_base(Navier,"Navier",Cond_lim_base);
+Implemente_base(Navier, "Navier", Cond_lim_base);
 
+Sortie& Navier::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 
-/*! @brief Ecrit le type de l'objet sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Navier::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << finl;
-}
-
-/*! @brief Type le champ a la frontiere en "Champ_front_uniforme" Ne lit rien sur le flot passe en parametre
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree& s) le flot d'entree
- */
-Entree& Navier::readOn(Entree& s )
-{
-  return s ;
-}
-
-/*! @brief NE FAIT RIEN
- *
- * @return (int) renvoie toujours 1
- */
-int Navier::compatible_avec_eqn(const Equation_base& ) const
-{
-  return 1;
-}
-
+Entree& Navier::readOn(Entree& s) { return s; }

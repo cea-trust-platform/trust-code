@@ -16,50 +16,36 @@
 #ifndef Sortie_libre_Gradient_Pression_libre_VEF_included
 #define Sortie_libre_Gradient_Pression_libre_VEF_included
 
-
 /*! @brief Sortie_libre_Gradient_Pression_libre_VEF
  *
  *  Cette classe derive de la classe Neumann_sortie_libre
  *
- *     Elle represente une frontiere ouverte avec condition
- *     de gradient de pression calculer.
- *     La fonction flux_impose() renvoie une valeur de pression
- *     a l'exterieur calculee a partir du gradient de pression impose
+ *     Elle represente une frontiere ouverte avec condition de gradient de pression calculer.
+ *     La fonction flux_impose() renvoie une valeur de pression a l'exterieur calculee a partir du gradient de pression impose
  *     et de la pression a l'interieur du domaine.
  *
- *
- *
- * @sa Milieu_base
  */
-
-
 #include <Neumann_sortie_libre.h>
 #include <Ref_Champ_P0_VEF.h>
 #include <Ref_Zone_VEF.h>
 
-class Sortie_libre_Gradient_Pression_libre_VEF : public Neumann_sortie_libre
+class Sortie_libre_Gradient_Pression_libre_VEF: public Neumann_sortie_libre
 {
-
   Declare_instanciable(Sortie_libre_Gradient_Pression_libre_VEF);
-
 public:
-
   void completer() override;
   int initialiser(double temps) override;
   void mettre_a_jour(double temps) override;
-  double flux_impose(int ) const override;
-  double flux_impose(int , int ) const override;
-  virtual double Grad_P_lib_VEF(int ) const;
-  int compatible_avec_eqn(const Equation_base&) const override;
-  int compatible_avec_discr(const Discretisation_base& ) const override;
+  double flux_impose(int) const override;
+  double flux_impose(int, int) const override;
+  virtual double Grad_P_lib_VEF(int) const;
+  int compatible_avec_discr(const Discretisation_base&) const override;
 
 protected:
-
-  REF(Zone_VEF)  la_zone_VEF;
-  REF(Champ_P0_VEF)  pression_interne;
+  REF(Zone_VEF) la_zone_VEF;
+  REF(Champ_P0_VEF) pression_interne;
   DoubleVect trace_pression_int;   // pression interne sur les mailles de bord
   DoubleVect coeff;
-
 };
 
 #endif

@@ -21,13 +21,10 @@
 
 /*! @brief Frontiere ouverte sur laquelle on impose le flux massique rho.
  *
- * U et non la vitesse U. La vitesse est calculee par division par
- *     rho(n+1) trouve dans le fluide au moment de l'appel a
- *     val_imp.
+ * U et non la vitesse U. La vitesse est calculee par division par rho(n+1) trouve dans le fluide au moment de l'appel a val_imp.
  *
  * @sa Dirichlet_entree_fluide
  */
-
 class Frontiere_ouverte_rho_u_impose  : public Entree_fluide_vitesse_imposee_libre
 {
   Declare_instanciable(Frontiere_ouverte_rho_u_impose);

@@ -14,31 +14,17 @@
 *****************************************************************************/
 
 #include <Paroi_Knudsen_non_negligeable.h>
-#include <Motcle.h>
 #include <Champ_front_fonc_gradient.h>
 #include <Discretisation_base.h>
 
+Implemente_instanciable(Paroi_Knudsen_non_negligeable, "Paroi_Knudsen_non_negligeable", Dirichlet_paroi_defilante);
 
-Implemente_instanciable(Paroi_Knudsen_non_negligeable,"Paroi_Knudsen_non_negligeable",Dirichlet_paroi_defilante);
+Sortie& Paroi_Knudsen_non_negligeable::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 
-
-/*! @brief Ecrit le type de l'objet sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Paroi_Knudsen_non_negligeable::printOn(Sortie& s ) const
+Entree& Paroi_Knudsen_non_negligeable::readOn(Entree& s)
 {
-  return s << que_suis_je() << finl;
-}
+  if (app_domains.size() == 0) app_domains = { Motcle("Hydraulique"), Motcle("indetermine") };
 
-/*! @brief Lecture des champs vitesse_paroi et k
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree& s) le flot d'entree modifie
- */
-Entree& Paroi_Knudsen_non_negligeable::readOn(Entree& s )
-{
   Cerr << "Paroi_Knudsen_non_negligeable::readOn" << finl;
   Motcle mot;
   Motcles les_motcles(3);
@@ -46,15 +32,15 @@ Entree& Paroi_Knudsen_non_negligeable::readOn(Entree& s )
     les_motcles[0] = "vitesse_paroi";
     les_motcles[1] = "k";
   }
-  int nb_champs_lus=0;
-  while (nb_champs_lus<2)
+  int nb_champs_lus = 0;
+  while (nb_champs_lus < 2)
     {
-      s >> mot ;
+      s >> mot;
       int rang = les_motcles.search(mot);
       if (rang == 0)
-        s >> vitesse_paroi_ ;
+        s >> vitesse_paroi_;
       if (rang == 1)
-        s >> k_ ;
+        s >> k_;
       nb_champs_lus++;
     }
 
@@ -66,10 +52,10 @@ Entree& Paroi_Knudsen_non_negligeable::readOn(Entree& s )
 void Paroi_Knudsen_non_negligeable::completer()
 {
   Cerr << "Paroi_Knudsen_non_negligeable::completer" << finl;
-  Nom type="Champ_front_fonc_gradient_";
+  Nom type = "Champ_front_fonc_gradient_";
   type += zone_Cl_dis().equation().discretisation().que_suis_je();
   // Typage definitif en fonction de la discretisation
-  Frontiere_dis_base& fr=le_champ_front.frontiere_dis();
+  Frontiere_dis_base& fr = le_champ_front.frontiere_dis();
   le_champ_front.typer(type);
   le_champ_front.associer_fr_dis_base(fr);
   // Paroi defilante : le champ_front est la vitesse de nombre
@@ -77,30 +63,7 @@ void Paroi_Knudsen_non_negligeable::completer()
   // maintenant cela ?
   le_champ_front->fixer_nb_comp(dimension);
   // On associe l'inconnue:
-  Champ_front_fonc_gradient& ch=ref_cast(Champ_front_fonc_gradient,le_champ_front.valeur());
+  Champ_front_fonc_gradient& ch = ref_cast(Champ_front_fonc_gradient, le_champ_front.valeur());
   ch.associer_ch_inc_base(zone_Cl_dis().equation().inconnue().valeur());
   Cerr << "Paroi_Knudsen_non_negligeable::completer OK" << finl;
-}
-
-/*! @brief Renvoie un booleen indiquant la compatibilite des conditions aux limites avec l'equation specifiee en parametre.
- *
- *     Des CL de type Dirichlet_paroi_defilante sont compatibles
- *     avec une equation dont le domaine est l'hydraulique (Navier_Stokes)
- *     ou bien indetermine.
- *
- * @param (Equation_base& eqn) l'equation avec laquelle il faut verifier la compatibilite
- * @return (int) valeur booleenne, 1 si les CL sont compatibles avec l'equation 0 sinon
- */
-int Paroi_Knudsen_non_negligeable::compatible_avec_eqn(const Equation_base& eqn) const
-{
-  Motcle dom_app=eqn.domaine_application();
-  Motcle Hydraulique="Hydraulique";
-  Motcle indetermine="indetermine";
-  if ( (dom_app==Hydraulique) || (dom_app==indetermine) )
-    return 1;
-  else
-    {
-      err_pas_compatible(eqn);
-      return 0;
-    }
 }

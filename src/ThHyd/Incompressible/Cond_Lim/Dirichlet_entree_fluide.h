@@ -18,19 +18,15 @@
 
 #include <Dirichlet.h>
 
-
 /*! @brief classe Dirichlet_entree_fluide Cette classe represente une condition aux limite imposant une grandeur
  *
- *     sur l'entree du fluide. Des classes derivees specialiseront la grandeur
- *     imposee: vitesse, temperature, concentration, fraction_massique ...
+ *     sur l'entree du fluide. Des classes derivees specialiseront la grandeur imposee: vitesse, temperature, concentration, fraction_massique ...
  *
  * @sa Dirichlet Entree_fluide_vitesse_imposee Entree_fluide_vitesse_imposee_libre, Entree_fluide_temperature_imposee Entree_fluide_T_h_imposee, Entree_fluide_Fluctu_Temperature_imposee Entree_fluide_Flux_Chaleur_Turbulente_imposee, Entree_fluide_K_Eps_impose Entree_fluide_V2_impose, Entree_fluide_concentration_imposee Entree_fluide_fraction_massique_imposee
  */
-class Dirichlet_entree_fluide  : public Dirichlet
+class Dirichlet_entree_fluide: public Dirichlet
 {
-
   Declare_base(Dirichlet_entree_fluide);
-
 };
 
 #endif

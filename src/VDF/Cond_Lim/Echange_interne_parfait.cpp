@@ -19,11 +19,6 @@
 Implemente_instanciable(Echange_interne_parfait,"Paroi_echange_interne_parfait",Echange_interne_impose);
 // XD Echange_interne_parfait condlim_base Paroi_echange_interne_parfait -1 Internal heat exchange boundary condition with perfect (infinite) exchange coefficient.
 
-/*! @brief Ecrit le type de l'objet sur un flot de sortie
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Echange_interne_parfait::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << finl;
@@ -38,6 +33,8 @@ Sortie& Echange_interne_parfait::printOn(Sortie& s ) const
  */
 Entree& Echange_interne_parfait::readOn(Entree& s )
 {
+  if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("Neutronique"), Motcle("fraction_massique"), Motcle("indetermine") };
+
   EChaine e("Champ_front_uniforme 1 1.0");
   e >> h_gap_;        // won't be used anyway
   init();

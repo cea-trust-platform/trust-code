@@ -15,31 +15,12 @@
 
 #include <Dirichlet_homogene.h>
 
-Implemente_base(Dirichlet_homogene,"Dirichlet_homogene",Cond_lim_base);
+Implemente_base(Dirichlet_homogene, "Dirichlet_homogene", Cond_lim_base);
 
+Sortie& Dirichlet_homogene::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 
-/*! @brief Ecrit le type de l'objet sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Dirichlet_homogene::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << finl;
-}
-
-
-/*! @brief Type le champ a la frontiere en "Champ_front_uniforme" Ne lit rien sur le flot passe en parametre
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree& s) le flot d'entree
- */
-Entree& Dirichlet_homogene::readOn(Entree& s )
+Entree& Dirichlet_homogene::readOn(Entree& s)
 {
   le_champ_front.typer("Champ_front_uniforme");
-  return s ;
+  return s;
 }
-
-
-
-

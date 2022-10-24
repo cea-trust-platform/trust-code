@@ -26,11 +26,7 @@ Echange_global_impose::Echange_global_impose()
 {
   phi_ext_lu_ = false;
 }
-/*! @brief Ecrit le type de l'objet sur un flot de sortie
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
+
 Sortie& Echange_global_impose::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << finl;

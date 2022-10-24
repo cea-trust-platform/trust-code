@@ -15,26 +15,25 @@
 
 #include <Echange_contact_Correlation_VDF.h>
 #include <Champ_front_calc.h>
-#include <Probleme_base.h>
-#include <Zone_VDF.h>
-#include <Milieu_base.h>
+#include <communications.h>
 #include <Champ_Uniforme.h>
+#include <Probleme_base.h>
+#include <Milieu_base.h>
 #include <Conduction.h>
 #include <Solv_TDMA.h>
-#include <communications.h>
+#include <Zone_VDF.h>
 #include <SFichier.h>
 #include <Param.h>
 
 Implemente_instanciable(Echange_contact_Correlation_VDF,"Paroi_Echange_contact_Correlation_VDF",Echange_global_impose);
 
 
-Sortie& Echange_contact_Correlation_VDF::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << finl;
-}
+Sortie& Echange_contact_Correlation_VDF::printOn(Sortie& s ) const { return s << que_suis_je() << finl; }
 
 Entree& Echange_contact_Correlation_VDF::readOn(Entree& is )
 {
+  if (app_domains.size() == 0) app_domains = { Motcle("Thermique") };
+
   Param param(que_suis_je());
   Reprise_temperature=0;
   dt_impr = 1e10;
@@ -660,16 +659,6 @@ void Echange_contact_Correlation_VDF::mettre_a_jour(double temps)
     }
 }
 
-int Echange_contact_Correlation_VDF::compatible_avec_eqn(const Equation_base& eqn) const
-{
-  if ( sub_type(Conduction, eqn) )
-    return 1;
-  else
-    {
-      err_pas_compatible(eqn);
-      return 0;
-    }
-}
 void Echange_contact_Correlation_VDF::calculer_h_solide(DoubleTab& tab,const Equation_base& une_eqn,const Zone_VDF& zvdf_2,const Front_VF& front_vf,const    Milieu_base& le_milieu)
 {
   DoubleVect e;

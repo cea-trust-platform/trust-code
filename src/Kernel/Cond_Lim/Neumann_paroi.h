@@ -18,25 +18,20 @@
 
 #include <Neumann.h>
 
-
 /*! @brief Classe Neumann_paroi Cette condition limite correspond a un flux impose pour l'equation de
  *
- *     transport d'un scalaire. Ex: une paroi chauffante pour l'equation de
- *     transport de la temperature.
+ *     transport d'un scalaire. Ex: une paroi chauffante pour l'equation de transport de la temperature.
  *     Le flux impose est uniforme.
  *
  * @sa Neumann
  */
-class Neumann_paroi : public Neumann
+class Neumann_paroi: public Neumann
 {
-
   Declare_instanciable(Neumann_paroi);
-
-public :
-  int compatible_avec_eqn(const Equation_base&) const override;
+public:
   void mettre_a_jour(double temps) override;
   double flux_impose(int i) const override;
-  double flux_impose(int i,int j) const override;
+  double flux_impose(int i, int j) const override;
   void verifie_ch_init_nb_comp() const override;
 };
 

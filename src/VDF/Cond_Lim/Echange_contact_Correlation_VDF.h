@@ -16,36 +16,25 @@
 #ifndef Echange_contact_Correlation_VDF_included
 #define Echange_contact_Correlation_VDF_included
 
-
 #include <Echange_global_impose.h>
 #include <Parser_U.h>
+
 class Front_VF;
 class Zone_VDF;
 class Faces;
 class Param;
 
-////////////////////////////////////////////////////////////////
-
-/*! @brief classe : Echange_contact_Correlation_VDF
- *
- *
- *
- */
-
-////////////////////////////////////////////////////////////////
-
-class Echange_contact_Correlation_VDF  : public Echange_global_impose
+class Echange_contact_Correlation_VDF: public Echange_global_impose
 {
 
   Declare_instanciable(Echange_contact_Correlation_VDF);
 
-public :
+public:
 
-  void mettre_a_jour(double ) override;
-  int compatible_avec_eqn(const Equation_base&) const override;
+  void mettre_a_jour(double) override;
   void completer() override;
-  virtual void imprimer(double ) const;
-  virtual int limpr(double , double ) const;
+  virtual void imprimer(double) const;
+  virtual int limpr(double, double) const;
 
   /*
    * Methode qu'on peut surcharger  dans les classes filles pour definir un Nusselt particulier
@@ -66,40 +55,16 @@ public :
   /*
    * Renvoie U et T et les proprietes physiques sur la maille 1D i
    */
-  inline double getU(int i) const
-  {
-    return U(i);
-  }
-  inline double getT(int i) const
-  {
-    return T(i);
-  }
-  inline double getMu(int i) const
-  {
-    return mu(i);
-  }
-  inline double getLambda(int i) const
-  {
-    return lambda(i);
-  }
-  inline double getRho(int i) const
-  {
-    return rho(i);
-  }
-  inline double getCp() const
-  {
-    return Cp;
-  }
-  inline double getDh() const
-  {
-    return diam;
-  }
-  inline double getQh() const
-  {
-    return debit;  // le debit
-  }
+  inline double getU(int i) const { return U(i); }
+  inline double getT(int i) const { return T(i); }
+  inline double getMu(int i) const { return mu(i); }
+  inline double getLambda(int i) const { return lambda(i); }
+  inline double getRho(int i) const { return rho(i); }
+  inline double getCp() const { return Cp; }
+  inline double getDh() const { return diam; }
+  inline double getQh() const { return debit; }
 
-protected :
+protected:
   void set_param(Param& param);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
 
@@ -110,40 +75,37 @@ protected :
   void calculer_Vitesse();
   void calculer_Tfluide();
   void calculer_h_mon_pb(DoubleTab&);
-  void calculer_h_solide(DoubleTab& ,const Equation_base& ,const Zone_VDF& ,const Front_VF& ,const    Milieu_base&);
+  void calculer_h_solide(DoubleTab&, const Equation_base&, const Zone_VDF&, const Front_VF&, const Milieu_base&);
   void init_tab_echange();
-
 
   IntVect correspondance_solide_fluide;
   DoubleTab autre_h;
-  int Reprise_temperature;
-
+  int Reprise_temperature = -1;
 
   DoubleTab tab_ech;
 
-  double Tinf, Tsup; // Temperature entree, sortie
-  double T_CL0, T_CL1 ; // CL sur le domaine. En seq. = Tinf et Tsup ; En parallele = Tvoisin
-  int dir; // Direction du cylindre
+  double Tinf = -100., Tsup = -100.; // Temperature entree, sortie
+  double T_CL0 = -100., T_CL1 = -100.; // CL sur le domaine. En seq. = Tinf et Tsup ; En parallele = Tvoisin
+  int dir = -1; // Direction du cylindre
   Parser_U lambda_T;
   Parser_U mu_T;
   Parser_U rho_T;
   Parser_U fct_Nu;
   Parser_U fct_vol;
-  double dt_impr;
-  double Cp;
-  double debit;
+  double dt_impr = -100.;
+  double Cp = -100.;
+  double debit = -100.;
 
-  double diam; // diametre hydraulique
+  double diam = -100.; // diametre hydraulique
   DoubleVect vol; // volumes des tranches Sdz du volume suivant la direction de l'ecoulement
   DoubleVect coord; // coordonnees des points de discretisation 1D
 
-  int N;   // nb de points du maillage 1D pour la vitesse et la temperature
-  DoubleVect U,T; // inconnues fluides vitesse et temperature
+  int N = -1;   // nb de points du maillage 1D pour la vitesse et la temperature
+  DoubleVect U, T; // inconnues fluides vitesse et temperature
   DoubleVect Qvol; // puissance volumique dans le fluide 1D
   DoubleVect rho, mu, lambda; // tableau des proprietes physiques du fluide a un instant donne
   DoubleVect h_correlation; // le coeff d'echange par correlation
 
 };
-
 
 #endif

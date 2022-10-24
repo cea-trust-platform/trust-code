@@ -13,34 +13,14 @@
 *
 *****************************************************************************/
 
-#include <Dirichlet.h>
 #include <Equation_base.h>
+#include <Dirichlet.h>
 
-Implemente_base(Dirichlet,"Dirichlet",Cond_lim_base);
+Implemente_base(Dirichlet, "Dirichlet", Cond_lim_base);
 
+Sortie& Dirichlet::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 
-/*! @brief Ecrit le type de l'objet sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Dirichlet::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << finl;
-}
-
-
-
-/*! @brief Simple appel a: Cond_lim_base::readOn(Entree& )
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree& s) le flot d'entree modifie
- */
-Entree& Dirichlet::readOn(Entree& s )
-{
-  return Cond_lim_base::readOn(s);
-}
-
+Entree& Dirichlet::readOn(Entree& s) { return Cond_lim_base::readOn(s); }
 
 /*! @brief Renvoie la valeur imposee sur la i-eme composante du champ a la frontiere au temps par defaut du champ_front.
  *
@@ -50,9 +30,8 @@ Entree& Dirichlet::readOn(Entree& s )
  */
 double Dirichlet::val_imp(int i) const
 {
-  return val_imp_au_temps(le_champ_front->get_temps_defaut(),i);
+  return val_imp_au_temps(le_champ_front->get_temps_defaut(), i);
 }
-
 
 /*! @brief Renvoie la valeur imposee sur la (i,j)-eme composante du champ a la frontiere au temps par defaut du champ_front.
  *
@@ -62,7 +41,7 @@ double Dirichlet::val_imp(int i) const
  */
 double Dirichlet::val_imp(int i, int j) const
 {
-  return val_imp_au_temps(le_champ_front->get_temps_defaut(),i,j);
+  return val_imp_au_temps(le_champ_front->get_temps_defaut(), i, j);
 }
 
 /*! @brief Renvoie la valeur imposee sur la i-eme composante du champ a la frontiere au temps precise.
@@ -70,28 +49,27 @@ double Dirichlet::val_imp(int i, int j) const
  */
 double Dirichlet::val_imp_au_temps(double temps, int i) const
 {
-  const DoubleTab& tab=le_champ_front->valeurs_au_temps(temps);
-  if (tab.size()==1)
-    return tab(0,0);
-  if (tab.line_size()==1)
-    return tab(i,0);
+  const DoubleTab& tab = le_champ_front->valeurs_au_temps(temps);
+  if (tab.size() == 1)
+    return tab(0, 0);
+  if (tab.line_size() == 1)
+    return tab(i, 0);
   else
     Cerr << "Dirichlet::val_imp error" << finl;
   exit();
   return 0.;
 }
 
-
 /*! @brief Renvoie la valeur imposee sur la (i,j)-eme composante du champ a la frontiere au temps precise.
  *
  */
 double Dirichlet::val_imp_au_temps(double temps, int i, int j) const
 {
-  const DoubleTab& tab=le_champ_front->valeurs_au_temps(temps);
-  if (tab.dimension(0)==1)
-    return tab(0,j);
+  const DoubleTab& tab = le_champ_front->valeurs_au_temps(temps);
+  if (tab.dimension(0) == 1)
+    return tab(0, j);
   else
-    return tab(i,j);
+    return tab(i, j);
 }
 
 void Dirichlet::verifie_ch_init_nb_comp() const
@@ -100,6 +78,6 @@ void Dirichlet::verifie_ch_init_nb_comp() const
     {
       const Equation_base& eq = zone_Cl_dis().equation();
       const int nb_comp = le_champ_front.valeur().nb_comp();
-      eq.verifie_ch_init_nb_comp_cl(eq.inconnue(),nb_comp, *this);
+      eq.verifie_ch_init_nb_comp_cl(eq.inconnue(), nb_comp, *this);
     }
 }

@@ -18,7 +18,6 @@
 
 #include <Neumann.h>
 
-
 /*! @brief Classe Neumann_val_ext Cette classe est la classe de base de la hierarchie des conditions
  *
  *     aux limites de type Neumann_val_ext.
@@ -29,18 +28,15 @@
  *
  * @sa Cond_lim_base Neumann_val_ext_homogene
  */
-class Neumann_val_ext : public Neumann
+class Neumann_val_ext: public Neumann
 {
-
   Declare_base(Neumann_val_ext);
-
 public:
   virtual const DoubleTab& tab_ext() const = 0;
   virtual DoubleTab& tab_ext() = 0;
 
   virtual double val_ext(int i) const = 0;
-  virtual double val_ext(int i,int j) const = 0;
-
+  virtual double val_ext(int i, int j) const = 0;
 };
 
 #endif

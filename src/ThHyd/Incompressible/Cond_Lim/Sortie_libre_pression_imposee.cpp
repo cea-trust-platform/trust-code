@@ -14,65 +14,25 @@
 *****************************************************************************/
 
 #include <Sortie_libre_pression_imposee.h>
-#include <Motcle.h>
-#include <Equation_base.h>
-#include <Champ_Uniforme.h>
-#include <Navier_Stokes_std.h>
 #include <Fluide_Incompressible.h>
+#include <Navier_Stokes_std.h>
+#include <Champ_Uniforme.h>
+#include <Equation_base.h>
 
-Implemente_instanciable_sans_constructeur(Sortie_libre_pression_imposee,"Frontiere_ouverte_pression_imposee",Neumann_sortie_libre);
+Implemente_instanciable_sans_constructeur(Sortie_libre_pression_imposee, "Frontiere_ouverte_pression_imposee", Neumann_sortie_libre);
 
+Sortie_libre_pression_imposee::Sortie_libre_pression_imposee() : d_rho(-123.) { }
 
-Sortie_libre_pression_imposee::Sortie_libre_pression_imposee():d_rho(-123.) {}
+Sortie& Sortie_libre_pression_imposee::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 
-/*! @brief Ecrit le type de l'objet sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Sortie_libre_pression_imposee::printOn(Sortie& s ) const
+Entree& Sortie_libre_pression_imposee::readOn(Entree& s)
 {
-  return s << que_suis_je() << finl;
-}
+  if (app_domains.size() == 0) app_domains = { Motcle("Hydraulique"), Motcle("indetermine") };
 
-/*! @brief Renvoie un booleen indiquant la compatibilite des conditions aux limites avec l'equation specifiee en parametre.
- *
- *     Des CL de type Sortie_libre_pression_imposee sont compatibles
- *     avec une equation dont le domaine est l'hydraulique (Navier_Stokes)
- *     ou bien indetermine.
- *
- * @param (Equation_base& eqn) l'equation avec laquelle il faut verifier la compatibilite
- * @return (int) valeur booleenne, 1 si les CL sont compatibles avec l'equation 0 sinon
- */
-int Sortie_libre_pression_imposee::compatible_avec_eqn(const Equation_base& eqn) const
-{
-  Motcle dom_app=eqn.domaine_application();
-  Motcle Hydraulique="Hydraulique";
-  Motcle indetermine="indetermine";
-  if ( (dom_app==Hydraulique) || (dom_app==indetermine) )
-    return 1;
-  else
-    {
-      err_pas_compatible(eqn);
-      return 0;
-    }
-}
-
-/*! @brief Lit le champ de frontiere a partir d'un flot d'entree.
- *
- * Type le_champ_ext en "Champ_front_uniforme".
- *     Redimmensionne le_champ_ext en fonction de la dimension
- *     de l'espace (dimension)
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree& s) le flot d'entree modifie
- */
-Entree& Sortie_libre_pression_imposee::readOn(Entree& s )
-{
   s >> le_champ_front;
   le_champ_ext.typer("Champ_front_uniforme");
-  le_champ_ext.valeurs().resize(1,dimension);
-  return s ;
+  le_champ_ext.valeurs().resize(1, dimension);
+  return s;
 }
 
 /*! @brief Complete les conditions aux limites.
@@ -83,25 +43,24 @@ Entree& Sortie_libre_pression_imposee::readOn(Entree& s )
  */
 void Sortie_libre_pression_imposee::completer()
 {
-  const Milieu_base& mil=ma_zone_cl_dis->equation().milieu();
+  const Milieu_base& mil = ma_zone_cl_dis->equation().milieu();
   if (sub_type(Fluide_Incompressible,mil) && ma_zone_cl_dis->equation().que_suis_je() != "QDM_Multiphase")
     {
-      if (sub_type(Champ_Uniforme,mil.masse_volumique().valeur()))
+      if (sub_type(Champ_Uniforme, mil.masse_volumique().valeur()))
         {
-          const Champ_Uniforme& rho=ref_cast(Champ_Uniforme,mil.masse_volumique().valeur());
-          d_rho = rho(0,0);
+          const Champ_Uniforme& rho = ref_cast(Champ_Uniforme, mil.masse_volumique().valeur());
+          d_rho = rho(0, 0);
         }
       else
         {
           d_rho = -1;
 
-          // GF dans les cas a rho non const QC FT on ne doit pas diviser par rho
-          // on met d_rho=1
-          d_rho=1;
+          // GF dans les cas a rho non const QC FT on ne doit pas diviser par rho on met d_rho=1
+          d_rho = 1;
         }
     }
   else
-    d_rho=1;
+    d_rho = 1;
 }
 
 /*! @brief Renvoie la valeur du flux impose sur la i-eme composante du champ representant le flux a la frontiere.
@@ -117,12 +76,12 @@ void Sortie_libre_pression_imposee::completer()
  */
 double Sortie_libre_pression_imposee::flux_impose(int i) const
 {
-  const Milieu_base& mil=ma_zone_cl_dis->equation().milieu();
+  const Milieu_base& mil = ma_zone_cl_dis->equation().milieu();
   double rho_;
-  assert(!est_egal(d_rho,-123.));
-  if (d_rho==-1)
+  assert(!est_egal(d_rho, -123.));
+  if (d_rho == -1)
     {
-      const Champ_base& rho=mil.masse_volumique().valeur();
+      const Champ_base& rho = mil.masse_volumique().valeur();
       rho_ = rho(i);
     }
   else
@@ -130,10 +89,10 @@ double Sortie_libre_pression_imposee::flux_impose(int i) const
       rho_ = d_rho;
     }
 
-  if (le_champ_front.valeurs().size()==1)
-    return le_champ_front(0,0)/rho_;
-  else if (le_champ_front.valeurs().dimension(1)==1)
-    return le_champ_front(i,0)/rho_;
+  if (le_champ_front.valeurs().size() == 1)
+    return le_champ_front(0, 0) / rho_;
+  else if (le_champ_front.valeurs().dimension(1) == 1)
+    return le_champ_front(i, 0) / rho_;
   else
     Cerr << "Neumann::flux_impose erreur" << finl;
   exit();
@@ -149,23 +108,19 @@ double Sortie_libre_pression_imposee::flux_impose(int i) const
  * @param (int j) indice suivant la deuxieme dimension du champ
  * @return (double) la valeur imposee sur la composante du champ specifiee
  */
-double Sortie_libre_pression_imposee::flux_impose(int i,int j) const
+double Sortie_libre_pression_imposee::flux_impose(int i, int j) const
 {
-  const Milieu_base& mil=ma_zone_cl_dis->equation().milieu();
-  const Champ_base& rho=mil.masse_volumique().valeur();
+  const Milieu_base& mil = ma_zone_cl_dis->equation().milieu();
+  const Champ_base& rho = mil.masse_volumique().valeur();
   double rho_;
-  assert(!est_egal(d_rho,-123.));
-  if (d_rho==-1)
-    {
-      rho_ = rho(i);
-    }
+  assert(!est_egal(d_rho, -123.));
+  if (d_rho == -1)
+    rho_ = rho(i);
   else
-    {
-      rho_ = d_rho;
-    }
+    rho_ = d_rho;
 
-  if (le_champ_front.valeurs().dimension(0)==1)
-    return le_champ_front(0,j)/rho_;
+  if (le_champ_front.valeurs().dimension(0) == 1)
+    return le_champ_front(0, j) / rho_;
   else
-    return le_champ_front(i,j)/rho_;
+    return le_champ_front(i, j) / rho_;
 }

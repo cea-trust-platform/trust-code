@@ -13,28 +13,20 @@
 *
 *****************************************************************************/
 
-
 #ifndef Scalaire_impose_paroi_included
 #define Scalaire_impose_paroi_included
 
 #include <Dirichlet.h>
 
-/*! @brief classe Scalaire_impose_paroi Impose un scalaire a la paroi dans une equation de type
- *
- *     Convection-Difussion d'un scalaire
+/*! @brief classe Scalaire_impose_paroi Impose un scalaire a la paroi dans une equation de type Convection-Difussion d'un scalaire
  *
  * @sa Dirichlet
  */
-class Scalaire_impose_paroi  : public Dirichlet
+class Scalaire_impose_paroi: public Dirichlet
 {
-
   Declare_instanciable(Scalaire_impose_paroi);
-
-public :
-
-  int compatible_avec_eqn(const Equation_base& ) const override;
-  int compatible_avec_discr(const Discretisation_base& ) const override;
+public:
+  int compatible_avec_discr(const Discretisation_base&) const override;
 };
-
 
 #endif

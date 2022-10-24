@@ -30,6 +30,8 @@ Sortie& PlaqThVDF::printOn(Sortie& s ) const
 
 Entree& PlaqThVDF::readOn(Entree& s )
 {
+  if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("Neutronique"), Motcle("fraction_massique"), Motcle("indetermine") };
+
   s >> h;
   T_ext().typer("Champ_front_calc");
   return s;

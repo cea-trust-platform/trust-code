@@ -13,27 +13,18 @@
 *
 *****************************************************************************/
 
-
 #ifndef Temperature_imposee_paroi_included
 #define Temperature_imposee_paroi_included
 
 #include <Scalaire_impose_paroi.h>
 
-/*! @brief classe Temperature_imposee_paroi Impose la temperature de la paroi dans une equation de type
- *
- *     Convection_Diffusion_Temperature
+/*! @brief classe Temperature_imposee_paroi Impose la temperature de la paroi dans une equation de type Convection_Diffusion_Temperature
  *
  * @sa Dirichlet Convection_Diffusion_Temperature
  */
-class Temperature_imposee_paroi  : public Scalaire_impose_paroi
+class Temperature_imposee_paroi: public Scalaire_impose_paroi
 {
-
   Declare_instanciable(Temperature_imposee_paroi);
-
-public :
-
-  int compatible_avec_eqn(const Equation_base& ) const override;
 };
-
 
 #endif

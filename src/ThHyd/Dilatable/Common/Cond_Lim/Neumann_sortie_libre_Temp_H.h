@@ -16,8 +16,8 @@
 #ifndef Neumann_sortie_libre_Temp_H_included
 #define Neumann_sortie_libre_Temp_H_included
 
-#include <Neumann_sortie_libre.h>
 #include <Ref_Fluide_Dilatable_base.h>
+#include <Neumann_sortie_libre.h>
 
 /*! @brief classe  Neumann_sortie_libre_Temp_H Cette classe represente une frontiere ouverte a temperature imposee pour
  *
@@ -29,16 +29,13 @@
 class Neumann_sortie_libre_Temp_H : public Neumann_sortie_libre
 {
   Declare_instanciable(Neumann_sortie_libre_Temp_H);
-
 public:
   void completer() override;
-  int compatible_avec_eqn(const Equation_base&) const override;
   double val_ext(int i) const override;
   double val_ext(int i,int j) const override;
 
 protected :
   REF(Fluide_Dilatable_base) le_fluide;
-
 };
 
 #endif /* Neumann_sortie_libre_Temp_H_included */

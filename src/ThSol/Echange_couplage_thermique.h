@@ -21,20 +21,12 @@
 
 /*! @brief : class Echange_couplage_thermique
  *
- *  <Description of class Echange_couplage_thermique>
- *
- *
  *
  */
-
 class Echange_couplage_thermique : public Echange_global_impose
 {
-
   Declare_instanciable( Echange_couplage_thermique ) ;
-
 public :
-
-  int compatible_avec_eqn(const Equation_base&) const override;
   int compatible_avec_discr(const Discretisation_base& discr) const override;
 
   void completer() override;
@@ -54,10 +46,7 @@ public :
   inline Champ_front& T_p();
   inline const Champ_front& T_p() const;
 
-  bool reprise() const
-  {
-    return reprise_;
-  }
+  bool reprise() const { return reprise_; }
   inline Champ_front& a_p();
   inline const Champ_front& a_p() const;
 

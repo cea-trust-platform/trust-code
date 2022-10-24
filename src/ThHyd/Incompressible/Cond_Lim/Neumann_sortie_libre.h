@@ -18,43 +18,32 @@
 
 #include <Neumann_val_ext.h>
 
-
 /*! @brief classe  Neumann_sortie_libre Cette classe represente une frontiere ouverte sans vitesse imposee
  *
- *     Pour les equations de Navier_Stokes on impose necessairement
- *     la pression sur une telle frontiere
- *     Pour traiter l'hydraulique, on derive donc de la classe
- *     Neumann_sortie_libre la classe Sortie_libre_pression_imposee
- *     Les conditions aux limites de type Neumann_sortie_libre ou des
- *     types derives se traduisent par des flux diffusifs nuls.
- *     En revanche, le traitement des flux convectifs impose de connaitre
- *     le champ convecte a l'exterieur de la frontiere en cas de re-entree
- *     de fluide. C'est pourquoi la classe porte un Champ_front
- *     (membre le_champ_ext).
- *     Dans les operateurs de calcul, les conditions aux limites
- *     de type Neumann_sortie_libre et des types derives seront traites
- *     de maniere identique
+ *     Pour les equations de Navier_Stokes on impose necessairement la pression sur une telle frontiere
+ *     Pour traiter l'hydraulique, on derive donc de la classe Neumann_sortie_libre la classe Sortie_libre_pression_imposee
+ *     Les conditions aux limites de type Neumann_sortie_libre ou des types derives se traduisent par des flux diffusifs nuls.
+ *     En revanche, le traitement des flux convectifs impose de connaitre le champ convecte a l'exterieur de la frontiere en cas de re-entree
+ *     de fluide. C'est pourquoi la classe porte un Champ_front (membre le_champ_ext).
+ *
+ *     Dans les operateurs de calcul, les conditions aux limites de type Neumann_sortie_libre et des types derives seront traites de maniere identique
  *
  * @sa Neumann Sortie_libre_pression_imposee
  */
-class Neumann_sortie_libre : public Neumann_val_ext
+class Neumann_sortie_libre: public Neumann_val_ext
 {
-
   Declare_instanciable(Neumann_sortie_libre);
-
 public:
-
   const DoubleTab& tab_ext() const override;
   DoubleTab& tab_ext() override;
 
   double val_ext(int i) const override;
-  double val_ext(int i,int j) const override;
-  int compatible_avec_eqn(const Equation_base&) const override;
+  double val_ext(int i, int j) const override;
   int initialiser(double temps) override;
-  void associer_fr_dis_base(const Frontiere_dis_base& ) override ;
+  void associer_fr_dis_base(const Frontiere_dis_base&) override;
   void verifie_ch_init_nb_comp() const override;
 
-  void fixer_nb_valeurs_temporelles (int nb_cases) override;
+  void fixer_nb_valeurs_temporelles(int nb_cases) override;
   void mettre_a_jour(double temps) override;
   void set_temps_defaut(double temps) override;
   void changer_temps_futur(double temps, int i) override;
@@ -62,9 +51,7 @@ public:
   int reculer(double temps) override;
 
 protected:
-
   Champ_front le_champ_ext;
-
 };
 
 #endif
