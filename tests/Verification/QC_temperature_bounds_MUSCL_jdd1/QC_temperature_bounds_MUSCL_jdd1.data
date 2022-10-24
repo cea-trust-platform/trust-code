@@ -42,32 +42,32 @@ lire sch
     dt_sauv -1
 }
 
-fluide_quasi_compressible fluide
-# water/ethanol water/saccarose mixture #
-lire fluide
-{
-    mu		champ_fonc_fonction temperature 1 ((val*0.00109+(1-val)*0.00245)_MAX_0.00109)_MIN_0.00245
-    lambda		champ_fonc_fonction temperature 1 1.77e-6
-    pression	1
-    loi_etat	rhoT_gaz_parfait_QC { Prandtl 1 Cp 1 rho_T ((T*1064.7+(1-T)*956.54)_MAX_956.54)_MIN_1064.7 }
-    traitement_pth constant
-    traitement_rho_gravite standard
-    omega_relaxation_drho_dt 0.9
-    temps_debut_prise_en_compte_drho_dt 1e-6
-}
-
-champ_uniforme gravite
-lire gravite 3 0 -9.81 0
-associer fluide gravite
-
 associer pb dom
 associer pb sch
-associer pb fluide
 
 discretiser pb dis
 
 lire pb
 {
+    # water/ethanol water/saccarose mixture #
+    fluide_quasi_compressible
+    {
+        gravite champ_uniforme 3 0 -9.81 0
+        mu champ_fonc_fonction pb temperature 1 ((val*0.00109+(1-val)*0.00245)_MAX_0.00109)_MIN_0.00245
+        lambda champ_fonc_fonction pb temperature 1 1.77e-6
+        pression 1
+        loi_etat rhoT_gaz_parfait_QC
+        {
+             Prandtl 1
+             Cp 1
+             rho_T ((T*1064.7+(1-T)*956.54)_MAX_956.54)_MIN_1064.7
+        }
+        traitement_pth constant
+        traitement_rho_gravite standard
+        omega_relaxation_drho_dt 0.9
+        temps_debut_prise_en_compte_drho_dt 1e-6
+    }
+
     Navier_Stokes_QC
     {
         parametre_equation	parametre_diffusion_implicite	{
