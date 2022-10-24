@@ -17,7 +17,7 @@
 #include <Pb_Multiphase.h>
 
 Implemente_instanciable(Flux_interfacial_Zeitoun, "Flux_interfacial_Zeitoun", Flux_interfacial_base);
-// XD flux_interfacial source_base flux_interfacial 0 Source term of mass transfer between phases connected by the saturation object defined in saturation_xxxx
+
 Sortie& Flux_interfacial_Zeitoun::printOn(Sortie& os) const
 {
   return os;

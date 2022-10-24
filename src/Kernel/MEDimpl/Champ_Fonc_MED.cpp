@@ -59,16 +59,12 @@ void Champ_Fonc_MED::set_param(Param& param)
 {
   param.ajouter_flag("use_existing_domain", &use_existing_domain_); // XD_ADD_P flag whether to optimize the field loading by indicating that the field is supported by the same mesh that was initially loaded as the domain
   param.ajouter_flag("last_time", &last_time_only_);                // XD_ADD_P flag to use the last time of the MED file instead of the specified time. Mutually exclusive with 'time' parameter.
-  param.ajouter("decoup", &nom_decoup_, Param::OPTIONAL);           // XD_ADD_P decoup specify a partition file (only functional with Champ_Fonc_MEDFile for now ...)
+  param.ajouter("decoup", &nom_decoup_, Param::OPTIONAL);           // XD_ADD_P chaine specify a partition file (only functional with Champ_Fonc_MEDFile ...)
   param.ajouter("domain", &nom_dom_, Param::REQUIRED);              // XD_ADD_P chaine Name of the domain supporting the field. This is the name of the mesh in the MED file, and if this mesh was also used to create the TRUST domain, loading can be optimized with option 'use_existing_domain'.
   param.ajouter("file", &nom_fichier_med_, Param::REQUIRED);        // XD_ADD_P chaine Name of the .med file.
   param.ajouter("field", &nom_champ_, Param::REQUIRED);             // XD_ADD_P chaine Name of field to load.
   param.ajouter("loc", &loc_, Param::OPTIONAL);                     // XD_ADD_P chaine(into=["som","elem"]) To indicate where the field is localised. Default to 'elem'.
   param.ajouter("time", &temps_, Param::OPTIONAL);                  // XD_ADD_P double Timestep to load from the MED file. Mutually exclusive with 'last_time' flag.
-
-  // XD decoup objet_lecture nul 0 Optional keyword
-  // XD attr key chaine(into=["decoup"]) key 0 Parameter for a partition file
-  // XD attr nom chaine nom 0 Name of a partition file
 }
 
 void Champ_Fonc_MED::readOn_old_syntax(Entree& is, Nom& chaine_lue, bool& nom_decoup_lu)
@@ -791,7 +787,7 @@ const ArrOfDouble& Champ_Fonc_MED::get_saved_times(void) const
  * Read field with MEDFile API (soon deprecated)
  */
 Implemente_instanciable_sans_constructeur(Champ_Fonc_MEDfile, "Champ_Fonc_MEDfile", Champ_Fonc_MED);
-// XD Champ_Fonc_MEDfile champ_fonc_med Champ_Fonc_MEDfile 0 Obsolete keyword to read a field with MED file API
+// XD Champ_Fonc_MEDfile champ_fonc_med Champ_Fonc_MEDfile -1 Obsolete keyword to read a field with MED file API
 Champ_Fonc_MEDfile::Champ_Fonc_MEDfile()
 {
   use_medcoupling_ = false;

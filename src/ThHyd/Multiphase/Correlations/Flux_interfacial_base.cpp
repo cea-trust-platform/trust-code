@@ -15,6 +15,7 @@
 
 #include <Flux_interfacial_base.h>
 Implemente_base(Flux_interfacial_base, "Flux_interfacial_base", Correlation_base);
+// XD flux_interfacial source_base flux_interfacial 0 Source term of mass transfer between phases connected by the saturation object defined in saturation_xxxx
 
 Sortie& Flux_interfacial_base::printOn(Sortie& os) const
 {
