@@ -10,12 +10,12 @@ then
    do
       echo "Test solve PETSc with -mat_type $option"
       aij=aij && [ $option = sbaij ] && aij=""
-      echo $ECHO_OPTS "1,$ s?cli[ ]\+{ [ ]\+ }?$aij cli { -mat_type $option }?g\nw $option.data" | ed $cas.data 1>/dev/null 2>&1 || exit -1
+      echo $ECHO_OPTS "1,$ s?cli { }?$aij cli { -mat_type $option }?g\nw $option.data" | ed $cas.data 1>/dev/null 2>&1 || exit -1
       trust $option -ksp_view 1>$option.out_err 2>&1 || exit -1
       grep "seq$option$" $option.out_err 1>/dev/null || exit -1
       compare_lata $option.lml $cas.lml 1>/dev/null 2>&1 || exit -1
       # Parallele:
-      echo $ECHO_OPTS "1,$ s?cli[ ]\+{ [ ]\+ }?$aij cli { -mat_type $option }?g\nw PAR_$option.data" | ed PAR_$cas.data 1>/dev/null 2>&1 || exit -1
+      echo $ECHO_OPTS "1,$ s?cli { }?$aij cli { -mat_type $option }?g\nw PAR_$option.data" | ed PAR_$cas.data 1>/dev/null 2>&1 || exit -1
       trust PAR_$option 2 -ksp_view 1>PAR_$option.out_err 2>&1 || exit -1
    done
    grep "Max Ratio" $option"_petsc".TU 
