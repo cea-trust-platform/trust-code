@@ -27,7 +27,7 @@ Implemente_instanciable(Entree_fluide_V2_impose,"Frontiere_ouverte_V2_impose",Di
  */
 Sortie& Entree_fluide_V2_impose::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 /*! @brief Simple appel a: Cond_lim_base::readOn(Entree& )

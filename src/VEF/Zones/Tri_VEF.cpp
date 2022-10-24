@@ -25,7 +25,7 @@ Implemente_instanciable_sans_constructeur(Tri_VEF,"Tri_VEF",Elem_VEF_base);
 
 Sortie& Tri_VEF::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Tri_VEF::readOn(Entree& s )

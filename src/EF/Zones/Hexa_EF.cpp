@@ -22,7 +22,7 @@ Implemente_instanciable_sans_constructeur(Hexa_EF,"Hexa_EF",Elem_EF_base);
 
 Sortie& Hexa_EF::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Hexa_EF::readOn(Entree& s )

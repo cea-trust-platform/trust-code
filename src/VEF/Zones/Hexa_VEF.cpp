@@ -22,7 +22,7 @@ Implemente_instanciable_sans_constructeur(Hexa_VEF,"Hexa_VEF",Elem_VEF_base);
 
 Sortie& Hexa_VEF::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Hexa_VEF::readOn(Entree& s )

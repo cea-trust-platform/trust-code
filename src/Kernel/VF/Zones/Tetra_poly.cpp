@@ -26,7 +26,7 @@ Implemente_instanciable_sans_constructeur(Tetra_poly,"Tetra_poly",Elem_poly_base
 
 Sortie& Tetra_poly::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Tetra_poly::readOn(Entree& s )

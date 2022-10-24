@@ -27,7 +27,7 @@ Implemente_instanciable_sans_constructeur(Tetra_EF,"Tetra_EF",Elem_EF_base);
 
 Sortie& Tetra_EF::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Tetra_EF::readOn(Entree& s )

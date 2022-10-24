@@ -24,7 +24,7 @@ Implemente_instanciable(Analyse_Angle,"Analyse_Angle",Interprete);
 
 Sortie& Analyse_Angle::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Analyse_Angle::readOn(Entree& is )

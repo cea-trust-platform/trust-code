@@ -22,7 +22,7 @@ Implemente_instanciable_sans_constructeur(Quadri_VEF,"Quadri_VEF",Elem_VEF_base)
 
 Sortie& Quadri_VEF::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Quadri_VEF::readOn(Entree& s )

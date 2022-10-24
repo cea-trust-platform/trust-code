@@ -22,7 +22,7 @@ Implemente_instanciable_sans_constructeur(Quadri_EF,"Quadri_EF",Elem_EF_base);
 
 Sortie& Quadri_EF::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Quadri_EF::readOn(Entree& s )

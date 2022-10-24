@@ -27,7 +27,7 @@ Implemente_instanciable(Segment_poly,"Segment_poly",Elem_poly_base);
 
 Sortie& Segment_poly::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Segment_poly::readOn(Entree& s )

@@ -199,7 +199,7 @@ REF(Champ_Generique_base) Couplage_U::findOutputField(const Nom& name) const
 
 Sortie& Couplage_U::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Couplage_U::readOn(Entree& s )

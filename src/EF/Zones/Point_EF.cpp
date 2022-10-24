@@ -27,7 +27,7 @@ Implemente_instanciable(Point_EF,"Point_EF",Elem_EF_base);
 
 Sortie& Point_EF::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Point_EF::readOn(Entree& s )

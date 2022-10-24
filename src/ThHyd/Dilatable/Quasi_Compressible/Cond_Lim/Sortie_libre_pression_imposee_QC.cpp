@@ -30,7 +30,7 @@ Sortie_libre_pression_imposee_QC::Sortie_libre_pression_imposee_QC() : Pthn(1.e5
  */
 Sortie& Sortie_libre_pression_imposee_QC::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 /*! @brief Renvoie un booleen indiquant la compatibilite des conditions aux limites avec l'equation specifiee en parametre.

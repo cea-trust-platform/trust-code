@@ -32,7 +32,7 @@ Implemente_instanciable(Sortie_libre_Gradient_Pression_libre_VEF,"Frontiere_ouve
 
 Sortie& Sortie_libre_Gradient_Pression_libre_VEF::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 //// readOn

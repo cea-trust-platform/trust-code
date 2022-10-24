@@ -27,7 +27,7 @@ Implemente_instanciable_sans_constructeur(Tri_EF,"Tri_EF",Elem_EF_base);
 
 Sortie& Tri_EF::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Tri_EF::readOn(Entree& s )

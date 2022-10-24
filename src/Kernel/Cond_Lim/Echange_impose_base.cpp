@@ -32,7 +32,7 @@ Implemente_base_sans_constructeur(Echange_impose_base,"Echange_impose_base",Cond
  */
 Sortie& Echange_impose_base::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 /*! @brief Lecture d'une condition aux limite de type Echange_impose_base a partir d'un flot d'entree.

@@ -25,7 +25,7 @@ Implemente_instanciable(Testeur,"Testeur",Interprete);
 
 Sortie& Testeur::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Testeur::readOn(Entree& is )

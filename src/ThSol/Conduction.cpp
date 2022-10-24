@@ -35,7 +35,7 @@ Conduction::Conduction()
  */
 Sortie& Conduction::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 /*! @brief cf Equation_base::readOn(Entree&)

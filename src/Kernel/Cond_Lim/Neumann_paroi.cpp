@@ -24,7 +24,7 @@ Implemente_instanciable(Neumann_paroi,"Neumann_paroi",Neumann);
 
 Sortie& Neumann_paroi::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Neumann_paroi::readOn(Entree& s )

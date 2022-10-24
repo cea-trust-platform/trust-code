@@ -26,7 +26,7 @@ Implemente_instanciable(Sortie_libre_Text_H_ext,"Sortie_libre_Text_H_ext",Neuman
  */
 Sortie& Sortie_libre_Text_H_ext::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 

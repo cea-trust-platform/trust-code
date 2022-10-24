@@ -29,7 +29,7 @@ Implemente_instanciable(Scalaire_impose_paroi,"Scalaire_impose_paroi",Dirichlet)
  */
 Sortie& Scalaire_impose_paroi::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 /*! @brief Simple appel a: Dirichlet::readOn(Entree& )

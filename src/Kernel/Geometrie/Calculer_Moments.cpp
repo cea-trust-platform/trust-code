@@ -23,7 +23,7 @@ Implemente_instanciable(Calculer_Moments,"Calculer_Moments",Interprete_geometriq
 
 Sortie& Calculer_Moments::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Calculer_Moments::readOn(Entree& is )

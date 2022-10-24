@@ -23,7 +23,7 @@ Implemente_instanciable(Imprimer_flux,"Imprimer_flux",Interprete_geometrique_bas
 
 Sortie& Imprimer_flux::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Imprimer_flux::readOn(Entree& is )

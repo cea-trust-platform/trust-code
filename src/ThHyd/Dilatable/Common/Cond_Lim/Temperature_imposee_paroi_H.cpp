@@ -27,7 +27,7 @@ Implemente_instanciable(Temperature_imposee_paroi_H,"Paroi_temperature_imposee_H
  */
 Sortie& Temperature_imposee_paroi_H::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 /*! @brief Simple appel a: Dirichlet::readOn(Entree& )

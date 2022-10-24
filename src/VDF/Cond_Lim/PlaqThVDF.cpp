@@ -25,7 +25,7 @@ Implemente_instanciable(PlaqThVDF,"Plaque_Thermique_VDF",Echange_global_impose);
 
 Sortie& PlaqThVDF::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& PlaqThVDF::readOn(Entree& s )

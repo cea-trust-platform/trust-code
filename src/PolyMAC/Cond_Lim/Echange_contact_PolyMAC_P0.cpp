@@ -32,7 +32,7 @@ using namespace MEDCoupling;
 
 Sortie& Echange_contact_PolyMAC_P0::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Echange_contact_PolyMAC_P0::readOn(Entree& s )

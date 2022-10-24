@@ -26,7 +26,7 @@ Implemente_instanciable(Reordonner,"Reordonner",Interprete_geometrique_base);
  */
 Sortie& Reordonner::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 

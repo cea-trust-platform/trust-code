@@ -25,7 +25,7 @@ Implemente_base(Navier,"Navier",Cond_lim_base);
  */
 Sortie& Navier::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 /*! @brief Type le champ a la frontiere en "Champ_front_uniforme" Ne lit rien sur le flot passe en parametre

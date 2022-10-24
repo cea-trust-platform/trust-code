@@ -22,7 +22,7 @@ Implemente_instanciable_sans_constructeur(Quadri_poly,"Quadri_poly",Elem_poly_ba
 
 Sortie& Quadri_poly::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Quadri_poly::readOn(Entree& s )

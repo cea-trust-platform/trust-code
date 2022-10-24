@@ -30,7 +30,7 @@ Implemente_instanciable(Echange_contact_Correlation_VDF,"Paroi_Echange_contact_C
 
 Sortie& Echange_contact_Correlation_VDF::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Echange_contact_Correlation_VDF::readOn(Entree& is )

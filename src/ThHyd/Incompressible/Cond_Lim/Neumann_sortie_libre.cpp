@@ -28,7 +28,7 @@ Implemente_instanciable(Neumann_sortie_libre,"Frontiere_ouverte",Neumann_val_ext
  */
 Sortie& Neumann_sortie_libre::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 /*! @brief Type le_champ_front en "Champ_front_uniforme".

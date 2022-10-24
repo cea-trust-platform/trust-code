@@ -29,7 +29,7 @@ Implemente_instanciable_sans_constructeur_ni_destructeur(Solv_Cholesky,"Solv_Cho
 
 Sortie& Solv_Cholesky::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Solv_Cholesky::readOn(Entree& is )

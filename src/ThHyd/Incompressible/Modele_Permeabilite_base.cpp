@@ -25,7 +25,7 @@ Implemente_base(Modele_Permeabilite_base,"Modele_Permeabilite_base",Objet_U);
  */
 Sortie& Modele_Permeabilite_base::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 

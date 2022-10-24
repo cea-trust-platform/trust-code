@@ -27,7 +27,7 @@ Implemente_base(Neumann_loi_paroi,"Neumann_loi_paroi",Neumann_paroi);
 
 Sortie& Neumann_loi_paroi::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Neumann_loi_paroi::readOn(Entree& s )

@@ -28,7 +28,7 @@ Implemente_instanciable(Sortie_libre_Gradient_Pression_impose,"Frontiere_ouverte
 
 Sortie& Sortie_libre_Gradient_Pression_impose::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 //// readOn

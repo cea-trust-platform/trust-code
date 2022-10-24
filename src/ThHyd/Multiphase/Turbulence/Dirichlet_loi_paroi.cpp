@@ -19,7 +19,7 @@ Implemente_base(Dirichlet_loi_paroi,"Dirichlet_loi_paroi",Dirichlet);
 
 Sortie& Dirichlet_loi_paroi::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Dirichlet_loi_paroi::readOn(Entree& s )

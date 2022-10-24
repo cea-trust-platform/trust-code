@@ -20,7 +20,7 @@
 
 Implemente_instanciable(Champ_P1_isoP1Bulle,"Champ_P1_isoP1Bulle",Champ_Inc_base);
 
-Sortie& Champ_P1_isoP1Bulle::printOn(Sortie& s ) const { return s << que_suis_je() << "\n"; }
+Sortie& Champ_P1_isoP1Bulle::printOn(Sortie& s ) const { return s << que_suis_je() << finl; }
 
 Entree& Champ_P1_isoP1Bulle::readOn(Entree& is )
 {

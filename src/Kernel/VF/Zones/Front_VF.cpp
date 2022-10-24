@@ -22,7 +22,7 @@ Implemente_instanciable(Front_VF,"Front_VF",Frontiere_dis_base);
 
 Sortie& Front_VF::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 //// readOn

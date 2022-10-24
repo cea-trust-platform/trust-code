@@ -26,7 +26,7 @@ Implemente_instanciable(Echange_contact_Colburn_VDF,"Paroi_Echange_contact_Colbu
 
 Sortie& Echange_contact_Colburn_VDF::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Echange_contact_Colburn_VDF::readOn(Entree& is )

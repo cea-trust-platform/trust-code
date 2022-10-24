@@ -24,7 +24,7 @@ Implemente_instanciable(Imprimer_flux_sum,"Imprimer_flux_sum",Interprete_geometr
 
 Sortie& Imprimer_flux_sum::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Imprimer_flux_sum::readOn(Entree& is )

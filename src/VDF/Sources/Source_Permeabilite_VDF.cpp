@@ -17,7 +17,7 @@
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(ModPerm_Cte,"K_constant",Modele_Permeabilite_base);
-Sortie& ModPerm_Cte::printOn(Sortie& s ) const { return s << que_suis_je() << "\n"; }
+Sortie& ModPerm_Cte::printOn(Sortie& s ) const { return s << que_suis_je() << finl; }
 Entree& ModPerm_Cte::readOn(Entree& is )
 {
   Param param(que_suis_je());
@@ -27,7 +27,7 @@ Entree& ModPerm_Cte::readOn(Entree& is )
 }
 
 Implemente_instanciable_sans_constructeur(ModPerm_Carman_Kozeny,"Carman_Kozeny",Modele_Permeabilite_base);
-Sortie& ModPerm_Carman_Kozeny::printOn(Sortie& s ) const { return s << que_suis_je() << "\n"; }
+Sortie& ModPerm_Carman_Kozeny::printOn(Sortie& s ) const { return s << que_suis_je() << finl; }
 Entree& ModPerm_Carman_Kozeny::readOn(Entree& is )
 {
   Param param(que_suis_je());
@@ -37,9 +37,9 @@ Entree& ModPerm_Carman_Kozeny::readOn(Entree& is )
 }
 
 Implemente_instanciable_sans_constructeur(ModPerm_ErgunPourDarcy,"ErgunDarcy",ModPerm_Carman_Kozeny);
-Sortie& ModPerm_ErgunPourDarcy::printOn(Sortie& s) const { return s << que_suis_je() << "\n"; }
+Sortie& ModPerm_ErgunPourDarcy::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 Entree& ModPerm_ErgunPourDarcy::readOn(Entree& is) { return ModPerm_Carman_Kozeny::readOn(is); }
 
 Implemente_instanciable_sans_constructeur(ModPerm_ErgunPourForch,"ErgunForchheimer",ModPerm_Carman_Kozeny);
-Sortie& ModPerm_ErgunPourForch::printOn(Sortie& s ) const { return s << que_suis_je() << "\n"; }
+Sortie& ModPerm_ErgunPourForch::printOn(Sortie& s ) const { return s << que_suis_je() << finl; }
 Entree& ModPerm_ErgunPourForch::readOn(Entree& is) { return ModPerm_Carman_Kozeny::readOn(is); }

@@ -27,7 +27,7 @@ Implemente_instanciable(Moyenne_volumique,"Moyenne_volumique",Interprete);
 
 Sortie& Moyenne_volumique::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 /*! @brief lecture de la fonction de filtrage.

@@ -21,7 +21,7 @@
 Implemente_instanciable(Polyedre_poly,"Polyedre_poly",Elem_poly_base);
 
 
-Sortie& Polyedre_poly::printOn(Sortie& s ) const { return s << que_suis_je() << "\n"; }
+Sortie& Polyedre_poly::printOn(Sortie& s ) const { return s << que_suis_je() << finl; }
 
 Entree& Polyedre_poly::readOn(Entree& s ) { return s ; }
 

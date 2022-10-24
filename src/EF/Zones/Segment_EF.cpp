@@ -27,7 +27,7 @@ Implemente_instanciable(Segment_EF,"Segment_EF",Elem_EF_base);
 
 Sortie& Segment_EF::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Segment_EF::readOn(Entree& s )

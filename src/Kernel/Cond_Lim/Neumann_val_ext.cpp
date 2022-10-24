@@ -25,7 +25,7 @@ Implemente_base(Neumann_val_ext,"Neumann_val_ext",Neumann);
  */
 Sortie& Neumann_val_ext::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 /*! @brief Simple appel a: Cond_lim_base::readOn(Entree& )

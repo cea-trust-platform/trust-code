@@ -24,7 +24,7 @@ Implemente_instanciable(Lire_Ideas,"Lire_Ideas",Interprete_geometrique_base);
 
 Sortie& Lire_Ideas::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Lire_Ideas::readOn(Entree& is )

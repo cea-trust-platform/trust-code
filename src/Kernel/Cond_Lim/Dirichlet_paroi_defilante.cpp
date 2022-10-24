@@ -27,7 +27,7 @@ Implemente_instanciable(Dirichlet_paroi_defilante,"Paroi_defilante",Dirichlet);
  */
 Sortie& Dirichlet_paroi_defilante::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 /*! @brief Simple appel a: Cond_lim_base::readOn(Entree& )

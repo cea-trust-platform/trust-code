@@ -27,7 +27,7 @@ Implemente_instanciable(Entree_fluide_fraction_massique_imposee,"Frontiere_ouver
  */
 Sortie& Entree_fluide_fraction_massique_imposee::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 /*! @brief Simple appel a: Cond_lim_base::readOn(Entree& )

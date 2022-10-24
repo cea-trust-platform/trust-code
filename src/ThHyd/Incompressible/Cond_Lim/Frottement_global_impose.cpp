@@ -19,7 +19,7 @@ Implemente_base(Frottement_global_impose,"Frottement_global_impose",Frottement_i
 
 Sortie& Frottement_global_impose::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Frottement_global_impose::readOn(Entree& s )

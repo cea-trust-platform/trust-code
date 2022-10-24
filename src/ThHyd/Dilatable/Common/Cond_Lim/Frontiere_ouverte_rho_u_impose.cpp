@@ -23,7 +23,7 @@ Implemente_instanciable(Frontiere_ouverte_rho_u_impose,"Frontiere_ouverte_rho_u_
 
 Sortie& Frontiere_ouverte_rho_u_impose::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Frontiere_ouverte_rho_u_impose::readOn(Entree& s)

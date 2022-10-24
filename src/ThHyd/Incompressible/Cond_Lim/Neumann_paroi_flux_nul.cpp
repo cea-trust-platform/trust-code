@@ -27,7 +27,7 @@ Implemente_instanciable(Neumann_paroi_flux_nul,"Paroi",Neumann_paroi_adiabatique
  */
 Sortie& Neumann_paroi_flux_nul::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 /*! @brief Simple appel a: Neumann_homogene::readOn(Entree& )

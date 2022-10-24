@@ -27,7 +27,7 @@ Implemente_instanciable(Neumann_sortie_libre_Temp_H,"Sortie_libre_temperature_im
  */
 Sortie& Neumann_sortie_libre_Temp_H::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 /*! @brief Type le_champ_front en "Champ_front_uniforme".

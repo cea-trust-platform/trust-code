@@ -23,7 +23,7 @@ Implemente_instanciable_sans_constructeur(Tri_poly,"Tri_poly",Elem_poly_base);
 
 Sortie& Tri_poly::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Tri_poly::readOn(Entree& s )

@@ -21,7 +21,7 @@ Implemente_instanciable( Polygone_poly, "Polygone_poly", Elem_poly_base ) ;
 
 Sortie& Polygone_poly::printOn( Sortie& os ) const
 {
-  return os << que_suis_je() << "\n";
+  return os << que_suis_je() << finl;
 }
 
 Entree& Polygone_poly::readOn( Entree& is )

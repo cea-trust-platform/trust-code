@@ -25,7 +25,7 @@ Implemente_base(Dirichlet_homogene,"Dirichlet_homogene",Cond_lim_base);
  */
 Sortie& Dirichlet_homogene::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 

@@ -32,7 +32,7 @@ Sortie_libre_pression_imposee::Sortie_libre_pression_imposee():d_rho(-123.) {}
  */
 Sortie& Sortie_libre_pression_imposee::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 /*! @brief Renvoie un booleen indiquant la compatibilite des conditions aux limites avec l'equation specifiee en parametre.

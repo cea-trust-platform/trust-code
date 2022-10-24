@@ -29,7 +29,7 @@ Implemente_instanciable(Paroi_Knudsen_non_negligeable,"Paroi_Knudsen_non_neglige
  */
 Sortie& Paroi_Knudsen_non_negligeable::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 /*! @brief Lecture des champs vitesse_paroi et k

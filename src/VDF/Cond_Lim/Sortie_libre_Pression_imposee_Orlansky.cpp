@@ -28,7 +28,7 @@ Implemente_instanciable(Sortie_libre_Pression_imposee_Orlansky,"Frontiere_ouvert
 
 Sortie& Sortie_libre_Pression_imposee_Orlansky::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 //// readOn

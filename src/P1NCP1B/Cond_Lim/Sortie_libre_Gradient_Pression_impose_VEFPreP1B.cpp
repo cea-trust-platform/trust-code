@@ -32,7 +32,7 @@ Implemente_instanciable(Sortie_libre_Gradient_Pression_impose_VEFPreP1B,"Frontie
 
 Sortie& Sortie_libre_Gradient_Pression_impose_VEFPreP1B::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Sortie_libre_Gradient_Pression_impose_VEFPreP1B::readOn(Entree& s )

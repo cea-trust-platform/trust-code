@@ -26,7 +26,7 @@ Implemente_instanciable(Echange_interne_parfait,"Paroi_echange_interne_parfait",
  */
 Sortie& Echange_interne_parfait::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 /*! @brief Simple appel a Echange_impose_base::readOn(Entree&) Lit les specifications des conditions aux limites

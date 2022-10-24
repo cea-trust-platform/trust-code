@@ -19,7 +19,7 @@ Implemente_base(Frottement_impose_base,"Frottement_impose_base",Navier);
 
 Sortie& Frottement_impose_base::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Frottement_impose_base::readOn(Entree& s )

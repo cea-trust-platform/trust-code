@@ -33,7 +33,7 @@ Echange_global_impose::Echange_global_impose()
  */
 Sortie& Echange_global_impose::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 /*! @brief Simple appel a Echange_impose_base::readOn(Entree&) Lit les specifications des conditions aux limites

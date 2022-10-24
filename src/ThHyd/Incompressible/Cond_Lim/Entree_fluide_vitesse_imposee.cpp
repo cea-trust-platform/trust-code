@@ -27,7 +27,7 @@ Implemente_instanciable(Entree_fluide_vitesse_imposee,"Frontiere_ouverte_vitesse
  */
 Sortie& Entree_fluide_vitesse_imposee::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 /*! @brief Simple appel a: Cond_lim_base::readOn(Entree& )

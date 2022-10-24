@@ -27,7 +27,7 @@ Implemente_instanciable(Entree_fluide_T_h_imposee,"Frontiere_ouverte_T_h_imposee
  */
 Sortie& Entree_fluide_T_h_imposee::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 /*! @brief Type le_champ_front en "Champ_front_uniforme".

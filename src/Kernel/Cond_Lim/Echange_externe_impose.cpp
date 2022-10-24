@@ -26,7 +26,7 @@ Implemente_instanciable(Echange_externe_impose,"Paroi_echange_externe_impose",Ec
  */
 Sortie& Echange_externe_impose::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 /*! @brief Simple appel a Echange_impose_base::readOn(Entree&) Lit les specifications des conditions aux limites

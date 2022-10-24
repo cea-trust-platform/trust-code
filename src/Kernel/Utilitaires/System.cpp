@@ -22,7 +22,7 @@ Implemente_instanciable(System,"System",Interprete);
 
 Sortie& System::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& System::readOn(Entree& is )

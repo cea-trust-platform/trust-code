@@ -31,7 +31,7 @@ Implemente_instanciable(Echange_contact_VDF,"Paroi_Echange_contact_VDF",Echange_
 
 int meme_point2(const DoubleVect& a,const DoubleVect& b);
 
-Sortie& Echange_contact_VDF::printOn(Sortie& s ) const { return s << que_suis_je() << "\n"; }
+Sortie& Echange_contact_VDF::printOn(Sortie& s ) const { return s << que_suis_je() << finl; }
 
 Entree& Echange_contact_VDF::readOn(Entree& s)
 {

@@ -25,7 +25,7 @@ Implemente_base(Dirichlet_entree_fluide,"Dirichlet_entree_fluide",Dirichlet);
  */
 Sortie& Dirichlet_entree_fluide::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 /*! @brief Simple appel a: Cond_lim_base::readOn(Entree& )

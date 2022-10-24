@@ -26,7 +26,7 @@ Implemente_base(Dirichlet,"Dirichlet",Cond_lim_base);
  */
 Sortie& Dirichlet::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 

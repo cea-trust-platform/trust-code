@@ -28,7 +28,7 @@ Implemente_instanciable(Echange_contact_VDF_Plaque_Flux_Cte,"Paroi_Echange_conta
 
 Sortie& Echange_contact_VDF_Plaque_Flux_Cte::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Echange_contact_VDF_Plaque_Flux_Cte::readOn(Entree& is )

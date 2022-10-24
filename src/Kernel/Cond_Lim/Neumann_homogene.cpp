@@ -26,7 +26,7 @@ Implemente_base(Neumann_homogene,"Neumann_homogene",Cond_lim_base);
  */
 Sortie& Neumann_homogene::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 /*! @brief Type le champ a la frontiere en "Champ_front_uniforme" N'ecrit rien sur le flot passe en parametre

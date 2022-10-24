@@ -19,7 +19,7 @@ Implemente_base(Frottement_externe_impose,"Frottement_externe_impose",Frottement
 
 Sortie& Frottement_externe_impose::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Frottement_externe_impose::readOn(Entree& s )

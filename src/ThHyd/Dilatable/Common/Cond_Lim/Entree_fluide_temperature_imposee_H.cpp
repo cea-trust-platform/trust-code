@@ -27,7 +27,7 @@ Implemente_instanciable(Entree_fluide_temperature_imposee_H,"Entree_temperature_
  */
 Sortie& Entree_fluide_temperature_imposee_H::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 /*! @brief Simple appel a: Cond_lim_base::readOn(Entree& )

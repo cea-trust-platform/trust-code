@@ -27,7 +27,7 @@ Implemente_instanciable(Dirichlet_paroi_fixe,"Paroi_fixe",Dirichlet_homogene);
  */
 Sortie& Dirichlet_paroi_fixe::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 

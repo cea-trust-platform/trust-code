@@ -25,7 +25,7 @@ Implemente_instanciable_sans_constructeur(Tetra_VEF,"Tetra_VEF",Elem_VEF_base);
 
 Sortie& Tetra_VEF::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 Entree& Tetra_VEF::readOn(Entree& s )

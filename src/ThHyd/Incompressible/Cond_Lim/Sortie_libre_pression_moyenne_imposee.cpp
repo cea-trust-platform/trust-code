@@ -30,7 +30,7 @@ Sortie_libre_pression_moyenne_imposee::Sortie_libre_pression_moyenne_imposee():d
  */
 Sortie& Sortie_libre_pression_moyenne_imposee::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << "\n";
+  return s << que_suis_je() << finl;
 }
 
 /*! @brief Lit le champ de frontiere a partir d'un flot d'entree : 1 double.
