@@ -142,7 +142,7 @@ Read pb
 Solve pb
 End
 End
-Porosites pb sous_zone1
+Porosites sous_zone1
 {
     VOLUMIQUE 1.0
     SURFACIQUE 2 0.5 0.25

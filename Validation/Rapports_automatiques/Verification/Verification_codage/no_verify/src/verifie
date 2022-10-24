@@ -2,7 +2,7 @@
 
 mystudy=$1
 
-sed "s/Lire_MED\|lire_med/Read_MED_For_Testing_No_Verify_Option/" $1.data > tmp
+sed "s/Read_MED\|read_med/Read_MED_For_Testing_No_Verify_Option/" $1.data > tmp
 mv tmp $1.data
 
 trust $mystudy  1>/dev/null 2>&1

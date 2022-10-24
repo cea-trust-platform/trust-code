@@ -8,7 +8,7 @@ lire comm all_in_pre_run
 ecrire comm
 
 Domaine interf
-Lire_MED {
+Read_MED {
     domain interf
     file Ksing.med
 }

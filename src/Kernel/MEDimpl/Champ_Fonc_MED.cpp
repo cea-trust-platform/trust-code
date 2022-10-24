@@ -77,7 +77,7 @@ void Champ_Fonc_MED::readOn_old_syntax(Entree& is, Nom& chaine_lue, bool& nom_de
   Cerr << "!!!!!!! WARNING: you're using the old syntax for one of the keyword 'Champ_Fonc_MED*'" << finl;
   Cerr << "!!!!!!! It will be deprecated in version 1.9.3. Please update your dataset with the following syntax:" << finl;
   Cerr << "    Champ_Fonc_MED {" << finl;
-  Cerr << "        domaine dom" << finl;
+  Cerr << "        domain dom" << finl;
   Cerr << "        file the_file.med" << finl;
   Cerr << "        field field_name" << finl;
   Cerr << "        use_existing_domain" << finl;

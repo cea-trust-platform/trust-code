@@ -30,8 +30,9 @@
 Implemente_base_sans_constructeur(Milieu_base,"Milieu_base",Objet_U);
 // XD milieu_base objet_u milieu_base -1 Basic class for medium (physics properties of medium).
 // XD attr gravite field_base gravite 1 Gravity field (optional).
-// XD attr porosites_champ field_base porosites_champ 1 Porosity field (optional).
+// XD attr porosites_champ field_base porosites_champ 1 The porosity is given at each element and the porosity at each face, Psi(face), is calculated by the average of the porosities of the two neighbour elements Psi(elem1), Psi(elem2) : Psi(face)=2/(1/Psi(elem1)+1/Psi(elem2)). This keyword is optional.
 // XD attr diametre_hyd_champ field_base diametre_hyd_champ 1 Hydraulic diameter field (optional).
+// XD attr porosites porosites porosites 1 Porosities.
 
 Milieu_base::Milieu_base()
 {

@@ -46,7 +46,15 @@ Read pb
         diffusion { }
         sources { boussinesq_temperature { T0 5. } }
         initial_conditions {
-            vitesse Champ_Fonc_MEDFile use_existing_domain last_time decoup dom0.dec initial.med dom vitesse som 0
+            vitesse Champ_Fonc_MEDFile {
+                domain dom
+                file initial.med
+                field vitesse
+                decoup dom0.dec
+                use_existing_domain
+                last_time
+                loc som
+            }
         }
         boundary_conditions {
             Haut paroi_fixe
@@ -66,7 +74,17 @@ Read pb
             Gauche paroi_temperature_imposee Champ_Front_Uniforme 1 10.
             Droit  paroi_temperature_imposee Champ_Front_Uniforme 1 0.
         }
-        initial_conditions { Temperature Champ_Fonc_MEDFile use_existing_domain last_time single_file.med dom temperature som 0 }
+        initial_conditions {
+            Temperature Champ_Fonc_MEDFile {
+                domain dom
+                file single_file.med
+                field temperature
+                use_existing_domain
+                last_time
+                loc som
+            }
+
+        }
     }
     Post_processings
     {

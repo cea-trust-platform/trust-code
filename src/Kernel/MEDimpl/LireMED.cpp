@@ -107,7 +107,7 @@ void interp_old_syntax(Entree& is, int& isvefforce, int& convertAllToPoly, int& 
   Cerr << "!!!!!!! WARNING: you're using the old syntax for the keyword 'Lire_MED' / 'Read_MED'" << finl;
   Cerr << "!!!!!!! It will be deprecated in version 1.9.3. Please update your dataset with the following syntax:" << finl;
   Cerr << "    Read_MED {" << finl;
-  Cerr << "        domaine dom" << finl;
+  Cerr << "        domain dom" << finl;
   Cerr << "        file the_file.med" << finl;
   Cerr << "        [mesh my_mesh_in_file]" << finl;
   Cerr << "    }" << finl;
