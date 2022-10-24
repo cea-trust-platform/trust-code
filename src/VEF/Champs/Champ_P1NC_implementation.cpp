@@ -1323,7 +1323,7 @@ DoubleVect& Champ_P1NC_implementation::valeur_a_elem(const DoubleVect& position,
 {
   const Champ_base& cha=le_champ();
   const int N = cha.nb_comp(), D = Objet_U::dimension;
-  const Zone& zone_geom = zone();
+  const Zone& zone_geom = get_zone_geom();
   const Zone_VEF& zone_VEF = zone_vef();
   const DoubleTab& coord = zone_geom.domaine().coord_sommets();
   const IntTab& sommet_poly = zone_geom.les_elems();
@@ -1350,7 +1350,7 @@ valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const
 {
   //Cerr << "Champ_P1NC_implementation::valeur_a_elem_compo" << finl;
   const Champ_base& cha=le_champ();
-  const Zone& zone_geom = zone();
+  const Zone& zone_geom = get_zone_geom();
   const int D = Objet_U::dimension;
   const Zone_VEF& zone_VEF = zone_vef();
   const DoubleTab& coord = zone_geom.domaine().coord_sommets();
@@ -1387,7 +1387,7 @@ valeur_aux_elems(const DoubleTab& positions,
   const DoubleTab& ch = cha.valeurs();
 
   const Zone_VEF& zone_VEF = zone_vef();
-  const Zone& zone_geom = zone();
+  const Zone& zone_geom = get_zone_geom();
   const DoubleTab& coord = zone_geom.domaine().coord_sommets();
   const IntTab& sommet_poly = zone_geom.les_elems();
   if (val.nb_dim() > 2)
@@ -1440,7 +1440,7 @@ valeur_aux_elems_compo(const DoubleTab& positions,
   double xs,ys,zs;
   int face;
   const Zone_VEF& zone_VEF = zone_vef();
-  const Zone& zone_geom = zone();
+  const Zone& zone_geom = get_zone_geom();
   const DoubleTab& coord = zone_geom.domaine().coord_sommets();
   const IntTab& sommet_poly = zone_geom.les_elems();
   // Commenter en attendant de comprendre le dimensionnement de xp apres la sortie de version
@@ -1492,7 +1492,7 @@ valeur_aux_elems_smooth(const DoubleTab& positions,
   const int les_polys_size = les_polys.size(), nb_compo_=cha.nb_comp(), D = Objet_U::dimension;
   const DoubleTab&  ch_sommet= (ch_som());
   const Zone_VEF& zone_VEF = zone_vef();
-  const Zone& zone_geom = zone();
+  const Zone& zone_geom = get_zone_geom();
   const Domaine& dom=zone_VEF.zone().domaine();
   const DoubleTab& coord = zone_geom.domaine().coord_sommets();
   const IntTab& sommet_poly = zone_geom.les_elems();
@@ -1558,7 +1558,7 @@ valeur_aux_elems_compo_smooth(const DoubleTab& positions,
   const DoubleTab& ch_sommet= (ch_som());
   const Zone_VEF& zone_VEF = zone_vef();
   const Domaine& dom=zone_VEF.zone().domaine();
-  const Zone& zone_geom = zone();
+  const Zone& zone_geom = get_zone_geom();
   const DoubleTab& coord = zone_geom.domaine().coord_sommets();
   const IntTab& sommet_poly = zone_geom.les_elems();
   if (!filtrer_L2_deja_appele_)
@@ -1714,7 +1714,7 @@ double Champ_P1NC_implementation::valeur_a_sommet_compo(int num_som, int le_poly
   //Cerr << "Champ_P1NC_implementation::valeur_a_sommet_compo" << finl;
   int face=-1;
   const IntTab& elem_faces = zone_vef().elem_faces();
-  const IntTab& sommet_poly = zone().les_elems();
+  const IntTab& sommet_poly = get_zone_geom().les_elems();
   const DoubleTab& ch = le_champ().valeurs();
   double val=0;
   if (le_poly != -1)
@@ -1758,7 +1758,7 @@ valeur_aux_sommets_compo(const Domaine& dom,
                          DoubleVect& champ_som,
                          int ncomp) const
 {
-  const Zone_dis_base& zone_dis = zone_dis_base_impl();
+  const Zone_dis_base& zone_dis = get_zone_dis();
   const Zone& mazone = zone_dis.zone();
   const DoubleTab& ch = le_champ().valeurs();
 

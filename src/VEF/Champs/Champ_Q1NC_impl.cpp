@@ -141,7 +141,7 @@ double Champ_Q1NC_impl::valeur_a_sommet_compo(int num_som, int le_poly, int ncom
   // ne sont pas triviales au sommet des hexas... On repasse
   // par calcule_valeur_a_elem_compo
   double xs, ys, zs = 0;
-  const Domaine& dom = zone().domaine();
+  const Domaine& dom = get_zone_geom().domaine();
   xs = dom.coord(num_som, 0);
   ys = dom.coord(num_som, 1);
   if (Objet_U::dimension == 3)
@@ -241,7 +241,7 @@ DoubleVect& Champ_Q1NC_impl::valeur_aux_elems_compo(const DoubleTab& positions, 
 DoubleTab& Champ_Q1NC_impl::valeur_aux_sommets(const Domaine& dom, DoubleTab& ch_som) const
 {
   // Cerr << "Champ_Q1NC_impl::valeur_aux_sommets " << finl;
-  const Zone_dis_base& zone_dis = zone_dis_base_impl();
+  const Zone_dis_base& zone_dis = get_zone_dis();
   const Zone& ma_zone = zone_dis.zone();
   int nb_elem_tot = ma_zone.nb_elem_tot(), nb_som = ma_zone.nb_som(), nb_som_elem = ma_zone.nb_som_elem();
   const Champ_base& cha = le_champ();
@@ -280,7 +280,7 @@ DoubleTab& Champ_Q1NC_impl::valeur_aux_sommets(const Domaine& dom, DoubleTab& ch
 DoubleVect& Champ_Q1NC_impl::valeur_aux_sommets_compo(const Domaine& dom, DoubleVect& ch_som, int ncomp) const
 {
   // Cerr << "Champ_Q1NC_impl::valeur_aux_sommets_compo " << finl;
-  const Zone_dis_base& zone_dis = zone_dis_base_impl();
+  const Zone_dis_base& zone_dis = get_zone_dis();
   const Zone& ma_zone = zone_dis.zone();
   int nb_elem_tot = ma_zone.nb_elem_tot(), nb_som = ma_zone.nb_som(), nb_som_elem = ma_zone.nb_som_elem();
   IntVect compteur(nb_som);
@@ -347,7 +347,7 @@ void Champ_Q1NC_impl::transforme_coord2D()
 {
   //  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
   const Zone_VEF& zone_VEF = zone_vef();
-  const Zone& zone_geom = zone();
+  const Zone& zone_geom = get_zone_geom();
   const int nb_elem_tot = zone_VEF.nb_elem_tot();
   const IntTab& sommet_face = zone_VEF.face_sommets();
   const IntTab& elem_faces = zone_VEF.elem_faces();
@@ -414,7 +414,7 @@ void Champ_Q1NC_impl::transforme_coord2D()
 void Champ_Q1NC_impl::transforme_coord3D()
 {
   const Zone_VEF& zone_VEF = zone_vef();
-  const Zone& zone_geom = zone();
+  const Zone& zone_geom = get_zone_geom();
   const int nb_elem_tot = zone_VEF.nb_elem_tot();
   const IntTab& sommet_face = zone_VEF.face_sommets();
   const IntTab& elem_faces = zone_VEF.elem_faces();

@@ -14,8 +14,8 @@
 *****************************************************************************/
 
 #include <Champ_implementation_base.h>
-#include <Champ_Inc_base.h>
 #include <Champ_Fonc_base.h>
+#include <Champ_Inc_base.h>
 #include <Zone_VF.h>
 #include <Domaine.h>
 
@@ -55,7 +55,7 @@ DoubleVect& Champ_implementation_base::valeur_aux_sommets_compo(const Domaine& d
   return result;
 }
 
-const Zone_VF& Champ_implementation_base::get_zone_dis(void) const
+const Zone_VF& Champ_implementation_base::get_zone_dis() const
 {
   const Champ_base& ch_base = le_champ();
 
@@ -71,13 +71,13 @@ const Zone_VF& Champ_implementation_base::get_zone_dis(void) const
     }
   else
     {
-      Cerr << le_champ().que_suis_je() << " do not know refer a Zone_VF" << finl;
+      Cerr << le_champ().que_suis_je() << " do not know/refer to a Zone_VF !" << finl;
       Process::exit();
       return get_zone_dis();
     }
 }
 
-const Zone& Champ_implementation_base::get_zone_geom(void) const
+const Zone& Champ_implementation_base::get_zone_geom() const
 {
   return get_zone_dis().zone();
 }

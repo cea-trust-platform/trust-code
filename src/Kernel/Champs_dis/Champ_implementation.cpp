@@ -14,32 +14,33 @@
 *****************************************************************************/
 
 #include <Champ_implementation.h>
-#include <Champ_Inc_base.h>
 #include <Champ_Fonc_base.h>
-#include <Zone_dis.h>
+#include <Champ_Inc_base.h>
+#include <Zone_VF.h>
 
-const Zone& Champ_implementation::zone() const
+const Zone_VF& Champ_implementation::get_zone_dis() const
 {
-  return zone_dis_base_impl().zone();
-}
+  const Champ_base& ch_base = le_champ();
 
-const Zone_dis_base& Champ_implementation::zone_dis_base_impl() const
-{
-  const Champ_base& chbase = le_champ();
-  if (sub_type(Champ_Inc_base, chbase))
+  if (sub_type(Champ_Inc_base, ch_base))
     {
-      const Champ_Inc_base& chi = ref_cast(Champ_Inc_base, chbase);
-      return chi.zone_dis_base();
+      const Champ_Inc_base& ch_inc = ref_cast(Champ_Inc_base, ch_base);
+      return ref_cast(Zone_VF, ch_inc.zone_dis_base());
     }
-  else if (sub_type(Champ_Fonc_base, chbase))
+  else if (sub_type(Champ_Fonc_base, ch_base))
     {
-      const Champ_Fonc_base& chf = ref_cast(Champ_Fonc_base, chbase);
-      return chf.zone_dis_base();
+      const Champ_Fonc_base& ch_fonc = ref_cast(Champ_Fonc_base, ch_base);
+      return ref_cast(Zone_VF, ch_fonc.zone_dis_base());
     }
   else
     {
-      Cerr << le_champ().que_suis_je() << " do not know refer a Zone_dis_base" << finl;
+      Cerr << le_champ().que_suis_je() << " do not know/refer to a Zone_VF !" << finl;
       Process::exit();
-      return zone_dis_base_impl();
+      return get_zone_dis();
     }
+}
+
+const Zone& Champ_implementation::get_zone_geom() const
+{
+  return get_zone_dis().zone();
 }

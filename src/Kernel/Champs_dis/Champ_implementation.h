@@ -18,15 +18,15 @@
 
 #include <TRUSTTabs_forward.h>
 
-class Zone_dis_base;
 class Champ_base;
+class Zone_VF;
 class Domaine;
 class Zone;
 
 class Champ_implementation
 {
 public:
-  inline virtual ~Champ_implementation() { }
+  virtual ~Champ_implementation() { }
   virtual DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const = 0;
   virtual double valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const = 0;
   virtual DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const = 0;
@@ -37,10 +37,11 @@ public:
   virtual int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const = 0;
 
 protected:
-  const Zone& zone() const;
-  virtual const Zone_dis_base& zone_dis_base_impl() const;
-  virtual const Champ_base& le_champ() const = 0;
+  const Zone_VF& get_zone_dis() const;
+  const Zone& get_zone_geom() const;
+
   virtual Champ_base& le_champ() = 0;
+  virtual const Champ_base& le_champ() const = 0;
 };
 
 #endif /* Champ_implementation_included */

@@ -45,7 +45,7 @@ DoubleTab& Champ_Face_VDF_implementation::valeur_aux_elems(const DoubleTab& posi
   int le_poly;
 
   const DoubleTab& ch = cha.valeurs();
-  const Domaine& dom=zone().domaine();
+  const Domaine& dom=get_zone_geom().domaine();
 
   if (nb_compo_ == 1)
     {
@@ -124,7 +124,7 @@ DoubleVect& Champ_Face_VDF_implementation::valeur_aux_elems_compo(const DoubleTa
   const IntTab& face_sommets = zone_VDF.face_sommets();
   const IntTab& elem_faces = zone_VDF.elem_faces();
   const DoubleTab& ch = cha.valeurs();
-  const Domaine& dom=zone().domaine();
+  const Domaine& dom=get_zone_geom().domaine();
 
   if (nb_compo_ == 1)
     {
@@ -158,7 +158,7 @@ DoubleVect& Champ_Face_VDF_implementation::valeur_aux_elems_compo(const DoubleTa
 DoubleVect& Champ_Face_VDF_implementation::valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const
 {
   const Zone_VDF& zone_VDF = zone_vdf();
-  const Zone& zone_geom = zone();
+  const Zone& zone_geom = get_zone_geom();
   const IntTab& face_sommets = zone_VDF.face_sommets();
   const IntTab& elem_faces = zone_VDF.elem_faces();
   const Champ_base& cha=le_champ();
@@ -202,7 +202,7 @@ DoubleVect& Champ_Face_VDF_implementation::valeur_a_elem(const DoubleVect& posit
 double Champ_Face_VDF_implementation::valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const
 {
   const Zone_VDF& zone_VDF = zone_vdf();
-  const Zone& zone_geom = zone();
+  const Zone& zone_geom = get_zone_geom();
   const IntTab& face_sommets = zone_VDF.face_sommets();
   const IntTab& elem_faces = zone_VDF.elem_faces();
   const Champ_base& cha = le_champ();
@@ -341,7 +341,7 @@ DoubleVect& Champ_Face_VDF_implementation::valeur_aux_sommets_compo(const Domain
 
 DoubleTab& Champ_Face_VDF_implementation::remplir_coord_noeuds(DoubleTab& positions) const
 {
-  const Zone_VDF& la_zone_vdf = ref_cast(Zone_VDF,zone_dis_base_impl());
+  const Zone_VDF& la_zone_vdf = ref_cast(Zone_VDF,get_zone_dis());
   const DoubleTab& xv = la_zone_vdf.xv();
   int nb_fac = la_zone_vdf.nb_faces_tot();
   if ( (xv.dimension(0) == nb_fac ) && (xv.dimension(1) == Objet_U::dimension) )
