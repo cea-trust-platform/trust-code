@@ -111,6 +111,7 @@ Associate pb sch
 Associate pb fluide
 Associate pb constituant
 Discretize pb dis
+
 # Define the front tracking problem #
 Read pb
 \{
@@ -274,33 +275,21 @@ Read pb
         # Another keywords to post process FT results #
         Postraitement_ft_lata liquid_gas
         \{
-            {\bf{dt_post 0.01 }}
-            nom_fichier liquid_gas
-            format binaire
-            print
-            fields sommets \{ vitesse \}
-            fields elements
-            \{
-                distance_interface_elem_interf
-                distance_interface_elem_body
-                indicatrice_interf
-                pression
-                concentration
-                vitesse
-            \}
+            fichier liquid_gas
+            format lata
+            
             # Post process the moving grid of the interface #
             interfaces interf \{
-                champs sommets \{ courbure vitesse \}
-                champs elements \{ pe \}
+                courbure som
+                vitesse som
+                pe elem
             \}
         \}
         Postraitement_ft_lata body
         \{
-            {\bf{dt_post 0.01 }}
             nom_fichier body
-            format binaire
-            print
-            interfaces body \{ champs sommets \{ courbure \} \}
+            format lata
+            interfaces body \{ courbure som \}
         \}
     \}
 \}

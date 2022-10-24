@@ -41,19 +41,17 @@ Read mon_schema
     seuil_statio 1.e-8
     {\bf{diffusion_implicite 1}}
 \}
-# Je definis un milieu #
-Fluide_Incompressible milieu
-Read milieu
-\{
-    mu  Champ_Uniforme 1 0.01
-    rho Champ_Uniforme 1 2.
-\}
 Associate pb dom
 Associate pb mon_schema
-Associate pb milieu
 Discretize pb dis
 Read pb
 \{
+    # Je definis un milieu #
+    Fluide_Incompressible 
+    \{
+        mu  Champ_Uniforme 1 0.01
+        rho Champ_Uniforme 1 2.
+    \}
     Navier_Stokes_standard
     \{
         solveur_pression GCP 

@@ -36,20 +36,18 @@ Read mon_schema
     # By default facsec equals to 1 # 
     # facsec 0.5 # 
 \} 
-# I define a medium # 
-Fluide_Incompressible milieu 
-Read milieu 
-\{ 
-    mu Champ_Uniforme 1 3.7e-05 
-    rho Champ_Uniforme 1 2 
-\} 
 # Association between the different objects # 
 Associate pb dom 
-Associate pb mon_schema 
-Associate pb milieu 
+Associate pb mon_schema
 Discretize pb ma_discretisation 
 Read pb 
 \{ 
+# I define a medium # 
+    Fluide_Incompressible
+    \{ 
+        mu Champ_Uniforme 1 3.7e-05 
+        rho Champ_Uniforme 1 2 
+    \} 
     Navier_Stokes_standard 
     \{ 
         # Pressure matrix solved with # 

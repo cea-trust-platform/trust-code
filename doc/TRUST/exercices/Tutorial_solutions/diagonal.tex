@@ -66,25 +66,20 @@ Read sch
     dt_sauv 100
     seuil_statio 1.e-8
 \}
-Fluide_Incompressible fluide
-Read fluide
-\{
-    {\bf{mu Champ_Uniforme 1 1.e-03}}
-    {\bf{rho Champ_Uniforme 1 1000}}
-    beta_co Champ_Uniforme 1 0.
-\}
-Constituant c1
-{\bf{Read c1 \{ coefficient_diffusion Champ_Uniforme 1 1.e-09 \} }}
-Champ_Uniforme gravite
-{\bf{Read gravite 2 0 -9.81}}
-Associate fluide gravite
 Associate pb dom
 Associate pb sch
-Associate pb fluide
-Associate pb c1
 Discretize pb dis
 Read pb
 \{
+    Fluide_Incompressible
+    \{
+        {\bf{gravite Champ_Uniforme 2 0 -9.81}}
+        {\bf{mu Champ_Uniforme 1 1.e-03}}
+        {\bf{rho Champ_Uniforme 1 1000}}
+        beta_co Champ_Uniforme 1 0.
+    \}
+    Constituant {\bf{\{ coefficient_diffusion Champ_Uniforme 1 1.e-09 \} }}
+
     Navier_Stokes_standard
     \{
         solveur_pression GCP \{ 
