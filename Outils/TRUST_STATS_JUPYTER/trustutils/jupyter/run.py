@@ -185,7 +185,7 @@ class TRUSTCase(object):
         --------
 
         subs_dict: dict 
-            Text we want to substitute.
+            Text we want to substitute with python Template formalism (character identified with $ in datafile)
         """
         path = self._fullPath()
         with open(path, "r") as file: filedata = Template(file.read())
@@ -708,6 +708,8 @@ def addCaseFromTemplate(datasetName, directory, d, nbProcs=1):
         directory where the case is stored (relative to build/)
     datasetName: str 
         Name of the case we want to run.
+    d: dictionary
+        substitution of term (key identified with $ in datafile) by value in new data file
     nbProcs : int 
         Number of processors
 
@@ -767,7 +769,7 @@ def addCase(directoryOrTRUSTCase, datasetName="", nbProcs=1):
         defaultSuite_.addCase(tc)
         return tc
 
-def _initCaseSuite():
+def initCaseSuite():
     """ Instantiate a default suite of cases """
     global defaultSuite_
     if defaultSuite_ is None:

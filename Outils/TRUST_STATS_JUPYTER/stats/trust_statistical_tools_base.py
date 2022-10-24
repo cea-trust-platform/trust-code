@@ -1009,7 +1009,8 @@ class StatisticalPostProcessing:
             )
         else:
             plt.savefig(save_path + name + "." + format, format=format, bbox_inches="tight")
-        plt.close()
+        #plt.show()
+        #plt.close()
         return ()
 
     def _computeNorm(self, X, Y, Z):
@@ -1195,8 +1196,8 @@ class StatisticalPostProcessing:
         func = lambda x: a * x ** 2 + b * x + c
         sol = optimize.root(func, 0, method="hybr")
         # print(sol.x) # for debug
-        StatisticalPostProcessing.COUNT_PARAB += 1
-        f = open("{0}_Roots_{1}.txt".format(sys.argv[0], StatisticalPostProcessing.COUNT_PARAB), "a")
+        StatisticalPostProcessing._COUNT_PARAB += 1
+        f = open("Roots_{0}.txt".format(StatisticalPostProcessing._COUNT_PARAB), "a")
         f.write("{0}\n".format(round(sol.x[0], digit)))
         f.close()
         x = np.linspace(0, max(aaa), 1000)

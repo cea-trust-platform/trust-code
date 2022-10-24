@@ -10,10 +10,14 @@ class TrustFile(object):
 
     def __init__(self, filePath, refFilePath):
         """
-        @param filePath Trust file to parse
-        @param refFilePath file serving as a reference to know if the main file has been reset. This
-        is typically the stop file. Can be None for test purposes (in this case only size of the main file
-        will be inspected).
+        Parameters
+        ----------
+        filePath: str 
+            Trust file to parse
+        refFilePath: str
+            file serving as a reference to know if the main file has been reset. This
+            is typically the stop file. Can be None for test purposes (in this case only size of the main file
+            will be inspected).
         """
         self._filePath = filePath
         self._refPath = refFilePath
@@ -30,7 +34,7 @@ class TrustFile(object):
         self._data = ""  # last chunk of read data
         self._ncols = 0  # numb of cols in the data
 
-    def isLogY(self):
+    def _isLogY(self):
         return False
 
     def getXLabel(self):
@@ -38,7 +42,9 @@ class TrustFile(object):
 
     def getEntries(self):
         """
-        @return a list of file entries (i.e. what can be ploted from the file)
+        Returns
+        --------
+        a list of file entries (i.e. what can be ploted from the file)
         """
         status = self._queryAndUpdateStatus(update=False)
         if status == "invalid":
@@ -51,7 +57,16 @@ class TrustFile(object):
     def getValues(self, entryName):
         """
         Get all current valid values from the file.
-        @return two np arrays (x and y)
+        
+        Parameters
+        ---------
+        
+        entryName: str
+            Name of the variable
+
+        Returns
+        ------
+            two np.arrays (x and y)
         """
         fileReady = self._getValuesInternal()
         return self._extractValues(fileReady, entryName)
@@ -59,9 +74,17 @@ class TrustFile(object):
     def getNewValues(self, entryName):
         """
         Return values to be appended to the last retrieved ones to get the full set of data.
+        
+        Parameters
+        ---------
+        
+        entryName: str
+            Name of the variable
+
+        Returns
+        ------
+        two (potentially void) np arrays (x and y)
         Note: after a file reset, it will return None, None on an entryName as long as getValues() hasn't been called once.
-        @return two (potentially void) np arrays (x and y)
-        @return None, None if the file has been reset or has become invalid (getValues() must be invoked again on this entry)
         """
         fileReady = self._getValuesInternal()
         return self._extractNewValues(fileReady, entryName)
@@ -248,6 +271,7 @@ class TrustFile(object):
 
 
 class SonFile(TrustFile):
+    ".son file resulting from a probes"
     def __init__(self, filePath, refPath):
         TrustFile.__init__(self, filePath, refPath)
         self._reset()
@@ -352,6 +376,7 @@ class SonFile(TrustFile):
         return self._npoints
 
 class SonPOINTFile(SonFile):
+    ".son files resulting of a Point probes"
     def __init__(self, filePath, refPath):
         SonFile.__init__(self, filePath, refPath)
 
@@ -639,7 +664,7 @@ class DTEVFile(TrustFile):
     def __init__(self, filePath, refPath):
         TrustFile.__init__(self, filePath, refPath)
 
-    def isLogY(self):
+    def _isLogY(self):
         return True
 
     def getXLabel(self):

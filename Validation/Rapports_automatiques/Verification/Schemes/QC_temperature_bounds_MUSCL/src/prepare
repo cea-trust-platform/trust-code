@@ -1,7 +1,0 @@
-#!/bin/bash
-
-mkdir MUSCL
-mkdir MUSCL_NEW
-
-sed 's/_CONV_/MUSCL/g' _Cas.data > MUSCL/Cas.data
-sed 's/_CONV_/MUSCL_NEW/g' _Cas.data > MUSCL_NEW/Cas.data

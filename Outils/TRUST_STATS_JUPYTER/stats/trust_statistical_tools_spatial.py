@@ -30,10 +30,10 @@ class SpatialPostProcessing(StatisticalPostProcessing):
 
     """
 
-    temp_folder = "CurveFiles/"
-    L_NAME = []
 
     def __init__(self):
+        self.temp_folder = "CurveFiles/"
+        self.L_NAME = []
         pass
 
     def __del__(self):

@@ -164,8 +164,8 @@ Read pb
 
     }
 
-    sauvegarde binaire sim_1.sauv
-    /* resume_last_time binaire ../sim_1/sim_1.sauv */
+    sauvegarde binaire $CASE.sauv
+    /* resume_last_time binaire ../$CASE/$CASE.sauv */
 
 }
 

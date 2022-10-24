@@ -76,7 +76,7 @@ lire pb
             seuil_diffusion_implicite 1e-10
         }
         solveur_pression	petsc Cholesky { impr }
-        convection		{ _CONV_ }
+        convection		{ $CONV }
         diffusion		{ }
         conditions_initiales	{ vitesse champ_uniforme 3 0 0 0 }
         conditions_limites	{
@@ -95,7 +95,7 @@ lire pb
             preconditionnement_diag 1
             seuil_diffusion_implicite 1e-10
         }
-        convection		{ _CONV_ }
+        convection		{ $CONV }
         diffusion		{ }
         conditions_initiales	{ temperature champ_fonc_xyz dom 1 (x<0)*(1)+(x>0)*(0) }
         conditions_limites	{
