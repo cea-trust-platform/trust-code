@@ -34,6 +34,7 @@ Sortie& Echange_contact_Correlation_VEF::printOn(Sortie& s ) const { return s <<
 Entree& Echange_contact_Correlation_VEF::readOn(Entree& is )
 {
   if (app_domains.size() == 0) app_domains = { Motcle("Thermique") };
+  if (supp_discs.size() == 0) supp_discs = { Nom("VEF"), Nom("EF"), Nom("EF_axi"), Nom("VEF_P1_P1"), Nom("VEFPreP1B"), Nom("PolyMAC"), Nom("PolyMAC_P0")   };
 
   Param param(que_suis_je());
   Reprise_temperature=0;

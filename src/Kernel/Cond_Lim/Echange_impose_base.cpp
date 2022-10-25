@@ -14,7 +14,6 @@
 *****************************************************************************/
 
 #include <Echange_impose_base.h>
-#include <Discretisation_base.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
 #include <Milieu_base.h>
@@ -26,6 +25,7 @@ Sortie& Echange_impose_base::printOn(Sortie& s) const { return s << que_suis_je(
 Entree& Echange_impose_base::readOn(Entree& s)
 {
   if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("Neutronique"), Motcle("fraction_massique"), Motcle("indetermine") };
+  if (supp_discs.size() == 0) supp_discs = { Nom("VDF"), Nom("VEFPreP1B"), Nom("PolyMAC"), Nom("PolyMAC_P0") };
 
   Motcle motlu;
   Motcles les_motcles(2);
@@ -158,18 +158,6 @@ int Echange_impose_base::initialiser(double temps)
   if (h_imp_.non_nul())
     h_imp_.valeur().initialiser(temps, zone_Cl_dis().equation().inconnue()), h_imp_.mettre_a_jour(temps);
   return Cond_lim_base::initialiser(temps);
-}
-
-int Echange_impose_base::compatible_avec_discr(const Discretisation_base& discr) const
-{
-  if ((discr.que_suis_je() == "VDF") || (discr.que_suis_je() == "VEFPreP1B")
-      || (discr.que_suis_je() == "VEFPreP1B") || (discr.que_suis_je() == "PolyMAC") || (discr.que_suis_je() == "PolyMAC_P0"))
-    return 1;
-  else
-    {
-      err_pas_compatible(discr);
-      return 0;
-    }
 }
 
 // ajout de methode pour ne pas operer directement su le champ_front

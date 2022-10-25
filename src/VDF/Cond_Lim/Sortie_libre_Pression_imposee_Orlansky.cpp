@@ -14,7 +14,6 @@
 *****************************************************************************/
 
 #include <Sortie_libre_Pression_imposee_Orlansky.h>
-#include <Discretisation_base.h>
 #include <Navier_Stokes_std.h>
 #include <Champ_Face_VDF.h>
 #include <Champ_P0_VDF.h>
@@ -28,6 +27,7 @@ Sortie& Sortie_libre_Pression_imposee_Orlansky::printOn(Sortie& s) const { retur
 Entree& Sortie_libre_Pression_imposee_Orlansky::readOn(Entree& s)
 {
   if (app_domains.size() == 0) app_domains = { Motcle("Hydraulique"), Motcle("indetermine") };
+  if (supp_discs.size() == 0) supp_discs = { Nom("VDF") };
 
   le_champ_ext.typer("Champ_front_uniforme");
   le_champ_ext.valeurs().resize(1, dimension);
@@ -212,15 +212,4 @@ double Sortie_libre_Pression_imposee_Orlansky::flux_impose(int, int) const
   Cerr << "Sortie_libre_Pression_imposee_Orlansky::flux_impose(int  , int )" << finl;
   Cerr << "La pression est un scalaire." << finl;
   return 0.;
-}
-
-int Sortie_libre_Pression_imposee_Orlansky::compatible_avec_discr(const Discretisation_base& discr) const
-{
-  if (discr.que_suis_je() == "VDF")
-    return 1;
-  else
-    {
-      err_pas_compatible(discr);
-      return 0;
-    }
 }

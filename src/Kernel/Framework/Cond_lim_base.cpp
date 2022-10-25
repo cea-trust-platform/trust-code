@@ -164,15 +164,20 @@ void Cond_lim_base::associer_zone_cl_dis_base(const Zone_Cl_dis_base& zcl)
 
 /*! @brief Renvoie 1 si la condition aux limites est compatible avec la discretisation passee en parametre.
  *
- *     NE FAIT RIEN
- *     A Surcharger dans les classes derivees
- *
  * @param (Discretisation_base&) la discretisation avec laquelle on veut verifier la compatibilite
- * @return (int) renvoie toujours 1
  */
-int Cond_lim_base::compatible_avec_discr(const Discretisation_base&) const
+int Cond_lim_base::compatible_avec_discr(const Discretisation_base& discr) const
 {
-  return 1;
+  if (supp_discs.size() == 0) return 1;
+  else
+    {
+      Nom type_discr = discr.que_suis_je();
+      for (const auto &itr : supp_discs)
+        if (itr == type_discr) return 1;
+
+      err_pas_compatible(discr);
+      return 0;
+    }
 }
 
 /*! @brief Cette methode est appelee quand la condition aux limites n'est pas compatible avec l'equation sur laquelle on essaye

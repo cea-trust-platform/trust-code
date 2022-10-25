@@ -22,6 +22,7 @@
 #include <Motcle.h>
 #include <map>
 
+class Milieu_base;
 class Front_VF;
 class Zone_VDF;
 class Faces;

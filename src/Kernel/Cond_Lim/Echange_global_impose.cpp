@@ -48,12 +48,6 @@ Entree& Echange_global_impose::readOn(Entree& s )
   return s ;
 }
 
-// Compatible with all discretisations
-int Echange_global_impose::compatible_avec_discr(const Discretisation_base& discr) const
-{
-  return 1;
-}
-
 void Echange_global_impose::changer_temps_futur(double temps, int i)
 {
   Echange_impose_base::changer_temps_futur(temps,i);

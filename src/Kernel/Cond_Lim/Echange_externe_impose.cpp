@@ -22,11 +22,6 @@ Sortie& Echange_externe_impose::printOn(Sortie& s) const { return s << que_suis_
 
 Entree& Echange_externe_impose::readOn(Entree& s) { return Echange_impose_base::readOn(s); }
 
-int Echange_externe_impose::compatible_avec_discr(const Discretisation_base& discr) const
-{
-  return Echange_impose_base::compatible_avec_discr(discr);
-}
-
 void Echange_externe_impose::verifie_ch_init_nb_comp() const
 {
   if (le_champ_front.non_nul())

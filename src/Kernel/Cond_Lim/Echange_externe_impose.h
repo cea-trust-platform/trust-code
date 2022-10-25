@@ -45,7 +45,6 @@
 class Echange_externe_impose: public Echange_impose_base
 {
   Declare_instanciable(Echange_externe_impose);
-  int compatible_avec_discr(const Discretisation_base&) const override;
   void verifie_ch_init_nb_comp() const override;
 };
 

@@ -19,6 +19,7 @@
 #include <Echange_global_impose.h>
 #include <Parser_U.h>
 
+class Milieu_base;
 class Front_VF;
 class Zone_VDF;
 class Faces;

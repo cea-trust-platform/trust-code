@@ -40,7 +40,6 @@ public:
   double flux_impose(int) const override;
   double flux_impose(int, int) const override;
   virtual double grad_P_imp(int) const;
-  int compatible_avec_discr(const Discretisation_base&) const override;
 
 protected:
   REF(Zone_VDF) la_zone_VDF;

@@ -65,8 +65,6 @@ public:
   inline virtual Champ_front& h_imp();
   inline virtual const Champ_front& h_imp() const;
 
-  int compatible_avec_discr(const Discretisation_base& ) const override;
-
   // Utilise dans les CAL de calcul des flux pour les lois de paroi
   virtual void liste_faces_loi_paroi(IntTab&) {};
 

@@ -15,7 +15,6 @@
 
 #include <Sortie_libre_Gradient_Pression_impose_VEFPreP1B.h>
 #include <Champ_P1_isoP1Bulle.h>
-#include <Discretisation_base.h>
 #include <Navier_Stokes_std.h>
 #include <distances_VEF.h>
 #include <Milieu_base.h>
@@ -26,7 +25,11 @@ Implemente_instanciable(Sortie_libre_Gradient_Pression_impose_VEFPreP1B, "Fronti
 
 Sortie& Sortie_libre_Gradient_Pression_impose_VEFPreP1B::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 
-Entree& Sortie_libre_Gradient_Pression_impose_VEFPreP1B::readOn(Entree& s) { return Sortie_libre_Gradient_Pression_impose_VEF::readOn(s); }
+Entree& Sortie_libre_Gradient_Pression_impose_VEFPreP1B::readOn(Entree& s)
+{
+  if (supp_discs.size() == 0) supp_discs = { Nom("VEFPreP1B") };
+  return Sortie_libre_Gradient_Pression_impose_VEF::readOn(s);
+}
 
 int Sortie_libre_Gradient_Pression_impose_VEFPreP1B::initialiser(double temps)
 {
@@ -82,15 +85,4 @@ int Sortie_libre_Gradient_Pression_impose_VEFPreP1B::calculer_trace_pression()
       trace_pression_int[ind_face] = pression_interne->valeur_au_bord(face);
     }
   return 1;
-}
-
-int Sortie_libre_Gradient_Pression_impose_VEFPreP1B::compatible_avec_discr(const Discretisation_base& discr) const
-{
-  if (discr.que_suis_je() == "VEFPreP1B")
-    return 1;
-  else
-    {
-      err_pas_compatible(discr);
-      return 0;
-    }
 }

@@ -14,12 +14,11 @@
 *****************************************************************************/
 
 #include <Sortie_libre_Gradient_Pression_libre_VEFPreP1B.h>
+#include <Champ_P1_isoP1Bulle.h>
 #include <Navier_Stokes_std.h>
 #include <Champ_Uniforme.h>
-#include <Milieu_base.h>
-#include <Champ_P1_isoP1Bulle.h>
 #include <distances_VEF.h>
-#include <Discretisation_base.h>
+#include <Milieu_base.h>
 
 Implemente_instanciable(Sortie_libre_Gradient_Pression_libre_VEFPreP1B, "Frontiere_ouverte_Gradient_Pression_libre_VEFPreP1B", Neumann_sortie_libre);
 
@@ -28,6 +27,7 @@ Sortie& Sortie_libre_Gradient_Pression_libre_VEFPreP1B::printOn(Sortie& s) const
 Entree& Sortie_libre_Gradient_Pression_libre_VEFPreP1B::readOn(Entree& is)
 {
   if (app_domains.size() == 0) app_domains = { Motcle("Hydraulique"), Motcle("indetermine") };
+  if (supp_discs.size() == 0) supp_discs = { Nom("VEFPreP1B") };
 
   le_champ_front.typer("Champ_front_uniforme");
   le_champ_front.valeurs().resize(1, dimension);
@@ -220,9 +220,7 @@ void Sortie_libre_Gradient_Pression_libre_VEFPreP1B::mettre_a_jour(double temps)
 
 double Sortie_libre_Gradient_Pression_libre_VEFPreP1B::flux_impose(int face) const
 {
-
   return Pimp[face];
-
 }
 
 double Sortie_libre_Gradient_Pression_libre_VEFPreP1B::flux_impose(int, int) const
@@ -245,15 +243,4 @@ double Sortie_libre_Gradient_Pression_libre_VEFPreP1B::Grad_P_lib_VEFPreP1B(int 
     Cerr << "Sortie_libre_Gradient_Pression_libre_VEFPreP1B::Grad_P_lib_VEFPreP1B() erreur" << finl;
   exit();
   return 0.;
-}
-
-int Sortie_libre_Gradient_Pression_libre_VEFPreP1B::compatible_avec_discr(const Discretisation_base& discr) const
-{
-  if (discr.que_suis_je() == "VEFPreP1B")
-    return 1;
-  else
-    {
-      err_pas_compatible(discr);
-      return 0;
-    }
 }

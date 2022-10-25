@@ -39,7 +39,6 @@ public:
   double flux_impose(int) const override;
   double flux_impose(int, int) const override;
   virtual double Grad_P_lib_VEF(int) const;
-  int compatible_avec_discr(const Discretisation_base&) const override;
 
 protected:
   REF(Zone_VEF) la_zone_VEF;

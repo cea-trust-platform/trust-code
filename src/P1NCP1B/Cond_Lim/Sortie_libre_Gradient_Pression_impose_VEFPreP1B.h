@@ -37,7 +37,6 @@ public:
   int initialiser(double temps) override;
   void mettre_a_jour(double) override;
   virtual int calculer_trace_pression();
-  int compatible_avec_discr(const Discretisation_base&) const override;
 
 protected:
   REF(Champ_P1_isoP1Bulle) pression_interne;

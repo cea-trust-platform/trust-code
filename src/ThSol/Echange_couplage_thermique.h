@@ -21,14 +21,11 @@
 
 /*! @brief : class Echange_couplage_thermique
  *
- *
  */
 class Echange_couplage_thermique : public Echange_global_impose
 {
   Declare_instanciable( Echange_couplage_thermique ) ;
 public :
-  int compatible_avec_discr(const Discretisation_base& discr) const override;
-
   void completer() override;
   void set_temps_defaut(double temps) override;
   void changer_temps_futur(double temps, int i) override;
@@ -43,84 +40,32 @@ public :
   inline double flux_exterieur_impose(int i) const override { return couplage_*champ_exterieur(i,phi_ext()); }
   inline double flux_exterieur_impose(int i,int j) const override { return couplage_*champ_exterieur(i,j,phi_ext()); };
 
-  inline Champ_front& T_p();
-  inline const Champ_front& T_p() const;
+  inline Champ_front& T_p() { return T_ext(); }
+  inline const Champ_front& T_p() const { return T_ext(); }
 
   bool reprise() const { return reprise_; }
-  inline Champ_front& a_p();
-  inline const Champ_front& a_p() const;
+  inline Champ_front& a_p() { return coeff_ap; }
+  inline const Champ_front& a_p() const { return coeff_ap; }
 
-  inline Champ_front& s_p();
-  inline const Champ_front& s_p() const;
+  inline Champ_front& s_p() { return coeff_sp; }
+  inline const Champ_front& s_p() const { return coeff_sp; }
 
   // Coefficient d'echange effectif
-  inline Champ_front& h_eff();
-  inline const Champ_front& h_eff() const;
+  inline Champ_front& h_eff() { return coeff_heff; }
+  inline const Champ_front& h_eff() const { return coeff_heff; }
 
   // Température effective
-  inline Champ_front& T_eff();
-  inline const Champ_front& T_eff() const;
+  inline Champ_front& T_eff() { return temperature_Teff; }
+  inline const Champ_front& T_eff() const { return temperature_Teff; }
 
 protected :
-
-  double couplage_;
+  double couplage_ = -1.;
   Champ_front coeff_ap;
   Champ_front coeff_sp;
   Champ_front coeff_heff;
   Champ_front temperature_Teff;
   Lecture_Champ lec_champs;
-  bool reprise_;
-  bool divise_par_rho_cp_=true;
+  bool reprise_ = false, divise_par_rho_cp_ = true;
 };
-
-inline const Champ_front& Echange_couplage_thermique::T_p() const
-{
-  return T_ext();
-}
-
-inline Champ_front& Echange_couplage_thermique::T_p()
-{
-  return T_ext();
-}
-
-inline const Champ_front& Echange_couplage_thermique::a_p() const
-{
-  return coeff_ap;
-}
-
-inline Champ_front& Echange_couplage_thermique::a_p()
-{
-  return coeff_ap;
-}
-
-inline const Champ_front& Echange_couplage_thermique::s_p() const
-{
-  return coeff_sp;
-}
-
-inline Champ_front& Echange_couplage_thermique::s_p()
-{
-  return coeff_sp;
-}
-
-inline const Champ_front& Echange_couplage_thermique::h_eff() const
-{
-  return coeff_heff;
-}
-
-inline Champ_front& Echange_couplage_thermique::h_eff()
-{
-  return coeff_heff;
-}
-
-inline const Champ_front& Echange_couplage_thermique::T_eff() const
-{
-  return temperature_Teff;
-}
-
-inline Champ_front& Echange_couplage_thermique::T_eff()
-{
-  return temperature_Teff;
-}
 
 #endif /* Echange_couplage_thermique_included */

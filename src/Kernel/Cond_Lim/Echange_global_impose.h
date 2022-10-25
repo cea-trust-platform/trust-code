@@ -17,7 +17,6 @@
 #define Echange_global_impose_included
 
 #include <Echange_impose_base.h>
-#include <Ref_Milieu_base.h>
 
 /*! @brief Classe Echange_global_impose Cette classe represente le cas particulier de la classe
  *
@@ -38,11 +37,9 @@
  */
 class Echange_global_impose: public Echange_impose_base
 {
-
   Declare_instanciable(Echange_global_impose);
 public:
-  int compatible_avec_discr(const Discretisation_base& discr) const override;
-
+  int compatible_avec_discr(const Discretisation_base& discr) const override { return 1; }
   void completer() override;
   void set_temps_defaut(double temps) override;
   void changer_temps_futur(double temps, int i) override;

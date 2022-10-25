@@ -19,7 +19,6 @@
 #include <Milieu_base.h>
 #include <Champ_P0_VDF.h>
 #include <Zone_VDF.h>
-#include <Discretisation_base.h>
 
 Implemente_instanciable(Sortie_libre_Gradient_Pression_impose, "Frontiere_ouverte_Gradient_Pression_impose", Neumann_sortie_libre);
 
@@ -28,6 +27,7 @@ Sortie& Sortie_libre_Gradient_Pression_impose::printOn(Sortie& s) const { return
 Entree& Sortie_libre_Gradient_Pression_impose::readOn(Entree& s)
 {
   if (app_domains.size() == 0) app_domains = { Motcle("Hydraulique"), Motcle("indetermine") };
+  if (supp_discs.size() == 0) supp_discs = { Nom("VDF") };
 
   s >> le_champ_front;
   le_champ_ext.typer("Champ_front_uniforme");
@@ -131,15 +131,4 @@ double Sortie_libre_Gradient_Pression_impose::grad_P_imp(int face) const
     }
   exit();
   return 0.;
-}
-
-int Sortie_libre_Gradient_Pression_impose::compatible_avec_discr(const Discretisation_base& discr) const
-{
-  if (discr.que_suis_je() == "VDF")
-    return 1;
-  else
-    {
-      err_pas_compatible(discr);
-      return 0;
-    }
 }

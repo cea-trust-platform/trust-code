@@ -39,7 +39,6 @@ public:
   void mettre_a_jour(double) override;
   double flux_impose(int) const override;
   double flux_impose(int, int) const override;
-  int compatible_avec_discr(const Discretisation_base&) const override;
 
 protected:
   REF(Zone_VDF) la_zone_VDF;

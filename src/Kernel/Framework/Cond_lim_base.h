@@ -73,6 +73,7 @@ public:
 
 protected:
   std::vector<Motcle> app_domains;
+  std::vector<Nom> supp_discs;
   Champ_front le_champ_front;
   REF(Zone_Cl_dis_base) ma_zone_cl_dis;
   void err_pas_compatible(const Equation_base&) const;

@@ -32,8 +32,6 @@ Implemente_instanciable_sans_constructeur( Echange_couplage_thermique, "Echange_
 
 Echange_couplage_thermique::Echange_couplage_thermique()
 {
-  couplage_=-1.;
-  reprise_ = false;
   phi_ext_lu_ = true;
 }
 
@@ -42,8 +40,9 @@ Sortie& Echange_couplage_thermique::printOn( Sortie& os ) const { return Echange
 Entree& Echange_couplage_thermique::readOn( Entree& is )
 {
   if (app_domains.size() == 0) app_domains = { Motcle("Thermique") };
+  if (supp_discs.size() == 0) supp_discs = { Nom("VDF"), Nom("VEFPreP1B"), Nom("EF_axi"), Nom("EF") };
 
-  Cerr << "Reading of coupled boundary\n";
+  Cerr << "Reading of coupled boundary" << finl;
 
   EChaine ech1("Ch_front_var_instationnaire_dep 1");
   EChaine ech2("Ch_front_var_instationnaire_dep 1");
@@ -58,17 +57,6 @@ Entree& Echange_couplage_thermique::readOn( Entree& is )
   reprise_ = lec_champs.champs_lus();
 
   return is;
-}
-
-int Echange_couplage_thermique::compatible_avec_discr(const Discretisation_base& discr) const
-{
-  if (discr.que_suis_je() == "EF" || discr.que_suis_je() == "EF_axi" || discr.que_suis_je() == "VDF" || discr.que_suis_je() == "VEFPreP1B")
-    return 1;
-  else
-    {
-      err_pas_compatible(discr);
-      return 0;
-    }
 }
 
 void Echange_couplage_thermique::completer()

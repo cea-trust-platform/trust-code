@@ -14,7 +14,6 @@
 *****************************************************************************/
 
 #include <Sortie_libre_Gradient_Pression_libre_VEF.h>
-#include <Discretisation_base.h>
 #include <Navier_Stokes_std.h>
 #include <Champ_Uniforme.h>
 #include <distances_VEF.h>
@@ -29,6 +28,7 @@ Sortie& Sortie_libre_Gradient_Pression_libre_VEF::printOn(Sortie& s) const { ret
 Entree& Sortie_libre_Gradient_Pression_libre_VEF::readOn(Entree& s)
 {
   if (app_domains.size() == 0) app_domains = { Motcle("Hydraulique"), Motcle("indetermine") };
+  if (supp_discs.size() == 0) supp_discs = { Nom("VEF") };
 
   le_champ_front.typer("Champ_front_uniforme");
   le_champ_front.valeurs().resize(1, dimension);
@@ -189,15 +189,4 @@ double Sortie_libre_Gradient_Pression_libre_VEF::Grad_P_lib_VEF(int face) const
     Cerr << "Sortie_libre_Gradient_Pression_libre_VEF::Grad_P_lib_VEF() erreur" << finl;
   exit();
   return 0.;
-}
-
-int Sortie_libre_Gradient_Pression_libre_VEF::compatible_avec_discr(const Discretisation_base& discr) const
-{
-  if (discr.que_suis_je() == "VEF")
-    return 1;
-  else
-    {
-      err_pas_compatible(discr);
-      return 0;
-    }
 }

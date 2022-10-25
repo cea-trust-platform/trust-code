@@ -25,8 +25,6 @@
 class Scalaire_impose_paroi: public Dirichlet
 {
   Declare_instanciable(Scalaire_impose_paroi);
-public:
-  int compatible_avec_discr(const Discretisation_base&) const override;
 };
 
 #endif

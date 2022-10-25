@@ -14,7 +14,6 @@
 *****************************************************************************/
 
 #include <Scalaire_impose_paroi.h>
-#include <Discretisation_base.h>
 
 Implemente_instanciable(Scalaire_impose_paroi, "Scalaire_impose_paroi", Dirichlet);
 // XD scalaire_impose_paroi dirichlet scalaire_impose_paroi 0 Imposed temperature condition at the wall called bord (edge).
@@ -25,35 +24,7 @@ Sortie& Scalaire_impose_paroi::printOn(Sortie& s) const { return s << que_suis_j
 Entree& Scalaire_impose_paroi::readOn(Entree& s)
 {
   if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("Concentration"), Motcle("Turbulence"), Motcle("indetermine") };
-  return Dirichlet::readOn(s);
-}
+  if (supp_discs.size() == 0) supp_discs = { Nom("VEF"), Nom("EF"), Nom("EF_axi"), Nom("VEF_P1_P1"), Nom("VEFPreP1B"), Nom("PolyMAC"), Nom("PolyMAC_P0")   };
 
-/*! @brief Verifie que les conditions aux limites sont compatiblea avec la discretisation specifiees en parametre.
- *
- *     Des CL de type Scalaire_imposee_paroi sont compatibles
- *     avec une discretisation de type VEF.
- *
- * @param (Discretisation_base& discr) la discretisation avec laquelle il faut verifier la compatibilite
- * @return (int) valeur booleenne, 1 si les CL sont compatibles avec la discretisation 0 sinon
- */
-int Scalaire_impose_paroi::compatible_avec_discr(const Discretisation_base& discr) const
-{
-  Nom type_discr = discr.que_suis_je();
-  if (type_discr == "VEF")
-    return 1;
-  else if (type_discr == "EF")
-    return 1;
-  else if (type_discr == "EF_axi")
-    return 1;
-  else if (type_discr == "VEF_P1_P1")
-    return 1;
-  else if (type_discr == "VEFPreP1B")
-    return 1;
-  else if (type_discr.debute_par("PolyMAC"))
-    return 1;
-  else
-    {
-      err_pas_compatible(discr);
-      return 0;
-    }
+  return Dirichlet::readOn(s);
 }
