@@ -16,14 +16,13 @@
 #ifndef Entree_fluide_temperature_imposee_H_included
 #define Entree_fluide_temperature_imposee_H_included
 
-#include <Entree_fluide_temperature_imposee.h>
+#include <Dirichlet_entree_fluide_leaves.h>
 #include <Ref_Fluide_Dilatable_base.h>
 
-/*! @brief classe Entree_fluide_temperature_imposee_H Cas particulier de la classe Entree_fluide_temperature_imposee pour une equation ayant l'enthalpie en inconnue
+/*! @brief classe Entree_fluide_temperature_imposee_H Cas particulier de la classe Dirichlet_entree_fluide pour une equation ayant l'enthalpie en inconnue
  *
  * @sa Dirichlet_entree_fluide
  */
-
 class Entree_fluide_temperature_imposee_H  : public Entree_fluide_temperature_imposee
 {
   Declare_instanciable(Entree_fluide_temperature_imposee_H);

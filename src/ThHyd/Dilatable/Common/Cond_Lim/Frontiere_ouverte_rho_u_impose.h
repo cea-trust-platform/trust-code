@@ -16,7 +16,7 @@
 #ifndef Frontiere_ouverte_rho_u_impose_included
 #define Frontiere_ouverte_rho_u_impose_included
 
-#include <Entree_fluide_vitesse_imposee_libre.h>
+#include <Dirichlet_entree_fluide_leaves.h>
 #include <Ref_Fluide_Dilatable_base.h>
 
 /*! @brief Frontiere ouverte sur laquelle on impose le flux massique rho.
@@ -28,7 +28,6 @@
 class Frontiere_ouverte_rho_u_impose  : public Entree_fluide_vitesse_imposee_libre
 {
   Declare_instanciable(Frontiere_ouverte_rho_u_impose);
-
 public :
   void completer() override;
   int compatible_avec_eqn(const Equation_base&) const override;

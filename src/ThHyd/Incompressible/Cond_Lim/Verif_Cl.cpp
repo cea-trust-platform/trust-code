@@ -18,12 +18,8 @@
 #include <Periodique.h>
 #include <Dirichlet_paroi_fixe.h>
 #include <Dirichlet_paroi_defilante.h>
-#include <Entree_fluide_vitesse_imposee.h>
-#include <Entree_fluide_vitesse_imposee_libre.h>
-#include <Entree_fluide_temperature_imposee.h>
+#include <Dirichlet_entree_fluide_leaves.h>
 #include <Entree_fluide_T_h_imposee.h>
-#include <Entree_fluide_concentration_imposee.h>
-#include <Entree_fluide_fraction_massique_imposee.h>
 #include <Neumann_paroi.h>
 #include <Neumann_paroi_adiabatique.h>
 #include <Neumann_paroi_flux_nul.h>

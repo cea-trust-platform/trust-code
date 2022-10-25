@@ -16,7 +16,7 @@
 #ifndef Entree_fluide_T_h_imposee_included
 #define Entree_fluide_T_h_imposee_included
 
-#include <Dirichlet_entree_fluide.h>
+#include <Dirichlet_entree_fluide_leaves.h>
 
 /*! @brief classe Entree_fluide_temperature_imposee Cas particulier de la classe Dirichlet_entree_fluide
  *

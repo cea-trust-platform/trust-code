@@ -17,7 +17,7 @@
 #include <Zone_VDF.h>
 #include <Dirichlet_paroi_fixe.h>
 #include <Dirichlet_paroi_defilante.h>
-#include <Dirichlet_entree_fluide.h>
+#include <Dirichlet_entree_fluide_leaves.h>
 #include <Sortie_libre_pression_imposee.h>
 #include <Symetrie.h>
 #include <Periodique.h>

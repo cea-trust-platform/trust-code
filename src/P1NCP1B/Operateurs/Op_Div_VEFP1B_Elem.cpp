@@ -19,7 +19,7 @@
 #include <Periodique.h>
 #include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
-#include <Dirichlet_entree_fluide.h>
+#include <Dirichlet_entree_fluide_leaves.h>
 #include <Symetrie.h>
 #include <Neumann.h>
 #include <Neumann_val_ext.h>

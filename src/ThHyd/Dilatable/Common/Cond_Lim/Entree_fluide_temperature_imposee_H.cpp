@@ -24,7 +24,7 @@ Sortie& Entree_fluide_temperature_imposee_H::printOn(Sortie& s) const { return s
 Entree& Entree_fluide_temperature_imposee_H::readOn(Entree& s)
 {
   if (app_domains.size() == 0) app_domains = { Motcle("Thermique_H") };
-  return Entree_fluide_temperature_imposee::readOn(s);
+  return Dirichlet_entree_fluide::readOn(s);
 }
 
 /*! @brief Complete les conditions aux limites.

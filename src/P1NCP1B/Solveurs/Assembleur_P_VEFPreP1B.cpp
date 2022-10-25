@@ -18,7 +18,7 @@
 #include <Domaine.h>
 #include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
-#include <Entree_fluide_vitesse_imposee.h>
+#include <Dirichlet_entree_fluide_leaves.h>
 #include <Neumann_sortie_libre.h>
 #include <Champ_front_instationnaire_base.h>
 #include <Milieu_base.h>
