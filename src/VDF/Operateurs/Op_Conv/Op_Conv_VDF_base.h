@@ -44,11 +44,9 @@ public:
   inline const Iterateur_VDF& get_iter() const { return iter; }
   inline Iterateur_VDF& get_iter() { return iter; }
 
-  inline int has_interface_blocs() const override
-  {
-    return 1;
-  };
+  inline int has_interface_blocs() const override { return 1; }
   void ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const override;
+  void associer_champ_conserve(const Champ_Inc& ch) { iter->associer_champ_conserve(ch); }
 
 protected:
   Iterateur_VDF iter;

@@ -55,6 +55,7 @@ public:
   inline void completer_() override { elem.ref(la_zone->face_voisins()); }
   inline Evaluateur_VDF& evaluateur() override { return (Evaluateur_VDF&) flux_evaluateur; }
   inline const Evaluateur_VDF& evaluateur() const override { return (Evaluateur_VDF&) flux_evaluateur; }
+  const Champ_Inc_base& le_champ_conserve() const  override { return le_champ_conserve_.valeur(); }
 
 protected:
   _TYPE_ flux_evaluateur;

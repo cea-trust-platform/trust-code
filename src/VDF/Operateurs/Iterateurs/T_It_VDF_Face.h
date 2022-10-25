@@ -56,6 +56,11 @@ public:
   inline void completer_() override;
   inline Evaluateur_VDF& evaluateur() override { return (Evaluateur_VDF&) flux_evaluateur; }
   inline const Evaluateur_VDF& evaluateur() const override { return (Evaluateur_VDF&) flux_evaluateur; }
+  const Champ_Inc_base& le_champ_conserve() const override
+  {
+    Cerr << "T_It_VDF_Face::le_champ_conserve() should not ne called !" << finl;
+    throw;
+  }
 
 protected:
   _TYPE_ flux_evaluateur;

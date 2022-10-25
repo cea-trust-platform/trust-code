@@ -16,6 +16,7 @@
 #ifndef Iterateur_VDF_base_included
 #define Iterateur_VDF_base_included
 
+#include <Ref_Champ_Inc_base.h>
 #include <Ref_Operateur_base.h>
 #include <CL_Types_include.h>
 #include <Evaluateur_VDF.h>
@@ -52,6 +53,9 @@ public:
   void associer(const Zone_VDF&, const Zone_Cl_VDF&, const Operateur_base&);
   void associer(const Zone_dis&, const Zone_Cl_dis&, const Operateur_base&);
   void associer_zone_cl_dis(const Zone_Cl_dis_base&);
+  void associer_champ_conserve(const Champ_Inc& ch) { le_champ_conserve_ = ch.valeur(); }
+  virtual const Champ_Inc_base& le_champ_conserve() const = 0; //{ return le_champ_conserve_.valeur(); }
+
   virtual void calculer_flux_bord(const DoubleTab&) const;
   virtual void ajouter_contribution_autre_pb(const DoubleTab& inco, Matrice_Morse& matrice, const Cond_lim& la_cl, std::map<int, std::pair<int, int>>&) const;
 
@@ -73,6 +77,7 @@ protected:
   REF(Zone_VDF) la_zone;
   REF(Zone_Cl_VDF) la_zcl;
   REF(Operateur_base) op_base;
+  REF(Champ_Inc_base) le_champ_conserve_;
 };
 
 inline Type_Cl_VDF Iterateur_VDF_base::type_cl(const Cond_lim& la_cl) const
