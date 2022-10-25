@@ -137,8 +137,6 @@ int Sortie_libre_Gradient_Pression_impose::compatible_avec_discr(const Discretis
 {
   if (discr.que_suis_je() == "VDF")
     return 1;
-  else if (discr.que_suis_je() == "VDF_Interface" || discr.que_suis_je() == "VDF_Front_Tracking")
-    return 1;
   else
     {
       err_pas_compatible(discr);

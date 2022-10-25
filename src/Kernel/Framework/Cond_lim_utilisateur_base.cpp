@@ -71,10 +71,6 @@ int Cond_lim_utilisateur_base::is_pb_VDF()
 {
   const Discretisation_base& discr=mon_equation->discretisation();
   Nom nom_discr=discr.que_suis_je();
-  if (nom_discr=="VDF_Front_Tracking")
-    {
-      nom_discr="VDF";
-    }
   if  (nom_discr=="VDF")
     return 1;
   else

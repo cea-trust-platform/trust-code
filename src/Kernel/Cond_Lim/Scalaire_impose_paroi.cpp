@@ -49,8 +49,6 @@ int Scalaire_impose_paroi::compatible_avec_discr(const Discretisation_base& disc
     return 1;
   else if (type_discr == "VEFPreP1B")
     return 1;
-  else if (type_discr == "VEFPreP1B_Front_Tracking")
-    return 1;
   else if (type_discr.debute_par("PolyMAC"))
     return 1;
   else

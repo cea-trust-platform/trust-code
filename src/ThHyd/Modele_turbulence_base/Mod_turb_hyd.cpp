@@ -64,8 +64,6 @@ Entree& Mod_turb_hyd::readOn(Entree& s )
       nom1 += "_";
       // les operateurs de diffusion sont communs aux discretisations VEF et VEFP1B
       if (discr=="VEFPreP1B") discr="VEF";
-      if (discr=="VDF_Front_Tracking") discr="VDF";
-      if (discr=="VEFPreP1B_Front_Tracking") discr="VEF";
       nom1+=discr;
     }
   if (nom1=="MODELE_TURBULENCE_HYD_SOUS_MAILLE_LM_VEF")

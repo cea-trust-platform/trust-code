@@ -216,7 +216,7 @@ double Sortie_libre_Pression_imposee_Orlansky::flux_impose(int, int) const
 
 int Sortie_libre_Pression_imposee_Orlansky::compatible_avec_discr(const Discretisation_base& discr) const
 {
-  if ((discr.que_suis_je() == "VDF") || (discr.que_suis_je() == "VDF_Interface") || (discr.que_suis_je() == "VDF_Front_Tracking"))
+  if (discr.que_suis_je() == "VDF")
     return 1;
   else
     {

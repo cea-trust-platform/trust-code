@@ -13,42 +13,30 @@
 *
 *****************************************************************************/
 
-
 #ifndef Terme_Source_Canal_perio_VDF_Face_included
 #define Terme_Source_Canal_perio_VDF_Face_included
-
-
 
 /*! @brief class Terme_Source_Canal_perio_VDF_Face Cette classe permet de conserver le debit dans une simulation
  *
  *   temporelle de Canal
  *
- *
  * @sa Terme_Source_Canal_perio
  */
-
 #include <Terme_Source_Canal_perio.h>
 #include <TRUSTTabs_forward.h>
 #include <Ref_Zone_Cl_VDF.h>
 #include <Ref_Zone_VDF.h>
 
-class Probleme_base;
 class Navier_Stokes_std;
-
-
-// La classe derive de Source_base et peut etre d'un terme source
+class Probleme_base;
 
 class Terme_Source_Canal_perio_VDF_Face : public Terme_Source_Canal_perio
 {
   Declare_instanciable(Terme_Source_Canal_perio_VDF_Face);
-
 public :
   inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
-  inline int has_interface_blocs() const override
-  {
-    return 1;
-  };
+  inline int has_interface_blocs() const override { return 1; }
 
 protected :
   REF(Zone_VDF) la_zone_VDF;
@@ -57,12 +45,10 @@ protected :
 
   void calculer_debit(double&) const override;
 };
+
 class Terme_Source_Canal_perio_QC_VDF_Face : public Terme_Source_Canal_perio_VDF_Face
 {
   Declare_instanciable(Terme_Source_Canal_perio_QC_VDF_Face);
 };
-class Terme_Source_Canal_perio_VDF_Front_Tracking : public Terme_Source_Canal_perio_VDF_Face
-{
-  Declare_instanciable(Terme_Source_Canal_perio_VDF_Front_Tracking);
-};
+
 #endif

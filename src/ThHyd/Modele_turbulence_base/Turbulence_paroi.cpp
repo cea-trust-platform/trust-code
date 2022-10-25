@@ -69,9 +69,6 @@ Entree& Turbulence_paroi::readOn(Entree& s)
 
   //  les operateurs de diffusion sont communs aux discretisations VEF et VEFP1B
   if(discr=="VEFPreP1B") discr="VEF";
-  // GF: je n'en suis pas sur du tout !!!
-  if (discr=="VDF_Front_Tracking") discr="VDF";
-  if(discr=="VEFPreP1B_Front_Tracking") discr="VEF";
   typ+=discr;
 
   Cerr<<"et typage :"<<typ<<finl;
