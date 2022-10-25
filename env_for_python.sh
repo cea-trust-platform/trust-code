@@ -32,7 +32,7 @@ then
      source $TRUST_MEDCOUPLING_ROOT/env.sh
   else
      echo "Error: cannot load MEDCoupling, not yet installed!"
-     ok=01
+     ok=0
  fi
 fi
 
