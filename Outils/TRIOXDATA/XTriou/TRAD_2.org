@@ -156,17 +156,6 @@ definition_champ objet_lecture nul 0 Keyword to create new complex field for adv
   attr champ_generique champ_generique_base champ_generique 0 not_set
 definition_champs listobj nul 1 definition_champ 0 List of definition champ
 postraitement_base objet_lecture postraitement_base -1 not_set
-postraitement postraitement_base postraitement -1 An object of post-processing (without name).
-  attr definition_champs definition_champs definition_champs 1 Keyword to create new or more complex field for advanced postprocessing.
-  attr sondes|Probes sondes sondes 1 Probe.
-  attr domaine chaine domaine 1 This optional parameter specifies the domain on which the data should be interpolated before it is written in the output file. The default is to write the data on the domain of the current problem (no interpolation).
-  attr format chaine(into=["lml","lata","lata_v1","lata_v2","med","med_major"]) format 1 This optional parameter specifies the format of the output file. The basename used for the output file is the basename of the data file. For the fmt parameter, choices are lml or lata. A short description of each format can be found below. The default value is lml.
-  attr parallele chaine(into=["simple","multiple","mpi-io"]) parallele 1 Select simple (single file, sequential write), multiple (several files, parallel write), or mpi-io (single file, parallel write) for LATA format
-  attr champs|fields champs_posts champs 1 Field\'s write mode.
-  attr statistiques stats_posts statistiques 1 Statistics between two points fixed : start of integration time and end of integration time.
-  attr fichier chaine fichier 1 Name of file.
-  attr statistiques_en_serie stats_serie_posts statistiques_en_serie 1 Statistics between two points not fixed : on period of integration.
-  attr interfaces champs_posts interfaces 1 Keyword to read all the caracteristics of the interfaces. Different kind of interfaces exist as well as different interface intitialisations.
 corps_postraitement postraitement nul -1 not_set
 un_postraitement objet_lecture nul 0 An object of post-processing (with name).
   attr nom chaine nom 0 Name of the post-processing.
@@ -453,16 +442,6 @@ penalisation_l2_ftd_lec objet_lecture nul 0 not_set
 penalisation_l2_ftd listobj pp 1 penalisation_l2_ftd_lec 0 not_set
 convection_diffusion_temperature eqn_base convection_diffusion_temperature -1 Energy equation (temperature diffusion convection).
   attr penalisation_l2_ftd penalisation_l2_ftd penalisation_l2_ftd 1 to activate or not (the default is Direct Forcing method) the Penalized Direct Forcing method to impose the specified temperature on the solid-fluid interface.
-pb_thermohydraulique Pb_base pb_thermohydraulique -1 Resolution of thermohydraulic problem.
-  attr fluide_incompressible fluide_incompressible fluide_incompressible 1 The fluid medium associated with the problem (only one possibility).
-  attr fluide_ostwald fluide_ostwald fluide_ostwald 1 The fluid medium associated with the problem (only one possibility).
-  attr fluide_sodium_liquide fluide_sodium_liquide fluide_sodium_liquide 1 The fluid medium associated with the problem (only one possibility).
-  attr fluide_sodium_gaz fluide_sodium_gaz fluide_sodium_gaz 1 The fluid medium associated with the problem (only one possibility).
-  attr navier_stokes_standard navier_stokes_standard navier_stokes_standard 1 Navier-Stokes equations.
-  attr convection_diffusion_temperature convection_diffusion_temperature convection_diffusion_temperature 1 Energy equation (temperature diffusion convection).
-pb_hydraulique Pb_base pb_hydraulique -1 Resolution of the Navier-Stokes equations.
-  attr fluide_incompressible fluide_incompressible fluide_incompressible 0 The fluid medium associated with the problem.
-  attr navier_stokes_standard navier_stokes_standard navier_stokes_standard 0 Navier-Stokes equations.
 turbulence_paroi_base objet_u turbulence_paroi_base -1 Basic class for wall laws for Navier-Stokes equations.
 dt_impr_ustar_mean_only objet_lecture nul 1 not_set
   attr dt_impr floattant dt_impr 0 not_set
@@ -609,6 +588,12 @@ champ_front_lu front_field_base champ_front_lu 0 boundary field which is given f
   attr file chaine file 0 path for the read file
 boundary_field_inward front_field_base boundary_field_inward 1 this field is used to define the normal vector field standard at the boundary in VDF or VEF discretization.
   attr normal_value chaine normal_value 0 normal vector value (positive value for a vector oriented outside to inside) which can depend of the time.
+constituant milieu_base constituant -1 Constituent.
+  attr rho field_base rho 1 Density (kg.m-3).
+  attr cp field_base cp 1 Specific heat (J.kg-1.K-1).
+  attr lambda field_base lambda_u 1 Conductivity (W.m-1.K-1).
+  attr coefficient_diffusion field_base coefficient_diffusion 1 Constituent diffusion coefficient value (m2.s-1). If a multi-constituent problem is being processed, the diffusivite will be a vectorial and each components will be the diffusion of the constituent.
+  ref gravite field_base
 champ_front_pression_from_u front_field_base champ_front_pression_from_u 0 this field is used to define a pressure field depending of a velocity field.
   attr expression chaine expression 0 value depending of a velocity (like $2*u_moy^2$).
 source_constituant source_base source_constituant 0 Keyword to specify source rates, in [[C]/s], for each one of the nb constituents. [C] is the concentration unit.
@@ -713,9 +698,10 @@ gmres solveur_sys_base gmres -1 Gmres method (for non symetric matrix).
   attr save_matrice|save_matrix rien save_matrice 1 to save the matrix in a file.
   attr dim_espace_krilov entier dim_espace_krilov 1 not_set
 postraiter_domaine interprete postraiter_domaine 1 To write one or more domains in a file with a specified format (MED,LML,LATA).
-  attr format chaine(into=["lml","lata","lata_v1","lata_v2","med"]) format 0 File format.
+  attr format chaine(into=["lml","lata","lata_v2","med"]) format 0 File format.
   attr fichier|file chaine fichier 1 The file name can be changed with the fichier option.
   attr domaine ref_domaine domain 1 Name of domain
+  attr sous_zone ref_sous_zone sous_zone 1 Name of the sub_zone
   attr domaines bloc_lecture domaines 1 Names of domains : { name1 name2 }
   attr joints_non_postraites entier(into=[0,1]) joints_non_postraites 1 The joints_non_postraites (1 by default) will not write the boundaries between the partitioned mesh.
   attr binaire entier(into=[0,1]) binaire 1 Binary (binaire 1) or ASCII (binaire 0) may be used. By default, it is 0 for LATA and only ASCII is available for LML and only binary is available for MED.
@@ -931,17 +917,6 @@ convection_diffusion_concentration eqn_base convection_diffusion_concentration -
   attr nom_inconnue chaine nom_inconnue 1 Keyword Nom_inconnue will rename the unknown of this equation with the given name. In the postprocessing part, the concentration field will be accessible with this name. This is usefull if you want to track more than one concentration (otherwise, only the concentration field in the first concentration equation can be accessed).
   attr masse_molaire floattant masse_molaire 1 not_set
   attr alias chaine alias 1 not_set
-pb_hydraulique_concentration Pb_base pb_hydraulique_concentration -1 Resolution of Navier-Stokes/multiple constituent transport equations.
-  attr fluide_incompressible fluide_incompressible fluide_incompressible 0 The fluid medium associated with the problem.
-  attr constituant constituant constituant 1 Constituents.
-  attr navier_stokes_standard navier_stokes_standard navier_stokes_standard 1 Navier-Stokes equations.
-  attr convection_diffusion_concentration convection_diffusion_concentration convection_diffusion_concentration 1 Constituent transport vectorial equation (concentration diffusion convection).
-pb_thermohydraulique_concentration Pb_base pb_thermohydraulique_concentration -1 Resolution of Navier-Stokes/energy/multiple constituent transport equations.
-  attr fluide_incompressible fluide_incompressible fluide_incompressible 0 The fluid medium associated with the problem.
-  attr constituant constituant constituant 1 Constituents.
-  attr navier_stokes_standard navier_stokes_standard navier_stokes_standard 1 Navier-Stokes equations.
-  attr convection_diffusion_concentration convection_diffusion_concentration convection_diffusion_concentration 1 Constituent transport equations (concentration diffusion convection).
-  attr convection_diffusion_temperature convection_diffusion_temperature convection_diffusion_temperature 1 Energy equation (temperature diffusion convection).
 darcy source_base darcy 0 Class for calculation in a porous media with source term of Darcy -nu/K*V. This keyword must be used with a permeability model. For the moment there are two models : permeability constant or Ergun\'s law. Darcy source term is available for quasi compressible calculation. A new keyword is aded for porosity (porosite).
   attr bloc bloc_lecture bloc 0 Description.
 forchheimer source_base forchheimer 0 Class to add the source term of Forchheimer -Cf/sqrt(K)*V2 in the Navier-Stokes equations. We must precise a permeability model : constant or Ergun\'s law. Moreover we can give the constant Cf : by default its value is 1. Forchheimer source term is available also for quasi compressible calculation. A new keyword is aded for porosity (porosite).
