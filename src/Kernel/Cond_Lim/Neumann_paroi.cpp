@@ -40,29 +40,3 @@ void Neumann_paroi::verifie_ch_init_nb_comp() const
       eq.verifie_ch_init_nb_comp_cl(eq.inconnue(), nb_comp, *this);
     }
 }
-
-double Neumann_paroi::flux_impose(int i) const
-{
-  if (le_champ_front.valeurs().size() == 1)
-    return le_champ_front(0, 0);
-  else if (le_champ_front.valeurs().dimension(1) == 1)
-    return le_champ_front(i, 0);
-  else
-    Cerr << "Neumann_paroi::flux_impose erreur" << finl;
-  Process::exit();
-  return 0.;
-}
-
-double Neumann_paroi::flux_impose(int i, int j) const
-{
-  if (le_champ_front.valeurs().dimension(0) == 1)
-    return le_champ_front(0, j);
-  else
-    return le_champ_front(i, j);
-}
-
-void Neumann_paroi::mettre_a_jour(double temps)
-{
-  Cond_lim_base::mettre_a_jour(temps);
-  le_champ_front.mettre_a_jour(temps);
-}

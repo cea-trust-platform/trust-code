@@ -17,7 +17,6 @@
 #define MItSouPolyMACFa_H
 
 #include <Iterateur_Source_PolyMAC_base.h>
-//#include <Les_Cl.h>
 #include <Zone_PolyMAC.h>
 #include <Champ_Uniforme.h>
 #include <Milieu_base.h>

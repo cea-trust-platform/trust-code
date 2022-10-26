@@ -35,7 +35,7 @@ double Neumann::flux_impose(int i) const
     return le_champ_front(i, 0);
   else
     Cerr << "Neumann::flux_impose error" << finl;
-  exit();
+  Process::exit();
   return 0.;
 }
 

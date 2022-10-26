@@ -16,7 +16,6 @@
 #include <Op_Div_PolyMAC_P0.h>
 #include <Zone_Cl_PolyMAC.h>
 #include <Champ_Face_PolyMAC_P0.h>
-//#include <Les_Cl.h>
 #include <Probleme_base.h>
 #include <Navier_Stokes_std.h>
 #include <Schema_Temps_base.h>
