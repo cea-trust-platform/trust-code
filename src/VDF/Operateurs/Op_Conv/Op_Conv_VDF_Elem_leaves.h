@@ -42,7 +42,7 @@ public:
   void check_multiphase_compatibility() const override { }
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
   void preparer_calcul() override;
-  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { modifier_pour_Cl_elem(matrice,secmem); }
+  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { }
   inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd,const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_CONV_ELEM,Eval_Amont_VDF_Elem>(zd,zcd,ch); }
   inline void associer_vitesse(const Champ_base& ch_vit) override { associer_vitesse_impl<Eval_Amont_VDF_Elem>(ch_vit); }
   inline Champ_base& vitesse() override { return vitesse_impl<Eval_Amont_VDF_Elem>(); }

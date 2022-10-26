@@ -407,7 +407,11 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
         {
           mat_semi_impl.ajouter_multvect(v_inco, v_sec); //passage increment -> variable pour faire plaisir aux solveurs iteratifs
           solv_p.valeur().reinit(), solv_p.valeur().set_return_on_error(1); /* pour eviter un exit() en cas d'echec */
+          mat_semi_impl.imprimer_formatte(Cerr);
+          Cerr << v_sec << finl;
           ok = (solv_p.resoudre_systeme(mat_semi_impl, v_sec, v_incr) >= 0);
+          for (int k = 0; k < 7; k++) Cerr << v_incr[k] << finl;
+          exit();
           if (!ok) break; //le solveur a echoue -> on sort
           v_incr -= v_inco; //retour en increments
         }

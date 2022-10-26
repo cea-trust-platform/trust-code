@@ -80,6 +80,9 @@ void Op_Conv_Amont_VDF_Elem::preparer_calcul()
 {
   Op_Conv_VDF_base::preparer_calcul();
   equation().init_champ_convecte();
+  const int ncomp = equation().inconnue().valeurs().line_size();
+  flux_bords().resize(ref_cast(Zone_VF,equation().zone_dis().valeur()).nb_faces_bord(),ncomp);
+  flux_bords()=0;
 }
 
 
