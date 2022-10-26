@@ -20,7 +20,7 @@
 #include <Navier_Stokes_std.h>
 #include <Op_Grad_VDF_Face.h>
 #include <communications.h>
-#include <Probleme_base.h>
+#include <Pb_Multiphase.h>
 #include <EcrFicPartage.h>
 #include <Champ_P0_VDF.h>
 #include <Matrix_tools.h>
@@ -261,7 +261,8 @@ void Op_Grad_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, con
 {
   statistiques().begin_count(gradient_counter_);
   Matrice_Morse *mat = matrices.count("pression") ? matrices.at("pression") : NULL;
-  const DoubleTab& inco = semi_impl.count("pression") ? semi_impl.at("pression") : (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs());
+  const DoubleTab& inco = semi_impl.count("pression") ? semi_impl.at("pression") : (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs()),
+                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
 
   assert_espace_virtuel_vect(inco);
 
@@ -271,6 +272,7 @@ void Op_Grad_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, con
 
   double coef;
   int n0, n1;
+  const int M = inco.line_size(), N = secmem.line_size();
 
   // Boucle sur les bords pour traiter les conditions aux limites
   for (int n_bord = 0; n_bord < zvdf.nb_front_Cl(); n_bord++)
@@ -283,47 +285,51 @@ void Op_Grad_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, con
         {
           const Neumann_sortie_libre& la_cl_typee = ref_cast(Neumann_sortie_libre, la_cl.valeur());
           for (int num_face = ndeb; num_face < nfin; num_face++)
-            {
-              const double P_imp = la_cl_typee.flux_impose(num_face-ndeb);
+            for (int n = 0, m = 0; n < N; n++, m += (M > 1))
+              {
+                const double P_imp = la_cl_typee.flux_impose(num_face-ndeb, m);
 
-              n0 = face_voisins(num_face,0);
-              if (n0 != -1)
-                {
-                  coef = face_surfaces(num_face)*porosite_surf(num_face) * Option_VDF::coeff_P_neumann;
-                  if(mat) (*mat)(num_face, n0) -= coef;
-                  secmem(num_face) -= coef * (P_imp - inco(n0));
-                }
-              else
-                {
-                  n1 = face_voisins(num_face,1);
-                  coef = face_surfaces(num_face)*porosite_surf(num_face) * Option_VDF::coeff_P_neumann;
-                  if(mat) (*mat)(num_face, n1) += coef;
-                  secmem(num_face) -= coef * (inco(n1) - P_imp);
-                }
-            }
+                n0 = face_voisins(num_face,0);
+                if (n0 != -1)
+                  {
+                    coef = face_surfaces(num_face)*porosite_surf(num_face) * Option_VDF::coeff_P_neumann * (alp ? (*alp)(n0, n) : 1);
+                    if(mat) (*mat)(N * num_face + n, M * n0 + m) -= coef;
+                    secmem(num_face, n) -= coef * (P_imp - inco(n0, m));
+                  }
+                else
+                  {
+                    n1 = face_voisins(num_face,1);
+                    coef = face_surfaces(num_face)*porosite_surf(num_face) * Option_VDF::coeff_P_neumann * (alp ? (*alp)(n1, n) : 1.0);
+                    if(mat) (*mat)(N * num_face + n, M * n1 + m) += coef;
+                    secmem(num_face, n) -= coef * (inco(n1, m) - P_imp);
+                  }
+              }
         }
       else if (sub_type(Periodique,la_cl.valeur())) // Correction periodicite
         {
           for (int num_face = ndeb; num_face < nfin; num_face++)
-            {
-              n0 = face_voisins(num_face,0), n1 = face_voisins(num_face,1);
-              coef = face_surfaces(num_face)*porosite_surf(num_face);
-              secmem(num_face) -= coef * (inco(n1) - inco(n0));
-            }
+            for (int n = 0, m = 0; n < N; n++, m += (M > 1))
+              {
+                n0 = face_voisins(num_face,0), n1 = face_voisins(num_face,1);
+                coef = face_surfaces(num_face)*porosite_surf(num_face);
+                secmem(num_face, n) -= coef * (inco(n1, m) * (alp ? (*alp)(n1, n) : 1.0) - inco(n0, m) * (alp ? (*alp)(n0, n) : 1.0));
+              }
         }
       else if (sub_type(Symetrie,la_cl.valeur())) { /* Do nothing */ }
       else if ( (sub_type(Dirichlet,la_cl.valeur())) || (sub_type(Dirichlet_homogene,la_cl.valeur())) ) { /* Do nothing */ }
     }
 
   // Boucle sur les faces internes
-  for (int num_face = zvdf.premiere_face_int(); num_face < zvdf.nb_faces(); num_face++)
-    {
-      n0 = face_voisins(num_face,0), n1 = face_voisins(num_face,1);
-      coef = face_surfaces(num_face)*porosite_surf(num_face);
-      if(mat) (*mat)(num_face, n0) -= coef;
-      if(mat) (*mat)(num_face, n1) += coef;
-      secmem(num_face) -= coef * (inco(n1) - inco(n0));
-    }
+  for (int f = zvdf.premiere_face_int(); f < zvdf.nb_faces(); f++)
+    for (int i = 0; i < 2; i++)
+      for (int n = 0, m = 0; n < N; n++, m += (M > 1))
+        {
+          const int e = face_voisins(f, i);
+          coef = face_surfaces(f) * porosite_surf(f) * (alp ? (*alp)(e, n) : 1.0);
+          if (mat)
+            (*mat)(N * f + n, M * e + m) += (i ? 1.0 : -1.0) * coef;
+          secmem(f, n) -= (i ? 1.0 : -1.0) * coef * inco(e, m);
+        }
   secmem.echange_espace_virtuel();
   statistiques().end_count(gradient_counter_);
 
