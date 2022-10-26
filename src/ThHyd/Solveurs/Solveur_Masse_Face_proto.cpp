@@ -41,8 +41,9 @@ DoubleTab& Solveur_Masse_Face_proto::appliquer_impl_proto(DoubleTab& sm) const
   for (f = 0; f < zone.nb_faces(); f++)
     for (n = 0; n < N; n++)
       {
-        for (fac = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-          fac += vfd(f, i) / vf(f) * (a_r ? (*a_r)(e, n) : 1);
+        for (fac = 0, i = 0; i < 2; i++)
+          if ((e = f_e(f, i)) >= 0)
+            fac += vfd(f, i) / vf(f) * (a_r ? (*a_r)(e, n) : 1);
         if (fac > 1e-10)
           sm(f, n) /= pf(f) * vf(f) * fac; //vitesse calculee
         else
@@ -97,13 +98,14 @@ void Solveur_Masse_Face_proto::ajouter_blocs_proto(matrices_t matrices, DoubleTa
     {
       if (!pbm)
         for (masse = 0, n = 0; n < N; n++) masse(n, n) = vf(f); //pas Pb_Multiphase ou CL -> pas de alpha * rho
-      else for (masse = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-          {
-            for (masse_e = 0, n = 0; n < N; n++) masse_e(n, n) = (*a_r)(e, n); //partie diagonale
-            if (corr) corr->ajouter(&(*alpha)(e, 0), &rho(!cR * e, 0), masse_e); //partie masse ajoutee
-            for (n = 0; n < N; n++)
-              for (m = 0; m < N; m++) masse(n, m) += vfd(f, i) * masse_e(n, m); //contribution au alpha * rho de la face
-          }
+      else for (masse = 0, i = 0; i < 2; i++)
+          if ((e = f_e(f, i)) >= 0)
+            {
+              for (masse_e = 0, n = 0; n < N; n++) masse_e(n, n) = (*a_r)(e, n); //partie diagonale
+              if (corr) corr->ajouter(&(*alpha)(e, 0), &rho(!cR * e, 0), masse_e); //partie masse ajoutee
+              for (n = 0; n < N; n++)
+                for (m = 0; m < N; m++) masse(n, m) += vfd(f, i) * masse_e(n, m); //contribution au alpha * rho de la face
+            }
       for (n = 0; n < N; n++)
         {
           for (m = 0; m < N; m++) secmem(f, n) += pf(f) / dt * masse(n, m) * (passe(f, m) - resoudre_en_increments * inco(f, m));

@@ -56,20 +56,20 @@ void Op_Conv_Amont_VDF_Elem::ajouter_blocs(matrices_t mats, DoubleTab& secmem, c
             }
 
         //second membre
-        for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-          if (e < zone.nb_elem())
+        for (i = 0; i < 2; i++)
+          if ((e = f_e(f, i)) >= 0 && e < zone.nb_elem())
             for (n = 0, m = 0; n < N; n++, m += (Mv > 1))
               secmem(e, n) -= (i ? -1 : 1) * dv_flux(n) * vit(f, m);
         //derivees : vitesse
         if (m_vit && fcl_v(f, 0) < 2)
-          for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-            if (e < zone.nb_elem())
+          for (i = 0; i < 2; i++)
+            if ((e = f_e(f, i)) >= 0 && e < zone.nb_elem())
               for (n = 0, m = 0; n < N; n++, m += (Mv > 1))
                 (*m_vit)(N * e + n, Mv * f + m) += (i ? -1 : 1) * dv_flux(n);
         //derivees : champ convecte
         for (auto &&d_m_i : d_cc)
-          for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-            if (e < zone.nb_elem())
+          for (i = 0; i < 2; i++)
+            if ((e = f_e(f, i)) >= 0 && e < zone.nb_elem())
               for (j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++)
                 for (n = 0, m = 0, M = std::get<2>(d_m_i); n < N; n++, m += (M > 1))
                   (*std::get<1>(d_m_i))(N * e + n, M * eb + m) += (i ? -1 : 1) * dc_flux(j, n) * (*std::get<0>(d_m_i))(eb, m);

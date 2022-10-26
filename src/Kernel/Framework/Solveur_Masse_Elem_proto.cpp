@@ -98,7 +98,7 @@ void Solveur_Masse_Elem_proto::ajouter_blocs_proto(matrices_t matrices, DoubleTa
   if ( (sub_type(Op_Diff_negligeable, solv_mass_->equation().operateur(0).l_op_base())) || (!sub_type(Operateur_Diff_base, solv_mass_->equation().operateur(0).l_op_base())) )
     for (f = 0; f < zone.premiere_face_int(); f++)
       if (fcl(f, 0) == 4)
-        for (e = f_e(f, 0), n = 0; n < N; n++)
+        for (e = f_e(f, f_e(f, 0) == -1), n = 0; n < N; n++)
           secmem(e, n) += fs(f) * ref_cast(Neumann_paroi, cls[fcl(f, 1)].valeur()).flux_impose(fcl(f, 2), n);
 
   /* matrices */
