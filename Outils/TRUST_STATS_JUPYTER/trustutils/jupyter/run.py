@@ -799,7 +799,7 @@ def getCases():
         return []
     return defaultSuite_.getCases()
 
-def executeScript(scriptName, verbose=False):
+def executeScript(scriptName, verbose=False, nonRegression=False):
     """ 
     Execute a script shell in the BUILD_DIRECTORY
 
@@ -809,7 +809,15 @@ def executeScript(scriptName, verbose=False):
     scriptName: str
         Name of the exec script
     verbose: bool
+    nonRegression: bool
+        by default executeScript is inactive when option -not_run is applied (for non regression test)
     """
+    opt = os.environ.get("JUPYTER_RUN_OPTIONS", "")
+    # Very specific to the validation process. Sometimes we want the core
+    # method 'runCases()' not to do anything ... see script 'archive_resultat' for example.
+    if "-not_run" in opt and not nonRegression :
+        return
+
     os.chdir(BUILD_DIRECTORY)
     pth = "./" + scriptName
     if os.path.exists(pth):
