@@ -207,9 +207,11 @@ double Sortie_libre_Pression_imposee_Orlansky::flux_impose(int face) const
   return le_champ_front.valeurs()(face);
 }
 
-double Sortie_libre_Pression_imposee_Orlansky::flux_impose(int, int) const
+double Sortie_libre_Pression_imposee_Orlansky::flux_impose(int face, int ncomp) const
 {
-  Cerr << "Sortie_libre_Pression_imposee_Orlansky::flux_impose(int  , int )" << finl;
-  Cerr << "La pression est un scalaire." << finl;
+  if (ncomp == 0) return flux_impose(face);
+
+  Cerr << "Sortie_libre_Pression_imposee_Orlansky::flux_impose(int  , int ). La pression est un scalaire." << finl;
+  Process::exit();
   return 0.;
 }

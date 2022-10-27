@@ -169,10 +169,13 @@ double Sortie_libre_Gradient_Pression_libre_VEF::flux_impose(int face) const
 
 }
 
-double Sortie_libre_Gradient_Pression_libre_VEF::flux_impose(int, int) const
+double Sortie_libre_Gradient_Pression_libre_VEF::flux_impose(int face, int ncomp) const
 {
+  if (ncomp == 0) return flux_impose(face);
+
   Cerr << "Sortie_libre_Gradient_Pression_libre_VEF::flux_impose(int  , int )" << finl;
   Cerr << "On ne sait imposer que la composante normale du gradient" << finl;
+  Process::exit();
   return 0.;
 }
 

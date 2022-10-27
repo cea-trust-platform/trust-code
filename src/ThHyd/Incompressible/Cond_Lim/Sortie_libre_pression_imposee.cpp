@@ -85,9 +85,7 @@ double Sortie_libre_pression_imposee::flux_impose(int i) const
       rho_ = rho(i);
     }
   else
-    {
-      rho_ = d_rho;
-    }
+    rho_ = d_rho;
 
   if (le_champ_front.valeurs().size() == 1)
     return le_champ_front(0, 0) / rho_;
