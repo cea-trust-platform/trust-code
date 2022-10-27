@@ -79,7 +79,7 @@ Read pb
 
     Navier_Stokes_Standard
     {
-solveur_pression petsc gcp { precond ssor { omega 1.6 } _reorder_matrix_ rtol 1.e-8 impr cli { -mat_view draw:image:matrix } }
+        solveur_pression petsc gcp { precond ssor { omega 1.6 } _reorder_matrix_ rtol 1.e-8 impr cli { -mat_view draw:image:matrix } }
         convection { muscl }
         diffusion  {  }
         initial_conditions {  vitesse Champ_Uniforme 3  0. 0. 0. }

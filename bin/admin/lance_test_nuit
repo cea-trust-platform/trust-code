@@ -530,9 +530,9 @@ git_push()
       cat $repo_log | tail -n +3
       if [ "$git_branch" != "Livraison" ]
       then
-         [ "`cat $repo_log | tail -n +3`" != "Everything up-to-date" ] && cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST git push $repo $git_branch\" $TRUST_MAIL 
+         [ "`grep 'Everything up-to-date' $repo_log`" = "" ] && cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST git push $repo $git_branch\" $TRUST_MAIL 
       else
-         [ "`cat $repo_log | tail -n +3`" != "Everything up-to-date" ] && cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST git push $repo TMA\" $TRUST_MAIL 
+         [ "`grep 'Everything up-to-date' $repo_log`" = "" ] && cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST git push $repo TMA\" $TRUST_MAIL 
       fi
    done
 }
@@ -945,7 +945,7 @@ fi
      echo " git push $repo TMA in `pwd`"
      git push $tags_ $repo Livraison:$remote_branch 1>tmp.log 2>&1
      cat tmp.log
-     [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] externalpackages git push $repo TMA\" $TRUST_MAIL 
+     [ "`grep 'Everything up-to-date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] externalpackages git push $repo TMA\" $TRUST_MAIL 
      rm tmp.log 1>/dev/null 2>&1
    done
    cd - 1>/dev/null 2>&1
@@ -965,28 +965,28 @@ fi
          #fi
          git push --tags origin Livraison:triou/TMA 1>tmp.log 2>&1
          cat tmp.log
-         [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push origin TMA\" $TRUST_MAIL 
+         [ "`grep 'Everything up-to-date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push origin TMA\" $TRUST_MAIL 
          rm tmp.log 1>/dev/null 2>&1
       elif [[ "$Composant" == "triocfd" ]]
       then
          #git checkout -- Front_tracking_discontinu/tests/Reference/Validation/ftd_gravite_jdd1/ftd_gravite_jdd1.data
-         git remote update
+         git remote update origin
          git checkout .
          git pull 1>tmp.log 2>&1
          if [ $? != 0 ]
          then
             cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull KO \" $TRUST_MAIL
          else
-            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull OK \" $TRUST_MAIL
+            [ "`grep 'Already up to date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull OK \" $TRUST_MAIL
          fi
-         rm tmp.log 1>/dev/null 2>&1
+         cat tmp.log && rm tmp.log 1>/dev/null 2>&1
          git push origin_irene-ccrt Livraison:triou/TMA 1>tmp.log 2>&1
          cat tmp.log
-         [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push origin_irene-ccrt TMA\" $TRUST_MAIL 
+         [ "`grep 'Everything up-to-date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push origin_irene-ccrt TMA\" $TRUST_MAIL 
          rm tmp.log 1>/dev/null 2>&1
          git push github_write Livraison:next 1>tmp.log 2>&1
          cat tmp.log
-         [ "`cat tmp.log`" != "Already up to date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push github TMA\" $TRUST_MAIL 
+         [ "`grep 'Everything up-to-date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push github TMA\" $TRUST_MAIL 
          rm tmp.log 1>/dev/null 2>&1
       elif [[ "$Composant" == "TRUST_NK" ]]
       then
@@ -998,14 +998,15 @@ fi
          then
             cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull master KO \" $TRUST_MAIL
          else
-            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull master OK \" $TRUST_MAIL
+            [ "`grep 'Already up to date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull master OK \" $TRUST_MAIL
          fi
+         cat tmp.log
          rm tmp.log 1>/dev/null 2>&1
       elif [[ "$Composant" == "flica5" ]]
       then
          git push --tags origin Livraison:triou/TMA 1>tmp.log 2>&1
          cat tmp.log
-         [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push origin TMA\" $TRUST_MAIL 
+         [ "`grep 'Everything up-to-date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push origin TMA\" $TRUST_MAIL 
          rm tmp.log 1>/dev/null 2>&1
          cd $WORKDIR/tuleap/Maintenance/Composants/$Composant
          git remote update
@@ -1016,8 +1017,9 @@ fi
          then
             cat tmp.log | mail_ -s\"[lance_test_nuit_maintenance] $Composant : git pull master KO \" $TRUST_MAIL
          else
-            cat tmp.log | mail_ -s\"[lance_test_nuit_maintenance] $Composant : git pull master OK \" $TRUST_MAIL
+            [ "`grep 'Already up to date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit_maintenance] $Composant : git pull master OK \" $TRUST_MAIL
          fi
+         cat tmp.log
          rm tmp.log 1>/dev/null 2>&1
          cd -
       elif [[ "$Composant" == "cathare3D" ]]
@@ -1030,8 +1032,9 @@ fi
          then
             cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull Issue0076_portage191 KO \" $TRUST_MAIL
          else
-            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull Issue0076_portage191 OK \" $TRUST_MAIL
+            [ "`grep 'Already up to date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull Issue0076_portage191 OK \" $TRUST_MAIL
          fi
+         cat tmp.log
          rm tmp.log 1>/dev/null 2>&1
          cd $WORKDIR/tuleap/Maintenance/Composants/$Composant
          git remote update
@@ -1043,8 +1046,9 @@ fi
          then
             cat tmp.log | mail_ -s\"[lance_test_nuit_maintenance] $Composant : git pull master KO \" $TRUST_MAIL
          else
-            cat tmp.log | mail_ -s\"[lance_test_nuit_maintenance] $Composant : git pull master OK \" $TRUST_MAIL
+            [ "`grep 'Already up to date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit_maintenance] $Composant : git pull master OK \" $TRUST_MAIL
          fi
+         cat tmp.log
          rm tmp.log 1>/dev/null 2>&1
          cd -
       else
@@ -1058,8 +1062,9 @@ fi
          then
             cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull portage KO \" $TRUST_MAIL
          else
-            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull portage OK \" $TRUST_MAIL
+            [ "`grep 'Already up to date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull portage OK \" $TRUST_MAIL
          fi
+         cat tmp.log
          rm tmp.log 1>/dev/null 2>&1
          #git push origin Livraison:triou/TMA 1>tmp.log 2>&1
       fi
@@ -2046,12 +2051,12 @@ do
 	       echo "    ssh $log@$adr scancel $pids"
 	       ssh $log@$adr scancel $pids
 	       ssh $log@$adr scancel $pids
-	     #  echo "    ssh $log@$adr kill -9 $pids"
-	     #  ssh $log@$adr kill -19 $pids
-	     #  ssh $log@$adr kill -9 $pids
+	       echo "    ssh $log@$adr kill -9 $pids   # scancel ne marche pas sur pc"
+	       #ssh $log@$adr kill -19 $pids
+	       ssh $log@$adr kill -9 $pids
 	      ) 
 	    done
-	    IFS=$old_IFS  # r\E9tablissement du s\E9parateur de champ par d\E9faut
+	    IFS=$old_IFS  # retablissement du separateur de champ par defaut
 	 fi 
 	 rm -f start.liste stop.liste kill.liste
       else

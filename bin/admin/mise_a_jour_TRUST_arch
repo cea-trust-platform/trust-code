@@ -969,12 +969,14 @@ do
 	 # Test MED_COUPLING_PYTHON
 	 echo Lata_conversion_scripts_jdd1 >> liste_cherche
 	 echo MED_major_jdd1 >> liste_cherche
+	 mv liste_cherche liste_cherche_cpu
 	 # CUDA
-	 trust -search amgx
+	 trust -search amgx 1>/dev/null
 	 mv liste_cherche liste_cherche_gpu
 	 trust -search petsc_gpu
 	 cat liste_cherche >> liste_cherche_gpu
 	 echo PETSC_CUDA >> liste_cherche_gpu
+	 mv liste_cherche_cpu liste_cherche
 	 # Ensuite selon les options, on affine:
 	 teste=0
 	 if [ "`$TRUST_ROOT/bin/admin/liste_machines "\-without_run" | grep ^$HOST_BUILD"\."`" ]
