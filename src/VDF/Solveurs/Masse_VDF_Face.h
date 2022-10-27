@@ -27,6 +27,7 @@ public:
   DoubleTab& appliquer_impl(DoubleTab& ) const override;
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const override;
+  DoubleTab& corriger_solution(DoubleTab& x, const DoubleTab& y, int incr) const override;
 };
 
 #endif /* Masse_VDF_Face_included */
