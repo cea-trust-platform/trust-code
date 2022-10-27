@@ -53,8 +53,8 @@ public:
   void associer(const Zone_VDF&, const Zone_Cl_VDF&, const Operateur_base&);
   void associer(const Zone_dis&, const Zone_Cl_dis&, const Operateur_base&);
   void associer_zone_cl_dis(const Zone_Cl_dis_base&);
-  void associer_champ_conserve(const Champ_Inc& ch) { le_champ_conserve_ = ch.valeur(); }
-  virtual const Champ_Inc_base& le_champ_conserve() const = 0; //{ return le_champ_conserve_.valeur(); }
+  void associer_champ_convecte(const Champ_Inc& ch) { le_champ_convecte_ = ch.valeur(); }
+  virtual void ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const=0;
 
   virtual void calculer_flux_bord(const DoubleTab&) const;
   virtual void ajouter_contribution_autre_pb(const DoubleTab& inco, Matrice_Morse& matrice, const Cond_lim& la_cl, std::map<int, std::pair<int, int>>&) const;
@@ -77,7 +77,7 @@ protected:
   REF(Zone_VDF) la_zone;
   REF(Zone_Cl_VDF) la_zcl;
   REF(Operateur_base) op_base;
-  REF(Champ_Inc_base) le_champ_conserve_;
+  REF(Champ_Inc_base) le_champ_convecte_;
 };
 
 inline Type_Cl_VDF Iterateur_VDF_base::type_cl(const Cond_lim& la_cl) const
@@ -120,6 +120,7 @@ public:
   inline const Zone_Cl_VDF& zone_Cl() const { return valeur().zone_Cl(); }
   inline DoubleTab& ajouter(const DoubleTab& inco, DoubleTab& resu) const { return valeur().ajouter(inco,resu); }
   inline DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu) const { return valeur().calculer(inco, resu); }
+  virtual void ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const { valeur().ajouter_blocs(mats, secmem, semi_impl); }
 
 protected:
   inline Type_Cl_VDF type_cl(const Cond_lim& cl) const { return valeur().type_cl(cl); }

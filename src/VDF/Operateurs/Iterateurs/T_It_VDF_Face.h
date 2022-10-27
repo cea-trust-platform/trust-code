@@ -52,15 +52,12 @@ public:
   void ajouter_contribution_vitesse(const DoubleTab&, Matrice_Morse& ) const override;
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
   DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const override;
+  void ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const override { Process::exit(); }
+
 
   inline void completer_() override;
   inline Evaluateur_VDF& evaluateur() override { return (Evaluateur_VDF&) flux_evaluateur; }
   inline const Evaluateur_VDF& evaluateur() const override { return (Evaluateur_VDF&) flux_evaluateur; }
-  const Champ_Inc_base& le_champ_conserve() const override
-  {
-    Cerr << "T_It_VDF_Face::le_champ_conserve() should not ne called !" << finl;
-    throw;
-  }
 
 protected:
   _TYPE_ flux_evaluateur;

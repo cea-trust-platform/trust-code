@@ -51,11 +51,11 @@ public:
   void ajouter_contribution_autre_pb(const DoubleTab& inco, Matrice_Morse& matrice, const Cond_lim& la_cl, std::map<int, std::pair<int, int>>&) const override;
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
   DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const override;
+  void ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const override;
 
   inline void completer_() override { elem.ref(la_zone->face_voisins()); }
   inline Evaluateur_VDF& evaluateur() override { return (Evaluateur_VDF&) flux_evaluateur; }
   inline const Evaluateur_VDF& evaluateur() const override { return (Evaluateur_VDF&) flux_evaluateur; }
-  const Champ_Inc_base& le_champ_conserve() const  override { return le_champ_conserve_.valeur(); }
 
 protected:
   _TYPE_ flux_evaluateur;
@@ -66,12 +66,14 @@ protected:
 private:
 
   /* ************************************** *
+   * *********  INTERFACE  BLOCS ********** *
+   * ************************************** */
+  template <typename Type_Double> DoubleTab& ajouter_blocs_bords(const int , matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const;
+  template <typename Type_Double> DoubleTab& ajouter_blocs_interne(const int , matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const;
+
+  /* ************************************** *
    * *********  POUR L'EXPLICITE ********** *
    * ************************************** */
-
-  template <typename Type_Double> DoubleTab& ajouter_bords(const int , const DoubleTab& , DoubleTab& ) const;
-  template <typename Type_Double> DoubleTab& ajouter_interne(const int , const DoubleTab& , DoubleTab& ) const;
-
   template <bool should_calc_flux, typename Type_Double, typename BC> void ajouter_bords_(const BC& , const int , const int , const int , const DoubleTab& , DoubleTab& ) const;
   template <typename Type_Double> void ajouter_bords_(const Periodique& , const int , const int , const int , const DoubleTab&, const Front_VF& , DoubleTab& ) const;
   template <typename Type_Double> void ajouter_bords_(const Echange_externe_impose& , const int , const int , const int , const int , const DoubleTab& , const Front_VF& , DoubleTab& ) const;
@@ -88,10 +90,6 @@ private:
   /* ************************************** *
    * *********  POUR L'IMPLICITE ********** *
    * ************************************** */
-
-  template <typename Type_Double> void ajouter_contribution_bords(const int , Matrice_Morse& ) const;
-  template <typename Type_Double> void ajouter_contribution_interne(const int ,  Matrice_Morse& ) const;
-
   template <bool should_calc_flux, typename Type_Double, typename BC> void ajouter_contribution_bords_(const BC& , const int , const int , const int , Matrice_Morse& ) const;
   template <typename Type_Double> void ajouter_contribution_bords_(const Periodique& , const int , const int , const int, Matrice_Morse& ) const;
   template <typename Type_Double> void ajouter_contribution_bords_(const Echange_externe_impose& , const int , const int , const int, const int, const Front_VF& , Matrice_Morse& ) const;

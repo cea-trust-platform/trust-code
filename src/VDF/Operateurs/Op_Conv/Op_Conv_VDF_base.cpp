@@ -38,11 +38,16 @@ inline void eval_fluent(const double psc,const int num1,const int num2, DoubleVe
 void Op_Conv_VDF_base::ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   statistiques().begin_count(convection_counter_);
-  const std::string& nom_inco = equation().inconnue().le_nom().getString();
-  Matrice_Morse* matrice = mats.count(nom_inco) ? mats.at(nom_inco) : NULL;
-  const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : equation().inconnue().valeurs());
-  if(matrice) iter.ajouter_contribution(inco, *matrice);
-  iter.ajouter(inco,secmem);
+  if (sub_type(Champ_Face_base, equation().inconnue().valeur()))
+    {
+      const std::string& nom_inco = equation().inconnue().le_nom().getString();
+      Matrice_Morse* matrice = mats.count(nom_inco) ? mats.at(nom_inco) : NULL;
+      const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : equation().inconnue().valeurs());
+      if(matrice) iter.ajouter_contribution(inco, *matrice);
+      iter.ajouter(inco,secmem);
+    }
+  else
+    iter.ajouter_blocs(mats, secmem, semi_impl);
   statistiques().end_count(convection_counter_);
 }
 
@@ -294,6 +299,8 @@ void Op_Conv_VDF_base::completer()
 {
   Operateur_base::completer();
   iter.completer_();
+  const Champ_Inc& cc = le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue(); //equation().champ_convecte()
+  iter->associer_champ_convecte(cc);
 }
 
 void Op_Conv_VDF_base::associer_zone_cl_dis(const Zone_Cl_dis_base& zcl)
