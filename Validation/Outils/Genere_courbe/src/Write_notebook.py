@@ -362,6 +362,7 @@ class Write_notebook:
         
         # cas test a faire tourner ici car trop tard dans inclureResultsNotebook
         testCases = "from trustutils import run\n \n"
+        testCases += "run.reset() \n"
         for cas in maitre.casTest:
             from lib import get_detail_cas
             nomcas,dir,nb_proc,comment=get_detail_cas(cas)
@@ -460,6 +461,7 @@ class Write_notebook:
     def write_liste_cas(self,maitre):
         if maitre.casTest:
             testCases = "from trustutils import run\n \n"
+            testCases += "run.reset() \n"
             for cas in maitre.casTest:
                 from lib import get_detail_cas
                 nomcas,dir,nb_proc,comment=get_detail_cas(cas)
