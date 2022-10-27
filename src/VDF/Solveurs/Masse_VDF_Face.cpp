@@ -164,6 +164,8 @@ void Masse_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, doubl
 
 DoubleTab& Masse_VDF_Face::corriger_solution(DoubleTab& x, const DoubleTab& y, int incr) const
 {
+  if (!sub_type(Pb_Multiphase, equation().probleme())) return Masse_VDF_base::corriger_solution(x,y,incr);
+
   const Zone_VDF& zone = ref_cast(Zone_VDF, equation().zone_dis().valeur());
   const Conds_lim& cls = ref_cast(Zone_Cl_dis_base, equation().zone_Cl_dis().valeur()).les_conditions_limites();
   const IntTab& fcl = ref_cast(Champ_Face_base, equation().inconnue().valeur()).fcl();
