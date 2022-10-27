@@ -826,9 +826,22 @@ def executeScript(scriptName, verbose=False, nonRegression=False):
         _runCommand(cmd, verbose)
     os.chdir(ORIGIN_DIRECTORY)
 
-def executeCommand(cmd, verbose=False):
+def executeCommand(cmd, verbose=False, nonRegression=False):
     """ Execute a bash command in the BUILD_DIRECTORY
+    Parameters
+    ----------
+
+    cmd: command to execute
+        Name of the exec script
+    verbose: bool
+    nonRegression: bool
+        by default executeScript is inactive when option -not_run is applied (for non regression test)
     """
+    opt = os.environ.get("JUPYTER_RUN_OPTIONS", "")
+    # Very specific to the validation process. Sometimes we want the core
+    # method 'runCases()' not to do anything ... see script 'archive_resultat' for example.
+    if "-not_run" in opt and not nonRegression :
+        return
     os.chdir(BUILD_DIRECTORY)
     _runCommand(cmd, verbose)
     os.chdir(ORIGIN_DIRECTORY)
