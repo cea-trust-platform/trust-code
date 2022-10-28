@@ -17,7 +17,8 @@
 #define Op_Diff_VDF_base_included
 
 #include <Operateur_Diff_base.h>
-#include <Iterateur_VDF_base.h>
+#include <Iterateur_VDF.h>
+
 class Champ_Fonc;
 
 /*! @brief class Op_Diff_VDF_base Classe de base des operateurs de diffusion VDF
@@ -39,10 +40,7 @@ public:
   inline const Iterateur_VDF& get_iter() const { return iter; }
   inline Iterateur_VDF& get_iter() { return iter; }
 
-  inline int has_interface_blocs() const override
-  {
-    return 1;
-  };
+  inline int has_interface_blocs() const override { return 1; }
   void init_op_ext() const override;
 
 protected:

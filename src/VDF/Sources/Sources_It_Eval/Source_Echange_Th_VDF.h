@@ -17,10 +17,9 @@
 #define Source_Echange_Th_VDF_included
 
 #include <Eval_Echange_Himp_VDF_Elem.h>
+#include <Iterateur_Source_VDF_Elem.h>
 #include <Terme_Source_VDF_base.h>
-#include <ItSouVDFEl.h>
 
-declare_It_Sou_VDF_Elem(Eval_Echange_Himp_VDF_Elem)
 /*! @brief class Source_Echange_Th_VDF Source volumique d'echange thermique avec un autre probleme de meme domaine
  *
  *   dT/dt = h * (T'-T) / rho / Cp
@@ -30,7 +29,7 @@ class Source_Echange_Th_VDF : public  Terme_Source_VDF_base
 {
   Declare_instanciable_sans_constructeur(Source_Echange_Th_VDF);
 public:
-  inline Source_Echange_Th_VDF() : Terme_Source_VDF_base(It_Sou_VDF_Elem(Eval_Echange_Himp_VDF_Elem)()), h(-1.) {}
+  inline Source_Echange_Th_VDF() : Terme_Source_VDF_base(Iterateur_Source_VDF_Elem<Eval_Echange_Himp_VDF_Elem>()), h(-1.) {}
   void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;
   void associer_pb(const Probleme_base&) override;
   void mettre_a_jour(double temps) override { /* Do nothing */ }

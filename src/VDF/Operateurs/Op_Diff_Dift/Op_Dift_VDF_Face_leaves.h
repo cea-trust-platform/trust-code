@@ -32,7 +32,7 @@ class Champ_Fonc;
 //////////////// CONST /////////////////
 
 // ===========================================================================================================================================
-declare_It_VDF_Face(Eval_Dift_VDF_const_Face)
+
 class Op_Dift_VDF_Face : public Op_Dift_VDF_Face_base, public Op_Diff_Dift_VDF<Op_Dift_VDF_Face>
 {
   Declare_instanciable_sans_constructeur(Op_Dift_VDF_Face);
@@ -46,6 +46,7 @@ public:
 };
 
 // ===========================================================================================================================================
+
 class Op_Dift_VDF_Face_Axi : public Op_Dift_VDF_Face_Axi_base
 {
   Declare_instanciable(Op_Dift_VDF_Face_Axi);
@@ -66,7 +67,7 @@ protected:
 //////////////// VAR /////////////////
 
 // ===========================================================================================================================================
-declare_It_VDF_Face(Eval_Dift_VDF_var_Face)
+
 class Op_Dift_VDF_var_Face : public Op_Dift_VDF_Face_base, public Op_Diff_Dift_VDF<Op_Dift_VDF_var_Face>
 {
   Declare_instanciable_sans_constructeur(Op_Dift_VDF_var_Face);
@@ -81,6 +82,7 @@ public:
 };
 
 // ===========================================================================================================================================
+
 class Op_Dift_VDF_var_Face_Axi : public Op_Dift_VDF_Face_Axi_base
 {
   Declare_instanciable(Op_Dift_VDF_var_Face_Axi);

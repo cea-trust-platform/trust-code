@@ -16,31 +16,26 @@
 #include <Op_Conv_VDF_Face_leaves.h>
 
 Implemente_instanciable_sans_constructeur(Op_Conv_Amont_VDF_Face,"Op_Conv_Amont_VDF_Face",Op_Conv_VDF_base);
-implemente_It_VDF_Face(Eval_Amont_VDF_Face)
 Sortie& Op_Conv_Amont_VDF_Face::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 Entree& Op_Conv_Amont_VDF_Face::readOn(Entree& s ) { return s ; }
-Op_Conv_Amont_VDF_Face::Op_Conv_Amont_VDF_Face() : Op_Conv_VDF_base(It_VDF_Face(Eval_Amont_VDF_Face)()) { }
+Op_Conv_Amont_VDF_Face::Op_Conv_Amont_VDF_Face() : Op_Conv_VDF_base(Iterateur_VDF_Face<Eval_Amont_VDF_Face>()) { }
 
 Implemente_instanciable_sans_constructeur(Op_Conv_Centre_VDF_Face,"Op_Conv_Centre_VDF_Face",Op_Conv_VDF_base);
-implemente_It_VDF_Face(Eval_Centre_VDF_Face)
 Sortie& Op_Conv_Centre_VDF_Face::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 Entree& Op_Conv_Centre_VDF_Face::readOn(Entree& s ) { return s ; }
-Op_Conv_Centre_VDF_Face::Op_Conv_Centre_VDF_Face() : Op_Conv_VDF_base(It_VDF_Face(Eval_Centre_VDF_Face)()) { }
+Op_Conv_Centre_VDF_Face::Op_Conv_Centre_VDF_Face() : Op_Conv_VDF_base(Iterateur_VDF_Face<Eval_Centre_VDF_Face>()) { }
 
 Implemente_instanciable_sans_constructeur(Op_Conv_Centre4_VDF_Face,"Op_Conv_Centre4_VDF_Face",Op_Conv_VDF_base);
-implemente_It_VDF_Face(Eval_Centre4_VDF_Face)
 Sortie& Op_Conv_Centre4_VDF_Face::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 Entree& Op_Conv_Centre4_VDF_Face::readOn(Entree& s ) { return s ; }
-Op_Conv_Centre4_VDF_Face::Op_Conv_Centre4_VDF_Face() : Op_Conv_VDF_base(It_VDF_Face(Eval_Centre4_VDF_Face)()) { }
+Op_Conv_Centre4_VDF_Face::Op_Conv_Centre4_VDF_Face() : Op_Conv_VDF_base(Iterateur_VDF_Face<Eval_Centre4_VDF_Face>()) { }
 
 Implemente_instanciable_sans_constructeur(Op_Conv_Quick_VDF_Face_Axi,"Op_Conv_Quick_VDF_Face_Axi",Op_Conv_VDF_base);
-implemente_It_VDF_Face(Eval_Quick_VDF_Face_Axi)
 Sortie& Op_Conv_Quick_VDF_Face_Axi::printOn(Sortie& s ) const { return s; }
 Entree& Op_Conv_Quick_VDF_Face_Axi::readOn(Entree& is ) { return is; }
-Op_Conv_Quick_VDF_Face_Axi::Op_Conv_Quick_VDF_Face_Axi() :Op_Conv_VDF_base(It_VDF_Face(Eval_Quick_VDF_Face_Axi)()) { }
+Op_Conv_Quick_VDF_Face_Axi::Op_Conv_Quick_VDF_Face_Axi() :Op_Conv_VDF_base(Iterateur_VDF_Face<Eval_Quick_VDF_Face_Axi>()) { }
 
 Implemente_instanciable_sans_constructeur(Op_Conv_Quick_VDF_Face,"Op_Conv_Quick_VDF_Face",Op_Conv_VDF_base);
-implemente_It_VDF_Face(Eval_Quick_VDF_Face)
 Sortie& Op_Conv_Quick_VDF_Face::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 Entree& Op_Conv_Quick_VDF_Face::readOn(Entree& s ) { return s ; }
-Op_Conv_Quick_VDF_Face::Op_Conv_Quick_VDF_Face() : Op_Conv_VDF_base(It_VDF_Face(Eval_Quick_VDF_Face)()) { }
+Op_Conv_Quick_VDF_Face::Op_Conv_Quick_VDF_Face() : Op_Conv_VDF_base(Iterateur_VDF_Face<Eval_Quick_VDF_Face>()) { }

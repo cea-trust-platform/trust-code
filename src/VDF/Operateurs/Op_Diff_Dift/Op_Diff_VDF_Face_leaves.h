@@ -29,7 +29,6 @@ class Op_Diff_VDF_Face_leaves
 
 //////////////// CONST /////////////////
 
-declare_It_VDF_Face(Eval_Diff_VDF_const_Face)
 /*! @brief class Op_Diff_VDF_Face Cette classe represente l'operateur de diffusion associe a une equation de la quantite de mouvement.
  *
  *   La discretisation est VDF. Le champ diffuse est un Champ_Face_VDF. Le champ de diffusivite est uniforme
@@ -69,7 +68,6 @@ protected:
 
 //////////////// VAR /////////////////
 
-declare_It_VDF_Face(Eval_Diff_VDF_var_Face)
 /*! @brief class Op_Diff_VDF_var_Face Cette classe represente l'operateur de diffusion associe a une equation de la quantite de mouvement.
  *
  *   La discretisation est VDF. Le champ diffuse est un Champ_Face_VDF. Le champ de diffusivite n'est pas uniforme

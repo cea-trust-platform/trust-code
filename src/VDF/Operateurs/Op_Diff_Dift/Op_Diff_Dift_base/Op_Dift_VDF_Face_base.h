@@ -16,9 +16,9 @@
 #ifndef Op_Dift_VDF_Face_base_included
 #define Op_Dift_VDF_Face_base_included
 
+#include <Iterateur_VDF_Face.h>
 #include <Op_Dift_VDF_base.h>
 #include <Op_VDF_Face.h>
-#include <ItVDFFa.h>
 
 class Mod_turb_hyd_base;
 class Eval_VDF_Face;

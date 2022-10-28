@@ -17,14 +17,13 @@
 #define Source_Dirac_VDF_Elem_included
 
 #include <Terme_Puissance_Thermique_VDF_base.h>
+#include <Iterateur_Source_VDF_Elem.h>
 #include <Eval_Dirac_VDF_Elem.h>
 #include <Modele_Permeabilite.h>
-#include <ItSouVDFEl.h>
 
-class Zone_dis;
 class Zone_Cl_dis;
+class Zone_dis;
 
-declare_It_Sou_VDF_Elem(Eval_Dirac_VDF_Elem)
 /*! @brief class Source_Dirac_VDF_Elem Cette classe represente un  terme source de Dirac.
  *
  */
@@ -32,7 +31,7 @@ class Source_Dirac_VDF_Elem : public Terme_Puissance_Thermique_VDF_base
 {
   Declare_instanciable_sans_constructeur(Source_Dirac_VDF_Elem);
 public:
-  inline Source_Dirac_VDF_Elem();
+  Source_Dirac_VDF_Elem() : Terme_Puissance_Thermique_VDF_base(Iterateur_Source_VDF_Elem<Eval_Dirac_VDF_Elem>()), nb_dirac(0) { }
   void associer_pb(const Probleme_base& ) override;
   void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;
   void mettre_a_jour(double temps) override { Terme_Puissance_Thermique::mettre_a_jour(temps); }
@@ -41,8 +40,5 @@ protected:
   DoubleVect point;
   int nb_dirac;
 };
-
-inline Source_Dirac_VDF_Elem::Source_Dirac_VDF_Elem() :
-  Terme_Puissance_Thermique_VDF_base(It_Sou_VDF_Elem(Eval_Dirac_VDF_Elem)()), nb_dirac(0) { }
 
 #endif /* Source_Dirac_VDF_Elem_included */

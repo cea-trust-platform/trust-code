@@ -18,10 +18,9 @@
 //////////////// CONST /////////////////
 
 Implemente_instanciable_sans_constructeur(Op_Dift_VDF_Face,"Op_Dift_VDF_Face",Op_Dift_VDF_Face_base);
-implemente_It_VDF_Face(Eval_Dift_VDF_const_Face)
 Sortie& Op_Dift_VDF_Face::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 Entree& Op_Dift_VDF_Face::readOn(Entree& s ) { return s ; }
-Op_Dift_VDF_Face::Op_Dift_VDF_Face() : Op_Dift_VDF_Face_base(It_VDF_Face(Eval_Dift_VDF_const_Face)()) { }
+Op_Dift_VDF_Face::Op_Dift_VDF_Face() : Op_Dift_VDF_Face_base(Iterateur_VDF_Face<Eval_Dift_VDF_const_Face>()) { }
 
 Implemente_instanciable(Op_Dift_VDF_Face_Axi,"Op_Dift_VDF_Face_Axi",Op_Dift_VDF_Face_Axi_base);
 Sortie& Op_Dift_VDF_Face_Axi::printOn(Sortie& s ) const { return s << que_suis_je() ; }
@@ -30,10 +29,9 @@ Entree& Op_Dift_VDF_Face_Axi::readOn(Entree& s ) { return s ; }
 //////////////// VAR /////////////////
 
 Implemente_instanciable_sans_constructeur(Op_Dift_VDF_var_Face,"Op_Dift_VDF_var_Face",Op_Dift_VDF_Face_base);
-implemente_It_VDF_Face(Eval_Dift_VDF_var_Face)
 Sortie& Op_Dift_VDF_var_Face::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 Entree& Op_Dift_VDF_var_Face::readOn(Entree& s ) { return s ; }
-Op_Dift_VDF_var_Face::Op_Dift_VDF_var_Face() : Op_Dift_VDF_Face_base(It_VDF_Face(Eval_Dift_VDF_var_Face)())
+Op_Dift_VDF_var_Face::Op_Dift_VDF_var_Face() : Op_Dift_VDF_Face_base(Iterateur_VDF_Face<Eval_Dift_VDF_var_Face>())
 {
   declare_support_masse_volumique(1);
 }

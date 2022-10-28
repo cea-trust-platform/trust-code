@@ -16,9 +16,9 @@
 #ifndef Op_Dift_VDF_Elem_base_included
 #define Op_Dift_VDF_Elem_base_included
 
+#include <Iterateur_VDF_Elem.h>
 #include <Op_Dift_VDF_base.h>
 #include <Op_VDF_Elem.h>
-#include <ItVDFEl.h>
 
 class Turbulence_paroi_scal;
 

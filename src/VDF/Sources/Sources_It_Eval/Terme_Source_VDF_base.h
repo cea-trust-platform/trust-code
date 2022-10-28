@@ -28,10 +28,7 @@ public:
   inline DoubleTab& calculer(DoubleTab& resu) const override { return iter->calculer(resu); }
   inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
   inline void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override { iter->ajouter(secmem); }
-  inline int has_interface_blocs() const override
-  {
-    return 1;
-  };
+  inline int has_interface_blocs() const override { return 1; }
 
 protected:
   Iterateur_Source_VDF iter;

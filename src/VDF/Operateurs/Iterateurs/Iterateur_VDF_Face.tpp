@@ -13,14 +13,14 @@
 *
 *****************************************************************************/
 
-#ifndef T_It_VDF_Face_TPP_included
-#define T_It_VDF_Face_TPP_included
+#ifndef Iterateur_VDF_Face_TPP_included
+#define Iterateur_VDF_Face_TPP_included
 #include <TRUSTSingle.h>
 #include <Champ_Uniforme.h>
 #include <communications.h>
 
 template <class _TYPE_>
-inline T_It_VDF_Face<_TYPE_>::T_It_VDF_Face(const T_It_VDF_Face<_TYPE_>& iter) :
+inline Iterateur_VDF_Face<_TYPE_>::Iterateur_VDF_Face(const Iterateur_VDF_Face<_TYPE_>& iter) :
   Iterateur_VDF_base(iter), flux_evaluateur(iter.flux_evaluateur), nb_elem(iter.nb_elem),
   premiere_arete_interne(iter.premiere_arete_interne), derniere_arete_interne(iter.derniere_arete_interne),
   premiere_arete_mixte(iter.premiere_arete_mixte), derniere_arete_mixte(iter.derniere_arete_mixte),
@@ -36,7 +36,7 @@ inline T_It_VDF_Face<_TYPE_>::T_It_VDF_Face(const T_It_VDF_Face<_TYPE_>& iter) :
 }
 
 template <class _TYPE_>
-void T_It_VDF_Face<_TYPE_>::completer_()
+void Iterateur_VDF_Face<_TYPE_>::completer_()
 {
   nb_elem=la_zone->nb_elem_tot();
   orientation.ref(la_zone->orientation());
@@ -56,7 +56,7 @@ void T_It_VDF_Face<_TYPE_>::completer_()
 }
 
 template <class _TYPE_>
-int T_It_VDF_Face<_TYPE_>::impr(Sortie& os) const
+int Iterateur_VDF_Face<_TYPE_>::impr(Sortie& os) const
 {
   const Zone& ma_zone=la_zone->zone();
   const int impr_mom=ma_zone.Moments_a_imprimer();
@@ -181,7 +181,7 @@ int T_It_VDF_Face<_TYPE_>::impr(Sortie& os) const
 }
 
 template <class _TYPE_>
-DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter(const DoubleTab& inco, DoubleTab& resu) const
+DoubleTab& Iterateur_VDF_Face<_TYPE_>::ajouter(const DoubleTab& inco, DoubleTab& resu) const
 {
   ((_TYPE_&) flux_evaluateur).mettre_a_jour();
   assert(inco.nb_dim() < 3);
@@ -215,7 +215,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter(const DoubleTab& inco, DoubleTab& resu
 }
 
 template <class _TYPE_>
-inline void T_It_VDF_Face<_TYPE_>::multiply_by_rho_if_hydraulique(DoubleTab& tab_flux_bords) const
+inline void Iterateur_VDF_Face<_TYPE_>::multiply_by_rho_if_hydraulique(DoubleTab& tab_flux_bords) const
 {
   Nom nom_eqn=la_zcl->equation().que_suis_je();
   /* Modif B.Mathieu pour front-tracking: masse_volumique() invalide en f.t.*/
@@ -233,14 +233,14 @@ inline void T_It_VDF_Face<_TYPE_>::multiply_by_rho_if_hydraulique(DoubleTab& tab
 }
 
 template <class _TYPE_>
-DoubleTab& T_It_VDF_Face<_TYPE_>::calculer(const DoubleTab& inco, DoubleTab& resu) const
+DoubleTab& Iterateur_VDF_Face<_TYPE_>::calculer(const DoubleTab& inco, DoubleTab& resu) const
 {
   resu=0;
   return ajouter(inco,resu);
 }
 
 template <class _TYPE_>
-void T_It_VDF_Face<_TYPE_>::ajouter_contribution(const DoubleTab& inco, Matrice_Morse& matrice) const
+void Iterateur_VDF_Face<_TYPE_>::ajouter_contribution(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   ((_TYPE_&) flux_evaluateur).mettre_a_jour();
   assert(inco.nb_dim() < 3);
@@ -270,7 +270,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution(const DoubleTab& inco, Matrice_
 }
 
 template <class _TYPE_>
-void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre(DoubleTab& resu) const
+void Iterateur_VDF_Face<_TYPE_>::contribuer_au_second_membre(DoubleTab& resu) const
 {
   ((_TYPE_&) flux_evaluateur).mettre_a_jour();
   assert(resu.nb_dim() < 3);
@@ -303,7 +303,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre(DoubleTab& resu) const
 }
 
 template <class _TYPE_>
-void T_It_VDF_Face<_TYPE_>::ajouter_contribution_vitesse(const DoubleTab& , Matrice_Morse& ) const
+void Iterateur_VDF_Face<_TYPE_>::ajouter_contribution_vitesse(const DoubleTab& , Matrice_Morse& ) const
 {
   Cerr << "Yannick dit : ajouter_contribution_vitesse should not be called from " <<  op_base.que_suis_je() << finl;
   abort();
@@ -314,7 +314,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_vitesse(const DoubleTab& , Matr
  * ************************************** */
 
 template <class _TYPE_> template <typename Type_Double>
-DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const int ncomp, const DoubleTab& inco, DoubleTab& resu) const
+DoubleTab& Iterateur_VDF_Face<_TYPE_>::ajouter_aretes_bords(const int ncomp, const DoubleTab& inco, DoubleTab& resu) const
 {
   if (!_TYPE_::CALC_ARR_BORD) return resu;
   DoubleTab& tab_flux_bords=op_base->flux_bords();
@@ -354,7 +354,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const int ncomp, const Do
 }
 
 template <class _TYPE_> template <typename Type_Double>
-DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins(const int ncomp, const DoubleTab& inco, DoubleTab& resu) const
+DoubleTab& Iterateur_VDF_Face<_TYPE_>::ajouter_aretes_coins(const int ncomp, const DoubleTab& inco, DoubleTab& resu) const
 {
   DoubleTab& tab_flux_bords=op_base->flux_bords();
   for (int n_arete = premiere_arete_coin; n_arete < derniere_arete_coin; n_arete++)
@@ -385,7 +385,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins(const int ncomp, const Do
 }
 
 template <class _TYPE_> template <typename Type_Double>
-DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_internes(const int ncomp, const DoubleTab& inco, DoubleTab& resu) const
+DoubleTab& Iterateur_VDF_Face<_TYPE_>::ajouter_aretes_internes(const int ncomp, const DoubleTab& inco, DoubleTab& resu) const
 {
   if(!_TYPE_::CALC_ARR_INT) return resu;
   for (int n_arete = premiere_arete_interne; n_arete < derniere_arete_interne; n_arete++) ajouter_aretes_internes_<true,Type_Flux_Arete::INTERNE,Type_Double>(n_arete,ncomp,inco,resu);
@@ -393,7 +393,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_internes(const int ncomp, const
 }
 
 template <class _TYPE_> template <typename Type_Double>
-DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_mixtes(const int ncomp, const DoubleTab& inco, DoubleTab& resu) const
+DoubleTab& Iterateur_VDF_Face<_TYPE_>::ajouter_aretes_mixtes(const int ncomp, const DoubleTab& inco, DoubleTab& resu) const
 {
   if(!_TYPE_::CALC_ARR_MIXTE) return resu;
   DoubleTab& tab_flux_bords = op_base->flux_bords();
@@ -402,7 +402,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_mixtes(const int ncomp, const D
 }
 
 template <class _TYPE_> template <typename Type_Double>
-DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_fa7_sortie_libre(const int ncomp, const DoubleTab& inco,DoubleTab& resu) const
+DoubleTab& Iterateur_VDF_Face<_TYPE_>::ajouter_fa7_sortie_libre(const int ncomp, const DoubleTab& inco,DoubleTab& resu) const
 {
   const int nb_front_Cl = la_zone->nb_front_Cl();
   DoubleTab& tab_flux_bords = op_base->flux_bords();
@@ -436,7 +436,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_fa7_sortie_libre(const int ncomp, cons
 }
 
 template <class _TYPE_> template <typename Type_Double>
-DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_fa7_elem(const int ncomp, const DoubleTab& inco, DoubleTab& resu) const
+DoubleTab& Iterateur_VDF_Face<_TYPE_>::ajouter_fa7_elem(const int ncomp, const DoubleTab& inco, DoubleTab& resu) const
 {
   DoubleTab& tab_flux_bords = op_base->flux_bords();
   for(int num_elem = 0 ; num_elem < nb_elem; num_elem++) ajouter_fa7_elem_<Type_Flux_Fa7::ELEM,Type_Double>(num_elem,ncomp,inco,resu,tab_flux_bords);
@@ -445,7 +445,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_fa7_elem(const int ncomp, const Double
 }
 
 template <class _TYPE_> template <typename Type_Double>
-DoubleTab& T_It_VDF_Face<_TYPE_>::corriger_flux_fa7_elem_periodicite(const int ncomp, const DoubleTab& inco, DoubleTab& resu) const
+DoubleTab& Iterateur_VDF_Face<_TYPE_>::corriger_flux_fa7_elem_periodicite(const int ncomp, const DoubleTab& inco, DoubleTab& resu) const
 {
   for (int num_cl = 0; num_cl < la_zone->nb_front_Cl(); num_cl++)
     {
@@ -466,7 +466,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::corriger_flux_fa7_elem_periodicite(const int n
 }
 
 template <class _TYPE_>
-void T_It_VDF_Face<_TYPE_>::prepare_corriger_pour_periodicite(const int face, int& num_elem, int& signe, int& fac1, int& fac2) const
+void Iterateur_VDF_Face<_TYPE_>::prepare_corriger_pour_periodicite(const int face, int& num_elem, int& signe, int& fac1, int& fac2) const
 {
   const int elem1 = elem(face,0), elem2 = elem(face,1), ori = orientation(face);
   if ( (face == elem_faces(elem1,ori)) || (face == elem_faces(elem1,ori+dimension)) )
@@ -483,7 +483,7 @@ void T_It_VDF_Face<_TYPE_>::prepare_corriger_pour_periodicite(const int face, in
 }
 
 template <class _TYPE_> template <typename Type_Double>
-void T_It_VDF_Face<_TYPE_>::corriger_flux_fa7_elem_periodicite_(const int ncomp, const int num_elem, const int fac1, const int fac2, const int face, const int signe, const DoubleTab& inco, DoubleTab& resu) const
+void Iterateur_VDF_Face<_TYPE_>::corriger_flux_fa7_elem_periodicite_(const int ncomp, const int num_elem, const int fac1, const int fac2, const int face, const int signe, const DoubleTab& inco, DoubleTab& resu) const
 {
   Type_Double flux(ncomp);
   flux_evaluateur.template flux_fa7<Type_Flux_Fa7::ELEM>(inco,num_elem,fac1,fac2,flux);
@@ -492,7 +492,7 @@ void T_It_VDF_Face<_TYPE_>::corriger_flux_fa7_elem_periodicite_(const int ncomp,
 
 template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
 enable_if_t< Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI, void>
-T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords_(const int n_arete, const int ncomp, const DoubleTab& inco,DoubleTab& resu, DoubleTab& tab_flux_bords) const
+Iterateur_VDF_Face<_TYPE_>::ajouter_aretes_bords_(const int n_arete, const int ncomp, const DoubleTab& inco,DoubleTab& resu, DoubleTab& tab_flux_bords) const
 {
   if (should_calc_flux)
     {
@@ -514,7 +514,7 @@ T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords_(const int n_arete, const int ncomp,
 
 template <class _TYPE_>  template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
 enable_if_t<Arete_Type == Type_Flux_Arete::PERIODICITE || Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
-T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords_(const int n_arete, const int ncomp, const DoubleTab& inco,DoubleTab& resu, DoubleTab& tab_flux_bords) const
+Iterateur_VDF_Face<_TYPE_>::ajouter_aretes_bords_(const int n_arete, const int ncomp, const DoubleTab& inco,DoubleTab& resu, DoubleTab& tab_flux_bords) const
 {
   if (should_calc_flux)
     {
@@ -548,7 +548,7 @@ T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords_(const int n_arete, const int ncomp,
 
 template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, TypeAreteCoinVDF::type_arete Arete_Type_Coin, typename Type_Double>
 enable_if_t< Arete_Type == Type_Flux_Arete::PAROI, void>
-T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins_(const int n_arete, const int ncomp, const DoubleTab& inco,DoubleTab& resu, DoubleTab& tab_flux_bords) const
+Iterateur_VDF_Face<_TYPE_>::ajouter_aretes_coins_(const int n_arete, const int ncomp, const DoubleTab& inco,DoubleTab& resu, DoubleTab& tab_flux_bords) const
 {
   if (should_calc_flux)
     {
@@ -571,7 +571,7 @@ T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins_(const int n_arete, const int ncomp,
 
 template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
 enable_if_t<Arete_Type == Type_Flux_Arete::PERIODICITE || Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
-T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins_(const int n_arete, const int ncomp, const DoubleTab& inco,DoubleTab& resu, DoubleTab& tab_flux_bords) const
+Iterateur_VDF_Face<_TYPE_>::ajouter_aretes_coins_(const int n_arete, const int ncomp, const DoubleTab& inco,DoubleTab& resu, DoubleTab& tab_flux_bords) const
 {
   if (should_calc_flux)
     {
@@ -604,13 +604,13 @@ T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins_(const int n_arete, const int ncomp,
 }
 
 template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
-void T_It_VDF_Face<_TYPE_>::ajouter_aretes_internes_(const int n_arete, const int ncomp, const DoubleTab& inco, DoubleTab& resu) const
+void Iterateur_VDF_Face<_TYPE_>::ajouter_aretes_internes_(const int n_arete, const int ncomp, const DoubleTab& inco, DoubleTab& resu) const
 {
   if(should_calc_flux) ajouter_aretes_mixtes_<should_calc_flux,Arete_Type,Type_Double>(n_arete,ncomp,inco,resu,op_base->flux_bords() /* inutile */);
 }
 
 template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
-void T_It_VDF_Face<_TYPE_>::ajouter_aretes_mixtes_(const int n_arete, const int ncomp, const DoubleTab& inco, DoubleTab& resu, DoubleTab& tab_flux_bords) const
+void Iterateur_VDF_Face<_TYPE_>::ajouter_aretes_mixtes_(const int n_arete, const int ncomp, const DoubleTab& inco, DoubleTab& resu, DoubleTab& tab_flux_bords) const
 {
   if (should_calc_flux)
     {
@@ -661,7 +661,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_aretes_mixtes_(const int n_arete, const int 
 }
 
 template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Fa7 Fa7_Type, typename Type_Double>
-void T_It_VDF_Face<_TYPE_>::ajouter_fa7_sortie_libre_(const int ndeb, const int nfin, const int ncomp , const Neumann_sortie_libre& cl, const DoubleTab& inco, DoubleTab& resu, DoubleTab& tab_flux_bords) const
+void Iterateur_VDF_Face<_TYPE_>::ajouter_fa7_sortie_libre_(const int ndeb, const int nfin, const int ncomp , const Neumann_sortie_libre& cl, const DoubleTab& inco, DoubleTab& resu, DoubleTab& tab_flux_bords) const
 {
   if (should_calc_flux)
     {
@@ -679,7 +679,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_fa7_sortie_libre_(const int ndeb, const int 
 }
 
 template <class _TYPE_> template <Type_Flux_Fa7 Fa7_Type, typename Type_Double>
-void T_It_VDF_Face<_TYPE_>::ajouter_fa7_elem_(const int num_elem, const int ncomp, const DoubleTab& inco, DoubleTab& resu, DoubleTab& tab_flux_bords) const
+void Iterateur_VDF_Face<_TYPE_>::ajouter_fa7_elem_(const int num_elem, const int ncomp, const DoubleTab& inco, DoubleTab& resu, DoubleTab& tab_flux_bords) const
 {
   Type_Double flux(ncomp);
   const int n = la_zone->nb_faces_bord();
@@ -696,7 +696,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_fa7_elem_(const int num_elem, const int ncom
 }
 
 template <class _TYPE_> template <typename Type_Double>
-inline void T_It_VDF_Face<_TYPE_>::fill_resu_tab(const int fac1, const int fac2, const int ncomp, const Type_Double& flux, DoubleTab& resu) const
+inline void Iterateur_VDF_Face<_TYPE_>::fill_resu_tab(const int fac1, const int fac2, const int ncomp, const Type_Double& flux, DoubleTab& resu) const
 {
   for (int k = 0; k < ncomp; k++)
     {
@@ -710,7 +710,7 @@ inline void T_It_VDF_Face<_TYPE_>::fill_resu_tab(const int fac1, const int fac2,
  * ************************************** */
 
 template <class _TYPE_> template <typename Type_Double>
-void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const int ncomp, const DoubleTab& inco, Matrice_Morse& matrice) const
+void Iterateur_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const int ncomp, const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   for (int n_arete = premiere_arete_bord; n_arete < derniere_arete_bord; n_arete++)
     {
@@ -746,7 +746,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const int ncomp, c
 }
 
 template <class _TYPE_> template <typename Type_Double>
-void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_coins(const int ncomp, const DoubleTab& inco , Matrice_Morse& matrice) const
+void Iterateur_VDF_Face<_TYPE_>::ajouter_contribution_aretes_coins(const int ncomp, const DoubleTab& inco , Matrice_Morse& matrice) const
 {
   for (int n_arete = premiere_arete_coin; n_arete < derniere_arete_coin; n_arete++)
     {
@@ -771,20 +771,20 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_coins(const int ncomp, c
 }
 
 template <class _TYPE_> template <typename Type_Double>
-void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_internes(const int ncomp, const DoubleTab& inco , Matrice_Morse& matrice) const
+void Iterateur_VDF_Face<_TYPE_>::ajouter_contribution_aretes_internes(const int ncomp, const DoubleTab& inco , Matrice_Morse& matrice) const
 {
   for (int n_arete = premiere_arete_interne; n_arete < derniere_arete_interne; n_arete++) ajouter_contribution_aretes_internes_<Type_Flux_Arete::INTERNE,Type_Double>(n_arete,ncomp,matrice);
 }
 
 template <class _TYPE_> template <typename Type_Double>
-void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_mixtes(const int ncomp, const DoubleTab& inco , Matrice_Morse& matrice) const
+void Iterateur_VDF_Face<_TYPE_>::ajouter_contribution_aretes_mixtes(const int ncomp, const DoubleTab& inco , Matrice_Morse& matrice) const
 {
   if (!_TYPE_::CALC_ARR_MIXTE) return;
   for (int n_arete = premiere_arete_mixte; n_arete < derniere_arete_mixte; n_arete++) ajouter_contribution_aretes_mixtes_<Type_Flux_Arete::MIXTE,Type_Double>(n_arete,ncomp,matrice);
 }
 
 template <class _TYPE_> template <typename Type_Double>
-void T_It_VDF_Face<_TYPE_>::ajouter_contribution_fa7_sortie_libre(const int ncomp, const DoubleTab& inco , Matrice_Morse& matrice) const
+void Iterateur_VDF_Face<_TYPE_>::ajouter_contribution_fa7_sortie_libre(const int ncomp, const DoubleTab& inco , Matrice_Morse& matrice) const
 {
   const int nb_front_Cl = la_zone->nb_front_Cl();
   for (int num_cl = 0; num_cl < nb_front_Cl; num_cl++)
@@ -816,14 +816,14 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_fa7_sortie_libre(const int ncom
 }
 
 template <class _TYPE_> template <typename Type_Double>
-void T_It_VDF_Face<_TYPE_>::ajouter_contribution_fa7_elem(const int ncomp, const DoubleTab& inco , Matrice_Morse& matrice) const
+void Iterateur_VDF_Face<_TYPE_>::ajouter_contribution_fa7_elem(const int ncomp, const DoubleTab& inco , Matrice_Morse& matrice) const
 {
   for(int num_elem=0; num_elem<nb_elem; num_elem++) ajouter_contribution_fa7_elem_<Type_Flux_Fa7::ELEM,Type_Double>(num_elem,ncomp,matrice);
   corriger_coeffs_fa7_elem_periodicite<Type_Double>(ncomp,inco,matrice);
 }
 
 template <class _TYPE_> template <typename Type_Double>
-void T_It_VDF_Face<_TYPE_>::corriger_coeffs_fa7_elem_periodicite(const int ncomp, const DoubleTab& inco , Matrice_Morse& matrice) const
+void Iterateur_VDF_Face<_TYPE_>::corriger_coeffs_fa7_elem_periodicite(const int ncomp, const DoubleTab& inco , Matrice_Morse& matrice) const
 {
   for (int num_cl = 0; num_cl < la_zone->nb_front_Cl(); num_cl++)
     {
@@ -843,7 +843,7 @@ void T_It_VDF_Face<_TYPE_>::corriger_coeffs_fa7_elem_periodicite(const int ncomp
 }
 
 template <class _TYPE_> template <typename Type_Double>
-void T_It_VDF_Face<_TYPE_>::corriger_coeffs_fa7_elem_periodicite_(const int ncomp, const int num_elem, const int fac1, const int fac2, const int face, const int signe, Matrice_Morse& matrice) const
+void Iterateur_VDF_Face<_TYPE_>::corriger_coeffs_fa7_elem_periodicite_(const int ncomp, const int num_elem, const int fac1, const int fac2, const int face, const int signe, Matrice_Morse& matrice) const
 {
   Type_Double aii(ncomp), ajj(ncomp);
   flux_evaluateur.template coeffs_fa7<Type_Flux_Fa7::ELEM>(num_elem, fac1, fac2, aii, ajj);
@@ -872,7 +872,7 @@ void T_It_VDF_Face<_TYPE_>::corriger_coeffs_fa7_elem_periodicite_(const int ncom
 
 template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
 enable_if_t< Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI, void>
-T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords_(const int n_arete, const int ncomp, Matrice_Morse& matrice) const
+Iterateur_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords_(const int n_arete, const int ncomp, Matrice_Morse& matrice) const
 {
   if (should_calc_flux)
     {
@@ -885,7 +885,7 @@ T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords_(const int n_arete, con
 
 template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
 enable_if_t<Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
-T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords_(const int n_arete, const int ncomp, Matrice_Morse& matrice) const
+Iterateur_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords_(const int n_arete, const int ncomp, Matrice_Morse& matrice) const
 {
   if (should_calc_flux)
     {
@@ -902,7 +902,7 @@ T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords_(const int n_arete, con
 
 template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
 enable_if_t< Arete_Type == Type_Flux_Arete::PERIODICITE || Arete_Type == Type_Flux_Arete::INTERNE, void>
-T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords_(const int n_arete, const int ncomp, Matrice_Morse& matrice) const
+Iterateur_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords_(const int n_arete, const int ncomp, Matrice_Morse& matrice) const
 {
   if (should_calc_flux)
     {
@@ -924,7 +924,7 @@ T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords_(const int n_arete, con
 
 template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
 enable_if_t< Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
-T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_coins_(const int n_arete, const int ncomp, Matrice_Morse& matrice) const
+Iterateur_VDF_Face<_TYPE_>::ajouter_contribution_aretes_coins_(const int n_arete, const int ncomp, Matrice_Morse& matrice) const
 {
   if (should_calc_flux)
     {
@@ -941,7 +941,7 @@ T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_coins_(const int n_arete, con
 
 template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
 enable_if_t< Arete_Type == Type_Flux_Arete::PERIODICITE || Arete_Type == Type_Flux_Arete::INTERNE || Arete_Type == Type_Flux_Arete::MIXTE, void>
-T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_coins_(const int n_arete, const int ncomp, Matrice_Morse& matrice) const
+Iterateur_VDF_Face<_TYPE_>::ajouter_contribution_aretes_coins_(const int n_arete, const int ncomp, Matrice_Morse& matrice) const
 {
   if (should_calc_flux)
     {
@@ -956,20 +956,20 @@ T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_coins_(const int n_arete, con
 }
 
 template <class _TYPE_> template <Type_Flux_Arete Arete_Type, typename Type_Double>
-void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_internes_(const int n_arete, const int ncomp, Matrice_Morse& matrice) const
+void Iterateur_VDF_Face<_TYPE_>::ajouter_contribution_aretes_internes_(const int n_arete, const int ncomp, Matrice_Morse& matrice) const
 {
   // XXX : Elie Saikali : j'ai fait comme le codage initial pour le cas Scalaire...
   ajouter_contribution_aretes_coins_<true,Arete_Type,Type_Double>(n_arete,ncomp,matrice); /* meme codage que le cas PERIODICITE */
 }
 
 template <class _TYPE_> template <Type_Flux_Arete Arete_Type, typename Type_Double>
-void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_mixtes_(const int n_arete, const int ncomp, Matrice_Morse& matrice) const
+void Iterateur_VDF_Face<_TYPE_>::ajouter_contribution_aretes_mixtes_(const int n_arete, const int ncomp, Matrice_Morse& matrice) const
 {
   ajouter_contribution_aretes_coins_<true,Arete_Type,Type_Double>(n_arete,ncomp,matrice); /* meme codage que le cas PERIODICITE */
 }
 
 template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Fa7 Fa7_Type, typename Type_Double>
-void T_It_VDF_Face<_TYPE_>::ajouter_contribution_fa7_sortie_libre_(const int ndeb, const int nfin, const int ncomp, const Neumann_sortie_libre& cl, Matrice_Morse& matrice) const
+void Iterateur_VDF_Face<_TYPE_>::ajouter_contribution_fa7_sortie_libre_(const int ndeb, const int nfin, const int ncomp, const Neumann_sortie_libre& cl, Matrice_Morse& matrice) const
 {
   if (should_calc_flux)
     {
@@ -986,7 +986,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_fa7_sortie_libre_(const int nde
 }
 
 template <class _TYPE_> template <Type_Flux_Fa7 Fa7_Type, typename Type_Double>
-void T_It_VDF_Face<_TYPE_>::ajouter_contribution_fa7_elem_(const int num_elem, const int ncomp, Matrice_Morse& matrice) const
+void Iterateur_VDF_Face<_TYPE_>::ajouter_contribution_fa7_elem_(const int num_elem, const int ncomp, Matrice_Morse& matrice) const
 {
   Type_Double aii(ncomp), ajj(ncomp);
   for (int fa7 = 0; fa7 < dimension; fa7++)
@@ -998,7 +998,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_fa7_elem_(const int num_elem, c
 }
 
 template <class _TYPE_> template <typename Type_Double>
-void T_It_VDF_Face<_TYPE_>::fill_coeff_matrice_morse(const int face, const int i, const int ncomp, const int signe, const Type_Double& A, Matrice_Morse& matrice) const
+void Iterateur_VDF_Face<_TYPE_>::fill_coeff_matrice_morse(const int face, const int i, const int ncomp, const int signe, const Type_Double& A, Matrice_Morse& matrice) const
 {
   const IntVect& tab1 = matrice.get_set_tab1(), &tab2 = matrice.get_set_tab2();
   DoubleVect& coeff = matrice.get_set_coeff();
@@ -1007,7 +1007,7 @@ void T_It_VDF_Face<_TYPE_>::fill_coeff_matrice_morse(const int face, const int i
 }
 
 template <class _TYPE_> template <typename Type_Double>
-void T_It_VDF_Face<_TYPE_>::fill_coeff_matrice_morse(const int fac1, const int fac2, const int i, const int ncomp, const Type_Double& A, const Type_Double& B, Matrice_Morse& matrice) const
+void Iterateur_VDF_Face<_TYPE_>::fill_coeff_matrice_morse(const int fac1, const int fac2, const int i, const int ncomp, const Type_Double& A, const Type_Double& B, Matrice_Morse& matrice) const
 {
   const IntVect& tab1 = matrice.get_set_tab1(), &tab2 = matrice.get_set_tab2();
   DoubleVect& coeff = matrice.get_set_coeff();
@@ -1028,7 +1028,7 @@ void T_It_VDF_Face<_TYPE_>::fill_coeff_matrice_morse(const int fac1, const int f
  * ************************************** */
 
 template <class _TYPE_> template <typename Type_Double>
-void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(const int ncomp,DoubleTab& resu) const
+void Iterateur_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(const int ncomp,DoubleTab& resu) const
 {
   for (int n_arete = premiere_arete_bord; n_arete<derniere_arete_bord; n_arete++)
     {
@@ -1065,7 +1065,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(const int n
 }
 
 template <class _TYPE_>template <typename Type_Double>
-void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins(const int ncomp,DoubleTab& resu) const
+void Iterateur_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins(const int ncomp,DoubleTab& resu) const
 {
   for (int n_arete = premiere_arete_coin; n_arete < derniere_arete_coin; n_arete++)
     {
@@ -1090,19 +1090,19 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins(const int n
 }
 
 template <class _TYPE_>template <typename Type_Double>
-void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_internes(const int ncomp,DoubleTab& resu) const
+void Iterateur_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_internes(const int ncomp,DoubleTab& resu) const
 {
   for (int n_arete = premiere_arete_interne; n_arete < derniere_arete_interne; n_arete++) contribuer_au_second_membre_aretes_internes_<true,Type_Flux_Arete::INTERNE,Type_Double>(n_arete,ncomp,resu);
 }
 
 template <class _TYPE_>template <typename Type_Double>
-void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_mixtes(const int ncomp,DoubleTab& resu) const
+void Iterateur_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_mixtes(const int ncomp,DoubleTab& resu) const
 {
   for (int n_arete=premiere_arete_mixte; n_arete<derniere_arete_mixte; n_arete++) contribuer_au_second_membre_aretes_mixtes_<true,Type_Flux_Arete::MIXTE,Type_Double>(n_arete,ncomp,resu);
 }
 
 template <class _TYPE_>template <typename Type_Double>
-void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_fa7_sortie_libre(const int ncomp,DoubleTab& resu) const
+void Iterateur_VDF_Face<_TYPE_>::contribuer_au_second_membre_fa7_sortie_libre(const int ncomp,DoubleTab& resu) const
 {
   int nb_front_Cl = la_zone->nb_front_Cl();
   for (int num_cl = 0; num_cl < nb_front_Cl; num_cl++)
@@ -1134,14 +1134,14 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_fa7_sortie_libre(const i
 }
 
 template <class _TYPE_>template <typename Type_Double>
-void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_fa7_elem(const int ncomp,DoubleTab& resu) const
+void Iterateur_VDF_Face<_TYPE_>::contribuer_au_second_membre_fa7_elem(const int ncomp,DoubleTab& resu) const
 {
   for(int num_elem = 0; num_elem < nb_elem; num_elem++) contribuer_au_second_membre_fa7_elem_<Type_Flux_Fa7::ELEM,Type_Double>(num_elem,ncomp,resu);
   corriger_secmem_fa7_elem_periodicite<Type_Double>(ncomp,resu);
 }
 
 template <class _TYPE_> template <typename Type_Double>
-void T_It_VDF_Face<_TYPE_>::corriger_secmem_fa7_elem_periodicite(const int ncomp,DoubleTab& resu) const
+void Iterateur_VDF_Face<_TYPE_>::corriger_secmem_fa7_elem_periodicite(const int ncomp,DoubleTab& resu) const
 {
   for (int num_cl = 0; num_cl < la_zone->nb_front_Cl(); num_cl++)
     {
@@ -1161,7 +1161,7 @@ void T_It_VDF_Face<_TYPE_>::corriger_secmem_fa7_elem_periodicite(const int ncomp
 }
 
 template <class _TYPE_> template <typename Type_Double>
-void T_It_VDF_Face<_TYPE_>::corriger_secmem_fa7_elem_periodicite_(const int ncomp, const int num_elem, const int fac1, const int fac2, const int face, const int signe, DoubleTab& resu) const
+void Iterateur_VDF_Face<_TYPE_>::corriger_secmem_fa7_elem_periodicite_(const int ncomp, const int num_elem, const int fac1, const int fac2, const int face, const int signe, DoubleTab& resu) const
 {
   Type_Double flux(ncomp);
   flux_evaluateur.template secmem_fa7<Type_Flux_Fa7::ELEM>(num_elem,fac1,fac2,flux);
@@ -1170,7 +1170,7 @@ void T_It_VDF_Face<_TYPE_>::corriger_secmem_fa7_elem_periodicite_(const int ncom
 
 template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
 enable_if_t< Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI, void>
-T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords_(const int n_arete, const int ncomp, DoubleTab& resu) const
+Iterateur_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords_(const int n_arete, const int ncomp, DoubleTab& resu) const
 {
   if (should_calc_flux)
     {
@@ -1183,7 +1183,7 @@ T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords_(const int n_are
 
 template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
 enable_if_t<Arete_Type == Type_Flux_Arete::PERIODICITE || Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
-T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords_(const int n_arete, const int ncomp, DoubleTab& resu) const
+Iterateur_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords_(const int n_arete, const int ncomp, DoubleTab& resu) const
 {
   if (should_calc_flux)
     {
@@ -1207,7 +1207,7 @@ T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords_(const int n_are
 }
 
 template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double> enable_if_t< Arete_Type == Type_Flux_Arete::PAROI, void>
-T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins_(const int n_arete, const int ncomp, DoubleTab& resu) const
+Iterateur_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins_(const int n_arete, const int ncomp, DoubleTab& resu) const
 {
   // XXX : Elie Saikali : j'ai fait comme le codage initial pour le cas Scalaire...
   contribuer_au_second_membre_aretes_bords_<should_calc_flux,Arete_Type,Type_Double>(n_arete,ncomp,resu);
@@ -1215,7 +1215,7 @@ T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins_(const int n_are
 
 template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
 enable_if_t<Arete_Type == Type_Flux_Arete::PERIODICITE || Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
-T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins_(const int n_arete, const int ncomp, DoubleTab& resu) const
+Iterateur_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins_(const int n_arete, const int ncomp, DoubleTab& resu) const
 {
   if (should_calc_flux)
     {
@@ -1245,7 +1245,7 @@ T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins_(const int n_are
 }
 
 template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
-void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_internes_(const int n_arete, const int ncomp, DoubleTab& resu) const
+void Iterateur_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_internes_(const int n_arete, const int ncomp, DoubleTab& resu) const
 {
   if (should_calc_flux)
     {
@@ -1260,13 +1260,13 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_internes_(const i
 }
 
 template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
-void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_mixtes_(const int n_arete, const int ncomp, DoubleTab& resu) const
+void Iterateur_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_mixtes_(const int n_arete, const int ncomp, DoubleTab& resu) const
 {
   contribuer_au_second_membre_aretes_internes_<should_calc_flux,Arete_Type,Type_Double>(n_arete,ncomp,resu);
 }
 
 template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Fa7 Fa7_Type, typename Type_Double>
-void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_fa7_sortie_libre_(const int ndeb, const int nfin, const int ncomp, const Neumann_sortie_libre& cl, DoubleTab& resu) const
+void Iterateur_VDF_Face<_TYPE_>::contribuer_au_second_membre_fa7_sortie_libre_(const int ndeb, const int nfin, const int ncomp, const Neumann_sortie_libre& cl, DoubleTab& resu) const
 {
   if (should_calc_flux)
     {
@@ -1283,7 +1283,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_fa7_sortie_libre_(const 
 }
 
 template <class _TYPE_> template <Type_Flux_Fa7 Fa7_Type, typename Type_Double>
-void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_fa7_elem_(const int num_elem, const int ncomp, DoubleTab& resu) const
+void Iterateur_VDF_Face<_TYPE_>::contribuer_au_second_membre_fa7_elem_(const int num_elem, const int ncomp, DoubleTab& resu) const
 {
   Type_Double flux(ncomp);
   for (int fa7 = 0; fa7 < dimension; fa7++)
@@ -1294,4 +1294,4 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_fa7_elem_(const int num_
     }
 }
 
-#endif /* T_It_VDF_Face_TPP_included */
+#endif /* Iterateur_VDF_Face_TPP_included */

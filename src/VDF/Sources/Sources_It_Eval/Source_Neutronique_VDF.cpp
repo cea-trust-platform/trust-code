@@ -18,15 +18,9 @@
 #include <Champ_Inc.h>
 
 Implemente_instanciable_sans_constructeur(Source_Neutronique_VDF,"Source_Neutronique_VDF_P0_VDF",Source_Neutronique);
-implemente_It_Sou_VDF_Elem(Eval_Puiss_Neutr_VDF_Elem)
 
 Sortie& Source_Neutronique_VDF::printOn(Sortie& s) const { return s << que_suis_je() ; }
-
-Entree& Source_Neutronique_VDF::readOn(Entree& s)
-{
-  Source_Neutronique::readOn(s);
-  return s;
-}
+Entree& Source_Neutronique_VDF::readOn(Entree& s) { return Source_Neutronique::readOn(s); }
 
 void Source_Neutronique_VDF::completer()
 {

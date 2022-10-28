@@ -17,8 +17,8 @@
 #define Op_Diff_Dift_VDF_included
 
 #include <Modele_turbulence_scal_base.h>
-#include <Iterateur_VDF_base.h>
 #include <Mod_turb_hyd_base.h>
+#include <Iterateur_VDF.h>
 #include <Champ_P0_VDF.h>
 #include <type_traits>
 

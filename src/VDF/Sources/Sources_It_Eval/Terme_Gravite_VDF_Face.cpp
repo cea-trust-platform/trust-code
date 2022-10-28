@@ -17,7 +17,6 @@
 #include <Probleme_base.h>
 
 Implemente_instanciable_sans_constructeur(Terme_Gravite_VDF_Face,"Gravite_VDF_Face",Terme_Source_VDF_base);
-implemente_It_Sou_VDF_Face(Eval_Gravite_VDF_Face)
 
 Sortie& Terme_Gravite_VDF_Face::printOn(Sortie& s) const { return s << que_suis_je(); }
 

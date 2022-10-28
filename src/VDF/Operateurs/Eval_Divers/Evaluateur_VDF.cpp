@@ -18,9 +18,8 @@
 #include <Milieu_base.h>
 #include <Zone_Cl_VDF.h>
 
-Evaluateur_VDF::Evaluateur_VDF(const Evaluateur_VDF& eval)
-  :
-  la_zone(eval.la_zone),la_zcl(eval.la_zcl),dimension(eval.dimension),premiere_face_bord(eval.premiere_face_bord)
+Evaluateur_VDF::Evaluateur_VDF(const Evaluateur_VDF& eval) : la_zone(eval.la_zone), la_zcl(eval.la_zcl), dimension(eval.dimension),
+  premiere_face_bord(eval.premiere_face_bord)
 {
   surface.ref(eval.surface);
   orientation.ref(eval.orientation);
@@ -28,11 +27,9 @@ Evaluateur_VDF::Evaluateur_VDF(const Evaluateur_VDF& eval)
   porosite.ref(eval.porosite);
   volume_entrelaces.ref(eval.volume_entrelaces);
   xv.ref(eval.xv);
-
 }
 
-void Evaluateur_VDF::associer_zones(const Zone_VDF& zone_vdf,
-                                    const Zone_Cl_VDF& zone_cl_vdf)
+void Evaluateur_VDF::associer_zones(const Zone_VDF& zone_vdf, const Zone_Cl_VDF& zone_cl_vdf)
 {
   la_zone = zone_vdf;
   la_zcl = zone_cl_vdf;
@@ -50,9 +47,6 @@ void Evaluateur_VDF::associer_porosite(const DoubleVect& poro)
 {
   porosite.ref(poro);
 }
-
-//// dist_norm_bord
-//
 
 double Evaluateur_VDF::dist_norm_bord(int face) const
 {

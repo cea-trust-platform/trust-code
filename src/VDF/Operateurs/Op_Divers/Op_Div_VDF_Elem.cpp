@@ -16,12 +16,11 @@
 #include <Op_Div_VDF_Elem.h>
 
 Implemente_instanciable_sans_constructeur(Op_Div_VDF_Elem,"Op_Div_VDF_Face",Op_Div_VDF_base);
-implemente_It_VDF_Elem(Eval_Div_VDF_Elem)
 
 Sortie& Op_Div_VDF_Elem::printOn(Sortie& s ) const { return s << que_suis_je(); }
 Entree& Op_Div_VDF_Elem::readOn(Entree& s ) { return s; }
 
-Op_Div_VDF_Elem::Op_Div_VDF_Elem() : Op_Div_VDF_base(It_VDF_Elem(Eval_Div_VDF_Elem)()) { }
+Op_Div_VDF_Elem::Op_Div_VDF_Elem() : Op_Div_VDF_base(Iterateur_VDF_Elem<Eval_Div_VDF_Elem>()) { }
 
 void Op_Div_VDF_Elem::associer(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_Cl_dis, const Champ_Inc& )
 {

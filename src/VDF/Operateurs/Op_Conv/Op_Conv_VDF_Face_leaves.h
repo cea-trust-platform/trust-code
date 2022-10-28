@@ -18,15 +18,14 @@
 
 #include <Eval_Conv_VDF_Elem_leaves.h> // pour les compilos (templates :-) )
 #include <Eval_Conv_VDF_Face_leaves.h>
+#include <Iterateur_VDF_Face.h>
 #include <Op_Conv_VDF.h>
-#include <ItVDFFa.h>
 
 /// \cond DO_NOT_DOCUMENT
 class Op_Conv_VDF_Face_leaves
 { };
 /// \endcond
 
-declare_It_VDF_Face(Eval_Amont_VDF_Face)
 /*! @brief class Op_Conv_Amont_VDF_Face Cette classe represente l'operateur de convection associe a une equation de la quantite de mouvement.
  *
  *   La discretisation est VDF. Le champ convecte est de type Champ_Face_VDF. Le schema de convection est du type Amont
@@ -58,7 +57,6 @@ public:
 
 };
 
-declare_It_VDF_Face(Eval_Centre_VDF_Face)
 /*! @brief class Op_Conv_Centre_VDF_Face Cette classe represente l'operateur de convection associe a une equation de la quantite de mouvement.
  *
  *   La discretisation est VDF. Le champ convecte est de type Champ_Face_VDF. Le schema de convection est du type Centre
@@ -85,7 +83,6 @@ public:
 
 };
 
-declare_It_VDF_Face(Eval_Centre4_VDF_Face)
 /*! @brief class Op_Conv_Centre4_VDF_Face Cette classe represente l'operateur de convection associe a une equation de la quantite de mouvement.
  *
  *   La discretisation est VDF. Le champ convecte est de type Champ_Face_VDF. Le schema de convection est du type centre4 (centre sur 4 points)
@@ -103,7 +100,6 @@ public:
   inline const Champ_base& vitesse() const override { return vitesse_impl<Eval_Centre4_VDF_Face>(); }
 };
 
-declare_It_VDF_Face(Eval_Quick_VDF_Face_Axi)
 /*! @brief class Op_Conv_Quick_VDF_Face Cette classe represente l'operateur de convection associe a une equation de la quantite de mouvement.
  *
  *   La discretisation est VDF. Le champ convecte est de type Champ_Face_VDF
@@ -121,7 +117,6 @@ public:
   inline const Champ_base& vitesse() const override { return vitesse_impl<Eval_Quick_VDF_Face_Axi>(); }
 };
 
-declare_It_VDF_Face(Eval_Quick_VDF_Face)
 /*! @brief class Op_Conv_Quick_VDF_Face Cette classe represente l'operateur de convection associe a une equation de la quantite de mouvement.
  *
  *   La discretisation est VDF. Le champ convecte est de type Champ_Face_VDF. Le schema de convection est du type Quick

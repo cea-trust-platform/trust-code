@@ -16,11 +16,10 @@
 #ifndef Op_Div_VDF_Elem_included
 #define Op_Div_VDF_Elem_included
 
+#include <Iterateur_VDF_Elem.h>
 #include <Eval_Div_VDF_Elem.h>
 #include <Op_Div_VDF_base.h>
-#include <ItVDFEl.h>
 
-declare_It_VDF_Elem(Eval_Div_VDF_Elem)
 /*! @brief class Op_Div_VDF_Elem Cette classe represente l'operateur de divergence
  *
  *   La discretisation est VDF. On calcule la divergence d'un champ de type Champ_Face_VDF

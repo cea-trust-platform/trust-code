@@ -16,10 +16,10 @@
 #ifndef Op_Diff_VDF_Face_base_included
 #define Op_Diff_VDF_Face_base_included
 
+#include <Iterateur_VDF_Face.h>
 #include <Op_Diff_VDF_base.h>
-#include <Op_VDF_Face.h>
-#include <ItVDFFa.h>
 #include <Eval_Diff_VDF.h>
+#include <Op_VDF_Face.h>
 
 class Eval_VDF_Face;
 class Champ_Inc;

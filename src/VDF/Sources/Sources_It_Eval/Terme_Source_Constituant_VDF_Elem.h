@@ -16,12 +16,11 @@
 #ifndef Terme_Source_Constituant_VDF_Elem_included
 #define Terme_Source_Constituant_VDF_Elem_included
 
+#include <Iterateur_Source_VDF_Elem.h>
 #include <Terme_Source_Constituant.h>
 #include <Eval_Source_C_VDF_Elem.h>
 #include <Terme_Source_VDF_base.h>
-#include <ItSouVDFEl.h>
 
-declare_It_Sou_VDF_Elem(Eval_Source_C_VDF_Elem)
 /*! @brief class Terme_Source_Constituant_VDF_Elem Cette classe represente un terme source de l'equation de la thermique
  *
  *  du type degagement volumique de puissance thermique uniforme sur une zone
@@ -32,15 +31,14 @@ class Terme_Source_Constituant_VDF_Elem : public Terme_Source_Constituant, publi
 {
   Declare_instanciable_sans_constructeur(Terme_Source_Constituant_VDF_Elem);
 public:
-  inline Terme_Source_Constituant_VDF_Elem();
+  Terme_Source_Constituant_VDF_Elem() : Terme_Source_Constituant(),
+    Terme_Source_VDF_base(Iterateur_Source_VDF_Elem<Eval_Source_C_VDF_Elem>()) { }
+
   void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;
   void associer_pb(const Probleme_base& ) override;
   void mettre_a_jour(double temps) override { Terme_Source_Constituant::mettre_a_jour(temps); }
   void ouvrir_fichier(SFichier& os,const Nom& type, const int flag) const override { Terme_Source_Constituant::ouvrir_fichier(equation(), out_, que_suis_je(), description(), os, type, flag); }
   void completer() override;
 };
-
-inline Terme_Source_Constituant_VDF_Elem::Terme_Source_Constituant_VDF_Elem()
-  : Terme_Source_Constituant(),Terme_Source_VDF_base(It_Sou_VDF_Elem(Eval_Source_C_VDF_Elem)()) { }
 
 #endif /* Terme_Source_Constituant_VDF_Elem_included */

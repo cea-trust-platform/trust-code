@@ -18,8 +18,8 @@
 
 #include <Eval_Conv_VDF_Face_leaves.h> // pour les compilos (templates :-) )
 #include <Eval_Conv_VDF_Elem_leaves.h>
+#include <Iterateur_VDF_Elem.h>
 #include <Op_Conv_VDF.h>
-#include <ItVDFEl.h>
 #include <Nom.h>
 
 /// \cond DO_NOT_DOCUMENT
@@ -27,7 +27,6 @@ class Op_Conv_VDF_Elem_leaves
 { };
 /// \endcond
 
-declare_It_VDF_Elem(Eval_Amont_VDF_Elem)
 /*! @brief class Op_Conv_Amont_VDF_Elem Cette classe represente l'operateur de convection associe a une equation de transport d'un scalaire.
  *
  *   La discretisation est VDF. Le champ convecte est scalaire. Le schema de convection est du type Amont
@@ -68,7 +67,6 @@ protected:
   inline Op_Conv_Amont_VDF_Elem(const Iterateur_VDF_base& it) : Op_Conv_VDF_base(it) { }
 };
 
-declare_It_VDF_Elem(Eval_Centre_VDF_Elem)
 /*! @brief class Op_Conv_Centre_VDF_Elem Cette classe represente l'operateur de convection associe a une equation de transport d'un scalaire.
  *
  *   La discretisation est VDF. Le champ convecte est scalaire. Le schema de convection est du type Centre (sur 2 points)
@@ -97,7 +95,6 @@ public:
   }
 };
 
-declare_It_VDF_Elem(Eval_Centre4_VDF_Elem)
 /*! @brief class Op_Conv_Centre4_VDF_Elem Cette classe represente l'operateur de convection associe a une equation de transport d'un scalaire.
  *
  *   La discretisation est VDF. Le champ convecte est scalaire. Le schema de convection est du type Centre (sur 4 points)
@@ -115,7 +112,6 @@ public:
   inline const Champ_base& vitesse() const override { return vitesse_impl<Eval_Centre4_VDF_Elem>(); }
 };
 
-declare_It_VDF_Elem(Eval_Quick_VDF_Elem)
 /*! @brief class Op_Conv_Quick_VDF_Elem Cette classe represente l'operateur de convection associe a une equation de transport d'un scalaire.
  *
  *   La discretisation est VDF. Le champ convecte est scalaire. Le schema de convection est du type Quick

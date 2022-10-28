@@ -13,8 +13,8 @@
 *
 *****************************************************************************/
 
-#ifndef T_It_VDF_Face_included
-#define T_It_VDF_Face_included
+#ifndef Iterateur_VDF_Face_included
+#define Iterateur_VDF_Face_included
 
 #include <CL_Types_Aretes_enum.h>
 #include <Iterateur_VDF_base.h>
@@ -28,23 +28,19 @@
 #include <TRUSTTrav.h>
 
 template <class _TYPE_>
-class T_It_VDF_Face : public Iterateur_VDF_base
+class Iterateur_VDF_Face : public Iterateur_VDF_base
 {
   inline unsigned taille_memoire() const override { throw; }
   inline int duplique() const override
   {
-    T_It_VDF_Face* xxx = new  T_It_VDF_Face(*this);
-    if(!xxx)
-      {
-        Cerr << "Not enough memory " << finl;
-        Process::exit();
-      }
+    Iterateur_VDF_Face* xxx = new  Iterateur_VDF_Face(*this);
+    if(!xxx) Process::exit("Not enough memory !");
     return xxx->numero();
   }
 
 public:
-  inline T_It_VDF_Face() { }
-  inline T_It_VDF_Face(const T_It_VDF_Face<_TYPE_>& );
+  inline Iterateur_VDF_Face() { }
+  inline Iterateur_VDF_Face(const Iterateur_VDF_Face<_TYPE_>& );
 
   int impr(Sortie& os) const override;
   void contribuer_au_second_membre(DoubleTab& ) const override;
@@ -54,15 +50,14 @@ public:
   DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const override;
   void ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const override { Process::exit(); }
 
-
   inline void completer_() override;
   inline Evaluateur_VDF& evaluateur() override { return (Evaluateur_VDF&) flux_evaluateur; }
   inline const Evaluateur_VDF& evaluateur() const override { return (Evaluateur_VDF&) flux_evaluateur; }
 
 protected:
   _TYPE_ flux_evaluateur;
-  int nb_elem, premiere_arete_interne, derniere_arete_interne, premiere_arete_mixte, derniere_arete_mixte;
-  int premiere_arete_bord, derniere_arete_bord, premiere_arete_coin, derniere_arete_coin;
+  int nb_elem = -100, premiere_arete_interne = -100, derniere_arete_interne = -100, premiere_arete_mixte = -100, derniere_arete_mixte = -100;
+  int premiere_arete_bord = -100, derniere_arete_bord = -100, premiere_arete_coin = -100, derniere_arete_coin = -100;
   mutable SFichier Flux, Flux_moment, Flux_sum;
   IntTab Qdm, elem, elem_faces;
   IntVect orientation, type_arete_bord, type_arete_coin;
@@ -184,6 +179,6 @@ private:
   template <Type_Flux_Fa7 Fa7_Type, typename Type_Double> void contribuer_au_second_membre_fa7_elem_(const int , const int , DoubleTab& ) const;
 };
 
-#include <T_It_VDF_Face.tpp> // templates specializations ici ;)
+#include <Iterateur_VDF_Face.tpp> // templates specializations ici ;)
 
-#endif /* T_It_VDF_Face_included */
+#endif /* Iterateur_VDF_Face_included */

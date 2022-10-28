@@ -16,8 +16,8 @@
 #ifndef Op_Conv_VDF_base_included
 #define Op_Conv_VDF_base_included
 
-#include <Iterateur_VDF_base.h>
 #include <Operateur_Conv.h>
+#include <Iterateur_VDF.h>
 
 /*! @brief class Op_Conv_VDF_base Classe de base des operateurs de convection VDF
  *

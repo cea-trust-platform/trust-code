@@ -17,15 +17,14 @@
 #define Source_Neutronique_VDF_included
 
 #include <Eval_Puiss_Neutr_VDF_Elem.h>
+#include <Iterateur_Source_VDF_Elem.h>
 #include <Iterateur_Source_VDF.h>
 #include <Source_Neutronique.h>
-#include <ItSouVDFEl.h>
 
 class Probleme_base;
 class Zone_Cl_dis;
 class Zone_dis;
 
-declare_It_Sou_VDF_Elem(Eval_Puiss_Neutr_VDF_Elem)
 /*! @brief class Source_Neutronique_VDF Cette classe constitue l'implementation en VDF du terme source
  *
  *   Source_Neutronique dans ThSol/.
@@ -35,8 +34,8 @@ class Source_Neutronique_VDF : public Source_Neutronique
 {
   Declare_instanciable_sans_constructeur(Source_Neutronique_VDF);
 public:
+  Source_Neutronique_VDF() : iter(Iterateur_Source_VDF_Elem<Eval_Puiss_Neutr_VDF_Elem>()) { }
   Source_Neutronique_VDF(const Iterateur_Source_VDF_base& iter_base) : iter(iter_base) { }
-  inline Source_Neutronique_VDF();
   inline DoubleTab& calculer(DoubleTab& resu) const override { return iter->calculer(resu); }
   void completer() override;
   void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;
@@ -50,7 +49,5 @@ protected:
   Iterateur_Source_VDF iter;
   REF(Zone_VDF) la_zone;
 };
-
-inline Source_Neutronique_VDF::Source_Neutronique_VDF() : iter(It_Sou_VDF_Elem(Eval_Puiss_Neutr_VDF_Elem)()) { }
 
 #endif /* Source_Neutronique_VDF_included */

@@ -21,7 +21,6 @@
 #include <Conduction.h>
 
 Implemente_instanciable_sans_constructeur(Source_Echange_Th_VDF,"Echange_thermique_h_imp_VDF_P0_VDF",Terme_Source_VDF_base);
-implemente_It_Sou_VDF_Elem(Eval_Echange_Himp_VDF_Elem)
 
 Sortie& Source_Echange_Th_VDF::printOn(Sortie& s) const { return s << que_suis_je(); }
 

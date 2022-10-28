@@ -17,7 +17,6 @@
 #define Iterateur_Source_VDF_included
 
 #include <Iterateur_Source_VDF_base.h>
-#include <ItSouVDFFa.h>
 
 Declare_deriv(Iterateur_Source_VDF_base);
 class Iterateur_Source_VDF : public DERIV(Iterateur_Source_VDF_base)

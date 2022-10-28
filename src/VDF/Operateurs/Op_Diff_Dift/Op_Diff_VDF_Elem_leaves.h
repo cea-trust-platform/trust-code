@@ -18,8 +18,8 @@
 
 #include <Eval_Diff_VDF_Elem_leaves.h>
 #include <Op_Diff_VDF_Elem_base.h>
+#include <Iterateur_VDF_Elem.h>
 #include <Op_Diff_Dift_VDF.h>
-#include <ItVDFEl.h>
 
 /// \cond DO_NOT_DOCUMENT
 class Op_Diff_VDF_Elem_leaves
@@ -28,7 +28,6 @@ class Op_Diff_VDF_Elem_leaves
 
 //////////////// CONST /////////////////
 
-declare_It_VDF_Elem(Eval_Diff_VDF_const_Elem)
 /*! @brief class Op_Diff_VDF_Elem Cette classe represente l'operateur de diffusion associe a une equation de transport.
  *
  *   La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite n'est pas uniforme
@@ -46,7 +45,6 @@ public:
   inline const Champ_base& diffusivite() const override { return diffusivite_impl<Eval_Diff_VDF_const_Elem>(); }
 };
 
-declare_It_VDF_Elem(Eval_Diff_VDF_const_Elem_Axi)
 /*! @brief class Op_Diff_VDF_Elem_Axi Cette classe represente l'operateur de diffusion associe a une equation de transport.
  *
  *   La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite n'est pas uniforme
@@ -64,7 +62,6 @@ public:
   inline const Champ_base& diffusivite() const override { return diffusivite_impl<Eval_Diff_VDF_const_Elem_Axi>(); }
 };
 
-declare_It_VDF_Elem(Eval_Diff_VDF_Multi_inco_const_Elem)
 /*! @brief class Op_Diff_VDF_Multi_inco_Elem Cette classe represente l'operateur de diffusion associe a une equation de transport.
  *
  *   La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite n'est pas uniforme
@@ -82,7 +79,6 @@ public:
   inline const Champ_base& diffusivite() const override { return diffusivite_impl<Eval_Diff_VDF_Multi_inco_const_Elem>(); }
 };
 
-declare_It_VDF_Elem(Eval_Diff_VDF_Multi_inco_const_Elem_Axi)
 /*! @brief class Op_Diff_VDF_Multi_inco_Elem_Axi Cette classe represente l'operateur de diffusion associe a une equation de transport.
  *
  *   La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite n'est pas uniforme
@@ -102,7 +98,6 @@ public:
 
 //////////////// VAR /////////////////
 
-declare_It_VDF_Elem(Eval_Diff_VDF_var_Elem)
 /*! @brief class Op_Diff_VDF_var_Elem Cette classe represente l'operateur de diffusion associe a une equation de transport.
  *
  *   La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite n'est pas uniforme
@@ -120,7 +115,6 @@ public:
   inline const Champ_base& diffusivite() const override { return diffusivite_impl<Eval_Diff_VDF_var_Elem>(); }
 };
 
-declare_It_VDF_Elem(Eval_Diff_VDF_var_Elem_Axi)
 /*! @brief class Op_Diff_VDF_var_Elem_Axi Cette classe represente l'operateur de diffusion associe a une equation de transport.
  *
  *   La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite n'est pas uniforme
@@ -138,7 +132,6 @@ public:
   inline const Champ_base& diffusivite() const override { return diffusivite_impl<Eval_Diff_VDF_var_Elem_Axi>(); }
 };
 
-declare_It_VDF_Elem(Eval_Diff_VDF_var_Elem_aniso)
 /*! @brief class Op_Diff_VDF_var_Elem_aniso Cette classe represente l'operateur de diffusion associe a une equation de transport.
  *
  *   La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite n'est pas uniforme
@@ -156,7 +149,6 @@ public:
   inline const Champ_base& diffusivite() const override { return diffusivite_impl<Eval_Diff_VDF_var_Elem_aniso>(); }
 };
 
-declare_It_VDF_Elem(Eval_Diff_VDF_Multi_inco_var_Elem)
 /*! @brief class Op_Diff_VDF_Multi_inco_var_Elem Cette classe represente l'operateur de diffusion associe a une equation de transport.
  *
  *   La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite n'est pas uniforme
@@ -174,7 +166,6 @@ public:
   inline const Champ_base& diffusivite() const override { return diffusivite_impl<Eval_Diff_VDF_Multi_inco_var_Elem>(); }
 };
 
-declare_It_VDF_Elem(Eval_Diff_VDF_Multi_inco_var_Elem_Axi)
 /*! @brief class Op_Diff_VDF_Multi_inco_var_Elem_Axi Cette classe represente l'operateur de diffusion associe a une equation de transport.
  *
  *   La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite n'est pas uniforme

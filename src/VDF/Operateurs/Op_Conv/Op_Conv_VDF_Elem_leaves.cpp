@@ -18,7 +18,6 @@
 #include <cfloat>
 
 Implemente_instanciable_sans_constructeur(Op_Conv_Amont_VDF_Elem,"Op_Conv_Amont_VDF_P0_VDF",Op_Conv_VDF_base);
-implemente_It_VDF_Elem(Eval_Amont_VDF_Elem)
 Sortie& Op_Conv_Amont_VDF_Elem::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 Entree& Op_Conv_Amont_VDF_Elem::readOn(Entree& s ) { return s ; }
 // ajoute la contribution de la convection au second membre resu
@@ -96,22 +95,19 @@ void Op_Conv_Amont_VDF_Elem::preparer_calcul()
 }
 
 
-Op_Conv_Amont_VDF_Elem::Op_Conv_Amont_VDF_Elem() : Op_Conv_VDF_base(It_VDF_Elem(Eval_Amont_VDF_Elem)()) { }
+Op_Conv_Amont_VDF_Elem::Op_Conv_Amont_VDF_Elem() : Op_Conv_VDF_base(Iterateur_VDF_Elem<Eval_Amont_VDF_Elem>()) { }
 
 Implemente_instanciable_sans_constructeur(Op_Conv_Centre_VDF_Elem,"Op_Conv_Centre_VDF_P0_VDF",Op_Conv_VDF_base);
-implemente_It_VDF_Elem(Eval_Centre_VDF_Elem)
 Sortie& Op_Conv_Centre_VDF_Elem::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 Entree& Op_Conv_Centre_VDF_Elem::readOn(Entree& s ) { return s ; }
-Op_Conv_Centre_VDF_Elem::Op_Conv_Centre_VDF_Elem() : Op_Conv_VDF_base(It_VDF_Elem(Eval_Centre_VDF_Elem)()) { }
+Op_Conv_Centre_VDF_Elem::Op_Conv_Centre_VDF_Elem() : Op_Conv_VDF_base(Iterateur_VDF_Elem<Eval_Centre_VDF_Elem>()) { }
 
 Implemente_instanciable_sans_constructeur(Op_Conv_Centre4_VDF_Elem,"Op_Conv_Centre4_VDF_P0_VDF",Op_Conv_VDF_base);
-implemente_It_VDF_Elem(Eval_Centre4_VDF_Elem)
 Sortie& Op_Conv_Centre4_VDF_Elem::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 Entree& Op_Conv_Centre4_VDF_Elem::readOn(Entree& s ) { return s ; }
-Op_Conv_Centre4_VDF_Elem::Op_Conv_Centre4_VDF_Elem() : Op_Conv_VDF_base(It_VDF_Elem(Eval_Centre4_VDF_Elem)()) { }
+Op_Conv_Centre4_VDF_Elem::Op_Conv_Centre4_VDF_Elem() : Op_Conv_VDF_base(Iterateur_VDF_Elem<Eval_Centre4_VDF_Elem>()) { }
 
 Implemente_instanciable_sans_constructeur(Op_Conv_Quick_VDF_Elem,"Op_Conv_Quick_VDF_P0_VDF",Op_Conv_VDF_base);
-implemente_It_VDF_Elem(Eval_Quick_VDF_Elem)
 Sortie& Op_Conv_Quick_VDF_Elem::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 Entree& Op_Conv_Quick_VDF_Elem::readOn(Entree& s ) { return s ; }
-Op_Conv_Quick_VDF_Elem::Op_Conv_Quick_VDF_Elem() : Op_Conv_VDF_base(It_VDF_Elem(Eval_Quick_VDF_Elem)()) { }
+Op_Conv_Quick_VDF_Elem::Op_Conv_Quick_VDF_Elem() : Op_Conv_VDF_base(Iterateur_VDF_Elem<Eval_Quick_VDF_Elem>()) { }

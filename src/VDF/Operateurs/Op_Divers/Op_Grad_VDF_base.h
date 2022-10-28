@@ -16,8 +16,8 @@
 #ifndef Op_Grad_VDF_base_included
 #define Op_Grad_VDF_base_included
 
-#include <Iterateur_VDF_base.h>
 #include <Operateur_Grad.h>
+#include <Iterateur_VDF.h>
 
 /*! @brief class Op_Grad_VDF_base Classe de base des operateurs de gradient VDF
  *

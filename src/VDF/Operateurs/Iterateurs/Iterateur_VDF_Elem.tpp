@@ -13,8 +13,8 @@
 *
 *****************************************************************************/
 
-#ifndef T_It_VDF_Elem_TPP_included
-#define T_It_VDF_Elem_TPP_included
+#ifndef Iterateur_VDF_Elem_TPP_included
+#define Iterateur_VDF_Elem_TPP_included
 #include <communications.h>
 #include <TRUSTSingle.h>
 #include <Champ_Uniforme.h>
@@ -22,7 +22,7 @@
 #include <Operateur_Diff_base.h>
 
 template <class _TYPE_>
-int T_It_VDF_Elem<_TYPE_>::impr(Sortie& os) const
+int Iterateur_VDF_Elem<_TYPE_>::impr(Sortie& os) const
 {
   const Zone_VDF& la_zone_vdf=ref_cast(Zone_VDF,op_base.valeur().equation().zone_dis().valeur());
   const Zone& mazone=la_zone->zone();
@@ -119,35 +119,35 @@ int T_It_VDF_Elem<_TYPE_>::impr(Sortie& os) const
 }
 
 template <class _TYPE_>
-DoubleTab& T_It_VDF_Elem<_TYPE_>::calculer(const DoubleTab& inco, DoubleTab& resu) const
+DoubleTab& Iterateur_VDF_Elem<_TYPE_>::calculer(const DoubleTab& inco, DoubleTab& resu) const
 {
   operator_egal(resu, 0., VECT_REAL_ITEMS);
   return ajouter(inco,resu);
 }
 
 template <class _TYPE_>
-DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter(const DoubleTab& inco, DoubleTab& secmem) const
+DoubleTab& Iterateur_VDF_Elem<_TYPE_>::ajouter(const DoubleTab& inco, DoubleTab& secmem) const
 {
   ajouter_blocs({}, secmem, {{ op_base->equation().inconnue().le_nom().getString(),inco }});
   return secmem;
 }
 
 template <class _TYPE_>
-void T_It_VDF_Elem<_TYPE_>::ajouter_contribution(const DoubleTab& inco, Matrice_Morse& m) const
+void Iterateur_VDF_Elem<_TYPE_>::ajouter_contribution(const DoubleTab& inco, Matrice_Morse& m) const
 {
   DoubleTrav secmem(inco); //on va le jeter
   ajouter_blocs({{ op_base->equation().inconnue().le_nom().getString(), &m }}, secmem, {});
 }
 
 template <class _TYPE_>
-void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_vitesse(const DoubleTab& inco, Matrice_Morse& m) const
+void Iterateur_VDF_Elem<_TYPE_>::ajouter_contribution_vitesse(const DoubleTab& inco, Matrice_Morse& m) const
 {
   DoubleTrav secmem(op_base->equation().inconnue().valeurs()); //on va le jeter
   ajouter_blocs({{ "vitesse", &m }}, secmem, {});
 }
 
 template <class _TYPE_>
-void T_It_VDF_Elem<_TYPE_>::ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
+void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   ((_TYPE_&) flux_evaluateur).mettre_a_jour();
   assert(le_champ_convecte_->valeurs().nb_dim() < 3 && la_zcl.non_nul() && la_zone.non_nul());
@@ -175,7 +175,7 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_blocs(matrices_t mats, DoubleTab& secmem, co
 }
 
 template <class _TYPE_>
-void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord(const DoubleTab& donnee) const // XXX : On entre jamais dedans :-) :-)
+void Iterateur_VDF_Elem<_TYPE_>::calculer_flux_bord(const DoubleTab& donnee) const // XXX : On entre jamais dedans :-) :-)
 {
   ((_TYPE_&) flux_evaluateur).mettre_a_jour();
   assert(donnee.nb_dim() < 3 && la_zcl.non_nul() && la_zone.non_nul());
@@ -189,7 +189,7 @@ void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord(const DoubleTab& donnee) const //
 }
 
 template <class _TYPE_>
-void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_autre_pb(const DoubleTab& inco, Matrice_Morse& matrice, const Cond_lim& la_cl, std::map<int, std::pair<int, int>>& f2e) const
+void Iterateur_VDF_Elem<_TYPE_>::ajouter_contribution_autre_pb(const DoubleTab& inco, Matrice_Morse& matrice, const Cond_lim& la_cl, std::map<int, std::pair<int, int>>& f2e) const
 {
   const int ncomp = inco.line_size();
   ArrOfDouble aii(ncomp), ajj(ncomp);
@@ -208,7 +208,7 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_autre_pb(const DoubleTab& inco,
 }
 
 template <class _TYPE_>
-void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre(DoubleTab& resu) const
+void Iterateur_VDF_Elem<_TYPE_>::contribuer_au_second_membre(DoubleTab& resu) const
 {
   ((_TYPE_&) flux_evaluateur).mettre_a_jour();
   const int ncomp = resu.line_size();
@@ -231,7 +231,7 @@ void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre(DoubleTab& resu) const
  * ************************************** */
 
 template<class _TYPE_> template<typename Type_Double>
-DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_blocs_bords(const int ncomp, matrices_t mats, DoubleTab& resu, const tabs_t& semi_impl) const
+DoubleTab& Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords(const int ncomp, matrices_t mats, DoubleTab& resu, const tabs_t& semi_impl) const
 {
   const Champ_Inc_base& cc = le_champ_convecte_;
   const std::string& nom_cc = cc.le_nom().getString();
@@ -290,7 +290,7 @@ DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_blocs_bords(const int ncomp, matrices_
           ajouter_blocs_bords_ < Type_Double > ((const Periodique&) la_cl.valeur(), ndeb, nfin, ncomp, donnee, frontiere_dis, resu, matrice);
           break;
         default:
-          Cerr << "On ne reconnait pas la condition limite : " << la_cl.valeur() << " , dans T_It_VDF_Elem<_TYPE_>::ajouter_bords" << finl;
+          Cerr << "On ne reconnait pas la condition limite : " << la_cl.valeur() << " , dans Iterateur_VDF_Elem<_TYPE_>::ajouter_bords" << finl;
           Process::exit();
           break;
         }
@@ -299,7 +299,7 @@ DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_blocs_bords(const int ncomp, matrices_
 }
 
 template <class _TYPE_> template <typename Type_Double>
-DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_blocs_interne(const int ncomp, matrices_t mats, DoubleTab& resu, const tabs_t& semi_impl) const
+DoubleTab& Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_interne(const int ncomp, matrices_t mats, DoubleTab& resu, const tabs_t& semi_impl) const
 {
   const Champ_Inc_base& cc = le_champ_convecte_;
   const std::string& nom_cc = cc.le_nom().getString();
@@ -335,7 +335,7 @@ DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_blocs_interne(const int ncomp, matrice
 }
 
 template<class _TYPE_> template<bool should_calc_flux, typename Type_Double, typename BC>
-void T_It_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const BC& cl, const int ndeb, const int nfin, const int ncomp, const DoubleTab& donnee, DoubleTab& resu, Matrice_Morse *matrice) const
+void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const BC& cl, const int ndeb, const int nfin, const int ncomp, const DoubleTab& donnee, DoubleTab& resu, Matrice_Morse *matrice) const
 {
   constexpr bool is_Neum_paroi_adiab = std::is_same<BC, Neumann_paroi_adiabatique>::value;
   if (should_calc_flux)
@@ -364,7 +364,7 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const BC& cl, const int ndeb, c
 }
 
 template<class _TYPE_> template<typename Type_Double>
-void T_It_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Periodique& cl, const int ndeb, const int nfin, const int ncomp, const DoubleTab& donnee, const Front_VF& frontiere_dis, DoubleTab& resu, Matrice_Morse *matrice) const
+void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Periodique& cl, const int ndeb, const int nfin, const int ncomp, const DoubleTab& donnee, const Front_VF& frontiere_dis, DoubleTab& resu, Matrice_Morse *matrice) const
 {
   DoubleTab& flux_bords = op_base->flux_bords();
   if (_TYPE_::CALC_FLUX_FACES_PERIO)
@@ -404,8 +404,8 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Periodique& cl, const int
 }
 
 template<class _TYPE_> template<typename Type_Double>
-void T_It_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Echange_externe_impose& cl, const int ndeb, const int nfin, const int num_cl, const int ncomp, const DoubleTab& donnee,
-                                                 const Front_VF& frontiere_dis, DoubleTab& resu, Matrice_Morse *matrice) const
+void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Echange_externe_impose& cl, const int ndeb, const int nfin, const int num_cl, const int ncomp, const DoubleTab& donnee,
+                                                      const Front_VF& frontiere_dis, DoubleTab& resu, Matrice_Morse *matrice) const
 {
   if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
     {
@@ -434,7 +434,7 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Echange_externe_impose& c
 }
 
 template <class _TYPE_> template <typename Type_Double>
-inline void T_It_VDF_Elem<_TYPE_>::fill_flux_tables_(const int face, const int ncomp, const double coeff , const Type_Double& flux, DoubleTab& resu) const
+inline void Iterateur_VDF_Elem<_TYPE_>::fill_flux_tables_(const int face, const int ncomp, const double coeff , const Type_Double& flux, DoubleTab& resu) const
 {
   DoubleTab& flux_bords = op_base->flux_bords();
   const int elem1 = elem(face,0), elem2 = elem(face,1);
@@ -453,7 +453,7 @@ inline void T_It_VDF_Elem<_TYPE_>::fill_flux_tables_(const int face, const int n
 }
 
 template <class _TYPE_>
-void  T_It_VDF_Elem<_TYPE_>::modifier_flux() const
+void  Iterateur_VDF_Elem<_TYPE_>::modifier_flux() const
 {
   if (op_base->equation().inconnue().le_nom().debute_par("temperature")
       && !( sub_type(Operateur_Diff_base,op_base.valeur()) && ref_cast(Operateur_Diff_base,op_base.valeur()).diffusivite().le_nom() == "conductivite" ) )
@@ -498,7 +498,7 @@ void  T_It_VDF_Elem<_TYPE_>::modifier_flux() const
  * ************************************** */
 
 template <class _TYPE_> template <typename Type_Double>
-void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_interne_vitesse(const int ncomp, const DoubleTab& inco, Matrice_Morse& matrice) const
+void Iterateur_VDF_Elem<_TYPE_>::ajouter_contribution_interne_vitesse(const int ncomp, const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   Type_Double aef(ncomp);
   const Zone_VDF& zone_VDF = la_zone.valeur();
@@ -516,7 +516,7 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_interne_vitesse(const int ncomp
 }
 
 template <class _TYPE_> template <typename Type_Double>
-void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse(const int ncomp, const DoubleTab& inco, Matrice_Morse& matrice ) const
+void Iterateur_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse(const int ncomp, const DoubleTab& inco, Matrice_Morse& matrice ) const
 {
   for (int num_cl = 0; num_cl < la_zone->nb_front_Cl(); num_cl++)
     {
@@ -557,7 +557,7 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse(const int ncomp, 
           ajouter_contribution_bords_vitesse_<Type_Double>((const Periodique&) la_cl.valeur(),ndeb,nfin,ncomp,inco,frontiere_dis,matrice);
           break;
         default :
-          Cerr << "On ne reconnait pas la condition limite : " << la_cl.valeur() << " , dans T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse" << finl;
+          Cerr << "On ne reconnait pas la condition limite : " << la_cl.valeur() << " , dans Iterateur_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse" << finl;
           Process::exit();
           break;
         }
@@ -565,7 +565,7 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse(const int ncomp, 
 }
 
 template <class _TYPE_> template <bool should_calc_flux, typename Type_Double, typename BC>
-void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse_(const BC& cl, const int ndeb, const int nfin, const int ncomp, const DoubleTab& inco, Matrice_Morse& matrice) const
+void Iterateur_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse_(const BC& cl, const int ndeb, const int nfin, const int ncomp, const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   if (should_calc_flux)
     {
@@ -583,7 +583,7 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse_(const BC& cl, co
 }
 
 template <class _TYPE_> template <typename Type_Double>
-void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse_(const Periodique& cl, const int ndeb, const int nfin, const int ncomp, const DoubleTab& inco, const Front_VF& frontiere_dis, Matrice_Morse& matrice) const
+void Iterateur_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse_(const Periodique& cl, const int ndeb, const int nfin, const int ncomp, const DoubleTab& inco, const Front_VF& frontiere_dis, Matrice_Morse& matrice) const
 {
   if (_TYPE_::CALC_FLUX_FACES_PERIO)
     {
@@ -603,7 +603,7 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse_(const Periodique
 }
 
 template <class _TYPE_> template <typename Type_Double>
-void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse_(const Echange_externe_impose& cl, const int ndeb, const int nfin, const int num_cl, const int ncomp, const DoubleTab& inco,const Front_VF& frontiere_dis, Matrice_Morse& matrice) const
+void Iterateur_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse_(const Echange_externe_impose& cl, const int ndeb, const int nfin, const int num_cl, const int ncomp, const DoubleTab& inco,const Front_VF& frontiere_dis, Matrice_Morse& matrice) const
 {
   if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
     {
@@ -627,7 +627,7 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse_(const Echange_ex
  * ************************************** */
 
 template <class _TYPE_> template <typename Type_Double>
-void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords(const int ncomp, DoubleTab& resu) const
+void Iterateur_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords(const int ncomp, DoubleTab& resu) const
 {
   for (int num_cl = 0; num_cl < la_zone->nb_front_Cl(); num_cl++)
     {
@@ -667,7 +667,7 @@ void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords(const int ncomp, D
           contribuer_au_second_membre_bords_<Type_Double>((const Echange_externe_impose&)la_cl.valeur(), ndeb,nfin,num_cl,ncomp,frontiere_dis,resu);
           break;
         default :
-          Cerr << "On ne reconnait pas la condition limite : " << la_cl.valeur() << " , dans T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords" << finl;
+          Cerr << "On ne reconnait pas la condition limite : " << la_cl.valeur() << " , dans Iterateur_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords" << finl;
           Process::exit();
           break;
         }
@@ -675,7 +675,7 @@ void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords(const int ncomp, D
 }
 
 template <class _TYPE_> template <typename Type_Double>
-void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_interne(const int ncomp, DoubleTab& resu) const
+void Iterateur_VDF_Elem<_TYPE_>::contribuer_au_second_membre_interne(const int ncomp, DoubleTab& resu) const
 {
   Type_Double flux(ncomp);
   const Zone_VDF& zone_VDF = la_zone.valeur();
@@ -693,7 +693,7 @@ void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_interne(const int ncomp,
 }
 
 template <class _TYPE_> template <bool should_calc_flux, typename Type_Double, typename BC>
-void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords_(const BC& cl, const int ndeb, const int nfin, const int ncomp, DoubleTab& resu) const
+void Iterateur_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords_(const BC& cl, const int ndeb, const int nfin, const int ncomp, DoubleTab& resu) const
 {
   constexpr bool is_Periodique = std::is_same<BC,Periodique>::value;
   if (should_calc_flux)
@@ -708,7 +708,7 @@ void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords_(const BC& cl, con
 }
 
 template <class _TYPE_> template <typename Type_Double>
-void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords_(const Echange_externe_impose& cl, const int ndeb, const int nfin, const int num_cl, const int ncomp, const Front_VF& frontiere_dis, DoubleTab& resu) const
+void Iterateur_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords_(const Echange_externe_impose& cl, const int ndeb, const int nfin, const int num_cl, const int ncomp, const Front_VF& frontiere_dis, DoubleTab& resu) const
 {
   if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
     {
@@ -726,7 +726,7 @@ void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords_(const Echange_ext
 
 // Debut : Inutile, jamais utilise ...
 template <class _TYPE_> template <typename Type_Double>
-void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord2(const int ncomp, const DoubleTab& donnee) const
+void Iterateur_VDF_Elem<_TYPE_>::calculer_flux_bord2(const int ncomp, const DoubleTab& donnee) const
 {
   for (int num_cl = 0; num_cl < la_zone->nb_front_Cl(); num_cl++)
     {
@@ -776,7 +776,7 @@ void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord2(const int ncomp, const DoubleTab
           calculer_flux_bord_<Type_Double>((const Echange_externe_impose&) la_cl.valeur(),ndeb,nfin,num_cl,ncomp,donnee,frontiere_dis);
           break;
         default :
-          Cerr << "On ne reconnait pas la condition limite : " << la_cl.valeur() << " , dans T_It_VDF_Elem<_TYPE_>::calculer_flux_bord" << finl;
+          Cerr << "On ne reconnait pas la condition limite : " << la_cl.valeur() << " , dans Iterateur_VDF_Elem<_TYPE_>::calculer_flux_bord" << finl;
           Process::exit();
           break;
         }
@@ -784,7 +784,7 @@ void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord2(const int ncomp, const DoubleTab
 }
 
 template <class _TYPE_> template <bool should_calc_flux, typename Type_Double, typename BC>
-void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord_(const BC& cl, const int ndeb, const int nfin, const int ncomp, const DoubleTab& donnee ) const
+void Iterateur_VDF_Elem<_TYPE_>::calculer_flux_bord_(const BC& cl, const int ndeb, const int nfin, const int ncomp, const DoubleTab& donnee ) const
 {
   constexpr bool is_Neum_paroi_adiab = std::is_same<BC,Neumann_paroi_adiabatique>::value;
   DoubleTab& flux_bords = op_base->flux_bords();
@@ -806,7 +806,7 @@ void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord_(const BC& cl, const int ndeb, co
 }
 
 template <class _TYPE_> template <typename Type_Double>
-void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord_(const Periodique& cl, const int ndeb, const int nfin, const int ncomp, const DoubleTab& donnee, const Front_VF& frontiere_dis) const
+void Iterateur_VDF_Elem<_TYPE_>::calculer_flux_bord_(const Periodique& cl, const int ndeb, const int nfin, const int ncomp, const DoubleTab& donnee, const Front_VF& frontiere_dis) const
 {
   DoubleTab& flux_bords = op_base->flux_bords();
   if (_TYPE_::CALC_FLUX_FACES_PERIO)
@@ -827,7 +827,7 @@ void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord_(const Periodique& cl, const int 
 }
 
 template <class _TYPE_> template <typename Type_Double>
-void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord_(const Echange_externe_impose& cl, const int ndeb, const int nfin, const int num_cl, const int ncomp, const DoubleTab& donnee, const Front_VF& frontiere_dis) const
+void Iterateur_VDF_Elem<_TYPE_>::calculer_flux_bord_(const Echange_externe_impose& cl, const int ndeb, const int nfin, const int num_cl, const int ncomp, const DoubleTab& donnee, const Front_VF& frontiere_dis) const
 {
   DoubleTab& flux_bords = op_base->flux_bords();
   if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
@@ -849,4 +849,4 @@ void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord_(const Echange_externe_impose& cl
 }
 // Fin : Inutile, jamais utilise ...
 
-#endif /* T_It_VDF_Elem_TPP_included */
+#endif /* Iterateur_VDF_Elem_TPP_included */

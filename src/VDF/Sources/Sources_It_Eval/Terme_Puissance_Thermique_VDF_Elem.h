@@ -17,10 +17,9 @@
 #define Terme_Puissance_Thermique_VDF_Elem_included
 
 #include <Terme_Puissance_Thermique_VDF_base.h>
+#include <Iterateur_Source_VDF_Elem.h>
 #include <Eval_Puiss_Th_VDF_Elem.h>
-#include <ItSouVDFEl.h>
 
-declare_It_Sou_VDF_Elem(Eval_Puiss_Th_VDF_Elem)
 /*! @brief class Terme_Puissance_Thermique_VDF_Elem Cette classe represente un terme source de l'equation de la thermique
  *
  *  du type degagement volumique de puissance thermique
@@ -31,13 +30,10 @@ class Terme_Puissance_Thermique_VDF_Elem : public Terme_Puissance_Thermique_VDF_
 {
   Declare_instanciable_sans_constructeur(Terme_Puissance_Thermique_VDF_Elem);
 public:
-  inline Terme_Puissance_Thermique_VDF_Elem();
+  Terme_Puissance_Thermique_VDF_Elem() : Terme_Puissance_Thermique_VDF_base(Iterateur_Source_VDF_Elem<Eval_Puiss_Th_VDF_Elem>()) { }
   void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;
   void associer_pb(const Probleme_base& ) override;
   inline void mettre_a_jour(double temps) override { Terme_Puissance_Thermique::mettre_a_jour(temps); }
 };
-
-inline Terme_Puissance_Thermique_VDF_Elem::Terme_Puissance_Thermique_VDF_Elem()
-  : Terme_Puissance_Thermique_VDF_base(It_Sou_VDF_Elem(Eval_Puiss_Th_VDF_Elem)()) { }
 
 #endif /* Terme_Puissance_Thermique_VDF_Elem_included */

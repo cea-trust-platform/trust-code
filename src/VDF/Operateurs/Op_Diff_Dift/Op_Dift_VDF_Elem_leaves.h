@@ -32,7 +32,7 @@ class Champ_base;
 //////////////// CONST /////////////////
 
 // ===========================================================================================================================================
-declare_It_VDF_Elem(Eval_Dift_VDF_const_Elem)
+
 class Op_Dift_VDF_Elem : public Op_Dift_VDF_Elem_base, public Op_Diff_Dift_VDF<Op_Dift_VDF_Elem>
 {
   Declare_instanciable_sans_constructeur(Op_Dift_VDF_Elem);
@@ -49,7 +49,7 @@ public:
 };
 
 // ===========================================================================================================================================
-declare_It_VDF_Elem(Eval_Dift_VDF_const_Elem_Axi)
+
 class Op_Dift_VDF_Elem_Axi : public Op_Dift_VDF_Elem_base, public Op_Diff_Dift_VDF<Op_Dift_VDF_Elem_Axi>
 {
   Declare_instanciable_sans_constructeur(Op_Dift_VDF_Elem_Axi);
@@ -66,7 +66,7 @@ public:
 };
 
 // ===========================================================================================================================================
-declare_It_VDF_Elem(Eval_Dift_VDF_Multi_inco_const_Elem)
+
 class Op_Dift_VDF_Multi_inco_Elem : public Op_Dift_VDF_Elem_base, public Op_Diff_Dift_VDF<Op_Dift_VDF_Multi_inco_Elem>
 {
   Declare_instanciable_sans_constructeur(Op_Dift_VDF_Multi_inco_Elem);
@@ -89,7 +89,7 @@ public:
 };
 
 // ===========================================================================================================================================
-declare_It_VDF_Elem(Eval_Dift_VDF_Multi_inco_const_Elem_Axi)
+
 class Op_Dift_VDF_Multi_inco_Elem_Axi : public Op_Dift_VDF_Elem_base, public Op_Diff_Dift_VDF<Op_Dift_VDF_Multi_inco_Elem_Axi>
 {
   Declare_instanciable_sans_constructeur(Op_Dift_VDF_Multi_inco_Elem_Axi);
@@ -112,7 +112,6 @@ public:
 
 //////////////// VAR /////////////////
 
-declare_It_VDF_Elem(Eval_Dift_VDF_var_Elem)
 class Op_Dift_VDF_var_Elem : public Op_Dift_VDF_Elem_base, public Op_Diff_Dift_VDF<Op_Dift_VDF_var_Elem>
 {
   Declare_instanciable_sans_constructeur(Op_Dift_VDF_var_Elem);
@@ -129,7 +128,7 @@ public:
 };
 
 // ===========================================================================================================================================
-declare_It_VDF_Elem(Eval_Dift_VDF_var_Elem_Axi)
+
 class Op_Dift_VDF_var_Elem_Axi : public Op_Dift_VDF_Elem_base, public Op_Diff_Dift_VDF<Op_Dift_VDF_var_Elem_Axi>
 {
   Declare_instanciable_sans_constructeur(Op_Dift_VDF_var_Elem_Axi);
@@ -146,7 +145,7 @@ public:
 };
 
 // ===========================================================================================================================================
-declare_It_VDF_Elem(Eval_Dift_VDF_Multi_inco_var_Elem)
+
 class Op_Dift_VDF_Multi_inco_var_Elem : public Op_Dift_VDF_Elem_base, public Op_Diff_Dift_VDF<Op_Dift_VDF_Multi_inco_var_Elem>
 {
   Declare_instanciable_sans_constructeur(Op_Dift_VDF_Multi_inco_var_Elem);
@@ -169,7 +168,7 @@ public:
 };
 
 // ===========================================================================================================================================
-declare_It_VDF_Elem(Eval_Dift_VDF_Multi_inco_var_Elem_Axi)
+
 class Op_Dift_VDF_Multi_inco_var_Elem_Axi : public Op_Dift_VDF_Elem_base, public Op_Diff_Dift_VDF<Op_Dift_VDF_Multi_inco_var_Elem_Axi>
 {
   Declare_instanciable_sans_constructeur(Op_Dift_VDF_Multi_inco_var_Elem_Axi);

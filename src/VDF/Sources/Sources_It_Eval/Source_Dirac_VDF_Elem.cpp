@@ -18,7 +18,6 @@
 #include <Navier_Stokes_std.h>
 
 Implemente_instanciable_sans_constructeur(Source_Dirac_VDF_Elem,"Dirac_VDF_P0_VDF",Terme_Puissance_Thermique_VDF_base);
-implemente_It_Sou_VDF_Elem(Eval_Dirac_VDF_Elem)
 
 Sortie& Source_Dirac_VDF_Elem::printOn(Sortie& s) const { return s << que_suis_je(); }
 

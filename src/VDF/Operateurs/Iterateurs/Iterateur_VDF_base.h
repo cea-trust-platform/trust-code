@@ -30,22 +30,19 @@ enum class Type_Operateur { Op_CONV_ELEM , Op_CONV_FACE , Op_DIFF_ELEM , Op_DIFT
 
 enum Type_Cl_VDF
 {
-  symetrie // Symetrie
-  ,sortie_libre // Neumann_sortie_libre ou derivees
-  ,entree_fluide // Dirichlet_entree_fluide
-  ,paroi_fixe // Dirichlet_paroi_fixe
-  ,paroi_defilante // Dirichlet_paroi_defilante
-  ,paroi_adiabatique // Neumann_paroi_adiabatique ou derivees
-  ,paroi // Neumann_paroi
-  ,echange_externe_impose // Echange_externe_impose
-  ,echange_global_impose // Echange_global_impose
-  ,periodique // periodique
-  ,nouvelle_Cl_VDF // Nouvelle_Cl_VDF
+  symetrie,  // Symetrie
+  sortie_libre, // Neumann_sortie_libre ou derivees
+  entree_fluide, // Dirichlet_entree_fluide
+  paroi_fixe, // Dirichlet_paroi_fixe
+  paroi_defilante, // Dirichlet_paroi_defilante
+  paroi_adiabatique, // Neumann_paroi_adiabatique ou derivees
+  paroi, // Neumann_paroi
+  echange_externe_impose, // Echange_externe_impose
+  echange_global_impose, // Echange_global_impose
+  periodique, // periodique
+  nouvelle_Cl_VDF // Nouvelle_Cl_VDF
 };
 
-/* *************************
- * Classe Iterateur_VDF_base
- * *************************/
 class Iterateur_VDF_base : public Objet_U
 {
   Declare_base(Iterateur_VDF_base);
@@ -82,59 +79,20 @@ protected:
 
 inline Type_Cl_VDF Iterateur_VDF_base::type_cl(const Cond_lim& la_cl) const
 {
-  Type_Cl_VDF retour=nouvelle_Cl_VDF;
-  if ( sub_type(Symetrie,la_cl.valeur()) ) retour=symetrie;
-  else if ( sub_type(Neumann_sortie_libre, la_cl.valeur()) ) retour=sortie_libre;
-  else if ( sub_type(Dirichlet_entree_fluide, la_cl.valeur()) ) retour=entree_fluide;
-  else if ( sub_type(Dirichlet_paroi_fixe, la_cl.valeur()) ) retour=paroi_fixe;
-  else if ( sub_type(Dirichlet_paroi_defilante, la_cl.valeur()) ) retour=paroi_defilante;
-  else if ( sub_type(Neumann_paroi_adiabatique, la_cl.valeur()) ) retour=paroi_adiabatique;
-  else if ( sub_type(Neumann_paroi, la_cl.valeur()) ) retour=paroi;
-  else if ( sub_type(Echange_externe_impose, la_cl.valeur()) ) retour=echange_externe_impose;
-  else if ( sub_type(Echange_global_impose, la_cl.valeur()) ) retour=echange_global_impose;
-  else if ( sub_type(Periodique, la_cl.valeur()) ) retour=periodique;
+  Type_Cl_VDF retour = nouvelle_Cl_VDF;
+
+  if (sub_type(Symetrie, la_cl.valeur())) retour = symetrie;
+  else if (sub_type(Neumann_sortie_libre, la_cl.valeur())) retour = sortie_libre;
+  else if (sub_type(Dirichlet_entree_fluide, la_cl.valeur())) retour = entree_fluide;
+  else if (sub_type(Dirichlet_paroi_fixe, la_cl.valeur())) retour = paroi_fixe;
+  else if (sub_type(Dirichlet_paroi_defilante, la_cl.valeur())) retour = paroi_defilante;
+  else if (sub_type(Neumann_paroi_adiabatique, la_cl.valeur())) retour = paroi_adiabatique;
+  else if (sub_type(Neumann_paroi, la_cl.valeur())) retour = paroi;
+  else if (sub_type(Echange_externe_impose, la_cl.valeur())) retour = echange_externe_impose;
+  else if (sub_type(Echange_global_impose, la_cl.valeur())) retour = echange_global_impose;
+  else if (sub_type(Periodique, la_cl.valeur())) retour = periodique;
+
   return retour;
-}
-
-/* ********************
- * Classe Iterateur_VDF
- * ********************/
-
-Declare_deriv(Iterateur_VDF_base);
-class Iterateur_VDF : public DERIV(Iterateur_VDF_base)
-{
-  Declare_instanciable(Iterateur_VDF);
-public:
-  inline int impr(Sortie& os) const { return valeur().impr(os); }
-  inline void completer_() { valeur().completer_(); }
-  inline void associer(const Zone_VDF& zvdf, const Zone_Cl_VDF& zcl_vdf, const Operateur_base& op) { valeur().associer(zvdf,zcl_vdf,op); }
-  inline void associer(const Zone_dis& zdis, const Zone_Cl_dis& zcl_dis, const Operateur_base& op) { valeur().associer(zdis,zcl_dis,op); }
-  inline void contribuer_au_second_membre(DoubleTab& resu) const { valeur().contribuer_au_second_membre(resu); }
-  inline void ajouter_contribution(const DoubleTab& inco, Matrice_Morse& matrice) const { valeur().ajouter_contribution(inco, matrice); }
-  inline void ajouter_contribution_vitesse(const DoubleTab& inco, Matrice_Morse& matrice) const { valeur().ajouter_contribution_vitesse(inco, matrice); }
-  inline void ajouter_contribution_autre_pb(const DoubleTab& inco, Matrice_Morse& matrice, const Cond_lim& la_cl, std::map<int, std::pair<int, int>>&) const;
-  inline Iterateur_VDF(const Iterateur_VDF_base&);
-  inline Evaluateur_VDF& evaluateur() { return valeur().evaluateur(); }
-  inline const Evaluateur_VDF& evaluateur() const { return valeur().evaluateur(); }
-  inline const Zone_VDF& zone() const { return valeur().zone(); }
-  inline const Zone_Cl_VDF& zone_Cl() const { return valeur().zone_Cl(); }
-  inline DoubleTab& ajouter(const DoubleTab& inco, DoubleTab& resu) const { return valeur().ajouter(inco,resu); }
-  inline DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu) const { return valeur().calculer(inco, resu); }
-  virtual void ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const { valeur().ajouter_blocs(mats, secmem, semi_impl); }
-
-protected:
-  inline Type_Cl_VDF type_cl(const Cond_lim& cl) const { return valeur().type_cl(cl); }
-};
-
-inline Iterateur_VDF::Iterateur_VDF(const Iterateur_VDF_base& Opb)
-  : DERIV(Iterateur_VDF_base)()
-{
-  DERIV(Iterateur_VDF_base)::operator=(Opb);
-}
-
-inline void Iterateur_VDF::ajouter_contribution_autre_pb(const DoubleTab& inco, Matrice_Morse& matrice, const Cond_lim& la_cl, std::map<int, std::pair<int, int>>& f2e) const
-{
-  return valeur().ajouter_contribution_autre_pb(inco, matrice, la_cl, f2e);
 }
 
 #endif /* Iterateur_VDF_base_included */

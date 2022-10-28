@@ -19,15 +19,9 @@
 
 
 Implemente_instanciable_sans_constructeur(Terme_Puissance_Thermique_VDF_Elem,"Puissance_Thermique_VDF_P0_VDF",Terme_Puissance_Thermique_VDF_base);
-implemente_It_Sou_VDF_Elem(Eval_Puiss_Th_VDF_Elem)
 
 Sortie& Terme_Puissance_Thermique_VDF_Elem::printOn(Sortie& s) const { return s << que_suis_je(); }
-
-Entree& Terme_Puissance_Thermique_VDF_Elem::readOn(Entree& s)
-{
-  Terme_Puissance_Thermique_VDF_base::readOn(s);
-  return s;
-}
+Entree& Terme_Puissance_Thermique_VDF_Elem::readOn(Entree& s) { return Terme_Puissance_Thermique_VDF_base::readOn(s); }
 
 void Terme_Puissance_Thermique_VDF_Elem::associer_zones(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
 {

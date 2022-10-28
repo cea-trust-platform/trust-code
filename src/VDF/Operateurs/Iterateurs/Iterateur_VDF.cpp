@@ -13,14 +13,10 @@
 *
 *****************************************************************************/
 
-#ifndef It_VDFFa_H
-#define It_VDFFa_H
+#include <Iterateur_VDF.h>
 
-#define It_VDF_Face(_TYPE_) name2(Iterateur_VDF_Face, _TYPE_)
+Implemente_deriv(Iterateur_VDF_base);
+Implemente_instanciable(Iterateur_VDF, "Iterateur_VDF", DERIV(Iterateur_VDF_base));
 
-#include <T_It_VDF_Face.h>
-#define declare_It_VDF_Face(_TYPE_)
-#define implemente_It_VDF_Face(_TYPE_) \
-  typedef T_It_VDF_Face<_TYPE_> It_VDF_Face(_TYPE_);
-
-#endif
+Entree& Iterateur_VDF::readOn(Entree& s) { return s; }
+Sortie& Iterateur_VDF::printOn(Sortie& s) const { return s << que_suis_je(); }

@@ -20,7 +20,6 @@
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Source_Forchheimer_VDF_Face,"Forchheimer_VDF_Face",Terme_Source_VDF_base);
-implemente_It_Sou_VDF_Face(Eval_Forchheimer_VDF_Face)
 
 Sortie& Source_Forchheimer_VDF_Face::printOn(Sortie& s) const { return s << que_suis_je(); }
 

@@ -23,20 +23,17 @@
 
 /*! @brief class Evaluateur_VDF Classe de base des evaluateurs VDF.
  *
- * Cette classe n'appartient pas a la
- *  hierarchie des Objet_U.
- *  Cette classe porte une reference a un objet de type Zone_VDF et une
- *  reference a un objet de type Zone_Cl_VDF. Elle porte des tableaux locaux
- *  qui sont en fait des references aux tableaux de l'objet de type Zone_VDF
- *  (ces tableaux locaux n'existent pas en memoire).
+ *  Cette classe n'appartient pas a la hierarchie des Objet_U.
+ *  Cette classe porte une reference a un objet de type Zone_VDF et une reference a un objet de type Zone_Cl_VDF. Elle porte des tableaux locaux
+ *  qui sont en fait des references aux tableaux de l'objet de type Zone_VDF (ces tableaux locaux n'existent pas en memoire).
  *
  */
 
 class Evaluateur_VDF
 {
 public:
-  inline Evaluateur_VDF() {}
-  inline virtual ~Evaluateur_VDF() {}
+  Evaluateur_VDF() {}
+  virtual ~Evaluateur_VDF() {}
   Evaluateur_VDF(const Evaluateur_VDF& );
   virtual void associer_zones(const Zone_VDF& , const Zone_Cl_VDF& );
   virtual void associer_porosite(const DoubleVect&);
@@ -51,7 +48,7 @@ public:
 protected:
   REF(Zone_VDF) la_zone;
   REF(Zone_Cl_VDF) la_zcl;
-  int dimension, premiere_face_bord;
+  int dimension = -100, premiere_face_bord = -100;
   IntTab elem_;                       // les 2 elements voisins d'une face
   DoubleVect surface;          // surfaces des faces
   IntVect orientation;         // orientations des faces

@@ -16,7 +16,7 @@
 #ifndef Op_Conv_VDF_included
 #define Op_Conv_VDF_included
 
-#include <Iterateur_VDF_base.h>
+#include <Iterateur_VDF.h>
 #include <Op_VDF_Elem.h>
 #include <Op_VDF_Face.h>
 #include <type_traits>

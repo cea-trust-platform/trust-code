@@ -16,6 +16,8 @@
 #ifndef CL_Types_Aretes_enum_included
 #define CL_Types_Aretes_enum_included
 
+#include <type_traits>
+
 // TODO : can be removed when we pass to C++14
 template<bool B, typename T> using enable_if_t = typename std::enable_if<B, T>::type;
 

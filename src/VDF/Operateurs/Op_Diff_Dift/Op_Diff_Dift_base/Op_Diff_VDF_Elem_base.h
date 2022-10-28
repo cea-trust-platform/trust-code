@@ -16,11 +16,12 @@
 #ifndef Op_Diff_VDF_Elem_base_included
 #define Op_Diff_VDF_Elem_base_included
 
+#include <Iterateur_VDF_Elem.h>
 #include <Op_Diff_VDF_base.h>
-#include <Op_VDF_Elem.h>
-#include <ItVDFEl.h>
-class Eval_VDF_Elem;
 #include <Eval_Diff_VDF.h>
+#include <Op_VDF_Elem.h>
+
+class Eval_VDF_Elem;
 
 /*! @brief class Op_Diff_VDF_Elem_base Cette classe represente l'operateur de diffusion associe a une equation de transport.
  *
