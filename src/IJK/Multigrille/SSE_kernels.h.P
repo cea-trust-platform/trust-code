@@ -1,0 +1,59 @@
+//TRUST_NO_INDENT
+/****************************************************************************
+* Copyright (c) 2015 - 2016, CEA
+* All rights reserved.
+*
+* Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+* 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+* 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+* 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+* IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+* OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*
+*****************************************************************************/
+/////////////////////////////////////////////////////////////////////////////
+//
+// File      : SSE_kernels.h
+// Directory : $IJK_ROOT/src/IJK/solveur_mg
+//
+/////////////////////////////////////////////////////////////////////////////
+#ifndef SSE_kernels_included
+#define SSE_kernels_included
+#include <IJK_Field.h>
+#include <Interprete.h>
+
+      // ToDo: remove it! Temporary way to respect trust rules (name of the file = name of the class)
+   class SSE_kernels
+   {
+public:
+     SSE_kernels() {}
+    ~SSE_kernels() {}
+   };
+
+   
+class Test_SSE_Kernels : public Interprete
+{
+  Declare_instanciable(Test_SSE_Kernels);
+ public:
+  Entree & interpreter(Entree & is) override;
+  
+};
+#Pmacro IMPLEMENTE_MULTIPASS(_SUFFIX_,_TYPE_)
+void Multipass_Jacobi_SUFFIX___TYPE_(IJK_Field_local__TYPE_ & x,
+				     IJK_Field_local__TYPE_ & residue,
+				     const IJK_Field_local__TYPE_ & coeffs,
+				     const IJK_Field_local__TYPE_ & secmem,
+				     const int npass,
+				     const bool last_pass_is_residue,
+				     const _TYPE_ relax_coefficient);
+#Pendmacro(IMPLEMENTE_MULTIPASS)
+
+
+#Pforeach _T_(float double)
+#Pusemacro(IMPLEMENTE_MULTIPASS)(generic,_T_)
+void reference_kernel__T_(const IJK_Field_local__T_ & tab, const IJK_Field_local__T_ & coeffs, const IJK_Field_local__T_ & secmem, IJK_Field_local__T_ & resu, 
+			  const _T_ relax, const bool residue);
+#Pendforeach(_T_)
+#endif

@@ -1,0 +1,336 @@
+//TRUST_NO_INDENT
+/****************************************************************************
+* Copyright (c) 2015 - 2016, CEA
+* All rights reserved.
+*
+* Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+* 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+* 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+* 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+* IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+* OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*
+*****************************************************************************/
+/////////////////////////////////////////////////////////////////////////////
+//
+// File      : IJK_Field.h
+// Directory : $IJK_ROOT/src/IJK/solveur_mg
+//
+/////////////////////////////////////////////////////////////////////////////
+#ifndef IJK_Field_included
+#define IJK_Field_included
+
+#include <Vect.h>
+#include <Static_Int_Lists.h>
+#include <TRUSTLists.h>
+#include <TRUSTVect.h>
+#include <TRUSTArray.h>
+#include <IJK_Splitting.h>  
+
+#define DIRECTION_I 0
+#define DIRECTION_J 1
+#define DIRECTION_K 2
+
+   
+// .Description
+//  Class to store lists of boundary condition cells
+//  In an IJK field, the list of all cells on the k layer is in K_Layer_Cells_Lists(k, ..)
+//  It contains "linear_index" of cells in the IJ_Layout
+//  See prepare_cond_lim
+class K_Layer_Cells_Lists : public Objet_U
+{
+  Declare_instanciable(K_Layer_Cells_Lists);
+public:
+  // list is a k index, with -ghost_k_ < k < nk + ghost_k_
+  int operator()(int list, int index) const { return data_(list + ghost_k_, index); }
+  int get_list_size(int list) const { return data_.get_list_size(list + ghost_k_); }
+  
+  int ghost_k_;
+  Static_Int_Lists data_;
+};
+
+Declare_vect(K_Layer_Cells_Lists);
+
+#Pmacro DEFARROFTYPE_WITHGHOST(_TYPE_,_SCALARTYPE_)
+// .Description
+//  This is an array with [] operator.
+//  Allocate array with resize(n, ghost).
+//  tab[i] is valid for "-ghost <= i < n + ghost"
+class ArrOf_TYPE__with_ghost : public Objet_U
+{
+  Declare_instanciable_sans_constructeur(ArrOf_TYPE__with_ghost);
+public:
+  ArrOf_TYPE__with_ghost() : ghost_(0) {};
+  void resize(int n, int new_ghost) {
+    tab_.resize_array(n + 2 * new_ghost);
+    ghost_ = new_ghost;
+  }
+  _SCALARTYPE_ operator[](int i) const { return tab_[i + ghost_]; }
+  _SCALARTYPE_ & operator[](int i) { return tab_[i + ghost_]; }
+  const ArrOf_TYPE_ & data() const { return tab_; }
+  int size() const { return tab_.size_array() - 2 * ghost_; }
+  int ghost() const { return ghost_; }
+  void echange_espace_virtuel(int pe_min, int pe_max);
+protected:
+  ArrOf_TYPE_ tab_;
+  int ghost_;
+};
+Declare_vect(ArrOf_TYPE__with_ghost);
+#Pendmacro(DEFARROFTYPE_WITHGHOST)
+#Pusemacro(DEFARROFTYPE_WITHGHOST)(Float,float)
+#Pusemacro(DEFARROFTYPE_WITHGHOST)(Double,double)
+
+
+#Pmacro DEF_IJK_FIELD(_TYPE_,_ARRAYTYPE_)
+// .Description
+// This class describes a scalar field in an ijk box without any parallel information.
+// The scalar field can be accessed by
+//  - field(i,j,k) with "-ghost() <= i < ni() + ghost()", same for j and k
+//  - field.data()[linear_index(i,j,k)]
+class IJK_Field_local__TYPE_ : public Objet_U
+{
+  Declare_instanciable(IJK_Field_local__TYPE_);
+public:
+  void allocate(int ni, int nj, int nk, int ghosts, int additional_k_layers = 0, int nb_compo = 1);
+  void shift_k_origin(int n);
+  void ref_ij(IJK_Field_local__TYPE_ & src, int k_layer);
+
+  int linear_index(int i, int j, int k) const {
+    assert(nb_compo_ == 1); // otherwise, must specify component
+    assert(i >= -ghost_size_ && i < ni_ + ghost_size_
+	   && j >= -ghost_size_ && j < nj_ + ghost_size_
+	   && k >= -ghost_size_ && k < nk_ + ghost_size_);
+    return offset_ + k * compo_stride_ + j * j_stride_ + i;
+  }
+  int linear_index(int i, int j, int k, int compo) const {
+    assert(i >= -ghost_size_ && i < ni_ + ghost_size_
+	   && j >= -ghost_size_ && j < nj_ + ghost_size_
+	   && k >= -ghost_size_ && k < nk_ + ghost_size_
+	   && compo >= 0 && compo < nb_compo_);
+    return offset_ + (k * nb_compo_ + compo) * compo_stride_ + j * j_stride_ + i;
+  }
+
+  // Operator() checks if the requested i,j,k index lies within the valid
+  // range [-ghost,n+ghost-1]
+  _TYPE_ & operator()(int i, int j, int k) {
+    int idx = linear_index(i, j, k);
+    return data_[idx];
+  }
+  // Operator() checks if the requested i,j,k index lies within the valid
+  // range [-ghost,n+ghost-1]
+  const _TYPE_ & operator()(int i, int j, int k) const {
+    int idx = linear_index(i, j, k);
+    return data_[idx];
+  }
+
+  // Operator() checks if the requested i,j,k index lies within the valid
+  // range [-ghost,n+ghost-1]
+  _TYPE_ & operator()(int i, int j, int k, int compo) {
+    int idx = linear_index(i, j, k, compo);
+    return data_[idx];
+  }
+
+  // Operator() checks if the requested i,j,k index lies within the valid
+  // range [-ghost,n+ghost-1]
+  const _TYPE_ & operator()(int i, int j, int k, int compo) const {
+    int idx = linear_index(i, j, k, compo);
+    return data_[idx];
+  }
+
+  int linear_index_relaxed_test(int i, int j, int k) const {
+    assert(nb_compo_ == 1); // otherwise, must specify component
+    assert(k >= -ghost_size_-k_layer_shift_ && k < nk_ + ghost_size_ + additional_k_layers_ - k_layer_shift_);
+    int x = offset_ + k * compo_stride_ + j * j_stride_ + i;
+    assert(x >= 0 && x < data_.size_array());
+    return x;
+  }
+  int linear_index_relaxed_test(int i, int j, int k, int compo) const {
+    assert(compo >= 0 && compo < nb_compo_);
+    assert(k >= -ghost_size_-k_layer_shift_ && k < nk_ + ghost_size_ + additional_k_layers_ - k_layer_shift_);
+    int x = offset_ + (k * nb_compo_ + compo) * compo_stride_ + j * j_stride_ + i;
+    assert(x >= 0 && x < data_.size_array());
+    return x;
+  }
+  // This method allows to access padding cells outside of the valid data range
+  // but inside the allocated data block.
+  _TYPE_ & get_in_allocated_area(int i, int j, int k) {
+    int idx = linear_index_relaxed_test(i, j, k);
+    return data_[idx];
+  }
+  // This method allows to access padding cells outside of the valid data range
+  // but inside the allocated data block.
+  const _TYPE_ & get_in_allocated_area(int i, int j, int k) const {
+    int idx = linear_index_relaxed_test(i, j, k);
+    return data_[idx];
+  }
+  // This method allows to access padding cells outside of the valid data range
+  // but inside the allocated data block.
+  _TYPE_ & get_in_allocated_area(int i, int j, int k, int compo) {
+    int idx = linear_index_relaxed_test(i, j, k, compo);
+    return data_[idx];
+  }
+  // This method allows to access padding cells outside of the valid data range
+  // but inside the allocated data block.
+  const _TYPE_ & get_in_allocated_area(int i, int j, int k, int compo) const {
+    int idx = linear_index_relaxed_test(i, j, k, compo);
+    return data_[idx];
+  }
+  
+  _TYPE_ *k_layer(int k) {
+    assert(nb_compo_ == 1);
+    assert(k >= -ghost_size_ && k < nk_ + ghost_size_);
+    return data_.addr() + offset_ + k * compo_stride_;
+  }
+  const _TYPE_ *k_layer(int k) const {
+    assert(nb_compo_ == 1);
+    assert(k >= -ghost_size_ && k < nk_ + ghost_size_);
+    return data_.addr() + offset_ + k * compo_stride_;
+  }
+  _TYPE_ *k_layer(int k, int compo) {
+    assert(compo >= 0 && compo < nb_compo_);
+    assert(k >= -ghost_size_ && k < nk_ + ghost_size_);
+    return data_.addr() + offset_ + (k * nb_compo_ + compo) * compo_stride_;
+  }
+  const _TYPE_ *k_layer(int k, int compo) const {
+    assert(compo >= 0 && compo < nb_compo_);
+    assert(k >= -ghost_size_ && k < nk_ + ghost_size_);
+    return data_.addr() + offset_ + (k * nb_compo_ + compo) * compo_stride_;
+  }
+
+  int ni() const { return ni_; }
+  int nj() const { return nj_; }
+  int nk() const { return nk_; }
+  int nb_elem_local(int dir) const { return (dir==0)?ni_:((dir==1)?nj_:nk_); }
+  int nb_compo() const { return nb_compo_; }
+  int j_stride() const { return j_stride_; }
+  int compo_stride() const { return compo_stride_; }
+  int k_stride() const { return compo_stride_ * nb_compo_; }
+  int ghost() const { return ghost_size_; }
+  int k_shift() const { return k_layer_shift_; }
+  int k_shift_max() const { return additional_k_layers_; }
+  _ARRAYTYPE_ & data() { return data_; }
+  const _ARRAYTYPE_ & data() const { return data_; }
+protected:
+  // local size on this proc: (real items)
+  // ni_ nj_ nk_ do not include the ghost size
+  int ni_, nj_, nk_, ghost_size_, nb_compo_;
+  int j_stride_; // how to jump to next j
+  int compo_stride_; // how to jump to next component, k_stride is compo_stride_ * nb_compo_
+  int offset_; // offset to first non ghost cell
+  int k_layer_shift_; // current shift value of the origin in the k direction
+  int additional_k_layers_;
+  _ARRAYTYPE_ data_;
+};
+
+
+// .Description
+// This class is an IJK_Field_local with parallel informations.
+// Each processor has a sub_box of the global box,
+// and echange_espace_virtuel(n) exchanges n layers of ghost cells,
+// echange_espace_virtuel handles periodicity by copying the first layer
+//  into the ghost layer on the opposite side.
+class IJK_Field__TYPE_ : public IJK_Field_local__TYPE_
+{
+  Declare_instanciable(IJK_Field__TYPE_);
+public:
+  void allocate(const IJK_Splitting &, IJK_Splitting::Localisation, int ghost_size, int additional_k_layers = 0, int nb_compo = 1);
+
+  const IJK_Splitting & get_splitting() const { return splitting_ref_.valeur(); }
+  IJK_Splitting::Localisation get_localisation() const { return localisation_; }
+  void echange_espace_virtuel(int ghost);
+protected:
+  REF(IJK_Splitting) splitting_ref_;
+  IJK_Splitting::Localisation localisation_;
+
+  void exchange_data(int pe_imin_, /* processor to send to */
+		     int is, int js, int ks, /* ijk coordinates of first data to send */
+		     int pe_imax_, /* processor to recv from */
+		     int ir, int jr, int kr, /* ijk coordinates of first data to recv */
+		     int isz, int jsz, int ksz); /* size of block data to send/recv */
+};
+
+Declare_vect(IJK_Field__TYPE_);
+
+double norme_ijk(const IJK_Field__TYPE_ & x);
+_TYPE_ max_ijk(const IJK_Field__TYPE_ & x);
+_TYPE_ prod_scal_ijk(const IJK_Field__TYPE_ & x, const IJK_Field__TYPE_ & y);
+double somme_ijk(const IJK_Field__TYPE_ & residu);
+
+#Pendmacro(DEF_IJK_FIELD)
+
+#Pusemacro(DEF_IJK_FIELD)(float,ArrOfFloat)
+#Pusemacro(DEF_IJK_FIELD)(double,ArrOfDouble)
+#Pusemacro(DEF_IJK_FIELD)(int,ArrOfInt)
+
+typedef IJK_Field_local_double IJK_Field_local;
+typedef IJK_Field_double IJK_Field;
+typedef VECT(IJK_Field_double) VECT(IJK_Field);
+#ifdef INT_is_64_
+using IJK_Field_int = IJK_Field_long;
+#endif
+
+// .Description
+//  This class describes an IJ plane of an IJK_Field_local.
+//  It just encapsulates the offset computation:
+//    j * j_stride_ + i
+//  with bound checking in debug...
+//  This class is usefull to safely optimize the code !
+class IJ_layout
+{
+public:
+  int ni() const { return ni_; }
+  int nj() const { return nj_; }
+  int ghost() const { return ghost_; }
+  int j_stride() const { return j_stride_; }
+
+#Pforeach _T_ (double float)
+  IJ_layout(const IJK_Field_local__T_ & f) :
+    ni_(f.ni()), 
+    nj_(f.nj()), 
+    ghost_(f.ghost()), 
+    j_stride_(f.j_stride()) {}
+
+  // origin points to x(0,0,k) for an IJK_Field
+  _T_ & operator()(_T_ * origin, int i, int j) const {
+    assert(i >= -ghost_ && i < ni_ + ghost_);
+    assert(j >= -ghost_ && j < nj_ + ghost_);
+    return origin[j * j_stride_ + i];
+  }
+
+  // origin points to x(0,0,k) for an IJK_Field
+  const _T_ & operator()(const _T_ * origin, int i, int j) const {
+    assert(i >= -ghost_ && i < ni_ + ghost_);
+    assert(j >= -ghost_ && j < nj_ + ghost_);
+    return origin[j * j_stride_ + i];
+  }
+  // linear index of cell (i=0,j=0) is zero
+  // origin points to x(0,0,k) for an IJK_Field
+  _T_ & linear(_T_ * origin, int linear_index) const {
+    assert(linear_index >= -ghost_*(j_stride_+1));
+    assert(linear_index < (ni_ + ghost_) + j_stride_ * (nj_ + ghost_ - 1));
+    return origin[linear_index];
+  }
+
+  const _T_ & linear(const _T_ * origin, int linear_index) const {
+    assert(linear_index >= -ghost_*(j_stride_+1));
+    assert(linear_index < (ni_ + ghost_) + j_stride_ * (nj_ + ghost_ - 1));
+    return origin[linear_index];
+  }
+#Pendforeach(_T_)
+
+  void linear_to_ij(int linear_index, int &i, int &j) const {
+    assert(linear_index >= -ghost_*(j_stride_+1));
+    assert(linear_index < (ni_ + ghost_) + j_stride_ * (nj_ + ghost_ - 1));
+    int l = linear_index + ghost_*(j_stride_+1);
+    j = (l / j_stride_) - ghost_;
+    i = (l % j_stride_) - ghost_;
+  }
+
+  // ghost_ is the number of ghost cells allocated in memory in I and J directions
+  int ni_, nj_, ghost_, j_stride_;
+};
+
+
+#endif

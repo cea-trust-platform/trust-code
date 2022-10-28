@@ -1,0 +1,283 @@
+//TRUST_NO_INDENT
+/****************************************************************************
+* Copyright (c) 2015 - 2016, CEA
+* All rights reserved.
+*
+* Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+* 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+* 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+* 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+* IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+* OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*
+*****************************************************************************/
+/////////////////////////////////////////////////////////////////////////////
+//
+// File      : simd_tools.h
+// Directory : $IJK_ROOT/src/IJK/solveur_mg
+//
+/////////////////////////////////////////////////////////////////////////////
+#ifndef simd_tools_included
+#define simd_tools_included
+// #define WITH_SSE
+#include <FixedVector.h>
+// #define WITH_SSE
+#if 1
+#if defined(WITH_SSE)
+//#include <simd_tools_sse.h>
+#include <simd_tools_Vc.h>
+#elif defined(WITH_AVX)
+//#include <simd_tools_avx.h>
+#include <simd_tools_Vc.h>
+#else
+#include <simd_tools_nosse.h>
+#endif
+#else
+#include <simd_tools_nosse.h>
+#endif
+
+ // ToDo: remove it! Temporary way to respect trust rules (name of the file = name of the class)
+   class simd_tools
+   {
+public:
+     simd_tools() {}
+    ~simd_tools() {}
+   };
+   
+#Pmacro SIMD_CLASS_DEF(__type__)
+
+
+// Simd___type__Array stores N scalar values of size VectorSize
+// arranged for Simd operation (one simd load or store accesses one
+// particular component of the vector for n consecutive vectors).
+// It is a fixed size storage that should be used for efficient processing
+// of local data (that fit in the L1 cache)
+template<int N>
+  class Simd___type__Array
+{
+ public:
+  __type__ & operator[](int i) {
+    assert(i>=0 && i<N);
+    return data_[i];
+  }
+  const __type__ & operator[](int i) const {
+    assert(i>=0 && i<N);
+    return data_[i];
+  }
+  Simd___type__ SimdGet(int vector_index) const {
+    assert(vector_index >= 0 && vector_index < N);
+    return ::SimdGet(data_ + vector_index);
+  }
+  void SimdPut(int vector_index, const Simd___type__ & x) {
+    assert(vector_index >= 0 && vector_index < N);
+    ::SimdPut(data_ + vector_index, x);
+  }
+ protected:
+  __type__ data_[N] _SimdAligned_;
+};
+
+// Simd___type__VectorArray stores N vectors of size VectorSize
+// arranged for Simd operation (one simd load or store accesses one
+// particular component of the vector for n consecutive vectors).
+// It is a fixed size storage that should be used for efficient processing
+// of local data (that fit in the L1 cache)
+template<int N, int VectorSize>
+  class Simd___type__VectorArray
+{
+ public:
+  __type__ & operator()(int vector_index, int component) {
+    assert(vector_index >= 0 && vector_index < N && component >= 0 && component < VectorSize);
+    return data_[component][vector_index];
+  }
+  const __type__ & operator()(int vector_index, int component) const {
+    assert(vector_index >= 0 && vector_index < N && component >= 0 && component < VectorSize);
+    return data_[component][vector_index];
+  }
+  Simd___type__ SimdGet(int vector_index, int component) const {
+    assert(vector_index >= 0 && vector_index < N && component >= 0 && component < VectorSize);
+    return ::SimdGet(data_[component] + vector_index);
+  }
+  void SimdPut(int vector_index, int component, const Simd___type__ & x) {
+    assert(vector_index >= 0 && vector_index < N && component >= 0 && component < VectorSize);
+    ::SimdPut(data_[component] + vector_index, x);
+  }
+  FixedVector<Simd___type__,VectorSize> SimdGetVector(int i) {
+    assert(i>=0 && i<N);
+    FixedVector<Simd___type__,VectorSize> v;
+    for (int j = 0; j < VectorSize; j++)
+      v[j] = ::SimdGet(data_[j] + i);
+    return v;
+  }
+
+ protected:
+  // Fortran type storage to allow vectorized operation on n consecutive vectors:
+  __type__ data_[VectorSize][N] _SimdAligned_;
+};
+
+
+// Simd___type__MatrixArray<N,Nlines,Ncolumns> stores N matrices of size Nlines * Ncolumns,
+// arranged for Simd operation (one simd load or store accesses one particular
+// (i,j) element of the matrix for n consecutive matrices).
+// N must be a multiple of the simd vector size
+// It is a fixed size storage that should be used for efficient processing
+// of local data (that fit in the L1 cache)
+template<int N, int Nlines, int Ncolumns>
+  class Simd___type__MatrixArray
+{
+ public:
+  __type__ & operator()(int matrix_index, int line, int col) {
+    assert(line>=0 && line<Nlines && col>=0 && col<Ncolumns && matrix_index>=0 && matrix_index<N);
+    return data_[line][col][matrix_index];
+  }
+  const __type__ & operator()(int matrix_index, int line, int col) const {
+    assert(line>=0 && line<Nlines && col>=0 && col<Ncolumns && matrix_index>=0 && matrix_index<N);
+    return data_[line][col][matrix_index];
+  }
+  Simd___type__ SimdGet(int matrix_index, int line, int col) const {
+    assert(line>=0 && line<Nlines && col>=0 && col<Ncolumns && matrix_index>=0 && matrix_index<N);
+    return ::SimdGet(data_[line][col] + matrix_index);
+  }
+  void SimdPut(int matrix_index, int line, int col, const Simd___type__ & x) {
+    assert(line>=0 && line<Nlines && col>=0 && col<Ncolumns && matrix_index>=0 && matrix_index<N);
+    ::SimdPut(data_[line][col] + matrix_index, x);
+  }
+ protected:
+  __type__ data_[Nlines][Ncolumns][N] _SimdAligned_;
+};
+
+// Computes the inverse of all matrices in the array with simd instructions
+// tab and resu must be properly aligned for simd.
+// Determinant of the matrices must not be zero (undefined behavior or crash...)
+template<int N>
+inline void Simd___type__Matrix33_inverse(const Simd___type__MatrixArray<N,3,3> & tab, Simd___type__MatrixArray<N,3,3> & resu)
+{
+  // 51 x vector size operations (count 4 x vector size operations for division)
+  // Runs at 13 Gflops on Nehalem 3Ghz with icc -O
+  const int vsize = Simd___type__::size();
+  assert(N%vsize == 0);
+  for (int i = 0; i < N; i += vsize) {
+    const Simd___type__ a00 = tab.SimdGet(i,0,0);
+    const Simd___type__ a01 = tab.SimdGet(i,0,1);
+    const Simd___type__ a02 = tab.SimdGet(i,0,2);
+    const Simd___type__ a10 = tab.SimdGet(i,1,0);
+    const Simd___type__ a11 = tab.SimdGet(i,1,1);
+    const Simd___type__ a12 = tab.SimdGet(i,1,2);
+    const Simd___type__ a20 = tab.SimdGet(i,2,0);
+    const Simd___type__ a21 = tab.SimdGet(i,2,1);
+    const Simd___type__ a22 = tab.SimdGet(i,2,2);
+    // calcul de valeurs temporaires pour optimisation
+    const Simd___type__ t4 = a00*a11;
+    const Simd___type__ t6 = a00*a12;
+    const Simd___type__ t8 = a01*a10;
+    const Simd___type__ t10 = a02*a10;
+    const Simd___type__ t12 = a01*a20;
+    const Simd___type__ t14 = a02*a20;
+    const Simd___type__ t = t4*a22-t6*a21-t8*a22+t10*a21+t12*a12-t14*a11;
+    const Simd___type__ t17 = SimdReciprocalMed(t);
+
+    //calcul de la matrice inverse
+    resu.SimdPut(i,0,0, (a11*a22-a12*a21)*t17);
+    resu.SimdPut(i,0,1, (a02*a21-a01*a22)*t17);
+    resu.SimdPut(i,0,2, (a01*a12-a02*a11)*t17);
+    resu.SimdPut(i,1,0, (a12*a20-a10*a22)*t17);
+    resu.SimdPut(i,1,1, (a00*a22-t14)*t17);
+    resu.SimdPut(i,1,2, (t10-t6)*t17);
+    resu.SimdPut(i,2,0, (a10*a21-a11*a20)*t17);
+    resu.SimdPut(i,2,1, (t12-a00*a21)*t17);
+    resu.SimdPut(i,2,2, (t4-t8)*t17);
+  }
+}
+
+inline Simd___type__ max(const Simd___type__ & a, const Simd___type__ & b)
+{
+  return SimdMax(a,b);
+}
+inline Simd___type__ min(const Simd___type__ & a, const Simd___type__ & b)
+{
+  return SimdMin(a,b);
+}
+
+inline Simd___type__ select___type__(Simd___type__ x1,
+			       Simd___type__ x2,
+			       Simd___type__ value_if_x1_lower_than_x2,
+			       Simd___type__ value_otherwise)
+{
+  return SimdSelect(x1, x2, value_if_x1_lower_than_x2, value_otherwise);
+}
+inline __type__ select___type__(__type__ x1,
+			       __type__ x2,
+			       __type__ value_if_x1_lower_than_x2,
+			       __type__ value_otherwise)
+{
+  return (x1 < x2) ? value_if_x1_lower_than_x2 : value_otherwise;
+}
+
+#Pendmacro(SIMD_CLASS_DEF)
+// Implementation for single precision type
+#Pusemacro(SIMD_CLASS_DEF)(float)
+// Implementation for double precision type
+#Pusemacro(SIMD_CLASS_DEF)(double)
+
+template<int N>
+  class Simd_intArray
+{
+ public:
+  int & operator[](int vector_index) {
+    assert(vector_index >= 0 && vector_index < N);
+    return data_[vector_index];
+  }
+  const int & operator[](int vector_index) const {
+    assert(vector_index >= 0 && vector_index < N);
+    return data_[vector_index];
+  }
+  Simd_int SimdGet(int vector_index) const {
+    assert(vector_index >= 0 && vector_index < N);
+    return ::SimdGet(data_ + vector_index);
+  }
+  void SimdPut(int vector_index, const Simd_int & x) {
+    assert(vector_index >= 0 && vector_index < N);
+    ::SimdPut(data_ + vector_index, x);
+  }
+ protected:
+  int data_[N] _SimdAligned_;
+};
+
+template<int N, int VectorSize>
+  class Simd_intVectorArray
+{
+ public:
+  int & operator()(int vector_index, int component) {
+    assert(vector_index >= 0 && vector_index < N && component >= 0 && component < VectorSize);
+    return data_[component][vector_index];
+  }
+  const int & operator()(int vector_index, int component) const {
+    assert(vector_index >= 0 && vector_index < N && component >= 0 && component < VectorSize);
+    return data_[component][vector_index];
+  }
+  Simd_int SimdGet(int vector_index, int component) const {
+    assert(vector_index >= 0 && vector_index < N && component >= 0 && component < VectorSize);
+    return ::SimdGet(data_[component] + vector_index);
+  }
+  void SimdPut(int vector_index, int component, const Simd_int & x) {
+    assert(vector_index >= 0 && vector_index < N && component >= 0 && component < VectorSize);
+    ::SimdPut(data_[component] + vector_index, x);
+  }
+/*   Simd_intVector<VectorSize> SimdGetVector(int i) { */
+/*     assert(i>=0 && i<N); */
+/*     Simd_intVector<VectorSize> v; */
+/*     for (int j = 0; j < VectorSize; j++) */
+/*       v[j] = ::SimdGet(data_[j] + i); */
+/*     return v; */
+/*   } */
+
+ protected:
+  // Fortran type storage to allow vectorized operation on n consecutive vectors:
+  int data_[VectorSize][N] _SimdAligned_;
+};
+
+
+#endif
+
+
