@@ -74,9 +74,9 @@ private:
   /* ************************************** *
    * *********  POUR L'EXPLICITE ********** *
    * ************************************** */
-  template <bool should_calc_flux, typename Type_Double, typename BC> void ajouter_bords_(const BC& , const int , const int , const int , const DoubleTab& , DoubleTab& ) const;
-  template <typename Type_Double> void ajouter_bords_(const Periodique& , const int , const int , const int , const DoubleTab&, const Front_VF& , DoubleTab& ) const;
-  template <typename Type_Double> void ajouter_bords_(const Echange_externe_impose& , const int , const int , const int , const int , const DoubleTab& , const Front_VF& , DoubleTab& ) const;
+  template <bool should_calc_flux, typename Type_Double, typename BC> void ajouter_blocs_bords_(const BC& , const int , const int , const int , const DoubleTab& , DoubleTab& , Matrice_Morse* ) const;
+  template <typename Type_Double> void ajouter_blocs_bords_(const Periodique& , const int , const int , const int , const DoubleTab&, const Front_VF& , DoubleTab& , Matrice_Morse* ) const;
+  template <typename Type_Double> void ajouter_blocs_bords_(const Echange_externe_impose& , const int , const int , const int , const int , const DoubleTab& , const Front_VF& , DoubleTab& , Matrice_Morse* ) const;
 
   void modifier_flux() const;
   template <typename Type_Double> inline void fill_flux_tables_(const int, const int , const double , const Type_Double& , DoubleTab& ) const;
@@ -90,9 +90,6 @@ private:
   /* ************************************** *
    * *********  POUR L'IMPLICITE ********** *
    * ************************************** */
-  template <bool should_calc_flux, typename Type_Double, typename BC> void ajouter_contribution_bords_(const BC& , const int , const int , const int , Matrice_Morse& ) const;
-  template <typename Type_Double> void ajouter_contribution_bords_(const Periodique& , const int , const int , const int, Matrice_Morse& ) const;
-  template <typename Type_Double> void ajouter_contribution_bords_(const Echange_externe_impose& , const int , const int , const int, const int, const Front_VF& , Matrice_Morse& ) const;
 
   template <typename Type_Double> void ajouter_contribution_interne_vitesse(const int , const DoubleTab& , Matrice_Morse& ) const;
   template <typename Type_Double> void ajouter_contribution_bords_vitesse(const int , const DoubleTab& , Matrice_Morse& ) const;
