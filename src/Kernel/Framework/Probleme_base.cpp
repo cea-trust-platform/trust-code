@@ -256,10 +256,10 @@ void Probleme_base::warn_old_syntax()
       Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
       Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
       Cerr << finl;
-      Cerr << "*** ATTENTION *** YOU ARE USING THE OLD SYNTAX OF A DATA FILE :-( :-( :-( " << finl;
-      Cerr << "*** ATTENTION *** STARTING FROM TRUST-V1.9.3 : THE MEDIUM SHOULD BE READ INSIDE THE PROBLEM AND NOT VIA ASSOSCIER ... " << finl;
-      Cerr << "*** ATTENTION *** STARTING FROM TRUST-V1.9.3 : THIS OLD SYNTAX WILL NOT BE SUPPORTED ANYMORE ... " << finl;
-      Cerr << "*** ATTENTION *** HAVE A LOOK TO ANY TRUST TEST CASE TO SEE HOW IT SHOULD BE DONE ($TRUST_ROOT/tests/)  ... " << finl;
+      Cerr << "*** WARNING *** YOU ARE USING THE OLD SYNTAX IN DATA FILE" << finl;
+      Cerr << "*** WARNING *** STARTING FROM TRUST-v1.9.3 : THE MEDIUM SHOULD BE READ INSIDE THE PROBLEM AND NOT VIA ASSOSCIATION ... " << finl;
+      Cerr << "*** WARNING *** THIS OLD SYNTAX WILL NOT BE SUPPORTED ANYMORE IN FUTURE VERSIONS... " << finl;
+      Cerr << "*** WARNING *** HAVE A LOOK TO ANY TRUST TEST CASE TO SEE HOW IT SHOULD BE DONE ($TRUST_ROOT/tests/)  ... " << finl;
       Cerr << finl;
       Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
       Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;

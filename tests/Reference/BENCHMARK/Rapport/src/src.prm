@@ -16,21 +16,21 @@ Chapitre {
 		RangeY 0. 16.
 		InclureDescCourbes 0
 		Courbe { 
-			Legende "callisto"
+			Legende "jean-zay"
 			Style points
-			Fichier callisto.cpu
+			Fichier jean-zay.cpu
 			colonnes $1 $3
 		}
 		Courbe { 
-			Legende "callisto-openmpi"
+			Legende "topaze-build64"
 			Style points
-			Fichier callisto-openmpi.cpu
+			Fichier topaze-build64.cpu
 			colonnes $1 $3
 		}
 		Courbe { 
-			Legende "curie-ccrt"
+			Legende "irene-amd-ccrt"
 			Style points
-			Fichier curie-ccrt.cpu
+			Fichier irene-amd-ccrt.cpu
 			colonnes $1 $3
 		}
 		Courbe { 
@@ -77,21 +77,21 @@ Chapitre {
 		RangeY 0. 2.
 		InclureDescCourbes 0
 		Courbe { 
-			Legende "callisto"
+			Legende "jean-zay"
 			Style points
-			Fichier callisto.cpu
+			Fichier jean-zay.cpu
 			colonnes $1 $8
 		}
 		Courbe { 
-			Legende "callisto-openmpi"
+			Legende "topaze-build64"
 			Style points
-			Fichier callisto-openmpi.cpu
+			Fichier topaze-build64.cpu
 			colonnes $1 $8
 		}
 		Courbe { 
-			Legende "curie-ccrt"
+			Legende "irene-amd-ccrt"
 			Style points
-			Fichier curie-ccrt.cpu
+			Fichier irene-amd-ccrt.cpu
 			colonnes $1 $8
 		}		
 		Courbe { 
@@ -142,21 +142,21 @@ Chapitre {
 		RangeY 0. 16.
 		InclureDescCourbes 0
 		Courbe { 
-			Legende "callisto"
+			Legende "jean-zay"
 			Style points
-			Fichier callisto.cpu
+			Fichier jean-zay.cpu
 			colonnes $1 $9
 		}
 		Courbe { 
-			Legende "callisto-openmpi"
+			Legende "topaze-build64"
 			Style points
-			Fichier callisto-openmpi.cpu
+			Fichier topaze-build64.cpu
 			colonnes $1 $9
 		}
 		Courbe { 
-			Legende "curie-ccrt"
+			Legende "irene-amd-ccrt"
 			Style points
-			Fichier curie-ccrt.cpu
+			Fichier irene-amd-ccrt.cpu
 			colonnes $1 $9
 		}
 		Courbe { 
@@ -203,21 +203,21 @@ Chapitre {
 		RangeY 0. 2.
 		InclureDescCourbes 0
 		Courbe { 
-			Legende "callisto"
+			Legende "jean-zay"
 			Style points
-			Fichier callisto.cpu
+			Fichier jean-zay.cpu
 			colonnes $1 $14
 		}
 		Courbe { 
-			Legende "callisto-openmpi"
+			Legende "topaze-build64"
 			Style points
-			Fichier callisto-openmpi.cpu
+			Fichier topaze-build64.cpu
 			colonnes $1 $14
 		}
 		Courbe { 
-			Legende "curie-ccrt"
+			Legende "irene-amd-ccrt"
 			Style points
-			Fichier curie-ccrt.cpu
+			Fichier irene-amd-ccrt.cpu
 			colonnes $1 $14
 		}
 		Courbe { 

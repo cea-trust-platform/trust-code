@@ -1660,7 +1660,6 @@ def write_file_data(name,listclass):
     listech=[]
     listproech=[]
     # print "write",listclass
-    # Identify 'phases' object if any. It should be written in the 'data' file just before the discretize keyword.
     for c in listclass:
         # print c
         if  isinstance(c,objet_u):
