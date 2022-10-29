@@ -16,103 +16,63 @@
 #ifndef Eval_Source_C_VEF_Face_included
 #define Eval_Source_C_VEF_Face_included
 
-
 #include <Evaluateur_Source_VEF_Face.h>
 #include <Champ_Uniforme.h>
 #include <Ref_Champ_Don.h>
 #include <Champ_Don.h>
 #include <TRUSTTab.h>
 
-class Eval_Source_C_VEF_Face : public Evaluateur_Source_VEF_Face
+class Eval_Source_C_VEF_Face: public Evaluateur_Source_VEF_Face
 {
-
 public:
-
-  inline Eval_Source_C_VEF_Face();
+  Eval_Source_C_VEF_Face() { }
   void completer() override;
-  void associer_champs(const Champ_Don& );
-  void mettre_a_jour( ) override;
-  inline double calculer_terme_source_standard(int ) const override ;
-  inline double calculer_terme_source_non_standard(int ) const override ;
-  inline void calculer_terme_source_standard(int , DoubleVect&  ) const override ;
-  inline void calculer_terme_source_non_standard(int , DoubleVect&  ) const override ;
+  void associer_champs(const Champ_Don&);
+  void mettre_a_jour() override { }
+
+  template<typename Type_Double>
+  inline void calculer_terme_source_standard(const int, Type_Double&) const;
+
+  template<typename Type_Double>
+  inline void calculer_terme_source_non_standard(const int, Type_Double&) const;
 
 protected:
-
   REF(Champ_Don) la_source_constituant;
   DoubleTab source_constituant;
   IntTab face_voisins;
   DoubleVect volumes;
-  int nb_faces_elem;
+  int nb_faces_elem = -1;
 };
 
-
-//
-//   Fonctions inline de la classe Eval_Puiss_Th_Uniforme_VEF_Face
-//
-
-inline Eval_Source_C_VEF_Face::Eval_Source_C_VEF_Face() {}
-
-inline double Eval_Source_C_VEF_Face::calculer_terme_source_standard(int num_face) const
+template<typename Type_Double>
+inline void Eval_Source_C_VEF_Face::calculer_terme_source_standard(int num_face, Type_Double& source) const
 {
-  double source;
-  if (sub_type(Champ_Uniforme,la_source_constituant.valeur().valeur()))
-    source = source_constituant(0,0)*volumes_entrelaces(num_face);
-  else
-    source = (source_constituant(face_voisins(num_face,0),0)*volumes(face_voisins(num_face,0)) + source_constituant(face_voisins(num_face,1),0)*volumes(face_voisins(num_face,1)))/nb_faces_elem;
+  const int size = source.size_array();
 
-  return (source*porosite_surf(num_face));
+  if (sub_type(Champ_Uniforme, la_source_constituant.valeur().valeur()))
+    for (int i = 0; i < size; i++) source[i] = source_constituant(0, i) * volumes_entrelaces[num_face] * porosite_surf[num_face];
+  else
+    for (int i = 0; i < size; i++)
+      source[i] = (source_constituant(face_voisins(num_face, 0), i) * volumes(face_voisins(num_face, 0)) + source_constituant(face_voisins(num_face, 1), i) * volumes(face_voisins(num_face, 1)))
+                  / nb_faces_elem * porosite_surf[num_face];
 }
 
-inline double Eval_Source_C_VEF_Face::calculer_terme_source_non_standard(int num_face) const
+template<typename Type_Double>
+inline void Eval_Source_C_VEF_Face::calculer_terme_source_non_standard(int num_face, Type_Double& source) const
 {
-  double source;
-  if (sub_type(Champ_Uniforme,la_source_constituant.valeur().valeur()))
-    source = source_constituant(0,0)*volumes_entrelaces_Cl(num_face);
+  const int size = source.size_array();
+
+  if (sub_type(Champ_Uniforme, la_source_constituant.valeur().valeur()))
+    for (int i = 0; i < size; i++) source[i] = source_constituant(0, i) * volumes_entrelaces_Cl[num_face] * porosite_surf[num_face];
   else
     {
-      if (face_voisins(num_face,1) != -1)
-        source = (source_constituant(face_voisins(num_face,0),0)*volumes(face_voisins(num_face,0)) + source_constituant(face_voisins(num_face,1),0)*volumes(face_voisins(num_face,1)))/nb_faces_elem;
-      else
-        source = source_constituant(face_voisins(num_face,0),0)*volumes(face_voisins(num_face,0))/nb_faces_elem;
-    }
-
-  return (source*porosite_surf(num_face));
-}
-
-inline void Eval_Source_C_VEF_Face::calculer_terme_source_standard(int num_face, DoubleVect& source) const
-{
-  if (sub_type(Champ_Uniforme,la_source_constituant.valeur().valeur()))
-    {
-      source.inject_array(source_constituant);
-      source *= volumes_entrelaces(num_face)*porosite_surf(num_face);
-    }
-  else
-    {
-      int size=source.size();
-      for (int i=0; i<size; i++)
-        source(i) = (source_constituant(face_voisins(num_face,0),i)*volumes(face_voisins(num_face,0))+source_constituant(face_voisins(num_face,1),i)*volumes(face_voisins(num_face,1)))/nb_faces_elem
-                    *porosite_surf(num_face);
-    }
-}
-
-inline void Eval_Source_C_VEF_Face::calculer_terme_source_non_standard(int num_face, DoubleVect& source) const
-{
-  if (sub_type(Champ_Uniforme,la_source_constituant.valeur().valeur()))
-    {
-      source.inject_array(source_constituant);
-      source *= volumes_entrelaces_Cl(num_face)*porosite_surf(num_face);
-    }
-  else
-    {
-      int size=source.size();
-      for (int i=0; i<size; i++)
-        if (face_voisins(num_face,1) != -1)
-          source(i) = (source_constituant(face_voisins(num_face,0),i)*volumes(face_voisins(num_face,0))+source_constituant(face_voisins(num_face,1),i)*volumes(face_voisins(num_face,1)))/nb_faces_elem
-                      *porosite_surf(num_face);
+      for (int i = 0; i < size; i++)
+        if (face_voisins(num_face, 1) != -1)
+          source[i] = (source_constituant(face_voisins(num_face, 0), i) * volumes(face_voisins(num_face, 0)) + source_constituant(face_voisins(num_face, 1), i) * volumes(face_voisins(num_face, 1)))
+                      / nb_faces_elem * porosite_surf[num_face];
         else
-          source(i) = source_constituant(face_voisins(num_face,0),i)*volumes(face_voisins(num_face,0))*porosite_surf(num_face)/nb_faces_elem;
+          source[i] = source_constituant(face_voisins(num_face, 0), i) * volumes(face_voisins(num_face, 0)) * porosite_surf[num_face] / nb_faces_elem;
     }
 }
 
-#endif
+#endif /* Eval_Source_C_VEF_Face_included */

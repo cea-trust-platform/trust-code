@@ -15,23 +15,16 @@
 
 #include <Eval_Source_C_VEF_Face.h>
 
-
-
 void Eval_Source_C_VEF_Face::completer()
 {
   Evaluateur_Source_VEF_Face::completer();
   face_voisins.ref(la_zone->face_voisins());
   volumes.ref(la_zone->volumes());
-  nb_faces_elem=la_zone->zone().nb_faces_elem();
+  nb_faces_elem = la_zone->zone().nb_faces_elem();
 }
 
 void Eval_Source_C_VEF_Face::associer_champs(const Champ_Don& Q)
 {
   la_source_constituant = Q;
   source_constituant.ref(Q.valeurs());
-}
-
-void Eval_Source_C_VEF_Face::mettre_a_jour( )
-{
-
 }

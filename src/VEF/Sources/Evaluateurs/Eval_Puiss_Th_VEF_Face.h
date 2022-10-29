@@ -24,69 +24,54 @@
 
 class Eval_Puiss_Th_VEF_Face: public Evaluateur_Source_VEF_Face
 {
-
 public:
-
   void completer() override;
   void associer_champs(const Champ_Don& );
-  void mettre_a_jour() override;
-  inline double calculer_terme_source_standard(int ) const override ;
-  inline double calculer_terme_source_non_standard(int ) const override ;
-  inline void calculer_terme_source_standard(int , DoubleVect&  ) const override ;
-  inline void calculer_terme_source_non_standard(int , DoubleVect&  ) const override ;
+  void mettre_a_jour() override { }
+
+  template<typename Type_Double>
+  inline void calculer_terme_source_standard(const int, Type_Double&) const;
+
+  template<typename Type_Double>
+  inline void calculer_terme_source_non_standard(const int, Type_Double&) const;
 
 protected:
-
   REF(Champ_Don) la_puissance;
   DoubleTab puissance;
   IntTab face_voisins;
   DoubleVect volumes;
-  int nb_faces_elem;
-
+  int nb_faces_elem = -100;
 };
 
-
-//
-//   Fonctions inline de la classe Eval_Puiss_Th_VEF_Face
-//
-
-inline double Eval_Puiss_Th_VEF_Face::calculer_terme_source_standard(int num_face) const
+template<typename Type_Double>
+inline void Eval_Puiss_Th_VEF_Face::calculer_terme_source_standard(int num_face, Type_Double& source) const
 {
-  double source;
-  if (sub_type(Champ_Uniforme,la_puissance.valeur().valeur()))
-    source = puissance(0,0)*volumes_entrelaces(num_face);
-  else
-    source = (puissance(face_voisins(num_face,0),0)*volumes(face_voisins(num_face,0)) + puissance(face_voisins(num_face,1),0)*volumes(face_voisins(num_face,1)))/(nb_faces_elem);
+  const int size = source.size_array();
+  if (size > 1) Process::exit("Eval_Puiss_Th_VEF_Face::calculer_terme_source_standard not available for multi-inco !");
 
-  return (source*porosite_surf(num_face));
+  if (sub_type(Champ_Uniforme, la_puissance.valeur().valeur()))
+    for (int i = 0; i < size; i++) source[i] = puissance(0, 0) * volumes_entrelaces[num_face] * porosite_surf[num_face];
+  else
+    for (int i = 0; i < size; i++) source[i] = ((puissance(face_voisins(num_face, 0), 0) * volumes(face_voisins(num_face, 0)) + puissance(face_voisins(num_face, 1), 0) * volumes(face_voisins(num_face, 1)))
+                                                  / (nb_faces_elem)) * porosite_surf[num_face];
 }
 
-inline double Eval_Puiss_Th_VEF_Face::calculer_terme_source_non_standard(int num_face) const
+template<typename Type_Double>
+inline void Eval_Puiss_Th_VEF_Face::calculer_terme_source_non_standard(int num_face, Type_Double& source) const
 {
-  double source;
-  if (sub_type(Champ_Uniforme,la_puissance.valeur().valeur()))
-    source = puissance(0,0)*volumes_entrelaces_Cl(num_face);
+  const int size = source.size_array();
+  if (size > 1) Process::exit("Eval_Puiss_Th_VEF_Face::calculer_terme_source_non_standard not available for multi-inco !");
+
+  if (sub_type(Champ_Uniforme, la_puissance.valeur().valeur()))
+    for (int i = 0; i < size; i++) source[i] =  puissance(0, 0) * volumes_entrelaces_Cl[num_face];
   else
     {
-      if (face_voisins(num_face,1) != -1)
-        source = (puissance(face_voisins(num_face,0),0)*volumes(face_voisins(num_face,0)) + puissance(face_voisins(num_face,1),0)*volumes(face_voisins(num_face,1)))/(nb_faces_elem);
+      if (face_voisins(num_face, 1) != -1)
+        for (int i = 0; i < size; i++) source[i] = ((puissance(face_voisins(num_face, 0), 0) * volumes(face_voisins(num_face, 0)) + puissance(face_voisins(num_face, 1), 0) * volumes(face_voisins(num_face, 1)))
+                                                      / (nb_faces_elem)) * porosite_surf[num_face];
       else
-        source = (puissance(face_voisins(num_face,0),0)*volumes(face_voisins(num_face,0)))/(nb_faces_elem);
+        for (int i = 0; i < size; i++) source[i] = ((puissance(face_voisins(num_face, 0), 0) * volumes(face_voisins(num_face, 0))) / (nb_faces_elem)) * porosite_surf[num_face];
     }
-  return (source*porosite_surf(num_face));
 }
 
-inline void Eval_Puiss_Th_VEF_Face::calculer_terme_source_standard(int , DoubleVect&  ) const
-{
-  Cerr << "Eval_Puiss_Th_VEF_Face::calculer_terme_source_standard(int , DoubleVect&  ) is not available." << finl;
-  Process::exit();
-}
-
-inline void Eval_Puiss_Th_VEF_Face::calculer_terme_source_non_standard(int , DoubleVect&  ) const
-{
-  Cerr << "Eval_Puiss_Th_VEF_Face::calculer_terme_source_non_standard(int , DoubleVect&  ) is not available." << finl;
-  Process::exit();
-}
-
-#endif
-
+#endif /* Eval_Puiss_Th_VEF_Face_included */

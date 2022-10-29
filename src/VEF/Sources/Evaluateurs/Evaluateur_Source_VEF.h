@@ -16,56 +16,33 @@
 #ifndef Evaluateur_Source_VEF_included
 #define Evaluateur_Source_VEF_included
 
-
-#include <Ref_Zone_VEF.h>
 #include <Ref_Zone_Cl_VEF.h>
-#include <Zone_VEF.h>
+#include <Ref_Zone_VEF.h>
 #include <Zone_Cl_VEF.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Evaluateur_Source_VEF
-//
-//
-//////////////////////////////////////////////////////////////////////////////
+#include <Zone_VEF.h>
 
 class Evaluateur_Source_VEF
 {
-
 public:
+  Evaluateur_Source_VEF() { }
+  Evaluateur_Source_VEF(const Evaluateur_Source_VEF& eval) : la_zone(eval.la_zone),la_zone_cl(eval.la_zone_cl) { }
+  virtual ~Evaluateur_Source_VEF() { }
 
-  inline Evaluateur_Source_VEF();
-  inline virtual ~Evaluateur_Source_VEF() {};
-  inline Evaluateur_Source_VEF(const Evaluateur_Source_VEF& );
   inline void associer_zones(const Zone_dis_base&,const Zone_Cl_dis_base&);
   virtual void mettre_a_jour() =0;
   virtual void completer() = 0;
   virtual void changer_volumes_entrelaces_Cl(DoubleVect&) =0;
 
 protected:
-
   REF(Zone_VEF) la_zone;
   REF(Zone_Cl_VEF) la_zone_cl;
-
 };
 
-//
-//   Fonctions inline de Evaluateur_Source_VEF
-//
-
-inline Evaluateur_Source_VEF::Evaluateur_Source_VEF() {}
-
-inline Evaluateur_Source_VEF::Evaluateur_Source_VEF(const Evaluateur_Source_VEF& eval)
-  : la_zone(eval.la_zone),la_zone_cl(eval.la_zone_cl)
+inline void Evaluateur_Source_VEF::associer_zones(const Zone_dis_base& zone_vef, const Zone_Cl_dis_base& zone_cl_vef)
 {
-}
-
-inline void Evaluateur_Source_VEF::associer_zones(const Zone_dis_base& zone_vef,
-                                                  const Zone_Cl_dis_base& zone_cl_vef)
-{
-  la_zone = ref_cast(Zone_VEF,zone_vef);
-  la_zone_cl = ref_cast(Zone_Cl_VEF,zone_cl_vef);
+  la_zone = ref_cast(Zone_VEF, zone_vef);
+  la_zone_cl = ref_cast(Zone_Cl_VEF, zone_cl_vef);
   completer();
 }
 
-#endif
+#endif /* Evaluateur_Source_VEF_included */

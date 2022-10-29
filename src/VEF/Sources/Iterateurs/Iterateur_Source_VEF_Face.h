@@ -18,6 +18,7 @@
 
 #include <Iterateur_Source_VEF_base.h>
 #include <Champ_Uniforme.h>
+#include <TRUSTSingle.h>
 #include <Milieu_base.h>
 #include <Dirichlet.h>
 #include <Zone_VEF.h>
@@ -40,18 +41,30 @@ public:
   Iterateur_Source_VEF_Face(const Iterateur_Source_VEF_Face<_TYPE_>& iter) : Iterateur_Source_VEF_base(iter), evaluateur_source_face(iter.evaluateur_source_face),
     nb_faces(iter.nb_faces), nb_faces_elem(iter.nb_faces_elem), premiere_face_std(iter.premiere_face_std) { }
 
-  DoubleTab& calculer(DoubleTab&) const override;
   DoubleTab& ajouter(DoubleTab&) const override;
-  inline Evaluateur_Source_VEF& evaluateur() override;
-  inline void completer_() override;
+
+  DoubleTab& calculer(DoubleTab& resu) const override
+  {
+    resu = 0.;
+    return ajouter(resu);
+  }
+
+  void completer_() override
+  {
+    nb_faces = la_zone->nb_faces();
+    nb_faces_elem = la_zone->zone().nb_faces_elem();
+    premiere_face_std = la_zone->premiere_face_std();
+  }
+
+  inline Evaluateur_Source_VEF& evaluateur() override
+  {
+    Evaluateur_Source_VEF& eval = static_cast<Evaluateur_Source_VEF&> (evaluateur_source_face);
+    return eval;
+  }
 
 protected:
   int initialiser(double tps) override;
   void remplir_volumes_cl_dirichlet();
-  DoubleTab& ajouter_faces_standard(DoubleTab&) const;
-  DoubleTab& ajouter_faces_standard(DoubleTab&, int) const;
-  DoubleTab& ajouter_faces_non_standard(DoubleTab&) const;
-  DoubleTab& ajouter_faces_non_standard(DoubleTab&, int) const;
 
   inline const int& faces_doubles(int num_face) const { return la_zone->faces_doubles()[num_face]; }
   inline double volumes_entrelaces_Cl(int& num_face) const { return volumes_cl_dirichlet_[num_face]; }
@@ -59,19 +72,15 @@ protected:
   inline int face_voisins(int num_face, int dir) const { return la_zone->face_voisins(num_face, dir); }
   inline int elem_faces(int num_elem, int i) const { return la_zone->elem_faces(num_elem, i); }
 
+private:
   _TYPE_ evaluateur_source_face;
   int nb_faces, nb_faces_elem, premiere_face_std;
   mutable DoubleTab coef;
   DoubleVect volumes_cl_dirichlet_;
-};
 
-template<typename _TYPE_>
-inline void Iterateur_Source_VEF_Face<_TYPE_>::completer_()
-{
-  nb_faces = la_zone->nb_faces();
-  nb_faces_elem = la_zone->zone().nb_faces_elem();
-  premiere_face_std = la_zone->premiere_face_std();
-}
+  template <typename Type_Double>  DoubleTab& ajouter_faces_standard(const int, DoubleTab& ) const;
+  template <typename Type_Double> DoubleTab& ajouter_faces_non_standard(const int, DoubleTab& ) const;
+};
 
 template<typename _TYPE_>
 inline int Iterateur_Source_VEF_Face<_TYPE_>::initialiser(double tps)
@@ -79,13 +88,6 @@ inline int Iterateur_Source_VEF_Face<_TYPE_>::initialiser(double tps)
   remplir_volumes_cl_dirichlet();
   evaluateur().changer_volumes_entrelaces_Cl(volumes_cl_dirichlet_);
   return 1;
-}
-
-template<typename _TYPE_>
-inline Evaluateur_Source_VEF& Iterateur_Source_VEF_Face<_TYPE_>::evaluateur()
-{
-  Evaluateur_Source_VEF& eval = static_cast<Evaluateur_Source_VEF&> (evaluateur_source_face);
-  return eval;
 }
 
 template<typename _TYPE_>
@@ -135,13 +137,13 @@ DoubleTab& Iterateur_Source_VEF_Face<_TYPE_>::ajouter(DoubleTab& resu) const
     }
   if (ncomp == 1)
     {
-      ajouter_faces_non_standard(resu);
-      ajouter_faces_standard(resu);
+      ajouter_faces_non_standard<SingleDouble>(ncomp,resu);
+      ajouter_faces_standard<SingleDouble>(ncomp,resu);
     }
   else
     {
-      ajouter_faces_non_standard(resu, ncomp);
-      ajouter_faces_standard(resu, ncomp);
+      ajouter_faces_non_standard<ArrOfDouble>(ncomp,resu);
+      ajouter_faces_standard<ArrOfDouble>(ncomp,resu);
     }
   return resu;
 }
@@ -171,76 +173,12 @@ void Iterateur_Source_VEF_Face<_TYPE_>::remplir_volumes_cl_dirichlet()
   marq.echange_espace_virtuel();
 }
 
-template<typename _TYPE_>
-DoubleTab& Iterateur_Source_VEF_Face<_TYPE_>::ajouter_faces_non_standard(DoubleTab& resu) const
+template<typename _TYPE_> template<typename Type_Double>
+DoubleTab& Iterateur_Source_VEF_Face<_TYPE_>::ajouter_faces_non_standard(const int ncomp, DoubleTab& resu) const
 {
   int num_cl;
   int num_face, nfin = 0;
-  DoubleVect& bilan = so_base->bilan();
-  for (num_cl = 0; num_cl < la_zone->nb_front_Cl(); num_cl++)
-    {
-      const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
-      const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-      int nf = le_bord.nb_faces_tot();
-      nfin = le_bord.num_premiere_face() + le_bord.nb_faces();
-      int type_CL = 0;
-      if (sub_type(Dirichlet, la_cl.valeur()))
-        type_CL = 1;
-      for (int ind_face = 0; ind_face < nf; ind_face++)
-        {
-          num_face = le_bord.num_face(ind_face);
-          double source = evaluateur_source_face.calculer_terme_source_non_standard(num_face);
-          if (volumes_entrelaces_Cl(num_face) == 0)
-            {
-              int faces_dirichlet = 0;
-              int face_voisine;
-              for (int i = 0; i < nb_faces_elem; i++)
-                {
-                  face_voisine = elem_faces(face_voisins(num_face, 0), i);
-                  if (volumes_entrelaces_Cl(face_voisine) == 0)
-                    faces_dirichlet += 1;
-                }
-              for (int i = 0; i < nb_faces_elem; i++)
-                {
-                  face_voisine = elem_faces(face_voisins(num_face, 0), i);
-                  if (volumes_entrelaces_Cl(face_voisine) != 0)
-                    {
-                      resu(face_voisine) += source / (nb_faces_elem - faces_dirichlet);
-                      if (face_voisine < la_zone->nb_faces())
-                        {
-                          double contribution = (faces_doubles(face_voisine) == 1) ? 0.5 : 1;
-                          bilan(0) += contribution * coef(face_voisine) * source / (nb_faces_elem - faces_dirichlet);
-                        }
-                    }
-                }
-            }
-          else
-            {
-              resu(num_face) += source;
-              if (num_face < la_zone->nb_faces())
-                {
-                  double contribution = (faces_doubles(num_face) == 1) ? 0.5 : 1;
-                  bilan(0) += (1. - type_CL) * contribution * coef(num_face) * source;
-                }
-            }
-        }
-    }
-  for (num_face = nfin; num_face < premiere_face_std; num_face++)
-    {
-      double source = evaluateur_source_face.calculer_terme_source_non_standard(num_face);
-      resu(num_face) += source;
-      double contribution = (faces_doubles(num_face) == 1) ? 0.5 : 1;
-      bilan(0) += contribution * coef(num_face) * source;
-    }
-  return resu;
-}
-
-template<typename _TYPE_>
-DoubleTab& Iterateur_Source_VEF_Face<_TYPE_>::ajouter_faces_non_standard(DoubleTab& resu, int ncomp) const
-{
-  int num_cl;
-  int num_face, nfin = 0;
-  DoubleVect source(ncomp);
+  Type_Double source(ncomp);
   DoubleVect& bilan = so_base->bilan();
   for (num_cl = 0; num_cl < la_zone->nb_front_Cl(); num_cl++)
     {
@@ -307,24 +245,10 @@ DoubleTab& Iterateur_Source_VEF_Face<_TYPE_>::ajouter_faces_non_standard(DoubleT
   return resu;
 }
 
-template<typename _TYPE_>
-DoubleTab& Iterateur_Source_VEF_Face<_TYPE_>::ajouter_faces_standard(DoubleTab& resu) const
+template<typename _TYPE_> template<typename Type_Double>
+DoubleTab& Iterateur_Source_VEF_Face<_TYPE_>::ajouter_faces_standard(const int ncomp, DoubleTab& resu) const
 {
-  DoubleVect& bilan = so_base->bilan();
-  for (int num_face = premiere_face_std; num_face < nb_faces; num_face++)
-    {
-      double source = evaluateur_source_face.calculer_terme_source_standard(num_face);
-      resu(num_face) += source;
-      double contribution = (faces_doubles(num_face) == 1) ? 0.5 : 1;
-      bilan(0) += contribution * coef(num_face) * source;
-    }
-  return resu;
-}
-
-template<typename _TYPE_>
-DoubleTab& Iterateur_Source_VEF_Face<_TYPE_>::ajouter_faces_standard(DoubleTab& resu, int ncomp) const
-{
-  DoubleVect source(ncomp);
+  Type_Double source(ncomp);
   DoubleVect& bilan = so_base->bilan();
   for (int num_face = premiere_face_std; num_face < nb_faces; num_face++)
     {
@@ -337,13 +261,6 @@ DoubleTab& Iterateur_Source_VEF_Face<_TYPE_>::ajouter_faces_standard(DoubleTab& 
         }
     }
   return resu;
-}
-
-template<typename _TYPE_>
-DoubleTab& Iterateur_Source_VEF_Face<_TYPE_>::calculer(DoubleTab& resu) const
-{
-  resu = 0;
-  return ajouter(resu);
 }
 
 #endif /* Iterateur_Source_VEF_Face_included */

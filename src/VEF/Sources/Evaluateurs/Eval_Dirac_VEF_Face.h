@@ -27,66 +27,39 @@ public:
 
   void associer_champs(const Champ_Don& );
   void mettre_a_jour() override;
-  inline double calculer_terme_source_standard(int ) const override;
-  inline double calculer_terme_source_non_standard(int ) const override ;
-  inline void calculer_terme_source_standard(int , DoubleVect& ) const override { }
-  inline void calculer_terme_source_non_standard(int , DoubleVect&  ) const override ;
+
+  template <typename Type_Double>
+  inline void calculer_terme_source_standard(const int num_face, Type_Double& source) const { calculer_terme_source(num_face,source); }
+
+  template <typename Type_Double>
+  inline void calculer_terme_source_non_standard(const int num_face, Type_Double& source) const { calculer_terme_source(num_face,source); }
+
   void associer_nb_elem_dirac(int );
   DoubleVect le_point;
 
 protected:
   REF(Champ_Don) la_puissance;
-  double puissance;
   REF(Zone) ma_zone;
-  double nb_dirac;
+  double puissance, nb_dirac;
+
+  template <typename Type_Double>
+  inline void calculer_terme_source(int , Type_Double&) const;
 };
 
-inline double Eval_Dirac_VEF_Face::calculer_terme_source_standard(int num_face) const
+template <typename Type_Double>
+inline void Eval_Dirac_VEF_Face::calculer_terme_source(const int num_face, Type_Double& source) const
 {
-  //on recuperre l'element associe a cette face
-  int elem;
-  if (face_voisins(num_face, 1) == -1)
-    elem = face_voisins(num_face, 0);
-  else
-    elem = face_voisins(num_face, 1);
+  const int size = source.size_array();
+  if (size > 1) Process::exit("Eval_Dirac_VEF_Face::calculer_terme_source not available for multi-inco !");
 
-  int test = ma_zone.valeur().type_elem().contient(le_point, elem);
+  int elem; // pour recuperer l'element associe a cette face
 
-  if (test == 1)
-    {
-      assert(nb_dirac != -123.);
-      assert(puissance != -123.);
-      double source = nb_dirac * puissance;
-      return source;
-    }
-  else
-    return 0;
+  if (face_voisins(num_face, 1) == -1) elem = face_voisins(num_face, 0);
+  else elem = face_voisins(num_face, 1);
+
+  const int test = ma_zone.valeur().type_elem().contient(le_point, elem);
+  assert(nb_dirac != -123. && puissance != -123.);
+  for (int i = 0; i < size; i++) source[i] = (test == 1) ? nb_dirac * puissance : 0.;
 }
 
-inline double Eval_Dirac_VEF_Face::calculer_terme_source_non_standard(int num_face) const
-{
-  int elem;
-  if (face_voisins(num_face, 1) == -1)
-    elem = face_voisins(num_face, 0);
-  else
-    elem = face_voisins(num_face, 1);
-
-  int test = ma_zone.valeur().type_elem().contient(le_point, elem);
-  if (test == 1)
-    {
-      assert(nb_dirac != -123.);
-      assert(puissance != -123.);
-      double source = nb_dirac * puissance;
-      return source;
-    }
-  else
-    return 0;
-}
-
-inline void Eval_Dirac_VEF_Face::calculer_terme_source_non_standard(int num_face, DoubleVect& source) const
-{
-  Cerr << "Eval_Dirac_VEF_Face::calculer_terme_source_non_standard(int num_face, DoubleVect& source) is not available." << finl;
-  Process::exit();
-}
-
-#endif
+#endif /* Eval_Dirac_VEF_Face_included */

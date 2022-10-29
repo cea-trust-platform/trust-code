@@ -22,110 +22,80 @@
 #include <Champ_Don.h>
 #include <TRUSTTab.h>
 
-
-
-////////////////////////////////////////////////////////////////////////////
-//
-//  CLASS Eval_Puiss_Th_QC_VEF_Face
-//
-////////////////////////////////////////////////////////////////////////////
-
 class Eval_Puiss_Th_QC_VEF_Face: public Evaluateur_Source_VEF_Face
 {
-
 public:
-
-  inline Eval_Puiss_Th_QC_VEF_Face();
+  Eval_Puiss_Th_QC_VEF_Face() { }
   void completer() override;
-  void associer_puissance(const Champ_Don& );
-  void mettre_a_jour() override;
-  inline double calculer_terme_source_standard(int ) const override ;
-  inline double calculer_terme_source_non_standard(int ) const override ;
-  inline void calculer_terme_source_standard(int , DoubleVect&  ) const override ;
-  inline void calculer_terme_source_non_standard(int , DoubleVect&  ) const override ;
+  void associer_puissance(const Champ_Don&);
+  void mettre_a_jour() override { }
+
+  template<typename Type_Double>
+  inline void calculer_terme_source_standard(const int, Type_Double&) const;
+
+  template<typename Type_Double>
+  inline void calculer_terme_source_non_standard(const int, Type_Double&) const;
 
 protected:
-
   REF(Champ_Don) la_puissance;
   DoubleTab puissance;
   IntTab face_voisins;
   DoubleVect volumes;
-  int nb_faces_elem;
-
+  int nb_faces_elem = -100;
 };
 
-
-//
-//   Fonctions inline de la classe Eval_Puiss_Th_QC_VEF_Face
-//
-
-inline Eval_Puiss_Th_QC_VEF_Face::Eval_Puiss_Th_QC_VEF_Face()  {}
-
-inline double Eval_Puiss_Th_QC_VEF_Face::calculer_terme_source_standard(int num_face) const
+template<typename Type_Double>
+inline void Eval_Puiss_Th_QC_VEF_Face::calculer_terme_source_standard(const int num_face, Type_Double& source) const
 {
-  double source;
-  if (sub_type(Champ_Uniforme,la_puissance.valeur().valeur()))
-    source = puissance(0,0)*volumes_entrelaces(num_face) ;
+  const int size = source.size_array();
+  if (size > 1) Process::exit("Eval_Puiss_Th_QC_VEF_Face::calculer_terme_source_standard not available for multi-inco !");
+
+  if (sub_type(Champ_Uniforme, la_puissance.valeur().valeur()))
+    for (int i = 0; i < size; i++) source[i] = puissance(0, 0) * volumes_entrelaces[num_face] * porosite_surf[num_face];
   else
     {
-      double P0,P1;
-      int elem0 = face_voisins(num_face,0);
-      int elem1 = face_voisins(num_face,1);
-      double V0 = volumes(elem0);
-      double V1 = volumes(elem1);
-      if (puissance.nb_dim()==1)
+      double P0, P1;
+      int elem0 = face_voisins(num_face, 0), elem1 = face_voisins(num_face, 1);
+      double V0 = volumes(elem0), V1 = volumes(elem1);
+      if (puissance.nb_dim() == 1)
         {
           P0 = puissance(elem0);
           P1 = puissance(elem1);
         }
       else
         {
-          P0 = puissance(elem0,0);
-          P1 = puissance(elem1,0);
+          P0 = puissance(elem0, 0);
+          P1 = puissance(elem1, 0);
         }
-      source = (P0*V0 + P1*V1) / nb_faces_elem;
+      for (int i = 0; i < size; i++) source[i] = ((P0 * V0 + P1 * V1) / nb_faces_elem) * porosite_surf[num_face];
     }
-  return (source*porosite_surf(num_face));
 }
 
-inline double Eval_Puiss_Th_QC_VEF_Face::calculer_terme_source_non_standard(int num_face) const
+template<typename Type_Double>
+inline void Eval_Puiss_Th_QC_VEF_Face::calculer_terme_source_non_standard(int num_face, Type_Double& source) const
 {
-  double source;
-  if (sub_type(Champ_Uniforme,la_puissance.valeur().valeur()))
-    source = puissance(0,0)*volumes_entrelaces_Cl(num_face) ;
+  const int size = source.size_array();
+  if (size > 1) Process::exit("Eval_Puiss_Th_QC_VEF_Face::calculer_terme_source_non_standard not available for multi-inco !");
+
+  if (sub_type(Champ_Uniforme, la_puissance.valeur().valeur()))
+    for (int i = 0; i < size; i++) source[i] = puissance(0, 0) * volumes_entrelaces_Cl[num_face] * porosite_surf(num_face);
   else
     {
-      double P0,P1;
-      int elem0 = face_voisins(num_face,0);
-      int elem1 = face_voisins(num_face,1);
-      double V0 = volumes(elem0);
-      double V1 = (elem1 != -1?volumes(elem1):0);
-      if (puissance.nb_dim()==1)
+      double P0, P1;
+      int elem0 = face_voisins(num_face, 0), elem1 = face_voisins(num_face, 1);
+      double V0 = volumes(elem0), V1 = (elem1 != -1 ? volumes(elem1) : 0);
+      if (puissance.nb_dim() == 1)
         {
           P0 = puissance(elem0);
-          P1 = (elem1 != -1?puissance(elem1):0);
+          P1 = (elem1 != -1 ? puissance(elem1) : 0);
         }
       else
         {
-          P0 = puissance(elem0,0);
-          P1 = (elem1 != -1?puissance(elem1,0):0);
+          P0 = puissance(elem0, 0);
+          P1 = (elem1 != -1 ? puissance(elem1, 0) : 0);
         }
-      source = (P0*V0 + P1*V1) / nb_faces_elem;
+      for (int i = 0; i < size; i++) source[i] = ((P0 * V0 + P1 * V1) / nb_faces_elem) * porosite_surf[num_face];
     }
-  return (source*porosite_surf(num_face));
 }
 
-inline void Eval_Puiss_Th_QC_VEF_Face
-::calculer_terme_source_standard(int , DoubleVect&  ) const
-{
-  ;
-}
-
-inline void Eval_Puiss_Th_QC_VEF_Face
-::calculer_terme_source_non_standard(int , DoubleVect&  ) const
-{
-  ;
-}
-
-#endif
-
+#endif /* Eval_Puiss_Th_QC_VEF_Face_included */

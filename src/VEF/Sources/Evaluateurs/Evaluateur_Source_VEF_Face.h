@@ -19,40 +19,20 @@
 #include <Evaluateur_Source_VEF.h>
 #include <TRUSTTabs_forward.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Evaluateur_Source_VEF_Face
-//
-//
-//////////////////////////////////////////////////////////////////////////////
-
 class Evaluateur_Source_VEF_Face : public Evaluateur_Source_VEF
 {
-
 public:
-
-  Evaluateur_Source_VEF_Face();
+  Evaluateur_Source_VEF_Face() { }
   Evaluateur_Source_VEF_Face(const Evaluateur_Source_VEF_Face& );
   void completer() override;
-  virtual double calculer_terme_source_standard(int ) const =0;
-  virtual double calculer_terme_source_non_standard(int ) const =0;
-  virtual void calculer_terme_source_standard(int , DoubleVect&  ) const =0;
-  virtual void calculer_terme_source_non_standard(int , DoubleVect&  ) const =0;
   void changer_volumes_entrelaces_Cl(DoubleVect&) override;
 
+  template <typename Type_Double> void calculer_terme_source_standard(const int , Type_Double&  ) const { throw; }
+  template <typename Type_Double> void calculer_terme_source_non_standard(const int , Type_Double&  ) const { throw; }
+
 protected:
-
-  DoubleVect volumes_entrelaces;
-  DoubleVect volumes_entrelaces_Cl;
-  DoubleVect porosite_surf;
+  DoubleVect volumes_entrelaces, volumes_entrelaces_Cl, porosite_surf;
   IntTab face_voisins;
-
 };
 
-//
-//   Fonctions inline de Evaluateur_Source_VEF_Face
-//
-
-inline Evaluateur_Source_VEF_Face::Evaluateur_Source_VEF_Face() {}
-
-#endif
+#endif /* Evaluateur_Source_VEF_Face_included */
