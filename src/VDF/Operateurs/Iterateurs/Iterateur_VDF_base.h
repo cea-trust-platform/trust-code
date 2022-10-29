@@ -59,7 +59,6 @@ public:
   virtual int impr(Sortie& os) const=0;
   virtual void contribuer_au_second_membre(DoubleTab& ) const=0;
   virtual void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const=0;
-  virtual void ajouter_contribution_vitesse(const DoubleTab&, Matrice_Morse& ) const=0;
   virtual void completer_()=0;
   virtual DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const=0;
   virtual DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const=0;

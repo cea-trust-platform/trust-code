@@ -302,13 +302,6 @@ void Iterateur_VDF_Face<_TYPE_>::contribuer_au_second_membre(DoubleTab& resu) co
     }
 }
 
-template <class _TYPE_>
-void Iterateur_VDF_Face<_TYPE_>::ajouter_contribution_vitesse(const DoubleTab& , Matrice_Morse& ) const
-{
-  Cerr << "Yannick dit : ajouter_contribution_vitesse should not be called from " <<  op_base.que_suis_je() << finl;
-  abort();
-}
-
 /* ************************************** *
  * *********  POUR L'EXPLICITE ********** *
  * ************************************** */

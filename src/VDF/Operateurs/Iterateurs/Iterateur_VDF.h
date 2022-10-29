@@ -32,7 +32,6 @@ public:
   inline void associer(const Zone_dis& zdis, const Zone_Cl_dis& zcl_dis, const Operateur_base& op) { valeur().associer(zdis,zcl_dis,op); }
   inline void contribuer_au_second_membre(DoubleTab& resu) const { valeur().contribuer_au_second_membre(resu); }
   inline void ajouter_contribution(const DoubleTab& inco, Matrice_Morse& matrice) const { valeur().ajouter_contribution(inco, matrice); }
-  inline void ajouter_contribution_vitesse(const DoubleTab& inco, Matrice_Morse& matrice) const { valeur().ajouter_contribution_vitesse(inco, matrice); }
   inline Evaluateur_VDF& evaluateur() { return valeur().evaluateur(); }
   inline const Evaluateur_VDF& evaluateur() const { return valeur().evaluateur(); }
   inline const Zone_VDF& zone() const { return valeur().zone(); }

@@ -45,7 +45,6 @@ public:
   int impr(Sortie& os) const override;
   void contribuer_au_second_membre(DoubleTab& ) const override;
   void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const override;
-  void ajouter_contribution_vitesse(const DoubleTab&, Matrice_Morse& ) const override;
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
   DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const override;
   void ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const override { Process::exit(); }
