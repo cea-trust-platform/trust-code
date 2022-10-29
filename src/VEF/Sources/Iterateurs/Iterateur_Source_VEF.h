@@ -16,66 +16,22 @@
 #ifndef Iterateur_Source_VEF_included
 #define Iterateur_Source_VEF_included
 
-
-/*! @brief class Iterateur_Source_VEF
- *
- */
 #define It_Sou_VEF_Face(_TYPE_) name2(Iterateur_Source_VEF_Face, _TYPE_)
-#include <MItSouVEFFa.h>
+
 #include <Iterateur_Source_VEF_base.h>
 
 Declare_deriv(Iterateur_Source_VEF_base);
 
-class Iterateur_Source_VEF : public DERIV(Iterateur_Source_VEF_base)
+class Iterateur_Source_VEF: public DERIV(Iterateur_Source_VEF_base)
 {
-
   Declare_instanciable(Iterateur_Source_VEF);
-
 public:
-
-  inline Iterateur_Source_VEF(const Iterateur_Source_VEF_base&);
-  inline void completer_();
-  inline DoubleTab& ajouter(DoubleTab& ) const;
-  inline DoubleTab& calculer(DoubleTab& ) const;
-  inline Evaluateur_Source_VEF& evaluateur();
-  inline void associer(const Source_base& source);
+  Iterateur_Source_VEF(const Iterateur_Source_VEF_base& Opb) : DERIV(Iterateur_Source_VEF_base)() { DERIV(Iterateur_Source_VEF_base)::operator=(Opb); }
+  inline void completer_() { valeur().completer_(); }
+  inline DoubleTab& ajouter(DoubleTab& resu) const { return valeur().ajouter(resu); }
+  inline DoubleTab& calculer(DoubleTab& resu) const { return valeur().calculer(resu); }
+  inline Evaluateur_Source_VEF& evaluateur() { return valeur().evaluateur(); }
+  inline void associer(const Source_base &source) { return valeur().associer(source); }
 };
 
-
-//
-//  Fonctions inline de la classe Iterateur_Source_VEF
-//
-
-inline Iterateur_Source_VEF::Iterateur_Source_VEF(const Iterateur_Source_VEF_base& Opb)
-
-  : DERIV(Iterateur_Source_VEF_base)()
-{
-  DERIV(Iterateur_Source_VEF_base)::operator=(Opb) ;
-}
-
-inline void Iterateur_Source_VEF::completer_()
-{
-  valeur().completer_();
-}
-
-inline Evaluateur_Source_VEF& Iterateur_Source_VEF::evaluateur()
-{
-  return valeur().evaluateur();
-}
-
-inline DoubleTab& Iterateur_Source_VEF::ajouter(DoubleTab& resu) const
-{
-  return valeur().ajouter(resu);
-}
-
-inline DoubleTab& Iterateur_Source_VEF::calculer(DoubleTab& resu) const
-{
-  return valeur().calculer(resu);
-}
-
-inline void Iterateur_Source_VEF::associer(const Source_base& source)
-{
-  return valeur().associer(source);
-}
-
-#endif
+#endif /* Iterateur_Source_VEF_included */

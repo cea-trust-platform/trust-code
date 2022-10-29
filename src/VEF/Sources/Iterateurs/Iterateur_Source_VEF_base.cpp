@@ -15,31 +15,12 @@
 
 #include <Iterateur_Source_VEF_base.h>
 
-Implemente_base(Iterateur_Source_VEF_base,"Iterateur_Source_VEF_base",Objet_U);
+Implemente_base(Iterateur_Source_VEF_base, "Iterateur_Source_VEF_base", Objet_U);
 
-//// printOn
-//
+Sortie& Iterateur_Source_VEF_base::printOn(Sortie& s) const { return s << que_suis_je(); }
+Entree& Iterateur_Source_VEF_base::readOn(Entree& s) { return s; }
 
-Sortie& Iterateur_Source_VEF_base::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
-
-//// readOn
-//
-
-Entree& Iterateur_Source_VEF_base::readOn(Entree& s )
-{
-  return s ;
-}
-
-//
-//  Fonctions de la classe Iterateur_Source_VEF_base
-//
-
-
-void Iterateur_Source_VEF_base::associer_zones(const Zone_VEF& zone_VEF,
-                                               const Zone_Cl_VEF& zone_cl_VEF)
+void Iterateur_Source_VEF_base::associer_zones(const Zone_VEF& zone_VEF, const Zone_Cl_VEF& zone_cl_VEF)
 {
   la_zone = zone_VEF;
   la_zcl = zone_cl_VEF;

@@ -108,4 +108,5 @@ void instancie_src_VEF_Operateurs();
 void instancie_src_VEF_Solveurs();
 void instancie_src_VEF_Sources();
 void instancie_src_VEF_Sources_Iterateurs();
+void instancie_src_VEF_Sources_Sources_It_Eval();
 void instancie_src_VEF_Zones();

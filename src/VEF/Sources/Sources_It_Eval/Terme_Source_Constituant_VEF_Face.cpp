@@ -13,51 +13,38 @@
 *
 *****************************************************************************/
 
-#ifndef Terme_Puissance_Thermique_VEF_Face_included
-#define Terme_Puissance_Thermique_VEF_Face_included
+#include <Terme_Source_Constituant_VEF_Face.h>
+#include <Convection_Diffusion_Concentration.h>
+#include <Discretisation_base.h>
+#include <Probleme_base.h>
+#include <Milieu_base.h>
 
+Implemente_instanciable_sans_constructeur(Terme_Source_Constituant_VEF_Face, "source_Constituant_VEF_P1NC", Terme_Source_VEF_base);
 
-#include <Terme_Puissance_Thermique_VEF_base.h>
-#include <Eval_Puiss_Th_VEF_Face.h>
-#include <Iterateur_Source_VEF.h>
+Sortie& Terme_Source_Constituant_VEF_Face::printOn(Sortie& s) const { return s << que_suis_je(); }
 
-declare_It_Sou_VEF_Face(Eval_Puiss_Th_VEF_Face)
-
-/*! @brief class Terme_Puissance_Thermique_VEF_Face
- *
- *  Cette classe represente un terme source de l'equation de la thermique
- *  du type degagement volumique de puissance thermique
- *
- *
- * @sa Terme_Puissance_Thermique, Terme_Source_VEF_base
- */
-class Terme_Puissance_Thermique_VEF_Face : public Terme_Puissance_Thermique_VEF_base
-
+Entree& Terme_Source_Constituant_VEF_Face::readOn(Entree& s)
 {
-  Declare_instanciable_sans_constructeur(Terme_Puissance_Thermique_VEF_Face);
-
-public:
-
-  inline Terme_Puissance_Thermique_VEF_Face();
-  void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;
-  void associer_pb(const Probleme_base& ) override;
-  void mettre_a_jour(double temps) override
-  {
-    Terme_Puissance_Thermique::mettre_a_jour(temps);
-  }
-
-};
-
-
-//
-// Fonctions inline de la classe Terme_Puissance_Thermique_VEF_Face
-//
-
-inline Terme_Puissance_Thermique_VEF_Face::Terme_Puissance_Thermique_VEF_Face()
-  : Terme_Puissance_Thermique_VEF_base(It_Sou_VEF_Face(Eval_Puiss_Th_VEF_Face)())
-{
+  Terme_Source_Constituant::lire_donnees(s);
+  set_fichier("Source_Constituant");
+  set_description("Injection rate = Integral(source_C*dv) [mol/s]");
+  return s;
 }
 
+void Terme_Source_Constituant_VEF_Face::associer_zones(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
+{
+  const Zone_VEF& zvef = ref_cast(Zone_VEF, zone_dis.valeur());
+  const Zone_Cl_VEF& zclvef = ref_cast(Zone_Cl_VEF, zone_cl_dis.valeur());
 
-#endif
+  iter->associer_zones(zvef, zclvef);
+  Eval_Source_C_VEF_Face& eval_puis = (Eval_Source_C_VEF_Face&) iter.evaluateur();
+  eval_puis.associer_zones(zvef, zclvef);
+}
 
+void Terme_Source_Constituant_VEF_Face::associer_pb(const Probleme_base& pb)
+{
+  const Equation_base& eqn = pb.equation(0);
+  eqn.discretisation().nommer_completer_champ_physique(eqn.zone_dis(), la_source_constituant.le_nom(), "", la_source_constituant, pb);
+  Eval_Source_C_VEF_Face& eval_puis = (Eval_Source_C_VEF_Face&) iter.evaluateur();
+  eval_puis.associer_champs(la_source_constituant);
+}

@@ -13,66 +13,36 @@
 *
 *****************************************************************************/
 
-#ifndef Source_Darcy_VEF_Face_included
-#define Source_Darcy_VEF_Face_included
+#ifndef Source_Forchheimer_VEF_Face_included
+#define Source_Forchheimer_VEF_Face_included
 
-/*! @brief class Source_Darcy_VEF_Face
- *
- *  Terme de Darcy pour les milieux poreux
- *
- *
- *
- */
-
+#include <Eval_Forchheimer_VEF_Face.h>
+#include <Iterateur_Source_VEF_Face.h>
 #include <Terme_Source_VEF_base.h>
 #include <Iterateur_Source_VEF.h>
-#include <Eval_Darcy_VEF_Face.h>
 
-class Zone_dis;
 class Zone_Cl_dis;
+class Zone_dis;
 class Param;
 
-declare_It_Sou_VEF_Face(Eval_Darcy_VEF_Face)
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Source_Darcy_VEF_Face
-//
-// Cette classe represente le terme de Darcy pour les ecoulement en milieux poreux.
-// Ce terme doit normalement etre de type "operateur" : pour l'instant il est code
-// comme un terme source et donc ne  doit etre utilise qu'avec un schema en temps
-// de type explicite.
-//
-//////////////////////////////////////////////////////////////////////////////
-
-class Source_Darcy_VEF_Face : public Terme_Source_VEF_base
+/*! @brief class Source_Forchheimer_VEF_Face
+ *
+ *  Cette classe represente le terme de Forchheimer pour les ecoulement en milieux poreux.
+ *  Ce terme doit normalement etre de type "operateur" : pour l'instant il est code
+ *  comme un terme source et donc ne  doit etre utilise qu'avec un schema en temps de type explicite.
+ *
+ */
+class Source_Forchheimer_VEF_Face: public Terme_Source_VEF_base
 {
-  Declare_instanciable_sans_constructeur(Source_Darcy_VEF_Face);
-
+  Declare_instanciable_sans_constructeur(Source_Forchheimer_VEF_Face);
 public:
+  Source_Forchheimer_VEF_Face() : Terme_Source_VEF_base(Iterateur_Source_VEF_Face<Eval_Forchheimer_VEF_Face>()) { }
   void set_param(Param& param);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  inline Source_Darcy_VEF_Face();
-  void associer_pb(const Probleme_base& ) override;
-  void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;
-  void mettre_a_jour(double temps) override
-  {
-    ;
-  }
-  inline Eval_Darcy_VEF_Face& eval()
-  {
-    return (Eval_Darcy_VEF_Face&) iter.evaluateur();
-  }
+  void associer_pb(const Probleme_base&) override;
+  void associer_zones(const Zone_dis&, const Zone_Cl_dis&) override;
+  void mettre_a_jour(double temps) override { }
+  inline Eval_Forchheimer_VEF_Face& eval() { return (Eval_Forchheimer_VEF_Face&) iter.evaluateur(); }
 };
 
-
-//
-// Fonctions inline de la classe Source_Darcy_VEF_Face
-//
-inline Source_Darcy_VEF_Face::Source_Darcy_VEF_Face() :
-  Terme_Source_VEF_base(It_Sou_VEF_Face(Eval_Darcy_VEF_Face)())
-{
-}
-
-#endif
-
+#endif /* Source_Forchheimer_VEF_Face_included */

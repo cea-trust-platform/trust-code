@@ -13,50 +13,25 @@
 *
 *****************************************************************************/
 
-#ifndef Terme_Source_Constituant_VEF_Face_included
-#define Terme_Source_Constituant_VEF_Face_included
+#include <Terme_Puissance_Thermique_VEF_Face.h>
+#include <Discretisation_base.h>
+#include <Probleme_base.h>
+#include <Milieu_base.h>
 
+Implemente_instanciable_sans_constructeur(Terme_Puissance_Thermique_VEF_Face, "Puissance_Thermique_VEF_P1NC", Terme_Puissance_Thermique_VEF_base);
 
+Sortie& Terme_Puissance_Thermique_VEF_Face::printOn(Sortie& s) const { return s << que_suis_je(); }
+Entree& Terme_Puissance_Thermique_VEF_Face::readOn(Entree& s) { return Terme_Puissance_Thermique_VEF_base::readOn(s); }
 
-#include <Terme_Source_Constituant.h>
-#include <Terme_Source_VEF_base.h>
-#include <Eval_Source_C_VEF_Face.h>
-#include <Iterateur_Source_VEF.h>
-
-declare_It_Sou_VEF_Face(Eval_Source_C_VEF_Face)
-
-/*! @brief class Terme_Source_Constituant_VEF_Face
- *
- *  Cette classe represente un terme source de l'equation de la concentration
- *
- *
- * @sa Terme_Source_Constituant, Terme_Source_VEF_base
- */
-class Terme_Source_Constituant_VEF_Face : public Terme_Source_Constituant,
-  public Terme_Source_VEF_base
+void Terme_Puissance_Thermique_VEF_Face::associer_zones(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
 {
-  Declare_instanciable_sans_constructeur(Terme_Source_Constituant_VEF_Face);
-
-public:
-
-  inline Terme_Source_Constituant_VEF_Face();
-  void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;
-  void associer_pb(const Probleme_base& ) override;
-  void mettre_a_jour(double temps) override
-  {
-    Terme_Source_Constituant::mettre_a_jour(temps);
-  }
-};
-
-
-//
-// Fonctions inline de la classe Terme_Source_Constituant_VEF_Face
-//
-
-inline Terme_Source_Constituant_VEF_Face::Terme_Source_Constituant_VEF_Face()
-  : Terme_Source_Constituant(),Terme_Source_VEF_base(It_Sou_VEF_Face(Eval_Source_C_VEF_Face)())
-{
+  Terme_Puissance_Thermique_VEF_base::associer_zones(zone_dis, zone_cl_dis);
+  Eval_Puiss_Th_VEF_Face& eval_puis = (Eval_Puiss_Th_VEF_Face&) iter.evaluateur();
+  eval_puis.associer_zones(zone_dis.valeur(), zone_cl_dis.valeur());
 }
 
-
-#endif
+void Terme_Puissance_Thermique_VEF_Face::associer_pb(const Probleme_base& pb)
+{
+  Eval_Puiss_Th_VEF_Face& eval_puis = (Eval_Puiss_Th_VEF_Face&) iter.evaluateur();
+  eval_puis.associer_champs(la_puissance);
+}

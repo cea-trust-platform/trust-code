@@ -13,55 +13,29 @@
 *
 *****************************************************************************/
 
-#include <Terme_Source_Constituant_VEF_Face.h>
-#include <Milieu_base.h>
-#include <Convection_Diffusion_Concentration.h>
-#include <Discretisation_base.h>
-#include <Probleme_base.h>
+#ifndef Terme_Source_Constituant_VEF_Face_included
+#define Terme_Source_Constituant_VEF_Face_included
 
-Implemente_instanciable_sans_constructeur(Terme_Source_Constituant_VEF_Face,"source_Constituant_VEF_P1NC",Terme_Source_VEF_base);
-implemente_It_Sou_VEF_Face(Eval_Source_C_VEF_Face)
+#include <Iterateur_Source_VEF_Face.h>
+#include <Terme_Source_Constituant.h>
+#include <Eval_Source_C_VEF_Face.h>
+#include <Terme_Source_VEF_base.h>
+#include <Iterateur_Source_VEF.h>
 
-//// printOn
-//
-
-Sortie& Terme_Source_Constituant_VEF_Face::printOn(Sortie& s ) const
+/*! @brief class Terme_Source_Constituant_VEF_Face
+ *
+ *  Cette classe represente un terme source de l'equation de la concentration
+ *
+ * @sa Terme_Source_Constituant, Terme_Source_VEF_base
+ */
+class Terme_Source_Constituant_VEF_Face: public Terme_Source_Constituant, public Terme_Source_VEF_base
 {
-  return s << que_suis_je() ;
-}
+  Declare_instanciable_sans_constructeur(Terme_Source_Constituant_VEF_Face);
+public:
+  Terme_Source_Constituant_VEF_Face() : Terme_Source_Constituant(),Terme_Source_VEF_base(Iterateur_Source_VEF_Face<Eval_Source_C_VEF_Face>()) { }
+  void associer_zones(const Zone_dis&, const Zone_Cl_dis&) override;
+  void associer_pb(const Probleme_base&) override;
+  void mettre_a_jour(double temps) override { Terme_Source_Constituant::mettre_a_jour(temps); }
+};
 
-//// readOn
-//
-
-Entree& Terme_Source_Constituant_VEF_Face::readOn(Entree& s )
-{
-  Terme_Source_Constituant::lire_donnees(s);
-  set_fichier("Source_Constituant");
-  set_description("Injection rate = Integral(source_C*dv) [mol/s]");
-
-  return s;
-}
-
-
-void Terme_Source_Constituant_VEF_Face::associer_zones(const Zone_dis& zone_dis,
-                                                       const Zone_Cl_dis& zone_cl_dis)
-{
-  const Zone_VEF& zvef = ref_cast(Zone_VEF,zone_dis.valeur());
-  const Zone_Cl_VEF& zclvef = ref_cast(Zone_Cl_VEF,zone_cl_dis.valeur());
-
-  iter->associer_zones(zvef, zclvef);
-
-  Eval_Source_C_VEF_Face& eval_puis = (Eval_Source_C_VEF_Face&) iter.evaluateur();
-  eval_puis.associer_zones(zvef, zclvef );
-}
-
-
-void Terme_Source_Constituant_VEF_Face::associer_pb(const Probleme_base& pb)
-{
-  const Equation_base& eqn = pb.equation(0);
-  eqn.discretisation().nommer_completer_champ_physique(eqn.zone_dis(),la_source_constituant.le_nom(),"",la_source_constituant,pb);
-  Eval_Source_C_VEF_Face& eval_puis = (Eval_Source_C_VEF_Face&) iter.evaluateur();
-  eval_puis.associer_champs(la_source_constituant);
-}
-
-
+#endif /* Terme_Source_Constituant_VEF_Face_included */

@@ -16,25 +16,7 @@
 #include <Iterateur_Source_VEF.h>
 
 Implemente_deriv(Iterateur_Source_VEF_base);
-Implemente_instanciable(Iterateur_Source_VEF,"Iterateur_Source_VEF",DERIV(Iterateur_Source_VEF_base));
+Implemente_instanciable(Iterateur_Source_VEF, "Iterateur_Source_VEF", DERIV(Iterateur_Source_VEF_base));
 
-//// printOn
-//
-
-Sortie& Iterateur_Source_VEF::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
-
-
-//// readOn
-//
-
-Entree& Iterateur_Source_VEF::readOn(Entree& s )
-{
-  return s ;
-}
-
-
-
-
+Sortie& Iterateur_Source_VEF::printOn(Sortie& s) const { return s << que_suis_je(); }
+Entree& Iterateur_Source_VEF::readOn(Entree& s) { return s; }

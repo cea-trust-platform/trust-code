@@ -13,45 +13,32 @@
 *
 *****************************************************************************/
 
-#include <Source_Forchheimer_VEF_Face.h>
+#include <Source_Darcy_VEF_Face.h>
+#include <Fluide_Incompressible.h>
 #include <Probleme_base.h>
-#include <Champ_Don.h>
-#include <Milieu_base.h>
 #include <Param.h>
 
-Implemente_instanciable_sans_constructeur(Source_Forchheimer_VEF_Face,"Forchheimer_VEF_P1NC",Terme_Source_VEF_base);
+Implemente_instanciable_sans_constructeur(Source_Darcy_VEF_Face,"Darcy_VEF_P1NC",Terme_Source_VEF_base);
 
-implemente_It_Sou_VEF_Face(Eval_Forchheimer_VEF_Face)
+Sortie& Source_Darcy_VEF_Face::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 
-//// printOn
-//
-
-Sortie& Source_Forchheimer_VEF_Face::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
-
-//// readOn
-//
-
-Entree& Source_Forchheimer_VEF_Face::readOn(Entree& is )
+Entree& Source_Darcy_VEF_Face::readOn(Entree& is )
 {
   Param param(que_suis_je());
   set_param(param);
   param.lire_avec_accolades_depuis(is);
-  set_fichier("Forcheimer");
-  set_description("Forchheimer term = Integral(-Cf/K*abs(vitesse)*vitesse*dv) [m/s2]");
+  set_fichier("Source_Darcy");
+  set_description("Darcy term = Integral(-nu/K*vitesse*dv) [m/s2]");
   return is;
 }
 
-void Source_Forchheimer_VEF_Face::set_param(Param& param)
+void Source_Darcy_VEF_Face::set_param(Param& param)
 {
   param.ajouter_non_std("modele_K",(this),Param::REQUIRED);
-  param.ajouter_non_std("Cf",(this),Param::REQUIRED);
   param.ajouter_non_std("porosite",(this),Param::REQUIRED);
 }
 
-int Source_Forchheimer_VEF_Face::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+int Source_Darcy_VEF_Face::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
   if (mot=="modele_K")
     {
@@ -61,40 +48,31 @@ int Source_Forchheimer_VEF_Face::lire_motcle_non_standard(const Motcle& mot, Ent
       is >> eval().modK.valeur();
       return 1;
     }
-  else if (mot=="Cf")
-    {
-      double c;
-      is >> c;
-      eval().setCf(c);
-      return 1;
-    }
   else if (mot=="porosite")
     {
-      double c;
-      is >> c;
-      eval().setPorosite(c);
+      is >> eval().getPorosite();
       return 1;
     }
   else
     {
-      Cerr << "Unknown keyword in Source_Forchheimer_VEF_Face " << finl;
+      Cerr << "Unknown keyword in Source_Darcy_VEF_Face" << finl;
       exit();
     }
   return -1;
 }
 
-void Source_Forchheimer_VEF_Face::associer_zones(const Zone_dis& zone_dis,
-                                                 const Zone_Cl_dis& zone_cl_dis)
+void Source_Darcy_VEF_Face::associer_zones(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
 {
   const Zone_VEF& zvdf = ref_cast(Zone_VEF,zone_dis.valeur());
   const Zone_Cl_VEF& zclvdf = ref_cast(Zone_Cl_VEF,zone_cl_dis.valeur());
   iter->associer_zones(zvdf, zclvdf);
-  eval().associer_zones(zvdf, zclvdf );
+  eval().associer_zones(zvdf, zclvdf);
 }
 
-void Source_Forchheimer_VEF_Face::associer_pb(const Probleme_base& pb)
+void Source_Darcy_VEF_Face::associer_pb(const Probleme_base& pb)
 {
+  const Champ_Don& diffu = ref_cast(Fluide_base,pb.milieu()).viscosite_cinematique();
   const Champ_Inc& vit = pb.equation(0).inconnue();
+  eval().associer(diffu);
   eval().associer(vit);
 }
-

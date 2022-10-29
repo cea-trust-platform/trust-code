@@ -13,39 +13,36 @@
 *
 *****************************************************************************/
 
-#include <Terme_Puissance_Thermique_VEF_Face.h>
-#include <Milieu_base.h>
-#include <Discretisation_base.h>
-#include <Probleme_base.h>
+#ifndef Source_Darcy_VEF_Face_included
+#define Source_Darcy_VEF_Face_included
 
-Implemente_instanciable_sans_constructeur(Terme_Puissance_Thermique_VEF_Face,"Puissance_Thermique_VEF_P1NC",Terme_Puissance_Thermique_VEF_base);
-implemente_It_Sou_VEF_Face(Eval_Puiss_Th_VEF_Face)
+#include <Iterateur_Source_VEF_Face.h>
+#include <Terme_Source_VEF_base.h>
+#include <Iterateur_Source_VEF.h>
+#include <Eval_Darcy_VEF_Face.h>
 
+class Zone_Cl_dis;
+class Zone_dis;
+class Param;
 
-Sortie& Terme_Puissance_Thermique_VEF_Face::printOn(Sortie& s ) const
+/*! @brief class Source_Darcy_VEF_Face
+ *
+ *  Cette classe represente le terme de Darcy pour les ecoulement en milieux poreux.
+ *  Ce terme doit normalement etre de type "operateur" : pour l'instant il est code
+ *  comme un terme source et donc ne  doit etre utilise qu'avec un schema en temps de type explicite.
+ *
+ */
+class Source_Darcy_VEF_Face: public Terme_Source_VEF_base
 {
-  return s << que_suis_je() ;
-}
+  Declare_instanciable_sans_constructeur(Source_Darcy_VEF_Face);
+public:
+  Source_Darcy_VEF_Face() : Terme_Source_VEF_base(Iterateur_Source_VEF_Face<Eval_Darcy_VEF_Face>()) { }
+  void set_param(Param& param);
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
+  void associer_pb(const Probleme_base&) override;
+  void associer_zones(const Zone_dis&, const Zone_Cl_dis&) override;
+  void mettre_a_jour(double temps) override { }
+  inline Eval_Darcy_VEF_Face& eval() { return (Eval_Darcy_VEF_Face&) iter.evaluateur(); }
+};
 
-Entree& Terme_Puissance_Thermique_VEF_Face::readOn(Entree& s )
-{
-  Terme_Puissance_Thermique_VEF_base::readOn(s);
-  return s;
-}
-
-void Terme_Puissance_Thermique_VEF_Face::associer_zones(const Zone_dis& zone_dis,
-                                                        const Zone_Cl_dis& zone_cl_dis)
-{
-  Terme_Puissance_Thermique_VEF_base::associer_zones(zone_dis,zone_cl_dis);
-  Eval_Puiss_Th_VEF_Face& eval_puis = (Eval_Puiss_Th_VEF_Face&) iter.evaluateur();
-  eval_puis.associer_zones(zone_dis.valeur(),zone_cl_dis.valeur());
-}
-
-
-void Terme_Puissance_Thermique_VEF_Face::associer_pb(const Probleme_base& pb)
-{
-  Eval_Puiss_Th_VEF_Face& eval_puis = (Eval_Puiss_Th_VEF_Face&) iter.evaluateur();
-  eval_puis.associer_champs(la_puissance);
-}
-
-
+#endif /* Source_Darcy_VEF_Face_included */

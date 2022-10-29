@@ -16,25 +16,18 @@
 #ifndef Eval_Darcy_VEF_Face_included
 #define Eval_Darcy_VEF_Face_included
 
-/*! @brief class Eval_Darcy_VEF_Face
- *
- *
- *
- */
-
 #include <Evaluateur_Source_VEF_Face.h>
 #include <Modele_Permeabilite.h>
-#include <Ref_Champ_Inc.h>
 #include <Ref_Champ_Don_base.h>
+#include <Ref_Champ_Inc.h>
 #include <Champ_Don.h>
 
 class Eval_Darcy_VEF_Face: public Evaluateur_Source_VEF_Face
 {
-
 public:
+  Eval_Darcy_VEF_Face() : porosite(1) {}
+  Eval_Darcy_VEF_Face(const Eval_Darcy_VEF_Face& eval) : Evaluateur_Source_VEF_Face(eval),porosite(1) { }
 
-  inline Eval_Darcy_VEF_Face();
-  inline Eval_Darcy_VEF_Face(const Eval_Darcy_VEF_Face& eval);
   inline void mettre_a_jour( ) override;
   inline double calculer_terme_source_standard(int ) const override;
   inline void calculer_terme_source_standard(int , DoubleVect& ) const override;
@@ -43,10 +36,7 @@ public:
   inline void associer(const Champ_Don&);
   inline void associer(const Champ_Inc&);
   Modele_Permeabilite modK;
-  inline double& getPorosite()
-  {
-    return porosite;
-  }
+  inline double& getPorosite() { return porosite; }
 
 protected:
   inline void calculer_terme_source(int , DoubleVect& , const DoubleVect&) const;
@@ -55,18 +45,6 @@ protected:
   DoubleTab db_diffusivite;
   double porosite;
 };
-
-
-//
-//   Fonctions inline de la classe Eval_Darcy_VEF_Face
-//
-inline Eval_Darcy_VEF_Face::Eval_Darcy_VEF_Face(): porosite(1)
-{}
-
-inline Eval_Darcy_VEF_Face::Eval_Darcy_VEF_Face(const Eval_Darcy_VEF_Face& eval)
-  : Evaluateur_Source_VEF_Face(eval),porosite(1)
-{
-}
 
 /*! @brief associe le champ de diffusivite
  *

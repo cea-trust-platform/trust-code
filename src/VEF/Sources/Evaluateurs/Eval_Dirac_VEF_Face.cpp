@@ -16,24 +16,20 @@
 #include <Eval_Dirac_VEF_Face.h>
 #include <Champ_Don.h>
 
-
-
 void Eval_Dirac_VEF_Face::associer_champs(const Champ_Don& Q)
 {
   la_puissance = Q;
   puissance = Q(0);
 }
 
-void Eval_Dirac_VEF_Face::mettre_a_jour( )
+void Eval_Dirac_VEF_Face::mettre_a_jour()
 {
-  puissance= la_puissance.valeur()(0);
+  puissance = la_puissance.valeur()(0);
   ma_zone = la_zone.valeur().zone();
 }
 
 void Eval_Dirac_VEF_Face::associer_nb_elem_dirac(int n)
 {
-  nb_dirac = 1./n;
-  //Cout << "Nb Dirac = " << n << finl;
+  nb_dirac = 1. / n;
 }
-
 

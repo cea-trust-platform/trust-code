@@ -14,32 +14,20 @@
 *****************************************************************************/
 
 #include <Terme_Puissance_Thermique_QC_VEF_Face.h>
+#include <Discretisation_base.h>
 #include <Probleme_base.h>
 #include <Milieu_base.h>
-#include <Discretisation_base.h>
 
-Implemente_instanciable_sans_constructeur(Terme_Puissance_Thermique_QC_VEF_Face,"Puissance_Thermique_QC_VEF_P1NC",Terme_Puissance_Thermique_VEF_base);
-implemente_It_Sou_VEF_Face(Eval_Puiss_Th_QC_VEF_Face)
+Implemente_instanciable_sans_constructeur(Terme_Puissance_Thermique_QC_VEF_Face, "Puissance_Thermique_QC_VEF_P1NC", Terme_Puissance_Thermique_VEF_base);
 
+Sortie& Terme_Puissance_Thermique_QC_VEF_Face::printOn(Sortie& s) const { return s << que_suis_je(); }
+Entree& Terme_Puissance_Thermique_QC_VEF_Face::readOn(Entree& s) { return Terme_Puissance_Thermique_VEF_base::readOn(s); }
 
-Sortie& Terme_Puissance_Thermique_QC_VEF_Face::printOn(Sortie& s ) const
+void Terme_Puissance_Thermique_QC_VEF_Face::associer_zones(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
 {
-  return s << que_suis_je() ;
-}
-
-Entree& Terme_Puissance_Thermique_QC_VEF_Face::readOn(Entree& s )
-{
-  Terme_Puissance_Thermique_VEF_base::readOn(s);
-  return s;
-}
-
-
-void Terme_Puissance_Thermique_QC_VEF_Face::associer_zones(const Zone_dis& zone_dis,
-                                                           const Zone_Cl_dis& zone_cl_dis)
-{
-  Terme_Puissance_Thermique_VEF_base::associer_zones(zone_dis,zone_cl_dis);
+  Terme_Puissance_Thermique_VEF_base::associer_zones(zone_dis, zone_cl_dis);
   Eval_Puiss_Th_QC_VEF_Face& eval_puis = (Eval_Puiss_Th_QC_VEF_Face&) iter.evaluateur();
-  eval_puis.associer_zones(zone_dis.valeur(),zone_cl_dis.valeur());
+  eval_puis.associer_zones(zone_dis.valeur(), zone_cl_dis.valeur());
 }
 
 void Terme_Puissance_Thermique_QC_VEF_Face::associer_pb(const Probleme_base& pb)
@@ -47,4 +35,3 @@ void Terme_Puissance_Thermique_QC_VEF_Face::associer_pb(const Probleme_base& pb)
   Eval_Puiss_Th_QC_VEF_Face& eval_puis = (Eval_Puiss_Th_QC_VEF_Face&) iter.evaluateur();
   eval_puis.associer_puissance(la_puissance);
 }
-

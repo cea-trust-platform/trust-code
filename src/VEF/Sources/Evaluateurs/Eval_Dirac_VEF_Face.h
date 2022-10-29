@@ -20,104 +20,67 @@
 #include <Ref_Champ_Don.h>
 #include <Zone.h>
 
-
-
-////////////////////////////////////////////////////////////////////////////
-//
-//  CLASS Eval_Dirac_VEF_Face
-//
-////////////////////////////////////////////////////////////////////////////
-
 class Eval_Dirac_VEF_Face: public Evaluateur_Source_VEF_Face
 {
-
 public:
+  Eval_Dirac_VEF_Face() : puissance(-123.), nb_dirac(-123.) {}
 
-  inline Eval_Dirac_VEF_Face();
   void associer_champs(const Champ_Don& );
   void mettre_a_jour() override;
   inline double calculer_terme_source_standard(int ) const override;
   inline double calculer_terme_source_non_standard(int ) const override ;
-  inline void calculer_terme_source_standard(int , DoubleVect& ) const override;
+  inline void calculer_terme_source_standard(int , DoubleVect& ) const override { }
   inline void calculer_terme_source_non_standard(int , DoubleVect&  ) const override ;
   void associer_nb_elem_dirac(int );
-
   DoubleVect le_point;
-protected:
 
+protected:
   REF(Champ_Don) la_puissance;
   double puissance;
   REF(Zone) ma_zone;
   double nb_dirac;
-
 };
-
-
-//
-//   Fonctions inline de la classe Eval_Dirac_VDF_Elem
-//
-
-inline Eval_Dirac_VEF_Face::Eval_Dirac_VEF_Face():puissance(-123.),nb_dirac(-123.) {}
-
 
 inline double Eval_Dirac_VEF_Face::calculer_terme_source_standard(int num_face) const
 {
   //on recuperre l'element associe a cette face
   int elem;
-  if (face_voisins(num_face,1)==-1)
-    {
-      elem = face_voisins(num_face,0);
-    }
+  if (face_voisins(num_face, 1) == -1)
+    elem = face_voisins(num_face, 0);
   else
-    {
-      elem = face_voisins(num_face,1);
-    }
+    elem = face_voisins(num_face, 1);
 
-  int test =  ma_zone.valeur().type_elem().contient(le_point,elem) ;
+  int test = ma_zone.valeur().type_elem().contient(le_point, elem);
 
   if (test == 1)
     {
-      assert(nb_dirac!=-123.);
-      assert(puissance!=-123.);
-      double source =  nb_dirac*puissance;
+      assert(nb_dirac != -123.);
+      assert(puissance != -123.);
+      double source = nb_dirac * puissance;
       return source;
     }
   else
-    {
-      return 0;
-    }
-
-}
-
-inline void Eval_Dirac_VEF_Face::calculer_terme_source_standard(int  num_face, DoubleVect& source) const
-{
-  ;
+    return 0;
 }
 
 inline double Eval_Dirac_VEF_Face::calculer_terme_source_non_standard(int num_face) const
 {
   int elem;
-  if (face_voisins(num_face,1)==-1)
-    {
-      elem = face_voisins(num_face,0);
-    }
+  if (face_voisins(num_face, 1) == -1)
+    elem = face_voisins(num_face, 0);
   else
-    {
-      elem = face_voisins(num_face,1);
-    }
+    elem = face_voisins(num_face, 1);
 
-  int test =  ma_zone.valeur().type_elem().contient(le_point,elem) ;
+  int test = ma_zone.valeur().type_elem().contient(le_point, elem);
   if (test == 1)
     {
-      assert(nb_dirac!=-123.);
-      assert(puissance!=-123.);
-      double source =  nb_dirac*puissance;
+      assert(nb_dirac != -123.);
+      assert(puissance != -123.);
+      double source = nb_dirac * puissance;
       return source;
     }
   else
-    {
-      return 0;
-    }
+    return 0;
 }
 
 inline void Eval_Dirac_VEF_Face::calculer_terme_source_non_standard(int num_face, DoubleVect& source) const
@@ -125,6 +88,5 @@ inline void Eval_Dirac_VEF_Face::calculer_terme_source_non_standard(int num_face
   Cerr << "Eval_Dirac_VEF_Face::calculer_terme_source_non_standard(int num_face, DoubleVect& source) is not available." << finl;
   Process::exit();
 }
-
 
 #endif

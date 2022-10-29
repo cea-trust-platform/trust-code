@@ -13,51 +13,28 @@
 *
 *****************************************************************************/
 
-
-#ifndef Source_Dirac_VEF_Face_included
-#define Source_Dirac_VEF_Face_included
+#ifndef Terme_Puissance_Thermique_VEF_Face_included
+#define Terme_Puissance_Thermique_VEF_Face_included
 
 #include <Terme_Puissance_Thermique_VEF_base.h>
+#include <Iterateur_Source_VEF_Face.h>
+#include <Eval_Puiss_Th_VEF_Face.h>
 #include <Iterateur_Source_VEF.h>
-#include <Eval_Dirac_VEF_Face.h>
 
-class Zone_dis;
-class Zone_Cl_dis;
-/*! @brief class Terme_Source_Dirac_VEF_Face
+/*! @brief class Terme_Puissance_Thermique_VEF_Face
  *
+ *  Cette classe represente un terme source de l'equation de la thermique du type degagement volumique de puissance thermique
  *
- *
- * @sa Source_base
+ * @sa Terme_Puissance_Thermique, Terme_Source_VEF_base
  */
-declare_It_Sou_VEF_Face(Eval_Dirac_VEF_Face)
-class Source_Dirac_VEF_Face : public Terme_Puissance_Thermique_VEF_base
+class Terme_Puissance_Thermique_VEF_Face : public Terme_Puissance_Thermique_VEF_base
 {
-
-  Declare_instanciable_sans_constructeur(Source_Dirac_VEF_Face);
-
+  Declare_instanciable_sans_constructeur(Terme_Puissance_Thermique_VEF_Face);
 public:
-
-  inline Source_Dirac_VEF_Face();
+  Terme_Puissance_Thermique_VEF_Face() : Terme_Puissance_Thermique_VEF_base(Iterateur_Source_VEF_Face<Eval_Puiss_Th_VEF_Face>()) { }
+  void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;
   void associer_pb(const Probleme_base& ) override;
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
-  void mettre_a_jour(double temps) override
-  {
-    Terme_Puissance_Thermique::mettre_a_jour(temps);
-  }
-
-protected:
-
-  DoubleVect point;
-  int nb_dirac;
-
+  void mettre_a_jour(double temps) override { Terme_Puissance_Thermique::mettre_a_jour(temps); }
 };
 
-//
-// Fonctions inline de la classe Source_Dirac_VDF_Elem
-//
-inline Source_Dirac_VEF_Face::Source_Dirac_VEF_Face() :
-  Terme_Puissance_Thermique_VEF_base(It_Sou_VEF_Face(Eval_Dirac_VEF_Face)())
-{
-}
-
-#endif
+#endif /* Terme_Puissance_Thermique_VEF_Face_included */

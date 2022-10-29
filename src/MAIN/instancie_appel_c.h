@@ -108,4 +108,5 @@ instancie_src_VEF_Operateurs();
 instancie_src_VEF_Solveurs();
 instancie_src_VEF_Sources();
 instancie_src_VEF_Sources_Iterateurs();
+instancie_src_VEF_Sources_Sources_It_Eval();
 instancie_src_VEF_Zones();
