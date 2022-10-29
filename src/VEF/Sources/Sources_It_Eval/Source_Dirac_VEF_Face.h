@@ -18,11 +18,8 @@
 
 #include <Terme_Puissance_Thermique_VEF_base.h>
 #include <Iterateur_Source_VEF_Face.h>
-#include <Iterateur_Source_VEF.h>
 #include <Eval_Dirac_VEF_Face.h>
 
-class Zone_dis;
-class Zone_Cl_dis;
 /*! @brief class Terme_Source_Dirac_VEF_Face
  *
  * @sa Terme_Puissance_Thermique_VEF_base

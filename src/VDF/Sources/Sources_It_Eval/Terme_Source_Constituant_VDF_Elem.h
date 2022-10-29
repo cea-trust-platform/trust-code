@@ -16,8 +16,8 @@
 #ifndef Terme_Source_Constituant_VDF_Elem_included
 #define Terme_Source_Constituant_VDF_Elem_included
 
-#include <Iterateur_Source_VDF_Elem.h>
 #include <Terme_Source_Constituant.h>
+#include <Iterateur_Source_Elem.h>
 #include <Eval_Source_C_VDF_Elem.h>
 #include <Terme_Source_VDF_base.h>
 
@@ -31,8 +31,7 @@ class Terme_Source_Constituant_VDF_Elem : public Terme_Source_Constituant, publi
 {
   Declare_instanciable_sans_constructeur(Terme_Source_Constituant_VDF_Elem);
 public:
-  Terme_Source_Constituant_VDF_Elem() : Terme_Source_Constituant(),
-    Terme_Source_VDF_base(Iterateur_Source_VDF_Elem<Eval_Source_C_VDF_Elem>()) { }
+  Terme_Source_Constituant_VDF_Elem() : Terme_Source_Constituant(), Terme_Source_VDF_base(Iterateur_Source_Elem<Eval_Source_C_VDF_Elem>()) { }
 
   void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;
   void associer_pb(const Probleme_base& ) override;

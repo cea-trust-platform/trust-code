@@ -20,7 +20,6 @@
 #include <Terme_Source_Constituant.h>
 #include <Eval_Source_C_VEF_Face.h>
 #include <Terme_Source_VEF_base.h>
-#include <Iterateur_Source_VEF.h>
 
 /*! @brief class Terme_Source_Constituant_VEF_Face
  *
@@ -32,7 +31,7 @@ class Terme_Source_Constituant_VEF_Face: public Terme_Source_Constituant, public
 {
   Declare_instanciable_sans_constructeur(Terme_Source_Constituant_VEF_Face);
 public:
-  Terme_Source_Constituant_VEF_Face() : Terme_Source_Constituant(),Terme_Source_VEF_base(Iterateur_Source_VEF_Face<Eval_Source_C_VEF_Face>()) { }
+  Terme_Source_Constituant_VEF_Face() : Terme_Source_Constituant(), Terme_Source_VEF_base(Iterateur_Source_VEF_Face<Eval_Source_C_VEF_Face>()) { }
   void associer_zones(const Zone_dis&, const Zone_Cl_dis&) override;
   void associer_pb(const Probleme_base&) override;
   void mettre_a_jour(double temps) override { Terme_Source_Constituant::mettre_a_jour(temps); }

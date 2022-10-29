@@ -16,6 +16,7 @@
 #include <Source_Darcy_VDF_Face.h>
 #include <Fluide_Incompressible.h>
 #include <Probleme_base.h>
+#include <Zone_Cl_VDF.h>
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Source_Darcy_VDF_Face,"Darcy_VDF_Face",Terme_Source_VDF_base);
@@ -56,7 +57,7 @@ int Source_Darcy_VDF_Face::lire_motcle_non_standard(const Motcle& mot, Entree& i
   else
     {
       Cerr << "Unknown keyword in Source_Darcy_VDF_Face" << finl;
-      exit();
+      Process::exit();
     }
   return -1;
 }

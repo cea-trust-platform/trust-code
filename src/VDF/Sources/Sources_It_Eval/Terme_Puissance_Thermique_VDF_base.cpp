@@ -15,6 +15,7 @@
 
 #include <Terme_Puissance_Thermique_VDF_base.h>
 #include <Champ_val_tot_sur_vol_base.h>
+#include <Zone_Cl_VDF.h>
 #include <Zone_VDF.h>
 
 Implemente_base(Terme_Puissance_Thermique_VDF_base,"Terme_Puissance_Thermique_VDF_base",Terme_Source_VDF_base);

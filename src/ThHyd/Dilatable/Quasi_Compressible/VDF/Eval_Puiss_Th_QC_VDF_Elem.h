@@ -16,12 +16,11 @@
 #ifndef Eval_Puiss_Th_QC_VDF_Elem_included
 #define Eval_Puiss_Th_QC_VDF_Elem_included
 
-
-#include <Evaluateur_Source_VDF_Elem.h>
 #include <Fluide_Quasi_Compressible.h>
+#include <Evaluateur_Source_Elem.h>
 #include <Ref_Champ_Don.h>
 
-class Eval_Puiss_Th_QC_VDF_Elem: public Evaluateur_Source_VDF_Elem
+class Eval_Puiss_Th_QC_VDF_Elem: public Evaluateur_Source_Elem
 {
 public:
   Eval_Puiss_Th_QC_VDF_Elem() { }

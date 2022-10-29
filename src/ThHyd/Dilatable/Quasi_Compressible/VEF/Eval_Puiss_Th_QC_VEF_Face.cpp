@@ -14,12 +14,13 @@
 *****************************************************************************/
 
 #include <Eval_Puiss_Th_QC_VEF_Face.h>
+#include <Zone_VEF.h>
 
 void Eval_Puiss_Th_QC_VEF_Face::completer()
 {
   Evaluateur_Source_VEF_Face::completer();
   face_voisins.ref(la_zone->face_voisins());
-  volumes.ref(la_zone->volumes());
+  volumes.ref(ref_cast(Zone_VEF,la_zone.valeur()).volumes());
   nb_faces_elem = la_zone->zone().nb_faces_elem();
 }
 

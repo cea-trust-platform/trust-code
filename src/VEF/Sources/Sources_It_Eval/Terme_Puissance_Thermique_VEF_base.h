@@ -16,42 +16,16 @@
 #ifndef Terme_Puissance_Thermique_VEF_base_included
 #define Terme_Puissance_Thermique_VEF_base_included
 
-
 #include <Terme_Puissance_Thermique.h>
 #include <Terme_Source_VEF_base.h>
 
-class Zone_dis;
-class Zone_Cl_dis;
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Terme_Puissance_Thermique_VEF_base
-//
-//////////////////////////////////////////////////////////////////////////////
-
-class Terme_Puissance_Thermique_VEF_base : public Terme_Puissance_Thermique, public Terme_Source_VEF_base
+class Terme_Puissance_Thermique_VEF_base: public Terme_Puissance_Thermique, public Terme_Source_VEF_base
 {
-
   Declare_base(Terme_Puissance_Thermique_VEF_base);
-
 public:
-
-  inline Terme_Puissance_Thermique_VEF_base(const Iterateur_Source_VEF_base&);
+  inline Terme_Puissance_Thermique_VEF_base(const Iterateur_Source_base& iter_base) : Terme_Puissance_Thermique(), Terme_Source_VEF_base(iter_base) { }
   void associer_zones(const Zone_dis&, const Zone_Cl_dis&) override;
   int initialiser(double temps) override;
-
-
-  /////////////////////////////////////////////////////
-
-protected:
-
-
-
 };
 
-inline Terme_Puissance_Thermique_VEF_base::Terme_Puissance_Thermique_VEF_base(const Iterateur_Source_VEF_base& iter_base)
-  : Terme_Puissance_Thermique(), Terme_Source_VEF_base(iter_base)
-{
-}
-
-#endif
+#endif /* Terme_Puissance_Thermique_VEF_base_included */

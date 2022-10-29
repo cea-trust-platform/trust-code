@@ -19,14 +19,11 @@
 #include <Terme_Puissance_Thermique.h>
 #include <Terme_Source_VDF_base.h>
 
-class Zone_Cl_dis;
-class Zone_dis;
-
 class Terme_Puissance_Thermique_VDF_base : public Terme_Puissance_Thermique, public Terme_Source_VDF_base
 {
   Declare_base(Terme_Puissance_Thermique_VDF_base);
 public:
-  Terme_Puissance_Thermique_VDF_base(const Iterateur_Source_VDF_base& iter_base) : Terme_Puissance_Thermique(), Terme_Source_VDF_base(iter_base) { }
+  Terme_Puissance_Thermique_VDF_base(const Iterateur_Source_base& iter_base) : Terme_Puissance_Thermique(), Terme_Source_VDF_base(iter_base) { }
   int initialiser(double temps) override;
   void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;
 };

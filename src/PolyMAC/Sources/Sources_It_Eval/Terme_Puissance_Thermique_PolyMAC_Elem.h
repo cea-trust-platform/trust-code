@@ -17,8 +17,8 @@
 #define Terme_Puissance_Thermique_PolyMAC_Elem_included
 
 #include <Terme_Puissance_Thermique_PolyMAC_base.h>
-#include <Iterateur_Source_PolyMAC_Elem.h>
 #include <Eval_Puiss_Th_PolyMAC_Elem.h>
+#include <Iterateur_Source_Elem.h>
 
 /*! @brief class Terme_Puissance_Thermique_PolyMAC_Elem
  *
@@ -30,7 +30,7 @@ class Terme_Puissance_Thermique_PolyMAC_Elem : public Terme_Puissance_Thermique_
 {
   Declare_instanciable_sans_constructeur(Terme_Puissance_Thermique_PolyMAC_Elem);
 public:
-  Terme_Puissance_Thermique_PolyMAC_Elem() : Terme_Puissance_Thermique_PolyMAC_base(Iterateur_Source_PolyMAC_Elem<Eval_Puiss_Th_PolyMAC_Elem>()) { }
+  Terme_Puissance_Thermique_PolyMAC_Elem() : Terme_Puissance_Thermique_PolyMAC_base(Iterateur_Source_Elem<Eval_Puiss_Th_PolyMAC_Elem>()) { }
 
   void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;
   void associer_pb(const Probleme_base& ) override;

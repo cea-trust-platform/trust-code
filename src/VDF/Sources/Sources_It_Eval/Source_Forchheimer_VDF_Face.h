@@ -17,12 +17,8 @@
 #define Source_Forchheimer_VDF_Face_included
 
 #include <Eval_Forchheimer_VDF_Face.h>
-#include <Iterateur_Source_VDF_Face.h>
+#include <Iterateur_Source_Face.h>
 #include <Terme_Source_VDF_base.h>
-
-class Zone_Cl_dis;
-class Zone_dis;
-class Param;
 
 /*! @brief class Source_Forchheimer_VDF_Face Cette classe represente le terme de Forchheimer pour les ecoulement en milieux poreux.
  *
@@ -34,7 +30,7 @@ class Source_Forchheimer_VDF_Face : public Terme_Source_VDF_base
 {
   Declare_instanciable_sans_constructeur(Source_Forchheimer_VDF_Face);
 public:
-  Source_Forchheimer_VDF_Face() : Terme_Source_VDF_base(Iterateur_Source_VDF_Face<Eval_Forchheimer_VDF_Face>()) { }
+  Source_Forchheimer_VDF_Face() : Terme_Source_VDF_base(Iterateur_Source_Face<Eval_Forchheimer_VDF_Face>()) { }
   void set_param(Param& param);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   void associer_pb(const Probleme_base& ) override;

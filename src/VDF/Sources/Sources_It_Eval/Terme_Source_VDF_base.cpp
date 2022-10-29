@@ -15,7 +15,7 @@
 
 #include <Terme_Source_VDF_base.h>
 
-Implemente_base(Terme_Source_VDF_base,"Terme_Source_VDF_base",Source_base);
+Implemente_base(Terme_Source_VDF_base, "Terme_Source_VDF_base", Source_base);
 
 Sortie& Terme_Source_VDF_base::printOn(Sortie& s) const { return s << que_suis_je(); }
 Entree& Terme_Source_VDF_base::readOn(Entree& s) { return s; }

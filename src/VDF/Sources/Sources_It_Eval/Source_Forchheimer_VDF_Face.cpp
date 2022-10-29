@@ -16,7 +16,9 @@
 #include <Source_Forchheimer_VDF_Face.h>
 #include <Probleme_base.h>
 #include <Milieu_base.h>
+#include <Zone_Cl_VDF.h>
 #include <Champ_Don.h>
+#include <Zone_VDF.h>
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Source_Forchheimer_VDF_Face,"Forchheimer_VDF_Face",Terme_Source_VDF_base);
@@ -67,7 +69,7 @@ int Source_Forchheimer_VDF_Face::lire_motcle_non_standard(const Motcle& mot, Ent
   else
     {
       Cerr << "Unknown keyword in Source_Forchheimer_VDF_Face " << finl;
-      exit();
+      Process::exit();
     }
   return -1;
 }

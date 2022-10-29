@@ -16,13 +16,9 @@
 #ifndef Source_Darcy_VDF_Face_included
 #define Source_Darcy_VDF_Face_included
 
-#include <Iterateur_Source_VDF_Face.h>
+#include <Iterateur_Source_Face.h>
 #include <Terme_Source_VDF_base.h>
 #include <Eval_Darcy_VDF_Face.h>
-
-class Zone_Cl_dis;
-class Zone_dis;
-class Param;
 
 /*! @brief class Source_Darcy_VDF_Face Cette classe represente le terme de Darcy pour les ecoulement en milieux poreux.
  *
@@ -34,7 +30,7 @@ class Source_Darcy_VDF_Face : public Terme_Source_VDF_base
 {
   Declare_instanciable_sans_constructeur(Source_Darcy_VDF_Face);
 public:
-  Source_Darcy_VDF_Face() : Terme_Source_VDF_base(Iterateur_Source_VDF_Face<Eval_Darcy_VDF_Face>()) { }
+  Source_Darcy_VDF_Face() : Terme_Source_VDF_base(Iterateur_Source_Face<Eval_Darcy_VDF_Face>()) { }
   void set_param(Param& param);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   void associer_pb(const Probleme_base& ) override;

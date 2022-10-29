@@ -16,22 +16,22 @@
 #ifndef Terme_Source_PolyMAC_base_included
 #define Terme_Source_PolyMAC_base_included
 
-#include <Iterateur_Source_PolyMAC.h>
+#include <Iterateur_Source.h>
 #include <Source_base.h>
 
 class Terme_Source_PolyMAC_base : public Source_base
 {
   Declare_base(Terme_Source_PolyMAC_base);
 public:
-  Terme_Source_PolyMAC_base(const Iterateur_Source_PolyMAC_base& iter_base) : iter(iter_base) {}
+  Terme_Source_PolyMAC_base(const Iterateur_Source_base& iter_base) : iter(iter_base) {}
 
   int has_interface_blocs() const override { return 1; }
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { }; //rien
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override { iter.ajouter(secmem); }
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override { iter->ajouter(secmem); }
   void completer() override;
 
 protected:
-  Iterateur_Source_PolyMAC iter;
+  Iterateur_Source iter;
 };
 
 #endif /* Terme_Source_PolyMAC_base_included */

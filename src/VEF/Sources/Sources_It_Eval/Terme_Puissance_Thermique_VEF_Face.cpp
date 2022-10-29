@@ -26,12 +26,12 @@ Entree& Terme_Puissance_Thermique_VEF_Face::readOn(Entree& s) { return Terme_Pui
 void Terme_Puissance_Thermique_VEF_Face::associer_zones(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
 {
   Terme_Puissance_Thermique_VEF_base::associer_zones(zone_dis, zone_cl_dis);
-  Eval_Puiss_Th_VEF_Face& eval_puis = (Eval_Puiss_Th_VEF_Face&) iter.evaluateur();
+  Eval_Puiss_Th_VEF_Face& eval_puis = (Eval_Puiss_Th_VEF_Face&) iter->evaluateur();
   eval_puis.associer_zones(zone_dis.valeur(), zone_cl_dis.valeur());
 }
 
 void Terme_Puissance_Thermique_VEF_Face::associer_pb(const Probleme_base& pb)
 {
-  Eval_Puiss_Th_VEF_Face& eval_puis = (Eval_Puiss_Th_VEF_Face&) iter.evaluateur();
+  Eval_Puiss_Th_VEF_Face& eval_puis = (Eval_Puiss_Th_VEF_Face&) iter->evaluateur();
   eval_puis.associer_champs(la_puissance);
 }

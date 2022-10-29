@@ -16,7 +16,9 @@
 #include <Terme_Source_Constituant_PolyMAC_Elem.h>
 #include <Convection_Diffusion_Concentration.h>
 #include <Discretisation_base.h>
+#include <Zone_Cl_PolyMAC.h>
 #include <Probleme_base.h>
+#include <Zone_PolyMAC.h>
 #include <Milieu_base.h>
 
 Implemente_instanciable_sans_constructeur(Terme_Source_Constituant_PolyMAC_Elem, "Source_Constituant_Elem_PolyMAC|Source_Constituant_Elem_PolyMAC_P0", Terme_Source_PolyMAC_base);
@@ -35,7 +37,6 @@ void Terme_Source_Constituant_PolyMAC_Elem::associer_zones(const Zone_dis& zone_
 {
   const Zone_PolyMAC& zvdf = ref_cast(Zone_PolyMAC, zone_dis.valeur());
   const Zone_Cl_PolyMAC& zclvdf = ref_cast(Zone_Cl_PolyMAC, zone_cl_dis.valeur());
-
   iter->associer_zones(zvdf, zclvdf);
   Eval_Source_C_PolyMAC_Elem& eval_puis = (Eval_Source_C_PolyMAC_Elem&) iter.evaluateur();
   eval_puis.associer_zones(zvdf, zclvdf);

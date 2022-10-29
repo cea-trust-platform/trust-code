@@ -16,14 +16,14 @@
 #ifndef Terme_Source_VDF_base_included
 #define Terme_Source_VDF_base_included
 
-#include <Iterateur_Source_VDF.h>
+#include <Iterateur_Source.h>
 #include <Source_base.h>
 
 class Terme_Source_VDF_base : public Source_base
 {
   Declare_base(Terme_Source_VDF_base);
 public:
-  Terme_Source_VDF_base(const Iterateur_Source_VDF_base& iter_base) : iter(iter_base) { }
+  Terme_Source_VDF_base(const Iterateur_Source_base& iter_base) : iter(iter_base) { }
   void completer() override;
   inline DoubleTab& calculer(DoubleTab& resu) const override { return iter->calculer(resu); }
   inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
@@ -31,7 +31,7 @@ public:
   inline int has_interface_blocs() const override { return 1; }
 
 protected:
-  Iterateur_Source_VDF iter;
+  Iterateur_Source iter;
 };
 
 #endif /* Terme_Source_VDF_base_included */

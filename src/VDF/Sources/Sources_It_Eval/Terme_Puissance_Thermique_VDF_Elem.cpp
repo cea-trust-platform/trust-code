@@ -17,7 +17,6 @@
 #include <Discretisation_base.h>
 #include <Probleme_base.h>
 
-
 Implemente_instanciable_sans_constructeur(Terme_Puissance_Thermique_VDF_Elem,"Puissance_Thermique_VDF_P0_VDF",Terme_Puissance_Thermique_VDF_base);
 
 Sortie& Terme_Puissance_Thermique_VDF_Elem::printOn(Sortie& s) const { return s << que_suis_je(); }

@@ -14,36 +14,31 @@
 *****************************************************************************/
 
 #include <Terme_Puissance_Thermique_VEF_base.h>
-#include <Zone_VEF.h>
 #include <Champ_val_tot_sur_vol_base.h>
+#include <Zone_Cl_VEF.h>
+#include <Zone_VEF.h>
 
-Implemente_base(Terme_Puissance_Thermique_VEF_base,"Terme_Puissance_Thermique_VEF_base",Terme_Source_VEF_base);
+Implemente_base(Terme_Puissance_Thermique_VEF_base, "Terme_Puissance_Thermique_VEF_base", Terme_Source_VEF_base);
 
-////printOn
-Sortie& Terme_Puissance_Thermique_VEF_base::printOn(Sortie& s) const
-{
-  return s << que_suis_je() ;
-}
+Sortie& Terme_Puissance_Thermique_VEF_base::printOn(Sortie& s) const { return s << que_suis_je(); }
 
-////readOn
 Entree& Terme_Puissance_Thermique_VEF_base::readOn(Entree& s)
 {
   const Equation_base& eqn = equation();
-  Terme_Puissance_Thermique::lire_donnees(s,eqn);
+  Terme_Puissance_Thermique::lire_donnees(s, eqn);
   champs_compris_.ajoute_champ(la_puissance);
   Nom name_file("Puissance_Thermique");
   modify_name_file(name_file);
   set_fichier(name_file);
   set_description("Heat power release = Integral(P*dv) [W]");
-  return s ;
+  return s;
 }
 
-void Terme_Puissance_Thermique_VEF_base::associer_zones(const Zone_dis& zone_dis,
-                                                        const Zone_Cl_dis& zone_cl_dis)
+void Terme_Puissance_Thermique_VEF_base::associer_zones(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
 {
-  const Zone_VEF& zvef = ref_cast(Zone_VEF,zone_dis.valeur());
-  const Zone_Cl_VEF& zclvef = ref_cast(Zone_Cl_VEF,zone_cl_dis.valeur());
-  iter->associer_zones(zvef,zclvef);
+  const Zone_VEF& zvef = ref_cast(Zone_VEF, zone_dis.valeur());
+  const Zone_Cl_VEF& zclvef = ref_cast(Zone_Cl_VEF, zone_cl_dis.valeur());
+  iter->associer_zones(zvef, zclvef);
 }
 
 int Terme_Puissance_Thermique_VEF_base::initialiser(double temps)
@@ -52,5 +47,3 @@ int Terme_Puissance_Thermique_VEF_base::initialiser(double temps)
   initialiser_champ_puissance(equation());
   return 1;
 }
-
-

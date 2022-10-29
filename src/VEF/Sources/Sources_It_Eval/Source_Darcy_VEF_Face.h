@@ -18,12 +18,7 @@
 
 #include <Iterateur_Source_VEF_Face.h>
 #include <Terme_Source_VEF_base.h>
-#include <Iterateur_Source_VEF.h>
 #include <Eval_Darcy_VEF_Face.h>
-
-class Zone_Cl_dis;
-class Zone_dis;
-class Param;
 
 /*! @brief class Source_Darcy_VEF_Face
  *

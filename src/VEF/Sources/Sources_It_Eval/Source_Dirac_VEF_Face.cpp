@@ -59,4 +59,3 @@ void Source_Dirac_VEF_Face::associer_zones(const Zone_dis& zone_dis, const Zone_
 
   eval_grav.associer_nb_elem_dirac(nb_dirac);
 }
-

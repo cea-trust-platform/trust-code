@@ -15,6 +15,7 @@
 
 #include <Terme_Puissance_Thermique_PolyMAC_base.h>
 #include <Champ_val_tot_sur_vol_base.h>
+#include <Zone_Cl_PolyMAC.h>
 #include <Zone_PolyMAC.h>
 
 Implemente_base(Terme_Puissance_Thermique_PolyMAC_base, "Terme_Puissance_Thermique_PolyMAC_base", Terme_Source_PolyMAC_base);

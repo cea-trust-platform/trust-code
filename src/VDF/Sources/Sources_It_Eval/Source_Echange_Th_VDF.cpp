@@ -17,8 +17,10 @@
 #include <Source_Echange_Th_VDF.h>
 #include <Probleme_base.h>
 #include <Milieu_base.h>
+#include <Zone_Cl_VDF.h>
 #include <Interprete.h>
 #include <Conduction.h>
+#include <Zone_VDF.h>
 
 Implemente_instanciable_sans_constructeur(Source_Echange_Th_VDF,"Echange_thermique_h_imp_VDF_P0_VDF",Terme_Source_VDF_base);
 

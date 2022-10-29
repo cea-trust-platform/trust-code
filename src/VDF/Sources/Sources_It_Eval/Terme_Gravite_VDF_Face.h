@@ -16,12 +16,9 @@
 #ifndef Terme_Gravite_VDF_Face_included
 #define Terme_Gravite_VDF_Face_included
 
-#include <Iterateur_Source_VDF_Face.h>
+#include <Iterateur_Source_Face.h>
 #include <Terme_Source_VDF_base.h>
 #include <Eval_Gravite_VDF_Face.h>
-
-class Zone_Cl_dis;
-class Zone_dis;
 
 /*! @brief class Terme_Gravite_VDF_Face Cette classe represente le terme de gravite qui figure dans l'equation
  *
@@ -33,14 +30,13 @@ class Terme_Gravite_VDF_Face : public Terme_Source_VDF_base
 {
   Declare_instanciable_sans_constructeur(Terme_Gravite_VDF_Face);
 public:
-  Terme_Gravite_VDF_Face() : Terme_Source_VDF_base(Iterateur_Source_VDF_Face<Eval_Gravite_VDF_Face>()) { }
+  Terme_Gravite_VDF_Face() : Terme_Source_VDF_base(Iterateur_Source_Face<Eval_Gravite_VDF_Face>()) { }
   void associer_pb(const Probleme_base& ) override;
   void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;
   inline void mettre_a_jour(double temps) override { gravite->mettre_a_jour(temps); }
 
 protected:
   REF(Champ_Don_base) gravite;
-
   void associer_gravite(const Champ_Don_base& );
 };
 

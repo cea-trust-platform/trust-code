@@ -15,6 +15,8 @@
 
 #include <Terme_Gravite_VDF_Face.h>
 #include <Probleme_base.h>
+#include <Zone_Cl_VDF.h>
+#include <Zone_VDF.h>
 
 Implemente_instanciable_sans_constructeur(Terme_Gravite_VDF_Face,"Gravite_VDF_Face",Terme_Source_VDF_base);
 

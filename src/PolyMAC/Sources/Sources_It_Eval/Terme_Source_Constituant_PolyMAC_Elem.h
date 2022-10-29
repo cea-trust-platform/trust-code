@@ -16,16 +16,14 @@
 #ifndef Terme_Source_Constituant_PolyMAC_Elem_included
 #define Terme_Source_Constituant_PolyMAC_Elem_included
 
-#include <Iterateur_Source_PolyMAC_Elem.h>
 #include <Eval_Source_C_PolyMAC_Elem.h>
 #include <Terme_Source_PolyMAC_base.h>
 #include <Terme_Source_Constituant.h>
+#include <Iterateur_Source_Elem.h>
 
 /*! @brief class Terme_Source_Constituant_PolyMAC_Elem
  *
- *  Cette classe represente un terme source de l'equation de la thermique
- *  du type degagement volumique de puissance thermique uniforme sur une zone
- *
+ *  Cette classe represente un terme source de l'equation de la thermique du type degagement volumique de puissance thermique uniforme sur une zone
  *
  * @sa Terme_Source_Constituant, Terme_Source_PolyMAC_base
  */
@@ -33,7 +31,7 @@ class Terme_Source_Constituant_PolyMAC_Elem: public Terme_Source_Constituant, pu
 {
   Declare_instanciable_sans_constructeur(Terme_Source_Constituant_PolyMAC_Elem);
 public:
-  Terme_Source_Constituant_PolyMAC_Elem() : Terme_Source_Constituant(), Terme_Source_PolyMAC_base(Iterateur_Source_PolyMAC_Elem<Eval_Source_C_PolyMAC_Elem>()) { }
+  Terme_Source_Constituant_PolyMAC_Elem() : Terme_Source_Constituant(), Terme_Source_PolyMAC_base(Iterateur_Source_Elem<Eval_Source_C_PolyMAC_Elem>()) { }
 
   void associer_zones(const Zone_dis&, const Zone_Cl_dis&) override;
   void associer_pb(const Probleme_base&) override;

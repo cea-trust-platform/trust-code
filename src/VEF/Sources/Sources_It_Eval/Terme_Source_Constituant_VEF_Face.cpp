@@ -13,11 +13,13 @@
 *
 *****************************************************************************/
 
-#include <Terme_Source_Constituant_VEF_Face.h>
 #include <Convection_Diffusion_Concentration.h>
+#include <Terme_Source_Constituant_VEF_Face.h>
 #include <Discretisation_base.h>
 #include <Probleme_base.h>
+#include <Zone_Cl_VEF.h>
 #include <Milieu_base.h>
+#include <Zone_VEF.h>
 
 Implemente_instanciable_sans_constructeur(Terme_Source_Constituant_VEF_Face, "source_Constituant_VEF_P1NC", Terme_Source_VEF_base);
 
@@ -35,9 +37,8 @@ void Terme_Source_Constituant_VEF_Face::associer_zones(const Zone_dis& zone_dis,
 {
   const Zone_VEF& zvef = ref_cast(Zone_VEF, zone_dis.valeur());
   const Zone_Cl_VEF& zclvef = ref_cast(Zone_Cl_VEF, zone_cl_dis.valeur());
-
   iter->associer_zones(zvef, zclvef);
-  Eval_Source_C_VEF_Face& eval_puis = (Eval_Source_C_VEF_Face&) iter.evaluateur();
+  Eval_Source_C_VEF_Face& eval_puis = (Eval_Source_C_VEF_Face&) iter->evaluateur();
   eval_puis.associer_zones(zvef, zclvef);
 }
 
@@ -45,6 +46,6 @@ void Terme_Source_Constituant_VEF_Face::associer_pb(const Probleme_base& pb)
 {
   const Equation_base& eqn = pb.equation(0);
   eqn.discretisation().nommer_completer_champ_physique(eqn.zone_dis(), la_source_constituant.le_nom(), "", la_source_constituant, pb);
-  Eval_Source_C_VEF_Face& eval_puis = (Eval_Source_C_VEF_Face&) iter.evaluateur();
+  Eval_Source_C_VEF_Face& eval_puis = (Eval_Source_C_VEF_Face&) iter->evaluateur();
   eval_puis.associer_champs(la_source_constituant);
 }

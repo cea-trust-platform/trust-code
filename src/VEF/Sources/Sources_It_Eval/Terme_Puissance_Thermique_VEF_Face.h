@@ -19,7 +19,6 @@
 #include <Terme_Puissance_Thermique_VEF_base.h>
 #include <Iterateur_Source_VEF_Face.h>
 #include <Eval_Puiss_Th_VEF_Face.h>
-#include <Iterateur_Source_VEF.h>
 
 /*! @brief class Terme_Puissance_Thermique_VEF_Face
  *

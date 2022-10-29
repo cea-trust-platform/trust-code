@@ -469,15 +469,11 @@
  Interprete Interprete Interprete.h
  Interprete_bloc Interprete_bloc Interprete_bloc.h
  Interprete_geometrique_base Interprete_geometrique_base Interprete_geometrique_base.h
+ Iterateur_Source Iterateur_Source Iterateur_Source.h
+ Iterateur_Source_base Iterateur_Source_base Iterateur_Source_base.h
  Iterateur_Source_EF Iterateur_Source_EF Iterateur_Source_EF.h
  Iterateur_Source_EF_base Iterateur_Source_EF_base Iterateur_Source_EF_base.h
- Iterateur_Source_PolyMAC Iterateur_Source_PolyMAC Iterateur_Source_PolyMAC.h
- Iterateur_Source_PolyMAC_base Iterateur_Source_PolyMAC_base Iterateur_Source_PolyMAC_base.h
- Iterateur_Source_VDF Iterateur_Source_VDF Iterateur_Source_VDF.h
- Iterateur_Source_VDF_base Iterateur_Source_VDF_base Iterateur_Source_VDF_base.h
- Iterateur_Source_VEF Iterateur_Source_VEF Iterateur_Source_VEF.h
- Iterateur_Source_VEF_base Iterateur_Source_VEF_base Iterateur_Source_VEF_base.h
- Iterateur_VDF Iterateur_VDF Iterateur_VDF_base.h
+ Iterateur_VDF Iterateur_VDF Iterateur_VDF.h
  Iterateur_VDF_base Iterateur_VDF_base Iterateur_VDF_base.h
  Joint Joint Joint.h
  Joints Joints Joints.h

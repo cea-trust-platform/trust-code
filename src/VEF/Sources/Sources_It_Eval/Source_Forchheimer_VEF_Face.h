@@ -19,11 +19,7 @@
 #include <Eval_Forchheimer_VEF_Face.h>
 #include <Iterateur_Source_VEF_Face.h>
 #include <Terme_Source_VEF_base.h>
-#include <Iterateur_Source_VEF.h>
-
-class Zone_Cl_dis;
-class Zone_dis;
-class Param;
+#include <Iterateur_Source.h>
 
 /*! @brief class Source_Forchheimer_VEF_Face
  *
@@ -42,7 +38,7 @@ public:
   void associer_pb(const Probleme_base&) override;
   void associer_zones(const Zone_dis&, const Zone_Cl_dis&) override;
   void mettre_a_jour(double temps) override { }
-  inline Eval_Forchheimer_VEF_Face& eval() { return (Eval_Forchheimer_VEF_Face&) iter.evaluateur(); }
+  inline Eval_Forchheimer_VEF_Face& eval() { return (Eval_Forchheimer_VEF_Face&) iter->evaluateur(); }
 };
 
 #endif /* Source_Forchheimer_VEF_Face_included */

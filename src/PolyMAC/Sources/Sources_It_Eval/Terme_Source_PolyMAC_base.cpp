@@ -23,6 +23,6 @@ Entree& Terme_Source_PolyMAC_base::readOn(Entree& s) { return s; }
 void Terme_Source_PolyMAC_base::completer()
 {
   Source_base::completer();
-  iter.associer(*this);
-  iter.completer_();
+  iter->associer(*this);
+  iter->completer_();
 }
