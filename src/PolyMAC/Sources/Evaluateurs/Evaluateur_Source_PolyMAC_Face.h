@@ -25,8 +25,8 @@ public:
   Evaluateur_Source_PolyMAC_Face() { }
   Evaluateur_Source_PolyMAC_Face(const Evaluateur_Source_PolyMAC_Face&);
   void completer() override;
-  virtual double calculer_terme_source_bord(int) const =0;
-  virtual void calculer_terme_source_bord(int, DoubleVect&) const =0;
+
+  template <typename Type_Double> void calculer_terme_source_bord(const int, Type_Double&) const { throw; }
 
 protected:
   IntVect orientation;           // orientations des faces

@@ -19,6 +19,7 @@
 #include <Iterateur_Source_PolyMAC_base.h>
 #include <Champ_Uniforme.h>
 #include <Zone_PolyMAC.h>
+#include <TRUSTSingle.h>
 
 template <class _TYPE_>
 class Iterateur_Source_PolyMAC_Elem: public Iterateur_Source_PolyMAC_base
@@ -33,66 +34,43 @@ class Iterateur_Source_PolyMAC_Elem: public Iterateur_Source_PolyMAC_base
   }
 
 public:
-  DoubleTab& calculer(DoubleTab&) const override;
   DoubleTab& ajouter(DoubleTab&) const override;
-  inline void completer_() override;
-  inline Evaluateur_Source_PolyMAC& evaluateur() override;
+  DoubleTab& calculer(DoubleTab& resu) const override
+  {
+    resu = 0.;
+    return ajouter(resu);
+  }
+
+  inline void completer_() override { nb_elem_ = la_zone->nb_elem(); }
+  inline Evaluateur_Source_PolyMAC& evaluateur() override
+  {
+    Evaluateur_Source_PolyMAC& eval = (Evaluateur_Source_PolyMAC&) evaluateur_source_elem;
+    return eval;
+  }
 
 protected:
   _TYPE_ evaluateur_source_elem;
-  int nb_elem_;
+  int nb_elem_ = -100;
 
-  DoubleTab& ajouter_(DoubleTab&) const;
-  DoubleTab& ajouter_(DoubleTab&, int) const;
+  template <typename Type_Double> DoubleTab& ajouter_(const int, DoubleTab& ) const;
 };
-
-template<class _TYPE_>
-inline void Iterateur_Source_PolyMAC_Elem<_TYPE_>::completer_()
-{
-  nb_elem_ = la_zone->nb_elem();
-}
-
-template<class _TYPE_>
-inline Evaluateur_Source_PolyMAC& Iterateur_Source_PolyMAC_Elem<_TYPE_>::evaluateur()
-{
-  Evaluateur_Source_PolyMAC& eval = (Evaluateur_Source_PolyMAC&) evaluateur_source_elem;
-  return eval;
-}
 
 template<class _TYPE_>
 DoubleTab& Iterateur_Source_PolyMAC_Elem<_TYPE_>::ajouter(DoubleTab& resu) const
 {
   ((_TYPE_&) (evaluateur_source_elem)).mettre_a_jour();
   assert(resu.nb_dim() < 3);
-  int ncomp = 1;
-  if (resu.nb_dim() == 2)
-    ncomp = resu.dimension(1);
+  const int ncomp = resu.line_size();
   DoubleVect& bilan = so_base->bilan();
   bilan = 0;
-  if (ncomp == 1)
-    ajouter_(resu);
-  else
-    ajouter_(resu, ncomp);
+  (ncomp == 1) ? ajouter_<SingleDouble>(ncomp, resu) : ajouter_<ArrOfDouble>(ncomp, resu);
   return resu;
 }
 
-template<class _TYPE_>
-DoubleTab& Iterateur_Source_PolyMAC_Elem<_TYPE_>::ajouter_(DoubleTab& resu) const
+template<class _TYPE_> template<typename Type_Double>
+DoubleTab& Iterateur_Source_PolyMAC_Elem<_TYPE_>::ajouter_(const int ncomp, DoubleTab& resu) const
 {
-  DoubleVect& bilan = so_base->bilan();
-  for (int num_elem = 0; num_elem < nb_elem_; num_elem++)
-    {
-      double source = evaluateur_source_elem.calculer_terme_source(num_elem);
-      resu[num_elem] += source;
-      bilan(0) += source;
-    }
-  return resu;
-}
-
-template<class _TYPE_>
-DoubleTab& Iterateur_Source_PolyMAC_Elem<_TYPE_>::ajouter_(DoubleTab& resu, int ncomp) const
-{
-  DoubleVect source(ncomp);
+  Type_Double source(ncomp);
   DoubleVect& bilan = so_base->bilan();
   for (int num_elem = 0; num_elem < nb_elem_; num_elem++)
     {
@@ -104,13 +82,6 @@ DoubleTab& Iterateur_Source_PolyMAC_Elem<_TYPE_>::ajouter_(DoubleTab& resu, int 
         }
     }
   return resu;
-}
-
-template<class _TYPE_>
-DoubleTab& Iterateur_Source_PolyMAC_Elem<_TYPE_>::calculer(DoubleTab& resu) const
-{
-  resu = 0.;
-  return ajouter(resu);
 }
 
 #endif /* Iterateur_Source_PolyMAC_Elem_included */

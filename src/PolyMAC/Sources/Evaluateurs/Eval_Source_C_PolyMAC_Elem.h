@@ -28,8 +28,9 @@ public:
   Eval_Source_C_PolyMAC_Elem() { }
   void mettre_a_jour( ) override { }
   inline void associer_champs(const Champ_Don& );
-  inline void calculer_terme_source(int , DoubleVect& ) const override;
-  inline double calculer_terme_source(int ) const override;
+
+  template <typename Type_Double>
+  inline void calculer_terme_source(const int , Type_Double& ) const;
 
 protected:
   REF(Champ_Don) la_source_constituant;
@@ -42,25 +43,11 @@ inline void Eval_Source_C_PolyMAC_Elem::associer_champs(const Champ_Don& Q)
   source_constituant.ref(Q.valeurs());
 }
 
-inline double Eval_Source_C_PolyMAC_Elem::calculer_terme_source(int num_elem) const
+template <typename Type_Double>
+inline void Eval_Source_C_PolyMAC_Elem::calculer_terme_source(int num_elem, Type_Double& source) const
 {
-  if (sub_type(Champ_Uniforme, la_source_constituant.valeur().valeur()))
-    return source_constituant(0, 0) * volumes(num_elem) * porosite_vol(num_elem);
-  else if (source_constituant.nb_dim() == 2)
-    return source_constituant(num_elem, 0) * volumes(num_elem) * porosite_vol(num_elem);
-  else
-    return source_constituant(num_elem) * volumes(num_elem) * porosite_vol(num_elem);
-}
-
-inline void Eval_Source_C_PolyMAC_Elem::calculer_terme_source(int num_elem, DoubleVect& source) const
-{
-  int size = source.size();
-  if (sub_type(Champ_Uniforme, la_source_constituant.valeur().valeur()))
-    for (int i = 0; i < size; i++)
-      source(i) = source_constituant(0, i) * volumes(num_elem) * porosite_vol(num_elem);
-  else
-    for (int i = 0; i < size; i++)
-      source(i) = source_constituant(num_elem, i) * volumes(num_elem) * porosite_vol(num_elem);
+  const int k = sub_type(Champ_Uniforme,la_source_constituant.valeur().valeur()) ? 0 : num_elem, size = source.size_array();
+  for (int i = 0; i < size; i++) source[i] = source_constituant(k,i)*volumes(num_elem)*porosite_vol(num_elem);
 }
 
 #endif /* Eval_Source_C_PolyMAC_Elem_included */

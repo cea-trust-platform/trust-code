@@ -32,8 +32,8 @@ public:
   inline void associer_zones(const Zone_dis_base&, const Zone_Cl_dis_base&);
   virtual void mettre_a_jour() =0;
   virtual void completer() = 0;
-  virtual double calculer_terme_source(int) const =0;
-  virtual void calculer_terme_source(int, DoubleVect&) const =0;
+
+  template <typename Type_Double> void calculer_terme_source(const int, Type_Double&) const { throw; }
 
 protected:
   REF(Zone_PolyMAC) la_zone;

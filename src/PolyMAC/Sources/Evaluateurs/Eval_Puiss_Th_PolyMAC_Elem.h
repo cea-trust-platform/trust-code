@@ -28,8 +28,9 @@ class Eval_Puiss_Th_PolyMAC_Elem: public Evaluateur_Source_PolyMAC_Elem
 public:
   void mettre_a_jour() override { }
   inline void associer_champs(const Champ_Don&);
-  inline void calculer_terme_source(int, DoubleVect&) const override;
-  inline double calculer_terme_source(int) const override;
+
+  template <typename Type_Double>
+  inline void calculer_terme_source(const int, Type_Double&) const;
 
 protected:
   REF(Champ_Don) la_puissance;
@@ -42,24 +43,11 @@ inline void Eval_Puiss_Th_PolyMAC_Elem::associer_champs(const Champ_Don& Q)
   puissance.ref(Q.valeurs());
 }
 
-inline double Eval_Puiss_Th_PolyMAC_Elem::calculer_terme_source(int num_elem) const
+template <typename Type_Double>
+inline void Eval_Puiss_Th_PolyMAC_Elem::calculer_terme_source(const int e, Type_Double& S) const
 {
-  if (sub_type(Champ_Uniforme, la_puissance.valeur().valeur()))
-    return puissance(0, 0) * volumes(num_elem) * porosite_vol(num_elem);
-  else
-    {
-      if (puissance.nb_dim() == 1)
-        return puissance(num_elem) * volumes(num_elem) * porosite_vol(num_elem);
-      else
-        return puissance(num_elem, 0) * volumes(num_elem) * porosite_vol(num_elem);
-    }
-}
-
-inline void Eval_Puiss_Th_PolyMAC_Elem::calculer_terme_source(int e, DoubleVect& S) const
-{
-  const int N = S.size(), pc = sub_type(Champ_Uniforme, la_puissance.valeur().valeur());
-  for (int n = 0; n < N; n++)
-    S[n] = puissance(!pc * e, n) * volumes(e) * porosite_vol(e);
+  const int k = sub_type(Champ_Uniforme,la_puissance.valeur().valeur()) ? 0 : e, size = S.size_array();
+  for (int i = 0; i < size; i++) S[i] = puissance(k, i) * volumes(e) * porosite_vol(e);
 }
 
 #endif /* Eval_Puiss_Th_PolyMAC_Elem_included */
