@@ -13,37 +13,53 @@
 *
 *****************************************************************************/
 
-#include <Terme_Puissance_Thermique_PolyMAC_Elem.h>
-#include <Milieu_base.h>
-#include <Discretisation_base.h>
-#include <Probleme_base.h>
+#ifndef Eval_Puiss_Th_PolyMAC_Elem_included
+#define Eval_Puiss_Th_PolyMAC_Elem_included
 
-Implemente_instanciable_sans_constructeur(Terme_Puissance_Thermique_PolyMAC_Elem,"Puissance_Thermique_Elem_PolyMAC|Puissance_Thermique_Elem_PolyMAC_P0",Terme_Puissance_Thermique_PolyMAC_base);
-implemente_It_Sou_PolyMAC_Elem(Eval_Puiss_Th_PolyMAC_Elem)
+#include <Evaluateur_Source_PolyMAC_Elem.h>
+#include <Champ_Uniforme.h>
+#include <Ref_Champ_Don.h>
+#include <Equation_base.h>
+#include <Champ_Don.h>
+#include <TRUSTTab.h>
 
-Sortie& Terme_Puissance_Thermique_PolyMAC_Elem::printOn(Sortie& s ) const
+class Eval_Puiss_Th_PolyMAC_Elem: public Evaluateur_Source_PolyMAC_Elem
 {
-  return s << que_suis_je() ;
+public:
+  void mettre_a_jour() override { }
+  inline void associer_champs(const Champ_Don&);
+  inline void calculer_terme_source(int, DoubleVect&) const override;
+  inline double calculer_terme_source(int) const override;
+
+protected:
+  REF(Champ_Don) la_puissance;
+  DoubleTab puissance;
+};
+
+inline void Eval_Puiss_Th_PolyMAC_Elem::associer_champs(const Champ_Don& Q)
+{
+  la_puissance = Q;
+  puissance.ref(Q.valeurs());
 }
 
-Entree& Terme_Puissance_Thermique_PolyMAC_Elem::readOn(Entree& s )
+inline double Eval_Puiss_Th_PolyMAC_Elem::calculer_terme_source(int num_elem) const
 {
-  Terme_Puissance_Thermique_PolyMAC_base::readOn(s);
-  return s;
+  if (sub_type(Champ_Uniforme, la_puissance.valeur().valeur()))
+    return puissance(0, 0) * volumes(num_elem) * porosite_vol(num_elem);
+  else
+    {
+      if (puissance.nb_dim() == 1)
+        return puissance(num_elem) * volumes(num_elem) * porosite_vol(num_elem);
+      else
+        return puissance(num_elem, 0) * volumes(num_elem) * porosite_vol(num_elem);
+    }
 }
 
-
-void Terme_Puissance_Thermique_PolyMAC_Elem::associer_zones(const Zone_dis& zone_dis,
-                                                            const Zone_Cl_dis& zone_cl_dis)
+inline void Eval_Puiss_Th_PolyMAC_Elem::calculer_terme_source(int e, DoubleVect& S) const
 {
-  Terme_Puissance_Thermique_PolyMAC_base::associer_zones(zone_dis,zone_cl_dis);
-  Eval_Puiss_Th_PolyMAC_Elem& eval_puis = (Eval_Puiss_Th_PolyMAC_Elem&) iter.evaluateur();
-  eval_puis.associer_zones(zone_dis.valeur(),zone_cl_dis.valeur());
+  const int N = S.size(), pc = sub_type(Champ_Uniforme, la_puissance.valeur().valeur());
+  for (int n = 0; n < N; n++)
+    S[n] = puissance(!pc * e, n) * volumes(e) * porosite_vol(e);
 }
 
-
-void Terme_Puissance_Thermique_PolyMAC_Elem::associer_pb(const Probleme_base& pb)
-{
-  Eval_Puiss_Th_PolyMAC_Elem& eval_puis = (Eval_Puiss_Th_PolyMAC_Elem&) iter.evaluateur();
-  eval_puis.associer_champs(la_puissance);
-}
+#endif /* Eval_Puiss_Th_PolyMAC_Elem_included */

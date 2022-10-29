@@ -13,21 +13,9 @@
 *
 *****************************************************************************/
 
-#include <Evaluateur_Source_PolyMAC_Elem.h>
-#include <Zone_PolyMAC.h>
-#include <Equation_base.h>
-#include <Milieu_base.h>
+#include <Iterateur_Source_PolyMAC.h>
 
-Evaluateur_Source_PolyMAC_Elem::Evaluateur_Source_PolyMAC_Elem(const Evaluateur_Source_PolyMAC_Elem& eval)
-  : Evaluateur_Source_PolyMAC(eval)
-{
-  volumes.ref(eval.volumes);
-  porosite_vol.ref(eval.porosite_vol);
-}
-
-void Evaluateur_Source_PolyMAC_Elem::completer()
-{
-  Cerr << "Evaluateur_Source_PolyMAC_Elem::completer()" << finl;
-  volumes.ref(la_zone->volumes());
-  porosite_vol.ref(la_zcl->equation().milieu().porosite_elem());
-}
+Implemente_deriv(Iterateur_Source_PolyMAC_base);
+Implemente_instanciable(Iterateur_Source_PolyMAC, "Iterateur_Source_PolyMAC", DERIV(Iterateur_Source_PolyMAC_base));
+Sortie& Iterateur_Source_PolyMAC::printOn(Sortie& s) const { return s << que_suis_je(); }
+Entree& Iterateur_Source_PolyMAC::readOn(Entree& s) { return s; }

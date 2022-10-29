@@ -13,6 +13,41 @@
 *
 *****************************************************************************/
 
-#include <Evaluateur_Source_PolyMAC.h>
+#ifndef Iterateur_Source_PolyMAC_base_included
+#define Iterateur_Source_PolyMAC_base_included
 
+#include <Ref_Zone_Cl_PolyMAC.h>
+#include <TRUSTTabs_forward.h>
+#include <Ref_Zone_PolyMAC.h>
+#include <Ref_Source_base.h>
+#include <Zone_Cl_PolyMAC.h>
+#include <Equation_base.h>
 
+class Evaluateur_Source_PolyMAC;
+
+class Iterateur_Source_PolyMAC_base: public Objet_U
+{
+  Declare_base(Iterateur_Source_PolyMAC_base);
+public:
+  void associer_zones(const Zone_PolyMAC&, const Zone_Cl_PolyMAC&);
+  virtual DoubleTab& ajouter(DoubleTab&) const =0;
+  virtual DoubleTab& calculer(DoubleTab&) const =0;
+  virtual Evaluateur_Source_PolyMAC& evaluateur() =0;
+  virtual void completer_()=0;
+
+  inline void associer(const Source_base& source) { so_base = source; }
+  virtual inline int equation_divisee_par_rho() const;
+
+protected:
+  REF(Zone_PolyMAC) la_zone;
+  REF(Zone_Cl_PolyMAC) la_zcl;
+  REF(Source_base) so_base;
+};
+
+int Iterateur_Source_PolyMAC_base::equation_divisee_par_rho() const
+{
+  Nom nom_eqn = la_zcl->equation().que_suis_je();
+  return (nom_eqn.debute_par("Navier_Stokes")) ? 1 : 0;
+}
+
+#endif /* Iterateur_Source_PolyMAC_base_included */

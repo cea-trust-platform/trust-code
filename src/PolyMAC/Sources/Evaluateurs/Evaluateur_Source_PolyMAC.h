@@ -13,19 +13,38 @@
 *
 *****************************************************************************/
 
-#ifndef ItSouPolyMACEL_H
-#define ItSouPolyMACEL_H
+#ifndef Evaluateur_Source_PolyMAC_included
+#define Evaluateur_Source_PolyMAC_included
 
-#include <Config_Template_Version_Sources_PolyMAC.h>
-#define It_Sou_PolyMAC_Elem(_TYPE_) name2(Iterateur_Source_PolyMAC_Elem, _TYPE_)
+#include <Ref_Zone_Cl_PolyMAC.h>
+#include <TRUSTTabs_forward.h>
+#include <Ref_Zone_PolyMAC.h>
+#include <Zone_Cl_PolyMAC.h>
+#include <Zone_PolyMAC.h>
 
-#ifdef Template_Version_PolyMAC
-#include <T_It_Sou_PolyMAC_Elem.h>
-#define declare_It_Sou_PolyMAC_Elem(_TYPE_)				\
-  typedef T_It_Sou_PolyMAC_Elem<_TYPE_> It_Sou_Poly_MAC_Elem(_TYPE_);
-#define implemente_It_Sou_PolyMAC_Elem(_TYPE_)
-#else
-#include <MItSouPolyMACEl.h>
-#endif
+class Evaluateur_Source_PolyMAC
+{
+public:
+  Evaluateur_Source_PolyMAC() { }
+  Evaluateur_Source_PolyMAC(const Evaluateur_Source_PolyMAC& eval) : la_zone(eval.la_zone), la_zcl(eval.la_zcl) { }
+  virtual ~Evaluateur_Source_PolyMAC() { }
 
-#endif
+  inline void associer_zones(const Zone_dis_base&, const Zone_Cl_dis_base&);
+  virtual void mettre_a_jour() =0;
+  virtual void completer() = 0;
+  virtual double calculer_terme_source(int) const =0;
+  virtual void calculer_terme_source(int, DoubleVect&) const =0;
+
+protected:
+  REF(Zone_PolyMAC) la_zone;
+  REF(Zone_Cl_PolyMAC) la_zcl;
+};
+
+inline void Evaluateur_Source_PolyMAC::associer_zones(const Zone_dis_base& zone_vdf, const Zone_Cl_dis_base& zone_cl_vdf)
+{
+  la_zone = ref_cast(Zone_PolyMAC, zone_vdf);
+  la_zcl = ref_cast(Zone_Cl_PolyMAC, zone_cl_vdf);
+  completer();
+}
+
+#endif /* Evaluateur_Source_PolyMAC_included */

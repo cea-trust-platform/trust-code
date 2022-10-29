@@ -16,62 +16,51 @@
 #ifndef Eval_Source_C_PolyMAC_Elem_included
 #define Eval_Source_C_PolyMAC_Elem_included
 
-
 #include <Evaluateur_Source_PolyMAC_Elem.h>
-#include <Ref_Champ_Don.h>
-#include <TRUSTTab.h>
 #include <Champ_Uniforme.h>
+#include <Ref_Champ_Don.h>
 #include <Champ_Don.h>
-
-////////////////////////////////////////////////////////////////////////////
-//
-//  CLASS Eval_Source_C_PolyMAC_Elem
-//
-////////////////////////////////////////////////////////////////////////////
+#include <TRUSTTab.h>
 
 class Eval_Source_C_PolyMAC_Elem : public Evaluateur_Source_PolyMAC_Elem
 {
-
 public:
-
-  inline Eval_Source_C_PolyMAC_Elem();
-  void associer_champs(const Champ_Don& );
-  void mettre_a_jour( ) override;
-  inline double calculer_terme_source(int ) const override;
+  Eval_Source_C_PolyMAC_Elem() { }
+  void mettre_a_jour( ) override { }
+  inline void associer_champs(const Champ_Don& );
   inline void calculer_terme_source(int , DoubleVect& ) const override;
+  inline double calculer_terme_source(int ) const override;
 
 protected:
-
   REF(Champ_Don) la_source_constituant;
   DoubleTab source_constituant;
 };
 
-
-//
-//   Fonctions inline de la classe Eval_Puiss_Th_Uniforme_PolyMAC_Elem
-//
-
-inline Eval_Source_C_PolyMAC_Elem::Eval_Source_C_PolyMAC_Elem() {}
+inline void Eval_Source_C_PolyMAC_Elem::associer_champs(const Champ_Don& Q)
+{
+  la_source_constituant = Q;
+  source_constituant.ref(Q.valeurs());
+}
 
 inline double Eval_Source_C_PolyMAC_Elem::calculer_terme_source(int num_elem) const
 {
-  if (sub_type(Champ_Uniforme,la_source_constituant.valeur().valeur()))
-    return source_constituant(0,0)*volumes(num_elem)*porosite_vol(num_elem);
-  else if (source_constituant.nb_dim()==2)
-    return source_constituant(num_elem,0)*volumes(num_elem)*porosite_vol(num_elem);
+  if (sub_type(Champ_Uniforme, la_source_constituant.valeur().valeur()))
+    return source_constituant(0, 0) * volumes(num_elem) * porosite_vol(num_elem);
+  else if (source_constituant.nb_dim() == 2)
+    return source_constituant(num_elem, 0) * volumes(num_elem) * porosite_vol(num_elem);
   else
-    return source_constituant(num_elem)*volumes(num_elem)*porosite_vol(num_elem);
+    return source_constituant(num_elem) * volumes(num_elem) * porosite_vol(num_elem);
 }
 
 inline void Eval_Source_C_PolyMAC_Elem::calculer_terme_source(int num_elem, DoubleVect& source) const
 {
-  int size=source.size();
-  if (sub_type(Champ_Uniforme,la_source_constituant.valeur().valeur()))
-    for (int i=0; i<size; i++)
-      source(i) = source_constituant(0,i)*volumes(num_elem)*porosite_vol(num_elem);
+  int size = source.size();
+  if (sub_type(Champ_Uniforme, la_source_constituant.valeur().valeur()))
+    for (int i = 0; i < size; i++)
+      source(i) = source_constituant(0, i) * volumes(num_elem) * porosite_vol(num_elem);
   else
-    for (int i=0; i<size; i++)
-      source(i) = source_constituant(num_elem,i)*volumes(num_elem)*porosite_vol(num_elem);
+    for (int i = 0; i < size; i++)
+      source(i) = source_constituant(num_elem, i) * volumes(num_elem) * porosite_vol(num_elem);
 }
 
-#endif
+#endif /* Eval_Source_C_PolyMAC_Elem_included */

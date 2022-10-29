@@ -12,9 +12,21 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-#ifndef Config_Template_Version_Sources_PolyMAC_included
-#define Config_Template_Version_Sources_PolyMAC_included
 
-// To use template version of sources in PolyMAC define Template_Version_Poly_MAC to 1
-//#define Template_Version_Sources_PolyMAC 1
-#endif
+#include <Evaluateur_Source_PolyMAC_Elem.h>
+#include <Zone_PolyMAC.h>
+#include <Equation_base.h>
+#include <Milieu_base.h>
+
+Evaluateur_Source_PolyMAC_Elem::Evaluateur_Source_PolyMAC_Elem(const Evaluateur_Source_PolyMAC_Elem& eval) : Evaluateur_Source_PolyMAC(eval)
+{
+  volumes.ref(eval.volumes);
+  porosite_vol.ref(eval.porosite_vol);
+}
+
+void Evaluateur_Source_PolyMAC_Elem::completer()
+{
+  Cerr << "Evaluateur_Source_PolyMAC_Elem::completer()" << finl;
+  volumes.ref(la_zone->volumes());
+  porosite_vol.ref(la_zcl->equation().milieu().porosite_elem());
+}

@@ -13,22 +13,21 @@
 *
 *****************************************************************************/
 
-#include <Eval_Puiss_Th_PolyMAC_Elem.h>
+#ifndef Evaluateur_Source_PolyMAC_Elem_included
+#define Evaluateur_Source_PolyMAC_Elem_included
 
-void Eval_Puiss_Th_PolyMAC_Elem::associer_champs(const Champ_Don& Q)
+#include <Evaluateur_Source_PolyMAC.h>
+#include <TRUSTTabs_forward.h>
+
+class Evaluateur_Source_PolyMAC_Elem : public Evaluateur_Source_PolyMAC
 {
-  la_puissance = Q;
-  puissance.ref(Q.valeurs());
-}
+public:
+  Evaluateur_Source_PolyMAC_Elem() { }
+  Evaluateur_Source_PolyMAC_Elem(const Evaluateur_Source_PolyMAC_Elem& );
+  void completer() override;
 
-void Eval_Puiss_Th_PolyMAC_Elem::mettre_a_jour()
-{
-  /* int n = puissance.size();
-     double pt=0.;
-     for (int i =0;i<n;i++)
-     {
-     pt += puissance(i,0)*volumes(i);
-     }
-     Cout << "puissa tot "  << pt << finl;*/
-}
+protected:
+  DoubleVect volumes, porosite_vol;     // porosites volumiques
+};
 
+#endif /* Evaluateur_Source_PolyMAC_Elem_included */

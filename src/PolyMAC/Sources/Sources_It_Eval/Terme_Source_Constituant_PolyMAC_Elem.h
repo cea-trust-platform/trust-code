@@ -13,52 +13,31 @@
 *
 *****************************************************************************/
 
-#ifndef Terme_Puissance_Thermique_PolyMAC_Elem_included
-#define Terme_Puissance_Thermique_PolyMAC_Elem_included
+#ifndef Terme_Source_Constituant_PolyMAC_Elem_included
+#define Terme_Source_Constituant_PolyMAC_Elem_included
 
+#include <Iterateur_Source_PolyMAC_Elem.h>
+#include <Eval_Source_C_PolyMAC_Elem.h>
+#include <Terme_Source_PolyMAC_base.h>
+#include <Terme_Source_Constituant.h>
 
-#include <Terme_Puissance_Thermique_PolyMAC_base.h>
-#include <Eval_Puiss_Th_PolyMAC_Elem.h>
-#include <ItSouPolyMACEl.h>
-
-declare_It_Sou_PolyMAC_Elem(Eval_Puiss_Th_PolyMAC_Elem)
-
-/*! @brief class Terme_Puissance_Thermique_PolyMAC_Elem
+/*! @brief class Terme_Source_Constituant_PolyMAC_Elem
  *
  *  Cette classe represente un terme source de l'equation de la thermique
- *  du type degagement volumique de puissance thermique
+ *  du type degagement volumique de puissance thermique uniforme sur une zone
  *
  *
- * @sa Terme_Puissance_Thermique, Terme_Source_PolyMAC_base
+ * @sa Terme_Source_Constituant, Terme_Source_PolyMAC_base
  */
-class Terme_Puissance_Thermique_PolyMAC_Elem : public Terme_Puissance_Thermique_PolyMAC_base
+class Terme_Source_Constituant_PolyMAC_Elem: public Terme_Source_Constituant, public Terme_Source_PolyMAC_base
 {
-  Declare_instanciable_sans_constructeur(Terme_Puissance_Thermique_PolyMAC_Elem);
-
+  Declare_instanciable_sans_constructeur(Terme_Source_Constituant_PolyMAC_Elem);
 public:
+  Terme_Source_Constituant_PolyMAC_Elem() : Terme_Source_Constituant(), Terme_Source_PolyMAC_base(Iterateur_Source_PolyMAC_Elem<Eval_Source_C_PolyMAC_Elem>()) { }
 
-  inline Terme_Puissance_Thermique_PolyMAC_Elem();
-  void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;
-  void associer_pb(const Probleme_base& ) override;
-  void mettre_a_jour(double temps) override
-  {
-    Terme_Puissance_Thermique::mettre_a_jour(temps);
-  }
-
-protected:
-
+  void associer_zones(const Zone_dis&, const Zone_Cl_dis&) override;
+  void associer_pb(const Probleme_base&) override;
+  void mettre_a_jour(double temps) override { Terme_Source_Constituant::mettre_a_jour(temps); }
 };
 
-
-//
-// Fonctions inline de la classe Terme_Puissance_Thermique_PolyMAC_Elem
-//
-
-inline Terme_Puissance_Thermique_PolyMAC_Elem::Terme_Puissance_Thermique_PolyMAC_Elem()
-  : Terme_Puissance_Thermique_PolyMAC_base(It_Sou_PolyMAC_Elem(Eval_Puiss_Th_PolyMAC_Elem)())
-{
-}
-
-
-#endif
-
+#endif /* Terme_Source_Constituant_PolyMAC_Elem_included */

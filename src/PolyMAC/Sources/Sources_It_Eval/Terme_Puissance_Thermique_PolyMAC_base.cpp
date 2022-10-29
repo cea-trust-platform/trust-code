@@ -13,25 +13,36 @@
 *
 *****************************************************************************/
 
-#include <Evaluateur_Source_PolyMAC_Face.h>
-#include <Equation_base.h>
-#include <Milieu_base.h>
+#include <Terme_Puissance_Thermique_PolyMAC_base.h>
+#include <Champ_val_tot_sur_vol_base.h>
+#include <Zone_PolyMAC.h>
 
-//
-//   Fonctions de Evaluateur_Source_PolyMAC_Face
-//
+Implemente_base(Terme_Puissance_Thermique_PolyMAC_base, "Terme_Puissance_Thermique_PolyMAC_base", Terme_Source_PolyMAC_base);
 
-Evaluateur_Source_PolyMAC_Face::Evaluateur_Source_PolyMAC_Face(const Evaluateur_Source_PolyMAC_Face& eval)
-  : Evaluateur_Source_PolyMAC(eval)
+Sortie& Terme_Puissance_Thermique_PolyMAC_base::printOn(Sortie& s) const { return s << que_suis_je(); }
+
+Entree& Terme_Puissance_Thermique_PolyMAC_base::readOn(Entree& s)
 {
-  orientation.ref(eval.orientation);
-  volumes_entrelaces.ref(eval.volumes_entrelaces);
-  porosite_surf.ref(eval.porosite_surf);
+  const Equation_base& eqn = equation();
+  Terme_Puissance_Thermique::lire_donnees(s, eqn);
+  champs_compris_.ajoute_champ(la_puissance);
+  Nom name_file("Puissance_Thermique");
+  modify_name_file(name_file);
+  set_fichier(name_file);
+  set_description("Heat power release = Integral(P*dv) [W]");
+  return s;
 }
 
-void Evaluateur_Source_PolyMAC_Face::completer()
+void Terme_Puissance_Thermique_PolyMAC_base::associer_zones(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
 {
-  orientation.ref(la_zone->orientation());
-  volumes_entrelaces.ref(la_zone->volumes_entrelaces());
-  porosite_surf.ref(la_zcl->equation().milieu().porosite_face());
+  const Zone_PolyMAC& zvdf = ref_cast(Zone_PolyMAC, zone_dis.valeur());
+  const Zone_Cl_PolyMAC& zclvdf = ref_cast(Zone_Cl_PolyMAC, zone_cl_dis.valeur());
+  iter->associer_zones(zvdf, zclvdf);
+}
+
+int Terme_Puissance_Thermique_PolyMAC_base::initialiser(double temps)
+{
+  Terme_Source_PolyMAC_base::initialiser(temps);
+  initialiser_champ_puissance(equation());
+  return 1;
 }

@@ -13,54 +13,25 @@
 *
 *****************************************************************************/
 
-#include <Terme_Source_Constituant_PolyMAC_Elem.h>
-#include <Milieu_base.h>
-#include <Convection_Diffusion_Concentration.h>
+#include <Terme_Puissance_Thermique_PolyMAC_Elem.h>
 #include <Discretisation_base.h>
 #include <Probleme_base.h>
+#include <Milieu_base.h>
 
-Implemente_instanciable_sans_constructeur(Terme_Source_Constituant_PolyMAC_Elem,"Source_Constituant_Elem_PolyMAC|Source_Constituant_Elem_PolyMAC_P0",Terme_Source_PolyMAC_base);
-implemente_It_Sou_PolyMAC_Elem(Eval_Source_C_PolyMAC_Elem)
+Implemente_instanciable_sans_constructeur(Terme_Puissance_Thermique_PolyMAC_Elem, "Puissance_Thermique_Elem_PolyMAC|Puissance_Thermique_Elem_PolyMAC_P0", Terme_Puissance_Thermique_PolyMAC_base);
 
-//// printOn
-//
+Sortie& Terme_Puissance_Thermique_PolyMAC_Elem::printOn(Sortie& s) const { return s << que_suis_je(); }
+Entree& Terme_Puissance_Thermique_PolyMAC_Elem::readOn(Entree& s) { return Terme_Puissance_Thermique_PolyMAC_base::readOn(s); }
 
-Sortie& Terme_Source_Constituant_PolyMAC_Elem::printOn(Sortie& s ) const
+void Terme_Puissance_Thermique_PolyMAC_Elem::associer_zones(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
 {
-  return s << que_suis_je() ;
+  Terme_Puissance_Thermique_PolyMAC_base::associer_zones(zone_dis, zone_cl_dis);
+  Eval_Puiss_Th_PolyMAC_Elem& eval_puis = (Eval_Puiss_Th_PolyMAC_Elem&) iter.evaluateur();
+  eval_puis.associer_zones(zone_dis.valeur(), zone_cl_dis.valeur());
 }
 
-//// readOn
-//
-
-Entree& Terme_Source_Constituant_PolyMAC_Elem::readOn(Entree& s )
+void Terme_Puissance_Thermique_PolyMAC_Elem::associer_pb(const Probleme_base& pb)
 {
-  Terme_Source_Constituant::lire_donnees(s);
-  set_fichier("Source_Constituant");
-  set_description("Injection rate = Integral(source_C*dv) [mol/s]");
-  return s;
+  Eval_Puiss_Th_PolyMAC_Elem& eval_puis = (Eval_Puiss_Th_PolyMAC_Elem&) iter.evaluateur();
+  eval_puis.associer_champs(la_puissance);
 }
-
-
-void Terme_Source_Constituant_PolyMAC_Elem::associer_zones(const Zone_dis& zone_dis,
-                                                           const Zone_Cl_dis& zone_cl_dis)
-{
-  const Zone_PolyMAC& zvdf = ref_cast(Zone_PolyMAC,zone_dis.valeur());
-  const Zone_Cl_PolyMAC& zclvdf = ref_cast(Zone_Cl_PolyMAC,zone_cl_dis.valeur());
-
-  iter->associer_zones(zvdf, zclvdf);
-
-  Eval_Source_C_PolyMAC_Elem& eval_puis = (Eval_Source_C_PolyMAC_Elem&) iter.evaluateur();
-  eval_puis.associer_zones(zvdf, zclvdf );
-}
-
-
-void Terme_Source_Constituant_PolyMAC_Elem::associer_pb(const Probleme_base& pb)
-{
-  const Equation_base& eqn = pb.equation(0);
-  eqn.discretisation().nommer_completer_champ_physique(eqn.zone_dis(),la_source_constituant.le_nom(),"",la_source_constituant,pb);
-  Eval_Source_C_PolyMAC_Elem& eval_puis = (Eval_Source_C_PolyMAC_Elem&) iter.evaluateur();
-  eval_puis.associer_champs(la_source_constituant);
-}
-
-

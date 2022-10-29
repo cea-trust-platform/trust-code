@@ -13,41 +13,24 @@
 *
 *****************************************************************************/
 
-#ifndef Terme_Puissance_Thermique_PolyMAC_base_included
-#define Terme_Puissance_Thermique_PolyMAC_base_included
+#ifndef Iterateur_Source_PolyMAC_included
+#define Iterateur_Source_PolyMAC_included
 
+#include <Iterateur_Source_PolyMAC_base.h>
 
-#include <Terme_Puissance_Thermique.h>
-#include <Terme_Source_PolyMAC_base.h>
+Declare_deriv(Iterateur_Source_PolyMAC_base);
 
-class Zone_dis;
-class Zone_Cl_dis;
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Terme_Puissance_Thermique_PolyMAC_base
-//
-//////////////////////////////////////////////////////////////////////////////
-
-class Terme_Puissance_Thermique_PolyMAC_base : public Terme_Puissance_Thermique, public Terme_Source_PolyMAC_base
+class Iterateur_Source_PolyMAC : public DERIV(Iterateur_Source_PolyMAC_base)
 {
-
-  Declare_base(Terme_Puissance_Thermique_PolyMAC_base);
-
+  Declare_instanciable(Iterateur_Source_PolyMAC);
 public:
+  Iterateur_Source_PolyMAC(const Iterateur_Source_PolyMAC_base& Opb) : DERIV(Iterateur_Source_PolyMAC_base)() { DERIV(Iterateur_Source_PolyMAC_base)::operator=(Opb); }
 
-  inline Terme_Puissance_Thermique_PolyMAC_base(const Iterateur_Source_PolyMAC_base&);
-  void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;
-  int initialiser(double temps) override;
-
-
-protected:
-
-
+  inline void completer_() { valeur().completer_(); }
+  inline void associer(const Source_base& source) { return valeur().associer(source); }
+  inline DoubleTab& ajouter(DoubleTab& resu) const { return valeur().ajouter(resu); }
+  inline DoubleTab& calculer(DoubleTab& resu) const { return valeur().calculer(resu); }
+  inline Evaluateur_Source_PolyMAC& evaluateur() { return valeur().evaluateur(); }
 };
 
-inline Terme_Puissance_Thermique_PolyMAC_base::Terme_Puissance_Thermique_PolyMAC_base(const Iterateur_Source_PolyMAC_base& iter_base)
-  : Terme_Puissance_Thermique(), Terme_Source_PolyMAC_base(iter_base)
-{
-}
-#endif
+#endif /* Iterateur_Source_PolyMAC_included */

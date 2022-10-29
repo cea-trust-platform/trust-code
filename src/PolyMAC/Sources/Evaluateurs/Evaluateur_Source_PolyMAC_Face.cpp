@@ -13,16 +13,20 @@
 *
 *****************************************************************************/
 
-#include <Eval_Source_C_PolyMAC_Elem.h>
+#include <Evaluateur_Source_PolyMAC_Face.h>
+#include <Equation_base.h>
+#include <Milieu_base.h>
 
-
-void Eval_Source_C_PolyMAC_Elem::associer_champs(const Champ_Don& Q)
+Evaluateur_Source_PolyMAC_Face::Evaluateur_Source_PolyMAC_Face(const Evaluateur_Source_PolyMAC_Face& eval) : Evaluateur_Source_PolyMAC(eval)
 {
-  la_source_constituant = Q;
-  source_constituant.ref(Q.valeurs());
+  orientation.ref(eval.orientation);
+  volumes_entrelaces.ref(eval.volumes_entrelaces);
+  porosite_surf.ref(eval.porosite_surf);
 }
 
-void Eval_Source_C_PolyMAC_Elem::mettre_a_jour( )
+void Evaluateur_Source_PolyMAC_Face::completer()
 {
-
+  orientation.ref(la_zone->orientation());
+  volumes_entrelaces.ref(la_zone->volumes_entrelaces());
+  porosite_surf.ref(la_zcl->equation().milieu().porosite_face());
 }

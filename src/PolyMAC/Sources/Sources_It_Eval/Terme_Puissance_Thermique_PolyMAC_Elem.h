@@ -13,58 +13,28 @@
 *
 *****************************************************************************/
 
-#ifndef Terme_Source_PolyMAC_base_included
-#define Terme_Source_PolyMAC_base_included
+#ifndef Terme_Puissance_Thermique_PolyMAC_Elem_included
+#define Terme_Puissance_Thermique_PolyMAC_Elem_included
 
-/*! @brief PolyMAC implementation of Source_base class
+#include <Terme_Puissance_Thermique_PolyMAC_base.h>
+#include <Iterateur_Source_PolyMAC_Elem.h>
+#include <Eval_Puiss_Th_PolyMAC_Elem.h>
+
+/*! @brief class Terme_Puissance_Thermique_PolyMAC_Elem
  *
+ *  Cette classe represente un terme source de l'equation de la thermique du type degagement volumique de puissance thermique
+ *
+ * @sa Terme_Puissance_Thermique, Terme_Source_PolyMAC_base
  */
-
-#include <Source_base.h>
-#include <Iterateur_Source_PolyMAC.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Terme_Source_PolyMAC_base
-//
-//////////////////////////////////////////////////////////////////////////////
-
-class Terme_Source_PolyMAC_base : public Source_base
+class Terme_Puissance_Thermique_PolyMAC_Elem : public Terme_Puissance_Thermique_PolyMAC_base
 {
-
-  Declare_base(Terme_Source_PolyMAC_base);
-
+  Declare_instanciable_sans_constructeur(Terme_Puissance_Thermique_PolyMAC_Elem);
 public:
+  Terme_Puissance_Thermique_PolyMAC_Elem() : Terme_Puissance_Thermique_PolyMAC_base(Iterateur_Source_PolyMAC_Elem<Eval_Puiss_Th_PolyMAC_Elem>()) { }
 
-  inline Terme_Source_PolyMAC_base(const Iterateur_Source_PolyMAC_base&);
-  int has_interface_blocs() const override
-  {
-    return 1;
-  };
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { }; //rien
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
-  void completer() override;
-
-protected:
-
-  Iterateur_Source_PolyMAC iter;
+  void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;
+  void associer_pb(const Probleme_base& ) override;
+  void mettre_a_jour(double temps) override { Terme_Puissance_Thermique::mettre_a_jour(temps); }
 };
 
-//
-//   Fonctions inline de la classe Terme_Source_PolyMAC_base
-//
-
-/*! @brief constructeur
- *
- */
-inline Terme_Source_PolyMAC_base::Terme_Source_PolyMAC_base(const Iterateur_Source_PolyMAC_base& iter_base) :
-  iter(iter_base)
-{}
-
-inline void Terme_Source_PolyMAC_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
-{
-  iter.ajouter(secmem);
-
-}
-
-#endif
+#endif /* Terme_Puissance_Thermique_PolyMAC_Elem_included */

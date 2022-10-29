@@ -13,21 +13,16 @@
 *
 *****************************************************************************/
 
-#ifndef Evaluateur_Source_PolyMAC_Elem_included
-#define Evaluateur_Source_PolyMAC_Elem_included
+#include <Terme_Source_PolyMAC_base.h>
 
-#include <Evaluateur_Source_PolyMAC.h>
-#include <TRUSTTabs_forward.h>
+Implemente_base(Terme_Source_PolyMAC_base, "Terme_Source_PolyMAC_base", Source_base);
 
-class Evaluateur_Source_PolyMAC_Elem : public Evaluateur_Source_PolyMAC
+Sortie& Terme_Source_PolyMAC_base::printOn(Sortie& s) const { return s << que_suis_je(); }
+Entree& Terme_Source_PolyMAC_base::readOn(Entree& s) { return s; }
+
+void Terme_Source_PolyMAC_base::completer()
 {
-public:
-  inline Evaluateur_Source_PolyMAC_Elem() { }
-  Evaluateur_Source_PolyMAC_Elem(const Evaluateur_Source_PolyMAC_Elem& );
-  void completer() override;
-
-protected:
-  DoubleVect volumes, porosite_vol;     // porosites volumiques
-};
-
-#endif
+  Source_base::completer();
+  iter.associer(*this);
+  iter.completer_();
+}

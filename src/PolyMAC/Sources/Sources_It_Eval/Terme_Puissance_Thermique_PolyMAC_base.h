@@ -13,44 +13,22 @@
 *
 *****************************************************************************/
 
-#include <Terme_Puissance_Thermique_PolyMAC_base.h>
-#include <Zone_PolyMAC.h>
-#include <Champ_val_tot_sur_vol_base.h>
+#ifndef Terme_Puissance_Thermique_PolyMAC_base_included
+#define Terme_Puissance_Thermique_PolyMAC_base_included
 
-Implemente_base(Terme_Puissance_Thermique_PolyMAC_base,"Terme_Puissance_Thermique_PolyMAC_base",Terme_Source_PolyMAC_base);
+#include <Terme_Puissance_Thermique.h>
+#include <Terme_Source_PolyMAC_base.h>
 
-////printOn
-Sortie& Terme_Puissance_Thermique_PolyMAC_base::printOn(Sortie& s ) const
+class Zone_Cl_dis;
+class Zone_dis;
+
+class Terme_Puissance_Thermique_PolyMAC_base: public Terme_Puissance_Thermique, public Terme_Source_PolyMAC_base
 {
-  return s << que_suis_je() ;
-}
+  Declare_base(Terme_Puissance_Thermique_PolyMAC_base);
+public:
+  Terme_Puissance_Thermique_PolyMAC_base(const Iterateur_Source_PolyMAC_base& iter_base) : Terme_Puissance_Thermique(), Terme_Source_PolyMAC_base(iter_base) { }
+  void associer_zones(const Zone_dis&, const Zone_Cl_dis&) override;
+  int initialiser(double temps) override;
+};
 
-////readOn
-Entree& Terme_Puissance_Thermique_PolyMAC_base::readOn(Entree& s )
-{
-  const Equation_base& eqn = equation();
-  Terme_Puissance_Thermique::lire_donnees(s,eqn);
-  champs_compris_.ajoute_champ(la_puissance);
-  Nom name_file("Puissance_Thermique");
-  modify_name_file(name_file);
-  set_fichier(name_file);
-  set_description("Heat power release = Integral(P*dv) [W]");
-  return s ;
-}
-
-void Terme_Puissance_Thermique_PolyMAC_base::associer_zones(const Zone_dis& zone_dis,
-                                                            const Zone_Cl_dis& zone_cl_dis)
-{
-  const Zone_PolyMAC& zvdf = ref_cast(Zone_PolyMAC,zone_dis.valeur());
-  const Zone_Cl_PolyMAC& zclvdf = ref_cast(Zone_Cl_PolyMAC,zone_cl_dis.valeur());
-  iter->associer_zones(zvdf,zclvdf);
-}
-
-int Terme_Puissance_Thermique_PolyMAC_base::initialiser(double temps)
-{
-  Terme_Source_PolyMAC_base::initialiser(temps);
-  initialiser_champ_puissance(equation());
-  return 1;
-}
-
-
+#endif /* Terme_Puissance_Thermique_PolyMAC_base_included */

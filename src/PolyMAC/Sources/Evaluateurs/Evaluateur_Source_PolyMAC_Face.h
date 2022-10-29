@@ -13,31 +13,24 @@
 *
 *****************************************************************************/
 
-#include <Terme_Source_PolyMAC_base.h>
+#ifndef Evaluateur_Source_PolyMAC_Face_included
+#define Evaluateur_Source_PolyMAC_Face_included
 
-Implemente_base(Terme_Source_PolyMAC_base,"Terme_Source_PolyMAC_base",Source_base);
+#include <Evaluateur_Source_PolyMAC.h>
+#include <TRUSTTabs_forward.h>
 
-
-//// printOn
-//
-
-Sortie& Terme_Source_PolyMAC_base::printOn(Sortie& s ) const
+class Evaluateur_Source_PolyMAC_Face: public Evaluateur_Source_PolyMAC
 {
-  return s << que_suis_je() ;
-}
+public:
+  Evaluateur_Source_PolyMAC_Face() { }
+  Evaluateur_Source_PolyMAC_Face(const Evaluateur_Source_PolyMAC_Face&);
+  void completer() override;
+  virtual double calculer_terme_source_bord(int) const =0;
+  virtual void calculer_terme_source_bord(int, DoubleVect&) const =0;
 
+protected:
+  IntVect orientation;           // orientations des faces
+  DoubleVect volumes_entrelaces, porosite_surf;          // porosites surfaciques
+};
 
-//// readOn
-//
-
-Entree& Terme_Source_PolyMAC_base::readOn(Entree& s )
-{
-  return s ;
-}
-
-void Terme_Source_PolyMAC_base::completer()
-{
-  Source_base::completer();
-  iter.associer(*this);
-  iter.completer_();
-}
+#endif /* Evaluateur_Source_PolyMAC_Face_included */
