@@ -471,8 +471,6 @@
  Interprete_geometrique_base Interprete_geometrique_base Interprete_geometrique_base.h
  Iterateur_Source Iterateur_Source Iterateur_Source.h
  Iterateur_Source_base Iterateur_Source_base Iterateur_Source_base.h
- Iterateur_Source_EF Iterateur_Source_EF Iterateur_Source_EF.h
- Iterateur_Source_EF_base Iterateur_Source_EF_base Iterateur_Source_EF_base.h
  Iterateur_VDF Iterateur_VDF Iterateur_VDF.h
  Iterateur_VDF_base Iterateur_VDF_base Iterateur_VDF_base.h
  Joint Joint Joint.h

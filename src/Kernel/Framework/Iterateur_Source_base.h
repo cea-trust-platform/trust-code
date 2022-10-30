@@ -59,6 +59,12 @@ public:
     la_zcl = zone_cl;
   }
 
+  virtual int impr(Sortie&) const
+  {
+    Process::exit("Iterateur_Source_base::impr must be overloaded !!");
+    return 0;
+  }
+
 protected:
   REF(Zone_Cl_dis_base) la_zcl;
   REF(Zone_dis_base) la_zone;

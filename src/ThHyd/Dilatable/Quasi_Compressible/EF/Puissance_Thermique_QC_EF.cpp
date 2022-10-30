@@ -14,9 +14,11 @@
 *****************************************************************************/
 
 #include <Puissance_Thermique_QC_EF.h>
+#include <Discretisation_base.h>
 #include <Probleme_base.h>
 #include <Milieu_base.h>
-#include <Discretisation_base.h>
+#include <Zone_Cl_EF.h>
+#include <Zone_EF.h>
 
 Implemente_instanciable_sans_constructeur(Puissance_Thermique_QC_EF, "Puissance_Thermique_QC_EF", Terme_Source_EF_base);
 

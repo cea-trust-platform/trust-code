@@ -16,17 +16,15 @@
 #ifndef Evaluateur_Source_EF_Som_included
 #define Evaluateur_Source_EF_Som_included
 
-#include <Evaluateur_Source_EF.h>
+#include <Evaluateur_Source.h>
 #include <TRUSTTabs_forward.h>
 
-class Evaluateur_Source_EF_Som: public Evaluateur_Source_EF
+class Evaluateur_Source_EF_Som: public Evaluateur_Source
 {
 public:
   Evaluateur_Source_EF_Som() { }
-  Evaluateur_Source_EF_Som(const Evaluateur_Source_EF_Som& eval) : Evaluateur_Source_EF(eval) { }
+  Evaluateur_Source_EF_Som(const Evaluateur_Source_EF_Som& eval) : Evaluateur_Source(eval) { }
   void completer() override { }
-  virtual double calculer_terme_source_standard(int) const =0;
-  virtual void calculer_terme_source_standard(int, DoubleVect&) const =0;
 };
 
 #endif /* Evaluateur_Source_EF_Som_included */

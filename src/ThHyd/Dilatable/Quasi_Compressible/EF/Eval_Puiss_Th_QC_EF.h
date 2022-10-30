@@ -29,8 +29,8 @@ public:
   void completer() override { Evaluateur_Source_EF_Som::completer(); }
   void mettre_a_jour() override { }
   inline void associer_puissance(const Champ_Don&);
-  inline double calculer_terme_source_standard(int) const override;
-  inline void calculer_terme_source_standard(int, DoubleVect&) const override;
+
+  template <typename Type_Double> void calculer_terme_source(const int , Type_Double& source) const;
 
 protected:
   REF(Champ_Don) la_puissance;
@@ -43,25 +43,14 @@ inline void Eval_Puiss_Th_QC_EF::associer_puissance(const Champ_Don& Q)
   puissance.ref(Q.valeurs());
 }
 
-inline void Eval_Puiss_Th_QC_EF::calculer_terme_source_standard(int num_elem, DoubleVect& d) const
+template <typename Type_Double>
+void Eval_Puiss_Th_QC_EF::calculer_terme_source(const int num_elem, Type_Double& source) const
 {
-  Cerr << "Non code" << __FILE__ << (int) __LINE__ << finl;
-  throw;
-}
+  const int size = source.size_array();
+  if (size > 1) Process::exit("Eval_Puiss_Th_EF::calculer_terme_source not available for multi-inco !");
 
-inline double Eval_Puiss_Th_QC_EF::calculer_terme_source_standard(int num_elem) const
-{
-  double source;
-  if (sub_type(Champ_Uniforme, la_puissance.valeur().valeur()))
-    source = puissance(0, 0);
-  else
-    {
-      if (puissance.nb_dim() == 1)
-        source = puissance(num_elem);
-      else
-        source = puissance(num_elem, 0);
-    }
-  return source;
+  const int k = (sub_type(Champ_Uniforme,la_puissance.valeur().valeur())) ? 0 : num_elem;
+  for (int i = 0; i < size; i++) source[i] = puissance(k,i);
 }
 
 #endif /* Eval_Puiss_Th_QC_EF_included */

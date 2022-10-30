@@ -16,13 +16,14 @@
 #ifndef Iterateur_Source_EF_Som_included
 #define Iterateur_Source_EF_Som_included
 
-#include <Iterateur_Source_EF_base.h>
+#include <Iterateur_Source_base.h>
 #include <Champ_Uniforme.h>
+#include <TRUSTSingle.h>
 #include <Milieu_base.h>
 #include <Zone_EF.h>
 
 template<typename _TYPE_>
-class Iterateur_Source_EF_Som: public Iterateur_Source_EF_base
+class Iterateur_Source_EF_Som: public Iterateur_Source_base
 {
   inline unsigned taille_memoire() const override { throw; }
 
@@ -35,22 +36,17 @@ class Iterateur_Source_EF_Som: public Iterateur_Source_EF_base
 
 public:
   Iterateur_Source_EF_Som() : nb_elems(-1) { }
-  Iterateur_Source_EF_Som(const Iterateur_Source_EF_Som& iter) : Iterateur_Source_EF_base(iter), evaluateur_source_elem(iter.evaluateur_source_elem), nb_elems(iter.nb_elems) { }
+  Iterateur_Source_EF_Som(const Iterateur_Source_EF_Som& iter) : Iterateur_Source_base(iter), evaluateur_source_elem(iter.evaluateur_source_elem), nb_elems(iter.nb_elems) { }
 
-  inline Evaluateur_Source_EF& evaluateur() override
+  inline Evaluateur_Source& evaluateur() override
   {
-    Evaluateur_Source_EF& eval = (Evaluateur_Source_EF&) evaluateur_source_elem;
+    Evaluateur_Source& eval = (Evaluateur_Source&) evaluateur_source_elem;
     return eval;
   }
 
-  DoubleTab& ajouter(DoubleTab&) const override;
-  DoubleTab& calculer(DoubleTab& resu) const override
-  {
-    resu = 0.;
-    return ajouter(resu);
-  }
-
   void completer_() override { nb_elems = la_zone->zone().nb_elem_tot(); }
+
+  DoubleTab& ajouter(DoubleTab&) const override;
   int impr(Sortie&) const override;
 
 protected:
@@ -59,8 +55,8 @@ protected:
   mutable double coef = -1.;
   mutable DoubleVect bilan;
 
-  DoubleTab& ajouter_elems_standard(DoubleTab&) const;
-  DoubleTab& ajouter_elems_standard(DoubleTab&, int) const;
+  template <typename Type_Double>
+  DoubleTab& ajouter_elems_standard(const int , DoubleTab& ) const;
 };
 
 template<typename _TYPE_>
@@ -87,48 +83,29 @@ DoubleTab& Iterateur_Source_EF_Som<_TYPE_>::ajouter(DoubleTab& resu) const
         }
     }
 
-  if (ncomp == 1)
-    ajouter_elems_standard(resu);
-  else
-    ajouter_elems_standard(resu, ncomp);
+  (ncomp == 1) ? ajouter_elems_standard<SingleDouble>(ncomp, resu) : ajouter_elems_standard<ArrOfDouble>(ncomp, resu);
 
   return resu;
 }
 
-template<typename _TYPE_>
-DoubleTab& Iterateur_Source_EF_Som<_TYPE_>::ajouter_elems_standard(DoubleTab& resu) const
+template<typename _TYPE_> template<typename Type_Double>
+DoubleTab& Iterateur_Source_EF_Som<_TYPE_>::ajouter_elems_standard(const int ncomp, DoubleTab& resu) const
 {
+  Type_Double source(ncomp);
   const IntTab& elems = la_zone->zone().les_elems();
-  const DoubleTab& IPhi_thilde = la_zone->IPhi_thilde();
+  const DoubleTab& IPhi_thilde = ref_cast(Zone_EF,la_zone.valeur()).IPhi_thilde();
   int nb_som_elem = la_zone->zone().nb_som_elem();
   for (int num_elem = 0; num_elem < nb_elems; num_elem++)
     {
-      double source_0 = evaluateur_source_elem.calculer_terme_source_standard(num_elem);
-      for (int i = 0; i < nb_som_elem; i++)
-        {
-          double source = source_0;
-          source *= IPhi_thilde(num_elem, i);
-          bilan(0) += coef * source;
-          resu(elems(num_elem, i)) += source;
-        }
-    }
-  return resu;
-}
-
-template<typename _TYPE_>
-DoubleTab& Iterateur_Source_EF_Som<_TYPE_>::ajouter_elems_standard(DoubleTab& resu, int ncomp) const
-{
-  DoubleVect source(ncomp);
-  for (int num_elem = 0; num_elem < nb_elems; num_elem++)
-    {
-      Cerr << "Iterateur_Source_EF_Som<_TYPE_>::ajouter_elems_standard(DoubleTab& resu,int ncomp) const  non code" << finl;
-      abort();
-      evaluateur_source_elem.calculer_terme_source_standard(num_elem, source);
+      evaluateur_source_elem.calculer_terme_source(num_elem, source);
       for (int k = 0; k < ncomp; k++)
-        {
-          resu(num_elem, k) += source(k);
-          bilan(k) += coef * source(k);
-        }
+        for (int i = 0; i < nb_som_elem; i++)
+          {
+            double src = source[k]; // XXX : ATTENTION : ON CHANGE PAS source[k] !!!
+            src *= IPhi_thilde(num_elem, i);
+            bilan(k) += coef * src;
+            resu(elems(num_elem, i),k) += src;
+          }
     }
   return resu;
 }

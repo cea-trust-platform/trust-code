@@ -16,7 +16,7 @@
 #ifndef Terme_Source_EF_base_included
 #define Terme_Source_EF_base_included
 
-#include <Iterateur_Source_EF.h>
+#include <Iterateur_Source.h>
 
 class Probleme_base;
 class Zone_Cl_dis;
@@ -26,14 +26,14 @@ class Terme_Source_EF_base: public Source_base
 {
   Declare_base(Terme_Source_EF_base);
 public:
-  Terme_Source_EF_base(const Iterateur_Source_EF_base& iter_base) : iter(iter_base) { }
+  Terme_Source_EF_base(const Iterateur_Source_base& iter_base) : iter(iter_base) { }
   DoubleTab& ajouter(DoubleTab& resu) const override { return iter->ajouter(resu); }
   DoubleTab& calculer(DoubleTab& resu) const override { return iter->calculer(resu); }
   void completer() override;
   int impr(Sortie& os) const override;
 
 protected:
-  Iterateur_Source_EF iter;
+  Iterateur_Source iter;
 };
 
 #endif /* Terme_Source_EF_base_included */
