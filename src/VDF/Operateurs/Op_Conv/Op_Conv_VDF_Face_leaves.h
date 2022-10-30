@@ -43,18 +43,8 @@ public:
   inline void associer_vitesse(const Champ_base& ch_vit) override { associer_vitesse_impl<Eval_Amont_VDF_Face>(ch_vit); }
   inline Champ_base& vitesse() override { return vitesse_impl<Eval_Amont_VDF_Face>(); }
   inline const Champ_base& vitesse() const override { return vitesse_impl<Eval_Amont_VDF_Face>(); }
-  inline void dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const override
-  {
-    const std::string& nom_inco = equation().inconnue().le_nom().getString();
-    Matrice_Morse *mat = mats.count(nom_inco) ? mats.at(nom_inco) : NULL, mat2;
-    dimensionner_face(mat2);
-    mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
-  }
-  void set_incompressible(const int flag) override
-  {
-    incompressible_ = flag;
-  }
-
+  inline void dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const override { dimensionner_blocs_impl<Type_Operateur::Op_CONV_FACE>(mats); }
+  void set_incompressible(const int flag) override { incompressible_ = flag; }
 };
 
 /*! @brief class Op_Conv_Centre_VDF_Face Cette classe represente l'operateur de convection associe a une equation de la quantite de mouvement.
@@ -73,14 +63,7 @@ public:
   inline void associer_vitesse(const Champ_base& ch_vit) override { associer_vitesse_impl<Eval_Centre_VDF_Face>(ch_vit); }
   inline Champ_base& vitesse() override { return vitesse_impl<Eval_Centre_VDF_Face>(); }
   inline const Champ_base& vitesse() const override { return vitesse_impl<Eval_Centre_VDF_Face>(); }
-  inline void dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const override
-  {
-    const std::string& nom_inco = equation().inconnue().le_nom().getString();
-    Matrice_Morse *mat = mats.count(nom_inco) ? mats.at(nom_inco) : NULL, mat2;
-    dimensionner_face(mat2);
-    mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
-  }
-
+  inline void dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const override { dimensionner_blocs_impl<Type_Operateur::Op_CONV_FACE>(mats); }
 };
 
 /*! @brief class Op_Conv_Centre4_VDF_Face Cette classe represente l'operateur de convection associe a une equation de la quantite de mouvement.
@@ -133,14 +116,7 @@ public:
   inline void associer_vitesse(const Champ_base& ch_vit) override { associer_vitesse_impl<Eval_Quick_VDF_Face>(ch_vit); }
   inline Champ_base& vitesse() override { return vitesse_impl<Eval_Quick_VDF_Face>(); }
   inline const Champ_base& vitesse() const override { return vitesse_impl<Eval_Quick_VDF_Face>(); }
-  inline void dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const override
-  {
-    const std::string& nom_inco = equation().inconnue().le_nom().getString();
-    Matrice_Morse *mat = mats.count(nom_inco) ? mats.at(nom_inco) : NULL, mat2;
-    dimensionner_face(mat2);
-    mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
-  }
-
+  inline void dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const override { dimensionner_blocs_impl<Type_Operateur::Op_CONV_FACE>(mats); }
 };
 
 #endif /* Op_Conv_VDF_Face_leaves_included */

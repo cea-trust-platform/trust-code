@@ -53,6 +53,36 @@ protected:
     associer_<EVAL_TYPE,is_QUICK,is_CENTRE4>(zone_dis,zone_cl_dis).associer_inconnue(vit); // Cheerssssssssss !!!
   }
 
+  template <Type_Operateur _TYPE_>
+  inline void dimensionner_blocs_impl(matrices_t mats) const
+  {
+    constexpr bool is_FACE_OP = (_TYPE_ == Type_Operateur::Op_CONV_FACE);
+    const std::string& nom_inco = static_cast<const OP_TYPE *>(this)->equation().inconnue().le_nom().getString();
+    Matrice_Morse *mat = mats.count(nom_inco) ? mats.at(nom_inco) : NULL, mat2;
+    is_FACE_OP ? dimensionner_face(mat2) : dimensionner_elem(mat2) /* elem */;
+    mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
+  }
+
+  template<Type_Operateur _TYPE_, typename EVAL_TYPE>
+  inline typename std::enable_if<_TYPE_ == Type_Operateur::Op_CONV_ELEM, void>::type /* Sinon SFINAE will detect if face ... */
+  dimensionner_blocs_gen_impl(matrices_t mats) const
+  {
+    constexpr bool is_AMONT = std::is_same<EVAL_TYPE, Eval_Amont_VDF_Elem>::value;
+    const std::string& nom_inco = static_cast<const OP_TYPE*>(this)->equation().inconnue().le_nom().getString();
+    for (auto &&i_m : mats)
+      {
+        if (is_AMONT) // pour la thermique monolithique seulement on amont : on traite uniquement notre inconnue
+          {
+            std::string prefix = nom_inco + "/";
+            if (Nom(i_m.first).debute_par(prefix)) continue;
+          }
+
+        Matrice_Morse mat;
+        (i_m.first == "vitesse") ? dimensionner_bloc_vitesse_elem(mat) : dimensionner_elem(mat);
+        i_m.second->nb_colonnes() ? *i_m.second += mat : *i_m.second = mat;
+      }
+  }
+
   template <typename EVAL_TYPE>
   void associer_vitesse_impl(const Champ_base& ch_vit)
   {
