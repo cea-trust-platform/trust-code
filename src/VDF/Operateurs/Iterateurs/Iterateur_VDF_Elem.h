@@ -30,27 +30,40 @@ class Iterateur_VDF_Elem : public Iterateur_VDF_base
   inline unsigned taille_memoire() const override { throw; }
   inline int duplique() const override
   {
-    Iterateur_VDF_Elem* xxx = new  Iterateur_VDF_Elem(*this);
+    Iterateur_VDF_Elem* xxx = new Iterateur_VDF_Elem(*this);
     if(!xxx) Process::exit("Not enough memory !");
     return xxx->numero();
   }
 
 public:
-  inline Iterateur_VDF_Elem() { }
-  inline Iterateur_VDF_Elem(const Iterateur_VDF_Elem<_TYPE_>& iter) : Iterateur_VDF_base(iter), flux_evaluateur(iter.flux_evaluateur) { elem.ref(iter.elem); }
+  Iterateur_VDF_Elem() { }
+  Iterateur_VDF_Elem(const Iterateur_VDF_Elem<_TYPE_>& iter) : Iterateur_VDF_base(iter), flux_evaluateur(iter.flux_evaluateur) { elem.ref(iter.elem); }
+
+  inline Evaluateur_VDF& evaluateur() override { return static_cast<Evaluateur_VDF&> (flux_evaluateur); }
+  inline const Evaluateur_VDF& evaluateur() const override { return static_cast<const Evaluateur_VDF&> (flux_evaluateur); }
 
   int impr(Sortie& os) const override;
-  void calculer_flux_bord(const DoubleTab&) const override;
-  void contribuer_au_second_membre(DoubleTab& ) const override;
-  void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const override;
-  void ajouter_contribution_autre_pb(const DoubleTab& inco, Matrice_Morse& matrice, const Cond_lim& la_cl, std::map<int, std::pair<int, int>>&) const override;
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
-  DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const override;
-  void ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const override;
+  void completer_() override { elem.ref(la_zone->face_voisins()); }
 
-  inline void completer_() override { elem.ref(la_zone->face_voisins()); }
-  inline Evaluateur_VDF& evaluateur() override { return (Evaluateur_VDF&) flux_evaluateur; }
-  inline const Evaluateur_VDF& evaluateur() const override { return (Evaluateur_VDF&) flux_evaluateur; }
+  DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu) const override
+  {
+    operator_egal(resu, 0., VECT_REAL_ITEMS);
+    return ajouter(inco,resu);
+  }
+
+  DoubleTab& ajouter(const DoubleTab& inco, DoubleTab& secmem) const override
+  {
+    ajouter_blocs({}, secmem, {{ op_base->equation().inconnue().le_nom().getString(), inco }});
+    return secmem;
+  }
+
+  void ajouter_contribution(const DoubleTab& inco, Matrice_Morse& m) const override
+  {
+    DoubleTrav secmem(inco); //on va le jeter
+    ajouter_blocs({{ op_base->equation().inconnue().le_nom().getString(), &m }}, secmem, {});
+  }
+
+  void ajouter_contribution_autre_pb(const DoubleTab& inco, Matrice_Morse& matrice, const Cond_lim& la_cl, std::map<int, std::pair<int, int>>&) const override;
 
 protected:
   _TYPE_ flux_evaluateur;
@@ -58,11 +71,13 @@ protected:
   mutable SFichier Flux, Flux_moment, Flux_sum;
   inline const Milieu_base& milieu() const { return (la_zcl->equation()).milieu(); }
 
-private:
-
   /* ************************************** *
    * *********  INTERFACE  BLOCS ********** *
    * ************************************** */
+public:
+  void ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const override;
+
+private:
   template <typename Type_Double> void ajouter_blocs_bords(const int , matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const;
   template <typename Type_Double> void ajouter_blocs_interne(const int , matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const;
 
@@ -73,6 +88,14 @@ private:
   void modifier_flux() const;
   template <typename Type_Double> inline void fill_flux_tables_(const int, const int , const double , const Type_Double& , DoubleTab& ) const;
 
+  /* ************************************** *
+   * *********  A VIRER UN JOUR  ********** *
+   * ************************************** */
+public:
+  void calculer_flux_bord(const DoubleTab&) const override;
+  void contribuer_au_second_membre(DoubleTab& ) const override;
+
+private:
   // inutile ?
   template <typename Type_Double> void contribuer_au_second_membre_bords(const int , DoubleTab& ) const;
   template <typename Type_Double> void contribuer_au_second_membre_interne(const int , DoubleTab& ) const;
