@@ -68,12 +68,15 @@ public:
   inline const Zone_VDF& zone() const { return la_zone.valeur(); }
   inline const Zone_Cl_VDF& zone_Cl() const { return la_zcl.valeur(); }
   inline Type_Cl_VDF type_cl(const Cond_lim&) const;
+  inline const bool& is_convective_op() const { return is_conv_op_; }
+  inline void set_convective_op_type(const bool ty) { is_conv_op_ = ty; }
 
 protected:
   REF(Zone_VDF) la_zone;
   REF(Zone_Cl_VDF) la_zcl;
   REF(Operateur_base) op_base;
   REF(Champ_Inc_base) le_champ_convecte_;
+  bool is_conv_op_ = false;
 };
 
 inline Type_Cl_VDF Iterateur_VDF_base::type_cl(const Cond_lim& la_cl) const

@@ -16,11 +16,10 @@
 #include <Modifier_pour_fluide_dilatable.h>
 #include <Discretisation_base.h>
 #include <Op_Conv_VDF_base.h>
-#include <Probleme_base.h>
+#include <Pb_Multiphase.h>
+#include <Statistiques.h>
 #include <TRUSTTrav.h>
 #include <Champ.h>
-
-#include <Statistiques.h>
 
 extern Stat_Counter_Id convection_counter_;
 
@@ -35,6 +34,34 @@ inline void eval_fluent(const double psc,const int num1,const int num2, DoubleVe
   else fluent[num1] -= psc;
 }
 
+void Op_Conv_VDF_base::completer()
+{
+  Operateur_base::completer();
+  iter->completer_();
+}
+
+int Op_Conv_VDF_base::impr(Sortie& os) const
+{
+  return iter->impr(os);
+}
+
+void Op_Conv_VDF_base::preparer_calcul()
+{
+  Operateur_Conv_base::preparer_calcul(); /* ne fait rien */
+  iter->set_convective_op_type(true /* convective op */);
+}
+
+void Op_Conv_VDF_base::associer_champ_convecte()
+{
+  Op_Conv_VDF_base::preparer_calcul();
+  if (sub_type(Pb_Multiphase, equation().probleme()))
+    {
+      equation().init_champ_convecte();
+      const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco->valeur() : equation().champ_convecte();
+      iter->associer_champ_convecte(cc);
+    }
+}
+
 void Op_Conv_VDF_base::ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   statistiques().begin_count(convection_counter_);
@@ -43,25 +70,18 @@ void Op_Conv_VDF_base::ajouter_blocs(matrices_t mats, DoubleTab& secmem, const t
       const std::string& nom_inco = equation().inconnue().le_nom().getString();
       Matrice_Morse* matrice = mats.count(nom_inco) ? mats.at(nom_inco) : NULL;
       const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : equation().inconnue().valeurs());
-      if(matrice) iter.ajouter_contribution(inco, *matrice);
-      iter.ajouter(inco,secmem);
+      if(matrice) iter->ajouter_contribution(inco, *matrice);
+      iter->ajouter(inco,secmem);
     }
   else
-    iter.ajouter_blocs(mats, secmem, semi_impl);
+    iter->ajouter_blocs(mats, secmem, semi_impl);
   statistiques().end_count(convection_counter_);
 }
 
-
-///////////////////////////////////////////////////////////////////////////////////
-//
-//    Implementation de fonctions de la classe Op_Conv_VDF_base
-//
-///////////////////////////////////////////////////////////////////////////////////
-
 double Op_Conv_VDF_base::calculer_dt_stab() const
 {
-  const Zone_VDF& zone_VDF = iter.zone();
-  const Zone_Cl_VDF& zone_Cl_VDF = iter.zone_Cl();
+  const Zone_VDF& zone_VDF = iter->zone();
+  const Zone_Cl_VDF& zone_Cl_VDF = iter->zone_Cl();
   const IntTab& face_voisins = zone_VDF.face_voisins();
   const DoubleVect& volumes = zone_VDF.volumes();
   const DoubleVect& face_surfaces = zone_VDF.face_surfaces();
@@ -125,13 +145,11 @@ double Op_Conv_VDF_base::calculer_dt_stab() const
   return dt_stab;
 }
 
-//Description
-// Calculation of local time: Vect of size number of faces of the domain
-// This is the equivalent of "Op_Conv_VDF_base :: calculer_dt_stab ()"
+// Calculation of local time: Vect of size number of faces of the domain This is the equivalent of "Op_Conv_VDF_base :: calculer_dt_stab ()"
 void Op_Conv_VDF_base::calculer_dt_local(DoubleTab& dt_face) const
 {
-  const Zone_VDF& zone_VDF = iter.zone();
-  const Zone_Cl_VDF& zone_Cl_VDF = iter.zone_Cl();
+  const Zone_VDF& zone_VDF = iter->zone();
+  const Zone_Cl_VDF& zone_Cl_VDF = iter->zone_Cl();
   const DoubleVect& volumes_entrelaces= zone_VDF.volumes_entrelaces();
   const DoubleVect& face_surfaces = zone_VDF.face_surfaces();
   //const DoubleVect& vit= vitesse_pour_pas_de_temps_.valeur().valeurs();
@@ -230,8 +248,8 @@ void Op_Conv_VDF_base::calculer_pour_post(Champ& espace_stockage,const Nom& opti
       DoubleTab& es_valeurs = espace_stockage->valeurs();
       es_valeurs = 1.e30;
 
-      const Zone_VDF& zone_VDF = iter.zone();
-      const Zone_Cl_VDF& zone_Cl_VDF = iter.zone_Cl();
+      const Zone_VDF& zone_VDF = iter->zone();
+      const Zone_Cl_VDF& zone_Cl_VDF = iter->zone_Cl();
       const IntTab& face_voisins = zone_VDF.face_voisins();
       const DoubleVect& volumes = zone_VDF.volumes();
       const DoubleVect& face_surfaces = zone_VDF.face_surfaces();
@@ -293,20 +311,4 @@ Motcle Op_Conv_VDF_base::get_localisation_pour_post(const Nom& option) const
   if (Motcle(option)=="stabilite") loc = "elem";
   else return Operateur_Conv_base::get_localisation_pour_post(option);
   return loc;
-}
-
-void Op_Conv_VDF_base::completer()
-{
-  Operateur_base::completer();
-  iter.completer_();
-}
-
-void Op_Conv_VDF_base::associer_zone_cl_dis(const Zone_Cl_dis_base& zcl)
-{
-  iter.valeur().associer_zone_cl_dis(zcl);
-}
-
-int Op_Conv_VDF_base::impr(Sortie& os) const
-{
-  return iter.impr(os);
 }

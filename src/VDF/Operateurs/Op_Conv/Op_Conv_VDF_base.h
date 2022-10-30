@@ -29,7 +29,8 @@ class Op_Conv_VDF_base : public Operateur_Conv_base
 public:
   inline Op_Conv_VDF_base( const Iterateur_VDF_base& iter_base) : iter(iter_base) { } // constructeur
   void completer() override;
-  void associer_zone_cl_dis(const Zone_Cl_dis_base&) override;
+  void preparer_calcul() override;
+  void associer_zone_cl_dis(const Zone_Cl_dis_base& zcl) override { iter->associer_zone_cl_dis(zcl); }
   void calculer_dt_local(DoubleTab&) const override ; //Local time step calculation
   void calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const override;
   double calculer_dt_stab() const override;
@@ -38,17 +39,17 @@ public:
   Motcle get_localisation_pour_post(const Nom& option) const override;
   virtual const Champ_base& vitesse() const = 0;
   virtual Champ_base& vitesse() = 0;
-  inline DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu ) const override { return iter.calculer(inco, resu); }
-  inline void contribuer_au_second_membre(DoubleTab& resu) const override { iter.contribuer_au_second_membre(resu); }
+  inline DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu ) const override { return iter->calculer(inco, resu); }
+  inline void contribuer_au_second_membre(DoubleTab& resu) const override { iter->contribuer_au_second_membre(resu); }
   inline const Iterateur_VDF& get_iter() const { return iter; }
   inline Iterateur_VDF& get_iter() { return iter; }
 
   inline int has_interface_blocs() const override { return 1; }
   void ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const override;
-  void associer_champ_convecte(const Champ_Inc& ch) { iter->associer_champ_convecte(ch); }
 
 protected:
   Iterateur_VDF iter;
+  void associer_champ_convecte();
 };
 
 // Fonction utile pour le calcul du pas de temps de stabilite
