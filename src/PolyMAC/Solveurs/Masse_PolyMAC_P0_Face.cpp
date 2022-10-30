@@ -13,26 +13,26 @@
 *
 *****************************************************************************/
 
-#include <Masse_PolyMAC_P0_Face.h>
-#include <Equation_base.h>
-#include <Zone_Cl_PolyMAC.h>
-#include <Zone_PolyMAC_P0.h>
-#include <Option_PolyMAC_P0.h>
-#include <Champ_Face_PolyMAC_P0.h>
-#include <Array_tools.h>
-#include <Matrix_tools.h>
-#include <Dirichlet.h>
-#include <Piso.h>
-#include <Vecteur3.h>
-#include <Matrice33.h>
 #include <Linear_algebra_tools_impl.h>
 #include <Op_Grad_PolyMAC_P0_Face.h>
+#include <Masse_PolyMAC_P0_Face.h>
+#include <Champ_Face_PolyMAC_P0.h>
+#include <Masse_ajoutee_base.h>
+#include <Option_PolyMAC_P0.h>
+#include <Zone_PolyMAC_P0.h>
+#include <Zone_Cl_PolyMAC.h>
 #include <Champ_Uniforme.h>
 #include <Pb_Multiphase.h>
-#include <Masse_ajoutee_base.h>
+#include <Equation_base.h>
+#include <Matrix_tools.h>
+#include <Array_tools.h>
+#include <Dirichlet.h>
+#include <Matrice33.h>
+#include <Vecteur3.h>
 #include <TRUSTTab.h>
+#include <Piso.h>
 
-Implemente_instanciable(Masse_PolyMAC_P0_Face,"Masse_PolyMAC_P0_Face",Solveur_Masse_base);
+Implemente_instanciable(Masse_PolyMAC_P0_Face, "Masse_PolyMAC_P0_Face", Masse_PolyMAC_Face);
 
 Sortie& Masse_PolyMAC_P0_Face::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 

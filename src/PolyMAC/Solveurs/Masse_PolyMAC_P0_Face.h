@@ -35,4 +35,4 @@ private:
   REF(Zone_PolyMAC_P0) la_zone_PolyMAC_P0;
 };
 
-#endif
+#endif /* Masse_PolyMAC_P0_Face_included */

@@ -24,31 +24,8 @@ Implemente_base_sans_constructeur(Solveur_Masse_base,"Solveur_Masse_base",Objet_
 
 Solveur_Masse_base::Solveur_Masse_base() : has_coefficient_temporel_(0), penalisation_flag_(1), penalisation_(0)  {}
 
-/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
- *
- *     Imprime le solveur de masse sur un flot de sortie.
- *
- * @param (Sortie& os) le flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Solveur_Masse_base::printOn(Sortie& os) const
-{
-  return os;
-}
-
-
-/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
- *
- *     Lecture d'un solveur de masse sur un flot d'entree.
- *
- * @param (Entree& is) le flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& Solveur_Masse_base::readOn(Entree& is)
-{
-  return is;
-}
-
+Sortie& Solveur_Masse_base::printOn(Sortie& os) const { return os; }
+Entree& Solveur_Masse_base::readOn(Entree& is) { return is; }
 
 /*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
  *
@@ -60,7 +37,6 @@ void Solveur_Masse_base::mettre_a_jour(double )
 {
 }
 
-
 /*! @brief NE FAIT RIEN Eventuellement a surcharger dans les classes derivees
  *
  *     si la matrice de masse necessite un assemblage.
@@ -69,7 +45,6 @@ void Solveur_Masse_base::mettre_a_jour(double )
  */
 void Solveur_Masse_base::assembler()
 {
-  ;
 }
 /*! @brief permet de choisir le nom du coefficient temporelle que l'on veut utiliser pour appliquer
  *
@@ -95,7 +70,6 @@ void Solveur_Masse_base::set_name_of_coefficient_temporel(const Nom& name)
       Cerr<< name_of_coefficient_temporel_<< " not understood by "<< equation().que_suis_je()<<finl;
       Process::exit();
     }
-
 }
 
 /*! @brief renvoie appliquer_impl(x/coeffient_temporelle) si on a un coefficient temporelle

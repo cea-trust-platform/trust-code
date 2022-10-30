@@ -18,7 +18,7 @@
 #include <Equation_base.h>
 #include <Zone_PolyMAC.h>
 
-Implemente_instanciable(Masse_PolyMAC_Elem,"Masse_PolyMAC_Elem|Masse_PolyMAC_P0_Elem",Solveur_Masse_base);
+Implemente_instanciable(Masse_PolyMAC_Elem, "Masse_PolyMAC_Elem|Masse_PolyMAC_P0_Elem", Masse_PolyMAC_base);
 
 Sortie& Masse_PolyMAC_Elem::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 

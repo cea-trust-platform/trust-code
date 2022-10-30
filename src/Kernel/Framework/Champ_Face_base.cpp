@@ -21,7 +21,7 @@
 #include <Neumann.h>
 #include <Navier.h>
 
-Implemente_base(Champ_Face_base,"Champ_Face_base",Champ_Inc_base) ;
+Implemente_base(Champ_Face_base, "Champ_Face_base", Champ_Inc_base);
 
 Sortie& Champ_Face_base::printOn(Sortie& os) const { return os; }
 Entree& Champ_Face_base::readOn(Entree& is) { return is; }
