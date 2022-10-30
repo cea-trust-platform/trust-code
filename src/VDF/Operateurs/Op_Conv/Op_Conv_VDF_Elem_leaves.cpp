@@ -25,9 +25,12 @@ Op_Conv_Amont_VDF_Elem::Op_Conv_Amont_VDF_Elem() : Op_Conv_VDF_base(Iterateur_VD
 void Op_Conv_Amont_VDF_Elem::preparer_calcul()
 {
   Op_Conv_VDF_base::preparer_calcul();
-  equation().init_champ_convecte();
-  const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco->valeur() : equation().champ_convecte();
-  iter->associer_champ_convecte(cc);
+  if (sub_type(Pb_Multiphase, equation().probleme()))
+    {
+      equation().init_champ_convecte();
+      const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco->valeur() : equation().champ_convecte();
+      iter->associer_champ_convecte(cc);
+    }
 }
 
 /* =================================================================================================================== */
@@ -40,9 +43,12 @@ Op_Conv_Centre_VDF_Elem::Op_Conv_Centre_VDF_Elem() : Op_Conv_VDF_base(Iterateur_
 void Op_Conv_Centre_VDF_Elem::preparer_calcul()
 {
   Op_Conv_VDF_base::preparer_calcul();
-  equation().init_champ_convecte();
-  const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco->valeur() : equation().champ_convecte();
-  iter->associer_champ_convecte(cc);
+  if (sub_type(Pb_Multiphase, equation().probleme()))
+    {
+      equation().init_champ_convecte();
+      const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco->valeur() : equation().champ_convecte();
+      iter->associer_champ_convecte(cc);
+    }
 }
 
 /* =================================================================================================================== */
@@ -55,9 +61,12 @@ Op_Conv_Centre4_VDF_Elem::Op_Conv_Centre4_VDF_Elem() : Op_Conv_VDF_base(Iterateu
 void Op_Conv_Centre4_VDF_Elem::preparer_calcul()
 {
   Op_Conv_VDF_base::preparer_calcul();
-  equation().init_champ_convecte();
-  const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco->valeur() : equation().champ_convecte();
-  iter->associer_champ_convecte(cc);
+  if (sub_type(Pb_Multiphase, equation().probleme()))
+    {
+      equation().init_champ_convecte();
+      const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco->valeur() : equation().champ_convecte();
+      iter->associer_champ_convecte(cc);
+    }
 }
 
 /* =================================================================================================================== */
@@ -70,7 +79,10 @@ Op_Conv_Quick_VDF_Elem::Op_Conv_Quick_VDF_Elem() : Op_Conv_VDF_base(Iterateur_VD
 void Op_Conv_Quick_VDF_Elem::preparer_calcul()
 {
   Op_Conv_VDF_base::preparer_calcul();
-  equation().init_champ_convecte();
-  const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco->valeur() : equation().champ_convecte();
-  iter->associer_champ_convecte(cc);
+  if (sub_type(Pb_Multiphase, equation().probleme()))
+    {
+      equation().init_champ_convecte();
+      const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco->valeur() : equation().champ_convecte();
+      iter->associer_champ_convecte(cc);
+    }
 }
