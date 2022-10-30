@@ -18,50 +18,33 @@
 #include <Milieu_base.h>
 #include <Discretisation_base.h>
 
-Implemente_instanciable_sans_constructeur(Puissance_Thermique_QC_EF,"Puissance_Thermique_QC_EF",Terme_Source_EF_base);
+Implemente_instanciable_sans_constructeur(Puissance_Thermique_QC_EF, "Puissance_Thermique_QC_EF", Terme_Source_EF_base);
 
-Implemente_It_Sou_EF(Eval_Puiss_Th_QC_EF);
+Sortie& Puissance_Thermique_QC_EF::printOn(Sortie& s) const { return s << que_suis_je(); }
 
-//// printOn
-//
-
-Sortie& Puissance_Thermique_QC_EF::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
-
-//// readOn
-//
-
-Entree& Puissance_Thermique_QC_EF::readOn(Entree& s )
+Entree& Puissance_Thermique_QC_EF::readOn(Entree& s)
 {
   const Equation_base& eqn = equation();
-  Terme_Puissance_Thermique::lire_donnees(s,eqn);
+  Terme_Puissance_Thermique::lire_donnees(s, eqn);
   champs_compris_.ajoute_champ(la_puissance);
-  //set_fichier("Puissance_Thermique");
-  // set_description("Degagement de puissance thermique = Integrale(P*dv)[W]");
-
   return s;
 }
 
-
-void Puissance_Thermique_QC_EF::associer_zones(const Zone_dis& zone_dis,
-                                               const Zone_Cl_dis& zone_cl_dis)
+void Puissance_Thermique_QC_EF::associer_zones(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
 {
-  const Zone_EF& zEF = ref_cast(Zone_EF,zone_dis.valeur());
-  const Zone_Cl_EF& zclEF = ref_cast(Zone_Cl_EF,zone_cl_dis.valeur());
+  const Zone_EF& zEF = ref_cast(Zone_EF, zone_dis.valeur());
+  const Zone_Cl_EF& zclEF = ref_cast(Zone_Cl_EF, zone_cl_dis.valeur());
 
   iter->associer_zones(zEF, zclEF);
 
   Eval_Puiss_Th_QC_EF& eval_puis = (Eval_Puiss_Th_QC_EF&) iter.evaluateur();
-  eval_puis.associer_zones(zEF, zclEF );
+  eval_puis.associer_zones(zEF, zclEF);
 }
-
 
 void Puissance_Thermique_QC_EF::associer_pb(const Probleme_base& pb)
 {
   const Equation_base& eqn = pb.equation(0);
-  eqn.discretisation().nommer_completer_champ_physique(eqn.zone_dis(),"Puissance_volumique","W/m3",la_puissance,pb);
+  eqn.discretisation().nommer_completer_champ_physique(eqn.zone_dis(), "Puissance_volumique", "W/m3", la_puissance, pb);
 
   Eval_Puiss_Th_QC_EF& eval_puis = (Eval_Puiss_Th_QC_EF&) iter.evaluateur();
   eval_puis.associer_puissance(la_puissance);
@@ -86,13 +69,11 @@ const Champ_base& Puissance_Thermique_QC_EF::get_champ(const Motcle& nom) const
 
   throw Champs_compris_erreur();
 }
-void Puissance_Thermique_QC_EF::get_noms_champs_postraitables(Noms& nom,Option opt) const
+void Puissance_Thermique_QC_EF::get_noms_champs_postraitables(Noms& nom, Option opt) const
 {
-  Terme_Source_EF_base::get_noms_champs_postraitables(nom,opt);
-  if (opt==DESCRIPTION)
-    Cerr<<"Terme_Puissance_Thermique_QC_EF : "<<champs_compris_.liste_noms_compris()<<finl;
-
+  Terme_Source_EF_base::get_noms_champs_postraitables(nom, opt);
+  if (opt == DESCRIPTION)
+    Cerr << "Terme_Puissance_Thermique_QC_EF : " << champs_compris_.liste_noms_compris() << finl;
   else
     nom.add(champs_compris_.liste_noms_compris());
 }
-

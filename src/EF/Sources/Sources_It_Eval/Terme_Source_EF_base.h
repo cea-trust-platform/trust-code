@@ -13,34 +13,27 @@
 *
 *****************************************************************************/
 
-#include <Iterateur_Source_EF_base.h>
+#ifndef Terme_Source_EF_base_included
+#define Terme_Source_EF_base_included
 
-Implemente_base(Iterateur_Source_EF_base,"Iterateur_Source_EF_base",Objet_U);
+#include <Iterateur_Source_EF.h>
 
-//// printOn
-//
+class Probleme_base;
+class Zone_Cl_dis;
+class Zone_dis;
 
-Sortie& Iterateur_Source_EF_base::printOn(Sortie& s ) const
+class Terme_Source_EF_base: public Source_base
 {
-  return s << que_suis_je() ;
-}
+  Declare_base(Terme_Source_EF_base);
+public:
+  Terme_Source_EF_base(const Iterateur_Source_EF_base& iter_base) : iter(iter_base) { }
+  DoubleTab& ajouter(DoubleTab& resu) const override { return iter->ajouter(resu); }
+  DoubleTab& calculer(DoubleTab& resu) const override { return iter->calculer(resu); }
+  void completer() override;
+  int impr(Sortie& os) const override;
 
-//// readOn
-//
+protected:
+  Iterateur_Source_EF iter;
+};
 
-Entree& Iterateur_Source_EF_base::readOn(Entree& s )
-{
-  return s ;
-}
-
-//
-//  Fonctions de la classe Iterateur_Source_EF_base
-//
-
-
-void Iterateur_Source_EF_base::associer_zones(const Zone_EF& zone_EF,
-                                              const Zone_Cl_EF& zone_cl_EF)
-{
-  la_zone = zone_EF;
-  la_zcl = zone_cl_EF;
-}
+#endif /* Terme_Source_EF_base_included */

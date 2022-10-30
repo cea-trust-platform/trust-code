@@ -7,6 +7,7 @@
 instancie_src_EF_Champs();
 instancie_src_EF_Operateurs();
 instancie_src_EF_Sources();
+instancie_src_EF_Sources_Sources_It_Eval();
 instancie_src_EF_Zones();
 instancie_src_IJK_Champs();
 instancie_src_IJK_Framework();

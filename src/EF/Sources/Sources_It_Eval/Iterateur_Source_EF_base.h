@@ -13,30 +13,38 @@
 *
 *****************************************************************************/
 
-#include <Terme_Source_EF_base.h>
+#ifndef Iterateur_Source_EF_base_included
+#define Iterateur_Source_EF_base_included
 
-Implemente_base(Terme_Source_EF_base,"Terme_Source_EF_base",Source_base);
+#include <TRUSTTabs_forward.h>
+#include <Ref_Zone_Cl_EF.h>
+#include <Equation_base.h>
+#include <Ref_Zone_EF.h>
+#include <Zone_Cl_EF.h>
 
+class Evaluateur_Source_EF;
 
-//// printOn
-//
-
-Sortie& Terme_Source_EF_base::printOn(Sortie& s ) const
+class Iterateur_Source_EF_base : public Objet_U
 {
-  return s << que_suis_je() ;
+  Declare_base(Iterateur_Source_EF_base);
+public:
+  void associer_zones(const Zone_EF&, const Zone_Cl_EF&);
+  virtual DoubleTab& ajouter(DoubleTab& ) const=0;
+  virtual DoubleTab& calculer(DoubleTab& ) const=0;
+  virtual Evaluateur_Source_EF& evaluateur() =0;
+  virtual void completer_()=0;
+  virtual int impr(Sortie& os) const=0;
+  virtual inline int equation_divisee_par_rho() const;
+
+protected:
+  REF(Zone_EF) la_zone;
+  REF(Zone_Cl_EF) la_zcl;
+};
+
+int Iterateur_Source_EF_base::equation_divisee_par_rho() const
+{
+  Nom nom_eqn=la_zcl->equation().que_suis_je();
+  return (nom_eqn.debute_par("Navier_Stokes")) ? 1 : 0;
 }
 
-
-//// readOn
-//
-
-Entree& Terme_Source_EF_base::readOn(Entree& s )
-{
-  return s ;
-}
-
-void Terme_Source_EF_base::completer()
-{
-  Source_base::completer();
-  iter.completer_();
-}
+#endif /* Iterateur_Source_EF_base_included */

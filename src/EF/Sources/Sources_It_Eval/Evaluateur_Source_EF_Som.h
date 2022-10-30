@@ -13,53 +13,20 @@
 *
 *****************************************************************************/
 
-#ifndef Puissance_Thermique_EF_included
-#define Puissance_Thermique_EF_included
+#ifndef Evaluateur_Source_EF_Som_included
+#define Evaluateur_Source_EF_Som_included
 
+#include <Evaluateur_Source_EF.h>
+#include <TRUSTTabs_forward.h>
 
-
-#include <Terme_Puissance_Thermique.h>
-#include <Terme_Source_EF_base.h>
-#include <Eval_Puiss_Th_EF.h>
-#include <It_Sou_EF.h>
-
-Declare_It_Sou_EF(Eval_Puiss_Th_EF);
-
-/*! @brief class Puissance_Thermique_EF
- *
- *  Cette classe represente un terme source de l'equation de la thermique
- *  du type degagement volumique de puissance thermique
- *
- *
- * @sa Terme_Puissance_Thermique, Terme_Source_EF_base
- */
-class Puissance_Thermique_EF : public Terme_Puissance_Thermique,
-  public Terme_Source_EF_base
+class Evaluateur_Source_EF_Som: public Evaluateur_Source_EF
 {
-  Declare_instanciable_sans_constructeur(Puissance_Thermique_EF);
-
 public:
-
-  inline Puissance_Thermique_EF();
-  void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;
-  void associer_pb(const Probleme_base& ) override;
-  void mettre_a_jour(double temps) override
-  {
-    Terme_Puissance_Thermique::mettre_a_jour(temps);
-  }
-
+  Evaluateur_Source_EF_Som() { }
+  Evaluateur_Source_EF_Som(const Evaluateur_Source_EF_Som& eval) : Evaluateur_Source_EF(eval) { }
+  void completer() override { }
+  virtual double calculer_terme_source_standard(int) const =0;
+  virtual void calculer_terme_source_standard(int, DoubleVect&) const =0;
 };
 
-
-//
-// Fonctions inline de la classe Puissance_Thermique_EF
-//
-
-inline Puissance_Thermique_EF::Puissance_Thermique_EF()
-  : Terme_Puissance_Thermique(),Terme_Source_EF_base(It_Sou_EF(Eval_Puiss_Th_EF)())
-{
-}
-
-
-#endif
-
+#endif /* Evaluateur_Source_EF_Som_included */

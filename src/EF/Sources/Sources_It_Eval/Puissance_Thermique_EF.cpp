@@ -13,25 +13,36 @@
 *
 *****************************************************************************/
 
-#include <Eval_Puiss_Th_QC_EF.h>
-#include <Champ_Don.h>
-#include <Zone_EF.h>
+#include <Puissance_Thermique_EF.h>
+#include <Discretisation_base.h>
+#include <Probleme_base.h>
+#include <Milieu_base.h>
 
-void Eval_Puiss_Th_QC_EF::completer()
+Implemente_instanciable_sans_constructeur(Puissance_Thermique_EF, "Puissance_Thermique_EF", Terme_Source_EF_base);
+
+Sortie& Puissance_Thermique_EF::printOn(Sortie& s) const { return s << que_suis_je(); }
+
+Entree& Puissance_Thermique_EF::readOn(Entree& s)
 {
-  Evaluateur_Source_EF_Som::completer();
-  //  nb_som_elem_=(la_zone->zone().nb_som_elem());
+  const Equation_base& eqn = equation();
+  Terme_Puissance_Thermique::lire_donnees(s, eqn);
+  champs_compris_.ajoute_champ(la_puissance);
+  return s;
 }
 
-void Eval_Puiss_Th_QC_EF::associer_puissance(const Champ_Don& Q)
+void Puissance_Thermique_EF::associer_zones(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
 {
-  la_puissance = Q;
-  puissance.ref(Q.valeurs());
+  const Zone_EF& zEF = ref_cast(Zone_EF, zone_dis.valeur());
+  const Zone_Cl_EF& zclEF = ref_cast(Zone_Cl_EF, zone_cl_dis.valeur());
+  iter->associer_zones(zEF, zclEF);
+  Eval_Puiss_Th_EF& eval_puis = (Eval_Puiss_Th_EF&) iter->evaluateur();
+  eval_puis.associer_zones(zEF, zclEF);
 }
 
-void Eval_Puiss_Th_QC_EF::mettre_a_jour( )
+void Puissance_Thermique_EF::associer_pb(const Probleme_base& pb)
 {
-
+  const Equation_base& eqn = pb.equation(0);
+  eqn.discretisation().nommer_completer_champ_physique(eqn.zone_dis(), la_puissance.le_nom(), "W/m3", la_puissance, pb);
+  Eval_Puiss_Th_EF& eval_puis = (Eval_Puiss_Th_EF&) iter->evaluateur();
+  eval_puis.associer_champs(la_puissance);
 }
-
-

@@ -13,25 +13,28 @@
 *
 *****************************************************************************/
 
+#ifndef Puissance_Thermique_EF_included
+#define Puissance_Thermique_EF_included
+
+#include <Terme_Puissance_Thermique.h>
+#include <Iterateur_Source_EF_Som.h>
+#include <Terme_Source_EF_base.h>
 #include <Eval_Puiss_Th_EF.h>
-#include <Champ_Don.h>
-#include <Zone_EF.h>
 
-void Eval_Puiss_Th_EF::completer()
+/*! @brief class Puissance_Thermique_EF
+ *
+ *  Cette classe represente un terme source de l'equation de la thermique du type degagement volumique de puissance thermique
+ *
+ * @sa Terme_Puissance_Thermique, Terme_Source_EF_base
+ */
+class Puissance_Thermique_EF: public Terme_Puissance_Thermique, public Terme_Source_EF_base
 {
-  Evaluateur_Source_EF_Som::completer();
-  //  nb_som_elem_=(la_zone->zone().nb_som_elem());
-}
+  Declare_instanciable_sans_constructeur(Puissance_Thermique_EF);
+public:
+  Puissance_Thermique_EF() : Terme_Puissance_Thermique(), Terme_Source_EF_base(Iterateur_Source_EF_Som<Eval_Puiss_Th_EF>()) { }
+  void associer_zones(const Zone_dis&, const Zone_Cl_dis&) override;
+  void associer_pb(const Probleme_base&) override;
+  void mettre_a_jour(double temps) override { Terme_Puissance_Thermique::mettre_a_jour(temps); }
+};
 
-void Eval_Puiss_Th_EF::associer_champs(const Champ_Don& Q)
-{
-  la_puissance = Q;
-  puissance.ref(Q.valeurs());
-}
-
-void Eval_Puiss_Th_EF::mettre_a_jour( )
-{
-
-}
-
-
+#endif /* Puissance_Thermique_EF_included */

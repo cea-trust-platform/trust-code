@@ -13,67 +13,33 @@
 *
 *****************************************************************************/
 
-#ifndef Iterateur_Source_EF_included
-#define Iterateur_Source_EF_included
+#ifndef Evaluateur_Source_EF_included
+#define Evaluateur_Source_EF_included
 
+#include <Ref_Zone_Cl_EF.h>
+#include <Ref_Zone_EF.h>
 
-/*! @brief class Iterateur_Source_EF
- *
- */
-
-#include <Iterateur_Source_EF_base.h>
-
-Declare_deriv(Iterateur_Source_EF_base);
-
-class Iterateur_Source_EF : public DERIV(Iterateur_Source_EF_base)
+class Evaluateur_Source_EF
 {
-
-  Declare_instanciable(Iterateur_Source_EF);
-
 public:
+  Evaluateur_Source_EF() { }
+  Evaluateur_Source_EF(const Evaluateur_Source_EF& eval) : la_zone(eval.la_zone), la_zone_cl(eval.la_zone_cl) { }
+  virtual ~Evaluateur_Source_EF() { }
 
-  inline Iterateur_Source_EF(const Iterateur_Source_EF_base&);
-  inline void completer_();
-  inline DoubleTab& ajouter(DoubleTab& ) const;
-  inline DoubleTab& calculer(DoubleTab& ) const;
-  inline Evaluateur_Source_EF& evaluateur();
-  inline int impr(Sortie& os) const;
+  inline void associer_zones(const Zone_EF&, const Zone_Cl_EF&);
+  virtual void mettre_a_jour() =0;
+  virtual void completer() = 0;
+
+protected:
+  REF(Zone_EF) la_zone;
+  REF(Zone_Cl_EF) la_zone_cl;
 };
 
-
-//
-//  Fonctions inline de la classe Iterateur_Source_EF
-//
-
-inline Iterateur_Source_EF::Iterateur_Source_EF(const Iterateur_Source_EF_base& Opb): DERIV(Iterateur_Source_EF_base)()
+inline void Evaluateur_Source_EF::associer_zones(const Zone_EF& zone_EF, const Zone_Cl_EF& zone_cl_EF)
 {
-  DERIV(Iterateur_Source_EF_base)::operator=(Opb);
+  la_zone = zone_EF;
+  la_zone_cl = zone_cl_EF;
+  completer();
 }
 
-inline void Iterateur_Source_EF::completer_()
-{
-  valeur().completer_();
-}
-
-inline Evaluateur_Source_EF& Iterateur_Source_EF::evaluateur()
-{
-  return valeur().evaluateur();
-}
-
-inline DoubleTab& Iterateur_Source_EF::ajouter(DoubleTab& resu) const
-{
-  return valeur().ajouter(resu);
-}
-
-inline DoubleTab& Iterateur_Source_EF::calculer(DoubleTab& resu) const
-{
-  return valeur().calculer(resu);
-}
-
-inline int Iterateur_Source_EF::impr(Sortie& os) const
-{
-  return valeur().impr(os);
-}
-
-
-#endif
+#endif /* Evaluateur_Source_EF_included */

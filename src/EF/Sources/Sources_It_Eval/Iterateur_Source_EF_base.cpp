@@ -13,18 +13,15 @@
 *
 *****************************************************************************/
 
-#ifndef ItSouEFFA_H
-#define ItSouEFFA_H
+#include <Iterateur_Source_EF_base.h>
 
-#define It_Sou_EF(_TYPE_) name2(Iterateur_Source_EF_Som, _TYPE_)
+Implemente_base(Iterateur_Source_EF_base, "Iterateur_Source_EF_base", Objet_U);
 
-#ifdef Template_Version
-#include <TIt_Sou_EF.h>
-#define Declare_It_Sou_EF(_TYPE_) \
-typedef Iterateur_Source_EF_Som<_TYPE_> It_Sou_EF(_TYPE_)
-#define Implemente_It_Sou_EF(_TYPE_) class __dmmy
-#else
-#include <MIt_Sou_EF.h>
-#endif
+Sortie& Iterateur_Source_EF_base::printOn(Sortie& s) const { return s << que_suis_je(); }
+Entree& Iterateur_Source_EF_base::readOn(Entree& s) { return s; }
 
-#endif
+void Iterateur_Source_EF_base::associer_zones(const Zone_EF& zone_EF, const Zone_Cl_EF& zone_cl_EF)
+{
+  la_zone = zone_EF;
+  la_zcl = zone_cl_EF;
+}

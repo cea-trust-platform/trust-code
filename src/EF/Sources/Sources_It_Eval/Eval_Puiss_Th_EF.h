@@ -13,56 +13,50 @@
 *
 *****************************************************************************/
 
-#ifndef Evaluateur_Source_EF_included
-#define Evaluateur_Source_EF_included
+#ifndef Eval_Puiss_Th_EF_included
+#define Eval_Puiss_Th_EF_included
 
+#include <Evaluateur_Source_EF_Som.h>
+#include <Champ_Uniforme.h>
+#include <Ref_Champ_Don.h>
+#include <Champ_Don.h>
+#include <TRUSTTab.h>
 
-#include <Ref_Zone_EF.h>
-#include <Ref_Zone_Cl_EF.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Evaluateur_Source_EF
-//
-//
-//////////////////////////////////////////////////////////////////////////////
-
-class Evaluateur_Source_EF
+class Eval_Puiss_Th_EF: public Evaluateur_Source_EF_Som
 {
-
 public:
-
-  inline Evaluateur_Source_EF();
-  inline virtual ~Evaluateur_Source_EF() {};
-  inline Evaluateur_Source_EF(const Evaluateur_Source_EF& );
-  inline void associer_zones(const Zone_EF& , const Zone_Cl_EF& );
-  virtual void mettre_a_jour() =0;
-  virtual void completer() = 0;
+  void completer() override { Evaluateur_Source_EF_Som::completer(); }
+  void mettre_a_jour() override { }
+  inline void associer_champs(const Champ_Don& );
+  inline double calculer_terme_source_standard(int ) const override ;
+  inline void calculer_terme_source_standard(int , DoubleVect&  ) const override ;
 
 protected:
-
-  REF(Zone_EF) la_zone;
-  REF(Zone_Cl_EF) la_zone_cl;
+  REF(Champ_Don) la_puissance;
+  DoubleTab puissance;
 
 };
 
-//
-//   Fonctions inline de Evaluateur_Source_EF
-//
-
-inline Evaluateur_Source_EF::Evaluateur_Source_EF() {}
-
-inline Evaluateur_Source_EF::Evaluateur_Source_EF(const Evaluateur_Source_EF& eval)
-  : la_zone(eval.la_zone),la_zone_cl(eval.la_zone_cl)
+inline void Eval_Puiss_Th_EF::associer_champs(const Champ_Don& Q)
 {
+  la_puissance = Q;
+  puissance.ref(Q.valeurs());
 }
 
-inline void Evaluateur_Source_EF::associer_zones(const Zone_EF& zone_EF,
-                                                 const Zone_Cl_EF& zone_cl_EF)
+inline void Eval_Puiss_Th_EF::calculer_terme_source_standard(int num_elem, DoubleVect& d) const
 {
-  la_zone = zone_EF;
-  la_zone_cl = zone_cl_EF;
-  completer();
+  Cerr<<"Non code"<<__FILE__<<(int)__LINE__<<finl;
+  throw;
 }
 
-#endif
+inline double Eval_Puiss_Th_EF::calculer_terme_source_standard(int num_elem) const
+{
+  double source;
+  if (sub_type(Champ_Uniforme,la_puissance.valeur().valeur()))
+    source = puissance(0,0);
+  else
+    source = puissance(num_elem,0);
+  return source;
+}
+
+#endif /* Eval_Puiss_Th_EF_included */

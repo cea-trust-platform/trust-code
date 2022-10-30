@@ -24,53 +24,44 @@
 
 class Eval_Puiss_Th_QC_EF: public Evaluateur_Source_EF_Som
 {
-
 public:
-
-  inline Eval_Puiss_Th_QC_EF();
-  void completer() override;
-  void associer_puissance(const Champ_Don& );
-  void mettre_a_jour() override;
-  inline double calculer_terme_source_standard(int ) const override ;
-  inline void calculer_terme_source_standard(int , DoubleVect&  ) const override ;
+  Eval_Puiss_Th_QC_EF() { }
+  void completer() override { Evaluateur_Source_EF_Som::completer(); }
+  void mettre_a_jour() override { }
+  inline void associer_puissance(const Champ_Don&);
+  inline double calculer_terme_source_standard(int) const override;
+  inline void calculer_terme_source_standard(int, DoubleVect&) const override;
 
 protected:
-
   REF(Champ_Don) la_puissance;
   DoubleTab puissance;
-
 };
 
-
-//
-//   Fonctions inline de la classe Eval_Puiss_Th_QC_EF
-//
-
-inline Eval_Puiss_Th_QC_EF::Eval_Puiss_Th_QC_EF() {}
+inline void Eval_Puiss_Th_QC_EF::associer_puissance(const Champ_Don& Q)
+{
+  la_puissance = Q;
+  puissance.ref(Q.valeurs());
+}
 
 inline void Eval_Puiss_Th_QC_EF::calculer_terme_source_standard(int num_elem, DoubleVect& d) const
 {
-  Cerr<<"Non code"<<__FILE__<<(int)__LINE__<<finl;
-  Process::exit();
+  Cerr << "Non code" << __FILE__ << (int) __LINE__ << finl;
   throw;
-  return calculer_terme_source_standard(num_elem,d);
 }
 
 inline double Eval_Puiss_Th_QC_EF::calculer_terme_source_standard(int num_elem) const
 {
   double source;
-  if (sub_type(Champ_Uniforme,la_puissance.valeur().valeur()))
-    source = puissance(0,0) ;
+  if (sub_type(Champ_Uniforme, la_puissance.valeur().valeur()))
+    source = puissance(0, 0);
   else
     {
-      if (puissance.nb_dim()==1)
+      if (puissance.nb_dim() == 1)
         source = puissance(num_elem);
       else
-        source = puissance(num_elem,0);
+        source = puissance(num_elem, 0);
     }
-  return (source);
+  return source;
 }
 
-
-#endif
-
+#endif /* Eval_Puiss_Th_QC_EF_included */

@@ -7,6 +7,7 @@
 void instancie_src_EF_Champs();
 void instancie_src_EF_Operateurs();
 void instancie_src_EF_Sources();
+void instancie_src_EF_Sources_Sources_It_Eval();
 void instancie_src_EF_Zones();
 void instancie_src_IJK_Champs();
 void instancie_src_IJK_Framework();

@@ -13,5 +13,11 @@
 *
 *****************************************************************************/
 
-#include <Evaluateur_Source_EF.h>
+#include <Iterateur_Source_EF.h>
 
+Implemente_deriv(Iterateur_Source_EF_base);
+Implemente_instanciable(Iterateur_Source_EF, "Iterateur_Source_EF", DERIV(Iterateur_Source_EF_base));
+
+Sortie& Iterateur_Source_EF::printOn(Sortie& s) const { return s << que_suis_je(); }
+
+Entree& Iterateur_Source_EF::readOn(Entree& s) { return s; }

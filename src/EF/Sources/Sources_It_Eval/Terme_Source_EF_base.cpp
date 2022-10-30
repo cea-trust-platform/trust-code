@@ -13,58 +13,21 @@
 *
 *****************************************************************************/
 
-#include <Puissance_Thermique_EF.h>
-#include <Probleme_base.h>
-#include <Milieu_base.h>
-#include <Discretisation_base.h>
+#include <Terme_Source_EF_base.h>
 
-Implemente_instanciable_sans_constructeur(Puissance_Thermique_EF,"Puissance_Thermique_EF",Terme_Source_EF_base);
+Implemente_base(Terme_Source_EF_base, "Terme_Source_EF_base", Source_base);
 
-Implemente_It_Sou_EF(Eval_Puiss_Th_EF);
+Sortie& Terme_Source_EF_base::printOn(Sortie& s) const { return s << que_suis_je(); }
+Entree& Terme_Source_EF_base::readOn(Entree& s) { return s; }
 
-//// printOn
-//
-
-Sortie& Puissance_Thermique_EF::printOn(Sortie& s ) const
+void Terme_Source_EF_base::completer()
 {
-  return s << que_suis_je() ;
+  Source_base::completer();
+  iter->completer_();
 }
 
-//// readOn
-//
-
-Entree& Puissance_Thermique_EF::readOn(Entree& s )
+int Terme_Source_EF_base::impr(Sortie& os) const
 {
-  const Equation_base& eqn = equation();
-  Terme_Puissance_Thermique::lire_donnees(s,eqn);
-  champs_compris_.ajoute_champ(la_puissance);
-  //set_fichier("Puissance_Thermique");
-  // set_description("Degagement de puissance thermique = Integrale(P*dv)[W]");
-
-  return s;
+  if (je_suis_maitre()) os << que_suis_je();
+  return iter->impr(os);
 }
-
-
-void Puissance_Thermique_EF::associer_zones(const Zone_dis& zone_dis,
-                                            const Zone_Cl_dis& zone_cl_dis)
-{
-  const Zone_EF& zEF = ref_cast(Zone_EF,zone_dis.valeur());
-  const Zone_Cl_EF& zclEF = ref_cast(Zone_Cl_EF,zone_cl_dis.valeur());
-
-  iter->associer_zones(zEF, zclEF);
-
-  Eval_Puiss_Th_EF& eval_puis = (Eval_Puiss_Th_EF&) iter.evaluateur();
-  eval_puis.associer_zones(zEF, zclEF );
-}
-
-
-void Puissance_Thermique_EF::associer_pb(const Probleme_base& pb)
-{
-  const Equation_base& eqn = pb.equation(0);
-  eqn.discretisation().nommer_completer_champ_physique(eqn.zone_dis(),la_puissance.le_nom(),"W/m3",la_puissance,pb);
-
-  Eval_Puiss_Th_EF& eval_puis = (Eval_Puiss_Th_EF&) iter.evaluateur();
-  eval_puis.associer_champs(la_puissance);
-}
-
-

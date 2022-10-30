@@ -13,64 +13,26 @@
 *
 *****************************************************************************/
 
-#ifndef Eval_Puiss_Th_EF_included
-#define Eval_Puiss_Th_EF_included
+#ifndef Iterateur_Source_EF_included
+#define Iterateur_Source_EF_included
 
-#include <Evaluateur_Source_EF_Som.h>
-#include <Ref_Champ_Don.h>
-#include <TRUSTTab.h>
-#include <Champ_Uniforme.h>
-#include <Champ_Don.h>
+/*! @brief class Iterateur_Source_EF
+ *
+ */
+#include <Iterateur_Source_EF_base.h>
 
+Declare_deriv(Iterateur_Source_EF_base);
 
-
-////////////////////////////////////////////////////////////////////////////
-//
-//  CLASS Eval_Puiss_Th_EF
-//
-////////////////////////////////////////////////////////////////////////////
-
-class Eval_Puiss_Th_EF: public Evaluateur_Source_EF_Som
+class Iterateur_Source_EF: public DERIV(Iterateur_Source_EF_base)
 {
-
+  Declare_instanciable(Iterateur_Source_EF);
 public:
-
-  void completer() override;
-  void associer_champs(const Champ_Don& );
-  void mettre_a_jour() override;
-  inline double calculer_terme_source_standard(int ) const override ;
-  inline void calculer_terme_source_standard(int , DoubleVect&  ) const override ;
-
-protected:
-
-  REF(Champ_Don) la_puissance;
-  DoubleTab puissance;
-
+  Iterateur_Source_EF(const Iterateur_Source_EF_base &Opb) : DERIV(Iterateur_Source_EF_base)() { DERIV(Iterateur_Source_EF_base)::operator=(Opb); }
+  inline void completer_() { valeur().completer_(); }
+  inline DoubleTab& ajouter(DoubleTab &resu) const { return valeur().ajouter(resu); }
+  inline DoubleTab& calculer(DoubleTab &resu) const { return valeur().calculer(resu); }
+  inline Evaluateur_Source_EF& evaluateur() { return valeur().evaluateur(); }
+  inline int impr(Sortie &os) const { return valeur().impr(os); }
 };
 
-
-//
-//   Fonctions inline de la classe Eval_Puiss_Th_EF
-//
-
-inline void Eval_Puiss_Th_EF::calculer_terme_source_standard(int num_elem, DoubleVect& d) const
-{
-  Cerr<<"Non code"<<__FILE__<<(int)__LINE__<<finl;
-  Process::exit();
-  throw;
-  return calculer_terme_source_standard(num_elem,d);
-}
-
-inline double Eval_Puiss_Th_EF::calculer_terme_source_standard(int num_elem) const
-{
-  double source;
-  if (sub_type(Champ_Uniforme,la_puissance.valeur().valeur()))
-    source = puissance(0,0);
-  else
-    source = puissance(num_elem,0);
-  return (source);
-}
-
-
-#endif
-
+#endif /* Iterateur_Source_EF_included */
