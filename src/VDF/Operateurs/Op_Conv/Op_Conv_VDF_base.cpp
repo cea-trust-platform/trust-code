@@ -299,8 +299,6 @@ void Op_Conv_VDF_base::completer()
 {
   Operateur_base::completer();
   iter.completer_();
-  const Champ_Inc& cc = le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue(); //equation().champ_convecte()
-  iter->associer_champ_convecte(cc);
 }
 
 void Op_Conv_VDF_base::associer_zone_cl_dis(const Zone_Cl_dis_base& zcl)

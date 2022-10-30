@@ -30,6 +30,8 @@ void Masse_VDF_Elem::preparer_calcul()
 {
   associer_masse_proto(*this, la_zone_VDF.valeur());
   if (sub_type(Pb_Multiphase,equation().probleme())) preparer_calcul_proto();
+  equation().init_champ_conserve();
+
 }
 
 DoubleTab& Masse_VDF_Elem::appliquer_impl(DoubleTab& sm) const

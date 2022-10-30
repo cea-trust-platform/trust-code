@@ -33,12 +33,7 @@ void Op_Diff_VDF_base::completer()
   Operateur_base::completer();
   // Certains operateurs (Axi) n'ont pas d'iterateurs en VDF...
   // Encore une anomalie dans la conception a corriger un jour !
-  if (iter.non_nul())
-    {
-      iter.completer_();
-      const Champ_Inc& cc = le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue(); //equation().champ_convecte()
-      iter->associer_champ_convecte(cc);
-    }
+  if (iter.non_nul()) iter.completer_();
 }
 
 int Op_Diff_VDF_base::impr(Sortie& os) const

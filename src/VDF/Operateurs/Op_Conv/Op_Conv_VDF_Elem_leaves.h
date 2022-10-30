@@ -39,7 +39,6 @@ class Op_Conv_Amont_VDF_Elem : public Op_Conv_VDF_base, public Op_Conv_VDF<Op_Co
 public:
   Op_Conv_Amont_VDF_Elem();
   void check_multiphase_compatibility() const override { }
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
   void preparer_calcul() override;
   inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { modifier_pour_Cl_elem(matrice,secmem); }
   inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd,const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_CONV_ELEM,Eval_Amont_VDF_Elem>(zd,zcd,ch); }
@@ -78,6 +77,7 @@ class Op_Conv_Centre_VDF_Elem : public Op_Conv_VDF_base, public Op_Conv_VDF<Op_C
   Declare_instanciable_sans_constructeur(Op_Conv_Centre_VDF_Elem);
 public:
   Op_Conv_Centre_VDF_Elem();
+  void preparer_calcul() override;
   inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { modifier_pour_Cl_elem(matrice,secmem); }
   inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd,const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_CONV_ELEM,Eval_Centre_VDF_Elem>(zd,zcd,ch); }
   inline void associer_vitesse(const Champ_base& ch_vit) override { associer_vitesse_impl<Eval_Centre_VDF_Elem>(ch_vit); }
@@ -106,6 +106,7 @@ class Op_Conv_Centre4_VDF_Elem : public Op_Conv_VDF_base, public Op_Conv_VDF<Op_
   Declare_instanciable_sans_constructeur(Op_Conv_Centre4_VDF_Elem);
 public:
   Op_Conv_Centre4_VDF_Elem();
+  void preparer_calcul() override;
   inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd,const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_CONV_ELEM,Eval_Centre4_VDF_Elem>(zd,zcd,ch); }
   inline void associer_vitesse(const Champ_base& ch_vit) override { associer_vitesse_impl<Eval_Centre4_VDF_Elem>(ch_vit); }
   inline Champ_base& vitesse() override { return vitesse_impl<Eval_Centre4_VDF_Elem>(); }
@@ -123,6 +124,7 @@ class Op_Conv_Quick_VDF_Elem : public Op_Conv_VDF_base, public Op_Conv_VDF<Op_Co
   Declare_instanciable_sans_constructeur(Op_Conv_Quick_VDF_Elem);
 public:
   Op_Conv_Quick_VDF_Elem();
+  void preparer_calcul() override;
   inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { modifier_pour_Cl_elem(matrice,secmem); }
   inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd,const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_CONV_ELEM,Eval_Quick_VDF_Elem>(zd,zcd,ch); }
   inline void associer_vitesse(const Champ_base& ch_vit) override { associer_vitesse_impl<Eval_Quick_VDF_Elem>(ch_vit); }

@@ -50,7 +50,7 @@ public:
   void associer(const Zone_VDF&, const Zone_Cl_VDF&, const Operateur_base&);
   void associer(const Zone_dis&, const Zone_Cl_dis&, const Operateur_base&);
   void associer_zone_cl_dis(const Zone_Cl_dis_base&);
-  void associer_champ_convecte(const Champ_Inc& ch) { le_champ_convecte_ = ch.valeur(); }
+  void associer_champ_convecte(const Champ_Inc_base& ch) { le_champ_convecte_ = ch; }
   virtual void ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const=0;
 
   virtual void calculer_flux_bord(const DoubleTab&) const;
