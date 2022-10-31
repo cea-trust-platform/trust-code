@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <Op_Div_VDF_base.h>
+#include <Pb_Multiphase.h>
 
 Implemente_base(Op_Div_VDF_base,"Op_Div_VDF_base",Operateur_Div_base);
 
@@ -25,6 +26,7 @@ void Op_Div_VDF_base::completer()
   Operateur_base::completer();
   iter->completer_();
   iter->associer_champ_convecte_ou_inc(equation().inconnue());
+  iter->set_convective_op_pb_type(false /* div op */, sub_type(Pb_Multiphase, equation().probleme()));
 }
 
 int Op_Div_VDF_base::impr(Sortie& os) const

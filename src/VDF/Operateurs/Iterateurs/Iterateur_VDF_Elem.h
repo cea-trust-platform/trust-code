@@ -18,8 +18,8 @@
 
 #include <Schema_Temps_base.h>
 #include <Op_Conv_VDF_base.h>
-#include <Equation_base.h>
 #include <Probleme_base.h>
+#include <Equation_base.h>
 #include <EcrFicPartage.h>
 #include <Milieu_base.h>
 #include <TRUSTTrav.h>

@@ -17,7 +17,7 @@
 #include <Op_Diff_VDF_base.h>
 #include <Champ_front_calc.h>
 #include <Eval_Diff_VDF.h>
-#include <Probleme_base.h>
+#include <Pb_Multiphase.h>
 #include <TRUSTTrav.h>
 #include <Champ_Don.h>
 #include <Operateur.h>
@@ -36,6 +36,7 @@ void Op_Diff_VDF_base::completer()
     {
       iter->completer_();
       iter->associer_champ_convecte_ou_inc(equation().inconnue());
+      iter->set_convective_op_pb_type(false /* diff op */, sub_type(Pb_Multiphase, equation().probleme()));
     }
 }
 

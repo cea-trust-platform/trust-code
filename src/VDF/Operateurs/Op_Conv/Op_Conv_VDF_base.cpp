@@ -48,7 +48,7 @@ int Op_Conv_VDF_base::impr(Sortie& os) const
 void Op_Conv_VDF_base::preparer_calcul()
 {
   Operateur_Conv_base::preparer_calcul(); /* ne fait rien */
-  iter->set_convective_op_type(true /* convective op */);
+  iter->set_convective_op_pb_type(true /* convective op */, sub_type(Pb_Multiphase, equation().probleme()));
 }
 
 void Op_Conv_VDF_base::associer_champ_convecte()

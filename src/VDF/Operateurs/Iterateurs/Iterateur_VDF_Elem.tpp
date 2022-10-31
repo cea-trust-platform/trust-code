@@ -140,14 +140,14 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_interne(const int N, matrices_t m
 
   Matrice_Morse *m_vit = mats.count("vitesse") ? mats.at("vitesse") : NULL;
   std::vector<std::tuple<const DoubleTab *, Matrice_Morse *, int>> d_cc; //liste des derivees de cc a renseigner : couples (derivee de cc, matrice, nb de compos de la variable)
-  if (is_convective_op() && !semi_impl.count(nom_ch))
+  if (is_pb_multiphase() && is_convective_op() && !semi_impl.count(nom_ch))
     {
       for (auto &i_m : mats)
         if (le_champ_convecte_ou_inc->derivees().count(i_m.first))
           d_cc.push_back(std::make_tuple(&le_champ_convecte_ou_inc->derivees().at(i_m.first), i_m.second, op_base->equation().probleme().get_champ(i_m.first.c_str()).valeurs().line_size()));
     }
 
-  Matrice_Morse* mat = (mats.count(nom_ch)) ? mats.at(nom_ch) : NULL;
+  Matrice_Morse* mat = (!is_pb_multiphase() && mats.count(nom_ch)) ? mats.at(nom_ch) : NULL;
 
   Type_Double flux(N), aii(N), ajj(N), aef(N);
   const int ndeb = la_zone->premiere_face_int(), nfin = la_zone->nb_faces(), Mv = N; // il faudrait Mv = vitesse.line_size();
@@ -211,13 +211,13 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const BC& cl, const int nd
 
       Matrice_Morse *m_vit = mats.count("vitesse") ? mats.at("vitesse") : NULL;
       std::vector<std::tuple<const DoubleTab *, Matrice_Morse *, int>> d_cc; //liste des derivees de cc a renseigner : couples (derivee de cc, matrice, nb de compos de la variable)
-      if (is_convective_op() && !semi_impl.count(nom_ch))
+      if (is_pb_multiphase()&& is_convective_op() && !semi_impl.count(nom_ch))
         {
           for (auto &i_m : mats)
             if (le_champ_convecte_ou_inc->derivees().count(i_m.first))
               d_cc.push_back(std::make_tuple(&le_champ_convecte_ou_inc->derivees().at(i_m.first), i_m.second, op_base->equation().probleme().get_champ(i_m.first.c_str()).valeurs().line_size()));
         }
-      Matrice_Morse* mat = (mats.count(nom_ch)) ? mats.at(nom_ch) : NULL;
+      Matrice_Morse* mat = (!is_pb_multiphase() && mats.count(nom_ch)) ? mats.at(nom_ch) : NULL;
 
       int e, Mv = N;
       Type_Double flux(N), aii(N), ajj(N), aef(N);
@@ -280,13 +280,13 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Periodique& cl, cons
 
       Matrice_Morse *m_vit = mats.count("vitesse") ? mats.at("vitesse") : NULL;
       std::vector<std::tuple<const DoubleTab *, Matrice_Morse *, int>> d_cc; //liste des derivees de cc a renseigner : couples (derivee de cc, matrice, nb de compos de la variable)
-      if (is_convective_op() && !semi_impl.count(nom_ch))
+      if (is_pb_multiphase() && is_convective_op() && !semi_impl.count(nom_ch))
         {
           for (auto &i_m : mats)
             if (le_champ_convecte_ou_inc->derivees().count(i_m.first))
               d_cc.push_back(std::make_tuple(&le_champ_convecte_ou_inc->derivees().at(i_m.first), i_m.second, op_base->equation().probleme().get_champ(i_m.first.c_str()).valeurs().line_size()));
         }
-      Matrice_Morse* mat = (mats.count(nom_ch)) ? mats.at(nom_ch) : NULL;
+      Matrice_Morse* mat = (!is_pb_multiphase() && mats.count(nom_ch)) ? mats.at(nom_ch) : NULL;
 
       Type_Double flux(N), aii(N), ajj(N), aef(N);
       for (int face = ndeb; face < nfin; face++)
@@ -357,13 +357,13 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Echange_externe_impo
 
       Matrice_Morse *m_vit = mats.count("vitesse") ? mats.at("vitesse") : NULL;
       std::vector<std::tuple<const DoubleTab *, Matrice_Morse *, int>> d_cc; //liste des derivees de cc a renseigner : couples (derivee de cc, matrice, nb de compos de la variable)
-      if (is_convective_op() && !semi_impl.count(nom_ch))
+      if (is_pb_multiphase() && is_convective_op() && !semi_impl.count(nom_ch))
         {
           for (auto &i_m : mats)
             if (le_champ_convecte_ou_inc->derivees().count(i_m.first))
               d_cc.push_back(std::make_tuple(&le_champ_convecte_ou_inc->derivees().at(i_m.first), i_m.second, op_base->equation().probleme().get_champ(i_m.first.c_str()).valeurs().line_size()));
         }
-      Matrice_Morse* mat = (mats.count(nom_ch)) ? mats.at(nom_ch) : NULL;
+      Matrice_Morse* mat = (!is_pb_multiphase() && mats.count(nom_ch)) ? mats.at(nom_ch) : NULL;
 
       Type_Double flux(N), aii(N), ajj(N), aef(N);
       int boundary_index = -1;
