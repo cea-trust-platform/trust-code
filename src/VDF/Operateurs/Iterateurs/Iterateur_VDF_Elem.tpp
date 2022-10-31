@@ -22,7 +22,7 @@
 #include <communications.h>
 #include <TRUSTSingle.h>
 
-template <class _TYPE_>
+template<class _TYPE_>
 void Iterateur_VDF_Elem<_TYPE_>::ajouter_contribution_autre_pb(const DoubleTab& inco, Matrice_Morse& matrice, const Cond_lim& la_cl, std::map<int, std::pair<int, int>>& f2e) const
 {
   const int ncomp = inco.line_size();
@@ -31,12 +31,13 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_contribution_autre_pb(const DoubleTab& 
   const int ndeb = frontiere_dis.num_premiere_face(), nfin = ndeb + frontiere_dis.nb_faces();
   if (_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP)
     {
-      const Echange_global_impose& cl =(const Echange_global_impose&) (la_cl.valeur());
+      const Echange_global_impose& cl = (const Echange_global_impose&) (la_cl.valeur());
       for (int f = ndeb; f < nfin; f++)
         {
           const int e1 = f2e[f].first, e2 = f2e[f].second;
           flux_evaluateur.coeffs_face(f, ndeb, cl, aii, ajj);
-          for (int i = 0; i < ncomp; i++) matrice(e1*ncomp+i,e2*ncomp+i) = -(elem(f, 0) > -1 ? aii[i] : ajj[i]);
+          for (int i = 0; i < ncomp; i++)
+            matrice(e1 * ncomp + i, e2 * ncomp + i) = -(elem(f, 0) > -1 ? aii[i] : ajj[i]);
         }
     }
 }
@@ -45,7 +46,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_contribution_autre_pb(const DoubleTab& 
  * *********  INTERFACE  BLOCS ********** *
  * ************************************** */
 
-template <class _TYPE_>
+template<class _TYPE_>
 void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   ((_TYPE_&) flux_evaluateur).mettre_a_jour();
@@ -53,7 +54,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs(matrices_t mats, DoubleTab& secme
   const int ncomp = op_base->equation().inconnue().valeurs().line_size();
   DoubleTab& flux_bords = op_base->flux_bords();
   flux_bords.resize(la_zone->nb_faces_bord(), ncomp);
-  flux_bords=0;
+  flux_bords = 0.;
   // modif b.m.: on va faire += sur des items virtuels, initialiser les cases : sinon risque que les cases soient invalides ou non initialisees
   {
     int n = secmem.size_array() - secmem.size();
@@ -62,13 +63,13 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs(matrices_t mats, DoubleTab& secme
   }
   if (ncomp == 1)
     {
-      ajouter_blocs_bords<SingleDouble>(ncomp, mats, secmem, semi_impl);
-      ajouter_blocs_interne<SingleDouble>(ncomp, mats, secmem, semi_impl);
+      ajouter_blocs_bords < SingleDouble > (ncomp, mats, secmem, semi_impl);
+      ajouter_blocs_interne < SingleDouble > (ncomp, mats, secmem, semi_impl);
     }
   else
     {
-      ajouter_blocs_bords<ArrOfDouble>(ncomp, mats, secmem, semi_impl);
-      ajouter_blocs_interne<ArrOfDouble>(ncomp, mats, secmem, semi_impl);
+      ajouter_blocs_bords < ArrOfDouble > (ncomp, mats, secmem, semi_impl);
+      ajouter_blocs_interne < ArrOfDouble > (ncomp, mats, secmem, semi_impl);
     }
   modifier_flux();
 }
@@ -132,14 +133,11 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords(const int ncomp, matrices_t
     }
 }
 
-template <class _TYPE_> template <typename Type_Double>
+template<class _TYPE_> template<typename Type_Double>
 void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_interne(const int N, matrices_t mats, DoubleTab& resu, const tabs_t& semi_impl) const
 {
   const std::string& nom_ch = le_champ_convecte_ou_inc->le_nom().getString();
   const DoubleTab& donnee = semi_impl.count(nom_ch) ? semi_impl.at(nom_ch) : le_champ_convecte_ou_inc->valeurs();
-  Matrice_Morse *m_vit = mats.count("vitesse") ? mats.at("vitesse") : NULL, *mat = (!is_pb_multiphase() && mats.count(nom_ch)) ? mats.at(nom_ch) : NULL;
-  VectorDeriv d_cc;
-  fill_derivee_cc(mats,semi_impl,d_cc);
 
   Type_Double flux(N), aii(N), ajj(N), aef(N);
   const int ndeb = la_zone->premiere_face_int(), nfin = la_zone->nb_faces(), Mv = N; // il faudrait Mv = vitesse.line_size();
@@ -154,6 +152,10 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_interne(const int N, matrices_t m
           resu(e1, k) -= flux[k];
         }
     }
+
+  Matrice_Morse *m_vit = mats.count("vitesse") ? mats.at("vitesse") : nullptr, *mat = (!is_pb_multiphase() && mats.count(nom_ch)) ? mats.at(nom_ch) : nullptr;
+  VectorDeriv d_cc;
+  fill_derivee_cc(mats, semi_impl, d_cc);
 
   //derivees : vitesse
   if (m_vit)
@@ -170,25 +172,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_interne(const int N, matrices_t m
     for (int face = ndeb; face < nfin; face++)
       {
         flux_evaluateur.coeffs_faces_interne(face, aii, ajj);
-        const int e0 = elem(face, 0), e1 = elem(face, 1);
-        if (mat)
-          for (int n = 0; n < N; n++)
-            {
-              const int i0 = N * e0 + n, j0 = N * e1 + n;
-              (*mat)(i0, i0) += aii[n];
-              (*mat)(i0, j0) -= ajj[n];
-              (*mat)(j0, j0) += ajj[n];
-              (*mat)(j0, i0) -= aii[n];
-            }
-        else for (auto &&d_m_i : d_cc)
-            for (int n = 0, m = 0, M = std::get<2>(d_m_i); n < N; n++, m += (M > 1))
-              {
-                const int i0 = N * e0 + n, j0 = M * e1 + m;
-                (*std::get<1>(d_m_i))(i0, i0) += aii[n] * (*std::get<0>(d_m_i))(e0, m);
-                (*std::get<1>(d_m_i))(i0, j0) -= ajj[n] * (*std::get<0>(d_m_i))(e1, m);
-                (*std::get<1>(d_m_i))(j0, j0) += ajj[n] * (*std::get<0>(d_m_i))(e1, m);
-                (*std::get<1>(d_m_i))(j0, i0) -= aii[n] * (*std::get<0>(d_m_i))(e0, m);
-              }
+        fill_coeffs_matrices(face, 1.0 /* coeff */, aii, ajj, mat, d_cc);
       }
 }
 
@@ -198,14 +182,11 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const BC& cl, const int nd
   constexpr bool is_Neum_paroi_adiab = std::is_same<BC, Neumann_paroi_adiabatique>::value;
   if (should_calc_flux)
     {
-      if (is_Neum_paroi_adiab) Process::exit(); // On bloque ici :-)
+      if (is_Neum_paroi_adiab)
+        Process::exit(); // On bloque ici :-)
 
       const std::string& nom_ch = le_champ_convecte_ou_inc->le_nom().getString();
       const DoubleTab& donnee = semi_impl.count(nom_ch) ? semi_impl.at(nom_ch) : le_champ_convecte_ou_inc->valeurs();
-
-      Matrice_Morse *m_vit = mats.count("vitesse") ? mats.at("vitesse") : NULL, *mat = (!is_pb_multiphase() && mats.count(nom_ch)) ? mats.at(nom_ch) : NULL;
-      VectorDeriv d_cc;
-      fill_derivee_cc(mats,semi_impl,d_cc);
 
       int e, Mv = N;
       Type_Double flux(N), aii(N), ajj(N), aef(N);
@@ -214,6 +195,10 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const BC& cl, const int nd
           flux_evaluateur.flux_face(donnee, face, cl, ndeb, flux); // Generic code
           fill_flux_tables_(face, N, 1.0 /* coeff */, flux, resu);
         }
+
+      Matrice_Morse *m_vit = mats.count("vitesse") ? mats.at("vitesse") : nullptr, *mat = (!is_pb_multiphase() && mats.count(nom_ch)) ? mats.at(nom_ch) : nullptr;
+      VectorDeriv d_cc;
+      fill_derivee_cc(mats, semi_impl, d_cc);
 
       //derivees : vitesse
       if (m_vit)
@@ -230,47 +215,21 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const BC& cl, const int nd
       if (mat || d_cc.size() > 0)
         for (int face = ndeb; face < nfin; face++)
           {
-            const int e0 = elem(face, 0), e1 = elem(face, 1);
             flux_evaluateur.coeffs_face(face, ndeb, cl, aii, ajj); // Generic code
-            if (mat)
-              {
-                if (e0 > -1)
-                  for (int n = 0; n < N; n++) (*mat)(e0 * N + n, e0 * N + n) += aii[n];
-
-                if (e1 > -1)
-                  for (int n = 0; n < N; n++) (*mat)(e1 * N + n, e1 * N + n) += ajj[n];
-              }
-            else for (auto &&d_m_i : d_cc)
-                {
-                  if (e0 > -1)
-                    for (int n = 0, m = 0, M = std::get < 2 > (d_m_i); n < N; n++, m += (M > 1))
-                      {
-                        const int i0 = N * e0 + n;
-                        (*std::get < 1 > (d_m_i))(i0, i0) += aii[n] * (*std::get < 0 > (d_m_i))(e0, m);
-                      }
-                  if (e1 > -1)
-                    for (int n = 0, m = 0, M = std::get < 2 > (d_m_i); n < N; n++, m += (M > 1))
-                      {
-                        const int j0 = M * e1 + m;
-                        (*std::get < 1 > (d_m_i))(j0, j0) += ajj[n] * (*std::get < 0 > (d_m_i))(e1, m);
-                      }
-                }
+            fill_coeffs_matrices(face, aii, ajj, mat, d_cc);
           }
     }
 }
 
 template<class _TYPE_> template<typename Type_Double>
-void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Periodique& cl, const int ndeb, const int nfin, const int N, const Front_VF& frontiere_dis, matrices_t mats, DoubleTab& resu, const tabs_t& semi_impl) const
+void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Periodique& cl, const int ndeb, const int nfin, const int N, const Front_VF& frontiere_dis,
+                                                      matrices_t mats, DoubleTab& resu, const tabs_t& semi_impl) const
 {
   DoubleTab& flux_bords = op_base->flux_bords();
   if (_TYPE_::CALC_FLUX_FACES_PERIO)
     {
       const std::string& nom_ch = le_champ_convecte_ou_inc->le_nom().getString();
       const DoubleTab& donnee = semi_impl.count(nom_ch) ? semi_impl.at(nom_ch) : le_champ_convecte_ou_inc->valeurs();
-
-      Matrice_Morse *m_vit = mats.count("vitesse") ? mats.at("vitesse") : NULL, *mat = (!is_pb_multiphase() && mats.count(nom_ch)) ? mats.at(nom_ch) : NULL;
-      VectorDeriv d_cc;
-      fill_derivee_cc(mats,semi_impl,d_cc);
 
       Type_Double flux(N), aii(N), ajj(N), aef(N);
       for (int face = ndeb; face < nfin; face++)
@@ -293,62 +252,47 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Periodique& cl, cons
             }
         }
 
+      Matrice_Morse *m_vit = mats.count("vitesse") ? mats.at("vitesse") : nullptr, *mat = (!is_pb_multiphase() && mats.count(nom_ch)) ? mats.at(nom_ch) : nullptr;
+      VectorDeriv d_cc;
+      fill_derivee_cc(mats, semi_impl, d_cc);
+
       //derivees : vitesse
       if (m_vit)
         for (int face = ndeb; face < nfin; face++)
           {
             const int e0 = elem(face, 0), e1 = elem(face, 1);
             flux_evaluateur.coeffs_face_bloc_vitesse(donnee, face, cl, ndeb, aef);
-            if ( e0 > -1)
+            if (e0 > -1)
               for (int i = 0; i < N; i++)
-                if ( face < (ndeb + frontiere_dis.nb_faces()/2) ) (*m_vit)(e0*N+i,face*N+i) += aef[i];
-            if ( e1 > -1)
+                if (face < (ndeb + frontiere_dis.nb_faces() / 2)) (*m_vit)(e0 * N + i, face * N + i) += aef[i];
+            if (e1 > -1)
               for (int i = 0; i < N; i++)
-                if ( (ndeb + frontiere_dis.nb_faces()/2) <= face ) (*m_vit)(e1*N+i,face*N+i) -= aef[i];
+                if ((ndeb + frontiere_dis.nb_faces() / 2) <= face) (*m_vit)(e1 * N + i, face * N + i) -= aef[i];
           }
 
       //derivees : champ convecte
       if (mat || d_cc.size() > 0)
         for (int face = ndeb; face < nfin; face++)
           {
-            const int e0 = elem(face, 0), e1 = elem(face, 1);
             flux_evaluateur.coeffs_face(face, ndeb, cl, aii, ajj);
-            if (mat)
-              for (int n = 0; n < N; n++)
-                {
-                  const int i0 = N * e0 + n, j0 = N * e1 + n;
-                  (*mat)(i0, i0) += 0.5 * aii[n];
-                  (*mat)(i0, j0) -= 0.5 * ajj[n];
-                  (*mat)(j0, j0) += 0.5 * ajj[n];
-                  (*mat)(j0, i0) -= 0.5 * aii[n];
-                }
-            else for (auto &&d_m_i : d_cc)
-                for (int n = 0, m = 0, M = std::get < 2 > (d_m_i); n < N; n++, m += (M > 1))
-                  {
-                    const int i0 = N * e0 + n, j0 = M * e1 + m;
-                    (*std::get < 1 > (d_m_i))(i0, i0) += 0.5 * aii[n] * (*std::get < 0 > (d_m_i))(e0, m);
-                    (*std::get < 1 > (d_m_i))(i0, j0) -= 0.5 * ajj[n] * (*std::get < 0 > (d_m_i))(e1, m);
-                    (*std::get < 1 > (d_m_i))(j0, j0) += 0.5 * ajj[n] * (*std::get < 0 > (d_m_i))(e1, m);
-                    (*std::get < 1 > (d_m_i))(j0, i0) -= 0.5 * aii[n] * (*std::get < 0 > (d_m_i))(e0, m);
-                  }
+            fill_coeffs_matrices(face, 0.5 /* coeff */, aii, ajj, mat, d_cc);
           }
     }
 }
 
 template<class _TYPE_> template<typename Type_Double>
-void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Echange_externe_impose& cl, const int ndeb, const int nfin, const int num_cl, const int N, const Front_VF& frontiere_dis, matrices_t mats, DoubleTab& resu, const tabs_t& semi_impl) const
+void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Echange_externe_impose& cl, const int ndeb, const int nfin, const int num_cl, const int N, const Front_VF& frontiere_dis,
+                                                      matrices_t mats, DoubleTab& resu, const tabs_t& semi_impl) const
 {
   if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
     {
       const std::string& nom_ch = le_champ_convecte_ou_inc->le_nom().getString();
       const DoubleTab& donnee = semi_impl.count(nom_ch) ? semi_impl.at(nom_ch) : le_champ_convecte_ou_inc->valeurs();
-      Matrice_Morse *m_vit = mats.count("vitesse") ? mats.at("vitesse") : NULL, * mat = (!is_pb_multiphase() && mats.count(nom_ch)) ? mats.at(nom_ch) : NULL;
-      VectorDeriv d_cc;
-      fill_derivee_cc(mats,semi_impl,d_cc);
 
       Type_Double flux(N), aii(N), ajj(N), aef(N);
       int boundary_index = -1;
-      if (la_zone.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom()) boundary_index = num_cl;
+      if (la_zone.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
+        boundary_index = num_cl;
 
       int e, Mv = N;
       for (int face = ndeb; face < nfin; face++)
@@ -358,65 +302,53 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Echange_externe_impo
           fill_flux_tables_(face, N, 1.0 /* coeff */, flux, resu);
         }
 
+      Matrice_Morse *m_vit = mats.count("vitesse") ? mats.at("vitesse") : nullptr, *mat = (!is_pb_multiphase() && mats.count(nom_ch)) ? mats.at(nom_ch) : nullptr;
+      VectorDeriv d_cc;
+      fill_derivee_cc(mats, semi_impl, d_cc);
+
       //derivees : vitesse
       if (m_vit)
         for (int face = ndeb; face < nfin; face++)
           {
             const int local_face = la_zone.valeur().front_VF(boundary_index).num_local_face(face);
-            flux_evaluateur.coeffs_face_bloc_vitesse(donnee, boundary_index, face, local_face, cl, ndeb,aef);
+            flux_evaluateur.coeffs_face_bloc_vitesse(donnee, boundary_index, face, local_face, cl, ndeb, aef);
 
             for (int i = 0; i < 2; i++)
               if ((e = elem(face, i)) >= 0)
-                for (int n = 0, m = 0; n < N; n++, m += (Mv > 1))
-                  (*m_vit)(N * e + n, Mv * face + m) += (i ? -1.0 : 1.0) * aef(n);
+                for (int n = 0, m = 0; n < N; n++, m += (Mv > 1)) (*m_vit)(N * e + n, Mv * face + m) += (i ? -1.0 : 1.0) * aef(n);
           }
 
       //derivees : champ convecte
       if (mat || d_cc.size() > 0)
         for (int face = ndeb; face < nfin; face++)
           {
-            const int local_face = la_zone.valeur().front_VF(boundary_index).num_local_face(face), e0 = elem(face, 0), e1 = elem(face, 1);
+            const int local_face = la_zone.valeur().front_VF(boundary_index).num_local_face(face);
             flux_evaluateur.coeffs_face(boundary_index, face, local_face, ndeb, cl, aii, ajj);
-            if (mat)
-              {
-                if (e0 > -1)
-                  for (int n = 0; n < N; n++) (*mat)(e0 * N + n, e0 * N + n) += aii[n];
-                if (e1 > -1)
-                  for (int n = 0; n < N; n++) (*mat)(e1 * N + n, e1 * N + n) += ajj[n];
-              }
-            else for (auto &&d_m_i : d_cc)
-                {
-                  if (e0 > -1)
-                    for (int n = 0, m = 0, M = std::get < 2 > (d_m_i); n < N; n++, m += (M > 1))
-                      (*std::get < 1 > (d_m_i))(e0 * N + n, e0 * M + m) += aii[n] * (*std::get < 0 > (d_m_i))(e0, m);
-                  if (e1 > -1)
-                    for (int n = 0, m = 0, M = std::get < 2 > (d_m_i); n < N; n++, m += (M > 1))
-                      (*std::get < 1 > (d_m_i))(e1 * N + n, e1 * M + m) += ajj[n] * (*std::get < 0 > (d_m_i))(e1, m);
-                }
+            fill_coeffs_matrices(face, aii, ajj, mat, d_cc); // XXX : Attention Yannick pour d_cc c'est pas tout a fait comme avant ... N et M ...
           }
     }
 }
 
-template <class _TYPE_> template <typename Type_Double>
-inline void Iterateur_VDF_Elem<_TYPE_>::fill_flux_tables_(const int face, const int ncomp, const double coeff , const Type_Double& flux, DoubleTab& resu) const
+template<class _TYPE_> template<typename Type_Double>
+inline void Iterateur_VDF_Elem<_TYPE_>::fill_flux_tables_(const int face, const int ncomp, const double coeff, const Type_Double& flux, DoubleTab& resu) const
 {
   DoubleTab& flux_bords = op_base->flux_bords();
-  const int elem1 = elem(face,0), elem2 = elem(face,1);
-  if ( elem1 > -1 )
+  const int elem1 = elem(face, 0), elem2 = elem(face, 1);
+  if (elem1 > -1)
     for (int k = 0; k < ncomp; k++)
       {
-        resu(elem1,k) += coeff*flux[k];
-        flux_bords(face,k) += coeff*flux[k];
+        resu(elem1, k) += coeff * flux[k];
+        flux_bords(face, k) += coeff * flux[k];
       }
-  if ( elem2 > -1 )
+  if (elem2 > -1)
     for (int k = 0; k < ncomp; k++)
       {
-        resu(elem2,k) -= coeff*flux[k];
-        flux_bords(face,k) -= coeff*flux[k];
+        resu(elem2, k) -= coeff * flux[k];
+        flux_bords(face, k) -= coeff * flux[k];
       }
 }
 
-template <class _TYPE_>
+template<class _TYPE_>
 inline void Iterateur_VDF_Elem<_TYPE_>::fill_derivee_cc(matrices_t mats, const tabs_t& semi_impl, VectorDeriv& d_cc) const
 {
   //liste des derivees de cc a renseigner : couples (derivee de cc, matrice, nb de compos de la variable)
@@ -427,6 +359,60 @@ inline void Iterateur_VDF_Elem<_TYPE_>::fill_derivee_cc(matrices_t mats, const t
           d_cc.push_back(std::make_tuple(&le_champ_convecte_ou_inc->derivees().at(i_m.first), i_m.second, op_base->equation().probleme().get_champ(i_m.first.c_str()).valeurs().line_size()));
     }
   else assert(d_cc.size() == 0);
+}
+
+template<class _TYPE_> template<typename Type_Double>
+inline void Iterateur_VDF_Elem<_TYPE_>::fill_coeffs_matrices(const int face, const double coeff, Type_Double& aii, Type_Double& ajj, Matrice_Morse *mat, VectorDeriv& d_cc) const
+{
+  const int e0 = elem(face, 0), e1 = elem(face, 1), N = aii.size_array();
+  if (mat)
+    for (int n = 0; n < N; n++)
+      {
+        const int i0 = N * e0 + n, j0 = N * e1 + n;
+        (*mat)(i0, i0) += coeff * aii[n];
+        (*mat)(i0, j0) -= coeff * ajj[n];
+        (*mat)(j0, j0) += coeff * ajj[n];
+        (*mat)(j0, i0) -= coeff * aii[n];
+      }
+  else
+    for (auto &&d_m_i : d_cc)
+      for (int n = 0, m = 0, M = std::get<2> (d_m_i); n < N; n++, m += (M > 1))
+        {
+          const int i0 = N * e0 + n, j0 = M * e1 + m;
+          (*std::get<1> (d_m_i))(i0, i0) += coeff * aii[n] * (*std::get<0> (d_m_i))(e0, m);
+          (*std::get<1> (d_m_i))(i0, j0) -= coeff * ajj[n] * (*std::get<0> (d_m_i))(e1, m);
+          (*std::get<1> (d_m_i))(j0, j0) += coeff * ajj[n] * (*std::get<0> (d_m_i))(e1, m);
+          (*std::get<1> (d_m_i))(j0, i0) -= coeff * aii[n] * (*std::get<0> (d_m_i))(e0, m);
+        }
+}
+
+template<class _TYPE_> template<typename Type_Double>
+inline void Iterateur_VDF_Elem<_TYPE_>::fill_coeffs_matrices(const int face, Type_Double& aii, Type_Double& ajj, Matrice_Morse *mat, VectorDeriv& d_cc) const
+{
+  const int e0 = elem(face, 0), e1 = elem(face, 1), N = aii.size_array();
+  if (mat)
+    {
+      if (e0 > -1)
+        for (int n = 0; n < N; n++) (*mat)(e0 * N + n, e0 * N + n) += aii[n];
+      if (e1 > -1)
+        for (int n = 0; n < N; n++) (*mat)(e1 * N + n, e1 * N + n) += ajj[n];
+    }
+  else
+    for (auto &&d_m_i : d_cc)
+      {
+        if (e0 > -1)
+          for (int n = 0, m = 0, M = std::get<2> (d_m_i); n < N; n++, m += (M > 1))
+            {
+              const int i0 = N * e0 + n;
+              (*std::get<1> (d_m_i))(i0, i0) += aii[n] * (*std::get<0> (d_m_i))(e0, m);
+            }
+        if (e1 > -1)
+          for (int n = 0, m = 0, M = std::get<2> (d_m_i); n < N; n++, m += (M > 1))
+            {
+              const int j0 = M * e1 + m;
+              (*std::get<1> (d_m_i))(j0, j0) += ajj[n] * (*std::get<0> (d_m_i))(e1, m);
+            }
+      }
 }
 
 #include <Iterateur_VDF_Elem_bis.tpp>

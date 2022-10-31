@@ -90,6 +90,8 @@ private:
 
   using VectorDeriv = std::vector<std::tuple<const DoubleTab *, Matrice_Morse *, int>>;
   void fill_derivee_cc(matrices_t mats, const tabs_t& semi_impl, VectorDeriv& d_cc) const;
+  template<typename Type_Double> void fill_coeffs_matrices(const int, Type_Double&, Type_Double&, Matrice_Morse*, VectorDeriv&) const;
+  template<typename Type_Double> void fill_coeffs_matrices(const int, const double, Type_Double&, Type_Double&, Matrice_Morse*, VectorDeriv&) const;
 
   /* ************************************** *
    * *********  A VIRER UN JOUR  ********** *
