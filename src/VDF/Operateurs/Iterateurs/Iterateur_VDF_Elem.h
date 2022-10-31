@@ -88,6 +88,9 @@ private:
   void modifier_flux() const;
   template <typename Type_Double> inline void fill_flux_tables_(const int, const int , const double , const Type_Double& , DoubleTab& ) const;
 
+  using VectorDeriv = std::vector<std::tuple<const DoubleTab *, Matrice_Morse *, int>>;
+  void fill_derivee_cc(matrices_t mats, const tabs_t& semi_impl, VectorDeriv& d_cc) const;
+
   /* ************************************** *
    * *********  A VIRER UN JOUR  ********** *
    * ************************************** */
