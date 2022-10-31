@@ -20,13 +20,6 @@ Implemente_base(Iterateur_VDF_base, "Iterateur_VDF_base", Objet_U);
 Entree& Iterateur_VDF_base::readOn(Entree& s) { return s; }
 Sortie& Iterateur_VDF_base::printOn(Sortie& s) const { return s << que_suis_je(); }
 
-void Iterateur_VDF_base::associer(const Zone_dis& z, const Zone_Cl_dis& zcl, const Operateur_base& op)
-{
-  const Zone_VDF& zone_vdf = ref_cast(Zone_VDF, z.valeur());
-  const Zone_Cl_VDF& zone_cl_vdf = ref_cast(Zone_Cl_VDF, zcl.valeur());
-  associer(zone_vdf, zone_cl_vdf, op);
-}
-
 void Iterateur_VDF_base::associer_zone_cl_dis(const Zone_Cl_dis_base& zcl)
 {
   const Zone_Cl_VDF& zone_cl_vdf = ref_cast(Zone_Cl_VDF, zcl);

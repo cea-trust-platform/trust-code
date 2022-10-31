@@ -24,13 +24,11 @@ class Champ_Fonc;
 /*! @brief class Op_Diff_VDF_base Classe de base des operateurs de diffusion VDF
  *
  */
-
 class Op_Diff_VDF_base : public Operateur_Diff_base
 {
   Declare_base(Op_Diff_VDF_base);
-
 public:
-  inline Op_Diff_VDF_base(const Iterateur_VDF_base& iter_base) : iter(iter_base), op_ext_init_(0) { }
+  inline Op_Diff_VDF_base(const Iterateur_VDF_base& iter_base) : iter(iter_base) { }
   void completer() override;
   void contribuer_au_second_membre(DoubleTab& ) const override;
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
@@ -45,8 +43,7 @@ public:
 
 protected:
   Iterateur_VDF iter;
-  mutable int op_ext_init_;
-
+  mutable int op_ext_init_ = 0;
 };
 
 #endif /* Op_Diff_VDF_base_included */

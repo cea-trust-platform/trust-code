@@ -29,7 +29,6 @@ public:
   inline int impr(Sortie& os) const { return valeur().impr(os); }
   inline void completer_() { valeur().completer_(); }
   inline void associer(const Zone_VDF& zvdf, const Zone_Cl_VDF& zcl_vdf, const Operateur_base& op) { valeur().associer(zvdf,zcl_vdf,op); }
-  inline void associer(const Zone_dis& zdis, const Zone_Cl_dis& zcl_dis, const Operateur_base& op) { valeur().associer(zdis,zcl_dis,op); }
   inline void contribuer_au_second_membre(DoubleTab& resu) const { valeur().contribuer_au_second_membre(resu); }
   inline void ajouter_contribution(const DoubleTab& inco, Matrice_Morse& matrice) const { valeur().ajouter_contribution(inco, matrice); }
   inline Evaluateur_VDF& evaluateur() { return valeur().evaluateur(); }

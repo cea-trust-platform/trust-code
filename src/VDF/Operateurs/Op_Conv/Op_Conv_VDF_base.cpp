@@ -53,13 +53,11 @@ void Op_Conv_VDF_base::preparer_calcul()
 
 void Op_Conv_VDF_base::associer_champ_convecte()
 {
+  if (sub_type(Pb_Multiphase, equation().probleme())) equation().init_champ_convecte();
+
   Op_Conv_VDF_base::preparer_calcul();
-  if (sub_type(Pb_Multiphase, equation().probleme()))
-    {
-      equation().init_champ_convecte();
-      const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco->valeur() : equation().champ_convecte();
-      iter->associer_champ_convecte(cc);
-    }
+  const Champ_Inc_base& cc = equation().has_champ_convecte() ? equation().champ_convecte() : equation().inconnue().valeur();
+  iter->associer_champ_convecte_ou_inc(cc);
 }
 
 void Op_Conv_VDF_base::ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const

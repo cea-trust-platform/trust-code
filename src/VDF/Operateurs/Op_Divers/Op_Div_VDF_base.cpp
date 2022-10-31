@@ -24,8 +24,7 @@ void Op_Div_VDF_base::completer()
 {
   Operateur_base::completer();
   iter->completer_();
-  const Champ_Inc& cc = le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue(); //equation().champ_convecte()
-  iter->associer_champ_convecte(cc);
+  iter->associer_champ_convecte_ou_inc(equation().inconnue());
 }
 
 int Op_Div_VDF_base::impr(Sortie& os) const
