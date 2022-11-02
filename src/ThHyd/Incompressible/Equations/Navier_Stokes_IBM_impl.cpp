@@ -141,7 +141,7 @@ void Navier_Stokes_IBM_impl::matrice_pression_IBM( )
 }
 
 
-void Navier_Stokes_IBM_impl::preparer_calcul_IBM(const Nom& nom_eq,const Nom& nom_eq2)
+void Navier_Stokes_IBM_impl::preparer_calcul_IBM(const bool& is_QC)
 {
   Cerr<<"(IBM) Immersed Interface: compute pressure matrix coefficients."<<finl;
   Source_PDF_base& src = dynamic_cast<Source_PDF_base&>((eq_NS->sources())[i_source_pdf_].valeur());
@@ -167,7 +167,7 @@ void Navier_Stokes_IBM_impl::preparer_calcul_IBM(const Nom& nom_eq,const Nom& no
     }
   else
     {
-      if ((nom_eq2==nom_eq))
+      if (!is_QC)
         {
           eq_NS->assembleur_pression().assembler(eq_NS->matrice_pression());
         }

@@ -169,7 +169,7 @@ protected:
   SolveurSys solveur_pression_;
 
   int projection_initiale;
-  double dt_projection, seuil_projection, seuil_uzawa, max_div_U, seuil_divU, raison_seuil_divU, LocalFlowRateRelativeError_;
+  double dt_projection, seuil_projection, seuil_uzawa, max_div_U, seuil_divU, raison_seuil_divU;
   mutable double cumulative_;
 
   Traitement_particulier_NS le_traitement_particulier;
@@ -187,6 +187,7 @@ private :
   DoubleTab P_n;
   // Pour ne pas calculer un gradient de plus si pas de postraitement du gradient de pression
   mutable int postraitement_gradient_P_;
+  double LocalFlowRateRelativeError() const;  // Estimation of a flow rate relative error
 };
 
 #endif /* Navier_Stokes_std_included */

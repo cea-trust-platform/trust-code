@@ -49,7 +49,6 @@ Navier_Stokes_std::Navier_Stokes_std():methode_calcul_pression_initiale_(0),div_
   seuil_uzawa = 1.e-12;
   seuil_divU = 100.;
   cumulative_=0;
-  LocalFlowRateRelativeError_=-1e20;
   raison_seuil_divU=-100;
   champs_compris_.ajoute_nom_compris("vorticite");
   champs_compris_.ajoute_nom_compris("critere_Q");
@@ -814,6 +813,7 @@ void Navier_Stokes_std::projeter()
     Cerr << "WARNING: Quasi compressible model --> no projection (except the first time step)." << finl;
   else
     {
+      Cerr << "Projection of initial and boundaries conditions " << finl;
       DoubleTab& tab_vitesse = la_vitesse.valeurs();
       tab_vitesse.echange_espace_virtuel();
       la_pression.valeurs().echange_espace_virtuel();
@@ -894,9 +894,6 @@ void Navier_Stokes_std::projeter()
           solv_iteratif& solv_iter=ref_cast(solv_iteratif,solveur_pression_.valeur());
           solv_iter.set_seuil(normal_seuil);
         }
-      divergence.calculer(la_vitesse.valeurs(),divergence_U.valeurs());
-      divergence_U.valeurs()=0.;  // on remet les bons flux bords
-
     }
   projection_initiale = 0;
 }
@@ -933,17 +930,14 @@ int Navier_Stokes_std::preparer_calcul()
   const double temps = schema_temps().temps_courant();
   sources().mettre_a_jour(temps);
   Equation_base::preparer_calcul();
-  Nom nom_eq=que_suis_je();
-  Nom nom_eq2(nom_eq);
-  nom_eq2.prefix("_QC");
-
+  bool is_QC = que_suis_je().finit_par("_QC");
   if ( is_IBM () )
     {
-      preparer_calcul_IBM(nom_eq, nom_eq2);
+      preparer_calcul_IBM(is_QC);
     }
   else
     {
-      if ((nom_eq2==nom_eq))
+      if (!is_QC)
         {
           assembleur_pression_.assembler(matrice_pression_);
         }
@@ -959,87 +953,71 @@ int Navier_Stokes_std::preparer_calcul()
   // C'est important pour le Simpler/Piso de bien repartir de la pression
   // sauvegardee...
   //la_pression.valeurs()=0.;
-  la_pression.changer_temps(temps);
-  // Calcul du gradient et mise au meme temps que la pression
-  gradient.calculer(la_pression.valeurs(), gradient_P.valeurs());
-  gradient_P.changer_temps(temps);
-
-
   Debog::verifier("Navier_Stokes_std::preparer_calcul, la_pression av projeter", la_pression.valeurs());
-
-  int proj_fait=0;
-
-
   if (projection_a_faire())
-    {
-      Cerr << "Projection of initial and boundaries conditions " << finl;
-      projeter();
-      proj_fait=1;
-    }
-  else
-    {
-      divergence.calculer(la_vitesse.valeurs(),divergence_U.valeurs());
-      divergence_U.valeurs()=0.;  // on remet les bons flux bords
-    }
-  divergence_U.changer_temps(temps);
+    projeter();
 
   // Au cas ou une cl de pression depend de u que l'on vient de modifier
   la_zone_Cl_dis->mettre_a_jour(temps);
-  gradient.calculer(la_pression.valeurs(), gradient_P.valeurs());
-
   Debog::verifier("Navier_Stokes_std::preparer_calcul, la_pression ap projeter", la_pression.valeurs());
 
   // Initialisation du champ de pression (resolution de Laplacien(P)=0 avec les conditions limites en pression)
   // Permet de demarrer la resolution avec une bonne approximation de la pression (important pour le Piso ou P!=0)
-  if  (methode_calcul_pression_initiale_!=3)
-    if (!probleme().reprise_effectuee())
-      {
-        Cout<<"Estimation du champ de pression au demarrage:" <<finl;
+  if  (!probleme().reprise_effectuee() && methode_calcul_pression_initiale_!=3)
+    {
+      Cout<<"Estimation du champ de pression au demarrage:" <<finl;
+      DoubleTrav secmem(la_pression.valeurs());
+      DoubleTrav vpoint(gradient_P.valeurs());
+      gradient.calculer(la_pression.valeurs(), gradient_P.valeurs());
+      vpoint-=gradient_P.valeurs();
+      if ( is_IBM() ) reprise_calcul_IBM(vpoint);
+      if (methode_calcul_pression_initiale_>=2)
+        for (int op=0; op<nombre_d_operateurs(); op++)
+          operateur(op).ajouter(vpoint);
+      if (methode_calcul_pression_initiale_>=1)
+        {
+          int mod=0;
+          if (le_schema_en_temps->pas_de_temps()==0)
+            {
+              double dt = std::max(le_schema_en_temps->pas_temps_min(),calculer_pas_de_temps());
+              dt = std::min(dt, le_schema_en_temps->pas_temps_max());
+              le_schema_en_temps->set_dt()=(dt);
+              mod=1;
+            }
+          sources().ajouter(vpoint);
+          if (is_IBM() && projection_initiale==0) pression_initiale_IBM(vpoint);
+          if (mod)
+            le_schema_en_temps->set_dt()=0;
+        }
 
-        DoubleTrav secmem(la_pression.valeurs());
-        DoubleTrav vpoint(gradient_P.valeurs());
-        vpoint-=gradient_P.valeurs();
-        if ( is_IBM() ) reprise_calcul_IBM(vpoint);
-        if (methode_calcul_pression_initiale_>=2)
-          for (int op=0; op<nombre_d_operateurs(); op++)
-            operateur(op).ajouter(vpoint);
-        if (methode_calcul_pression_initiale_>=1)
-          {
-            int mod=0;
-            if (le_schema_en_temps->pas_de_temps()==0)
-              {
-                double dt = std::max(le_schema_en_temps->pas_temps_min(),calculer_pas_de_temps());
-                dt = std::min(dt, le_schema_en_temps->pas_temps_max());
-                le_schema_en_temps->set_dt()=(dt);
-                mod=1;
-              }
-            sources().ajouter(vpoint);
-            if ( is_IBM() && proj_fait) pression_initiale_IBM(vpoint);
-            if (mod)
-              le_schema_en_temps->set_dt()=0;
-          }
+      solveur_masse.appliquer(vpoint);
+      vpoint.echange_espace_virtuel();
+      divergence.calculer(vpoint, secmem);
+      secmem*=-1;
+      secmem.echange_espace_virtuel();
 
-        solveur_masse.appliquer(vpoint);
-        vpoint.echange_espace_virtuel();
-        divergence.calculer(vpoint, secmem);
-        secmem*=-1;
-        secmem.echange_espace_virtuel();
+      assembleur_pression_->modifier_secmem_pour_incr_p(la_pression.valeurs(), 1, secmem);
+      DoubleTrav inc_pre(la_pression.valeurs());
+      solveur_pression_.resoudre_systeme(matrice_pression_.valeur(),secmem, inc_pre);
+      Cerr << "Pressure increment computed successfully" << finl;
 
-        assembleur_pression_->modifier_secmem_pour_incr_p(la_pression.valeurs(), 1, secmem);
-        DoubleTrav inc_pre(la_pression.valeurs());
-        solveur_pression_.resoudre_systeme(matrice_pression_.valeur(),secmem, inc_pre);
-        Cerr << "Pressure increment computed successfully" << finl;
+      if ( is_IBM() ) pression_correction_IBM( inc_pre );
 
-        if ( is_IBM() ) pression_correction_IBM( inc_pre );
-
-        // On veut que l'espace virtuel soit a jour, donc all_items
-        operator_add(la_pression.valeurs(), inc_pre, VECT_ALL_ITEMS);
-
-        gradient.calculer(la_pression.valeurs(),gradient_P.valeurs());
-        divergence.calculer(la_vitesse.valeurs(),divergence_U.valeurs());
-        divergence_U.valeurs()=0.;  // on remet les bons flux bords pour div
-      }
+      // On veut que l'espace virtuel soit a jour, donc all_items
+      operator_add(la_pression.valeurs(), inc_pre, VECT_ALL_ITEMS);
+    }
+  // Mise a jour pression
+  la_pression.changer_temps(temps);
   calculer_la_pression_en_pa();
+
+  // Calcul gradient_P
+  gradient.calculer(la_pression.valeurs(),gradient_P.valeurs());
+  gradient_P.changer_temps(temps);
+
+  // Calcul divergence_U
+  divergence.calculer(la_vitesse.valeurs(),divergence_U.valeurs());
+  //divergence_U.valeurs()=0.;
+  divergence_U.changer_temps(temps);
 
   if (le_traitement_particulier.non_nul())
     le_traitement_particulier.preparer_calcul_particulier();
@@ -1074,8 +1052,7 @@ void Navier_Stokes_std::mettre_a_jour(double temps)
   divergence_U.mettre_a_jour(temps);
 
   // Update the pressure field in Pascal
-  calculer_la_pression_en_pa();
-  la_pression_en_pa.mettre_a_jour(temps);
+  calculer_la_pression_en_pa();;
 
   // Pour le postraitement, on veut M-1BtP et non BtP
   if (postraitement_gradient_P_)
@@ -1088,12 +1065,6 @@ void Navier_Stokes_std::mettre_a_jour(double temps)
     }
   gradient_P.mettre_a_jour(temps);
 
-  // Estimation of a flow rate relative error
-  DoubleTab array(divergence_U.valeurs()); // array(i)=sum(u.ndS)
-  divergence.volumique(array); // array(i)=sum(u.ndS)/vol(i)
-  double dt = schema_temps().pas_de_temps();
-  LocalFlowRateRelativeError_ = mp_max_abs_vect(array) * dt; // =max|sum(u.ndS)/(vol(i)/dt)|
-
   // PQ : 04/03 : procedure de determination dynamique du seuil de convergence en pression
   if(sub_type(solv_iteratif,solveur_pression_.valeur()) && seuil_divU < 1.)
     {
@@ -1101,7 +1072,7 @@ void Navier_Stokes_std::mettre_a_jour(double temps)
       solv_iteratif& solv_iter=ref_cast(solv_iteratif,solveur_pression_.valeur());
       double seuil_dyn=solv_iter.get_seuil();
 
-      if(LocalFlowRateRelativeError_<seuil_divU)
+      if(LocalFlowRateRelativeError()<seuil_divU)
         seuil_dyn*=raison_seuil_divU;
       else
         seuil_dyn/=raison_seuil_divU;
@@ -1120,6 +1091,14 @@ void Navier_Stokes_std::mettre_a_jour(double temps)
   Debog::verifier("Navier_Stokes_std::mettre_a_jour : vitesse", la_vitesse.valeurs());
 }
 
+double Navier_Stokes_std::LocalFlowRateRelativeError() const
+{
+  // Estimation of a flow rate relative error
+  DoubleTrav array(divergence_U.valeurs()); // array(i)=sum(u.ndS)
+  divergence.volumique(array); // array(i)=sum(u.ndS)/vol(i)
+  return mp_max_abs_vect(array) * schema_temps().pas_de_temps(); // =max|sum(u.ndS)/(vol(i)/dt)|
+}
+
 void Navier_Stokes_std::abortTimeStep()
 {
   // On reprend la pression du debut du pas de temps
@@ -1129,7 +1108,6 @@ void Navier_Stokes_std::abortTimeStep()
   //pression()->valeurs()=0;
   Equation_base::abortTimeStep();
 }
-
 
 bool Navier_Stokes_std::initTimeStep(double dt)
 {
@@ -1218,6 +1196,7 @@ void Navier_Stokes_std::calculer_la_pression_en_pa()
   // On multiplie par rho si uniforme sinon deja en Pa...
   if (sub_type(Champ_Uniforme,rho))
     Pa *= rho(0,0);
+  la_pression_en_pa.mettre_a_jour(pression().temps());
 }
 
 /*! @brief Appelle Equation_base::sauvegarder(Sortie&) et sauvegarde la pression sur un flot de sortie.
@@ -1564,7 +1543,7 @@ int Navier_Stokes_std::impr(Sortie& os) const
       os << finl;
       os << "Cell balance flow rate control for the problem " << probleme().le_nom() << " : " << finl;
       os << "Absolute value : " << LocalFlowRateError << " m"<<dimension+bidim_axi<<"/s" << finl;
-      os << "Relative value : " << LocalFlowRateRelativeError_ << finl; // max|sum(u.ndS)i/(vol(i)/dt)|=max|div(U)i/dt|
+      os << "Relative value : " << LocalFlowRateRelativeError() << finl; // max|sum(u.ndS)i/(vol(i)/dt)|=max|div(U)i/dt|
       // Calculation as OpenFOAM: http://foam.sourceforge.net/docs/cpp/a04190_source.html
       // It is relative errors (normalized by the volume/dt)
       double dt = schema_temps().pas_de_temps();

@@ -35,7 +35,7 @@ public:
   void pression_initiale_IBM( DoubleTrav& );
   void pression_correction_IBM( DoubleTrav& );
   void matrice_pression_IBM ();
-  void preparer_calcul_IBM(const Nom& nom_eq,const Nom& nom_eq2);
+  void preparer_calcul_IBM(const bool&);
 
   bool initTimeStep_IBM(bool ddt);
 
