@@ -4,5 +4,23 @@ then
    diff Cx.metis decoupage.metis 1>/dev/null 2>&1
    [ $? != 0 ] && echo "Metis partitionning has changed!" && exit -1
 fi 
+
+#####################################
+# Comparaison non regression des .out
+#####################################
+message()
+{
+   [ $1 != $2 ] && echo $ECHO_OPTS "Error ($1!=$2) when checking:\n $msg" && err=1
+   #[ $debog = 1 ] && echo $msg
+}
+err=0
+for out in `ls Cx*.out.ref`
+do
+   msg="diff $out ${out%.ref}"
+   eval $msg 1>verifie.log 2>&1
+   message $? 0
+done
+[ $err != 0 ] && exit $err
+
 # Verification du nombre d'appels a echange_espace_virtuel par pas de temps
 exit `awk '/Nb echange_espace_virtuel/ {if ($NF<39) print 0;else print 1}' Cx.TU`
