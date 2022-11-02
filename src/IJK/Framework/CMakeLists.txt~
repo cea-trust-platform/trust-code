@@ -1,2 +1,0 @@
-file(GLOB srcs [A-Z|a-z]*.cpp [A-Z|a-z]*.c [A-Z|a-z]*.f)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}  ${TRUST_ROOT}/include/backward         ${TRUST_ROOT}/src/Kernel/Utilitaires         ${TRUST_ROOT}/src/Kernel/Math         ${TRUST_ROOT}/src/Kernel/Geometrie         ${TRUST_ROOT}/src/Kernel/VF/Zones         ${TRUST_ROOT}/src/Kernel/Framework                ${TRUST_ROOT}/src/IJK/Champs         ${TRUST_ROOT}/src/IJKLib = ${TRUST_LIB}/libijk_framework)
