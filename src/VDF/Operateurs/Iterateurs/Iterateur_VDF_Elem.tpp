@@ -363,28 +363,22 @@ inline void Iterateur_VDF_Elem<_TYPE_>::fill_derivee_cc(matrices_t mats, const t
 }
 
 template<class _TYPE_> template<typename Type_Double>
-inline void Iterateur_VDF_Elem<_TYPE_>::fill_coeffs_matrices(const int face, const double coeff, Type_Double& aii, Type_Double& ajj, Matrice_Morse *mat, VectorDeriv& d_cc) const
+inline void Iterateur_VDF_Elem<_TYPE_>::fill_coeffs_matrices(const int f, const double coeff, Type_Double& aii, Type_Double& ajj, Matrice_Morse *mat, VectorDeriv& d_cc) const
 {
-  const int e0 = elem(face, 0), e1 = elem(face, 1), N = aii.size_array();
+  const int N = aii.size_array();
   if (mat)
-    for (int n = 0; n < N; n++)
-      {
-        const int i0 = N * e0 + n, j0 = N * e1 + n;
-        (*mat)(i0, i0) += coeff * aii[n];
-        (*mat)(i0, j0) -= coeff * ajj[n];
-        (*mat)(j0, j0) += coeff * ajj[n];
-        (*mat)(j0, i0) -= coeff * aii[n];
-      }
+    {
+      for (int i = 0; i < 2; i++)
+        for (int j = 0, e = elem(f, i); j < 2; j++)
+          for (int n = 0, eb = elem(f, j); n < N; n++)
+            (*mat)(N * e + n, N * eb + n) += (i == j ? 1.0 : -1.0) * coeff * (j ? ajj[n] : aii[n]);
+    }
   else
     for (auto &&d_m_i : d_cc)
-      for (int n = 0, m = 0, M = std::get<2> (d_m_i); n < N; n++, m += (M > 1))
-        {
-          const int i0 = N * e0 + n, j0 = M * e1 + m;
-          (*std::get<1> (d_m_i))(i0, i0) += coeff * aii[n] * (*std::get<0> (d_m_i))(e0, m);
-          (*std::get<1> (d_m_i))(i0, j0) -= coeff * ajj[n] * (*std::get<0> (d_m_i))(e1, m);
-          (*std::get<1> (d_m_i))(j0, j0) += coeff * ajj[n] * (*std::get<0> (d_m_i))(e1, m);
-          (*std::get<1> (d_m_i))(j0, i0) -= coeff * aii[n] * (*std::get<0> (d_m_i))(e0, m);
-        }
+      for (int i = 0; i < 2; i++)
+        for (int j = 0, e = elem(f, i); j < 2; j++)
+          for (int n = 0, m = 0, M = std::get<2> (d_m_i), eb = elem(f, j); n < N; n++, m += (M > 1))
+            (*std::get<1> (d_m_i))(N * e + n, M * eb + m) += (i == j ? 1.0 : -1.0) * coeff * (j ? ajj[n] : aii[n]) * (*std::get<0> (d_m_i))(eb, m);
 }
 
 template<class _TYPE_> template<typename Type_Double>
