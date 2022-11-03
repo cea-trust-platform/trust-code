@@ -495,27 +495,27 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
       la_sous_zone=ref_cast(Sous_Zone,Interprete_bloc::objet_global(nom_de_la_sous_zone));
 
       // Declaration du domaine
-      Nom nom_du_dom("dom_");
-      nom_du_dom += nom_de_la_sous_zone;
+      Nom nom_du_dom(la_sous_zone.zone().domaine().le_nom());
+      Nom nom_du_nouveau_dom = nom_du_dom + Nom("_") + nom_de_la_sous_zone;
 
       Nom in("domaine ");
-      in += nom_du_dom;
+      in += nom_du_nouveau_dom;
 
       EChaine IN(in);
       Interprete_bloc::interprete_courant().interpreter_bloc(IN, Interprete_bloc::BLOC_EOF, 0);
 
       // Definition du domaine a partir de la sous-zone
       in = "Create_domain_from_sous_zone { domaine_final ";
-      in += nom_du_dom;
+      in += nom_du_nouveau_dom;
       in += " par_sous_zone ";
       in += nom_de_la_sous_zone;
       in += " domaine_init ";
-      in += la_sous_zone.zone().domaine().le_nom();
+      in += nom_du_dom;
       in += " } ";
 
       EChaine IN2(in);
       Interprete_bloc::interprete_courant().interpreter_bloc(IN2, Interprete_bloc::BLOC_EOF, 0);
-      le_domaine=ref_cast(Domaine,Interprete_bloc::objet_global(nom_du_dom));
+      le_domaine=ref_cast(Domaine,Interprete_bloc::objet_global(nom_du_nouveau_dom));
 
       return 1;
     }
