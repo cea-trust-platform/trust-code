@@ -34,6 +34,7 @@
 #include <IJK_Splitting.h>
 #include <Noms.h>
 #include <stat_counters.h>
+#include<limits>
 
 void envoyer_recevoir(const void * send_buf, int send_buf_size, int send_proc,
 		      void * recv_buf, int recv_buf_size, int recv_proc)
@@ -397,7 +398,7 @@ float max_ijk(const IJK_Field_float& residu)
   const int ni = residu.ni();
   const int nj = residu.nj();
   const int nk = residu.nk();
-  float res = (float)-1.e30;
+  float res = (float) std::numeric_limits<float>::lowest();
   for (int k = 0; k < nk; k++)
     for (int j = 0; j < nj; j++)
       for (int i = 0; i < ni; i++)
@@ -743,7 +744,7 @@ double max_ijk(const IJK_Field_double& residu)
   const int ni = residu.ni();
   const int nj = residu.nj();
   const int nk = residu.nk();
-  double res = (double)-1.e30;
+  double res = (double) std::numeric_limits<double>::lowest();
   for (int k = 0; k < nk; k++)
     for (int j = 0; j < nj; j++)
       for (int i = 0; i < ni; i++)
@@ -1089,7 +1090,7 @@ int max_ijk(const IJK_Field_int& residu)
   const int ni = residu.ni();
   const int nj = residu.nj();
   const int nk = residu.nk();
-  int res = (int)-1.e30;
+  int res = (int) std::numeric_limits<int>::lowest();
   for (int k = 0; k < nk; k++)
     for (int j = 0; j < nj; j++)
       for (int i = 0; i < ni; i++)

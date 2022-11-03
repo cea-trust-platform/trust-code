@@ -31,6 +31,7 @@
 #include <IJK_Splitting.h>
 #include <Noms.h>
 #include <stat_counters.h>
+#include<limits>
 
 void envoyer_recevoir(const void * send_buf, int send_buf_size, int send_proc,
 		      void * recv_buf, int recv_buf_size, int recv_proc)
@@ -405,7 +406,7 @@ _TYPE_ max_ijk(const IJK_Field__TYPE_& residu)
   const int ni = residu.ni();
   const int nj = residu.nj();
   const int nk = residu.nk();
-  _TYPE_ res = (_TYPE_)-1.e30;
+  _TYPE_ res = (_TYPE_) std::numeric_limits<_TYPE_>::lowest();
   for (int k = 0; k < nk; k++)
     for (int j = 0; j < nj; j++)
       for (int i = 0; i < ni; i++)
