@@ -1,0 +1,42 @@
+# perf ecriture #
+# PARALLEL ONLY 8 #
+IJK_Grid_Geometry grid_geom
+
+Lire grid_geom
+{
+  nbelem_i 432
+  nbelem_j 13
+  nbelem_k 27
+  uniform_domain_size_i 1.
+  uniform_domain_size_j 1.
+  uniform_domain_size_k 1.
+  perio_i
+  perio_j
+}
+
+IJK_Splitting grid_splitting
+Lire grid_splitting
+{
+  ijk_grid_geometry grid_geom
+  nproc_i 2
+  nproc_j 2
+  nproc_k 1
+}
+
+# Default behaviour will write by only 1 proc if test is run on np<24) # 
+Parallel_io_parameters
+{
+  block_size_megabytes 0
+  bench_ijk_splitting_write grid_splitting
+  bench_ijk_splitting_read grid_splitting
+}
+
+system "cp test.lata.1.VELOCITY test.lata.1.VELOCITY.reference" 
+Parallel_io_parameters
+{
+  block_size_bytes 2048
+  writing_processes 2
+  bench_ijk_splitting_write grid_splitting 
+  bench_ijk_splitting_read grid_splitting
+}
+Fin
