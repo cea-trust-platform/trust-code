@@ -6,7 +6,7 @@ ncomp=1
 awk -v ncomp=$ncomp -f ../res_rocalution.awk $cas.out > $cas.res
 
 # Memoire:
-awk '/Projection/ {OK=1} (OK==1) && /MBytes of RAM/ {it++;print it" "$(NF-1)}' $cas.out 1>$cas.ram
+awk '/MBytes of RAM/ {it++;print it" "$(NF-1)}' $cas.out 1>$cas.ram
 
 # CPU:
 awk '/clock Ax=B/ {i++;if (i>2) print i" "$3}' $cas.out 1>$cas.cpu

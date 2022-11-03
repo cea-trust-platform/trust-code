@@ -1205,7 +1205,7 @@ echo "###############################################"
 	   cd - 1>/dev/null 2>&1
 	   # Delete non Kernel tests if any:
 	   cd $TRUST_ROOT/tests
-	   NonKernelTests=`find * -type d | grep -v Kernel | grep "/"`
+	   NonKernelTests=`find * -type d | grep -v "/Kernel" | grep "/"`
 	   if [ "$NonKernelTests" != "" ]
 	   then
 	      echo "Call git rm no $vue tests..."
