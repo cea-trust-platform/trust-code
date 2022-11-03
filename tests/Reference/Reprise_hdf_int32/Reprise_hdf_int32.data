@@ -12,7 +12,7 @@ Domaine dom
 /* Read mesh from ICEM */
 /* Read_File_Binary dom mesh.bin */
 /* Read mesh from Salome */
-/* Read_MED dom Mesh_1 mesh.med */
+/* Read_MED { domain dom file mesh.med } */
 /* Create domain and mesh from TRUST */
 Read_file Reprise_hdf_int32.geo ;
 END MESH #

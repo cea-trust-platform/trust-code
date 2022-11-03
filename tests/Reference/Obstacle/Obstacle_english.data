@@ -2,7 +2,7 @@
 # -the TYPE OF PROBLEM and its name #
 # -the problem spatial dimension #
 # -the SPATIAL DOMAIN on which the problem will be solved and its corresponding MESH #
-# A common practice is to read the mesh in an existing file with extension ".geom" #
+# A common practice is to read the mesh in an existing file with extension ".med" #
 
 dimension 2
 
@@ -100,5 +100,5 @@ Read pb
         }
     }
 }
-# The last lines launch the solving process and terminate the data file #
+# The last line launches the solving process #
 Solve pb
