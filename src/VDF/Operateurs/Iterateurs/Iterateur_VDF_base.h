@@ -52,7 +52,7 @@ public:
   void associer_champ_convecte_ou_inc(const Champ_Inc_base& ch) { le_champ_convecte_ou_inc = ch; }
   virtual void ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const=0;
 
-  virtual void calculer_flux_bord(const DoubleTab&) const;
+  virtual void calculer_flux_bord(const DoubleTab&, const DoubleTab&) const;
   virtual void ajouter_contribution_autre_pb(const DoubleTab& inco, Matrice_Morse& matrice, const Cond_lim& la_cl, std::map<int, std::pair<int, int>>&) const;
 
   virtual int impr(Sortie& os) const=0;

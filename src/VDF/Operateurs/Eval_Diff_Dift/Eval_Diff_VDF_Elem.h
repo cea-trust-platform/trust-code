@@ -63,14 +63,14 @@ public:
    * ************************************** */
 
   template <typename BC, typename Type_Double> // Generic return
-  inline void flux_face(const DoubleTab&, const int, const BC&, int, Type_Double& ) const { /* Do nothing */ }
+  inline void flux_face(const DoubleTab&, const DoubleTab&, const int, const BC&, int, Type_Double& ) const { /* Do nothing */ }
 
   // To overload
-  template <typename Type_Double> inline void flux_face(const DoubleTab&, const int, const Dirichlet_entree_fluide&, const int, Type_Double& ) const;
-  template <typename Type_Double> inline void flux_face(const DoubleTab&, const int, const Neumann_paroi&, const int, Type_Double& ) const;
-  template <typename Type_Double> inline void flux_face(const DoubleTab&, const int, const Periodique&, const int, Type_Double& ) const;
-  template <typename Type_Double> inline void flux_face(const DoubleTab&, const int, const Echange_global_impose&, const int, Type_Double& ) const;
-  template <typename Type_Double> inline void flux_face(const DoubleTab&, const int, const Dirichlet_paroi_fixe&, const int, Type_Double& ) const;
+  template <typename Type_Double> inline void flux_face(const DoubleTab&, const DoubleTab&, const int, const Dirichlet_entree_fluide&, const int, Type_Double& ) const;
+  template <typename Type_Double> inline void flux_face(const DoubleTab&, const DoubleTab&, const int, const Neumann_paroi&, const int, Type_Double& ) const;
+  template <typename Type_Double> inline void flux_face(const DoubleTab&, const DoubleTab&, const int, const Periodique&, const int, Type_Double& ) const;
+  template <typename Type_Double> inline void flux_face(const DoubleTab&, const DoubleTab&, const int, const Echange_global_impose&, const int, Type_Double& ) const;
+  template <typename Type_Double> inline void flux_face(const DoubleTab&, const DoubleTab&, const int, const Dirichlet_paroi_fixe&, const int, Type_Double& ) const;
   template <typename Type_Double> inline void flux_face(const DoubleTab&, const int, const int, const int, const Echange_externe_impose&, const int, Type_Double& ) const;
   template <typename Type_Double> inline void flux_faces_interne(const DoubleTab&, const int, Type_Double& ) const;
 

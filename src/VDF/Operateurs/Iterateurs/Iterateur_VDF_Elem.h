@@ -97,7 +97,7 @@ private:
    * *********  A VIRER UN JOUR  ********** *
    * ************************************** */
 public:
-  void calculer_flux_bord(const DoubleTab&) const override;
+  void calculer_flux_bord(const DoubleTab&, const DoubleTab&) const override;
   void contribuer_au_second_membre(DoubleTab& ) const override;
 
 private:
@@ -109,8 +109,8 @@ private:
   template <typename Type_Double> void contribuer_au_second_membre_bords_(const Echange_externe_impose& , const int , const int , const int, const int , const Front_VF& , DoubleTab& ) const;
 
   // Inutile, jamais utilise ...
-  template <typename Type_Double> void calculer_flux_bord2(const int, const DoubleTab&) const;
-  template <bool should_calc_flux, typename Type_Double, typename BC> void calculer_flux_bord_(const BC& , const int , const int , const int , const DoubleTab& ) const;
+  template <typename Type_Double> void calculer_flux_bord2(const int, const DoubleTab&, const DoubleTab&) const;
+  template <bool should_calc_flux, typename Type_Double, typename BC> void calculer_flux_bord_(const BC& , const int , const int , const int , const DoubleTab&, const DoubleTab&) const;
   template <typename Type_Double> void calculer_flux_bord_(const Periodique& , const int , const int , const int , const DoubleTab& , const Front_VF& ) const;
   template <typename Type_Double> void calculer_flux_bord_(const Echange_externe_impose& , const int , const int , const int, const int , const DoubleTab& ,const Front_VF& ) const;
 };

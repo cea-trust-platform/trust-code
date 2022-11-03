@@ -34,12 +34,12 @@ public:
    * ************************************** */
 
   template <typename BC, typename Type_Double> // Generic return
-  inline void flux_face(const DoubleTab& inco, const int face, const BC&, const int , Type_Double& flux) const
+  inline void flux_face(const DoubleTab& inco, const DoubleTab&, const int face, const BC&, const int , Type_Double& flux) const
   { for (int k=0; k<flux.size_array(); k++) flux[k] = inco(face,k)*surface(face)*porosite(face); }
 
-  template <typename Type_Double> inline void flux_face(const DoubleTab&, const int , const Symetrie&, const int, Type_Double& ) const { /* Do nothing */ }
-  template <typename Type_Double> inline void flux_face(const DoubleTab&, const int , const Dirichlet_paroi_fixe&, const int, Type_Double& ) const { /* Do nothing */ }
-  template <typename Type_Double> inline void flux_face(const DoubleTab&, const int , const Dirichlet_paroi_defilante&, const int, Type_Double& ) const { /* Do nothing */ }
+  template <typename Type_Double> inline void flux_face(const DoubleTab&, const DoubleTab&, const int , const Symetrie&, const int, Type_Double& ) const { /* Do nothing */ }
+  template <typename Type_Double> inline void flux_face(const DoubleTab&, const DoubleTab&, const int , const Dirichlet_paroi_fixe&, const int, Type_Double& ) const { /* Do nothing */ }
+  template <typename Type_Double> inline void flux_face(const DoubleTab&, const DoubleTab&, const int , const Dirichlet_paroi_defilante&, const int, Type_Double& ) const { /* Do nothing */ }
 
   template <typename Type_Double>
   inline void flux_face(const DoubleTab& inco, const int boundary_index, const int face, const int local_face, const Echange_externe_impose&, const int, Type_Double& flux) const

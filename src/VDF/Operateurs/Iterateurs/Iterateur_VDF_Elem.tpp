@@ -186,13 +186,14 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const BC& cl, const int nd
         Process::exit(); // On bloque ici :-)
 
       const std::string& nom_ch = le_champ_convecte_ou_inc->le_nom().getString();
-      const DoubleTab& donnee = semi_impl.count(nom_ch) ? semi_impl.at(nom_ch) : le_champ_convecte_ou_inc->valeurs();
+      const DoubleTab& donnee = semi_impl.count(nom_ch) ? semi_impl.at(nom_ch) : le_champ_convecte_ou_inc->valeurs(),
+                       val_b = sub_type(Champ_Face_base, le_champ_convecte_ou_inc.valeur()) ? DoubleTab() : le_champ_convecte_ou_inc->valeur_aux_bords(); // si le champ associe est un champ_face, alors on est dans un operateur de div
 
       int e, Mv = N;
       Type_Double flux(N), aii(N), ajj(N), aef(N);
       for (int face = ndeb; face < nfin; face++)
         {
-          flux_evaluateur.flux_face(donnee, face, cl, ndeb, flux); // Generic code
+          flux_evaluateur.flux_face(donnee, val_b, face, cl, ndeb, flux); // Generic code
           fill_flux_tables_(face, N, 1.0 /* coeff */, flux, resu);
         }
 
@@ -204,7 +205,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const BC& cl, const int nd
       if (m_vit)
         for (int face = ndeb; face < nfin; face++)
           {
-            flux_evaluateur.coeffs_face_bloc_vitesse(donnee, face, cl, ndeb, aef);
+            flux_evaluateur.coeffs_face_bloc_vitesse(donnee, val_b, face, cl, ndeb, aef);
             for (int i = 0; i < 2; i++)
               if ((e = elem(face, i)) >= 0)
                 for (int n = 0, m = 0; n < N; n++, m += (Mv > 1))
@@ -235,7 +236,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Periodique& cl, cons
       for (int face = ndeb; face < nfin; face++)
         {
           const int e0 = elem(face, 0), e1 = elem(face, 1);
-          flux_evaluateur.flux_face(donnee, face, cl, ndeb, flux);
+          flux_evaluateur.flux_face(donnee, donnee, face, cl, ndeb, flux); // attention 2 fois donnee
 
           for (int n = 0; n < N; n++)
             {
@@ -261,7 +262,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Periodique& cl, cons
         for (int face = ndeb; face < nfin; face++)
           {
             const int e0 = elem(face, 0), e1 = elem(face, 1);
-            flux_evaluateur.coeffs_face_bloc_vitesse(donnee, face, cl, ndeb, aef);
+            flux_evaluateur.coeffs_face_bloc_vitesse(donnee, DoubleTab(), face, cl, ndeb, aef);
             if (e0 > -1)
               for (int i = 0; i < N; i++)
                 if (face < (ndeb + frontiere_dis.nb_faces() / 2)) (*m_vit)(e0 * N + i, face * N + i) += aef[i];
@@ -311,7 +312,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Echange_externe_impo
         for (int face = ndeb; face < nfin; face++)
           {
             const int local_face = la_zone.valeur().front_VF(boundary_index).num_local_face(face);
-            flux_evaluateur.coeffs_face_bloc_vitesse(donnee, boundary_index, face, local_face, cl, ndeb, aef);
+            flux_evaluateur.coeffs_face_bloc_vitesse(donnee, le_champ_convecte_ou_inc->valeur_aux_bords(), boundary_index, face, local_face, cl, ndeb, aef);
 
             for (int i = 0; i < 2; i++)
               if ((e = elem(face, i)) >= 0)

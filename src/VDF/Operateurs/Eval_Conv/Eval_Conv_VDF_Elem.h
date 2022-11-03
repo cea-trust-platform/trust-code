@@ -33,12 +33,12 @@ public:
    * ************************************** */
 
   template <typename BC, typename Type_Double> // Generic return
-  inline void flux_face(const DoubleTab&, const int, const BC&, const int, Type_Double& ) const { /* Do nothing */ }
+  inline void flux_face(const DoubleTab&, const DoubleTab&, const int, const BC&, const int, Type_Double& ) const { /* Do nothing */ }
 
   // To overload
-  template <typename Type_Double> inline void flux_face(const DoubleTab&, const int, const Dirichlet_entree_fluide&, const int, Type_Double& ) const;
-  template <typename Type_Double> inline void flux_face(const DoubleTab&, const int, const Neumann_sortie_libre&, const int, Type_Double& ) const;
-  template <typename Type_Double> inline void flux_face(const DoubleTab&, const int, const Periodique&, const int, Type_Double& ) const;
+  template <typename Type_Double> inline void flux_face(const DoubleTab&, const DoubleTab&, const int, const Dirichlet_entree_fluide&, const int, Type_Double& ) const;
+  template <typename Type_Double> inline void flux_face(const DoubleTab&, const DoubleTab&, const int, const Neumann_sortie_libre&, const int, Type_Double& ) const;
+  template <typename Type_Double> inline void flux_face(const DoubleTab&, const DoubleTab&, const int, const Periodique&, const int, Type_Double& ) const;
   template <typename Type_Double> inline void flux_face(const DoubleTab&, const int, const int, const int, const Echange_externe_impose&, const int, Type_Double& ) const { /* Do nothing */ }
   template <typename Type_Double> inline void flux_faces_interne(const DoubleTab&, const int, Type_Double& ) const;
 
@@ -58,13 +58,13 @@ public:
 
   // contribution de la derivee en vitesse d'une equation scalaire
   template <typename BC, typename Type_Double> // Generic return
-  inline void coeffs_face_bloc_vitesse(const DoubleTab&, const int, const BC&, const int, Type_Double& ) const { /* Do nothing */ }
+  inline void coeffs_face_bloc_vitesse(const DoubleTab&, const DoubleTab&, const int, const BC&, const int, Type_Double& ) const { /* Do nothing */ }
 
   // Type_Double
-  template <typename Type_Double> inline void coeffs_face_bloc_vitesse(const DoubleTab&, const int, const Dirichlet_entree_fluide&, const int, Type_Double& ) const;
-  template <typename Type_Double> inline void coeffs_face_bloc_vitesse(const DoubleTab&, const int, const Neumann_sortie_libre&, const int, Type_Double& ) const;
-  template <typename Type_Double> inline void coeffs_face_bloc_vitesse(const DoubleTab&, const int, const Periodique&, const int, Type_Double& ) const;
-  template <typename Type_Double> inline void coeffs_face_bloc_vitesse(const DoubleTab&, const int, const int, const int, const Echange_externe_impose&, const int, Type_Double& ) const { /* Do nothing */ }
+  template <typename Type_Double> inline void coeffs_face_bloc_vitesse(const DoubleTab&, const DoubleTab&, const int, const Dirichlet_entree_fluide&, const int, Type_Double& ) const;
+  template <typename Type_Double> inline void coeffs_face_bloc_vitesse(const DoubleTab&, const DoubleTab&, const int, const Neumann_sortie_libre&, const int, Type_Double& ) const;
+  template <typename Type_Double> inline void coeffs_face_bloc_vitesse(const DoubleTab&, const DoubleTab&, const int, const Periodique&, const int, Type_Double& ) const;
+  template <typename Type_Double> inline void coeffs_face_bloc_vitesse(const DoubleTab&, const DoubleTab&, const int, const int, const int, const Echange_externe_impose&, const int, Type_Double& ) const { /* Do nothing */ }
   template <typename Type_Double> inline void coeffs_faces_interne_bloc_vitesse(const DoubleTab&, const int, Type_Double& ) const;
 
   /* ************************************** *

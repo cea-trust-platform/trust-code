@@ -38,7 +38,7 @@ void Iterateur_VDF_base::ajouter_contribution_autre_pb(const DoubleTab& inco, Ma
   /* ne fait rien en general */
 }
 
-void Iterateur_VDF_base::calculer_flux_bord(const DoubleTab& inco) const
+void Iterateur_VDF_base::calculer_flux_bord(const DoubleTab& inco, const DoubleTab&) const
 {
   Cerr << que_suis_je() << " must implement calculer_flux_bord" << finl;
   Process::exit();
