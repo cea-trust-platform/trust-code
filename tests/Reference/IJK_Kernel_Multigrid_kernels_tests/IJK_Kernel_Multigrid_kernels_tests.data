@@ -1,2 +1,2 @@
-Test_SSE_Kernels { nmax 5 }
+Test_SSE_Kernels { nmax 1 }
 Fin
