@@ -28,7 +28,7 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, cons
   for (int n = 0; n < flux.size_array(); n++)
     for (int i = 0, e; i < 2; i++)
       if ((e = elem_(f, i)) > -1)
-        flux[n] = -psc * (((psc > 0 && !i) || (psc <= 0 && i)) ? inco(e, n) : la_cl.val_imp(f - num1, n)) /* val_b(f, n) */;
+        flux[n] = -psc * (((psc > 0 && !i) || (psc <= 0 && i)) ? inco(e, n) : val_b(f, n));
 }
 
 template <typename DERIVED_T> template <typename Type_Double>
@@ -39,7 +39,7 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, cons
   for (int n = 0; n < flux.size_array(); n++)
     for (int i = 0, e; i < 2; i++)
       if ((e = elem_(f, i)) > -1)
-        flux[n] = -psc * (((psc > 0 && !i) || (psc <= 0 && i)) ? inco(e, n) : la_cl.val_ext(f - num1, n)) /* val_b(f, n) */;
+        flux[n] = -psc * (((psc > 0 && !i) || (psc <= 0 && i)) ? inco(e, n) : val_b(f, n));
 }
 
 template <typename DERIVED_T> template <typename Type_Double>
@@ -220,7 +220,7 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_bloc_vitesse(const Double
   for (int n = 0; n < flux.size_array(); n++)
     for (int i = 0, e; i < 2; i++)
       if ((e = elem_(f, i)) > -1)
-        flux[n] = -surface_porosite(f) * (((dt_vitesse(f) > 0 && !i) || (dt_vitesse(f) <= 0 && i)) ? inco(e, n) : la_cl.val_imp(f - num1, n)) /* val_b(f, n) */;
+        flux[n] = surface_porosite(f) * (((dt_vitesse(f) > 0 && !i) || (dt_vitesse(f) <= 0 && i)) ? inco(e, n) : val_b(f, n));
 }
 
 template <typename DERIVED_T> template <typename Type_Double>
@@ -230,7 +230,7 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_bloc_vitesse(const Double
   for (int n = 0; n < flux.size_array(); n++)
     for (int i = 0, e; i < 2; i++)
       if ((e = elem_(f, i)) > -1)
-        flux[n] = -surface_porosite(f) * (((dt_vitesse(f) > 0 && !i) || (dt_vitesse(f) <= 0 && i)) ? inco(e, n) : la_cl.val_ext(f - num1, n)) /* val_b(f, n) */;
+        flux[n] = surface_porosite(f) * (((dt_vitesse(f) > 0 && !i) || (dt_vitesse(f) <= 0 && i)) ? inco(e, n) : val_b(f, n));
 }
 
 template <typename DERIVED_T> template <typename Type_Double>
