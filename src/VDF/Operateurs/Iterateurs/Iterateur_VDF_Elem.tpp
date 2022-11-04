@@ -203,14 +203,18 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const BC& cl, const int nd
 
       //derivees : vitesse
       if (m_vit)
-        for (int face = ndeb; face < nfin; face++)
-          {
-            flux_evaluateur.coeffs_face_bloc_vitesse(donnee, val_b, face, cl, ndeb, aef);
-            for (int i = 0; i < 2; i++)
-              if ((e = elem(face, i)) >= 0)
-                for (int n = 0, m = 0; n < N; n++, m += (Mv > 1))
-                  (*m_vit)(N * e + n, Mv * face + m) += (i ? -1.0 : 1.0) * aef(n);
-          }
+        {
+          const IntTab* fcl_v = le_ch_v.non_nul() ? &ref_cast(Champ_Face_base, le_ch_v.valeur()).fcl() : nullptr;
+          for (int f = ndeb; f < nfin; f++)
+            if ((*fcl_v)(f, 0) < 2)
+              {
+                flux_evaluateur.coeffs_face_bloc_vitesse(donnee, val_b, f, cl, ndeb, aef);
+                for (int i = 0; i < 2; i++)
+                  if ((e = elem(f, i)) >= 0)
+                    for (int n = 0, m = 0; n < N; n++, m += (Mv > 1))
+                      (*m_vit)(N * e + n, Mv * f + m) += (i ? -1.0 : 1.0) * aef(n);
+              }
+        }
 
       //derivees : champ convecte
       if (mat || d_cc.size() > 0)

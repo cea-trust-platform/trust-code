@@ -16,6 +16,7 @@
 #ifndef Iterateur_VDF_base_included
 #define Iterateur_VDF_base_included
 
+#include <Ref_Champ_base.h>
 #include <Ref_Champ_Inc_base.h>
 #include <Ref_Operateur_base.h>
 #include <CL_Types_include.h>
@@ -49,7 +50,7 @@ class Iterateur_VDF_base : public Objet_U
 public:
   void associer(const Zone_VDF&, const Zone_Cl_VDF&, const Operateur_base&);
   void associer_zone_cl_dis(const Zone_Cl_dis_base&);
-  void associer_champ_convecte_ou_inc(const Champ_Inc_base& ch) { le_champ_convecte_ou_inc = ch; }
+  void associer_champ_convecte_ou_inc(const Champ_Inc_base& ch, const Champ_base* chv);
   virtual void ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const=0;
 
   virtual void calculer_flux_bord(const DoubleTab&, const DoubleTab&) const;
@@ -80,6 +81,7 @@ protected:
   REF(Zone_Cl_VDF) la_zcl;
   REF(Operateur_base) op_base;
   REF(Champ_Inc_base) le_champ_convecte_ou_inc;
+  REF(Champ_base) le_ch_v;
   bool is_conv_op_ = false, is_pb_multi = false;
 };
 

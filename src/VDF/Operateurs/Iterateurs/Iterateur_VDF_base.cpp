@@ -43,3 +43,9 @@ void Iterateur_VDF_base::calculer_flux_bord(const DoubleTab& inco, const DoubleT
   Cerr << que_suis_je() << " must implement calculer_flux_bord" << finl;
   Process::exit();
 }
+
+void Iterateur_VDF_base::associer_champ_convecte_ou_inc(const Champ_Inc_base& ch, const Champ_base* chv)
+{
+  le_champ_convecte_ou_inc = ch;
+  if (chv) le_ch_v = *chv;
+}

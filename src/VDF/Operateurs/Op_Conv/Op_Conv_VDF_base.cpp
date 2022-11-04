@@ -57,7 +57,7 @@ void Op_Conv_VDF_base::associer_champ_convecte()
 
   Op_Conv_VDF_base::preparer_calcul();
   const Champ_Inc_base& cc = equation().has_champ_convecte() ? equation().champ_convecte() : equation().inconnue().valeur();
-  iter->associer_champ_convecte_ou_inc(cc);
+  iter->associer_champ_convecte_ou_inc(cc, &vitesse());
 }
 
 void Op_Conv_VDF_base::ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
