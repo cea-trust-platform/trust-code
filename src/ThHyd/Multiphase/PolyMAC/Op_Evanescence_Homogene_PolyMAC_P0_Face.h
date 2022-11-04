@@ -26,14 +26,10 @@ class Op_Evanescence_Homogene_PolyMAC_P0_Face: public Operateur_Evanescence_base
 {
   Declare_instanciable(Op_Evanescence_Homogene_PolyMAC_P0_Face);
 public :
-  int has_interface_blocs() const override
-  {
-    return 1;
-  };
+  int has_interface_blocs() const override { return 1; }
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
-
-  double alpha_res() const override {return alpha_res_;} ;
+  double alpha_res() const override { return alpha_res_; }
 
 private:
   double alpha_res_, alpha_res_min_ = 0; //seuil de declenchement du traitement de l'evanescence

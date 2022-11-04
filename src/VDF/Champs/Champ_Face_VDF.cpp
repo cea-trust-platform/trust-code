@@ -1244,7 +1244,7 @@ int Champ_Face_VDF::fixer_nb_valeurs_nodales(int nb_noeuds)
   // Probleme: nb_comp vaut 2 mais on ne veut qu'une dimension !!!
   // HACK :
   int old_nb_compo = nb_compo_;
-  nb_compo_ = 1;
+  if(nb_compo_ >= dimension) nb_compo_ /= dimension;
   creer_tableau_distribue(md);
   nb_compo_ = old_nb_compo;
   return nb_noeuds;
@@ -1263,12 +1263,13 @@ Champ_base& Champ_Face_VDF::affecter_(const Champ_base& ch)
   const Zone_VDF& zone_VDF = zone_vdf();
   int nb_faces = zone_VDF.nb_faces();
   const IntVect& orientation = zone_VDF.orientation();
-  int ori, n0, n1;
+  int ori, n0, n1, N = val.dimension(1);
 
   if (sub_type(Champ_Uniforme, ch))
     {
       for (int num_face = 0; num_face < nb_faces; num_face++)
-        val(num_face) = v(0, orientation(num_face));
+        for (int n = 0; n < N; n++)
+          val(num_face, n) = v(0, N * orientation(num_face) + n);
     }
   else if ((sub_type(Champ_Uniforme_Morceaux, ch)) || (sub_type(Champ_Don_lu, ch)))
     {
@@ -1280,10 +1281,11 @@ Champ_base& Champ_Face_VDF::affecter_(const Champ_base& ch)
         {
           ori = orientation(num_face);
           n0 = face_voisins(num_face, 0);
-          if (n0 != -1)
-            val(num_face) = v(n0, ori);
-          else
-            val(num_face) = v(face_voisins(num_face, 1), ori);
+          for (int n = 0; n < N; n++)
+            if (n0 != -1)
+              val(num_face, n) = v(n0, N * ori + n);
+            else
+              val(num_face, n) = v(face_voisins(num_face, 1), N * ori + n);
         }
 
       for (num_face = ndeb_int; num_face < nb_faces; num_face++)
@@ -1291,19 +1293,16 @@ Champ_base& Champ_Face_VDF::affecter_(const Champ_base& ch)
           ori = orientation(num_face);
           n0 = face_voisins(num_face, 0);
           n1 = face_voisins(num_face, 1);
-          val(num_face) = 0.5 * (v(n0, ori) + v(n1, ori));
+          for (int n = 0; n < N; n++)
+            val(num_face, n) = 0.5 * (v(n0, N * ori + n) + v(n1, N * ori + n));
         }
     }
   else
     {
       //      int ndeb_int = zone_VDF.premiere_face_int();
       //      const IntTab& face_voisins = zone_VDF.face_voisins();
-      DoubleTab positionX(zone_VDF.nb_faces_X(), dimension);
-      DoubleVect U(zone_VDF.nb_faces_X());
-      DoubleTab positionY(zone_VDF.nb_faces_Y(), dimension);
-      DoubleVect V(zone_VDF.nb_faces_Y());
-      DoubleTab positionZ(zone_VDF.nb_faces_Z(), dimension);
-      DoubleVect W(zone_VDF.nb_faces_Z());
+      DoubleTab positionX(zone_VDF.nb_faces_X(), dimension), positionY(zone_VDF.nb_faces_Y(), dimension), positionZ(zone_VDF.nb_faces_Z(), dimension);
+      DoubleTab U(zone_VDF.nb_faces_X(), N), V(zone_VDF.nb_faces_Y(), N), W(zone_VDF.nb_faces_Z(), N);
       const DoubleTab& xv = zone_VDF.xv();
       int nbx = 0;
       int nby = 0;
@@ -1339,21 +1338,22 @@ Champ_base& Champ_Face_VDF::affecter_(const Champ_base& ch)
         ch.valeur_aux_compo(positionZ, W, 2);
       nbx = nby = nbz = 0;
       for (num_face = 0; num_face < nb_faces; num_face++)
-        {
-          ori = orientation(num_face);
-          switch(ori)
-            {
-            case 0:
-              val(num_face) = U(nbx++);
-              break;
-            case 1:
-              val(num_face) = V(nby++);
-              break;
-            case 2:
-              val(num_face) = W(nbz++);
-              break;
-            }
-        }
+        for (int n = 0; n < N; n++)
+          {
+            ori = orientation(num_face);
+            switch(ori)
+              {
+              case 0:
+                val(num_face, n) = U(nbx++, n);
+                break;
+              case 1:
+                val(num_face, n) = V(nby++, n);
+                break;
+              case 2:
+                val(num_face, n) = W(nbz++, n);
+                break;
+              }
+          }
     }
   return *this;
 }

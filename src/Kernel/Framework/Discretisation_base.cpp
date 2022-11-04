@@ -542,6 +542,15 @@ Nom Discretisation_base::get_name_of_type_for(const Nom& class_operateur, const 
           return type;
         }
     }
+  else if (class_operateur == "Operateur_Evanescence")
+    {
+      Nom type_inco = eqn.inconnue()->que_suis_je();
+      if (type_inco == "Champ_Q1NC") type_inco = "Champ_P1NC";
+      if (type_inco.debute_par("Champ_P0_VDF")) type_inco = "Champ_P0_VDF";
+      if (type_inco.debute_par("Champ_Face")) type_inco = "Champ_Face";
+      type_inco.suffix("Champ");
+      type = Nom("Op_Evanescence") + (type_operateur != "" ? "_" : "") + type_operateur + "_" + que_suis_je() + type_inco;
+    }
   else
     {
       Cerr << class_operateur << " not understood in get_name_of_type_for of  " << que_suis_je() << finl;

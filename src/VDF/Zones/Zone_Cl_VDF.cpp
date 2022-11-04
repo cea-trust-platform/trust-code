@@ -372,6 +372,7 @@ void Zone_Cl_VDF::imposer_cond_lim(Champ_Inc& ch, double temps)
   static int init=0;
   Champ_Inc_base& ch_base=ch.valeur();
   DoubleTab& ch_tab = ch_base.valeurs(temps);
+  const int N = ch_tab.line_size();
   if (sub_type(Champ_P0_VDF,ch_base))
     ;
   else if(ch_base.nature_du_champ()==scalaire)
@@ -419,7 +420,8 @@ void Zone_Cl_VDF::imposer_cond_lim(Champ_Inc& ch, double temps)
               ndeb = le_bord.num_premiere_face();
               nfin = ndeb + le_bord.nb_faces();
               for (num_face=ndeb; num_face<nfin; num_face++)
-                ch_tab[num_face] = 0;
+                for (int n = 0; n < N; n++)
+                  ch_tab(num_face, n) = 0;
             }
           else if ( sub_type(Dirichlet_entree_fluide,la_cl) )
             {
@@ -428,11 +430,12 @@ void Zone_Cl_VDF::imposer_cond_lim(Champ_Inc& ch, double temps)
               ndeb = le_bord.num_premiere_face();
               nfin = ndeb + le_bord.nb_faces();
 
-              for (num_face=ndeb; num_face<nfin; num_face++)
-                {
-                  // WEC : optimisable (pour chaque face recherche le bon temps !)
-                  ch_tab[num_face] = la_cl_diri.val_imp_au_temps(temps,num_face-ndeb,ma_zone_VDF.orientation(num_face));
-                }
+              for (num_face = ndeb; num_face < nfin; num_face++)
+                for (int n = 0; n < N; n++)
+                  {
+                    // WEC : optimisable (pour chaque face recherche le bon temps !)
+                    ch_tab(num_face, n) = la_cl_diri.val_imp_au_temps(temps, num_face - ndeb, N * ma_zone_VDF.orientation(num_face) + n);
+                  }
             }
           else if ( sub_type(Dirichlet_paroi_fixe,la_cl) )
             {
@@ -440,7 +443,8 @@ void Zone_Cl_VDF::imposer_cond_lim(Champ_Inc& ch, double temps)
               ndeb = le_bord.num_premiere_face();
               nfin = ndeb + le_bord.nb_faces();
               for (num_face=ndeb; num_face<nfin; num_face++)
-                ch_tab[num_face] = 0;
+                for (int n = 0; n < N; n++)
+                  ch_tab(num_face, n) = 0;
             }
           else if ( sub_type(Dirichlet_paroi_defilante,la_cl) )
             {
@@ -448,7 +452,8 @@ void Zone_Cl_VDF::imposer_cond_lim(Champ_Inc& ch, double temps)
               ndeb = le_bord.num_premiere_face();
               nfin = ndeb + le_bord.nb_faces();
               for (num_face=ndeb; num_face<nfin; num_face++)
-                ch_tab[num_face] = 0;
+                for (int n = 0; n < N; n++)
+                  ch_tab(num_face, n) = 0;
             }
         }
       init = 1;

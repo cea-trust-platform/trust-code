@@ -14,9 +14,8 @@
 *****************************************************************************/
 
 #include <Op_Evanescence_Homogene_PolyMAC_Elem.h>
-#include <Zone_PolyMAC.h>
-#include <Champ_Elem_PolyMAC.h>
-#include <Zone_Cl_PolyMAC.h>
+#include <Zone_VF.h>
+#include <Champ_Inc_P0_base.h>
 #include <Matrix_tools.h>
 #include <Pb_Multiphase.h>
 #include <Champ_Uniforme.h>
@@ -24,13 +23,13 @@
 #include <SETS.h>
 #include <Param.h>
 #include <Milieu_composite.h>
+#include <Synonyme_info.h>
+
 
 Implemente_instanciable(Op_Evanescence_Homogene_PolyMAC_Elem,"Op_Evanescence_Homogene_PolyMAC_Elem|Op_Evanescence_Homogene_PolyMAC_P0_Elem",Operateur_Evanescence_base);
+Add_synonym(Op_Evanescence_Homogene_PolyMAC_Elem, "Op_Evanescence_Homogene_VDF_Elem");
 
-Sortie& Op_Evanescence_Homogene_PolyMAC_Elem::printOn(Sortie& os) const
-{
-  return os;
-}
+Sortie& Op_Evanescence_Homogene_PolyMAC_Elem::printOn(Sortie& os) const { return os; }
 
 Entree& Op_Evanescence_Homogene_PolyMAC_Elem::readOn(Entree& is)
 {
@@ -43,9 +42,8 @@ Entree& Op_Evanescence_Homogene_PolyMAC_Elem::readOn(Entree& is)
 
 void Op_Evanescence_Homogene_PolyMAC_Elem::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, equation().inconnue().valeur());
-  const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, equation().zone_dis().valeur());
-  const DoubleTab& inco = ch.valeurs();
+  const Zone_VF& zone = ref_cast(Zone_VF, equation().zone_dis().valeur());
+  const DoubleTab& inco = equation().inconnue().valeurs();
 
   /* on doit pouvoir ajouter / soustraire les equations entre composantes */
   int i, j, e, n, N = inco.line_size();
@@ -74,8 +72,8 @@ void Op_Evanescence_Homogene_PolyMAC_Elem::dimensionner_blocs(matrices_t matrice
 void Op_Evanescence_Homogene_PolyMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
-  const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, equation().inconnue().valeur());
-  const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, equation().zone_dis().valeur());
+  const Champ_Inc_P0_base& ch = ref_cast(Champ_Inc_P0_base, equation().inconnue().valeur());
+  const Zone_VF& zone = ref_cast(Zone_VF, equation().zone_dis().valeur());
   const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, equation().probleme());
   const DoubleTab& inco = ch.valeurs(), &alpha = pb.eq_masse.inconnue().valeurs(),
                    &rho = equation().milieu().masse_volumique().valeurs(),

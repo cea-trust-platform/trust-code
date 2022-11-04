@@ -30,23 +30,17 @@
 class Operateur_Evanescence  : public Operateur, public DERIV(Operateur_Evanescence_base)
 {
   Declare_instanciable(Operateur_Evanescence);
+
 public:
-  Operateur_base&   l_op_base() override;
-  const Operateur_base& l_op_base() const override;
-  DoubleTab&        ajouter(const DoubleTab&, DoubleTab& ) const override;
-  DoubleTab&        calculer(const DoubleTab&, DoubleTab& ) const override;
-  void              typer() override;
-  void              typer(const Nom&);
-  inline int op_non_nul() const override;
+  Operateur_base& l_op_base() override { return valeur(); }
+  const Operateur_base& l_op_base() const override { return valeur(); }
+  DoubleTab& ajouter(const DoubleTab& donnee, DoubleTab& resu) const override { return valeur().ajouter(donnee, resu); }
+  DoubleTab& calculer(const DoubleTab& donnee, DoubleTab& resu) const override { return valeur().calculer(donnee, resu); }
+  void typer(const Nom& un_type) { DERIV(Operateur_Evanescence_base)::typer(un_type); }
+  void typer() override;
+  inline int op_non_nul() const override { return non_nul(); };
 
 protected:
   REF(Champ_base) la_diffusivite;
 };
-inline int Operateur_Evanescence::op_non_nul() const
-{
-  if (non_nul())
-    return 1;
-  else
-    return 0;
-}
 #endif

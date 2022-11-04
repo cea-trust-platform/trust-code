@@ -14,20 +14,20 @@
 *****************************************************************************/
 
 #include <Flux_interfacial_PolyMAC.h>
-#include <Op_Diff_PolyMAC_P0_Elem.h>
 #include <Flux_interfacial_base.h>
 #include <Changement_phase_base.h>
-#include <Op_Diff_PolyMAC_Elem.h>
-#include <Champ_Elem_PolyMAC.h>
+#include <Champ_Inc_P0_base.h>
 #include <Aire_interfaciale.h>
 #include <Milieu_composite.h>
 #include <Champ_Uniforme.h>
 #include <Pb_Multiphase.h>
-#include <Zone_PolyMAC.h>
+#include <Synonyme_info.h>
 #include <Matrix_tools.h>
 #include <Array_tools.h>
+#include <Zone_VF.h>
 
 Implemente_instanciable(Flux_interfacial_PolyMAC,"Flux_interfacial_Elem_PolyMAC|Flux_interfacial_Elem_PolyMAC_P0", Source_base);
+Add_synonym(Flux_interfacial_PolyMAC, "Flux_interfacial_VDF_P0_VDF");
 
 Sortie& Flux_interfacial_PolyMAC::printOn(Sortie& os) const { return os; }
 
@@ -41,8 +41,8 @@ Entree& Flux_interfacial_PolyMAC::readOn(Entree& is)
 
 void Flux_interfacial_PolyMAC::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, equation().inconnue().valeur());
-  const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, equation().zone_dis().valeur());
+  const Champ_Inc_P0_base& ch = ref_cast(Champ_Inc_P0_base, equation().inconnue().valeur());
+  const Zone_VF& zone = ref_cast(Zone_VF, equation().zone_dis().valeur());
   const DoubleTab& inco = ch.valeurs();
 
   /* on doit pouvoir ajouter / soustraire les equations entre composantes */
@@ -78,7 +78,7 @@ void Flux_interfacial_PolyMAC::dimensionner_blocs(matrices_t matrices, const tab
 
 void Flux_interfacial_PolyMAC::completer()
 {
-  const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, equation().zone_dis().valeur());
+  const Zone_VF& zone = ref_cast(Zone_VF, equation().zone_dis().valeur());
   int N = equation().inconnue().valeurs().line_size();
   if (!sub_type(Flux_interfacial_PolyMAC, equation().sources().dernier()->valeur())) Process::exit(que_suis_je() + " : Flux_interfacial_PolyMAC must be the last source term in the source term declaration list of the " + equation().que_suis_je() + " equation ! ");
   if (sub_type(Energie_Multiphase, equation()))
@@ -122,10 +122,10 @@ void Flux_interfacial_PolyMAC::mettre_a_jour(double temps)
 void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
-  const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, equation().inconnue().valeur());
+  const Champ_Inc_P0_base& ch = ref_cast(Champ_Inc_P0_base, equation().inconnue().valeur());
   // Matrice_Morse *mat = matrices.count(ch.le_nom().getString()) ? matrices.at(ch.le_nom().getString()) : NULL;
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
-  const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, equation().zone_dis().valeur());
+  const Zone_VF& zone = ref_cast(Zone_VF, equation().zone_dis().valeur());
   const DoubleVect& pe = milc.porosite_elem(), &ve = zone.volumes();
   const tabs_t& der_h = ref_cast(Champ_Inc_base, milc.enthalpie()).derivees();
   const Champ_base& ch_rho = milc.masse_volumique();

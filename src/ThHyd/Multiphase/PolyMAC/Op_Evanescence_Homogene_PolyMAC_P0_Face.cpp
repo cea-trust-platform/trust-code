@@ -15,21 +15,19 @@
 
 #include <Op_Evanescence_Homogene_PolyMAC_P0_Face.h>
 #include <Op_Grad_PolyMAC_P0_Face.h>
-#include <Champ_Face_PolyMAC_P0.h>
-#include <Zone_Cl_PolyMAC.h>
-#include <Zone_PolyMAC_P0.h>
+#include <Champ_Face_base.h>
+#include <Zone_VF.h>
 #include <Champ_Uniforme.h>
 #include <Pb_Multiphase.h>
 #include <Matrix_tools.h>
 #include <Param.h>
 #include <SETS.h>
+#include <Synonyme_info.h>
 
 Implemente_instanciable(Op_Evanescence_Homogene_PolyMAC_P0_Face,"Op_Evanescence_HOMOGENE_PolyMAC_P0_Face",Operateur_Evanescence_base);
+Add_synonym(Op_Evanescence_Homogene_PolyMAC_P0_Face, "Op_Evanescence_HOMOGENE_VDF_Face");
 
-Sortie& Op_Evanescence_Homogene_PolyMAC_P0_Face::printOn(Sortie& os) const
-{
-  return os;
-}
+Sortie& Op_Evanescence_Homogene_PolyMAC_P0_Face::printOn(Sortie& os) const { return os; }
 
 Entree& Op_Evanescence_Homogene_PolyMAC_P0_Face::readOn(Entree& is)
 {
@@ -42,8 +40,8 @@ Entree& Op_Evanescence_Homogene_PolyMAC_P0_Face::readOn(Entree& is)
 
 void Op_Evanescence_Homogene_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
-  const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0, equation().zone_dis().valeur());
+  const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue().valeur());
+  const Zone_VF& zone = ref_cast(Zone_VF, equation().zone_dis().valeur());
   const DoubleTab& inco = ch.valeurs();
   const IntTab& fcl = ch.fcl();
 
@@ -88,8 +86,8 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matr
 
 void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
-  const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0, equation().zone_dis().valeur());
+  const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue().valeur());
+  const Zone_VF& zone = ref_cast(Zone_VF, equation().zone_dis().valeur());
   const IntTab& f_e = zone.face_voisins(), &fcl = ch.fcl();
   const DoubleTab& inco = ch.valeurs(), &vfd = zone.volumes_entrelaces_dir(),
                    &alpha = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe();
