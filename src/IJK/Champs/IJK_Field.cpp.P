@@ -101,18 +101,18 @@ void set_imin_nitot(int rank_dir, int nproc_dir,
     envoyer(n_tot, pe_min, canal);
 }
 
-#Pmacro DEF_IJK_FIELD(_TYPE_,_ARRAYTYPE_,_IS_INT_)
+#Pmacro DEF_IJK_FIELD(_CLASS_NAME_,_TYPE_,_ARRAYTYPE_)
 
-Implemente_instanciable_sans_constructeur(IJK_Field_local__TYPE_, "IJK_Field_local__TYPE_", Objet_U);
-Implemente_instanciable(IJK_Field__TYPE_, "IJK_Field__TYPE_", IJK_Field_local__TYPE_);
-Implemente_vect(IJK_Field__TYPE_);
+Implemente_instanciable_sans_constructeur(IJK_Field_local__CLASS_NAME_, "IJK_Field_local__CLASS_NAME_", Objet_U);
+Implemente_instanciable(IJK_Field__CLASS_NAME_, "IJK_Field__CLASS_NAME_", IJK_Field_local__CLASS_NAME_);
+Implemente_vect(IJK_Field__CLASS_NAME_);
 
-Sortie & IJK_Field_local__TYPE_::printOn(Sortie & os) const { return os; }
-Entree & IJK_Field_local__TYPE_::readOn(Entree & is) { return is; }
-Sortie & IJK_Field__TYPE_::printOn(Sortie & os) const { return os; }
-Entree & IJK_Field__TYPE_::readOn(Entree & is) { return is; }
+Sortie & IJK_Field_local__CLASS_NAME_::printOn(Sortie & os) const { return os; }
+Entree & IJK_Field_local__CLASS_NAME_::readOn(Entree & is) { return is; }
+Sortie & IJK_Field__CLASS_NAME_::printOn(Sortie & os) const { return os; }
+Entree & IJK_Field__CLASS_NAME_::readOn(Entree & is) { return is; }
 
-IJK_Field_local__TYPE_::IJK_Field_local__TYPE_()
+IJK_Field_local__CLASS_NAME_::IJK_Field_local__CLASS_NAME_()
 {
   ni_ = nj_ = nk_ = ghost_size_ = 0;
   nb_compo_ = 1;
@@ -121,10 +121,10 @@ IJK_Field_local__TYPE_::IJK_Field_local__TYPE_()
 }
 
 
-void IJK_Field_local__TYPE_::allocate(int Ni, int Nj, int Nk, int ghosts, int additional_k_layers, int nb_compos)
+void IJK_Field_local__CLASS_NAME_::allocate(int Ni, int Nj, int Nk, int ghosts, int additional_k_layers, int nb_compos)
 {
   if (ghosts > Ni || ghosts > Nj || ghosts > Nk) {
-    Cerr << "Error in IJK_Field_local__TYPE_::allocate: ghostsize=" << ghosts
+    Cerr << "Error in IJK_Field_local__CLASS_NAME_::allocate: ghostsize=" << ghosts
 	 << " is larger than the local mesh size " << Ni << " " << Nj << " " << Nk << finl;
     Process::exit();
   }
@@ -167,7 +167,7 @@ void IJK_Field_local__TYPE_::allocate(int Ni, int Nj, int Nk, int ghosts, int ad
 // Adds n * compo_stride_ * nb_compo_ to the offset
 // (shifts the data by n layers in the k direction without moving memory)
 // Used by the jacobi "in place" algorithm: the result replaces the source data but is shifted in k.
-void IJK_Field_local__TYPE_::shift_k_origin(int n)
+void IJK_Field_local__CLASS_NAME_::shift_k_origin(int n)
 {
   k_layer_shift_ += n;
   // Check that the data still fits into the allocated memory block
@@ -177,9 +177,9 @@ void IJK_Field_local__TYPE_::shift_k_origin(int n)
 }
 
 // Creates a field with nk=1, that points to the data than src(...,...,k_layer)
-// (uses ArrOf_TYPE_::ref_array() to create the reference).
+// (uses ArrOf_CLASS_NAME_::ref_array() to create the reference).
 // ghostsize is identical to source array.
-void IJK_Field_local__TYPE_::ref_ij(IJK_Field_local__TYPE_ & src, int k_lay)
+void IJK_Field_local__CLASS_NAME_::ref_ij(IJK_Field_local__CLASS_NAME_ & src, int k_lay)
 {
 #Pif("_TYPE_"=="float")
   Cerr << "Error: must implement ArrOfFloat::ref_array() and reset()" << endl;
@@ -204,7 +204,7 @@ void IJK_Field_local__TYPE_::ref_ij(IJK_Field_local__TYPE_ & src, int k_lay)
 }
 
 
-void IJK_Field__TYPE_::exchange_data(int pe_send_, /* processor to send to */
+void IJK_Field__CLASS_NAME_::exchange_data(int pe_send_, /* processor to send to */
 			      int is, int js, int ks, /* ijk coordinates of first data to send */
 			      int pe_recv_, /* processor to recv from */
 			      int ir, int jr, int kr, /* ijk coordinates of first data to recv */
@@ -308,7 +308,7 @@ void IJK_Field__TYPE_::exchange_data(int pe_send_, /* processor to send to */
 /*! @brief Exchange data over "ghost" number of cells.
  *
  */
-void IJK_Field__TYPE_::echange_espace_virtuel(int le_ghost)
+void IJK_Field__CLASS_NAME_::echange_espace_virtuel(int le_ghost)
 {
   statistiques().begin_count(echange_vect_counter_);
   assert(le_ghost <= ghost_size_);
@@ -368,18 +368,18 @@ void IJK_Field__TYPE_::echange_espace_virtuel(int le_ghost)
 //   with nb_compo=3: numbers of faces in each direction differ.
 //   Also, components are not grouped by node but stored by layers in k. nb_compo>1 is essentially used
 //   in the multigrid solver to optimize memory accesses to the components of the matrix.
-void IJK_Field__TYPE_::allocate(const IJK_Splitting & splitting, IJK_Splitting::Localisation loc, 
+void IJK_Field__CLASS_NAME_::allocate(const IJK_Splitting & splitting, IJK_Splitting::Localisation loc, 
 				int ghost_size, int additional_k_layers, int ncompo)
 {
   const int ni_local = splitting.get_nb_items_local(loc, 0);
   const int nj_local = splitting.get_nb_items_local(loc, 1);
   const int nk_local = splitting.get_nb_items_local(loc, 2);
-  IJK_Field_local__TYPE_::allocate(ni_local, nj_local, nk_local, ghost_size, additional_k_layers, ncompo);
+  IJK_Field_local__CLASS_NAME_::allocate(ni_local, nj_local, nk_local, ghost_size, additional_k_layers, ncompo);
   splitting_ref_ = splitting;
   localisation_ = loc;
 }
 
-double norme_ijk(const IJK_Field__TYPE_ & residu)
+double norme_ijk(const IJK_Field__CLASS_NAME_ & residu)
 {
   const int ni = residu.ni();
   const int nj = residu.nj();
@@ -401,7 +401,7 @@ double norme_ijk(const IJK_Field__TYPE_ & residu)
   return sqrt(somme);
 }
 
-_TYPE_ max_ijk(const IJK_Field__TYPE_& residu)
+_TYPE_ max_ijk(const IJK_Field__CLASS_NAME_& residu)
 {
   const int ni = residu.ni();
   const int nj = residu.nj();
@@ -418,7 +418,7 @@ _TYPE_ max_ijk(const IJK_Field__TYPE_& residu)
   return res;
 }
 
-_TYPE_ prod_scal_ijk(const IJK_Field__TYPE_ & x, const IJK_Field__TYPE_ & y)
+_TYPE_ prod_scal_ijk(const IJK_Field__CLASS_NAME_ & x, const IJK_Field__CLASS_NAME_ & y)
 {
   const int ni = x.ni();
   const int nj = x.nj();
@@ -439,7 +439,7 @@ _TYPE_ prod_scal_ijk(const IJK_Field__TYPE_ & x, const IJK_Field__TYPE_ & y)
   return somme;
 }
 
-double somme_ijk(const IJK_Field__TYPE_ & residu)
+double somme_ijk(const IJK_Field__CLASS_NAME_ & residu)
 {
   const int ni = residu.ni();
   const int nj = residu.nj();
@@ -463,6 +463,6 @@ double somme_ijk(const IJK_Field__TYPE_ & residu)
 
 #Pendmacro(DEF_IJK_FIELD)
 
-#Pusemacro(DEF_IJK_FIELD)(float,ArrOfFloat,0)
-#Pusemacro(DEF_IJK_FIELD)(double,ArrOfDouble,0)
-#Pusemacro(DEF_IJK_FIELD)(int,ArrOfInt,1)
+#Pusemacro(DEF_IJK_FIELD)(float,float,ArrOfFloat)
+#Pusemacro(DEF_IJK_FIELD)(double,double,ArrOfDouble)
+#Pusemacro(DEF_IJK_FIELD)(True_int,int,ArrOfInt)

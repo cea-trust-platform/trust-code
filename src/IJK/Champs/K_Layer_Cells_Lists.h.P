@@ -83,19 +83,19 @@ Declare_vect(ArrOf_TYPE__with_ghost);
 #Pusemacro(DEFARROFTYPE_WITHGHOST)(Double,double)
 
 
-#Pmacro DEF_IJK_FIELD(_TYPE_,_ARRAYTYPE_)
+#Pmacro DEF_IJK_FIELD(_CLASS_NAME_,_TYPE_,_ARRAYTYPE_)
 // .Description
 // This class describes a scalar field in an ijk box without any parallel information.
 // The scalar field can be accessed by
 //  - field(i,j,k) with "-ghost() <= i < ni() + ghost()", same for j and k
 //  - field.data()[linear_index(i,j,k)]
-class IJK_Field_local__TYPE_ : public Objet_U
+class IJK_Field_local__CLASS_NAME_ : public Objet_U
 {
-  Declare_instanciable(IJK_Field_local__TYPE_);
+  Declare_instanciable(IJK_Field_local__CLASS_NAME_);
 public:
   void allocate(int ni, int nj, int nk, int ghosts, int additional_k_layers = 0, int nb_compo = 1);
   void shift_k_origin(int n);
-  void ref_ij(IJK_Field_local__TYPE_ & src, int k_layer);
+  void ref_ij(IJK_Field_local__CLASS_NAME_ & src, int k_layer);
 
   int linear_index(int i, int j, int k) const {
     assert(nb_compo_ == 1); // otherwise, must specify component
@@ -231,9 +231,9 @@ protected:
 // and echange_espace_virtuel(n) exchanges n layers of ghost cells,
 // echange_espace_virtuel handles periodicity by copying the first layer
 //  into the ghost layer on the opposite side.
-class IJK_Field__TYPE_ : public IJK_Field_local__TYPE_
+class IJK_Field__CLASS_NAME_ : public IJK_Field_local__CLASS_NAME_
 {
-  Declare_instanciable(IJK_Field__TYPE_);
+  Declare_instanciable(IJK_Field__CLASS_NAME_);
 public:
   void allocate(const IJK_Splitting &, IJK_Splitting::Localisation, int ghost_size, int additional_k_layers = 0, int nb_compo = 1);
 
@@ -251,26 +251,24 @@ protected:
 		     int isz, int jsz, int ksz); /* size of block data to send/recv */
 };
 
-Declare_vect(IJK_Field__TYPE_);
+Declare_vect(IJK_Field__CLASS_NAME_);
 
-double norme_ijk(const IJK_Field__TYPE_ & x);
-_TYPE_ max_ijk(const IJK_Field__TYPE_ & x);
-_TYPE_ prod_scal_ijk(const IJK_Field__TYPE_ & x, const IJK_Field__TYPE_ & y);
-double somme_ijk(const IJK_Field__TYPE_ & residu);
+double norme_ijk(const IJK_Field__CLASS_NAME_ & x);
+_TYPE_ max_ijk(const IJK_Field__CLASS_NAME_ & x);
+_TYPE_ prod_scal_ijk(const IJK_Field__CLASS_NAME_ & x, const IJK_Field__CLASS_NAME_ & y);
+double somme_ijk(const IJK_Field__CLASS_NAME_ & residu);
 
 #Pendmacro(DEF_IJK_FIELD)
-
-#Pusemacro(DEF_IJK_FIELD)(float,ArrOfFloat)
-#Pusemacro(DEF_IJK_FIELD)(double,ArrOfDouble)
-#Pusemacro(DEF_IJK_FIELD)(int,ArrOfInt)
-
+#Pusemacro(DEF_IJK_FIELD)(float,float,ArrOfFloat)
+#Pusemacro(DEF_IJK_FIELD)(double,double,ArrOfDouble)
+#Pusemacro(DEF_IJK_FIELD)(True_int,int,ArrOfInt)
+ 
 typedef IJK_Field_local_double IJK_Field_local;
 typedef IJK_Field_double IJK_Field;
 typedef VECT(IJK_Field_double) VECT(IJK_Field);
-#ifdef INT_is_64_
-using IJK_Field_int = IJK_Field_long;
-#endif
 
+using IJK_Field_int = IJK_Field_True_int;
+ 
 // .Description
 //  This class describes an IJ plane of an IJK_Field_local.
 //  It just encapsulates the offset computation:

@@ -800,16 +800,16 @@ double somme_ijk(const IJK_Field_double & residu)
 }
 
 
-Implemente_instanciable_sans_constructeur(IJK_Field_local_int, "IJK_Field_local_int", Objet_U);
-Implemente_instanciable(IJK_Field_int, "IJK_Field_int", IJK_Field_local_int);
-Implemente_vect(IJK_Field_int);
+Implemente_instanciable_sans_constructeur(IJK_Field_local_True_int, "IJK_Field_local_True_int", Objet_U);
+Implemente_instanciable(IJK_Field_True_int, "IJK_Field_True_int", IJK_Field_local_True_int);
+Implemente_vect(IJK_Field_True_int);
 
-Sortie & IJK_Field_local_int::printOn(Sortie & os) const { return os; }
-Entree & IJK_Field_local_int::readOn(Entree & is) { return is; }
-Sortie & IJK_Field_int::printOn(Sortie & os) const { return os; }
-Entree & IJK_Field_int::readOn(Entree & is) { return is; }
+Sortie & IJK_Field_local_True_int::printOn(Sortie & os) const { return os; }
+Entree & IJK_Field_local_True_int::readOn(Entree & is) { return is; }
+Sortie & IJK_Field_True_int::printOn(Sortie & os) const { return os; }
+Entree & IJK_Field_True_int::readOn(Entree & is) { return is; }
 
-IJK_Field_local_int::IJK_Field_local_int()
+IJK_Field_local_True_int::IJK_Field_local_True_int()
 {
   ni_ = nj_ = nk_ = ghost_size_ = 0;
   nb_compo_ = 1;
@@ -818,10 +818,10 @@ IJK_Field_local_int::IJK_Field_local_int()
 }
 
 
-void IJK_Field_local_int::allocate(int Ni, int Nj, int Nk, int ghosts, int additional_k_layers, int nb_compos)
+void IJK_Field_local_True_int::allocate(int Ni, int Nj, int Nk, int ghosts, int additional_k_layers, int nb_compos)
 {
   if (ghosts > Ni || ghosts > Nj || ghosts > Nk) {
-    Cerr << "Error in IJK_Field_local_int::allocate: ghostsize=" << ghosts
+    Cerr << "Error in IJK_Field_local_True_int::allocate: ghostsize=" << ghosts
 	 << " is larger than the local mesh size " << Ni << " " << Nj << " " << Nk << finl;
     Process::exit();
   }
@@ -861,7 +861,7 @@ void IJK_Field_local_int::allocate(int Ni, int Nj, int Nk, int ghosts, int addit
 // Adds n * compo_stride_ * nb_compo_ to the offset
 // (shifts the data by n layers in the k direction without moving memory)
 // Used by the jacobi "in place" algorithm: the result replaces the source data but is shifted in k.
-void IJK_Field_local_int::shift_k_origin(int n)
+void IJK_Field_local_True_int::shift_k_origin(int n)
 {
   k_layer_shift_ += n;
   // Check that the data still fits into the allocated memory block
@@ -871,9 +871,9 @@ void IJK_Field_local_int::shift_k_origin(int n)
 }
 
 // Creates a field with nk=1, that points to the data than src(...,...,k_layer)
-// (uses ArrOfint::ref_array() to create the reference).
+// (uses ArrOfTrue_int::ref_array() to create the reference).
 // ghostsize is identical to source array.
-void IJK_Field_local_int::ref_ij(IJK_Field_local_int & src, int k_lay)
+void IJK_Field_local_True_int::ref_ij(IJK_Field_local_True_int & src, int k_lay)
 {
   data_.reset();
   ni_ = src.ni_;
@@ -893,7 +893,7 @@ void IJK_Field_local_int::ref_ij(IJK_Field_local_int & src, int k_lay)
 }
 
 
-void IJK_Field_int::exchange_data(int pe_send_, /* processor to send to */
+void IJK_Field_True_int::exchange_data(int pe_send_, /* processor to send to */
 			      int is, int js, int ks, /* ijk coordinates of first data to send */
 			      int pe_recv_, /* processor to recv from */
 			      int ir, int jr, int kr, /* ijk coordinates of first data to recv */
@@ -992,7 +992,7 @@ void IJK_Field_int::exchange_data(int pe_send_, /* processor to send to */
 /*! @brief Exchange data over "ghost" number of cells.
  *
  */
-void IJK_Field_int::echange_espace_virtuel(int le_ghost)
+void IJK_Field_True_int::echange_espace_virtuel(int le_ghost)
 {
   statistiques().begin_count(echange_vect_counter_);
   assert(le_ghost <= ghost_size_);
@@ -1052,18 +1052,18 @@ void IJK_Field_int::echange_espace_virtuel(int le_ghost)
 //   with nb_compo=3: numbers of faces in each direction differ.
 //   Also, components are not grouped by node but stored by layers in k. nb_compo>1 is essentially used
 //   in the multigrid solver to optimize memory accesses to the components of the matrix.
-void IJK_Field_int::allocate(const IJK_Splitting & splitting, IJK_Splitting::Localisation loc, 
+void IJK_Field_True_int::allocate(const IJK_Splitting & splitting, IJK_Splitting::Localisation loc, 
 				int ghost_size, int additional_k_layers, int ncompo)
 {
   const int ni_local = splitting.get_nb_items_local(loc, 0);
   const int nj_local = splitting.get_nb_items_local(loc, 1);
   const int nk_local = splitting.get_nb_items_local(loc, 2);
-  IJK_Field_local_int::allocate(ni_local, nj_local, nk_local, ghost_size, additional_k_layers, ncompo);
+  IJK_Field_local_True_int::allocate(ni_local, nj_local, nk_local, ghost_size, additional_k_layers, ncompo);
   splitting_ref_ = splitting;
   localisation_ = loc;
 }
 
-double norme_ijk(const IJK_Field_int & residu)
+double norme_ijk(const IJK_Field_True_int & residu)
 {
   const int ni = residu.ni();
   const int nj = residu.nj();
@@ -1085,7 +1085,7 @@ double norme_ijk(const IJK_Field_int & residu)
   return sqrt(somme);
 }
 
-int max_ijk(const IJK_Field_int& residu)
+int max_ijk(const IJK_Field_True_int& residu)
 {
   const int ni = residu.ni();
   const int nj = residu.nj();
@@ -1102,7 +1102,7 @@ int max_ijk(const IJK_Field_int& residu)
   return res;
 }
 
-int prod_scal_ijk(const IJK_Field_int & x, const IJK_Field_int & y)
+int prod_scal_ijk(const IJK_Field_True_int & x, const IJK_Field_True_int & y)
 {
   const int ni = x.ni();
   const int nj = x.nj();
@@ -1123,7 +1123,7 @@ int prod_scal_ijk(const IJK_Field_int & x, const IJK_Field_int & y)
   return somme;
 }
 
-double somme_ijk(const IJK_Field_int & residu)
+double somme_ijk(const IJK_Field_True_int & residu)
 {
   const int ni = residu.ni();
   const int nj = residu.nj();

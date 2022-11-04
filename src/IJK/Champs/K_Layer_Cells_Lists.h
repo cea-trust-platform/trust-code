@@ -106,7 +106,6 @@ protected:
 Declare_vect(ArrOfDouble_with_ghost);
 
 
-
 // .Description
 // This class describes a scalar field in an ijk box without any parallel information.
 // The scalar field can be accessed by
@@ -460,13 +459,13 @@ double somme_ijk(const IJK_Field_double & residu);
 // The scalar field can be accessed by
 //  - field(i,j,k) with "-ghost() <= i < ni() + ghost()", same for j and k
 //  - field.data()[linear_index(i,j,k)]
-class IJK_Field_local_int : public Objet_U
+class IJK_Field_local_True_int : public Objet_U
 {
-  Declare_instanciable(IJK_Field_local_int);
+  Declare_instanciable(IJK_Field_local_True_int);
 public:
   void allocate(int ni, int nj, int nk, int ghosts, int additional_k_layers = 0, int nb_compo = 1);
   void shift_k_origin(int n);
-  void ref_ij(IJK_Field_local_int & src, int k_layer);
+  void ref_ij(IJK_Field_local_True_int & src, int k_layer);
 
   int linear_index(int i, int j, int k) const {
     assert(nb_compo_ == 1); // otherwise, must specify component
@@ -602,9 +601,9 @@ protected:
 // and echange_espace_virtuel(n) exchanges n layers of ghost cells,
 // echange_espace_virtuel handles periodicity by copying the first layer
 //  into the ghost layer on the opposite side.
-class IJK_Field_int : public IJK_Field_local_int
+class IJK_Field_True_int : public IJK_Field_local_True_int
 {
-  Declare_instanciable(IJK_Field_int);
+  Declare_instanciable(IJK_Field_True_int);
 public:
   void allocate(const IJK_Splitting &, IJK_Splitting::Localisation, int ghost_size, int additional_k_layers = 0, int nb_compo = 1);
 
@@ -622,21 +621,20 @@ protected:
 		     int isz, int jsz, int ksz); /* size of block data to send/recv */
 };
 
-Declare_vect(IJK_Field_int);
+Declare_vect(IJK_Field_True_int);
 
-double norme_ijk(const IJK_Field_int & x);
-int max_ijk(const IJK_Field_int & x);
-int prod_scal_ijk(const IJK_Field_int & x, const IJK_Field_int & y);
-double somme_ijk(const IJK_Field_int & residu);
+double norme_ijk(const IJK_Field_True_int & x);
+int max_ijk(const IJK_Field_True_int & x);
+int prod_scal_ijk(const IJK_Field_True_int & x, const IJK_Field_True_int & y);
+double somme_ijk(const IJK_Field_True_int & residu);
 
-
+ 
 typedef IJK_Field_local_double IJK_Field_local;
 typedef IJK_Field_double IJK_Field;
 typedef VECT(IJK_Field_double) VECT(IJK_Field);
-#ifdef INT_is_64_
-using IJK_Field_int = IJK_Field_long;
-#endif
 
+using IJK_Field_int = IJK_Field_True_int;
+ 
 // .Description
 //  This class describes an IJ plane of an IJK_Field_local.
 //  It just encapsulates the offset computation:
