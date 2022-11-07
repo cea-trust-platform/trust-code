@@ -222,7 +222,7 @@ void Corriger_frontiere_periodique::corriger_coordonnees_sommets_perio(Domaine& 
       Domaine dom2;
       Cerr << "Writing node displacement into file: " << nom_fichier_post << finl;
       DERIV(Format_Post_base) fichier_post;
-      fichier_post.typer("FORMAT_POST_LATA_V1");
+      fichier_post.typer("FORMAT_POST_LATA");
       fichier_post.valeur().initialize(nom_fichier_post, 1 /* binaire */, "SIMPLE");
       Format_Post_base& post = fichier_post.valeur();
       post.ecrire_entete(0., 0 /*reprise*/, 1 /* premier post */);
