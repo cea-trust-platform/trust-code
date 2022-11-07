@@ -19,9 +19,9 @@ linux	git_ssh  	tache	irene-amd-ccrt-build64.ccc.cea.fr	-limited	-TrioCFD -IJK-F
 linux	git_ssh  	tache	irene-ccrt-build64.ccc.cea.fr	-limited	-TrioCFD -IJK-FT 						-build_64_bit -without-doc -disable-plot2d 						# RedHat 7.6	CEA CCRT
 linux	git_ssh 	tache	desactive_irene-amd-ccrt.ccc.cea.fr	-limited	-TrioCFD -IJK-FT					-benchmark	-without-doc -disable-plot2d 									# RedHat 7.6	CEA CCRT
 linux	git_ssh 	tache	irene-next-amd.ccc.cea.fr	-limited	-TrioCFD -IJK-FT					-benchmark	-without-doc -disable-plot2d -without-visit  									# RedHat 8.4	CEA CCRT
-linux	git_ssh 	tache	desactive-irene-amd-ccrt-gpu.ccc.cea.fr			-TrioCFD -IJK-FT				-cuda		-without-doc -disable-plot2d 									# RedHat 7.6	CEA CCRT
+linux	git_ssh 	tache	irene-amd-ccrt-gpu.ccc.cea.fr			-TrioCFD -IJK-FT				-cuda		-without-doc -disable-plot2d 									# RedHat 7.6	CEA CCRT
 linux	git_ssh 	tache	topaze-build64.ccc.cea.fr		-limited	-TrioCFD -IJK-FT 				-benchmark	-without-doc -disable-plot2d -build_64_bit 									# RedHat 8.3	CEA CCRT
-linux	git_ssh 	tache	desactive-topaze-gpu.ccc.cea.fr				-TrioCFD -IJK-FT 				-cuda 	-without-doc -disable-plot2d -without-visit  									# RedHat 8.3	CEA CCRT
+linux	git_ssh 	tache	topaze-gpu.ccc.cea.fr				-TrioCFD -IJK-FT 				-cuda 	-without-doc -disable-plot2d -without-visit  									# RedHat 8.3	CEA CCRT
 linux	rsync_ssh	tache	jean-zay.idris.fr   		-limited	-TrioCFD -IJK-FT           						-benchmark -without-doc -disable-plot2d -without-visit                					# RedHat 8.1
 linux	rsync_ssh	tache	jean-zay-gpu.idris.fr   			-TrioCFD -IJK-FT         			-cuda 		-without-doc -disable-plot2d -without-visit                					# RedHat 8.1
 linux	rsync_ssh	tache	jean-zay-build64.idris.fr   -limited	-TrioCFD -IJK-FT          		 		-build_64_bit -without-doc -disable-plot2d -without-visit                					# RedHat 8.1

@@ -13,7 +13,7 @@ Mailler dom
         Longueurs 1. 1.
     }
     {
-				Bord Gauche  X = 0.0   0.0  <= Y <= 1.0
+	Bord Gauche  X = 0.0   0.0  <= Y <= 1.0
         Bord Bas     Y = 0.0   0.0  <= X <= 1.0
         Bord Droit   X = 1.0   0.0  <= Y <= 1.0
         Bord Haut    Y = 1.0   0.0  <= X <= 1.0
@@ -22,17 +22,9 @@ Mailler dom
 # END MESH #
 
 # BEGIN PARTITION
-Postraiter_domaine
-{
-    fichier mesh.lata
-    format lata
-    domaine dom
-}
-
 Partition dom
 {
     partitionneur metis { Nb_parts 4 }
-    nb_parts_tot 4
     larg_joint 1
     zones_name DOM
 }
@@ -69,9 +61,6 @@ Read sch
             -pc_hypre_boomeramg_truncfactor 0.5
             -ksp_type fgmres
         }
-/*
-        solveur petsc cholesky { cli { -ksp_reuse_preconditioner } }
-*/
     }
 }
 
@@ -92,14 +81,17 @@ Read pb
     Conduction
     {
         diffusion { }
-        sources { Puissance_thermique Champ_Fonc_XYZ dom 1 2.*pi*pi*sin(pi*x)*sin(pi*y) }
-        initial_conditions { temperature Champ_Fonc_XYZ dom 1 0*sin(pi*x)*sin(pi*y) }
-        boundary_conditions
-        {
+        initial_conditions {
+            temperature Champ_Fonc_XYZ dom 1 0*sin(pi*x)*sin(pi*y)
+        }
+        boundary_conditions {
             Haut paroi_temperature_imposee Champ_Front_Uniforme 1 0
             Bas paroi_temperature_imposee Champ_Front_Uniforme 1 0
             Gauche paroi_temperature_imposee Champ_Front_Uniforme 1 0
             Droit paroi_temperature_imposee Champ_Front_Uniforme 1 0
+        }
+        sources {
+            Puissance_thermique Champ_Fonc_XYZ dom 1 2.*pi*pi*sin(pi*x)*sin(pi*y)
         }
     }
 
@@ -107,15 +99,13 @@ Read pb
     {
         Definition_champs
         {
-            erreur_T transformation
-            {
-                methode formule expression 1 abs(Temp-sin(pi*x)*sin(pi*y)) sources
-                {
+            erreur_T transformation {
+                methode formule expression 1 abs(Temp-sin(pi*x)*sin(pi*y))
+                sources {
                     refChamp { pb_champ pb temperature nom_source Temp }
                 }
             }
-            max_erreur_T reduction_0D
-            {
+            max_erreur_T reduction_0D {
                 methode l2_norm source_reference erreur_T
             }
         }
@@ -127,7 +117,7 @@ Read pb
             temperature_X grav temperature periode 1e8 segment 100 0. 1. 1. 0.
             norme_linf max_erreur_T periode 1e-7 numero_elem_sur_maitre 0
         }
-        format Lata
+        format lata
         fields dt_post 30.
         {
             temperature elem
@@ -138,5 +128,4 @@ Read pb
 }
 
 Solve pb
-lata_to_other lml NOM_DU_CAS NOM_DU_CAS
 End

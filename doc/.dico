@@ -446,10 +446,10 @@
  IJK_discretization IJK_discretization IJK_discretization.h
  IJK_Field_double IJK_Field_double IJK_Field.h
  IJK_Field_float IJK_Field_float IJK_Field.h
- IJK_Field_int IJK_Field_int IJK_Field.h
  IJK_Field_local_double IJK_Field_local_double IJK_Field.h
  IJK_Field_local_float IJK_Field_local_float IJK_Field.h
- IJK_Field_local_int IJK_Field_local_int IJK_Field.h
+ IJK_Field_local_True_int IJK_Field_local_True_int IJK_Field.h
+ IJK_Field_True_int IJK_Field_True_int IJK_Field.h
  IJK_Grid_Geometry IJK_Grid_Geometry IJK_Grid_Geometry.h
  IJK_Lata_Swap_JK IJK_Lata_Swap_JK IJK_Lata_Swap_JK.h
  IJK_Splitting IJK_Splitting IJK_Splitting.h

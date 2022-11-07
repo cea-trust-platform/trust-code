@@ -936,21 +936,21 @@ class Show(object):
                     f.write(" annotation.GetAxes3D().SetVisible(0)\n")
                     f.write(" annotation.GetAxes2D().SetVisible(0)\n")
                     f.write("except:\n")
-                    f.write(' print "option no_axes incompatible with this version of visit"\n pass\n')
+                    f.write(' print (\"option no_axes incompatible with this version of visit\")\n pass\n')
                     f.write("SetAnnotationAttributes(annotation)\n")
                 elif type_op == "no_triad":
                     f.write("annotation=GetAnnotationAttributes()\n")
                     f.write("try:\n annotation.GetAxes2D().SetVisible(0)\n")
                     f.write(" annotation.GetAxes3D().SetTriadFlag(0)\n")
                     f.write("except:\n")
-                    f.write(' print "option no_triad incompatible with this version of visit"\n pass\n')
+                    f.write(' print (\"option no_triad incompatible with this version of visit\")\n pass\n')
                     f.write("SetAnnotationAttributes(annotation)\n")
                 elif type_op == "no_bounding_box":
                     f.write("annotation=GetAnnotationAttributes()\n")
 
                     f.write("try: annotation.GetAxes3D().SetBboxFlag(0)\n")
                     f.write("except:\n")
-                    f.write(' print "option no_boundig_box incompatible with this version of visit"\n pass\n')
+                    f.write(' print (\"option no_boundig_box incompatible with this version of visit\")\n pass\n')
                     f.write("SetAnnotationAttributes(annotation)\n")
                 elif type_op == "no_databaseinfo":
                     f.write("annotation=GetAnnotationAttributes()\n")
@@ -969,7 +969,7 @@ class Show(object):
         """
 
         with open(visitTmpFile_(), "a") as f:
-            f.write("vb=VectorAttributes()\nvb.SetColorByMag(0)\nvb.SetUseLegend(0)\n")
+            f.write("vb=VectorAttributes()\ntry:\n  SetColorByMagnitude=vb.SetColorByMagnitude\nexcept:\n  SetColorByMagnitude=vb.SetColorByMag\nSetColorByMagnitude(0)\nvb.SetUseLegend(0)\n")
             f.write("SetPlotOptions(vb)\n")
         f.close()
 
