@@ -115,7 +115,7 @@ const Domain& get_domain(LataFilter& filter, Domain_Id& id, Nom& filename)
 // methode mettre dans lata_analyzer, commune compare_lata et lata_to_other
 DomainUnstructured convertIJKtoUnstructured(const DomainIJK& ijk)
 {
-  cerr << "conversion domaijk ";
+//  cerr << "conversion domaijk ";
   DomainUnstructured dom;
   dom.elt_type_ = ijk.elt_type_;
   int nx = 1, ny = 1, nz = 1;
@@ -179,7 +179,7 @@ DomainUnstructured convertIJKtoUnstructured(const DomainIJK& ijk)
             elems(nn, 3) = (i + 1) * ny + (j + 1);
           }
     }
-  cerr << " ok" << endl;
+//  cerr << " ok" << endl;
   return dom;
 }
 
@@ -859,7 +859,6 @@ int main(int argc, char **argv)
               try
                 {
                   const FieldFloat& field = filter.get_float_field(id);
-                  //	  cerr<<field.id_.uname_<<field.data_.dimension(1)<<endl;
                   const FieldFloat& field2 = filter2.get_float_field(id2);
 
                   Ecarts& ecarts = un_ecart.les_ecarts_.add();
@@ -874,8 +873,15 @@ int main(int argc, char **argv)
                 }
               catch (LataError err)
                 {
-                  cerr << "error loading field" << endl;
-                  exit(-1);
+                  if (err.code_ == LataError::NOT_A_FLOAT_FIELD)
+                    {
+                      cerr << "Field '" << id.uname_ << "' is not a float field. No comparison done." << endl;
+                    }
+                  else
+                    {
+                    cerr << "error loading field" << endl;
+                    exit(-1);
+                    }
                 }
             }
         }
@@ -889,6 +895,7 @@ int main(int argc, char **argv)
       const EcartField& un_ecart = les_ecarts[j];
 
       Nom nom_champ = get_long_field_name(un_ecart.name_);
+      if (un_ecart.les_ecarts_.size() < 2) continue;
       int nbc = un_ecart.les_ecarts_[1].min.size_array();
       if (nbc == 1)
         {
@@ -909,7 +916,6 @@ int main(int argc, char **argv)
                     double min = 1e30, max = -1e30;
                     for (int i = 0; i < nbv; i++)
                       {
-
                         const Ecarts& ecarts = les_ecarts[j - 1 + i].les_ecarts_[t];
                         // cerr<<t<<" la "<<ecarts.min[0]<<" "<<ecarts.max[0]<<endl;
                         double p = (ecarts.min[0]);

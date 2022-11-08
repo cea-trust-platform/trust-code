@@ -233,7 +233,7 @@ protected:
 
 struct LataError
 {
-  enum ErrorCode { NEED_REGULAR, NO_FACES, WRONG_ELT_TYPE, INVALID_TSTEP, INVALID_COMPONENT, INVALID_DOMAIN, OTHER };
+  enum ErrorCode { NEED_REGULAR, NO_FACES, WRONG_ELT_TYPE, INVALID_TSTEP, INVALID_COMPONENT, INVALID_DOMAIN, NOT_A_FLOAT_FIELD, OTHER };
   LataError(ErrorCode code, const char *msg) : code_(code), msg_(msg) { }
   ErrorCode code_;
   const char *msg_;
