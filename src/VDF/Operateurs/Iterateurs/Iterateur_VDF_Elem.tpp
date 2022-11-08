@@ -187,7 +187,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const BC& cl, const int nd
 
       const std::string& nom_ch = le_champ_convecte_ou_inc->le_nom().getString();
       const DoubleTab& donnee = semi_impl.count(nom_ch) ? semi_impl.at(nom_ch) : le_champ_convecte_ou_inc->valeurs(),
-                       val_b = sub_type(Champ_Face_base, le_champ_convecte_ou_inc.valeur()) ? DoubleTab() : le_champ_convecte_ou_inc->valeur_aux_bords(); // si le champ associe est un champ_face, alors on est dans un operateur de div
+                       val_b = sub_type(Champ_Face_base, le_champ_convecte_ou_inc.valeur()) ? DoubleTab() : (use_base_val_b_ ? le_champ_convecte_ou_inc->Champ_base::valeur_aux_bords() : le_champ_convecte_ou_inc->valeur_aux_bords()); // si le champ associe est un champ_face, alors on est dans un operateur de div
 
       int e, Mv = N;
       Type_Double flux(N), aii(N), ajj(N), aef(N);
@@ -313,15 +313,18 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Echange_externe_impo
 
       //derivees : vitesse
       if (m_vit)
-        for (int face = ndeb; face < nfin; face++)
-          {
-            const int local_face = la_zone.valeur().front_VF(boundary_index).num_local_face(face);
-            flux_evaluateur.coeffs_face_bloc_vitesse(donnee, le_champ_convecte_ou_inc->valeur_aux_bords(), boundary_index, face, local_face, cl, ndeb, aef);
+        {
+          DoubleTab val_b = use_base_val_b_ ? le_champ_convecte_ou_inc->Champ_base::valeur_aux_bords() : le_champ_convecte_ou_inc->valeur_aux_bords();
+          for (int face = ndeb; face < nfin; face++)
+            {
+              const int local_face = la_zone.valeur().front_VF(boundary_index).num_local_face(face);
+              flux_evaluateur.coeffs_face_bloc_vitesse(donnee, val_b, boundary_index, face, local_face, cl, ndeb, aef);
 
-            for (int i = 0; i < 2; i++)
-              if ((e = elem(face, i)) >= 0)
-                for (int n = 0, m = 0; n < N; n++, m += (Mv > 1)) (*m_vit)(N * e + n, Mv * face + m) += (i ? -1.0 : 1.0) * aef(n);
-          }
+              for (int i = 0; i < 2; i++)
+                if ((e = elem(face, i)) >= 0)
+                  for (int n = 0, m = 0; n < N; n++, m += (Mv > 1)) (*m_vit)(N * e + n, Mv * face + m) += (i ? -1.0 : 1.0) * aef(n);
+            }
+        }
 
       //derivees : champ convecte
       if (mat || d_cc.size() > 0)

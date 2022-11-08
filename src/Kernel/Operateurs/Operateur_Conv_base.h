@@ -38,6 +38,7 @@ public :
   virtual void associer_norme_vitesse(const Champ_base& norme_vitesse);
   virtual void associer_vitesse_pour_pas_de_temps(const Champ_base& vitesse);
   virtual void set_incompressible(const int);
+  virtual void associer_champ_temp(const Champ_Inc&, bool) const { }
 
 protected :
   REF(Champ_base) la_norme_vitesse;

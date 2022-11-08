@@ -60,6 +60,11 @@ void Op_Conv_VDF_base::associer_champ_convecte()
   iter->associer_champ_convecte_ou_inc(cc, &vitesse());
 }
 
+void Op_Conv_VDF_base::associer_champ_temp(const Champ_Inc& ch_unite, bool use_base) const
+{
+  const_cast<Iterateur_VDF&>(iter)->associer_champ_convecte_ou_inc(ch_unite, nullptr, use_base);
+}
+
 void Op_Conv_VDF_base::ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   statistiques().begin_count(convection_counter_);

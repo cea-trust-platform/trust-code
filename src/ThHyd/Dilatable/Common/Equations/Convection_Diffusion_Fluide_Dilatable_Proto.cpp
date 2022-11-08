@@ -20,16 +20,15 @@
 #include <EcritureLectureSpecial.h>
 #include <Op_Conv_negligeable.h>
 #include <Schema_Temps_base.h>
+#include <Discretisation_base.h>
 #include <Champ_Uniforme.h>
-
 #include <Probleme_base.h>
 #include <Matrice_Morse.h>
-
+#include <Statistiques.h>
 #include <TRUSTTrav.h>
 #include <Operateur.h>
 #include <Domaine.h>
 #include <Avanc.h>
-#include <Statistiques.h>
 
 extern Stat_Counter_Id assemblage_sys_counter_;
 extern Stat_Counter_Id source_counter_;
@@ -45,12 +44,18 @@ void Convection_Diffusion_Fluide_Dilatable_Proto::calculer_div_rho_u_impl
       return;
     }
 
-  DoubleTrav unite(eqn.inconnue().valeurs());
-  unite=1;
-  ref_cast_non_const(Operateur_base,op_conv.l_op_base()).associer_zone_cl_dis(eqn.zone_cl_modif());
+  Champ_Inc ch_unite = eqn.inconnue();
+  ch_unite->valeurs() = 1.0;
+  ref_cast_non_const(Operateur_Conv_base,op_conv.l_op_base()).associer_champ_temp(ch_unite, true);
 
-  op_conv.ajouter(unite,Div);
-  ref_cast_non_const(Operateur_base,op_conv.l_op_base()).associer_zone_cl_dis(eqn.zone_Cl_dis());
+  if (eqn.discretisation().que_suis_je() != "VDF")
+    ref_cast_non_const(Operateur_base,op_conv.l_op_base()).associer_zone_cl_dis(eqn.zone_cl_modif());
+
+  op_conv.ajouter(ch_unite->valeurs(), Div);
+  ref_cast_non_const(Operateur_Conv_base,op_conv.l_op_base()).associer_champ_temp(eqn.inconnue(), false);
+
+  if (eqn.discretisation().que_suis_je() != "VDF")
+    ref_cast_non_const(Operateur_base,op_conv.l_op_base()).associer_zone_cl_dis(eqn.zone_Cl_dis());
 
 }
 

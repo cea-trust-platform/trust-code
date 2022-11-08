@@ -47,6 +47,8 @@ public:
   inline int has_interface_blocs() const override { return 1; }
   void ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const override;
 
+  void associer_champ_temp(const Champ_Inc&, bool) const override;
+
 protected:
   Iterateur_VDF iter;
   void associer_champ_convecte();

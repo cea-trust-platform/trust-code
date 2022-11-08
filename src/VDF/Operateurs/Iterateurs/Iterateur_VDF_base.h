@@ -50,7 +50,7 @@ class Iterateur_VDF_base : public Objet_U
 public:
   void associer(const Zone_VDF&, const Zone_Cl_VDF&, const Operateur_base&);
   void associer_zone_cl_dis(const Zone_Cl_dis_base&);
-  void associer_champ_convecte_ou_inc(const Champ_Inc_base& ch, const Champ_base* chv);
+  void associer_champ_convecte_ou_inc(const Champ_Inc_base& ch, const Champ_base* chv, bool use=false);
   virtual void ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const=0;
 
   virtual void calculer_flux_bord(const DoubleTab&, const DoubleTab&) const;
@@ -82,7 +82,8 @@ protected:
   REF(Operateur_base) op_base;
   REF(Champ_Inc_base) le_champ_convecte_ou_inc;
   REF(Champ_base) le_ch_v;
-  bool is_conv_op_ = false, is_pb_multi = false;
+  bool is_conv_op_ = false, is_pb_multi = false, use_base_val_b_ = false;
+
 };
 
 inline Type_Cl_VDF Iterateur_VDF_base::type_cl(const Cond_lim& la_cl) const
