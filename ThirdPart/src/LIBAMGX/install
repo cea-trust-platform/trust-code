@@ -35,7 +35,7 @@ then
       AMGX_COMPILERS="-DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc" # See https://github.com/NVIDIA/AMGX for compilers...
    fi
    # Sur jeanzay, $TRUST_MAKE plante (pas assez de memoire sur frontale?) donc on retente avec make:
-   cmake -Wno-dev $CUDA_NVCC_FLAGS -DCUDA_TOOLKIT_ROOT_DIR=$CUDA_ROOT -DAMGX_NO_RPATH=1 -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB $AMGX_COMPILERS .. && ($TRUST_MAKE || make) && make install && cp -f ../examples/matrix.mtx $AMGX_DIR/$LIB/lib/examples
+   cmake -Wno-dev $CUDA_NVCC_FLAGS -DCUDA_TOOLKIT_ROOT_DIR=$CUDA_ROOT -DAMGX_NO_RPATH=1 -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB $AMGX_COMPILERS -DCMAKE_CUDA_FLAGS_RELEASE="-DNDEBUG" .. && ($TRUST_MAKE || make) && make install && cp -f ../examples/matrix.mtx $AMGX_DIR/$LIB/lib/examples
    [ $? != 0 ] && exit -1
    make install && cp -f ../examples/matrix.mtx $AMGX_DIR/$LIB/lib/examples
    cd $ROOT && rm -r -f $LIB
