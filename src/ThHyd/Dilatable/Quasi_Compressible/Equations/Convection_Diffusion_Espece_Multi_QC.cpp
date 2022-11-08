@@ -135,17 +135,9 @@ DoubleTab& Convection_Diffusion_Espece_Multi_QC::derivee_en_temps_inco(DoubleTab
   // on commence par retirer phi*div(1 U)
   const DoubleTab& frac_mass = inconnue().valeurs();
 
+  Convection_Diffusion_Fluide_Dilatable_Proto::calculer_div_rho_u_impl(derivee_bis,*this);
+
   int n = frac_mass.dimension_tot(0);
-  DoubleTrav unite(frac_mass);
-  unite = 1;
-
-  {
-    // on change temporairement la zone_cl
-    operateur(1).l_op_base().associer_zone_cl_dis(zcl_modif_.valeur());
-    operateur(1).ajouter(unite, derivee_bis);
-    operateur(1).l_op_base().associer_zone_cl_dis(zone_Cl_dis().valeur());
-  }
-
   for (int i = 0; i < n; i++)
     derivee_bis(i) = -derivee_bis(i) * frac_mass(i);
 
@@ -172,15 +164,8 @@ void Convection_Diffusion_Espece_Multi_QC::assembler(Matrice_Morse& matrice, con
   int ndl = rho.dimension(0);
 
   // on retire Divu1 *inco
-  DoubleTrav unite(inco), divu1(inco);
-  unite = 1;
-
-  {
-    // on change temporairement la zone_cl
-    operateur(1).l_op_base().associer_zone_cl_dis(zcl_modif_.valeur());
-    operateur(1).ajouter(unite, divu1);
-    operateur(1).l_op_base().associer_zone_cl_dis(zone_Cl_dis().valeur());
-  }
+  DoubleTrav divu1(inco);
+  Convection_Diffusion_Fluide_Dilatable_Proto::calculer_div_rho_u_impl(divu1,*this);
 
   // ajout de la convection
   operateur(1).l_op_base().contribuer_a_avec(inco, matrice);
@@ -265,15 +250,8 @@ void Convection_Diffusion_Espece_Multi_QC::assembler_blocs_avec_inertie(matrices
   operateur(1).l_op_base().ajouter_blocs(matrices, secmem, semi_impl);
 
   // on retire Divu1 *inco
-  DoubleTrav unite(inco), divu1(inco);
-  unite = 1;
-
-  {
-    // on change temporairement la zone_cl
-    operateur(1).l_op_base().associer_zone_cl_dis(zcl_modif_.valeur());
-    operateur(1).ajouter(unite, divu1);
-    operateur(1).l_op_base().associer_zone_cl_dis(zone_Cl_dis().valeur());
-  }
+  DoubleTrav divu1(inco);
+  Convection_Diffusion_Fluide_Dilatable_Proto::calculer_div_rho_u_impl(divu1,*this);
 
   for (int i = 0; i < ndl; i++)
     {
