@@ -65,7 +65,7 @@ for machine in $list_machine
     color=""
     [ "$res" = "OK" ] && color=BGCOLOR=3D"#E47833" &&  res="<A HREF=$file> $res </A>"
     
-    [ "$res" = "KO" ] && color=BGCOLOR="#C42111" && res="<A HREF=$file> $res </A>" 
+    [ "`echo $res | grep KO 2>/dev/null`" != "" ] && res="KO" && color=BGCOLOR="#C42111" && res="<A HREF=$file> $res </A>" 
     
  #   [ "`echo $res|awk '{print $1}`" = "file" ] && res="<A HREF=$file> $res </A>"
     echo "<TD $color>$res</TD>" >> nuit_${project}.html 
