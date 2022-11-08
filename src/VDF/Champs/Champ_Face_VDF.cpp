@@ -1338,22 +1338,27 @@ Champ_base& Champ_Face_VDF::affecter_(const Champ_base& ch)
         ch.valeur_aux_compo(positionZ, W, 2);
       nbx = nby = nbz = 0;
       for (num_face = 0; num_face < nb_faces; num_face++)
-        for (int n = 0; n < N; n++)
-          {
-            ori = orientation(num_face);
-            switch(ori)
-              {
-              case 0:
-                val(num_face, n) = U(nbx++, n);
-                break;
-              case 1:
-                val(num_face, n) = V(nby++, n);
-                break;
-              case 2:
-                val(num_face, n) = W(nbz++, n);
-                break;
-              }
-          }
+        {
+          ori = orientation(num_face);
+          switch(ori)
+            {
+            case 0:
+              for (int n = 0; n < N; n++)
+                val(num_face, n) = U(nbx, n);
+              nbx++;
+              break;
+            case 1:
+              for (int n = 0; n < N; n++)
+                val(num_face, n) = V(nby, n);
+              nby++;
+              break;
+            case 2:
+              for (int n = 0; n < N; n++)
+                val(num_face, n) = W(nbz, n);
+              nbz++;
+              break;
+            }
+        }
     }
   return *this;
 }
