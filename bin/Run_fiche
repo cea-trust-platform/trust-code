@@ -79,6 +79,7 @@ pdf=build/rapport.pdf
 save=""
 ici=`pwd`
 export_pdf=false
+coverage=false
 parallel=false
 # Changement par defaut, on utilise -np 2 si parallele et MPI non natif
 #if [ "`echo $MPI_ROOT | grep TRUST`" != "" ]
@@ -132,6 +133,9 @@ do
       shift
    elif [ "$1" = -export_pdf ]; then
       export_pdf=true
+      shift
+   elif [ "$1" = -coverage ]; then
+      coverage=true
       shift
    elif [ "$1" = -not_run ] || [ "$1" = -post_run ] || [ "$1" = -parallel_run ] || [ "$1" = -parallel_sjob ]
    then

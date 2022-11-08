@@ -875,8 +875,9 @@ then
     fi
 fi
 
-# Adding utility package 'trustutils' in PYTHONPATH
+# Adding utility package 'stats' and 'trustutils' in PYTHONPATH
 echo "export PYTHONPATH=\$TRUST_ROOT/Outils/TRUST_STATS_JUPYTER:\$PYTHONPATH" >> $env
+echo "export PYTHONPATH=\$TRUST_ROOT/Validation/Outils:\$PYTHONPATH" >> $env
 
 if [ "$TRUST_DISABLE_JUPYTER" != 1 ]
 then
