@@ -805,6 +805,14 @@ void Assembleur_P_VDF::assembler_continuite(matrices_t matrices, DoubleTab& secm
     for (n = 0; n < N; n++) mat(e, N * e + n) = -pe(e) * ve(e);
 }
 
+/* norme pour assembler_continuite */
+DoubleTab Assembleur_P_VDF::norme_continuite() const
+{
+  const DoubleVect& pe = la_zone_Cl_VDF->equation().milieu().porosite_elem(), &ve = la_zone_VDF->volumes();
+  DoubleTab norm(la_zone_VDF->nb_elem());
+  for (int e = 0; e < la_zone_VDF->nb_elem(); e++) norm(e) = pe(e) * ve(e);
+  return norm;
+}
 
 const Zone_dis_base& Assembleur_P_VDF::zone_dis_base() const
 {

@@ -48,6 +48,7 @@ public:
   void completer(const Equation_base&) override;
   void dimensionner_continuite(matrices_t matrices, int aux_only = 0) const override;
   void assembler_continuite(matrices_t matrices, DoubleTab& secmem, int aux_only = 0) const override;
+  DoubleTab norme_continuite() const override;
 
 protected:
   int construire(Matrice& la_matrice);
