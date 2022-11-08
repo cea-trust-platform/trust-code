@@ -46,6 +46,7 @@ public:
 
   inline int has_interface_blocs() const override { return 1; }
   void ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const override;
+  void dimensionner_blocs_elem(matrices_t mats, const tabs_t& semi_impl) const;
 
   void associer_champ_temp(const Champ_Inc&, bool) const override;
 

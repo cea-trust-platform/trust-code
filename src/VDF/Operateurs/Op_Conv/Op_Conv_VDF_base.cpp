@@ -16,8 +16,11 @@
 #include <Modifier_pour_fluide_dilatable.h>
 #include <Discretisation_base.h>
 #include <Op_Conv_VDF_base.h>
+#include <Champ_Face_VDF.h>
 #include <Pb_Multiphase.h>
+#include <Matrix_tools.h>
 #include <Statistiques.h>
+#include <Array_tools.h>
 #include <TRUSTTrav.h>
 #include <Champ.h>
 
@@ -64,6 +67,46 @@ void Op_Conv_VDF_base::associer_champ_temp(const Champ_Inc& ch_unite, bool use_b
 {
   const_cast<Iterateur_VDF&>(iter)->associer_champ_convecte_ou_inc(ch_unite, nullptr, use_base);
 }
+
+void Op_Conv_VDF_base::dimensionner_blocs_elem(matrices_t mats, const tabs_t& semi_impl) const
+{
+  const Zone_VDF& zone = iter->zone();
+  const IntTab& f_e = zone.face_voisins();
+  int i, j, e, eb, f, n, N = equation().inconnue().valeurs().line_size();
+  const int hcc = equation().has_champ_convecte();
+  const Champ_Inc_base& cc = hcc ? equation().champ_convecte() : equation().inconnue().valeur();
+
+  for (auto &&i_m : mats)
+    if (i_m.first == "vitesse" || (!hcc && i_m.first == cc.le_nom()) || (cc.derivees().count(i_m.first) && !semi_impl.count(cc.le_nom().getString())))
+      {
+        Matrice_Morse mat;
+        IntTrav stencil(0, 2);
+        stencil.set_smart_resize(1);
+        int m, M = equation().probleme().get_champ(i_m.first.c_str()).valeurs().line_size();
+        if (i_m.first == "vitesse") /* vitesse */
+          {
+            const IntTab& fcl_v = ref_cast(Champ_Face_VDF, vitesse()).fcl();
+
+            for (f = 0; f < zone.nb_faces_tot(); f++)
+              if (fcl_v(f, 0) < 2)
+                for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+                  if (e < zone.nb_elem())
+                    for (n = 0; n < N; n++) stencil.append_line(N * e + n, M * f + n * (M > 1));
+          }
+        else for (f = 0; f < zone.nb_faces_tot(); f++)
+            for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+              if (e < zone.nb_elem()) /* inconnues scalaires */
+                for (j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++)
+                  for (n = 0, m = 0; n < N; n++, m += (M > 1)) stencil.append_line(N * e + n, M * eb + m);
+
+        tableau_trier_retirer_doublons(stencil);
+        const int nl = equation().inconnue().valeurs().size_totale(),
+                  nc = i_m.first == "vitesse" ? vitesse().valeurs().size_totale() : (hcc ? cc.derivees().at(i_m.first).size_totale() : nl);
+        Matrix_tools::allocate_morse_matrix(nl, nc, stencil, mat);
+        i_m.second->nb_colonnes() ? *i_m.second += mat : *i_m.second = mat;
+      }
+}
+
 
 void Op_Conv_VDF_base::ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
 {

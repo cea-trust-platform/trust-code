@@ -45,7 +45,7 @@ public:
   inline void associer_vitesse(const Champ_base& ch_vit) override { associer_vitesse_impl<Eval_Amont_VDF_Elem>(ch_vit); }
   inline Champ_base& vitesse() override { return vitesse_impl<Eval_Amont_VDF_Elem>(); }
   inline const Champ_base& vitesse() const override { return vitesse_impl<Eval_Amont_VDF_Elem>(); }
-  inline void dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const override { dimensionner_blocs_gen_impl<Type_Operateur::Op_CONV_ELEM,Eval_Amont_VDF_Elem>(mats); }
+  inline void dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const override { Op_Conv_VDF_base::dimensionner_blocs_elem(mats, semi_impl); }
 
 protected:
   inline Op_Conv_Amont_VDF_Elem(const Iterateur_VDF_base& it) : Op_Conv_VDF_base(it) { } // Ce constructeur permet de creer des classes filles (exemple : front_tracking)
@@ -68,7 +68,7 @@ public:
   inline void associer_vitesse(const Champ_base& ch_vit) override { associer_vitesse_impl<Eval_Centre_VDF_Elem>(ch_vit); }
   inline Champ_base& vitesse() override { return vitesse_impl<Eval_Centre_VDF_Elem>(); }
   inline const Champ_base& vitesse() const override { return vitesse_impl<Eval_Centre_VDF_Elem>(); }
-  inline void dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const override { dimensionner_blocs_gen_impl<Type_Operateur::Op_CONV_ELEM,Eval_Centre_VDF_Elem>(mats); }
+  inline void dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const override { Op_Conv_VDF_base::dimensionner_blocs_elem(mats, semi_impl); }
 };
 
 /*! @brief class Op_Conv_Centre4_VDF_Elem Cette classe represente l'operateur de convection associe a une equation de transport d'un scalaire.

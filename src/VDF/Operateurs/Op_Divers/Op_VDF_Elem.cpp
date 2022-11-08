@@ -143,29 +143,4 @@ void Op_VDF_Elem::dimensionner(const Zone_VDF& la_zone, const Zone_Cl_VDF& la_zo
     }
 }
 
-void Op_VDF_Elem::dimensionner_bloc_vitesse(const Zone_VDF& la_zone, const Zone_Cl_VDF& la_zone_cl, Matrice_Morse& matrice) const
-{
-  const int nb_faces = la_zone.nb_faces(), nb_faces_tot = la_zone.nb_faces_tot(), nb_elem_tot = la_zone.nb_elem_tot();
-  const IntTab& face_voisins = la_zone.face_voisins();
-  IntTab stencyl(0,2);
-  stencyl.set_smart_resize(1);
-
-  int nb_coef = 0;
-  for (int face = 0; face < nb_faces; face++)
-    for (int dir = 0; dir < 2; dir++)
-      {
-        const int elem = face_voisins(face,dir);
-        if (elem != -1)
-          {
-            stencyl.resize(nb_coef+1,2);
-            stencyl(nb_coef,0) = elem;
-            stencyl(nb_coef,1) = face;
-            nb_coef++;
-          }
-      }
-
-  tableau_trier_retirer_doublons(stencyl);
-  Matrix_tools::allocate_morse_matrix(nb_elem_tot,nb_faces_tot,stencyl,matrice);
-}
-
 void Op_VDF_Elem:: modifier_pour_Cl(const Zone_VDF& , const Zone_Cl_VDF& , Matrice_Morse& , DoubleTab& ) const { /* Do nothing */ }
