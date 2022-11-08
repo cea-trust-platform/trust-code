@@ -834,7 +834,7 @@ const Noms Champ_Generique_Transformation::get_property(const Motcle& query) con
       {
         Noms unites(nb_comp_);
         for (int comp=0; comp<nb_comp_; comp++)
-          unites[comp] = "bidon";
+          unites[comp] = "??";
         return unites;
         break;
       }

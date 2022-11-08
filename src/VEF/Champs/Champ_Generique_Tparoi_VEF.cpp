@@ -53,7 +53,7 @@ const Champ_base& Champ_Generique_Tparoi_VEF::get_champ_without_evaluation(Champ
   Noms noms;
   Noms unites;
   noms.add("bidon");
-  unites.add("bidon");
+  unites.add("K");
   int nb_comp = 1;
   double temps;
   temps=0.;
@@ -78,7 +78,7 @@ const Champ_base& Champ_Generique_Tparoi_VEF::get_champ(Champ& espace_stockage) 
   Noms noms;
   Noms unites;
   noms.add("bidon");
-  unites.add("bidon");
+  unites.add("K");
   int nb_comp = 1;
   double temps;
   temps=0.;

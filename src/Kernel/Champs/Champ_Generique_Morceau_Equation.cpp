@@ -116,10 +116,7 @@ Champ_Fonc& Champ_Generique_Morceau_Equation::creer_espace_stockage(const Nature
   Noms noms;
   Noms unites;
   for (int c=0; c<nb_comp; c++)
-    {
-      //  noms.add("bidon");
-      unites.add("bidon");
-    }
+    unites.add("??");
   noms.add("bidon");
   double temps;
   temps = get_time();
@@ -214,9 +211,19 @@ const Noms Champ_Generique_Morceau_Equation::get_property(const Motcle& query) c
         Noms unites(1);
         if (Motcle(option_)=="stabilite")
           unites[0] = "s";
-        else if (Motcle(option_)=="flux_bords" || Motcle(option_)=="flux_surfacique_bords")
-          unites[0] = "bidon";
-
+        else if (Motcle(option_).debute_par("FLUX_"))
+          {
+            // Tres incomplet mais bon...:
+            unites[0] = "??";
+            if (ref_eq_->inconnue().le_nom()=="vitesse")
+              {
+                if (numero_morceau_<2) unites[0]="N";
+                else if (numero_morceau_==3) unites[0]=(dimension==2 ? "m2/s" : "m3/s");
+              }
+            else if (ref_eq_->inconnue().le_nom()=="temperature") unites[0]="W";
+            if (Motcle(option_)==Motcle("flux_surfacique_bords"))
+              unites[0]+="/m2";
+          }
         return unites;
         break;
       }

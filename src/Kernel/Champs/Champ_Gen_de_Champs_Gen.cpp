@@ -143,10 +143,7 @@ Champ_Fonc& Champ_Gen_de_Champs_Gen::creer_espace_stockage(const Nature_du_champ
   Noms noms;
   Noms unites;
   for (int c=0; c<nb_comp; c++)
-    {
-      //  noms.add("bidon");
-      unites.add("bidon");
-    }
+    unites.add("??");
   noms.add("bidon");
   double temps;
   temps = get_time();
