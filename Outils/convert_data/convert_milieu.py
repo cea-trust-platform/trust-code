@@ -295,7 +295,7 @@ class MilieuModifier(TRUSTParser):
         tt = self.tabToken
         ret = []
         for att, kw in zip([medium.poro, medium.poroSurf, medium.diamHyd], 
-                           ["porosites_champs", "porosite_surf_champ", "diametre_hyd_champ"]):
+                           ["porosites_champ", "porosite_surf_champ", "diametre_hyd_champ"]):
             if len(att):
                 s, e = att["start"], att["end"]
                 s2 = self.getNext(s, 2)
