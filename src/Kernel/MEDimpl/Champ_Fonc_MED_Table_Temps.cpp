@@ -38,28 +38,26 @@ Sortie& Champ_Fonc_MED_Table_Temps::printOn( Sortie& os ) const
 
 void Champ_Fonc_MED_Table_Temps::set_param(Param& param)
 {
-  param.ajouter("table_temps",&la_table,Param::REQUIRED);
   Champ_Fonc_MED::set_param(param);
+  param.ajouter_non_std("table_temps",(this),Param::REQUIRED);
 }
-
 
 Entree& Champ_Fonc_MED_Table_Temps::readOn( Entree& is )
 {
-  Motcle mot;
+  Champ_Fonc_MED::readOn( is );
+  return is;
+}
 
-  is >> mot;
+int Champ_Fonc_MED_Table_Temps::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+{
   if (mot=="table_temps")
     {
       Lecture_Table lec_table;
       lec_table.lire_table(is,la_table);
     }
   else
-    {
-      Cerr << "Error while reading " << que_suis_je() << ". We expected a time table."<< finl;
-      Process::exit();
-    }
-
-  return Champ_Fonc_MED::readOn( is );
+    return Champ_Fonc_MED::lire_motcle_non_standard(mot,is);
+  return 1;
 }
 
 void Champ_Fonc_MED_Table_Temps::lire_donnees_champ(const std::string& fileName, const std::string& meshName, const std::string& fieldName,

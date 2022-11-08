@@ -34,11 +34,11 @@ public :
 
   void lire_donnees_champ(const std::string& fileName, const std::string& meshName, const std::string& fieldName,
                           ArrOfDouble& temps_sauv, int& size, int& nbcomp, Nom& type_champ) override;
-
   void lire(double tps,int given_iteration=-1) override;
 protected :
 
   void set_param(Param& param) override;
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
 
   inline virtual const Champ_Fonc_base& le_champ0() const;
   inline virtual Champ_Fonc_base& le_champ0();
