@@ -95,7 +95,7 @@ export LD_LIBRARY_PATH=$TRUST_ROOT/lib/src/LIBLAPACK:$LD_LIBRARY_PATH
 
 # Important: pour utiliser le cmake Python sans l'environnement Python:
 # Specifier CMAKE_SYSTEM_IGNORE_PATH=$TRUST_ROOT/exec/python/lib
-$TRUST_ROOT/exec/python/bin/cmake $options $plugins  \
+cmake $options $plugins  \
 -DCMAKE_SYSTEM_IGNORE_PATH=$TRUST_ROOT/exec/python/lib \
 -DCMAKE_C_COMPILER=$TRUST_cc -DCMAKE_CXX_COMPILER=$TRUST_CC \
 -DCMAKE_INSTALL_PREFIX=$TRUST_ROOT/exec/gmsh \
