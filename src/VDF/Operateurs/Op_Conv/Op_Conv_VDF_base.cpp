@@ -90,12 +90,12 @@ void Op_Conv_VDF_base::dimensionner_blocs_elem(matrices_t mats, const tabs_t& se
             for (f = 0; f < zone.nb_faces_tot(); f++)
               if (fcl_v(f, 0) < 2)
                 for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-                  if (e < zone.nb_elem())
+                  if (e < zone.nb_elem_tot())
                     for (n = 0; n < N; n++) stencil.append_line(N * e + n, M * f + n * (M > 1));
           }
         else for (f = 0; f < zone.nb_faces_tot(); f++)
             for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-              if (e < zone.nb_elem()) /* inconnues scalaires */
+              if (e < zone.nb_elem_tot()) /* inconnues scalaires */
                 for (j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++)
                   for (n = 0, m = 0; n < N; n++, m += (M > 1)) stencil.append_line(N * e + n, M * eb + m);
 
