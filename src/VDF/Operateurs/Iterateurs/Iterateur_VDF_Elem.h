@@ -65,17 +65,14 @@ public:
 
   void ajouter_contribution_autre_pb(const DoubleTab& inco, Matrice_Morse& matrice, const Cond_lim& la_cl, std::map<int, std::pair<int, int>>&) const override;
 
+  // INTERFACE  BLOCS
+  void ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const override;
+
 protected:
   _TYPE_ flux_evaluateur;
   IntTab elem;
   mutable SFichier Flux, Flux_moment, Flux_sum;
   inline const Milieu_base& milieu() const { return (la_zcl->equation()).milieu(); }
-
-  /* ************************************** *
-   * *********  INTERFACE  BLOCS ********** *
-   * ************************************** */
-public:
-  void ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const override;
 
 private:
   template <typename Type_Double> void ajouter_blocs_bords(const int , matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const;
@@ -92,20 +89,6 @@ private:
   void fill_derivee_cc(matrices_t mats, const tabs_t& semi_impl, VectorDeriv& d_cc) const;
   template<typename Type_Double> void fill_coeffs_matrices(const int, Type_Double&, Type_Double&, Matrice_Morse*, VectorDeriv&) const;
   template<typename Type_Double> void fill_coeffs_matrices(const int, const double, Type_Double&, Type_Double&, Matrice_Morse*, VectorDeriv&) const;
-
-  /* ************************************** *
-   * *********  A VIRER UN JOUR  ********** *
-   * ************************************** */
-public:
-  void calculer_flux_bord(const DoubleTab&, const DoubleTab&) const override;
-
-private:
-
-  // Inutile, jamais utilise ...
-  template <typename Type_Double> void calculer_flux_bord2(const int, const DoubleTab&, const DoubleTab&) const;
-  template <bool should_calc_flux, typename Type_Double, typename BC> void calculer_flux_bord_(const BC& , const int , const int , const int , const DoubleTab&, const DoubleTab&) const;
-  template <typename Type_Double> void calculer_flux_bord_(const Periodique& , const int , const int , const int , const DoubleTab& , const Front_VF& ) const;
-  template <typename Type_Double> void calculer_flux_bord_(const Echange_externe_impose& , const int , const int , const int, const int , const DoubleTab& ,const Front_VF& ) const;
 };
 
 #include <Iterateur_VDF_Elem.tpp> // templates specializations ici ;)

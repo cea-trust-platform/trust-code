@@ -33,7 +33,6 @@ public:
 
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
   int impr(Sortie& os) const override;
-  virtual void calculer_flux_bord(const DoubleTab& inco, const DoubleTab& val_b) const;
 
   inline const Iterateur_VDF& get_iter() const { return iter; }
   inline Iterateur_VDF& get_iter() { return iter; }
@@ -41,6 +40,7 @@ public:
   inline int has_interface_blocs() const override { return 1; }
   void init_op_ext() const override;
 
+  virtual void calculer_flux_bord(const DoubleTab& inco, const DoubleTab& val_b) const = delete;
   void contribuer_au_second_membre(DoubleTab& ) const override
   {
     Cerr << "Op_Diff_VDF_base::" << __func__ << " should not be called !" << finl;

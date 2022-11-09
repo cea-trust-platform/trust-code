@@ -33,17 +33,6 @@ void Iterateur_VDF_base::associer(const Zone_VDF& zone_vdf, const Zone_Cl_VDF& z
   op_base = op;
 }
 
-void Iterateur_VDF_base::ajouter_contribution_autre_pb(const DoubleTab& inco, Matrice_Morse& matrice, const Cond_lim& la_cl, std::map<int, std::pair<int, int>>& f2e) const
-{
-  /* ne fait rien en general */
-}
-
-void Iterateur_VDF_base::calculer_flux_bord(const DoubleTab& inco, const DoubleTab&) const
-{
-  Cerr << que_suis_je() << " must implement calculer_flux_bord" << finl;
-  Process::exit();
-}
-
 void Iterateur_VDF_base::associer_champ_convecte_ou_inc(const Champ_Inc_base& ch, const Champ_base* chv, bool use)
 {
   le_champ_convecte_ou_inc = ch;

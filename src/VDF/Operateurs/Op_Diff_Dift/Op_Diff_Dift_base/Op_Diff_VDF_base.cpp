@@ -46,11 +46,6 @@ int Op_Diff_VDF_base::impr(Sortie& os) const
   return (iter.non_nul()) ? iter->impr(os) : 0;
 }
 
-void Op_Diff_VDF_base::calculer_flux_bord(const DoubleTab& inco, const DoubleTab& val_b) const
-{
-  iter->calculer_flux_bord(inco, val_b);
-}
-
 /*! @brief calcule la contribution de la diffusion, la range dans resu
  *
  */
