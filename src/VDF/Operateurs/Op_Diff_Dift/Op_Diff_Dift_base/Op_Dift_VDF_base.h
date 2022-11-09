@@ -35,6 +35,9 @@ public:
   // Methodes utiles pour l'heritage V
   inline void associer_diffusivite_turbulente_base(const Champ_Fonc& diff_turb) { Op_Diff_Turbulent_base::associer_diffusivite_turbulente(diff_turb); }
   inline void completer_Op_Dift_VDF_base() { Op_Diff_VDF_base::completer(); }
+
+protected:
+  void ajoute_terme_pour_axi_turb(const DoubleTab& , Matrice_Morse* , DoubleTab& ) const;
 };
 
 #endif /* Op_Dift_VDF_base_included */

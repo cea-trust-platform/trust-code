@@ -48,6 +48,8 @@ public:
   }
 
 protected:
+  void ajoute_terme_pour_axi(const DoubleTab& , Matrice_Morse* , DoubleTab& ) const;
+
   Iterateur_VDF iter;
   mutable int op_ext_init_ = 0;
 };
