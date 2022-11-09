@@ -254,10 +254,8 @@ add_test_case_from_validation()
 	       ###################################################################
 	       for cas_test in `\ls | grep $FICHE"_jdd" 2>/dev/null`
 	       do
-        	  if [ ! -f $cas_test/lien_fiche_validation ] || [ ! -f $cas_test/$cas_test.lml.gz ]
-		  then
-		     ok=0
-		  fi
+        	  [ ! -f $cas_test/lien_fiche_validation ] && ok=0 && echo "lien_fiche_validation manquant..." 
+        	  [ ! -f $cas_test/$cas_test.lml.gz ]      && ok=0 && echo "Fichier $cas_test.lml.gz manquant... Effacer le repertoire `pwd`/$cas_test"
 		  #####################################################################################
                   # Verification de la localisation de la fiche de validation pointee par le cas test #
                   #####################################################################################
