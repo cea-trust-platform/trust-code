@@ -1926,12 +1926,12 @@ then
       echo "Not tested."
    fi
    awk '/Driver Version/ {V=11.4;if ($NF>V) print "Warning, current AmgX library only supported for CUDA<="V" !"}' $TRUST_ENV/card.log 2>/dev/null
-   m="# TRUST will use CUDA ?";e="TRUST_USE_CUDA=\"$TRUST_USE_CUDA\" && export TRUST_USE_CUDA";ecrit $m"|"$e"|"$env
    Defines=$Defines" -DTRUST_USE_CUDA -DPETSC_SKIP_COMPLEX"
    # Vu sur orcus (fait ch..r) -pedantic pose probleme:
    echo "Cuda: -pedantic suppressed in \$CppFlags"
    CppFlags=`echo $CppFlags | sed "s?-pedantic??g"`
 fi
+m="# TRUST will use CUDA ?";e="TRUST_USE_CUDA=\"$TRUST_USE_CUDA\" && export TRUST_USE_CUDA";ecrit $m"|"$e"|"$env
 ##########
 # VAMPIR #
 ##########
