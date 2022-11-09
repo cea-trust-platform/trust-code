@@ -30,7 +30,7 @@ class Op_Diff_VDF_base : public Operateur_Diff_base
 public:
   inline Op_Diff_VDF_base(const Iterateur_VDF_base& iter_base) : iter(iter_base) { }
   void completer() override;
-  void contribuer_au_second_membre(DoubleTab& ) const override;
+
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
   int impr(Sortie& os) const override;
   virtual void calculer_flux_bord(const DoubleTab& inco, const DoubleTab& val_b) const;
@@ -40,6 +40,12 @@ public:
 
   inline int has_interface_blocs() const override { return 1; }
   void init_op_ext() const override;
+
+  void contribuer_au_second_membre(DoubleTab& ) const override
+  {
+    Cerr << "Op_Diff_VDF_base::" << __func__ << " should not be called !" << finl;
+    Process::exit();
+  }
 
 protected:
   Iterateur_VDF iter;

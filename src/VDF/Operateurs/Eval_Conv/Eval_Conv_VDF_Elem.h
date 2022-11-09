@@ -67,19 +67,6 @@ public:
   template <typename Type_Double> inline void coeffs_face_bloc_vitesse(const DoubleTab&, const DoubleTab&, const int, const int, const int, const Echange_externe_impose&, const int, Type_Double& ) const { /* Do nothing */ }
   template <typename Type_Double> inline void coeffs_faces_interne_bloc_vitesse(const DoubleTab&, const int, Type_Double& ) const;
 
-  /* ************************************** *
-   * *********  POUR L'IMPLICITE ********** *
-   * ************************************** */
-
-  template <typename BC, typename Type_Double> // Generic return
-  inline void secmem_face(const int, const BC&, const int, Type_Double& ) const { /* Do nothing */ }
-
-  // To overload
-  template <typename Type_Double> inline void secmem_face(const int, const Dirichlet_entree_fluide&, const int, Type_Double& ) const;
-  template <typename Type_Double> inline void secmem_face(const int, const Neumann_sortie_libre&, const int, Type_Double& ) const;
-  template <typename Type_Double> inline void secmem_face(const int, const int, const int, const Echange_externe_impose&, const int, Type_Double& ) const { /* Do nothing */ }
-  template <typename Type_Double> inline void secmem_faces_interne(const int, Type_Double& ) const { /* Do nothing */ }
-
 private:
   template <typename Type_Double> inline void coeffs_face_common(const int, Type_Double&, Type_Double& ) const;
   template <typename Type_Double> inline void coeffs_face_bloc_vitesse_common(const DoubleTab&, const int, Type_Double& ) const;

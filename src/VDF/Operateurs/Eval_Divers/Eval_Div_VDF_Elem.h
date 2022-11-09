@@ -58,16 +58,6 @@ public:
 
   template <typename Type_Double> inline void coeffs_face(const int, const int, const int, const int, const Echange_externe_impose&, Type_Double& , Type_Double&  ) const { /* Do nothing */ }
   template <typename Type_Double> inline void coeffs_faces_interne(const int, Type_Double& , Type_Double&  ) const { /* Do nothing */ }
-
-  /* ************************************** *
-   * *********  POUR L'IMPLICITE ********** *
-   * ************************************** */
-
-  template <typename BC, typename Type_Double>
-  inline void secmem_face(const int, const BC&, const int, Type_Double& ) const { /* Do nothing */ }
-
-  template <typename Type_Double> inline void secmem_face(const int, const int, const int, const Echange_externe_impose&, const int, Type_Double& ) const { /* Do nothing */ }
-  template <typename Type_Double> inline void secmem_faces_interne(const int, Type_Double& ) const { /* Do nothing */ }
 };
 
 #endif /* Eval_Div_VDF_Elem_included */

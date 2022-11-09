@@ -98,15 +98,8 @@ private:
    * ************************************** */
 public:
   void calculer_flux_bord(const DoubleTab&, const DoubleTab&) const override;
-  void contribuer_au_second_membre(DoubleTab& ) const override;
 
 private:
-  // inutile ?
-  template <typename Type_Double> void contribuer_au_second_membre_bords(const int , DoubleTab& ) const;
-  template <typename Type_Double> void contribuer_au_second_membre_interne(const int , DoubleTab& ) const;
-
-  template <bool should_calc_flux, typename Type_Double, typename BC> void contribuer_au_second_membre_bords_(const BC& , const int , const int , const int , DoubleTab& ) const;
-  template <typename Type_Double> void contribuer_au_second_membre_bords_(const Echange_externe_impose& , const int , const int , const int, const int , const Front_VF& , DoubleTab& ) const;
 
   // Inutile, jamais utilise ...
   template <typename Type_Double> void calculer_flux_bord2(const int, const DoubleTab&, const DoubleTab&) const;

@@ -40,7 +40,6 @@ public:
   virtual const Champ_base& vitesse() const = 0;
   virtual Champ_base& vitesse() = 0;
   inline DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu ) const override { return iter->calculer(inco, resu); }
-  inline void contribuer_au_second_membre(DoubleTab& resu) const override { iter->contribuer_au_second_membre(resu); }
   inline const Iterateur_VDF& get_iter() const { return iter; }
   inline Iterateur_VDF& get_iter() { return iter; }
 
@@ -49,6 +48,11 @@ public:
   void dimensionner_blocs_elem(matrices_t mats, const tabs_t& semi_impl) const;
 
   void associer_champ_temp(const Champ_Inc&, bool) const override;
+  void contribuer_au_second_membre(DoubleTab& resu) const override
+  {
+    Cerr << "Op_Conv_VDF_base::" << __func__ << " should not be called !" << finl;
+    Process::exit();
+  }
 
 protected:
   Iterateur_VDF iter;

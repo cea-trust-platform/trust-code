@@ -57,7 +57,6 @@ public:
   virtual void ajouter_contribution_autre_pb(const DoubleTab& inco, Matrice_Morse& matrice, const Cond_lim& la_cl, std::map<int, std::pair<int, int>>&) const;
 
   virtual int impr(Sortie& os) const=0;
-  virtual void contribuer_au_second_membre(DoubleTab& ) const=0;
   virtual void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const=0;
   virtual void completer_()=0;
   virtual DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const=0;

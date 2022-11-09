@@ -43,7 +43,6 @@ public:
   inline Iterateur_VDF_Face(const Iterateur_VDF_Face<_TYPE_>& );
 
   int impr(Sortie& os) const override;
-  void contribuer_au_second_membre(DoubleTab& ) const override;
   void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const override;
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
   DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const override;
@@ -78,7 +77,6 @@ private:
   template <typename Type_Double> void fill_resu_tab(const int , const int , const int , const Type_Double& , DoubleTab& ) const;
   inline void multiply_by_rho_if_hydraulique(DoubleTab& ) const;
   inline void prepare_corriger_pour_periodicite(const int , int& , int& , int& , int& ) const;
-
 
   /* Private SFINAE templates */
   template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
@@ -141,41 +139,6 @@ private:
   template <Type_Flux_Arete Arete_Type, typename Type_Double> void ajouter_contribution_aretes_mixtes_(const int , const int , Matrice_Morse& ) const;
   template <bool should_calc_flux, Type_Flux_Fa7 Fa7_Type, typename Type_Double> void ajouter_contribution_fa7_sortie_libre_(const int , const int , const int , const Neumann_sortie_libre& , Matrice_Morse& ) const;
   template <Type_Flux_Fa7 Fa7_Type, typename Type_Double> void ajouter_contribution_fa7_elem_(const int , const int , Matrice_Morse& ) const;
-
-  /* ************************************** *
-   * *********  POUR L'IMPLICITE ********** *
-   * ************************************** */
-
-  template <typename Type_Double> void contribuer_au_second_membre_aretes_bords(const int , DoubleTab& ) const;
-  template <typename Type_Double> void contribuer_au_second_membre_aretes_coins(const int , DoubleTab& ) const;
-  template <typename Type_Double> void contribuer_au_second_membre_aretes_internes(const int , DoubleTab& ) const;
-  template <typename Type_Double> void contribuer_au_second_membre_aretes_mixtes(const int , DoubleTab& ) const;
-  template <typename Type_Double> void contribuer_au_second_membre_fa7_sortie_libre(const int , DoubleTab& ) const;
-  template <typename Type_Double> void contribuer_au_second_membre_fa7_elem(const int , DoubleTab& ) const;
-  template <typename Type_Double> void corriger_secmem_fa7_elem_periodicite(const int , DoubleTab& ) const;
-  template <typename Type_Double> void corriger_secmem_fa7_elem_periodicite_(const int , const int , const int , const int , const int , const int , DoubleTab& ) const;
-
-  /* Private SFINAE templates */
-  template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
-  enable_if_t< Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI, void>
-  contribuer_au_second_membre_aretes_bords_(const int , const int , DoubleTab& ) const;
-
-  template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
-  enable_if_t<Arete_Type == Type_Flux_Arete::PERIODICITE || Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
-  contribuer_au_second_membre_aretes_bords_(const int , const int , DoubleTab& ) const;
-
-  template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
-  enable_if_t< Arete_Type == Type_Flux_Arete::PAROI, void>
-  contribuer_au_second_membre_aretes_coins_(const int , const int , DoubleTab& ) const;
-
-  template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
-  enable_if_t<Arete_Type == Type_Flux_Arete::PERIODICITE || Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
-  contribuer_au_second_membre_aretes_coins_(const int , const int , DoubleTab& ) const;
-
-  template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double> void contribuer_au_second_membre_aretes_internes_(const int , const int , DoubleTab& ) const;
-  template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double> void contribuer_au_second_membre_aretes_mixtes_(const int , const int , DoubleTab& ) const;
-  template <bool should_calc_flux, Type_Flux_Fa7 Fa7_Type, typename Type_Double> void contribuer_au_second_membre_fa7_sortie_libre_(const int , const int , const int , const Neumann_sortie_libre& , DoubleTab& ) const;
-  template <Type_Flux_Fa7 Fa7_Type, typename Type_Double> void contribuer_au_second_membre_fa7_elem_(const int , const int , DoubleTab& ) const;
 };
 
 #include <Iterateur_VDF_Face.tpp> // templates specializations ici ;)
