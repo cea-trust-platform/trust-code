@@ -80,8 +80,7 @@ if [ ${TRUST_F77_BASE%gfortran} != $TRUST_F77_BASE ]
 then
    # Vu sur 2 machines de Saclay dont is213120:
    # gfortran non trouve au link de Gmsh
-   #options="-DCMAKE_CXX_LINK_FLAGS=-lgfortran"
-   options="-lgfortran"
+   options="-DCMAKE_CXX_LINK_FLAGS=-lgfortran"
 elif [ ${TRUST_F77_BASE%nvfortran} != $TRUST_F77_BASE ]
 then
    options="-DCMAKE_CXX_LINK_FLAGS=-lnvf"
