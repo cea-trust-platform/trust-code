@@ -84,7 +84,6 @@ do
 <TD>Nvidia</TD>
 <TD>End</TD>
 <TD>OS</TD>
-<TD>Titania</TD>
 <TD>CC</TD>
 <TD>MPI</TD>
 <TD>Exec</TD>
@@ -258,7 +257,7 @@ do
 	PERF=$REP_NUIT/PERF_$NOM
 	EXEC=${NOM%_$HOST}
 	EXEC=${EXEC%_$arch}
-	host="";os="";rel="";titania="";nvidia="";nb_procs="";ram="";cache="";freq="";TRUST_CC=""
+	host="";os="";rel="";nvidia="";nb_procs="";ram="";cache="";freq="";TRUST_CC=""
 	executable="-";cpu="";cpu3d="<TD $BLANC>NOT</TD>";bench="<TD $BLANC>NOT</TD>";runfich="<TD $BLANC>NOT</TD>";testgrind="<TD $BLANC>NOT</TD>"
 	BLANC="BGCOLOR=#FEFEFE";ROUGE="BGCOLOR=#C42111";VERT="BGCOLOR=3D\"#E47833\""
 	comp="Echec";COL1=$ROUGE
@@ -266,7 +265,6 @@ do
     TRIOXDATA="<TD $BLANC>NOT</TD>" && [ "`grep TRIOXDATA:OK $CR`" != "" ] && TRIOXDATA="<TD $VERT>OK</TD>"
 	TRIOXDATA=$TRIOXDATA && [ "`grep TRIOXDATA:error $CR`" != "" ] && TRIOXDATA="<TD $ROUGE>KO</TD>"
 	TOOLS="<TD $ROUGE>Echec</TD>" && [ "`grep BUILD_TOOLS=OK $CR`" != "" ] && TOOLS="<TD $VERT>Succes</TD>"
-	titania=`$TRUST_Awk -F= '/Titania=/ {print $2}' $CR`
 	nvidia=`grep " Device " $CR | cut -d: -f 2 | sed "s/^ //" | sed "s/\"//g"`
 	[ "$nvidia" = "" ] && nvidia=`$TRUST_Awk -F= '/Nvidia=/ {print $2}' $CR`
 	COL2="";taux=$vide
@@ -379,7 +377,6 @@ $TD$freq$FTD
 $TD$nvidia$FTD
 $FIN
 $TD$os$FTD
-$TD$titania$FTD
 $TD$TRUST_CC$FTD
 $TD$MPI$FTD
 $TD$executable$FTD
@@ -413,7 +410,6 @@ $bench
         echo "
 <TR>
 $TD_CR<A HREF="$CR">$HOST</A>$FTD
-<TD>$vide</TD>
 <TD>$vide</TD>
 <TD>$vide</TD>
 <TD>$vide</TD>

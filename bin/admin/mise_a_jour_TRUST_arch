@@ -483,15 +483,6 @@ do
    if [ $MODULE = TRUST ]
    then
       echo "==========================="
-      ######################
-      # machine Titania ?
-      ######################
-      if [ "`id | grep dm2s-projet-trust_trio-r`" != "" ] #[ "`echo $TRUST_ROOT | grep trust_trio 2>/dev/null`" != "" ]
-      then
-	 echo "Titania=Yes"
-      else
-	 echo "Titania="
-      fi
       #########################
       # Type de carte graphique
       #########################
