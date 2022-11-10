@@ -33,7 +33,7 @@ Implemente_instanciable_sans_constructeur(Fluide_Incompressible,"Fluide_Incompre
 // XD attr rho field_base rho 1 Density (kg.m-3).
 // XD attr cp field_base cp 1 Specific heat (J.kg-1.K-1).
 // XD attr lambda field_base lambda_u 1 Conductivity (W.m-1.K-1).
-
+// XD attr porosites bloc_lecture porosites 1 Porosity (optional)
 
 Fluide_Incompressible::Fluide_Incompressible() { }
 

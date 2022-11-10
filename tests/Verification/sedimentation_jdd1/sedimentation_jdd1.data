@@ -68,6 +68,10 @@ Read pb
         }
     }
 
+    Correlations {
+        Frottement_interfacial bulles { rayon_bulle 0.5e-3 coeff_derive 0.44 }
+    }
+
     QDM_Multiphase
     {
         solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg }
@@ -89,7 +93,7 @@ Read pb
         }
         sources
         {
-            frottement_interfacial { a_res 1.e-2 dv_min 0.1 } bulles { rayon_bulle 0.5e-3 coeff_derive 0.44 } ,
+            frottement_interfacial { a_res 1.e-2 dv_min 0.1 } ,
             source_qdm Champ_composite 2 /* champ par phase */
             {
                 champ_fonc_xyz dom 2  0 -10
