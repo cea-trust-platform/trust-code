@@ -32,13 +32,12 @@ Entree& Op_Dift_VDF_base::readOn(Entree& is) { return Op_Diff_VDF_base::readOn(i
 void Op_Dift_VDF_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   statistiques().begin_count(diffusion_counter_);
+  iter->ajouter_blocs(matrices,secmem,semi_impl);
+
+  // On ajoute des termes si axi ...
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
   const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : equation().inconnue().valeurs();
-
-  if(mat) iter->ajouter_contribution(inco, *mat);
-  iter->ajouter(inco, secmem);
-
   Op_Dift_VDF_base::ajoute_terme_pour_axi_turb(inco,mat,secmem);
 
   statistiques().end_count(diffusion_counter_);

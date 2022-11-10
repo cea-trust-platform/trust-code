@@ -37,14 +37,13 @@ void Op_Diff_VDF_Face_base::dimensionner_blocs(matrices_t matrices, const tabs_t
 void Op_Diff_VDF_Face_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   statistiques().begin_count(diffusion_counter_);
+  assert_invalide_items_non_calcules(secmem, 0.);
+  iter->ajouter_blocs(matrices,secmem,semi_impl);
+
+  // On ajoute des termes si axi ...
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse* mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
   const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : equation().inconnue().valeur().valeurs();
-
-  assert_invalide_items_non_calcules(secmem, 0.);
-  if(mat) iter->ajouter_contribution(inco, *mat);
-  iter->ajouter(inco,secmem);
-
   Op_Diff_VDF_base::ajoute_terme_pour_axi(inco,mat,secmem);
 
   statistiques().end_count(diffusion_counter_);

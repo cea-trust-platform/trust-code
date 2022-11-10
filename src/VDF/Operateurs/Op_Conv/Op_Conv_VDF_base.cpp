@@ -111,16 +111,7 @@ void Op_Conv_VDF_base::dimensionner_blocs_elem(matrices_t mats, const tabs_t& se
 void Op_Conv_VDF_base::ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   statistiques().begin_count(convection_counter_);
-  if (sub_type(Champ_Face_base, equation().inconnue().valeur()))
-    {
-      const std::string& nom_inco = equation().inconnue().le_nom().getString();
-      Matrice_Morse* matrice = mats.count(nom_inco) ? mats.at(nom_inco) : NULL;
-      const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : equation().inconnue().valeurs());
-      if(matrice) iter->ajouter_contribution(inco, *matrice);
-      iter->ajouter(inco,secmem);
-    }
-  else
-    iter->ajouter_blocs(mats, secmem, semi_impl);
+  iter->ajouter_blocs(mats, secmem, semi_impl);
   statistiques().end_count(convection_counter_);
 }
 
