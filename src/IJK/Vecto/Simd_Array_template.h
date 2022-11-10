@@ -13,41 +13,50 @@
 *
 *****************************************************************************/
 
-#ifndef simd_tools_included
-#define simd_tools_included
+#ifndef Simd_Array_template_included
+#define Simd_Array_template_included
 
-#include <Simd_Array_template.h>
-#include <Simd_VectorArray_template.h>
-#include <Simd_MatrixArray_template.h>
+#include <Simd_template.h>
+#include <FixedVector.h>
 
-template<typename _TYPE_>
-inline Simd_template<_TYPE_> max(const Simd_template<_TYPE_>& a, const Simd_template<_TYPE_>& b)
+// Simd_Array_template stores N scalar values of size VectorSize arranged for Simd operation (one simd load or store accesses one
+// particular component of the vector for n consecutive vectors).
+// It is a fixed size storage that should be used for efficient processing of local data (that fit in the L1 cache)
+template<typename _TYPE_, int N>
+class Simd_Array_template
 {
-  return SimdMax(a, b);
-}
+public:
+  _TYPE_& operator[](int i)
+  {
+    assert(i >= 0 && i < N);
+    return data_[i];
+  }
 
-template<typename _TYPE_>
-inline Simd_template<_TYPE_> min(const Simd_template<_TYPE_>& a, const Simd_template<_TYPE_>& b)
-{
-  return SimdMin(a, b);
-}
+  const _TYPE_& operator[](int i) const
+  {
+    assert(i >= 0 && i < N);
+    return data_[i];
+  }
 
-inline Simd_float select_float(Simd_float x1, Simd_float x2, Simd_float value_if_x1_lower_than_x2, Simd_float value_otherwise)
-{
-  return SimdSelect(x1, x2, value_if_x1_lower_than_x2, value_otherwise);
-}
-inline float select_float(float x1, float x2, float value_if_x1_lower_than_x2, float value_otherwise)
-{
-  return (x1 < x2) ? value_if_x1_lower_than_x2 : value_otherwise;
-}
+  Simd_template<_TYPE_> SimdGet(int vector_index) const
+  {
+    assert(vector_index >= 0 && vector_index < N);
+    return SimdGet(data_ + vector_index);
+  }
 
-inline Simd_double select_double(Simd_double x1, Simd_double x2, Simd_double value_if_x1_lower_than_x2, Simd_double value_otherwise)
-{
-  return SimdSelect(x1, x2, value_if_x1_lower_than_x2, value_otherwise);
-}
-inline double select_double(double x1, double x2, double value_if_x1_lower_than_x2, double value_otherwise)
-{
-  return (x1 < x2) ? value_if_x1_lower_than_x2 : value_otherwise;
-}
+  void SimdPut(int vector_index, const Simd_template<_TYPE_>& x)
+  {
+    assert(vector_index >= 0 && vector_index < N);
+    SimdPut(data_ + vector_index, x);
+  }
 
-#endif /* simd_tools_included */
+protected:
+  _TYPE_ data_[N];
+};
+
+template<int N> using Simd_intArray = Simd_Array_template<int,N>;
+template<int N> using Simd_floatArray = Simd_Array_template<float,N>;
+template<int N> using Simd_doubleArray = Simd_Array_template<double,N>;
+
+
+#endif /* Simd_Array_template_included */

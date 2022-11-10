@@ -13,41 +13,19 @@
 *
 *****************************************************************************/
 
-#ifndef simd_tools_included
-#define simd_tools_included
+#ifndef IJK_Field_forward_H
+#define IJK_Field_forward_H
 
-#include <Simd_Array_template.h>
-#include <Simd_VectorArray_template.h>
-#include <Simd_MatrixArray_template.h>
+#include <TRUSTTabs_forward.h>
 
-template<typename _TYPE_>
-inline Simd_template<_TYPE_> max(const Simd_template<_TYPE_>& a, const Simd_template<_TYPE_>& b)
-{
-  return SimdMax(a, b);
-}
 
-template<typename _TYPE_>
-inline Simd_template<_TYPE_> min(const Simd_template<_TYPE_>& a, const Simd_template<_TYPE_>& b)
-{
-  return SimdMin(a, b);
-}
+template<typename _TYPE_, typename _TYPE_ARRAY_> class IJK_Field_template;
+template<typename _TYPE_, typename _TYPE_ARRAY_> class IJKArray_with_ghost;
 
-inline Simd_float select_float(Simd_float x1, Simd_float x2, Simd_float value_if_x1_lower_than_x2, Simd_float value_otherwise)
-{
-  return SimdSelect(x1, x2, value_if_x1_lower_than_x2, value_otherwise);
-}
-inline float select_float(float x1, float x2, float value_if_x1_lower_than_x2, float value_otherwise)
-{
-  return (x1 < x2) ? value_if_x1_lower_than_x2 : value_otherwise;
-}
+using IJK_Field_float = IJK_Field_template<float,ArrOfFloat>;
+using IJK_Field_double = IJK_Field_template<double,ArrOfDouble>;
+using IJK_Field_int = IJK_Field_template<int,ArrOfInt>;
+using ArrOfFloat_with_ghost = IJKArray_with_ghost<float,ArrOfFloat>;
+using ArrOfDouble_with_ghost = IJKArray_with_ghost<double,ArrOfDouble>;
 
-inline Simd_double select_double(Simd_double x1, Simd_double x2, Simd_double value_if_x1_lower_than_x2, Simd_double value_otherwise)
-{
-  return SimdSelect(x1, x2, value_if_x1_lower_than_x2, value_otherwise);
-}
-inline double select_double(double x1, double x2, double value_if_x1_lower_than_x2, double value_otherwise)
-{
-  return (x1 < x2) ? value_if_x1_lower_than_x2 : value_otherwise;
-}
-
-#endif /* simd_tools_included */
+#endif /* IJK_Field_forward_H */
