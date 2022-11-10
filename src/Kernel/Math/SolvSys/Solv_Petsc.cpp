@@ -2674,7 +2674,7 @@ bool Solv_Petsc::check_stencil(const Matrice_Morse& mat_morse)
       const ArrOfDouble& coeff = mat_morse.get_coeff();
       const ArrOfInt& renum_array = renum_;
       int RowLocal = 0;
-      Journal() << "Provisoire: nb_rows_=" << nb_rows_ << " nb_rows_tot_=" << nb_rows_tot_ << finl;
+      //Journal() << "Provisoire: nb_rows_=" << nb_rows_ << " nb_rows_tot_=" << nb_rows_tot_ << finl;
       for (int i = 0; i < tab1.size_array() - 1; i++)
         {
           if (items_to_keep_[i])
@@ -2684,7 +2684,7 @@ bool Solv_Petsc::check_stencil(const Matrice_Morse& mat_morse)
                 if (coeff[k] != 0) nnz_row++;
               if (nnz_row != rowOffsets[RowLocal + 1] - rowOffsets[RowLocal])
                 {
-                  Journal() << "Provisoire: Number of non-zero will change from " << rowOffsets[RowLocal + 1] - rowOffsets[RowLocal] << " to " << nnz_row << " on row " << RowLocal << finl;
+                  //Journal() << "Provisoire: Number of non-zero will change from " << rowOffsets[RowLocal + 1] - rowOffsets[RowLocal] << " to " << nnz_row << " on row " << RowLocal << finl;
                   new_stencil = 1;
                   break;
                 }

@@ -453,8 +453,9 @@ void Statistiques::begin_count_(const int id)
 
   if(si.counter_running[id])
     {
-      Process::Journal() << "WARNING : counter " << si.description[id]
-                         << " has been started while it's already running !" << finl;
+      if (si.counter_nb[id]<=3) // Pour ne pas saturer les logs...
+        Process::Journal() << "WARNING (only shown 3 times): counter " << si.description[id]
+                           << " has been started while it's already running !" << finl;
       return;
     }
 
@@ -1064,7 +1065,8 @@ void Statistiques::end_communication_tracking(int cid)
 
   if (si.comm_zones_on[cid] == false)
     {
-      Process::Journal() << "Error! end_communication_tracking (" << si.description[cid] << ") has not been activated" <<finl;
+      if (si.counter_nb[cid]<=3) // Moins verbeux
+        Process::Journal() << "Error! end_communication_tracking (" << si.description[cid] << ") has not been activated" <<finl;
       return;
     }
 
