@@ -1,0 +1,78 @@
+/****************************************************************************
+* Copyright (c) 2022, CEA
+* All rights reserved.
+*
+* Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+* 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+* 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+* 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+* IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+* OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*
+*****************************************************************************/
+
+#ifndef IJK_Field_template_included
+#define IJK_Field_template_included
+
+#include <simd_tools.h>
+#include <communications.h>
+#include <stat_counters.h>
+#include <Statistiques.h>
+#include <TRUSTVect.h>
+#include <IJK_Splitting.h>
+#include <IJK_Field_local_template.h>
+
+// .Description : This class is an IJK_Field_local with parallel informations.
+// Each processor has a sub_box of the global box, and echange_espace_virtuel(n) exchanges n layers of ghost cells,
+// echange_espace_virtuel handles periodicity by copying the first layer into the ghost layer on the opposite side.
+template<typename _TYPE_, typename _TYPE_ARRAY_>
+class IJK_Field_template : public IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>
+{
+protected:
+  unsigned taille_memoire() const override { throw; }
+
+  int duplique() const override
+  {
+    IJK_Field_template *xxx = new IJK_Field_template(*this);
+    if (!xxx)
+      {
+        Cerr << "Not enough memory " << finl;
+        Process::exit();
+      }
+    return xxx->numero();
+  }
+
+  Sortie& printOn(Sortie& os) const override { return os; }
+
+  Entree& readOn(Entree& is) override { return is; }
+
+public:
+  IJK_Field_template() : IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>() { }
+  void allocate(const IJK_Splitting&, IJK_Splitting::Localisation, int ghost_size, int additional_k_layers = 0, int nb_compo = 1, bool external_storage = false);
+
+  const IJK_Splitting& get_splitting() const { return splitting_ref_.valeur(); }
+  IJK_Splitting::Localisation get_localisation() const { return localisation_; }
+  void echange_espace_virtuel(int ghost);
+
+protected:
+  REF(IJK_Splitting) splitting_ref_;
+  IJK_Splitting::Localisation localisation_;
+
+  void exchange_data(int pe_imin_, /* processor to send to */
+                     int is, int js, int ks, /* ijk coordinates of first data to send */
+                     int pe_imax_, /* processor to recv from */
+                     int ir, int jr, int kr, /* ijk coordinates of first data to recv */
+                     int isz, int jsz, int ksz); /* size of block data to send/recv */
+};
+
+using IJK_Field_float = IJK_Field_template<float,ArrOfFloat>;
+Declare_vect(IJK_Field_float);
+using IJK_Field_double = IJK_Field_template<double,ArrOfDouble>;
+Declare_vect(IJK_Field_double);
+using IJK_Field_int = IJK_Field_template<int,ArrOfInt>;
+
+#include <IJK_Field_template.tpp>
+
+#endif /* IJK_Field_template_included */

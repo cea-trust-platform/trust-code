@@ -13,7 +13,8 @@
 *
 *****************************************************************************/
 
-#ifndef IJK_Field_included
-#define IJK_Field_included
-#include <IJK_Field_tools.h>
-#endif
+#include <IJKArray_with_ghost.h>
+
+Implemente_vect(ArrOfFloat_with_ghost);
+Implemente_vect(ArrOfDouble_with_ghost);
+

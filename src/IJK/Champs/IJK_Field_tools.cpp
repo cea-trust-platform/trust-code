@@ -13,7 +13,18 @@
 *
 *****************************************************************************/
 
-#ifndef IJK_Field_included
-#define IJK_Field_included
-#include <IJK_Field_tools.h>
-#endif
+#include <IJK_Field.h>
+#include <Comm_Group.h>
+#include <Comm_Group_MPI.h>
+#include <simd_tools.h>
+
+Implemente_instanciable(IJK_Field_tools, "IJK_Field_tools", Objet_U);
+Sortie& IJK_Field_tools::printOn(Sortie& os) const { return os; }
+Entree& IJK_Field_tools::readOn(Entree& is) { return is; }
+
+Implemente_vect(ArrOfFloat_with_ghost);
+Implemente_vect(ArrOfDouble_with_ghost);
+
+Implemente_vect(IJK_Field_float);
+Implemente_vect(IJK_Field_double);
+

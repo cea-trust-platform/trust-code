@@ -13,7 +13,21 @@
 *
 *****************************************************************************/
 
-#ifndef IJK_Field_included
-#define IJK_Field_included
-#include <IJK_Field_tools.h>
-#endif
+#include <Comm_Group_MPI.h>
+#include <Comm_Group.h>
+#include <IJK_communications.h>
+#include <PE_Groups.h>
+
+void envoyer_recevoir(const void *send_buf, int send_buf_size, int send_proc, void *recv_buf, int recv_buf_size, int recv_proc)
+{
+  const Comm_Group& grp = PE_Groups::current_group();
+  if (!sub_type(Comm_Group_MPI, grp))
+    {
+      if (send_proc == -1 && recv_proc == -1) return;
+      Cerr << "Error in envoyer_recevoir: non empty message and not Comm_Group_MPI" << finl;
+      Process::exit();
+    }
+  const Comm_Group_MPI& grpmpi = ref_cast(Comm_Group_MPI, grp);
+  grpmpi.ptop_send_recv(send_buf, send_buf_size, send_proc, recv_buf, recv_buf_size, recv_proc);
+}
+

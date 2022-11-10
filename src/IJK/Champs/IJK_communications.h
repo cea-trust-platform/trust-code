@@ -13,7 +13,9 @@
 *
 *****************************************************************************/
 
-#ifndef IJK_Field_included
-#define IJK_Field_included
-#include <IJK_Field_tools.h>
-#endif
+#ifndef IJK_communications_included
+#define IJK_communications_included
+
+extern void envoyer_recevoir(const void *send_buf, int send_buf_size, int send_proc, void *recv_buf, int recv_buf_size, int recv_proc);
+
+#endif /* IJK_communications_included */

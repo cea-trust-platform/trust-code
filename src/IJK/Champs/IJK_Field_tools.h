@@ -13,34 +13,50 @@
 *
 *****************************************************************************/
 
-#include <IJK_Field.h>
-#include <Comm_Group.h>
-#include <Comm_Group_MPI.h>
-#include <simd_tools.h>
+#ifndef IJK_Field_tools_included
+#define IJK_Field_tools_included
 
-void envoyer_recevoir(const void * send_buf, int send_buf_size, int send_proc,
-                      void * recv_buf, int recv_buf_size, int recv_proc)
+#include <Vect.h>
+#include <Static_Int_Lists.h>
+#include <TRUSTLists.h>
+#include <TRUSTVect.h>
+#include <TRUSTArray.h>
+#include <IJK_Splitting.h>
+#include <IJ_layout.h>
+#include <IJK_Field_local_template.h>
+#include <IJK_Field_template.h>
+#include <IJKArray_with_ghost.h>
+#include <IJK_communications.h>
+
+// pour IJK_Lata_writer.cpp. TODO : FIXME : to do enum class !!!!!
+#define DIRECTION_I 0
+#define DIRECTION_J 1
+#define DIRECTION_K 2
+
+// .Description
+// Useless class but for some reason, verifie_pere only seems to work if it's here ??
+class IJK_Field_tools : public Objet_U
 {
-  const Comm_Group& grp = PE_Groups::current_group();
-  if (!sub_type(Comm_Group_MPI, grp))
-    {
-      if (send_proc == -1 && recv_proc == -1)
-        return;
-      Cerr << "Error in envoyer_recevoir: non empty message and not Comm_Group_MPI" << finl;
-      Process::exit();
-    }
-  const Comm_Group_MPI& grpmpi = ref_cast(Comm_Group_MPI, grp);
-  grpmpi.ptop_send_recv(send_buf, send_buf_size, send_proc,
-                        recv_buf, recv_buf_size, recv_proc);
-}
+  Declare_instanciable(IJK_Field_tools);
+};
 
-Implemente_instanciable(IJK_Field_internal, "IJK_Field_internal", Objet_U);
-Sortie& IJK_Field_internal::printOn(Sortie& os) const { return os; }
-Entree& IJK_Field_internal::readOn(Entree& is) { return is; }
 
-Implemente_vect(ArrOfFloat_with_ghost);
-Implemente_vect(ArrOfDouble_with_ghost);
+template<typename _TYPE_, typename _TYPE_ARRAY_>
+double norme_ijk(const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& x);
 
-Implemente_vect(IJK_Field_float);
-Implemente_vect(IJK_Field_double);
+template<typename _TYPE_, typename _TYPE_ARRAY_>
+_TYPE_ prod_scal_ijk(const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& x, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& y);
 
+template<typename _TYPE_, typename _TYPE_ARRAY_>
+double somme_ijk(const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& residu);
+
+template<typename _TYPE_, typename _TYPE_ARRAY_>
+_TYPE_ max_ijk(const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& residu);
+
+using IJK_Field_local = IJK_Field_local_double;
+using IJK_Field = IJK_Field_double;
+using VECT(IJK_Field) = VECT(IJK_Field_double);
+
+#include <IJK_Field_tools.tpp>
+
+#endif
