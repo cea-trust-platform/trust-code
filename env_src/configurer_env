@@ -1682,7 +1682,8 @@ case $TRUST_ARCH_CC in
 	CppFlags="-O3 -fPIC $ArmFlags $AoccFlags -std=c++11 -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth"
 	CppFlags=$CppFlags" -Wshadow -Wextra  -Qunused-arguments -Wno-unused-parameter -Wno-cpp " #  -Wno-infinite-recursion"
 	TRUST_VERSION_CLANG=`print_CLANG_VERSION`
-	clangFlags="-Wsuggest-override" && [ "`echo $TRUST_VERSION_CLANG | awk '{split($1,a,".");print (a[1]<11?1:0)}'`" = 1 ] && clangFlags=""
+	# sur clang v > 10 ou 11, ajouter -ffp-model=strict -ffp-exception-behavior=strict pour eviter fausses FPE
+	clangFlags="-Wsuggest-override -ffp-exception-behavior=strict" && [ "`echo $TRUST_VERSION_CLANG | awk '{split($1,a,".");print (a[1]<11?1:0)}'`" = 1 ] && clangFlags=""
 	CppFlags=$CppFlags" "$clangFlags
 	# GF pas convaincu des erreurs trouvees
 	#CppFlags=$CppFlags" -pedantic" # mis en commentaire au passage de clang 4.0.0 car sinon erreur compilation en mode debug
@@ -1739,6 +1740,7 @@ case $TRUST_ARCH_CC in
 	;;
    linux_icpc) TRUST_SUPPORTED=1
 	# -fp-model precise (default fast=1) pour avoir memes resultats que GNU
+	# ND: -fp-model=except en plus de precise, fvca_jdd13 OK mais crash dans F5
 	flag_optim="-O3 -fp-model precise" && [ "$VT_ROOT" != "" ] && flag_optim="-g "$flag_optim # -g pour Itac, traceanalyzer
 	Defines="-D_COMPILE_AVEC_INTEL"
 	CppFlags="$flag_optim -std=c++11 -fPIC -unroll -Wno-unknown-pragmas"
