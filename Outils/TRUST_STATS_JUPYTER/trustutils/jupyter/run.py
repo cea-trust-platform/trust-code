@@ -325,10 +325,24 @@ class TRUSTCase(object):
             s += "( echo;\n"
             s += '  echo "-> Running the calculation of the %s data file in the %s directory ...";\n' % (n, d)
             s += "  cd %s ; \n" % fullD
-            s += '  [ -f pre_run ] && chmod +x pre_run && echo "-> Running the pre_run script in the %s directory ..." && (./pre_run %s || exit -1);\n' % (d, n)
+            # Running and checking pre_run was OK:
+            s += "  if [ -f pre_run ]; then\n"
+            s += "     chmod +x pre_run\n"
+            s +=f'     echo "-> Running the pre_run script in the {d} directory ..."\n'
+            s +=f"     (./pre_run {n} || (echo '  FAILED!' && exit -1)) || exit -1 \n"
+            s += "fi\n"
+
+            # Running case
             s += "  trust %s %s 1>%s.out 2>%s.err;\n" % (n, para, n, n)
             s += "  if [ ! $? -eq 0 ]; then exit -1; fi; \n"
-            s += '  [ -f post_run ] && chmod +x post_run && echo "-> Running the post_run script in the %s directory ..." && (./post_run %s || exit -1);\n' % (d, n)
+
+            # Running and checking post_run was OK:
+            s += "  if [ -f post_run ]; then\n"
+            s += "     chmod +x post_run\n"
+            s +=f'     echo "-> Running the post_run script in the {d} directory ..."\n'
+            s +=f"     (./post_run {n} || (echo '  FAILED!' && exit -1)) || exit -1\n"
+            s += "fi\n"
+
             s += "  exit 0;"
             s += ") 1>%s 2>&1 \n" % fullL
             f.write(s)
@@ -489,6 +503,7 @@ class TRUSTSuite(object):
         th_lst, log_lst = [], []
         err_msg = "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
         err_msg += "Case '%s/%s.data' FAILED !! Here are the last 20 lines of the log file:\n"
+        err_msg += "(If you don't see anything suspicious, also check pre/post_run scripts!!)\n"
         err_msg += "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
 
         if runParallel:
@@ -760,7 +775,7 @@ def addCase(directoryOrTRUSTCase, datasetName="", nbProcs=1):
         tc = directoryOrTRUSTCase
         initCaseSuite()
         defaultSuite_.addCase(tc)
-        return 
+        return
     elif isinstance(directoryOrTRUSTCase, str):
         if datasetName == "":
             raise ValueError("addCase() method can either be called with a single argument (a TRUSTCase object) or with at least 2 arguments (directory and case name)")
