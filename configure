@@ -323,7 +323,7 @@ if [ "$1" = "-disable-optionals" ]
 then
   shift
   export TRUST_ROOT=$TRUST_ROOT_SA
-  $0 -disable-ccache -disable-petsc -disable-gnuplot -disable-tcl_tk -disable-vc -disable-valgrind -disable-mpi -disable-metis -without-visit -disable-gmsh -disable-plot2d -without-doc -disable-doxygen -disable-checks -disable-check_sources $*
+  $0 -disable-ccache -disable-petsc -disable-gnuplot -disable-tcl_tk -disable-vc -disable-valgrind -disable-mpi -disable-metis -without-visit -disable-gmsh -disable-plot2d -without-doc -disable-doxygen -disable-checks -disable-check_sources -rocalution=0 $*
   exit $?
 fi
 if [ "$1" = "-disable-tools" ]

@@ -590,7 +590,7 @@ VOBS="TRUST Composants"
 # basic est le template Hello_word qui permet de tester TRUST avec make check_trust_optim (pas possible via script de portabilite) 
 # => on utilise maintenant le baltik Test_Baltik pour la portabilite
 #ComposantsLns="Test_Baltik basic equation_convection_diffusion ICoCo"
-ComposantsLns="Test_Baltik equation_convection_diffusion ICoCo Front_tracking_IJK" # Front_tracking_IJK is now in triocfd
+ComposantsLns="Test_Baltik equation_convection_diffusion ICoCo" # Front_tracking_IJK" # Front_tracking_IJK is now in triocfd
 #ComposantsGit="triocfd Front_tracking_IJK polymac triomc mathys mpcube genepi3 pxp flica5"
 ComposantsOfficial="triocfd mpcube genepi3 flica5 TRUST_NK cathare3D"
 # 14/10/2020 : je retire mathys et triomc sur decision RPL
@@ -3528,9 +3528,9 @@ do
    fi
    echo " "
    other_dest=""
-   other_dest=`[ "$Composant" = "triocfd" ] && echo $triocfd_PROJECT_LEADER`
-   other_dest=`[ "$Composant" = "cathare3D" ] && echo $cathare3D_PROJECT_LEADER`
-   other_dest=`[ "$Composant" = "flica5" ] && echo $flica5_PROJECT_LEADER`
+   [ "$other_dest" = "" ] && other_dest=`[ "$Composant" = "triocfd" ] && echo $triocfd_PROJECT_LEADER`
+   [ "$other_dest" = "" ] && other_dest=`[ "$Composant" = "cathare3D" ] && echo $cathare3D_PROJECT_LEADER`
+   [ "$other_dest" = "" ] && other_dest=`[ "$Composant" = "flica5" ] && echo $flica5_PROJECT_LEADER`
    if [ $validation_composant = 1 ]
    then
       echo "Release criterion: $Composant OK"
