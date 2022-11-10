@@ -104,11 +104,12 @@ class DocConverter(object):
 
         return res
 
-    def _generateBrief(self, txtLst):
+    def _generateBriefLong(self, txtLst):
         """ Extract the first sentence from a list of strings, i.e. 
             - first string ending with a dot '.', 
             - or first two lines (to handle the case of short descriptions cut on two lines ...)
-         to generate the 'brief' part of doxygen
+         to generate the 'brief' part of doxygen.
+         Also produce the long version
         """
         brief, long, lin = [], [], 0
         # Skip empty first lines
@@ -129,15 +130,26 @@ class DocConverter(object):
         """ Format the dictionary to produce a nice Doxygen text 
         """
         sep = "\n * "
-        brief, long = self._generateBrief(dicRes[self.DESC_TAG][0])
+        brief, long = self._generateBriefLong(dicRes[self.DESC_TAG][0])
         brief_desc, long_desc = "", ""
         if brief != []:
             brief_desc = "@brief " + " ".join(brief)  # All on one line for brief description
         if long != []:
             long_desc = " * " + sep.join(long) + "\n *\n"
 
+
+        # Extract pre and postconditions if any, to keep them in the long description:
+        supp_desc, supp_txt = [], ""
+        for w, tag in zip(["Precondition:", "Postcondition:"], [self.PRE_TAG, self.POST_TAG]):
+            for p in dicRes.get(tag,[]):
+                p = [e.strip() for e in p if e.strip() != ""]
+                if p != []:
+                    supp_desc.extend([f"{w} " + p[0]] + p[1:])
+        if supp_desc != []:
+            supp_txt = " * " + sep.join(supp_desc) + "\n *\n"
+            
         # Description
-        res = f"{brief_desc}\n *\n{long_desc}"
+        res = f"{brief_desc}\n *\n{long_desc}{supp_txt}"
 
         # Parameters
         for p in dicRes.get(self.PARAM_TAG,[]):
@@ -152,7 +164,7 @@ class DocConverter(object):
                     supp = "(%s) " % p[self.EMPTY_TAG][0]
                 else: supp = ""
                 param_txt = supp + " ".join(signif)
-                res += f" * @param{in_out} {param_txt} \n"
+                res += f" * @param{in_out} {param_txt}\n"
 
         # Return
         for ret in dicRes.get(self.RET_TAG,[]):
@@ -176,7 +188,7 @@ class DocConverter(object):
         for sa in dicRes.get(self.SA_CLS_TAGS[0],[]):
             sa = [s.strip() for s in sa if s.strip() != ""]
             if sa != []:
-                res += f" * @sa %s \n" % ", ".join(sa)
+                res += f" * @sa %s\n" % ", ".join(sa)
 
         # Sometimes we have commented bits of code in the comments ...
         res = res.replace('/*', '//').replace('*/', '//')
