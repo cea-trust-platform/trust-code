@@ -15,5 +15,5 @@
 
 #ifndef IJK_Field_included
 #define IJK_Field_included
-#include <K_Layer_Cells_Lists.h>
+#include <IJK_Field_internal.h>
 #endif

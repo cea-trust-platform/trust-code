@@ -12,12 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-/////////////////////////////////////////////////////////////////////////////
-//
-// File      : Ref_IJK_Field_double.cpp
-// Directory : $IJK_ROOT/src/IJK/solveur_mg
-//
-/////////////////////////////////////////////////////////////////////////////
 
 #include <Ref_IJK_Field_double.h>
 #include <IJK_Field.h>

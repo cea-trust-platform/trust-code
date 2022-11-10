@@ -18,8 +18,7 @@
 // Directory : $IJK_ROOT/src/IJK/solveur_mg
 //
 /////////////////////////////////////////////////////////////////////////////
-class IJK_Field_float;
-class IJK_Field_double;
+#include <IJK_Field_forward.h>
 
 void dumplata_scalar(const char *filename, const char *fieldname, const IJK_Field_float& f, int step);
 void dumplata_vector(const char *filename, const char *fieldname, const IJK_Field_float& vx, const IJK_Field_float& vy, const IJK_Field_float& vz, int step);

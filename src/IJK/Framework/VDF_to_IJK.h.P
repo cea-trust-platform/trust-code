@@ -23,9 +23,7 @@
 #define VDF_to_IJK_included
 class Zone_VF;
 class IJK_Splitting;
-class IJK_Field_double;
-class IJK_Field_float;
-
+#include <IJK_Field_forward.h>
 #include <TRUSTTabs_forward.h>
 #include <Static_Int_Lists.h>
 #include <IJK_Splitting.h>

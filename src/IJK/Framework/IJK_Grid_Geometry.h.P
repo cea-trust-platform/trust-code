@@ -21,9 +21,7 @@
 /////////////////////////////////////////////////////////////////////////////
 #ifndef IJK_Grid_Geometry_included
 #define IJK_Grid_Geometry_included
-class IJK_Field_float;
-class IJK_Field_double;
-class ArrOfDouble_with_ghost;
+#include <IJK_Field_forward.h>
 #include <TRUSTArrays.h>
 
 class Zone;

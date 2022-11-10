@@ -26,10 +26,7 @@
 #include <Interprete.h>
 #include <EFichier.h>
 #include <SFichier.h>
-
-class IJK_Field_float;
-class IJK_Field_double;
-
+#include <IJK_Field_forward.h>
 #include <TRUSTTabs_forward.h>
 
 /*! @brief : class DebogIJK

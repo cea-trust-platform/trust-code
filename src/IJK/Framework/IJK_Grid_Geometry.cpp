@@ -165,10 +165,10 @@ static void find_unique_coord(const DoubleTab & src, int column, ArrOfDouble & r
     int np = Process::nproc();
     for (i = 1; i < np; i++) {
       recevoir(tmp, i, 53 /* canal */);
-      int m1 = tmp.size_array();
-      int m2 = result.size_array();
-      result.resize_array(m2+m1);
-      result.inject_array(tmp, m1 /* nbelem */, m2 /* dest index */, 0 /* src index */);
+      int m1Loc = tmp.size_array();
+      int m2Loc = result.size_array();
+      result.resize_array(m2Loc+m1Loc);
+      result.inject_array(tmp, m1Loc /* nbelem */, m2Loc /* dest index */, 0 /* src index */);
     }
     result.ordonne_array();
     retirer_doublons(result, Objet_U::precision_geom);
