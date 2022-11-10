@@ -9,8 +9,10 @@ help()
    echo "-doc                           : Open jupyter's validation forms documentation (opens SampleFormJupyter notebook)."
    echo "-export_pdf                    : Produce the PDF report direclty as 'build/rapport.pdf'. This is the default for PRM format, but not for Jupyter notebooks."
    echo "-o name_report.pdf             : Change the default PDF report's name (default is rapport.pdf)"
+   echo "-parallel_sjob                 : Run/submit calculations in a parallel way using the Sserver. "
    echo "-exec binary_path              : Location of the TRUST binary to use (by default given by $exec)."
    echo "-create                        : Build a minimal .ipynb with data files found in the src directory."
+   echo "-xpdf                          : Open the PDF report file at the end of the build."
    echo
    echo "For .prm validation forms:"
    echo "Usage: `basename $0` [path] [-help] [-not_run] [-post_run] [-parallel_run] [-parallel_sjob] [-nb_pas_dt_max N] [-visit_np np] [-dest path_build] [-d text|figure_number] [-o name_rapport.pdf] [-xpdf] [-remote login@machine:PATH] [-exec binary_path] [-save]"
@@ -46,6 +48,14 @@ help()
    #echo "You could get more information by executing the following command:"
    #echo "python $TRUST_ROOT/Validation/Outils/Genere_courbe/src/genererCourbes.py --help"
    #echo
+}
+show_pdf()
+{
+   # Affichage du PDF
+   for app in xpdf kpdf evince okular
+   do
+      $app $1 1>/dev/null 2>&1 && break
+   done
 }
 # On verifie que pdflatex est installe sur la machine
 pdflatex --version 1>/dev/null 2>&1
@@ -93,7 +103,7 @@ do
       echo "----------------------------------------------------------------------"
       echo "Launching SampleFormJupyter in your web browser... hit Ctrl-C when you're done."
       echo "  >  jupyter-notebook $prm"
-      echo "----------------------------------------------------------------------"
+      echo "-----------------------------------------------------$curr_dir/build/rapport.pdf-----------------"
       jupyter-notebook $prm 2>/dev/null
       exit 0
    elif [ "$1" = -doc_prm ]
@@ -102,16 +112,16 @@ do
       exit 0
    elif [ "$1" = -convert_prm ]
    then
-		 prm=`ls src/*.prm 2>/dev/null`
-		 if [ "$((`echo $prm | wc -w`+0))" != 1 ]
-		 then
-			 echo ".prm files found: $prm"
-			 echo "There should be ONE .prm file in the src directory."
-			 exit -1
-		 fi
-   	 $TRUST_ROOT/Validation/Outils/Genere_courbe/Transcript $prm 2>&1
+       prm=`ls src/*.prm 2>/dev/null`
+       if [ "$((`echo $prm | wc -w`+0))" != 1 ]
+       then
+          echo ".prm files found: $prm"
+          echo "There should be ONE .prm file in the src directory."
+          exit -1
+       fi
+       $TRUST_ROOT/Validation/Outils/Genere_courbe/Transcript $prm 2>&1
      exit 0
-	 elif [ "$1" = -dest ]
+    elif [ "$1" = -dest ]
    then
       options=$options" "$1
       shift
@@ -124,16 +134,22 @@ do
    elif [ "$1" = -not_run ] || [ "$1" = -post_run ] || [ "$1" = -parallel_run ] || [ "$1" = -parallel_sjob ]
    then
       options=$options" "$1
-      if [ "$1" = -not_run ]; then
-        not_run=1
+      if [ "$1" = -not_run ]
+      then
+         not_run=1
       elif [ "$1" = -parallel_run ] 
-			then
-				parallel=true
-				if [ "$2" != "" ]
-				then
-					shift
-					TRUST_NB_PROCS=$1
-				fi
+      then
+         parallel=true
+         if [ "`echo $2 | grep [0-9]`" != "" ] 
+         then
+            shift
+            TRUST_NB_PROCS=$1
+         fi
+      elif [ "$1" = -parallel_sjob ]
+      then
+         parallel=true
+         # Lancement Server si necessaire
+         [ "$TRUST_WITHOUT_HOST" = 1 ] && [ "`ps -efl | grep Sserver | grep -v grep`" = "" ] && (cd $TRUST_ROOT/bin/Sjob;./Sserver $TRUST_NB_PROCS &)         
       fi
       shift
    elif [ "$1" = -nb_pas_dt_max ]
@@ -203,7 +219,7 @@ do
       shift
    elif [ "$1" = -save ]
    then
-      save=1
+      save=1$curr_dir/build/rapport.pdf
       shift
    elif [ "$1" = -create_prm ]
    then
@@ -213,38 +229,38 @@ do
          prm=`cd ..;basename $PWD`.prm
       else
          prm=`cd ../..;basename $PWD`.prm
-	 			 cd src
+         cd src
       fi
       datas=`ls *.data 2>/dev/null`
       echo "Parameters {" > $prm
-      echo "	Title " >> $prm
-      echo "	Author `whoami`" >> $prm
+      echo "   Title " >> $prm
+      echo "   Author `whoami`" >> $prm
       for data in $datas
       do
-         echo "	Testcase . ${data%.data}" >> $prm
+         echo "   Testcase . ${data%.data}" >> $prm
       done
       echo "}" >> $prm
       echo "Chapter {" >> $prm
-      echo "	Title Computer performance" >> $prm
-      echo "	Tableau_performance {" >> $prm
-      echo "	}" >> $prm
+      echo "   Title Computer performance" >> $prm
+      echo "   Tableau_performance {" >> $prm
+      echo "   }" >> $prm
       echo "}" >> $prm
    elif [ "$1" = -create ]
    then
-		 shift
-     if [ "$1" != "" ]
-		 then
-			 jy=$1
-		 else
-			 if [ "`basename $ici`" = src ]
-			 then
-				 jy=`cd ..;basename $PWD`
-			 else
-				 jy=`basename $PWD`
-			 fi
-		 fi
-		 create_basic_jupyter_notebook.sh $jy
-		 exit 0
+      shift
+      if [ "$1" != "" ]
+      then
+         jy=$1
+      else
+         if [ "`basename $ici`" = src ]
+         then
+            jy=`cd ..;basename $PWD`
+         else
+            jy=`basename $PWD`
+         fi
+      fi
+      create_basic_jupyter_notebook.sh $jy
+      exit 0
    else
       options=$options" "$1
       echo "=================================================="
@@ -292,11 +308,16 @@ then
           echo "Converting Jupyter notebook into PDF: build/rapport.pdf"
           echo "  >  jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to pdf --no-input --output $ici/build/rapport.pdf $opt_jy $prm"
           echo "----------------------------------------------------------------------"
-          jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to pdf --no-input --output "$ici/build/rapport.pdf" $opt_jy $prm
+          pdf=$ici/build/rapport.pdf
+          jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to pdf --no-input --output "$pdf" $opt_jy $prm
+          [ "$xpdf" = "-xpdf" ] && show_pdf $pdf
           exit $?
-			elif $parallel; then
-					curr_dir=`pwd`
-					env JUPYTER_RUN_OPTIONS="-parallel_run" jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to pdf --no-input --output "$curr_dir/build/rapport.pdf" --execute $prm 2>& 1| tee -a Run.log
+      elif $parallel; then
+          curr_dir=`pwd`  
+          pdf=$curr_dir/build/rapport.pdf
+          env JUPYTER_RUN_OPTIONS="-parallel_run" jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to pdf --no-input --output "$pdf" --execute $prm 2>& 1| tee -a Run.log
+          [ "$xpdf" = "-xpdf" ] && show_pdf $pdf
+          #killall Sserver 
           exit $?
       else
           echo "----------------------------------------------------------------------"
@@ -350,12 +371,5 @@ then
    echo compare_pdf $pdf $compare_pdf ...
    compare_pdf $pdf $compare_pdf
 fi
-# Affichage eventuel du PDF
-if [ "$xpdf" = "-xpdf" ]
-then
-   for app in xpdf kpdf evince okular
-   do
-      $app $pdf 1>/dev/null 2>&1 && break
-   done
-fi
+[ "$xpdf" = "-xpdf" ] && show_pdf $pdf
 exit 0
