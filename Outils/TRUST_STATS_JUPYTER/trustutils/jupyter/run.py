@@ -498,7 +498,7 @@ class TRUSTSuite(object):
         ### Change the root to build file ###
 
         allOK = True
-        lstC = defaultSuite_.getCases()
+        lstC = self.getCases()
 
         th_lst, log_lst = [], []
         err_msg = "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
@@ -566,6 +566,20 @@ class TRUSTSuite(object):
                 os.chdir(ORIGIN_DIRECTORY)
 
             print("  => A total of %d cases were (successfully) run in %.1fs." % (len(lstC), dt))
+
+    def tablePerf(self):
+        """ Prints the table of performance
+        """
+        from . import plot
+        columns = ["host", "system", "Total CPU Time", "CPU time/step", "number of cells"]
+        zeTable = plot.Table(columns)
+        for case in self.getCases():
+            try:
+                case._addPerfToTable(zeTable)
+            except Exception as e:
+                raise e
+        zeTable.sum("Total CPU Time")
+        return zeTable.df
 
 def readFile(data):
     """
@@ -917,15 +931,5 @@ def runCases(verbose=False, preventConcurrent=False):
 def tablePerf():
     """ Prints the table of performance
     """
-    from . import plot
-    columns = ["host", "system", "Total CPU Time", "CPU time/step", "number of cells"]
-    zeTable = plot.Table(columns)
-    for case in getCases():
-        try:
-            case._addPerfToTable(zeTable)
-        except Exception as e:
-            raise e
-
-    zeTable.sum("Total CPU Time")
-
-    return zeTable.df
+    global defaultSuite_
+    return defaultSuite_.tablePerf()
