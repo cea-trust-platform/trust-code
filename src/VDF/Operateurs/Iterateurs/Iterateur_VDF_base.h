@@ -16,15 +16,20 @@
 #ifndef Iterateur_VDF_base_included
 #define Iterateur_VDF_base_included
 
-#include <Ref_Champ_base.h>
 #include <Ref_Champ_Inc_base.h>
 #include <Ref_Operateur_base.h>
 #include <CL_Types_include.h>
+#include <Ref_Champ_base.h>
+#include <Operateur_base.h>
 #include <Evaluateur_VDF.h>
 #include <Champ_Face_VDF.h>
+#include <Probleme_base.h>
+#include <Equation_base.h>
 #include <Matrice_Morse.h>
 #include <Zone_Cl_VDF.h>
 #include <Zone_Cl_dis.h>
+#include <Milieu_base.h>
+#include <TRUSTTrav.h>
 #include <Zone_VDF.h>
 
 enum class Type_Operateur { Op_CONV_ELEM , Op_CONV_FACE , Op_DIFF_ELEM , Op_DIFT_ELEM , Op_DIFF_FACE , Op_DIFT_FACE } ; // ne touche pas !
@@ -54,11 +59,8 @@ public:
   virtual void ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const=0;
   virtual void ajouter_contribution_autre_pb(const DoubleTab& , Matrice_Morse& , const Cond_lim& , std::map<int, std::pair<int, int>>&) const { /* ne fait rien en general */ }
 
-  virtual int impr(Sortie& os) const=0;
-  virtual void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const=0;
   virtual void completer_()=0;
-  virtual DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const=0;
-  virtual DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const=0;
+  virtual int impr(Sortie& os) const=0;
   virtual Evaluateur_VDF& evaluateur() =0;
   virtual const Evaluateur_VDF& evaluateur() const=0;
 
@@ -71,6 +73,24 @@ public:
   {
     is_conv_op_ = ty_op;
     is_pb_multi = ty_pb;
+  }
+
+  virtual DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu) const final
+  {
+    operator_egal(resu, 0., VECT_REAL_ITEMS);
+    return ajouter(inco,resu);
+  }
+
+  virtual DoubleTab& ajouter(const DoubleTab& inco, DoubleTab& secmem) const final
+  {
+    ajouter_blocs({}, secmem, {{ op_base->equation().inconnue().le_nom().getString(), inco }});
+    return secmem;
+  }
+
+  virtual void ajouter_contribution(const DoubleTab& inco, Matrice_Morse& m) const final
+  {
+    DoubleTrav secmem(inco); //on va le jeter
+    ajouter_blocs({{ op_base->equation().inconnue().le_nom().getString(), &m }}, secmem, {});
   }
 
 protected:

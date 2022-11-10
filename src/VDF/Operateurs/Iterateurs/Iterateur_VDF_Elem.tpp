@@ -17,7 +17,6 @@
 #define Iterateur_VDF_Elem_TPP_included
 
 #include <Operateur_Diff_base.h>
-#include <Operateur_Conv_base.h>
 #include <Champ_Uniforme.h>
 #include <communications.h>
 #include <TRUSTSingle.h>

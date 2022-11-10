@@ -18,11 +18,7 @@
 
 #include <Schema_Temps_base.h>
 #include <Op_Conv_VDF_base.h>
-#include <Probleme_base.h>
-#include <Equation_base.h>
 #include <EcrFicPartage.h>
-#include <Milieu_base.h>
-#include <TRUSTTrav.h>
 
 template <class _TYPE_>
 class Iterateur_VDF_Elem : public Iterateur_VDF_base
@@ -44,25 +40,6 @@ public:
 
   int impr(Sortie& os) const override;
   void completer_() override { elem.ref(la_zone->face_voisins()); }
-
-  DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu) const override
-  {
-    operator_egal(resu, 0., VECT_REAL_ITEMS);
-    return ajouter(inco,resu);
-  }
-
-  DoubleTab& ajouter(const DoubleTab& inco, DoubleTab& secmem) const override
-  {
-    ajouter_blocs({}, secmem, {{ op_base->equation().inconnue().le_nom().getString(), inco }});
-    return secmem;
-  }
-
-  void ajouter_contribution(const DoubleTab& inco, Matrice_Morse& m) const override
-  {
-    DoubleTrav secmem(inco); //on va le jeter
-    ajouter_blocs({{ op_base->equation().inconnue().le_nom().getString(), &m }}, secmem, {});
-  }
-
   void ajouter_contribution_autre_pb(const DoubleTab& inco, Matrice_Morse& matrice, const Cond_lim& la_cl, std::map<int, std::pair<int, int>>&) const override;
 
   // INTERFACE  BLOCS

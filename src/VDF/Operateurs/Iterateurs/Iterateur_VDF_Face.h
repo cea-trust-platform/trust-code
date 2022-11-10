@@ -17,15 +17,9 @@
 #define Iterateur_VDF_Face_included
 
 #include <CL_Types_Aretes_enum.h>
-#include <Iterateur_VDF_base.h>
 #include <Schema_Temps_base.h>
 #include <Op_Conv_VDF_base.h>
-#include <Operateur_base.h>
 #include <EcrFicPartage.h>
-#include <Equation_base.h>
-#include <Probleme_base.h>
-#include <Milieu_base.h>
-#include <TRUSTTrav.h>
 
 template <class _TYPE_>
 class Iterateur_VDF_Face : public Iterateur_VDF_base
@@ -39,18 +33,17 @@ class Iterateur_VDF_Face : public Iterateur_VDF_base
   }
 
 public:
-  inline Iterateur_VDF_Face() { }
-  inline Iterateur_VDF_Face(const Iterateur_VDF_Face<_TYPE_>& );
+  Iterateur_VDF_Face() { }
+  Iterateur_VDF_Face(const Iterateur_VDF_Face<_TYPE_>& );
+
+  inline Evaluateur_VDF& evaluateur() override { return static_cast<Evaluateur_VDF&> (flux_evaluateur); }
+  inline const Evaluateur_VDF& evaluateur() const override { return static_cast<const Evaluateur_VDF&> (flux_evaluateur); }
 
   int impr(Sortie& os) const override;
-  void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const override;
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
-  DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const override;
-  void ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const override { Process::exit(); }
+  void completer_() override;
 
-  inline void completer_() override;
-  inline Evaluateur_VDF& evaluateur() override { return (Evaluateur_VDF&) flux_evaluateur; }
-  inline const Evaluateur_VDF& evaluateur() const override { return (Evaluateur_VDF&) flux_evaluateur; }
+  // INTERFACE  BLOCS
+  void ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const override;
 
 protected:
   _TYPE_ flux_evaluateur;
@@ -63,15 +56,18 @@ protected:
 private:
 
   /* ************************************** *
+   * *********  INTERFACE  BLOCS ********** *
+   * ************************************** */
+  template <typename Type_Double> void ajouter_blocs_aretes_bords(const int , matrices_t , DoubleTab& , const tabs_t& ) const;
+  template <typename Type_Double> void ajouter_blocs_aretes_coins(const int , matrices_t , DoubleTab& , const tabs_t& ) const;
+  template <typename Type_Double> void ajouter_blocs_aretes_internes(const int , matrices_t , DoubleTab& , const tabs_t& ) const;
+  template <typename Type_Double> void ajouter_blocs_aretes_mixtes(const int , matrices_t , DoubleTab& , const tabs_t& ) const;
+  template <typename Type_Double> void ajouter_blocs_fa7_sortie_libre(const int , matrices_t , DoubleTab& , const tabs_t& ) const;
+  template <typename Type_Double> void ajouter_blocs_fa7_elem(const int , matrices_t , DoubleTab& , const tabs_t& ) const;
+
+  /* ************************************** *
    * *********  POUR L'EXPLICITE ********** *
    * ************************************** */
-
-  template <typename Type_Double> DoubleTab& ajouter_aretes_bords(const int , const DoubleTab&, DoubleTab& ) const;
-  template <typename Type_Double> DoubleTab& ajouter_aretes_coins(const int , const DoubleTab&, DoubleTab& ) const;
-  template <typename Type_Double> DoubleTab& ajouter_aretes_internes(const int , const DoubleTab&, DoubleTab& ) const;
-  template <typename Type_Double> DoubleTab& ajouter_aretes_mixtes(const int , const DoubleTab&, DoubleTab& ) const;
-  template <typename Type_Double> DoubleTab& ajouter_fa7_sortie_libre(const int , const DoubleTab&, DoubleTab& ) const;
-  template <typename Type_Double> DoubleTab& ajouter_fa7_elem(const int , const DoubleTab&, DoubleTab& ) const;
   template <typename Type_Double> DoubleTab& corriger_flux_fa7_elem_periodicite(const int , const DoubleTab&, DoubleTab& ) const;
   template <typename Type_Double> void corriger_flux_fa7_elem_periodicite_(const int , const int , const int , const int , const int , const int , const DoubleTab& , DoubleTab& ) const;
   template <typename Type_Double> void fill_resu_tab(const int , const int , const int , const Type_Double& , DoubleTab& ) const;
@@ -103,13 +99,6 @@ private:
   /* ************************************** *
    * *********  POUR L'IMPLICITE ********** *
    * ************************************** */
-
-  template <typename Type_Double> void ajouter_contribution_aretes_bords(const int , const DoubleTab&, Matrice_Morse& ) const;
-  template <typename Type_Double> void ajouter_contribution_aretes_coins(const int , const DoubleTab&, Matrice_Morse& ) const ;
-  template <typename Type_Double> void ajouter_contribution_aretes_internes(const int , const DoubleTab&, Matrice_Morse& ) const;
-  template <typename Type_Double> void ajouter_contribution_aretes_mixtes(const int , const DoubleTab&, Matrice_Morse& ) const;
-  template <typename Type_Double> void ajouter_contribution_fa7_sortie_libre(const int , const DoubleTab&, Matrice_Morse& ) const;
-  template <typename Type_Double> void ajouter_contribution_fa7_elem(const int , const DoubleTab&, Matrice_Morse& ) const;
   template <typename Type_Double> void corriger_coeffs_fa7_elem_periodicite(const int , const DoubleTab&, Matrice_Morse& ) const;
   template <typename Type_Double> void corriger_coeffs_fa7_elem_periodicite_(const int , const int , const int , const int , const int , const int , Matrice_Morse& ) const;
   template <typename Type_Double> void fill_coeff_matrice_morse(const int , const int , const int , const int , const Type_Double& , Matrice_Morse&) const;
