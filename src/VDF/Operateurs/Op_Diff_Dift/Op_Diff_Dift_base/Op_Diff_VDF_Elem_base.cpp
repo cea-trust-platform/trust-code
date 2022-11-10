@@ -44,7 +44,7 @@ double Op_Diff_VDF_Elem_base::calculer_dt_stab() const
   //      le max de coeff est atteint sur l'element qui realise
   //      a la fois le min de dx le min de dy et le min de dz
   double dt_stab = DMAXFLOAT;
-  const Zone_VDF& zone_VDF = iter.zone();
+  const Zone_VDF& zone_VDF = iter->zone();
   const DoubleTab& diffu = has_champ_masse_volumique() ? diffusivite().valeurs() : diffusivite_pour_pas_de_temps().valeurs();
 
 
@@ -89,9 +89,9 @@ double Op_Diff_VDF_Elem_base::calculer_dt_stab() const
 
 void Op_Diff_VDF_Elem_base::contribuer_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, Matrice_Morse& matrice) const
 {
-  const Zone_VDF& zone = iter.zone();
+  const Zone_VDF& zone = iter->zone();
   const IntTab& f_e = zone.face_voisins();
-  const Zone_Cl_VDF& zcl = iter.zone_Cl();
+  const Zone_Cl_VDF& zcl = iter->zone_Cl();
   int l;
 
   // boucle sur les cl pour trouver un paroi_contact
@@ -111,16 +111,16 @@ void Op_Diff_VDF_Elem_base::contribuer_termes_croises(const DoubleTab& inco, con
             int e = f_e(f, 0) == -1 ? f_e(f, 1) : f_e(f, 0);
             f2e[f] = std::make_pair(e, l);
           }
-      iter.ajouter_contribution_autre_pb(inco, matrice, la_cl, f2e);
+      iter->ajouter_contribution_autre_pb(inco, matrice, la_cl, f2e);
     }
 }
 
 void Op_Diff_VDF_Elem_base::dimensionner_termes_croises(Matrice_Morse& matrice, const Probleme_base& autre_pb, int nl, int nc) const
 {
   const Champ_P0_VDF& ch = ref_cast(Champ_P0_VDF, equation().inconnue().valeur());
-  const Zone_VDF& zone = iter.zone();
+  const Zone_VDF& zone = iter->zone();
   const IntTab& f_e = zone.face_voisins();
-  const Conds_lim& cls = iter.zone_Cl().les_conditions_limites();
+  const Conds_lim& cls = iter->zone_Cl().les_conditions_limites();
   int i, j, l, f, n, N = ch.valeurs().line_size();
 
   IntTab stencil(0, 2);
@@ -162,10 +162,10 @@ void Op_Diff_VDF_Elem_base::dimensionner_blocs(matrices_t matrices, const tabs_t
       mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : NULL;
       if(!mat[i]) continue;
       Matrice_Morse mat2;
-      if(i==0) Op_VDF_Elem::dimensionner(iter.zone(), iter.zone_Cl(), mat2);
+      if(i==0) Op_VDF_Elem::dimensionner(iter->zone(), iter->zone_Cl(), mat2);
       else
         {
-          int nl = N[0] * iter.zone().nb_elem_tot();
+          int nl = N[0] * iter->zone().nb_elem_tot();
           int nc = N[i] * op_ext[i]->equation().zone_dis()->nb_elem_tot();
           dimensionner_termes_croises(mat2, op_ext[i]->equation().probleme(),nl, nc);
         }
@@ -178,28 +178,36 @@ void Op_Diff_VDF_Elem_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
   statistiques().begin_count(diffusion_counter_);
   if (!op_ext_init_) init_op_ext();
 
+  // On commence par l'operateur locale; i.e. *this !
+  iter->ajouter_blocs(matrices,secmem,semi_impl);
+
+  // On ajoute des termes si axi ...
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
-  int n_ext = (int)op_ext.size(); //pour la thermique monolithique
+  Matrice_Morse* mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
+  const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : equation().inconnue()->valeurs();
+  Op_Diff_VDF_base::ajoute_terme_pour_axi(inco,mat,secmem);
+
+  // On ajoute contribution si monolithique
+  if ((int)op_ext.size() > 1) ajouter_blocs_pour_monolithique(matrices,secmem,semi_impl);
+
+  statistiques().end_count(diffusion_counter_);
+}
+
+void Op_Diff_VDF_Elem_base::ajouter_blocs_pour_monolithique(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
+{
+  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  int n_ext = (int)op_ext.size() - 1; // pour la thermique monolithique, -1 car 1er (i.e. *this) est deja fait via ajouter_blocs
   std::vector<Matrice_Morse *> mat(n_ext);
   std::vector<const DoubleTab *> inco(n_ext); //inconnues
 
-  mat[0] = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
-  inco[0] = semi_impl.count(nom_inco) ? &semi_impl.at(nom_inco) : &op_ext[0]->equation().inconnue().valeur().valeurs();
-
-  if(mat[0]) iter.ajouter_contribution(*inco[0], *mat[0]);
-  iter.ajouter(*inco[0],secmem);
-
-  Op_Diff_VDF_base::ajoute_terme_pour_axi(*inco[0],mat[0],secmem);
-
-  for (int i = 1; i < n_ext; i++)
+  for (int i = 0; i < n_ext; i++)
     {
-      std::string nom_mat = nom_inco + "/" + op_ext[i]->equation().probleme().le_nom().getString();
+      std::string nom_mat = nom_inco + "/" + op_ext[i + 1]->equation().probleme().le_nom().getString();
       mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : NULL;
       if(mat[i])
         {
-          inco[i] = semi_impl.count(nom_mat) ? &semi_impl.at(nom_mat) : &op_ext[i]->equation().inconnue().valeur().valeurs();
-          contribuer_termes_croises(*inco[i], op_ext[i]->equation().probleme(), op_ext[i]->equation().inconnue().valeurs(), *mat[i]);
+          inco[i] = semi_impl.count(nom_mat) ? &semi_impl.at(nom_mat) : &op_ext[i + 1]->equation().inconnue()->valeurs();
+          contribuer_termes_croises(*inco[i], op_ext[i + 1]->equation().probleme(), op_ext[i + 1]->equation().inconnue()->valeurs(), *mat[i]);
         }
     }
-  statistiques().end_count(diffusion_counter_);
 }

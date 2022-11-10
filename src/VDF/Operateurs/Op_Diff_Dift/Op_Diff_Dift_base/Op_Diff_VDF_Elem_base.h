@@ -33,8 +33,7 @@ class Op_Diff_VDF_Elem_base : public Op_Diff_VDF_base, public Op_VDF_Elem
 {
   Declare_base_sans_constructeur(Op_Diff_VDF_Elem_base);
 public:
-  // Ce constructeur permet de creer des classes filles des evalateurs (utilise dans le constructeur de Op_Diff_VDF_var_Elem_temp_FTBM)
-  inline Op_Diff_VDF_Elem_base(const Iterateur_VDF_base& iterateur) : Op_Diff_VDF_base(iterateur)
+  Op_Diff_VDF_Elem_base(const Iterateur_VDF_base& iterateur) : Op_Diff_VDF_base(iterateur)
   {
     declare_support_masse_volumique(1);
   }
@@ -42,10 +41,12 @@ public:
   double calculer_dt_stab() const override;
   void dimensionner_termes_croises(Matrice_Morse&, const Probleme_base& autre_pb, int nl, int nc) const override;
   void contribuer_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco,  Matrice_Morse& matrice) const override;
-  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { Op_VDF_Elem::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem); }
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
+  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { Op_VDF_Elem::modifier_pour_Cl(iter->zone(), iter->zone_Cl(), matrice, secmem); }
 
+private:
+  void ajouter_blocs_pour_monolithique(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const;
 };
 
 #endif /* Op_Diff_VDF_Elem_base_included */
