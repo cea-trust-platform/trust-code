@@ -121,7 +121,7 @@ Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_bords_(const int n_arete, const
             }
         }
 
-      //derivees : champ convecte
+      // derivees : champ convecte
       if (matrice)
         {
           flux_evaluateur.template coeffs_arete < Arete_Type > (fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
@@ -162,7 +162,7 @@ Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_bords_(const int n_arete, const
             for (int k = 0; k < ncomp; k++) tab_flux_bords(fac2, orientation(fac3)) -= 0.5 * signe * flux3[k];
         }
 
-      //derivees : champ convecte
+      // derivees : champ convecte
       if (matrice)
         {
           flux_evaluateur.template coeffs_arete < Arete_Type > (fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
@@ -199,7 +199,7 @@ Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_bords_(const int n_arete, const
 
       fill_resu_tab < Type_Double > (fac1, fac2, ncomp, flux1_2, secmem);
 
-      //derivees : champ convecte
+      // derivees : champ convecte
       if (matrice)
         {
           flux_evaluateur.template coeffs_arete < Arete_Type > (fac3, fac4, fac1, fac2, aii, ajj);
@@ -278,7 +278,7 @@ Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_coins_(const int n_arete, const
             tab_flux_bords(fac1, orientation(fac3)) -= 0.5 * signe * flux[k];
         }
 
-      //derivees : champ convecte
+      // derivees : champ convecte
       if (matrice)
         {
           flux_evaluateur.template coeffs_arete < Arete_Type > (fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
@@ -311,7 +311,7 @@ Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_coins_(const int n_arete, const
           if (fac1 < n) tab_flux_bords(fac1, orientation(fac3)) -= 0.5 * signe * flux3[k];
         }
 
-      //derivees : champ convecte
+      // derivees : champ convecte
       if (matrice)
         {
           flux_evaluateur.template coeffs_arete < Arete_Type > (fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
@@ -348,7 +348,7 @@ Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_coins_(const int n_arete, const
           secmem(fac2, k) -= 0.5 * flux1_2[k];
         }
 
-      //derivees : champ convecte
+      // derivees : champ convecte
       if (matrice)
         {
           flux_evaluateur.template coeffs_arete < Arete_Type > (fac3, fac4, fac1, fac2, aii, ajj);
@@ -447,7 +447,7 @@ Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_generique_(const int debut, con
             }
         }
 
-      //derivees : champ convecte
+      // derivees : champ convecte
       if (matrice)
         for (int n_arete = debut; n_arete < fin; n_arete++)
           {
@@ -521,7 +521,7 @@ void Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_fa7_sortie_libre_(const int num_c
             for (int k = 0; k < ncomp; k++) secmem(face, k) -= flux[k];
         }
 
-      //derivees : champ convecte
+      // derivees : champ convecte
       if (matrice)
         for (int face = ndeb; face < nfin; face++)
           {
@@ -564,9 +564,7 @@ void Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_fa7_elem(const int ncomp, matrice
           for (int k = 0; k < ncomp; k++) tab_flux_bords(fac2, orientation(fac2)) -= flux[k];
       }
 
-  corriger_flux_fa7_elem_periodicite < Type_Double > (ncomp, inco, secmem);
-
-  //derivees : champ convecte
+  // derivees : champ convecte
   if (matrice)
     {
       for (int num_elem = 0; num_elem < nb_elem; num_elem++)
@@ -577,16 +575,21 @@ void Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_fa7_elem(const int ncomp, matrice
             for (int i = 0; i < ncomp; i++)
               fill_coeff_matrice_morse < Type_Double > (fac1, fac2, i, ncomp, aii, ajj, *matrice);
           }
-
-      corriger_coeffs_fa7_elem_periodicite < Type_Double > (ncomp, inco, *matrice);
     }
+
+  // On corrige si cl periodique ...
+  corriger_fa7_elem_periodicite<Type_Double>(ncomp, mats, secmem, semi_impl);
 }
 
-// ===================================================================================================
-
 template<class _TYPE_> template<typename Type_Double>
-DoubleTab& Iterateur_VDF_Face<_TYPE_>::corriger_flux_fa7_elem_periodicite(const int ncomp, const DoubleTab& inco, DoubleTab& resu) const
+void Iterateur_VDF_Face<_TYPE_>::corriger_fa7_elem_periodicite(const int ncomp, matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
+  Type_Double flux(ncomp), aii(ncomp), ajj(ncomp);
+
+  const std::string& nom_ch = op_base->equation().inconnue().le_nom().getString();
+  const DoubleTab& inco = semi_impl.count(nom_ch) ? semi_impl.at(nom_ch) : op_base->equation().inconnue()->valeurs();
+  Matrice_Morse *matrice = mats.count(nom_ch) ? mats.at(nom_ch) : NULL;
+
   for (int num_cl = 0; num_cl < la_zone->nb_front_Cl(); num_cl++)
     {
       const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
@@ -595,18 +598,52 @@ DoubleTab& Iterateur_VDF_Face<_TYPE_>::corriger_flux_fa7_elem_periodicite(const 
           const Periodique& la_cl_perio = ref_cast(Periodique, la_cl.valeur());
           const Front_VF& le_bord = ref_cast(Front_VF, la_cl_perio.frontiere_dis());
           int num_elem, signe, fac1, fac2, ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
+
+          // second membre
           for (int face = ndeb; face < nfin; face++)
             {
-              prepare_corriger_pour_periodicite(face, num_elem, signe, fac1, fac2);
-              corriger_flux_fa7_elem_periodicite_ < Type_Double > (ncomp, num_elem, fac1, fac2, face, signe, inco, resu);
+              corriger_fa7_elem_periodicite__(face, num_elem, signe, fac1, fac2);
+
+              flux_evaluateur.template flux_fa7 < Type_Flux_Fa7::ELEM > (inco, num_elem, fac1, fac2, flux);
+              for (int k = 0; k < ncomp; k++) secmem(face, k) += signe * flux[k];
             }
+
+          // derivees : champ convecte
+          if (matrice)
+            for (int face = ndeb; face < nfin; face++)
+              {
+                corriger_fa7_elem_periodicite__(face, num_elem, signe, fac1, fac2);
+
+                flux_evaluateur.template coeffs_fa7 < Type_Flux_Fa7::ELEM > (num_elem, fac1, fac2, aii, ajj);
+                const IntVect& tab1 = (*matrice).get_set_tab1(), &tab2 = (*matrice).get_set_tab2();
+                DoubleVect& coeff = (*matrice).get_set_coeff();
+                if (signe > 0) /* on a oublie a droite  la contribution de la gauche */
+                  {
+                    for (int i = 0; i < ncomp; i++)
+                      for (int k = tab1[face * ncomp + i] - 1; k < tab1[face * ncomp + 1 + i] - 1; k++)
+                        if (tab2[k] - 1 == face * ncomp + i) coeff[k] += aii[i];
+
+                    for (int i = 0; i < ncomp; i++)
+                      for (int k = tab1[face * ncomp + i] - 1; k < tab1[face * ncomp + 1 + i] - 1; k++)
+                        if (tab2[k] - 1 == fac2 * ncomp + i) coeff[k] -= ajj[i];
+                  }
+                else /* on a oublie a gauche  la contribution de la droite */
+                  {
+                    for (int i = 0; i < ncomp; i++)
+                      for (int k = tab1[face * ncomp + i] - 1; k < tab1[face * ncomp + 1 + i] - 1; k++)
+                        if (tab2[k] - 1 == fac1 * ncomp + i) coeff[k] -= aii[i];
+
+                    for (int i = 0; i < ncomp; i++)
+                      for (int k = tab1[face * ncomp + i] - 1; k < tab1[face * ncomp + 1 + i] - 1; k++)
+                        if (tab2[k] - 1 == face * ncomp + i) coeff[k] += ajj[i];
+                  }
+              }
         }
     }
-  return resu;
 }
 
 template<class _TYPE_>
-void Iterateur_VDF_Face<_TYPE_>::prepare_corriger_pour_periodicite(const int face, int& num_elem, int& signe, int& fac1, int& fac2) const
+void Iterateur_VDF_Face<_TYPE_>::corriger_fa7_elem_periodicite__(const int face, int& num_elem, int& signe, int& fac1, int& fac2) const
 {
   const int elem1 = elem(face, 0), elem2 = elem(face, 1), ori = orientation(face);
   if ((face == elem_faces(elem1, ori)) || (face == elem_faces(elem1, ori + dimension)))
@@ -622,13 +659,7 @@ void Iterateur_VDF_Face<_TYPE_>::prepare_corriger_pour_periodicite(const int fac
   fac1 = elem_faces(num_elem, ori), fac2 = elem_faces(num_elem, ori + dimension);
 }
 
-template<class _TYPE_> template<typename Type_Double>
-void Iterateur_VDF_Face<_TYPE_>::corriger_flux_fa7_elem_periodicite_(const int ncomp, const int num_elem, const int fac1, const int fac2, const int face, const int signe, const DoubleTab& inco, DoubleTab& resu) const
-{
-  Type_Double flux(ncomp);
-  flux_evaluateur.template flux_fa7 < Type_Flux_Fa7::ELEM > (inco, num_elem, fac1, fac2, flux);
-  for (int k = 0; k < ncomp; k++) resu(face, k) += signe * flux[k];
-}
+// ===================================================================================================
 
 template<class _TYPE_> template<typename Type_Double>
 inline void Iterateur_VDF_Face<_TYPE_>::fill_resu_tab(const int fac1, const int fac2, const int ncomp, const Type_Double& flux, DoubleTab& resu) const
@@ -637,56 +668,6 @@ inline void Iterateur_VDF_Face<_TYPE_>::fill_resu_tab(const int fac1, const int 
     {
       resu(fac1, k) += flux[k];
       resu(fac2, k) -= flux[k];
-    }
-}
-
-template<class _TYPE_> template<typename Type_Double>
-void Iterateur_VDF_Face<_TYPE_>::corriger_coeffs_fa7_elem_periodicite(const int ncomp, const DoubleTab& inco, Matrice_Morse& matrice) const
-{
-  for (int num_cl = 0; num_cl < la_zone->nb_front_Cl(); num_cl++)
-    {
-      const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
-      if (sub_type(Periodique, la_cl.valeur()))
-        {
-          const Periodique& la_cl_perio = ref_cast(Periodique, la_cl.valeur());
-          const Front_VF& le_bord = ref_cast(Front_VF, la_cl_perio.frontiere_dis());
-          int num_elem, signe, fac1, fac2, ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
-          for (int face = ndeb; face < nfin; face++)
-            {
-              prepare_corriger_pour_periodicite(face, num_elem, signe, fac1, fac2);
-              corriger_coeffs_fa7_elem_periodicite_ < Type_Double > (ncomp, num_elem, fac1, fac2, face, signe, matrice);
-            }
-        }
-    }
-}
-
-template<class _TYPE_> template<typename Type_Double>
-void Iterateur_VDF_Face<_TYPE_>::corriger_coeffs_fa7_elem_periodicite_(const int ncomp, const int num_elem, const int fac1, const int fac2, const int face, const int signe, Matrice_Morse& matrice) const
-{
-  Type_Double aii(ncomp), ajj(ncomp);
-  flux_evaluateur.template coeffs_fa7 < Type_Flux_Fa7::ELEM > (num_elem, fac1, fac2, aii, ajj);
-  const IntVect& tab1 = matrice.get_set_tab1(), &tab2 = matrice.get_set_tab2();
-  DoubleVect& coeff = matrice.get_set_coeff();
-  // XXX : Elie Saikali : j'ai fait comme le codage initial pour le cas Scalaire...
-  if (signe > 0) /* on a oublie a droite  la contribution de la gche */
-    {
-      for (int i = 0; i < ncomp; i++)
-        for (int k = tab1[face * ncomp + i] - 1; k < tab1[face * ncomp + 1 + i] - 1; k++)
-          if (tab2[k] - 1 == face * ncomp + i) coeff[k] += aii[i];
-
-      for (int i = 0; i < ncomp; i++)
-        for (int k = tab1[face * ncomp + i] - 1; k < tab1[face * ncomp + 1 + i] - 1; k++)
-          if (tab2[k] - 1 == fac2 * ncomp + i) coeff[k] -= ajj[i];
-    }
-  else /* on a oublie a gauche  la contribution de la droite */
-    {
-      for (int i = 0; i < ncomp; i++)
-        for (int k = tab1[face * ncomp + i] - 1; k < tab1[face * ncomp + 1 + i] - 1; k++)
-          if (tab2[k] - 1 == fac1 * ncomp + i) coeff[k] -= aii[i];
-
-      for (int i = 0; i < ncomp; i++)
-        for (int k = tab1[face * ncomp + i] - 1; k < tab1[face * ncomp + 1 + i] - 1; k++)
-          if (tab2[k] - 1 == face * ncomp + i) coeff[k] += ajj[i];
     }
 }
 

@@ -54,14 +54,7 @@ protected:
   IntVect orientation, type_arete_bord, type_arete_coin;
 
 private:
-  // methodes utiles
-  inline void multiply_by_rho_if_hydraulique(DoubleTab&) const;
-  inline void prepare_corriger_pour_periodicite(const int, int&, int&, int&, int&) const;
-
-  template<typename Type_Double> DoubleTab& corriger_flux_fa7_elem_periodicite(const int, const DoubleTab&, DoubleTab&) const;
-  template<typename Type_Double> void corriger_flux_fa7_elem_periodicite_(const int, const int, const int, const int, const int, const int, const DoubleTab&, DoubleTab&) const;
-  template<typename Type_Double> void corriger_coeffs_fa7_elem_periodicite(const int, const DoubleTab&, Matrice_Morse&) const;
-  template<typename Type_Double> void corriger_coeffs_fa7_elem_periodicite_(const int, const int, const int, const int, const int, const int, Matrice_Morse&) const;
+  void multiply_by_rho_if_hydraulique(DoubleTab&) const;
   template<typename Type_Double> void fill_resu_tab(const int, const int, const int, const Type_Double&, DoubleTab&) const;
   template<typename Type_Double> void fill_coeff_matrice_morse(const int, const int, const int, const int, const Type_Double&, Matrice_Morse&) const;
   template<typename Type_Double> void fill_coeff_matrice_morse(const int, const int, const int, const int, const Type_Double&, const Type_Double&, Matrice_Morse&) const;
@@ -124,6 +117,9 @@ private:
   /* ====== FA7 ELEM ===== */
   template<typename Type_Double>
   void ajouter_blocs_fa7_elem(const int, matrices_t, DoubleTab&, const tabs_t&) const;
+
+  void corriger_fa7_elem_periodicite__(const int, int&, int&, int&, int&) const;
+  template<typename Type_Double> void corriger_fa7_elem_periodicite(const int, matrices_t, DoubleTab&, const tabs_t& ) const;
 };
 
 #include <Iterateur_VDF_Face.tpp> // templates specializations ici ;)
