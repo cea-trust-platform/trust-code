@@ -12,12 +12,7 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-/////////////////////////////////////////////////////////////////////////////
-//
-// File      : IJK_lata_dump.h
-// Directory : $IJK_ROOT/src/IJK/solveur_mg
-//
-/////////////////////////////////////////////////////////////////////////////
+
 #include <IJK_Field_forward.h>
 
 void dumplata_scalar(const char *filename, const char *fieldname, const IJK_Field_float& f, int step);
