@@ -16,12 +16,10 @@
 #ifndef Iterateur_VDF_Face_bis_TPP_included
 #define Iterateur_VDF_Face_bis_TPP_included
 
-template <class _TYPE_>
+template<class _TYPE_>
 inline Iterateur_VDF_Face<_TYPE_>::Iterateur_VDF_Face(const Iterateur_VDF_Face<_TYPE_>& iter) :
-  Iterateur_VDF_base(iter), flux_evaluateur(iter.flux_evaluateur), nb_elem(iter.nb_elem),
-  premiere_arete_interne(iter.premiere_arete_interne), derniere_arete_interne(iter.derniere_arete_interne),
-  premiere_arete_mixte(iter.premiere_arete_mixte), derniere_arete_mixte(iter.derniere_arete_mixte),
-  premiere_arete_bord(iter.premiere_arete_bord), derniere_arete_bord(iter.derniere_arete_bord),
+  Iterateur_VDF_base(iter), flux_evaluateur(iter.flux_evaluateur), nb_elem(iter.nb_elem), premiere_arete_interne(iter.premiere_arete_interne), derniere_arete_interne(iter.derniere_arete_interne),
+  premiere_arete_mixte(iter.premiere_arete_mixte), derniere_arete_mixte(iter.derniere_arete_mixte), premiere_arete_bord(iter.premiere_arete_bord), derniere_arete_bord(iter.derniere_arete_bord),
   premiere_arete_coin(iter.premiere_arete_coin), derniere_arete_coin(iter.derniere_arete_coin)
 {
   orientation.ref(iter.orientation);
@@ -32,92 +30,96 @@ inline Iterateur_VDF_Face<_TYPE_>::Iterateur_VDF_Face(const Iterateur_VDF_Face<_
   type_arete_coin.ref(iter.type_arete_coin);
 }
 
-template <class _TYPE_>
+template<class _TYPE_>
 void Iterateur_VDF_Face<_TYPE_>::completer_()
 {
-  nb_elem=la_zone->nb_elem_tot();
+  nb_elem = la_zone->nb_elem_tot();
   orientation.ref(la_zone->orientation());
   Qdm.ref(la_zone->Qdm());
   elem.ref(la_zone->face_voisins());
   elem_faces.ref(la_zone->elem_faces());
   type_arete_bord.ref(la_zcl->type_arete_bord());
   type_arete_coin.ref(la_zcl->type_arete_coin());
-  premiere_arete_interne=la_zone->premiere_arete_interne();
-  derniere_arete_interne=premiere_arete_interne+la_zone->nb_aretes_internes();
-  premiere_arete_mixte=la_zone->premiere_arete_mixte();
-  derniere_arete_mixte=premiere_arete_mixte+la_zone->nb_aretes_mixtes();
-  premiere_arete_bord=la_zone->premiere_arete_bord();
-  derniere_arete_bord=premiere_arete_bord+la_zone->nb_aretes_bord();
-  premiere_arete_coin=la_zone->premiere_arete_coin();
-  derniere_arete_coin=premiere_arete_coin+la_zone->nb_aretes_coin();
+  premiere_arete_interne = la_zone->premiere_arete_interne();
+  derniere_arete_interne = premiere_arete_interne + la_zone->nb_aretes_internes();
+  premiere_arete_mixte = la_zone->premiere_arete_mixte();
+  derniere_arete_mixte = premiere_arete_mixte + la_zone->nb_aretes_mixtes();
+  premiere_arete_bord = la_zone->premiere_arete_bord();
+  derniere_arete_bord = premiere_arete_bord + la_zone->nb_aretes_bord();
+  premiere_arete_coin = la_zone->premiere_arete_coin();
+  derniere_arete_coin = premiere_arete_coin + la_zone->nb_aretes_coin();
 }
 
-template <class _TYPE_>
+template<class _TYPE_>
 inline void Iterateur_VDF_Face<_TYPE_>::multiply_by_rho_if_hydraulique(DoubleTab& tab_flux_bords) const
 {
-  Nom nom_eqn=la_zcl->equation().que_suis_je();
+  Nom nom_eqn = la_zcl->equation().que_suis_je();
   /* Modif B.Mathieu pour front-tracking: masse_volumique() invalide en f.t.*/
-  if (nom_eqn.debute_par("Navier_Stokes") && nom_eqn!="Navier_Stokes_Melange" && nom_eqn!="Navier_Stokes_FT_Disc")
+  if (nom_eqn.debute_par("Navier_Stokes") && nom_eqn != "Navier_Stokes_Melange" && nom_eqn != "Navier_Stokes_FT_Disc")
     {
       const Champ_base& rho = la_zcl->equation().milieu().masse_volumique().valeur();
-      if (sub_type(Champ_Uniforme,rho))
+      if (sub_type(Champ_Uniforme, rho))
         {
-          const double coef = rho(0,0);
+          const double coef = rho(0, 0);
           const int nb_faces_bord = la_zone->nb_faces_bord();
           for (int face = 0; face < nb_faces_bord; face++)
-            for(int k = 0; k < tab_flux_bords.line_size(); k++) tab_flux_bords(face,k) *= coef;
+            for (int k = 0; k < tab_flux_bords.line_size(); k++) tab_flux_bords(face, k) *= coef;
         }
     }
 }
 
-template <class _TYPE_>
+template<class _TYPE_>
 int Iterateur_VDF_Face<_TYPE_>::impr(Sortie& os) const
 {
-  const Zone& ma_zone=la_zone->zone();
-  const int impr_mom=ma_zone.Moments_a_imprimer();
-  const int impr_sum=(ma_zone.Bords_a_imprimer_sum().est_vide() ? 0:1), impr_bord=(ma_zone.Bords_a_imprimer().est_vide() ? 0:1);
+  const Zone& ma_zone = la_zone->zone();
+  const int impr_mom = ma_zone.Moments_a_imprimer();
+  const int impr_sum = (ma_zone.Bords_a_imprimer_sum().est_vide() ? 0 : 1), impr_bord = (ma_zone.Bords_a_imprimer().est_vide() ? 0 : 1);
   const Schema_Temps_base& sch = la_zcl->equation().probleme().schema_temps();
-  DoubleTab& tab_flux_bords=op_base->flux_bords();
+  DoubleTab& tab_flux_bords = op_base->flux_bords();
   DoubleVect bilan(tab_flux_bords.dimension(1));
   const int nb_faces = la_zone->nb_faces_tot();
-  DoubleTab xgr(nb_faces,dimension);
-  xgr=0.;
+  DoubleTab xgr(nb_faces, dimension);
+  xgr = 0.;
   if (impr_mom)
     {
       const DoubleTab& xgrav = la_zone->xv();
-      const ArrOfDouble& c_grav=ma_zone.cg_moments();
-      for (int num_face=0; num_face <nb_faces; num_face++)
-        for (int i=0; i<dimension; i++)
-          xgr(num_face,i)=xgrav(num_face,i)-c_grav[i];
+      const ArrOfDouble& c_grav = ma_zone.cg_moments();
+      for (int num_face = 0; num_face < nb_faces; num_face++)
+        for (int i = 0; i < dimension; i++)
+          xgr(num_face, i) = xgrav(num_face, i) - c_grav[i];
     }
-  int k,face, nb_front_Cl=la_zone->nb_front_Cl();
-  DoubleTrav flux_bords2( 5, nb_front_Cl , tab_flux_bords.dimension(1)) ;
-  flux_bords2=0;
-  for (int num_cl=0; num_cl<nb_front_Cl; num_cl++)
+  int k, face, nb_front_Cl = la_zone->nb_front_Cl();
+  DoubleTrav flux_bords2(5, nb_front_Cl, tab_flux_bords.dimension(1));
+  flux_bords2 = 0;
+  for (int num_cl = 0; num_cl < nb_front_Cl; num_cl++)
     {
       const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
-      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
-      int ndeb = frontiere_dis.num_premiere_face(), nfin = ndeb + frontiere_dis.nb_faces(), periodicite = (type_cl(la_cl)==periodique?1:0);
-      for (face=ndeb; face<nfin; face++)
+      const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
+      int ndeb = frontiere_dis.num_premiere_face(), nfin = ndeb + frontiere_dis.nb_faces(), periodicite = (type_cl(la_cl) == periodique ? 1 : 0);
+      for (face = ndeb; face < nfin; face++)
         {
-          for(k=0; k<tab_flux_bords.dimension(1); k++)
+          for (k = 0; k < tab_flux_bords.dimension(1); k++)
             {
-              flux_bords2(0,num_cl,k)+=tab_flux_bords(face, k);
-              if(periodicite)
+              flux_bords2(0, num_cl, k) += tab_flux_bords(face, k);
+              if (periodicite)
                 {
-                  if( face < (ndeb+frontiere_dis.nb_faces()/2) ) flux_bords2(1,num_cl,k)+=tab_flux_bords(face, k);
-                  else flux_bords2(2,num_cl,k)+=tab_flux_bords(face, k);
+                  if (face < (ndeb + frontiere_dis.nb_faces() / 2))
+                    flux_bords2(1, num_cl, k) += tab_flux_bords(face, k);
+                  else
+                    flux_bords2(2, num_cl, k) += tab_flux_bords(face, k);
                 }
-              if (ma_zone.Bords_a_imprimer_sum().contient(frontiere_dis.le_nom())) flux_bords2(3,num_cl,k)+=tab_flux_bords(face, k);
-            }  /* fin for k */
+              if (ma_zone.Bords_a_imprimer_sum().contient(frontiere_dis.le_nom()))
+                flux_bords2(3, num_cl, k) += tab_flux_bords(face, k);
+            } /* fin for k */
           if (impr_mom)
             {
-              if (dimension==2) flux_bords2(4,num_cl,0)+=tab_flux_bords(face,1)*xgr(face,0)-tab_flux_bords(face,0)*xgr(face,1);
+              if (dimension == 2)
+                flux_bords2(4, num_cl, 0) += tab_flux_bords(face, 1) * xgr(face, 0) - tab_flux_bords(face, 0) * xgr(face, 1);
               else
                 {
-                  flux_bords2(4,num_cl,0)+=tab_flux_bords(face,2)*xgr(face,1)-tab_flux_bords(face,1)*xgr(face,2);
-                  flux_bords2(4,num_cl,1)+=tab_flux_bords(face,0)*xgr(face,2)-tab_flux_bords(face,2)*xgr(face,0);
-                  flux_bords2(4,num_cl,2)+=tab_flux_bords(face,1)*xgr(face,0)-tab_flux_bords(face,0)*xgr(face,1);
+                  flux_bords2(4, num_cl, 0) += tab_flux_bords(face, 2) * xgr(face, 1) - tab_flux_bords(face, 1) * xgr(face, 2);
+                  flux_bords2(4, num_cl, 1) += tab_flux_bords(face, 0) * xgr(face, 2) - tab_flux_bords(face, 2) * xgr(face, 0);
+                  flux_bords2(4, num_cl, 2) += tab_flux_bords(face, 1) * xgr(face, 0) - tab_flux_bords(face, 0) * xgr(face, 1);
                 }
             }
         } /* fin for face */
@@ -126,66 +128,82 @@ int Iterateur_VDF_Face<_TYPE_>::impr(Sortie& os) const
   if (je_suis_maitre())
     {
       //SFichier Flux;
-      if (!Flux.is_open()) op_base->ouvrir_fichier(Flux,"",1);
+      if (!Flux.is_open())
+        op_base->ouvrir_fichier(Flux, "", 1);
       //SFichier Flux_moment;
-      if (!Flux_moment.is_open()) op_base->ouvrir_fichier(Flux_moment,"moment",impr_mom);
+      if (!Flux_moment.is_open())
+        op_base->ouvrir_fichier(Flux_moment, "moment", impr_mom);
       //SFichier Flux_sum;
-      if (!Flux_sum.is_open()) op_base->ouvrir_fichier(Flux_sum,"sum",impr_sum);
+      if (!Flux_sum.is_open())
+        op_base->ouvrir_fichier(Flux_sum, "sum", impr_sum);
       Flux.add_col(sch.temps_courant());
-      if (impr_mom) Flux_moment.add_col(sch.temps_courant());
-      if (impr_sum) Flux_sum.add_col(sch.temps_courant());
-      for (int num_cl=0; num_cl<nb_front_Cl; num_cl++)
+      if (impr_mom)
+        Flux_moment.add_col(sch.temps_courant());
+      if (impr_sum)
+        Flux_sum.add_col(sch.temps_courant());
+      for (int num_cl = 0; num_cl < nb_front_Cl; num_cl++)
         {
           const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
-          int periodicite = (type_cl(la_cl)==periodique?1:0);
-          for(k=0; k<tab_flux_bords.dimension(1); k++)
+          int periodicite = (type_cl(la_cl) == periodique ? 1 : 0);
+          for (k = 0; k < tab_flux_bords.dimension(1); k++)
             {
-              if(periodicite)
+              if (periodicite)
                 {
-                  Flux.add_col(flux_bords2(1,num_cl,k));
-                  Flux.add_col(flux_bords2(2,num_cl,k));
+                  Flux.add_col(flux_bords2(1, num_cl, k));
+                  Flux.add_col(flux_bords2(2, num_cl, k));
                 }
-              else Flux.add_col(flux_bords2(0,num_cl,k));
+              else
+                Flux.add_col(flux_bords2(0, num_cl, k));
 
-              if (impr_sum) Flux_sum.add_col(flux_bords2(3,num_cl,k));
-              bilan(k)+=flux_bords2(0,num_cl,k);
+              if (impr_sum)
+                Flux_sum.add_col(flux_bords2(3, num_cl, k));
+              bilan(k) += flux_bords2(0, num_cl, k);
             }
-          if (dimension==3)
+          if (dimension == 3)
             {
-              for (k=0; k<tab_flux_bords.dimension(1); k++)
-                if (impr_mom) Flux_moment.add_col(flux_bords2(4,num_cl,k));
+              for (k = 0; k < tab_flux_bords.dimension(1); k++)
+                if (impr_mom)
+                  Flux_moment.add_col(flux_bords2(4, num_cl, k));
             }
-          else if (impr_mom) Flux_moment.add_col(flux_bords2(4,num_cl,0));
+          else if (impr_mom)
+            Flux_moment.add_col(flux_bords2(4, num_cl, 0));
         } /* fin for num_cl */
-      for(k=0; k<tab_flux_bords.dimension(1); k++) Flux.add_col(bilan(k));
+      for (k = 0; k < tab_flux_bords.dimension(1); k++)
+        Flux.add_col(bilan(k));
       Flux << finl;
-      if (impr_sum) Flux_sum << finl;
-      if (impr_mom) Flux_moment << finl;
+      if (impr_sum)
+        Flux_sum << finl;
+      if (impr_mom)
+        Flux_moment << finl;
     }
-  const LIST(Nom)& Liste_Bords_a_imprimer = la_zone->zone().Bords_a_imprimer();
+  const LIST (Nom)
+  &Liste_Bords_a_imprimer = la_zone->zone().Bords_a_imprimer();
   if (!Liste_Bords_a_imprimer.est_vide())
     {
       EcrFicPartage Flux_face;
-      op_base->ouvrir_fichier_partage(Flux_face,"",impr_bord);
-      for (int num_cl=0; num_cl<nb_front_Cl; num_cl++)
+      op_base->ouvrir_fichier_partage(Flux_face, "", impr_bord);
+      for (int num_cl = 0; num_cl < nb_front_Cl; num_cl++)
         {
           const Frontiere_dis_base& la_fr = la_zcl->les_conditions_limites(num_cl).frontiere_dis();
           const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
-          const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
           int ndeb = frontiere_dis.num_premiere_face(), nfin = ndeb + frontiere_dis.nb_faces();
           if (ma_zone.Bords_a_imprimer().contient(la_fr.le_nom()))
             {
-              if(je_suis_maitre())
+              if (je_suis_maitre())
                 {
                   Flux_face << "# Flux par face sur " << la_fr.le_nom() << " au temps ";
                   sch.imprimer_temps_courant(Flux_face);
                   Flux_face << " : " << finl;
                 }
-              for (face=ndeb; face<nfin; face++)
+              for (face = ndeb; face < nfin; face++)
                 {
-                  if (dimension == 2) Flux_face << "# Face a x= " << la_zone->xv(face,0) << " y= " << la_zone->xv(face,1) << " : ";
-                  else if (dimension == 3) Flux_face << "# Face a x= " << la_zone->xv(face,0) << " y= " << la_zone->xv(face,1) << " z= " << la_zone->xv(face,2) << " : ";
-                  for(k=0; k<tab_flux_bords.dimension(1); k++) Flux_face << tab_flux_bords(face, k) << " ";
+                  if (dimension == 2)
+                    Flux_face << "# Face a x= " << la_zone->xv(face, 0) << " y= " << la_zone->xv(face, 1) << " : ";
+                  else if (dimension == 3)
+                    Flux_face << "# Face a x= " << la_zone->xv(face, 0) << " y= " << la_zone->xv(face, 1) << " z= " << la_zone->xv(face, 2) << " : ";
+                  for (k = 0; k < tab_flux_bords.dimension(1); k++)
+                    Flux_face << tab_flux_bords(face, k) << " ";
                   Flux_face << finl;
                 }
               Flux_face.syncfile();
