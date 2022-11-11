@@ -300,7 +300,7 @@ void IJK_Striped_Writer::redistribute(const IJK_Field_template<_TYPE_,_TYPE_ARRA
 
 // les n_compo_tot sont inutiles ici !!!
 template<typename _IN_TYPE_, typename _TYPE_, typename _TYPE_ARRAY_>
-void IJK_Striped_Writer::redistribute_load(const TRUSTTab<_IN_TYPE_>& input, IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& output,
+void IJK_Striped_Writer::redistribute_load(const TRUSTArray<_IN_TYPE_>& input, IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& output,
                                            const int nitot, const int njtot, const int nktot, const int nbcompo, const int component)
 {
   const IJK_Splitting& splitting = output.get_splitting();
