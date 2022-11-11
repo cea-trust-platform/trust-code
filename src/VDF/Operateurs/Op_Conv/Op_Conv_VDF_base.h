@@ -56,7 +56,8 @@ public:
 
 protected:
   Iterateur_VDF iter;
-  void associer_champ_convecte();
+  void associer_champ_convecte_elem();
+  void associer_champ_convecte_face();
 };
 
 // Fonction utile pour le calcul du pas de temps de stabilite
