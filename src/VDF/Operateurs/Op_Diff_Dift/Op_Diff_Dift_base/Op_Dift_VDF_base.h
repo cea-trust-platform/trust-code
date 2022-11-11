@@ -37,7 +37,7 @@ public:
   inline void completer_Op_Dift_VDF_base() { Op_Diff_VDF_base::completer(); }
 
 protected:
-  void ajoute_terme_pour_axi_turb(const DoubleTab& , Matrice_Morse* , DoubleTab& ) const;
+  void ajoute_terme_pour_axi_turb(matrices_t , DoubleTab& , const tabs_t& ) const;
 };
 
 #endif /* Op_Dift_VDF_base_included */

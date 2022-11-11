@@ -35,76 +35,79 @@ void Op_Dift_VDF_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, con
   iter->ajouter_blocs(matrices,secmem,semi_impl);
 
   // On ajoute des termes si axi ...
-  const std::string& nom_inco = equation().inconnue().le_nom().getString();
-  Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
-  const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : equation().inconnue().valeurs();
-  Op_Dift_VDF_base::ajoute_terme_pour_axi_turb(inco,mat,secmem);
+  Op_Dift_VDF_base::ajoute_terme_pour_axi_turb(matrices, secmem, semi_impl);
 
   statistiques().end_count(diffusion_counter_);
 }
 
 // Ajout du terme supplementaire en V/(R*R) dans le cas des coordonnees axisymetriques
-void Op_Dift_VDF_base::ajoute_terme_pour_axi_turb(const DoubleTab& inco, Matrice_Morse* mat, DoubleTab& secmem) const
+void Op_Dift_VDF_base::ajoute_terme_pour_axi_turb(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   if (equation().domaine_application() == Motcle("Hydraulique")) // On est dans le cas des equations de Navier_Stokes
-    if (Objet_U::bidim_axi == 1)
-      {
-        const Zone_VDF& zvdf = iter->zone();
-        const DoubleTab& xv = zvdf.xv();
-        const IntVect& ori = zvdf.orientation();
-        const IntTab& face_voisins = zvdf.face_voisins();
-        const DoubleVect& volumes_entrelaces = zvdf.volumes_entrelaces();
-        int face, nb_faces = zvdf.nb_faces(); //, cst;
-        DoubleTrav diffu_tot(zvdf.nb_elem_tot());
-        double db_diffusivite;
+    {
+      const std::string& nom_inco = equation().inconnue().le_nom().getString();
+      Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
+      const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : equation().inconnue().valeurs();
 
-        const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
-        if (sub_type(Mod_turb_hyd_base, modele_turbulence.valeur()))
-          {
-            const Eval_Diff_VDF& eval = dynamic_cast<const Eval_Diff_VDF&>(iter->evaluateur());
-            const Champ_base& ch = eval.get_diffusivite();
-            const DoubleVect& tab_diffusivite = ch.valeurs();
-            int size = diffu_tot.size_totale();
-            if (tab_diffusivite.size() == 1)
-              {
-                db_diffusivite = tab_diffusivite[0];
-                const Eval_Dift_VDF_const& eval_dift = static_cast<const Eval_Dift_VDF_const&>(eval);
-                const Champ_Fonc& ch_diff_turb = eval_dift.diffusivite_turbulente();
-                const DoubleVect& diffusivite_turb = ch_diff_turb.valeurs();
-                for (int i = 0; i < size; i++) diffu_tot[i] = db_diffusivite + diffusivite_turb[i];
-              }
-            else
-              {
-                const Eval_Dift_VDF_var& eval_dift = static_cast<const Eval_Dift_VDF_var&>(eval);
-                const Champ_Fonc& ch_diff_turb = eval_dift.diffusivite_turbulente();
-                const DoubleVect& diffusivite_turb = ch_diff_turb.valeurs();
-                for (int i = 0; i < size; i++) diffu_tot[i] = tab_diffusivite[i] + diffusivite_turb[i];
-              }
-          }
-        else
-          {
-            Cerr << "Method Op_Dift_VDF_base::ajouter_blocs" << finl;
-            Cerr << "The type " << equation().que_suis_je() << " of the equation associated " << finl;
-            Cerr << "with the current operator " << que_suis_je() << "is not coherent." << finl;
-            Cerr << "It must be sub typing of Navier_Stokes_Turbulent" << finl;
-            Process::exit();
-          }
+      if (Objet_U::bidim_axi == 1)
+        {
+          const Zone_VDF& zvdf = iter->zone();
+          const DoubleTab& xv = zvdf.xv();
+          const IntVect& ori = zvdf.orientation();
+          const IntTab& face_voisins = zvdf.face_voisins();
+          const DoubleVect& volumes_entrelaces = zvdf.volumes_entrelaces();
+          int face, nb_faces = zvdf.nb_faces(); //, cst;
+          DoubleTrav diffu_tot(zvdf.nb_elem_tot());
+          double db_diffusivite;
 
-        for (face = 0; face < nb_faces; face++)
-          if (ori(face) == 0)
+          const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
+          if (sub_type(Mod_turb_hyd_base, modele_turbulence.valeur()))
             {
-              const int elem1 = face_voisins(face, 0), elem2 = face_voisins(face, 1);
-
-              if (elem1 == -1) db_diffusivite = diffu_tot(elem2);
-              else if (elem2 == -1) db_diffusivite = diffu_tot(elem1);
-              else db_diffusivite = 0.5 * (diffu_tot(elem2) + diffu_tot(elem1));
-
-              double r = xv(face, 0);
-              if (r >= 1.e-24)
+              const Eval_Diff_VDF& eval = dynamic_cast<const Eval_Diff_VDF&>(iter->evaluateur());
+              const Champ_base& ch = eval.get_diffusivite();
+              const DoubleVect& tab_diffusivite = ch.valeurs();
+              int size = diffu_tot.size_totale();
+              if (tab_diffusivite.size() == 1)
                 {
-                  if (mat) (*mat)(face, face) += db_diffusivite * volumes_entrelaces(face) / (r * r);
-                  secmem(face) -= inco(face) * db_diffusivite * volumes_entrelaces(face) / (r * r);
+                  db_diffusivite = tab_diffusivite[0];
+                  const Eval_Dift_VDF_const& eval_dift = static_cast<const Eval_Dift_VDF_const&>(eval);
+                  const Champ_Fonc& ch_diff_turb = eval_dift.diffusivite_turbulente();
+                  const DoubleVect& diffusivite_turb = ch_diff_turb.valeurs();
+                  for (int i = 0; i < size; i++) diffu_tot[i] = db_diffusivite + diffusivite_turb[i];
+                }
+              else
+                {
+                  const Eval_Dift_VDF_var& eval_dift = static_cast<const Eval_Dift_VDF_var&>(eval);
+                  const Champ_Fonc& ch_diff_turb = eval_dift.diffusivite_turbulente();
+                  const DoubleVect& diffusivite_turb = ch_diff_turb.valeurs();
+                  for (int i = 0; i < size; i++) diffu_tot[i] = tab_diffusivite[i] + diffusivite_turb[i];
                 }
             }
-      }
+          else
+            {
+              Cerr << "Method Op_Dift_VDF_base::ajoute_terme_pour_axi_turb" << finl;
+              Cerr << "The type " << equation().que_suis_je() << " of the equation associated " << finl;
+              Cerr << "with the current operator " << que_suis_je() << "is not coherent." << finl;
+              Cerr << "It must be sub typing of Navier_Stokes_Turbulent" << finl;
+              Process::exit();
+            }
+
+          for (face = 0; face < nb_faces; face++)
+            if (ori(face) == 0)
+              {
+                const int elem1 = face_voisins(face, 0), elem2 = face_voisins(face, 1);
+
+                if (elem1 == -1) db_diffusivite = diffu_tot(elem2);
+                else if (elem2 == -1) db_diffusivite = diffu_tot(elem1);
+                else db_diffusivite = 0.5 * (diffu_tot(elem2) + diffu_tot(elem1));
+
+                double r = xv(face, 0);
+                if (r >= 1.e-24)
+                  {
+                    if (mat) (*mat)(face, face) += db_diffusivite * volumes_entrelaces(face) / (r * r);
+                    secmem(face) -= inco(face) * db_diffusivite * volumes_entrelaces(face) / (r * r);
+                  }
+              }
+        }
+    }
 }

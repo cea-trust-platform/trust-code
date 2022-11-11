@@ -179,16 +179,13 @@ void Op_Diff_VDF_Elem_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
   if (!op_ext_init_) init_op_ext();
 
   // On commence par l'operateur locale; i.e. *this !
-  iter->ajouter_blocs(matrices,secmem,semi_impl);
+  iter->ajouter_blocs(matrices, secmem, semi_impl);
 
   // On ajoute des termes si axi ...
-  const std::string& nom_inco = equation().inconnue().le_nom().getString();
-  Matrice_Morse* mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
-  const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : equation().inconnue()->valeurs();
-  Op_Diff_VDF_base::ajoute_terme_pour_axi(inco,mat,secmem);
+  Op_Diff_VDF_base::ajoute_terme_pour_axi(matrices, secmem, semi_impl);
 
   // On ajoute contribution si monolithique
-  if ((int)op_ext.size() > 1) ajouter_blocs_pour_monolithique(matrices,secmem,semi_impl);
+  if ((int) op_ext.size() > 1) ajouter_blocs_pour_monolithique(matrices, secmem, semi_impl);
 
   statistiques().end_count(diffusion_counter_);
 }
