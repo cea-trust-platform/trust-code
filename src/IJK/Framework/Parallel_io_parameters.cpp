@@ -12,12 +12,7 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-/////////////////////////////////////////////////////////////////////////////
-//
-// File      : Parallel_io_parameters.cpp
-// Directory : $IJK_ROOT/src
-//
-/////////////////////////////////////////////////////////////////////////////
+
 #include <Parallel_io_parameters.h>
 #include <Param.h>
 #include <IJK_Lata_writer.h>

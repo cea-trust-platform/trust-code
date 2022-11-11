@@ -12,15 +12,9 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-/////////////////////////////////////////////////////////////////////////////
-//
-// File      : Parallel_io_parameters.h
-// Directory : $IJK_ROOT/src
-//
-/////////////////////////////////////////////////////////////////////////////
+
 #ifndef Parallel_io_parameters_included
 #define Parallel_io_parameters_included
-#define DebogIJK_included
 #include <Interprete.h>
 
 class Parallel_io_parameters : public Interprete
