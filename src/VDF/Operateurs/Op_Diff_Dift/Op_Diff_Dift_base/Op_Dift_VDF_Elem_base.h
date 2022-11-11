@@ -30,7 +30,7 @@ public:
   double calculer_dt_stab_elem() const;
   double calculer_dt_stab_elem_axi() const;
   double calculer_dt_stab_elem_var_axi() const;
-  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { Op_VDF_Elem::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem); }
+  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { Op_VDF_Elem::modifier_pour_Cl(iter->zone(), iter->zone_Cl(), matrice, secmem); }
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override;
 
 protected:

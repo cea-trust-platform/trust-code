@@ -148,6 +148,6 @@ void Op_Dift_VDF_Elem_base::dimensionner_blocs(matrices_t matrices, const tabs_t
 {
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL, mat2;
-  Op_VDF_Elem::dimensionner(iter.zone(), iter.zone_Cl(), mat2);
+  Op_VDF_Elem::dimensionner(iter->zone(), iter->zone_Cl(), mat2);
   mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
 }

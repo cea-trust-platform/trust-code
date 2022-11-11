@@ -37,7 +37,7 @@ public:
   void associer_pb(const Probleme_base&) override;
   void associer_zones(const Zone_dis&, const Zone_Cl_dis&) override;
   void mettre_a_jour(double temps) override { }
-  inline Eval_Darcy_VEF_Face& eval() { return (Eval_Darcy_VEF_Face&) iter.evaluateur(); }
+  inline Eval_Darcy_VEF_Face& eval() { return (Eval_Darcy_VEF_Face&) iter->evaluateur(); }
 };
 
 #endif /* Source_Darcy_VEF_Face_included */

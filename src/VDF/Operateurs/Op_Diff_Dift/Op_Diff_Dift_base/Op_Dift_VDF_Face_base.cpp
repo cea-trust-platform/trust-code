@@ -22,7 +22,7 @@ Entree& Op_Dift_VDF_Face_base::readOn(Entree& s ) { return s ; }
 
 double Op_Dift_VDF_Face_base::calculer_dt_stab() const
 {
-  const Zone_VDF& zone_VDF = iter.zone();
+  const Zone_VDF& zone_VDF = iter->zone();
   return calculer_dt_stab(zone_VDF);
 }
 
@@ -101,7 +101,7 @@ double Op_Dift_VDF_Face_base::calculer_dt_stab(const Zone_VDF& zone_VDF) const
 
 void Op_Dift_VDF_Face_base::calculer_borne_locale(DoubleVect& borne_visco_turb,double dt,double dt_diff_sur_dt_conv) const
 {
-  const Zone_VDF& zone_VDF = iter.zone();
+  const Zone_VDF& zone_VDF = iter->zone();
   const Champ_base& champ_diffu = diffusivite();
   const DoubleVect& diffu = champ_diffu.valeurs();
   const int diffu_variable = (diffu.size() == 1) ? 0 : 1, nb_elem = zone_VDF.nb_elem();
@@ -125,6 +125,6 @@ void Op_Dift_VDF_Face_base::dimensionner_blocs(matrices_t matrices, const tabs_t
 {
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL, mat2;
-  Op_VDF_Face::dimensionner(iter.zone(), iter.zone_Cl(), mat2);
+  Op_VDF_Face::dimensionner(iter->zone(), iter->zone_Cl(), mat2);
   mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
 }

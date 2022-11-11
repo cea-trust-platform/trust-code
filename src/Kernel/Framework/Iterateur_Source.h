@@ -24,12 +24,6 @@ class Iterateur_Source : public DERIV(Iterateur_Source_base)
   Declare_instanciable(Iterateur_Source);
 public:
   Iterateur_Source(const Iterateur_Source_base& Opb) : DERIV(Iterateur_Source_base)() { DERIV(Iterateur_Source_base)::operator=(Opb); }
-
-  inline void completer_() { valeur().completer_(); }
-  inline void associer(const Source_base& source) { return valeur().associer(source); }
-  inline DoubleTab& ajouter(DoubleTab& resu) const { return valeur().ajouter(resu); }
-  inline DoubleTab& calculer(DoubleTab& resu) const { return valeur().calculer(resu); }
-  inline Evaluateur_Source& evaluateur() { return valeur().evaluateur(); }
 };
 
 #endif /* Iterateur_Source_included */

@@ -13,48 +13,30 @@
 *
 *****************************************************************************/
 
-
 #ifndef Op_Conv_PolyMAC_base_included
 #define Op_Conv_PolyMAC_base_included
 
-#include <Operateur_Conv.h>
-#include <Ref_Zone_Poly_base.h>
 #include <Ref_Zone_Cl_PolyMAC.h>
+#include <Ref_Zone_Poly_base.h>
+#include <Operateur_Conv.h>
 #include <SFichier.h>
 
 /*! @brief class Op_Conv_PolyMAC_base
  *
  *  Classe de base des operateurs de convection VDF
- *
- *
  */
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Conv_PolyMAC_base
-//
-//////////////////////////////////////////////////////////////////////////////
 
 class Op_Conv_PolyMAC_base : public Operateur_Conv_base
 {
-
   Declare_base(Op_Conv_PolyMAC_base);
-
 public:
-
   void completer() override;
   double calculer_dt_stab() const override;
   inline DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu ) const override;
-
-  //void calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const;
-  //virtual Motcle get_localisation_pour_post(const Nom& option) const;
   int impr(Sortie& os) const override;
   void associer_zone_cl_dis(const Zone_Cl_dis_base&) override;
   void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& ) override;
-
   void associer_vitesse(const Champ_base& ) override;
-
-
 
 protected:
   REF(Zone_Poly_base) la_zone_poly_;
@@ -73,8 +55,4 @@ inline DoubleTab& Op_Conv_PolyMAC_base::calculer(const DoubleTab& inco, DoubleTa
   return ajouter(inco,resu);
 }
 
-
-
-
-
-#endif
+#endif /* Op_Conv_PolyMAC_base_included */

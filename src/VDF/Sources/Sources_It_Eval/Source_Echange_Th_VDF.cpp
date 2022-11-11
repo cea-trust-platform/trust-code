@@ -48,7 +48,7 @@ void Source_Echange_Th_VDF::associer_zones(const Zone_dis& zone_dis, const Zone_
 void Source_Echange_Th_VDF::associer_pb(const Probleme_base& pb)
 {
   REF(Equation_base) eqn;
-  Eval_Echange_Himp_VDF_Elem& eval = static_cast<Eval_Echange_Himp_VDF_Elem&> (iter.evaluateur());
+  Eval_Echange_Himp_VDF_Elem& eval = static_cast<Eval_Echange_Himp_VDF_Elem&> (iter->evaluateur());
   bool eq_OK = false;
 
   for (int i = 0; i < pb_voisin->nombre_d_equations(); i++)

@@ -27,7 +27,7 @@ Entree& Source_Neutronique_VDF::readOn(Entree& s) { return Source_Neutronique::r
 void Source_Neutronique_VDF::completer()
 {
   Source_Neutronique::completer();
-  iter.completer_();
+  iter->completer_();
 }
 
 double Source_Neutronique_VDF::calculer_Tmoyenne()
