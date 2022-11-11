@@ -13,30 +13,18 @@
  *
  *****************************************************************************/
 
-#ifndef SSE_Kernels_included
-#define SSE_Kernels_included
+#ifndef Test_SSE_Kernels_included
+#define Test_SSE_Kernels_included
 
 #include <IJK_Field.h>
+#include <Interprete.h>
 
-namespace SSE_Kernels
+class Test_SSE_Kernels : public Interprete
 {
-constexpr int GENERIC_STRIDE = -1;
+  Declare_instanciable(Test_SSE_Kernels);
+public:
+  Entree& interpreter(Entree& is) override;
 
-template <typename _TYPE_, typename _TYPE_ARRAY_>
-void Multipass_Jacobigeneric_template(IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>& x,
-                                      IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>& residue,
-                                      const IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>& coeffs,
-                                      const IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>& secmem,
-                                      const int npass,
-                                      const bool last_pass_is_residue,
-                                      const _TYPE_ relax_coefficient);
-template <typename _TYPE_, typename _TYPE_ARRAY_>
-void reference_kernel_template(const IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>& tab,
-                               const IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>& coeffs,
-                               const IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>& secmem,
-                               IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>& resu,
-                               const _TYPE_ relax, const bool residue);
-}
+};
 
-#include <SSE_kernels.tpp>
 #endif

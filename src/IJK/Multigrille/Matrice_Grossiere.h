@@ -12,12 +12,7 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-/////////////////////////////////////////////////////////////////////////////
-//
-// File      : Matrice_Grossiere.h
-// Directory : $IJK_ROOT/src/IJK/solveur_mg
-//
-/////////////////////////////////////////////////////////////////////////////
+
 #ifndef Matrice_Grossiere_included
 #define Matrice_Grossiere_included
 
@@ -32,8 +27,9 @@
 class Matrice_Grossiere
 {
 public:
-  void build_matrix(const IJK_Field_float& coeffs_face);
-  void build_matrix(const IJK_Field_double& coeffs_face);
+
+  template <typename _TYPE_, typename _TYPE_ARRAY_>
+  void build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& coeffs_face);
 
   const int& renum(int i, int j, int k) const
   {
@@ -50,9 +46,9 @@ public:
   }
 
 protected:
-  inline void ajoute_coeff(int i, int j, int k,
-                           int i_voisin, int j_voisin, int k_voisin,
-                           const double coeff);
+  void ajoute_coeff(int i, int j, int k,
+                    int i_voisin, int j_voisin, int k_voisin,
+                    const double coeff);
 
   int& renum(int i, int j, int k)
   {
@@ -78,4 +74,6 @@ protected:
   IntLists voisins_virt_;
   DoubleLists coeffs_virt_;
 };
+
+#include <Matrice_Grossiere.tpp>
 #endif
