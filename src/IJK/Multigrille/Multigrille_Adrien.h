@@ -28,8 +28,9 @@
 #include <Multigrille_base.h>
 #include <Equation_base.h>
 #include <TRUSTArray.h>
-#include <Grid_Level_Data.h>
+#include <Grid_Level_Data_template.h>
 #include <Coarsen_Operator_base.h>
+
 class IJK_Splitting;
 class Multigrille_Adrien : public Multigrille_base
 {
