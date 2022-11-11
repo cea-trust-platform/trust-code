@@ -40,7 +40,7 @@ public:
 
   inline Evaluateur_Source& evaluateur() override
   {
-    Evaluateur_Source& eval = (Evaluateur_Source&) evaluateur_source_elem;
+    Evaluateur_Source& eval = static_cast<Evaluateur_Source&> (evaluateur_source_elem);
     return eval;
   }
 

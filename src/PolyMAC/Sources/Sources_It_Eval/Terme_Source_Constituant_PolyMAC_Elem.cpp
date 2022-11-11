@@ -38,7 +38,7 @@ void Terme_Source_Constituant_PolyMAC_Elem::associer_zones(const Zone_dis& zone_
   const Zone_PolyMAC& zvdf = ref_cast(Zone_PolyMAC, zone_dis.valeur());
   const Zone_Cl_PolyMAC& zclvdf = ref_cast(Zone_Cl_PolyMAC, zone_cl_dis.valeur());
   iter->associer_zones(zvdf, zclvdf);
-  Eval_Source_C_PolyMAC_Elem& eval_puis = (Eval_Source_C_PolyMAC_Elem&) iter->evaluateur();
+  Eval_Source_C_PolyMAC_Elem& eval_puis = dynamic_cast<Eval_Source_C_PolyMAC_Elem&> (iter->evaluateur());
   eval_puis.associer_zones(zvdf, zclvdf);
 }
 
@@ -46,6 +46,6 @@ void Terme_Source_Constituant_PolyMAC_Elem::associer_pb(const Probleme_base& pb)
 {
   const Equation_base& eqn = pb.equation(0);
   eqn.discretisation().nommer_completer_champ_physique(eqn.zone_dis(), la_source_constituant.le_nom(), "", la_source_constituant, pb);
-  Eval_Source_C_PolyMAC_Elem& eval_puis = (Eval_Source_C_PolyMAC_Elem&) iter->evaluateur();
+  Eval_Source_C_PolyMAC_Elem& eval_puis = dynamic_cast<Eval_Source_C_PolyMAC_Elem&> (iter->evaluateur());
   eval_puis.associer_champs(la_source_constituant);
 }
