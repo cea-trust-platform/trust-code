@@ -23,10 +23,13 @@
 #include <TRUSTVect.h>
 #include <IJK_Splitting.h>
 
-// .Description : This class describes a scalar field in an ijk box without any parallel information.
-// The scalar field can be accessed by
-//  - field(i,j,k) with "-ghost() <= i < ni() + ghost()", same for j and k
-//  - field.data()[linear_index(i,j,k)]
+/*! @brief : This class describes a scalar field in an ijk box without any parallel information.
+ *
+ * The scalar field can be accessed by
+ *   - field(i,j,k) with "-ghost() <= i < ni() + ghost()", same for j and k
+ *   - field.data()[linear_index(i,j,k)]
+ *
+ */
 template<typename _TYPE_, typename _TYPE_ARRAY_>
 class IJK_Field_local_template : public Objet_U
 {

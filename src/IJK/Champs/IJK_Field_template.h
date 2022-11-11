@@ -24,9 +24,12 @@
 #include <IJK_Splitting.h>
 #include <IJK_Field_local_template.h>
 
-// .Description : This class is an IJK_Field_local with parallel informations.
-// Each processor has a sub_box of the global box, and echange_espace_virtuel(n) exchanges n layers of ghost cells,
-// echange_espace_virtuel handles periodicity by copying the first layer into the ghost layer on the opposite side.
+/*! @brief : This class is an IJK_Field_local with parallel informations.
+ *
+ * Each processor has a sub_box of the global box, and echange_espace_virtuel(n) exchanges n layers of ghost cells,
+ *  echange_espace_virtuel handles periodicity by copying the first layer into the ghost layer on the opposite side.
+ *
+ */
 template<typename _TYPE_, typename _TYPE_ARRAY_>
 class IJK_Field_template : public IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>
 {

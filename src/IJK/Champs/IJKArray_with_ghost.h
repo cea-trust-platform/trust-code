@@ -24,7 +24,11 @@
 #include <IJK_Splitting.h>
 #include <IJK_communications.h>
 
-// .Description. This is an array with [] operator. Allocate array with resize(n, ghost). tab[i] is valid for "-ghost <= i < n + ghost"
+/*! @brief This is an array with [] operator.
+ *
+ * Allocate array with resize(n, ghost). tab[i] is valid for "-ghost <= i < n + ghost"
+ *
+ */
 template<typename _TYPE_, typename _TYPE_ARRAY_>
 class IJKArray_with_ghost : public Objet_U
 {

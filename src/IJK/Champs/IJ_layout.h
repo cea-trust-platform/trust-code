@@ -17,9 +17,12 @@
 #define IJ_layout_included
 
 
-// .Description : This class describes an IJ plane of an IJK_Field_local.
-//  It just encapsulates the offset computation: j * j_stride_ + i
-//  with bound checking in debug... This class is usefull to safely optimize the code !
+/*! @brief : This class describes an IJ plane of an IJK_Field_local.
+ *
+ * It just encapsulates the offset computation: j * j_stride_ + i
+ *   with bound checking in debug... This class is usefull to safely optimize the code !
+ *
+ */
 class IJ_layout
 {
 public:
