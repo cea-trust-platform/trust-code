@@ -18,6 +18,7 @@
 
 #include <Eval_Conv_VDF_Elem_leaves.h> // pour les compilos (templates :-) )
 #include <Eval_Conv_VDF_Face_leaves.h>
+#include <Pb_Multiphase.h>
 #include <Iterateur_VDF_Face.h>
 #include <Op_Conv_VDF.h>
 
@@ -39,13 +40,17 @@ public:
   Op_Conv_Amont_VDF_Face();
   void check_multiphase_compatibility() const override { }
   void preparer_calcul() override { Op_Conv_VDF_base::associer_champ_convecte_face(); }
-  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { modifier_pour_Cl_face(matrice,secmem); }
+  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { if (!sub_type(Pb_Multiphase,equation().probleme())) modifier_pour_Cl_face(matrice,secmem); } // TODO : FIXME
   inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd,const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_CONV_FACE,Eval_Amont_VDF_Face>(zd,zcd,ch); }
   inline void associer_vitesse(const Champ_base& ch_vit) override { associer_vitesse_impl<Eval_Amont_VDF_Face>(ch_vit); }
   inline Champ_base& vitesse() override { return vitesse_impl<Eval_Amont_VDF_Face>(); }
   inline const Champ_base& vitesse() const override { return vitesse_impl<Eval_Amont_VDF_Face>(); }
-  inline void dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const override { dimensionner_blocs_impl<Type_Operateur::Op_CONV_FACE>(mats); }
   void set_incompressible(const int flag) override { incompressible_ = flag; }
+  inline void dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const override // TODO : FIXME
+  {
+    if (sub_type(Pb_Multiphase,equation().probleme())) Op_Conv_VDF_base::dimensionner_blocs_face(mats, semi_impl);
+    else dimensionner_blocs_impl<Type_Operateur::Op_CONV_FACE>(mats);
+  }
 };
 
 /*! @brief class Op_Conv_Centre_VDF_Face Cette classe represente l'operateur de convection associe a une equation de la quantite de mouvement.

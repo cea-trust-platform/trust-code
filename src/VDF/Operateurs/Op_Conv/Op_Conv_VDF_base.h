@@ -44,8 +44,9 @@ public:
   inline Iterateur_VDF& get_iter() { return iter; }
 
   inline int has_interface_blocs() const override { return 1; }
-  void ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const override;
-  void dimensionner_blocs_elem(matrices_t mats, const tabs_t& semi_impl) const;
+  void ajouter_blocs(matrices_t , DoubleTab& , const tabs_t& ) const override;
+  void dimensionner_blocs_elem(matrices_t , const tabs_t& ) const;
+  void dimensionner_blocs_face(matrices_t , const tabs_t& ) const;
 
   void associer_champ_temp(const Champ_Inc&, bool) const override;
   void contribuer_au_second_membre(DoubleTab& resu) const override

@@ -15,6 +15,7 @@
 
 #include <Modifier_pour_fluide_dilatable.h>
 #include <Discretisation_base.h>
+#include <Masse_ajoutee_base.h>
 #include <Op_Conv_VDF_base.h>
 #include <Champ_Face_VDF.h>
 #include <Pb_Multiphase.h>
@@ -111,6 +112,39 @@ void Op_Conv_VDF_base::dimensionner_blocs_elem(matrices_t mats, const tabs_t& se
         Matrix_tools::allocate_morse_matrix(nl, nc, stencil, mat);
         i_m.second->nb_colonnes() ? *i_m.second += mat : *i_m.second = mat;
       }
+}
+
+void Op_Conv_VDF_base::dimensionner_blocs_face(matrices_t matrices, const tabs_t& semi_impl) const
+{
+  const Zone_VDF& zone = iter->zone();
+  const Champ_Face_VDF& ch = ref_cast(Champ_Face_VDF, equation().inconnue().valeur());
+  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ch.fcl();
+  const DoubleTab& inco = ch.valeurs();
+
+  const std::string& nom_inco = ch.le_nom().getString();
+  if (!matrices.count(nom_inco) || semi_impl.count(nom_inco)) return; //pas de bloc diagonal ou semi-implicite -> rien a faire
+  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
+  const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee").valeur()) : NULL;
+  Matrice_Morse& mat = *matrices.at(nom_inco), mat2;
+
+  int e, eb, fb,  N = equation().inconnue().valeurs().line_size();
+
+  IntTab stencil(0, 2);
+  stencil.set_smart_resize(1);
+
+  /* agit uniquement aux elements; diagonale omise */
+  for (int f = 0; f < zone.nb_faces_tot(); f++)
+    if (f_e(f, 0) >= 0 && (f_e(f, 1) >= 0 || fcl(f, 0) == 3))
+      for (int i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+        for (int j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++)
+          for (int k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++)
+            if (fb < zone.nb_faces() && fcl(fb, 0) < 2)
+              for (int n = 0; n < N; n++)
+                for (int m = (corr ? 0 : n); m < (corr ? N : n + 1); m++) stencil.append_line(N * fb + n, N * f + m);
+
+  tableau_trier_retirer_doublons(stencil);
+  Matrix_tools::allocate_morse_matrix(inco.size_totale(), inco.size_totale(), stencil, mat2);
+  mat.nb_colonnes() ? mat += mat2 : mat = mat2;
 }
 
 
