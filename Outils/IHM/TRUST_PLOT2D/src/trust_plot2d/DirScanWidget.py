@@ -352,7 +352,7 @@ class DirScanWidget(QDockWidget):
             e = self._displayMapRev[str(entry.text())]
             fileObj, varName = self._entryMap[e]
             x, y = fileObj.getValues(varName)
-            isLogY = fileObj.isLogY()
+            isLogY = fileObj._isLogY()
             xLabel = fileObj.getXLabel()
             # Create curve
             crvID, psID = curveplot.AddCurve(x, y, curve_label=str(entry.text()), x_label=xLabel , append=append)
@@ -376,7 +376,7 @@ class DirScanWidget(QDockWidget):
             curveplot.LockRepaint()
             psID = curveplot.AddPlotSet(varName)
             curveplot.SetCurrentPlotSet(psID)
-            curveplot.SetYLog(psID, log=fileObj.isLogY())
+            curveplot.SetYLog(psID, log=fileObj._isLogY())
             curveplot.SetXLabel("Time", psID)
             curveplot.SetLegendVisible(psID, False)
             # Invert entries:
