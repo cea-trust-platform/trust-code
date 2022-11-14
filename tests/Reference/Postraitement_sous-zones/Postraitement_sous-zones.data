@@ -102,32 +102,40 @@ Read pb
             Arriere	paroi_temperature_imposee Champ_Front_Uniforme 1 30.
         }
     }
-    Post_processing
-    {
-        fields dt_post 5.
+
+
+        post_processings
         {
-            temperature elem
-            temperature som
+            on_domaine
+            {
+                fichier Postraitement_sous-zones
+                fields dt_post 5.
+                {
+                    temperature elem
+                    temperature som
+                }
+            }
+            sous_zone_1
+            {
+                fichier Postraitement_sous-zones
+                sous_zone SSZ
+                fields dt_post 5.
+                {
+                    temperature elem
+                    temperature som
+                }
+            }
+            sous_zone_2
+            {
+                fichier Postraitement_sous-zones
+                sous_zone SSZ2
+                fields dt_post 5.
+                {
+                    temperature elem
+                    temperature som
+                }
+            }
         }
-    }
-    Post_processing
-    {
-        sous_zone SSZ
-        fields dt_post 5.
-        {
-            temperature elem
-            temperature som
-        }
-    }
-    Post_processing
-    {
-        sous_zone SSZ2
-        fields dt_post 5.
-        {
-            temperature elem
-            temperature som
-        }
-    }
 }
 Solve pb
 End
