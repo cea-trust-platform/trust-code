@@ -260,6 +260,8 @@ void Probleme_base::warn_old_syntax()
       Cerr << "*** WARNING *** STARTING FROM TRUST-v1.9.3 : THE MEDIUM SHOULD BE READ INSIDE THE PROBLEM AND NOT VIA ASSOSCIATION ... " << finl;
       Cerr << "*** WARNING *** THIS OLD SYNTAX WILL NOT BE SUPPORTED ANYMORE IN FUTURE VERSIONS... " << finl;
       Cerr << "*** WARNING *** HAVE A LOOK TO ANY TRUST TEST CASE TO SEE HOW IT SHOULD BE DONE ($TRUST_ROOT/tests/)  ... " << finl;
+      Cerr << "***   TIP   *** You can find, in the RELEASE_NOTES of your code, command to help you converting" << finl;
+      Cerr << "                your datafile "<< nom_du_cas() << ".data to new syntax" << finl;
       Cerr << finl;
       Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
       Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
