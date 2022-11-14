@@ -141,7 +141,8 @@ if __name__ == "__main__":
     }
     meshes = [100, 200, 400, 800]
     for n in meshes:
-        os.system("mkdir n{}".format(n))
+        for d in ["VDF", "PolyMAC_P0"]:
+            os.system(f"mkdir -p n{n}/{d}")
 
     columns = ["$$\gamma$$", "$$p_\infty$$", "$$\rho_L$$", "$$u_L$$", "$$p_L$$", "$$\rho_R$$", "$$u_R$$", "$$p_R$$","$$x_d$$"]
     tab = plot.Table(columns)
@@ -161,7 +162,7 @@ if __name__ == "__main__":
         filedata = filedata.replace(
             "__Tr__", str((TCs[name]["WR"][2] + TCs[name]["pinf"]) / (TCs[name]["WR"][0] * 8.31446261815324) -273.15 )
         )
-        
+
         tab.addLigne( [[TCs[name]["gamma"], TCs[name]["pinf"]] + TCs[name]["WL"] + TCs[name]["WR"] + [TCs[name]["x"]]], name)
 
         for n in ["tmax", "gamma", "pinf", "x"]:
@@ -175,5 +176,6 @@ if __name__ == "__main__":
             # dt = 0.1 * 1.0 / n / c
             filedata_ = filedata.replace("__n__", str(n + 1))
             filedata_ = filedata_.replace("__dt__", str(dt))
-            with open("n{}/{}.data".format(n, name), "w") as file:
-                file.write(filedata_)
+            for d, d_str in [("VDF", "VDF dis Option_VDF { p_imposee_aux_faces oui traitement_coins oui }"), ("PolyMAC_P0", "PolyMAC_P0 dis Option_PolyMAC_P0 {  }")]:
+                with open(f"n{n}/{d}/{name}.data", "w") as file:
+                    file.write(filedata_.replace("__dis__", d_str))
