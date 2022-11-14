@@ -174,7 +174,7 @@ class Graph:
     
     """
 
-    def __init__(self, title=None, subtitle=None, nX=1, nY=1, size=[12, 10]):
+    def __init__(self, title=None, subtitle=None, nX=1, nY=1, size=[12, 10], label_size=14, title_size=24, legend_size=14):
         """
 
         Constructor of the class Graph.
@@ -211,6 +211,9 @@ class Graph:
         else:
             self.subtitle=subtitle
         self.flag = False
+        self.label_font_size = label_size
+        self.title_font_size = title_size
+        self.legend_font_size = legend_size
         self._reset()
 
     def coordonee(self):
@@ -240,14 +243,14 @@ class Graph:
         Methode to reinitialize the plot.
         
         """
-        plt.rc("xtick", labelsize=14)  # Font size
-        plt.rc("ytick", labelsize=14)
-        #plt.rcParams.update({"font.size": 14})
+        plt.rc("xtick", labelsize=self.label_font_size)  # Font size
+        plt.rc("ytick", labelsize=self.label_font_size)
+        plt.rcParams.update({"font.size": self.legend_font_size})
         self.fig, self.axs = plt.subplots(self.nX, self.nY, figsize=(self.size[0] * self.nY, self.size[1] * self.nX))
         if self.nX * self.nY != 1:
             for ax in self.axs.reshape(-1):
                 ax.axis("off")
-            self.fig.suptitle(self.title, fontsize=24)
+            self.fig.suptitle(self.title, fontsize=self.title_font_size)
         self.addPlot(self.coordonee(), self.subtitle)
 
     def add(self, x, y, marker="-", label=None, title=None, xIndice=None, yIndice=None, **kwargs):
