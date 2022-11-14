@@ -96,15 +96,16 @@ void Op_Conv_VDF_base::dimensionner_blocs_elem(matrices_t mats, const tabs_t& se
 
             for (f = 0; f < zone.nb_faces_tot(); f++)
               if (fcl_v(f, 0) < 2)
-                for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-                  if (e < zone.nb_elem_tot())
+                for (i = 0; i < 2; i++)
+                  if ((e = f_e(f, i)) >= 0 && e < zone.nb_elem_tot())
                     for (n = 0; n < N; n++) stencil.append_line(N * e + n, M * f + n * (M > 1));
           }
         else for (f = 0; f < zone.nb_faces_tot(); f++)
-            for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-              if (e < zone.nb_elem_tot()) /* inconnues scalaires */
-                for (j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++)
-                  for (n = 0, m = 0; n < N; n++, m += (M > 1)) stencil.append_line(N * e + n, M * eb + m);
+            for (i = 0; i < 2; i++)
+              if ((e = f_e(f, i)) >= 0 && e < zone.nb_elem_tot()) /* inconnues scalaires */
+                for (j = 0; j < 2; j++)
+                  if ((eb = f_e(f, j)) >= 0)
+                    for (n = 0, m = 0; n < N; n++, m += (M > 1)) stencil.append_line(N * e + n, M * eb + m);
 
         tableau_trier_retirer_doublons(stencil);
         const int nl = equation().inconnue().valeurs().size_totale(),
@@ -135,12 +136,15 @@ void Op_Conv_VDF_base::dimensionner_blocs_face(matrices_t matrices, const tabs_t
   /* agit uniquement aux elements; diagonale omise */
   for (int f = 0; f < zone.nb_faces_tot(); f++)
     if (f_e(f, 0) >= 0 && (f_e(f, 1) >= 0 || fcl(f, 0) == 3))
-      for (int i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-        for (int j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++)
-          for (int k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++)
-            if (fb < zone.nb_faces() && fcl(fb, 0) < 2)
-              for (int n = 0; n < N; n++)
-                for (int m = (corr ? 0 : n); m < (corr ? N : n + 1); m++) stencil.append_line(N * fb + n, N * f + m);
+      for (int i = 0; i < 2; i++)
+        if ((e = f_e(f, i)) >= 0)
+          for (int j = 0; j < 2; j++)
+            if ((eb = f_e(f, j)) >= 0)
+              for (int k = 0; k < e_f.dimension(1); k++)
+                if ((fb = e_f(e, k)) >= 0)
+                  if (fb < zone.nb_faces() && fcl(fb, 0) < 2)
+                    for (int n = 0; n < N; n++)
+                      for (int m = (corr ? 0 : n); m < (corr ? N : n + 1); m++) stencil.append_line(N * fb + n, N * f + m);
 
   tableau_trier_retirer_doublons(stencil);
   Matrix_tools::allocate_morse_matrix(inco.size_totale(), inco.size_totale(), stencil, mat2);
