@@ -9,8 +9,6 @@
  Aretes Aretes Aretes.h
  Array_base Array_base Array_base.h
  ArrOfBit ArrOfBit ArrOfBit.h
- ArrOfDouble_with_ghost ArrOfDouble_with_ghost IJK_Field.h
- ArrOfFloat_with_ghost ArrOfFloat_with_ghost IJK_Field.h
  Asin Asin StdFunction.h
  Assembleur Assembleur Assembleur.h
  Assembleur_base Assembleur_base Assembleur_base.h
@@ -433,8 +431,6 @@
  grad_U_Champ_Face grad_U_Champ_Face grad_U_Champ_Face.h
  grad_U_Champ_P1NC grad_U_Champ_P1NC grad_U_Champ_P1NC.h
  Gravite_VDF_Face Terme_Gravite_VDF_Face Terme_Gravite_VDF_Face.h
- Grid_Level_Data_double Grid_Level_Data_double Grid_Level_Data.h
- Grid_Level_Data_float Grid_Level_Data_float Grid_Level_Data.h
  Hexaedre Hexaedre Hexaedre.h
  Hexaedre_axi Hexaedre_axi Hexaedre_axi.h
  Hexaedre_VEF Hexaedre_VEF Hexaedre_VEF.h
@@ -444,12 +440,7 @@
  h_conv_Champ_P1NC h_conv_Champ_P1NC h_conv_Champ_P1NC.h
  ICE ICE SETS.h
  IJK_discretization IJK_discretization IJK_discretization.h
- IJK_Field_double IJK_Field_double IJK_Field.h
- IJK_Field_float IJK_Field_float IJK_Field.h
- IJK_Field_local_double IJK_Field_local_double IJK_Field.h
- IJK_Field_local_float IJK_Field_local_float IJK_Field.h
- IJK_Field_local_True_int IJK_Field_local_True_int IJK_Field.h
- IJK_Field_True_int IJK_Field_True_int IJK_Field.h
+ IJK_Field_tools IJK_Field_tools IJK_Field_tools.h
  IJK_Grid_Geometry IJK_Grid_Geometry IJK_Grid_Geometry.h
  IJK_Lata_Swap_JK IJK_Lata_Swap_JK IJK_Lata_Swap_JK.h
  IJK_Splitting IJK_Splitting IJK_Splitting.h
@@ -492,7 +483,6 @@
  Joint Joint Joint.h
  Joints Joints Joints.h
  K_constant ModPerm_Cte Source_Permeabilite_VDF.h
- K_Layer_Cells_Lists K_Layer_Cells_Lists IJK_Field.h
  Lata_To_MED LataToMED LataToMED.h
  lata_to_other latatoother LataToMED.h
  Leap_frog Leap_frog Leap_frog.h
@@ -1119,7 +1109,7 @@
  Testeur Testeur Testeur.h
  Testeur_MEDCoupling Testeur_MEDCoupling Testeur_MEDCoupling.h
  Test_solveur Test_solveur Solv_Optimal.h
- Test_SSE_Kernels Test_SSE_Kernels SSE_kernels.h
+ Test_SSE_Kernels Test_SSE_Kernels Test_SSE_Kernels.h
  Tetraedre Tetraedre Tetraedre.h
  Tetraedriser Tetraedriser Tetraedriser.h
  Tetraedriser_homogene Tetraedriser_homogene Tetraedriser_homogene.h
