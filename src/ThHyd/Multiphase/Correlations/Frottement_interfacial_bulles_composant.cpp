@@ -13,28 +13,44 @@
 *
 *****************************************************************************/
 
-#ifndef Portance_interfaciale_Tomiyama_included
-#define Portance_interfaciale_Tomiyama_included
-#include <Portance_interfaciale_base.h>
+#include <Frottement_interfacial_bulles_composant.h>
+#include <Pb_Multiphase.h>
+#include <TRUSTTab.h>
 
-/*! @brief classe Portance_interfaciale_Tomiyama coefficients de portance interfaciale d'un ecoulement a bulles deformables
- *
- *
- *
- */
+Implemente_instanciable(Frottement_interfacial_bulles_composant, "Frottement_interfacial_bulles_composant|Frottement_interfacial_bulles", Frottement_interfacial_base);
 
-class Portance_interfaciale_Tomiyama : public Portance_interfaciale_base
+Sortie& Frottement_interfacial_bulles_composant::printOn(Sortie& os) const
 {
-  Declare_instanciable(Portance_interfaciale_Tomiyama);
-public:
-  void coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
-                   const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma,
-                   const DoubleTab& k_turb, const DoubleTab& d_bulles,
-                   const DoubleTab& ndv, int e, DoubleTab& coeff) const override;
-protected:
-  double g_=9.81;
-  int n_l = -1; //phase liquide
+  return os;
+}
 
-};
+Entree& Frottement_interfacial_bulles_composant::readOn(Entree& is)
+{
+  Param param(que_suis_je());
+  param.ajouter("coeff_derive", &C_d_, Param::REQUIRED);
+  param.ajouter("rayon_bulle", &r_bulle_, Param::REQUIRED);
+  param.lire_avec_accolades_depuis(is);
 
-#endif
+  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, pb_.valeur()) ? &ref_cast(Pb_Multiphase, pb_.valeur()) : NULL;
+
+  if (!pbm || pbm->nb_phases() == 1) Process::exit(que_suis_je() + " : not needed for single-phase flow!");
+
+  return is;
+}
+
+void Frottement_interfacial_bulles_composant::coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
+                                                          const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma, double Dh,
+                                                          const DoubleTab& ndv, const DoubleTab& d_bulles, DoubleTab& coeff) const
+{
+  int k,l,N = ndv.dimension(0);
+
+  coeff = 0.;
+
+// case r_bulle < 0 <=> sedimentation test case, robust
+  double rho_m = 0;
+  for (k = 0; k < N; k++) rho_m += alpha(k) * rho(k);
+  for (k = 0; k < N; k++)
+    for (l = 0; l < N; l++)
+      if (l != k)
+        if (r_bulle_>0) coeff(k, l, 0) = (coeff(k, l, 1) = 1. / 8 * C_d_ * 3 * alpha(k) * alpha(l) / r_bulle_ * rho_m) * ndv(k, l);
+}

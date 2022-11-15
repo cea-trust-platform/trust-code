@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,28 +13,28 @@
 *
 *****************************************************************************/
 
-#ifndef Portance_interfaciale_Tomiyama_included
-#define Portance_interfaciale_Tomiyama_included
-#include <Portance_interfaciale_base.h>
+#ifndef Frottement_interfacial_bulles_composant_included
+#define Frottement_interfacial_bulles_composant_included
+#include <Frottement_interfacial_base.h>
 
-/*! @brief classe Portance_interfaciale_Tomiyama coefficients de portance interfaciale d'un ecoulement a bulles deformables
+/*! @brief classe Frottement_interfacial_bulles coefficients de frottement interfacial d'un ecoulement a bulles
  *
- *
+ *       parametres (a lire dans les Op_FI_*_bulles) :
+ *        - C_d_     -> coefficient de friction
+ *        - r_bulle_ -> rayon de la bulle
+ *        - symetrical_force_ -> 1 si la force est symmetrique (pas de diff liq/vap), 0 si non (doit chercher phase vap)
  *
  */
 
-class Portance_interfaciale_Tomiyama : public Portance_interfaciale_base
+class Frottement_interfacial_bulles_composant : public Frottement_interfacial_base
 {
-  Declare_instanciable(Portance_interfaciale_Tomiyama);
+  Declare_instanciable(Frottement_interfacial_bulles_composant);
 public:
   void coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
-                   const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma,
-                   const DoubleTab& k_turb, const DoubleTab& d_bulles,
-                   const DoubleTab& ndv, int e, DoubleTab& coeff) const override;
+                   const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma, double Dh,
+                   const DoubleTab& ndv, const DoubleTab& d_bulles, DoubleTab& coeff) const override;
 protected:
-  double g_=9.81;
-  int n_l = -1; //phase liquide
-
+  double r_bulle_ = -100., C_d_= -100.;
 };
 
 #endif

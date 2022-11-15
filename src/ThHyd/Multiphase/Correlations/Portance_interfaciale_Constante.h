@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,28 +13,27 @@
 *
 *****************************************************************************/
 
-#ifndef Frottement_interfacial_bulles_included
-#define Frottement_interfacial_bulles_included
-#include <Frottement_interfacial_base.h>
+#ifndef Portance_interfaciale_Constante_included
+#define Portance_interfaciale_Constante_included
+#include <Portance_interfaciale_base.h>
 
-/*! @brief classe Frottement_interfacial_bulles coefficients de frottement interfacial d'un ecoulement a bulles
+/*! @brief classe Portance_interfaciale_Constante coefficients de portance interfaciale d'un ecoulement a bulles pour validation analytique
  *
- *       parametres (a lire dans les Op_FI_*_bulles) :
- *        - r_bulle_ -> rayon de bulle
- *        - C_d_     -> coefficient de friction
  *
  *
  */
 
-class Frottement_interfacial_bulles : public Frottement_interfacial_base
+class Portance_interfaciale_Constante : public Portance_interfaciale_base
 {
-  Declare_instanciable(Frottement_interfacial_bulles);
+  Declare_instanciable(Portance_interfaciale_Constante);
 public:
   void coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
-                   const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma, double Dh,
-                   const DoubleTab& ndv, const DoubleTab& d_bulles, DoubleTab& coeff) const override;
+                   const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma,
+                   const DoubleTab& k_turb, const DoubleTab& d_bulles,
+                   const DoubleTab& ndv, int e, DoubleTab& coeff) const override;
 protected:
-  double r_bulle_ = -100., C_d_= -100.;
+  double Cl_;
+  int n_l = -1; //phase liquide
 };
 
 #endif

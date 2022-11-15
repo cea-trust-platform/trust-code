@@ -13,34 +13,47 @@
 *
 *****************************************************************************/
 
-#include <Frottement_interfacial_bulles.h>
-#include <TRUSTTab.h>
+#include <Portance_interfaciale_Constante.h>
+#include <Pb_Multiphase.h>
+#include <math.h>
 
-Implemente_instanciable(Frottement_interfacial_bulles, "Frottement_interfacial_bulles", Frottement_interfacial_base);
+Implemente_instanciable(Portance_interfaciale_Constante, "Portance_interfaciale_Constante", Portance_interfaciale_base);
 
-Sortie& Frottement_interfacial_bulles::printOn(Sortie& os) const
+Sortie& Portance_interfaciale_Constante::printOn(Sortie& os) const
 {
   return os;
 }
 
-Entree& Frottement_interfacial_bulles::readOn(Entree& is)
+Entree& Portance_interfaciale_Constante::readOn(Entree& is)
 {
   Param param(que_suis_je());
-  param.ajouter("rayon_bulle", &r_bulle_, Param::REQUIRED);
-  param.ajouter("coeff_derive", &C_d_, Param::REQUIRED);
+  param.ajouter("Cl", &Cl_, Param::REQUIRED);
   param.lire_avec_accolades_depuis(is);
+
+  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, pb_.valeur()) ? &ref_cast(Pb_Multiphase, pb_.valeur()) : NULL;
+
+  if (!pbm || pbm->nb_phases() == 1) Process::exit(que_suis_je() + " : not needed for single-phase flow!");
+  for (int n = 0; n < pbm->nb_phases(); n++) //recherche de n_l, n_g : phase {liquide,gaz}_continu en priorite
+    if (pbm->nom_phase(n).debute_par("liquide") && (n_l < 0 || pbm->nom_phase(n).finit_par("continu")))  n_l = n;
+
+  if (n_l < 0) Process::exit(que_suis_je() + " : liquid phase not found!");
+
   return is;
 }
 
-void Frottement_interfacial_bulles::coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
-                                                const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma, double Dh,
-                                                const DoubleTab& ndv, const DoubleTab& d_bulles, DoubleTab& coeff) const
+void Portance_interfaciale_Constante::coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
+                                                  const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma,
+                                                  const DoubleTab& k_turb, const DoubleTab& d_bulles,
+                                                  const DoubleTab& ndv, int e, DoubleTab& coeff) const
 {
-  int k, l, N = ndv.dimension(0);
-  double rho_m = 0;
-  for (k = 0; k < N; k++) rho_m += alpha(k) * rho(k);
+  int k, N = ndv.dimension(0);
+
+  coeff = 0;
+
   for (k = 0; k < N; k++)
-    for (l = 0; l < N; l++)
-      if (l != k)
-        coeff(k, l, 0) = (coeff(k, l, 1) = 1. / 8 * C_d_ * 3 * alpha(k) * alpha(l) / r_bulle_ * rho_m) * ndv(k, l);
+    if (k!=n_l) // k gas phase
+      {
+        coeff(k, n_l) = Cl_ * rho(n_l) * alpha(k) ;
+        coeff(n_l, k) =  coeff(k, n_l);
+      }
 }
