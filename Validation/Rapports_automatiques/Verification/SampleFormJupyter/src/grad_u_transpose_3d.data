@@ -23,8 +23,10 @@ Mailler dom
         Bord Devant   X =  1.  -1. <= Y <= 1.  -1. <= Z <= 1.
     }
 }
+tetraedriser dom
+VerifierCoin dom { }
 
-EF dis
+VEFPreP1b dis
 
 Scheme_euler_explicit sch
 Read sch
@@ -35,7 +37,7 @@ Read sch
     dt_impr 5.e-1
     dt_sauv 10
     seuil_statio 1.e-8
-    dt_min 5e-5
+    dt_min 1e-6
     nb_pas_dt_max 10
 }
 
