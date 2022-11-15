@@ -3,11 +3,13 @@
 help()
 {
    echo "For jupyter's validation forms (new formalism in v1.9.0):"
-   echo "Usage: `basename $0` [path] [-help] [-export_pdf] [-exec binary_path] [-doc]"
+   echo "Usage: `basename $0` [path] [-help] [[-not_run] -export_pdf [-xpdf] [-o name_rapport.pdf]] [-exec binary_path] [-parallel_run] [-parallel_sjob] [-doc] [-create]"
    echo "Script to build a PDF report file from a Jupyter validation form."
    echo "-help                          : This description."
    echo "-doc                           : Open jupyter's validation forms documentation (opens SampleFormJupyter notebook)."
    echo "-export_pdf                    : Produce the PDF report direclty as 'build/rapport.pdf'. This is the default for PRM format, but not for Jupyter notebooks."
+   echo "-not_run                       : Build the PDF report file without running the TRUST calculations and pre_run/post_run scripts."
+   echo "-parallel_run [n]              : Run/submit calculations in a parallel way on n cores (n=$TRUST_NB_PROCS by default)."
    echo "-o name_report.pdf             : Change the default PDF report's name (default is rapport.pdf)"
    echo "-parallel_sjob                 : Run/submit calculations in a parallel way using the Sserver. "
    echo "-exec binary_path              : Location of the TRUST binary to use (by default given by $exec)."
@@ -121,7 +123,7 @@ do
        fi
        $TRUST_ROOT/Validation/Outils/Genere_courbe/Transcript $prm 2>&1
      exit 0
-    elif [ "$1" = -dest ]
+   elif [ "$1" = -dest ]
    then
       options=$options" "$1
       shift
@@ -219,7 +221,7 @@ do
       shift
    elif [ "$1" = -save ]
    then
-      save=1$curr_dir/build/rapport.pdf
+      save=1
       shift
    elif [ "$1" = -create_prm ]
    then
@@ -304,21 +306,26 @@ then
           if [ "$not_run" != "1" ]; then
               opt_jy="--execute"
           fi
+          pdf=$(basename $pdf)
+          curr_dir=`pwd`
+          pdf=$curr_dir/build/$pdf
           echo "----------------------------------------------------------------------"
           echo "Converting Jupyter notebook into PDF: build/rapport.pdf"
-          echo "  >  jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to pdf --no-input --output $ici/build/rapport.pdf $opt_jy $prm"
+          echo "  >  jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to pdf --no-input --output $pdf $opt_jy $prm"
           echo "----------------------------------------------------------------------"
-          pdf=$ici/build/rapport.pdf
           jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to pdf --no-input --output "$pdf" $opt_jy $prm
+          err=$?
           [ "$xpdf" = "-xpdf" ] && show_pdf $pdf
-          exit $?
+          exit $err
       elif $parallel; then
           curr_dir=`pwd`  
-          pdf=$curr_dir/build/rapport.pdf
+          pdf=$(basename $pdf)
+          pdf=$curr_dir/build/$pdf
           env JUPYTER_RUN_OPTIONS="-parallel_run" jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to pdf --no-input --output "$pdf" --execute $prm 2>& 1| tee -a Run.log
+          err=$?
           [ "$xpdf" = "-xpdf" ] && show_pdf $pdf
           #killall Sserver 
-          exit $?
+          exit $err
       else
           echo "----------------------------------------------------------------------"
           echo "Launching Jupyter in your web browser ... hit Ctrl-C when you're done."
