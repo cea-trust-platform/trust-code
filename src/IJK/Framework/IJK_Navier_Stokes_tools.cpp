@@ -1203,7 +1203,7 @@ static void mass_solver_with_rho_DIR(DIRECTION _DIR_, const IJK_Field_double& in
     {
       for (int i = 0; i < ni; i++)
         {
-          double a, b, c, resu;
+          double a = 0., b = 0., c, resu;
           rho.get_left_center(_DIR_, i, a, b); // a et b sont les masses volumiques a gauche et a droite de la face
           v.get_center(i, c); // v
           resu = c / ((a + b) * facteur); // division par le produit (volume * rho_face)
@@ -1231,7 +1231,7 @@ static void mass_solver_with_inv_rho_DIR(DIRECTION _DIR_, const IJK_Field_double
     {
       for (int i = 0; i < ni; i++)
         {
-          double a, b, c, resu;
+          double a=0., b=0., c, resu;
           inv_rho.get_left_center(_DIR_, i, a, b); // a et b sont les masses volumiques a gauche et a droite de la face
           v.get_center(i, c); // v
           resu = c * (a + b) * facteur; // v * inv_rho_face * volume
