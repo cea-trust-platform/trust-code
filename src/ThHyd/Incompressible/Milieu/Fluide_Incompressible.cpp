@@ -48,6 +48,13 @@ Entree& Fluide_Incompressible::readOn(Entree& is)
   return is;
 }
 
+void Fluide_Incompressible::set_param(Param& param)
+{
+  Fluide_base::set_param(param);
+  //La lecture de rho est rendue obligatoire ici
+  param.supprimer("rho");
+  param.ajouter("rho",&rho,Param::REQUIRED);
+}
 
 /*! @brief Verifie que les champs lus l'ont ete correctement.
  *
