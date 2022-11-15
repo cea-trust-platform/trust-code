@@ -62,6 +62,7 @@ using namespace MEDCoupling;
 #include <Dirichlet_homogene.h>
 #include <Dirichlet_paroi_defilante.h>
 #include <Navier.h>
+#include <Symetrie.h>
 
 
 Implemente_base(Domaine_Poly_base,"Domaine_Poly_base",Domaine_VF);
@@ -784,7 +785,7 @@ void Domaine_Poly_base::init_dist_paroi_globale(const Conds_lim& conds_lim) // M
   int nb_aretes = 0;
   std::set<int> soms;
   for (auto& itr : conds_lim)
-    if ( sub_type(Dirichlet_paroi_defilante, itr.valeur()) || sub_type(Dirichlet_homogene, itr.valeur()) || sub_type(Navier, itr.valeur()) )
+    if ( sub_type(Dirichlet_paroi_defilante, itr.valeur()) || sub_type(Dirichlet_homogene, itr.valeur()) || (sub_type(Navier, itr.valeur()) && !sub_type(Symetrie, itr.valeur()) ) )
       {
         int num_face_1_cl = itr.frontiere_dis().frontiere().num_premiere_face();
         int nb_faces_cl   = itr.frontiere_dis().frontiere().nb_faces();
@@ -807,7 +808,7 @@ void Domaine_Poly_base::init_dist_paroi_globale(const Conds_lim& conds_lim) // M
   // On remplit les coordonnes des faces et aretes de bord locales
   int ind_tab = 0 ; // indice de la face/sommet/arete dans le tableau
   for (int ind_cl = 0 ; ind_cl < conds_lim.size() ; ind_cl++)
-    if ( sub_type(Dirichlet_paroi_defilante, conds_lim[ind_cl].valeur()) || sub_type(Dirichlet_homogene, conds_lim[ind_cl].valeur()) || sub_type(Navier, conds_lim[ind_cl].valeur()) )
+    if ( sub_type(Dirichlet_paroi_defilante, conds_lim[ind_cl].valeur()) || sub_type(Dirichlet_homogene, conds_lim[ind_cl].valeur()) || (sub_type(Navier, conds_lim[ind_cl].valeur()) && !sub_type(Symetrie, conds_lim[ind_cl].valeur()) ) )
       {
         int num_face_1_cl = conds_lim[ind_cl].frontiere_dis().frontiere().num_premiere_face();
         int nb_faces_cl   = conds_lim[ind_cl].frontiere_dis().frontiere().nb_faces();
@@ -914,7 +915,7 @@ void Domaine_Poly_base::init_dist_paroi_globale(const Conds_lim& conds_lim) // M
 
   // Pour les elems de bord, on calcule la distance de facon propre avec le produit scalaire
   for (int ind_cl = 0 ; ind_cl < conds_lim.size() ; ind_cl++)
-    if ( sub_type(Dirichlet_paroi_defilante, conds_lim[ind_cl].valeur()) || sub_type(Dirichlet_homogene, conds_lim[ind_cl].valeur()) || sub_type(Navier, conds_lim[ind_cl].valeur()) )
+    if ( sub_type(Dirichlet_paroi_defilante, conds_lim[ind_cl].valeur()) || sub_type(Dirichlet_homogene, conds_lim[ind_cl].valeur()) || (sub_type(Navier, conds_lim[ind_cl].valeur()) && !sub_type(Symetrie, conds_lim[ind_cl].valeur()) ))
       {
         int num_face_1_cl = conds_lim[ind_cl].frontiere_dis().frontiere().num_premiere_face();
         int nb_faces_cl   = conds_lim[ind_cl].frontiere_dis().frontiere().nb_faces();
