@@ -260,27 +260,44 @@ class TRUSTCase(object):
                 i = i.replace(i, "")
             else:
                 tmp.append(i)
-        list_Trust_keywork = tmp
+        list_Trust_keywords = tmp
         f.close()
 
         ### Import and Underline important words of the data file  ###
         f = open(self._fullPath(), "r")
         tmp = f.readlines()
         test = []
+        comment_flag = False
         for j in tmp:
             flag = 0
-            if j[0] == "#":
+            if j.count("#") == 1 and  not comment_flag:
+                comment_flag = True
+                flag = 1
+                j = "\033[38;5;88m" + j + "\033[0;0m"
+            elif j.count("#") == 1 and  comment_flag :
+                comment_flag = False
+                j = "\033[38;5;88m" + j + "\033[0;0m"
+                flag = 1
+            elif j.count("#") == 2 or comment_flag:
+                j = "\033[38;5;88m" + j + "\033[0;0m"
+                flag = 1
+
+
+            if "end" in j.lower():
                 flag = 1
                 j = "\033[38;5;88m" + j + "\033[0;0m"
             j = " " + j
             j = j.replace("\t", "\t ")
             if flag == 0:
-                for i in list_Trust_keywork:
+                j = j.replace("{", "\033[196;5;30m{\033[0;0m") # en gras
+                j = j.replace("}", "\033[196;5;30m}\033[0;0m") # en gras
+
+                for i in list_Trust_keywords:
                     j = j.replace(i, "\033[38;5;28m" + i + "\033[0;0m")
-            if flag == 0:
+
                 for i in list_Trust_classe:
                     j = j.replace(i, "\033[38;5;4m" + i + "\033[0;0m")
-            if flag == 0:
+
                 for i in user_keywords:
                     # tmp=tmp.replace(i, "\033[196;5;30m"+i+"\033[0;0m ") # en gras
                     j = j.replace(i, "\033[38;5;196m" + i + "\033[0;0m")  # en rouge
@@ -697,7 +714,7 @@ def dumpDataset(fiche, list_Trust_user_words=[]):
     c.dumpDataset(list_Trust_user_words)
 
 
-def dumpData(fiche, list_keywords=[]):
+def dumpText(fiche, list_keywords=[]):
     """ Print out the file.
 
     Parameters
