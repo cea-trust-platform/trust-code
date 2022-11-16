@@ -80,7 +80,7 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
   int check_enabled = DEFAULT_CHECK_ENABLED;
   int with_petsc = -1;       // -1 => use petsc if compiled
   int nproc = -1;
-  int verbose_level = 1;
+  int verbose_level = -1;
   int journal_master = 0;
   int journal_shared = 0;
   int helptrust = 0;

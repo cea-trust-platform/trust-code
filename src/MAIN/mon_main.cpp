@@ -313,8 +313,14 @@ void mon_main::dowork(const Nom& nom_du_cas)
       verbose_level_ = 0;
 
     // Si un journal unique n'est pas active, alors desactive les journaux logs au dela d'un certain nombre de rangs MPI:
-    if (!journal_shared_ && !journal_master_ && Process::force_single_file(Process::nproc(), nom_du_cas+".log"))
-      verbose_level_ = 0;
+    // Dans le cas ou l'option "-journal" est specifiee
+    if (verbose_level_ < 0)
+      {
+        if (!journal_shared_ && !journal_master_ && Process::force_single_file(Process::nproc(), nom_du_cas+".log"))
+          verbose_level_ = 0;
+        else
+          verbose_level_ = 1;
+      }
 
     init_journal_file(verbose_level_, journal_shared_,filename, 0 /* append=0 */);
     if(journal_shared_) Process::Journal() << "\n[Proc " << Process::me() << "] : ";
