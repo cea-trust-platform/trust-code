@@ -29,11 +29,11 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
     {
 
       // Self (periodicity on same processor)
-      _TYPE_ *dest = (this)->template data().addr();
+      _TYPE_ *dest = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::data().addr();
       for (int k = 0; k < ksz; k++)
         for (int j = 0; j < jsz; j++)
           for (int i = 0; i < isz; i++)
-            dest[(this)->template linear_index(ir + i, jr + j, kr + k)] = (this)->template operator()(is + i, js + j, ks + k);
+            dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(ir + i, jr + j, kr + k)] = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(is + i, js + j, ks + k);
       return;
     }
   const int data_size = isz * jsz * ksz;
@@ -49,7 +49,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
       for (int k = 0; k < ksz; k++)
         for (int j = 0; j < jsz; j++)
           for (int i = 0; i < isz; i++, buf++)
-            *buf = (this)->template operator()(is + i, js + j, ks + k);
+            *buf = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(is + i, js + j, ks + k);
     }
   if (pe_recv_ >= 0)
     recv_buffer = new _TYPE_[data_size];
@@ -59,11 +59,11 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
     {
       // Unpack recv data
       _TYPE_ *buf = recv_buffer;
-      _TYPE_ *dest = (this)->template data().addr();
+      _TYPE_ *dest = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::data().addr();
       for (int k = 0; k < ksz; k++)
         for (int j = 0; j < jsz; j++)
           for (int i = 0; i < isz; i++, buf++)
-            dest[(this)->template linear_index(ir + i, jr + j, kr + k)] = *buf;
+            dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(ir + i, jr + j, kr + k)] = *buf;
     }
 
   delete[] send_buffer;
@@ -89,7 +89,9 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_gho
   int pe_jmax_ = splitting.get_neighbour_processor(1, 1);
   int pe_kmin_ = splitting.get_neighbour_processor(0, 2);
   int pe_kmax_ = splitting.get_neighbour_processor(1, 2);
-  const int nii = (this)->template ni(), njj = (this)->template nj(), nkk = (this)->template nk();
+  const int nii = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::ni();
+  const int njj = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nj();
+  const int nkk = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nk();
 
   // send left layer of real cells to right layer of virtual cells
   exchange_data(pe_imin_, 0, 0, 0, pe_imax_, nii, 0, 0, le_ghost, njj, nkk); /* size of block data to send */

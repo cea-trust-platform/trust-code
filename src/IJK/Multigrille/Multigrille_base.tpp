@@ -559,7 +559,7 @@ void calcul_produits_scalaires(IJK_Vector<IJK_Field_template, _TYPE_, _TYPE_ARRA
   mp_sum_for_each_item(resu);
 }
 
-static void triangularise(const DoubleTab& hessenberg, const double norme_b, DoubleTab& resu, ArrOfDouble& r)
+static inline void triangularise(const DoubleTab& hessenberg, const double norme_b, DoubleTab& resu, ArrOfDouble& r)
 {
   const int n = hessenberg.dimension(1);
   assert(hessenberg.dimension(0) == n+1);
