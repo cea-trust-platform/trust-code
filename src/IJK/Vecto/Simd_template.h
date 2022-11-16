@@ -19,6 +19,12 @@
 #include <assert.h>
 #include <stdint.h>
 #include <Vc/Vc>
+#include <cstdlib>
+#include <cmath>
+
+#if defined(VC_VC_) && (defined(WITH_SSE) || defined(WITH_AVX))
+#define OPTIM_AVX_
+#endif
 
 /*! @brief This class provides a generic access to simd operations on x86, x86 AMD and ARM architectures.
  *
@@ -39,7 +45,7 @@ public:
 
   Simd_template() { data_ = 0.; };
   // Commodity default constructor (provides implicit conversion)
-#if defined(WITH_SSE) || defined(WITH_AVX)
+#ifdef OPTIM_AVX_
   Simd_template(Vc::Vector<_TYPE_> x) : data_(x) {};
 #endif
   Simd_template(_TYPE_ x) : data_(x) {};
@@ -47,7 +53,7 @@ public:
   // Size of the vector
   static int size()
   {
-#if defined(WITH_SSE) || defined(WITH_AVX)
+#ifdef OPTIM_AVX_
     return Vc::Vector<_TYPE_>::Size ;
 #else
     return 1;
@@ -58,7 +64,7 @@ public:
   void operator*=(Simd_template a) { data_ *= a.data_; }
   void operator-=(Simd_template a) { data_ -= a.data_; }
 
-#if defined(WITH_SSE) || defined(WITH_AVX)
+#ifdef OPTIM_AVX_
   Vc::Vector<_TYPE_> data_;
 #else
   _TYPE_ data_;
@@ -74,7 +80,7 @@ using Simd_double = Simd_template<double>;
  */
 inline static constexpr int simd_getalign()
 {
-#if defined(WITH_SSE) || defined(WITH_AVX)
+#ifdef OPTIM_AVX_
   return Vc_1::MemoryAlignment;
 #else
   return 1;
@@ -87,7 +93,7 @@ inline static constexpr int simd_getalign()
 template<typename T>
 inline T* simd_malloc (std::size_t size)
 {
-#if defined(WITH_SSE) || defined(WITH_AVX)
+#ifdef OPTIM_AVX_
   return Vc::malloc<T, Vc::AlignOnCacheline>(size);
 #else
   T* res_ptr = (T*)malloc(size * sizeof(T));
@@ -100,7 +106,7 @@ inline T* simd_malloc (std::size_t size)
  */
 inline void simd_free(void* ptr)
 {
-#if defined(WITH_SSE) || defined(WITH_AVX)
+#ifdef OPTIM_AVX_
   Vc::free(ptr);
 #else
   free(ptr);
@@ -129,7 +135,7 @@ inline int aligned(const void *ptr, int size)
 template<typename _TYPE_>
 inline Simd_template<_TYPE_> SimdGet(const _TYPE_ *data)
 {
-#if defined(WITH_SSE) || defined(WITH_AVX)
+#ifdef OPTIM_AVX_
   Vc::Vector<_TYPE_> v(data, Vc::Aligned);
   return v;
 #else
@@ -145,7 +151,7 @@ inline Simd_template<_TYPE_> SimdGet(const _TYPE_ *data)
 template<typename _TYPE_>
 inline void SimdPut(_TYPE_ *data, Simd_template<_TYPE_> x)
 {
-#if defined(WITH_SSE) || defined(WITH_AVX)
+#ifdef OPTIM_AVX_
   x.data_.store(data, Vc::Aligned);
 #else
   *data = x.data_;
@@ -158,7 +164,7 @@ inline void SimdPut(_TYPE_ *data, Simd_template<_TYPE_> x)
 template<typename _TYPE_>
 inline Simd_template<_TYPE_> SimdGetAtRight(const _TYPE_ *data)
 {
-#if defined(WITH_SSE) || defined(WITH_AVX)
+#ifdef OPTIM_AVX_
   Vc::Vector<_TYPE_> first_vector(data, Vc::Aligned);
   Vc::Vector<_TYPE_> second_vector(data+Vc::Vector<_TYPE_>::Size, Vc::Aligned);
 
@@ -176,7 +182,7 @@ inline Simd_template<_TYPE_> SimdGetAtRight(const _TYPE_ *data)
 template<typename _TYPE_>
 inline Simd_template<_TYPE_> SimdGetAtLeft(const _TYPE_ *data)
 {
-#if defined(WITH_SSE) || defined(WITH_AVX)
+#ifdef OPTIM_AVX_
   Vc::Vector<_TYPE_> first_vector(data - Vc::Vector<_TYPE_>::Size, Vc::Aligned);
   Vc::Vector<_TYPE_> second_vector(data, Vc::Aligned);
 
@@ -194,7 +200,7 @@ inline Simd_template<_TYPE_> SimdGetAtLeft(const _TYPE_ *data)
 template<typename _TYPE_>
 inline void SimdGetLeftCenter(const _TYPE_ *data, Simd_template<_TYPE_>& left, Simd_template<_TYPE_>& center)
 {
-#if defined(WITH_SSE) || defined(WITH_AVX)
+#ifdef OPTIM_AVX_
   Vc::Vector<_TYPE_> first_vector(data - Vc::Vector<_TYPE_>::Size, Vc::Aligned);
   Vc::Vector<_TYPE_> second_vector(data, Vc::Aligned);
 
@@ -217,7 +223,7 @@ inline void SimdGetCenterRight(const _TYPE_ *data,
                                Simd_template<_TYPE_>& center,
                                Simd_template<_TYPE_>& right)
 {
-#if defined(WITH_SSE) || defined(WITH_AVX)
+#ifdef OPTIM_AVX_
   Vc::Vector<_TYPE_> first_vector(data, Vc::Aligned);
   Vc::Vector<_TYPE_> second_vector(data+Vc::Vector<_TYPE_>::Size, Vc::Aligned);
 
@@ -241,7 +247,7 @@ inline void SimdGetLeftCenterRight(const _TYPE_ *data,
                                    Simd_template<_TYPE_>& center,
                                    Simd_template<_TYPE_>& right)
 {
-#if defined(WITH_SSE) || defined(WITH_AVX)
+#ifdef OPTIM_AVX_
   Vc::Vector<_TYPE_> first_vector(data-Vc::Vector<_TYPE_>::Size, Vc::Aligned);
   Vc::Vector<_TYPE_> second_vector(data, Vc::Aligned);
   Vc::Vector<_TYPE_> third_vector(data+Vc::Vector<_TYPE_>::Size, Vc::Aligned);
@@ -274,7 +280,7 @@ inline void SimdGetLeftleftLeftCenterRight(const _TYPE_ *data,
                                            Simd_template<_TYPE_>& center,
                                            Simd_template<_TYPE_>& right)
 {
-#if defined(WITH_SSE) || defined(WITH_AVX)
+#ifdef OPTIM_AVX_
   Vc::Vector<_TYPE_> first_vector(data-Vc::Vector<_TYPE_>::Size, Vc::Aligned);
   Vc::Vector<_TYPE_> second_vector(data, Vc::Aligned);
   Vc::Vector<_TYPE_> third_vector(data+Vc::Vector<_TYPE_>::Size, Vc::Aligned);
@@ -329,7 +335,7 @@ inline Simd_template<_TYPE_> operator*(double a, Simd_template<_TYPE_> b) { retu
 template<typename _TYPE_>
 inline Simd_template<_TYPE_> Simd_absolute_value(Simd_template<_TYPE_> a)
 {
-#if defined(WITH_SSE) || defined(WITH_AVX)
+#ifdef OPTIM_AVX_
   return Vc::abs(a.data_);
 #else
   return std::abs(a.data_);
@@ -350,7 +356,7 @@ inline Simd_template<_TYPE_> SimdSelect(Simd_template<_TYPE_> x1,
                                         Simd_template<_TYPE_> value_if_x1_lower_than_x2,
                                         Simd_template<_TYPE_> value_otherwise)
 {
-#if defined(WITH_SSE) || defined(WITH_AVX)
+#ifdef OPTIM_AVX_
   Vc::Vector<_TYPE_> compare = x1.data_ - x2.data_; //comparing x1 and x2
 
   Vc::Vector<_TYPE_> resu;
@@ -368,7 +374,7 @@ inline Simd_template<_TYPE_> SimdSelect(Simd_template<_TYPE_> x1,
 template<typename _TYPE_>
 inline Simd_template<_TYPE_> SimdMin(const Simd_template<_TYPE_>& a, const Simd_template<_TYPE_>&   b)
 {
-#if defined(WITH_SSE) || defined(WITH_AVX)
+#ifdef OPTIM_AVX_
   return Vc::min(a.data_, b.data_);
 #else
   return (a.data_ < b.data_) ? a : b;
@@ -379,7 +385,7 @@ inline Simd_template<_TYPE_> SimdMin(const Simd_template<_TYPE_>& a, const Simd_
 template<typename _TYPE_>
 inline Simd_template<_TYPE_> SimdMax(const Simd_template<_TYPE_>& a, const Simd_template<_TYPE_>&   b)
 {
-#if defined(WITH_SSE) || defined(WITH_AVX)
+#ifdef OPTIM_AVX_
   return Vc::max(a.data_, b.data_);
 #else
   return (a.data_ > b.data_) ? a : b;
@@ -390,7 +396,7 @@ inline Simd_template<_TYPE_> SimdMax(const Simd_template<_TYPE_>& a, const Simd_
 template<typename _TYPE_>
 inline Simd_template<_TYPE_> SimdDivideMed(const Simd_template<_TYPE_>& a, const Simd_template<_TYPE_>& b)
 {
-#if defined(WITH_SSE) || defined(WITH_AVX)
+#ifdef OPTIM_AVX_
   Vc::Vector<_TYPE_> x = Vc::reciprocal(b.data_); // x = approximation de 1/b
   Vc::Vector<_TYPE_> y = a.data_ * x; // y = a * x
   // resu = (a.data_ - b.data_ * y) * x + y
@@ -406,7 +412,7 @@ inline Simd_template<_TYPE_> SimdDivideMed(const Simd_template<_TYPE_>& a, const
 template<typename _TYPE_>
 inline Simd_template<_TYPE_> SimdReciprocalMed(const Simd_template<_TYPE_>& b)
 {
-#if defined(WITH_SSE) || defined(WITH_AVX)
+#ifdef OPTIM_AVX_
   Vc::Vector<_TYPE_> x = Vc::reciprocal(b.data_); // x = approximation de 1/b
   // resu = (2 - b * x) * x
   Vc::Vector<_TYPE_> two(2.);
@@ -427,7 +433,7 @@ public:
   // Commodity default constructor (provides implicit conversion)
   Simd_int(int x)
   {
-#if defined(WITH_SSE) || defined(WITH_AVX)
+#ifdef OPTIM_AVX_
     //on parcourt chaque vecteur d'entiers qui composent data_, et on les initialise a x
     for(size_t j = 0; j < data_.vectorsCount(); j++)
       {
@@ -439,14 +445,14 @@ public:
 #endif
   };
 
-#if defined(WITH_SSE) || defined(WITH_AVX)
+#ifdef OPTIM_AVX_
   Simd_int(Vc::Memory<Vc::int_v,  Vc::float_v::Size> x) : data_(x) {};
 #endif
 
   //on souhaite que la taille d'un vecteur d'entiers soit la meme que celle d'un vecteur de flottants
   static int size()
   {
-#if defined(WITH_SSE) || defined(WITH_AVX)
+#ifdef OPTIM_AVX_
     return Vc::float_v::Size;
 #else
     return 1;
@@ -455,7 +461,7 @@ public:
 
   void operator|=(Simd_int a)
   {
-#if defined(WITH_SSE) || defined(WITH_AVX)
+#ifdef OPTIM_AVX_
     //on parcourt chaque vecteur d'entiers qui composent data_
     for(size_t j = 0; j < data_.vectorsCount(); j++)
       {
@@ -466,7 +472,7 @@ public:
 #endif
   }
 
-#if defined(WITH_SSE) || defined(WITH_AVX)
+#ifdef OPTIM_AVX_
   // dans certains cas, un vecteur de flottants n'a pas la meme taille qu'un vecteur d'entiers
   // on aimerait que ce soit le cas pour pouvoir facilement les comparer
   // on utilise donc la structure de donnees Vc:::Memory qui est compose d'un certain nombre de vecteurs d'entiers
@@ -487,7 +493,7 @@ public:
  */
 inline Simd_int SimdGet(const int *data)
 {
-#if defined(WITH_SSE) || defined(WITH_AVX)
+#ifdef OPTIM_AVX_
   Vc::Memory<Vc::int_v,  Vc::float_v::Size> res;
 
   //on parcourt chaque vecteur d'entiers qui composent res
@@ -511,7 +517,7 @@ inline Simd_int SimdGet(const int *data)
  */
 inline void SimdPut(int *data, Simd_int x)
 {
-#if defined(WITH_SSE) || defined(WITH_AVX)
+#ifdef OPTIM_AVX_
   //on parcourt chaque vecteur d'entiers qui composent x
   //et on stocke les valeurs qu'elles contiennt dans data
   for(size_t j = 0; j < x.data_.vectorsCount(); j++)
@@ -530,7 +536,7 @@ inline Simd_int SimdSelect(Simd_float x1,
                            Simd_int value_if_x1_lower_than_x2,
                            Simd_int value_otherwise)
 {
-#if defined(WITH_SSE) || defined(WITH_AVX)
+#ifdef OPTIM_AVX_
   //on compare x1 et x2
   Vc::Mask<float> mask = (x1.data_ < x2.data_);
 
@@ -569,7 +575,7 @@ inline Simd_int SimdSelect(Simd_float x1,
 inline void SimdCompareAndSetIfLower(const Simd_float x_new, Simd_float x,
                                      const Simd_int i_new, Simd_int i)
 {
-#if defined(WITH_SSE) || defined(WITH_AVX)
+#ifdef OPTIM_AVX_
   //on compare x1 et x2
   Vc::Mask<float> mask = (x_new.data_ < x.data_);
 
