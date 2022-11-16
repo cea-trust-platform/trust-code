@@ -78,7 +78,7 @@ template<typename _TYPE_, typename _TYPE_ARRAY_>
 void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_ghost)
 {
   statistiques().begin_count(echange_vect_counter_);
-  assert(le_ghost <= (this)->template ghost());
+  assert(le_ghost <= (IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::ghost()));
   // Exchange in i direction real cells,
   // then in j direction with ghost cells in i,
   // then in k direction, with ghost cells in i and j
