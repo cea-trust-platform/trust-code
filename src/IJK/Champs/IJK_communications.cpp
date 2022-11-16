@@ -20,6 +20,7 @@
 
 void envoyer_recevoir(const void *send_buf, int send_buf_size, int send_proc, void *recv_buf, int recv_buf_size, int recv_proc)
 {
+#ifdef MPI_
   const Comm_Group& grp = PE_Groups::current_group();
   if (!sub_type(Comm_Group_MPI, grp))
     {
@@ -29,5 +30,6 @@ void envoyer_recevoir(const void *send_buf, int send_buf_size, int send_proc, vo
     }
   const Comm_Group_MPI& grpmpi = ref_cast(Comm_Group_MPI, grp);
   grpmpi.ptop_send_recv(send_buf, send_buf_size, send_proc, recv_buf, recv_buf_size, recv_proc);
+#endif
 }
 
