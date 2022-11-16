@@ -10,7 +10,7 @@ linux	rsync_ssh	tache	is242981-clang.intra.cea.fr			-TrioCFD -IJK-FT 					-clang
 linux	rsync_ssh	tache	is234634-clang.intra.cea.fr	-all 		-GENEPI3 -IJK-FT -FLICA5 -C3D  					-clang 		-force_provided_openmpi -without-pdflatex -without-visit 								# Fedora 36	Bat 451 LGLS titania bureau TMA TRUST
 linux	rsync_ssh	cible	is227246.intra.cea.fr		-all     	-MPCube -TrioCFD -IJK-FT -GENEPI3 -SIDES -SCORPIO -STT -PEMFC -FLICA5 -C3D  -force_latest_mpich  							# Fedora 34	Bat 451 Erwan titania
 linux	git_ssh    	tache	irene-ccrt.ccc.cea.fr		-limited	-TrioCFD -IJK-FT					-semi_opt -benchmark	-without-doc -disable-plot2d 									# RedHat 7.6	CEA CCRT
-linux	rsync_ssh	tache	altair-nvidia.intra.cea.fr	-all		-TrioCFD				-cuda         -force_system_mpi	-disable-vc -disable-petsc -disable-mpi4py
+linux	rsync_ssh	tache	altair-nvidia.intra.cea.fr	-all		-TrioCFD				-cuda
 linux   rsync_ssh   tache   is240831.intra.cea.fr       -all                                -cuda=/volatile/cuda-11.1/bin/nvcc              # Ubuntu 18 PC inconnu RTX5000 
 linux	rsync_ssh	cible	is246139-gpu.intra.cea.fr	-all		-TrioCFD				-cuda -openmp -force_system_mpi	-disable-vc -disable-mpi4py				# Ubuntu 20	Bat 451 LGLS bureau Luc L.
 linux	rsync_ssh	tache	orcus-amd-gpu.intra.cea.fr			-TrioCFD -IJK-FT  			-cuda 											# CentOS 7.6	CEA Saclay
