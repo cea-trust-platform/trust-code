@@ -15,9 +15,10 @@
 
 #include <Check_espace_virtuel.h>
 #include <Op_Grad_P0_to_Face.h>
+#include <Pb_Multiphase.h>
+#include <Statistiques.h>
 #include <Zone_Cl_VDF.h>
 #include <Periodique.h>
-#include <Statistiques.h>
 
 extern Stat_Counter_Id gradient_counter_;
 
@@ -26,13 +27,17 @@ Implemente_instanciable(Op_Grad_P0_to_Face,"Op_Grad_P0_to_Face",Op_Grad_VDF_Face
 Sortie& Op_Grad_P0_to_Face::printOn(Sortie& s) const { return s << que_suis_je(); }
 Entree& Op_Grad_P0_to_Face::readOn(Entree& s) { return s; }
 
-void Op_Grad_P0_to_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
-{
-  return;
-}
+void Op_Grad_P0_to_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const { return; }
 
 void Op_Grad_P0_to_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
+  if (sub_type(Pb_Multiphase, equation().probleme()))
+    {
+      Cerr << "Op_Grad_P0_to_Face::" << __func__ << " is not yet compatible with Pb_Multiphase !" << finl;
+      Cerr << "You should instead use Op_Grad_VDF_Face ... Otherwise you should add the contripution of alpha to the secmem ..." << finl;
+      Process::exit();
+    }
+
   statistiques().begin_count(gradient_counter_);
   const DoubleTab& inco = semi_impl.count("pression") ? semi_impl.at("pression") : equation().inconnue().valeur().valeurs();
   assert_espace_virtuel_vect(inco);
@@ -87,5 +92,4 @@ void Op_Grad_P0_to_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, c
 
   secmem.echange_espace_virtuel();
   statistiques().end_count(gradient_counter_);
-
 }
