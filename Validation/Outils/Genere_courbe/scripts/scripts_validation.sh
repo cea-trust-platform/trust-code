@@ -25,10 +25,14 @@ Extract_Times()
       cas=${arc%.tgz}
       mkdir -p $cas
       cd $cas
-      tar zxf $ref/$arc preserve/temps_total
-      echo  `head -1 preserve/temps_total`  $cas
-      t=`head -1 preserve/temps_total | awk '{print $1}'`
-      stt=`echo $stt+$t | bc -l`
+      tar zxf $ref/$arc preserve/temps_total 2> /dev/null
+      if [ "$?" = "0" ]; then
+         echo  `head -1 preserve/temps_total`  $cas
+         t=`head -1 preserve/temps_total | awk '{print $1}'`
+         stt=`echo $stt+$t | bc -l`
+      else
+         echo "0.0 s 0.0 m 0.0 h  $cas"
+      fi
       cd $output_dir/build_prov 
     done    > $output_dir/build_prov/Times
 #    echo $stt Total  >> $output_dir/build_prov/Times
