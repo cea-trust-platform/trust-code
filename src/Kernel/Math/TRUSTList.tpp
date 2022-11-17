@@ -253,8 +253,8 @@ inline void TRUSTList<_TYPE_>::suppr(_TYPE_ obj)
 template<typename _TYPE_>
 inline void TRUSTList<_TYPE_>::calcule_min_max()
 {
-  min_data = std::is_same<_TYPE_,double>::value ? DMAXFLOAT : IMAX;
-  max_data = std::is_same<_TYPE_,double>::value ? -DMAXFLOAT : -IMAX;
+  min_data = std::numeric_limits<_TYPE_>::max();
+  max_data = std::numeric_limits<_TYPE_>::lowest();
   TRUSTList_Curseur<_TYPE_> curseur = *this;
   while (curseur)
     {

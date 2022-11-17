@@ -19,8 +19,7 @@
 #include <TRUSTListElem.h>
 #include <Double.h>
 #include <Nom.h>
-
-#define IMAX 1000000000
+#include <limits>
 
 template<typename _TYPE_> class TRUSTList_Curseur;
 
@@ -37,8 +36,8 @@ public :
 
   TRUSTList() : TRUSTListElem<_TYPE_>()
   {
-    min_data = std::is_same<_TYPE_, double>::value ? DMAXFLOAT : IMAX;
-    max_data = std::is_same<_TYPE_, double>::value ? -DMAXFLOAT : -IMAX;
+    min_data = std::numeric_limits<_TYPE_>::max();
+    max_data = std::numeric_limits<_TYPE_>::lowest();
     size_ = 0;
     dernier_ = this;
   }
