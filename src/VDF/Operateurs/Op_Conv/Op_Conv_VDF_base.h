@@ -44,6 +44,7 @@ public:
   inline Iterateur_VDF& get_iter() { return iter; }
 
   inline int has_interface_blocs() const override { return 1; }
+  void set_incompressible(const int flag) override { iter->set_incompressible(flag); }
   void ajouter_blocs(matrices_t , DoubleTab& , const tabs_t& ) const override;
   void dimensionner_blocs_elem(matrices_t , const tabs_t& ) const;
   void dimensionner_blocs_face(matrices_t , const tabs_t& ) const;

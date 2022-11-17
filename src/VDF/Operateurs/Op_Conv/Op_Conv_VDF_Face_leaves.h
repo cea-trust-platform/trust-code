@@ -45,7 +45,6 @@ public:
   inline void associer_vitesse(const Champ_base& ch_vit) override { associer_vitesse_impl<Eval_Amont_VDF_Face>(ch_vit); }
   inline Champ_base& vitesse() override { return vitesse_impl<Eval_Amont_VDF_Face>(); }
   inline const Champ_base& vitesse() const override { return vitesse_impl<Eval_Amont_VDF_Face>(); }
-  void set_incompressible(const int flag) override { incompressible_ = flag; }
   inline void dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const override // TODO : FIXME
   {
     if (sub_type(Pb_Multiphase,equation().probleme())) Op_Conv_VDF_base::dimensionner_blocs_face(mats, semi_impl);

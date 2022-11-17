@@ -93,6 +93,11 @@ public:
     ajouter_blocs({{ op_base->equation().inconnue().le_nom().getString(), &m }}, secmem, {});
   }
 
+  void set_incompressible(const int flag)
+  {
+    incompressible_ = flag;
+  }
+
 protected:
   REF(Zone_VDF) la_zone;
   REF(Zone_Cl_VDF) la_zcl;
@@ -100,7 +105,7 @@ protected:
   REF(Champ_Inc_base) le_champ_convecte_ou_inc;
   REF(Champ_base) le_ch_v;
   bool is_conv_op_ = false, is_pb_multi = false, use_base_val_b_ = false;
-
+  int incompressible_ = 1;
 };
 
 inline Type_Cl_VDF Iterateur_VDF_base::type_cl(const Cond_lim& la_cl) const
