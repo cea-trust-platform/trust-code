@@ -339,7 +339,7 @@ do
   command=TRUST_DISABLE_$THIRD_PARTY=0
   eval $command
 done
-export TRUST_DISABLE_PETSC_WITH_X=0
+export TRUST_DISABLE_PETSC_OPTIONALS=0
 export TRUST_ENABLE_PETSC_DEBUG=0
 export TRUST_DISABLE_MPIIO=0
 export TRUST_DISABLE_CHECK_SRC=0
@@ -599,7 +599,7 @@ do
    echo "$VAR=${!VAR} && export $VAR 	# Disable/enable $THIRD_PARTY"  					>> $var
 done
 echo "TRUST_DISABLE_MPIIO=$TRUST_DISABLE_MPIIO && export TRUST_DISABLE_MPIIO	# Disable/enable MPI-IO mode for writing of binary output file"	>> $var
-echo "TRUST_DISABLE_PETSC_WITH_X=$TRUST_DISABLE_PETSC_WITH_X && export TRUST_DISABLE_PETSC_WITH_X	# Disable/enable PETSc visualization features"	>> $var
+echo "TRUST_DISABLE_PETSC_OPTIONALS=$TRUST_DISABLE_PETSC_OPTIONALS && export TRUST_DISABLE_PETSC_OPTIONALS	# Disable/enable PETSc visualization features"	>> $var
 echo "TRUST_ENABLE_PETSC_DEBUG=$TRUST_ENABLE_PETSC_DEBUG && export TRUST_ENABLE_PETSC_DEBUG	# Disable/enable PETSc debug"	>> $var
 echo "TRUST_DISABLE_CHECKS=$TRUST_DISABLE_CHECKS && export TRUST_DISABLE_CHECKS	# Disable/enable checks for external packages, sources, disk space and speed" >> $var
 echo "TRUST_INT64=$TRUST_INT64 && export TRUST_INT64	# Build in 64 bits integer indices." >> $var
