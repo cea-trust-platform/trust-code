@@ -21,31 +21,48 @@
  * ************************************** */
 
 template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type, typename Type_Double> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>
-Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7(const DoubleTab& inco, const DoubleTab*, int face, const Neumann_sortie_libre& la_cl, int num1, Type_Double& flux) const
+Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7(const DoubleTab& inco, const DoubleTab* a_r, int face, const Neumann_sortie_libre& la_cl, int num1, Type_Double& flux) const
 {
   const int elem1 = elem_(face,0), ncomp = flux.size_array();
-  const double psc = dt_vitesse(face)*surface(face);
+  double psc = dt_vitesse(face)*surface(face);
   if (elem1 != -1)
     {
+      if (a_r && DERIVED_T::IS_AMONT) psc *= (*a_r)(elem1,0);
       if (psc > 0)
-        for (int k = 0; k < flux.size_array(); k++) flux[k] = -psc*inco(face,k)*porosite(face);
-      else for (int k = 0; k < ncomp; k++) flux[k] = -psc*la_cl.val_ext(face-num1,orientation(face)); // : -psc*la_cl.val_ext(face-num1,k); // TODO : FIXME : Yannick help :/
+        for (int k = 0; k < flux.size_array(); k++)
+          {
+            flux[k] = -psc*inco(face,k)*porosite(face);
+          }
+      else for (int k = 0; k < ncomp; k++)
+          {
+//            if (a_r && DERIVED_T::IS_AMONT) psc *= (*a_r)(elem1,0); // TODO : FIXME : val aux bords ...
+            flux[k] = -psc*la_cl.val_ext(face-num1,orientation(face));
+          }
     }
   else
     {
+      if (a_r && DERIVED_T::IS_AMONT) psc *= (*a_r)(elem_(face,1),0);
       if (psc < 0)
-        for (int k = 0; k < flux.size_array(); k++) flux[k] = -psc*inco(face,k)*porosite(face);
-      else for (int k = 0; k < ncomp; k++) flux[k] = -psc*la_cl.val_ext(face-num1,orientation(face)); // : -psc*la_cl.val_ext(face-num1,k);
+        for (int k = 0; k < flux.size_array(); k++)
+          {
+            flux[k] = -psc*inco(face,k)*porosite(face);
+          }
+      else for (int k = 0; k < ncomp; k++)
+          {
+//            if (a_r && DERIVED_T::IS_AMONT) psc *= (*a_r)(elem1,0); // TODO : FIXME : val aux bords ...
+            flux[k] = -psc*la_cl.val_ext(face-num1,orientation(face));
+          }
     }
 }
 
 template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type, typename Type_Double> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
-Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7(const DoubleTab& inco, const DoubleTab*, int num_elem, int fac1, int fac2, Type_Double& flux) const
+Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7(const DoubleTab& inco, const DoubleTab* a_r, int num_elem, int fac1, int fac2, Type_Double& flux) const
 {
   const int ncomp = flux.size_array();
-  const double psc = 0.25*(dt_vitesse(fac1)+dt_vitesse(fac2))*(surface(fac1)+surface(fac2));
+  double psc = 0.25*(dt_vitesse(fac1)+dt_vitesse(fac2))*(surface(fac1)+surface(fac2));
   if (DERIVED_T::IS_AMONT)
     {
+      if (a_r) psc *= (*a_r)(num_elem,0);
       if (psc>0)
         for (int k = 0; k < ncomp; k++) flux[k] = -psc*inco(fac1,k)*porosite(fac1);
       else for (int k = 0; k < ncomp; k++) flux[k] = -psc*inco(fac2,k)*porosite(fac2);
@@ -119,15 +136,23 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7(const DoubleTab& inco, const DoubleTab*,
 }
 
 template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, typename Type_Double> inline enable_if_t< Arete_Type == Type_Flux_Arete::INTERNE, void>
-Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, const DoubleTab*, int fac1, int fac2,int fac3, int fac4, Type_Double& flux) const
+Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, const DoubleTab* a_r, int fac1, int fac2,int fac3, int fac4, Type_Double& flux) const
 {
   const int ncomp = flux.size_array();
-  const double psc = 0.25 * ((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
+  double psc = 0.25 * ((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
   if (DERIVED_T::IS_AMONT)
     {
       if (psc>0)
-        for (int k = 0; k < ncomp; k++) flux[k] = -psc*inco(fac3,k);
-      else for (int k = 0; k < ncomp; k++) flux[k] = -psc*inco(fac4,k);
+        for (int k = 0; k < ncomp; k++)
+          {
+//            if (a_r) psc *= (*a_r)(elem_(fac3,0),0); // FIXME
+            flux[k] = -psc*inco(fac3,k);
+          }
+      else for (int k = 0; k < ncomp; k++)
+          {
+//            if (a_r) psc *= (*a_r)(elem_(fac4,0),0);  // FIXME
+            flux[k] = -psc*inco(fac4,k);
+          }
     }
   else if (DERIVED_T::IS_CENTRE)
     for (int k = 0; k < ncomp; k++) flux[k] = -0.5*(inco(fac3,k)+inco(fac4,k))*psc ;
@@ -196,31 +221,44 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, const DoubleTab
 }
 
 template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, typename Type_Double> inline enable_if_t< Arete_Type == Type_Flux_Arete::MIXTE, void>
-Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, const DoubleTab*, int fac1, int fac2,int fac3, int fac4, Type_Double& flux) const
+Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, const DoubleTab* a_r, int fac1, int fac2,int fac3, int fac4, Type_Double& flux) const
 {
-  const double psc = 0.25*((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
+  double psc = 0.25*((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
   if (DERIVED_T::IS_CENTRE)
     for (int k = 0; k < flux.size_array(); k++) flux[k] = -psc*0.5*(inco(fac3,k)+inco(fac4,k));
   else
     {
       if (psc>0)
-        for (int k = 0; k < flux.size_array(); k++) flux[k] = -psc*inco(fac3,k);
-      else for (int k = 0; k < flux.size_array(); k++) flux[k] = -psc*inco(fac4,k);
+        for (int k = 0; k < flux.size_array(); k++)
+          {
+//            if (a_r) psc *= (*a_r)(elem_(fac3,0),0); // FIXME
+            flux[k] = -psc*inco(fac3,k);
+          }
+      else for (int k = 0; k < flux.size_array(); k++)
+          {
+//            if (a_r) psc *= (*a_r)(elem_(fac4,0),0); // FIXME
+            flux[k] = -psc*inco(fac4,k);
+          }
     }
 }
 
 template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, typename Type_Double>
 inline enable_if_t<Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
-Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, const DoubleTab*, int fac1, int fac2, int fac3, int signe, Type_Double& flux3, Type_Double& flux1_2) const
+Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, const DoubleTab* a_r, int fac1, int fac2, int fac3, int signe, Type_Double& flux3, Type_Double& flux1_2) const
 {
   assert(flux3.size_array() == flux1_2.size_array());
   constexpr bool is_SYM = (Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE);
   if (DERIVED_T::IS_AXI && is_SYM) return;
   const int ncomp = flux3.size_array();
+  double aa_r = 1.0;
 
   double psc = 0.25*((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
   if ((psc*signe)>0)
-    for (int k = 0; k < ncomp; k++) flux3[k] = -inco(fac3,k)*psc ;
+    for (int k = 0; k < ncomp; k++)
+      {
+//        if (a_r && DERIVED_T::IS_AMONT) aa_r = (*a_r)(elem_(fac3,0),0); // FIXME
+        flux3[k] = -aa_r*inco(fac3,k)*psc ;
+      }
   else
     {
       const int pfb = premiere_face_bord(), ori = orientation(fac3), rang1 = DERIVED_T::IS_QUICK ? fac1 : (fac1-pfb), rang2 = DERIVED_T::IS_QUICK ? fac2 :(fac2-pfb); // TODO : FIXME : euh ? pourquoi ca ?
@@ -231,8 +269,16 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, const DoubleTab
 
   psc = 0.5*dt_vitesse(fac3)*surface(fac3)*porosite(fac3);
   if (psc>0)
-    for (int k = 0; k < ncomp; k++) flux1_2[k] = -psc*inco(fac1,k);
-  else for (int k = 0; k < ncomp; k++) flux1_2[k] = (DERIVED_T::IS_CENTRE || DERIVED_T::IS_CENTRE4) ? -psc*0.5*(inco(fac1,k)+inco(fac2,k)) : -psc*inco(fac2,k);
+    for (int k = 0; k < ncomp; k++)
+      {
+//        if (a_r && DERIVED_T::IS_AMONT) psc *= (*a_r)(elem_(fac1,0),0); // FIXME
+        flux1_2[k] = -psc*inco(fac1,k);
+      }
+  else for (int k = 0; k < ncomp; k++)
+      {
+//        if (a_r && DERIVED_T::IS_AMONT) psc *= (*a_r)(elem_(fac2,0),0); // FIXME
+        flux1_2[k] = (DERIVED_T::IS_CENTRE || DERIVED_T::IS_CENTRE4) ? -psc*0.5*(inco(fac1,k)+inco(fac2,k)) : -psc*inco(fac2,k);
+      }
 }
 
 template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, typename Type_Double> inline enable_if_t< Arete_Type == Type_Flux_Arete::PERIODICITE, void>
@@ -275,8 +321,16 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, const DoubleTab
   else
     {
       if (psc>0)
-        for (int k = 0; k < ncomp; k++) flux3_4[k] = -psc*inco(fac3,k);
-      else for (int k = 0; k < ncomp; k++) flux3_4[k] = -psc*inco(fac4,k);
+        for (int k = 0; k < ncomp; k++)
+          {
+//            if (a_r && DERIVED_T::IS_AMONT) psc *= (*a_r)(elem_(fac3,0),0); // FIXME
+            flux3_4[k] = -psc*inco(fac3,k);
+          }
+      else for (int k = 0; k < ncomp; k++)
+          {
+//            if (a_r && DERIVED_T::IS_AMONT) psc *= (*a_r)(elem_(fac4,0),0); // FIXME
+            flux3_4[k] = -psc*inco(fac4,k);
+          }
     }
 
   psc = 0.25*(dt_vitesse(fac3)*porosite(fac3)+dt_vitesse(fac4)*porosite(fac4))*(surface(fac3)+surface(fac4));
@@ -307,13 +361,21 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, const DoubleTab
   else
     {
       if (psc>0)
-        for (int k = 0; k < ncomp; k++) flux1_2[k] = -psc*inco(fac1,k);
-      else for (int k = 0; k < ncomp; k++) flux1_2[k] = -psc*inco(fac2,k);
+        for (int k = 0; k < ncomp; k++)
+          {
+//            if (a_r && DERIVED_T::IS_AMONT) psc *= (*a_r)(elem_(fac1,0),0); // FIXME
+            flux1_2[k] = -psc*inco(fac1,k);
+          }
+      else for (int k = 0; k < ncomp; k++)
+          {
+//            if (a_r && DERIVED_T::IS_AMONT) psc *= (*a_r)(elem_(fac2,0),0); // FIXME
+            flux1_2[k] = -psc*inco(fac2,k);
+          }
     }
 }
 
 template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, typename Type_Double> inline enable_if_t< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
-Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, const DoubleTab*, int fac1, int , int fac3, int signe, Type_Double& flux3, Type_Double& flux1_2) const
+Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, const DoubleTab* a_r, int fac1, int , int fac3, int signe, Type_Double& flux3, Type_Double& flux1_2) const
 {
   assert(flux3.size_array() == flux1_2.size_array());
   if (!DERIVED_T::IS_AMONT)
@@ -324,7 +386,11 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, const DoubleTab
   const int ncomp = flux3.size_array();
   double psc = 0.5 * dt_vitesse(fac1) * porosite(fac1) * surface(fac1);
   if ((psc * signe) > 0)
-    for (int k = 0; k < ncomp; k++) flux3[k] = -inco(fac3,k) * psc;
+    for (int k = 0; k < ncomp; k++)
+      {
+//        if (a_r) psc *= (*a_r)(elem_(fac3,0),0); // FIXME
+        flux3[k] = -inco(fac3,k) * psc;
+      }
   else
     {
       const int pfb = premiere_face_bord(), rang1 = (fac1 - pfb), ori = orientation(fac3);
@@ -333,7 +399,11 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, const DoubleTab
 
   psc = 0.5 * dt_vitesse(fac3) * surface(fac3) * porosite(fac3);
   if (psc > 0)
-    for (int k = 0; k < ncomp; k++) flux1_2[k] = -psc * inco(fac1,k);
+    for (int k = 0; k < ncomp; k++)
+      {
+//        if (a_r) psc *= (*a_r)(elem_(fac1,0),0); // FIXME
+        flux1_2[k] = -psc * inco(fac1,k);
+      }
   else
     {
       const int pfb = premiere_face_bord(), rang3 = (fac3 - pfb), ori = orientation(fac1);
@@ -346,39 +416,51 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, const DoubleTab
  * ************************************** */
 
 template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type, typename Type_Double> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>
-Eval_Conv_VDF_Face<DERIVED_T>::coeffs_fa7(const DoubleTab*, int face,const Neumann_sortie_libre& la_cl, Type_Double& aii, Type_Double& ajj) const
+Eval_Conv_VDF_Face<DERIVED_T>::coeffs_fa7(const DoubleTab* a_r, int face,const Neumann_sortie_libre& la_cl, Type_Double& aii, Type_Double& ajj) const
 {
   assert(aii.size_array() == ajj.size_array());
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
+  const int elem1 = elem_(face,0), elem2 = elem_(face,1);
+  double psc = dt_vitesse(face)*surface(face)*porosite(face);
 
-  const double psc = dt_vitesse(face)*surface(face)*porosite(face);
+  if (elem1 != -1)
+    {
+      if (a_r && psc < 0) psc *= (*a_r)(elem1,0); // FIXME
+    }
+  else
+    {
+      if (a_r && psc < 0) psc *= (*a_r)(elem2,0);
+    }
+
   fill_coeffs_proto<Type_Double>(psc,psc,aii,ajj);
 }
 
 template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type, typename Type_Double> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
-Eval_Conv_VDF_Face<DERIVED_T>::coeffs_fa7(const DoubleTab*, int, int fac1, int fac2, Type_Double& aii, Type_Double& ajj ) const
+Eval_Conv_VDF_Face<DERIVED_T>::coeffs_fa7(const DoubleTab* a_r, int num_elem, int fac1, int fac2, Type_Double& aii, Type_Double& ajj ) const
 {
   assert(aii.size_array() == ajj.size_array());
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
-  const double psc = 0.25*(dt_vitesse(fac1)+dt_vitesse(fac2))*(surface(fac1)+surface(fac2)), psc1 = psc*porosite(fac1), psc2 = psc*porosite(fac2);
+  double psc = 0.25*(dt_vitesse(fac1)+dt_vitesse(fac2))*(surface(fac1)+surface(fac2)), psc1 = psc*porosite(fac1), psc2 = psc*porosite(fac2);
+  if (a_r) psc *= (*a_r)(num_elem,0);
   fill_coeffs_proto<Type_Double>(psc1,psc2,aii,ajj);
 }
 
 template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, typename Type_Double> inline
 enable_if_t<Arete_Type == Type_Flux_Arete::INTERNE || Arete_Type == Type_Flux_Arete::MIXTE || Arete_Type == Type_Flux_Arete::PERIODICITE, void>
-Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(const DoubleTab*, int fac1, int fac2 , int fac3, int fac4, Type_Double& aii, Type_Double& ajj) const
+Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(const DoubleTab* a_r, int fac1, int fac2 , int fac3, int fac4, Type_Double& aii, Type_Double& ajj) const
 {
   assert(aii.size_array() == ajj.size_array());
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
-  const double psc = 0.25*((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
+  double psc = 0.25*((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
+//  if (a_r) psc *= (*a_r)(elem_(fac3,0),0); // FIXME oulaaaaaaaaaaaaaa
   fill_coeffs_proto<Type_Double>(psc,psc,aii,ajj);
 }
 
 template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, typename Type_Double> inline
 enable_if_t<Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
-Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(const DoubleTab*, int fac1, int fac2,int fac3,int signe,Type_Double& aii1_2, Type_Double& aii3_4, Type_Double& ajj1_2) const
+Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(const DoubleTab* a_r, int fac1, int fac2,int fac3,int signe,Type_Double& aii1_2, Type_Double& aii3_4, Type_Double& ajj1_2) const
 {
   assert(aii1_2.size_array() == aii3_4.size_array() && aii1_2.size_array() == ajj1_2.size_array());
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
@@ -388,10 +470,15 @@ Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(const DoubleTab*, int fac1, int fac2
 
   double psc = is_COIN ? 0.5*dt_vitesse(fac1)*porosite(fac1)*surface(fac1) : 0.25 * ((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
   if ((psc*signe)>0)
-    for (int k = 0; k < ncomp; k++) aii3_4[k] = psc ;
+    for (int k = 0; k < ncomp; k++)
+      {
+//        if (a_r) psc *= (*a_r)(elem_(fac3,0),0); // FIXME
+        aii3_4[k] = psc ;
+      }
   else for (int k = 0; k < ncomp; k++) aii3_4[k] = 0.;
 
   psc = 0.5*dt_vitesse(fac3)*surface(fac3)*porosite(fac3);
+//  if (a_r) psc *= (*a_r)(elem_(fac1,0),0); // FIXME
   fill_coeffs_proto<Type_Double>(psc,psc,aii1_2,ajj1_2);
 }
 
