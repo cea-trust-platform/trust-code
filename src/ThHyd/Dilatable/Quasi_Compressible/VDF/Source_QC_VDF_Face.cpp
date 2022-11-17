@@ -68,6 +68,8 @@ Implemente_instanciable(Darcy_QC_VDF_Face,"Darcy_QC_VDF_Face",Source_Darcy_VDF_F
 Sortie& Darcy_QC_VDF_Face::printOn(Sortie& os) const { return Source_Darcy_VDF_Face::printOn(os); }
 Entree& Darcy_QC_VDF_Face::readOn(Entree& is) { return Source_Darcy_VDF_Face::readOn(is); }
 DoubleTab& Darcy_QC_VDF_Face::ajouter_mere(DoubleTab& resu) const { Source_Darcy_VDF_Face::ajouter_blocs({},resu, {}); return resu; }
+
+#pragma clang optimize off
 void Darcy_QC_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
@@ -75,11 +77,14 @@ void Darcy_QC_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, co
   contribuer_a_avec_impl(secmem,*mat);
   ajouter_impl(secmem);
 }
+#pragma clang optimize on
 
 Implemente_instanciable(Forchheimer_QC_VDF_Face,"Forchheimer_QC_VDF_Face",Source_Forchheimer_VDF_Face);
 Sortie& Forchheimer_QC_VDF_Face::printOn(Sortie& os) const { return Source_Forchheimer_VDF_Face::printOn(os); }
 Entree& Forchheimer_QC_VDF_Face::readOn(Entree& is) { return Source_Forchheimer_VDF_Face::readOn(is); }
 DoubleTab& Forchheimer_QC_VDF_Face::ajouter_mere(DoubleTab& resu) const { Source_Forchheimer_VDF_Face::ajouter_blocs({},resu, {}); return resu; }
+
+#pragma clang optimize off
 void Forchheimer_QC_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
@@ -87,4 +92,4 @@ void Forchheimer_QC_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
   contribuer_a_avec_impl(secmem,*mat);
   ajouter_impl(secmem);
 }
-
+#pragma clang optimize on
