@@ -7,7 +7,7 @@ linux	rsync_ssh	tache	is221559.intra.cea.fr				-TRUST -MPCube -TrioCFD -IJK-FT -
 linux	scp_ssh		tache	is241479.intra.cea.fr		-all 		 -TrioCFD -IJK-FT 	-g 				-force_provided_mpich -disable-valgrind -disable-plot2d -without-pdflatex -disable-vc 	# CentOS 7.9 salle de formation titania
 linux	rsync_ssh	cible	is242981-gpu.intra.cea.fr			-TrioCFD -IJK-FT 			-cuda		-without-pdflatex								# Fedora 32	Bat 451 LGLS titania bureau Pierre Ledac
 linux	rsync_ssh	tache	is242981-clang.intra.cea.fr			-TrioCFD -IJK-FT 					-clang 		-force_provided_openmpi -without-pdflatex								# Fedora 32	Bat 451 LGLS titania bureau Pierre Ledac
-linux	rsync_ssh	tache	is234634-clang.intra.cea.fr	-all 		-GENEPI3 -IJK-FT -FLICA5 -C3D  					-clang 		-force_provided_openmpi -without-pdflatex -without-visit 								# Fedora 36	Bat 451 LGLS titania bureau TMA TRUST
+linux	rsync_ssh	tache	is234634-clang.intra.cea.fr	-all 		-GENEPI3 -TrioCFD -FLICA5 -C3D  					-clang 		-force_provided_openmpi -without-pdflatex -without-visit 								# Fedora 36	Bat 451 LGLS titania bureau TMA TRUST
 linux	rsync_ssh	cible	is227246.intra.cea.fr		-all     	-MPCube -TrioCFD -IJK-FT -GENEPI3 -SIDES -SCORPIO -STT -PEMFC -FLICA5 -C3D  -force_latest_mpich  							# Fedora 34	Bat 451 Erwan titania
 linux	git_ssh    	tache	irene-ccrt.ccc.cea.fr		-limited	-TrioCFD -IJK-FT					-semi_opt -benchmark	-without-doc -disable-plot2d 									# RedHat 7.6	CEA CCRT
 linux	rsync_ssh	tache	altair-nvidia.intra.cea.fr	-all		-TrioCFD				-cuda
