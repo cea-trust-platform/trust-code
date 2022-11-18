@@ -14,14 +14,40 @@
 *****************************************************************************/
 
 
-#ifndef Terme_Puissance_Thermique_Echange_Impose_P0_VDF_included
-#define Terme_Puissance_Thermique_Echange_Impose_P0_VDF_included
+#ifndef Terme_Puissance_Thermique_Echange_Impose_Elem_base_included
+#define Terme_Puissance_Thermique_Echange_Impose_Elem_base_included
 
-#include <Terme_Puissance_Thermique_Echange_Impose_Elem_base.h>
+#include <Source_base.h>
+#include <Ref_Zone_VF.h>
+#include <Ref_Zone_Cl_dis_base.h>
+#include <Champ_Don.h>
+#include <Parser_U.h>
 
-class Terme_Puissance_Thermique_Echange_Impose_P0_VDF:  public Terme_Puissance_Thermique_Echange_Impose_Elem_base
+class Probleme_base;
+
+class Terme_Puissance_Thermique_Echange_Impose_Elem_base: public Source_base
 {
-  Declare_instanciable(Terme_Puissance_Thermique_Echange_Impose_P0_VDF);
+
+  Declare_base(Terme_Puissance_Thermique_Echange_Impose_Elem_base);
+
+public:
+  int has_interface_blocs() const override { return 1; }
+  int lire_motcle_non_standard(const Motcle& mot, Entree& is) override;
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { }; //rien
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+  void associer_pb(const Probleme_base& ) override { };
+  void mettre_a_jour(double ) override;
+  void pid_process();
+
+protected:
+  REF(Zone_VF) la_zone;
+  REF(Zone_Cl_dis_base) la_zone_Cl;
+  Champ_Don himp_,Text_;
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
+  // PID controler
+  int regul_ = 0;
+  Parser_U pow_cible_, Kp_, Ki_, Kd_;
+  double DT_regul_ = 0.0, p_error = 0.0;
 };
 
 #endif

@@ -17,44 +17,12 @@
 #ifndef Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC_included
 #define Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC_included
 
-#include <Source_base.h>
+#include <Terme_Puissance_Thermique_Echange_Impose_Elem_base.h>
 
-#include <Ref_Zone_PolyMAC.h>
-#include <Ref_Zone_Cl_PolyMAC.h>
-#include <Champ_Don.h>
-
-class Probleme_base;
-
-/*! @brief class Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC
- *
- *
- *
- * @sa Source_base
- */
-class Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC :  public Source_base
-
-
+class Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC: public Terme_Puissance_Thermique_Echange_Impose_Elem_base
 {
 
-  Declare_instanciable_sans_constructeur(Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC);
-
-public:
-  int has_interface_blocs() const override
-  {
-    return 1;
-  };
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { }; //rien
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
-  void associer_pb(const Probleme_base& ) override { };
-  void mettre_a_jour(double ) override;
-
-protected:
-
-  REF(Zone_PolyMAC) la_zone_PolyMAC;
-  REF(Zone_Cl_PolyMAC) la_zone_Cl_PolyMAC;
-  Champ_Don himp_,Text_;
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
-
+  Declare_instanciable(Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC);
 };
 
 #endif
