@@ -2,7 +2,8 @@
 rm -f nb_cells
 for f in `find -name "*.data"`
 do
-  nbr_maille=""
-  nbr_maille=`grep -i nombre_de_noeud $f | $TRUST_Awk '{print ($2-1)*($3-1)}'`
-  [ "$nbr_maille" != "" ] && echo $f $nbr_maille >> nb_cells
+  nbCells=""
+  nbCells=`grep -i nombre_de_noeud $f | $TRUST_Awk '{print ($2-1)*($3-1)}'`
+  [ "$nbCells" != "" ] && echo $f $nbCells >> nb_cells
 done
+exit 0
