@@ -13,8 +13,7 @@
 *
 *****************************************************************************/
 
-#include <IJK_Field_template.h>
+#include <IJK_Field.h>
 
 Implemente_vect(IJK_Field_float);
 Implemente_vect(IJK_Field_double);
-

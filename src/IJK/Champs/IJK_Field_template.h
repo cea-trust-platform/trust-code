@@ -52,7 +52,10 @@ protected:
   Entree& readOn(Entree& is) override { return is; }
 
 public:
-  IJK_Field_template() : IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>() { }
+  IJK_Field_template() :
+    IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>(),
+    localisation_(IJK_Splitting::Localisation::ELEM)
+  { }
   void allocate(const IJK_Splitting&, IJK_Splitting::Localisation, int ghost_size, int additional_k_layers = 0, int nb_compo = 1, bool external_storage = false);
 
   const IJK_Splitting& get_splitting() const { return splitting_ref_.valeur(); }
@@ -69,12 +72,6 @@ protected:
                      int ir, int jr, int kr, /* ijk coordinates of first data to recv */
                      int isz, int jsz, int ksz); /* size of block data to send/recv */
 };
-
-using IJK_Field_float = IJK_Field_template<float,ArrOfFloat>;
-Declare_vect(IJK_Field_float);
-using IJK_Field_double = IJK_Field_template<double,ArrOfDouble>;
-Declare_vect(IJK_Field_double);
-using IJK_Field_int = IJK_Field_template<int,ArrOfInt>;
 
 #include <IJK_Field_template.tpp>
 

@@ -53,10 +53,6 @@ double somme_ijk(const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& residu);
 template<typename _TYPE_, typename _TYPE_ARRAY_>
 _TYPE_ max_ijk(const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& residu);
 
-using IJK_Field_local = IJK_Field_local_double;
-using IJK_Field = IJK_Field_double;
-using VECT(IJK_Field) = VECT(IJK_Field_double);
-
 #include <IJK_Field_tools.tpp>
 
 #endif
