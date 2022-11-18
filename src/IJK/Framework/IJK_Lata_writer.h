@@ -24,6 +24,8 @@ void dumplata_header(const char *filename, const IJK_Field_template<_TYPE_,_TYPE
 template<typename _TYPE_, typename _TYPE_ARRAY_>
 void dumplata_add_geometry(const char *filename, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& f);
 
+void dumplata_add_geometry(const char *filename, const IJK_Splitting& splitting);
+
 void dumplata_newtime(const char *filename, double time);
 
 template<typename _TYPE_, typename _TYPE_ARRAY_>
@@ -50,6 +52,8 @@ template<typename _TYPE_, typename _TYPE_ARRAY_>
 void dumplata_scalar_parallele_plan(const char *filename, const char *fieldname,
                                     const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& f,
                                     int step);
+
+void dumplata_finish(const char *filename);
 
 template<typename _TYPE_, typename _TYPE_ARRAY_>
 void lire_dans_lata(const char *filename, int tstep, const char *geometryname, const char *fieldname,

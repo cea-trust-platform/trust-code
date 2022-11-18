@@ -39,6 +39,12 @@ protected:
   typedef FixedVector<Int3,2> Int23;
 public:
   enum Localisation { ELEM, NODES, FACES_I, FACES_J, FACES_K };
+  static Localisation FacesDirToLocalisation(int dir)
+  {
+    Localisation toto[] = { FACES_I, FACES_J, FACES_K };
+    assert(dir >= 0 && dir <= 2);
+    return toto[dir];
+  }
 
   IJK_Splitting();
   void nommer(const Nom& n) override { object_name_ = n; }
@@ -51,6 +57,12 @@ public:
                   const ArrOfInt& slice_size_j,
                   const ArrOfInt& slice_size_k,
                   const IntTab& processor_mapping);
+
+  void init_subregion(const IJK_Splitting& src,
+                      int ni, int nj, int nk,
+                      int offset_i, int offset_j, int offset_k,
+                      const Nom& subregion,
+                      bool perio_x = false, bool perio_y = false, bool perio_z = false);
 
   const IJK_Grid_Geometry& get_grid_geometry() const
   {

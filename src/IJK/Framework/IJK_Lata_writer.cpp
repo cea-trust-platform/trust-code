@@ -43,6 +43,48 @@ void dumplata_header(const char *filename)
     }
 }
 
+void dumplata_add_geometry(const char *filename, const IJK_Splitting& splitting)
+{
+  if (Process::je_suis_maitre())
+    {
+      SFichier master_file;
+      Nom prefix = Nom(filename) + Nom(".");
+      SFichier binary_file;
+      binary_file.set_bin(1);
+      ArrOfFloat tmp;
+      int n;
+
+      Nom basename(filename);
+      master_file.set_bin(0);
+      master_file.ouvrir(basename, ios::app);
+      Noms fname(3);
+      const Nom& geomname = splitting.get_grid_geometry().le_nom();
+      if (geomname == "??")
+        {
+          Cerr << "Error in  dumplata_header: geometry has no name" << finl;
+          Process::exit();
+        }
+      for (int dir = 0; dir < 3; dir++)
+        {
+          fname[dir] = prefix + geomname + Nom(".coord") + Nom((char)('x'+dir));
+          int i;
+          binary_file.ouvrir(fname[dir]);
+          const ArrOfDouble& coord = splitting.get_grid_geometry().get_node_coordinates(dir);
+          n = coord.size_array();
+          tmp.resize_array(n);
+          for (i = 0; i < n; i++)
+            tmp[i] = (float)coord[i]; // LATA in float ... pfff
+          binary_file.put(tmp.addr(), n, 1);
+          binary_file.close();
+        }
+      master_file << "Geom " << geomname << " type_elem=HEXAEDRE" << finl;
+      master_file << "Champ SOMMETS_IJK_I " << fname[0] << " geometrie=" << geomname << " size=" << splitting.get_grid_geometry().get_nb_elem_tot(0)+1 << " composantes=1" << finl;
+      master_file << "Champ SOMMETS_IJK_J " << fname[1] << " geometrie=" << geomname << " size=" << splitting.get_grid_geometry().get_nb_elem_tot(1)+1 << " composantes=1" << finl;
+      master_file << "Champ SOMMETS_IJK_K " << fname[2] << " geometrie=" << geomname << " size=" << splitting.get_grid_geometry().get_nb_elem_tot(2)+1 << " composantes=1" << finl;
+      master_file.close();
+    }
+}
+
 void dumplata_ft_field(const char *filename, const char *meshname,
                        const char *field_name, const char *localisation,
                        const ArrOfInt& field, int step)
@@ -114,6 +156,16 @@ void dumplata_ft_field(const char *filename, const char *meshname,
                   << localisation << finl;
     }
 
+}
+
+void dumplata_finish(const char *filename)
+{
+  if (Process::je_suis_maitre())
+    {
+      SFichier master_file;
+      master_file.ouvrir(filename, ios::app);
+      master_file << "FIN" << finl;
+    }
 }
 
 Nom dirname(const Nom& filename)

@@ -65,7 +65,7 @@ void dumplata_add_geometry(const char *filename, const  IJK_Field_template<_TYPE
           n = coord.size_array();
           tmp.resize_array(n);
           for (i = 0; i < n; i++)
-            tmp[i] = (float)coord[i];  //ToDo:: float here ????
+            tmp[i] = (float)coord[i];   // LATA in float ... pfff
           binary_file.put(tmp.addr(), n, 1);
           binary_file.close();
         }

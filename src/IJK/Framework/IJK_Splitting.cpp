@@ -363,6 +363,52 @@ void IJK_Splitting::initialize(const IJK_Grid_Geometry& geom, const ArrOfInt& sl
             << " right:" << print_vect(neighbour_processors_[1]) << finl;
 }
 
+// Builds geometry, parallel splitting and DOF correspondance between a "father" region
+// and a "son" region which is a subpart of the father region.
+// Only conformal subregion is supported for now, with ELEMENT types.
+// Missing features: be able to build a subregion which is the boundary of another
+// eg: father is "3D elements", son is "2D faces"
+void IJK_Splitting::init_subregion(const IJK_Splitting& src,
+                                   int ni, int nj, int nk,
+                                   int offset_i, int offset_j, int offset_k,
+                                   const Nom& subregion_name,
+                                   bool perio_x, bool perio_y, bool perio_z )
+{
+
+  /* methode difficile a ecrire pour etre generale
+     traiter proprement les differentes localisation, par exemple les faces de bord est un casse-tete
+     Pour l'instant, en dur on suppose que la sous region ne peut etre partiel que dans la direction K
+     (on garde les plans entiers en i et j)
+     et que le decoupage en processeurs ne peut etre fait qu'en I et J, et que la localisation est toujours
+     ELEM
+   */
+  assert(src.nproc_per_direction_[0] == 1 || (ni==src.get_grid_geometry().get_nb_elem_tot(0) && offset_i==0));
+  assert(src.nproc_per_direction_[1] == 1 || (nj==src.get_grid_geometry().get_nb_elem_tot(1) && offset_j==0));
+  assert(src.nproc_per_direction_[2] == 1 || (nk==src.get_grid_geometry().get_nb_elem_tot(2) && offset_k==0));
+
+  // La construction de la geometrie ne necessite pas les prerequis: c'est general
+  double x0 = src.get_grid_geometry().get_node_coordinates(0)[offset_i];
+  double y0 = src.get_grid_geometry().get_node_coordinates(1)[offset_j];
+  double z0 = src.get_grid_geometry().get_node_coordinates(2)[offset_k];
+  ArrOfDouble dx0 = src.get_grid_geometry().get_delta(0);
+  ArrOfDouble dy0 = src.get_grid_geometry().get_delta(1);
+  ArrOfDouble dz0 = src.get_grid_geometry().get_delta(2);
+  ArrOfDouble dx, dy, dz;
+  dx.ref_array(dx0, offset_i, ni);
+  dy.ref_array(dy0, offset_j, nj);
+  dz.ref_array(dz0, offset_k, nk);
+  IJK_Grid_Geometry grid_geom;
+  grid_geom.initialize_origin_deltas(x0,y0,z0,dx,dy,dz,perio_x,perio_y,perio_z);
+
+  grid_geom.nommer( subregion_name );
+  // Pour le decoupage, on recopie:
+
+  int nproc_i=src.nproc_per_direction_[0];
+  int nproc_j=src.nproc_per_direction_[1];
+  int nproc_k=src.nproc_per_direction_[2];
+  initialize(grid_geom, nproc_i,nproc_j,nproc_k);
+}
+
 // Resizes delta with the local number of mesh cells in direction dir
 // with required number of ghost cells, and fills the array with the size
 // of the cells in this direction.

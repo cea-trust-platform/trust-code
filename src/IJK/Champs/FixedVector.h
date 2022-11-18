@@ -21,6 +21,9 @@ template<class T, int N>
 class FixedVector
 {
 public:
+  FixedVector() { }
+  FixedVector(int i, int j, int k) {  }
+
   static int size()
   {
     return N;
@@ -49,6 +52,15 @@ public:
 protected:
   T data_[N];
 };
+
+template<>
+inline FixedVector<int,3>::FixedVector(int i, int j, int k)
+{
+  data_[0] = i;
+  data_[1] = j;
+  data_[2] = k;
+}
+
 
 template<class T, int N>
 inline FixedVector<T,N> operator-(const FixedVector<T,N>& v1, const FixedVector<T,N>& v2)
@@ -155,13 +167,13 @@ inline FixedVector<FixedVector<T,N>,M> operator*(const FixedVector<FixedVector<T
 }
 
 template<class T, int N, int M>
-inline FixedVector<FixedVector<T,N>,M> operator+(const FixedVector<FixedVector<T,N>,M>& m1,
-                                                 const FixedVector<FixedVector<T,N>,M>& m2)
+inline FixedVector<FixedVector<T,N>,M> operator+(const FixedVector<FixedVector<T,N>,M>& mm1,
+                                                 const FixedVector<FixedVector<T,N>,M>& mm2)
 {
   FixedVector<FixedVector<T,N>,M> resu;
   for (int j = 0; j < M; j++)
     for (int i = 0; i < N; i++)
-      resu[j][i] = m1[j][i] + m2[j][i];
+      resu[j][i] = mm1[j][i] + mm2[j][i];
   return resu;
 }
 
