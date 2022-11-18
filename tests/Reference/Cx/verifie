@@ -16,7 +16,7 @@ message()
 err=0
 for out in `ls Cx*.out.ref`
 do
-   msg="diff $out ${out%.ref}"
+   msg="compare_sonde $out ${out%.ref}"
    eval $msg 1>verifie.log 2>&1
    message $? 0
 done

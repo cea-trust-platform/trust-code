@@ -386,6 +386,7 @@ check_components()
 	                else
 	                   check_option="--check-all" #&& [ "$Composant" = Front_tracking_IJK ] && check_option="" # IJK modifie le FT (modification PL 15/05/2020) donc on ne fait plus que make check_optim
 	                                              # ND 26/09/2022 : IJK est dans triocfd, et ne modifie plus le FT
+		           [ "$Composant" = TRUST_NK ] && check_option=""
 		           if [[ "$updated_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines updated
 		           then
 			      if [ "`date '+%u'`" -gt 5 ] || ([ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 17 ])
