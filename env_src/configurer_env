@@ -1741,7 +1741,7 @@ case $TRUST_ARCH_CC in
    linux_icpc) TRUST_SUPPORTED=1
 	# -fp-model precise (default fast=1) pour avoir memes resultats que GNU
 	# ND: -fp-model=except en plus de precise, fvca_jdd13 OK mais crash dans F5
-	flag_optim="-O3 -fp-model precise" && [ "$VT_ROOT" != "" ] && flag_optim="-g "$flag_optim # -g pour Itac, traceanalyzer
+	flag_optim="-O3 -fp-model=strict" && [ "$VT_ROOT" != "" ] && flag_optim="-g "$flag_optim # -g pour Itac, traceanalyzer
 	Defines="-D_COMPILE_AVEC_INTEL"
 	CppFlags="$flag_optim -std=c++11 -fPIC -unroll -Wno-unknown-pragmas"
 	LIB_INTEL=`dirname $TRUST_F77_BASE`

@@ -44,7 +44,7 @@ done
 cat par
 rm -f EN_COURS
 # Envoi un mail si TRUST_ADMIN
-if [ "$TRUST_LOGIN" = triou ]
+if [ "`whoami`" = triou ]
 then
    cat par | mail_ -s "Bench_$HOST_BUILD" $TRUST_MAIL
    cat Run_bench.log | mail_ -s "Run_bench.log_$HOST_BUILD" $TRUST_MAIL
