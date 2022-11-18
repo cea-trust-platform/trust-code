@@ -1064,8 +1064,13 @@ void Sonde::ouvrir_fichier()
               if (dimension==3) fichier() << " z= " << p(i,2) ;
             }
           s << finl;
-          const Noms unites = mon_champ->get_property("unites");
-          s << "# Champ " << nom_champ_lu_ << " [" << unites[ncomp==-1 ? 0 : ncomp] << "]" << finl;
+          if (mon_champ.non_nul())
+            {
+              const Noms unites = mon_champ->get_property("unites");
+              s << "# Champ " << nom_champ_lu_ << " [" << unites[ncomp == -1 ? 0 : ncomp] << "]" << finl;
+            }
+          else
+            s << "# Champ " << nom_champ_lu_ << " [??]" << finl;
           s << "# Type " << get_type() << finl;
         }
       // Ecriture de l'en tete des fichiers plan :
