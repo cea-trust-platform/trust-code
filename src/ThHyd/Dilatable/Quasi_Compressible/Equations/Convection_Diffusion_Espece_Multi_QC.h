@@ -26,12 +26,12 @@
  *
  * @sa Convection_Diffusion_Espece_Multi_base
  */
-
 class Convection_Diffusion_Espece_Multi_QC : public Convection_Diffusion_Espece_Multi_base
 {
   Declare_instanciable(Convection_Diffusion_Espece_Multi_QC);
 
 public :
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
   void set_param(Param& titi) override;
   void completer() override;
   void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) override ;

@@ -15,12 +15,16 @@
 
 #include <Convection_Diffusion_Espece_Multi_QC.h>
 #include <Fluide_Quasi_Compressible.h>
+#include <Neumann_sortie_libre.h>
 #include <Loi_Etat_Multi_GP_QC.h>
-#include <Probleme_base.h>
-#include <TRUSTTrav.h>
-#include <Param.h>
 #include <Discretisation_base.h>
+#include <Navier_Stokes_QC.h>
+#include <Probleme_base.h>
 #include <Statistiques.h>
+#include <Dirichlet.h>
+#include <TRUSTTrav.h>
+#include <EChaine.h>
+#include <Param.h>
 
 extern Stat_Counter_Id assemblage_sys_counter_;
 extern Stat_Counter_Id source_counter_;
@@ -44,10 +48,36 @@ void Convection_Diffusion_Espece_Multi_QC::set_param(Param& param)
   param.ajouter("espece",&mon_espece_); // XD_ADD_P espece Assosciate a species (with its properties) to the equation
 }
 
+int Convection_Diffusion_Espece_Multi_QC::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+{
+  if (mot=="diffusion")
+    {
+      Cerr << "Reading and typing of the diffusion operator : " << finl;
+      //associe mu_sur_Sc dans la diffusivite
+      terme_diffusif.associer_diffusivite(diffusivite_pour_transport());
+      ref_cast_non_const(Champ_base,terme_diffusif.diffusivite()).nommer("mu_sur_Schmidt");
+      is >> terme_diffusif;
+      // Il faut appeler associer_diffusivite_pour_pas_de_temps
+      terme_diffusif.associer_diffusivite_pour_pas_de_temps(diffusivite_pour_pas_de_temps());
+      return 1;
+    }
+  else if (mot=="convection")
+    {
+      const Probleme_base& pb = probleme();
+      const Champ_Inc& vit_transportante = ref_cast(Navier_Stokes_QC,pb.equation(0)).rho_la_vitesse();
+      associer_vitesse(vit_transportante);
+      terme_convectif.associer_vitesse(vit_transportante);
+      is >> terme_convectif;
+      terme_convectif.associer_vitesse(vit_transportante);
+      return 1;
+    }
+  else
+    return Convection_Diffusion_Espece_Fluide_Dilatable_base::lire_motcle_non_standard(mot,is);
+}
+
 const Champ_base& Convection_Diffusion_Espece_Multi_QC::diffusivite_pour_pas_de_temps() const
 {
-  // TODO : FIXME : on passe actuellement en parametre mu_sur_Schmidt
-  // qu il faut remplacer par nu_sur_Schmidt
+  // TODO : FIXME : on passe actuellement en parametre mu_sur_Schmidt qu il faut remplacer par nu_sur_Schmidt
   return le_fluide->mu_sur_Schmidt();
 }
 
@@ -57,10 +87,33 @@ const Champ_base& Convection_Diffusion_Espece_Multi_QC::diffusivite_pour_pas_de_
 void Convection_Diffusion_Espece_Multi_QC::completer()
 {
   Convection_Diffusion_Espece_Multi_base::completer();
-  Fluide_Quasi_Compressible& le_fluideQC=ref_cast(Fluide_Quasi_Compressible,fluide());
-  Loi_Etat_Multi_GP_QC& loi_etat = ref_cast_non_const(Loi_Etat_Multi_GP_QC,le_fluideQC.loi_etat().valeur());
+  Fluide_Quasi_Compressible& le_fluideQC = ref_cast(Fluide_Quasi_Compressible, fluide());
+  Loi_Etat_Multi_GP_QC& loi_etat = ref_cast_non_const(Loi_Etat_Multi_GP_QC, le_fluideQC.loi_etat().valeur());
   loi_etat.associer_inconnue(l_inco_ch.valeur());
   loi_etat.associer_espece(*this);
+
+  // remplissage de la zone cl modifiee avec 1 partout au bord...
+  zcl_modif_ = zone_Cl_dis();
+
+  Conds_lim& condlims = zcl_modif_.valeur().les_conditions_limites();
+  int nb = condlims.size();
+  for (int i = 0; i < nb; i++)
+    {
+      // pour chaque condlim on recupere le champ_front et on met 1 meme si la cond lim est un flux (dans ce cas la convection restera nulle.)
+      if (sub_type(Neumann_sortie_libre, condlims[i].valeur()))
+        {
+          ref_cast(Neumann_sortie_libre,condlims[i].valeur()).tab_ext() = 1;
+        }
+      if (sub_type(Dirichlet, condlims[i].valeur()))
+        {
+          const Frontiere_dis_base& frdis = condlims[i].valeur().frontiere_dis();
+          EChaine toto(" Champ_front_uniforme 1 1");
+          toto >> condlims[i].valeur();
+          condlims[i].valeur().associer_fr_dis_base(frdis);
+        }
+      DoubleTab& T = condlims[i].valeur().champ_front().valeurs();
+      T = 1.;
+    }
 }
 
 /*! @brief Renvoie la derivee en temps de l'inconnue de l'equation.
@@ -73,114 +126,89 @@ void Convection_Diffusion_Espece_Multi_QC::completer()
  */
 DoubleTab& Convection_Diffusion_Espece_Multi_QC::derivee_en_temps_inco(DoubleTab& derivee)
 {
-  if (schema_temps().diffusion_implicite())
-    {
-      // on ne peut  pas pour l'instanrt aller plus vite que la CFL
-      double dt=le_schema_en_temps->pas_de_temps();
-      double dt_op = operateur(1).calculer_pas_de_temps();
-      if(inf_strict(dt_op,dt))
-        {
-          Cerr<<"diffusion_implicite cannot be achieved for the case dt > dt_op_conv"<<finl;
-          Process::exit();
-        }
-    }
+  derivee = 0;
 
-  DoubleTrav secmem(derivee);
+  les_sources.ajouter(derivee);
+  solveur_masse.appliquer(derivee);
+  DoubleTrav derivee_bis(derivee);
 
   // on commence par retirer phi*div(1 U)
   const DoubleTab& frac_mass = inconnue().valeurs();
 
   int n = frac_mass.dimension_tot(0);
   DoubleTrav unite(frac_mass);
-  unite=1;
-
-  // on change temporairement la zone_cl
-  operateur(1).l_op_base().associer_zone_cl_dis(zcl_modif_.valeur());
-  operateur(1).ajouter(unite,secmem);
-  operateur(1).l_op_base().associer_zone_cl_dis(zone_Cl_dis().valeur());
-
-  for (int i=0; i<n; i++)
-    secmem(i)=-secmem(i)*frac_mass(i);
-
-  // suite + standard
-  operateur(1).ajouter(secmem);
-  les_sources.ajouter(secmem);
-  solveur_masse.appliquer(secmem);
-
-  solveur_masse->set_name_of_coefficient_temporel("masse_volumique");
-  if (schema_temps().diffusion_implicite())
-    {
-      derivee=inconnue().valeurs();
-      Equation_base::Gradient_conjugue_diff_impl(secmem, derivee);
-    }
-  else
-    {
-      DoubleTrav secmem_bis(secmem);
-      operateur(0).ajouter(secmem_bis);
-      solveur_masse.appliquer(secmem_bis);
-      secmem += secmem_bis;
-      derivee = secmem;
-    }
-  solveur_masse->set_name_of_coefficient_temporel("no_coeff");
-  return derivee;
-}
-
-void Convection_Diffusion_Espece_Multi_QC::assembler( Matrice_Morse& matrice, const DoubleTab& inco, DoubleTab& resu)
-{
-
-  resu=0;
-  const IntVect& tab1= matrice.get_tab1();
-
-  DoubleVect& coeff=matrice.get_set_coeff();
-
-  const DoubleTab& rho=get_champ("masse_volumique").valeurs();
-  operateur(0).l_op_base().contribuer_a_avec(inco, matrice );
-
-  operateur(0).ajouter( resu );
-
-  int ndl=rho.dimension(0);
-  // on divise par rho chaque ligne
-  for (int som=0; som<ndl; som++)
-    {
-      double inv_rho=1/rho(som);
-      for (int k=tab1(som)-1; k<tab1(som+1)-1; k++)
-        coeff(k)*=inv_rho;
-      resu(som)*=inv_rho;
-    }
-
-
-  // ajout de la convection
-  operateur(1).l_op_base().contribuer_a_avec(inco, matrice );
-  operateur(1).ajouter(resu );
-
-
-  // on retire Divu1 *inco
-
-  DoubleTrav unite(inco),divu1(inco);
-  unite=1;
+  unite = 1;
 
   {
     // on change temporairement la zone_cl
-
     operateur(1).l_op_base().associer_zone_cl_dis(zcl_modif_.valeur());
-    operateur(1).ajouter(unite,divu1);
-
+    operateur(1).ajouter(unite, derivee_bis);
     operateur(1).l_op_base().associer_zone_cl_dis(zone_Cl_dis().valeur());
   }
-  for (int i=0; i<ndl; i++)
-    {
-      resu(i)-=divu1(i)*inco(i);
-      matrice(i,i)+=divu1(i);
-    }
 
-  les_sources.contribuer_a_avec(inco,matrice);
-  les_sources.ajouter(resu);
-  int test_op=0;
+  for (int i = 0; i < n; i++)
+    derivee_bis(i) = -derivee_bis(i) * frac_mass(i);
+
+  // suite + standard
+  operateur(1).ajouter(derivee_bis);
+  operateur(0).ajouter(derivee_bis);
+
+  solveur_masse->set_name_of_coefficient_temporel("masse_volumique");
+  solveur_masse.appliquer(derivee_bis);
+  solveur_masse->set_name_of_coefficient_temporel("no_coeff");
+  derivee += derivee_bis;
+  return derivee;
+}
+
+void Convection_Diffusion_Espece_Multi_QC::assembler(Matrice_Morse& matrice, const DoubleTab& inco, DoubleTab& resu)
+{
+  resu = 0;
+  const IntVect& tab1 = matrice.get_tab1();
+  DoubleVect& coeff = matrice.get_set_coeff();
+
+  const DoubleTab& rho = get_champ("masse_volumique").valeurs();
+  operateur(0).l_op_base().contribuer_a_avec(inco, matrice);
+  operateur(0).ajouter(resu);
+  int ndl = rho.dimension(0);
+
+  // on retire Divu1 *inco
+  DoubleTrav unite(inco), divu1(inco);
+  unite = 1;
+
   {
-    char* theValue = getenv("TRUST_TEST_OPERATEUR_IMPLICITE_BLOQUANT");
-    if (theValue != NULL) test_op=1;
+    // on change temporairement la zone_cl
+    operateur(1).l_op_base().associer_zone_cl_dis(zcl_modif_.valeur());
+    operateur(1).ajouter(unite, divu1);
+    operateur(1).l_op_base().associer_zone_cl_dis(zone_Cl_dis().valeur());
   }
 
+  // ajout de la convection
+  operateur(1).l_op_base().contribuer_a_avec(inco, matrice);
+  operateur(1).ajouter(resu);
+
+  for (int i = 0; i < ndl; i++)
+    {
+      resu(i) -= divu1(i) * inco(i);
+      matrice(i, i) += divu1(i);
+    }
+  // on divise par rho chaque ligne
+  for (int som = 0; som < ndl; som++)
+    {
+      double inv_rho = 1 / rho(som);
+      for (int k = tab1(som) - 1; k < tab1(som + 1) - 1; k++)
+        coeff(k) *= inv_rho;
+      resu(som) *= inv_rho;
+    }
+
+  les_sources.contribuer_a_avec(inco, matrice);
+  les_sources.ajouter(resu);
+
+  int test_op = 0;
+  {
+    char *theValue = getenv("TRUST_TEST_OPERATEUR_IMPLICITE_BLOQUANT");
+    if (theValue != NULL)
+      test_op = 1;
+  }
 
   if (test_op)
     {
@@ -189,75 +217,69 @@ void Convection_Diffusion_Espece_Multi_QC::assembler( Matrice_Morse& matrice, co
       DoubleTrav resu2(resu);
       derivee_en_temps_inco(resu2);
       solveur_masse.appliquer(test2);
-      resu2-=test2;
-      Cerr<<" here " <<mp_max_abs_vect(resu2)<<finl;
-      matrice.ajouter_multvect(inco,test);
+      resu2 -= test2;
+      Cerr << " here " << mp_max_abs_vect(resu2) << finl;
+      matrice.ajouter_multvect(inco, test);
       solveur_masse.appliquer(test);
       const double max_test = mp_max_abs_vect(test);
-      Cerr<<"iii "<<max_test<<finl;
+      Cerr << "iii " << max_test << finl;
 
-      if (max_test>0)
+      if (max_test > 0)
         {
 
-          for (int i=0; i<resu.size(); i++)
-            if (std::fabs(test(i))>1e-5)
-              Cerr<<i << " "<<test(i)<<finl;
-          //        Cerr<<resu <<finl;
+          for (int i = 0; i < resu.size(); i++)
+            if (std::fabs(test(i)) > 1e-5)
+              Cerr << i << " " << test(i) << finl;
           Process::exit();
         }
     }
-  matrice.ajouter_multvect(inco,resu);
-  /*
-    Cerr<<" Convection_Diffusion_Espece_Multi_QC::assembler non code "<<finl;
-    Cerr<<"vous ne pouvez pas faire d'implicite avec des fracions massiques "<<finl;
-    exit();
-  */
+  matrice.ajouter_multvect(inco, resu);
 }
-
 
 void Convection_Diffusion_Espece_Multi_QC::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl)
 {
   statistiques().begin_count(assemblage_sys_counter_);
   const std::string& nom_inco = inconnue().le_nom().getString();
   const DoubleTab& inco = inconnue().valeurs();
-  Matrice_Morse *mat = matrices.count(nom_inco)?matrices.at(nom_inco):NULL;
+  Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
 
-  secmem=0;
-  const IntVect& tab1= mat->get_tab1();
+  secmem = 0;
+  const IntVect& tab1 = mat->get_tab1();
 
-  DoubleVect& coeff=mat->get_set_coeff();
+  DoubleVect& coeff = mat->get_set_coeff();
 
-  const DoubleTab& rho=get_champ("masse_volumique").valeurs();
+  const DoubleTab& rho = get_champ("masse_volumique").valeurs();
   operateur(0).l_op_base().ajouter_blocs(matrices, secmem, semi_impl);
 
-  int ndl=rho.dimension(0);
+  int ndl = rho.dimension(0);
   // on divise par rho chaque ligne
-  for (int som=0; som<ndl; som++)
+  for (int som = 0; som < ndl; som++)
     {
-      double inv_rho=1/rho(som);
-      for (int k=tab1(som)-1; k<tab1(som+1)-1; k++)
-        coeff(k)*=inv_rho;
-      secmem(som)*=inv_rho;
+      double inv_rho = 1 / rho(som);
+      for (int k = tab1(som) - 1; k < tab1(som + 1) - 1; k++)
+        coeff(k) *= inv_rho;
+      secmem(som) *= inv_rho;
     }
 
   // ajout de la convection
   operateur(1).l_op_base().ajouter_blocs(matrices, secmem, semi_impl);
 
   // on retire Divu1 *inco
-  DoubleTrav unite(inco),divu1(inco);
-  unite=1;
+  DoubleTrav unite(inco), divu1(inco);
+  unite = 1;
 
   {
     // on change temporairement la zone_cl
     operateur(1).l_op_base().associer_zone_cl_dis(zcl_modif_.valeur());
-    operateur(1).ajouter(unite,divu1);
+    operateur(1).ajouter(unite, divu1);
     operateur(1).l_op_base().associer_zone_cl_dis(zone_Cl_dis().valeur());
   }
 
-  for (int i=0; i<ndl; i++)
+  for (int i = 0; i < ndl; i++)
     {
-      secmem(i)-=divu1(i)*inco(i);
-      if(mat) (*mat)(i,i)+=divu1(i);
+      secmem(i) -= divu1(i) * inco(i);
+      if (mat)
+        (*mat)(i, i) += divu1(i);
     }
   statistiques().end_count(assemblage_sys_counter_);
 
@@ -267,13 +289,13 @@ void Convection_Diffusion_Espece_Multi_QC::assembler_blocs_avec_inertie(matrices
   statistiques().end_count(source_counter_);
 
   statistiques().begin_count(assemblage_sys_counter_);
-  if(mat) mat->ajouter_multvect(inco,secmem);
+  if (mat)
+    mat->ajouter_multvect(inco, secmem);
 
   schema_temps().ajouter_blocs(matrices, secmem, *this);
 
   if (!discretisation().que_suis_je().debute_par("PolyMAC"))
-    modifier_pour_Cl(*mat,secmem);
+    modifier_pour_Cl(*mat, secmem);
 
   statistiques().end_count(assemblage_sys_counter_);
-
 }
