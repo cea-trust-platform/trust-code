@@ -55,6 +55,7 @@ public :
   inline int calculer_hyd(Champ_Fonc& , Champ_Fonc& );
   virtual int calculer_hyd(DoubleTab& ) =0;
   virtual int calculer_hyd(DoubleTab& , DoubleTab& ) =0;
+  virtual int calculer_hyd_BiK(DoubleTab& , DoubleTab& ) =0;
   inline virtual DoubleTab& corriger_derivee_impl(DoubleTab& d) const
   {
     return d;

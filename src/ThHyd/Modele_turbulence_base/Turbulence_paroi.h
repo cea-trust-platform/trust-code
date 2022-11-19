@@ -47,6 +47,7 @@ public:
   void associer_modele(const Mod_turb_hyd_base& );
   inline int init_lois_paroi();
   inline int calculer_hyd(Champ_Inc& );
+  inline int calculer_hyd_BiK(Champ_Inc& , Champ_Inc& );
   inline int calculer_hyd(Champ_Fonc& , Champ_Fonc& );
   inline int calculer_hyd(Champ_Inc_base& );
   inline int calculer_hyd(Champ_Fonc_base& ,Champ_Fonc_base& );
@@ -128,6 +129,17 @@ inline void Turbulence_paroi::imprimer_premiere_ligne_ustar(int boundaries_, con
 inline int Turbulence_paroi::calculer_hyd(Champ_Inc& ch)
 {
   return valeur().calculer_hyd(ch);
+}
+
+/*! @brief Appel a l'objet sous-jacent.
+ *
+ * @param (Champ_Fonc& ch1)
+ * @param (Champ_Fonc& ch2)
+ * @return (int) code de retour propage
+ */
+inline int Turbulence_paroi::calculer_hyd_BiK(Champ_Inc& ch1 , Champ_Inc& ch2 )
+{
+  return valeur().calculer_hyd_BiK(ch1->valeurs(),ch2->valeurs());
 }
 
 
