@@ -198,12 +198,44 @@ double Loi_Etat_Multi_GP_WC::calculer_masse_volumique(double P, double T) const
 
 /*! @brief Calcule la viscosite dynamique de reference (depend des Yi)
  *
+ * With Wilke formulation: https://aip.scitation.org/doi/pdf/10.1063/1.1747673
+ * See also for mass fractions : https://doi.org/10.1016/j.ijheatmasstransfer.2020.120470
+ *
+ *
+ * Mu =
+ *
+ *       N
+ *     ______
+ *     \     `
+ *     \          Mu_i*Y_i
+ *      \     ----------------
+ *       \      N
+ *        \    __
+ *        /    \ `
+ *       /      )   Phi_ij*Y_j
+ *      /      /_,
+ *     /      j = 1
+ *     /_____,
+ *     i = 1
+ *
+ *
+ * where Phi_ij =
+ *
+ *                                   2
+ *         /     0.25     ______    \
+ *         |/M_j\        / Mu_i     |
+ *     M_i*||---|    *  /  ----  + 1|
+ *         \\M_i/     \/   Mu_j     /
+ *     -------------------------------
+ *                   ___________
+ *                  / 8*M_i
+ *           M_j*  /  ----- + 8
+ *               \/    M_j
+ *
+ *
  */
 void Loi_Etat_Multi_GP_WC::calculer_mu_wilke()
 {
-  // With Wilke formulation : https://aip.scitation.org/doi/pdf/10.1063/1.1747673
-  // See also for mass fractions : https://doi.org/10.1016/j.ijheatmasstransfer.2020.120470
-
   assert (liste_Y.size() + 1 == num_espece_);
   const int size = liste_Y(0)->valeurs().size();
   DoubleTab phi(size), mu(size);

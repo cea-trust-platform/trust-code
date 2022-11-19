@@ -203,43 +203,74 @@ double Loi_Etat_Multi_GP_QC::calculer_masse_volumique(double P, double T) const
 
 /*! @brief Calcule la viscosite dynamique de reference (depend des Yi)
  *
+ * With Wilke formulation: https://aip.scitation.org/doi/pdf/10.1063/1.1747673
+ * See also for mass fractions : https://doi.org/10.1016/j.ijheatmasstransfer.2020.120470
+ *
+ *
+ * Mu =
+ *
+ *       N
+ *     ______
+ *     \     `
+ *     \          Mu_i*Y_i
+ *      \     ----------------
+ *       \      N
+ *        \    __
+ *        /    \ `
+ *       /      )   Phi_ij*Y_j
+ *      /      /_,
+ *     /      j = 1
+ *     /_____,
+ *     i = 1
+ *
+ *
+ * where Phi_ij =
+ *
+ *                                   2
+ *         /     0.25     ______    \
+ *         |/M_j\        / Mu_i     |
+ *     M_i*||---|    *  /  ----  + 1|
+ *         \\M_i/     \/   Mu_j     /
+ *     -------------------------------
+ *                   ___________
+ *                  / 8*M_i
+ *           M_j*  /  ----- + 8
+ *               \/    M_j
+ *
+ *
  */
 void Loi_Etat_Multi_GP_QC::calculer_mu_wilke()
 {
-  // With Wilke formulation: https://aip.scitation.org/doi/pdf/10.1063/1.1747673
   const int size = liste_Y(0).valeur().valeurs().size(), list_size = liste_Y.size();
-  DoubleTab phi(size);
-  DoubleTab mu(size);
+  DoubleTab phi(size), mu(size);
   mu = 0.;
   phi = 0.;
 
-  for (int i=0; i<list_size; i++)
+  for (int i = 0; i < list_size; i++)
     {
       phi = 0.;
-      double& M_i=liste_especes(i).valeur().masse_molaire();
-      double mu_i=liste_especes(i).valeur().viscosite_dynamique().valeurs()(0,0);
-      for (int j=0; j<list_size; j++)
-        if (j!=i)
+      const double M_i = liste_especes(i).valeur().masse_molaire();
+      const double mu_i = liste_especes(i).valeur().viscosite_dynamique().valeurs()(0, 0);
+
+      for (int j = 0; j < list_size; j++)
+        if (j != i) // sinon phi_ii = 1
           {
-            double& M_j=liste_especes(j).valeur().masse_molaire();
-            double mu_j=liste_especes(j).valeur().viscosite_dynamique().valeurs()(0,0);
-            double a=1.+sqrt(mu_i/mu_j)*pow(M_j/M_i,0.25);
-            double b=sqrt(8.*(1.+(M_i/M_j)));
-            /*
-             * E Saikali : XXX XXX XXX
-             * I think that a term is missing in this formulation
-             * (phi_ij must be multiplied by Mi/Mj since we use mass fractions and not mol fractions !)
-             */
-            double phi_ij=a*a/b;
+            const double M_j = liste_especes(j).valeur().masse_molaire();
+            const double mu_j = liste_especes(j).valeur().viscosite_dynamique().valeurs()(0, 0);
+
+            double a = 1. + sqrt(mu_i / mu_j) * pow(M_j / M_i, 0.25);
+            double b = sqrt(8. * (1. + (M_i / M_j)));
+            double phi_ij = ( M_i / M_j ) * a * a / b;
 
             const DoubleVect& y_j = liste_Y(j).valeur().valeurs();
             // node is elem (VDF) or face (VEF)
-            for (int node=0; node<y_j.size(); node++) phi(node) += y_j(node)*phi_ij;
+            for (int node = 0; node < y_j.size(); node++) phi(node) += y_j(node) * phi_ij;
           }
       // We add the mass fraction when i = j
       const DoubleVect& y_i = liste_Y(i).valeur().valeurs();
-      for (int node=0; node<y_i.size(); node++) mu(node) += mu_i * y_i(node)/ ( y_i(node) + phi(node) );
+      for (int node = 0; node < y_i.size(); node++) mu(node) += mu_i * y_i(node) / (y_i(node) + phi(node));
     }
+
   calculer_tab_mu(mu, size);
 }
 
