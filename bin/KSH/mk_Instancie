@@ -51,12 +51,8 @@ then
    # S'il est different, on le change
    if [ ! -f $name.cpp ] || [ "`diff $name.cpp $tmp/$name.cpp`" != "" ]
    then
-      if [ -f $name.cpp ]
+      if [ ! -f $name.cpp ]
       then
-         echo "Fichier $name modifie:"
-         diff $name.cpp $tmp/$name.cpp
-      else
-         echo "Fichier $name cree"
          touch $name.cpp
       fi
       cat $tmp/$name.cpp > $name.cpp
