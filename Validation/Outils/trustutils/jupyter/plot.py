@@ -230,9 +230,9 @@ class Graph:
         The coordinates  of the subplot.
         
         """
-        if self.nX == 1 & self.nY == 1:
+        if self.nX == 1 and self.nY == 1:
             return 1
-        elif (self.nX == 1) | (self.nY == 1):
+        elif (self.nX == 1) or (self.nY == 1):
             return max(self.xIndice, self.yIndice)
         else:
             return (self.xIndice, self.yIndice)
@@ -309,9 +309,9 @@ class Graph:
         """
         self.subtitle = title
 
-        if self.nX == 1 & self.nY == 1:
+        if self.nX == 1 and self.nY == 1:
             self.flag = True
-        elif (self.nX == 1) | (self.nY == 1):
+        elif (self.nX == 1) or (self.nY == 1):
             self.xIndice = coordonee
         else:
             self.xIndice = coordonee[0]
