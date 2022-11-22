@@ -1,5 +1,4 @@
 # Lance la configuration et la compilation de Lapack/Blas
-#old=$(TRUST_LIB)/liblapack.a LAPACK
 lib1=$(TRUST_LIB)/src/LIBLAPACK/libblas.a 
 lib2=$(TRUST_LIB)/src/LIBLAPACK/liblapack.a
 
@@ -9,7 +8,7 @@ $(lib2): Installer makefile
 	./Installer
 
 clean:
-	rm -r -f *.a *.log  xianyi-OpenBLAS*  $(lib1) $(lib2) lapack-*.tgz
+	rm -r -f *.a OpenBLAS* $(TRUST_LIB)/src/LIBLAPACK/* lapack-*
 	# Il sera necessaire de recompiler PETSc
-	#if [ "$(TRUST_DISABLE_PETSC)" != 1 ]; then \
-	#cd ../LIBPETSC;make clean;fi
+	if [ "$(TRUST_DISABLE_PETSC)" != 1 ]; then \
+	cd ../LIBPETSC;make clean;fi

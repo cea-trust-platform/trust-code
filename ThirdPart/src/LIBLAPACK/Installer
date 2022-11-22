@@ -6,7 +6,6 @@ install_OpenBlas()
    # Installation d'OpenBLAS
    #########################
    package=OpenBLAS-$version_openblas.tar.gz
-   lib=libopenblas.a
 
    # Installation
    rm -r -f *-OpenBLAS-*
@@ -14,20 +13,6 @@ install_OpenBlas()
    gunzip -f -c $package | tar -xf -
    cd OpenBLAS-$version_openblas
    $TRUST_MAKE CC=$TRUST_cc FC=$TRUST_F77 USE_THREAD=$TRUST_USE_OPENMP
-
-   # On copie la librairie si elle existe sinon on sort
-   if [ -f $lib ]
-   then
-      cp $lib ..
-      cd ..
-      # On fait des liens
-      ln -sf $lib libblas.a
-      ln -sf $lib liblapack.a
-   else
-      cd ..
-   fi  
-   # On efface les sources
-   rm -r -f OpenBLAS*
 }
 install_NetLib()
 {
@@ -75,7 +60,7 @@ install_NetLib()
    cd ..
    # On efface les sources
    rm -r -f $package
-   echo "Netlib Blas Netlib installed."
+   echo "Netlib Blas installed."
 }
 #########################
 # Debut de la procedure #
@@ -95,53 +80,45 @@ do
    ln -sf $file .
 done
 # Nom des versions a upgrader:
-version_openblas=0.3.10
+version_openblas=0.3.21
+#version_openblas=0.3.10
 # On utilise Lapack 3.1.1 si le compilateur fortran n'est pas f90 (auquel cas TRUST_USE_MUMPS=0)
 version_lapack=3.4.1 && [ "$TRUST_INT64" != "1" ] && [ "$TRUST_USE_MUMPS" != 1 ] && version_lapack=3.1.1
 
-TRY_OPENBLAS=1 # Installation d'OpenBlas (multithreade uniquement si support OpenMP active). Ecarts sur plusieurs cas fvca8 sinon
-# fvca8_jdd10 ATTENTION 8 ecarts possible sur ce cas...
-# fvca8_jdd11 ATTENTION 8 ecarts possible sur ce cas...
-# fvca8_jdd13 ATTENTION 8 ecarts possible sur ce cas...
-# fvca8_jdd5 ATTENTION 8 ecarts possible sur ce cas...
-# fvca8_jdd6 ATTENTION 8 ecarts possible sur ce cas...
-# fvca8_jdd9 ATTENTION 8 ecarts possible sur ce cas...
-if [ "$TRY_OPENBLAS" = 1 ] && [ "$TRUST_USE_OPENMP" = 1 ]
+TRY_OPENBLAS=1
+if [ "$TRY_OPENBLAS" = 1 ]
 then
-   # Parfois OpenBlas ne s'installe pas, on switche sur la version classique
    install_OpenBlas
-   [ ! -f libopenblas.a ] && install_NetLib
-   # Test d'OpenBlas:
-   echo "#include <cblas.h>
-#include <stdio.h>
-
-int main()
-{
-  int i=0;
-  double A[6] = {1.0,2.0,1.0,-3.0,4.0,-1.0};         
-  double B[6] = {1.0,2.0,1.0,-3.0,4.0,-1.0};  
-  double C[9] = {.5,.5,.5,.5,.5,.5,.5,.5,.5}; 
-  cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans,3,3,2,1,A, 3, B, 3,2,C,3);
-
-  for(i=0; i<9; i++)
-    printf(\"%lf \", C[i]);
-  printf(\"\n\");
-  return 0;    
-}" > test.c
-   echo "Testing OpenBlas..."
-   OK=0 && $TRUST_cc -o test test.c -L. -lblas -lpthread && ./test && OK=1
-   [ $OK = 0 ] && install_NetLib
-   echo "OpenBLAS installed." 
+   lib=`ls libopenblas_*$version_openblas.a 2>/dev/null`
+   # Bench OpenBlas:
+   # Bizarre pour bench, besoin de copier la libairie sous un nom legerement different:
+   cp $lib `echo $lib | sed '1,$ s?-r?p-r?'` 2>/dev/null
+   (cd benchmark && make dgemm.goto && ./dgemm.goto 2>&1 | tee ../../dgemm_openblas_$version_openblas.log)
+   # On copie la librairie si elle existe sinon on sort
+   if [ -f $lib ]
+   then
+      cp $lib ..
+      cd ..
+      # On fait des liens
+      ln -sf $lib libblas.a
+      ln -sf $lib liblapack.a
+      echo "OpenBLAS installed."
+      # On efface les sources
+      rm -r -f OpenBLAS*
+   else
+      cd ..
+      echo "Error during OpenBLAS install, so switching to Netlib non optimized blas..."
+      install_NetLib
+   fi  
 else
    install_NetLib
 fi
 mkdir -p $TRUST_LIB/src/LIBLAPACK
 mv *.a $TRUST_LIB/src/LIBLAPACK
-#  on efface les liens des archives
+# On efface les liens des archives
 for file in `ls $TRUST_ROOT/externalpackages/lapack/*`
 do
  f=`basename $file`
  [ -h $f ] && rm  $f 
 done
-# Nom des versions a upgrader:
 exit 0
