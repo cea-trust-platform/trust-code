@@ -21,7 +21,7 @@ Mailler dom_fluide
         Bord haut   Y = 1.0  0.0 <= X <= 1.0
     }
 }
-trianguler_h dom_fluide
+
 # END MESH #
 
 # BEGIN PARTITION
@@ -51,7 +51,7 @@ Read sch
     solveur implicite { solveur petsc cholesky { } }
 }
 
-VEFPreP1B  dis
+VDF  dis
 
 Associate pb dom_fluide
 Associate pb sch
@@ -82,8 +82,8 @@ Read pb
         boundary_conditions {
             gauche paroi_fixe
             droite paroi_fixe
-            bas    paroi_fixe
-            haut   paroi_fixe
+            bas    frontiere_ouverte_vitesse_imposee champ_front_uniforme 2 0 1
+            haut   frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
         }
     }
     Convection_Diffusion_Temperature
@@ -94,14 +94,15 @@ Read pb
         {
             gauche paroi_adiabatique
             droite paroi_adiabatique
-            bas    paroi_adiabatique
-            haut   paroi_adiabatique
+            bas    frontiere_ouverte_temperature_imposee champ_front_uniforme 1 30
+            haut   frontiere_ouverte T_ext champ_front_uniforme 1 30
         }
         sources
         {
             terme_puissance_thermique_echange_impose
             {
                 himp Champ_Uniforme 1 100 Text Champ_Uniforme 1 10
+                
             }
         }
         initial_conditions { Temperature Champ_Uniforme 1 30. }

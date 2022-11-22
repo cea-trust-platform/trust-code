@@ -21,10 +21,7 @@ Mailler dom_fluide
         Bord haut   Y = 1.0  0.0 <= X <= 1.0
     }
 }
-/* DEBUTVEFPreP1B
-trianguler_h dom_fluide
-FINVEFPreP1B */
-
+$tri
 # END MESH #
 
 # BEGIN PARTITION
@@ -53,7 +50,7 @@ Read sch
     solveur implicite { solveur petsc cholesky { } }
 }
 
-__dis__  dis
+$dis  dis
 
 Associate pb dom_fluide
 Associate pb sch
@@ -103,7 +100,7 @@ Read pb
         {
             terme_puissance_thermique_echange_impose
             {
-                himp Champ_Uniforme 1 100 Text Champ_Uniforme 1 10
+                himp Champ_Uniforme 1 100 Text Champ_Uniforme 1 $text
             }
         }
         initial_conditions { Temperature Champ_Uniforme 1 30. }

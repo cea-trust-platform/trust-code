@@ -21,9 +21,6 @@ Mailler dom_fluide
         Bord haut   Y = 1.0  0.0 <= X <= 1.0
     }
 }
-/* DEBUTVEFPreP1B
-trianguler_h dom_fluide
-FINVEFPreP1B */
 
 # END MESH #
 
@@ -54,7 +51,7 @@ Read sch
     solveur implicite { solveur petsc cholesky { } }
 }
 
-VDF  dis
+PolyMAC  dis
 
 Associate pb dom_fluide
 Associate pb sch
