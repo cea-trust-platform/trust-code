@@ -19,6 +19,7 @@ define_modules_config()
    else
       module="slurm compilers/intel/2019_update3 mpi/openmpi/intel/2019_update3/4.0.1" # OpenMPI plante TRUST de facon bizarre sur cette machine...
       module="slurm compilers/intel/2019_update3 mpi/intelmpi/2019_update3 texlive/2020"
+      module="slurm compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020" # Calculs plus stables avec MUMPS (teste fin 2022). SegFault avec la precedente ligne parfois au bout d'un certain temps
    fi
    echo "# Module $module detected and loaded on $HOST." 
    echo "module purge 1>/dev/null" >> $env   

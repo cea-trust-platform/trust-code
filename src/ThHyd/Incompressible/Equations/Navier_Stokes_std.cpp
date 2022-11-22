@@ -1013,6 +1013,13 @@ int Navier_Stokes_std::preparer_calcul()
   // Calcul gradient_P
   gradient.calculer(la_pression.valeurs(),gradient_P.valeurs());
   gradient_P.changer_temps(temps);
+  // ToDo mettre a jour flux_bords de gradient
+  // Attention en parallele...
+  // Mieux ecrire les boucles en 2D/3D et corriger l'ouverture multiple (DI TMA)
+  // Modifier Cx (verifie) pour que le Cx_FPX.son a t=0 ecrive la bonne valeur...
+  // Cx_FPX_CYLINDER.son
+  //SFichier null("/dev/null");
+  //gradient.impr(null);
 
   // Calcul divergence_U
   divergence.calculer(la_vitesse.valeurs(),divergence_U.valeurs());
