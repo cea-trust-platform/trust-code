@@ -290,9 +290,11 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
                   // Test if the same face between surface domain and volum domain
                   int coincide=0;
                   // Loop on vertex of each face of each element on the volume domain
-                  for (int k=0; k<nse2D; k++)
+
+                  int nse_reel = 0;
+                  for (int k = 0, numso; k < nse2D && (numso = face_sommets(numfa, k)) >= 0; k++)
                     {
-                      int numso = face_sommets(numfa,k);
+                      nse_reel++;
                       double xcoord_vol=coord_sommets(numso,0);
                       double ycoord_vol=coord_sommets(numso,1);
                       //double zcoord_vol=coord_sommets(numso,2);
@@ -300,9 +302,8 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
                       if (Objet_U::dimension>2)
                         zcoord_vol=coord_sommets(numso,2);
 
-                      for (int i=0; i<nse2D ; i++)
+                      for (int i = 0, numso2D; i < nse2D && (numso2D = zone_2D.sommet_elem(ind_face, i)) >= 0; i++)
                         {
-                          int numso2D = zone_2D.sommet_elem(ind_face,i);
                           double xcoord_2D=coord_sommets_2D(numso2D,0);
                           double ycoord_2D=coord_sommets_2D(numso2D,1);
                           double zcoord_2D=0;
@@ -317,7 +318,7 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
                             }
                         }
                     }
-                  if (coincide==nse2D)
+                  if (coincide == nse_reel)
                     {
                       bool trouve=0;
                       for (int i=0; i<compteur ; i++)
