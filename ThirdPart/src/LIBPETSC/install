@@ -462,11 +462,11 @@ then
    #[ $minimal_mumps = 0 ] && add_package superlu_dist && [ "$TRUST_USE_CUDA" = 1 ] && [ $PETSC_HAVE_OPENMP = 0 ] && echo "Rerun configure by adding -openmp!" && exit 1
    [ "$minimal_mumps" = 0 ] && [ "$TRUST_USE_CUDA" = 1 ] && [ "$PETSC_HAVE_OPENMP" = 1 ] && [ "`basename $TRUST_CC_BASE`" != nvc++ ] && add_package superlu_dist
 
-   # New (SuiteSparse/Cholmod):
+   # New (SuiteSparse/Cholmod/UmfPack):
    if [ "$minimal_mumps" = 0 ]
    then
-      # Cholmod GPU pas portable avec Cuda_11, on desactive en attendant montee de version:
-      [ "`nvcc --version 2>&1 | grep cuda_11`" = "" ] && add_package SuiteSparse && with_packages=$with_packages" --download-suitesparse-disablegpu=1" # Add --with-64-bit-indices ?
+      # Cholmod GPU pas portable avec cartes recentes type A100, on desactive en attendant montee de version:
+      [ "$HOST" != topaze ] && add_package SuiteSparse && with_packages=$with_packages" --download-suitesparse-disablegpu=1" # Add --with-64-bit-indices ?
    fi
    # New (Pastix) pb sous cygwin
    # Test (27/06/15 : probleme pour portabilite sur Ubuntu16 entre autre)
