@@ -13,24 +13,28 @@
 *
 *****************************************************************************/
 
-#include <Portance_interfaciale_Constante.h>
+#include <Flux_interfacial_Wolfert.h>
 #include <Pb_Multiphase.h>
-#include <math.h>
 
-Implemente_instanciable(Portance_interfaciale_Constante, "Portance_interfaciale_Constante", Portance_interfaciale_base);
+Implemente_instanciable(Flux_interfacial_Wolfert, "Flux_interfacial_Wolfert", Flux_interfacial_base);
 
-Sortie& Portance_interfaciale_Constante::printOn(Sortie& os) const
+Sortie& Flux_interfacial_Wolfert::printOn(Sortie& os) const
 {
   return os;
 }
 
-Entree& Portance_interfaciale_Constante::readOn(Entree& is)
+Entree& Flux_interfacial_Wolfert::readOn(Entree& is)
 {
   Param param(que_suis_je());
-  param.ajouter("Cl", &Cl_, Param::REQUIRED);
+  param.ajouter("Pr_t", &Pr_t_);
   param.lire_avec_accolades_depuis(is);
 
-  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, pb_.valeur()) ? &ref_cast(Pb_Multiphase, pb_.valeur()) : NULL;
+  return is;
+}
+
+void Flux_interfacial_Wolfert::completer()
+{
+  Pb_Multiphase *pbm = sub_type(Pb_Multiphase, pb_.valeur()) ? &ref_cast(Pb_Multiphase, pb_.valeur()) : NULL;
 
   if (!pbm || pbm->nb_phases() == 1) Process::exit(que_suis_je() + " : not needed for single-phase flow!");
   for (int n = 0; n < pbm->nb_phases(); n++) //recherche de n_l, n_g : phase {liquide,gaz}_continu en priorite
@@ -38,17 +42,25 @@ Entree& Portance_interfaciale_Constante::readOn(Entree& is)
 
   if (n_l < 0) Process::exit(que_suis_je() + " : liquid phase not found!");
 
-  return is;
+  if (!pbm->has_champ("diametre_bulles")) Process::exit("Flux_interfacial_Wolfert : bubble diameter needed !");
 }
 
-void Portance_interfaciale_Constante::coefficient(const input_t& in, output_t& out) const
+void Flux_interfacial_Wolfert::coeffs(const input_t& in, output_t& out) const
 {
-  int k, N = out.Cl.dimension(0);
-
+  int k, N = out.hi.dimension(0);
   for (k = 0; k < N; k++)
-    if (k!=n_l) // k gas phase
+    if (k != n_l)
       {
-        out.Cl(k, n_l) = Cl_ * in.rho[n_l] * in.alpha[k] ;
-        out.Cl(n_l, k) =  out.Cl(k, n_l);
+        int ind_trav = (k>n_l) ? (n_l*(N-1)-(n_l-1)*(n_l)/2) + (k-n_l-1) : (k*(N-1)-(k-1)*(k)/2) + (n_l-k-1);
+        double Ja = in.rho[n_l] * in.Cp[n_l] * (in.T[k] -  in.T[n_l]) / (in.rho[k] * in.Lvap[ind_trav] );
+        double Pe = in.rho[n_l] * in.Cp[n_l] * in.nv[N * n_l + k] * in.d_bulles[k] / in.lambda[n_l];
+
+        double Nu = 12./M_PI*Ja  + 2/std::sqrt(M_PI)*(1+in.nut[n_l]*in.rho[n_l]*in.Cp[n_l]/in.lambda[n_l])*std::sqrt(Pe);
+
+        out.hi(n_l, k) = Nu * in.lambda[n_l] / in.d_bulles[k] * 6 * std::max(in.alpha[k], 1e-4) / in.d_bulles[k] ; // std::max() pour que le flux interfacial sont non nul
+        out.da_hi(n_l, k, k) = in.alpha[k] > 1e-4 ?
+                               Nu * in.lambda[n_l] * 6. / (in.d_bulles[k]*in.d_bulles[k]) :
+                               0. ;
+        out.hi(k, n_l) = 1e8;
       }
 }

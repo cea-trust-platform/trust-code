@@ -27,10 +27,7 @@ class Portance_interfaciale_Constante : public Portance_interfaciale_base
 {
   Declare_instanciable(Portance_interfaciale_Constante);
 public:
-  void coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
-                   const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma,
-                   const DoubleTab& k_turb, const DoubleTab& d_bulles,
-                   const DoubleTab& ndv, int e, DoubleTab& coeff) const override;
+  void coefficient(const input_t& input, output_t& output) const override;
 protected:
   double Cl_;
   int n_l = -1; //phase liquide

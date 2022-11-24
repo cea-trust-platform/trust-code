@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,16 +37,15 @@ void Flux_interfacial_Ranz_Marshall::completer()
 void Flux_interfacial_Ranz_Marshall::coeffs(const input_t& in, output_t& out) const
 {
   out.hi = 0.0, out.da_hi = 0.0;
-  int k, N = out.hi.dimension(0), e = in.e;
-  const DoubleTab& d_bulles = pb_->get_champ("diametre_bulles").valeurs() ;
+  int k, N = out.hi.dimension(0);
   for (k = 0; k < N; k++)
     if (k != n_l)
       {
-        double Re_b = in.rho[n_l] * in.nv[N * n_l + k] * d_bulles(e,k) / in.mu[n_l];
+        double Re_b = in.rho[n_l] * in.nv[N * n_l + k] * in.d_bulles[k] / in.mu[n_l];
         double Pr = in.mu[n_l] * in.Cp[n_l] / in.lambda[n_l];
         double Nu = 2.0 + 0.6* std::pow(Re_b, 0.5)*std::pow(Pr, 0.3);
-        out.hi(n_l, k) = Nu * in.lambda[n_l] / d_bulles(e,k) * 6.0 * std::max(in.alpha[k], a_min) / d_bulles(e,k); // std::max() pour que le flux interfacial sont non nul
-        out.da_hi(n_l, k, k) = in.alpha[k] > a_min ? Nu * in.lambda[n_l] * 6.0 / (d_bulles(e, k) * d_bulles(e, k)) : 0;
+        out.hi(n_l, k) = Nu * in.lambda[n_l] / in.d_bulles[k] * 6.0 * std::max(in.alpha[k], a_min) / in.d_bulles[k]; // std::max() pour que le flux interfacial sont non nul
+        out.da_hi(n_l, k, k) = in.alpha[k] > a_min ? Nu * in.lambda[n_l] * 6.0 / (in.d_bulles[k] * in.d_bulles[k]) : 0;
         out.hi(k, n_l) = 1e8;
       }
 }

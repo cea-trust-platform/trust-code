@@ -36,10 +36,27 @@ class Portance_interfaciale_base : public Correlation_base
 {
   Declare_base(Portance_interfaciale_base);
 public:
-  virtual void coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
-                           const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma,
-                           const DoubleTab& k_turb, const DoubleTab& d_bulles,
-                           const DoubleTab& ndv, int e, DoubleTab& coeff) const  = 0;
+  struct input_t
+  {
+    double dh;            // diametre hyd
+    const double *alpha;  // alpha[n] : taux de vide de la phase n
+    const double *T;      // T[n]     : temperature de la phase n
+    double p;             // pression
+    const double *nv;     // nv[N * k + l] : norme de ||v_k - v_l||
+    const double *mu;     // mu[n]         : viscosite dynamique de la phase n
+    const double *rho;    // rho[n]        : masse volumique de la phase n
+    const double *sigma;  // sigma[N*k+l]  : tension superficielle entre la phase k et l
+    const double *k_turb; // k_turb[n]     : energie cinetique turbulente de la phase n
+    const double *d_bulles;//d_bulles[n]   : diametre de bulles de la phase n
+    int e;                // indice d'element
+  };
+  /* valeurs de sortie */
+  struct output_t
+  {
+    DoubleTab Cl;    //Cl(k, l)       : coeff de portance entre les phases k et l
+  };
+
+  virtual void coefficient(const input_t& input, output_t& output) const  = 0;
 };
 
 #endif

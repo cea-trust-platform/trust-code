@@ -14,8 +14,10 @@
 *****************************************************************************/
 
 #include <Source_Flux_interfacial_base.h>
+#include <Viscosite_turbulente_base.h>
 #include <Flux_interfacial_base.h>
 #include <Changement_phase_base.h>
+#include <Operateur_Diff_base.h>
 #include <Champ_Inc_P0_base.h>
 #include <Aire_interfaciale.h>
 #include <Milieu_composite.h>
@@ -93,6 +95,8 @@ void Source_Flux_interfacial_base::completer()
       da_qpi_.resize(0, N, N, N), domaine.domaine().creer_tableau_elements(da_qpi_);
       dp_qpi_.resize(0, N, N), domaine.domaine().creer_tableau_elements(dp_qpi_);
     }
+
+  if       (ref_cast(Operateur_Diff_base, equation().probleme().equation(0).operateur(0).l_op_base()).is_turb()) is_turb_ = 1;
 }
 
 DoubleTab& Source_Flux_interfacial_base::qpi() const
@@ -141,7 +145,9 @@ void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab&
   const DoubleTab& inco = ch.valeurs(), &alpha = ch_alpha.valeurs(), &press = ch_p.valeurs(), &temp  = ch_temp.valeurs(),
                    &h = milc.enthalpie().valeurs(), *dP_h = der_h.count("pression") ? &der_h.at("pression") : nullptr, *dT_h = der_h.count("temperature") ? &der_h.at("temperature") : nullptr,
                     &lambda = milc.conductivite().passe(), &mu = milc.viscosite_dynamique().passe(), &rho = milc.masse_volumique().passe(), &Cp = milc.capacite_calorifique().passe(),
-                     &p_ar = ch_a_r.passe(), &a_r = ch_a_r.valeurs(), &qi = qpi(), &dTqi = dT_qpi(), &daqi = da_qpi(), &dpqi = dp_qpi();
+                     &p_ar = ch_a_r.passe(), &a_r = ch_a_r.valeurs(), &qi = qpi(), &dTqi = dT_qpi(), &daqi = da_qpi(), &dpqi = dp_qpi(),
+                      *d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").valeurs() : NULL,
+                       *k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : NULL;
 
   Matrice_Morse *Mp = matrices.count("pression")    ? matrices.at("pression")    : nullptr,
                  *Mt = matrices.count("temperature") ? matrices.at("temperature") : nullptr,
@@ -154,6 +160,16 @@ void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab&
   const Flux_interfacial_base& correlation_fi = ref_cast(Flux_interfacial_base, correlation_.valeur().valeur());
   const Changement_phase_base *correlation_G = pbm.has_correlation("changement_phase") ? &ref_cast(Changement_phase_base, pbm.get_correlation("changement_phase").valeur()) : nullptr;
   double dt = equation().schema_temps().pas_de_temps(), alpha_min = 1.e-6;
+
+  // Viscosite turbulente pour les correlations qui en ont besoin
+  DoubleTrav nut;
+  if (is_turb_)
+    {
+      nut.resize(0, N);
+      MD_Vector_tools::creer_tableau_distribue(equation().inconnue()->valeurs().get_md_vector(), nut); //Necessary to compare size in eddy_viscosity()
+      const Viscosite_turbulente_base& corr_visc_turb = ref_cast(Viscosite_turbulente_base, ref_cast(Operateur_Diff_base, equation().probleme().equation(0).operateur(0).l_op_base()).correlation_viscosite_turbulente()->valeur());
+      corr_visc_turb.eddy_viscosity(nut);
+    }
 
   /* limiteur de changement de phase : on limite gamma pour eviter d'avoir alpha_k < 0 dans une phase */
   /* pour cela, on assemble l'equation de masse sans changement de phase */
@@ -237,6 +253,7 @@ void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab&
       //coeffs d'echange vers l'interface (explicites)
       in.dh = dh, in.alpha = &alpha(e, 0), in.T = &temp(e, 0), in.p = press(e, 0), in.nv = &nv(0, 0), in.h = &h(e, 0), in.dT_h = dT_h ? &(*dT_h)(e, 0) : nullptr, in.dP_h = dP_h ? &(*dP_h)(e, 0) : nullptr;
       in.lambda = &lambda(!cL * e, 0), in.mu = &mu(!cM * e, 0), in.rho = &rho(!cR * e, 0), in.Cp = &Cp(!cCp * e, 0), in.e = e, in.Lvap = &Lvap_tab(e, 0);
+      in.d_bulles = (d_bulles) ? &(*d_bulles)(e,0) : nullptr, in.k_turb = (k_turb) ? &(*k_turb)(e,0) : nullptr, in.nut = (is_turb_) ? &nut(e,0) : nullptr;
       correlation_fi.coeffs(in, out);
 
       for (k = 0; k < N; k++)

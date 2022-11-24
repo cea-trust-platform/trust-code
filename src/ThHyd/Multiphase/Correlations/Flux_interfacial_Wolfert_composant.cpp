@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,22 +47,21 @@ void Flux_interfacial_Wolfert_composant::completer()
 
 void Flux_interfacial_Wolfert_composant::coeffs(const input_t& in, output_t& out) const
 {
-  int k, N = out.hi.dimension(0), e = in.e;
-  const DoubleTab& d_bulles = pb_->get_champ("diametre_bulles").valeurs() ;
+  int k, N = out.hi.dimension(0);
   for (k = 0; k < N; k++)
     if (k != n_l)
       {
         int ind_trav = (k>n_l) ? (n_l*(N-1)-(n_l-1)*(n_l)/2) + (k-n_l-1) : (k*(N-1)-(k-1)*(k)/2) + (n_l-k-1);
         double Ja = in.rho[n_l] * in.Cp[n_l] * (in.T[k] -  in.T[n_l]) / (in.rho[k] * in.Lvap[ind_trav] );
-        double Pe = in.rho[n_l] * in.Cp[n_l] * in.nv[N * n_l + k] * d_bulles(e,k) / in.lambda[n_l];
+        double Pe = in.rho[n_l] * in.Cp[n_l] * in.nv[N * n_l + k] * in.d_bulles[k]  / in.lambda[n_l];
         double U_tau = 0.1987 * in.nv[N * n_l + n_l] * std::pow(in.dh * in.rho[n_l] * in.nv[N * n_l + n_l]/ in.mu[n_l], -1./8.)  ; //Blasius correlation
         double lambda_turb = Pr_t_  * 0.06 * U_tau * in.dh ;
 
-        double Nu = 12./M_PI*Ja  + 2/std::sqrt(M_PI)*(1+lambda_turb/in.lambda[n_l])*std::sqrt(Pe);
+        double Nu = 12./M_PI*Ja  + 2/std::sqrt(M_PI)*(1+lambda_turb*in.rho[n_l]*in.Cp[n_l]/in.lambda[n_l])*std::sqrt(Pe);
 
-        out.hi(n_l, k) = Nu * in.lambda[n_l] / d_bulles(e,k) * 6 * std::max(in.alpha[k], 1e-4) / d_bulles(e,k) ; // std::max() pour que le flux interfacial sont non nul
+        out.hi(n_l, k) = Nu * in.lambda[n_l] / in.d_bulles[k]  * 6 * std::max(in.alpha[k], 1e-4) / in.d_bulles[k]  ; // std::max() pour que le flux interfacial sont non nul
         out.da_hi(n_l, k, k) = in.alpha[k] > 1e-4 ?
-                               Nu * in.lambda[n_l] * 6. / (d_bulles(e,k)*d_bulles(e, k)) :
+                               Nu * in.lambda[n_l] * 6. / (in.d_bulles[k] * in.d_bulles[k] ) :
                                0. ;
         out.hi(k, n_l) = 1e8;
       }

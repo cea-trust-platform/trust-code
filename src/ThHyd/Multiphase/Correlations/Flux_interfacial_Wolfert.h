@@ -13,42 +13,27 @@
 *
 *****************************************************************************/
 
-#include <Portance_interfaciale_Constante.h>
-#include <Pb_Multiphase.h>
-#include <math.h>
+#ifndef Flux_interfacial_Wolfert_included
+#define Flux_interfacial_Wolfert_included
 
-Implemente_instanciable(Portance_interfaciale_Constante, "Portance_interfaciale_Constante", Portance_interfaciale_base);
+#include <Flux_interfacial_base.h>
+#include <TRUSTTabs_forward.h>
+#include <TRUSTTab.h>
 
-Sortie& Portance_interfaciale_Constante::printOn(Sortie& os) const
+/*! @brief Flux interfacial a coefficient constant par phase
+ *
+ */
+
+class Flux_interfacial_Wolfert : public Flux_interfacial_base
 {
-  return os;
-}
+  Declare_instanciable(Flux_interfacial_Wolfert);
+public:
+  void coeffs(const input_t& in, output_t& out) const override;
+  void completer() override;
 
-Entree& Portance_interfaciale_Constante::readOn(Entree& is)
-{
-  Param param(que_suis_je());
-  param.ajouter("Cl", &Cl_, Param::REQUIRED);
-  param.lire_avec_accolades_depuis(is);
+protected:
+  int n_l = -1; //number of the liquid phase
+  double Pr_t_ = 0.85;
+};
 
-  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, pb_.valeur()) ? &ref_cast(Pb_Multiphase, pb_.valeur()) : NULL;
-
-  if (!pbm || pbm->nb_phases() == 1) Process::exit(que_suis_je() + " : not needed for single-phase flow!");
-  for (int n = 0; n < pbm->nb_phases(); n++) //recherche de n_l, n_g : phase {liquide,gaz}_continu en priorite
-    if (pbm->nom_phase(n).debute_par("liquide") && (n_l < 0 || pbm->nom_phase(n).finit_par("continu")))  n_l = n;
-
-  if (n_l < 0) Process::exit(que_suis_je() + " : liquid phase not found!");
-
-  return is;
-}
-
-void Portance_interfaciale_Constante::coefficient(const input_t& in, output_t& out) const
-{
-  int k, N = out.Cl.dimension(0);
-
-  for (k = 0; k < N; k++)
-    if (k!=n_l) // k gas phase
-      {
-        out.Cl(k, n_l) = Cl_ * in.rho[n_l] * in.alpha[k] ;
-        out.Cl(n_l, k) =  out.Cl(k, n_l);
-      }
-}
+#endif
