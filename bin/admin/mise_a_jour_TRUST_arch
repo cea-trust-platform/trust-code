@@ -1066,7 +1066,7 @@ do
 	 test_run_fiche=1
          [ "`eval pdflatex --version 1>/dev/null 2>&1;echo $?`" != 0 ] && test_run_fiche=0
          [ "${HOST:0:8}" = is233136 ] && test_run_fiche=0
-	 if [ "$test_run_fiche" = 1 ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable " | grep ^$HOST_BUILD"\."`" = "" ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-optionals" | grep ^$HOST_BUILD"\."`" = "" ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-tools" | grep ^$HOST_BUILD"\."`" = "" ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-without-visit" | grep ^$HOST_BUILD"\."`" = "" ]
+	 if [ "$test_run_fiche" = 1 ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable" | grep ^$HOST_BUILD"\."`" = "" ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-optionals" | grep ^$HOST_BUILD"\."`" = "" ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-tools" | grep ^$HOST_BUILD"\."`" = "" ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-without-visit" | grep ^$HOST_BUILD"\."`" = "" ]
 	 then
             echo "--------------------------------------------------------"
             echo "Test of Run_fiche at `date '+%H:%M:%S'`"

@@ -540,7 +540,7 @@ if [ "$TRUST_INT64" = "1" ]
 then
    with_64bit_indices="--with-64-bit-indices"
    # Sur topaze, PETSc prend des "long long" pour PetscInt au lieu de "long" donc pour forcer (a noter que MUMPS ne fonctionne pas malgre cela):
-   if [ "$HOST" = topaze ] || [ "${HOST#jean-zay}" != $HOST ] || [ "${HOST_BUILD#jean-zay}" != $HOST_BUILD ]
+   if [ "$HOST" = topaze ] || [ "${HOST#jean-zay}" != $HOST ] || [ "${HOST_BUILD#jean-zay}" != $HOST_BUILD ] || [ "$HOST" = irene-ccrt ]
    then
       with_64bit_indices="--with-64-bit-indices --known-mpi-int64_t"
    fi
