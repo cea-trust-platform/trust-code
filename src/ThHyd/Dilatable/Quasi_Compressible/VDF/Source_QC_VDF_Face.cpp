@@ -44,6 +44,7 @@ Implemente_instanciable(Perte_Charge_Reguliere_QC_VDF_Face,"Perte_Charge_Regulie
 Sortie& Perte_Charge_Reguliere_QC_VDF_Face::printOn(Sortie& os) const { return Perte_Charge_Reguliere_VDF_Face::printOn(os); }
 Entree& Perte_Charge_Reguliere_QC_VDF_Face::readOn(Entree& is) { return Perte_Charge_Reguliere_VDF_Face::readOn(is); }
 DoubleTab& Perte_Charge_Reguliere_QC_VDF_Face::ajouter_mere(DoubleTab& resu) const { Perte_Charge_Reguliere_VDF_Face::ajouter_blocs({},resu, {}); return resu; }
+#pragma clang optimize off
 void Perte_Charge_Reguliere_QC_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
@@ -51,11 +52,13 @@ void Perte_Charge_Reguliere_QC_VDF_Face::ajouter_blocs(matrices_t matrices, Doub
   contribuer_a_avec_impl(secmem,*mat);
   ajouter_impl(secmem);
 }
+#pragma clang optimize on
 
 Implemente_instanciable(Perte_Charge_Singuliere_QC_VDF_Face,"Perte_Charge_Singuliere_QC_VDF_Face",Perte_Charge_Singuliere_VDF_Face);
 Sortie& Perte_Charge_Singuliere_QC_VDF_Face::printOn(Sortie& os) const { return Perte_Charge_Singuliere_VDF_Face::printOn(os); }
 Entree& Perte_Charge_Singuliere_QC_VDF_Face::readOn(Entree& is) { return Perte_Charge_Singuliere_VDF_Face::readOn(is); }
 DoubleTab& Perte_Charge_Singuliere_QC_VDF_Face::ajouter_mere(DoubleTab& resu) const { Perte_Charge_Singuliere_VDF_Face::ajouter_blocs({},resu, {}); return resu;  }
+#pragma clang optimize off
 void Perte_Charge_Singuliere_QC_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
@@ -63,6 +66,7 @@ void Perte_Charge_Singuliere_QC_VDF_Face::ajouter_blocs(matrices_t matrices, Dou
   contribuer_a_avec_impl(secmem,*mat);
   ajouter_impl(secmem);
 }
+#pragma clang optimize on
 
 Implemente_instanciable(Darcy_QC_VDF_Face,"Darcy_QC_VDF_Face",Source_Darcy_VDF_Face);
 Sortie& Darcy_QC_VDF_Face::printOn(Sortie& os) const { return Source_Darcy_VDF_Face::printOn(os); }
