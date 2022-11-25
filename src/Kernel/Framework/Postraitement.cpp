@@ -348,7 +348,7 @@ void Postraitement::set_param(Param& param)
   param.ajouter("Fichier",&nom_fich_); // XD_ADD_P chaine Name of file.
   param.ajouter("Format",&format); // XD_ADD_P chaine(into=["lml","lata","lata_v2","med","med_major"]) This optional parameter specifies the format of the output file. The basename used for the output file is the basename of the data file. For the fmt parameter, choices are lml or lata. A short description of each format can be found below. The default value is lml.
   param.ajouter_non_std("Domaine",(this)); // XD_ADD_P chaine This optional parameter specifies the domain on which the data should be interpolated before it is written in the output file. The default is to write the data on the domain of the current problem (no interpolation).
-  param.ajouter_non_std("Sous_zone",(this)); // XD_ADD_P chaine This optional parameter specifies the sous_zone on which the data should be interpolated before it is written in the output file.
+  param.ajouter_non_std("Sous_zone",(this)); // XD_ADD_P chaine This optional parameter specifies the sous_zone on which the data should be interpolated before it is written in the output file. It is only available for sequential computation.
   param.ajouter("Parallele",&option_para); // XD_ADD_P chaine(into=["simple","multiple","mpi-io"]) Select simple (single file, sequential write), multiple (several files, parallel write), or mpi-io (single file, parallel write) for LATA format
   param.ajouter_non_std("Definition_champs",(this));// XD_ADD_P definition_champs  Keyword to create new or more complex field for advanced postprocessing.
   param.ajouter_non_std("Definition_champs_fichier|Definition_champs_file",(this));// XD_ADD_P Definition_champs_fichier  Definition_champs read from file.
