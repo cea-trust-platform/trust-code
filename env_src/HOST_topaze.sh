@@ -27,7 +27,8 @@ define_modules_config()
    # Load modules
    if [ "$TRUST_USE_CUDA" = 1 ]
    then
-      module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.2"  # revenir a cuda/11.2 au lieu de 11.3
+      module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.3" # Non, cela crashe en multi-gpu
+      module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.2"
    else
       module="gnu/11.1.0 mpi/openmpi/4.0.5"
       module="intel/20.0.4 mpi/openmpi/4.0.5"
@@ -35,7 +36,7 @@ define_modules_config()
    module=$module" texlive cmake/3.22.2" # cmake 3.22 important pour AmgX et Nvidia-HPC
    #
    # Ajout pour charger l'espace disque a la place de SCRATCHDIR pas encore disponible sur topaze:
-   [ "`id | grep gch0504`" != "" ] && sw=dfldatadir/gch0504
+   #[ "`id | grep gch0504`" != "" ] && sw=dfldatadir/gch0504
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
    echo "module load $module 1>/dev/null || exit -1" >> $env

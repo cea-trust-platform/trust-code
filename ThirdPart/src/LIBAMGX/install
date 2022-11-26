@@ -24,7 +24,7 @@ then
       tar cfz $PACKAGE --exclude .git $LIB && echo "Creation du package $PACKAGE"
    else
       commit=6dba8067ca
-      commit=v2.3.0 # Verifier la validation (cas test AmgX_Semi_Implicite_jdd3 ecarts aleatoires)
+      commit=v2.3.0
       tar xfz $TRUST_ROOT/externalpackages/AmgX/AmgX_$commit.tar.gz
    fi
    cd $LIB && mkdir -p build && cd build
@@ -97,6 +97,7 @@ then
 fi
 if [ -f $TRUST_ENV/card.log ] # On ne teste que si on peut lancer des calculs GPU
 then
-   ./test_$LIB.sh | tee -a $log
+   # Ces tests doivent absolument marcher:
+   ./test_$LIB.sh >> $log || exit -1
 fi
 exit 0
