@@ -304,7 +304,7 @@ void mon_main::dowork(const Nom& nom_du_cas)
       {
         filename += "_";
         char s[20];
-        sprintf(s, "%05d", (True_int)Process::me());
+        snprintf(s, 20, "%05d", (True_int)Process::me());
         filename += s;
       }
     filename += ".log";

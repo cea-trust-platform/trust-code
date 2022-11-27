@@ -506,7 +506,7 @@ void print_statistics_analyse(const char * message, int mode_append)
                         << "\n";
               /*              stat_file << "Secondes / sauvegarde  : "
                                       << sauvegarde.max_time / sauvegarde.max_count << "\n"; */
-              sprintf(s, "%2.2f", total_quantity / (sauvegarde.max_count * 1024 * 1024));
+              snprintf(s, 20, "%2.2f", total_quantity / (sauvegarde.max_count * 1024 * 1024));
               stat_file << "Data / sauvegarde [Mo] : " << s << "\n";
               /* stat_file << "Debit           [Mo/s] : "
                         << (int) (total_quantity / (1024 * 1024)

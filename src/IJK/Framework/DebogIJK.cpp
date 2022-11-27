@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -126,7 +126,7 @@ void DebogIJK::verifier(const char *msg, const IJK_Field_float& f)
       char ss[1000];
       for (int i = 0; i < sig.size_array(); i++)
         {
-          sprintf(ss, "%20.13g ", sig[i]);
+          snprintf(ss, 1000, "%20.13g ", sig[i]);
           s += ss;
         }
       s += msg;
@@ -140,7 +140,7 @@ void DebogIJK::verifier(const char *msg, const IJK_Field_float& f)
           for (int i = 0; i < sig.size_array(); i++)
             {
               infile_ >> sig2[i];
-              sprintf(ss, "%20.13g ", sig2[i]);
+              snprintf(ss, 1000, "%20.13g ", sig2[i]);
               s2 += ss;
             }
           std::string ligne;
@@ -224,7 +224,7 @@ void DebogIJK::verifier(const char *msg, const IJK_Field_double& f)
       char ss[1000];
       for (int i = 0; i < sig.size_array(); i++)
         {
-          sprintf(ss, "%20.13g ", sig[i]);
+          snprintf(ss, 1000, "%20.13g ", sig[i]);
           s += ss;
         }
       s += msg;
@@ -238,7 +238,7 @@ void DebogIJK::verifier(const char *msg, const IJK_Field_double& f)
           for (int i = 0; i < sig.size_array(); i++)
             {
               infile_ >> sig2[i];
-              sprintf(ss, "%20.13g ", sig2[i]);
+              snprintf(ss, 1000, "%20.13g ", sig2[i]);
               s2 += ss;
             }
           std::string ligne;

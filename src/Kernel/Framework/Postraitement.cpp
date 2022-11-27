@@ -136,7 +136,7 @@ inline void nom_fichier(const Postraitement& post, const Champ_Generique_Statist
 
   nom_fichier+=op->get_nom_post()+"."+loc_post+"."+dom.le_nom()+"."+post.probleme().le_nom()+".";
   char s[100];
-  sprintf(s,"%.10f", op->get_time());
+  snprintf(s,100,"%.10f", op->get_time());
   nom_fichier+=Nom(s);
 }
 
@@ -145,7 +145,7 @@ inline void nom_fichier(const Postraitement& post, const Nom& nom_post, const No
   nom_fichier+=".";
   nom_fichier+=nom_post+"."+loc+"."+dom.le_nom()+"."+post.probleme().le_nom()+".";
   char s[100];
-  sprintf(s,"%.10f",temps_ch);
+  snprintf(s,100,"%.10f",temps_ch);
   nom_fichier+=Nom(s);
 }
 

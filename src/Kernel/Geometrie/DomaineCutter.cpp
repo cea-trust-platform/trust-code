@@ -1235,25 +1235,25 @@ static void construire_nom_fichier_sous_domaine(const Nom& basename,
   if (partie < 0)
     {
       if (nb_parties_ > 10000)
-        sprintf(s, "_p%05d.Zones", (True_int)nb_parties_);
+        snprintf(s, 30, "_p%05d.Zones", (True_int)nb_parties_);
       else
-        sprintf(s, "_p%04d.Zones",(True_int) nb_parties_);
+        snprintf(s, 30, "_p%04d.Zones",(True_int) nb_parties_);
     }
   else
     {
       if (nb_parties_ > 10000)
         {
           if(original_proc < 0)
-            sprintf(s, "_%05d.Zones", (True_int)partie);
+            snprintf(s, 30, "_%05d.Zones", (True_int)partie);
           else
-            sprintf(s, "_%05d_%d.Zones", (True_int)partie, (True_int)original_proc);
+            snprintf(s, 30, "_%05d_%d.Zones", (True_int)partie, (True_int)original_proc);
         }
       else
         {
           if(original_proc < 0)
-            sprintf(s, "_%04d.Zones", (True_int)partie);
+            snprintf(s, 30, "_%04d.Zones", (True_int)partie);
           else
-            sprintf(s, "_%04d_%d.Zones", (True_int)partie, (True_int)original_proc);
+            snprintf(s, 30, "_%04d_%d.Zones", (True_int)partie, (True_int)original_proc);
         }
     }
   fichier += Nom(s);
@@ -1488,7 +1488,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
                 nbfaces_total+=nbfaces;
                 const int nbelemdist = joint.joint_item(Joint::ELEMENT).items_distants().size_array();
                 nbelemdist_total+=nbelemdist;
-                // Beurk: sprintf pas beau et dangereux, mais c'est plus simple...
+                // Beurk: snprintf pas beau et dangereux, mais c'est plus simple...
                 assert(sizeof(int)==sizeof(int));
                 Cerr<< "  Joint "<<i<<" PeVoisin "<<pe<<" NbSommets "<<nbsom<<" NbFaces "<<nbfaces;
                 if (Decouper::print_more_infos) Cerr <<" NbElemDist "<<nbelemdist;

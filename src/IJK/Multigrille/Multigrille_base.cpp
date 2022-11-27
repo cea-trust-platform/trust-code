@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -97,7 +97,7 @@ void dump_x_b_residue_in_file(const IJK_Field_float& x, const IJK_Field_float& b
       const int k_fix = 3;
       Nom n("plot_step");
       char ss[4];
-      sprintf(ss, "%03d", step_number);
+      snprintf(ss, 4, "%03d", step_number);
       n += Nom(ss);
       n += Nom("_level");
       n += Nom(grid_level);
@@ -127,7 +127,7 @@ void dump_x_b_residue_in_file(const IJK_Field_double& x, const IJK_Field_double&
       const int k_fix = 3;
       Nom n("plot_step");
       char ss[4];
-      sprintf(ss, "%03d", step_number);
+      snprintf(ss, 4, "%03d", step_number);
       n += Nom(ss);
       n += Nom("_level");
       n += Nom(grid_level);

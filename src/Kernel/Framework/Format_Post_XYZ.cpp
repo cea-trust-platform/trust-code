@@ -252,7 +252,7 @@ Nom Format_Post_XYZ::construire_nom_xyz(double temps_,
   extension_champ += ".";
   char str_temps[100] = "0.0";
   if (temps_ >= 0.)
-    sprintf(str_temps, "%.10f", temps_);
+    snprintf(str_temps, 100, "%.10f", temps_);
   extension_champ += str_temps;
   Nom nom_fich(xyz_basename_);
   nom_fich += "." ;

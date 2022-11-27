@@ -79,7 +79,7 @@ Fichier_Lata::Fichier_Lata(const char * basename, const char * extension,
         is_parallel_ = 0;
         fichier_ = new SFichier;
         const int moi = Process::me();
-        sprintf(s, "_%05d", (True_int)moi);
+        snprintf(s, 20, "_%05d", (True_int)moi);
         break;
       }
     default:
@@ -808,7 +808,7 @@ int Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const Doub
   extension_geom += ".";
   char str_temps[100] = "0.0";
   if (temps_courant_ >= 0.)
-    sprintf(str_temps, "%.10f", temps_courant_);
+    snprintf(str_temps, 100, "%.10f", temps_courant_);
   extension_geom += Nom(str_temps);
   Nom nom_fichier_geom;
   int decalage_sommets = 1;
@@ -1040,7 +1040,7 @@ int Format_Post_Lata::ecrire_champ(const Domaine& domaine, const Noms& unite_, c
   extension_champ += ".";
   char str_temps[100] = "0.0";
   if (temps >= 0.)
-    sprintf(str_temps, "%.10f", temps);
+    snprintf(str_temps, 100, "%.10f", temps);
   extension_champ += str_temps;
 
   Nom filename_champ;

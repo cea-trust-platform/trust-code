@@ -102,7 +102,7 @@ void crit_err_hdlr(True_int sig_num, siginfo_t * info, void * ucontext)
 
       // Call 'addr2line' system utility to extract line number in the source code:
       char syscom[256];
-      sprintf(syscom, "addr2line %p --functions -e %.*s | tr '\n' ' ' | c++filt", array[i], (True_int)p, messages[i]);
+      snprintf(syscom, 256, "addr2line %p --functions -e %.*s | tr '\n' ' ' | c++filt", array[i], (True_int)p, messages[i]);
       std::string output;
       int ret = exec_cmd_and_get_output(syscom, output);
       if(!ret)

@@ -1465,7 +1465,7 @@ bool Solv_Petsc::enable_ksp_view( void )
 int Solv_Petsc::add_option(const Nom& astring, const double& value, int cli)
 {
   char nom_value[80];
-  sprintf(nom_value,"%e",value);
+  snprintf(nom_value,80, "%e",value);
   return add_option(astring, (Nom)nom_value, cli);
 }
 

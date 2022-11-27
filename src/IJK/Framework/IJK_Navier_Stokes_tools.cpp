@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -119,11 +119,11 @@ Probleme_base& creer_zone_vdf(const IJK_Splitting& splitting, const Nom& nom_dom
   const int nk = geom.get_nb_elem_tot(DIRECTION_K)+1;
 
   char fonction_coord_x[300];
-  sprintf(fonction_coord_x,"%.16g+x*%.16g", x0, lx);
+  snprintf(fonction_coord_x,300,"%.16g+x*%.16g", x0, lx);
   char fonction_coord_y[300];
-  sprintf(fonction_coord_y,"%.16g+y*%.16g", y0, ly);
+  snprintf(fonction_coord_y,300,"%.16g+y*%.16g", y0, ly);
   char fonction_coord_z[300];
-  sprintf(fonction_coord_z,"%.16g+z*%.16g", z0, lz);
+  snprintf(fonction_coord_z,300,"%.16g+z*%.16g", z0, lz);
 
   SChaine instructions;
   instructions << "Dimension 3 " << finl;

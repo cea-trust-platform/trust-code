@@ -102,9 +102,9 @@ Nom::Nom(int i)
 
   char chaine[22];
 #ifdef INT_is_64_
-  sprintf(chaine, "%ld", i);
+  snprintf(chaine, 22, "%ld", i);
 #else
-  sprintf(chaine, "%d", i);
+  snprintf(chaine, 22, "%d", i);
 #endif
   operator=(chaine);
 }
@@ -132,7 +132,7 @@ Nom::Nom(const Nom& nom) : Objet_U(nom), nom_(nom.nom_)
   nb_noms++;
 }
 
-/*! @brief Construction d'un nom a partir d'un flottant La chaine cree est la representation du nombre reel (sprintf)
+/*! @brief Construction d'un nom a partir d'un flottant La chaine cree est la representation du nombre reel (snprintf)
  *
  * @param (double le_reel) le reel a utiliser
  */
@@ -141,11 +141,11 @@ Nom::Nom(double le_reel)
   nb_noms++;
   nom_ = "";
   char la_chaine[80];
-  sprintf(la_chaine,"%f",le_reel);
+  snprintf(la_chaine,80,"%f",le_reel);
   operator=(la_chaine);
 }
 
-/*! @brief Construction d'un nom a partir d'un flottant La chaine cree est la representation du nombre reel (sprintf)
+/*! @brief Construction d'un nom a partir d'un flottant La chaine cree est la representation du nombre reel (snprintf)
  *
  *     Le format du nombre represente par la chaine est donne par format
  *
@@ -154,7 +154,7 @@ Nom::Nom(double le_reel)
 Nom::Nom(double le_reel, const char* format)
 {
   char la_chaine[80];
-  sprintf(la_chaine,format,le_reel);
+  snprintf(la_chaine,80,format,le_reel);
 #ifdef MICROSOFT
   // sous windows les chiffres s'ecrivent 1.0000e+000 (avec 3 chiffres pour les puissances)
   // on retire le premier zero

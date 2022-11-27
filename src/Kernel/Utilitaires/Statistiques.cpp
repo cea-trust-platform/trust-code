@@ -555,11 +555,11 @@ static void print_stat(Sortie& perfs,
       s[0] = 0;
 
       if (min_time_per_step != max_time_per_step)
-        sprintf(s, "(%0.3f,%0.3f, %0.3f)", min_time_per_step == INITIAL_MIN? 0.0 : min_time_per_step, max_time_per_step, var_time_per_step);
+        snprintf(s, 50, "(%0.3f,%0.3f, %0.3f)", min_time_per_step == INITIAL_MIN? 0.0 : min_time_per_step, max_time_per_step, var_time_per_step);
 
-      sprintf(tampon, "%55s (%02d) %10.2f %5.1f%% %10.3g %10.3g %10.2f %10s ",
-              description, (True_int)level, time, percent_time, nb, quantity,
-              avg_time_per_step, s);
+      snprintf(tampon, BUFLEN + 200, "%55s (%02d) %10.2f %5.1f%% %10.3g %10.3g %10.2f %10s ",
+               description, (True_int)level, time, percent_time, nb, quantity,
+               avg_time_per_step, s);
       perfs << tampon << finl;
     }
 
@@ -607,19 +607,19 @@ static void print_stat(Sortie& perfs,
           char s1[50], s2[50], s3[50];
           s1[0] = s2[0] = s3[0] = 0;
           if (min_time != max_time)
-            sprintf(s1, "(%0.2f,%0.2f)", min_time, max_time);
+            snprintf(s1, 50, "(%0.2f,%0.2f)", min_time, max_time);
           if (min_nb != max_nb)
-            sprintf(s2, "(%0.3g,%0.3g)", min_nb, max_nb);
+            snprintf(s2, 50, "(%0.3g,%0.3g)", min_nb, max_nb);
           if (min_quantity != max_quantity)
-            sprintf(s3, "(%0.3g,%0.3g)", min_quantity, max_quantity);
+            snprintf(s3, 50, "(%0.3g,%0.3g)", min_quantity, max_quantity);
 
-          sprintf(tampon,
-                  "%55s (%02d) %10.2f  %5.1f%% %-23s %10.3g %-23s %10.3g %-23s %10.2f (%0.3f)",
-                  description, (True_int)level,
-                  avg_time, percent_time, s1,
-                  avg_nb, s2,
-                  avg_quantity, s3,
-                  avg_avg_time_ps, avg_var_time_ps);
+          snprintf(tampon, BUFLEN + 200,
+                   "%55s (%02d) %10.2f  %5.1f%% %-23s %10.3g %-23s %10.3g %-23s %10.2f (%0.3f)",
+                   description, (True_int)level,
+                   avg_time, percent_time, s1,
+                   avg_nb, s2,
+                   avg_quantity, s3,
+                   avg_avg_time_ps, avg_var_time_ps);
 
           perfs_globales << tampon << finl;
         }
@@ -646,20 +646,20 @@ void Statistiques::dump(const char * message, int mode_append)
       perfs << " " << Time::description << finl;
 
 
-      sprintf(tampon, "%60s %10s         %10s %10s  %-23s %10s ",
-              "Counter (level)", "time(s)", "count", "quantity", "avg time per step", "(min,max,std dev)" );
+      snprintf(tampon, BUFLEN + 150, "%60s %10s         %10s %10s  %-23s %10s ",
+               "Counter (level)", "time(s)", "count", "quantity", "avg time per step", "(min,max,std dev)" );
       perfs << tampon << finl;
     }
 
   if (Process::je_suis_maitre())
     {
-      sprintf(tampon,
-              "%60s %10s         %-23s %10s %-23s %10s %-23s %10s %-23s",
-              "Counter (level)",
-              "avg time", "(min,max)",
-              "avg count", "(min,max)",
-              "avg qty", "(min,max)",
-              "avg time per step", "(std dev)");
+      snprintf(tampon, BUFLEN + 150,
+               "%60s %10s         %-23s %10s %-23s %10s %-23s %10s %-23s",
+               "Counter (level)",
+               "avg time", "(min,max)",
+               "avg count", "(min,max)",
+               "avg qty", "(min,max)",
+               "avg time per step", "(std dev)");
       perfs_globales << "Statistics overall execution : " << message << finl;
       perfs_globales << " the time was measured by the following method :" << finl;
       perfs_globales << " " << Time::description << finl;
@@ -714,9 +714,9 @@ void Statistiques::dump(const char * message, int mode_append)
       char description[BUFLEN];
 
       if (si.family[i])
-        sprintf(description, "%s:%s", si.family[i], si.description[i]);
+        snprintf(description, BUFLEN, "%s:%s", si.family[i], si.description[i]);
       else
-        sprintf(description, "%s", si.description[i]);
+        snprintf(description, BUFLEN, "%s", si.description[i]);
 
       double time;
       double nb;
@@ -1160,9 +1160,9 @@ void Statistiques::print_communciation_tracking_details(const char* message, int
                   if(avg_communication_of_type_j)
                     {
 #ifdef INT_is_64_
-                      sprintf(desc, "%10s %-25s %.2e s (%2li%%)\n", "\tdont", si.description[counter_id], avg_communication_of_type_j,avg_communication_type_pourcentage);
+                      snprintf(desc, BUFLEN + 100, "%10s %-25s %.2e s (%2li%%)\n", "\tdont", si.description[counter_id], avg_communication_of_type_j,avg_communication_type_pourcentage);
 #else
-                      sprintf(desc, "%10s %-25s %.2e s (%2i%%)\n", "\tdont", si.description[counter_id], avg_communication_of_type_j,avg_communication_type_pourcentage);
+                      snprintf(desc, BUFLEN + 100, "%10s %-25s %.2e s (%2i%%)\n", "\tdont", si.description[counter_id], avg_communication_of_type_j,avg_communication_type_pourcentage);
 #endif
                       comm << desc;
                     }

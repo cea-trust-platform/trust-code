@@ -213,7 +213,7 @@ Sortie& EcrFicPartageMPIIO::operator <<(const double ob)
   if (bin_)
     write(MPI_DOUBLE, &ob);
   else
-    (*this)<<std::to_string(ob).c_str(); // ToDo utiliser sprintf
+    (*this)<<std::to_string(ob).c_str(); // ToDo utiliser snprintf
   return *this;
 }
 Sortie& EcrFicPartageMPIIO::operator <<(const Objet_U& ob)
