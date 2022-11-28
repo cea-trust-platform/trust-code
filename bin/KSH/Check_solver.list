@@ -36,7 +36,7 @@ let i=$i+1;solver[$i]="Gen            { seuil $seuil solv_elem bicgstab precond 
 
 ################################
 # Solveurs matrices symetriques:
-################################P
+################################
 # References TRUST (GC+SSOR - Cholesky)
 let i=$i+1;solver[$i]="      GCP      { seuil $seuil precond ssor { omega 1.65 } impr }"			;sym[$i]=1	;rank[$i]=1;
 # Marche pas en VEF:
@@ -135,10 +135,6 @@ let i=$i+1;solver[$i]="AMGX GCP { seuil $seuil precond C-AMG { } impr }" 					;g
 ###############################
 # AMGX solveurs tested on GPU #
 ###############################
-let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond DIAG { } impr }"				;amgx[$i]=1	;sym[$i]=1
-let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond SSOR { omega 1.6 } impr }"			;amgx[$i]=1	;sym[$i]=1
-let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond C-AMG { } impr }" 				;amgx[$i]=1	;sym[$i]=1
-let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond SA-AMG { } impr }" 				;amgx[$i]=1	;sym[$i]=1
 let i=$i+1;solver[$i]="AMGX  GCP      { seuil $seuil precond GS { } impr }" 				;amgx[$i]=1	;sym[$i]=1
 #let i=$i+1;solver[$i]="AMGX  GCP      { seuil $seuil precond DIAG { } impr }" 				;amgx[$i]=1	;sym[$i]=1 
 let i=$i+1;solver[$i]="AMGX  GCP      { seuil $seuil precond BLOCK_JACOBI_ILU { level 0 } impr }" 		;amgx[$i]=1	;sym[$i]=1 
@@ -148,14 +144,24 @@ let i=$i+1;solver[$i]="AMGX  GCP      { seuil $seuil precond ILU  { level 1 } im
 let i=$i+1;solver[$i]="AMGX  CLI      { solver(s)=PCG s:preconditioner(p)=MULTICOLOR_GS s:tolerance=$seuil }";amgx[$i]=1	;sym[$i]=1 
 let i=$i+1;solver[$i]="AMGX  GCP      { seuil $seuil precond C-AMG { } impr }" 				;amgx[$i]=1	;sym[$i]=1
 let i=$i+1;solver[$i]="AMGX  GCP      { seuil $seuil precond SA-AMG { } impr }" 				;amgx[$i]=1	;sym[$i]=1
+# Pour comparaison sur CPU:
+let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond DIAG { } impr }"				;amgx[$i]=1	;sym[$i]=1
+let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond SSOR { omega 1.6 } impr }"			;amgx[$i]=1	;sym[$i]=1
+let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond C-AMG { } impr }" 				;amgx[$i]=1	;sym[$i]=1
+let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond SA-AMG { } impr }" 				;amgx[$i]=1	;sym[$i]=1
 
+############################################################################### 
+# Solveurs Amgx sur matrices non symetriques (attention GMRES faux dans AmgX !)
+###############################################################################
+let i=$i+1;solver[$i]="AMGX  FGMRES   { seuil $seuil precond GS { } impr }" 				;amgx[$i]=1	;sym[$i]=0
+#let i=$i+1;solver[$i]="AMGX  BICGSTAB { seuil $seuil precond GS { } impr }" 	 			;amgx[$i]=1	;sym[$i]=0	
+let i=$i+1;solver[$i]="AMGX  BICGSTAB { seuil $seuil precond BLOCK_JACOBI_ILU { level 0 } impr }" 	;amgx[$i]=1	;sym[$i]=0	
+let i=$i+1;solver[$i]="AMGX  GCP      { seuil $seuil precond GS { } impr }" 				;amgx[$i]=1	;sym[$i]=0
+let i=$i+1;solver[$i]="AMGX  FGMRES   { seuil $seuil precond BLOCK_JACOBI_ILU { level 0 } impr }" 	;amgx[$i]=1	;sym[$i]=0
+let i=$i+1;solver[$i]="AMGX  FGMRES   { seuil $seuil precond C-AMG { } impr }" 				;amgx[$i]=1	;sym[$i]=0
+# Pour comparaison sur CPU:
 let i=$i+1;solver[$i]="      GMRES    { seuil $seuil DIAG controle_residu 1 impr }" 		 	;amgx[$i]=1	;sym[$i]=0
 let i=$i+1;solver[$i]="PETSC GMRES    { seuil $seuil precond DIAG { } impr }" 				;amgx[$i]=1	;sym[$i]=0	
-# GMRES faux dans AmgX !
-#let i=$i+1;solver[$i]="AMGX  FGMRES   { seuil $seuil precond DIAG { } impr }" 				;amgx[$i]=1	;sym[$i]=0	
-let i=$i+1;solver[$i]="AMGX  FGMRES   { seuil $seuil precond C-AMG { } impr }" 				;amgx[$i]=1	;sym[$i]=0
-let i=$i+1;solver[$i]="AMGX  FGMRES   { seuil $seuil precond BLOCK_JACOBI_ILU { level 0 } impr }" 	;amgx[$i]=1	;sym[$i]=0	
-let i=$i+1;solver[$i]="AMGX  GCP      { seuil $seuil precond GS { } impr }" 				;amgx[$i]=1	;sym[$i]=0	
 
 #let i=$i+1;solver[$i]="Petsc_GPU CLI       { -ksp_type cg -pc_type saviennacl -mat_type aijviennacl -vec_type viennacl -ksp_divtol 1e6 -ksp_atol $seuil }"	   ;amgx[$i]=1	;sym[$i]=1; par[$i]=0 # ToDo
 #let i=$i+1;solver[$i]="Petsc_GPU CLI       { -ksp_type cg -pc_type rowscalingviennacl -mat_type aijviennacl -vec_type viennacl -ksp_divtol 1e6 -ksp_atol $seuil }" ;amgx[$i]=1	;sym[$i]=1; par[$i]=0 # ToDo

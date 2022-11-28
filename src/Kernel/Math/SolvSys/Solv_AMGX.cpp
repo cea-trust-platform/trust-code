@@ -137,6 +137,14 @@ void Solv_AMGX::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse)
 // Check and return true if new stencil
 bool Solv_AMGX::check_stencil(const Matrice_Morse& mat_morse)
 {
+  int num_devices = 0;
+  cudaGetDeviceCount(&num_devices);
+  if (num_devices>1)
+    {
+      // Exemple cas PETSC_AMGX en parallele:
+      Cout << "[AmgX] In Solv_AMGX::check_stencil same_stencil=true cause bug in SolveurAmgX_::updateA on multi-GPU (ToDo: fix by switching to CSR interface)!" << finl;
+      return true;
+    }
   double start = Statistiques::get_time_now();
   // Parcours de la matrice_morse (qui peut contenir des 0 et qui n'est pas triee par colonnes croissantes)
   // si matrice sur le GPU deja construite (qui est sans 0 et qui est triee par colonnes croissantes):
@@ -215,6 +223,7 @@ int Solv_AMGX::solve(ArrOfDouble& residu)
       return 0;
       //Process::exit();
     }
+
   double start = Statistiques::get_time_now();
   SolveurAmgX_.solve(lhs, rhs, nRowsLocal);
   Cout << "[AmgX] Time to solve system on GPU: " << Statistiques::get_time_now() - start << finl;
