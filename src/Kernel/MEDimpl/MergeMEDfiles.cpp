@@ -22,7 +22,6 @@
 #include <MEDLoader.hxx>
 #include <MEDFileMesh.hxx>
 #include <MEDCouplingFieldDouble.hxx>
-// #pragma GCC diagnostic ignored "-Wreorder"
 using namespace MEDCoupling;
 #endif
 

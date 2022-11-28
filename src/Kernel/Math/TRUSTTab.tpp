@@ -50,6 +50,7 @@ inline const _TYPE_& TRUSTTab<_TYPE_>::operator()(int i) const
   return TRUSTVect<_TYPE_>::operator[](i);
 }
 
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wstrict-overflow"
 template<typename _TYPE_>
 inline _TYPE_& TRUSTTab<_TYPE_>::operator()(int i1, int i2)
@@ -110,6 +111,7 @@ inline const _TYPE_& TRUSTTab<_TYPE_>::operator()(int i1, int i2, int i3, int i4
   assert(i4 >= 0 && i4 < dimensions_[3]);
   return TRUSTVect<_TYPE_>::operator[](((i1*dimensions_[1]+i2)*dimensions_[2]+i3)*dimensions_[3]+i4);
 }
+#pragma GCC diagnostic pop
 
 //  Returns one of the "real" dimensions of the multi-dimensionnal array, as defined by:
 //   dimension(0) = size_reelle() / line_size(), or 0 if line_size()==0

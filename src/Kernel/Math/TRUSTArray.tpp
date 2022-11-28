@@ -150,6 +150,7 @@ inline _TYPE_& TRUSTArray<_TYPE_>::operator[](int i)
 //    assert si la valeur sort de l'intervalle : [ -DMAXFLOAT,DMAXFLOAT ]
 //    assert si i n'est pas dans l'intervalle
 /// \cond DO_NOT_DOCUMENT
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wstrict-overflow"
 template<>
 inline double& TRUSTArray<double>::operator[](int i)
@@ -178,6 +179,7 @@ inline const double& TRUSTArray<double>::operator[](int i) const
   assert(data_[i] > -DMAXFLOAT && data_[i] < DMAXFLOAT);
   return data_[i];
 }
+#pragma GCC diagnostic pop
 /// \endcond
 
 //  Renvoie un pointeur sur le premier element du tableau. Le pointeur est nul si le tableau est "detache".

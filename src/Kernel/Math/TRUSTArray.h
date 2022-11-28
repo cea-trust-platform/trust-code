@@ -103,8 +103,8 @@ public:
   {
     if (dataLocation()!=HostOnly)
       {
-#pragma GCC diagnostic ignored "-Wunused-variable"
 #pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-variable"
         _TYPE_ *tab_addr = addr();
         #pragma omp target exit data map(from:tab_addr[0:size_array()])
 #pragma GCC diagnostic pop
