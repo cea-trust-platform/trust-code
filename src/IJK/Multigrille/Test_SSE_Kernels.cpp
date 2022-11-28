@@ -35,7 +35,6 @@ Entree& Test_SSE_Kernels::readOn(Entree& is )
 
 Entree& Test_SSE_Kernels::interpreter(Entree& is)
 {
-  int i=0;
   int nmax=1000;
   Param param(que_suis_je());
   param.ajouter("nmax", &nmax);

@@ -977,8 +977,6 @@ calculer_laplacien_som(const DoubleTab& nu_som) const
   testl|=sub_type(Champ_Fonc_base,diffu);
   is_laplacian_filled_=testl;
 
-  const Zone_VEF_PreP1b& zone_VEF = zone_VEFPreP1B();
-
   DoubleVect& coeff=laplacien_p1_.get_set_coeff();
 
   const DoubleTab& inconnue1=equation().inconnue().valeurs();

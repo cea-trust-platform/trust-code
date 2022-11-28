@@ -162,8 +162,6 @@ Entree& Op_Dift_Stab_VEF_Face::readOn(Entree& is )
 
 DoubleTab& Op_Dift_Stab_VEF_Face::ajouter(const DoubleTab& inconnue_org,DoubleTab& resu) const
 {
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
-
   const DoubleTab& nu_turb=diffusivite_turbulente()->valeurs();
   const DoubleVect& porosite_face = equation().milieu().porosite_face();
   const DoubleVect& porosite_elem = equation().milieu().porosite_elem();

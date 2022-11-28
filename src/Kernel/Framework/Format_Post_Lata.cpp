@@ -973,9 +973,6 @@ int Format_Post_Lata::ecrire_domaine(const Domaine& domaine,const int est_le_pre
            << " status = RESET. Uninitialized object" << finl;
       exit();
     }
-  const Nom& id_domaine = domaine.le_nom();
-  const DoubleTab& sommets = domaine.les_sommets();
-  const IntTab& elements = domaine.zone(0).les_elems();
   Motcle type_elem = domaine.zone(0).type_elem().valeur().que_suis_je();
 
   ecrire_domaine_low_level(domaine.le_nom(), domaine.les_sommets(), domaine.zone(0).les_elems(), type_elem);

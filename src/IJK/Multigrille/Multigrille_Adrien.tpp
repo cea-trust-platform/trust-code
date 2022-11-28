@@ -201,8 +201,6 @@ void Multigrille_Adrien::jacobi_residu_(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>&
 
   statistiques().begin_count(jacobi_residu_counter_);
 
-  constexpr bool IS_DOUBLE = std::is_same<_TYPE_, double>::value;
-
   const IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>& coeffs_face = get_grid_data<_TYPE_>(grid_level).get_faces_coefficients();
 
   IJ_layout layout(x);
