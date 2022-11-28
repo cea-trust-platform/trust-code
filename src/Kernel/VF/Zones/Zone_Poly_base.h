@@ -33,10 +33,6 @@
 #include <array>
 #include <map>
 
-#ifndef __clang__
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-#endif
-
 class Geometrie;
 
 /*! @brief class Zone_Poly_base
