@@ -6,8 +6,10 @@ LIB=`basename $1`
 ROOT=`pwd`
 valgrind=$TRUST_ROOT/exec/valgrind/bin/valgrind
 # ToDo: remonter dans configure de TRUST pour partage avec PETSc ?
-[ -d $CUDA_ROOT/../math_libs ] &&  export CUDA_LIB_PATH=$CUDA_ROOT/../math_libs && CUDA_NVCC_FLAGS="-DCUDA_NVCC_FLAGS=-I$CUDA_LIB_PATH/include;--compiler-options;-fPIC" # Ajout sur orcus
-[ -d $CUDA_ROOT/math_libs ]    &&  export CUDA_LIB_PATH=$CUDA_ROOT/math_libs    && CUDA_NVCC_FLAGS="-DCUDA_NVCC_FLAGS=-I$CUDA_LIB_PATH/include;--compiler-options;-fPIC" # Ajout sur topaze
+for CUDA_LIB_PATH in $CUDA_ROOT/math_libs $CUDA_ROOT/../math_libs $CUDA_ROOT/../../math_libs
+do
+   [ -d $CUDA_LIB_PATH ] && export CUDA_LIB_PATH && CUDA_NVCC_FLAGS="-DCUDA_NVCC_FLAGS=-I$CUDA_LIB_PATH/include;--compiler-options;-L$CUDA_LIB_PATH/lib64 -fPIC" && break
+done
 # Fin ToDo
 log=$ROOT/perf_$LIB.log && rm -f $log
 rm -r -f $LIB
@@ -35,8 +37,9 @@ then
       AMGX_COMPILERS="-DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc" # See https://github.com/NVIDIA/AMGX for compilers...
    fi
    # Sur jeanzay, $TRUST_MAKE plante (pas assez de memoire sur frontale?) donc on retente avec make:
-   cmake -Wno-dev $CUDA_NVCC_FLAGS -DCUDA_TOOLKIT_ROOT_DIR=$CUDA_ROOT -DAMGX_NO_RPATH=1 -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB $AMGX_COMPILERS -DCMAKE_CUDA_FLAGS_RELEASE="-DNDEBUG" .. && ($TRUST_MAKE || make) && make install && cp -f ../examples/matrix.mtx $AMGX_DIR/$LIB/lib/examples
-   [ $? != 0 ] && exit -1
+   #-DCUDA_ARCH="60;70;80"
+   cmake -Wno-dev $CUDA_NVCC_FLAGS -DCUDA_TOOLKIT_ROOT_DIR=$CUDA_ROOT -DAMGX_NO_RPATH=1 -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB $AMGX_COMPILERS -DCMAKE_CUDA_FLAGS_RELEASE="-DNDEBUG" .. || exit -1
+   ($TRUST_MAKE || make) && make install && cp -f ../examples/matrix.mtx $AMGX_DIR/$LIB/lib/examples || exit -1
    make install && cp -f ../examples/matrix.mtx $AMGX_DIR/$LIB/lib/examples
    cd $ROOT && rm -r -f $LIB
 fi

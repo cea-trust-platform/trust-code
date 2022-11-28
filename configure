@@ -264,7 +264,7 @@ echo "[-force_provided_openmpi]         Use the provided OpenMPI `awk -F= '/defa
 echo "[-force_latest_openmpi]           Download and use the OpenMPI `awk -F= '/latest_version=/ {print $2}' ThirdPart/src/LIBMPI/Installer_openmpi` version."
 echo "[-force_system_mpi]               Use the system-provided MPI library."
 echo "[-force_even_unsupported]         Force the configure even the compiler/OS is not supported."
-echo "[-cuda[=path to nvcc]]            Activate the CUDA support into several libraries for NVidia GPU computing (experimental)"
+echo "[-cuda[=path to nvcc|=download]]  Activate the CUDA support into several libraries for NVidia GPU computing (experimental)"
 echo "[-rocalution=0|path to rocALUTION]Disable or specifiy extern rocALUTION library for AMD GPU computing (experimental). Default: using provided rocALUTION library"
 echo "[-openmp]                         Enable OpenMP support (use of threaded BLAS like Mkl or OpenBlas and build PETSc with OpenMP support."
 echo "[-disable-petsc]                  Disable PETSc library installation."
@@ -459,7 +459,7 @@ do
    elif [ "${1#-cuda}" != "$1" ]
    then
       export TRUST_USE_CUDA=1
-      CUDA_NVCC=${1#-cuda=} && [ -f $CUDA_NVCC ] && export PATH=`dirname $CUDA_NVCC`:$PATH
+      [ "${1#-cuda=}" != "$1" ] && CUDA_NVCC=${1#-cuda=}
 
    elif [ "${1#-rocalution}" != "$1" ]
    then
@@ -575,6 +575,72 @@ do
    fi
    shift
 done
+
+
+# Cuda
+if [ "$CUDA_NVCC" != "" ]
+then
+   if [ "$CUDA_NVCC" = download ]
+   then
+      source env/TRUST_TMP.env 1>/dev/null 2>&1
+      if [ "$TRUST_USE_OPENMP" = 1 ]
+      then
+         # NVIDIA HPC SDK
+         SDK_VERSION=22.9
+         CUDA_VERSION=11.7 && installer=nvhpc_2022_229_Linux_x86_64_cuda_$CUDA_VERSION
+         CUDA_BIN=$TRUST_TMP/nvhpc-$SDK_VERSION/Linux_x86_64/$SDK_VERSION/cuda/$CUDA_VERSION/bin
+         if [ ! -f $CUDA_BIN/nvcc ]
+         then
+            echo "It may take some minutes to download NVidia HPC SDK..."
+            (
+            cd $TRUST_TMP
+            if [ ! -f $installer.tar.gz ]
+            then
+               wget https://developer.download.nvidia.com/hpc-sdk/$SDK_VERSION/$installer.tar.gz 1>/dev/null 2>&1 
+               [ $? != 0 ] && echo "Error when downloading. See https://developer.nvidia.com/nvidia-hpc-sdk-releases" && exit -1
+            fi
+            echo "It may take some minutes to install NVidia HPC SDK..."
+            tar xpzf $installer.tar.gz && rm -f $installer.tar.gz
+            echo -e "\n1\n$TRUST_TMP/nvhpc-$SDK_VERSION\n" | $installer/install
+            [ $? != 0 ] && echo "Error during NVidia HPC SDK install under `dirname $CUDA_BIN`" && exit -1
+            rm -r -f $installer
+            )
+         fi
+      else
+         # CUDA TOOLKIT
+         CUDA_VERSION=11.8.0 && installer=cuda_$CUDA_VERSION_520.61.05_linux.run # Ne converge pas (PAR_gpu_3D) semble se produire des 11.3...
+         CUDA_VERSION=11.2.0 && installer=cuda_$CUDA_VERSION_460.27.04_linux.run 
+         CUDA_BIN=$TRUST_TMP/cuda-$CUDA_VERSION/bin
+         if [ ! -f $CUDA_BIN/nvcc ]
+         then
+            echo "It may take some minutes to download Cuda Toolkit..."
+            (
+            cd $TRUST_TMP
+            if [ ! -f $installer ]
+            then
+               wget https://developer.download.nvidia.com/compute/cuda/$CUDA_VERSION/local_installers/$installer 1>/dev/null 2>&1 
+               [ $? != 0 ] && echo "Error when downloading. See https://developer.nvidia.com/cuda-downloads" && exit -1
+            fi
+            echo "It may take some minutes to install Cuda Toolkit..."
+            bash ./$installer --silent --no-drm --no-man-page --toolkit --installpath=`dirname $CUDA_BIN`
+            [ $? != 0 ] && echo "Error during Cuda install under `dirname $CUDA_BIN`" && exit -1
+            rm -f $installer
+            )
+         fi
+      fi
+   else
+      CUDA_BIN=`dirname $CUDA_NVCC`
+   fi
+   if [ ! -f $CUDA_BIN/nvcc ]
+   then
+      echo "Error: $CUDA_BIN/nvcc doesn't exist." && exit -1
+   else
+      # Bizarre petra:
+      chmod gou+x $CUDA_BIN/*
+      echo "OK: Cuda nvcc installed under $CUDA_BIN"
+   fi
+   export PATH=$CUDA_BIN:$PATH
+fi
 
 export TRUST_ROOT_VERSION=`awk '/version/ && /Release notes/ {print $4;exit}' $TRUST_ROOT/RELEASE_NOTES | sed "s/_beta//"`
 if [ "$clean" != "clean" ]

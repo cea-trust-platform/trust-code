@@ -276,6 +276,12 @@
 ###
 # Triggered by all test case using Cuda
 {
+   <XDCORE>
+   Memcheck:Value8
+   ...
+   obj:*/libdxcore.so
+}
+{
    <CUBLAS_LIB>
    Memcheck:Leak
    ...
@@ -294,7 +300,13 @@
    obj:*/libcublas.so.*
 }
 {
-   <CUDA_LIB>
+   <CUDA_LIB_Cond>
+   Memcheck:Cond
+   ...
+   obj:*/libcuda.so.*
+}
+{
+   <CUDA_LIB_Leak>
    Memcheck:Leak
    ...
    obj:*/libcuda.so.*

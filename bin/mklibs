@@ -26,56 +26,64 @@ then
          [ -f lib$lib.a ] && PETSC=$PETSC" -l$lib"
       done
       [ -f libumfpack.a ] && PETSC=$PETSC" -lumfpack -lklu -lcholmod -lbtf -lccolamd -lcolamd -lcamd -lamd -lsuitesparseconfig"$([ `uname -s` != Darwin ] && echo " -lrt")
-      # Crash sur orcus (Caught amgx exception: Cannot allocate pinned memory) si on utilise la librairie statique AmgX avec -lamgx !
-      [ "$TRUST_USE_CUDA" = 1 ] && AMGX_ROOT="\$(TRUST_ROOT)/lib/src/LIBAMGX" && PETSC=$PETSC" -L$AMGX_ROOT/AmgX/lib -lamgxsh -L$AMGX_ROOT/AmgXWrapper/lib64 -lAmgXWrapper"
+
+      # Link avec les librairies statiques de CUDA:
+      # Pros: Portability ?
+      # Cons: Binary size 74Go -> 900Go ! Crash possible sur orcus (Caught amgx exception: Cannot allocate pinned memory) si on utilise la librairie statique AmgX avec -lamgx !
+      LINK_CUDA=_static
+      LINK_CUDA=""
+      [ "$TRUST_USE_CUDA" = 1 ] && AMGX_ROOT="\$(TRUST_ROOT)/lib/src/LIBAMGX" && PETSC=$PETSC" -L$AMGX_ROOT/AmgX/lib -lamgx`[ "$LINK_CUDA" != _static ] && echo sh` -L$AMGX_ROOT/AmgXWrapper/lib64 -lAmgXWrapper"
       # Le fichier suivant pourrait peut etre permettre de simplifier les choses precedantes:
       # car desormais on l'utilise pour avoir le nombre des librairies BLAS optimisees et des librairies eventuelles CUDA
       petscmachineinfo=$PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h
       if [ -f $petscmachineinfo ]
       then
          # Si PETSc compile avec GNU et le code avec NVidia il faut donner le chemin des libs GNU (libX11, libm, libpthread, etc...)
-	 [ "`basename $TRUST_CC_BASE`" = nvc++ ] && PETSC=$PETSC" -L/usr/lib/x86_64-linux-gnu"
-	 # CUDA trouve et qui fonctionne sur la machine (test fait dans $PETSC_ROOT/GPU)
+         [ "`basename $TRUST_CC_BASE`" = nvc++ ] && PETSC=$PETSC" -L/usr/lib/x86_64-linux-gnu"
+         # CUDA trouve et qui fonctionne sur la machine (test fait dans $PETSC_ROOT/GPU)
          # -lnvToolsExt: ajoute suite undefined reference sur cobalt
-	 [ "$TRUST_USE_CUDA" = 1 ] && PETSC=$PETSC" `awk '/Using libraries/ && /cuda/ { for (i=1;i<=NF;i++) if (index($i,"cuda") || (index($i,"-lcu"))) libs=libs" "$i;} END {print libs" -lnvToolsExt"}' $petscmachineinfo`"
-	 # X11 (avec une bidouille pour castor, pas capable de trouver sa librairie X11)
-	 if [ "`grep lX11 $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ]
-	 then
+         if [ "$TRUST_USE_CUDA" = 1 ]
+         then
+            PETSC=$PETSC" `awk -v LINK_CUDA=$LINK_CUDA '/Using libraries/ && /cuda/ { for (i=1;i<=NF;i++) {if (index($i,"/cuda")) libs=libs" "$i;if (index($i,"-lcu")) libs=libs" "$i""LINK_CUDA;}} END {print libs" -lnvToolsExt"}' $petscmachineinfo`"
+            [ "$LINK_CUDA" = _static ] && PETSC=$PETSC" -lcublasLt_static -lculibos -lrt"
+         fi
+         # X11 (avec une bidouille pour castor, pas capable de trouver sa librairie X11)
+         if [ "`grep lX11 $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ]
+         then
             # Sur certaines machines X11 non trouve
-	    touch test.cpp
-	    if [ "`$TRUST_CC -o test test.cpp -lX11 2>&1 | grep X11 | grep find`" != "" ]
-	    then
-	       bits=64 && [ "`uname -m`" = i686 ] && bits=""
-	       L=`ls /usr/X11R6/lib$bits/libX11.a 2>/dev/null`
-	       L="-L"`dirname $L`" "
+            touch test.cpp
+            if [ "`$TRUST_CC -o test test.cpp -lX11 2>&1 | grep X11 | grep find`" != "" ]
+            then
+               bits=64 && [ "`uname -m`" = i686 ] && bits=""
+               L=`ls /usr/X11R6/lib$bits/libX11.a 2>/dev/null`
+               L="-L"`dirname $L`" "
             else
-	       L=""
-	    fi
-	    rm -f test.cpp
+               L=""
+            fi
+            rm -f test.cpp
             PETSC=$PETSC" "$L"-lX11"
-	 fi
-	 # PETSc without MPI:
-	 if [ "$TRUST_DISABLE_MPI" = 1 ]
-	 then
+         fi
+         # PETSc without MPI:
+         if [ "$TRUST_DISABLE_MPI" = 1 ]
+         then
             PETSC=$PETSC" -lmpiseq -lpthread"
-
-	 else
-             for libfort in lmpifort lmpi_f77
-             do
-	     if [ "`grep $libfort $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ]
-		 then
-		 MPIFORT=" -L\$(MPI_ROOT)/lib -${libfort} "
-	     fi
-	     done
-	 fi
-	 if [ "`grep lssl $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ]
-	 then
-	    PETSC=$PETSC" -lssl -lcrypto"
-	 fi
-	 if [ "`grep lpthread $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ]
-	 then
-	    PETSC=$PETSC" -lpthread"
-	 fi
+         else
+            for libfort in lmpifort lmpi_f77
+            do
+        if [ "`grep $libfort $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ]
+       then
+       MPIFORT=" -L\$(MPI_ROOT)/lib -${libfort} "
+        fi
+        done
+    fi
+    if [ "`grep lssl $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ]
+    then
+       PETSC=$PETSC" -lssl -lcrypto"
+    fi
+    if [ "`grep lpthread $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ]
+    then
+       PETSC=$PETSC" -lpthread"
+    fi
       fi
       # Bizarre, MUMPS switche sur gfortran: Ameliorer ?
       #PETSC=$PETSC" -lgfortran"
@@ -176,19 +184,19 @@ do
    suffixe=${fic#make.lib}
    if [ $suffixe = a ]
    then
-      echo $ECHO_OPTS "Libs = \$(LIB)\\" 	> $fic
+      echo $ECHO_OPTS "Libs = \$(LIB)\\"    > $fic
    else
-      echo $ECHO_OPTS "Libs = \\"		> $fic
+      echo $ECHO_OPTS "Libs = \\"      > $fic
       # On ne se base plus sur le contenu de lib mais sur les make.include !
       # C'est mieux en cas d'une lib en trop ou en moins.
       END=hydturbspe
       for rep in `cat $TRUST_ENV/rep.TRUST | grep -v MAIN`
       do
-	 [ ! -f $TRUST_ROOT/$rep/make.include ] && echo "No make.include file find in $rep !" && exit -1
-	 NOM=`cat $TRUST_ROOT/$rep/make.include | $TRUST_Awk -F'/' '/Lib =/ {print $2}'`
-	 NOM=${NOM#lib}
-	 [ ${#NOM} = 0 ] && echo "No 'Lib =' in $rep/make.include !" && exit -1
-	 [ $NOM != $END ] && echo $ECHO_OPTS "\$(TRUST_LIB)/lib$NOM.$suffixe\\" >> $fic
+         [ ! -f $TRUST_ROOT/$rep/make.include ] && echo "No make.include file find in $rep !" && exit -1
+         NOM=`cat $TRUST_ROOT/$rep/make.include | $TRUST_Awk -F'/' '/Lib =/ {print $2}'`
+         NOM=${NOM#lib}
+         [ ${#NOM} = 0 ] && echo "No 'Lib =' in $rep/make.include !" && exit -1
+         [ $NOM != $END ] && echo $ECHO_OPTS "\$(TRUST_LIB)/lib$NOM.$suffixe\\" >> $fic
       done
       # Problem seen on Ubuntu 13.x:
       # We put the library given by END at the end:
@@ -198,12 +206,12 @@ do
       fi
    fi
    # NB: 1.5.6: MED est place APRES PETSC car seg fault sinon avec -lz si place avant la librairie lcudart !
-   echo $ECHO_OPTS "-L\$(TRUST_LIB) -lmfft -lmfft_c\\"				>> $fic
-   echo $ECHO_OPTS "-lskit $METIS -L\$(TRUST_LATAFILTER)/lib -llatafilter\\"	>> $fic
-   echo $ECHO_OPTS "-L\$(TRUST_ICOCOAPI)/lib -licocoapi\\"	>> $fic
-   [ "$PETSC" != "" ] && echo $ECHO_OPTS "$PETSC \\"				>> $fic
-   [ "$LAPACK" != "" ] && echo $ECHO_OPTS "$LAPACK \\"				>> $fic
-   [ "$VC" != "" ] && echo $ECHO_OPTS "$VC \\"                     		>> $fic
+   echo $ECHO_OPTS "-L\$(TRUST_LIB) -lmfft -lmfft_c\\"            >> $fic
+   echo $ECHO_OPTS "-lskit $METIS -L\$(TRUST_LATAFILTER)/lib -llatafilter\\"   >> $fic
+   echo $ECHO_OPTS "-L\$(TRUST_ICOCOAPI)/lib -licocoapi\\"   >> $fic
+   [ "$PETSC" != "" ] && echo $ECHO_OPTS "$PETSC \\"            >> $fic
+   [ "$LAPACK" != "" ] && echo $ECHO_OPTS "$LAPACK \\"            >> $fic
+   [ "$VC" != "" ] && echo $ECHO_OPTS "$VC \\"                           >> $fic
    [ -f ${TRUST_ROCALUTION}/lib/librocalution.so ] && echo $ECHO_OPTS "-L\$(TRUST_ROCALUTION)/lib -lrocalution \\" >> $fic
    [ -f ${TRUST_OSQP_ROOT}/lib/libosqp.a ] && echo $ECHO_OPTS "-L\$(TRUST_OSQP_ROOT)/lib -losqp \\" >> $fic
    [ -f ${TRUST_OSQP_ROOT}/lib64/libosqp.a ] && echo $ECHO_OPTS "-L\$(TRUST_OSQP_ROOT)/lib64 -losqp \\" >> $fic
@@ -211,8 +219,8 @@ do
    LISTP=""
    [ $TRUST_DISABLE_MPI = 0 ] && LISTP="paramedmem paramedloader" 
    for ll in medloader medcouplingremapper medcoupling medicoco $LISTP  interpkernel
-    do
-    LIBS_MEDC=${LIBS_MEDC}" \$(TRUST_MEDCOUPLING_ROOT)/lib/lib${ll}.a"
+   do
+       LIBS_MEDC=${LIBS_MEDC}" \$(TRUST_MEDCOUPLING_ROOT)/lib/lib${ll}.a"
    done
    # echo $LIBS_MEDC
 
@@ -220,9 +228,9 @@ do
    # medcoupling 64bits is now available : we need to link TRUST to it
    echo $ECHO_OPTS "${LIBS_MEDC} \\" >> $fic
    
-   [ "$MEDLDFLAGS" != "" ] && echo $ECHO_OPTS "$MEDLDFLAGS \\"  	>> $fic
+   [ "$MEDLDFLAGS" != "" ] && echo $ECHO_OPTS "$MEDLDFLAGS \\"     >> $fic
 
-   [ "$MPIFORT" != "" ] && echo $ECHO_OPTS "$MPIFORT "  		>> $fic
+   [ "$MPIFORT" != "" ] && echo $ECHO_OPTS "$MPIFORT "        >> $fic
 
    # Verification qu'une librairie n'est pas en double
    a=`cat $fic | sort | uniq -c | grep -v 1`
