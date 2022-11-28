@@ -35,6 +35,7 @@
 #include <functional>
 #include <Flux_parietal_base.h>
 #include <Flux_interfacial_PolyMAC.h>
+#include <Milieu_composite.h>
 
 Implemente_instanciable_sans_constructeur(Op_Diff_PolyMAC_P0_Elem, "Op_Diff_PolyMAC_P0_Elem|Op_Diff_PolyMAC_P0_var_Elem", Op_Diff_PolyMAC_P0_base);
 Implemente_instanciable(Op_Dift_PolyMAC_P0_Elem, "Op_Dift_PolyMAC_P0_Elem_PolyMAC_P0|Op_Dift_PolyMAC_P0_var_Elem_PolyMAC_P0", Op_Diff_PolyMAC_P0_Elem);
@@ -212,7 +213,7 @@ double Op_Diff_PolyMAC_P0_Elem::calculer_dt_stab() const
       for (n = 0; n < N; n++)
         if ((!alp || (*alp)(e, n) > 1e-3) && flux(n)) /* sous 0.5e-6, on suppose que l'evanescence fait le job */
           dt = std::min(dt, pe(e) * ve(e) * (alp ? (*alp)(e, n) : 1) * (lambda(!cL * e, n) / diffu(!cD * e, n)) / flux(n));
-      if (dt < 0) abort();
+      if (dt < 0) Process::exit(que_suis_je() + " : negative dt_stab calculated !!");
     }
   return Process::mp_min(dt);
 }
@@ -353,6 +354,36 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
   A.set_smart_resize(1), B.set_smart_resize(1), Ff.set_smart_resize(1), Fec.set_smart_resize(1), C.set_smart_resize(1), X.set_smart_resize(1);
   Y.set_smart_resize(1), piv.set_smart_resize(1), W.set_smart_resize(1), x_fs.set_smart_resize(1), Tefs.set_smart_resize(1), S.set_smart_resize(1);
   mA.set_smart_resize(1), mB.set_smart_resize(1), Qf.set_smart_resize(1), Qec.set_smart_resize(1);
+
+  // Et pour les methodes span de la classe Saturation pour le flux parietal
+  std::vector<DoubleTrav> Ts_tab(n_ext), Sigma_tab(n_ext), Lvap_tab(n_ext);
+  // remplir les tabs ... mais seulement si besoin !
+  for (i = 0; i < n_ext; i++)
+    if (sub_type(Milieu_composite, op_ext[i]->equation().milieu()))
+      {
+        const Milieu_composite& milc = ref_cast(Milieu_composite, op_ext[i]->equation().milieu());
+        const int nbelem_tot = domaine[i].get().nb_elem_tot(), nb_max_sat =  N[i] * (N[i]-1) /2; // oui !! suite arithmetique !!
+        if (ref_cast(Pb_Multiphase,op_ext[i]->equation().probleme()).has_correlation("flux_parietal"))
+          {
+            Ts_tab[i].resize(nbelem_tot,nb_max_sat), Sigma_tab[i].resize(nbelem_tot,nb_max_sat), Lvap_tab[i].resize(nbelem_tot,nb_max_sat);
+            const DoubleTab& press = ref_cast(Pb_Multiphase, op_ext[i]->equation().probleme()).eq_qdm.pression()->passe();
+            const DoubleTab& temp  = ref_cast(Pb_Multiphase, op_ext[i]->equation().probleme()).eq_energie.inconnue()->passe();
+            for (k = 0; k < N[i]; k++)
+              for (l = k + 1; l < N[i]; l++)
+                if (milc.has_saturation(k, l))
+                  {
+                    Saturation_base& z_sat = milc.get_saturation(k, l);
+                    const int ind_trav = (k*(N[i]-1)-(k-1)*(k)/2) + (l-k-1); // Et oui ! matrice triang sup !
+                    // XXX XXX XXX
+                    // Attention c'est dangereux ! on suppose pour le moment que le champ de pression a 1 comp. Par contre la taille de res est nb_max_sat*nbelem !!
+                    // Aussi, on passe le Span le nbelem pour le champ de pression et pas nbelem_tot ....
+                    assert (press.line_size() == 1);
+                    z_sat.Tsat( press.get_span_tot(),   Ts_tab[i].get_span_tot(),nb_max_sat,ind_trav);
+                    z_sat.Lvap( press.get_span_tot(), Lvap_tab[i].get_span_tot(),nb_max_sat,ind_trav);
+                    z_sat.sigma( temp.get_span_tot(),       press.get_span_tot(), Sigma_tab[i].get_span_tot(),nb_max_sat,ind_trav);
+                  }
+          }
+      }
 
   for (i_s = 0; i_s < som_ext.dimension(0); i_s++)
     if ((s = som_ext(i_s)) < domaine0.nb_som())
@@ -559,6 +590,8 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                             Flux_parietal_base::output_t out;
                             DoubleTrav Tf(N[p]), qpk(N[p]), dTf_qpk(N[p], N[p]), dTp_qpk(N[p]), qpi(N[p], N[p]), dTf_qpi(N[p], N[p], N[p]), dTp_qpi(N[p], N[p]), nv(N[p]), d_nuc(N[p]);
                             in.N = N[p], in.f = f, in.D_h = dh(e), in.D_ch = dh(e), in.alpha = &alpha(e, 0), in.T = &Tf(0), in.p = press(e), in.v = nv.addr(), in.Tp = Tefs(0, i_efs(i, j, M)), in.lambda = &lambda(e, 0), in.mu = &mu(e, 0), in.rho = &rho(e, 0), in.Cp = &Cp(e, 0);
+                            if (corr.needs_saturation()) in.Lvap = &Lvap_tab[p](e, 0), in.Sigma = &Sigma_tab[p](e, 0), in.Tsat = &Ts_tab[p](e, 0);
+                            else                         in.Lvap = nullptr           , in.Sigma = nullptr            , in.Tsat = nullptr        ;
                             out.qpk = &qpk, out.dTf_qpk = &dTf_qpk, out.dTp_qpk = &dTp_qpk, out.qpi = &qpi, out.dTp_qpi = &dTp_qpi, out.dTf_qpi = &dTf_qpi, out.nonlinear = &nonlinear, out.d_nuc = &d_nuc;
                             for (d = 0; d < D; d++)
                               for (n = 0; n < N[p]; n++) nv(n) += std::pow(vit(domaine[p].get().nb_faces_tot() + D * e + d, n), 2);

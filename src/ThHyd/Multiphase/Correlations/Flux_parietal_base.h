@@ -48,6 +48,9 @@ public:
     const double *mu;     // mu[n]     -> viscosite de la phase n
     const double *rho;    // rho[n]    -> masse volumique de la phase n
     const double *Cp;     // Cp[n]     -> capacite calorifique de la phase n
+    const double *Lvap;   //Lvap[(k*(N-1)-(k-1)*(k)/2) + (l-k-1)]     : chaleur latente changement de phase n <=> k
+    const double *Sigma;  //Sigma[(k*(N-1)-(k-1)*(k)/2) + (l-k-1)]    : tension de surface entre phases n <=> k
+    const double *Tsat;   //Tsat[(k*(N-1)-(k-1)*(k)/2) + (l-k-1)]     : temperature de saturation du changement de phase n <=> k
   };
   /* valeurs de sortie */
   struct output_t
@@ -70,6 +73,8 @@ public:
   virtual void qp(const input_t& input, output_t& output) const = 0;
 
   virtual int calculates_bubble_nucleation_diameter() const {return 0;};
+  virtual int needs_saturation() const {return 0;};
+
 };
 
 #endif
