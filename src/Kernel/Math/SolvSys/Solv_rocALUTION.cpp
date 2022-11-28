@@ -178,12 +178,9 @@ Solver<GlobalMatrix<T>, GlobalVector<T>, T>* Solv_rocALUTION::create_rocALUTION_
           lp = new MultiColoredGS<LocalMatrix<T>, LocalVector<T>, T>(); // Attention converge avec BICGSTAB pas CG...
           double omega = ::precond_option(is, "omega");
           if (omega >= 0) dynamic_cast<MultiColoredGS<LocalMatrix<T>, LocalVector<T>, T> &>(*lp).SetRelaxation(omega);
-          try
-            {
-              auto& solver = dynamic_cast<CG<GlobalMatrix<double>, GlobalVector<double>, double> &>(*ls);
-              Process::exit("Error, non symmetric Gauss Seidel preconditioners should be used with BiCGSTab solver, not CG.");
-            }
-          catch (const std::bad_cast& error) {}
+
+          if(dynamic_cast<CG<GlobalMatrix<double>, GlobalVector<double>, double> *>(ls) != nullptr)
+            Process::exit("Error, non symmetric Gauss Seidel preconditioners should be used with BiCGSTab solver, not CG.");
         }
       else if (precond == (Motcle) "ILU")  // ILU(0) sur GPU build/solver
         {
@@ -518,15 +515,13 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
     }
   else
     {
-      try
+      // Provisoire pourquoi rebuild pour pairwise amg ?
+      if(dynamic_cast<PairwiseAMG<GlobalMatrix<double>, GlobalVector<double>, double> *>(gp) != nullptr)
         {
-          // Provisoire pourquoi rebuild pour pairwise amg ?
-          auto& mg = dynamic_cast<PairwiseAMG<GlobalMatrix<double>, GlobalVector<double>, double> &>(*gp);
           tick = rocalution_time();
           ls->ReBuildNumeric();
           Cout << "[rocALUTION] Time to rebuild solver: " << (rocalution_time() - tick) / 1e6 << finl;
         }
-      catch (const std::bad_cast& error) {}
     }
   bool debug = b.size_array() < 100;
   if (debug)
@@ -705,7 +700,6 @@ void Solv_rocALUTION::Create_objects(const Matrice_Morse& csr)
   const ArrOfInt& tab1 = csr.get_tab1();
   const ArrOfInt& tab2 = csr.get_tab2();
   const ArrOfDouble& coeff = csr.get_coeff();
-  const ArrOfInt& renum_array = renum_;  // tableau vu comme lineaire
   const MD_Vector_base& mdv = renum_.get_md_vector().valeur();
   const MD_Vector_std& md = sub_type(MD_Vector_composite, mdv) ? ref_cast(MD_Vector_composite, mdv).global_md_ : ref_cast(MD_Vector_std, mdv);
   IntVect local_renum(items_to_keep_.size_array()); // ToDo remonter dans Solv_externe
