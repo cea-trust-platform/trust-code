@@ -106,6 +106,11 @@ public:
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-variable"
         _TYPE_ *tab_addr = addr();
+        if (!tab_addr)
+          {
+            Cerr << "Null pointer in ~TRUSTArray !" << finl;
+            Process::exit();
+          }
         #pragma omp target exit data map(from:tab_addr[0:size_array()])
 #pragma GCC diagnostic pop
       }

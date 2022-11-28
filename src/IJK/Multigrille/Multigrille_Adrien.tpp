@@ -203,7 +203,7 @@ void Multigrille_Adrien::jacobi_residu_(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>&
 
   const IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>& coeffs_face = get_grid_data<_TYPE_>(grid_level).get_faces_coefficients();
 
-  IJ_layout layout(x);
+  //IJ_layout layout(x);
   const _TYPE_ relax = (_TYPE_)relax_jacobi(grid_level);
   // We can do at most this number of passes per sweep:
   const int nb_passes_max_per_sweep = x.ghost();
