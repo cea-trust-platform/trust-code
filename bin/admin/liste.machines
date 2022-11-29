@@ -66,3 +66,5 @@ linux   rsync_ssh   tache   is229955.intra.cea.fr 			  					                    
 linux   rsync_ssh   tache   is231796.intra.cea.fr       -all    -MPCube -TrioCFD -IJK-FT  -GENEPI3 -FLICA5       -prof       -force_provided_mpich -without-pdflatex             # Debian 10 Bat 451 LGLS  Portable Clarisse
 linux   rsync_ssh	non	is232973.intra.cea.fr 		-all		-TrioCFD -IJK-FT -GENEPI3 -STT -PEMFC      	 	-gcov	-force_provided_mpich -without-pdflatex 								# Ubuntu 20.04	Bat 451	LMSF	Bureau TMA TRUST titania
 linux   rsync_ssh	non	is232973-gui.intra.cea.fr 		-all		-TrioCFD -IJK-FT -GENEPI3 -TRUST_NK       -gui   	 		-remote_install_TRUST_with_source -force_provided_mpich -without-pdflatex  								# Ubuntu 20.04	Bat 451	LMSF	Bureau TMA titania TRUST
+linux   rsync_ssh	non	petra.intra.cea.fr 		-all		-TrioCFD   	 		 -cuda=download -disable-mpi4py -without-pdflatex  								# Ubuntu 20.04 serveur rackable titania
+

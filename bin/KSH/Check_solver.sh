@@ -299,9 +299,9 @@ do
 	 rm -f $jdd.* $jdd"_"*
 	 mv tmp/* .
 	 rmdir tmp	 
-      elif [ $nc = 1 ]
-      then
-	 echo $ECHO_OPTS "\t\t\t\t\tNonCode\t[$i]    $solver" | tee -a rank
+      #elif [ $nc = 1 ]
+      #then
+#	 echo $ECHO_OPTS "\t\t\t\t\tNonCode\t[$i]    $solver" | tee -a rank
       fi
    fi
    let i=$i+1

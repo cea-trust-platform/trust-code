@@ -357,6 +357,7 @@ export TRUST_DOWNLOAD_VISIT=0
 export TRUST_DOWNLOAD_SALOME=0
 export TRUST_WITHOUT_HOST=0
 export TRUST_ENABLE_DOC_DOXYGEN=0
+unset CUDA_NVCC
 unset TRUST_USE_EXTERNAL_HDF
 unset TRUST_USE_EXTERNAL_MED
 unset TRUST_USE_EXTERNAL_MEDCOUPLING
@@ -596,7 +597,8 @@ then
             cd $TRUST_TMP
             if [ ! -f $installer.tar.gz ]
             then
-               wget https://developer.download.nvidia.com/hpc-sdk/$SDK_VERSION/$installer.tar.gz 1>/dev/null 2>&1 
+               
+                https://developer.download.nvidia.com/hpc-sdk/$SDK_VERSION/$installer.tar.gz 1>/dev/null 2>&1 
                [ $? != 0 ] && echo "Error when downloading. See https://developer.nvidia.com/nvidia-hpc-sdk-releases" && exit -1
             fi
             echo "It may take some minutes to install NVidia HPC SDK..."
@@ -608,8 +610,8 @@ then
          fi
       else
          # CUDA TOOLKIT
-         CUDA_VERSION=11.8.0 && installer=cuda_$CUDA_VERSION_520.61.05_linux.run # Ne converge pas (PAR_gpu_3D) semble se produire des 11.3...
-         CUDA_VERSION=11.2.0 && installer=cuda_$CUDA_VERSION_460.27.04_linux.run 
+         CUDA_VERSION=11.8.0 && installer=cuda_$CUDA_VERSION"_520.61.05_linux.run" # Ne converge pas (PAR_gpu_3D) semble se produire des 11.3...
+         CUDA_VERSION=11.2.0 && installer=cuda_$CUDA_VERSION"_460.27.04_linux.run" 
          CUDA_BIN=$TRUST_TMP/cuda-$CUDA_VERSION/bin
          if [ ! -f $CUDA_BIN/nvcc ]
          then
@@ -622,7 +624,7 @@ then
                [ $? != 0 ] && echo "Error when downloading. See https://developer.nvidia.com/cuda-downloads" && exit -1
             fi
             echo "It may take some minutes to install Cuda Toolkit..."
-            bash ./$installer --silent --no-drm --no-man-page --toolkit --installpath=`dirname $CUDA_BIN`
+            bash ./$installer --no-xwin --silent --no-drm --no-man-page --toolkit --installpath=`dirname $CUDA_BIN`
             [ $? != 0 ] && echo "Error during Cuda install under `dirname $CUDA_BIN`" && exit -1
             rm -f $installer
             )
