@@ -6,6 +6,7 @@ meshes="10x10x10" && cpu=2 # ~20000 cells/MPI
 #meshes="19x19x19" && cpu=8
 liste_cas="" 
 seuil=1.e-4
+seuil=1.e-5 # Plus d'ecarts entre machines
 option[0]="solveur amgx gcp   		{ precond null { }           impr rtol  $seuil }"       && liste_cas=$liste_cas"amgx_gc "  
 option[1]="solveur amgx gcp   		{ precond gs   { omega 0.9 } impr rtol  $seuil }"	&& liste_cas=$liste_cas"amgx_gc_gs "  
 option[2]="solveur amgx fgmres   	{ precond gs   { omega 0.9 } impr rtol  $seuil }"	&& liste_cas=$liste_cas"amgx_fgmres_gs "  
