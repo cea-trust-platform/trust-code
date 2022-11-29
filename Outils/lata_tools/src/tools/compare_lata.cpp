@@ -821,37 +821,37 @@ int main(int argc, char **argv)
           un_ecart.les_ecarts_.add();
           //double val_max=0;
 
-          for (int i = 1; i < nbtimes; i++)
+          for (int kt = 1; kt < nbtimes; kt++)
             {
               int t1, t2;
               if (dernier_only == 0)
                 {
-                  t1 = t2 = i;
+                  t1 = t2 = kt;
                 }
               else
                 {
                   t1 = nbtimes - 1;
                   t2 = filter2.get_nb_timesteps() - 1;
-                  i = t1;
+                  kt = t1;
                 }
               // Rebuild vertex/elem correspondances if needed
               if (!is_fixed_domain)
                 {
-                  map_ielem[i] = ArrOfInt();
-                  map_isom[i] = ArrOfInt();
+                  map_ielem[kt] = ArrOfInt();
+                  map_isom[kt] = ArrOfInt();
 
-                  Domain_Id id_t(geoms3[i], i, -1);
+                  Domain_Id id_t(geoms3[i], kt, -1);
                   const Domain& dom_t = get_domain(filter, id_t, filename);
                   const Domain& dom_t_2 = get_domain(filter2, id_t, filename2);
 
-                  ArrOfInt &ielem2 = map_ielem[i], &isom2=map_isom[i];
+                  ArrOfInt &ielem2 = map_ielem[kt], &isom2=map_isom[kt];
                   // on construit les tableux de ocnnectivites elem2 -> elem et som2 -> som
                   // C'est aussi la que se fait la comparaison des geometries:
                   construit_corres(((dom_t.get_domain_type() == Domain::UNSTRUCTURED) ? dom_t.cast_DomainUnstructured() : convertIJKtoUnstructured(dom_t.cast_DomainIJK())),
                                    (dom_t_2.get_domain_type() == Domain::UNSTRUCTURED) ? dom_t_2.cast_DomainUnstructured() : convertIJKtoUnstructured(dom_t_2.cast_DomainIJK()),
                                     ielem2, isom2);
                 }
-              int key = is_fixed_domain ? -1 : i; // fixed domain
+              int key = is_fixed_domain ? -1 : kt; // fixed domain
               ArrOfInt &ielem3 = map_ielem[key], &isom3=map_isom[key];
 
               Field_Id id(fields3[j], t1, -1);
