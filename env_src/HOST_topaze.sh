@@ -27,7 +27,7 @@ define_modules_config()
    # Load modules
    if [ "$TRUST_USE_CUDA" = 1 ]
    then
-      module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.3"
+      module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.2"  # revenir a cuda/11.2 au lieu de 11.3
    else
       module="gnu/11.1.0 mpi/openmpi/4.0.5"
       module="intel/20.0.4 mpi/openmpi/4.0.5"
