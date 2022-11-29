@@ -101,19 +101,13 @@ public:
 
   virtual ~TRUSTArray()
   {
+#ifdef _OPENMP
     if (dataLocation()!=HostOnly)
       {
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-variable"
         _TYPE_ *tab_addr = addr();
-        if (!tab_addr)
-          {
-            Cerr << "Null pointer in ~TRUSTArray !" << finl;
-            Process::exit();
-          }
         #pragma omp target exit data map(from:tab_addr[0:size_array()])
-#pragma GCC diagnostic pop
       }
+#endif
     detach_array();
     size_array_ = -1; // Paranoia: si size_array_==-1, c'est un zombie
   }
