@@ -18,8 +18,8 @@
 
 #include <Eval_Conv_VDF_Elem_leaves.h> // pour les compilos (templates :-) )
 #include <Eval_Conv_VDF_Face_leaves.h>
-#include <Pb_Multiphase.h>
 #include <Iterateur_VDF_Face.h>
+#include <Pb_Multiphase.h>
 #include <Op_Conv_VDF.h>
 
 /// \cond DO_NOT_DOCUMENT

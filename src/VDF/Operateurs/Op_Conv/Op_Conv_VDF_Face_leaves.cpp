@@ -48,88 +48,170 @@ void Op_Conv_Amont_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secme
                         *alp = pbm ? &pbm->eq_masse.inconnue().passe() : NULL, &rho = equation().milieu().masse_volumique().passe();
       Matrice_Morse *mat = matrices.count(nom_inco) && !semi_impl.count(nom_inco) ? matrices.at(nom_inco) : NULL;
 
-      int i, j, k, l, e, eb, f, fb, fc, fd, m, n, N = inco.line_size(), d, D = dimension, comp = !incompressible_;
-      double mult;
+      int i, j, k, l, e = -100, eb, f, fb, fc, fd, m, n, N = inco.line_size(), d, D = dimension, comp = !incompressible_;
 
       DoubleTrav dfac(2, N, N), masse(N, N);
       for (f = 0; f < zone.nb_faces_tot(); f++)
-        if (f_e(f, 0) >= 0 && (f_e(f, 1) >= 0 || fcl(f, 0) == 1 || fcl(f, 0) == 3))
-          {
-            // etape 1 : masse + dfac
-            for (i = 0, dfac = 0; i < 2; i++)
-              {
-                //masse : diagonale
-                for (masse = 0, e = f_e(f, f_e(f, i) >= 0 ? i : 0), n = 0; n < N; n++)
-                  {
-                    masse(n, n) = a_r ? (*a_r)(e, n) : 1;
-                  }
+        {
+          const bool is_interne = (f_e(f, 0) >= 0 && f_e(f, 1) >= 0);
+          const bool is_bord = ((f_e(f, 0) >= 0 && f_e(f, 1) < 0) || (f_e(f, 0) < 0 && f_e(f, 1) >= 0));
+          const bool is_neum_or_diric = ( fcl(f, 0) == 1 || fcl(f, 0) == 3 );
 
-                // masse ajoutee si correlation
-                if (corr)
-                  corr->ajouter(&(*alp)(e, 0), &rho(e, 0), masse);
+          if (is_interne || (is_bord && is_neum_or_diric))
+            {
+              // etape 1 : masse + dfac
+              if (f_e(f, 0) < 0)
+                {
+                  for (i = 1, dfac = 0; i >= 0; i--)
+                    {
+                      //masse : diagonale
+                      for (masse = 0, e = f_e(f, f_e(f, i) >= 0 ? i : !i), n = 0; n < N; n++)
+                        masse(n, n) = a_r ? (*a_r)(e, n) : 1;
 
-                //contribution a dfac
-                for (n = 0; n < N; n++)
+                      // masse ajoutee si correlation
+                      if (corr)
+                        corr->ajouter(&(*alp)(e, 0), &rho(e, 0), masse);
+
+                      //contribution a dfac
+                      for (n = 0; n < N; n++)
+                        {
+                          e = f_e(f, i);
+                          eb = e;
+                          for (m = 0; m < N; m++)
+                            {
+                              const int ind = fcl(f, 0) == 1 ? 0 : i;
+                              const int ind_por = eb >= 0 ? eb : f_e(f, f_e(f, i) >= 0 ? i : !i);
+                              double dd = (vit(f, m) * (i ? -1 : 1) >= 0 ? 1. : vit(f, m) ? -1. : 0.);
+
+                              dfac(ind, n, m) += fs(f) * vit(f, m) * pe(ind_por) * masse(n, m) * (1. + dd) / 2;
+                            }
+                        }
+                    }
+                }
+              else
+                {
+                  for (i = 0, dfac = 0; i < 2; i++)
+                    {
+                      //masse : diagonale
+                      for (masse = 0, e = f_e(f, f_e(f, i) >= 0 ? i : !i), n = 0; n < N; n++)
+                        masse(n, n) = a_r ? (*a_r)(e, n) : 1;
+
+                      // masse ajoutee si correlation
+                      if (corr)
+                        corr->ajouter(&(*alp)(e, 0), &rho(e, 0), masse);
+
+                      //contribution a dfac
+                      for (n = 0; n < N; n++)
+                        {
+                          e = f_e(f, i);
+                          eb = e;
+                          for (m = 0; m < N; m++)
+                            {
+                              const int ind = fcl(f, 0) == 1 ? (f_e(f, 0) >= 0 ? 0 : 1) : i;
+                              const int ind_por = eb >= 0 ? eb : f_e(f, f_e(f, i) >= 0 ? i : !i);
+                              double dd = (vit(f, m) * (i ? -1 : 1) >= 0 ? 1. : vit(f, m) ? -1. : 0.);
+
+                              dfac(ind, n, m) += fs(f) * vit(f, m) * pe(ind_por) * masse(n, m) * (1. + dd) / 2;
+                            }
+                        }
+                    }
+                }
+
+              // etape 2 : secmem + derivee
+              for (i = 0; i <2; i++)
+                if ((e = f_e(f, i)) >= 0)
                   {
-                    e = f_e(f, i);
-                    eb = e;
-                    for (m = 0; m < N; m++)
+                    for (k = 0; k < e_f.dimension(1); k++)
                       {
-                        const int ind = fcl(f, 0) == 1 ? 0 : i;
-                        const int ind_por = eb >= 0 ? eb : f_e(f, 0);
+                        fb = e_f(e, k);
+                        if (fb >= 0 && (zone.orientation(fb) == zone.orientation(f)))
+                          if (fb < zone.nb_faces())
+                            if (f_e(f, i == 0 ? 1 : 0) < 0 || (f_e(f, 0) >= 0 && f_e(f, 1) >= 0))
+                              {
+                                if (f_e(f, 0) < 0)
+                                  for (j = 1; j >= 0; j--) //equivalence : face fd -> face fb
+                                    {
+                                      eb = f_e(f, j), fd = (j == i ? fb : zone.face_amont_princ(fb, j) /* face  */); //element/face sources
 
-                        double dd = (vit(f, m) * (i ? -1 : 1) >= 0 ? 1. : vit(f, m) ? -1. : 0.);
+                                      for (n = 0; n < N; n++)
+                                        for (m = 0; m < N; m++)
+                                          if (dfac(!j, n, m))
+                                            {
+                                              // secmem
+                                              double fac = (i ? -1 : 1) * vfd(fb, e != f_e(fb, 0)) * dfac(!j, n, m) / ve(e);
+                                              if (f_e(fb, 0) < 0) fac *= 0.5;
+                                              if (fd >= 0)
+                                                secmem(fb, n) -= fac * inco(fd, m); //autre face calculee
+                                              else
+                                                {
+                                                  for (d = 0; d < D; d++)  //CL de Dirichlet
+                                                    {
+                                                      if (sub_type(Dirichlet, cls[fcl(f, 1)].valeur()))
+                                                        throw;
+                                                      secmem(fb, n) -= 0;  //fac * zone.face_normales(fb, d) / fs(fb) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + m);
+                                                    }
+                                                }
 
-                        dfac(ind, n, m) += fs(f) * vit(f, m) * pe(ind_por) * masse(n, m) * (1. + dd) / 2;
+                                              // si compressible :partie v div(alpha rho v)
+                                              if (comp)
+                                                secmem(fb, n) += fac * inco(fb, m);
+
+                                              // derivee
+                                              if (mat)
+                                                {
+                                                  if (fd >= 0)
+                                                    (*mat)(N * fb + n, N * fd + m) += fac ;
+                                                  if (comp)
+                                                    (*mat)(N * fb + n, N * fb + m) -= fac;
+                                                }
+                                            }
+                                    }
+                                else
+                                  for (j = 0; j < 2; j++) //equivalence : face fd -> face fb
+                                    {
+                                      eb = f_e(f, j), fd = (j == i ? fb : zone.face_amont_princ(fb, j) /* face  */); //element/face sources
+
+                                      for (n = 0; n < N; n++)
+                                        for (m = 0; m < N; m++)
+                                          if (dfac(j, n, m))
+                                            {
+                                              // secmem
+                                              double fac = (i ? -1 : 1) * vfd(fb, e != f_e(fb, 0)) * dfac(j, n, m) / ve(e);
+                                              if (f_e(fb, 0) < 0) fac *= 0.5;
+                                              if (fd >= 0)
+                                                secmem(fb, n) -= fac * inco(fd, m); //autre face calculee
+                                              else
+                                                {
+                                                  for (d = 0; d < D; d++)  //CL de Dirichlet
+                                                    {
+                                                      if (sub_type(Dirichlet, cls[fcl(f, 1)].valeur()))
+                                                        throw;
+                                                      secmem(fb, n) -= 0;  //fac * zone.face_normales(fb, d) / fs(fb) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + m);
+                                                    }
+                                                }
+
+                                              // si compressible :partie v div(alpha rho v)
+                                              if (comp)
+                                                secmem(fb, n) += fac * inco(fb, m);
+
+                                              // derivee
+                                              if (mat)
+                                                {
+                                                  if (fd >= 0)
+                                                    (*mat)(N * fb + n, N * fd + m) += fac;
+                                                  if (comp)
+                                                    (*mat)(N * fb + n, N * fb + m) -= fac;
+                                                }
+                                            }
+                                    }
+                              }
+
                       }
                   }
-              }
-
-            // etape 2 : secmem + derivee
-            for (i = 0; i < 2; i++)
-              if ((e = f_e(f, i)) >= 0)
-                for (k = 0; k < e_f.dimension(1); k++)
-                  if ((fb = e_f(e, k)) >= 0)
-                    if (fb < zone.nb_faces())
-                      if (f_e(f, 1) < 0)
-                        for (j = 0; j < 2; j++) //equivalence : face fd -> face fb
-                          {
-                            eb = f_e(f, j), fd = (j == i ? fb : f /* face  */); //element/face sources
-//                            mult = (fd < 0 || zone.dot(&nf(fb, 0), &nf(fd, 0)) > 0 ? 1 : -1) * (fd >= 0 ? pf(fd) / pe(eb) : 1); //multiplicateur pour passer de vf a ve
-                            mult = (fd < 0 || (zone.orientation(fb) ==  0 && zone.orientation(fd) == 0)) ? 1 : -1 ; //multiplicateur pour passer de vf a ve
-                            for (n = 0; n < N; n++)
-                              for (m = 0; m < N; m++)
-                                if (dfac(j, n, m))
-                                  {
-                                    // secmem
-                                    double fac = (i ? -1 : 1) * vfd(fb, e != f_e(fb, 0)) * dfac(j, n, m) / ve(e);
-                                    if (fd >= 0)
-                                      secmem(fb, n) -= fac * mult * inco(fd, m); //autre face calculee
-                                    else
-                                      for (d = 0; d < D; d++)  //CL de Dirichlet
-                                        {
-                                          // attention si face_normales sont OK ??
-                                          secmem(fb, n) -= fac * zone.face_normales(fb, d) / fs(fb) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + m);
-                                        }
-
-                                    // si compressible :partie v div(alpha rho v)
-                                    if (comp)
-                                      secmem(fb, n) += fac * inco(fb, m);
-
-                                    // derivee
-                                    if (mat)
-                                      {
-                                        if (fd >= 0)
-                                          (*mat)(N * fb + n, N * fd + m) += fac * mult;
-                                        if (comp)
-                                          (*mat)(N * fb + n, N * fb + m) -= fac;
-                                      }
-                                  }
-                          }
-          }
+            }
+        }
     }
 }
-
 
 Implemente_instanciable_sans_constructeur(Op_Conv_Centre_VDF_Face,"Op_Conv_Centre_VDF_Face",Op_Conv_VDF_base);
 Sortie& Op_Conv_Centre_VDF_Face::printOn(Sortie& s ) const { return s << que_suis_je() ; }
