@@ -25,34 +25,9 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7(const DoubleTab& inco, const DoubleTab* 
 {
   const int elem1 = elem_(face,0), ncomp = flux.size_array();
   double psc = dt_vitesse(face)*surface(face);
-  if (elem1 != -1)
-    {
-      if (a_r && DERIVED_T::IS_AMONT) psc *= (*a_r)(elem1,0);
-      if (psc > 0)
-        for (int k = 0; k < flux.size_array(); k++)
-          {
-            flux[k] = -psc*inco(face,k)*porosite(face);
-          }
-      else for (int k = 0; k < ncomp; k++)
-          {
-//            if (a_r && DERIVED_T::IS_AMONT) psc *= (*a_r)(elem1,0); // TODO : FIXME : val aux bords ...
-            flux[k] = -psc*la_cl.val_ext(face-num1,orientation(face));
-          }
-    }
-  else
-    {
-      if (a_r && DERIVED_T::IS_AMONT) psc *= (*a_r)(elem_(face,1),0);
-      if (psc < 0)
-        for (int k = 0; k < flux.size_array(); k++)
-          {
-            flux[k] = -psc*inco(face,k)*porosite(face);
-          }
-      else for (int k = 0; k < ncomp; k++)
-          {
-//            if (a_r && DERIVED_T::IS_AMONT) psc *= (*a_r)(elem1,0); // TODO : FIXME : val aux bords ...
-            flux[k] = -psc*la_cl.val_ext(face-num1,orientation(face));
-          }
-    }
+  if (a_r && DERIVED_T::IS_AMONT) psc *= (elem1 != -1) ? (*a_r)(elem1,0) : (*a_r)(elem_(face,1),0);
+  for (int k = 0; k < flux.size_array(); k++)
+    flux[k] = -psc*inco(face,k)*porosite(face);
 }
 
 template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type, typename Type_Double> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
