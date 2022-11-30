@@ -301,7 +301,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Echange_externe_impo
       int e, Mv = N;
       for (int face = ndeb; face < nfin; face++)
         {
-          const int local_face = la_zone.valeur().front_VF(boundary_index).num_local_face(face), e0 = elem(face, 0), e1 = elem(face, 1);
+          const int local_face = la_zone.valeur().front_VF(boundary_index).num_local_face(face);
           flux_evaluateur.flux_face(donnee, boundary_index, face, local_face, cl, ndeb, flux);
           fill_flux_tables_(face, N, 1.0 /* coeff */, flux, resu);
         }

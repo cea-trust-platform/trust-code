@@ -36,8 +36,8 @@ void Op_Conv_Amont_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secme
       const Champ_Face_VDF& ch = ref_cast(Champ_Face_VDF, equation().inconnue().valeur());
       const Conds_lim& cls = iter->zone_Cl().les_conditions_limites();
       const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ch.fcl();
-      const DoubleTab& vit = ch.passe(), &vfd = zone.volumes_entrelaces_dir(), &xp = zone.xp(), &xv = zone.xv();
-      const DoubleVect& fs = zone.face_surfaces(), &pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(), &ve = zone.volumes();
+      const DoubleTab& vit = ch.passe(), &vfd = zone.volumes_entrelaces_dir();
+      const DoubleVect& fs = zone.face_surfaces(), &pe = equation().milieu().porosite_elem(), &ve = zone.volumes();
 
       /* a_r : produit alpha_rho si Pb_Multiphase -> par semi_implicite, ou en recuperant le champ_conserve de l'equation de masse */
       const std::string& nom_inco = ch.le_nom().getString();
@@ -48,7 +48,7 @@ void Op_Conv_Amont_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secme
                         *alp = pbm ? &pbm->eq_masse.inconnue().passe() : NULL, &rho = equation().milieu().masse_volumique().passe();
       Matrice_Morse *mat = matrices.count(nom_inco) && !semi_impl.count(nom_inco) ? matrices.at(nom_inco) : NULL;
 
-      int i, j, k, l, e = -100, eb, f, fb, fc, fd, m, n, N = inco.line_size(), d, D = dimension, comp = !incompressible_;
+      int i, j, k, e = -100, eb, f, fb, fd, m, n, N = inco.line_size(), d, D = dimension, comp = !incompressible_;
 
       DoubleTrav dfac(2, N, N), masse(N, N);
       for (f = 0; f < zone.nb_faces_tot(); f++)

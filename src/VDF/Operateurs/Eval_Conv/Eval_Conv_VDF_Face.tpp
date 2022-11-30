@@ -23,7 +23,7 @@
 template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type, typename Type_Double> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>
 Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7(const DoubleTab& inco, const DoubleTab* a_r, int face, const Neumann_sortie_libre& la_cl, int num1, Type_Double& flux) const
 {
-  const int elem1 = elem_(face,0), ncomp = flux.size_array();
+  const int elem1 = elem_(face,0);
   double psc = dt_vitesse(face)*surface(face);
   if (a_r && DERIVED_T::IS_AMONT) psc *= (elem1 != -1) ? (*a_r)(elem1,0) : (*a_r)(elem_(face,1),0);
   for (int k = 0; k < flux.size_array(); k++)

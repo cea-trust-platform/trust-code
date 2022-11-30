@@ -186,7 +186,6 @@ Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_bords_(const int n_arete, const
 {
   if (should_calc_flux)
     {
-      constexpr bool is_PERIO = (Arete_Type == Type_Flux_Arete::PERIODICITE);
       Type_Double flux3_4(ncomp), flux1_2(ncomp), aii(ncomp), ajj(ncomp);
       const int fac1 = Qdm(n_arete, 0), fac2 = Qdm(n_arete, 1), fac3 = Qdm(n_arete, 2), fac4 = Qdm(n_arete, 3);
       const std::string& nom_ch = le_champ_convecte_ou_inc->le_nom().getString();

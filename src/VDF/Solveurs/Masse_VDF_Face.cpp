@@ -121,12 +121,12 @@ void Masse_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, doubl
       const Zone_VF& zone = ref_cast(Zone_VF, equation().zone_dis().valeur());
       const Conds_lim& cls = ref_cast(Zone_Cl_dis_base, equation().zone_Cl_dis().valeur()).les_conditions_limites();
       const IntTab& f_e = zone.face_voisins(), &fcl = ref_cast(Champ_Face_base, equation().inconnue().valeur()).fcl();
-      const DoubleVect& pf = equation().milieu().porosite_face(), &pe = equation().milieu().porosite_elem(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes(), &fs = zone.face_surfaces();
+      const DoubleVect& pf = equation().milieu().porosite_face(), &vf = zone.volumes_entrelaces(), &fs = zone.face_surfaces();
       const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
       const DoubleTab& rho = equation().milieu().masse_volumique().passe(),
                        *alpha = pbm ? &pbm->eq_masse.inconnue().passe() : NULL, *a_r = pbm ? &pbm->eq_masse.champ_conserve().passe() : NULL, &vfd = zone.volumes_entrelaces_dir();
       const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee").valeur()) : NULL;
-      int i, e, f, nf_tot = zone.nb_faces_tot(), m, n, N = inco.line_size(), d, D = dimension, cR = rho.dimension_tot(0) == 1;
+      int i, e, f, m, n, N = inco.line_size(), d, D = dimension, cR = rho.dimension_tot(0) == 1;
 
       /* faces : si CLs, pas de produit par alpha * rho en multiphase */
       DoubleTrav masse(N, N), masse_e(N, N); //masse alpha * rho, contribution

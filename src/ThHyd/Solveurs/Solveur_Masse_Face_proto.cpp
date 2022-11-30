@@ -30,8 +30,7 @@ DoubleTab& Solveur_Masse_Face_proto::appliquer_impl_proto(DoubleTab& sm) const
 {
   const Zone_VF& zone = la_zone_.valeur();
   const IntTab& f_e = zone.face_voisins();
-  const DoubleVect& pf = solv_mass_->equation().milieu().porosite_face(), &pe = solv_mass_->equation().milieu().porosite_elem(),
-                    &vf = zone.volumes_entrelaces(), &ve = zone.volumes();
+  const DoubleVect& pf = solv_mass_->equation().milieu().porosite_face(), &vf = zone.volumes_entrelaces();
   const DoubleTab *a_r = sub_type(QDM_Multiphase, solv_mass_->equation()) ? &ref_cast(Pb_Multiphase, solv_mass_->equation().probleme()).eq_masse.champ_conserve().passe() : NULL,
                    &vfd = zone.volumes_entrelaces_dir();
   int i, e, f, n, N = solv_mass_->equation().inconnue().valeurs().line_size();

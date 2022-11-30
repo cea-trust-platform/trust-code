@@ -42,7 +42,6 @@ Entree& Champ_Face_PolyMAC_P0::readOn(Entree& is) { return is; }
 
 int Champ_Face_PolyMAC_P0::fixer_nb_valeurs_nodales(int n)
 {
-
   // j'utilise le meme genre de code que dans Champ_Fonc_P0_base
   // sauf que je recupere le nombre de faces au lieu du nombre d'elements
   //
@@ -50,14 +49,12 @@ int Champ_Face_PolyMAC_P0::fixer_nb_valeurs_nodales(int n)
   // Champ_Fonc_P0_base::fixer_nb_valeurs_nodales()
   // pour recuperer la zone discrete...
 
-  const Champ_Inc_base& self = ref_cast(Champ_Inc_base, *this);
   assert(n == zone_PolyMAC_P0().nb_faces() || n < 0);
 
   // Probleme: nb_comp vaut dimension mais on ne veut qu'une dimension !!!
   // HACK :
   int old_nb_compo = nb_compo_;
   if(nb_compo_ != 1) nb_compo_ /= dimension;
-
 
   /* variables : valeurs normales aux faces, puis valeurs aux elements par blocs -> pour que line_size() marche */
   creer_tableau_distribue(zone_PolyMAC_P0().md_vector_faces());
