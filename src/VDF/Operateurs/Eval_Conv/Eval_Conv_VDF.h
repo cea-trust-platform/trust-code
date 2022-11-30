@@ -44,7 +44,7 @@ public:
   inline int get_elem(int i, int j) const { return elem_(i,j); }
   inline int get_orientation(int i ) const { return orientation(i); }
   inline int get_premiere_face_bord() const { return premiere_face_bord; }
-  inline double get_dt_vitesse(int face) const { return dt_vitesse(face); }
+  inline double get_dt_vitesse(int face, int comp = 0) const { return dt_vitesse(face, comp); }
   inline double get_surface_porosite(int face) const { return surface(face)*porosite(face); }
   inline double get_surface(int face) const { return surface(face); }
   inline double get_porosite(int face) const { return porosite(face); }

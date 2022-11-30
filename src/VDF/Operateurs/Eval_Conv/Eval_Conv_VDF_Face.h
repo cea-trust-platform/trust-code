@@ -84,7 +84,7 @@ public:
 
 private:
   template <typename Type_Double>
-  inline void fill_coeffs_proto(const double , const double, Type_Double& , Type_Double& ) const;
+  inline void fill_coeffs_proto(const int, const double , const double, Type_Double& , Type_Double& ) const;
 
   // CRTP pattern to static_cast the appropriate class and get the implementation: This is magic !
   inline int premiere_face_bord() const { return static_cast<const DERIVED_T *>(this)->get_premiere_face_bord(); }
@@ -92,7 +92,7 @@ private:
   inline int elem_(int i, int j) const { return static_cast<const DERIVED_T *>(this)->get_elem(i,j); }
   inline int face_amont_princ_(int num_face, int i) const { return static_cast<const DERIVED_T *>(this)->face_amont_princ(num_face,i); }
   inline int face_amont_conj_(int num_face,int i, int k) const { return static_cast<const DERIVED_T *>(this)->face_amont_conj(num_face,i,k); }
-  inline double dt_vitesse(int face) const { return static_cast<const DERIVED_T *>(this)->get_dt_vitesse(face); }
+  inline double dt_vitesse(int face, int comp = 0) const { return static_cast<const DERIVED_T *>(this)->get_dt_vitesse(face, comp); }
   inline double surface_porosite(int face) const { return static_cast<const DERIVED_T *>(this)->get_surface_porosite(face); }
   inline double surface(int face) const { return static_cast<const DERIVED_T *>(this)->get_surface(face); }
   inline double porosite(int face) const { return static_cast<const DERIVED_T *>(this)->get_porosite(face); }

@@ -74,7 +74,7 @@ private:
   // CRTP pattern to static_cast the appropriate class and get the implementation : This is magic !
   inline int elem_(const int i, const int j) const { return static_cast<const DERIVED_T *>(this)->get_elem(i,j); }
   inline int amont_amont_(const int face, const int i) const { return static_cast<const DERIVED_T *>(this)->amont_amont(face,i); }
-  inline double dt_vitesse(const int face) const { return static_cast<const DERIVED_T *>(this)->get_dt_vitesse(face); }
+  inline double dt_vitesse(const int face, int comp = 0) const { return static_cast<const DERIVED_T *>(this)->get_dt_vitesse(face, comp); }
   inline double surface_porosite(const int face) const { return static_cast<const DERIVED_T *>(this)->get_surface_porosite(face); }
 
   template <typename Type_Double> inline void quick_fram_(const double psc, const int num0, const int num1, const int num0_0, const int num1_1, const int face, const DoubleTab& transporte, Type_Double& flux) const
