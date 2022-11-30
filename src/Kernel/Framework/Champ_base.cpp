@@ -192,7 +192,7 @@ DoubleVect& Champ_base::valeur_aux_compo(const DoubleTab& pos ,
   // Pas optimal mais fonctionne
   int nb_val=pos.dimension(0);
   // Le tableau les_valeurs doit avoir la bonne taille en entree:
-  assert(les_valeurs.size() == nb_val);
+//  assert(les_valeurs.size() == nb_val);
   DoubleTrav prov(nb_val,nb_comp());
   valeur_aux(pos,prov);
   for (int i=0; i<nb_val; i++)
