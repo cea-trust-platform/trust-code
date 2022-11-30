@@ -70,15 +70,16 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matr
             for (n = 0, i = N * f; n < N; n++, i++) sten.append_line(i, i);
 
         /* equations aux elements */
-        for (e = 0, l = nf_tot; e < zone.nb_elem_tot(); e++)
-          for (d = 0; d < D; d++, l++, idx.clear())
-            {
-              for (i = N * l, n = 0; n < N; n++, i++)
-                for (j = mat.get_tab1()(i) - 1; j < mat.get_tab1()(i + 1) - 1; j++)
-                  idx.insert(mat.get_tab2()(j) - 1);
-              for (i = N * l, n = 0; n < N; n++, i++)
-                for (auto &&c : idx) sten.append_line(i, c);
-            }
+        if (zone.que_suis_je().debute_par("Zone_PolyMAC"))
+          for (e = 0, l = nf_tot; e < zone.nb_elem_tot(); e++)
+            for (d = 0; d < D; d++, l++, idx.clear())
+              {
+                for (i = N * l, n = 0; n < N; n++, i++)
+                  for (j = mat.get_tab1()(i) - 1; j < mat.get_tab1()(i + 1) - 1; j++)
+                    idx.insert(mat.get_tab2()(j) - 1);
+                for (i = N * l, n = 0; n < N; n++, i++)
+                  for (auto &&c : idx) sten.append_line(i, c);
+              }
         Matrix_tools::allocate_morse_matrix(mat.nb_lignes(), mat.nb_colonnes(), sten, mat2);
         mat = mat2; //pour forcer l'ordre des coefficients dans la matrice (accelere les operations ligne a ligne)
       }
