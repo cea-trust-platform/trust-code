@@ -20,6 +20,7 @@
 #include <Navier_Stokes_std.h>
 #include <Op_Grad_VDF_Face.h>
 #include <communications.h>
+#include <Champ_Face_VDF.h>
 #include <Pb_Multiphase.h>
 #include <EcrFicPartage.h>
 #include <Champ_P0_VDF.h>
@@ -237,23 +238,25 @@ int Op_Grad_VDF_Face::impr(Sortie& os) const
 
 void Op_Grad_VDF_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  Matrice_Morse *mat_p = matrices.count("pression") ? matrices.at("pression") : NULL, mat2_p;
+  if (!matrices.count("pression")) return; //rien a faire
 
   const Zone_VDF& zvdf = la_zone_vdf.valeur();
-  IntTab stencil_p(0, 2);
-  stencil_p.set_smart_resize(1);
+  IntTab sten(0, 2);
+  sten.set_smart_resize(1);
+  const Champ_Face_VDF& ch = ref_cast(Champ_Face_VDF, equation().inconnue().valeur());
+  const DoubleTab& vit = ch.valeurs(), &press = ref_cast(Navier_Stokes_std, equation()).pression().valeurs();
+  const int N = vit.line_size(), M = press.line_size();
+  Matrice_Morse *mat = matrices["pression"], mat2;
 
-  int e;
   for (int f = 0; f < zvdf.nb_faces(); f++)
-    for (int i = 0; i < 2; i++)
-      if ((e = zvdf.face_voisins(f, i)) >= 0) stencil_p.append_line(f, e);
-  tableau_trier_retirer_doublons(stencil_p);
-  if (mat_p)
-    {
-      Matrix_tools::allocate_morse_matrix(zvdf.nb_faces_tot(), zvdf.nb_elem_tot(), stencil_p, mat2_p);
-      mat_p->nb_colonnes() ? *mat_p += mat2_p : *mat_p = mat2_p;
-    }
+    for (int i = 0, e; i < 2; i++)
+      if ((e = zvdf.face_voisins(f, i)) >= 0)
+        for (int n = 0, m = 0; n < N; n++, m += (M > 1))
+          sten.append_line(N * f + n, M * e + m); /* bloc (face, elem )*/
 
+  tableau_trier_retirer_doublons(sten);
+  Matrix_tools::allocate_morse_matrix(vit.size_totale(), press.size_totale(), sten, mat2);
+  mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
 }
 
 
