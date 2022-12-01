@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,6 +25,7 @@
 #include <Matrix_tools.h>
 #include <Array_tools.h>
 #include <Zone_VF.h>
+#include <Domaine.h>
 
 Implemente_instanciable(Flux_interfacial_PolyMAC,"Flux_interfacial_Elem_PolyMAC|Flux_interfacial_Elem_PolyMAC_P0", Source_base);
 Add_synonym(Flux_interfacial_PolyMAC, "Flux_interfacial_VDF_P0_VDF");
@@ -132,7 +133,7 @@ void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
   const Champ_Inc_base& ch_alpha = pbm.eq_masse.inconnue().valeur(), &ch_a_r = pbm.eq_masse.champ_conserve(), &ch_vit = pbm.eq_qdm.inconnue().valeur(),
                         &ch_temp = pbm.eq_energie.inconnue().valeur(), &ch_p = pbm.eq_qdm.pression().valeur(),
                          *pch_rho = sub_type(Champ_Inc_base, ch_rho) ? &ref_cast(Champ_Inc_base, ch_rho) : NULL;
-  const DoubleTab& inco = ch.valeurs(), &alpha = ch_alpha.valeurs(), &press = ch_p.valeurs(), &temp  = ch_temp.valeurs(), &pvit = ch_vit.passe(),
+  const DoubleTab& inco = ch.valeurs(), &alpha = ch_alpha.valeurs(), &press = ch_p.valeurs(), &temp  = ch_temp.valeurs(),
                    &h = milc.enthalpie().valeurs(), *dP_h = der_h.count("pression") ? &der_h.at("pression") : NULL, *dT_h = der_h.count("temperature") ? &der_h.at("temperature") : NULL,
                     &lambda = milc.conductivite().passe(), &mu = milc.viscosite_dynamique().passe(), &rho = milc.masse_volumique().passe(), &Cp = milc.capacite_calorifique().passe(),
                      &p_ar = ch_a_r.passe(), &a_r = ch_a_r.valeurs(), &qi = qpi(), &dTqi = dT_qpi(), &daqi = da_qpi(), &dpqi = dp_qpi();
@@ -184,6 +185,30 @@ void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
   const int nbelem = zone.nb_elem(), nb_max_sat =  N * (N-1) /2; // oui !! suite arithmetique !!
   DoubleTrav Ts_tab(nbelem,nb_max_sat), dPTs_tab(nbelem,nb_max_sat), Hvs_tab(nbelem,nb_max_sat), Hls_tab(nbelem,nb_max_sat), dPHvs_tab(nbelem,nb_max_sat), dPHls_tab(nbelem,nb_max_sat), Lvap_tab(nbelem,nb_max_sat);
 
+  DoubleTab pvit_elem(0, N * D);
+  zone.zone().creer_tableau_elements(pvit_elem);
+  if (zone.que_suis_je() == "Zone_PolyMAC_P0")
+    for (e = 0; e < zone.nb_elem_tot(); e++)
+      for (n = 0; n < N; n++)
+        for (d = 0; d < D; d++)
+          pvit_elem(e, N * d + n) = ch_vit.passe()(nf_tot + D * e + d, n);
+  else
+    {
+      const IntTab& f_s = zone.face_sommets(), &e_f = zone.elem_faces();
+      const Domaine& dom = zone.zone().domaine();
+      pvit_elem = 0.0;
+      for (e = 0; e < zone.nb_elem_tot(); e++)
+        for (n = 0; n < N; n++)
+          for (d = 0; d < D; d++)
+            {
+              const double val1 = ch_vit.passe()(e_f(e, d), n), val2 = ch_vit.passe()(e_f(e, d + D), n);
+              const int som0 = f_s(e_f(e, d), 0), som1 = f_s(e_f(e, d + D), 0);
+              const double psi = (zone.xp(e, d) - dom.coord(som0, d)) / (dom.coord(som1, d) - dom.coord(som0, d));
+
+              pvit_elem(e, N * d + n) = (std::fabs(psi) < 1e-12) ? val1 : (std::fabs(1. - psi) < 1e-12 ? val2 : val1 + psi * (val2-val1));
+            }
+    }
+
   // remplir les tabs ...
   for (k = 0; k < N; k++)
     for (l = k + 1; l < N; l++)
@@ -206,15 +231,13 @@ void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
 
   for (e = 0; e < zone.nb_elem(); e++)
     {
-      //  double vol = pe(e) * ve(e), x, G = 0, dv_min = 0.1, dh = milc.diametre_hydraulique_elem()(e, 0), dP_G = 0.; // E. Saikali : initialise dP_G ici sinon fuite memoire ...
-      // PL ToDo: Uniformiser diametre_hydraulique_elem (vecteur) pour C3D et F5
       double vol = pe(e) * ve(e), x, G = 0, dv_min = 0.1, dh = milc.diametre_hydraulique_elem()(e), dP_G = 0.; // E. Saikali : initialise dP_G ici sinon fuite memoire ...
       for (in.v = 0, d = 0; d < D; d++)
         for (n = 0; n < N; n++)
-          in.v(n, d) = pvit(nf_tot + D * e + d, n);
+          in.v(n, d) = pvit_elem(e, N * d + n);
       for (nv = 0, d = 0; d < D; d++)
         for (n = 0; n < N; n++)
-          for (k = 0 ; k<N ; k++) nv(n, k) += std::pow( pvit(nf_tot + D * e + d, n) - ((n!=k) ? pvit(nf_tot + D * e + d, k) : 0) , 2); // nv(n,n) = ||v(n)||, nv(n, k!=n) = ||v(n)-v(k)||
+          for (k = 0 ; k<N ; k++) nv(n, k) += std::pow(pvit_elem(e, N * d + n) - ((n!=k) ? pvit_elem(e, N * d + k) : 0) , 2); // nv(n,n) = ||v(n)||, nv(n, k!=n) = ||v(n)-v(k)||
       for (n = 0; n < N; n++)
         for (k = 0 ; k<N ; k++) nv(n, k) = std::max(sqrt(nv(n, k)), dv_min);
       //coeffs d'echange vers l'interface (explicites)
