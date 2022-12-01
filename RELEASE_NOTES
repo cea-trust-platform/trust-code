@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------------------------
-Release notes version 1.9.1_beta : Enhancements, modifications and corrected bugs since version 1.9.0 :
+Release notes version 1.9.1 : Enhancements, modifications and corrected bugs since version 1.9.0 :
 --------------------------------------------------------------------------------------------------
 17/11/22 (TRUST)  Output      : Field unit if known added into .son files
 24/10/22 (TRUST)  New option  : Post-processing can now be done on a sub-zone of the domain (available only in sequential)

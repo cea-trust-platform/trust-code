@@ -1788,9 +1788,7 @@ echo $ECHO_OPTS "TRUST's distribution site:   https://github.com/cea-trust-platf
 echo $ECHO_OPTS "TrioCFD's distribution site: https://github.com/cea-trust-platform/TrioCFD-code" >> $MESSAGES_NUIT
 #echo $ECHO_OPTS "TrioCFD<=1.8.3 distribution site: http://sourceforge.net/projects/triocfd" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "TRUST environment at Saclay:   source /home/triou/env_TRUST_$old.sh" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "TRUST environment at Saclay:   source /home/trust_trio-public/env_TRUST-$old.sh" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "TrioCFD environment at Saclay: source /home/triou/env_TrioCFD_$old.sh" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "TrioCFD environment at Saclay: source /home/trust_trio-public/env_TrioCFD-$old.sh" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "User TRUST TrioCFD     diffusion list http://saxifrage:3500/wws/info/trio_u_annonces" >> $MESSAGES_NUIT
@@ -2975,7 +2973,7 @@ $TRUST_ROOT/bin/KSH/tggcov_ 1>$REP_NUIT/tggcov.log 2>&1
 #tail -n2 $REP_NUIT/tggcov.log
 couverture_de_code=`tggcov_ | $TRUST_Awk '/TRUST code/ {print $1}'`
 cd - 1>/dev/null 2>&1
-couverture_minimale=72.27 # 72.27 v1.9.0 ; 69.24 v1.8.4 ; 69.42 v1.8.3 (templates vdf) ; 65.88 v1.8.2 ; 57.86 v1.8.1 ; 60.03 v1.8.0 ; 66.73 v1.7.9 ; 67.49 v1.7.8 ; 69.05 v1.7.7 ; 69.42 v1.7.6 ; 69.87 v1.7.5 ; 70.04 v1.7.4 ; 69.61 v1.7.3 ; 69.28 v1.7.2 ; 65.26 v1.7.1
+couverture_minimale=74.23 # 74.23 v1.9.1 ; 72.27 v1.9.0 ; 69.24 v1.8.4 ; 69.42 v1.8.3 (templates vdf) ; 65.88 v1.8.2 ; 57.86 v1.8.1 ; 60.03 v1.8.0 ; 66.73 v1.7.9 ; 67.49 v1.7.8 ; 69.05 v1.7.7 ; 69.42 v1.7.6 ; 69.87 v1.7.5 ; 70.04 v1.7.4 ; 69.61 v1.7.3 ; 69.28 v1.7.2 ; 65.26 v1.7.1
 coverage=`echo $couverture_de_code | $TRUST_Awk -v m=$couverture_minimale '{if ($1>=m) print 1;else print 0}'`
 if [ $coverage = 1 ]
 then
@@ -4280,9 +4278,6 @@ type mpicxx
 # for CEA Saclay (PC Titania file system or orcus cluster):
 source /home/trust_trio-public/env_TRUST-$new.sh
 
-# for CEA Saclay (PC Thalie file system):
-source /home/triou/env_TRUST_$new.sh
-
 # for TOPAZE and IRENE (Skylake & AMD Rome) supercomputers (64-bit integers version):
 source /ccc/cont002/home/den/triou/env_TRUST-$new-int64.sh
 
@@ -4391,9 +4386,6 @@ Then, install TrioCFD-$new using one of these methods:
 ----------------------------------------------------------------------------------------------------
 # for CEA Saclay (PC Titania file system or orcus cluster):
 source /home/trust_trio-public/env_TrioCFD-$new.sh
-
-# for CEA Saclay (PC Thalie file system):
-source /home/triou/env_TrioCFD_$new.sh
 
 # for TOPAZE and IRENE (Skylake & AMD Rome) supercomputers (64-bit integers version):
 source /ccc/cont002/home/den/triou/env_TrioCFD-$new-int64.sh
