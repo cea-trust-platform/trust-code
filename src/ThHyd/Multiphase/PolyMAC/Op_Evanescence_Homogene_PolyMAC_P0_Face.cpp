@@ -131,25 +131,26 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices,
 
       }
 
-  for (e = 0; e < zone.nb_elem_tot(); e++) /* elements : a faire D fois par element */
-    {
-      /* phase majoritaire : directement dans l'element */
-      for (a_max = 0, k = -1, n = 0; n < N; n++)
-        if ((a_m = alpha(e, n)) > a_max) k = n, a_max = a_m;
-      if (k >= 0)
-        for (i = nf_tot + D * e, d = 0; d < D; d++, i++) maj(i) = k;
-      else abort();
+  if (zone.que_suis_je().debute_par("Zone_PolyMAC"))
+    for (e = 0; e < zone.nb_elem_tot(); e++) /* elements : a faire D fois par element */
+      {
+        /* phase majoritaire : directement dans l'element */
+        for (a_max = 0, k = -1, n = 0; n < N; n++)
+          if ((a_m = alpha(e, n)) > a_max) k = n, a_max = a_m;
+        if (k >= 0)
+          for (i = nf_tot + D * e, d = 0; d < D; d++, i++) maj(i) = k;
+        else abort();
 
-      /* coeff d'evanescence */
-      for (i = nf_tot + D * e, d = 0; d < D; d++, i++)
-        for (n = 0; n < N; n++)
-          if (n != k && (a_m = alpha(e, n)) < a_eps)
-            {
-              coeff(i, n, 1) = mat_diag(N * i + k, N * i + k) * (coeff(i, n, 0) = std::min(std::max((a_eps - a_m) / (a_eps - a_eps_min), 0.), 1.));
-              double flux = coeff(i, n, 0) * secmem(i, n) + coeff(i, n, 1) * (inco(i, n) - inco(i, k));
-              secmem(i, k) += flux, secmem(i, n) -= flux;
-            }
-    }
+        /* coeff d'evanescence */
+        for (i = nf_tot + D * e, d = 0; d < D; d++, i++)
+          for (n = 0; n < N; n++)
+            if (n != k && (a_m = alpha(e, n)) < a_eps)
+              {
+                coeff(i, n, 1) = mat_diag(N * i + k, N * i + k) * (coeff(i, n, 0) = std::min(std::max((a_eps - a_m) / (a_eps - a_eps_min), 0.), 1.));
+                double flux = coeff(i, n, 0) * secmem(i, n) + coeff(i, n, 1) * (inco(i, n) - inco(i, k));
+                secmem(i, k) += flux, secmem(i, n) -= flux;
+              }
+      }
 
   /* lignes de matrices */
   for (auto &&n_m : matrices)
@@ -170,16 +171,17 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices,
                     mat.get_set_coeff()(i) += -coeff(f, n, 0) * mat.get_set_coeff()(i) + coeff(f, n, 1) * ((c == N * f + n) - (c == N * f + k));
                   }
         /* elements : l est l'indice de ligne */
-        for (e = 0, l = nf_tot; e < zone.nb_elem_tot(); e++)
-          for (d = 0; d < D; d++, l++)
-            for (n = 0; n < N; n++)
-              if (coeff(l, n, 0))
-                for (k = maj(l), i = mat.get_tab1()(N * l + n) - 1, j = mat.get_tab1()(N * l + k) - 1; i < mat.get_tab1()(N * l + n + 1) - 1; i++, j++)
-                  {
-                    assert(mat.get_tab2()(i) == mat.get_tab2()(j));
-                    int c = diag * mat.get_tab2()(i) - 1; //indice de colonne (commun aux deux lignes grace au dimensionner_blocs())
-                    mat.get_set_coeff()(j) +=  coeff(l, n, 0) * mat.get_set_coeff()(i) - coeff(l, n, 1) * ((c == N * l + n) - (c == N * l + k));
-                    mat.get_set_coeff()(i) += -coeff(l, n, 0) * mat.get_set_coeff()(i) + coeff(l, n, 1) * ((c == N * l + n) - (c == N * l + k));
-                  }
+        if (zone.que_suis_je().debute_par("Zone_PolyMAC"))
+          for (e = 0, l = nf_tot; e < zone.nb_elem_tot(); e++)
+            for (d = 0; d < D; d++, l++)
+              for (n = 0; n < N; n++)
+                if (coeff(l, n, 0))
+                  for (k = maj(l), i = mat.get_tab1()(N * l + n) - 1, j = mat.get_tab1()(N * l + k) - 1; i < mat.get_tab1()(N * l + n + 1) - 1; i++, j++)
+                    {
+                      assert(mat.get_tab2()(i) == mat.get_tab2()(j));
+                      int c = diag * mat.get_tab2()(i) - 1; //indice de colonne (commun aux deux lignes grace au dimensionner_blocs())
+                      mat.get_set_coeff()(j) +=  coeff(l, n, 0) * mat.get_set_coeff()(i) - coeff(l, n, 1) * ((c == N * l + n) - (c == N * l + k));
+                      mat.get_set_coeff()(i) += -coeff(l, n, 0) * mat.get_set_coeff()(i) + coeff(l, n, 1) * ((c == N * l + n) - (c == N * l + k));
+                    }
       }
 }
