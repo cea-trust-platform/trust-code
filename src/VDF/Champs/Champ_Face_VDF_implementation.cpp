@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,90 +13,47 @@
 *
 *****************************************************************************/
 
-#include <Champ_Face_VDF_implementation.h>
 #include <Champ_Inc_base.h>
+#include <Champ_Face_VDF_implementation.h>
 #include <Zone_VDF.h>
 #include <LecFicDiffuse.h>
 #include <Frontiere_dis_base.h>
 #include <TRUSTTab.h>
 
-DoubleTab& Champ_Face_VDF_implementation::valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val) const
+DoubleTab& Champ_Face_VDF_implementation::valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val_elem) const
 {
-  const Champ_base& cha=le_champ();
-  int nb_compo_=cha.nb_comp();
-  if (val.nb_dim() == 2)
+  if (val_elem.nb_dim() > 2)
     {
-      assert((val.dimension(0) == les_polys.size())||(val.dimension_tot(0) == les_polys.size()));
-      assert(val.dimension(1) == nb_compo_);
-    }
-  else
-    {
-      Cerr << "Erreur TRUST dans Champ_Face_VDF_implementation::valeur_aux_elems()" << finl;
-      Cerr << "Le DoubleTab val n'a pas 2 entrees" << finl;
+      Cerr << "Erreur TRUST dans Champ_Face_implementation::valeur_aux_elems()" << finl;
+      Cerr << "Le DoubleTab val a plus de 2 entrees" << finl;
       Process::exit();
     }
 
+  if (le_champ().nb_comp() == 1)
+    {
+      Cerr<<"Champ_Face_implementation::valeur_aux_elems"<<finl;
+      Cerr <<"A scalar field cannot be of Champ_Face type." << finl;
+      Process::exit();
+    }
+
+  const int N = le_champ().valeurs().line_size(), D = Objet_U::dimension;
   const Zone_VDF& zone_VDF = zone_vdf();
-  //  const Zone& zone_geom = zone_VDF.zone();
-  const IntTab& face_sommets = zone_VDF.face_sommets();
-  const IntTab& elem_faces = zone_VDF.elem_faces();
-  double psi,val1,val2;
-  int som0,som1;
-  int le_poly;
+  const IntTab& f_s = zone_VDF.face_sommets(), &e_f = zone_VDF.elem_faces();
+  const DoubleTab& ch_face = le_champ().valeurs();
+  const Domaine& dom = zone_VDF.zone().domaine();
 
-  const DoubleTab& ch = cha.valeurs();
-  const Domaine& dom=get_zone_geom().domaine();
-
-  if (nb_compo_ == 1)
-    {
-      for(int rang_poly=0; rang_poly<les_polys.size(); rang_poly++)
+  val_elem = 0.0;
+  for (int p = 0, e; p < les_polys.size(); p++)
+    for (int n = 0; n < N && (e = les_polys(p)) != -1; n++)
+      for (int d = 0; d < D; d++)
         {
-          le_poly=les_polys(rang_poly);
-          if (le_poly == -1)
-            val(rang_poly, 0) = 0;
-          else
-            for(int dir=0; dir<Objet_U::dimension; dir++)
-              {
-                int face1 = elem_faces(le_poly,dir);
-                int face2 = elem_faces(le_poly,Objet_U::dimension+dir);
-                val1 = ch(face1);
-                val2 = ch(face2);
+          const double val1 = ch_face(e_f(e, d), n), val2 = ch_face(e_f(e, d + D), n);
+          const int som0 = f_s(e_f(e, d), 0), som1 = f_s(e_f(e, d + D), 0);
+          const double psi = (positions(p, d) - dom.coord(som0, d)) / (dom.coord(som1, d) - dom.coord(som0, d));
 
-                som0 = face_sommets(face1,0);
-                som1 = face_sommets(face2,0);
-
-                psi = ( positions(rang_poly,dir) - dom.coord(som0,dir) )
-                      / ( dom.coord(som1,dir) - dom.coord(som0,dir) ) ;
-                if (est_egal(psi,0) || est_egal(psi,1))
-                  val(rang_poly,0) = interpolation(val1,val2,psi);
-              }
+          val_elem(p, N * d + n) = interpolation(val1, val2, psi);
         }
-    }
-  else // (nb_compo_ != 1) */
-    {
-      for(int rang_poly=0; rang_poly<les_polys.size(); rang_poly++)
-        {
-          le_poly=les_polys(rang_poly);
-          if (le_poly == -1)
-            for(int ncomp=0; ncomp<nb_compo_; ncomp++)
-              val(rang_poly,ncomp) = 0;
-          else
-            for(int ncomp=0; ncomp<nb_compo_; ncomp++)
-              {
-
-                val1 = ch(elem_faces(le_poly,ncomp));
-                val2 = ch(elem_faces(le_poly,Objet_U::dimension+ncomp));
-
-                som0 = face_sommets(elem_faces(le_poly,ncomp),0);
-                som1 = face_sommets(elem_faces(le_poly,Objet_U::dimension+ncomp),0);
-
-                psi = ( positions(rang_poly,ncomp) - dom.coord(som0,ncomp) )
-                      / ( dom.coord(som1,ncomp) - dom.coord(som0,ncomp) ) ;
-                val(rang_poly,ncomp) = interpolation(val1,val2,psi);
-              }
-        }
-    }
-  return val;
+  return val_elem;
 }
 
 double Champ_Face_VDF_implementation::interpolation(const double val1, const double val2, const double psi) const
