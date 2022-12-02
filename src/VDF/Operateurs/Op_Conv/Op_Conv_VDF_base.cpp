@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,10 +32,10 @@ Implemente_base(Op_Conv_VDF_base,"Op_Conv_VDF_base",Operateur_Conv_base);
 Sortie& Op_Conv_VDF_base::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 Entree& Op_Conv_VDF_base::readOn(Entree& s ) { return s ; }
 
-inline void eval_fluent(const double psc,const int num1,const int num2, DoubleVect& fluent)
+inline void eval_fluent(const double psc, const int num1, const int num2, const int n, DoubleTab& fluent)
 {
-  if (psc >= 0) fluent[num2] += psc;
-  else fluent[num1] -= psc;
+  if (psc >= 0) fluent(num2, n) += psc;
+  else fluent(num1, n) -= psc;
 }
 
 void Op_Conv_VDF_base::completer()
@@ -166,9 +166,10 @@ double Op_Conv_VDF_base::calculer_dt_stab() const
   const IntTab& face_voisins = zone_VDF.face_voisins();
   const DoubleVect& volumes = zone_VDF.volumes();
   const DoubleVect& face_surfaces = zone_VDF.face_surfaces();
-  const DoubleVect& vit_associe = vitesse().valeurs();
-  const DoubleVect& vit= (vitesse_pour_pas_de_temps_.non_nul()?vitesse_pour_pas_de_temps_.valeur().valeurs(): vit_associe);
-  DoubleTab fluent;
+  const DoubleTab& vit_associe = vitesse().valeurs();
+  const DoubleTab& vit= (vitesse_pour_pas_de_temps_.non_nul()?vitesse_pour_pas_de_temps_.valeur().valeurs(): vit_associe);
+  const int N = std::min(vit.line_size(), equation().inconnue().valeurs().line_size());
+  DoubleTab fluent(0, N);
   // fluent est initialise a zero par defaut:
   zone_VDF.zone().creer_tableau_elements(fluent);
 
@@ -186,25 +187,27 @@ double Op_Conv_VDF_base::calculer_dt_stab() const
           num1 = le_bord.num_premiere_face();
           num2 = num1 + le_bord.nb_faces();
           for (face=num1; face<num2; face++)
-            {
-              psc = vit[face]*face_surfaces(face);
-              if ( (elem1 = face_voisins(face,0)) != -1)
-                {
-                  if (psc < 0) fluent[elem1] -= psc;
-                }
-              else // (elem2 != -1)
-                if (psc > 0) fluent[face_voisins(face,1)] += psc;
-            }
+            for (int n = 0; n < N; n++)
+              {
+                psc = vit(face, n) * face_surfaces(face);
+                if ( (elem1 = face_voisins(face,0)) != -1)
+                  {
+                    if (psc < 0) fluent(elem1, n) -= psc;
+                  }
+                else // (elem2 != -1)
+                  if (psc > 0) fluent(face_voisins(face,1), n) += psc;
+              }
         }
     }
 
   // Boucle sur les faces internes pour remplir fluent
   const int zone_VDF_nb_faces = zone_VDF.nb_faces(), premiere_face = zone_VDF.premiere_face_int();
   for (face = premiere_face; face < zone_VDF_nb_faces; face++)
-    {
-      psc = vit[face]*face_surfaces(face);
-      eval_fluent(psc,face_voisins(face,0),face_voisins(face,1),fluent);
-    }
+    for (int n = 0; n < N; n++)
+      {
+        psc = vit(face, n) * face_surfaces(face);
+        eval_fluent(psc, face_voisins(face, 0), face_voisins(face, 1), n, fluent);
+      }
 
   // Calcul du pas de temps de stabilite a partir du tableau fluent
   if (vitesse().le_nom()=="rho_u" && equation().probleme().is_dilatable())
@@ -214,10 +217,11 @@ double Op_Conv_VDF_base::calculer_dt_stab() const
   int zone_VDF_nb_elem=zone_VDF.nb_elem();
   // dt_stab = min ( 1 / ( |U|/dx + |V|/dy + |W|/dz ) )
   for (int num_poly=0; num_poly<zone_VDF_nb_elem; num_poly++)
-    {
-      double dt_elem = volumes(num_poly)/(fluent[num_poly]+DMINFLOAT);
-      if (dt_elem<dt_stab) dt_stab = dt_elem;
-    }
+    for (int n = 0; n < N; n++)
+      {
+        double dt_elem = volumes(num_poly)/(fluent(num_poly, n)+DMINFLOAT);
+        if (dt_elem<dt_stab) dt_stab = dt_elem;
+      }
   dt_stab = Process::mp_min(dt_stab);
 
   // astuce pour contourner le type const de la methode
@@ -369,7 +373,7 @@ void Op_Conv_VDF_base::calculer_pour_post(Champ& espace_stockage,const Nom& opti
       for (face = zone_VDF.premiere_face_int(); face < zone_VDF_nb_faces; face++)
         {
           psc = vit[face]*face_surfaces(face);
-          eval_fluent(psc,face_voisins(face,0),face_voisins(face,1),fluent);
+          eval_fluent(psc,face_voisins(face,0),face_voisins(face,1),0,fluent);
         }
       //fluent.echange_espace_virtuel();
       if (vitesse().le_nom()=="rho_u" && equation().probleme().is_dilatable())

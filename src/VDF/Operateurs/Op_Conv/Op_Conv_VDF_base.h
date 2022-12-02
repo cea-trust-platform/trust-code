@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -69,6 +69,6 @@ protected:
 };
 
 // Fonction utile pour le calcul du pas de temps de stabilite
-inline void eval_fluent(const double , const int , const int , DoubleVect& );
+inline void eval_fluent(const double , const int , const int , const int , DoubleTab& );
 
 #endif /* Op_Conv_VDF_base_included */
