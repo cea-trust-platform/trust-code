@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -70,7 +70,8 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs(matrices_t mats, DoubleTab& secme
       ajouter_blocs_bords < ArrOfDouble > (ncomp, mats, secmem, semi_impl);
       ajouter_blocs_interne < ArrOfDouble > (ncomp, mats, secmem, semi_impl);
     }
-  modifier_flux();
+
+  if (!is_pb_multi) modifier_flux(); /* deja rho*cp car champ convecte */
 }
 
 template<class _TYPE_> template<typename Type_Double>

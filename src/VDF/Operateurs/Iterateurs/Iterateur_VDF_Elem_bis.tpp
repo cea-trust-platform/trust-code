@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,22 +36,14 @@ void  Iterateur_VDF_Elem<_TYPE_>::modifier_flux() const
           if (sub_type(Op_Conv_VDF_base,op))
             if (ref_cast(Op_Conv_VDF_base,op).vitesse().le_nom()=="rho_u") is_rho_u = 1;
         }
-      double Cp_=0,rho_=0;
       const int nb_faces_bords = la_zone_vdf.nb_faces_bord();
       for (int face = 0; face < nb_faces_bords; face++)
-        {
-          int num_elem = face_voisins(face,0);
-          if (num_elem == -1) num_elem = face_voisins(face,1);
-          if (cp_uniforme) Cp_=Cp(0,0);
-          else if (Cp.nb_comp()==1) Cp_=Cp(num_elem);
-          else Cp_=Cp(num_elem,0);
-          if (rho_uniforme) rho_=rho(0,0);
-          else if (rho.nb_comp()==1) rho_=rho(num_elem);
-          else rho_=rho(num_elem,0);
-          /* si on est en QC temperature on a calcule div(rhou * T) il ne faut pas remultiplier par rho */
-          if (is_rho_u) rho_=1;
-          flux_bords(face,0) *= (rho_*Cp_);
-        }
+        for(int k = 0; k < flux_bords.dimension(1); k++)
+          {
+            int e = (face_voisins(face, 0) != -1) ? face_voisins(face, 0) : face_voisins(face, 1);
+            const double rho_ = (is_rho_u) ? 1.0 : rho(!rho_uniforme * e, k);
+            flux_bords(face, k) *= rho_ * Cp(!cp_uniforme * e, k);
+          }
     }
 }
 

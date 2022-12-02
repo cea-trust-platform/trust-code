@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -423,16 +423,7 @@ Eval_Conv_VDF_Face<DERIVED_T>::coeffs_fa7(const DoubleTab* a_r, int face,const N
   for (int k = 0; k < aii.size_array(); k++)
     {
       double psc = dt_vitesse(face,k) * surface(face) * porosite(face);
-
-      if (elem1 != -1)
-        {
-          if (a_r && psc < 0) psc *= (*a_r)(elem1, k); // FIXME
-        }
-      else
-        {
-          if (a_r && psc < 0) psc *= (*a_r)(elem2, k);
-        }
-
+      if (a_r) psc *= (*a_r)((elem1 != -1) ? elem1 : elem2, k);
       fill_coeffs_proto < Type_Double > (k, psc, psc, aii, ajj);
     }
 }
