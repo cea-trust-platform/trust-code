@@ -319,7 +319,10 @@ def TmeltK():
 
 
 if __name__ == "__main__":
-  datafile = sys.argv[1]
+  dis0 = sys.argv[1]
+  dis = dis0 + " dis"
+  if dis0 == "VDF": dis += " Option_VDF { p_imposee_aux_faces oui }"
+  datafile = sys.argv[2]
   ue = 1
   Te = 800
   P = 1e5
@@ -350,6 +353,7 @@ if __name__ == "__main__":
        "__rv__" : rv,
        "__hls__" : hls,
        "__hvs__" : hvs,
+       "__dis__" : dis,
        }
 
   with open(datafile, "r") as file:
@@ -360,5 +364,5 @@ if __name__ == "__main__":
     filedata = filedata.replace(k, str(v))
 
   # Write the file out again
-  with open(datafile, "w") as file:
+  with open(f"{datafile[:-5]}_{dis0}.data", "w") as file:
     file.write(filedata)

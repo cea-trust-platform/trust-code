@@ -1,2 +1,3 @@
 #!/bin/bash
-python eos_sodium.py canal.data
+python eos_sodium.py PolyMAC_P0 canal.data
+python eos_sodium.py VDF canal.data
