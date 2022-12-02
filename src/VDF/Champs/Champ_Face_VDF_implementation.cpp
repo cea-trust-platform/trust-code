@@ -29,13 +29,6 @@ DoubleTab& Champ_Face_VDF_implementation::valeur_aux_elems(const DoubleTab& posi
       Process::exit();
     }
 
-  if (le_champ().nb_comp() == 1)
-    {
-      Cerr<<"Champ_Face_implementation::valeur_aux_elems"<<finl;
-      Cerr <<"A scalar field cannot be of Champ_Face type." << finl;
-      Process::exit();
-    }
-
   const int N = le_champ().valeurs().line_size(), D = Objet_U::dimension;
   const Zone_VDF& zone_VDF = zone_vdf();
   const IntTab& f_s = zone_VDF.face_sommets(), &e_f = zone_VDF.elem_faces();
@@ -50,8 +43,13 @@ DoubleTab& Champ_Face_VDF_implementation::valeur_aux_elems(const DoubleTab& posi
           const double val1 = ch_face(e_f(e, d), n), val2 = ch_face(e_f(e, d + D), n);
           const int som0 = f_s(e_f(e, d), 0), som1 = f_s(e_f(e, d + D), 0);
           const double psi = (positions(p, d) - dom.coord(som0, d)) / (dom.coord(som1, d) - dom.coord(som0, d));
-
-          val_elem(p, N * d + n) = interpolation(val1, val2, psi);
+          if (le_champ().nb_comp() == 1)
+            {
+              if (est_egal(psi, 0) || est_egal(psi, 1))
+                val_elem(p, 0) = interpolation(val1, val2, psi);
+            }
+          else
+            val_elem(p, N * d + n) = interpolation(val1, val2, psi);
         }
   return val_elem;
 }

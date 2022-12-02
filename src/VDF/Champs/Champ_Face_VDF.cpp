@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1299,10 +1299,8 @@ Champ_base& Champ_Face_VDF::affecter_(const Champ_base& ch)
     }
   else
     {
-      //      int ndeb_int = zone_VDF.premiere_face_int();
-      //      const IntTab& face_voisins = zone_VDF.face_voisins();
       DoubleTab positionX(zone_VDF.nb_faces_X(), dimension), positionY(zone_VDF.nb_faces_Y(), dimension), positionZ(zone_VDF.nb_faces_Z(), dimension);
-      DoubleTab U(zone_VDF.nb_faces_X(), N), V(zone_VDF.nb_faces_Y(), N), W(zone_VDF.nb_faces_Z(), N);
+      DoubleVect U(zone_VDF.nb_faces_X()), V(zone_VDF.nb_faces_Y()), W(zone_VDF.nb_faces_Z());
       const DoubleTab& xv = zone_VDF.xv();
       int nbx = 0;
       int nby = 0;
@@ -1332,31 +1330,28 @@ Champ_base& Champ_Face_VDF::affecter_(const Champ_base& ch)
             }
         }
 
-      ch.valeur_aux_compo(positionX, U, 0);
-      ch.valeur_aux_compo(positionY, V, 1);
-      if (dimension == 3)
-        ch.valeur_aux_compo(positionZ, W, 2);
-      nbx = nby = nbz = 0;
-      for (num_face = 0; num_face < nb_faces; num_face++)
+      for (int n = 0; n < N; n++)
         {
-          ori = orientation(num_face);
-          switch(ori)
+          ch.valeur_aux_compo(positionX, U, N * 0 + n);
+          ch.valeur_aux_compo(positionY, V, N * 1 + n);
+          if (dimension == 3)
+            ch.valeur_aux_compo(positionZ, W, N * 2 + n);
+          nbx = nby = nbz = 0;
+          for (num_face = 0; num_face < nb_faces; num_face++)
             {
-            case 0:
-              for (int n = 0; n < N; n++)
-                val(num_face, n) = U(nbx, n);
-              nbx++;
-              break;
-            case 1:
-              for (int n = 0; n < N; n++)
-                val(num_face, n) = V(nby, n);
-              nby++;
-              break;
-            case 2:
-              for (int n = 0; n < N; n++)
-                val(num_face, n) = W(nbz, n);
-              nbz++;
-              break;
+              ori = orientation(num_face);
+              switch(ori)
+                {
+                case 0:
+                  val(num_face, n) = U(nbx++);
+                  break;
+                case 1:
+                  val(num_face, n) = V(nby++);
+                  break;
+                case 2:
+                  val(num_face, n) = W(nbz++);
+                  break;
+                }
             }
         }
     }

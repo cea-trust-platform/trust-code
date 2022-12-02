@@ -339,7 +339,9 @@ void Op_Conv_VDF_base::calculer_pour_post(Champ& espace_stockage,const Nom& opti
       const DoubleVect& volumes = zone_VDF.volumes();
       const DoubleVect& face_surfaces = zone_VDF.face_surfaces();
       const DoubleVect& vit = vitesse().valeurs();
-      DoubleTrav fluent(zone_VDF.zone().nb_elem_tot());
+      const int N = std::min(vit.line_size(), equation().inconnue().valeurs().line_size());
+      DoubleTrav fluent(zone_VDF.zone().nb_elem_tot(), N);
+      assert(N == 1); // en attendant de coder les boucles...
 
       // Remplissage du tableau fluent
       fluent = 0;
