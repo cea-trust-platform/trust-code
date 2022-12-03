@@ -686,7 +686,7 @@ void Iterateur_VDF_Face<_TYPE_>::corriger_fa7_elem_periodicite__(const int face,
  * ========================= */
 
 template<class _TYPE_> template<typename Type_Double>
-void Iterateur_VDF_Face<_TYPE_>::ajouter_pour_compressible(const int ncomp, matrices_t , DoubleTab& secmem, const tabs_t& ) const
+void Iterateur_VDF_Face<_TYPE_>::ajouter_pour_compressible(const int ncomp, matrices_t mats, DoubleTab& secmem, const tabs_t& ) const
 {
   // on a secmem calcule comme : div(alpha rho v x v)
   const DoubleTab& vit = le_champ_convecte_ou_inc->valeurs();
@@ -698,12 +698,12 @@ void Iterateur_VDF_Face<_TYPE_>::ajouter_pour_compressible(const int ncomp, matr
 
   const tabs_t tabsT = {{ le_champ_convecte_ou_inc->le_nom().getString(), unite}};
 
-  ajouter_blocs_aretes_bords<Type_Double>(ncomp, {}, resu, tabsT);
-  ajouter_blocs_aretes_coins<Type_Double>(ncomp, {}, resu, tabsT);
-  ajouter_blocs_aretes_internes<Type_Double>(ncomp, {}, resu, tabsT);
-  ajouter_blocs_aretes_mixtes<Type_Double>(ncomp, {}, resu, tabsT);
-  ajouter_blocs_fa7_sortie_libre<Type_Double>( ncomp, {}, resu, tabsT );
-  ajouter_blocs_fa7_elem<Type_Double>( ncomp, {}, resu, tabsT);
+  ajouter_blocs_aretes_bords<Type_Double>(ncomp, mats, resu, tabsT);
+  ajouter_blocs_aretes_coins<Type_Double>(ncomp, mats, resu, tabsT);
+  ajouter_blocs_aretes_internes<Type_Double>(ncomp, mats, resu, tabsT);
+  ajouter_blocs_aretes_mixtes<Type_Double>(ncomp, mats, resu, tabsT);
+  ajouter_blocs_fa7_sortie_libre<Type_Double>( ncomp, mats, resu, tabsT );
+  ajouter_blocs_fa7_elem<Type_Double>( ncomp, mats, resu, tabsT);
 
   // etape 2 : on multiplie par v pour avoir : v . div(alpha rho v)
   resu *= vit;
