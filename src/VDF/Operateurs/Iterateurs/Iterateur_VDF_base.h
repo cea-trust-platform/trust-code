@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -69,6 +69,9 @@ public:
   inline Type_Cl_VDF type_cl(const Cond_lim&) const;
   inline const bool& is_convective_op() const { return is_conv_op_; }
   inline const bool& is_pb_multiphase() const { return is_pb_multi; }
+  void set_incompressible(const int flag) { incompressible_ = flag; }
+  inline const int& is_incompressible() const { return incompressible_; }
+
   inline void set_convective_op_pb_type(const bool ty_op, const bool ty_pb)
   {
     is_conv_op_ = ty_op;
@@ -91,11 +94,6 @@ public:
   {
     DoubleTrav secmem(inco); //on va le jeter
     ajouter_blocs({{ op_base->equation().inconnue().le_nom().getString(), &m }}, secmem, {});
-  }
-
-  void set_incompressible(const int flag)
-  {
-    incompressible_ = flag;
   }
 
 protected:

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -109,17 +109,21 @@ private:
 
   /* ====== FA7 SORTIE LIBRE ===== */
   template<typename Type_Double>
-  void ajouter_blocs_fa7_sortie_libre(const int, matrices_t, DoubleTab&, const tabs_t&) const;
+  void ajouter_blocs_fa7_sortie_libre(const int, matrices_t, DoubleTab&, const tabs_t& ) const;
 
   template <bool should_calc_flux, Type_Flux_Fa7 Fa7_Type, typename Type_Double>
   void ajouter_blocs_fa7_sortie_libre_(const int , const int , matrices_t , DoubleTab& , const tabs_t& ) const;
 
   /* ====== FA7 ELEM ===== */
   template<typename Type_Double>
-  void ajouter_blocs_fa7_elem(const int, matrices_t, DoubleTab&, const tabs_t&) const;
+  void ajouter_blocs_fa7_elem(const int, matrices_t, DoubleTab&, const tabs_t& ) const;
 
   void corriger_fa7_elem_periodicite__(const int, int&, int&, int&, int&) const;
   template<typename Type_Double> void corriger_fa7_elem_periodicite(const int, matrices_t, DoubleTab&, const tabs_t& ) const;
+
+  /* ====== Compressible ===== */
+  template<typename Type_Double>
+  void ajouter_pour_compressible(const int, matrices_t, DoubleTab&, const tabs_t&) const;
 };
 
 #include <Iterateur_VDF_Face.tpp> // templates specializations ici ;)

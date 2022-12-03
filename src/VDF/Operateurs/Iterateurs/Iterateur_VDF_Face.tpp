@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,8 +50,17 @@ void Iterateur_VDF_Face<_TYPE_>::ajouter_blocs(matrices_t mats, DoubleTab& secme
       ajouter_blocs_fa7_elem<ArrOfDouble>(ncomp, mats, secmem, semi_impl);
     }
 
+  if (!incompressible_ )
+    {
+      assert (is_pb_multi && is_conv_op_);
+      if (ncomp == 1)
+        ajouter_pour_compressible<SingleDouble>(ncomp, mats, secmem, semi_impl);
+      else
+        ajouter_pour_compressible<ArrOfDouble>(ncomp, mats, secmem, semi_impl);
+    }
+
   // On multiplie les flux au bord par rho en hydraulique (sert uniquement a la sortie)
-  multiply_by_rho_if_hydraulique(tab_flux_bords);
+  if (!is_pb_multi) multiply_by_rho_if_hydraulique(tab_flux_bords);
 }
 
 /* ================== *
@@ -556,12 +565,12 @@ void Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_fa7_elem(const int ncomp, matrice
   DoubleTab& tab_flux_bords = op_base->flux_bords();
   const std::string& nom_ch = le_champ_convecte_ou_inc->le_nom().getString();
   const DoubleTab& inco = semi_impl.count(nom_ch) ? semi_impl.at(nom_ch) : le_champ_convecte_ou_inc->valeurs();
-  Type_Double flux(ncomp), aii(ncomp), ajj(ncomp);
+  Type_Double flux(ncomp), aii(ncomp), ajj(ncomp), flux_c(ncomp) /* partie compressible */;
   const int n_fc_bd = la_zone->nb_faces_bord();
 
   const DoubleTab* a_r = (!is_pb_multi || !is_conv_op_) ? nullptr : semi_impl.count("alpha_rho") ? &semi_impl.at("alpha_rho") :
                          &ref_cast(Pb_Multiphase,op_base->equation().probleme()).eq_masse.champ_conserve().valeurs();
-
+//  const IntTab& f_e = la_zone->face_voisins();
   // second membre
   for (int num_elem = 0; num_elem < nb_elem; num_elem++)
     for (int fa7 = 0; fa7 < dimension; fa7++)
@@ -670,6 +679,37 @@ void Iterateur_VDF_Face<_TYPE_>::corriger_fa7_elem_periodicite__(const int face,
       signe = -1;
     }
   fac1 = elem_faces(num_elem, ori), fac2 = elem_faces(num_elem, ori + dimension);
+}
+
+/* ========================= *
+ * ====== Compressible =====
+ * ========================= */
+
+template<class _TYPE_> template<typename Type_Double>
+void Iterateur_VDF_Face<_TYPE_>::ajouter_pour_compressible(const int ncomp, matrices_t , DoubleTab& secmem, const tabs_t& ) const
+{
+  // on a secmem calcule comme : div(alpha rho v x v)
+  const DoubleTab& vit = le_champ_convecte_ou_inc->valeurs();
+
+  // etape 1 : calcule de la terme div(alpha rho v)
+  DoubleTrav unite(secmem), resu(secmem);
+  unite  = 1.;
+  resu = 0.;
+
+  const tabs_t tabsT = {{ le_champ_convecte_ou_inc->le_nom().getString(), unite}};
+
+  ajouter_blocs_aretes_bords<Type_Double>(ncomp, {}, resu, tabsT);
+  ajouter_blocs_aretes_coins<Type_Double>(ncomp, {}, resu, tabsT);
+  ajouter_blocs_aretes_internes<Type_Double>(ncomp, {}, resu, tabsT);
+  ajouter_blocs_aretes_mixtes<Type_Double>(ncomp, {}, resu, tabsT);
+  ajouter_blocs_fa7_sortie_libre<Type_Double>( ncomp, {}, resu, tabsT );
+  ajouter_blocs_fa7_elem<Type_Double>( ncomp, {}, resu, tabsT);
+
+  // etape 2 : on multiplie par v pour avoir : v . div(alpha rho v)
+  resu *= vit;
+
+  // etape 3 : finalement,  alpha rho v grad v = div(alpha rho v x v) - v . div(alpha rho v)
+  secmem -= resu;
 }
 
 // ===================================================================================================
