@@ -42,10 +42,19 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7(const DoubleTab& inco, const DoubleTab* 
       for (int k = 0; k < ncomp; k++)
         {
           psc = 0.25*(dt_vitesse(fac1,k)+dt_vitesse(fac2,k))*(surface(fac1)+surface(fac2));
-          if (a_r) psc *= (*a_r)(num_elem, k);
 
-          if (psc > 0) flux[k] = -psc * inco(fac1, k) * porosite(fac1);
-          else flux[k] = -psc * inco(fac2, k) * porosite(fac2);
+          if (psc > 0)
+            {
+              const int elem = elem_(fac1, 0), elem2 = elem_(fac1, 1);
+              if (a_r) psc *= elem > -1 ? (*a_r)(elem, k) : (*a_r)(elem2, k);
+              flux[k] = -psc * inco(fac1, k) * porosite(fac1);
+            }
+          else
+            {
+              const int elem = elem_(fac2, 1), elem2 = elem_(fac2, 0);
+              if (a_r) psc *= elem > -1 ? (*a_r)(elem, k) : (*a_r)(elem2, k);
+              flux[k] = -psc * inco(fac2, k) * porosite(fac2);
+            }
         }
     }
   else if (DERIVED_T::IS_CENTRE)
