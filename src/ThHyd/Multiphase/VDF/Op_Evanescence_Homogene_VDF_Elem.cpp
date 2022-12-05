@@ -13,9 +13,8 @@
 *
 *****************************************************************************/
 
-#include <Operateur_Evanescence_base.h>
+#include <Op_Evanescence_Homogene_VDF_Elem.h>
 
-Implemente_base(Operateur_Evanescence_base, "Operateur_Evanescence_base", Operateur_base);
-
-Sortie& Operateur_Evanescence_base::printOn(Sortie& os) const { return os; }
-Entree& Operateur_Evanescence_base::readOn(Entree& is) { return is; }
+Implemente_instanciable(Op_Evanescence_Homogene_VDF_Elem, "Op_Evanescence_Homogene_VDF_Elem", Op_Evanescence_Homogene_Elem_base);
+Sortie& Op_Evanescence_Homogene_VDF_Elem::printOn(Sortie& os) const { return os; }
+Entree& Op_Evanescence_Homogene_VDF_Elem::readOn(Entree& is) { return Op_Evanescence_Homogene_Elem_base::readOn(is); }

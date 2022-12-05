@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,8 +16,8 @@
 #ifndef Operateur_Evanescence_included
 #define Operateur_Evanescence_included
 
-#include <Operateur.h>
 #include <Operateur_Evanescence_base.h>
+#include <Operateur.h>
 
 /*! @brief classe Operateur_Evanescence Classe generique de la hierarchie des operateurs representant un terme
  *
@@ -26,11 +26,11 @@
  *
  * @sa Operateur_base Operateur
  */
+Declare_deriv(Operateur_Evanescence_base);
 
-class Operateur_Evanescence  : public Operateur, public DERIV(Operateur_Evanescence_base)
+class Operateur_Evanescence : public Operateur, public DERIV(Operateur_Evanescence_base)
 {
   Declare_instanciable(Operateur_Evanescence);
-
 public:
   Operateur_base& l_op_base() override { return valeur(); }
   const Operateur_base& l_op_base() const override { return valeur(); }
@@ -43,4 +43,5 @@ public:
 protected:
   REF(Champ_base) la_diffusivite;
 };
-#endif
+
+#endif /* Operateur_Evanescence_included */

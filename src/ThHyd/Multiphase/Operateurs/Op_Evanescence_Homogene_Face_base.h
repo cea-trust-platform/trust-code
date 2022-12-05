@@ -13,9 +13,33 @@
 *
 *****************************************************************************/
 
+#ifndef Op_Evanescence_Homogene_Face_base_included
+#define Op_Evanescence_Homogene_Face_base_included
+
 #include <Operateur_Evanescence_base.h>
+#include <set>
 
-Implemente_base(Operateur_Evanescence_base, "Operateur_Evanescence_base", Operateur_base);
+/*! @brief Classe Op_Evanescence_Homogene_Face_base
+ *
+ *    gestion de l'evanescence dans une equation aux faces (-> QDM)
+ *
+ * @sa Operateur_Evanescence_base Operateur_base
+ */
+class Op_Evanescence_Homogene_Face_base: public Operateur_Evanescence_base
+{
+  Declare_base(Op_Evanescence_Homogene_Face_base);
+public :
+  int has_interface_blocs() const override { return 1; }
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+  double alpha_res() const override { return alpha_res_; }
 
-Sortie& Operateur_Evanescence_base::printOn(Sortie& os) const { return os; }
-Entree& Operateur_Evanescence_base::readOn(Entree& is) { return is; }
+protected:
+  double alpha_res_ = 0., alpha_res_min_ = 0.; //seuil de declenchement du traitement de l'evanescence
+
+private:
+  virtual void dimensionner_blocs_aux(std::set<int>&, IntTrav& ,  Matrice_Morse& ) const = 0;
+  virtual void ajouter_blocs_aux(IntTrav& , DoubleTrav , matrices_t , DoubleTab& ) const = 0;
+};
+
+#endif /* Op_Evanescence_Homogene_Face_base_included */

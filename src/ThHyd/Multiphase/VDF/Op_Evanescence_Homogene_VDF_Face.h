@@ -13,9 +13,17 @@
 *
 *****************************************************************************/
 
-#include <Operateur_Evanescence_base.h>
+#ifndef Op_Evanescence_Homogene_VDF_Face_included
+#define Op_Evanescence_Homogene_VDF_Face_included
 
-Implemente_base(Operateur_Evanescence_base, "Operateur_Evanescence_base", Operateur_base);
+#include <Op_Evanescence_Homogene_Face_base.h>
 
-Sortie& Operateur_Evanescence_base::printOn(Sortie& os) const { return os; }
-Entree& Operateur_Evanescence_base::readOn(Entree& is) { return is; }
+class Op_Evanescence_Homogene_VDF_Face: public Op_Evanescence_Homogene_Face_base
+{
+  Declare_instanciable(Op_Evanescence_Homogene_VDF_Face);
+protected:
+  void dimensionner_blocs_aux(std::set<int>&, IntTrav& ,  Matrice_Morse& ) const override { /* Do nothing */ }
+  void ajouter_blocs_aux(IntTrav& , DoubleTrav , matrices_t , DoubleTab& ) const override { /* Do nothing */ }
+};
+
+#endif /* Op_Evanescence_Homogene_VDF_Face_included */

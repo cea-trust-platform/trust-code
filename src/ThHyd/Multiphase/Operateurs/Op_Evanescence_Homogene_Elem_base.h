@@ -13,9 +13,28 @@
 *
 *****************************************************************************/
 
+#ifndef Op_Evanescence_Homogene_Elem_base_included
+#define Op_Evanescence_Homogene_Elem_base_included
+
 #include <Operateur_Evanescence_base.h>
 
-Implemente_base(Operateur_Evanescence_base, "Operateur_Evanescence_base", Operateur_base);
+/*! @brief Classe Op_Evanescence_Homogene_Elem_base
+ *
+ *   gestion de l'evanescence dans une equation aux elements (masse, energie ...)
+ *
+ * @sa Operateur_Evanescence_base Operateur_base
+ */
+class Op_Evanescence_Homogene_Elem_base: public Operateur_Evanescence_base
+{
+  Declare_base(Op_Evanescence_Homogene_Elem_base);
+public :
+  int has_interface_blocs() const override { return 1; }
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+  double alpha_res() const override { return alpha_res_; }
 
-Sortie& Operateur_Evanescence_base::printOn(Sortie& os) const { return os; }
-Entree& Operateur_Evanescence_base::readOn(Entree& is) { return is; }
+private:
+  double alpha_res_ = 0., alpha_res_min_ = 0.; //seuil de declenchement du traitement de l'evanescence
+};
+
+#endif /* Op_Evanescence_Homogene_Elem_base_included*/

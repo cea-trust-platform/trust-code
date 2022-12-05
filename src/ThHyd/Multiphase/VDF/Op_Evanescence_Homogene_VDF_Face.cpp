@@ -13,9 +13,9 @@
 *
 *****************************************************************************/
 
-#include <Operateur_Evanescence_base.h>
+#include <Op_Evanescence_Homogene_VDF_Face.h>
 
-Implemente_base(Operateur_Evanescence_base, "Operateur_Evanescence_base", Operateur_base);
+Implemente_instanciable(Op_Evanescence_Homogene_VDF_Face, "Op_Evanescence_HOMOGENE_VDF_Face", Op_Evanescence_Homogene_Face_base);
 
-Sortie& Operateur_Evanescence_base::printOn(Sortie& os) const { return os; }
-Entree& Operateur_Evanescence_base::readOn(Entree& is) { return is; }
+Sortie& Op_Evanescence_Homogene_VDF_Face::printOn(Sortie& os) const { return os; }
+Entree& Op_Evanescence_Homogene_VDF_Face::readOn(Entree& is) { return Op_Evanescence_Homogene_Face_base::readOn(is); }

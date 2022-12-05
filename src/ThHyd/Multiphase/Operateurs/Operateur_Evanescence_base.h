@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,5 +33,4 @@ public:
   virtual double alpha_res() const {Process::exit( " Operateur_Evanescence_base::alpha_res must be overloaded !");  return -1.;};
 };
 
-Declare_deriv(Operateur_Evanescence_base);
-#endif
+#endif /* Operateur_Evanescence_base_included */

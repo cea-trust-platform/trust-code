@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,23 +16,14 @@
 #ifndef Op_Evanescence_Homogene_PolyMAC_P0_Face_included
 #define Op_Evanescence_Homogene_PolyMAC_P0_Face_included
 
-#include <Operateur_Evanescence_base.h>
+#include <Op_Evanescence_Homogene_Face_base.h>
 
-/*! @brief Classe Op_Evanescence_Homogene_PolyMAC_P0_Face gestion dans PolyMAC_P0 de l'evanescence dans une equation aux faces (-> QDM)
- *
- * @sa Operateur_PolyMAC_P0_base Operateur_base
- */
-class Op_Evanescence_Homogene_PolyMAC_P0_Face: public Operateur_Evanescence_base
+class Op_Evanescence_Homogene_PolyMAC_P0_Face: public Op_Evanescence_Homogene_Face_base
 {
   Declare_instanciable(Op_Evanescence_Homogene_PolyMAC_P0_Face);
-public :
-  int has_interface_blocs() const override { return 1; }
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
-  double alpha_res() const override { return alpha_res_; }
-
-private:
-  double alpha_res_, alpha_res_min_ = 0; //seuil de declenchement du traitement de l'evanescence
+protected:
+  void dimensionner_blocs_aux(std::set<int>&, IntTrav& ,  Matrice_Morse& ) const override;
+  void ajouter_blocs_aux(IntTrav& , DoubleTrav , matrices_t , DoubleTab& ) const override;
 };
 
-#endif
+#endif /* Op_Evanescence_Homogene_PolyMAC_P0_Face_included */

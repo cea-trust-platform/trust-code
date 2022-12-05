@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,12 +14,10 @@
 *****************************************************************************/
 
 #include <Operateur_Evanescence.h>
-#include <Operateur_base.h>
+#include <Discretisation_base.h>
+#include <Champ_base.h>
 #include <Champ_Don.h>
 
-#include <Discretisation_base.h>
-
-#include <Champ_base.h>
 Implemente_deriv(Operateur_Evanescence_base);
 Implemente_instanciable(Operateur_Evanescence,"Operateur_Evanescence",DERIV(Operateur_Evanescence_base));
 
@@ -28,9 +26,9 @@ Entree& Operateur_Evanescence::readOn(Entree& is) { return Operateur::lire(is); 
 
 void Operateur_Evanescence::typer()
 {
-  Cerr << "Operateur_Evanescence::typer("<<typ<<")" << finl;
-  Equation_base& eqn=mon_equation.valeur();
-  Nom nom_type= eqn.discretisation().get_name_of_type_for(que_suis_je(),typ,eqn);
+  Cerr << "Operateur_Evanescence::typer(" << typ << ")" << finl;
+  Equation_base& eqn = mon_equation.valeur();
+  Nom nom_type = eqn.discretisation().get_name_of_type_for(que_suis_je(), typ, eqn);
   DERIV(Operateur_Evanescence_base)::typer(nom_type);
   Cerr << valeur().que_suis_je() << finl;
 }
