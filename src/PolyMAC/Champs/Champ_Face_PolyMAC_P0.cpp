@@ -126,8 +126,7 @@ void Champ_Face_PolyMAC_P0::update_ve(DoubleTab& val) const
 
 void Champ_Face_PolyMAC_P0::init_ve2() const
 {
-#ifdef _COMPILE_AVEC_PGCC
-  // PL ToDo: rewrite code
+#ifdef _COMPILE_AVEC_PGCC_AVANT_22_7
   Cerr << "Internal error with nvc++: Internal error: read_memory_region: not all expected entries were read." << finl;
   Process::exit();
 #else

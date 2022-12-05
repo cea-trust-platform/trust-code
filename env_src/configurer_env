@@ -1740,7 +1740,7 @@ case $TRUST_ARCH_CC in
    linux_pgCC|linux_nvc++) TRUST_SUPPORTED=1
         m="# TMPDIR ?";e="TMPDIR=\"$TRUST_TMP\" && export TMPDIR";ecrit $m"|"$e"|"$env # Plantage vus avec /tmp par defaut
    	Defines="-D_COMPILE_AVEC_PGCC"
-	CppFlags="-O1 -fPIC" # Crash en -O2 et -O3 sur cas EF_upwind par exemple: compilateur de merde
+	CppFlags="-O3 -fPIC -Ktrap=fp -Kieee" # -Ktrap=fp evitent des soucis Arithmetic Exceptions...
 	SYSLIBS="-lgfortran" # Car BLAS+AMGX+PETSC compile avec GNU
 	F77Flags="-O3 -fPIC"
 	ccFLAGS="-O3 -fPIC"
@@ -1933,7 +1933,8 @@ then
       rm -f $TRUST_ENV/card.log
       echo "Not tested."
    fi
-   awk '/Driver Version/ {V=11.4;if ($NF>V) print "Warning, current AmgX library only supported for CUDA<="V" !"}' $TRUST_ENV/card.log 2>/dev/null
+   # Cuda 11.3, 11.6, 11.7 testes, ne marchent pas (PAR_gpu_3D diverge...)
+   awk '/Driver Version/ {V=11.2;if ($NF>V) print "Warning, current AmgX library only supported for CUDA<="V" !"}' $TRUST_ENV/card.log 2>/dev/null
    Defines=$Defines" -DTRUST_USE_CUDA -DPETSC_SKIP_COMPLEX"
    # Vu sur orcus (fait ch..r) -pedantic pose probleme:
    echo "Cuda: -pedantic suppressed in \$CppFlags"
@@ -1997,7 +1998,8 @@ then
       then
          # A partir de HPC SDK 21.3 !
          openmp_target="-target=gpu $march"
-         #export NVCOMPILER_ACC_NOTIFY = 1|2|3
+         #export NVCOMPILER_ACC_NOTIFY = 1|2|4|8|16
+         #export NVCOMPILER_ACC_TIME = 1
       fi
    else
       echo "-openmp not supported for $TRUST_CC_BASE" && exit -1
@@ -2023,7 +2025,7 @@ double b[3];
       if [ $? != 0 ]
       then
          echo "Error, $TRUST_CC_BASE compiler doesn't support OpenMP offloading."
-         [ "$TRUST_USE_CUDA" = 1 ] && [ "$TRUST_VERSION_GNU" != "" ] && echo "Try adding the feature to your GNU compiler for instance on Fedora: sudo dnf install gcc-offload-nvptx"
+         #[ "$TRUST_USE_CUDA" = 1 ] && [ "$TRUST_VERSION_GNU" != "" ] && echo "Try adding the feature to your GNU compiler for instance on Fedora: sudo dnf install gcc-offload-nvptx"
          exit -1
       else
          echo "$TRUST_CC_BASE support OpenMP offloading..."

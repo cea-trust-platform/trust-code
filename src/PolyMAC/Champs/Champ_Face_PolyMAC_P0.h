@@ -70,7 +70,11 @@ public :
     double nv = sqrt(zone.dot(v, v));
     if (dnv)
       for (d = 0; d < D; d++) dnv[d] = nv ? (v[d] - (f >= 0 ? vf * nf(f, d) / fs(f) : 0)) / nv : 0;
+#ifdef _COMPILE_AVEC_PGCC
+    if (dnv) dnv[3] = f >= 0 && nv ? vf / (nv+DMINFLOAT) : 0; // nvc++ sucks
+#else
     if (dnv) dnv[3] = f >= 0 && nv ? vf / nv : 0;
+#endif
     return nv;
   }
 private:

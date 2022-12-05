@@ -139,7 +139,7 @@ void Zone_PolyMAC_P0::init_stencils() const
 void Zone_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntTab& fcl, const DoubleTab *nu, const IntTab *som_ext,
                             int virt, int full_stencil, IntTab& phif_d, IntTab& phif_e, DoubleTab& phif_c) const
 {
-#ifdef _COMPILE_AVEC_PGCC
+#ifdef _COMPILE_AVEC_PGCC_AVANT_22_7
   Cerr << "Internal error with nvc++: Internal error: read_memory_region: not all expected entries were read." << finl;
   Process::exit();
 #else
