@@ -13,16 +13,16 @@
 *
 *****************************************************************************/
 
-#ifndef Flux_interfacial_PolyMAC_included
-#define Flux_interfacial_PolyMAC_included
+#ifndef Flux_interfacial_VDF_included
+#define Flux_interfacial_VDF_included
 
 #include <Source_Flux_interfacial_base.h>
 
-class Flux_interfacial_PolyMAC: public Source_Flux_interfacial_base
+class Flux_interfacial_VDF: public Source_Flux_interfacial_base
 {
-  Declare_instanciable(Flux_interfacial_PolyMAC);
+  Declare_instanciable(Flux_interfacial_VDF);
 protected:
   void fill_vit_elem_tab(DoubleTab&) const override;
 };
 
-#endif /* Flux_interfacial_PolyMAC_included */
+#endif /* Flux_interfacial_VDF_included */

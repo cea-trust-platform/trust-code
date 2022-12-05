@@ -13,16 +13,36 @@
 *
 *****************************************************************************/
 
-#ifndef Flux_interfacial_PolyMAC_included
-#define Flux_interfacial_PolyMAC_included
+#include <Flux_interfacial_VDF.h>
+#include <Champ_Inc_P0_base.h>
+#include <Pb_Multiphase.h>
+#include <Equation_base.h>
+#include <Zone_VF.h>
+#include <Domaine.h>
 
-#include <Source_Flux_interfacial_base.h>
+Implemente_instanciable(Flux_interfacial_VDF,"Flux_interfacial_VDF_P0_VDF", Source_Flux_interfacial_base);
 
-class Flux_interfacial_PolyMAC: public Source_Flux_interfacial_base
+Sortie& Flux_interfacial_VDF::printOn(Sortie& os) const { return os; }
+Entree& Flux_interfacial_VDF::readOn(Entree& is) { return Source_Flux_interfacial_base::readOn(is); }
+
+void Flux_interfacial_VDF::fill_vit_elem_tab(DoubleTab& pvit_elem) const
 {
-  Declare_instanciable(Flux_interfacial_PolyMAC);
-protected:
-  void fill_vit_elem_tab(DoubleTab&) const override;
-};
+  const Zone_VF& zone = ref_cast(Zone_VF, equation().zone_dis().valeur());
+  const Domaine& dom = zone.zone().domaine();
+  const Champ_Inc_base& ch_vit = ref_cast(Pb_Multiphase, equation().probleme()).eq_qdm.inconnue().valeur();
+  const IntTab& f_s = zone.face_sommets(), &e_f = zone.elem_faces();
+  const int N = ref_cast(Champ_Inc_P0_base, equation().inconnue().valeur()).valeurs().line_size(), D = dimension;
 
-#endif /* Flux_interfacial_PolyMAC_included */
+  pvit_elem = 0.0;
+
+  for (int e = 0; e < zone.nb_elem_tot(); e++)
+    for (int n = 0; n < N; n++)
+      for (int d = 0; d < D; d++)
+        {
+          const double val1 = ch_vit.passe()(e_f(e, d), n), val2 = ch_vit.passe()(e_f(e, d + D), n);
+          const int som0 = f_s(e_f(e, d), 0), som1 = f_s(e_f(e, d + D), 0);
+          const double psi = (zone.xp(e, d) - dom.coord(som0, d)) / (dom.coord(som1, d) - dom.coord(som0, d));
+
+          pvit_elem(e, N * d + n) = (std::fabs(psi) < 1e-12) ? val1 : (std::fabs(1. - psi) < 1e-12 ? val2 : val1 + psi * (val2-val1));
+        }
+}
