@@ -1,4 +1,4 @@
-# 1.74s/dt avec OpenMP sur MI100 #
+# 3.28s/dt avec OpenMP sur RTX A5000 #
 dimension 3
 Pb_Hydraulique pb
 Domaine coarse_dom
@@ -56,7 +56,7 @@ Read sch
     dt_impr 0.0000001
     dt_sauv 0.5
     seuil_statio 1.e-8
-    facsec 1.
+    facsec 1.GPU4_BENCH_AMGX.data
     nb_pas_dt_max 10
 }
 
@@ -77,7 +77,7 @@ Read pb
 
     Navier_Stokes_Standard
     {
-        solveur_pression rocALUTION gcp { precond jacobi { } seuil 1.e-5 impr }
+        solveur_pression amgx gcp { precond sa-amg { } seuil 1.e-5 impr }
         convection { muscl }
         diffusion  {  }
         initial_conditions {  vitesse Champ_Uniforme 3  0. 0. 0. }
