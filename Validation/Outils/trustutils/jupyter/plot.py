@@ -408,6 +408,7 @@ class Graph:
         """
 
         path = os.path.join(BUILD_DIRECTORY, data)
+        if not os.path.exists(path): raise ValueError(f"The path ({path}) does not exist!")
         if label == "":
             label = data.split(".")[0]
         # On plot le dernier instant
