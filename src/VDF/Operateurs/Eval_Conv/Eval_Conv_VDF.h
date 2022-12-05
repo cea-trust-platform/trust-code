@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,6 +48,7 @@ public:
   inline double get_surface_porosite(int face) const { return surface(face)*porosite(face); }
   inline double get_surface(int face) const { return surface(face); }
   inline double get_porosite(int face) const { return porosite(face); }
+  inline const DoubleTab& get_tab_vitesse() const { return dt_vitesse; }
   inline const Zone_Cl_VDF& get_la_zcl() const { return la_zcl.valeur(); }
 
 protected:

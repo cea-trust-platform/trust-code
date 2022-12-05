@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,7 +25,8 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, cons
 {
   for (int n = 0; n < flux.size_array(); n++)
     {
-      const double psc = dt_vitesse(f,n) * surface_porosite(f);
+      const int ind = (tab_vitesse().line_size() == flux.size_array()) ? n : 0;
+      const double psc = dt_vitesse(f,ind) * surface_porosite(f);
       for (int i = 0, e; i < 2; i++)
         if ((e = elem_(f, i)) > -1)
           flux[n] = -psc * (((psc > 0 && !i) || (psc <= 0 && i)) ? inco(e, n) : val_b(f, n));
@@ -37,7 +38,8 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, cons
 {
   for (int n = 0; n < flux.size_array(); n++)
     {
-      const double psc = dt_vitesse(f, n) * surface_porosite(f);
+      const int ind = (tab_vitesse().line_size() == flux.size_array()) ? n : 0;
+      const double psc = dt_vitesse(f, ind) * surface_porosite(f);
       for (int i = 0, e; i < 2; i++)
         if ((e = elem_(f, i)) > -1)
           flux[n] = -psc * (((psc > 0 && !i) || (psc <= 0 && i)) ? inco(e, n) : val_b(f, n));
@@ -64,7 +66,8 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, cons
   else
     for (int k = 0; k < ncomp; k++)
       {
-        const double psc = dt_vitesse(face, k) * surface_porosite(face);
+        const int ind = (tab_vitesse().line_size() == ncomp) ? k : 0;
+        const double psc = dt_vitesse(face, ind) * surface_porosite(face);
         flux[k] = (psc > 0) ? -psc * inco(i, k) : -psc * inco(j, k); /* AMONT */
       }
 }
@@ -114,7 +117,8 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::flux_faces_interne(const DoubleTab& i
   else
     for(int k = 0; k < ncomp; k++)
       {
-        const double psc = dt_vitesse(face,k)*surface_porosite(face);
+        const int ind = (tab_vitesse().line_size() == ncomp) ? k : 0;
+        const double psc = dt_vitesse(face, ind)*surface_porosite(face);
         flux[k] = (psc > 0) ? -psc * inco(i, k) : -psc * inco(j, k); /* AMONT */
       }
 }
@@ -139,7 +143,8 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_common(const int face, Ty
       else
         for (int k = 0; k < ncomp; k++)
           {
-            psc = dt_vitesse(face,k)*surface_porosite(face);
+            const int ind = (tab_vitesse().line_size() == ncomp) ? k : 0;
+            psc = dt_vitesse(face, ind)*surface_porosite(face);
             aii[k] = (psc > 0) ? psc : 0.;
             ajj[k] = 0.;
           }
@@ -154,7 +159,8 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_common(const int face, Ty
       else
         for (int k = 0; k < ncomp; k++)
           {
-            psc = dt_vitesse(face,k)*surface_porosite(face);
+            const int ind = (tab_vitesse().line_size() == ncomp) ? k : 0;
+            psc = dt_vitesse(face, ind)*surface_porosite(face);
             ajj[k] = (psc < 0) ? -psc : 0.;
             aii[k] = 0.;
           }
@@ -191,7 +197,8 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face(const int face, const int
   else
     for (int k = 0; k < ncomp; k++)
       {
-        const double psc = dt_vitesse(face,k)*surface_porosite(face);
+        const int ind = (tab_vitesse().line_size() == ncomp) ? k : 0;
+        const double psc = dt_vitesse(face, ind)*surface_porosite(face);
         aii[k] = (psc > 0) ? psc : 0.;
         ajj[k] = (psc > 0) ? 0. : -psc;
       }
@@ -224,7 +231,8 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_faces_interne(const int face, 
   else
     for (int k = 0; k < ncomp; k++)
       {
-        const double psc = dt_vitesse(face,k)*surface_porosite(face);
+        const int ind = (tab_vitesse().line_size() == ncomp) ? k : 0;
+        const double psc = dt_vitesse(face, ind)*surface_porosite(face);
         aii[k] = (psc > 0) ? psc : 0.;
         ajj[k] = (psc > 0) ? 0. : -psc;
       }
@@ -238,7 +246,10 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_bloc_vitesse(const Double
   for (int n = 0; n < flux.size_array(); n++)
     for (int i = 0, e; i < 2; i++)
       if ((e = elem_(f, i)) > -1)
-        flux[n] = surface_porosite(f) * (((dt_vitesse(f,n) > 0 && !i) || (dt_vitesse(f,n) <= 0 && i)) ? inco(e, n) : val_b(f, n));
+        {
+          const int ind = (tab_vitesse().line_size() == flux.size_array()) ? n : 0;
+          flux[n] = surface_porosite(f) * (((dt_vitesse(f, ind) > 0 && !i) || (dt_vitesse(f, ind) <= 0 && i)) ? inco(e, n) : val_b(f, n));
+        }
 }
 
 template <typename DERIVED_T> template <typename Type_Double>
@@ -248,7 +259,10 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_bloc_vitesse(const Double
   for (int n = 0; n < flux.size_array(); n++)
     for (int i = 0, e; i < 2; i++)
       if ((e = elem_(f, i)) > -1)
-        flux[n] = surface_porosite(f) * (((dt_vitesse(f,n) > 0 && !i) || (dt_vitesse(f,n) <= 0 && i)) ? inco(e, n) : val_b(f, n));
+        {
+          const int ind = (tab_vitesse().line_size() == flux.size_array()) ? n : 0;
+          flux[n] = surface_porosite(f) * (((dt_vitesse(f, ind) > 0 && !i) || (dt_vitesse(f, ind) <= 0 && i)) ? inco(e, n) : val_b(f, n));
+        }
 }
 
 template <typename DERIVED_T> template <typename Type_Double>
@@ -263,7 +277,11 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_bloc_vitesse_common(const
       const int i_0 = amont_amont_(face,0), j_1 = amont_amont_(face,1);
       qcentre_<Type_Double>(psc,i,j,i_0,j_1,face,inco,flux);
     }
-  else for (int k = 0; k < ncomp; k++) flux[k] = (dt_vitesse(face,k) > 0) ? psc * inco(i, k) : psc * inco(j, k);
+  else for (int k = 0; k < ncomp; k++)
+      {
+        const int ind = (tab_vitesse().line_size() == ncomp) ? k : 0;
+        flux[k] = (dt_vitesse(face, ind) > 0) ? psc * inco(i, k) : psc * inco(j, k);
+      }
 }
 
 template <typename DERIVED_T> template <typename Type_Double>
