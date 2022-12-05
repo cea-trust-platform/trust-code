@@ -44,6 +44,7 @@ make_()
          echo "=> Try using another MPI package, for instance -force_latest_mpich in the configure step, to fix this problem." >> $TRUST_ROOT/NON_INSTALLED
       fi
       echo "---" >> $TRUST_ROOT/NON_INSTALLED
+      exit -1 # Penible de ne pas voir le probleme immediatement...
    fi
    # On ecrit dans prog.log pour la desinstallation
    echo `pwd` | sed "s?$TRUST_ROOT/??" >> $TRUST_ROOT/env/prog.log
@@ -358,10 +359,14 @@ check_nvidia_cuda()
    # Detection nvcc
    ################
    m="# Path to CUDA compiler";e="`cherche_file CUDA_NVCC nvcc`";ecrit $m"|"$e"|"$env;eval $e
-   if [ "`$CUDA_NVCC --version 2>/dev/null`" = "" ]
+   # Cuda 11.3, 11.6, 11.7 testes, ne marchent pas (PAR_gpu_3D diverge...)
+   NVCC_VERSION=11.2
+   NVCC_VALIDE=`$CUDA_NVCC --version 2>/dev/null | awk -F, -v v=$NVCC_VERSION '/release/ {gsub("release","",$2);if (1.0*$2<=v) print 1}'`
+   if [ "$NVCC_VALIDE" = "" ]
    then
-      echo "Error, no nvcc cuda compiler found."
-      echo "Load Cuda module or NVidia HPC SDK module or download it."
+      echo "Error, no valid cuda compiler (nvcc<=$NVCC_VERSION) found:"
+      echo "`$CUDA_NVCC --version 2>/dev/null`"
+      echo "Load Cuda module or use ./configure -cuda=download to download Cuda toolkit $NVCC_VERSION."
       exit -1
    fi
    #########################
@@ -646,18 +651,24 @@ case $arch in
 	TRUST_CC_BASE=" crayCC  FCC icpc  armclang++ "$cuda"g++      g++"
 	TRUST_F77_BASE="crayftn frt ifort armflang   "$cuda"gfortran gfortran"
 	TRUST_cc_BASE=" craycc  fc  icc   armclang   "$cuda"gcc      gcc"
-	# On n'utilise pas de compilateurs supportant l'offload OpenMP sur GPU NVidia pour compiler tout le code (trop difficile)
-	# Pour forcer quand meme -c++=nvc++ -cc=nvc -fc=nvfortran (attention necessite compute_capability 70)
-	# Pour forcer quand meme -c++=clang++ -cc=clang (attention necessite de recompiler clang avec driver nvidia)
-	# On vise a utiliser les compilateurs habituels et ne compiler QUE les sources TRUST OpenMP avec les compilos offload OpenMP
-	#if [ "$TRUST_USE_OPENMP" = 1 ] && [ "$TRUST_USE_CUDA" = 1 ]
-	#then
-     # On place les compilateurs NVidia en premier pour l'offloading GPU avec OpenMP. Attention, cartes au dessus de compute_capability 70
-	   # On place ensuite le compilateur clang++ qu'il faut compiler...
-     #TRUST_CC_BASE="nvc++ clang++ "$TRUST_CC_BASE
-     #TRUST_F77_BASE="nvfortran "$TRUST_F77_BASE
-     #TRUST_cc_BASE="nvc clang "$TRUST_cc_BASE
-	#fi
+	if [ "$TRUST_USE_CUDA" = 1 ] && [ "$TRUST_USE_OPENMP" = 1 ]
+	then
+     TRUST_CC_BASE="nvc++ "$TRUST_CC_BASE
+     TRUST_F77_BASE="nvfortran "$TRUST_F77_BASE
+     TRUST_cc_BASE="nvc "$TRUST_cc_BASE
+     # Si n'est pas dans le PATH, on download NVHPC (attention pas encore teste). Utile sur Fedora CEA:
+     # Normalement, sur Ubuntu on charge le PATH du module NVHPC
+     nvc++ -help 1>/dev/null 2>&1
+     if [ $? != 0 ]
+     then
+        source ../env_src/gpu/install_nvhpc_sdk_toolkit.sh
+        export PATH=$PATH:$NVHPC/bin
+     fi
+     nvc++ -help 1>/dev/null 2>&1
+     [ $? != 0 ] && echo "Erreur, nvc++ not installed." && exit -1
+     # On compile les extp (librairies, tools) avec GNU
+     export TRUST_CC_BASE_EXTP=g++ && [ -f /usr/bin/cuda-g++ ] && TRUST_CC_BASE_EXTP=/usr/bin/cuda-g++
+	fi
 	# On rajoute les autres compilateurs
 	TRUST_CC_BASE=$TRUST_CC_BASE" pgCC"
 	TRUST_F77_BASE=$TRUST_F77_BASE" pgf90 f90 pgf77 f77"
@@ -1055,13 +1066,6 @@ m="# Path to optimized BLAS";e="TRUST_BLAS_LAPACK=\"$TRUST_BLAS_LAPACK\" && expo
 if [ "$TRUST_USE_CUDA" = 1 ]
 then
    TRUST_USE_AMGX=1
-   if [ ${TRUST_CC_BASE%nvc++} != $TRUST_CC_BASE ] # Plusieurs librairies ne compilent pas encore avec NVidia HPC/SDK
-   then
-      [ "$TRUST_DISABLE_VC"       != 1 ] && echo "Add -disable-vc with nvc++ compiler"       && exit=-1
-      [ "$TRUST_FORCE_SYSTEM_MPI" != 1 ] && echo "Add -force_system_mpi with nvc++ compiler" && exit=-1
-      [ "$TRUST_DISABLE_MPI4PY"   != 1 ] && echo "Add -disable-mpi4py with nvc++ compiler"   && exit=-1
-      [ "$exit" = -1 ] && exit $exit
-   fi
    e="TRUST_USE_AMGX=\"$TRUST_USE_AMGX\" && export TRUST_USE_AMGX" && m="# Use AmgX ?" && ecrit $m"|"$e"|"$env && eval $e
    [ "$TRUST_USE_AMGX" = 1 ] && [ "$TRUST_DISABLE_PETSC" = 1 ] && echo "Error, you need PETSc with -cuda option to build AmgXWrapper/AmgX." && exit -1
    check_nvidia_cuda
@@ -1089,7 +1093,7 @@ done
 # Par defaut (aucun TRUST_FORCE specifie) alors hors clusters et Cuda, FORCE_PROVIDED_MPICH car plus pratique pour VisIt, tests de NR plus rapides, valgrind error-free:
 if [ "$TRUST_FORCE_PROVIDED_OPENMPI" != 1 ] && [ "$TRUST_FORCE_LATEST_OPENMPI" != 1 ] && [ "$TRUST_FORCE_PROVIDED_MPICH" != 1 ] && [ "$TRUST_FORCE_LATEST_MPICH" != 1 ] && [ "$TRUST_FORCE_SYSTEM_MPI" != 1 ]
 then
-   if [ "$BATCH_SYSTEM_DETECTED" = 0 ] && [ "$TRUST_WITHOUT_HOST" = 1 ]
+   if [ "$BATCH_SYSTEM_DETECTED" = 0 ] && [ "$TRUST_MPI_NATIF" = 0 ]
    then
       #if [ "$TRUST_USE_CUDA" = 1 ]
       #then
@@ -1386,6 +1390,7 @@ else
       then
 	 COMLIBS=""
 	 # Pour MPICH on prend desormais mpicxx (mpiCC n'existe plus) pour compiler en changeant le compilateur
+	 m="# Compiler for mpicxx" && e="MPICH_CXX=\"\$TRUST_CC_BASE\" && export MPICH_CXX" && ecrit $m"|"$e"|"$env;eval $e
 	 m="# Compiler for mpiCC" && e="MPICH_CCC=\"\$TRUST_CC_BASE\" && export MPICH_CCC" && ecrit $m"|"$e"|"$env;eval $e
 	 m="# Compiler for mpicc" && e="MPICH_CC=\"\$TRUST_cc_BASE\" && export MPICH_CC" && ecrit $m"|"$e"|"$env;eval $e
 	 m="# Compiler for mpif77" && e="MPICH_F77=\"\$TRUST_F77_BASE\" && export MPICH_F77" && ecrit $m"|"$e"|"$env;eval $e
@@ -1453,7 +1458,7 @@ then
    for pkg in $pkgs
    do
      echo "Installing $pkg ..."
-     env MPICC=$TRUST_cc $TRUST_ROOT/exec/python/bin/pip install $TRUST_ROOT/externalpackages/pip/$pkg*.gz 1>$TRUST_ROOT/exec/conda_python.log 2>&1
+     env MPICH_CC=gcc MPICC=$TRUST_cc $TRUST_ROOT/exec/python/bin/pip install $TRUST_ROOT/externalpackages/pip/$pkg*.gz 1>$TRUST_ROOT/exec/conda_python.log 2>&1
      if [ $? != 0 ]
      then
         echo "Error while installing '$pkg' with pip. see $TRUST_ROOT/exec/conda_python.log"
@@ -1633,6 +1638,7 @@ SL_EXTENSION="so" && [ ${TRUST_ARCH#HPPA} != $TRUST_ARCH ] && SL_EXTENSION="sl"
 
 OPTIMIZE="-O3"
 TRUST_SUPPORTED=0
+TRUST_CC_BASE_EXTP="" # New: compiler may be given for External_Packages (libraries, tools,...)
 case $TRUST_ARCH_CC in
    linux_g++*|cygw*g++*|linux_cuda-g++*) TRUST_SUPPORTED=1
 	TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk -F. '{ver=$1*100+$2*10+$3;if (ver>=485 && ver<=1201) print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
@@ -1738,14 +1744,15 @@ case $TRUST_ARCH_CC in
         ShLibFlag="\$(TRUST_CC) -shared"
 	;;
    linux_pgCC|linux_nvc++) TRUST_SUPPORTED=1
-        m="# TMPDIR ?";e="TMPDIR=\"$TRUST_TMP\" && export TMPDIR";ecrit $m"|"$e"|"$env # Plantage vus avec /tmp par defaut
+    m="# TMPDIR ?";e="TMPDIR=\"$TRUST_TMP\" && export TMPDIR";ecrit $m"|"$e"|"$env # Plantage vus avec /tmp par defaut
+    # TRUST_USE_GNU_FOR_EXTP = 1
    	Defines="-D_COMPILE_AVEC_PGCC"
-	CppFlags="-O3 -fPIC -Ktrap=fp -Kieee" # -Ktrap=fp evitent des soucis Arithmetic Exceptions...
-	SYSLIBS="-lgfortran" # Car BLAS+AMGX+PETSC compile avec GNU
-	F77Flags="-O3 -fPIC"
-	ccFLAGS="-O3 -fPIC"
-	ShLibFlag="\$(TRUST_CC) -shared"
-	;;
+    CppFlags="-O3 -fPIC -Ktrap=fp -Kieee -noswitcherror" # -Ktrap=fp evitent des soucis Arithmetic Exceptions...
+    SYSLIBS="-lgfortran" # Car BLAS+AMGX+PETSC compile avec GNU
+    F77Flags="-O3 -fPIC"
+    ccFLAGS="-O3 -fPIC"
+    ShLibFlag="\$(TRUST_CC) -shared"
+    ;;
    linux_icpc) TRUST_SUPPORTED=1
 	# -fp-model precise (default fast=1) pour avoir memes resultats que GNU
 	# ND: -fp-model=except en plus de precise, fvca_jdd13 OK mais crash dans F5
@@ -1785,6 +1792,7 @@ elif [ $TRUST_SUPPORTED = 1 ]
 then
    echo "\$TRUST_ARCH_CC=$TRUST_ARCH_CC is a supported platform for TRUST."
 fi
+m="# C++ compiler for EXTP";e="TRUST_CC_BASE_EXTP=$TRUST_CC_BASE_EXTP && export TRUST_CC_BASE_EXTP";ecrit $m"|"$e"|"$env
 ########################
 # Cas du compilateur gnu
 ########################
@@ -1893,10 +1901,14 @@ then
 fi
 [ "$AVX_SUPPORTED" != 1 ] && echo "AVX support not activated yet by default. But you can build a version with:  make opt_avx"
 
-################################################
-# Test si le support GPU est possible avec PETSc
-################################################
+#######
+# Petsc
+#######
 m="# PATH to PETSc";e="PETSC_DIR=\"\$TRUST_ROOT/lib/src/LIBPETSC/petsc/$TRUST_ARCH"_opt"\" && export PETSC_DIR";ecrit $m"|"$e"|"$env
+
+################################################
+# Test si le support GPU est possible sur NVidia
+################################################
 if [ "$TRUST_USE_CUDA" = 1 ]
 then
    #############################
@@ -1933,14 +1945,97 @@ then
       rm -f $TRUST_ENV/card.log
       echo "Not tested."
    fi
-   # Cuda 11.3, 11.6, 11.7 testes, ne marchent pas (PAR_gpu_3D diverge...)
-   awk '/Driver Version/ {V=11.2;if ($NF>V) print "Warning, current AmgX library only supported for CUDA<="V" !"}' $TRUST_ENV/card.log 2>/dev/null
+   # awk '/Driver Version/ {V=11.2;if ($NF>V) print "Warning, current AmgX library only supported for CUDA<="V" !"}' $TRUST_ENV/card.log 2>/dev/null
    Defines=$Defines" -DTRUST_USE_CUDA -DPETSC_SKIP_COMPLEX"
    # Vu sur orcus (fait ch..r) -pedantic pose probleme:
    echo "Cuda: -pedantic suppressed in \$CppFlags"
    CppFlags=`echo $CppFlags | sed "s?-pedantic??g"`
 fi
 m="# TRUST will use CUDA ?";e="TRUST_USE_CUDA=\"$TRUST_USE_CUDA\" && export TRUST_USE_CUDA";ecrit $m"|"$e"|"$env
+
+##########
+# OpenMP #
+##########
+openmp=""
+openmp_target=""
+if [ "$TRUST_USE_OPENMP" = 1 ]
+then
+   openmp="-fopenmp"
+   TRUST_OPENMP_CC=`basename $TRUST_CC_BASE`
+   # Compilateurs OpenMP ranges du plus teste au moins teste...
+   if [ $TRUST_OPENMP_CC = crayCC ]
+   then
+      # crayCC est le seul compilateur OpenMP qui compile tout le code...
+      [ "$TRUST_USE_CUDA" = 1 ] && target=nvptx64-nvidia-cuda && march=""
+      # ToDo detecter le march automatiquement (Adastra arch differente...): Se baser sur rocm-smi et rocm-info
+      [ "$ROCM_PATH" != "" ]    && target=amdgcn-amd-amdhsa   && march="-march=gfx908" # Device AMD Radeon MI100
+      # -fsave-loopmark est une option pour creer un .lst a la compilation mais il faut aussi le retirer pour eviter un crash du compilateur
+      openmp_target="-fopenmp-targets=$target -Xopenmp-target=$target $march "
+  elif [ $TRUST_OPENMP_CC = nvc++ ]
+  then
+     # See https://www.openmp.org/wp-content/uploads/20210924-OpenMP-update-for-DOE.pdf
+     openmp="-mp"
+     if [ "$TRUST_USE_CUDA" = 1 ]
+     then
+        # A partir de HPC SDK 21.3 et necessite compute_capability 70 !
+        openmp_target="-target=gpu $march"
+        #Flags utiles du debug:
+        #export NVCOMPILER_ACC_NOTIFY = 1|2|4|8|16
+        #export NVCOMPILER_ACC_TIME = 1
+     fi
+   elif [ $TRUST_OPENMP_CC = clang++ ]
+   then
+      #[ "$ROCM_PATH" != "" ]    && target=amdgcn  && march="-march=gfx908"
+      if [ "$TRUST_USE_CUDA" = 1 ] # Compilation de clang pour offload OpenMP: See https://gist.github.com/anjohan/9ee746295ea1a00d9ca69415f40fafc9
+      then
+         target=nvptx64 && march=""
+         openmp_target="-fopenmp-targets=$target"
+         openmp_target=$openmp_target" -Wno-unsequenced" # Hmmm... Operation suspecte pour les classes tableaux de TRUST...
+         # Bidouille car clang++ compile pour offload OpenMP
+         openmp_target=$openmp_target" -lomptarget -L`dirname $TRUST_CC_BASE`/../lib"
+      fi
+   elif [ $TRUST_OPENMP_CC = g++ ]
+   then
+      openmp="-fopenmp"
+      target=disable # Pas de carte See https://gcc.gnu.org/wiki/Offloading
+      [ "$TRUST_USE_CUDA" = 1 ] && target=nvptx-none 	&& march="" # Complique gcc a recompiler: voir https://gist.github.com/matthiasdiener/e318e7ed8815872e9d29feb3b9c8413f
+      [ "$ROCM_PATH" != "" ]    && target=amdgcn-amdhsa	&& march="-march=gfx908" # Device AMD Radeon MI100
+      openmp_target="-foffload=$target $march"
+   elif [ $TRUST_OPENMP_CC = icpc ]
+   then
+      openmp=$openmp" -mkl=parallel" # Ajout de -mkl=parallel pour etre sur de linker avec Mkl BLAS parallele et non sequential (Vu sur sagittarius)
+   fi
+fi
+# Test offloading
+if [ "$openmp_target" != "" ]
+then
+   cmd="$TRUST_CC_BASE $openmp $openmp_target -o offload_openmp offload_openmp.cpp"
+   echo "#include <iostream>
+int main()
+{
+double a[3];
+double b[3];
+#pragma omp target
+   for (int i=0;i<3;i++)
+      a[i]=b[i]+1;
+   for (int i=0;i<3;i++)
+      std::cout << a[i] << std::endl;
+  return 0;
+}" > offload_openmp.cpp && echo $cmd && eval $cmd
+   if [ $? != 0 ]
+   then
+      echo "Error, $TRUST_CC_BASE compiler doesn't support OpenMP offloading."
+      echo "Suppress -openmp flag of the configure"
+      #[ "$TRUST_USE_CUDA" = 1 ] && [ "$TRUST_VERSION_GNU" != "" ] && echo "Try adding the feature to your GNU compiler for instance on Fedora: sudo dnf install gcc-offload-nvptx"
+      exit -1
+   else
+      echo "$TRUST_CC_BASE support OpenMP offloading..."
+   fi
+fi
+# Ajout des flags OpenMP:
+CppFlags=$CppFlags" "$openmp" "$openmp_target
+SYSLIBS=$SYSLIBS" "$openmp
+
 ##########
 # VAMPIR #
 ##########
@@ -1953,84 +2048,6 @@ then
    ccFLAGS=$ccFLAGS" "$VT_OPTION
    F77Flags=$F77Flags" "$VT_OPTION
    Defines=$Defines" -DVTRACE"
-fi
-
-##########
-# OpenMP #
-##########
-if [ "$TRUST_USE_OPENMP" = 1 ]
-then
-   if [ "`basename $TRUST_CC_BASE`" = icpc ]
-   then
-      openmp="-openmp" # Take care, "man icpc" says if -openmp misunderstood, it creates an object name penmp so:
-      openmp="-fopenmp -mkl=parallel" # Ajout de -mkl=parallel pour etre sur de linker avec Mkl BLAS parallele et non sequential (Vu sur sagittarius)
-   elif [ "`basename $TRUST_CC_BASE`" = crayCC ]
-   then
-      openmp="-fopenmp"
-      [ "$TRUST_USE_CUDA" = 1 ] && target=nvptx64-nvidia-cuda && march=""
-      [ "$ROCM_PATH" != "" ]    && target=amdgcn-amd-amdhsa   && march="-march=gfx908" # Device AMD Radeon MI100
-      # -fsave-loopmark est une option pour creer un .lst a la compilation mais il faut aussi le retirer pour eviter un crash du compilateur
-      openmp_target="-fopenmp-targets=$target -Xopenmp-target=$target $march "
-   elif [ "`basename $TRUST_CC_BASE`" = clang++ ]
-   then
-      openmp="-fopenmp"
-      #[ "$ROCM_PATH" != "" ]    && target=amdgcn  && march="-march=gfx908"
-      if [ "$TRUST_USE_CUDA" = 1 ] # Compilation de clang pour offload OpenMP: See https://gist.github.com/anjohan/9ee746295ea1a00d9ca69415f40fafc9
-      then
-         target=nvptx64 && march=""
-         openmp_target="-fopenmp-targets=$target"
-         openmp_target=$openmp_target" -Wno-unsequenced" # Hmmm... Operation suspecte pour les classes tableaux de TRUST...
-         # Bidouille car clang++ compile pour offload OpenMP
-         openmp_target=$openmp_target" -lomptarget -L`dirname $TRUST_CC_BASE`/../lib"
-      fi
-   elif [ "`basename $TRUST_CC_BASE`" = g++ ] || [ "`basename $TRUST_CC_BASE`" = cuda-g++ ]
-   then
-      openmp="-fopenmp"
-      target=disable # Pas de carte See https://gcc.gnu.org/wiki/Offloading
-      [ "$TRUST_USE_CUDA" = 1 ] && target=nvptx-none 	&& march="" # Complique gcc a recompiler: voir https://gist.github.com/matthiasdiener/e318e7ed8815872e9d29feb3b9c8413f
-      [ "$ROCM_PATH" != "" ]    && target=amdgcn-amdhsa	&& march="-march=gfx908" # Device AMD Radeon MI100
-      openmp_target="-foffload=$target $march"
-   elif [ "`basename $TRUST_CC_BASE`" = nvc++ ]
-   then
-      # See https://www.openmp.org/wp-content/uploads/20210924-OpenMP-update-for-DOE.pdf
-      openmp="-mp"
-      if [ "$TRUST_USE_CUDA" = 1 ]
-      then
-         # A partir de HPC SDK 21.3 !
-         openmp_target="-target=gpu $march"
-         #export NVCOMPILER_ACC_NOTIFY = 1|2|4|8|16
-         #export NVCOMPILER_ACC_TIME = 1
-      fi
-   else
-      echo "-openmp not supported for $TRUST_CC_BASE" && exit -1
-   fi
-   CppFlags=$CppFlags" "$openmp" "$openmp_target
-   SYSLIBS=$SYSLIBS" "$openmp
-   # Test offloading:
-   if [ "$openmp_target" != "" ]
-   then
-      cmd="$TRUST_CC $openmp $openmp_target -o offload_openmp offload_openmp.cpp"
-      echo "#include <iostream>
-int main()
-{
-double a[3];
-double b[3];
-#pragma omp target
-   for (int i=0;i<3;i++)
-      a[i]=b[i]+1;
-   for (int i=0;i<3;i++)
-      std::cout << a[i] << std::endl;
-  return 0;
-}" > offload_openmp.cpp && echo $cmd && eval $cmd
-      if [ $? != 0 ]
-      then
-         echo "Error, $TRUST_CC_BASE compiler doesn't support OpenMP offloading."
-         #[ "$TRUST_USE_CUDA" = 1 ] && [ "$TRUST_VERSION_GNU" != "" ] && echo "Try adding the feature to your GNU compiler for instance on Fedora: sudo dnf install gcc-offload-nvptx"
-         exit -1
-      else
-         echo "$TRUST_CC_BASE support OpenMP offloading..."
-      fi
-   fi
 fi
 
 ##############
@@ -2066,7 +2083,7 @@ m="# TRUST will use OpenMP ?";e="TRUST_USE_OPENMP=\"$TRUST_USE_OPENMP\" && expor
 # L'utilisateur devra faire: OMP_NUM_THREADS=n $exec jdd ou utiliser le script trust qui permettra de specifier le nombre de threads, ex: trust -n 2 -m 4 jdd (2 MPI et 4 threads par task MPI)
 if [ "$TRUST_USE_OPENMP" = 1 ]
 then
-   m="# Default, no multithreading. User should explicitly enable the number of OpenMP threads.";e="OMP_NUM_THREADS=1 && export OMP_NUM_THREADS";ecrit $m"|"$e"|"$env
+   m="# Default, no multithreading. User should explicitly enable the number of OpenMP threads.";e="OMP_NUM_THREADS=1 && export OMP_NUM_THREADS";ecrit $m"|"$e"|"$envopenmp_target
 fi
 
 #################################################################
