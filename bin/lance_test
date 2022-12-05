@@ -948,12 +948,12 @@ then
 
 	fi
 	# Discard PolyMAC test cases with NVidia compiler:
-	if [ "$TRUST_ARCH_CC" = linux_nvc++ ] && [ "`grep -i "PolyMAC" $REP/* 2>/dev/null`" != "" ]
-	then
-	    echo "Test $i skipped (PolyMAC build error with nvc++ to fix)"
-	    liste_skipped=$liste_skipped" $i"
-	    i=""
-	fi
+	#if [ "$TRUST_ARCH_CC" = linux_nvc++ ] && [ "`grep -i "PolyMAC" $REP/* 2>/dev/null`" != "" ]
+	#then
+	#    echo "Test $i skipped (PolyMAC build error with nvc++ to fix)"
+	#    liste_skipped=$liste_skipped" $i"
+	#    i=""
+	#fi
 	# Discard test case with python MPI:
 	if [ "$TRUST_DISABLE_MPI4PY" = 1 ] && [ "`grep -i mpirun $REP/* 2>/dev/null | grep -i python`" != "" ]
 	then

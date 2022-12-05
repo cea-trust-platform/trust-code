@@ -1,4 +1,4 @@
-# 3.28s/dt avec OpenMP sur RTX A5000 #
+# PARALLEL OK #
 dimension 3
 Pb_Hydraulique pb
 Domaine coarse_dom
@@ -9,7 +9,7 @@ Mailler coarse_dom
     Pave Cavite
     {
         Origine 0. 0. 0.
-        Nombre_de_Noeuds 31 31 10 /* Nombre mailles sur le calcul parallele = (Nx-1)*(Ny-1)*(Nz-1)*40*8 */
+        Nombre_de_Noeuds 96 96 29 /* Nombre mailles sur le calcul parallele = (Nx-1)*(Ny-1)*(Nz-1)*40*8 */ 
         Longueurs 10 10 3
     }
     {
@@ -31,7 +31,7 @@ Raffiner_isotrope dom
 # BEGIN PARTITION
 Partition coarse_dom
 {
-    Partition_tool Metis { Nb_parts 2 }
+    Partition_tool Metis { Nb_parts 80 }
     Larg_joint 2
     zones_name COARSE_DOM
 }
@@ -43,7 +43,7 @@ Raffiner_isotrope_parallele { name_of_initial_zones COARSE_DOM name_of_new_zones
 Scatter DOM.Zones dom
 END SCATTER #
 
-VEFPreP1B dis
+VEFPreP1B dis Lire dis { P0 }
 
 # Runge_Kutta_ordre_3 #
 Scheme_euler_explicit sch
@@ -60,24 +60,27 @@ Read sch
     nb_pas_dt_max 10
 }
 
+Fluide_Incompressible air
+Read air
+{
+    mu Champ_Uniforme       1 2.21799454e-04
+    rho Champ_Uniforme      1 943.112976
+    lambda Champ_Uniforme   1 0.806537897
+    Cp Champ_Uniforme       1 4238.62106
+    beta_th Champ_Uniforme  1 8.6e-4
+}
+
 Associate pb dom
 Associate pb sch
+Associate pb air
+
 Discretize pb dis
 Read pb
 {
-
-    fluide_incompressible {
-        mu Champ_Uniforme       1 2.21799454e-04
-        rho Champ_Uniforme      1 943.112976
-        lambda Champ_Uniforme   1 0.806537897
-        Cp Champ_Uniforme       1 4238.62106
-        beta_th Champ_Uniforme  1 8.6e-4
-    }
-
-
     Navier_Stokes_Standard
     {
-        solveur_pression amgx gcp { precond sa-amg { } seuil 1.e-5 impr }
+        # solveur_pression gcp { precond ssor { omega 1.6 } seuil 1.e-4 impr } #
+        solveur_pression rocalution gcp { precond jacobi { } seuil 1.e-4 impr }
         convection { muscl }
         diffusion  {  }
         initial_conditions {  vitesse Champ_Uniforme 3  0. 0. 0. }
@@ -86,6 +89,7 @@ Read pb
             sortie    Frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
             paroi     paroi_fixe
         }
+        # Sources { Forchheimer { porosite 0.4 Cf 1. modele_K ErgunForchheimer { diametre 1.5e-3 } } } #
     }
 }
 EcritureLectureSpecial 0

@@ -27,7 +27,7 @@ Trianguler_h dom
 # BEGIN PARTITION
 Partition dom
 {
-    Partition_tool metis { Nb_parts 3 }
+    Partition_tool metis { Nb_parts 2 }
     Larg_joint 2
     zones_name DOM
 }

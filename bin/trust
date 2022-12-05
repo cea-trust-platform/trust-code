@@ -1201,6 +1201,16 @@ then
    exit $err
 else
    [ "$cpus_per_task" != "" ] 	&& [ "$HOST" != "jean-zay" ] && echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
+   # Une carte GPU ne peut supporter plusieurs calculs en meme temps via ctest
+   # Marche pas, le GPU pas toujours utilise donc on bloque ctest
+   #if [ "$TRUST_USE_CUDA" = 1 ] && binary=`basename $exec`
+   #then
+   #   while [ "`nvidia-smi 2>/dev/null | grep $binary`" != "" ]
+   #   do
+   #      sleep 1
+   #   done
+   #fi
+   [ "$TRUST_USE_CUDA" = 1 ] && [ "$CTEST" = 1 ] && echo "You can't use ctest with GPU card: not enough memory on it to support all the running tests." && exit -1
    if [ $NB_PROCS = 1 ] && [ $USE_MPIRUN = 0 ]
    then
       ###############################

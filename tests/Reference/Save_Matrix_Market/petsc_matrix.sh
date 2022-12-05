@@ -7,6 +7,7 @@ if [ ! -f $exec ]
 then
    dir=$PETSC_ROOT/linux_opt/share/petsc/examples/src/ksp/ksp/tutorials
    cp $dir/ex10.c $dir/makefile .
+   [ "$TRUST_CC_BASE_EXTP" != "" ] && export MPICH_CC=${TRUST_CC_BASE_EXTP%++}cc
    make ex10 1>/dev/null 2>&1 || exit -1
 fi
 if [ "$1" != "" ]
