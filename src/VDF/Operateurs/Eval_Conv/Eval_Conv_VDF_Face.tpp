@@ -27,7 +27,7 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7(const DoubleTab& inco, const DoubleTab* 
   for (int k = 0; k < flux.size_array(); k++)
     {
       double psc = dt_vitesse(face, k) * surface(face);
-      if (a_r && DERIVED_T::IS_AMONT) psc *= (elem1 != -1) ? (*a_r)(elem1, k) : (*a_r)(elem_(face, 1), k);
+      if (a_r && DERIVED_T::IS_AMONT) psc *= (*a_r)(elem_(face, (elem1 == -1)), k);
       flux[k] = -psc * inco(face, k) * porosite(face);
     }
 }
@@ -42,19 +42,16 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7(const DoubleTab& inco, const DoubleTab* 
       for (int k = 0; k < ncomp; k++)
         {
           psc = 0.25*(dt_vitesse(fac1,k)+dt_vitesse(fac2,k))*(surface(fac1)+surface(fac2));
+          const int f = psc > 0 ? fac1 : fac2;
 
-          if (psc > 0)
+          if (a_r)
             {
-              const int elem = elem_(fac1, 0), elem2 = elem_(fac1, 1);
-              if (a_r) psc *= elem > -1 ? (*a_r)(elem, k) : (*a_r)(elem2, k);
-              flux[k] = -psc * inco(fac1, k) * porosite(fac1);
+              const int elem = elem_(f, 0), elem2 = elem_(f, 1);
+              const int e = dt_vitesse(f) > 0 ? (elem > -1 ? elem : elem2) : (elem2 > -1 ? elem2 : elem);
+              psc *= (*a_r)(e, k);
             }
-          else
-            {
-              const int elem = elem_(fac2, 1), elem2 = elem_(fac2, 0);
-              if (a_r) psc *= elem > -1 ? (*a_r)(elem, k) : (*a_r)(elem2, k);
-              flux[k] = -psc * inco(fac2, k) * porosite(fac2);
-            }
+
+          flux[k] = -psc * inco(f, k) * porosite(f);
         }
     }
   else if (DERIVED_T::IS_CENTRE)
