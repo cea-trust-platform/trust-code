@@ -21,6 +21,7 @@ __pycache__
 make.lock
 .ipynb_checkpoints/
 instancie_src_*.cpp
+src/**/CMakeLists.txt
 
 # XDATA stuff
 
