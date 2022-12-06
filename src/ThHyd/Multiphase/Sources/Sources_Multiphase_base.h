@@ -13,36 +13,20 @@
 *
 *****************************************************************************/
 
-#ifndef Source_Dispersion_bulles_base_included
-#define Source_Dispersion_bulles_base_included
+#ifndef Sources_Multiphase_base_included
+#define Sources_Multiphase_base_included
 
-#include <Sources_Multiphase_base.h>
-#include <Correlation.h>
+#include <Source_base.h>
 
-/*! @brief Classe Source_Dispersion_bulles_base
- *
- *  Cette classe implemente un operateur de dispersion turbulente
- *
- *       F_{kl} = - F_{lk} = - C_{kl} grad(alpha{k}) + C_{lk} grad(alpha{l}) ou la phase
- *       l est la phase liquide porteuse et k != 0 une phase quelconque
- *     le calcul de C_{n_l, k} est realise par la hierarchie Dispersion_turbulente_base
- *
- * @sa Source_base
- */
-class Source_Dispersion_bulles_base: public Sources_Multiphase_base
+class Sources_Multiphase_base: public Source_base
 {
-  Declare_base(Source_Dispersion_bulles_base);
+  Declare_base(Sources_Multiphase_base);
 public :
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override = 0;
-  const Correlation& correlation() const {return correlation_;};
-
-protected:
-  Correlation correlation_; //correlation donnant le coeff de dispersion turbulente
-  int is_turb = 0;
-  double beta_ = 1.; // To adjust the force in .data
-
-  virtual void dimensionner_blocs_aux(IntTrav&) const = 0;
+  int has_interface_blocs() const override { return 1; }
+  void check_multiphase_compatibility() const override { /* Do nothing */ } // of course
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override { /* Do nothing */ }
+  void associer_pb(const Probleme_base& ) override { /* Do nothing */ }
+  void mettre_a_jour(double temps) override { /* Do nothing */ }
 };
 
-#endif /* Source_Dispersion_bulles_base_included */
+#endif /* Sources_Multiphase_base_included */

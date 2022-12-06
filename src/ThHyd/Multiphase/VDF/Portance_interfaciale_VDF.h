@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,32 +13,16 @@
 *
 *****************************************************************************/
 
-#ifndef Travail_pression_Elem_base_included
-#define Travail_pression_Elem_base_included
+#ifndef Portance_interfaciale_VDF_included
+#define Portance_interfaciale_VDF_included
 
-#include <Source_base.h>
+#include <Source_Portance_interfaciale_base.h>
 
-/*! @brief Classe Travail_pression_Elem_base Cette classe implemente le travail de la pression
- *
- *     - p (d alpha_k / dt + div(alpha_k v_k) )
- *     dans l'equation d'energie ecrite en energie interne (cf. CATHARE 3D)
- *
- */
-class Travail_pression_Elem_base: public Source_base
+class Portance_interfaciale_VDF: public Source_Portance_interfaciale_base
 {
-  Declare_base(Travail_pression_Elem_base);
-public :
-  int has_interface_blocs() const override { return 1; }
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
+  Declare_instanciable(Portance_interfaciale_VDF);
+public:
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
-  void check_multiphase_compatibility() const override {}; //of course
-
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override { };
-  void associer_pb(const Probleme_base& ) override { };
-  void mettre_a_jour(double temps) override { };
-
-protected:
-  double alp = 1.0; /* decentrament de l'operateur de convection */
 };
 
-#endif
+#endif /* Portance_interfaciale_VDF_included */

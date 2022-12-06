@@ -878,6 +878,7 @@
  Porosites_champ Porosites_champ Porosites_champ.h
  Portance_interfaciale_base Portance_interfaciale_base Portance_interfaciale_base.h
  Portance_interfaciale_Face_PolyMAC_P0 Portance_interfaciale_PolyMAC_P0 Portance_interfaciale_PolyMAC_P0.h
+ Portance_interfaciale_Face_VDF Portance_interfaciale_VDF Portance_interfaciale_VDF.h
  Portance_interfaciale_Sugrue Portance_interfaciale_Sugrue Portance_interfaciale_Sugrue.h
  Portance_interfaciale_Tomiyama Portance_interfaciale_Tomiyama Portance_interfaciale_Tomiyama.h
  Postraitements|Post_processings Postraitements Postraitements.h
@@ -1031,6 +1032,7 @@
  Sortie_libre_Text_H_ext Sortie_libre_Text_H_ext Sortie_libre_Text_H_ext.h
  Source Source Source.h
  Sources Sources Sources.h
+ Sources_Multiphase_base Sources_Multiphase_base Sources_Multiphase_base.h
  Source_base Source_base Source_base.h
  Source_Canal_RANS_LES_VEF_P1NC Terme_Source_Canal_RANS_LES_VEF_Face Terme_Source_Canal_RANS_LES_VEF_Face.h
  Source_Chaleur_Fluide_Dilatable_base Source_Chaleur_Fluide_Dilatable_base Source_Chaleur_Fluide_Dilatable_base.h
@@ -1052,6 +1054,7 @@
  Source_Neutronique_VDF_P0_VDF Source_Neutronique_VDF Source_Neutronique_VDF.h
  Source_PDF_base Source_PDF_base Source_PDF_base.h
  Source_PDF_EF Source_PDF_EF Source_PDF_EF.h
+ Source_Portance_interfaciale_base Source_Portance_interfaciale_base Source_Portance_interfaciale_base.h
  Source_QC_Chaleur Source_QC_Chaleur Source_QC_Chaleur.h
  Source_QC_Chaleur_VDF Source_QC_Chaleur_VDF Source_QC_Chaleur_VDF.h
  Source_QC_Chaleur_VEF Source_QC_Chaleur_VEF Source_QC_Chaleur_VEF.h
@@ -1071,6 +1074,7 @@
  Source_Rappel_T_VEF_P1NC Terme_Source_Rappel_T_VEF_Face Terme_Source_Rappel_T_VEF_Face.h
  Source_Scalaire_EF Source_Scalaire_EF Source_Scalaire_EF.h
  Source_Th_TdivU_VEF_P1NC Terme_Source_Th_TdivU_VEF_Face Terme_Source_Th_TdivU_VEF_Face.h
+ Source_Travail_pression_Elem_base Source_Travail_pression_Elem_base Source_Travail_pression_Elem_base.h
  Source_WC_Chaleur Source_WC_Chaleur Source_WC_Chaleur.h
  Source_WC_Chaleur_VDF Source_WC_Chaleur_VDF Source_WC_Chaleur_VDF.h
  Source_WC_Chaleur_VEF Source_WC_Chaleur_VEF Source_WC_Chaleur_VEF.h
@@ -1157,7 +1161,6 @@
  Transformer Transformer Transformer.h
  Transport_Interfaces_base Transport_Interfaces_base Transport_Interfaces_base.h
  Transport_turbulent_base Transport_turbulent_base Transport_turbulent_base.h
- Travail_pression_Elem_base Travail_pression_Elem_base Travail_pression_Elem_base.h
  Travail_pression_Elem_PolyMAC|Travail_pression_Elem_PolyMAC_P0 Travail_pression_PolyMAC Travail_pression_PolyMAC.h
  travail_pression_VDF_P0_VDF Travail_pression_VDF Travail_pression_VDF.h
  Triangle Triangle Triangle.h

@@ -16,25 +16,19 @@
 #ifndef Source_Force_Tchen_base_included
 #define Source_Force_Tchen_base_included
 
-#include <Source_base.h>
+#include <Sources_Multiphase_base.h>
 
 /*! @brief classe Force_Tchen Force de Tchen dans un ecoulement multiphase
  *
  *       Forme F_Tchen = alpha_v * rho_l * du_l/dt
  *
  */
-class Source_Force_Tchen_base: public Source_base
+class Source_Force_Tchen_base: public Sources_Multiphase_base
 {
   Declare_base(Source_Force_Tchen_base);
 public :
-  int has_interface_blocs() const override { return 1; }
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
-  void check_multiphase_compatibility() const override { } //of course
-
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override { }
-  void associer_pb(const Probleme_base& ) override { }
-  void mettre_a_jour(double temps) override { }
 
 protected:
   int n_l = -1; //phase liquide

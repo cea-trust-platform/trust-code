@@ -13,36 +13,33 @@
 *
 *****************************************************************************/
 
-#ifndef Source_Dispersion_bulles_base_included
-#define Source_Dispersion_bulles_base_included
+#include <Source_Portance_interfaciale_base.h>
+#include <Portance_interfaciale_base.h>
+#include <Pb_Multiphase.h>
 
-#include <Sources_Multiphase_base.h>
-#include <Correlation.h>
+Implemente_base(Source_Portance_interfaciale_base, "Source_Portance_interfaciale_base", Sources_Multiphase_base);
 
-/*! @brief Classe Source_Dispersion_bulles_base
- *
- *  Cette classe implemente un operateur de dispersion turbulente
- *
- *       F_{kl} = - F_{lk} = - C_{kl} grad(alpha{k}) + C_{lk} grad(alpha{l}) ou la phase
- *       l est la phase liquide porteuse et k != 0 une phase quelconque
- *     le calcul de C_{n_l, k} est realise par la hierarchie Dispersion_turbulente_base
- *
- * @sa Source_base
- */
-class Source_Dispersion_bulles_base: public Sources_Multiphase_base
+Sortie& Source_Portance_interfaciale_base::printOn(Sortie& os) const { return os; }
+
+Entree& Source_Portance_interfaciale_base::readOn(Entree& is)
 {
-  Declare_base(Source_Dispersion_bulles_base);
-public :
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override = 0;
-  const Correlation& correlation() const {return correlation_;};
+  Param param(que_suis_je());
+  param.ajouter("beta", &beta_);
+  param.lire_avec_accolades_depuis(is);
 
-protected:
-  Correlation correlation_; //correlation donnant le coeff de dispersion turbulente
-  int is_turb = 0;
-  double beta_ = 1.; // To adjust the force in .data
+  Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
 
-  virtual void dimensionner_blocs_aux(IntTrav&) const = 0;
-};
+  if (!pbm || pbm->nb_phases() == 1) Process::exit(que_suis_je() + " : not needed for single-phase flow!");
 
-#endif /* Source_Dispersion_bulles_base_included */
+  for (int n = 0; n < pbm->nb_phases(); n++) //recherche de n_l, n_g : phase {liquide,gaz}_continu en priorite
+    if (pbm->nom_phase(n).debute_par("liquide") && (n_l < 0 || pbm->nom_phase(n).finit_par("continu")))  n_l = n;
+
+  if (n_l < 0) Process::exit(que_suis_je() + " : liquid phase not found!");
+
+  if (pbm->has_correlation("Portance_interfaciale")) correlation_ = pbm->get_correlation("Portance_interfaciale"); //correlation fournie par le bloc correlation
+  else correlation_.typer_lire((*pbm), "Portance_interfaciale", is); //sinon -> on la lit
+
+  pbm->creer_champ("vorticite"); // Besoin de vorticite
+
+  return is;
+}

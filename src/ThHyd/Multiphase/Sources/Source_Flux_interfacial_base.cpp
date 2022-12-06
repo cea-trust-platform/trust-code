@@ -27,7 +27,7 @@
 #include <Zone_VF.h>
 #include <Domaine.h>
 
-Implemente_base(Source_Flux_interfacial_base,"Source_Flux_interfacial_base", Source_base);
+Implemente_base(Source_Flux_interfacial_base,"Source_Flux_interfacial_base", Sources_Multiphase_base);
 
 Sortie& Source_Flux_interfacial_base::printOn(Sortie& os) const { return os; }
 

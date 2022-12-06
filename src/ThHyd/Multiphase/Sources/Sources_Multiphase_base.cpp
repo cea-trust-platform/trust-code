@@ -13,36 +13,8 @@
 *
 *****************************************************************************/
 
-#ifndef Source_Dispersion_bulles_base_included
-#define Source_Dispersion_bulles_base_included
-
 #include <Sources_Multiphase_base.h>
-#include <Correlation.h>
 
-/*! @brief Classe Source_Dispersion_bulles_base
- *
- *  Cette classe implemente un operateur de dispersion turbulente
- *
- *       F_{kl} = - F_{lk} = - C_{kl} grad(alpha{k}) + C_{lk} grad(alpha{l}) ou la phase
- *       l est la phase liquide porteuse et k != 0 une phase quelconque
- *     le calcul de C_{n_l, k} est realise par la hierarchie Dispersion_turbulente_base
- *
- * @sa Source_base
- */
-class Source_Dispersion_bulles_base: public Sources_Multiphase_base
-{
-  Declare_base(Source_Dispersion_bulles_base);
-public :
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override = 0;
-  const Correlation& correlation() const {return correlation_;};
-
-protected:
-  Correlation correlation_; //correlation donnant le coeff de dispersion turbulente
-  int is_turb = 0;
-  double beta_ = 1.; // To adjust the force in .data
-
-  virtual void dimensionner_blocs_aux(IntTrav&) const = 0;
-};
-
-#endif /* Source_Dispersion_bulles_base_included */
+Implemente_base(Sources_Multiphase_base, "Sources_Multiphase_base", Source_base);
+Sortie& Sources_Multiphase_base::printOn(Sortie& os) const { return os; }
+Entree& Sources_Multiphase_base::readOn(Entree& is) { return is; }

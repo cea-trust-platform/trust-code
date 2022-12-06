@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,21 +13,21 @@
 *
 *****************************************************************************/
 
-#include <Travail_pression_Elem_base.h>
-#include <Zone_VF.h>
-#include <Array_tools.h>
-#include <Matrix_tools.h>
-#include <Pb_Multiphase.h>
+#include <Source_Travail_pression_Elem_base.h>
 #include <Champ_Inc_P0_base.h>
+#include <Pb_Multiphase.h>
+#include <Matrix_tools.h>
+#include <Array_tools.h>
+#include <Zone_VF.h>
 #include <cfloat>
 
-Implemente_base(Travail_pression_Elem_base, "Travail_pression_Elem_base", Source_base);
-// XD travail_pression_elem_base source_base travail_pression_elem_base 0 Source term which corresponds to the additional pressure work term that appears when dealing with compressible multiphase fluids
+Implemente_base(Source_Travail_pression_Elem_base, "Source_Travail_pression_Elem_base", Sources_Multiphase_base);
+// XD Source_Travail_pression_Elem_base source_base Source_Travail_pression_Elem_base 0 Source term which corresponds to the additional pressure work term that appears when dealing with compressible multiphase fluids
 
-Sortie& Travail_pression_Elem_base::printOn(Sortie& os) const { return os; }
-Entree& Travail_pression_Elem_base::readOn(Entree& is) { return is; }
+Sortie& Source_Travail_pression_Elem_base::printOn(Sortie& os) const { return os; }
+Entree& Source_Travail_pression_Elem_base::readOn(Entree& is) { return is; }
 
-void Travail_pression_Elem_base::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
+void Source_Travail_pression_Elem_base::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   const Zone_VF& zone = ref_cast(Zone_VF, equation().zone_dis().valeur());
   const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
@@ -61,7 +61,7 @@ void Travail_pression_Elem_base::dimensionner_blocs(matrices_t matrices, const t
       }
 }
 
-void Travail_pression_Elem_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
+void Source_Travail_pression_Elem_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
   const Zone_VF& zone = ref_cast(Zone_VF, equation().zone_dis().valeur());

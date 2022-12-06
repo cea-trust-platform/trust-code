@@ -13,36 +13,28 @@
 *
 *****************************************************************************/
 
-#ifndef Source_Dispersion_bulles_base_included
-#define Source_Dispersion_bulles_base_included
+#ifndef Source_Travail_pression_Elem_base_included
+#define Source_Travail_pression_Elem_base_included
 
 #include <Sources_Multiphase_base.h>
-#include <Correlation.h>
 
-/*! @brief Classe Source_Dispersion_bulles_base
+/*! @brief Classe Source_Travail_pression_Elem_base
  *
- *  Cette classe implemente un operateur de dispersion turbulente
+ *  Cette classe implemente le travail de la pression
  *
- *       F_{kl} = - F_{lk} = - C_{kl} grad(alpha{k}) + C_{lk} grad(alpha{l}) ou la phase
- *       l est la phase liquide porteuse et k != 0 une phase quelconque
- *     le calcul de C_{n_l, k} est realise par la hierarchie Dispersion_turbulente_base
+ *     - p (d alpha_k / dt + div(alpha_k v_k) )
+ *     dans l'equation d'energie ecrite en energie interne (cf. CATHARE 3D)
  *
- * @sa Source_base
  */
-class Source_Dispersion_bulles_base: public Sources_Multiphase_base
+class Source_Travail_pression_Elem_base: public Sources_Multiphase_base
 {
-  Declare_base(Source_Dispersion_bulles_base);
+  Declare_base(Source_Travail_pression_Elem_base);
 public :
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override = 0;
-  const Correlation& correlation() const {return correlation_;};
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
 
 protected:
-  Correlation correlation_; //correlation donnant le coeff de dispersion turbulente
-  int is_turb = 0;
-  double beta_ = 1.; // To adjust the force in .data
-
-  virtual void dimensionner_blocs_aux(IntTrav&) const = 0;
+  double alp = 1.0; /* decentrament de l'operateur de convection */
 };
 
-#endif /* Source_Dispersion_bulles_base_included */
+#endif /* Source_Travail_pression_Elem_base_included */

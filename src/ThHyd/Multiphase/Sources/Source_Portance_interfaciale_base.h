@@ -13,36 +13,34 @@
 *
 *****************************************************************************/
 
-#ifndef Source_Dispersion_bulles_base_included
-#define Source_Dispersion_bulles_base_included
+#ifndef Source_Portance_interfaciale_base_included
+#define Source_Portance_interfaciale_base_included
 
 #include <Sources_Multiphase_base.h>
 #include <Correlation.h>
 
-/*! @brief Classe Source_Dispersion_bulles_base
+/*! @brief Classe Source_Portance_interfaciale_base
  *
- *  Cette classe implemente un operateur de dispersion turbulente
+ *  Cette classe implemente un operateur de portance interfaciale
  *
- *       F_{kl} = - F_{lk} = - C_{kl} grad(alpha{k}) + C_{lk} grad(alpha{l}) ou la phase
- *       l est la phase liquide porteuse et k != 0 une phase quelconque
- *     le calcul de C_{n_l, k} est realise par la hierarchie Dispersion_turbulente_base
+ *     de la forme F_{n_l} = - F_{k} = C_{n_l, k} (u_k - u_n_l) x rot(u_n_l) ou la phase
+ *     n_l est la phase liquide porteuse et k une phase gazeuse
+ *     le calcul de C_{n_l, k} est realise par la hierarchie Portance_interfaciale_base
  *
  * @sa Source_base
  */
-class Source_Dispersion_bulles_base: public Sources_Multiphase_base
+class Source_Portance_interfaciale_base : public Sources_Multiphase_base
 {
-  Declare_base(Source_Dispersion_bulles_base);
+  Declare_base(Source_Portance_interfaciale_base);
 public :
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { /* Do nothing : 100% explicit */ }
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override = 0;
-  const Correlation& correlation() const {return correlation_;};
+  const Correlation& correlation() const { return correlation_; }
 
 protected:
-  Correlation correlation_; //correlation donnant le coeff de dispersion turbulente
-  int is_turb = 0;
-  double beta_ = 1.; // To adjust the force in .data
-
-  virtual void dimensionner_blocs_aux(IntTrav&) const = 0;
+  Correlation correlation_; //correlation donnant le coeff de portance interfaciale
+  int n_l = -1; //phase liquide
+  double beta_ = 1. ; // To adjust the force in .data
 };
 
-#endif /* Source_Dispersion_bulles_base_included */
+#endif /* Source_Portance_interfaciale_base_included */

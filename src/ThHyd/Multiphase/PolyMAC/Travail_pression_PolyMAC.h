@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,21 +16,13 @@
 #ifndef Travail_pression_PolyMAC_included
 #define Travail_pression_PolyMAC_included
 
-#include <Travail_pression_Elem_base.h>
+#include <Source_Travail_pression_Elem_base.h>
 
-/*! @brief Classe Travail_pression_PolyMAC Cette classe implemente dans PolyMAC le travail de la pression
- *
- *     - p (d alpha_k / dt + div(alpha_k v_k) )
- *     dans l'equation d'energie ecrite en energie interne (cf. CATHARE 3D)
- *
- * @sa Operateur_PolyMAC_base Operateur_base
- */
-class Travail_pression_PolyMAC : public Travail_pression_Elem_base
+class Travail_pression_PolyMAC : public Source_Travail_pression_Elem_base
 {
   Declare_instanciable(Travail_pression_PolyMAC);
-
 public:
   void completer() override;
 };
 
-#endif
+#endif /* Travail_pression_PolyMAC_included */

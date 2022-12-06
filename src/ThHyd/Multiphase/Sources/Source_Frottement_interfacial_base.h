@@ -16,7 +16,7 @@
 #ifndef Source_Frottement_interfacial_base_included
 #define Source_Frottement_interfacial_base_included
 
-#include <Source_base.h>
+#include <Sources_Multiphase_base.h>
 #include <Correlation.h>
 
 /*! @brief Classe Source_Frottement_interfacial_base
@@ -28,18 +28,12 @@
  *
  * @sa Source_base
  */
-class Source_Frottement_interfacial_base: public Source_base
+class Source_Frottement_interfacial_base: public Sources_Multiphase_base
 {
   Declare_base(Source_Frottement_interfacial_base);
 public :
-  int has_interface_blocs() const override { return 1; }
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override = 0;
-  void check_multiphase_compatibility() const override { } //of course
-
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override { }
-  void associer_pb(const Probleme_base& ) override { }
-  void mettre_a_jour(double temps) override { }
   void completer() override;
 
 protected:

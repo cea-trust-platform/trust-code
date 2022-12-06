@@ -20,7 +20,7 @@
 #include <Array_tools.h>
 #include <math.h>
 
-Implemente_base(Source_Force_Tchen_base, "Source_Force_Tchen_base", Source_base);
+Implemente_base(Source_Force_Tchen_base, "Source_Force_Tchen_base", Sources_Multiphase_base);
 
 Sortie& Source_Force_Tchen_base::printOn(Sortie& os) const { return os; }
 

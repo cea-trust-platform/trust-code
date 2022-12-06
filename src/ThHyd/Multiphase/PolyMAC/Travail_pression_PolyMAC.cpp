@@ -16,15 +16,15 @@
 #include <Op_Conv_EF_Stab_PolyMAC_Elem.h>
 #include <Travail_pression_PolyMAC.h>
 
-Implemente_instanciable(Travail_pression_PolyMAC, "Travail_pression_Elem_PolyMAC|Travail_pression_Elem_PolyMAC_P0", Travail_pression_Elem_base);
+Implemente_instanciable(Travail_pression_PolyMAC, "Travail_pression_Elem_PolyMAC|Travail_pression_Elem_PolyMAC_P0", Source_Travail_pression_Elem_base);
 // XD travail_pression source_base travail_pression 0 Source term which corresponds to the additional pressure work term that appears when dealing with compressible multiphase fluids
 
-Sortie& Travail_pression_PolyMAC::printOn(Sortie& os) const { return Travail_pression_Elem_base::printOn(os); }
-Entree& Travail_pression_PolyMAC::readOn(Entree& is) { return Travail_pression_Elem_base::readOn(is); }
+Sortie& Travail_pression_PolyMAC::printOn(Sortie& os) const { return Source_Travail_pression_Elem_base::printOn(os); }
+Entree& Travail_pression_PolyMAC::readOn(Entree& is) { return Source_Travail_pression_Elem_base::readOn(is); }
 
 void Travail_pression_PolyMAC::completer()
 {
-  Travail_pression_Elem_base::completer();
+  Source_Travail_pression_Elem_base::completer();
   const Op_Conv_EF_Stab_PolyMAC_Elem *op_conv = sub_type(Op_Conv_EF_Stab_PolyMAC_Elem, equation().operateur(1).l_op_base()) ? &ref_cast(Op_Conv_EF_Stab_PolyMAC_Elem, equation().operateur(1).l_op_base()) : NULL;
   alp = op_conv ? op_conv->alpha : 1; /* meme decentrement que l'operateur de convection si il existe, amont sinon */
 }

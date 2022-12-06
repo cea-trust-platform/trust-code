@@ -21,7 +21,7 @@
 #include <Array_tools.h>
 #include <Zone_VF.h>
 
-Implemente_base(Source_Dispersion_bulles_base, "Source_Dispersion_bulles_base", Source_base);
+Implemente_base(Source_Dispersion_bulles_base, "Source_Dispersion_bulles_base", Sources_Multiphase_base);
 
 Sortie& Source_Dispersion_bulles_base::printOn(Sortie& os) const { return os; }
 
