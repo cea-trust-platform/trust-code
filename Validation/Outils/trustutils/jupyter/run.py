@@ -598,6 +598,30 @@ class TRUSTSuite(object):
         zeTable.sum("Total CPU Time")
         return zeTable.df
 
+    def extractNRCases(self):
+        """
+        Prints out the list of cases in a suitable format for processing by validation and lance_test tools.
+
+        WARNING:
+        do not modify this without looking at scripts get_list_cas_nr and get_nb_cas_nr in Validation/Outils/Genere_Courbe/scripts
+        """
+        import numpy as np
+
+        list_exclu_nr = []
+        if os.path.exists("src/liste_cas_exclu_nr"):
+            list_cases = np.loadtxt("src/liste_cas_exclu_nr", dtype=str)
+            list_exclu_nr = list(map(lambda a: os.path.normpath(a), list_cases))
+
+        for c in self.getCases():
+            if c.dir_ != ".":
+                t = os.path.join(c.dir_, c.name_ + ".data")
+                # t = c.dir_ + "/" + c.name_ + ".data"
+            else:
+                t = c.name_ + ".data"
+            t = os.path.normpath(t)
+            if not t in list_exclu_nr:
+                print("@@@CAS_NR_JY@@@ " + t)
+
 def readFile(data):
     """
     Method to open and read file with Save in FileAccumulator"
@@ -901,31 +925,17 @@ def printCases():
     for c in getCases():
         text += "* " + c.dir_ + "/" + c.name_ + ".data : \n"
     displayMD(text)
-    
+
 
 def extractNRCases():
-    """ 
+    """
     Prints out the list of cases in a suitable format for processing by validation and lance_test tools.
 
-    WARNING: 
+    WARNING:
     do not modify this without looking at scripts get_list_cas_nr and get_nb_cas_nr in Validation/Outils/Genere_Courbe/scripts
     """
-    import numpy as np
-
-    list_exclu_nr = []
-    if os.path.exists("src/liste_cas_exclu_nr"):
-        list_cases = np.loadtxt("src/liste_cas_exclu_nr", dtype=str)
-        list_exclu_nr = list(map(lambda a: os.path.normpath(a), list_cases))
-
-    for c in getCases():
-        if c.dir_ != ".":
-            t = os.path.join(c.dir_, c.name_ + ".data")
-            # t = c.dir_ + "/" + c.name_ + ".data"
-        else:
-            t = c.name_ + ".data"
-        t = os.path.normpath(t)
-        if not t in list_exclu_nr:
-            print("@@@CAS_NR_JY@@@ " + t)
+    global defaultSuite_
+    return defaultSuite_.extractNRCases()
 
 
 def runCases(verbose=False, preventConcurrent=False):
