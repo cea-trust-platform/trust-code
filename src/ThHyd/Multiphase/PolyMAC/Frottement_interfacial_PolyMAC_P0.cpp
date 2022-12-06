@@ -15,17 +15,9 @@
 
 #include <Frottement_interfacial_PolyMAC_P0.h>
 #include <Frottement_interfacial_base.h>
-#include <Op_Grad_PolyMAC_P0_Face.h>
 #include <Champ_Face_PolyMAC_P0.h>
 #include <Milieu_composite.h>
-#include <Zone_PolyMAC_P0.h>
-#include <Zone_Cl_PolyMAC.h>
-#include <Champ_Uniforme.h>
-#include <Interface_base.h>
-#include <QDM_Multiphase.h>
 #include <Pb_Multiphase.h>
-#include <Matrix_tools.h>
-#include <Array_tools.h>
 
 Implemente_instanciable(Frottement_interfacial_PolyMAC_P0, "Frottement_interfacial_Face_PolyMAC_P0", Source_Frottement_interfacial_base);
 

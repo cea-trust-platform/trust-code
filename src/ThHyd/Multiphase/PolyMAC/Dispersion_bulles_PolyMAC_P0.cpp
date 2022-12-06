@@ -19,16 +19,9 @@
 #include <Dispersion_bulles_base.h>
 #include <Champ_Face_PolyMAC_P0.h>
 #include <Champ_Elem_PolyMAC_P0.h>
-#include <Echange_impose_base.h>
 #include <Milieu_composite.h>
-#include <Zone_PolyMAC_P0.h>
-#include <Zone_Cl_PolyMAC.h>
-#include <Champ_Uniforme.h>
-#include <Interface_base.h>
 #include <Pb_Multiphase.h>
 #include <Neumann_paroi.h>
-#include <Matrix_tools.h>
-#include <Array_tools.h>
 
 Implemente_instanciable(Dispersion_bulles_PolyMAC_P0,"Dispersion_bulles_Face_PolyMAC_P0", Source_Dispersion_bulles_base);
 

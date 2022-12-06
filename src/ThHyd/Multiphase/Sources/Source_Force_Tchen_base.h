@@ -13,19 +13,34 @@
 *
 *****************************************************************************/
 
-#include <Travail_pression_VDF.h>
-#include <Operateur_base.h>
-#include <Equation_base.h>
-#include <Operateur.h>
+#ifndef Source_Force_Tchen_base_included
+#define Source_Force_Tchen_base_included
 
-Implemente_instanciable(Travail_pression_VDF, "travail_pression_VDF_P0_VDF", Travail_pression_Elem_base);
-// XD travail_pression source_base travail_pression 0 Source term which corresponds to the additional pressure work term that appears when dealing with compressible multiphase fluids
+#include <Source_base.h>
 
-Sortie& Travail_pression_VDF::printOn(Sortie& os) const { return Travail_pression_Elem_base::printOn(os); }
-Entree& Travail_pression_VDF::readOn(Entree& is) { return Travail_pression_Elem_base::readOn(is); }
-
-void Travail_pression_VDF::completer()
+/*! @brief classe Force_Tchen Force de Tchen dans un ecoulement multiphase
+ *
+ *       Forme F_Tchen = alpha_v * rho_l * du_l/dt
+ *
+ */
+class Source_Force_Tchen_base: public Source_base
 {
-  Travail_pression_Elem_base::completer();
-  alp = equation().operateur(1).l_op_base().que_suis_je().debute_par("Op_Conv_Amont");
-}
+  Declare_base(Source_Force_Tchen_base);
+public :
+  int has_interface_blocs() const override { return 1; }
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+  void check_multiphase_compatibility() const override { } //of course
+
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override { }
+  void associer_pb(const Probleme_base& ) override { }
+  void mettre_a_jour(double temps) override { }
+
+protected:
+  int n_l = -1; //phase liquide
+
+  virtual void dimensionner_blocs_aux(IntTrav&) const = 0;
+  virtual void ajouter_blocs_aux(matrices_t , DoubleTab& ) const = 0;
+};
+
+#endif /* Source_Force_Tchen_base_included */

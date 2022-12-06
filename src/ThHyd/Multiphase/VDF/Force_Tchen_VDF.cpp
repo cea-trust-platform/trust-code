@@ -13,19 +13,9 @@
 *
 *****************************************************************************/
 
-#include <Travail_pression_VDF.h>
-#include <Operateur_base.h>
-#include <Equation_base.h>
-#include <Operateur.h>
+#include <Force_Tchen_VDF.h>
 
-Implemente_instanciable(Travail_pression_VDF, "travail_pression_VDF_P0_VDF", Travail_pression_Elem_base);
-// XD travail_pression source_base travail_pression 0 Source term which corresponds to the additional pressure work term that appears when dealing with compressible multiphase fluids
+Implemente_instanciable(Force_Tchen_VDF, "Force_Tchen_Face_VDF|Tchen_force_Face_VDF", Source_Force_Tchen_base);
 
-Sortie& Travail_pression_VDF::printOn(Sortie& os) const { return Travail_pression_Elem_base::printOn(os); }
-Entree& Travail_pression_VDF::readOn(Entree& is) { return Travail_pression_Elem_base::readOn(is); }
-
-void Travail_pression_VDF::completer()
-{
-  Travail_pression_Elem_base::completer();
-  alp = equation().operateur(1).l_op_base().que_suis_je().debute_par("Op_Conv_Amont");
-}
+Sortie& Force_Tchen_VDF::printOn(Sortie& os) const { return os; }
+Entree& Force_Tchen_VDF::readOn(Entree& is) { return Source_Force_Tchen_base::readOn(is); }

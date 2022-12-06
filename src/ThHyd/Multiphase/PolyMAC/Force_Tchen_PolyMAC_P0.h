@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,33 +15,15 @@
 
 #ifndef Force_Tchen_PolyMAC_P0_included
 #define Force_Tchen_PolyMAC_P0_included
-#include <Source_base.h>
 
-/*! @brief classe Force_Tchen Force de Tchen dans un ecoulement multiphase
- *
- *       Forme F_Tchen = alpha_v * rho_l * du_l/dt
- *
- *
- */
+#include <Source_Force_Tchen_base.h>
 
-class Force_Tchen_PolyMAC_P0: public Source_base
+class Force_Tchen_PolyMAC_P0: public Source_Force_Tchen_base
 {
   Declare_instanciable(Force_Tchen_PolyMAC_P0);
-public :
-  int has_interface_blocs() const override
-  {
-    return 1;
-  };
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
-  void check_multiphase_compatibility() const override {}; //of course
-
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override { };
-  void associer_pb(const Probleme_base& ) override { };
-  void mettre_a_jour(double temps) override { };
 protected:
-  int n_l = -1; //phase liquide
-
+  void dimensionner_blocs_aux(IntTrav&) const override;
+  void ajouter_blocs_aux(matrices_t , DoubleTab& ) const override;
 };
 
 #endif /* Force_Tchen_PolyMAC_P0_included */

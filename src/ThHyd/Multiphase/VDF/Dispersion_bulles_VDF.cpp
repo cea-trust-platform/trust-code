@@ -13,19 +13,7 @@
 *
 *****************************************************************************/
 
-#include <Dispersion_bulles_base.h>
 #include <Dispersion_bulles_VDF.h>
-#include <Echange_impose_base.h>
-#include <Milieu_composite.h>
-#include <Champ_Uniforme.h>
-#include <Champ_Face_VDF.h>
-#include <Interface_base.h>
-#include <Pb_Multiphase.h>
-#include <Neumann_paroi.h>
-#include <Champ_P0_VDF.h>
-#include <Matrix_tools.h>
-#include <Array_tools.h>
-#include <Zone_VDF.h>
 
 Implemente_instanciable(Dispersion_bulles_VDF, "Dispersion_bulles_Face_VDF", Source_Dispersion_bulles_base);
 

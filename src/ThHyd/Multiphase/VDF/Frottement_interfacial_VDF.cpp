@@ -17,13 +17,7 @@
 #include <Frottement_interfacial_VDF.h>
 #include <Milieu_composite.h>
 #include <Champ_Face_VDF.h>
-#include <Champ_Uniforme.h>
-#include <Interface_base.h>
-#include <QDM_Multiphase.h>
 #include <Pb_Multiphase.h>
-#include <Matrix_tools.h>
-#include <Array_tools.h>
-#include <Zone_VDF.h>
 
 Implemente_instanciable(Frottement_interfacial_VDF, "Frottement_interfacial_VDF_Face", Source_Frottement_interfacial_base);
 
