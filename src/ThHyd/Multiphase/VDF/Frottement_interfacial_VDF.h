@@ -13,17 +13,17 @@
 *
 *****************************************************************************/
 
-#ifndef Frottement_interfacial_PolyMAC_P0_included
-#define Frottement_interfacial_PolyMAC_P0_included
+#ifndef Frottement_interfacial_VDF_included
+#define Frottement_interfacial_VDF_included
 
 #include <Source_Frottement_interfacial_base.h>
 
-class Frottement_interfacial_PolyMAC_P0: public Source_Frottement_interfacial_base
+class Frottement_interfacial_VDF: public Source_Frottement_interfacial_base
 {
-  Declare_instanciable(Frottement_interfacial_PolyMAC_P0);
+  Declare_instanciable(Frottement_interfacial_VDF);
 protected:
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
-  void dimensionner_blocs_aux(IntTrav&) const override;
+  void dimensionner_blocs_aux(IntTrav&) const override { /* Do nothing */ }
 };
 
-#endif /* Frottement_interfacial_PolyMAC_P0_included */
+#endif /* Frottement_interfacial_VDF_included */

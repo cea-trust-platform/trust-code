@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,88 +14,42 @@
 *****************************************************************************/
 
 #include <Frottement_interfacial_PolyMAC_P0.h>
-#include <Zone_PolyMAC_P0.h>
-#include <Champ_Face_PolyMAC_P0.h>
-#include <Op_Grad_PolyMAC_P0_Face.h>
-#include <Zone_Cl_PolyMAC.h>
-#include <Array_tools.h>
-#include <Matrix_tools.h>
-#include <Pb_Multiphase.h>
-#include <QDM_Multiphase.h>
-#include <Champ_Uniforme.h>
 #include <Frottement_interfacial_base.h>
-
+#include <Op_Grad_PolyMAC_P0_Face.h>
+#include <Champ_Face_PolyMAC_P0.h>
 #include <Milieu_composite.h>
+#include <Zone_PolyMAC_P0.h>
+#include <Zone_Cl_PolyMAC.h>
+#include <Champ_Uniforme.h>
 #include <Interface_base.h>
+#include <QDM_Multiphase.h>
+#include <Pb_Multiphase.h>
+#include <Matrix_tools.h>
+#include <Array_tools.h>
 
-Implemente_instanciable(Frottement_interfacial_PolyMAC_P0,"Frottement_interfacial_Face_PolyMAC_P0", Source_base);
+Implemente_instanciable(Frottement_interfacial_PolyMAC_P0, "Frottement_interfacial_Face_PolyMAC_P0", Source_Frottement_interfacial_base);
 
-Sortie& Frottement_interfacial_PolyMAC_P0::printOn(Sortie& os) const
+Sortie& Frottement_interfacial_PolyMAC_P0::printOn(Sortie& os) const { return os; }
+Entree& Frottement_interfacial_PolyMAC_P0::readOn(Entree& is) { return Source_Frottement_interfacial_base::readOn(is); }
+
+void Frottement_interfacial_PolyMAC_P0::dimensionner_blocs_aux(IntTrav& stencil) const
 {
-  return os;
-}
+  const DoubleTab& inco = ref_cast(Champ_Face_base, equation().inconnue().valeur()).valeurs();
+  const Zone_VF& zone = ref_cast(Zone_VF, equation().zone_dis().valeur());
+  int i, j, e, k, l, N = inco.line_size(), d, db, D = dimension, nf_tot = zone.nb_faces_tot();
 
-Entree& Frottement_interfacial_PolyMAC_P0::readOn(Entree& is)
-{
-  Param param(que_suis_je());
-  param.ajouter("a_res", &a_res_);
-  param.ajouter("dv_min", &dv_min);
-  param.ajouter("exp_res", &exp_res);
-  param.lire_avec_accolades_depuis(is);
-
-  const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
-  if (pbm.has_correlation("frottement_interfacial")) correlation_ = pbm.get_correlation("frottement_interfacial"); //correlation fournie par le bloc correlation
-  else correlation_.typer_lire(pbm, "frottement_interfacial", is); //sinon -> on la lit
-  return is;
-}
-
-void Frottement_interfacial_PolyMAC_P0::completer()
-{
-  if (a_res_ < 1.e-12)
-    {
-      a_res_ = ref_cast(QDM_Multiphase, equation()).alpha_res();
-      a_res_ = std::max(1.e-4, a_res_*100.);
-    }
-}
-
-void Frottement_interfacial_PolyMAC_P0::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
-{
-  const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
-  if (!matrices.count(ch.le_nom().getString())) return; //rien a faire
-  Matrice_Morse& mat = *matrices.at(ch.le_nom().getString()), mat2;
-  const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0, equation().zone_dis().valeur());
-  const DoubleTab& inco = ch.valeurs();
-  const IntTab& fcl = ch.fcl();
-
-  /* stencil : diagonal par bloc pour les vitesses aux faces, puis chaque composante des vitesses aux elems */
-  IntTrav stencil(0, 2);
-  stencil.set_smart_resize(1);
-  int i, j, e, f, k, l, N = inco.line_size(), d, db, D = dimension, nf_tot = zone.nb_faces_tot();
-  /* faces */
-  for (f = 0; f < zone.nb_faces(); f++)
-    if (fcl(f, 0) < 2)
-      {
-        for (k = 0; k < N; k++)
-          for (l = 0; l < N; l++) stencil.append_line(N * f + k, N * f + l);
-        // for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) for (d = 0, j = nf_tot + D * e; d < D; d++, j++)
-        //     for (k = 0; k < N; k++) for (l = 0; l < N; l++) stencil.append_line(N * f + k, N * j + l);
-      }
   /* elements */
   for (e = 0, i = nf_tot; e < zone.nb_elem_tot(); e++)
     for (d = 0; d < D; d++, i++)
       for (db = 0, j = nf_tot + D * e; db < D; db++, j++)
         for (k = 0; k < N; k++)
           for (l = 0; l < N; l++) stencil.append_line(N * i + k, N * j + l);
-
-  tableau_trier_retirer_doublons(stencil);
-  Matrix_tools::allocate_morse_matrix(inco.size_totale(), inco.size_totale(), stencil, mat2);
-  mat.nb_colonnes() ? mat += mat2 : mat = mat2;
 }
 
 void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
-  Matrice_Morse *mat = matrices.count(ch.le_nom().getString()) ? matrices.at(ch.le_nom().getString()) : NULL;
+  Matrice_Morse *mat = matrices.count(ch.le_nom().getString()) ? matrices.at(ch.le_nom().getString()) : nullptr;
   const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0, equation().zone_dis().valeur());
   const IntTab& f_e = zone.face_voisins(), &fcl = ch.fcl();
   const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(), &ve = zone.volumes(), &vf = zone.volumes_entrelaces(), &dh_e = equation().milieu().diametre_hydraulique_elem();
@@ -107,7 +61,7 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
                        &mu    = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique().passe();
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
 
-  DoubleTab const * d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").valeurs() : NULL ;
+  DoubleTab const * d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").valeurs() : nullptr ;
 
   int e, f, c, i, j, k, l, n, N = inco.line_size(), Np = press.line_size(), d, D = dimension, nf_tot = zone.nb_faces_tot(),
                               cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1);
@@ -136,7 +90,7 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
               dh += vfd(f, c) / vf(f) * alpha(e, n) * dh_e(e);
               for (k = 0; k < N; k++)
                 {
-                  double dv_c = ch.v_norm(pvit, pvit, e, f, k, n, NULL, &ddv_c(0));
+                  double dv_c = ch.v_norm(pvit, pvit, e, f, k, n, nullptr, &ddv_c(0));
                   if (dv_c > dv(k, n))
                     for (dv(k, n) = dv_c, i = 0; i < 4; i++) ddv(k, n, i) = ddv_c(i);
                 }
@@ -181,7 +135,7 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
               }
           d_bulles_l(n) = (d_bulles) ? (*d_bulles)(e,n) : 0;
 
-          for (k = 0; k < N; k++) dv(k, n) = std::max(ch.v_norm(pvit, pvit, e, -1, k, n, NULL, &ddv(k, n, 0)), dv_min);
+          for (k = 0; k < N; k++) dv(k, n) = std::max(ch.v_norm(pvit, pvit, e, -1, k, n, nullptr, &ddv(k, n, 0)), dv_min);
 
         }
 
