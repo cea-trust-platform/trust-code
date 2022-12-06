@@ -13,17 +13,42 @@
 *
 *****************************************************************************/
 
-#ifndef Dispersion_bulles_PolyMAC_P0_included
-#define Dispersion_bulles_PolyMAC_P0_included
+#ifndef Source_Dispersion_bulles_base_included
+#define Source_Dispersion_bulles_base_included
 
-#include <Source_Dispersion_bulles_base.h>
+#include <Source_base.h>
+#include <Correlation.h>
 
-class Dispersion_bulles_PolyMAC_P0: public Source_Dispersion_bulles_base
+/*! @brief Classe Source_Dispersion_bulles_base
+ *
+ *  Cette classe implemente un operateur de dispersion turbulente
+ *
+ *       F_{kl} = - F_{lk} = - C_{kl} grad(alpha{k}) + C_{lk} grad(alpha{l}) ou la phase
+ *       l est la phase liquide porteuse et k != 0 une phase quelconque
+ *     le calcul de C_{n_l, k} est realise par la hierarchie Dispersion_turbulente_base
+ *
+ * @sa Source_base
+ */
+class Source_Dispersion_bulles_base: public Source_base
 {
-  Declare_instanciable(Dispersion_bulles_PolyMAC_P0);
+  Declare_base(Source_Dispersion_bulles_base);
+public :
+  int has_interface_blocs() const override { return 1; }
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override = 0;
+  void check_multiphase_compatibility() const override { } //of course
+
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override { }
+  void associer_pb(const Probleme_base& ) override { }
+  void mettre_a_jour(double temps) override { }
+  const Correlation& correlation() const {return correlation_;};
+
 protected:
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
-  void dimensionner_blocs_aux(IntTrav&) const override;
+  Correlation correlation_; //correlation donnant le coeff de dispersion turbulente
+  int is_turb = 0;
+  double beta_ = 1.; // To adjust the force in .data
+
+  virtual void dimensionner_blocs_aux(IntTrav&) const = 0;
 };
 
-#endif /* Dispersion_bulles_PolyMAC_P0_included */
+#endif /* Source_Dispersion_bulles_base_included */

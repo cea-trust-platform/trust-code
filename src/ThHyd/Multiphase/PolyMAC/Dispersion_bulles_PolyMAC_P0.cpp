@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,78 +13,48 @@
 *
 *****************************************************************************/
 
+#include <Op_Diff_Turbulent_PolyMAC_P0_Face.h>
 #include <Dispersion_bulles_PolyMAC_P0.h>
+#include <Viscosite_turbulente_base.h>
 #include <Dispersion_bulles_base.h>
-#include <Zone_PolyMAC_P0.h>
 #include <Champ_Face_PolyMAC_P0.h>
 #include <Champ_Elem_PolyMAC_P0.h>
-#include <Zone_Cl_PolyMAC.h>
-#include <Array_tools.h>
-#include <Matrix_tools.h>
-#include <Pb_Multiphase.h>
-#include <Champ_Uniforme.h>
-#include <Milieu_composite.h>
-#include <Interface_base.h>
-#include <Op_Diff_Turbulent_PolyMAC_P0_Face.h>
-#include <Viscosite_turbulente_base.h>
-#include <Neumann_paroi.h>
 #include <Echange_impose_base.h>
+#include <Milieu_composite.h>
+#include <Zone_PolyMAC_P0.h>
+#include <Zone_Cl_PolyMAC.h>
+#include <Champ_Uniforme.h>
+#include <Interface_base.h>
+#include <Pb_Multiphase.h>
+#include <Neumann_paroi.h>
+#include <Matrix_tools.h>
+#include <Array_tools.h>
 
-Implemente_instanciable(Dispersion_bulles_PolyMAC_P0,"Dispersion_bulles_Face_PolyMAC_P0", Source_base);
+Implemente_instanciable(Dispersion_bulles_PolyMAC_P0,"Dispersion_bulles_Face_PolyMAC_P0", Source_Dispersion_bulles_base);
 
-Sortie& Dispersion_bulles_PolyMAC_P0::printOn(Sortie& os) const
-{
-  return os;
-}
+Sortie& Dispersion_bulles_PolyMAC_P0::printOn(Sortie& os) const { return os; }
 
 Entree& Dispersion_bulles_PolyMAC_P0::readOn(Entree& is)
 {
-  Param param(que_suis_je());
-  param.ajouter("beta", &beta_);
-  param.lire_avec_accolades_depuis(is);
-
-  Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
-
-  if (!pbm || pbm->nb_phases() == 1) Process::exit(que_suis_je() + " : not needed for single-phase flow!");
-
-  if (pbm->has_correlation("Dispersion_bulles")) correlation_ = pbm->get_correlation("Dispersion_bulles"); //correlation fournie par le bloc correlation
-  else correlation_.typer_lire((*pbm), "Dispersion_bulles", is); //sinon -> on la lit
-
+  Source_Dispersion_bulles_base::readOn(is);
   if sub_type(Op_Diff_Turbulent_PolyMAC_P0_Face, equation().operateur(0).l_op_base()) is_turb = 1;
-
   return is;
 }
 
-void Dispersion_bulles_PolyMAC_P0::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const // 100% explicit
+void Dispersion_bulles_PolyMAC_P0::dimensionner_blocs_aux(IntTrav& stencil) const
 {
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
-  if (!matrices.count(ch.le_nom().getString())) return; //rien a faire
-  Matrice_Morse& mat = *matrices.at(ch.le_nom().getString()), mat2;
   const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0, equation().zone_dis().valeur());
   const DoubleTab& inco = ch.valeurs();
-  const IntTab& fcl = ch.fcl();
 
-  /* stencil : diagonal par bloc pour les vitesses aux faces, puis chaque composante des vitesses aux elems */
-  IntTrav stencil(0, 2);
-  stencil.set_smart_resize(1);
-  int i, j, e, f, k, l, N = inco.line_size(), d, db, D = dimension, nf_tot = zone.nb_faces_tot();
+  int i, j, e, k, l, N = inco.line_size(), d, db, D = dimension, nf_tot = zone.nb_faces_tot();
 
-  /*faces*/
-  for (f = 0; f < zone.nb_faces(); f++)
-    if (fcl(f, 0) < 2)
-      for (k = 0; k < N; k++)
-        for (l = 0; l < N; l++) stencil.append_line(N * f + k, N * f + l);
   /* elements */
   for (e = 0, i = nf_tot; e < zone.nb_elem_tot(); e++)
     for (d = 0; d < D; d++, i++)
       for (db = 0, j = nf_tot + D * e; db < D; db++, j++)
         for (k = 0; k < N; k++)
           for (l = 0; l < N; l++) stencil.append_line(N * i + k, N * j + l);
-
-
-  tableau_trier_retirer_doublons(stencil);
-  Matrix_tools::allocate_morse_matrix(inco.size_totale(), inco.size_totale(), stencil, mat2);
-  mat.nb_colonnes() ? mat += mat2 : mat = mat2;
 }
 
 void Dispersion_bulles_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const

@@ -13,17 +13,17 @@
 *
 *****************************************************************************/
 
-#ifndef Dispersion_bulles_PolyMAC_P0_included
-#define Dispersion_bulles_PolyMAC_P0_included
+#ifndef Dispersion_bulles_VDF_included
+#define Dispersion_bulles_VDF_included
 
 #include <Source_Dispersion_bulles_base.h>
 
-class Dispersion_bulles_PolyMAC_P0: public Source_Dispersion_bulles_base
+class Dispersion_bulles_VDF: public Source_Dispersion_bulles_base
 {
-  Declare_instanciable(Dispersion_bulles_PolyMAC_P0);
+  Declare_instanciable(Dispersion_bulles_VDF);
 protected:
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
-  void dimensionner_blocs_aux(IntTrav&) const override;
+  void dimensionner_blocs_aux(IntTrav&) const override { /* Do nothing */ }
 };
 
-#endif /* Dispersion_bulles_PolyMAC_P0_included */
+#endif /* Dispersion_bulles_VDF_included */
