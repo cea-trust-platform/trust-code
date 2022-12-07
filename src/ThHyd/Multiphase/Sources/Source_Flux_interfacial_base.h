@@ -48,8 +48,6 @@ public :
 private:
   mutable DoubleTab qpi_, dT_qpi_, da_qpi_, dp_qpi_;
   REF(Correlation) correlation_; //correlation donnant le coeff de flux interfacial
-
-  virtual void fill_vit_elem_tab(DoubleTab& ) const = 0;
 };
 
 #endif /* Source_Flux_interfacial_base_included */

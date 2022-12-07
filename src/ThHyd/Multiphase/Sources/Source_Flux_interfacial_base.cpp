@@ -19,6 +19,7 @@
 #include <Champ_Inc_P0_base.h>
 #include <Aire_interfaciale.h>
 #include <Milieu_composite.h>
+#include <Champ_Face_base.h>
 #include <Champ_Uniforme.h>
 #include <Pb_Multiphase.h>
 #include <Synonyme_info.h>
@@ -191,11 +192,11 @@ void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab&
   const int nbelem = zone.nb_elem(), nb_max_sat =  N * (N-1) /2; // oui !! suite arithmetique !!
   DoubleTrav Ts_tab(nbelem,nb_max_sat), dPTs_tab(nbelem,nb_max_sat), Hvs_tab(nbelem,nb_max_sat), Hls_tab(nbelem,nb_max_sat), dPHvs_tab(nbelem,nb_max_sat), dPHls_tab(nbelem,nb_max_sat), Lvap_tab(nbelem,nb_max_sat);
 
+  // fill velocity at elem tab
   DoubleTab pvit_elem(0, N * D);
   zone.zone().creer_tableau_elements(pvit_elem);
-
-  // fill velocity at elem tab
-  fill_vit_elem_tab(pvit_elem);
+  const Champ_Face_base& ch_vit = ref_cast(Champ_Face_base,ref_cast(Pb_Multiphase, equation().probleme()).eq_qdm.inconnue().valeur());
+  ch_vit.get_elem_vector_field(pvit_elem);
 
   // remplir les tabs ...
   for (k = 0; k < N; k++)

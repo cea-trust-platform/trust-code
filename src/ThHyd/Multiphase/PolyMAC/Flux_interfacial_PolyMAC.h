@@ -21,8 +21,6 @@
 class Flux_interfacial_PolyMAC: public Source_Flux_interfacial_base
 {
   Declare_instanciable(Flux_interfacial_PolyMAC);
-protected:
-  void fill_vit_elem_tab(DoubleTab&) const override;
 };
 
 #endif /* Flux_interfacial_PolyMAC_included */
