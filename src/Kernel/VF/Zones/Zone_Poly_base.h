@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -105,12 +105,10 @@ public :
 
   inline DoubleTab& volumes_entrelaces_dir();
   inline const DoubleTab& volumes_entrelaces_dir() const;
-  //produit scalaire (a - ma).(b - mb)
-  inline double dot (const double *a, const double *b, const double *ma = NULL, const double *mb = NULL) const;
+
   //equivalent de dot(), mais pour le produit (a - ma).nu.(b - mb)
-  inline double nu_dot(const DoubleTab* nu, int e, int n, const double *a, const double *b, const double *ma = NULL, const double *mb = NULL) const;
-  //produit vectoriel
-  inline std::array<double, 3> cross(int dima, int dimb, const double *a, const double *b, const double *ma = NULL, const double *mb = NULL) const;
+  inline double nu_dot(const DoubleTab* nu, int e, int n, const double *a, const double *b, const double *ma = nullptr, const double *mb = nullptr) const;
+
 
   inline double dist_norm(int num_face) const;
   inline double dist_norm_bord(int num_face) const;
@@ -278,24 +276,6 @@ inline int Zone_Poly_base::oriente_normale(int face_opp, int elem2) const
 inline const ArrOfInt& Zone_Poly_base::ind_faces_virt_non_std() const
 {
   return ind_faces_virt_non_std_;
-}
-
-/* produit scalaire de deux vecteurs */
-inline double Zone_Poly_base::dot(const double *a, const double *b, const double *ma, const double *mb) const
-{
-  double res = 0;
-  for (int i = 0; i < dimension; i++) res += (a[i] - (ma ? ma[i] : 0)) * (b[i] - (mb ? mb[i] : 0));
-  return res;
-}
-
-/* produit vectoriel de deux vecteurs (toujours 3D, meme en 2D) */
-inline std::array<double, 3> Zone_Poly_base::cross(int dima, int dimb, const double *a, const double *b, const double *ma, const double *mb) const
-{
-  std::array<double, 3> va = {{ 0, 0, 0 }}, vb = {{ 0, 0, 0 }}, res;
-  for (int i = 0; i < dima; i++) va[i] = a[i] - (ma ? ma[i] : 0);
-  for (int i = 0; i < dimb; i++) vb[i] = b[i] - (mb ? mb[i] : 0);
-  for (int i = 0; i < 3; i++) res[i] = va[(i + 1) % 3] * vb[(i + 2) % 3] - va[(i + 2) % 3] * vb[(i + 1) % 3];
-  return res;
 }
 
 /* produit matricel et transposee de DoubleTab */

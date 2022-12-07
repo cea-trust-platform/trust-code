@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -142,6 +142,12 @@ public :
   virtual const MD_Vector& md_vector_aretes() const { return md_vector_aretes_; }
 
   virtual const DoubleTab& xv_bord() const;
+
+  //produit scalaire (a - ma).(b - mb)
+  inline double dot (const double *a, const double *b, const double *ma = nullptr, const double *mb = nullptr) const;
+
+  //produit vectoriel
+  inline std::array<double, 3> cross(int dima, int dimb, const double *a, const double *b, const double *ma = NULL, const double *mb = NULL) const;
 
 private:
   DoubleVect face_surfaces_;                // surface des faces
@@ -457,6 +463,24 @@ inline int Zone_VF::face_numero_bord(int num_face) const
 {
   assert(num_face < nb_faces());
   return face_numero_bord_(num_face);
+}
+
+/* produit scalaire de deux vecteurs */
+inline double Zone_VF::dot(const double *a, const double *b, const double *ma, const double *mb) const
+{
+  double res = 0;
+  for (int i = 0; i < dimension; i++) res += (a[i] - (ma ? ma[i] : 0)) * (b[i] - (mb ? mb[i] : 0));
+  return res;
+}
+
+/* produit vectoriel de deux vecteurs (toujours 3D, meme en 2D) */
+inline std::array<double, 3> Zone_VF::cross(int dima, int dimb, const double *a, const double *b, const double *ma, const double *mb) const
+{
+  std::array<double, 3> va = {{ 0, 0, 0 }}, vb = {{ 0, 0, 0 }}, res;
+  for (int i = 0; i < dima; i++) va[i] = a[i] - (ma ? ma[i] : 0);
+  for (int i = 0; i < dimb; i++) vb[i] = b[i] - (mb ? mb[i] : 0);
+  for (int i = 0; i < 3; i++) res[i] = va[(i + 1) % 3] * vb[(i + 2) % 3] - va[(i + 2) % 3] * vb[(i + 1) % 3];
+  return res;
 }
 
 #endif /* Zone_VF_included */
