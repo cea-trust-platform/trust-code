@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -144,12 +144,14 @@ Champ_base& Champ_Face_PolyMAC::affecter_(const Champ_base& ch)
 
 DoubleVect& Champ_Face_PolyMAC::valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const
 {
+  Cerr << "Champ_Face_PolyMAC::" <<__func__ << " is not coded !" << finl;
   throw;
   // return Champ_implementation_RT0::valeur_a_elem(position,result,poly);
 }
 
 double Champ_Face_PolyMAC::valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const
 {
+  Cerr << "Champ_Face_PolyMAC::" <<__func__ << " is not coded !" << finl;
   throw;
   //return Champ_implementation_RT0::valeur_a_elem_compo(position,poly,ncomp);
 }
@@ -203,7 +205,6 @@ DoubleTab& Champ_Face_PolyMAC::valeur_aux_elems(const DoubleTab& positions, cons
   // XXX : TODO Check this assert (positions and not val)
   assert((positions.dimension(0) == les_polys.size())||(positions.dimension_tot(0) == les_polys.size()));
   // assert((val.dimension(0) == les_polys.size())||(val.dimension_tot(0) == les_polys.size()));
-
 
   if (val.nb_dim() > 2)
     {

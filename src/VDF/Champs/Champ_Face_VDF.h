@@ -73,10 +73,6 @@ public:
   DoubleVect& calcul_S_barre_sans_contrib_paroi(const DoubleTab&, DoubleVect&, const Zone_Cl_VDF&) const;
   void calculer_dercov_axi(const Zone_Cl_VDF&);
 
-  // methodes utile pour constuire un champ vectoriel aux elems
-  DoubleTab& get_elem_vector_field(DoubleTab& ) const;
-  DoubleVect& get_elem_vector(const int, DoubleVect& ) const;
-
   // methodes inlines
   inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const override
   {

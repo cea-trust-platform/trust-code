@@ -1515,29 +1515,6 @@ void Champ_Face_VDF::mettre_a_jour(double un_temps)
   Champ_Inc_base::mettre_a_jour(un_temps);
 }
 
-DoubleTab& Champ_Face_VDF::get_elem_vector_field(DoubleTab& val_vec) const
-{
-  const Zone_VDF& zone_VDF = zone_vdf();
-  const DoubleTab& centres_de_gravites = zone_VDF.xp();
-  IntVect les_polys(zone_VDF.nb_elem_tot());
-
-  for (int elem = 0; elem < zone_VDF.nb_elem_tot(); elem++) les_polys(elem) = elem;
-
-  valeur_aux_elems(centres_de_gravites, les_polys, val_vec);
-
-  return val_vec;
-}
-
-DoubleVect& Champ_Face_VDF::get_elem_vector(const int num_elem, DoubleVect& val_vec) const
-{
-  const Zone_VDF& zone_VDF = zone_vdf();
-  const DoubleTab& centres_de_gravites = zone_VDF.xp();
-
-  valeur_a_elem(centres_de_gravites, val_vec, num_elem);
-
-  return val_vec;
-}
-
 void Champ_Face_VDF::calculer_rotationnel_ordre2_centre_element(DoubleTab& rot) const
 {
   const DoubleTab& val = valeurs();

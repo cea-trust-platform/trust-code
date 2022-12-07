@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,4 +50,27 @@ void Champ_Face_base::init_fcl() const
         f = fvf.num_face(i), fcl_(f, 0) = idx, fcl_(f, 1) = n, fcl_(f, 2) = i;
     }
   fcl_init_ = 1;
+}
+
+DoubleTab& Champ_Face_base::get_elem_vector_field(DoubleTab& val_vec) const
+{
+  const Zone_VF& zone = ref_cast(Zone_VF,la_zone_VF.valeur());
+  const DoubleTab& centres_de_gravites = zone.xp();
+  IntVect les_polys(zone.nb_elem_tot());
+
+  for (int elem = 0; elem < zone.nb_elem_tot(); elem++) les_polys(elem) = elem;
+
+  valeur_aux_elems(centres_de_gravites, les_polys, val_vec);
+
+  return val_vec;
+}
+
+DoubleVect& Champ_Face_base::get_elem_vector(const int num_elem, DoubleVect& val_vec) const
+{
+  const Zone_VF& zone = ref_cast(Zone_VF,la_zone_VF.valeur());
+  const DoubleTab& centres_de_gravites = zone.xp();
+
+  valeur_a_elem(centres_de_gravites, val_vec, num_elem);
+
+  return val_vec;
 }
