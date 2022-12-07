@@ -38,6 +38,7 @@ public:
   inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
   inline int has_interface_blocs() const override { return 1; }
+  void check_multiphase_compatibility() const override { } // certooooooo
 
 protected:
   REF(Zone_VDF) la_zone_VDF;
