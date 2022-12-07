@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,14 +13,14 @@
 *
 *****************************************************************************/
 
-
 #ifndef Terme_Source_Qdm_VDF_Face_included
 #define Terme_Source_Qdm_VDF_Face_included
 
-#include <Source_base.h>
 #include <Terme_Source_Qdm.h>
-#include <Ref_Zone_VDF.h>
 #include <Ref_Zone_Cl_VDF.h>
+#include <Ref_Zone_VDF.h>
+#include <Source_base.h>
+
 class Probleme_base;
 
 /*! @brief class Terme_Source_Qdm_VDF_Face
@@ -31,28 +31,18 @@ class Probleme_base;
  */
 class Terme_Source_Qdm_VDF_Face : public Source_base, public Terme_Source_Qdm
 {
-
   Declare_instanciable(Terme_Source_Qdm_VDF_Face);
-
 public:
-
-  void associer_pb(const Probleme_base& ) override;
-  DoubleTab& calculer(DoubleTab& ) const override;
+  void associer_pb(const Probleme_base& ) override { }
   void mettre_a_jour(double ) override;
-
   inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
-  inline int has_interface_blocs() const override
-  {
-    return 1;
-  };
+  inline int has_interface_blocs() const override { return 1; }
 
 protected:
-
   REF(Zone_VDF) la_zone_VDF;
   REF(Zone_Cl_VDF) la_zone_Cl_VDF;
   void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
-
 };
 
-#endif
+#endif /* */
