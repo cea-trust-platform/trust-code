@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -91,7 +91,6 @@ public :
   //inline double porosite_face(int ) const;
   //inline double porosite_elem(int i) const;
   inline int orientation(int ) const override;
-  inline double face_normales(int , int ) const override;
   inline double dist_face(int , int , int k) const;
   inline double dist_norm(int num_face) const ;
   inline double dist_norm_bord(int num_face) const;
@@ -167,6 +166,7 @@ private:
   // void calculer_porosites();
   void genere_aretes();
   void calcul_h();
+  void remplir_face_normales();
 };
 
 // Fonctions inline
@@ -283,18 +283,6 @@ inline const IntVect& Zone_VDF::orientation() const
 inline int Zone_VDF::orientation(int i) const
 {
   return orientation_[i];
-}
-
-/*! @brief
- *
- */
-inline double Zone_VDF::face_normales(int num_face,int k) const
-{
-  int ori = orientation(num_face);
-  double surf=0;
-  if (ori == k)
-    surf=face_surfaces(num_face);
-  return surf;
 }
 
 // Fonction de calcul utilisable uniquement en coordonnees cartesiennes

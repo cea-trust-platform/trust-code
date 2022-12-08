@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,15 +30,24 @@ class Zone_VF_inst : public Zone_VF
 {
   Declare_instanciable(Zone_VF_inst);
 public :
-  inline double face_normales(int , int ) const override
+  double face_normales(int, int) const override
   {
-    Cerr<<"face_normales not coded in "<<que_suis_je()<<finl;
-    Process::exit();
-    return -1;
-  };
+    Cerr << "face_normales not coded in " << que_suis_je() << finl;
+    throw;
+  }
+  const DoubleTab& face_normales() const override
+  {
+    Cerr << "face_normales not coded in " << que_suis_je() << finl;
+    throw;
+  }
+  DoubleTab& face_normales() override
+  {
+    Cerr << "face_normales not coded in " << que_suis_je() << finl;
+    throw;
+  }
 
 private:
-  inline void remplir_elem_faces() override
+  void remplir_elem_faces() override
   {
     Cerr<<"remplir_elem_faces not coded in "<<que_suis_je()<<finl;
   }

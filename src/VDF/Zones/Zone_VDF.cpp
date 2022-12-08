@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -286,8 +286,25 @@ void Zone_VDF::discretiser()
   calculer_volumes_entrelaces();
   genere_aretes();
   calcul_h();
+  remplir_face_normales();
   Cerr << "L'objet de type Zone_VDF a ete rempli avec succes " << finl;
 
+}
+
+void Zone_VDF::remplir_face_normales()
+{
+  // On remplit le tableau face_normales_;
+  //  Attention : le tableau face_voisins n'est pas exactement un tableau distribue. Une face n'a pas ses deux voisins dans le
+  //  meme ordre sur tous les processeurs qui possedent la face.
+  //  Donc la normale a la face peut changer de direction d'un processeur a l'autre, y compris pour les faces de joint.
+  face_normales_ = xv_; // already has // structure
+  face_normales_ = 0.;
+
+  for (int f = 0; f < nb_faces_tot(); f++)
+    {
+      int ori = orientation(f);
+      face_normales_(f,ori) = face_surfaces(f);
+    }
 }
 
 void  Zone_VDF::remplir_elem_faces()

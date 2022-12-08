@@ -35,7 +35,9 @@ class Zone_VF : public Zone_dis_base
 {
   Declare_base(Zone_VF);
 public :
-  virtual double face_normales(int , int ) const =0;
+  virtual double face_normales(int face, int comp) const { return face_normales_(face,comp); }
+  virtual DoubleTab& face_normales() { return face_normales_; }
+  virtual const DoubleTab& face_normales() const { return face_normales_; }
   void calculer_face_surfaces(const DoubleVect& surfaces) { face_surfaces_ = surfaces; }
   virtual const DoubleVect& face_surfaces() const { return face_surfaces_; }
   virtual inline double face_surfaces(int i) const { return face_surfaces_(i); }
@@ -153,11 +155,11 @@ private:
   DoubleVect face_surfaces_;                // surface des faces
 
 protected:
-
   DoubleVect volumes_;                          // volumes des elements
   DoubleVect inverse_volumes_;                  // inverse du volumes des elements
   DoubleVect volumes_entrelaces_;            // volumes entrelaces pour l'integration des Qdm
   DoubleTab volumes_entrelaces_dir_;        // volumes entrelaces par cote
+  DoubleTab face_normales_;             // normales aux faces
 
   IntTab face_voisins_;                          // connectivite face/elements
   IntTab face_voisins_fictifs_;           // connectivite face/elements fictifs

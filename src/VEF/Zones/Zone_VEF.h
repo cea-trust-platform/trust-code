@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -80,19 +80,7 @@ public :
   inline int premiere_face_std() const;
   inline int nb_faces_non_std() const;
   inline double carre_pas_du_maillage() const;
-  inline double carre_pas_maille(int i) const
-  {
-    return h_carre_(i);
-  };
-  inline double face_normales(int ,int ) const override;
-  inline DoubleTab& face_normales()
-  {
-    return face_normales_;
-  };
-  inline const DoubleTab& face_normales() const
-  {
-    return face_normales_;
-  };
+  inline double carre_pas_maille(int i) const { return h_carre_(i); }
   inline DoubleTab& facette_normales();
   inline const DoubleTab& facette_normales() const;
   inline IntVect& rang_elem_non_std();
@@ -108,7 +96,6 @@ private:
   double h_carre;                         // carre du pas du maillage
   DoubleVect h_carre_;                        // carre du pas d'une maille
   Elem_VEF type_elem_;                  // type de l'element de discretisation
-  DoubleTab face_normales_;             // normales aux faces
   DoubleTab facette_normales_;          // normales aux faces des volumes entrelaces
   DoubleTab vecteur_face_facette_;                // vecteur centre face->centre facette
   int nb_faces_std_;                    // nombre de faces standard
@@ -131,13 +118,6 @@ private:
 inline const Elem_VEF& Zone_VEF::type_elem() const
 {
   return type_elem_;
-}
-
-// Decription:
-// renvoie la composante comp de la surface normale a la face.
-inline double Zone_VEF::face_normales(int face,int comp) const
-{
-  return face_normales_(face,comp);
 }
 
 // Decription:
