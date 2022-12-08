@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -354,33 +354,15 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
       Champ copie_source;
       copie_source = source;
       copie_source.valeurs().echange_espace_virtuel();
-      if (ncomp==-1)
-        {
-          DoubleTab val_temp;
-          copie_source.valeur().calculer_valeurs_som_post(val_temp,
-                                                          nb_sommets,
-                                                          nom_champ_interpole,
-                                                          domaine);
-          for (int i_val=0; i_val<imax; i_val++)
-            for (int j_val=0; j_val<nb_comp; j_val++)
-              espace_valeurs(i_val,j_val) = val_temp(i_val,j_val);
-        }
-      else
-        //On construit un tableau de valeurs a nb_comp composantes meme si ncomp!=-1
-        {
-          DoubleTab val_temp;
-          copie_source.valeur().calculer_valeurs_som_compo_post(val_temp,
-                                                                ncomp,
-                                                                nb_sommets,
-                                                                nom_champ_interpole,
-                                                                domaine);
-
-          int dim0 = val_temp.dimension(0);
-          for (int i=0; i<dim0; i++)
-            for (int j=0; j<nb_comp; j++)
-              if (j==ncomp)
-                espace_valeurs(i,j) = val_temp(i);
-        }
+      DoubleTab val_temp;
+      copie_source.valeur().calculer_valeurs_som_post(val_temp,
+                                                      nb_sommets,
+                                                      nom_champ_interpole,
+                                                      domaine);
+      for (int i=0; i<imax; i++)
+        for (int j=0; j<nb_comp; j++)
+          if (ncomp == -1 || ncomp == j)
+            espace_valeurs(i,j) = val_temp(i, j);
     }
   else
     {
