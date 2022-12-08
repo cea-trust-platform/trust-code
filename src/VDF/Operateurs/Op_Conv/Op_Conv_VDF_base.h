@@ -33,8 +33,10 @@ public:
   void associer_zone_cl_dis(const Zone_Cl_dis_base& zcl) override { iter->associer_zone_cl_dis(zcl); }
   void calculer_dt_local(DoubleTab&) const override ; //Local time step calculation
   void calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const override;
-  double calculer_dt_stab() const override;
+  void creer_champ(const Motcle& ) override;
+  void mettre_a_jour(double ) override;
 
+  double calculer_dt_stab() const override;
   int impr(Sortie& os) const override;
   Motcle get_localisation_pour_post(const Nom& option) const override;
   virtual const Champ_base& vitesse() const = 0;
@@ -66,6 +68,15 @@ protected:
   Iterateur_VDF iter;
   void associer_champ_convecte_elem();
   void associer_champ_convecte_face();
+
+private:
+  /* si operateur de convection de Masse_Multiphase */
+  std::vector<Champ_Inc> cc_phases_; //flux massiques (kg/m2/s)
+  Motcles noms_cc_phases_; //leurs noms
+  std::vector<Champ_Inc> vd_phases_; //vitesses debitantes
+  Motcles noms_vd_phases_; //leurs noms
+  std::vector<Champ_Inc> x_phases_; //titres par phase
+  Motcles noms_x_phases_; //leurs noms
 };
 
 // Fonction utile pour le calcul du pas de temps de stabilite

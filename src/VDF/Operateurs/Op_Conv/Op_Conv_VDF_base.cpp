@@ -30,7 +30,24 @@ extern Stat_Counter_Id convection_counter_;
 Implemente_base(Op_Conv_VDF_base,"Op_Conv_VDF_base",Operateur_Conv_base);
 
 Sortie& Op_Conv_VDF_base::printOn(Sortie& s ) const { return s << que_suis_je() ; }
-Entree& Op_Conv_VDF_base::readOn(Entree& s ) { return s ; }
+
+Entree& Op_Conv_VDF_base::readOn(Entree& s)
+{
+  if (sub_type(Masse_Multiphase, equation())) //convection dans Masse_Multiphase -> champs de debit / titre
+    {
+      const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, equation().probleme());
+      noms_cc_phases_.dimensionner(pb.nb_phases()), cc_phases_.resize(pb.nb_phases());
+      noms_vd_phases_.dimensionner(pb.nb_phases()), vd_phases_.resize(pb.nb_phases());
+      noms_x_phases_.dimensionner(pb.nb_phases()), x_phases_.resize(pb.nb_phases());
+      for (int i = 0; i < pb.nb_phases(); i++)
+        {
+          champs_compris_.ajoute_nom_compris(noms_cc_phases_[i] = Nom("debit_") + pb.nom_phase(i));
+          champs_compris_.ajoute_nom_compris(noms_vd_phases_[i] = Nom("vitesse_debitante_") + pb.nom_phase(i));
+          champs_compris_.ajoute_nom_compris(noms_x_phases_[i] = Nom("titre_") + pb.nom_phase(i));
+        }
+    }
+  return s;
+}
 
 inline void eval_fluent(const double psc, const int num1, const int num2, const int n, DoubleTab& fluent)
 {
@@ -398,4 +415,88 @@ Motcle Op_Conv_VDF_base::get_localisation_pour_post(const Nom& option) const
   if (Motcle(option)=="stabilite") loc = "elem";
   else return Operateur_Conv_base::get_localisation_pour_post(option);
   return loc;
+}
+
+void Op_Conv_VDF_base::creer_champ(const Motcle& motlu)
+{
+  Operateur_Conv_base::creer_champ(motlu); // Do nothing mais bon :-) Maybe some day it will
+  if (sub_type(Masse_Multiphase, equation())) //convection dans Masse_Multiphase -> champs de debit / titre
+    {
+      int i = noms_cc_phases_.rang(motlu), j = noms_vd_phases_.rang(motlu), k = noms_x_phases_.rang(motlu);
+      if (i >= 0 && !cc_phases_[i].non_nul())
+        {
+          equation().discretisation().discretiser_champ("vitesse", equation().zone_dis(), noms_cc_phases_[i], "kg/m2/s",dimension, 1, 0, cc_phases_[i]);
+          champs_compris_.ajoute_champ(cc_phases_[i]);
+        }
+      if (j >= 0 && !vd_phases_[j].non_nul())
+        {
+          equation().discretisation().discretiser_champ("vitesse", equation().zone_dis(), noms_vd_phases_[j], "m/s",dimension, 1, 0, vd_phases_[j]);
+          champs_compris_.ajoute_champ(vd_phases_[j]);
+        }
+      if (k >= 0 && !x_phases_[k].non_nul())
+        {
+          equation().discretisation().discretiser_champ("temperature", equation().zone_dis(), noms_x_phases_[k], "m/s",1, 1, 0, x_phases_[k]);
+          champs_compris_.ajoute_champ(x_phases_[k]);
+        }
+    }
+}
+
+void Op_Conv_VDF_base::mettre_a_jour(double temps)
+{
+  Operateur_Conv_base::mettre_a_jour(temps); // Do nothing mais bon :-) Maybe some day it will
+
+  if (sub_type(Masse_Multiphase, equation())) //convection dans Masse_Multiphase -> champs de debit / titre
+    {
+      const Zone_VDF& zone = iter->zone();
+      const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
+      const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().champ_convecte();
+      const DoubleVect& pf = equation().milieu().porosite_face(), &pe = equation().milieu().porosite_elem(), &fs = zone.face_surfaces(), &ve = zone.volumes();
+      const DoubleTab& vit = vitesse().valeurs(), &vcc = cc.valeurs(), bcc = cc.valeur_aux_bords(), &xv = zone.xv(), &xp = zone.xp();
+      DoubleTab balp;
+      if (vd_phases_.size()) balp = equation().inconnue().valeur().valeur_aux_bords();
+
+      int i, e, f, d, D = dimension, n, m, N = vcc.line_size(), M = vit.line_size();
+      DoubleTrav cc_f(N); //valeur du champ convecte aux faces
+
+      if (cc_phases_.size())
+        for (n = 0, m = 0; n < N; n++, m += (M > 1))
+          if (cc_phases_[n].non_nul()) /* mise a jour des champs de debit */
+            {
+              Champ_Face_VDF& c_ph = ref_cast(Champ_Face_VDF, cc_phases_[n].valeur());
+              DoubleTab& v_ph = c_ph.valeurs();
+              for (f = 0; f < zone.nb_faces(); v_ph(f) *= vit(f, m) * pf(f), f++)
+                for (v_ph(f) = 0, i = 0; i < 2; i++) v_ph(f) += (1. + (vit(f, m) * (i ? -1 : 1) >= 0 ? 1. : -1.) * 1.0 /* FIXME : amont */) / 2 * ((e = f_e(f, i)) >= 0 ? vcc(e, n) : bcc(f, n));
+              c_ph.changer_temps(temps);
+            }
+
+      if (vd_phases_.size())
+        for (n = 0, m = 0; n < N; n++, m += (M > 1))
+          if (vd_phases_[n].non_nul()) /* mise a jour des champs de vitesse debitante */
+            {
+              const DoubleTab& alp = equation().inconnue().valeurs();
+              Champ_Face_VDF& c_ph = ref_cast(Champ_Face_VDF, vd_phases_[n].valeur());
+              DoubleTab& v_ph = c_ph.valeurs();
+              /* on remplit la partie aux faces, puis on demande au champ d'interpoler aux elements */
+              for (f = 0; f < zone.nb_faces(); v_ph(f) *= vit(f, m) * pf(f), f++)
+                for (v_ph(f) = 0, i = 0; i < 2; i++) v_ph(f) += (1. + (vit(f, m) * (i ? -1 : 1) >= 0 ? 1. : -1.) * 1.0 /* FIXME : amont */) / 2 * ((e = f_e(f, i)) >= 0 ? alp(e, n) : balp(f, n));
+              c_ph.changer_temps(temps);
+            }
+
+      DoubleTrav G(N), v(N, D);
+      double Gt;
+      if (x_phases_.size())
+        for (e = 0; e < zone.nb_elem(); e++) //titre : aux elements
+          {
+            for (v = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
+              for (n = 0; n < N; n++)
+                for (d = 0; d < D; d++)
+                  v(n, d) += fs(f) * pf(f) * (xv(f, d) - xp(e, d)) * (e == f_e(f, 0) ? 1 : -1) * vit(f, n) / (pe(e) * ve(e));
+            for (Gt = 0, n = 0; n < N; Gt += G(n), n++) G(n) = vcc(e, n) * sqrt(zone.dot(&v(n, 0), &v(n, 0)));
+            for (n = 0; n < N; n++)
+              if (x_phases_[n].non_nul()) x_phases_[n]->valeurs()(e) = Gt ? G(n) / Gt : 0;
+          }
+      if (x_phases_.size())
+        for (n = 0; n < N; n++)
+          if (x_phases_[n].non_nul()) x_phases_[n]->changer_temps(temps);
+    }
 }
