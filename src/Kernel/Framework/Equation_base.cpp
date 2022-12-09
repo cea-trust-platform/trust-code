@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,7 +14,9 @@
 *****************************************************************************/
 
 #include <Parametre_diffusion_implicite.h>
+#include <Solveur_Implicite_Base.h>
 #include <Schema_Euler_explicite.h>
+#include <Schema_Implicite_base.h>
 #include <Source_dep_inco_base.h>
 #include <Operateur_Conv_base.h>
 #include <Op_Conv_negligeable.h>
@@ -25,6 +27,7 @@
 #include <Matrice_Morse_Sym.h>
 #include <Operateur_base.h>
 #include <TRUSTTab_parts.h>
+#include <EcrFicPartage.h>
 #include <Postraitement.h>
 #include <Equation_base.h>
 #include <Statistiques.h>
@@ -34,10 +37,7 @@
 #include <EChaine.h>
 #include <Zone_VF.h>
 #include <Avanc.h>
-#include <EcrFicPartage.h>
 #include <Debog.h>
-#include <Schema_Implicite_base.h>
-#include <Solveur_Implicite_Base.h>
 #include <Param.h>
 
 extern Stat_Counter_Id assemblage_sys_counter_;
@@ -2139,11 +2139,13 @@ void Equation_base::assembler_blocs(matrices_t matrices, DoubleTab& secmem, cons
   /* operateurs, sources, masse */
   for (int i = 0; i < nombre_d_operateurs(); i++)
     operateur(i).l_op_base().ajouter_blocs(matrices, secmem, semi_impl);
+
   statistiques().end_count(assemblage_sys_counter_, 0, 0);
 
   statistiques().begin_count(source_counter_);
   for (int i = 0; i < les_sources.size(); i++)
     les_sources(i).valeur().ajouter_blocs(matrices, secmem, semi_impl);
+
   statistiques().end_count(source_counter_);
 
   statistiques().begin_count(assemblage_sys_counter_);
@@ -2161,6 +2163,7 @@ void Equation_base::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab&
   assembler_blocs(matrices, secmem, semi_impl);
   solv_masse().valeur().set_penalisation_flag(0);
   schema_temps().ajouter_blocs(matrices, secmem, *this);
+
   if (!(discretisation().que_suis_je().debute_par("PolyMAC") || probleme().que_suis_je() == "Pb_Multiphase"))
     {
       const std::string& nom_inco = inconnue().le_nom().getString();

@@ -97,7 +97,12 @@ void Op_Evanescence_Homogene_Face_base::ajouter_blocs(matrices_t matrices, Doubl
         for (a_max = 0, k = -1, n = 0; n < N; n++)
           {
             if (iter) a_m = alpha(f_e(f, f_e(f, 1) >= 0 && inco(f, n) < 0), n);
-            else for (a_m = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) a_m += vfd(f, i) / vf(f) * alpha(e, n);
+            else
+              {
+                for (a_m = 0, i = 0; i < 2; i++)
+                  if ((e = f_e(f, i)) >= 0)
+                    a_m += vfd(f, i) / vf(f) * alpha(e, n);
+              }
             if (a_m > a_max) k = n, a_max = a_m;
           }
         if (k >= 0) maj(f) = k;
@@ -107,7 +112,12 @@ void Op_Evanescence_Homogene_Face_base::ajouter_blocs(matrices_t matrices, Doubl
         for (n = 0; n < N; n++)
           {
             if (iter) a_m = alpha(f_e(f, f_e(f, 1) >= 0 && inco(f, n) < 0), n);
-            else for (a_m = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) a_m += vfd(f, i) / vf(f) * alpha(e, n);
+            else
+              {
+                for (a_m = 0, i = 0; i < 2; i++)
+                  if ((e = f_e(f, i)) >= 0)
+                    a_m += vfd(f, i) / vf(f) * alpha(e, n);
+              }
             if (n != k && a_m < a_eps)
               {
                 coeff(f, n, 1) = mat_diag(N * f + k, N * f + k) * (coeff(f, n, 0) = std::min(std::max((a_eps - a_m) / (a_eps - a_eps_min), 0.), 1.));
