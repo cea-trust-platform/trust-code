@@ -119,6 +119,32 @@ public:
     return Champ_Face_VDF_implementation::remplir_coord_noeuds_et_polys(positions, polys);
   }
 
+  /* utilitaire pour le calcul des termes sources : calcule le vecteur v_e + n_f (v_f - v_e. n_f)
+     retour : le vecteur, sa norme et les derivees de celle-ci selon v_e et v_f
+  */
+  inline double v_norm(const DoubleTab& val, const DoubleTab& val_f, int e, int f, int k, int l, double *v_ext, double *dnv) const
+  {
+    const Zone_VDF& zone = zone_vdf();
+    int d, D = dimension;
+    const DoubleTab& nf = zone.face_normales();
+    const DoubleVect& fs = zone.face_surfaces();
+
+    double scal = 0, vf = f >= 0 ? val_f(f, k) - (l >= 0 ? val_f(f, l) : 0) : 0, v_temp[3], *v = v_ext ? v_ext : v_temp;
+    for (d = 0; d < D; d++)
+      v[d] = val(e, k + d * D) - (l >= 0 ? val(e, l + d * D) : 0);
+
+    if (f >= 0)
+      for (d = 0, scal = zone.dot(v, &nf(f, 0)) / fs(f); d < D; d++) v[d] += (vf - scal) * nf(f, d) / fs(f);
+
+    double nv = sqrt(zone.dot(v, v));
+
+    if (dnv)
+      for (d = 0; d < D; d++) dnv[d] = nv ? (v[d] - (f >= 0 ? vf * nf(f, d) / fs(f) : 0)) / nv : 0;
+
+    if (dnv) dnv[3] = f >= 0 && nv ? vf / nv : 0;
+    return nv;
+  }
+
 private:
   double val_imp_face_bord_private(int face, int comp) const;
   double val_imp_face_bord_private(int face, int comp1, int comp2) const;
