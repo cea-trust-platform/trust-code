@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,6 +35,7 @@ public :
   DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const override;
   double valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const override;
   DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const override;
+  DoubleTab& valeur_aux_elems_passe(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const override;
   DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& result, int ncomp) const override;
 
   DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const override;
@@ -58,6 +59,7 @@ public :
 protected:
   virtual Champ_base& le_champ() { return *this; }
   virtual const Champ_base& le_champ() const { return *this; }
+  virtual DoubleTab& valeur_aux_elems_(const DoubleTab& val_face ,const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const;
 };
 
 

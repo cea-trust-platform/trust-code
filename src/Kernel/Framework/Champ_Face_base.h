@@ -35,10 +35,11 @@ public:
   }
 
   // methodes utile pour constuire un champ vectoriel aux elems
-  virtual DoubleTab& get_elem_vector_field(DoubleTab& ) const;
+  virtual DoubleTab& get_elem_vector_field(DoubleTab& , bool passe = false) const;
   virtual DoubleVect& get_elem_vector(const int, DoubleVect& ) const;
 
 protected:
+  virtual DoubleTab& valeur_aux_elems_passe(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& tab_valeurs) const = 0;
   void init_fcl() const;
   mutable IntTab fcl_;
   mutable int fcl_init_ = 0;

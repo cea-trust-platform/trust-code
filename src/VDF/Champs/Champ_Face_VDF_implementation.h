@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,6 +28,7 @@ public:
   DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const override;
   double valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const override;
   DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const override;
+  DoubleTab& valeur_aux_elems_passe(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const;
   DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const override;
   DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const override;
   DoubleVect& valeur_aux_sommets_compo(const Domaine&, DoubleVect&, int) const override;
@@ -39,6 +40,9 @@ protected:
   virtual const Zone_VDF& zone_vdf() const = 0;
   double interpolation(const double, const double, const double) const;
   DoubleTab& trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x, int distant) const;
+
+private:
+  DoubleTab& valeur_aux_elems_(const DoubleTab& val_face ,const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const;
 };
 
 #endif /* Champ_Face_VDF_implementation_included */

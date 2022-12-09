@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,6 +40,7 @@ public :
   void init_auxiliary_variables() override; /* demande l'ajout des variables auxiliaires (\vec v aux elements) */
 
   DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const override;
+  DoubleTab& valeur_aux_elems_passe(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const override;
   DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& result, int ncomp) const override;
   DoubleTab& trace(const Frontiere_dis_base& , DoubleTab& , double, int distant ) const override;
 
@@ -72,6 +73,8 @@ public :
     if (dnv) dnv[3] = f >= 0 && nv ? vf / nv : 0;
     return nv;
   }
+private:
+  DoubleTab& valeur_aux_elems_(const DoubleTab& val_face ,const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const override;
 };
 
 #endif /* Champ_Face_PolyMAC_P0_included */

@@ -197,16 +197,26 @@ void Champ_Face_PolyMAC::interp_ve(const DoubleTab& inco, const IntVect& les_pol
       }
 }
 
-DoubleTab& Champ_Face_PolyMAC::valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val) const
+DoubleTab& Champ_Face_PolyMAC::valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val_elem) const
+{
+  return valeur_aux_elems_(le_champ().valeurs(), positions, les_polys, val_elem);
+}
+
+DoubleTab& Champ_Face_PolyMAC::valeur_aux_elems_passe(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val_elem) const
+{
+  return valeur_aux_elems_(le_champ().passe(), positions, les_polys, val_elem);
+}
+
+DoubleTab& Champ_Face_PolyMAC::valeur_aux_elems_(const DoubleTab& val_face ,const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val_elem) const
 {
   const Champ_base& cha=le_champ();
-  int nb_compo=cha.nb_comp(), N = cha.valeurs().line_size(), D = dimension;
-  assert(val.line_size() == nb_compo * N);
+  int nb_compo=cha.nb_comp(), N = val_face.line_size(), D = dimension;
+  assert(val_elem.line_size() == nb_compo * N);
   // XXX : TODO Check this assert (positions and not val)
   assert((positions.dimension(0) == les_polys.size())||(positions.dimension_tot(0) == les_polys.size()));
   // assert((val.dimension(0) == les_polys.size())||(val.dimension_tot(0) == les_polys.size()));
 
-  if (val.nb_dim() > 2)
+  if (val_elem.nb_dim() > 2)
     {
       Cerr << "Erreur TRUST dans Champ_Face_PolyMAC::valeur_aux_elems()" << finl;
       Cerr << "Le DoubleTab val a plus de 2 entrees" << finl;
@@ -224,10 +234,10 @@ DoubleTab& Champ_Face_PolyMAC::valeur_aux_elems(const DoubleTab& positions, cons
   DoubleTrav ve(0, N * D);
   zone_PolyMAC().zone().domaine().creer_tableau_elements(ve);
   bool is_vit = cha.le_nom().debute_par("vitesse") && !cha.le_nom().debute_par("vitesse_debitante");
-  interp_ve(cha.valeurs(), ve, is_vit);
+  interp_ve(val_face, ve, is_vit);
   for (int p = 0; p < les_polys.size(); p++)
-    for (int r = 0, e = les_polys(p); e < zone_PolyMAC().nb_elem() && r < N * D; r++) val(p, r) = (e==-1) ? 0. : ve(e, r);
-  return val;
+    for (int r = 0, e = les_polys(p); e < zone_PolyMAC().nb_elem() && r < N * D; r++) val_elem(p, r) = (e==-1) ? 0. : ve(e, r);
+  return val_elem;
 }
 
 DoubleVect& Champ_Face_PolyMAC::valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& val, int ncomp) const

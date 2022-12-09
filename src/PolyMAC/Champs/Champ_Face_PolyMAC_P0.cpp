@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -257,18 +257,32 @@ void Champ_Face_PolyMAC_P0::update_ve2(DoubleTab& val, int incr) const
   val.echange_espace_virtuel();
 }
 
-DoubleTab& Champ_Face_PolyMAC_P0::valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val) const
+DoubleTab& Champ_Face_PolyMAC_P0::valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val_elem) const
+{
+  if (valeurs().get_md_vector() != zone_PolyMAC_P0().mdv_ch_face)
+    return Champ_Face_PolyMAC::valeur_aux_elems_(valeurs(), positions, les_polys, val_elem);
+  else
+    return valeur_aux_elems_(le_champ().valeurs(), positions, les_polys, val_elem);
+}
+
+DoubleTab& Champ_Face_PolyMAC_P0::valeur_aux_elems_passe(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val_elem) const
+{
+  if (valeurs().get_md_vector() != zone_PolyMAC_P0().mdv_ch_face)
+    return Champ_Face_PolyMAC::valeur_aux_elems_(passe(), positions, les_polys, val_elem);
+  else
+    return valeur_aux_elems_(le_champ().passe(), positions, les_polys, val_elem);
+}
+
+DoubleTab& Champ_Face_PolyMAC_P0::valeur_aux_elems_(const DoubleTab& val_face ,const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val_elem) const
 {
   const Zone_PolyMAC_P0& zone = zone_PolyMAC_P0();
-  if (valeurs().get_md_vector() != zone.mdv_ch_face) return Champ_Face_PolyMAC::valeur_aux_elems(positions, les_polys, val);
-  const Champ_base& cha=le_champ();
-  int nb_compo=cha.nb_comp(), nf_tot = zone.nb_faces_tot(), d, D = dimension, n, N = valeurs().line_size();
+  int nb_compo=le_champ().nb_comp(), nf_tot = zone.nb_faces_tot(), d, D = dimension, n, N = val_face.line_size();
 
   // XXX : TODO Check this assert (positions and not val)
   assert((positions.dimension(0) == les_polys.size())||(positions.dimension_tot(0) == les_polys.size()));
   // assert((val.dimension(0) == les_polys.size())||(val.dimension_tot(0) == les_polys.size()));
 
-  if (val.nb_dim() > 2)
+  if (val_elem.nb_dim() > 2)
     {
       Cerr << "Erreur TRUST dans Champ_Face_PolyMAC_P0::valeur_aux_elems()" << finl;
       Cerr << "Le DoubleTab val a plus de 2 entrees" << finl;
@@ -285,8 +299,8 @@ DoubleTab& Champ_Face_PolyMAC_P0::valeur_aux_elems(const DoubleTab& positions, c
   for (int p = 0, e; p < les_polys.size(); p++)
     for (e = les_polys(p), d = 0; e < zone.nb_elem() && d < D; d++)
       for (n = 0; n < N; n++)
-        val(p, N * d + n) = valeurs()(nf_tot + D * e + d, n);
-  return val;
+        val_elem(p, N * d + n) = val_face(nf_tot + D * e + d, n);
+  return val_elem;
 }
 
 DoubleVect& Champ_Face_PolyMAC_P0::valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& val, int ncomp) const

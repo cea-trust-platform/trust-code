@@ -13,14 +13,24 @@
 *
 *****************************************************************************/
 
-#include <Champ_Inc_base.h>
 #include <Champ_Face_VDF_implementation.h>
-#include <Zone_VDF.h>
-#include <LecFicDiffuse.h>
 #include <Frontiere_dis_base.h>
+#include <Champ_Inc_base.h>
+#include <LecFicDiffuse.h>
+#include <Zone_VDF.h>
 #include <TRUSTTab.h>
 
 DoubleTab& Champ_Face_VDF_implementation::valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val_elem) const
+{
+  return valeur_aux_elems_(le_champ().valeurs(), positions, les_polys, val_elem);
+}
+
+DoubleTab& Champ_Face_VDF_implementation::valeur_aux_elems_passe(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val_elem) const
+{
+  return valeur_aux_elems_(le_champ().passe(), positions, les_polys, val_elem);
+}
+
+DoubleTab& Champ_Face_VDF_implementation::valeur_aux_elems_(const DoubleTab& val_face ,const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val_elem) const
 {
   if (val_elem.nb_dim() > 2)
     {
@@ -29,10 +39,9 @@ DoubleTab& Champ_Face_VDF_implementation::valeur_aux_elems(const DoubleTab& posi
       Process::exit();
     }
 
-  const int N = le_champ().valeurs().line_size(), D = Objet_U::dimension;
+  const int N = val_face.line_size(), D = Objet_U::dimension;
   const Zone_VDF& zone_VDF = zone_vdf();
   const IntTab& f_s = zone_VDF.face_sommets(), &e_f = zone_VDF.elem_faces();
-  const DoubleTab& ch_face = le_champ().valeurs();
   const Domaine& dom = zone_VDF.zone().domaine();
   val_elem = 0.0;
 
@@ -44,7 +53,7 @@ DoubleTab& Champ_Face_VDF_implementation::valeur_aux_elems(const DoubleTab& posi
           const double psi = (positions(p, d) - dom.coord(som0, d)) / (dom.coord(som1, d) - dom.coord(som0, d));
           for (int n = 0; n < N; n++)
             {
-              const double val1 = ch_face(e_f(e, d), n), val2 = ch_face(e_f(e, d + D), n);
+              const double val1 = val_face(e_f(e, d), n), val2 = val_face(e_f(e, d + D), n);
               if (le_champ().nb_comp() == 1)
                 {
                   if (est_egal(psi, 0) || est_egal(psi, 1))
@@ -54,6 +63,7 @@ DoubleTab& Champ_Face_VDF_implementation::valeur_aux_elems(const DoubleTab& posi
                 val_elem(p, N * d + n) = interpolation(val1, val2, psi);
             }
         }
+
   return val_elem;
 }
 

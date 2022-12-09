@@ -89,6 +89,11 @@ public:
     return Champ_Face_VDF_implementation::valeur_aux_elems(positions, les_polys, tab_valeurs);
   }
 
+  inline DoubleTab& valeur_aux_elems_passe(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& tab_valeurs) const override
+  {
+    return Champ_Face_VDF_implementation::valeur_aux_elems_passe(positions, les_polys, tab_valeurs);
+  }
+
   inline DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& tab_valeurs, int ncomp) const override
   {
     return Champ_Face_VDF_implementation::valeur_aux_elems_compo(positions, les_polys, tab_valeurs, ncomp);
