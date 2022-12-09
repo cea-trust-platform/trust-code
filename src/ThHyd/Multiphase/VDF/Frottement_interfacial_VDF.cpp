@@ -45,37 +45,44 @@ void Frottement_interfacial_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& s
   double dh;
   const Frottement_interfacial_base& correlation_fi = ref_cast(Frottement_interfacial_base, correlation_.valeur());
 
+  DoubleTab pvit_elem(0, N * dimension);
+  zone.zone().creer_tableau_elements(pvit_elem);
+  ch.get_elem_vector_field(pvit_elem, true);
+
   /* faces */
   for (f = 0; f < zone.nb_faces(); f++)
     if (fcl(f, 0) < 2)
       {
-        for (a_l = 0, p_l = 0, T_l = 0, rho_l = 0, mu_l = 0, dh = 0, sigma_l = 0, dv = dv_min, ddv = 0, d_bulles_l = 0, c = 0; c < 2 && (e = f_e(f, c)) >= 0; c++)
-          for (n = 0; n < N; n++)
-            {
-              a_l(n) += vfd(f, c) / vf(f) * alpha(e, n);
-              p_l(n) += vfd(f, c) / vf(f) * press(e, n * (Np > 1));
-              T_l(n) += vfd(f, c) / vf(f) * temp(e, n);
-              rho_l(n) += vfd(f, c) / vf(f) * rho(!cR * e, n);
-              mu_l(n) += vfd(f, c) / vf(f) * mu(!cM * e, n);
-              for (k = 0; k < N; k++)
-                if (milc.has_interface(n, k))
+        a_l = 0, p_l = 0, T_l = 0, rho_l = 0, mu_l = 0, dh = 0, sigma_l = 0, dv = dv_min, ddv = 0, d_bulles_l = 0;
+        for (c = 0; c < 2 ; c++)
+          if( (e = f_e(f, c)) >= 0 )
+            for (n = 0; n < N; n++)
+              {
+                a_l(n) += vfd(f, c) / vf(f) * alpha(e, n);
+                p_l(n) += vfd(f, c) / vf(f) * press(e, n * (Np > 1));
+                T_l(n) += vfd(f, c) / vf(f) * temp(e, n);
+                rho_l(n) += vfd(f, c) / vf(f) * rho(!cR * e, n);
+                mu_l(n) += vfd(f, c) / vf(f) * mu(!cM * e, n);
+                for (k = 0; k < N; k++)
+                  if (milc.has_interface(n, k))
+                    {
+                      Interface_base& sat = milc.get_interface(n, k);
+                      sigma_l(n, k) += vfd(f, c) / vf(f) * sat.sigma(temp(e, n), press(e, n * (Np > 1)));
+                    }
+                dh += vfd(f, c) / vf(f) * alpha(e, n) * dh_e(e);
+
+                for (k = 0; k < N; k++)
                   {
-                    Interface_base& sat = milc.get_interface(n, k);
-                    sigma_l(n, k) += vfd(f, c) / vf(f) * sat.sigma(temp(e, n), press(e, n * (Np > 1)));
+                    double dv_c = ch.v_norm(pvit_elem, pvit, e, f, k, n, nullptr, &ddv_c(0));
+                    if (dv_c > dv(k, n))
+                      for (dv(k, n) = dv_c, i = 0; i < 4; i++)
+                        ddv(k, n, i) = ddv_c(i);
+
                   }
-              dh += vfd(f, c) / vf(f) * alpha(e, n) * dh_e(e);
 
-              for (k = 0; k < N; k++)
-                {
-                  // FIXME
-                  double dv_c = 0.;//ch.v_norm(pvit, pvit, e, f, k, n, nullptr, &ddv_c(0));
-                  if (dv_c > dv(k, n))
-                    for (dv(k, n) = dv_c, i = 0; i < 4; i++)
-                      ddv(k, n, i) = ddv_c(i);
-                }
 
-              d_bulles_l(n) += (d_bulles) ? vfd(f, c) / vf(f) * (*d_bulles)(e, n) : 0;
-            }
+                d_bulles_l(n) += (d_bulles) ? vfd(f, c) / vf(f) * (*d_bulles)(e, n) : 0;
+              }
 
         correlation_fi.coefficient(a_l, p_l, T_l, rho_l, mu_l, sigma_l, dh, dv, d_bulles_l, coeff);
         for (k = 0; k < N; k++)
@@ -90,11 +97,11 @@ void Frottement_interfacial_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& s
               {
                 double fac = pf(f) * vf(f);
                 /* on essaie d'impliciter coeff sans ralentir la convergence en en faisant un developpement limite autour de pvit (dans la direction d'interet seulement) */
-                secmem(f, k) -= fac
-                                * (coeff(k, l, 0) * (inco(f, k) - inco(f, l)) + coeff(k, l, 1) * ddv(k, l, 3) * (pvit(f, k) - pvit(f, l)) * ((inco(f, k) - inco(f, l)) - (pvit(f, k) - pvit(f, l))));
+                secmem(f, k) -= fac * (coeff(k, l, 0) * (inco(f, k) - inco(f, l)) + coeff(k, l, 1) * ddv(k, l, 3) * (pvit(f, k) - pvit(f, l)) * ((inco(f, k) - inco(f, l)) - (pvit(f, k) - pvit(f, l))));
                 if (mat)
                   for (j = 0; j < 2; j++)
                     (*mat)(N * f + k, N * f + (j ? l : k)) += fac * (j ? -1 : 1) * (coeff(k, l, 0) + coeff(k, l, 1) * ddv(k, l, 3) * (pvit(f, k) - pvit(f, l)));
               }
+
       }
 }
