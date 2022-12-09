@@ -40,7 +40,7 @@ public:
   Op_Conv_Amont_VDF_Face();
   void check_multiphase_compatibility() const override { }
   void preparer_calcul() override { Op_Conv_VDF_base::associer_champ_convecte_face(); }
-  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { if (!sub_type(Pb_Multiphase,equation().probleme())) modifier_pour_Cl_face(matrice,secmem); } // TODO : FIXME
+  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { modifier_pour_Cl_face(matrice,secmem); }
   inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd,const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_CONV_FACE,Eval_Amont_VDF_Face>(zd,zcd,ch); }
   inline void associer_vitesse(const Champ_base& ch_vit) override { associer_vitesse_impl<Eval_Amont_VDF_Face>(ch_vit); }
   inline Champ_base& vitesse() override { return vitesse_impl<Eval_Amont_VDF_Face>(); }

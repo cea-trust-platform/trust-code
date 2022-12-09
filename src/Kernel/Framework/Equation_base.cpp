@@ -2164,7 +2164,7 @@ void Equation_base::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab&
   solv_masse().valeur().set_penalisation_flag(0);
   schema_temps().ajouter_blocs(matrices, secmem, *this);
 
-  if (!(discretisation().que_suis_je().debute_par("PolyMAC") || probleme().que_suis_je() == "Pb_Multiphase"))
+  if (!(discretisation().que_suis_je().debute_par("PolyMAC")))
     {
       const std::string& nom_inco = inconnue().le_nom().getString();
       Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
