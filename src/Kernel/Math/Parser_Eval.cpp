@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,307 +15,48 @@
 
 #include <Parser_Eval.h>
 
-//Cas d une fonction a evaluer qui depend de l espace (x,y,z)
-//On traite toute(s) le(s) composante(s)
-void Parser_Eval::eval_fct(const DoubleVect& positions,DoubleVect& val) const
+double Parser_Eval::eval_fct_single_position_single_compo(const DoubleVect& position, const double* t, const double* val_param, const int ncomp) const
 {
-  int dim = fonction_.size();
-  int dimension = positions.size();
-
-  double x,y,z=0;
-  x = positions(0);
-  y = positions(1);
-  if (dimension>2)
-    z = positions(2);
-
-  for(int k=0; k<dim; k++)
-    {
-      Parser_U& fct = parser(k);
-      fct.setVar(0,x);
-      fct.setVar(1,y);
-      if (dimension>2)
-        fct.setVar(2,z);
-      val(k) = fct.eval();
-    }
-
-
-}
-
-//Cas d une fonction a evaluer qui depend de l espace (x,y,z)
-//On traite toute(s) le(s) composante(s)
-void Parser_Eval::eval_fct(const DoubleTab& positions,DoubleTab& val) const
-{
-  int pos_size = positions.dimension(0);
-  int dim = fonction_.size();
-  int nb_dim = val.nb_dim();
-  int dimension = positions.dimension(1);
-  double x,y,z;
-  x=y=z=0.;
-
-  if (nb_dim==1)
-    {
-      Parser_U& fct = parser(0);
-      for (int i=0; i<pos_size; i++)
-        {
-          x = positions(i,0);
-          y = positions(i,1);
-          if (dimension>2)
-            z = positions(i,2);
-          // Optimisation
-          fct.setVar(0,x); //fct.setVar("x",x);
-          fct.setVar(1,y); //fct.setVar("y",y);
-          if (dimension>2)
-            fct.setVar(2,z); //fct.setVar("z",z);
-          val(i) = fct.eval();
-        }
-    }
-  else
-    {
-      for (int i=0; i<pos_size; i++)
-        {
-          x = positions(i,0);
-          y = positions(i,1);
-          if (dimension>2)
-            z = positions(i,2);
-
-          for(int k=0; k<dim; k++)
-            {
-              Parser_U& fct = parser(k);
-              fct.setVar(0,x);
-              fct.setVar(1,y);
-              if (dimension>2)
-                fct.setVar(2,z);
-              val(i,k) = fct.eval();
-            }
-        }
-    }
-
-}
-
-//Cas d une fonction a evaluer qui depend de l espace (x,y,z)
-//On ne traite que la composante ncomp
-void Parser_Eval::eval_fct(const DoubleTab& positions,DoubleVect& val,const int ncomp) const
-{
-
-  int pos_size = positions.dimension(0);
-  int dimension = positions.dimension(1);
-  double x,y,z;
-  x=y=z=0.;
+  const int D = position.size();
+  const int with_time = t ? 1 : 0;
 
   Parser_U& fct = parser(ncomp);
-  for (int i=0; i<pos_size; i++)
-    {
-      x = positions(i,0);
-      y = positions(i,1);
-      if (dimension>2)
-        z = positions(i,2);
-
-      fct.setVar(0,x);
-      fct.setVar(1,y);
-      if (dimension>2)
-        fct.setVar(2,z);
-
-      val(i) = fct.eval();
-    }
-
-
+  if (with_time) fct.setVar(0, *t);
+  for (int d = 0; d < D; d++)
+    fct.setVar(with_time + d, position(d));
+  if (val_param) fct.setVar(4, *val_param);
+  return fct.eval();
 }
 
-//Cas d une fonction a evaluer qui depend de l espace et du temps (x,y,z,t)
-//On traite toute(s) le(s) composante(s)
-void Parser_Eval::eval_fct(const DoubleVect& positions,const double tps,DoubleVect& val) const
+void Parser_Eval::eval_fct_single_position(const DoubleVect& position, const double* t, const double* val_param, DoubleVect& val) const
 {
-  int dim = fonction_.size();
-  int dimension = positions.size();
-
-  double x,y,z=0;
-  x = positions(0);
-  y = positions(1);
-  if (dimension>2)
-    z = positions(2);
-
-  for(int k=0; k<dim; k++)
-    {
-      Parser_U& fct = parser(k);
-      fct.setVar(0,tps);
-      fct.setVar(1,x);
-      fct.setVar(2,y);
-      if (dimension>2)
-        fct.setVar(3,z);
-      val(k) = fct.eval();
-    }
-}
-//Cas d une fonction a evaluer qui depend de l espace et du temps (x,y,z,t)
-//On traite toute(s) le(s) composante(s)
-void Parser_Eval::eval_fct(const DoubleTab& positions,const double tps,DoubleTab& val) const
-{
-  int pos_size = positions.dimension(0);
-  int dim = fonction_.size();
-  int nb_dim = val.nb_dim();
-  int dimension = positions.dimension(1);
-
-  double x,y,z;
-  x=y=z=0.;
-
-  if (nb_dim==1)
-    {
-      Parser_U& fct = parser(0);
-      fct.setVar(0,tps); //fct.setVar("t",tps);
-      for (int i=0; i<pos_size; i++)
-        {
-          x = positions(i,0);
-          y = positions(i,1);
-          if (dimension>2)
-            z = positions(i,2);
-
-          fct.setVar(1,x);
-          fct.setVar(2,y);
-          if (dimension>2)
-            fct.setVar(3,z);
-          val(i) = fct.eval();
-        }
-    }
-  else
-    {
-      for (int i=0; i<pos_size; i++)
-        {
-          x = positions(i,0);
-          y = positions(i,1);
-          if (dimension>2)
-            z = positions(i,2);
-
-          for(int k=0; k<dim; k++)
-            {
-              Parser_U& fct = parser(k);
-              fct.setVar(0,tps);
-              fct.setVar(1,x);
-              fct.setVar(2,y);
-              if (dimension>2)
-                fct.setVar(3,z);
-              val(i,k) = fct.eval();
-            }
-        }
-    }
-
-
+  for (int k = 0; k < fonction_.size(); k++)
+    val(k) = eval_fct_single_position_single_compo(position, t, val_param, k);
 }
 
-//Cas d une fonction a evaluer qui depend de l espace et du temps (x,y,z,t)
-//On ne traite que la composante ncomp
-void Parser_Eval::eval_fct(const DoubleTab& positions,const double tps,DoubleVect& val,const int ncomp) const
+void Parser_Eval::eval_fct_single_compo(const DoubleTab& positions, const double* t, DoubleVect& val, const int ncomp) const
 {
+  const int pos_size = positions.dimension(0), D = positions.dimension(1);
+  DoubleVect position(D);
 
-  int pos_size = positions.dimension(0);
-  int dimension = positions.dimension(1);
-  double x,y,z;
-  x=y=z=0.;
-
-  Parser_U& fct = parser(ncomp);
-  fct.setVar(0,tps);
-  for (int i=0; i<pos_size; i++)
+  for (int i = 0; i < pos_size; i++)
     {
-      x = positions(i,0);
-      y = positions(i,1);
-      if (dimension>2)
-        z = positions(i,2);
-
-      fct.setVar(1,x);
-      fct.setVar(2,y);
-      if (dimension>2)
-        fct.setVar(3,z);
-
-      val(i) = fct.eval();
+      for (int d = 0; d < D; d++) position(d) = positions(i, d);
+      val(i) = eval_fct_single_position_single_compo(position, t, nullptr, ncomp);
     }
-
 }
 
-//Cas d une fonction a evaluer qui depend de l espace, du temps et des valeurs d un champ inconnu (x,y,z,t,val)
-//On traite toute(s) le(s) composante(s)
-void Parser_Eval::eval_fct(const DoubleTab& positions,const double tps,const DoubleTab& val_param,DoubleTab& val) const
+void Parser_Eval::eval_fct_(const DoubleTab& positions, const double* t, const DoubleTab* val_param, DoubleTab& val) const
 {
-  int pos_size = positions.dimension(0);
-  int dim = fonction_.size();
-  int nb_dim = val.nb_dim();
-  int dimension = positions.dimension(1);
+  const int pos_size = positions.dimension(0), D = positions.dimension(1), dim = fonction_.size();
+  DoubleVect position(D), val_elem(dim);
 
-  double x,y,z,valp;
-  x=y=z=valp=0.;
-
-  if (nb_dim==1)
+  for (int i = 0; i < pos_size; i++)
     {
-      Parser_U& fct = parser(0);
-      fct.setVar(0,tps);
-      for (int i=0; i<pos_size; i++)
-        {
-          x = positions(i,0);
-          y = positions(i,1);
-          if (dimension>2)
-            z = positions(i,2);
-          valp = val_param(i);
-
-          fct.setVar(1,x);
-          fct.setVar(2,y);
-          if (dimension>2)
-            fct.setVar(3,z);
-          fct.setVar(4,valp);
-          val(i) = fct.eval();
-        }
+      for (int d = 0; d < D; d++) position(d) = positions(i, d);
+      eval_fct_single_position(position, t, val_param ? &(*val_param)(i) : nullptr, val_elem);
+      for (int k = 0; k < dim; k++) val(i, k) = val_elem(k);
     }
-  else
-    {
-      for (int i=0; i<pos_size; i++)
-        {
-          x = positions(i,0);
-          y = positions(i,1);
-          if (dimension>2)
-            z = positions(i,2);
-
-          for(int k=0; k<dim; k++)
-            {
-              Parser_U& fct = parser(k);
-              valp = val_param(i,k);
-              fct.setVar(0,tps);
-              fct.setVar(1,x);
-              fct.setVar(2,y);
-              if (dimension>2)
-                fct.setVar(3,z);
-              fct.setVar(4,valp);
-              val(i,k) = fct.eval();
-            }
-        }
-    }
-
-}
-
-//Cas d une fonction a evaluer qui depend de l espace, du temps et des valeurs d un champ inconnu (x,y,z,t,val)
-//On ne traite que la composante ncomp
-void Parser_Eval::eval_fct(const DoubleTab& positions,const double tps,const DoubleTab& val_param,DoubleVect& val,const int ncomp) const
-{
-  int pos_size = positions.dimension(0);
-  int dimension = positions.dimension(1);
-  double x,y,z,valp;
-  x=y=z=valp=0.;
-
-  Parser_U& fct = parser(ncomp);
-  fct.setVar(0,tps);
-  for (int i=0; i<pos_size; i++)
-    {
-      x = positions(i,0);
-      y = positions(i,1);
-      if (dimension>2)
-        z = positions(i,2);
-      valp = val_param(i);
-
-      fct.setVar(1,x);
-      fct.setVar(2,y);
-      if (dimension>2)
-        fct.setVar(3,z);
-      fct.setVar(4,valp);
-
-      val(i) = fct.eval();
-    }
-
-
 }
 
 void Parser_Eval::eval_fct(const DoubleTabs& variables, DoubleTab& val) const

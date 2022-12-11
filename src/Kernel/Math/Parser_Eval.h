@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,25 +32,32 @@ public :
   Parser_U& parser(int i) { return fonction_[i]; }
   Parser_U& parser(int i) const { return fonction_[i]; }
 
-  //Cas d une fonction a evaluer qui depend de l espace
-  void eval_fct(const DoubleVect& positions,DoubleVect& val) const;
-  void eval_fct(const DoubleTab& positions,DoubleTab& val) const;
-  void eval_fct(const DoubleTab& positions,DoubleVect& val,const int ncomp) const;
-
-  //Cas d une fonction a evaluer qui depend de l espace et du temps
-  void eval_fct(const DoubleVect& positions,const double tps,DoubleVect& val) const;
-  void eval_fct(const DoubleTab& positions,const double tps,DoubleTab& val) const;
-  void eval_fct(const DoubleTab& positions,const double tps,DoubleVect& val,const int ncomp) const;
-
-  //Cas d une fonction a evaluer qui depend de l espace, du temps et des valeurs d un champ inconnu
-  void eval_fct(const DoubleTab& positions,const double tps,const DoubleTab& val_param,DoubleTab& val) const;
-  void eval_fct(const DoubleTab& positions,const double tps,const DoubleTab& val_param,DoubleVect& val,const int ncomp) const;
+  // multiple points evaluation - x, y, z
+  void eval_fct(const DoubleTab& positions, DoubleTab& val) const { eval_fct_(positions, nullptr, nullptr, val); }
+  // multiple points evaluation - x, y, z, t
+  void eval_fct(const DoubleTab& positions, const double t, DoubleTab& val) const { eval_fct_(positions, &t, nullptr, val); }
+  // multiple points evaluation - x, y, z, t, field
+  void eval_fct(const DoubleTab& positions, const double t, const DoubleTab& val_param, DoubleTab& val) const { eval_fct_(positions, &t, &val_param, val); }
+  // multiple points evaluation, single component - x, y, z
+  void eval_fct(const DoubleTab& positions, DoubleVect& val, const int ncomp) const { eval_fct_single_compo(positions, nullptr, val, ncomp); }
+  // multiple points evaluation, single component - x, y, z, t
+  void eval_fct(const DoubleTab& positions, const double t, DoubleVect& val, const int ncomp) const { eval_fct_single_compo(positions, &t, val, ncomp); }
+  // single point evaluation - x, y, z
+  void eval_fct(const DoubleVect& position, DoubleVect& val) const { eval_fct_single_position(position, nullptr, nullptr, val); }
+  // single point evaluation - x, y, z, t
+  void eval_fct(const DoubleVect& position, const double t, DoubleVect& val) const { eval_fct_single_position(position, &t, nullptr, val); }
 
   // Fonction generale qui depend de plusieurs champs inconnus
   void eval_fct(const DoubleTabs& variables, DoubleTab& val) const;
 
-protected :
+protected:
   mutable VECT(Parser_U) fonction_;
+
+private:
+  double eval_fct_single_position_single_compo(const DoubleVect& position, const double* t, const double* val_param, const int ncomp) const;
+  void eval_fct_single_position(const DoubleVect& position, const double* t, const double* val_param, DoubleVect& val) const;
+  void eval_fct_single_compo(const DoubleTab& positions, const double* t, DoubleVect& val, const int ncomp) const;
+  void eval_fct_(const DoubleTab& positions, const double* t, const DoubleTab *val_param, DoubleTab& val) const;
 };
 
 #endif /* Parser_Eval_included */
