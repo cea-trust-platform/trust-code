@@ -30,7 +30,12 @@ DoubleTab& Champ_Face_VDF_implementation::valeur_aux_elems_passe(const DoubleTab
   return valeur_aux_elems_(le_champ().passe(), positions, les_polys, val_elem);
 }
 
-DoubleTab& Champ_Face_VDF_implementation::valeur_aux_elems_(const DoubleTab& val_face ,const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val_elem) const
+DoubleVect& Champ_Face_VDF_implementation::valeur_a_elem(const DoubleVect& position, DoubleVect& val, int e) const
+{
+  return valeur_a_elem_(le_champ().valeurs(), position, val, e);
+}
+
+DoubleTab& Champ_Face_VDF_implementation::valeur_aux_elems_(const DoubleTab& val_face, const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val_elem) const
 {
   if (val_elem.nb_dim() > 2)
     {
@@ -39,32 +44,48 @@ DoubleTab& Champ_Face_VDF_implementation::valeur_aux_elems_(const DoubleTab& val
       Process::exit();
     }
 
-  const int N = val_face.line_size(), D = Objet_U::dimension;
-  const Zone_VDF& zone_VDF = zone_vdf();
-  const IntTab& f_s = zone_VDF.face_sommets(), &e_f = zone_VDF.elem_faces();
-  const Domaine& dom = zone_VDF.zone().domaine();
+  const int N = val_face.line_size(), D = Objet_U::dimension, M = le_champ().nb_comp();
+  DoubleVect val_e(N * D), x(D);
   val_elem = 0.0;
 
-  for (int p = 0, e; p < les_polys.size(); p++)
-    if ((e = les_polys(p)) != -1)
-      for (int d = 0; d < D; d++)
-        {
-          const int som0 = f_s(e_f(e, d), 0), som1 = f_s(e_f(e, d + D), 0);
-          const double psi = (positions(p, d) - dom.coord(som0, d)) / (dom.coord(som1, d) - dom.coord(som0, d));
-          for (int n = 0; n < N; n++)
-            {
-              const double val1 = val_face(e_f(e, d), n), val2 = val_face(e_f(e, d + D), n);
-              if (le_champ().nb_comp() == 1)
-                {
-                  if (est_egal(psi, 0) || est_egal(psi, 1))
-                    val_elem(p, 0) = interpolation(val1, val2, psi);
-                }
-              else
-                val_elem(p, N * d + n) = interpolation(val1, val2, psi);
-            }
-        }
+  for (int p = 0; p < les_polys.size(); p++)
+    {
+      for (int d = 0; d < D; d++) x(d) = positions(p, d);
+      valeur_a_elem_(val_face, x, val_e, les_polys(p));
+      for (int i = 0; i < N * std::min(D, M); i++) val_elem(p, i) = val_e(i);
+    }
 
   return val_elem;
+}
+
+DoubleVect& Champ_Face_VDF_implementation::valeur_a_elem_(const DoubleTab& val_face, const DoubleVect& position, DoubleVect& val, int e) const
+{
+  val = 0.0;
+  if (e == -1) return val;
+
+  const int N = le_champ().valeurs().line_size(), D = Objet_U::dimension;
+  const Zone_VDF& zone_VDF = zone_vdf();
+  const Zone& zone_geom = get_zone_geom();
+  const IntTab& f_s = zone_VDF.face_sommets(), &e_f = zone_VDF.elem_faces();
+  const Domaine& dom = zone_geom.domaine();
+
+  for (int d = 0; d < D; d++)
+    {
+      const int som0 = f_s(e_f(e, d), 0), som1 = f_s(e_f(e, d + D), 0);
+      const double psi = (position(d) - dom.coord(som0, d)) / (dom.coord(som1, d) - dom.coord(som0, d));
+      for (int n = 0; n < N; n++)
+        {
+          const double val1 = val_face(e_f(e, d), n), val2 = val_face(e_f(e, d + D), n);
+          if (le_champ().nb_comp() == 1)
+            {
+              if (est_egal(psi, 0) || est_egal(psi, 1))
+                val(0) = interpolation(val1, val2, psi);
+            }
+          else
+            val(N * d + n) = interpolation(val1, val2, psi);
+        }
+    }
+  return val;
 }
 
 double Champ_Face_VDF_implementation::interpolation(const double val1, const double val2, const double psi) const
@@ -80,100 +101,32 @@ double Champ_Face_VDF_implementation::interpolation(const double val1, const dou
 
 DoubleVect& Champ_Face_VDF_implementation::valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& val, int ncomp) const
 {
-  if (le_champ().nb_comp() == 1)
-    {
-      Cerr<<"Champ_Face_VDF_implementation::valeur_aux_elems_compo"<<finl;
-      Cerr <<"A scalar field cannot be of Champ_Face type." << finl;
-      Process::exit();
-    }
-  if (le_champ().valeurs().line_size() > 1)
-    {
-      Cerr<<"Champ_Face_VDF_implementation::valeur_aux_elems_compo"<<finl;
-      Cerr <<"Not compatible with multi-phase." << finl;
-      Process::exit();
-    }
   assert(val.size() == les_polys.size());
-  int le_poly;
-  double psi,val1,val2;
-  int som0,som1;
 
-  const Zone_VDF& zone_VDF = zone_vdf();
-  const IntTab& face_sommets = zone_VDF.face_sommets();
-  const IntTab& elem_faces = zone_VDF.elem_faces();
-  const DoubleTab& ch = le_champ().valeurs();
-  const Domaine& dom=get_zone_geom().domaine();
+  const int D = Objet_U::dimension;
+  DoubleVect x(D);
 
-  for(int rang_poly=0; rang_poly<les_polys.size(); rang_poly++)
+  for(int p = 0; p < les_polys.size(); p++)
     {
-      le_poly=les_polys(rang_poly);
-      if (le_poly == -1)
-        val(rang_poly) = 0;
-      else
-        {
-          val1 = ch(elem_faces(le_poly,ncomp));
-          val2 = ch(elem_faces(le_poly,Objet_U::dimension+ncomp));
-          som0 = face_sommets(elem_faces(le_poly,ncomp),0);
-          som1 = face_sommets(elem_faces(le_poly,Objet_U::dimension+ncomp),0);
-
-          psi = ( positions(rang_poly,ncomp) - dom.coord(som0,ncomp) )
-                / ( dom.coord(som1,ncomp) - dom.coord(som0,ncomp) ) ;
-          val(rang_poly) = interpolation(val1,val2,psi);
-        }
+      for (int d = 0; d < D; d++) x(d) = positions(p, d);
+      val(p) = valeur_a_elem_compo(x, les_polys(p), ncomp);
     }
 
   return val;
 }
-
-DoubleVect& Champ_Face_VDF_implementation::valeur_a_elem(const DoubleVect& position, DoubleVect& val, int e) const
-{
-  if (le_champ().nb_comp() == 1)
-    {
-      Cerr<<"Champ_Face_VDF_implementation::valeur_a_elem"<<finl;
-      Cerr <<"A scalar field cannot be of Champ_Face type." << finl;
-      Process::exit();
-    }
-  val = 0.0;
-  if (e == -1) return val;
-
-  const int N = le_champ().valeurs().line_size(), D = Objet_U::dimension;
-  const Zone_VDF& zone_VDF = zone_vdf();
-  const Zone& zone_geom = get_zone_geom();
-  const IntTab& f_s = zone_VDF.face_sommets(), &e_f = zone_VDF.elem_faces();
-  const DoubleTab& ch = le_champ().valeurs();
-  const Domaine& dom = zone_geom.domaine();
-
-  for (int d = 0; d < D; d++)
-    {
-      const int som0 = f_s(e_f(e, d), 0), som1 = f_s(e_f(e, d + D), 0);
-      const double psi = (position(d) - dom.coord(som0, d)) / (dom.coord(som1, d) - dom.coord(som0, d));
-      for (int n = 0; n < N; n++)
-        {
-          const double val1 = ch(e_f(e, d), n), val2 = ch(e_f(e, d + D), n);
-          val(N * d + n) = interpolation(val1, val2, psi);
-        }
-    }
-  return val;
-}
-
 
 double Champ_Face_VDF_implementation::valeur_a_elem_compo(const DoubleVect& position, int e, int d) const
 {
-  if (le_champ().nb_comp() == 1)
-    {
-      Cerr<<"Champ_Face_implementation::valeur_a_elem_compo"<<finl;
-      Cerr <<"A scalar field cannot be of Champ_Face type." << finl;
-      Process::exit();
-    }
+  assert (le_champ().nb_comp() > 1); // a scalar field should not be a champ_face
   assert(le_champ().valeurs().line_size() == 1); // not compatible with multiphase
   if (e == -1) return 0;
 
-  const Zone_VDF& zone_VDF = zone_vdf();
-  const IntTab& f_s = zone_VDF.face_sommets(), &e_f = zone_VDF.elem_faces();
-  const DoubleTab& ch = le_champ().valeurs();
-  const Domaine& dom = zone_VDF.zone().domaine();
+  const IntTab& f_s = zone_vdf().face_sommets(), &e_f = zone_vdf().elem_faces();
+  const DoubleTab& vals = le_champ().valeurs();
+  const Domaine& dom = zone_vdf().zone().domaine();
   const int D = Objet_U::dimension;
 
-  const double val1 = ch(e_f(e, d)), val2 = ch(e_f(e, D + d));
+  const double val1 = vals(e_f(e, d)), val2 = vals(e_f(e, D + d));
   const int som0 = f_s(e_f(e, d), 0), som1 = f_s(e_f(e, D + d), 0);
   const double psi = (position(d) - dom.coord(som0, d)) / (dom.coord(som1, d) - dom.coord(som0, d));
 

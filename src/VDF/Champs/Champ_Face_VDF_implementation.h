@@ -42,7 +42,8 @@ protected:
   DoubleTab& trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x, int distant) const;
 
 private:
-  DoubleTab& valeur_aux_elems_(const DoubleTab& val_face ,const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const;
+  DoubleTab& valeur_aux_elems_(const DoubleTab& val_face, const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const;
+  DoubleVect& valeur_a_elem_(const DoubleTab& val_face, const DoubleVect& position, DoubleVect& val, int le_poly) const;
 };
 
 #endif /* Champ_Face_VDF_implementation_included */
