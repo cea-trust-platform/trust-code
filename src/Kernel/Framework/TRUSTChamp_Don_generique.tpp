@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,12 +52,8 @@ double TRUSTChamp_Don_generique<_TYPE_>::valeur_a_compo(const DoubleVect& x, int
 
   if (ncomp > nb_compo_) erreur_champ_(__func__); // asking ncomp > nb_compo_ ?????
 
-  DoubleTab positions(1, dimension);
-  DoubleTab val_fct(1);
-  positions(0, 0) = x(0);
-  positions(0, 1) = x(1);
-  if (dimension > 2) positions(0, 2) = x(2);
-
+  DoubleTab positions(1, dimension), val_fct(1);
+  for (int d = 0; d < dimension; d++) positions(0, d) = x(d);
   eval_fct(positions, val_fct, ncomp);
   return val_fct(0);
 }
