@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,6 +22,7 @@
 #include <Dirichlet.h>
 #include <Symetrie.h>
 
+// TODO : FIXME : a la poubelle
 void Op_VDF_Face::dimensionner(const Zone_VDF& la_zone, const Zone_Cl_VDF& la_zone_cl, Matrice_Morse& la_matrice) const
 {
   // Dimensionnement de la matrice qui devra recevoir les coefficients provenant de la convection, de la diffusion pour le cas des faces.
@@ -131,20 +132,19 @@ void Op_VDF_Face::dimensionner(const Zone_VDF& la_zone, const Zone_Cl_VDF& la_zo
             }
         }
     }
-  // la_matrice.imprimer_formatte(Cout);
 }
 
 void Op_VDF_Face::modifier_pour_Cl_(const int face, const int comp, const int nb_comp, Matrice_Morse& la_matrice) const
 {
-  IntVect& tab1=la_matrice.get_set_tab1();
+  IntVect& tab1 = la_matrice.get_set_tab1();
   DoubleVect& coeff = la_matrice.get_set_coeff();
 
-  const int idiag = tab1[face*nb_comp+comp]-1;
-  coeff[idiag] = 1;
+  const int idiag = tab1[face * nb_comp + comp] - 1;
+  coeff[idiag] = 1.;
 
   // pour les voisins
-  const int nbvois = tab1[face*nb_comp+1+comp] - tab1[face*nb_comp+comp];
-  for (int k = 1; k < nbvois; k++) coeff[idiag+k] = 0;
+  const int nbvois = tab1[face * nb_comp + 1 + comp] - tab1[face * nb_comp + comp];
+  for (int k = 1; k < nbvois; k++) coeff[idiag + k] = 0.;
 }
 
 void Op_VDF_Face::modifier_pour_Cl(const Zone_VDF& la_zone, const Zone_Cl_VDF& la_zone_cl, Matrice_Morse& la_matrice, DoubleTab& secmem) const
@@ -154,48 +154,47 @@ void Op_VDF_Face::modifier_pour_Cl(const Zone_VDF& la_zone, const Zone_Cl_VDF& l
   const DoubleTab& champ_inconnue = la_zone_cl.equation().inconnue().valeurs();
   const int nb_comp = champ_inconnue.line_size();
 
-  // Prise en compte des conditions de type periodicite
   for (int i = 0; i < les_cl.size(); i++)
     {
       const Cond_lim& la_cl = les_cl[i];
-      const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& la_front_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
       const int numdeb = la_front_dis.num_premiere_face(), nfaces = la_front_dis.nb_faces();
 
-      if (sub_type(Dirichlet,la_cl.valeur()))
+      if (sub_type(Dirichlet, la_cl.valeur()))
         {
-          const Dirichlet& la_cl_Dirichlet = ref_cast(Dirichlet,la_cl.valeur());
+          const Dirichlet& la_cl_Dirichlet = ref_cast(Dirichlet, la_cl.valeur());
 
           for (int face = numdeb; face < (numdeb + nfaces); face++)
             for (int comp = 0; comp < nb_comp; comp++)
               {
-                modifier_pour_Cl_(face,comp,nb_comp,la_matrice);
+                modifier_pour_Cl_(face, comp, nb_comp, la_matrice);
                 // pour le second membre [Correction erreur (10/99) : WEC : correction numero de face]
                 const int ori = orientation(face);
-                secmem[face*nb_comp+comp] = la_cl_Dirichlet.val_imp(face-numdeb,ori);
+                secmem(face, comp) = la_cl_Dirichlet.val_imp(face - numdeb, nb_comp * ori + comp);
               }
         }
 
-      if (sub_type(Symetrie,la_cl.valeur()))
+      if (sub_type(Symetrie, la_cl.valeur()))
         {
           for (int face = numdeb; face < numdeb + nfaces; face++)
-            for (int comp=0; comp<nb_comp; comp++)
+            for (int comp = 0; comp < nb_comp; comp++)
               {
-                modifier_pour_Cl_(face,comp,nb_comp,la_matrice);
-                secmem[face*nb_comp+comp] = 0;
+                modifier_pour_Cl_(face, comp, nb_comp, la_matrice);
+                secmem(face, comp) = 0.;
               }
         }
 
-      if (sub_type(Dirichlet_homogene,la_cl.valeur()))
+      if (sub_type(Dirichlet_homogene, la_cl.valeur()))
         {
-          const Dirichlet_homogene& la_cl_Dirichlet_homogene = ref_cast(Dirichlet_homogene,la_cl.valeur());
+          const Dirichlet_homogene& la_cl_Dirichlet_homogene = ref_cast(Dirichlet_homogene, la_cl.valeur());
 
           for (int face = numdeb; face < numdeb + nfaces; face++)
             for (int comp = 0; comp < nb_comp; comp++)
               {
-                modifier_pour_Cl_(face,comp,nb_comp,la_matrice);
+                modifier_pour_Cl_(face, comp, nb_comp, la_matrice);
                 // pour le second membre [Correction erreur (10/99) : WEC : correction numero de face]
                 const int ori = orientation(face);
-                secmem[face*nb_comp+comp] = la_cl_Dirichlet_homogene.val_imp(face-numdeb,ori);
+                secmem(face, comp) = la_cl_Dirichlet_homogene.val_imp(face - numdeb, nb_comp * ori + comp);
               }
         }
     }
