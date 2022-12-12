@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -328,7 +328,9 @@ void Op_Grad_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, con
       for (int n = 0, m = 0; n < N; n++, m += (M > 1))
         {
           const int e = face_voisins(f, i);
-          coef = face_surfaces(f) * porosite_surf(f) * (alp ? (*alp)(e, n) : 1.0);
+          n0 = face_voisins(f, 0), n1 = face_voisins(f, 1);
+          // XXX : Elie Saikali : attention : on code alpha grad(P) et pas grad(alpha.P) !! Sinon on manque des termes ... (voir avec Antoine sinon)
+          coef = 0.5 * face_surfaces(f) * porosite_surf(f) * (alp ? (*alp)(n0, n) + (*alp)(n1, n) : 2.0);
           if (mat)
             (*mat)(N * f + n, M * e + m) += (i ? 1.0 : -1.0) * coef;
           secmem(f, n) -= (i ? 1.0 : -1.0) * coef * inco(e, m);
