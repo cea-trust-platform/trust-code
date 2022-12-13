@@ -186,6 +186,8 @@ double Op_Conv_VDF_base::calculer_dt_stab() const
   const DoubleTab& vit_associe = vitesse().valeurs();
   const DoubleTab& vit= (vitesse_pour_pas_de_temps_.non_nul()?vitesse_pour_pas_de_temps_.valeur().valeurs(): vit_associe);
   const int N = std::min(vit.line_size(), equation().inconnue().valeurs().line_size());
+  const DoubleTab* alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
+
   DoubleTab fluent(0, N);
   // fluent est initialise a zero par defaut:
   zone_VDF.zone().creer_tableau_elements(fluent);
@@ -235,10 +237,12 @@ double Op_Conv_VDF_base::calculer_dt_stab() const
   // dt_stab = min ( 1 / ( |U|/dx + |V|/dy + |W|/dz ) )
   for (int num_poly=0; num_poly<zone_VDF_nb_elem; num_poly++)
     for (int n = 0; n < N; n++)
-      {
-        double dt_elem = volumes(num_poly)/(fluent(num_poly, n)+DMINFLOAT);
-        if (dt_elem<dt_stab) dt_stab = dt_elem;
-      }
+      if ((!alp || (*alp)(num_poly, n) > 1e-3))
+        {
+          double dt_elem = volumes(num_poly)/(fluent(num_poly, n)+DMINFLOAT);
+          if (dt_elem<dt_stab) dt_stab = dt_elem;
+        }
+
   dt_stab = Process::mp_min(dt_stab);
 
   // astuce pour contourner le type const de la methode
