@@ -9,7 +9,7 @@ all:$(lib)
 $(lib): makefile Install test_VC.cpp
 	make clean;
 	./Install $(Vc);
-	make test;
+	#make test;
 
 test: test_VC.cpp
 	cp test_VC.cpp $(TRUST_TMP)/build/lib/Vc_build; cd $(TRUST_TMP)/build/lib/Vc_build; \

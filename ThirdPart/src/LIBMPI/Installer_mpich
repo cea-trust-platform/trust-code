@@ -11,6 +11,22 @@ default_version=3.2
 # PL NB2: Evaluer conda install mpich (3.3?)
 latest_version=3.4.2
 [ `uname -s` = Darwin ] && latest_version=4.0.2
+
+# Choix du compilateur:
+if [ "$TRUST_CC_BASE_EXTP" != "" ]
+then
+   export CXX=$TRUST_CC_BASE_EXTP
+   export CC=${CXX%++}cc
+   export F77=${CXX%++}fortran
+else
+   export CXX=$TRUST_CC_BASE
+   export CC=$TRUST_cc_BASE
+   export F77=$TRUST_F77_BASE
+fi
+export FC=$F77
+# Si compilateur GNU calcul de la version (ToDo: remonter dans configure)
+TRUST_VERSION_GNU_NUMERIC=0 && [ "${CXX%g++}" != "$CXX" ] && TRUST_VERSION_GNU_NUMERIC=`$CXX -v 2>&1 | awk '/gcc / && /version / {split($3,a,".");print a[1]*100+a[2]*10+a[3]*1}'`
+
 # Cas ou l'on force la version la plus recente:
 if [ "$TRUST_FORCE_LATEST_MPICH" = 1 ]
 then
@@ -18,7 +34,7 @@ then
 else # ToDo remonter dans le configure ?
    version=$default_version
    # Ubuntu 22 et Fedora 34, GNU>=11.0.0
-   if [ "`echo $TRUST_VERSION_GNU | awk -F. '{if ($1*100+$2*10+$3>=1100) print -force_latest_mpich}'`" != "" ]
+   if [ "$TRUST_VERSION_GNU_NUMERIC" -ge 1100 ]
    then
       echo "Error, use -force_latest_mpich cause $version MPICH not supported with GNU compilers >= 11" && exit -1
    fi
@@ -72,17 +88,13 @@ cd $src
 ###############################
 # Lancement de la configuration
 ###############################
-export F77=$TRUST_F77_BASE
-export FC=$TRUST_F77_BASE
-export CC=$TRUST_cc_BASE
-export CXX=$TRUST_CC_BASE
 export CXXFLAGS="-fPIC"
 export CFLAGS="-fPIC"
 export FFLAGS="-fPIC -std=legacy"
 # MPICH meme recent 3.3.1 ne compile pas encore avec gfortran 10 sans allow-argument-mismatch:
-TRUST_GNU_VERSION=`[ "${TRUST_CC_BASE%g++}" != "$TRUST_CC_BASE" ] && $TRUST_CC_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`
-[ `echo $TRUST_GNU_VERSION | awk -F. '{print ($1>=10)}'` = 1 ] && FFLAGS=$FFLAGS" -fallow-argument-mismatch"
+[ "$TRUST_VERSION_GNU_NUMERIC" -ge 1000 ] && FFLAGS=$FFLAGS" -fallow-argument-mismatch"
 export FCFLAGS=$FFLAGS
+
 # La variable MV est definie a sta sur certaines machines et pose probleme:
 unset MV
 ./configure --help 2>&1 1>../configure.help

@@ -182,6 +182,8 @@ then
    # Change le format en lml
    echo $ECHO_OPTS "1,$ s?ormat[ \t]lata_v2?ormat lml?g\nw" | ed $test.data 1>/dev/null 2>&1
    echo $ECHO_OPTS "1,$ s?ormat[ \t]lata?ormat lml?g\nw" | ed $test.data 1>/dev/null 2>&1
+   # Pas le med bazar dans G+
+   #echo $ECHO_OPTS "1,$ s?ormat[ \t]med?ormat lml?g\nw" | ed $test.data 1>/dev/null 2>&1
    # Pas de postraitement aux faces (a ameliorer, cela devient trop complique):
    echo $ECHO_OPTS "1,$ s/[ \t]temperature_physique[ \t]faces$//g\nw" | ed $test.data 1>/dev/null 2>&1
    echo $ECHO_OPTS "1,$ s/[ \t]energie_cinetique[ \t]faces$//g\nw" | ed $test.data 1>/dev/null 2>&1

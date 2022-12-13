@@ -12,7 +12,15 @@ install_OpenBlas()
    echo "Installation of $package (USE_THREAD=$TRUST_USE_OPENMP)..."
    gunzip -f -c $package | tar -xf -
    cd OpenBLAS-$version_openblas
-   $TRUST_MAKE CC=$TRUST_cc FC=$TRUST_F77 USE_THREAD=$TRUST_USE_OPENMP
+   if [ "$TRUST_CC_BASE_EXTP" != "" ]
+   then
+      CC=${TRUST_CC_BASE_EXTP%++}cc
+      FC=${TRUST_CC_BASE_EXTP%++}fortran
+   else
+      CC=$TRUST_cc
+      FC=$TRUST_F77
+   fi  
+   $TRUST_MAKE CC=$CC FC=$FC USE_THREAD=$TRUST_USE_OPENMP
 }
 install_NetLib()
 {

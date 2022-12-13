@@ -56,7 +56,7 @@ analyse_fichier_colonne()
    if [ $type = "par" ]
    then
       let egal=0
-      list_output=`ls  $NOM2"_"*.out 2>/dev/null`
+      list_output=`ls  $NOM2"_"*.out 2>/dev/null | grep -v unknown_operator`
       total=`echo $list_output | wc -w | $TRUST_Awk '{print $1}'`
       seuil=1e-3
       if [ -f seuil_controle_bilan ]

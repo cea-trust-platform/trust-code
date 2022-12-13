@@ -42,15 +42,16 @@ mkdir -p build
 cd build
 [ -f /usr/include/gtest ] && BUILD_CLIENTS="-DBUILD_CLIENTS_SAMPLES=ON -DBUILD_CLIENTS_TESTS=ON -DBUILD_CLIENTS_BENCHMARKS=ON"
 # rocALUTION se construit avec GNU/HP-CRAY/INTEL
-CXX=$TRUST_CC_BASE cmake .. $BUILD_CLIENTS -DSUPPORT_HIP=$SUPPORT_HIP -DROCM_PATH=$ROCM_PATH -DSUPPORT_OMP=OFF -DSUPPORT_MPI=$SUPPORT_MPI -DCMAKE_INSTALL_PREFIX=$TRUST_ROCALUTION || exit -1
+CXX=$TRUST_CC_BASE && [ "$TRUST_CC_BASE_EXTP" != "" ] && CXX=$TRUST_CC_BASE_EXTP
+CXX=$CXX cmake .. $BUILD_CLIENTS -DSUPPORT_HIP=$SUPPORT_HIP -DROCM_PATH=$ROCM_PATH -DSUPPORT_OMP=OFF -DSUPPORT_MPI=$SUPPORT_MPI -DCMAKE_INSTALL_PREFIX=$TRUST_ROCALUTION || exit -1
 
-# Bidouille pour ROCM anciens... (Attention AdAstra (rocm 5.2.0) donc supprimer cette partie si necessaire):
-if [ -f $ROCM_PATH/include/rocsparse.h ]
-then
-   echo "Creating links for old Rocm version..."
-   mkdir -p include/rocsparse && ln -s -f $ROCM_PATH/include/rocsparse.h include/rocsparse/rocsparse.h
-   mkdir -p include/rocblas   && ln -s -f $ROCM_PATH/include/rocblas.h   include/rocblas/rocblas.h
-fi
+# Bidouille pour ROCM anciens... (Attention Adastra (rocm 5.2.0) donc supprimer cette partie si necessaire):
+#if [ -f $ROCM_PATH/include/rocsparse.h ]
+#then
+#   echo "Creating links for old Rocm version..."
+#   mkdir -p include/rocsparse && ln -s -f $ROCM_PATH/include/rocsparse.h include/rocsparse/rocsparse.h
+#   mkdir -p include/rocblas   && ln -s -f $ROCM_PATH/include/rocblas.h   include/rocblas/rocblas.h
+#fi
 $TRUST_MAKE
 
 # Install et copie des samples

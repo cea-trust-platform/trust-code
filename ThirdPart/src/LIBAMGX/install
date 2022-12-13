@@ -30,11 +30,11 @@ then
       tar xfz $TRUST_ROOT/externalpackages/AmgX/AmgX_$commit.tar.gz
    fi
    cd $LIB && mkdir -p build && cd build
-   if [ "$TRUST_VERSION_GNU" != "" ]
+   if [ "$TRUST_CC_BASE_EXTP" != "" ]
    then
-      AMGX_COMPILERS="-DCMAKE_CXX_COMPILER=$TRUST_CC_BASE -DCMAKE_C_COMPILER=$TRUST_cc_BASE"
+      AMGX_COMPILERS="-DCMAKE_CXX_COMPILER=$TRUST_CC_BASE_EXTP -DCMAKE_CXX_FLAGS=-std=c++11 -DCMAKE_C_COMPILER=${TRUST_CC_BASE_EXTP%++}cc" # See https://github.com/NVIDIA/AMGX for compilers...
    else
-      AMGX_COMPILERS="-DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc" # See https://github.com/NVIDIA/AMGX for compilers...
+      AMGX_COMPILERS="-DCMAKE_CXX_COMPILER=$TRUST_CC_BASE -DCMAKE_C_COMPILER=$TRUST_cc_BASE"
    fi
    # Sur jeanzay, $TRUST_MAKE plante (pas assez de memoire sur frontale?) donc on retente avec make:
    #-DCUDA_ARCH="60;70;80"
@@ -64,14 +64,14 @@ then
    BUILD=RELEASE
    CMAKE_CXX_FLAGS="-DCMAKE_CXX_FLAGS=-fPIC" && [ "$TRUST_USE_OPENMP" = 1 ] && CMAKE_CXX_FLAGS="-DCMAKE_CXX_FLAGS=-fopenmp"
    #BUILD=DEBUG
-   # On specifie CC et CXX car si HPC SDK, nvc et nvc++ pris a la place (orcus):
-   if [ "$TRUST_VERSION_GNU" != "" ]
+   # On specifie CC et CXX:
+   if [ "$TRUST_CC_BASE_EXTP" != "" ]
    then
-      export CC=$TRUST_cc
-      export CXX=$TRUST_CC
+      export CXX=$TRUST_CC_BASE_EXTP
+      export CC=${CXX%++}cc
    else
-      export CC=gcc
-      export CXX=g++
+      export CXX=$TRUST_CC
+      export CC=$TRUST_cc
    fi
    CMAKE_FLAGS="$CMAKE_CXX_FLAGS -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX -DCMAKE_CUDA_HOST_COMPILER=$CC -DCMAKE_CUDA_FLAGS=-fPIC"
    # cmake (meme recent, 3.20) pas foutu de detecter correctement le nvcc du HPC SDK (cannot find -lcudadevrt -lcudart_static):

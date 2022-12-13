@@ -47,14 +47,25 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
   sed -i 's/GET_PROPERTY(_lib_lst TARGET hdf5 PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES_NOCONFIG)/SET(_lib_lst)/' $(find . -name FindMedfileHDF5.cmake)
 
   # fPIC is not there by default in MED autotools ...
-  Wno="-Wno-error -Wno-implicit-function-declaration" && [ "`basename $TRUST_CC_BASE`" = nvc++ ] && Wno=""
+  Wno="-Wno-error -Wno-implicit-function-declaration"
   CFLAGS="${CFLAGS} -fPIC $Wno"
   CPPFLAGS="${CPPFLAGS} -fPIC $Wno"
   CXXFLAGS="${CXXFLAGS} -fPIC $Wno"
   FFLAGS="${FFLAGS} -fPIC"
-  #LDFLAGS from TRUST
-  fic_env=$TRUST_ROOT/env/make.$TRUST_ARCH_CC`[ "$debug" = "0" ] && echo _opt`
-  LDFLAGS=`$TRUST_Awk '/SYSLIBS =/ {gsub("SYSLIBS =","",$0);print $0}' $fic_env`
+
+  if [ "$TRUST_CC_BASE_EXTP" != "" ]
+  then
+     CXX=$TRUST_CC_BASE_EXTP
+     CC=${CXX%++}cc
+     FC=${CXX%++}fortran
+  else
+     CXX=$TRUST_CC
+     CC=$TRUST_cc
+     FC=$TRUST_F77
+     #LDFLAGS from TRUST
+     fic_env=$TRUST_ROOT/env/make.$TRUST_ARCH_CC`[ "$debug" = "0" ] && echo _opt`
+     LDFLAGS=`$TRUST_Awk '/SYSLIBS =/ {gsub("SYSLIBS =","",$0);print $0}' $fic_env`
+  fi
   export CFLAGS CPPFLAGS CXXFLAGS FFLAGS LDFLAGS
 
   echo "Configuring with CMake ..."
@@ -71,7 +82,7 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
   fi
   [ `uname -s` = Darwin ] && DARWIN_FLAGS="-DCMAKE_OSX_DEPLOYMENT_TARGET=$(sw_vers -productVersion)"
   echo "Setting FFLAGS=$FFLAGS and MED_INT=$MED_INT ..."
-  env CC=$TRUST_cc CXX=$TRUST_CC F77=$TRUST_F77 FC=$TRUST_F77 cmake ..  -DCMAKE_INSTALL_PREFIX="$actual_install_dir" -DMEDFILE_BUILD_STATIC_LIBS=ON -DMEDFILE_BUILD_SHARED_LIBS=OFF \
+  env CC=$CC CXX=$CXX F77=$FC FC=$FC cmake ..  -DCMAKE_INSTALL_PREFIX="$actual_install_dir" -DMEDFILE_BUILD_STATIC_LIBS=ON -DMEDFILE_BUILD_SHARED_LIBS=OFF \
       -DMEDFILE_INSTALL_DOC=OFF -DMEDFILE_BUILD_PYTHON=OFF -DHDF5_ROOT_DIR=$TRUST_MED_ROOT/hdf5_install -DMEDFILE_USE_MPI=$USE_MPI -DMED_MEDINT_TYPE=$MED_INT \
       -DCMAKE_SHARED_LINKER_FLAGS="$LDFLAGS" -DMEDFILE_BUILD_TESTS=OFF $DARWIN_FLAGS
 
