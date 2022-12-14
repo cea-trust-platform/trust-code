@@ -1860,14 +1860,17 @@ AVX_FLAGS=""
 if [ "${TRUST_CC_BASE%icpc}" != "$TRUST_CC_BASE" ]
 then
    # INTEL
-   AVX_FLAGS="-axavx -xavx -xssse3"
+   AVX_FLAGS="-axavx -xavx -xssse3 -vec-report1"
 else
    # GNU (il vaut mieux verifier dans le /proc/cpuinfo que l'extension existe
    # car le test de compilation ne suffit pas). A se demander si ce n'est pas
    # plus simple de l'enlever
    # Autre pb: sse4_x n'est pas gere par valgrind en 32 bits
    model=`uname -m`
-   for flag in avx `[ "$model" != i686 ] && echo sse4_2 sse4_1` ssse3
+   # avx512f 3 pb sur TRUST Parallel_Domain_Cutting Polyedre_volume_xg Reprise_Statistiques_Definition_Champs
+   # Ok G3/mpcube/TrioCFD
+   #for flag in avx512f avx2 avx `[ "$model" != i686 ] && echo sse4_2 sse4_1` ssse3
+   for flag in avx2 avx `[ "$model" != i686 ] && echo sse4_2 sse4_1` ssse3
    do
       if  [ "`grep $flag /proc/cpuinfo 2>/dev/null`" != "" ]
       then
@@ -1877,7 +1880,7 @@ else
    done
 fi
 # Tester la compilation et l'execution
-AVX_SUPPORTED=0
+AVX_SUPPORTED=$TRUST_USE_AVX
 for AVX_FLAG in $AVX_FLAGS
 do
    file=${AVX_FLAG#-}
@@ -1894,11 +1897,6 @@ int main() {
    $TRUST_CC_BASE -o $file $AVX_FLAG $file.cpp 1>$file.log 2>&1 && ./$file 1>>$file.log 2>&1 && rm -f $file $file.cpp $file.log && echo "Yes" && break
    echo "No" && AVX_FLAG=""
 done
-# Ajout d'une option de log de vectorization sur Intel (pas trouve sur GNU)
-if [ "$AVX_FLAG" != "" ]
-then
-   [ "${TRUST_CC_BASE%icpc}" != "$TRUST_CC_BASE" ] && AVX_FLAG=$AVX_FLAG" -vec-report1"
-fi
 [ "$AVX_SUPPORTED" != 1 ] && echo "AVX support not activated yet by default. But you can build a version with:  make opt_avx"
 
 #######
@@ -2125,14 +2123,15 @@ fi
 suffixes=`echo $TRUST_ARCH_CC"_opt" $TRUST_ARCH_CC`
 for suffixe in $suffixes
 do
+   OPT_FLAG="" && [ "$AVX_SUPPORTED" = 1 ] && [ ${suffixe%_opt} != $suffixe ] && OPT_FLAG=$AVX_FLAG
    tmp=`mktemp_`
    echo "Defines = $Defines
 SYSINC = $SYSINC
 SYSINC_DEP = $SYSINC_DEP
-CppFlags = $TRUST_ADD_CXXFLAGS `[ "$AVX_SUPPORTED" = 1 ] && echo $AVX_FLAG` $CppFlags $MPI_Flags \$(Includes) \$(SYSINC) \$(Defines)
+CppFlags = $TRUST_ADD_CXXFLAGS $OPT_FLAG $CppFlags $MPI_Flags \$(Includes) \$(SYSINC) \$(Defines)
 SYSLIBS = $MPI_LIB $COMLIBS $SYSLIBS
 F77Flags = $TRUST_ADD_FFLAGS $F77Flags
-ccFLAGS = $TRUST_ADD_CFLAGS `[ "$AVX_SUPPORTED" = 1 ] && echo $AVX_FLAG` $ccFLAGS
+ccFLAGS = $TRUST_ADD_CFLAGS $OPT_FLAG $ccFLAGS
 ShLibFlag = $ShLibFlag
 SL_EXTENSION = $SL_EXTENSION
 LINK_MALIB = $LINK_MALIB" > $tmp

@@ -348,6 +348,7 @@ export TRUST_INT64=0
 export TRUST_USE_CUDA=0
 export TRUST_ROCALUTION=1
 export TRUST_USE_OPENMP=0
+export TRUST_USE_AVX=1
 export TRUST_DISABLE_MPI4PY=0
 export TRUST_DISABLE_JUPYTER=0
 export TRUST_WITHOUT_DOC=0
@@ -456,6 +457,10 @@ do
    elif [ "${1#-enable-petsc-debug}" != "$1" ]
    then
       export TRUST_ENABLE_PETSC_DEBUG=1
+
+   elif [ "${1#-disable-avx}" != "$1" ]
+   then
+      export TRUST_USE_AVX=0
 
    elif [ "${1#-cuda}" != "$1" ]
    then
