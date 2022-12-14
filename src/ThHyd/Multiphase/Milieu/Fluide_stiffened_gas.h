@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,19 +13,19 @@
 *
 *****************************************************************************/
 
-#ifndef StiffenedGas_included
-#define StiffenedGas_included
+#ifndef Fluide_stiffened_gas_included
+#define Fluide_stiffened_gas_included
 
 #include <Fluide_reel_base.h>
 
-/*! @brief : Classe StiffenedGas Cette classe represente un milieu reel
+/*! @brief : Classe Fluide_stiffened_gas Cette classe represente un milieu reel
  *
  */
-class StiffenedGas: public Fluide_reel_base
+class Fluide_stiffened_gas: public Fluide_reel_base
 {
-  Declare_instanciable_sans_constructeur(StiffenedGas);
+  Declare_instanciable_sans_constructeur(Fluide_stiffened_gas);
 public:
-  StiffenedGas();
+  Fluide_stiffened_gas();
   void set_param(Param& param) override;
 
 private:
@@ -44,4 +44,4 @@ protected :
   void lambda_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
 };
 
-#endif /* StiffenedGas_included */
+#endif /* Fluide_stiffened_gas_included */
