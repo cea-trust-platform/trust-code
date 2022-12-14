@@ -140,19 +140,14 @@ void Fluide_reel_base::mettre_a_jour(double t)
   int Ni = mu.valeurs().dimension_tot(0), cR = tab_rho.dimension_tot(0) == 1;
   if (t > tp || first_maj_)
     {
-      if (is_incompressible())
-        {
-          _cp_(T_ref_, P_ref_, tab_Cp.get_span_tot() /* elem reel + virt */);
-          _mu_(T_ref_, P_ref_, tab_mu.get_span_tot());
-          _lambda_(T_ref_, P_ref_, tab_lambda.get_span_tot());
-          _beta_(T_ref_, P_ref_, tab_beta.get_span_tot());
-        }
+      std::vector<SpanD> spans_interne;
+      spans_interne = { tab_Cp.get_span_tot(), tab_mu.get_span_tot(), tab_lambda.get_span_tot(), tab_beta.get_span_tot() }; // XXX : attention l'ordre !
+
+      if (is_incompressible()) _cp_mu_lambda_beta_(spans_interne);
       else
         {
           assert(pres.line_size() == 1 && tab_Cp.line_size() == 1 && tab_mu.line_size() == 1 && tab_lambda.line_size() == 1 && tab_beta.line_size() == 1);
           const int n_comp = temp.line_size(); /* on a temp(xx,id_composite) */
-          std::vector<SpanD> spans_interne;
-          spans_interne = { tab_Cp.get_span_tot(), tab_mu.get_span_tot(), tab_lambda.get_span_tot(), tab_beta.get_span_tot() }; // XXX : attention l'ordre !
           cp_mu_lambda_beta_(temp.get_span_tot(), pres.get_span_tot(), spans_interne, n_comp, id_composite);
         }
 
@@ -222,27 +217,22 @@ void Fluide_reel_base::calculate_fluid_properties_incompressible()
   dT_h.resize(Ni, 1);
   dT_e.resize(Ni, 1);
 
-  VectorD H_(Ni), dTH_(Ni), bH_(Nb), bdTH_(Nb); // Je suis desole ....
-  _h_(T_ref_, P_ref_, SpanD(H_));
-  _dT_h_(T_ref_, P_ref_, SpanD(dTH_));
-  for (int i = 0; i < Ni; i++)
+  VectorD H_(Ni), dTH_(Ni), bH_(Nb), bdTH_(Nb); // Je suis desole ...
+  std::vector<SpanD> spans_interne = { SpanD(H_), SpanD(dTH_) }, spans_bord = { SpanD(bH_), SpanD(bdTH_) };
+  _compute_all_(spans_interne, spans_bord);
+
+  for (int i = 0; i < Ni; i++) /* interne */
     {
-      val_h(i) = H_[i] + dTH_[i] * (T(i, n) - T_ref_); /* interne */
+      val_h(i) = H_[i] + dTH_[i] * (T(i, n) - T_ref_);
       val_e(i) = val_h(i);
-    }
-
-  _h_(T_ref_, P_ref_, SpanD(bH_));
-  _dT_h_(T_ref_, P_ref_, SpanD(bdTH_));
-  for (int i = 0; i < Nb; i++)
-    {
-      bval_h(i) = bH_[i] + bdTH_[i] * (bT(i, n) - T_ref_); /* bord */
-      bval_e(i) = bval_h(i);
-    }
-
-  for (int i = 0; i < Ni; i++)
-    {
       dT_h(i) = dTH_[i]; /* la seule derivee en incompressible */
       dT_e(i) = dT_h(i);
+    }
+
+  for (int i = 0; i < Nb; i++) /* bord */
+    {
+      bval_h(i) = bH_[i] + bdTH_[i] * (bT(i, n) - T_ref_);
+      bval_e(i) = bval_h(i);
     }
 }
 
@@ -305,6 +295,26 @@ void Fluide_reel_base::calculate_fluid_properties()
     }
 
   for (int i = 0; i < Nb; i++) bval_e(i) = bval_h(i) -  bp(i, m) / bval_rho(i); /* bord */
+}
+
+void Fluide_reel_base::_cp_mu_lambda_beta_(std::vector<SpanD> prop) const
+{
+  assert((int )prop.size() == 4);
+  const SpanD CP = prop[0], M = prop[1], L = prop[2], B = prop[3];
+  _cp_(T_ref_, P_ref_, CP);
+  _mu_(T_ref_, P_ref_, M);
+  _lambda_(T_ref_, P_ref_, L);
+  _beta_(T_ref_, P_ref_, B);
+}
+
+void Fluide_reel_base::_compute_all_(std::vector<SpanD> inter, std::vector<SpanD> bord) const
+{
+  assert((int )inter.size() == 2 && (int )bord.size() == 2);
+  SpanD H = inter[0], dTH = inter[1], bH = bord[0], bdTH = bord[1];
+  _h_(T_ref_, P_ref_, H);
+  _h_(T_ref_, P_ref_, bH);
+  _dT_h_(T_ref_, P_ref_, dTH);
+  _dT_h_(T_ref_, P_ref_, bdTH);
 }
 
 void Fluide_reel_base::cp_mu_lambda_beta_(const SpanD T, const SpanD P, std::vector<SpanD> prop, int ncomp, int id) const

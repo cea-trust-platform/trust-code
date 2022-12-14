@@ -124,6 +124,9 @@ private:
   void _beta_(const double T, const double P, SpanD res) const { double_to_span<&Fluide_reel_base::beta_>(T,P,res); }
   void _mu_(const double T, const double P, SpanD res) const { double_to_span<&Fluide_reel_base::mu_>(T,P,res); }
   void _lambda_(const double T, const double P, SpanD res) const { double_to_span<&Fluide_reel_base::lambda_>(T,P,res); }
+
+  void _cp_mu_lambda_beta_(std::vector<SpanD> ) const;
+  void _compute_all_(std::vector<SpanD> , std::vector<SpanD> ) const;
 };
 
 #endif /* Fluide_reel_base_included */
