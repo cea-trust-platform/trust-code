@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <Saturation_base.h>
+
 Implemente_base(Saturation_base, "Saturation_base", Interface_base);
 // XD saturation_base objet_u saturation_base -1 fluide-gas interface with phase change (used in pb_multiphase)
 
@@ -102,4 +103,28 @@ void Saturation_base::dP_Hvs(const SpanD P, SpanD res, int ncomp, int ind) const
   if (P_ref_ > 0)
     for (int i =0; i < (int)P.size(); i++) res[i * ncomp + ind] = 0.;
   else dP_Hvs_(P,res,ncomp,ind);
+}
+
+void Saturation_base::compute_all_flux_interfacial(std::vector<SpanD> sats, int ncomp, int ind) const
+{
+  assert((int )sats.size() == 8);
+
+  const SpanD P = sats[0];
+  SpanD Ts__ = sats[1], dPTs__ = sats[2], Hvs__ = sats[3], Hls__ = sats[4], dPHvs__ = sats[5], dPHls__ = sats[6], Lvap__ = sats[7];
+
+  assert(ncomp * (int )P.size() == (int )Ts__.size());
+  assert(ncomp * (int )P.size() == (int )dPTs__.size());
+  assert(ncomp * (int )P.size() == (int )Hvs__.size());
+  assert(ncomp * (int )P.size() == (int )Hls__.size());
+  assert(ncomp * (int )P.size() == (int )dPHvs__.size());
+  assert(ncomp * (int )P.size() == (int )dPHls__.size());
+  assert(ncomp * (int )P.size() == (int )Lvap__.size());
+
+  Tsat(P, Ts__, ncomp, ind);
+  dP_Tsat(P, dPTs__, ncomp, ind);
+  Hvs(P, Hvs__, ncomp, ind);
+  Hls(P, Hls__, ncomp, ind);
+  dP_Hvs(P, dPHvs__, ncomp, ind);
+  dP_Hls(P, dPHls__, ncomp, ind);
+  Lvap(P, Lvap__, ncomp, ind);
 }

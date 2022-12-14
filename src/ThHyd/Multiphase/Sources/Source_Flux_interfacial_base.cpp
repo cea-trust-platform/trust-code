@@ -208,14 +208,19 @@ void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab&
           // XXX XXX XXX
           // Attention c'est dangereux ! on suppose pour le moment que le champ de pression a 1 comp. Par contre la taille de res est nb_max_sat*nbelem !!
           // Aussi, on passe le Span le nbelem pour le champ de pression et pas nbelem_tot ....
-          assert (press.line_size() == 1);
-          z_sat.Tsat(press.get_span() /* elem reel */, Ts_tab.get_span() ,nb_max_sat,ind_trav);
-          z_sat.dP_Tsat(press.get_span(), dPTs_tab.get_span(),nb_max_sat,ind_trav);
-          z_sat.Hvs(press.get_span(), Hvs_tab.get_span(),nb_max_sat,ind_trav);
-          z_sat.Hls(press.get_span(), Hls_tab.get_span(),nb_max_sat,ind_trav);
-          z_sat.dP_Hvs(press.get_span(), dPHvs_tab.get_span(),nb_max_sat,ind_trav);
-          z_sat.dP_Hls(press.get_span(), dPHls_tab.get_span(),nb_max_sat,ind_trav);
-          z_sat.Hls(press.get_span(), Lvap_tab.get_span(),nb_max_sat,ind_trav);
+          assert(press.line_size() == 1);
+
+          std::vector<SpanD> sats_all;
+          sats_all.push_back(press.get_span() /* elem reel */);
+          sats_all.push_back(Ts_tab.get_span());
+          sats_all.push_back(dPTs_tab.get_span());
+          sats_all.push_back(Hvs_tab.get_span());
+          sats_all.push_back(Hls_tab.get_span());
+          sats_all.push_back(dPHvs_tab.get_span());
+          sats_all.push_back(dPHls_tab.get_span());
+          sats_all.push_back(Lvap_tab.get_span());
+
+          z_sat.compute_all_flux_interfacial(sats_all, nb_max_sat, ind_trav);
         }
 
   for (e = 0; e < zone.nb_elem(); e++)

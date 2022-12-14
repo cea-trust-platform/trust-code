@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,6 +17,7 @@
 #define Saturation_base_included
 
 #include <Interface_base.h>
+#include <vector>
 
 class Saturation_base : public Interface_base
 {
@@ -35,6 +36,9 @@ public:
   void dP_Hls(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const;
   void Hvs(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const;
   void dP_Hvs(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const;
+
+  // Called from Flux_interfacial
+  virtual void compute_all_flux_interfacial(std::vector<SpanD>, int ncomp = 1, int ind = 0) const;
 
   // Methods that can be called if point-to-point calculation is required
   double Tsat(const double P) const { return double_to_span<&Saturation_base::Tsat_>(P); }
