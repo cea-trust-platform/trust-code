@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,15 +32,12 @@ class MD_Vector;
 class Zone_dis;
 class Domaine;
 
-/*! @brief Classe Champ_Inc_base Classe de base des champs inconnues qui sont les champs calcules
+/*! @brief Classe Champ_Inc_base
  *
- *      par une equation.
- *      Un objet de type Roue est associe au Champ_Inc, cette roue permet
- *      de gerer le nombre de valeurs du temps pour lesquels le champ
- *      doit rester en memoire. C'est le schema en temps qui guide le
- *      nombre de valeurs a garder.
- *      Cette classe peut aussi servir a stocker des champs calcules a
- *      partir d'autres Champ_Inc. Dans ce cas, une fonction calculer_valeurs(...)
+ *      Classe de base des champs inconnues qui sont les champs calcules par une equation.
+ *      Un objet de type Roue est associe au Champ_Inc, cette roue permet de gerer le nombre de valeurs du temps pour lesquels le champ
+ *      doit rester en memoire. C'est le schema en temps qui guide le nombre de valeurs a garder.
+ *      Cette classe peut aussi servir a stocker des champs calcules a partir d'autres Champ_Inc. Dans ce cas, une fonction calculer_valeurs(...)
  *      est appellee lors de mettre_a_jour() et doit remplir :
  *       - les valeurs du champ a l'instant courant;
  *       - les derivees de ces valeurs par rapport aux inconnues;
@@ -55,8 +52,9 @@ class Domaine;
 class Champ_Inc_base : public Champ_base, public MorEqn
 {
   Declare_base_sans_constructeur(Champ_Inc_base);
+
 public:
-  Champ_Inc_base() : fonc_calc_(NULL) { } //par defaut : pas de fonc_calc_
+  Champ_Inc_base() : fonc_calc_(nullptr) { } // par defaut : pas de fonc_calc_
 
   // Methode reimplementees
   int fixer_nb_valeurs_nodales(int) override;
@@ -123,11 +121,16 @@ public:
   //derivees du champ en les inconnues :
   //renvoie les derivees calcules par fonc_calc_ si champ_calcule, deriv[nom de l'inco] = 1 si vraie inconnue
   const tabs_t& derivees() const { return deriv_; }
+  tabs_t& derivees() { return deriv_; }
+  DoubleTab& val_bord() { return val_bord_; }
 
   //champ dependant d'autres Champ_Inc : reglage de la fonciton de calcul, initialisation de val_bord_
   void init_champ_calcule(const Objet_U& obj, fonc_calc_t fonc);
   //pour forcer le calcul de toutes les cases au prochain mettre_a_jour() (normalement fait une seule fois)
   void reset_champ_calcule() { fonc_calc_init_ = 0; }
+
+  void resize_val_bord();
+  void set_val_bord_fluide_multiphase(const bool flag) { bord_fluide_multiphase_ = flag; }
 
   //utilise les conditions aux limites (au lieu de valeur_aux() dans Champ_base)
   //result n'est rempli que pour les faces de bord dont la CL impose une valeur (val_imp ou val_ext)
@@ -150,6 +153,7 @@ protected:
   REF(Objet_U) obj_calc_; //un objet a passer en argument
   DoubleTab val_bord_;   //valeurs aux bords au temps courant
   tabs_t deriv_;        //derivees au temps courant
+  bool bord_fluide_multiphase_ = false;
 };
 
 #endif /* Champ_Inc_base_included */

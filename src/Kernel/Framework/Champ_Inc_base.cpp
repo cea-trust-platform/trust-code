@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -114,9 +114,7 @@ void Champ_Inc_base::creer_tableau_distribue(const MD_Vector& md, Array_base::Re
     }
 }
 
-/*! @brief Returns the number of "real" geometric positions of the degrees of freedom, or -1 if not applicable (fields with multiple
- *
- *   localisations)
+/*! @brief Returns the number of "real" geometric positions of the degrees of freedom, or -1 if not applicable (fields with multiple localisations)
  *
  */
 int Champ_Inc_base::nb_valeurs_nodales() const
@@ -153,12 +151,10 @@ const DoubleTab& Champ_Inc_base::valeurs() const
  * @param (double temps) le  temps  auquel on veut les valeurs du champ
  * @return (DoubleTab&) les valeurs du champs a l'instant temps
  */
-DoubleTab& Champ_Inc_base::valeurs(double tps)
-// WEC : Attention dans le cas de Pb_Couple on utilisait le fait que
-// cette fonction renvoyait le present quand elle ne trouvait
+// WEC : Attention dans le cas de Pb_Couple on utilisait le fait que cette fonction renvoyait le present quand elle ne trouvait
 // pas un temps superieur a tous les temps disponibles!!!
-// Le comportement est maintenant plus explicite : un WARNING est
-// affiche des que le present est renvoye a la place du temps demande.
+// Le comportement est maintenant plus explicite : un WARNING est affiche des que le present est renvoye a la place du temps demande.
+DoubleTab& Champ_Inc_base::valeurs(double tps)
 {
   if (temps() == tps)
     return valeurs();
@@ -401,8 +397,7 @@ double Champ_Inc_base::recuperer_temps_passe(int i) const
 
 /*! @brief Sauvegarde le champ inconnue sur un flot de sortie.
  *
- * Ecrit un identifiant, les valeurs du champs, et
- *     la date (le temps au moment de la sauvegarde).
+ *  Ecrit un identifiant, les valeurs du champs, et la date (le temps au moment de la sauvegarde).
  *
  * @param (Sortie& fich) un flot de sortie
  * @return (int) returns the size of array
@@ -568,7 +563,6 @@ Champ_base& Champ_Inc_base::affecter_(const Champ_base& ch)
 //La methode est a surcharger pour des champs discretises aux faces.
 void Champ_Inc_base::verifie_valeurs_cl()
 {
-
 }
 
 /*! @brief Affectation d'une composante d'un Champ quelconque (Champ_base) dans une composante d'un champ inconnue
@@ -593,13 +587,10 @@ Champ_base& Champ_Inc_base::affecter_compo(const Champ_base& ch, int compo)
 
 /*! @brief voir Champ_base Cas particulier (malheureusement) du Champ_P0_VDF :
  *
- *     Si la frontiere est un raccord, le resultat est calcule sur le
- *     raccord associe. Dans ce cas, le DoubleTab x doit etre
+ *     Si la frontiere est un raccord, le resultat est calcule sur le raccord associe. Dans ce cas, le DoubleTab x doit etre
  *     dimensionne sur le raccord associe.
  *
- *
  */
-
 DoubleTab& Champ_Inc_base::trace(const Frontiere_dis_base&, DoubleTab& x, double tps, int distant) const
 {
   Cerr << que_suis_je() << "did not overloaded Champ_Inc_base::trace" << finl;
@@ -710,13 +701,18 @@ Zone_Cl_dis& Champ_Inc_base::zone_Cl_dis()
 void Champ_Inc_base::init_champ_calcule(const Objet_U& obj, fonc_calc_t fonc)
 {
   obj_calc_ = obj, fonc_calc_ = fonc, fonc_calc_init_ = 0;
+  resize_val_bord();
+}
+
+void Champ_Inc_base::resize_val_bord()
+{
   val_bord_.resize(ref_cast(Zone_VF, zone_dis_base()).xv_bord().dimension_tot(0), valeurs().line_size());
 }
 
 DoubleTab Champ_Inc_base::valeur_aux_bords() const
 {
   //si Champ_Inc calcule (fonc_calc_ existe), alors les valeurs aux bords sont stockees dans val_bord_
-  if (fonc_calc_)
+  if (fonc_calc_ || bord_fluide_multiphase_)
     {
       DoubleTab result;
       result.ref(val_bord_);
