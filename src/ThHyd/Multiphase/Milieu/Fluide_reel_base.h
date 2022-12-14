@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -62,9 +62,8 @@ protected :
   double T_ref_ = -1., P_ref_ = -1., t_init_ = -1.;
   int first_maj_ = 1;
 
-  static void calculer_masse_volumique(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);
-  static void calculer_energie_interne(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);
-  static void calculer_enthalpie(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);
+  void calculate_fluid_properties_incompressible();
+  void calculate_fluid_properties();
 
   // densite
   virtual void rho_(const SpanD T, const SpanD P, SpanD R, int ncomp = 1, int id = 0) const = 0;
@@ -79,6 +78,9 @@ protected :
   virtual void beta_(const SpanD T, const SpanD P, SpanD B, int ncomp = 1, int id = 0) const = 0;
   virtual void mu_(const SpanD T, const SpanD P, SpanD M, int ncomp = 1, int id = 0) const = 0;
   virtual void lambda_(const SpanD T, const SpanD P, SpanD L, int ncomp = 1, int id = 0) const = 0;
+
+  virtual void cp_mu_lambda_beta_(const SpanD T, const SpanD P, std::vector<SpanD>, int ncomp = 1, int id = 0) const;
+  virtual void compute_all_(std::vector<SpanD> , std::vector<SpanD> , int ncomp = 1, int id = 0) const;
 
   // Methods that can be called if point-to-point calculation is required
   double _rho_(const double T, const double P) const { return double_to_span<&Fluide_reel_base::rho_>(T,P); }
