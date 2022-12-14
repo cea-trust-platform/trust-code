@@ -140,9 +140,7 @@ void Fluide_reel_base::mettre_a_jour(double t)
   int Ni = mu.valeurs().dimension_tot(0), cR = tab_rho.dimension_tot(0) == 1;
   if (t > tp || first_maj_)
     {
-      std::vector<SpanD> spans_interne;
-      spans_interne = { tab_Cp.get_span_tot(), tab_mu.get_span_tot(), tab_lambda.get_span_tot(), tab_beta.get_span_tot() }; // XXX : attention l'ordre !
-
+      MSpanD spans_interne = { { "cp", tab_Cp.get_span_tot() }, { "mu", tab_mu.get_span_tot() }, { "lambda", tab_lambda.get_span_tot() }, { "beta", tab_beta.get_span_tot() } };
       if (is_incompressible()) _cp_mu_lambda_beta_(spans_interne);
       else
         {
@@ -218,7 +216,7 @@ void Fluide_reel_base::calculate_fluid_properties_incompressible()
   dT_e.resize(Ni, 1);
 
   VectorD H_(Ni), dTH_(Ni), bH_(Nb), bdTH_(Nb); // Je suis desole ...
-  std::vector<SpanD> spans_interne = { SpanD(H_), SpanD(dTH_) }, spans_bord = { SpanD(bH_), SpanD(bdTH_) };
+  MSpanD spans_interne = { { "h", SpanD(H_) }, { "dT_h", SpanD(dTH_) } }, spans_bord = { { "h", SpanD(bH_) }, { "dT_h", SpanD(bdTH_) } };
   _compute_all_(spans_interne, spans_bord);
 
   for (int i = 0; i < Ni; i++) /* interne */
@@ -251,7 +249,8 @@ void Fluide_reel_base::calculate_fluid_properties()
   DoubleTab& val_e = ch_e.valeurs(), &bval_e = ch_e.val_bord();
 
   const int n_comp = T.line_size(), zero = 0, Ni = val_h.dimension_tot(0), Nb = bval_h.dimension_tot(0), n = std::max(id_composite, zero), m = p.line_size() == T.line_size() ? n : 0;
-  if (m != 0) throw; // TODO : FIXME : a voir si besoin faut surcharger les methodes
+
+  if (m != 0) Process::exit("Fluide_reel_base currently supports single-component pressure field ! Call the 911 !");
 
   DoubleTab& dT_rho = ch_rho.derivees()["temperature"], &dp_rho = ch_rho.derivees()["pression"];
   DoubleTab& dT_h = ch_h.derivees()["temperature"], &dp_h = ch_h.derivees()["pression"];
@@ -264,25 +263,19 @@ void Fluide_reel_base::calculate_fluid_properties()
   dT_e.resize(Ni, 1);
   dp_e.resize(Ni, 1);
 
-  std::vector<SpanD> spans_interne, spans_bord;
-
-  // interne + bord
-  spans_interne.push_back(T.get_span_tot());
-  spans_interne.push_back(p.get_span_tot());
-  spans_bord.push_back(bT.get_span_tot());
-  spans_bord.push_back(bp.get_span_tot());
+  MSpanD spans_interne = { { "temperature", T.get_span_tot() }, { "pressure", p.get_span_tot() } }, spans_bord = { { "temperature", bT.get_span_tot() }, { "pressure", bp.get_span_tot() } };
 
   // pour rho
-  spans_interne.push_back(val_rho.get_span_tot());
-  spans_interne.push_back(dp_rho.get_span_tot());
-  spans_interne.push_back(dT_rho.get_span_tot());
-  spans_bord.push_back(bval_rho.get_span_tot());
+  spans_interne.insert( { "rho", val_rho.get_span_tot() });
+  spans_interne.insert( { "dp_rho", dp_rho.get_span_tot() });
+  spans_interne.insert( { "dT_rho", dT_rho.get_span_tot() });
+  spans_bord.insert( { "rho", bval_rho.get_span_tot() });
 
   // pour h
-  spans_interne.push_back(val_h.get_span_tot());
-  spans_interne.push_back(dp_h.get_span_tot());
-  spans_interne.push_back(dT_h.get_span_tot());
-  spans_bord.push_back(bval_h.get_span_tot());
+  spans_interne.insert( { "h", val_h.get_span_tot() });
+  spans_interne.insert( { "dp_h", dp_h.get_span_tot() });
+  spans_interne.insert( { "dT_h", dT_h.get_span_tot() });
+  spans_bord.insert( { "h", bval_h.get_span_tot() });
 
   compute_all_(spans_interne, spans_bord, n_comp, n);
 
@@ -297,32 +290,32 @@ void Fluide_reel_base::calculate_fluid_properties()
   for (int i = 0; i < Nb; i++) bval_e(i) = bval_h(i) -  bp(i, m) / bval_rho(i); /* bord */
 }
 
-void Fluide_reel_base::_cp_mu_lambda_beta_(std::vector<SpanD> prop) const
+void Fluide_reel_base::_cp_mu_lambda_beta_(MSpanD prop) const
 {
   assert((int )prop.size() == 4);
-  const SpanD CP = prop[0], M = prop[1], L = prop[2], B = prop[3];
+  SpanD CP = prop.at("cp"), M = prop.at("mu"), L = prop.at("lambda"), B = prop.at("beta");
   _cp_(T_ref_, P_ref_, CP);
   _mu_(T_ref_, P_ref_, M);
   _lambda_(T_ref_, P_ref_, L);
   _beta_(T_ref_, P_ref_, B);
 }
 
-void Fluide_reel_base::_compute_all_(std::vector<SpanD> inter, std::vector<SpanD> bord) const
+void Fluide_reel_base::_compute_all_(MSpanD inter, MSpanD bord) const
 {
   assert((int )inter.size() == 2 && (int )bord.size() == 2);
-  SpanD H = inter[0], dTH = inter[1], bH = bord[0], bdTH = bord[1];
+  SpanD H = inter.at("h"), dTH = inter.at("dT_h"), bH = bord.at("h"), bdTH = bord.at("dT_h");
   _h_(T_ref_, P_ref_, H);
   _h_(T_ref_, P_ref_, bH);
   _dT_h_(T_ref_, P_ref_, dTH);
   _dT_h_(T_ref_, P_ref_, bdTH);
 }
 
-void Fluide_reel_base::cp_mu_lambda_beta_(const SpanD T, const SpanD P, std::vector<SpanD> prop, int ncomp, int id) const
+void Fluide_reel_base::cp_mu_lambda_beta_(const SpanD T, const SpanD P, MSpanD prop, int ncomp, int id) const
 {
   assert((int )prop.size() == 4);
 
   // BEEM
-  const SpanD CP = prop[0], M = prop[1], L = prop[2], B = prop[3];
+  SpanD CP = prop.at("cp"), M = prop.at("mu"), L = prop.at("lambda"), B = prop.at("beta");
   assert((int )T.size() == ncomp * (int )CP.size() && (int )T.size() == ncomp * (int )P.size());
   assert((int )T.size() == ncomp * (int )B.size() && (int )T.size() == ncomp * (int )P.size());
   assert((int )T.size() == ncomp * (int )M.size() && (int )T.size() == ncomp * (int )P.size());
@@ -335,12 +328,12 @@ void Fluide_reel_base::cp_mu_lambda_beta_(const SpanD T, const SpanD P, std::vec
   beta_(T, P, B, ncomp, id);
 }
 
-void Fluide_reel_base::compute_all_(std::vector<SpanD> inter, std::vector<SpanD> bord, int ncomp, int id) const
+void Fluide_reel_base::compute_all_(MSpanD inter, MSpanD bord, int ncomp, int id) const
 {
   assert((int )inter.size() == 8 && (int )bord.size() == 4);
 
-  const SpanD T = inter[0], P = inter[1], bT = bord[0], bP = bord[1];
-  SpanD R = inter[2], dP = inter[3], dT = inter[4], H = inter[5], dPH = inter[6], dTH = inter[7], bR = bord[2], bH = bord[3];
+  const SpanD T = inter.at("temperature"), P = inter.at("pressure"), bT = bord.at("temperature"), bP = bord.at("pressure");
+  SpanD R = inter.at("rho"), dP = inter.at("dp_rho"), dT = inter.at("dT_rho"), H = inter.at("h"), dPH = inter.at("dp_h"), dTH = inter.at("dT_h"), bR = bord.at("rho"), bH = bord.at("h");
 
   assert((int )bT.size() == ncomp * (int )bP.size() && (int )bT.size() == ncomp * (int )bR.size());
   assert((int )bT.size() == ncomp * (int )bP.size() && (int )bT.size() == ncomp * (int )bH.size());

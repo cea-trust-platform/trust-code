@@ -105,12 +105,12 @@ void Saturation_base::dP_Hvs(const SpanD P, SpanD res, int ncomp, int ind) const
   else dP_Hvs_(P,res,ncomp,ind);
 }
 
-void Saturation_base::compute_all_flux_interfacial(std::vector<SpanD> sats, int ncomp, int ind) const
+void Saturation_base::compute_all_flux_interfacial(MSpanD sats, int ncomp, int ind) const
 {
   assert((int )sats.size() == 8);
 
-  const SpanD P = sats[0];
-  SpanD Ts__ = sats[1], dPTs__ = sats[2], Hvs__ = sats[3], Hls__ = sats[4], dPHvs__ = sats[5], dPHls__ = sats[6], Lvap__ = sats[7];
+  const SpanD P = sats.at("pressure");
+  SpanD Ts__ = sats.at("Tsat"), dPTs__ = sats.at("dP_Tsat"), Hvs__ = sats.at("Hvs"), Hls__ = sats.at("Hls"), dPHvs__ = sats.at("dP_Hvs"), dPHls__ = sats.at("dP_Hls"), Lvap__ = sats.at("Lvap");
 
   assert(ncomp * (int )P.size() == (int )Ts__.size());
   assert(ncomp * (int )P.size() == (int )dPTs__.size());

@@ -24,6 +24,7 @@
 #include <array>
 #include <map>
 
+using MSpanD = std::map<std::string, tcb::span<double>>;
 using VectorD = std::vector<double>;
 using ArrayD = std::array<double,1>;
 using SpanD = tcb::span<double>;
@@ -79,8 +80,8 @@ protected :
   virtual void mu_(const SpanD T, const SpanD P, SpanD M, int ncomp = 1, int id = 0) const = 0;
   virtual void lambda_(const SpanD T, const SpanD P, SpanD L, int ncomp = 1, int id = 0) const = 0;
 
-  virtual void cp_mu_lambda_beta_(const SpanD T, const SpanD P, std::vector<SpanD>, int ncomp = 1, int id = 0) const;
-  virtual void compute_all_(std::vector<SpanD> , std::vector<SpanD> , int ncomp = 1, int id = 0) const;
+  virtual void cp_mu_lambda_beta_(const SpanD T, const SpanD P, MSpanD, int ncomp = 1, int id = 0) const;
+  virtual void compute_all_(MSpanD , MSpanD , int ncomp = 1, int id = 0) const;
 
   // Methods that can be called if point-to-point calculation is required
   double _rho_(const double T, const double P) const { return double_to_span<&Fluide_reel_base::rho_>(T,P); }
@@ -125,8 +126,8 @@ private:
   void _mu_(const double T, const double P, SpanD res) const { double_to_span<&Fluide_reel_base::mu_>(T,P,res); }
   void _lambda_(const double T, const double P, SpanD res) const { double_to_span<&Fluide_reel_base::lambda_>(T,P,res); }
 
-  void _cp_mu_lambda_beta_(std::vector<SpanD> ) const;
-  void _compute_all_(std::vector<SpanD> , std::vector<SpanD> ) const;
+  void _cp_mu_lambda_beta_(MSpanD ) const;
+  void _compute_all_(MSpanD , MSpanD ) const;
 };
 
 #endif /* Fluide_reel_base_included */

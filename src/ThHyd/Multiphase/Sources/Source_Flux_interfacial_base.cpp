@@ -210,15 +210,15 @@ void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab&
           // Aussi, on passe le Span le nbelem pour le champ de pression et pas nbelem_tot ....
           assert(press.line_size() == 1);
 
-          std::vector<SpanD> sats_all;
-          sats_all.push_back(press.get_span() /* elem reel */);
-          sats_all.push_back(Ts_tab.get_span());
-          sats_all.push_back(dPTs_tab.get_span());
-          sats_all.push_back(Hvs_tab.get_span());
-          sats_all.push_back(Hls_tab.get_span());
-          sats_all.push_back(dPHvs_tab.get_span());
-          sats_all.push_back(dPHls_tab.get_span());
-          sats_all.push_back(Lvap_tab.get_span());
+          std::map<std::string, SpanD> sats_all = { { "pressure", press.get_span() /* elem reel */} };
+
+          sats_all.insert( { "Tsat", Ts_tab.get_span() });
+          sats_all.insert( { "dP_Tsat", dPTs_tab.get_span() });
+          sats_all.insert( { "Hvs", Hvs_tab.get_span() });
+          sats_all.insert( { "Hls", Hls_tab.get_span() });
+          sats_all.insert( { "dP_Hvs", dPHvs_tab.get_span() });
+          sats_all.insert( { "dP_Hls", dPHls_tab.get_span() });
+          sats_all.insert( { "Lvap", Lvap_tab.get_span() });
 
           z_sat.compute_all_flux_interfacial(sats_all, nb_max_sat, ind_trav);
         }
