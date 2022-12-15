@@ -1292,9 +1292,8 @@ Champ_base& Champ_Face_VDF::affecter_(const Champ_base& ch)
       else eval.resize(val.dimension(0), N * D), ch.valeur_aux(zone_VDF.xv(), eval);
 
       for (int f = 0; f < zone_VDF.nb_faces(); f++)
-        for (int d = 0; d < D; d++)
-          for (int n = 0; n < N; n++)
-            val(f, n) = eval(unif ? 0 : f, N * orientation(f) + n);
+        for (int n = 0; n < N; n++)
+          val(f, n) = eval(unif ? 0 : f, N * orientation(f) + n);
     }
   val.echange_espace_virtuel();
   return *this;

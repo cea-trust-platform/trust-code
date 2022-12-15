@@ -48,14 +48,14 @@ void Parser_Eval::eval_fct_single_compo(const DoubleTab& positions, const double
 
 void Parser_Eval::eval_fct_(const DoubleTab& positions, const double* t, const DoubleTab* val_param, DoubleTab& val) const
 {
-  const int pos_size = positions.dimension(0), D = positions.dimension(1), dim = fonction_.size();
-  DoubleVect position(D), val_elem(dim);
+  const int pos_size = positions.dimension(0), D = positions.dimension(1);
+  DoubleVect position(D);
 
   for (int i = 0; i < pos_size; i++)
     {
       for (int d = 0; d < D; d++) position(d) = positions(i, d);
-      eval_fct_single_position(position, t, val_param ? &(*val_param)(i) : nullptr, val_elem);
-      for (int k = 0; k < dim; k++) val(i, k) = val_elem(k);
+      for (int k = 0; k < fonction_.size(); k++)
+        val(i, k) = eval_fct_single_position_single_compo(position, t, val_param ? &(*val_param)(i) : nullptr, k);
     }
 }
 

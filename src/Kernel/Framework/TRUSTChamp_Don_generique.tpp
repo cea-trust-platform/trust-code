@@ -61,24 +61,21 @@ double TRUSTChamp_Don_generique<_TYPE_>::valeur_a_compo(const DoubleVect& x, int
 template <Champ_Don_Type _TYPE_>
 void TRUSTChamp_Don_generique<_TYPE_>::mettre_a_jour_positions(DoubleTab& positions)
 {
-  double x, y, z;
-  const int nb_elems = mon_domaine->zone(0).nb_elem();
+  positions = 0.0;
+  const int nb_elems = mon_domaine->zone(0).nb_elem(), D = dimension;
   const IntTab& les_Polys = mon_domaine->zone(0).les_elems();
   for (int num_elem = 0; num_elem < nb_elems; num_elem++)
     {
-      x = y = z = 0;
       int nb_som = 0;
       for (int s = 0, num_som; s < les_Polys.dimension(1); s++)
         if ((num_som = les_Polys(num_elem, s)) >= 0)
           {
-            x += mon_domaine->coord(num_som, 0);
-            y += mon_domaine->coord(num_som, 1);
-            if (dimension > 2) z += mon_domaine->coord(num_som, 2);
+            for (int d = 0; d < D; d++)
+              positions(num_elem, d) += mon_domaine->coord(num_som, d);
             nb_som++;
           }
-      positions(num_elem, 0) = x / nb_som;
-      positions(num_elem, 1) = y / nb_som;
-      if (dimension > 2) positions(num_elem, 2) = z / nb_som;
+      for (int d = 0; d < D; d++)
+        positions(num_elem, d) /= nb_som;
     }
 }
 
@@ -153,16 +150,13 @@ template <Champ_Don_Type _TYPE_> template <Champ_Don_Type T>
 enable_if_t<T == Champ_Don_Type::TXYZ, double>
 TRUSTChamp_Don_generique<_TYPE_>::valeur_a_elem_compo_(const DoubleVect& x, int , int ncomp) const
 {
-  DoubleTab positions(1,dimension);
+  DoubleTab positions(1, dimension);
+  for (int d = 0; d < dimension; d++) positions(0, d) = x(d);
+
   DoubleVect val_fct(1);
-  positions(0,0) = x(0);
-  positions(0,1) = x(1);
-  if (dimension>2) positions(0,2) = x(2);
+  eval_fct(positions, temps(), val_fct, ncomp);
 
-  eval_fct(positions,temps(),val_fct,ncomp);
-  double val = val_fct(0);
-
-  return val;
+  return val_fct(0);
 }
 
 /*! @brief Renvoie les valeurs du champ aux points specifies par leurs coordonnees.
