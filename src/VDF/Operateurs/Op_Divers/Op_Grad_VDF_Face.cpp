@@ -271,10 +271,8 @@ void Op_Grad_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, con
 
   const Zone_VDF& zvdf = la_zone_vdf.valeur();
   const Zone_Cl_VDF& zclvdf = la_zcl_vdf.valeur();
-  const DoubleVect& face_surfaces = zvdf.face_surfaces();
-
-  double coef;
-  int n0, n1;
+  const DoubleVect& face_surfaces = zvdf.face_surfaces(), &vf = zvdf.volumes_entrelaces();
+  const DoubleTab& vfd = zvdf.volumes_entrelaces_dir();
   const int M = inco.line_size(), N = secmem.line_size();
 
   // Boucle sur les bords pour traiter les conditions aux limites
@@ -292,17 +290,17 @@ void Op_Grad_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, con
               {
                 const double P_imp = la_cl_typee.flux_impose(num_face-ndeb, m);
 
-                n0 = face_voisins(num_face,0);
+                const int n0 = face_voisins(num_face,0);
                 if (n0 != -1)
                   {
-                    coef = face_surfaces(num_face)*porosite_surf(num_face) * Option_VDF::coeff_P_neumann * (alp ? (*alp)(n0, n) : 1);
+                    const double coef = face_surfaces(num_face)*porosite_surf(num_face) * Option_VDF::coeff_P_neumann * (alp ? (*alp)(n0, n) : 1);
                     if(mat) (*mat)(N * num_face + n, M * n0 + m) -= coef;
                     secmem(num_face, n) -= coef * (P_imp - inco(n0, m));
                   }
                 else
                   {
-                    n1 = face_voisins(num_face,1);
-                    coef = face_surfaces(num_face)*porosite_surf(num_face) * Option_VDF::coeff_P_neumann * (alp ? (*alp)(n1, n) : 1.0);
+                    const int n1 = face_voisins(num_face,1);
+                    const double coef = face_surfaces(num_face)*porosite_surf(num_face) * Option_VDF::coeff_P_neumann * (alp ? (*alp)(n1, n) : 1.0);
                     if(mat) (*mat)(N * num_face + n, M * n1 + m) += coef;
                     secmem(num_face, n) -= coef * (inco(n1, m) - P_imp);
                   }
@@ -310,12 +308,13 @@ void Op_Grad_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, con
         }
       else if (sub_type(Periodique,la_cl.valeur())) // Correction periodicite
         {
-          for (int num_face = ndeb; num_face < nfin; num_face++)
+          for (int f = ndeb; f < nfin; f++)
             for (int n = 0, m = 0; n < N; n++, m += (M > 1))
               {
-                n0 = face_voisins(num_face,0), n1 = face_voisins(num_face,1);
-                coef = face_surfaces(num_face)*porosite_surf(num_face);
-                secmem(num_face, n) -= coef * (inco(n1, m) * (alp ? (*alp)(n1, n) : 1.0) - inco(n0, m) * (alp ? (*alp)(n0, n) : 1.0));
+                const int n0 = face_voisins(f, 0), n1 = face_voisins(f, 1);
+                const double alpha_face = alp ? (vfd(f, 0) * (*alp)(n0, n) + vfd(f, 1) * (*alp)(n1, n)) / vf(f) : 1.0;
+                const double coef = face_surfaces(f) * porosite_surf(f) * alpha_face;
+                secmem(f, n) -= coef * (inco(n1, m) - inco(n0, m));
               }
         }
       else if (sub_type(Symetrie,la_cl.valeur())) { /* Do nothing */ }
@@ -324,17 +323,21 @@ void Op_Grad_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, con
 
   // Boucle sur les faces internes
   for (int f = zvdf.premiere_face_int(); f < zvdf.nb_faces(); f++)
-    for (int i = 0; i < 2; i++)
-      for (int n = 0, m = 0; n < N; n++, m += (M > 1))
-        {
-          const int e = face_voisins(f, i);
-          n0 = face_voisins(f, 0), n1 = face_voisins(f, 1);
-          // XXX : Elie Saikali : attention : on code alpha grad(P) et pas grad(alpha.P) !! Sinon on manque des termes ... (voir avec Antoine sinon)
-          coef = 0.5 * face_surfaces(f) * porosite_surf(f) * (alp ? (*alp)(n0, n) + (*alp)(n1, n) : 2.0);
-          if (mat)
-            (*mat)(N * f + n, M * e + m) += (i ? 1.0 : -1.0) * coef;
-          secmem(f, n) -= (i ? 1.0 : -1.0) * coef * inco(e, m);
-        }
+    for (int n = 0, m = 0; n < N; n++, m += (M > 1))
+      {
+        const int n0 = face_voisins(f, 0), n1 = face_voisins(f, 1);
+        // XXX : Elie Saikali : attention : on code alpha grad(P) et pas grad(alpha.P) !! Sinon on manque des termes ... (voir avec Antoine sinon)
+        const double alpha_face = alp ? (vfd(f, 0) * (*alp)(n0, n) + vfd(f, 1) * (*alp)(n1, n)) / vf(f) : 1.0;
+        const double coef = face_surfaces(f) * porosite_surf(f) * alpha_face;
+        for (int i = 0; i < 2; i++)
+          {
+            const int e = face_voisins(f, i);
+            if (mat)
+              (*mat)(N * f + n, M * e + m) += (i ? 1.0 : -1.0) * coef;
+            secmem(f, n) -= (i ? 1.0 : -1.0) * coef * inco(e, m);
+          }
+      }
+
   secmem.echange_espace_virtuel();
   statistiques().end_count(gradient_counter_);
 
