@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -55,16 +55,6 @@ Sortie& Entree_fluide_alpha_impose::printOn(Sortie& s) const { return s << que_s
 Entree& Entree_fluide_alpha_impose::readOn(Entree& s)
 {
   if (app_domains.size() == 0) app_domains = { Motcle("Fraction_volumique"), Motcle("indetermine") };
-  return Dirichlet_entree_fluide::readOn(s);
-}
-
-/* ========================================================================================= */
-
-Implemente_instanciable(Entree_fluide_concentration_imposee, "Frontiere_ouverte_concentration_imposee", Dirichlet_entree_fluide);
-Sortie& Entree_fluide_concentration_imposee::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
-Entree& Entree_fluide_concentration_imposee::readOn(Entree& s)
-{
-  if (app_domains.size() == 0) app_domains = { Motcle("Concentration"), Motcle("indetermine") };
   return Dirichlet_entree_fluide::readOn(s);
 }
 

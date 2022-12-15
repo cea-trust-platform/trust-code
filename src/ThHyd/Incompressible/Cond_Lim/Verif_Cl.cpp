@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,6 +18,7 @@
 #include <Periodique.h>
 #include <Dirichlet_paroi_fixe.h>
 #include <Dirichlet_paroi_defilante.h>
+#include <Entree_fluide_concentration_imposee.h>
 #include <Dirichlet_entree_fluide_leaves.h>
 #include <Entree_fluide_T_h_imposee.h>
 #include <Neumann_paroi.h>
