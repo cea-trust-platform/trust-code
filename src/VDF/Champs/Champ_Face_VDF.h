@@ -66,6 +66,7 @@ public:
   void calcul_critere_Q(DoubleTab&, const Zone_Cl_VDF&);
   void calcul_grad_u(const DoubleTab&, DoubleTab&, const Zone_Cl_VDF&);
   void calcul_y_plus(DoubleTab&, const Zone_Cl_VDF&);
+  void calcul_y_plus_diphasique(DoubleTab& , const Zone_Cl_VDF& );
 
   DoubleTab& calcul_duidxj(const DoubleTab&, DoubleTab&) const;
   DoubleTab& calcul_duidxj(const DoubleTab&, DoubleTab&, const Zone_Cl_VDF&) const;

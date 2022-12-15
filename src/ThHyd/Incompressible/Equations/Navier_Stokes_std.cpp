@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -560,6 +560,16 @@ const Operateur_Div& Navier_Stokes_std::operateur_divergence() const
 Operateur_Grad& Navier_Stokes_std::operateur_gradient()
 {
   return gradient;
+}
+
+Operateur_Diff& Navier_Stokes_std::operateur_diff()
+{
+  return terme_diffusif;
+}
+
+const Operateur_Diff& Navier_Stokes_std::operateur_diff() const
+{
+  return terme_diffusif;
 }
 
 /*! @brief Renvoie l'operateur de calcul du gradient associe a l'equation.

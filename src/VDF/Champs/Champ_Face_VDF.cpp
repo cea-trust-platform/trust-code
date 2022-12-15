@@ -13,8 +13,8 @@
 *
 *****************************************************************************/
 
-#include <Dirichlet_paroi_defilante.h>
 #include <Dirichlet_entree_fluide_leaves.h>
+#include <Dirichlet_paroi_defilante.h>
 #include <Champ_Uniforme_Morceaux.h>
 #include <Dirichlet_paroi_fixe.h>
 #include <Mod_turb_hyd_base.h>

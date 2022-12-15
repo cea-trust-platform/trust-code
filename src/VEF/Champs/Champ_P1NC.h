@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,6 +39,7 @@ public:
   void mettre_a_jour(double temps) override;
   void abortTimeStep() override;
   void calcul_y_plus(const Zone_Cl_VEF&, DoubleVect&) const;
+  void calcul_y_plus_diphasique(const Zone_Cl_VEF& , DoubleVect&) const;
   void calcul_grad_T(const Zone_Cl_VEF&, DoubleTab&) const;
   void calcul_grad_U(const Zone_Cl_VEF&, DoubleTab&) const;
   void calcul_h_conv(const Zone_Cl_VEF&, DoubleTab&, int temp_ref) const;
