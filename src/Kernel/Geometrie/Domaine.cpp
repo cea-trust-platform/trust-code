@@ -51,8 +51,8 @@ Sortie& Domaine::printOn(Sortie& s ) const
   s.precision(20);
 #endif
   s << nom_ << finl;
-  s << sommets;
-  s << les_zones;
+  s << sommets_;
+  s << les_zones_;
   //s << les_ss_zones;
   return s ;
 }
@@ -60,8 +60,7 @@ Sortie& Domaine::printOn(Sortie& s ) const
 
 /*! @brief Lit les specifications d'un domaine a partir d'un flot d'entree.
  *
- * Associe les zones
- *     lues au domaine.
+ * Associe les zones lues au domaine.
  *     Format:
  *       nom_domaine
  *       bloc de lecture des Sommets
@@ -80,31 +79,31 @@ Entree& Domaine::readOn(Entree& s)
   s.precision(20);
 #endif
   // Ajout BM: reset de la structure (a pour effet de debloquer la structure parallele)
-  sommets.reset();
-  renum_som_perio.reset();
+  sommets_.reset();
+  renum_som_perio_.reset();
   // ne pas faire reset du nom (deja lu)
   // pour deformable je ne sais pas...
   // Pour les sous_zones je ne sais pas non plus... les_ss_zones.vide();
-  les_zones.vide();
+  les_zones_.vide();
 
   Nom tmp;
   s >> tmp;
   // Si le domaine n'est pas nomme, on prend celui lu
   if (nom_=="??") nom_=tmp;
   Cerr << "Reading domain " << le_nom() << finl;
-  s >> sommets;
+  s >> sommets_;
   // PL : pas tout a fait exact le nombre affiche de sommets, on compte plusieurs fois les sommets des joints...
-  int nbsom = mp_sum(sommets.dimension(0));
+  int nbsom = mp_sum(sommets_.dimension(0));
   Cerr << " Number of nodes: " << nbsom << finl;
-  s >> les_zones;
+  s >> les_zones_;
   //s >> les_ss_zones;
   if ( (Process::nproc()==1) && (NettoieNoeuds::NettoiePasNoeuds==0) )
     {
       NettoieNoeuds::nettoie(*this);
-      nbsom = mp_sum(sommets.dimension(0));
+      nbsom = mp_sum(sommets_.dimension(0));
       Cerr << " Number of nodes after node-cleanup: " << nbsom << finl;
     }
-  les_zones.associer_domaine(*this);
+  les_zones_.associer_domaine(*this);
 
   // On initialise les descripteurs "sequentiels" (attention, cela bloque le resize des tableaux sommets et elements !)
   Scatter::init_sequential_domain(*this);
@@ -114,21 +113,20 @@ Entree& Domaine::readOn(Entree& s)
 
 
 /*! @brief only read vertices from the stream s
- *
  */
 void Domaine::read_vertices(Entree& s)
 {
   // Ajout BM: reset de la structure (a pour effet de debloquer la structure parallele)
-  sommets.reset();
-  renum_som_perio.reset();
-  les_zones.vide();
+  sommets_.reset();
+  renum_som_perio_.reset();
+  les_zones_.vide();
 
   Nom tmp;
   s >> tmp;
   // Si le domaine n'est pas nomme, on prend celui lu
   if (nom_=="??") nom_=tmp;
   Cerr << "Reading domain " << le_nom() << finl;
-  s >> sommets;
+  s >> sommets_;
 
 }
 
@@ -146,7 +144,7 @@ Domaine::Domaine() : epsilon_(Objet_U::precision_geom),deformable_(0)
 #ifdef MEDCOUPLING_
   mesh_ = NULL;
 #endif
-  axi1d = 0;
+  axi1d_ = 0;
 }
 
 /*! @brief Renvoie le nombre total de sommets
@@ -154,7 +152,7 @@ Domaine::Domaine() : epsilon_(Objet_U::precision_geom),deformable_(0)
  */
 int Domaine::nb_som_tot() const
 {
-  return sommets.dimension_tot(0);
+  return sommets_.dimension_tot(0);
 }
 
 /*! @brief Renvoie le nombre de sommets
@@ -162,7 +160,7 @@ int Domaine::nb_som_tot() const
  */
 int Domaine::nb_som() const
 {
-  return sommets.dimension(0);
+  return sommets_.dimension(0);
 }
 
 /*! @brief Ajoute une Zone au domaine.
@@ -172,7 +170,7 @@ int Domaine::nb_som() const
  */
 Zone& Domaine::add(Zone& une_zone)
 {
-  return les_zones.add(une_zone);
+  return les_zones_.add(une_zone);
 }
 
 /*! @brief Ajoute des noeuds (ou sommets) au domaine (sans verifier les doublons)
@@ -181,13 +179,13 @@ Zone& Domaine::add(Zone& une_zone)
  */
 void Domaine::ajouter(const DoubleTab& soms)
 {
-  int oldsz=sommets.dimension(0);
+  int oldsz=sommets_.dimension(0);
   int ajoutsz=soms.dimension(0);
   int dim=soms.dimension(1);
-  sommets.resize(oldsz+ajoutsz,dim);
+  sommets_.resize(oldsz+ajoutsz,dim);
   for(int i=0; i<ajoutsz; i++)
     for(int k=0; k<dim; k++)
-      sommets(oldsz+i,k)=soms(i,k) ;
+      sommets_(oldsz+i,k)=soms(i,k) ;
 }
 
 /*! @brief Ajoute des noeuds au domaine avec elimination des noeuds double au retour nums contient les nouveaux numeros des noeuds de soms
@@ -200,14 +198,14 @@ void Domaine::ajouter(const DoubleTab& soms)
  */
 void Domaine::ajouter(const DoubleTab& soms, IntVect& nums)
 {
-  int oldsz=sommets.dimension(0);
+  int oldsz=sommets_.dimension(0);
   int ajoutsz=soms.dimension(0);
   int dim=soms.dimension(1);
   nums.resize(ajoutsz);
   nums=-1;
   if(oldsz!=0)
     {
-      assert(dim==sommets.dimension(1));
+      assert(dim==sommets_.dimension(1));
       Octree_Double octree;
       octree.build_nodes(les_sommets(), 0 /* ne pas inclure les sommets virtuels */);
 
@@ -245,7 +243,7 @@ void Domaine::ajouter(const DoubleTab& soms, IntVect& nums)
             }
         }
       Cerr << compteur << " double nodes were found \n";
-      sommets.resize(oldsz+ajoutsz-compteur,dim);
+      sommets_.resize(oldsz+ajoutsz-compteur,dim);
       compteur=0;
       for( i=0; i<ajoutsz; i++)
         if(nums(i)==-1)
@@ -253,14 +251,14 @@ void Domaine::ajouter(const DoubleTab& soms, IntVect& nums)
             nums(i)=oldsz+compteur;
             compteur++;
             for( k=0; k<dim; k++)
-              sommets(nums(i),k)=soms(i,k) ;
+              sommets_(nums(i),k)=soms(i,k) ;
           }
     }
   else
     {
-      sommets=soms;
+      sommets_=soms;
       // if som has a descriptor, delete it:
-      sommets.set_md_vector(MD_Vector());
+      sommets_.set_md_vector(MD_Vector());
       for(int i=0; i<ajoutsz; i++)
         {
           nums(i)=i;
@@ -273,7 +271,7 @@ void Domaine::ajouter(const DoubleTab& soms, IntVect& nums)
  */
 void Domaine::comprimer()
 {
-  les_zones.comprimer();
+  les_zones_.comprimer();
 }
 
 /*! @brief Association d'une Sous_Zone au domaine.
@@ -303,7 +301,7 @@ int Domaine::associer_(Objet_U& ob)
  */
 void Domaine::add(const Sous_Zone& ssz)
 {
-  les_ss_zones.add(ssz);
+  les_ss_zones_.add(ssz);
 }
 
 /*! @brief Reordonne les mailles du domaine suivant les conventions de Trio-U.
@@ -311,7 +309,7 @@ void Domaine::add(const Sous_Zone& ssz)
  */
 void Domaine::reordonner()
 {
-  les_zones.reordonner();
+  les_zones_.reordonner();
 }
 
 void Domaine::construire_renum_som_perio(const Conds_lim& les_cl,
@@ -325,7 +323,7 @@ void Domaine::construire_renum_som_perio(const Conds_lim& les_cl,
         bords_perio.add(les_cl[n_bord].frontiere_dis().frontiere().le_nom());
     }
 
-  Reordonner_faces_periodiques::renum_som_perio(*this, bords_perio, renum_som_perio,
+  Reordonner_faces_periodiques::renum_som_perio(*this, bords_perio, renum_som_perio_,
                                                 1 /* Calculer les valeurs pour les sommets virtuels */);
 }
 

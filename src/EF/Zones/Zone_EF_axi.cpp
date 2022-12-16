@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -148,7 +148,7 @@ void Zone_EF_axi::remplir_tableau_origine()
 
 void Zone_EF_axi::verifie_compatibilite_domaine()
 {
-  if (!zone().domaine().Axi1d())
+  if (!zone().domaine().axi1d())
     {
       Cerr << "*****************************************************************************" << finl;
       Cerr << " Error in " << que_suis_je() << " : the type of domain " << zone().domaine().que_suis_je();

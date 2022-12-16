@@ -52,9 +52,9 @@ void Op_Conv_PolyMAC_base::associer(const Zone_dis& zone_dis, const Zone_Cl_dis&
 int Op_Conv_PolyMAC_base::impr(Sortie& os) const
 {
   const Zone& ma_zone=la_zone_poly_->zone();
-  const int impr_mom=ma_zone.Moments_a_imprimer();
-  const int impr_sum=(ma_zone.Bords_a_imprimer_sum().est_vide() ? 0:1);
-  const int impr_bord=(ma_zone.Bords_a_imprimer().est_vide() ? 0:1);
+  const int impr_mom=ma_zone.moments_a_imprimer();
+  const int impr_sum=(ma_zone.bords_a_imprimer_sum().est_vide() ? 0:1);
+  const int impr_bord=(ma_zone.bords_a_imprimer().est_vide() ? 0:1);
   const Schema_Temps_base& sch = la_zcl_poly_->equation().probleme().schema_temps();
   DoubleTab& tab_flux_bords= flux_bords();
   int nb_comp = tab_flux_bords.nb_dim() > 1 ? tab_flux_bords.dimension(1) : 0;
@@ -85,7 +85,7 @@ int Op_Conv_PolyMAC_base::impr(Sortie& os) const
           for(k=0; k<nb_comp; k++)
             {
               flux_bords2(0,num_cl,k)+=tab_flux_bords(face, k);
-              if (ma_zone.Bords_a_imprimer_sum().contient(frontiere_dis.le_nom()))
+              if (ma_zone.bords_a_imprimer_sum().contient(frontiere_dis.le_nom()))
                 flux_bords2(3,num_cl,k)+=tab_flux_bords(face, k);
             }  /* fin for k */
           if (impr_mom)
@@ -140,8 +140,8 @@ int Op_Conv_PolyMAC_base::impr(Sortie& os) const
       if (impr_sum) Flux_sum << finl;
       if (impr_mom) Flux_moment << finl;
     }
-  const LIST(Nom)& Liste_Bords_a_imprimer = la_zone_poly_->zone().Bords_a_imprimer();
-  if (!Liste_Bords_a_imprimer.est_vide() && nb_comp > 0)
+  const LIST(Nom)& Liste_bords_a_imprimer = la_zone_poly_->zone().bords_a_imprimer();
+  if (!Liste_bords_a_imprimer.est_vide() && nb_comp > 0)
     {
       EcrFicPartage Flux_face;
       ouvrir_fichier_partage(Flux_face,"",impr_bord);
@@ -152,7 +152,7 @@ int Op_Conv_PolyMAC_base::impr(Sortie& os) const
           const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
           int ndeb = frontiere_dis.num_premiere_face();
           int nfin = ndeb + frontiere_dis.nb_faces();
-          if (ma_zone.Bords_a_imprimer().contient(la_fr.le_nom()))
+          if (ma_zone.bords_a_imprimer().contient(la_fr.le_nom()))
             {
               if(je_suis_maitre())
                 {

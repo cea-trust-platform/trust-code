@@ -115,7 +115,7 @@ DoubleTab& Op_Div_EF::calculer(const DoubleTab& vit, DoubleTab& div) const
 int Op_Div_EF::impr(Sortie& os) const
 {
 
-  const int impr_bord=(la_zone_EF->zone().Bords_a_imprimer().est_vide() ? 0:1);
+  const int impr_bord=(la_zone_EF->zone().bords_a_imprimer().est_vide() ? 0:1);
   SFichier Flux_div;
   ouvrir_fichier(Flux_div,"",je_suis_maitre());
   EcrFicPartage Flux_face;
@@ -169,7 +169,7 @@ int Op_Div_EF::impr(Sortie& os) const
       const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
       int ndeb = frontiere_dis.num_premiere_face();
       int nfin = ndeb + frontiere_dis.nb_faces();
-      if (la_zone_EF->zone().Bords_a_imprimer().contient(la_fr.le_nom()))
+      if (la_zone_EF->zone().bords_a_imprimer().contient(la_fr.le_nom()))
         {
           Flux_face << "# Flux par face sur " << la_fr.le_nom() << " au temps " << temps << " : " << finl;
           for (int face=ndeb; face<nfin; face++)

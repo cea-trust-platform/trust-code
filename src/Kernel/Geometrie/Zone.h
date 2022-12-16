@@ -146,32 +146,17 @@ public:
   int comprimer_joints();
   void ecrire_noms_bords(Sortie& ) const;
   double epsilon() const;
-  inline void associer_Bords_a_imprimer(LIST(Nom));
-  inline void associer_Bords_a_imprimer_sum(LIST(Nom));
-  Entree& Lire_Bords_a_imprimer(Entree& s) ;
-  Entree& Lire_Bords_a_imprimer_sum(Entree& s) ;
-  inline const LIST(Nom)& Bords_a_imprimer() const;
-  inline const LIST(Nom)& Bords_a_imprimer_sum() const;
-  inline int  Moments_a_imprimer() const
-  {
-    return Moments_a_imprimer_;
-  };
-  inline int& Moments_a_imprimer()
-  {
-    return Moments_a_imprimer_;
-  };
-  inline const ArrOfDouble& cg_moments() const
-  {
-    return cg_moments_;
-  };
-  inline ArrOfDouble& cg_moments()
-  {
-    return cg_moments_;
-  };
-  inline void exporter_mon_centre_de_gravite(ArrOfDouble c)
-  {
-    cg_moments_=c;
-  };
+  inline void associer_bords_a_imprimer(LIST(Nom));
+  inline void associer_bords_a_imprimer_sum(LIST(Nom));
+  Entree& lire_bords_a_imprimer(Entree& s) ;
+  Entree& lire_bords_a_imprimer_sum(Entree& s) ;
+  inline const LIST(Nom)& bords_a_imprimer() const;
+  inline const LIST(Nom)& bords_a_imprimer_sum() const;
+  inline int  moments_a_imprimer() const  {  return moments_a_imprimer_;  }
+  inline int& moments_a_imprimer() {  return moments_a_imprimer_;  }
+  inline const ArrOfDouble& cg_moments() const  {  return cg_moments_;  }
+  inline ArrOfDouble& cg_moments() {  return cg_moments_;  }
+  inline void exporter_mon_centre_de_gravite(ArrOfDouble c)  {  cg_moments_ = c; }
   double volume_total() const;
 
   int nb_faces_bord(Type_Face type) const ;
@@ -179,14 +164,11 @@ public:
   int nb_faces_raccord(Type_Face type) const ;
   int nb_faces_int(Type_Face type) const ;
 
-  //void numeroter_elems_virtuels(const DoubleTab&, IntVect&);
-
   int rang_elem_depuis(const DoubleTab&, const ArrOfInt&, ArrOfInt&) const;
   void rang_elems_sommet(ArrOfInt&, double x, double y=0, double z=0) const;
   void invalide_octree();
   const OctreeRoot& construit_octree() const;
   const OctreeRoot& construit_octree(int&) const;
-  //int postraiter_ijk(Sortie&) const;
   inline const ArrOfInt& ind_faces_virt_bord() const;
   void construire_elem_virt_pe_num();
   void construire_elem_virt_pe_num(IntTab& elem_virt_pe_num_cpy) const;
@@ -206,27 +188,25 @@ public:
   void correct_type_of_borders_after_merge();
 
 protected:
-  Nom nom;
+  Nom nom_;
   REF(Domaine) le_domaine;
   // Type de l'element geometrique de cette Zone
-  Elem_geom elem;
-  /*! @brief des elements (pour le multi-element, le tableau peut contenir des -1 !!!)
-   *
-   */
-  IntTab mes_elems;
+  Elem_geom elem_;
+  // Description des elements (pour le multi-element, le tableau peut contenir des -1 !!!)
+  IntTab mes_elems_;
   // Definition des aretes des elements (pour chaque arete, indices des deux sommets)
   //  (ce tableau n'est pas toujours rempli, selon la discretisation)
-  IntTab Aretes_som;
+  IntTab aretes_som_;
   // Pour chaque element, indices de ses aretes dans Aretes_som (voir Elem_geom_base::get_tab_aretes_sommets_locaux())
-  IntTab Elem_Aretes;
+  IntTab elem_aretes_;
   // Bords, raccords et faces_internes forment les "faces_frontiere" sur lesquelles
   //  sont definies les conditions aux limites.
-  Bords mes_faces_bord;
-  Raccords mes_faces_raccord;
-  Faces_Internes mes_faces_int;
+  Bords mes_faces_bord_;
+  Raccords mes_faces_raccord_;
+  Faces_Internes mes_faces_int_;
   // Les faces de joint sont les faces communes avec les autres processeurs (bords
   //  de la zone locale a ce processeur qui se raccordent a un processeur voisin)
-  Joints mes_faces_joint;
+  Joints mes_faces_joint_;
   // Pour les faces virtuelles de la Zone_VF, indices de la meme face dans le tableau des faces de bord
   // (voir Zone::init_faces_virt_bord())
   ArrOfInt ind_faces_virt_bord_; // contient les indices des faces virtuelles de bord
@@ -241,9 +221,9 @@ protected:
   IntTab elem_virt_pe_num_;
 
   void duplique_faces_internes();
-  LIST(Nom) Bords_a_imprimer_;
-  LIST(Nom) Bords_a_imprimer_sum_;
-  int Moments_a_imprimer_;
+  LIST(Nom) bords_a_imprimer_;
+  LIST(Nom) bords_a_imprimer_sum_;
+  int moments_a_imprimer_;
 
 private:
   // Volume total de la zone (somme sur tous les processeurs)
@@ -253,44 +233,23 @@ private:
   mutable ArrsOfInt cached_elements_;
 };
 
-inline const LIST(Nom)& Zone::Bords_a_imprimer() const
-{
-  return Bords_a_imprimer_;
-}
-
-inline const LIST(Nom)& Zone::Bords_a_imprimer_sum() const
-{
-  return Bords_a_imprimer_sum_;
-}
-
-inline void Zone::associer_Bords_a_imprimer(LIST(Nom) liste)
-{
-  Bords_a_imprimer_=liste;
-}
-
-inline void Zone::associer_Bords_a_imprimer_sum(LIST(Nom) liste)
-{
-  Bords_a_imprimer_sum_=liste;
-}
+inline const LIST(Nom)& Zone::bords_a_imprimer() const { return bords_a_imprimer_; }
+inline const LIST(Nom)& Zone::bords_a_imprimer_sum() const { return bords_a_imprimer_sum_; }
+inline void Zone::associer_bords_a_imprimer(LIST(Nom) liste) { bords_a_imprimer_=liste; }
+inline void Zone::associer_bords_a_imprimer_sum(LIST(Nom) liste) { bords_a_imprimer_sum_=liste; }
 
 
 /*! @brief Renvoie le nombre d'elements de la zone.
  *
  * @return (int) le nombre d'elements de la zone
  */
-inline int Zone::nb_elem() const
-{
-  return mes_elems.dimension(0);
-}
+inline int Zone::nb_elem() const  { return mes_elems_.dimension(0); }
 
 /*! @brief Renvoie le nombre total d'elements de la zone.
  *
  * @return (int) le nombre total d'elements de la zone
  */
-inline int Zone::nb_elem_tot() const
-{
-  return mes_elems.dimension_tot(0);
-}
+inline int Zone::nb_elem_tot() const { return mes_elems_.dimension_tot(0); }
 
 /*! @brief Renvoie le numero (global) j-ieme sommet du i-ieme element
  *
@@ -298,47 +257,32 @@ inline int Zone::nb_elem_tot() const
  * @param (int j) le numero local (sur l'element) du sommet dont on veut connaitre le numero global
  * @return (int) le numero (global) j-ieme sommet du i-ieme element
  */
-inline int Zone::sommet_elem(int i, int j) const
-{
-  return mes_elems(i,j);
-}
+inline int Zone::sommet_elem(int i, int j) const {  return mes_elems_(i,j); }
 
 /*! @brief Renvoie le nom de la zone.
  *
  * @return (Nom&) le nom de la zone
  */
-inline const Nom& Zone::le_nom() const
-{
-  return nom;
-}
+inline const Nom& Zone::le_nom() const {   return nom_; }
 
 /*! @brief Donne un nom a la zone.
  *
- * @param (Nom& nom_) le nom a donner a la zone
+ * @param (Nom& nom) le nom a donner a la zone
  */
-inline void Zone::nommer(const Nom& nom_)
-{
-  nom = nom_;
-}
+inline void Zone::nommer(const Nom& nom) {  nom_ = nom; }
 
 
 /*! @brief Renvoie le tableau des sommets des elements
  *
  * @return (IntTab&) le tableau des sommets des elements
  */
-inline IntTab& Zone::les_elems()
-{
-  return mes_elems;
-}
+inline IntTab& Zone::les_elems() {  return mes_elems_; }
 
 /*! @brief Renvoie le tableau des sommets des elements (version const)
  *
  * @return (IntTab&) le tableau des sommets des elements
  */
-inline const IntTab& Zone::les_elems() const
-{
-  return mes_elems;
-}
+inline const IntTab& Zone::les_elems() const {  return mes_elems_; }
 
 /*! @brief Renvoie le nombre de sommets des elements geometriques constituants la zone.
  *
@@ -349,10 +293,7 @@ inline const IntTab& Zone::les_elems() const
  *
  * @return (int) le nombre de sommets par element
  */
-inline int Zone::nb_som_elem() const
-{
-  return elem.nb_som();
-}
+inline int Zone::nb_som_elem() const {   return elem_.nb_som(); }
 
 /*! @brief Renvoie le nombre de face de type i des elements geometriques constituants la zone.
  *
@@ -362,10 +303,7 @@ inline int Zone::nb_som_elem() const
  * @param (int i) le type de face
  * @return (int) le nombre de face de type i des elements geometriques constituants la zone
  */
-inline int Zone::nb_faces_elem(int i) const
-{
-  return elem.nb_faces(i);
-}
+inline int Zone::nb_faces_elem(int i) const {  return elem_.nb_faces(i); }
 
 /*! @brief Renvoie un element geometrique du type de ceux qui constituent la zone.
  *
@@ -373,65 +311,44 @@ inline int Zone::nb_faces_elem(int i) const
  *
  * @return (Elem_geom&) un element geometrique du type de ceux qui constituent la zone
  */
-inline const Elem_geom& Zone::type_elem() const
-{
-  return elem;
-}
+inline const Elem_geom& Zone::type_elem() const { return elem_; }
 
 /*! @brief Renvoie un element geometrique du type de ceux qui constituent la zone.
  *
  * @return (Elem_geom&) un element geometrique du type de ceux qui constituent la zone
  */
-inline Elem_geom& Zone::type_elem()
-{
-  return elem;
-}
+inline Elem_geom& Zone::type_elem() {  return elem_; }
 
 /*! @brief Renvoie le nombre de bords de la zone.
  *
  * @return (int) le nombre de bords de la zone
  */
-inline int Zone::nb_bords() const
-{
-  return mes_faces_bord.nb_bords();
-}
+inline int Zone::nb_bords() const {  return mes_faces_bord_.nb_bords(); }
 
 /*! @brief Renvoie le nombre de joints de la zone.
  *
  * @return (int) le nombre de joints de la zone
  */
-inline int Zone::nb_joints() const
-{
-  return mes_faces_joint.nb_joints();
-}
+inline int Zone::nb_joints() const { return mes_faces_joint_.nb_joints(); }
 
 /*! @brief Renvoie le nombre de raccords de la zone.
  *
  * @return (int) le nombre de raccords de la zone
  */
-inline int Zone::nb_raccords() const
-{
-  return mes_faces_raccord.nb_raccords();
-}
+inline int Zone::nb_raccords() const {  return mes_faces_raccord_.nb_raccords(); }
 
 /*! @brief Renvoie le nombre de frontieres internes de la zone.
  *
  * @return (int) le nombre de frontieres internes de la zone
  */
-inline int Zone::nb_frontieres_internes() const
-{
-  return mes_faces_int.nb_faces_internes();
-}
+inline int Zone::nb_frontieres_internes() const {  return mes_faces_int_.nb_faces_internes(); }
 
 /*! @brief Renvoie le nombre de faces frontiere de la zone.
  *
  * C'est la somme des nombres de  bords, de raccords et de faces internes
  *
  */
-inline int Zone::nb_faces_frontiere() const
-{
-  return nb_faces_bord() + nb_faces_raccord() + nb_faces_int();
-}
+inline int Zone::nb_faces_frontiere() const { return nb_faces_bord() + nb_faces_raccord() + nb_faces_int(); }
 
 /*! @brief Renvoie le nombre de bords + le nombre de raccords
  *
@@ -439,153 +356,120 @@ inline int Zone::nb_faces_frontiere() const
  *
  * @return (int) le nombre de frontieres ayant des conditions aux limites.
  */
-inline int Zone::nb_front_Cl() const
-{
-  return nb_bords() +nb_raccords() + nb_frontieres_internes();
-}
+inline int Zone::nb_front_Cl() const  {   return nb_bords() +nb_raccords() + nb_frontieres_internes(); }
 /*! @brief Type les elements de la zone avec le nom passe en parametre.
  *
- * Et associe le type
- *     d'element a la zone.
- *
+ * Et associe le type d'element a la zone.
  * @param (Nom& typ) le nom du type des elements geometriques de la zone.
  */
 inline void Zone::typer(const Nom& typ)
 {
-  elem.typer(typ);
-  elem.associer_zone(*this);
+  elem_.typer(typ);
+  elem_.associer_zone(*this);
 }
 
 /*! @brief Calcule les centres de gravites des elements de la zone.
  *
  * @param (DoubleTab& xp) le tableau contenant les centres de gravites des elements de la zone
  */
-inline void Zone::calculer_centres_gravite(DoubleTab& xp) const
-{
-  elem.calculer_centres_gravite(xp);
-}
+inline void Zone::calculer_centres_gravite(DoubleTab& xp) const {  elem_.calculer_centres_gravite(xp); }
 
 /*! @brief Renvoie le bord dont le nom est specifie.
  *
  * (version const)
  *
- * @param (Nom& nom_) le nom du bord a renvoyer
+ * @param (Nom& nom) le nom du bord a renvoyer
  * @return (Bord&) le bord dont le nom est specifie
  */
-inline const Bord& Zone::bord(const Nom& nom_) const
-{
-  return mes_faces_bord(nom_);
-}
+inline const Bord& Zone::bord(const Nom& nom) const {   return mes_faces_bord_(nom); }
 
 /*! @brief Renvoie le bord dont le nom est specifie.
  *
- * @param (Nom& nom_) le nom du bord a renvoyer
+ * @param (Nom& nom) le nom du bord a renvoyer
  * @return (Bord&) le bord dont le nom est specifie
  */
-inline Bord& Zone::bord(const Nom& nom_)
-{
-  return mes_faces_bord(nom_);
-}
+inline Bord& Zone::bord(const Nom& nom) {  return mes_faces_bord_(nom); }
 
 /*! @brief Renvoie le joint dont le nom est specifie (version const)
  *
- * @param (Nom& nom_) le nom du joint a renvoyer
+ * @param (Nom& nom) le nom du joint a renvoyer
  * @return (Joint&) le joint dont le nom est specifie
  */
-inline const Joint& Zone::joint(const Nom& nom_) const
-{
-  return mes_faces_joint(nom_);
-}
+inline const Joint& Zone::joint(const Nom& nom) const {   return mes_faces_joint_(nom); }
 
 /*! @brief Renvoie le joint dont le nom est specifie
  *
- * @param (Nom& nom_) le nom du joint a renvoyer
+ * @param (Nom& nom) le nom du joint a renvoyer
  * @return (Joint&) le joint dont le nom est specifie
  */
-inline Joint& Zone::joint(const Nom& nom_)
-{
-  return mes_faces_joint(nom_);
-}
+inline Joint& Zone::joint(const Nom& nom) {  return mes_faces_joint_(nom); }
 
 /*! @brief Renvoie le raccord dont le nom est specifie (version const)
  *
- * @param (Nom& nom_) le nom du raccord a renvoyer
+ * @param (Nom& nom) le nom du raccord a renvoyer
  * @return (Raccord&) le raccord dont le nom est specifie
  */
-inline const Raccord& Zone::raccord(const Nom& nom_) const
-{
-  return mes_faces_raccord(nom_);
-}
+inline const Raccord& Zone::raccord(const Nom& nom) const {   return mes_faces_raccord_(nom); }
 
 /*! @brief Renvoie le raccord dont le nom est specifie
  *
- * @param (Nom& nom_) le nom du raccord a renvoyer
+ * @param (Nom& nom) le nom du raccord a renvoyer
  * @return (Raccord&) le raccord dont le nom est specifie
  */
-inline Raccord& Zone::raccord(const Nom& nom_)
-{
-  return mes_faces_raccord(nom_);
-}
+inline Raccord& Zone::raccord(const Nom& nom) {  return mes_faces_raccord_(nom); }
 
 /*! @brief Renvoie les faces_internes dont le nom est specifie (version const)
  *
- * @param (Nom& nom_) le nom des faces internes a renvoyer
+ * @param (Nom& nom) le nom des faces internes a renvoyer
  * @return (Faces_Interne&) les faces_internes dont le nom est specifie
  */
-inline const Faces_Interne& Zone::faces_interne(const Nom& nom_) const
-{
-  return mes_faces_int(nom_);
-}
+inline const Faces_Interne& Zone::faces_interne(const Nom& nom) const {   return mes_faces_int_(nom); }
 
 /*! @brief Renvoie les faces_internes dont le nom est specifie
  *
- * @param (Nom& nom_) le nom des faces internes a renvoyer
+ * @param (Nom& nom) le nom des faces internes a renvoyer
  * @return (Faces_Interne&) les faces_internes dont le nom est specifie
  */
-inline Faces_Interne& Zone::faces_interne(const Nom& nom_)
-{
-  return mes_faces_int(nom_);
-}
+inline Faces_Interne& Zone::faces_interne(const Nom& nom) {   return mes_faces_int_(nom); }
 
 /*! @brief Renvoie le i-ieme bord de la zone (version const)
  *
  * @param (int i) l'indice du bord renvoyer
  * @return (Bord&) le i-ieme bord de la zone
  */
-inline const Bord& Zone::bord(int i) const
-{
-  return mes_faces_bord(i);
-}
+inline const Bord& Zone::bord(int i) const {   return mes_faces_bord_(i); }
+
 inline const Frontiere& Zone::frontiere(int i) const
 {
   int fin=nb_bords();
   if(i<fin)
-    return mes_faces_bord(i);
+    return mes_faces_bord_(i);
   i-=fin;
   fin=nb_raccords();
   if(i<fin)
-    return mes_faces_raccord(i).valeur();
+    return mes_faces_raccord_(i).valeur();
   i-=fin;
   fin=nb_frontieres_internes();
   if(i<fin)
-    return mes_faces_int(i);
+    return mes_faces_int_(i);
   assert(0);
   exit();
   return frontiere(i);
 }
+
 inline Frontiere& Zone::frontiere(int i)
 {
   int fin=nb_bords();
   if(i<fin)
-    return mes_faces_bord(i);
+    return mes_faces_bord_(i);
   i-=fin;
   fin=nb_raccords();
   if(i<fin)
-    return mes_faces_raccord(i).valeur();
+    return mes_faces_raccord_(i).valeur();
   i-=fin;
   fin=nb_frontieres_internes();
   if(i<fin)
-    return mes_faces_int(i);
+    return mes_faces_int_(i);
   assert(0);
   exit();
   return frontiere(i);
@@ -596,30 +480,21 @@ inline Frontiere& Zone::frontiere(int i)
  * @param (int i) l'indice du bord a renvoyer
  * @return (Bord&) le i-ieme bord de la zone
  */
-inline Bord& Zone::bord(int i)
-{
-  return mes_faces_bord(i);
-}
+inline Bord& Zone::bord(int i) {  return mes_faces_bord_(i); }
 
 /*! @brief Renvoie le i-ieme joint de la zone (version const)
  *
  * @param (int i) l'indice du joint renvoyer
  * @return (Joint&) le i-ieme joint de la zone
  */
-inline const Joint& Zone::joint(int i) const
-{
-  return mes_faces_joint(i);
-}
+inline const Joint& Zone::joint(int i) const { return mes_faces_joint_(i); }
 
 /*! @brief Renvoie le i-ieme joint de la zone
  *
  * @param (int i) l'indice du joint a renvoyer
  * @return (Joint&) le i-ieme joint de la zone
  */
-inline Joint& Zone::joint(int i)
-{
-  return mes_faces_joint(i);
-}
+inline Joint& Zone::joint(int i) {   return mes_faces_joint_(i); }
 
 /*! @brief Renvoie le joint correspondant au PE specifie.
  *
@@ -633,17 +508,18 @@ inline const Joint& Zone::joint_of_pe(int pe) const
 {
   int i;
   for(i=0; i<nb_joints(); i++)
-    if(mes_faces_joint(i).PEvoisin()==pe)
+    if(mes_faces_joint_(i).PEvoisin()==pe)
       break;
-  return mes_faces_joint(i);
+  return mes_faces_joint_(i);
 }
+
 inline Joint& Zone::joint_of_pe(int pe)
 {
   int i;
   for(i=0; i<nb_joints(); i++)
-    if(mes_faces_joint(i).PEvoisin()==pe)
+    if(mes_faces_joint_(i).PEvoisin()==pe)
       break;
-  return mes_faces_joint(i);
+  return mes_faces_joint_(i);
 }
 
 /*! @brief Renvoie le i-ieme raccord de la zone (version const)
@@ -651,90 +527,63 @@ inline Joint& Zone::joint_of_pe(int pe)
  * @param (int i) l'indice du raccord renvoyer
  * @return (Raccord&) le i-ieme raccord de la zone
  */
-inline const Raccord& Zone::raccord(int i) const
-{
-  return mes_faces_raccord(i);
-}
+inline const Raccord& Zone::raccord(int i) const { return mes_faces_raccord_(i); }
 
 /*! @brief Renvoie le i-ieme raccord de la zone
  *
  * @param (int i) l'indice du raccord a renvoyer
  * @return (Raccord&) le i-ieme raccord de la zone
  */
-inline Raccord& Zone::raccord(int i)
-{
-  return mes_faces_raccord(i);
-}
+inline Raccord& Zone::raccord(int i) {  return mes_faces_raccord_(i); }
 
 /*! @brief Renvoie les i-ieme faces internes de la zone (version const)
  *
  * @param (int i) l'indice des faces internes renvoyer
  * @return (Faces_Internes&) les i-ieme faces internes de la zone
  */
-inline const Faces_Interne& Zone::faces_interne(int i) const
-{
-  return mes_faces_int(i);
-}
+inline const Faces_Interne& Zone::faces_interne(int i) const {  return mes_faces_int_(i); }
 
 /*! @brief Renvoie les i-ieme faces internes de la zone
  *
  * @param (int i) l'indice des faces internes a renvoyer
  * @return (Facesr_Internes&) les i-ieme faces internes de la zone
  */
-inline Faces_Interne& Zone::faces_interne(int i)
-{
-  return mes_faces_int(i);
-}
+inline Faces_Interne& Zone::faces_interne(int i) {   return mes_faces_int_(i); }
 
 /*! @brief Renvoie la liste des bords de la zone.
- *
  * (version const)
  *
  * @return (Bords&) la liste des bords de la zone
  */
-inline const Bords& Zone::faces_bord() const
-{
-  return mes_faces_bord;
-}
+inline const Bords& Zone::faces_bord() const { return mes_faces_bord_; }
 
 /*! @brief Renvoie la liste des bords de la zone.
  *
  * @return (Bords&) la liste des bords de la zone
  */
-inline Bords& Zone::faces_bord()
-{
-  return mes_faces_bord;
-}
+inline Bords& Zone::faces_bord() {  return mes_faces_bord_; }
 
 /*! @brief Renvoie la liste des joints de la zone.
- *
  * (version const)
  *
  * @return (Joints&) la liste des joints de la zone
  */
-inline const Joints& Zone::faces_joint() const
-{
-  return mes_faces_joint;
-}
+inline const Joints& Zone::faces_joint() const {  return mes_faces_joint_; }
 
 /*! @brief Renvoie la liste des joints de la zone.
  *
  * @return (Joints&) la liste des joints de la zone
  */
-inline Joints& Zone::faces_joint()
-{
-  return mes_faces_joint;
-}
+inline Joints& Zone::faces_joint() { return mes_faces_joint_; }
 
 /*! @brief Renvoie la liste des racoords de la zone.
- *
  * (version const)
  *
  * @return (Raccords&) la liste des raccords de la zone
  */
 inline const Raccords& Zone::faces_raccord() const
 {
-  return mes_faces_raccord;
+  return mes_faces_raccord_;
 }
 
 /*! @brief Renvoie la liste des racoords de la zone.
@@ -743,18 +592,17 @@ inline const Raccords& Zone::faces_raccord() const
  */
 inline Raccords& Zone::faces_raccord()
 {
-  return mes_faces_raccord;
+  return mes_faces_raccord_;
 }
 
 /*! @brief Renvoie la liste des faces internes de la zone.
- *
  * (version const)
  *
  * @return (Faces_Internes&) la liste des faces internes de la zone
  */
 inline const Faces_Internes& Zone::faces_int() const
 {
-  return mes_faces_int;
+  return mes_faces_int_;
 }
 
 /*! @brief Renvoie la liste des faces internes de la zone.
@@ -763,15 +611,14 @@ inline const Faces_Internes& Zone::faces_int() const
  */
 inline Faces_Internes& Zone::faces_int()
 {
-  return mes_faces_int;
+  return mes_faces_int_;
 }
 
 /*! @brief Reordonne les elements suivant la convention employe par Trio-U.
- *
  */
 inline void Zone::reordonner()
 {
-  elem.reordonner();
+  elem_.reordonner();
 }
 
 
@@ -793,76 +640,33 @@ inline int Zone::nb_faces_frontiere(Type_Face type) const
 
 // Decription:
 // Renvoie le tableau des indices des faces distantes de bord
-inline const ArrOfInt& Zone::ind_faces_virt_bord() const
-{
-  return ind_faces_virt_bord_;
-}
+inline const ArrOfInt& Zone::ind_faces_virt_bord() const { return ind_faces_virt_bord_; }
 
 /*! @brief renvoie le nombre d'aretes reelles.
- *
  */
-inline int Zone::
-nb_aretes() const
-{
-  return Aretes_som.dimension(0);
-}
+inline int Zone::nb_aretes() const { return aretes_som_.dimension(0); }
 
 /*! @brief renvoie le nombre d'aretes total (reelles+virtuelles).
- *
  */
-inline int Zone::
-nb_aretes_tot() const
-{
-  return Aretes_som.dimension_tot(0);
-}
+inline int Zone::nb_aretes_tot() const { return aretes_som_.dimension_tot(0); }
 
 /*! @brief renvoie le numero du jeme sommet de la ieme arete.
- *
  */
-inline int Zone::
-arete_sommets(int i, int j) const
-{
-  return Aretes_som(i, j);
-}
+inline int Zone::arete_sommets(int i, int j) const { return aretes_som_(i, j); }
 
 /*! @brief renvoie le numero de la jeme arete du ieme element.
- *
  */
-inline int Zone::
-elem_aretes(int i, int j) const
-{
-  return Elem_Aretes(i, j);
-}
+inline int Zone::elem_aretes(int i, int j) const {  return elem_aretes_(i, j); }
 
 /*! @brief renvoie le tableau de connectivite aretes/sommets.
- *
  */
-inline const IntTab& Zone::
-aretes_som() const
-{
-  return Aretes_som;
-}
-inline IntTab& Zone::
-set_aretes_som()
-{
-  return Aretes_som;
-}
+inline const IntTab& Zone::aretes_som() const {  return aretes_som_; }
+
+inline IntTab& Zone::set_aretes_som() {  return aretes_som_; }
 
 /*! @brief renvoie le tableau de connectivite elements/aretes.
- *
  */
-inline const IntTab& Zone::
-elem_aretes() const
-{
-  return Elem_Aretes;
-}
-inline IntTab& Zone::
-set_elem_aretes()
-{
-  return Elem_Aretes;
-}
+inline const IntTab& Zone::elem_aretes() const {   return elem_aretes_; }
+inline IntTab& Zone::set_elem_aretes() {   return elem_aretes_; }
+
 #endif
-
-
-
-

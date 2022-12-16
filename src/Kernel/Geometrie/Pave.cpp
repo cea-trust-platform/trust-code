@@ -36,12 +36,6 @@ Implemente_instanciable(Pave,"Pave",Zone);
 // XD attr ztanh_dilatation entier(into=[-1,0,1]) ztanh_dilatation 1 Keyword to generate mesh with tanh (hyperbolic tangent) variation in the Z-direction. tanh_dilatation: The value may be -1,0,1 (0 by default): 0: coarse mesh at the middle of the channel and smaller near the walls -1: coarse mesh at the back of the channel and smaller near the front 1: coarse mesh at the front of the channel and smaller near the back.
 // XD attr ztanh_taille_premiere_maille floattant ztanh_taille_premiere_maille 1 Size of the first cell of the mesh with tanh (hyperbolic tangent) variation in the Z-direction.
 
-
-/*! @brief Simple appel a: Zone::printOn(Sortie&)
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Pave::printOn(Sortie& s ) const
 {
   return Zone::printOn(s) ;
@@ -102,12 +96,12 @@ Entree& Pave::readOn(Entree& is)
 
   typer_();
 
-  is >> nom;
-  Cerr << "Reading of the block " << nom << finl;
+  is >> nom_;
+  Cerr << "Reading of the block " << nom_ << finl;
   is >> motlu;
   if (motlu!="{")
     {
-      Cerr << "We expected a { after " << nom << finl;
+      Cerr << "We expected a { after " << nom_ << finl;
       exit();
     }
   {
@@ -143,10 +137,10 @@ Entree& Pave::readOn(Entree& is)
               is >> Origine(i);
             break;
           case 1:
-            lire_Longueurs(is);
+            lire_longueurs(is);
             break;
           case 2:
-            lire_Noeuds(is);
+            lire_noeuds(is);
             break;
           case 3:
             for(int i=0; i< dimension; i++)
@@ -414,13 +408,13 @@ Entree& Pave::readOn(Entree& is)
           {
           case 0:      // Bord
             {
-              Bord& newbord=mes_faces_bord.add(Bord());
+              Bord& newbord=mes_faces_bord_.add(Bord());
               lire_front(is , newbord );
             }
             break;
           case 1:      // Raccord
             {
-              Raccord& newraccord=mes_faces_raccord.add(Raccord());
+              Raccord& newraccord=mes_faces_raccord_.add(Raccord());
               Nom type="Raccord_";
               Nom local, homogene;
               is >> local >> homogene;
@@ -438,7 +432,7 @@ Entree& Pave::readOn(Entree& is)
             break;
           case 2:      // Plaques
             {
-              Faces_Interne& faces=mes_faces_int.add(Faces_Interne());
+              Faces_Interne& faces=mes_faces_int_.add(Faces_Interne());
               lire_front(is , faces );
             }
             break;
@@ -446,7 +440,7 @@ Entree& Pave::readOn(Entree& is)
             break;
           case 4:      // Joint
             {
-              Joint& newjoint=mes_faces_joint.add(Joint());
+              Joint& newjoint=mes_faces_joint_.add(Joint());
               lire_front(is , newjoint );
             }
             break;
@@ -1285,7 +1279,7 @@ void Pave::typer_()
  * @param (Entree& is) un flot d'entree
  * @throws La Longueur est en nombre de tour en axi, comprise entre 0 et 1
  */
-void Pave::lire_Longueurs(Entree& is)
+void Pave::lire_longueurs(Entree& is)
 {
   int i;
   for(i=0; i< dimension; i++)
@@ -1311,7 +1305,7 @@ void Pave::lire_Longueurs(Entree& is)
  * @throws en coordonnees axi il faut lire les longueurs d'abord
  * @throws dimension d'espace non prevue
  */
-void Pave::lire_Noeuds(Entree& is)
+void Pave::lire_noeuds(Entree& is)
 {
   int i, j, k;
   if( (axi) && (Longueurs(0)==0.))
@@ -1323,7 +1317,7 @@ void Pave::lire_Noeuds(Entree& is)
     is >> Nb_Noeuds(i);
   if (min_array(Nb_Noeuds)<2)
     {
-      Cerr << "\nError: The number of nodes in directions Nx and Ny (and Nz) for 'Pave " << nom << "' must be greater than 1." << finl;
+      Cerr << "\nError: The number of nodes in directions Nx and Ny (and Nz) for 'Pave " << nom_ << "' must be greater than 1." << finl;
       Cerr << "If you want to define a unique cell in a given direction, set the number of nodes to 2 in that direction." << finl;
       exit();
     }
@@ -1331,7 +1325,7 @@ void Pave::lire_Noeuds(Entree& is)
     {
       Mx=Nb_Noeuds(0);
       Nx=Nb_Noeuds(0)-1;
-      mes_elems.resize(Nx,2);
+      mes_elems_.resize(Nx,2);
       Les_Noeuds.resize(Mx);
       for (i=0; i<Nx; i++)
         {
@@ -1347,7 +1341,7 @@ void Pave::lire_Noeuds(Entree& is)
       Ny=Nb_Noeuds(1)-1;
       assert(tour_complet!=-123);
       if(tour_complet) Ny++;
-      mes_elems.resize(Nx*Ny,4);
+      mes_elems_.resize(Nx*Ny,4);
       Les_Noeuds.resize(Mx*My,2);
       for (i=0; i<Nx; i++)
         for (j=0; j<Ny; j++)
@@ -1368,7 +1362,7 @@ void Pave::lire_Noeuds(Entree& is)
       Nz=Nb_Noeuds(2)-1;
       assert(tour_complet!=-123);
       if(tour_complet) Ny++;
-      mes_elems.resize(Nx*Ny*Nz,8);
+      mes_elems_.resize(Nx*Ny*Nz,8);
       Les_Noeuds.resize(Mx*My*Mz,3);
       for (i=0; i<Nx; i++)
         for ( j=0; j<Ny; j++)

@@ -413,7 +413,7 @@ void Zone_EF::typer_elem(Zone& zone_geom)
 
 void Zone_EF::verifie_compatibilite_domaine()
 {
-  if (zone().domaine().Axi1d())
+  if (zone().domaine().axi1d())
     {
       Cerr << "*****************************************************************************" << finl;
       Cerr << " Error in " << que_suis_je() << " : the type of domain " << zone().domaine().que_suis_je();

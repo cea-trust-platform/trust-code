@@ -758,9 +758,9 @@ void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
 
 int Op_Grad_VEF_P1B_Face::impr(Sortie& os) const
 {
-  const int impr_mom=la_zone_vef->zone().Moments_a_imprimer();
-  const int impr_sum=(la_zone_vef->zone().Bords_a_imprimer_sum().est_vide() ? 0:1);
-  const int impr_bord=(la_zone_vef->zone().Bords_a_imprimer().est_vide() ? 0:1);
+  const int impr_mom=la_zone_vef->zone().moments_a_imprimer();
+  const int impr_sum=(la_zone_vef->zone().bords_a_imprimer_sum().est_vide() ? 0:1);
+  const int impr_bord=(la_zone_vef->zone().bords_a_imprimer().est_vide() ? 0:1);
   const Schema_Temps_base& sch = equation().probleme().schema_temps();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   const Zone_VEF_PreP1b& zone_VEF = zone_Vef();
@@ -794,7 +794,7 @@ int Op_Grad_VEF_P1B_Face::impr(Sortie& os) const
     {
       const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-      int impr_boundary = (zone_VEF.zone().Bords_a_imprimer_sum().contient(le_bord.le_nom()) ? 1 : 0);
+      int impr_boundary = (zone_VEF.zone().bords_a_imprimer_sum().contient(le_bord.le_nom()) ? 1 : 0);
       int ndeb = le_bord.num_premiere_face();
       int nfin = ndeb + le_bord.nb_faces();
       for (int face=ndeb; face<nfin; face++)
@@ -893,8 +893,8 @@ int Op_Grad_VEF_P1B_Face::impr(Sortie& os) const
       if (impr_mom) Flux_grad_moment << finl;
     }
 
-  const LIST(Nom)& Liste_Bords_a_imprimer = zone_VEF.zone().Bords_a_imprimer();
-  if (!Liste_Bords_a_imprimer.est_vide())
+  const LIST(Nom)& Liste_bords_a_imprimer = zone_VEF.zone().bords_a_imprimer();
+  if (!Liste_bords_a_imprimer.est_vide())
     {
       EcrFicPartage Flux_grad_face;
       ouvrir_fichier_partage(Flux_grad_face,"",impr_bord);
@@ -904,7 +904,7 @@ int Op_Grad_VEF_P1B_Face::impr(Sortie& os) const
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
           int ndeb = le_bord.num_premiere_face();
           int nfin = ndeb + le_bord.nb_faces();
-          if (zone_VEF.zone().Bords_a_imprimer().contient(le_bord.le_nom()))
+          if (zone_VEF.zone().bords_a_imprimer().contient(le_bord.le_nom()))
             {
               if (je_suis_maitre())
                 {

@@ -356,9 +356,9 @@ void Op_Grad_EF::calculer_flux_bords() const
 
 int Op_Grad_EF::impr(Sortie& os) const
 {
-  const int impr_mom=la_zone_EF->zone().Moments_a_imprimer();
-  const int impr_sum=(la_zone_EF->zone().Bords_a_imprimer_sum().est_vide() ? 0:1);
-  const int impr_bord=(la_zone_EF->zone().Bords_a_imprimer().est_vide() ? 0:1);
+  const int impr_mom=la_zone_EF->zone().moments_a_imprimer();
+  const int impr_sum=(la_zone_EF->zone().bords_a_imprimer_sum().est_vide() ? 0:1);
+  const int impr_bord=(la_zone_EF->zone().bords_a_imprimer().est_vide() ? 0:1);
   const Schema_Temps_base& sch = equation().probleme().schema_temps();
   double temps = sch.temps_courant();
   const Zone_Cl_EF& zone_Cl_EF = la_zcl_EF.valeur();
@@ -408,7 +408,7 @@ int Op_Grad_EF::impr(Sortie& os) const
               // Calcul du moment exerce par le fluide sur le bord (OM/\F)
               if (impr_mom) moment_z+=flux_bords_(face,1)*c_grav[0]-flux_bords_(face,0)*c_grav[1];
 
-              if (zone_EF.zone().Bords_a_imprimer_sum().contient(le_bord.le_nom()))
+              if (zone_EF.zone().bords_a_imprimer_sum().contient(le_bord.le_nom()))
                 {
                   fluxx_sum_s += flux_bords_(face,0) ;
                   fluxy_sum_s += flux_bords_(face,1) ;
@@ -424,7 +424,7 @@ int Op_Grad_EF::impr(Sortie& os) const
               moment_x+=flux_bords_(face,2)*c_grav[1]-flux_bords_(face,1)*c_grav[2];
               moment_y+=flux_bords_(face,0)*c_grav[2]-flux_bords_(face,2)*c_grav[0];
               moment_z+=flux_bords_(face,1)*c_grav[0]-flux_bords_(face,0)*c_grav[1];
-              if (zone_EF.zone().Bords_a_imprimer_sum().contient(le_bord.le_nom()))
+              if (zone_EF.zone().bords_a_imprimer_sum().contient(le_bord.le_nom()))
                 {
                   fluxx_sum_s += flux_bords_(face,0) ;
                   fluxy_sum_s += flux_bords_(face,1) ;
@@ -495,7 +495,7 @@ int Op_Grad_EF::impr(Sortie& os) const
 
       int ndeb = le_bord.num_premiere_face();
       int nfin = ndeb + le_bord.nb_faces();
-      if (zone_EF.zone().Bords_a_imprimer().contient(le_bord.le_nom()))
+      if (zone_EF.zone().bords_a_imprimer().contient(le_bord.le_nom()))
         {
           if (je_suis_maitre()) Flux_grad_face << "# Force par face sur " << le_bord.le_nom() << " au temps " << temps << " : " << finl;
           for (face=ndeb; face<nfin; face++)

@@ -20,11 +20,18 @@
 #include <Domaine.h>
 #include <Octree.h>
 #include <Zone.h>
+#include <TRUSTTrav.h>
+#include <Scatter.h>
+#include <Poly_geom_base.h>
+#include <Array_tools.h>
+#include <Schema_Comm.h>
+#include <MD_Vector_std.h>
+#include <MD_Vector_tools.h>
 
 Implemente_instanciable_sans_constructeur(Zone, "Zone", Objet_U);
 
 Zone::Zone() :
-  Moments_a_imprimer_(0)
+  moments_a_imprimer_(0)
 {
   volume_total_ = -1.; // pas encore calcule
 }
@@ -41,13 +48,13 @@ Zone::Zone() :
 Sortie& Zone::printOn(Sortie& s) const
 {
   Cerr << "Writing of " << nb_elem() << " elements." << finl;
-  s << nom << finl;
-  s << elem << finl;
-  s << mes_elems;
-  s << mes_faces_bord;
-  s << mes_faces_joint;
-  s << mes_faces_raccord;
-  s << mes_faces_int;
+  s << nom_ << finl;
+  s << elem_ << finl;
+  s << mes_elems_;
+  s << mes_faces_bord_;
+  s << mes_faces_joint_;
+  s << mes_faces_raccord_;
+  s << mes_faces_int_;
   return s;
 }
 
@@ -120,14 +127,14 @@ Entree& Zone::readOn(Entree& s)
  */
 void Zone::read_zone(Entree& s)
 {
-  s >> nom;
+  s >> nom_ ;
   Cerr << " Reading zone " << le_nom() << finl;
-  s >> elem;
-  s >> mes_elems;
-  s >> mes_faces_bord;
-  s >> mes_faces_joint;
-  s >> mes_faces_raccord;
-  s >> mes_faces_int;
+  s >> elem_;
+  s >> mes_elems_;
+  s >> mes_faces_bord_;
+  s >> mes_faces_joint_;
+  s >> mes_faces_raccord_;
+  s >> mes_faces_int_;
 }
 
 /*! @brief associate the read objects to the zone and check that the reading objects are coherent
@@ -145,30 +152,28 @@ void Zone::check_zone()
       }
   }
 
-  if (mes_faces_bord.size() == 0 && mes_faces_raccord.size() == 0 && Process::nproc() == 1)
-    {
-      Cerr << "Warning, the reread zone " << nom << " has no defined boundaries (none boundary or connector)." << finl;
-    }
+  if (mes_faces_bord_.size() == 0 && mes_faces_raccord_.size() == 0 && Process::nproc() == 1)
+    Cerr << "Warning, the reread zone " << nom_ << " has no defined boundaries (none boundary or connector)." << finl;
 
-  mes_faces_bord.associer_zone(*this);
-  mes_faces_joint.associer_zone(*this);
-  mes_faces_raccord.associer_zone(*this);
-  mes_faces_int.associer_zone(*this);
-  elem.associer_zone(*this);
+  mes_faces_bord_.associer_zone(*this);
+  mes_faces_joint_.associer_zone(*this);
+  mes_faces_raccord_.associer_zone(*this);
+  mes_faces_int_.associer_zone(*this);
+  elem_.associer_zone(*this);
   fixer_premieres_faces_frontiere();
 
-  const int nbelem = mp_sum(mes_elems.dimension(0));
+  const int nbelem = mp_sum(mes_elems_.dimension(0));
   Cerr << "  Number of elements: " << nbelem << finl;
 
   // Verifications sanitaires:
   // On doit avoir le meme nombre de frontieres et les memes noms sur tous les procs
-  check_frontiere(mes_faces_bord, "(Bord)");
-  check_frontiere(mes_faces_raccord, "(Raccord)");
-  check_frontiere(mes_faces_int, "(Face_Interne)");
+  check_frontiere(mes_faces_bord_, "(Bord)");
+  check_frontiere(mes_faces_raccord_, "(Raccord)");
+  check_frontiere(mes_faces_int_, "(Face_Interne)");
 
 }
 
-Entree& Zone::Lire_Bords_a_imprimer(Entree& is)
+Entree& Zone::lire_bords_a_imprimer(Entree& is)
 {
   Nom nom_lu;
   Motcle motlu, accolade_fermee = "}", accolade_ouverte = "{";
@@ -184,14 +189,14 @@ Entree& Zone::Lire_Bords_a_imprimer(Entree& is)
   while (nom_lu != "}")
     {
       Cerr << nom_lu << " ";
-      Bords_a_imprimer_.add(Nom(nom_lu));
+      bords_a_imprimer_.add(Nom(nom_lu));
       is >> nom_lu;
     }
   Cerr << finl;
   return is;
 }
 
-Entree& Zone::Lire_Bords_a_imprimer_sum(Entree& is)
+Entree& Zone::lire_bords_a_imprimer_sum(Entree& is)
 {
   Nom nom_lu;
   Motcle motlu, accolade_fermee = "}", accolade_ouverte = "{";
@@ -207,7 +212,7 @@ Entree& Zone::Lire_Bords_a_imprimer_sum(Entree& is)
   while (nom_lu != "}")
     {
       Cerr << nom_lu << " ";
-      Bords_a_imprimer_sum_.add(Nom(nom_lu));
+      bords_a_imprimer_sum_.add(Nom(nom_lu));
       is >> nom_lu;
     }
   Cerr << finl;
@@ -249,7 +254,7 @@ Domaine& Zone::domaine()
  * @param (ArrOfInt& elem_) le tableau contenant les numeros des elements contenant les sommets specifies
  * @return (ArrOfInt&) le tableau des numeros des sommets dont on cherche les elements correspondants
  */
-ArrOfInt& Zone::indice_elements(const IntTab& sommets, ArrOfInt& elem_, int reel) const
+ArrOfInt& Zone::indice_elements(const IntTab& sommets, ArrOfInt& elem, int reel) const
 {
   int i, j, k;
   const DoubleTab& les_coord = domaine().coord_sommets();
@@ -259,8 +264,9 @@ ArrOfInt& Zone::indice_elements(const IntTab& sommets, ArrOfInt& elem_, int reel
     for (j = 0; j < nb_som_elem(); j++)
       for (k = 0; k < Objet_U::dimension; k++)
         xg(i, k) += les_coord(sommets(i, j), k);
+
   xg /= nb_som_elem();
-  return chercher_elements(xg, elem_, reel);
+  return chercher_elements(xg, elem, reel);
 }
 
 /*! @brief Recherche des elements contenant les points dont les coordonnees sont specifiees.
@@ -393,7 +399,7 @@ void Zone::associer_domaine(const Domaine& un_domaine)
  */
 int Zone::nb_faces_bord() const
 {
-  return mes_faces_bord.nb_faces();
+  return mes_faces_bord_.nb_faces();
 }
 
 /*! @brief Renvoie le nombre de joints de la zone.
@@ -402,7 +408,7 @@ int Zone::nb_faces_bord() const
  */
 int Zone::nb_faces_joint() const
 {
-  return mes_faces_joint.nb_faces();
+  return mes_faces_joint_.nb_faces();
 }
 
 /*! @brief Renvoie le nombre de raccords de la zone.
@@ -411,7 +417,7 @@ int Zone::nb_faces_joint() const
  */
 int Zone::nb_faces_raccord() const
 {
-  return mes_faces_raccord.nb_faces();
+  return mes_faces_raccord_.nb_faces();
 }
 
 /*! @brief Renvoie le nombre de face internes de la zone.
@@ -420,7 +426,7 @@ int Zone::nb_faces_raccord() const
  */
 int Zone::nb_faces_int() const
 {
-  return mes_faces_int.nb_faces();
+  return mes_faces_int_.nb_faces();
 }
 
 /*! @brief Renvoie le nombre de sommets de la zone.
@@ -453,7 +459,7 @@ int Zone::nb_som_tot() const
  */
 int Zone::nb_faces_bord(int i) const
 {
-  return mes_faces_bord(i).nb_faces();
+  return mes_faces_bord_(i).nb_faces();
 }
 
 /*! @brief Renvoie le nombre de faces du i-ieme joint.
@@ -463,7 +469,7 @@ int Zone::nb_faces_bord(int i) const
  */
 int Zone::nb_faces_joint(int i) const
 {
-  return mes_faces_joint(i).nb_faces();
+  return mes_faces_joint_(i).nb_faces();
 }
 
 /*! @brief Renvoie le nombre de faces du i-ieme raccord.
@@ -473,7 +479,7 @@ int Zone::nb_faces_joint(int i) const
  */
 int Zone::nb_faces_raccord(int i) const
 {
-  return mes_faces_raccord(i)->nb_faces();
+  return mes_faces_raccord_(i)->nb_faces();
 }
 /*! @brief Renvoie le nombre de faces de la i-ieme liste de faces internes
  *
@@ -482,7 +488,7 @@ int Zone::nb_faces_raccord(int i) const
  */
 int Zone::nb_faces_int(int i) const
 {
-  return mes_faces_int(i).nb_faces();
+  return mes_faces_int_(i).nb_faces();
 }
 
 /*! @brief Renumerotation des noeuds: Le noeud de numero k devient le noeud de numero Les_Nums[k]
@@ -491,21 +497,21 @@ int Zone::nb_faces_int(int i) const
  */
 void Zone::renum(const IntVect& Les_Nums)
 {
-  int dim0 = mes_elems.dimension(0);
-  int dim1 = mes_elems.dimension(1);
+  int dim0 = mes_elems_.dimension(0);
+  int dim1 = mes_elems_.dimension(1);
 
   for (int i = 0; i < dim0; i++)
     for (int j = 0; j < dim1; j++)
-      mes_elems(i, j) = Les_Nums[mes_elems(i, j)];
+      mes_elems_(i, j) = Les_Nums[mes_elems_(i, j)];
 
   for (int i = 0; i < nb_bords(); i++)
-    mes_faces_bord(i).renum(Les_Nums);
+    mes_faces_bord_(i).renum(Les_Nums);
   for (int i = 0; i < nb_joints(); i++)
-    mes_faces_joint(i).renum(Les_Nums);
+    mes_faces_joint_(i).renum(Les_Nums);
   for (int i = 0; i < nb_raccords(); i++)
-    mes_faces_raccord(i)->renum(Les_Nums);
+    mes_faces_raccord_(i)->renum(Les_Nums);
   for (int i = 0; i < nb_frontieres_internes(); i++)
-    mes_faces_int(i).renum(Les_Nums);
+    mes_faces_int_(i).renum(Les_Nums);
 }
 
 /*! @brief Renumerotation des noeuds et des elements presents dans les items communs des joints Le noeud de numero k devient le noeud de numero Les_Nums[k]
@@ -518,11 +524,11 @@ void Zone::renum_joint_common_items(const IntVect& Les_Nums, const int elem_offs
 {
   for (int i_joint = 0; i_joint < nb_joints(); i_joint++)
     {
-      ArrOfInt& sommets_communs = mes_faces_joint[i_joint].set_joint_item(Joint::SOMMET).set_items_communs();
+      ArrOfInt& sommets_communs = mes_faces_joint_[i_joint].set_joint_item(Joint::SOMMET).set_items_communs();
       for (int index = 0; index < sommets_communs.size_array(); index++)
         sommets_communs[index] = Les_Nums[sommets_communs[index]];
 
-      ArrOfInt& elements_distants = mes_faces_joint[i_joint].set_joint_item(Joint::ELEMENT).set_items_distants();
+      ArrOfInt& elements_distants = mes_faces_joint_[i_joint].set_joint_item(Joint::ELEMENT).set_items_distants();
       elements_distants += elem_offset;
     }
 }
@@ -541,7 +547,7 @@ int Zone::face_interne_conjuguee(int face) const
   if ((face) < compteur)
     return -1;
 
-  for (const auto& itr : mes_faces_int)
+  for (const auto& itr : mes_faces_int_)
     {
       const Faces& les_faces = itr.faces();
       int nbf = les_faces.nb_faces();
@@ -568,7 +574,7 @@ void Zone::correct_type_of_borders_after_merge()
 {
   {
     // Les Bords
-    auto& list = mes_faces_bord.get_stl_list();
+    auto& list = mes_faces_bord_.get_stl_list();
 
     // first loop over list elements
     for (auto it = list.begin(); it != list.end(); ++it)
@@ -594,7 +600,7 @@ void Zone::correct_type_of_borders_after_merge()
 
   {
     // Les Faces Internes :
-    auto& list = mes_faces_int.get_stl_list();
+    auto& list = mes_faces_int_.get_stl_list();
     for (auto it = list.begin(); it != list.end(); ++it)
       {
         Frontiere& front = *it;
@@ -617,7 +623,7 @@ void Zone::correct_type_of_borders_after_merge()
 
   {
     // Les Raccords
-    auto& list = mes_faces_raccord.get_stl_list();
+    auto& list = mes_faces_raccord_.get_stl_list();
     for (auto it = list.begin(); it != list.end(); ++it)
       {
         Frontiere& front = (*it).valeur();
@@ -640,7 +646,7 @@ void Zone::correct_type_of_borders_after_merge()
 
   {
     //Les joints
-    auto& list = mes_faces_joint.get_stl_list();
+    auto& list = mes_faces_joint_.get_stl_list();
     for (auto it = list.begin(); it != list.end(); ++it)
       {
         Frontiere& front = *it;
@@ -667,7 +673,7 @@ void Zone::correct_type_of_borders_after_merge()
  */
 int Zone::comprimer_joints()
 {
-  auto& list = mes_faces_joint.get_stl_list();
+  auto& list = mes_faces_joint_.get_stl_list();
   for (auto it = list.begin(); it != list.end(); ++it)
     {
       Frontiere& front = *it;
@@ -693,7 +699,7 @@ int Zone::comprimer()
 {
   {
     // Les Bords
-    auto& list = mes_faces_bord.get_stl_list();
+    auto& list = mes_faces_bord_.get_stl_list();
 
     // first loop over list elements
     for (auto it = list.begin(); it != list.end(); ++it)
@@ -722,7 +728,7 @@ int Zone::comprimer()
 
   {
     // Les Faces Internes :
-    auto& list = mes_faces_int.get_stl_list();
+    auto& list = mes_faces_int_.get_stl_list();
     for (auto it = list.begin(); it != list.end(); ++it)
       {
         Frontiere& front = *it;
@@ -742,7 +748,7 @@ int Zone::comprimer()
 
   {
     // Les Raccords
-    auto& list = mes_faces_raccord.get_stl_list();
+    auto& list = mes_faces_raccord_.get_stl_list();
     for (auto it = list.begin(); it != list.end(); ++it)
       {
         Frontiere& front = (*it).valeur();
@@ -772,15 +778,15 @@ int Zone::comprimer()
 void Zone::ecrire_noms_bords(Sortie& os) const
 {
   // Les Bords
-  for (const auto &itr : mes_faces_bord)
+  for (const auto &itr : mes_faces_bord_)
     os << itr.le_nom() << finl;
 
   // Les Faces Internes :
-  for (const auto &itr : mes_faces_raccord)
+  for (const auto &itr : mes_faces_raccord_)
     os << itr->le_nom() << finl;
 
   // Les Faces Internes :
-  for (const auto &itr : mes_faces_int)
+  for (const auto &itr : mes_faces_int_)
     os << itr.le_nom() << finl;
 }
 
@@ -796,7 +802,7 @@ double Zone::epsilon() const
  */
 int Zone::nb_faces_bord(Type_Face type) const
 {
-  return mes_faces_bord.nb_faces(type);
+  return mes_faces_bord_.nb_faces(type);
 }
 
 /*! @brief Renvoie le nombre de joints du type specifie
@@ -806,7 +812,7 @@ int Zone::nb_faces_bord(Type_Face type) const
  */
 int Zone::nb_faces_joint(Type_Face type) const
 {
-  return mes_faces_joint.nb_faces(type);
+  return mes_faces_joint_.nb_faces(type);
 }
 
 /*! @brief Renvoie le nombre de raccords du type specifie
@@ -816,7 +822,7 @@ int Zone::nb_faces_joint(Type_Face type) const
  */
 int Zone::nb_faces_raccord(Type_Face type) const
 {
-  return mes_faces_raccord.nb_faces(type);
+  return mes_faces_raccord_.nb_faces(type);
 }
 
 /*! @brief Renvoie le nombre de faces interieures du type specifie
@@ -826,7 +832,7 @@ int Zone::nb_faces_raccord(Type_Face type) const
  */
 int Zone::nb_faces_int(Type_Face type) const
 {
-  return mes_faces_int.nb_faces(type);
+  return mes_faces_int_.nb_faces(type);
 }
 
 /*! @brief Renvoie le rang de l'element contenant le point dont les coordonnees sont specifiees.
@@ -883,21 +889,21 @@ int Zone::chercher_sommets(double x, double y, double z, int reel) const
 int Zone::rang_frontiere(const Nom& un_nom) const
 {
   int i = 0;
-  for (const auto &itr : mes_faces_bord)
+  for (const auto &itr : mes_faces_bord_)
     {
       if (itr.le_nom() == un_nom)
         return i;
       ++i;
     }
 
-  for (const auto &itr : mes_faces_raccord)
+  for (const auto &itr : mes_faces_raccord_)
     {
       if (itr->le_nom() == un_nom)
         return i;
       ++i;
     }
 
-  for (const auto &itr : mes_faces_int)
+  for (const auto &itr : mes_faces_int_)
     {
       if (itr.le_nom() == un_nom)
         return i;
@@ -924,19 +930,19 @@ void Zone::fixer_premieres_faces_frontiere()
 {
   Journal() << "Zone::fixer_premieres_faces_frontiere()" << finl;
   int compteur = 0;
-  for (auto &itr : mes_faces_bord)
+  for (auto &itr : mes_faces_bord_)
     {
       itr.fixer_num_premiere_face(compteur);
       compteur += itr.nb_faces();
       Journal() << "Le bord " << itr.le_nom() << " commence a la face : " << itr.num_premiere_face() << finl;
     }
-  for (auto &itr : mes_faces_raccord)
+  for (auto &itr : mes_faces_raccord_)
     {
       itr->fixer_num_premiere_face(compteur);
       compteur += itr->nb_faces();
       Journal() << "Le raccord " << itr->le_nom() << " commence a la face : " << itr->num_premiere_face() << finl;
     }
-  for (auto &itr : mes_faces_joint)
+  for (auto &itr : mes_faces_joint_)
     {
       itr.fixer_num_premiere_face(compteur);
       compteur += itr.nb_faces();
@@ -951,7 +957,7 @@ void Zone::fixer_premieres_faces_frontiere()
 // Voir Zone.h : elem_virt_pe_num_
 void Zone::construire_elem_virt_pe_num()
 {
-  IntTab tableau_echange(mes_elems);
+  IntTab tableau_echange(mes_elems_);
   assert(tableau_echange.dimension(1) >= 2);
   int i;
   const int n = nb_elem();
@@ -974,7 +980,7 @@ void Zone::construire_elem_virt_pe_num()
 
 void Zone::construire_elem_virt_pe_num(IntTab& elem_virt_pe_num_cpy) const
 {
-  IntTab tableau_echange(mes_elems);
+  IntTab tableau_echange(mes_elems_);
   assert(tableau_echange.dimension(1) >= 2);
   int i;
   const int n = nb_elem();
@@ -1033,7 +1039,7 @@ void Zone::calculer_volumes(DoubleVect& volumes, DoubleVect& inverse_volumes) co
 {
   if (!volumes.get_md_vector().non_nul())
     creer_tableau_elements(volumes, Array_base::NOCOPY_NOINIT);
-  elem.calculer_volumes(volumes); // Dimensionne et calcule le DoubleVect volumes
+  elem_.calculer_volumes(volumes); // Dimensionne et calcule le DoubleVect volumes
   // Check and fill inverse_volumes
   if (!inverse_volumes.get_md_vector().non_nul())
     creer_tableau_elements(inverse_volumes, Array_base::NOCOPY_NOINIT);
@@ -1063,7 +1069,7 @@ void Zone::calculer_centres_gravite_aretes(DoubleTab& xa) const
   xa.resize(nb_aretes(), dimension);
   for (int i = 0; i < nb_aretes(); i++)
     for (int j = 0; j < dimension; j++)
-      xa(i, j) = 0.5 * (coord(Aretes_som(i, 0), j) + coord(Aretes_som(i, 1), j));
+      xa(i, j) = 0.5 * (coord(aretes_som_(i, 0), j) + coord(aretes_som_(i, 1), j));
 }
 
 int Zone::rang_elem_depuis(const DoubleTab& coord, const ArrOfInt& elems, ArrOfInt& prems) const
@@ -1130,7 +1136,7 @@ void Zone::creer_tableau_elements(Array_base& x, Array_base::Resize_Options opt)
  */
 const MD_Vector& Zone::md_vector_elements() const
 {
-  const MD_Vector& md = mes_elems.get_md_vector();
+  const MD_Vector& md = mes_elems_.get_md_vector();
   if (!md.non_nul())
     {
       Cerr << "Internal error in Zone::md_vector_elements(): descriptor for elements not initialized\n" << " You might use a buggy Domain constructor that does not build descriptors,\n"
@@ -1220,4 +1226,414 @@ int Zone::identifie_item_unique(IntList& item_possible, DoubleTab& coord_possibl
       Process::exit();
     }
   return it_selection;
+}
+
+/*! @brief Methode appelee par Zone_VF::discretiser().
+ *
+ * Construction du descripteur pour les faces de bord
+ *   Remplissage de ind_faces_virt_bord et des tableaux get_faces_virt() des frontieres
+ *   a partir du descripteur parallele des faces.
+ *   Note B.M.: le fait d'avoir mis les faces dans la Zone_VF, les aretes dans la Zone,
+ *    certaines parties des proprites des faces de bord dans la Zone_VF et d'autres dans la Zone
+ *    fait que l'initialisation passe par des chemins un peu tordus... il faudra nettoyer ca.
+ *
+ */
+void Zone::init_faces_virt_bord(const MD_Vector& md_vect_faces, MD_Vector& md_vect_faces_front)
+{
+  // ***************************************
+  // 1) Construction des structures de tableaux pour toutes les faces de bord
+  //   (faces de 0 a nb_faces_frontiere())
+  const int nb_faces_fr = nb_faces_frontiere();
+  //  Marquage des faces de bord (-1=>pas une face de bord, 0=>face de bord)
+  IntVect vect_renum;
+  MD_Vector_tools::creer_tableau_distribue(md_vect_faces, vect_renum, Array_base::NOCOPY_NOINIT);
+  vect_renum = -1;
+  for (int i = 0; i < nb_faces_fr; i++)
+    vect_renum[i] = 0;
+  vect_renum.echange_espace_virtuel();
+
+  // Creation du descripteur pour les faces de bord (par extraction d'un sous ensemble du descripteur
+  //  des faces). On utilise la numerotation par defaut dans l'ordre croissant:
+  MD_Vector_tools::creer_md_vect_renum_auto(vect_renum, md_vect_faces_front);
+
+  //  Remplissage du tableau ind_faces_virt_bord. C'est juste la partie virtuelle du tableau renum.
+  //  (la partie reelle est triviale: c'est une numerotation contigue de 0 a nb_faces_frontiere()
+  const int nb_faces = vect_renum.size();
+  const int nb_faces_tot = vect_renum.size_totale();
+  const int nb_faces_virt = nb_faces_tot - nb_faces;
+  ind_faces_virt_bord_.resize_array(nb_faces_virt, Array_base::NOCOPY_NOINIT);
+  for (int i = 0; i < nb_faces_virt; i++)
+    ind_faces_virt_bord_[i] = vect_renum[nb_faces + i];
+
+  // **************************************
+  // 2) Construction des structures de tableaux pour chaque frontiere
+
+  // Remplissage des tableaux
+  //   frontiere(i).get_faces_virt() pour 0 <= i < nb_front_Cl()
+  // Ce tableau contient les indices dans la Zone_VF des faces virtuelles
+  // qui sont sur la frontiere i.
+  // Calcul de l'espace virtuel des faces de chaque frontiere
+
+  // Nombre de frontieres:
+  const int nb_frontieres = nb_front_Cl();
+  int i_frontiere;
+  // Remplissage des tableaux get_faces_virt():
+  // et constructrion des MD_Vector de chaque frontiere (associe au tableau des faces)
+  for (i_frontiere = 0; i_frontiere < nb_frontieres; i_frontiere++)
+    {
+      Frontiere& front = frontiere(i_frontiere);
+      IntTab& faces_sommets_frontiere = front.les_sommets_des_faces();
+      // Certains problemes ont plusieurs objets Zone_VF attaches a la meme Zone (rayonnement)
+      // Si on est deja passe par ici, ne pas refaire le travail:
+      if (faces_sommets_frontiere.get_md_vector().non_nul())
+        {
+          continue;
+        }
+      //les tableaux faces_sommets_frontiere doivent faire la meme largeur sur tous les procs avant echange
+      int nb_som_faces = Process::mp_max(faces_sommets_frontiere.dimension(1));
+      if (faces_sommets_frontiere.dimension(1) < nb_som_faces)
+        {
+          IntTrav fsf_old;
+          fsf_old = faces_sommets_frontiere;
+          faces_sommets_frontiere.resize(fsf_old.dimension_tot(0), nb_som_faces);
+          faces_sommets_frontiere = -1;
+          for (int i = 0, j; i < fsf_old.dimension_tot(0); i++)
+            for (j = 0; j < fsf_old.dimension(1); j++)
+              faces_sommets_frontiere(i, j) = fsf_old(i, j);
+        }
+
+      vect_renum = -1;
+      const int i_premiere_face = front.num_premiere_face();
+      const int nb_faces_front = front.nb_faces();
+      // Marquage des faces de cette frontiere
+      for (int i = i_premiere_face; i < i_premiere_face + nb_faces_front; i++)
+        vect_renum[i] = 0;
+      vect_renum.echange_espace_virtuel();
+      // Construction d'un descripteur contenant le sous-ensemble des faces de cette frontiere
+      MD_Vector md_frontiere;
+      MD_Vector_tools::creer_md_vect_renum_auto(vect_renum, md_frontiere);
+
+      // Creation de l'espace virtuel des faces de la frontiere
+      // (c'est ici qu'on associe le descripteur md_frontiere au tableau des faces)
+      const MD_Vector& md_sommets = domaine().les_sommets().get_md_vector();
+      Scatter::construire_espace_virtuel_traduction(md_frontiere, /* tableau indexe par des numeros de faces de bord */
+                                                    md_sommets, /* contenant des indices de sommets du domaine */
+                                                    faces_sommets_frontiere, /* tableau a traiter */
+                                                    1 /* erreur fatale: si un sommet est manquant, c'est une erreur */);
+
+      // On recupere dans renum l'indice renumerote de chaque face:
+      //  on extrait les indices des faces virtuelles de cette frontiere
+      ArrOfInt& tab = front.get_faces_virt();
+      assert(faces_sommets_frontiere.dimension(0) == nb_faces_front);
+      const int nb_faces_tot_frontiere = faces_sommets_frontiere.dimension_tot(0);
+      const int nb_faces_virt_frontiere = nb_faces_tot_frontiere - nb_faces_front;
+      tab.resize_array(nb_faces_virt_frontiere);
+      const int ndebut = nb_faces; // nombre de faces de la Zone !
+      const int nfin = nb_faces_tot; // idem !
+      for (int i = ndebut; i < nfin; i++)
+        {
+          const int j = vect_renum[i];
+          if (j >= 0)
+            {
+              assert(j >= nb_faces_front && j < nb_faces_tot_frontiere);
+              // La face i est virtuelle et sur cette frontiere
+              tab[j - nb_faces_front] = i;
+            }
+        }
+    }
+}
+
+namespace
+{
+/*! @brief Cette methode permet de faire un echange espace virtuel d'un tableau aux aretes sans passer par le descripteur des aretes.
+ *
+ * On utilise le tableau elem_aretes et l'echange
+ *   espace virtuel des elements
+ *
+ */
+void echanger_tableau_aretes(const IntTab& elem_aretes, int nb_aretes_reelles, ArrOfInt& tab_aretes)
+{
+  const int moi = Process::me();
+
+  const int nb_elem = elem_aretes.dimension(0);
+  const int nb_elem_tot = elem_aretes.dimension_tot(0);
+  const int nb_aretes_elem = elem_aretes.dimension(1);
+  int i;
+
+  // **********************
+  // I) Echange pour mettre a jour les items communs
+  //  Algo un peu complique pour mettre a jour les items communs: pour chaque arete reele,
+  //  la valeur de tab_aretes doit etre egale a la valeur initiale de tab_arete donnee par
+  //  le processeur de rang le plus petit parmi ceux qui partagent l'arete (c'est a dire
+  //  les processeurs qui ont un element adjacent a cette arete).
+
+  // Tableau permettant de connaitre le processeur proprietaire d'une arete reele
+  ArrOfInt pe_arete(nb_aretes_reelles);
+  pe_arete = moi;
+  // Tableau qui donne, pour chaque element, le processeur proprietaire
+  IntVect pe_elem(nb_elem_tot);
+  pe_elem = moi; // initialise avec "moi"
+  {
+    pe_elem.set_md_vector(elem_aretes.get_md_vector());
+    pe_elem.echange_espace_virtuel();
+    // On range dans pe_arete le numero du plus petit processeur proprietaire des
+    // elements adjacents a cette arete
+    // Inutile de parcourir les elements reels, on va trouver pe_elem[i]==moi...
+    // Si l'arete se trouve sur un processeur de rang inferieur, on lui attribue
+    for (i = nb_elem; i < nb_elem_tot; i++)
+      for (int pe = pe_elem[i], j = 0, a; j < nb_aretes_elem && (a = elem_aretes(i, j)) >= 0; j++)
+        if (a < nb_aretes_reelles && pe_arete[a] > pe)
+          pe_arete[a] = pe;
+  }
+  // On suppose que l'espace virtuel des elements contient au moins une couche d'elements virtuels
+  //   (tous les voisins des elements reels par des sommets) alors les aretes reelles sont
+  //   echangees (pas encore les aretes virtuelles)
+  // Dans ce cas, pe_arete est maintenant correctement rempli pour les aretes reelles.
+
+  IntTab tmp;
+  tmp.copy(elem_aretes, Array_base::NOCOPY_NOINIT); // copier uniquement la structure
+
+  // Copier tab_aretes dans la structure tmp (on sait echanger tmp, pas tab_aretes)
+  for (i = 0; i < nb_elem; i++)
+    for (int j = 0, a; j < nb_aretes_elem && (a = elem_aretes(i, j)) >= 0; j++)
+      tmp(i, j) = tab_aretes[a];
+
+  // 2) Echange du tableau
+  tmp.echange_espace_virtuel();
+
+  // 3) On reverse dans la partie reelle de tab_aretes les valeurs prises dans tmp:
+  //    pour une arete partagee par plusieurs procs, c'est le proc de rang le plus petit
+  //    qui donne la valeur
+  // Inutile de parcourir les elements reels, la valeur ne changerait pas
+  for (i = nb_elem; i < nb_elem_tot; i++)
+    for (int pe = pe_elem[i], j = 0, a; j < nb_aretes_elem && (a = elem_aretes(i, j)) >= 0; j++)
+      if (a < nb_aretes_reelles && pe_arete[a] == pe)
+        tab_aretes[a] = tmp(i, j);
+
+  // tab_aretes contient maintenant des valeurs correctes pour toutes les aretes reeles
+  //  (les items communs sont a jour). On fait encore un echange en passant par tmp pour
+  //  mettre a jour les items virtuels:
+
+  // ******************
+  // II) echange pour mettre a jour l'espace virtuel des aretes
+
+  // Copier encore une fois tab_aretes dans la structure tmp
+  for (i = 0; i < nb_elem; i++)
+    for (int j = 0, a; j < nb_aretes_elem && (a = elem_aretes(i, j)) >= 0; j++)
+      tmp(i, j) = tab_aretes[a];
+
+  // Echange du tableau
+  tmp.echange_espace_virtuel();
+  // Recopie de tmp dans tab_aretes
+  for (i = nb_elem; i < nb_elem_tot; i++)
+    for (int j = 0, a; j < nb_aretes_elem && (a = elem_aretes(i, j)) >= 0; j++)
+      tab_aretes[a] = tmp(i, j);
+}
+}
+
+/* version de creer_aretes compatible avec les polyedres */
+void Zone::creer_aretes()
+{
+  const IntTab& elem_som = les_elems();
+  // Nombre d'elements reels:
+  const int nbelem = elem_som.dimension(0);
+  // Les elements virtuels sont deja construits:
+  const int nbelem_tot = elem_som.dimension_tot(0);
+
+  aretes_som_.set_smart_resize(1);
+  aretes_som_.resize(0, 2);
+  bool is_poly = sub_type(Poly_geom_base, type_elem().valeur());
+
+  std::vector<std::vector<int> > v_e_a(nbelem_tot);  //liste des aretes de chaque element
+  int nb_aretes_reelles = 0, i, j;
+  {
+    // Une liste chainee pour retrouver, pour chaque sommet, la liste des aretes
+    // attachees a ce sommet. Le tableau est de meme taille que Aretes_som.dimension(0)
+    // chaine_aretes_sommets[i] contient l'indice de la prochaine arete attachee au
+    // meme sommet ou -1 si c'est la derniere
+    ArrOfInt chaine_aretes_sommets;
+    chaine_aretes_sommets.set_smart_resize(1);
+    // Indice de la premiere arete attachee a chaque sommet dans chaine_aretes_sommets
+    ArrOfInt premiere_arete_som(nb_som_tot());
+    premiere_arete_som = -1;
+
+    std::map<std::array<double, 3>, std::array<int, 2> > aretes_loc; //aretes de l'element considere : aretes_loc[{xa, ya, za}] = { s1, s2}
+    //l'utilisation d'un map permet de s'assurer que les aretes soient dans le meme ordre sur tous les procs!
+    for (int i_elem = 0; i_elem < nbelem_tot; aretes_loc.clear(), i_elem++)
+      {
+        /* 1. on retrouve les aretes de l'element en iterant sur ses faces */
+        const Elem_geom_base& elem_g = ref_cast(Elem_geom_base, type_elem().valeur());
+        IntTrav f_e_r;
+        if (is_poly)
+          {
+            const Poly_geom_base& poly_g = ref_cast(Poly_geom_base, type_elem().valeur());
+            poly_g.get_tab_faces_sommets_locaux(f_e_r, i_elem);
+          }
+        else
+          elem_g.get_tab_faces_sommets_locaux(f_e_r);
+
+        for (i = 0; i < f_e_r.dimension(0) && f_e_r(i, 0) >= 0; i++)
+          for (j = 0; j < f_e_r.dimension(1) && f_e_r(i, j) >= 0; j++)
+            {
+              int s1 = elem_som(i_elem, f_e_r(i, j)), s2 = elem_som(i_elem, f_e_r(i, j + 1 < f_e_r.dimension(1) && f_e_r(i, j + 1) >= 0 ? j + 1 : 0));
+              std::array<double, 3> key;
+              for (int l = 0; l < 3; l++)
+                key[l] = (domaine().coord_sommets()(s1, l) + domaine().coord_sommets()(s2, l)) / 2;
+              aretes_loc[key] = { { std::min(s1, s2), std::max(s1, s2) } };
+            }
+
+        for (auto &&kv : aretes_loc)
+          {
+            //a-t-on deja vu cette arete ?
+            int k = premiere_arete_som[kv.second[0]];
+            while (k >= 0 && (aretes_som_(k, 0) != kv.second[0] || aretes_som_(k, 1) != kv.second[1]))
+              k = chaine_aretes_sommets[k];
+            if (k < 0) //on n'a pas encore trouve l'arete -> maj de premiere_arete_som et chaine_arete_sommets
+              {
+                // L'arete n'existe pas encore
+                k = chaine_aretes_sommets.size_array();
+                assert(k == aretes_som_.dimension(0));
+                aretes_som_.append_line(kv.second[0], kv.second[1]);
+                // Insertion de l'arete en tete de la liste chainee
+                int old_head = premiere_arete_som[kv.second[0]];
+                // Indice de la nouvelle arete
+                int new_head = chaine_aretes_sommets.size_array();
+                chaine_aretes_sommets.append_array(old_head);
+                premiere_arete_som[kv.second[0]] = new_head;
+              }
+            v_e_a[i_elem].push_back(k); //ajout de l'arete a la liste des aretes de l'element
+          }
+        if (i_elem == nbelem - 1)
+          {
+            // On vient de finir les aretes reelles
+            nb_aretes_reelles = aretes_som_.dimension(0);
+          }
+      }
+  }
+  /* remplissage du tableau elem_aretes a l'aide de v_e_a */
+  int nb_aretes_elem = 0;
+  for (i = 0; i < nbelem_tot; i++)
+    nb_aretes_elem = std::max(nb_aretes_elem, (int) v_e_a[i].size());
+  nb_aretes_elem = mp_max(nb_aretes_elem);
+  elem_aretes_.resize(0, nb_aretes_elem);
+  creer_tableau_elements(elem_aretes_, Array_base::NOCOPY_NOINIT);
+  for (i = 0, elem_aretes_ = -1; i < nbelem_tot; i++)
+    for (j = 0; j < (int) v_e_a[i].size(); j++)
+      elem_aretes_(i, j) = v_e_a[i][j];
+
+  // Ajuste la taille du tableau Aretes_som
+  const int n_aretes_tot = aretes_som_.dimension(0); // attention, nb_aretes_tot est une methode !
+  aretes_som_.append_line(-1, -1); // car le resize suivant ne fait quelque chose que si on change de taille
+  aretes_som_.set_smart_resize(0);
+  aretes_som_.resize(n_aretes_tot, 2);
+
+  Journal() << "Domaine " << domaine().le_nom() << " nb_aretes=" << nb_aretes_reelles << " nb_aretes_tot=" << n_aretes_tot << finl;
+
+  // Construction du descripteur parallele
+  {
+    // Pour chaque arete, indice du processeur proprietaire de l'arete
+    const int moi = Process::me();
+    ArrOfInt pe_aretes(n_aretes_tot);
+    pe_aretes = moi;
+    echanger_tableau_aretes(elem_aretes_, nb_aretes_reelles, pe_aretes);
+
+    // Pour chaque arete, indice de l'arete sur le processeur proprietaire
+    ArrOfInt indice_aretes_owner;
+    indice_aretes_owner.resize_array(n_aretes_tot, Array_base::NOCOPY_NOINIT);
+    for (i = 0; i < nb_aretes_reelles; i++)
+      indice_aretes_owner[i] = i;
+    echanger_tableau_aretes(elem_aretes_, nb_aretes_reelles, indice_aretes_owner);
+
+    // Construction de pe_voisins
+    ArrOfInt pe_voisins;
+    pe_voisins.set_smart_resize(1);
+    for (i = 0; i < n_aretes_tot; i++)
+      if (pe_aretes[i] != moi)
+        pe_voisins.append_array(pe_aretes[i]);
+
+    ArrOfInt liste_pe;
+    liste_pe.set_smart_resize(1);
+    reverse_send_recv_pe_list(pe_voisins, liste_pe);
+
+    // On concatene les deux listes.
+    for (i = 0; i < liste_pe.size_array(); i++)
+      pe_voisins.append_array(liste_pe[i]);
+    array_trier_retirer_doublons(pe_voisins);
+
+    int nb_voisins = pe_voisins.size_array();
+    ArrOfInt indices_pe(nproc());
+    indices_pe = -1;
+    for (i = 0; i < nb_voisins; i++)
+      indices_pe[pe_voisins[i]] = i;
+
+    ArrsOfInt aretes_communes_to_recv(nb_voisins);
+    ArrsOfInt blocs_aretes_virt(nb_voisins);
+    ArrsOfInt aretes_to_send(nb_voisins);
+    for (i = 0; i < nb_voisins; i++)
+      {
+        aretes_communes_to_recv[i].set_smart_resize(1);
+        blocs_aretes_virt[i].set_smart_resize(1);
+        aretes_to_send[i].set_smart_resize(1);
+      }
+    // Parcours des aretes: recherche des aretes a recevoir d'un autre processeur.
+    // Aretes reeles (items communs)
+    for (i = 0; i < nb_aretes_reelles; i++)
+      {
+        const int pe = pe_aretes[i];
+        if (pe != moi)
+          {
+            const int indice_pe = indices_pe[pe];
+            if (indice_pe < 0)
+              {
+                Cerr << "Error: indice_pe=" << indice_pe << " shouldn't be negative in Zone::creer_aretes." << finl;
+                Cerr << "It is a TRUST bug on this mesh with the Pa discretization, contact support." << finl;
+                Cerr << "You could also try another partitioned mesh to get around this issue." << finl;
+                exit();
+              }
+            // Je recois cette arete d'un autre proc
+            const int indice_distant = indice_aretes_owner[i];
+            aretes_to_send[indice_pe].append_array(indice_distant); // indice sur le pe voisin
+            aretes_communes_to_recv[indice_pe].append_array(i); // indice local de l'arete
+          }
+      }
+    // Aretes virtuelles
+    for (i = nb_aretes_reelles; i < n_aretes_tot; i++)
+      {
+        const int pe = pe_aretes[i];
+        assert(pe < nproc() && pe != moi);
+        const int indice_pe = indices_pe[pe];
+        if (indice_pe < 0)
+          {
+            Cerr << "Error: indice_pe=" << indice_pe << " shouldn't be negative in Zone::creer_aretes." << finl;
+            Cerr << "It is a TRUST bug on this mesh with the Pa discretization, contact support." << finl;
+            Cerr << "You could also try another partitioned mesh to get around this issue." << finl;
+            exit();
+          }
+        const int indice_distant = indice_aretes_owner[i];
+        aretes_to_send[indice_pe].append_array(indice_distant); // indice sur le pe voisin
+        MD_Vector_base2::append_item_to_blocs(blocs_aretes_virt[indice_pe], i);
+      }
+    {
+      Schema_Comm schema;
+      schema.set_send_recv_pe_list(pe_voisins, pe_voisins);
+      schema.begin_comm();
+      // On empile le tableau aretes_to_send et le nombre d'aretes commune avec ce pe:
+      for (i = 0; i < nb_voisins; i++)
+        schema.send_buffer(pe_voisins[i]) << aretes_to_send[i];
+      schema.echange_taille_et_messages();
+      // Reception
+      for (i = 0; i < nb_voisins; i++)
+        schema.recv_buffer(pe_voisins[i]) >> aretes_to_send[i];
+      schema.end_comm();
+    }
+
+    // Construit l'objet descripteur
+    MD_Vector_std md_aretes(n_aretes_tot, nb_aretes_reelles, pe_voisins, aretes_to_send, aretes_communes_to_recv, blocs_aretes_virt);
+    Cerr << "Total number of edges = " << md_aretes.nb_items_seq_tot_ << finl;
+    // Range l'objet dans un MD_Vector (devient const)
+    MD_Vector md;
+    md.copy(md_aretes);
+    // Attache le descripteur au tableau
+    aretes_som_.set_md_vector(md);
+  }
 }

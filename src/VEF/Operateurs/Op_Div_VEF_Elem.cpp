@@ -76,7 +76,7 @@ void Op_Div_VEF_Elem::volumique(DoubleTab& div) const
 
 int Op_Div_VEF_Elem::impr(Sortie& os) const
 {
-  const int impr_bord=(la_zone_vef->zone().Bords_a_imprimer().est_vide() ? 0:1);
+  const int impr_bord=(la_zone_vef->zone().bords_a_imprimer().est_vide() ? 0:1);
   const Schema_Temps_base& sch = equation().probleme().schema_temps();
   double temps = sch.temps_courant();
 
@@ -138,8 +138,8 @@ int Op_Div_VEF_Elem::impr(Sortie& os) const
       Flux_div << finl;
     }
 
-  const LIST(Nom)& Liste_Bords_a_imprimer = la_zone_vef->zone().Bords_a_imprimer();
-  if (!Liste_Bords_a_imprimer.est_vide())
+  const LIST(Nom)& Liste_bords_a_imprimer = la_zone_vef->zone().bords_a_imprimer();
+  if (!Liste_bords_a_imprimer.est_vide())
     {
       EcrFicPartage Flux_face;
       ouvrir_fichier_partage(Flux_face,"",impr_bord);
@@ -150,7 +150,7 @@ int Op_Div_VEF_Elem::impr(Sortie& os) const
           const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
           int ndeb = frontiere_dis.num_premiere_face();
           int nfin = ndeb + frontiere_dis.nb_faces();
-          if (la_zone_vef->zone().Bords_a_imprimer().contient(la_fr.le_nom()))
+          if (la_zone_vef->zone().bords_a_imprimer().contient(la_fr.le_nom()))
             {
               Flux_face << "# Flux par face sur " << la_fr.le_nom() << " au temps " << temps << " : " << finl;
               for (int face=ndeb; face<nfin; face++)

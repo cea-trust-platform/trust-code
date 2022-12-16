@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,14 +48,14 @@ Entree& Raffiner_anisotrope::interpreter_(Entree& is)
   for(int i=0; i<domaine().nb_zones() ; i++)
 
     {
-      Raffiner_anisotrope_(domaine().zone(i));
+      raffiner_(domaine().zone(i));
     }
   Scatter::init_sequential_domain(domaine());
   Cerr << "Refinement... OK" << finl;
   return is;
 }
 
-void Raffiner_anisotrope::Raffiner_anisotrope_(Zone& zone)
+void Raffiner_anisotrope::raffiner_(Zone& zone)
 {
   if  ((zone.type_elem()->que_suis_je() == "Triangle")
        ||(zone.type_elem()->que_suis_je() == "Tetraedre"))

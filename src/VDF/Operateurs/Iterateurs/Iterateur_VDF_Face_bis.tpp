@@ -72,8 +72,8 @@ template<class _TYPE_>
 int Iterateur_VDF_Face<_TYPE_>::impr(Sortie& os) const
 {
   const Zone& ma_zone = la_zone->zone();
-  const int impr_mom = ma_zone.Moments_a_imprimer();
-  const int impr_sum = (ma_zone.Bords_a_imprimer_sum().est_vide() ? 0 : 1), impr_bord = (ma_zone.Bords_a_imprimer().est_vide() ? 0 : 1);
+  const int impr_mom = ma_zone.moments_a_imprimer();
+  const int impr_sum = (ma_zone.bords_a_imprimer_sum().est_vide() ? 0 : 1), impr_bord = (ma_zone.bords_a_imprimer().est_vide() ? 0 : 1);
   const Schema_Temps_base& sch = la_zcl->equation().probleme().schema_temps();
   DoubleTab& tab_flux_bords = op_base->flux_bords();
   DoubleVect bilan(tab_flux_bords.dimension(1));
@@ -108,7 +108,7 @@ int Iterateur_VDF_Face<_TYPE_>::impr(Sortie& os) const
                   else
                     flux_bords2(2, num_cl, k) += tab_flux_bords(face, k);
                 }
-              if (ma_zone.Bords_a_imprimer_sum().contient(frontiere_dis.le_nom()))
+              if (ma_zone.bords_a_imprimer_sum().contient(frontiere_dis.le_nom()))
                 flux_bords2(3, num_cl, k) += tab_flux_bords(face, k);
             } /* fin for k */
           if (impr_mom)
@@ -177,8 +177,8 @@ int Iterateur_VDF_Face<_TYPE_>::impr(Sortie& os) const
         Flux_moment << finl;
     }
   const LIST (Nom)
-  &Liste_Bords_a_imprimer = la_zone->zone().Bords_a_imprimer();
-  if (!Liste_Bords_a_imprimer.est_vide())
+  &Liste_bords_a_imprimer = la_zone->zone().bords_a_imprimer();
+  if (!Liste_bords_a_imprimer.est_vide())
     {
       EcrFicPartage Flux_face;
       op_base->ouvrir_fichier_partage(Flux_face, "", impr_bord);
@@ -188,7 +188,7 @@ int Iterateur_VDF_Face<_TYPE_>::impr(Sortie& os) const
           const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
           const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
           int ndeb = frontiere_dis.num_premiere_face(), nfin = ndeb + frontiere_dis.nb_faces();
-          if (ma_zone.Bords_a_imprimer().contient(la_fr.le_nom()))
+          if (ma_zone.bords_a_imprimer().contient(la_fr.le_nom()))
             {
               if (je_suis_maitre())
                 {

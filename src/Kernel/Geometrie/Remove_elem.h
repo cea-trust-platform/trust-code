@@ -37,7 +37,7 @@ class Remove_elem : public Interprete_geometrique_base
 public :
 
   Entree& interpreter_(Entree&) override;
-  void Remove_elem_(Zone&);
+  void remove_elem_(Zone&);
   void recreer_faces(Zone& , Faces&, IntTab&) const;
   void creer_faces(Zone& , Faces&, IntTab&) const;
   void remplir_liste(IntTab&, int, int, int, int) const;

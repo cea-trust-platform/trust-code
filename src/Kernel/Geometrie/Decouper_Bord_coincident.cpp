@@ -34,17 +34,15 @@ Entree& Decouper_Bord_coincident::interpreter_(Entree& is)
   associer_domaine(is);
   is >> nom_bord;
 
-  for(int i=0; i<domaine().nb_zones() ; i++)
+  for (int i = 0; i < domaine().nb_zones(); i++)
+    decouper_(domaine().zone(i));
 
-    {
-      Decouper_Bord_coincident_(domaine().zone(i));
-    }
   Cerr << "Decouper_Bord_coincident... OK" << finl;
   return is;
 }
 
 
-void Decouper_Bord_coincident::Decouper_Bord_coincident_(Zone& zone)
+void Decouper_Bord_coincident::decouper_(Zone& zone)
 {
   if  (zone.type_elem()->que_suis_je() == "Triangle")
     //           ||(zone.type_elem()->que_suis_je() == "Tetraedre"))

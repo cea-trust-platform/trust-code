@@ -52,7 +52,7 @@ int Iterateur_VDF_Elem<_TYPE_>::impr(Sortie& os) const
 {
   const Zone_VDF& la_zone_vdf=ref_cast(Zone_VDF,op_base.valeur().equation().zone_dis().valeur());
   const Zone& mazone=la_zone->zone();
-  const int impr_bord=(mazone.Bords_a_imprimer().est_vide() ? 0:1);
+  const int impr_bord=(mazone.bords_a_imprimer().est_vide() ? 0:1);
   const Schema_Temps_base& sch = la_zcl->equation().probleme().schema_temps();
   double temps = sch.temps_courant();
   DoubleTab& flux_bords=op_base->flux_bords();
@@ -106,8 +106,8 @@ int Iterateur_VDF_Elem<_TYPE_>::impr(Sortie& os) const
         Flux.add_col(bilan(k));
       Flux << finl;
     }
-  const LIST(Nom)& Liste_Bords_a_imprimer = la_zone->zone().Bords_a_imprimer();
-  if (!Liste_Bords_a_imprimer.est_vide())
+  const LIST(Nom)& Liste_bords_a_imprimer = la_zone->zone().bords_a_imprimer();
+  if (!Liste_bords_a_imprimer.est_vide())
     {
       EcrFicPartage Flux_face;
       op_base->ouvrir_fichier_partage(Flux_face,"",impr_bord);
@@ -117,7 +117,7 @@ int Iterateur_VDF_Elem<_TYPE_>::impr(Sortie& os) const
           const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
           const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
           int ndeb = frontiere_dis.num_premiere_face(), nfin = ndeb + frontiere_dis.nb_faces();
-          if (mazone.Bords_a_imprimer().contient(la_fr.le_nom()))
+          if (mazone.bords_a_imprimer().contient(la_fr.le_nom()))
             {
               Flux_face << "# Flux par face sur " << la_fr.le_nom() << " au temps " << temps << " : " << finl;
               for (face=ndeb; face<nfin; face++)

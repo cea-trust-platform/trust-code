@@ -70,7 +70,7 @@ Entree& Remove_elem::interpreter_(Entree& is)
   Scatter::uninit_sequential_domain(domaine());
   for (int i = 0; i < domaine().nb_zones(); i++)
     {
-      Remove_elem_(domaine().zone(i));
+      remove_elem_(domaine().zone(i));
     }
   Scatter::init_sequential_domain(domaine());
   NettoieNoeuds::nettoie(domaine());
@@ -206,7 +206,7 @@ void Remove_elem::remplir_liste(IntTab& som_face, int ind1, int ind2, int ind3, 
     }
 }
 
-void Remove_elem::Remove_elem_(Zone& zone)
+void Remove_elem::remove_elem_(Zone& zone)
 {
   if (zone.type_elem()->que_suis_je() == "Rectangle" || zone.type_elem()->que_suis_je() == "Hexaedre")
     {

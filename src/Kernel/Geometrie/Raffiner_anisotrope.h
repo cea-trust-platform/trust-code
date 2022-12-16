@@ -38,7 +38,7 @@ class Raffiner_anisotrope : public Interprete_geometrique_base
 public :
 
   Entree& interpreter_(Entree&) override;
-  void Raffiner_anisotrope_(Zone&);
+  void raffiner_(Zone&);
 
 };
 

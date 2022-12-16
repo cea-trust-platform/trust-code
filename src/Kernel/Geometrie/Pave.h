@@ -49,15 +49,13 @@ class Pave : public Zone
   Declare_instanciable(Pave);
 public :
   void associer_domaine(const Domaine& ) override;
-  inline IntVect& Nb_Noeud();
-  DoubleVect Origine;
-  DoubleVect Longueurs;
-  IntVect Nb_Noeuds;
-  DoubleVect Facteurs;
-  DoubleVect Pas;
+
+protected:
+  DoubleVect Origine, Longueurs, Facteurs, Pas;
+  IntVect Nb_Noeuds, Les_Nums, Symetrique;
   DoubleTab Les_Noeuds;
-  IntVect Les_Nums;
-  IntVect Symetrique;
+
+  int Nx = -1, Ny = -1, Nz = -1, Mx = -1, My = -1, Mz = -1;
   double a_tanh= 10.;  // a pour le maillage en tanh dans la diry!!
   int tanh_dilatation=0;
   double xa_tanh= 10.;  // xa pour le maillage en tanh dans la dirx!!
@@ -65,41 +63,33 @@ public :
   double za_tanh= 10.;  // za pour le maillage en tanh dans la dirz!!
   int ztanh_dilatation=0;
   int rep_VEF=0;
+  int tour_complet = 0;
+
   inline int numero_maille(int );
   inline int numero_maille(int, int );
   inline int numero_maille(int , int, int);
+
   inline int numero_sommet(int );
   inline int numero_sommet(int, int );
   inline int numero_sommet(int, int, int );
+
   inline int& maille_sommet(int ,int);
   inline int& maille_sommet(int, int, int);
   inline int& maille_sommet(int, int, int, int);
+
   inline double& coord_noeud(int);
   inline double& coord_noeud(int, int, int);
   inline double& coord_noeud(int, int, int, int);
 
-  int Nx = -1, Ny = -1, Nz = -1, Mx = -1, My = -1, Mz = -1;
-
+  void typer_();
   void maille1D();
   void maille2D();
   void maille3D();
-  void typer_();
-  void lire_Longueurs(Entree& is);
-  void lire_Noeuds(Entree& is);
+
+  void lire_longueurs(Entree& is);
+  void lire_noeuds(Entree& is);
   void lire_front(Entree& , Frontiere& );
-
-  int tour_complet=0;
 };
-
-/*! @brief Renvoie le nombre de noeuds du pave dans chacune des dimensions d'espace.
- *
- * @return (IntVect&) vecteur d'entier contenant le nombre de noeud du pave suivant X, Y et Z
- */
-inline IntVect& Pave::Nb_Noeud()
-{
-  return Nb_Noeuds;
-}
-
 
 /*! @brief Renvoie le numero de la i-ieme maille (suivant X)
  *
@@ -199,7 +189,7 @@ inline int Pave::numero_sommet(int i, int j, int k  )
 inline int& Pave::maille_sommet(int i, int l)
 {
   assert(dimension == 1);
-  return mes_elems(numero_maille(i),l);
+  return mes_elems_(numero_maille(i),l);
 }
 
 /*! @brief Renvoie une reference sur le numero du l-ieme sommet de la (i,j)-ieme maille (suivant (X,Y)) du pave.
@@ -212,7 +202,7 @@ inline int& Pave::maille_sommet(int i, int l)
 inline int& Pave::maille_sommet(int i, int j, int l)
 {
   assert(dimension == 2);
-  return mes_elems(numero_maille(i, j),l);
+  return mes_elems_(numero_maille(i, j),l);
 }
 
 /*! @brief Renvoie une reference sur le numero du l-ieme sommet de la (i,j,k)-ieme maille (suivant (X,Y,Z)) du pave.
@@ -226,7 +216,7 @@ inline int& Pave::maille_sommet(int i, int j, int l)
 inline int& Pave::maille_sommet(int i, int j, int k, int l)
 {
   assert(dimension == 3);
-  return mes_elems(numero_maille(i, j, k), l);
+  return mes_elems_(numero_maille(i, j, k), l);
 }
 
 /*! @brief Renvoie une reference sur les coordonnees du i-ieme noeud.

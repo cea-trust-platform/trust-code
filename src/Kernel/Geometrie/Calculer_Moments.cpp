@@ -39,7 +39,7 @@ Entree& Calculer_Moments::interpreter_(Entree& is)
   Domaine& dom=domaine();
   is >> nom_var;
   Cerr << nom_var << finl;
-  dom.zone(0).Moments_a_imprimer()=1;
+  dom.zone(0).moments_a_imprimer()=1;
   if(nom_var=="calcul")
     {
       Cerr << "Calculation of center of gravity " << nom_var<< finl;

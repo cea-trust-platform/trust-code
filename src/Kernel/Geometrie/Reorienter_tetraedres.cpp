@@ -39,7 +39,7 @@ Entree& Reorienter_tetraedres::interpreter_(Entree& is)
   associer_domaine(is);
   Domaine& dom=domaine();
   Scatter::uninit_sequential_domain(dom);
-  Reorienter(dom);
+  reorienter(dom);
   Scatter::init_sequential_domain(dom);
   Cerr << "Reorientation of tetrahedra... OK" << finl;
   return is;
@@ -114,7 +114,7 @@ Reorienter_tetraedres::Sens Reorienter_tetraedres::reorienter_tetra(IntTab& les_
 //
 //
 //
-void Reorienter_tetraedres::Reorienter(Domaine& dom) const
+void Reorienter_tetraedres::reorienter(Domaine& dom) const
 {
   const DoubleTab& coord_sommets = dom.coord_sommets();
   int nb_zones = dom.nb_zones();

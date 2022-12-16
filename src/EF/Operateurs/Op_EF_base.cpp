@@ -417,11 +417,11 @@ int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
   const Schema_Temps_base& sch=pb.schema_temps();
   // On n'imprime les moments que si demande et si on traite l'operateur de diffusion de la vitesse
   int impr_mom=0;
-  if (la_zone_EF.zone().Moments_a_imprimer() && sub_type(Operateur_Diff_base,op) && op.equation().inconnue().le_nom()=="vitesse")
+  if (la_zone_EF.zone().moments_a_imprimer() && sub_type(Operateur_Diff_base,op) && op.equation().inconnue().le_nom()=="vitesse")
     impr_mom=1;
 
-  const int impr_sum=(la_zone_EF.zone().Bords_a_imprimer_sum().est_vide() ? 0:1);
-  const int impr_bord=(la_zone_EF.zone().Bords_a_imprimer().est_vide() ? 0:1);
+  const int impr_sum=(la_zone_EF.zone().bords_a_imprimer_sum().est_vide() ? 0:1);
+  const int impr_bord=(la_zone_EF.zone().bords_a_imprimer().est_vide() ? 0:1);
   int flag=0;
   if (Process::je_suis_maitre()) flag=1;
   //SFichier Flux;
@@ -503,7 +503,7 @@ int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
             {
               Flux.add_col(flux_bord(k));
               if (impr_mom) Flux_moment.add_col(moment(k));
-              if (la_zone_EF.zone().Bords_a_imprimer_sum().contient(la_fr.le_nom())) Flux_sum.add_col(flux_bord(k));
+              if (la_zone_EF.zone().bords_a_imprimer_sum().contient(la_fr.le_nom())) Flux_sum.add_col(flux_bord(k));
 
               // On somme les flux de toutes les frontieres pour mettre dans le tableau bilan
               bilan(k)+=flux_bord(k);
@@ -531,7 +531,7 @@ int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
       int ndeb = frontiere_dis.num_premiere_face();
       int nfin = ndeb + frontiere_dis.nb_faces();
       // Impression sur chaque face
-      if (la_zone_EF.zone().Bords_a_imprimer().contient(la_fr.le_nom()))
+      if (la_zone_EF.zone().bords_a_imprimer().contient(la_fr.le_nom()))
         {
           Flux_face << "# Flux par face sur " << la_fr.le_nom() << " au temps " << temps << " : " << finl;
           const DoubleTab& xv=la_zone_EF.xv();

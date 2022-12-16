@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,9 +16,10 @@
 #ifndef Faces_builder_included
 #define Faces_builder_included
 
+#include <TRUSTTab.h>
 #include <Ref_IntTab.h>
-#include <TRUSTTrav.h>
 #include <Ref_Zone.h>
+
 class Zone;
 class Static_Int_Lists;
 class Faces;

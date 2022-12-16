@@ -80,8 +80,6 @@ Entree& Mailler::interpreter_(Entree& is)
       Cerr << "We expected a {" << finl;
       exit();
     }
-  // Valeur par defaut: precision_geom
-  dom.fixer_epsilon(Objet_U::precision_geom);
   Nom typ_zone;
   do
     {

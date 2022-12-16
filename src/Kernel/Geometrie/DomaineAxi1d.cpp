@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,7 +20,7 @@ Implemente_instanciable_sans_constructeur( DomaineAxi1d, "DomaineAxi1d", Domaine
 // XD DomaineAxi1d domaine DomaineAxi1d -1 1D domain
 DomaineAxi1d::DomaineAxi1d()
 {
-  axi1d = 1;
+  axi1d_ = 1;
 }
 
 Sortie& DomaineAxi1d::printOn( Sortie& os ) const

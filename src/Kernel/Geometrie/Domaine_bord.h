@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,6 +15,7 @@
 #ifndef Domaine_bord_included
 #define Domaine_bord_included
 #include <Domaine.h>
+
 /*! @brief Cette classe est un domaine dont les sommets et les elements sont extraits d'un bord d'un domaine source.
  *
  *   On construit ce domaine par la methode construire_domaine_bord()

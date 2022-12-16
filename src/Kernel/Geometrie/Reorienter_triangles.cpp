@@ -40,7 +40,7 @@ Entree& Reorienter_triangles::interpreter_(Entree& is)
   associer_domaine(is);
   Domaine& dom=domaine();
   Scatter::uninit_sequential_domain(dom);
-  Reorienter(dom);
+  reorienter(dom);
   Scatter::init_sequential_domain(dom);
   Cerr << "Reorientation of triangles... OK" << finl;
   return is;
@@ -98,7 +98,7 @@ Reorienter_triangles::Sens Reorienter_triangles::reorienter_triangle(IntTab& les
 }
 
 //Cette methode permet de reorienter les triangles dans le sens direct
-void Reorienter_triangles::Reorienter(Domaine& dom) const
+void Reorienter_triangles::reorienter(Domaine& dom) const
 {
   const DoubleTab& coord_sommets = dom.coord_sommets();
   int nb_zones = dom.nb_zones();

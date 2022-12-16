@@ -33,6 +33,8 @@ class Domaine_dis;
 class Probleme_base;
 class Zone_VF;
 class Zone_dis_base;
+
+
 /*! @brief Classe Domaine Un Domaine represente le domaine (spatial) de resolution d'un Probleme.
  *
  *     Un Domaine a un Nom, il est constitue d'une ou plusieurs Zone qui
@@ -63,11 +65,13 @@ public :
   inline Sous_Zone& ss_zone(int);
   inline const Sous_Zone& ss_zone(const Nom&) const;
   inline Sous_Zone& ss_zone(const Nom&);
+
   inline double coord(int, int) const;
   inline double& coord(int, int);
   inline const DoubleTab& coord_sommets() const;
   virtual int nb_som() const;
   virtual int nb_som_tot() const;
+
   void add(const Sous_Zone&);
   int associer_(Objet_U&) override;
   inline DoubleTab& les_sommets();
@@ -97,7 +101,7 @@ public :
   virtual void creer_tableau_sommets(Array_base&, Array_base::Resize_Options opt = Array_base::COPY_INIT) const;
   virtual void creer_tableau_elements(Array_base&, Array_base::Resize_Options opt = Array_base::COPY_INIT) const;
   virtual const MD_Vector& md_vector_sommets() const;
-  inline void set_renum_som_perio(IntTab& renum)  {    renum_som_perio=renum;   };
+  inline void set_renum_som_perio(IntTab& renum)  {    renum_som_perio_=renum;   };
 
   // Domaines frontieres
   void creer_mes_domaines_frontieres(const Zone_VF& zone_vf);
@@ -112,28 +116,30 @@ public :
   void setUMesh(MCAuto<MEDCouplingUMesh>& m) const  {   mesh_ = m->clone(true);   };
 #endif
   void buildUFacesMesh(const Zone_dis_base& zone_dis_base) const;
-  bool Axi1d() const {  return axi1d;  }
+  bool axi1d() const {  return axi1d_;  }
 
   void read_vertices(Entree& s);
 
 protected :
+  Nom nom_;
+
+  DoubleTab sommets_;
+  Zones les_zones_;
+  ArrOfInt renum_som_perio_;
 
   LIST(REF(Domaine)) domaines_frontieres_;
-  Nom nom_;
-  DoubleTab sommets;
-  LIST(REF(Sous_Zone)) les_ss_zones;
-  Zones les_zones;
-  ArrOfInt renum_som_perio;
+  LIST(REF(Sous_Zone)) les_ss_zones_;
   double epsilon_;
   int deformable_;
   Nom fichier_lu_;
+
 #ifdef MEDCOUPLING_
   ///! MEDCoupling version of the domain:
   mutable MCAuto<MEDCouplingUMesh> mesh_;
   ///! MEDCoupling version of the faces domain:
   mutable MCAuto<MEDCouplingUMesh> faces_mesh_;
 #endif
-  int axi1d;
+  int axi1d_;
 };
 
 /*! @brief Renvoie le nom du domaine.
@@ -152,7 +158,7 @@ inline void Domaine::nommer(const Nom& un_nom) {   nom_=un_nom; }
  *
  * @return (int) le nombre de zones du domaine
  */
-inline int Domaine::nb_zones() const {  return les_zones.size(); }
+inline int Domaine::nb_zones() const {  return les_zones_.size(); }
 
 // Verification que le domaine est bien rempli
 inline void check_domaine(int n)
@@ -174,7 +180,7 @@ inline void check_domaine(int n)
 inline const Zone& Domaine::zone(int i) const
 {
   check_domaine(nb_zones());
-  return les_zones[i];
+  return les_zones_[i];
 }
 
 /*! @brief Renvoie la i-ieme zone du domaine.
@@ -185,7 +191,7 @@ inline const Zone& Domaine::zone(int i) const
 inline Zone& Domaine::zone(int i)
 {
   check_domaine(nb_zones());
-  return les_zones[i];
+  return les_zones_[i];
 }
 
 /*! @brief Renvoie la Zone dont le nom est indique en parametre.
@@ -198,7 +204,7 @@ inline Zone& Domaine::zone(int i)
 inline const Zone& Domaine::zone(const Nom& un_nom) const
 {
   check_domaine(nb_zones());
-  return les_zones(un_nom);
+  return les_zones_(un_nom);
 }
 
 /*! @brief Renvoie la Zone dont le nom est indique en parametre.
@@ -209,14 +215,14 @@ inline const Zone& Domaine::zone(const Nom& un_nom) const
 inline Zone& Domaine::zone(const Nom& un_nom)
 {
   check_domaine(nb_zones());
-  return les_zones(un_nom);
+  return les_zones_(un_nom);
 }
 
 /*! @brief Renvoie le nombre de sous-zone.
  *
  * @return (int) le nombre de sous-zone
  */
-inline int Domaine::nb_ss_zones() const { return les_ss_zones.size(); }
+inline int Domaine::nb_ss_zones() const { return les_ss_zones_.size(); }
 
 /*! @brief Renvoie la i-ieme sous-zone.
  *
@@ -225,14 +231,14 @@ inline int Domaine::nb_ss_zones() const { return les_ss_zones.size(); }
  * @param (int i) l'indice de la zone a renvoyer
  * @return (Sous_Zone&) la i-ieme sous-zone
  */
-inline const Sous_Zone& Domaine::ss_zone(int i) const { return les_ss_zones[i].valeur(); }
+inline const Sous_Zone& Domaine::ss_zone(int i) const { return les_ss_zones_[i].valeur(); }
 
 /*! @brief Renvoie la i-ieme sous-zone.
  *
  * @param (int i) l'indice de la zone a renvoyer
  * @return (Sous_Zone&) la i-ieme sous-zone
  */
-inline Sous_Zone& Domaine::ss_zone(int i) { return les_ss_zones[i].valeur(); }
+inline Sous_Zone& Domaine::ss_zone(int i) { return les_ss_zones_[i].valeur(); }
 
 /*! @brief Renvoie la sous-zone dont le nom est indique en parametre.
  *
@@ -241,14 +247,14 @@ inline Sous_Zone& Domaine::ss_zone(int i) { return les_ss_zones[i].valeur(); }
  * @param (Nom& un_nom) le nom de la sous-zone a renvoyer
  * @return (Sous_Zone&) la sous-zone dont le nom est indique en parametre
  */
-inline const Sous_Zone& Domaine::ss_zone(const Nom& un_nom) const { return les_ss_zones(un_nom).valeur(); }
+inline const Sous_Zone& Domaine::ss_zone(const Nom& un_nom) const { return les_ss_zones_(un_nom).valeur(); }
 
 /*! @brief Renvoie la sous-zone dont le nom est indique en parametre.
  *
  * @param (Nom& un_nom) le nom de la sous-zone a renvoyer
  * @return (Sous_Zone&) la sous-zone dont le nom est indique en parametre
  */
-inline Sous_Zone& Domaine::ss_zone(const Nom& un_nom) {  return les_ss_zones(un_nom).valeur(); }
+inline Sous_Zone& Domaine::ss_zone(const Nom& un_nom) {  return les_ss_zones_(un_nom).valeur(); }
 
 /*! @brief Renvoie la j-ieme coordonnee du i-ieme noeud.
  *
@@ -256,7 +262,7 @@ inline Sous_Zone& Domaine::ss_zone(const Nom& un_nom) {  return les_ss_zones(un_
  * @param (int j) indice de la composante a renvoyer
  * @return (double) la j-ieme coordonnee du i-ieme noeud
  */
-inline double Domaine::coord(int i,int j) const {  return sommets(i, j); }
+inline double Domaine::coord(int i,int j) const {  return sommets_(i, j); }
 
 /*! @brief Renvoie une reference sur la j-ieme coordonnee du i-ieme noeud.
  *
@@ -266,7 +272,7 @@ inline double Domaine::coord(int i,int j) const {  return sommets(i, j); }
  * @param (int j) indice de la composante a renvoyer
  * @return (double&) reference sur la j-ieme coordonnee du i-ieme noeud
  */
-inline double& Domaine::coord(int i, int j) { return sommets(i, j); }
+inline double& Domaine::coord(int i, int j) { return sommets_(i, j); }
 
 /*! @brief Renvoie le tableau des coordonnees des noeuds (sommets).
  *
@@ -274,7 +280,7 @@ inline double& Domaine::coord(int i, int j) { return sommets(i, j); }
  *
  * @return (DoubleTab&) le tableau des coordonnees des noeuds
  */
-inline const DoubleTab& Domaine::coord_sommets() const { return sommets; }
+inline const DoubleTab& Domaine::coord_sommets() const { return sommets_; }
 
 /*! @brief Fixe epsilon, Si 2 points d'un domaine sont separes d'une distance
  *
@@ -297,16 +303,16 @@ inline double Domaine::epsilon() const {  return epsilon_; }
  *
  * @return (int) le nombre total de sommets
  */
-inline DoubleTab& Domaine::les_sommets() {   return sommets; }
+inline DoubleTab& Domaine::les_sommets() {   return sommets_; }
 
 /*! @brief Renvoie le tableau des sommets du domaine.
  *
  * @return (DoubleTab&) le tableau des sommets du domaine
  */
-inline const DoubleTab& Domaine::les_sommets() const { return sommets; }
-inline const Zones& Domaine::zones() const { return les_zones; }
-inline Zones& Domaine::zones() {  return les_zones; }
-inline const LIST(REF(Sous_Zone))& Domaine::ss_zones() const {  return les_ss_zones; }
-inline int Domaine::get_renum_som_perio(int i) const {  return renum_som_perio[i]; }
+inline const DoubleTab& Domaine::les_sommets() const { return sommets_; }
+inline const Zones& Domaine::zones() const { return les_zones_; }
+inline Zones& Domaine::zones() {  return les_zones_; }
+inline const LIST(REF(Sous_Zone))& Domaine::ss_zones() const {  return les_ss_zones_; }
+inline int Domaine::get_renum_som_perio(int i) const {  return renum_som_perio_[i]; }
 
 #endif

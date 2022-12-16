@@ -37,7 +37,7 @@ class Reorienter_triangles : public Interprete_geometrique_base
 public :
 
   Entree& interpreter_(Entree&) override;
-  void Reorienter(Domaine&) const;
+  void reorienter(Domaine&) const;
 
 protected :
   enum Sens {DIRECT , INDIRECT};
