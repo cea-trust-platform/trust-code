@@ -1,5 +1,4 @@
 Version	Qui				Tache
-1.9.2   trust@cea.fr            integrer commit Adrien aa80e234d dans TRUST pour le fix de compare_lata pour ijk
 1.9.2   trust@cea.fr            warning postraitement med si proc > 5120
 1.9.2   trust@cea.fr            faire unset TMPDIR dans le configure
 1.9.2   trust@cea.fr            Supprimer host_irene-ccrt.xml de visit car fait bloquer visit sur irene avec NiceDCV
