@@ -138,7 +138,7 @@ help()
    echo "-vtune                        : Run vtune tool (profiling)."
    echo "-perf                         : Run perf tool (profiling)."
    echo "-trace                        : Run traceanalyzer tool (MPI profiling)."
-   [ "`nsys --version 2>/dev/null;echo $?`" = 0 ] && echo "-nsys                         : Run Nsight profiler (GPU profiling)."
+   [ "`nsys --version 1>/dev/null 2>&1;echo $?`" = 0 ] && echo "-nsys                         : Run Nsight tool (GPU profiling)."
    echo "-create_sub_file              : Create a submission file only."
    echo "-prod                         : Create a submission file and submit the job on the main production class with exclusive resource."
    echo "-bigmem                       : Create a submission file and submit the job on the big memory production class."
@@ -831,8 +831,9 @@ then
 elif [ "$NSYS" = 1 ]
 then
    rm -f $NOM.qdrep
-   export NVCOMPILER_ACC_NOTIFY=3
-   exec="nsys profile -o $NOM.qdrep $binary"
+   export NVCOMPILER_ACC_TIME=1 # Tres utile pour sortie bilan des copies sur device
+   #export NVCOMPILER_ACC_NOTIFY=3
+   exec="nsys profile --force-overwrite true -o $NOM.qdrep $binary"
 elif [ "$VT_PCTRACE" != "" ]
 then
    exec="-trace $binary"
@@ -1284,11 +1285,14 @@ fi
 [ "$VT_PCTRACE" != "" ] && [ -f `basename $binary`.stf ] && echo "Use -g flag or $exec_gcov binary for source code..." && traceanalyzer `basename $binary`.stf
 if [ "$NSYS" = 1 ] && [ -f $NOM.qdrep ]
 then
-   nm -D /lib64/libk5crypto.so.3 2>/dev/null | grep 'U EVP_KDF_ctrl' >/dev/null
-   if [[ ${PIPESTATUS[1]} -eq 0 ]]; then
-      echo "libk5crypto.so.3 requires EVP_KDF_ctrl. Switching to system OpenSSL libraries" >&2
-      LD_PRELOAD=/lib64/libcrypto.so.1.1:/lib64/libssl.so.1.1 nsight-sys $NOM.qdrep
-   fi
+   $CUDA_ROOT/*/bin/nsys-ui $NOM.qdrep
+   #nm -D /lib64/libk5crypto.so.3 2>/dev/null | grep 'U EVP_KDF_ctrl' >/dev/null
+   #if [[ ${PIPESTATUS[1]} -eq 0 ]]; then
+   #   echo "libk5crypto.so.3 requires EVP_KDF_ctrl. Switching to system OpenSSL libraries" >&2
+   #   LD_PRELOAD=/lib64/libcrypto.so.1.1:/lib64/libssl.so.1.1 nsight-sys 
+   #else
+   #   echo "Sorry, can't run nsight-sys GUI for GPU profiling..."
+   #fi
 fi
 exit $err
 
