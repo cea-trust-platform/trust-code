@@ -423,7 +423,7 @@ check_components()
 		           #WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/triou/env_TRUST_\$TRUST_VERSION.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            WORKBETA=""
                            trustversion=""
-                           [ "$Composant" == "flica5" ] && trustversion=1.9.0
+                           [ "$Composant" == "flica5" ] && trustversion=1.9.1
                            [ "$Composant" == "cathare3D" ] && trustversion=1.8.3
                            if  [ "${machine:0:5}" = "orcus" ]
                            then
@@ -439,8 +439,7 @@ check_components()
 		              WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /soft/der/sesi/TRUST/env_TRUST-'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            elif  [ "${machine:0:2}" = "is" ]
                            then
-		              WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/triou/env_TRUST_'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
-		              [[ "$titania_machines" = *"$machine"* ]] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/trust_trio-public/env_TRUST-'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/trust_trio-public/env_TRUST-'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            fi
                            if [ "$WORKBETA" != "" ]
                            then
@@ -1027,7 +1026,7 @@ fi
       then
          git remote update
          git checkout .
-         git checkout Issue0076_portage191
+         git checkout Issue0081_portage192
          git pull 1>tmp.log 2>&1
          if [ $? != 0 ]
          then

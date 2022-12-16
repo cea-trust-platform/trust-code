@@ -25,7 +25,7 @@ BALTIK_ROOT=$TRUST_ROOT/bin/baltik/share/baltik/bin
 ORG=`pwd`
 
 # On cherche tous les sous-BALTIK en localisant project.cfg 
-prjs=`find . -mindepth 2  -name project.cfg -exec dirname {} \; | grep -v Prov`
+prjs=`find . -mindepth 2  -name project.cfg -exec dirname {} \; | grep -v Prov | grep -v Algo_QC`
 
 for dir in $prjs
   do

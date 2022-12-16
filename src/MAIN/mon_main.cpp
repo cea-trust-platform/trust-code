@@ -350,7 +350,7 @@ void mon_main::dowork(const Nom& nom_du_cas)
   Cout<< " *     | |    | ) \\ \\__ | (___) | /\\____) |    | |     *  " << finl;
   Cout<< " *     )_(    |/   \\__/ (_______) \\_______)    )_(     *   " << finl;
   Cout<< " *                                                     *     " << finl;
-  Cout<< " *                  version : 1.9.1               *     "  << finl;
+  Cout<< " *                  version : 1.9.2_beta               *     "  << finl;
   Cout<< " *                       CEA - DES                     *     " << finl;
   Cout<< " *                                                     *     " << finl;
   Cout<< " * * * * * * * * * * * * * * * * * * * * * * * * * * * * " << finl;

@@ -4,18 +4,31 @@
 # util pour le portage 
 org=`mktemp_ -d `
 list_patch=""
+list_useless_patch=""
 rm -rf org
 for f in `ls build/src/*.{cpp,h,f} 2>/dev/null | grep -v info_atelier`
 do
   f2=`Find.sh $(basename $f)`
- [ "$f2" != "" ] && f3=`find -name $(basename $f) | grep -v build | grep -v kernel_official_sources` &&  cp $f2 $org && [ "$f3" != "" ] && list_patch=$f3" "$list_patch; 
+ [ "$f2" != "" ] && f3=`find -name $(basename $f) | grep -v build | grep -v kernel_official_sources` &&  cp $f2 $org && [ "$f3" != "" ] && list_patch=$f3" "$list_patch && [ "`diff $f3 $f2 &>/dev/null ; echo $?`" = "0" ] && list_useless_patch=$f3" "$list_useless_patch; 
 done
 
-echo "List of patched files:"
-echo $list_patch | sed "s/ /\n/g"
-echo ""
+if [ "$list_useless_patch" != "" ]
+then
+   echo "====================================================="
+   echo "List of useless patches:"
+   echo $list_useless_patch | sed "s/ /\n/g"
+   echo "====================================================="
+   echo ""
+fi
 
-
+if [ "$list_patch" != "" ]
+then
+   echo "====================================================="
+   echo "List of patched files:"
+   echo $list_patch | sed "s/ /\n/g"
+   echo "====================================================="
+   echo ""
+fi
 diff -r $org share/kernel_official_sources 2>&1 1>/dev/null
 status=$?
 if [ $status -ne 0 ]
