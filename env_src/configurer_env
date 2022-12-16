@@ -387,17 +387,22 @@ check_nvidia_cuda()
 ########################################################
 print_OS()
 {
-   for file in /etc/system-release /etc/release /etc/issue.net /etc/issue
-   do
-      if [ -f $file ]
-      then
-         echo "# OS for the machine : `head -1 $file`"
-	 break
-         # En 2 fois pour supprimer les \n \l qui empechent une comparaison correcte
-         #chaine=`head -1 /etc/issue`
-         #echo "# OS for the machine : `echo $ECHO_OPTS $chaine | head -1`"
-      fi
-   done
+   if [ -f /etc/os-release ]
+   then
+      (. /etc/os-release && echo "# OS for the machine : $NAME $VERSION_ID")
+   else
+      for file in /etc/system-release /etc/release /etc/issue.net /etc/issue
+      do
+         if [ -f $file ]
+         then
+            echo "# OS for the machine : `head -1 $file`"
+	    break
+            # En 2 fois pour supprimer les \n \l qui empechent une comparaison correcte
+            #chaine=`head -1 /etc/issue`
+            #echo "# OS for the machine : `echo $ECHO_OPTS $chaine | head -1`"
+         fi
+      done
+   fi
 }
 
 ########################################################
