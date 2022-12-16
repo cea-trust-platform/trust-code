@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -65,10 +65,8 @@ void Sortie_libre_pression_imposee::completer()
 
 /*! @brief Renvoie la valeur du flux impose sur la i-eme composante du champ representant le flux a la frontiere.
  *
- *     Le champ a la frontiere est considere constant sur tous
- *     les elements de la frontiere.
- *     La valeur du flux impose a la frontiere est egale
- *     a la valeur du champ (considere constant) a la frontiere divise par d_rho.
+ *     Le champ a la frontiere est considere constant sur tous les elements de la frontiere.
+ *     La valeur du flux impose a la frontiere est egale a la valeur du champ (considere constant) a la frontiere divise par d_rho.
  *
  * @param (int i) indice suivant la premiere dimension du champ
  * @return (double) la valeur imposee sur la composante du champ specifiee
@@ -76,25 +74,7 @@ void Sortie_libre_pression_imposee::completer()
  */
 double Sortie_libre_pression_imposee::flux_impose(int i) const
 {
-  const Milieu_base& mil = ma_zone_cl_dis->equation().milieu();
-  double rho_;
-  assert(!est_egal(d_rho, -123.));
-  if (d_rho == -1)
-    {
-      const Champ_base& rho = mil.masse_volumique().valeur();
-      rho_ = rho(i);
-    }
-  else
-    rho_ = d_rho;
-
-  if (le_champ_front.valeurs().size() == 1)
-    return le_champ_front(0, 0) / rho_;
-  else if (le_champ_front.valeurs().dimension(1) == 1)
-    return le_champ_front(i, 0) / rho_;
-  else
-    Cerr << "Neumann::flux_impose erreur" << finl;
-  exit();
-  return 0.;
+  return flux_impose(i,0);
 }
 
 /*! @brief Renvoie la valeur du flux impose sur la (i,j)-eme composante du champ representant le flux a la frontiere.
@@ -109,16 +89,22 @@ double Sortie_libre_pression_imposee::flux_impose(int i) const
 double Sortie_libre_pression_imposee::flux_impose(int i, int j) const
 {
   const Milieu_base& mil = ma_zone_cl_dis->equation().milieu();
-  const Champ_base& rho = mil.masse_volumique().valeur();
   double rho_;
   assert(!est_egal(d_rho, -123.));
   if (d_rho == -1)
-    rho_ = rho(i);
+    {
+      const Champ_base& rho = mil.masse_volumique().valeur();
+      rho_ = rho(i);
+    }
   else
     rho_ = d_rho;
 
   if (le_champ_front.valeurs().dimension(0) == 1)
     return le_champ_front(0, j) / rho_;
-  else
+  else if (j < le_champ_front.valeurs().dimension(1))
     return le_champ_front(i, j) / rho_;
+  else
+    Cerr << "Sortie_libre_pression_imposee::flux_impose erreur" << finl;
+  Process::exit();
+  return 0.;
 }
