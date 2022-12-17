@@ -622,6 +622,15 @@ class TRUSTSuite(object):
             if not t in list_exclu_nr:
                 print("@@@CAS_NR_JY@@@ " + t)
 
+    def printCases(self):
+        """
+        display testCases
+        """
+        text = "### Test cases \n"
+        for c in self.getCases():
+            text += "* " + c.dir_ + "/" + c.name_ + ".data : \n"
+        displayMD(text)
+
 def readFile(data):
     """
     Method to open and read file with Save in FileAccumulator"
@@ -921,10 +930,8 @@ def printCases():
     """
     display testCases
     """
-    text = "### Test cases \n"
-    for c in getCases():
-        text += "* " + c.dir_ + "/" + c.name_ + ".data : \n"
-    displayMD(text)
+    global defaultSuite_
+    return defaultSuite_.printCases()
 
 
 def extractNRCases():
