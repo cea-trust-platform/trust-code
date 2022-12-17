@@ -102,7 +102,7 @@ public:
   virtual ~TRUSTArray()
   {
 #ifdef _OPENMP
-    if (dataLocation()!=HostOnly)
+    if (dataLocation_!=HostOnly)
       {
         _TYPE_ *tab_addr = addr();
         #pragma omp target exit data map(from:tab_addr[0:size_array()])
@@ -319,10 +319,10 @@ private:
   Storage storage_type_;
 
   // Drapeau du statut du array sur le Device:
-  // -1: non alloue sur le device sinon                     HostOnly
-  //  0: A jour sur le host pas sur le device               Host
-  //  1: A jour sur le device mais pas sur le host          Device
-  //  2: A jour sur le host et le device                    HostDevice
+  // HostOnly  : Non alloue sur le device encore
+  // Host      : A jour sur le host pas sur le device               
+  // Device    : A jour sur le device mais pas sur le host          
+  // HostDevice: A jour sur le host et le device                    
   mutable dataLocation dataLocation_ = HostOnly;
   inline void checkDataOnHost(const TRUSTArray& tab) const
   {
@@ -343,12 +343,12 @@ private:
 #ifndef NDEBUG
     if (tab.get_dataLocation()==Device)
       {
-        Cerr << "Error! A non-const TRUSTArray tab is computed on the host whereas its dataLocation=Device" << finl;
-        Cerr << "In order to copy data from device to hist,add a call like: copyFromDevice(tab);" << finl;
+        Cerr << "Error! A non-const TRUSTArray tab will be computed on the host whereas its dataLocation=Device" << finl;
+        Cerr << "In order to copy data from device to host,add a call like: copyFromDevice(tab);" << finl;
         Process::exit();
       }
-    //set_dataLocation(Host); // Plante severement sur Device dans Op_Grad::ajouter_elem: pourquoi ?
 #endif
+    if (tab.get_dataLocation()!=HostOnly) set_dataLocation(Host); // On va modifier le tableau sur le host
 #endif
   }
 };

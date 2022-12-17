@@ -463,9 +463,9 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
   const int *type_elem_Cl_addr = copyToDevice(type_elem_Cl_);
   const int * traitement_pres_bord_addr = copyToDevice(traitement_pres_bord_);
 
-  const int * KEL_addr = type_elemvef.KEL().addr();
-  const double * normales_facettes_Cl_addr = normales_facettes_Cl.addr();
-  const double * vecteur_face_facette_Cl_addr = vecteur_face_facette_Cl.addr();
+  const int * KEL_addr = copyToDevice(type_elemvef.KEL());
+  const double * normales_facettes_Cl_addr = copyToDevice(normales_facettes_Cl);
+  const double * vecteur_face_facette_Cl_addr = copyToDevice(vecteur_face_facette_Cl);
   const double * vitesse_addr=la_vitesse.valeurs().addr();
   const double * vitesse_face_absolue_addr = vitesse_face_absolue.addr();
   const double * transporte_face_addr = transporte_face.addr();
@@ -499,7 +499,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
           // Provisoire crash sur compilateur offload clang++ non Cray:
           Cerr << "ToDo: No offload of Op_Conv_VEF_Face::ajouter() on GPU." << finl;
 #else
-          #pragma omp target teams if (computeOnDevice()) map(to:KEL_addr[0:KEL.size_array()], normales_facettes_Cl_addr[0:normales_facettes_Cl.size_array()], vecteur_face_facette_Cl_addr[0:vecteur_face_facette_Cl.size_array()], vitesse_addr[0:la_vitesse.valeurs().size_array()], vitesse_face_absolue_addr[0:vitesse_face_absolue.size_array()], gradient_addr[0:gradient.size_array()], transporte_face_addr[0:transporte_face.size_array()]) map(tofrom:flux_b_addr[0:flux_b.size_array()], resu_addr[0:resu.size_array()])
+          #pragma omp target teams if (computeOnDevice()) map(to:vitesse_addr[0:la_vitesse.valeurs().size_array()], vitesse_face_absolue_addr[0:vitesse_face_absolue.size_array()], gradient_addr[0:gradient.size_array()], transporte_face_addr[0:transporte_face.size_array()]) map(tofrom:flux_b_addr[0:flux_b.size_array()], resu_addr[0:resu.size_array()])
 #endif
           {
             int face[4] {};
@@ -1572,13 +1572,13 @@ void  Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
       const double *porosite_elem_addr = copyToDevice(porosite_elem);
       const double *facette_normales_addr = copyToDevice(facette_normales);
 
-      const int *KEL_addr = KEL.addr();
-      const double *normales_facettes_Cl_addr = normales_facettes_Cl.addr();
+      const int *KEL_addr = copyToDevice(KEL);
+      const double *normales_facettes_Cl_addr = copyToDevice(normales_facettes_Cl);
       const double *vitesse_face_addr = vitesse_face.addr();
       double *fluent_addr = fluent_.addr();
 
       const int *type_elem_Cl_addr = copyToDevice(type_elem_Cl_);
-      #pragma omp target teams if (computeOnDevice()) map(to:KEL_addr[0:KEL.size_array()], normales_facettes_Cl_addr[0:normales_facettes_Cl.size_array()], vitesse_face_addr[0:vitesse_face.size_array()]) map(tofrom:fluent_addr[0:fluent_.size_array()])
+      #pragma omp target teams if (computeOnDevice()) map(to:vitesse_face_addr[0:vitesse_face.size_array()]) map(tofrom:fluent_addr[0:fluent_.size_array()])
       {
         int face[4] {};
         double vs[3] {};

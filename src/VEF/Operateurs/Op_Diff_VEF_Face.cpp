@@ -379,13 +379,13 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
   const int * elem_faces_addr = copyToDevice(zone_VEF.elem_faces());
   const double * inverse_volumes_addr = copyToDevice(inverse_volumes);
   const double * face_normales_addr = copyToDevice(face_normales);
-  const double * nu_addr = nu.addr();
-  const double * inconnue_addr = inconnue.addr();
+  const double * nu_addr = copyToDevice(nu);
+  const double * inconnue_addr = copyToDevice(inconnue);
   double * resu_addr = resu.addr();
 
   int premiere_face_int = zone_VEF.premiere_face_int();
   // On traite les faces internes
-  #pragma omp target teams distribute parallel for if (computeOnDevice()) map(to:nu_addr[0:nu.size_array()],inconnue_addr[0:inconnue.size_array()]) map(tofrom:resu_addr[0:resu.size_array()])
+  #pragma omp target teams distribute parallel for if (computeOnDevice()) map(tofrom:resu_addr[0:resu.size_array()])
   for (num_face=premiere_face_int; num_face<nb_faces; num_face++)
     {
       for (int k=0; k<2; k++)

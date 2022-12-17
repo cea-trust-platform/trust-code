@@ -32,7 +32,8 @@ inline void end_timer(const std::string& str) // Return in [ms]
 {
   if (clock_on!=NULL)
     {
-      printf("[clock] %7.3f ms %15s\n", Statistiques::get_time_now() - clock_start,str.c_str());
+      double ms = 1000 * (Statistiques::get_time_now() - clock_start);
+      printf("[clock] %7.3f ms %15s\n", ms, str.c_str());
       fflush(stdout);
     }
 }
@@ -40,13 +41,18 @@ inline void end_timer(const std::string& str, int size) // Return in [ms]
 {
   if (clock_on!=NULL)
     {
-      double ms = Statistiques::get_time_now() - clock_start;
+      double ms = 10000 * (Statistiques::get_time_now() - clock_start);
       int mo = size/1024/1024;
+      if (ms==0)
+          printf("[clock]            %15s %6d Mo\n", str.c_str(), mo);
+      else
+      {
 #ifndef INT_is_64_
-      printf("[clock] %7.3f ms %15s %6d Mo %4.1f Go/s\n", ms ,str.c_str(), mo, mo/ms);
+      printf("[clock] %7.3f ms %15s %6d Mo %5.1f Go/s\n", ms ,str.c_str(), mo, mo/ms);
 #else
-      printf("[clock] %7.3f ms %15s %6ld Mo %4.1f Go/s\n", ms ,str.c_str(), mo, mo/ms);
+      printf("[clock] %7.3f ms %15s %6ld Mo %5.1f Go/s\n", ms ,str.c_str(), mo, mo/ms);
 #endif
+      }
       fflush(stdout);
     }
 }
@@ -54,27 +60,33 @@ inline void end_timer(const std::string& str, int size) // Return in [ms]
 template <typename _TYPE_>
 inline const _TYPE_* copyToDevice(const TRUSTArray<_TYPE_>& tab)
 {
-  const _TYPE_ *tab_addr = copyToDevice_(const_cast<TRUSTArray <_TYPE_>&>(tab));
-  tab.set_dataLocation(Array_base::HostDevice); // const array will matches on host and device
+  // const array will matches on host and device   
+  const _TYPE_ *tab_addr = copyToDevice_(const_cast<TRUSTArray <_TYPE_>&>(tab), Array_base::HostDevice);
   return tab_addr;
 }
 
 template <typename _TYPE_>
-inline _TYPE_* copyToDevice_(TRUSTArray<_TYPE_>& tab)
+inline _TYPE_* copyToDevice_(TRUSTArray<_TYPE_>& tab, Array_base::dataLocation nextLocation)
 {
-  _TYPE_* tab_addr = tab.addr();
+#ifdef _OPENMP
+  Array_base::dataLocation currentLocation = tab.get_dataLocation();
+  tab.set_dataLocation(nextLocation); // Important de specifier le nouveau status avant la recuperation du pointeur:
+#endif
+  _TYPE_* tab_addr = tab.addr(); // Car addr() contient un mecanisme de verification
 #ifdef _OPENMP
   start_timer();
-  if (tab.get_dataLocation()==Array_base::HostOnly)
+  if (currentLocation==Array_base::HostOnly)
     {
       #pragma omp target enter data map(to:tab_addr[0:tab.size_array()])
       end_timer((std::string) "copyToDevice Array ", sizeof(_TYPE_) * tab.size_array());
     }
-  else if (tab.get_dataLocation()==Array_base::Host)
+  else if (currentLocation==Array_base::Host)
     {
       #pragma omp target update to(tab_addr[0:tab.size_array()])
       end_timer((std::string) "updateToDevice Array ", sizeof(_TYPE_) * tab.size_array());
     }
+  else
+      end_timer((std::string) "upToDateDevice Array ", sizeof(_TYPE_) * tab.size_array());
 #endif
   return tab_addr;
 }
@@ -82,8 +94,8 @@ inline _TYPE_* copyToDevice_(TRUSTArray<_TYPE_>& tab)
 template <typename _TYPE_>
 inline _TYPE_* computeOnDevice(TRUSTArray<_TYPE_>& tab)
 {
-  _TYPE_ *tab_addr = copyToDevice_(tab);
-  tab.set_dataLocation(Array_base::Device); // non-const array will be modified on device
+  // non-const array will be modified on device:
+  _TYPE_ *tab_addr = copyToDevice_(tab, Array_base::Device);
   return tab_addr;
 }
 
@@ -102,8 +114,15 @@ inline void copyFromDevice(TRUSTArray<_TYPE_>& tab)
 #endif
 }
 // Pour disabler
+#pragma omp declare target
 inline bool computeOnDevice()
 {
+#ifdef _COMPILE_AVEC_PGCC
+  return true; // Pas possible d'utiliser getenv avec nvc++ : VC++-S-1073-Procedures called in a OpenMP target region must have 'omp declare target' information - getenv
+#else
   return getenv("TRUST_DISABLE_DEVICE") == NULL ? true : false;
+#endif
 }
+#pragma omp end declare target
+
 #endif
