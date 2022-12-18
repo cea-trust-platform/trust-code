@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,11 +41,7 @@ public:
   void init_op_ext() const override;
 
   virtual void calculer_flux_bord(const DoubleTab& inco, const DoubleTab& val_b) const = delete;
-  void contribuer_au_second_membre(DoubleTab& ) const override
-  {
-    Cerr << "Op_Diff_VDF_base::" << __func__ << " should not be called !" << finl;
-    Process::exit();
-  }
+  void contribuer_au_second_membre(DoubleTab& resu) const override { iter->contribuer_au_second_membre(resu); }
 
 protected:
   void ajoute_terme_pour_axi(matrices_t , DoubleTab& , const tabs_t& ) const;

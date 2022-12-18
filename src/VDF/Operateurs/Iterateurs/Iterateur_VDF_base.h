@@ -58,6 +58,11 @@ public:
   void associer_champ_convecte_ou_inc(const Champ_Inc_base& ch, const Champ_base* chv, bool use=false);
   virtual void ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const=0;
   virtual void ajouter_contribution_autre_pb(const DoubleTab& , Matrice_Morse& , const Cond_lim& , std::map<int, std::pair<int, int>>&) const { /* ne fait rien en general */ }
+  virtual void contribuer_au_second_membre(DoubleTab& ) const
+  {
+    Cerr << "Iterateur_VDF_base::" << __func__ << " should not be called !" << finl;
+    Process::exit();
+  }
 
   virtual void completer_()=0;
   virtual int impr(Sortie& os) const=0;
