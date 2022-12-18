@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,6 +31,7 @@ public:
   inline _TYPE_& operator()(int i) { assert(i == 0); return d_; }
   inline const _TYPE_& operator[](int i) const { assert(i == 0); return d_; }
   inline _TYPE_& operator[](int i) { assert(i == 0); return d_; }
+  inline _TYPE_& operator=(_TYPE_ xx) { d_ = xx; return d_;}
   // We do want that .. but later
 //  inline const _TYPE_& operator()(int i) const = delete;
 //  inline _TYPE_& operator()(int i) = delete;

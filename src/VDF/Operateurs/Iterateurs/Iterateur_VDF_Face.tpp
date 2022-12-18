@@ -417,6 +417,7 @@ Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_generique_(const int debut, con
       // second membre
       for (int n_arete = debut; n_arete < fin; n_arete++)
         {
+          flux = 0.;
           const int fac1 = Qdm(n_arete, 0), fac2 = Qdm(n_arete, 1), fac3 = Qdm(n_arete, 2), fac4 = Qdm(n_arete, 3);
           const int n = la_zone->nb_faces_bord(), n2 = la_zone->nb_faces_tot(); /* GF pour assurer bilan seq = para */
           flux_evaluateur.template flux_arete < Arete_Type > (inco, a_r, fac1, fac2, fac3, fac4, flux);
@@ -470,6 +471,7 @@ Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_generique_(const int debut, con
       if (matrice)
         for (int n_arete = debut; n_arete < fin; n_arete++)
           {
+            aii = 0., ajj = 0.;
             const int fac1 = Qdm(n_arete, 0), fac2 = Qdm(n_arete, 1), fac3 = Qdm(n_arete, 2), fac4 = Qdm(n_arete, 3);
 
             flux_evaluateur.template coeffs_arete < Arete_Type > (a_r, fac3, fac4, fac1, fac2, aii, ajj);
@@ -624,6 +626,7 @@ void Iterateur_VDF_Face<_TYPE_>::corriger_fa7_elem_periodicite(const int ncomp, 
           // second membre
           for (int face = ndeb; face < nfin; face++)
             {
+              flux = 0.;
               corriger_fa7_elem_periodicite__(face, num_elem, signe, fac1, fac2);
 
               flux_evaluateur.template flux_fa7 < Type_Flux_Fa7::ELEM > (inco, nullptr, num_elem, fac1, fac2, flux);
@@ -634,6 +637,7 @@ void Iterateur_VDF_Face<_TYPE_>::corriger_fa7_elem_periodicite(const int ncomp, 
           if (matrice)
             for (int face = ndeb; face < nfin; face++)
               {
+                aii = 0., ajj = 0.;
                 corriger_fa7_elem_periodicite__(face, num_elem, signe, fac1, fac2);
 
                 flux_evaluateur.template coeffs_fa7 < Type_Flux_Fa7::ELEM > (nullptr, num_elem, fac1, fac2, aii, ajj);
