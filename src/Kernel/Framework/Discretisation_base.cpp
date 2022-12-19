@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -584,6 +584,14 @@ int Discretisation_base::verifie_sous_type(Nom& type, const Nom& sous_type, cons
           type = sous_type;
           return 0;
         }
+
+      // Elie Saikali : je fais mieux le jour ou on fait du vrai C++ pas comme ca ... FAUT TESTER SI LE CAST MARCHE ET PAS NOMMMMM !!!!!!!!!!!!!!!!!!
+      if (sous_type.debute_par("Champ_Face_dep_expr") && type == "Champ_Face_VDF")
+        {
+          type = sous_type;
+          return 0;
+        }
+
       Cerr << "Error in " << que_suis_je() << " ::discretiser_champ" << finl;
       Cerr << sous_type << " is not a sub type of " << type << " for " << que_suis_je() << " discretization";
       Cerr << "( directive : \""<< directive << "\")"<<finl;
