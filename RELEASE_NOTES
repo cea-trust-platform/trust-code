@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.2_beta : Enhancements, modifications and corrected bugs since version 1.9.1 :
 --------------------------------------------------------------------------------------------------
+19/12/22 (TRUST) Output       : if -journal verbosity set to a value >=1 when running computation, log files will be written even if nbproc > 5120
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.1 : Enhancements, modifications and corrected bugs since version 1.9.0 :
 --------------------------------------------------------------------------------------------------
