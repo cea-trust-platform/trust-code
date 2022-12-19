@@ -77,14 +77,14 @@ void Op_Conv_VDF_base::associer_champ_convecte_elem()
   if (sub_type(Pb_Multiphase, equation().probleme())) equation().init_champ_convecte();
 
   Op_Conv_VDF_base::preparer_calcul();
-  const Champ_Inc_base& cc = equation().has_champ_convecte() ? equation().champ_convecte() : equation().inconnue().valeur();
+  const Champ_Inc_base& cc = equation().has_champ_convecte() ? equation().champ_convecte() : (le_champ_inco.non_nul() ? le_champ_inco->valeur() : equation().inconnue().valeur());
   iter->associer_champ_convecte_ou_inc(cc, &vitesse());
 }
 
 void Op_Conv_VDF_base::associer_champ_convecte_face()
 {
   Op_Conv_VDF_base::preparer_calcul();
-  iter->associer_champ_convecte_ou_inc(equation().inconnue().valeur(), &vitesse());
+  iter->associer_champ_convecte_ou_inc(le_champ_inco.non_nul() ? le_champ_inco->valeur() : equation().inconnue().valeur(), &vitesse());
 }
 
 void Op_Conv_VDF_base::associer_champ_temp(const Champ_Inc& ch_unite, bool use_base) const
