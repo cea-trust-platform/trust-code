@@ -57,10 +57,16 @@ inline void end_timer(const std::string& str, int size) // Return in [ms]
     }
 }
 
+// Pour disabler
+inline bool computeOnDevice()
+{
+  return getenv("TRUST_DISABLE_DEVICE") == NULL ? true : false;
+}
+
 template <typename _TYPE_>
 inline const _TYPE_* copyToDevice(const TRUSTArray<_TYPE_>& tab)
 {
-  // const array will matches on host and device   
+  // const array will matches on host and device
   const _TYPE_ *tab_addr = copyToDevice_(const_cast<TRUSTArray <_TYPE_>&>(tab), Array_base::HostDevice);
   return tab_addr;
 }
@@ -77,12 +83,12 @@ inline _TYPE_* copyToDevice_(TRUSTArray<_TYPE_>& tab, Array_base::dataLocation n
   start_timer();
   if (currentLocation==Array_base::HostOnly)
     {
-      #pragma omp target enter data map(to:tab_addr[0:tab.size_array()])
+      #pragma omp target enter data if (computeOnDevice()) map(to:tab_addr[0:tab.size_array()])
       end_timer((std::string) "copyToDevice Array ", sizeof(_TYPE_) * tab.size_array());
     }
   else if (currentLocation==Array_base::Host)
     {
-      #pragma omp target update to(tab_addr[0:tab.size_array()])
+      #pragma omp target update if (computeOnDevice()) to(tab_addr[0:tab.size_array()])
       end_timer((std::string) "updateToDevice Array ", sizeof(_TYPE_) * tab.size_array());
     }
   else
@@ -92,7 +98,7 @@ inline _TYPE_* copyToDevice_(TRUSTArray<_TYPE_>& tab, Array_base::dataLocation n
 }
 
 template <typename _TYPE_>
-inline _TYPE_* computeOnDevice(TRUSTArray<_TYPE_>& tab)
+inline _TYPE_* computeOnTheDevice(TRUSTArray<_TYPE_>& tab)
 {
   // non-const array will be modified on device:
   _TYPE_ *tab_addr = copyToDevice_(tab, Array_base::Device);
@@ -107,22 +113,10 @@ inline void copyFromDevice(TRUSTArray<_TYPE_>& tab)
   if (tab.get_dataLocation()==Array_base::Device)
     {
       start_timer();
-      #pragma omp target update from(tab_addr[0:tab.size_array()])
+      #pragma omp target update if (computeOnDevice()) from(tab_addr[0:tab.size_array()])
       end_timer((std::string) "copyFromDevice Array ", sizeof(_TYPE_) * tab.size_array());
       tab.set_dataLocation(Array_base::HostDevice);
     }
 #endif
 }
-// Pour disabler
-#pragma omp declare target
-inline bool computeOnDevice()
-{
-#ifdef _COMPILE_AVEC_PGCC
-  return true; // Pas possible d'utiliser getenv avec nvc++ : VC++-S-1073-Procedures called in a OpenMP target region must have 'omp declare target' information - getenv
-#else
-  return getenv("TRUST_DISABLE_DEVICE") == NULL ? true : false;
-#endif
-}
-#pragma omp end declare target
-
 #endif
