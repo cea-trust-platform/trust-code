@@ -329,16 +329,14 @@ void Op_Grad_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, con
         // XXX : Elie Saikali : attention : on code alpha grad(P) et pas grad(alpha.P) !! Sinon on manque des termes ... (voir avec Antoine sinon)
         const double alpha_face = alp ? (vfd(f, 0) * (*alp)(n0, n) + vfd(f, 1) * (*alp)(n1, n)) / vf(f) : 1.0;
         const double coef = face_surfaces(f) * porosite_surf(f) * alpha_face;
-        for (int i = 0; i < 2; i++)
+        if(mat)
           {
-            const int e = face_voisins(f, i);
-            if (mat)
-              (*mat)(N * f + n, M * e + m) += (i ? 1.0 : -1.0) * coef;
-            secmem(f, n) -= (i ? 1.0 : -1.0) * coef * inco(e, m);
+            (*mat)(N * f + n, M * n0 + m) -= coef;
+            (*mat)(N * f + n, M * n1 + m) += coef;
           }
+        secmem(f, n) -= coef * (inco(n1, m) - inco(n0, m));
       }
 
   secmem.echange_espace_virtuel();
   statistiques().end_count(gradient_counter_);
-
 }
