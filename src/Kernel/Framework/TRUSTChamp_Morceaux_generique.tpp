@@ -217,7 +217,7 @@ void TRUSTChamp_Morceaux_generique<_TYPE_>::interprete_get_domaine(const Nom& no
       ref_pb = ref_cast(Probleme_base, Interprete::objet(nom));
       mon_domaine = ref_pb->domaine();
     }
-  else mon_domaine = ref_cast(Domaine, Interprete::objet(nom));
+  else mon_domaine = ref_cast(Zone, Interprete::objet(nom));
 }
 
 template<Champ_Morceaux_Type _TYPE_>

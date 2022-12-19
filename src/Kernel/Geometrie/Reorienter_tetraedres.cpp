@@ -37,7 +37,7 @@ Entree& Reorienter_tetraedres::interpreter_(Entree& is)
       exit();
     }
   associer_domaine(is);
-  Domaine& dom=domaine();
+  Zone& dom=domaine();
   Scatter::uninit_sequential_domain(dom);
   reorienter(dom);
   Scatter::init_sequential_domain(dom);
@@ -114,7 +114,7 @@ Reorienter_tetraedres::Sens Reorienter_tetraedres::reorienter_tetra(IntTab& les_
 //
 //
 //
-void Reorienter_tetraedres::reorienter(Domaine& dom) const
+void Reorienter_tetraedres::reorienter(Zone& dom) const
 {
   const DoubleTab& coord_sommets = dom.coord_sommets();
   int nb_zones = dom.nb_zones();

@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Hexa_VEF.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_instanciable_sans_constructeur(Hexa_VEF,"Hexa_VEF",Elem_VEF_base);
 

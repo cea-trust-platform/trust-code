@@ -47,8 +47,8 @@ public:
   const Noms        get_property(const Motcle& query) const override;
   void nommer_source() override;
   void completer(const Postraitement_base& post) override;
-  const Domaine& get_ref_domain() const override;
-  void get_copy_domain(Domaine&) const override;
+  const Zone& get_ref_domain() const override;
+  void get_copy_domain(Zone&) const override;
   const Zone_dis_base& get_ref_zone_dis_base() const override;
   void discretiser_domaine();
   const  Motcle  get_directive_pour_discr() const override;
@@ -58,7 +58,7 @@ protected :
   Nom dom_extrac_;                //Nom du domaine d extraction
   Nom nom_fr_;                        //Nom de la frontiere sur laquelle on fait l extraction
   Nom methode_;                        //Type de methode pour extraire ("trace" ou "champ_frontiere")
-  REF(Domaine) domaine_;        //Reference sur le domaine d extraction
+  REF(Zone) domaine_;        //Reference sur le domaine d extraction
   Domaine_dis le_dom_dis;        //Le domaine discretise correspondant a domaine_.valeur()
 };
 

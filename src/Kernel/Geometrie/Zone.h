@@ -30,7 +30,7 @@
 #include <Noms.h>
 
 #include <List_Ref_Sous_Zone.h>
-#include <Domaine.h>  // For LIST(REF(Domaine))
+#include <Zone.h>  // For LIST(REF(Zone))
 
 class Motcle;
 
@@ -47,7 +47,7 @@ class Probleme_base;
  *     Une zone est constituee d'elements, de bords, de bords periodiques,
  *     de joints, de raccords et de face internes.
  *
- * @sa Domaine SousZone Frontiere Elem_geom Elem_geom_base, Bord Bord_perio Joint Raccord Faces_Interne
+ * @sa Zone SousZone Frontiere Elem_geom Elem_geom_base, Bord Bord_perio Joint Raccord Faces_Interne
  */
 class Zone : public Objet_U
 {
@@ -112,7 +112,7 @@ public:
 
   // Informations
   void imprimer() const;
-  inline const LIST(REF(Domaine))& domaines_frontieres() const  {   return domaines_frontieres_;   }
+  inline const LIST(REF(Zone))& domaines_frontieres() const  {   return domaines_frontieres_;   }
 #ifdef MEDCOUPLING_
   // MEDCoupling:
   MCAuto<MEDCouplingUMesh>& getUMesh() const  {   return mesh_;   };
@@ -139,8 +139,8 @@ public:
   inline int sommet_elem(int , int ) const;
   inline const Nom& le_nom() const override;
   inline void nommer(const Nom& ) override;
-  const Domaine& domaine() const;
-  Domaine& domaine();
+  const Zone& domaine() const;
+  Zone& domaine();
   void fixer_premieres_faces_frontiere();
   //
 
@@ -152,7 +152,7 @@ public:
   int chercher_sommets(double x, double y=0, double z=0,int reel=0) const;
   ArrOfInt& chercher_aretes(const DoubleTab& ,ArrOfInt& ,int reel=0) const;
 
-  virtual void associer_domaine(const Domaine&);
+  virtual void associer_domaine(const Zone&);
   void init_faces_virt_bord(const MD_Vector& md_vect_faces, MD_Vector& md_vect_faces_bord);
   inline void calculer_centres_gravite(DoubleTab& ) const;
   void calculer_centres_gravite_aretes(DoubleTab& ) const;
@@ -273,7 +273,7 @@ protected:
   Zones les_zones_;
   ArrOfInt renum_som_perio_;
 
-  LIST(REF(Domaine)) domaines_frontieres_;
+  LIST(REF(Zone)) domaines_frontieres_;
   LIST(REF(Sous_Zone)) les_ss_zones_;
   double epsilon_;
   int deformable_;
@@ -288,7 +288,7 @@ protected:
   int axi1d_;
 //////@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-  REF(Domaine) le_domaine;
+  REF(Zone) le_domaine;
   // Type de l'element geometrique de cette Zone
   Elem_geom elem_;
   // Description des elements (pour le multi-element, le tableau peut contenir des -1 !!!)

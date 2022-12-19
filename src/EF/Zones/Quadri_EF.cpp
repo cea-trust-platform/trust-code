@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Quadri_EF.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_instanciable_sans_constructeur(Quadri_EF,"Quadri_EF",Elem_EF_base);
 

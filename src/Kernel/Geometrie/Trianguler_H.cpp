@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Trianguler_H.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_instanciable(Trianguler_H,"Trianguler_H",Triangulation_base);
 
@@ -49,7 +49,7 @@ Entree& Trianguler_H::readOn(Entree& is)
  */
 void Trianguler_H::trianguler(Zone& zone) const
 {
-  Domaine& dom=zone.domaine();
+  Zone& dom=zone.domaine();
   IntTab& les_elems=zone.les_elems();
   int oldsz=les_elems.dimension(0);
   DoubleTab& sommets=dom.les_sommets();

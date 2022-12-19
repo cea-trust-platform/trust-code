@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Triangle.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 /*! @brief des faces du triangle de reference: 3 faces de deux sommets.
  *
@@ -80,7 +80,7 @@ int Triangle::contient(const ArrOfDouble& pos, int ielem) const
 {
   assert(pos.size_array()==2);
   const Zone& zone=ma_zone.valeur();
-  const Domaine& dom=zone.domaine();
+  const Zone& dom=zone.domaine();
   assert(ielem<zone.nb_elem_tot());
   int som0 = zone.sommet_elem(ielem,0);
   int som1 = zone.sommet_elem(ielem,1);

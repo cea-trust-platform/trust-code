@@ -40,7 +40,7 @@ public :
   const Zone_VF& zone_vf() const override { throw; }
 
   void mettre_a_jour(double ) override;
-  int creer(const Nom&,const Domaine& dom,const Motcle& localisation,ArrOfDouble& temps_sauv);
+  int creer(const Nom&,const Zone& dom,const Motcle& localisation,ArrOfDouble& temps_sauv);
 
 #ifdef MEDCOUPLING_
   MCAuto<MEDCoupling::MEDCouplingField> lire_champ(const std::string& fileName, const std::string& meshName, const std::string& fieldName, const int iteration, const int order);
@@ -49,7 +49,7 @@ public :
                                   ArrOfDouble& temps_sauv, int& size, int& nbcomp, Nom& type_champ);
 #endif
 
-  const Domaine& domaine() const { return mon_dom; }
+  const Zone& domaine() const { return mon_dom; }
   virtual void lire(double tps,int given_iteration=-1);
   int nb_pas_temps() { return nb_dt; }
   using Champ_Fonc_base::valeurs;
@@ -58,8 +58,8 @@ public :
 
   inline DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const override;
   inline DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const override;
-  inline DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const override;
-  inline DoubleVect& valeur_aux_sommets_compo(const Domaine&, DoubleVect&, int) const override;
+  inline DoubleTab& valeur_aux_sommets(const Zone&, DoubleTab&) const override;
+  inline DoubleVect& valeur_aux_sommets_compo(const Zone&, DoubleVect&, int) const override;
   inline DoubleVect& valeur_a(const DoubleVect& position, DoubleVect& valeurs) const override;
 
   inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& valeurs, int le_poly) const override ;
@@ -79,8 +79,8 @@ protected:
   int last_time_only_=0;
 
   // Other:
-  REF(Domaine) mon_dom;
-  Domaine dom_med_;
+  REF(Zone) mon_dom;
+  Zone dom_med_;
   Zone_VF_inst zonebidon_inst;
   int numero_ch = -10;
   int nb_dt = -10;
@@ -158,12 +158,12 @@ inline DoubleVect& Champ_Fonc_MED::valeur_aux_elems_compo(const DoubleTab& posit
   return le_champ().valeur_aux_elems_compo(positions, les_polys, tab_valeurs, ncomp);
 }
 
-inline DoubleTab& Champ_Fonc_MED::valeur_aux_sommets(const Domaine& un_dom, DoubleTab& sommets) const
+inline DoubleTab& Champ_Fonc_MED::valeur_aux_sommets(const Zone& un_dom, DoubleTab& sommets) const
 {
   return le_champ().valeur_aux_sommets(un_dom, sommets);
 }
 
-inline DoubleVect& Champ_Fonc_MED::valeur_aux_sommets_compo(const Domaine& un_dom, DoubleVect& sommets, int compo) const
+inline DoubleVect& Champ_Fonc_MED::valeur_aux_sommets_compo(const Zone& un_dom, DoubleVect& sommets, int compo) const
 {
   return le_champ().valeur_aux_sommets_compo(un_dom, sommets, compo);
 }

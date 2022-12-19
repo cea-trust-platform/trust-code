@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Tetra_VEF.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Zone_VEF.h>
 #include <Champ_P1NC.h>
 

@@ -20,7 +20,7 @@
 #include <Champ_Q1NC_implementation.h>
 #include <Zone_VEF.h>
 
-class Domaine;
+class Zone;
 
 class Champ_Q1NC: public Champ_Inc_base, public Champ_Q1NC_implementation
 {
@@ -61,12 +61,12 @@ public:
     return Champ_Q1NC_implementation::valeur_aux_elems_compo(positions, les_polys, tab_valeurs, ncomp);
   }
 
-  inline DoubleTab& valeur_aux_sommets(const Domaine& dom, DoubleTab& val) const override
+  inline DoubleTab& valeur_aux_sommets(const Zone& dom, DoubleTab& val) const override
   {
     return Champ_Q1NC_implementation::valeur_aux_sommets(dom, val);
   }
 
-  inline DoubleVect& valeur_aux_sommets_compo(const Domaine& dom, DoubleVect& val, int comp) const override
+  inline DoubleVect& valeur_aux_sommets_compo(const Zone& dom, DoubleVect& val, int comp) const override
   {
     return Champ_Q1NC_implementation::valeur_aux_sommets_compo(dom, val, comp);
   }

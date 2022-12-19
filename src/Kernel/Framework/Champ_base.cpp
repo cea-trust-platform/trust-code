@@ -275,7 +275,7 @@ DoubleVect& Champ_base::valeur_aux_elems_compo_smooth(const DoubleTab&,
  *
  * @param (double) temps de mise a jour
  */
-DoubleVect& Champ_base::valeur_a_sommet(int sommet, const Domaine& dom, DoubleVect& val) const
+DoubleVect& Champ_base::valeur_a_sommet(int sommet, const Zone& dom, DoubleVect& val) const
 {
   DoubleVect position(dimension);
   for(int i=0; i<dimension; i++)
@@ -296,10 +296,10 @@ double Champ_base::valeur_a_sommet_compo(int sommet, int le_poly, int compo) con
   return -1;
 }
 
-/*! @brief renvoie les valeurs aux sommets du Domaine dom
+/*! @brief renvoie les valeurs aux sommets du Zone dom
  *
  */
-DoubleTab& Champ_base::valeur_aux_sommets(const Domaine& dom, DoubleTab& val) const
+DoubleTab& Champ_base::valeur_aux_sommets(const Zone& dom, DoubleTab& val) const
 {
   const DoubleTab& positions=dom.coord_sommets();
   const Zone& zone=dom.zone(0);
@@ -311,7 +311,7 @@ DoubleTab& Champ_base::valeur_aux_sommets(const Domaine& dom, DoubleTab& val) co
 /*! @brief renvoie la compo eme valeur aux sommets de dom.
  *
  */
-DoubleVect& Champ_base::valeur_aux_sommets_compo(const Domaine& dom,
+DoubleVect& Champ_base::valeur_aux_sommets_compo(const Zone& dom,
                                                  DoubleVect& val, int compo) const
 {
   const DoubleTab& positions=dom.coord_sommets();
@@ -415,7 +415,7 @@ void Champ_base::corriger_unite_nom_compo()
 }
 
 
-int Champ_base::calculer_valeurs_elem_post(DoubleTab& les_valeurs,int nb_elem,Nom& nom_post,const Domaine& dom) const
+int Champ_base::calculer_valeurs_elem_post(DoubleTab& les_valeurs,int nb_elem,Nom& nom_post,const Zone& dom) const
 {
   const Zone& zone=dom.zone(0);
   //nom_post=le_nom();
@@ -477,7 +477,7 @@ int Champ_base::calculer_valeurs_elem_post(DoubleTab& les_valeurs,int nb_elem,No
   return nb_elem_PE;
 
 }
-int Champ_base::calculer_valeurs_elem_compo_post(DoubleTab& les_valeurs,int ncomp,int nb_elem,Nom& nom_post,const Domaine& dom) const
+int Champ_base::calculer_valeurs_elem_compo_post(DoubleTab& les_valeurs,int ncomp,int nb_elem,Nom& nom_post,const Zone& dom) const
 {
   const Zone& zone=dom.zone(0);
   //nom_post=nom_compo(ncomp);
@@ -530,7 +530,7 @@ int Champ_base::calculer_valeurs_elem_compo_post(DoubleTab& les_valeurs,int ncom
 }
 
 // Ajoute la contribution des autres processeurs a valeurs et compteur
-inline void add_sommets_communs(const Domaine& dom, DoubleTab& les_valeurs, IntTab& compteur)
+inline void add_sommets_communs(const Zone& dom, DoubleTab& les_valeurs, IntTab& compteur)
 {
 
   //  if (Process::nproc()>9) return;
@@ -626,7 +626,7 @@ inline void add_sommets_communs(const Domaine& dom, DoubleTab& les_valeurs, IntT
     }
 }
 
-int Champ_base::calculer_valeurs_som_post(DoubleTab& les_valeurs,int nb_som,Nom& nom_post,const Domaine& dom) const
+int Champ_base::calculer_valeurs_som_post(DoubleTab& les_valeurs,int nb_som,Nom& nom_post,const Zone& dom) const
 {
   Nom nom_dom=dom.le_nom();
   Nom nom_dom_inc= dom.le_nom();
@@ -825,7 +825,7 @@ int Champ_base::calculer_valeurs_som_post(DoubleTab& les_valeurs,int nb_som,Nom&
   nom_post+= nom_dom;
   return nb_som_PE;
 }
-int Champ_base::calculer_valeurs_som_compo_post(DoubleTab& les_valeurs,int ncomp,int nb_som,Nom& nom_post,const Domaine& dom,int appliquer_cl) const
+int Champ_base::calculer_valeurs_som_compo_post(DoubleTab& les_valeurs,int ncomp,int nb_som,Nom& nom_post,const Zone& dom,int appliquer_cl) const
 {
   Nom nom_dom=dom.le_nom();
   Nom nom_dom_inc= dom.le_nom();
@@ -937,7 +937,7 @@ int Champ_base::calculer_valeurs_som_compo_post(DoubleTab& les_valeurs,int ncomp
 }
 
 
-int Champ_base::completer_post_champ(const Domaine& dom,const int is_axi,const Nom& loc_post,
+int Champ_base::completer_post_champ(const Zone& dom,const int is_axi,const Nom& loc_post,
                                      const Nom& le_nom_champ_post,Format_Post_base& format) const
 {
 

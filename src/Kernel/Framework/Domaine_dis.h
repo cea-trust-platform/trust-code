@@ -24,10 +24,10 @@
  *
  *      Elle contient l'ensemble des objets de type Zone_dis
  *      qui correspondent a la discretisation des objets
- *      de type Zone contenus dans l'objet Domaine associe au
+ *      de type Zone contenus dans l'objet Zone associe au
  *      domaine discretise.
  *
- * @sa Domaine Zone Zone_dis, Dans TRUST V1 il n'y qu'une zone par domaine
+ * @sa Zone Zone Zone_dis, Dans TRUST V1 il n'y qu'une zone par domaine
  */
 Declare_ref(Sous_zones_dis);
 Declare_ref(Zones_dis);
@@ -54,15 +54,15 @@ public:
   {
     return les_sous_zones_dis.valeur()[i];
   }
-  void associer_domaine(const Domaine&);
+  void associer_domaine(const Zone&);
   void discretiser(const Nom& );
-  inline Domaine& domaine();
-  inline const Domaine& domaine() const;
+  inline Zone& domaine();
+  inline const Zone& domaine() const;
 
 protected:
   REF(Sous_zones_dis) les_sous_zones_dis;
   REF(Zones_dis) les_zones;
-  REF(Domaine) le_domaine;
+  REF(Zone) le_domaine;
 
 private:
   mutable Nom i_am_allocator_of_les_zones;
@@ -100,22 +100,22 @@ inline Zone_dis& Domaine_dis::zone_dis(int i)
   return les_zones.valeur()[i];
 }
 
-/*! @brief Renvoie une reference sur le Domaine associe au domaine discretise.
+/*! @brief Renvoie une reference sur le Zone associe au domaine discretise.
  *
- * @return (Domaine&) le Domaine associe au domaine discretise
+ * @return (Zone&) le Zone associe au domaine discretise
  */
-inline Domaine& Domaine_dis::domaine()
+inline Zone& Domaine_dis::domaine()
 {
   return le_domaine.valeur();
 }
 
-/*! @brief Renvoie une reference sur le Domaine associe au domaine discretise.
+/*! @brief Renvoie une reference sur le Zone associe au domaine discretise.
  *
  *     (version const)
  *
- * @return (Domaine&) le Domaine associe au domaine discretise
+ * @return (Zone&) le Zone associe au domaine discretise
  */
-inline const Domaine& Domaine_dis::domaine() const
+inline const Zone& Domaine_dis::domaine() const
 {
   return le_domaine.valeur();
 }

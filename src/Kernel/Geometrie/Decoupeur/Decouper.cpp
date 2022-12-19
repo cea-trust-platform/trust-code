@@ -13,7 +13,7 @@
 *
 *****************************************************************************/
 #include <Decouper.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <DomaineCutter.h>
 #include <Format_Post_Lata.h>
 #include <EChaine.h>
@@ -39,15 +39,15 @@ Entree& Decouper::readOn(Entree& is)
  *
  * @throws si le domaine n'a pas ete trouve, exit.
  */
-const Domaine& Decouper::find_domain(const Nom& le_nom_domaine)
+const Zone& Decouper::find_domain(const Nom& le_nom_domaine)
 {
-  const Domaine * domaine_ptr = 0;
+  const Zone * domaine_ptr = 0;
 
   if (objet_existant(le_nom_domaine))
     {
       const Objet_U& objet_domaine = objet(le_nom_domaine);
-      if (sub_type(Domaine, objet_domaine))
-        domaine_ptr = & ref_cast(Domaine, objet_domaine);
+      if (sub_type(Zone, objet_domaine))
+        domaine_ptr = & ref_cast(Zone, objet_domaine);
     }
 
   if (domaine_ptr == 0)
@@ -64,7 +64,7 @@ const Domaine& Decouper::find_domain(const Nom& le_nom_domaine)
  *
  */
 static void lire_partitionneur(DERIV(Partitionneur_base) & d_part,
-                               const Domaine& domaine, Entree& is)
+                               const Zone& domaine, Entree& is)
 {
   Nom n;
   is >> n;
@@ -100,7 +100,7 @@ static void ecrire_fichier_decoupage(const Nom& nom_fichier_decoupage,
 }
 
 static void postraiter_decoupage(const Nom& nom_fichier_lata,
-                                 const Domaine& domaine,
+                                 const Zone& domaine,
                                  const IntVect& elem_part)
 {
   Cerr << "Postprocessing of the splitting at the lata (V2) format: " << nom_fichier_lata << finl;
@@ -150,7 +150,7 @@ static void postraiter_decoupage(const Nom& nom_fichier_lata,
 
 static void ecrire_sous_zones(const Nom& nom_zones_decoup,
                               const Decouper::ZonesFileOutputType format,
-                              const Domaine& domaine,
+                              const Zone& domaine,
                               IntVect& elem_part,
                               const int nb_parties,
                               const int epaisseur_joint,
@@ -332,7 +332,7 @@ int Decouper::lire_motcle_non_standard(const Motcle& mot, Entree& is)
   if (mot=="partitionneur|partition_tool")
     {
       Cerr<<"domaine = "<<nom_domaine<<finl;
-      const Domaine& domaine = find_domain(nom_domaine);
+      const Zone& domaine = find_domain(nom_domaine);
       lire_partitionneur(deriv_partitionneur,domaine,is);
     }
   else retval = -1;

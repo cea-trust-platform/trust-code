@@ -81,12 +81,12 @@ public :
     return Champ_implementation_P0::remplir_coord_noeuds_et_polys(positions,polys);
   }
 
-  inline DoubleTab& valeur_aux_sommets(const Domaine& domain, DoubleTab& result) const override
+  inline DoubleTab& valeur_aux_sommets(const Zone& domain, DoubleTab& result) const override
   {
     return Champ_implementation::valeur_aux_sommets(domain,result);
   }
 
-  inline DoubleVect& valeur_aux_sommets_compo(const Domaine& domain, DoubleVect& result, int ncomp) const override
+  inline DoubleVect& valeur_aux_sommets_compo(const Zone& domain, DoubleVect& result, int ncomp) const override
   {
     return Champ_implementation::valeur_aux_sommets_compo(domain,result,ncomp);
   }

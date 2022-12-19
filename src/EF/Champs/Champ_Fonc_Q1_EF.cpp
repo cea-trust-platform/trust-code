@@ -15,7 +15,7 @@
 
 #include <Champ_Fonc_Q1_EF.h>
 #include <Zone_EF.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_instanciable(Champ_Fonc_Q1_EF, "Champ_Fonc_Q1_EF", Champ_Fonc_Q1_base);
 

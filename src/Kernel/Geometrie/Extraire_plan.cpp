@@ -21,7 +21,7 @@
 #include <Zone_VF.h>
 #include <EChaine.h>
 #include <SChaine.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Param.h>
 
 Implemente_instanciable(Extraire_plan,"Extraire_plan",Interprete_geometrique_base);
@@ -158,7 +158,7 @@ Entree& Extraire_plan::interpreter_(Entree& is)
       return is;
     }
 
-  Domaine& dom=domaine();
+  Zone& dom=domaine();
   // on recupere le pb
   if(! sub_type(Probleme_base, objet(nom_pb)))
     {
@@ -186,7 +186,7 @@ Entree& Extraire_plan::interpreter_(Entree& is)
   // IntTab& les_elems=zone.les_elems();
 
   // creation d'une zone pipo pour pouvoir chercher les faces
-  Domaine test;
+  Zone test;
   ArrOfDouble normal(3);
   {
     Zone prov;

@@ -26,7 +26,7 @@
 #include <Zone_PolyMAC.h>
 #include <Symetrie.h>
 #include <EChaine.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Zone_VF.h>
 #include <array>
 #include <cmath>

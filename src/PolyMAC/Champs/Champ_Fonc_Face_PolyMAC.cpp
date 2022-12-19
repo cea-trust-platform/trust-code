@@ -17,7 +17,7 @@
 #include <Champ_Uniforme.h>
 #include <Zone_PolyMAC.h>
 #include <TRUSTTab.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Zone_VF.h>
 
 Implemente_instanciable(Champ_Fonc_Face_PolyMAC,"Champ_Fonc_Face_PolyMAC",Champ_Fonc_base);
@@ -192,12 +192,12 @@ int Champ_Fonc_Face_PolyMAC::remplir_coord_noeuds_et_polys(DoubleTab& positions,
   throw;
 }
 
-DoubleTab& Champ_Fonc_Face_PolyMAC::valeur_aux_sommets(const Domaine& domain, DoubleTab& result) const
+DoubleTab& Champ_Fonc_Face_PolyMAC::valeur_aux_sommets(const Zone& domain, DoubleTab& result) const
 {
   throw;
 }
 
-DoubleVect& Champ_Fonc_Face_PolyMAC::valeur_aux_sommets_compo(const Domaine& domain, DoubleVect& result, int ncomp) const
+DoubleVect& Champ_Fonc_Face_PolyMAC::valeur_aux_sommets_compo(const Zone& domain, DoubleVect& result, int ncomp) const
 {
   throw;
 }

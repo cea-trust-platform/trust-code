@@ -16,7 +16,7 @@
 #include <Interpolation_IBM_mean_gradient.h>
 #include <TRUSTTrav.h>
 
-#include <Domaine.h>
+#include <Zone.h>
 #include <Param.h>
 
 Implemente_instanciable( Interpolation_IBM_mean_gradient, "Interpolation_IBM_gradient_moyen|IBM_gradient_moyen", Interpolation_IBM_base ) ;

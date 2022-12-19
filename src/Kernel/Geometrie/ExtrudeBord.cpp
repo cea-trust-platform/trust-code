@@ -69,7 +69,7 @@ Entree& ExtrudeBord::interpreter_(Entree& is)
 
   associer_domaine(nom_dom_volumique);
 
-  const Domaine& dom=domaine();
+  const Zone& dom=domaine();
   const Zone& zone=dom.zone(0);
 
   if (zone.nb_som_elem()==8 && (hexa_old == 1))
@@ -82,19 +82,19 @@ Entree& ExtrudeBord::interpreter_(Entree& is)
     }
 
 
-  Domaine& dom_surfacique=ref_cast(Domaine, objet(nom_dom_surfacique));
+  Zone& dom_surfacique=ref_cast(Zone, objet(nom_dom_surfacique));
   Scatter::init_sequential_domain(dom_surfacique);
   return is;
 }
 
 void ExtrudeBord::extruder_bord(Nom& nom_front, Nom& nom_dom_surfacique, DoubleVect& vect_dir, int nbpas)
 {
-  const Domaine& dom=domaine();
+  const Zone& dom=domaine();
 
   const Zone& zone=dom.zone(0);
   const Bord& front=zone.bord(nom_front);
 
-  Domaine& dom_surfacique=ref_cast(Domaine, objet(nom_dom_surfacique));
+  Zone& dom_surfacique=ref_cast(Zone, objet(nom_dom_surfacique));
 
   // Extract from the volume domain dom the boundary front and fill the dom_surfacique domain:
   TroisDto2D tD2dD;
@@ -225,13 +225,13 @@ void ExtrudeBord::extruder_bord(Nom& nom_front, Nom& nom_dom_surfacique, DoubleV
 void ExtrudeBord::extruder_hexa_old(Nom& nom_front, Nom& nom_dom_surfacique, DoubleVect& vect_dir, int nbpas)
 {
 
-  const Domaine& dom=domaine();
+  const Zone& dom=domaine();
 
   const Zone& zone=dom.zone(0);
   int nbfr=zone.nb_front_Cl();
 
 
-  Domaine& dom_surfacique=ref_cast(Domaine, objet(nom_dom_surfacique));
+  Zone& dom_surfacique=ref_cast(Zone, objet(nom_dom_surfacique));
 
   Zone& zone2=dom_surfacique.add(*(new Zone()));
   zone2.associer_domaine(dom_surfacique);

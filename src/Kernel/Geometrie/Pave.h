@@ -48,7 +48,7 @@ class Pave : public Zone
 {
   Declare_instanciable(Pave);
 public :
-  void associer_domaine(const Domaine& ) override;
+  void associer_domaine(const Zone& ) override;
 
 protected:
   DoubleVect Origine, Longueurs, Facteurs, Pas;

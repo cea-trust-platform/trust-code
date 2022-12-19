@@ -17,7 +17,7 @@
 #include <Equation_base.h>
 #include <Milieu_base.h>
 #include <Tetra_poly.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_instanciable_sans_constructeur(Tetra_poly,"Tetra_poly",Elem_poly_base);
 

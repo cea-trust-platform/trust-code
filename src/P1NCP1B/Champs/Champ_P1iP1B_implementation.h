@@ -42,9 +42,9 @@ public:
 
   DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const override;
 
-  DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const override;
+  DoubleTab& valeur_aux_sommets(const Zone&, DoubleTab&) const override;
 
-  DoubleVect& valeur_aux_sommets_compo(const Domaine&, DoubleVect&, int) const override;
+  DoubleVect& valeur_aux_sommets_compo(const Zone&, DoubleVect&, int) const override;
 
   DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const override;
 

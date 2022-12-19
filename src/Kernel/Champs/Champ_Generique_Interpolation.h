@@ -56,8 +56,8 @@ public:
   //virtual void  get_xyz_values(const DoubleTab & coords, DoubleTab & values, ArrOfBit & validity_flag) const;
 
   Entity  get_localisation(const int index = -1) const override;
-  const Domaine&      get_ref_domain() const override;
-  void get_copy_domain(Domaine&) const override;
+  const Zone&      get_ref_domain() const override;
+  void get_copy_domain(Zone&) const override;
 
   const DoubleTab&  get_ref_coordinates() const override;
   void              get_copy_coordinates(DoubleTab&) const override;
@@ -81,7 +81,7 @@ private:
   Motcle               localisation_;                 // localisation d interpolation elem, som
   Motcle               methode_;                      // calculer_champ_post, etc...
   Nom                nom_domaine_lu_;        // Nom du domaine lu
-  REF(Domaine)         domaine_;                      // domaine sur lequel on veut interpoler le champ (domaine natif si reference nulle)
+  REF(Zone)         domaine_;                      // domaine sur lequel on veut interpoler le champ (domaine natif si reference nulle)
   Domaine_dis le_dom_dis;                     // rempli si domaine d interpolation different du domaine natif
   // ex : Sonde utilise valeur_aux...() qui necessite de disposer d une zone discretisee
   int optimisation_sous_maillage_,optimisation_demande_;

@@ -23,7 +23,7 @@
 #include <Interprete_geometrique_base.h>
 
 class Nom;
-class Domaine;
+class Zone;
 
 /*! @brief Classe Postraiter_domaine Lecture d'un fichier
  *

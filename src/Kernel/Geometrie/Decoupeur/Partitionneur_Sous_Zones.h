@@ -17,7 +17,7 @@
 
 #include <Partitionneur_base.h>
 #include <Ref_Domaine.h>
-class Domaine;
+class Zone;
 
 /*! @brief Partitionneur de domaine a partir de sous-zones du domaine Voir construire_partition()
  *
@@ -27,13 +27,13 @@ class Partitionneur_Sous_Zones : public Partitionneur_base
   Declare_instanciable(Partitionneur_Sous_Zones);
 public:
   void set_param(Param& param) override;
-  void associer_domaine(const Domaine& domaine) override;
+  void associer_domaine(const Zone& domaine) override;
   void initialiser(const Noms& noms_sous_zones);
   void construire_partition(IntVect& elem_part, int& nb_parts_tot) const override;
 
 private:
   // Parametres du partitionneur
-  REF(Domaine) ref_domaine_;
+  REF(Zone) ref_domaine_;
   // Noms des sous-zones a utiliser
   Noms noms_sous_zones_;
   // Noms de domaine a utiliser

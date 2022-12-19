@@ -74,8 +74,8 @@ public:
   void              get_copy_values(DoubleTab&) const override;
   void              get_xyz_values(const DoubleTab& coords, DoubleTab& values, ArrOfBit& validity_flag) const override;
 
-  const Domaine&    get_ref_domain() const override;
-  void              get_copy_domain(Domaine&) const override;
+  const Zone&    get_ref_domain() const override;
+  void              get_copy_domain(Zone&) const override;
 
   const Zone_dis_base&  get_ref_zone_dis_base() const override;
   const Zone_Cl_dis_base&  get_ref_zcl_dis_base() const override;

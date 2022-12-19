@@ -346,7 +346,7 @@ calculer_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
 {
   const Zone_VEF& zone_VEF = la_zone_vef.valeur();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Domaine& domaine = zone_VEF.zone().domaine();
+  const Zone& domaine = zone_VEF.zone().domaine();
 
   const DoubleTab& vecteur_face_facette = ref_cast_non_const(Zone_VEF,zone_VEF).vecteur_face_facette();
   const DoubleTab& vecteur_face_facette_Cl = zone_Cl_VEF.vecteur_face_facette_Cl();

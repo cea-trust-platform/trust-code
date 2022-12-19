@@ -17,7 +17,7 @@
 #include <Interprete.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Zone_VF.h>
 #ifdef MEDCOUPLING_
 #include <MEDCouplingMemArray.hxx>

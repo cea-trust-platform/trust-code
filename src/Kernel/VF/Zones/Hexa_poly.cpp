@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Hexa_poly.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_instanciable_sans_constructeur(Hexa_poly,"Hexa_poly",Elem_poly_base);
 

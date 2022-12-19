@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Elem_geom_base.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_base(Elem_geom_base,"Elem_geom_base",Objet_U);
 
@@ -101,7 +101,7 @@ void Elem_geom_base::creer_faces_elem(Faces& les_faces ,
 void Elem_geom_base::calculer_centres_gravite(DoubleTab& xp) const
 {
   const IntTab& les_Polys = ma_zone->les_elems();
-  const Domaine& le_domaine = ma_zone->domaine();
+  const Zone& le_domaine = ma_zone->domaine();
   int nb_elem;
   if(xp.dimension(0)==0)
     {

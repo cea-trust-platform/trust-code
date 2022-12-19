@@ -17,7 +17,7 @@
 #include <Array_tools.h>
 #include <Refine_Mesh.h>
 #include <Sous_Zone.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Scatter.h>
 #include <SChaine.h>
 #include <EChaine.h>
@@ -94,7 +94,7 @@ void Refine_Mesh::check_cell_type(void) const
 
 void Refine_Mesh::apply_2D(void)
 {
-  Domaine& domain = domaine();
+  Zone& domain = domaine();
   Scatter::uninit_sequential_domain(domain);
 
   assert(domain.zone(0).type_elem().valeur().que_suis_je() == Motcle("Triangle"));
@@ -135,7 +135,7 @@ void Refine_Mesh::apply_2D(void)
 
 void Refine_Mesh::apply_3D(void)
 {
-  Domaine& domain = domaine();
+  Zone& domain = domaine();
   Scatter::uninit_sequential_domain(domain);
 
   assert(domain.zone(0).type_elem().valeur().que_suis_je() == Motcle("Tetraedre"));

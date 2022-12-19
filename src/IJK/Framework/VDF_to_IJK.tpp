@@ -23,7 +23,7 @@
 #include <IJK_Field.h>
 #include <TRUSTTabs.h>
 #include <Array_tools.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 template <typename _TYPE_, typename _TYPE_ARRAY_>
 void VDF_to_IJK::convert_to_ijk(const DoubleVect& x, IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& ijk_x) const

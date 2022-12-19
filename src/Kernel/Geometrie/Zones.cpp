@@ -13,7 +13,7 @@
 *
 *****************************************************************************/
 
-#include <Domaine.h>
+#include <Zone.h>
 #include <Zones.h>
 
 Implemente_instanciable(Zones, "Zones",List_Zone);
@@ -24,9 +24,9 @@ Entree& Zones::readOn(Entree& s) { return List_Zone::readOn(s); }
 
 /*! @brief Associe toutes les zones de la liste au domaine specifie.
  *
- * @param (Domaine& un_domaine) le domaine dont font partie les zones de la liste
+ * @param (Zone& un_domaine) le domaine dont font partie les zones de la liste
  */
-void Zones::associer_domaine(const Domaine& un_domaine)
+void Zones::associer_domaine(const Zone& un_domaine)
 {
   List_Zone_Curseur curseur(*this);;;
   while(curseur)

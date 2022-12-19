@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Tetraedre.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Linear_algebra_tools_impl.h>
 #include <algorithm>
 using std::swap;
@@ -208,7 +208,7 @@ int Tetraedre::contient(const ArrOfInt& som, int element ) const
 void Tetraedre::calculer_volumes(DoubleVect& volumes) const
 {
   const Zone& zone=ma_zone.valeur();
-  const Domaine& dom=zone.domaine();
+  const Zone& dom=zone.domaine();
 
   double x0,y0,z0;
   double x1,y1,z1;

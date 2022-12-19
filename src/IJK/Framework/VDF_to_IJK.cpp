@@ -22,7 +22,7 @@
 #include <IJK_Field.h>
 #include <TRUSTTabs.h>
 #include <Array_tools.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 // search non empty lists in src and fills non_empty and dest with non empty lists
 static void pack_lists(const VECT(ArrOfInt) & src, ArrOfInt& non_empty, Static_Int_Lists& dest)

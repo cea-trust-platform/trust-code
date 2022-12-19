@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Segment_poly.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Equation_base.h>
 #include <Milieu_base.h>
 #include <Zone_Poly_base.h>

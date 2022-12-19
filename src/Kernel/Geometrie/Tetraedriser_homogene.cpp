@@ -24,7 +24,7 @@ Entree& Tetraedriser_homogene::readOn(Entree& is) { return Interprete::readOn(is
 // Traitement des faces
 static void decoupe(Zone& zone, Faces& faces, IntTab& new_soms_old_elems)
 {
-  const Domaine& dom = zone.domaine();
+  const Zone& dom = zone.domaine();
   const DoubleTab& coord = dom.coord_sommets();
   IntTab& sommets = faces.les_sommets();
   int nb_faces = sommets.dimension(0);
@@ -119,7 +119,7 @@ static void decoupe(Zone& zone, Faces& faces, IntTab& new_soms_old_elems)
 //
 // ATTENTION: ne considere qu'une seule zone pour l'instant...
 //
-int creer_sommet(Domaine& dom, Zone& zone, DoubleTab& new_soms, IntTab& elem_traite, IntTab& new_soms_old_elems,
+int creer_sommet(Zone& dom, Zone& zone, DoubleTab& new_soms, IntTab& elem_traite, IntTab& new_soms_old_elems,
 //                int i1, int i2,
                  int NbSom, IntTab& sommets, int& compteur, int oldnbsom, int& nbnewsoms)
 {
@@ -222,7 +222,7 @@ void Tetraedriser_homogene::trianguler(Zone& zone) const
       // pour chaque cube, liste des nouveaux sommets qu'il contient :
       IntTab new_soms_old_elems(oldsz, 19);
       IntTab sommets(8);
-      Domaine& dom = zone.domaine();
+      Zone& dom = zone.domaine();
       int compteur = 0;
       int nbnewsoms = 0;
       int i;

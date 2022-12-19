@@ -19,7 +19,7 @@
 #include <Interprete_geometrique_base.h>
 
 class Nom;
-class Domaine;
+class Zone;
 
 /*! @brief Classe Create_domain_from_sous_zone Lecture d'un fichier
  *

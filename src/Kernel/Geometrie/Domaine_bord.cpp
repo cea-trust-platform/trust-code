@@ -15,7 +15,7 @@
 #include <Domaine_bord.h>
 #include <Hexaedre.h>
 
-Implemente_instanciable(Domaine_bord,"Domaine_bord",Domaine);
+Implemente_instanciable(Domaine_bord,"Domaine_bord",Zone);
 
 /*! @brief pour l'instant exit()
  *
@@ -38,7 +38,7 @@ Sortie& Domaine_bord::printOn(Sortie& os) const
 /*! @brief construit le domaine en appelant extraire_domaine_bord()
  *
  */
-void Domaine_bord::construire_domaine_bord(const Domaine& source, const Nom& nom_bord)
+void Domaine_bord::construire_domaine_bord(const Zone& source, const Nom& nom_bord)
 {
   domaine_source_ = source;
   bord_source_ = nom_bord;
@@ -48,7 +48,7 @@ void Domaine_bord::construire_domaine_bord(const Domaine& source, const Nom& nom
 /*! @brief renvoie une reference au domaine source
  *
  */
-const Domaine& Domaine_bord::get_domaine_source() const
+const Zone& Domaine_bord::get_domaine_source() const
 {
   return domaine_source_;
 }
@@ -112,9 +112,9 @@ void type_face_to_type_elem(const Elem_geom_base& type_elem, const Type_Face& ty
  *   suit: renum_som[i] est l'indice dans le domaine "src" du sommet i du domaine "dest".
  *
  */
-void Domaine_bord::extraire_domaine_bord(const Domaine& src,
+void Domaine_bord::extraire_domaine_bord(const Zone& src,
                                          const Nom& nom_bord,
-                                         Domaine& dest,
+                                         Zone& dest,
                                          ArrOfInt& renum_som)
 {
   if (Process::nproc() > 1)

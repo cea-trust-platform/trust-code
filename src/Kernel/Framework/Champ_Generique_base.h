@@ -16,7 +16,7 @@
 #ifndef Champ_Generique_base_included
 #define Champ_Generique_base_included
 
-#include <Domaine.h>
+#include <Zone.h>
 #include <Champ.h>
 #include <Ref_Probleme_base.h>
 
@@ -62,8 +62,8 @@ public:
   virtual void              get_copy_values(DoubleTab&) const;
   virtual void              get_xyz_values(const DoubleTab& coords, DoubleTab& values, ArrOfBit& validity_flag) const;
 
-  virtual const Domaine&    get_ref_domain() const; //rend une reference au domaine associe au champ
-  virtual void              get_copy_domain(Domaine&) const;
+  virtual const Zone&    get_ref_domain() const; //rend une reference au domaine associe au champ
+  virtual void              get_copy_domain(Zone&) const;
   virtual const Zone_dis_base&  get_ref_zone_dis_base() const; //rend la zone discretisee liee au domaine
   virtual const Zone_Cl_dis_base&  get_ref_zcl_dis_base() const; //rend la zcl discretisee liee a l equation portant le champ cible
 

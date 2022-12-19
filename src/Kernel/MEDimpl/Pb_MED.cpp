@@ -126,7 +126,7 @@ Entree& Pb_MED::readOn(Entree& is )
   // on retire _0000 si il existe et on cree le bon fichier
   traite_nom_fichier_med(nom_fic);
 
-  Domaine& dom=ref_cast(Domaine, Interprete::objet(nom_dom));
+  Zone& dom=ref_cast(Zone, Interprete::objet(nom_dom));
   associer_domaine(dom);
 
   // Read domain in MED file:
@@ -262,7 +262,7 @@ void Pb_MED::creer_champ(const Motcle& motlu)
         }
     }
   Champ_Fonc_MED& chmed=ref_cast(Champ_Fonc_MED,le_ch_fonc.valeur());
-  const Domaine& dom_med = domaine();
+  const Zone& dom_med = domaine();
   chmed.creer(nom_fic,dom_med,localisation, temps_sauv_);
 
   if (flag)

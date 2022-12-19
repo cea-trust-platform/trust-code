@@ -14,7 +14,7 @@
 *****************************************************************************/
 #include <Partitionneur_Union.h>
 #include <EFichier.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Param.h>
 #include <EChaine.h>
 #include <Sous_Zone.h>
@@ -59,7 +59,7 @@ Sortie& Partitionneur_Union::printOn(Sortie& os) const
   return os;
 }
 
-void Partitionneur_Union::associer_domaine(const Domaine& domaine)
+void Partitionneur_Union::associer_domaine(const Zone& domaine)
 {
   ref_domaine_ = domaine;
 }

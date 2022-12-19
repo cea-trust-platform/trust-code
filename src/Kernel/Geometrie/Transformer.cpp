@@ -48,7 +48,7 @@ Entree& Transformer::interpreter_(Entree& is)
   return is;
 }
 
-void Transformer::transformer(Domaine& dom, Noms& les_fcts)
+void Transformer::transformer(Zone& dom, Noms& les_fcts)
 {
   VECT(Parser_U) fxyz(dimension);
 

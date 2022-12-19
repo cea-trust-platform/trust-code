@@ -18,7 +18,7 @@
 #include <Schema_Temps_base.h>
 #include <Discretisation_base.h>
 #include <Probleme_base.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <EcritureLectureSpecial.h>
 #include <Operateur_Diff_base.h>
 #include <Operateur_Conv_base.h>
@@ -114,7 +114,7 @@ int Mod_turb_hyd_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
           Nom accolade_ouverte="{";
           Nom accolade_fermee="}";
           nom_fichier_=Objet_U::nom_du_cas()+"_"+equation().probleme().le_nom()+"_ustar_mean_only";
-          Domaine& dom=equation().probleme().domaine();
+          Zone& dom=equation().probleme().domaine();
           Zone& zone=dom.zone(0);
           LIST(Nom) nlistbord_dom;                      //!< liste stockant tous les noms de frontiere du domaine
           int nbfr=zone.nb_front_Cl();

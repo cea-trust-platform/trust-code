@@ -19,7 +19,7 @@
 
 #include <Fluide_Incompressible.h>
 #include <Probleme_base.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Sous_zone_VF.h>
 #include <Zone_VEF.h>
 #include <Matrice_Morse.h>

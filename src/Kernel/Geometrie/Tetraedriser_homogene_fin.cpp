@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Tetraedriser_homogene_fin.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_instanciable(Tetraedriser_homogene_fin, "Tetraedriser_homogene_fin", Triangulation_base);
 
@@ -177,7 +177,7 @@ void Tetraedriser_homogene_fin::decoupe(Zone& zone, Faces& faces, IntTab& new_so
   sommets.ref(nouveaux);
 }
 
-int Tetraedriser_homogene_fin::creer_sommet(Domaine& dom, Zone& zone, DoubleTab& new_soms, IntTab& elem_traite, IntTab& new_soms_old_elems, int NbSom, IntTab& sommets, int& compteur, int oldnbsom,
+int Tetraedriser_homogene_fin::creer_sommet(Zone& dom, Zone& zone, DoubleTab& new_soms, IntTab& elem_traite, IntTab& new_soms_old_elems, int NbSom, IntTab& sommets, int& compteur, int oldnbsom,
                                             int& nbnewsoms, IntTab& fait_sommet, int& nface, IntTab& fait_sommet_arete, int& narete) const
 {
 
@@ -338,7 +338,7 @@ void Tetraedriser_homogene_fin::trianguler(Zone& zone) const
       // pour chaque cube, liste des nouveaux sommets qu'il contient :
       IntTab new_soms_old_elems(oldsz, 19);
       IntTab sommets(8);
-      Domaine& dom = zone.domaine();
+      Zone& dom = zone.domaine();
       int compteur = 0;
       int nbnewsoms = 0;
       int nface = 0;

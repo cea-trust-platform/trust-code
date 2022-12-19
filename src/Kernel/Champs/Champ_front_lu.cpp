@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Champ_front_lu.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <LecFicDiffuse.h>
 #include <Interprete.h>
 #include <Zone_VF.h>
@@ -56,7 +56,7 @@ Entree& Champ_front_lu::readOn(Entree& is)
   Nom nom;
   is >> nom;
 
-  mon_domaine = ref_cast(Domaine, Interprete::objet(nom));
+  mon_domaine = ref_cast(Zone, Interprete::objet(nom));
 
 
 
@@ -99,7 +99,7 @@ int Champ_front_lu::initialiser(double temps, const Champ_Inc_base& inco)
     return 0;
 
   int dim=nb_comp();
-  Domaine& domaine=mon_domaine.valeur();
+  Zone& domaine=mon_domaine.valeur();
   const Frontiere_dis_base& fr_dis=frontiere_dis();
   const Frontiere& frontiere=fr_dis.frontiere();
   const int nb_faces=frontiere.nb_faces();

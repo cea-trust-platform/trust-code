@@ -20,7 +20,7 @@
 #include <Equation.h>
 #include <EChaine.h>
 #include <Zone_VF.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Param.h>
 
 REF(Debog_Pb) Debog_Pb::instance_debog_;
@@ -180,7 +180,7 @@ void Debog_Pb::write_geometry_data()
       Cerr << "Error in Debog.cpp: cannot write geometry data in parallel." << finl;
       Process::exit();
     }
-  const Domaine& dom = ref_pb_.valeur().domaine();
+  const Zone& dom = ref_pb_.valeur().domaine();
   const Zone_dis_base& zd = ref_pb_.valeur().domaine_dis().zone_dis(0).valeur();
   const Zone_VF& zvf = ref_cast(Zone_VF, zd);
   {
@@ -268,13 +268,13 @@ void Debog_Pb::add_renum_item(const DoubleTab& coord_ref, const DoubleTab& coord
 
 void Debog_Pb::read_geometry_data()
 {
-  const Domaine& dom = ref_pb_.valeur().domaine();
+  const Zone& dom = ref_pb_.valeur().domaine();
   const Zone_dis_base& zd = ref_pb_.valeur().domaine_dis().zone_dis(0).valeur();
   const Zone_VF& zvf = ref_cast(Zone_VF, zd);
   {
     DoubleTab coord_som_seq; // sommets
     DoubleTab xp_seq; // centres des elements
-    // Il faut passer dans un groupe monoprocesseur pour Domaine::readOn:
+    // Il faut passer dans un groupe monoprocesseur pour Zone::readOn:
     {
       DERIV(Comm_Group) group;
       ArrOfInt liste_procs(1); // Liste de 1 processeur contenant le proc 0
@@ -282,7 +282,7 @@ void Debog_Pb::read_geometry_data()
       if (PE_Groups::enter_group(group.valeur()))
         {
           EFichier f(fichier_domaine_);
-          Domaine dom_seq;
+          Zone dom_seq;
           f >> dom_seq;
           coord_som_seq = dom_seq.coord_sommets();
           const Elem_geom_base& elem = dom_seq.zone(0).type_elem().valeur();

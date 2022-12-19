@@ -16,7 +16,7 @@
 #include <NettoieNoeuds.h>
 #include <TRUST_Deriv.h>
 #include <Mailler.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Scatter.h>
 #include <Zone.h>
 
@@ -68,7 +68,7 @@ Entree& Mailler::interpreter_(Entree& is)
     }
   double precision_geom_sa=precision_geom;
   associer_domaine(is);
-  Domaine& dom=domaine();
+  Zone& dom=domaine();
 
   // On debloque les structures pour modifier le domaine
   Scatter::uninit_sequential_domain(dom);
@@ -101,9 +101,9 @@ Entree& Mailler::interpreter_(Entree& is)
             }
           verifie_syntaxe(motlu);
         }
-      else if (motlu=="Domaine")
+      else if (motlu=="Zone")
         {
-          Cerr<<"The syntax of \"Mailler\" has changed. The keyword \"Domaine\" has been replaced by \"Domain\"" <<finl;
+          Cerr<<"The syntax of \"Mailler\" has changed. The keyword \"Zone\" has been replaced by \"Domain\"" <<finl;
           exit();
         }
       else if(motlu=="Domain")
@@ -111,7 +111,7 @@ Entree& Mailler::interpreter_(Entree& is)
           Nom nom_dom;
           is >> nom_dom;
           Cerr << "Adding a domain " << nom_dom << finl;
-          Domaine& added_dom=ref_cast(Domaine, objet(nom_dom));
+          Zone& added_dom=ref_cast(Zone, objet(nom_dom));
           IntVect nums;
           Zone& zone=dom.add(added_dom.zone(0));
           zone.associer_domaine(dom);

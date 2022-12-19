@@ -105,7 +105,7 @@ void Tetraedriser_homogene_compact::decoupe(Zone& zone, Faces& faces, IntTab& ne
 //
 // ATTENTION: ne considere qu'une seule zone pour l'instant...
 //
-int Tetraedriser_homogene_compact::creer_sommet(Domaine& dom, Zone& zone, DoubleTab& new_soms, IntTab& elem_traite, IntTab& new_soms_old_elems, int NbSom, IntTab& sommets, int& compteur, int oldnbsom,
+int Tetraedriser_homogene_compact::creer_sommet(Zone& dom, Zone& zone, DoubleTab& new_soms, IntTab& elem_traite, IntTab& new_soms_old_elems, int NbSom, IntTab& sommets, int& compteur, int oldnbsom,
                                                 int& nbnewsoms, IntTab& fait_sommet, int& nface) const
 {
 
@@ -182,7 +182,7 @@ void Tetraedriser_homogene_compact::trianguler(Zone& zone) const
       // pour chaque cube, liste des nouveaux sommets qu'il contient :
       IntTab new_soms_old_elems(oldsz, 7);
       IntTab sommets(8);
-      Domaine& dom = zone.domaine();
+      Zone& dom = zone.domaine();
       int compteur = 0;
       int nbnewsoms = 0;
       int nface = 0;

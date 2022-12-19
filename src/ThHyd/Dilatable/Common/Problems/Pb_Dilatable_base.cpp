@@ -24,7 +24,7 @@
 #include <Equation_base.h>
 #include <stat_counters.h>
 
-#include <Domaine.h>
+#include <Zone.h>
 #include <Debog.h>
 
 Implemente_base(Pb_Dilatable_base,"Pb_Dilatable_base",Pb_Fluide_base);

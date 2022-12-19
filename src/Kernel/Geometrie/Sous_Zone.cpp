@@ -19,7 +19,7 @@
 #include <Sous_Zone.h>
 #include <Polynome.h>
 #include <Parser_U.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_instanciable(Sous_Zone,"Sous_Zone",Objet_U);
 
@@ -94,7 +94,7 @@ Entree& Sous_Zone::readOn(Entree& is)
     }
 
   const Zone& lazone=la_zone_.valeur();
-  const Domaine& dom=lazone.domaine();
+  const Zone& dom=lazone.domaine();
   ArrOfInt les_polys_possibles_;
 
   // GF de prendre nb_elem_tot au lieu de nb_elem permet de ne plus avoir besoin de decouper les sous zones..
@@ -1032,11 +1032,11 @@ void Sous_Zone::associer_zone(const Zone& une_zone)
  */
 int Sous_Zone::associer_(Objet_U& ob)
 {
-  if( sub_type(Domaine, ob))
+  if( sub_type(Zone, ob))
     {
       // MONOZONE pour le moment
       if(la_zone_.non_nul()) return 1;
-      associer_zone(ref_cast(Domaine, ob).zone(0));
+      associer_zone(ref_cast(Zone, ob).zone(0));
       ob.associer_(*this);
       return 1;
     }

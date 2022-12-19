@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Champ_front_MED.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Frontiere_dis_base.h>
 #include <Param.h>
 
@@ -45,7 +45,7 @@ void Champ_front_MED::remplir_tab(DoubleTab& tab,double temps) const
   const Frontiere_dis_base& fr_dis=frontiere_dis();
   const Frontiere& frontiere=fr_dis.frontiere();
   const Zone& zone=frontiere.zone();
-  const Domaine& domaine=zone.domaine();
+  const Zone& domaine=zone.domaine();
   const Faces& faces=frontiere.faces();
   int nb_faces=frontiere.nb_faces();
   double x,y,z;

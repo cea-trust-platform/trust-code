@@ -16,7 +16,7 @@
 
 #include <ScatterMED.h>
 #include <LireMED.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <SFichier.h>
 
 Implemente_instanciable(ScatterMED,"ScatterMED",Scatter);
@@ -42,7 +42,7 @@ Entree& ScatterMED::readOn(Entree& is)
  *
  *   (selon fichier_zone_format_binaire_)
  *   Le format historique n'est plus supporte.
- *   Format attendu : Domaine::ReadOn
+ *   Format attendu : Zone::ReadOn
  *   La zone est renommee comme le domaine (pour lance_test_seq_par)
  *
  */
@@ -55,7 +55,7 @@ void ScatterMED::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
   Nom n(me()+1);
   fichiermed+=n;
   fichiermed+=".med";
-  Domaine& dom = domaine();
+  Zone& dom = domaine();
   LireMED lire_med;
   Nom nom_lu(dom.le_nom());
   nom_lu+="_";

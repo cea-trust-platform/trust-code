@@ -17,7 +17,7 @@
 #define Zone_VF_inst_included
 
 #include <Zone_VF.h>
-#include <Domaine.h>
+#include <Zone.h>
 class Geometrie;
 
 /*! @brief class Zone_VF_inst

@@ -288,15 +288,15 @@ void Probleme_base::warn_old_syntax()
  */
 int Probleme_base::associer_(Objet_U& ob)
 {
-  // Schema_Temps_base Domaine Milieu_base
+  // Schema_Temps_base Zone Milieu_base
   if( sub_type(Schema_Temps_base, ob))
     {
       associer_sch_tps_base(ref_cast(Schema_Temps_base, ob));
       return 1;
     }
-  if( sub_type(Domaine, ob))
+  if( sub_type(Zone, ob))
     {
-      associer_domaine(ref_cast(Domaine, ob));
+      associer_domaine(ref_cast(Zone, ob));
       return 1;
     }
   if( sub_type(Milieu_base, ob))
@@ -354,11 +354,11 @@ int Probleme_base::verifier()
 /*! @brief Associe un domaine au probleme.
  *
  * Prend un_domaine comme support.
- *      apelle Domaine_dis::associer_dom(const Domaine& )
+ *      apelle Domaine_dis::associer_dom(const Zone& )
  *
- * @param (Domaine& un_domaine) le domaine
+ * @param (Zone& un_domaine) le domaine
  */
-void Probleme_base::associer_domaine(const Domaine& un_domaine)
+void Probleme_base::associer_domaine(const Zone& un_domaine)
 {
   le_domaine_dis.associer_domaine(un_domaine);
 
@@ -374,9 +374,9 @@ void Probleme_base::discretiser_equations()
     }
 }
 
-/*! @brief Affecte une discretisation au probleme Discretise le Domaine associe au probleme avec la discretisation
+/*! @brief Affecte une discretisation au probleme Discretise le Zone associe au probleme avec la discretisation
  *
- *      Associe la premiere zone du Domaine aux equations du probleme
+ *      Associe la premiere zone du Zone aux equations du probleme
  *      Discretise les equations associees au probleme
  *      NOTE: TRUST V1 une seule Zone_dis pas Domaine_dis est traitee
  *
@@ -602,18 +602,18 @@ Schema_Temps_base& Probleme_base::schema_temps()
  *
  * (version const)
  *
- * @return (Domaine&) un domaine
+ * @return (Zone&) un domaine
  */
-const Domaine& Probleme_base::domaine() const
+const Zone& Probleme_base::domaine() const
 {
   return le_domaine_dis.domaine();
 }
 
 /*! @brief Renvoie le domaine associe au probleme.
  *
- * @return (Domaine&) un domaine
+ * @return (Zone&) un domaine
  */
-Domaine& Probleme_base::domaine()
+Zone& Probleme_base::domaine()
 {
   return le_domaine_dis.domaine();
 }

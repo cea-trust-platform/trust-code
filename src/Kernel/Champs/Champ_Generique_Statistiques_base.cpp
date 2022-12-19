@@ -56,7 +56,7 @@ void Champ_Generique_Statistiques_base::set_param(Param& param)
   param.ajouter("t_fin",&tstat_fin_);
 }
 
-int Champ_Generique_Statistiques_base::completer_post_statistiques(const Domaine& dom,const int is_axi,Format_Post_base& format)
+int Champ_Generique_Statistiques_base::completer_post_statistiques(const Zone& dom,const int is_axi,Format_Post_base& format)
 {
 
   const Nom nom_post = le_nom();

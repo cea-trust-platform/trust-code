@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Calculer_Moments.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 
 Implemente_instanciable(Calculer_Moments,"Calculer_Moments",Interprete_geometrique_base);
@@ -36,7 +36,7 @@ Entree& Calculer_Moments::interpreter_(Entree& is)
   Motcle nom_var;
   associer_domaine(is);
   c.resize_array(dimension);
-  Domaine& dom=domaine();
+  Zone& dom=domaine();
   is >> nom_var;
   Cerr << nom_var << finl;
   dom.zone(0).moments_a_imprimer()=1;

@@ -283,7 +283,7 @@ void Moyenne_volumique::traiter_champs(const Motcles& noms_champs,
                                        double temps,
                                        const Motcle& localisation)
 {
-  const Domaine& dom_post = ref_cast(Domaine, objet(nom_dom));
+  const Zone& dom_post = ref_cast(Zone, objet(nom_dom));
   const int nb_champs = noms_champs.size();
   if (nb_champs == 0)
     return;
@@ -452,7 +452,7 @@ Entree& Moyenne_volumique::interpreter(Entree& is)
   param.lire_avec_accolades_depuis(is);
 
   // on recupere le domaine
-  const Domaine& dom = ref_cast(Domaine, objet(nom_dom));
+  const Zone& dom = ref_cast(Zone, objet(nom_dom));
   if (noms_champs.size() == 0)
     {
       Cerr << "Moyenne_volumique : no field to treat" << finl;

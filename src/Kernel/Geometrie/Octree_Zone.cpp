@@ -13,7 +13,7 @@
 *
 *****************************************************************************/
 #include <Octree_Zone.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 void Octree_Zone::reset()
 {

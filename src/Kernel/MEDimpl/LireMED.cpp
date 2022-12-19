@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <LireMED.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Param.h>
 #include <EChaine.h>
 #include <med++.h>
@@ -91,7 +91,7 @@ Entree& LireMED::interpreter_(Entree& is)
   med_non_installe();
   return is;
 }
-void LireMED::lire_geom( Nom& nom_fic,Domaine& dom,const Nom& nom_dom,const Nom& nom_dom_trio,int isvef, int isfamilyshort)
+void LireMED::lire_geom( Nom& nom_fic,Zone& dom,const Nom& nom_dom,const Nom& nom_dom_trio,int isvef, int isfamilyshort)
 {
   med_non_installe();
 }
@@ -200,7 +200,7 @@ Entree& LireMED::interpreter_(Entree& is)
       nom_fic=nom_fic3.nom_me(me());
     }
   associer_domaine(nom_dom_trio);
-  Domaine& dom=domaine();
+  Zone& dom=domaine();
   lire_geom(nom_fic,dom,nom_mesh,nom_dom_trio,isvefforce,convertAllToPoly,isfamilyshort);
   return is;
 }
@@ -1294,7 +1294,7 @@ Nom type_medcoupling_to_type_geo_trio(const int type_cell, const int isvef, cons
 }
 #endif
 
-void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const Nom& nom_dom_trio, int isvef, int convertAllToPoly, int isfamilyshort)
+void LireMED::lire_geom(Nom& nom_fic, Zone& dom, const Nom& nom_dom, const Nom& nom_dom_trio, int isvef, int convertAllToPoly, int isfamilyshort)
 {
 
   ArrsOfInt sommets_joints;
@@ -1982,7 +1982,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
 //void medinfo1champ(const Nom& nom_fic, Nom& nomchamp,int& numero,int& nbcomp,int& ndt,med_entity_type& type_ent, med_geometry_type& type_geo,int& size,const Nom& nom_dom,int verifie_type,ArrOfDouble& temps_sauv);
 
 med_geometry_type type_geo_trio_to_type_med(const Nom& a);
-void medinfochamp_existe(const Nom& nom_fic,Noms& nomschamp,const Domaine& dom,ArrOfDouble& temps_sauv)
+void medinfochamp_existe(const Nom& nom_fic,Noms& nomschamp,const Zone& dom,ArrOfDouble& temps_sauv)
 {
   med_idt fid=MEDfileOpen(nom_fic,MED_ACC_RDONLY);
   if (fid<0)

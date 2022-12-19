@@ -262,11 +262,11 @@ void Champ_Generique_base::get_copy_connectivity(Entity index1, Entity index2, I
  * Par defaut le domaine associe au probleme.
  *
  */
-const Domaine& Champ_Generique_base::get_ref_domain() const
+const Zone& Champ_Generique_base::get_ref_domain() const
 {
   const Objet_U& ob = interprete().objet(nom_pb_);
   const Probleme_base& pb = ref_cast(Probleme_base,ob);
-  const Domaine& dom = pb.domaine_dis().domaine();
+  const Zone& dom = pb.domaine_dis().domaine();
   return dom;
 }
 
@@ -276,9 +276,9 @@ const Domaine& Champ_Generique_base::get_ref_domain() const
  * Par defaut le domaine associe au probleme.
  *
  */
-void Champ_Generique_base::get_copy_domain(Domaine& domain) const
+void Champ_Generique_base::get_copy_domain(Zone& domain) const
 {
-  const Domaine& dom = get_ref_domain();
+  const Zone& dom = get_ref_domain();
   domain = dom;
 }
 

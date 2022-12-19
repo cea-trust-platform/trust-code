@@ -19,7 +19,7 @@
 #include <Interprete.h>
 
 class Nom;
-class Domaine;
+class Zone;
 
 /*! @brief Classe Integrer_champ_med Lecture d'un fichier
  *

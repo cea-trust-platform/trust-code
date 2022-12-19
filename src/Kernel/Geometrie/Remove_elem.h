@@ -26,7 +26,7 @@
 #include <Interprete_geometrique_base.h>
 #include <TRUSTList.h>
 #include <Parser_U.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 class Zone;
 

@@ -17,7 +17,7 @@
 #include <Discretisation_base.h>
 #include <Schema_Temps_base.h>
 #include <Probleme_base.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <EcritureLectureSpecial.h>
 
 Implemente_instanciable_sans_constructeur(Modele_turbulence_hyd_nul,"Modele_turbulence_hyd_nul",Mod_turb_hyd_base);

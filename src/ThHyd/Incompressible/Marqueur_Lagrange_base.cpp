@@ -19,7 +19,7 @@
 #include <Probleme_base.h>
 #include <Equation_base.h>
 #include <Schema_Temps_base.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Ensemble_Lagrange_base.h>
 
 Implemente_base_sans_constructeur(Marqueur_Lagrange_base,"Marqueur_Lagrange_base",Objet_U);

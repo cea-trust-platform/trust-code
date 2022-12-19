@@ -20,7 +20,7 @@
 #include <Zone_dis_base.h>
 #include <Zone_VF.h>
 #include <TRUSTTabs.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <communications.h>
 
 #include <medcoupling++.h>

@@ -15,7 +15,7 @@
 
 #include <Interpolation_IBM_mean_gradient_proto.h>
 #include <TRUSTTrav.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Process.h>
 
 void Interpolation_IBM_mean_gradient_proto::computeSommetsVoisins(Zone_dis_base& la_zone_EF,

@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Quadrangle_VEF.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Triangle.h>
 
 // Definition des sommets :
@@ -93,7 +93,7 @@ int Quadrangle_VEF::contient(const ArrOfDouble& pos, int element) const
 {
   assert(pos.size_array()==2);
   const Zone& zone=ma_zone.valeur();
-  const Domaine& dom=zone.domaine();
+  const Zone& dom=zone.domaine();
   int som0 = zone.sommet_elem(element,0);
   int som1 = zone.sommet_elem(element,1);
   int som2 = zone.sommet_elem(element,2);
@@ -226,7 +226,7 @@ void Quadrangle_VEF::calculer_volumes(DoubleVect& volumes) const
 void Quadrangle_VEF::reordonner()
 {
   Zone& zone=ma_zone.valeur();
-  const Domaine& dom=zone.domaine();
+  const Zone& dom=zone.domaine();
   IntTab& elem=zone.les_elems();
 
   ArrOfInt S(4);

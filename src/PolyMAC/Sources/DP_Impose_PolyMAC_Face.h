@@ -20,7 +20,7 @@
 #include <Perte_Charge_PolyMAC_Face.h>
 #include <DP_Impose.h>
 
-class Domaine;
+class Zone;
 #include <TRUSTList.h>
 
 /*! @brief class DP_Impose_PolyMAC_Face

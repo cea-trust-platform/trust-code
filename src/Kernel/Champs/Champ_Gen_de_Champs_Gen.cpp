@@ -301,12 +301,12 @@ void Champ_Gen_de_Champs_Gen::get_xyz_values(const DoubleTab& coords, DoubleTab&
   throw Champ_Generique_erreur("NOT_IMPLEMENTED");
 }
 
-const Domaine& Champ_Gen_de_Champs_Gen::get_ref_domain() const
+const Zone& Champ_Gen_de_Champs_Gen::get_ref_domain() const
 {
   return get_source(0).get_ref_domain();
 }
 
-void Champ_Gen_de_Champs_Gen::get_copy_domain(Domaine& domain) const
+void Champ_Gen_de_Champs_Gen::get_copy_domain(Zone& domain) const
 {
   return get_source(0).get_copy_domain(domain);
 }

@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Trianguler_fin.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_instanciable(Trianguler_fin, "Trianguler_fin", Triangulation_base);
 
@@ -31,7 +31,7 @@ Entree& Trianguler_fin::readOn(Entree& is) { return Interprete::readOn(is); }
  */
 void Trianguler_fin::trianguler(Zone& zone) const
 {
-  Domaine& dom = zone.domaine();
+  Zone& dom = zone.domaine();
   const DoubleTab& xs = dom.coord_sommets();
   IntTab& les_elems = zone.les_elems();
   int oldsz = les_elems.dimension(0);

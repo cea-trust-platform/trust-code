@@ -27,7 +27,7 @@
  */
 
 #include <Triangulation_base.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 class Zone;
 

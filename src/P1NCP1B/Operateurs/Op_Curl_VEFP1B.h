@@ -21,7 +21,7 @@
 #include <Ref_Zone_VEF.h>
 #include <TRUSTLists.h>
 #include <Zone_VEF.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 class Zone_VEF_PreP1b;
 

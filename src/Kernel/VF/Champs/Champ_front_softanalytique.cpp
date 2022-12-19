@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Champ_front_softanalytique.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Zone_VF.h>
 
 Implemente_instanciable(Champ_front_softanalytique,"Champ_front_fonc_xyz",Ch_front_var_stationnaire);

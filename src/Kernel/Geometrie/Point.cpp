@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Point.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_instanciable(Point,"Point",Elem_geom_base);
 
@@ -79,7 +79,7 @@ int Point::contient(const ArrOfDouble& pos, int element ) const
 
 
   const Zone& zone=ma_zone.valeur();
-  const Domaine& dom=zone.domaine();
+  const Zone& dom=zone.domaine();
   const IntTab& elem=zone.les_elems();
   for (int s=0; s<1; s++)
     {

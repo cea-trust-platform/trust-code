@@ -57,7 +57,7 @@ Entree& Perte_Charge_Reguliere_VDF_Face::readOn(Entree& s )
 
 void Perte_Charge_Reguliere_VDF_Face::remplir_num_faces(Nom& nom_sous_zone)
 {
-  const Domaine& le_domaine = equation().probleme().domaine();
+  const Zone& le_domaine = equation().probleme().domaine();
   const Zone_VDF& zone_VDF = ref_cast(Zone_VDF,equation().zone_dis().valeur());
   const IntTab& elem_faces = zone_VDF.elem_faces();
   const IntTab& face_voisins = zone_VDF.face_voisins();

@@ -17,7 +17,7 @@
 #include <Champ_base.h>
 #include <TRUSTTrav.h>
 #include <Zone_VF.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 DoubleVect& Champ_implementation_sommet::valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const
 {

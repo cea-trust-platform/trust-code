@@ -31,7 +31,7 @@ Entree& Discretiser_domaine::readOn(Entree& is)
 Entree& Discretiser_domaine::interpreter_(Entree& is)
 {
   associer_domaine(is);
-  Domaine& dom=domaine();
+  Zone& dom=domaine();
   Zone_VF_inst zone_dis;
   zone_dis.associer_zone(dom.zone(0));
   zone_dis.discretiser();

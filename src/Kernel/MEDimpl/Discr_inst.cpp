@@ -18,7 +18,7 @@
 #include <Champ_Fonc.h>
 #include <Motcle.h>
 #include <Zone_dis_base.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_instanciable(Discr_inst,"VF_inst",Discretisation_base);
 
@@ -106,7 +106,7 @@ void Discr_inst::discretiser_champ_fonc_don(
   Nom type;
   int rang = motcles.search(directive);
   //int default_nb_comp = 1;
-  const Domaine& domaine=z.zone().domaine();
+  const Zone& domaine=z.zone().domaine();
   int nb_som_elem = domaine.zone(0).nb_som_elem();
   int nb_ddl=-1;
   switch(rang)

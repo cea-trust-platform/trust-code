@@ -15,7 +15,7 @@
 
 #include <Champ_P1_isoP1Bulle.h>
 #include <TRUSTTab_parts.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Debog.h>
 
 Implemente_instanciable(Champ_P1_isoP1Bulle,"Champ_P1_isoP1Bulle",Champ_Inc_base);
@@ -38,7 +38,7 @@ int Champ_P1_isoP1Bulle::fixer_nb_valeurs_nodales(int n)
   return n;
 }
 
-double Champ_P1_isoP1Bulle::norme_L2(const Domaine& dom) const
+double Champ_P1_isoP1Bulle::norme_L2(const Zone& dom) const
 {
   const Zone_VEF_PreP1b& zvef = zone_vef();
   const IntTab& som_elem = zvef.zone().les_elems();
@@ -117,7 +117,7 @@ Champ_base& Champ_P1_isoP1Bulle::affecter_(const Champ_base& ch)
 
       //const Zone_VEF_PreP1b& zvef=zone_vef();
       const Zone& la_zone = zvef.zone();
-      const Domaine& dom = la_zone.domaine();
+      const Zone& dom = la_zone.domaine();
       const DoubleTab& coord_sommets = dom.coord_sommets();
       const DoubleTab& xg = zvef.xp();
       ch.valeur_aux(xg, Pk);

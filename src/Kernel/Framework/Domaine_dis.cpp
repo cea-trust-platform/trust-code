@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Domaine_dis.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Discretisation_base.h>
 #include <Zone_VF.h>
 #include <map>
@@ -90,7 +90,7 @@ void Domaine_dis::discretiser(const Nom& type_1)
       Cerr << "The domain is not specified. Please check your data file." << finl;
       exit();
     }
-  const Domaine& dom=le_domaine.valeur();
+  const Zone& dom=le_domaine.valeur();
   i_am_allocator_of_les_zones = domaine().le_nom()+"_"+type; // Nom unique
   if (domaines_dis.find(i_am_allocator_of_les_zones.getChar()) != domaines_dis.end()) //on a deja discretise ce domaine!
     {
@@ -174,14 +174,14 @@ void Domaine_dis::discretiser(const Nom& type_1)
 }
 
 
-/*! @brief Associe un Domaine (non discretise) a l'objet.
+/*! @brief Associe un Zone (non discretise) a l'objet.
  *
  * Dimensionne le tableau des zones discretisees associees
  *     au domaine.
  *
- * @param (Domaine& un_domaine) le domaine a associer
+ * @param (Zone& un_domaine) le domaine a associer
  */
-void Domaine_dis::associer_domaine(const Domaine& un_domaine)
+void Domaine_dis::associer_domaine(const Zone& un_domaine)
 {
   le_domaine=un_domaine;
 }

@@ -15,7 +15,7 @@
 
 #include <Champ_P1iP1B_implementation.h>
 #include <Champ_implementation_P1.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Zone_VEF_PreP1b.h>
 #include <Zone_Cl_VEFP1B.h>
 #include <Debog.h>
@@ -160,7 +160,7 @@ DoubleVect& Champ_P1iP1B_implementation::valeur_aux_elems_compo(const DoubleTab&
 
 // Recupere un domaine
 // Renvoie un tableau contenant les valeurs du champ aux sommets du domaine
-DoubleTab& Champ_P1iP1B_implementation::valeur_aux_sommets(const Domaine& dom, DoubleTab& val) const
+DoubleTab& Champ_P1iP1B_implementation::valeur_aux_sommets(const Zone& dom, DoubleTab& val) const
 {
   const Zone_VEF_PreP1b& zvef = zone_vef();
   int nb_compo_=le_champ().nb_comp();
@@ -202,7 +202,7 @@ DoubleTab& Champ_P1iP1B_implementation::valeur_aux_sommets(const Domaine& dom, D
 
 //
 DoubleVect& Champ_P1iP1B_implementation::
-valeur_aux_sommets_compo(const Domaine& dom,
+valeur_aux_sommets_compo(const Zone& dom,
                          DoubleVect& val,
                          int ncomp) const
 {
@@ -216,7 +216,7 @@ DoubleTab& Champ_P1iP1B_implementation::remplir_coord_noeuds(DoubleTab& coord) c
 {
   const Zone_VEF_PreP1b& zvef=zone_vef();
   const Zone& la_zone=zvef.zone();
-  const Domaine& dom=la_zone.domaine();
+  const Zone& dom=la_zone.domaine();
   const DoubleTab& coord_sommets=dom.coord_sommets();
   int nbe=zvef.nb_elem_tot();
   int nbs=zvef.nb_som_tot();
@@ -267,7 +267,7 @@ void assembler(const Zone_VEF_PreP1b& zone_VEF, Matrice& matrice)
   int nnz=nb_som_tot+nb_arete_tot;
   const IntTab& aretes_som=zone_VEF.zone().aretes_som();
   const ArrOfInt& renum_arete_perio=zone_VEF.get_renum_arete_perio();
-  const Domaine& dom=zone_VEF.zone().domaine();
+  const Zone& dom=zone_VEF.zone().domaine();
 
   IntLists voisins(nb_som_tot);
   DoubleLists coeffs(nb_som_tot);
@@ -313,7 +313,7 @@ double second_membre(const Zone_VEF_PreP1b& zone_VEF, ArrOfDouble& Pa, DoubleVec
   int nb_arete_tot = zone_VEF.zone().nb_aretes_tot();
   const IntTab& aretes_som=zone_VEF.zone().aretes_som();
   const ArrOfInt& renum_arete_perio=zone_VEF.get_renum_arete_perio();
-  const Domaine& dom=zone_VEF.zone().domaine();
+  const Zone& dom=zone_VEF.zone().domaine();
   secmem=0;
   // On parcourt toutes les aretes non periodiques
   for(int arete=0; arete<nb_arete_tot; arete++)
@@ -383,7 +383,7 @@ void corriger(const Zone_VEF_PreP1b& zone_VEF, DoubleTab& champ_filtre_, Matrice
       solveur.resoudre_systeme(matrice, secmem, solution);
 
       // Application de la periodicite sur la solution:
-      const Domaine& dom=zone_VEF.zone().domaine();
+      const Zone& dom=zone_VEF.zone().domaine();
       for(int i=0; i<nb_som; i++)
         {
           int som=dom.get_renum_som_perio(i);

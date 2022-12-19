@@ -21,7 +21,7 @@
 #include <map>
 #include <array>
 #include <Zone_VF.h>
-#include <Domaine.h>
+#include <Zone.h>
 class Geometrie;
 
 /*! @brief class Zone_VDF
@@ -840,7 +840,7 @@ inline double Zone_VDF::dist_face_elem1_period(int num_face,int n1,double l) con
 
 inline double Zone_VDF::dist_face_period(int fac1 , int fac2, int k) const
 {
-  const Domaine& le_domaine = zone().domaine();
+  const Zone& le_domaine = zone().domaine();
   const DoubleTab& coord_sommets = le_domaine.coord_sommets();
   double dist= std::fabs(coord_sommets(face_sommets(fac1,1),k)-xv_(fac1,k));
   dist += std::fabs(xv_(fac2,k) - coord_sommets(face_sommets(fac2,0),k));

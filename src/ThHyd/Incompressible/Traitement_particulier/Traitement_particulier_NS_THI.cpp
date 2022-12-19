@@ -17,7 +17,7 @@
 #include <MD_Vector_tools.h>
 #include <ArrOfBit.h>
 #include <Scatter.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_base(Traitement_particulier_NS_THI,"Traitement_particulier_NS_THI",Traitement_particulier_NS_base);
 

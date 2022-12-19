@@ -15,7 +15,7 @@
 
 #include <Imprimer_flux_sum.h>
 //#include <Motcle.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 
 Implemente_instanciable(Imprimer_flux_sum,"Imprimer_flux_sum",Interprete_geometrique_base);

@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Trianguler.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_instanciable(Trianguler,"Trianguler",Triangulation_base);
 

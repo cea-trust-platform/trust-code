@@ -31,7 +31,7 @@
 #include <Conds_lim.h>
 #include <Symetrie.h>
 #include <Zone_Poly_base.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Lapack.h>
 #include <math.h>
 #include <vector>

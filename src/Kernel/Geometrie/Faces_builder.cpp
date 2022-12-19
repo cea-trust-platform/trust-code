@@ -21,7 +21,7 @@
 #include <communications.h>
 #include <NettoieNoeuds.h>
 #include <Faces_builder.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Scatter.h>
 #include <Faces2.h>
 #include <stdio.h>

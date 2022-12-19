@@ -15,7 +15,7 @@
 
 #include <Champ_Fonc_Som_PolyMAC.h>
 #include <Zone_PolyMAC.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_instanciable(Champ_Fonc_Som_PolyMAC, "Champ_Fonc_Som_PolyMAC", Champ_Fonc_P1_base);
 

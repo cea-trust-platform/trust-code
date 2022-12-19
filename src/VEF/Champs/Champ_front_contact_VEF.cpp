@@ -23,7 +23,7 @@
 #include <Interprete.h>
 #include <Pb_Conduction.h>
 #include <Zone_Cl_VEF.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Champ_Fonc_P0_VEF.h>
 #include <Format_Post_Med.h>
 #include <Champ_front_contact_fictif_VEF.h>
@@ -1036,7 +1036,7 @@ void Champ_front_contact_VEF::connectivity_failed(const Zone_VEF& zvef1, int& nb
   Nom bis(fichier_med);
   bis+="_index";
   fichier_med.prefix(".med");
-  const Domaine& dom2 = zvef2.zone().domaine();
+  const Zone& dom2 = zvef2.zone().domaine();
   Noms unites_(1);
   unites_[0]="1";
   Noms nom_compos(1);

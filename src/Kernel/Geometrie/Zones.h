@@ -27,7 +27,7 @@ class Zones : public List_Zone
 {
   Declare_instanciable(Zones);
 public :
-  void associer_domaine(const Domaine&);
+  void associer_domaine(const Zone&);
   void comprimer();
   void reordonner();
   void merge();

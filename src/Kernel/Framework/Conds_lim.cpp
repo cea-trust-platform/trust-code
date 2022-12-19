@@ -17,7 +17,7 @@
 #include <Schema_Temps_base.h>
 #include <Equation_base.h>
 #include <Conds_lim.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_instanciable(Conds_lim,"Conds_lim",VECT(Cond_lim));
 
@@ -41,6 +41,6 @@ void Conds_lim::completer(const Zone_dis& z)
 
   for (auto& itr : *this) itr->fixer_nb_valeurs_temporelles(nb_cases);
 
-  Domaine& dom=(*this)[0].frontiere_dis().frontiere().zone().domaine();
+  Zone& dom=(*this)[0].frontiere_dis().frontiere().zone().domaine();
   dom.construire_renum_som_perio(*this, z);
 }

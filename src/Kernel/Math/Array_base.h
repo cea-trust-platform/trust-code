@@ -21,7 +21,7 @@ class MD_Vector;
 
 /*! @brief : classe vide servant de base a tous les tableaux.
  *
- * (permet de passer un type generique quel que soit le sous-type du tableau par exemple Domaine::creer_tableau_sommets())
+ * (permet de passer un type generique quel que soit le sous-type du tableau par exemple Zone::creer_tableau_sommets())
  *
  */
 class Array_base : public Objet_U

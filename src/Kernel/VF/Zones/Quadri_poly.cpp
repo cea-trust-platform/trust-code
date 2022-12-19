@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Quadri_poly.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_instanciable_sans_constructeur(Quadri_poly,"Quadri_poly",Elem_poly_base);
 

@@ -53,8 +53,8 @@ public :
   inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& les_valeurs, int le_poly) const;
   inline virtual double valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const;
   inline DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& les_valeurs) const;
-  inline DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const;
-  inline DoubleVect& valeur_aux_sommets_compo(const Domaine&,
+  inline DoubleTab& valeur_aux_sommets(const Zone&, DoubleTab&) const;
+  inline DoubleVect& valeur_aux_sommets_compo(const Zone&,
                                               DoubleVect&, int) const;
   inline void nommer(const Nom& nom) override
   {
@@ -209,11 +209,11 @@ inline DoubleTab& Champ_Fonc::valeur_aux_elems(const DoubleTab& positions, const
 {
   return valeur().valeur_aux_elems(positions, les_polys, les_valeurs);
 }
-inline DoubleTab& Champ_Fonc::valeur_aux_sommets(const Domaine& dom, DoubleTab& les_valeurs) const
+inline DoubleTab& Champ_Fonc::valeur_aux_sommets(const Zone& dom, DoubleTab& les_valeurs) const
 {
   return valeur().valeur_aux_sommets(dom, les_valeurs);
 }
-inline DoubleVect& Champ_Fonc::valeur_aux_sommets_compo(const Domaine& dom, DoubleVect& les_valeurs, int compo) const
+inline DoubleVect& Champ_Fonc::valeur_aux_sommets_compo(const Zone& dom, DoubleVect& les_valeurs, int compo) const
 {
   return valeur().valeur_aux_sommets_compo(dom, les_valeurs, compo);
 }

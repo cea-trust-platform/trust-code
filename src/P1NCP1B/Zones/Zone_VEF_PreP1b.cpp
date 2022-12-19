@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Zone_VEF_PreP1b.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Scatter.h>
 #include <TRUSTLists.h>
 #include <Conds_lim.h>
@@ -124,7 +124,7 @@ void Zone_VEF_PreP1b::discretiser_suite(const VEFPreP1B& discr)
 
 void Zone_VEF_PreP1b::discretiser_arete()
 {
-  const Domaine& dom = zone().domaine();
+  const Zone& dom = zone().domaine();
 
   // Creation des aretes reelles (informations geometriques construites et stockees dans la zone)
   zone().creer_aretes();
@@ -174,7 +174,7 @@ void Zone_VEF_PreP1b::discretiser_arete()
 /*
   static int arete(const IntTab& som_aretes,
   const IntTab& aretes_som,
-  int S1, int S2, const Domaine& dom)
+  int S1, int S2, const Zone& dom)
   {
   //Cout << "S1,S2 = " << S1 << " " << S2 << finl;
   for(int i=0; i<nb_max_aretes_som; i++)
@@ -220,7 +220,7 @@ void Zone_VEF_PreP1b::modifier_pour_Cl(const Conds_lim& conds_lim)
   static DoubleVect* ptr=0;
   if(ptr!=&volumes_som)
     {
-      const Domaine& dom=zone().domaine();
+      const Zone& dom=zone().domaine();
       int i;
       const int ns = nb_som();
       for(i=0; i<ns; i++)
@@ -243,7 +243,7 @@ void Zone_VEF_PreP1b::modifier_pour_Cl(const Conds_lim& conds_lim)
   if (Debog::active())
     {
       IntVect tmp;
-      const Domaine& dom = zone().domaine();
+      const Zone& dom = zone().domaine();
       dom.creer_tableau_sommets(tmp, Array_base::NOCOPY_NOINIT);
       const int n = tmp.size_array();
       for (int i=0; i<n; i++)
@@ -322,7 +322,7 @@ void exemple_champ_non_homogene(const Zone_VEF_PreP1b& zone_VEF, DoubleTab& tab)
 void Zone_VEF_PreP1b::construire_ok_arete()
 {
   Cerr << "Build array ok_arete..." << finl;
-  const Domaine& dom=zone().domaine();
+  const Zone& dom=zone().domaine();
   const IntTab& aretes_som=zone().aretes_som();
   const int nb_som_reel=nb_som();
 
@@ -500,7 +500,7 @@ void Zone_VEF_PreP1b::construire_renum_arete_perio(const Conds_lim& conds_lim)
   Cerr << "Build array renum_arete_perio..." << finl;
   const IntTab& aretes_som=zone().aretes_som();
   const int nb_aretes_tot=zone().nb_aretes_tot();
-  const Domaine& dom=zone().domaine();
+  const Zone& dom=zone().domaine();
 
   // Initialisation de renum_arete_perio
   renum_arete_perio.resize_array(nb_aretes_tot);
@@ -676,7 +676,7 @@ void Zone_VEF_PreP1b::verifie_ok_arete(int nombre_aretes_superflues_prevues_sur_
   // ...
   // contenu doit contenir uniquement 2 ce qui implique que tous les
   // sommets ont ete analyses.
-  const Domaine& dom=zone().domaine();
+  const Zone& dom=zone().domaine();
   const int nb_som_reel=nb_som();
   const IntTab& aretes_som=zone().aretes_som();
   int nb_aretes_pour_verbose=60; // Pour verbose

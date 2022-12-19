@@ -18,7 +18,7 @@
 
 #include <Interprete_geometrique_base.h>
 
-class Domaine;
+class Zone;
 class Faces;
 
 /*! @brief Classe Extruder Cette classe est un interprete qui sert a lire et executer
@@ -46,12 +46,12 @@ public :
   }
   inline void setNbTranches(int n) { NZ = n; }
 
-  void extruder(Domaine&) ;
+  void extruder(Zone&) ;
 
 protected:
-  void extruder_hexa(Domaine&);
-  virtual void extruder_dvt(Domaine&, Faces&, int, int ) ;
-  virtual void extruder_dvt_hexa(Domaine&, Faces&, int , int ) ;
+  void extruder_hexa(Zone&);
+  virtual void extruder_dvt(Zone&, Faces&, int, int ) ;
+  virtual void extruder_dvt_hexa(Zone&, Faces&, int , int ) ;
 
   ArrOfDouble direction;
   int NZ = -10;

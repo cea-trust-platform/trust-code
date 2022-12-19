@@ -78,7 +78,7 @@ public:
   inline void associer(const Zone_dis_base& ,const Champ_Generique_base& ,const Champ_Generique_base& , double t1, double t2 );
   inline void fixer_tstat_deb(double, double ) override;
   inline void fixer_tstat_fin(double ) override;
-  int completer_post_statistiques(const Domaine& dom,const int is_axi,Format_Post_base& format) override;
+  int completer_post_statistiques(const Zone& dom,const int is_axi,Format_Post_base& format) override;
   inline int sauvegarder(Sortie& os) const override;
   inline int reprendre(Entree& is) override;
   inline void associer_op_stat(const Operateur_Statistique_tps_base&) override;

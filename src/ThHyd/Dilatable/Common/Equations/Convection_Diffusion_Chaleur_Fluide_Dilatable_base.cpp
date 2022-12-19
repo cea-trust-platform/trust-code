@@ -20,7 +20,7 @@
 #include <Navier_Stokes_std.h>
 #include <Probleme_base.h>
 #include <Discret_Thyd.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Avanc.h>
 #include <Statistiques.h>
 

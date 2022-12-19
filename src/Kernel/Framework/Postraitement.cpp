@@ -109,7 +109,7 @@ Motcles Postraitement::formats_supportes=Motcles(0);
 LIST(Nom) Postraitement::noms_fichiers_sondes_=LIST(Nom)();
 
 
-inline void nom_fichier(const Postraitement& post, const Champ_Generique_Statistiques& op, const Domaine& dom, Nom& nom_fichier)
+inline void nom_fichier(const Postraitement& post, const Champ_Generique_Statistiques& op, const Zone& dom, Nom& nom_fichier)
 {
   nom_fichier+=".";
   const Entity& loc = op->get_localisation();
@@ -134,7 +134,7 @@ inline void nom_fichier(const Postraitement& post, const Champ_Generique_Statist
   nom_fichier+=Nom(s);
 }
 
-inline void nom_fichier(const Postraitement& post, const Nom& nom_post, const Nom& loc, const double temps_ch, const Domaine& dom, Nom& nom_fichier)
+inline void nom_fichier(const Postraitement& post, const Nom& nom_post, const Nom& loc, const double temps_ch, const Zone& dom, Nom& nom_fichier)
 {
   nom_fichier+=".";
   nom_fichier+=nom_post+"."+loc+"."+dom.le_nom()+"."+post.probleme().le_nom()+".";
@@ -143,7 +143,7 @@ inline void nom_fichier(const Postraitement& post, const Nom& nom_post, const No
   nom_fichier+=Nom(s);
 }
 
-inline void nom_fichier(const Domaine& dom, Nom& nom_fichier)
+inline void nom_fichier(const Zone& dom, Nom& nom_fichier)
 {
   nom_fichier+=".";
   nom_fichier+=dom.le_nom();
@@ -319,7 +319,7 @@ void Postraitement::set_param(Param& param)
 //  attr interfaces champs_posts interfaces 1 Keyword to read all the caracteristics of the interfaces. Different kind of interfaces exist as well as different interface intitialisations.
   param.ajouter("Fichier",&nom_fich_); // XD_ADD_P chaine Name of file.
   param.ajouter("Format",&format); // XD_ADD_P chaine(into=["lml","lata","lata_v2","med","med_major"]) This optional parameter specifies the format of the output file. The basename used for the output file is the basename of the data file. For the fmt parameter, choices are lml or lata. A short description of each format can be found below. The default value is lml.
-  param.ajouter_non_std("Domaine",(this)); // XD_ADD_P chaine This optional parameter specifies the domain on which the data should be interpolated before it is written in the output file. The default is to write the data on the domain of the current problem (no interpolation).
+  param.ajouter_non_std("Zone",(this)); // XD_ADD_P chaine This optional parameter specifies the domain on which the data should be interpolated before it is written in the output file. The default is to write the data on the domain of the current problem (no interpolation).
   param.ajouter_non_std("Sous_zone",(this)); // XD_ADD_P chaine This optional parameter specifies the sous_zone on which the data should be interpolated before it is written in the output file. It is only available for sequential computation.
   param.ajouter("Parallele",&option_para); // XD_ADD_P chaine(into=["simple","multiple","mpi-io"]) Select simple (single file, sequential write), multiple (several files, parallel write), or mpi-io (single file, parallel write) for LATA format
   param.ajouter_non_std("Definition_champs",(this));// XD_ADD_P definition_champs  Keyword to create new or more complex field for advanced postprocessing.
@@ -457,7 +457,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
       stat_demande_ = 1;
       return 1;
     }
-  else if (mot=="Domaine")
+  else if (mot=="Zone")
     {
       if (champs_demande_ || stat_demande_ || sondes_demande_)
         {
@@ -467,7 +467,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
 
       Nom nom_du_domaine;
       s >> nom_du_domaine;
-      le_domaine=ref_cast(Domaine,Interprete::objet(nom_du_domaine));
+      le_domaine=ref_cast(Zone,Interprete::objet(nom_du_domaine));
       return 1;
     }
   else if (mot=="Sous_zone")
@@ -511,7 +511,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
 
       EChaine IN2(in);
       Interprete_bloc::interprete_courant().interpreter_bloc(IN2, Interprete_bloc::BLOC_EOF, 0);
-      le_domaine=ref_cast(Domaine,Interprete_bloc::objet_global(nom_du_nouveau_dom));
+      le_domaine=ref_cast(Zone,Interprete_bloc::objet_global(nom_du_nouveau_dom));
 
       return 1;
     }
@@ -1173,7 +1173,7 @@ void Postraitement::init()
       formats_supportes[4]="xyz";
     }
 
-  const Domaine& dom=le_domaine.valeur();
+  const Zone& dom=le_domaine.valeur();
   const Nom& nom_du_domaine = dom.le_nom();
   Nom name=nom_fich().prefix(format);
   name.prefix(".");
@@ -1336,7 +1336,7 @@ void Postraitement::finir()
 int Postraitement::postraiter_champs()
 {
   double temps_courant = mon_probleme->schema_temps().temps_courant();
-  const Domaine& dom=le_domaine.valeur();
+  const Zone& dom=le_domaine.valeur();
 
   if (temps_ < temps_courant)
     {
@@ -1390,7 +1390,7 @@ int Postraitement::postraiter_champs()
 void Postraitement::postprocess_field_values()
 {
   double temps_courant = mon_probleme->schema_temps().temps_courant();
-  const Domaine& dom=le_domaine.valeur();
+  const Zone& dom=le_domaine.valeur();
 
   for (auto& itr : noms_champs_a_post_)
     {
@@ -1429,7 +1429,7 @@ void Postraitement::postprocess_field_values()
 int Postraitement::postraiter_tableaux()
 {
   double temps_courant = mon_probleme->schema_temps().temps_courant();
-  const Domaine& dom=le_domaine.valeur();
+  const Zone& dom=le_domaine.valeur();
 
   //Methode ecrire_item_int codee uniquement pour les formats lml et lata
   //Sans doute pas testee par les cas de non regression
@@ -1527,7 +1527,7 @@ int Postraitement::traiter_sondes()
   return 1;
 }
 
-int Postraitement::postraiter(const Domaine& dom,const Noms& unites,const Noms& noms_compo,const int ncomp,
+int Postraitement::postraiter(const Zone& dom,const Noms& unites,const Noms& noms_compo,const int ncomp,
                               const double temps,
                               Nom nom_post,const Nom& localisation,const Nom& nature,const DoubleTab& valeurs,int tenseur)
 
@@ -1541,7 +1541,7 @@ int Postraitement::postraiter(const Domaine& dom,const Noms& unites,const Noms& 
   return 1;
 }
 
-int Postraitement::postraiter_tableau(const Domaine& dom,const Noms& unites,const Noms& noms_compo,const int ncomp,
+int Postraitement::postraiter_tableau(const Zone& dom,const Noms& unites,const Noms& noms_compo,const int ncomp,
                                       const double temps,
                                       Nom nom_post,const Nom& localisation,const Nom& nature,const DoubleTab& valeurs)
 {
@@ -1586,7 +1586,7 @@ int Postraitement::postraiter_tableau(const Domaine& dom,const Noms& unites,cons
   return 1;
 }
 
-int Postraitement::postraiter_tenseur(const Domaine& dom,const Noms& unites,const Noms& noms_compo,const int ncomp,
+int Postraitement::postraiter_tenseur(const Zone& dom,const Noms& unites,const Noms& noms_compo,const int ncomp,
                                       const double temps,
                                       Nom nom_post,const Nom& localisation,const Nom& nature,const DoubleTab& valeurs)
 {

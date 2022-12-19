@@ -15,7 +15,7 @@
 
 #include <Zone_dis_base.h>
 #include <Frontiere_dis_base.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_base(Zone_dis_base,"Zone_dis_base",Objet_U);
 

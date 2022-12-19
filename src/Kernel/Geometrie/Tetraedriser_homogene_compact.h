@@ -27,7 +27,7 @@
  */
 
 #include <Triangulation_base.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 class Zone;
 
@@ -39,7 +39,7 @@ public :
 
   void decoupe(Zone& , Faces& , IntTab&, IntTab&, int ) const;
   void trianguler(Zone&) const override;
-  int creer_sommet (Domaine& ,Zone& ,DoubleTab& ,IntTab& ,IntTab& ,int ,
+  int creer_sommet (Zone& ,Zone& ,DoubleTab& ,IntTab& ,IntTab& ,int ,
                     IntTab& , int& , int , int&, IntTab&, int&  ) const;
   inline int dimension_application() const override;
 };

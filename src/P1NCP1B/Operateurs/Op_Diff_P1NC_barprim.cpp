@@ -24,7 +24,7 @@
 #include <Champ_Uniforme.h>
 
 #include <TRUSTTrav.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Ref_Champ_P1NC.h>
 
 #include <TRUSTLists.h>

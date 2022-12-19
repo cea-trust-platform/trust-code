@@ -16,7 +16,7 @@
 #include <Reordonner_faces_periodiques.h>
 #include <Zone_Cl_dis.h>
 #include <Periodique.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Zone_VF.h>
 #include <Scatter.h>
 

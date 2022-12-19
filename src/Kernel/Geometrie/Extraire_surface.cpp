@@ -18,7 +18,7 @@
 #include <Equation_base.h>
 #include <NettoieNoeuds.h>
 #include <Parser_U.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Zone_VF.h>
 #include <Param.h>
 
@@ -45,7 +45,7 @@ Entree& Extraire_surface::interpreter_(Entree& is)
   param.lire_avec_accolades_depuis(is);
 
   associer_domaine(nom_domaine_surfacique);
-  Domaine& domaine_surfacique=domaine();
+  Zone& domaine_surfacique=domaine();
 
   if (domaine_surfacique.nb_som_tot()!=0)
     {
@@ -64,7 +64,7 @@ Entree& Extraire_surface::interpreter_(Entree& is)
     }
   Probleme_base& pb=ref_cast(Probleme_base, objet(nom_pb));
   const Zone_VF& zone_vf=ref_cast(Zone_VF,pb.domaine_dis().zone_dis(0).valeur());
-  const Domaine& domaine_volumique = zone_vf.zone().domaine();
+  const Zone& domaine_volumique = zone_vf.zone().domaine();
 
   extraire_surface(domaine_surfacique,domaine_volumique,nom_domaine_surfacique,zone_vf,expr_elements,expr_faces,avec_les_bords,noms_des_bords);
 
@@ -74,7 +74,7 @@ Entree& Extraire_surface::interpreter_(Entree& is)
 void calcul_normal(const ArrOfDouble& origine,const ArrOfDouble& point1, const ArrOfDouble& point2,ArrOfDouble& normal);
 
 // Extraction d'une ou plusieurs frontieres du domaine volumique selon certaines conditions
-void Extraire_surface::extraire_surface(Domaine& domaine_surfacique,const Domaine& domaine_volumique, const Nom& nom_domaine_surfacique, const Zone_VF& zone_vf, const Nom& expr_elements,const Nom& expr_faces, int avec_les_bords, const Noms& noms_des_bords)
+void Extraire_surface::extraire_surface(Zone& domaine_surfacique,const Zone& domaine_volumique, const Nom& nom_domaine_surfacique, const Zone_VF& zone_vf, const Nom& expr_elements,const Nom& expr_faces, int avec_les_bords, const Noms& noms_des_bords)
 {
   domaine_surfacique.nommer(nom_domaine_surfacique);
   Parser_U condition_elements,condition_faces;

@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <EcrMED.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <med++.h>
 #include <Zone_VF.h>
 #include <Champ_Inc_base.h>
@@ -93,23 +93,23 @@ Entree& EcrMED::interpreter(Entree& is)
       Cerr<<" Adding "<<nom_dom<<finl;
     }
   is >> nom_fic;
-  if(! sub_type(Domaine, objet(nom_dom)))
+  if(! sub_type(Zone, objet(nom_dom)))
     {
       Cerr << nom_dom << " type is " << objet(nom_dom).que_suis_je() << finl;
-      Cerr << "Only Domaine type objects can be meshed" << finl;
+      Cerr << "Only Zone type objects can be meshed" << finl;
       exit();
     }
-  const Domaine& dom=ref_cast(Domaine, objet(nom_dom));
+  const Zone& dom=ref_cast(Zone, objet(nom_dom));
   ecrire_domaine(nom_fic,dom,nom_dom,mode);
   return is;
 }
 
 #ifndef MED_
-void EcrMED::ecrire_champ(const Nom& type,const Nom& nom_fic,const Domaine& dom,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite, const Noms& noms_compo, const Nom& type_elem,double time,int compteur)
+void EcrMED::ecrire_champ(const Nom& type,const Nom& nom_fic,const Zone& dom,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite, const Noms& noms_compo, const Nom& type_elem,double time,int compteur)
 {
   med_non_installe();
 }
-void EcrMED::ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom_dom,int mode)
+void EcrMED::ecrire_domaine(const Nom& nom_fic,const Zone& dom,const Nom& nom_dom,int mode)
 {
   med_non_installe();
 }
@@ -804,7 +804,7 @@ const Frontiere& mes_faces_fr(const Zone& zone,int i)
 
 
 // a partir d'un domaine extrait le type de face, la connectivite des faces de bords, le nom des bords et cree les familles
-void creer_all_faces_bord(const Domaine& dom,Noms& type_face,IntTabs& all_faces_bord, Noms& noms_bords,ArrsOfInt& familles)
+void creer_all_faces_bord(const Zone& dom,Noms& type_face,IntTabs& all_faces_bord, Noms& noms_bords,ArrsOfInt& familles)
 {
   const Zone& zone=dom.zone(0);
   int nb_type_face=zone.type_elem().nb_type_face();
@@ -906,7 +906,7 @@ void creer_all_faces_bord(const Domaine& dom,Noms& type_face,IntTabs& all_faces_
     }
 }
 
-void EcrMED::ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom_dom,int mode)
+void EcrMED::ecrire_domaine(const Nom& nom_fic,const Zone& dom,const Nom& nom_dom,int mode)
 {
   REF(Zone_dis_base) zone_dis_base; // Pas de zone discretisee
   ecrire_domaine_dis(nom_fic, dom, zone_dis_base, nom_dom, mode);
@@ -915,7 +915,7 @@ void EcrMED::ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom
 // ecrit le domaine dom dans le fichier nom_fic
 // mode = -1 nouveau fichier
 // mode = 0 ajout du domaine dans le fichier
-void EcrMED::ecrire_domaine_dis(const Nom& nom_fic,const Domaine& dom,const REF(Zone_dis_base)& zone_dis_base,const Nom& nom_dom,int mode)
+void EcrMED::ecrire_domaine_dis(const Nom& nom_fic,const Zone& dom,const REF(Zone_dis_base)& zone_dis_base,const Nom& nom_dom,int mode)
 {
   //Cerr<<"Here writing of the domain "<<nom_dom<<" in "<<nom_fic<<" mode "<<mode<<finl;
   const  DoubleTab& sommets=dom.les_sommets();
@@ -1306,7 +1306,7 @@ int medecrchamp(const Nom& nom_fic,const Nom& nom_dom,const Nom& nomcha1,const D
 // time le temps
 // compteur le numero du pas de temps (ne sert pas pour l'instant)
 // ToDo: suppress compteur variable (set to 1 and NEVER used !)
-void EcrMED::ecrire_champ(const Nom& type, const Nom& nom_fic, const Domaine& dom, const Nom& nom_cha1, const DoubleTab& val, const Noms& unite,
+void EcrMED::ecrire_champ(const Nom& type, const Nom& nom_fic, const Zone& dom, const Nom& nom_cha1, const DoubleTab& val, const Noms& unite,
                           const Noms& noms_compo, const Nom& type_elem, double time, int compteur)
 {
   const Nom& nom_dom = dom.le_nom();

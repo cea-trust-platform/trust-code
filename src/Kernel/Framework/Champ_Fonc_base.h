@@ -21,7 +21,7 @@
 
 class Zone_dis_base;
 class MD_Vector;
-class Domaine;
+class Zone;
 
 /*! @brief classe Champ_Fonc_base Classe de base des champs qui sont fonction d'une grandeur calculee
  *
@@ -45,7 +45,7 @@ public:
   virtual DoubleTab& remplir_coord_noeuds(DoubleTab&) const;
   virtual DoubleTab& remplir_coord_noeuds_compo(DoubleTab&, int) const;
   DoubleTab& valeur_aux(const DoubleTab&, DoubleTab&) const override;
-  const Domaine& domaine() const;
+  const Zone& domaine() const;
   int a_une_zone_dis_base() const override { return 1; }
   // Obsolete method: signature changed in order to generate a compiler error if old code is not removed
   virtual void creer_espace_distant(int dummy) { }

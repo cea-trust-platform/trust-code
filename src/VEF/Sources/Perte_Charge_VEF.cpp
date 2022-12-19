@@ -18,7 +18,7 @@
 #include <Zone_VEF.h>
 #include <Fluide_Incompressible.h>
 #include <Probleme_base.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Champ_Uniforme.h>
 #include <Sous_zone_VF.h>
 #include <Champ_P1NC.h>

@@ -29,7 +29,7 @@
 
 #include <interface_INITGAUSS.h>
 #include <interface_CALCULSI.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_instanciable(Op_Grad_EF,"Op_Grad_EF",Operateur_Grad_base);
 

@@ -20,7 +20,7 @@
 
 class Champ_base;
 class Zone_VF;
-class Domaine;
+class Zone;
 class Zone;
 
 class Champ_implementation
@@ -35,8 +35,8 @@ public:
   virtual int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const =0;
 
   // pas pure ...
-  virtual DoubleTab& valeur_aux_sommets(const Domaine& domain, DoubleTab& result) const;
-  virtual DoubleVect& valeur_aux_sommets_compo(const Domaine& domain, DoubleVect& result, int ncomp) const;
+  virtual DoubleTab& valeur_aux_sommets(const Zone& domain, DoubleTab& result) const;
+  virtual DoubleVect& valeur_aux_sommets_compo(const Zone& domain, DoubleVect& result, int ncomp) const;
 
 protected:
   const Zone_VF& get_zone_dis() const;

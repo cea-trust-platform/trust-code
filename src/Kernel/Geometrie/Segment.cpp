@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Segment.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_instanciable(Segment,"Segment",Elem_geom_base);
 
@@ -50,7 +50,7 @@ void Segment::reordonner()
 {
   Zone& zone=ma_zone.valeur();
   IntTab& elem=zone.les_elems();
-  const Domaine& dom=zone.domaine();
+  const Zone& dom=zone.domaine();
   ArrOfInt S(2);
   int i;
   const int nb_elem=zone.nb_elem();
@@ -99,7 +99,7 @@ int Segment::contient(const ArrOfDouble& pos, int element ) const
   assert(pos.size_array()==dimension);
 
   const Zone& zone=ma_zone.valeur();
-  const Domaine& dom=zone.domaine();
+  const Zone& dom=zone.domaine();
   const IntTab& elem=zone.les_elems();
   // Test whether OM = a.O1 with O and 1 the extreme points of the seg and M the point to be tested
   double autre_a = 0;
@@ -148,7 +148,7 @@ int Segment::contient(const ArrOfInt& pos, int element ) const
 void Segment::calculer_volumes(DoubleVect& volumes) const
 {
   const Zone& zone=ma_zone.valeur();
-  const Domaine& dom=zone.domaine();
+  const Zone& dom=zone.domaine();
   double dx;
   int S1,S2;
 

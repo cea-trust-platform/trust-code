@@ -24,7 +24,7 @@
 #include <Zone_VEF.h>
 #include <EFichier.h>
 #include <SFichier.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Param.h>
 
 Implemente_instanciable(Echange_contact_Correlation_VEF,"Paroi_Echange_contact_Correlation_VEF",Temperature_imposee_paroi);

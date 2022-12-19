@@ -22,7 +22,7 @@
 #include <Equation_base.h>
 #include <Zone_PolyMAC.h>
 #include <Zone_Cl_dis.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <array>
 
 Implemente_instanciable(Champ_Elem_PolyMAC,"Champ_Elem_PolyMAC",Champ_Inc_P0_base);

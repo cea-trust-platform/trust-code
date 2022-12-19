@@ -255,13 +255,13 @@ void Champ_Generique_Extraction::completer(const Postraitement_base& post)
 {
   Champ_Gen_de_Champs_Gen::completer(post);
   const Objet_U& ob = interprete().objet(dom_extrac_);
-  if (!sub_type(Domaine, ob))
+  if (!sub_type(Zone, ob))
     {
       Cerr << "Error in  Champ_Generique_Extraction:get_champ"<<finl;
       Cerr<<"We do not retrieve domain"<<finl;
       exit();
     }
-  domaine_ = ref_cast(Domaine,ob);
+  domaine_ = ref_cast(Zone,ob);
   const Champ_Generique_base& source = get_source(0);
 
   if (methode_=="champ_frontiere")
@@ -287,7 +287,7 @@ void Champ_Generique_Extraction::completer(const Postraitement_base& post)
 
     }
 
-  const Domaine& dom = source.get_ref_domain();
+  const Zone& dom = source.get_ref_domain();
   if (dom==domaine_.valeur())
     {
       Cerr<<"Error in Champ_Generique_Extraction:get_champ"<<finl;
@@ -387,7 +387,7 @@ void Champ_Generique_Extraction::completer(const Postraitement_base& post)
   discretiser_domaine();
 }
 
-const Domaine& Champ_Generique_Extraction::get_ref_domain() const
+const Zone& Champ_Generique_Extraction::get_ref_domain() const
 {
   if (domaine_.non_nul())
     return domaine_.valeur();
@@ -400,9 +400,9 @@ const Domaine& Champ_Generique_Extraction::get_ref_domain() const
   return get_ref_domain();
 }
 
-void Champ_Generique_Extraction::get_copy_domain(Domaine& domain) const
+void Champ_Generique_Extraction::get_copy_domain(Zone& domain) const
 {
-  const Domaine& dom = get_ref_domain();
+  const Zone& dom = get_ref_domain();
   domain = dom;
 }
 

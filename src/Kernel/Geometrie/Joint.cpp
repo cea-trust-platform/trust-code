@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Joint.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_instanciable(Joint,"Joint",Frontiere);
 

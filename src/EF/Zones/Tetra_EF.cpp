@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Tetra_EF.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Zone_EF.h>
 #include <Champ_P1_EF.h>
 #include <Equation_base.h>

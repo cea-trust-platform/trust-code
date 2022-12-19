@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Champ_front_fonc_pois_ipsn.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Frontiere_dis_base.h>
 
 Implemente_instanciable(Champ_front_fonc_pois_ipsn,"Champ_front_fonc_pois_ipsn",Champ_front_fonc);
@@ -68,7 +68,7 @@ int Champ_front_fonc_pois_ipsn::initialiser(double temps, const Champ_Inc_base& 
 
   const Frontiere& front=la_frontiere_dis->frontiere();
   const Zone& zone=front.zone();
-  const Domaine& domaine=zone.domaine();
+  const Zone& domaine=zone.domaine();
   const Faces& faces=front.faces();
 
   int nb_faces=front.nb_faces();

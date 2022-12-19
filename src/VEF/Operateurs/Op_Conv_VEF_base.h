@@ -24,7 +24,7 @@
 #include <Zone_VEF.h>
 #include <Zone_Cl_VEF.h>
 #include <Dirichlet.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Op_VEF_Face.h>
 #include <Milieu_base.h>
 

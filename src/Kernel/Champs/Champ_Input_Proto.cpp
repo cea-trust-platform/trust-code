@@ -20,7 +20,7 @@
 #include <Probleme_base.h>
 #include <Interprete.h>
 #include <TRUSTTab.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 using ICoCo::WrongArgument;
 

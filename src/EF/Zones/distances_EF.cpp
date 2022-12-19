@@ -13,7 +13,7 @@
 *
 *****************************************************************************/
 #include <distances_EF.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Motcle.h>
 
 double norm_3D_vit1(const DoubleTab& vit,int fac,int num1,

@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Polygone_poly.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Poly_geom_base.h>
 
 Implemente_instanciable( Polygone_poly, "Polygone_poly", Elem_poly_base ) ;

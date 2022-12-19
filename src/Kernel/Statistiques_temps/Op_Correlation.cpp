@@ -212,7 +212,7 @@ DoubleTab Op_Correlation::calculer_valeurs() const
   return correlation.valeurs();
 }
 
-int Op_Correlation::completer_post_statistiques(const Domaine& dom,const int is_axi,Format_Post_base& format)
+int Op_Correlation::completer_post_statistiques(const Zone& dom,const int is_axi,Format_Post_base& format)
 {
   return 1;
 }

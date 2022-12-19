@@ -21,7 +21,7 @@
 #include <Array_tools.h>
 #include <TRUSTLists.h>
 #include <ArrOfBit.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Param.h>
 
 Implemente_base(Partitionneur_base,"Partitionneur_base",Objet_U);
@@ -242,7 +242,7 @@ int Partitionneur_base::calculer_graphe_connexions_periodiques(const Zone& zone,
  *   c'est faux. Avec cette correction, cet algorithme est correct.
  *
  */
-int Partitionneur_base::corriger_sommets_bord(const Domaine& domaine,
+int Partitionneur_base::corriger_sommets_bord(const Zone& domaine,
                                               const Noms& liste_bords_perio,
                                               const ArrOfInt& renum_som_perio,
                                               const Static_Int_Lists& som_elem,
@@ -403,7 +403,7 @@ int Partitionneur_base::corriger_sommets_bord(const Domaine& domaine,
  *   tous les elements adjacents sont rattaches au meme processeur.
  *
  */
-int Partitionneur_base::corriger_multiperiodique(const Domaine& domaine,
+int Partitionneur_base::corriger_multiperiodique(const Zone& domaine,
                                                  const Noms& liste_bords_perio,
                                                  const ArrOfInt& renum_som_perio,
                                                  const Static_Int_Lists& som_elem,
@@ -614,7 +614,7 @@ int Partitionneur_base::corriger_multiperiodique(const Domaine& domaine,
  */
 int Partitionneur_base::corriger_bords_avec_graphe(const Static_Int_Lists& graph_elements_perio,
                                                    const Static_Int_Lists& som_elem,
-                                                   const Domaine& domaine,
+                                                   const Zone& domaine,
                                                    const Noms& liste_bords_perio,
                                                    IntVect& elem_part)
 {
@@ -664,7 +664,7 @@ int Partitionneur_base::corriger_bords_avec_graphe(const Static_Int_Lists& graph
  *    appeler directement corriger_periodique_avec_graphe)
  *
  */
-void Partitionneur_base::corriger_bords_avec_liste(const Domaine& dom,
+void Partitionneur_base::corriger_bords_avec_liste(const Zone& dom,
                                                    const Noms& liste_bords_periodiques,
                                                    const int my_offset,
                                                    IntVect& elem_part)

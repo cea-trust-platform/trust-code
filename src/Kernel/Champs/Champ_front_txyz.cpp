@@ -15,7 +15,7 @@
 //   Nouveau champ frontiere
 
 #include <Champ_front_txyz.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Frontiere_dis_base.h>
 #include <Zone_VF.h>
 #include <TRUSTTrav.h>

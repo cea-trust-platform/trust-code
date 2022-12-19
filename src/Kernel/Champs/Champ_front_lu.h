@@ -40,7 +40,7 @@ public:
   int is_bin(Nom name);
 
 protected :
-  REF(Domaine) mon_domaine;
+  REF(Zone) mon_domaine;
   Nom nom_fic;
 };
 

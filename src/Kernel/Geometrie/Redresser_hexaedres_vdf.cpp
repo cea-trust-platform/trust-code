@@ -15,7 +15,7 @@
 
 #include <Redresser_hexaedres_vdf.h>
 #include <Octree_Double.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Rectangle.h>
 #include <Hexaedre.h>
 #include <Quadrangle_VEF.h>

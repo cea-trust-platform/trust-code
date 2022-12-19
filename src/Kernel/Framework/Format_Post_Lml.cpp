@@ -115,7 +115,7 @@ int Format_Post_Lml::finir(const int est_le_dernier_post)
 }
 
 
-int Format_Post_Lml::completer_post(const Domaine& dom,const int is_axi,
+int Format_Post_Lml::completer_post(const Zone& dom,const int is_axi,
                                     const Nature_du_champ& nature,const int nb_compo,const Noms& noms_compo,
                                     const Motcle& loc_post,const Nom& le_nom_champ_post)
 {
@@ -138,7 +138,7 @@ int Format_Post_Lml::preparer_post(const Nom& id_du_domaine,const int est_le_pre
 /*! @brief voir Format_Post_base::ecrire_domaine
  *
  */
-int Format_Post_Lml::ecrire_domaine(const Domaine& domaine,const int est_le_premier_post)
+int Format_Post_Lml::ecrire_domaine(const Zone& domaine,const int est_le_premier_post)
 {
   //Appel de la methode statique specifique au format lml
   Nom nom_fich(lml_basename_);
@@ -171,7 +171,7 @@ int Format_Post_Lml::ecrire_temps(const double temps)
 /*! @brief voir Format_Post_base::ecrire_champ
  *
  */
-int Format_Post_Lml::ecrire_champ(const Domaine& domaine,const Noms& unite_, const Noms& noms_compo,
+int Format_Post_Lml::ecrire_champ(const Zone& domaine,const Noms& unite_, const Noms& noms_compo,
                                   int ncomp,double temps_,
                                   const Nom& id_champ,
                                   const Nom& id_du_domaine,
@@ -268,9 +268,9 @@ int Format_Post_Lml::preparer_post_lml()
   return 1;
 }
 
-int Format_Post_Lml::ecrire_domaine_lml(const Domaine& domaine,Nom& nom_fich)
+int Format_Post_Lml::ecrire_domaine_lml(const Zone& domaine,Nom& nom_fich)
 {
-  //Actuellement copie identique de la methode Domaine::postraiter_lml()
+  //Actuellement copie identique de la methode Zone::postraiter_lml()
 
   EcrFicPartage s;
   s.ouvrir(nom_fich,ios::app);
@@ -466,7 +466,7 @@ int Format_Post_Lml::ecrire_temps_lml(const double temps,Nom& nom_fich)
   return 1;
 }
 
-int Format_Post_Lml::ecrire_champ_lml(const Domaine& domaine,const Noms& unite_,const Noms& noms_compo,
+int Format_Post_Lml::ecrire_champ_lml(const Zone& domaine,const Noms& unite_,const Noms& noms_compo,
                                       int ncomp, double temps_,
                                       const Nom&   id_du_champ,
                                       const Nom&   id_du_domaine,

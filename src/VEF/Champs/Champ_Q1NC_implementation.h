@@ -40,8 +40,8 @@ public:
   double valeur_a_sommet_compo(int num_som, int le_poly, int ncomp) const;
   DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const override;
   DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const override;
-  DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const override;
-  DoubleVect& valeur_aux_sommets_compo(const Domaine&, DoubleVect&, int) const override;
+  DoubleTab& valeur_aux_sommets(const Zone&, DoubleTab&) const override;
+  DoubleVect& valeur_aux_sommets_compo(const Zone&, DoubleVect&, int) const override;
   DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const override;
   int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const override;
   void transforme_coord2D();

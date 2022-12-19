@@ -444,7 +444,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
 
   const IntTab& KEL=type_elemvef.KEL();
   const DoubleTab& xv=zone_VEF.xv();
-  const Domaine& domaine=zone.domaine();
+  const Zone& domaine=zone.domaine();
   const DoubleTab& coord_sommets=domaine.coord_sommets();
 
   const int * rang_elem_non_std_addr = copyToDevice(rang_elem_non_std);

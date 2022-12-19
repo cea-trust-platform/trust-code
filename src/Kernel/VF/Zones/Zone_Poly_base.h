@@ -25,7 +25,7 @@
 #include <TRUSTTrav.h>
 #include <Conds_lim.h>
 #include <Zone_VF.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Lapack.h>
 #include <math.h>
 #include <vector>

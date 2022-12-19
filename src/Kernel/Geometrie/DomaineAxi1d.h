@@ -16,7 +16,7 @@
 #ifndef DomaineAxi1d_included
 #define DomaineAxi1d_included
 
-#include <Domaine.h>
+#include <Zone.h>
 #include <Champ.h>
 #include <Ref_DoubleTab.h>
 class Param;

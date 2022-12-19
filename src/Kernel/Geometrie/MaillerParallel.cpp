@@ -13,7 +13,7 @@
 *
 *****************************************************************************/
 #include <MaillerParallel.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Motcle.h>
 #include <Scatter.h>
 #include <Statistiques.h>
@@ -46,7 +46,7 @@ Sortie& MaillerParallel::printOn(Sortie& os) const
 
 struct BlocData
 {
-  void add_bloc(Domaine& domaine, const ArrsOfDouble& coord_ijk) const;
+  void add_bloc(Zone& domaine, const ArrsOfDouble& coord_ijk) const;
   // xmin_tot = 0 implicitement
   // xmax_tot = nombre total de sommets dans le maillage
   // xmax = indice du dernier sommet + 1
@@ -65,7 +65,7 @@ struct BlocData
   void add_faces(Zone& zone, const Nom& nombord, int offset_sommets, int dir, int cote_max) const;
 };
 
-void BlocData::add_bloc(Domaine& domaine, const ArrsOfDouble& coord_ijk) const
+void BlocData::add_bloc(Zone& domaine, const ArrsOfDouble& coord_ijk) const
 {
   if (nb_elem(0) < 1 || nb_elem(1) < 1 || nb_elem(2) < 1)
     {
@@ -632,13 +632,13 @@ Entree& MaillerParallel::interpreter(Entree& is)
     }
 
   Objet_U& obj = objet(nom_domaine);
-  if(!sub_type(Domaine, obj))
+  if(!sub_type(Zone, obj))
     {
-      Cerr << "obj : " << nom_domaine << " is not an object of type Domaine !" << finl;
+      Cerr << "obj : " << nom_domaine << " is not an object of type Zone !" << finl;
       exit();
     }
 
-  Domaine& domaine = ref_cast(Domaine, obj);
+  Zone& domaine = ref_cast(Zone, obj);
 
   const int numproc = Process::me();
 

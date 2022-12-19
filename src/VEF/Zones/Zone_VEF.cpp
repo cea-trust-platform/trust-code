@@ -26,7 +26,7 @@
 #include <Tetra_VEF.h>
 #include <Quadri_VEF.h>
 #include <Hexa_VEF.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <MD_Vector_tools.h>
 
 Implemente_instanciable(Zone_VEF,"Zone_VEF",Zone_VF);

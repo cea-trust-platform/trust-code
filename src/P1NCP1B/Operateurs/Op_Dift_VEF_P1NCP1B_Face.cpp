@@ -20,7 +20,7 @@
 #include <Symetrie.h>
 #include <Neumann_sortie_libre.h>
 #include <Champ_Uniforme.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <TRUSTLists.h>
 #include <Solv_GCP.h>
 #include <SSOR.h>
@@ -139,7 +139,7 @@ DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_gradient_som(const DoubleTab& vit,
 
   const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b, (la_zone_vef.valeur()));
   const Zone& zone = zone_VEF.zone();
-  const Domaine& dom = zone.domaine();
+  const Zone& dom = zone.domaine();
   const DoubleTab& face_normales = zone_VEF.face_normales();
   const IntTab& som_elem = zone.les_elems();
   const IntTab& elem_faces = zone_VEF.elem_faces();
@@ -431,7 +431,7 @@ DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_divergence_som(double nu, const Do
 {
   const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b, la_zone_vef.valeur());
   const Zone& zone = zone_VEF.zone();
-  const Domaine& dom = zone.domaine();
+  const Zone& dom = zone.domaine();
   const DoubleTab& face_normales = zone_VEF.face_normales();
   const IntTab& som_elem = zone.les_elems();
   const IntTab& elem_faces = zone_VEF.elem_faces();
@@ -497,7 +497,7 @@ DoubleTab& Op_Dift_VEF_P1NCP1B_Face::ajouter(const DoubleTab& inconnue, DoubleTa
   //  const Zone_Cl_VEFP1B& zone_Cl_VEF = la_zcl_vef.valeur();
   const Zone_VEF_PreP1b& zone_VEF = la_zone_vef.valeur();
   const Zone& zone = zone_VEF.zone();
-  const Domaine& dom = zone.domaine();
+  const Zone& dom = zone.domaine();
   int nb_elem_tot = zone.nb_elem_tot();
   int nb_som_tot = dom.nb_som_tot();
 

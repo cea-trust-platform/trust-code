@@ -24,7 +24,7 @@
 #include <Equation_base.h>
 #include <Probleme_base.h>
 #include <Dirichlet.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Zone_VF.h>
 
 Implemente_base_sans_constructeur(Champ_Inc_base,"Champ_Inc_base",Champ_base);
@@ -631,7 +631,7 @@ int Champ_Inc_base::remplir_coord_noeuds_et_polys_compo(DoubleTab& coord, IntVec
   return remplir_coord_noeuds_et_polys(coord, poly);
 }
 
-const Domaine& Champ_Inc_base::domaine() const
+const Zone& Champ_Inc_base::domaine() const
 {
   return zone_dis_base().zone().domaine();
 }

@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Champ_Inc_P0_base.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Equation_base.h>
 #include <Zone_dis_base.h>
 #include <Frontiere_dis_base.h>

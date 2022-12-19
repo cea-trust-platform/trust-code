@@ -17,7 +17,7 @@
 #include <Champ_Fonc_base.h>
 #include <MD_Vector_tools.h>
 #include <Zone_VF.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_base(Champ_Fonc_base, "Champ_Fonc_base", Champ_Don_base);
 
@@ -227,7 +227,7 @@ int Champ_Fonc_base::remplir_coord_noeuds_et_polys_compo(DoubleTab&, IntVect&, i
   return 0;
 }
 
-const Domaine& Champ_Fonc_base::domaine() const
+const Zone& Champ_Fonc_base::domaine() const
 {
   return zone_dis_base().zone().domaine();
 }

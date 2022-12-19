@@ -27,14 +27,14 @@ class Partitionneur_Partition : public Partitionneur_base
 public:
 
   void set_param(Param& param) override;
-  void associer_domaine(const Domaine& domaine) override;
+  void associer_domaine(const Zone& domaine) override;
   void initialiser();
   void construire_partition(IntVect& elem_part, int& nb_parts_tot) const override;
 
 private:
   // Parametres du partitionneur
-  REF(Domaine) ref_domaine_interpol_;
-  REF(Domaine) ref_domaine_calcul_;
+  REF(Zone) ref_domaine_interpol_;
+  REF(Zone) ref_domaine_calcul_;
   Nom dom_calcul_;
 };
 #endif

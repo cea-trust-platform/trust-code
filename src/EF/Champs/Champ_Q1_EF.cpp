@@ -15,7 +15,7 @@
 
 #include <Champ_Q1_EF.h>
 #include <Zone_EF.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Equation.h>
 #include <Debog.h>
 

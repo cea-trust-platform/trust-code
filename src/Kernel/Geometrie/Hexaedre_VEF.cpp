@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Hexaedre_VEF.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_instanciable(Hexaedre_VEF,"Hexaedre_VEF",Elem_geom_base);
 
@@ -57,7 +57,7 @@ const Nom& Hexaedre_VEF::nom_lml() const
  *
  * @return (Nom&) toujours egal a "HEXA8"
  */
-static int entre_faces(const Zone& zone,const Domaine& dom,const ArrOfDouble& pos, int Asom0_, int Asom1_, int Asom2_, int Bsom0_, int Bsom1_, int Bsom2_)
+static int entre_faces(const Zone& zone,const Zone& dom,const ArrOfDouble& pos, int Asom0_, int Asom1_, int Asom2_, int Bsom0_, int Bsom1_, int Bsom2_)
 {
   double prodA,prodB;
   const DoubleTab& coord=dom.les_sommets();
@@ -111,7 +111,7 @@ static int entre_faces(const Zone& zone,const Domaine& dom,const ArrOfDouble& po
  *
  * @return (Nom&) toujours egal a "HEXA8"
  */
-static int contient_Tetra(const Zone& zone,const Domaine& dom,const ArrOfDouble& pos, int som0_, int som1_, int som2_, int som3_, int aff)
+static int contient_Tetra(const Zone& zone,const Zone& dom,const ArrOfDouble& pos, int som0_, int som1_, int som2_, int som3_, int aff)
 {
   double prod1,prod2;
   int som0, som1, som2, som3;
@@ -250,7 +250,7 @@ int Hexaedre_VEF::contient(const ArrOfDouble& pos, int element ) const
 {
   assert(pos.size_array()==3);
   const Zone& zone=ma_zone.valeur();
-  const Domaine& dom=zone.domaine();
+  const Zone& dom=zone.domaine();
   int som0 = zone.sommet_elem(element,0);
   int som1 = zone.sommet_elem(element,1);
   int som2 = zone.sommet_elem(element,2);
@@ -324,7 +324,7 @@ int Hexaedre_VEF::contient(const ArrOfInt& som, int element ) const
 void Hexaedre_VEF::calculer_volumes(DoubleVect& volumes) const
 {
   const Zone& zone=ma_zone.valeur();
-  const Domaine& dom=zone.domaine();
+  const Zone& dom=zone.domaine();
   IntTab face_sommet_global;
   face_sommet_global.resize(6,4);
   double x0,y0,z0;

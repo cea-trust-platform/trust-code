@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Lire_Ideas.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <EFichier.h>
 #include <Scatter.h>
 
@@ -37,7 +37,7 @@ Entree& Lire_Ideas::interpreter_(Entree& is)
   Nom nom_fic;
   associer_domaine(is);
   is >> nom_fic;
-  Domaine& dom=domaine();
+  Zone& dom=domaine();
   //
   int NDIM=dimension;
   int NNOEUDS=0;

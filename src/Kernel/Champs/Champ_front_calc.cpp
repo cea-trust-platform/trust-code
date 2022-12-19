@@ -20,7 +20,7 @@
 #include <Equation_base.h>
 #include <Probleme_base.h>
 #include <Interprete.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Zone_VF.h>
 
 Implemente_instanciable_sans_constructeur(Champ_front_calc,"Champ_front_calc",Ch_front_var_instationnaire_dep);

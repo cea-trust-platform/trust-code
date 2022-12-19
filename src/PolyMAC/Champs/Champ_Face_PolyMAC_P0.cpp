@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Champ_Face_PolyMAC_P0.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Zone_VF.h>
 #include <Champ_Uniforme.h>
 #include <Zone_PolyMAC_P0.h>

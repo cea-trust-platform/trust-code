@@ -15,7 +15,7 @@
 
 #include <Interpolation_IBM_elem_fluid.h>
 #include <TRUSTTrav.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Param.h>
 
 Implemente_instanciable( Interpolation_IBM_elem_fluid, "Interpolation_IBM_element_fluide|IBM_element_fluide", Interpolation_IBM_base ) ;

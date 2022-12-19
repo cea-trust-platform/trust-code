@@ -25,7 +25,7 @@
 #include <Echange_externe_impose.h>
 #include <Symetrie.h>
 #include <Champ_Uniforme.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Ref_Champ_P1NC.h>
 #include <Debog.h>
 #include <TRUSTLists.h>
@@ -480,7 +480,7 @@ calculer_gradient_som(const DoubleVect& inconnue) const
   const Zone_VEF_PreP1b& zone_VEF = zone_VEFPreP1B();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   const Zone& zone = zone_VEF.zone();
-  const Domaine& dom=zone.domaine();
+  const Zone& dom=zone.domaine();
 
   const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
 
@@ -855,7 +855,7 @@ calculer_divergence_som(DoubleVect& div) const
 {
   const Zone_VEF_PreP1b& zone_VEF = zone_VEFPreP1B();
   const Zone& zone = zone_VEF.zone();
-  const Domaine& dom=zone.domaine();
+  const Zone& dom=zone.domaine();
 
   const DoubleTab& face_normales = zone_VEF.face_normales();
   ArrOfDouble sigma(dimension);
@@ -1218,7 +1218,7 @@ void Op_Diff_VEFP1NCP1B_Face::calculer_flux_bords_som(const DoubleVect& inconnue
   const Zone_VEF_PreP1b& zone_VEF = zone_VEFPreP1B();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   const Zone& zone = zone_VEF.zone();
-  const Domaine& dom=zone.domaine();
+  const Zone& dom=zone.domaine();
 
   const IntTab& face_sommets=zone_VEF.face_sommets();
 
@@ -2221,7 +2221,7 @@ remplir_nu_p1(const DoubleTab& nu_elem,DoubleTab& nu_p1) const
 {
   const Zone_VEF_PreP1b& zone_VEF=zone_VEFPreP1B();
   const Zone& zone=zone_VEF.zone();
-  const Domaine& dom=zone.domaine();
+  const Zone& dom=zone.domaine();
 
   const int nb_som = dom.nb_som();
   const int nb_elem_tot=zone.nb_elem_tot();
@@ -2316,7 +2316,7 @@ void Op_Diff_VEFP1NCP1B_Face::liste_face(IntLists& liste,int& nnz) const
   const Zone_VEF_PreP1b& zone_VEF = zone_VEFPreP1B();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   const Zone& zone = zone_VEF.zone();
-  const Domaine& dom=zone.domaine();
+  const Zone& dom=zone.domaine();
 
 
   const IntTab& som_elem=zone.les_elems();
@@ -2719,7 +2719,7 @@ gradient_som(const int face,int& nnz, IntVect& som_glob,DoubleTab& grad) const
 {
   const Zone_VEF_PreP1b& zone_VEF=zone_VEFPreP1B();
   const Zone& zone=zone_VEF.zone();
-  const Domaine& dom=zone.domaine();
+  const Zone& dom=zone.domaine();
 
   const DoubleTab& face_normales=zone_VEF.face_normales();
   const DoubleVect& volume_aux_sommets=zone_VEF.volume_aux_sommets();
@@ -2834,7 +2834,7 @@ gradient_som_CL(const int face,int& nnz, IntVect& som_glob,DoubleTab& grad) cons
 {
   const Zone_VEF_PreP1b& zone_VEF=zone_VEFPreP1B();
   const Zone& zone=zone_VEF.zone();
-  const Domaine& dom=zone.domaine();
+  const Zone& dom=zone.domaine();
 
   const DoubleTab& face_normales=zone_VEF.face_normales();
   const DoubleVect& volume_aux_sommets=zone_VEF.volume_aux_sommets();
@@ -2938,7 +2938,7 @@ void Op_Diff_VEFP1NCP1B_Face::isInStencil(int face,int som_glob,
 {
   const Zone_VEF_PreP1b& zone_VEF=zone_VEFPreP1B();
   const Zone& zone=zone_VEF.zone();
-  const Domaine& dom=zone.domaine();
+  const Zone& dom=zone.domaine();
 
   const IntTab& face_voisins=zone_VEF.face_voisins();
   const IntTab& elem_som=zone.les_elems();
@@ -3194,7 +3194,7 @@ void Op_Diff_VEFP1NCP1B_Face::test() const
   const Zone_VEF_PreP1b& zone_VEF=zone_VEFPreP1B();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   const Zone& zone = zone_VEF.zone();
-  const Domaine& dom=zone.domaine();
+  const Zone& dom=zone.domaine();
 
   const Solveur_Masse& solveur_masse=equation().solv_masse();
 

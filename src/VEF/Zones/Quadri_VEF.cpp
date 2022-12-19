@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Quadri_VEF.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_instanciable_sans_constructeur(Quadri_VEF,"Quadri_VEF",Elem_VEF_base);
 

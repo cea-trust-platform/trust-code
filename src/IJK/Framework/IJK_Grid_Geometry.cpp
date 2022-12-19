@@ -15,7 +15,7 @@
 
 #include <IJK_Grid_Geometry.h>
 #include <Zone.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <communications.h>
 #include <IJK_Field.h>
 #include <Param.h>

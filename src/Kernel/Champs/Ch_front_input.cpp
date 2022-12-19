@@ -17,7 +17,7 @@
 #include <Probleme_base.h>
 #include <Schema_Temps_base.h>
 #include <Interprete.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Frontiere_dis_base.h>
 #include <communications.h>
 #include <Convert_ICoCoTrioField.h>

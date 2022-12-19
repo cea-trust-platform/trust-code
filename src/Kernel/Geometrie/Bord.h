@@ -24,7 +24,7 @@
 /*! @brief Classe Bord Cette classe represente un bord d'une zone, c'est un type de frontiere
  *
  *     (derive de Frontiere).
- *     On appelle Bord la surface qui borde un Domaine, pour une equation
+ *     On appelle Bord la surface qui borde un Zone, pour une equation
  *     donnee l'utilisateur doit fournir une condition aux limites a chaque
  *     Bord.
  *

@@ -15,7 +15,7 @@
 
 #include <Champ_Q4_implementation.h>
 #include <Champ_base.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 DoubleVect& Champ_Q4_implementation::valeur_a_elem(const DoubleVect& position, DoubleVect& val, int num_elem) const
 {
@@ -162,7 +162,7 @@ DoubleVect& Champ_Q4_implementation::valeur_aux_elems_compo(const DoubleTab&, co
   return val;
 }
 
-DoubleTab& Champ_Q4_implementation::valeur_aux_sommets(const Domaine& dom, DoubleTab& val) const
+DoubleTab& Champ_Q4_implementation::valeur_aux_sommets(const Zone& dom, DoubleTab& val) const
 {
   const Champ_base& cha = le_champ();
   const DoubleTab& ch = cha.valeurs();
@@ -190,7 +190,7 @@ DoubleTab& Champ_Q4_implementation::valeur_aux_sommets(const Domaine& dom, Doubl
     }
   return val;
 }
-DoubleVect& Champ_Q4_implementation::valeur_aux_sommets_compo(const Domaine& dom, DoubleVect& val, int ncomp) const
+DoubleVect& Champ_Q4_implementation::valeur_aux_sommets_compo(const Zone& dom, DoubleVect& val, int ncomp) const
 {
   const Champ_base& cha = le_champ();
   const DoubleTab& ch = cha.valeurs();

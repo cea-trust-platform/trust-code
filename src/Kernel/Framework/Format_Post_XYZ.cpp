@@ -115,7 +115,7 @@ int Format_Post_XYZ::finir(const int est_le_dernier_post)
 }
 
 
-int Format_Post_XYZ::completer_post(const Domaine& dom,const int is_axi,
+int Format_Post_XYZ::completer_post(const Zone& dom,const int is_axi,
                                     const Nature_du_champ& nature,const int nb_compo,const Noms& noms_compo,
                                     const Motcle& loc_post,const Nom& le_nom_champ_post)
 {
@@ -138,7 +138,7 @@ int Format_Post_XYZ::preparer_post(const Nom& id_du_domaine,const int est_le_pre
 /*! @brief voir Format_Post_base::ecrire_domaine
  *
  */
-int Format_Post_XYZ::ecrire_domaine(const Domaine& domaine,const int est_le_premier_post)
+int Format_Post_XYZ::ecrire_domaine(const Zone& domaine,const int est_le_premier_post)
 {
   //Appel de la methode statique specifique au format xyz
   Nom nom_fich(xyz_basename_);
@@ -171,7 +171,7 @@ int Format_Post_XYZ::ecrire_temps(const double temps)
 /*! @brief voir Format_Post_base::ecrire_champ
  *
  */
-int Format_Post_XYZ::ecrire_champ2(const Domaine& domaine,const Noms& unite_, const Noms& noms_compo,
+int Format_Post_XYZ::ecrire_champ2(const Zone& domaine,const Noms& unite_, const Noms& noms_compo,
                                    int ncomp,double temps_,
                                    const Nom& id_champ,
                                    const Nom& id_du_domaine,
@@ -284,7 +284,7 @@ int Format_Post_XYZ::preparer_post_xyz()
   return 1;
 }
 
-int Format_Post_XYZ::ecrire_domaine_xyz(const Domaine& domaine,Nom& nom_fich)
+int Format_Post_XYZ::ecrire_domaine_xyz(const Zone& domaine,Nom& nom_fich)
 {
   return 1;
 }
@@ -294,7 +294,7 @@ int Format_Post_XYZ::ecrire_temps_xyz(const double temps,Nom& nom_fich)
   return 1;
 }
 
-int Format_Post_XYZ::ecrire_champ_xyz(const Domaine& domaine,const Noms& unite_,const Noms& noms_compo,
+int Format_Post_XYZ::ecrire_champ_xyz(const Zone& domaine,const Noms& unite_,const Noms& noms_compo,
                                       int ncomp,double temps_,
                                       const Nom&   id_du_champ,
                                       const Nom&   id_du_domaine,

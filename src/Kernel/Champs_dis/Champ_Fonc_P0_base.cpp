@@ -16,7 +16,7 @@
 #include <Champ_Fonc_P0_base.h>
 #include <Frontiere_dis_base.h>
 #include <Zone_dis_base.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Zone_VF.h>
 
 Implemente_base(Champ_Fonc_P0_base, "Champ_Fonc_P0_base", Champ_Fonc_base);

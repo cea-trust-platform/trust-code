@@ -53,12 +53,12 @@ public:
     return Champ_implementation_P0::valeur_aux_elems_compo(positions, polys, result, ncomp);
   }
 
-  inline DoubleTab& valeur_aux_sommets(const Domaine& domain, DoubleTab& result) const override
+  inline DoubleTab& valeur_aux_sommets(const Zone& domain, DoubleTab& result) const override
   {
     return Champ_implementation_P0::valeur_aux_sommets(domain, result);
   }
 
-  inline DoubleVect& valeur_aux_sommets_compo(const Domaine& domain, DoubleVect& result, int ncomp) const override
+  inline DoubleVect& valeur_aux_sommets_compo(const Zone& domain, DoubleVect& result, int ncomp) const override
   {
     return Champ_implementation_P0::valeur_aux_sommets_compo(domain, result, ncomp);
   }

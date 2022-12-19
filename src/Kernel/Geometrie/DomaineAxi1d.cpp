@@ -16,7 +16,7 @@
 #include <DomaineAxi1d.h>
 #include <Param.h>
 
-Implemente_instanciable_sans_constructeur( DomaineAxi1d, "DomaineAxi1d", Domaine ) ;
+Implemente_instanciable_sans_constructeur( DomaineAxi1d, "DomaineAxi1d", Zone ) ;
 // XD DomaineAxi1d domaine DomaineAxi1d -1 1D domain
 DomaineAxi1d::DomaineAxi1d()
 {
@@ -25,7 +25,7 @@ DomaineAxi1d::DomaineAxi1d()
 
 Sortie& DomaineAxi1d::printOn( Sortie& os ) const
 {
-  Domaine::printOn( os );
+  Zone::printOn( os );
   return os;
 }
 

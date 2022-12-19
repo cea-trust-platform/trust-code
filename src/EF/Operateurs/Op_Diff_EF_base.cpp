@@ -21,7 +21,7 @@
 #include <Zone_EF.h>
 #include <Zone_Cl_EF.h>
 #include <Champ_Fonc_P0_base.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_base_sans_constructeur(Op_Diff_EF_base,"Op_Diff_EF_base",Operateur_Diff_base);
 

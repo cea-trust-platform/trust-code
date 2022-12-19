@@ -32,7 +32,7 @@ Entree& Modif_bord_to_raccord::interpreter_(Entree& is)
   Nom nom_bord;
   associer_domaine(is);
   is>>nom_bord;
-  Domaine& dom=domaine();
+  Zone& dom=domaine();
 
   Zone& zone=dom.zone(0);
   Bord& bord=zone.bord(nom_bord);

@@ -17,14 +17,14 @@
 
 #include <TRUSTTabs_forward.h>
 #include <Interprete.h>
-class Domaine;
+class Zone;
 
 class MaillerParallel : public Interprete
 {
   Declare_instanciable(MaillerParallel);
 public:
   Entree& interpreter(Entree& is) override;
-  //static void construire_domaine(Domaine & domaine, const int numproc);
+  //static void construire_domaine(Zone & domaine, const int numproc);
 };
 
 #endif

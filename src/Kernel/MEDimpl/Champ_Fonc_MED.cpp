@@ -191,7 +191,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
   nommer(nom_champ_);
 
   int field_size;
-  bool domain_exist=( interprete().objet_existant(nom_dom_) && sub_type(Domaine, interprete().objet(nom_dom_)) );
+  bool domain_exist=( interprete().objet_existant(nom_dom_) && sub_type(Zone, interprete().objet(nom_dom_)) );
   if (use_existing_domain_)
     {
       if (!domain_exist)
@@ -203,7 +203,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
       else
         {
           // use_existing_domain utilisable en parallele uniquement si le process 0 gere tout le domaine ou si decoup specifie:
-          const Domaine& le_domaine=ref_cast(Domaine, interprete().objet(nom_dom_));
+          const Zone& le_domaine=ref_cast(Zone, interprete().objet(nom_dom_));
           if (Process::nproc()>1 && mp_max((int)(le_domaine.nb_som()>0)) != 0 && use_medcoupling_==1)
             {
               Cerr << "Warning, you can't use use_existing_domain on a partitionned domain like " << nom_dom_ << finl;
@@ -218,7 +218,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
     {
       Cerr<<nom_dom_<<" was not read into the med file because it already exists." <<finl;
 
-      const Domaine& le_domaine=ref_cast(Domaine, interprete().objet(nom_dom_));
+      const Zone& le_domaine=ref_cast(Zone, interprete().objet(nom_dom_));
 
 #ifndef NDEBUG
       // on va verifier que l'on a le meme domaine en mode debug car lent
@@ -267,7 +267,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
             }
 
           // Reset:
-          dom_med_=Domaine();
+          dom_med_=Zone();
         }
 #endif
       field_size = creer(nom_fichier_med_,le_domaine,loc_,temps_sauv_);
@@ -288,7 +288,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
         {
           // On verifie que l'on a bien des recouvrements identiques (verification imparfaite sur les BoundingBox)
           DoubleTab BB1 = dom_med_.getBoundingBox();
-          const Domaine& dom_calcul = ref_cast(Domaine, interprete().objet(nom_dom_));
+          const Zone& dom_calcul = ref_cast(Zone, interprete().objet(nom_dom_));
           DoubleTab BB2 = dom_calcul.getBoundingBox();
           for (int i=0; i<dimension; i++)
             for (int j=0; j<2; j++)
@@ -579,7 +579,7 @@ INTERP_KERNEL::NormalizedCellType type_geo_trio_to_type_medcoupling(const Nom& t
 #endif
 #endif
 
-int Champ_Fonc_MED::creer(const Nom& nom_fic, const Domaine& un_dom, const Motcle& localisation, ArrOfDouble& temps_sauv)
+int Champ_Fonc_MED::creer(const Nom& nom_fic, const Zone& un_dom, const Motcle& localisation, ArrOfDouble& temps_sauv)
 {
 #ifdef MED_
   nom_fichier_med_ = nom_fic;

@@ -69,7 +69,7 @@ public:
     return le_champ_tabule_discretise().valeur_a_elem(position, les_valeurs, le_poly);
   }
 
-  inline DoubleVect& valeur_aux_sommets_compo(const Domaine& dom, DoubleVect& les_valeurs, int compo) const override
+  inline DoubleVect& valeur_aux_sommets_compo(const Zone& dom, DoubleVect& les_valeurs, int compo) const override
   {
     return le_champ_tabule_discretise().valeur_aux_sommets_compo(dom, les_valeurs, compo);
   }
@@ -79,7 +79,7 @@ public:
     return le_champ_tabule_discretise().valeur_aux_elems(positions, les_polys, les_valeurs);
   }
 
-  inline DoubleTab& valeur_aux_sommets(const Domaine& dom, DoubleTab& les_valeurs) const override
+  inline DoubleTab& valeur_aux_sommets(const Zone& dom, DoubleTab& les_valeurs) const override
   {
     return le_champ_tabule_discretise().valeur_aux_sommets(dom, les_valeurs);
   }

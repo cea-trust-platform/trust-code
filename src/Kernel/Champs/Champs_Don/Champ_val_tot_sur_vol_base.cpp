@@ -15,7 +15,7 @@
 
 #include <Champ_val_tot_sur_vol_base.h>
 #include <Interprete.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Zone_VF.h>
 #include <Sous_Zone.h>
 

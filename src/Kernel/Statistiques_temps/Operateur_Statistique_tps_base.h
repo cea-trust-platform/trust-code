@@ -19,7 +19,7 @@
 #include <Integrale_tps_Champ.h>
 class Probleme_base;
 class Zone_dis_base;
-class Domaine;
+class Zone;
 class Nom;
 
 
@@ -55,7 +55,7 @@ public:
   virtual void initialiser(double val) =0;
   virtual void completer(const Probleme_base& ) =0;
   virtual DoubleTab calculer_valeurs() const =0;
-  virtual int completer_post_statistiques(const Domaine& dom,const int is_axi,Format_Post_base& format);
+  virtual int completer_post_statistiques(const Zone& dom,const int is_axi,Format_Post_base& format);
 
 protected:
   Nom localisation_post_;

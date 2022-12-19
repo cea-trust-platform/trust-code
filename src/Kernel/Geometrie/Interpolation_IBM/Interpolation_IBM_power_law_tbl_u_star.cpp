@@ -16,7 +16,7 @@
 #include <Interpolation_IBM_power_law_tbl_u_star.h>
 #include <TRUSTTrav.h>
 
-#include <Domaine.h>
+#include <Zone.h>
 #include <Param.h>
 
 Implemente_instanciable( Interpolation_IBM_power_law_tbl_u_star, "Interpolation_IBM_power_law_tbl_u_star|IBM_power_law_tbl_u_star", Interpolation_IBM_mean_gradient ) ;

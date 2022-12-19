@@ -16,7 +16,7 @@
 #include <Champ_implementation_P1.h>
 #include <Zone_Poly_base.h>
 #include <Octree_Double.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 double Champ_implementation_P1::form_function(const ArrOfDouble& position, const IntTab& les_elems, const DoubleTab& nodes, ArrOfInt& index, int cell, int ddl) const
 {
@@ -174,7 +174,7 @@ void Champ_implementation_P1::value_interpolation(const DoubleTab& positions, co
  *   x y [z] compo1 [compo2 [compo3 ... ]]   (type double)
  *
  */
-void Champ_implementation_P1::init_from_file(DoubleTab& val, const Domaine& dom, int nb_comp, double tolerance, Entree& input)
+void Champ_implementation_P1::init_from_file(DoubleTab& val, const Zone& dom, int nb_comp, double tolerance, Entree& input)
 {
   val.resize(0, nb_comp);
   dom.creer_tableau_sommets(val, Array_base::NOCOPY_NOINIT);

@@ -23,7 +23,7 @@
 #include <Ref_Zone_Cl_EF.h>
 #include <Zone_EF.h>
 #include <Zone_Cl_EF.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Op_EF_base.h>
 
 /*! @brief class Op_Conv_EF_base

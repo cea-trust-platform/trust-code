@@ -16,7 +16,7 @@
 #include <Linear_algebra_tools_impl.h>
 #include <Champ_implementation_Q1.h>
 #include <Linear_algebra_tools.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 static int faces_sommets_quadra[4][2] =
 {

@@ -19,7 +19,7 @@
 
 #include <TRUSTVects.h>
 #include <RTabInt.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Octree.h>
 
 Implemente_instanciable_sans_constructeur(OctreeRoot,"OctreeRoot",Objet_U);
@@ -585,7 +585,7 @@ void Octree::construire(int nb_octrees, const ArrOfInt& Tab,
     {
       //else
       const Zone& z=zone();
-      const Domaine& dom=z.domaine();
+      const Zone& dom=z.domaine();
       IntVects SousTab(nb_octrees);
       ArrOfInt compteur(nb_octrees);
       int nb_som_elem=z.nb_som_elem();
@@ -713,7 +713,7 @@ void OctreeRoot::construire(int reel_prec)
   reel_=reel_prec;
   pere=0;
   const Zone& z=zone();
-  const Domaine& dom=z.domaine();
+  const Zone& dom=z.domaine();
 
   {
     // Calcul du min et du max des coordonnees dans chaque direction
@@ -789,7 +789,7 @@ int OctreeRoot::rang_sommet(double x, double y, double z) const
   if (elem != -1)
     {
       const Zone& zo=zone();
-      const Domaine& dom=zo.domaine();
+      const Zone& dom=zo.domaine();
       int nb_som_elem=zo.nb_som_elem();
       double epsilon=get_epsilon();
       for(int i=0; i<nb_som_elem; i++)

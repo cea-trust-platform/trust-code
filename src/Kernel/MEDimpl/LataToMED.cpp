@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <LataToMED.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <EFichierBin.h>
 #include <EChaine.h>
 #include <PE_Groups.h>
@@ -49,7 +49,7 @@ Entree& LataToMED::readOn(Entree& is)
   return Interprete::readOn(is);
 }
 
-void convert_domain_to_Domaine(  const Domain& dom , Domaine& dom_trio)
+void convert_domain_to_Domaine(  const Domain& dom , Zone& dom_trio)
 {
   //      dom_trio.les_sommets()=geom.nodes_;
   // mais geom.nodes est un FloatTab
@@ -239,7 +239,7 @@ Entree& latatoother::interpreter(Entree& is)
             Domain_Id id(geoms[i], 1, -1);
             const Domain& dom = filter.get_geometry(id);
 
-            Domaine dom_trio;
+            Zone dom_trio;
             dom_trio.nommer(geoms[i]);
             convert_domain_to_Domaine(dom,dom_trio);
             int est_le_premier_post=(i==0);
@@ -269,7 +269,7 @@ Entree& latatoother::interpreter(Entree& is)
               Domain_Id id(geoms[i], timestate, -1);
               const Domain& dom = filter.get_geometry(id);
 
-              Domaine dom_trio;
+              Zone dom_trio;
               dom_trio.nommer(geoms[i]);
               convert_domain_to_Domaine(dom,dom_trio);
               Field_UNames fields = filter.get_exportable_field_unames(geoms[i]);

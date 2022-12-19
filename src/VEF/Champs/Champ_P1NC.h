@@ -50,7 +50,7 @@ public:
   int imprime(Sortie&, int) const override;
   void calcul_critere_Q(DoubleVect&) const;
 
-  virtual double norme_L2(const Domaine&) const;
+  virtual double norme_L2(const Zone&) const;
   Champ_base& affecter_(const Champ_base&) override;
   void verifie_valeurs_cl() override;
 
@@ -58,8 +58,8 @@ public:
   static DoubleTab& calcul_gradient(const DoubleTab&, DoubleTab&, const Zone_Cl_VEF&);
   static DoubleTab& calcul_duidxj_paroi(DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&, const Zone_Cl_VEF&);
 
-  virtual double norme_H1(const Domaine&) const;
-  virtual double norme_L2_H1(const Domaine& dom) const;
+  virtual double norme_H1(const Zone&) const;
+  virtual double norme_L2_H1(const Zone& dom) const;
   static double calculer_integrale_volumique(const Zone_VEF&, const DoubleVect&, Ok_Perio ok);
 
   // Methodes inlines
@@ -99,12 +99,12 @@ public:
     return Champ_P1NC_implementation::valeur_aux_elems_compo_smooth(positions, les_polys, tab_valeurs, ncomp);
   }
 
-  inline DoubleTab& valeur_aux_sommets(const Domaine& dom, DoubleTab& val) const override
+  inline DoubleTab& valeur_aux_sommets(const Zone& dom, DoubleTab& val) const override
   {
     return Champ_P1NC_implementation::valeur_aux_sommets(dom, val);
   }
 
-  inline DoubleVect& valeur_aux_sommets_compo(const Domaine& dom, DoubleVect& val, int comp) const override
+  inline DoubleVect& valeur_aux_sommets_compo(const Zone& dom, DoubleVect& val, int comp) const override
   {
     return Champ_P1NC_implementation::valeur_aux_sommets_compo(dom, val, comp);
   }

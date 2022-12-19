@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Ch_front_Vortex.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <LecFicDiffuse.h>
 #include <Interprete.h>
 #include <Zone_VF.h>
@@ -67,7 +67,7 @@ Entree& Ch_front_Vortex::readOn(Entree& is)
   Nom nom;
   is >> nom >> geom >> nu >> utau;
 
-  mon_domaine = ref_cast(Domaine, Interprete::objet(nom));
+  mon_domaine = ref_cast(Zone, Interprete::objet(nom));
 
   return is;
 }
@@ -164,7 +164,7 @@ int Ch_front_Vortex::initialiser(double un_temps, const Champ_Inc_base& inco)
   if (!Champ_front_var_instationnaire::initialiser(un_temps,inco))
     return 0;
 
-  Domaine& domaine=mon_domaine.valeur();
+  Zone& domaine=mon_domaine.valeur();
   const Frontiere_dis_base& fr_dis=frontiere_dis();
   const Frontiere& frontiere=fr_dis.frontiere();
   const int nb_faces=frontiere.nb_faces();

@@ -15,7 +15,7 @@
 
 #include <Polyedre_poly.h>
 #include <Polyedre.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Linear_algebra_tools_impl.h>
 
 Implemente_instanciable(Polyedre_poly,"Polyedre_poly",Elem_poly_base);

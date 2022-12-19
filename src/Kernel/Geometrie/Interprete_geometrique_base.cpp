@@ -15,7 +15,7 @@
 
 #include <Interprete_geometrique_base.h>
 #include <Sous_Zone.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <EChaine.h>
 
 Implemente_base(Interprete_geometrique_base, "Interprete_geometrique_base", Interprete);
@@ -36,13 +36,13 @@ void Interprete_geometrique_base::associer_domaine(Entree& is)
   Cerr << "Association of the domain on which the interpreter applies " << que_suis_je() << finl;
   Nom nom_dom;
   is >> nom_dom;
-  if(!sub_type(Domaine, objet(nom_dom)))
+  if(!sub_type(Zone, objet(nom_dom)))
     {
       Cerr << nom_dom << " is of type " << objet(nom_dom).que_suis_je() << finl;
       Cerr << "we know to treat only one domain with the interpreter " << que_suis_je() << finl;
       exit();
     }
-  domains_.add(ref_cast(Domaine, objet(nom_dom)));
+  domains_.add(ref_cast(Zone, objet(nom_dom)));
 }
 
 Entree& Interprete_geometrique_base::interpreter(Entree& is)
@@ -73,7 +73,7 @@ Entree& Interprete_geometrique_base::interpreter(Entree& is)
 // Je rajoute dans les sous-zones les nouveaux elements
 void Interprete_geometrique_base::mettre_a_jour_sous_zone(Zone& zone, int& elem, int num_premier_elem, int nb_elem) const
 {
-  Domaine& dom=zone.domaine();
+  Zone& dom=zone.domaine();
   for (int ssz=0; ssz<dom.nb_ss_zones(); ssz++)
     {
       Sous_Zone& sous_zone=dom.ss_zone(ssz);

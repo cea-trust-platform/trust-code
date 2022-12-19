@@ -45,12 +45,12 @@ public:
     return le_champ().valeur_aux_elems_compo(positions, les_polys, les_valeurs, ncomp);
   }
 
-  inline DoubleTab& valeur_aux_sommets(const Domaine& dom, DoubleTab& sommets) const override
+  inline DoubleTab& valeur_aux_sommets(const Zone& dom, DoubleTab& sommets) const override
   {
     return le_champ().valeur_aux_sommets(dom, sommets);
   }
 
-  inline DoubleVect& valeur_aux_sommets_compo(const Domaine& dom, DoubleVect& sommets, int compo) const override
+  inline DoubleVect& valeur_aux_sommets_compo(const Zone& dom, DoubleVect& sommets, int compo) const override
   {
     return le_champ().valeur_aux_sommets_compo(dom, sommets, compo);
   }

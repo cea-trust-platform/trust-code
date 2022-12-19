@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Tri_poly.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_instanciable_sans_constructeur(Tri_poly,"Tri_poly",Elem_poly_base);
 

@@ -27,7 +27,7 @@
 #include <Statistiques.h>
 #include <TRUSTTrav.h>
 #include <Operateur.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Avanc.h>
 
 extern Stat_Counter_Id assemblage_sys_counter_;

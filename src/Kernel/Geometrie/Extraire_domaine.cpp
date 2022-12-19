@@ -20,7 +20,7 @@
 #include <Sous_Zone.h>
 #include <Parser_U.h>
 #include <Zone_VF.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Scatter.h>
 #include <Param.h>
 
@@ -57,7 +57,7 @@ Entree& Extraire_domaine::interpreter_(Entree& is)
   condition_elements.parseString();
 
   associer_domaine(nom_dom);
-  Domaine& dom=domaine();
+  Zone& dom=domaine();
   // on recupere le pb
   if(! sub_type(Probleme_base, objet(nom_pb)))
     {

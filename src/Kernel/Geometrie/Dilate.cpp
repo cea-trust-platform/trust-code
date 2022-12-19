@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Dilate.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_instanciable(Dilate,"Dilate",Interprete_geometrique_base);
 

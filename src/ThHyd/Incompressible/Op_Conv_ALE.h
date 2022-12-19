@@ -39,7 +39,7 @@ protected :
   void associer(const Zone_dis&,
                 const Zone_Cl_dis&,
                 const Champ_Inc& inco) override ;//Classe abstraite de Operateur base
-  REF(Domaine) dom;
+  REF(Zone) dom;
   REF(Champ_Inc_base) la_vitesse;
 };
 

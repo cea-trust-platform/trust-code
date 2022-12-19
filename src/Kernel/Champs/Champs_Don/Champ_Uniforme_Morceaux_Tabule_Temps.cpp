@@ -16,7 +16,7 @@
 #include <Champ_Uniforme_Morceaux_Tabule_Temps.h>
 #include <Interprete.h>
 #include <Sous_Zone.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Motcle.h>
 
 Implemente_instanciable(Champ_Uniforme_Morceaux_Tabule_Temps, "Champ_Uniforme_Morceaux_Tabule_Temps", Champ_Uniforme_Morceaux_inst);
@@ -38,8 +38,8 @@ Entree& Champ_Uniforme_Morceaux_Tabule_Temps::readOn(Entree& is)
   Nom nom;
   int k, poly,nb_val;
   is >> nom;
-  mon_domaine = ref_cast(Domaine, Interprete::objet(nom));
-  Domaine& le_domaine=mon_domaine.valeur();
+  mon_domaine = ref_cast(Zone, Interprete::objet(nom));
+  Zone& le_domaine=mon_domaine.valeur();
   dim=lire_dimension(is,que_suis_je());
   valeurs_.resize(0, dim);
   le_domaine.creer_tableau_elements(valeurs_);

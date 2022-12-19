@@ -18,7 +18,7 @@
 #include <Champ_Uniforme.h>
 #include <Fluide_Incompressible.h>
 #include <Interprete.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Champ_Fonc_P0_VEF.h>
 
 Implemente_instanciable(Champ_front_contact_fictif_VEF,"Champ_front_contact_fictif_VEF",Champ_front_contact_VEF);

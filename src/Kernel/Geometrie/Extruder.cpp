@@ -17,7 +17,7 @@
 #include <Static_Int_Lists.h>
 #include <Faces_builder.h>
 #include <Extruder.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Scatter.h>
 #include <Param.h>
 
@@ -74,7 +74,7 @@ inline void check_boundary_name(const Nom& name)
  *
  * @param (Zone& zone) la zone dont on veut raffiner les elements
  */
-void Extruder::extruder(Domaine& dom)
+void Extruder::extruder(Zone& dom)
 {
   Zone& zone = dom.zone(0);
 
@@ -370,7 +370,7 @@ void Extruder::traiter_faces_dvt(Faces& les_faces_bord, Faces& les_faces, int ol
 
 
 
-void Extruder::extruder_dvt(Domaine& dom, Faces& les_faces, int oldnbsom, int oldsz)
+void Extruder::extruder_dvt(Zone& dom, Faces& les_faces, int oldnbsom, int oldsz)
 {
   Zone& zone = dom.zone(0);
   const int nbfaces2D = les_faces.nb_faces();
@@ -430,7 +430,7 @@ void Extruder::extruder_dvt(Domaine& dom, Faces& les_faces, int oldnbsom, int ol
 
 }
 
-void Extruder::extruder_hexa(Domaine& dom)
+void Extruder::extruder_hexa(Zone& dom)
 {
   Zone& zone = dom.zone(0);
   int oldnbsom = zone.nb_som();
@@ -568,7 +568,7 @@ void Extruder::traiter_faces_dvt_hexa(Faces& les_faces_bord, int oldnbsom)
   les_faces_bord.voisins()=-1;
 }
 
-void Extruder::extruder_dvt_hexa(Domaine& dom, Faces& les_faces, int oldnbsom, int oldsz)
+void Extruder::extruder_dvt_hexa(Zone& dom, Faces& les_faces, int oldnbsom, int oldsz)
 {
   Zone& zone = dom.zone(0);
   IntTab& les_elems=zone.les_elems();

@@ -17,7 +17,7 @@
 
 #include <Champ_Fonc_base.h>
 #include <Zone_VF.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <MD_Vector_tools.h>
 #include <Octree_Double.h>
 #include <MD_Vector_composite.h>

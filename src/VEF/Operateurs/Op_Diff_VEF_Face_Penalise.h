@@ -19,7 +19,7 @@
 #include <Op_Diff_VEF_Face.h>
 #include <Zone_Cl_VEF.h>
 #include <TRUSTList.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 class Op_Diff_VEF_Face_Penalise : public Op_Diff_VEF_Face
 {
@@ -101,8 +101,8 @@ private:
   /* Fonction membre qui retourne la Zone_VEF du domaine. */
   inline const Zone_VEF& zone_vef() const;
 
-  /* Fonction membre qui retourne le Domaine du probleme. */
-  inline const Domaine&  domaine() const;
+  /* Fonction membre qui retourne le Zone du probleme. */
+  inline const Zone&  domaine() const;
 
   /* Fonction membre qui renvoie la zone du probleme. */
   inline const Zone& zone() const;
@@ -169,7 +169,7 @@ inline const Zone&  Op_Diff_VEF_Face_Penalise::zone() const
   return zone_vef().zone();
 }
 
-inline const Domaine&  Op_Diff_VEF_Face_Penalise::domaine() const
+inline const Zone&  Op_Diff_VEF_Face_Penalise::domaine() const
 {
   return zone().domaine();
 }

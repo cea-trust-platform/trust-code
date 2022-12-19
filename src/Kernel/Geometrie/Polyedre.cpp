@@ -16,7 +16,7 @@
 #include <Linear_algebra_tools_impl.h>
 #include <TRUSTList.h>
 #include <Polyedre.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <algorithm>
 
 using std::swap;
@@ -152,7 +152,7 @@ void Polyedre::calculer_centres_gravite(DoubleTab& xp) const
 void Polyedre::calculer_un_centre_gravite(const int num_elem,DoubleVect& xp) const
 {
   const IntTab& les_Polys = ma_zone->les_elems();
-  const Domaine& le_domaine = ma_zone->domaine();
+  const Zone& le_domaine = ma_zone->domaine();
 
   xp.resize(dimension);
   int nb_som_reel=nb_som();

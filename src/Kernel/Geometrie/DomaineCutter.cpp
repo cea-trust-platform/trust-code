@@ -15,7 +15,7 @@
 
 #include <DomaineCutter.h>
 #include <ArrOfBit.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Connectivite_som_elem.h>
 #include <SFichierBin.h>
 #include <Array_tools.h>
@@ -773,7 +773,7 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie, const Domain
     const ArrOfInt& liste_inverse_sommets = correspondance.get_liste_inverse_sommets();
     const IntVect& elem_part = ref_elem_part_.valeur();
     // Sommets des elements du maillage global
-    const Domaine& domaine = ref_domaine_.valeur();
+    const Zone& domaine = ref_domaine_.valeur();
     const IntTab& elem_som = domaine.zone(0).les_elems();
 
     ArrOfInt une_face(nb_sommets_par_face);
@@ -951,7 +951,7 @@ void calculer_listes_elements_sous_domaines(const IntVect& elem_part, const int 
     }
 }
 
-void calculer_elements_voisins_bords(const Domaine& dom, const Static_Int_Lists& som_elem, Static_Int_Lists& voisins, const IntVect& elem_part, const int permissif, Noms& bords_a_pb_)
+void calculer_elements_voisins_bords(const Zone& dom, const Static_Int_Lists& som_elem, Static_Int_Lists& voisins, const IntVect& elem_part, const int permissif, Noms& bords_a_pb_)
 {
   const Zone& zone = dom.zone(0);
   const int nb_front = zone.nb_front_Cl();
@@ -1006,7 +1006,7 @@ void calculer_elements_voisins_bords(const Domaine& dom, const Static_Int_Lists&
  * @param (les_faces)
  * @param (epaisseur_joint)
  */
-void DomaineCutter::initialiser(const Domaine& domaine_global, const IntVect& elem_part, const int nb_parts, const int epaisseur_joint, const Noms& liste_bords_periodiques, const int permissif)
+void DomaineCutter::initialiser(const Zone& domaine_global, const IntVect& elem_part, const int nb_parts, const int epaisseur_joint, const Noms& liste_bords_periodiques, const int permissif)
 {
   assert(nb_parts >= 0);
   assert(domaine_global.nb_zones() == 1);
@@ -1049,7 +1049,7 @@ void DomaineCutter::initialiser(const Domaine& domaine_global, const IntVect& el
  *   Attention: sous_domaine doit etre un objet vierge (ne pas contenir de zone)
  *
  */
-void DomaineCutter::construire_sous_domaine(const int part, DomaineCutter_Correspondance& correspondance, Domaine& sous_domaine, const Static_Int_Lists *som_raccord) const
+void DomaineCutter::construire_sous_domaine(const int part, DomaineCutter_Correspondance& correspondance, Zone& sous_domaine, const Static_Int_Lists *som_raccord) const
 {
   // L'objet doit etre initialise:
   assert(nb_parties_ >= 0);
@@ -1060,7 +1060,7 @@ void DomaineCutter::construire_sous_domaine(const int part, DomaineCutter_Corres
 
   correspondance.partie_ = part;
 
-  const Domaine& domaine = ref_domaine_.valeur();
+  const Zone& domaine = ref_domaine_.valeur();
   const Zone& zone = domaine.zone(0);
 
   ArrOfInt elements_sous_partie;
@@ -1170,7 +1170,7 @@ static void construire_nom_fichier_sous_domaine(const Nom& basename, const int p
   fichier += Nom(s);
 }
 
-void DomaineCutter::writeData(const Domaine& sous_domaine, Sortie& os) const
+void DomaineCutter::writeData(const Zone& sous_domaine, Sortie& os) const
 {
   os << sous_domaine;
   // Benoit Mathieu: Scatter a besoin de la liste des bords periodiques pour le
@@ -1189,7 +1189,7 @@ void DomaineCutter::writeData(const Domaine& sous_domaine, Sortie& os) const
 void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileOutputType format, IntVect& elem_part, const int reorder, const Static_Int_Lists *som_raccord)
 {
   assert(nb_parties_ >= 0);
-  const Domaine& domaine = ref_domaine_.valeur();
+  const Zone& domaine = ref_domaine_.valeur();
   DomaineCutter_Correspondance dc_correspondance;
 
   // Needed for HDF5 Zones output:
@@ -1348,7 +1348,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
                   int ipart = 0;
                   while (!myZones[ipart])
                     ipart++;
-                  Domaine dom_tmp;
+                  Zone dom_tmp;
                   construire_sous_domaine(ipart, dc_correspondance, dom_tmp);
                   Sortie_Brute os_tmp;
                   writeData(dom_tmp, os_tmp);
@@ -1372,7 +1372,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
           if (zones_index[i_part] >= 0)
             Cerr << "This part is shared between multiple processors" << finl;
 
-          Domaine sous_domaine;
+          Zone sous_domaine;
           construire_sous_domaine(i_part, dc_correspondance, sous_domaine, som_raccord);
           // On affiche quelques informations...
           {

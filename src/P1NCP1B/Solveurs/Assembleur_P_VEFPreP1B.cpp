@@ -15,7 +15,7 @@
 
 #include <Assembleur_P_VEFPreP1B.h>
 #include <Matrice_Bloc_Sym.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
 #include <Dirichlet_entree_fluide_leaves.h>
@@ -430,7 +430,7 @@ int Assembleur_P_VEFPreP1B::modifier_secmem(DoubleTab& b)
   if (la_zone.get_alphaS())
     {
       // Verification que la pression sur les sommets periodiques est nulle
-      const Domaine& dom=la_zone.zone().domaine();
+      const Zone& dom=la_zone.zone().domaine();
       int nps=la_zone.numero_premier_sommet();
       int ns=la_zone.zone().nb_som();
       for(int i=0; i<ns; i++)
@@ -586,7 +586,7 @@ int Assembleur_P_VEFPreP1B::modifier_secmem_som(const DoubleTab& Gpoint, DoubleT
   const Zone_VEF_PreP1b& zone_VEF =  zone_Vef();
   const Zone_Cl_VEF& zone_Cl = la_zone_Cl_VEF.valeur();
   const Zone& zone = zone_VEF.zone();
-  const Domaine& domaine = zone.domaine();
+  const Zone& domaine = zone.domaine();
 
   const int nb_cond_lim = zone_Cl.nb_cond_lim();
   const int nb_elem_tot = (zone_VEF.get_alphaE()?zone.nb_elem_tot():0);
@@ -713,7 +713,7 @@ int Assembleur_P_VEFPreP1B::modifier_solution(DoubleTab& pression)
   // On applique la periodicite sur les sommets pour la pression:
   if (la_zone.get_alphaS())
     {
-      const Domaine& dom=la_zone.zone().domaine();
+      const Zone& dom=la_zone.zone().domaine();
       int nps=la_zone.numero_premier_sommet();
       int ns=la_zone.zone().nb_som();
       for(int i=0; i<ns; i++)
@@ -1004,7 +1004,7 @@ void operation11(Matrice_Bloc& A00, Matrice_Bloc& A01, Matrice_Bloc& A11, double
   Matrice_Morse& A11VR=ref_cast(Matrice_Morse, A11.get_bloc(1,0).valeur());
   Matrice_Morse& A11VV=ref_cast(Matrice_Morse, A11.get_bloc(1,1).valeur());
   const IntTab& les_elems=zone.les_elems();
-  const Domaine& dom=zone.domaine();
+  const Zone& dom=zone.domaine();
   int nb_som=A11RR.nb_lignes();
   int nb_som_elem=les_elems.dimension(1);
   // On parcours les elements de la matrice A00
@@ -1103,7 +1103,7 @@ void operation01(Matrice_Bloc& A00, Matrice_Bloc& A01, double alpha, double beta
   Matrice_Morse& A01VR=ref_cast(Matrice_Morse, A01.get_bloc(1,0).valeur());
   Matrice_Morse& A01VV=ref_cast(Matrice_Morse, A01.get_bloc(1,1).valeur());
   const IntTab& les_elems=zone.les_elems();
-  const Domaine& dom=zone.domaine();
+  const Zone& dom=zone.domaine();
   int nb_elem=A01RR.nb_lignes();
   int nb_som=A01RR.nb_colonnes();
   int nb_som_elem=les_elems.dimension(1);
@@ -1180,7 +1180,7 @@ void Assembleur_P_VEFPreP1B::changer_base_second_membre(DoubleVect& y)
   // ys~ = ys - beta * somme(yk)(s appartenant a k)
   // yk~ = alpha * yk
   const IntTab& les_elems=zone_Vef().zone().les_elems();
-  const Domaine& dom=zone_Vef().zone().domaine();
+  const Zone& dom=zone_Vef().zone().domaine();
   int nb_elem_tot=zone_Vef().nb_elem_tot();
   int nb_som_elem=les_elems.dimension(1);
   for (int k=0; k<nb_elem_tot; k++)
@@ -1201,7 +1201,7 @@ void Assembleur_P_VEFPreP1B::changer_base_pression_inverse(DoubleVect& x) const
   // xk = alpha * xk~ - beta * somme(xs~)(s appartenant a k)
   // xs = xs~
   const IntTab& les_elems=zone_Vef().zone().les_elems();
-  const Domaine& dom=zone_Vef().zone().domaine();
+  const Zone& dom=zone_Vef().zone().domaine();
   int nb_elem_tot=zone_Vef().nb_elem_tot();
   int nb_som_elem=les_elems.dimension(1);
   for (int k=0; k<nb_elem_tot; k++)
@@ -1223,7 +1223,7 @@ void Assembleur_P_VEFPreP1B::changer_base_pression(DoubleVect& x)
   // xk~ = xk / alpha + beta / alpha * somme(xs)(s appartenant a k)
   // xs~ = xs
   const IntTab& les_elems=zone_Vef().zone().les_elems();
-  const Domaine& dom=zone_Vef().zone().domaine();
+  const Zone& dom=zone_Vef().zone().domaine();
   int nb_elem_tot=zone_Vef().nb_elem_tot();
   int nb_som_elem=les_elems.dimension(1);
   for (int k=0; k<nb_elem_tot; k++)

@@ -123,15 +123,15 @@ public:
   inline const Liste_Champ_Generique& champs_post_complet() const { return champs_post_complet_; }
 
   //On distingue le postraitement d un tableau et d un tenseur
-  int postraiter(const Domaine& dom,const Noms& unites,const Noms& noms_compo,const int ncomp,
+  int postraiter(const Zone& dom,const Noms& unites,const Noms& noms_compo,const int ncomp,
                  const double temps,
                  Nom nom_post,const Nom& localisation,const Nom& nature,const DoubleTab& valeurs,int tenseur);
 
-  int postraiter_tableau(const Domaine& dom,const Noms& unites,const Noms& noms_compo,const int ncomp,
+  int postraiter_tableau(const Zone& dom,const Noms& unites,const Noms& noms_compo,const int ncomp,
                          const double temps,
                          Nom nom_post,const Nom& localisation,const Nom& nature,const DoubleTab& valeurs);
 
-  int postraiter_tenseur(const Domaine& dom,const Noms& unites,const Noms& noms_compo,const int ncomp,
+  int postraiter_tenseur(const Zone& dom,const Noms& unites,const Noms& noms_compo,const int ncomp,
                          const double temps,
                          Nom nom_post,const Nom& localisation,const Nom& nature,const DoubleTab& valeurs);
 
@@ -174,7 +174,7 @@ public:
    * @return -1 if nothing more was written, 1 otherwise.
    */
   virtual int write_extra_mesh() { return -1; }
-  const REF(Domaine)& domaine() { return le_domaine; }
+  const REF(Zone)& domaine() { return le_domaine; }
   int DeprecatedKeepDuplicatedProbes=0; // Ancien format des sondes dans les .son qui autorise les sondes dupliquees
 
 protected:
@@ -215,7 +215,7 @@ protected:
   Nom nom_fich_, format, option_para;
   double temps_, dernier_temps; // temps du precedent appel a postraiter()
   static Motcles formats_supportes;
-  REF(Domaine) le_domaine;
+  REF(Zone) le_domaine;
   REF(Zone_dis_base) zone_dis_pour_faces;
 
 private :

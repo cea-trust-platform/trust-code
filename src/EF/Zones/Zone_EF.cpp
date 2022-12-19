@@ -28,7 +28,7 @@
 #include <Tetra_EF.h>
 #include <Quadri_EF.h>
 #include <Hexa_EF.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Scatter.h>
 #include <Zone_Cl_dis_base.h>
 #include <Equation_base.h>
@@ -243,7 +243,7 @@ void Zone_EF::reordonner(Faces& les_faces)
   //   le tableau Zone_Cl_EF::type_elem_Cl_).
   // Un element est non standard s'il est voisin d'une face frontiere.
   {
-    const Domaine& dom = zone().domaine();
+    const Zone& dom = zone().domaine();
     const int nb_elements = nb_elem();
     const int nb_faces_front = zone().nb_faces_frontiere();
     dom.creer_tableau_elements(rang_elem_non_std_);
@@ -419,7 +419,7 @@ void Zone_EF::verifie_compatibilite_domaine()
       Cerr << " Error in " << que_suis_je() << " : the type of domain " << zone().domaine().que_suis_je();
       Cerr << " is not compatible" << finl;
       Cerr << " with the discretisation EF. " << finl;
-      Cerr << " Please use the discretization EF_axi or define a domain of type Domaine." << finl;
+      Cerr << " Please use the discretization EF_axi or define a domain of type Zone." << finl;
       Cerr << "*****************************************************************************" << finl;
       Process::exit();
     }
@@ -524,7 +524,7 @@ void Zone_EF::discretiser()
   {
     const int n = nb_faces();
     face_normales_.resize(n, dimension);
-    // const Domaine & dom = zone().domaine();
+    // const Zone & dom = zone().domaine();
     //    Scatter::creer_tableau_distribue(dom, Joint::FACE, face_normales_);
     creer_tableau_faces(face_normales_);
     const IntTab& face_som = face_sommets();

@@ -15,7 +15,7 @@
 
 #include <Perte_Charge_Singuliere.h>
 #include <Motcle.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Zone_VF.h>
 #include <Sous_Zone.h>
 #include <Octree.h>
@@ -104,7 +104,7 @@ Entree& Perte_Charge_Singuliere::lire_donnees(Entree& is)
   return is;
 }
 
-void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domaine,
+void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Zone& le_domaine,
                                             const Zone_dis_base& zone_dis, IntVect& les_faces, IntVect& sgn)
 {
   const Zone_VF& zvf = ref_cast(Zone_VF,zone_dis);
@@ -249,7 +249,7 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
   else if (algo==1)
     {
       /* Surface algorithm */
-      const Domaine& le_domaine2D = ref_cast(Domaine,le_domaine.interprete().objet(nom_surface));
+      const Zone& le_domaine2D = ref_cast(Zone,le_domaine.interprete().objet(nom_surface));
       if (le_domaine2D.nb_zones() == 0)
         {
           Cerr << "Error in Perte_Charge_Singuliere::lire_surfaces" << finl;

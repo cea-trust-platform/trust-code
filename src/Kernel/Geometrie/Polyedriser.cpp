@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Polyedriser.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Scatter.h>
 #include <Polyedre.h>
 #include <vector>

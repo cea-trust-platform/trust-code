@@ -25,7 +25,7 @@
 #include <Ref_Domaine.h>
 #include <TRUST_List.h>
 #include <Parser_U.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 enum class Champ_Morceaux_Type { FONC , FONC_TXYZ , FONC_TABULE , UNIFORME };
 
@@ -54,14 +54,14 @@ public:
 
   int initialiser(const double temps) override;
 
-  const REF(Domaine)& domaine() const { return mon_domaine; }
-  REF(Domaine)& domaine() { return mon_domaine; }
+  const REF(Zone)& domaine() const { return mon_domaine; }
+  REF(Zone)& domaine() { return mon_domaine; }
   const LIST(REF(Sous_Zone))& sous_zones() const { return les_sous_zones; }
   LIST(REF(Sous_Zone))& sous_zones() { return les_sous_zones; }
 
 protected:
   LIST(REF(Sous_Zone)) les_sous_zones;
-  REF(Domaine) mon_domaine;
+  REF(Zone) mon_domaine;
   REF(Probleme_base) ref_pb;
   VECT(Parser_U) parser; /* vecteur de tous les parsers */
   Nom nom_champ_parametre_; /* nom du champ dont les fonctions ont parametres */

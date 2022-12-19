@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Champ_Inc_P1_base.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_base(Champ_Inc_P1_base,"Champ_Inc_P1_base",Champ_Inc_base);
 

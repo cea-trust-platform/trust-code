@@ -17,7 +17,7 @@
 #include <Static_Int_Lists.h>
 #include <Faces_builder.h>
 #include <Extruder_en3.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Scatter.h>
 #include <Param.h>
 
@@ -78,12 +78,12 @@ Entree& Extruder_en3::interpreter_(Entree& is)
   // On procede par concatenation des domaines dans "dom_tot" de maniere a ne pas interferer
   // avec les domaines et les zones d'origines.
 
-  Domaine dom_tot;
+  Zone dom_tot;
   for(int i=0; i<nb_dom; i++)
     {
       // on parcourt les domaines a l'envers pour retrouver l'ancien comportement
       associer_domaine(nom_dom[nb_dom-1-i]);
-      Domaine& domi=domaine(i);
+      Zone& domi=domaine(i);
       Zone& zone_tot=dom_tot.add(domi.zone(0));
       zone_tot.associer_domaine(dom_tot);
       int nb_som=domi.coord_sommets().dimension(0);
@@ -110,7 +110,7 @@ Entree& Extruder_en3::interpreter_(Entree& is)
 /*! @brief Extrusion d'un domaine surfacique
  *
  */
-void Extruder_en3::extruder(Domaine& dom, const IntVect& num)
+void Extruder_en3::extruder(Zone& dom, const IntVect& num)
 {
   Zone& zone = dom.zone(0);
   if(zone.type_elem()->que_suis_je() == "Triangle")
@@ -314,7 +314,7 @@ void Extruder_en3::extruder(Domaine& dom, const IntVect& num)
 /*! @brief Creation des bords du domaine extrude
  *
  */
-void Extruder_en3::construire_bords(Domaine& dom, Faces& les_faces, int oldnbsom, int oldsz, const IntVect& num)
+void Extruder_en3::construire_bords(Zone& dom, Faces& les_faces, int oldnbsom, int oldsz, const IntVect& num)
 {
   Zone& zone = dom.zone(0);
   IntTab& les_elems = zone.les_elems();

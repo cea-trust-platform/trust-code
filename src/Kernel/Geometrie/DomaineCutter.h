@@ -23,7 +23,7 @@
 #include <Decouper.h>
 #include <Noms.h>
 
-class Domaine;
+class Zone;
 class Zone;
 
 /*! @brief Classe outil permettant de generer des sous-domaines pour un calcul parallele a partir d'un domaine de depart (domaine_global) et d'un tableau de decoupage
@@ -36,12 +36,12 @@ class DomaineCutter: public Objet_U
 {
   Declare_instanciable(DomaineCutter);
 public:
-  void initialiser(const Domaine& domaine_global, const IntVect& elem_part, const int nb_parts, const int epaisseur_joint, const Noms& bords_periodiques, const int permissif = 0);
+  void initialiser(const Zone& domaine_global, const IntVect& elem_part, const int nb_parts, const int epaisseur_joint, const Noms& bords_periodiques, const int permissif = 0);
 
   void reset();
 
-  void construire_sous_domaine(const int part, DomaineCutter_Correspondance& correspondance_, Domaine& sous_domaine_, const Static_Int_Lists *som_raccord = NULL) const;
-  void construire_sous_domaine(const int part, Domaine& sous_domaine_) const
+  void construire_sous_domaine(const int part, DomaineCutter_Correspondance& correspondance_, Zone& sous_domaine_, const Static_Int_Lists *som_raccord = NULL) const;
+  void construire_sous_domaine(const int part, Zone& sous_domaine_) const
   {
     DomaineCutter_Correspondance correspondance;
     construire_sous_domaine(part, correspondance, sous_domaine_);
@@ -60,14 +60,14 @@ private:
 
   void construire_elements_distants_ssdom(const int partie, const ArrOfInt& liste_sommets, const ArrOfInt& liste_inverse_elements, Zone& zone_partie) const;
 
-  void writeData(const Domaine& sous_domaine, Sortie& os) const;
+  void writeData(const Zone& sous_domaine, Sortie& os) const;
 
   // Ne pas utiliser ces deux methodes:
   const DomaineCutter& operator=(const DomaineCutter& dc);
   DomaineCutter(const DomaineCutter& dc);
 
   // Reference au domaine global
-  REF(Domaine) ref_domaine_;
+  REF(Zone) ref_domaine_;
   // Reference au tableau de decoupage
   //  (pour chaque element du domaine global, numero de sous-domaine)
   REF(IntVect) ref_elem_part_;

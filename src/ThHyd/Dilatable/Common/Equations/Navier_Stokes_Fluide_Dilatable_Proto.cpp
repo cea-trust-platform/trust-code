@@ -22,7 +22,7 @@
 #include <Dirichlet.h>
 #include <TRUSTTrav.h>
 #include <Zone_VF.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Debog.h>
 #include <Statistiques.h>
 

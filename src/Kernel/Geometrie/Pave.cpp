@@ -15,7 +15,7 @@
 
 #include <Pave.h>
 #include <math.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_instanciable(Pave,"Pave",Zone);
 // XD bloc_pave objet_lecture nul -1 Class to create a pave.
@@ -459,9 +459,9 @@ Entree& Pave::readOn(Entree& is)
 
 /*! @brief Associe un domaine au Pave.
  *
- * @param (Domaine& un_dom) le domaine dont fait partie le pave
+ * @param (Zone& un_dom) le domaine dont fait partie le pave
  */
-void Pave::associer_domaine(const Domaine& un_dom)
+void Pave::associer_domaine(const Zone& un_dom)
 {
   Zone::associer_domaine(un_dom);
   if(Les_Noeuds.size() > 0)

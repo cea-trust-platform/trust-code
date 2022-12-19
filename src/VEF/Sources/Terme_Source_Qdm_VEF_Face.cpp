@@ -15,7 +15,7 @@
 
 #include <Terme_Source_Qdm_VEF_Face.h>
 #include <Champ_Uniforme.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Zone_Cl_dis.h>
 #include <Zone_VEF.h>
 #include <Zone_Cl_VEF.h>

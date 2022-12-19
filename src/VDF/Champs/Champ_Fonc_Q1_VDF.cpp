@@ -15,7 +15,7 @@
 
 #include <Champ_Fonc_Q1_VDF.h>
 #include <Zone_VF.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_instanciable(Champ_Fonc_Q1_VDF, "Champ_Fonc_Q1_VDF", Champ_Fonc_Q1_base);
 

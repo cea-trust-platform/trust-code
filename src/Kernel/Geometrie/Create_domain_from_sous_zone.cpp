@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Create_domain_from_sous_zone.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Param.h>
 #include <DomaineCutter.h>
 #include <Scatter.h>
@@ -71,7 +71,7 @@ Entree& Create_domain_from_sous_zone::interpreter_(Entree& is)
       exit();
     }
 
-  const Domaine& domaine_org=ref_cast(Domaine, objet(nom_dom_org));
+  const Zone& domaine_org=ref_cast(Zone, objet(nom_dom_org));
 
   DomaineCutter cutter;
   Noms vide;
@@ -93,7 +93,7 @@ Entree& Create_domain_from_sous_zone::interpreter_(Entree& is)
   cutter.initialiser(domaine_org, index, noms_doms.size() + 1,1,vide,1);
   for (int i = 0; i < nb_dom; i++)
     {
-      Domaine& dom = ref_cast(Domaine, objet(noms_doms[i]));
+      Zone& dom = ref_cast(Zone, objet(noms_doms[i]));
       cutter.construire_sous_domaine(i + 1, dom);
       Zone& zone=dom.zone(0);
       Bords& bords=zone.faces_bord();

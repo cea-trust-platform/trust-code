@@ -21,7 +21,7 @@
 #include <Domaine_dis.h>
 #include <Champ_Don.h>
 #include <Parser_U.h>
-class Domaine;
+class Zone;
 class Zone_dis_base;
 class Equation_base;
 class Source_base;
@@ -40,7 +40,7 @@ public :
 
   virtual ~Perte_Charge_Singuliere() {}
   Entree& lire_donnees(Entree&);
-  virtual void lire_surfaces(Entree&, const Domaine&, const Zone_dis_base&, IntVect&, IntVect&);
+  virtual void lire_surfaces(Entree&, const Zone&, const Zone_dis_base&, IntVect&, IntVect&);
   inline double K() const;
   double calculate_Q(const Equation_base& eqn, const IntVect& num_faces, const IntVect& sgn) const; //met a jour le debit a travers la surface et le renvoie
   void update_K(const Equation_base& eqn, double deb, DoubleVect& bilan);                  //regule K_ a partir du debit calcule par update_Q

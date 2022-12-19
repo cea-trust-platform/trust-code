@@ -19,7 +19,7 @@
 #include <TRUSTArray.h>
 #include <Multigrille_Adrien.h>
 #include <communications.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Schema_Comm.h>
 #include <IJK_discretization.h>
 #include <Interprete_bloc.h>

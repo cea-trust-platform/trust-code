@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Champ_Fonc_Tabule_Morceaux.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <TRUSTTrav.h>
 #include <Zone_VF.h>
 #include <TRUSTTab_parts.h>

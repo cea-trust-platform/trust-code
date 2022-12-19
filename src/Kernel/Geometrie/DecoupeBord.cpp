@@ -32,7 +32,7 @@ Entree& DecoupeBord::readOn(Entree& is)
   return Interprete::readOn(is);
 }
 
-void create_listb_from_domaine2(const Domaine& dom1, const Domaine& dom2,const Noms& nomdec)
+void create_listb_from_domaine2(const Zone& dom1, const Zone& dom2,const Noms& nomdec)
 {
   const DoubleTab& xs1=dom1.coord_sommets();
   const Zone& zone1=dom1.zone(0);
@@ -130,7 +130,7 @@ void create_listb_from_domaine2(const Domaine& dom1, const Domaine& dom2,const N
   listb.close();
 }
 
-void create_listb_from_xyz(const Domaine& dom1,const Noms& nomdec,const Noms& expr)
+void create_listb_from_xyz(const Zone& dom1,const Noms& nomdec,const Noms& expr)
 {
   int n1=nomdec.size();
   int n2=expr.size();
@@ -220,7 +220,7 @@ void create_listb_from_xyz(const Domaine& dom1,const Noms& nomdec,const Noms& ex
   listb.close();
 }
 
-void create_listb_naif(const Domaine& dom1,const Noms& nomdec,const ArrOfInt& nbdec)
+void create_listb_naif(const Zone& dom1,const Noms& nomdec,const ArrOfInt& nbdec)
 {
   int n1=nomdec.size();
   int n2=nbdec.size_array();
@@ -275,7 +275,7 @@ void create_listb_naif(const Domaine& dom1,const Noms& nomdec,const ArrOfInt& nb
   listb.close();
 }
 
-void create_listb_geom(const Domaine& dom1,const Noms& nomdec,const ArrOfInt& nbdec)
+void create_listb_geom(const Zone& dom1,const Noms& nomdec,const ArrOfInt& nbdec)
 {
   if((Objet_U::dimension)!=3)
     {
@@ -445,23 +445,23 @@ Entree& DecoupeBord::interpreter_(Entree& is)
   param.lire_avec_accolades_depuis(is);
   // on fait une copie de dom1 pour le modifier
   associer_domaine(nom_dom1);
-  const Domaine& dom_1=domaine();
+  const Zone& dom_1=domaine();
   if (nom_fichier_sortie=="")
     {
       nom_fichier_sortie=dom_1.le_nom()+".newgeom";
     }
-  Domaine dom1;
+  Zone dom1;
   dom1=dom_1;
   if (nom_dom2!=Nom())
     {
-      if (!sub_type(Domaine, objet(nom_dom2)))
+      if (!sub_type(Zone, objet(nom_dom2)))
         {
-          Cerr << nom_dom2 << " is not an object of type Domaine " << finl;
+          Cerr << nom_dom2 << " is not an object of type Zone " << finl;
           Cerr << " Please correct your data set" << finl;
           exit();
         }
 
-      const Domaine& dom_2=ref_cast(Domaine, objet(nom_dom2));
+      const Zone& dom_2=ref_cast(Zone, objet(nom_dom2));
       create_listb_from_domaine2(dom1,dom_2,nomdec);
     }
   else
@@ -498,7 +498,7 @@ Entree& DecoupeBord::interpreter_(Entree& is)
 }
 
 
-void DecoupeBord::Decouper(Domaine& dom, const Nom& nom_file)
+void DecoupeBord::Decouper(Zone& dom, const Nom& nom_file)
 {
   Cerr << "Splitting to the radiation of the boundaries of the domain " << dom.le_nom() << finl;
   int nb_faces_bord_sa=dom.zone(0). nb_faces_bord();

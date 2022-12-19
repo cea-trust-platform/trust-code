@@ -13,7 +13,7 @@
 *
 *****************************************************************************/
 #include <Partitionneur_Partition.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Reordonner_faces_periodiques.h>
 #include <EFichier.h>
 #include <Param.h>
@@ -25,7 +25,7 @@ Partitionneur_Partition::Partitionneur_Partition()
   dom_calcul_ = "";
 }
 
-/*! @brief La syntaxe est { Domaine NOM_DOM }
+/*! @brief La syntaxe est { Zone NOM_DOM }
  *
  */
 Entree& Partitionneur_Partition::readOn(Entree& is)
@@ -38,7 +38,7 @@ Entree& Partitionneur_Partition::readOn(Entree& is)
 
   Partitionneur_base::readOn(is);
   Cerr << " Reference domain : " << dom_calcul_ << finl;
-  ref_domaine_calcul_ = ref_cast(Domaine, Interprete::objet(dom_calcul_));
+  ref_domaine_calcul_ = ref_cast(Zone, Interprete::objet(dom_calcul_));
   return is;
 }
 
@@ -57,7 +57,7 @@ void Partitionneur_Partition::set_param(Param& param)
 /*! @brief Premiere etape d'initialisation du partitionneur: on associe un domaine.
  *
  */
-void Partitionneur_Partition::associer_domaine(const Domaine& domaine)
+void Partitionneur_Partition::associer_domaine(const Zone& domaine)
 {
   ref_domaine_interpol_ = domaine;
 }
@@ -77,8 +77,8 @@ void Partitionneur_Partition::construire_partition(IntVect& elem_part, int& nb_p
   assert(ref_domaine_interpol_.non_nul());
   assert(ref_domaine_calcul_.non_nul());
 
-  // Domaine dom_interpol
-  const Domaine& dom_interpol = ref_domaine_interpol_.valeur();
+  // Zone dom_interpol
+  const Zone& dom_interpol = ref_domaine_interpol_.valeur();
   if(dom_interpol.nb_som()==0)
     {
       Cerr << "The domain \"" << dom_interpol.le_nom() << "\" to be split is empty !" << finl;
@@ -88,8 +88,8 @@ void Partitionneur_Partition::construire_partition(IntVect& elem_part, int& nb_p
   const int nb_elem_interpol = zone_interpol.nb_elem_tot();
   const int dim_interpol = dom_interpol.dimension;
 
-  // Domaine dom_calcul
-  const Domaine dom_calcul = ref_domaine_calcul_.valeur();
+  // Zone dom_calcul
+  const Zone dom_calcul = ref_domaine_calcul_.valeur();
   if(dom_calcul.nb_som()==0)
     {
       Cerr << "The reference domain \"" << dom_calcul.le_nom() << "\" is empty !" << finl;

@@ -20,7 +20,7 @@
 #include <Array_tools.h>
 #include <TRUSTList.h>
 #include <TRUSTTab.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Scatter.h>
 #include <Param.h>
 
@@ -115,7 +115,7 @@ Entree& ExtrudeParoi::interpreter_(Entree& is)
  *
  * @param (Zone& zone) la zone dont on veut raffiner les elements
  */
-void ExtrudeParoi::extrude(Domaine& dom)
+void ExtrudeParoi::extrude(Zone& dom)
 {
   Zone& zone = dom.zone(0);
 

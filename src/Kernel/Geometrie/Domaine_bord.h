@@ -14,7 +14,7 @@
 *****************************************************************************/
 #ifndef Domaine_bord_included
 #define Domaine_bord_included
-#include <Domaine.h>
+#include <Zone.h>
 
 /*! @brief Cette classe est un domaine dont les sommets et les elements sont extraits d'un bord d'un domaine source.
  *
@@ -25,18 +25,18 @@ class Domaine_bord : public Domaine
 {
   Declare_instanciable(Domaine_bord);
 public:
-  virtual void construire_domaine_bord(const Domaine& source, const Nom& nom_bord);
-  virtual const Domaine&   get_domaine_source() const;
+  virtual void construire_domaine_bord(const Zone& source, const Nom& nom_bord);
+  virtual const Zone&   get_domaine_source() const;
   virtual const Nom&       get_nom_bord_source() const;
   virtual const ArrOfInt& get_renum_som() const;
 
-  static void extraire_domaine_bord(const Domaine& src,
+  static void extraire_domaine_bord(const Zone& src,
                                     const Nom& nom_bord,
-                                    Domaine& dest,
+                                    Zone& dest,
                                     ArrOfInt& renum_som);
 protected:
   // Reference au domaine source:
-  REF(Domaine) domaine_source_;
+  REF(Zone) domaine_source_;
   // Nom du bord dans le domaine source:
   Nom bord_source_;
   // Pour chaque sommet de ce domaine, indice du meme sommet dans le domaine source:

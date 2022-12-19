@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Champ_Q1NC_implementation.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Zone_VEF.h>
 #include <Champ_Inc_base.h>
 #include <verif_cast.h>
@@ -141,7 +141,7 @@ double Champ_Q1NC_implementation::valeur_a_sommet_compo(int num_som, int le_poly
   // ne sont pas triviales au sommet des hexas... On repasse
   // par calcule_valeur_a_elem_compo
   double xs, ys, zs = 0;
-  const Domaine& dom = get_zone_geom().domaine();
+  const Zone& dom = get_zone_geom().domaine();
   xs = dom.coord(num_som, 0);
   ys = dom.coord(num_som, 1);
   if (Objet_U::dimension == 3)
@@ -238,7 +238,7 @@ DoubleVect& Champ_Q1NC_implementation::valeur_aux_elems_compo(const DoubleTab& p
   return val;
 }
 
-DoubleTab& Champ_Q1NC_implementation::valeur_aux_sommets(const Domaine& dom, DoubleTab& ch_som) const
+DoubleTab& Champ_Q1NC_implementation::valeur_aux_sommets(const Zone& dom, DoubleTab& ch_som) const
 {
   // Cerr << "Champ_Q1NC_implementation::valeur_aux_sommets " << finl;
   const Zone_dis_base& zone_dis = get_zone_dis();
@@ -277,7 +277,7 @@ DoubleTab& Champ_Q1NC_implementation::valeur_aux_sommets(const Domaine& dom, Dou
 
   return ch_som;
 }
-DoubleVect& Champ_Q1NC_implementation::valeur_aux_sommets_compo(const Domaine& dom, DoubleVect& ch_som, int ncomp) const
+DoubleVect& Champ_Q1NC_implementation::valeur_aux_sommets_compo(const Zone& dom, DoubleVect& ch_som, int ncomp) const
 {
   // Cerr << "Champ_Q1NC_implementation::valeur_aux_sommets_compo " << finl;
   const Zone_dis_base& zone_dis = get_zone_dis();
@@ -351,7 +351,7 @@ void Champ_Q1NC_implementation::transforme_coord2D()
   const int nb_elem_tot = zone_VEF.nb_elem_tot();
   const IntTab& sommet_face = zone_VEF.face_sommets();
   const IntTab& elem_faces = zone_VEF.elem_faces();
-  const Domaine& dom = zone_geom.domaine();
+  const Zone& dom = zone_geom.domaine();
   const DoubleTab& coords = dom.les_sommets();
   double lec0, lec1, alpha, beta;
   int i, poly, som0, som1;
@@ -418,7 +418,7 @@ void Champ_Q1NC_implementation::transforme_coord3D()
   const int nb_elem_tot = zone_VEF.nb_elem_tot();
   const IntTab& sommet_face = zone_VEF.face_sommets();
   const IntTab& elem_faces = zone_VEF.elem_faces();
-  const Domaine& dom = zone_geom.domaine();
+  const Zone& dom = zone_geom.domaine();
   const DoubleTab& coords = dom.les_sommets();
   double lec0, lec1, lec2;
   double alpha, beta;

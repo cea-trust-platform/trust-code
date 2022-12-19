@@ -15,7 +15,7 @@
 
 #include <Source_Scalaire_EF.h>
 #include <Champ_Uniforme.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Zone_EF.h>
 #include <Probleme_base.h>
 #include <Discretisation_base.h>

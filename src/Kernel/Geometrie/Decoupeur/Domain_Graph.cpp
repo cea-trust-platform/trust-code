@@ -12,7 +12,7 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-#include <Domaine.h>
+#include <Zone.h>
 #include <Static_Int_Lists.h>
 #include <Connectivite_som_elem.h>
 #include <Poly_geom_base.h>
@@ -92,7 +92,7 @@ static void construire_connectivite_real_som_virtual_elem(const int       nb_som
   som_elem.trier_liste(-1);
 }
 
-void Domain_Graph::construire_graph_from_segment(const Domaine& dom,
+void Domain_Graph::construire_graph_from_segment(const Zone& dom,
                                                  const int use_weights)
 {
   const IntTab& liaisons = dom.zone(0).les_elems();
@@ -160,7 +160,7 @@ void Domain_Graph::construire_graph_from_segment(const Domaine& dom,
 // Si use_weights, on pondere les liens entre les elements periodiques
 // pour les forcer a etre sur le meme processeur. Cela diminue le nombre
 // de corrections a faire ensuite (voir (***))
-void Domain_Graph::construire_graph_elem_elem(const Domaine& dom,
+void Domain_Graph::construire_graph_elem_elem(const Zone& dom,
                                               const Noms& liste_bords_periodiques,
                                               const int use_weights,
                                               Static_Int_Lists& graph_elements_perio)

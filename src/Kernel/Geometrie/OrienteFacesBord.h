@@ -28,7 +28,7 @@
 // Interprete
 
 #include <Interprete_geometrique_base.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 class Zone;
 

@@ -22,7 +22,7 @@
 #include <Interprete.h>
 #include <vector>
 
-class Domaine;
+class Zone;
 
 /*! @brief Interprete Decouper.
  *
@@ -49,12 +49,12 @@ public:
 
   Nom nom_domaine;
   DERIV(Partitionneur_base) deriv_partitionneur;
-  REF(Domaine) ref_domaine;
+  REF(Zone) ref_domaine;
   int nb_parts_tot = -1;
   Noms liste_bords_periodiques;
 
 private:
-  const Domaine& find_domain(const Nom& nom);
+  const Zone& find_domain(const Nom& nom);
   // Parametres du decoupage:
 
   //parametres remplis par lire()

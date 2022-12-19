@@ -36,7 +36,7 @@
 #include <Hexaedre.h>
 #include <Triangle.h>
 #include <Segment.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Scatter.h>
 #include <EChaine.h>
 #include <Lapack.h>

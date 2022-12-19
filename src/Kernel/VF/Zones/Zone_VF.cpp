@@ -19,7 +19,7 @@
 #include <Static_Int_Lists.h>
 #include <Connectivite_som_elem.h>
 #include <Faces_builder.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <MD_Vector_tools.h>
 #include <Scatter.h>
 #include <MD_Vector_base.h>

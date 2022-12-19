@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Tetraedriser_par_prisme.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_instanciable(Tetraedriser_par_prisme, "Tetraedriser_par_prisme", Triangulation_base);
 
@@ -32,7 +32,7 @@ Entree& Tetraedriser_par_prisme::readOn(Entree& is) { return Interprete::readOn(
 static void decoupe(Zone& zone, Faces& faces)
 {
 
-  const Domaine& dom = zone.domaine();
+  const Zone& dom = zone.domaine();
   const DoubleTab& coord = dom.coord_sommets();
 
   IntTab& sommets = faces.les_sommets();

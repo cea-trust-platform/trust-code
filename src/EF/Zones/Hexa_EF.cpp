@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Hexa_EF.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_instanciable_sans_constructeur(Hexa_EF,"Hexa_EF",Elem_EF_base);
 

@@ -17,7 +17,7 @@
 #include <NettoieNoeuds.h>
 #include <Lire_Tgrid.h>
 #include <EFichier.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <ctype.h>
 #include <math.h>
 
@@ -204,7 +204,7 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
 {
   Cerr << "Reading a mesh which comes from Tgrid" << finl;
   associer_domaine(is);
-  Domaine& dom=domaine();
+  Zone& dom=domaine();
   DoubleTab& coord_sommets=dom.les_sommets();
   // Declaration des variables
   int dim = -1;
@@ -726,7 +726,7 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
   dom.zone(0).type_elem().reordonner();
 
   // Nettoie le domaine pour enlever les noeuds inutiles
-  // Mettre une methode a Domaine::nettoie
+  // Mettre une methode a Zone::nettoie
   // Attention: les lignes suivantes pas compatibles avec TRUST < v1.4.6
 
   if ( (Process::nproc()==1) && (NettoieNoeuds::NettoiePasNoeuds==0) )

@@ -16,7 +16,7 @@
 #include <Reordonner_faces_periodiques.h>
 #include <Partitionneur_Tranche.h>
 #include <TRUSTArray.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Partitionneur_Tranche,"Partitionneur_Tranche",Partitionneur_base);
@@ -61,7 +61,7 @@ void Partitionneur_Tranche::set_param(Param& param)
 /*! @brief Premiere etape d'initialisation du partitionneur: on associe un domaine.
  *
  */
-void Partitionneur_Tranche::associer_domaine(const Domaine& domaine)
+void Partitionneur_Tranche::associer_domaine(const Zone& domaine)
 {
   ref_domaine_ = domaine;
   nb_tranches_.resize(domaine.dimension);
@@ -192,7 +192,7 @@ void Partitionneur_Tranche::construire_partition(IntVect& elem_part, int& nb_par
   assert(ref_domaine_.non_nul());
   assert(nb_tranches_[0] > 0);
 
-  const Domaine& dom = ref_domaine_.valeur();
+  const Zone& dom = ref_domaine_.valeur();
   const Zone& zone = dom.zone(0);
   const int nb_elem = zone.nb_elem();
 

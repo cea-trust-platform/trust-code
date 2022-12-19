@@ -46,7 +46,7 @@ const Zone_VEF_PreP1b& Op_Curl_VEFP1B::zone_Vef() const
 /////////////////////////////////////
 
 inline void add_curl_som(int nps, int sommet, int face, double flux,
-                         DoubleTab& curl, const Domaine& domaine)
+                         DoubleTab& curl, const Zone& domaine)
 {
   curl(nps+domaine.get_renum_som_perio(sommet)) += flux;
 }

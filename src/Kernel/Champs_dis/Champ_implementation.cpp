@@ -17,9 +17,9 @@
 #include <Champ_Fonc_base.h>
 #include <Champ_Inc_base.h>
 #include <Zone_VF.h>
-#include <Domaine.h>
+#include <Zone.h>
 
-DoubleTab& Champ_implementation::valeur_aux_sommets(const Domaine& domain, DoubleTab& result) const
+DoubleTab& Champ_implementation::valeur_aux_sommets(const Zone& domain, DoubleTab& result) const
 {
   Nom domain_name = domain.le_nom();
   Nom support_name = get_zone_geom().domaine().le_nom();
@@ -37,7 +37,7 @@ DoubleTab& Champ_implementation::valeur_aux_sommets(const Domaine& domain, Doubl
   return result;
 }
 
-DoubleVect& Champ_implementation::valeur_aux_sommets_compo(const Domaine& domain, DoubleVect& result, int ncomp) const
+DoubleVect& Champ_implementation::valeur_aux_sommets_compo(const Zone& domain, DoubleVect& result, int ncomp) const
 {
   Nom domain_name = domain.le_nom();
   Nom support_name = get_zone_geom().domaine().le_nom();

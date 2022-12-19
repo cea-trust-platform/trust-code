@@ -26,7 +26,7 @@
 #include <Champ_P1NC.h>
 #include <Periodique.h>
 #include <Solv_GCP.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Debog.h>
 #include <SSOR.h>
 
@@ -61,7 +61,7 @@ static const double coeff_penalisation = 1e9;
  *  Voir aussi "What is in TRUST" : Scales_Separation_P1_P1NC.
  *
  */
-DoubleTab& valeur_P1_L2(Champ_P1NC& cha, const Domaine& dom)
+DoubleTab& valeur_P1_L2(Champ_P1NC& cha, const Zone& dom)
 {
   const Zone& mazone = dom.zone(0);
 
@@ -479,7 +479,7 @@ DoubleTab& valeur_P1_L2(Champ_P1NC& cha, const Domaine& dom)
   return vit_som;
 }
 
-DoubleTab& valeur_P1_L2(Champ_Fonc_P1NC& cha, const Domaine& dom)
+DoubleTab& valeur_P1_L2(Champ_Fonc_P1NC& cha, const Zone& dom)
 {
   const Zone& mazone = dom.zone(0);
   int nb_elem_tot = mazone.nb_elem_tot();
@@ -702,7 +702,7 @@ DoubleTab& valeur_P1_L2(Champ_Fonc_P1NC& cha, const Domaine& dom)
 
 DoubleTab&
 valeur_P1_H1(const Champ_P1NC& cha,
-             const Domaine& dom,
+             const Zone& dom,
              DoubleTab& ch_som)
 {
   const Zone& zone = dom.zone(0);
@@ -933,7 +933,7 @@ void Champ_P1NC_implementation::filtrer_H1(DoubleTab& valeurs) const
 void Champ_P1NC_implementation::filtrer_L2(DoubleTab& valeurs) const
 {
   const Zone_VEF& zone_VEF = zone_vef();
-  const Domaine& dom=zone_VEF.zone().domaine();
+  const Zone& dom=zone_VEF.zone().domaine();
   double coeff= 1./Objet_U::dimension;
   //   int nb_som= zone_VEF.zone().nb_som_tot();
   int nb_faces=valeurs.dimension_tot(0);
@@ -1130,7 +1130,7 @@ void Champ_P1NC_implementation::filtrer_resu(DoubleTab& resu) const
   const Zone_VEF& zone_VEF = zone_vef();
   const DoubleVect& volumes_entrelaces= zone_VEF.volumes_entrelaces();
   const Zone& mazone =zone_VEF.zone();
-  const Domaine& dom=mazone.domaine();
+  const Zone& dom=mazone.domaine();
   const IntTab& face_sommets=zone_VEF.face_sommets();
   int nb_faces=resu.dimension(0);
   int nb_faces_tot=resu.dimension_tot(0);
@@ -1493,7 +1493,7 @@ valeur_aux_elems_smooth(const DoubleTab& positions,
   const DoubleTab&  ch_sommet= (ch_som());
   const Zone_VEF& zone_VEF = zone_vef();
   const Zone& zone_geom = get_zone_geom();
-  const Domaine& dom=zone_VEF.zone().domaine();
+  const Zone& dom=zone_VEF.zone().domaine();
   const DoubleTab& coord = zone_geom.domaine().coord_sommets();
   const IntTab& sommet_poly = zone_geom.les_elems();
   if (val.nb_dim() == 2)
@@ -1557,7 +1557,7 @@ valeur_aux_elems_compo_smooth(const DoubleTab& positions,
   const int les_polys_size = les_polys.size(), nb_compo_=cha.nb_comp(), D = Objet_U::dimension;
   const DoubleTab& ch_sommet= (ch_som());
   const Zone_VEF& zone_VEF = zone_vef();
-  const Domaine& dom=zone_VEF.zone().domaine();
+  const Zone& dom=zone_VEF.zone().domaine();
   const Zone& zone_geom = get_zone_geom();
   const DoubleTab& coord = zone_geom.domaine().coord_sommets();
   const IntTab& sommet_poly = zone_geom.les_elems();
@@ -1596,7 +1596,7 @@ valeur_aux_elems_compo_smooth(const DoubleTab& positions,
 }
 
 DoubleTab& Champ_P1NC_implementation::
-valeur_aux_sommets(const Domaine& dom,
+valeur_aux_sommets(const Zone& dom,
                    DoubleTab& champ_som) const
 {
   const Zone& mazone = dom.zone(0);
@@ -1732,7 +1732,7 @@ double Champ_P1NC_implementation::valeur_a_sommet_compo(int num_som, int le_poly
 }
 
 //DoubleTab& Champ_P1NC_implementation::
-//valeur_aux_sommets(const Domaine& dom,
+//valeur_aux_sommets(const Zone& dom,
 //                   DoubleTab& ch_som) const
 //{
 //  //Cerr << "Champ_P1NC_implementation::valeur_aux_sommets" << finl;
@@ -1754,7 +1754,7 @@ double Champ_P1NC_implementation::valeur_a_sommet_compo(int num_som, int le_poly
 //}
 
 DoubleVect& Champ_P1NC_implementation::
-valeur_aux_sommets_compo(const Domaine& dom,
+valeur_aux_sommets_compo(const Zone& dom,
                          DoubleVect& champ_som,
                          int ncomp) const
 {
@@ -1919,7 +1919,7 @@ int Champ_P1NC_implementation::fixer_nb_valeurs_nodales(int n)
   const int nb_dim = le_champ().valeurs().nb_dim();
   if (nb_dim > 1)
     ch_som_.resize(0, le_champ().nb_comp());
-  const Domaine& dom = zone_vef().zone().domaine();
+  const Zone& dom = zone_vef().zone().domaine();
   dom.creer_tableau_sommets(ch_som_);
   ch_som_vect_.reset();
   dom.creer_tableau_sommets(ch_som_vect_);

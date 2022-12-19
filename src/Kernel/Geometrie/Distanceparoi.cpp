@@ -59,7 +59,7 @@ Entree& Distanceparoi::interpreter_(Entree& is)
     }
 
 
-  Domaine& dom=domaine();
+  Zone& dom=domaine();
   Nom fichier = dom.le_nom();
   fichier += "_Wall_length.xyz";
 

@@ -30,7 +30,7 @@ class Frontiere_dis_base;
 class Zone_dis_base;
 class MD_Vector;
 class Zone_dis;
-class Domaine;
+class Zone;
 
 /*! @brief Classe Champ_Inc_base
  *
@@ -116,7 +116,7 @@ public:
   virtual DoubleTab& remplir_coord_noeuds_compo(DoubleTab&, int) const;
 
   virtual double integrale_espace(int ncomp) const;
-  const Domaine& domaine() const;
+  const Zone& domaine() const;
 
   //derivees du champ en les inconnues :
   //renvoie les derivees calcules par fonc_calc_ si champ_calcule, deriv[nom de l'inco] = 1 si vraie inconnue

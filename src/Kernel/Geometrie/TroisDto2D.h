@@ -17,7 +17,7 @@
 #define TroisDto2D_included
 
 #include <Interprete_geometrique_base.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 
 /*! @brief Classe TroisDto2D x->alpha x
@@ -29,7 +29,7 @@ class TroisDto2D : public Interprete_geometrique_base
   Declare_instanciable(TroisDto2D);
 public :
   Entree& interpreter_(Entree&) override;
-  void extraire_2D(const Domaine&, Domaine&, const Bord&,const Nom& , int);
+  void extraire_2D(const Zone&, Zone&, const Bord&,const Nom& , int);
 
   // OC, 28/10/2004, Modif pour pouvoir extraire un bord d'orientation quelconque.
   // Renvoi la composante X  de l'origine A du repere local au bord, calcule par la classe.

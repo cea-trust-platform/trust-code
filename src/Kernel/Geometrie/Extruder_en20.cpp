@@ -17,7 +17,7 @@
 #include <Static_Int_Lists.h>
 #include <Extruder_en20.h>
 #include <Faces_builder.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Scatter.h>
 #include <Param.h>
 
@@ -63,7 +63,7 @@ Entree& Extruder_en20::interpreter_(Entree& is)
  *
  * @param (Zone& zone) la zone dont on veut raffiner les elements
  */
-void Extruder_en20::extruder(Domaine& dom)
+void Extruder_en20::extruder(Zone& dom)
 {
   Zone& zone = dom.zone(0);
 
@@ -403,7 +403,7 @@ void Extruder_en20::traiter_faces_dvt(Faces& les_faces_bord, Faces& les_faces, i
 
 
 
-void Extruder_en20::extruder_dvt(Domaine& dom, Faces& les_faces, int oldnbsom, int oldsz)
+void Extruder_en20::extruder_dvt(Zone& dom, Faces& les_faces, int oldnbsom, int oldsz)
 {
   Zone& zone = dom.zone(0);
   const int nbfaces2D = les_faces.nb_faces();

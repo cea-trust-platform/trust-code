@@ -20,7 +20,7 @@
 #include <Dirichlet_homogene.h>
 #include <Neumann_sortie_libre.h>
 #include <Navier_Stokes_std.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Debog.h>
 #include <Check_espace_virtuel.h>
 #include <TRUSTTrav.h>
@@ -95,7 +95,7 @@ static void verifier(const Op_Grad_VEF_P1B_Face& op,
       Process::exit();
     }
   const Zone& zone = zone_VEF.zone();
-  const Domaine& dom=zone.domaine();
+  const Zone& dom=zone.domaine();
   int nb_elem_tot=zone.nb_elem_tot();
   int nb_som_tot=dom.nb_som_tot();
   int nb_elem=zone.nb_elem();
@@ -348,7 +348,7 @@ ajouter_som(const DoubleTab& pre,
                                              la_zone_vef.valeur());
   assert(zone_VEF.get_alphaS());
   const Zone& zone = zone_VEF.zone();
-  const Domaine& dom=zone.domaine();
+  const Zone& dom=zone.domaine();
   const DoubleTab& face_normales = zone_VEF.face_normales();
   const DoubleVect& porosite_face=equation().milieu().porosite_face();
   const IntTab& som_elem=zone.les_elems();
@@ -443,7 +443,7 @@ ajouter_aretes(const DoubleTab& pre,
     ref_cast(Zone_VEF_PreP1b, la_zone_vef.valeur());
   assert(zone_VEF.get_alphaA());
   const Zone& zone = zone_VEF.zone();
-  //const Domaine& dom=zone.domaine();
+  //const Zone& dom=zone.domaine();
   const DoubleTab& face_normales = zone_VEF.face_normales();
   const DoubleVect& porosite_face=equation().milieu().porosite_face();
   const IntTab& som_elem=zone.les_elems();

@@ -19,7 +19,7 @@
 
 #include <Frontiere.h>
 
-class Domaine;
+class Zone;
 
 /*! @brief Classe Raccord_base Cette classe est simplement une frontiere, c'est la classe de base de la
  *

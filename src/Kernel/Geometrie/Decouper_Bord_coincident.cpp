@@ -57,7 +57,7 @@ void Decouper_Bord_coincident::decouper_(Zone& zone)
           exit();
         }
 
-      Domaine& dom = zone.domaine();
+      Zone& dom = zone.domaine();
       const DoubleTab& xs = dom.coord_sommets();
       IntTab& les_elems = zone.les_elems();
       int oldsz = les_elems.dimension(0);

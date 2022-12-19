@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Rectangle_axi.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_instanciable(Rectangle_axi,"Rectangle_axi",Rectangle);
 
@@ -48,7 +48,7 @@ Entree& Rectangle_axi::readOn(Entree& s )
 void Rectangle_axi::calculer_centres_gravite(DoubleTab& xp) const
 {
   const IntTab& les_Polys = ma_zone->les_elems();
-  const Domaine& le_domaine = ma_zone->domaine();
+  const Zone& le_domaine = ma_zone->domaine();
   int nb_elem = ma_zone->nb_elem();
   int num_som;
 
@@ -114,7 +114,7 @@ const Nom& Rectangle_axi::nom_lml() const
 void Rectangle_axi::calculer_volumes(DoubleVect& volumes) const
 {
   const Zone& zone=ma_zone.valeur();
-  const Domaine& dom=zone.domaine();
+  const Zone& dom=zone.domaine();
   double r,dr,d_teta;
   int S1,S2,S4;
 
@@ -165,7 +165,7 @@ int Rectangle_axi::contient(const ArrOfDouble& pos, int element ) const
 {
   assert(pos.size_array()==2);
   const Zone& zone=ma_zone.valeur();
-  const Domaine& dom=zone.domaine();
+  const Zone& dom=zone.domaine();
   int som0 = zone.sommet_elem(element,0);
   int som3 = zone.sommet_elem(element,3);
   double r0,r3,t0,t3;

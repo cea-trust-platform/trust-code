@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <EOS_Tools_VEF.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Zone_VEF_PreP1b.h>
 #include <Debog.h>
 #include <Navier_Stokes_std.h>
@@ -175,7 +175,7 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
   double rn,rnp1;
   int nfe = la_zone->zone().nb_faces_elem();
   int nsf = la_zone->nb_som_face();
-  const Domaine& dom=la_zone->zone().domaine();
+  const Zone& dom=la_zone->zone().domaine();
 
   // calcul de la somme des volumes entrelacees autour d'un sommet
   volume_int_som=0.;

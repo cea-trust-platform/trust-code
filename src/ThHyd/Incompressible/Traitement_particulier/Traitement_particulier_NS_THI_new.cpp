@@ -15,7 +15,7 @@
 
 #include <Traitement_particulier_NS_THI_new.h>
 #include <MD_Vector_base.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_base(Traitement_particulier_NS_THI_new,"Traitement_particulier_NS_THI_new",Traitement_particulier_NS_base);
 

@@ -27,7 +27,7 @@
  */
 
 #include <Interprete_geometrique_base.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 class Zone;
 
@@ -38,7 +38,7 @@ class DecoupeBord : public Interprete_geometrique_base
 public :
 
   Entree& interpreter_(Entree&) override;
-  void Decouper(Domaine& dom, const Nom& nom_file);
+  void Decouper(Zone& dom, const Nom& nom_file);
 
 
 };

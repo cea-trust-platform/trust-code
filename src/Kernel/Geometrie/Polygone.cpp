@@ -16,7 +16,7 @@
 #include <TRUSTList.h>
 #include <Polygone.h>
 #include <Triangle.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <algorithm>
 using std::swap;
 

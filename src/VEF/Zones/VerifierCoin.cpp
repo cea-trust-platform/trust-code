@@ -17,7 +17,7 @@
 #include <VerifierCoin.h>
 #include <TRUSTLists.h>
 #include <Scatter.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Param.h>
 #include <time.h>
 
@@ -68,7 +68,7 @@ Entree& VerifierCoin::interpreter_(Entree& is)
 
 
   associer_domaine(is);
-  Domaine& dom=domaine();
+  Zone& dom=domaine();
   Zone& zone=dom.zone(0);
   if (zone.type_elem()->que_suis_je() != "Triangle" && zone.type_elem()->que_suis_je() != "Tetraedre")
     {

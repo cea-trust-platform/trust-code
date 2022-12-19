@@ -19,7 +19,7 @@
 #include <Zone_Cl_PolyMAC.h>
 #include <TRUSTTab_parts.h>
 #include <Equation_base.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <array>
 #include <cmath>
 

@@ -15,7 +15,7 @@
 
 #include <Champ_P1_EF.h>
 #include <Zone_EF.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_instanciable(Champ_P1_EF,"Champ_P1_EF",Champ_Inc_P1_base);
 

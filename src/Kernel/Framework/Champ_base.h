@@ -22,7 +22,7 @@
 #include <Field_base.h>
 #include <Noms.h>
 class Motcle;
-class Domaine;
+class Zone;
 class Zone_dis_base;
 class Format_Post_base;
 class Frontiere_dis_base;
@@ -91,21 +91,21 @@ public:
   virtual DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const;
   virtual DoubleTab& valeur_aux_elems_smooth(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs);
   virtual DoubleVect& valeur_aux_elems_compo_smooth(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp);
-  virtual DoubleVect& valeur_a_sommet(int, const Domaine&, DoubleVect&) const;
+  virtual DoubleVect& valeur_a_sommet(int, const Zone&, DoubleVect&) const;
   virtual double valeur_a_sommet_compo(int, int, int) const;
-  virtual DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const;
-  virtual DoubleVect& valeur_aux_sommets_compo(const Domaine&, DoubleVect&, int) const;
+  virtual DoubleTab& valeur_aux_sommets(const Zone&, DoubleTab&) const;
+  virtual DoubleVect& valeur_aux_sommets_compo(const Zone&, DoubleVect&, int) const;
 
   /* ces methodes ne s'appliquent que si a_une_zone_dis_base() */
   virtual DoubleTab& valeur_aux_faces(DoubleTab& result) const;
   virtual DoubleTab valeur_aux_bords() const;
 
-  int calculer_valeurs_som_post(DoubleTab& valeurs, int nbsom, Nom& nom_post, const Domaine& dom) const;
-  int calculer_valeurs_som_compo_post(DoubleTab& valeurs, int ncomp, int nbsom, Nom& nom_post, const Domaine& dom, int appliquer_cl = 0) const;
-  int calculer_valeurs_elem_post(DoubleTab& valeurs, int nbelem, Nom& nom_post, const Domaine& dom) const;
-  int calculer_valeurs_elem_compo_post(DoubleTab& valeurs, int ncomp, int nbelem, Nom& nom_post, const Domaine& dom) const;
+  int calculer_valeurs_som_post(DoubleTab& valeurs, int nbsom, Nom& nom_post, const Zone& dom) const;
+  int calculer_valeurs_som_compo_post(DoubleTab& valeurs, int ncomp, int nbsom, Nom& nom_post, const Zone& dom, int appliquer_cl = 0) const;
+  int calculer_valeurs_elem_post(DoubleTab& valeurs, int nbelem, Nom& nom_post, const Zone& dom) const;
+  int calculer_valeurs_elem_compo_post(DoubleTab& valeurs, int ncomp, int nbelem, Nom& nom_post, const Zone& dom) const;
   void corriger_unite_nom_compo();
-  virtual int completer_post_champ(const Domaine& dom, const int axi, const Nom& loc_post, const Nom& le_nom_champ_post, Format_Post_base& format) const;
+  virtual int completer_post_champ(const Zone& dom, const int axi, const Nom& loc_post, const Nom& le_nom_champ_post, Format_Post_base& format) const;
   virtual void completer(const Zone_Cl_dis_base& zcl);
 
 protected:

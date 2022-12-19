@@ -30,7 +30,7 @@ class Fichier_Lata;
 //                     ecrire_domaine(domaine,est_le_premier_post)
 
 //    (pour chaque dt) ecrire_temps(temps_courant)
-//                     ecrire_champ(const Domaine& domaine, const Noms& unite_, const Noms& noms_compo,
+//                     ecrire_champ(const Zone& domaine, const Noms& unite_, const Noms& noms_compo,
 //                                      int ncomp,double temps_,double temps_courant
 //                                      const Nom  & id_du_champ,
 //                                    const Nom  & id_du_domaine,
@@ -62,16 +62,16 @@ public:
   virtual int reconstruct(const Nom file_basename, const Nom, const double tinit);
   virtual int finir_sans_reprise(const Nom file_basename);
   int ecrire_entete(const double temps_courant, const int reprise, const int est_le_premier_post) override;
-  int completer_post(const Domaine& dom, const int axi, const Nature_du_champ& nature, const int nb_compo, const Noms& noms_compo, const Motcle& loc_post, const Nom& le_nom_champ_post) override;
+  int completer_post(const Zone& dom, const int axi, const Nature_du_champ& nature, const int nb_compo, const Noms& noms_compo, const Motcle& loc_post, const Nom& le_nom_champ_post) override;
 
   int preparer_post(const Nom& id_du_domaine, const int est_le_premier_post, const int reprise, const double t_init) override;
-  int ecrire_domaine(const Domaine& domaine, const int est_le_premier_post) override;
+  int ecrire_domaine(const Zone& domaine, const int est_le_premier_post) override;
   int ecrire_domaine_low_level(const Nom& id_dom, const DoubleTab& sommets, const IntTab& elements, const Motcle& type_elem);
   int ecrire_temps(const double temps) override;
 
   int finir(const int est_le_dernier_post) override;
 
-  int ecrire_champ(const Domaine& domaine, const Noms& unite_, const Noms& noms_compo, int ncomp, double temps_, const Nom& id_du_champ, const Nom& id_du_domaine,
+  int ecrire_champ(const Zone& domaine, const Noms& unite_, const Noms& noms_compo, int ncomp, double temps_, const Nom& id_du_champ, const Nom& id_du_domaine,
                    const Nom& localisation, const Nom& nature, const DoubleTab& data) override;
 
   int ecrire_item_int(const Nom& id_item, const Nom& id_du_domaine, const Nom& id_zone, const Nom& localisation, const Nom& reference, const IntVect& data, const int reference_size) override;

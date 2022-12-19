@@ -81,7 +81,7 @@ int Format_Post_base::finir(const int est_le_dernier_post)
 }
 
 int Format_Post_base::init_ecriture(double temps_courant,double temps_post,
-                                    int est_le_premier_postraitement_pour_nom_fich_,const Domaine& domaine)
+                                    int est_le_premier_postraitement_pour_nom_fich_,const Zone& domaine)
 {
   return 1;
 }
@@ -93,7 +93,7 @@ int Format_Post_base::finir_ecriture(double temps_courant)
 
 
 
-int Format_Post_base::completer_post(const Domaine& dom,const int is_axi,
+int Format_Post_base::completer_post(const Zone& dom,const int is_axi,
                                      const Nature_du_champ& nature,const int nb_compo,const Noms& noms_compo,
                                      const Motcle& loc_post,const Nom& le_nom_champ_post)
 {
@@ -146,14 +146,14 @@ int Format_Post_base::test_coherence(const int champs, const int stat, const dou
  * @param (elements) Indices des sommets de chaque element. dimension(1) doit correspondre au type de l'element (3 pour un triangle, 4 pour un rectangle ou un tetraedre, etc...)
  */
 
-int Format_Post_base::ecrire_domaine(const Domaine& domaine,const int est_le_premier_post)
+int Format_Post_base::ecrire_domaine(const Zone& domaine,const int est_le_premier_post)
 {
   Cerr << "Format_Post_base::ecrire_domaine(...)\n"
        << " method not coded for " << que_suis_je() << finl;
   return 0;
 }
 
-int Format_Post_base::ecrire_domaine_dis(const Domaine& domaine,const REF(Zone_dis_base)& zone_dis_base,const int est_le_premier_post)
+int Format_Post_base::ecrire_domaine_dis(const Zone& domaine,const REF(Zone_dis_base)& zone_dis_base,const int est_le_premier_post)
 {
   return ecrire_domaine(domaine, est_le_premier_post);
 }
@@ -179,7 +179,7 @@ int Format_Post_base::ecrire_temps(const double temps)
  * @param (data) tableau de valeurs a postraiter. Le nombre de lignes du tableau doit etre egal au nombre de lignes du tableau "localisation" (nombre de sommets, d'elements ou de faces ou autre). Valeur de retour: 1 si operation reussie, 0 sinon (par exemple, preconditions non remplies ou fonctionnalite non supportee par le format).
  */
 
-int Format_Post_base::ecrire_champ(const Domaine& domaine,const Noms& unite_,const Noms& noms_compo,
+int Format_Post_base::ecrire_champ(const Zone& domaine,const Noms& unite_,const Noms& noms_compo,
                                    int ncomp, double temps_,
                                    const Nom&   id_du_champ,
                                    const Nom&         id_du_domaine,
@@ -193,7 +193,7 @@ int Format_Post_base::ecrire_champ(const Domaine& domaine,const Noms& unite_,con
 }
 
 // Surcharge de la methode precedente pour le format XYZ : donner les coordonees de postraitement en argument
-int Format_Post_base::ecrire_champ2(const Domaine& domaine,const Noms& unite_,const Noms& noms_compo,
+int Format_Post_base::ecrire_champ2(const Zone& domaine,const Noms& unite_,const Noms& noms_compo,
                                     int ncomp, double temps_,
                                     const Nom&   id_du_champ,
                                     const Nom&         id_du_domaine,
@@ -237,7 +237,7 @@ int Format_Post_base::ecrire_item_int(const Nom&   id_item,
 //  Nom id_champ_post="temperature_elem_dom";
 //  Nature_du_champ nature = scalaire;
 //  Motcle loc="ELEM";
-//  const Domaine& dom = ...
+//  const Zone& dom = ...
 //  const double& temps_courant = ...
 //  const Champ_base& ch_temp = mon_probleme->get_champ("temperature");
 //  const Zone_dis_base& zone_dis = ch_temp.zone_dis_base();
@@ -251,7 +251,7 @@ int Format_Post_base::ecrire_item_int(const Nom&   id_item,
 /////////////////Exemple d utilisation//////////////////////////////////////
 
 void Format_Post_base::postraiter_debug_valeurs_un_instant(const Nom& nom_fich,
-                                                           const Domaine& dom,
+                                                           const Zone& dom,
                                                            const Zone_dis_base& zone_dis,
                                                            double temps_champ, double temps_courant,
                                                            const Nom& id_champ_post,const Nature_du_champ& nature_champ,

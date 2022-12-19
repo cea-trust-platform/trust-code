@@ -18,7 +18,7 @@
 #include <Fluide_Incompressible.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Champ_Uniforme.h>
 #include <Matrice_Morse.h>
 
@@ -60,7 +60,7 @@ Entree& Perte_Charge_Reguliere_VEF_P1NC::readOn(Entree& s )
 void Perte_Charge_Reguliere_VEF_P1NC::remplir_num_faces(Nom& un_nom_sous_zone)
 {
   Cerr << " Perte_Charge_Reguliere_VEF_P1NC::remplir_num_faces " << finl;
-  const Domaine& le_domaine = equation().probleme().domaine();
+  const Zone& le_domaine = equation().probleme().domaine();
   const Zone_VEF& zone_VEF = la_zone_VEF.valeur();
 
   const IntTab& elem_faces = zone_VEF.elem_faces();

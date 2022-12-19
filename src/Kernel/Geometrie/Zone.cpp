@@ -17,7 +17,7 @@
 #include <communications.h>
 #include <TRUSTList.h>
 #include <Sous_Zone.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Octree.h>
 #include <Zone.h>
 #include <TRUSTTrav.h>
@@ -229,18 +229,18 @@ Entree& Zone::lire_bords_a_imprimer_sum(Entree& is)
  *
  * (version const)
  *
- * @return (Domaine&) le domaine dont la zone fait partie
+ * @return (Zone&) le domaine dont la zone fait partie
  */
-const Domaine& Zone::domaine() const
+const Zone& Zone::domaine() const
 {
   return le_domaine.valeur();
 }
 
 /*! @brief Renvoie le domaine dont la zone fait partie.
  *
- * @return (Domaine&) le domaine dont la zone fait partie
+ * @return (Zone&) le domaine dont la zone fait partie
  */
-Domaine& Zone::domaine()
+Zone& Zone::domaine()
 {
   return le_domaine.valeur();
 }
@@ -386,9 +386,9 @@ ArrOfInt& Zone::chercher_elements(const DoubleVect& positions, ArrOfInt& element
 }
 /*! @brief Specifie le domaine dont la zone fait partie.
  *
- * @param (Domaine& un_domaine) le domaine dont la zone fait partie
+ * @param (Zone& un_domaine) le domaine dont la zone fait partie
  */
-void Zone::associer_domaine(const Domaine& un_domaine)
+void Zone::associer_domaine(const Zone& un_domaine)
 {
   le_domaine = un_domaine;
 }
@@ -1527,7 +1527,7 @@ void Zone::creer_aretes()
   aretes_som_.set_smart_resize(0);
   aretes_som_.resize(n_aretes_tot, 2);
 
-  Journal() << "Domaine " << domaine().le_nom() << " nb_aretes=" << nb_aretes_reelles << " nb_aretes_tot=" << n_aretes_tot << finl;
+  Journal() << "Zone " << domaine().le_nom() << " nb_aretes=" << nb_aretes_reelles << " nb_aretes_tot=" << n_aretes_tot << finl;
 
   // Construction du descripteur parallele
   {

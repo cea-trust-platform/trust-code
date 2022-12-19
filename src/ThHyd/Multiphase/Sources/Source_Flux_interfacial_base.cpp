@@ -26,7 +26,7 @@
 #include <Matrix_tools.h>
 #include <Array_tools.h>
 #include <Zone_VF.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 Implemente_base(Source_Flux_interfacial_base,"Source_Flux_interfacial_base", Sources_Multiphase_base);
 

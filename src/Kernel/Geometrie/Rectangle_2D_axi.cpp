@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Rectangle_2D_axi.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <math.h>
 Implemente_instanciable(Rectangle_2D_axi,"Rectangle_2D_axi",Rectangle);
 
@@ -68,7 +68,7 @@ void Rectangle_2D_axi::calculer_centres_gravite(DoubleTab& xp) const
 {
   /*
     const IntTab& les_Polys = ma_zone->les_elems();
-    const Domaine& le_domaine = ma_zone->domaine();
+    const Zone& le_domaine = ma_zone->domaine();
     int nb_elem = ma_zone->nb_elem_tot();
     int num_som;
 
@@ -99,7 +99,7 @@ void Rectangle_2D_axi::calculer_centres_gravite(DoubleTab& xp) const
 void Rectangle_2D_axi::calculer_volumes(DoubleVect& volumes) const
 {
   const Zone& zone=ma_zone.valeur();// zone.valeur() permet d'acceder a                                            // la zone qui est en cours de traitement
-  const Domaine& dom=zone.domaine();
+  const Zone& dom=zone.domaine();
   double r,r1,r2,dr,dz;
   int S1,S2,S3;
   int size_tot = zone.nb_elem_tot();

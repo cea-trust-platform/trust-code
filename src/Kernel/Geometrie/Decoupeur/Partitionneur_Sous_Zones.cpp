@@ -14,7 +14,7 @@
 *****************************************************************************/
 #include <Partitionneur_Sous_Zones.h>
 
-#include <Domaine.h>
+#include <Zone.h>
 #include <Sous_Zone.h>
 #include <Param.h>
 
@@ -61,7 +61,7 @@ void Partitionneur_Sous_Zones::set_param(Param& param)
 /*! @brief Premiere etape d'initialisation du partitionneur: on associe un domaine.
  *
  */
-void Partitionneur_Sous_Zones::associer_domaine(const Domaine& domaine)
+void Partitionneur_Sous_Zones::associer_domaine(const Zone& domaine)
 {
   ref_domaine_ = domaine;
 }
@@ -93,7 +93,7 @@ void Partitionneur_Sous_Zones::initialiser(const Noms& noms_sous_zones)
 void Partitionneur_Sous_Zones::construire_partition(IntVect& elem_part, int& nb_parts_tot) const
 {
   assert(ref_domaine_.non_nul());
-  const Domaine& dom = ref_domaine_.valeur();
+  const Zone& dom = ref_domaine_.valeur();
   const Zone& zone = dom.zone(0);
   const int nb_elem = zone.nb_elem_tot();
   elem_part.resize(nb_elem);
@@ -111,14 +111,14 @@ void Partitionneur_Sous_Zones::construire_partition(IntVect& elem_part, int& nb_
       for (int i=0; i<noms_domaines_.size(); i++)
         {
           const Nom& nom_domaine = noms_domaines_[i];
-          if (!interprete().objet_existant(nom_domaine) || !sub_type(Domaine, interprete().objet(nom_domaine)))
+          if (!interprete().objet_existant(nom_domaine) || !sub_type(Zone, interprete().objet(nom_domaine)))
             {
               // Contrairement au sous zone, le domaine doit exister pour le moment
               Cerr << "Domain " << nom_domaine << " is not existing." << finl;
               Process::exit();
               // ToDo eventuellement liste de zones dans des fichiers ex: DOM_0000.Zones, DOM_0001.Zones
             }
-          const Domaine& domaine = ref_cast(Domaine, interprete().objet(nom_domaine));
+          const Zone& domaine = ref_cast(Zone, interprete().objet(nom_domaine));
           DoubleTab domaine_xp;
           domaine.zone(0).calculer_centres_gravite(domaine_xp);
           IntVect dom_cells_containing_domaine_cells;

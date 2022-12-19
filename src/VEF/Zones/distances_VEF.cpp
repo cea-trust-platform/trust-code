@@ -13,7 +13,7 @@
 *
 *****************************************************************************/
 #include <distances_VEF.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Motcle.h>
 
 double norm_2D_vit1(const DoubleTab& vit,int num1,int num2,int fac,const Zone_VEF& zone,double& u)
@@ -630,7 +630,7 @@ DoubleVect& calcul_longueur_filtre(DoubleVect& longueur_filtre, const Motcle& me
 
   if ( ! (methode == Motcle("volume_sans_lissage")) )  // processus de "regularisation"
     {
-      const Domaine& dom=zone.zone().domaine();
+      const Zone& dom=zone.zone().domaine();
       const IntTab& les_sommets = zone_geom.les_elems();
       int nb_sommet = zone.nb_som_tot();
       ArrOfDouble longueur_filtre_sommet(nb_sommet);

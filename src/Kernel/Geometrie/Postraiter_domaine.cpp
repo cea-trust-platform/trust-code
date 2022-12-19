@@ -42,7 +42,7 @@ Entree& Postraiter_domaine::readOn(Entree& is)
 }
 void traite_bord(const Zone& zone,IntVect& ch_som,IntVect& ch_elem3,int num2, Faces& faces,Nom& nom_bord,Nom& fichier,const IntTab& les_elems, Format_Post_base& post, int& compteur,int& compteur0,int& compteur_reel,int& moi,int isjoint=0)
 {
-  const Domaine& dom=zone.domaine();
+  const Zone& dom=zone.domaine();
   Nom nom_dom=dom.le_nom();
   int num=-num2;
   int nb_elem=les_elems.dimension(0);
@@ -286,7 +286,7 @@ void Postraiter_domaine::ecrire(Nom& nom_pdb)
         est_le_premie_post=0;
       post.ecrire_entete(0.,0,est_le_premie_post);
 
-      const Domaine& dom=domaine(numero_domaine);
+      const Zone& dom=domaine(numero_domaine);
       int reprise = 0;
       double t_init = 0.;
       post.preparer_post(dom.le_nom(),est_le_premie_post,reprise,t_init);
@@ -301,7 +301,7 @@ void Postraiter_domaine::ecrire(Nom& nom_pdb)
         est_le_premie_post=1;
       else
         est_le_premie_post=0;
-      const Domaine& dom=domaine(numero_domaine);
+      const Zone& dom=domaine(numero_domaine);
 
       compteur=-1;
       post.init_ecriture(0.,-1.,est_le_premie_post,dom);
@@ -313,7 +313,7 @@ void Postraiter_domaine::ecrire(Nom& nom_pdb)
 
   for (int numero_domaine=0; numero_domaine<nb_domaine_; numero_domaine++)
     {
-      Domaine& dom=domaine(numero_domaine);
+      Zone& dom=domaine(numero_domaine);
       Nom nom_dom(dom.le_nom());
       Zone& zone=dom.zone(0);
       const IntTab& les_elems = zone.les_elems();

@@ -23,7 +23,7 @@
 #include <Schema_Comm.h>
 #include <TRUSTTabs.h>
 #include <SFichier.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Scatter.h>
 #include <Param.h>
 #include <Nom.h>
@@ -182,7 +182,7 @@ void mon_construire_correspondance_items_par_coordonnees(Joints& joints, const J
  *
  */
 
-void mon_construire_correspondance_sommets_par_coordonnees(Domaine& dom)
+void mon_construire_correspondance_sommets_par_coordonnees(Zone& dom)
 {
   mon_construire_correspondance_items_par_coordonnees(dom.zone(0).faces_joint(), Joint::SOMMET, dom.coord_sommets());
 }
@@ -209,7 +209,7 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
       Cerr << "Raffiner_isotrope_parallele::interpreter(): options 'ascii' and 'single_hdf' are mutually exclusive!" << finl;
       Process::exit(1);
     }
-  Domaine dom_org;
+  Zone dom_org;
   Noms liste_bords_periodiques;
   org+=".Zones";
 
@@ -247,7 +247,7 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
     }
 
   Scatter::uninit_sequential_domain(dom_org);
-  Domaine dom_new(dom_org);
+  Zone dom_new(dom_org);
 
   refine_domain(dom_org,dom_new);
 

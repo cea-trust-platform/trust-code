@@ -40,13 +40,13 @@ class Partitionneur_Union : public Partitionneur_base
   Declare_instanciable(Partitionneur_Union);
 public:
   void set_param(Param& param) override { };
-  void associer_domaine(const Domaine& dom) override;
+  void associer_domaine(const Zone& dom) override;
   void initialiser(const char *filename, const char *filename_ssz);
   void construire_partition(IntVect& elem_part, int& nb_parts_tot) const override;
 
 protected:
   // Parametres du partitionneur
-  REF(Domaine) ref_domaine_;
+  REF(Zone) ref_domaine_;
   std::map<std::string, std::string> fic_ssz; //fic_ssz[nom de la sous zone] = { fichier de decoupage }
 };
 #endif

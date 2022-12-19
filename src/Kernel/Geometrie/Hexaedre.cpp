@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Hexaedre.h>
-#include <Domaine.h>
+#include <Zone.h>
 
 // Convention de numerotation
 //    sommets         faces         5(face z=1)
@@ -80,7 +80,7 @@ void Hexaedre::reordonner()
 int Hexaedre::reordonner_elem()
 {
   Zone& zone = ma_zone.valeur();
-  const Domaine& dom = zone.domaine();
+  const Zone& dom = zone.domaine();
   const DoubleTab& dom_coord = dom.les_sommets();
   IntTab& elem = zone.les_elems();
   ArrOfInt S(8);
@@ -170,7 +170,7 @@ int Hexaedre::contient(const ArrOfDouble& pos, int element ) const
 {
   assert(pos.size_array()==3);
   const Zone& zone=ma_zone.valeur();
-  const Domaine& dom=zone.domaine();
+  const Zone& dom=zone.domaine();
   int som0 = zone.sommet_elem(element,0);
   int som7 = zone.sommet_elem(element,7);
   if (    inf_ou_egal(dom.coord(som0,0),pos[0]) && inf_ou_egal(pos[0],dom.coord(som7,0))
@@ -213,7 +213,7 @@ int Hexaedre::contient(const ArrOfInt& som, int element ) const
 void Hexaedre::calculer_volumes(DoubleVect& volumes) const
 {
   const Zone& zone=ma_zone.valeur();
-  const Domaine& dom=zone.domaine();
+  const Zone& dom=zone.domaine();
   double dx,dy,dz;
   int S1,S2,S3,S4;
 

@@ -48,7 +48,7 @@ class Partitionneur_Sous_Domaine : public Partitionneur_base
   Declare_instanciable(Partitionneur_Sous_Domaine);
 public:
   void set_param(Param& param) override;
-  void associer_domaine(const Domaine& dom) override { };
+  void associer_domaine(const Zone& dom) override { };
   void construire_partition(IntVect& elem_part, int& nb_parts_tot) const override;
 
 protected:

@@ -15,7 +15,7 @@
 
 #include <Assembleur_P_VEFPreP1B.h>
 #include <Matrice_Bloc_Sym.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
 #include <Periodique.h>
@@ -297,7 +297,7 @@ static inline int chercher_arete(const Zone_VEF_PreP1b& zone_VEF,
                                  const IntTab& aretes_som)
 {
   const ArrOfInt& renum_arete_perio=zone_VEF.get_renum_arete_perio();
-  const Domaine& dom=zone_VEF.zone().domaine();
+  const Zone& dom=zone_VEF.zone().domaine();
   if(somi>somj)
     {
       int k=somi;
@@ -344,7 +344,7 @@ static inline void remplir_sommets(const Zone_VEF& zone_VEF,
   const IntTab& elem_som = zone_VEF.zone().les_elems();
   const IntTab& face_som = zone_VEF.face_sommets();
   const IntTab& elem_faces = zone_VEF.elem_faces();
-  const Domaine& dom=zone_VEF.zone().domaine();
+  const Zone& dom=zone_VEF.zone().domaine();
   int i,j,k;
   for(i=0; i<Objet_U::dimension; i++)
     sommets[i]=dom.get_renum_som_perio(face_som(face,i));

@@ -137,7 +137,7 @@ int Champ_Generique_Interpolation::set_methode(const Motcle& methode, int exit_o
   return ok;
 }
 
-/*! @brief Initialisation de la classe: initialisation du domaine d'interpolation Parametres valides : "" => domaine natif, ou le nom d'un objet Domaine connu de l'interprete
+/*! @brief Initialisation de la classe: initialisation du domaine d'interpolation Parametres valides : "" => domaine natif, ou le nom d'un objet Zone connu de l'interprete
  *
  */
 int Champ_Generique_Interpolation::set_domaine(const Nom& nom_domaine, int exit_on_error)
@@ -151,7 +151,7 @@ int Champ_Generique_Interpolation::set_domaine(const Nom& nom_domaine, int exit_
   else
     {
       const Objet_U& ob = interprete().objet(nom_domaine);
-      if (!sub_type(Domaine, ob))
+      if (!sub_type(Zone, ob))
         {
           Cerr << "Error in Champ_Generique_Interpolation::set_domaine(nom_domaine)\n"
                << " The object " << nom_domaine << " is not a domain" << finl;
@@ -162,7 +162,7 @@ int Champ_Generique_Interpolation::set_domaine(const Nom& nom_domaine, int exit_
         }
       else
         {
-          domaine_ = ref_cast(Domaine, ob);
+          domaine_ = ref_cast(Zone, ob);
         }
     }
   return ok;
@@ -198,7 +198,7 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_without_evaluation(Ch
 
   Champ espace_stockage_source;
   const Champ_base& source = get_source(0).get_champ_without_evaluation(espace_stockage_source);
-  // Domaine sur lequel on interpole le champ :
+  // Zone sur lequel on interpole le champ :
   //  si domaine_ est une ref nulle, on prend le domaine natif du champ.
 
   const Noms compo = get_property("composantes");
@@ -243,9 +243,9 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
   const Champ_base& source  = ((optimisation_sous_maillage_==-1)?source_bis.valeur():source0);
   Nom nom_champ_interpole;
 
-  // Domaine sur lequel on interpole le champ :
+  // Zone sur lequel on interpole le champ :
   //  si domaine_ est une ref nulle, on prend le domaine natif du champ.
-  const Domaine& domaine = get_ref_domain();
+  const Zone& domaine = get_ref_domain();
   const Noms compo = get_property("composantes");
   const Noms nom_champ = get_property("nom");
   const Noms syno = get_property("synonyms");
@@ -501,7 +501,7 @@ Entity Champ_Generique_Interpolation::get_localisation(const int index) const
   return loc;
 }
 
-const Domaine& Champ_Generique_Interpolation::get_ref_domain() const
+const Zone& Champ_Generique_Interpolation::get_ref_domain() const
 {
   if (domaine_.non_nul())
     {
@@ -513,9 +513,9 @@ const Domaine& Champ_Generique_Interpolation::get_ref_domain() const
     }
 }
 
-void Champ_Generique_Interpolation::get_copy_domain(Domaine& domain) const
+void Champ_Generique_Interpolation::get_copy_domain(Zone& domain) const
 {
-  const Domaine& dom = get_ref_domain();
+  const Zone& dom = get_ref_domain();
   domain = dom;
 }
 
@@ -612,7 +612,7 @@ void Champ_Generique_Interpolation::completer(const Postraitement_base& post)
       exit();
     }
   // Si le domaine lu n'est pas le domaine de calcul, on fixe le domaine
-  const Domaine& domaine_calcul = get_source(0).get_ref_domain();
+  const Zone& domaine_calcul = get_source(0).get_ref_domain();
   if (optimisation_demande_!=1)
     optimisation_sous_maillage_=0;
   if ( (nom_domaine_lu_!="") && (nom_domaine_lu_!=domaine_calcul.le_nom()) )

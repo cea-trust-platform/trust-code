@@ -826,7 +826,7 @@ static double norme_L2(const DoubleTab& u, const Zone_VEF& zone_VEF)
     }
   return sqrt(norme);
 }
-double Champ_P1NC::norme_L2(const Domaine& dom) const
+double Champ_P1NC::norme_L2(const Zone& dom) const
 {
   Cerr << "Champ_P1NC::norme_L2" << finl;
   {
@@ -838,7 +838,7 @@ double Champ_P1NC::norme_L2(const Domaine& dom) const
   return ::norme_L2(u, zone_vef());
 }
 
-double Champ_P1NC::norme_H1(const Domaine& dom) const
+double Champ_P1NC::norme_H1(const Zone& dom) const
 {
   const Zone& ma_zone = zone_vef().zone();
 
@@ -881,7 +881,7 @@ double Champ_P1NC::norme_H1(const Domaine& dom) const
   return sqrt(dnorme_H1);
 }
 
-double Champ_P1NC::norme_L2_H1(const Domaine& dom) const
+double Champ_P1NC::norme_L2_H1(const Zone& dom) const
 {
   double pas_de_temps = equation().schema_temps().pas_de_temps();
 

@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Prisme.h>
-#include <Domaine.h>
+#include <Zone.h>
 //      5
 //     /|
 //    3----4
@@ -100,7 +100,7 @@ int Prisme::contient(const ArrOfDouble& pos, int ielem ) const
   // adaptation de tetraedre contient
   assert(pos.size_array()==3);
   const Zone& zone=ma_zone.valeur();
-  const Domaine& dom=zone.domaine();
+  const Zone& dom=zone.domaine();
   double prod1,prod2,xn,yn,zn;
   int som0, som1, som2, som3,som4,som5;
 

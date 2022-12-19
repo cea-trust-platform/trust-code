@@ -43,7 +43,7 @@
 #include <EFichier.h>
 #include <SFichier.h>
 #include <Segment.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Scatter.h>
 #include <EChaine.h>
 #include <LireMED.h>

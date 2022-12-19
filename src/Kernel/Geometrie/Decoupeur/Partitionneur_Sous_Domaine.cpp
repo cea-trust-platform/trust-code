@@ -14,7 +14,7 @@
 *****************************************************************************/
 #include <Partitionneur_Sous_Domaine.h>
 #include <EFichier.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Param.h>
 #include <EChaine.h>
 

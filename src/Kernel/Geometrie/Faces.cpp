@@ -440,7 +440,7 @@ void Faces::completer(int face, int num_elem)
 void Faces::calculer_surfaces(DoubleVect& surfaces) const
 {
   surfaces.resize(nb_faces_tot());
-  const Domaine& dom=zone().domaine();
+  const Zone& dom=zone().domaine();
   // Verification qu'en coordonnees cylindriques, r est bien positif
   if (axi || bidim_axi)
     {
@@ -703,7 +703,7 @@ void Faces::calculer_surfaces(DoubleVect& surfaces) const
 void Faces::calculer_centres_gravite(DoubleTab& xv) const
 {
   // Le tableau xv est dimensionne dans ::calculer_centres_gravite
-  const Domaine& dom=zone().domaine();
+  const Zone& dom=zone().domaine();
   const DoubleTab& coord=dom.coord_sommets();
   ::calculer_centres_gravite(xv, type_face_,
                              coord, sommets);
@@ -836,7 +836,7 @@ void Faces::reordonner()
       {
         assert(dimension==2);
         const Zone& mazone=zone();
-        const Domaine& dom=mazone.domaine();
+        const Zone& dom=mazone.domaine();
         ArrOfInt S(2);
         ArrOfInt NS(2);
         int i;
@@ -881,7 +881,7 @@ void Faces::reordonner()
       {
         assert(dimension==3);
         const Zone& mazone=zone();
-        const Domaine& dom=mazone.domaine();
+        const Zone& dom=mazone.domaine();
         ArrOfInt S(4);
         ArrOfInt NS(4);
         int i;
@@ -1038,8 +1038,8 @@ IntVect& Faces::compare(const Faces& faces, IntVect& renum)
 {
   const Zone& la_zone=zone();
   const Zone& sa_zone=faces.zone();
-  const Domaine& domaine=la_zone.domaine();
-  const Domaine& son_domaine=sa_zone.domaine();
+  const Zone& domaine=la_zone.domaine();
+  const Zone& son_domaine=sa_zone.domaine();
   if ( (nb_faces() != faces.nb_faces()) || ( type_face_ != faces.type_face_) )
     {
       renum.resize(1);

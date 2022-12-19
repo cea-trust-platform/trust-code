@@ -19,7 +19,7 @@
 #include <Champ_Don_Fonc_txyz.h>
 #include <Champ_Uniforme.h>
 #include <Champ_base.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Zone_VF.h>
 
 DoubleVect& Champ_implementation_P0::valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const

@@ -71,7 +71,7 @@ Entree& Corriger_frontiere_periodique::interpreter_(Entree& is)
   param.ajouter("fichier_post", &nom_fichier_post);
   param.lire_avec_accolades_depuis(is);
   associer_domaine(nom_dom);
-  Domaine& dom = domaine();
+  Zone& dom = domaine();
   const int dim = dom.coord_sommets().dimension(1);
   int direction_perio_set;
   if (direction_perio.size_array() == 0)
@@ -104,7 +104,7 @@ Entree& Corriger_frontiere_periodique::interpreter_(Entree& is)
       else
         Cerr << "May be you could use the DIRECTION option to specify the vector of periodicity" << finl;
       Cerr << "for the keyword:" << finl;
-      Cerr << "Corriger_frontiere_periodique { Domaine " << nom_dom << " Bord " << nom_bord << " } " << finl;
+      Cerr << "Corriger_frontiere_periodique { Zone " << nom_dom << " Bord " << nom_bord << " } " << finl;
       exit();
     }
   return is;
@@ -122,7 +122,7 @@ Entree& Corriger_frontiere_periodique::interpreter_(Entree& is)
  * @param (vecteur_perio) un vecteur de taille "dimension" qui contient le delta entre deux sommets periodiques associes (voir methode chercher_direction_perio())
  * @param (nom_fichier_post) si different de "??", on cree un fichier de postraitement contenant les faces du bord initial et un vecteur qui indique le deplacement applique aux sommets.
  */
-void Corriger_frontiere_periodique::corriger_coordonnees_sommets_perio(Domaine& dom,
+void Corriger_frontiere_periodique::corriger_coordonnees_sommets_perio(Zone& dom,
                                                                        const Nom& nom_bord,
                                                                        const ArrOfDouble& vecteur_perio,
                                                                        const Nom& nom_fichier_post)
@@ -219,7 +219,7 @@ void Corriger_frontiere_periodique::corriger_coordonnees_sommets_perio(Domaine& 
 
   if (nom_fichier_post != "??")
     {
-      Domaine dom2;
+      Zone dom2;
       Cerr << "Writing node displacement into file: " << nom_fichier_post << finl;
       DERIV(Format_Post_base) fichier_post;
       fichier_post.typer("FORMAT_POST_LATA");

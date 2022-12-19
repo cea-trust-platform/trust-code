@@ -17,7 +17,7 @@
 #include <Connectivite_som_elem.h>
 #include <Static_Int_Lists.h>
 #include <Scatter.h>
-#include <Domaine.h>
+#include <Zone.h>
 #include <Param.h>
 
 Implemente_instanciable(Remove_Invalid_Internal_Boundaries,"Remove_Invalid_Internal_Boundaries",Interprete_geometrique_base);
@@ -30,7 +30,7 @@ Entree& Remove_Invalid_Internal_Boundaries::interpreter_(Entree& is)
 {
   associer_domaine(is);
 
-  Domaine& domain = domaine(0);
+  Zone& domain = domaine(0);
   Zone&    zone   = domain.zone(0);
 
   Scatter::uninit_sequential_domain(domain);
