@@ -9,24 +9,14 @@ define_modules_config()
    echo "source /etc/profile" >> $env
    #
    # Load modules
-   module="craype-x86-rome craype-network-ofi PrgEnv-cray/8.3.3 rocm/5.0.2 craype-accel-amd-gfx908 libfabric/1.13.1"
-   module="craype-x86-rome craype-network-ofi PrgEnv-cray/8.3.3 rocm/4.5.0 craype-accel-amd-gfx908 libfabric/1.13.1"
-   module="craype-x86-rome craype-network-ofi PrgEnv-cray/8.3.3 rocm/5.2.0 craype-accel-amd-gfx90a libfabric/1.13.1"
+   module="craype-x86-trento craype-network-ofi PrgEnv-cray rocm craype-accel-amd-gfx90a libfabric"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
    echo "module load $module 1>/dev/null" >> $env
-# JD : To Clean
-#   echo "module sw cce/13.0.1" >> $env
-#   echo "module sw cray-mpich/8.1.13" >> $env
-#   echo "export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:/opt/rocm-5.0.2/hip/lib/:/opt/rocm-4.5.0/lib/" >> $env
    echo "PATH=\$CRAY_MPICH_PREFIX/bin:\$PATH"  >> $env # Pour trouver mpicxx
-   echo "export TRUST_DEVICES_PER_NODE=6" >> $env # Devices per node
+   echo "export TRUST_DEVICES_PER_NODE=8" >> $env # Devices per node
    . $env
-   # Creation wrapper qstat -> squeue
-   echo "#!/bin/bash
-squeue" > $TRUST_ROOT/bin/qstat
-   chmod +x $TRUST_ROOT/bin/qstat
 }
 
 ##############################
@@ -39,7 +29,7 @@ define_soumission_batch()
    [ "$gpu"  = 1 ] && soumission=1
    # http://www.idris.fr/eng/jean-zay/gpu/jean-zay-gpu-exec_partition_slurm-eng.html Une seule partition gpu_p13
    project=""
-   queue=LUMI
+   queue=accel
    #qos=qos_cpu-t3 && cpu=1200 && [ "$prod" != 1 ] && qos=qos_cpu-dev && cpu=120 
    cpu=6000
    [ "`id | grep fej`" != "" ] && project="fej@cpu"

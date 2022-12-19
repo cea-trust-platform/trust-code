@@ -1982,7 +1982,7 @@ then
       # crayCC est le seul compilateur OpenMP qui compile tout le code...
       [ "$TRUST_USE_CUDA" = 1 ] && target=nvptx64-nvidia-cuda && march=""
       # ToDo detecter le march automatiquement (Adastra arch differente...): Se baser sur rocm-smi et rocm-info
-      [ "$ROCM_PATH" != "" ]    && target=amdgcn-amd-amdhsa   && march="-march=gfx908" # Device AMD Radeon MI100
+      [ "$ROCM_PATH" != "" ]    && target=amdgcn-amd-amdhsa   && march="-march=gfx908a" # Device AMD Radeon MI200
       # -fsave-loopmark est une option pour creer un .lst a la compilation mais il faut aussi le retirer pour eviter un crash du compilateur
       openmp_target="-fopenmp-targets=$target -Xopenmp-target=$target $march "
   elif [ $TRUST_OPENMP_CC = nvc++ ]
@@ -1999,7 +1999,8 @@ then
      fi
    elif [ $TRUST_OPENMP_CC = clang++ ]
    then
-      #[ "$ROCM_PATH" != "" ]    && target=amdgcn  && march="-march=gfx908"
+      openmp="-fopenmp"
+      #[ "$ROCM_PATH" != "" ]    && target=amdgcn  && march="-march=gfx90a"
       if [ "$TRUST_USE_CUDA" = 1 ] # Compilation de clang pour offload OpenMP: See https://gist.github.com/anjohan/9ee746295ea1a00d9ca69415f40fafc9
       then
          target=nvptx64 && march=""
@@ -2013,7 +2014,7 @@ then
       openmp="-fopenmp"
       target=disable # Pas de carte See https://gcc.gnu.org/wiki/Offloading
       [ "$TRUST_USE_CUDA" = 1 ] && target=nvptx-none 	&& march="" # Complique gcc a recompiler: voir https://gist.github.com/matthiasdiener/e318e7ed8815872e9d29feb3b9c8413f
-      [ "$ROCM_PATH" != "" ]    && target=amdgcn-amdhsa	&& march="-march=gfx908" # Device AMD Radeon MI100
+      [ "$ROCM_PATH" != "" ]    && target=amdgcn-amdhsa	&& march="-march=gfx90a" # Device AMD Radeon MI200
       openmp_target="-foffload=$target $march"
    elif [ $TRUST_OPENMP_CC = icpc ]
    then
