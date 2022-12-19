@@ -16,7 +16,7 @@
 #ifndef Interprete_geometrique_base_included
 #define Interprete_geometrique_base_included
 
-#include <Ref_Domaine.h>
+#include <Ref_Zone.h>
 #include <Interprete.h>
 #include <TRUST_List.h>
 #include <Zone.h>

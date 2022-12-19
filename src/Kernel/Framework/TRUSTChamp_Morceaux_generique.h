@@ -20,9 +20,9 @@
 #include <Champ_Uniforme.h>
 #include <Champ_Don_base.h>
 #include <Probleme_base.h>
+#include <Ref_Zone.h>
 #include <Ref_Sous_Zone.h>
 #include <TRUST_Vector.h>
-#include <Ref_Domaine.h>
 #include <TRUST_List.h>
 #include <Parser_U.h>
 #include <Zone.h>

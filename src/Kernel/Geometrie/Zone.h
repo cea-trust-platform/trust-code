@@ -17,7 +17,7 @@
 #define Zone_included
 
 #include <Faces_Internes.h>
-#include <Ref_Domaine.h>
+#include <Ref_Zone.h>
 #include <TRUSTArrays.h>
 #include <TRUST_Deriv.h>
 #include <TRUSTList.h>
@@ -31,7 +31,7 @@
 
 //@@@@@@@@@@@@@@@
 #include <List_Ref_Sous_Zone.h>
-#include <Ref_Domaine.h>
+#include <Ref_Zone.h>
 
 #include <medcoupling++.h>
 #ifdef MEDCOUPLING_

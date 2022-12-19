@@ -17,7 +17,7 @@
 #define Scatter_included
 
 #include <TRUSTTabs_forward.h>
-#include <Ref_Domaine.h>
+#include <Ref_Zone.h>
 #include <Interprete.h>
 #include <Joint.h>
 

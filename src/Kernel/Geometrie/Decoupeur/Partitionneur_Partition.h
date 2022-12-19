@@ -16,7 +16,7 @@
 #define Partitionneur_Partition_included
 
 #include <Partitionneur_base.h>
-#include <Ref_Domaine.h>
+#include <Ref_Zone.h>
 
 /*! @brief Partitionneur de domaine en fonction du partitionnement d'un autre domaine
  *

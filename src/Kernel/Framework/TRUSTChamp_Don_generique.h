@@ -18,7 +18,7 @@
 
 #include <Champ_Don_base.h>
 #include <Champ_Uniforme.h>
-#include <Ref_Domaine.h>
+#include <Ref_Zone.h>
 #include <Parser_Eval.h>
 #include <Zone.h>
 

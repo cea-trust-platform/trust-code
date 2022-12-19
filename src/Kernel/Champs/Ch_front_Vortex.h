@@ -20,7 +20,7 @@
 #include <Champ_front_var_instationnaire.h>
 
 
-#include <Ref_Domaine.h>
+#include <Ref_Zone.h>
 
 /*! @brief classe Ch_fr_Vortex Classe derivee de Champ_front_var qui represente les
  *

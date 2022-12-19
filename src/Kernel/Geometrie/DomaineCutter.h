@@ -18,12 +18,11 @@
 
 #include <DomaineCutter_Correspondance.h>
 #include <Static_Int_Lists.h>
-#include <Ref_Domaine.h>
+#include <Ref_Zone.h>
 #include <Ref_IntVect.h>
 #include <Decouper.h>
 #include <Noms.h>
 
-class Zone;
 class Zone;
 
 /*! @brief Classe outil permettant de generer des sous-domaines pour un calcul parallele a partir d'un domaine de depart (domaine_global) et d'un tableau de decoupage

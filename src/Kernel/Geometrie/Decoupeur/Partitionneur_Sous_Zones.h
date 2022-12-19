@@ -16,7 +16,7 @@
 #define Partitionneur_Sous_Zones_included
 
 #include <Partitionneur_base.h>
-#include <Ref_Domaine.h>
+#include <Ref_Zone.h>
 class Zone;
 
 /*! @brief Partitionneur de domaine a partir de sous-zones du domaine Voir construire_partition()

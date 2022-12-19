@@ -17,7 +17,7 @@
 #define Decouper_included
 
 #include <Partitionneur_base.h>
-#include <Ref_Domaine.h>
+#include <Ref_Zone.h>
 #include <TRUST_Deriv.h>
 #include <Interprete.h>
 #include <vector>

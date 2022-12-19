@@ -16,7 +16,7 @@
 #define Partitionneur_Fichier_MED_included
 
 #include <Partitionneur_base.h>
-#include <Ref_Domaine.h>
+#include <Ref_Zone.h>
 
 
 /*! @brief Partition d'un domaine a partir d'un fichier MED contenant un champ donnant, pour chaque element, le numero du processeur auquel cet element est attache.

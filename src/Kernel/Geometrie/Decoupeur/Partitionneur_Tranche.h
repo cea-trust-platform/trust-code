@@ -17,7 +17,7 @@
 
 #include <Partitionneur_base.h>
 #include <TRUSTTabs_forward.h>
-#include <Ref_Domaine.h>
+#include <Ref_Zone.h>
 
 /*! @brief Partitionneur de domaine en tranches paralleles aux directions de l'espace.
  *

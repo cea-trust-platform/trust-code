@@ -21,11 +21,8 @@
 #define Ref_Domaine_included
 
 #include <Ref.h>
-// Pour Ref(Zone)
-class Zone;
-Declare_ref(Zone);
-
-// .SECTION voir aussi
-// Domaine
+// Pour Ref(Domaine)
+class Domaine;
+Declare_ref(Domaine);
 
 #endif

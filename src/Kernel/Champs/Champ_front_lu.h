@@ -20,7 +20,7 @@
 #include <Ch_front_var_stationnaire.h>
 
 
-#include <Ref_Domaine.h>
+#include <Ref_Zone.h>
 
 /*! @brief classe Champ_front_lu Classe derivee de Champ_front_var qui represente les
  *

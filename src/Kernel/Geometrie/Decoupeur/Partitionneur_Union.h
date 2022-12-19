@@ -16,7 +16,7 @@
 #define Partitionneur_Union_included
 
 #include <Partitionneur_base.h>
-#include <Ref_Domaine.h>
+#include <Ref_Zone.h>
 #include <map>
 #include <string>
 

@@ -16,7 +16,7 @@
 #define Partitionneur_Sous_Domaine_included
 
 #include <Partitionneur_base.h>
-#include <Ref_Domaine.h>
+#include <Ref_Zone.h>
 
 
 /*! @brief Decoupeur permettant de decouper des sous-domaines (se recouvrant potentiellement)  crees par Create_domain_from_sous_zone de maniere "conforme" : le sous-domaine est decoupe de maniere

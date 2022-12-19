@@ -16,7 +16,7 @@
 #define Partitionneur_Ptscotch_included
 
 #include <Partitionneur_base.h>
-#include <Ref_Domaine.h>
+#include <Ref_Zone.h>
 
 /*! @brief Partition d'un domaine en nb_parties parties equilibrees en utilisant la librairie Ptscotch.
  *
