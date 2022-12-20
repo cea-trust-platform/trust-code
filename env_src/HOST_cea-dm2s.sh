@@ -11,10 +11,11 @@ define_modules_config()
    # Bye-bye C++ 11 sur Centos7:
    if [ "`gcc -v 2>&1 | grep 4.8`" != "" ]
    then
-      # Attention, pas teste sur altair/pegasi2
       echo "source /etc/profile" >> $env
       echo "module purge" >> $env
-      echo "module load compilers/gcc/6.5.0 mpich/gcc_6.5.0/3.2.1 || exit -1" >> $env
+      #echo "module load gcc/6.5.0 mpich/gcc_6.5.0/3.2.1 || exit -1" >> $env
+      #echo "export TRUST_MPI_NATIF=1" >> $env
+      echo "module load gcc/6.5.0 || exit -1" >> $env
    fi
    if [ $TRUST_USE_CUDA = 1 ]
    then
