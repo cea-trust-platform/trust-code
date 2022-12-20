@@ -19,6 +19,7 @@
 
 #include <Convection_Diffusion_std.h>
 #include <Ref_Fluide_base.h>
+#include <Fluide_base.h>
 #include <Champ_Fonc.h>
 #include <TRUSTTabs.h>
 
@@ -45,14 +46,13 @@ public :
   inline Champ_Inc& inconnue() override;
   void discretiser() override;
   int preparer_calcul() override;
-  const Milieu_base& milieu() const override;
   const Fluide_base& fluide() const;
   Fluide_base& fluide();
-  Milieu_base& milieu() override;
+  const Milieu_base& milieu() const override { return fluide(); }
+  Milieu_base& milieu() override { return fluide(); }
   void associer_milieu_base(const Milieu_base& ) override;
-  int impr(Sortie& os) const override;
-  const Champ_Don& diffusivite_pour_transport() const override;
-  const Champ_base& diffusivite_pour_pas_de_temps() const override;
+  const Champ_Don& diffusivite_pour_transport() const override { return milieu().conductivite(); }
+  const Champ_base& diffusivite_pour_pas_de_temps() const override { return milieu().diffusivite(); }
   //Methodes de l interface des champs postraitables
   /////////////////////////////////////////////////////
   void creer_champ(const Motcle& motlu) override;
@@ -65,17 +65,19 @@ public :
   DoubleTab& derivee_en_temps_inco_eq_base(DoubleTab& );
   void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) override ;
   void assembler_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+  /* champ convecte : rho * cp * T */
+  static void calculer_rho_cp_T(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);
+  // std::pair<std::string, fonc_calc_t> get_fonc_champ_conserve() const override
+  // {
+  //   return { "rho_cp_T", calculer_rho_cp_T };
+  // }
 
 protected :
 
   Champ_Inc la_temperature;
   REF(Fluide_base) le_fluide;
 
-//  Champ_Fonc temperature_paroi;
   Champ_Fonc gradient_temperature;
-
-  //Il faudrait creer une liste de Champ_Fonc si on veut utiliser
-  //plusieurs temperature de reference
   Champ_Fonc h_echange;
 
   // Parametres penalisation IBC
@@ -103,35 +105,8 @@ protected :
 };
 
 
-/*! @brief Associe un fluide incompressible a l'equation.
- *
- * @param (Fluide_base& un_fluide) le milieu fluide incompressible a associer a l'equation
- */
-inline void Convection_Diffusion_Temperature::associer_fluide(const Fluide_base& un_fluide)
-{
-  le_fluide = un_fluide;
-}
-
-
-/*! @brief Renvoie le champ inconnue representant la temperatue.
- *
- * (version const)
- *
- * @return (Champ_Inc&) le champ inconnue representant la temperatue
- */
-inline const Champ_Inc& Convection_Diffusion_Temperature::inconnue() const
-{
-  return la_temperature;
-}
-
-
-/*! @brief Renvoie le champ inconnue representant la temperatue.
- *
- * @return (Champ_Inc&) le champ inconnue representant la temperatue
- */
-inline Champ_Inc& Convection_Diffusion_Temperature::inconnue()
-{
-  return la_temperature;
-}
+inline void Convection_Diffusion_Temperature::associer_fluide(const Fluide_base& un_fluide) { le_fluide = un_fluide; }
+inline const Champ_Inc& Convection_Diffusion_Temperature::inconnue() const { return la_temperature; }
+inline Champ_Inc& Convection_Diffusion_Temperature::inconnue() { return la_temperature; }
 
 #endif

@@ -21,7 +21,6 @@
 #include <Frontiere_dis_base.h>
 #include <Param.h>
 #include <Transport_Interfaces_base.h>
-#include <Fluide_base.h>
 #include <TRUSTTrav.h>
 #include <SFichier.h>
 #include <Zone_VF.h>
@@ -190,31 +189,6 @@ int Convection_Diffusion_Temperature::preparer_calcul()
   return Equation_base::preparer_calcul();
 }
 
-/*! @brief Renvoie le milieu physique de l'equation.
- *
- * (un Fluide_base upcaste en Milieu_base)
- *     (version const)
- *
- * @return (Milieu_base&) le Fluide_base upcaste en Milieu_base
- */
-const Milieu_base& Convection_Diffusion_Temperature::milieu() const
-{
-  return fluide();
-}
-
-
-/*! @brief Renvoie le milieu physique de l'equation.
- *
- * (un Fluide_base upcaste en Milieu_base)
- *
- * @return (Milieu_base&) le Fluide_base upcaste en Milieu_base
- */
-Milieu_base& Convection_Diffusion_Temperature::milieu()
-{
-  return fluide();
-}
-
-
 /*! @brief Renvoie le fluide incompressible associe a l'equation.
  *
  * (version const)
@@ -249,20 +223,6 @@ Fluide_base& Convection_Diffusion_Temperature::fluide()
     }
   return le_fluide.valeur();
 }
-
-/*! @brief Impression des flux sur les bords sur un flot de sortie.
- *
- * Appelle Equation_base::impr(Sortie&)
- *
- * @param (Sortie& os) un flot de sortie
- * @return (int) code de retour propage
- */
-int Convection_Diffusion_Temperature::impr(Sortie& os) const
-{
-  return Equation_base::impr(os);
-}
-
-
 
 inline int string2int(const char* digit, int& result)
 {
@@ -1402,12 +1362,31 @@ void Convection_Diffusion_Temperature::ecrire_fichier_pena_th(DoubleTab& u_old, 
     }
 }
 
-const Champ_Don& Convection_Diffusion_Temperature::diffusivite_pour_transport() const
+void Convection_Diffusion_Temperature::calculer_rho_cp_T(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv)
 {
-  return milieu().conductivite();
-}
+  const Equation_base& eqn = ref_cast(Equation_base, obj);
+  const Fluide_base& fl = ref_cast(Fluide_base, eqn.milieu());
+  const Champ_Inc_base& ch_T = eqn.inconnue().valeur();
+  const Champ_base& ch_rho = fl.masse_volumique().valeur();
+  assert(sub_type(Champ_Uniforme, ch_rho));
+  const Champ_Don& ch_cp = fl.capacite_calorifique();
+  const DoubleTab& cp = fl.capacite_calorifique().valeurs(), &rho = ch_rho.valeurs(), &T = ch_T.valeurs();
 
-const Champ_base& Convection_Diffusion_Temperature::diffusivite_pour_pas_de_temps() const
-{
-  return milieu().diffusivite();
+  /* valeurs du champ */
+  const int N = val.line_size(), Nl = val.dimension_tot(0), cCp = sub_type(Champ_Uniforme, ch_cp.valeur());
+  for (int i = 0; i < Nl; i++)
+    for (int n = 0; n < N; n++) val(i, n) = rho(0, n) * cp(!cCp * i, n) * T(i, n);
+
+  /* on ne peut utiliser valeur_aux_bords que si ch_rho a une zone_dis_base */
+  DoubleTab b_cp = cCp ? cp : ch_cp->valeur_aux_bords(), b_T = ch_T.valeur_aux_bords();
+  int Nb = b_T.dimension_tot(0);
+  // on suppose que rho est un champ_uniforme : on utilise directement le tableau du champ
+  for (int i = 0; i < Nb; i++)
+    for (int n = 0; n < N; n++) bval(i, n) = b_cp(!cCp * i, n) * rho(0, n) * b_T(i, n);
+
+  DoubleTab& d_T = deriv["temperature"];
+  d_T.resize(Nl, N);
+  for (int i = 0; i < Nl; i++)
+    for (int n = 0; n < N; n++) d_T(i, n) = rho(0, n) * cp(!cCp * i, n);
+
 }
