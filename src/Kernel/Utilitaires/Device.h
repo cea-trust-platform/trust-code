@@ -58,21 +58,27 @@ inline void end_timer(const std::string& str, int size) // Return in [ms]
 }
 
 // Pour disabler
+#pragma omp declare target
 inline bool computeOnDevice()
 {
+#ifdef _COMPILE_AVEC_PGCC
+  return true; // Pas possible d'utiliser getenv avec nvc++ : VC++-S-1073-Procedures called in a OpenMP target region must have 'omp declare target' information - getenv
+#else
   return getenv("TRUST_DISABLE_DEVICE") == NULL ? true : false;
+#endif
 }
+#pragma omp end declare target
 
 template <typename _TYPE_>
-inline const _TYPE_* copyToDevice(const TRUSTArray<_TYPE_>& tab)
+inline const _TYPE_* copyToDevice(const TRUSTArray<_TYPE_>& tab, std::string arrayName="")
 {
   // const array will matches on host and device
-  const _TYPE_ *tab_addr = copyToDevice_(const_cast<TRUSTArray <_TYPE_>&>(tab), Array_base::HostDevice);
+  const _TYPE_ *tab_addr = copyToDevice_(const_cast<TRUSTArray <_TYPE_>&>(tab), Array_base::HostDevice, arrayName);
   return tab_addr;
 }
 
 template <typename _TYPE_>
-inline _TYPE_* copyToDevice_(TRUSTArray<_TYPE_>& tab, Array_base::dataLocation nextLocation)
+inline _TYPE_* copyToDevice_(TRUSTArray<_TYPE_>& tab, Array_base::dataLocation nextLocation, std::string arrayName)
 {
 #ifdef _OPENMP
   Array_base::dataLocation currentLocation = tab.get_dataLocation();
@@ -84,24 +90,24 @@ inline _TYPE_* copyToDevice_(TRUSTArray<_TYPE_>& tab, Array_base::dataLocation n
   if (currentLocation==Array_base::HostOnly)
     {
       #pragma omp target enter data if (computeOnDevice()) map(to:tab_addr[0:tab.size_array()])
-      end_timer((std::string) "copyToDevice Array ", sizeof(_TYPE_) * tab.size_array());
+      end_timer((std::string) "copy array ["+arrayName+"] to device       ", sizeof(_TYPE_) * tab.size_array());
     }
   else if (currentLocation==Array_base::Host)
     {
       #pragma omp target update if (computeOnDevice()) to(tab_addr[0:tab.size_array()])
-      end_timer((std::string) "updateToDevice Array ", sizeof(_TYPE_) * tab.size_array());
+      end_timer((std::string) "update array ["+arrayName+"] on device     ", sizeof(_TYPE_) * tab.size_array());
     }
   else
-      end_timer((std::string) "upToDateDevice Array ", sizeof(_TYPE_) * tab.size_array());
+      end_timer((std::string) "array ["+arrayName+"] up-to-date on device ", sizeof(_TYPE_) * tab.size_array());
 #endif
   return tab_addr;
 }
 
 template <typename _TYPE_>
-inline _TYPE_* computeOnTheDevice(TRUSTArray<_TYPE_>& tab)
+inline _TYPE_* computeOnTheDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName="")
 {
   // non-const array will be modified on device:
-  _TYPE_ *tab_addr = copyToDevice_(tab, Array_base::Device);
+  _TYPE_ *tab_addr = copyToDevice_(tab, Array_base::Device, arrayName);
   return tab_addr;
 }
 

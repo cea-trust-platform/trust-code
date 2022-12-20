@@ -78,10 +78,12 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& sm) const
   const double * volumes_entrelaces_Cl_addr = copyToDevice(volumes_entrelaces_Cl);
   const double * volumes_entrelaces_addr = copyToDevice(volumes_entrelaces);
   double * sm_addr = sm.addr();
+    start_timer();
   #pragma omp target teams distribute parallel for if (computeOnDevice()) map(tofrom:sm_addr[0:sm.size_array()])
   for (int face=num_std; face<nfa; face++)
     for (int comp=0; comp<nbcomp; comp++)
       sm_addr[face*nbcomp+comp] /= (volumes_entrelaces_addr[face]*porosite_face_addr[face]);
+    end_timer("Face loop (std) in Masse_VEF_P1NC::appliquer_impl");
 
   // On traite les faces non standard
   // les faces des bord sont des faces non standard susceptibles de porter des C.L
@@ -144,10 +146,12 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& sm) const
     }
 
   // On traite les faces internes non standard
+  start_timer();
   #pragma omp target teams distribute parallel for if (computeOnDevice()) map(tofrom:sm_addr[0:sm.size_array()])
   for (int face=num_int; face<num_std; face++)
     for (int comp=0; comp<nbcomp; comp++)
       sm_addr[face*nbcomp+comp] /= (volumes_entrelaces_Cl_addr[face]*porosite_face_addr[face]);
+  end_timer("Face loop (non-std) in Masse_VEF_P1NC::appliquer_impl");
 
   //sm.echange_espace_virtuel();
   //Debog::verifier("Masse_VEF_P1NC::appliquer, sm=",sm);

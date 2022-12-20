@@ -113,7 +113,8 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_elem(const DoubleTab& vit, DoubleTab& div
   const int * face_voisins_addr = copyToDevice(face_voisins);
   const double * face_normales_addr = copyToDevice(face_normales);
   const int * elem_faces_addr = copyToDevice(elem_faces);
-  const double * vit_addr = copyToDevice(vit);
+  const double * vit_addr = copyToDevice(vit,"vit");
+  start_timer();
   #pragma omp target teams distribute parallel for if (computeOnDevice()) map(tofrom:div_addr[0:div.size_array()])
   for(int elem=0; elem<nb_elem; elem++)
     {
@@ -129,6 +130,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_elem(const DoubleTab& vit, DoubleTab& div
         }
       div_addr[elem]+=pscf;
     }
+    end_timer("Elem loop in Op_Div_VEFP1B_Elem::ajouter_elem");
   assert_invalide_items_non_calcules(div);
   return div;
 }
@@ -380,9 +382,9 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
       const int *face_voisins_addr = copyToDevice(face_voisins);
       const double *face_normales_addr = copyToDevice(face_normales);
       const int *som_addr = copyToDevice(som_);
-      const double *vit_addr = copyToDevice(vit);
+      const double *vit_addr = copyToDevice(vit,"vit");
       double *div_addr = div.addr();
-
+      start_timer();
       #pragma omp target teams if (computeOnDevice()) map(tofrom:div_addr[0:div.size_array()])
       {
         double sigma[3] {};
@@ -413,7 +415,8 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
               }
           }
       }
-    }
+      end_timer("Elem loop in Op_Div_VEFP1B_Elem::ajouter_som");
+  }
 
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();

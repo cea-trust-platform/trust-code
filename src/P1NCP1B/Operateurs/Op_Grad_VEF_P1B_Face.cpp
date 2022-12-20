@@ -278,9 +278,7 @@ modifier_grad_pour_Cl(DoubleTab& grad ) const
   end_timer("Boundary loop in Op_Grad_VEF_P1B_Face::modifier_grad_pour_Cl");
   return grad;
 }
-DoubleTab& Op_Grad_VEF_P1B_Face::
-ajouter_elem(const DoubleTab& pre,
-             DoubleTab& grad) const
+DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& grad) const
 {
   const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b,
                                              la_zone_vef.valeur());
@@ -324,10 +322,10 @@ ajouter_elem(const DoubleTab& pre,
   const double* porosite_face_addr = copyToDevice(porosite_face);
   const double * face_normales_addr = copyToDevice(face_normales);
   const int * elem_faces_addr = copyToDevice(elem_faces);
-  const double * pre_addr = pre.addr();
+  const double * pre_addr = copyToDevice(pre,"pre");
   double * grad_addr = grad.addr();
   start_timer();
-  #pragma omp target teams distribute parallel for if (computeOnDevice()) map(to:pre_addr[0:pre.size_array()]) map(tofrom:grad_addr[0:grad.size_array()])
+  #pragma omp target teams distribute parallel for if (computeOnDevice()) map(tofrom:grad_addr[0:grad.size_array()])
   for(int elem=0; elem<nb_elem_tot; elem++)
     {
       for(int indice=0; indice<nfe; indice++)
@@ -383,12 +381,12 @@ ajouter_som(const DoubleTab& pre,
   const double* porosite_face_addr = copyToDevice(porosite_face);
   const double * coeff_som_addr = copyToDevice(coeff_som_);
   const int * som_addr = copyToDevice(som_);
-  const double * pre_addr = pre.addr();
+  const double * pre_addr = copyToDevice(pre);
   double * grad_addr = grad.addr();
 
   // boucle couteuse: A porter
   start_timer();
-  #pragma omp target teams if (computeOnDevice()) map(to:pre_addr[0:pre.size_array()]) map(tofrom:grad_addr[0:grad.size_array()])
+  #pragma omp target teams if (computeOnDevice()) map(tofrom:grad_addr[0:grad.size_array()])
   {
     double sigma[3] {};
     #pragma omp distribute parallel for private(sigma)

@@ -278,10 +278,14 @@ public:
   inline virtual void reset() { detach_array(); }
   inline virtual void ref_array(TRUSTArray&, int start = 0, int sz = -1);
   inline virtual void resize_tab(int n, Array_base::Resize_Options opt = COPY_INIT);
+
+  // Host/Device methods:
   inline dataLocation get_dataLocation() { return dataLocation_; }
   inline dataLocation get_dataLocation() const { return dataLocation_; }
   inline void set_dataLocation(dataLocation flag) { dataLocation_ = flag; }
   inline void set_dataLocation(dataLocation flag) const { dataLocation_ = flag; }
+  inline void checkDataOnHost() { checkDataOnHost(*this); }
+  inline void checkDataOnHost() const { checkDataOnHost(*this); }
 
   inline virtual Span_ get_span() { return Span_(data_,size_array_); }
   inline virtual Span_ get_span_tot() { return Span_(data_,size_array_); }

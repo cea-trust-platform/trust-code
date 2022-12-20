@@ -120,10 +120,10 @@ void calculer_gradientP1NC(const DoubleTab& variable, const Zone_VEF& zone_VEF, 
 
   gradient_elem = 0.;
 
-  const int *face_voisins_addr = copyToDevice(face_voisins);
-  const double *face_normales_addr = copyToDevice(face_normales);
-  const double *variable_addr = variable.addr();
-  double *gradient_elem_addr = gradient_elem.addr();
+  const int * face_voisins_addr = copyToDevice(face_voisins);
+  const double * face_normales_addr = copyToDevice(face_normales);
+  const double * variable_addr = copyToDevice(variable,"variable");
+  double * gradient_elem_addr = gradient_elem.addr();
   int gradient_elem_nb_dim = gradient_elem.nb_dim();
   // Cas du calcul du gradient d'un tableau de vecteurs
   if (nb_comp != 1)
@@ -175,8 +175,9 @@ void calculer_gradientP1NC(const DoubleTab& variable, const Zone_VEF& zone_VEF, 
                     }
               }
         }
-      #pragma omp target teams distribute parallel for if (computeOnDevice()) map(to:variable_addr[0:variable.size_array()]) map(tofrom:gradient_elem_addr[0:gradient_elem.size_array()])
-      for (int fac = premiere_face_int; fac < nb_faces; fac++)
+      start_timer();
+      #pragma omp target teams distribute parallel for if (computeOnDevice()) map(tofrom:gradient_elem_addr[0:gradient_elem.size_array()])
+      for (int fac=premiere_face_int; fac<nb_faces; fac++)
         {
           int elem1 = face_voisins_addr[fac * 2];
           int elem2 = face_voisins_addr[fac * 2 + 1];
@@ -236,6 +237,7 @@ void calculer_gradientP1NC(const DoubleTab& variable, const Zone_VEF& zone_VEF, 
                   }
             }
         }
+      end_timer("Elem loop in Champ_P1NC::calculer_gradientP1NC");
 
     }
   // Cas du calcul du gradient d'un tableau de scalaire dans un tableau gradient_elem(,,)
@@ -287,8 +289,9 @@ void calculer_gradientP1NC(const DoubleTab& variable, const Zone_VEF& zone_VEF, 
                   }
               }
         }
-      #pragma omp target teams distribute parallel for if (computeOnDevice()) map(to:variable_addr[0:variable.size_array()]) map(tofrom:gradient_elem_addr[0:gradient_elem.size_array()])
-      for (int fac = premiere_face_int; fac < nb_faces; fac++)
+      start_timer();
+      #pragma omp target teams distribute parallel for if (computeOnDevice()) map(tofrom:gradient_elem_addr[0:gradient_elem.size_array()])
+      for (int fac=premiere_face_int; fac<nb_faces; fac++)
         {
           int elem1 = face_voisins_addr[fac * 2];
           int elem2 = face_voisins_addr[fac * 2 + 1];
@@ -302,6 +305,7 @@ void calculer_gradientP1NC(const DoubleTab& variable, const Zone_VEF& zone_VEF, 
                 gradient_elem_addr[(elem2 * nb_comp) * dimension + i] -= face_normales_addr[fac * dimension + i] * variable_addr[fac];
             }
         }
+      end_timer("Face loop in Champ_P1NC::calculer_gradientP1NC");
     }
   // Cas du calcul du gradient d'un tableau de scalaire dans un tableau gradient_elem(,)
   else
@@ -350,8 +354,9 @@ void calculer_gradientP1NC(const DoubleTab& variable, const Zone_VEF& zone_VEF, 
                   }
               }
         }
-      #pragma omp target teams distribute parallel for if (computeOnDevice()) map(to:variable_addr[0:variable.size_array()]) map(tofrom:gradient_elem_addr[0:gradient_elem.size_array()])
-      for (int fac = premiere_face_int; fac < nb_faces; fac++)
+      start_timer();
+      #pragma omp target teams distribute parallel for if (computeOnDevice()) map(tofrom:gradient_elem_addr[0:gradient_elem.size_array()])
+      for (int fac=premiere_face_int; fac<nb_faces; fac++)
         {
           int elem1 = face_voisins_addr[fac * 2];
           int elem2 = face_voisins_addr[fac * 2 + 1];
@@ -365,11 +370,14 @@ void calculer_gradientP1NC(const DoubleTab& variable, const Zone_VEF& zone_VEF, 
                 gradient_elem_addr[(elem2 * nb_comp) * dimension + i] -= face_normales_addr[fac * dimension + i] * variable_addr[fac];
             }
         }
+      end_timer("Face loop in Champ_P1NC::calculer_gradientP1NC");
     }
 
   const double *inverse_volumes_addr = copyToDevice(zone_VEF.inverse_volumes());
 
-  if (gradient_elem_nb_dim == 3)
+  // Bizarre if (computeOnDevice()) plante sur NVHPC recent...
+  start_timer();
+  if (gradient_elem_nb_dim==3)
     #pragma omp target teams distribute parallel for if (computeOnDevice()) map(tofrom:gradient_elem_addr[0:gradient_elem.size_array()])
     for (int elem = 0; elem < nb_elem; elem++)
       for (int icomp = 0; icomp < nb_comp; icomp++)
@@ -377,9 +385,10 @@ void calculer_gradientP1NC(const DoubleTab& variable, const Zone_VEF& zone_VEF, 
           gradient_elem_addr[(elem * nb_comp + icomp) * dimension + i] *= inverse_volumes_addr[elem];
   else
     #pragma omp target teams distribute parallel for if (computeOnDevice()) map(tofrom:gradient_elem_addr[0:gradient_elem.size_array()])
-    for (int elem = 0; elem < nb_elem; elem++)
-      for (int i = 0; i < dimension; i++)
-        gradient_elem_addr[(elem * nb_comp) * dimension + i] *= inverse_volumes_addr[elem];
+    for (int elem=0; elem<nb_elem; elem++)
+      for (int i=0; i<dimension; i++)
+        gradient_elem_addr[(elem*nb_comp)*dimension+i] *= inverse_volumes_addr[elem];
+   end_timer("Elem loop in Champ_P1NC::calculer_gradientP1NC");
 }
 
 void Champ_P1NC::gradient(DoubleTab& gradient_elem) const

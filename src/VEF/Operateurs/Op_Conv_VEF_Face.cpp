@@ -359,7 +359,6 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
       //  application du limiteur
       gradient.resize(0, ncomp_ch_transporte, dimension);     // (du/dx du/dy dv/dx dv/dy) pour une face
       zone_VEF.creer_tableau_faces(gradient);
-      gradient_addr = gradient.addr();
       for (int n_bord=0; n_bord<nb_bord; n_bord++)
         {
           const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
@@ -416,8 +415,10 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
       // Need offload
       const int * traitement_pres_bord_addr = copyToDevice(traitement_pres_bord_);
       const int * face_voisins_addr = copyToDevice(face_voisins);
-      const double * gradient_elem_addr = gradient_elem.addr();
-      #pragma omp target teams distribute parallel for if (computeOnDevice()) map(to:gradient_elem_addr[0:gradient_elem.size_array()]) map(tofrom:gradient_addr[0:gradient.size_array()])
+      const double * gradient_elem_addr = copyToDevice(gradient_elem,"gradient_elem");
+      gradient_addr = gradient.addr();
+      start_timer();
+      #pragma omp target teams distribute parallel for if (computeOnDevice()) map(tofrom:gradient_addr[0:gradient.size_array()])
       for (int fac=premiere_face_int; fac<nb_faces_; fac++)
         {
           int elem1=face_voisins_addr[fac*2];
@@ -435,6 +436,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                   gradient_addr[(fac*ncomp_ch_transporte+comp0)*dimension+i] = LIMITEUR_GPU(grad1, grad2, cas);
               }
         } // fin du for faces
+      end_timer("Face loop in Op_Conv_VEF_Face::ajouter");
       gradient.echange_espace_virtuel();
     }// fin if(type_op==muscl)
 
@@ -466,9 +468,9 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
   const int * KEL_addr = copyToDevice(type_elemvef.KEL());
   const double * normales_facettes_Cl_addr = copyToDevice(normales_facettes_Cl);
   const double * vecteur_face_facette_Cl_addr = copyToDevice(vecteur_face_facette_Cl);
-  const double * vitesse_addr=la_vitesse.valeurs().addr();
+  const double * vitesse_addr = la_vitesse.valeurs().addr();
   const double * vitesse_face_absolue_addr = vitesse_face_absolue.addr();
-  const double * transporte_face_addr = transporte_face.addr();
+  const double * transporte_face_addr = copyToDevice(transporte_face);
   double * resu_addr = resu.addr();
   double * flux_b_addr = flux_b.addr();
 
@@ -499,7 +501,8 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
 #if ( ( defined(_OPENMP) && defined(__clang__) && !defined(__cray__) && !defined(__APPLE__) ) || ( !defined(NDEBUG) && defined(_OPENMP) && defined(__clang__) && defined(__cray__) && !defined(__APPLE__) ) )
           Cerr << "ToDo: No offload of Op_Conv_VEF_Face::ajouter() on GPU." << finl;
 #else
-          #pragma omp target teams if (computeOnDevice()) map(to:vitesse_addr[0:la_vitesse.valeurs().size_array()], vitesse_face_absolue_addr[0:vitesse_face_absolue.size_array()], gradient_addr[0:gradient.size_array()], transporte_face_addr[0:transporte_face.size_array()]) map(tofrom:flux_b_addr[0:flux_b.size_array()], resu_addr[0:resu.size_array()])
+          start_timer();
+          #pragma omp target teams if (computeOnDevice()) map(to:vitesse_addr[0:la_vitesse.valeurs().size_array()], vitesse_face_absolue_addr[0:vitesse_face_absolue.size_array()], gradient_addr[0:gradient.size_array()]) map(tofrom:flux_b_addr[0:flux_b.size_array()], resu_addr[0:resu.size_array()])
 #endif
           {
             int face[4] {};
@@ -785,7 +788,8 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                   }
               } // fin de la boucle
           }
-        }
+          end_timer("Elem loop in Op_Conv_VEF_Face::ajouter");
+      }
       else
         {
           // Non tetra (tri, quad, hexa)
@@ -1509,7 +1513,7 @@ void Op_Conv_VEF_Face::contribue_au_second_membre(DoubleTab& resu ) const
     }
 }
 
-void  Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
+void Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
 {
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   const Zone_VEF& zone_VEF = ref_cast(Zone_VEF, la_zone_vef.valeur());
@@ -1575,9 +1579,9 @@ void  Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
       const int *KEL_addr = copyToDevice(KEL);
       const double *normales_facettes_Cl_addr = copyToDevice(normales_facettes_Cl);
       const double *vitesse_face_addr = vitesse_face.addr();
-      double *fluent_addr = fluent_.addr();
-
       const int *type_elem_Cl_addr = copyToDevice(type_elem_Cl_);
+      double *fluent_addr = fluent_.addr();
+      start_timer();
       #pragma omp target teams if (computeOnDevice()) map(to:vitesse_face_addr[0:vitesse_face.size_array()]) map(tofrom:fluent_addr[0:fluent_.size_array()])
       {
         int face[4] {};
@@ -1682,7 +1686,8 @@ void  Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
               } // fin de la boucle sur les facettes
           } // fin de la boucle
       }
-    }
+      end_timer("Elem loop in Op_Conv_VEF_Face::remplir_fluent");
+  }
   else
     {
       ArrOfInt face(nfac);

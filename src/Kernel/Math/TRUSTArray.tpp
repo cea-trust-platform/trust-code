@@ -431,7 +431,7 @@ inline void TRUSTArray<_TYPE_>::fill_default_value(Array_base::Resize_Options op
 template <typename _TYPE_>
 inline void TRUSTArray<_TYPE_>::resize_array_(int new_size, Array_base::Resize_Options opt)
 {
-  // ToDo Device
+  checkDataOnHost();
   assert(new_size >= 0);
   // Soit le tableau est detache (data_==0), soit il est normal (p_!=0)
   // S'il est normal, il ne faut pas qu'il y ait d'autre reference au tableau, ou alors la taille ne doit pas changer.
@@ -460,7 +460,7 @@ inline void TRUSTArray<_TYPE_>::resize_array_(int new_size, Array_base::Resize_O
 template <typename _TYPE_>
 inline int TRUSTArray<_TYPE_>::detach_array()
 {
-  // ToDo Device
+    checkDataOnHost();
   int retour = 0;
   if (p_)
     {

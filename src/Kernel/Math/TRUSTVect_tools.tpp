@@ -46,6 +46,7 @@ inline int operator!=(const TRUSTVect<_TYPE_>& x, const TRUSTVect<_TYPE_>& y)
 template <typename _TYPE_>
 inline void invalidate_data(TRUSTVect<_TYPE_>& resu, Mp_vect_options opt)
 {
+  resu.checkDataOnHost();
   _TYPE_ invalid = (std::is_same<_TYPE_,int>::value) ? INT_MAX : -987654.321 ;
 
   const MD_Vector& md = resu.get_md_vector();
@@ -484,6 +485,8 @@ inline void error_divide(const char * nom_funct)
 template <typename _TYPE_, TYPE_OPERATOR_VECT _TYPE_OP_ >
 inline void operator_vect_vect_generic(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt)
 {
+    resu.checkDataOnHost();
+    vx.checkDataOnHost();
   static constexpr bool IS_ADD = (_TYPE_OP_ == TYPE_OPERATOR_VECT::ADD_), IS_SUB = (_TYPE_OP_ == TYPE_OPERATOR_VECT::SUB_),
                         IS_MULT = (_TYPE_OP_ == TYPE_OPERATOR_VECT::MULT_), IS_DIV = (_TYPE_OP_ == TYPE_OPERATOR_VECT::DIV_), IS_EGAL = (_TYPE_OP_ == TYPE_OPERATOR_VECT::EGAL_);
 
@@ -589,6 +592,7 @@ enum class TYPE_OPERATOR_SINGLE { ADD_ , SUB_ , MULT_ , DIV_ , EGAL_ , NEGATE_ ,
 template <typename _TYPE_, TYPE_OPERATOR_SINGLE _TYPE_OP_ >
 inline void operator_vect_single_generic(TRUSTVect<_TYPE_>& resu, const _TYPE_ x, Mp_vect_options opt)
 {
+    resu.checkDataOnHost();
   static constexpr bool IS_ADD = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::ADD_), IS_SUB = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::SUB_),
                         IS_MULT = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::MULT_), IS_DIV = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::DIV_), IS_EGAL = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::EGAL_),
                         IS_NEGATE = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::NEGATE_), IS_INV = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::INV_), IS_ABS = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::ABS_),
@@ -756,6 +760,8 @@ inline void ajoute_operation_speciale_generic(TRUSTVect<int>& resu, int alpha, c
 template <TYPE_OPERATION_VECT_SPEC _TYPE_OP_ ,typename _TYPE_>
 inline void ajoute_operation_speciale_generic(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt)
 {
+    resu.checkDataOnHost();
+    vx.checkDataOnHost();
   static constexpr bool IS_ADD = (_TYPE_OP_ == TYPE_OPERATION_VECT_SPEC::ADD_), IS_CARRE = (_TYPE_OP_ == TYPE_OPERATION_VECT_SPEC::CARRE_);
 
   // Master vect donne la structure de reference, les autres vecteurs doivent avoir la meme structure.
@@ -841,7 +847,10 @@ inline void ajoute_carre_(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, const TRUSTVect
 template <typename _TYPE_>
 inline void ajoute_produit_scalaire(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, const TRUSTVect<_TYPE_>& vx, const TRUSTVect<_TYPE_>& vy, Mp_vect_options opt = VECT_ALL_ITEMS)
 {
-  // Master vect donne la structure de reference, les autres vecteurs doivent avoir la meme structure.
+    resu.checkDataOnHost();
+    vx.checkDataOnHost();
+    vy.checkDataOnHost();
+    // Master vect donne la structure de reference, les autres vecteurs doivent avoir la meme structure.
   const TRUSTVect<_TYPE_>& master_vect = resu;
   const int line_size = master_vect.line_size(), vect_size_tot = master_vect.size_totale();
   const MD_Vector& md = master_vect.get_md_vector();
@@ -907,7 +916,9 @@ inline void operation_speciale_tres_generic(TRUSTVect<int>& resu, const TRUSTVec
 template <TYPE_OPERATION_VECT_SPEC_GENERIC _TYPE_OP_ , typename _TYPE_>
 inline void operation_speciale_tres_generic(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt)
 {
-  static constexpr bool IS_MUL = (_TYPE_OP_ == TYPE_OPERATION_VECT_SPEC_GENERIC::MUL_), IS_DIV = (_TYPE_OP_ == TYPE_OPERATION_VECT_SPEC_GENERIC::DIV_);
+     resu.checkDataOnHost();
+    vx.checkDataOnHost();
+    static constexpr bool IS_MUL = (_TYPE_OP_ == TYPE_OPERATION_VECT_SPEC_GENERIC::MUL_), IS_DIV = (_TYPE_OP_ == TYPE_OPERATION_VECT_SPEC_GENERIC::DIV_);
 
   // Master vect donne la structure de reference, les autres vecteurs doivent avoir la meme structure.
   const TRUSTVect<_TYPE_>& master_vect = resu;
@@ -1000,7 +1011,9 @@ inline void tab_divide_any_shape_(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE
 template<typename _TYPE_>
 inline void tab_multiply_any_shape(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt = VECT_ALL_ITEMS)
 {
-  if (vx.size_array() == 1 && !vx.get_md_vector().non_nul()) // Produit par une constante
+    resu.checkDataOnHost();
+    vx.checkDataOnHost();
+    if (vx.size_array() == 1 && !vx.get_md_vector().non_nul()) // Produit par une constante
     {
       const _TYPE_ x = vx[0];
       operator_multiply(resu, x, opt);
@@ -1017,6 +1030,8 @@ inline void tab_multiply_any_shape(TRUSTVect<int>& resu, const TRUSTVect<int>& v
 template<typename _TYPE_>
 inline void tab_divide_any_shape(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt = VECT_ALL_ITEMS)
 {
+    resu.checkDataOnHost();
+    vx.checkDataOnHost();
   if (vx.size_array() == 1 && !vx.get_md_vector().non_nul()) // division par une constante
     {
       if (vx[0] == 0) error_divide(__func__);

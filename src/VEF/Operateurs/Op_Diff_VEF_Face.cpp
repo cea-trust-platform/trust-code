@@ -385,6 +385,7 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
 
   int premiere_face_int = zone_VEF.premiere_face_int();
   // On traite les faces internes
+  start_timer();
   #pragma omp target teams distribute parallel for if (computeOnDevice()) map(tofrom:resu_addr[0:resu.size_array()])
   for (num_face=premiere_face_int; num_face<nb_faces; num_face++)
     {
@@ -429,6 +430,7 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
             }
         }
     }// Fin faces internes
+    end_timer("Face loop in Op_Diff_VEF_Face::ajouter");
 
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
