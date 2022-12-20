@@ -90,6 +90,8 @@ public :
   inline int Qdm(int num_arete,int ) const;
   //inline double porosite_face(int ) const;
   //inline double porosite_elem(int i) const;
+  using Zone_VF::face_normales;
+  inline double face_normales(int , int ) const override;
   inline int orientation(int ) const override;
   inline double dist_face(int , int , int k) const;
   inline double dist_norm(int num_face) const ;
@@ -177,6 +179,15 @@ private:
 inline IntTab& Zone_VDF::Qdm()
 {
   return Qdm_;
+}
+
+inline double Zone_VDF::face_normales(int num_face,int k) const
+{
+  int ori = orientation(num_face);
+  double surf=0;
+  if (ori == k)
+    surf=face_surfaces(num_face);
+  return surf;
 }
 
 /*! @brief
