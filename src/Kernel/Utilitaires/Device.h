@@ -72,7 +72,7 @@ inline bool computeOnDevice()
 template <typename _TYPE_>
 inline const _TYPE_* copyToDevice(const TRUSTArray<_TYPE_>& tab, std::string arrayName="")
 {
-  // const array will matches on host and device
+  // const array will matches on host and device   
   const _TYPE_ *tab_addr = copyToDevice_(const_cast<TRUSTArray <_TYPE_>&>(tab), Array_base::HostDevice, arrayName);
   return tab_addr;
 }
