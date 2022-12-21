@@ -9,14 +9,15 @@ PETSC=""
 PETSC_LIB=$PETSC_ROOT/$TRUST_ARCH$OPT/lib
 MPIFORT=""
 petscmachineinfo=""
+SYSLIBS=""
 if [ -d $PETSC_LIB ]
 then
    cd $PETSC_LIB
    if [ -f libpetsc.a ]
    then
-      PETSC="-L\$(PETSC_ROOT)/\$(TRUST_ARCH)\$(OPT)/lib"
+      PETSC="-L\$(PETSC_ROOT)/\$(TRUST_ARCH)\$(OPT)/lib -lpetsc"
       # -ldl pour Petsc 3.0.0 necessaire sur certaines machines avec GNU un peu ancien
-      PETSC=$PETSC" -lpetsc -ldl"
+      SYSLIBS=$SYSLIBS" -ldl"
       superlu=`ls libsuperlu_dist*.a 2>/dev/null` && superlu=${superlu#lib} && PETSC=$PETSC" -l${superlu%.a}"
       [ -f libcmumps.a ] && PETSC=$PETSC" -lcmumps -ldmumps -lmumps_common -lsmumps -lzmumps -lpord"
       [ -f libpastix.a ] && PETSC=$PETSC" -lpastix"
@@ -25,7 +26,7 @@ then
       do
          [ -f lib$lib.a ] && PETSC=$PETSC" -l$lib"
       done
-      [ -f libumfpack.a ] && PETSC=$PETSC" -lumfpack -lklu -lcholmod -lbtf -lccolamd -lcolamd -lcamd -lamd -lsuitesparseconfig"$([ `uname -s` != Darwin ] && echo " -lrt")
+      [ -f libumfpack.a ] && PETSC=$PETSC" -lumfpack -lklu -lcholmod -lbtf -lccolamd -lcolamd -lcamd -lamd -lsuitesparseconfig" && [ `uname -s` != Darwin ] && SYSLIBS=$SYSLIBS" -lrt"
 
       # Link avec les librairies statiques de CUDA:
       # Pros: Portability ?
@@ -38,8 +39,6 @@ then
       petscmachineinfo=$PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h
       if [ -f $petscmachineinfo ]
       then
-         # Si PETSc compile avec GNU et le code avec NVidia il faut donner le chemin des libs GNU (libX11, libm, libpthread, etc...)
-         [ "`basename $TRUST_CC_BASE`" = nvc++ ] && PETSC=$PETSC" -L/usr/lib/x86_64-linux-gnu"
          # CUDA trouve et qui fonctionne sur la machine (test fait dans $PETSC_ROOT/GPU)
          # -lnvToolsExt: ajoute suite undefined reference sur cobalt
          if [ "$TRUST_USE_CUDA" = 1 ]
@@ -47,47 +46,26 @@ then
             PETSC=$PETSC" `awk -v LINK_CUDA=$LINK_CUDA '/Using libraries/ && /cuda/ { for (i=1;i<=NF;i++) {if (index($i,"/cuda")) libs=libs" "$i;if (index($i,"-lcu")) libs=libs" "$i""LINK_CUDA;}} END {print libs" -lnvToolsExt"}' $petscmachineinfo`"
             [ "$LINK_CUDA" = _static ] && PETSC=$PETSC" -lcublasLt_static -lculibos -lrt"
          fi
-         # X11 (avec une bidouille pour castor, pas capable de trouver sa librairie X11)
-         if [ "`grep lX11 $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ]
-         then
-            # Sur certaines machines X11 non trouve
-            touch test.cpp
-            if [ "`$TRUST_CC -o test test.cpp -lX11 2>&1 | grep X11 | grep find`" != "" ]
-            then
-               bits=64 && [ "`uname -m`" = i686 ] && bits=""
-               L=`ls /usr/X11R6/lib$bits/libX11.a 2>/dev/null`
-               L="-L"`dirname $L`" "
-            else
-               L=""
-            fi
-            rm -f test.cpp
-            PETSC=$PETSC" "$L"-lX11"
-         fi
+         # PETSc with X11:
+         [ "`grep lX11 $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ] && SYSLIBS=$SYSLIBS" -lX11"
+
          # PETSc without MPI:
          if [ "$TRUST_DISABLE_MPI" = 1 ]
          then
-            PETSC=$PETSC" -lmpiseq -lpthread"
+            PETSC=$PETSC" -lmpiseq"
+	    SYSLIBS=$SYSLIBS" -lpthread"
          else
             for libfort in lmpifort lmpi_f77
             do
-        if [ "`grep $libfort $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ]
-       then
-       MPIFORT=" -L\$(MPI_ROOT)/lib -${libfort} "
-        fi
-        done
-    fi
-    if [ "`grep lssl $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ]
-    then
-       PETSC=$PETSC" -lssl -lcrypto"
-    fi
-    if [ "`grep lpthread $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ]
-    then
-       PETSC=$PETSC" -lpthread"
-    fi
+               if [ "`grep $libfort $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ]
+               then
+                  MPIFORT=" -L\$(MPI_ROOT)/lib -${libfort} "
+               fi
+            done
+         fi
+         [ "`grep lssl     $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ] && SYSLIBS=$SYSLIBS" -lssl -lcrypto"
+         [ "`grep lpthread $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ] && SYSLIBS=$SYSLIBS" -lpthread"
       fi
-      # Bizarre, MUMPS switche sur gfortran: Ameliorer ?
-      #PETSC=$PETSC" -lgfortran"
-      #PETSC="-L\$(PETSC_ROOT)/\$(TRUST_ARCH)\$(OPT)/lib "`awk '/Using libraries/ {for (i=1;i<=NF;i++) if (index($i,"-l")) print $i}' $petscmachineinfo`
    fi
    \cd - 1>/dev/null 2>&1
 else
@@ -143,16 +121,13 @@ else
    # Sinon, on regarde si la librairie existe... Mais attention on ne verifie pas si elle est 32 ou 64 bits...
    [ "`ls /usr/lib*/libz.a /lib/libz.so* 2>/dev/null`" != "" ] && lz="-lz "
 fi
-# Binaire 32 bits, pour ameliorer la portabilite:
-if [ "`uname -m`" = i686 ] && [ "$lz" != "" ] && [ -f /usr/lib/libz.a ]
-then
-   lz="/usr/lib/libz.a "
-fi
 
 # Ajout des flags -lsvml et -lintlc necessaires avec certains compilateurs intel... vu sur jean-zay et plafrim
-if [ -f  $TRUST_MED_ROOT/lib/libhdf5.so ] ; then
+if [ -f  $TRUST_MED_ROOT/lib/libhdf5.so ]
+then
    svmlpath=""
-   if [ "`ldd $TRUST_MED_ROOT/lib/libhdf5.so | grep libsvml.so`" != "" ] ; then
+   if [ "`ldd $TRUST_MED_ROOT/lib/libhdf5.so | grep libsvml.so`" != "" ]
+   then
       lz=$lz"-lsvml "
       svmlso=`ldd $TRUST_MED_ROOT/lib/libhdf5.so | grep libsvml.so | cut -d' ' -f 3`
       svmlpath=`dirname $svmlso`
@@ -160,20 +135,36 @@ if [ -f  $TRUST_MED_ROOT/lib/libhdf5.so ] ; then
    fi
 
    intlcpath=""
-   if [ "`ldd $TRUST_MED_ROOT/lib/libhdf5.so | grep libintlc.so`" != "" ] ; then
+   if [ "`ldd $TRUST_MED_ROOT/lib/libhdf5.so | grep libintlc.so`" != "" ]
+   then
       lz=$lz"-lintlc "
       intlcso=`ldd $TRUST_MED_ROOT/lib/libhdf5.so | grep libintlc.so | cut -d' ' -f 3`
       intlcpath=`dirname $intlcso`
       [ "$svmlpath" != "$intlcpath" ] && lz=" -L$intlcpath "$lz
    fi
 fi
-MEDLDFLAGS="\$(TRUST_MED_ROOT)/lib/libmed.a \$(TRUST_MED_ROOT)/lib/libmedimport.a \$(TRUST_MED_ROOT)/lib/libmedC.a \$(TRUST_MED_ROOT)/lib/libhdf5.a \$(TRUST_MED_ROOT)/lib/libhdf5_hl.a $lz-lm -ldl"
+MEDLDFLAGS="\$(TRUST_MED_ROOT)/lib/libmed.a \$(TRUST_MED_ROOT)/lib/libmedimport.a \$(TRUST_MED_ROOT)/lib/libmedC.a \$(TRUST_MED_ROOT)/lib/libhdf5.a \$(TRUST_MED_ROOT)/lib/libhdf5_hl.a"
 
-if [ $TRUST_DISABLE_VC = 1 ] ; then
-    VC=""
-else
-    VC="-L\$(TRUST_ROOT)/lib/src/LIBVC/lib -lVc"
-fi
+#############
+# MEDCoupling
+#############
+LISTP="" && [ $TRUST_DISABLE_MPI = 0 ] && LISTP="paramedmem paramedloader" 
+LIBS_MEDC=""
+for ll in medloader medcouplingremapper medcoupling medicoco $LISTP interpkernel
+do
+    LIBS_MEDC=${LIBS_MEDC}" \$(TRUST_MEDCOUPLING_ROOT)/lib/lib${ll}.a"
+done
+
+####
+# VC
+####
+VC="" && [ "$TRUST_DISABLE_VC" != 1 ] && VC="-L\$(TRUST_ROOT)/lib/src/LIBVC/lib -lVc"
+
+# Cela m'a fait transpirer: si -lm alors -L/usr/lib/x86_64-linux-gnu ajoute et conflit entre MPI systeme et MPI livre si mix nvc++/g++:
+# Si TRUST_CC_BAXE_EXTP GNU et le code avec NVidia il faut donner le chemin des libs GNU (libX11, libm, libpthread, etc...)
+[ "`basename $TRUST_CC_BASE`" = nvc++ ] && SYSLIBS=" -L/usr/lib/x86_64-linux-gnu "$SYSLIBS
+#SYSLIBS=$SYSLIBS" $lz-lm -ldl"
+SYSLIBS=$SYSLIBS" $lz -ldl"
 
 #################################################
 # Construction des fichiers $TRUST_ENV/make.lib?
@@ -215,23 +206,12 @@ do
    [ -f ${TRUST_ROCALUTION}/lib/librocalution.so ] && echo $ECHO_OPTS "-L\$(TRUST_ROCALUTION)/lib -lrocalution \\" >> $fic
    [ -f ${TRUST_OSQP_ROOT}/lib/libosqp.a ] && echo $ECHO_OPTS "-L\$(TRUST_OSQP_ROOT)/lib -losqp \\" >> $fic
    [ -f ${TRUST_OSQP_ROOT}/lib64/libosqp.a ] && echo $ECHO_OPTS "-L\$(TRUST_OSQP_ROOT)/lib64 -losqp \\" >> $fic
-   LIBS_MEDC=""
-   LISTP=""
-   [ $TRUST_DISABLE_MPI = 0 ] && LISTP="paramedmem paramedloader" 
-   for ll in medloader medcouplingremapper medcoupling medicoco $LISTP  interpkernel
-   do
-       LIBS_MEDC=${LIBS_MEDC}" \$(TRUST_MEDCOUPLING_ROOT)/lib/lib${ll}.a"
-   done
-   # echo $LIBS_MEDC
-
-   #[ "$TRUST_INT64" != "1" ] && echo $ECHO_OPTS "${LIBS_MEDC} \\" >> $fic
-   # medcoupling 64bits is now available : we need to link TRUST to it
-   echo $ECHO_OPTS "${LIBS_MEDC} \\" >> $fic
+   [ "$LIBS_MEDC" != "" ]  && echo $ECHO_OPTS "${LIBS_MEDC} \\" >> $fic
+   [ "$MEDLDFLAGS" != "" ] && echo $ECHO_OPTS "$MEDLDFLAGS \\"  >> $fic
+   [ "$MPIFORT" != "" ]    && echo $ECHO_OPTS "$MPIFORT \\"     >> $fic
+   # Ecriture de SYSLIBS desormais a la fin:
+   [ "$SYSLIBS" != "" ]    && echo $ECHO_OPTS $SYSLIBS >> $fic
    
-   [ "$MEDLDFLAGS" != "" ] && echo $ECHO_OPTS "$MEDLDFLAGS \\"     >> $fic
-
-   [ "$MPIFORT" != "" ] && echo $ECHO_OPTS "$MPIFORT "        >> $fic
-
    # Verification qu'une librairie n'est pas en double
    a=`cat $fic | sort | uniq -c | grep -v 1`
    if [ ${#a} != 0 ]

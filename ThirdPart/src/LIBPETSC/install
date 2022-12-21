@@ -292,8 +292,10 @@ then
       # Pour pouvoir compiler AmgX+AmgXWrapper si les compilateurs de TRUST ne sont pas GNU
       export OMPI_CXX=$TRUST_CC_BASE_EXTP
       export OMPI_CC=${TRUST_CC_BASE_EXTP%++}cc
+      export OMPI_FC=${TRUST_CC_BASE_EXTP%++}fortran
       export MPICH_CXX=$OMPI_CXX
       export MPICH_CC=$OMPI_CC
+      export MPICH_FC=$OMPI_FC
       CUDAFLAGS="-O3 -ccbin $OMPI_CC"
       COPTFLAGS="-O3 -fPIC"
    fi

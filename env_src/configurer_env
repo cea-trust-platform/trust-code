@@ -1220,12 +1220,13 @@ else
 	 then
 	    # MPICH_CCC peut etre obsolete, a remplacer par MPICH_CXX ?
 	    m="# Compiler for mpicxx" && e="MPICH_CXX=\"\$TRUST_CC_BASE\"  && export MPICH_CXX" && ecrit $m"|"$e"|"$env;eval $e
-            m="# Compiler for mpiCC"  && e="MPICH_CCC=\"\$TRUST_CC_BASE\"  && export MPICH_CCC" && ecrit $m"|"$e"|"$env;eval $e
-            m="# Compiler for mpicc"  && e="MPICH_CC=\"\$TRUST_cc_BASE\"   && export MPICH_CC"  && ecrit $m"|"$e"|"$env;eval $e
-            m="# Compiler for mpif77" && e="MPICH_F77=\"\$TRUST_F77_BASE\" && export MPICH_F77" && ecrit $m"|"$e"|"$env;eval $e
-	    m="# Compiler for mpif90" && e="MPICH_F90=\"\$TRUST_F77_BASE\" && export MPICH_F90" && ecrit $m"|"$e"|"$env;eval $e
-            # Bizarrerie pour ioulia, il faut specifier le linker en fortran sinon NP ne compile pas:
-            m="# Linker pour mpif77"      && e="MPICH_FLINKER=\"\$TRUST_F77_BASE\" && export MPICH_FLINKER" && ecrit $m"|"$e"|"$env;eval $e
+      m="# Compiler for mpiCC"  && e="MPICH_CCC=\"\$TRUST_CC_BASE\"  && export MPICH_CCC" && ecrit $m"|"$e"|"$env;eval $e
+      m="# Compiler for mpicc"  && e="MPICH_CC=\"\$TRUST_cc_BASE\"   && export MPICH_CC"  && ecrit $m"|"$e"|"$env;eval $e
+      m="# Compiler for mpif90" && e="MPICH_FC=\"\$TRUST_F77_BASE\" && export MPICH_FC"   && ecrit $m"|"$e"|"$env;eval $e
+      #m="# Compiler for mpif77" && e="MPICH_F77=\"\$TRUST_F77_BASE\" && export MPICH_F77" && ecrit $m"|"$e"|"$env;eval $e
+      #m="# Compiler for mpif90" && e="MPICH_F90=\"\$TRUST_F77_BASE\" && export MPICH_F90" && ecrit $m"|"$e"|"$env;eval $e
+      # Bizarrerie pour ioulia, il faut specifier le linker en fortran sinon NP ne compile pas:
+      m="# Linker pour mpif77"  && e="MPICH_FLINKER=\"\$TRUST_F77_BASE\" && export MPICH_FLINKER" && ecrit $m"|"$e"|"$env;eval $e
 	 elif [ "`$mpiCC -show | grep mpi | grep intel`" != "" ] || [ "`$mpiCC -help | grep I_MPI_CXX`" != "" ]
 	 then
 	    m="# Compiler for mpiCC"  && e="I_MPI_CXX=\"\$TRUST_CC_BASE\"  && export I_MPI_CXX" && ecrit $m"|"$e"|"$env;eval $e
@@ -1409,7 +1410,8 @@ else
 	 m="# Compiler for mpicxx" && e="MPICH_CXX=\"\$TRUST_CC_BASE\" && export MPICH_CXX" && ecrit $m"|"$e"|"$env;eval $e
 	 m="# Compiler for mpiCC" && e="MPICH_CCC=\"\$TRUST_CC_BASE\" && export MPICH_CCC" && ecrit $m"|"$e"|"$env;eval $e
 	 m="# Compiler for mpicc" && e="MPICH_CC=\"\$TRUST_cc_BASE\" && export MPICH_CC" && ecrit $m"|"$e"|"$env;eval $e
-	 m="# Compiler for mpif77" && e="MPICH_F77=\"\$TRUST_F77_BASE\" && export MPICH_F77" && ecrit $m"|"$e"|"$env;eval $e
+	 m="# Compiler for mpif77" && e="MPICH_FC=\"\$TRUST_F77_BASE\" && export MPICH_FC" && ecrit $m"|"$e"|"$env;eval $e
+#	 m="# Compiler for mpif77" && e="MPICH_F77=\"\$TRUST_F77_BASE\" && export MPICH_F77" && ecrit $m"|"$e"|"$env;eval $e
 	 m="# Compiler C++" && e="TRUST_CC=\"$MPI_ROOT/bin/mpicxx\" && export TRUST_CC" && ecrit $m"|"$e"|"$env;eval $e
 	 m="# Compiler C" && e="TRUST_cc=\"$MPI_ROOT/bin/mpicc\" && export TRUST_cc" && ecrit $m"|"$e"|"$env;eval $e
 	 m="# Compiler F77" && e="TRUST_F77=\"$MPI_ROOT/bin/mpif77\" && export TRUST_F77" && ecrit $m"|"$e"|"$env;eval $e
@@ -1675,28 +1677,8 @@ case $TRUST_ARCH_CC in
 	# include <sstream> fait un warning sur gcc 2.96, impossible d'utiliser #pragma supporte dans 4.2.x:
 	# Idem OpenMPI 1.3.2 sur certaines clusters provoque un warning: type-punning to incomplete type might break strict-aliasing rules
 	[ $TRUST_ARCH_CC = linux_g++ ] && [ "`echo $Mpirun | grep 1.3.2`" = "" ] && CppFlags=$CppFlags" -Werror"
-	# Attention fort77&f2c et g77&g2c sinon pb avec Blas !
-	# On ne met pas -static car plante en // sur dom1 avec scali meme avec -ldl
-	if [ ${TRUST_F77_BASE%gfortran} != $TRUST_F77_BASE ]
-	then
-	   # Parfois libgfortran non trouve (castor, kata,...), on teste et on prend la version 64 bits:
-	   touch test.cpp
-	   if [ "`$TRUST_CC -o test test.cpp -lgfortran 2>&1 | grep gfortran | grep ld`" != "" ]
-	   then
-	      L=`ls /usr/lib/gcc/*/*/libgfortran.a 2>/dev/null | grep 64`
-	      SYSLIBS="-L"`dirname $L`" "
-	   fi
-	   rm -f test.cpp
-	   # SYSLIBS=$SYSLIBS"-lgfortran -Wl,--allow-multiple-definition" # Pourquoi -Wl,--allow-multiple-definition sur GNU ?
-	   SYSLIBS=$SYSLIBS"-lgfortran"
-	elif [ "`echo $TRUST_F77_BASE | grep absoft`" != "" ]
-	then
-	   SYSLIBS=$SYSLIBS"-L/usr/local/absoft/lib -lfio -lf77math"
-        elif [ "`basename $TRUST_F77_BASE`" = g77 ]
-        then
-	   SYSLIBS=$SYSLIBS"-lg2c"
-        fi
-	F77Flags="-O3 $FPIC" && [ "$TRUST_INT64" = "1" ] && F77Flags=$F77Flags" -fdefault-integer-8"
+	SYSLIBS=$SYSLIBS"-lgfortran"
+	F77Flags="-O3 -std=legacy $FPIC" && [ "$TRUST_INT64" = "1" ] && F77Flags=$F77Flags" -fdefault-integer-8"
 	# -fallow-argument-mismatch pour gfortran>=10.0.0 (plusieurs librairies Fortran ne compilent pas sinon dont LIBSKIT la premiere):
         [ "`echo $TRUST_VERSION_GNU | awk -F. '{print ($1>=10)}'`" = 1 ] && F77Flags=$F77Flags" -fallow-argument-mismatch"
 	ccFLAGS="-O3 $FPIC $PTHREAD"
@@ -1718,26 +1700,11 @@ case $TRUST_ARCH_CC in
 	# GF pas convaincu des erreurs trouvees
 	#CppFlags=$CppFlags" -pedantic" # mis en commentaire au passage de clang 4.0.0 car sinon erreur compilation en mode debug
 	CppFlags=$CppFlags" -Wno-tautological-compare -Werror"
-	if [ "`basename $TRUST_F77_BASE`" = g77 ]
-        then
-	   SYSLIBS=$SYSLIBS"-lg2c"
-        fi
-	if [ ${TRUST_F77_BASE%gfortran} != $TRUST_F77_BASE ]
-	then
-	   # Parfois libgfortran non trouve (castor, kata,...), on teste et on prend la version 64 bits:
-	   touch test.cpp
-	   if [ "`$TRUST_CC -o test test.cpp -lgfortran 2>&1 | grep gfortran | grep ld`" != "" ]
-	   then
-	      L=`ls /usr/lib/gcc/*/*/libgfortran.a 2>/dev/null | grep 64`
-	      SYSLIBS="-L"`dirname $L`" "
-	   fi
-	   rm -f test.cpp
-	   SYSLIBS=$SYSLIBS"-lgfortran -lgcc"
-	   TRUST_GNU_VERSION=`$TRUST_F77_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`
-	fi
+	SYSLIBS=$SYSLIBS"-lgfortran -lgcc"
+	TRUST_GNU_VERSION=`$TRUST_F77_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`
 	[ "$TRUST_F77_BASE" = linux_armclang++ ] && SYSLIBS=$SYSLIBS" -lflang -lflangrti -lflangADT -lflangArger"
 	[ ${TRUST_F77_BASE%flang} != $TRUST_F77_BASE ] && SYSLIBS=$SYSLIBS" -lflang -lflangrti -lpgmath -lomp"
-	F77Flags="-O3 -fPIC $ArmFlags $AoccFlags"
+	F77Flags="-O3 -std=legacy -fPIC $ArmFlags $AoccFlags"
 	[ `echo $TRUST_GNU_VERSION | awk -F. '{print ($1>=10)}'` = 1 ] && F77Flags=$F77Flags" -fallow-argument-mismatch"
 	ccFLAGS="-Qunused-arguments -O3 -fPIC $ArmFlags $AoccFlags"
 	ShLibFlag="\$(TRUST_CC) -shared"
@@ -1765,8 +1732,8 @@ case $TRUST_ARCH_CC in
    	Defines="-D_COMPILE_AVEC_PGCC"
     CppFlags="-O3 -fPIC -Ktrap=fp -Kieee -noswitcherror" # -Ktrap=fp evitent des soucis Arithmetic Exceptions...
     SYSLIBS="-lgfortran" # Car BLAS+AMGX+PETSC compile avec GNU
-    F77Flags="-O3 -fPIC"
-    ccFLAGS="-O3 -fPIC"
+    F77Flags="-O3 -fPIC -noswitcherror"
+    ccFLAGS="-O3 -fPIC -noswitcherror"
     ShLibFlag="\$(TRUST_CC) -shared"
     ;;
    linux_icpc) TRUST_SUPPORTED=1
@@ -1855,8 +1822,9 @@ echo "
       real(kind=8) a
       return
       end" > testf90.f
-echo $ECHO_OPTS "Is $TRUST_F77_BASE fortran 90 compliant to compile MUMPS ? \c"
-$TRUST_F77 -c testf90.f 1>testf90.log 2>&1
+FC=$TRUST_F77_BASE && [ "$TRUST_CC_BASE_EXTP" != "" ] && FC=${TRUST_CC_BASE_EXTP%++}fortran
+echo $ECHO_OPTS "Is $FC fortran 90 compliant to compile MUMPS ? \c"
+$FC -c testf90.f 1>testf90.log 2>&1
 # 12/02/10: Ajout test sur la version de gfortran car la compilation de MUMPS fait planter gfortran 4.0.1
 if [ $? = 0 ] && [ "`$TRUST_F77_BASE -v 2>&1 | $TRUST_Awk '/gcc version / {print $3}'`" != "4.0.1" ]
 then
@@ -1865,8 +1833,8 @@ then
 else
    TRUST_USE_MUMPS=0
    echo "No"
+   echo "Error, check your $TRUST_F77_BASE compiler." && exit -1
 fi
-#[ "$TRUST_INT64" = "1" ] && TRUST_USE_MUMPS=0 # Mumps provided by Petsc does not accept 64 bit integers
 m="# MUMPS will be used ?";e="TRUST_USE_MUMPS=\"$TRUST_USE_MUMPS\" && export TRUST_USE_MUMPS";ecrit $m"|"$e"|"$env
 
 ####################################

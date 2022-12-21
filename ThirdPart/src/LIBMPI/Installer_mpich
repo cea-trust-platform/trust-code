@@ -90,7 +90,8 @@ cd $src
 ###############################
 export CXXFLAGS="-fPIC"
 export CFLAGS="-fPIC"
-export FFLAGS="-fPIC -std=legacy"
+export FFLAGS="-fPIC"
+#-export FFLAGS="-fPIC -std=legacy" # gfortran option -> passe dans le configure
 # MPICH meme recent 3.3.1 ne compile pas encore avec gfortran 10 sans allow-argument-mismatch:
 [ "$TRUST_VERSION_GNU_NUMERIC" -ge 1000 ] && FFLAGS=$FFLAGS" -fallow-argument-mismatch"
 export FCFLAGS=$FFLAGS
