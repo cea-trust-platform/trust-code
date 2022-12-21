@@ -158,7 +158,10 @@ cd $BENCH_DIR
 COMPLETE_BENCH_NAME=$(basename ${BENCH_PATH})
 BENCH_NAME=${COMPLETE_BENCH_NAME%.data}
 
-cat <<EOF > TRUST_sbatch.sh
+# Job Hash
+HASH=$(md5sum<<<$RANDOM | head -c 6)
+
+cat <<EOF > TRUST_sbatch_${HASH}.sh
 #!/bin/bash
 
 #SBATCH -J ${BENCH_NAME}
@@ -233,14 +236,15 @@ else
   echo "[DBG] No numerical verification for this bench."
 fi
 
-# Get back SLURM outputs
+# Get back SLURM outputs and submission script
 mv ../*\${SLURM_JOB_ID}.out .
 mv ../*\${SLURM_JOB_ID}.err .
+mv ../TRUST_sbatch_${HASH}.sh ./TRUST_sbatch_\${SLURM_JOB_ID}.sh
 EOF
 
 echo
 echo "# Subsmision"
-sbatch TRUST_sbatch.sh
+sbatch TRUST_sbatch_${HASH}.sh
 
 echo
 echo "# Numerical verification:"
