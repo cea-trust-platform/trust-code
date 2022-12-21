@@ -134,11 +134,11 @@ public :
   const DoubleTab& normale_paroi_faces() const {return n_y_faces_;} ;
 
 protected:
-  double h_carre;			 // carre du pas du maillage
+  double h_carre = DMAXFLOAT;			 // carre du pas du maillage
   DoubleVect h_carre_;			// carre du pas d'une maille
   Elem_poly type_elem_;                  // type de l'element de discretisation
-  int nb_faces_std_;                    // nombre de faces standard
-  int nb_elem_std_;                     // nombre d'elements standard
+  int nb_faces_std_ = 0;                    // nombre de faces standard
+  int nb_elem_std_ = 0;                     // nombre d'elements standard
   IntVect rang_elem_non_std_;		 // rang_elem_non_std_= -1 si l'element est standard
   // rang_elem_non_std_= rang de l'element dans les tableaux
   // relatifs aux elements non standards

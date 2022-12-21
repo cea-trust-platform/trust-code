@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,7 +52,7 @@ public :
   }
 
 protected :
-  double alpha; //alpha = 0 -> centre, alpha = 1 -> amont
+  double alpha = -1e8; //alpha = 0 -> centre, alpha = 1 -> amont
   DoubleVect porosite_f, porosite_e; //pour F5
 };
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,32 +30,13 @@
 #include <Masse_PolyMAC_P0_Face.h>
 #include <Milieu_base.h>
 #include <Pb_Multiphase.h>
-#include <cfloat>
 
 Implemente_instanciable(Op_Grad_PolyMAC_P0_Face,"Op_Grad_PolyMAC_P0_Face",Operateur_Grad_base);
 
+Sortie& Op_Grad_PolyMAC_P0_Face::printOn(Sortie& s) const { return s << que_suis_je() ; }
 
-//// printOn
-//
+Entree& Op_Grad_PolyMAC_P0_Face::readOn(Entree& s) { return s ; }
 
-Sortie& Op_Grad_PolyMAC_P0_Face::printOn(Sortie& s) const
-{
-  return s << que_suis_je() ;
-}
-
-//// readOn
-//
-
-Entree& Op_Grad_PolyMAC_P0_Face::readOn(Entree& s)
-{
-  return s ;
-}
-
-
-
-/*! @brief
- *
- */
 void Op_Grad_PolyMAC_P0_Face::associer(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis, const Champ_Inc& ch)
 {
   ref_zone = ref_cast(Zone_PolyMAC_P0, zone_dis.valeur());
@@ -77,7 +58,6 @@ void Op_Grad_PolyMAC_P0_Face::completer()
       Champ_Face_PolyMAC_P0& gradp = ref_cast(Champ_Face_PolyMAC_P0, ref_cast(Navier_Stokes_std, equation()).grad_P().valeur());
       gradp.init_auxiliary_variables();
     }
-  last_gradp_ = -DBL_MAX;
 }
 
 void Op_Grad_PolyMAC_P0_Face::update_grad(int full_stencil) const

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,6 +22,7 @@
 #include <Zone_PolyMAC_P0.h>
 #include <Ref_Zone_Cl_PolyMAC.h>
 #include <Ref_Champ_Face_PolyMAC_P0.h>
+#include <cfloat>
 
 /*! @brief class Op_Grad_PolyMAC_P0_Face
  *
@@ -59,7 +60,7 @@ public:
 
 private:
 
-  mutable double last_gradp_; //dernier temps utilise pour interpoler grad p (mis a DBL_MAX si grad p non reinterpole)
+  mutable double last_gradp_ = -DBL_MAX; //dernier temps utilise pour interpoler grad p (mis a DBL_MAX si grad p non reinterpole)
   REF(Zone_PolyMAC_P0) ref_zone;
   REF(Zone_Cl_PolyMAC) ref_zcl;
 };

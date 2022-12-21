@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -68,7 +68,7 @@ void Zone_Cl_PolyMAC::associer(const Zone_PolyMAC& la_zone_PolyMAC)
  */
 void Zone_Cl_PolyMAC::completer(const Zone_dis& une_zone_dis)
 {
-  modif_perio_fait_ =0;
+  modif_perio_fait_ = 0;
   if (sub_type(Zone_PolyMAC,une_zone_dis.valeur()))
     {
       const Zone_PolyMAC& la_zone_poly = ref_cast(Zone_PolyMAC, une_zone_dis.valeur());
@@ -96,10 +96,8 @@ void Zone_Cl_PolyMAC::imposer_cond_lim(Champ_Inc& ch, double temps)
   Champ_Inc_base& ch_base=ch.valeur();
   DoubleTab& ch_tab = ch_base.valeurs(temps);
   int n, N = ch_tab.line_size();
-  if (sub_type(Champ_Inc_P0_base,ch_base))
-    ;
-  else if(ch_base.nature_du_champ()==scalaire)
-    ;
+  if (sub_type(Champ_Inc_P0_base,ch_base)) { /* do nothing */ }
+  else if(ch_base.nature_du_champ()==scalaire) { /* do nothing */ }
   else if (sub_type(Champ_Face_PolyMAC,ch_base))
     {
       Champ_Face_PolyMAC& ch_face = ref_cast(Champ_Face_PolyMAC, ch_base);

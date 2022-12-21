@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -79,7 +79,7 @@ public :
     return 1.2; /* en cas de pas de temps rate, on remonte doucement */
   }
 
-  int iteration;  //numero de l'iteration en cours (pour les operateurs d'evanescence)
+  int iteration = 0;  //numero de l'iteration en cours (pour les operateurs d'evanescence)
   int p_degen = -1;    //1 si la pression est degeneree (milieu incompressible + pas de CLs de pression imposee)
   int sets_;      // 1 si on fait l'etape de prediction des vitesses
 
@@ -103,7 +103,7 @@ public :
 protected :
 
   int iter_min_ = 1, iter_max_ = 10; //nombre d'iterations min/max de l'etape non-lineaire
-  int first_call_;//au tout premier appel, P peut etre tres mauvais -> on ne predit pas v en SETS
+  int first_call_ = 1;//au tout premier appel, P peut etre tres mauvais -> on ne predit pas v en SETS
   int pressure_reduction_ = 1; //fait-on la reduction en pression?
 
   /* criteres de convergences par inconnue (en norme Linf), modifiables par le mot-cle "criteres_convergence" */

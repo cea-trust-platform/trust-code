@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,21 +49,17 @@ void Source_Generique_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& se
   int premiere_face_interne = la_zone_VDF->premiere_face_int();
   int num_face;
 
-  for (int num_cl =0; num_cl<nb_front_cl; num_cl++)
+  for (int num_cl = 0; num_cl < nb_front_cl; num_cl++)
     {
       const Cond_lim& la_cl = la_zcl_VDF->les_conditions_limites(num_cl);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
       int ndeb = le_bord.num_premiere_face();
       int nfin = ndeb + le_bord.nb_faces();
-      if ((sub_type(Dirichlet,la_cl.valeur()))
-          ||
-          (sub_type(Dirichlet_homogene,la_cl.valeur()))
-         )
-        ;
+      if ((sub_type(Dirichlet, la_cl.valeur())) || (sub_type(Dirichlet_homogene, la_cl.valeur()))) { /* Do nothing */ }
       else
-        for (num_face=ndeb; num_face<nfin; num_face++)
+        for (num_face = ndeb; num_face < nfin; num_face++)
           {
-            secmem(num_face) += valeurs_calc(num_face)*vol_entrelaces(num_face)*poro_face(num_face);
+            secmem(num_face) += valeurs_calc(num_face) * vol_entrelaces(num_face) * poro_face(num_face);
           }
     }
 

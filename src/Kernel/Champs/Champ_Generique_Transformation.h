@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -105,9 +105,9 @@ protected:
   Nom methode_;                //Methode indiquant le type de transformation retenue
   Noms les_fct;                //Contient l expression de la combinaison
   mutable VECT(Parser_U) fxyz; //Parser utilise pour evaluer la valeur prise par la combinaison
-  int nb_comp_;                //Nombre de composantes du champ evalue
+  int nb_comp_ = 1;                //Nombre de composantes du champ evalue
   Motcle localisation_;        //Localisation du support d evaluation de l expression
-  Nature_du_champ nature_ch;   //Nature du champ evalue
+  Nature_du_champ nature_ch = scalaire;   //Nature du champ evalue
 
 };
 

@@ -29,46 +29,41 @@
 Implemente_instanciable(Zone_VDF,"Zone_VDF",Zone_VF);
 
 //#define SORT_POUR_DEBOG
-//// printOn
-//
 
 Sortie& Zone_VDF::printOn(Sortie& os) const
 {
   Zone_VF::printOn(os);
-  os << "orientation_"<<orientation_<< finl;
-  os << "nb_faces_X_"<<nb_faces_X_<< finl;
-  os << "nb_faces_Y_"<<nb_faces_Y_<< finl;
-  os << "nb_faces_Z_"<<nb_faces_Z_<< finl;
-  os << "nb_aretes_"<<nb_aretes_<< finl;
-  os << "nb_aretes_joint_"<<nb_aretes_joint_<< finl;
-  os << "nb_aretes_coin_"<<nb_aretes_coin_<< finl;
-  os << "nb_aretes_bord_"<<nb_aretes_bord_<< finl;
-  os << "nb_aretes_mixtes_"<<nb_aretes_mixtes_<< finl;
-  os << "nb_aretes_internes_"<<nb_aretes_internes_<< finl;
-  Qdm_.ecrit(os<< "Qdm : ");
-  os << h_x_ << " " << h_y_ << " " << h_z_<< finl;
-  return os ;
+  os << "orientation_" << orientation_ << finl;
+  os << "nb_faces_X_" << nb_faces_X_ << finl;
+  os << "nb_faces_Y_" << nb_faces_Y_ << finl;
+  os << "nb_faces_Z_" << nb_faces_Z_ << finl;
+  os << "nb_aretes_" << nb_aretes_ << finl;
+  os << "nb_aretes_joint_" << nb_aretes_joint_ << finl;
+  os << "nb_aretes_coin_" << nb_aretes_coin_ << finl;
+  os << "nb_aretes_bord_" << nb_aretes_bord_ << finl;
+  os << "nb_aretes_mixtes_" << nb_aretes_mixtes_ << finl;
+  os << "nb_aretes_internes_" << nb_aretes_internes_ << finl;
+  Qdm_.ecrit(os << "Qdm : ");
+  os << h_x_ << " " << h_y_ << " " << h_z_ << finl;
+  return os;
 }
-
-//// readOn
-//
 
 Entree& Zone_VDF::readOn(Entree& is)
 {
   Zone_VF::readOn(is);
-  is >>  orientation_;
-  is >>  nb_faces_X_;
-  is >>  nb_faces_Y_;
-  is >>  nb_faces_Z_;
-  is >>  nb_aretes_;
-  is >>  nb_aretes_joint_;
-  is >>  nb_aretes_coin_;
-  is >>  nb_aretes_bord_;
-  is >>  nb_aretes_mixtes_;
-  is >>  nb_aretes_internes_;
+  is >> orientation_;
+  is >> nb_faces_X_;
+  is >> nb_faces_Y_;
+  is >> nb_faces_Z_;
+  is >> nb_aretes_;
+  is >> nb_aretes_joint_;
+  is >> nb_aretes_coin_;
+  is >> nb_aretes_bord_;
+  is >> nb_aretes_mixtes_;
+  is >> nb_aretes_internes_;
   Qdm_.lit(is);
-  is >>  h_x_>>h_y_>>h_z_;
-  return is ;
+  is >> h_x_ >> h_y_ >> h_z_;
+  return is;
 }
 /*! @brief renvoie un Faces_VDF* !
  *
@@ -610,9 +605,6 @@ void Zone_VDF::calcul_h()
   Zone& zone_geom=zone();
   int nb_poly = zone_geom.nb_elem();
 
-  h_x_ = 1.e30;
-  h_y_ = 1.e30;
-  h_z_ = 1.e30;
   double deux_pi = M_PI*2.0;
   IntVect numfa(zone_geom.nb_faces_elem());
 

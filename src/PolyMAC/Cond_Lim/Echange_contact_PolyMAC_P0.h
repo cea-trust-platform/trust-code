@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,7 +47,7 @@ public :
   void verifie_ch_init_nb_comp() const override { }; //pas de contrainte sur les composantes de chaque cote
 
   mutable REF(Front_VF) fvf, o_fvf; //frontiere dans l'autre probleme
-  mutable int i_fvf, i_o_fvf;  //indices de frontiere de chaque cote
+  mutable int i_fvf = -1, i_o_fvf = -1;  //indices de frontiere de chaque cote
   mutable REF(Op_Diff_PolyMAC_P0_Elem) diff, o_diff; //operateurs de diffusion de chaque cote
 
   /* faces, sommets de l'autre cote de la frontiere */
@@ -56,7 +56,7 @@ public :
   mutable std::map<int, int> s_dist; //s_dist[sommet de ce cote] = sommet de l'autre cote
   mutable int fs_dist_init_ = 0;
 
-  double invh_paroi; //resistance thermique (1 / h) de la paroi
+  double invh_paroi = 1e30; //resistance thermique (1 / h) de la paroi
 
 protected :
   Nom nom_autre_pb_, nom_bord_, nom_champ_; //nom du probleme distant, du bord, du champ

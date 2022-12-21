@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,10 +37,10 @@ public :
   void ecrire(Nom&);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
 protected:
-  int nb_domaine_;
+  int nb_domaine_ = 0;
   Nom commande_,format_post_;
-  int joint_non_ecrit_;
-  int format_binaire_;
-  int ecrire_frontiere_;
+  int joint_non_ecrit_ = 1;
+  int format_binaire_ = 1;
+  int ecrire_frontiere_ = 1;
 };
 #endif

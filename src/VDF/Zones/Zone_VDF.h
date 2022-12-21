@@ -145,21 +145,21 @@ private:
   // 0 si face perpendiculaire a l'axe des X
   // 1 si face perpendiculaire a l'axe des Y
   // 2 si face perpendiculaire a l'axe des Z
-  int nb_faces_X_;                         // nombre de faces perpendiculaires a l'axe des X
-  int nb_faces_Y_;                         // nombre de faces perpendiculaires a l'axe des Y
-  int nb_faces_Z_;                         // nombre de faces perpendiculaires a l'axe des Z
-  int nb_aretes_;                          // nombre d'aretes tous types confondus
-  int nb_aretes_joint_;                    // nombre d'aretes joint
-  int nb_aretes_coin_;                     // nombre d'aretes coin
-  int nb_aretes_bord_;                     // nombre d'aretes bord
-  int nb_aretes_mixtes_;                   // nombre d'aretes mixtes
-  int nb_aretes_internes_;                 // nombre d'aretes internes
+  int nb_faces_X_ = -1;                         // nombre de faces perpendiculaires a l'axe des X
+  int nb_faces_Y_ = -1;                         // nombre de faces perpendiculaires a l'axe des Y
+  int nb_faces_Z_ = -1;                         // nombre de faces perpendiculaires a l'axe des Z
+  int nb_aretes_ = -1;                          // nombre d'aretes tous types confondus
+  int nb_aretes_joint_ = -1;                    // nombre d'aretes joint
+  int nb_aretes_coin_ = -1;                     // nombre d'aretes coin
+  int nb_aretes_bord_ = -1;                     // nombre d'aretes bord
+  int nb_aretes_mixtes_ = -1;                   // nombre d'aretes mixtes
+  int nb_aretes_internes_ = -1;                 // nombre d'aretes internes
   IntTab Qdm_;                            // connectivites aretes/faces
   // DoubleVect porosite_elem_;               // Porosites volumiques pour les volumes de
   // controle de masse
   // DoubleVect porosite_face_;               // Porosites surfaciques en masse et volumiques
   // en quantite de mouvement
-  double h_x_,h_y_,h_z_;                   // pas du maillage dans les trois directions
+  double h_x_ = 1.e30 , h_y_ = 1.e30 ,h_z_ = 1.e30;                   // pas du maillage dans les trois directions
   // d'espace;h_x_ (resp h_y_) est la plus petite
   // distance entre deux centres de faces d'equation
   // X = cte (resp Y= cte)
