@@ -74,6 +74,7 @@ public:
   inline Type_Cl_VDF type_cl(const Cond_lim&) const;
   inline const bool& is_convective_op() const { return is_conv_op_; }
   inline const bool& is_pb_multiphase() const { return is_pb_multi; }
+  void set_name_champ_inco(const std::string& nom) { nom_ch_inco_ = nom; }
   void set_incompressible(const int flag) { incompressible_ = flag; }
   inline const int& is_incompressible() const { return incompressible_; }
 
@@ -107,6 +108,7 @@ protected:
   REF(Operateur_base) op_base;
   REF(Champ_Inc_base) le_champ_convecte_ou_inc;
   REF(Champ_base) le_ch_v;
+  std::string nom_ch_inco_;
   bool is_conv_op_ = false, is_pb_multi = false, use_base_val_b_ = false;
   int incompressible_ = 1;
 };

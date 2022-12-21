@@ -79,12 +79,15 @@ void Op_Conv_VDF_base::associer_champ_convecte_elem()
   Op_Conv_VDF_base::preparer_calcul();
   const Champ_Inc_base& cc = equation().has_champ_convecte() ? equation().champ_convecte() : (le_champ_inco.non_nul() ? le_champ_inco->valeur() : equation().inconnue().valeur());
   iter->associer_champ_convecte_ou_inc(cc, &vitesse());
+  iter->set_name_champ_inco(le_champ_inco.non_nul() ? nom_inconnue() : cc.le_nom().getString());
 }
 
 void Op_Conv_VDF_base::associer_champ_convecte_face()
 {
   Op_Conv_VDF_base::preparer_calcul();
-  iter->associer_champ_convecte_ou_inc(le_champ_inco.non_nul() ? le_champ_inco->valeur() : equation().inconnue().valeur(), &vitesse());
+  const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco->valeur() : equation().inconnue().valeur();
+  iter->associer_champ_convecte_ou_inc(cc, &vitesse());
+  iter->set_name_champ_inco(le_champ_inco.non_nul() ? nom_inconnue() : cc.le_nom().getString());
 }
 
 void Op_Conv_VDF_base::associer_champ_temp(const Champ_Inc& ch_unite, bool use_base) const

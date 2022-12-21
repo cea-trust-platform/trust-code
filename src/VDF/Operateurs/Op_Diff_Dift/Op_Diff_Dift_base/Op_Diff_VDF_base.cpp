@@ -35,7 +35,9 @@ void Op_Diff_VDF_base::completer()
   if (iter.non_nul())
     {
       iter->completer_();
-      iter->associer_champ_convecte_ou_inc(le_champ_inco.non_nul() ? le_champ_inco->valeur() : equation().inconnue(), nullptr);
+      const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco->valeur() : equation().inconnue();
+      iter->associer_champ_convecte_ou_inc(cc, nullptr);
+      iter->set_name_champ_inco(le_champ_inco.non_nul() ? nom_inconnue() : cc.le_nom().getString());
       iter->set_convective_op_pb_type(false /* diff op */, sub_type(Pb_Multiphase, equation().probleme()));
     }
 }

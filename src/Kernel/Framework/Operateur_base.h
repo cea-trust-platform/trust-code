@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,7 +48,7 @@ class Operateur_base : public Objet_U, public MorEqn, public Champs_compris_inte
 public:
   virtual DoubleTab& ajouter(const DoubleTab&, DoubleTab&) const;
   virtual DoubleTab& calculer(const DoubleTab&, DoubleTab&) const;
-  virtual void associer_champ(const Champ_Inc&);
+  virtual void associer_champ(const Champ_Inc&, const std::string& nom_ch);
   virtual void associer(const Zone_dis&, const Zone_Cl_dis&, const Champ_Inc& inco) =0;
   virtual void associer_zone_cl_dis(const Zone_Cl_dis_base&);
   virtual void dimensionner(Matrice_Morse&) const /* =0 */;
@@ -89,6 +89,11 @@ public:
   virtual void ajouter_contribution_explicite_au_second_membre(const Champ_Inc_base& inconnue, DoubleTab& derivee) const;
   const Champ_Inc& mon_inconnue() const { return le_champ_inco.valeur(); }
   bool has_champ_inco() const { return le_champ_inco.non_nul(); }
+  const std::string& nom_inconnue() const
+  {
+    assert (has_champ_inco());
+    return nom_inco_;
+  }
 
   void ouvrir_fichier(SFichier& os, const Nom&, const int flag = 1) const;
   void ouvrir_fichier_partage(EcrFicPartage&, const Nom&, const int flag = 1) const;
@@ -131,6 +136,7 @@ protected:
 
   Champs_compris champs_compris_;
   REF(Champ_Inc) le_champ_inco;
+  std::string nom_inco_;
 };
 
 

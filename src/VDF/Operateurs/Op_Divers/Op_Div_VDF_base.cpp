@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,6 +26,7 @@ void Op_Div_VDF_base::completer()
   Operateur_base::completer();
   iter->completer_();
   iter->associer_champ_convecte_ou_inc(equation().inconnue(), nullptr);
+  iter->set_name_champ_inco(equation().inconnue().le_nom().getString());
   iter->set_convective_op_pb_type(false /* div op */, sub_type(Pb_Multiphase, equation().probleme()));
 }
 

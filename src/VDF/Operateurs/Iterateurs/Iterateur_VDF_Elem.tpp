@@ -136,8 +136,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords(const int ncomp, matrices_t
 template<class _TYPE_> template<typename Type_Double>
 void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_interne(const int N, matrices_t mats, DoubleTab& resu, const tabs_t& semi_impl) const
 {
-  const std::string& nom_ch = op_base->equation().inconnue().le_nom().getString();
-  const DoubleTab& donnee = semi_impl.count(nom_ch) ? semi_impl.at(nom_ch) : le_champ_convecte_ou_inc->valeurs();
+  const DoubleTab& donnee = semi_impl.count(nom_ch_inco_) ? semi_impl.at(nom_ch_inco_) : le_champ_convecte_ou_inc->valeurs();
 
   Type_Double flux(N), aii(N), ajj(N), aef(N);
   const int ndeb = la_zone->premiere_face_int(), nfin = la_zone->nb_faces(), Mv = N; // il faudrait Mv = vitesse.line_size();
@@ -153,7 +152,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_interne(const int N, matrices_t m
         }
     }
 
-  Matrice_Morse *m_vit = mats.count("vitesse") ? mats.at("vitesse") : nullptr, *mat = (!is_pb_multiphase() && mats.count(nom_ch)) ? mats.at(nom_ch) : nullptr;
+  Matrice_Morse *m_vit = mats.count("vitesse") ? mats.at("vitesse") : nullptr, *mat = (!is_pb_multiphase() && mats.count(nom_ch_inco_)) ? mats.at(nom_ch_inco_) : nullptr;
   VectorDeriv d_cc;
   fill_derivee_cc(mats, semi_impl, d_cc);
 
@@ -185,8 +184,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const BC& cl, const int nd
       if (is_Neum_paroi_adiab)
         Process::exit(); // On bloque ici :-)
 
-      const std::string& nom_ch = op_base->equation().inconnue().le_nom().getString();
-      const DoubleTab& donnee = semi_impl.count(nom_ch) ? semi_impl.at(nom_ch) : le_champ_convecte_ou_inc->valeurs(),
+      const DoubleTab& donnee = semi_impl.count(nom_ch_inco_) ? semi_impl.at(nom_ch_inco_) : le_champ_convecte_ou_inc->valeurs(),
                        val_b = sub_type(Champ_Face_base, le_champ_convecte_ou_inc.valeur()) ? DoubleTab() : (use_base_val_b_ ? le_champ_convecte_ou_inc->Champ_base::valeur_aux_bords() : le_champ_convecte_ou_inc->valeur_aux_bords()); // si le champ associe est un champ_face, alors on est dans un operateur de div
 
       int e, Mv = N;
@@ -197,7 +195,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const BC& cl, const int nd
           fill_flux_tables_(face, N, 1.0 /* coeff */, flux, resu);
         }
 
-      Matrice_Morse *m_vit = mats.count("vitesse") ? mats.at("vitesse") : nullptr, *mat = (!is_pb_multiphase() && mats.count(nom_ch)) ? mats.at(nom_ch) : nullptr;
+      Matrice_Morse *m_vit = mats.count("vitesse") ? mats.at("vitesse") : nullptr, *mat = (!is_pb_multiphase() && mats.count(nom_ch_inco_)) ? mats.at(nom_ch_inco_) : nullptr;
       VectorDeriv d_cc;
       fill_derivee_cc(mats, semi_impl, d_cc);
 
@@ -233,8 +231,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Periodique& cl, cons
   DoubleTab& flux_bords = op_base->flux_bords();
   if (_TYPE_::CALC_FLUX_FACES_PERIO)
     {
-      const std::string& nom_ch = op_base->equation().inconnue().le_nom().getString();
-      const DoubleTab& donnee = semi_impl.count(nom_ch) ? semi_impl.at(nom_ch) : le_champ_convecte_ou_inc->valeurs();
+      const DoubleTab& donnee = semi_impl.count(nom_ch_inco_) ? semi_impl.at(nom_ch_inco_) : le_champ_convecte_ou_inc->valeurs();
 
       Type_Double flux(N), aii(N), ajj(N), aef(N);
       for (int face = ndeb; face < nfin; face++)
@@ -257,7 +254,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Periodique& cl, cons
             }
         }
 
-      Matrice_Morse *m_vit = mats.count("vitesse") ? mats.at("vitesse") : nullptr, *mat = (!is_pb_multiphase() && mats.count(nom_ch)) ? mats.at(nom_ch) : nullptr;
+      Matrice_Morse *m_vit = mats.count("vitesse") ? mats.at("vitesse") : nullptr, *mat = (!is_pb_multiphase() && mats.count(nom_ch_inco_)) ? mats.at(nom_ch_inco_) : nullptr;
       VectorDeriv d_cc;
       fill_derivee_cc(mats, semi_impl, d_cc);
 
@@ -291,8 +288,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Echange_externe_impo
 {
   if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
     {
-      const std::string& nom_ch = op_base->equation().inconnue().le_nom().getString();
-      const DoubleTab& donnee = semi_impl.count(nom_ch) ? semi_impl.at(nom_ch) : le_champ_convecte_ou_inc->valeurs();
+      const DoubleTab& donnee = semi_impl.count(nom_ch_inco_) ? semi_impl.at(nom_ch_inco_) : le_champ_convecte_ou_inc->valeurs();
 
       Type_Double flux(N), aii(N), ajj(N), aef(N);
       int boundary_index = -1;
@@ -307,7 +303,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Echange_externe_impo
           fill_flux_tables_(face, N, 1.0 /* coeff */, flux, resu);
         }
 
-      Matrice_Morse *m_vit = mats.count("vitesse") ? mats.at("vitesse") : nullptr, *mat = (!is_pb_multiphase() && mats.count(nom_ch)) ? mats.at(nom_ch) : nullptr;
+      Matrice_Morse *m_vit = mats.count("vitesse") ? mats.at("vitesse") : nullptr, *mat = (!is_pb_multiphase() && mats.count(nom_ch_inco_)) ? mats.at(nom_ch_inco_) : nullptr;
       VectorDeriv d_cc;
       fill_derivee_cc(mats, semi_impl, d_cc);
 

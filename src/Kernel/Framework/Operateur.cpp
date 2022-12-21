@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -149,10 +149,11 @@ void Operateur::completer()
   l_op_base().completer();
 }
 
-void Operateur::associer_champ(const Champ_Inc& ch)
+void Operateur::associer_champ(const Champ_Inc& ch, const std::string& nom_ch)
 {
   le_champ_inco = ch;
-  l_op_base().associer_champ(ch);
+  nom_inco_ = nom_ch;
+  l_op_base().associer_champ(ch, nom_ch);
 }
 
 /*! @brief Effecttue une mise a jour en temps de l'operateur.
