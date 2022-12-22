@@ -1,3 +1,4 @@
+XX/XX/22 (TRUST)  Fix         : Postprocessing fields on sub-zones: couldn't post-process PolyMAC fields with MED format + some fields were not found because of bad names
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.2_beta : Enhancements, modifications and corrected bugs since version 1.9.1 :
 --------------------------------------------------------------------------------------------------

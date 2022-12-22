@@ -363,7 +363,7 @@ const Motcle Champ_Gen_de_Champs_Gen::get_directive_pour_discr() const
   return get_source(0).get_directive_pour_discr();
 }
 
-void Champ_Gen_de_Champs_Gen::nommer_sources()
+void Champ_Gen_de_Champs_Gen::nommer_sources(const Postraitement_base& post)
 {
   int nb_sources = get_nb_sources();
   for (int i=0; i<nb_sources; i++)
@@ -371,13 +371,13 @@ void Champ_Gen_de_Champs_Gen::nommer_sources()
       if (sub_type(Champ_Gen_de_Champs_Gen,sources_[i].valeur()))
         {
           Champ_Gen_de_Champs_Gen& champ = ref_cast(Champ_Gen_de_Champs_Gen,sources_[i].valeur());
-          champ.nommer_sources();
+          champ.nommer_sources(post);
           champ.nommer_source();
         }
       else if (sub_type(Champ_Generique_refChamp,sources_[i].valeur()))
         {
           Champ_Generique_refChamp& champ = ref_cast(Champ_Generique_refChamp,sources_[i].valeur());
-          champ.nommer_source();
+          champ.nommer_source(post);
         }
       else
         {

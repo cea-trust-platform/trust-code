@@ -137,7 +137,7 @@ Read pb
     }
     Post_processing
     {
-
+        domaine bas 
         Definition_champs
         {
             vitesse_elem_bas Interpolation
@@ -177,7 +177,7 @@ Read pb
             T_Timp grav temperature Periode 0.0001 Segment 109 0.59 +0.95  0.59 -9.95
             T_exit grav temperature Periode 0.0001 Segment  10 0.01 -9.50  0.59 -9.50
         }
-        domaine bas fields dt_post 0.2 { vitesse_elem_bas }
+        fields dt_post 0.2 { vitesse_elem_bas }
     }
     Post_processings
     {

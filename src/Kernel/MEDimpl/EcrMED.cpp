@@ -1047,8 +1047,8 @@ void EcrMED::ecrire_domaine_dis(const Nom& nom_fic,const Domaine& dom,const REF(
       // Faces:
       int nfaces;
       MCAuto<DataArrayInt> renum_boundary_cell(DataArrayInt::New());
-      // If the domain is discretized, we can create a faces mesh, else only a boundary mesh
-      if (zone_dis_base.non_nul())
+      // If the domain has faces (eg:domain computation), we can create a faces mesh, else only a boundary mesh
+      if (zone_dis_base.non_nul() && ref_cast(Zone_VF, zone_dis_base.valeur()).elem_faces().size()>0)
         {
           // Faces mesh:
           dom.buildUFacesMesh(zone_dis_base);

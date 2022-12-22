@@ -174,6 +174,7 @@ void rebuild_liste_noms(const LIST(REF(Champ_base))& liste_champs_, const Noms& 
 
 void Champs_compris::ajoute_champ(const Champ_base& champ)
 {
+  /*
   REF(Champ_base) champ_ref;
   champ_ref = champ;
   assert(!liste_champs_.contient(champ_ref));
@@ -181,21 +182,23 @@ void Champs_compris::ajoute_champ(const Champ_base& champ)
   // il faut tester si champ est contenu ( c.a.d si il ya une reference vers celui-ci
   if (liste_champs_.contient(champ_ref)) abort();
   // GF essai brutal ....
+   */
   CONST_LIST_CURSEUR(REF(Champ_base)) curseur = liste_champs_;
   Motcle nom_champ_add = champ.le_nom();
   while (curseur)
     {
       const Champ_base& ch= curseur.valeur().valeur();
       const Nom& nom_champ = ch.le_nom();
-      if (nom_champ==nom_champ_add)
-        {
+      if (nom_champ==nom_champ_add) return;
+        /*{
           Cerr<<champ.le_nom()<<" is already in the list of names of field !!"<<finl;
           //  exit();
-        }
+        }*/
       ++curseur;
     }
 
-  liste_champs_.add(champ_ref);
+  //liste_champs_.add(champ_ref);
+    liste_champs_.add(champ);
   Cerr<<"Champs_compris::ajoute_champ " <<champ.le_nom()<<finl;
   rebuild_liste_noms(liste_champs_,liste_noms_,liste_noms_construits_);
 

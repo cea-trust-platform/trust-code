@@ -25,6 +25,7 @@
 #include <Equation_base.h>
 #include <Synonyme_info.h>
 #include <Param.h>
+#include <Postraitement.h>
 
 Implemente_instanciable(Champ_Generique_refChamp,"refChamp",Champ_Generique_base);
 Add_synonym(Champ_Generique_refChamp,"Champ_Post_refChamp");
@@ -398,7 +399,7 @@ void Champ_Generique_refChamp::reset()
 
 void Champ_Generique_refChamp::completer(const Postraitement_base& post)
 {
-  nommer_source();
+  nommer_source(post);
 }
 
 /*! @brief Voir Champ_Generique_base::mettre_a_jour Si le champ est champ_inc dans l'equation, il doit deja avoir
@@ -539,14 +540,20 @@ void Champ_Generique_refChamp::set_nom_champ(const Motcle& nom)
 
 //Nomme le champ en tant que source par defaut
 //nom_champ_base + "_natif_" + nom_dom_natif
-void Champ_Generique_refChamp::nommer_source()
+void Champ_Generique_refChamp::nommer_source(const Postraitement_base& post)
 {
   if (nom_post_=="??")
     {
       Nom nom_post_source, nom_champ_base, nom_dom_natif;
       nom_champ_base = get_ref_champ_base().le_nom();
-      nom_dom_natif = get_ref_domain().le_nom();
-      nom_post_source =  nom_champ_base + "_natif_" + nom_dom_natif;
+      if (ref_cast_non_const(Postraitement, post).domaine().non_nul())
+      {
+          nom_post_source =  nom_champ_base + "_natif_" + ref_cast_non_const(Postraitement, post).domaine().le_nom();
+      }
+      else {
+          nom_dom_natif = get_ref_domain().le_nom();
+          nom_post_source = nom_champ_base + "_natif_" + nom_dom_natif;
+      }
       nommer(nom_post_source);
     }
 }

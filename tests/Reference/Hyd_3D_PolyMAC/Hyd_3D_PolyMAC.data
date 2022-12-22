@@ -34,6 +34,10 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
+Sous_Zone zone_tot
+Associate zone_tot dom
+Lire zone_tot { fonction_sous_zone 1 }
+
 polymac dis
 
 Schema_euler_implicite sch
@@ -77,8 +81,29 @@ Read pb
             Inlet frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 3  1. 0. 0.
         }
     }
+    # Postraitement sur le domaine de calcul #
     postraitement
     {
+        champs dt_post 1e8 {
+            pression elem
+        }
+    }
+    # Postraitement sur le domaine (ici egale au domaine de calcul) #
+    postraitement
+    {
+    	format med fichier domaine
+	domaine dom
+	sondes { sonde_domaine vitesse periode 1.00e+07 point 1 0 0 0 }
+        champs dt_post 1e8 {
+            pression elem
+        }
+    }
+    # Postraitement sur une zone (ici egale au domaine de calcul) #
+    postraitement
+    {
+    	format med fichier sous_zone
+	sous_zone zone_tot
+	sondes { sonde_sous_zone vitesse periode 1.00e+07 point 1 0 0 0 }
         champs dt_post 1e8 {
             pression elem
         }

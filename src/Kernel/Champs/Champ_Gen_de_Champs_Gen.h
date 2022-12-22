@@ -84,7 +84,7 @@ public:
   const IntTab&     get_ref_connectivity(Entity index1, Entity index2) const override;
   void              get_copy_connectivity(Entity index1, Entity index2, IntTab&) const override;
 
-  void nommer_sources();
+  void nommer_sources(const Postraitement_base& post);
   virtual void nommer_source();
   int get_info_type_post() const override;
 

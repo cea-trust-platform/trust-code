@@ -266,28 +266,6 @@ Entree& Postraitement::readOn(Entree& s )
   Probleme_base& le_pb = mon_probleme.valeur();
   le_domaine=le_pb.domaine();
 
-  ////////////////////////////////////////
-  // Creation d'alias pour certains champs
-  ////////////////////////////////////////
-  Noms liste_noms;
-  const Probleme_base& Pb = probleme();
-  Pb.get_noms_champs_postraitables(liste_noms);
-  // On ajoute temperature_physique aux champs definis
-  if ( liste_noms.rang("temperature")!=-1 && !comprend_champ_post("temperature_physique") )
-    {
-      Motcle disc(probleme().discretisation().que_suis_je());
-      if ((disc=="VEF")||(disc=="VEFPreP1b"))
-        {
-          Nom in("{ temperature_physique ");
-          in+="Tparoi_VEF { source  refChamp { Pb_champ ";
-          in+=probleme().le_nom();
-          in+=" temperature } } }";
-          Cerr<<" Building of temperature_physique  "<<in<<finl;
-          EChaine IN(in);
-          lire_champs_operateurs(IN);
-        }
-    }
-
   Postraitement_base::readOn(s);
 
   if (Motcle(format)=="MED") format="med";
@@ -364,6 +342,28 @@ void Postraitement::set_param(Param& param)
 
 int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
 {
+    ////////////////////////////////////////
+    // Creation d'alias pour certains champs
+    ////////////////////////////////////////
+    {
+        Noms liste_noms;
+        const Probleme_base &Pb = probleme();
+        Pb.get_noms_champs_postraitables(liste_noms);
+        // On ajoute temperature_physique aux champs definis
+        if (liste_noms.rang("temperature") != -1 && !comprend_champ_post("temperature_physique")) {
+            Motcle disc(probleme().discretisation().que_suis_je());
+            if ((disc == "VEF") || (disc == "VEFPreP1b")) {
+                Nom in("{ temperature_physique ");
+                in += "Tparoi_VEF { source  refChamp { Pb_champ ";
+                in += probleme().le_nom();
+                in += " temperature } } }";
+                Cerr << " Building of temperature_physique  " << in << finl;
+                EChaine IN(in);
+                lire_champs_operateurs(IN);
+            }
+        }
+    }
+
   Motcle motlu;
   if (mot=="Sondes|Probes")
     {
@@ -584,7 +584,9 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
       return 1;
     }
 
-  return -1;
+
+
+    return -1;
 }
 
 /*! @brief Constructeur par defaut.
@@ -1823,7 +1825,7 @@ void Postraitement::creer_champ_post(const Motcle& motlu1,const Motcle& motlu2,E
     {
 
       Champ_Generique_Interpolation& champ_post = ref_cast(Champ_Generique_Interpolation,champ.valeur());
-      champ_post.nommer_sources();
+      champ_post.nommer_sources(*this);
 
       //On fixe l attribut compo_ pour le Champ_Generique_Interpolation cree par cette macro
 
@@ -1938,7 +1940,7 @@ void Postraitement::creer_champ_post_stat(const Motcle& motlu1,const Motcle& mot
 
       //On nomme les sources du Champ_Generique_Interpolation cree par macro
       Champ_Generique_Interpolation& champ_post = ref_cast(Champ_Generique_Interpolation,champ.valeur());
-      champ_post.nommer_sources();
+      champ_post.nommer_sources(*this);
 
       //On fixe l attribut compo_ pour le Champ_Generique_Interpolation cree par cette macro
       Champ_Generique_Statistiques_base& champ_stat = ref_cast(Champ_Generique_Statistiques_base,champ_post.set_source(0));
@@ -2128,7 +2130,7 @@ void Postraitement::creer_champ_post_moreqn(const Motcle& type,const Motcle& opt
   Champ_Generique& champ_a_completer = champs_post_complet_.add_if_not(champ);
   champ_a_completer->completer(*this);
   Champ_Gen_de_Champs_Gen& champ_post = ref_cast(Champ_Gen_de_Champs_Gen,champ.valeur());
-  champ_post.nommer_sources();
+  champ_post.nommer_sources(*this);
 
   nom_champ_a_post = nom_champ;
   if (noms_champs_a_post_.contient(nom_champ_a_post))
@@ -2204,7 +2206,7 @@ const Champ_Generique_base& Postraitement::get_champ_post(const Motcle& nom) con
 
   REF(Champ_Generique_base) ref_champ;
   CONST_LIST_CURSEUR(Champ_Generique) curseur_liste_champs = champs_post_complet_;
-
+  Cerr << "Provisoire searching for " << nom << finl;
   while (curseur_liste_champs)
     {
       try

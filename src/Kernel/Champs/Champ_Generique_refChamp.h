@@ -72,7 +72,7 @@ public:
   double get_time() const override;
   const  Motcle            get_directive_pour_discr() const override;
   void set_nom_champ(const Motcle&);
-  void nommer_source();
+  void nommer_source(const Postraitement_base& post);
   int get_info_type_post() const override;
 
 protected:
