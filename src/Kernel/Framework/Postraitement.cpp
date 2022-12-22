@@ -2184,7 +2184,7 @@ const Champ_Generique_base& Postraitement::get_champ_post(const Motcle& nom) con
 {
 
   REF(Champ_Generique_base) ref_champ;
-  Cerr << "Provisoire searching for " << nom << finl;
+  //Cerr << "Provisoire searching for " << nom << finl;
   for (const auto& itr : champs_post_complet_)
     {
       try
