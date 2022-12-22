@@ -17,6 +17,7 @@
 #include <Neumann_homogene.h>
 #include <Champ_Face_base.h>
 #include <Zone_Cl_dis.h>
+#include <Periodique.h>
 #include <Dirichlet.h>
 #include <Neumann.h>
 #include <Navier.h>
@@ -40,7 +41,8 @@ void Champ_Face_base::init_fcl() const
       int idx = sub_type(Neumann, cls[n].valeur())
                 + 2 * sub_type(Navier, cls[n].valeur())
                 + 3 * sub_type(Dirichlet, cls[n].valeur()) + 3 * sub_type(Neumann_homogene, cls[n].valeur())
-                + 4 * sub_type(Dirichlet_homogene, cls[n].valeur());
+                + 4 * sub_type(Dirichlet_homogene, cls[n].valeur())
+                + 5 * sub_type(Periodique, cls[n].valeur());
       if (!idx)
         {
           Cerr << "Champ_Face_base : CL non codee rencontree!" << finl;
