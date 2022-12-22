@@ -424,7 +424,7 @@ check_components()
                            WORKBETA=""
                            trustversion=""
                            [ "$Composant" == "flica5" ] && trustversion=1.9.1
-                           [ "$Composant" == "cathare3D" ] && trustversion=1.8.3
+                           [ "$Composant" == "cathare3D" ] && trustversion=1.9.1
                            if  [ "${machine:0:5}" = "orcus" ]
                            then
 		              WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/trust_trio-public/env_TRUST-'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
@@ -3499,6 +3499,12 @@ do
    tot_cible=0
    nb_total=0
    tot_total=0
+   # If no html report, we try to generate it
+   if [ ! -f $nuit_log ]
+   then
+      echo "No $REP_NUIT/nuit_$Composant.html report of $Composant ... we try to generate it " | tee -a tmp.log
+      (cd $PROJECT_ROOT/ ; sh $TRUST_ROOT/bin/baltik/share/baltik/bin/portability/build_report.sh $Composant)
+   fi
    if [ -f $nuit_log ]
    then
       echo "Analysis of "$nuit_log" file" | tee -a tmp.log
