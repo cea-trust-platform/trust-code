@@ -886,9 +886,6 @@ perte_charge_singuliere source_base perte_charge_singuliere 1 Source term that i
 DP_Impose source_base DP_Impose 1 Source term to impose a pressure difference according to the formula : DP = A + B * (Q - Q0)
   attr dp field_base dp 0 the parameters of the previous formula champ_uniforme 3 A B Q0 where Q0 is a volume flow (m3/s).
   attr surface bloc_lecture surface 0 Three syntaxes are possible for the surface definition block: NL2 For VDF and VEF: { X|Y|Z = location subzone_name } NL2 Only for VEF: { Surface surface_name }. NL2 For polymac { Surface surface_name Orientation champ_uniforme }.
-terme_puissance_thermique_echange_impose source_base terme_puissance_thermique_echange_impose 1 Source term to impose thermal power according to formula : P = himp * (T - Text). Where T is the Trust temperature, Text is the outside temperature with which energy is exchanged via an exchange coefficient himp
-  attr himp field_base himp 0 the exchange coefficient
-  attr Text field_base Text 0 the outside temperature
 perte_charge_directionnelle source_base perte_charge_directionnelle 1 Directional pressure loss.
   attr lambda chaine lambda_u 0 Function for loss coefficient which may be Reynolds dependant (Ex: 64/Re).
   attr diam_hydr champ_don_base diam_hydr 0 Hydraulic diameter value.
