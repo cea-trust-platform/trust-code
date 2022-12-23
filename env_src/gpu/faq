@@ -1,0 +1,12 @@
+#1 Error: 
+code:222, reason: the provided PTX was compiled with an unsupported toolchain.
+
+Se produit si la version CUDA utilisee est plus recente que le driver. 
+Example sur un pc avec un download de Cuda 11.2 (nvcc) et un Cuda local en 11.1
+Tester avec nvidia-smi et comparer les numeros ?
+NB: C'est vicieux car cela fonctionnait en sequentiel et plantait en parallele a la FIN du solve et 
+impossible de reproduire avec le cas AMG poisson en parallele...
+
+Le probleme sur orcus est certainement lie a cela avec un driver Cuda trop anciens sur les noeuds par rapport au Cuda utilise.
+
+Une bonne mesure est donc d'empecher: nvcc>nvidia-smi
