@@ -377,7 +377,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
     }
   else
     {
-      double coeff_som = 1. / (dimension * (dimension + 1));
+      const double coeff_som = 1. / (dimension * (dimension + 1));
       const int *elem_faces_addr = copyToDevice(elem_faces);
       const int *face_voisins_addr = copyToDevice(face_voisins);
       const double *face_normales_addr = copyToDevice(face_normales);
@@ -385,34 +385,31 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
       const double *vit_addr = copyToDevice(vit,"vit");
       double *div_addr = div.addr();
       start_timer();
-      #pragma omp target teams if (computeOnDevice()) map(tofrom:div_addr[0:div.size_array()])
+      #pragma omp target teams distribute parallel for if (computeOnDevice()) map(tofrom:div_addr[0:div.size_array()])
+      for (int elem = 0; elem < nb_elem_tot; elem++)
       {
-        double sigma[3] {};
-        #pragma omp distribute parallel for private(sigma)
-        for (int elem = 0; elem < nb_elem_tot; elem++)
-          {
-            for (int comp = 0; comp < dimension; comp++)
+          double sigma[3];
+          for (int comp = 0; comp < dimension; comp++)
               sigma[comp] = 0;
-            for (int indice = 0; indice < nfe; indice++)
-              {
-                int face = elem_faces_addr[elem * nfe + indice];
-                for (int comp = 0; comp < dimension; comp++)
+          for (int indice = 0; indice < nfe; indice++)
+          {
+              int face = elem_faces_addr[elem * nfe + indice];
+              for (int comp = 0; comp < dimension; comp++)
                   sigma[comp] += vit_addr[face * dimension + comp];
-              }
+          }
 
-            for (int indice = 0; indice < nfe; indice++)
-              {
-                int som = som_addr[elem * nfe + indice];
-                int face = elem_faces_addr[elem * nfe + indice];
-                double psc = 0;
-                int signe = 1;
-                if (elem != face_voisins_addr[face * 2])
+          for (int indice = 0; indice < nfe; indice++)
+          {
+              int som = som_addr[elem * nfe + indice];
+              int face = elem_faces_addr[elem * nfe + indice];
+              double psc = 0;
+              int signe = 1;
+              if (elem != face_voisins_addr[face * 2])
                   signe = -1;
-                for (int comp = 0; comp < dimension; comp++)
+              for (int comp = 0; comp < dimension; comp++)
                   psc += sigma[comp] * face_normales_addr[face * dimension + comp];
-                #pragma omp atomic
-                div_addr[som] += signe * coeff_som * psc;
-              }
+              #pragma omp atomic
+              div_addr[som] += signe * coeff_som * psc;
           }
       }
       end_timer("Elem loop in Op_Div_VEFP1B_Elem::ajouter_som");
