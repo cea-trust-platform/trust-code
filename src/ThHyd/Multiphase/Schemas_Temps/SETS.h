@@ -13,22 +13,24 @@
 *
 *****************************************************************************/
 
-
 #ifndef SETS_included
 #define SETS_included
 
-#include <Simpler.h>
 #include <Interface_blocs.h>
-#include <utility>
-#include <set>
-#include <vector>
 #include <Solv_Petsc.h>
+#include <Simpler.h>
+#include <utility>
+#include <vector>
+#include <set>
 
-
-
-//Description
-
-// SETS (semi-implicite + etapes de stabilisation, a la TRACE)
+/*! @brief classe SETS (semi-implicite + etapes de stabilisation, a la TRACE)
+ *
+ * SETS (“Stability-Enhancing Two-Step”)
+ *
+ *  Ref : J. H. MAHAFFY, “A stability-enhancing two-step method for fluid flow calculations,” Journal of Computational Physics, 46, 3, 329 (1982).
+ *
+ * @sa Simpler Piso
+ */
 class SETS : public Simpler
 {
 
@@ -122,10 +124,10 @@ protected :
   Matrice_Morse matrice_pression;
 };
 
-//Description
-
-// semi-implicte ICE, a la CATHARE 3D
-
+/*! @brief classe ICE (semi-implicte ICE, a la CATHARE 3D)
+ *
+ * @sa SETS
+ */
 class ICE : public SETS
 {
   Declare_instanciable(ICE);
@@ -138,8 +140,6 @@ public:
   {
     return 1; /* SETS est semi-implicite */
   }
-
 };
 
-#endif
-
+#endif /* SETS_included */

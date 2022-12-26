@@ -45,24 +45,29 @@ template class std::map<std::string, matrices_t>;
 template class std::map<std::string, Matrice_Morse>;
 #endif
 
-Implemente_instanciable_sans_constructeur(SETS,"SETS",Simpler);
+Implemente_instanciable_sans_constructeur(SETS, "SETS", Simpler);
+// XD sets simpler sets -1 Stability-Enhancing Two-Step solver which is useful for a multiphase problem. Ref : J. H. MAHAFFY, “A stability-enhancing two-step method for fluid flow calculations,” Journal of Computational Physics, 46, 3, 329 (1982).
+// XD attr criteres_convergence bloc_criteres_convergence criteres_convergence 1 Set the convergence thresholds for each unknown (i.e: alpha, temperature, velocity and pressure). The default values are respectively 0.01, 0.1, 0.01 and 100
+// XD attr iter_min entier iter_min 1 Number of minimum iterations
+// XD attr seuil_convergence_implicite floattant seuil_convergence_implicite 1 Convergence criteria.
+// XD attr nb_corrections_max entier nb_corrections_max 1 Maximum number of corrections performed by the PISO algorithm to achieve the projection of the velocity field. The algorithm may perform less corrections then nb_corrections_max if the accuracy of the projection is sufficient. (By default nb_corrections_max is set to 21).
+// XD bloc_criteres_convergence bloc_lecture nul 0 Not set
 
-Implemente_instanciable_sans_constructeur(ICE,"ICE",SETS);
+Implemente_instanciable_sans_constructeur(ICE, "ICE", SETS);
+// XD ice sets ice -1 Implicit Continuous-fluid Eulerian solver which is useful for a multiphase problem. Robust pressure reduction resolution.
+// XD attr pression_degeneree entier pression_degeneree 1 Set to 1 if the pressure field is degenerate (ex. : incompressible fluid with no imposed-pressure BCs). Default: autodetected
+// XD attr reduction_pression|pressure_reduction entier reduction_pression 1 Set to 1 if the user wants a resolution with a pressure reduction. Otherwise, the flag is to be set to 0 so that the complete matrix is considered. The default value of this flag is 1.
+// XD criteres_convergence interprete nul 0 convergence criteria
+// XD attr aco chaine(into=["{"]) aco 0 Opening curly bracket.
+// XD attr inco chaine inco 1 Unknown (i.e: alpha, temperature, velocity and pressure)
+// XD attr val floattant val 1 Convergence threshold
+// XD attr acof chaine(into=["}"]) acof 0 Closing curly bracket.
 
-SETS::SETS()
-{
-  sets_ = 1;
-}
+SETS::SETS() { sets_ = 1; }
 
-ICE::ICE()
-{
-  sets_ = 0;
-}
+ICE::ICE() { sets_ = 0; }
 
-Sortie& SETS::printOn(Sortie& os ) const
-{
-  return Simpler::printOn(os);
-}
+Sortie& SETS::printOn(Sortie& os ) const { return Simpler::printOn(os); }
 
 Entree& SETS::readOn(Entree& is )
 {

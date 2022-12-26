@@ -352,17 +352,6 @@ simpler solveur_implicite_base simpler 1 Simpler method for incompressible syste
 piso simpler piso -1 Piso (Pressure Implicit with Split Operator) - method to solve N_S.
   attr seuil_convergence_implicite floattant seuil_convergence_implicite 1 Convergence criteria.
   attr nb_corrections_max entier nb_corrections_max 1 Maximum number of corrections performed by the PISO algorithm to achieve the projection of the velocity field. The algorithm may perform less corrections then nb_corrections_max if the accuracy of the projection is sufficient. (By default nb_corrections_max is set to 21).
-sets piso sets -1 Stability-Enhancing Two-Step solver which is useful for a multiphase problem.
-  attr criteres_convergence bloc_criteres_convergence criteres_convergence 1 Set the convergence thresholds for each unknown (i.e: alpha, temperature, velocity and pressure). The default values are respectively 0.01, 0.1, 0.01 and 100
-  attr iter_min entier iter_min 1 Number of minimum iterations
-bloc_criteres_convergence bloc_lecture nul 0 Not set
-ice sets ice -1 Implicit Continuous-fluid Eulerian solver which is useful for a multiphase problem. Robust pressure reduction resolution.
-  attr pression_degeneree entier pression_degeneree 1 set to 1 if the pressure field is degenerate (ex. : incompressible fluid with no imposed-pressure BCs). Default: autodetected
-criteres_convergence interprete nul 0 convergence criteria
-  attr aco chaine(into=["{"]) aco 0 Opening curly bracket.
-  attr inco chaine inco 1 Unknown (i.e: alpha, temperature, velocity and pressure)
-  attr val floattant val 1 Convergence threshold
-  attr acof chaine(into=["}"]) acof 0 Closing curly bracket.
 implicite piso implicite -1 similar to PISO, but as it looks like a simplified solver, it will use fewer timesteps. But it may run faster because the pressure matrix is not re-assembled and thus provides CPU gains.
 simple piso simple -1 SIMPLE type algorithm
   attr relax_pression floattant relax_pression 1 Value between 0 and 1 (by default 1), this keyword is used only by the SIMPLE algorithm for relaxing the increment of pressure.
