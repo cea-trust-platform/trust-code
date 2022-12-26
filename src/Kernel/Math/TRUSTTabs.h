@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,9 +20,7 @@
 #include <TRUSTTab.h>
 
 // BYE BYE MACRO !! ahahaha
-using Vect_DoubleTab = TRUST_Vector<TRUSTTab<double>>; // remplace VECT(DoubleTab)
-using Vect_IntTab = TRUST_Vector<TRUSTTab<int>>; // remplace VECT(IntTab)
-using IntTabs = Vect_IntTab;
-using DoubleTabs = Vect_DoubleTab;
+using DoubleTabs = TRUST_Vector<TRUSTTab<double>>; // remplace VECT(DoubleTab)
+using IntTabs = TRUST_Vector<TRUSTTab<int>>; // remplace VECT(IntTab)
 
 #endif /* TRUSTTabs_included */

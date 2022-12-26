@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,9 +17,9 @@
 #define Champ_Fonc_t_included
 
 #include <Champ_Uniforme_inst.h>
+#include <TRUST_Vector.h>
+#include <Parser_U.h>
 
-
-#include <Vect_Parser_U.h>
 /*! @brief Classe Champ_Fonc_t Cette classe derivee de Champ_Uniforme_inst qui represente
  *
  *     un champ constant dans l'espace et fonction de la variable temps t.

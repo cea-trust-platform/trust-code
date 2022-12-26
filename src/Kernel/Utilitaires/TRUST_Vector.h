@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,19 +18,20 @@
 
 #include <Vect_impl.h>
 
+// MACRO to replace VECT(THECLASS) by TRUST_Vector<THECLASS> & keep previous syntax for some developers
+#define VECT(_TYPE_) TRUST_Vector<_TYPE_>
+
 /*! @brief classe TRUST_Vector
  *
- *  - La classe template TRUST_Vector est utilisable pour n'importe quelle classe
+ *  - La classe template TRUST_Vector est utilisable pour n'importe quelle classe SAUF MD_Vector
+ *
  *      Utilisation (par exemple):
  *
- *        - using Vect_Milieu_base = TRUST_Vector<Milieu_base>
- *        - using Vect_ArrOfDouble = TRUST_Vector<TRUSTArray<double>>
+ *        - TRUST_Vector<Milieu_base>
+ *        - TRUST_Vector<TRUSTArray<double>>
  *
+ *  - Si besoin un vect d'un MD_Vector, il faut utiliser la classe Vect_MD_Vector
  */
-
-// MACRO to replace VECT(THECLASS) by Vect_THECLASS & keep previous syntax for some developers
-#define VECT(_TYPE_) name2(Vect_,_TYPE_)
-
 template<typename _CLASSE_>
 class TRUST_Vector: public Vect_impl
 {

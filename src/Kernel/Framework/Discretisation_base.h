@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,23 +16,24 @@
 #ifndef Discretisation_base_included
 #define Discretisation_base_included
 
+#include <Ref_Champ_base.h>
 #include <Champ_base.h> // Pour Nature_du_champ
-#include <Vect_Ref_Champ_base.h>
+
+class Champ_Fonc_Tabule;
 class Schema_Temps_base;
-class Champ_Inc_base;
-class Champ_Inc;
 class Champ_Fonc_base;
+class Champ_Inc_base;
+class Zone_dis_base;
+class Probleme_base;
+class Equation_base;
+class Domaine_dis;
+class Zone_Cl_dis;
 class Champ_base;
 class Champ_Fonc;
 class Champ_Don;
-class Domaine_dis;
-class Zone_dis_base;
+class Champ_Inc;
 class Zone_dis;
-class Zone_Cl_dis;
 class Motcle;
-class Champ_Fonc_Tabule;
-class Probleme_base;
-class Equation_base;
 
 /*! @brief classe Discretisation_base Cette classe represente un schema de discretisation en espace, qui
  *

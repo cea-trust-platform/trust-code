@@ -16,8 +16,8 @@
 #ifndef Zone_VF_included
 #define Zone_VF_included
 
-#include <Vect_Front_VF.h>
 #include <TRUSTArrays.h>
+#include <Front_VF.h>
 #include <Zone_dis.h>
 
 class Zone_Cl_dis_base;

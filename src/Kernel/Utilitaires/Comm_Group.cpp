@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,11 +12,12 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-#include <Comm_Group.h>
+
 #include <Ref_Comm_Group.h>
 #include <communications.h>
+#include <Comm_Group.h>
 #include <PE_Groups.h>
-#include <Vect_Deriv_Comm_Group.h>
+
 Implemente_ref(Comm_Group);
 Implemente_deriv(Comm_Group);
 Implemente_base_sans_constructeur_ni_destructeur(Comm_Group,"Comm_Group",Objet_U);

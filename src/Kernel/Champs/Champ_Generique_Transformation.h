@@ -18,7 +18,8 @@
 #define Champ_Generique_Transformation_included
 
 #include <Champ_Gen_de_Champs_Gen.h>
-#include <Vect_Parser_U.h>
+#include <TRUST_Vector.h>
+#include <Parser_U.h>
 
 /*! @brief class Champ_Generique_Transformation
  *

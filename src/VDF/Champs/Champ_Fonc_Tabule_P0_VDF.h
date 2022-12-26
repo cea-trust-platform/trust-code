@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,8 +16,9 @@
 #ifndef Champ_Fonc_Tabule_P0_VDF_included
 #define Champ_Fonc_Tabule_P0_VDF_included
 
-#include <Vect_Ref_Champ_base.h>
 #include <Champ_Fonc_P0_VDF.h>
+#include <Ref_Champ_base.h>
+#include <TRUST_Vector.h>
 #include <Ref_Table.h>
 
 class Champ_Fonc_Tabule_P0_VDF: public Champ_Fonc_P0_VDF

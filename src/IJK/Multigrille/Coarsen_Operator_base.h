@@ -42,6 +42,5 @@ protected:
 };
 
 Declare_deriv(Coarsen_Operator_base);
-using Vect_Deriv_Coarsen_Operator_base = TRUST_Vector<DERIV(Coarsen_Operator_base)>;
 
 #endif

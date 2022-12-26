@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,19 +17,15 @@
 #define PDF_model_included
 
 #include <TRUSTTabs_forward.h>
-#include <Vect_Parser_U.h>
 #include <Champ_Don.h>
+#include <Parser_U.h>
 #include <Zone_VF.h>
 #include <Motcle.h>
 
 /*! @brief : class PDF_model
  *
  *  <Description of class PDF_model>
- *
- *
- *
  */
-
 class PDF_model : public Objet_U
 {
   Declare_instanciable(PDF_model) ;

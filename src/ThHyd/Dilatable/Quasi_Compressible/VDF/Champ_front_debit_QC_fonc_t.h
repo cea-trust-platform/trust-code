@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,14 +13,13 @@
 *
 *****************************************************************************/
 
-
 #ifndef Champ_front_debit_QC_fonc_t_included
 #define Champ_front_debit_QC_fonc_t_included
 
 #include <Ch_front_var_instationnaire_indep.h>
 #include <Ref_Fluide_Quasi_Compressible.h>
-#include <Vect_Parser_U.h>
-
+#include <TRUST_Vector.h>
+#include <Parser_U.h>
 
 /*! @brief classe Champ_front_debit_QC_fonc_t Classe derivee de Champ_front_base qui represente les
  *

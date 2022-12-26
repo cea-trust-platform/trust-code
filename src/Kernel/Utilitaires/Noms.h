@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,8 +18,6 @@
 
 #include <TRUST_Vector.h>
 #include <Nom.h>
-
-using Vect_Nom = TRUST_Vector<Nom>;
 
 /*! @brief Un tableau de chaine de caracteres (VECT(Nom))
  *

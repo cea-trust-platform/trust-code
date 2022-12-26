@@ -71,9 +71,7 @@ protected:
 };
 
 using ArrOfFloat_with_ghost = IJKArray_with_ghost<float,ArrOfFloat>;
-using Vect_ArrOfFloat_with_ghost = TRUST_Vector<ArrOfFloat_with_ghost>;
 using ArrOfDouble_with_ghost = IJKArray_with_ghost<double,ArrOfDouble>;
-using Vect_ArrOfDouble_with_ghost= TRUST_Vector<ArrOfDouble_with_ghost>;
 
 template<typename _TYPE_, typename _TYPE_ARRAY_>
 void IJKArray_with_ghost<_TYPE_,_TYPE_ARRAY_>::echange_espace_virtuel(int pe_min, int pe_max)

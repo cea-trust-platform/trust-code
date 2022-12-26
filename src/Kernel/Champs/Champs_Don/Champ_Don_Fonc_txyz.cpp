@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,7 +14,8 @@
 *****************************************************************************/
 
 #include <Champ_Don_Fonc_txyz.h>
-#include <Vect_Parser_U.h>
+#include <TRUST_Vector.h>
+#include <Parser_U.h>
 
 Implemente_instanciable(Champ_Don_Fonc_txyz,"Champ_Fonc_txyz",TRUSTChamp_Don_generique<Champ_Don_Type::TXYZ>);
 

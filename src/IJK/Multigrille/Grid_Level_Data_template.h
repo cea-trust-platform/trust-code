@@ -98,8 +98,6 @@ protected:
 
 using Grid_Level_Data_double = Grid_Level_Data_template<double>;
 using Grid_Level_Data_float = Grid_Level_Data_template<float>;
-using Vect_Grid_Level_Data_double = TRUST_Vector<Grid_Level_Data_double>;
-using Vect_Grid_Level_Data_float = TRUST_Vector<Grid_Level_Data_float>;
 
 #include <Grid_Level_Data_template.tpp>
 

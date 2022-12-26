@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,9 +20,7 @@
 #include <TRUSTVect.h>
 
 // BYE BYE MACRO !! ahahaha
-using Vect_DoubleVect = TRUST_Vector<TRUSTVect<double>>; // remplace VECT(DoubleVect)
-using Vect_IntVect = TRUST_Vector<TRUSTVect<int>>; // remplace VECT(IntVect)
-using IntVects = Vect_IntVect;
-using DoubleVects = Vect_DoubleVect;
+using DoubleVects = TRUST_Vector<TRUSTVect<double>>; // remplace VECT(DoubleVect)
+using IntVects = TRUST_Vector<TRUSTVect<int>>; // remplace VECT(IntVect)
 
 #endif /* TRUSTVects_included */

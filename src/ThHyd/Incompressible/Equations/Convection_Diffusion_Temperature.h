@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,11 +20,10 @@
 #include <Convection_Diffusion_std.h>
 #include <Ref_Fluide_base.h>
 #include <TRUST_Vector.h>
+#include <Ref_Objet_U.h>
 #include <Fluide_base.h>
 #include <Champ_Fonc.h>
 #include <TRUSTTabs.h>
-
-using Vect_RefObjU = TRUST_Vector<RefObjU>;
 
 /*! @brief classe Convection_Diffusion_Temperature Cas particulier de Convection_Diffusion_std
  *

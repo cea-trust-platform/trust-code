@@ -62,8 +62,6 @@ protected:
   REF(Mod_turb_hyd_base) mon_modele_turb_hyd;
 };
 
-using Vect_Turbulence_paroi = TRUST_Vector<Turbulence_paroi>;
-
 /*! @brief Operateur d'affectation d'un objet Turbulence_paroi_base dans un objet Turbulence_paroi.
  *
  * @param (Turbulence_paroi_base& paroi_base) la partie droite de l'affectation

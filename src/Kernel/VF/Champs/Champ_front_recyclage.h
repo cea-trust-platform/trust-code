@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,11 +17,11 @@
 #define Champ_front_recyclage_included
 
 #include <Ch_front_var_instationnaire_dep.h>
-#include <TRUSTTabs.h>
-#include <TRUSTArrays.h>
-#include <Vect_Parser_U.h>
-#include <Noms.h>
 #include <Ref_Champ_Inc_base.h>
+#include <TRUSTArrays.h>
+#include <TRUSTTabs.h>
+#include <Parser_U.h>
+#include <Noms.h>
 
 class Equation_base;
 class Milieu_base;

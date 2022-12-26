@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,8 +17,6 @@
 #define Vect_MD_Vector_included
 
 #include <MD_Vector.h>
-
-#define VECT(_TYPE_) name2(Vect_,_TYPE_)
 
 class Vect_MD_Vector
 {

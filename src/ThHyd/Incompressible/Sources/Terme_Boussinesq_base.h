@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,15 +16,15 @@
 #ifndef Terme_Boussinesq_base_included
 #define Terme_Boussinesq_base_included
 
+#include <Convection_Diffusion_Temperature.h>
+#include <Ref_Convection_Diffusion_std.h>
 #include <Ref_Champ_Don_base.h>
 #include <Ref_Champ_Don.h>
-#include <Champ_Don.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
+#include <TRUST_Vector.h>
+#include <Champ_Don.h>
 #include <Parser_U.h>
-#include <Ref_Convection_Diffusion_std.h>
-#include <Vect_Parser_U.h>
-#include <Convection_Diffusion_Temperature.h>
 #include <Domaine.h>
 
 class Convection_Diffusion_std;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,7 +19,6 @@
 #include <TRUST_Vector.h>
 #include <Zone_dis.h>
 
-using Vect_Zone_dis = TRUST_Vector<Zone_dis>;
-using Zones_dis = Vect_Zone_dis;
+using Zones_dis = TRUST_Vector<Zone_dis>;
 
 #endif /* Zones_dis_included */

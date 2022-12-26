@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,7 +19,6 @@
 #include <TRUST_Vector.h>
 #include <Champ_front.h>
 
-using Vect_Champ_front = TRUST_Vector<Champ_front>;
-using Champs_front = Vect_Champ_front;
+using Champs_front = TRUST_Vector<Champ_front>;
 
 #endif /* Champs_front_included */

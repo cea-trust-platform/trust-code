@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,8 +25,6 @@
 class Motcles;
 class Champ_base;
 class Probleme_base;
-
-using Vect_Ref_Champ_Inc_base = TRUST_Vector<Ref_Champ_Inc_base>;
 
 class Reaction: public Objet_U
 {

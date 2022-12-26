@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,8 +27,5 @@ class DescStructure : public Objet_U
 {
   Declare_instanciable(DescStructure);
 };
-
-using Vect_Esp_Virt = TRUST_Vector<Esp_Virt>;
-using Vect_Esp_Dist = TRUST_Vector<Esp_Dist>;
 
 #endif /* DescStructure_included */

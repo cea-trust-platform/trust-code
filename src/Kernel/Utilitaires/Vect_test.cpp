@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,17 +14,14 @@
 *****************************************************************************/
 #include <cppunit.h>
 #ifdef cppunit_
-#include <EcrFicCollecte.h>
 
+#include <EcrFicCollecte.h>
+#include <TRUST_Vector.h>
+#include <TriouError.h>
 #include <EChaine.h>
 #include <SChaine.h>
-#include <TriouError.h>
-#include <TRUST_Vector.h>
-
 #include <Bord.h>
 #include <Noms.h>
-
-using Vect_Bord = TRUST_Vector<Bord>;
 
 class VectTest: public CPPUNIT_NS::TestFixture
 {
