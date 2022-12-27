@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,7 +16,9 @@
 #ifndef List_Nom_included
 #define List_Nom_included
 
-#include <List.h>
-Declare_liste(Nom);
+#include <TRUST_List.h>
+#include <Nom.h>
+
+using List_Nom = TRUST_List<Nom>;
 
 #endif

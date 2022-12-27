@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,10 +16,7 @@
 #include <Sondes_Int.h>
 #include <Postraitement.h>
 
-Implemente_liste(Sonde_Int);
 Implemente_instanciable(Sondes_Int,"Sondes_Int",LIST(Sonde_Int));
-
-
 
 /*! @brief Lit une liste de sondes a partir d'un flot d'entree Format: { [LIRE UNE SONDE AUTANT DE FOIS QUE NECESSAIRE] }
  *

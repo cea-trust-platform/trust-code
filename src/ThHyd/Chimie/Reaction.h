@@ -20,7 +20,7 @@
 #include <TRUST_Vector.h>
 #include <TRUSTArray.h>
 #include <Champ_Fonc.h>
-#include <List.h>
+#include <TRUST_List.h>
 
 class Motcles;
 class Champ_base;
@@ -79,5 +79,4 @@ protected:
   */
 };
 
-Declare_liste(Reaction);
 #endif

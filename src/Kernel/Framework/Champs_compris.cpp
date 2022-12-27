@@ -17,30 +17,11 @@
 #include <Champ_base.h>
 #include <List_Nom.h>
 
-Implemente_liste(REF(Champ_base));
+Implemente_instanciable(Champs_compris, "Champs_compris", Objet_U);
 
-Implemente_instanciable(Champs_compris,"Champs_compris",Objet_U);
+Sortie& Champs_compris::printOn(Sortie& os) const { return os; }
 
-
-/*! @brief
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Champs_compris::printOn(Sortie& os) const
-{
-  return os;
-}
-
-/*! @brief
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& Champs_compris::readOn(Entree& is)
-{
-  return is;
-}
+Entree& Champs_compris::readOn(Entree& is) { return is; }
 
 const Champ_base& Champs_compris::get_champ(const Motcle& motcle) const
 {

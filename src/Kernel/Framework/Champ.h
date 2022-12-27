@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,7 +18,6 @@
 
 #include <Champ_base.h>
 #include <Deriv.h>
-#include <List.h>
 
 Declare_deriv(Champ_base);
 
@@ -106,7 +105,5 @@ public :
     return valeur().valeur_aux_elems_compo(positions, les_polys, les_valeurs, ncomp);
   }
 };
-
-Declare_liste(Champ);
 
 #endif /* Champ_included */

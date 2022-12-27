@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,7 +21,6 @@
 #include <Discretisation_base.h>
 
 Implemente_instanciable(Reaction,"Reaction",Objet_U);
-Implemente_liste(Reaction);
 
 Sortie& Reaction::printOn(Sortie& os) const
 {

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,32 +13,14 @@
 *
 *****************************************************************************/
 
-#include <Zones.h>
 #include <Domaine.h>
+#include <Zones.h>
 
-Implemente_liste(Zone);
-Implemente_instanciable(Zones,"Zones",LIST(Zone));
+Implemente_instanciable(Zones, "Zones", LIST(Zone));
 
-/*! @brief Ecrit toutes les zones de la liste sur un flot de sortie
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Zones::printOn(Sortie& s ) const
-{
-  return LIST(Zone)::printOn(s) ;
-}
+Sortie& Zones::printOn(Sortie& s) const { return LIST(Zone)::printOn(s); }
 
-
-/*! @brief Lit les zones a partir d'un flot d'entree.
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& Zones::readOn(Entree& s)
-{
-  return LIST(Zone)::readOn(s) ;
-}
+Entree& Zones::readOn(Entree& s) { return LIST(Zone)::readOn(s); }
 
 /*! @brief Associe toutes les zones de la liste au domaine specifie.
  *

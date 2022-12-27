@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,16 +13,11 @@
 *
 *****************************************************************************/
 
-#include <Faces_Interne.h>
-#include <List.h>
-
-
 #ifndef Faces_Internes_included
 #define Faces_Internes_included
 
-Declare_liste(Faces_Interne);
-
-
+#include <Faces_Interne.h>
+#include <TRUST_List.h>
 
 /*! @brief Class Faces_Internes Cette classe represente une liste d'objets de type Faces_Interne
  *

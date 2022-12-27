@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,6 +13,14 @@
 *
 *****************************************************************************/
 
-#include <List_Ref_Champ_Generique_base.h>
+#ifndef Deriv_UnaryFunction_included
+#define Deriv_UnaryFunction_included
 
-Implemente_liste(REF(Champ_Generique_base)) ;
+#include <UnaryFunction.h>
+#include <TRUST_List.h>
+
+Declare_deriv(UnaryFunction);
+
+using ListUnaryFunction = TRUST_List<DERIV(UnaryFunction)>;
+
+#endif /* Deriv_UnaryFunction_included */

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,20 +16,15 @@
 #ifndef Lecture_Champ_included
 #define Lecture_Champ_included
 
+#include <List_Nom.h>
 #include <Objet_U.h>
-#include <List.h>
 #include <Champ.h>
-
-//Declare_liste(Champ);
 
 /*! @brief : class Lecture_Champ
  *
  *  <Description of class Lecture_Champ>
  *
- *
- *
  */
-class List_Nom;
 class Lecture_Champ : public Objet_U
 {
 

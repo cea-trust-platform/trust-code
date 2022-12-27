@@ -44,7 +44,6 @@ extern Stat_Counter_Id assemblage_sys_counter_;
 extern Stat_Counter_Id diffusion_implicite_counter_;
 extern Stat_Counter_Id source_counter_;
 
-Implemente_liste(RefObjU);
 Implemente_base_sans_constructeur(Equation_base,"Equation_base",Objet_U);
 // XD eqn_base mor_eqn eqn_base -3 Basic class for equations.
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,10 +16,8 @@
 #ifndef Sondes_Int_included
 #define Sondes_Int_included
 
-#include <List.h>
+#include <TRUST_List.h>
 #include <Sonde_Int.h>
-
-Declare_liste(Sonde_Int);
 
 /*! @brief classe Sondes_Int Cette classe represente une liste d'objets de type Sonde_Int.
  *

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,31 +15,11 @@
 
 #include <Faces_Internes.h>
 
-Implemente_liste(Faces_Interne);
-Implemente_instanciable(Faces_Internes,"Faces_Internes",LIST(Faces_Interne));
+Implemente_instanciable(Faces_Internes, "Faces_Internes", LIST(Faces_Interne));
 
+Sortie& Faces_Internes::printOn(Sortie& os) const { return LIST(Faces_Interne)::printOn(os); }
 
-/*! @brief
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Faces_Internes::printOn(Sortie& os) const
-{
-  return LIST(Faces_Interne)::printOn(os);
-}
-
-
-/*! @brief
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& Faces_Internes::readOn(Entree& is)
-{
-  return LIST(Faces_Interne)::readOn(is);
-}
-
+Entree& Faces_Internes::readOn(Entree& is) { return LIST(Faces_Interne)::readOn(is); }
 
 /*! @brief Associe une zone a tous les objets Faces_Interne de la liste.
  *

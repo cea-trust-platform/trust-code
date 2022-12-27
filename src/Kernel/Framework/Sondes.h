@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,18 +16,12 @@
 #ifndef Sondes_included
 #define Sondes_included
 
-
-
-
-#include <List.h>
+#include <Champ_Generique_base.h>
+#include <Champs_compris.h>
+#include <TRUST_List.h>
+#include <Champ.h>
 #include <Sonde.h>
 #include <Noms.h>
-#include <Champs_compris.h>
-#include <Champ.h>
-#include <Champ_Generique_base.h>
-
-Declare_liste(Sonde);
-//Declare_liste(Champ);
 
 /*! @brief classe Sondes Cette classe represente une liste de sondes.
  *

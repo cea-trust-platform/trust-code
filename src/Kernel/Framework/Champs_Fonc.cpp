@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,31 +15,11 @@
 
 #include <Champs_Fonc.h>
 
-Implemente_liste(Champ_Fonc);
-Implemente_instanciable(Champs_Fonc,"Champs_Fonc",LIST(Champ_Fonc));
+Implemente_instanciable(Champs_Fonc, "Champs_Fonc", LIST(Champ_Fonc));
 
+Entree& Champs_Fonc::readOn(Entree& s) { return s; }
 
-
-/*! @brief NE FAIT RIEN
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree&)
- */
-Entree& Champs_Fonc::readOn(Entree& s )
-{
-  return s ;
-}
-
-
-/*! @brief NE FAIT RIEN
- *
- * @param (Sortie& s) un flot de sortie
- */
-Sortie& Champs_Fonc::printOn(Sortie& s ) const
-{
-  return s ;
-}
-
+Sortie& Champs_Fonc::printOn(Sortie& s) const { return s; }
 
 /*! @brief Effectue une mise a jour en temps de tous les Champ contenus dans la liste.
  *
@@ -50,7 +30,6 @@ void Champs_Fonc::mettre_a_jour(double tps)
   LIST_CURSEUR(Champ_Fonc) curseur(*this);
   while(curseur)
     {
-
       curseur->mettre_a_jour(tps);
       ++curseur;
     }

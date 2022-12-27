@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,30 +15,11 @@
 
 #include <Bords.h>
 
-Implemente_liste(Bord);
-Implemente_instanciable(Bords,"Bords",LIST(Bord));
+Implemente_instanciable(Bords, "Bords", LIST(Bord));
 
+Sortie& Bords::printOn(Sortie& os) const { return LIST(Bord)::printOn(os); }
 
-/*! @brief Ecrit tous les bords de la liste sur un flot de sortie.
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Bords::printOn(Sortie& os) const
-{
-  return LIST(Bord)::printOn(os);
-}
-
-
-/*! @brief Lit les bords a partir d'un flot d'entree.
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& Bords::readOn(Entree& is)
-{
-  return LIST(Bord)::readOn(is);
-}
+Entree& Bords::readOn(Entree& is) { return LIST(Bord)::readOn(is); }
 
 
 /*! @brief Associe une zone a tous les bords de la liste.

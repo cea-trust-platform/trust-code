@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,13 +13,13 @@
 *
 *****************************************************************************/
 
+#include <Ref_Frontiere.h>
+#include <NettoieNoeuds.h>
 #include <Lire_Tgrid.h>
 #include <EFichier.h>
 #include <Domaine.h>
-#include <math.h>
-#include <RefFrontiere.h>
-#include <NettoieNoeuds.h>
 #include <ctype.h>
+#include <math.h>
 
 // Methode a remonter dans une classe au dessus de toutes les classes lire_...
 // Ou a placer dans le constructeur d'EFichier avec eventuellement un

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,7 +18,6 @@
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Objet_a_lire,"Objet_a_lire",Objet_U);
-Implemente_liste(Objet_a_lire);
 
 Objet_a_lire::Objet_a_lire(): int_a_lire(NULL),double_a_lire(NULL), obj_a_lire(NULL), objet_lu(NULL),arrofint_a_lire(NULL),arrofdouble_a_lire(NULL),flag_a_lire(NULL)
 {

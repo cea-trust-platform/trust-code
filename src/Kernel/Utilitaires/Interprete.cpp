@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,7 +19,6 @@
 
 Implemente_instanciable(Interprete, "Interprete", Objet_U);
 Implemente_ref(Interprete);
-Implemente_liste(Nom);
 
 Entree& Interprete::readOn(Entree& is)
 {

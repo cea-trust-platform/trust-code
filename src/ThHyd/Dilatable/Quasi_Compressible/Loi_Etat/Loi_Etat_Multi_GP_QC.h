@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,6 +18,7 @@
 
 #include <Convection_Diffusion_Espece_Multi_QC.h>
 #include <Loi_Etat_Multi_GP_base.h>
+#include <TRUST_List.h>
 #include <Ref_Espece.h>
 
 /*! @brief classe Loi_Etat_Multi_GP_QC Cette classe represente la loi d'etat pour un melange de gaz parfaits.
@@ -26,9 +27,6 @@
  *
  * @sa Fluide_Dilatable_base Loi_Etat_base Loi_Etat_Multi_GP_base
  */
-
-Declare_liste(REF(Espece));
-
 class Loi_Etat_Multi_GP_QC : public Loi_Etat_Multi_GP_base
 {
   Declare_instanciable_sans_constructeur(Loi_Etat_Multi_GP_QC);

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,8 +17,6 @@
 #define List_Ref_Field_base_included
 
 #include <Ref_Field_base.h>
-#include <List.h>
-
-Declare_liste(REF(Field_base));
+#include <TRUST_List.h>
 
 #endif

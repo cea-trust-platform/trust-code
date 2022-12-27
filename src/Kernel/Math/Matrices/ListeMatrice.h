@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,12 +17,8 @@
 #define ListeMatrice_included
 
 #include <Matrice_Morse_Sym.h>
-#include <List.h>
+#include <TRUST_List.h>
 
-Declare_liste(Matrice_Morse_Sym);
-
-class ListeMatrice : public LIST(Matrice_Morse_Sym)
-{
-};
+using ListeMatrice = TRUST_List<Matrice_Morse_Sym>;
 
 #endif

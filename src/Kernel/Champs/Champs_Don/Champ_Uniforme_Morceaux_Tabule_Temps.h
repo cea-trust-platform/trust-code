@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,12 +16,9 @@
 #ifndef Champ_Uniforme_Morceaux_Tabule_Temps_included
 #define Champ_Uniforme_Morceaux_Tabule_Temps_included
 
-
-
 #include <Champ_Uniforme_Morceaux_inst.h>
+#include <TRUST_List.h>
 #include <Table.h>
-
-Declare_liste(Table);
 
 /*! @brief classe Champ_Uniforme_Morceaux_Tabule_Temps Cette classe derivee de Champ_Uniforme_Morceaux_inst represente
  *
@@ -41,7 +38,6 @@ private:
 
   LIST(Table) les_tables;
 };
-
 
 #endif
 

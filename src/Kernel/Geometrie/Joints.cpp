@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,31 +14,12 @@
 *****************************************************************************/
 
 #include <Joints.h>
-Implemente_liste(Joint);
-Implemente_instanciable(Joints,"Joints",LIST(Joint));
 
+Implemente_instanciable(Joints, "Joints", LIST(Joint));
 
-/*! @brief
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Joints::printOn(Sortie& os) const
-{
-  return LIST(Joint)::printOn(os);
-}
+Sortie& Joints::printOn(Sortie& os) const { return LIST(Joint)::printOn(os); }
 
-
-/*! @brief
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& Joints::readOn(Entree& is)
-{
-  return LIST(Joint)::readOn(is);
-}
-
+Entree& Joints::readOn(Entree& is) { return LIST(Joint)::readOn(is); }
 
 /*! @brief Associe une zone a tous les joints de la liste.
  *

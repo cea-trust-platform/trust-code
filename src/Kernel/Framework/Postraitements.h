@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,7 +16,8 @@
 #ifndef Postraitements_included
 #define Postraitements_included
 
-#include <List.h>
+//#include <Postraitement_base.h>
+#include <TRUST_List.h>
 
 /*! @brief classe Postraitements Cette classe represente une liste de postraitements
  *
@@ -28,7 +29,6 @@ class Postraitement_base;
 class Entree;
 class Motcle;
 Declare_deriv(Postraitement_base);
-Declare_liste(DERIV(Postraitement_base));
 
 class Postraitements : public LIST(DERIV(Postraitement_base))
 {

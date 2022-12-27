@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,13 +13,12 @@
 *
 *****************************************************************************/
 
+#include <Champ_Generique_Statistiques_base.h>
 #include <Operateurs_Statistique_tps.h>
 #include <EcritureLectureSpecial.h>
 #include <Postraitement.h>
 
-#include <Champ_Generique_Statistiques_base.h>
 
-Implemente_liste(Operateur_Statistique_tps);
 Implemente_instanciable_sans_constructeur(Operateurs_Statistique_tps,"Operateurs_Statistique_tps",LIST(Operateur_Statistique_tps));
 
 Operateurs_Statistique_tps::Operateurs_Statistique_tps(): tstat_deb_(-123.), tstat_dernier_calcul_(-123.), tstat_fin_(-123.), lserie_(-123),dt_integr_serie_(-123.) {}

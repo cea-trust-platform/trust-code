@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,24 +14,14 @@
 *****************************************************************************/
 
 #include <Champ_Uniforme_Morceaux_Tabule_Temps.h>
-#include <Domaine.h>
 #include <Interprete.h>
-#include <Motcle.h>
 #include <Sous_Zone.h>
-Implemente_liste(Table);
-Implemente_instanciable(Champ_Uniforme_Morceaux_Tabule_Temps,"Champ_Uniforme_Morceaux_Tabule_Temps",Champ_Uniforme_Morceaux_inst);
+#include <Domaine.h>
+#include <Motcle.h>
 
+Implemente_instanciable(Champ_Uniforme_Morceaux_Tabule_Temps, "Champ_Uniforme_Morceaux_Tabule_Temps", Champ_Uniforme_Morceaux_inst);
 
-/*! @brief NE FAIT RIEN
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie
- */
-Sortie& Champ_Uniforme_Morceaux_Tabule_Temps::printOn(Sortie& os) const
-{
-  return os;
-}
-
+Sortie& Champ_Uniforme_Morceaux_Tabule_Temps::printOn(Sortie& os) const { return os; }
 
 /*! @brief Lit un champ uniforme par morceaux tabule dans le temps a partir d'un flot d'entree.
  *

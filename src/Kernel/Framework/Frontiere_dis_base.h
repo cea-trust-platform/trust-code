@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,14 +13,11 @@
 *
 *****************************************************************************/
 
-
 #ifndef Frontiere_dis_base_included
 #define Frontiere_dis_base_included
 
-#include <RefFrontiere.h>
 #include <Ref_Zone_dis_base.h>
-
-
+#include <Ref_Frontiere.h>
 
 /*! @brief classe Frontiere_dis_base Classe representant une frontiere discretisee.
  *

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,18 +16,14 @@
 #ifndef Interprete_geometrique_base_included
 #define Interprete_geometrique_base_included
 
-
-#include <Interprete.h>
 #include <Ref_Domaine.h>
-#include <List.h>
+#include <Interprete.h>
+#include <TRUST_List.h>
 #include <Zone.h>
 #ifdef MICROSOFT
 // necessaire pour visual
 #include <Octree.h>
 #endif
-
-Declare_liste(REF(Domaine));
-
 
 /*! @brief classe Interprete_geometrique_base .
  *
@@ -62,7 +58,6 @@ public :
 protected :
 
   LIST(REF(Domaine)) domains_; // List of reference to domains
-
 };
 
 #endif

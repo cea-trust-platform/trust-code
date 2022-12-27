@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,6 +31,7 @@ Implemente_instanciable(Pb_Conduction_Scalaires_Passifs,"Pb_Conduction_Scalaires
 Sortie& Pb_Conduction_Scalaires_Passifs::printOn(Sortie& os) const { return TRUSTProblem_sup_eqns<Pb_Conduction>::printOn(os); }
 Entree& Pb_Conduction_Scalaires_Passifs::readOn(Entree& is) { return TRUSTProblem_sup_eqns<Pb_Conduction>::readOn(is); }
 
+// XD listeqn listobj nul 1 eqn_base 0 List of equations.
 
 // XD pb_avec_passif Pb_base pb_avec_passif -1 Class to create a classical problem with a scalar transport equation (e.g: temperature or concentration) and an additional set of passive scalars (e.g: temperature or concentration) equations.
 // XD attr equations_scalaires_passifs listeqn equations_scalaires_passifs 0 Passive scalar equations. The unknowns of the passive scalar equation number N are named temperatureN or concentrationN or fraction_massiqueN. This keyword is used to define initial conditions and the post processing fields. This kind of problem is very useful to test in only one data file (and then only one calculation) different schemes or different boundary conditions for the scalar transport equation.

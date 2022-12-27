@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,13 +13,11 @@
 *
 *****************************************************************************/
 
-#include <Sondes.h>
 #include <LecFicDiffuse_JDD.h>
 #include <Postraitement.h>
+#include <Sondes.h>
 
-Implemente_liste(Sonde);
 Implemente_instanciable(Sondes,"Sondes|Probes",LIST(Sonde));
-Implemente_liste(Champ);
 
 /*! @brief Lit une liste de sondes a partir d'un flot d'entree Format:
  *

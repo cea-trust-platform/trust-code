@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,8 +16,7 @@
 #ifndef List_Ref_Champ_Generique_base_included
 #define List_Ref_Champ_Generique_base_included
 
-#include <List.h>
 #include <Ref_Champ_Generique_base.h>
-Declare_liste(REF(Champ_Generique_base)) ;
+#include <TRUST_List.h>
 
 #endif /* List_Ref_Champ_Generique_base_included */

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,6 +17,5 @@
 #define List_List_Nom_included
 
 #include <List_Nom.h>
-Declare_liste(LIST(Nom));
 
 #endif

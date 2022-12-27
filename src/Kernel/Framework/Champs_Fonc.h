@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,14 +16,8 @@
 #ifndef Champs_Fonc_included
 #define Champs_Fonc_included
 
-
-
-
 #include <Champ_Fonc.h>
-#include <List.h>
-
-
-Declare_liste(Champ_Fonc);
+#include <TRUST_List.h>
 
 /*! @brief classe Champs_Fonc Liste de Champ_Fonc declaree grace a la macro LIST(X)
  *

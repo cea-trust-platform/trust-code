@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,7 +18,7 @@
 
 #include <Loi_Etat_Melange_GP_base.h>
 #include <Ref_Champ_Inc_base.h>
-#include <List.h>
+#include <TRUST_List.h>
 
 class Champ_Inc_base;
 
@@ -28,8 +28,6 @@ class Champ_Inc_base;
  *
  * @sa Fluide_Dilatable_base Loi_Etat_base Loi_Etat_Melange_GP_base
  */
-
-Declare_liste(REF(Champ_Inc_base));
 
 class Loi_Etat_Multi_GP_base : public Loi_Etat_Melange_GP_base
 {

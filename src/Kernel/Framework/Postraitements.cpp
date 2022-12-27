@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,7 +18,6 @@
 #include <List_Nom.h>
 #include <Postraitement.h>
 Implemente_deriv(Postraitement_base);
-Implemente_liste(DERIV(Postraitement_base));
 Implemente_instanciable(Postraitements,"Postraitements|Post_processings",LIST(DERIV(Postraitement_base)));
 
 Entree& Postraitements::readOn(Entree& s)

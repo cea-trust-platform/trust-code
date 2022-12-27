@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,12 +13,11 @@
 *
 *****************************************************************************/
 
-#include <Joint.h>
-#include <List.h>
 #ifndef Joints_included
 #define Joints_included
 
-Declare_liste(Joint);
+#include <TRUST_List.h>
+#include <Joint.h>
 
 /*! @brief Classe Joints Cette classe represente une liste d'objet de type Joint
  *

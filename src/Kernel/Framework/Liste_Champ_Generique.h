@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,15 +18,10 @@
 #define Liste_Champ_Generique_included
 
 #include <Champ_Generique.h>
-
+#include <TRUST_List.h>
 /*! @brief classe List_Champ_Generique Represente une liste de Champ_Generique
  *
- *
- *
  */
-
-
-Declare_liste(Champ_Generique);
 class Liste_Champ_Generique : public LIST(Champ_Generique)
 {
   Declare_instanciable(Liste_Champ_Generique);

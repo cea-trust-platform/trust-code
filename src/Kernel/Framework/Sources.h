@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,9 +16,8 @@
 #ifndef Sources_included
 #define Sources_included
 
+#include <TRUST_List.h>
 #include <Source.h>
-
-Declare_liste(Source);
 
 /*! @brief class Sources Sources represente une liste de Source.
  *

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,22 +13,10 @@
 *
 *****************************************************************************/
 
-
 #ifndef List_Champ_Fonc_Tabule_included
 #define List_Champ_Fonc_Tabule_included
 
-
-
 #include <Champ_Fonc_Tabule.h>
-
-/*! @brief classe List_equation Represente une liste d'equations
- *
- *
- *
- */
-
-
-Declare_liste(Champ_Fonc_Tabule);
-
+#include <TRUST_List.h>
 
 #endif

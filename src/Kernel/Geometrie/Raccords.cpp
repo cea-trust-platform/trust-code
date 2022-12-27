@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,30 +14,12 @@
 *****************************************************************************/
 
 #include <Raccords.h>
-Implemente_liste(Raccord);
-Implemente_instanciable(Raccords,"Raccords",LIST(Raccord));
 
+Implemente_instanciable(Raccords, "Raccords", LIST(Raccord));
 
-/*! @brief
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Raccords::printOn(Sortie& os) const
-{
-  return LIST(Raccord)::printOn(os);
-}
+Sortie& Raccords::printOn(Sortie& os) const { return LIST(Raccord)::printOn(os); }
 
-/*! @brief
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& Raccords::readOn(Entree& is)
-{
-  return LIST(Raccord)::readOn(is);
-}
-
+Entree& Raccords::readOn(Entree& is) { return LIST(Raccord)::readOn(is); }
 
 /*! @brief Associe une zone a tous les raccords de la liste.
  *

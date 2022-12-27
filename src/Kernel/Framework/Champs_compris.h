@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,17 +16,15 @@
 #ifndef Champs_compris_included
 #define Champs_compris_included
 
-#include <Noms.h>
 #include <Ref_Champ_base.h>
-#include <List.h>
+#include <TRUST_List.h>
+#include <Noms.h>
 
 /*! @brief classe Champs_compris Represente un champ compris par un objet de type Equation, Milieu,
  *
  *      Operateur, Source, Traitement_particulier.
  *
  */
-
-Declare_liste(REF(Champ_base));
 
 class Champs_compris : public Objet_U
 {

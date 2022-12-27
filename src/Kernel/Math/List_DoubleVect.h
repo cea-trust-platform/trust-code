@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,10 +16,9 @@
 #ifndef List_DoubleVect_included
 #define List_DoubleVect_included
 
+#include <TRUST_List.h>
 #include <TRUSTVect.h>
-#include <List.h>
 
-Declare_liste(DoubleVect);
-using ListeDoubleVect = List_DoubleVect;
+using ListeDoubleVect = TRUST_List<DoubleVect>;
 
 #endif /* List_DoubleVect_included */

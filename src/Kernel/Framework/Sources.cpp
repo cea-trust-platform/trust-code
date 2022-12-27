@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,20 +17,9 @@
 #include <TRUSTTab.h>
 #include <Sources.h>
 
-Implemente_liste(Source);
-Implemente_instanciable(Sources,"Sources",LIST(Source));
+Implemente_instanciable(Sources, "Sources", LIST(Source));
 
-
-/*! @brief Imprime la liste des Sources sur un flot de sortie.
- *
- * @param (Sortie& os) le flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Sources::printOn(Sortie& os) const
-{
-  return LIST(Source)::printOn(os);
-}
-
+Sortie& Sources::printOn(Sortie& os) const { return LIST(Source)::printOn(os); }
 
 /*! @brief Lecture d'une liste de sources sur un flot d'entree.
  *

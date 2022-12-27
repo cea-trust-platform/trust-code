@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -79,9 +79,6 @@ enum Type_modele { TURBULENCE };
  *
  * @sa Equation
  */
-
-Declare_liste(RefObjU);
-
 class Equation_base : public Champs_compris_interface, public Objet_U
 {
   Declare_base(Equation_base);

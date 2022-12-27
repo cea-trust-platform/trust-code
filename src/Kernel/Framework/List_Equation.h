@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,18 +17,7 @@
 #ifndef List_Equation_included
 #define List_Equation_included
 
-
-
+#include <TRUST_List.h>
 #include <Equation.h>
-
-/*! @brief classe List_equation Represente une liste d'equations
- *
- *
- *
- */
-
-
-Declare_liste(Equation);
-
 
 #endif

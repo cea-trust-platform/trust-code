@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,25 +14,16 @@
 *****************************************************************************/
 
 #include <Interprete_geometrique_base.h>
+#include <Sous_Zone.h>
 #include <Domaine.h>
 #include <EChaine.h>
-#include <Sous_Zone.h>
 
-Implemente_base(Interprete_geometrique_base,"Interprete_geometrique_base",Interprete);
+Implemente_base(Interprete_geometrique_base, "Interprete_geometrique_base", Interprete);
 // XD interprete_geometrique_base interprete interprete_geometrique_base -1 Class for interpreting a data file
 
-Implemente_liste(REF(Domaine));
+Sortie& Interprete_geometrique_base::printOn(Sortie& os) const { return os; }
 
-Sortie& Interprete_geometrique_base::printOn(Sortie& os) const
-{
-  return os;
-}
-
-
-Entree& Interprete_geometrique_base::readOn(Entree& is)
-{
-  return is;
-}
+Entree& Interprete_geometrique_base::readOn(Entree& is) { return is; }
 
 void Interprete_geometrique_base::associer_domaine(Nom& nom_dom)
 {
