@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1067,11 +1067,11 @@ void EcrMED::ecrire_domaine_dis(const Nom& nom_fic,const Domaine& dom,const REF(
           nfaces = 0;
           int nb_type_face = familles.size();
           for (int j = 0; j < nb_type_face; j++)
-            nfaces += familles(j).size_array();
+            nfaces += familles[j].size_array();
           boundary_mesh->allocateCells(nfaces);
           for (int j = 0; j < nb_type_face; j++)
             {
-              int size = familles(j).size_array();
+              int size = familles[j].size_array();
               if (size)
                 {
                   // Converting trio to medcoupling boundary cell:

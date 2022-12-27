@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -462,7 +462,7 @@ vector<string> ProblemTrio::getOutputFieldsNames() const
   pb->getOutputFieldsNames(my_names);
   vector<string> output_names;
   for (int i=0; i<my_names.size(); i++)
-    output_names.push_back(my_names(i).getChar());
+    output_names.push_back(my_names[i].getChar());
   return  output_names;
 
 }

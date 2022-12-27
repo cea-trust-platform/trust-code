@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -323,7 +323,7 @@ int Motcles::search(const Motcle& t ) const
   assert(size()>=0);
   int i=size();
   while(i--)
-    if (operator()(i)==t)
+    if (operator[](i)==t)
       {
         return i;
       }
@@ -341,7 +341,7 @@ int Motcles::rang(const char* const ch) const
   assert(size()>=0);
   int i=size();
   while(i--)
-    if (operator()(i)==nom)
+    if (operator[](i)==nom)
       {
         return i;
       }

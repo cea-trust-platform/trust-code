@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -662,7 +662,7 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
     {
       for(int bord_perio = 0; bord_perio < liste_bords_periodiques.size(); bord_perio++)
         {
-          Nom bp_nom = liste_bords_periodiques(bord_perio);
+          Nom bp_nom = liste_bords_periodiques[bord_perio];
           Bord& bord = dom.zone(0).bord(bp_nom);
           if(bord.nb_faces() == 0)
             continue;

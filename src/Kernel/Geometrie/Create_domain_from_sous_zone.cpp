@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -55,8 +55,8 @@ Entree& Create_domain_from_sous_zone::interpreter_(Entree& is)
   Nom nom_dom_org;
   noms_sous_zones.dimensionner(1), noms_doms.dimensionner(1);
   Param param(que_suis_je());
-  param.ajouter("domaine_final",&noms_doms(0)); // XD_ADD_P ref_domaine new domain in which faces are stored
-  param.ajouter("par_sous_zone",&noms_sous_zones(0)); // XD_ADD_P chaine a sub-area allowing to choose the elements
+  param.ajouter("domaine_final",&noms_doms[0]); // XD_ADD_P ref_domaine new domain in which faces are stored
+  param.ajouter("par_sous_zone",&noms_sous_zones[0]); // XD_ADD_P chaine a sub-area allowing to choose the elements
   param.ajouter("domaine_init",&nom_dom_org,Param::REQUIRED); // XD_ADD_P ref_domaine initial domain
   param.ajouter_non_std("domaines", this);
   // 16/10/2017: desactivation du mot-cle par_sous_zones
@@ -81,7 +81,7 @@ Entree& Create_domain_from_sous_zone::interpreter_(Entree& is)
   index = 0; //par defaut, on ne prend rien
   for (int i = 0; i < nb_dom; i++)
     {
-      const Sous_Zone& ssz=ref_cast(Sous_Zone,objet(noms_sous_zones(i)));
+      const Sous_Zone& ssz=ref_cast(Sous_Zone,objet(noms_sous_zones[i]));
       for (int j = 0; j < ssz.nb_elem_tot(); j++)
         {
           if (index(ssz(j))) /* element deja pris -> erreur */

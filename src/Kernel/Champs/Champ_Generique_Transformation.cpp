@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -385,10 +385,10 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
           Cerr << "Aborting..."<<finl;
           Process::abort( );
         }
-      Nom reference_location = sources_location( 0 );
+      Nom reference_location = sources_location[0];
       for(int i=1; i<nb_locations; i++)
         {
-          if( sources_location( i ) != reference_location )
+          if( sources_location[i] != reference_location )
             {
               sources_location_ok = false;
               Cerr << "Warning in Champ_Generique_Transformation::completer "<<finl;
@@ -405,19 +405,19 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
     {
       if( sources_location_ok  )
         {
-          Cerr <<"sources have same location : "<< sources_location( 0 )<<finl;
+          Cerr <<"sources have same location : "<< sources_location[0]<<finl;
         }
       else
         {
-          Cerr << "Warning sources have not the same location, taking "<<sources_location( 0 )<<" as location"<<finl;
+          Cerr << "Warning sources have not the same location, taking "<<sources_location[0]<<" as location"<<finl;
         }
-      localisation_ = sources_location( 0 ) ;
+      localisation_ = sources_location[0] ;
     }
   else
     {
-      if( ! fictive_source && localisation_ != sources_location( 0 ) )
+      if( ! fictive_source && localisation_ != sources_location[0] )
         {
-          Cerr << "Warning first source is located to "<<sources_location( 0 )<<" but the user has specified "<< localisation_<<finl;
+          Cerr << "Warning first source is located to "<<sources_location[0]<<" but the user has specified "<< localisation_<<finl;
         }
     }
 
@@ -616,7 +616,7 @@ const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stocka
           if (nb_pos_tmp > sources_val[so].size())
             {
               Cerr << "\nError in Champ_Generique_Transformation::get_champ" << finl;
-              Cerr << nom_source(so) << " : Wrong number of elements." << finl;
+              Cerr << nom_source[so] << " : Wrong number of elements." << finl;
               exit();
             }
         }

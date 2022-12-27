@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,7 +50,7 @@ int Noms::search_without_checking_Motcle(const Nom& t ) const
   int i=size();
   while(i--)
     {
-      const Nom& unnom=operator()(i);
+      const Nom& unnom=operator[](i);
       if (unnom.getString().compare(t)==0)
         {
           return i;
@@ -70,7 +70,7 @@ int Noms::rang(const char* const ch) const
   assert(size()>=0);
   int i=size();
   while(i--)
-    if (operator()(i).getString()==ch)
+    if (operator[](i).getString()==ch)
       {
         return i;
       }

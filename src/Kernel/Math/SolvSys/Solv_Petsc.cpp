@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -558,7 +558,7 @@ void Solv_Petsc::create_solver(Entree& entree)
               {
                 if (solveur_direct_)
                   {
-                    Cerr << "Definition of " << les_parametres_solveur(les_parametres_solveur.search(motlu)) << " is useless for a direct method." << finl;
+                    Cerr << "Definition of " << les_parametres_solveur[les_parametres_solveur.search(motlu)] << " is useless for a direct method." << finl;
                     Cerr << "Suppress the keyword." << finl;
                     exit();
                   }
@@ -858,7 +858,7 @@ void Solv_Petsc::create_solver(Entree& entree)
               {
                 if (solveur_direct_)
                   {
-                    Cerr << "Definition of " << les_parametres_solveur(les_parametres_solveur.search(motlu)) << " is useless for a direct method." << finl;
+                    Cerr << "Definition of " << les_parametres_solveur[les_parametres_solveur.search(motlu)] << " is useless for a direct method." << finl;
                     Cerr << "Suppress the keyword." << finl;
                     exit();
                   }

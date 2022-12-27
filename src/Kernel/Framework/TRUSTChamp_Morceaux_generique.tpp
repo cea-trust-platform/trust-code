@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -188,7 +188,7 @@ void TRUSTChamp_Morceaux_generique<_TYPE_>::mettre_a_jour(double time)
       double val = ch ? ch->valeurs()(i, 0) : 0;
       for (int k = 0; k < tab.dimension(1); k++)
         {
-          Parser_U& psr = parser(parser_idx(i, k));
+          Parser_U& psr = parser[parser_idx(i, k)];
           psr.setVar("x", xs[0]);
           psr.setVar("y", xs[1]);
           psr.setVar("z", xs[2]);

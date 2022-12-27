@@ -782,12 +782,12 @@ void Zone_Poly_base::init_dist_paroi_globale(const Conds_lim& conds_lim) // Meth
   int nb_aretes = 0;
   std::set<int> soms;
   for (int ind_cl = 0 ; ind_cl < conds_lim.size() ; ind_cl++)
-    if ( sub_type(Dirichlet_paroi_defilante, conds_lim(ind_cl).valeur()) || sub_type(Dirichlet_homogene, conds_lim(ind_cl).valeur()) || sub_type(Navier, conds_lim(ind_cl).valeur()) )
+    if ( sub_type(Dirichlet_paroi_defilante, conds_lim[ind_cl].valeur()) || sub_type(Dirichlet_homogene, conds_lim[ind_cl].valeur()) || sub_type(Navier, conds_lim[ind_cl].valeur()) )
       {
-        int num_face_1_cl = conds_lim(ind_cl).frontiere_dis().frontiere().num_premiere_face();
-        int nb_faces_cl   = conds_lim(ind_cl).frontiere_dis().frontiere().nb_faces();
+        int num_face_1_cl = conds_lim[ind_cl].frontiere_dis().frontiere().num_premiere_face();
+        int nb_faces_cl   = conds_lim[ind_cl].frontiere_dis().frontiere().nb_faces();
 
-        nb_faces_bord_ += conds_lim(ind_cl).frontiere_dis().frontiere().nb_faces();
+        nb_faces_bord_ += conds_lim[ind_cl].frontiere_dis().frontiere().nb_faces();
 
         for (int f=num_face_1_cl ; f < nb_faces_cl+num_face_1_cl ; f++)
           {
@@ -805,10 +805,10 @@ void Zone_Poly_base::init_dist_paroi_globale(const Conds_lim& conds_lim) // Meth
   // On remplit les coordonnes des faces et aretes de bord locales
   int ind_tab = 0 ; // indice de la face/sommet/arete dans le tableau
   for (int ind_cl = 0 ; ind_cl < conds_lim.size() ; ind_cl++)
-    if ( sub_type(Dirichlet_paroi_defilante, conds_lim(ind_cl).valeur()) || sub_type(Dirichlet_homogene, conds_lim(ind_cl).valeur()) || sub_type(Navier, conds_lim(ind_cl).valeur()) )
+    if ( sub_type(Dirichlet_paroi_defilante, conds_lim[ind_cl].valeur()) || sub_type(Dirichlet_homogene, conds_lim[ind_cl].valeur()) || sub_type(Navier, conds_lim[ind_cl].valeur()) )
       {
-        int num_face_1_cl = conds_lim(ind_cl).frontiere_dis().frontiere().num_premiere_face();
-        int nb_faces_cl   = conds_lim(ind_cl).frontiere_dis().frontiere().nb_faces();
+        int num_face_1_cl = conds_lim[ind_cl].frontiere_dis().frontiere().num_premiere_face();
+        int nb_faces_cl   = conds_lim[ind_cl].frontiere_dis().frontiere().nb_faces();
 
         for (int f=num_face_1_cl ; f < nb_faces_cl+num_face_1_cl ; f++)
           {
@@ -912,10 +912,10 @@ void Zone_Poly_base::init_dist_paroi_globale(const Conds_lim& conds_lim) // Meth
 
   // Pour les elems de bord, on calcule la distance de facon propre avec le produit scalaire
   for (int ind_cl = 0 ; ind_cl < conds_lim.size() ; ind_cl++)
-    if ( sub_type(Dirichlet_paroi_defilante, conds_lim(ind_cl).valeur()) || sub_type(Dirichlet_homogene, conds_lim(ind_cl).valeur()) || sub_type(Navier, conds_lim(ind_cl).valeur()) )
+    if ( sub_type(Dirichlet_paroi_defilante, conds_lim[ind_cl].valeur()) || sub_type(Dirichlet_homogene, conds_lim[ind_cl].valeur()) || sub_type(Navier, conds_lim[ind_cl].valeur()) )
       {
-        int num_face_1_cl = conds_lim(ind_cl).frontiere_dis().frontiere().num_premiere_face();
-        int nb_faces_cl   = conds_lim(ind_cl).frontiere_dis().frontiere().nb_faces();
+        int num_face_1_cl = conds_lim[ind_cl].frontiere_dis().frontiere().num_premiere_face();
+        int nb_faces_cl   = conds_lim[ind_cl].frontiere_dis().frontiere().nb_faces();
 
         for (int f=num_face_1_cl ; f < nb_faces_cl+num_face_1_cl ; f++)
           {
