@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,15 +32,14 @@ void Conds_lim::completer(const Zone_dis& z)
 {
   if (!size()) return; //rien a faire
   // Completer les CL.
-  for (int i=0; i<size(); i++)
-    (*this)[i].completer();
+  for (auto& itr : *this) itr->completer();
 
   // WEC : Fixer le nombre de valeurs temporelles des champ_front
   // Cela pourrait etre fait dans Cond_lim_base::completer(),
   // mais il faudrait retoucher a plein de classes derivees...
   int nb_cases = (*this)[0]->zone_Cl_dis().equation().schema_temps().nb_valeurs_temporelles();
-  for (int i=0; i<size(); i++)
-    (*this)[i]->fixer_nb_valeurs_temporelles(nb_cases);
+
+  for (auto& itr : *this) itr->fixer_nb_valeurs_temporelles(nb_cases);
 
   Domaine& dom=(*this)[0].frontiere_dis().frontiere().zone().domaine();
   dom.construire_renum_som_perio(*this, z);

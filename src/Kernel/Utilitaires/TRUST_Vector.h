@@ -42,6 +42,7 @@ class TRUST_Vector: public Objet_U
   using value_type = _CLASSE_;
   using STLVect = std::vector<_CLASSE_>;
   using Iterator = typename STLVect::iterator;
+  using Const_Iterator = typename STLVect::const_iterator;
 
 protected:
   unsigned taille_memoire() const override { throw; }
@@ -88,16 +89,20 @@ private:
   printOn_(Sortie& s) const { return s ; }
 
 public:
-  const STLVect& get_stl_vect() const { return z_vect_; }
-  STLVect& get_stl_vect() { return z_vect_; }
-
-  inline Iterator begin() { return z_vect_.begin(); }
-  inline Iterator end() { return z_vect_.end(); }
-
   ~TRUST_Vector() { z_vect_.clear(); }
   TRUST_Vector() : z_vect_() { }
   TRUST_Vector(int i) : z_vect_(i) { }
   TRUST_Vector(const TRUST_Vector& avect) : Objet_U(avect) { z_vect_ = avect.z_vect_; }
+
+  // get stl vector
+  const STLVect& get_stl_vect() const { return z_vect_; }
+  STLVect& get_stl_vect() { return z_vect_; }
+
+  // iterators on TRUST_Vector
+  inline Iterator begin() { return z_vect_.begin(); }
+  inline Iterator end() { return z_vect_.end(); }
+  inline Const_Iterator begin() const { return z_vect_.begin(); }
+  inline Const_Iterator end() const { return z_vect_.end(); }
 
   const _CLASSE_& operator[](int i) const { return static_cast<const _CLASSE_&>(z_vect_[i]); }
   _CLASSE_& operator[](int i) { return static_cast<_CLASSE_&>(z_vect_[i]); }
@@ -143,10 +148,7 @@ public:
   }
 
   /* Append a vect to a vect */
-  void add(const TRUST_Vector& v2)
-  {
-    z_vect_.insert(z_vect_.end(), v2.get_stl_vect().begin(), v2.get_stl_vect().end());
-  }
+  void add(const TRUST_Vector& v2) { z_vect_.insert(end(), v2.begin(), v2.end()); }
 };
 
 #endif /* TRUST_Vector_included */

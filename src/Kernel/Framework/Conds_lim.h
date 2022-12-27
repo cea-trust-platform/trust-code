@@ -47,9 +47,9 @@ public:
 
 inline int Conds_lim::initialiser(double temps)
 {
-  int ok=1;
-  for (int i=0; i<size(); i++)
-    ok = ok && (*this)[i]->initialiser(temps);
+  int ok = 1;
+  for (auto &itr : *this)
+    ok = ok && itr->initialiser(temps);
   return ok;
 }
 
@@ -59,8 +59,7 @@ inline int Conds_lim::initialiser(double temps)
  */
 inline void Conds_lim::mettre_a_jour(double temps)
 {
-  for (int i=0; i<size(); i++)
-    (*this)[i].mettre_a_jour(temps);
+  for (auto& itr : *this) itr->mettre_a_jour(temps);
 }
 
 /*! @brief Calcul des coefficients d'echange pour toutes les conditions aux limites du vecteur.
@@ -69,8 +68,7 @@ inline void Conds_lim::mettre_a_jour(double temps)
  */
 inline void Conds_lim::calculer_coeffs_echange(double temps)
 {
-  for (int i=0; i<size(); i++)
-    (*this)[i].calculer_coeffs_echange(temps);
+  for (auto& itr : *this) itr->calculer_coeffs_echange(temps);
 }
 
 /*! @brief Renvoie si TOUTES les conditions aux limites du vecteurs sont compatibles avec l'equation passee en parametre.
@@ -80,9 +78,8 @@ inline void Conds_lim::calculer_coeffs_echange(double temps)
  */
 inline int Conds_lim::compatible_avec_eqn(const Equation_base& eqn) const
 {
-  int ok=1;
-  for (int i=0; i<size(); i++)
-    ok*=(*this)[i].compatible_avec_eqn(eqn);
+  int ok = 1;
+  for (auto& itr : *this) ok *= itr->compatible_avec_eqn(eqn);
   return ok;
 }
 
@@ -93,9 +90,8 @@ inline int Conds_lim::compatible_avec_eqn(const Equation_base& eqn) const
  */
 inline int Conds_lim::compatible_avec_discr(const Discretisation_base& dis) const
 {
-  int ok=1;
-  for (int i=0; i<size(); i++)
-    ok*=(*this)[i].compatible_avec_discr(dis);
+  int ok = 1;
+  for (auto& itr : *this) ok *= itr->compatible_avec_discr(dis);
   return ok;
 }
 
@@ -105,8 +101,7 @@ inline int Conds_lim::compatible_avec_discr(const Discretisation_base& dis) cons
  */
 inline void Conds_lim::set_modifier_val_imp(int drap)
 {
-  for (int i=0; i<size(); i++)
-    (*this)[i].set_modifier_val_imp(drap);
+  for (auto& itr : *this) itr->set_modifier_val_imp(drap);
 }
 
 #endif /* Conds_lim_included */
