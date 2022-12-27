@@ -98,7 +98,7 @@ protected:
 
   // Liste des descripteurs connus (on ignore tous les tableaux qui n'auront pas
   //  leur descripteur dans known_md_)
-  Vect_MD_Vector known_md_;
+  VECT(MD_Vector) known_md_;
   // Dans le meme ordre, identificateur des structures (som, elem, face, etc)
   Noms renum_id_;
   // Dans le meme ordre, tableaux de renumerotation (pour chaque items du calcul,

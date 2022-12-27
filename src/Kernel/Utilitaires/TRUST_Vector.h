@@ -19,56 +19,73 @@
 #include <vector>
 #include <Nom.h>
 
+class MD_Vector;
+
 // MACRO to replace VECT(THECLASS) by TRUST_Vector<THECLASS> & keep previous syntax for some developers
 #define VECT(_TYPE_) TRUST_Vector<_TYPE_>
 
+template<bool B, typename T> using enable_if_t = typename std::enable_if<B, T>::type;
+
 /*! @brief classe TRUST_Vector
  *
- *  - La classe template TRUST_Vector est utilisable pour n'importe quelle classe SAUF MD_Vector
+ *  - La classe template TRUST_Vector est utilisable pour n'importe quelle classe
  *
  *      Utilisation (par exemple):
  *
+ *        - TRUST_Vector<MD_Vector>
  *        - TRUST_Vector<Milieu_base>
  *        - TRUST_Vector<TRUSTArray<double>>
- *
- *  - Si besoin un vect d'un MD_Vector, il faut utiliser la classe Vect_MD_Vector
  */
 template<typename _CLASSE_>
 class TRUST_Vector: public Objet_U
 {
-protected:
-  inline unsigned taille_memoire() const override { throw; }
+  using value_type = _CLASSE_;
+  using STLVect = std::vector<_CLASSE_>;
+  using Iterator = typename STLVect::iterator;
 
-  inline int duplique() const override
+protected:
+  unsigned taille_memoire() const override { throw; }
+  Sortie& printOn(Sortie& s) const override { return printOn_<_CLASSE_>(s); }
+  Entree& readOn(Entree& s) override { return readOn_<_CLASSE_>(s); }
+
+  int duplique() const override
   {
     TRUST_Vector *xxx = new TRUST_Vector(*this);
     if (!xxx) Process::exit("Not enough memory !");
     return xxx->numero();
   }
 
-  Sortie& printOn(Sortie& s) const override
-  {
-    s << (int)z_vect_.size() << space;
-    for (auto& itr : z_vect_) s << itr << space;
-    return s << finl;
-  }
+private:
+  STLVect z_vect_;
 
-  Entree& readOn(Entree& s) override
+  template<typename _TYPE_>
+  enable_if_t< !(std::is_same<_TYPE_,MD_Vector>::value), Entree&>
+  readOn_(Entree& s)
   {
     int i;
     s >> i;
     z_vect_.resize(i);
-    for (auto& itr : z_vect_) s >> itr;
+    for (auto &itr : z_vect_) s >> itr;
     return s;
   }
 
-  // Iterators ...
-  using value_type = _CLASSE_;
-  using STLVect = std::vector<_CLASSE_>;
-  using Iterator = typename STLVect::iterator;
+  template<typename _TYPE_>
+  enable_if_t< !(std::is_same<_TYPE_,MD_Vector>::value), Sortie&>
+  printOn_(Sortie& s) const
+  {
+    s << (int) z_vect_.size() << space;
+    for (auto &itr : z_vect_) s << itr << space;
+    return s << finl;
+  }
 
-private:
-  STLVect z_vect_;
+  // MD_Vector class does not derive from Objet_U => no readOn & printOn
+  template<typename _TYPE_>
+  enable_if_t<(std::is_same<_TYPE_,MD_Vector>::value), Entree&>
+  readOn_(Entree& s) { return s; }
+
+  template<typename _TYPE_>
+  enable_if_t<(std::is_same<_TYPE_,MD_Vector>::value), Sortie&>
+  printOn_(Sortie& s) const { return s ; }
 
 public:
   const STLVect& get_stl_vect() const { return z_vect_; }
@@ -112,6 +129,8 @@ public:
 
   TRUST_Vector& operator=(const TRUST_Vector& avect)
   {
+    if (this == &avect) return *this;
+
     z_vect_ = avect.z_vect_;
     return *this;
   }

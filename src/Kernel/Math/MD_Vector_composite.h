@@ -16,8 +16,8 @@
 #ifndef MD_Vector_composite_included
 #define MD_Vector_composite_included
 
-#include <Vect_MD_Vector.h>
 #include <MD_Vector_std.h>
+#include <MD_Vector.h>
 #include <TRUSTTabs.h>
 #include <Noms.h>
 
@@ -51,8 +51,7 @@ public:
   inline const MD_Vector& get_desc_part(int i) const { return data_[i]; }
   inline Nom get_name(int i) const { return names_[i]; }
 
-
-  Vect_MD_Vector data_;
+  VECT(MD_Vector) data_;
   // Descriptor for the entire vector:
   MD_Vector_std global_md_;
   // Start index of the n-th part,
