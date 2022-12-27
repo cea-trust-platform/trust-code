@@ -16,12 +16,17 @@
 #ifndef IJK_Vector_included
 #define IJK_Vector_included
 
-#include <Vect_impl.h>
+#include <TRUST_Vector.h>
 #include <TRUSTTab.h>
 
-// class inspired by TRUST_Vector but for IJK_Fields (that takes 2 template arguments)
+/*! @brief classe IJK_Vector
+ *
+ *  - La classe template IJK_Vector derive de la classe template TRUST_Vector
+ *
+ *  - Elle demande 2 template arguments
+ */
 template<template<typename,typename> class _TRUST_TABL_,typename _TYPE_, typename _TYPE_ARRAY_>
-class IJK_Vector: public Vect_impl
+class IJK_Vector: public TRUST_Vector<_TRUST_TABL_<_TYPE_,_TYPE_ARRAY_>>
 {
 protected:
 
@@ -30,52 +35,23 @@ protected:
   inline int duplique() const override
   {
     IJK_Vector *xxx = new IJK_Vector(*this);
-    if (!xxx)
-      {
-        Cerr << "Not enough memory " << finl;
-        Process::exit();
-      }
+    if (!xxx) Process::exit("Not enough memory !");
     return xxx->numero();
   }
 
-  Objet_U* cree_une_instance() const override
-  {
-    _TRUST_TABL_<_TYPE_,_TYPE_ARRAY_> *instan = new _TRUST_TABL_<_TYPE_,_TYPE_ARRAY_>();
-    return instan;
-  }
-
-  Sortie& printOn(Sortie& s) const override { return Vect_impl::printOn(s); }
-
-  Entree& readOn(Entree& s) override { return Vect_impl::readOn(s); }
+  Sortie& printOn(Sortie& s) const override { return TRUST_Vector<_TRUST_TABL_<_TYPE_,_TYPE_ARRAY_>>::printOn(s); }
+  Entree& readOn(Entree& s) override { return TRUST_Vector<_TRUST_TABL_<_TYPE_,_TYPE_ARRAY_>>::readOn(s); }
 
 public:
-  IJK_Vector() : Vect_impl() { }
-  IJK_Vector(int i) { build_vect_impl(i); }
-  IJK_Vector(const IJK_Vector& avect) : Vect_impl(avect) { }
-
-  /* Returns the ith VECT element */
-  const _TRUST_TABL_<_TYPE_,_TYPE_ARRAY_>& operator[](int i) const { return static_cast<const _TRUST_TABL_<_TYPE_,_TYPE_ARRAY_>&>(Vect_impl::operator[](i)); }
-  _TRUST_TABL_<_TYPE_,_TYPE_ARRAY_>& operator[](int i) { return static_cast<_TRUST_TABL_<_TYPE_,_TYPE_ARRAY_>&>(Vect_impl::operator[](i)); }
-
-  const _TRUST_TABL_<_TYPE_,_TYPE_ARRAY_>& operator()(int i) const { return operator[](i); }
-  _TRUST_TABL_<_TYPE_,_TYPE_ARRAY_>& operator()(int i) { return operator[](i); }
+  IJK_Vector() : TRUST_Vector<_TRUST_TABL_<_TYPE_, _TYPE_ARRAY_>>() { }
+  IJK_Vector(int i) : TRUST_Vector<_TRUST_TABL_<_TYPE_, _TYPE_ARRAY_>>(i) { }
+  IJK_Vector(const IJK_Vector& avect) : TRUST_Vector<_TRUST_TABL_<_TYPE_, _TYPE_ARRAY_>>(avect) { }
 
   IJK_Vector& operator=(const IJK_Vector& avect)
   {
-    Vect_impl::operator=(avect);
+    TRUST_Vector<_TRUST_TABL_<_TYPE_,_TYPE_ARRAY_>>::operator=(avect);
     return *this;
   }
-
-  Entree& lit(Entree& s) { return Vect_impl::lit(s); }
-
-  _TRUST_TABL_<_TYPE_,_TYPE_ARRAY_>& add(const _TRUST_TABL_<_TYPE_,_TYPE_ARRAY_>& data_to_add)
-  {
-    Vect_impl::add(data_to_add);
-    return (*this)[size() - 1];
-  }
-
-  _TRUST_TABL_<_TYPE_,_TYPE_ARRAY_>& add() { return add(_TRUST_TABL_<_TYPE_,_TYPE_ARRAY_>()); }
-  void add(const IJK_Vector& data_to_add) { Vect_impl::add(data_to_add); }
 };
 
 #endif /* IJK_Vector_included */

@@ -16,7 +16,8 @@
 #ifndef TRUST_Vector_included
 #define TRUST_Vector_included
 
-#include <Vect_impl.h>
+#include <vector>
+#include <Nom.h>
 
 // MACRO to replace VECT(THECLASS) by TRUST_Vector<THECLASS> & keep previous syntax for some developers
 #define VECT(_TYPE_) TRUST_Vector<_TYPE_>
@@ -33,7 +34,7 @@
  *  - Si besoin un vect d'un MD_Vector, il faut utiliser la classe Vect_MD_Vector
  */
 template<typename _CLASSE_>
-class TRUST_Vector: public Vect_impl
+class TRUST_Vector: public Objet_U
 {
 protected:
   inline unsigned taille_memoire() const override { throw; }
@@ -41,48 +42,92 @@ protected:
   inline int duplique() const override
   {
     TRUST_Vector *xxx = new TRUST_Vector(*this);
-    if (!xxx) Cerr << "Not enough memory " << finl, Process::exit();
+    if (!xxx) Process::exit("Not enough memory !");
     return xxx->numero();
   }
 
-  Objet_U* cree_une_instance() const override
+  Sortie& printOn(Sortie& s) const override
   {
-    _CLASSE_ *instan = new _CLASSE_();
-    if (!instan) Cerr << "Not enough memory " << finl, Process::exit();
-    return instan;
+    s << (int)z_vect_.size() << space;
+    for (auto& itr : z_vect_) s << itr << space;
+    return s << finl;
   }
 
-  Sortie& printOn(Sortie& s) const override { return Vect_impl::printOn(s); }
-  Entree& readOn(Entree& s) override { return Vect_impl::readOn(s); }
+  Entree& readOn(Entree& s) override
+  {
+    int i;
+    s >> i;
+    z_vect_.resize(i);
+    for (auto& itr : z_vect_) s >> itr;
+    return s;
+  }
+
+  // Iterators ...
+  using value_type = _CLASSE_;
+  using STLVect = std::vector<_CLASSE_>;
+  using Iterator = typename STLVect::iterator;
+
+private:
+  STLVect z_vect_;
 
 public:
-  TRUST_Vector() : Vect_impl() { }
-  TRUST_Vector(int i) { build_vect_impl(i); }
-  TRUST_Vector(const TRUST_Vector& avect) : Vect_impl(avect) { }
+  const STLVect& get_stl_vect() const { return z_vect_; }
+  STLVect& get_stl_vect() { return z_vect_; }
 
-  /* Returns the ith VECT element */
-  const _CLASSE_& operator[](int i) const { return static_cast<const _CLASSE_&>(Vect_impl::operator[](i)); }
-  _CLASSE_& operator[](int i) { return static_cast<_CLASSE_&>(Vect_impl::operator[](i)); }
+  inline Iterator begin() { return z_vect_.begin(); }
+  inline Iterator end() { return z_vect_.end(); }
 
-  const _CLASSE_& operator()(int i) const { return operator[](i); }
-  _CLASSE_& operator()(int i) { return operator[](i); }
+  ~TRUST_Vector() { z_vect_.clear(); }
+  TRUST_Vector() : z_vect_() { }
+  TRUST_Vector(int i) : z_vect_(i) { }
+  TRUST_Vector(const TRUST_Vector& avect) : Objet_U(avect) { z_vect_ = avect.z_vect_; }
+
+  const _CLASSE_& operator[](int i) const { return static_cast<const _CLASSE_&>(z_vect_[i]); }
+  _CLASSE_& operator[](int i) { return static_cast<_CLASSE_&>(z_vect_[i]); }
+
+  // Elie Saikali : Pas de negociation pour ca desole ...
+  const _CLASSE_& operator()(int i) const = delete;
+  _CLASSE_& operator()(int i) = delete;
+
+  _CLASSE_& add() = delete; //{ return add(_CLASSE_()); }
+
+  int size() const { return (int)z_vect_.size(); }
+  void reset() { z_vect_.clear(); }
+  void dimensionner(int i) { z_vect_.resize(i); }
+
+  Entree& lit(Entree& s)
+  {
+    int i;
+    s >> i;
+    dimensionner_force(i);
+    for (auto& itr : z_vect_) s >> itr;
+    return s;
+  }
+
+  void dimensionner_force(int i)
+  {
+    z_vect_.clear();
+    z_vect_.resize(i);
+  }
 
   TRUST_Vector& operator=(const TRUST_Vector& avect)
   {
-    Vect_impl::operator=(avect);
+    z_vect_ = avect.z_vect_;
     return *this;
   }
 
-  Entree& lit(Entree& s) { return Vect_impl::lit(s); }
-
+  /* Add a new element to the vect */
   _CLASSE_& add(const _CLASSE_& data_to_add)
   {
-    Vect_impl::add(data_to_add);
-    return (*this)[size() - 1];
+    z_vect_.push_back(data_to_add);
+    return z_vect_.back();
   }
 
-  _CLASSE_& add() { return add(_CLASSE_()); }
-  void add(const TRUST_Vector& data_to_add) { Vect_impl::add(data_to_add); }
+  /* Append a vect to a vect */
+  void add(const TRUST_Vector& v2)
+  {
+    z_vect_.insert(z_vect_.end(), v2.get_stl_vect().begin(), v2.get_stl_vect().end());
+  }
 };
 
 #endif /* TRUST_Vector_included */

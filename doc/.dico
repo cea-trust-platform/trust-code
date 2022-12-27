@@ -1170,7 +1170,6 @@
  Valeur_totale_sur_volume_VEF Champ_val_tot_sur_vol_VEF Champ_val_tot_sur_vol_VEF.h
  Value_Input_Int Value_Input_Int Value_Input_Int.h
  VDF VDF_discretisation VDF_discretisation.h
- Vect_impl Vect_impl Vect_impl.h
  VEF VEF_discretisation VEF_discretisation.h
  VEFPreP1B VEFPreP1B VEFPreP1B.h
  VEF_1D VEF_1D VEF_1D.h
