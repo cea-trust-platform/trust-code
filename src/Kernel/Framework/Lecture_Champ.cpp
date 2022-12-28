@@ -14,7 +14,6 @@
 *****************************************************************************/
 
 #include <Lecture_Champ.h>
-#include <List_Nom.h>
 #include <Motcle.h>
 
 Implemente_instanciable_sans_constructeur( Lecture_Champ, "Lecture_Champ", Objet_U ) ;
@@ -36,7 +35,7 @@ Entree& Lecture_Champ::readOn( Entree& is )
   return is;
 }
 
-Entree& Lecture_Champ::lire_champs( Entree& is , List_Nom& noms_champs)
+Entree& Lecture_Champ::lire_champs( Entree& is , LIST(Nom)& noms_champs)
 {
 
   Cerr << "Reading Fields\n";

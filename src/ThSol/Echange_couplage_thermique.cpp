@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,11 +15,11 @@
 
 #include <Echange_couplage_thermique.h>
 #include <Discretisation_base.h>
-#include <EChaine.h>
-#include <Milieu_base.h>
 #include <Champ_Uniforme.h>
 #include <Probleme_base.h>
 #include <Equation_base.h>
+#include <Milieu_base.h>
+#include <EChaine.h>
 
 Implemente_instanciable_sans_constructeur( Echange_couplage_thermique, "Echange_couplage_thermique", Echange_global_impose ) ;
 // XD Echange_couplage_thermique paroi_echange_global_impose Echange_couplage_thermique 1 Thermal coupling boundary condition
@@ -50,7 +50,7 @@ Entree& Echange_couplage_thermique::readOn( Entree& is )
   ech1 >>  h_imp_;
   ech2 >>  T_ext();
 
-  List_Nom noms;
+  LIST(Nom) noms;
   noms.add("temperature_paroi");
   noms.add("flux_paroi");
   lec_champs.lire_champs(is,noms);

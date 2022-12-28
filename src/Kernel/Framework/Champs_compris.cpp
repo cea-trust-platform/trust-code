@@ -15,7 +15,6 @@
 
 #include <Champs_compris.h>
 #include <Champ_base.h>
-#include <List_Nom.h>
 
 Implemente_instanciable(Champs_compris, "Champs_compris", Objet_U);
 

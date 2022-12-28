@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,13 +13,13 @@
 *
 *****************************************************************************/
 
-#include <Sous_Zone.h>
-#include <Domaine.h>
-#include <List_Polynome.h>
 #include <LecFicDistribue.h>
 #include <communications.h>
-#include <Parser_U.h>
 #include <Interprete.h>
+#include <Sous_Zone.h>
+#include <Polynome.h>
+#include <Parser_U.h>
+#include <Domaine.h>
 
 Implemente_instanciable(Sous_Zone,"Sous_Zone",Objet_U);
 

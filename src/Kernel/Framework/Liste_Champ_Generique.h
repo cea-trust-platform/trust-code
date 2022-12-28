@@ -13,7 +13,6 @@
 *
 *****************************************************************************/
 
-
 #ifndef Liste_Champ_Generique_included
 #define Liste_Champ_Generique_included
 

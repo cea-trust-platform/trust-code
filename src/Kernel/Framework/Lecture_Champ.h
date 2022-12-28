@@ -16,7 +16,7 @@
 #ifndef Lecture_Champ_included
 #define Lecture_Champ_included
 
-#include <List_Nom.h>
+#include <TRUST_List.h>
 #include <Objet_U.h>
 #include <Champ.h>
 
@@ -32,7 +32,7 @@ class Lecture_Champ : public Objet_U
 
 public :
 
-  Entree& lire_champs(Entree& is, List_Nom& noms_champs);
+  Entree& lire_champs(Entree& is, LIST(Nom)& noms_champs);
 
   Champ& champ_lu(const Nom& nom)
   {

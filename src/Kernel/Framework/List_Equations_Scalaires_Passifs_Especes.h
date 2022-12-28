@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,8 @@
 #define List_Equations_Scalaires_Passifs_Especes_included
 
 #include <Ref_Milieu_base.h>
-#include <List_Equation.h>
+#include <TRUST_List.h>
+#include <Equation.h>
 
 /*! @brief classe List_Equations_Scalaires_Passifs_Especes Represente une liste d'equations de scalaires passifs ou especes
  *

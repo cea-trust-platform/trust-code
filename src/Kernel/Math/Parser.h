@@ -17,12 +17,14 @@
 #define Parser_included
 
 #include <Deriv_UnaryFunction.h>
-#include <List_Constante.h>
+#include <TRUST_List.h>
+#include <Constante.h>
 #include <Variable.h>
+#include <algorithm>
 #include <Stack.h>
 #include <math.h>
 #include <string>
-#include <algorithm>
+
 class StringTokenizer;
 
 /*! @brief Representation des donnees de la classe Parser
@@ -155,8 +157,8 @@ private:
   PNode* root;
   std::string* str;
   Variable** les_var;
-  static ListeConstantes les_cst;
-  static ListUnaryFunction unary_func;
+  static LIST(Constante) les_cst;
+  static LIST(DERIV(UnaryFunction)) unary_func;
   int maxvar,ivar;
 };
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,16 +17,17 @@
 #define Probleme_base_included
 
 #include <Probleme_base_interface_proto.h>
-#include <List_Ref_Loi_Fermeture_base.h>
 #include <Deriv_Sortie_Fichier_base.h>
 #include <Champs_compris_interface.h>
+#include <Ref_Loi_Fermeture_base.h>
 #include <Ref_Schema_Temps_base.h>
-#include <List_Ref_Field_base.h>
 #include <Discretisation.h>
+#include <Ref_Field_base.h>
 #include <Postraitements.h>
 #include <Sortie_Brute.h>
 #include <Ref_IntVect.h>
 #include <Domaine_dis.h>
+#include <TRUST_List.h>
 #include <Probleme_U.h>
 #include <Milieu.h>
 

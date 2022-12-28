@@ -16,9 +16,10 @@
 #ifndef Domaine_included
 #define Domaine_included
 
-#include <List_Ref_Sous_Zone.h>
-#include <Zones.h>
 #include <Interprete_geometrique_base.h>
+#include <Ref_Sous_Zone.h>
+#include <TRUST_List.h>
+#include <Zones.h>
 #include <medcoupling++.h>
 #ifdef MEDCOUPLING_
 #include <MEDCouplingUMesh.hxx>

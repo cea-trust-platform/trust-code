@@ -27,7 +27,6 @@
 #include <Champs_Fonc.h>
 #include <Ref_Objet_U.h>
 #include <Zone_Cl_dis.h>
-#include <List_Noms.h>
 #include <TRUSTList.h>
 #include <TRUSTTrav.h>
 #include <TRUSTTab_parts.h>
@@ -342,7 +341,7 @@ private :
   void ecrire_fichier_xyz() const;
   ArrOfDouble dt_ecrire_fic_xyz;
   Motcles nom_champ_xyz;
-  Liste_Noms noms_bord_xyz;
+  LIST(Noms) noms_bord_xyz;
   IntVect nb_bords_post_xyz;
   int nombre_champ_xyz;
   int ecrit_champ_xyz_bin;

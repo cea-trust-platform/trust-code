@@ -17,10 +17,8 @@
 #define Deriv_UnaryFunction_included
 
 #include <UnaryFunction.h>
-#include <TRUST_List.h>
+#include <Deriv.h>
 
 Declare_deriv(UnaryFunction);
-
-using ListUnaryFunction = TRUST_List<DERIV(UnaryFunction)>;
 
 #endif /* Deriv_UnaryFunction_included */

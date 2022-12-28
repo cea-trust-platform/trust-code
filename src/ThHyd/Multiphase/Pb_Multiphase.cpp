@@ -13,18 +13,14 @@
 *
 *****************************************************************************/
 
-#include <Pb_Multiphase.h>
-
+#include <Schema_Euler_Implicite.h>
+#include <Loi_Fermeture_base.h>
 #include <Milieu_composite.h>
 #include <Interprete_bloc.h>
-#include <EChaine.h>
-#include <Schema_Euler_Implicite.h>
-#include <SETS.h>
-
-// a cause du mettre_a_jour
-
+#include <Pb_Multiphase.h>
 #include <Domaine.h>
-#include <Loi_Fermeture_base.h>
+#include <EChaine.h>
+#include <SETS.h>
 
 Implemente_instanciable(Pb_Multiphase, "Pb_Multiphase", Pb_Fluide_base);
 // XD Pb_Multiphase Pb_base Pb_Multiphase -1 A problem that allows the resolution of N-phases with 3*N equations

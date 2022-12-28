@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,31 +12,9 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+
 #include <UnaryFunction.h>
-// il faut include LecFicDiffuse.h pour la definition du label AVEC_PARSER
 
-
-Implemente_base(UnaryFunction,"UnaryFunction",Objet_U);
-
-/*! @brief Ecriture sur un flot de sortie Ecrit la valeur de la constante
- *
- * @param (Sortie& os) le flot de sortie a utiliser
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& UnaryFunction::printOn(Sortie& os) const
-{
-  return os;
-}
-
-
-/*! @brief Lit la valeur de la constante
- *
- * @param (Entree& is) le flot d'entree a utiliser
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& UnaryFunction::readOn(Entree& is)
-{
-  return is;
-}
-
-
+Implemente_base(UnaryFunction, "UnaryFunction", Objet_U);
+Sortie& UnaryFunction::printOn(Sortie& os) const { return os; }
+Entree& UnaryFunction::readOn(Entree& is) { return is; }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,19 +17,19 @@
 #define Postraitement_included
 
 #include <Operateurs_Statistique_tps.h>
-#include <Champs_Fonc.h>
-#include <Sondes.h>
-#include <Sondes_Int.h>
-#include <List_Ref_IntVect.h>
-#include <Interprete.h>
-#include <Postraitement_base.h>
-#include <Format_Post.h>
-#include <List_Noms.h>
-#include <Probleme_base.h>
-#include <Schema_Temps_base.h>
-#include <Liste_Champ_Generique.h>
 #include <Champ_Gen_de_Champs_Gen.h>
+#include <Liste_Champ_Generique.h>
+#include <Postraitement_base.h>
+#include <Schema_Temps_base.h>
+#include <Probleme_base.h>
+#include <Ref_IntVect.h>
+#include <Format_Post.h>
+#include <Champs_Fonc.h>
+#include <Sondes_Int.h>
+#include <TRUST_List.h>
+#include <Interprete.h>
 #include <Parser_U.h>
+#include <Sondes.h>
 
 /*! @brief classe Postraitement La classe est dotee -d une liste de champs generiques champs_post_complet_ qui contient
  *

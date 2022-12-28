@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,13 +16,11 @@
 #ifndef Turbulence_paroi_base_included
 #define Turbulence_paroi_base_included
 
-
-#include <Champ_Inc.h>
-#include <Champ_Fonc.h>
+#include <Champs_compris_interface.h>
 #include <Ref_Mod_turb_hyd_base.h>
 #include <Champs_compris.h>
-#include <Champs_compris_interface.h>
-#include <List_Nom.h>
+#include <Champ_Fonc.h>
+#include <Champ_Inc.h>
 
 class Mod_turb_hyd;
 class Zone_dis;

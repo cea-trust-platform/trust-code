@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,8 +17,9 @@
 #define Probleme_base_interface_proto_included
 
 #include <Ref_Champ_Generique_base.h>
-#include <List_Ref_Field_base.h>
 #include <Schema_Temps_base.h>
+#include <Ref_Field_base.h>
+#include <TRUST_List.h>
 
 class Champ_Generique_base;
 class Probleme_base;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,14 +16,15 @@
 #ifndef Pb_Multiphase_included
 #define Pb_Multiphase_included
 
-#include <Interprete.h>
+#include <Energie_Multiphase.h>
+#include <Masse_Multiphase.h>
 #include <Pb_Fluide_base.h>
 #include <QDM_Multiphase.h>
-#include <Masse_Multiphase.h>
-#include <Energie_Multiphase.h>
-#include <Verif_Cl.h>
 #include <Correlation.h>
-#include <List_Equation.h>
+#include <TRUST_List.h>
+#include <Interprete.h>
+#include <Equation.h>
+#include <Verif_Cl.h>
 
 /*! @brief classe Pb_Multiphase Cette classe represente un probleme de thermohydraulique multiphase de type "3*N equations" :
  *

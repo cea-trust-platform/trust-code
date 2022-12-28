@@ -13,9 +13,8 @@
 *
 *****************************************************************************/
 
-#include <Interprete.h>
 #include <Interprete_bloc.h>
-#include <List_Nom.h>
+#include <Interprete.h>
 
 Implemente_instanciable(Interprete, "Interprete", Objet_U);
 Implemente_ref(Interprete);

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,31 +15,20 @@
 
 #ifndef UnaryFunction_included
 #define UnaryFunction_included
-/*! @brief Definit une constante dans le jeu de donnees
- *
- * @sa =
- */
+
 #include <Objet_U.h>
 #include <Nom.h>
 
-
-
+/*! @brief Definit une constante dans le jeu de donnees
+ *
+ */
 class UnaryFunction :  public Objet_U
 {
   Declare_base(UnaryFunction);
 public :
-
   virtual  double eval(double x) =0;
-
   virtual  const Nom& getName() const =0;
-
-  virtual int precedence()
-  {
-    return  100;
-  }
-
-
+  virtual int precedence() { return  100; }
 };
-
 
 #endif

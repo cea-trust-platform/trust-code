@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,8 +16,9 @@
 #ifndef Champ_Gen_de_Champs_Gen_included
 #define Champ_Gen_de_Champs_Gen_included
 
+#include <Ref_Champ_Generique_base.h>
 #include <Liste_Champ_Generique.h>
-#include <List_Ref_Champ_Generique_base.h>
+#include <TRUST_List.h>
 
 class Champ_Fonc;
 

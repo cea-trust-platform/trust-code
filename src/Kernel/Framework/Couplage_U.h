@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,13 +13,12 @@
 *
 *****************************************************************************/
 
-
 #ifndef Couplage_U_included
 #define Couplage_U_included
 
-
+#include <Ref_Probleme_U.h>
 #include <Probleme_U.h>
-#include <List_Ref_Probleme_U.h>
+#include <TRUST_List.h>
 
 /*! @brief class Couplage_U
  *

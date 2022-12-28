@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,7 +23,6 @@
 #include <TRUSTList.h>
 #include <Elem_geom.h>
 #include <TRUSTTabs.h>
-#include <List_Nom.h>
 #include <Raccords.h>
 #include <Joints.h>
 #include <Bords.h>
