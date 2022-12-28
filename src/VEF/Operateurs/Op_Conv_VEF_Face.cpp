@@ -338,7 +338,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
 
   if(type_op==centre || type_op==muscl)
     {
-      Champ_P1NC::calcul_gradient(transporte_face,gradient_elem,zone_Cl_VEF);
+      Champ_P1NC::calcul_gradient(transporte_face,gradient_elem, zone_Cl_VEF);
     }
   DoubleTab gradient;
 
@@ -413,7 +413,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
         }
 
       // Need offload
-      const int * traitement_pres_bord_addr = copyToDevice(traitement_pres_bord_);
+      const int * traitement_pres_bord_addr = copyToDevice(traitement_pres_bord_,"traitement_pres_bord_"); // ToDo precalculer
       const int * face_voisins_addr = copyToDevice(face_voisins);
       const double * gradient_elem_addr = copyToDevice(gradient_elem,"gradient_elem");
       gradient_addr = gradient.addr();
@@ -455,7 +455,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
   const int * rang_elem_non_std_addr = copyToDevice(rang_elem_non_std);
   const int * elem_faces_addr = copyToDevice(elem_faces);
   const double * porosite_face_addr = copyToDevice(porosite_face);
-  const double * porosite_elem_addr = copyToDevice(porosite_elem);
+  const double * porosite_elem_addr = copyToDevice(porosite_elem, "porosite_elem"); // ToDo update normal ?
   const double * coord_sommets_addr = copyToDevice(coord_sommets);
   const int * les_elems_addr = copyToDevice(les_elems);
   const double * facette_normales_addr = facette_normales.addr();
@@ -470,7 +470,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
   const double * vecteur_face_facette_Cl_addr = copyToDevice(vecteur_face_facette_Cl);
   const double * vitesse_addr = la_vitesse.valeurs().addr();
   const double * vitesse_face_absolue_addr = vitesse_face_absolue.addr();
-  const double * transporte_face_addr = copyToDevice(transporte_face);
+  const double * transporte_face_addr = copyToDevice(transporte_face, "transporte_face");
   double * resu_addr = resu.addr();
   double * flux_b_addr = flux_b.addr();
 

@@ -33,7 +33,7 @@ inline void end_timer(const std::string& str) // Return in [ms]
   if (clock_on!=NULL)
     {
       double ms = 1000 * (Statistiques::get_time_now() - clock_start);
-      printf("[clock] %7.3f ms %15s\n", ms, str.c_str());
+      printf("[clock] %7.3f ms %15s\n\n", ms, str.c_str());
       fflush(stdout);
     }
 }
@@ -86,19 +86,39 @@ inline _TYPE_* copyToDevice_(TRUSTArray<_TYPE_>& tab, Array_base::dataLocation n
 #endif
   _TYPE_* tab_addr = tab.addr(); // Car addr() contient un mecanisme de verification
 #ifdef _OPENMP
+  std::string message;
   start_timer();
   if (currentLocation==Array_base::HostOnly)
     {
       #pragma omp target enter data if (computeOnDevice()) map(to:tab_addr[0:tab.size_array()])
-      end_timer((std::string) "copy array ["+arrayName+"] to device       ", sizeof(_TYPE_) * tab.size_array());
+      if (arrayName=="")
+          arrayName="??";
+      message = "copy array ["+arrayName+"] to device       ";
     }
   else if (currentLocation==Array_base::Host)
     {
       #pragma omp target update if (computeOnDevice()) to(tab_addr[0:tab.size_array()])
-      end_timer((std::string) "update array ["+arrayName+"] on device     ", sizeof(_TYPE_) * tab.size_array());
+      if (arrayName=="")
+          arrayName="??";
+      message = "update array ["+arrayName+"] on device     ";
     }
   else
-      end_timer((std::string) "array ["+arrayName+"] up-to-date on device ", sizeof(_TYPE_) * tab.size_array());
+    {
+      message = "array ["+arrayName+"] up-to-date on device ";
+#ifndef NDEBUG
+      if (clock_on!=NULL)
+      {
+          // Comparaison tableaux sur device et host:
+          TRUSTArray<_TYPE_> tmp(tab);
+          _TYPE_* tmp_addr = tmp.addr();
+          #pragma omp target update from(tmp_addr[0:tmp.size_array()])
+          int err = memcmp(tmp.addr(), tab.addr(), sizeof(_TYPE_) * tmp.size_array());
+          assert(err==0);
+      }
+#endif
+    }
+  if (arrayName!="")
+      end_timer(message, sizeof(_TYPE_) * tab.size_array());
 #endif
   return tab_addr;
 }
@@ -112,7 +132,7 @@ inline _TYPE_* computeOnTheDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName
 }
 
 template <typename _TYPE_>
-inline void copyFromDevice(TRUSTArray<_TYPE_>& tab)
+inline void copyFromDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName="")
 {
 #ifdef _OPENMP
   _TYPE_* tab_addr = tab.addr();
