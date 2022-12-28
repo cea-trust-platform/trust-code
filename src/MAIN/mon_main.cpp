@@ -133,7 +133,7 @@ static int init_parallel_mpi(DERIV(Comm_Group) & groupe_trio)
 }
 
 #ifdef PETSC_HAVE_CUDA
-#include <cuda.h>
+//#include <cuda.h>
 #include <cuda_runtime.h>
 void init_cuda()
 {
