@@ -30,6 +30,7 @@
 #ifdef _OPENMP
 #include <omp.h>
 #endif
+#include <Device.h>
 #ifndef __CYGWIN__
 #include <catch_and_trace.h>
 #endif
@@ -185,6 +186,10 @@ void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int chec
   init_cuda();
 #endif /* MPIX_CUDA_AWARE_SUPPORT */
 #endif
+  // Variable pour desactiver le calcul sur GPU et ainsi facilement comparer avec le meme binaire
+  // les performances sur CPU et sur GPU. Utilisee par rocALUTION et les kernels OpenMP:
+  computeOnDevice_ = getenv("TRUST_DISABLE_DEVICE") == NULL ? true : false;
+
   Nom arguments_info="";
   int must_mpi_initialize = 1;
   if (with_petsc != 0)

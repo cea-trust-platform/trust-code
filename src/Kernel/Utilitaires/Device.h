@@ -57,16 +57,10 @@ inline void end_timer(const std::string& str, int size) // Return in [ms]
     }
 }
 
-// Pour disabler
+// Activer ou non le calcul sur le device:
 #pragma omp declare target
-inline bool computeOnDevice()
-{
-#ifdef _COMPILE_AVEC_PGCC
-  return true; // Pas possible d'utiliser getenv avec nvc++ : VC++-S-1073-Procedures called in a OpenMP target region must have 'omp declare target' information - getenv
-#else
-  return getenv("TRUST_DISABLE_DEVICE") == NULL ? true : false;
-#endif
-}
+static int computeOnDevice_ = true;
+inline bool computeOnDevice() { return computeOnDevice_; }
 #pragma omp end declare target
 
 template <typename _TYPE_>
@@ -145,4 +139,6 @@ inline void copyFromDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName="")
     }
 #endif
 }
+
+
 #endif
