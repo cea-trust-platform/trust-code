@@ -50,6 +50,8 @@ template<typename _TYPE_> template<typename _T_, typename _SCALAR_TYPE_>
 typename std::enable_if<std::is_convertible<_SCALAR_TYPE_, _T_>::value , void>::type
 inline TRUSTVect<_TYPE_>::ajoute(_SCALAR_TYPE_ alpha, const TRUSTVect<_T_>& y, Mp_vect_options opt)
 {
+  this->checkDataOnHost();
+  y.checkDataOnHost();
   ajoute_alpha_v(*this, alpha, y, opt);
   if (opt == VECT_ALL_ITEMS) echange_espace_virtuel();
 }
@@ -99,6 +101,7 @@ inline void TRUSTVect<_TYPE_>::resize(int n, Array_base::Resize_Options opt)
 template<typename _TYPE_>
 inline void TRUSTVect<_TYPE_>::resize_vect_(int n, Array_base::Resize_Options opt)
 {
+  this->checkDataOnHost();
   // Note B.M.: j'aurais voulu interdire completement resize des qu'on a un descripteur mais il y en a partout dans le code (on resize les tableaux alors qu'ils ont deja
   //  la bonne taille). Donc j'autorise si la taille ne change pas.
   //assert(!md_vector_.non_nul() || n == size_array());
@@ -184,6 +187,8 @@ inline void TRUSTVect<_TYPE_>::copy(const TRUSTVect& v, Array_base::Resize_Optio
 template<typename _TYPE_>
 inline void TRUSTVect<_TYPE_>::copy_(const TRUSTVect& v, Array_base::Resize_Options opt)
 {
+  this->checkDataOnHost();
+  v.checkDataOnHost();
   assert(&v != this); // Il faut avoir fait le test avant !
   // Si le vecteur a deja une structure parallele, la copie n'est autorisee que si
   // le vecteur source a la meme structure. Si ce n'est pas le cas, utiliser inject_array() pour copier uniquement les valeurs, ou faire d'abord reset() si on veut ecraser la structure.
@@ -267,6 +272,7 @@ inline void TRUSTVect<_TYPE_>::set_md_vector(const MD_Vector& md_vector)
 template<typename _TYPE_>
 inline void TRUSTVect<_TYPE_>::echange_espace_virtuel()
 {
+  this->checkDataOnHost();
   MD_Vector_tools::echange_espace_virtuel(*this);
 }
 
@@ -274,6 +280,7 @@ inline void TRUSTVect<_TYPE_>::echange_espace_virtuel()
 template<typename _TYPE_>
 inline void TRUSTVect<_TYPE_>::ecrit(Sortie& os) const
 {
+  this->checkDataOnHost();
   TRUSTArray<_TYPE_>::printOn(os);
   os << (int)-1 << finl; // le marqueur -1 indique que c'est le nouveau format "ecrit", sans structure parallele
 }
