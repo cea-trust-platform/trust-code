@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,10 +13,10 @@
 *
 *****************************************************************************/
 
-#ifndef O_U_Ptr_included
-#define O_U_Ptr_included
-#include <Objet_U.h>
+#ifndef Objet_U_ptr_included
+#define Objet_U_ptr_included
 
+#include <Objet_U.h>
 
 class Nom;
 
@@ -25,48 +25,45 @@ class Nom;
  * Le constructeur par defaut construit un pointeur "nul".
  *
  *
- * @sa Ref_ Deriv_ Memoire_
+ * @sa Ref_ Deriv_
  */
-class O_U_Ptr : public Objet_U
+class Objet_U_ptr: public Objet_U
 {
-  Declare_base_sans_constructeur_ni_destructeur(O_U_Ptr);
+  Declare_base_sans_constructeur_ni_destructeur(Objet_U_ptr);
 
 public:
-  int        non_nul() const;
-  const Nom&    le_nom() const override;
-  // Renvoie le Type_info du type de base accepte par le pointeur
-  // (l'objet pointe derive obligatoirement de ce type).
+  int non_nul() const;
+  const Nom& le_nom() const override;
+  // Renvoie le Type_info du type de base accepte par le pointeur (l'objet pointe derive obligatoirement de ce type).
   virtual const Type_info& get_info_ptr() const = 0;
 
 protected:
-  ~O_U_Ptr() override;
-  O_U_Ptr();
+  ~Objet_U_ptr() override;
+  Objet_U_ptr();
 
-  virtual void      set_O_U_Ptr(Objet_U *);
-  virtual Objet_U * get_O_U_Ptr() const;
-  int            get_ptr_cle() const;
-  int            get_ptr_object_id() const;
+  virtual void set_Objet_U_ptr(Objet_U*);
+  virtual Objet_U* get_Objet_U_ptr() const;
+  int get_ptr_cle() const;
+  int get_ptr_object_id() const;
 
-  void              recopie(const Objet_U&);
-  int            change_num(const int* const) override; // renumerotation des objets
+  void recopie(const Objet_U&);
+  int change_num(const int* const) override; // renumerotation des objets
 
-  Objet_U *         get_O_U_Ptr_check() const;
-  int            check_O_U_Ptr_type(const Objet_U * ptr) const;
+  Objet_U* get_Objet_U_ptr_check() const;
+  int check_Objet_U_ptr_type(const Objet_U *ptr) const;
 
 private:
-  O_U_Ptr(const O_U_Ptr&);
-  const O_U_Ptr& operator=(const O_U_Ptr&);
+  Objet_U_ptr(const Objet_U_ptr&);
+  const Objet_U_ptr& operator=(const Objet_U_ptr&);
 
   // cle_ est le numero de cle de l'objet en reference.
   // Si cle_ == -1, le pointeur est "nul".
   // L'objet peut etre recupere par la_memoire().objet_u(cle_)
-  // Attention, la cle_ peut changer au cours du deroulement du
-  // programme (voir Memoire::comprimer())
-  int    cle_;
+  // Attention, la cle_ peut changer au cours du deroulement du programme (voir Memoire::comprimer())
+  int cle_;
   // ptr_object_id_ est l'object_id_ de l'objet en reference.
-  // Permet de tester facilement si on pointe sur l'objet que
-  // l'on croit.
-  int    ptr_object_id_;
+  // Permet de tester facilement si on pointe sur l'objet que l'on croit.
+  int ptr_object_id_;
 };
 
-#endif // O_U_Ptr_H
+#endif // Objet_U_ptr_H

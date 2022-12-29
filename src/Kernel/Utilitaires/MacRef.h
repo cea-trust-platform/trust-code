@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,27 +53,27 @@
   _INLINE_REF_ const _TYPE_& REF(_TYPE_)::valeur() const        \
   {                                                                \
     assert(pointeur_ != 0);                                        \
-    assert(get_O_U_Ptr_check() || 1);                                \
+    assert(get_Objet_U_ptr_check() || 1);                                \
     return *pointeur_;                                                \
   }                                                                \
                                                                 \
   _INLINE_REF_ _TYPE_& REF(_TYPE_)::valeur()                        \
   {                                                                \
     assert(pointeur_ != 0);                                        \
-    assert(get_O_U_Ptr_check() || 1);                                \
+    assert(get_Objet_U_ptr_check() || 1);                                \
     return *pointeur_;                                                \
   }                                                                \
                                                                 \
   _INLINE_REF_ const _TYPE_* REF(_TYPE_)::operator->() const        \
   {                                                                \
     assert(pointeur_ != 0);                                        \
-    assert(get_O_U_Ptr_check() || 1);                                \
+    assert(get_Objet_U_ptr_check() || 1);                                \
     return pointeur_;                                                \
   }                                                                \
   _INLINE_REF_ _TYPE_* REF(_TYPE_)::operator->()                \
   {                                                                \
     assert(pointeur_ != 0);                                        \
-    assert(get_O_U_Ptr_check() || 1);                                \
+    assert(get_Objet_U_ptr_check() || 1);                                \
     return pointeur_;                                                \
   }
 
@@ -101,10 +101,10 @@
     const REF(_TYPE_)& operator=(const REF(_TYPE_)& );                \
     operator const _TYPE_&() const;                                \
     operator _TYPE_&();                                                \
-    /* methode reimplementee de O_U_Ptr : */                        \
+    /* methode reimplementee de Objet_U_ptr : */                        \
     const Type_info & get_info_ptr() const override;                        \
   protected:                                                        \
-    void set_O_U_Ptr(Objet_U *) override;                                \
+    void set_Objet_U_ptr(Objet_U *) override;                                \
   private:                                                        \
     /* Le pointeur doit absolument etre de type _TYPE_* */        \
     /* (voir commentaires ci-dessus) */                                \
@@ -127,20 +127,20 @@
   }                                                                        \
   REF(_TYPE_)::REF(_TYPE_)(const _TYPE_& t) :  Ref_()                        \
   {                                                                        \
-    set_O_U_Ptr((_TYPE_ *) &t);                                                \
+    set_Objet_U_ptr((_TYPE_ *) &t);                                                \
   }                                                                        \
   REF(_TYPE_)::REF(_TYPE_)(const REF(_TYPE_)& t) :  Ref_()                \
   {                                                                        \
-    set_O_U_Ptr(t.pointeur_);                                                \
+    set_Objet_U_ptr(t.pointeur_);                                                \
   }                                                                        \
   const REF(_TYPE_)& REF(_TYPE_)::operator=(const _TYPE_& t)                \
   {                                                                        \
-    set_O_U_Ptr((_TYPE_ *) &t);                                                \
+    set_Objet_U_ptr((_TYPE_ *) &t);                                                \
     return *this;                                                        \
   }                                                                        \
   const REF(_TYPE_)& REF(_TYPE_)::operator=(const REF(_TYPE_)& t)        \
   {                                                                        \
-    set_O_U_Ptr(t.pointeur_);                                                \
+    set_Objet_U_ptr(t.pointeur_);                                                \
     return *this;                                                        \
   }                                                                        \
   /* Le resultat de == est positif si r1 et r2 pointent */                \
@@ -169,9 +169,9 @@
     const Type_info * type_info = _TYPE_::info();                        \
     return *type_info;                                                        \
   }                                                                        \
-  void REF(_TYPE_)::set_O_U_Ptr(Objet_U * objet)                        \
+  void REF(_TYPE_)::set_Objet_U_ptr(Objet_U * objet)                        \
   {                                                                        \
-    O_U_Ptr::set_O_U_Ptr(objet);                                        \
+    Objet_U_ptr::set_Objet_U_ptr(objet);                                        \
     if (objet)                                                                \
       /* Attention: cette conversion de type est non triviale */        \
       /* si le _TYPE_ est issu d'un heritage multiple. */                \

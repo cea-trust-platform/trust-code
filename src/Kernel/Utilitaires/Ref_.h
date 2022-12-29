@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,16 +15,16 @@
 
 #ifndef Ref__included
 #define Ref__included
-#include <O_U_Ptr.h>
+#include <Objet_U_ptr.h>
 #include <Nom.h>
 
 /*! @brief classe Ref_ un type qui permet d'acceder a un objet de la classe Objet_U ou
  *
  *      de l'une quelconque des classes derivees de la classe Objet_U
  *
- * @sa O_U_Ptr Objet_U
+ * @sa Objet_U_ptr Objet_U
  */
-class Ref_ : public O_U_Ptr
+class Ref_ : public Objet_U_ptr
 {
   Declare_base(Ref_);
 public:

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,7 +16,7 @@
 
 #ifndef Deriv__included
 #define Deriv__included
-#include <O_U_Ptr.h>
+#include <Objet_U_ptr.h>
 
 /*! @brief Type de base de tous les types DERIV(__TYPE__).
  *
@@ -26,9 +26,9 @@
  *    30/06/2004, B.Mathieu : la template version n'est plus a jour.
  *
  *
- * @sa TpltDeriv O_U_Ptr
+ * @sa TpltDeriv Objet_U_ptr
  */
-class Deriv_ : public O_U_Ptr
+class Deriv_ : public Objet_U_ptr
 {
   Declare_base(Deriv_);
 public:

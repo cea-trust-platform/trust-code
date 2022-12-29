@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,31 +13,31 @@
 *
 *****************************************************************************/
 
-#include <O_U_Ptr.h>
-#include <Nom.h>
+#include <Objet_U_ptr.h>
 #include <Memoire.h>
+#include <Nom.h>
 
-Implemente_base_sans_constructeur_ni_destructeur(O_U_Ptr,"O_U_Ptr",Objet_U);
+Implemente_base_sans_constructeur_ni_destructeur(Objet_U_ptr,"Objet_U_ptr",Objet_U);
 
-/*! @brief Surcharge Objet_U::printOn(Sortie&) Ecriture de la cle d'un O_U_Ptr sur un flot de sortie.
+/*! @brief Surcharge Objet_U::printOn(Sortie&) Ecriture de la cle d'un Objet_U_ptr sur un flot de sortie.
  *
  *     A definir avec readOn. Pour l'instant :
  *     os << cle_ << finl;
  *
  */
-Sortie& O_U_Ptr::printOn(Sortie& os) const
+Sortie& Objet_U_ptr::printOn(Sortie& os) const
 {
-  get_O_U_Ptr_check();
+  get_Objet_U_ptr_check();
   return os << cle_ << finl;
 }
 
-/*! @brief Surcharge Objet_U::readOn(Entree&) Lecture d'un O_U_Ptr (par sa cle) dans un flot d'entree
+/*! @brief Surcharge Objet_U::readOn(Entree&) Lecture d'un Objet_U_ptr (par sa cle) dans un flot d'entree
  *
  *     ATTENTION: Le comportement de cette fonction est a definir.
  *                Pour l'instant: ne fait rien.
  *
  */
-Entree& O_U_Ptr::readOn(Entree& is)
+Entree& Objet_U_ptr::readOn(Entree& is)
 {
   // Il y aurait deux choix pertinents:
   // choix 1:
@@ -60,7 +60,7 @@ Entree& O_U_Ptr::readOn(Entree& is)
  * Il ne detruit pas l'objet en reference
  *
  */
-O_U_Ptr::~O_U_Ptr()
+Objet_U_ptr::~Objet_U_ptr()
 {
   // Paranoia : on rend le pointeur invalide
   cle_ = -2;
@@ -69,7 +69,7 @@ O_U_Ptr::~O_U_Ptr()
 /*! @brief construit un pointeur nul (cle a -1)
  *
  */
-O_U_Ptr::O_U_Ptr() :
+Objet_U_ptr::Objet_U_ptr() :
   cle_(-1),
   ptr_object_id_(-1)
 {
@@ -78,7 +78,7 @@ O_U_Ptr::O_U_Ptr() :
 /*! @brief Constructeur par copie
  *
  */
-O_U_Ptr::O_U_Ptr(const O_U_Ptr& ptr): Objet_U(ptr)
+Objet_U_ptr::Objet_U_ptr(const Objet_U_ptr& ptr): Objet_U(ptr)
 {
   assert(0);
 }
@@ -86,7 +86,7 @@ O_U_Ptr::O_U_Ptr(const O_U_Ptr& ptr): Objet_U(ptr)
 /*! @brief Operateur copie
  *
  */
-const O_U_Ptr& O_U_Ptr::operator=(const O_U_Ptr& ptr)
+const Objet_U_ptr& Objet_U_ptr::operator=(const Objet_U_ptr& ptr)
 {
   assert(0);
   return *this;
@@ -95,9 +95,9 @@ const O_U_Ptr& O_U_Ptr::operator=(const O_U_Ptr& ptr)
 /*! @brief Renvoie 1 si le pointeur est non_nul Renvoie 0 sinon.
  *
  */
-int O_U_Ptr::non_nul() const
+int Objet_U_ptr::non_nul() const
 {
-  assert(get_O_U_Ptr_check() || 1);
+  assert(get_Objet_U_ptr_check() || 1);
   return (cle_ >= 0);
 }
 
@@ -110,7 +110,7 @@ int O_U_Ptr::non_nul() const
  *  Renvoie l'adresse de l'objet pointe (de type Objet_U)
  *
  */
-Objet_U * O_U_Ptr::get_O_U_Ptr_check() const
+Objet_U * Objet_U_ptr::get_Objet_U_ptr_check() const
 {
   if (cle_ != -1 || ptr_object_id_ != -1)
     {
@@ -122,7 +122,7 @@ Objet_U * O_U_Ptr::get_O_U_Ptr_check() const
       else
         {
           Cerr << "(PE" << me() << ") ";
-          Cerr << "Error in O_U_Ptr::get_O_U_Ptr_check() : id != ptr_object_id_\n";
+          Cerr << "Error in Objet_U_ptr::get_Objet_U_ptr_check() : id != ptr_object_id_\n";
           Cerr << " Pointer type " << le_type();
           Cerr << "\n cle_           = " << cle_;
           Cerr << "\n ptr_object_id_ = " << ptr_object_id_;
@@ -140,7 +140,7 @@ Objet_U * O_U_Ptr::get_O_U_Ptr_check() const
 /*! @brief Verifie que l'objet pointe par ptr est d'un type acceptable pour le pointeur (avec get_info_ptr)
  *
  */
-int O_U_Ptr::check_O_U_Ptr_type(const Objet_U * ptr) const
+int Objet_U_ptr::check_Objet_U_ptr_type(const Objet_U * ptr) const
 {
   if (ptr == 0)
     return 1; // Le pointeur nul est valide
@@ -155,7 +155,7 @@ int O_U_Ptr::check_O_U_Ptr_type(const Objet_U * ptr) const
   if (! type_info_ptr.can_cast(&type_info_obj))
     {
       Cerr << "(PE" << me() << ") ";
-      Cerr << "Error in O_U_Ptr::get_O_U_Ptr_check() : Type error\n";
+      Cerr << "Error in Objet_U_ptr::get_Objet_U_ptr_check() : Type error\n";
       Cerr << " Pointer type " << le_type();
       Cerr << "\n cle_           = " << cle_;
       Cerr << "\n ptr_object_id_ = " << ptr_object_id_;
@@ -173,10 +173,10 @@ int O_U_Ptr::check_O_U_Ptr_type(const Objet_U * ptr) const
  * le_nom() si le pointeur est non nul ou "Pointeur Nul"
  *
  */
-const Nom& O_U_Ptr::le_nom() const
+const Nom& Objet_U_ptr::le_nom() const
 {
   static Nom nom("Pointeur Nul");
-  const Objet_U * addr = get_O_U_Ptr_check();
+  const Objet_U * addr = get_Objet_U_ptr_check();
   if (addr)
     return addr->le_nom();
   return nom;
@@ -187,7 +187,7 @@ const Nom& O_U_Ptr::le_nom() const
  * @param (const int* const new_ones) tableau de la nouvelle numerotation
  * @return (int) la nouvelle cle du pointeur
  */
-int O_U_Ptr::change_num(const int* const new_ones)
+int Objet_U_ptr::change_num(const int* const new_ones)
 {
   Objet_U::change_num(new_ones);
 
@@ -202,18 +202,18 @@ int O_U_Ptr::change_num(const int* const new_ones)
  *
  * @param (const Objet_U& obj) reference sur l'Objet_U a copier
  */
-void O_U_Ptr::recopie(const Objet_U& obj)
+void Objet_U_ptr::recopie(const Objet_U& obj)
 {
   int cle = obj.duplique();
   Memoire& memoire = Memoire::Instance();
   Objet_U& objet = memoire.objet_u(cle);
-  set_O_U_Ptr(& objet);
+  set_Objet_U_ptr(& objet);
 }
 
 /*! @brief Renvoie un pointeur sur l'Objet_U associe ATTENTION: l'adresse peut etre nulle (si le pointeur est nul)
  *
  */
-Objet_U * O_U_Ptr::get_O_U_Ptr() const
+Objet_U * Objet_U_ptr::get_Objet_U_ptr() const
 {
   const Objet_U * objet;
   if (cle_ < 0)
@@ -225,14 +225,14 @@ Objet_U * O_U_Ptr::get_O_U_Ptr() const
       Memoire& memoire = Memoire::Instance();
       objet = & memoire.objet_u(cle_);
     }
-  assert(objet == get_O_U_Ptr_check());
+  assert(objet == get_Objet_U_ptr_check());
   return (Objet_U*) objet;
 }
 
 /*! @brief Fait pointer *this sur l'objet *ptr L'adresse peut etre nulle (pointeur nul).
  *
  */
-void O_U_Ptr::set_O_U_Ptr(Objet_U * ptr)
+void Objet_U_ptr::set_Objet_U_ptr(Objet_U * ptr)
 {
   if (ptr != 0)
     {
@@ -247,16 +247,16 @@ void O_U_Ptr::set_O_U_Ptr(Objet_U * ptr)
   // Il suffit de tester le type ici : si le type est bon ici
   // et qu'ensuite l'object_id_ ne change pas, alors le
   // type est toujours bon.
-  assert(check_O_U_Ptr_type(ptr));
-  assert(get_O_U_Ptr_check() == ptr);
+  assert(check_Objet_U_ptr_type(ptr));
+  assert(get_Objet_U_ptr_check() == ptr);
 }
 
-int O_U_Ptr::get_ptr_cle() const
+int Objet_U_ptr::get_ptr_cle() const
 {
   return cle_;
 }
 
-int O_U_Ptr::get_ptr_object_id() const
+int Objet_U_ptr::get_ptr_object_id() const
 {
   return ptr_object_id_;
 }

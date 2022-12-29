@@ -365,9 +365,9 @@ int Memoire::imprime() const
           else
             {
               Cerr << "TYPE :" << obj.le_type()<< flush;
-              if (sub_type(O_U_Ptr, obj))
+              if (sub_type(Objet_U_ptr, obj))
                 {
-                  const O_U_Ptr& x=ref_cast(O_U_Ptr, obj);
+                  const Objet_U_ptr& x=ref_cast(Objet_U_ptr, obj);
                   Cerr << " key: " << x << flush;
                 }
               else

@@ -38,6 +38,6 @@ Entree& Cond_lim::readOn(Entree& s )
 void Cond_lim::adopt(Cond_lim& cl)
 {
   detach();
-  set_O_U_Ptr(&(cl.valeur()));
-  cl.set_O_U_Ptr(NULL);
+  set_Objet_U_ptr(&(cl.valeur()));
+  cl.set_Objet_U_ptr(NULL);
 }

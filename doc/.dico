@@ -595,6 +595,7 @@
  Not Not StdFunction.h
  Objet_a_lire Objet_a_lire Objet_a_lire.h
  objet_interne_ptrPram ptrParam ptrParam.h
+ Objet_U_ptr Objet_U_ptr Objet_U_ptr.h
  OctreeRoot OctreeRoot Octree.h
  Operateurs_Statistique_tps Operateurs_Statistique_tps Operateurs_Statistique_tps.h
  Operateur_base Operateur_base Operateur_base.h
@@ -751,7 +752,6 @@
  Op_Rot_VEFPreP1B_P1NC Op_Rot_VEFP1B Op_Rot_VEFP1B.h
  OrienteFacesBord OrienteFacesBord OrienteFacesBord.h
  Orienter_Simplexes_old Orienter_Simplexes Orienter_Simplexes.h
- O_U_Ptr O_U_Ptr O_U_Ptr.h
  Parallel_io_parameters Parallel_io_parameters Parallel_io_parameters.h
  Parametre_diffusion_implicite Parametre_diffusion_implicite Parametre_diffusion_implicite.h
  Parametre_equation Parametre_equation Parametre_equation.h

@@ -85,9 +85,9 @@ protected:
   Sortie& printOn(Sortie& os) const override { return Deriv_::printOn(os); }
   Entree& readOn(Entree& is) override  { return Deriv_::readOn(is); }
 
-  void set_O_U_Ptr(Objet_U *objet) override
+  void set_Objet_U_ptr(Objet_U *objet) override
   {
-    O_U_Ptr::set_O_U_Ptr(objet);
+    Objet_U_ptr::set_Objet_U_ptr(objet);
     /* Attention: cette conversion de type est non triviale. si le _TYPE_ est issu d'un heritage multiple. */
     if (objet) pointeur_ = (_CLASSE_*) objet;
     else pointeur_ = (_CLASSE_*) 0;
@@ -107,28 +107,28 @@ public:
   inline const _CLASSE_& valeur() const
   {
     assert(pointeur_ != 0);
-    assert(get_O_U_Ptr_check() || 1);
+    assert(get_Objet_U_ptr_check() || 1);
     return *pointeur_;
   }
 
   inline _CLASSE_& valeur()
   {
     assert(pointeur_ != 0);
-    assert(get_O_U_Ptr_check() || 1);
+    assert(get_Objet_U_ptr_check() || 1);
     return *pointeur_;
   }
 
   inline const _CLASSE_* operator ->() const
   {
     assert(pointeur_ != 0);
-    assert(get_O_U_Ptr_check() || 1);
+    assert(get_Objet_U_ptr_check() || 1);
     return pointeur_;
   }
 
   inline _CLASSE_* operator ->()
   {
     assert(pointeur_ != 0);
-    assert(get_O_U_Ptr_check() || 1);
+    assert(get_Objet_U_ptr_check() || 1);
     return pointeur_;
   }
 
@@ -213,7 +213,7 @@ public:
   {
     detach();
     if (t.non_nul()) recopie(t.valeur());
-    else Deriv_::set_O_U_Ptr((Objet_U *) 0); /* Elie Saikali : Attention pas la classe mere ! */
+    else Deriv_::set_Objet_U_ptr((Objet_U *) 0); /* Elie Saikali : Attention pas la classe mere ! */
     return *this;
   }
 
@@ -228,8 +228,8 @@ public:
   {
     detach();
     Objet_U& objet = deriv_obj.valeur();
-    set_O_U_Ptr(&objet);
-    deriv_obj.set_O_U_Ptr((Objet_U*) 0);
+    set_Objet_U_ptr(&objet);
+    deriv_obj.set_Objet_U_ptr((Objet_U*) 0);
   }
 };
 

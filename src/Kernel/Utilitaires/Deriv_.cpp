@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,7 +19,7 @@
 
 extern const Nom& deriv_vide();
 
-Implemente_base_sans_destructeur(Deriv_,"Deriv_",O_U_Ptr);
+Implemente_base_sans_destructeur(Deriv_,"Deriv_",Objet_U_ptr);
 
 Deriv_::~Deriv_()
 {
@@ -29,7 +29,7 @@ Deriv_::~Deriv_()
 
 Sortie& Deriv_::printOn(Sortie& os)  const
 {
-  const Objet_U * objet = get_O_U_Ptr();
+  const Objet_U * objet = get_Objet_U_ptr();
   if (objet)
     {
       os << objet->le_type() << finl;
@@ -60,7 +60,7 @@ Entree& Deriv_::readOn(Entree& is)
         }
     }
   // Appel a la methode virtuelle : met a jour le pointeur_
-  set_O_U_Ptr(objet);
+  set_Objet_U_ptr(objet);
   // Lecture de l'objet derive
   if (objet)
     is >> (*objet);
@@ -69,10 +69,10 @@ Entree& Deriv_::readOn(Entree& is)
 
 void Deriv_::detach()
 {
-  Objet_U * ptr = get_O_U_Ptr();
+  Objet_U * ptr = get_Objet_U_ptr();
   if (ptr)
     delete ptr;
-  set_O_U_Ptr((Objet_U *) 0);
+  set_Objet_U_ptr((Objet_U *) 0);
 }
 
 /*! @brief Essaie de creer une instance du type "type".
@@ -89,7 +89,7 @@ Objet_U * Deriv_::typer(const char* type)
   const Type_info * type_info = Type_info::type_info_from_name(type);
   // Type de base du DERIV:
   const Type_info& type_base = get_info_ptr();
-  if ( get_O_U_Ptr())
+  if ( get_Objet_U_ptr())
     {
       //Cerr<<"on avait deja typer ???"<<finl;
       detach();
@@ -134,13 +134,13 @@ Objet_U * Deriv_::typer(const char* type)
       // Cree une instance du type decrit dans type_info
       instance = type_info->instance();
     }
-  set_O_U_Ptr(instance);
+  set_Objet_U_ptr(instance);
   return instance;
 }
 
 int Deriv_::associer_(Objet_U& objet)
 {
-  Objet_U * ptr = get_O_U_Ptr_check();
+  Objet_U * ptr = get_Objet_U_ptr_check();
   assert(ptr != 0);
   int resu = ptr->associer_(objet);
   return resu;
