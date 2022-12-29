@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,17 +17,11 @@
 #define EDO_Pression_th_included
 
 #include <EDO_Pression_th_base.h>
-#include <Deriv.h>
+#include <TRUST_Deriv.h>
 
 /*! @brief class EDO_Pression_th Cette classe est la derivee de la classe EDO_Pression_th_base
  *
- *
- *
- * @sa EDO_Pression_th_base
  */
-
-Declare_deriv(EDO_Pression_th_base);
-
 class EDO_Pression_th : public DERIV(EDO_Pression_th_base)
 {
   Declare_instanciable(EDO_Pression_th);

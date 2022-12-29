@@ -16,8 +16,8 @@
 #ifndef Operateur_included
 #define Operateur_included
 
-#include <Discretisation.h>
 #include <Ref_Champ_Inc_base.h>
+#include <Discretisation.h>
 #include <Ref_Champ_Inc.h>
 #include <Champ_Inc.h>
 #include <Motcle.h>

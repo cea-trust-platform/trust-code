@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,9 +15,7 @@
 
 #include <Sous_zone_dis.h>
 
-Implemente_deriv(Sous_zone_dis_base);
 Implemente_instanciable(Sous_zone_dis,"Sous_zone_dis",DERIV(Sous_zone_dis_base));
-
 
 Sortie& Sous_zone_dis::printOn(Sortie& os) const
 {

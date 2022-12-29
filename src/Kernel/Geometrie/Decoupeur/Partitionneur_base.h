@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,13 +16,12 @@
 #define Partitionneur_base_included
 
 #include <TRUSTTabs_forward.h>
-#include <Deriv.h>
 #include <Noms.h>
 
-class Domaine;
-class Zone;
 class Static_Int_Lists;
+class Domaine;
 class Param;
+class Zone;
 
 /*! @brief Classe de base des partitionneurs de domaine (pour decouper un maillage avant un calcul parallele).
  *
@@ -69,5 +68,4 @@ protected:
   Noms liste_bords_periodiques_;
 };
 
-Declare_deriv(Partitionneur_base);
 #endif

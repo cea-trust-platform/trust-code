@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,19 +13,14 @@
 *
 *****************************************************************************/
 
-#include <Elem_poly.h>
-#include <Tri_poly.h>
-#include <Tetra_poly.h>
 #include <Quadri_poly.h>
+#include <Tetra_poly.h>
+#include <Elem_poly.h>
 #include <Hexa_poly.h>
+#include <Tri_poly.h>
 #include <Nom.h>
 
-Implemente_deriv(Elem_poly_base);
 Implemente_instanciable(Elem_poly,"Elem_poly",DERIV(Elem_poly_base));
-
-
-
-// printOn et readOn
 
 Sortie& Elem_poly::printOn(Sortie& s ) const
 {

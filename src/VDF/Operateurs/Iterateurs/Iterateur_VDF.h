@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,8 +17,7 @@
 #define Iterateur_VDF_included
 
 #include <Iterateur_VDF_base.h>
-
-Declare_deriv(Iterateur_VDF_base);
+#include <TRUST_Deriv.h>
 
 class Iterateur_VDF : public DERIV(Iterateur_VDF_base)
 {

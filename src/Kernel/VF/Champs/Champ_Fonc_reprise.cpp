@@ -13,8 +13,8 @@
 *
 *****************************************************************************/
 
-#include <Deriv_Entree_Fichier_base.h>
 #include <EcritureLectureSpecial.h>
+#include <Entree_Fichier_base.h>
 #include <Champ_Fonc_reprise.h>
 #include <LecFicDiffuseBin.h>
 #include <Champ_Generique.h>
@@ -22,6 +22,7 @@
 #include <Probleme_base.h>
 #include <FichierHDFPar.h>
 #include <stat_counters.h>
+#include <TRUST_Deriv.h>
 #include <Op_Moyenne.h>
 #include <Parser_U.h>
 #include <Avanc.h>

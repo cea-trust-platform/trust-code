@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,19 +13,14 @@
 *
 *****************************************************************************/
 
-#include <Elem_VEF.h>
-#include <Tri_VEF.h>
 #include <Tetra_VEF.h>
 #include <Quadri_VEF.h>
 #include <Hexa_VEF.h>
+#include <Elem_VEF.h>
+#include <Tri_VEF.h>
 #include <Motcle.h>
 
-Implemente_deriv(Elem_VEF_base);
 Implemente_instanciable(Elem_VEF,"Elem_VEF",DERIV(Elem_VEF_base));
-
-
-
-// printOn et readOn
 
 Sortie& Elem_VEF::printOn(Sortie& s ) const
 {

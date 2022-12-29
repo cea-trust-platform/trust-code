@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,28 +15,14 @@
 
 
 #include <Parametre_equation.h>
-#include <Parametre_equation_base.h>
 
-Implemente_deriv(Parametre_equation_base);
 Implemente_instanciable(Parametre_equation,"Parametre_equation",DERIV(Parametre_equation_base));
 
-
-/*! @brief Impression de la source sur un flot de sortie.
- *
- * @param (Sortie& os) le flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Parametre_equation::printOn(Sortie& os) const
 {
   return DERIV(Parametre_equation_base)::printOn(os);
 }
 
-
-/*! @brief Lecture de la source sur un flot d'entree.
- *
- * @param (Entree& is) le flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Parametre_equation::readOn(Entree& is)
 {
   return DERIV(Parametre_equation_base)::readOn(is);

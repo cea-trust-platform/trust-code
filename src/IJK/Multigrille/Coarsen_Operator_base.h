@@ -41,6 +41,4 @@ protected:
   virtual void ajouter_param(Param& param) {};
 };
 
-Declare_deriv(Coarsen_Operator_base);
-
 #endif

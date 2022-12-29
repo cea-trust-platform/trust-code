@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,11 +16,8 @@
 #ifndef Elem_geom_included
 #define Elem_geom_included
 
-
-
-
 #include <Elem_geom_base.h>
-
+#include <TRUST_Deriv.h>
 
 /*! @brief Classe Elem_geom Classe generique de la hierarchie des elements geometriques, un objet
  *
@@ -28,15 +25,11 @@
  *      Elem_geom_base.
  *      La plupart des methodes appellent les methodes de l'objet Elem_geom_base
  *      sous-jacent via la methode valeur() declaree grace a la macro
- * Declare_deriv().;
  *
  */
-Declare_deriv(Elem_geom_base);
 class Elem_geom : public DERIV(Elem_geom_base)
 {
-
   Declare_instanciable(Elem_geom);
-
 public:
 
   inline void associer_zone(const Zone& );

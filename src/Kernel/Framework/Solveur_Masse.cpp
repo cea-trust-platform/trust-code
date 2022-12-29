@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,37 +13,21 @@
 *
 *****************************************************************************/
 
-
+#include <Discretisation_base.h>
 #include <Solveur_Masse.h>
 #include <Equation_base.h>
-#include <Discretisation_base.h>
 
-
-Implemente_deriv(Solveur_Masse_base);
 Implemente_instanciable(Solveur_Masse,"Solveur_Masse",DERIV(Solveur_Masse_base));
 
-
-/*! @brief Imprime le solveur de masse sur un flot de sortie.
- *
- * @param (Sortie& os) le flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Solveur_Masse::printOn(Sortie& os) const
 {
   return DERIV(Solveur_Masse_base)::printOn(os);
 }
 
-
-/*! @brief Lit le solveur de masse sur un flot d'entree.
- *
- * @param (Entree& is) le flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Solveur_Masse::readOn(Entree& is)
 {
   return DERIV(Solveur_Masse_base)::readOn(is);
 }
-
 
 /*! @brief Construit le bon type de Solveur de masse.
  *

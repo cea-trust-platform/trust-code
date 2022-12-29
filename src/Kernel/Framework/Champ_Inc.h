@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,6 +17,7 @@
 #define Champ_Inc_included
 
 #include <Champ_Inc_base.h>
+#include <TRUST_Deriv.h>
 
 /*! @brief classe Champ_Inc Classe generique de la hierarchie des champs inconnue, un objet
  *
@@ -24,12 +25,9 @@
  *      Champ_Inc_base.
  *      La plupart des methodes appellent les methodes de l'objet champ
  *      sous-jacent via la methode valeur() declaree grace a la macro
- * Declare_deriv().;
  *
  * @sa Ch_Inc_base Zone_dis Ch_proto
  */
-
-Declare_deriv(Champ_Inc_base);
 
 class Champ_Inc : public DERIV(Champ_Inc_base), public Champ_Proto
 {

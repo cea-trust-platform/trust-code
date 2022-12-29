@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,15 +17,8 @@
 #include <Discretisation_base.h>
 #include <Equation_base.h>
 
-Implemente_deriv(Modele_turbulence_scal_base);
 Implemente_instanciable(Modele_turbulence_scal,"Modele_turbulence_scal",DERIV(Modele_turbulence_scal_base));
 
-
-/*! @brief Ecrit le type de l'objet sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Modele_turbulence_scal::printOn(Sortie& s ) const
 {
   return s << valeur().que_suis_je() << finl;

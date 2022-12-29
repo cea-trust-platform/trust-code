@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,6 @@
 
 #include <Champ_Generique.h>
 
-Implemente_deriv(Champ_Generique_base);
 Implemente_instanciable(Champ_Generique,"Champ_Generique",DERIV(Champ_Generique_base));
 
 Sortie& Champ_Generique::printOn(Sortie& os) const

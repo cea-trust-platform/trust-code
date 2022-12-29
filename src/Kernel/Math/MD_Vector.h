@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,8 +15,8 @@
 #ifndef MD_Vector_included
 #define MD_Vector_included
 
-#include <Deriv_MD_Vector_base.h>
-class MD_Vector_base;
+#include <MD_Vector_base.h>
+#include <TRUST_Deriv.h>
 
 // Options for arithmetic operations on vectors (mp_min_vect_local, apply_operator, etc...)
 //  VECT_SEQUENTIAL_ITEMS: compute requested operation only on sequential items (real items that are not received from another processor)

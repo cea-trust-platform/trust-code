@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,9 +17,7 @@
 #define Schema_Temps_included
 
 #include <Schema_Temps_base.h>
-#include <Deriv.h>
-
-Declare_deriv(Schema_Temps_base);
+#include <TRUST_Deriv.h>
 
 /*! @brief classe Schema_Temps Classe generique de la hierarchie des schemas en temps, un objet
  *
@@ -27,7 +25,6 @@ Declare_deriv(Schema_Temps_base);
  *      Schema_Temps_base.
  *      La plupart des methodes appellent les methodes de l'objet
  *      Schema_Temps_base sous-jacent via la methode valeur() declaree grace
- * alamacroDeclare_deriv().;
  *
  * @sa Sch_Tps_base
  */

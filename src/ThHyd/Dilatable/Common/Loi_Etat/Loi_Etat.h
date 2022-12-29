@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,16 +17,11 @@
 #define Loi_Etat_included
 
 #include <Loi_Etat_base.h>
+#include <TRUST_Deriv.h>
 
 /*! @brief class Loi_Etat Cette classe est la derivee de la classe Loi_Etat_base
  *
- *
- *
- * @sa Loi_Etat_base
  */
-
-Declare_deriv(Loi_Etat_base);
-
 class Loi_Etat : public DERIV(Loi_Etat_base)
 {
   Declare_instanciable(Loi_Etat);

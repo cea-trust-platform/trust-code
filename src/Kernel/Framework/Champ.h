@@ -16,10 +16,8 @@
 #ifndef Champ_included
 #define Champ_included
 
+#include <TRUST_Deriv.h>
 #include <Champ_base.h>
-#include <Deriv.h>
-
-Declare_deriv(Champ_base);
 
 /*! @brief class Champ Cette classe sert a representer n'importe quelle classe derivee de la classe Champ_base
  *

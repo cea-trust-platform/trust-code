@@ -17,6 +17,7 @@
 #define TRUST_Deriv_included
 
 #include <Deriv_.h>
+#include <Nom.h>
 
 /*! @brief classe TRUST_Deriv
  *
@@ -174,6 +175,10 @@ public:
  *   - reprendre
  *   - sauvegarder
  *
+ *   Utilisation :
+ *   - TRUST_Deriv_Objet_U
+ *   ou
+ *   - DerObjU
  */
 class TRUST_Deriv_Objet_U : public TRUST_Deriv<Objet_U>
 {
@@ -227,5 +232,7 @@ public:
     deriv_obj.set_O_U_Ptr((Objet_U*) 0);
   }
 };
+
+using DerObjU = TRUST_Deriv_Objet_U;
 
 #endif /* TRUST_Deriv_included */

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,19 +16,16 @@
 #ifndef Source_included
 #define Source_included
 
-
 #include <Source_base.h>
+#include <TRUST_Deriv.h>
 
 class Equation_base;
-
-Declare_deriv(Source_base);
 
 /*! @brief classe Source Classe generique de la hierarchie des sources, un objet Source peut
  *
  *      referencer n'importe quel d'objet derivant de Source_base.
  *      La plupart des methodes appellent les methodes de l'objet Probleme
  *      sous-jacent via la methode valeur() declaree grace a la macro
- * Declare_deriv().;
  *
  * @sa Source_base
  */

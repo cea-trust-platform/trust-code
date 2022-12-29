@@ -18,7 +18,6 @@
 #include <Champ_base.h>
 #include <Champ_Don.h>
 
-Implemente_deriv(Operateur_Evanescence_base);
 Implemente_instanciable(Operateur_Evanescence,"Operateur_Evanescence",DERIV(Operateur_Evanescence_base));
 
 Sortie& Operateur_Evanescence::printOn(Sortie& os) const { return Operateur::ecrire(os); }

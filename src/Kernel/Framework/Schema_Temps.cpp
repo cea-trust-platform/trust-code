@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,29 +15,14 @@
 
 #include <Schema_Temps.h>
 
-Implemente_deriv(Schema_Temps_base);
 Implemente_instanciable(Schema_Temps,"Schema_Temps",DERIV(Schema_Temps_base));
 
-
-/*! @brief Surcharge Objet_U::printOn(Sortie&) Impression du schema en temps sur un flot de sortie.
- *
- * @param (Sortie& os) le flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Schema_Temps::printOn(Sortie& os) const
 {
   return DERIV(Schema_Temps_base)::printOn(os);
 }
 
-
-/*! @brief Lecture du schema en temps sur un flot d'entree.
- *
- * @param (Entree& is) le flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Schema_Temps::readOn(Entree& is)
 {
   return DERIV(Schema_Temps_base)::readOn(is);
 }
-
-

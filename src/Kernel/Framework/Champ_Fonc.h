@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,8 +17,7 @@
 #define Champ_Fonc_included
 
 #include <Champ_Fonc_base.h>
-
-Declare_deriv(Champ_Fonc_base);
+#include <TRUST_Deriv.h>
 
 /*! @brief classe Champ_Fonc Classe generique de la hierarchie des champs fontions du temps,
  *

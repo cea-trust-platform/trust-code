@@ -16,7 +16,8 @@
 #ifndef Parser_included
 #define Parser_included
 
-#include <Deriv_UnaryFunction.h>
+#include <UnaryFunction.h>
+#include <TRUST_Deriv.h>
 #include <TRUST_List.h>
 #include <Constante.h>
 #include <Variable.h>

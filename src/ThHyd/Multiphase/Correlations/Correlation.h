@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,9 +16,9 @@
 #ifndef Correlation_included
 #define Correlation_included
 
-#include <Ref.h>
-#include <Deriv.h>
 #include <Correlation_base.h>
+#include <TRUST_Deriv.h>
+#include <Ref.h>
 
 /*! @brief classe Correlation Un objet Correlation peut referencer n'importe quel objet
  *
@@ -26,10 +26,6 @@
  *
  * @sa Correlation_base
  */
-
-class Correlation_base;
-
-Declare_deriv(Correlation_base);
 
 class Correlation : public DERIV(Correlation_base)
 {

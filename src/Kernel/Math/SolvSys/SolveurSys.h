@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,8 +26,7 @@
 
 #include <SolveurSys_base.h>
 #include <Matrice_Base.h>
-
-Declare_deriv(SolveurSys_base);
+#include <TRUST_Deriv.h>
 
 class SolveurSys : public DERIV(SolveurSys_base)
 {

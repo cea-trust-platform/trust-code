@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,8 @@
 #define PE_Groups_included
 
 #include <TRUSTTabs_forward.h>
-#include <Deriv_Comm_Group.h>
+#include <TRUST_Deriv.h>
+#include <Comm_Group.h>
 
 /*! @brief : Cette classe regroupe des fonctions permettant la creation, la
  *

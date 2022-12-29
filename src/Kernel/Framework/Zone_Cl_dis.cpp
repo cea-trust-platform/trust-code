@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,26 +15,13 @@
 
 #include <Zone_Cl_dis.h>
 
-Implemente_deriv(Zone_Cl_dis_base);
 Implemente_instanciable(Zone_Cl_dis,"Zone_Cl_dis",DERIV(Zone_Cl_dis_base));
 
-
-/*! @brief NE FAIT RIEN
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Zone_Cl_dis::printOn(Sortie& os) const
 {
   return os;
 }
 
-
-/*! @brief NE FAIT RIEN
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Zone_Cl_dis::readOn(Entree& is)
 {
   return is;

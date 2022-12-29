@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,26 +21,13 @@
 #include <TRUSTTabs.h>
 #include <Source.h>
 
-Implemente_deriv(Source_base);
 Implemente_instanciable(Source,"Source",DERIV(Source_base));
 
-
-/*! @brief Impression de la source sur un flot de sortie.
- *
- * @param (Sortie& os) le flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Source::printOn(Sortie& os) const
 {
   return DERIV(Source_base)::printOn(os);
 }
 
-
-/*! @brief Lecture de la source sur un flot d'entree.
- *
- * @param (Entree& is) le flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Source::readOn(Entree& is)
 {
   return DERIV(Source_base)::readOn(is);

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,26 +15,13 @@
 
 #include <Cond_lim.h>
 
-Implemente_deriv(Cond_lim_base);
 Implemente_instanciable(Cond_lim,"Cond_lim",DERIV(Cond_lim_base));
 
-
-/*! @brief Surcharge Objet_U::printOn(Sortie&) Imprime seulement le nom de la condition aux limites.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Cond_lim::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
-
-/*! @brief Lit la condition aux limites sur un flot d'entree.
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Cond_lim::readOn(Entree& s )
 {
   return DERIV(Cond_lim_base)::readOn(s) ;

@@ -16,14 +16,15 @@
 #ifndef Zone_included
 #define Zone_included
 
-#include <Deriv_OctreeRoot.h>
 #include <Faces_Internes.h>
 #include <Ref_Domaine.h>
 #include <TRUSTArrays.h>
+#include <TRUST_Deriv.h>
 #include <TRUSTList.h>
 #include <Elem_geom.h>
 #include <TRUSTTabs.h>
 #include <Raccords.h>
+#include <Octree.h>
 #include <Joints.h>
 #include <Bords.h>
 #include <Noms.h>

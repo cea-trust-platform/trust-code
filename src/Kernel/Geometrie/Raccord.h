@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,23 +17,19 @@
 #define Raccord_included
 
 #include <Raccord_base.h>
-
-Declare_deriv(Raccord_base);
+#include <TRUST_Deriv.h>
 
 /*! @brief Classe Raccord Classe generique de la hierarchie des raccords, un objet Raccord
  *
  *     peut referencer n'importe quel objet derivant de Raccord_base.
  *     La plupart des methodes appellent les methodes de l'objet Probleme
  *     sous-jacent via la methode valeur() declaree grace a la macro
- * Declare_deriv().;
  *
  * @sa Frontiere Raccord_base
  */
 class Raccord : public DERIV(Raccord_base)
 {
   Declare_instanciable(Raccord);
-public:
-private :
 };
 
 #endif

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,31 +15,14 @@
 
 #include <Elem_geom.h>
 
-
-Implemente_deriv(Elem_geom_base);
 Implemente_instanciable(Elem_geom,"Elem_geom",DERIV(Elem_geom_base));
 
-
-/*! @brief
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Elem_geom::printOn(Sortie& s ) const
 {
   return DERIV(Elem_geom_base)::printOn(s);
 }
 
-
-
-/*! @brief
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Elem_geom::readOn(Entree& s )
 {
   return DERIV(Elem_geom_base)::readOn(s);
 }
-
-

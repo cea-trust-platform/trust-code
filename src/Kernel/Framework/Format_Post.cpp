@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,30 +13,15 @@
 *
 *****************************************************************************/
 
-
 #include <Format_Post.h>
 
-
-Implemente_deriv(Format_Post_base);
 Implemente_instanciable(Format_Post,"Format_Post",DERIV(Format_Post_base));
 
-
-/*! @brief Impression de Format_Post sur un flot de sortie.
- *
- * @param (Sortie& os) le flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Format_Post::printOn(Sortie& os) const
 {
   return DERIV(Format_Post_base)::printOn(os);
 }
 
-
-/*! @brief Lecture de Format_Post sur un flot d'entree.
- *
- * @param (Entree& is) le flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Format_Post::readOn(Entree& is)
 {
   return DERIV(Format_Post_base)::readOn(is);

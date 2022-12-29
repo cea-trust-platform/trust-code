@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,10 +16,7 @@
 #ifndef liste_included
 #define liste_included
 
-
-
-
-#include <DerOu_.h>
+#include <TRUST_Deriv.h>
 
 /*! @brief Les classes liste et liste_curseur representent une liste de Deriv<Objet_U> et un curseur associe.
  *

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,6 @@
 
 #include <Iterateur_VDF.h>
 
-Implemente_deriv(Iterateur_VDF_base);
 Implemente_instanciable(Iterateur_VDF, "Iterateur_VDF", DERIV(Iterateur_VDF_base));
 
 Entree& Iterateur_VDF::readOn(Entree& s) { return s; }

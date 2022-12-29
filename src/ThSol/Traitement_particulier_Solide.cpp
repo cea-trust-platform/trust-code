@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,15 +16,12 @@
 #include <Traitement_particulier_Solide.h>
 #include <Conduction.h>
 
-Implemente_deriv(Traitement_particulier_Solide_base);
 Implemente_instanciable(Traitement_particulier_Solide,"Traitement_particulier_Solide",DERIV(Traitement_particulier_Solide_base));
-
 
 Sortie& Traitement_particulier_Solide::printOn(Sortie& is) const
 {
   return DERIV(Traitement_particulier_Solide_base)::printOn(is);
 }
-
 
 Entree& Traitement_particulier_Solide::readOn(Entree& is)
 {

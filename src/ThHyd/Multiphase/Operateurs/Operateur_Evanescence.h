@@ -17,6 +17,7 @@
 #define Operateur_Evanescence_included
 
 #include <Operateur_Evanescence_base.h>
+#include <TRUST_Deriv.h>
 #include <Operateur.h>
 
 /*! @brief classe Operateur_Evanescence Classe generique de la hierarchie des operateurs representant un terme
@@ -26,7 +27,6 @@
  *
  * @sa Operateur_base Operateur
  */
-Declare_deriv(Operateur_Evanescence_base);
 
 class Operateur_Evanescence : public Operateur, public DERIV(Operateur_Evanescence_base)
 {

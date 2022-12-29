@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,21 +16,15 @@
 #ifndef Parametre_equation_included
 #define Parametre_equation_included
 
-
-class Parametre_equation_base;
-#include <Deriv.h>
-
-Declare_deriv(Parametre_equation_base);
+#include <Parametre_equation_base.h>
+#include <TRUST_Deriv.h>
 
 /*! @brief classe Parametre_equation Classe generique de la hierarchie des Parametres_equation_base
- *
- *
  *
  */
 class Parametre_equation : public DERIV(Parametre_equation_base)
 {
   Declare_instanciable(Parametre_equation);
 };
-
 
 #endif

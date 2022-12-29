@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,27 +15,13 @@
 
 #include <Champ_Fonc.h>
 
-Implemente_deriv(Champ_Fonc_base);
 Implemente_instanciable(Champ_Fonc,"Champ_Fonc",DERIV(Champ_Fonc_base));
 
-
-
-/*! @brief Lecture d'un Champ_Fonc sur un flot d'entree
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Champ_Fonc::readOn(Entree& s)
 {
   return DERIV(Champ_Fonc_base)::readOn(s);
 }
 
-
-/*! @brief Ecriture d'un Champ_Fonc sur un flot de sortie
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Champ_Fonc::printOn(Sortie& s) const
 {
   return DERIV(Champ_Fonc_base)::printOn(s);

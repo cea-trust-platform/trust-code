@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,17 +16,14 @@
 #ifndef Modele_turbulence_scal_included
 #define Modele_turbulence_scal_included
 
+#include <Modele_turbulence_scal_base.h>
+#include <TRUST_Deriv.h>
 
 /*! @brief class Modele_turbulence_scal Cette classe represente n'importe quelle classe
  *
  *  derivee de Modele_turbulence_scal_base
  *
  */
-
-#include <Modele_turbulence_scal_base.h>
-
-Declare_deriv(Modele_turbulence_scal_base);
-
 class Modele_turbulence_scal : public MorEqn, public DERIV(Modele_turbulence_scal_base)
 {
 

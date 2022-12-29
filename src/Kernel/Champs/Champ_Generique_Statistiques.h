@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,8 +19,7 @@
 //temporaire voir si classe a supprimer
 
 #include <Champ_Generique_Statistiques_base.h>
-
-Declare_deriv(Champ_Generique_Statistiques_base);
+#include <TRUST_Deriv.h>
 
 /*! @brief : Cette classe sert a representer n'importe quelle classe
  *

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,9 +17,7 @@
 #define Sous_zone_dis_included
 
 #include <Sous_zone_dis_base.h>
-
-Declare_deriv(Sous_zone_dis_base);
-
+#include <TRUST_Deriv.h>
 
 //! Classe generique de la hierarchie des sous-zones discretisees.
 /**

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,28 +13,20 @@
 *
 *****************************************************************************/
 
-#include <Turbulence_paroi_scal.h>
-#include <Probleme_base.h>
-#include <Equation_base.h>
-#include <Discretisation_base.h>
-#include <Mod_turb_hyd_base.h>
 #include <Modele_turbulence_scal_base.h>
 #include <Convection_Diffusion_std.h>
+#include <Turbulence_paroi_scal.h>
+#include <Discretisation_base.h>
+#include <Mod_turb_hyd_base.h>
+#include <Equation_base.h>
+#include <Probleme_base.h>
 
-Implemente_deriv(Turbulence_paroi_scal_base);
 Implemente_instanciable(Turbulence_paroi_scal,"Turbulence_paroi_scal",DERIV(Turbulence_paroi_scal_base));
 
-
-/*! @brief Ecrit le type de l'objet sur un flot de sortie
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Turbulence_paroi_scal::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
-
 
 /*! @brief Lit les caracteristques de la loi de parois a partir d'un flot d'entree.
  *

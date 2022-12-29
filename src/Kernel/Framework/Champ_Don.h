@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,16 +13,11 @@
 *
 *****************************************************************************/
 
-
-
 #ifndef Champ_Don_included
 #define Champ_Don_included
 
 #include <Champ_Don_base.h>
-
-Declare_deriv(Champ_Don_base);
-
-
+#include <TRUST_Deriv.h>
 
 /*! @brief classe Champ_Don Classe generique de la hierarchie des champs donnes, un objet
  *
@@ -30,7 +25,6 @@ Declare_deriv(Champ_Don_base);
  *      Champ_Don_base.
  *      La plupart des methodes appellent les methodes de l'objet Probleme
  *      sous-jacent via la methode valeur() declaree grace a la macro
- * Declare_deriv().;
  *
  * @sa Champ_Don_base Ch_proto
  */

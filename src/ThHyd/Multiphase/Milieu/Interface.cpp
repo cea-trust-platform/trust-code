@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,6 @@
 
 #include <Interface.h>
 
-Implemente_deriv(Interface_base);
 Implemente_instanciable(Interface,"Interface",DERIV(Interface_base));
 
 Sortie& Interface::printOn(Sortie& os) const { return DERIV(Interface_base)::printOn(os); }

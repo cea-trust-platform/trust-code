@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,18 +14,15 @@
 *****************************************************************************/
 
 #include <Interpolation_IBM.h>
-#include <Nom.h>
 
-Implemente_deriv(Interpolation_IBM_base);
-Implemente_instanciable( Interpolation_IBM, "Interpolation_IBM", DERIV(Interpolation_IBM_base) ) ;
+Implemente_instanciable( Interpolation_IBM, "Interpolation_IBM", DERIV(Interpolation_IBM_base) );
 
-Sortie& Interpolation_IBM::printOn( Sortie& os ) const
+Sortie& Interpolation_IBM::printOn(Sortie& os) const
 {
-  DERIV(Interpolation_IBM_base)::printOn( os );
-  return os;
+  return DERIV(Interpolation_IBM_base)::printOn(os);
 }
 
-Entree& Interpolation_IBM::readOn( Entree& is )
+Entree& Interpolation_IBM::readOn(Entree& is)
 {
   return DERIV(Interpolation_IBM_base)::readOn(is);
 }

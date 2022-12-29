@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,7 +18,8 @@
 #include <Zone_VF.h>
 #include <Postraitement.h>
 #include <Discretisation_base.h>
-#include <Deriv_Zone.h>
+#include <TRUST_Deriv.h>
+#include <Zone.h>
 #include <Equation_base.h>
 #include <Champ_front_uniforme.h>
 #include <Dirichlet_homogene.h>

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,25 +13,17 @@
 *
 *****************************************************************************/
 
+#include <Discretisation_base.h>
+#include <Equation_base.h>
 #include <Mod_turb_hyd.h>
 #include <Motcle.h>
-#include <Equation_base.h>
-#include <Discretisation_base.h>
 
-Implemente_deriv(Mod_turb_hyd_base);
 Implemente_instanciable(Mod_turb_hyd,"Mod_turb_hyd",DERIV(Mod_turb_hyd_base));
 
-
-/*! @brief
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Mod_turb_hyd::printOn(Sortie& s ) const
 {
   return DERIV(Mod_turb_hyd_base)::printOn(s);
 }
-
 
 /*! @brief Lit les specifications d'un modele de turbulence a partir d'un flot d'entree.
  *

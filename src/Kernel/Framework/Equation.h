@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,11 +17,7 @@
 #define Equation_included
 
 #include <Equation_base.h>
-
-
-
-
-Declare_deriv(Equation_base);
+#include <TRUST_Deriv.h>
 
 /*! @brief classe Equation Classe generique de la hierarchie des equations.
  *
@@ -29,7 +25,6 @@ Declare_deriv(Equation_base);
  *      referencer n'importe quel objet derivant de Equation_base.
  *      La plupart des methodes appellent les methodes de l'objet Probleme
  *      sous-jacent via la methode valeur() declaree grace a la macro
- * Declare_deriv().;
  *
  * @sa Eqn_base Operateur Proprietes Champ_Inc
  */
@@ -53,12 +48,6 @@ public :
   inline const Milieu_base& milieu() const;
   inline Milieu_base& milieu();
 };
-/*
-inline Equation::Equation(const Equation_base& eqn)
-  : DERIV(Equation_base)(eqn)
-{
-}
-*/
 
 
 /*! @brief Appel a l'objet sous-jacent.

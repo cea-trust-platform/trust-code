@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,8 +13,6 @@
 *
 *****************************************************************************/
 
-
-
 #ifndef NbCasesParNoeuds
 #define NbCasesParNoeuds 512
 #endif
@@ -25,13 +23,7 @@
 #include <Octree.h>
 
 Implemente_instanciable_sans_constructeur(OctreeRoot,"OctreeRoot",Objet_U);
-Implemente_deriv(OctreeRoot);
 
-/*! @brief
- *
- * @param (Sortie& is) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Octree::printOn(Sortie& is) const
 {
   int nb_octrees=Octree::nombre_d_octrees();
@@ -50,58 +42,27 @@ Sortie& Octree::printOn(Sortie& is) const
   return is << finl;
 }
 
-/*! @brief NE FAIT RIEN
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree
- */
 Entree& Octree::readOn(Entree& is)
 {
   return is;
 }
 
-
-/*! @brief Simple appel a: Octree::printOn(Sortie&)
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& OctreeRoot::printOn(Sortie& os) const
 {
   return Octree::printOn(os);
 }
 
-
-/*! @brief Simple appel a: Octree::readOn(Entree&)
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& OctreeRoot::readOn(Entree& is)
 {
   return Octree::readOn(is);
 }
 
-
-/*! @brief Appelle  Octree::printOn(Sortie&) et ecrit le numero des elements sur le
- *
- *     flot de sortie.
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& OctreeFloor::printOn(Sortie& os) const
 {
   Octree::printOn(os);
   return os << num_elem << finl;
 }
 
-
-/*! @brief Simple appel a: Octree::readOn(Entree&)
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& OctreeFloor::readOn(Entree& is)
 {
   return Octree::readOn(is);

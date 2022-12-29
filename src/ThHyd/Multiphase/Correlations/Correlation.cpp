@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,9 +15,7 @@
 
 #include <Correlation.h>
 
-Implemente_deriv(Correlation_base);
 Implemente_instanciable(Correlation,"Correlation0",DERIV(Correlation_base));
-
 
 Entree& Correlation::readOn(Entree& is)
 {

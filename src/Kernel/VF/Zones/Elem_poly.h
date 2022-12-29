@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,23 +16,13 @@
 #ifndef Elem_poly_included
 #define Elem_poly_included
 
-/*! @brief class Elem_poly
- *
- */
 
-
-#include <Elem_poly_base.h>
 #include <TRUSTTabs_forward.h>
-#include <Deriv.h>
+#include <Elem_poly_base.h>
+#include <TRUST_Deriv.h>
 
 class Champ_Inc_base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Elem_poly
-//
-//////////////////////////////////////////////////////////////////////////////
-Declare_deriv(Elem_poly_base);
 class Elem_poly: public DERIV(Elem_poly_base)
 {
   Declare_instanciable(Elem_poly);

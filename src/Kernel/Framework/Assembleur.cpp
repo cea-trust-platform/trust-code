@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,33 +14,18 @@
 *****************************************************************************/
 
 #include <Assembleur.h>
-#include <Assembleur_base.h>
 
-Implemente_deriv(Assembleur_base);
 Implemente_instanciable(Assembleur,"Assembleur",DERIV(Assembleur_base));
 
-
-/*! @brief Simple appel a Assembleur_base::printOn(Sortie&) Imprime l'equation et ses composants sur un flot de sortie.
- *
- * @param (Sortie& os) le flot de sortie de sauvegarde
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Assembleur::printOn(Sortie& os) const
 {
   return DERIV(Assembleur_base)::printOn(os);
 }
 
-
-/*! @brief Simple appel a Assembleur_base::readOn(Entree&) Imprime l'equation et ses composants sur un flot de sortie.
- *
- * @param (Entree& is) le flot d'entree pour la lecture d'une equation
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Assembleur::readOn(Entree& is)
 {
   return DERIV(Assembleur_base)::readOn(is);
 }
-
 
 /*! @brief Appel a l'objet sous-jacent.
  *

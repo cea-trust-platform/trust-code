@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,9 +18,8 @@
 #include <Schema_Comm.h>
 #include <TRUSTArrays.h>
 #include <TRUSTTabs.h>
-#include <Motcle.h>
-#include <DerOu_.h>
 #include <TRUSTTab.h>
+#include <Motcle.h>
 
 /*! @brief Envoi de messages point-to-point synchrone entre la source et la cible.
  *
@@ -401,7 +400,7 @@ int is_parallel_object(const Objet_U& obj)
   int erreur = 0;
   if (Process::je_suis_maitre())
     {
-      DERIV(Objet_U) copie;
+      DerObjU copie;
       const int n = Process::nproc();
       for (int i = 1; i < n; i++)
         {
@@ -437,7 +436,7 @@ int is_parallel_object(const Objet_U& obj)
   else
     {
       // On envoie un objet de type DERIV..
-      DERIV(Objet_U) copie(obj);
+      DerObjU copie(obj);
       envoyer(copie, 0, 67 /* tag */);
     }
 

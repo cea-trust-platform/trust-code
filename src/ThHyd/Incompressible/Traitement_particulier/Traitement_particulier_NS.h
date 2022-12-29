@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,14 +13,12 @@
 *
 *****************************************************************************/
 
-
 #ifndef Traitement_particulier_NS_included
 #define Traitement_particulier_NS_included
 
 #include <Traitement_particulier_NS_base.h>
-#include <Deriv.h>
+#include <TRUST_Deriv.h>
 
-Declare_deriv(Traitement_particulier_NS_base);
 /*! @brief classe Traitement_particulier_NS
  *
  * @sa Navier_Stokes_Turbulent, Traitement_particulier_NS_base
@@ -38,9 +36,6 @@ public :
   inline void sauver_stat(void) const;
   inline void reprendre_stat(void);
   inline void en_cours_de_resolution(int , DoubleTab& , DoubleTab& ,double);
-
-protected :
-
 };
 
 inline void Traitement_particulier_NS::associer_eqn(const Equation_base& eqn)

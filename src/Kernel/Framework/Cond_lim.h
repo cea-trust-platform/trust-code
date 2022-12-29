@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,22 +13,17 @@
 *
 *****************************************************************************/
 
-
-
 #ifndef Cond_lim_included
 #define Cond_lim_included
 
 #include <Cond_lim_base.h>
-
-
-Declare_deriv(Cond_lim_base);
+#include <TRUST_Deriv.h>
 
 /*! @brief classe Cond_lim Classe generique servant a representer n'importe quelle classe
  *
  *     derivee de la classe Cond_lim_base
  *     La plupart des methodes appellent les methodes de l'objet Probleme
  *     sous-jacent via la methode valeur() declaree grace a la macro
- * Declare_deriv().;
  *
  * @sa Cond_lim_base
  */

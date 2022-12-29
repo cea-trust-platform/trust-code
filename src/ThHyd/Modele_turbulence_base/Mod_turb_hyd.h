@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,15 +13,11 @@
 *
 *****************************************************************************/
 
-
 #ifndef Mod_turb_hyd_included
 #define Mod_turb_hyd_included
 
 #include <Mod_turb_hyd_base.h>
-
-Declare_deriv(Mod_turb_hyd_base);
-
-
+#include <TRUST_Deriv.h>
 
 /*! @brief Classe Mod_turb_hyd Classe generique de la hierarchie des modeles de turbulence utilises
  *
@@ -30,7 +26,6 @@ Declare_deriv(Mod_turb_hyd_base);
  *     Mod_turb_hyd_base.
  *     La plupart des methodes appellent les methodes de l'objet Mod_turb_hyd
  *     sous-jacent via la methode valeur() declaree grace a la macro
- * Declare_deriv().;
  *
  * @sa Mod_turb_hyd_base MorEqn
  */

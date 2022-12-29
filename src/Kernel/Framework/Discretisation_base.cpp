@@ -13,22 +13,17 @@
 *
 *****************************************************************************/
 
-#include <Discretisation_base.h>
-#include <Zone_VF.h>
 #include <Schema_Temps_base.h>
-#include <Probleme_base.h>
 #include <Champ_Fonc_Tabule.h>
+#include <Champ_Uniforme.h>
+#include <Probleme_base.h>
 #include <Equation_base.h>
 #include <Milieu_base.h>
-#include <Champ_Uniforme.h>
 #include <Interprete.h>
+#include <Zone_VF.h>
 
 Implemente_base(Discretisation_base,"Discretisation_base",Objet_U);
-
-Implemente_deriv(Discretisation_base);
-
 Implemente_ref(Discretisation_base);
-
 Implemente_instanciable(Discretisation,"Discretisation",DERIV(Discretisation_base));
 
 const Motcle Discretisation_base::demande_description = Motcle("demande_description");

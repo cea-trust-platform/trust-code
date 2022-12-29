@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,29 +14,14 @@
 *****************************************************************************/
 
 #include <Modele_Permeabilite.h>
-#include <Motcle.h>
 
-Implemente_deriv(Modele_Permeabilite_base);
 Implemente_instanciable(Modele_Permeabilite,"Modele_Permeabilite",DERIV(Modele_Permeabilite_base));
 
-/*! @brief Imprime le type du modele sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Modele_Permeabilite::printOn(Sortie& s ) const
 {
   return DERIV(Modele_Permeabilite_base)::printOn(s);
 }
 
-
-/*! @brief Lit les specifications d'un modele Permeabilite a partir d'un flot d'entree.
- *
- *     Controle dynamique du type du terme source.
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Modele_Permeabilite::readOn(Entree& s )
 {
   return s;

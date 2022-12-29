@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,26 +15,13 @@
 
 #include <Champ_Don.h>
 
-Implemente_deriv(Champ_Don_base);
 Implemente_instanciable(Champ_Don,"Champ_Don",DERIV(Champ_Don_base));
 
-
-/*! @brief Surcharge Objet_U::printOn(Sortie&) Imprime le champ sur un flot de sortie.
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Champ_Don::printOn(Sortie& os) const
 {
   return DERIV(Champ_Don_base)::printOn(os);
 }
 
-
-/*! @brief Surcharge Objet_U::readOn(Entree&) Lecture du champ a partir d'un flot d'entree.
- *
- * @param (Entree& is) le flot d'entree sur lequel lire
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Champ_Don::readOn(Entree& is)
 {
   return DERIV(Champ_Don_base)::readOn(is);

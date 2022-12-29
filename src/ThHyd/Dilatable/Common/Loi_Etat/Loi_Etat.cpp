@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,7 +16,6 @@
 #include <Loi_Etat.h>
 #include <Motcle.h>
 
-Implemente_deriv(Loi_Etat_base);
 Implemente_instanciable(Loi_Etat,"Loi_Etat",DERIV(Loi_Etat_base));
 
 Sortie& Loi_Etat::printOn(Sortie& os) const

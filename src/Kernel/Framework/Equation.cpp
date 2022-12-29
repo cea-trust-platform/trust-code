@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,26 +15,13 @@
 
 #include <Equation.h>
 
-Implemente_deriv(Equation_base);
 Implemente_instanciable(Equation,"Equation",DERIV(Equation_base));
 
-
-/*! @brief Imprime l'equation et ses composants sur un flot de sortie.
- *
- * @param (Sortie& os) le flot de sortie de sauvegarde
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Equation::printOn(Sortie& os) const
 {
   return DERIV(Equation_base)::printOn(os);
 }
 
-
-/*! @brief Imprime l'equation et ses composants sur un flot de sortie.
- *
- * @param (Entree& is) le flot d'entree pour la lecture d'une equation
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Equation::readOn(Entree& is)
 {
   return DERIV(Equation_base)::readOn(is);

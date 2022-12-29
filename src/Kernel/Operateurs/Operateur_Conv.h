@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,16 +13,13 @@
 *
 *****************************************************************************/
 
-
 #ifndef Operateur_Conv_included
 #define Operateur_Conv_included
 
 #include <Operateur_Conv_base.h>
-#include <Operateur.h>
 #include <Ref_Champ_base.h>
-
-Declare_deriv(Operateur_Conv_base);
-
+#include <TRUST_Deriv.h>
+#include <Operateur.h>
 
 /*! @brief classe Operateur_Conv Classe generique de la hierarchie des operateurs representant un terme
  *

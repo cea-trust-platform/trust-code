@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,6 +16,9 @@
 #ifndef Precond_included
 #define Precond_included
 
+#include <Precond_base.h>
+#include <TRUST_Deriv.h>
+
 /*! @brief class Precond Un Precond represente n'importe qu'elle classe
  *
  *   derivee de la classe Precond_base
@@ -23,12 +26,6 @@
  *
  * @sa SSOR Precond_base
  */
-
-#include <Precond_base.h>
-#include <Deriv.h>
-
-Declare_deriv(Precond_base);
-
 class Precond : public DERIV(Precond_base)
 {
   Declare_instanciable(Precond);

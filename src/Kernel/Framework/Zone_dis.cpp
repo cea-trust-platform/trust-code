@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,26 +15,13 @@
 
 #include <Zone_dis.h>
 
-Implemente_deriv(Zone_dis_base);
 Implemente_instanciable(Zone_dis,"Zone_dis",DERIV(Zone_dis_base));
 
-
-/*! @brief Surcharge Objet_U::printOn(Sortie&) Imprime la zone discretisee sur un flot de sortie.
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Zone_dis::printOn(Sortie& os) const
 {
   return DERIV(Zone_dis_base)::printOn(os);
 }
 
-
-/*! @brief Surcharge Objet_U::readOn(Entree&) Lit la zone discretisee a partir d'un flot d'entree.
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Zone_dis::readOn(Entree& is)
 {
   return DERIV(Zone_dis_base)::readOn(is);

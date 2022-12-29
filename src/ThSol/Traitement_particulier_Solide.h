@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,14 +13,12 @@
 *
 *****************************************************************************/
 
-
 #ifndef Traitement_particulier_Solide_included
 #define Traitement_particulier_Solide_included
 
 #include <Traitement_particulier_Solide_base.h>
-#include <Deriv.h>
+#include <TRUST_Deriv.h>
 
-Declare_deriv(Traitement_particulier_Solide_base);
 /*! @brief classe Traitement_particulier_Solide
  *
  * @sa Conduction, Traitement_particulier_Solide_base

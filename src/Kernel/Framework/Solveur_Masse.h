@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,17 +13,13 @@
 *
 *****************************************************************************/
 
-
 #ifndef Solveur_Masse_included
 #define Solveur_Masse_included
 
-#include <Deriv.h>
 #include <Solveur_Masse_base.h>
+#include <TRUST_Deriv.h>
 
 class Matrice_Base;
-Declare_deriv(Solveur_Masse_base);
-
-
 
 /*! @brief classe Solveur_Masse Classe generique de la hierarchie des solveurs de masse, un objet
  *
@@ -31,7 +27,6 @@ Declare_deriv(Solveur_Masse_base);
  *      Solveur_Masse_base.
  *      La plupart des methodes appellent les methodes de l'objet Solveur_Masse
  *      sous-jacent via la methode valeur() declaree grace a la macro
- * Declare_deriv().;
  *      Contrairement a la classe de base (Solveur_Masse_base) Solveur_Masse
  *      contient une reference vers l'equation associee car il herite de MorEqn.
  *

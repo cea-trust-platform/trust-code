@@ -16,7 +16,6 @@
 #include <Coarsen_Operator_base.h>
 
 Implemente_base(Coarsen_Operator_base, "Coarsen_Operator_base", Objet_U);
-Implemente_deriv(Coarsen_Operator_base);
 
 Entree& Coarsen_Operator_base::readOn(Entree& is)
 {

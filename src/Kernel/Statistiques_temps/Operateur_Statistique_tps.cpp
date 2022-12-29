@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,40 +15,8 @@
 
 #include <Operateur_Statistique_tps.h>
 
-Implemente_deriv(Operateur_Statistique_tps_base);
-Implemente_instanciable(Operateur_Statistique_tps,"Operateur_Statistique_tps",DERIV(Operateur_Statistique_tps_base));
+Implemente_instanciable(Operateur_Statistique_tps, "Operateur_Statistique_tps", DERIV(Operateur_Statistique_tps_base));
 
+Sortie& Operateur_Statistique_tps::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-/*! @brief Imprime le type et le nom de l'operateur statistique sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- */
-
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-Sortie& Operateur_Statistique_tps::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-
-/*! @brief NE FAIT RIEN
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& Operateur_Statistique_tps::readOn(Entree& s )
-{
-  return s ;
-}
-
-
-
-
+Entree& Operateur_Statistique_tps::readOn(Entree& s) { return s; }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,31 +15,13 @@
 
 #include <Traitement_particulier_NS.h>
 
-Implemente_deriv(Traitement_particulier_NS_base);
 Implemente_instanciable(Traitement_particulier_NS,"Traitement_particulier_NS",DERIV(Traitement_particulier_NS_base));
 
-
-/*! @brief Impression de l'equation sur un flot de sortie.
- *
- * Simple appel a Equation_base::printOn(Sortie&).
- *
- * @param (Sortie& is) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Traitement_particulier_NS::printOn(Sortie& is) const
 {
   return DERIV(Traitement_particulier_NS_base)::printOn(is);
 }
 
-
-/*! @brief Lit les specifications de l'equation de Navier Stokes a partir d'un flot d'entree.
- *
- *     Simple appel a Navier_Stokes_std::readOn(Entree&)
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- * @throws pas de modele de turbulence speficie
- */
 Entree& Traitement_particulier_NS::readOn(Entree& is)
 {
   return DERIV(Traitement_particulier_NS_base)::readOn(is);

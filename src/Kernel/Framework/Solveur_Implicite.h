@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,33 +13,20 @@
 *
 *****************************************************************************/
 
+#ifndef Solveur_Implicite_included
+#define Solveur_Implicite_included
 
-
+#include <Solveur_Implicite_Base.h>
+#include <TRUST_Deriv.h>
 
 /*! @brief class Solveur_Implicite Solveur represente n'importe qu'elle classe
  *
  *  derivee de la classe Solveur_Implicite_base
  *
  */
-
-
-
-#ifndef Solveur_Implicite_included
-#define Solveur_Implicite_included
-
-#include <Solveur_Implicite_Base.h>
-
-#include <Deriv.h>
-Declare_deriv(Solveur_Implicite_Base);
-
 class Solveur_Implicite : public  DERIV(Solveur_Implicite_Base)
 {
   Declare_instanciable(Solveur_Implicite);
-
-public :
-
 };
 
-
 #endif
-

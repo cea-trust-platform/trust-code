@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,6 +16,9 @@
 #ifndef SolvElem_included
 #define SolvElem_included
 
+#include <SolvElem_base.h>
+#include <TRUST_Deriv.h>
+#include <Nom.h>
 
 /*! @brief class SolvElem Un SolvElem represente n'importe qu'elle classe
  *
@@ -24,13 +27,6 @@
  *
  * @sa SolvElem_base
  */
-
-#include <SolvElem_base.h>
-#include <Deriv.h>
-#include <Nom.h>
-
-Declare_deriv(SolvElem_base);
-
 class SolvElem : public DERIV(SolvElem_base)
 {
   Declare_instanciable(SolvElem);

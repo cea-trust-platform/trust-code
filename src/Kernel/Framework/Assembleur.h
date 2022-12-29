@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,8 +16,6 @@
 #ifndef Assembleur_included
 #define Assembleur_included
 
-#include <Deriv.h>
-
 /*! @brief classe Assembleur Classe generique de la hierarchie des Assembleurs de systemes.
  *
  * Un objet Assembleur peut
@@ -27,13 +25,13 @@
  */
 
 #include <TRUSTTabs_forward.h>
-class Assembleur_base;
+#include <Assembleur_base.h>
+#include <TRUST_Deriv.h>
+
 class Equation_base;
 class Matrice;
 class Zone_dis_base;
 class Zone_Cl_dis_base;
-
-Declare_deriv(Assembleur_base);
 
 class Assembleur : public DERIV(Assembleur_base)
 {

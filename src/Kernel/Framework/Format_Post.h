@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,11 +12,12 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+
 #ifndef Format_Post_included
 #define Format_Post_included
 
 #include <Format_Post_base.h>
-Declare_deriv(Format_Post_base);
+#include <TRUST_Deriv.h>
 
 class Format_Post : public DERIV(Format_Post_base)
 {
@@ -24,7 +25,6 @@ class Format_Post : public DERIV(Format_Post_base)
 
 public :
   void typer_direct(const Nom& );
-
 };
 
 #endif

@@ -16,7 +16,8 @@
 #ifndef Postraitements_included
 #define Postraitements_included
 
-//#include <Postraitement_base.h>
+#include <Postraitement_base.h>
+#include <TRUST_Deriv.h>
 #include <TRUST_List.h>
 
 /*! @brief classe Postraitements Cette classe represente une liste de postraitements
@@ -25,10 +26,8 @@
  */
 
 class Probleme_base;
-class Postraitement_base;
 class Entree;
 class Motcle;
-Declare_deriv(Postraitement_base);
 
 class Postraitements : public LIST(DERIV(Postraitement_base))
 {

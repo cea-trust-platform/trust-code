@@ -18,11 +18,10 @@
 
 #include <Turbulence_paroi_base.h>
 #include <TRUST_Vector.h>
+#include <TRUST_Deriv.h>
 
 class Pb_Hydraulique;
 class Probleme_base;
-
-Declare_deriv(Turbulence_paroi_base);
 
 /*! @brief Classe Turbulence_paroi Classe generique de la hierarchie des turbulences au niveau de la
  *
@@ -30,7 +29,6 @@ Declare_deriv(Turbulence_paroi_base);
  *     objet derivant Turbulence_paroi_base.
  *     La plupart des methodes appellent les methodes de l'objet Probleme
  *     sous-jacent via la methode valeur() declaree grace a la macro
- * Declare_deriv().;
  *
  * @sa Turbulence_paroi_base
  */

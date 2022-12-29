@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,6 @@
 
 #include <Fluide.h>
 
-Implemente_deriv(Fluide_base);
 Implemente_instanciable(Fluide,"Fluide",DERIV(Fluide_base));
 
 Sortie& Fluide::printOn(Sortie& os) const { return DERIV(Fluide_base)::printOn(os); }

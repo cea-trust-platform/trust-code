@@ -17,14 +17,15 @@
 #define Probleme_base_included
 
 #include <Probleme_base_interface_proto.h>
-#include <Deriv_Sortie_Fichier_base.h>
 #include <Champs_compris_interface.h>
 #include <Ref_Loi_Fermeture_base.h>
 #include <Ref_Schema_Temps_base.h>
+#include <Sortie_Fichier_base.h>
 #include <Discretisation.h>
 #include <Ref_Field_base.h>
 #include <Postraitements.h>
 #include <Sortie_Brute.h>
+#include <TRUST_Deriv.h>
 #include <Ref_IntVect.h>
 #include <Domaine_dis.h>
 #include <TRUST_List.h>

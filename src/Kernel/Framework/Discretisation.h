@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,8 +16,9 @@
 #ifndef Discretisation_included
 #define Discretisation_included
 
+#include <Discretisation_base.h>
+#include <TRUST_Deriv.h>
 #include <Ref.h>
-#include <Deriv.h>
 
 /*! @brief classe Discretisation Classe generique de la hierarchie des discretisation en espace.
  *
@@ -26,10 +27,6 @@
  *
  * @sa Discretisation_base
  */
-
-class Discretisation_base;
-
-Declare_deriv(Discretisation_base);
 
 class Discretisation : public DERIV(Discretisation_base)
 {

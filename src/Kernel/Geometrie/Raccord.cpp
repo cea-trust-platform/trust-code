@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,29 +15,14 @@
 
 #include <Raccord.h>
 
-Implemente_deriv(Raccord_base);
-Implemente_instanciable(Raccord,"Raccord",DERIV(Raccord_base));
+Implemente_instanciable(Raccord, "Raccord", DERIV(Raccord_base));
 
-
-/*! @brief
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Raccord::printOn(Sortie& s ) const
+Sortie& Raccord::printOn(Sortie& s) const
 {
-  return DERIV(Raccord_base)::printOn(s) ;
+  return DERIV(Raccord_base)::printOn(s);
 }
 
-
-/*! @brief
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Raccord::readOn(Entree& s)
 {
-  return DERIV(Raccord_base)::readOn(s) ;
+  return DERIV(Raccord_base)::readOn(s);
 }
-
-

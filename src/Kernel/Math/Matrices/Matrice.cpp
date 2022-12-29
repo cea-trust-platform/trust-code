@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,22 +13,19 @@
 *
 *****************************************************************************/
 
-#include <Matrice.h>
-#include <Matrice_Base.h>
 #include <TRUSTVect.h>
+#include <Matrice.h>
 
 Implemente_instanciable( Matrice, "Matrice", DERIV( Matrice_Base ) ) ;
 
 Sortie& Matrice::printOn( Sortie& os ) const
 {
-  DERIV( Matrice_Base )::printOn( os );
-  return os;
+  return DERIV( Matrice_Base )::printOn( os );
 }
 
 Entree& Matrice::readOn( Entree& is )
 {
-  DERIV( Matrice_Base )::readOn( is );
-  return is;
+  return DERIV( Matrice_Base )::readOn( is );
 }
 
 Matrice& Matrice::operator=( const Matrice& matrix )

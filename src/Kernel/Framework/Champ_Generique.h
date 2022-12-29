@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,12 +12,12 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+
 #ifndef Champ_Generique_included
 #define Champ_Generique_included
 
 #include <Champ_Generique_base.h>
-
-Declare_deriv(Champ_Generique_base);
+#include <TRUST_Deriv.h>
 
 /*! @brief : Cette classe sert a representer n'importe quelle classe
  *
@@ -25,12 +25,9 @@ Declare_deriv(Champ_Generique_base);
  *
  *
  */
-
 class Champ_Generique : public DERIV(Champ_Generique_base)
 {
   Declare_instanciable(Champ_Generique);
-public :
-
 };
 
 #endif

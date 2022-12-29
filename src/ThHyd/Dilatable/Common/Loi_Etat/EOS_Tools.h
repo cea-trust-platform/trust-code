@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,16 +17,11 @@
 #define EOS_Tools_included
 
 #include <EOS_Tools_base.h>
-#include <Deriv.h>
+#include <TRUST_Deriv.h>
 
 /*! @brief class EOS_Tools Cette classe est la derivee de la classe EOS_Tools_base
  *
- *
- *
- * @sa EOS_Tools_base
  */
-
-Declare_deriv(EOS_Tools_base);
 
 class EOS_Tools : public DERIV(EOS_Tools_base)
 {

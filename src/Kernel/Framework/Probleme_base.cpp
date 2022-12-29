@@ -13,8 +13,8 @@
 *
 *****************************************************************************/
 
-#include <Deriv_Entree_Fichier_base.h>
 #include <EcritureLectureSpecial.h>
+#include <Entree_Fichier_base.h>
 #include <Discretisation_base.h>
 #include <Loi_Fermeture_base.h>
 #include <EcrFicCollecteBin.h>
@@ -26,6 +26,7 @@
 #include <stat_counters.h>
 #include <FichierHDFPar.h>
 #include <Milieu_base.h>
+#include <TRUST_Deriv.h>
 #include <sys/stat.h>
 #include <Equation.h>
 #include <Debog.h>

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,18 +12,17 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-#include <Partitionneur_base.h>
-#include <Domaine.h>
-#include <Connectivite_som_elem.h>
-#include <Static_Int_Lists.h>
-#include <Reordonner_faces_periodiques.h>
-#include <ArrOfBit.h>
-#include <Array_tools.h>
-#include <Param.h>
-#include <TRUSTLists.h>
-#include <communications.h>
 
-Implemente_deriv(Partitionneur_base);
+#include <Reordonner_faces_periodiques.h>
+#include <Connectivite_som_elem.h>
+#include <Partitionneur_base.h>
+#include <Static_Int_Lists.h>
+#include <communications.h>
+#include <Array_tools.h>
+#include <TRUSTLists.h>
+#include <ArrOfBit.h>
+#include <Domaine.h>
+#include <Param.h>
 
 Implemente_base(Partitionneur_base,"Partitionneur_base",Objet_U);
 

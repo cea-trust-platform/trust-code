@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,9 +17,7 @@
 #define Modele_Permeabilite_included
 
 #include <Modele_Permeabilite_base.h>
-#include <Deriv.h>
-
-Declare_deriv(Modele_Permeabilite_base);
+#include <TRUST_Deriv.h>
 
 /*! @brief classe Modele_Permeabilite Classe generique pour un modele de permeabilite.
  *

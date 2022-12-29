@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,14 +16,8 @@
 #ifndef Zone_Cl_dis_included
 #define Zone_Cl_dis_included
 
-
-
-
-
 #include <Zone_Cl_dis_base.h>
-
-Declare_deriv(Zone_Cl_dis_base);
-
+#include <TRUST_Deriv.h>
 
 /*! @brief classe Zone_Cl_dis Classe generique de la hierarchie des conditions aux limites
  *
@@ -31,7 +25,6 @@ Declare_deriv(Zone_Cl_dis_base);
  *     derivant de Zone_Cl_dis_base.
  *     La plupart des methodes appellent les methodes de l'objet Probleme
  *     sous-jacent via la methode valeur() declaree grace a la macro
- * Declare_deriv().;
  *
  * @sa Zone_Cl_dis_base
  */

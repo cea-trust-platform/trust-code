@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,14 +16,11 @@
 #ifndef Turbulence_paroi_scal_included
 #define Turbulence_paroi_scal_included
 
-
 #include <Turbulence_paroi_scal_base.h>
+#include <TRUST_Deriv.h>
+
 class Pb_Hydraulique;
 class Probleme_base;
-
-
-
-Declare_deriv(Turbulence_paroi_scal_base);
 
 /*! @brief Classe Turbulence_paroi_scal Classe generique de la hierarchie des turbulences au niveau de la
  *
@@ -31,7 +28,6 @@ Declare_deriv(Turbulence_paroi_scal_base);
  *     objet derivant Turbulence_paroi_base.
  *     La plupart des methodes appellent les methodes de l'objet Probleme
  *     sous-jacent via la methode valeur() declaree grace a la macro
- * Declare_deriv().;
  *
  * @sa Turbulence_paroi_scal_base
  */

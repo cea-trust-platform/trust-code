@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,8 +16,7 @@
 #ifndef Mailler_included
 #define Mailler_included
 
-
-
+#include <Interprete_geometrique_base.h>
 
 /*! @brief Classe Mailler Un mailleur par agglomeration de zones (paves pour le moment)
  *
@@ -44,7 +43,6 @@
  *
  * @sa Interprete Pave, Actuellement le seul tyep d'objet reconnu par Trio-U pour mailler, une domaine est l'objet Pave
  */
-#include <Interprete_geometrique_base.h>
 class Mailler : public Interprete_geometrique_base
 {
   Declare_instanciable(Mailler);

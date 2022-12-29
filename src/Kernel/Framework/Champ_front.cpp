@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,30 +15,14 @@
 
 #include <Champ_front.h>
 
-Implemente_deriv(Champ_front_base);
 Implemente_instanciable(Champ_front,"Champ_front",DERIV(Champ_front_base));
 
-
-/*! @brief Imprime le champ sur un flot de sortie
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Champ_front::printOn(Sortie& s ) const
 {
   return DERIV(Champ_front_base)::printOn(s) ;
 }
 
-
-
-/*! @brief Lit le champ a partir d'un flot d'entree
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Champ_front::readOn(Entree& s )
 {
   return DERIV(Champ_front_base)::readOn(s) ;
 }
-
-

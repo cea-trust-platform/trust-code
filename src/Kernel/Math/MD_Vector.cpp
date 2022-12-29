@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,10 +14,8 @@
 *****************************************************************************/
 
 #include <MD_Vector.h>
-#include <MD_Vector_base.h>
 #include <Memoire.h>
 
-Implemente_deriv(MD_Vector_base);
 Implemente_base_sans_constructeur_ni_destructeur(MD_Vector_base,"MD_Vector_base",Objet_U);
 
 /*! @brief construction d'un objet MD_Vector par copie d'un objet existant.

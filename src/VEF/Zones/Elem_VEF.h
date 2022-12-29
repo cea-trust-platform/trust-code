@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,12 +17,11 @@
 #define Elem_VEF_included
 
 #include <Elem_VEF_base.h>
+#include <TRUST_Deriv.h>
 #include <TRUSTTab.h>
-#include <Deriv.h>
 
 class Champ_Inc_base;
 
-Declare_deriv(Elem_VEF_base);
 class Elem_VEF: public DERIV(Elem_VEF_base)
 {
   Declare_instanciable(Elem_VEF);
@@ -41,10 +40,6 @@ public:
   inline void normale(int, DoubleTab&, const IntTab&, const IntTab&, const IntTab&, const Zone&) const;
 
 };
-
-//
-//  Fonctions inline de la classe Elem_VEF
-//
 
 inline Elem_VEF& Elem_VEF::operator =(const Elem_VEF_base& elem_base)
 {

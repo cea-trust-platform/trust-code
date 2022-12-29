@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,24 +13,21 @@
 *
 *****************************************************************************/
 
-
 #ifndef Matrice_included
 #define Matrice_included
 
-#include <Deriv_Matrice_Base.h>
 #include <TRUSTTabs_forward.h>
+#include <Matrice_Base.h>
+#include <TRUST_Deriv.h>
 
 /*! @brief Classe Matrice Classe generique de la hierarchie des matrices.
  *
  *     Un objet de type Matrice peut referencer n'importe quel objet derivant
  *     de Matrice_Base.
  *     La plupart des methodes appellent les methodes de l'objet Probleme
- *     sous-jacent via la methode valeur() declaree grace a la macro
- * Declare_deriv().;
+ *     sous-jacent via la methode valeur()
  *
  *     Dans les commentaires des methodes A represente un objet Matrice.
- *
- *
  */
 
 class Matrice : public DERIV(Matrice_Base)

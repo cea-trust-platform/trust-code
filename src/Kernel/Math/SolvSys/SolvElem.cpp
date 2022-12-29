@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,14 +15,12 @@
 
 #include <SolvElem.h>
 
-Implemente_deriv(SolvElem_base);
 Implemente_instanciable(SolvElem,"SolvElem",DERIV(SolvElem_base));
 
 Sortie& SolvElem::printOn(Sortie& s ) const
 {
   return DERIV(SolvElem_base)::printOn(s);
 }
-
 
 Entree& SolvElem::readOn(Entree& is )
 {

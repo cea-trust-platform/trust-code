@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,10 +15,10 @@
 
 #include <Milieu.h>
 
-Implemente_deriv(Milieu_base);
-Implemente_instanciable(Milieu,"Milieu",DERIV(Milieu_base));
+Implemente_instanciable(Milieu, "Milieu", DERIV(Milieu_base));
 
 Sortie& Milieu::printOn(Sortie& os) const { return DERIV(Milieu_base)::printOn(os); }
+
 Entree& Milieu::readOn(Entree& is)
 {
   Cerr << "Typing the medium ... " << finl;

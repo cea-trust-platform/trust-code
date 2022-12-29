@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,9 +17,8 @@
 #define Operateur_Grad_included
 
 #include <Operateur_Grad_base.h>
+#include <TRUST_Deriv.h>
 #include <Operateur.h>
-
-Declare_deriv(Operateur_Grad_base);
 
 /*! @brief Classe Operateur_Grad Classe generique de la hierarchie des operateurs calculant le gradient
  *

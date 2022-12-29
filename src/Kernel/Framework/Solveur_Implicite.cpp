@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,25 +15,14 @@
 
 #include <Solveur_Implicite.h>
 
-
-Implemente_deriv(Solveur_Implicite_Base);
 Implemente_instanciable(Solveur_Implicite,"Solveur_Implicite",DERIV(Solveur_Implicite_Base));
 
-
-// printOn()
-///
 Sortie& Solveur_Implicite::printOn(Sortie& os ) const
 {
-  Cerr << "in the printOn of Solveur_Implicite" << finl;
   return DERIV(Solveur_Implicite_Base)::printOn(os);
 }
 
-//// readOn
-//
-
 Entree& Solveur_Implicite::readOn(Entree& is )
 {
-  Cerr << "in the readOn of Solveur_Implicite" << finl;
   return DERIV(Solveur_Implicite_Base)::readOn(is);
 }
-
