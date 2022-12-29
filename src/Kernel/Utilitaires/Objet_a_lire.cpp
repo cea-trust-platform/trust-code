@@ -61,13 +61,6 @@ void Objet_a_lire::set_arrofdouble(ArrOfDouble* quoi  )
   type=ArrOfDouble_size_imp;
 }
 
-void Objet_a_lire::set_deriv(Deriv_* quoi, const char *prefixe)
-{
-  obj_a_lire=quoi;
-  type=DERIV;
-  prefixe_deriv = prefixe;
-}
-
 void Objet_a_lire::set_flag( int* quoi  )
 {
   flag_a_lire=quoi;

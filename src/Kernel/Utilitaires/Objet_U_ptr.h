@@ -25,7 +25,7 @@ class Nom;
  * Le constructeur par defaut construit un pointeur "nul".
  *
  *
- * @sa Ref_ Deriv_
+ * @sa Ref_ TRUST_Deriv
  */
 class Objet_U_ptr: public Objet_U
 {

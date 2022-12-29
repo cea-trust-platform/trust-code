@@ -38,7 +38,6 @@ public:
   void set_objet(Objet_U*);
   void set_arrofint(ArrOfInt*);
   void set_arrofdouble(ArrOfDouble*);
-  void set_deriv(Deriv_*, const char *prefixe);
   Param& create_param(const char*);
   void set_flag(int*);
   void set_non_std(Objet_U*);

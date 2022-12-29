@@ -16,7 +16,8 @@
 #ifndef TRUST_Deriv_included
 #define TRUST_Deriv_included
 
-#include <Deriv_.h>
+#include <Synonyme_info.h>
+#include <Objet_U_ptr.h>
 #include <Nom.h>
 
 /*! @brief classe TRUST_Deriv
@@ -63,7 +64,7 @@
 #define DERIV(_TYPE_) TRUST_Deriv<_TYPE_>
 
 template<typename _CLASSE_>
-class TRUST_Deriv: public Deriv_
+class TRUST_Deriv: public Objet_U_ptr
 {
 protected:
   unsigned taille_memoire() const override { throw; }
@@ -82,8 +83,36 @@ protected:
     return instan;
   }
 
-  Sortie& printOn(Sortie& os) const override { return Deriv_::printOn(os); }
-  Entree& readOn(Entree& is) override  { return Deriv_::readOn(is); }
+  Sortie& printOn(Sortie& os) const override
+  {
+    const Objet_U * objet = get_Objet_U_ptr();
+    if (objet)
+      {
+        os << objet->le_type() << finl;
+        os << (*objet);
+      }
+    else os << "vide" << finl;
+
+    return os;
+  }
+
+  Entree& readOn(Entree& is) override
+  {
+    detach(); // Efface l'objet existant
+    static Nom nom_type; // static pour le pas creer un Objet_U a chaque fois
+    is >> nom_type;
+    Objet_U * objet = (Objet_U*) 0;
+    if (nom_type != "vide")
+      {
+        objet = typer(nom_type);
+        if (! objet) Process::exit();
+      }
+
+    set_Objet_U_ptr(objet);
+    if (objet) is >> (*objet); // On lit
+
+    return is;
+  }
 
   void set_Objet_U_ptr(Objet_U *objet) override
   {
@@ -98,10 +127,27 @@ private:
 
 public:
   ~TRUST_Deriv() { detach(); }
-  TRUST_Deriv() :  Deriv_(), pointeur_(0) { }
-  TRUST_Deriv(const TRUST_Deriv& t) : Deriv_(), pointeur_(0)
+  TRUST_Deriv() :  Objet_U_ptr(), pointeur_(0) { }
+  TRUST_Deriv(const TRUST_Deriv& t) : Objet_U_ptr(), pointeur_(0)
   {
     if (t.non_nul()) recopie(t.valeur());
+  }
+
+  void detach()
+  {
+    Objet_U * ptr = get_Objet_U_ptr();
+    if (ptr) delete ptr;
+    set_Objet_U_ptr((Objet_U *) 0);
+  }
+
+  Objet_U * typer(const char * nom_type);
+
+  int associer_(Objet_U& objet) override
+  {
+    Objet_U * ptr = get_Objet_U_ptr_check();
+    assert(ptr != 0);
+    int resu = ptr->associer_(objet);
+    return resu;
   }
 
   inline const _CLASSE_& valeur() const
@@ -162,6 +208,53 @@ public:
   }
 };
 
+/*! @brief Essaie de creer une instance du type "type".
+ *
+ * si type n'est pas un type ou type n'est pas instanciable=>arret
+ *    si type n'est pas un sous-type du type du pointeur=>retour 0
+ *    si ok, renvoie l'adresse de l'objet cree.
+ */
+template<typename _CLASSE_>
+Objet_U * TRUST_Deriv<_CLASSE_>::typer(const char * type)
+{
+  const Type_info * type_info = Type_info::type_info_from_name(type); // Type_info du type demande
+  const Type_info& type_base = get_info_ptr(); // Type de base du DERIV
+
+  if ( get_Objet_U_ptr()) detach();
+
+  Objet_U * instance = 0;
+
+  if (type_info == 0)
+    {
+      const Synonyme_info* syn_info= Synonyme_info::synonyme_info_from_name(type);
+
+      if (syn_info!=0) return typer(syn_info->org_name_());
+      else
+        {
+          Cerr << "Error in Deriv_::typer_(const char* const type)" << finl << type << " is not a type." << finl;
+          Cerr << "Type required : derived from " << type_base.name() << finl << finl;
+          Cerr << type << " is not a recognized keyword." << finl << "Check your data set." << finl;
+          Nom nompb = type;
+          if (nompb.find("TURBULENT")!=-1 )
+            Cerr << "Since TRUST V1.8.0, turbulence models are in TrioCFD and not anymore in TRUST.\nTry using TrioCFD executable or contact trust support." << finl;
+          Process::exit();
+        }
+    }
+  if (! type_info->instanciable())
+    {
+      Cerr << "Error in Deriv_::typer_(const char* const type).\n" << type << " is not instanciable." << finl;
+      Process::exit();
+    }
+
+  if (! type_info->has_base(&type_base))
+    Cerr << "Error in Deriv_::typer_(const char* const type).\n " << type << " is not a subtype of " << type_base.name() << finl;
+  else
+    instance = type_info->instance(); // Cree une instance du type decrit dans type_info
+
+  set_Objet_U_ptr(instance);
+  return instance;
+}
+
 /* ======================================================= *
  * ======================================================= *
  * ======================================================= */
@@ -213,7 +306,7 @@ public:
   {
     detach();
     if (t.non_nul()) recopie(t.valeur());
-    else Deriv_::set_Objet_U_ptr((Objet_U *) 0); /* Elie Saikali : Attention pas la classe mere ! */
+    else Objet_U_ptr::set_Objet_U_ptr((Objet_U *) 0); /* Elie Saikali : Attention pas la classe mere ! */
     return *this;
   }
 

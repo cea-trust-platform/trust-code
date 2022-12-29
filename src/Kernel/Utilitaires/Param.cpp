@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -414,18 +414,6 @@ void Param::ajouter_arr_size_predefinie(const char* mot, ArrOfDouble* quoi,  Par
   Objet_a_lire& obj=create_or_get_objet_a_lire(mot);
   obj.set_nature(convert_nature(nat));
   obj.set_arrofdouble(quoi);
-}
-
-/*! @brief Lecture d'un objet de type deriv.
- *
- * Format attendu : Titi { parametres } L'objet sera type avec le type prefixeTiti, puis le readOn de l'objet sera appele.
- *
- */
-void Param::ajouter_deriv(const char* mot, const char *prefixe, Deriv_* quoi,  Param::Nature nat ) //int opt)
-{
-  Objet_a_lire& obj=create_or_get_objet_a_lire(mot);
-  obj.set_nature(convert_nature(nat));
-  obj.set_deriv(quoi, prefixe);
 }
 
 void Param::ajouter_flag(const char* mot, int* quoi,  Param::Nature nat ) //int opt)

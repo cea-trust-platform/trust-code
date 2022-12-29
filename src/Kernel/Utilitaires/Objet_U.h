@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -55,7 +55,7 @@ class Entree;
  *       le debuggage et l'optimisation (operations specifiques a la creation,
  *       a la destruction et a la copie)
  *
- * @sa Memoire Ref_ Deriv_ Process, Classe abstraite
+ * @sa Memoire Objet_U_ptr Process, Classe abstraite
  */
 class Objet_U : public Process
 {
