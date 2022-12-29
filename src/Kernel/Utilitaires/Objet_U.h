@@ -103,6 +103,7 @@ public:
   static Objet_U& self_cast( Objet_U&);
 
   static int disable_TU; // Flag to disable the writing of the .TU files
+  static bool computeOnDevice; // Flag pour activer/desactiver calcul sur GPU
 protected:
   Objet_U();
   Objet_U(const Objet_U&);

@@ -31,7 +31,7 @@ struct rocalution_initializer
   {
     if (rocalution_initialized==0)
       {
-        disable_accelerator_rocalution(!computeOnDevice()); // TRUST_DISABLE_DEVICE=1 $exec pour desactiver la version GPU de rocALUTION
+        disable_accelerator_rocalution(!Objet_U::computeOnDevice); // TRUST_DISABLE_DEVICE=1 $exec pour desactiver la version GPU de rocALUTION
         set_omp_affinity_rocalution(false); // Disable OpenMP thread affinity
         //char* dev_per_node = getenv("TRUST_DEVICES_PER_NODE");
         //init_rocalution(Process::me(), dev_per_node==NULL ? 1 : atoi(dev_per_node));

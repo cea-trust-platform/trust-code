@@ -188,7 +188,7 @@ void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int chec
 #endif
   // Variable pour desactiver le calcul sur GPU et ainsi facilement comparer avec le meme binaire
   // les performances sur CPU et sur GPU. Utilisee par rocALUTION et les kernels OpenMP:
-  computeOnDevice_ = getenv("TRUST_DISABLE_DEVICE") == NULL ? true : false;
+  Objet_U::computeOnDevice = getenv("TRUST_DISABLE_DEVICE") == NULL ? true : false;
 
   Nom arguments_info="";
   int must_mpi_initialize = 1;

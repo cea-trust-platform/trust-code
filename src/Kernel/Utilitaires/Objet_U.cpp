@@ -25,6 +25,7 @@ int Objet_U::axi=0;
 int Objet_U::bidim_axi=0;
 int Objet_U::static_obj_counter_=0;
 int Objet_U::DEACTIVATE_SIGINT_CATCH=0;
+bool Objet_U::computeOnDevice=true;
 Interprete* Objet_U::l_interprete=0;
 
 int Objet_U::disable_TU=0; // Flag to disable or not the writing of the .TU files

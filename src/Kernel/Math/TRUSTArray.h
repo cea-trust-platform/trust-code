@@ -22,7 +22,6 @@
 #include <Double.h>
 #include <span.hpp>
 #include <climits>
-#include <Device.h>
 
 /*! @brief Represente un tableau d'elements de type int/double/float.
  *
@@ -106,7 +105,7 @@ public:
     if (dataLocation_!=HostOnly)
       {
         _TYPE_ *tab_addr = addr();
-        #pragma omp target exit data if (computeOnDevice()) map(from:tab_addr[0:size_array()])
+        #pragma omp target exit data if (computeOnDevice) map(from:tab_addr[0:size_array()])
       }
 #endif
     detach_array();

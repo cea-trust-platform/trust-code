@@ -19,6 +19,7 @@
 // Timer:
 #include <ctime>
 #include <string>
+#include <cstring>
 #include <Array_base.h>
 #include <Statistiques.h>
 static double clock_start;
@@ -57,14 +58,8 @@ inline void end_timer(const std::string& str, int size) // Return in [ms]
     }
 }
 
-// Activer ou non le calcul sur le device:
-#pragma omp declare target
-static int computeOnDevice_ = true;
-inline bool computeOnDevice() { return computeOnDevice_; }
-#pragma omp end declare target
-
 template <typename _TYPE_>
-inline const _TYPE_* copyToDevice(const TRUSTArray<_TYPE_>& tab, std::string arrayName="")
+inline const _TYPE_* copyToDevice(const TRUSTArray<_TYPE_>& tab, std::string arrayName="??")
 {
   // const array will matches on host and device   
   const _TYPE_ *tab_addr = copyToDevice_(const_cast<TRUSTArray <_TYPE_>&>(tab), Array_base::HostDevice, arrayName);
@@ -84,41 +79,36 @@ inline _TYPE_* copyToDevice_(TRUSTArray<_TYPE_>& tab, Array_base::dataLocation n
   start_timer();
   if (currentLocation==Array_base::HostOnly)
     {
-      #pragma omp target enter data if (computeOnDevice()) map(to:tab_addr[0:tab.size_array()])
-      if (arrayName=="")
-          arrayName="??";
+      #pragma omp target enter data if (Objet_U::computeOnDevice) map(to:tab_addr[0:tab.size_array()])
       message = "copy array ["+arrayName+"] to device       ";
     }
   else if (currentLocation==Array_base::Host)
     {
-      #pragma omp target update if (computeOnDevice()) to(tab_addr[0:tab.size_array()])
-      if (arrayName=="")
-          arrayName="??";
+      #pragma omp target update if (Objet_U::computeOnDevice) to(tab_addr[0:tab.size_array()])
       message = "update array ["+arrayName+"] on device     ";
     }
   else
     {
-      message = "array ["+arrayName+"] up-to-date on device ";
+      if (arrayName!="??") message = "array ["+arrayName+"] up-to-date on device ";
 #ifndef NDEBUG
       if (clock_on!=NULL)
       {
           // Comparaison tableaux sur device et host:
           TRUSTArray<_TYPE_> tmp(tab);
           _TYPE_* tmp_addr = tmp.addr();
-          #pragma omp target update from(tmp_addr[0:tmp.size_array()])
+          #pragma omp target update if (Objet_U::computeOnDevice) from(tmp_addr[0:tmp.size_array()])
           int err = memcmp(tmp.addr(), tab.addr(), sizeof(_TYPE_) * tmp.size_array());
           assert(err==0);
       }
 #endif
     }
-  if (arrayName!="")
-      end_timer(message, sizeof(_TYPE_) * tab.size_array());
+  if (message!="") end_timer(message, sizeof(_TYPE_) * tab.size_array());
 #endif
   return tab_addr;
 }
 
 template <typename _TYPE_>
-inline _TYPE_* computeOnTheDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName="")
+inline _TYPE_* computeOnTheDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName="??")
 {
   // non-const array will be modified on device:
   _TYPE_ *tab_addr = copyToDevice_(tab, Array_base::Device, arrayName);
@@ -126,14 +116,14 @@ inline _TYPE_* computeOnTheDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName
 }
 
 template <typename _TYPE_>
-inline void copyFromDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName="")
+inline void copyFromDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName="??")
 {
 #ifdef _OPENMP
   _TYPE_* tab_addr = tab.addr();
   if (tab.get_dataLocation()==Array_base::Device)
     {
       start_timer();
-      #pragma omp target update if (computeOnDevice()) from(tab_addr[0:tab.size_array()])
+      #pragma omp target update if (Objet_U::computeOnDevice) from(tab_addr[0:tab.size_array()])
       end_timer((std::string) "copyFromDevice Array ", sizeof(_TYPE_) * tab.size_array());
       tab.set_dataLocation(Array_base::HostDevice);
     }

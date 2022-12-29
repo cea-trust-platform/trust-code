@@ -418,7 +418,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
       const double * gradient_elem_addr = copyToDevice(gradient_elem,"gradient_elem");
       gradient_addr = gradient.addr();
       start_timer();
-      #pragma omp target teams distribute parallel for if (computeOnDevice()) map(tofrom:gradient_addr[0:gradient.size_array()])
+      #pragma omp target teams distribute parallel for if (computeOnDevice) map(tofrom:gradient_addr[0:gradient.size_array()])
       for (int fac=premiere_face_int; fac<nb_faces_; fac++)
         {
           int elem1=face_voisins_addr[fac*2];
@@ -502,7 +502,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
           Cerr << "ToDo: No offload of Op_Conv_VEF_Face::ajouter() on GPU." << finl;
 #else
           start_timer();
-          #pragma omp target teams if (computeOnDevice()) map(to:vitesse_addr[0:la_vitesse.valeurs().size_array()], vitesse_face_absolue_addr[0:vitesse_face_absolue.size_array()], gradient_addr[0:gradient.size_array()]) map(tofrom:flux_b_addr[0:flux_b.size_array()], resu_addr[0:resu.size_array()])
+          #pragma omp target teams if (computeOnDevice) map(to:vitesse_addr[0:la_vitesse.valeurs().size_array()], vitesse_face_absolue_addr[0:vitesse_face_absolue.size_array()], gradient_addr[0:gradient.size_array()]) map(tofrom:flux_b_addr[0:flux_b.size_array()], resu_addr[0:resu.size_array()])
 #endif
           {
             int face[4] {};
@@ -1582,7 +1582,7 @@ void Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
       const int *type_elem_Cl_addr = copyToDevice(type_elem_Cl_);
       double *fluent_addr = fluent_.addr();
       start_timer();
-      #pragma omp target teams if (computeOnDevice()) map(to:vitesse_face_addr[0:vitesse_face.size_array()]) map(tofrom:fluent_addr[0:fluent_.size_array()])
+      #pragma omp target teams if (computeOnDevice) map(to:vitesse_face_addr[0:vitesse_face.size_array()]) map(tofrom:fluent_addr[0:fluent_.size_array()])
       {
         int face[4] {};
         double vs[3] {};
