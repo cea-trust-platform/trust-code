@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -157,7 +157,7 @@ const Champ_Generique_base& Champ_Generique_Moyenne::get_champ_post(const Motcle
     {
       return Champ_Gen_de_Champs_Gen::get_champ_post(nom) ;
     }
-  catch (Champs_compris_erreur)
+  catch (Champs_compris_erreur& err_)
     {
     }
 

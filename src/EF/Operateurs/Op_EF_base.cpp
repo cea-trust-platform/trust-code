@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -572,7 +572,7 @@ void  Op_EF_base::marque_elem(const Equation_base& eqn)
         if (marq(n)>0)
           marqueur_elem_[n]=1;
     }
-  catch  (Champs_compris_erreur)
+  catch  (Champs_compris_erreur& err_)
     {
     }
 

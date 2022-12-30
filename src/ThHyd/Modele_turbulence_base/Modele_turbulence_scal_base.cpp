@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -241,7 +241,7 @@ const Champ_base& Modele_turbulence_scal_base::get_champ(const Motcle& nom) cons
     {
       return champs_compris_.get_champ(nom);
     }
-  catch (Champs_compris_erreur)
+  catch (Champs_compris_erreur& err_)
     {
     }
 
@@ -251,7 +251,7 @@ const Champ_base& Modele_turbulence_scal_base::get_champ(const Motcle& nom) cons
         {
           return loipar->get_champ(nom);
         }
-      catch (Champs_compris_erreur)
+      catch (Champs_compris_erreur& err_)
         {
         }
     }

@@ -300,7 +300,7 @@ bool Pb_Multiphase::has_champ(const Motcle& un_nom) const
         {
           champ = &corr.second->get_champ(un_nom);
         }
-      catch (Champs_compris_erreur)  {        }
+      catch (Champs_compris_erreur& err_)  {        }
     }
   if (champ) return true ;
   return Probleme_base::has_champ(un_nom);
@@ -316,13 +316,13 @@ const Champ_base& Pb_Multiphase::get_champ(const Motcle& un_nom) const
         {
           return corr.second->get_champ(un_nom);
         }
-      catch (Champs_compris_erreur)  {        }
+      catch (Champs_compris_erreur& err_)  {        }
     }
   try
     {
       return Pb_Fluide_base::get_champ(un_nom);
     }
-  catch (Champs_compris_erreur)     {      }
+  catch (Champs_compris_erreur& err_)     {      }
   throw Champs_compris_erreur();
   return ref_champ;
 }

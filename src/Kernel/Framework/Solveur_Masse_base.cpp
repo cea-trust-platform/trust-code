@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -65,7 +65,7 @@ void Solveur_Masse_base::set_name_of_coefficient_temporel(const Nom& name)
     {
       ref_coeff = equation().get_champ(name_of_coefficient_temporel_);
     }
-  catch (Champs_compris_erreur)
+  catch (Champs_compris_erreur& err_)
     {
       Cerr<< name_of_coefficient_temporel_<< " not understood by "<< equation().que_suis_je()<<finl;
       Process::exit();

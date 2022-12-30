@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -408,14 +408,14 @@ const Champ_base& Fluide_Dilatable_base::get_champ(const Motcle& nom) const
     {
       return Fluide_base::get_champ(nom);
     }
-  catch (Champs_compris_erreur)
+  catch (Champs_compris_erreur& err_)
     {
     }
   try
     {
       return loi_etat_->get_champ(nom);
     }
-  catch (Champs_compris_erreur)
+  catch (Champs_compris_erreur& err_)
     {
     }
   throw Champs_compris_erreur();

@@ -796,14 +796,14 @@ bool Probleme_base::has_champ(const Motcle& un_nom) const
         {
           champ = &equation(i).get_champ(un_nom);
         }
-      catch (Champs_compris_erreur)
+      catch (Champs_compris_erreur& err_)
         {
         }
       try
         {
           champ = &equation(i).milieu().get_champ(un_nom);
         }
-      catch (Champs_compris_erreur)
+      catch (Champs_compris_erreur& err_)
         {
         }
     }
@@ -816,7 +816,7 @@ bool Probleme_base::has_champ(const Motcle& un_nom) const
         {
           champ = &loi.get_champ(un_nom);
         }
-      catch(Champs_compris_erreur)
+      catch(Champs_compris_erreur& err_)
         {
         }
       ++curseur;
@@ -835,14 +835,14 @@ const Champ_base& Probleme_base::get_champ(const Motcle& un_nom) const
         {
           return equation(i).get_champ(un_nom);
         }
-      catch (Champs_compris_erreur)
+      catch (Champs_compris_erreur& err_)
         {
         }
       try
         {
           return equation(i).milieu().get_champ(un_nom);
         }
-      catch (Champs_compris_erreur)
+      catch (Champs_compris_erreur& err_)
         {
         }
     }
@@ -855,7 +855,7 @@ const Champ_base& Probleme_base::get_champ(const Motcle& un_nom) const
         {
           return loi.get_champ(un_nom);
         }
-      catch(Champs_compris_erreur)
+      catch(Champs_compris_erreur& err_)
         {
         }
       ++curseur;
@@ -965,7 +965,7 @@ const Champ_Generique_base& Probleme_base::get_champ_post(const Motcle& un_nom) 
             {
               return post.get_champ_post(un_nom);
             }
-          catch (Champs_compris_erreur) { }
+          catch (Champs_compris_erreur& err_) { }
         }
       ++curseur_post;
     }

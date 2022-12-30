@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -329,7 +329,7 @@ void Debog_Pb::read_geometry_data()
           {
             f >> xa_seq;
           }
-        catch (Entree_Sortie_Error)
+        catch (Entree_Sortie_Error& err_)
           {
             avec_aretes = 0;
           }

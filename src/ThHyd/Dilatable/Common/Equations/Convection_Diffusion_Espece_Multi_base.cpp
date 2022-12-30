@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -72,7 +72,7 @@ const Champ_base& Convection_Diffusion_Espece_Multi_base::get_champ(const Motcle
     {
       return Convection_Diffusion_Espece_Fluide_Dilatable_base::get_champ(nom);
     }
-  catch (Champs_compris_erreur)
+  catch (Champs_compris_erreur& err_)
     {
     }
 // a revoir ..... a mon avis
@@ -80,7 +80,7 @@ const Champ_base& Convection_Diffusion_Espece_Multi_base::get_champ(const Motcle
     {
       return probleme().equation(0).get_champ(nom);
     }
-  catch (Champs_compris_erreur)
+  catch (Champs_compris_erreur& err_)
     {
     }
   throw Champs_compris_erreur();

@@ -2215,7 +2215,7 @@ const Champ_Generique_base& Postraitement::get_champ_post(const Motcle& nom) con
         {
           return curseur_liste_champs.valeur().valeur().get_champ_post(nom);
         }
-      catch (Champs_compris_erreur)
+      catch (Champs_compris_erreur& err_)
         {
         }
       ++curseur_liste_champs;
