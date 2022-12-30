@@ -16,6 +16,7 @@
 #ifndef TRUST_List_included
 #define TRUST_List_included
 
+#include <algorithm> // for std::find
 #include <Motcle.h>
 #include <liste.h>
 #include <list> // pour stl list
@@ -223,7 +224,7 @@ protected:
         for (auto &itr : list_)
           {
             os << itr;
-            if (itr != list_.end()) os << blanc << virgule << finl;
+            if (&itr != &list_.back()) os << blanc << virgule << finl;
           }
         os << finl << accfermee << finl;
       }
@@ -274,22 +275,117 @@ public:
 
   TRUST_STLList() : list_() { }
   TRUST_STLList(const _CLASSE_& t) : list_(t) { }
-  TRUST_STLList(const TRUST_STLList& t) { list_ = t.list_; }
+  TRUST_STLList(const TRUST_STLList& t) : Objet_U(t) { list_ = t.list_; }
 
   int size() const { return (int)list_.size(); }
   void vide() { list_.clear(); }
-  _CLASSE_& add(const _CLASSE_& t) { list_.push_back(t); return (_CLASSE_&)t; }
+
+  /* Add list to list */
+  TRUST_STLList& add(const TRUST_STLList& a_list)
+  {
+    list_.insert(list_.end(), a_list.get_stl_list().begin(), a_list.get_stl_list().end());
+    return *this;
+  }
+
+  /* Add element to list */
+  _CLASSE_& add(const _CLASSE_ &t)
+  {
+    list_.push_back(t);
+    return static_cast<_CLASSE_&>(list_.back()); /* attention pour retourner une reference de t dans la liste !!!! */
+  }
+
+  /* Add element to list if it is not already inside */
+  _CLASSE_& add_if_not(const _CLASSE_& t)
+  {
+    auto it = std::find(list_.begin(), list_.end(), t); // Search for the element in the list
+
+    // If the element is not found, add it to the list
+    if (it == list_.end())
+      {
+        list_.push_back(t);
+        it = std::prev(list_.end());
+      }
+
+    return *it;
+  }
+
   const _CLASSE_& front() const { return list_.front(); }
+  _CLASSE_& front() { return list_.front(); }
+  const _CLASSE_& dernier() const { return list_.back(); }
+  _CLASSE_& dernier() { return list_.back(); }
 
-  _CLASSE_& operator[](int i) = delete;
-  const _CLASSE_& operator[](int i) const = delete;
-  _CLASSE_& operator[](const Nom& nom) = delete;
-  const _CLASSE_& operator[](const Nom& nom) const = delete;
+  int est_vide() const { return list_.empty(); }
 
-  _CLASSE_& operator()(int i) = delete;
-  const _CLASSE_& operator()(int i) const = delete;
-  _CLASSE_& operator()(const Nom& n) = delete;
-  const _CLASSE_& operator()(const Nom& n) const = delete;
+  void suppr(const _CLASSE_& t) { list_.remove(t); }
+
+  // XXX : Elie Saikali
+  // j'ai tente de supprimer tout ce bordel mais ... bon courage je te laisse faire
+  _CLASSE_& operator[](int i)
+  {
+    assert (size() > 0);
+    int ind = 0;
+    for (auto& itr : list_)
+      {
+        if (ind == i) return itr;
+        ind++;
+      }
+    Cerr << "TRUST_STLList : overflow of list " << finl;
+    throw;
+  }
+
+  const _CLASSE_& operator[](int i) const
+  {
+    assert (size() > 0);
+    int ind = 0;
+    for (auto& itr : list_)
+      {
+        if (ind == i) return itr;
+        ind++;
+      }
+    Cerr << "TRUST_STLList : overflow of list " << finl;
+    throw;
+  }
+
+  _CLASSE_& operator[](const Nom& nom)
+  {
+    assert (size() > 0);
+    int ind = 0;
+    for (auto& itr : list_)
+      {
+        if (itr.le_nom() == nom) return itr;
+        ind++;
+      }
+    Cerr << "TRUST_STLList : We have not found an object with name " << nom << finl;
+    throw;
+  }
+
+  const _CLASSE_& operator[](const Nom& nom) const
+  {
+    assert (size() > 0);
+    int ind = 0;
+    for (auto& itr : list_)
+      {
+        if (itr.le_nom() == nom) return itr;
+        ind++;
+      }
+    Cerr << "TRUST_STLList : We have not found an object with name " << nom << finl;
+    throw;
+  }
+
+  _CLASSE_& operator()(int i) { return operator[](i); }
+  const _CLASSE_& operator()(int i) const { return operator[](i); }
+  _CLASSE_& operator()(const Nom& n) { return operator[](n); }
+  const _CLASSE_& operator()(const Nom& n) const { return operator[](n); }
+
+//  _CLASSE_& operator[](int i) = delete;
+//  const _CLASSE_& operator[](int i) const = delete;
+//  _CLASSE_& operator[](const Nom& nom) = delete;
+//  const _CLASSE_& operator[](const Nom& nom) const = delete;
+//
+//  _CLASSE_& operator()(int i) = delete;
+//  const _CLASSE_& operator()(int i) const = delete;
+//  _CLASSE_& operator()(const Nom& n) = delete;
+//  const _CLASSE_& operator()(const Nom& n) const = delete;
 
   TRUST_STLList& operator=(const _CLASSE_ &t)
   {
@@ -309,7 +405,7 @@ public:
     int ind = 0;
     for (auto& itr : list_)
       {
-        if (itr->le_nom() == nom) return ind;
+        if (itr.le_nom() == nom) return ind;
         ind++;
       }
     return -1;
@@ -319,7 +415,7 @@ public:
   {
     Nom nom(ch);
     for (auto& itr : list_)
-      if (itr->le_nom() == nom) return 1;
+      if (itr.le_nom() == nom) return 1;
     return -1;
   }
 
