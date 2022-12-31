@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,8 +45,8 @@ protected :
 
 private :
 
-  double alpha_tau;
-  int fct_ok;
+  double alpha_tau=1.;
+  int fct_ok=-1;
   mutable Parser_U force_rappel;
 
   REF(Champ_Inc_base) l_inconnue;

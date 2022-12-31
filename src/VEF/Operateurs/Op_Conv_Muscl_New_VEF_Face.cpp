@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -88,14 +88,7 @@ Entree& Op_Conv_Muscl_New_VEF_Face::readOn(Entree& s )
 
   //Les variables a instancier
   alpha_=1.;
-  centered_=1;
-  upwind_=1;
-  stabilized_=1;
-  old_centered_=0;
-  version_=2;
   limiteur_=&minmod;
-  facsec_auto_=0;
-  max_limiteur_=1.;
 
   return s;
 }

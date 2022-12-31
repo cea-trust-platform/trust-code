@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -85,8 +85,8 @@ public:
 
 private :
 
-  Type_Face type_face_;
-  int nb_som_face;
+  Type_Face type_face_ = vide_0D;
+  int nb_som_face = -123;
   IntTab sommets;
   IntTab faces_voisins;
   REF(Zone) ma_zone;

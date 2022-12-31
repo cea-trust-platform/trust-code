@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,8 +48,8 @@ private:
   Champ_Fonc_t vitesse_;
   Champ_Fonc_t rotation_;
   Champ_Fonc_t derivee_rotation_;
-  int verification_derivee_;
-  int impr_;
+  int verification_derivee_=1;
+  int impr_=1;
   Nom nom_;
 };
 

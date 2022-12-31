@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1821,8 +1821,7 @@ void  Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
               double psc = 0;
               for (int i=0; i<dimension; i++)
                 psc += vitesse_face(num_face,i)*face_normales(num_face,i);
-              if (psc>0)
-                ;
+              if (psc>0) { /* Do nothing */}
               else
                 fluent_(num_face) -= psc;
             }

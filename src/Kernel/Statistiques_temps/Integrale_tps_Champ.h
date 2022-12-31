@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,11 +45,9 @@ public:
 protected :
 
   REF(Champ_Generique_base) mon_champ;
-  int puissance;
-  double t_debut_;
-  double t_fin_;
-  double tps_integrale;
-  double dt_integr_calcul;
+  int puissance = -10;
+  double t_debut_ = -100., t_fin_= -100.;
+  double tps_integrale= -100., dt_integr_calcul= -100.;
 };
 
 inline void Integrale_tps_Champ::associer(const Champ_Generique_base& le_ch, int n, double t0, double t1)

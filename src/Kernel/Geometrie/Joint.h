@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -59,10 +59,10 @@ public:
 
 private:
   // Numero du PEvoisin correspondant au joint
-  int PEvoisin_;
+  int PEvoisin_=-1;
 
   // Epaisseur de joint, utilise par Scatter::calculer_espace_distant_elements
-  int epaisseur_;
+  int epaisseur_=-1;
 
   Joint_Items joint_sommets_;
   Joint_Items joint_elements_;

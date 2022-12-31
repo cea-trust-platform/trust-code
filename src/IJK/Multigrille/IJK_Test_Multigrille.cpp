@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,8 +33,6 @@ Entree& IJK_Test_Multigrille::readOn(Entree& s)
 Entree& IJK_Test_Multigrille::interpreter(Entree& is)
 {
   IJK_Splitting split;
-  timestep_reprise_rho_ = -2;
-  timestep_reprise_rhs_ = -2;
 
   Param param(que_suis_je());
   Nom ijk_splitting_name;

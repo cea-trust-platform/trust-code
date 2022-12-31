@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,18 +47,18 @@ public:
 
 protected :
 
-  int init;
-  int first_rand;
+  int init = 1;
+  int first_rand = 1;
   REF(Domaine) mon_domaine;
   Nom geom;
-  double nu,utau;
-  double R,Ox,Oy,Oz,surf;
-  int nb_vortex;
-  double temps;
+  double nu = -100., utau = -100.;
+  double R = -100., Ox = -100., Oy = -100., Oz = -100., surf = -100.;
+  int nb_vortex = -1;
+  double temps = -100.;
 
-  double nx,ny,nz;         // composantes normales du repere associe a la frontiere
-  double t1x,t1y,t1z; // composantes tangentielles : n.t1 = 0
-  double t2x,t2y,t2z; // composantes tangentielles : t2 = n ^ t1 = 0
+  double nx = -100., ny = -100., nz = -100.;         // composantes normales du repere associe a la frontiere
+  double t1x = -100., t1y = -100., t1z = -100.; // composantes tangentielles : n.t1 = 0
+  double t2x = -100., t2y = -100., t2z = -100.; // composantes tangentielles : t2 = n ^ t1 = 0
 
   DoubleVect xvort;  // coordonnees x des vortex
   DoubleVect yvort;  // coordonnees y des vortex
@@ -69,8 +69,7 @@ protected :
   DoubleVect gamma;  // intensite du vortex
   DoubleVect sigma;  // longeur caracteristique du vortex
 
-
-  DoubleVect u,v,w,u_moy,dudy,k,eps;
+  DoubleVect u, v, w, u_moy, dudy, k, eps;
 
   DoubleVect Wk; // processus de Wiener
 };

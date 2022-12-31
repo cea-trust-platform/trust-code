@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -270,9 +270,9 @@ protected :
   double dt_;                                // Pas de temps de calcul
   DoubleTab dt_locaux_;                     // Local time steps: Vector of size nb faces of the mesh
 
-  double temps_courant_;
-  double temps_precedent_;
-  double dt_failed_;  //si on a rate un pas de temps, sa valeur
+  double temps_courant_ = -100.;
+  double temps_precedent_ = -100.;
+  double dt_failed_ = -100.;  //si on a rate un pas de temps, sa valeur
   double dt_gf_;
   double tinit_;
   double tmax_;
@@ -284,7 +284,7 @@ protected :
   mutable double dt_max_;                // Pas de temps max fixe par l'utilisateur
   Nom dt_max_str_;                       //reglage de dt_max comme une fonction du temps
   mutable Parser_U dt_max_fn_;           //Parser_U associe
-  double dt_stab_;                // Pas de temps de stabilite
+  double dt_stab_=-100.;                // Pas de temps de stabilite
   double facsec_;
   double seuil_statio_;
   int seuil_statio_relatif_deconseille_;                // Drapeau pour specifier si seuil_statio_ est une valeur absolue (defaut) ou relative
@@ -313,7 +313,7 @@ protected :
   int no_error_if_not_converged_diff_impl_;
   int schema_impr_;                  // 1 si le schema a le droit d'imprimer dans le .out et dt_ev
   int file_allocation_;                // 1 = allocation espace disque (par defaut), 0 sinon
-  int max_length_cl_;
+  int max_length_cl_ = -10;
 private:
   int stationnaire_atteint_;	// Stationary reached by the problem using this scheme
   bool stationnaires_atteints_;	// Stationary reached by the calculation (means all the problems reach stationary)

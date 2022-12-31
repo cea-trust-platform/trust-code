@@ -39,7 +39,7 @@ public:
   virtual double valeur_au_temps(double temps, int som, int comp) const;
 
 protected :
-  int ismoyen;
+  int ismoyen=0;
   REF(Fluide_Quasi_Compressible) fluide;
 
 private :

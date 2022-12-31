@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -747,7 +747,6 @@ void Zone_EF::calculer_porosites_sommets()
 void Zone_EF::calculer_h_carre()
 {
   // Calcul de h_carre
-  h_carre = 1.e30;
   h_carre_.resize(nb_faces());
   // Calcul des surfaces
   const DoubleVect& surfaces=face_surfaces();

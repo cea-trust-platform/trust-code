@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,7 +30,6 @@ Entree& Terme_Boussinesq_base::readOn(Entree& is )
 {
   Param param(que_suis_je());
   Cerr << "Reading Boussinesq source term parameters." << finl;
-  verif_=1;
   set_param(param);
   param.lire_avec_accolades_depuis(is);
   return is;

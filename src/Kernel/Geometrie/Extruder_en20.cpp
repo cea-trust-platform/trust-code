@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,42 +13,21 @@
 *
 *****************************************************************************/
 
-#include <Extruder_en20.h>
-#include <Domaine.h>
-#include <Static_Int_Lists.h>
 #include <Connectivite_som_elem.h>
+#include <Static_Int_Lists.h>
+#include <Extruder_en20.h>
 #include <Faces_builder.h>
-#include <Param.h>
+#include <Domaine.h>
 #include <Scatter.h>
+#include <Param.h>
 
-Implemente_instanciable_sans_constructeur(Extruder_en20,"Extruder_en20",Interprete_geometrique_base);
+Implemente_instanciable_sans_constructeur(Extruder_en20, "Extruder_en20", Interprete_geometrique_base);
 
-Extruder_en20::Extruder_en20()
-{
-  direction.resize(3,Array_base::NOCOPY_NOINIT);
-}
+Extruder_en20::Extruder_en20() { direction.resize(3, Array_base::NOCOPY_NOINIT); }
 
-/*! @brief Simple appel a: Interprete::printOn(Sortie&)
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Extruder_en20::printOn(Sortie& os) const
-{
-  return Interprete::printOn(os);
-}
+Sortie& Extruder_en20::printOn(Sortie& os) const { return Interprete::printOn(os); }
 
-
-/*! @brief Simple appel a: Interprete::readOn(Entree&)
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& Extruder_en20::readOn(Entree& is)
-{
-  return Interprete::readOn(is);
-}
-
+Entree& Extruder_en20::readOn(Entree& is) { return Interprete::readOn(is); }
 
 /*! @brief Fonction principale de l'interprete Extruder_en20 Triangule 1 a 1 toutes les zones du domaine
  *

@@ -664,10 +664,6 @@ void Octree::detruire()
 }
 
 
-/*! @brief
- *
- * @return (int)
- */
 int Octree::niveau() const
 {
   int i=0;
@@ -710,10 +706,6 @@ void OctreeRoot::associer_Zone(const Zone& z)
   la_zone=z;
 }
 
-
-/*! @brief
- *
- */
 void OctreeRoot::construire(int reel_prec)
 {
   detruire();

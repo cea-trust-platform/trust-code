@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -362,8 +362,6 @@ double Op_Conv_EF::calculer_dt_stab() const
   int nb_som_elem=zone_ef.zone().nb_som_elem();
   const IntTab& elems=zone_ef.zone().les_elems() ;
   ArrOfDouble G_e(dimension);
-  max_ue_=1e-8 ; // comme G2
-  min_dx_=1e37;
   double Max=0;
   double dt_l=0,dt2=0;
   for (int elem=0; elem<nb_elem_tot; elem++)

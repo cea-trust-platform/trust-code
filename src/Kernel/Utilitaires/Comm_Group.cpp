@@ -26,13 +26,13 @@ int Comm_Group::static_group_number_ = 0;
 
 Sortie& Comm_Group::printOn(Sortie& os) const
 {
-  exit();
+  Process::exit();
   return os;
 }
 
 Entree& Comm_Group::readOn(Entree& is)
 {
-  exit();
+  Process::exit();
   return is;
 }
 
@@ -43,8 +43,6 @@ Comm_Group::Comm_Group()
   // Les tags des communications sont differents
   // pour chaque groupe tant qu'il n'y a pas plus de 32 groupes.
   // Ainsi, chaque communication de chaque groupe aura un tag different.
-  rank_ = -1;
-  nproc_ = -1;
   group_number_ = static_group_number_;
   group_tag_increment_ = group_increment;
   static_group_number_++;
@@ -57,7 +55,7 @@ Comm_Group::Comm_Group()
 Comm_Group::Comm_Group(const Comm_Group& a): Objet_U(a)
 {
   Cerr << "Comm_Group::Comm_Group(const Comm_Group &) error" << finl;
-  exit();
+  Process::exit();
 }
 
 /*! @brief La copie est interdite !
@@ -65,7 +63,7 @@ Comm_Group::Comm_Group(const Comm_Group& a): Objet_U(a)
  */
 const Comm_Group& Comm_Group::operator=(const Comm_Group&)
 {
-  exit();
+  Process::exit();
   return *this;
 }
 
@@ -95,7 +93,7 @@ void Comm_Group::init_group(const ArrOfInt& pe_list)
   if (nproc_ == 0)
     {
       Cerr << "Comm_Group::set_group_properties : empty process list" << finl;
-      exit();
+      Process::exit();
     }
   rank_ = -1;
   const Comm_Group& groupe_trio = PE_Groups::groupe_TRUST();
@@ -114,14 +112,14 @@ void Comm_Group::init_group(const ArrOfInt& pe_list)
           if (pe_check != pe)
             {
               Cerr << "Comm_Group::set_group_properties : processes have different pe_lists" << finl;
-              exit();
+              Process::exit();
             }
         }
       if (pe < 0 || pe >= current.nproc_)
         {
           Cerr << "Comm_Group::set_group_properties : process "
                << pe << " is not in current_group()" << finl;
-          exit();
+          Process::exit();
         }
       // rank du pe dans le groupe_TRUST
       const int world_rank = current.world_ranks_[pe];
@@ -129,7 +127,7 @@ void Comm_Group::init_group(const ArrOfInt& pe_list)
       if (local_ranks_[world_rank] >= 0)
         {
           Cerr << "Comm_Group::set_group_properties : duplicate pe in pe_list" << finl;
-          exit();
+          Process::exit();
         }
 
       world_ranks_[i] = world_rank;

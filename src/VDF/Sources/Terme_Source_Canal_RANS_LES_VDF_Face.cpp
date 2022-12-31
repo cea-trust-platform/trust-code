@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -65,9 +65,6 @@ Entree& Terme_Source_Canal_RANS_LES_VDF_Face::readOn(Entree& is )
   Motcle acc_fermee("}");
 
   nom_pb_rans="non_couple";
-  t_av=-1;
-  f_start = 0.;
-  moyenne = 0;//valeur par defaut
   // 0 => moyenne spatiale
   // 1 => moyenne temporelle glissante (moyenne en alpha)
   // 2 => moyenne temporelle commence a t=f_start-t_av
@@ -260,8 +257,6 @@ void Terme_Source_Canal_RANS_LES_VDF_Face::init()
           vit_reprise2 << num_face << " " << umoy(num_face) << finl;
         }
     }
-  cpt = 0;
-  compteur_reprise = 0;
 }//fin init
 
 void Terme_Source_Canal_RANS_LES_VDF_Face::init_calcul_moyenne_spat()

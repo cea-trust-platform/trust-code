@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -64,8 +64,8 @@ public:
 protected :
 
   REF(Champ_Generique_base) mon_second_champ_;
-  int seconde_puissance_;
-  int support_different_;
+  int seconde_puissance_ = -10;
+  int support_different_ = -10;
 };
 
 /*! @brief Associe les champs et les temps

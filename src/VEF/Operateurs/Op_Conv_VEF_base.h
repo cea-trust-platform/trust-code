@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -83,8 +83,8 @@ protected:
   //************************************************************************
   // Les jeton pour la permmutation des schemas de convection
   //************************************************************************
-  mutable int jeton;
-  mutable int roue;
+  mutable int jeton = -1;
+  mutable int roue = -1;
   //  int roue2;
 
 };

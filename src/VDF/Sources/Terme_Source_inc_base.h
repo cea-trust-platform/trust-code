@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,9 +36,7 @@ public:
 protected :
   void set_param(Param& param);
   REF(Navier_Stokes_std) eq_hydraulique_;
-  /*   int dir_source,deb; */
-  /*    double h,coeff,u_etoile; */
-  int impr;
+  int impr = 0;
 };
 
 

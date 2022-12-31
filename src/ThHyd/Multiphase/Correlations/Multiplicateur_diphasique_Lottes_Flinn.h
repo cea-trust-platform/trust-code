@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,8 +36,8 @@ public:
                    const double *mu, const double Dh, const double gamma, const double *Fk,
                    const double Fm, DoubleTab& coeff) const override;
 protected:
-  double alpha_min_, alpha_max_;
-  int n_l, n_g; //indices des phases frottantes : liquide, gaz
+  double alpha_min_ = 0.9, alpha_max_ = 0.95;
+  int n_l = -1, n_g = -1; //indices des phases frottantes : liquide, gaz
 };
 
 #endif

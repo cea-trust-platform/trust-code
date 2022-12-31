@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -67,7 +67,7 @@ void Tri_EF::normale(int num_Face,DoubleTab& Face_normales,
   if ( (f0 = elem_faces(elem1,0)) == num_Face )
     f0 = elem_faces(elem1,1);
   if ( (no3 = Face_sommets(f0,0)) != n0 && no3 != n1 )
-    ;
+    { /* Do nothing */}
   else
     no3 = Face_sommets(f0,1);
 

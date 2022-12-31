@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,7 +60,6 @@ Sortie& Champ_front_debit_QC_fonc_t::printOn(Sortie& os) const
 Entree& Champ_front_debit_QC_fonc_t::readOn(Entree& is)
 {
   Cerr<<"Champ_front_debit_QC_VDF_fonc_t usage : dim { val1 .. valdim } [ moyen ] nom_pb"<<finl;
-  ismoyen=0;
   int dim;
   is >> dim;
   Motcle motlu;

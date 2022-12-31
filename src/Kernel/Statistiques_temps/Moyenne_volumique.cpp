@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,7 +42,6 @@ Sortie& Moyenne_volumique::printOn(Sortie& s ) const
  */
 Entree& Moyenne_volumique::readOn(Entree& is )
 {
-  l_ = -1;
   expression_parser_ = "??";
   int type;
   Param param(que_suis_je());

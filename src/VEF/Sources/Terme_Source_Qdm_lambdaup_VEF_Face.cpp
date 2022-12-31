@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,26 +23,13 @@
 
 Implemente_instanciable(Terme_Source_Qdm_lambdaup_VEF_Face,"Source_Qdm_lambdaup_VEF_P1NC",Source_base);
 
-
-
-//// printOn
-//
-
 Sortie& Terme_Source_Qdm_lambdaup_VEF_Face::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
 
-
-//// readOn
-//
-
 Entree& Terme_Source_Qdm_lambdaup_VEF_Face::readOn(Entree& is )
 {
-  lambda=-1.;
-  lambda_min=1.e-24;
-  lambda_max=2;
-  cible=0.01;
   Motcle accouverte = "{" , accfermee = "}" ;
   Motcle motlu;
   is >> motlu;

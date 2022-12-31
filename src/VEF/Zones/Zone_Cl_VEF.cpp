@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -125,7 +125,6 @@ void Zone_Cl_VEF::associer(const Zone_VEF& la_zone_VEF)
  */
 void Zone_Cl_VEF::completer(const Zone_dis& une_zone_dis)
 {
-  modif_perio_fait_ =0;
   if (sub_type(Zone_VEF,une_zone_dis.valeur()))
     {
       const Zone_VEF& la_zone_VEF = ref_cast(Zone_VEF, une_zone_dis.valeur());

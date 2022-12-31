@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -58,11 +58,8 @@ DoubleTab& Source_Generique_VEF::ajouter(DoubleTab& resu) const
       int ndeb = le_bord.num_premiere_face();
       int nfin = ndeb + le_bord.nb_faces();
 
-      if ((sub_type(Dirichlet,la_cl.valeur()))
-          ||
-          (sub_type(Dirichlet_homogene,la_cl.valeur()))
-         )
-        ;
+      if ((sub_type(Dirichlet, la_cl.valeur())) || (sub_type(Dirichlet_homogene, la_cl.valeur())))
+        { /* Do nothing */}
       else
         for (num_face=ndeb; num_face<nfin; num_face++)
           {

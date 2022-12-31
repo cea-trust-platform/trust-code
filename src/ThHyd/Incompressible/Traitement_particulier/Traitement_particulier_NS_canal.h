@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,12 +60,12 @@ protected :
   void ecriture_fichiers_moy_vitesse_rho_mu_old(const DoubleTab&, const Nom&, const double, const int) const;
   void ecriture_fichiers_moy_Temp_old(const DoubleTab&, const Nom&, const double, const int) const;
 
-  int Ny, Nval, Nphase;
+  int Ny = -10, Nval, Nphase;
   DoubleTab val_moy_tot, val_moy_temp, val_moy_phase;
   DoubleVect Y, Y_tot, compt, compt_tot;
   IntVect Nb_ech_phase;     // nombre d'echantillons par phase
   IntTab Tab_recap;
-  double w, freq;
+  double w = -100., freq= -100.;
   int ind_phase, oui_profil_nu_t, oui_profil_Temp, oui_repr, oui_pulse;
   double temps_deb, temps_fin, debut_phase, dt_impr_moy_spat, dt_impr_moy_temp;
   Nom fich_repr;

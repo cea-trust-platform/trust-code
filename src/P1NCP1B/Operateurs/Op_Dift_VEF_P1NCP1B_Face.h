@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,53 +36,52 @@
  *
  */
 
-class Op_Dift_VEF_P1NCP1B_Face : public Op_Dift_VEF_base
+class Op_Dift_VEF_P1NCP1B_Face: public Op_Dift_VEF_base
 {
   Declare_instanciable(Op_Dift_VEF_P1NCP1B_Face);
 
 public:
 
-  void associer(const Zone_dis& , const Zone_Cl_dis& ,
-                const Champ_Inc& ) override;
-  void associer_diffusivite(const Champ_base& ) override;
+  void associer(const Zone_dis&, const Zone_Cl_dis&, const Champ_Inc&) override;
+  void associer_diffusivite(const Champ_base&) override;
   inline const Champ_base& diffusivite() const override
   {
     return diffusivite_;
-  };
+  }
+  ;
 
-  void associer_modele_turbulence(const Mod_turb_hyd_base& );
+  void associer_modele_turbulence(const Mod_turb_hyd_base&);
 
-  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
+  DoubleTab& ajouter(const DoubleTab&, DoubleTab&) const override;
+  DoubleTab& calculer(const DoubleTab&, DoubleTab&) const override;
   void verifier() const;
 
   void contribue_au_second_membre() const;
   void ajouter_contribution() const;
 
   double calculer_dt_stab() const override;
-  inline void remplir_nu(DoubleTab& ) const override
+  inline void remplir_nu(DoubleTab&) const override
   {
-    Cerr<<__FILE__<<":"<<(int)__LINE__<<finl;
+    Cerr << __FILE__ << ":" << (int) __LINE__ << finl;
     exit();
-  } ;
+  }
+  ;
 
-protected :
+protected:
   REF(Champ_base) diffusivite_;
 
-  DoubleTab& calculer_gradient_elem(const DoubleTab&, DoubleTab& ) const;
-  DoubleTab& calculer_gradient_som(const DoubleTab&, DoubleTab& ) const;
-  DoubleTab& calculer_divergence_elem(double, const DoubleTab&,
-                                      const DoubleTab&, DoubleTab& ) const;
-  DoubleTab& calculer_divergence_som(double, const DoubleTab&,
-                                     const DoubleTab&, DoubleTab& ) const;
-  DoubleTab& corriger_div_pour_Cl(DoubleTab& ) const;
+  DoubleTab& calculer_gradient_elem(const DoubleTab&, DoubleTab&) const;
+  DoubleTab& calculer_gradient_som(const DoubleTab&, DoubleTab&) const;
+  DoubleTab& calculer_divergence_elem(double, const DoubleTab&, const DoubleTab&, DoubleTab&) const;
+  DoubleTab& calculer_divergence_som(double, const DoubleTab&, const DoubleTab&, DoubleTab&) const;
+  DoubleTab& corriger_div_pour_Cl(DoubleTab&) const;
   REF(Mod_turb_hyd_base) le_modele_turbulence;
   REF(Zone_VEF_PreP1b) la_zone_vef;
   REF(Zone_Cl_VEFP1B) la_zcl_vef;
-  SolveurSys  solveur;
-  int trans;
-  double lambda;
-  int filtre;
+  SolveurSys solveur;
+  int trans = -10;
+  double lambda = -100.;
+  int filtre = -10;
   Matrice_Morse_Sym masse;
   DoubleTab savgrad;
 };

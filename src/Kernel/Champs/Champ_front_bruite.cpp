@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,8 +51,6 @@ Sortie& Champ_front_bruite::printOn(Sortie& os) const
  */
 Entree& Champ_front_bruite::readOn(Entree& is)
 {
-  nx=0;
-  lx=0.;
   int dim;
   dim=lire_dimension(is,que_suis_je());
   Motcle motlu;

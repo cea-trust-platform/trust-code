@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,41 +14,24 @@
 *****************************************************************************/
 
 #include <Op_Dift_standard_VEF_Face.h>
+#include <Dirichlet_paroi_defilante.h>
+#include <Dirichlet_paroi_fixe.h>
+#include <Dirichlet_homogene.h>
 #include <Champ_P1NC.h>
 #include <Periodique.h>
 #include <Dirichlet.h>
-#include <Dirichlet_homogene.h>
-#include <Dirichlet_paroi_fixe.h>
-#include <Dirichlet_paroi_defilante.h>
-#include <Debog.h>
 #include <TRUSTTrav.h>
+#include <Debog.h>
 
 Implemente_instanciable(Op_Dift_standard_VEF_Face,"Op_Dift_VEF_P1NC_standard",Op_Dift_VEF_Face);
-
-
-// Methode pour le parallel.
-double tau_tang(int face,int kk,int nb_faces,
-                const DoubleTab&, const ArrOfInt&);
-//// printOn
-//
 
 Sortie& Op_Dift_standard_VEF_Face::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
 
-//// readOn
-//
-
 Entree& Op_Dift_standard_VEF_Face::readOn(Entree& is )
 {
-  Cerr<<"je suis dans Op_Dift_standard_VEF_Face::readOn"<<finl;
-  grad_Ubar=1;
-  nu_lu=1;
-  nut_lu=1;
-  nu_transp_lu=1;
-  nut_transp_lu=1;
-  filtrer_resu=1;
   Motcle accouverte = "{" , accfermee = "}" ;
   Motcle motlu;
   is >> motlu;

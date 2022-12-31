@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,25 +13,17 @@
 *
 *****************************************************************************/
 
-
-#include <Sonde_Int.h>
-#include <Postraitement.h>
 #include <communications.h>
+#include <Postraitement.h>
+#include <Sonde_Int.h>
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Sonde_Int,"Sonde_Int",Objet_U);
 Sonde_Int::Sonde_Int():le_fichier(0) { }
 
-
-/*! @brief Imprime le type de l'objet sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Sonde_Int::printOn(Sortie& s ) const
 {
   return s << que_suis_je();
 }
-
 
 /*! @brief Lit les specifications d'une sonde a partir d'un flot d'entree.
  *
@@ -58,10 +50,6 @@ Entree& Sonde_Int::readOn(Entree& is )
   Motcle accolade_ouverte("{");
   Motcle accolade_fermee("}");
   int nbre_points;
-
-  // initialisation de periode par defaut
-
-  periode = 1.e10;
 
   // Recherche du tableau sonde
   // Remplissage de la reference au tableau
@@ -291,7 +279,6 @@ void Sonde_Int::associer_post(const Postraitement& le_post)
  */
 void Sonde_Int::initialiser(const Zone& zone_geom)
 {
-  nb_bip = 0.;
   int nbre_points = les_positions_.dimension(0);
   elem_.resize(nbre_points);
   zone_geom.chercher_elements(les_positions_,elem_);

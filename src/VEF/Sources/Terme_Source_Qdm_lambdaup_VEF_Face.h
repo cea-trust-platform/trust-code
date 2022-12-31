@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,10 +50,10 @@ public:
 
 protected:
 
-  mutable double lambda;
-  double lambda_max;
-  double lambda_min;
-  double cible;
+  mutable double lambda = -1.;
+  double lambda_max = 2.;
+  double lambda_min = 1.e-24;
+  double cible = 0.01;
   REF(Champ_P1NC) la_vitesse;
   REF(Zone_VEF) la_zone_VEF;
   REF(Zone_Cl_VEF) la_zone_Cl_VEF;

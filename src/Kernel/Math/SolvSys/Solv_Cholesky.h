@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,7 +46,7 @@ protected :
 
   int Cholesky(const Matrice_Morse_Sym&, const DoubleVect&, DoubleVect& );
   int Fact_Cholesky(const Matrice_Morse_Sym&, const int ); // met a jour matrice_bande_factorisee_fortran_
-  int largeur_de_bande_;
+  int largeur_de_bande_ = -100;
   ArrOfDouble matrice_bande_factorisee_fortran_;
   Matrice_Morse_Sym matrice_de_travail;
 };

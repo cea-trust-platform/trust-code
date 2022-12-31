@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,10 +54,10 @@ protected :
   int& calcul_nb_som_dir(const Zone&);
   void msg_erreur_maillage(const char*);
 
-  int init,oui_transf,oui_calc_spectre;
-  double Ec_init;
-  int nb_som_dir;
-  int fac_init;
+  int init = 0, oui_transf = 0, oui_calc_spectre = 0;
+  double Ec_init = -100.;
+  int nb_som_dir = 0;
+  int fac_init = 0;
 };
 
 #endif

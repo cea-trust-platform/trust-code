@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -82,8 +82,8 @@ protected:
   REF(Domaine) mon_dom;
   Domaine dom_med_;
   Zone_VF_inst zonebidon_inst;
-  int numero_ch;
-  int nb_dt;
+  int numero_ch = -10;
+  int nb_dt = -10;
 #ifdef MED_
   med_entity_type type_ent;
   med_geometry_type type_geo;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,14 +48,14 @@ protected :
   DoubleVect moyenne;
   DoubleVect dir_fluct;
 
-  int nbModes;
-  double lenghtScale; // echelle integrale en espace
-  double timeScale; // echelle integrale en temps
-  double turbKinEn; // energie cinetique turbulente (k)
-  double turbDissRate; // taux de dissipation turbulente (epsilon)
-  double KeOverKmin;
-  double ratioCutoffWavenumber; // au lieu de prendre kappa_mesh comme plus grand nombre d'onde, on prend kappa_mesh/ratioCutoffWavenumber (ratioCutoffWavenumber>1 permet de mieux discretiser les fluctuations => aspect plus lisse)
-  double temps_d_avant_;
+  int nbModes = -10;
+  double lenghtScale= 0.; // echelle integrale en espace
+  double timeScale= 0.; // echelle integrale en temps
+  double turbKinEn= 0.; // energie cinetique turbulente (k)
+  double turbDissRate= 0.; // taux de dissipation turbulente (epsilon)
+  double KeOverKmin= 0.;
+  double ratioCutoffWavenumber= 0.; // au lieu de prendre kappa_mesh comme plus grand nombre d'onde, on prend kappa_mesh/ratioCutoffWavenumber (ratioCutoffWavenumber>1 permet de mieux discretiser les fluctuations => aspect plus lisse)
+  double temps_d_avant_= 0.;
 };
 
 #endif

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,10 +50,8 @@ public:
   void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const;
 
 protected:
-  int transportant_bar;
-  int transporte_bar;
-  int filtrer_resu;
-  int antisym;
+  int transportant_bar = 0, transporte_bar = 1;
+  int filtrer_resu = 1, antisym = 1;
 };
 
 

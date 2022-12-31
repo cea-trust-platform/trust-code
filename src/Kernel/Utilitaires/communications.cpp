@@ -417,14 +417,14 @@ int is_parallel_object(const Objet_U& obj)
               // L'operateur == n'est pas virtuel, on ne peut pas se contenter de comparer avec ==.
               // Il faut appeler == pour le sous-type specifique de l'objet.
               // L'ordre est important: d'abord le type le plus derive, puis sa classe de base.
-              if (compare<IntTab> (obj, obj2, erreur));
-              else if (compare<DoubleTab> (obj, obj2, erreur));
-              else if (compare<IntVect> (obj, obj2, erreur));
-              else if (compare<DoubleVect> (obj, obj2, erreur));
-              else if (compare<ArrOfInt> (obj, obj2, erreur));
-              else if (compare<ArrOfDouble> (obj, obj2, erreur));
-              else if (compare<Motcle> (obj, obj2, erreur));
-              else if (compare<Nom> (obj, obj2, erreur));
+              if (compare<IntTab> (obj, obj2, erreur)) { /* Do nothing */ }
+              else if (compare<DoubleTab> (obj, obj2, erreur)) { /* Do nothing */ }
+              else if (compare<IntVect> (obj, obj2, erreur)) { /* Do nothing */ }
+              else if (compare<DoubleVect> (obj, obj2, erreur)) { /* Do nothing */ }
+              else if (compare<ArrOfInt> (obj, obj2, erreur)) { /* Do nothing */ }
+              else if (compare<ArrOfDouble> (obj, obj2, erreur)) { /* Do nothing */ }
+              else if (compare<Motcle> (obj, obj2, erreur)) { /* Do nothing */ }
+              else if (compare<Nom> (obj, obj2, erreur)) { /* Do nothing */ }
               else
                 {
                   Cerr << "Internal error in is_parallel_objec() : it is not coded for " << obj.que_suis_je() << finl;

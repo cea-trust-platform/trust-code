@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,14 +48,8 @@ public:
   virtual int preparer_calcul();
   virtual bool initTimeStep(double dt);
   virtual void mettre_a_jour(double ) =0;
-  inline const Champ_Fonc& conductivite_turbulente() const
-  {
-    return conductivite_turbulente_;
-  };
-  inline const Champ_Fonc& diffusivite_turbulente() const
-  {
-    return diffusivite_turbulente_;
-  };
+  inline const Champ_Fonc& conductivite_turbulente() const { return conductivite_turbulente_; }
+  inline const Champ_Fonc& diffusivite_turbulente() const { return diffusivite_turbulente_; }
   inline const Turbulence_paroi_scal& loi_paroi() const;
   inline int loi_paroi_non_nulle() const;
   inline Turbulence_paroi_scal& loi_paroi();
@@ -87,7 +81,7 @@ protected:
   Champ_Fonc conductivite_turbulente_, diffusivite_turbulente_;
   REF(Convection_Diffusion_std) mon_equation;
   Turbulence_paroi_scal loipar;
-  double dt_impr_nusselt_;
+  double dt_impr_nusselt_=DMAXFLOAT;
 
 protected :
 

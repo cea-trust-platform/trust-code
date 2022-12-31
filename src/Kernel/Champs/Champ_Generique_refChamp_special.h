@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,7 +37,7 @@ public :
 
   const Champ_base& get_champ(Champ& espace_stockage) const override;
 protected :
-  int case_;
+  int case_=-1;
 };
 
 #endif /* Champ_Generique_refChamp_special_included */

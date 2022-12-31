@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -373,10 +373,8 @@ void Zone_Cl_VDF::imposer_cond_lim(Champ_Inc& ch, double temps)
   Champ_Inc_base& ch_base=ch.valeur();
   DoubleTab& ch_tab = ch_base.valeurs(temps);
   const int N = ch_tab.line_size();
-  if (sub_type(Champ_P0_VDF,ch_base))
-    ;
-  else if(ch_base.nature_du_champ()==scalaire)
-    ;
+  if (sub_type(Champ_P0_VDF,ch_base)) { /* Do nothing */}
+  else if(ch_base.nature_du_champ()==scalaire) { /* Do nothing */}
   else if (sub_type(Champ_Face_VDF,ch_base))
     {
       Champ_Face_VDF& ch_face = ref_cast(Champ_Face_VDF, ch_base);

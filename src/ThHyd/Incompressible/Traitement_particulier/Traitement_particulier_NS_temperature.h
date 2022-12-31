@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,15 +35,14 @@ class Traitement_particulier_NS_temperature : public Traitement_particulier_NS_b
 
 public :
 
-  inline ~Traitement_particulier_NS_temperature() override;
-  inline Traitement_particulier_NS_temperature();
+  ~Traitement_particulier_NS_temperature() override  { }
+  Traitement_particulier_NS_temperature() : le_fichier(0)  { }
   Entree& lire(Entree& ) override;
   void preparer_calcul_particulier(void) override ;
   void post_traitement_particulier(void) override ;
-  inline void en_cours_de_resolution(int , DoubleTab&, DoubleTab& ,double) override ;
-  inline void sauver_stat(void)  const override ;
-  inline void reprendre_stat(void) override  ;
-
+  void en_cours_de_resolution(int , DoubleTab&, DoubleTab& ,double) override { }
+  void sauver_stat(void)  const override  { }
+  void reprendre_stat(void) override   { }
 
 protected :
 
@@ -52,28 +51,7 @@ protected :
   SFichier* le_fichier;
 
   Nom nom_cl;
-  int dir;
+  int dir = -1;
 };
 
 #endif
-
-inline void Traitement_particulier_NS_temperature::en_cours_de_resolution(int , DoubleTab&, DoubleTab& ,double)
-{
-}
-
-inline void Traitement_particulier_NS_temperature::sauver_stat(void)  const
-{
-  ;
-}
-
-inline void Traitement_particulier_NS_temperature::reprendre_stat(void)
-{
-  ;
-}
-
-inline Traitement_particulier_NS_temperature::Traitement_particulier_NS_temperature():le_fichier(0)
-{
-}
-inline Traitement_particulier_NS_temperature::~Traitement_particulier_NS_temperature()
-{
-}

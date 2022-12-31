@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -144,20 +144,20 @@ protected :
   Vec LocalSolutionPetsc_;	// Local solution in case of petsc_decide_=1
   VecScatter VecScatter_;	// Scatter context needed when petsc_decide_=1 to gather values of global to local solution
 #endif
-  int solveur_direct_;          // Pour savoir si l'on manipule un solveur direct et non iteratif
+  int solveur_direct_ = no;          // Pour savoir si l'on manipule un solveur direct et non iteratif
   int read_matrix_;		// Read constant matrix in a file
-  bool gpu_;                    // Utilisation des solveurs GPU de PETSc
-  bool amgx_;			// Utilisation des solveurs GPU de AMGX
+  bool gpu_ = false;                    // Utilisation des solveurs GPU de PETSc
+  bool amgx_ = false;			// Utilisation des solveurs GPU de AMGX
   const Nom config();    // Nom du fichier de config eventuel
-  bool amgx_initialized_;	// Amgx initialise
+  bool amgx_initialized_ = false;	// Amgx initialise
   // Options dev:
-  bool ignore_new_nonzero_;
-  bool rebuild_matrix_;
-  bool allow_realloc_;
-  bool clean_matrix_;
-  bool reduce_ram_;
+  bool ignore_new_nonzero_ = false;
+  bool rebuild_matrix_ = false;
+  bool allow_realloc_ = true;
+  bool clean_matrix_= true;
+  bool reduce_ram_ = false;
   bool verbose = false; // Timing
-  bool reorder_matrix_;
+  bool reorder_matrix_ = false;
 #ifdef PETSCKSP_H
   IS rowperm = NULL, colperm = NULL;
 #endif

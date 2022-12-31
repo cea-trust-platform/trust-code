@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,12 +24,6 @@ Sortie& Terme_Source_inc_base::printOn(Sortie& s ) const { return s << que_suis_
 Entree& Terme_Source_inc_base::readOn(Entree& is )
 {
   Cerr << "Source_inc_base::readOn" << finl;
-  // Initialisation
-  //   u_etoile = 1.;
-  //   h = 1.;
-  //   coeff = 1;
-  //   dir_source = 1;
-  impr = 0;
   Param param(que_suis_je());
   set_param(param);
   param.lire_avec_accolades_depuis(is);

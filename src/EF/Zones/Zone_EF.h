@@ -133,11 +133,11 @@ private:
   //  Champ_Don champ_porosite_sommets_,champ_porosite_lu_;
   DoubleTab Bij_,Bij_thilde_;                         // stockage des matrice Bije
 
-  double h_carre;			 // carre du pas du maillage
+  double h_carre= 1.e30;			 // carre du pas du maillage
   DoubleVect h_carre_;			// carre du pas d'une maille
   Elem_EF type_elem_;                  // type de l'element de discretisation
-  int nb_faces_std_;                    // nombre de faces standard
-  int nb_elem_std_;                     // nombre d'elements standard
+  int nb_faces_std_=-10;                    // nombre de faces standard
+  int nb_elem_std_=-10;                     // nombre d'elements standard
   IntVect rang_elem_non_std_;		 // rang_elem_non_std_= -1 si l'element est standard
   // rang_elem_non_std_= rang de l'element dans les tableaux
   // relatifs aux elements non standards

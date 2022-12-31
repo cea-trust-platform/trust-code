@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,8 +47,8 @@ public :
 protected :
   void ouvrir_fichier(SFichier& s) const;
   virtual void calculer_Ec(double&);
-  double periode,tinit,nb_bip;
-  int repere_mobile_;
+  double periode = -100.,tinit = -100.,nb_bip = 0.;
+  int repere_mobile_ = 0;
 };
 
 #endif
@@ -76,7 +76,7 @@ inline int Traitement_particulier_NS_EC::comprend_champ(const Motcle& mot) const
 {
   return 0 ;
 }
-inline Traitement_particulier_NS_EC::Traitement_particulier_NS_EC():repere_mobile_(0)
+inline Traitement_particulier_NS_EC::Traitement_particulier_NS_EC()
 {
 }
 inline Traitement_particulier_NS_EC::~Traitement_particulier_NS_EC() {}

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -57,9 +57,9 @@ protected :
 
 private :
 
-  int standard_;
-  int info_;
-  int new_jacobian_;
+  int standard_=0;
+  int info_=0;
+  int new_jacobian_=0;
   IntTab is_dirichlet_faces_;
 };
 

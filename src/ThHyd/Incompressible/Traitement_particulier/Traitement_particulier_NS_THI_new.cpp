@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,27 +14,16 @@
 *****************************************************************************/
 
 #include <Traitement_particulier_NS_THI_new.h>
-#include <Domaine.h>
 #include <MD_Vector_base.h>
+#include <Domaine.h>
+
 Implemente_base(Traitement_particulier_NS_THI_new,"Traitement_particulier_NS_THI_new",Traitement_particulier_NS_base);
 
-
-/*! @brief
- *
- * @param (Sortie& is) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Traitement_particulier_NS_THI_new::printOn(Sortie& is) const
 {
   return is;
 }
 
-
-/*! @brief
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Traitement_particulier_NS_THI_new::readOn(Entree& is)
 {
   return is;
@@ -42,12 +31,6 @@ Entree& Traitement_particulier_NS_THI_new::readOn(Entree& is)
 
 Entree& Traitement_particulier_NS_THI_new::lire(Entree& is)
 {
-  // valeurs par defaut
-  init = 0;
-  fac_init = 0;
-  oui_transf = 0;
-  oui_calc_spectre = 0;
-  // FIN valeurs par defaut
   Motcle accouverte = "{" , accfermee = "}" ;
   Motcle valec="val_Ec";
   Motcle facon="facon_init";

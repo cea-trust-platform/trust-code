@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,8 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-
-
 
 #ifndef Op_Diff_PolyMAC_base_included
 #define Op_Diff_PolyMAC_base_included
@@ -105,7 +103,7 @@ protected:
   /* gestion des variables auxiliaires en semi-implicite */
   void update_aux(double t) const;
   mutable double t_last_aux_ = -1e10; /* dernier temps auquel on les a calcule */
-  mutable int use_aux_;               /* les variables auxiliaires sont-elles stockees dans var_aux ? */
+  mutable int use_aux_ = 0;               /* les variables auxiliaires sont-elles stockees dans var_aux ? */
   mutable Matrice_Bloc mat_aux;      /* systeme a resoudre : mat.var_aux = secmem */
   mutable DoubleTab var_aux;
   mutable SolveurSys solv_aux; //solveur

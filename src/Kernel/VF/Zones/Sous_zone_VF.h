@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -86,9 +86,9 @@ public:
 protected:
   REF(Zone_VF) la_zone_VF;
   IntTab les_faces_;
-  int premiere_face_bord_0_;
-  int premiere_face_bord_1_;
-  int premiere_face_bord_;
+  int premiere_face_bord_0_ = -10;
+  int premiere_face_bord_1_= -10;
+  int premiere_face_bord_= -10;
   DoubleTab volumes_entrelaces_;
 };
 

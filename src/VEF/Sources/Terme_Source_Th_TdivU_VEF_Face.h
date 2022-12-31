@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,7 +49,7 @@ protected:
   REF(Equation_base) eqn_t;
   Zone_Cl_dis ma_zonecl_;
   REF(Zone_Cl_dis_base) zonecl_sa;
-  int zone_cl_mod_;
+  int zone_cl_mod_ = 0;
 };
 
 #endif

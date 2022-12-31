@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -97,7 +97,7 @@ public:
   inline const IntVect& get_faces_coin() const;
 
 protected :
-  int is_conduction; // Est-on dans un probleme conduction ?
+  int is_conduction=0; // Est-on dans un probleme conduction ?
   REF(Champ_Inc_base) l_inconnue1;
   REF(Champ_Inc_base) l_inconnue2;
   REF(Champ_Inc_base) l_inconnue;
@@ -111,7 +111,7 @@ protected :
   Nom nom_pb2;
 
   IntVect connect_bords; // Tableau de connectivite des faces de bord des deux bord conjugues (en sequentiel)
-  int connect_est_remplit;
+  int connect_est_remplit = -1;
 
   DoubleVect gradient_num_local;
   DoubleVect gradient_fro_local;
@@ -124,7 +124,7 @@ protected :
 
   IntVect elems_voisin_bord_; //Contient le numero de l element voisin pour chaque face de bord
   IntVect faces_coin;         //Prend la valeur 1 si la face de bord est une face de coin (0 sinon)
-  int verification_faces_coin;
+  int verification_faces_coin=0;
 };
 
 

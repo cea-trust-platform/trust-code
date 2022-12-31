@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -86,15 +86,15 @@ protected :
 
   virtual bool iterateTimeStepOnEquation(int i,bool& converged);
 
-  double seuil; // To determine convergence
-  int niter_min; // Minimum number of iterations (before, continue to iterate)
-  int niter_max; // Maximum number of iterations (after, considered as not convergent)
-  int niter_avg; // Average number of iterations wanted (facsec adjusted to fit that number)
-  double facsec_max; // Maximum facsec (not to miss the physics)
+  double seuil=1.e-3; // To determine convergence
+  int niter_min=2; // Minimum number of iterations (before, continue to iterate)
+  int niter_max=6; // Maximum number of iterations (after, considered as not convergent)
+  int niter_avg=3; // Average number of iterations wanted (facsec adjusted to fit that number)
+  double facsec_max=2; // Maximum facsec (not to miss the physics)
 
   // Used internally.
-  int iteration; // Number of iterations done for the current time step.
-  double last_facsec; // facsec at the beginning of time step resolution,
+  int iteration = -1; // Number of iterations done for the current time step.
+  double last_facsec = -100.; // facsec at the beginning of time step resolution,
   // to avoid changing facsec several times for the same time step.
 };
 

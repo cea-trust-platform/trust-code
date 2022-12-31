@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -64,20 +64,20 @@ private:
   static int search_type_info_name(const char *nom, int& index);
 
   // Possible names (eg: A|B)
-  const char* names_;
+  const char* names_ = "rien";
   // Name and its synonym
-  mutable Nom * name_; // (eg: A)
-  mutable Nom * synonym_name_; // (eg: B)
+  mutable Nom * name_ = nullptr; // (eg: A)
+  mutable Nom * synonym_name_ = nullptr; // (eg: B)
   // Object synonym:
-  Synonyme_info* synonym_; // Synonym
+  Synonyme_info* synonym_= nullptr; // Synonym
 
   // Nombre de classes de base de cette classe
-  int nb_bases_;
+  int nb_bases_ = -1;
   // Liste des Type_info des classes de base de cette classe
-  const Type_info** b;
+  const Type_info** b= nullptr;
   // Pointeur vers la methode statique "cree_instance" de la classe
   // (nul si la classe n'est pas instanciable)
-  Objet_U* (*cree_instance)();
+  Objet_U* (*cree_instance)()= nullptr;
 
   // Liste des Type_info des classes declarees par declare_base/declare_instanciable
   // La liste est triee par ordre alphabetique (minuscules/majuscules indifferentes)

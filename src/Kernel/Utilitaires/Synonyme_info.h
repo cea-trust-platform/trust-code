@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,12 +15,13 @@
 
 #ifndef Synonyme_info_included
 #define Synonyme_info_included
+
 #include <arch.h>
 
 class Objet_U;
-class Nom;
-class Noms;
 class Sortie;
+class Noms;
+class Nom;
 
 // Macro to declare A and B synonyms:
 #define Add_synonym(A,B) const Synonyme_info name2(name2(synonym_,A),__LINE__)(B,A::info_obj.name())
@@ -32,18 +33,12 @@ class Sortie;
 class Synonyme_info
 {
 public:
-  Synonyme_info() {};
+  Synonyme_info() { }
   ~Synonyme_info();
   Synonyme_info(const char* name, const char* org);
 
-  inline const char* org_name_() const
-  {
-    return org;
-  };
-  inline const char* nom() const
-  {
-    return n;
-  };
+  inline const char* org_name_() const { return org; }
+  inline const char* nom() const { return n; }
 
   // Methodes statiques :
   static Sortie&           hierarchie(Sortie&) ;
@@ -63,8 +58,8 @@ private:
   static int search_synonyme_info_name(const char *nom, int& index);
 
   // Le nom de la classe.
-  const char* n;
-  const char* org;
+  const char* n = "rien";
+  const char* org = "rien";
 
   // Liste des Synonyme_info des classes declarees par declare_base/declare_instanciable
   // La liste est triee par ordre alphabetique (minuscules/majuscules indifferentes)
@@ -77,6 +72,4 @@ private:
   static int les_synonymes_memsize;
 };
 
-
-#endif
-
+#endif /* Synonyme_info_included */

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,11 +60,11 @@ protected:
 
   enum Type { ERROR, BOITE, CHAPEAU, GAUSSIENNE, PARSER, QUADRA };
   // Si type_ != parser, il faut renseigner l_, sinon il faut renseigner expression_parser_
-  Type type_;
+  Type type_ = ERROR;
   // parametre du filtre (largeur de boite, chapeau ou gaussienne)
-  double l_;
+  double l_= -1.;
   // box_size_ doit toujours etre rempli (demi-cote d'un cube contenant le support du filtre)
-  double box_size_;
+  double box_size_ = -100.;
   Nom expression_parser_;
   mutable Parser parser_;
 };

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -74,9 +74,6 @@ void Terme_Source_Acceleration::lire_data(Entree& s)
 {
   if (je_suis_maitre())
     Cerr << "Terme_Source_Acceleration::lire_data" << finl;
-
-  // Valeurs par defaut:
-  option_ = TERME_COMPLET;
 
   Motcles les_mots(7);
   les_mots[0] = "omega";

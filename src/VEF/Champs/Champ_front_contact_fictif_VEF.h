@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,8 +45,8 @@ public:
 
 protected :
 
-  double conduct_fictif; // conductivite du solide fictif
-  double ep_fictif; // epaisseur du solide fictif
+  double conduct_fictif = -100.; // conductivite du solide fictif
+  double ep_fictif= -100.; // epaisseur du solide fictif
 
 };
 

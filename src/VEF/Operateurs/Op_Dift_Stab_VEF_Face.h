@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -65,18 +65,13 @@ protected :
   void ajouter_antidiffusion(const DoubleTab&, const DoubleTab&, DoubleTab&) const ;
   void ajouter_antidiffusion_vectoriel(const DoubleTab& Aij, const DoubleTab& inconnueTab, DoubleTab& resuTab) const;
 
-  int standard_;
   IntTab is_dirichlet_faces_;
-
-
-
   REF(Champ_Inc) divergence_U;
 
-  int nu_lu_;
-  int nut_lu_;
-  int nu_transp_lu_;
-  int nut_transp_lu_;
-  int new_jacobian_;
+  int nu_lu_ = 1, nut_lu_ = 1;
+  int nu_transp_lu_ = 0, nut_transp_lu_ = 1;
+  int new_jacobian_ = 0;
+  int standard_ = 0;
 };
 
 inline double Op_Dift_Stab_VEF_Face::aij_extradiag(const int elem, const int facei, const int facej, const int dim, const int dim2, const double nu_elem) const

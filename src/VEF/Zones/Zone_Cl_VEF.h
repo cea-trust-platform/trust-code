@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -85,7 +85,7 @@ protected:
   DoubleTab normales_facettes_Cl_;
   DoubleTab vecteur_face_facette_Cl_;
   IntVect type_elem_Cl_;
-  int modif_perio_fait_;
+  int modif_perio_fait_ = 0;
 
   // Fonctions de creation des membres prives de la zone:
 

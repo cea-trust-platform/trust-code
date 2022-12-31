@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -138,12 +138,12 @@ void Terme_Source_Coriolis_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTa
         }
 
       else if (sub_type(Symetrie,la_cl.valeur()))
-        ;
+        { /* Do nothing */}
       else if ( (sub_type(Dirichlet,la_cl.valeur()))
                 ||
                 (sub_type(Dirichlet_homogene,la_cl.valeur()))
               )
-        ;
+        { /* Do nothing */}
       else if (sub_type(Periodique,la_cl.valeur()))
         {
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());

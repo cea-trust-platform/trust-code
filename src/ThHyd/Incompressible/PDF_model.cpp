@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,16 +13,12 @@
 *
 *****************************************************************************/
 
-/////////////////////////////////////////////////////////////////////////////
-//
 // Model developped by Michel Belliard
 // Implementation : Georis Billo
-//
-/////////////////////////////////////////////////////////////////////////////
 
 #include <PDF_model.h>
-#include <Param.h>
 #include <algorithm>
+#include <Param.h>
 
 Implemente_instanciable(PDF_model,"PDF_model",Objet_U) ;
 // (xdata documentation is in the TRAD_2.org because we need a special bloc_lecture object)
@@ -36,12 +32,9 @@ Sortie& PDF_model::printOn(Sortie& os) const
 Entree& PDF_model::readOn(Entree& is)
 {
   // (xdata documentation is in the TRAD_2.org because we need a special bloc_lecture object)
-  type_vitesse_imposee_ = -1; //DEFAULT VALUE = not set
   Param param(que_suis_je());
   param.ajouter("eta",&eta_, Param::REQUIRED);
-  temps_relax_=1.0e+12;
   param.ajouter("temps_relaxation_coefficient_PDF",&temps_relax_,Param::OPTIONAL);
-  echelle_relax_=5.0e-2;
   param.ajouter("echelle_relaxation_coefficient_PDF",&echelle_relax_,Param::OPTIONAL);
   param.ajouter_flag("local",&local_);
   param.ajouter_non_std("vitesse_imposee_data",(this),Param::OPTIONAL);

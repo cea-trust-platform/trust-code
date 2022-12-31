@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,22 +32,15 @@ Implemente_base_sans_constructeur(Perte_Charge_PolyMAC,"Perte_Charge_PolyMAC",So
 
 Perte_Charge_PolyMAC::Perte_Charge_PolyMAC():implicite_(1) { }
 
-// printOn
-//
-
 Sortie& Perte_Charge_PolyMAC::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << endl;
 }
 
-// readOn
-//
-
 Entree& Perte_Charge_PolyMAC::readOn(Entree& is )
 {
   Param param(que_suis_je());
   Cerr << que_suis_je() << "::readOn " << finl;
-  sous_zone=false;
   lambda.setNbVar(4+dimension);
   set_param(param);
   param.lire_avec_accolades_depuis(is);

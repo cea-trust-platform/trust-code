@@ -50,33 +50,21 @@ public:
 protected:
   Nom reactifs_,produits_,activite_;
 
-  double constante_taux_reaction_;
-  double enthalpie_reaction_; // en J/mol
-  double contre_reaction_;     // prefacteur
-  double c_r_Ea_;              // en J/mol
-  /* double c0_D_G_;             // en Pa.m2/s         |
-     double c1_D_G_;             // en Pa.m2/s/K       |
-     double c2_D_G_;             // en Pa.m2/s/K2      |      pour D_G=1/p*(c0+c1*T+c2*T^2+c32*T^(3/2))
-     double d_D_G_;              // en Pa.m2/s/K^(3/2) |
-
-     double c_Re05Sc033_;        // constante de la loi de type Ranz-Marschall pour D_G (e.g. 0.3)
-     double d_min_, d_max_;      // en m
-  */
-  double Sc_t_;               // Nombre de Schmidt turbulent (e.g. 0.8)
-  double Ea_;                 // en J/mol
-  double beta_/*,exp_comb_,exp_oxy_*/;
+  double constante_taux_reaction_=1e30;
+  double enthalpie_reaction_ = -100.; // en J/mol
+  double contre_reaction_=-1.;     // prefacteur
+  double c_r_Ea_=0.;              // en J/mol
+  double Sc_t_=0.8;               // Nombre de Schmidt turbulent (e.g. 0.8)
+  double Ea_=0.;                 // en J/mol
+  double beta_=0./*,exp_comb_,exp_oxy_*/;
   ArrOfDouble coeff_Y_,coeff_stoechio_;
   ArrOfDouble coeff_activite_;
   Motcles save_alias_; //pour verifier que les Yi arrivent dans le meme ordre que lors de l'interpretation de la reaction
   mutable Champ_Fonc omega_;
 
-  mutable double proportion_max_sur_delta_t_;
-  double proportion_max_admissible_;
-  int nb_sous_pas_de_temps_reaction_;
-
-  /* int    nb_iter_impl_contre_reaction_;      // iteration du point fixe en cas de contre-reaction
-     double sous_relax__impl_contre_reaction_;  // iteration du point fixe en cas de contre-reaction
-  */
+  mutable double proportion_max_sur_delta_t_=1;
+  double proportion_max_admissible_=1e30;
+  int nb_sous_pas_de_temps_reaction_=1;
 };
 
 #endif

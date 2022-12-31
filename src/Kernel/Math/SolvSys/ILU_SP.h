@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,8 +41,8 @@ protected:
   ArrOfDouble alu;                // tableau pour L et U
   ArrOfInt jlu;                // tableau pour L et U
   enum Type_Precond { PRECOND_NUL = 0, PRECOND_GAUCHE = 1, PRECOND_DROITE = 2, PRECOND_GAUCHE_DROITE = 3};
-  int precond_ ;         // Flag pour le preconditionnement ILU_SP
-  int lfil_;             // Parametre de remplissage pour ilut
+  int precond_ = _TYPE_ILU_;         // Flag pour le preconditionnement ILU_SP
+  int lfil_= _LFIL_ILU_;             // Parametre de remplissage pour ilut
   Matrice_Morse MLOC;
 };
 

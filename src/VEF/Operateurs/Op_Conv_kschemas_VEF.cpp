@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,37 +20,26 @@
 Implemente_base(Op_Conv_kschemas_VEF,"Op_Conv_kschemas_VEF_P1NC",Op_Conv_VEF_base);
 
 
-//// printOn
-//
-
 Sortie& Op_Conv_kschemas_VEF::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
-
-//// readOn
-//
 
 Entree& Op_Conv_kschemas_VEF::readOn(Entree& s )
 {
   return s ;
 }
 
-//
-//   Fonctions de la classe Op_Conv_kschemas_VEF
-//
-void Op_Conv_kschemas_VEF::associer(const Zone_dis& zone_dis,
-                                    const Zone_Cl_dis& zone_cl_dis,
-                                    const Champ_Inc& ch )
+void Op_Conv_kschemas_VEF::associer(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis, const Champ_Inc& ch)
 {
   // CCa le 28/05/99 Le schema Kquick ne marche pas en paralle !!
-  if(Process::nproc()>1)
+  if (Process::nproc() > 1)
     {
-      Cerr<<"ATTENTION le kquick ne marche pas en parallele !!!"<<finl;
+      Cerr << "ATTENTION le kquick ne marche pas en parallele !!!" << finl;
       exit();
     }
 
-  Op_Conv_VEF_base::associer(zone_dis,zone_cl_dis,ch);
+  Op_Conv_VEF_base::associer(zone_dis, zone_cl_dis, ch);
 }
 
 

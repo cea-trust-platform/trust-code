@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -65,15 +65,6 @@ Entree& Op_Conv_EF_VEF_P1NC_Stab::readOn(Entree& s )
     les_mots[8] = "alpha_sous_zone";
   }
 
-  //Les variables a instancier
-  alpha_=1.;
-  test_=0;
-  is_compressible_=0;
-  old_=0;
-  volumes_etendus_=1;
-  sous_zone=false;
-  ssz_alpha=false;
-  new_jacobienne_=0;
   s >> motlu;
   if (motlu!=accouverte)
     {

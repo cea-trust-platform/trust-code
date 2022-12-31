@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,27 +26,18 @@
 
 Implemente_base(Source_Neutronique,"Source_Neutronique",Source_base);
 
-//// printOn
-//
-
 Sortie& Source_Neutronique::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
 
-//// readOn
-//
 Entree& Source_Neutronique::readOn(Entree& is )
 {
   Param param(que_suis_je());
   EChaine ec("Champ_Uniforme 1 1");
   ec >> la_puissance;
-  Ci0_ok=0;
   f_xyz = "1.";
   n_ssz="defaut";
-  N = -1;
-  init = 1;
-  dt_impr = 1e10;
   faire_un_pas_de_temps =  &Source_Neutronique::faire_un_pas_de_temps_RK;
   set_param(param);
   param.lire_avec_accolades_depuis(is);

@@ -1507,7 +1507,7 @@ public:
 private:
   // Metadata des indices qu'on va renumeroter :
   MD_Vector md_items_;
-  int premier_indice_global_;
+  int premier_indice_global_ = -100;
   // Tableau distribue (avec espaces virtuels et items communs)
   // contenant pour toutes les entites a indexer  (reelles et virtuelles)
   // un indice global.

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,23 +25,14 @@
 
 Implemente_base(Schema_Implicite_Multi_TimeStep_base,"Schema_Implicite_Multi_TimeStep_base",Schema_Implicite_base);
 
-//     printOn()
-/////
 
 Sortie& Schema_Implicite_Multi_TimeStep_base::printOn(Sortie& s) const
 {
   return  Schema_Implicite_base::printOn(s);
 }
 
-//// readOn
-//
-
 Entree& Schema_Implicite_Multi_TimeStep_base::readOn(Entree& s)
 {
-  nb_ite_max=100000;
-  residu_old_=0;
-  facsec_max_=DMAXFLOAT;
-
   Schema_Implicite_base::readOn(s);
 
   if(!le_solveur.non_nul())

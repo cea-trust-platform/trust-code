@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,27 +22,11 @@
 #include <TRUSTTab.h>
 #include <Param.h>
 
-Implemente_instanciable(Sch_CN_iteratif,"Sch_CN_iteratif",Schema_Temps_base);
+Implemente_instanciable(Sch_CN_iteratif, "Sch_CN_iteratif", Schema_Temps_base);
 
+Sortie& Sch_CN_iteratif::printOn(Sortie& s) const { return Schema_Temps_base::printOn(s); }
 
-Sortie& Sch_CN_iteratif::printOn(Sortie& s) const
-{
-  return  Schema_Temps_base::printOn(s);
-}
-
-
-Entree& Sch_CN_iteratif::readOn(Entree& s)
-{
-  seuil=1.e-3;
-  niter_min=2;
-  niter_max=6;
-  niter_avg=3;
-  facsec_max=2;
-
-  Schema_Temps_base::readOn(s) ;
-
-  return s;
-}
+Entree& Sch_CN_iteratif::readOn(Entree& s) { return Schema_Temps_base::readOn(s); }
 
 void Sch_CN_iteratif::ajuster_facsec(type_convergence cv)
 {

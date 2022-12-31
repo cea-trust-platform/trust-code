@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -58,13 +58,13 @@ public :
   DoubleTab Les_Noeuds;
   IntVect Les_Nums;
   IntVect Symetrique;
-  double a_tanh;  // a pour le maillage en tanh dans la diry!!
-  int tanh_dilatation;
-  double xa_tanh;  // xa pour le maillage en tanh dans la dirx!!
-  int xtanh_dilatation;
-  double za_tanh;  // za pour le maillage en tanh dans la dirz!!
-  int ztanh_dilatation;
-  int rep_VEF;
+  double a_tanh= 10.;  // a pour le maillage en tanh dans la diry!!
+  int tanh_dilatation=0;
+  double xa_tanh= 10.;  // xa pour le maillage en tanh dans la dirx!!
+  int xtanh_dilatation=0;
+  double za_tanh= 10.;  // za pour le maillage en tanh dans la dirz!!
+  int ztanh_dilatation=0;
+  int rep_VEF=0;
   inline int numero_maille(int );
   inline int numero_maille(int, int );
   inline int numero_maille(int , int, int);
@@ -78,7 +78,7 @@ public :
   inline double& coord_noeud(int, int, int);
   inline double& coord_noeud(int, int, int, int);
 
-  int Nx, Ny, Nz, Mx, My, Mz;
+  int Nx = -1, Ny = -1, Nz = -1, Mx = -1, My = -1, Mz = -1;
 
   void maille1D();
   void maille2D();
@@ -88,7 +88,7 @@ public :
   void lire_Noeuds(Entree& is);
   void lire_front(Entree& , Frontiere& );
 
-  int tour_complet;
+  int tour_complet=0;
 };
 
 /*! @brief Renvoie le nombre de noeuds du pave dans chacune des dimensions d'espace.

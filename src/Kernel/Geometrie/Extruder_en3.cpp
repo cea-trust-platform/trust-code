@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,11 +13,11 @@
 *
 *****************************************************************************/
 
+#include <Connectivite_som_elem.h>
+#include <Static_Int_Lists.h>
+#include <Faces_builder.h>
 #include <Extruder_en3.h>
 #include <Domaine.h>
-#include <Static_Int_Lists.h>
-#include <Connectivite_som_elem.h>
-#include <Faces_builder.h>
 #include <Scatter.h>
 #include <Param.h>
 
@@ -30,27 +30,9 @@ Extruder_en3::Extruder_en3()
   direction_.resize(3,Array_base::NOCOPY_NOINIT);
 }
 
-/*! @brief Simple appel a: Interprete::printOn(Sortie&)
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Extruder_en3::printOn(Sortie& os) const
-{
-  return Interprete::printOn(os);
-}
+Sortie& Extruder_en3::printOn(Sortie& os) const { return Interprete::printOn(os); }
 
-
-/*! @brief Simple appel a: Interprete::readOn(Entree&)
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& Extruder_en3::readOn(Entree& is)
-{
-  return Interprete::readOn(is);
-}
-
+Entree& Extruder_en3::readOn(Entree& is) { return Interprete::readOn(is); }
 
 /*! @brief Fonction principale de l'interprete Extruder_en3 Triangule 1 a 1 toutes les zones du domaine
  *

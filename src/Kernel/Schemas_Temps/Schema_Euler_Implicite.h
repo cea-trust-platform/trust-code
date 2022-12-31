@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -69,10 +69,11 @@ public :
   int reprendre(Entree& ) override;
   inline void completer(void) override { } ;
   int resolution_monolithique(const Nom& nom) const;
+
 protected:
-  int nb_ite_max;
-  double residu_old_,facsec_max_;
-  int nb_ite_sans_accel_;
+  int nb_ite_max = 200;
+  double residu_old_ = 0, facsec_max_ = DMAXFLOAT;
+  int nb_ite_sans_accel_ = -1;
   std::vector<std::set<std::string>> resolution_monolithique_;
 };
 

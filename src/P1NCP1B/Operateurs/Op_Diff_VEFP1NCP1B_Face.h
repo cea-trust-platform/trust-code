@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -125,15 +125,15 @@ protected :
   mutable DoubleTab gradient_p1_;
   mutable DoubleTab gradient_pa_;
   mutable Matrice_Morse laplacien_p1_;
-  mutable int is_laplacian_filled_;
-  mutable int is_laplacian_built_;
+  mutable int is_laplacian_filled_ = 0;
+  mutable int is_laplacian_built_ = 0;
 
   double convexite_;//attribut pour definir la convexite
   double coeff_;//pour la matrice lumpee
   int alphaE;//attribut pour calculer la partie P0 de l'operateur
   int alphaS;//attribut pour calculer la partie P1 de l'operateur
   int alphaA;//attribut pour calculer la partie Pa de l'operateur
-  int dim_ch_;//attribut donnant le nombre de dimension de l'inconnue
+  int dim_ch_ = -1;//attribut donnant le nombre de dimension de l'inconnue
   int decentrage_;//attribut autorisant le decentrage de l'operateur
 };
 

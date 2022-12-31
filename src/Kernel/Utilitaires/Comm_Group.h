@@ -114,9 +114,9 @@ private:
   static int static_group_number_;
 
   // Rang du processeur local dans le groupe, -1 s'il n'est pas dans le groupe
-  int rank_;
+  int rank_ = -1;
   // Nombre de processeurs dans le groupe
-  int nproc_;
+  int nproc_ = -1;
   // Pour chaque pe du calcul complet (taille du tableau = groupe_TRUST().nproc())
   //  indice au sein du groupe si le pe est dedans,
   //  -1 si le pe n'est pas dans le groupe
@@ -127,15 +127,14 @@ private:
 
   // Mon numero de groupe (egal au static_group_number_ au moment de la
   // creation du groupe).
-  int group_number_;
+  int group_number_ = -1;
   // On incremente le group_communication_tag_ de cette quantite a chaque
   // operation. C'est un nombre premier, ce qui permet d'avoir des tags
   // differents pour chaque groupe pendant un bon bout de temps (jusqu'a ce
   // que le numero de tag depasse MAXINT...)
-  int group_tag_increment_;
-  // On incremente le tag a chaque operation, ce qui permet de verifier
-  // que les processus sont bien synchronises.
-  mutable int group_communication_tag_;
+  int group_tag_increment_ = -1;
+  // On incremente le tag a chaque operation, ce qui permet de verifier que les processus sont bien synchronises.
+  mutable int group_communication_tag_ = -1;
 };
 
 inline int Comm_Group::check_enabled()

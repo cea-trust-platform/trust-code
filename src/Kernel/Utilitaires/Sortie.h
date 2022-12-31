@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -101,8 +101,8 @@ public:
   int is_bin();
   bool has_ostream() const;
 protected:
-  int bin_;
-  int col_width_;
+  int bin_=0;
+  int col_width_=-1;
 private:
   ostream * ostream_;
 

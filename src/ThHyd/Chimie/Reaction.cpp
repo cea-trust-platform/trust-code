@@ -29,23 +29,13 @@ Sortie& Reaction::printOn(Sortie& os) const
   os<<"produits "<<produits_<<finl;
   os<<"exposant_beta "<<beta_<<finl;
   os<<"constante_taux_reaction "<<constante_taux_reaction_<<finl;
-  /*  os<<"c0_D_G "<<c0_D_G_<<" Pa.m2/s"<<finl;
-      os<<"c1_D_G "<<c1_D_G_<<" Pa.m2/s/K"<<finl;
-      os<<"c2_D_G "<<c2_D_G_<<" Pa.m2/s/K2"<<finl;
-      os<<"d_D_G  "<<d_D_G_<<" Pa.m2/s/K^(3/2)"<<finl;
-      os<<"c_Re05Sc033 "<<c_Re05Sc033_<<finl; */
   os<<"Sc_t "<<Sc_t_<<finl;
-  /*  os<<"d_min "<<d_min_<<finl;
-      os<<"d_max "<<d_max_<<finl; */
   os<<"enthalpie_reaction "<<enthalpie_reaction_<<" J/mol"<<finl;
   os<<"energie_activation "<<Ea_<<" J/mol"<<finl;
   os<<"proportion_max_admissible "<<proportion_max_admissible_<<finl;
   os<<"nb_sous_pas_de_temps_reaction "<<nb_sous_pas_de_temps_reaction_<<finl;
   os<<"contre_reaction "<<contre_reaction_<<finl;
   os<<"contre_energie_activation "<<c_r_Ea_<<finl;
-  /*
-    os<<"nb_iter_impl_contre_reaction "<<nb_iter_impl_contre_reaction_<<finl;
-    os<<"sous_relax__impl_contre_reaction "<<sous_relax__impl_contre_reaction_<<finl; */
   os<<" } "<<finl;
   return os;
 }
@@ -88,8 +78,6 @@ void Reaction::extract_coef(ArrOfDouble& coeff_reactifs,ArrOfDouble& coeff_produ
 
 void Reaction::completer(const Motcles& list_var,const ArrOfDouble& masse_molaire)
 {
-  // test
-
   ArrOfDouble coeff_reactifs;
   ArrOfDouble coeff_produits;
   extract_coef(coeff_reactifs,coeff_produits,list_var,masse_molaire);
@@ -125,24 +113,7 @@ void Reaction::completer(const Motcles& list_var,const ArrOfDouble& masse_molair
 
 Entree& Reaction::readOn(Entree& is)
 {
-  Ea_=0;                            // J/mol
-  beta_=0;
-  c_r_Ea_=0;
-  constante_taux_reaction_=1e30;    // 1/s en gaz, m/s en grains (et suivant nombre de produits d'activite !)
-  /*  c0_D_G_ =0.;                      // Pa.m2/s
-      c1_D_G_ =0.;                      // Pa.m2/s/K
-      c2_D_G_ =0.;                      // Pa.m2/s/K2
-      d_D_G_=1e30;                      // Pa.m2/s/K^(3/2)
-      c_Re05Sc033_=0.3;                 // constante de la loi de type Ranz-Marschall pour D_G (e.g. 0.3)
-  */
-  Sc_t_=0.8;                        // Nombre de Schmidt turbulent dans le calcul de D_G
-  /*  d_min_=1e-10;
-      d_max_=1.; */
-  proportion_max_admissible_=1e30;
-  proportion_max_sur_delta_t_=1;    // mol/kg
   activite_="0";
-  nb_sous_pas_de_temps_reaction_ =1;
-  contre_reaction_=-1;
   //  nb_iter_impl_contre_reaction_=1;      // pas d'iteration
   //sous_relax__impl_contre_reaction_=1.; // pas de sous-relaxation
   Param param(que_suis_je());
@@ -151,42 +122,13 @@ Entree& Reaction::readOn(Entree& is)
   param.ajouter( "constante_taux_reaction",&constante_taux_reaction_);
   param.ajouter( "enthalpie_reaction",&enthalpie_reaction_,Param::REQUIRED);
   param.ajouter( "energie_activation",&Ea_);
-
-
   param.ajouter( "exposant_beta",&beta_);
   param.ajouter_non_std("coefficients_activites",(this));
 
-
   param.ajouter( "contre_reaction",&contre_reaction_);
   param.ajouter( "contre_energie_activation",&c_r_Ea_);
-  /* param.ajouter( "c0_D_G", &c0_D_G_);
-     param.ajouter( "c1_D_G", &c1_D_G_);
-     param.ajouter( "c2_D_G", &c2_D_G_);
-     param.ajouter( "d_D_G",&d_D_G_);
-     param.ajouter( "c_Re05Sc033 ",&c_Re05Sc033_);
-
-     param.ajouter( "d_min",&d_min_);
-     param.ajouter( "d_max",&d_max_);
-
-
-     param.ajouter( "proportion_max_admissible",&proportion_max_admissible_);
-
-     param.ajouter( "nb_sous_pas_de_temps_reaction",&nb_sous_pas_de_temps_reaction_);
-
-     param.ajouter( "nb_iter_impl_contre_reaction",&nb_iter_impl_contre_reaction_);
-     param.ajouter( "sous_relax__impl_contre_reaction",&sous_relax__impl_contre_reaction_);
-  */
   param.ajouter( "Sc_t",&Sc_t_);
   param.lire_avec_accolades_depuis(is);
-  /*
-    if (((c0_D_G_+c1_D_G_*1.E3+c2_D_G_*1.E6+d_D_G_*3.E4)>1.e29)&&(constante_taux_reaction_>1.e29))
-    { // NB : D_G=1/p*(c0+c1*T+c2*T^2+c32*T^(3/2))
-    Cerr<<" L'une des deux valeurs D_G(T) ou constante_taux_reaction doit etre << 1E30 !"<<finl;
-    Cerr<<"   c0_D_G & d_D_G : "<<c0_D_G_<<" & "<<d_D_G_ <<finl;
-    Cerr<<"   constante_taux_reaction : "<< constante_taux_reaction_ <<finl;
-    exit();
-    }
-  */
   if (Sc_t_==0.)
     {
       Cerr<<" Une valeur nulle du Schmidt turbulent est impossible ! Essayer plutot 1E30 !"<<finl;

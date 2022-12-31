@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,33 +25,18 @@ Implemente_instanciable_sans_constructeur(Traitement_particulier_NS_Brech_VEF,"T
 
 Traitement_particulier_NS_Brech_VEF::Traitement_particulier_NS_Brech_VEF()
 {
-  /*
-    Noms& nom=champs_compris_.liste_noms_compris();
-    nom.dimensionner(2);
-    nom[0]="Pression_porosite";
-    nom[1]="Richardson";
-  */
 }
-/*! @brief
- *
- * @param (Sortie& is) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
+
 Sortie& Traitement_particulier_NS_Brech_VEF::printOn(Sortie& is) const
 {
   return is;
 }
 
-
-/*! @brief
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Traitement_particulier_NS_Brech_VEF::readOn(Entree& is)
 {
   return is;
 }
+
 /*
   inline int Traitement_particulier_NS_Brech_VEF::comprend_champ(const Motcle& mot) const
   {
@@ -78,10 +63,6 @@ Entree& Traitement_particulier_NS_Brech_VEF::lire(Entree& is)
 {
   Motcle accouverte = "{" , accfermee = "}" ;
   Motcle motbidon, motlu;
-
-  c_flux = 0 ;
-  c_Richardson = 0 ;
-  c_pression = 0 ;
 
   is >> motbidon ;
 

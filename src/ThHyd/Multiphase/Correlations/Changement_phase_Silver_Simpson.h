@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,7 +34,7 @@ public:
                   DoubleTab& dT_G, DoubleTab& da_G, double& dp_G) const override;
 protected:
   double lambda_ec[2] = { 1, 1 }; //facteurs multiplicatifs d'evaporation / condensation
-  double M; //masse molaire de la vapeur
+  double M = -100.; //masse molaire de la vapeur
   double alpha_min = 0.1; //taux de vide minimal (pour que le changement de phase soit possible a alpha = 0)
 };
 

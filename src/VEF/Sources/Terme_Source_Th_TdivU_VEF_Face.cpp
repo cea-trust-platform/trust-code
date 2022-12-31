@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,19 +30,10 @@
 
 Implemente_instanciable(Terme_Source_Th_TdivU_VEF_Face,"Source_Th_TdivU_VEF_P1NC",Source_base);
 
-
-
-//// printOn
-//
-
 Sortie& Terme_Source_Th_TdivU_VEF_Face::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
-
-
-//// readOn
-//
 
 Entree& Terme_Source_Th_TdivU_VEF_Face::readOn(Entree& s )
 {
@@ -94,9 +85,8 @@ void Terme_Source_Th_TdivU_VEF_Face::completer()
 {
   Source_base::completer();
   associer_eqn_t();
-
-  zone_cl_mod_=0;
 }
+
 void Terme_Source_Th_TdivU_VEF_Face::modifier_zone_cl()
 {
   if (zone_cl_mod_) return;

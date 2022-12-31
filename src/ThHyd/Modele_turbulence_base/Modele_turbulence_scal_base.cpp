@@ -26,18 +26,8 @@ Implemente_base_sans_constructeur(Modele_turbulence_scal_base,"Modele_turbulence
 
 Modele_turbulence_scal_base::Modele_turbulence_scal_base()
 {
-  /*
-    Noms& nom=champs_compris_.liste_noms_compris();
-    nom.dimensionner(1);
-    nom[0]="diffusivite_turbulente";
-  */
 }
 
-/*! @brief Ecrit le type et le nom de l'objet sur un flot de sortie
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Modele_turbulence_scal_base::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << " " << le_nom();
@@ -57,7 +47,6 @@ Entree& Modele_turbulence_scal_base::readOn(Entree& is )
   Cerr<<"Reading of data for a "<<que_suis_je()<<" scalar turbulence model"<<finl;
   Param param(que_suis_je());
   Motcle  mot = "turbulence_paroi";
-  dt_impr_nusselt_=DMAXFLOAT;
   set_param(param);
   param.lire_avec_accolades_depuis(is);
   const Probleme_base& le_pb = mon_equation->probleme();

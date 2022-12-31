@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,7 +40,7 @@ public:
   void convkschemas_centre(const double , const int, int , const int ,const int, const int,const int,const int ,const double ,const DoubleTab&,DoubleVect& , DoubleVect& ,const DoubleVect& , const DoubleTab&,DoubleVect&) const ;
 protected:
 
-  double K;  // int caracterisant les differents schemas
+  double K = -100.;  // int caracterisant les differents schemas
 
 };
 

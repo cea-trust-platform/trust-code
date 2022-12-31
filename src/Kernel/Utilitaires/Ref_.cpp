@@ -14,35 +14,12 @@
 *****************************************************************************/
 
 #include <Ref_.h>
-extern const Nom& deriv_vide();
 
-Implemente_base(Ref_,"Ref_",Objet_U_ptr);
+Implemente_base(Ref_, "Ref_", Objet_U_ptr);
 
+Sortie& Ref_::printOn(Sortie& os) const { return Objet_U_ptr::printOn(os); }
 
-/*! @brief Ecriture de l'Objet_U reference sur un flot de sortie
- *
- * @param (Sortie& os) le flot de sortie a utiliser
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Ref_::printOn(Sortie& os)  const
-{
-  Objet_U_ptr::printOn(os);
-  return os;
-}
-
-
-/*! @brief Lecture dans un flot d'entree A surcharger.
- *
- * Ne fait rien
- *
- * @param (Entree& is) le flot d'entree a utiliser
- * @return (Entree&) le flux d'entree non modifie
- */
-Entree& Ref_::readOn(Entree& is)
-{
-  Objet_U_ptr::readOn(is);
-  return is;
-}
+Entree& Ref_::readOn(Entree& is) { return Objet_U_ptr::readOn(is); }
 
 /*! @brief Annule la ref
  *

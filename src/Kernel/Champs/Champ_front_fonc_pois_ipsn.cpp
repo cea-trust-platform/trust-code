@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,9 +19,6 @@
 
 Implemente_instanciable(Champ_front_fonc_pois_ipsn,"Champ_front_fonc_pois_ipsn",Champ_front_fonc);
 
-//// printOn
-//
-
 Sortie& Champ_front_fonc_pois_ipsn::printOn(Sortie& s ) const
 {
 
@@ -34,9 +31,6 @@ Sortie& Champ_front_fonc_pois_ipsn::printOn(Sortie& s ) const
 
   return  s ;
 }
-
-//// readOn
-//
 
 Entree& Champ_front_fonc_pois_ipsn::readOn(Entree& is )
 {

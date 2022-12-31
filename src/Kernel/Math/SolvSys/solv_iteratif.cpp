@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,8 +16,7 @@
 #include <solv_iteratif.h>
 
 Implemente_base_sans_constructeur(solv_iteratif,"solv_iteratif",SolveurSys_base);
-//
-// printOn et readOn
+
 solv_iteratif::solv_iteratif() { }
 Sortie& solv_iteratif::printOn(Sortie& s ) const
 {

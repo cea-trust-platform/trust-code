@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -69,7 +69,6 @@ Op_Diff_VEFP1NCP1B_Face::Op_Diff_VEFP1NCP1B_Face()
   test_=0;
   coeff_=1.;//alphaE+alphaS;
   decentrage_=1;
-  is_laplacian_filled_=0;
 }
 
 Sortie& Op_Diff_VEFP1NCP1B_Face::printOn(Sortie& s ) const

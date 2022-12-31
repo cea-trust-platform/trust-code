@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,16 +23,10 @@
 
 Implemente_instanciable(DP_Impose_PolyMAC_Face,"DP_Impose_Face_PolyMAC|DP_Impose_Face_PolyMAC_P0",Perte_Charge_PolyMAC_Face);
 
-//// printOn
-//
-
 Sortie& DP_Impose_PolyMAC_Face::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
-
-//// readOn
-//
 
 Entree& DP_Impose_PolyMAC_Face::readOn(Entree& s)
 {
@@ -48,15 +42,6 @@ Entree& DP_Impose_PolyMAC_Face::readOn(Entree& s)
   set_description(Nom("DP impose sur la surface ") + identifiant_ + "\nt DP dDP/dQ Q Q0");
   return s;
 }
-
-
-/////////////////////////////////////////////////////////////////////
-//
-//                    Implementation des fonctions
-//
-//               de la classe DP_Impose_PolyMAC_Face
-//
-////////////////////////////////////////////////////////////////////
 
 void DP_Impose_PolyMAC_Face::remplir_num_faces(Entree& s)
 {

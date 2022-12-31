@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -83,7 +83,7 @@ private:
 
 
   enum Option_TSA { TERME_COMPLET, CORIOLIS_SEUL, ENTRAINEMENT_SEUL };
-  Option_TSA option_;
+  Option_TSA option_ = TERME_COMPLET;
   // *****************************************************************
 };
 

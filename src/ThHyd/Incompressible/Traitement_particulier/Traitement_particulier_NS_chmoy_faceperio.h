@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,11 +46,11 @@ public :
 protected :
 
   virtual void init_calcul_stats() =0;
-  virtual void calcul_chmoy_faceperio(double , double , double ) =0;
+  virtual void calcul_chmoy_faceperio(double, double, double) =0;
   DoubleTab chmoy_faceperio;
-  double temps_deb,temps_fin;
-  int oui_stat;
-  SFichier* le_fichier;
+  double temps_deb = -100., temps_fin = -100.;
+  int oui_stat = 0;
+  SFichier *le_fichier;
 };
 
 #endif
@@ -61,12 +61,10 @@ inline void Traitement_particulier_NS_chmoy_faceperio::en_cours_de_resolution(in
 
 inline void Traitement_particulier_NS_chmoy_faceperio::sauver_stat(void)  const
 {
-  ;
 }
 
 inline void Traitement_particulier_NS_chmoy_faceperio::reprendre_stat(void)
 {
-  ;
 }
 
 inline Traitement_particulier_NS_chmoy_faceperio::Traitement_particulier_NS_chmoy_faceperio():le_fichier(0)

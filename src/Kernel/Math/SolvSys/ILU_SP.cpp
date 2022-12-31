@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,9 +32,6 @@ Sortie& ILU_SP::printOn(Sortie& s ) const
 
 Entree& ILU_SP::readOn(Entree& is )
 {
-  precond_ = _TYPE_ILU_;
-  lfil_ = _LFIL_ILU_;
-
   Param param(que_suis_je());
   param.ajouter("type", &precond_, Param::OPTIONAL);
   param.dictionnaire("0", PRECOND_NUL);

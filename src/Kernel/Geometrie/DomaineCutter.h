@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,16 +12,17 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-#include <Ref_Domaine.h>
-//#include <Ref_ArrOfInt.h>
-#include <Ref_IntVect.h>
-#include <Static_Int_Lists.h>
-#include <Noms.h>
-#include <DomaineCutter_Correspondance.h>
-#include <Decouper.h>
 
 #ifndef DomaineCutter_included
 #define DomaineCutter_included
+
+#include <DomaineCutter_Correspondance.h>
+#include <Static_Int_Lists.h>
+#include <Ref_Domaine.h>
+#include <Ref_IntVect.h>
+#include <Decouper.h>
+#include <Noms.h>
+
 class Domaine;
 class Zone;
 
@@ -31,55 +32,33 @@ class Zone;
  *   Voir aussi Partitionneur_base.
  *
  */
-class DomaineCutter : public Objet_U
+class DomaineCutter: public Objet_U
 {
   Declare_instanciable(DomaineCutter);
 public:
-  void initialiser(const Domaine&   domaine_global,
-                   const IntVect& elem_part,
-                   const int     nb_parts,
-                   const int     epaisseur_joint,
-                   const Noms&      bords_periodiques,
-                   const int permissif=0);
+  void initialiser(const Domaine& domaine_global, const IntVect& elem_part, const int nb_parts, const int epaisseur_joint, const Noms& bords_periodiques, const int permissif = 0);
 
   void reset();
 
-  void construire_sous_domaine(const int part,
-                               DomaineCutter_Correspondance& correspondance_,
-                               Domaine& sous_domaine_, const Static_Int_Lists *som_raccord = NULL) const;
-  void construire_sous_domaine(const int part,
-                               Domaine& sous_domaine_) const
+  void construire_sous_domaine(const int part, DomaineCutter_Correspondance& correspondance_, Domaine& sous_domaine_, const Static_Int_Lists *som_raccord = NULL) const;
+  void construire_sous_domaine(const int part, Domaine& sous_domaine_) const
   {
-    DomaineCutter_Correspondance  correspondance;
-    construire_sous_domaine(part,correspondance,sous_domaine_);
-  };
-  void ecrire_zones(const Nom& basename, const Decouper::ZonesFileOutputType format, IntVect& elem_part, const int reorder, const Static_Int_Lists *som_raccord = NULL);
-  inline const Noms& bords_internes() const
-  {
-    return bords_a_pb_;
+    DomaineCutter_Correspondance correspondance;
+    construire_sous_domaine(part, correspondance, sous_domaine_);
   }
 
+  void ecrire_zones(const Nom& basename, const Decouper::ZonesFileOutputType format, IntVect& elem_part, const int reorder, const Static_Int_Lists *som_raccord = NULL);
+  inline const Noms& bords_internes() const { return bords_a_pb_; }
+
 private:
-  void construire_faces_bords_ssdom   (const ArrOfInt& liste_inverse_sommets,
-                                       const int partie, Zone& zone_partie) const;
-  void construire_faces_raccords_ssdom(const ArrOfInt& liste_inverse_sommets,
-                                       const int partie, Zone& zone_partie) const;
-  void construire_faces_internes_ssdom(const ArrOfInt& liste_inverse_sommets,
-                                       const int partie, Zone& zone_partie) const;
-  void construire_sommets_joints_ssdom(const ArrOfInt& liste_sommets,
-                                       const ArrOfInt& liste_inverse_sommets,
-                                       const int partie,
-                                       const Static_Int_Lists *som_raccord,
-                                       Zone& zone_partie) const;
+  void construire_faces_bords_ssdom(const ArrOfInt& liste_inverse_sommets, const int partie, Zone& zone_partie) const;
+  void construire_faces_raccords_ssdom(const ArrOfInt& liste_inverse_sommets, const int partie, Zone& zone_partie) const;
+  void construire_faces_internes_ssdom(const ArrOfInt& liste_inverse_sommets, const int partie, Zone& zone_partie) const;
+  void construire_sommets_joints_ssdom(const ArrOfInt& liste_sommets, const ArrOfInt& liste_inverse_sommets, const int partie, const Static_Int_Lists *som_raccord, Zone& zone_partie) const;
 
-  void construire_faces_joints_ssdom(const int partie,
-                                     const DomaineCutter_Correspondance& correspondance,
-                                     Zone& zone_partie) const;
+  void construire_faces_joints_ssdom(const int partie, const DomaineCutter_Correspondance& correspondance, Zone& zone_partie) const;
 
-  void construire_elements_distants_ssdom(const int     partie,
-                                          const ArrOfInt& liste_sommets,
-                                          const ArrOfInt& liste_inverse_elements,
-                                          Zone& zone_partie) const;
+  void construire_elements_distants_ssdom(const int partie, const ArrOfInt& liste_sommets, const ArrOfInt& liste_inverse_elements, Zone& zone_partie) const;
 
   void writeData(const Domaine& sous_domaine, Sortie& os) const;
 
@@ -95,9 +74,9 @@ private:
   // Liste des noms des bords periodiques
   Noms liste_bords_periodiques_;
   // Nombre total de parties (>= a max_array(elem_part) + 1)
-  int nb_parties_;
+  int nb_parties_ = -1;
   // Epaisseur du joint
-  int epaisseur_joint_;
+  int epaisseur_joint_ = -1;
   // Connectivite sommets_elements du domaine global:
   Static_Int_Lists som_elem_;
   // Pour chaque partie, liste des elements du domaine source de cette partie

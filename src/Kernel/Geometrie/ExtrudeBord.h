@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -58,8 +58,8 @@ private:
   void extruder_hexa_old(Nom& nom_front, Nom& nom_dom2, DoubleVect& vect_dir, int nbpas);
   int hexa_old; // flag pour ancienne version de l'extrusion des hexas : 0 = ancienne version
   int Trois_Tetra; // flag pour extrusion en trois tetraedres plutot qu'en 14 (option par defaut)
-  int Vingt_Tetra; // flag pour extrusion en vingr tetraedres plutot qu'en 14 (option par defaut)
-  int en3D_;
+  int Vingt_Tetra=0; // flag pour extrusion en vingr tetraedres plutot qu'en 14 (option par defaut)
+  int en3D_=1;
 };
 
 #endif

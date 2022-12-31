@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,30 +26,16 @@
 
 Implemente_instanciable(Terme_Source_Rappel_T_VEF_Face,"Source_Rappel_T_VEF_P1NC",Source_base);
 
-
-
-//// printOn
-//
-
 Sortie& Terme_Source_Rappel_T_VEF_Face::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
-
-
-//// readOn
-//
 
 Entree& Terme_Source_Rappel_T_VEF_Face::readOn(Entree& is )
 {
   Motcle mot_lu;
   Motcle acc_ouverte("{");
   Motcle acc_fermee("}");
-
-
-
-  alpha_tau=1.;
-  fct_ok=-1;
 
   Motcles les_mots(3);
   {

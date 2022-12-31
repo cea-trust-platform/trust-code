@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,6 +20,7 @@
 
 class Domaine;
 class Faces;
+
 /*! @brief Classe Extruder_en20 Cette classe est un interprete qui sert a lire et executer
  *
  *     la directive Extruder_en20:
@@ -42,25 +43,20 @@ public :
     direction[0]=lx;
     direction[1]=ly;
     direction[2]=lz;
-  };
-  inline void setNbTranches(int n)
-  {
-    NZ = n;
-  };
+  }
+
+  inline void setNbTranches(int n) { NZ = n; }
 
   void extruder(Domaine&) ;
-
 
 protected:
   virtual void extruder_dvt(Domaine&, Faces&, int, int ) ;
 
   ArrOfDouble direction;
-  int NZ;
+  int NZ = -10;
 
 private:
   void traiter_faces_dvt(Faces&, Faces&, int, int, int);
-
-
-
 };
+
 #endif

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,17 +24,10 @@
 
 Implemente_instanciable(Terme_Source_Solide_SWIFT_VDF,"Solide_SWIFT_VDF_P0_VDF",Source_base);
 
-//// printOn
-//
-
 Sortie& Terme_Source_Solide_SWIFT_VDF::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
-
-
-//// readOn
-//
 
 Entree& Terme_Source_Solide_SWIFT_VDF::readOn(Entree& is )
 {

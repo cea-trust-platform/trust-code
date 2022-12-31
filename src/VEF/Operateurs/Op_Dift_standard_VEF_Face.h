@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,12 +18,10 @@
 #define Op_Dift_standard_VEF_Face_included
 
 #include <Ref_Champ_Uniforme.h>
-#include <Operateur_Div.h>
 #include <Op_Dift_VEF_Face.h>
+#include <Operateur_Div.h>
 
 /*! @brief class Op_Dift_standard_VEF_Face
- *
- *
  *
  */
 
@@ -37,20 +35,12 @@ public:
   void calcul_divergence(DoubleTab&,const DoubleTab&,const DoubleTab&,const DoubleTab&,const DoubleTab&,const Zone_Cl_VEF&,const Zone_VEF&,DoubleTab&,int) const;
   void ajouter_cas_vectoriel(const DoubleTab&, DoubleTab& , DoubleTab& ,const DoubleTab& , const DoubleTab& ,const Zone_Cl_VEF& ,const Zone_VEF& ,const DoubleTab& ,int ) const;
 
-
 protected :
-
   REF(Champ_Inc) divergence_U;
-
-  int grad_Ubar;
-  int nu_lu;
-  int nut_lu;
-  int nu_transp_lu;
-  int nut_transp_lu;
-  int filtrer_resu;
+  int grad_Ubar = 1;
+  int nu_lu = 1, nut_lu = 1;
+  int nu_transp_lu = 1, nut_transp_lu = 1;
+  int filtrer_resu = 1;
 };
 
-
-
 #endif
-

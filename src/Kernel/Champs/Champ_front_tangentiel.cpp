@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,10 +16,7 @@
 #include <Champ_front_tangentiel.h>
 #include <Motcle.h>
 
-
-
 Implemente_instanciable(Champ_front_tangentiel,"Champ_front_tangentiel",Ch_front_var_instationnaire_dep);
-
 
 Sortie& Champ_front_tangentiel::printOn(Sortie& os) const
 {

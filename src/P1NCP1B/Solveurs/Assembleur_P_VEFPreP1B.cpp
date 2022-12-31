@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -89,9 +89,6 @@ void Assembleur_P_VEFPreP1B::completer(const Equation_base& eqn)
 {
   mon_equation=eqn;
   Assembleur_P_VEF::completer(eqn);
-  // Initialisation de alpha, beta
-  alpha=0.;
-  beta=0.;
   if (zone_Vef().get_P1Bulle())
     {
       // Pour changer de base et retrouver le P1Bulle

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,9 +26,7 @@ const Separateur space(Separateur::SPACE);
 // Constructeurs
 Sortie::Sortie()
 {
-  bin_=0;
   ostream_=0;
-  col_width_ = -1;
 }
 
 void Sortie::setf(IOS_FORMAT code)
@@ -47,7 +45,6 @@ void Sortie::set_col_width(int w) { col_width_ = w; }
 
 Sortie::Sortie(ostream& os)
 {
-  bin_=0;
   if(os.rdbuf())
     {
       ostream_ = new ostream(os.rdbuf());
@@ -60,7 +57,6 @@ Sortie::Sortie(ostream& os)
 
 Sortie::Sortie(const Sortie& os)
 {
-  bin_=0;
   if (os.has_ostream())
     {
       Cerr<<"we try to copy a Sortie with ostream !!!"<<finl;

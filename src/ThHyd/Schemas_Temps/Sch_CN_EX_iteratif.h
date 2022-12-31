@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,7 +52,7 @@ protected :
   virtual bool iterateTimeStepOnNS(int i,bool& converged);
   virtual bool iterateTimeStepOnOther(int i,bool& converged);
 
-  double omega;
+  double omega=0.1;
   void ajuster_facsec(type_convergence cv) override;
 
 };

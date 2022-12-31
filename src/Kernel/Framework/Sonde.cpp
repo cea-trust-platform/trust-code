@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,18 +13,16 @@
 *
 *****************************************************************************/
 
-
-#include <Sonde.h>
-#include <Postraitement.h>
-#include <Zone_VF.h>
-#include <sys/stat.h>
-#include <communications.h>
 #include <Champ_Generique_Interpolation.h>
-#include <Entree_complete.h>
-
 #include <Champ_Generique_refChamp.h>
+#include <Entree_complete.h>
+#include <communications.h>
 #include <Champ_Inc_base.h>
+#include <Postraitement.h>
 #include <Zone_Cl_dis.h>
+#include <sys/stat.h>
+#include <Zone_VF.h>
+#include <Sonde.h>
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Sonde,"Sonde",Objet_U);
 // XD sonde objet_lecture nul 0 Keyword is used to define the probes. Observations: the probe coordinates should be given in Cartesian coordinates (X, Y, Z), including axisymmetric.
@@ -1281,8 +1279,7 @@ void Sonde::postraiter()
       int nbproc = Process::nproc();
       DoubleTab valeurs_pe;
       DoubleTab& valeurs=(nbproc==1?valeurs_locales:valeurs_sur_maitre);
-      if (nbproc==1)
-        ;//valeurs=valeurs_locales;
+      if (nbproc==1) { /* Do nothing */} //valeurs=valeurs_locales;
       else
         {
           int nb_val = valeurs_locales.dimension(0);

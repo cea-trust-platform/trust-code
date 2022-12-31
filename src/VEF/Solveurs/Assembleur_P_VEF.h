@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,22 +22,16 @@
 #include <Ref_Zone_Cl_VEF.h>
 #include <Ref_Equation_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS:Assembleur_Pression_VEF
-//
-//////////////////////////////////////////////////////////////////////////////
-
-class Assembleur_P_VEF : public Assembleur_base
+class Assembleur_P_VEF: public Assembleur_base
 {
   Declare_instanciable(Assembleur_P_VEF);
 
 public:
-  void associer_zone_dis_base(const Zone_dis_base& ) override         ;
-  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& ) override   ;
-  const Zone_dis_base& zone_dis_base() const override                 ;
-  const Zone_Cl_dis_base& zone_Cl_dis_base() const override           ;
-  int assembler(Matrice&) override              ;
+  void associer_zone_dis_base(const Zone_dis_base&) override;
+  void associer_zone_cl_dis_base(const Zone_Cl_dis_base&) override;
+  const Zone_dis_base& zone_dis_base() const override;
+  const Zone_Cl_dis_base& zone_Cl_dis_base() const override;
+  int assembler(Matrice&) override;
   int assembler_mat(Matrice&, const DoubleVect&, int, int) override;
   int remplir(Matrice&, const DoubleTab&);
   inline int remplir(Matrice&, const DoubleVect&)
@@ -45,32 +39,33 @@ public:
     assert(0);
     exit();
     return 1;
-  };
-  int assembler_QC(const DoubleTab&, Matrice&) override            ;
-  int modifier_secmem(DoubleTab&) override                         ;
-  int modifier_solution(DoubleTab&) override                       ;
-  virtual int modifier_matrice(Matrice&)                        ;
-  void completer(const Equation_base& ) override                      ;
-  inline const Equation_base& equation() const                ;
+  }
+  ;
+  int assembler_QC(const DoubleTab&, Matrice&) override;
+  int modifier_secmem(DoubleTab&) override;
+  int modifier_solution(DoubleTab&) override;
+  virtual int modifier_matrice(Matrice&);
+  void completer(const Equation_base&) override;
+  inline const Equation_base& equation() const;
 
-protected :
-  REF(Equation_base) mon_equation                            ;
-  REF(Zone_VEF) la_zone_VEF                                  ;
-  REF(Zone_Cl_VEF) la_zone_Cl_VEF                            ;
-  DoubleTab les_coeff_pression                               ;
-  int has_P_ref;
-  void calculer_inv_volume(DoubleTab& inv_volumes_entrelaces, const Zone_Cl_VEF& zone_Cl_VEF,const DoubleVect& volumes_entrelaces) ;
+protected:
+  REF(Equation_base) mon_equation;
+  REF(Zone_VEF) la_zone_VEF;
+  REF(Zone_Cl_VEF) la_zone_Cl_VEF;
+  DoubleTab les_coeff_pression;
+  int has_P_ref = 0;
+  void calculer_inv_volume(DoubleTab& inv_volumes_entrelaces, const Zone_Cl_VEF& zone_Cl_VEF, const DoubleVect& volumes_entrelaces);
 
 };
 
 inline const Equation_base& Assembleur_P_VEF::equation() const
 {
-  if (mon_equation.non_nul()==0)
+  if (mon_equation.non_nul() == 0)
     {
       Cerr << "\nError in Assembleur_P_VEF::equation() : The equation is unknown !" << finl;
       Process::exit();
     }
-  return  mon_equation.valeur();
+  return mon_equation.valeur();
 }
 
 #endif

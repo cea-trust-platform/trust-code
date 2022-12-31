@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,7 +25,6 @@ Sortie& Multiplicateur_diphasique_Lottes_Flinn::printOn(Sortie& os) const
 
 Entree& Multiplicateur_diphasique_Lottes_Flinn::readOn(Entree& is)
 {
-  alpha_min_ = 0.9, alpha_max_ = 0.95, n_l = -1, n_g = -1;
   Param param(que_suis_je());
   param.ajouter("alpha_min", &alpha_min_);
   param.ajouter("alpha_max", &alpha_max_);

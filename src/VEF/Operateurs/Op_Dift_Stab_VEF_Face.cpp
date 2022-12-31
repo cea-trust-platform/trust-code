@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -87,14 +87,6 @@ Entree& Op_Dift_Stab_VEF_Face::readOn(Entree& is )
   }
 
   Motcle motlu;
-
-  nu_lu_=1;
-  nut_lu_=1;
-  nu_transp_lu_=0;
-  nut_transp_lu_=1;
-  standard_=0;
-  new_jacobian_=0;
-
 
   is>>motlu;
   if (motlu!=accouverte)

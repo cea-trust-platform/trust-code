@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,28 +22,13 @@ Implemente_instanciable_sans_constructeur(Traitement_particulier_NS_Pression_VEF
 
 Traitement_particulier_NS_Pression_VEF::Traitement_particulier_NS_Pression_VEF()
 {
-  /*
-    Noms& nom=champs_compris_.liste_noms_compris();
-    nom.dimensionner(1);
-    nom[0]="Pression_porosite";
-  */
 }
-/*! @brief
- *
- * @param (Sortie& is) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
+
 Sortie& Traitement_particulier_NS_Pression_VEF::printOn(Sortie& is) const
 {
   return is;
 }
 
-
-/*! @brief
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Traitement_particulier_NS_Pression_VEF::readOn(Entree& is)
 {
   return is;
@@ -70,8 +55,6 @@ Entree& Traitement_particulier_NS_Pression_VEF::lire(Entree& is)
 {
   Motcle accouverte = "{" , accfermee = "}" ;
   Motcle motbidon, motlu;
-
-  c_pression = 0 ;
 
   is >> motbidon ;
 

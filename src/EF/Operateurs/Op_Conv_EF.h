@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -70,10 +70,10 @@ protected:
   double f_lu_;
   enum type_operateur { amont, muscl, centre };
   int calcul_dt_stab_;
-  type_operateur type_op;
+  type_operateur type_op=amont;
 
   // pour supg
-  mutable double max_ue_,min_dx_;
+  mutable double max_ue_=1e-8,min_dx_=1e37;// comme G2
   mutable Champ_Uniforme coefficient_correcteur_supg_;
 
 // optimisation
@@ -82,7 +82,7 @@ protected:
   DoubleTab& ajouter_sous_cond_dim3_nbn8_nbdim2(const DoubleTab& transporte, DoubleTab& resu,int btd_impl,int hourglass_impl,int centre_impl) const;
   DoubleTab& ajouter_sous_cond_dim2_nbn4_nbdim1(const DoubleTab& transporte, DoubleTab& resu,int btd_impl,int hourglass_impl,int centre_impl) const;
   DoubleTab& ajouter_sous_cond_dim2_nbn4_nbdim2(const DoubleTab& transporte, DoubleTab& resu,int btd_impl,int hourglass_impl,int centre_impl) const;
-  double btd_;
+  double btd_=-1.;
 
   template <AJOUTE_COND _COND_>
   DoubleTab& ajouter_sous_cond_template(const DoubleTab& transporte, DoubleTab& resu,int btd_impl,int hourglass_impl,int centre_impl) const;
@@ -94,7 +94,7 @@ class Op_Conv_BTD_EF : public Op_Conv_EF
   double coefficient_btd() const override;
   void completer() override;
 protected:
-  double facteur_;
+  double facteur_=-100.;
 };
 
 template <AJOUTE_COND _COND_>

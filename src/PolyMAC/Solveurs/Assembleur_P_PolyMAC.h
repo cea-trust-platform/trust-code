@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -59,8 +59,8 @@ protected :
   REF(Equation_base) mon_equation;
   REF(Zone_PolyMAC) la_zone_PolyMAC;
   REF(Zone_Cl_PolyMAC) la_zone_Cl_PolyMAC;
-  int has_P_ref;
-  int stencil_done;
+  int has_P_ref = 0;
+  int stencil_done = 0;
   IntVect tab1, tab2;//tableaux tab1 / tab2 de la Matrice_Morse (ne changent pas)
 };
 

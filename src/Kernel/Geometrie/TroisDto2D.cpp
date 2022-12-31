@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,33 +17,11 @@
 #include <Interprete_bloc.h>
 #include <Scatter.h>
 
-Implemente_instanciable_sans_constructeur(TroisDto2D,"Extract_2D_from_3D",Interprete_geometrique_base);
+Implemente_instanciable(TroisDto2D,"Extract_2D_from_3D",Interprete_geometrique_base);
 
-TroisDto2D::TroisDto2D()
-{
-  coupe_=1; // Algorithme de coupe utilise par Xprepro
-}
+Sortie& TroisDto2D::printOn(Sortie& os) const { return Interprete::printOn(os); }
 
-/*! @brief Simple appel a: Interprete::printOn(Sortie&)
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& TroisDto2D::printOn(Sortie& os) const
-{
-  return Interprete::printOn(os);
-}
-
-
-/*! @brief Simple appel a: Interprete::readOn(Entree&)
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& TroisDto2D::readOn(Entree& is)
-{
-  return Interprete::readOn(is);
-}
+Entree& TroisDto2D::readOn(Entree& is) { return Interprete::readOn(is); }
 
 /*! @brief Fonction principale de l'interprete Extract_2D_from_3D Structure du jeu de donnee (en dimension 3) :
  *

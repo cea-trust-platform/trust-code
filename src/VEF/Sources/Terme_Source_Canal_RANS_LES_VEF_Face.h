@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,12 +47,12 @@ protected :
   REF(Zone_Cl_VEF) la_zone_Cl_VEF;
 
 private :
-  int moyenne; //type de moyenne
-  int dir; //direction
+  int moyenne= 0; //type de moyenne
+  int dir = -10; //direction
   Nom dir_nom; // axe
-  double alpha_tau, Ly, u_tau, nu, rayon;
-  double t_moy_start,f_start,f_tot;
-  int u_target;
+  double alpha_tau = -100., Ly= -100., u_tau= -100., nu= -100., rayon= -100.;
+  double t_moy_start= -100.,f_start= 0.,f_tot= -100.;
+  int u_target= 0;
 
   DoubleTab U_RANS;
   DoubleTab utemp;

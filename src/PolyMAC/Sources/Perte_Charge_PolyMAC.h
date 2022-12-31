@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -91,7 +91,7 @@ protected:
   REF(Champ_Inc_base) la_vitesse;
 
   // Cas d'une sous-zone
-  bool sous_zone; //!< Le terme est-il limite a une sous-zone ?
+  bool sous_zone=false; //!< Le terme est-il limite a une sous-zone ?
   Nom nom_sous_zone; //!< Nom de la sous-zone, initialise dans readOn()
   REF(Sous_Zone) la_sous_zone; //!< Initialise dans completer()
   int implicite_;

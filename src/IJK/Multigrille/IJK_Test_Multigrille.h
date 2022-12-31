@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,9 +36,9 @@ public:
   IJK_Field_double resu_;
   Multigrille_Adrien poisson_solver_;
   Nom fichier_reprise_rho_;
-  int timestep_reprise_rho_;
+  int timestep_reprise_rho_ = -2;
   Nom fichier_reprise_rhs_;
-  int timestep_reprise_rhs_;
+  int timestep_reprise_rhs_= -2;
   Nom expression_rho_;
   Nom expression_rhs_;
 };

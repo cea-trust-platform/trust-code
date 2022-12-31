@@ -19,64 +19,65 @@
 
 Implemente_instanciable_sans_constructeur(Objet_a_lire,"Objet_a_lire",Objet_U);
 
-Objet_a_lire::Objet_a_lire(): int_a_lire(NULL),double_a_lire(NULL), obj_a_lire(NULL), objet_lu(NULL),arrofint_a_lire(NULL),arrofdouble_a_lire(NULL),flag_a_lire(NULL)
-{
-}
+Objet_a_lire::Objet_a_lire() : int_a_lire(nullptr), double_a_lire(nullptr), obj_a_lire(nullptr), objet_lu(nullptr),
+  arrofint_a_lire(nullptr), arrofdouble_a_lire(nullptr), flag_a_lire(nullptr) { }
+
 Entree& Objet_a_lire::readOn(Entree& is)
 {
   return Objet_U::readOn(is);
 }
+
 Sortie& Objet_a_lire::printOn(Sortie& os) const
 {
   return Objet_U::printOn(os);
 }
 
-void Objet_a_lire::set_entier( int* quoi  )
+void Objet_a_lire::set_entier(int *quoi)
 {
-  type=INTEGER;
-  int_a_lire=quoi;
+  type = INTEGER;
+  int_a_lire = quoi;
 }
 
-void Objet_a_lire::set_double(double* quoi  )
+void Objet_a_lire::set_double(double *quoi)
 {
-  type=DOUBLE;
-  double_a_lire=quoi;
+  type = DOUBLE;
+  double_a_lire = quoi;
 }
 
-void Objet_a_lire::set_objet(Objet_U* quoi  )
+void Objet_a_lire::set_objet(Objet_U *quoi)
 {
-  obj_a_lire=quoi;
-  type=OBJECT;
+  obj_a_lire = quoi;
+  type = OBJECT;
 }
 
-void Objet_a_lire::set_arrofint(ArrOfInt* quoi  )
+void Objet_a_lire::set_arrofint(ArrOfInt *quoi)
 {
-  arrofint_a_lire=quoi;
-  type=ArrOfInt_size_imp;
+  arrofint_a_lire = quoi;
+  type = ArrOfInt_size_imp;
 }
 
-void Objet_a_lire::set_arrofdouble(ArrOfDouble* quoi  )
+void Objet_a_lire::set_arrofdouble(ArrOfDouble *quoi)
 {
-  arrofdouble_a_lire=quoi;
-  type=ArrOfDouble_size_imp;
+  arrofdouble_a_lire = quoi;
+  type = ArrOfDouble_size_imp;
 }
 
-void Objet_a_lire::set_flag( int* quoi  )
+void Objet_a_lire::set_flag(int *quoi)
 {
-  flag_a_lire=quoi;
+  flag_a_lire = quoi;
   // initialisation du flag a 0
-  *flag_a_lire=0;
-  type=FLAG;
+  *flag_a_lire = 0;
+  type = FLAG;
 }
 
-void Objet_a_lire::set_non_std(Objet_U* quoi  )
+void Objet_a_lire::set_non_std(Objet_U *quoi)
 {
-  objet_lu=quoi;
-  type=NON_STD;
+  objet_lu = quoi;
+  type = NON_STD;
 }
-Param& Objet_a_lire::create_param(const char* aname)
+Param& Objet_a_lire::create_param(const char *aname)
 {
-  type=PARAM;
+  type = PARAM;
   param_interne.create(aname);
   return param_interne.valeur();
 }
@@ -86,11 +87,10 @@ bool Objet_a_lire::is_optional(void) const
   return (nature == OPTIONAL);
 }
 
-
-void Objet_a_lire::set_name(const LIST(Nom)& n)
+void Objet_a_lire::set_name(const LIST(Nom) &n)
 {
   CONST_LIST_CURSEUR(Nom) curseur(n);
-  name=curseur.valeur();
+  name = curseur.valeur();
   ++curseur;
   while (curseur)
     {
@@ -101,18 +101,14 @@ void Objet_a_lire::set_name(const LIST(Nom)& n)
 
 int Objet_a_lire::comprend_name(Motcle& mot) const
 {
-  if (mot==name)
-    return 1;
-  //int size=names.size();
+  if (mot == name) return 1;
+
   CONST_LIST_CURSEUR(Nom) curseur(names);
   while (curseur)
-    //for (int i=0; i<size; i++)
     {
-      // Cerr<<"ici "<<names(i)<<finl;
-      if (mot==curseur.valeur())
+      if (mot == curseur.valeur())
         {
-          //Cerr<<names.rang(mot)<<finl;
-          mot=name;
+          mot = name;
           return 1;
         }
       ++curseur;
@@ -122,11 +118,11 @@ int Objet_a_lire::comprend_name(Motcle& mot) const
 Nom Objet_a_lire::get_names_message(void) const
 {
   Nom titi(name);
-  int size=names.size();
-  for (int i=size-1; i>=0; i--)
+  int size = names.size();
+  for (int i = size - 1; i >= 0; i--)
     {
-      titi+=Nom("|");
-      titi+=names(i);
+      titi += Nom("|");
+      titi += names(i);
     }
   return titi;
 }
@@ -136,7 +132,7 @@ const Nom& Objet_a_lire::get_name(void) const
   return name;
 }
 
-ptrParam& Objet_a_lire::add_dict(const char* nom_option, int valeur,const char* aname)
+ptrParam& Objet_a_lire::add_dict(const char *nom_option, int valeur, const char *aname)
 {
   // Le dictionnaire ne fonctionne que pour des parametres de type int:
   assert(int_a_lire != 0);
@@ -147,8 +143,8 @@ ptrParam& Objet_a_lire::add_dict(const char* nom_option, int valeur,const char* 
   dictionnaire_valeurs.set_smart_resize(1);
   dictionnaire_valeurs.append_array(valeur);
   dictionnaire_params.add(ptrParam());
-  ptrParam&  ptr=  dictionnaire_params[dictionnaire_params.size()-1];
-  if (aname!=0)
+  ptrParam& ptr = dictionnaire_params[dictionnaire_params.size() - 1];
+  if (aname != 0)
     {
       ptr.create(aname);
     }
@@ -161,26 +157,25 @@ void Objet_a_lire::set_nature(Objet_a_lire::Nature n)
 
 bool Objet_a_lire::is_type_simple() const
 {
-  // return ((double_a_lire!=NULL)||(int_a_lire!=NULL)||(flag_a_lire!=NULL));
-  return ((type==INTEGER)||(type==DOUBLE)||(type==FLAG));
+  return ((type == INTEGER) || (type == DOUBLE) || (type == FLAG));
 }
 
 double Objet_a_lire::get_value() const
 {
 
-  switch (type)
+  switch(type)
     {
-    case INTEGER :
+    case INTEGER:
       return (*int_a_lire);
       break;
-    case DOUBLE  :
+    case DOUBLE:
       return (*double_a_lire);
       break;
-    case FLAG    :
+    case FLAG:
       return (*flag_a_lire);
       break;
-    default      :
-      Cerr<<"get_value not coded for this case"<<finl;
+    default:
+      Cerr << "get_value not coded for this case" << finl;
       Process::exit();
       break;
     }
@@ -191,12 +186,12 @@ double Objet_a_lire::get_value() const
 void Objet_a_lire::read(Motcle const& motcle, Entree& is)
 {
   int ret = -1;
-  switch (type)
+  switch(type)
     {
-    case INTEGER :
+    case INTEGER:
       if (dictionnaire_noms.size() == 0)
         {
-          is>>*int_a_lire;
+          is >> *int_a_lire;
         }
       else
         {
@@ -205,38 +200,36 @@ void Objet_a_lire::read(Motcle const& motcle, Entree& is)
           const int rang = dictionnaire_noms.search(motlu);
           if (rang < 0)
             {
-              Cerr << "Error while reading parameter " << name
-                   << "\n Found: " << motlu
-                   << "\n Expected one on these keywords: " << dictionnaire_noms << finl;
+              Cerr << "Error while reading parameter " << name << "\n Found: " << motlu << "\n Expected one on these keywords: " << dictionnaire_noms << finl;
               barrier();
               exit();
             }
           *int_a_lire = dictionnaire_valeurs[rang];
-          ptrParam& ptr=dictionnaire_params[rang];
+          ptrParam& ptr = dictionnaire_params[rang];
           if (ptr.non_nul())
             {
               ptr.valeur().lire_avec_accolades_depuis(is);
             }
         }
       break;
-    case DOUBLE  :
+    case DOUBLE:
       is >> (*double_a_lire);
       break;
-    case OBJECT  :
+    case OBJECT:
       is >> (*obj_a_lire);
       break;
-    case FLAG    :
-      (*flag_a_lire)=1;
+    case FLAG:
+      (*flag_a_lire) = 1;
       break;
-    case NON_STD :
-      ret = (*objet_lu).lire_motcle_non_standard(motcle,is);
+    case NON_STD:
+      ret = (*objet_lu).lire_motcle_non_standard(motcle, is);
       if (ret < 0)
         {
           Cerr << "Error while reading keyword: '" << motcle << "'. Not recognized!" << finl;
           Process::exit(-1);
         }
       break;
-    case DERIV   :
+    case DERIV:
       {
         Motcle type_complet(prefixe_deriv);
         Motcle the_type;
@@ -248,20 +241,22 @@ void Objet_a_lire::read(Motcle const& motcle, Entree& is)
       }
     case ArrOfInt_size_imp:
       {
-        ArrOfInt& arr=*arrofint_a_lire;
-        int size=arr.size_array();
+        ArrOfInt& arr = *arrofint_a_lire;
+        int size = arr.size_array();
         // on ne veut pas de taille nulle pour etre sur que l'utilisateur a bien fait dimensionner...
-        assert(size>0);
-        for (int i=0; i<size; i++) is >>arr[i];
+        assert(size > 0);
+        for (int i = 0; i < size; i++)
+          is >> arr[i];
         break;
       }
     case ArrOfDouble_size_imp:
       {
-        ArrOfDouble& arr=*arrofdouble_a_lire;
-        int size=arr.size_array();
+        ArrOfDouble& arr = *arrofdouble_a_lire;
+        int size = arr.size_array();
         // on ne veut pas de taille nulle pour etre sur que l'utilisateur a bien fait dimensionner...
-        assert(size>0);
-        for (int i=0; i<size; i++) is >>arr[i];
+        assert(size > 0);
+        for (int i = 0; i < size; i++)
+          is >> arr[i];
         break;
       }
     case PARAM:
@@ -269,7 +264,7 @@ void Objet_a_lire::read(Motcle const& motcle, Entree& is)
         param_interne.valeur().lire_avec_accolades_depuis(is);
         break;
       }
-    default      :
+    default:
       Cerr << "Invalid parameter type" << finl;
       Process::exit();
       break;

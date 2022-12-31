@@ -49,11 +49,11 @@ protected:
   REF(Probleme_base) pb_;
   Motcles alias;
   VECT(REF(Champ_Inc_base)) liste_Y_,liste_ai_,liste_nd10_,liste_ngrains_,liste_C_;
-  int nb_grains_;
+  int nb_grains_ = -10;
   DoubleTab Puissance_volumique_;
-  int modele_micro_melange_;
-  double constante_modele_micro_melange_;
+  int modele_micro_melange_ = 0;
+  double constante_modele_micro_melange_=-1.0;
   Motcle espece_en_competition_micro_melange_;
-  int marqueur_espece_en_competition_micro_melange_;
+  int marqueur_espece_en_competition_micro_melange_ = -1;
 };
 #endif

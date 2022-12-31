@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,52 +37,16 @@
 #include <Dirichlet_paroi_fixe_iso_Genepi2.h>
 
 Implemente_instanciable(Zone_Cl_EF,"Zone_Cl_EF",Zone_Cl_dis_base);
-int Deux_Puissance(int n) ;
-int trois_puissance(int n) ;
-/*
-int Deux_Puissance(int n) {
-  switch(n) {
-  case 0 :return 1;
-  case 1 :return 2;
-  case 2 :return 4;
-  case 3 :return 8;
-  default: return 8*Deux_Puissance((int)(n-3));
-  }
-}
-int trois_puissance(int n)
-{
-  switch(n)
-    {
-    case 0:return 1;
-    case 1:return 3;
-    case 2:return 9;
-    case 3:return 27;
-    default : return 27*trois_puissance(n-3);
-    }
-}
-*/
-//// printOn
-//
 
 Sortie& Zone_Cl_EF::printOn(Sortie& os ) const
 {
   return os;
 }
 
-//// readOn
-//
-
 Entree& Zone_Cl_EF::readOn(Entree& is )
 {
   return Zone_Cl_dis_base::readOn(is) ;
 }
-
-
-/////////////////////////////////////////////////////////////////////
-//
-// Implementation des fonctions de la classe Zone_Cl_EF
-//
-/////////////////////////////////////////////////////////////////////
 
 /*! @brief etape de discretisation : dimensionnement des tableaux
  *
@@ -97,7 +61,6 @@ void Zone_Cl_EF::associer(const Zone_EF& la_zone_EF)
  */
 void Zone_Cl_EF::completer(const Zone_dis& une_zone_dis)
 {
-  modif_perio_fait_ =0;
   if (sub_type(Zone_EF,une_zone_dis.valeur()))
     {
       const Zone_EF& la_zone_EF = ref_cast(Zone_EF, une_zone_dis.valeur());

@@ -101,7 +101,7 @@ protected :
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
 
   REF(Champ_Don_base) la_gravite_;
-  int verif_;
+  int verif_=1;
   ArrOfDouble Scalaire0_; // T0=Scalaire0_(0) ou C0(i)=Scalaire0_(i)
   Nom NomScalaire_; // Temperature ou Concentration
   VECT(Parser_U) fct_Scalaire0_;

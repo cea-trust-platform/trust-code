@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,12 +28,6 @@
 Implemente_base(Source_PDF_base,"Source_PDF_base",Source_dep_inco_base);
 // XD source_pdf_base source_base source_pdf_base 1 Base class of the source term for the Immersed Boundary Penalized Direct Forcing method (PDF)
 
-/*##################################################################################################
-####################################################################################################
-################################# READON AND PRINTON ###############################################
-####################################################################################################
-##################################################################################################*/
-
 Entree& Source_PDF_base::readOn(Entree& s)
 {
   Param param(que_suis_je());
@@ -46,7 +40,6 @@ Entree& Source_PDF_base::readOn(Entree& s)
   param.ajouter("interpolation",&interpolation_lue_,Param::OPTIONAL); // XD_ADD_P interpolation_ibm_base interpolation method
 
   param.lire_avec_accolades(s);
-  interpolation_bool_ = false;
   if ((&interpolation_lue_)->non_nul())
     {
       if (!(interpolation_lue_.valeur().que_suis_je() == "Interpolation_IBM_aucune"))
@@ -61,12 +54,6 @@ Sortie& Source_PDF_base::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
-
-/*##################################################################################################
-####################################################################################################
-################################# PROBLEM ASSOCIATION AND ZONES ####################################
-####################################################################################################
-##################################################################################################*/
 
 void Source_PDF_base::associer_pb(const Probleme_base& pb)
 {
@@ -152,12 +139,7 @@ void Source_PDF_base::multiply_coeff_volume(DoubleTab& coeff) const
   abort();
 }
 
-/*##################################################################################################
-####################################################################################################
-################################# TENSOR CALCULATION ###############################################
-####################################################################################################
-##################################################################################################*/
-
+// TENSOR CALCULATION
 ArrOfDouble Source_PDF_base::get_tuvw_local() const
 {
   assert(Objet_U::dimension==3);
@@ -167,16 +149,6 @@ ArrOfDouble Source_PDF_base::get_tuvw_local() const
   tuvw[2] = 1.0 / modele_lu_.eta_;
   return tuvw ;
 }
-
-/*##################################################################################################
-####################################################################################################
-################################# AJOUTER_ #########################################################
-####################################################################################################
-##################################################################################################*/
-
-/*
-This function redirects toward the ajouter_ which correspond to the model chosen.
-*/
 
 DoubleTab& Source_PDF_base::ajouter_(const DoubleTab& vitesse, DoubleTab& resu) const
 {
@@ -192,15 +164,6 @@ DoubleTab& Source_PDF_base::ajouter_(const DoubleTab& vitesse, DoubleTab& resu, 
   return resu;
 }
 
-/*##################################################################################################
-####################################################################################################
-################################# CONTRIBUER_A_AVEC ################################################
-####################################################################################################
-##################################################################################################*/
-
-/*
-This function redirects toward the contribuer_avec_ which correspond to the model chosen.
-*/
 
 void  Source_PDF_base::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {

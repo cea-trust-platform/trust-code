@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -78,7 +78,7 @@ public :
   bool is_stencil_up_to_date( void ) const ;
 
 protected:
-  bool is_stencil_up_to_date_ ;
+  bool is_stencil_up_to_date_ = false;
   IntTab stencil_ ;
 };
 

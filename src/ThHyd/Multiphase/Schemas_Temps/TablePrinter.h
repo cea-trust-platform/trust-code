@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -115,7 +115,7 @@ private:
   int i_; // index of current row
   int j_; // index of current column
 
-  int table_width_;
+  int table_width_ = -10;
   bool flush_left_;
 };
 

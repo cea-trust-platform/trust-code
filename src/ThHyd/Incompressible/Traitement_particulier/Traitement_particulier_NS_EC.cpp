@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,7 +53,6 @@ Entree& Traitement_particulier_NS_EC::lire(Entree& is)
   Motcle accouverte = "{" , accfermee = "}" ;
   Motcle valec="Ec";
   Motcle motbidon, motlu;
-  nb_bip=0;
   periode = mon_equation->probleme().schema_temps().pas_temps_min();
   is >> motbidon ;
   if (motbidon == accouverte)

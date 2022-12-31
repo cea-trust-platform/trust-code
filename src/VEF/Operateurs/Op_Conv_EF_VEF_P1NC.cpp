@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,24 +22,13 @@
 
 Implemente_instanciable(Op_Conv_EF_VEF_P1NC,"Op_Conv_EF_VEF_P1NC",Op_Conv_VEF_base);
 
-
-//// printOn
-//
-
 Sortie& Op_Conv_EF_VEF_P1NC::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
 
-//// readOn
-//
-
 Entree& Op_Conv_EF_VEF_P1NC::readOn(Entree& s )
 {
-  transportant_bar=0;
-  transporte_bar=1;
-  filtrer_resu=1;
-  antisym=1;
   Motcle motlu;
   for (int i=0; i<4; i++)
     {

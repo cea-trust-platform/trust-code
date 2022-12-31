@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -224,8 +224,6 @@ int Synonyme_info::est_un_synonyme(const char* nom)
   return (synonyme != 0);
 }
 
-
-
 /*! @brief Methode statique qui renvoie un pointeur vers le Synonyme_info dont le nom est "synonyme_name".
  *
  * Si synonyme_name n'est pas un synonyme,
@@ -243,4 +241,3 @@ const Synonyme_info * Synonyme_info::synonyme_info_from_name(const char * synony
     }
   return synonyme_info;
 }
-

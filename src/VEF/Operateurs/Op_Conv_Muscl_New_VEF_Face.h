@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -93,19 +93,19 @@ private :
   ArrOfDouble beta; // vaut zero pour les faces ou l'on souhaite degenerer en Amont.
   //  mutable DoubleTab limiteurs_;//tableau stockant pour chaque face la moyenne algebrique du limiteur
 
-  double max_limiteur_;
-  int centered_;
-  int upwind_;
-  int stabilized_;
-  int old_centered_;
-  int version_;
-  int facsec_auto_;
+  double max_limiteur_ = 1.;
+  int centered_ = 1;
+  int upwind_ = 1;
+  int stabilized_ = 1;
+  int old_centered_ = 0;
+  int version_ = 2;
+  int facsec_auto_ = 0;
 
 //  bool sous_zone;  // Cas d'une sous-zone a definir pour que l'EF_Stab degenere en Amont
   Nom nom_sous_zone;
   REF(Sous_zone_VF) la_sous_zone_dis;
 
-  double (*limiteur_)(double);
+  double (*limiteur_)(double)=nullptr;
 
 };
 

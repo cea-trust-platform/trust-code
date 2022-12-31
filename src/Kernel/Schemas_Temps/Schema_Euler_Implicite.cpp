@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,9 +37,6 @@ Sortie& Schema_Euler_Implicite::printOn(Sortie& s) const
 
 Entree& Schema_Euler_Implicite::readOn(Entree& s)
 {
-  nb_ite_max=200;
-  residu_old_=0;
-  facsec_max_=DMAXFLOAT;
   Schema_Implicite_base::readOn(s);
   if (facsec_max_ == DMAXFLOAT) /* facsec_max non regle par l'utilisateur -> on demande sa preference au solveur */
     facsec_max_ = le_solveur->get_default_facsec_max();

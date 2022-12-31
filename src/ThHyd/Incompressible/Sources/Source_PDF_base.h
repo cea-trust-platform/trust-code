@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -87,26 +87,26 @@ protected:
   virtual void calculer_vitesse_imposee_power_law_tbl_u_star();
   virtual void rotate_imposed_velocity(DoubleTab&);
   ArrOfDouble get_tuvw_local() const;
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
+  void associer_zones(const Zone_dis&, const Zone_Cl_dis&) override;
   virtual void compute_indicateur_nodal_champ_aire();
-  int type_vitesse_imposee_;
+  int type_vitesse_imposee_ = -1;
   Champ_Don champ_rotation_lu_;
   Champ_Don champ_rotation_;
   Champ_Don champ_aire_lu_;
   Champ_Don champ_aire_;
   Champ_Don champ_rho_;
-  int transpose_rotation_;
+  int transpose_rotation_ = -1;
   DoubleTab indicateur_nodal_champ_aire_;
   DoubleTab vitesse_imposee_;
   PDF_model modele_lu_;
-  double temps_relax_;
-  double echelle_relax_;
-  bool matrice_pression_variable_bool_;
-  bool penalized_;
+  double temps_relax_ = -100.;
+  double echelle_relax_ = -100.;
+  bool matrice_pression_variable_bool_ = false;
+  bool penalized_ = false;
   DoubleTab sec_mem_pdf; // part of the source term computed with the imposed velocity
   // FOR THE INTERPOLATION
   Interpolation_IBM interpolation_lue_;
-  int interpolation_bool_;
+  int interpolation_bool_ = 0;
   //
 };
 

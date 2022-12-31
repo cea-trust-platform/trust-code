@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,21 +45,17 @@ public :
     direction_[0]=lx;
     direction_[1]=ly;
     direction_[2]=lz;
-  };
-  inline void setNbTranches(int n)
-  {
-    NZ_ = n;
-  };
+  }
+
+  inline void setNbTranches(int n) { NZ_ = n; }
+
   void extruder(Domaine&, const IntVect&) ;
 
-protected :
-
 private:
-
   void construire_bords(Domaine&, Faces&, int, int, const IntVect&) ;
   void construire_bord_lateral(Faces&, Faces&, int, const IntVect&);
   ArrOfDouble direction_;
-  int NZ_;
+  int NZ_ = -10;
   Nom nom_dvt_, nom_derriere_;
 };
 #endif

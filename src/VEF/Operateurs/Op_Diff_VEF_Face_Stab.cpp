@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -70,16 +70,10 @@ double maximum(double a,double b)
   else return b;
 }
 
-//// printOn
-//
-
 Sortie& Op_Diff_VEF_Face_Stab::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
-
-//// readOn
-//
 
 Entree& Op_Diff_VEF_Face_Stab::readOn(Entree& s )
 {
@@ -90,10 +84,6 @@ Entree& Op_Diff_VEF_Face_Stab::readOn(Entree& s )
     les_mots[1]="info";
     les_mots[2]="new_jacobian";
   }
-
-  standard_=0;
-  info_=0;
-  new_jacobian_=0;
 
   s>>motlu;
   if (motlu!=accouverte)

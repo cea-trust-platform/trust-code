@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,14 +60,14 @@ private :
 
   REF(Postraitement) mon_post;
   Nom nom_;                                // le nom de la sonde
-  int dim;                                // la dimension de la sone (point:0,segment:1,plan:2,volume:3)
-  int nbre_points1,nbre_points2,nbre_points3;        // faire des sonde_segment,sonde_plan,etc...
+  int dim = -1;                                // la dimension de la sone (point:0,segment:1,plan:2,volume:3)
+  int nbre_points1= -1,nbre_points2= -1,nbre_points3= -1;        // faire des sonde_segment,sonde_plan,etc...
   REF(IntVect) mon_tableau;                // Le tableau sonde
   DoubleTab les_positions_;                // les coordonnees des sondes ponctuelles
   IntVect elem_;                        // les elements contenant les sondes ponctuelles
   IntTab valeurs;                      // les valeurs de mon_tableau pour les indices donnes par elem_
-  double periode;                        // periode d'echantillonnage
-  double nb_bip;
+  double periode= 1.e10;                        // periode d'echantillonnage
+  double nb_bip= 0.;
   SFichier* le_fichier;
 };
 

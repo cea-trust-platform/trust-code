@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -63,7 +63,7 @@ protected :
   REF(Conduction) eq_swift;
   REF(Conduction) eq_corse;
 
-  double tau;                                // tau est la constante de temps du forcage.
+  double tau = -123.;                                // tau est la constante de temps du forcage.
 
   DoubleVect Y_swift;                         // Coordonnees des points ou est definie la temperature dans le solide
   DoubleVect Y_corse;                        // ou doit etre fait le forcage.

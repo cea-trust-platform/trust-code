@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,15 +19,10 @@
 
 Implemente_instanciable(Integrale_tps_produit_champs,"Integrale_tps_produit_champs",Integrale_tps_Champ);
 
-// printOn
-
 Sortie& Integrale_tps_produit_champs::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
-
-
-// readOn
 
 Entree& Integrale_tps_produit_champs::readOn(Entree& s)
 {

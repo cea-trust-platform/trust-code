@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,7 +48,6 @@ Entree& ExtrudeBord::interpreter_(Entree& is)
   Nom nom_dom_volumique;
   Nom nom_front,nom_dom_surfacique;
   DoubleVect vect_dir(3);
-  en3D_=1;
   int nbpas;
 
   if(dimension!=3)

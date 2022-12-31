@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,12 +13,6 @@
 *
 *****************************************************************************/
 
-// .NOM Champ_Post_Operateur_Eqn
-// .ENTETE TRUST Kernel/Champs
-// .LIBRAIRIE
-// .FILE Champ_Post_Operateur_Eqn.h
-// .FILE Champ_Post_Operateur_Eqn.cpp
-
 #ifndef Champ_Post_Operateur_Eqn_included
 #define Champ_Post_Operateur_Eqn_included
 
@@ -29,18 +23,18 @@
  *
  *  La classe porte un operateur statistique "gradient"
  *
+ *  Syntaxe a respecter pour jdd
+ *
+ *  nom_choisi operateur_eqn
+ *    {
+ *      sources { refchamp { pb_champ nom_pb nom_inconnue } }
+ *      numero_source/numero op 1
+ *    }
+ * Il faut entrer le nom de l'inconnue et pas celui de l'equation
+ * Le numero des termes sources est celui du jdd, bien respecter l'ordre
+ * Pour les operateurs : 0 diffusion, 1 convection
+ *
  */
-
-//// Syntaxe a respecter pour jdd
-//
-//nom_choisi operateur_eqn
-//			{
-//				sources { refchamp { pb_champ nom_pb nom_inconnue } }
-//				numero_source/numero op 1
-//			}
-// Il faut entrer le nom de l'inconnue et pas celui de l'equation
-// Le numero des termes sources est celui du jdd, bien respecter l'ordre
-// Pour les operateurs : 0 diffusion, 1 convection
 
 class Champ_Post_Operateur_Eqn : public Champ_Generique_Operateur_base
 {
@@ -68,7 +62,7 @@ protected:
   int numero_source_,numero_op_;
   REF(Equation_base) ref_eq_;
   int sans_solveur_masse_;
-  Entity localisation_inco_;
+  Entity localisation_inco_=NODE;
   int compo_;                            //Pour identifier la composante a recuperer
 };
 

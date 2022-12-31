@@ -32,7 +32,6 @@
 #include <Motcle.h>
 #include <Frontiere_dis_base.h>
 
-
 /*! @brief Teste la compatibilite des conditions aux limites thermiques et hydrauliques.
  *
  *     La liste des compatibilites est la suivante:
@@ -79,94 +78,73 @@ int tester_compatibilite_hydr_thermique(const Zone_Cl_dis& zone_Cl_hydr, const Z
       Process::exit();
     }
 
-  for (int num_Cl=0; num_Cl<nb_Cl; num_Cl++)
+  for (int num_Cl = 0; num_Cl < nb_Cl; num_Cl++)
     {
       const Cond_lim& la_cl_hydr = zone_Cl_hydr.les_conditions_limites(num_Cl);
       const Cond_lim& la_cl_th = zone_Cl_th.les_conditions_limites(num_Cl);
-      if (sub_type(Entree_fluide_vitesse_imposee_libre,la_cl_hydr.valeur()))
+      if (sub_type(Entree_fluide_vitesse_imposee_libre, la_cl_hydr.valeur()))
         {
-          if ( (sub_type(Entree_fluide_temperature_imposee,la_cl_th.valeur()))
-               || (sub_type(Neumann_sortie_libre,la_cl_th.valeur())) )
-            ;
-          else if ( (sub_type(Entree_fluide_T_h_imposee,la_cl_th.valeur()))
-                    || (sub_type(Neumann_sortie_libre,la_cl_th.valeur())) )
-            ;
+          if ((sub_type(Entree_fluide_temperature_imposee, la_cl_th.valeur())) || (sub_type(Neumann_sortie_libre, la_cl_th.valeur())))
+            { /* Do nothing */ }
+          else if ((sub_type(Entree_fluide_T_h_imposee, la_cl_th.valeur())) || (sub_type(Neumann_sortie_libre, la_cl_th.valeur())))
+            { /* Do nothing */ }
           else
             {
-              message_erreur_therm( la_cl_hydr, la_cl_th, num_Cl);
+              message_erreur_therm(la_cl_hydr, la_cl_th, num_Cl);
             }
         }
-      else if (sub_type(Entree_fluide_vitesse_imposee,la_cl_hydr.valeur()))
+      else if (sub_type(Entree_fluide_vitesse_imposee, la_cl_hydr.valeur()))
         {
-          if (sub_type(Entree_fluide_temperature_imposee,la_cl_th.valeur()))
-            ;
-          else if (sub_type(Entree_fluide_T_h_imposee,la_cl_th.valeur()))
-            ;
+          if (sub_type(Entree_fluide_temperature_imposee, la_cl_th.valeur()))
+            { /* Do nothing */ }
+          else if (sub_type(Entree_fluide_T_h_imposee, la_cl_th.valeur()))
+            { /* Do nothing */ }
           else
             {
-              message_erreur_therm( la_cl_hydr, la_cl_th, num_Cl);
+              message_erreur_therm(la_cl_hydr, la_cl_th, num_Cl);
             }
         }
-      else if ( (sub_type(Dirichlet_paroi_fixe,la_cl_hydr.valeur())) ||
-                (sub_type(Dirichlet_paroi_defilante,la_cl_hydr.valeur()))  )
+      else if ((sub_type(Dirichlet_paroi_fixe, la_cl_hydr.valeur())) || (sub_type(Dirichlet_paroi_defilante, la_cl_hydr.valeur())))
         {
-          if ( (sub_type(Neumann_paroi_adiabatique,la_cl_th.valeur()))
-               || (sub_type(Neumann_paroi,la_cl_th.valeur()))
-               || (sub_type(Echange_global_impose,la_cl_th.valeur()))
-               || (sub_type(Echange_externe_impose,la_cl_th.valeur()))
-               || (sub_type(Scalaire_impose_paroi,la_cl_th.valeur()))
-             )
-            {
-              ;
-            }
+          if ((sub_type(Neumann_paroi_adiabatique, la_cl_th.valeur())) || (sub_type(Neumann_paroi, la_cl_th.valeur())) || (sub_type(Echange_global_impose, la_cl_th.valeur()))
+              || (sub_type(Echange_externe_impose, la_cl_th.valeur())) || (sub_type(Scalaire_impose_paroi, la_cl_th.valeur())))
+            { /* Do nothing */ }
           else
             {
-              message_erreur_therm( la_cl_hydr, la_cl_th, num_Cl);
+              message_erreur_therm(la_cl_hydr, la_cl_th, num_Cl);
             }
         }
-      else if (sub_type(Neumann_sortie_libre,la_cl_hydr.valeur()))
+      else if (sub_type(Neumann_sortie_libre, la_cl_hydr.valeur()))
         {
-          if ( (sub_type(Entree_fluide_temperature_imposee,la_cl_th.valeur()))
-               || (sub_type(Neumann_sortie_libre,la_cl_th.valeur())) )
-            {
-              ;
-            }
+          if ((sub_type(Entree_fluide_temperature_imposee, la_cl_th.valeur())) || (sub_type(Neumann_sortie_libre, la_cl_th.valeur())))
+            { /* Do nothing */}
           else
             {
-              message_erreur_therm( la_cl_hydr, la_cl_th, num_Cl);
+              message_erreur_therm(la_cl_hydr, la_cl_th, num_Cl);
             }
         }
-      else if (sub_type(Symetrie,la_cl_hydr.valeur()))
+      else if (sub_type(Symetrie, la_cl_hydr.valeur()))
         {
-          if ( (sub_type(Neumann_paroi_adiabatique,la_cl_th.valeur()))
-               || (sub_type(Neumann_paroi,la_cl_th.valeur()))
-               || (sub_type(Echange_global_impose,la_cl_th.valeur()))
-               || (sub_type(Echange_externe_impose,la_cl_th.valeur()))
-               || (sub_type(Scalaire_impose_paroi,la_cl_th.valeur()))
-               || (sub_type(Symetrie,la_cl_th.valeur())) )
-            {
-              ;
-            }
+          if ((sub_type(Neumann_paroi_adiabatique, la_cl_th.valeur())) || (sub_type(Neumann_paroi, la_cl_th.valeur())) || (sub_type(Echange_global_impose, la_cl_th.valeur()))
+              || (sub_type(Echange_externe_impose, la_cl_th.valeur())) || (sub_type(Scalaire_impose_paroi, la_cl_th.valeur())) || (sub_type(Symetrie, la_cl_th.valeur())))
+            { /* Do nothing */}
           else
             {
-              message_erreur_therm( la_cl_hydr, la_cl_th, num_Cl);
+              message_erreur_therm(la_cl_hydr, la_cl_th, num_Cl);
             }
         }
-      else if (sub_type(Periodique,la_cl_hydr.valeur()))
+      else if (sub_type(Periodique, la_cl_hydr.valeur()))
         {
-          if (sub_type(Periodique,la_cl_th.valeur()))
-            {
-              ;
-            }
+          if (sub_type(Periodique, la_cl_th.valeur()))
+            { /* Do nothing */}
           else
             {
-              message_erreur_therm( la_cl_hydr, la_cl_th, num_Cl);
+              message_erreur_therm(la_cl_hydr, la_cl_th, num_Cl);
             }
         }
     }
   return 1;
 }
-
 
 /*! @brief Affiche un message d'erreur pour la fonction precedente
  *
@@ -183,7 +161,6 @@ int message_erreur_therm(const Cond_lim& la_cl_hydr, const Cond_lim& la_cl_th, i
   Process::exit();
   return 1;
 }
-
 
 /*! @brief Teste la compatibilite des conditions aux limites concentration et hydrauliques.
  *
@@ -211,8 +188,7 @@ int message_erreur_therm(const Cond_lim& la_cl_hydr, const Cond_lim& la_cl_th, i
  * @throws nombres de conditions aux limites differents
  * @throws conditions aux limite hydraulique et concentration incompatible
  */
-int tester_compatibilite_hydr_concentration(const Zone_Cl_dis& zone_Cl_hydr,
-                                            const Zone_Cl_dis& zone_Cl_co)
+int tester_compatibilite_hydr_concentration(const Zone_Cl_dis& zone_Cl_hydr, const Zone_Cl_dis& zone_Cl_co)
 {
 
   int nb_Cl = zone_Cl_hydr.nb_cond_lim();
@@ -224,70 +200,58 @@ int tester_compatibilite_hydr_concentration(const Zone_Cl_dis& zone_Cl_hydr,
       Process::exit();
     }
 
-  for (int num_Cl=0; num_Cl<nb_Cl; num_Cl++)
+  for (int num_Cl = 0; num_Cl < nb_Cl; num_Cl++)
     {
       const Cond_lim& la_cl_hydr = zone_Cl_hydr.les_conditions_limites(num_Cl);
       const Cond_lim& la_cl_co = zone_Cl_co.les_conditions_limites(num_Cl);
 
-      if (sub_type(Entree_fluide_vitesse_imposee,la_cl_hydr.valeur()))
+      if (sub_type(Entree_fluide_vitesse_imposee, la_cl_hydr.valeur()))
         {
-          if ( (sub_type(Entree_fluide_concentration_imposee,la_cl_co.valeur()))
-               || (sub_type(Neumann_sortie_libre,la_cl_co.valeur()))  )
-            ;
+          if ((sub_type(Entree_fluide_concentration_imposee, la_cl_co.valeur())) || (sub_type(Neumann_sortie_libre, la_cl_co.valeur())))
+            { /* Do nothing */ }
           else
             {
-              message_erreur_conc( la_cl_hydr, la_cl_co, num_Cl);
+              message_erreur_conc(la_cl_hydr, la_cl_co, num_Cl);
             }
         }
-      else if ( (sub_type(Dirichlet_paroi_fixe,la_cl_hydr.valeur())) ||
-                (sub_type(Dirichlet_paroi_defilante,la_cl_hydr.valeur()))  )
+      else if ((sub_type(Dirichlet_paroi_fixe, la_cl_hydr.valeur())) || (sub_type(Dirichlet_paroi_defilante, la_cl_hydr.valeur())))
         {
-          if ((!sub_type(Neumann_paroi_flux_nul,la_cl_co.valeur())) && (!sub_type(Neumann_paroi,la_cl_co.valeur()))
-              && (!sub_type(Scalaire_impose_paroi,la_cl_co.valeur())))
+          if ((!sub_type(Neumann_paroi_flux_nul, la_cl_co.valeur())) && (!sub_type(Neumann_paroi, la_cl_co.valeur())) && (!sub_type(Scalaire_impose_paroi, la_cl_co.valeur())))
             {
-              message_erreur_conc( la_cl_hydr, la_cl_co, num_Cl);
+              message_erreur_conc(la_cl_hydr, la_cl_co, num_Cl);
             }
         }
-      else if (sub_type(Neumann_sortie_libre,la_cl_hydr.valeur()))
+      else if (sub_type(Neumann_sortie_libre, la_cl_hydr.valeur()))
         {
-          if ( (sub_type(Neumann_sortie_libre,la_cl_co.valeur())) ||
-               (sub_type(Entree_fluide_concentration_imposee,la_cl_co.valeur())) )
-            {
-              ;
-            }
+          if ((sub_type(Neumann_sortie_libre, la_cl_co.valeur())) || (sub_type(Entree_fluide_concentration_imposee, la_cl_co.valeur())))
+            { /* Do nothing */}
           else
             {
-              message_erreur_conc( la_cl_hydr, la_cl_co, num_Cl);
+              message_erreur_conc(la_cl_hydr, la_cl_co, num_Cl);
             }
         }
-      else if (sub_type(Symetrie,la_cl_hydr.valeur()))
+      else if (sub_type(Symetrie, la_cl_hydr.valeur()))
         {
-          if ( (sub_type(Symetrie,la_cl_co.valeur()))
-               || (sub_type(Neumann_paroi_flux_nul,la_cl_co.valeur())) )
-            {
-              ;
-            }
+          if ((sub_type(Symetrie, la_cl_co.valeur())) || (sub_type(Neumann_paroi_flux_nul, la_cl_co.valeur())))
+            { /* Do nothing */}
           else
             {
-              message_erreur_conc( la_cl_hydr, la_cl_co, num_Cl);
+              message_erreur_conc(la_cl_hydr, la_cl_co, num_Cl);
             }
         }
-      else if (sub_type(Periodique,la_cl_hydr.valeur()))
+      else if (sub_type(Periodique, la_cl_hydr.valeur()))
         {
-          if (sub_type(Periodique,la_cl_co.valeur()))
-            {
-              ;
-            }
+          if (sub_type(Periodique, la_cl_co.valeur()))
+            { /* Do nothing */}
           else
             {
-              message_erreur_conc( la_cl_hydr, la_cl_co, num_Cl);
+              message_erreur_conc(la_cl_hydr, la_cl_co, num_Cl);
             }
         }
     }
 
   return 1;
 }
-
 
 /*! @brief Affiche un message d'erreur pour la fonction precedente
  *
@@ -347,77 +311,63 @@ int tester_compatibilite_hydr_fraction_massique(const Zone_Cl_dis& zone_Cl_hydr,
       Process::exit();
     }
 
-  for (int num_Cl=0; num_Cl<nb_Cl; num_Cl++)
+  for (int num_Cl = 0; num_Cl < nb_Cl; num_Cl++)
     {
       const Cond_lim& la_cl_hydr = zone_Cl_hydr.les_conditions_limites(num_Cl);
       const Cond_lim& la_cl_fm = zone_Cl_fm.les_conditions_limites(num_Cl);
-      if (sub_type(Entree_fluide_vitesse_imposee_libre,la_cl_hydr.valeur()))
+      if (sub_type(Entree_fluide_vitesse_imposee_libre, la_cl_hydr.valeur()))
         {
-          if ( (sub_type(Entree_fluide_fraction_massique_imposee,la_cl_fm.valeur()))
-               || (sub_type(Neumann_sortie_libre,la_cl_fm.valeur()))  ||
-               (sub_type(Echange_externe_impose,la_cl_fm.valeur())) ||
-               (sub_type(Neumann_paroi,la_cl_fm.valeur())) )
-            ;
+          if ((sub_type(Entree_fluide_fraction_massique_imposee, la_cl_fm.valeur())) || (sub_type(Neumann_sortie_libre, la_cl_fm.valeur())) || (sub_type(Echange_externe_impose, la_cl_fm.valeur()))
+              || (sub_type(Neumann_paroi, la_cl_fm.valeur())))
+            { /* Do nothing */ }
           else
             {
-              message_erreur_fraction_massique( la_cl_hydr, la_cl_fm, num_Cl);
+              message_erreur_fraction_massique(la_cl_hydr, la_cl_fm, num_Cl);
             }
         }
-      else if (sub_type(Entree_fluide_vitesse_imposee,la_cl_hydr.valeur()))
+      else if (sub_type(Entree_fluide_vitesse_imposee, la_cl_hydr.valeur()))
         {
-          if (sub_type(Entree_fluide_fraction_massique_imposee,la_cl_fm.valeur()))
-            ;
+          if (sub_type(Entree_fluide_fraction_massique_imposee, la_cl_fm.valeur()))
+            { /* Do nothing */ }
           else
             {
-              message_erreur_fraction_massique( la_cl_hydr, la_cl_fm, num_Cl);
+              message_erreur_fraction_massique(la_cl_hydr, la_cl_fm, num_Cl);
             }
         }
-      else if ( (sub_type(Dirichlet_paroi_fixe,la_cl_hydr.valeur())) ||
-                (sub_type(Dirichlet_paroi_defilante,la_cl_hydr.valeur()))  )
+      else if ((sub_type(Dirichlet_paroi_fixe, la_cl_hydr.valeur())) || (sub_type(Dirichlet_paroi_defilante, la_cl_hydr.valeur())))
         {
-          if ((!sub_type(Neumann_paroi_flux_nul,la_cl_fm.valeur())) &&
-              (!sub_type(Neumann_paroi,la_cl_fm.valeur())) &&
-              (!sub_type(Scalaire_impose_paroi,la_cl_fm.valeur())) &&
-              (!sub_type(Echange_externe_impose,la_cl_fm.valeur())) )
+          if ((!sub_type(Neumann_paroi_flux_nul, la_cl_fm.valeur())) && (!sub_type(Neumann_paroi, la_cl_fm.valeur())) && (!sub_type(Scalaire_impose_paroi, la_cl_fm.valeur()))
+              && (!sub_type(Echange_externe_impose, la_cl_fm.valeur())))
             {
-              message_erreur_fraction_massique( la_cl_hydr, la_cl_fm, num_Cl);
+              message_erreur_fraction_massique(la_cl_hydr, la_cl_fm, num_Cl);
             }
 
         }
-      else if (sub_type(Neumann_sortie_libre,la_cl_hydr.valeur()))
+      else if (sub_type(Neumann_sortie_libre, la_cl_hydr.valeur()))
         {
-          if ( (sub_type(Entree_fluide_fraction_massique_imposee,la_cl_fm.valeur()))
-               || (sub_type(Neumann_sortie_libre,la_cl_fm.valeur())) )
-            {
-              ;
-            }
+          if ((sub_type(Entree_fluide_fraction_massique_imposee, la_cl_fm.valeur())) || (sub_type(Neumann_sortie_libre, la_cl_fm.valeur())))
+            { /* Do nothing */}
           else
             {
-              message_erreur_fraction_massique( la_cl_hydr, la_cl_fm, num_Cl);
+              message_erreur_fraction_massique(la_cl_hydr, la_cl_fm, num_Cl);
             }
         }
-      else if (sub_type(Symetrie,la_cl_hydr.valeur()))
+      else if (sub_type(Symetrie, la_cl_hydr.valeur()))
         {
-          if( (sub_type(Symetrie,la_cl_fm.valeur()))
-              || (sub_type(Neumann_paroi_flux_nul,la_cl_fm.valeur()))
-              || (sub_type(Neumann_paroi,la_cl_fm.valeur())) )
-            {
-              ;
-            }
+          if ((sub_type(Symetrie, la_cl_fm.valeur())) || (sub_type(Neumann_paroi_flux_nul, la_cl_fm.valeur())) || (sub_type(Neumann_paroi, la_cl_fm.valeur())))
+            { /* Do nothing */}
           else
             {
-              message_erreur_fraction_massique( la_cl_hydr, la_cl_fm, num_Cl);
+              message_erreur_fraction_massique(la_cl_hydr, la_cl_fm, num_Cl);
             }
         }
-      else if (sub_type(Periodique,la_cl_hydr.valeur()))
+      else if (sub_type(Periodique, la_cl_hydr.valeur()))
         {
-          if (sub_type(Periodique,la_cl_fm.valeur()))
-            {
-              ;
-            }
+          if (sub_type(Periodique, la_cl_fm.valeur()))
+            { /* Do nothing */}
           else
             {
-              message_erreur_fraction_massique( la_cl_hydr, la_cl_fm, num_Cl);
+              message_erreur_fraction_massique(la_cl_hydr, la_cl_fm, num_Cl);
             }
         }
     }

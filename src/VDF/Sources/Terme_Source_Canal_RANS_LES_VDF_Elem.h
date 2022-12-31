@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -57,10 +57,10 @@ protected :
   REF(Zone_Cl_VDF) la_zone_Cl_VDF;
 
 private :
-  int moyenne; //type de moyenne
-  int cpt, compteur_reprise;
-  double alpha_tau, Ly;
-  double f_start, t_av;
+  int moyenne = 0; //type de moyenne
+  int cpt = 0, compteur_reprise = 0;
+  double alpha_tau = -100., Ly = -100.;
+  double f_start = 0., t_av = -1;
 
   DoubleTab tau;
   DoubleTab U_RANS;

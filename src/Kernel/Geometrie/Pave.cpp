@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,7 @@
 #include <math.h>
 #include <Domaine.h>
 
-Implemente_instanciable_sans_constructeur(Pave,"Pave",Zone);
+Implemente_instanciable(Pave,"Pave",Zone);
 // XD bloc_pave objet_lecture nul -1 Class to create a pave.
 // XD attr Origine listf Origine 1 Keyword to define the pave (block) origin, that is to say one of the 8 block points (or 4 in a 2D coordinate system).
 // XD attr longueurs listf longueurs 1 Keyword to define the block dimensions, that is to say knowing the origin, length along the axes.
@@ -47,7 +47,6 @@ Sortie& Pave::printOn(Sortie& s ) const
   return Zone::printOn(s) ;
 }
 
-Pave::Pave():a_tanh(-123),tanh_dilatation(-123),xa_tanh(-123),xtanh_dilatation(-123),za_tanh(-123),ztanh_dilatation(-123),Nx(-1),Ny(-1),Nz(-1),Mx(-1),My(-1),Mz(-1),tour_complet(-123) {}
 /*! @brief Lit les specifications d'un pave a partir d'un flot d'entree.
  *
  *     Le format de lecture d'un pave dans le jeu de donnee est le suivant:
@@ -85,9 +84,6 @@ Pave::Pave():a_tanh(-123),tanh_dilatation(-123),xa_tanh(-123),xtanh_dilatation(-
  */
 Entree& Pave::readOn(Entree& is)
 {
-  xtanh_dilatation=0;
-  tanh_dilatation=0;
-  ztanh_dilatation=0;
   if(dimension<0)
     {
       Cerr << "You must give the dimension before to mesh" << finl;
@@ -98,16 +94,11 @@ Entree& Pave::readOn(Entree& is)
   Facteurs = 1.;
   Symetrique.resize(dimension);
   Symetrique=0;
-  xa_tanh = 10.;
-  a_tanh = 10.;
-  za_tanh = 10.;
   Origine.resize(dimension);
   Longueurs.resize(dimension);
   Nb_Noeuds.resize(dimension);
   Motcle motlu;
   int rang;
-  tour_complet=0;
-  rep_VEF=0;
 
   typer_();
 

@@ -56,14 +56,14 @@ public:
 protected:
   Nom name;
   LIST(Nom) names;
-  Objet_a_lire::Type type;
-  Objet_a_lire::Nature nature;
-  int * int_a_lire;
-  double* double_a_lire;
-  Objet_U *obj_a_lire,*objet_lu ;
-  ArrOfInt* arrofint_a_lire;
-  ArrOfDouble* arrofdouble_a_lire;
-  int * flag_a_lire;
+  Objet_a_lire::Type type = INTEGER;
+  Objet_a_lire::Nature nature = OPTIONAL;
+  int *int_a_lire;
+  double *double_a_lire;
+  Objet_U *obj_a_lire, *objet_lu;
+  ArrOfInt *arrofint_a_lire;
+  ArrOfDouble *arrofdouble_a_lire;
+  int *flag_a_lire;
   Motcles dictionnaire_noms;
   ArrOfInt dictionnaire_valeurs;
   VECT(ptrParam) dictionnaire_params;

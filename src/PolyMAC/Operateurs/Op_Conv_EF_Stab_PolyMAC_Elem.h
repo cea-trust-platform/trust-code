@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,7 +51,7 @@ public :
 
   void mettre_a_jour(double temps) override;
 
-  double alpha; //alpha = 0 -> centre, alpha = 1 -> amont
+  double alpha = 1.0; //alpha = 0 -> centre, alpha = 1 -> amont
 protected :
 
   /* si operateur de convection de Masse_Multiphase */

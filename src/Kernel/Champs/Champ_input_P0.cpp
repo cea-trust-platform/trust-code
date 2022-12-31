@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -55,7 +55,7 @@ Entree& Champ_input_P0::readOn(Entree& is)
     {
       const Sous_Zone& ssz=ma_sous_zone.valeur();
       nb_elems_reels_loc_ = mon_pb->domaine().zone(0).les_elems().dimension(0);
-      for (int i = nb_elems_reels_sous_zone_ = 0; i < ssz.nb_elem_tot(); i++)
+      for (int i = 0; i < ssz.nb_elem_tot(); i++)
         nb_elems_reels_sous_zone_ += (ssz[i] < nb_elems_reels_loc_);
     }
   return is;

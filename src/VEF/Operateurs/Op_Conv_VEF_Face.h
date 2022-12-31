@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,7 +37,7 @@ class Op_Conv_VEF_Face : public Op_Conv_VEF_base
   Declare_instanciable_sans_constructeur(Op_Conv_VEF_Face);
 
 public:
-  Op_Conv_VEF_Face() : alpha_(1) {};
+  Op_Conv_VEF_Face() { }
   void completer() override;
   DoubleTab& ajouter(const DoubleTab& , DoubleTab& ) const override;
   void remplir_fluent(DoubleVect& ) const override;
@@ -57,13 +57,13 @@ public:
 protected:
   Motcle type_lim;
   enum type_lim_type {type_lim_minmod,type_lim_vanleer,type_lim_vanalbada,type_lim_chakravarthy,type_lim_superbee};
-  type_lim_type type_lim_int;
-  int ordre;
-  double alpha_;
+  type_lim_type type_lim_int = type_lim_minmod;
+  int ordre = 1;
+  double alpha_=1.;
   enum type_operateur { amont, muscl, centre };
-  type_operateur type_op;
+  type_operateur type_op = amont;
 
-  double (*LIMITEUR)(double, double);
+  double (*LIMITEUR)(double, double) = nullptr;
   mutable ArrOfInt traitement_pres_bord_;
   mutable ArrOfInt est_une_face_de_dirichlet_;
   mutable ArrOfInt type_elem_Cl_;

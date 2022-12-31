@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -91,9 +91,9 @@ protected:
   void authorized_equation(const Equation_base& eqn);
   void authorized_equation(const Equation_base& eqn) const;
 
-  int nb_ite_max;
-  double residu_old_,facsec_max_;
-  int nb_ite_sans_accel_;
+  int nb_ite_max=100000;
+  double residu_old_=0,facsec_max_=DMAXFLOAT;
+  int nb_ite_sans_accel_=-10;
 };
 
 inline int Schema_Implicite_Multi_TimeStep_base::nb_valeurs_temporelles_effectives() const

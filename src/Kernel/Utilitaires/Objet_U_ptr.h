@@ -60,10 +60,10 @@ private:
   // Si cle_ == -1, le pointeur est "nul".
   // L'objet peut etre recupere par la_memoire().objet_u(cle_)
   // Attention, la cle_ peut changer au cours du deroulement du programme (voir Memoire::comprimer())
-  int cle_;
+  int cle_ = -1;
   // ptr_object_id_ est l'object_id_ de l'objet en reference.
   // Permet de tester facilement si on pointe sur l'objet que l'on croit.
-  int ptr_object_id_;
+  int ptr_object_id_ = -1;
 };
 
 #endif // Objet_U_ptr_H

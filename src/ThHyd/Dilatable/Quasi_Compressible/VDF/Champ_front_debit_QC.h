@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,7 +38,7 @@ public:
   void mettre_a_jour(double temps) override;
 
 protected :
-  int ismoyen;
+  int ismoyen=0;
   DoubleVect Debit;
   REF(Fluide_Quasi_Compressible) fluide;
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,6 @@
 
 #ifndef Frontiere_included
 #define Frontiere_included
-
 
 #include <Faces.h>
 
@@ -59,14 +58,8 @@ public:
   inline void fixer_num_premiere_face(int );
   inline const ArrOfInt& get_faces_virt() const;
   inline ArrOfInt& get_faces_virt();
-  inline const double& get_aire() const
-  {
-    return aire_;
-  };
-  inline void set_aire(double& aire)
-  {
-    aire_ = aire;
-  };
+  inline const double& get_aire() const { return aire_; }
+  inline void set_aire(double& aire) { aire_ = aire; }
 
   virtual void creer_tableau_faces(Array_base&, Array_base::Resize_Options opt = Array_base::COPY_INIT) const;
   virtual void trace_elem_local(const DoubleTab&, DoubleTab&) const;
@@ -83,8 +76,8 @@ private :
   Faces les_faces;
   REF(Zone) la_zone;
   ArrOfInt faces_virt;
-  int num_premiere_face_;
-  double aire_;
+  int num_premiere_face_ = -100;
+  double aire_ = -100.;
 };
 
 

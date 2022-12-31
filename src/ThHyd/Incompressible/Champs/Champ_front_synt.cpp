@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -74,13 +74,6 @@ int Champ_front_synt::initialiser(double tps, const Champ_Inc_base& inco)
  */
 Entree& Champ_front_synt::readOn(Entree& is)
 {
-  timeScale = 0.;
-  lenghtScale = 0.;
-  nbModes = 0;
-  turbKinEn = 0.;
-  turbDissRate = 0.;
-  KeOverKmin = 0.;
-  ratioCutoffWavenumber = 0;
 
   int dim;
   dim=lire_dimension(is,que_suis_je());

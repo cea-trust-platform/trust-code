@@ -38,12 +38,12 @@ protected :
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   Champ_Don vitesse_imposee_lu_;
   Champ_Don vitesse_imposee_;
-  double eta_;
-  double coefku_;
-  double temps_relax_;
-  double echelle_relax_;
-  int type_vitesse_imposee_;
-  int local_;
+  double eta_ = -100.;
+  double coefku_= -100.;
+  double temps_relax_=1.0e+12;
+  double echelle_relax_=5.0e-2;
+  int type_vitesse_imposee_= -1;
+  int local_ = -1;
   friend class Source_PDF_base;
   friend class Source_PDF_EF;
 private:

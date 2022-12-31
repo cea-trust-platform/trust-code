@@ -78,11 +78,8 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
   for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
     {
       const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
-      if ( (sub_type(Dirichlet,la_cl.valeur()))
-           ||
-           (sub_type(Dirichlet_homogene,la_cl.valeur()))
-         )
-        ;
+      if ((sub_type(Dirichlet, la_cl.valeur())) || (sub_type(Dirichlet_homogene, la_cl.valeur())))
+        { /* Do nothing */}
       else
         {
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
@@ -150,11 +147,8 @@ void Op_Conv_VEF_base::calculer_pour_post(Champ& espace_stockage,const Nom& opti
           for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
             {
               const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
-              if ((sub_type(Dirichlet,la_cl.valeur()))
-                  ||
-                  (sub_type(Dirichlet_homogene,la_cl.valeur()))
-                 )
-                ;
+              if ((sub_type(Dirichlet, la_cl.valeur())) || (sub_type(Dirichlet_homogene, la_cl.valeur())))
+                { /* Do nothing */}
               else
                 {
                   const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());

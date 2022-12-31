@@ -36,5 +36,3 @@ void Correlation::typer_lire(const Probleme_base& pb, const Nom& type, Entree& i
   valeur().associer_pb(pb);
   valeur().lire(is);
 }
-
-Declare_ref(Correlation_base);

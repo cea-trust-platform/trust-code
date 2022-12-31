@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,6 +16,7 @@
 #ifndef TroisDto2D_included
 #define TroisDto2D_included
 
+#include <Interprete_geometrique_base.h>
 #include <Domaine.h>
 
 
@@ -23,7 +24,6 @@
  *
  * @sa Interprete Pave, Actuellement le seul tyep d'objet reconnu par Trio-U pour mailler, une domaine est l'objet Pave
  */
-#include <Interprete_geometrique_base.h>
 class TroisDto2D : public Interprete_geometrique_base
 {
   Declare_instanciable(TroisDto2D);
@@ -32,127 +32,43 @@ public :
   void extraire_2D(const Domaine&, Domaine&, const Bord&,const Nom& , int);
 
   // OC, 28/10/2004, Modif pour pouvoir extraire un bord d'orientation quelconque.
+  // Renvoi la composante X  de l'origine A du repere local au bord, calcule par la classe.
+  double getXa() { return xa; }
+  // Renvoi la composante Y de l'origine A du repere local au bord, calcule par la classe.
+  double getYa() { return ya; }
+  // Renvoi la composante Z de l'origine A du repere local au bord, calcule par la classe.
+  double getZa() { return za; }
+  // Renvoi la composante X du premier vecteur de base I du repere local au bord, calcule par la classe.
+  double getIx() { return Ix; }
+  // Renvoi la composante Y du premier vecteur de base I du repere local au bord, calcule par la classe.
+  double getIy() { return Iy; }
+  // Renvoi la composante Z du premier vecteur de base I du repere local au bord, calcule par la classe.
+  double getIz() { return Iz; }
+  // Renvoi la composante X du  vecteur de base J du repere local au bord, calcule par la classe.
+  double getJx() { return Jx; }
+  // Renvoi la composante Y du  vecteur de base J du repere local au bord, calcule par la classe.
+  double getJy() { return Jy; }
+  // Renvoi la composante Z du  vecteur de base J du repere local au bord, calcule par la classe.
+  double getJz() { return Jz; }
+  // Renvoi la composante X du  vecteur de base K du repere local au bord, calcule par la classe.
+  double getKx() { return Kx; }
+  // Renvoi la composante Y du  vecteur de base K du repere local au bord, calcule par la classe.
+  double getKy() { return Ky; }
+  // Renvoi la composante Z du  vecteur de base K du repere local au bord, calcule par la classe.
+  double getKz() { return Kz; }
 
-
-  /**
-   * Renvoi la composante X  de l'origine A
-   * du repere local au bord, calcule par la classe.
-   */
-  double getXa()
-  {
-    return xa;
-  }
-  /**
-   * Renvoi la composante Y de l'origine A
-   * du repere local au bord, calcule par la classe.
-   */
-  double getYa()
-  {
-    return ya;
-  }
-  /**
-   * Renvoi la composante Z de l'origine A
-   * du repere local au bord, calcule par la classe.
-   */
-  double getZa()
-  {
-    return za;
-  }
-
-
-  /**
-   * Renvoi la composante X du premier vecteur de base I
-   * du repere local au bord, calcule par la classe.
-   */
-  double getIx()
-  {
-    return Ix;
-  }
-  /**
-   * Renvoi la composante Y du premier vecteur de base I
-   * du repere local au bord, calcule par la classe.
-   */
-  double getIy()
-  {
-    return Iy;
-  }
-  /**
-   * Renvoi la composante Z du premier vecteur de base I
-   * du repere local au bord, calcule par la classe.
-   */
-  double getIz()
-  {
-    return Iz;
-  }
-
-  /**
-   * Renvoi la composante X du  vecteur de base J
-   * du repere local au bord, calcule par la classe.
-   */
-  double getJx()
-  {
-    return Jx;
-  }
-  /**
-   * Renvoi la composante Y du  vecteur de base J
-   * du repere local au bord, calcule par la classe.
-   */
-  double getJy()
-  {
-    return Jy;
-  }
-  /**
-   * Renvoi la composante Z du  vecteur de base J
-   * du repere local au bord, calcule par la classe.
-   */
-  double getJz()
-  {
-    return Jz;
-  }
-
-  /**
-   * Renvoi la composante X du  vecteur de base K
-   * du repere local au bord, calcule par la classe.
-   */
-  double getKx()
-  {
-    return Kx;
-  }
-  /**
-   * Renvoi la composante Y du  vecteur de base K
-   * du repere local au bord, calcule par la classe.
-   */
-  double getKy()
-  {
-    return Ky;
-  }
-  /**
-   * Renvoi la composante Z du  vecteur de base K
-   * du repere local au bord, calcule par la classe.
-   */
-  double getKz()
-  {
-    return Kz;
-  }
-
-  inline int& coupe() ;
+  inline int& coupe() { return coupe_; }
 
 protected :
 
-  int coupe_;
+  int coupe_ = 1;
 
 private :
-  double xa,ya,za;
-  double Ix,Iy,Iz;
-  double Jx,Jy,Jz;
-  double Kx,Ky,Kz;
-
-
+  double xa = -100., ya = -100., za = -100.;
+  double Ix = -100., Iy = -100., Iz = -100.;
+  double Jx = -100., Jy = -100., Jz = -100.;
+  double Kx = -100., Ky = -100., Kz = -100.;
 };
 
-inline int& TroisDto2D::coupe()
-{
-  return coupe_;
-}
 #endif
 

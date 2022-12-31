@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,8 +35,6 @@ Sortie& Chimie::printOn(Sortie& os) const
 
 Entree& Chimie::readOn(Entree& is)
 {
-  modele_micro_melange_=0;
-  constante_modele_micro_melange_=1.;
   Param param(que_suis_je());
   param.ajouter("reactions",&reactions_,Param::REQUIRED);
   param.ajouter("modele_micro_melange",&modele_micro_melange_);

@@ -1024,12 +1024,12 @@ void Terme_Source_inc_th_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
         }
 
       else if (sub_type(Symetrie,la_cl.valeur()))
-        ;
+        { /* Do nothing */}
       else if ( (sub_type(Dirichlet,la_cl.valeur()))
                 ||
                 (sub_type(Dirichlet_homogene,la_cl.valeur()))
               )
-        ;
+        { /* Do nothing */}
       else if (sub_type(Periodique,la_cl.valeur()))
         {
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());

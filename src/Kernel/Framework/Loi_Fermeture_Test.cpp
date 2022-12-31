@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,10 +13,10 @@
 *
 *****************************************************************************/
 
-#include <Loi_Fermeture_Test.h>
 #include <Discretisation_base.h>
-#include <Probleme_base.h>
+#include <Loi_Fermeture_Test.h>
 #include <Schema_Temps_base.h>
+#include <Probleme_base.h>
 #include <Param.h>
 
 Implemente_instanciable( Loi_Fermeture_Test, "Loi_Fermeture_Test", Loi_Fermeture_base ) ;
@@ -24,15 +24,12 @@ Implemente_instanciable( Loi_Fermeture_Test, "Loi_Fermeture_Test", Loi_Fermeture
 
 Sortie& Loi_Fermeture_Test::printOn( Sortie& os ) const
 {
-  Loi_Fermeture_base::printOn( os );
-  return os;
+  return Loi_Fermeture_base::printOn( os );
 }
 
 Entree& Loi_Fermeture_Test::readOn( Entree& is )
 {
-  coef_=1;
-  Loi_Fermeture_base::readOn( is );
-  return is;
+  return Loi_Fermeture_base::readOn( is );
 }
 
 void Loi_Fermeture_Test::set_param(Param& param)

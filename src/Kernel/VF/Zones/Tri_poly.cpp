@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,47 +38,43 @@ Tri_poly::Tri_poly()
 /*! @brief remplit le tableau face_normales dans la Zone_poly
  *
  */
-void Tri_poly::normale(int num_Face,DoubleTab& Face_normales,
-                       const  IntTab& Face_sommets,
-                       const IntTab& Face_voisins,
-                       const IntTab& elem_faces,
-                       const Zone& zone_geom) const
+void Tri_poly::normale(int num_Face, DoubleTab& Face_normales, const IntTab& Face_sommets, const IntTab& Face_voisins, const IntTab& elem_faces, const Zone& zone_geom) const
 {
   const DoubleTab& les_coords = zone_geom.domaine().coord_sommets();
 
-  double x1,y1;
-  double nx,ny;
+  double x1, y1;
+  double nx, ny;
   int no3;
   int f0;
-  int n0 = Face_sommets(num_Face,0);
-  int n1 = Face_sommets(num_Face,1);
-  x1 = les_coords(n0,0)-les_coords(n1,0);
-  y1 = les_coords(n0,1)-les_coords(n1,1);
+  int n0 = Face_sommets(num_Face, 0);
+  int n1 = Face_sommets(num_Face, 1);
+  x1 = les_coords(n0, 0) - les_coords(n1, 0);
+  y1 = les_coords(n0, 1) - les_coords(n1, 1);
   nx = -y1;
   ny = x1;
 
   // Orientation de la normale de elem1 vers elem2
   // pour cela recherche du sommet de elem1 qui n'est pas sur la Face
-  int elem1 = Face_voisins(num_Face,0);
-  if ( (f0 = elem_faces(elem1,0)) == num_Face )
-    f0 = elem_faces(elem1,1);
-  if ( (no3 = Face_sommets(f0,0)) != n0 && no3 != n1 )
-    ;
+  int elem1 = Face_voisins(num_Face, 0);
+  if ((f0 = elem_faces(elem1, 0)) == num_Face)
+    f0 = elem_faces(elem1, 1);
+  if ((no3 = Face_sommets(f0, 0)) != n0 && no3 != n1)
+    { /* Do nothing */ }
   else
-    no3 = Face_sommets(f0,1);
+    no3 = Face_sommets(f0, 1);
 
-  x1 = les_coords(no3,0) - les_coords(n0,0);
-  y1 = les_coords(no3,1) - les_coords(n0,1);
+  x1 = les_coords(no3, 0) - les_coords(n0, 0);
+  y1 = les_coords(no3, 1) - les_coords(n0, 1);
 
-  if ( (nx*x1+ny*y1) > 0 )
+  if ((nx * x1 + ny * y1) > 0)
     {
-      Face_normales(num_Face,0) = - nx;
-      Face_normales(num_Face,1) = - ny;
+      Face_normales(num_Face, 0) = -nx;
+      Face_normales(num_Face, 1) = -ny;
     }
   else
     {
-      Face_normales(num_Face,0) = nx;
-      Face_normales(num_Face,1) = ny;
+      Face_normales(num_Face, 0) = nx;
+      Face_normales(num_Face, 1) = ny;
     }
 }
 

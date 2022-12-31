@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,7 +34,7 @@ class Op_Conv_SUPG_EF : public Op_Conv_BTD_EF
 public :
   double coefficient_btd() const override;
 protected :
-  double ksupg_;
+  double ksupg_ = -100.;
 
 };
 

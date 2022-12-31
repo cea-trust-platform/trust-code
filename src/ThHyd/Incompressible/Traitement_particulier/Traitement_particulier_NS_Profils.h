@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,17 +53,18 @@ protected :
 
   virtual void init_calcul_moyenne(void) = 0;
 
-  DoubleTab u_moy_temp_x,u_moy_temp_y,u_moy_temp_z;
-  DoubleTab uv_moy_temp,u2_moy_temp,v2_moy_temp,w2_moy_temp,u3_moy_temp,v3_moy_temp,w3_moy_temp,u4_moy_temp,v4_moy_temp,w4_moy_temp,nu_t_temp;
-  double temps_deb,temps_fin;
-  double dt_post_stat,dt_post_inst;
-  IntVect Nxy,Nyy,Nzy,Nuv;
-  int Nap;
-  Nom fich_repr_u,fich_repr_nu_t;
-  int oui_repr,oui_u_inst, oui_stat,oui_profil_nu_t,oui_repr_nu_t;
-  int n_probes;
+  DoubleTab u_moy_temp_x, u_moy_temp_y, u_moy_temp_z;
+  DoubleTab uv_moy_temp, u2_moy_temp, v2_moy_temp, w2_moy_temp, u3_moy_temp;
+  DoubleTab v3_moy_temp, w3_moy_temp, u4_moy_temp, v4_moy_temp, w4_moy_temp, nu_t_temp;
+  double temps_deb = -100., temps_fin = -100.;
+  double dt_post_stat = -100., dt_post_inst = -100.;
+  IntVect Nxy, Nyy, Nzy, Nuv;
+  int Nap = -1;
+  Nom fich_repr_u, fich_repr_nu_t;
+  int oui_repr = 0, oui_u_inst = 0, oui_stat = 0, oui_profil_nu_t = 0, oui_repr_nu_t = 0;
+  int n_probes = 1;
   DoubleVect positions;
-  int homo_dir,dir_profil;
+  int homo_dir = -1, dir_profil = -1;
 
 };
 #endif

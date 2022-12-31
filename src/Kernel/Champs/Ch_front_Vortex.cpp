@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -56,7 +56,6 @@ Sortie& Ch_front_Vortex::printOn(Sortie& os) const
  */
 Entree& Ch_front_Vortex::readOn(Entree& is)
 {
-
   if(dimension!=3)
     {
       Cerr << " Vortex Boundary condition requests 3D problem " << finl;
@@ -64,9 +63,6 @@ Entree& Ch_front_Vortex::readOn(Entree& is)
     }
 
   fixer_nb_comp(dimension);
-
-  init = 1;
-  first_rand = 1;
 
   Nom nom;
   is >> nom >> geom >> nu >> utau;

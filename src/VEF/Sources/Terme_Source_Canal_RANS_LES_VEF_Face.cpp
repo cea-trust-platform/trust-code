@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,17 +24,6 @@
 
 Implemente_instanciable_sans_destructeur(Terme_Source_Canal_RANS_LES_VEF_Face,"Source_Canal_RANS_LES_VEF_P1NC",Source_base);
 
-//Terme_Source_Canal_RANS_LES_VEF_Face::Terme_Source_Canal_RANS_LES_VEF_Face()
-//{
-//  dernier_tps_calc = new double();
-//}
-
-//Terme_Source_Canal_RANS_LES_VEF_Face::~Terme_Source_Canal_RANS_LES_VEF_Face()
-//{
-//  delete dernier_tps_calc;
-//}
-
-
 Terme_Source_Canal_RANS_LES_VEF_Face::~Terme_Source_Canal_RANS_LES_VEF_Face()
 {
   //Le destructeur est appele a l'initialisation alors
@@ -46,9 +35,6 @@ Terme_Source_Canal_RANS_LES_VEF_Face::~Terme_Source_Canal_RANS_LES_VEF_Face()
       fic << utemp;
     }
 }
-
-//// printOn
-//
 
 Sortie& Terme_Source_Canal_RANS_LES_VEF_Face::printOn(Sortie& s ) const
 {
@@ -66,9 +52,6 @@ Entree& Terme_Source_Canal_RANS_LES_VEF_Face::readOn(Entree& is )
   Motcle acc_ouverte("{");
   Motcle acc_fermee("}");
 
-  u_target = 0;
-  f_start = 0.;
-  moyenne = 0;//valeur par defaut
   // 0 => moyenne spatiale
   // 1 => moyenne temporelle glissante (moyenne en alpha)
   // 2 => moyenne temporelle
@@ -201,7 +184,6 @@ void Terme_Source_Canal_RANS_LES_VEF_Face::associer_zones(const Zone_dis& zone_d
 
 void Terme_Source_Canal_RANS_LES_VEF_Face::associer_pb(const Probleme_base& pb)
 {
-  ;
 }
 
 void Terme_Source_Canal_RANS_LES_VEF_Face::init()

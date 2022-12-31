@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,24 +29,16 @@ Implemente_base_sans_constructeur(Perte_Charge_VEF,"Perte_Charge_VEF",Source_bas
 
 Perte_Charge_VEF::Perte_Charge_VEF():implicite_(1) { }
 
-// printOn
-//
-
 Sortie& Perte_Charge_VEF::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << finl;
-
 }
-
-// readOn
-//
 
 Entree& Perte_Charge_VEF::readOn(Entree& is )
 {
   Param param(que_suis_je());
   Cerr << que_suis_je() << "::readOn " << finl;
   lambda.setNbVar(4+dimension);
-  sous_zone=false;
   set_param(param);
   param.lire_avec_accolades_depuis(is);
   Cerr << "Interpretation de la fonction " << lambda.getString() << " ... ";

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,13 +46,7 @@ Entree& Traitement_particulier_NS_Profils::readOn(Entree& is)
 Entree& Traitement_particulier_NS_Profils::lire(Entree& is)
 {
   // Initialisation
-  oui_u_inst = 0;
-  oui_stat = 0;
-  oui_repr = 0;
-  oui_repr_nu_t = 0;
-  oui_profil_nu_t = 0;
   IntVect Verif(8);
-  n_probes = 1;
   Verif=0;
 
   // END Initialisation

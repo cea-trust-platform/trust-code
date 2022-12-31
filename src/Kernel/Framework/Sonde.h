@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -83,7 +83,6 @@ protected :
   Nom nom_;                               // le nom de la sonde
   Nom nom_fichier_;                       // le nom du fichier contenant la sonde
   int dim;                                // la dimension de la sone (point:0,segment:1,plan:2,volume:3)
-  int nbre_points1,nbre_points2,nbre_points3;        // faire des sonde_segment,sonde_plan,etc...
   REF(Champ_Generique_base) mon_champ;
   REF(Operateur_Statistique_tps_base) operateur_statistique_;        // Reference vers un operateur statistique eventuel
   int ncomp;                              // Numero de la composante a sonder
@@ -109,6 +108,7 @@ protected :
   // Traitement des bords (option "gravcl")
   ArrOfInt faces_bords_;                  // array containing the indices of the boundary faces hit by the probe
   IntTab rang_cl_;                        // for a given face, index of the CL that this face bears
+  int nbre_points1 = -1,nbre_points2 = -1,nbre_points3 = -1;        // faire des sonde_segment,sonde_plan,etc...
 };
 
 

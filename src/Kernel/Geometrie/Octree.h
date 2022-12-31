@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -121,19 +121,13 @@ public :
   void construire(int reel=0);
   int construit() const;
   void invalide();
-  inline int reel() const;
+  inline int reel() const { return reel_; }
 
 protected :
   REF(Zone) la_zone;
   OctreeLoc loc;
-  int valid_;
-  int reel_;
+  int valid_, reel_ = -1;
 };
-
-inline int OctreeRoot::reel() const
-{
-  return reel_;
-}
 
 /*! @brief Classe OctreeFloor
  *

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,23 +25,13 @@
 Implemente_instanciable(Loi_horaire,"Loi_horaire",Objet_U);
 Implemente_ref(Loi_horaire);
 
-/*! @brief
- *
- */
 Sortie& Loi_horaire::printOn(Sortie& os) const
 {
   return os;
 }
 
-/*! @brief
- *
- */
 Entree& Loi_horaire::readOn(Entree& is)
 {
-  // Initialisations
-  verification_derivee_=1;
-  impr_=1;
-
   EChaine x(dimension==3?"3 0. 0. 0.":"2 0. 0.");
   x >> position_;
   EChaine v(dimension==3?"3 0. 0. 0.":"2 0. 0.");

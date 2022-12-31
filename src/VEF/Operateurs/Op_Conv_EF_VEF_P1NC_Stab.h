@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -100,22 +100,22 @@ private :
   ArrOfDouble beta; // vaut zero pour les faces ou l'on souhaite degenerer en Amont.
   //  mutable DoubleTab limiteurs_;//tableau stockant pour chaque face la moyenne algebrique du limiteur
 
-  double alpha_;
+  double alpha_ = 1.;
 
-  int is_compressible_;
-  int test_;
-  int old_;
-  int volumes_etendus_;
+  int is_compressible_ = 0;
+  int test_ = 0;
+  int old_ = 0;
+  int volumes_etendus_ = 1;
 
-  bool sous_zone;  // Cas d'une sous-zone a definir pour que l'EF_Stab degenere en Amont
-  int new_jacobienne_;
+  bool sous_zone = false;  // Cas d'une sous-zone a definir pour que l'EF_Stab degenere en Amont
+  int new_jacobienne_ = 0;
   Nom nom_sous_zone;
   REF(Sous_zone_VF) la_sous_zone_dis;
 
-  int nb_ssz_alpha;
+  int nb_ssz_alpha = -1;
   DoubleVect alpha_ssz;
   Noms noms_ssz_alpha;
-  bool ssz_alpha;
+  bool ssz_alpha = false;
 
 };
 

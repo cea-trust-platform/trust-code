@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,8 +45,8 @@ protected:
   virtual const Nom& get_name() const; // calls le_nom
 
 private:
-  int nb_elems_reels_sous_zone_; //if sous-zone : number of elements of the sous-zone on this proc
-  int nb_elems_reels_loc_;       //total number of local elements
+  int nb_elems_reels_sous_zone_=0; //if sous-zone : number of elements of the sous-zone on this proc
+  int nb_elems_reels_loc_=0;       //total number of local elements
 };
 
 #endif /* Champ_input_P0_included */

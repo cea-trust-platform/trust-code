@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -104,13 +104,13 @@ void Hexa_VEF::normale(int num_Face,DoubleTab& Face_normales,
 
   if ( (no4 = Face_sommets(f0,0)) != n0    &&   no4 != n1
        &&   no4 != n2 &&   no4 != n3)
-    ;
+    { /* Do nothing */}
   else if ( (no4 = Face_sommets(f0,1)) != n0 && no4 != n1
             && no4 != n2 &&   no4 != n3)
-    ;
+    { /* Do nothing */}
   else if ( (no4 = Face_sommets(f0,2)) != n0 && no4 != n1
             && no4 != n2 &&   no4 != n3)
-    ;
+    { /* Do nothing */}
   else
     no4 = Face_sommets(f0,3);
 
@@ -155,13 +155,13 @@ void Hexa_VEF::normale(int num_Face,DoubleTab& Face_normales,
 
   if ( (no4 = Face_sommets(f0,0)) != n0    &&   no4 != n1
        &&   no4 != n2 &&   no4 != n3)
-    ;
+    { /* Do nothing */}
   else if ( (no4 = Face_sommets(f0,1)) != n0 && no4 != n1
             && no4 != n2 &&   no4 != n3)
-    ;
+    { /* Do nothing */}
   else if ( (no4 = Face_sommets(f0,2)) != n0 && no4 != n1
             && no4 != n2 &&   no4 != n3)
-    ;
+    { /* Do nothing */}
   else
     no4 = Face_sommets(f0,3);
 

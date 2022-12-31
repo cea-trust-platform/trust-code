@@ -71,7 +71,7 @@ protected:
   //IJK_Grid_Geometry grid_geometry_;
   IJK_Splitting grid_splitting_;
   int ghost_size_;
-  bool perio_k_;
+  bool perio_k_ = false;
 
   VECT(ArrOfDouble_with_ghost) local_delta_xyz_;
   bool uniform_[3];

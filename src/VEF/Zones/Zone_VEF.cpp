@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -384,7 +384,6 @@ void Zone_VEF::calculer_h_carre()
 {
   const int nbe=nb_elem();
   // Calcul de h_carre
-  h_carre = 1.e30;
   h_carre_.resize(nbe);
   // Calcul des surfaces
   const DoubleVect& surfaces=face_surfaces();

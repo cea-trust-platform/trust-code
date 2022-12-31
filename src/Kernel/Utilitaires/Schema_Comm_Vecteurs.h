@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -80,9 +80,9 @@ protected:
   ArrOfInt send_procs_;
   ArrOfInt recv_procs_;
   // A l'issue de la phase d'initialisation, les processeurs sont-ils dans l'ordre croissant ?
-  int sorted_;
+  int sorted_ = 1;
   // Taille du buffer requis pour ce schema
-  int min_buf_size_;
+  int min_buf_size_ = -1;
 
   enum Status { RESET, BEGIN_INIT, END_INIT, BEGIN_COMM, EXCHANGED };
   Status status_;

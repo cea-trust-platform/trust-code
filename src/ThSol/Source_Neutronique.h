@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,31 +52,28 @@ public:
   void completer() override;
   virtual void imprimer(double ) const;
   virtual int limpr(double , double ) const;
-  inline double puissance_neutro() const
-  {
-    return Un(0);
-  }
+  inline double puissance_neutro() const { return Un(0); }
   virtual double calculer_Tmoyenne() = 0;
 
 private :
   void mul(DoubleTab& m, DoubleVect& v, DoubleVect& resu);
   void mettre_a_jour_matA(double t);
-  int N;                 // Nombre de groupe >= 1
-  double Tvie;         // duree de vie d'un neutron
+  int N = -1;                 // Nombre de groupe >= 1
+  double Tvie = -100.;         // duree de vie d'un neutron
   DoubleVect Un, Unp1;// Inconnus a l'instant n et n+1 : Puissance Un(0) et Concentrations Un(i) du groupe i
   DoubleVect beta;        // beta(i) = nombre de neutrons retardees issue de l espece i,
-  double beta_som;          // somme des beta(i)
+  double beta_som = -100.;          // somme des beta(i)
   DoubleVect lambda;         //
   DoubleTab matA;           // matrice du systeme d'equa diff
-  double dt;                 // pas de temps
-  int init;
-  double P0;                 // Puissance a t=0
+  double dt= -100.;                 // pas de temps
+  int init = 1;
+  double P0= -100.;                 // Puissance a t=0
   DoubleVect Ci0;         // Concentration a t=0
-  int Ci0_ok;
-  double dt_impr;
-  double temps_courant;
-  void (Source_Neutronique::*faire_un_pas_de_temps)(void) ;
-  double Tmoy; // temperature moyenne
+  int Ci0_ok=0;
+  double dt_impr = 1e10;
+  double temps_courant= -100.;
+  void (Source_Neutronique::*faire_un_pas_de_temps)(void) = nullptr;
+  double Tmoy= -100.; // temperature moyenne
 
   Parser_U fct_tT;
   Nom f_xyz;

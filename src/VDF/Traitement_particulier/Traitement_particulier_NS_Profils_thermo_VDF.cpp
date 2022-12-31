@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,37 +28,21 @@ Implemente_instanciable_sans_constructeur(Traitement_particulier_NS_Profils_ther
 Traitement_particulier_NS_Profils_thermo_VDF::Traitement_particulier_NS_Profils_thermo_VDF():oui_repr_stats_thermo(0)
 {
 }
-/*! @brief Classe permettant de faire les statistiques sur le champs de temperature avec des profils dans un domaine homogene dans une direction.
- *
- * @param (Sortie& is) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
+
 Sortie& Traitement_particulier_NS_Profils_thermo_VDF::printOn(Sortie& is) const
 {
   return is;
 }
 
-
-/*! @brief
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Traitement_particulier_NS_Profils_thermo_VDF::readOn(Entree& is)
 {
   return is;
 }
 
-
-
-
 Entree& Traitement_particulier_NS_Profils_thermo_VDF::lire(Entree& is)
 {
   return Traitement_particulier_NS_Profils_VDF::lire(is);
 }
-
-
-
 
 Entree& Traitement_particulier_NS_Profils_thermo_VDF::lire(const Motcle& motlu, Entree& is)
 {
@@ -96,10 +80,6 @@ Entree& Traitement_particulier_NS_Profils_thermo_VDF::lire(const Motcle& motlu, 
   return is;
 }
 
-
-
-
-
 void Traitement_particulier_NS_Profils_thermo_VDF::associer_eqn(const Equation_base& eq_ns )
 {
   Traitement_particulier_NS_Profils_VDF::associer_eqn(eq_ns);
@@ -129,10 +109,6 @@ void Traitement_particulier_NS_Profils_thermo_VDF::associer_eqn(const Equation_b
       exit();
     }
 }
-
-
-
-
 
 // #################### Postraitement Statistique du Champ de Temperature #########
 

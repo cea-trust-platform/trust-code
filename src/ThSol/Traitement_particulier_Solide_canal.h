@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,9 +46,9 @@ protected :
   DoubleVect T2_moy_temp;
   /*    DoubleVect val_moy_temp,val_moy_Temp_temp;*/
   IntVect corresp, compt;
-  double temps_deb,temps_fin;
-  double dt_post_stat,dt_post_inst;
-  int N;
+  double temps_deb= -100.,temps_fin= -100.;
+  double dt_post_stat = -100.,dt_post_inst= -100.;
+  int N = -1;
 };
 
 
