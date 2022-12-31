@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,6 +22,8 @@
 #include <cstring>
 #include <Array_base.h>
 #include <Statistiques.h>
+extern void init_openmp();
+extern bool self_test();
 static double clock_start;
 static char* clock_on=NULL;
 inline void start_timer()
@@ -29,31 +31,22 @@ inline void start_timer()
   clock_on = getenv ("TRUST_CLOCK_ON");
   if (clock_on!=NULL) clock_start = Statistiques::get_time_now();
 }
-inline void end_timer(const std::string& str) // Return in [ms]
+inline void end_timer(const std::string& str, int size=-1) // Return in [ms]
 {
   if (clock_on!=NULL)
     {
       double ms = 1000 * (Statistiques::get_time_now() - clock_start);
-      printf("[clock] %7.3f ms %15s\n\n", ms, str.c_str());
-      fflush(stdout);
-    }
-}
-inline void end_timer(const std::string& str, int size) // Return in [ms]
-{
-  if (clock_on!=NULL)
-    {
-      double ms = 10000 * (Statistiques::get_time_now() - clock_start);
-      int mo = size/1024/1024;
-      if (ms==0)
-          printf("[clock]            %15s %6d Mo\n", str.c_str(), mo);
+      if (size==-1)
+        printf("[clock] %7.3f ms [Kernel] %15s\n\n", ms, str.c_str());
       else
-      {
-#ifndef INT_is_64_
-      printf("[clock] %7.3f ms %15s %6d Mo %5.1f Go/s\n", ms ,str.c_str(), mo, mo/ms);
-#else
-      printf("[clock] %7.3f ms %15s %6ld Mo %5.1f Go/s\n", ms ,str.c_str(), mo, mo/ms);
-#endif
-      }
+        {
+          double mo = (double)size / 1024 / 1024;
+          if (ms == 0 || size==0)
+            printf("[clock]            [Data]   %15s\n", str.c_str());
+          else
+            printf("[clock] %7.3f ms [Data]   %15s %6ld Bytes %5.1f Go/s\n", ms, str.c_str(), int(size), (int)(mo/ms));
+          //printf("[clock] %7.3f ms [Data]   %15s %6ld Mo %5.1f Go/s\n", ms, str.c_str(), int(mo), (int)(mo/ms));
+        }
       fflush(stdout);
     }
 }
@@ -61,48 +54,58 @@ inline void end_timer(const std::string& str, int size) // Return in [ms]
 template <typename _TYPE_>
 inline const _TYPE_* copyToDevice(const TRUSTArray<_TYPE_>& tab, std::string arrayName="??")
 {
-  // const array will matches on host and device   
-  const _TYPE_ *tab_addr = copyToDevice_(const_cast<TRUSTArray <_TYPE_>&>(tab), Array_base::HostDevice, arrayName);
+#ifndef NDEBUG
+  if (self_test()) self_test();
+#endif
+  // const array will matches on host and device
+  const _TYPE_ *tab_addr = copyToDevice_(const_cast<TRUSTArray <_TYPE_>&>(tab), HostDevice, arrayName);
   return tab_addr;
 }
-
+#include <sstream>
+inline std::string toString(const void* adr)
+{
+  std::stringstream ss;
+  ss << adr;
+  return ss.str();
+}
 template <typename _TYPE_>
-inline _TYPE_* copyToDevice_(TRUSTArray<_TYPE_>& tab, Array_base::dataLocation nextLocation, std::string arrayName)
+inline _TYPE_* copyToDevice_(TRUSTArray<_TYPE_>& tab, dataLocation nextLocation, std::string arrayName)
 {
 #ifdef _OPENMP
-  Array_base::dataLocation currentLocation = tab.get_dataLocation();
+  tab.nommer(arrayName);
+  dataLocation currentLocation = tab.get_dataLocation();
   tab.set_dataLocation(nextLocation); // Important de specifier le nouveau status avant la recuperation du pointeur:
 #endif
   _TYPE_* tab_addr = tab.addr(); // Car addr() contient un mecanisme de verification
 #ifdef _OPENMP
   std::string message;
   start_timer();
-  if (currentLocation==Array_base::HostOnly)
+  int size=0;
+  if (currentLocation==HostOnly)
     {
-      #pragma omp target enter data if (Objet_U::computeOnDevice) map(to:tab_addr[0:tab.size_array()])
-      message = "copy array ["+arrayName+"] to device       ";
+      //#pragma omp target enter data if (Objet_U::computeOnDevice) map(to:tab_addr[0:tab.size_array()])
+      //Argh le bug trouve: si plusieurs appels de copy (DoubleTrav?), l'update ne se fait pas car tableau deja alloue
+      //donc on alloue puis on update pour etre certain de la copie:
+      #pragma omp target enter data if (Objet_U::computeOnDevice) map(alloc:tab_addr[0:tab.size_array()])
+      #pragma omp target update if (Objet_U::computeOnDevice) to(tab_addr[0:tab.size_array()])
+      message = "Copy to device array "+arrayName+" ["+toString(tab.addr())+"]";
+      size = sizeof(_TYPE_) * tab.size_array();
     }
-  else if (currentLocation==Array_base::Host)
+  else if (currentLocation==Host)
     {
       #pragma omp target update if (Objet_U::computeOnDevice) to(tab_addr[0:tab.size_array()])
-      message = "update array ["+arrayName+"] on device     ";
+      message = "Update on device array "+arrayName+" ["+toString(tab.addr())+"]";
+      size = sizeof(_TYPE_) * tab.size_array();
     }
   else
     {
-      if (arrayName!="??") message = "array ["+arrayName+"] up-to-date on device ";
-#ifndef NDEBUG
-      if (clock_on!=NULL)
-      {
-          // Comparaison tableaux sur device et host:
-          TRUSTArray<_TYPE_> tmp(tab);
-          _TYPE_* tmp_addr = tmp.addr();
-          #pragma omp target update if (Objet_U::computeOnDevice) from(tmp_addr[0:tmp.size_array()])
-          int err = memcmp(tmp.addr(), tab.addr(), sizeof(_TYPE_) * tmp.size_array());
-          assert(err==0);
-      }
-#endif
+      if (arrayName!="??")
+        {
+          message = "No change on device array "+arrayName+" ["+toString(tab.addr())+"]";
+          size = 0;
+        }
     }
-  if (message!="") end_timer(message, sizeof(_TYPE_) * tab.size_array());
+  if (message!="") end_timer(message, size);
 #endif
   return tab_addr;
 }
@@ -111,7 +114,7 @@ template <typename _TYPE_>
 inline _TYPE_* computeOnTheDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName="??")
 {
   // non-const array will be modified on device:
-  _TYPE_ *tab_addr = copyToDevice_(tab, Array_base::Device, arrayName);
+  _TYPE_ *tab_addr = copyToDevice_(tab, Device, arrayName);
   return tab_addr;
 }
 
@@ -120,15 +123,16 @@ inline void copyFromDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName="??")
 {
 #ifdef _OPENMP
   _TYPE_* tab_addr = tab.addr();
-  if (tab.get_dataLocation()==Array_base::Device)
+  if (tab.get_dataLocation()==Device)
     {
       start_timer();
       #pragma omp target update if (Objet_U::computeOnDevice) from(tab_addr[0:tab.size_array()])
-      end_timer((std::string) "copyFromDevice Array ", sizeof(_TYPE_) * tab.size_array());
-      tab.set_dataLocation(Array_base::HostDevice);
+      std::string message;
+      message = "Copy from device of array "+arrayName+" ["+toString(tab.addr())+"]";
+      end_timer(message, sizeof(_TYPE_) * tab.size_array());
+      tab.set_dataLocation(HostDevice);
     }
 #endif
 }
-
 
 #endif

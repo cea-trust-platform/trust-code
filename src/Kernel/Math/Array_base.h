@@ -34,12 +34,6 @@ public:
   //  COPY_INIT: copier les anciennes et initialiser les nouvelles a zero
   enum Resize_Options { NOCOPY_NOINIT = 0, COPY_NOINIT = 1, COPY_INIT = 2 };
   enum Storage { STANDARD, TEMP_STORAGE };
-  // Options de localisation de data_ (Host ou Device ou les 2):
-  // HostOnly   : data_ alloue sur host seulement (pas alloue sur device)
-  // Host       : data_ est a jour sur host (pas sur device)
-  // Device     : data_ est a jour sur device (pas sur host)
-  // HostDevice : data_ est a jour sur host et device
-  enum dataLocation { HostOnly, Host, Device, HostDevice };
 };
 
 #endif /* Array_base_included */

@@ -212,7 +212,6 @@ static void verifier(const Op_Grad_VEF_P1B_Face& op,
 DoubleTab& Op_Grad_VEF_P1B_Face::
 modifier_grad_pour_Cl(DoubleTab& grad ) const
 {
-  start_timer();
   const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b,
                                              la_zone_vef.valeur());
   const DoubleTab& face_normales = zone_VEF.face_normales();
@@ -275,7 +274,6 @@ modifier_grad_pour_Cl(DoubleTab& grad ) const
           }
       }
     }
-  end_timer("Boundary loop in Op_Grad_VEF_P1B_Face::modifier_grad_pour_Cl");
   return grad;
 }
 DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& grad) const
@@ -293,7 +291,6 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
   // Si pas de support P1, on impose Neumann sur P0
   if (zone_VEF.get_alphaS()==0)
     {
-      start_timer();
       const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
       const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
       int nb_bords =les_cl.size();
@@ -315,7 +312,6 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
                 }
             }
         }
-      end_timer("Boundary loop in Op_Grad_VEF_P1B_Face::ajouter_elem");
     }
 
   const int * face_voisins_addr = copyToDevice(face_voisins);
@@ -375,6 +371,7 @@ ajouter_som(const DoubleTab& pre,
             som_(el,indice) = nps+dom.get_renum_som_perio(som_elem(el,indice));
         }
     }
+
   const int * elem_faces_addr = copyToDevice(elem_faces);
   const int * face_voisins_addr = copyToDevice(face_voisins);
   const double * face_normales_addr = copyToDevice(face_normales);
@@ -383,35 +380,33 @@ ajouter_som(const DoubleTab& pre,
   const int * som_addr = copyToDevice(som_);
   const double * pre_addr = copyToDevice(pre,"pre");
   double * grad_addr = grad.addr();
-
-  // boucle couteuse: A porter
   start_timer();
   #pragma omp target teams distribute parallel for if (computeOnDevice) map(tofrom:grad_addr[0:grad.size_array()])
   for(int elem=0; elem<nb_elem_tot; elem++)
     {
-        double sigma[3];
-        for(int indice=0; indice<nfe; indice++)
+      double sigma[3];
+      for(int indice=0; indice<nfe; indice++)
         {
-            int face = elem_faces_addr[nfe*elem+indice];
-            double signe=1;
-            if(elem!=face_voisins_addr[face*2]) signe=-1;
+          int face = elem_faces_addr[nfe*elem+indice];
+          double signe=1;
+          if(elem!=face_voisins_addr[face*2]) signe=-1;
 
-            for(int comp=0; comp<dimension; comp++)
-                sigma[comp]=face_normales_addr[face*dimension+comp]*signe;
+          for(int comp=0; comp<dimension; comp++)
+            sigma[comp]=face_normales_addr[face*dimension+comp]*signe;
 
-            for(int indice2=0; indice2<nfe; indice2++)
+          for(int indice2=0; indice2<nfe; indice2++)
             {
-                int face2 = elem_faces_addr[elem*nfe+indice2];
-                for(int comp=0; comp<dimension; comp++)
+              int face2 = elem_faces_addr[elem*nfe+indice2];
+              for(int comp=0; comp<dimension; comp++)
                 {
-                    #pragma omp atomic
-                    grad_addr[face2*dimension+comp] -= coeff_som_addr[elem]*pre_addr[som_addr[elem*nfe+indice]]*sigma[comp]*porosite_face_addr[face2];
+                  #pragma omp atomic
+                  grad_addr[face2*dimension+comp] -= coeff_som_addr[elem]*pre_addr[som_addr[elem*nfe+indice]]*sigma[comp]*porosite_face_addr[face2];
                 }
             }
         }
     }
   end_timer("Elem loop in Op_Grad_VEF_P1B_Face::ajouter_som");
-  start_timer();
+
   const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
   const IntTab& face_sommets = zone_VEF.face_sommets();
   int nb_bords = les_cl.size();
@@ -438,7 +433,6 @@ ajouter_som(const DoubleTab& pre,
             } //fin du if sur "Neumann_sortie_libre"
         }
     }
-  end_timer("Boundary loop in Op_Grad_VEF_P1B_Face::ajouter_som");
   return grad;
 }
 DoubleTab& Op_Grad_VEF_P1B_Face::

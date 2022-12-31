@@ -32,6 +32,8 @@ template<typename _TYPE_> class TRUST_ptr_trav;
  *
  * @sa TRUSTArray
  */
+enum dataLocation { HostOnly, Host, Device, HostDevice };
+
 template<typename _TYPE_>
 class VTRUSTdata
 {
@@ -62,6 +64,16 @@ public:
   inline int ref_count() const { return ref_count_; }
   inline int get_size() const { return size_; }
 
+  // Options de localisation de data_ (Host ou Device ou les 2):
+  // HostOnly   : data_ alloue sur host seulement (pas alloue sur device)
+  // Host       : data_ est a jour sur host (pas sur device)
+  // Device     : data_ est a jour sur device (pas sur host)
+  // HostDevice : data_ est a jour sur host et device
+  inline dataLocation get_dataLocation() { return dataLocation_; }
+  inline dataLocation get_dataLocation() const { return dataLocation_; }
+  inline void set_dataLocation(dataLocation flag) { dataLocation_ = flag; }
+  inline void set_dataLocation(dataLocation flag) const { dataLocation_ = flag; }
+
 private:
   // Le constructeur par copie et l'operateur= sont interdits.
   VTRUSTdata(const VTRUSTdata& v) = delete;
@@ -79,6 +91,13 @@ private:
 
   // Si storage est de type TEMP_STORAGE, d_ptr_trav porte la reference a la zone allouee, sinon le pointeur est nul.
   TRUST_ptr_trav<_TYPE_> * d_ptr_trav_;
+
+  // Drapeau du statut du data sur le Device:
+  // HostOnly  : Non alloue sur le device encore
+  // Host      : A jour sur le host pas sur le device
+  // Device    : A jour sur le device mais pas sur le host
+  // HostDevice: A jour sur le host et le device
+  dataLocation dataLocation_ = HostOnly;
 };
 
 using VDoubledata = VTRUSTdata<double>;

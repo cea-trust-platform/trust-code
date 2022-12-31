@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -72,18 +72,19 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& sm) const
            << " taille du second membre : " << sm.dimension(0) << finl;
       exit();
     }
-
+  bool gpu = computeOnDevice;
   // On traite les faces standard qui ne portent pas de conditions aux limites
   const double * porosite_face_addr = copyToDevice(porosite_face);
-  const double * volumes_entrelaces_Cl_addr = copyToDevice(volumes_entrelaces_Cl);
   const double * volumes_entrelaces_addr = copyToDevice(volumes_entrelaces);
   double * sm_addr = sm.addr();
-    start_timer();
-  #pragma omp target teams distribute parallel for if (computeOnDevice) map(tofrom:sm_addr[0:sm.size_array()])
+  start_timer();
+  //PL: desactive le kernel GPU car plus 2 fois plus lent que sur CPU pour le moment (copie de sm tofrom):
+  gpu = false;
+  #pragma omp target teams distribute parallel for if (gpu) map(tofrom:sm_addr[0:sm.size_array()])
   for (int face=num_std; face<nfa; face++)
     for (int comp=0; comp<nbcomp; comp++)
       sm_addr[face*nbcomp+comp] /= (volumes_entrelaces_addr[face]*porosite_face_addr[face]);
-    end_timer("Face loop (std) in Masse_VEF_P1NC::appliquer_impl");
+  end_timer("Face loop (std) in Masse_VEF_P1NC::appliquer_impl");
 
   // On traite les faces non standard
   // les faces des bord sont des faces non standard susceptibles de porter des C.L
@@ -146,8 +147,11 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& sm) const
     }
 
   // On traite les faces internes non standard
+  const double * volumes_entrelaces_Cl_addr = copyToDevice(volumes_entrelaces_Cl);
   start_timer();
-  #pragma omp target teams distribute parallel for if (computeOnDevice) map(tofrom:sm_addr[0:sm.size_array()])
+  //PL: desactive le kernel GPU car plus 50 fois plus lent que sur CPU ! pour le moment num_std-num_face trop petit...
+  gpu = false;
+  #pragma omp target teams distribute parallel for if (gpu) map(tofrom:sm_addr[0:sm.size_array()])
   for (int face=num_int; face<num_std; face++)
     for (int comp=0; comp<nbcomp; comp++)
       sm_addr[face*nbcomp+comp] /= (volumes_entrelaces_Cl_addr[face]*porosite_face_addr[face]);

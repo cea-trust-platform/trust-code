@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -376,7 +376,6 @@ inline void TRUSTArray<_TYPE_>::attach_array(const TRUSTArray& m, int start, int
       size_array_ = size;
       memory_size_ = m.memory_size_ - start;
       smart_resize_ = m.smart_resize_;
-      set_dataLocation(m.get_dataLocation());
     }
   else
     {
@@ -459,13 +458,18 @@ inline void TRUSTArray<_TYPE_>::resize_array_(int new_size, Array_base::Resize_O
 template <typename _TYPE_>
 inline int TRUSTArray<_TYPE_>::detach_array()
 {
-  this->checkDataOnHost();
   int retour = 0;
   if (p_)
     {
       // Le tableau est de type "normal". Si la zone de memoire n'est plus utilisee par personne, on la detruit.
       if ((p_->suppr_one_ref()) == 0)
         {
+#ifdef _OPENMP
+          if (get_dataLocation()!=HostOnly)
+            {
+              #pragma omp target exit data if (computeOnDevice) map(delete:data_[0:size_array_])
+            }
+#endif
           delete p_;
           retour = 1;
         }

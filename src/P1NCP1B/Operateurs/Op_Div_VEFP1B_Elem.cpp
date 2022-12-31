@@ -109,11 +109,12 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_elem(const DoubleTab& vit, DoubleTab& div
   const IntTab& face_voisins=zone_VEF.face_voisins();
   int nfe=zone.nb_faces_elem();
   int nb_elem=zone.nb_elem();
-  double * div_addr = div.addr();
+
   const int * face_voisins_addr = copyToDevice(face_voisins);
   const double * face_normales_addr = copyToDevice(face_normales);
   const int * elem_faces_addr = copyToDevice(elem_faces);
   const double * vit_addr = copyToDevice(vit,"vit");
+  double * div_addr = div.addr();
   start_timer();
   #pragma omp target teams distribute parallel for if (computeOnDevice) map(tofrom:div_addr[0:div.size_array()])
   for(int elem=0; elem<nb_elem; elem++)
@@ -130,7 +131,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_elem(const DoubleTab& vit, DoubleTab& div
         }
       div_addr[elem]+=pscf;
     }
-    end_timer("Elem loop in Op_Div_VEFP1B_Elem::ajouter_elem");
+  end_timer("Elem loop in Op_Div_VEFP1B_Elem::ajouter_elem");
   assert_invalide_items_non_calcules(div);
   return div;
 }
@@ -387,33 +388,33 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
       start_timer();
       #pragma omp target teams distribute parallel for if (computeOnDevice) map(tofrom:div_addr[0:div.size_array()])
       for (int elem = 0; elem < nb_elem_tot; elem++)
-      {
+        {
           double sigma[3];
           for (int comp = 0; comp < dimension; comp++)
-              sigma[comp] = 0;
+            sigma[comp] = 0;
           for (int indice = 0; indice < nfe; indice++)
-          {
+            {
               int face = elem_faces_addr[elem * nfe + indice];
               for (int comp = 0; comp < dimension; comp++)
-                  sigma[comp] += vit_addr[face * dimension + comp];
-          }
+                sigma[comp] += vit_addr[face * dimension + comp];
+            }
 
           for (int indice = 0; indice < nfe; indice++)
-          {
+            {
               int som = som_addr[elem * nfe + indice];
               int face = elem_faces_addr[elem * nfe + indice];
               double psc = 0;
               int signe = 1;
               if (elem != face_voisins_addr[face * 2])
-                  signe = -1;
+                signe = -1;
               for (int comp = 0; comp < dimension; comp++)
-                  psc += sigma[comp] * face_normales_addr[face * dimension + comp];
+                psc += sigma[comp] * face_normales_addr[face * dimension + comp];
               #pragma omp atomic
               div_addr[som] += signe * coeff_som * psc;
-          }
-      }
+            }
+        }
       end_timer("Elem loop in Op_Div_VEFP1B_Elem::ajouter_som");
-  }
+    }
 
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();

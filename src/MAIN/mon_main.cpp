@@ -27,9 +27,6 @@
 #include <stat_counters.h>
 #include <info_atelier.h>
 #include <unistd.h> // Pour chdir for other compiler
-#ifdef _OPENMP
-#include <omp.h>
-#endif
 #include <Device.h>
 #ifndef __CYGWIN__
 #include <catch_and_trace.h>
@@ -242,14 +239,8 @@ void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int chec
     Cerr << arguments_info;
 
 #ifdef _OPENMP
-  cerr << "Detecting " << omp_get_num_devices() << " devices." << endl;
-  int rank;
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  int device = rank % omp_get_num_devices();
-  cerr << "Assigning rank " << rank << " to device " << device << endl;
-  omp_set_default_device(device);
+  init_openmp();
 #endif
-
 }
 
 void mon_main::finalize()

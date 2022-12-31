@@ -387,8 +387,8 @@ void calculer_gradientP1NC(const DoubleTab& variable, const Zone_VEF& zone_VEF, 
     for (int elem=0; elem<nb_elem; elem++)
       for (int i=0; i<dimension; i++)
         gradient_elem_addr[(elem*nb_comp)*dimension+i] *= inverse_volumes_addr[elem];
-   end_timer("Elem loop in Champ_P1NC::calculer_gradientP1NC");
-   copyFromDevice(gradient_elem, "gradient_elem"); // ToDo deplacer la ou necessaire
+  end_timer("Elem loop in Champ_P1NC::calculer_gradientP1NC");
+  copyFromDevice(gradient_elem, "gradient_elem");
 }
 
 void Champ_P1NC::gradient(DoubleTab& gradient_elem) const

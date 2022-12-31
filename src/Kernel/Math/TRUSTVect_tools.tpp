@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1025,9 +1025,9 @@ inline void tab_divide_any_shape_(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE
 template<typename _TYPE_>
 inline void tab_multiply_any_shape(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt = VECT_ALL_ITEMS)
 {
-    resu.checkDataOnHost();
-    vx.checkDataOnHost();
-    if (vx.size_array() == 1 && !vx.get_md_vector().non_nul()) // Produit par une constante
+  resu.checkDataOnHost();
+  vx.checkDataOnHost();
+  if (vx.size_array() == 1 && !vx.get_md_vector().non_nul()) // Produit par une constante
     {
       const _TYPE_ x = vx[0];
       operator_multiply(resu, x, opt);

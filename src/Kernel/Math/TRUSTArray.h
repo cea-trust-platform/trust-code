@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -101,20 +101,13 @@ public:
 
   virtual ~TRUSTArray()
   {
-#ifdef _OPENMP
-    if (dataLocation_!=HostOnly)
-      {
-        _TYPE_ *tab_addr = addr();
-        #pragma omp target exit data if (computeOnDevice) map(from:tab_addr[0:size_array()])
-      }
-#endif
     detach_array();
     size_array_ = -1; // Paranoia: si size_array_==-1, c'est un zombie
   }
 
-  TRUSTArray() : p_(0), data_(0), size_array_(0), memory_size_(0), smart_resize_(0), storage_type_(STANDARD), dataLocation_(HostOnly) { }
+  TRUSTArray() : p_(0), data_(0), size_array_(0), memory_size_(0), smart_resize_(0), storage_type_(STANDARD) { }
 
-  TRUSTArray(int n): p_(0), data_(0), size_array_(n), memory_size_(n), smart_resize_(0), storage_type_(STANDARD), dataLocation_(HostOnly)
+  TRUSTArray(int n): p_(0), data_(0), size_array_(n), memory_size_(n), smart_resize_(0), storage_type_(STANDARD)
   {
     if (n)
       {
@@ -132,7 +125,6 @@ public:
       {
         // Creation d'un tableau "normal"
         storage_type_ = STANDARD;
-        dataLocation_ = HostOnly;
         p_ = new VTRUSTdata<_TYPE_>(size, STANDARD);
         data_ = p_->get_data();
         size_array_ = size;
@@ -149,7 +141,6 @@ public:
         memory_size_ = 0;
         smart_resize_ = 0;
         storage_type_ = STANDARD;
-        dataLocation_ = HostOnly;
       }
   }
 
@@ -279,10 +270,10 @@ public:
   inline virtual void resize_tab(int n, Array_base::Resize_Options opt = COPY_INIT);
 
   // Host/Device methods:
-  inline dataLocation get_dataLocation() { return dataLocation_; }
-  inline dataLocation get_dataLocation() const { return dataLocation_; }
-  inline void set_dataLocation(dataLocation flag) { dataLocation_ = flag; }
-  inline void set_dataLocation(dataLocation flag) const { dataLocation_ = flag; }
+  inline dataLocation get_dataLocation() { return p_==NULL ? HostOnly : p_->get_dataLocation(); }
+  inline dataLocation get_dataLocation() const { return p_==NULL ? HostOnly : p_->get_dataLocation(); }
+  inline void set_dataLocation(dataLocation flag) { if (p_!=NULL) p_->set_dataLocation(flag); }
+  inline void set_dataLocation(dataLocation flag) const { if (p_!=NULL) p_->set_dataLocation(flag); }
   inline void checkDataOnHost() { checkDataOnHost(*this); }
   inline void checkDataOnHost() const { checkDataOnHost(*this); }
 
@@ -322,12 +313,6 @@ private:
   // Drapeau indiquant si l'allocation memoire a lieu avec un new classique ou dans le pool de memoire temporaire de Trio
   Storage storage_type_;
 
-  // Drapeau du statut du array sur le Device:
-  // HostOnly  : Non alloue sur le device encore
-  // Host      : A jour sur le host pas sur le device               
-  // Device    : A jour sur le device mais pas sur le host          
-  // HostDevice: A jour sur le host et le device                    
-  mutable dataLocation dataLocation_ = HostOnly;
   inline void checkDataOnHost(const TRUSTArray& tab) const
   {
 #ifdef _OPENMP
@@ -352,7 +337,8 @@ private:
         Process::exit();
       }
 #endif
-    if (tab.get_dataLocation()!=HostOnly) set_dataLocation(Host); // On va modifier le tableau sur le host
+    if (tab.get_dataLocation()!=HostOnly)
+      set_dataLocation(Host); // On va modifier le tableau sur le host
 #endif
   }
 };
