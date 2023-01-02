@@ -128,7 +128,9 @@ project_build_directory="${project_directory}/build/src"
 rm -r -f $project_build_directory   
 mkdir -p $project_build_directory
 rep_dev=$project_build_directory python $TRUST_ROOT/bin/KSH/Createcmakefile.py -atelier
-touch $project_build_directory/info_atelier.cpp
+mkdir -p $project_build_directory/exec $project_build_directory/exec_opt
+touch $project_build_directory/exec/info_atelier.cpp
+touch $project_build_directory/exec_opt/info_atelier.cpp
 
 # Names and path of sub projects
 sub_projects_names=""
