@@ -9,7 +9,7 @@ cd $BUILD_DIR
 for file in `ls $TRUST_ROOT/externalpackages/Gmsh/*`; do
   ln -sf $file .
 done
-
+      
 ########
 # FLTK #
 ########
@@ -32,9 +32,14 @@ then
    echo "Installing $fltk..." 
    echo "#########################"
    tar xfz $fltk
-   cd ${fltk%-source.tar.gz}
-   export CC=$TRUST_cc_BASE
-   env CFLAGS=-fPIC CXXFLAGS=-fPIC ./configure --enable-xdbe=no --prefix $FLTK_ROOT LIBS='-ldl' || exit -1
+   cd ${fltk%-source.tar.gz}   
+   if [ "$TRUST_CC_BASE_EXTP" != "" ]
+   then
+      CC=${TRUST_CC_BASE_EXTP%++}cc
+   else
+      CC=$TRUST_cc_BASE
+   fi  
+   env CFLAGS=-fPIC CXXFLAGS=-fPIC CC=$CC ./configure --enable-xdbe=no --prefix $FLTK_ROOT LIBS='-ldl' || exit -1
    if [ "$TRUST_ARCH_CC" = "linux_nvc++" ]
    then
       for flag in -Os -Wunused -Wno-format-y2k
@@ -75,15 +80,25 @@ sed -i "1,$ s?#include <sstream>?#define OMPI_SKIP_MPICXX\n#define MPICH_SKIP_MP
 mkdir -p gmsh-build
 cd gmsh-build
 
+CXX=$TRUST_CC
+CC=$TRUST_cc
+FC=$TRUST_F77_BASE
+if [ "$TRUST_CC_BASE_EXTP" != "" ]
+then
+   export OMPI_CXX=$TRUST_CC_BASE_EXTP
+   export OMPI_CC=${TRUST_CC_BASE_EXTP%++}cc
+   export OMPI_FC=${TRUST_CC_BASE_EXTP%++}fortran
+   export MPICH_CXX=$OMPI_CXX
+   export MPICH_CC=$OMPI_CC
+   export MPICH_FC=$OMPI_FC
+fi  
+
 options=""
-if [ ${TRUST_F77_BASE%gfortran} != $TRUST_F77_BASE ]
+if [ "${TRUST_F77_BASE%gfortran}" != $TRUST_F77_BASE ]
 then
    # Vu sur 2 machines de Saclay dont is213120:
    # gfortran non trouve au link de Gmsh
    options="-DCMAKE_CXX_LINK_FLAGS=-lgfortran"
-elif [ ${TRUST_F77_BASE%nvfortran} != $TRUST_F77_BASE ]
-then
-   options="-DCMAKE_CXX_LINK_FLAGS=-lnvf"
 fi
 
 # By default, all plugins off, except for FLTK GUI (which requires Mesh, Post, Plugins and ONELAB), MED and (since v184) NETGEN.
@@ -96,7 +111,7 @@ export LD_LIBRARY_PATH=$TRUST_ROOT/lib/src/LIBLAPACK:$LD_LIBRARY_PATH
 # Specifier CMAKE_SYSTEM_IGNORE_PATH=$TRUST_ROOT/exec/python/lib
 cmake $options $plugins  \
 -DCMAKE_SYSTEM_IGNORE_PATH=$TRUST_ROOT/exec/python/lib \
--DCMAKE_C_COMPILER=$TRUST_cc -DCMAKE_CXX_COMPILER=$TRUST_CC \
+-DCMAKE_C_COMPILER=$CC -DCMAKE_CXX_COMPILER=$CXX \
 -DCMAKE_INSTALL_PREFIX=$TRUST_ROOT/exec/gmsh \
 -DCMAKE_PREFIX_PATH="$TRUST_MED_ROOT;$FLTK_ROOT" \
 -DCMAKE_BUILD_TYPE=Release \

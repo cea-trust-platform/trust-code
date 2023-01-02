@@ -62,7 +62,6 @@ then
    sed -i "1,$ s?if (\${\${runs}})??"    AmgXWrapper/cmake-modules/FindPETSc.cmake
    cd $LIB && rm -r -f build && mkdir -p build && cd build
    BUILD=RELEASE
-   CMAKE_CXX_FLAGS="-DCMAKE_CXX_FLAGS=-fPIC" && [ "$TRUST_USE_OPENMP" = 1 ] && CMAKE_CXX_FLAGS="-DCMAKE_CXX_FLAGS=-fopenmp"
    #BUILD=DEBUG
    # On specifie CC et CXX:
    if [ "$TRUST_CC_BASE_EXTP" != "" ]
@@ -73,7 +72,8 @@ then
       export CXX=$TRUST_CC
       export CC=$TRUST_cc
    fi
-   CMAKE_FLAGS="$CMAKE_CXX_FLAGS -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX -DCMAKE_CUDA_HOST_COMPILER=$CC -DCMAKE_CUDA_FLAGS=-fPIC"
+   CMAKE_FLAGS=" -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX -DCMAKE_CUDA_HOST_COMPILER=$CC -DCMAKE_CUDA_FLAGS=-fPIC"
+   export CXXFLAGS=-fPIC && [ "$TRUST_USE_OPENMP" = 1 ] && CXXFLAGS=$CXXFLAGS" -fopenmp"
    # cmake (meme recent, 3.20) pas foutu de detecter correctement le nvcc du HPC SDK (cannot find -lcudadevrt -lcudart_static):
    if [ "$NVHPC" != "" ] || [ "$NVCOMPILERS" != "" ]
    then
@@ -94,7 +94,10 @@ then
    for test in $tests
    do
       sed -i "1,$ s?# include <petsctime.h>??g" $ROOT/AmgXWrapper/example/$test/src/solve.cpp || exit -1
-      mkdir -p $test && cd $test && cp $ROOT/AmgXWrapper/example/$test/README.md . && cmake $CMAKE_FLAGS $ROOT/AmgXWrapper/example/$test && $TRUST_MAKE && cd .. || exit -1
+      mkdir -p $test && cd $test && cp $ROOT/AmgXWrapper/example/$test/README.md .
+      echo $CMAKE_FLAGS
+      cmake $CMAKE_FLAGS $ROOT/AmgXWrapper/example/$test && $TRUST_MAKE || exit -1
+      cd ..
    done
    cd $ROOT && rm -r -f $LIB # On efface les sources ?
 fi
