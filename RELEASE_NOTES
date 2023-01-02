@@ -1,6 +1,8 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.2_beta : Enhancements, modifications and corrected bugs since version 1.9.1 :
 --------------------------------------------------------------------------------------------------
+03/01/23 (TRUST) Major Change : For Pb_Multiphase, simple calls are now applied to compute fluid/saturations properties (improve significantly the performance especially with libraries like EOS, RefProp, ...)
+03/01/23 (TRUST) Major Change : Homogeneous Neumann boundary condition (BC) is applied on the velocity field if a fixed pressure BC is prescribed at an open boundary.
 19/12/22 (TRUST) Output       : if -journal verbosity set to a value >=1 when running computation, log files will be written even if nbproc > 5120
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.1 : Enhancements, modifications and corrected bugs since version 1.9.0 :

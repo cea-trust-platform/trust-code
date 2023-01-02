@@ -1,6 +1,8 @@
 -------------------------------------------------------------
 Developer notes version 1.9.2_beta : Changes since version 1.9.1 :
 -------------------------------------------------------------
+03/01/23 (TRUST) Parser_Eval : Huge refactoring !
+03/01/23 (TRUST) Rename classes : Champ_Face => Champ_Face_VDF, Champ_Fonc_Face => Champ_Fonc_Face_VDF, Champ_Face_implementation => Champ_Face_VDF_implementation
 -------------------------------------------------------------
 Developer notes version 1.9.1 : Changes since version 1.9.0 :
 -------------------------------------------------------------
