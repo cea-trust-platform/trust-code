@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -547,13 +547,14 @@ void Champ_Generique_refChamp::nommer_source(const Postraitement_base& post)
       Nom nom_post_source, nom_champ_base, nom_dom_natif;
       nom_champ_base = get_ref_champ_base().le_nom();
       if (ref_cast_non_const(Postraitement, post).domaine().non_nul())
-      {
+        {
           nom_post_source =  nom_champ_base + "_natif_" + ref_cast_non_const(Postraitement, post).domaine().le_nom();
-      }
-      else {
+        }
+      else
+        {
           nom_dom_natif = get_ref_domain().le_nom();
           nom_post_source = nom_champ_base + "_natif_" + nom_dom_natif;
-      }
+        }
       nommer(nom_post_source);
     }
 }

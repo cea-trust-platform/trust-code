@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -342,27 +342,29 @@ void Postraitement::set_param(Param& param)
 
 int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
 {
-    ////////////////////////////////////////
-    // Creation d'alias pour certains champs
-    ////////////////////////////////////////
-    {
-        Noms liste_noms;
-        const Probleme_base &Pb = probleme();
-        Pb.get_noms_champs_postraitables(liste_noms);
-        // On ajoute temperature_physique aux champs definis
-        if (liste_noms.rang("temperature") != -1 && !comprend_champ_post("temperature_physique")) {
-            Motcle disc(probleme().discretisation().que_suis_je());
-            if ((disc == "VEF") || (disc == "VEFPreP1b")) {
-                Nom in("{ temperature_physique ");
-                in += "Tparoi_VEF { source  refChamp { Pb_champ ";
-                in += probleme().le_nom();
-                in += " temperature } } }";
-                Cerr << " Building of temperature_physique  " << in << finl;
-                EChaine IN(in);
-                lire_champs_operateurs(IN);
-            }
-        }
-    }
+  ////////////////////////////////////////
+  // Creation d'alias pour certains champs
+  ////////////////////////////////////////
+  {
+    Noms liste_noms;
+    const Probleme_base& Pb = probleme();
+    Pb.get_noms_champs_postraitables(liste_noms);
+    // On ajoute temperature_physique aux champs definis
+    if (liste_noms.rang("temperature") != -1 && !comprend_champ_post("temperature_physique"))
+      {
+        Motcle disc(probleme().discretisation().que_suis_je());
+        if ((disc == "VEF") || (disc == "VEFPreP1b"))
+          {
+            Nom in("{ temperature_physique ");
+            in += "Tparoi_VEF { source  refChamp { Pb_champ ";
+            in += probleme().le_nom();
+            in += " temperature } } }";
+            Cerr << " Building of temperature_physique  " << in << finl;
+            EChaine IN(in);
+            lire_champs_operateurs(IN);
+          }
+      }
+  }
 
   Motcle motlu;
   if (mot=="Sondes|Probes")
@@ -586,7 +588,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
 
 
 
-    return -1;
+  return -1;
 }
 
 /*! @brief Constructeur par defaut.

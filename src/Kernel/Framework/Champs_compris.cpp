@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -190,15 +190,15 @@ void Champs_compris::ajoute_champ(const Champ_base& champ)
       const Champ_base& ch= curseur.valeur().valeur();
       const Nom& nom_champ = ch.le_nom();
       if (nom_champ==nom_champ_add) return;
-        /*{
-          Cerr<<champ.le_nom()<<" is already in the list of names of field !!"<<finl;
-          //  exit();
-        }*/
+      /*{
+        Cerr<<champ.le_nom()<<" is already in the list of names of field !!"<<finl;
+        //  exit();
+      }*/
       ++curseur;
     }
 
   //liste_champs_.add(champ_ref);
-    liste_champs_.add(champ);
+  liste_champs_.add(champ);
   Cerr<<"Champs_compris::ajoute_champ " <<champ.le_nom()<<finl;
   rebuild_liste_noms(liste_champs_,liste_noms_,liste_noms_construits_);
 
