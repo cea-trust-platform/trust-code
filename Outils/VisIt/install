@@ -49,8 +49,9 @@ new=1
 [ "`grep 'Debian GNU/Linux [7-8]'  				/etc/issue.net 2>/dev/null`" != "" ]		&& new=0
 [ "`grep 'Ubuntu 1[4-7]' 					/etc/issue 2>/dev/null`" != "" ]		&& new=0
 [ "`grep 'Fedora release 2[0-5]' 				/etc/fedora-release 2>/dev/null`" != "" ]	&& new=0
-[ "`grep 'CentOS Linux release [6-7]' 				/etc/centos-release 2>/dev/null`" != "" ]	&& new=0
-[ "`grep 'CentOS release [6-7]' 				/etc/centos-release 2>/dev/null`" != "" ]	&& new=0
+#Normalement avec GNU 6.5.0, Visit 3.1.1 se construit sur Centos (ex: altair)
+#[ "`grep 'CentOS Linux release [6-7]' 				/etc/centos-release 2>/dev/null`" != "" ]	&& new=0
+#[ "`grep 'CentOS release [6-7]' 				/etc/centos-release 2>/dev/null`" != "" ]	&& new=0
 [ "`grep 'Red Hat Enterprise Linux Server release [6-7]' 	/etc/redhat-release 2>/dev/null`" != "" ]	&& new=0
 [ "`grep 'Scientific Linux release 6'				/etc/issue.net 2>/dev/null`" != "" ]		&& new=0 # gutta aar
 
