@@ -1123,7 +1123,7 @@ done
 # Par defaut (aucun TRUST_FORCE specifie) alors hors clusters et Cuda, FORCE_PROVIDED_MPICH car plus pratique pour VisIt, tests de NR plus rapides, valgrind error-free:
 if [ "$TRUST_FORCE_PROVIDED_OPENMPI" != 1 ] && [ "$TRUST_FORCE_LATEST_OPENMPI" != 1 ] && [ "$TRUST_FORCE_PROVIDED_MPICH" != 1 ] && [ "$TRUST_FORCE_LATEST_MPICH" != 1 ] && [ "$TRUST_FORCE_SYSTEM_MPI" != 1 ]
 then
-   if [ "$BATCH_SYSTEM_DETECTED" = 0 ] && [ "$TRUST_MPI_NATIF" = 0 ]
+   if [ "$BATCH_SYSTEM_DETECTED" = 0 ]
    then
       #if [ "$TRUST_USE_CUDA" = 1 ]
       #then
@@ -1362,7 +1362,7 @@ else
 
    if [ $mpi_detecte = 0 ]
    then
-      if [ "$TRUST_FORCE_PROVIDED_OPENMPI" != 1 ] && [ "$TRUST_FORCE_PROVIDED_MPICH" != 1 ] && [ "$TRUST_MPI_NATIF" = 1 ]
+      if [ "$TRUST_FORCE_PROVIDED_OPENMPI" != 1 ] && [ "$TRUST_FORCE_PROVIDED_MPICH" != 1 ]
       then
          if [ "$TRUST_WITHOUT_HOST" = 0 ] || [ "$BATCH_SYSTEM_DETECTED" = 1 ]
          then
