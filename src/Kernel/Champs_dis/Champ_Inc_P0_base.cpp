@@ -63,13 +63,13 @@ double Champ_Inc_P0_base::valeur_au_bord(int face) const
 {
   assert(la_zone_VF.non_nul());
   const DoubleTab& val = valeurs();
-  double val_bord;
+  double la_val_bord;
 
   int n0 = la_zone_VF->face_voisins(face, 0);
-  if (n0 != -1) val_bord = val[n0];
-  else val_bord = val[la_zone_VF->face_voisins(face, 1)];
+  if (n0 != -1) la_val_bord = val[n0];
+  else la_val_bord = val[la_zone_VF->face_voisins(face, 1)];
 
-  return val_bord;
+  return la_val_bord;
 }
 
 /*! @brief Trace du champ P0 sur la frontiere

@@ -54,7 +54,7 @@ void Champ_Face_base::init_fcl() const
   fcl_init_ = 1;
 }
 
-DoubleTab& Champ_Face_base::get_elem_vector_field(DoubleTab& val_vec , bool passe) const
+DoubleTab& Champ_Face_base::get_elem_vector_field(DoubleTab& val_vec , bool is_passe) const
 {
   const Zone_VF& zone = ref_cast(Zone_VF,la_zone_VF.valeur());
   const DoubleTab& centres_de_gravites = zone.xp();
@@ -62,7 +62,7 @@ DoubleTab& Champ_Face_base::get_elem_vector_field(DoubleTab& val_vec , bool pass
 
   for (int elem = 0; elem < zone.nb_elem_tot(); elem++) les_polys(elem) = elem;
 
-  if (!passe) valeur_aux_elems(centres_de_gravites, les_polys, val_vec);
+  if (!is_passe) valeur_aux_elems(centres_de_gravites, les_polys, val_vec);
   else valeur_aux_elems_passe(centres_de_gravites, les_polys, val_vec);
 
   return val_vec;

@@ -239,14 +239,14 @@ double Champ_P1_isoP1Bulle::valeur_au_bord(int face) const
     }
 
   int som_opp = zone_VEF.get_num_fac_loc(face, 0);
-  double val_bord = 0;
+  double la_val_bord = 0;
   for (int i = 0; i < (dimension + 1); i++)
     if (i != som_opp)
       {
-        val_bord += val[nps + som_elem(elem, i)];
+        la_val_bord += val[nps + som_elem(elem, i)];
       }
-  val_bord /= dimension;
-  return val_bord;
+  la_val_bord /= dimension;
+  return la_val_bord;
 }
 
 void Champ_P1_isoP1Bulle::completer(const Zone_Cl_dis_base& zcl)
