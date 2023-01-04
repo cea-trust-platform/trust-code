@@ -342,11 +342,9 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
     }
   DoubleTab gradient;
 
-  double * gradient_addr = NULL;
   if (type_op==centre)
     {
       gradient.ref(gradient_elem);
-      gradient_addr = gradient.addr();
     }
   else if(type_op==muscl)
     {
@@ -416,7 +414,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
       const int * traitement_pres_bord_addr = copyToDevice(traitement_pres_bord_);
       const int * face_voisins_addr = copyToDevice(face_voisins);
       const double * gradient_elem_addr = copyToDevice(gradient_elem,"gradient_elem");
-      gradient_addr = gradient.addr();
+      double* gradient_addr = gradient.addr();
       start_timer();
       #pragma omp target teams distribute parallel for if (computeOnDevice) map(tofrom:gradient_addr[0:gradient.size_array()])
       for (int fac=premiere_face_int; fac<nb_faces_; fac++)
@@ -500,6 +498,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
           // Provisoire crash sur compilateur offload clang++ non Cray:
 #if ( ( defined(_OPENMP) && defined(__clang__) && !defined(__cray__) && !defined(__APPLE__) ) || ( !defined(NDEBUG) && defined(_OPENMP) && defined(__clang__) && defined(__cray__) && !defined(__APPLE__) ) )
           Cerr << "ToDo: No offload of Op_Conv_VEF_Face::ajouter() on GPU." << finl;
+          const double* gradient_addr = gradient.addr();
 #else
           const double* gradient_addr = copyToDevice(gradient, "gradient");
           start_timer();

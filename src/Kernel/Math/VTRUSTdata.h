@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -72,7 +72,7 @@ public:
   inline dataLocation get_dataLocation() { return dataLocation_; }
   inline dataLocation get_dataLocation() const { return dataLocation_; }
   inline void set_dataLocation(dataLocation flag) { dataLocation_ = flag; }
-  inline void set_dataLocation(dataLocation flag) const { dataLocation_ = flag; }
+  //inline void set_dataLocation(dataLocation flag) const { dataLocation_ = flag; }
 
 private:
   // Le constructeur par copie et l'operateur= sont interdits.

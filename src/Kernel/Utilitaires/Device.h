@@ -44,8 +44,8 @@ inline void end_timer(const std::string& str, int size=-1) // Return in [ms]
           if (ms == 0 || size==0)
             printf("[clock]            [Data]   %15s\n", str.c_str());
           else
-            printf("[clock] %7.3f ms [Data]   %15s %6ld Bytes %5.1f Go/s\n", ms, str.c_str(), int(size), (int)(mo/ms));
-          //printf("[clock] %7.3f ms [Data]   %15s %6ld Mo %5.1f Go/s\n", ms, str.c_str(), int(mo), (int)(mo/ms));
+            printf("[clock] %7.3f ms [Data]   %15s %6ld Bytes %5.1f Go/s\n", ms, str.c_str(), long(size), mo/ms);
+          //printf("[clock] %7.3f ms [Data]   %15s %6ld Mo %5.1f Go/s\n", ms, str.c_str(), long(mo), mo/ms);
         }
       fflush(stdout);
     }
@@ -54,9 +54,6 @@ inline void end_timer(const std::string& str, int size=-1) // Return in [ms]
 template <typename _TYPE_>
 inline const _TYPE_* copyToDevice(const TRUSTArray<_TYPE_>& tab, std::string arrayName="??")
 {
-#ifndef NDEBUG
-  if (self_test()) self_test();
-#endif
   // const array will matches on host and device
   const _TYPE_ *tab_addr = copyToDevice_(const_cast<TRUSTArray <_TYPE_>&>(tab), HostDevice, arrayName);
   return tab_addr;
@@ -72,6 +69,9 @@ template <typename _TYPE_>
 inline _TYPE_* copyToDevice_(TRUSTArray<_TYPE_>& tab, dataLocation nextLocation, std::string arrayName)
 {
 #ifdef _OPENMP
+#ifndef NDEBUG
+  if (self_test()) self_test();
+#endif
   tab.nommer(arrayName);
   dataLocation currentLocation = tab.get_dataLocation();
   tab.set_dataLocation(nextLocation); // Important de specifier le nouveau status avant la recuperation du pointeur:

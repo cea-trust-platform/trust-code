@@ -357,6 +357,8 @@ check_nvidia_cuda()
    ################
    # Detection nvcc
    ################
+   # Ajout du nvcc local en priorite si trouve pour coherence avec driver
+   local_nvcc=`ls /usr/local/*/bin/nvcc 2>/dev/null | tail -1` && [ "$local_nvcc" != "" ] && export PATH=`dirname $local_nvcc`:$PATH
    m="# Path to CUDA compiler";e="`cherche_file CUDA_NVCC nvcc`";ecrit $m"|"$e"|"$env;eval $e
    NVCC_VERSION=`$CUDA_NVCC --version 2>/dev/null | awk -F, '/release/ {gsub("release","",$2);gsub(" ","",$2);print $2}'`
    echo "Cuda compiler version: $NVCC_VERSION"
@@ -372,14 +374,17 @@ check_nvidia_cuda()
    fi
    # Verification par rapport au driver CUDA (ToDo: mieux detecter sur cluster: trust -gpu nvidia-smi)
    NVIDIA_VERSION=`nvidia-smi 2>/dev/null | awk '/CUDA Version/ {print $(NF-1)}'`
-   [ "$NVIDIA_VERSION" != "" ] && echo "NVidia driver version: $NVIDIA_VERSION"
-   NVCC_VALIDE=`echo $NVCC_VERSION $NVIDIA_VERSION | awk '{if (1.0*$1<=1.0*$2) print 1}'`
-   if [ "$NVCC_VALIDE" = "" ]
+   if [ "$NVIDIA_VERSION" != "" ]
    then
-      echo "The NVidia drivers are too old for your Cuda compiler."
-      echo "You will experience possible error code:222, reason: the provided PTX was compiled with an unsupported toolchain"
-      echo "-> Update NVidia driver or take older Cuda compiler."
-      exit -1
+      echo "NVidia driver version: $NVIDIA_VERSION"
+      NVCC_VALIDE=`echo $NVCC_VERSION $NVIDIA_VERSION | awk '{if (1.0*$1<=1.0*$2) print 1}'`
+      if [ "$NVCC_VALIDE" = "" ]
+      then
+         echo "The NVidia drivers are too old for your Cuda compiler."
+         echo "You will experience possible error code:222, reason: the provided PTX was compiled with an unsupported toolchain"
+         echo "-> Update NVidia driver or take older Cuda compiler."
+         exit -1
+      fi
    fi
    #########################
    # Detection CUDA run time
@@ -1740,6 +1745,7 @@ case $TRUST_ARCH_CC in
     # TRUST_USE_GNU_FOR_EXTP = 1
    	Defines="-D_COMPILE_AVEC_PGCC"
     CppFlags="-O3 -fPIC -Ktrap=fp -Kieee -noswitcherror" # -Ktrap=fp evitent des soucis Arithmetic Exceptions...
+    CppFlags=$CppFlags" -std=c++14 -Wno-long-long -Wall -Wshadow -Wextra -Wno-unused-parameter" # Warnings ajouter -Werror et corriger...
     SYSLIBS="-lgfortran" # Car BLAS+AMGX+PETSC compile avec GNU
     F77Flags="-O3 -fPIC -noswitcherror"
     ccFLAGS="-O3 -fPIC -noswitcherror"

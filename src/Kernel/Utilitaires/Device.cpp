@@ -69,8 +69,10 @@ bool self_test()
         for (int i = 0; i < N; i++)
           b_addr[i] = a_addr[i];
 
+#ifndef NDEBUG
         const DoubleTab& const_b = b;
         const DoubleTab& const_a = a;
+#endif
         assert(const_b[5] == const_a[5]);
         assert(const_b[5] == 1);
         //assert(b[5] == a[5]); // Argh double& TRUSTArray<double>::operator[](int i) appele pour a et donc repasse sur host
@@ -96,8 +98,10 @@ bool self_test()
         for (int i = 0; i < N; i++)
           b_addr[i] = a_addr[i];
 
+#ifndef NDEBUG
         const DoubleTab& const_b = b;
         const DoubleTab& const_a = a;
+#endif
         assert(const_b[5] == const_a[5]);
         assert(const_b[5] == 1);
         assert(a.get_dataLocation() == HostDevice);
@@ -123,8 +127,10 @@ bool self_test()
         #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice) map(tofrom:b_addr[0:b.size_array()])
         for (int i = 0; i < N; i++)
           b_addr[i] = a_addr[i];
+#ifndef NDEBUG
         const DoubleTab& const_b = b;
         const DoubleTab& const_a = a;
+#endif
         assert(const_b[5] == const_a[5]);
         assert(const_b[5] == 2);
         assert(a.get_dataLocation() == HostDevice);
@@ -150,8 +156,10 @@ bool self_test()
         #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice) map(tofrom:b_addr[0:b.size_array()])
         for (int i = 0; i < N; i++)
           b_addr[i] = a_addr[i];
+#ifndef NDEBUG
         const DoubleTab& const_b = b;
         const DoubleTab& const_a = a;
+#endif
         assert(const_b[5] == const_a[5]);
         assert(const_b[5] == 3);
         assert(a.get_dataLocation() == HostDevice);
