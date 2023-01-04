@@ -2,7 +2,7 @@
 // Warning : DO NOT EDIT !
 // To update this file, run: make depend
 //
-#include <verifie_pere.h> 
+#include <verifie_pere.h>
 void instancie_src_Kernel_Champs();
 void instancie_src_Kernel_Champs_dis();
 void instancie_src_Kernel_Cond_Lim();

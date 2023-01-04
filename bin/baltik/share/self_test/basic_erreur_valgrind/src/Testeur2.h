@@ -10,7 +10,7 @@
 #include <Interprete.h>
 
 //
-// AJOUTER ICI 
+// AJOUTER ICI
 
 class Testeur2 : public Interprete
 {
@@ -20,7 +20,7 @@ class Testeur2 : public Interprete
 public :
 
   Entree& interpreter(Entree&) override;
- 
+
 };
 
 

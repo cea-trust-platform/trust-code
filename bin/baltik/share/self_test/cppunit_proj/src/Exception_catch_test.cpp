@@ -13,10 +13,11 @@ class Exception_catch_test: public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST_SUITE_END();
 
 public:
-  void testMemoryerror() { 
-      ArrOfDouble toto;
-      EChaine erreur(" 20000000000000000000");
-      CPPUNIT_ASSERT_THROW_MESSAGE("verification de la levee d'erreur si depassement memoire",(erreur>>toto), TriouError);
+  void testMemoryerror()
+  {
+    ArrOfDouble toto;
+    EChaine erreur(" 20000000000000000000");
+    CPPUNIT_ASSERT_THROW_MESSAGE("verification de la levee d'erreur si depassement memoire",(erreur>>toto), TriouError);
   }
 };
 
