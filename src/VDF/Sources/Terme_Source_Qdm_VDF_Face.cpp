@@ -58,9 +58,11 @@ void Terme_Source_Qdm_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& re
   const DoubleVect& porosite_surf = equation().milieu().porosite_face();
   const DoubleVect& volumes_entrelaces = zone_VDF.volumes_entrelaces();
 
-  const DoubleTab& rho = equation().milieu().masse_volumique().passe();
+  // useful only if multiphase problem
   const DoubleTab* alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : nullptr;
-  const int cR = (rho.dimension_tot(0) == 1), nb_comp = equation().inconnue().valeurs().line_size();
+  const DoubleTab* rho = alp ? &equation().milieu().masse_volumique().passe() : nullptr;
+
+  const int cR = alp ? ((*rho).dimension_tot(0) == 1) : 0, nb_comp = equation().inconnue().valeurs().line_size();
 
   double vol;
   int ndeb, nfin, ncomp, num_face, elem1, elem2;
@@ -108,7 +110,7 @@ void Terme_Source_Qdm_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& re
                       {
                         elem1 = face_voisins(num_face, 0), elem2 = face_voisins(num_face, 1);
                         const int e = ( elem1 > -1 ? elem1 : elem2);
-                        double a = (*alp)(e, k), r = rho(!cR * e, k);
+                        double a = (*alp)(e, k), r = (*rho)(!cR * e, k);
                         alpha_rho = a * r;
                       }
                     resu(num_face, k) += s(nb_comp * ncomp + k) * vol * alpha_rho;
@@ -130,7 +132,7 @@ void Terme_Source_Qdm_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& re
             if (alp)
               {
                 elem1 = face_voisins(num_face, 0), elem2 = face_voisins(num_face, 1);
-                double a = 0.5 * ((*alp)(elem1, k) + (*alp)(elem2, k)), r = 0.5 * (rho(!cR * elem1, k) + rho(!cR * elem2, k));
+                double a = 0.5 * ((*alp)(elem1, k) + (*alp)(elem2, k)), r = 0.5 * ((*rho)(!cR * elem1, k) + (*rho)(!cR * elem2, k));
                 alpha_rho = a * r;
               }
             resu(num_face, k) += s(nb_comp * ncomp + k) * vol * alpha_rho;
@@ -163,7 +165,7 @@ void Terme_Source_Qdm_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& re
                     double alpha_rho = 1.0;
                     if (alp)
                       {
-                        double a = (*alp)(e, k), r = rho(!cR * e, k);
+                        double a = (*alp)(e, k), r = (*rho)(!cR * e, k);
                         alpha_rho = a * r;
                       }
                     resu(num_face, k) += s(e, nb_comp * ncomp + k) * vol * alpha_rho;
@@ -202,7 +204,7 @@ void Terme_Source_Qdm_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& re
             double alpha_rho = 1.0;
             if (alp)
               {
-                double a = 0.5 * ((*alp)(elem1, k) + (*alp)(elem2, k)), r = 0.5 * (rho(!cR * elem1, k) + rho(!cR * elem2, k));
+                double a = 0.5 * ((*alp)(elem1, k) + (*alp)(elem2, k)), r = 0.5 * ((*rho)(!cR * elem1, k) + (*rho)(!cR * elem2, k));
                 alpha_rho = a * r;
               }
             double s_face = 0.5 * (s(elem1, nb_comp * ncomp + k) + s(elem2, nb_comp * ncomp + k));
