@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,6 +44,7 @@ class Op_Diff_Turbulent_PolyMAC_P0_Elem : public Op_Diff_PolyMAC_P0_Elem
 
   void creer_champ(const Motcle& motlu) override;
   void mettre_a_jour(double temps) override;
+  bool is_turb() const override { return true; }
 
 protected:
   Correlation corr; //correlation de transport turbulent

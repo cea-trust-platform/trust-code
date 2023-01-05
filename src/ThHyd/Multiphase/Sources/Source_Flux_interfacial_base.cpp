@@ -96,7 +96,7 @@ void Source_Flux_interfacial_base::completer()
       dp_qpi_.resize(0, N, N), domaine.domaine().creer_tableau_elements(dp_qpi_);
     }
 
-  if       (ref_cast(Operateur_Diff_base, equation().probleme().equation(0).operateur(0).l_op_base()).is_turb()) is_turb_ = 1;
+  if(ref_cast(Operateur_Diff_base, equation().probleme().equation(0).operateur(0).l_op_base()).is_turb()) is_turb_ = 1;
 }
 
 DoubleTab& Source_Flux_interfacial_base::qpi() const
