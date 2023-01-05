@@ -68,11 +68,14 @@ echo "`pwd`/benchmark.log created."
 #rm -r -f $TRUST_ROOT/ThirdPart/src/LIBROCALUTION/rocALUTION
 
 # Creation de l'include:
-echo "#ifdef _COMPILE_AVEC_GCC_
+echo "#if defined(_COMPILE_AVEC_GCC_)
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Woverloaded-virtual"
+#pragma GCC diagnostic ignored \"-Woverloaded-virtual\"
 #include <rocalution.hpp>
 #pragma GCC diagnostic pop
+#elif defined(_COMPILE_AVEC_PGCC)
+#pragma diag_suppress 612
+#include <rocalution.hpp>
 #else
 #include <rocalution.hpp>
 #endif

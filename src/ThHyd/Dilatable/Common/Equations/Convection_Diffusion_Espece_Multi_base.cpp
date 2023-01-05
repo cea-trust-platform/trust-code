@@ -63,7 +63,6 @@ int Convection_Diffusion_Espece_Multi_base::lire_motcle_non_standard(const Motcl
     }
   else
     return Convection_Diffusion_Espece_Fluide_Dilatable_base::lire_motcle_non_standard(mot,is);
-  return 1;
 }
 
 const Champ_base& Convection_Diffusion_Espece_Multi_base::get_champ(const Motcle& nom) const
@@ -84,7 +83,4 @@ const Champ_base& Convection_Diffusion_Espece_Multi_base::get_champ(const Motcle
     {
     }
   throw Champs_compris_erreur();
-
-  REF(Champ_base) ref_champ;
-  return ref_champ;
 }

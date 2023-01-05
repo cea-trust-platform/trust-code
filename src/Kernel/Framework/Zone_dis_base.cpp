@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -132,7 +132,6 @@ IntTab& Zone_dis_base::face_sommets()
        << finl;
   exit();
   throw;
-  return face_sommets();
 }
 
 const IntTab& Zone_dis_base::face_sommets() const
@@ -141,7 +140,6 @@ const IntTab& Zone_dis_base::face_sommets() const
        << finl;
   exit();
   throw;
-  return face_sommets();
 }
 
 IntTab& Zone_dis_base::face_voisins()
@@ -150,7 +148,6 @@ IntTab& Zone_dis_base::face_voisins()
        << finl;
   exit();
   throw;
-  return face_voisins();
 }
 
 const IntTab& Zone_dis_base::face_voisins() const
@@ -159,5 +156,4 @@ const IntTab& Zone_dis_base::face_voisins() const
        << finl;
   exit();
   throw;
-  return face_voisins();
 }

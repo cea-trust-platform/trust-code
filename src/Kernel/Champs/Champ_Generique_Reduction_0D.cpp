@@ -735,7 +735,6 @@ const Noms Champ_Generique_Reduction_0D::get_property(const Motcle& query) const
           }
 
         return compo;
-        break;
       }
 
     }

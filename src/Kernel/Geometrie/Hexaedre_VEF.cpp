@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -261,30 +261,35 @@ int Hexaedre_VEF::contient(const ArrOfDouble& pos, int element ) const
   int som7 = zone.sommet_elem(element,7);
 
   // GF on teste si le point est boen entre les 2 faces
-  if (entre_faces(zone,dom,pos,som0,som1,som2,som4,som5,som6))
-    if (entre_faces(zone,dom,pos,som0,som1,som4,som2,som3,som6))
-
-      if (entre_faces(zone,dom,pos,som0,som2,som4,som1,som3,som5))
-        return 1;
-  return 0;
-  // PQ : 04/03 : optimisation
-  int aff = 0;
-  if (element==-701)
+  bool new_algo = true;
+  if (new_algo)
     {
-      aff = 1;
+      if (entre_faces(zone, dom, pos, som0, som1, som2, som4, som5, som6))
+        if (entre_faces(zone, dom, pos, som0, som1, som4, som2, som3, som6))
+
+          if (entre_faces(zone, dom, pos, som0, som2, som4, som1, som3, som5))
+            return 1;
+      return 0;
     }
-  if (contient_Tetra(zone, dom, pos, som0,som1,som2,som4,aff) ||
-      contient_Tetra(zone, dom, pos, som1,som2,som3,som6,aff) ||
-      contient_Tetra(zone, dom, pos, som1,som2,som4,som6,aff) ||
-      contient_Tetra(zone, dom, pos, som3,som5,som6,som7,aff) ||
-      contient_Tetra(zone, dom, pos, som1,som4,som5,som6,aff) ||
-      contient_Tetra(zone, dom, pos, som1,som3,som5,som6,aff))
+  else
     {
-      return 1;
+      // PQ : 04/03 : optimisation
+      int aff = 0;
+      if (element == -701)
+        {
+          aff = 1;
+        }
+      if (contient_Tetra(zone, dom, pos, som0, som1, som2, som4, aff) ||
+          contient_Tetra(zone, dom, pos, som1, som2, som3, som6, aff) ||
+          contient_Tetra(zone, dom, pos, som1, som2, som4, som6, aff) ||
+          contient_Tetra(zone, dom, pos, som3, som5, som6, som7, aff) ||
+          contient_Tetra(zone, dom, pos, som1, som4, som5, som6, aff) ||
+          contient_Tetra(zone, dom, pos, som1, som3, som5, som6, aff))
+        {
+          return 1;
+        }
+      return 0;
     }
-
-  return 0;
-
 }
 
 

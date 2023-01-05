@@ -191,17 +191,13 @@ public:
       {
       case LataField_base::SOM:
         return virt_nodes_;
-        break;
       case LataField_base::ELEM:
         return virt_elements_;
-        break;
       case LataField_base::FACES:
         return virt_faces_;
-        break;
       default:
         throw;
       }
-    return virt_nodes_;
   }
   void set_virt_items(LataField_base::Elem_som loc, const ArrOfInt& list)
   {
@@ -248,17 +244,13 @@ public:
       {
       case LataField_base::SOM:
         return nb_virt_nodes_;
-        break;
       case LataField_base::ELEM:
         return nb_virt_elements_;
-        break;
       case LataField_base::FACES:
         return nb_virt_faces_;
-        break;
       default:
         throw;
       }
-    return nb_virt_nodes_;
   }
 
   virtual void fill_domain_from_lataDB(const LataDB& lataDB, const Domain_Id& id, entier load_faces = 1, entier merge_virtual_elements = 0);

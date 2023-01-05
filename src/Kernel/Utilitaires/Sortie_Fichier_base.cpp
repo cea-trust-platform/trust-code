@@ -24,13 +24,11 @@ Implemente_base_sans_constructeur_ni_destructeur(Sortie_Fichier_base,"Sortie_Fic
 Entree& Sortie_Fichier_base::readOn(Entree& s)
 {
   throw;
-  return s;
 }
 
 Sortie& Sortie_Fichier_base::printOn(Sortie& s) const
 {
   throw;
-  return s;
 }
 Sortie_Fichier_base::Sortie_Fichier_base()
 {

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -155,19 +155,14 @@ Joint_Items& Joint::set_joint_item(Type_Item item)
     {
     case SOMMET:
       return joint_sommets_;
-      break;
     case ELEMENT:
       return joint_elements_;
-      break;
     case FACE:
       return joint_faces_;
-      break;
     case ARETE:
       return joint_aretes_;
-      break;
     case FACE_FRONT:
       return joint_faces_front_;
-      break;
     default:
       Cerr << "Error in Joint::set_joint_item, invalid item number : " << (int)item << finl;
       exit();
@@ -184,19 +179,14 @@ const Joint_Items& Joint::joint_item(Type_Item item) const
     {
     case SOMMET:
       return joint_sommets_;
-      break;
     case ELEMENT:
       return joint_elements_;
-      break;
     case FACE:
       return joint_faces_;
-      break;
     case ARETE:
       return joint_aretes_;
-      break;
     case FACE_FRONT:
       return joint_faces_front_;
-      break;
     default:
       Cerr << "Error in Joint::set_joint_item, invalid item number : " << (int)item << finl;
       exit();

@@ -769,7 +769,6 @@ const LataGeometryMetaData& LataFilter::get_geometry_metadata(const char *geomet
 
   Journal() << "Error in LataFilter::get_geometry_metadata: unknown geometry " << geometry << endl;
   throw LataError(LataError::INVALID_DOMAIN, "unknown geometry");
-  return geoms_metadata_[0];
 }
 
 // Description: fill "data" for the requested "geometry/field". "geometry"  and "field" must be names
@@ -782,7 +781,6 @@ const LataFieldMetaData& LataFilter::get_field_metadata(const Field_UName& uname
 
   Journal() << "Error in LataFilter::get_field_metadata: unknown field " << uname << endl;
   throw LataError(LataError::INVALID_COMPONENT, "unknown field");
-  return fields_metadata_[0];
 }
 
 // Description:

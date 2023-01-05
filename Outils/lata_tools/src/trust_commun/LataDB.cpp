@@ -2573,7 +2573,6 @@ FileOffset LataDB::write_data(entier tstep, const Field_UName& uname, const Doub
 {
   Journal() << " LataDB::write_data not coded for double" << endl;
   throw;
-  return 0;
 }
 
 // See write_data(..., const DoubleTab &)
@@ -2617,31 +2616,22 @@ const char *LataDBError::describe() const
     {
     case READ_ERROR:
       return "READ_ERROR";
-      break;
     case BAD_HEADER:
       return "BAD_HEADER";
-      break;
     case BAD_TIMESTEP:
       return "BAD_TIMESTEP";
-      break;
     case NAME_NOT_FOUND:
       return "NAME_NOT_FOUND";
-      break;
     case DATA_ERROR:
       return "DATA_ERROR";
-      break;
     case FILE_NOT_FOUND:
       return "FILE_NOT_FOUND";
-      break;
     case BAD_ELEM_TYPE:
       return "BAD_ELEM_TYPE";
-      break;
     case INVALID_OPERATION:
       return "INVALID_OPERATION";
-      break;
     case INTEGER_OVERFLOW:
       return "INTEGER_OVERFLOW";
-      break;
     default:
       ;
     }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -272,11 +272,4 @@ int Prisme::get_tab_faces_sommets_locaux(IntTab& faces_som_local) const
     for (int j=0; j<4; j++)
       faces_som_local(i,j) = faces_sommets_prisme[i][j];
   return 1;
-
-
-  Cerr << "Elem_geom_base::faces_sommets_locaux : error.\n"
-       << " Method not implemented for the object "
-       << que_suis_je() << finl;
-  exit();
-  return 0;
 }

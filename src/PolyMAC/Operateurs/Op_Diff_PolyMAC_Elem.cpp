@@ -339,6 +339,7 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
                T_ext = fcl[0](f, 0) == 1 ? ref_cast(Echange_impose_base, cls[0].get()[fcl[0](f, 1)].valeur()).T_ext(fcl[0](f, 2), 0) : 0, dTp, FT, dFTp;
         in.Tp = ech ? v_aux[o_p](o_f, 0) : fcl[0](f, 0) == 5 ? 0 : fcl[0](f, 0) == 6 ? ref_cast(Dirichlet, cls[0].get()[fcl[0](f, 1)].valeur()).val_imp(fcl[0](f, 2), 0) : fcl[0](f, 0) == 1 ? T_ext : v_aux[0](f, 0);
         //appel : on n'est implicite qu'en les temperatures
+        dTp=0;
         for (int it = 0; it < 10 && (!it || std::abs(dTp) > 1e-5); in.Tp += dTp, it++)
           {
             corr[0]->qp(in, out);

@@ -59,7 +59,6 @@ int Champ_Generique_base::get_dimension() const
 {
   throw Champ_Generique_erreur("NOT_IMPLEMENTED");
   // On n'arrive jamais ici
-  return get_dimension();
 }
 
 /*! @brief Renvoie le temps du Champ_Generique.
@@ -68,15 +67,12 @@ int Champ_Generique_base::get_dimension() const
 double Champ_Generique_base::get_time() const
 {
   throw Champ_Generique_erreur("NOT_IMPLEMENTED");
-  // On n'arrive jamais ici
-  return get_time();
 }
 
 //Renvoie le probleme qui porte le champ cible
 const Probleme_base& Champ_Generique_base::get_ref_pb_base() const
 {
   throw Champ_Generique_erreur("NOT_IMPLEMENTED");
-  return get_ref_pb_base();
 }
 
 //Renvoie la discretisation associee au probleme
@@ -93,7 +89,6 @@ const Discretisation_base& Champ_Generique_base::get_discretisation() const
 const Motcle Champ_Generique_base::get_directive_pour_discr() const
 {
   throw Champ_Generique_erreur("NOT_IMPLEMENTED");
-  return get_directive_pour_discr();
 }
 
 void Champ_Generique_base::nommer(const Nom& nom)
@@ -130,8 +125,6 @@ void Champ_Generique_base::get_property_names(Motcles& list) const
 const Noms Champ_Generique_base::get_property(const Motcle& query) const
 {
   throw Champ_Generique_erreur("NOT_IMPLEMENTED");
-  // On n'arrive jamais ici
-  return get_property(query);
 }
 
 
@@ -154,15 +147,11 @@ const Noms Champ_Generique_base::get_property(const Motcle& query) const
 Entity Champ_Generique_base::get_localisation(const int index) const
 {
   throw Champ_Generique_erreur("NOT_IMPLEMENTED");
-  // On n'arrive jamais ici
-  return get_localisation(index);
 }
 
 int Champ_Generique_base::get_nb_localisations() const
 {
   throw Champ_Generique_erreur("NOT_IMPLEMENTED");
-  // On n'arrive jamais ici
-  return get_nb_localisations();
 }
 
 /*! @brief Renvoie une reference au tableau de valeurs discretes s'il existe en memoire.
@@ -181,8 +170,6 @@ const DoubleTab& Champ_Generique_base::get_ref_values() const
 {
   // Implementation par defaut : exception NO_REF
   throw Champ_Generique_erreur("NO_REF");
-  // On n'arrive jamais ici
-  return get_ref_values();
 }
 
 /*! @brief Remplit le tableau values avec les valeurs discretes du champ (cree une copie).
@@ -236,8 +223,6 @@ const DoubleTab& Champ_Generique_base::get_ref_coordinates() const
 {
   // Implementation par defaut : exception NO_REF
   throw Champ_Generique_erreur("NO_REF");
-  // On n'arrive jamais ici
-  return get_ref_coordinates();
 }
 
 
@@ -265,8 +250,6 @@ void Champ_Generique_base::get_copy_coordinates(DoubleTab&) const
 const IntTab& Champ_Generique_base::get_ref_connectivity(Entity index1, Entity index2) const
 {
   throw Champ_Generique_erreur("NOT_IMPLEMENTED");
-  // On n'arrive jamais ici
-  return get_ref_connectivity(index1,index2);
 }
 
 void Champ_Generique_base::get_copy_connectivity(Entity index1, Entity index2, IntTab&) const
@@ -319,8 +302,6 @@ const Zone_dis_base& Champ_Generique_base::get_ref_zone_dis_base() const
 const Zone_Cl_dis_base& Champ_Generique_base::get_ref_zcl_dis_base() const
 {
   throw Champ_Generique_erreur("INVALID");
-  // On n'arrive jamais ici
-  return get_ref_zcl_dis_base();
 }
 
 const Champ_Generique_base& Champ_Generique_base::get_champ_post(const Motcle& nom) const
@@ -365,7 +346,6 @@ const Champ_Generique_base& Champ_Generique_base::get_champ_post(const Motcle& n
   }
 
   throw Champs_compris_erreur();
-  return ref_champ;
 }
 
 int Champ_Generique_base::comprend_champ_post(const Motcle& identifiant) const

@@ -562,7 +562,6 @@ const Noms Champ_Generique_Interpolation::get_property(const Motcle& query) cons
               }
           }
         return compo;
-        break;
       }
     case 1:
       {
@@ -571,7 +570,6 @@ const Noms Champ_Generique_Interpolation::get_property(const Motcle& query) cons
             return syno_;
           }
         return get_source(0).get_property("synonyms");
-        break;
       }
 
     }
@@ -647,9 +645,6 @@ const Zone_dis_base& Champ_Generique_Interpolation::get_ref_zone_dis_base() cons
     {
       return Champ_Gen_de_Champs_Gen::get_ref_zone_dis_base();
     }
-
-  //Pour compilation
-  return get_ref_zone_dis_base();
 
 }
 

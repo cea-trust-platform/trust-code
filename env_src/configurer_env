@@ -1358,7 +1358,7 @@ else
 	 fi
       fi
    fi
-   [ "$err" != 1 ] && rm -r -f $rep_test_mpi
+   #[ "$err" != 1 ] && rm -r -f $rep_test_mpi
 
    if [ $mpi_detecte = 0 ]
    then
@@ -1745,7 +1745,7 @@ case $TRUST_ARCH_CC in
     # TRUST_USE_GNU_FOR_EXTP = 1
    	Defines="-D_COMPILE_AVEC_PGCC"
     CppFlags="-O3 -fPIC -Ktrap=fp -Kieee -noswitcherror" # -Ktrap=fp evitent des soucis Arithmetic Exceptions...
-    CppFlags=$CppFlags" -std=c++14 -Wno-long-long -Wall -Wshadow -Wextra -Wno-unused-parameter" # Warnings ajouter -Werror et corriger...
+    CppFlags=$CppFlags" -std=c++14 -Wno-long-long -Wall -Wshadow -Wextra -Wno-unused-parameter -Werror --display_error_number --diag_suppress185" #--diag_suppress111 si on veut supprimer le warning "statement is unreachable"
     SYSLIBS="-lgfortran" # Car BLAS+AMGX+PETSC compile avec GNU
     F77Flags="-O3 -fPIC -noswitcherror"
     ccFLAGS="-O3 -fPIC -noswitcherror"

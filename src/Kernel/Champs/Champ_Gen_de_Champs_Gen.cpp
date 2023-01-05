@@ -108,7 +108,6 @@ int Champ_Gen_de_Champs_Gen::lire_motcle_non_standard(const Motcle& mot, Entree&
     }
   else
     return Champ_Generique_base::lire_motcle_non_standard(mot,is);
-  return 1;
 }
 
 LIST(Champ_Generique)& Champ_Gen_de_Champs_Gen::get_set_sources()
@@ -275,7 +274,6 @@ const Noms Champ_Gen_de_Champs_Gen::get_property(const Motcle& query) const
         Noms mots(1);
         mots[0] = nom_post_;
         return mots;
-        break;
       }
     }
   return get_source(0).get_property(query);
@@ -461,7 +459,6 @@ const Champ_Generique_base& Champ_Gen_de_Champs_Gen::get_champ_post(const Motcle
     }
 
   throw Champs_compris_erreur();
-  return ref_champ;
 }
 
 int Champ_Gen_de_Champs_Gen::comprend_champ_post(const Motcle& identifiant) const

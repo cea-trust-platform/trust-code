@@ -592,7 +592,7 @@ ICoCo::MEDDoubleField ProblemTrio::getDirectAccessToUnknown(const std::string& u
     {
       Probleme_base& pb_base = ref_cast(Probleme_base,*pb);
       double * ptr = nullptr;
-      size_t nbTup = -1, nbCompo = -1;
+      size_t nbTup = 0, nbCompo = 0;
       for (int i=0; i < pb_base.nombre_d_equations(); i++)
         {
           Champ_Inc& ci = pb_base.equation(i).inconnue();

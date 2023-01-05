@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,13 +22,11 @@ Implemente_instanciable_sans_constructeur_ni_destructeur(LecFicDistribue,"LecFic
 Entree& LecFicDistribue::readOn(Entree& s)
 {
   throw;
-  return s;
 }
 
 Sortie& LecFicDistribue::printOn(Sortie& s) const
 {
   throw;
-  return s;
 }
 
 LecFicDistribue::LecFicDistribue(int)

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -55,7 +55,6 @@ int Champ_Generique_Champ::lire_motcle_non_standard(const Motcle& mot, Entree& i
     }
   else
     return Champ_Generique_refChamp::lire_motcle_non_standard(mot,is);
-  return 1;
 }
 void Champ_Generique_Champ::mettre_a_jour(double temps)
 {

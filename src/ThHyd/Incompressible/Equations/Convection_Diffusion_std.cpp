@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -73,7 +73,6 @@ int Convection_Diffusion_std::lire_motcle_non_standard(const Motcle& mot, Entree
     }
   else
     return Equation_base::lire_motcle_non_standard(mot,is);
-  return 1;
 }
 /*! @brief Renvoie le nombre d'operateurs de l'equation: 2 pour une equation de diffusion.
  *

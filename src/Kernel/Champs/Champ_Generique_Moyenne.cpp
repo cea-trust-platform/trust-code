@@ -54,7 +54,6 @@ int Champ_Generique_Moyenne::lire_motcle_non_standard(const Motcle& mot, Entree&
     }
   else
     return Champ_Generique_Statistiques_base::lire_motcle_non_standard(mot,is);
-  return 1;
 }
 
 void Champ_Generique_Moyenne::completer(const Postraitement_base& post)
@@ -129,7 +128,6 @@ const Noms Champ_Generique_Moyenne::get_property(const Motcle& query) const
           }
 
         return compo;
-        break;
       }
     }
   return Champ_Gen_de_Champs_Gen::get_property(query);
@@ -182,7 +180,6 @@ const Champ_Generique_base& Champ_Generique_Moyenne::get_champ_post(const Motcle
     }
 
   throw Champs_compris_erreur();
-  return ref_champ;
 }
 
 int Champ_Generique_Moyenne::comprend_champ_post(const Motcle& identifiant) const

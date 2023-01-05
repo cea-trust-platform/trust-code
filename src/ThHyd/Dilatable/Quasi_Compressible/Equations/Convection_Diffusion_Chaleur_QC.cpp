@@ -94,7 +94,6 @@ int Convection_Diffusion_Chaleur_QC::lire_motcle_non_standard(const Motcle& mot,
     }
   else
     return Convection_Diffusion_Chaleur_Fluide_Dilatable_base::lire_motcle_non_standard(mot,is);
-  return 1;
 }
 
 const Champ_base& Convection_Diffusion_Chaleur_QC::vitesse_pour_transport() const

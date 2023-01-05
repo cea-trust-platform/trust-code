@@ -105,7 +105,6 @@ int Champ_Generique_Transformation::lire_motcle_non_standard(const Motcle& mot, 
     }
   else
     return Champ_Gen_de_Champs_Gen::lire_motcle_non_standard(mot,is);
-  return 1;
 }
 
 void Champ_Generique_Transformation::verifier_coherence_donnees()
@@ -828,7 +827,6 @@ const Noms Champ_Generique_Transformation::get_property(const Motcle& query) con
             compo[i] = nom_post_+nume;
           }
         return compo;
-        break;
       }
     case 1:
       {
@@ -836,7 +834,6 @@ const Noms Champ_Generique_Transformation::get_property(const Motcle& query) con
         for (int comp=0; comp<nb_comp_; comp++)
           unites[comp] = "??";
         return unites;
-        break;
       }
     }
   return Champ_Gen_de_Champs_Gen::get_property(query);

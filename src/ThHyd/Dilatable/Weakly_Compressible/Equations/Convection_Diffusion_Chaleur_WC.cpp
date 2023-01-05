@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -59,7 +59,6 @@ int Convection_Diffusion_Chaleur_WC::lire_motcle_non_standard(const Motcle& mot,
     }
   else
     return Convection_Diffusion_Chaleur_Fluide_Dilatable_base::lire_motcle_non_standard(mot,is);
-  return 1;
 }
 
 void Convection_Diffusion_Chaleur_WC::completer()

@@ -120,7 +120,6 @@ int Conduction::lire_motcle_non_standard(const Motcle& mot, Entree& is)
     }
   else
     return Equation_base::lire_motcle_non_standard(mot,is);
-  return 1;
 }
 
 // retourne la *conductivite* et non la diffusivite comme dans Conduction
@@ -306,8 +305,6 @@ const Champ_base& Conduction::get_champ(const Motcle& nom) const
 
       }
   throw Champs_compris_erreur();
-  REF(Champ_base) ref_champ;
-  return ref_champ;
 }
 
 void Conduction::get_noms_champs_postraitables(Noms& nom,Option opt) const

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -783,7 +783,6 @@ void Op_Dift_EF_Q1::ajouter_contributions_bords(Matrice_Morse& matrice ) const
     {
       // Cerr<<__PRETTY_FUNCTION__<<" non code pour les vecteurs"<<finl;
       throw;
-      return;
     }
 
   // Neumann :

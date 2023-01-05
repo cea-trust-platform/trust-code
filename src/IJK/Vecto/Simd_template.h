@@ -571,7 +571,7 @@ inline Simd_int SimdSelect(Simd_float x1,
   return (x1.data_ < x2.data_) ? value_if_x1_lower_than_x2.data_ : value_otherwise.data_;
 #endif
 }
-
+/*
 inline void SimdCompareAndSetIfLower(const Simd_float x_new, Simd_float x,
                                      const Simd_int i_new, Simd_int i)
 {
@@ -603,6 +603,7 @@ inline void SimdCompareAndSetIfLower(const Simd_float x_new, Simd_float x,
     }
 #endif
 }
+ */
 
 
 #endif

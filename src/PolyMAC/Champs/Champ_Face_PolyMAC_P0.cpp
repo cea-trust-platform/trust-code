@@ -311,7 +311,7 @@ DoubleVect& Champ_Face_PolyMAC_P0::valeur_aux_elems_compo(const DoubleTab& posit
   DoubleTab vfe(valeurs());
   update_ve(vfe);
 
-  for (int p = 0, e; p < polys.size(); p++) val(p) = (e = polys(p)) < 0 ? 0. : vfe.addr()[N * (nf_tot + D * polys(p)) + ncomp];
+  for (int p = 0, e; p < polys.size(); p++) val(p) = (e = polys(p)) < 0 ? 0. : vfe.addr()[N * (nf_tot + D * e) + ncomp];
 
   return val;
 }

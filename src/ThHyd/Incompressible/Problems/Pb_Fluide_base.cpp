@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -131,5 +131,4 @@ int Pb_Fluide_base::expression_predefini(const Motcle& motlu, Nom& expression)
     }
   else
     return Probleme_base::expression_predefini(motlu,expression);
-  return 0;
 }

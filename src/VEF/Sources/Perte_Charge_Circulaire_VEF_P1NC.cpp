@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -92,7 +92,6 @@ int Perte_Charge_Circulaire_VEF_P1NC::lire_motcle_non_standard(const Motcle& mot
     {
       return Perte_Charge_VEF::lire_motcle_non_standard(mot,is);
     }
-  return -1;
 }
 
 

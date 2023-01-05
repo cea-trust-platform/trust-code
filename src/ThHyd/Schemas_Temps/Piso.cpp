@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -106,6 +106,7 @@ Entree& Piso::lire(const Motcle& motlu,Entree& is)
 void test_imposer_cond_lim(Equation_base& eqn,DoubleTab& current2,const char * msg,int flag)
 {
   return;
+  /*
   DoubleTab& present = eqn.inconnue().futur();
   DoubleTab sauv(present);
   const Schema_Temps_base& sch = eqn.probleme().schema_temps();
@@ -118,6 +119,7 @@ void test_imposer_cond_lim(Equation_base& eqn,DoubleTab& current2,const char * m
   if ((ecart_max>1e-10))
     abort();
   present = sauv;
+   */
 }
 
 //Entree Un ; Pn

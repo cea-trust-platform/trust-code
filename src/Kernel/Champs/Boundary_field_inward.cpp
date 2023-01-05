@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -120,5 +120,4 @@ Entree& Champ_front_normal_VEF::readOn(Entree& is)
   exp+=" } ";
   EChaine E(exp);
   return Boundary_field_inward::readOn(E);
-  return is;
 }

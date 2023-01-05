@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -122,7 +122,6 @@ const Noms Champ_Generique_Correlation::get_property(const Motcle& query) const
       {
         const Noms noms_unites = integrale()->unites();
         return noms_unites;
-        break;
       }
     case 1:
       {
@@ -157,8 +156,6 @@ const Noms Champ_Generique_Correlation::get_property(const Motcle& query) const
 
         const Noms noms_compo = integrale()->noms_compo();
         return noms_compo;
-        break;
-
       }
     }
   return Champ_Gen_de_Champs_Gen::get_property(query);

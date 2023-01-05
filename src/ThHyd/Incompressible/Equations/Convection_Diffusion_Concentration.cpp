@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -103,7 +103,6 @@ int Convection_Diffusion_Concentration::lire_motcle_non_standard(const Motcle& m
     }
   else
     return Convection_Diffusion_std::lire_motcle_non_standard(mot,is);
-  return 1;
 }
 
 /*! @brief Associe un milieu physique a l'equation, le milieu est en fait caste en Constituant et associe a l'equation.

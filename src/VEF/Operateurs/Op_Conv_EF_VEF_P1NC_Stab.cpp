@@ -140,7 +140,6 @@ Entree& Op_Conv_EF_VEF_P1NC_Stab::readOn(Entree& s )
           Cerr << "Mot clef " << motlu << " non connu." << finl;
           Cerr << "Sortie du programme." << finl;
           Process::exit();
-          break;
 
         }//fin du switch
 
@@ -209,17 +208,13 @@ double formule_2D(int n)
     {
     case 0:
       return 1./3;
-      break;
     case 1:
       return 0.5;
-      break;
     case 2:
       return 1.;
-      break;
     default:
       Cerr << "Erreur Op_Conv_EF_VEF_P1NC_Stab::formule_2D()" << finl;
       Process::exit();
-      break;
     }
   return 0.;
 }
@@ -230,20 +225,15 @@ double formule_3D(int n)
     {
     case 0:
       return 0.25;
-      break;
     case 1:
       return 1./3;
-      break;
     case 2:
       return 0.5;
-      break;
     case 3:
       return 1.;
-      break;
     default:
       Cerr << "Erreur Op_Conv_EF_VEF_P1NC_Stab::formule_3D()" << finl;
       Process::exit();
-      break;
     }
   return 0.;
 }

@@ -324,7 +324,6 @@ const Champ_base& Pb_Multiphase::get_champ(const Motcle& un_nom) const
     }
   catch (Champs_compris_erreur& err_)     {      }
   throw Champs_compris_erreur();
-  return ref_champ;
 }
 
 void Pb_Multiphase::completer()

@@ -166,23 +166,24 @@ void TRUSTChamp_Morceaux_generique<_TYPE_>::mettre_a_jour(double time)
       Champ_Don_base::mettre_a_jour(time);
       return;
     }
-
-  const IntTab& les_elems = mon_domaine->zone(0).les_elems();
-  const int nb_som_elem = mon_domaine->zone(0).nb_som_elem();
-
-  const Champ_base *ch = ref_pb.non_nul() ? &ref_pb->get_champ(nom_champ_parametre_) : nullptr;
-
-  DoubleTab& tab = valeurs();
-
-  for (int i = 0; i < mon_domaine->zone(0).nb_elem_tot(); i++)
+  else
     {
-      /* xs : coordonnees du poly par barycentre des sommets -> pas top */
-      double xs[3] = { 0, };
-      int nb_som = 0, s, r;
-      for (int j = 0; j < nb_som_elem && (s = les_elems(i, j)) >= 0; j++)
-        for (r = 0, nb_som++; r < dimension; r++) xs[r] += mon_domaine->coord(s, r);
+      const IntTab& les_elems = mon_domaine->zone(0).les_elems();
+      const int nb_som_elem = mon_domaine->zone(0).nb_som_elem();
 
-      for (r = 0; r < dimension; r++) xs[r] /= nb_som;
+      const Champ_base *ch = ref_pb.non_nul() ? &ref_pb->get_champ(nom_champ_parametre_) : nullptr;
+
+      DoubleTab& tab = valeurs();
+
+      for (int i = 0; i < mon_domaine->zone(0).nb_elem_tot(); i++)
+        {
+          /* xs : coordonnees du poly par barycentre des sommets -> pas top */
+          double xs[3] = {0,};
+          int nb_som = 0, s, r;
+          for (int j = 0; j < nb_som_elem && (s = les_elems(i, j)) >= 0; j++)
+            for (r = 0, nb_som++; r < dimension; r++) xs[r] += mon_domaine->coord(s, r);
+
+          for (r = 0; r < dimension; r++) xs[r] /= nb_som;
 
       /* calcul de chaque composante */
       double val = ch ? ch->valeurs()(i, 0) : 0;
@@ -194,8 +195,9 @@ void TRUSTChamp_Morceaux_generique<_TYPE_>::mettre_a_jour(double time)
           psr.setVar("z", xs[2]);
           psr.setVar("t", time);
 
-          if (ref_pb.non_nul()) psr.setVar("val", val);
-          tab(i, k) = psr.eval();
+              if (ref_pb.non_nul()) psr.setVar("val", val);
+              tab(i, k) = psr.eval();
+            }
         }
     }
 }

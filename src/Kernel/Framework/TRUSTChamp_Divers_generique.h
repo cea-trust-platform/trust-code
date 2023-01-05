@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,17 +42,16 @@ public:
         for (int j = 0; j < nb_comp(); j++) tab_valeurs(j) = valeurs_(0, j);
         return tab_valeurs;
       }
-
-    return not_implemented_champ_<DoubleVect&>(__func__); /* Cas INUTILE : methode sur-chargee pour CANAL */
+    else
+      return not_implemented_champ_<DoubleVect&>(__func__); /* Cas INUTILE : methode sur-chargee pour CANAL */
   }
 
   double valeur_a_compo(const DoubleVect& x, int ncomp) const override
   {
     static constexpr bool IS_UNIFORME = (_TYPE_ == Champ_Divers_Type::UNIFORME), IS_CANAL = (_TYPE_ == Champ_Divers_Type::CANAL);
     if (IS_UNIFORME) return valeurs_(0,ncomp);
-    if (IS_CANAL) return Champ_Don_base::valeur_a_compo(x,ncomp);
-
-    return not_implemented_champ_<double>(__func__); /* INUTILE */
+    else if (IS_CANAL) return Champ_Don_base::valeur_a_compo(x,ncomp);
+    else return not_implemented_champ_<double>(__func__); /* INUTILE */
   }
 
   DoubleVect& valeur_a_elem(const DoubleVect& positions, DoubleVect& tab_valeurs, int) const override
@@ -64,9 +63,9 @@ public:
         return tab_valeurs;
       }
 
-    if (IS_CANAL) return valeur_a(positions, tab_valeurs); // from VTABLE
+    else if (IS_CANAL) return valeur_a(positions, tab_valeurs); // from VTABLE
 
-    return not_implemented_champ_<DoubleVect&>(__func__); /* INUTILE */
+    else return not_implemented_champ_<DoubleVect&>(__func__); /* INUTILE */
   }
 
   double valeur_a_elem_compo(const DoubleVect&, int, int ncomp) const override
@@ -86,16 +85,15 @@ public:
 
         return tab_valeurs;
       }
-
-    return not_implemented_champ_<DoubleTab&>(__func__); // voir classes filles ...
+    else
+      return not_implemented_champ_<DoubleTab&>(__func__); // voir classes filles ...
   }
 
   DoubleVect& valeur_aux_compo(const DoubleTab&, DoubleVect& tab_valeurs, int ncomp) const override
   {
     static constexpr bool IS_UNIFORME = (_TYPE_ == Champ_Divers_Type::UNIFORME);
     if (IS_UNIFORME) return tab_valeurs = valeurs_(0, ncomp);
-
-    return not_implemented_champ_<DoubleVect&>(__func__); // BOOM
+    else return not_implemented_champ_<DoubleVect&>(__func__); // BOOM
   }
 
   DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect&, DoubleTab& tab_valeurs) const override
@@ -110,7 +108,7 @@ public:
         return tab_valeurs;
       }
 
-    return valeur_aux(positions, tab_valeurs); // from VTABLE
+    else return valeur_aux(positions, tab_valeurs); // from VTABLE
   }
 
   DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect&, DoubleVect& tab_valeurs, int ncomp) const override
@@ -118,7 +116,7 @@ public:
     static constexpr bool IS_UNIFORME = (_TYPE_ == Champ_Divers_Type::UNIFORME);
     if (IS_UNIFORME) return tab_valeurs = valeurs_(0, ncomp);
 
-    return valeur_aux_compo(positions, tab_valeurs, ncomp); // from VTABLE
+    else return valeur_aux_compo(positions, tab_valeurs, ncomp); // from VTABLE
   }
 };
 

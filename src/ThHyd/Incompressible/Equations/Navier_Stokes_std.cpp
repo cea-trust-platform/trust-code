@@ -262,7 +262,6 @@ int Navier_Stokes_std::lire_motcle_non_standard(const Motcle& mot, Entree& is)
     }
   else
     return Equation_base::lire_motcle_non_standard(mot,is);
-  return 1;
 }
 
 const Champ_Don& Navier_Stokes_std::diffusivite_pour_transport() const
@@ -1523,8 +1522,6 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
       {
       }
   throw Champs_compris_erreur();
-
-  return ref_champ;
 }
 
 void Navier_Stokes_std::get_noms_champs_postraitables(Noms& nom,Option opt) const
@@ -1853,7 +1850,6 @@ const Champ_Inc& Navier_Stokes_std::rho_la_vitesse() const
   assert(0);
   exit();
   throw;
-  return rho_la_vitesse();
 }
 
 void Navier_Stokes_std::renewing_jacobians( DoubleTab& derivee )

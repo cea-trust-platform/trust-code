@@ -284,9 +284,11 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, const DoubleTab
   if (DERIVED_T::IS_QUICK) // XXX : LOL
     {
       if (DERIVED_T::IS_AXI) return;
-      flux_arete<Type_Flux_Arete::INTERNE>(inco,a_r,fac1,fac2,fac3,fac4,flux3_4);
-      flux_arete<Type_Flux_Arete::INTERNE>(inco,a_r, fac3,fac4,fac1,fac2,flux1_2);
-      return;
+      else {
+          flux_arete < Type_Flux_Arete::INTERNE > (inco, a_r, fac1, fac2, fac3, fac4, flux3_4);
+          flux_arete < Type_Flux_Arete::INTERNE > (inco, a_r, fac3, fac4, fac1, fac2, flux1_2);
+          return;
+      }
     }
   const int ncomp = flux3_4.size_array();
 

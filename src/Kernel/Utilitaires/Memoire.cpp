@@ -496,6 +496,7 @@ Memoire::~Memoire()
 {
   // GF on a deja tout detruit avant.
   return;
+  /*
   if (data)
     {
       int i;
@@ -519,5 +520,5 @@ Memoire::~Memoire()
   Cerr << "Max Memory Size : " << max_sz_mem << finl;
   Cerr << "Memory size min : " << min_sz_mem << finl;
   Cerr << "Memory size used in Ko : " << (max_sz_mem-min_sz_mem)/1024 << finl;
-  Process::exit();
+  Process::exit(); */
 }

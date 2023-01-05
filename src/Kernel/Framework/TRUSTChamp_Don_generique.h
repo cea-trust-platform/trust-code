@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,11 +49,14 @@ public:
   Champ_base& affecter_(const Champ_base& ch) override
   {
     static constexpr bool IS_LU = (_TYPE_ == Champ_Don_Type::LU);
-    if (IS_LU) return Champ_Don_base::affecter_(ch); // throw
-
-    if (sub_type(Champ_Uniforme, ch)) valeurs() = ch.valeurs()(0, 0);
-    else valeurs() = ch.valeurs();
-    return *this;
+    if (IS_LU)
+      return Champ_Don_base::affecter_(ch); // throw
+    else
+      {
+        if (sub_type(Champ_Uniforme, ch)) valeurs() = ch.valeurs()(0, 0);
+        else valeurs() = ch.valeurs();
+        return *this;
+      }
   }
 
   DoubleVect& valeur_a(const DoubleVect& position, DoubleVect& vals) const override

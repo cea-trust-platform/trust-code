@@ -161,13 +161,10 @@ double Objet_a_lire::get_value() const
     {
     case INTEGER:
       return (*int_a_lire);
-      break;
     case DOUBLE:
       return (*double_a_lire);
-      break;
     case FLAG:
       return (*flag_a_lire);
-      break;
     default:
       Cerr << "get_value not coded for this case" << finl;
       Process::exit();

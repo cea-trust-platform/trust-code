@@ -951,13 +951,11 @@ int Lecture_Result(ifstream *fic,int   type, T_Trio   *contenu,int  k, double   
 	  (*fic).seekg(fic_sauve);
 	  delete [] bufcpp;
 	  return (OK);
-	  break;
 	case FIN :
 	  /* On a trouve le mot FIN */
 	  (*fic).seekg(fic_sauve);;
 	  delete [] bufcpp;
 	  return (OK);
-	  break;
 	default :
 	  break;
 	}
@@ -1405,7 +1403,6 @@ double trouve_dernier_temps(char* nom1)
 	  break;
 	case FIN:
 	  return t;
-	  break;
 	default :
 	  break;
 	}

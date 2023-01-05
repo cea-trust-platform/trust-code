@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,13 +43,11 @@ static void handle_error(int errcode, const char *str)
 Entree& EcrFicPartageMPIIO::readOn(Entree& s)
 {
   throw;
-  return s;
 }
 
 Sortie& EcrFicPartageMPIIO::printOn(Sortie& s) const
 {
   throw;
-  return s;
 }
 
 EcrFicPartageMPIIO::EcrFicPartageMPIIO() : SFichier()

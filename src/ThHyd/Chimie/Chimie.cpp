@@ -543,7 +543,6 @@ const Champ_base& Chimie::get_champ(const Motcle& nom) const
     }
 
   throw Champs_compris_erreur();
-  return get_champ(nom);
 }
 
 void Chimie::get_noms_champs_postraitables(Noms& nom,Option opt) const

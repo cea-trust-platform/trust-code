@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -126,6 +126,7 @@ int Format_Post_Med::completer_post(const Domaine& dom,const int is_axi,
                                     const Motcle& loc_post,const Nom& le_nom_champ_post)
 {
   return 1;
+  /*
   Nom nom_fich2(med_basename_);
   Nom format="med";
   nom_fich2 += ".";
@@ -161,7 +162,7 @@ int Format_Post_Med::completer_post(const Domaine& dom,const int is_axi,
 
   completer_post_med(nom_fich2,nom_post,nom2);
 
-  return 1;
+  return 1;*/
 }
 
 int Format_Post_Med::preparer_post(const Nom& id_du_domaine,const int est_le_premier_post,
@@ -169,6 +170,7 @@ int Format_Post_Med::preparer_post(const Nom& id_du_domaine,const int est_le_pre
                                    const double t_init)
 {
   return 1;
+  /*
   Nom nom_fich1(med_basename_);
   Nom nom_fich2(med_basename_);
   Nom nom_fich3(med_basename_);
@@ -188,7 +190,7 @@ int Format_Post_Med::preparer_post(const Nom& id_du_domaine,const int est_le_pre
   nom_fich3 += ".med2";
 
   preparer_post_med(nom_fich1,nom_fich2,nom_fich3,id_du_domaine,est_le_premier_post);
-  return 1;
+  return 1;*/
 
 }
 

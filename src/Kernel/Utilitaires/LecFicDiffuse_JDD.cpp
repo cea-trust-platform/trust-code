@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,13 +24,11 @@ Implemente_instanciable_sans_constructeur(LecFicDiffuse_JDD,"LecFicDiffuse_JDD",
 Entree& LecFicDiffuse_JDD::readOn(Entree& s)
 {
   throw;
-  return s;
 }
 
 Sortie& LecFicDiffuse_JDD::printOn(Sortie& s) const
 {
   throw;
-  return s;
 }
 
 LecFicDiffuse_JDD::LecFicDiffuse_JDD() :

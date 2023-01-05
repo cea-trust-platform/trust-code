@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -71,6 +71,12 @@ void Partitionneur_Metis::set_param(Param& param)
 
 int Partitionneur_Metis::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
+  if(Process::nproc() >1)
+    {
+      Cerr << "WARNING! You're using a sequential algorithm on " << nproc() << "processors " << finl;
+      Cerr << "Use PARMETIS for parallel domain cutting" << finl;
+      Process::exit();
+    }
   if (mot=="pmetis")
     {
       Cerr << " Algorithm PMETIS" << finl;
@@ -100,14 +106,6 @@ int Partitionneur_Metis::lire_motcle_non_standard(const Motcle& mot, Entree& is)
     }
   else
     return Partitionneur_base::lire_motcle_non_standard(mot,is);
-
-  if(Process::nproc() >1)
-    {
-      Cerr << "WARNING! You're using a sequential algorithm on " << nproc() << "processors " << finl;
-      Cerr << "Use PARMETIS for parallel domain cutting" << finl;
-      Process::exit();
-    }
-  return 1;
 }
 
 void Partitionneur_Metis::associer_domaine(const Domaine& domaine)

@@ -93,7 +93,6 @@ int Champ_Generique_refChamp::lire_motcle_non_standard(const Motcle& mot, Entree
     }
   else
     return Champ_Generique_base::lire_motcle_non_standard(mot,is);
-  return 1;
 }
 
 /*! @brief On initialise la classe avec le champ en parametre.
@@ -147,14 +146,12 @@ const Noms Champ_Generique_refChamp::get_property(const Motcle& query) const
         Noms mots(1);
         mots[0] = nom_post_;
         return mots;
-        break;
       }
     case 1:
       {
         Noms mots(1);
         mots[0] = nom_champ_;
         return mots;
-        break;
       }
     case 2 :
       {
@@ -175,14 +172,12 @@ const Noms Champ_Generique_refChamp::get_property(const Motcle& query) const
               }
           }
         return mots;
-        break;
       }
     case 4 :
       {
         const Noms mots = get_ref_champ_base().get_synonyms();
 
         return mots;
-        break;
       }
     case 3 :
       {
@@ -198,7 +193,6 @@ const Noms Champ_Generique_refChamp::get_property(const Motcle& query) const
               compo[i] = nom_post_+nume;
             }
           return compo;
-          break;
         }
 
       }
@@ -360,8 +354,6 @@ const IntTab& Champ_Generique_refChamp::get_ref_connectivity(Entity index1, Enti
   Nom message="Invalid localization used for postprocessing the field ";
   message+=ch.le_nom()+". Change your data file.";
   throw Champ_Generique_erreur(message);
-  // On n'arrive jamais ici
-  return get_ref_connectivity(index1,index2);
 }
 
 void Champ_Generique_refChamp::get_copy_connectivity(Entity index1, Entity index2, IntTab& tab) const

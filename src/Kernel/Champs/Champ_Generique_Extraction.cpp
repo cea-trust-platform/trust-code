@@ -225,7 +225,6 @@ const Noms Champ_Generique_Extraction::get_property(const Motcle& query) const
           }
 
         return compo;
-        break;
       }
     }
 

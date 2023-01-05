@@ -27,7 +27,6 @@ const Champ_base& Champs_compris::get_champ(const Motcle& motcle) const
   REF(Champ_base) ref_champ;
   if (has_champ(motcle, ref_champ)) return ref_champ;
   throw Champs_compris_erreur();
-  return ref_champ;
 }
 
 bool Champs_compris::has_champ(const Motcle& motcle, REF(Champ_base)& ref_champ) const

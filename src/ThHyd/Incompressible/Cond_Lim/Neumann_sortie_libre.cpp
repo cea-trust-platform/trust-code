@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -123,7 +123,6 @@ int Neumann_sortie_libre::initialiser(double temps)
   Cond_lim_base::initialiser(temps);
   assert(le_champ_ext.non_nul());
   return le_champ_ext->initialiser(temps, zone_Cl_dis().equation().inconnue());
-  return 1;
 }
 
 void Neumann_sortie_libre::associer_fr_dis_base(const Frontiere_dis_base& fr)

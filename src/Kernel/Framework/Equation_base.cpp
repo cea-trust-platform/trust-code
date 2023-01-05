@@ -1270,8 +1270,6 @@ const Champ_base& Equation_base::get_champ(const Motcle& nom) const
           }
     }
   throw Champs_compris_erreur();
-
-  return ref_champ;
 }
 
 void Equation_base::get_noms_champs_postraitables(Noms& noms,Option opt) const
@@ -2283,7 +2281,6 @@ const Operateur& Equation_base::operateur_fonctionnel(int i) const
   Cerr<<"The method operateur_fonctionnel is not coded for equation "<<que_suis_je()<<finl;
   exit();
   throw;
-  return Equation_base::operateur_fonctionnel(i);
 }
 
 Operateur& Equation_base::operateur_fonctionnel(int i)
@@ -2291,7 +2288,6 @@ Operateur& Equation_base::operateur_fonctionnel(int i)
   Cerr<<"The method operateur_fonctionnel is not coded for equation "<<que_suis_je()<<finl;
   exit();
   throw;
-  return Equation_base::operateur_fonctionnel(i);
 }
 
 int Equation_base::nombre_d_operateurs_tot() const

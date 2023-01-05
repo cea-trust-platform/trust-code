@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -203,7 +203,6 @@ const Noms Champ_Generique_Morceau_Equation::get_property(const Motcle& query) c
         compo[0] = nom_post_+nume;
 
         return compo;
-        break;
       }
 
     case 1:
@@ -225,7 +224,6 @@ const Noms Champ_Generique_Morceau_Equation::get_property(const Motcle& query) c
               unites[0]+="/m2";
           }
         return unites;
-        break;
       }
 
     }

@@ -447,10 +447,10 @@ Champ_base& Champ_P1NC::affecter_(const Champ_base& ch)
             tab(face,comp)=17./60.*somme+3./20.*valf(face,comp);
         }
     }
+  return *this;
 #else
   return Champ_Inc_base::affecter_(ch);
 #endif
-  return *this;
 }
 
 //-Cas CL periodique : assure que les valeurs sur des faces periodiques

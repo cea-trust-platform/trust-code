@@ -487,7 +487,6 @@ int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& 
       default:
         Cerr<<"type_geo " << (int)type_geo <<" is not a supported element."<<finl;
         return -1;
-        break;
       }
 
     if (rep==MED_CYLINDRICAL)
@@ -740,7 +739,6 @@ int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& 
             default:
               Cerr<<"type_geo " << (int)type_geo <<" is not supported by TRUST."<<finl;
               return -1;
-              break;
             }
 
 

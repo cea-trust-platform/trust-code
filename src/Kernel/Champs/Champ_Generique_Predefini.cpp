@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -57,7 +57,6 @@ int Champ_Generique_Predefini::lire_motcle_non_standard(const Motcle& mot, Entre
     }
   else
     return Champ_Generique_base::lire_motcle_non_standard(mot,is);
-  return 1;
 }
 
 void Champ_Generique_Predefini::completer(const Postraitement_base& post)
@@ -120,7 +119,6 @@ const Noms Champ_Generique_Predefini::get_property(const Motcle& query) const
         else if (Motcle(type_champ_)=="TOTAL_FORCE")
           mots[0] = "kg.m2/s";
         return mots;
-        break;
       }
     }
   return champ_->get_property(query);

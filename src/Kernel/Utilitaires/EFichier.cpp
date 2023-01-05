@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,12 +30,10 @@ EFichier::EFichier(const char* name,IOS_OPEN_MODE mode) :Entree_Fichier_base(nam
 Entree& EFichier::readOn(Entree& s)
 {
   throw;
-  return s;
 }
 
 Sortie& EFichier::printOn(Sortie& s) const
 {
   throw;
-  return s;
 }
 

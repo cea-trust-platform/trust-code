@@ -96,15 +96,18 @@ template <typename _TYPE_, TYPE_OPERATION_VECT _TYPE_OP_ >
 inline _TYPE_ neutral_value()
 {
   static constexpr bool IS_MAX = ((_TYPE_OP_ == TYPE_OPERATION_VECT::IMAX_) || (_TYPE_OP_ == TYPE_OPERATION_VECT::MAX_)), IS_MAX_ABS = (_TYPE_OP_ == TYPE_OPERATION_VECT::MAX_ABS_);
-  if (IS_MAX_ABS) return 0;
+  if (IS_MAX_ABS)
+    return 0;
+  else
+    {
+      _TYPE_ neutral_val;
 
-  _TYPE_ neutral_val;
+      if (std::is_same<_TYPE_, double>::value) neutral_val = (_TYPE_) neutral_value_double_(IS_MAX);
+      else if (std::is_same<_TYPE_, float>::value) neutral_val = (_TYPE_) neutral_value_float_(IS_MAX);
+      else neutral_val = (_TYPE_) neutral_value_int_(IS_MAX);
 
-  if (std::is_same<_TYPE_, double>::value) neutral_val = (_TYPE_)neutral_value_double_(IS_MAX);
-  else if (std::is_same<_TYPE_, float>::value) neutral_val = (_TYPE_)neutral_value_float_(IS_MAX);
-  else neutral_val = (_TYPE_)neutral_value_int_(IS_MAX);
-
-  return neutral_val;
+      return neutral_val;
+    }
 }
 
 template <typename _TYPE_,typename _TYPE_RETURN_, TYPE_OPERATION_VECT _TYPE_OP_ >

@@ -1274,12 +1274,10 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion(const DoubleTab& Kij, const Do
     case 1 :
 
       return ajouter_antidiffusion_v1(Kij,Fij,transporte,resu);
-      break;
 
     case 2 :
 
       return ajouter_antidiffusion_v2(Kij,Fij,transporte,resu);
-      break;
 
     default :
 

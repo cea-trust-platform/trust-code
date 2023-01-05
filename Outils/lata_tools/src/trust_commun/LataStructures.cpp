@@ -162,35 +162,25 @@ Motcle Domain::lata_element_name(Domain::Element type)
     {
     case point:
       return "POINT";
-      break;
     case line:
       return "SEGMENT";
-      break;
     case triangle:
       return "TRIANGLE";
-      break;
     case quadri:
       return "QUADRANGLE";
-      break;
     case tetra:
       return "TETRAEDRE";
-      break;
     case hexa:
       return "HEXAEDRE";
-      break;
     case prism6:
       return "PRISM6";
-      break;
     case polyedre:
       return "POLYEDRE";
-      break;
     case polygone:
       return "POLYGONE";
-      break;
     default:
       return "UNSPECIFIED";
     }
-  return "UNSPECIFIED";
 }
 
 Domain::Element Domain::element_type_from_string(const Motcle& type_elem)

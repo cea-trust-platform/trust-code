@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -65,19 +65,19 @@ void Source_Fluide_Dilatable_Face<DERIVED_T>::contribuer_a_avec_impl(const Doubl
 {
 
   return; /* on ne fait rien pour l'instant ... */
-
-  DoubleTrav toto(present);
-  ajouter_impl(toto);
-  int nb_comp=toto.dimension(1);
-  for (int i=0; i < toto.dimension(0); i++)
-    for (int comp=0; comp<nb_comp; comp++)
-      {
-        if (present(i,comp)!=0)
-          {
-            int i0 = i * nb_comp + comp;
-            matrice(i0,i0) -= toto(i,comp) / present(i,comp);
-          }
-      }
+  /*
+    DoubleTrav toto(present);
+    ajouter_impl(toto);
+    int nb_comp=toto.dimension(1);
+    for (int i=0; i < toto.dimension(0); i++)
+      for (int comp=0; comp<nb_comp; comp++)
+        {
+          if (present(i,comp)!=0)
+            {
+              int i0 = i * nb_comp + comp;
+              matrice(i0,i0) -= toto(i,comp) / present(i,comp);
+            }
+        } */
 }
 
 #endif /* Source_Fluide_Dilatable_Face_included */

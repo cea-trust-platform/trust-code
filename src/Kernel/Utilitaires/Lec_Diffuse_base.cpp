@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,13 +23,11 @@ Implemente_base_sans_constructeur(Lec_Diffuse_base,"Lec_Diffuse_base",EFichier);
 Entree& Lec_Diffuse_base::readOn(Entree& s)
 {
   throw;
-  return s;
 }
 
 Sortie& Lec_Diffuse_base::printOn(Sortie& s) const
 {
   throw;
-  return s;
 }
 
 /*! @brief ne fait rien (constructeur protege car c'est une classe de base)

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -129,7 +129,6 @@ const Noms Champ_Generique_Divergence::get_property(const Motcle& query) const
         compo[0] = nom_post_+nume;
 
         return compo;
-        break;
       }
 
     case 1:
@@ -140,7 +139,6 @@ const Noms Champ_Generique_Divergence::get_property(const Motcle& query) const
         unites[0] = source_unites[0]+"/m";
 
         return unites;
-        break;
       }
     }
   return Champ_Gen_de_Champs_Gen::get_property(query);
