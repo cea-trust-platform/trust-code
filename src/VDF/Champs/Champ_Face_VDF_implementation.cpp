@@ -75,7 +75,9 @@ DoubleVect& Champ_Face_VDF_implementation::valeur_a_elem_(const DoubleTab& val_f
       const double psi = (position(d) - dom.coord(som0, d)) / (dom.coord(som1, d) - dom.coord(som0, d));
       for (int n = 0; n < N; n++)
         {
-          const double val1 = val_face(e_f(e, d), n), val2 = val_face(e_f(e, d + D), n);
+          // TODO : FIXME : cas avec line_size 1 mais nb_dim != 2 ... vu dans cathare3D
+          const double val1 = (N == 1) ? val_face(e_f(e, d)) : val_face(e_f(e, d), n);
+          const double val2 = (N == 1) ? val_face(e_f(e, d + D)) : val_face(e_f(e, d + D), n);
           if (le_champ().nb_comp() == 1)
             {
               if (est_egal(psi, 0) || est_egal(psi, 1))
