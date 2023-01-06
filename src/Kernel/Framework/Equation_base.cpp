@@ -690,10 +690,18 @@ void Equation_base::imprimer(Sortie& os) const
  */
 DoubleTab& Equation_base::derivee_en_temps_inco(DoubleTab& derivee)
 {
-  derivee=0;
+  derivee = 0.;
   DoubleTrav secmem(derivee);
   // secmem = sum(operators) + sources + equation specific terms
-  if (schema_temps().diffusion_implicite())
+
+  bool calcul_explicite = false;
+  if (parametre_equation_.non_nul() && sub_type(Parametre_implicite, parametre_equation_.valeur()))
+    {
+      Parametre_implicite& param2 = ref_cast(Parametre_implicite, parametre_equation_.valeur());
+      calcul_explicite = param2.calcul_explicite();
+    }
+
+  if (schema_temps().diffusion_implicite() && !calcul_explicite)
     {
       // Add convection operator only if equation has one
       derivee=inconnue().valeurs();
@@ -721,7 +729,7 @@ DoubleTab& Equation_base::derivee_en_temps_inco(DoubleTab& derivee)
   if (implicite_==0)
     {
       solveur_masse.appliquer(secmem); // M-1 * secmem
-      if (schema_temps().diffusion_implicite())
+      if (schema_temps().diffusion_implicite() && !calcul_explicite)
         {
           // Solve: (1/dt + M-1*A)*dI = M-1 * secmem
           // where A is the diffusion
