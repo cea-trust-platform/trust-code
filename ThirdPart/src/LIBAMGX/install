@@ -32,7 +32,7 @@ then
    cd $LIB && mkdir -p build && cd build
    if [ "$TRUST_CC_BASE_EXTP" != "" ]
    then
-      AMGX_COMPILERS="-DCMAKE_CXX_COMPILER=$TRUST_CC_BASE_EXTP -DCMAKE_CXX_FLAGS=-std=c++14 -DCMAKE_C_COMPILER=${TRUST_CC_BASE_EXTP%++}cc" # See https://github.com/NVIDIA/AMGX for compilers...
+      AMGX_COMPILERS="-DCMAKE_CXX_COMPILER=$TRUST_CC_BASE_EXTP -DCMAKE_CXX_FLAGS=-std=c++14 -DCMAKE_C_COMPILER=$TRUST_cc_BASE_EXTP" # See https://github.com/NVIDIA/AMGX for compilers...
    else
       AMGX_COMPILERS="-DCMAKE_CXX_COMPILER=$TRUST_CC_BASE -DCMAKE_C_COMPILER=$TRUST_cc_BASE"
    fi
@@ -67,7 +67,7 @@ then
    if [ "$TRUST_CC_BASE_EXTP" != "" ]
    then
       export CXX=$TRUST_CC_BASE_EXTP
-      export CC=${CXX%++}cc
+      export CC=$TRUST_cc_BASE_EXTP
    else
       export CXX=$TRUST_CC
       export CC=$TRUST_cc

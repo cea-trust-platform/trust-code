@@ -14,8 +14,8 @@ install_OpenBlas()
    cd OpenBLAS-$version_openblas
    if [ "$TRUST_CC_BASE_EXTP" != "" ]
    then
-      CC=${TRUST_CC_BASE_EXTP%++}cc
-      FC=${TRUST_CC_BASE_EXTP%++}fortran
+      CC=$TRUST_cc_BASE_EXTP
+      FC=$TRUST_F77_BASE_EXTP
    else
       CC=$TRUST_cc
       FC=$TRUST_F77

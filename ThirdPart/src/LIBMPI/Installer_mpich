@@ -16,8 +16,8 @@ latest_version=3.4.2
 if [ "$TRUST_CC_BASE_EXTP" != "" ]
 then
    export CXX=$TRUST_CC_BASE_EXTP
-   export CC=${CXX%++}cc
-   export F77=${CXX%++}fortran
+   export CC=$TRUST_cc_BASE_EXTP
+   export F77=$TRUST_F77_BASE_EXTP
 else
    export CXX=$TRUST_CC_BASE
    export CC=$TRUST_cc_BASE

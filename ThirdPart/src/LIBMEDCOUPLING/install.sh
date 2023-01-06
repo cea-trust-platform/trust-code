@@ -65,7 +65,7 @@ USE_PYTHON=ON # API Python
 if [ "$TRUST_CC_BASE_EXTP" != "" ]
 then
    CXX=$TRUST_CC_BASE_EXTP
-   CC=${CXX%++}cc
+   CC=$TRUST_cc_BASE_EXTP
 else
    CXX=$TRUST_CC
    CC=$TRUST_cc

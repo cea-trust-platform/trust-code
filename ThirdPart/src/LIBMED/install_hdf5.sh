@@ -52,8 +52,8 @@ if [ "x$TRUST_USE_EXTERNAL_HDF" = "x" ]; then
   if [ "$TRUST_CC_BASE_EXTP" != "" ]
   then
      CXX=$TRUST_CC_BASE_EXTP
-     CC=${CXX%++}cc
-     FC=${CXX%++}fortran
+     CC=$TRUST_cc_BASE_EXTP
+     FC=$TRUST_F77_BASE_EXTP
   else
      CXX=$TRUST_CC
      CC=$TRUST_cc

@@ -637,6 +637,7 @@ define_modules_config
 #######################
 # Variable TRUST_TMP #
 #######################
+cd $TRUST_ROOT/env_src
 . ./TRUST_TMP.env
 
 ###################################
@@ -660,7 +661,6 @@ fi
 # Quelle architecture ?
 #######################
 arch=`uname -s`
-TRUST_CC_BASE_EXTP="" # New: compiler may be given for External_Packages (libraries, tools,...)
 case $arch in
    Linux) TRUST_ARCH=linux
 	TRUST_EDITOR="gedit nedit kate kedit xemacs xedit emacs"
@@ -684,8 +684,14 @@ case $arch in
 	   fi
 	   nvc++ -help 1>/dev/null 2>&1
 	   [ $? != 0 ] && echo "Erreur, nvc++ not installed." && exit -1
-	   # On compile les extp (librairies, tools) avec GNU
-	   export TRUST_CC_BASE_EXTP=g++ && [ -f /usr/bin/cuda-g++ ] && TRUST_CC_BASE_EXTP=/usr/bin/cuda-g++
+	   # Avec Cuda et OpenMP, on compile les extp (librairies, tools) avec GNU si pas defini dans les fichiers HOST.machine
+	   if [ "$TRUST_CC_BASE_EXTP" = "" ]
+	   then
+	      TRUST_CC_BASE_EXTP=g++       && [ -f /usr/bin/cuda-g++ ]      && TRUST_CC_BASE_EXTP=/usr/bin/cuda-g++
+	      TRUST_cc_BASE_EXTP=gcc       && [ -f /usr/bin/cuda-gcc ]      && TRUST_cc_BASE_EXTP=/usr/bin/cuda-gcc
+	      TRUST_F77_BASE_EXTP=gfortran && [ -f /usr/bin/cuda-gfortran ] && TRUST_F77_BASE_EXTP=/usr/bin/cuda-gfortran
+	   fi
+	   export TRUST_CC_BASE_EXTP TRUST_cc_BASE_EXTP TRUST_F77_BASE_EXTP
 	fi
 	# On rajoute les autres compilateurs
 	TRUST_CC_BASE=$TRUST_CC_BASE" pgCC"
@@ -1193,7 +1199,6 @@ else
      return 0;
    }" > $rep_test_mpi/test_abort_mpi.cpp
    echo "      program main
-      include 'mpif.h'
       integer ierr
       integer argc
       argc=iargc()
@@ -1362,7 +1367,7 @@ else
 
    if [ $mpi_detecte = 0 ]
    then
-      if [ "$TRUST_FORCE_PROVIDED_OPENMPI" != 1 ] && [ "$TRUST_FORCE_PROVIDED_MPICH" != 1 ]
+      if [ "$TRUST_FORCE_PROVIDED_OPENMPI" != 1 ] && [ "$TRUST_FORCE_LATEST_OPENMPI" != 1 ] && [ "$TRUST_FORCE_PROVIDED_MPICH" != 1 ] && [ "$TRUST_FORCE_LATEST_MPICH" != 1 ]
       then
          if [ "$TRUST_WITHOUT_HOST" = 0 ] || [ "$BATCH_SYSTEM_DETECTED" = 1 ]
          then
@@ -1726,11 +1731,11 @@ case $TRUST_ARCH_CC in
 	;;
    linux_crayCC) TRUST_SUPPORTED=1
    	Defines="-D_COMPILE_AVEC_CLANG"
-	CppFlags="-O3 -fPIC -std=c++14 -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wshadow -Wextra -Qunused-arguments -Wno-unsequenced -Wno-unused-parameter -Wno-tautological-compare -Werror"
-	SYSLIBS="-lrt "
-	F77Flags="-O3 -fPIC"
-	ccFLAGS="-O3 -fPIC"
-	ShLibFlag="\$(TRUST_CC) -shared"
+    CppFlags="-O3 -fPIC -std=c++14 -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wshadow -Wextra -Qunused-arguments -Wno-unsequenced -Wno-unused-parameter -Wno-tautological-compare -Werror"
+    SYSLIBS="-lrt "
+    F77Flags="-O3 -fPIC"
+    ccFLAGS="-O3 -fPIC"
+    ShLibFlag="\$(TRUST_CC) -shared"
 	;;
    linux_FCC) TRUST_SUPPORTED=1
         Defines="-D_COMPILE_AVEC_FCC" # Kfast: induces the standard options to exploit the full performance of the A64FX such as SIMDization, software pipelining
@@ -1790,7 +1795,13 @@ elif [ $TRUST_SUPPORTED = 1 ]
 then
    echo "\$TRUST_ARCH_CC=$TRUST_ARCH_CC is a supported platform for TRUST."
 fi
-m="# C++ compiler for EXTP";e="TRUST_CC_BASE_EXTP=$TRUST_CC_BASE_EXTP && export TRUST_CC_BASE_EXTP";ecrit $m"|"$e"|"$env
+# New: compiler may be given for External_Packages (libraries, tools,...)
+if [ "$TRUST_CC_BASE_EXTP" != "" ]
+then
+   m="# C++ compiler for EXTP";e="TRUST_CC_BASE_EXTP=$TRUST_CC_BASE_EXTP   && export TRUST_CC_BASE_EXTP";ecrit $m"|"$e"|"$env
+   m="# C   compiler for EXTP";e="TRUST_cc_BASE_EXTP=$TRUST_cc_BASE_EXTP   && export TRUST_cc_BASE_EXTP";ecrit $m"|"$e"|"$env
+   m="# F77 compiler for EXTP";e="TRUST_F77_BASE_EXTP=$TRUST_F77_BASE_EXTP && export TRUST_F77_BASE_EXTP";ecrit $m"|"$e"|"$env
+fi
 ########################
 # Cas du compilateur gnu
 ########################
@@ -1832,12 +1843,14 @@ done
 #################################################
 # test si $TRUST_F77 peut compiler du Fortran 90
 #################################################
+# Suppression de include 'mpif.h' car inutile avec wrapper mpi.
+# Et regle le probleme de l'erreur: Array specification at (1) has more than 7 dimensions in mpif-sizeof.h
 echo "
       subroutine test
       real(kind=8) a
       return
       end" > testf90.f
-FC=$TRUST_F77_BASE && [ "$TRUST_CC_BASE_EXTP" != "" ] && FC=${TRUST_CC_BASE_EXTP%++}fortran
+FC=$TRUST_F77_BASE && [ "$TRUST_CC_BASE_EXTP" != "" ] && FC=$TRUST_F77_BASE_EXTP
 echo $ECHO_OPTS "Is $FC fortran 90 compliant to compile MUMPS ? \c"
 $FC -c testf90.f 1>testf90.log 2>&1
 # 12/02/10: Ajout test sur la version de gfortran car la compilation de MUMPS fait planter gfortran 4.0.1
@@ -1976,6 +1989,9 @@ then
      then
         # A partir de HPC SDK 21.3 et necessite compute_capability 70 !
         openmp_target="-target=gpu $march"
+        # Sur cluster pour compiler sur la frontale (pas de carte):
+        # https://forums.developer.nvidia.com/t/compile-error-for-openmp-code-with-target-offloading-in-nvhpc-20-11/164188
+        [ "$BATCH_SYSTEM_DETECTED" = 1 ] && openmp_target=$openmp_target" -gpu=cc70"
         #Flags utiles du debug:
         #export NVCOMPILER_ACC_NOTIFY = 1|2|4|8|16
         #export NVCOMPILER_ACC_TIME = 1

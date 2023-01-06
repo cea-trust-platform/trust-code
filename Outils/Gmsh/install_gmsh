@@ -35,7 +35,7 @@ then
    cd ${fltk%-source.tar.gz}   
    if [ "$TRUST_CC_BASE_EXTP" != "" ]
    then
-      CC=${TRUST_CC_BASE_EXTP%++}cc
+      CC=$TRUST_cc_BASE_EXTP
    else
       CC=$TRUST_cc_BASE
    fi  
@@ -86,8 +86,8 @@ FC=$TRUST_F77_BASE
 if [ "$TRUST_CC_BASE_EXTP" != "" ]
 then
    export OMPI_CXX=$TRUST_CC_BASE_EXTP
-   export OMPI_CC=${TRUST_CC_BASE_EXTP%++}cc
-   export OMPI_FC=${TRUST_CC_BASE_EXTP%++}fortran
+   export OMPI_CC=$TRUST_cc_BASE_EXTP
+   export OMPI_FC=$TRUST_F77_BASE_EXTP
    export MPICH_CXX=$OMPI_CXX
    export MPICH_CC=$OMPI_CC
    export MPICH_FC=$OMPI_FC

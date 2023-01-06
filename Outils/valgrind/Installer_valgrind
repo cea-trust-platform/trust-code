@@ -44,7 +44,7 @@ diff mpi/libmpiwrap.c.org mpi/libmpiwrap.c
 ./configure -help 1>../configure.help 2>&1
 if [ "$TRUST_CC_BASE_EXTP" != "" ]
 then
-   export OMPI_CC=${TRUST_CC_BASE_EXTP%++}cc
+   export OMPI_CC=$TRUST_cc_BASE_EXTP
    export MPICH_CC=$OMPI_CC
 fi
 ./configure --with-mpicc=$TRUST_cc --prefix=$TRUST_ROOT/exec/valgrind
