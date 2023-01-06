@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,6 +33,7 @@ Entree& Milieu_composite::readOn(Entree& is)
 {
   int i = 0;
   std::vector<std::pair<std::string, int>> especes; // string pour phase_nom. int : 0 pour liquide et 1 pour gaz
+  Cerr << "Reading Milieu_composite..." << finl;
   Nom mot;
   is >> mot;
   if (mot != "{")
@@ -58,7 +59,7 @@ Entree& Milieu_composite::readOn(Entree& is)
       else if (!mot.debute_par("saturation") && !mot.debute_par("interface")) // on ajout les phases
         {
           noms_phases_.add(mot);
-          Cerr << "Milieu_composite : ajout la phase " << mot << " ... " << finl;
+          Cerr << "Milieu_composite: add phase " << mot << " ... " << finl;
           Fluide fluide;
           is >> fluide;
           if (fluide->get_porosites_champ().non_nul())
@@ -90,13 +91,13 @@ Entree& Milieu_composite::readOn(Entree& is)
       else if (mot.debute_par("saturation")) // on ajout la saturation
         {
           has_saturation_ = true;
-          Cerr << "Milieu_composite : ajout la saturation " << mot << " ... " << finl;
+          Cerr << "Milieu_composite: add saturation " << mot << " ... " << finl;
           is >> sat_lu;
         }
       else // on ajout l'interface
         {
           has_interface_ = true;
-          Cerr << "Milieu_composite : ajout l'interface " << mot << " ... " << finl;
+          Cerr << "Milieu_composite: add interface " << mot << " ... " << finl;
           is >> inter_lu;
         }
     }

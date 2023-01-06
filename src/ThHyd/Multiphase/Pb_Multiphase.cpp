@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,6 +18,8 @@
 #include <Milieu_composite.h>
 #include <Interprete_bloc.h>
 #include <EChaine.h>
+#include <Schema_Euler_Implicite.h>
+#include <SETS.h>
 
 // a cause du mettre_a_jour
 
@@ -46,10 +48,35 @@ Implemente_instanciable(Pb_HEM, "Pb_HEM", Pb_Multiphase);
 
 Sortie& Pb_Multiphase::printOn(Sortie& os) const { return Pb_Fluide_base::printOn(os); }
 
-Entree& Pb_Multiphase::readOn(Entree& is) { return Pb_Fluide_base::readOn(is); }
+Entree& Pb_Multiphase::readOn(Entree& is)
+{
+  if (domaine_dis().zone_dis(0).valeur().que_suis_je().debute_par("Zone_VEF"))
+    {
+      Cerr << "Error: Problem of type " << que_suis_je() << " is not available for VEF discretization" << finl;
+      Cerr << "It is only available for VDF, PolyMAC and PolyMAC_P0 discretizations." << finl;
+      Process::exit();
+    }
+  return Pb_Fluide_base::readOn(is);
+}
 
 Entree& Pb_Multiphase::lire_equations(Entree& is, Motcle& mot)
 {
+  // Verify that user choosed adapted time scheme/solver
+  if (!sub_type(Schema_Euler_Implicite,le_schema_en_temps.valeur()))
+    {
+      Cerr << "Error: for Pb_Multiphase, you can only use Scheme_euler_implicit time scheme with sets/ice solver" << finl;
+      Process::exit();
+    }
+  else if (sub_type(Schema_Euler_Implicite,le_schema_en_temps.valeur()))
+    {
+      Schema_Euler_Implicite& schm_imp = ref_cast(Schema_Euler_Implicite,le_schema_en_temps.valeur());
+      if (!sub_type(SETS,schm_imp.solveur().valeur()))
+        {
+          Cerr << "Error: for Pb_Multiphase, you can only use Scheme_euler_implicit time scheme with sets/ice solver" << finl;
+          Process::exit();
+        }
+    }
+
   bool already_read;
 
   is >> mot;
@@ -147,6 +174,12 @@ void Pb_Multiphase::typer_lire_milieu(Entree& is)
 {
   le_milieu_.resize(1); /* Un milieu .. mais composite !! */
   is >> le_milieu_[0]; // On commence par la lecture du milieu
+  if (!sub_type(Milieu_composite,le_milieu_[0].valeur()))
+    {
+      Cerr << "Error: Fluid of type " << le_milieu_[0].valeur().le_type() << " is not compatible with " << que_suis_je() << " problem which accepts only Milieu_composite medium" << finl;
+      Cerr << "Check your datafile!" << finl;
+      Process::exit();
+    }
   noms_phases_ = ref_cast(Milieu_composite,le_milieu_[0].valeur()).noms_phases();
   associer_milieu_base(le_milieu_[0].valeur());
 
