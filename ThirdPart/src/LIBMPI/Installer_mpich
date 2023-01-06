@@ -55,7 +55,11 @@ fi
 #[ "`file $package 2>&1 | grep gzip`" = "" ] && rm -f $package
 
 # On telecharge le package s'il n'est pas la
-[ ! -f $package ] && package=$TRUST_TMP/$package && [ ! -f $package ] && wget_ $http/`basename $package` -P $TRUST_TMP
+[ ! -f $package ] && package=$TRUST_TMP/$package
+if [ ! -f $package ]
+then
+   wget_ $http/`basename $package` -P $TRUST_TMP || exit-1
+fi
 
 install=`pwd`/mpich
 install=$MPI_ROOT

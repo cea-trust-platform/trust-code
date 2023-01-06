@@ -425,7 +425,7 @@ check_components()
                            trustversion=""
                            [ "$Composant" == "flica5" ] && trustversion=1.9.1
                            [ "$Composant" == "cathare3D" ] && trustversion=1.9.1
-                           if  [ "${machine:0:5}" = "orcus" ]
+                           if  [ "${machine:0:5}" = "orcus" ] || [ "${machine:0:6}" = "altair" ]
                            then
 		              WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/trust_trio-public/env_TRUST-'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            elif  [ "${machine:0:9}" = "callisto-" ] || [ "${machine:0:11}" = "irene-ccrt-" ] || [ "${machine:0:7}" = "cobalt-" ]
