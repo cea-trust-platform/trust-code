@@ -23,7 +23,7 @@
  *
  * @sa Raccord
  */
-class Raccords : public LIST(Raccord)
+class Raccords : public STLLIST(Raccord)
 {
   Declare_instanciable(Raccords);
 public :
@@ -43,4 +43,5 @@ inline int Raccords::nb_raccords() const
 {
   return size();
 }
-#endif
+
+#endif /* Raccords_included */

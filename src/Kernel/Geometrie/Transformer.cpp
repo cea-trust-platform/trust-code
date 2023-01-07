@@ -20,25 +20,13 @@
 #include <Hexaedre.h>
 #include <Scatter.h>
 
-Implemente_instanciable(Transformer,"Transformer",Interprete_geometrique_base);
+Implemente_instanciable(Transformer, "Transformer", Interprete_geometrique_base);
 
-
-/*! @brief Simple appel a: Interprete::printOn(Sortie&)
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Transformer::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
-
-/*! @brief Simple appel a: Interprete::readOn(Entree&)
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Transformer::readOn(Entree& is)
 {
   return Interprete::readOn(is);
@@ -53,21 +41,18 @@ Entree& Transformer::interpreter_(Entree& is)
 
   les_fcts.dimensionner(dimension);
 
-  for (int i=0; i<dimension; i++)
-    {
-      is >> les_fcts[i];
-    }
+  for (int i = 0; i < dimension; i++)
+    is >> les_fcts[i];
 
   transformation_complete(les_fcts);
   return is;
 }
 
-
 void Transformer::transformer(Domaine& dom, Noms& les_fcts)
 {
   VECT(Parser_U) fxyz(dimension);
 
-  for (int i = 0; i<dimension; i++)
+  for (int i = 0; i < dimension; i++)
     {
       Cerr << "Reading and interpretation of the function " << les_fcts[i] << finl;
       fxyz[i].setNbVar(3);
@@ -78,37 +63,37 @@ void Transformer::transformer(Domaine& dom, Noms& les_fcts)
       fxyz[i].parseString();
       Cerr << "Interpretation of the function " << les_fcts[i] << " Ok" << finl;
     }
-  DoubleTab& sommets=dom.les_sommets();
+  DoubleTab& sommets = dom.les_sommets();
   DoubleTab new_sommets(sommets);
-  int sz=sommets.dimension(0);
-  double x=0;
-  double y=0;
-  double z=0;
-  for (int i = 0; i<sz; i++)
+  int sz = sommets.dimension(0);
+  double x = 0;
+  double y = 0;
+  double z = 0;
+  for (int i = 0; i < sz; i++)
     {
-      for (int j = 0; j<dimension; j++)
+      for (int j = 0; j < dimension; j++)
         {
-          x=sommets(i,0);
-          y=sommets(i,1);
-          z=0;
+          x = sommets(i, 0);
+          y = sommets(i, 1);
+          z = 0;
 
-          if (dimension >2 )
-            z = sommets(i,2);
+          if (dimension > 2)
+            z = sommets(i, 2);
         }
-      for(int  j=0; j<dimension; j++)
+      for (int j = 0; j < dimension; j++)
         {
-          fxyz[j].setVar("x",x);
-          fxyz[j].setVar("y",y);
-          fxyz[j].setVar("z",z);
-          new_sommets(i,j)=fxyz[j].eval();
+          fxyz[j].setVar("x", x);
+          fxyz[j].setVar("y", y);
+          fxyz[j].setVar("z", z);
+          new_sommets(i, j) = fxyz[j].eval();
         }
     }
-  sommets=new_sommets;
+  sommets = new_sommets;
 }
 
 void Transformer::verifie_type_elem()
 {
-  Elem_geom& type_elem=domaine().zone(0).type_elem();
+  Elem_geom& type_elem = domaine().zone(0).type_elem();
   if (type_elem->que_suis_je() == "Hexaedre_VEF")
     {
       Cerr << "------------------------------------------------------------------" << finl;
@@ -129,10 +114,10 @@ void Transformer::transformation_complete(Noms& les_fcts)
   transformer(domaine(), les_fcts);
 
   // Transformation de l'element parfois necessaire
-  Elem_geom& type_elem=domaine().zone(0).type_elem();
+  Elem_geom& type_elem = domaine().zone(0).type_elem();
   if (type_elem->que_suis_je() == "Rectangle")
     {
-      if (ref_cast(Rectangle,type_elem.valeur()).reordonner_elem()==-1) // Le reordonner_elem revele que l'on n'a plus des Rectangle
+      if (ref_cast(Rectangle,type_elem.valeur()).reordonner_elem() == -1) // Le reordonner_elem revele que l'on n'a plus des Rectangle
         {
           type_elem.typer("Quadrangle");
           type_elem.associer_zone(domaine().zone(0));
@@ -140,17 +125,16 @@ void Transformer::transformation_complete(Noms& les_fcts)
     }
   if (type_elem->que_suis_je() == "Hexaedre")
     {
-      if (ref_cast(Hexaedre,type_elem.valeur()).reordonner_elem()==-1) // Le reordonner_elem revele que l'on n'a plus des Hexaedre
+      if (ref_cast(Hexaedre,type_elem.valeur()).reordonner_elem() == -1) // Le reordonner_elem revele que l'on n'a plus des Hexaedre
         {
           type_elem.typer("Hexaedre_VEF");
           type_elem.associer_zone(domaine().zone(0));
-          Bords& les_bords=domaine().zone(0).faces_bord();
-          LIST_CURSEUR(Bord) curseur=les_bords;
-          while (curseur)
-            {
-              curseur->faces().typer(Faces::quadrangle_3D);
-              ++curseur;
-            }
+          Bords& les_bords = domaine().zone(0).faces_bord();
+          auto& list = les_bords.get_stl_list();
+
+          for (auto &itr : list)
+            itr.faces().typer(Faces::quadrangle_3D);
+
           les_bords.associer_zone(domaine().zone(0));
         }
     }

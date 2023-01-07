@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,20 +22,9 @@
 Implemente_instanciable(Pb_MED,"Pb_MED",Probleme_base);
 Implemente_instanciable(Pbc_MED,"Pbc_MED",Probleme_Couple);
 
+Sortie& Pb_MED::printOn(Sortie& s ) const { return s; }
+Sortie& Pbc_MED::printOn(Sortie& s ) const { return s; }
 
-/*! @brief NE FAIT RIEN
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie
- */
-Sortie& Pb_MED::printOn(Sortie& s ) const
-{
-  return s;
-}
-Sortie& Pbc_MED::printOn(Sortie& s ) const
-{
-  return s;
-}
 Entree& Pbc_MED::readOn(Entree& is )
 {
 
@@ -298,42 +287,36 @@ const Champ_base& Pb_MED::get_champ(const Motcle& un_nom) const
   REF(Champ_base) ref_champ;
 
   double temps_courant = schema_temps().temps_courant();
-
-  CONST_LIST_CURSEUR(Champ_Fonc) curseur = champs_fonc_post ;
   Motcle nom_champ;
   int ok_post=1;
-  while(curseur)
+
+  const auto& list = champs_fonc_post.get_stl_list();
+  for (const auto& itr : list)
     {
-      Champ_Fonc_MED& ch_med = ref_cast_non_const(Champ_Fonc_MED,curseur.valeur().valeur());
-      nom_champ = Motcle(curseur.valeur().le_nom());
-      // nom_champ=ch_med.le_champ().le_nom();
-      //  Cerr<<(int)__LINE__<<nom_champ<<finl;
-      // nom_champ = Motcle(curseur.valeur().valeur().le_nom());
+      Champ_Fonc_MED& ch_med = ref_cast_non_const(Champ_Fonc_MED,itr.valeur());
+      nom_champ = Motcle(itr.le_nom());
       if ((nom_champ==un_nom) && (ok_post==1))
         {
-          ref_champ = curseur.valeur();
+          ref_champ = itr;
           if (ch_med.temps()!=temps_courant)
             ch_med.mettre_a_jour(temps_courant);
           return ch_med.le_champ();
-          // return ref_champ.valeur();
         }
       else
         {
-          int nb_composantes = curseur.valeur().valeur().nb_comp();
+          int nb_composantes = itr->nb_comp();
           for (int i=0; i<nb_composantes; i++)
             {
-              nom_champ = Motcle(curseur.valeur().valeur().nom_compo(i));
+              nom_champ = Motcle(itr->nom_compo(i));
               if ((nom_champ==un_nom) && (ok_post==1))
                 {
-                  ref_champ = curseur.valeur();
+                  ref_champ = itr;
                   if (ch_med.temps()!=temps_courant)
                     ch_med.mettre_a_jour(temps_courant);
-                  //                   return ref_champ.valeur();
                   return ch_med.le_champ();
                 }
             }
         }
-      ++curseur;
     }
 
   Cerr<<"The indicated name "<<un_nom<<" do not correspond to a field understood by the problem"<<finl;

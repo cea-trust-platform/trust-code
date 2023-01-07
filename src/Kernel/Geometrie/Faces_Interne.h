@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,10 +16,7 @@
 #ifndef Faces_Interne_included
 #define Faces_Interne_included
 
-
-
 #include <Frontiere.h>
-
 
 /*! @brief Classe Faces_Interne La classe sert a representer un ensemble de faces qui sont internes
  *
@@ -33,11 +30,6 @@
 class Faces_Interne : public Frontiere
 {
   Declare_instanciable(Faces_Interne);
-
-public:
-
-private :
-
 };
 
-#endif
+#endif /* Faces_Interne_included */

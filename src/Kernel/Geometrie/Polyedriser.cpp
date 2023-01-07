@@ -207,37 +207,34 @@ void Polyedriser::polyedriser(Zone& zone) const
     }
 
   const DoubleTab coords = zone.domaine().coord_sommets();
+
   {
-    LIST_CURSEUR(Bord) curseur(zone.faces_bord());
-    while(curseur)
+    auto& list = zone.faces_bord().get_stl_list();
+    for (auto &itr : list)
       {
-        Faces& les_faces=curseur->faces();
+        Faces& les_faces = itr.faces();
         les_faces.typer(Faces::polygone_3D);
         reorder_vertices(les_faces, coords);
-        ++curseur;
       }
   }
 
   {
-    // Les Raccords
-    LIST_CURSEUR(Raccord) curseur(zone.faces_raccord());
-    while(curseur)
+    auto& list = zone.faces_raccord().get_stl_list();
+    for (auto &itr : list)
       {
-        Faces& les_faces=curseur.valeur()->faces();
+        Faces& les_faces = itr->faces();
         les_faces.typer(Faces::polygone_3D);
         reorder_vertices(les_faces, coords);
-        ++curseur;
       }
   }
+
   {
-    // Les Faces internes
-    LIST_CURSEUR(Faces_Interne) curseur(zone.faces_int());
-    while(curseur)
+    auto& list = zone.faces_int().get_stl_list();
+    for (auto &itr : list)
       {
-        Faces& les_faces=curseur->faces();
+        Faces& les_faces = itr.faces();
         les_faces.typer(Faces::polygone_3D);
         reorder_vertices(les_faces, coords);
-        ++curseur;
       }
   }
   return;

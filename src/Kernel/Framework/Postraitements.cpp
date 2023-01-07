@@ -16,23 +16,21 @@
 #include <Postraitements.h>
 #include <Postraitement.h>
 
-Implemente_instanciable(Postraitements,"Postraitements|Post_processings",LIST(DERIV(Postraitement_base)));
+Implemente_instanciable(Postraitements,"Postraitements|Post_processings",STLLIST(DERIV(Postraitement_base)));
 
 Entree& Postraitements::readOn(Entree& s)
 {
-  Cerr << "Postraitements::readOn should not be used" << finl;
-  exit();
+  Process::exit("Postraitements::readOn should not be used");
   return s;
 }
 
 Sortie& Postraitements::printOn(Sortie& s) const
 {
-  CONST_LIST_CURSEUR(DERIV(Postraitement_base)) curseur = *this;
-  while(curseur)
+  const auto& list = get_stl_list();
+  for (const auto& itr : list)
     {
-      const Postraitement_base& post = curseur.valeur().valeur();
+      const Postraitement_base& post = itr.valeur(); // valeur() car DERIV
       s << post;
-      ++curseur;
     }
   return s;
 }
@@ -89,8 +87,7 @@ Sortie& Postraitements::printOn(Sortie& s) const
 // Renvoie 1 si le motlu est compris (lecture d'un bloc de postraitement),
 //         0 sinon.
 
-int Postraitements::lire_postraitements(Entree& is, const Motcle& motlu,
-                                        const Probleme_base& mon_pb)
+int Postraitements::lire_postraitements(Entree& is, const Motcle& motlu, const Probleme_base& mon_pb)
 {
   Motcles motcles(4);
   motcles[0] = "Postraitement|Post_processing";
@@ -211,102 +208,93 @@ int Postraitements::lire_postraitements(Entree& is, const Motcle& motlu,
 
 void Postraitements::postraiter()
 {
-  LIST_CURSEUR(DERIV(Postraitement_base)) curseur = *this;
-  while(curseur)
+  auto& list = get_stl_list();
+  for (auto& itr : list)
     {
-      Postraitement_base& post = curseur.valeur().valeur();
+      Postraitement_base& post = itr.valeur();
       post.postraiter(1); // On force le postraitement
-      ++curseur;
     }
 }
 
 void Postraitements::traiter_postraitement()
 {
-  LIST_CURSEUR(DERIV(Postraitement_base)) curseur = *this;
-  while(curseur)
+  auto& list = get_stl_list();
+  for (auto& itr : list)
     {
-      Postraitement_base& post = curseur.valeur().valeur();
+      Postraitement_base& post = itr.valeur();
       post.postraiter(0); // Postraitement si intervalle de temps ecoule
-      ++curseur;
     }
 }
 
 void Postraitements::mettre_a_jour(double temps)
 {
-  LIST_CURSEUR(DERIV(Postraitement_base)) curseur = *this;
-  while(curseur)
+  auto& list = get_stl_list();
+  for (auto& itr : list)
     {
-      Postraitement_base& post = curseur.valeur().valeur();
+      Postraitement_base& post = itr.valeur();
       post.mettre_a_jour(temps);
-      ++curseur;
     }
 }
 
 void Postraitements::init()
 {
-  LIST_CURSEUR(DERIV(Postraitement_base)) curseur = *this;
-  while(curseur)
+  auto& list = get_stl_list();
+  for (auto& itr : list)
     {
-      Postraitement_base& post = curseur.valeur().valeur();
+      Postraitement_base& post = itr.valeur();
       post.init();
-      ++curseur;
     }
 }
 
 void Postraitements::finir()
 {
-  LIST_CURSEUR(DERIV(Postraitement_base)) curseur = *this;
-  while(curseur)
+  auto& list = get_stl_list();
+  for (auto& itr : list)
     {
-      Postraitement_base& post = curseur.valeur().valeur();
+      Postraitement_base& post = itr.valeur();
       post.finir();
-      ++curseur;
     }
 }
 
 int Postraitements::sauvegarder(Sortie& os) const
 {
   int bytes = 0;
-  CONST_LIST_CURSEUR(DERIV(Postraitement_base)) curseur = *this;
-  while(curseur)
+  const auto& list = get_stl_list();
+  for (const auto& itr : list)
     {
-      const Postraitement_base& post = curseur.valeur().valeur();
+      const Postraitement_base& post = itr.valeur();
       bytes += post.sauvegarder(os);
-      ++curseur;
     }
   return bytes;
 }
 
 int Postraitements::reprendre(Entree& is)
 {
-  LIST_CURSEUR(DERIV(Postraitement_base)) curseur = *this;
-  while(curseur)
+  auto& list = get_stl_list();
+  for (auto& itr : list)
     {
-      Postraitement_base& post = curseur.valeur().valeur();
+      Postraitement_base& post = itr.valeur();
       post.reprendre(is);
-      ++curseur;
     }
   return 1;
 }
 
 void Postraitements::completer()
 {
-  LIST_CURSEUR(DERIV(Postraitement_base)) curseur = *this;
-  while(curseur)
+  auto& list = get_stl_list();
+  for (auto& itr : list)
     {
-      Postraitement_base& post = curseur.valeur().valeur();
+      Postraitement_base& post = itr.valeur();
       post.completer();
-      ++curseur;
     }
 }
 
 void Postraitements::completer_sondes()
 {
-  LIST_CURSEUR(DERIV(Postraitement_base)) curseur = *this;
-  while(curseur)
+  auto& list = get_stl_list();
+  for (auto& itr : list)
     {
-      Postraitement_base& post = curseur.valeur().valeur();
+      Postraitement_base& post = itr.valeur();
       post.completer_sondes();
-      ++curseur;
     }
 }

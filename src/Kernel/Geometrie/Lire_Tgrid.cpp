@@ -675,12 +675,10 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
               Cerr << "Case not provided, contact TRUST support." << finl;
               exit();
             }
-          LIST_CURSEUR(Bord) curseur=les_bords;
-          while (curseur)
-            {
-              if (curseur->le_nom()==(Nom)izone) curseur->nommer(nom_zone);
-              ++curseur;
-            }
+
+          auto& list = les_bords.get_stl_list();
+          for (auto& itr : list)
+            if (itr.le_nom()==(Nom)izone) itr.nommer(nom_zone);
           // On parcourt les zones pour renommer
           Zones& les_zones=dom.zones();
           LIST_CURSEUR(Zone) curseur2=les_zones;

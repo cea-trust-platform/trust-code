@@ -18,18 +18,18 @@
 
 #include <Champ_Generique.h>
 #include <TRUST_List.h>
+
 /*! @brief classe List_Champ_Generique Represente une liste de Champ_Generique
  *
  */
-class Liste_Champ_Generique : public LIST(Champ_Generique)
+class Liste_Champ_Generique : public STLLIST(Champ_Generique)
 {
   Declare_instanciable(Liste_Champ_Generique);
 
 public :
   int reprendre(Entree& is) override;
   int sauvegarder(Sortie& os) const override;
-
-  void fixer_tstat_deb(double, double );
+  void fixer_tstat_deb(double, double ) { }
 };
 
-#endif
+#endif /* Liste_Champ_Generique_included */

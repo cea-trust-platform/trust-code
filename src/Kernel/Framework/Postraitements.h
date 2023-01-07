@@ -29,13 +29,12 @@ class Probleme_base;
 class Entree;
 class Motcle;
 
-class Postraitements : public LIST(DERIV(Postraitement_base))
+class Postraitements : public STLLIST(DERIV(Postraitement_base))
 {
   Declare_instanciable(Postraitements);
 
 public:
-  int lire_postraitements(Entree& is, const Motcle& motlu,
-                          const Probleme_base& mon_pb);
+  int lire_postraitements(Entree& is, const Motcle& motlu, const Probleme_base& mon_pb);
   void postraiter();
   void traiter_postraitement();
   void mettre_a_jour(double temps);

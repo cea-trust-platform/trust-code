@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,15 +20,9 @@
 
 Implemente_instanciable(Decouper_Bord_coincident,"Decouper_Bord_coincident",Interprete_geometrique_base);
 
-Sortie& Decouper_Bord_coincident::printOn(Sortie& os) const
-{
-  return Interprete::printOn(os);
-}
+Sortie& Decouper_Bord_coincident::printOn(Sortie& os) const { return Interprete::printOn(os); }
 
-Entree& Decouper_Bord_coincident::readOn(Entree& is)
-{
-  return Interprete::readOn(is);
-}
+Entree& Decouper_Bord_coincident::readOn(Entree& is) { return Interprete::readOn(is); }
 
 Entree& Decouper_Bord_coincident::interpreter_(Entree& is)
 {
@@ -232,60 +226,26 @@ void Decouper_Bord_coincident::Decouper_Bord_coincident_(Zone& zone)
       {
         // Les Raccords
         Cerr << "Splitting of connections" << finl;
-        LIST_CURSEUR(Raccord) curseur(zone.faces_raccord());;;
-        while(curseur)
+        auto& list = zone.faces_raccord().get_stl_list();
+        for (auto &itr : list)
           {
-            if(curseur.valeur()->le_nom()==nom_bord)
+            if (itr->le_nom() == nom_bord)
               {
-                Faces& les_faces=curseur.valeur()->faces();
-                if(dimension==2)
+                Faces& les_faces = itr->faces();
+                if (dimension == 2)
                   les_faces.typer(Faces::segment_2D);
                 else
                   les_faces.typer(Faces::triangle_3D);
 
-                IntTab& sommets=les_faces.les_sommets();
-                assert(sommets.dimension(1)==dimension);
+                IntTab& sommets = les_faces.les_sommets();
+                assert(sommets.dimension(1) == dimension);
                 sommets.ref(new_faces_racc);
                 les_faces.voisins().resize(face_newsz, 2);
-                les_faces.voisins()=-1;
+                les_faces.voisins() = -1;
               }
-            ++curseur;
           }
       }
       Scatter::init_sequential_domain(dom);
-      /*
-        {
-        // Les Faces internes
-        Cerr << "Splitting of internal faces" << finl;
-        LIST_CURSEUR(Faces_Interne) curseur(zone.faces_int());;;
-        while(curseur)
-        {
-        Faces& les_faces=curseur->faces();
-        if(dimension==2)
-        les_faces.typer(Faces::segment_2D);
-        else
-        les_faces.typer(Faces::triangle_3D);
-
-        IntTab& sommets=les_faces.les_sommets();
-        int nb_faces=sommets.dimension(0);
-        assert(sommets.dimension(1)==dimension);
-
-        IntTab new_faces(nb_faces+ii, dimension);
-
-        for(int j=0; j<nb_faces; j++)
-        for(int k=0; k<dimension; k++)
-        new_faces(j,k)=sommets(j,k);
-
-        for(int j=0; j<ii; j++)
-        for(int k=0; k<dimension; k++)
-        new_faces(j+nb_faces,k)=new_faces_int(j,k);
-
-        sommets.ref(new_faces);
-        les_faces.voisins().resize(nb_faces+ii, 2);
-        les_faces.voisins()=-1;
-        }
-        }
-      */
       Cerr<<"END of Decouper_Bord_coincident..."<<finl;
       Cerr<<"  1 NbElem="<<zone.les_elems().dimension(0)<<"  NbSom="<<zone.nb_som()<<finl;
     }

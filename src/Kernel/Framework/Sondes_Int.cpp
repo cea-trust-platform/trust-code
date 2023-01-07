@@ -13,10 +13,12 @@
 *
 *****************************************************************************/
 
-#include <Sondes_Int.h>
 #include <Postraitement.h>
+#include <Sondes_Int.h>
 
-Implemente_instanciable(Sondes_Int,"Sondes_Int",LIST(Sonde_Int));
+Implemente_instanciable(Sondes_Int, "Sondes_Int", STLLIST(Sonde_Int));
+
+Sortie& Sondes_Int::printOn(Sortie& s ) const { return s ; }
 
 /*! @brief Lit une liste de sondes a partir d'un flot d'entree Format: { [LIRE UNE SONDE AUTANT DE FOIS QUE NECESSAIRE] }
  *
@@ -60,31 +62,14 @@ Entree& Sondes_Int::readOn(Entree& s )
   return s;
 }
 
-
-/*! @brief NE FAIT RIEN
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Sondes_Int::printOn(Sortie& s ) const
-{
-  return s ;
-}
-
-
 /*! @brief Effectue le postraitement sur chacune des sondes de la liste.
  *
  */
 void Sondes_Int::postraiter(double temps)
 {
-  LIST_CURSEUR(Sonde_Int) curseur=*this;
-  while(curseur)
-    {
-      curseur->postraiter(temps);
-      ++curseur;
-    }
+  auto& list = get_stl_list();
+  for (auto& itr : list) itr.postraiter(temps);
 }
-
 
 /*! @brief Effectue une mise a jour en temps de chacune des sondes de la liste.
  *
@@ -93,14 +78,9 @@ void Sondes_Int::postraiter(double temps)
  */
 void Sondes_Int::mettre_a_jour(double temps, double tinit)
 {
-  LIST_CURSEUR(Sonde_Int) curseur=*this;
-  while(curseur)
-    {
-      curseur->mettre_a_jour(temps,tinit);
-      ++curseur;
-    }
+  auto& list = get_stl_list();
+  for (auto& itr : list) itr.mettre_a_jour(temps,tinit);
 }
-
 
 /*! @brief Associe un postraitement a la liste des sondes.
  *
@@ -109,4 +89,3 @@ void Sondes_Int::associer_post(const Postraitement& post)
 {
   mon_post = post;
 }
-

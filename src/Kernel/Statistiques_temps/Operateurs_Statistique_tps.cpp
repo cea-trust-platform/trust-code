@@ -19,46 +19,27 @@
 #include <Postraitement.h>
 
 
-Implemente_instanciable_sans_constructeur(Operateurs_Statistique_tps,"Operateurs_Statistique_tps",LIST(Operateur_Statistique_tps));
+Implemente_instanciable_sans_constructeur(Operateurs_Statistique_tps,"Operateurs_Statistique_tps",STLLIST(Operateur_Statistique_tps));
 
 Operateurs_Statistique_tps::Operateurs_Statistique_tps(): tstat_deb_(-123.), tstat_dernier_calcul_(-123.), tstat_fin_(-123.), lserie_(-123),dt_integr_serie_(-123.) {}
 
-/*! @brief Imprime le type et le nom de la liste d'operateurs sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Operateurs_Statistique_tps::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
+Sortie& Operateurs_Statistique_tps::printOn(Sortie& s ) const { return s << que_suis_je() << " " << le_nom(); }
+Entree& Operateurs_Statistique_tps::readOn(Entree& s) { return s; }
 
 inline const Operateur_Statistique_tps& recherche(Operateurs_Statistique_tps& op, const Nom& champ, const Motcle& motlu)
 {
-  LIST_CURSEUR(Operateur_Statistique_tps) curseur=op;
-  while(curseur)
+  auto& list = op.get_stl_list();
+  for (auto &itr : list)
     {
-      if ( curseur->valeur().le_nom() == champ )
-        return curseur.valeur();
-      ++curseur;
+      if (itr->le_nom() == champ)
+        return itr;
     }
   Cerr << "The post_processing request " << motlu << " of a variable" << finl;
   Cerr << "must be preceded by the post-processing request of the average of the same variable." << finl;
   Process::exit();
-  return curseur.valeur();
+  throw;
 }
 
-/*! @brief Lit les specifications d'une liste d'operateurs statistiques a partir d'un flot d'entree.
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- * @throws accolade ouvrante attendue
- * @throws mot clef ne correspond pas a un champ inconnu du probleme
- */
-Entree& Operateurs_Statistique_tps::readOn(Entree& s)
-{
-  return s;
-}
 
 int Operateurs_Statistique_tps::sauvegarder(Sortie& os) const
 {
@@ -71,20 +52,19 @@ int Operateurs_Statistique_tps::sauvegarder(Sortie& os) const
       Nom mon_ident(que_suis_je());
       mon_ident += mon_post->probleme().domaine().le_nom();
       double temps = mon_post->probleme().schema_temps().temps_courant();
-      mon_ident += Nom(temps,"%e");
+      mon_ident += Nom(temps, "%e");
       os << mon_ident << finl;
       os << que_suis_je() << finl;
       os << size() << finl;
-      os << Nom(tstat_deb_,"%e") << finl;
-      os << Nom(tstat_dernier_calcul_,"%e") << finl ;
+      os << Nom(tstat_deb_, "%e") << finl;
+      os << Nom(tstat_dernier_calcul_, "%e") << finl;
     }
-  CONST_LIST_CURSEUR(Operateur_Statistique_tps) curseur=*this;
-  int bytes=0;
-  while(curseur)
-    {
-      bytes += curseur->sauvegarder(os);
-      ++curseur;
-    }
+
+  int bytes = 0;
+  const auto& list = get_stl_list();
+  for (const auto &itr : list)
+    bytes += itr.sauvegarder(os);
+
   if (a_faire) os.flush();
   return bytes;
 }
@@ -135,38 +115,34 @@ int Operateurs_Statistique_tps::reprendre(Entree& is)
             }
           Cerr << "Statistics are not restarted and therefore the statistics calculation" << finl;
           Cerr << "will restart a t_deb =" << tstat_deb_ << finl;
-          LIST_CURSEUR(Operateur_Statistique_tps) curseur=*this;
+
           Nom bidon2;
           double dbidon;
           DoubleTab tab_bidon;
-          while(curseur)   // On saute les champs
+          auto& list = get_stl_list();
+          for (auto&& itr = list.begin(); itr != list.end(); ) // On saute les champs
             {
               is >> bidon2 >> bidon2;
               is >> dbidon;
               tab_bidon.reset(); // sinon erreur sur la taille dans lit()
               tab_bidon.jump(is);
-              ++curseur;
+              ++itr;
             }
         }
       else // tinit=>temps_derniere_mise_a_jour_stats : on fait la reprise
         {
           Nom bidon2;
-          LIST_CURSEUR(Operateur_Statistique_tps) curseur=*this;
-          while(curseur)
+          auto& list = get_stl_list();
+          for (auto &itr : list)
             {
               is >> bidon2 >> bidon2; // On saute l'identificateur et le type des champs
-              curseur->reprendre(is);
-              ++curseur;
+              itr.reprendre(is);
             }
           // On modifie l'attribut tstat_deb_ et l'attribut t_debut_ des champs
           // pour tenir compte de la reprise
           tstat_deb_ = tstat_deb_sauv;
-          curseur=*this;
-          while(curseur)
-            {
-              curseur->fixer_tstat_deb(tstat_deb_,temps_derniere_mise_a_jour_stats);
-              ++curseur;
-            }
+          for (auto &itr : list)
+            itr.fixer_tstat_deb(tstat_deb_,temps_derniere_mise_a_jour_stats);
         }
     }
   else  // lecture pour sauter le bloc

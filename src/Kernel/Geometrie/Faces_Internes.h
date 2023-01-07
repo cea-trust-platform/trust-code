@@ -23,7 +23,7 @@
  *
  * @sa Faces_Interne
  */
-class Faces_Internes : public LIST(Faces_Interne)
+class Faces_Internes : public STLLIST(Faces_Interne)
 {
   Declare_instanciable(Faces_Internes);
 
@@ -36,7 +36,6 @@ public :
   int nb_faces(Type_Face type) const;
 };
 
-
 /*! @brief Renvoie le nombre d'objet Face_Interne stockes dans la liste.
  *
  * @return (int) le nombre d'objet Face_Interne stockes dans la liste
@@ -46,4 +45,4 @@ inline int Faces_Internes::nb_faces_internes() const
   return size();
 }
 
-#endif
+#endif /* Faces_Internes_included */

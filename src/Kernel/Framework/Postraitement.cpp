@@ -77,15 +77,15 @@ void Postraitement::postraiter(int forcer)
           tstat_deb_ = dernier_temps;
           tstat_dernier_calcul_ = tstat_deb_;
           tstat_fin_ = tstat_deb_ + dt_integr_serie_;
-          LIST_CURSEUR(Champ_Generique) curseur2 = champs_post_complet_ ;
-          while(curseur2)
+
+          auto& list = champs_post_complet_.get_stl_list();
+          for (auto &itr : list)
             {
-              if (sub_type(Champ_Gen_de_Champs_Gen,curseur2.valeur().valeur()))
+              if (sub_type(Champ_Gen_de_Champs_Gen, itr.valeur()))
                 {
-                  Champ_Gen_de_Champs_Gen& champ_post = ref_cast(Champ_Gen_de_Champs_Gen,curseur2.valeur().valeur());
-                  champ_post.fixer_serie(tstat_deb_,tstat_fin_);
+                  Champ_Gen_de_Champs_Gen& champ_post = ref_cast(Champ_Gen_de_Champs_Gen, itr.valeur());
+                  champ_post.fixer_serie(tstat_deb_, tstat_fin_);
                 }
-              ++curseur2;
             }
         }
     }
@@ -94,12 +94,8 @@ void Postraitement::postraiter(int forcer)
 void Postraitement::mettre_a_jour(double temps)
 {
   //Mise a jour des operateurs statistiques portes par les Champ_Generique_Statistiques
-  LIST_CURSEUR(Champ_Generique) curseur2 = champs_post_complet_ ;
-  while(curseur2)
-    {
-      curseur2.valeur()->mettre_a_jour(temps);
-      ++curseur2;
-    }
+  auto& list = champs_post_complet_.get_stl_list();
+  for (auto &itr : list) itr->mettre_a_jour(temps);
 
   if ( inf_ou_egal(tstat_deb_,temps) &&  inf_ou_egal(temps,tstat_fin_) )
     tstat_dernier_calcul_ =  temps;// Il y a eu mise a jour effective des integrales
@@ -710,16 +706,14 @@ int Postraitement::reprendre(Entree& is)
                   Cerr << "We do not resume the statistics and thus the statistics calculation" << finl;
                   Cerr << "will restart at t_deb=" << tstat_deb_ << finl;
 
-
-                  LIST_CURSEUR(Champ_Generique) curseur = champs_post_complet_;
-                  while(curseur)
+                  auto& list = champs_post_complet_.get_stl_list();
+                  for (auto &itr : list)
                     {
-                      if (sub_type(Champ_Gen_de_Champs_Gen,curseur.valeur().valeur()))
+                      if (sub_type(Champ_Gen_de_Champs_Gen, itr.valeur()))
                         {
-                          const Champ_Gen_de_Champs_Gen& champ_post = ref_cast(Champ_Gen_de_Champs_Gen,curseur.valeur().valeur());
+                          const Champ_Gen_de_Champs_Gen& champ_post = ref_cast(Champ_Gen_de_Champs_Gen, itr.valeur());
                           champ_post.lire_bidon(is);
                         }
-                      ++curseur;
                     }
                 }
               else // tinit=>temps_derniere_mise_a_jour_stats : on fait la reprise
@@ -730,16 +724,14 @@ int Postraitement::reprendre(Entree& is)
                   // pour tenir compte de la reprise
                   tstat_deb_ = tstat_deb_sauv;
 
-                  LIST_CURSEUR(Champ_Generique) curseur = champs_post_complet_;
-
-                  while(curseur)
+                  auto& list = champs_post_complet_.get_stl_list();
+                  for (auto &itr : list)
                     {
-                      if (sub_type(Champ_Gen_de_Champs_Gen,curseur.valeur().valeur()))
+                      if (sub_type(Champ_Gen_de_Champs_Gen, itr.valeur()))
                         {
-                          Champ_Gen_de_Champs_Gen& champ_post = ref_cast(Champ_Gen_de_Champs_Gen,curseur.valeur().valeur());
-                          champ_post.fixer_tstat_deb(tstat_deb_,temps_derniere_mise_a_jour_stats);
+                          Champ_Gen_de_Champs_Gen& champ_post = ref_cast(Champ_Gen_de_Champs_Gen, itr.valeur());
+                          champ_post.fixer_tstat_deb(tstat_deb_, temps_derniere_mise_a_jour_stats);
                         }
-                      ++curseur;
                     }
                 }
             }
@@ -2190,15 +2182,10 @@ void Postraitement::creer_champ_post_med(const Motcle& motlu1,const Motcle& motl
 
 int Postraitement::comprend_champ_post(const Motcle& identifiant) const
 {
-
-  CONST_LIST_CURSEUR(Champ_Generique) curseur_liste_champs = champs_post_complet_;
-
-  while (curseur_liste_champs)
-    {
-      if (curseur_liste_champs.valeur().valeur().comprend_champ_post(identifiant))
-        return 1;
-      ++curseur_liste_champs;
-    }
+  const auto& list = champs_post_complet_.get_stl_list();
+  for (const auto &itr : list)
+    if (itr->comprend_champ_post(identifiant))
+      return 1;
 
   return 0;
 }
@@ -2207,18 +2194,17 @@ const Champ_Generique_base& Postraitement::get_champ_post(const Motcle& nom) con
 {
 
   REF(Champ_Generique_base) ref_champ;
-  CONST_LIST_CURSEUR(Champ_Generique) curseur_liste_champs = champs_post_complet_;
   Cerr << "Provisoire searching for " << nom << finl;
-  while (curseur_liste_champs)
+  const auto& list = champs_post_complet_.get_stl_list();
+  for (const auto& itr : list)
     {
       try
         {
-          return curseur_liste_champs.valeur().valeur().get_champ_post(nom);
+          return itr->get_champ_post(nom);
         }
       catch (Champs_compris_erreur& err_)
         {
         }
-      ++curseur_liste_champs;
     }
   Cerr<<"Field " <<nom<<" not found."<< finl;
   throw Champs_compris_erreur();

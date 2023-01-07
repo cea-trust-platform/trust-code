@@ -17,10 +17,9 @@
 
 Implemente_instanciable(Bords, "Bords", LIST(Bord));
 
-Sortie& Bords::printOn(Sortie& os) const { return LIST(Bord)::printOn(os); }
+Sortie& Bords::printOn(Sortie& os) const { return STLLIST(Bord)::printOn(os); }
 
-Entree& Bords::readOn(Entree& is) { return LIST(Bord)::readOn(is); }
-
+Entree& Bords::readOn(Entree& is) { return STLLIST(Bord)::readOn(is); }
 
 /*! @brief Associe une zone a tous les bords de la liste.
  *
@@ -28,14 +27,9 @@ Entree& Bords::readOn(Entree& is) { return LIST(Bord)::readOn(is); }
  */
 void Bords::associer_zone(const Zone& une_zone)
 {
-  LIST_CURSEUR(Bord) curseur(*this);
-  while(curseur)
-    {
-      curseur->associer_zone(une_zone);
-      ++curseur;
-    }
+  auto& list = this->get_stl_list();
+  for (auto &itr : list) itr.associer_zone(une_zone);
 }
-
 
 /*! @brief Renvoie le nombre total de faces de tous les bords de la liste
  *
@@ -43,13 +37,11 @@ void Bords::associer_zone(const Zone& une_zone)
  */
 int Bords::nb_faces() const
 {
-  CONST_LIST_CURSEUR(Bord) curseur(*this);
-  int nombre=0;
-  while(curseur)
-    {
-      nombre+=curseur->nb_faces();
-      ++curseur;
-    }
+  const auto& list = this->get_stl_list();
+  int nombre = 0;
+
+  for (const auto &itr : list) nombre += itr.nb_faces();
+
   return nombre;
 }
 
@@ -60,13 +52,11 @@ int Bords::nb_faces() const
  */
 int Bords::nb_faces(Type_Face type) const
 {
-  CONST_LIST_CURSEUR(Bord) curseur(*this);
-  int nombre=0;
-  while(curseur)
-    {
-      if (type == curseur->faces().type_face())
-        nombre+=curseur->nb_faces();
-      ++curseur;
-    }
+  const auto& list = this->get_stl_list();
+  int nombre = 0;
+
+  for (const auto &itr : list)
+    if (type == itr.faces().type_face()) nombre += itr.nb_faces();
+
   return nombre;
 }

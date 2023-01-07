@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,29 +15,11 @@
 
 #include <Tetraedriser.h>
 
-Implemente_instanciable(Tetraedriser,"Tetraedriser",Triangulation_base);
+Implemente_instanciable(Tetraedriser, "Tetraedriser", Triangulation_base);
 
+Sortie& Tetraedriser::printOn(Sortie& os) const { return Interprete::printOn(os); }
 
-/*! @brief Simple appel a: Interprete::printOn(Sortie&)
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Tetraedriser::printOn(Sortie& os) const
-{
-  return Interprete::printOn(os);
-}
-
-
-/*! @brief Simple appel a: Interprete::readOn(Entree&)
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& Tetraedriser::readOn(Entree& is)
-{
-  return Interprete::readOn(is);
-}
+Entree& Tetraedriser::readOn(Entree& is) { return Interprete::readOn(is); }
 
 /*! @brief Fonction hors classe Decoupe toutes les faces d'un objet Faces
  *
@@ -48,28 +30,27 @@ Entree& Tetraedriser::readOn(Entree& is)
  */
 static void decoupe(Faces& faces)
 {
-  IntTab& sommets=faces.les_sommets();
-  int nb_faces=sommets.dimension(0);
-  assert(sommets.dimension(1)==4);
-  IntTab nouveaux(2*nb_faces, 3);
-  faces.voisins().resize(2*nb_faces, 2);
-  faces.voisins()=-1;
-  for(int i=0; i<nb_faces; i++)
+  IntTab& sommets = faces.les_sommets();
+  int nb_faces = sommets.dimension(0);
+  assert(sommets.dimension(1) == 4);
+  IntTab nouveaux(2 * nb_faces, 3);
+  faces.voisins().resize(2 * nb_faces, 2);
+  faces.voisins() = -1;
+  for (int i = 0; i < nb_faces; i++)
     {
-      int i1 = sommets(i,0);
-      int i2 = sommets(i,1);
-      int i3 = sommets(i,2);
-      int i4 = sommets(i,3);
-      nouveaux(i,0) = i1;
-      nouveaux(i,1) = i2;
-      nouveaux(i,2) = i3;
-      nouveaux(nb_faces+i,0) = i2;
-      nouveaux(nb_faces+i,1) = i3;
-      nouveaux(nb_faces+i,2) = i4;
+      int i1 = sommets(i, 0);
+      int i2 = sommets(i, 1);
+      int i3 = sommets(i, 2);
+      int i4 = sommets(i, 3);
+      nouveaux(i, 0) = i1;
+      nouveaux(i, 1) = i2;
+      nouveaux(i, 2) = i3;
+      nouveaux(nb_faces + i, 0) = i2;
+      nouveaux(nb_faces + i, 1) = i3;
+      nouveaux(nb_faces + i, 2) = i4;
     }
   sommets.ref(nouveaux);
 }
-
 
 /*! @brief Tetraedrise tous les elements d'une zone: transforme les elements goemetriques de la zone en tetraedres.
  *
@@ -84,100 +65,93 @@ static void decoupe(Faces& faces)
  */
 void Tetraedriser::trianguler(Zone& zone) const
 {
-  if(zone.type_elem()->que_suis_je() == "Hexaedre")
+  if (zone.type_elem()->que_suis_je() == "Hexaedre")
     {
       zone.typer("Tetraedre");
-      IntTab& les_elems=zone.les_elems();
-      int oldsz=les_elems.dimension(0);
-      IntTab new_elems(6*oldsz, 4);
-      for(int i=0; i< oldsz; i++)
+      IntTab& les_elems = zone.les_elems();
+      int oldsz = les_elems.dimension(0);
+      IntTab new_elems(6 * oldsz, 4);
+      for (int i = 0; i < oldsz; i++)
         {
-          int i0=les_elems(i,0);
-          int i1=les_elems(i,1);
-          int i2=les_elems(i,2);
-          int i3=les_elems(i,3);
-          int i4=les_elems(i,4);
-          int i5=les_elems(i,5);
-          int i6=les_elems(i,6);
-          int i7=les_elems(i,7);
+          int i0 = les_elems(i, 0);
+          int i1 = les_elems(i, 1);
+          int i2 = les_elems(i, 2);
+          int i3 = les_elems(i, 3);
+          int i4 = les_elems(i, 4);
+          int i5 = les_elems(i, 5);
+          int i6 = les_elems(i, 6);
+          int i7 = les_elems(i, 7);
           {
-            new_elems(i,0)=i0;
-            new_elems(i,1)=i1;
-            new_elems(i,2)=i2;
-            new_elems(i,3)=i4;
+            new_elems(i, 0) = i0;
+            new_elems(i, 1) = i1;
+            new_elems(i, 2) = i2;
+            new_elems(i, 3) = i4;
 
-            new_elems(i+oldsz,0)=i1;
-            new_elems(i+oldsz,1)=i2;
-            new_elems(i+oldsz,2)=i3;
-            new_elems(i+oldsz,3)=i6;
-            mettre_a_jour_sous_zone(zone,i,i+oldsz,1);
+            new_elems(i + oldsz, 0) = i1;
+            new_elems(i + oldsz, 1) = i2;
+            new_elems(i + oldsz, 2) = i3;
+            new_elems(i + oldsz, 3) = i6;
+            mettre_a_jour_sous_zone(zone, i, i + oldsz, 1);
 
-            new_elems(i+2*oldsz,0)=i1;
-            new_elems(i+2*oldsz,1)=i2;
-            new_elems(i+2*oldsz,2)=i4;
-            new_elems(i+2*oldsz,3)=i6;
-            mettre_a_jour_sous_zone(zone,i,i+2*oldsz,1);
+            new_elems(i + 2 * oldsz, 0) = i1;
+            new_elems(i + 2 * oldsz, 1) = i2;
+            new_elems(i + 2 * oldsz, 2) = i4;
+            new_elems(i + 2 * oldsz, 3) = i6;
+            mettre_a_jour_sous_zone(zone, i, i + 2 * oldsz, 1);
 
-            new_elems(i+3*oldsz,0)=i3;
-            new_elems(i+3*oldsz,1)=i5;
-            new_elems(i+3*oldsz,2)=i6;
-            new_elems(i+3*oldsz,3)=i7;
-            mettre_a_jour_sous_zone(zone,i,i+3*oldsz,1);
+            new_elems(i + 3 * oldsz, 0) = i3;
+            new_elems(i + 3 * oldsz, 1) = i5;
+            new_elems(i + 3 * oldsz, 2) = i6;
+            new_elems(i + 3 * oldsz, 3) = i7;
+            mettre_a_jour_sous_zone(zone, i, i + 3 * oldsz, 1);
 
-            new_elems(i+4*oldsz,0)=i1;
-            new_elems(i+4*oldsz,1)=i4;
-            new_elems(i+4*oldsz,2)=i5;
-            new_elems(i+4*oldsz,3)=i6;
-            mettre_a_jour_sous_zone(zone,i,i+4*oldsz,1);
+            new_elems(i + 4 * oldsz, 0) = i1;
+            new_elems(i + 4 * oldsz, 1) = i4;
+            new_elems(i + 4 * oldsz, 2) = i5;
+            new_elems(i + 4 * oldsz, 3) = i6;
+            mettre_a_jour_sous_zone(zone, i, i + 4 * oldsz, 1);
 
-            new_elems(i+5*oldsz,0)=i1;
-            new_elems(i+5*oldsz,1)=i3;
-            new_elems(i+5*oldsz,2)=i5;
-            new_elems(i+5*oldsz,3)=i6;
-            mettre_a_jour_sous_zone(zone,i,i+5*oldsz,1);
+            new_elems(i + 5 * oldsz, 0) = i1;
+            new_elems(i + 5 * oldsz, 1) = i3;
+            new_elems(i + 5 * oldsz, 2) = i5;
+            new_elems(i + 5 * oldsz, 3) = i6;
+            mettre_a_jour_sous_zone(zone, i, i + 5 * oldsz, 1);
           }
         }
       les_elems.ref(new_elems);
     }
   else
     {
-      Cerr << "We do not yet know how to Tetraedriser the "
-           << zone.type_elem()->que_suis_je() <<"s"<<finl;
+      Cerr << "We do not yet know how to Tetraedriser the " << zone.type_elem()->que_suis_je() << "s" << finl;
       Cerr << "Try to use Tetraedriser_homogene_compact instead." << finl;
       exit();
     }
   {
-    LIST_CURSEUR(Bord) curseur(zone.faces_bord());
-    while(curseur)
+    auto& list = zone.faces_bord().get_stl_list();
+    for (auto &itr : list)
       {
-        Faces& les_faces=curseur->faces();
+        Faces& les_faces = itr.faces();
         les_faces.typer(Faces::triangle_3D);
         decoupe(les_faces);
-        ++curseur;
       }
   }
 
   {
-    // Les Raccords
-    LIST_CURSEUR(Raccord) curseur(zone.faces_raccord());
-    while(curseur)
+    auto& list = zone.faces_raccord().get_stl_list();
+    for (auto &itr : list)
       {
-        Faces& les_faces=curseur.valeur()->faces();
+        Faces& les_faces = itr->faces();
         les_faces.typer(Faces::triangle_3D);
         decoupe(les_faces);
-        ++curseur;
       }
   }
   {
-    // Les Faces internes
-    LIST_CURSEUR(Faces_Interne) curseur(zone.faces_int());
-    while(curseur)
+    auto& list = zone.faces_int().get_stl_list();
+    for (auto &itr : list)
       {
-        Faces& les_faces=curseur->faces();
+        Faces& les_faces = itr.faces();
         les_faces.typer(Faces::triangle_3D);
         decoupe(les_faces);
-        ++curseur;
       }
   }
 }
-

@@ -32,4 +32,4 @@ class Raccord : public DERIV(Raccord_base)
   Declare_instanciable(Raccord);
 };
 
-#endif
+#endif /* Raccord_included */

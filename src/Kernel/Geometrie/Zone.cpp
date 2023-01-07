@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,7 +21,7 @@
 #include <Octree.h>
 #include <Zone.h>
 
-Implemente_instanciable_sans_constructeur(Zone,"Zone",Objet_U);
+Implemente_instanciable_sans_constructeur(Zone, "Zone", Objet_U);
 
 Zone::Zone() :
   Moments_a_imprimer_(0)
@@ -38,7 +38,7 @@ Zone::Zone() :
  * @param (Sortie& s) un flot de sortie
  * @return (Sortie&) le flot de sortie modifie
  */
-Sortie& Zone::printOn(Sortie& s ) const
+Sortie& Zone::printOn(Sortie& s) const
 {
   Cerr << "Writing of " << nb_elem() << " elements." << finl;
   s << nom << finl;
@@ -51,10 +51,11 @@ Sortie& Zone::printOn(Sortie& s ) const
   return s;
 }
 
-template<class LIST_FRONTIERE> void check_frontiere(const LIST_FRONTIERE& list, const char * msg)
+template<class LIST_FRONTIERE>
+void check_frontiere(const LIST_FRONTIERE& list, const char *msg)
 {
   int n = list.size();
-  if (! is_parallel_object(n))
+  if (!is_parallel_object(n))
     {
       Cerr << " Fatal error: processors don't have the same number of boundaries " << msg << finl;
       Process::barrier();
@@ -64,7 +65,7 @@ template<class LIST_FRONTIERE> void check_frontiere(const LIST_FRONTIERE& list, 
     {
       const Nom& nom = list[i].le_nom();
       Cerr << "  Boundary " << msg << " : " << nom << finl;
-      if (! is_parallel_object(nom))
+      if (!is_parallel_object(nom))
         {
           Cerr << " Fatal error: processors don't have the same number of boundaries " << msg << finl;
           Process::barrier();
@@ -75,10 +76,10 @@ template<class LIST_FRONTIERE> void check_frontiere(const LIST_FRONTIERE& list, 
 
 // S'il y a un proc qui a un type different de vide_OD, on type les faces sur tous
 // les processeurs avec ce type:
-static void corriger_type(Faces& faces,const Elem_geom_base& type_elem)
+static void corriger_type(Faces& faces, const Elem_geom_base& type_elem)
 {
   int typ = faces.type_face();
-  const int pe = (faces.type_face() == Faces::vide_0D) ? Process::nproc()-1 : Process::me();
+  const int pe = (faces.type_face() == Faces::vide_0D) ? Process::nproc() - 1 : Process::me();
   const int min_pe = ::mp_min(pe);
   // Le processeur min_pe envoie son type a tous les autres
   int typ_commun = typ;
@@ -91,10 +92,10 @@ static void corriger_type(Faces& faces,const Elem_geom_base& type_elem)
           Cerr << "Error in Zone.cpp corriger_type: invalid boundary face type" << finl;
           Process::exit();
         }
-      Type_Face tt = (Type_Face)typ_commun;
+      Type_Face tt = (Type_Face) typ_commun;
       faces.typer(tt);
 //     int n= faces.nb_som_faces();
-      int n =type_elem.nb_som_face();
+      int n = type_elem.nb_som_face();
       faces.les_sommets().resize(0, n);
     }
 }
@@ -111,16 +112,15 @@ Entree& Zone::readOn(Entree& s)
 {
   read_zone(s);
   check_zone();
-  return s ;
+  return s;
 }
-
 
 /*! @brief read zone from the input stream
  *
  */
 void Zone::read_zone(Entree& s)
 {
-  s >> nom ;
+  s >> nom;
   Cerr << " Reading zone " << le_nom() << finl;
   s >> elem;
   s >> mes_elems;
@@ -141,14 +141,13 @@ void Zone::check_zone()
     int n = nb_front_Cl();
     for (i = 0; i < n; i++)
       {
-        corriger_type(frontiere(i).faces(),type_elem().valeur());
+        corriger_type(frontiere(i).faces(), type_elem().valeur());
       }
   }
 
-  if (mes_faces_bord.size()==0 && mes_faces_raccord.size()==0 && Process::nproc()==1)
+  if (mes_faces_bord.size() == 0 && mes_faces_raccord.size() == 0 && Process::nproc() == 1)
     {
-      Cerr << "Warning, the reread zone " << nom
-           << " has no defined boundaries (none boundary or connector)." << finl;
+      Cerr << "Warning, the reread zone " << nom << " has no defined boundaries (none boundary or connector)." << finl;
     }
 
   mes_faces_bord.associer_zone(*this);
@@ -172,10 +171,10 @@ void Zone::check_zone()
 Entree& Zone::Lire_Bords_a_imprimer(Entree& is)
 {
   Nom nom_lu;
-  Motcle motlu, accolade_fermee="}", accolade_ouverte="{";
+  Motcle motlu, accolade_fermee = "}", accolade_ouverte = "{";
   is >> motlu;
-  Cerr << "Reading boundaries to be print:"  << finl;
-  if(motlu!=accolade_ouverte)
+  Cerr << "Reading boundaries to be print:" << finl;
+  if (motlu != accolade_ouverte)
     {
       Cerr << "We expected a list { ... } of boundaries to be print" << finl;
       Cerr << "and not : " << motlu << finl;
@@ -189,16 +188,16 @@ Entree& Zone::Lire_Bords_a_imprimer(Entree& is)
       is >> nom_lu;
     }
   Cerr << finl;
-  return is ;
+  return is;
 }
 
 Entree& Zone::Lire_Bords_a_imprimer_sum(Entree& is)
 {
   Nom nom_lu;
-  Motcle motlu, accolade_fermee="}", accolade_ouverte="{";
+  Motcle motlu, accolade_fermee = "}", accolade_ouverte = "{";
   is >> motlu;
-  Cerr << "Reading boundaries to be print:"  << finl;
-  if(motlu!=accolade_ouverte)
+  Cerr << "Reading boundaries to be print:" << finl;
+  if (motlu != accolade_ouverte)
     {
       Cerr << "We expected a list { ... } of boundaries to be print" << finl;
       Cerr << "and not : " << motlu << finl;
@@ -212,7 +211,7 @@ Entree& Zone::Lire_Bords_a_imprimer_sum(Entree& is)
       is >> nom_lu;
     }
   Cerr << finl;
-  return is ;
+  return is;
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -220,7 +219,6 @@ Entree& Zone::Lire_Bords_a_imprimer_sum(Entree& is)
 //  Implementation des fonctions de la classe Zone
 //
 /////////////////////////////////////////////////////////////////////
-
 
 /*! @brief Renvoie le domaine dont la zone fait partie.
  *
@@ -251,20 +249,18 @@ Domaine& Zone::domaine()
  * @param (ArrOfInt& elem_) le tableau contenant les numeros des elements contenant les sommets specifies
  * @return (ArrOfInt&) le tableau des numeros des sommets dont on cherche les elements correspondants
  */
-ArrOfInt& Zone::indice_elements(const IntTab& sommets,
-                                ArrOfInt& elem_,
-                                int reel) const
+ArrOfInt& Zone::indice_elements(const IntTab& sommets, ArrOfInt& elem_, int reel) const
 {
-  int i,j,k;
+  int i, j, k;
   const DoubleTab& les_coord = domaine().coord_sommets();
   int sz_sommets = sommets.dimension(0);
-  DoubleTab xg(sz_sommets,Objet_U::dimension);
-  for(i=0; i<sz_sommets; i++)
-    for(j=0; j<nb_som_elem(); j++)
-      for(k=0; k<Objet_U::dimension; k++)
-        xg(i,k)+=les_coord(sommets(i,j),k);
-  xg/=nb_som_elem();
-  return chercher_elements(xg,elem_,reel);
+  DoubleTab xg(sz_sommets, Objet_U::dimension);
+  for (i = 0; i < sz_sommets; i++)
+    for (j = 0; j < nb_som_elem(); j++)
+      for (k = 0; k < Objet_U::dimension; k++)
+        xg(i, k) += les_coord(sommets(i, j), k);
+  xg /= nb_som_elem();
+  return chercher_elements(xg, elem_, reel);
 }
 
 /*! @brief Recherche des elements contenant les points dont les coordonnees sont specifiees.
@@ -273,23 +269,23 @@ ArrOfInt& Zone::indice_elements(const IntTab& sommets,
  * @param (ArrOfInt& elements) le tableau des numeros des elements contenant les points specifies
  * @return (ArrOfInt&) le tableau des numeros des elements contenant les points specifies
  */
-static double cached_memory=0;
+static double cached_memory = 0;
 bool sameDoubleTab(const DoubleTab& a, const DoubleTab& b)
 {
   int size_a = a.size_array();
   int size_b = b.size_array();
-  if (size_a != size_b) return false;
-  for (int i=0; i<size_a; i++)
-    if (a.addr()[i] != b.addr()[i]) return false;
+  if (size_a != size_b)
+    return false;
+  for (int i = 0; i < size_a; i++)
+    if (a.addr()[i] != b.addr()[i])
+      return false;
   return true;
 }
-ArrOfInt& Zone::chercher_elements(const DoubleTab& positions,
-                                  ArrOfInt& elements,
-                                  int reel) const
+ArrOfInt& Zone::chercher_elements(const DoubleTab& positions, ArrOfInt& elements, int reel) const
 {
   bool set_cache = false;
   // PL: On devrait faire un appel a chercher_elements(x,y,z,elem) si positions.dimension(0)=1 ...
-  if (!domaine().deformable() && positions.dimension(0)>1)
+  if (!domaine().deformable() && positions.dimension(0) > 1)
     {
       set_cache = true;
       if (!deriv_octree_.non_nul() || !deriv_octree_.valeur().construit())
@@ -298,41 +294,44 @@ ArrOfInt& Zone::chercher_elements(const DoubleTab& positions,
           cached_elements_.reset();
           cached_positions_.reset();
         }
-      else // Recherche dans le cache:
+      else
+        // Recherche dans le cache:
         for (int i = 0; i < cached_positions_.size(); i++)
           if (sameDoubleTab(positions, cached_positions_[i]))
             {
               elements.resize_tab(cached_positions_[i].dimension(0), ArrOfInt::NOCOPY_NOINIT);
               elements = cached_elements_[i];
               /*
-              //Cerr << "Reuse " << i << "th array cached in memory for Zone::chercher_elements(...): " << finl;
-              if (i!=0)
-                {
-                  // Permute pour avoir le tableau en premier
-                  cached_elements_[i].resize_tab(cached_positions_[0].dimension(0), ArrOfInt::NOCOPY_NOINIT);
-                  cached_elements_[i] = cached_elements_[0];
-                  cached_elements_[0].resize_tab(cached_positions_[i].dimension(0), ArrOfInt::NOCOPY_NOINIT);
-                  cached_elements_[0] = elements;
-                  DoubleTab tmp(cached_positions_[i]);
-                  cached_positions_[i] = cached_positions_[0];
-                  cached_positions_[0] = tmp;
-                }
-                */
+               //Cerr << "Reuse " << i << "th array cached in memory for Zone::chercher_elements(...): " << finl;
+               if (i!=0)
+               {
+               // Permute pour avoir le tableau en premier
+               cached_elements_[i].resize_tab(cached_positions_[0].dimension(0), ArrOfInt::NOCOPY_NOINIT);
+               cached_elements_[i] = cached_elements_[0];
+               cached_elements_[0].resize_tab(cached_positions_[i].dimension(0), ArrOfInt::NOCOPY_NOINIT);
+               cached_elements_[0] = elements;
+               DoubleTab tmp(cached_positions_[i]);
+               cached_positions_[i] = cached_positions_[0];
+               cached_positions_[0] = tmp;
+               }
+               */
               return elements;
             }
     }
   const OctreeRoot& octree = construit_octree(reel);
-  int sz=positions.dimension(0);
+  int sz = positions.dimension(0);
   const int dim = positions.dimension(1);
   // resize_tab est virtuelle, si c'est un Vect ou un Tab elle appelle le
   // resize de la classe derivee:
   elements.resize_tab(sz, ArrOfInt::NOCOPY_NOINIT);
-  double x, y=0, z=0;
-  for (int i=0; i<sz; i++)
+  double x, y = 0, z = 0;
+  for (int i = 0; i < sz; i++)
     {
-      x = positions(i,0);
-      if (dim > 1) y = positions(i,1);
-      if (dim > 2) z = positions(i,2);
+      x = positions(i, 0);
+      if (dim > 1)
+        y = positions(i, 1);
+      if (dim > 2)
+        z = positions(i, 2);
       elements[i] = octree.rang_elem(x, y, z);
     }
   if (set_cache)
@@ -340,9 +339,9 @@ ArrOfInt& Zone::chercher_elements(const DoubleTab& positions,
       // Met en cache
       cached_positions_.add(positions);
       cached_elements_.add(elements);
-      cached_memory += positions.size_array() * (int)sizeof(double);
-      cached_memory += elements.size_array() * (int)sizeof(int);
-      if (cached_memory>1e7)   // 10Mo
+      cached_memory += positions.size_array() * (int) sizeof(double);
+      cached_memory += elements.size_array() * (int) sizeof(int);
+      if (cached_memory > 1e7)   // 10Mo
         {
           Cerr << 2 * cached_positions_.size() << " arrays cached in memory for Zone::chercher_elements(...): ";
           if (cached_memory < 1e6)
@@ -362,23 +361,22 @@ ArrOfInt& Zone::chercher_elements(const DoubleTab& positions,
  * @param (ArrOfInt& elements) le tableau des numeros des elements contenant les points specifies
  * @return (ArrOfInt&) le tableau des numeros des elements contenant les points specifies
  */
-ArrOfInt& Zone::chercher_elements(const DoubleVect& positions,
-                                  ArrOfInt& elements,
-                                  int reel) const
+ArrOfInt& Zone::chercher_elements(const DoubleVect& positions, ArrOfInt& elements, int reel) const
 {
   //  Cerr<<"Dans Zone::chercher_elements(const DoubleVect&"<<finl;
   //  Cerr<<"codage lourd....."<<finl;
-  int n=positions.size();
-  if (n!=dimension)
+  int n = positions.size();
+  if (n != dimension)
     {
-      Cerr<<"Zone::chercher_elements(const DoubleVect& positions, ArrOfInt& elements, int reel) const -> Coding is made to copy a doublevect(dimesnion) in a DoubleTab(1,dimension)"<<finl;
-      Cerr<<"But, it comes with a DoubleVect of size "<<n << " instead of "<<dimension<<finl;
+      Cerr << "Zone::chercher_elements(const DoubleVect& positions, ArrOfInt& elements, int reel) const -> Coding is made to copy a doublevect(dimesnion) in a DoubleTab(1,dimension)" << finl;
+      Cerr << "But, it comes with a DoubleVect of size " << n << " instead of " << dimension << finl;
       assert(0);
       exit();
     }
-  DoubleTab positions2(1,n);
-  for (int ii=0; ii<n; ii++) positions2(0,ii)=positions(ii);
-  return chercher_elements( positions2, elements, reel) ;
+  DoubleTab positions2(1, n);
+  for (int ii = 0; ii < n; ii++)
+    positions2(0, ii) = positions(ii);
+  return chercher_elements(positions2, elements, reel);
 }
 /*! @brief Specifie le domaine dont la zone fait partie.
  *
@@ -386,7 +384,7 @@ ArrOfInt& Zone::chercher_elements(const DoubleVect& positions,
  */
 void Zone::associer_domaine(const Domaine& un_domaine)
 {
-  le_domaine=un_domaine;
+  le_domaine = un_domaine;
 }
 
 /*! @brief Renvoie le nombre de faces qui sont des bords.
@@ -425,13 +423,11 @@ int Zone::nb_faces_int() const
   return mes_faces_int.nb_faces();
 }
 
-
-
 /*! @brief Renvoie le nombre de sommets de la zone.
  *
  * @return (int) le nombre de sommets de la zone
  */
-int  Zone::nb_som() const
+int Zone::nb_som() const
 {
   // MONOZONE pour le moment!
   return domaine().nb_som();
@@ -444,7 +440,7 @@ int  Zone::nb_som() const
  *
  * @return (int) le nombre total de sommets de la zone
  */
-int  Zone::nb_som_tot() const
+int Zone::nb_som_tot() const
 {
   // MONOZONE pour le moment!
   return domaine().nb_som_tot();
@@ -498,17 +494,17 @@ void Zone::renum(const IntVect& Les_Nums)
   int dim0 = mes_elems.dimension(0);
   int dim1 = mes_elems.dimension(1);
 
-  for(int i=0; i<dim0; i++)
-    for(int j=0; j<dim1; j++)
-      mes_elems(i,j)=Les_Nums[mes_elems(i,j)];
+  for (int i = 0; i < dim0; i++)
+    for (int j = 0; j < dim1; j++)
+      mes_elems(i, j) = Les_Nums[mes_elems(i, j)];
 
-  for(int i=0; i<nb_bords(); i++)
+  for (int i = 0; i < nb_bords(); i++)
     mes_faces_bord(i).renum(Les_Nums);
-  for(int i=0; i<nb_joints(); i++)
+  for (int i = 0; i < nb_joints(); i++)
     mes_faces_joint(i).renum(Les_Nums);
-  for(int i=0; i<nb_raccords(); i++)
+  for (int i = 0; i < nb_raccords(); i++)
     mes_faces_raccord(i)->renum(Les_Nums);
-  for(int i=0; i<nb_frontieres_internes(); i++)
+  for (int i = 0; i < nb_frontieres_internes(); i++)
     mes_faces_int(i).renum(Les_Nums);
 }
 
@@ -523,14 +519,13 @@ void Zone::renum_joint_common_items(const IntVect& Les_Nums, const int elem_offs
   for (int i_joint = 0; i_joint < nb_joints(); i_joint++)
     {
       ArrOfInt& sommets_communs = mes_faces_joint[i_joint].set_joint_item(Joint::SOMMET).set_items_communs();
-      for(int index=0; index<sommets_communs.size_array(); index++)
+      for (int index = 0; index < sommets_communs.size_array(); index++)
         sommets_communs[index] = Les_Nums[sommets_communs[index]];
 
       ArrOfInt& elements_distants = mes_faces_joint[i_joint].set_joint_item(Joint::ELEMENT).set_items_distants();
-      elements_distants+= elem_offset;
+      elements_distants += elem_offset;
     }
 }
-
 
 /*! @brief Renvoie -1 si face n'est pas une face interne Renvoie le numero de la face dupliquee sinon.
  *
@@ -540,32 +535,32 @@ void Zone::renum_joint_common_items(const IntVect& Les_Nums, const int elem_offs
  */
 int Zone::face_interne_conjuguee(int face) const
 {
-  if( (face)>=nb_faces_frontiere())
+  if ((face) >= nb_faces_frontiere())
     return -1;
-  int compteur=nb_faces_frontiere()-nb_faces_int();
-  if( (face)<compteur)
+  int compteur = nb_faces_frontiere() - nb_faces_int();
+  if ((face) < compteur)
     return -1;
 
-  CONST_LIST_CURSEUR(Faces_Interne) curseur(mes_faces_int);;;
-  while(curseur)
+  const auto& list = mes_faces_int.get_stl_list();
+  for (const auto& itr : list)
     {
-      const Faces& les_faces=curseur->faces();
-      int nbf=les_faces.nb_faces();
-      if(face < nbf + compteur)
+      const Faces& les_faces = itr.faces();
+      int nbf = les_faces.nb_faces();
+      if (face < nbf + compteur)
         {
-          nbf/=2;
-          if( (face-compteur)<nbf) return face+nbf;
-          else return face-nbf;
+          nbf /= 2;
+          if ((face - compteur) < nbf)
+            return face + nbf;
+          else
+            return face - nbf;
         }
-      compteur+=(2*nbf);
-      ++curseur;
+      compteur += (2 * nbf);
     }
-  Cerr << "TRUST error " << finl;
-  assert(0);
-  exit();
+
+  Cerr << "TRUST error in Zone::face_interne_conjuguee " << finl;
+  Process::exit();
   return -1;
 }
-
 
 /*! @brief Correcting type of borders if they were empty before merge (ie equal to vide_0D) difference with corriger_type is that we don't want to delete faces inside borders afterwards
  *
@@ -574,99 +569,96 @@ void Zone::correct_type_of_borders_after_merge()
 {
   {
     // Les Bords
-    LIST_CURSEUR(Bord) curseur(mes_faces_bord);;;
-    while(curseur)
+    auto& list = mes_faces_bord.get_stl_list();
+
+    // first loop over list elements
+    for (auto it = list.begin(); it != list.end(); ++it)
       {
-        Frontiere& front=curseur.valeur();
-        if(front.faces().type_face() == Faces::vide_0D)
+        Frontiere& front = *it;
+        if (front.faces().type_face() == Faces::vide_0D)
           {
-            LIST_CURSEUR(Bord) curseur2(curseur.list());;;
-            while(!curseur2.list().est_dernier())
+            // second loop over list elements, starting from an incremented position
+            for (auto it2 = std::next(it); it2 != list.end();)
               {
-                Frontiere& front2=curseur2.list().suivant().valeur();
-                if(front.le_nom() == front2.le_nom())
+                Frontiere& front2 = *it2;
+                if (front.le_nom() == front2.le_nom())
                   {
                     front.faces().typer(front2.faces().type_face());
                     break;
                   }
                 else
-                  ++curseur2;
+                  ++it2;
               }
           }
-        ++curseur;
       }
   }
 
   {
     // Les Faces Internes :
-    LIST_CURSEUR(Faces_Interne) curseur(mes_faces_int);;;
-    while(curseur)
+    auto& list = mes_faces_int.get_stl_list();
+    for (auto it = list.begin(); it != list.end(); ++it)
       {
-        Frontiere& front=curseur.valeur();
-        if(front.faces().type_face() == Faces::vide_0D)
+        Frontiere& front = *it;
+        if (front.faces().type_face() == Faces::vide_0D)
           {
-            LIST_CURSEUR(Faces_Interne) curseur2(curseur.list());;;
-            while(!curseur2.list().est_dernier())
+            for (auto it2 = std::next(it); it2 != list.end();)
               {
-                Frontiere& front2=curseur2.list().suivant().valeur();
-                if(front.le_nom() == front2.le_nom())
+                Frontiere& front2 = *it2;
+                if (front.le_nom() == front2.le_nom())
                   {
                     front.faces().typer(front2.faces().type_face());
                     break;
                   }
                 else
-                  ++curseur2;
+                  ++it2;
               }
           }
-        ++curseur;
       }
   }
+
   {
     // Les Raccords
-    LIST_CURSEUR(Raccord) curseur(mes_faces_raccord);;;
-    while(curseur)
+    auto& list = mes_faces_raccord.get_stl_list();
+    for (auto it = list.begin(); it != list.end(); ++it)
       {
-        Frontiere& front=curseur.valeur();
-        if(front.faces().type_face() == Faces::vide_0D)
+        Frontiere& front = (*it).valeur();
+        if (front.faces().type_face() == Faces::vide_0D)
           {
-            LIST_CURSEUR(Raccord) curseur2(curseur.list());;;
-            while(!curseur2.list().est_dernier())
+            for (auto it2 = std::next(it); it2 != list.end();)
               {
-                Frontiere& front2=curseur2.list().suivant().valeur();
-                if(front.le_nom() == front2.le_nom())
+                Frontiere& front2 = (*it2).valeur();
+                if (front.le_nom() == front2.le_nom())
                   {
                     front.faces().typer(front2.faces().type_face());
                     break;
                   }
                 else
-                  ++curseur2;
+                  ++it2;
               }
           }
-        ++curseur;
       }
   }
+
   {
     //Les joints
-    LIST_CURSEUR(Joint) curseur(mes_faces_joint);;;
-    while(curseur)
+    auto& list = mes_faces_joint.get_stl_list();
+    for (auto it = list.begin(); it != list.end(); ++it)
       {
-        Frontiere& front=curseur.valeur();
-        if(front.faces().type_face() == Faces::vide_0D)
+        Frontiere& front = *it;
+        if (front.faces().type_face() == Faces::vide_0D)
           {
-            LIST_CURSEUR(Joint) curseur2(curseur.list());;;
-            while(!curseur2.list().est_dernier())
+            for (auto it2 = std::next(it); it2 != list.end();)
               {
-                Frontiere& front2=curseur2.list().suivant().valeur();
-                if(front.le_nom() == front2.le_nom())
+                Frontiere& front2 = *it2;
+                if (front.le_nom() == front2.le_nom())
                   {
                     front.faces().typer(front2.faces().type_face());
                     break;
                   }
                 else
-                  ++curseur2;
+                  ++it2;
               }
           }
-        ++curseur;
       }
   }
 }
@@ -676,28 +668,24 @@ void Zone::correct_type_of_borders_after_merge()
  */
 int Zone::comprimer_joints()
 {
-  LIST_CURSEUR(Joint) curseur(mes_faces_joint);;;
-  while(curseur)
+  auto& list = mes_faces_joint.get_stl_list();
+  for (auto it = list.begin(); it != list.end(); ++it)
     {
-      Frontiere& front=curseur.valeur();
-      LIST_CURSEUR(Joint) curseur2(curseur.list());;;
-      while(!curseur2.list().est_dernier())
+      Frontiere& front = *it;
+      for (auto it2 = std::next(it); it2 != list.end();)
         {
-          Frontiere& front2=curseur2.list().suivant().valeur();
-          if(front.le_nom() == front2.le_nom())
+          Frontiere& front2 = *it2;
+          if (front.le_nom() == front2.le_nom())
             {
               front.add(front2);
-              curseur2.list().supprimer();
+              it2 = list.erase(it2);
             }
           else
-            ++curseur2;
+            ++it2;
         }
-      ++curseur;
     }
   return 1;
 }
-
-
 
 /*! @brief Concatene les bords de meme nom et ceci pour: les bords, les bords periodiques et les faces internes.
  *
@@ -706,73 +694,71 @@ int Zone::comprimer()
 {
   {
     // Les Bords
-    LIST_CURSEUR(Bord) curseur(mes_faces_bord);;;
-    while(curseur)
-      {
-        Frontiere& front=curseur.valeur();
-        // Au cas ou la zone de la frontiere n'est pas la bonne zone
-        front.associer_zone(*this);
+    auto& list = mes_faces_bord.get_stl_list();
 
-        LIST_CURSEUR(Bord) curseur2(curseur.list());;;
+    // first loop over list elements
+    for (auto it = list.begin(); it != list.end(); ++it)
+      {
+        Frontiere& front = *it;
+        front.associer_zone(*this); // Au cas ou la zone de la frontiere n'est pas la bonne zone
         Journal() << "Zone::comprimer() bord : " << front.le_nom() << finl;
-        while(!curseur2.list().est_dernier())
+
+        // second loop over list elements, starting from an incremented position
+        for (auto it2 = std::next(it); it2 != list.end(); )
           {
-            Frontiere& front2=curseur2.list().suivant().valeur();
-            if(front.le_nom() == front2.le_nom())
+            Frontiere& front2 = *it2;
+            if (front.le_nom() == front2.le_nom())
               {
                 Journal() << "On agglomere le bord : " << front.le_nom() << finl;
                 front.add(front2);
-                curseur2.list().supprimer();
+                it2 = list.erase(it2);
               }
             else
-              ++curseur2;
+              ++it2;
+
+            Journal() << front.le_nom() << " est associee a : " << front.zone().le_nom() << finl;
           }
-        Journal() << front.le_nom() << " est associee a : " << front.zone().le_nom() << finl;
-        ++curseur;
       }
   }
 
   {
     // Les Faces Internes :
-    LIST_CURSEUR(Faces_Interne) curseur(mes_faces_int);;;
-    while(curseur)
+    auto& list = mes_faces_int.get_stl_list();
+    for (auto it = list.begin(); it != list.end(); ++it)
       {
-        Frontiere& front=curseur.valeur();
-        LIST_CURSEUR(Faces_Interne) curseur2(curseur.list());;;
-        while(!curseur2.list().est_dernier())
+        Frontiere& front = *it;
+        for (auto it2 = std::next(it); it2 != list.end(); )
           {
-            Frontiere& front2=curseur2.list().suivant().valeur();
-            if(front.le_nom() == front2.le_nom())
+            Frontiere& front2 = *it2;
+            if (front.le_nom() == front2.le_nom())
               {
                 front.add(front2);
-                curseur2.list().supprimer();
+                it2 = list.erase(it2);
               }
             else
-              ++curseur2;
+              ++it2;
           }
-        ++curseur;
       }
   }
+
   {
     // Les Raccords
-    LIST_CURSEUR(Raccord) curseur(mes_faces_raccord);;;
-    while(curseur)
+    auto& list = mes_faces_raccord.get_stl_list();
+    for (auto it = list.begin(); it != list.end(); ++it)
       {
-        Frontiere& front=curseur->valeur();
-        LIST_CURSEUR(Raccord) curseur2(curseur.list());;;
+        Frontiere& front = (*it).valeur();
         Journal() << "Raccord : " << front.le_nom() << finl;
-        while(!curseur2.list().est_dernier())
+        for (auto it2 = std::next(it); it2 != list.end(); )
           {
-            Frontiere& front2=curseur2.list().suivant()->valeur();
-            if(front.le_nom() == front2.le_nom())
+            Frontiere& front2 = (*it2).valeur();
+            if (front.le_nom() == front2.le_nom())
               {
                 front.add(front2);
-                curseur2.list().supprimer();
+                it2 = list.erase(it2);
               }
             else
-              ++curseur2;
+              ++it2;
           }
-        ++curseur;
       }
   }
   return 1;
@@ -788,32 +774,23 @@ void Zone::ecrire_noms_bords(Sortie& os) const
 {
   {
     // Les Bords
-    CONST_LIST_CURSEUR(Bord) curseur(mes_faces_bord);
-    while(curseur)
-      {
-        os << curseur->le_nom() << finl;
-        ++curseur;
-      }
+    const auto& list = mes_faces_bord.get_stl_list();
+    for (const auto &itr : list)
+      os << itr.le_nom() << finl;
   }
 
   {
     // Les Faces Internes :
-    CONST_LIST_CURSEUR(Raccord) curseur(mes_faces_raccord);
-    while(curseur)
-      {
-        os << curseur.valeur()->le_nom() << finl;
-        ++curseur;
-      }
+    const auto& list = mes_faces_raccord.get_stl_list();
+    for (const auto &itr : list)
+      os << itr->le_nom() << finl;
   }
 
   {
     // Les Faces Internes :
-    CONST_LIST_CURSEUR(Faces_Interne) curseur(mes_faces_int);
-    while(curseur)
-      {
-        os << curseur->le_nom() << finl;
-        ++curseur;
-      }
+    const auto& list = mes_faces_int.get_stl_list();
+    for (const auto &itr : list)
+      os << itr.le_nom() << finl;
   }
 }
 
@@ -821,7 +798,6 @@ double Zone::epsilon() const
 {
   return domaine().epsilon();
 }
-
 
 /*! @brief Renvoie le nombre de faces du type specifie.
  *
@@ -870,7 +846,7 @@ int Zone::nb_faces_int(Type_Face type) const
  * @param (double z) coordonnee en Z
  * @return (int) le rang de l'element contenant le point dont les coordonnees sont specifiees.
  */
-int Zone::chercher_elements(double x, double y, double z,int reel) const
+int Zone::chercher_elements(double x, double y, double z, int reel) const
 {
   const OctreeRoot& octree = construit_octree(reel);
   return octree.rang_elem(x, y, z);
@@ -882,9 +858,7 @@ int Zone::chercher_elements(double x, double y, double z,int reel) const
  * @param (ArrOfInt& som)
  * @return (ArrOfInt&)
  */
-ArrOfInt& Zone::chercher_sommets(const DoubleTab& pos,
-                                 ArrOfInt& som,
-                                 int reel) const
+ArrOfInt& Zone::chercher_sommets(const DoubleTab& pos, ArrOfInt& som, int reel) const
 {
   const OctreeRoot& octree = construit_octree(reel);
   octree.rang_sommet(pos, som);
@@ -897,9 +871,7 @@ ArrOfInt& Zone::chercher_sommets(const DoubleTab& pos,
  * @param (IntTab& aretes_som) la definition des aretes par leurs sommets
  * @return (ArrOfInt& aretes) Liste des aretes trouvees
  */
-ArrOfInt& Zone::chercher_aretes(const DoubleTab& pos,
-                                ArrOfInt& aretes,
-                                int reel) const
+ArrOfInt& Zone::chercher_aretes(const DoubleTab& pos, ArrOfInt& aretes, int reel) const
 {
   const OctreeRoot& octree = construit_octree(reel);
   octree.rang_arete(pos, aretes);
@@ -920,41 +892,38 @@ int Zone::chercher_sommets(double x, double y, double z, int reel) const
 
 int Zone::rang_frontiere(const Nom& un_nom) const
 {
-  int i=0;
+  int i = 0;
   {
-    CONST_LIST_CURSEUR(Bord) curseur(mes_faces_bord);
-    while(curseur)
+    const auto& list = mes_faces_bord.get_stl_list();
+    for (const auto &itr : list)
       {
-        if(curseur->le_nom() == un_nom)
+        if (itr.le_nom() == un_nom)
           return i;
-        ++curseur;
-        ++i;
-      }
-  }
-  {
-    CONST_LIST_CURSEUR(Raccord) curseur(mes_faces_raccord);
-    while(curseur)
-      {
-        if(curseur.valeur()->le_nom() == un_nom)
-          return i;
-        ++curseur;
         ++i;
       }
   }
 
   {
-    // Les Faces Internes :
-    CONST_LIST_CURSEUR(Faces_Interne) curseur(mes_faces_int);
-    while(curseur)
+    const auto& list = mes_faces_raccord.get_stl_list();
+    for (const auto &itr : list)
       {
-        if(curseur->le_nom() == un_nom)
+        if (itr->le_nom() == un_nom)
           return i;
-        ++curseur;
+        ++i;
+      }
+  }
+
+  {
+    const auto& list = mes_faces_int.get_stl_list();
+    for (const auto &itr : list)
+      {
+        if (itr.le_nom() == un_nom)
+          return i;
         ++i;
       }
   }
   Cerr << "Zone::rang_frontiere(): We have not found a boundary with name " << un_nom << finl;
-  exit();
+  Process::exit();
   return -1;
 }
 
@@ -973,38 +942,32 @@ Frontiere& Zone::frontiere(const Nom& un_nom)
 void Zone::fixer_premieres_faces_frontiere()
 {
   Journal() << "Zone::fixer_premieres_faces_frontiere()" << finl;
-  int compteur=0;
+  int compteur = 0;
   {
-    LIST_CURSEUR(Bord) curseur(mes_faces_bord);
-    while(curseur)
+    auto& list = mes_faces_bord.get_stl_list();
+    for (auto &itr : list)
       {
-        curseur->fixer_num_premiere_face(compteur);
-        compteur+=curseur->nb_faces();
-        Journal() << "Le bord " << curseur->le_nom() << " commence a la face : "
-                  << curseur->num_premiere_face() << finl;
-        ++curseur;
+        itr.fixer_num_premiere_face(compteur);
+        compteur += itr.nb_faces();
+        Journal() << "Le bord " << itr.le_nom() << " commence a la face : " << itr.num_premiere_face() << finl;
       }
   }
   {
-    LIST_CURSEUR(Raccord) curseur(mes_faces_raccord);
-    while(curseur)
+    auto& list = mes_faces_raccord.get_stl_list();
+    for (auto &itr : list)
       {
-        curseur.valeur()->fixer_num_premiere_face(compteur);
-        compteur+=curseur.valeur()->nb_faces();
-        Journal() << "Le raccord " << curseur->le_nom() << " commence a la face : "
-                  << curseur.valeur()->num_premiere_face() << finl;
-        ++curseur;
+        itr->fixer_num_premiere_face(compteur);
+        compteur += itr->nb_faces();
+        Journal() << "Le raccord " << itr->le_nom() << " commence a la face : " << itr->num_premiere_face() << finl;
       }
   }
   {
-    LIST_CURSEUR(Joint) curseur(mes_faces_joint);
-    while(curseur)
+    auto& list = mes_faces_joint.get_stl_list();
+    for (auto &itr : list)
       {
-        curseur->fixer_num_premiere_face(compteur);
-        compteur+=curseur->nb_faces();
-        Journal() << "Le joint " << curseur->le_nom() << " commence a la face : "
-                  << curseur->num_premiere_face() << finl;
-        ++curseur;
+        itr.fixer_num_premiere_face(compteur);
+        compteur += itr.nb_faces();
+        Journal() << "Le joint " << itr.le_nom() << " commence a la face : " << itr.num_premiere_face() << finl;
       }
   }
   // GF recalcul de nb_faces_Cl (inutile dans la 1.5.8)
@@ -1062,7 +1025,6 @@ void Zone::construire_elem_virt_pe_num(IntTab& elem_virt_pe_num_cpy) const
     }
 }
 
-
 const IntTab& Zone::elem_virt_pe_num() const
 {
   return elem_virt_pe_num_;
@@ -1072,24 +1034,24 @@ const IntTab& Zone::elem_virt_pe_num() const
  */
 void Zone::calculer_mon_centre_de_gravite(ArrOfDouble& c)
 {
-  c=0;
+  c = 0;
   // Volumes computed cause stored in Zone_VF and so not available in Zone...
   DoubleVect volumes;
   DoubleVect inverse_volumes;
-  calculer_volumes(volumes,inverse_volumes);
+  calculer_volumes(volumes, inverse_volumes);
   DoubleTab xp;
   calculer_centres_gravite(xp);
-  double volume=0;
-  for (int i=0; i<nb_elem(); i++)
-    for (int j=0; j<dimension; j++)
+  double volume = 0;
+  for (int i = 0; i < nb_elem(); i++)
+    for (int j = 0; j < dimension; j++)
       {
-        c[j]+=xp(i,j)*volumes(i);
-        volume+=volumes(i);
+        c[j] += xp(i, j) * volumes(i);
+        volume += volumes(i);
       }
   // Cas de Zone vide:
-  if (volume>0)
-    c/=volume;
-  cg_moments_=c;
+  if (volume > 0)
+    c /= volume;
+  cg_moments_ = c;
   volume_total_ = mp_somme_vect(volumes);
 }
 
@@ -1106,17 +1068,17 @@ void Zone::calculer_volumes(DoubleVect& volumes, DoubleVect& inverse_volumes) co
   if (!inverse_volumes.get_md_vector().non_nul())
     creer_tableau_elements(inverse_volumes, Array_base::NOCOPY_NOINIT);
   int size = volumes.size_totale();
-  for (int i=0; i<size; i++)
+  for (int i = 0; i < size; i++)
     {
       double v = volumes(i);
-      if (v<=0.)
+      if (v <= 0.)
         {
           Cerr << "Volume[" << i << "]=" << v << finl;
           Cerr << "Several volumes of the mesh are not positive." << finl;
           Cerr << "Something is wrong in the mesh..." << finl;
           exit();
         }
-      inverse_volumes(i)=1./v;
+      inverse_volumes(i) = 1. / v;
     }
 }
 
@@ -1128,26 +1090,23 @@ void Zone::calculer_centres_gravite_aretes(DoubleTab& xa) const
 {
   const DoubleTab& coord = domaine().coord_sommets();
   // Calcule les centres de gravite des aretes reelles seulement
-  xa.resize(nb_aretes(),dimension);
-  for (int i=0; i<nb_aretes(); i++)
-    for (int j=0; j<dimension; j++)
-      xa(i,j) = 0.5*(coord(Aretes_som(i,0),j)+coord(Aretes_som(i,1),j));
+  xa.resize(nb_aretes(), dimension);
+  for (int i = 0; i < nb_aretes(); i++)
+    for (int j = 0; j < dimension; j++)
+      xa(i, j) = 0.5 * (coord(Aretes_som(i, 0), j) + coord(Aretes_som(i, 1), j));
 }
 
-int Zone::rang_elem_depuis(const DoubleTab& coord,
-                           const ArrOfInt& elems,
-                           ArrOfInt& prems) const
+int Zone::rang_elem_depuis(const DoubleTab& coord, const ArrOfInt& elems, ArrOfInt& prems) const
 {
   Cerr << "Zone::rang_elem_depuis: function not any more implemented" << finl;
   exit();
   return -1;
 }
 
-void Zone::rang_elems_sommet(ArrOfInt& elems,
-                             double x, double y, double z) const
+void Zone::rang_elems_sommet(ArrOfInt& elems, double x, double y, double z) const
 {
   const OctreeRoot octree = construit_octree();
-  octree.rang_elems_sommet(elems,x,y,z);
+  octree.rang_elems_sommet(elems, x, y, z);
 }
 
 void Zone::invalide_octree()
@@ -1204,10 +1163,8 @@ const MD_Vector& Zone::md_vector_elements() const
   const MD_Vector& md = mes_elems.get_md_vector();
   if (!md.non_nul())
     {
-      Cerr << "Internal error in Zone::md_vector_elements(): descriptor for elements not initialized\n"
-           << " You might use a buggy Domain constructor that does not build descriptors,\n"
-           << " Use the following syntax to finish the domain construction\n"
-           << "  Scatter ; " << domaine().le_nom() << finl;
+      Cerr << "Internal error in Zone::md_vector_elements(): descriptor for elements not initialized\n" << " You might use a buggy Domain constructor that does not build descriptors,\n"
+           << " Use the following syntax to finish the domain construction\n" << "  Scatter ; " << domaine().le_nom() << finl;
       exit();
     }
   // Pour l'instant je prends le descripteur dans le tableau mes_elems, mais on
@@ -1229,17 +1186,15 @@ double Zone::volume_total() const
 // S'il reste plusieurs items se trouvant a la meme distance du point de reference
 // alors on repete le test en translatant le point de reference
 
-int Zone::identifie_item_unique(IntList& item_possible,
-                                DoubleTab& coord_possible,
-                                const DoubleVect& coord_ref)
+int Zone::identifie_item_unique(IntList& item_possible, DoubleTab& coord_possible, const DoubleVect& coord_ref)
 {
   int it_selection = -1;
-  DoubleTab decentre_face(4,Objet_U::dimension);
+  DoubleTab decentre_face(4, Objet_U::dimension);
   decentre_face = 0.;
-  for (int t=1; t<4; t++)
-    for (int dir=0; dir<Objet_U::dimension; dir++)
-      if (dir==(t-1))
-        decentre_face(t,dir) = 1.;
+  for (int t = 1; t < 4; t++)
+    for (int dir = 0; dir < Objet_U::dimension; dir++)
+      if (dir == (t - 1))
+        decentre_face(t, dir) = 1.;
   // decentre_face(0,0:dim)={0,0,0}
   // decentre_face(1,0:dim)={1,0,0}
   // decentre_face(2,0:dim)={0,1,0}
@@ -1247,53 +1202,52 @@ int Zone::identifie_item_unique(IntList& item_possible,
 
   //Au premier passage (t=0) pas de translation effectuee
   DoubleVect dist;
-  assert (item_possible.size()!=0);
+  assert(item_possible.size() != 0);
   int t = 0;
-  while ((item_possible.size()!=1) && (t<4))
+  while ((item_possible.size() != 1) && (t < 4))
     {
       double distmin = DMAXFLOAT;
       int size_initiale = item_possible.size();
       dist.resize(size_initiale);
       dist = 0.;
 
-      for (int ind_it=0; ind_it<size_initiale; ind_it++)
+      for (int ind_it = 0; ind_it < size_initiale; ind_it++)
         {
-          for (int dir=0; dir<Objet_U::dimension; dir++)
-            dist[ind_it] += (coord_possible(ind_it,dir)-(coord_ref(dir)+decentre_face(t,dir)))*(coord_possible(ind_it,dir)-(coord_ref(dir)+decentre_face(t,dir)));
-          if (dist[ind_it]<=distmin)
+          for (int dir = 0; dir < Objet_U::dimension; dir++)
+            dist[ind_it] += (coord_possible(ind_it, dir) - (coord_ref(dir) + decentre_face(t, dir))) * (coord_possible(ind_it, dir) - (coord_ref(dir) + decentre_face(t, dir)));
+          if (dist[ind_it] <= distmin)
             distmin = dist[ind_it];
         }
 
       int ind_it = 0;
       int nb_it_suppr = 0;
-      while (ind_it<size_initiale)
+      while (ind_it < size_initiale)
         {
-          if (!est_egal(dist[ind_it],distmin))
+          if (!est_egal(dist[ind_it], distmin))
             {
-              int ind_it_suppr = ind_it-nb_it_suppr;
+              int ind_it_suppr = ind_it - nb_it_suppr;
               int it_suppr = item_possible[ind_it_suppr];
               item_possible.suppr(it_suppr);
 
               int size_actuelle = item_possible.size();
-              for (int ind=ind_it_suppr; ind<size_actuelle; ind++)
-                for (int dir=0; dir<dimension; dir++)
-                  coord_possible(ind,dir) = coord_possible(ind+1,dir);
-              coord_possible.resize(size_actuelle,dimension,Array_base::COPY_NOINIT);
+              for (int ind = ind_it_suppr; ind < size_actuelle; ind++)
+                for (int dir = 0; dir < dimension; dir++)
+                  coord_possible(ind, dir) = coord_possible(ind + 1, dir);
+              coord_possible.resize(size_actuelle, dimension, Array_base::COPY_NOINIT);
               nb_it_suppr++;
             }
           ind_it++;
         }
       t++;
     }
-  if (item_possible.size()==1)
+  if (item_possible.size() == 1)
     it_selection = item_possible[0];
   else
     {
-      Cerr<<"Zone::identifie_item_unique()"<<finl;
-      Cerr<<"An item has not been found among the list."<<finl;
-      Cerr<<"Please contact TRUST support."<<finl;
+      Cerr << "Zone::identifie_item_unique()" << finl;
+      Cerr << "An item has not been found among the list." << finl;
+      Cerr << "Please contact TRUST support." << finl;
       Process::exit();
     }
   return it_selection;
 }
-

@@ -15,11 +15,11 @@
 
 #include <Joints.h>
 
-Implemente_instanciable(Joints, "Joints", LIST(Joint));
+Implemente_instanciable(Joints, "Joints", STLLIST(Joint));
 
-Sortie& Joints::printOn(Sortie& os) const { return LIST(Joint)::printOn(os); }
+Sortie& Joints::printOn(Sortie& os) const { return STLLIST(Joint)::printOn(os); }
 
-Entree& Joints::readOn(Entree& is) { return LIST(Joint)::readOn(is); }
+Entree& Joints::readOn(Entree& is) { return STLLIST(Joint)::readOn(is); }
 
 /*! @brief Associe une zone a tous les joints de la liste.
  *
@@ -29,14 +29,9 @@ Entree& Joints::readOn(Entree& is) { return LIST(Joint)::readOn(is); }
  */
 void Joints::associer_zone(const Zone& une_zone)
 {
-  LIST_CURSEUR(Joint) curseur(*this);;;
-  while(curseur)
-    {
-      curseur->associer_zone(une_zone);
-      ++curseur;
-    }
+  auto& list = get_stl_list();
+  for (auto& itr : list) itr.associer_zone(une_zone);
 }
-
 
 /*! @brief Renvoie le nombre de face total des Joints de la liste.
  *
@@ -47,13 +42,10 @@ void Joints::associer_zone(const Zone& une_zone)
  */
 int Joints::nb_faces() const
 {
-  CONST_LIST_CURSEUR(Joint) curseur(*this);;;
-  int nombre=0;
-  while(curseur)
-    {
-      nombre+=curseur->nb_faces();
-      ++curseur;
-    }
+  int nombre = 0;
+  const auto& list = get_stl_list();
+  for (const auto &itr : list) nombre += itr.nb_faces();
+
   return nombre;
 }
 
@@ -67,17 +59,14 @@ int Joints::nb_faces() const
  */
 int Joints::nb_faces(Type_Face type) const
 {
-  CONST_LIST_CURSEUR(Joint) curseur(*this);
-  int nombre=0;
-  while(curseur)
-    {
-      if (type == curseur->faces().type_face())
-        nombre+=curseur->nb_faces();
-      ++curseur;
-    }
+  int nombre = 0;
+  const auto& list = get_stl_list();
+  for (const auto &itr : list)
+    if (type == itr.faces().type_face())
+      nombre += itr.nb_faces();
+
   return nombre;
 }
-
 
 /*! @brief Comprime la liste de joints.
  *
@@ -86,56 +75,51 @@ void Joints::comprimer()
 {
   Cerr << "Joints::comprimer() - Start" << finl;
   IntVect fait(size());
-  int rang1=0, rang2=0;
-  LIST_CURSEUR(Joint) curseur1(*this);;
-  while(curseur1)
+  int rang1 = 0, rang2 = 0;
+
+  auto& list = get_stl_list();
+  for (auto &itr : list)
     {
-      if (!fait(rang1) )
+      if (!fait(rang1))
         {
-          fait(rang1)=1;
-          Joint& joint1=curseur1.valeur();
-          rang2=rang1;
-          LIST_CURSEUR(Joint) curseur2(curseur1.list());;
-          while(curseur2)
+          fait(rang1) = 1;
+          Joint& joint1 = itr;
+          rang2 = rang1;
+
+          for (auto &itr2 : list)
             {
-              if (!fait(rang2) )
+              if (!fait(rang2))
                 {
-                  Joint& joint2=curseur2.valeur();
-                  if(joint1.PEvoisin() == joint2.PEvoisin())
+                  Joint& joint2 = itr2;
+                  if (joint1.PEvoisin() == joint2.PEvoisin())
                     {
-                      Cerr << "agglomeration of joints " << joint1.le_nom()
-                           << " and " << joint2.le_nom() << finl;
-                      fait(rang2)=1;
-                      joint1.nommer(joint1.le_nom()+joint2.le_nom());
+                      Cerr << "agglomeration of joints " << joint1.le_nom() << " and " << joint2.le_nom() << finl;
+                      fait(rang2) = 1;
+                      joint1.nommer(joint1.le_nom() + joint2.le_nom());
 
                       // Concatenation des faces
                       joint1.ajouter_faces(joint2.les_sommets_des_faces());
 
                       // Concatenation des sommets ???
                       Cerr << "Concatenation of nodes ?" << finl;
-                      exit();
+                      Process::exit();
 
                       joint2.dimensionner(0);
                     }
                 }
-              ++curseur2;
               rang2++;
             }
         }
-      ++curseur1;
       ++rang1;
     }
-  curseur1=*this;
-  while(curseur1)
+
+  for (auto itr = list.begin(); itr != list.end(); )
     {
-      Joint& joint1=curseur1.valeur();
-      if (joint1.nb_faces()==0)
-        {
-          suppr(curseur1.valeur());
-          curseur1=*this;
-        }
+      Joint& joint1 = *itr;
+      if (joint1.nb_faces() == 0)
+        itr = list.erase(itr);
       else
-        ++curseur1;
+        ++itr;
     }
   Cerr << "Joints::comprimer() - End" << finl;
 }
@@ -157,17 +141,15 @@ int Joints::nb_joints() const
  */
 Joint& Joints::joint_PE(int pe)
 {
-  LIST_CURSEUR(Joint) curseur(*this);
-  for (; curseur; ++curseur)
+  auto& list = get_stl_list();
+  for (auto &itr : list)
     {
-      Joint& joint = curseur.valeur();
+      Joint& joint = itr;
       int pe_joint = joint.PEvoisin();
-      if (pe == pe_joint)
-        return joint;
+      if (pe == pe_joint) return joint;
     }
   Cerr << "Error in Joints::joint_PE : joint not found" << finl;
-  assert(0);
-  exit();
-  return curseur.valeur();
+  Process::exit();
+  throw;
 }
 

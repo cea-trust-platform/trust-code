@@ -17,12 +17,6 @@
 
 Implemente_instanciable(Raccord, "Raccord", DERIV(Raccord_base));
 
-Sortie& Raccord::printOn(Sortie& s) const
-{
-  return DERIV(Raccord_base)::printOn(s);
-}
+Sortie& Raccord::printOn(Sortie& s) const { return DERIV(Raccord_base)::printOn(s); }
 
-Entree& Raccord::readOn(Entree& s)
-{
-  return DERIV(Raccord_base)::readOn(s);
-}
+Entree& Raccord::readOn(Entree& s) { return DERIV(Raccord_base)::readOn(s); }

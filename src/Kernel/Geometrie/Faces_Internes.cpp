@@ -15,11 +15,11 @@
 
 #include <Faces_Internes.h>
 
-Implemente_instanciable(Faces_Internes, "Faces_Internes", LIST(Faces_Interne));
+Implemente_instanciable(Faces_Internes, "Faces_Internes", STLLIST(Faces_Interne));
 
-Sortie& Faces_Internes::printOn(Sortie& os) const { return LIST(Faces_Interne)::printOn(os); }
+Sortie& Faces_Internes::printOn(Sortie& os) const { return STLLIST(Faces_Interne)::printOn(os); }
 
-Entree& Faces_Internes::readOn(Entree& is) { return LIST(Faces_Interne)::readOn(is); }
+Entree& Faces_Internes::readOn(Entree& is) { return STLLIST(Faces_Interne)::readOn(is); }
 
 /*! @brief Associe une zone a tous les objets Faces_Interne de la liste.
  *
@@ -27,14 +27,9 @@ Entree& Faces_Internes::readOn(Entree& is) { return LIST(Faces_Interne)::readOn(
  */
 void Faces_Internes::associer_zone(const Zone& une_zone)
 {
-  LIST_CURSEUR(Faces_Interne) curseur(*this);
-  while(curseur)
-    {
-      curseur->associer_zone(une_zone);
-      ++curseur;
-    }
+  auto& list = get_stl_list();
+  for (auto& itr : list) itr.associer_zone(une_zone);
 }
-
 
 /*! @brief Renvoie le nombre total de faces contenues dans la liste des Faces_Interne, i.
  *
@@ -46,13 +41,10 @@ void Faces_Internes::associer_zone(const Zone& une_zone)
  */
 int Faces_Internes::nb_faces() const
 {
-  int nombre=0;
-  CONST_LIST_CURSEUR(Faces_Interne) curseur(*this);
-  while(curseur)
-    {
-      nombre+=curseur->nb_faces();
-      ++curseur;
-    }
+  int nombre = 0;
+  const auto& list = get_stl_list();
+  for (const auto &itr : list) nombre += itr.nb_faces();
+
   return nombre;
 }
 
@@ -67,13 +59,10 @@ int Faces_Internes::nb_faces() const
  */
 int Faces_Internes::nb_faces(Type_Face type) const
 {
-  CONST_LIST_CURSEUR(Faces_Interne) curseur(*this);
-  int nombre=0;
-  while(curseur)
-    {
-      if (type == curseur->faces().type_face())
-        nombre+=curseur->nb_faces();
-      ++curseur;
-    }
+  int nombre = 0;
+  const auto& list = get_stl_list();
+  for (const auto &itr : list)
+    if (type == itr.faces().type_face()) nombre += itr.nb_faces();
+
   return nombre;
 }

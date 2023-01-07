@@ -83,7 +83,7 @@ void Source_Flux_interfacial_base::completer()
 {
   const Zone_VF& zone = ref_cast(Zone_VF, equation().zone_dis().valeur());
   int N = equation().inconnue().valeurs().line_size();
-  if (!sub_type(Source_Flux_interfacial_base, equation().sources().dernier()->valeur()))
+  if (!sub_type(Source_Flux_interfacial_base, equation().sources().dernier().valeur()))
     Process::exit(que_suis_je() + " : Source_Flux_interfacial_base must be the last source term in the source term declaration list of the " + equation().que_suis_je() + " equation ! ");
 
   if (sub_type(Energie_Multiphase, equation()))
@@ -98,25 +98,25 @@ void Source_Flux_interfacial_base::completer()
 DoubleTab& Source_Flux_interfacial_base::qpi() const
 {
   if (sub_type(Energie_Multiphase, equation())) return qpi_;
-  return ref_cast(Source_Flux_interfacial_base, ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.sources().dernier().valeur().valeur()).qpi();
+  return ref_cast(Source_Flux_interfacial_base, ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.sources().dernier().valeur()).qpi();
 }
 
 DoubleTab& Source_Flux_interfacial_base::dT_qpi() const
 {
   if (sub_type(Energie_Multiphase, equation())) return dT_qpi_;
-  return ref_cast(Source_Flux_interfacial_base, ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.sources().dernier().valeur().valeur()).dT_qpi();
+  return ref_cast(Source_Flux_interfacial_base, ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.sources().dernier().valeur()).dT_qpi();
 }
 
 DoubleTab& Source_Flux_interfacial_base::da_qpi() const
 {
   if (sub_type(Energie_Multiphase, equation())) return da_qpi_;
-  return ref_cast(Source_Flux_interfacial_base, ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.sources().dernier().valeur().valeur()).da_qpi();
+  return ref_cast(Source_Flux_interfacial_base, ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.sources().dernier().valeur()).da_qpi();
 }
 
 DoubleTab& Source_Flux_interfacial_base::dp_qpi() const
 {
   if (sub_type(Energie_Multiphase, equation())) return dp_qpi_;
-  return ref_cast(Source_Flux_interfacial_base, ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.sources().dernier().valeur().valeur()).dp_qpi();
+  return ref_cast(Source_Flux_interfacial_base, ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.sources().dernier().valeur()).dp_qpi();
 }
 
 void Source_Flux_interfacial_base::mettre_a_jour(double temps)

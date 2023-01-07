@@ -427,14 +427,12 @@ void Probleme_base::discretiser(const Discretisation_base& une_discretisation)
  */
 void Probleme_base::init_postraitements()
 {
-  LIST_CURSEUR(DERIV(Postraitement_base)) curseur = les_postraitements;
-  while (curseur)   // Pour chaque postraitement
+  auto& list = les_postraitements.get_stl_list();
+  for (auto& itr : list) // Pour chaque postraitement
     {
-
-      DERIV(Postraitement_base) &der_post = curseur.valeur();
+      DERIV(Postraitement_base) &der_post = itr;
 
       // S'il est de type Postraitement, initialiser premier/dernier _pour_nom_fich
-
       if (sub_type(Postraitement, der_post.valeur()))
         {
 
@@ -468,7 +466,6 @@ void Probleme_base::init_postraitements()
             }
           post.est_le_dernier_postraitement_pour_nom_fich() = 1;
         }
-      ++curseur;
     }
   les_postraitements.init();
 }
@@ -901,15 +898,14 @@ void Probleme_base::get_noms_champs_postraitables(Noms& noms,Option opt) const
 
 int Probleme_base::comprend_champ_post(const Motcle& un_nom) const
 {
-  if (un_nom=="TEMPERATURE_PHYSIQUE")
-    return 0;
-  CONST_LIST_CURSEUR(DERIV(Postraitement_base)) curseur_post = postraitements();
-  while (curseur_post)
+  if (un_nom == "TEMPERATURE_PHYSIQUE") return 0;
+
+  const auto& list = postraitements().get_stl_list();
+  for (const auto &itr : list)
     {
-      const Postraitement& post = ref_cast(Postraitement,curseur_post.valeur().valeur());
+      const Postraitement& post = ref_cast(Postraitement, itr.valeur());
       if (post.comprend_champ_post(un_nom))
         return 1;
-      ++curseur_post;
     }
   return 0;
 }
@@ -919,61 +915,45 @@ int Probleme_base::comprend_champ_post(const Motcle& un_nom) const
  */
 int Probleme_base::verifie_tdeb_tfin(const Motcle& un_nom) const
 {
-  CONST_LIST_CURSEUR(DERIV(Postraitement_base)) curseur_post = postraitements();
-  while (curseur_post)
+  const auto& list = postraitements().get_stl_list();
+  for (const auto &itr : list)
     {
-      const Postraitement& post = ref_cast(Postraitement,curseur_post.valeur().valeur());
-      if (tstat_deb_==-1)
+      const Postraitement& post = ref_cast(Postraitement, itr.valeur());
+      if (tstat_deb_ == -1)
         tstat_deb_ = post.tstat_deb();
-      else if (!est_egal(tstat_deb_,post.tstat_deb()) && post.tstat_deb()!=-1)
-        {
-          //Cerr << finl;
-          //Cerr << "Error in " << un_nom << finl;
-          //Cerr << "Your beginning time of statistics t_deb=" << post.tstat_deb() << " must be equal" << finl;
-          //Cerr << "to the previous beginning time already read t_deb=" << tstat_deb_ << finl;
-          Cerr << "Beginning times of statistics t_deb are differents but the calculation continues" << finl;
-          //exit();
-        }
-      if (tstat_fin_==-1)
+      else if (!est_egal(tstat_deb_, post.tstat_deb()) && post.tstat_deb() != -1)
+        Cerr << "Beginning times of statistics t_deb are differents but the calculation continues" << finl;
+
+      if (tstat_fin_ == -1)
         tstat_fin_ = post.tstat_fin();
-      else if (!est_egal(tstat_fin_,post.tstat_fin()) && post.tstat_fin()!=-1)
-        {
-          //Cerr << finl;
-          //Cerr << "Error in " << un_nom << finl;
-          //Cerr << "Your ending time of statistics t_fin=" << post.tstat_fin() << " must be equal" << finl;
-          //Cerr << "to the previous ending time already read t_fin=" << tstat_fin_ << finl;
-          Cerr << "Ending times of statistics t_fin are differents but the calculation continues" << finl;
-          //exit();
-        }
-      ++curseur_post;
+      else if (!est_egal(tstat_fin_, post.tstat_fin()) && post.tstat_fin() != -1)
+        Cerr << "Ending times of statistics t_fin are differents but the calculation continues" << finl;
     }
   return 1;
 }
 
 const Champ_Generique_base& Probleme_base::get_champ_post(const Motcle& un_nom) const
 {
-
   REF(Champ_Generique_base) ref_champ;
 
-  CONST_LIST_CURSEUR(DERIV(Postraitement_base)) curseur_post = postraitements();
-  while (curseur_post)
+  const auto& list = postraitements().get_stl_list();
+  for (const auto &itr : list)
     {
-      if (sub_type(Postraitement,curseur_post.valeur().valeur()))
+      if (sub_type(Postraitement, itr.valeur()))
         {
-          const Postraitement& post = ref_cast(Postraitement,curseur_post.valeur().valeur());
+          const Postraitement& post = ref_cast(Postraitement, itr.valeur());
           try
             {
               return post.get_champ_post(un_nom);
             }
           catch (Champs_compris_erreur& err_) { }
         }
-      ++curseur_post;
     }
   Cerr<<" "<<finl;
   Cerr<<"The field named "<<un_nom<<" do not correspond to a field understood by the problem."<<finl;
   Cerr<<"Check the name of the field indicated into the postprocessing block of the data file " << finl;
   Cerr<<"or in the list of post-processed fields above (in the block 'Reading of fields to be postprocessed')."<<finl;
-  exit();
+  Process::exit();
 
   //Pour compilation
   return ref_champ;

@@ -17,9 +17,9 @@
 #include <TRUSTTab.h>
 #include <Sources.h>
 
-Implemente_instanciable(Sources, "Sources", LIST(Source));
+Implemente_instanciable(Sources, "Sources", STLLIST(Source));
 
-Sortie& Sources::printOn(Sortie& os) const { return LIST(Source)::printOn(os); }
+Sortie& Sources::printOn(Sortie& os) const { return STLLIST(Source)::printOn(os); }
 
 /*! @brief Lecture d'une liste de sources sur un flot d'entree.
  *
@@ -83,12 +83,8 @@ Entree& Sources::readOn(Entree& is)
  */
 DoubleTab& Sources::ajouter(DoubleTab& xx) const
 {
-  CONST_LIST_CURSEUR(Source) curseur(*this);
-  while(curseur)
-    {
-      curseur->ajouter(xx);
-      ++curseur;
-    }
+  const auto& list = get_stl_list();
+  for (const auto& itr : list) itr.ajouter(xx);
   return xx;
 }
 
@@ -101,13 +97,9 @@ DoubleTab& Sources::ajouter(DoubleTab& xx) const
  */
 DoubleTab& Sources::calculer(DoubleTab& xx) const
 {
-  xx=0;
-  CONST_LIST_CURSEUR(Source) curseur(*this);
-  while(curseur)
-    {
-      curseur->ajouter(xx);
-      ++curseur;
-    }
+  xx = 0.;
+  const auto& list = get_stl_list();
+  for (const auto& itr : list) itr.ajouter(xx);
   return xx;
 }
 
@@ -117,12 +109,8 @@ DoubleTab& Sources::calculer(DoubleTab& xx) const
  */
 void Sources::mettre_a_jour(double temps)
 {
-  LIST_CURSEUR(Source) curseur(*this);
-  while(curseur)
-    {
-      curseur->mettre_a_jour(temps);
-      ++curseur;
-    }
+  auto& list = get_stl_list();
+  for (auto& itr : list) itr.mettre_a_jour(temps);
 }
 
 
@@ -133,12 +121,8 @@ void Sources::mettre_a_jour(double temps)
  */
 void Sources::completer()
 {
-  LIST_CURSEUR(Source) curseur(*this);
-  while(curseur)
-    {
-      curseur->completer();
-      ++curseur;
-    }
+  auto& list = get_stl_list();
+  for (auto& itr : list) itr.completer();
 }
 
 /*! @brief Pour chaque source de la liste, appel a associer_champ_rho de la source.
@@ -150,13 +134,12 @@ void Sources::completer()
  */
 void Sources::associer_champ_rho(const Champ_base& champ_rho)
 {
-  LIST_CURSEUR(Source) curseur(*this);
-  while(curseur)
+  auto& list = get_stl_list();
+  for (auto& itr : list)
     {
-      Source& src = curseur.valeur();
+      Source& src = itr;
       Source_base& src_base = src.valeur();
       src_base.associer_champ_rho(champ_rho);
-      ++curseur;
     }
 }
 
@@ -169,17 +152,16 @@ int Sources::a_pour_Champ_Fonc(const Motcle& mot,
                                REF(Champ_base)& ch_ref) const
 {
   int ok = 0;
-  CONST_LIST_CURSEUR(Source) curseur(*this);
-  while(curseur)
+  const auto& list = get_stl_list();
+  for (const auto& itr : list)
     {
-      const Source& src = curseur.valeur();
+      const Source& src = itr;
       const Source_base& src_base = src.valeur();
       if (src_base.a_pour_Champ_Fonc(mot, ch_ref))
         {
           ok = 1;
           break;
         }
-      ++curseur;
     }
   return ok;
 }
@@ -191,12 +173,8 @@ int Sources::a_pour_Champ_Fonc(const Motcle& mot,
  */
 int Sources::impr(Sortie& os) const
 {
-  CONST_LIST_CURSEUR(Source) curseur(*this);
-  while(curseur)
-    {
-      curseur->impr(os);
-      ++curseur;
-    }
+  const auto& list = get_stl_list();
+  for (const auto& itr : list) itr.impr(os);
   return 1;
 }
 
@@ -207,15 +185,14 @@ int Sources::impr(Sortie& os) const
  */
 void Sources::dimensionner(Matrice_Morse& matrice) const
 {
-  CONST_LIST_CURSEUR(Source) curseur(*this);
-  while(curseur)
+  const auto& list = get_stl_list();
+  for (const auto& itr : list)
     {
-      const Source& src = curseur.valeur();
+      const Source& src = itr;
       const Source_base& src_base = src.valeur();
       Matrice_Morse mat;
       src_base.dimensionner(mat);
       if (mat.nb_colonnes()) matrice += mat;
-      ++curseur;
     }
 }
 /*! @brief contribution a la matrice implicite des termes sources par defaut pas de contribution
@@ -223,25 +200,23 @@ void Sources::dimensionner(Matrice_Morse& matrice) const
  */
 void Sources::contribuer_a_avec(const DoubleTab& a, Matrice_Morse& matrice) const
 {
-  CONST_LIST_CURSEUR(Source) curseur(*this);
-  while(curseur)
+  const auto& list = get_stl_list();
+  for (const auto& itr : list)
     {
-      const Source& src = curseur.valeur();
+      const Source& src = itr;
       const Source_base& src_base = src.valeur();
       src_base.contribuer_a_avec(a,matrice);
-      ++curseur;
     }
 }
 
 void Sources::contribuer_jacobienne(Matrice_Bloc& matrice, int n) const
 {
-  CONST_LIST_CURSEUR(Source) curseur(*this);
-  while(curseur)
+  const auto& list = get_stl_list();
+  for (const auto& itr : list)
     {
-      const Source& src = curseur.valeur();
+      const Source& src = itr;
       const Source_base& src_base = src.valeur();
       src_base.contribuer_jacobienne(matrice, n);
-      ++curseur;
     }
 }
 
@@ -252,24 +227,20 @@ void Sources::contribuer_jacobienne(Matrice_Bloc& matrice, int n) const
  */
 int Sources::initialiser(double temps)
 {
-  LIST_CURSEUR(Source) curseur(*this);
   int ok=1;
-  while(curseur)
-    {
-      ok = ok && curseur->initialiser(temps);
-      ++curseur;
-    }
+  auto& list = get_stl_list();
+  for (auto& itr : list)
+    ok = ok && itr.initialiser(temps);
   return ok;
 }
 
 void Sources::check_multiphase_compatibility() const
 {
-  CONST_LIST_CURSEUR(Source) curseur(*this);
-  while(curseur)
+  const auto& list = get_stl_list();
+  for (const auto& itr : list)
     {
-      const Source& src = curseur.valeur();
+      const Source& src = itr;
       const Source_base& src_base = src.valeur();
       src_base.check_multiphase_compatibility();
-      ++curseur;
     }
 }

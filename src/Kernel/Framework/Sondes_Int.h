@@ -24,13 +24,10 @@
  * @sa Sonde_Int Postraitement
  */
 
-class Sondes_Int : public LIST(Sonde_Int)
+class Sondes_Int : public STLLIST(Sonde_Int)
 {
-
   Declare_instanciable(Sondes_Int);
-
 public:
-
   inline void ouvrir_fichiers();
   inline void fermer_fichiers();
   void associer_post(const Postraitement&);
@@ -38,36 +35,25 @@ public:
   void mettre_a_jour(double temps, double tinit);
 
 private:
-
   REF(Postraitement) mon_post;
 };
-
 
 /*! @brief Ouvre tous les fichiers associes a chacune des sondes de la liste.
  *
  */
 inline void Sondes_Int::ouvrir_fichiers()
 {
-  LIST_CURSEUR(Sonde_Int) curseur=*this;
-  while(curseur)
-    {
-      curseur->ouvrir_fichier();
-      ++curseur;
-    }
+  auto& list = get_stl_list();
+  for (auto &itr : list) itr.ouvrir_fichier();
 }
-
 
 /*! @brief Ferme tous les fichiers des sondes de la liste.
  *
  */
 inline void Sondes_Int::fermer_fichiers()
 {
-  LIST_CURSEUR(Sonde_Int) curseur=*this;
-  while(curseur)
-    {
-      curseur->fermer_fichier();
-      ++curseur;
-    }
+  auto& list = get_stl_list();
+  for (auto &itr : list) itr.fermer_fichier();
 }
 
-#endif
+#endif /* Sondes_Int_included */

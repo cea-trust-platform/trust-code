@@ -15,11 +15,11 @@
 
 #include <Raccords.h>
 
-Implemente_instanciable(Raccords, "Raccords", LIST(Raccord));
+Implemente_instanciable(Raccords, "Raccords", STLLIST(Raccord));
 
-Sortie& Raccords::printOn(Sortie& os) const { return LIST(Raccord)::printOn(os); }
+Sortie& Raccords::printOn(Sortie& os) const { return STLLIST(Raccord)::printOn(os); }
 
-Entree& Raccords::readOn(Entree& is) { return LIST(Raccord)::readOn(is); }
+Entree& Raccords::readOn(Entree& is) { return STLLIST(Raccord)::readOn(is); }
 
 /*! @brief Associe une zone a tous les raccords de la liste.
  *
@@ -27,12 +27,8 @@ Entree& Raccords::readOn(Entree& is) { return LIST(Raccord)::readOn(is); }
  */
 void Raccords::associer_zone(const Zone& une_zone)
 {
-  LIST_CURSEUR(Raccord) curseur(*this);
-  while(curseur)
-    {
-      curseur.valeur()->associer_zone(une_zone);
-      ++curseur;
-    }
+  auto& list = get_stl_list();
+  for (auto& itr : list) itr->associer_zone(une_zone);
 }
 
 /*! @brief Renvoie le nombre de face total des Raccords de la liste.
@@ -44,13 +40,10 @@ void Raccords::associer_zone(const Zone& une_zone)
  */
 int Raccords::nb_faces() const
 {
-  CONST_LIST_CURSEUR(Raccord) curseur(*this);
-  int nombre=0;
-  while(curseur)
-    {
-      nombre+=curseur.valeur()->nb_faces();
-      ++curseur;
-    }
+  int nombre = 0;
+  const auto& list = get_stl_list();
+  for (const auto &itr : list) nombre += itr->nb_faces();
+
   return nombre;
 }
 
@@ -65,13 +58,10 @@ int Raccords::nb_faces() const
  */
 int Raccords::nb_faces(Type_Face type) const
 {
-  CONST_LIST_CURSEUR(Raccord) curseur(*this);
-  int nombre=0;
-  while(curseur)
-    {
-      if (type == curseur.valeur()->faces().type_face())
-        nombre+=curseur.valeur()->nb_faces();
-      ++curseur;
-    }
+  int nombre = 0;
+  const auto& list = get_stl_list();
+  for (const auto &itr : list)
+    if (type == itr->faces().type_face()) nombre += itr->nb_faces();
+
   return nombre;
 }

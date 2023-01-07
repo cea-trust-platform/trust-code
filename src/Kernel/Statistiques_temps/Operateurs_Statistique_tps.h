@@ -27,7 +27,7 @@ class Motcle;
  *
  * @sa Operateur_Statistique_tps Postraitement
  */
-class Operateurs_Statistique_tps : public LIST(Operateur_Statistique_tps)
+class Operateurs_Statistique_tps : public STLLIST(Operateur_Statistique_tps)
 {
   Declare_instanciable(Operateurs_Statistique_tps);
 

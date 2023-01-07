@@ -377,20 +377,20 @@ void Equation_base::ecrire_fichier_xyz() const
         {
           // On recherche le champ dans le probleme contenant l'equation, et les postraitements
           // dans les postraitements ?
-          CONST_LIST_CURSEUR(DERIV(Postraitement_base)) curseur = mon_probleme->postraitements();
-          while(curseur && !champ_ok)
-            {
-              if (sub_type(Postraitement,curseur.valeur().valeur()))
+          const auto& list = mon_probleme->postraitements().get_stl_list();
+          for (auto &itr : list)
+            if (!champ_ok)
+              if (sub_type(Postraitement, itr.valeur()))
                 {
-                  const Postraitement& post = ref_cast(Postraitement,curseur.valeur().valeur());
-                  if (champ_ok==0)
+                  const Postraitement& post = ref_cast(Postraitement, itr.valeur());
+                  if (champ_ok == 0)
                     {
                       Motcle nom_test = nom_champ;
                       //La recherche est faite sur les champs statistiques a partir d un identifiant
                       //Si le nom indique dans le jeux de donnes est celui d un champ statistiques
                       //il doit correspondre au nom du champ de postraitement
 
-                      post.champ_fonc(nom_test,champ_a_ecrire,op_stat);
+                      post.champ_fonc(nom_test, champ_a_ecrire, op_stat);
                       if (champ_a_ecrire.non_nul())
                         {
                           champ_stat = 1;
@@ -398,8 +398,6 @@ void Equation_base::ecrire_fichier_xyz() const
                         }
                     }
                 }
-              ++curseur;
-            }
 
           if (champ_ok==0)
             //L identifiant correspond ici a un Champ_base
@@ -1195,14 +1193,10 @@ void Equation_base::creer_champ(const Motcle& motlu)
         operateur(i).l_op_base().creer_champ(motlu);
     }
 
-
-  LIST_CURSEUR(Source) curseur = les_sources;
-  while(curseur)
-    {
-      if (curseur.valeur().non_nul())
-        curseur.valeur()->creer_champ(motlu);
-      ++curseur;
-    }
+  auto& list = les_sources.get_stl_list();
+  for (auto& itr : list)
+    if (itr.non_nul())
+      itr->creer_champ(motlu);
 }
 
 const Champ_base& Equation_base::get_champ(const Motcle& nom) const
@@ -1228,13 +1222,12 @@ const Champ_base& Equation_base::get_champ(const Motcle& nom) const
     }
   else
     {
-      CONST_LIST_CURSEUR(Champ_Fonc) curseur = list_champ_combi;
-      while(curseur)
+      const auto& list = list_champ_combi.get_stl_list();
+      for (const auto& itr : list)
         {
-          const Champ_Fonc& ch = curseur.valeur();
+          const Champ_Fonc& ch = itr;
           if (ch.le_nom()==nom && ch.temps()!=inconnue()->temps())
             ref_cast_non_const( Champ_Fonc,ch).mettre_a_jour(inconnue()->temps());
-          ++curseur;
         }
     }
   try
@@ -1267,20 +1260,18 @@ const Champ_base& Equation_base::get_champ(const Motcle& nom) const
           }
     }
 
-
-  CONST_LIST_CURSEUR(Source) curseur = les_sources;
-  while(curseur)
+  const auto& list = les_sources.get_stl_list();
+  for (const auto& itr : list)
     {
-      if (curseur.valeur().non_nul())
+      if (itr.non_nul())
         try
           {
-            return curseur.valeur()->get_champ(nom);
+            return itr->get_champ(nom);
           }
         catch (Champs_compris_erreur& err_)
           {
 
           }
-      ++curseur;
     }
   throw Champs_compris_erreur();
 
@@ -1301,15 +1292,10 @@ void Equation_base::get_noms_champs_postraitables(Noms& noms,Option opt) const
         operateur(i).l_op_base().get_noms_champs_postraitables(noms,opt);
     }
 
-
-  CONST_LIST_CURSEUR(Source) curseur = les_sources;
-  while(curseur)
-    {
-      if (curseur.valeur().non_nul())
-        curseur.valeur()->get_noms_champs_postraitables(noms,opt);
-      ++curseur;
-    }
-
+  const auto& list = les_sources.get_stl_list();
+  for (const auto& itr : list)
+    if (itr.non_nul())
+      itr->get_noms_champs_postraitables(noms,opt);
 }
 
 

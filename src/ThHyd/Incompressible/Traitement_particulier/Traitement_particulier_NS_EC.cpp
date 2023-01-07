@@ -269,12 +269,13 @@ void Traitement_particulier_NS_EC::calculer_Ec(double& energie_cinetique)
       int ok=0;
       // Verification de l'existence d'un terme source Acceleration dans Navier Stokes
       const Sources& les_sources=mon_equation->sources();
-      CONST_LIST_CURSEUR(Source) curseur(les_sources);
-      while(curseur)
+
+      const auto& list = les_sources.get_stl_list();
+      for (const auto& itr : list)
         {
-          if (sub_type(Terme_Source_Acceleration,curseur->valeur()))
+          if (sub_type(Terme_Source_Acceleration,itr.valeur()))
             {
-              const Terme_Source_Acceleration& terme_source_acceleration=ref_cast(Terme_Source_Acceleration,curseur->valeur());
+              const Terme_Source_Acceleration& terme_source_acceleration=ref_cast(Terme_Source_Acceleration,itr.valeur());
               // Verification que les vitesses de translation du repere
               // mobiles sont bien definies et association des tableaux translation et
               // eventuellement rotation
@@ -288,7 +289,6 @@ void Traitement_particulier_NS_EC::calculer_Ec(double& energie_cinetique)
                   ok=1;
                 }
             }
-          ++curseur;
         }
       if (!ok)
         {

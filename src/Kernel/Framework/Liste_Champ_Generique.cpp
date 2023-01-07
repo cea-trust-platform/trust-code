@@ -15,7 +15,7 @@
 
 #include <Liste_Champ_Generique.h>
 
-Implemente_instanciable(Liste_Champ_Generique, "Liste_Champ_Generique", LIST(Champ_Generique));
+Implemente_instanciable(Liste_Champ_Generique, "Liste_Champ_Generique", STLLIST(Champ_Generique));
 
 Sortie& Liste_Champ_Generique::printOn(Sortie& os) const { return os; }
 
@@ -23,28 +23,17 @@ Entree& Liste_Champ_Generique::readOn(Entree& is) { return is; }
 
 int Liste_Champ_Generique::sauvegarder(Sortie& os) const
 {
-  int bytes=0;
-  CONST_LIST_CURSEUR(Champ_Generique) curseur=*this;
-  while(curseur)
-    {
-      bytes += curseur.valeur()->sauvegarder(os);
-      ++curseur;
-    }
+  int bytes = 0;
+  const auto& list = get_stl_list();
+  for (const auto &itr : list) bytes += itr->sauvegarder(os);
+
   return bytes;
 }
 
 int Liste_Champ_Generique::reprendre(Entree& is)
 {
-  LIST_CURSEUR(Champ_Generique) curseur=*this;
-  while(curseur)
-    {
-      curseur.valeur()->reprendre(is);
-      ++curseur;
-    }
+  auto& list = get_stl_list();
+  for (auto &itr : list) itr->reprendre(is);
+
   return 1;
-}
-
-void Liste_Champ_Generique::fixer_tstat_deb(double , double )
-{
-
 }

@@ -15,7 +15,7 @@
 
 #include <Champs_Fonc.h>
 
-Implemente_instanciable(Champs_Fonc, "Champs_Fonc", LIST(Champ_Fonc));
+Implemente_instanciable(Champs_Fonc, "Champs_Fonc", STLLIST(Champ_Fonc));
 
 Entree& Champs_Fonc::readOn(Entree& s) { return s; }
 
@@ -27,10 +27,6 @@ Sortie& Champs_Fonc::printOn(Sortie& s) const { return s; }
  */
 void Champs_Fonc::mettre_a_jour(double tps)
 {
-  LIST_CURSEUR(Champ_Fonc) curseur(*this);
-  while(curseur)
-    {
-      curseur->mettre_a_jour(tps);
-      ++curseur;
-    }
+  auto& list = get_stl_list();
+  for (auto &itr : list) itr.mettre_a_jour(tps);
 }

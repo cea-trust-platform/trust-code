@@ -407,23 +407,21 @@ void Extruder_en20::extruder_dvt(Domaine& dom, Faces& les_faces, int oldnbsom, i
 {
   Zone& zone = dom.zone(0);
   const int nbfaces2D = les_faces.nb_faces();
-  IntTab& les_elems=zone.les_elems();
+  IntTab& les_elems = zone.les_elems();
   {
-    LIST_CURSEUR(Bord) curseur(zone.faces_bord());
-    while(curseur)
+    auto& list = zone.faces_bord().get_stl_list();
+    for (auto &itr : list)
       {
-        Faces& les_faces_bord=curseur->faces();
-        traiter_faces_dvt(les_faces_bord, les_faces, oldnbsom, oldsz, nbfaces2D );
-        ++curseur;
+        Faces& les_faces_bord = itr.faces();
+        traiter_faces_dvt(les_faces_bord, les_faces, oldnbsom, oldsz, nbfaces2D);
       }
   }
   {
-    LIST_CURSEUR(Raccord) curseur(zone.faces_raccord());
-    while(curseur)
+    auto& list = zone.faces_raccord().get_stl_list();
+    for (auto &itr : list)
       {
-        Faces& les_faces_bord=curseur.valeur()->faces();
-        traiter_faces_dvt(les_faces_bord, les_faces, oldnbsom, oldsz, nbfaces2D );
-        ++curseur;
+        Faces& les_faces_bord = itr->faces();
+        traiter_faces_dvt(les_faces_bord, les_faces, oldnbsom, oldsz, nbfaces2D);
       }
   }
 

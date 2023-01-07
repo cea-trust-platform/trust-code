@@ -317,25 +317,23 @@ void Extruder_en3::extruder(Domaine& dom, const IntVect& num)
 void Extruder_en3::construire_bords(Domaine& dom, Faces& les_faces, int oldnbsom, int oldsz, const IntVect& num)
 {
   Zone& zone = dom.zone(0);
-  IntTab& les_elems=zone.les_elems();
+  IntTab& les_elems = zone.les_elems();
   // Les bords:
   {
-    LIST_CURSEUR(Bord) curseur(zone.faces_bord());
-    while(curseur)
+    auto& list = zone.faces_bord().get_stl_list();
+    for (auto &itr : list)
       {
-        Faces& les_faces_du_bord=curseur->faces();
+        Faces& les_faces_du_bord = itr.faces();
         construire_bord_lateral(les_faces_du_bord, les_faces, oldnbsom, num);
-        ++curseur;
       }
   }
   // Les raccords:
   {
-    LIST_CURSEUR(Raccord) curseur(zone.faces_raccord());
-    while(curseur)
+    auto& list = zone.faces_raccord().get_stl_list();
+    for (auto &itr : list)
       {
-        Faces& les_faces_du_bord=curseur.valeur()->faces();
+        Faces& les_faces_du_bord = itr->faces();
         construire_bord_lateral(les_faces_du_bord, les_faces, oldnbsom, num);
-        ++curseur;
       }
   }
 

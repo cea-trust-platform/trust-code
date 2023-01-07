@@ -285,13 +285,12 @@ void construire_liste_faces_sous_domaine(const ArrOfInt& elements_voisins, const
 void DomaineCutter::construire_faces_bords_ssdom(const ArrOfInt& liste_inverse_sommets, const int partie, Zone& zone_partie) const
 {
   const Zone& zone = ref_domaine_.valeur().zone(0);
-  CONST_LIST_CURSEUR(Bord /*difference*/) curseur(zone.faces_bord()/*difference*/);
+  const auto& list = zone.faces_bord().get_stl_list();
   int i_fr = 0;
   ArrOfInt elements_voisins;
-  for (; curseur; ++curseur)
+  for (const auto& itr : list)
     {
-
-      const Frontiere& frontiere = curseur.valeur();
+      const Frontiere& frontiere = itr;
       Frontiere& front_partie = zone_partie.faces_bord()/*difference*/.add(Bord()/*difference*/);
       front_partie.nommer(frontiere.le_nom());
       front_partie.associer_zone(zone_partie);
@@ -310,13 +309,14 @@ void DomaineCutter::construire_faces_bords_ssdom(const ArrOfInt& liste_inverse_s
 void DomaineCutter::construire_faces_raccords_ssdom(const ArrOfInt& liste_inverse_sommets, const int partie, Zone& zone_partie) const
 {
   const Zone& zone = ref_domaine_.valeur().zone(0);
-  CONST_LIST_CURSEUR(Raccord) curseur(zone.faces_raccord());
   int i_fr = zone.nb_bords();
   ArrOfInt elements_voisins;
-  for (; curseur; ++curseur)
+
+  const auto& list = zone.faces_raccord().get_stl_list();
+  for (const auto& itr : list)
     {
 
-      const Raccord& raccord = curseur.valeur();
+      const Raccord& raccord = itr;
       const Frontiere& frontiere = raccord.valeur();
       Raccord& raccord_partie = zone_partie.faces_raccord().add(Raccord());
       Nom type_raccord = frontiere.que_suis_je();
@@ -338,14 +338,13 @@ void DomaineCutter::construire_faces_internes_ssdom(const ArrOfInt& liste_invers
   // Rappel : les faces internes sont des "frontieres" a l'interieur du domaine
   // (par exemple une plaque d'epaisseur nulle dans l'ecoulement)
   const Zone& zone = ref_domaine_.valeur().zone(0);
-  CONST_LIST_CURSEUR(Faces_Interne/*difference*/) curseur(zone.faces_int()/*difference*/);
   int i_fr = zone.nb_bords() + zone.nb_raccords();
   ArrOfInt elements_voisins;
 
-  for (; curseur; ++curseur)
+  const auto& list = zone.faces_int().get_stl_list();
+  for (const auto& itr : list)
     {
-
-      const Frontiere& frontiere = curseur.valeur();
+      const Frontiere& frontiere = itr;
       Frontiere& front_partie = zone_partie.faces_int()/*difference*/.add(Faces_Interne()/*difference*/);
       front_partie.nommer(frontiere.le_nom());
       front_partie.associer_zone(zone_partie);

@@ -319,14 +319,15 @@ int Mod_turb_hyd_base::preparer_calcul()
   if (loipar.non_nul())
     res = loipar.init_lois_paroi();
 
-  LIST_CURSEUR(DERIV(Postraitement_base)) curseur = equation().probleme().postraitements();
   bool contient_distance_paroi = false;
-  while (curseur && !contient_distance_paroi)
-    {
-      if (sub_type(Postraitement,curseur.valeur().valeur()))
+
+  auto& list = equation().probleme().postraitements().get_stl_list();
+  for (auto &itr : list)
+    if (!contient_distance_paroi)
+      if (sub_type(Postraitement, itr.valeur()))
         {
-          Postraitement& post = ref_cast(Postraitement,curseur.valeur().valeur());
-          for (int i=0; i<post.noms_champs_a_post().size(); i++)
+          Postraitement& post = ref_cast(Postraitement, itr.valeur());
+          for (int i = 0; i < post.noms_champs_a_post().size(); i++)
             {
               if (post.noms_champs_a_post()[i].contient("DISTANCE_PAROI"))
                 {
@@ -336,8 +337,6 @@ int Mod_turb_hyd_base::preparer_calcul()
                 }
             }
         }
-      ++curseur;
-    }
   loipar.imprimer_premiere_ligne_ustar(boundaries_, boundaries_list, nom_fichier_);
   return res;
 }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,28 +17,11 @@
 #include <Domaine.h>
 #include <Scatter.h>
 
-Implemente_instanciable(NettoieNoeuds,"NettoiePasNoeuds",Interprete_geometrique_base);
+Implemente_instanciable(NettoieNoeuds, "NettoiePasNoeuds", Interprete_geometrique_base);
 
-/*! @brief Simple appel a: Interprete::printOn(Sortie&)
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& NettoieNoeuds::printOn(Sortie& os) const
-{
-  return Interprete::printOn(os);
-}
+Sortie& NettoieNoeuds::printOn(Sortie& os) const { return Interprete::printOn(os); }
 
-
-/*! @brief Simple appel a: Interprete::readOn(Entree&)
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& NettoieNoeuds::readOn(Entree& is)
-{
-  return Interprete::readOn(is);
-}
+Entree& NettoieNoeuds::readOn(Entree& is) { return Interprete::readOn(is); }
 
 /*! @brief Fonction principale de l'interprete NettoieNoeuds Structure du jeu de donnee (en dimension 2) :
  *
@@ -156,64 +139,56 @@ void NettoieNoeuds::nettoie(Domaine& dom)
 
       {
         // On recupere les bords :
-        LIST_CURSEUR(Bord) curseur(zone.faces_bord());;;
-        while(curseur)
+        auto& list = zone.faces_bord().get_stl_list();
+        for (auto &itr : list)
           {
-            // while(curseur)
-            Frontiere& front=curseur.valeur();
-            Faces& faces=front.faces();
-            IntTab& faces_sommets=faces.les_sommets();
+            Frontiere& front = itr;
+            Faces& faces = front.faces();
+            IntTab& faces_sommets = faces.les_sommets();
             IntTab old_faces_sommets(faces.les_sommets());
-            int nb_faces=faces_sommets.dimension(0);
-            int nb_som_face=faces_sommets.dimension(1);
-            for(int i=0; i<nb_faces; i++)
-              for(int j=0; j<nb_som_face; j++)
+            int nb_faces = faces_sommets.dimension(0);
+            int nb_som_face = faces_sommets.dimension(1);
+            for (int i = 0; i < nb_faces; i++)
+              for (int j = 0; j < nb_som_face; j++)
                 {
-                  int som=old_faces_sommets(i,j);
-                  if (som!=-1)
-                    faces_sommets(i,j)=
-                      renum_som_old2new[som];
+                  int som = old_faces_sommets(i, j);
+                  if (som != -1)
+                    faces_sommets(i, j) = renum_som_old2new[som];
                   else
-                    faces_sommets(i,j)=som;
+                    faces_sommets(i, j) = som;
                 }
-            ++curseur;
           }
       }
       {
         // Les Faces Internes :
-        LIST_CURSEUR(Faces_Interne) curseur(zone.faces_int());;;
-        while(curseur)
+        auto& list = zone.faces_int().get_stl_list();
+        for (auto &itr : list)
           {
-            // while(curseur)
-            Frontiere& front=curseur.valeur();
-            Faces& faces=front.faces();
-            IntTab& faces_sommets=faces.les_sommets();
+            Frontiere& front = itr;
+            Faces& faces = front.faces();
+            IntTab& faces_sommets = faces.les_sommets();
             IntTab old_faces_sommets(faces.les_sommets());
-            int nb_faces=faces_sommets.dimension(0);
-            int nb_som_face=faces_sommets.dimension(1);
-            for(int i=0; i<nb_faces; i++)
-              for(int j=0; j<nb_som_face; j++)
-                faces_sommets(i,j)=
-                  renum_som_old2new[old_faces_sommets(i,j)];
-            ++curseur;
+            int nb_faces = faces_sommets.dimension(0);
+            int nb_som_face = faces_sommets.dimension(1);
+            for (int i = 0; i < nb_faces; i++)
+              for (int j = 0; j < nb_som_face; j++)
+                faces_sommets(i, j) = renum_som_old2new[old_faces_sommets(i, j)];
           }
       }
       {
         // Les Raccords
-        LIST_CURSEUR(Raccord) curseur(zone.faces_raccord());;;
-        while(curseur)
+        auto& list = zone.faces_raccord().get_stl_list();
+        for (auto &itr : list)
           {
-            Frontiere& front=curseur->valeur();
-            Faces& faces=front.faces();
-            IntTab& faces_sommets=faces.les_sommets();
+            Frontiere& front = itr.valeur();
+            Faces& faces = front.faces();
+            IntTab& faces_sommets = faces.les_sommets();
             IntTab old_faces_sommets(faces.les_sommets());
-            int nb_faces=faces_sommets.dimension(0);
-            int nb_som_face=faces_sommets.dimension(1);
-            for(int i=0; i<nb_faces; i++)
-              for(int j=0; j<nb_som_face; j++)
-                faces_sommets(i,j)=
-                  renum_som_old2new[old_faces_sommets(i,j)];
-            ++curseur;
+            int nb_faces = faces_sommets.dimension(0);
+            int nb_som_face = faces_sommets.dimension(1);
+            for (int i = 0; i < nb_faces; i++)
+              for (int j = 0; j < nb_som_face; j++)
+                faces_sommets(i, j) = renum_som_old2new[old_faces_sommets(i, j)];
           }
       }
     }

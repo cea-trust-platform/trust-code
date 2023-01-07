@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -303,7 +303,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
       N.push_back(inco[i].get().line_size()), fcl.push_back(std::ref(ch.fcl()));
     }
   const Zone_PolyMAC_P0& zone0 = zone[0];
-  DoubleTab *pqpi = equation().sources().size() && sub_type(Flux_interfacial_PolyMAC, equation().sources().dernier().valeur().valeur()) ? &ref_cast(Flux_interfacial_PolyMAC, equation().sources().dernier().valeur().valeur()).qpi() : NULL;
+  DoubleTab *pqpi = equation().sources().size() && sub_type(Flux_interfacial_PolyMAC, equation().sources().dernier().valeur()) ? &ref_cast(Flux_interfacial_PolyMAC, equation().sources().dernier().valeur()).qpi() : NULL;
   d_nuc_ = 0; //remise a zero du diametre de nucleation
 
   /* avec phif : flux hors Echange_contact -> mat[0] seulement */

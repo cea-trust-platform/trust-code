@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -544,14 +544,15 @@ void ExtrudeParoi::extrude(Domaine& dom)
 
   {
     Cerr << "Reconstruction of the boundaries" << finl;
-    LIST_CURSEUR(Bord) curseur(zone.faces_bord());;;
+
+    auto& list = zone.faces_bord().get_stl_list();
     int num_front=0;
-    while(curseur)
+    for (auto& itr : list)
       {
-        Faces& lesfacesbord=curseur->faces();
+        Faces& lesfacesbord=itr.faces();
         lesfacesbord.typer(Faces::triangle_3D);
         IntTab& sommets=lesfacesbord.les_sommets();
-        if(curseur->le_nom()==nom_front)
+        if(itr.le_nom()==nom_front)
           {
             sommets.ref(som_front);
           }
@@ -612,7 +613,6 @@ void ExtrudeParoi::extrude(Domaine& dom)
             sommets.ref(som_front2);
           }
         num_front++;
-        ++curseur;
       }
   }
 

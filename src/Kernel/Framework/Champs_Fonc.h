@@ -23,14 +23,11 @@
  *
  * @sa Champ_Fonc
  */
-class Champs_Fonc : public LIST(Champ_Fonc)
+class Champs_Fonc : public STLLIST(Champ_Fonc)
 {
   Declare_instanciable(Champs_Fonc);
-
 public :
-
   void mettre_a_jour(double );
-
 };
 
-#endif
+#endif /* Champs_Fonc_included */

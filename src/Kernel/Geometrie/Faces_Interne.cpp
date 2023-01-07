@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,26 +15,6 @@
 
 #include <Faces_Interne.h>
 
-Implemente_instanciable(Faces_Interne,"Faces_Interne",Frontiere);
-
-/*! @brief Simple appel a Frontiere::printOn(Sortie&)
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Faces_Interne::printOn(Sortie& s ) const
-{
-  return Frontiere::printOn(s) ;
-}
-
-
-/*! @brief Simple appel a Frontiere::readOn(Entree&)
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& Faces_Interne::readOn(Entree& s)
-{
-  return Frontiere::readOn(s) ;
-}
-
+Implemente_instanciable(Faces_Interne, "Faces_Interne", Frontiere);
+Sortie& Faces_Interne::printOn(Sortie& s) const { return Frontiere::printOn(s); }
+Entree& Faces_Interne::readOn(Entree& s) { return Frontiere::readOn(s); }
