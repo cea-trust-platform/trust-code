@@ -17,7 +17,9 @@
 #include <Postraitement.h>
 #include <Sondes.h>
 
-Implemente_instanciable(Sondes,"Sondes|Probes",LIST(Sonde));
+Implemente_instanciable(Sondes, "Sondes|Probes", STLLIST(Sonde));
+
+Sortie& Sondes::printOn(Sortie& s ) const { return s ; }
 
 /*! @brief Lit une liste de sondes a partir d'un flot d'entree Format:
  *
@@ -114,16 +116,6 @@ void Sondes::lire_fichier(const Nom& nom_fichier)
   f.close();
 }
 
-/*! @brief NE FAIT RIEN
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Sondes::printOn(Sortie& s ) const
-{
-  return s ;
-}
-
 void Sondes::set_noms_champs_postraitables()
 {
   // Reconstruit noms_champs_postraitables_
@@ -140,12 +132,8 @@ void Sondes::set_noms_champs_postraitables()
 void Sondes::completer()
 {
   set_noms_champs_postraitables();
-  LIST_CURSEUR(Sonde) curseur=*this;
-  while(curseur)
-    {
-      curseur->completer();
-      ++curseur;
-    }
+  auto& list = get_stl_list();
+  for (auto &itr : list) itr.completer();
 }
 
 /*! @brief Effectue le postraitement sur chacune des sondes de la liste.
@@ -153,12 +141,9 @@ void Sondes::completer()
  */
 void Sondes::postraiter()
 {
-  LIST_CURSEUR(Sonde) curseur=*this;
-  while(curseur)
-    {
-      curseur->postraiter();
-      ++curseur;
-    }
+  auto& list = get_stl_list();
+  for (auto &itr : list) itr.postraiter();
+
   clear_cache();
 }
 
@@ -196,15 +181,11 @@ REF(Champ_base) Sondes::get_from_cache(REF(Champ_Generique_base)& mon_champ, con
  */
 void Sondes::mettre_a_jour(double temps, double tinit)
 {
-  LIST_CURSEUR(Sonde) curseur=*this;
-  while(curseur)
-    {
-      curseur->mettre_a_jour(temps,tinit);
-      ++curseur;
-    }
+  auto& list = get_stl_list();
+  for (auto &itr : list) itr.mettre_a_jour(temps, tinit);
+
   clear_cache();
 }
-
 
 /*! @brief Associe un postraitement a la liste des sondes.
  *
@@ -213,4 +194,3 @@ void Sondes::associer_post(const Postraitement& post)
 {
   mon_post = post;
 }
-

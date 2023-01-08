@@ -59,18 +59,9 @@ public :
   inline double temps() const;
   inline SFichier& fichier();
   inline ~Sonde() override;
-  inline const Nom& get_nom() const
-  {
-    return nom_;
-  };
-  inline const Nom& get_type() const
-  {
-    return type_;
-  };
-  inline const int& get_dim() const
-  {
-    return dim ;
-  } ;
+  inline const Nom& get_nom() const { return nom_; }
+  inline const Nom& get_type() const { return type_; }
+  inline const int& get_dim() const { return dim ; }
 
   // Traitement des bords (option "gravcl")
   void ajouter_bords(const DoubleTab& coords_bords);
@@ -98,7 +89,7 @@ protected :
   bool nodes,chsom,grav,gravcl,som;
   DoubleTab valeurs_locales,valeurs_sur_maitre;     // valeurs_locales les valeurs sur chaque proc, valeurs_sur_maitre les valeurs regroupes sur le maitre
   double nb_bip;
-  SFichier le_fichier_;
+  SFichier* le_fichier_ = nullptr;
   Motcle nom_champ_lu_;
   ArrsOfInt participant ;            // vecteur d'ArrOfInt sur le maitre ; participant[pe][i] -> le ieme point sur pe correspond  la  participant [pe][i]  eme position
   int reprise;                            // si reprise=0, on cree la sonde, sinon on ecrit a la suite
@@ -128,9 +119,9 @@ inline double Sonde::temps() const
  */
 inline void Sonde::fermer_fichier()
 {
-  if (fichier().is_open())
+  if (le_fichier_)
     {
-      le_fichier_.close();
+      delete le_fichier_;
     }
 }
 
@@ -191,7 +182,7 @@ inline const IntVect& Sonde::les_poly() const
  */
 inline SFichier& Sonde::fichier()
 {
-  return le_fichier_;
+  return *le_fichier_;
 }
 
 /*! @brief Destructeur.

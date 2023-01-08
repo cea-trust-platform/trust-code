@@ -27,13 +27,10 @@
  *
  * @sa Sonde Postraitement
  */
-class Sondes : public LIST(Sonde)
+class Sondes : public STLLIST(Sonde)
 {
-
   Declare_instanciable(Sondes);
-
 public:
-
   inline void ouvrir_fichiers();
   inline void fermer_fichiers();
   void completer();
@@ -46,6 +43,7 @@ public:
   void clear_cache();
   void set_noms_champs_postraitables();
   const Motcles& get_noms_champs_postraitables() const { return noms_champs_postraitables_; }
+
 private:
   // Mecanisme de cache pour les sondes:
   LIST(REF(Champ_base)) sourceList;
@@ -57,12 +55,8 @@ private:
 
 inline void Sondes::init_bords()
 {
-  LIST_CURSEUR(Sonde) curseur=*this;
-  while(curseur)
-    {
-      curseur->init_bords();
-      ++curseur;
-    }
+  auto& list = get_stl_list();
+  for (auto& itr : list) itr.init_bords();
 }
 
 /*! @brief Ouvre tous les fichiers associes a chacune des sondes de la liste.
@@ -70,26 +64,17 @@ inline void Sondes::init_bords()
  */
 inline void Sondes::ouvrir_fichiers()
 {
-  LIST_CURSEUR(Sonde) curseur=*this;
-  while(curseur)
-    {
-      curseur->ouvrir_fichier();
-      ++curseur;
-    }
+  auto& list = get_stl_list();
+  for (auto &itr : list) itr.ouvrir_fichier();
 }
-
 
 /*! @brief Ferme tous les fichiers des sondes de la liste.
  *
  */
 inline void Sondes::fermer_fichiers()
 {
-  LIST_CURSEUR(Sonde) curseur=*this;
-  while(curseur)
-    {
-      curseur->fermer_fichier();
-      ++curseur;
-    }
+  auto& list = get_stl_list();
+  for (auto &itr : list) itr.fermer_fichier();
 }
 
-#endif
+#endif /* Sondes_included */
