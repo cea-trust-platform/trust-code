@@ -88,7 +88,7 @@ static double computeAngleBetweenCoplanarVectors(std::vector<double> u, std::vec
 
 // reordering vertices inside the faces in trigonometric order
 // (or anti-trigonometric, depending on the orientation of the normal)
-static void reorder_vertices(Faces& faces, DoubleTab coords)
+static void reorder_vertices(Faces& faces, const DoubleTab& coords)
 {
   int nb_sommets = faces.les_sommets().dimension(1);
   int nb_faces = faces.nb_faces();
@@ -206,7 +206,7 @@ void Polyedriser::polyedriser(Zone& zone) const
       exit();
     }
 
-  const DoubleTab coords = zone.domaine().coord_sommets();
+  const DoubleTab& coords = zone.domaine().coord_sommets();
 
   {
     auto& list = zone.faces_bord().get_stl_list();
