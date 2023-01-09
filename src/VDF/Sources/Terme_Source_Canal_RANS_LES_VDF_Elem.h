@@ -58,7 +58,7 @@ protected :
 
 private :
   int moyenne = 0; //type de moyenne
-  int cpt = 0, compteur_reprise = 0;
+  int compteur_reprise = 0;
   double alpha_tau = -100., Ly = -100.;
   double f_start = 0., t_av = -1;
 
