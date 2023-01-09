@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -55,7 +55,8 @@ public:
     const double *mu;     // mu[n]         : viscosite dynamique de la phase n
     const double *rho;    // rho[n]        : masse volumique de la phase n
     const double *Cp;     // CP[n]         : capacite calorifique de la phase n
-    const double *Lvap;   //Lvap[n,k]     : chaleur latente changement de phase n=>k
+    const double *Lvap;   // Lvap[ind_trav]  : chaleur latente changement de phase n=>k ou ind_trav = (k*(N-1)-(k-1)*(k)/2) + (l-k-1)
+    const double *dP_Lvap;//dP_Lvap[ind_trav]: chaleur latente changement de phase n=>k ou ind_trav = (k*(N-1)-(k-1)*(k)/2) + (l-k-1)
     const double *h;      // h[n]          : enthalpie de la phase n
     const double *dP_h;   // dP_h[n]       : derivee en pression de l'enthalpie de la phase n
     const double *dT_h;   // dT_h[n]       : deritee en temperature de la phase n de l'enthalpie de la phase n

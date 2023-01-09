@@ -47,14 +47,37 @@ void Flux_interfacial_Zeitoun::coeffs(const input_t& in, output_t& out) const
   for (k = 0; k < N; k++)
     if (k != n_l)
       {
-        int ind_trav = (k>n_l) ? (n_l*(N-1)-(n_l-1)*(n_l)/2) + (k-n_l-1) : (k*(N-1)-(k-1)*(k)/2) + (n_l-k-1);
-        double Ja = in.rho[n_l] * in.Cp[n_l] * (in.T[k] -  in.T[n_l]) / (in.rho[k] * in.Lvap[ind_trav] );
-        double Re_b = in.rho[n_l] * in.nv[N * n_l + k] * in.d_bulles[k] / in.mu[n_l];
-        double Nu = 2.04* std::pow(Re_b, .61)*std::pow(std::max(in.alpha[k], 1e-4), 0.328)* std::pow(Ja, -.308);
-        out.hi(n_l, k) = Nu * in.lambda[n_l] / in.d_bulles[k] * 6 * std::max(in.alpha[k], 1e-4) / in.d_bulles[k] ; // std::max() pour que le flux interfacial sont non nul
-        out.da_hi(n_l, k, k) = in.alpha[k] > 1e-4 ?
-                               Nu * in.lambda[n_l] * 6. / (in.d_bulles[k]*in.d_bulles[k]) * 1.328 / in.alpha[k]:
-                               0. ;
-        out.hi(k, n_l) = 1e8;
+        if (in.T[k] >  in.T[n_l]) // Cas condensation
+          {
+            int    ind_trav = (k>n_l) ? (n_l*(N-1)-(n_l-1)*(n_l)/2) + (k-n_l-1) : (k*(N-1)-(k-1)*(k)/2) + (n_l-k-1);
+
+            double Re_b = in.rho[n_l] * in.nv[N * n_l + k] * in.d_bulles[k] / in.mu[n_l];
+
+            double Ja     = in.rho[n_l] * in.Cp[n_l] * (in.T[k] -  in.T[n_l]) / (in.rho[k] *             in.Lvap[ind_trav] );
+            double dTl_Ja = in.rho[n_l] * in.Cp[n_l] *         -1.            / (in.rho[k] *             in.Lvap[ind_trav] );
+            double dTk_Ja = in.rho[n_l] * in.Cp[n_l] *          1.            / (in.rho[k] *             in.Lvap[ind_trav] );
+            double dP_Ja  = in.rho[n_l] * in.Cp[n_l] * (in.T[k] -  in.T[n_l]) /  in.rho[k] * -in.dP_Lvap[ind_trav]/(in.Lvap[ind_trav]*in.Lvap[ind_trav]) ;
+
+            double Nu     = 2.04* std::pow(Re_b, .61)*std::pow(std::max(in.alpha[k], 1e-4), 0.328)* std::pow(Ja, -.308);
+            double dTk_Nu = 2.04* std::pow(Re_b, .61)*std::pow(std::max(in.alpha[k], 1e-4), 0.328)* -.308*dTk_Ja*std::pow(Ja, -1.308);
+            double dTl_Nu = 2.04* std::pow(Re_b, .61)*std::pow(std::max(in.alpha[k], 1e-4), 0.328)* -.308*dTl_Ja*std::pow(Ja, -1.308);
+            double dP_Nu  = 2.04* std::pow(Re_b, .61)*std::pow(std::max(in.alpha[k], 1e-4), 0.328)* -.308*dP_Ja *std::pow(Ja, -1.308);
+
+            out.hi(n_l, k)       = Nu    * in.lambda[n_l] * 6. / (in.d_bulles[k]*in.d_bulles[k]) * std::max(in.alpha[k], 1e-4); // std::max() pour que le flux interfacial sont non nul
+            out.da_hi(n_l, k, k) = in.alpha[k] > 1e-4 ?
+                                   Nu    * in.lambda[n_l] * 6. / (in.d_bulles[k]*in.d_bulles[k]) * 1.328 :
+                                   0. ;
+            out.dp_hi(n_l, k)    = dP_Nu * in.lambda[n_l] * 6. / (in.d_bulles[k]*in.d_bulles[k]) * std::max(in.alpha[k], 1e-4);
+            out.dT_hi(n_l, k,n_l)= dTl_Nu* in.lambda[n_l] * 6. / (in.d_bulles[k]*in.d_bulles[k]) * std::max(in.alpha[k], 1e-4);
+            out.dT_hi(n_l, k, k) = dTk_Nu* in.lambda[n_l] * 6. / (in.d_bulles[k]*in.d_bulles[k]) * std::max(in.alpha[k], 1e-4);
+            out.hi(k, n_l) = 1e8;
+          }
+        else  // Cas flashing
+          {
+            out.hi(n_l, k) = 1.e8;
+            out.da_hi(n_l, k, k) = 0.;
+            out.dT_hi(n_l, k, k) = 0.;
+            out.hi(k, n_l) = 1e8;
+          }
       }
 }
