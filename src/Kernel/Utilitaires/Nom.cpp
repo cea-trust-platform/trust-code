@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,7 +45,7 @@ Sortie& Nom::printOn(Sortie& s) const
   else
     return s;
 }
-#define BUFLEN 10000
+#define BUFLEN 100000
 
 /*! @brief Lecture d'un nom.
  *
