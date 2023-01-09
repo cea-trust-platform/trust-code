@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,12 +13,6 @@
 *
 *****************************************************************************/
 
-
-
-
-/*! @brief
- *
- */
 #ifdef TESTS__
 int test_Ref()
 {
@@ -69,12 +63,12 @@ int test_Deriv()
 int test_List()
 {
   Cerr << "test_List" << finl;
-  LIST(Nom) la_liste;
+  STLLIST(Nom) la_liste;
   la_liste.add("Chien");
   la_liste.add("Chat");
   la_liste.add("Chou");
   Cerr << la_liste;
-  LIST(Nom) copie(la_liste);
+  STLLIST(Nom) copie(la_liste);
   Cerr << copie;
   if(la_liste == copie)
     Cerr << "The two lists are identical" << finl;

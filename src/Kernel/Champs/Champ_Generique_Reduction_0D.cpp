@@ -34,7 +34,7 @@ Sortie& Champ_Generique_Reduction_0D::printOn(Sortie& s ) const
 //cf Champ_Gen_de_Champs_Gen::readOn
 Entree& Champ_Generique_Reduction_0D::readOn(Entree& s )
 {
-  LIST(Motcle) mot_compris;
+  STLLIST(Motcle) mot_compris;
   mot_compris.add("min");
   mot_compris.add("max");
   mot_compris.add("euclidian_norm"); // new name for norme_L2
@@ -61,7 +61,7 @@ Entree& Champ_Generique_Reduction_0D::readOn(Entree& s )
     {
       Cerr << "Method " << methode_ << " is an unknown option for methode keyword in "<< que_suis_je() << "." << finl;
       Cerr << "Choose from " << mot_compris << finl;
-      exit();
+      Process::exit();
     }
   return s ;
 }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,10 +45,10 @@ DoubleVect& Champ_val_tot_sur_vol_VDF::eval_contrib_loc(const Zone_dis_base& zdi
   const DoubleVect& por_elem = zcldis.equation().milieu().porosite_elem();
 
   int cpt=1;
-  LIST_CURSEUR(REF(Sous_Zone)) curseur1 = les_sous_zones;
-  while(curseur1)
+  auto& list = les_sous_zones.get_stl_list();
+  for (auto& itr : list)
     {
-      const Sous_Zone& sz = curseur1.valeur().valeur();
+      const Sous_Zone& sz = itr.valeur();
       int size_sz = sz.nb_elem_tot();
       int el;
 
@@ -60,7 +60,6 @@ DoubleVect& Champ_val_tot_sur_vol_VDF::eval_contrib_loc(const Zone_dis_base& zdi
             vol_glob_pond(cpt) += vol(el)*por_elem(el);
         }
       cpt++;
-      ++curseur1;
     }
 
   for (int elem=0; elem<nb_elem; elem++)

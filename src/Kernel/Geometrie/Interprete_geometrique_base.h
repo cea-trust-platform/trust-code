@@ -41,23 +41,13 @@ public :
   Entree& interpreter(Entree& is) override;
   void associer_domaine(Nom& nom_dom);
   void associer_domaine(Entree& is);
-  inline Domaine& domaine(int i=0)
-  {
-    return domains_(i).valeur();
-  };
-  inline const Domaine& domaine(int i=0) const
-  {
-    return domains_(i).valeur();
-  };
-  inline LIST(REF(Domaine))& domaines()
-  {
-    return domains_;
-  };
+  inline Domaine& domaine(int i=0) { return domains_(i).valeur(); }
+  inline const Domaine& domaine(int i=0) const { return domains_(i).valeur(); }
+  inline STLLIST(REF(Domaine))& domaines() { return domains_; }
   void mettre_a_jour_sous_zone(Zone& zone, int& elem, int num_premier_elem, int nb_elem) const;
 
 protected :
-
-  LIST(REF(Domaine)) domains_; // List of reference to domains
+  STLLIST(REF(Domaine)) domains_; // List of reference to domains
 };
 
 #endif

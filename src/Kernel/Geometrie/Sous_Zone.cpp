@@ -150,7 +150,7 @@ Entree& Sous_Zone::readOn(Entree& is)
     case 1 :
       {
         Cerr<<"Sous_Zone::readOn : Reading of the polynomials"<<finl;
-        LIST(Polynome) les_polynomes;
+        STLLIST(Polynome) les_polynomes;
         is >> motlu;
         if(motlu!=Motcle("{"))
           {
@@ -188,20 +188,19 @@ Entree& Sous_Zone::readOn(Entree& is)
                     x(k)+=dom.coord(lazone.sommet_elem(le_poly,le_som),k);
                 }
               x/=((double)(nbsom));
-              LIST_CURSEUR(Polynome) curseur=les_polynomes;
               int test = 1;
-              while(curseur)
+              auto& list = les_polynomes.get_stl_list();
+              for (auto& itr : list)
                 {
                   if (dimension==2)
                     {
-                      if (curseur.valeur()(x(0), x(1)) <0) test = -1;
+                      if (itr(x(0), x(1)) <0) test = -1;
                     }
 
                   if (dimension==3)
                     {
-                      if (curseur.valeur()(x(0), x(1),x(2)) <0) test = -1;
+                      if (itr(x(0), x(1),x(2)) <0) test = -1;
                     }
-                  ++curseur;
                 }
 
               if(test > 0)

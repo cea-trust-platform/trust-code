@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,17 +26,10 @@
 
 Implemente_instanciable(Op_Div_VEF_Elem,"Op_Div_VEF_P1NC",Operateur_Div_base);
 
-
-//// printOn
-//
-
 Sortie& Op_Div_VEF_Elem::printOn(Sortie& s) const
 {
   return s << que_suis_je() ;
 }
-
-//// readOn
-//
 
 Entree& Op_Div_VEF_Elem::readOn(Entree& s)
 {
@@ -145,7 +138,7 @@ int Op_Div_VEF_Elem::impr(Sortie& os) const
       Flux_div << finl;
     }
 
-  const LIST(Nom)& Liste_Bords_a_imprimer = la_zone_vef->zone().Bords_a_imprimer();
+  const STLLIST(Nom)& Liste_Bords_a_imprimer = la_zone_vef->zone().Bords_a_imprimer();
   if (!Liste_Bords_a_imprimer.est_vide())
     {
       EcrFicPartage Flux_face;

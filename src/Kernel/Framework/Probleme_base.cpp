@@ -62,8 +62,8 @@ Implemente_base_sans_constructeur_ni_destructeur(Probleme_base,"Probleme_base",P
 
 // Variables globales pour initialiser est_le_premier_postraitement_pour_nom_fic
 // et est_le_dernier_postraitement_pour_nom_fic en une seule passe.
-LIST(Nom) glob_noms_fichiers;
-LIST(REF(Postraitement)) glob_derniers_posts;
+STLLIST(Nom) glob_noms_fichiers;
+STLLIST(REF(Postraitement)) glob_derniers_posts;
 
 // Retourne la version du format de sauvegarde
 // 151 pour dire que c'est la version initiee a la version 1.5.1 de TRUST
@@ -331,12 +331,11 @@ void Probleme_base::completer()
   for (int i = 0; i < nombre_d_equations(); i++)
     equation(i).completer();
 
-  LIST_CURSEUR(REF(Loi_Fermeture_base)) curseur = liste_loi_fermeture_;
-  while (curseur)
+  auto& list = liste_loi_fermeture_.get_stl_list();
+  for (auto& itr : list)
     {
-      Loi_Fermeture_base& loi = curseur.valeur().valeur();
+      Loi_Fermeture_base& loi = itr.valeur();
       loi.completer();
-      ++curseur;
     }
 
   les_postraitements.completer();
@@ -413,12 +412,11 @@ void Probleme_base::discretiser(const Discretisation_base& une_discretisation)
         }
     }
 
-  LIST_CURSEUR(REF(Loi_Fermeture_base)) curseur = liste_loi_fermeture_;
-  while (curseur)
+  auto& list = liste_loi_fermeture_.get_stl_list();
+  for (auto& itr : list)
     {
-      Loi_Fermeture_base& loi = curseur.valeur().valeur();
+      Loi_Fermeture_base& loi = itr.valeur();
       loi.discretiser(une_discretisation);
-      ++curseur;
     }
 }
 
@@ -773,12 +771,11 @@ void Probleme_base::creer_champ(const Motcle& motlu)
   for (int i=0; i<nb_eq; i++)
     equation(i).creer_champ(motlu);
 
-  LIST_CURSEUR(REF(Loi_Fermeture_base)) curseur = liste_loi_fermeture_;
-  while (curseur)
+  auto& list = liste_loi_fermeture_.get_stl_list();
+  for (auto& itr : list)
     {
-      Loi_Fermeture_base& loi=curseur.valeur().valeur();
+      Loi_Fermeture_base& loi=itr.valeur();
       loi.creer_champ(motlu);
-      ++curseur;
     }
 }
 
@@ -805,10 +802,10 @@ bool Probleme_base::has_champ(const Motcle& un_nom) const
         }
     }
 
-  CONST_LIST_CURSEUR(REF(Loi_Fermeture_base)) curseur = liste_loi_fermeture_;
-  while (curseur)
+  const auto& list = liste_loi_fermeture_.get_stl_list();
+  for (const auto& itr : list)
     {
-      const Loi_Fermeture_base& loi=curseur.valeur().valeur();
+      const Loi_Fermeture_base& loi=itr.valeur();
       try
         {
           champ = &loi.get_champ(un_nom);
@@ -816,7 +813,6 @@ bool Probleme_base::has_champ(const Motcle& un_nom) const
       catch(Champs_compris_erreur& err_)
         {
         }
-      ++curseur;
     }
 
   if (champ) return true ;
@@ -844,10 +840,10 @@ const Champ_base& Probleme_base::get_champ(const Motcle& un_nom) const
         }
     }
 
-  CONST_LIST_CURSEUR(REF(Loi_Fermeture_base)) curseur = liste_loi_fermeture_;
-  while (curseur)
+  const auto& list = liste_loi_fermeture_.get_stl_list();
+  for (const auto& itr : list)
     {
-      const Loi_Fermeture_base& loi=curseur.valeur().valeur();
+      const Loi_Fermeture_base& loi=itr.valeur();
       try
         {
           return loi.get_champ(un_nom);
@@ -855,7 +851,6 @@ const Champ_base& Probleme_base::get_champ(const Motcle& un_nom) const
       catch(Champs_compris_erreur& err_)
         {
         }
-      ++curseur;
     }
 
   if (discretisation().que_suis_je()=="VDF")
@@ -886,12 +881,11 @@ void Probleme_base::get_noms_champs_postraitables(Noms& noms,Option opt) const
   for (int i=0; i<nb_eq; i++)
     equation(i).get_noms_champs_postraitables(noms,opt);
 
-  CONST_LIST_CURSEUR(REF(Loi_Fermeture_base)) curseur = liste_loi_fermeture_;
-  while (curseur)
+  const auto& list = liste_loi_fermeture_.get_stl_list();
+  for (const auto& itr : list)
     {
-      const Loi_Fermeture_base& loi=curseur.valeur().valeur();
+      const Loi_Fermeture_base& loi=itr.valeur();
       loi.get_noms_champs_postraitables(noms,opt);
-      ++curseur;
     }
 
 }
@@ -992,12 +986,11 @@ void Probleme_base::mettre_a_jour(double temps)
   // Update the domain:
   domaine().mettre_a_jour(temps,domaine_dis(),*this);
 
-  LIST_CURSEUR(REF(Loi_Fermeture_base)) curseur = liste_loi_fermeture_;
-  while (curseur)
+  auto& list = liste_loi_fermeture_.get_stl_list();
+  for (auto& itr : list)
     {
-      Loi_Fermeture_base& loi=curseur.valeur().valeur();
+      Loi_Fermeture_base& loi=itr.valeur();
       loi.mettre_a_jour(temps);
-      ++curseur;
     }
 }
 
@@ -1022,12 +1015,11 @@ void Probleme_base::preparer_calcul()
   if (schema_temps().file_allocation() && EcritureLectureSpecial::Active)
     file_size_xyz();
 
-  LIST_CURSEUR(REF(Loi_Fermeture_base)) curseur = liste_loi_fermeture_;
-  while (curseur)
+  auto& list = liste_loi_fermeture_.get_stl_list();
+  for (auto& itr : list)
     {
-      Loi_Fermeture_base& loi = curseur.valeur().valeur();
+      Loi_Fermeture_base& loi = itr.valeur();
       loi.preparer_calcul();
-      ++curseur;
     }
 }
 

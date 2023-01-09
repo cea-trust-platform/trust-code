@@ -87,34 +87,29 @@ bool Objet_a_lire::is_optional(void) const
   return (nature == OPTIONAL);
 }
 
-void Objet_a_lire::set_name(const LIST(Nom) &n)
+void Objet_a_lire::set_name(const STLLIST(Nom) &n)
 {
-  CONST_LIST_CURSEUR(Nom) curseur(n);
-  name = curseur.valeur();
-  ++curseur;
-  while (curseur)
-    {
-      names.add(curseur.valeur());
-      ++curseur;
-    }
+  const auto& list = n.get_stl_list();
+  auto itr = list.begin();
+  name = *itr;
+  ++itr;
+
+  for ( ; itr != list.end(); ++itr) names.add(*itr);
 }
 
 int Objet_a_lire::comprend_name(Motcle& mot) const
 {
   if (mot == name) return 1;
-
-  CONST_LIST_CURSEUR(Nom) curseur(names);
-  while (curseur)
-    {
-      if (mot == curseur.valeur())
-        {
-          mot = name;
-          return 1;
-        }
-      ++curseur;
-    }
+  const auto& list = names.get_stl_list();
+  for (const auto& itr : list)
+    if (mot == itr)
+      {
+        mot = name;
+        return 1;
+      }
   return 0;
 }
+
 Nom Objet_a_lire::get_names_message(void) const
 {
   Nom titi(name);

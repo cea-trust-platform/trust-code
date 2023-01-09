@@ -36,12 +36,13 @@ bool Champs_compris::has_champ(const Motcle& motcle, REF(Champ_base)& ref_champ)
     {
       Cerr<<"Champs_compris::get_champ()"<<finl;
       Cerr<<"No field can be requested using the identifier \'??\'"<<finl;
-      exit();
+      Process::exit();
     }
-  CONST_LIST_CURSEUR(REF(Champ_base)) curseur = liste_champs_;
-  while (curseur)
+
+  const auto& list = liste_champs_.get_stl_list();
+  for (const auto& itr : list)
     {
-      ref_champ = curseur.valeur().valeur();
+      ref_champ = itr.valeur();
       if (ref_champ.le_nom() == motcle)  // case insensitive test
         return true;
       else
@@ -60,61 +61,60 @@ bool Champs_compris::has_champ(const Motcle& motcle, REF(Champ_base)& ref_champ)
                 return true;
             }
         }
-      ++curseur;
     }
   return false;
 }
 
-int new_liste_add_if_not(LIST(Nom)& new_list,const Nom& nom_champ)
+int new_liste_add_if_not(STLLIST(Nom)& new_list,const Nom& nom_champ)
 {
   Motcle mot(nom_champ);
-  CONST_LIST_CURSEUR(Nom) curseur = new_list;
-  while (curseur)
+  const auto& list = new_list.get_stl_list();
+  for (const auto& itr : list)
     {
-      if (mot == curseur.valeur())
+      if (mot == itr)
         return 0;
-      ++curseur;
     }
   new_list.add(nom_champ);
   return 1;
 }
 
-void rebuild_liste_noms(const LIST(REF(Champ_base))& liste_champs_, const Noms& liste_noms_, Noms& liste_noms_construits_,int info=0)
+void rebuild_liste_noms(const STLLIST(REF(Champ_base))& liste_champs_, const Noms& liste_noms_, Noms& liste_noms_construits_,int info=0)
 {
   if (liste_noms_construits_.size()<liste_noms_.size())
     liste_noms_construits_=liste_noms_;
-  LIST(Nom) new_liste;
+  STLLIST(Nom) new_liste;
   int size = liste_noms_.size();
   for (int i=0; i<size; i++)
     new_liste.add(liste_noms_[i]);
 
   REF(Champ_base) ref_champ;
-  CONST_LIST_CURSEUR(REF(Champ_base)) curseur = liste_champs_;
+
   Nom nom_champ;
-  while (curseur)
+  const auto& list = liste_champs_.get_stl_list();
+  for (const auto &itr : list)
     {
-      const Champ_base& ch= curseur.valeur().valeur();
+      const Champ_base& ch = itr.valeur();
       nom_champ = ch.le_nom();
       //Cerr<<" ok "<<nom_champ<<finl;
-      if (nom_champ!=Nom())
-        new_liste_add_if_not(new_liste,nom_champ);
+      if (nom_champ != Nom())
+        new_liste_add_if_not(new_liste, nom_champ);
 
-      const Noms& syno= ch.get_synonyms();
-      int nb_syno=syno.size();
-      for (int s=0; s<nb_syno; s++)
+      const Noms& syno = ch.get_synonyms();
+      int nb_syno = syno.size();
+      for (int s = 0; s < nb_syno; s++)
         {
-          if (syno[s]!=Nom())
-            new_liste_add_if_not(new_liste,syno[s]);
+          if (syno[s] != Nom())
+            new_liste_add_if_not(new_liste, syno[s]);
         }
       int nb_composantes = ch.nb_comp();
-      for (int i=0; i<nb_composantes; i++)
+      for (int i = 0; i < nb_composantes; i++)
         {
           nom_champ = (ch.nom_compo(i));
-          if (nom_champ!=Nom())
-            new_liste_add_if_not(new_liste,nom_champ);
+          if (nom_champ != Nom())
+            new_liste_add_if_not(new_liste, nom_champ);
         }
-      ++curseur;
     }
+
   int size_new_liste=new_liste.size();
   int prem=1;
   if (size_new_liste!=liste_noms_construits_.size())
@@ -154,27 +154,14 @@ void rebuild_liste_noms(const LIST(REF(Champ_base))& liste_champs_, const Noms& 
 
 void Champs_compris::ajoute_champ(const Champ_base& champ)
 {
-  /*
-  REF(Champ_base) champ_ref;
-  champ_ref = champ;
-  assert(!liste_champs_.contient(champ_ref));
-  // GF ne sert a rien le test ne marche pas !!!
-  // il faut tester si champ est contenu ( c.a.d si il ya une reference vers celui-ci
-  if (liste_champs_.contient(champ_ref)) abort();
-  // GF essai brutal ....
-   */
-  CONST_LIST_CURSEUR(REF(Champ_base)) curseur = liste_champs_;
+
   Motcle nom_champ_add = champ.le_nom();
-  while (curseur)
+  const auto& list = liste_champs_.get_stl_list();
+  for (const auto &itr : list)
     {
-      const Champ_base& ch= curseur.valeur().valeur();
+      const Champ_base& ch = itr.valeur();
       const Nom& nom_champ = ch.le_nom();
-      if (nom_champ==nom_champ_add) return;
-      /*{
-        Cerr<<champ.le_nom()<<" is already in the list of names of field !!"<<finl;
-        //  exit();
-      }*/
-      ++curseur;
+      if (nom_champ == nom_champ_add) return;
     }
 
   //liste_champs_.add(champ_ref);

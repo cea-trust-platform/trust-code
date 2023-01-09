@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -428,7 +428,7 @@ Entree& DecoupeBord::interpreter_(Entree& is)
 {
   Nom nom_dom1,nom_dom2;
   Nom nom_fichier_sortie("");
-  LIST(Nom) list_nom_dec;
+  STLLIST(Nom) list_nom_dec;
   Noms nomdec;
   ArrOfInt nb_parts,nb_parts_geom;
   Param param(que_suis_je());
@@ -466,11 +466,6 @@ Entree& DecoupeBord::interpreter_(Entree& is)
     }
   else
     {
-      //if (nb_parts.size_array()==0)
-      //  {
-      //    Cerr<<" You must specify domaine_grossier or cut into n"<<finl;
-      //    exit();
-      //  }
       if (expr.size()!=0)
         {
           create_listb_from_xyz(dom1,nomdec,expr);

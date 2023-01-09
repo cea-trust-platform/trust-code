@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,17 +21,9 @@
 
 Implemente_base(Champ_val_tot_sur_vol_base,"Champ_val_tot_sur_vol_base",Champ_Uniforme_Morceaux);
 
+Sortie& Champ_val_tot_sur_vol_base::printOn(Sortie& os) const { return Champ_Uniforme_Morceaux::printOn(os); }
 
-Sortie& Champ_val_tot_sur_vol_base::printOn(Sortie& os) const
-{
-  return Champ_Uniforme_Morceaux::printOn(os);
-}
-
-Entree& Champ_val_tot_sur_vol_base::readOn(Entree& is)
-{
-  Champ_Uniforme_Morceaux::readOn(is);
-  return is;
-}
+Entree& Champ_val_tot_sur_vol_base::readOn(Entree& is) { return Champ_Uniforme_Morceaux::readOn(is); }
 
 //Evaluation du champ sur le domaine par defaut et les sous zones specifiees
 //-Pour chacune des sous zones et pour le domaine complet on calcul CONTRIB_loc:
@@ -53,10 +45,11 @@ void Champ_val_tot_sur_vol_base::evaluer(const Zone_dis_base& zdis,const Zone_Cl
       valeurs_(elem,k) /= vol_glob_pond(0);
 
   int cpt=1;
-  LIST_CURSEUR(REF(Sous_Zone)) curseur1 = les_sous_zones;
-  while(curseur1)
+
+  auto& list = les_sous_zones.get_stl_list();
+  for (auto& itr : list)
     {
-      const Sous_Zone& sz = curseur1.valeur().valeur();
+      const Sous_Zone& sz = itr.valeur();
       int size_sz = sz.nb_elem_tot();
       int el;
       for (int elem=0; elem<size_sz; elem++)
@@ -70,9 +63,7 @@ void Champ_val_tot_sur_vol_base::evaluer(const Zone_dis_base& zdis,const Zone_Cl
         }
 
       cpt++;
-      ++curseur1;
     }
 
   valeurs().echange_espace_virtuel();
 }
-

@@ -110,7 +110,7 @@ void  Chimie::completer(const Probleme_base& pb)
   // verification de l'unicite des  alias
   marqueur_espece_en_competition_micro_melange_=-1;
   {
-    LIST(Nom) test;
+    STLLIST(Nom) test;
     for (int n=0; n<alias.size(); n++)
       {
         int deja=test.contient(alias[n]);

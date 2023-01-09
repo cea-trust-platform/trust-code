@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -114,7 +114,7 @@ protected:
   double dt_impr_ustar;
   double dt_impr_ustar_mean_only;
   int boundaries_;
-  LIST(Nom) boundaries_list ;
+  STLLIST(Nom) boundaries_list ;
   Nom nom_fichier_;
   void limiter_viscosite_turbulente();
 

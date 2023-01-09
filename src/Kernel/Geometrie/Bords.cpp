@@ -15,7 +15,7 @@
 
 #include <Bords.h>
 
-Implemente_instanciable(Bords, "Bords", LIST(Bord));
+Implemente_instanciable(Bords, "Bords", STLLIST(Bord));
 
 Sortie& Bords::printOn(Sortie& os) const { return STLLIST(Bord)::printOn(os); }
 

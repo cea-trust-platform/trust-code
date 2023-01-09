@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,10 +20,7 @@ Implemente_instanciable_sans_constructeur(List_Equations_Scalaires_Passifs_Espec
 
 List_Equations_Scalaires_Passifs_Especes::List_Equations_Scalaires_Passifs_Especes() : complet(0) { }
 
-Sortie& List_Equations_Scalaires_Passifs_Especes::printOn(Sortie& os) const
-{
-  return os;
-}
+Sortie& List_Equations_Scalaires_Passifs_Especes::printOn(Sortie& os) const { return os; }
 
 Entree& List_Equations_Scalaires_Passifs_Especes::readOn(Entree& is)
 {

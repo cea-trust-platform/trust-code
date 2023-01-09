@@ -46,8 +46,8 @@ public:
 
 private:
   // Mecanisme de cache pour les sondes:
-  LIST(REF(Champ_base)) sourceList;
-  LIST(Champ) espaceStockageList;
+  STLLIST(REF(Champ_base)) sourceList;
+  STLLIST(Champ) espaceStockageList;
   Noms sourceNoms;
   REF(Postraitement) mon_post;
   Motcles noms_champs_postraitables_;

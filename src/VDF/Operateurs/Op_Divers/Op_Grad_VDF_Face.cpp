@@ -194,7 +194,7 @@ int Op_Grad_VDF_Face::impr(Sortie& os) const
       if (impr_mom) Flux_grad_moment << finl;
     }
 
-  const LIST(Nom)& Liste_Bords_a_imprimer = zvdf.zone().Bords_a_imprimer();
+  const STLLIST(Nom)& Liste_Bords_a_imprimer = zvdf.zone().Bords_a_imprimer();
   if (!Liste_Bords_a_imprimer.est_vide())
     {
       EcrFicPartage Flux_grad_face;

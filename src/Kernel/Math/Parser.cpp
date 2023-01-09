@@ -21,8 +21,8 @@
 void debug(StringTokenizer*);
 
 Constante Parser::c_pi;
-LIST(DERIV(UnaryFunction)) Parser::unary_func;
-LIST(Constante) Parser::les_cst;
+STLLIST(DERIV(UnaryFunction)) Parser::unary_func;
+STLLIST(Constante) Parser::les_cst;
 
 /* Les identificateurs suivants doivent etre definis de maniere unique pour chaque fonction */
 
@@ -668,16 +668,15 @@ void Parser::addVar(const char *vv)
 
 int Parser::searchCst(const std::string& v)
 {
-  LIST_CURSEUR(Constante) curseur(les_cst);
   int i=0;
   Nom nv(v);
-  while(curseur)
+  auto& list = les_cst.get_stl_list();
+  for (auto& itr : list)
     {
-      Constante& cst = ref_cast(Constante,curseur.valeur());
+      Constante& cst = ref_cast(Constante,itr);
       std::string ss(cst.le_nom());
       std::transform(ss.begin(), ss.end(), ss.begin(), ::toupper);
       if (nv == Nom(ss)) return i;
-      ++curseur;
       i++;
     }
   return -1;
@@ -686,17 +685,16 @@ int Parser::searchCst(const std::string& v)
 
 int Parser::searchFunc(const std::string& v)
 {
-  LIST_CURSEUR(DERIV(UnaryFunction)) curseur(unary_func);
   int i=0;
   Nom nv(v);
   nv.majuscule();
-  while(curseur)
+  auto& list = unary_func.get_stl_list();
+  for (auto& itr : list)
     {
-      UnaryFunction& f = curseur.valeur().valeur();
+      UnaryFunction& f = itr.valeur();
       Nom n2(f.getName());
       n2.majuscule();
       if (nv == n2) return i+1 ; // OC: pour ne pas utiliser le zero car sinon conflit avec la nouvelle numerotation des operateurs binaires.
-      ++curseur;
       i++;
     }
   return -1;

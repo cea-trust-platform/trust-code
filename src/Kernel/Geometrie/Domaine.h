@@ -88,7 +88,7 @@ public :
   };
   inline const Zones& zones() const;
   inline Zones& zones() ;
-  inline const LIST(REF(Sous_Zone))& ss_zones() const;
+  inline const STLLIST(REF(Sous_Zone))& ss_zones() const;
   inline int deformable() const
   {
     return deformable_;
@@ -124,7 +124,7 @@ public :
 
   // Informations
   void imprimer() const;
-  inline const LIST(REF(Domaine))& domaines_frontieres() const
+  inline const STLLIST(REF(Domaine))& domaines_frontieres() const
   {
     return domaines_frontieres_;
   };
@@ -157,10 +157,10 @@ public :
 
 protected :
 
-  LIST(REF(Domaine)) domaines_frontieres_;
+  STLLIST(REF(Domaine)) domaines_frontieres_;
   Nom nom_;
   DoubleTab sommets;
-  LIST(REF(Sous_Zone)) les_ss_zones;
+  STLLIST(REF(Sous_Zone)) les_ss_zones;
   Zones les_zones;
   ArrOfInt renum_som_perio;
   double epsilon_;
@@ -396,7 +396,7 @@ inline Zones& Domaine::zones()
 {
   return les_zones;
 }
-inline const LIST(REF(Sous_Zone))& Domaine::ss_zones() const
+inline const STLLIST(REF(Sous_Zone))& Domaine::ss_zones() const
 {
   return les_ss_zones;
 }

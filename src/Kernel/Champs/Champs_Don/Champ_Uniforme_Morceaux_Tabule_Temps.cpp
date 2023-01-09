@@ -103,9 +103,6 @@ Entree& Champ_Uniforme_Morceaux_Tabule_Temps::readOn(Entree& is)
   return is;
 }
 
-
-
-
 /*! @brief Mise a jour en temps du champ (tabule en temps)
  *
  * @param (double tps) le temps de mise a jour
@@ -114,25 +111,25 @@ void Champ_Uniforme_Morceaux_Tabule_Temps::me_calculer(double tps)
 {
   if (!est_egal(temps(),tps))
     {
-      LIST_CURSEUR(REF(Sous_Zone)) curseur1(les_sous_zones);
-      LIST_CURSEUR(Table) curseur2(les_tables);
+
+      auto& list = les_tables.get_stl_list();
+      auto itr2 = les_sous_zones.get_stl_list().begin();
 
       if (nb_comp() == 1)
         {
           DoubleVect& mes_valeurs = valeurs();
           double val_ch;
-          while(curseur1)
+          for (auto& itr : list)
             {
-              Sous_Zone& ssz = (curseur1.valeur()).valeur();
-              Table& la_table = curseur2.valeur();
+              Sous_Zone& ssz = (*itr2).valeur();
+              Table& la_table = itr;
 
               val_ch = la_table.val(tps);
 
               for( int poly=0; poly<ssz.nb_elem_tot(); poly++)
                 mes_valeurs(ssz(poly)) = val_ch;
 
-              ++curseur1;
-              ++curseur2;
+              ++itr2;
             }
         }
       else
@@ -141,10 +138,10 @@ void Champ_Uniforme_Morceaux_Tabule_Temps::me_calculer(double tps)
           int k,dim = nb_comp();
           DoubleVect val_loc(dim);
 
-          while(curseur1)
+          for (auto& itr : list)
             {
-              Sous_Zone& ssz = (curseur1.valeur()).valeur();
-              Table& la_table = curseur2.valeur();
+              Sous_Zone& ssz = (*itr2).valeur();
+              Table& la_table = itr;
 
               la_table.valeurs(val_loc,tps);
 
@@ -152,8 +149,7 @@ void Champ_Uniforme_Morceaux_Tabule_Temps::me_calculer(double tps)
                 for( k=0; k< dim; k++)
                   mes_valeurs(ssz(poly),k) = val_loc(k);
 
-              ++curseur1;
-              ++curseur2;
+              ++itr2;
             }
         }
     }

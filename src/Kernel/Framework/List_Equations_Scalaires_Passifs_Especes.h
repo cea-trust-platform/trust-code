@@ -84,7 +84,7 @@ public :
   }
 
 protected :
-  LIST(Equation) list_eq;
+  STLLIST(Equation) list_eq;
   REF(Milieu_base) mil;
   int complet;
 };

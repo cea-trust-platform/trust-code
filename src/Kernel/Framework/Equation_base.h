@@ -320,7 +320,7 @@ protected :
   Parametre_equation parametre_equation_;
   Champ_Fonc volume_maille;
 
-  LIST(RefObjU) liste_modeles_; //Le premier element de la liste est le modele nul
+  STLLIST(RefObjU) liste_modeles_; //Le premier element de la liste est le modele nul
   Champs_compris champs_compris_;
   Champs_Fonc list_champ_combi;
 
@@ -341,7 +341,7 @@ private :
   void ecrire_fichier_xyz() const;
   ArrOfDouble dt_ecrire_fic_xyz;
   Motcles nom_champ_xyz;
-  LIST(Noms) noms_bord_xyz;
+  STLLIST(Noms) noms_bord_xyz;
   IntVect nb_bords_post_xyz;
   int nombre_champ_xyz;
   int ecrit_champ_xyz_bin;

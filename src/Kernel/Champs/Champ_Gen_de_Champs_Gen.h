@@ -44,7 +44,7 @@ public:
 
   void set_param(Param& param) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  virtual LIST(Champ_Generique)& get_set_sources();
+  virtual STLLIST(Champ_Generique)& get_set_sources();
   virtual Champ_Generique&        get_set_source();
   void   reset() override;
   int sauvegarder(Sortie& os) const override;
@@ -101,12 +101,12 @@ public:
 
 protected:
 
-  LIST(Nom) noms_sources_ref_;
-  LIST(REF(Champ_Generique_base)) sources_reference_; //permet de creer une source en faisant une reference a un
+  STLLIST(Nom) noms_sources_ref_;
+  STLLIST(REF(Champ_Generique_base)) sources_reference_; //permet de creer une source en faisant une reference a un
   //champ generique deja defini a partir de son nom (noms_ource_ref_)
 
 private:
-  LIST(Champ_Generique) sources_;        //Attribut qui designent les sources de "premier niveau"
+  STLLIST(Champ_Generique) sources_;        //Attribut qui designent les sources de "premier niveau"
   //Chacune de ses sources est susceptible de posseder une
   //ou plusieurs sources
 };

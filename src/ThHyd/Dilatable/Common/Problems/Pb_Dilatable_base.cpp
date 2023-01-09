@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -88,12 +88,11 @@ void Pb_Dilatable_base::mettre_a_jour(double temps)
 
   les_postraitements.mettre_a_jour(temps);
   domaine().mettre_a_jour(temps,domaine_dis(),*this);
-  LIST_CURSEUR(REF(Loi_Fermeture_base)) curseur = liste_loi_fermeture_;
-  while (curseur)
+  auto& list = liste_loi_fermeture_.get_stl_list();
+  for (auto& itr : list)
     {
-      Loi_Fermeture_base& loi=curseur.valeur().valeur();
+      Loi_Fermeture_base& loi=itr.valeur();
       loi.mettre_a_jour(temps);
-      ++curseur;
     }
 }
 

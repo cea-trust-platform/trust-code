@@ -106,7 +106,7 @@ int Iterateur_VDF_Elem<_TYPE_>::impr(Sortie& os) const
         Flux.add_col(bilan(k));
       Flux << finl;
     }
-  const LIST(Nom)& Liste_Bords_a_imprimer = la_zone->zone().Bords_a_imprimer();
+  const STLLIST(Nom)& Liste_Bords_a_imprimer = la_zone->zone().Bords_a_imprimer();
   if (!Liste_Bords_a_imprimer.est_vide())
     {
       EcrFicPartage Flux_face;

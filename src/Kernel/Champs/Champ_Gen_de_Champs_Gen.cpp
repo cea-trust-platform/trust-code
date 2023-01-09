@@ -111,7 +111,7 @@ int Champ_Gen_de_Champs_Gen::lire_motcle_non_standard(const Motcle& mot, Entree&
   return 1;
 }
 
-LIST(Champ_Generique)& Champ_Gen_de_Champs_Gen::get_set_sources()
+STLLIST(Champ_Generique)& Champ_Gen_de_Champs_Gen::get_set_sources()
 {
   return sources_;
 }

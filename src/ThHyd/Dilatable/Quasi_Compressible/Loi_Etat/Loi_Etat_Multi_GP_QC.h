@@ -43,7 +43,7 @@ public :
 
 protected :
   void rabot(int futur = 0);
-  LIST(REF(Espece)) liste_especes;
+  STLLIST(REF(Espece)) liste_especes;
   int correction_fraction_,ignore_check_fraction_;
   double Sc_,dtol_fraction_;
 

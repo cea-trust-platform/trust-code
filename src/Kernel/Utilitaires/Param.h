@@ -67,7 +67,7 @@ public:
   int read(Entree& is,int with_acco=1);
   void print(Sortie& s) const;
 
-  inline const LIST(Nom)& get_list_mots_lus() const { return list_parametre_lu_ ; }
+  inline const STLLIST(Nom)& get_list_mots_lus() const { return list_parametre_lu_ ; }
 
   double get_value(const Nom& mot_lu) const;
   int check();
@@ -76,9 +76,9 @@ protected:
   Param();
   Objet_a_lire& create_or_get_objet_a_lire(const char *);
 
-  LIST(Objet_a_lire) list_parametre_a_lire_;
+  STLLIST(Objet_a_lire) list_parametre_a_lire_;
   Nom proprietaire_;
-  LIST(Nom) list_parametre_lu_,list_conditions_,list_message_erreur_conditions_, list_nom_conditions_;
+  STLLIST(Nom) list_parametre_lu_,list_conditions_,list_message_erreur_conditions_, list_nom_conditions_;
 
 };
 

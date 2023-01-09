@@ -41,7 +41,7 @@ Postraitement::~Postraitement()
 {
   //Cerr<<"remise a zero des noms des sondes" <<finl;
   // quand on detruit un postraitement on detruit la liste des noms des sondes pour pouvoir refaire initialize
-  Postraitement::noms_fichiers_sondes_=LIST(Nom)();
+  Postraitement::noms_fichiers_sondes_=STLLIST(Nom)();
 }
 
 void Postraitement::associer_nom_et_pb_base(const Nom& nom,
@@ -108,7 +108,7 @@ void Postraitement::mettre_a_jour(double temps)
 }
 
 Motcles Postraitement::formats_supportes=Motcles(0);
-LIST(Nom) Postraitement::noms_fichiers_sondes_=LIST(Nom)();
+STLLIST(Nom) Postraitement::noms_fichiers_sondes_=STLLIST(Nom)();
 
 
 inline void nom_fichier(const Postraitement& post, const Champ_Generique_Statistiques& op, const Domaine& dom, Nom& nom_fichier)
@@ -1195,12 +1195,11 @@ void Postraitement::init()
   //REF(Zone_dis_base) zone_dis_pour_faces;
 
   {
-    LIST_CURSEUR(Nom) curseur1 = noms_champs_a_post_;
     Nom le_nom_champ_post;
-
-    while(curseur1)
+    auto& list = noms_champs_a_post_.get_stl_list();
+    for (auto& itr : list)
       {
-        const Nom& nom_post = curseur1.valeur();
+        const Nom& nom_post = itr;
         const REF(Champ_Generique_base)& champ = get_champ_post(nom_post);
 
         int indic_correlation=0;
@@ -1272,8 +1271,6 @@ void Postraitement::init()
             format_post->completer_post(dom,axi,nature,nb_compo,composantes,loc_post,le_nom_champ_post);
 
           }
-
-        ++curseur1;
       }
   }
 
@@ -1400,10 +1397,10 @@ void Postraitement::postprocess_field_values()
   double temps_courant = mon_probleme->schema_temps().temps_courant();
   const Domaine& dom=le_domaine.valeur();
 
-  LIST_CURSEUR(Nom) curseur1 = noms_champs_a_post_;
-  while(curseur1)
+  auto& list = noms_champs_a_post_.get_stl_list();
+  for (auto& itr : list)
     {
-      const Champ_Generique_base& champ = get_champ_post(curseur1.valeur());
+      const Champ_Generique_base& champ = get_champ_post(itr);
 
       //Etape de calcul
       //Le champ cree est rendu dans champ_ecriture
@@ -1426,13 +1423,12 @@ void Postraitement::postprocess_field_values()
 
       //Etape pour savoir si on doit postraiter un champ ou une de ses composantes
 
-      int ncomp = Champ_Generique_base::composante(curseur1.valeur(),nom_post[0],noms_compo,champ.get_property("synonyms"));
+      int ncomp = Champ_Generique_base::composante(itr,nom_post[0],noms_compo,champ.get_property("synonyms"));
 
       //La distinction du type de postraitement (tableau ou tenseur) est fait dans la methode postraiter par la valeur de tenseur
       Nom nature("scalar");
       if (champ_ecriture.nature_du_champ()==vectoriel) nature="vector";
-      postraiter(dom,unites,noms_compo,ncomp,temps_courant,curseur1.valeur(),localisation,nature,valeurs_post,tenseur);
-      ++curseur1;
+      postraiter(dom,unites,noms_compo,ncomp,temps_courant,itr,localisation,nature,valeurs_post,tenseur);
     }
 }
 
@@ -1454,23 +1450,24 @@ int Postraitement::postraiter_tableaux()
         format_post->ecrire_temps(temps_courant);
     }
 
-  LIST_CURSEUR(REF(IntVect)) curseur1 = tableaux_a_postraiter_;
-  LIST_CURSEUR(Nom) curseur2 = noms_tableaux_;
+  auto& list1 = tableaux_a_postraiter_.get_stl_list();
+  auto& list2 = noms_tableaux_.get_stl_list();
 
-  while(curseur1)
+  auto itr2 = list2.begin();
+
+  for (auto& itr1 : list1)
     {
-      const Nom& id_item = curseur2.valeur();
+      const Nom& id_item = *itr2;
       const Nom& id_du_domaine = dom.le_nom();
       const Nom& id_zone = dom.zone(0).le_nom();
       const Nom localisation="";
       const Nom reference="";
-      const IntVect& val =  curseur1->valeur();
+      const IntVect& val = itr1;
       const int ref_size =0;
 
       format_post->ecrire_item_int(id_item,id_du_domaine,id_zone,localisation,reference,val,ref_size);
 
-      ++curseur1;
-      ++curseur2;
+      ++itr2;
     }
 
 

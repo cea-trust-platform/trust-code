@@ -95,7 +95,7 @@ public:
 
 private:
 
-  LIST(REF(Probleme_U)) problems;
+  STLLIST(REF(Probleme_U)) problems;
 
 };
 

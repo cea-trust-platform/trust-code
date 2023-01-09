@@ -422,7 +422,7 @@ public:
   int contient(const Objet_U& obj) const
   {
     for (auto &itr : list_)
-      if (itr.valeur() == obj) return 1;
+      if (itr == obj) return 1;
     return 0;
   }
 };

@@ -38,8 +38,8 @@ Entree& Remove_Invalid_Internal_Boundaries::interpreter_(Entree& is)
   Static_Int_Lists incidence;
   construire_connectivite_som_elem(domain.nb_som_tot(), zone.les_elems(), incidence, 1);
 
-  LIST(Nom) name_of_useless_boundaries;
-  LIST(Nom) name_of_useless_connectors;
+  STLLIST(Nom) name_of_useless_boundaries;
+  STLLIST(Nom) name_of_useless_connectors;
   ArrOfInt nodes_of_frontier_face;
   ArrOfInt cells_on_frontier_face;
   cells_on_frontier_face.set_smart_resize(1);
@@ -174,22 +174,20 @@ Entree& Remove_Invalid_Internal_Boundaries::interpreter_(Entree& is)
   }
 
   {
-    LIST_CURSEUR(Nom) cursor(name_of_useless_boundaries);
-    while (cursor)
+    auto& list = name_of_useless_boundaries.get_stl_list();
+    for (auto& itr : list)
       {
         Bords& boundaries = zone.faces_bord();
-        boundaries.suppr(zone.bord(cursor.valeur()));
-        ++cursor;
+        boundaries.suppr(zone.bord(itr));
       }
   }
 
   {
-    LIST_CURSEUR(Nom) cursor(name_of_useless_connectors);
-    while (cursor)
+    auto& list = name_of_useless_connectors.get_stl_list();
+    for (auto& itr : list)
       {
         Raccords& connectors = zone.faces_raccord();
-        connectors.suppr(zone.raccord(cursor.valeur()));
-        ++cursor;
+        connectors.suppr(zone.raccord(itr));
       }
   }
 

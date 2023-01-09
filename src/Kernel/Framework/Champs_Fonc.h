@@ -19,7 +19,7 @@
 #include <Champ_Fonc.h>
 #include <TRUST_List.h>
 
-/*! @brief classe Champs_Fonc Liste de Champ_Fonc declaree grace a la macro LIST(X)
+/*! @brief classe Champs_Fonc Liste de Champ_Fonc declaree grace a la macro STLLIST(X)
  *
  * @sa Champ_Fonc
  */

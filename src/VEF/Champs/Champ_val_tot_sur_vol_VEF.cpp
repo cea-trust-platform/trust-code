@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -57,10 +57,10 @@ DoubleVect& Champ_val_tot_sur_vol_VEF::eval_contrib_loc(const Zone_dis_base& zdi
   int cpt=1;
   IntVect face_fait(nb_faces);
 
-  LIST_CURSEUR(REF(Sous_Zone)) curseur1 = les_sous_zones;
-  while(curseur1)
+  auto& list = les_sous_zones.get_stl_list();
+  for (auto& itr : list)
     {
-      const Sous_Zone& sz = curseur1.valeur().valeur();
+      const Sous_Zone& sz = itr.valeur();
       int size_sz = sz.nb_elem_tot();
       face_fait = 0;
       int el,elem0,elem1,elem_test;
@@ -149,7 +149,6 @@ DoubleVect& Champ_val_tot_sur_vol_VEF::eval_contrib_loc(const Zone_dis_base& zdi
         }
 
       cpt++;
-      ++curseur1;
     }
 
   for (int num_face=0; num_face<prem_face_std; num_face++)

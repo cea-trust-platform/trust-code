@@ -141,7 +141,7 @@ Entree& Create_domain_from_sous_zone::interpreter_(Entree& is)
         }
 
       //et les sous-zones?
-      const LIST(REF(Sous_Zone)) & liste_sous_zones = domaine_org.ss_zones();
+      const STLLIST(REF(Sous_Zone)) & liste_sous_zones = domaine_org.ss_zones();
       int nb_sous_zones = liste_sous_zones.size();
       const Sous_Zone& ssz=ref_cast(Sous_Zone,objet(noms_sous_zones[i]));
       ArrOfInt rev_ssz(domaine_org.zone(0).nb_elem());

@@ -99,7 +99,7 @@ int Postraitements::lire_postraitements(Entree& is, const Motcle& motlu, const P
 
   // a cause du cas Liste_Postraitements (rang=2)
   //=> obligation de creer la liste de nom de fichier associes au post
-  LIST(Nom) list_nom_post;
+  STLLIST(Nom) list_nom_post;
   int compteur = 0 ;
 
   if (lerang == 0)

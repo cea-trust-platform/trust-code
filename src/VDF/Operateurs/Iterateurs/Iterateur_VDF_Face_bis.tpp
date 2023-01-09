@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -176,7 +176,7 @@ int Iterateur_VDF_Face<_TYPE_>::impr(Sortie& os) const
       if (impr_mom)
         Flux_moment << finl;
     }
-  const LIST (Nom)
+  const STLLIST (Nom)
   &Liste_Bords_a_imprimer = la_zone->zone().Bords_a_imprimer();
   if (!Liste_Bords_a_imprimer.est_vide())
     {

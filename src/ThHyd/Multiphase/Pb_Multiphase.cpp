@@ -137,8 +137,8 @@ Entree& Pb_Multiphase::lire_equations(Entree& is, Motcle& mot)
   for (is >> mot; noms_eq_maj.rang(mot) >= 0; is >> mot)
     {
       eq_opt.add(Equation()); //une autre equation optionelle
-      eq_opt.dernier().valeur().typer(mot); //on lui donne le bon type
-      Equation_base& eq = eq_opt.dernier().valeur().valeur();
+      eq_opt.dernier().typer(mot); //on lui donne le bon type
+      Equation_base& eq = eq_opt.dernier().valeur();
       //memes associations que pour les autres equations : probleme, milieu, schema en temps
       eq.associer_pb_base(*this);
       eq.associer_milieu_base(milieu());

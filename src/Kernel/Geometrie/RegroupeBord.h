@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,7 +39,7 @@ class RegroupeBord : public Interprete_geometrique_base
 public :
 
   Entree& interpreter_(Entree&) override;
-  void regroupe_bord(Domaine& dom, Nom nom,const LIST(Nom)& nlistbord);
+  void regroupe_bord(Domaine& dom, Nom nom,const STLLIST(Nom)& nlistbord);
   // regroupe les bords de meme nom en un seul bord du meme nom
   void rassemble_bords(Domaine& dom);
 
