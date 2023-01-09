@@ -237,12 +237,13 @@ double Op_Conv_VDF_base::calculer_dt_stab() const
   if (vitesse().le_nom()=="rho_u" && equation().probleme().is_dilatable())
     diviser_par_rho_si_dilatable(fluent,equation().milieu());
 
+  const double alpha_min_dt = 1e-3; // avoid stupid time steps during vanishing phase
   double dt_stab = 1.e30;
   int domaine_VDF_nb_elem=domaine_VDF.nb_elem();
   // dt_stab = min ( 1 / ( |U|/dx + |V|/dy + |W|/dz ) )
   for (int num_poly=0; num_poly<domaine_VDF_nb_elem; num_poly++)
     for (int n = 0; n < N; n++)
-      if ((!alp || (*alp)(num_poly, n) > 1e-3))
+      if ((!alp || (*alp)(num_poly, n) > alpha_min_dt))
         {
           double dt_elem = volumes(num_poly)/(fluent(num_poly, n)+DMINFLOAT);
           if (dt_elem<dt_stab) dt_stab = dt_elem;
