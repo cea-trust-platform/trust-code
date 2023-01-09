@@ -1,4 +1,4 @@
-# PARALLEL OK #
+# PARALLEL RUNS #
 # Hydraulique 2D laminaire POISEUILLE #
 /*  Re = (rho*U_max*L)/mu
   rho = 1.0 kg/m^3
