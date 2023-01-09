@@ -1479,7 +1479,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
             }
 
           // Ecritures des fichiers sous-zones .ssz
-          const STLLIST(REF(Sous_Zone)) &liste_sous_zones = domaine.ss_zones();
+          const LIST(REF(Sous_Zone)) &liste_sous_zones = domaine.ss_zones();
           const int nb_sous_zones = liste_sous_zones.size();
           if (nb_sous_zones > 0)
             {

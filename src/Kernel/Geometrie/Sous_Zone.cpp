@@ -150,7 +150,7 @@ Entree& Sous_Zone::readOn(Entree& is)
     case 1 :
       {
         Cerr<<"Sous_Zone::readOn : Reading of the polynomials"<<finl;
-        STLLIST(Polynome) les_polynomes;
+        LIST(Polynome) les_polynomes;
         is >> motlu;
         if(motlu!=Motcle("{"))
           {

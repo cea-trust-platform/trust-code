@@ -861,7 +861,7 @@ int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& 
     Indice_bords.resize(nfam);
     int non_affecte=-1000;
     med_int ngro;
-    STLLIST(Nom) list_group;
+    LIST(Nom) list_group;
     IntTab corres_grp_fam;
     for (int passage=0; passage<2; passage++)
       {

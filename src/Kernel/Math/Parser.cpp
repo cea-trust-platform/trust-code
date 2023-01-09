@@ -21,8 +21,8 @@
 void debug(StringTokenizer*);
 
 Constante Parser::c_pi;
-STLLIST(DERIV(UnaryFunction)) Parser::unary_func;
-STLLIST(Constante) Parser::les_cst;
+LIST(DERIV(UnaryFunction)) Parser::unary_func;
+LIST(Constante) Parser::les_cst;
 
 /* Les identificateurs suivants doivent etre definis de maniere unique pour chaque fonction */
 

@@ -48,14 +48,14 @@ public:
   const Nom& get_name(void) const;
   int comprend_name(Motcle& mot) const;
   Nom get_names_message(void) const;
-  void set_name(const STLLIST(Nom)& n);
+  void set_name(const LIST(Nom)& n);
   bool is_optional(void) const;
   bool is_type_simple() const ;
   double get_value() const;
 
 protected:
   Nom name;
-  STLLIST(Nom) names;
+  LIST(Nom) names;
   Objet_a_lire::Type type = INTEGER;
   Objet_a_lire::Nature nature = OPTIONAL;
   int *int_a_lire;

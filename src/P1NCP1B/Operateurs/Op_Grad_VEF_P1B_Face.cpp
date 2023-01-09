@@ -893,7 +893,7 @@ int Op_Grad_VEF_P1B_Face::impr(Sortie& os) const
       if (impr_mom) Flux_grad_moment << finl;
     }
 
-  const STLLIST(Nom)& Liste_Bords_a_imprimer = zone_VEF.zone().Bords_a_imprimer();
+  const LIST(Nom)& Liste_Bords_a_imprimer = zone_VEF.zone().Bords_a_imprimer();
   if (!Liste_Bords_a_imprimer.est_vide())
     {
       EcrFicPartage Flux_grad_face;

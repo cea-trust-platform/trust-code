@@ -208,7 +208,7 @@ int Param::check()
   }
   // tests des autres conditions
   int val = 1;
-  STLLIST(Nom) list_mot;
+  LIST(Nom) list_mot;
   int size = list_parametre_a_lire_.size();
   for (int i = 0; i < size; i++)
     {
@@ -263,9 +263,9 @@ int Param::check()
 }
 
 // retourne une liste de mot venant de nom.split('|')
-STLLIST(Nom) split_mot(const Nom& nom)
+LIST(Nom) split_mot(const Nom& nom)
 {
-  STLLIST(Nom) res;
+  LIST(Nom) res;
   Nom n0(nom);
   // on cherche le dernier |
   const char *marq = strchr(n0, '|');
@@ -316,7 +316,7 @@ Param& Param::dictionnaire_param(const char *nom_option, int valeur)
  */
 Objet_a_lire& Param::create_or_get_objet_a_lire(const char *mot)
 {
-  STLLIST(Nom) split_noms = split_mot(Nom(mot));
+  LIST(Nom) split_noms = split_mot(Nom(mot));
   const auto& list1 = split_noms.get_stl_list();
   auto& list2 = list_parametre_a_lire_.get_stl_list();
 
@@ -343,7 +343,7 @@ Objet_a_lire& Param::create_or_get_objet_a_lire(const char *mot)
 
 void Param::supprimer(const char *mot)
 {
-  STLLIST(Nom) split_noms = split_mot(Nom(mot));
+  LIST(Nom) split_noms = split_mot(Nom(mot));
   Motcle motcle(split_noms(0));
   auto& list = list_parametre_a_lire_.get_stl_list();
   for (auto &itr : list)

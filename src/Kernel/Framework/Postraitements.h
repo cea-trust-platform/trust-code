@@ -29,7 +29,7 @@ class Probleme_base;
 class Entree;
 class Motcle;
 
-class Postraitements : public STLLIST(DERIV(Postraitement_base))
+class Postraitements : public LIST(DERIV(Postraitement_base))
 {
   Declare_instanciable(Postraitements);
 

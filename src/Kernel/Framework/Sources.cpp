@@ -17,9 +17,9 @@
 #include <TRUSTTab.h>
 #include <Sources.h>
 
-Implemente_instanciable(Sources, "Sources", STLLIST(Source));
+Implemente_instanciable(Sources, "Sources", LIST(Source));
 
-Sortie& Sources::printOn(Sortie& os) const { return STLLIST(Source)::printOn(os); }
+Sortie& Sources::printOn(Sortie& os) const { return LIST(Source)::printOn(os); }
 
 /*! @brief Lecture d'une liste de sources sur un flot d'entree.
  *

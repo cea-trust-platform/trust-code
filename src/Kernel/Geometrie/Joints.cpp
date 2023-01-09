@@ -15,11 +15,11 @@
 
 #include <Joints.h>
 
-Implemente_instanciable(Joints, "Joints", STLLIST(Joint));
+Implemente_instanciable(Joints, "Joints", LIST(Joint));
 
-Sortie& Joints::printOn(Sortie& os) const { return STLLIST(Joint)::printOn(os); }
+Sortie& Joints::printOn(Sortie& os) const { return LIST(Joint)::printOn(os); }
 
-Entree& Joints::readOn(Entree& is) { return STLLIST(Joint)::readOn(is); }
+Entree& Joints::readOn(Entree& is) { return LIST(Joint)::readOn(is); }
 
 /*! @brief Associe une zone a tous les joints de la liste.
  *

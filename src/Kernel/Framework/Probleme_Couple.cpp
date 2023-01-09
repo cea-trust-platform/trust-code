@@ -164,7 +164,7 @@ Entree& Probleme_Couple::readOn(Entree& is)
         }
       assert(nb_problemes()==0);
 
-      STLLIST(STLLIST(Nom)) les_noms;
+      LIST(LIST(Nom)) les_noms;
       is >> les_noms;
 
       groupes.resize_array(les_noms.size());

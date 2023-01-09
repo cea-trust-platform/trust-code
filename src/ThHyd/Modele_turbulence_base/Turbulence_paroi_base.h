@@ -59,8 +59,8 @@ public :
     return d;
   };
   inline virtual void imprimer_ustar(Sortie& ) const ;
-  inline virtual void imprimer_ustar_mean_only(Sortie&, int, const STLLIST(Nom)&, const Nom&) const ;
-  inline virtual void imprimer_premiere_ligne_ustar(int, const STLLIST(Nom)&, const Nom&) const;
+  inline virtual void imprimer_ustar_mean_only(Sortie&, int, const LIST(Nom)&, const Nom&) const ;
+  inline virtual void imprimer_premiere_ligne_ustar(int, const LIST(Nom)&, const Nom&) const;
   // rajout pour prendre en compte Cisaillement_paroi dans la classe
   // de base
 
@@ -113,11 +113,11 @@ inline void Turbulence_paroi_base::imprimer_ustar(Sortie& ) const
 {
 }
 
-inline void Turbulence_paroi_base::imprimer_ustar_mean_only(Sortie&, int, const STLLIST(Nom)&, const Nom&) const
+inline void Turbulence_paroi_base::imprimer_ustar_mean_only(Sortie&, int, const LIST(Nom)&, const Nom&) const
 {
 }
 
-inline void Turbulence_paroi_base::imprimer_premiere_ligne_ustar(int, const STLLIST(Nom)&, const Nom& ) const
+inline void Turbulence_paroi_base::imprimer_premiere_ligne_ustar(int, const LIST(Nom)&, const Nom& ) const
 {
 }
 /*! @brief Associe un modele de turbulence a l'objet.

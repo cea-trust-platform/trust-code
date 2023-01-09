@@ -44,7 +44,7 @@ public :
 
 protected :
 
-  STLLIST(REF(Champ_base)) liste_champs_;
+  LIST(REF(Champ_base)) liste_champs_;
   Noms liste_noms_;
   Noms liste_noms_construits_;
 

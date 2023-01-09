@@ -36,7 +36,7 @@ public:
 
 private:
 
-  STLLIST(Table) les_tables;
+  LIST(Table) les_tables;
 };
 
 #endif

@@ -45,7 +45,7 @@ public:
   int reprendre(Entree& ) override;
 
 protected:
-  STLLIST(Reaction) reactions_;
+  LIST(Reaction) reactions_;
   REF(Probleme_base) pb_;
   Motcles alias;
   VECT(REF(Champ_Inc_base)) liste_Y_,liste_ai_,liste_nd10_,liste_ngrains_,liste_C_;

@@ -23,7 +23,7 @@
  *
  * @sa Raccord
  */
-class Raccords : public STLLIST(Raccord)
+class Raccords : public LIST(Raccord)
 {
   Declare_instanciable(Raccords);
 public :

@@ -27,7 +27,7 @@ Sortie& Lecture_Champ::printOn( Sortie& os ) const { return Objet_U::printOn( os
 
 Entree& Lecture_Champ::readOn( Entree& is ) { return Objet_U::readOn( is ); }
 
-Entree& Lecture_Champ::lire_champs( Entree& is , STLLIST(Nom)& noms_champs)
+Entree& Lecture_Champ::lire_champs( Entree& is , LIST(Nom)& noms_champs)
 {
 
   Cerr << "Reading Fields\n";

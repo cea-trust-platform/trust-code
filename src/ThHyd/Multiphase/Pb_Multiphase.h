@@ -68,7 +68,7 @@ public:
   QDM_Multiphase eq_qdm;
   Energie_Multiphase eq_energie;
   Masse_Multiphase eq_masse;
-  STLLIST(Equation) eq_opt; //autres equations (turbulence, aire interfaciale...)
+  LIST(Equation) eq_opt; //autres equations (turbulence, aire interfaciale...)
 
   const Correlation& get_correlation(std::string nom_correlation) const
   {

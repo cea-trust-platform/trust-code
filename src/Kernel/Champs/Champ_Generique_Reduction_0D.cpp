@@ -34,7 +34,7 @@ Sortie& Champ_Generique_Reduction_0D::printOn(Sortie& s ) const
 //cf Champ_Gen_de_Champs_Gen::readOn
 Entree& Champ_Generique_Reduction_0D::readOn(Entree& s )
 {
-  STLLIST(Motcle) mot_compris;
+  LIST(Motcle) mot_compris;
   mot_compris.add("min");
   mot_compris.add("max");
   mot_compris.add("euclidian_norm"); // new name for norme_L2

@@ -62,8 +62,8 @@ Implemente_base_sans_constructeur_ni_destructeur(Probleme_base,"Probleme_base",P
 
 // Variables globales pour initialiser est_le_premier_postraitement_pour_nom_fic
 // et est_le_dernier_postraitement_pour_nom_fic en une seule passe.
-STLLIST(Nom) glob_noms_fichiers;
-STLLIST(REF(Postraitement)) glob_derniers_posts;
+LIST(Nom) glob_noms_fichiers;
+LIST(REF(Postraitement)) glob_derniers_posts;
 
 // Retourne la version du format de sauvegarde
 // 151 pour dire que c'est la version initiee a la version 1.5.1 de TRUST

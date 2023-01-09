@@ -19,7 +19,7 @@
 #include <Postraitement.h>
 
 
-Implemente_instanciable_sans_constructeur(Operateurs_Statistique_tps,"Operateurs_Statistique_tps",STLLIST(Operateur_Statistique_tps));
+Implemente_instanciable_sans_constructeur(Operateurs_Statistique_tps,"Operateurs_Statistique_tps",LIST(Operateur_Statistique_tps));
 
 Operateurs_Statistique_tps::Operateurs_Statistique_tps(): tstat_deb_(-123.), tstat_dernier_calcul_(-123.), tstat_fin_(-123.), lserie_(-123),dt_integr_serie_(-123.) {}
 

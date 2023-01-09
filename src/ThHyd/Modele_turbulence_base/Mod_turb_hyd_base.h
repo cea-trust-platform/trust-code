@@ -114,7 +114,7 @@ protected:
   double dt_impr_ustar;
   double dt_impr_ustar_mean_only;
   int boundaries_;
-  STLLIST(Nom) boundaries_list ;
+  LIST(Nom) boundaries_list ;
   Nom nom_fichier_;
   void limiter_viscosite_turbulente();
 

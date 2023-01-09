@@ -22,7 +22,7 @@
 /*! @brief classe List_Champ_Generique Represente une liste de Champ_Generique
  *
  */
-class Liste_Champ_Generique : public STLLIST(Champ_Generique)
+class Liste_Champ_Generique : public LIST(Champ_Generique)
 {
   Declare_instanciable(Liste_Champ_Generique);
 

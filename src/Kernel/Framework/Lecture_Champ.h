@@ -32,7 +32,7 @@ class Lecture_Champ : public Objet_U
 
 public :
 
-  Entree& lire_champs(Entree& is, STLLIST(Nom)& noms_champs);
+  Entree& lire_champs(Entree& is, LIST(Nom)& noms_champs);
   Champ& champ_lu(const Nom& nom) { return liste_champs(nom); }
   const Champ& champ_lu(const Nom& nom)const { return liste_champs(nom); }
   bool champs_lus() { return champs_lus_; }
@@ -40,7 +40,7 @@ public :
 
 protected :
 
-  STLLIST(Champ) liste_champs;
+  LIST(Champ) liste_champs;
   bool champs_lus_;
 };
 

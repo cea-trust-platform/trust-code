@@ -41,7 +41,7 @@ Postraitement::~Postraitement()
 {
   //Cerr<<"remise a zero des noms des sondes" <<finl;
   // quand on detruit un postraitement on detruit la liste des noms des sondes pour pouvoir refaire initialize
-  Postraitement::noms_fichiers_sondes_=STLLIST(Nom)();
+  Postraitement::noms_fichiers_sondes_=LIST(Nom)();
 }
 
 void Postraitement::associer_nom_et_pb_base(const Nom& nom,
@@ -108,7 +108,7 @@ void Postraitement::mettre_a_jour(double temps)
 }
 
 Motcles Postraitement::formats_supportes=Motcles(0);
-STLLIST(Nom) Postraitement::noms_fichiers_sondes_=STLLIST(Nom)();
+LIST(Nom) Postraitement::noms_fichiers_sondes_=LIST(Nom)();
 
 
 inline void nom_fichier(const Postraitement& post, const Champ_Generique_Statistiques& op, const Domaine& dom, Nom& nom_fichier)

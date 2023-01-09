@@ -63,12 +63,12 @@ int test_Deriv()
 int test_List()
 {
   Cerr << "test_List" << finl;
-  STLLIST(Nom) la_liste;
+  LIST(Nom) la_liste;
   la_liste.add("Chien");
   la_liste.add("Chat");
   la_liste.add("Chou");
   Cerr << la_liste;
-  STLLIST(Nom) copie(la_liste);
+  LIST(Nom) copie(la_liste);
   Cerr << copie;
   if(la_liste == copie)
     Cerr << "The two lists are identical" << finl;

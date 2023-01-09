@@ -220,7 +220,7 @@ protected :
   static int num_pb;                // numero du probleme
   mutable Nom error;                // Erreur d'allocation
 
-  STLLIST(REF(Loi_Fermeture_base)) liste_loi_fermeture_; // liste des fermetures associees au probleme
+  LIST(REF(Loi_Fermeture_base)) liste_loi_fermeture_; // liste des fermetures associees au probleme
 };
 
 /*! @brief surcharge Objet_U::nommer(const Nom&) Donne un nom au probleme

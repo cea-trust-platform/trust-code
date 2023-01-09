@@ -65,7 +65,7 @@ bool Champs_compris::has_champ(const Motcle& motcle, REF(Champ_base)& ref_champ)
   return false;
 }
 
-int new_liste_add_if_not(STLLIST(Nom)& new_list,const Nom& nom_champ)
+int new_liste_add_if_not(LIST(Nom)& new_list,const Nom& nom_champ)
 {
   Motcle mot(nom_champ);
   const auto& list = new_list.get_stl_list();
@@ -78,11 +78,11 @@ int new_liste_add_if_not(STLLIST(Nom)& new_list,const Nom& nom_champ)
   return 1;
 }
 
-void rebuild_liste_noms(const STLLIST(REF(Champ_base))& liste_champs_, const Noms& liste_noms_, Noms& liste_noms_construits_,int info=0)
+void rebuild_liste_noms(const LIST(REF(Champ_base))& liste_champs_, const Noms& liste_noms_, Noms& liste_noms_construits_,int info=0)
 {
   if (liste_noms_construits_.size()<liste_noms_.size())
     liste_noms_construits_=liste_noms_;
-  STLLIST(Nom) new_liste;
+  LIST(Nom) new_liste;
   int size = liste_noms_.size();
   for (int i=0; i<size; i++)
     new_liste.add(liste_noms_[i]);

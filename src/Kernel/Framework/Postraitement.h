@@ -109,7 +109,7 @@ public:
   inline Nom nom_fich() const { return nom_fich_; };
   // int contient_champ_fonc(const Motcle& );
   inline int lpost_tab(double) const;
-  static inline STLLIST(Nom)& noms_fichiers_sondes() { return noms_fichiers_sondes_; }
+  static inline LIST(Nom)& noms_fichiers_sondes() { return noms_fichiers_sondes_; }
   inline int& est_le_premier_postraitement_pour_nom_fich() { return est_le_premier_postraitement_pour_nom_fich_; }
   inline int& est_le_dernier_postraitement_pour_nom_fich() { return est_le_dernier_postraitement_pour_nom_fich_; }
   inline Operateurs_Statistique_tps& les_statistiques() { return les_statistiques_; }
@@ -119,7 +119,7 @@ public:
   inline int stat_demande_definition_champs() const { return stat_demande_definition_champs_; }
   inline int tableaux_demande() { return tableaux_demande_; }
   inline bool besoin_postraiter_champs() { return (champs_demande_) || (stat_demande_) || (stat_demande_definition_champs_); }
-  inline STLLIST(Nom)& noms_champs_a_post() { return noms_champs_a_post_; }
+  inline LIST(Nom)& noms_champs_a_post() { return noms_champs_a_post_; }
   inline const Liste_Champ_Generique& champs_post_complet() const { return champs_post_complet_; }
 
   //On distingue le postraitement d un tableau et d un tenseur
@@ -191,7 +191,7 @@ protected:
   Sondes_Int les_sondes_int_;   // Sondes pour des tableaux d'entiers
   Operateurs_Statistique_tps les_statistiques_; // Liste d'operateurs statistiques a traiter
 
-  STLLIST(Nom) noms_champs_a_post_;                 //contient les identifiants des champs a postraiter
+  LIST(Nom) noms_champs_a_post_;                 //contient les identifiants des champs a postraiter
   Liste_Champ_Generique champs_post_complet_;   //contient l ensemble des champs generiques dedies au post-traitement
 
   //attributs pour sauvegarde-reprise
@@ -204,12 +204,12 @@ protected:
   int lserie_;
   double dt_integr_serie_;
 
-  STLLIST(REF(IntVect)) tableaux_a_postraiter_; // Liste de references a des tableaux a post-traiter
-  STLLIST(Nom) noms_tableaux_;
+  LIST(REF(IntVect)) tableaux_a_postraiter_; // Liste de references a des tableaux a post-traiter
+  LIST(Nom) noms_tableaux_;
 
   Format_Post format_post;
 
-  static STLLIST(Nom) noms_fichiers_sondes_;
+  static LIST(Nom) noms_fichiers_sondes_;
   int sondes_demande_, champs_demande_, stat_demande_, stat_demande_definition_champs_;
   int binaire, tableaux_demande_;
   Nom nom_fich_, format, option_para;

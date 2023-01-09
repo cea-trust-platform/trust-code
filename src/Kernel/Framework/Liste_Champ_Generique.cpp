@@ -15,7 +15,7 @@
 
 #include <Liste_Champ_Generique.h>
 
-Implemente_instanciable(Liste_Champ_Generique, "Liste_Champ_Generique", STLLIST(Champ_Generique));
+Implemente_instanciable(Liste_Champ_Generique, "Liste_Champ_Generique", LIST(Champ_Generique));
 
 Sortie& Liste_Champ_Generique::printOn(Sortie& os) const { return os; }
 

@@ -16,7 +16,7 @@
 #include <Postraitements.h>
 #include <Postraitement.h>
 
-Implemente_instanciable(Postraitements,"Postraitements|Post_processings",STLLIST(DERIV(Postraitement_base)));
+Implemente_instanciable(Postraitements,"Postraitements|Post_processings",LIST(DERIV(Postraitement_base)));
 
 Entree& Postraitements::readOn(Entree& s)
 {
@@ -99,7 +99,7 @@ int Postraitements::lire_postraitements(Entree& is, const Motcle& motlu, const P
 
   // a cause du cas Liste_Postraitements (rang=2)
   //=> obligation de creer la liste de nom de fichier associes au post
-  STLLIST(Nom) list_nom_post;
+  LIST(Nom) list_nom_post;
   int compteur = 0 ;
 
   if (lerang == 0)

@@ -23,7 +23,7 @@
  *
  * @sa Faces_Interne
  */
-class Faces_Internes : public STLLIST(Faces_Interne)
+class Faces_Internes : public LIST(Faces_Interne)
 {
   Declare_instanciable(Faces_Internes);
 

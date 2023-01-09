@@ -87,7 +87,7 @@ bool Objet_a_lire::is_optional(void) const
   return (nature == OPTIONAL);
 }
 
-void Objet_a_lire::set_name(const STLLIST(Nom) &n)
+void Objet_a_lire::set_name(const LIST(Nom) &n)
 {
   const auto& list = n.get_stl_list();
   auto itr = list.begin();

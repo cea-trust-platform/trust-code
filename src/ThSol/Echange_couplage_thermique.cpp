@@ -50,7 +50,7 @@ Entree& Echange_couplage_thermique::readOn( Entree& is )
   ech1 >>  h_imp_;
   ech2 >>  T_ext();
 
-  STLLIST(Nom) noms;
+  LIST(Nom) noms;
   noms.add("temperature_paroi");
   noms.add("flux_paroi");
   lec_champs.lire_champs(is,noms);

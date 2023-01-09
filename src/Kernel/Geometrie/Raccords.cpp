@@ -15,11 +15,11 @@
 
 #include <Raccords.h>
 
-Implemente_instanciable(Raccords, "Raccords", STLLIST(Raccord));
+Implemente_instanciable(Raccords, "Raccords", LIST(Raccord));
 
-Sortie& Raccords::printOn(Sortie& os) const { return STLLIST(Raccord)::printOn(os); }
+Sortie& Raccords::printOn(Sortie& os) const { return LIST(Raccord)::printOn(os); }
 
-Entree& Raccords::readOn(Entree& is) { return STLLIST(Raccord)::readOn(is); }
+Entree& Raccords::readOn(Entree& is) { return LIST(Raccord)::readOn(is); }
 
 /*! @brief Associe une zone a tous les raccords de la liste.
  *

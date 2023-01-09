@@ -50,7 +50,7 @@ public:
   REF(Champ_Generique_base) findOutputField_impl(const Probleme_base& pb,const Nom& name) const;
 
 protected:
-  STLLIST(REF(Field_base)) input_fields; // List of input fields inside this problem.
+  LIST(REF(Field_base)) input_fields; // List of input fields inside this problem.
   // Flags used to control the calling order and raise exceptions
   bool initialized = false;  // true if initialize was called
   bool terminated = false;   // true if terminate was called

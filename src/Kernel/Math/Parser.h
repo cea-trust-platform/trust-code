@@ -158,8 +158,8 @@ private:
   PNode* root;
   std::string* str;
   Variable** les_var;
-  static STLLIST(Constante) les_cst;
-  static STLLIST(DERIV(UnaryFunction)) unary_func;
+  static LIST(Constante) les_cst;
+  static LIST(DERIV(UnaryFunction)) unary_func;
   int maxvar,ivar;
 };
 

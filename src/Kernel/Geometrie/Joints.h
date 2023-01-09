@@ -24,7 +24,7 @@
  * @sa Joint
  */
 
-class Joints : public STLLIST(Joint)
+class Joints : public LIST(Joint)
 {
   Declare_instanciable(Joints);
 

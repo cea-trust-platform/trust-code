@@ -15,11 +15,11 @@
 
 #include <Bords.h>
 
-Implemente_instanciable(Bords, "Bords", STLLIST(Bord));
+Implemente_instanciable(Bords, "Bords", LIST(Bord));
 
-Sortie& Bords::printOn(Sortie& os) const { return STLLIST(Bord)::printOn(os); }
+Sortie& Bords::printOn(Sortie& os) const { return LIST(Bord)::printOn(os); }
 
-Entree& Bords::readOn(Entree& is) { return STLLIST(Bord)::readOn(is); }
+Entree& Bords::readOn(Entree& is) { return LIST(Bord)::readOn(is); }
 
 /*! @brief Associe une zone a tous les bords de la liste.
  *

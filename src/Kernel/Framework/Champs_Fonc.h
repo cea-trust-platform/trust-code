@@ -19,11 +19,11 @@
 #include <Champ_Fonc.h>
 #include <TRUST_List.h>
 
-/*! @brief classe Champs_Fonc Liste de Champ_Fonc declaree grace a la macro STLLIST(X)
+/*! @brief classe Champs_Fonc Liste de Champ_Fonc declaree grace a la macro LIST(X)
  *
  * @sa Champ_Fonc
  */
-class Champs_Fonc : public STLLIST(Champ_Fonc)
+class Champs_Fonc : public LIST(Champ_Fonc)
 {
   Declare_instanciable(Champs_Fonc);
 public :

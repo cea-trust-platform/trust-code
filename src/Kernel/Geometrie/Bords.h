@@ -23,7 +23,7 @@
  *
  * @sa Bord
  */
-class Bords : public STLLIST(Bord)
+class Bords : public LIST(Bord)
 {
 
   Declare_instanciable(Bords);

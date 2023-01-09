@@ -20,26 +20,17 @@
 #include <Motcle.h>
 #include <list> // pour stl list
 
+#define LIST(_TYPE_) TRUST_List<_TYPE_>
+
 /*! @brief classe TRUST_List
  *
  *  - La classe template TRUST_List est utilisable pour n'importe quelle classe
  *      Utilisation (par exemple):
  *
  *        - TRUST_List<Milieu_base>
- *
- *  - Le curseur (iterateur) est utilise pour n'importe quelle classe
- *      Utilisation (par exemple):
- *
- *        - TRUST_List_Curseur<Milieu_base>
  */
-
-#define STLLIST(_TYPE_) TRUST_STLList<_TYPE_>
-
-class TRUST_List
-{ };
-
 template<typename _CLASSE_>
-class TRUST_STLList : public Objet_U
+class TRUST_List : public Objet_U
 {
   using value_type = _CLASSE_;
   using STLList = std::list<_CLASSE_>;
@@ -49,7 +40,7 @@ protected:
 
   int duplique() const override
   {
-    TRUST_STLList *xxx = new TRUST_STLList(*this);
+    TRUST_List *xxx = new TRUST_List(*this);
     if (!xxx) Process::exit("Not enough memory !");
     return xxx->numero();
   }
@@ -95,7 +86,7 @@ private:
   STLList list_;
 
 public:
-  // Iterator class to enable iterating over the elements of TRUST_STLList
+  // Iterator class to enable iterating over the elements of TRUST_List
   struct Iterator
   {
   private:
@@ -114,15 +105,15 @@ public:
   const std::list<_CLASSE_>& get_stl_list() const { return list_; }
   std::list<_CLASSE_>& get_stl_list() { return list_; }
 
-  TRUST_STLList() : list_() { }
-  TRUST_STLList(const _CLASSE_& t) : list_(t) { }
-  TRUST_STLList(const TRUST_STLList& t) : Objet_U(t) { list_ = t.list_; }
+  TRUST_List() : list_() { }
+  TRUST_List(const _CLASSE_& t) : list_(t) { }
+  TRUST_List(const TRUST_List& t) : Objet_U(t) { list_ = t.list_; }
 
   int size() const { return (int)list_.size(); }
   void vide() { list_.clear(); }
 
   /* Add list to list */
-  TRUST_STLList& add(const TRUST_STLList& a_list)
+  TRUST_List& add(const TRUST_List& a_list)
   {
     list_.insert(list_.end(), a_list.get_stl_list().begin(), a_list.get_stl_list().end());
     return *this;
@@ -170,7 +161,7 @@ public:
         if (ind == i) return itr;
         ind++;
       }
-    Cerr << "TRUST_STLList : overflow of list " << finl;
+    Cerr << "TRUST_List : overflow of list " << finl;
     throw;
   }
 
@@ -183,7 +174,7 @@ public:
         if (ind == i) return itr;
         ind++;
       }
-    Cerr << "TRUST_STLList : overflow of list " << finl;
+    Cerr << "TRUST_List : overflow of list " << finl;
     throw;
   }
 
@@ -196,7 +187,7 @@ public:
         if (itr.le_nom() == nom) return itr;
         ind++;
       }
-    Cerr << "TRUST_STLList : We have not found an object with name " << nom << finl;
+    Cerr << "TRUST_List : We have not found an object with name " << nom << finl;
     throw;
   }
 
@@ -209,7 +200,7 @@ public:
         if (itr.le_nom() == nom) return itr;
         ind++;
       }
-    Cerr << "TRUST_STLList : We have not found an object with name " << nom << finl;
+    Cerr << "TRUST_List : We have not found an object with name " << nom << finl;
     throw;
   }
 
@@ -228,13 +219,13 @@ public:
 //  _CLASSE_& operator()(const Nom& n) = delete;
 //  const _CLASSE_& operator()(const Nom& n) const = delete;
 
-  TRUST_STLList& operator=(const _CLASSE_ &t)
+  TRUST_List& operator=(const _CLASSE_ &t)
   {
     list_ = t.list_;
     return *this;
   }
 
-  TRUST_STLList& operator=(const TRUST_STLList& t)
+  TRUST_List& operator=(const TRUST_List& t)
   {
     list_ = t.list_;
     return *this;

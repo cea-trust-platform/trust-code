@@ -24,7 +24,7 @@
  * @sa Sonde_Int Postraitement
  */
 
-class Sondes_Int : public STLLIST(Sonde_Int)
+class Sondes_Int : public LIST(Sonde_Int)
 {
   Declare_instanciable(Sondes_Int);
 public:

@@ -30,7 +30,7 @@ Entree& SupprimeBord::readOn(Entree& is)
 Entree& SupprimeBord::interpreter_(Entree& is)
 {
   Nom nom_dom;
-  STLLIST(Nom) nlistbord;
+  LIST(Nom) nlistbord;
   associer_domaine(is);
   Nom mot;
   is >>mot;

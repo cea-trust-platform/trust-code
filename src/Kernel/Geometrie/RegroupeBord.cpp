@@ -30,7 +30,7 @@ Entree& RegroupeBord::readOn(Entree& is)
 Entree& RegroupeBord::interpreter_(Entree& is)
 {
   Nom nom;
-  STLLIST(Nom) nlistbord;
+  LIST(Nom) nlistbord;
   associer_domaine(is);
   is >> nom;
 
@@ -56,7 +56,7 @@ Entree& RegroupeBord::interpreter_(Entree& is)
   // test pour savoir si la frontiere a regrouper est valide
   // i.e : si frontiere est une frontiere du domaine  : on applique regroupe_bord()
   Zone& zone=dom.zone(0);
-  STLLIST(Nom) nlistbord_dom; // liste stockant tous les noms de frontiere du domaine
+  LIST(Nom) nlistbord_dom; // liste stockant tous les noms de frontiere du domaine
   int nbfr=zone.nb_front_Cl();
   for (int b=0; b<nbfr; b++)
     {
@@ -90,7 +90,7 @@ void RegroupeBord::rassemble_bords(Domaine& dom)
       Frontiere& org=zone.frontiere(b);
       const Nom& nom_bord=org.le_nom();
 
-      STLLIST(Nom) listn;
+      LIST(Nom) listn;
       listn.add(nom_bord);
       regroupe_bord(dom,nom_bord,listn);
       // si on a detruit des bords on revient sur b
@@ -103,7 +103,7 @@ void RegroupeBord::rassemble_bords(Domaine& dom)
     }
 }
 
-void RegroupeBord::regroupe_bord(Domaine& dom, Nom nom,const STLLIST(Nom)& nlistbord)
+void RegroupeBord::regroupe_bord(Domaine& dom, Nom nom,const LIST(Nom)& nlistbord)
 {
 
   Zone& zone=dom.zone(0);

@@ -176,7 +176,7 @@ int Iterateur_VDF_Face<_TYPE_>::impr(Sortie& os) const
       if (impr_mom)
         Flux_moment << finl;
     }
-  const STLLIST (Nom)
+  const LIST (Nom)
   &Liste_Bords_a_imprimer = la_zone->zone().Bords_a_imprimer();
   if (!Liste_Bords_a_imprimer.est_vide())
     {

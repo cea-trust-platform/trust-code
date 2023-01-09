@@ -583,7 +583,7 @@ int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
       if (impr_sum) Flux_sum << finl;
     }
 
-  const STLLIST(Nom)& Liste_Bords_a_imprimer = la_zone_vef.zone().Bords_a_imprimer();
+  const LIST(Nom)& Liste_Bords_a_imprimer = la_zone_vef.zone().Bords_a_imprimer();
   if (!Liste_Bords_a_imprimer.est_vide())
     {
       EcrFicPartage Flux_face;

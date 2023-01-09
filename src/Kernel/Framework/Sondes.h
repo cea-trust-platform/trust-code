@@ -27,7 +27,7 @@
  *
  * @sa Sonde Postraitement
  */
-class Sondes : public STLLIST(Sonde)
+class Sondes : public LIST(Sonde)
 {
   Declare_instanciable(Sondes);
 public:
@@ -46,8 +46,8 @@ public:
 
 private:
   // Mecanisme de cache pour les sondes:
-  STLLIST(REF(Champ_base)) sourceList;
-  STLLIST(Champ) espaceStockageList;
+  LIST(REF(Champ_base)) sourceList;
+  LIST(Champ) espaceStockageList;
   Noms sourceNoms;
   REF(Postraitement) mon_post;
   Motcles noms_champs_postraitables_;

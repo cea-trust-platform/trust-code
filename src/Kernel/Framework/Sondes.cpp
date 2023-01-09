@@ -17,7 +17,7 @@
 #include <Postraitement.h>
 #include <Sondes.h>
 
-Implemente_instanciable(Sondes, "Sondes|Probes", STLLIST(Sonde));
+Implemente_instanciable(Sondes, "Sondes|Probes", LIST(Sonde));
 
 Sortie& Sondes::printOn(Sortie& s ) const { return s ; }
 

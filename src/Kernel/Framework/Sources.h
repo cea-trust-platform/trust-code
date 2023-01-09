@@ -27,7 +27,7 @@
  *
  * @sa Source MorEqn Equation
  */
-class Sources : public STLLIST(Source), public MorEqn
+class Sources : public LIST(Source), public MorEqn
 {
   Declare_instanciable(Sources);
 

@@ -39,7 +39,7 @@ class RegroupeBord : public Interprete_geometrique_base
 public :
 
   Entree& interpreter_(Entree&) override;
-  void regroupe_bord(Domaine& dom, Nom nom,const STLLIST(Nom)& nlistbord);
+  void regroupe_bord(Domaine& dom, Nom nom,const LIST(Nom)& nlistbord);
   // regroupe les bords de meme nom en un seul bord du meme nom
   void rassemble_bords(Domaine& dom);
 

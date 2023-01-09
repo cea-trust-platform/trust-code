@@ -146,12 +146,12 @@ public:
   int comprimer_joints();
   void ecrire_noms_bords(Sortie& ) const;
   double epsilon() const;
-  inline void associer_Bords_a_imprimer(STLLIST(Nom));
-  inline void associer_Bords_a_imprimer_sum(STLLIST(Nom));
+  inline void associer_Bords_a_imprimer(LIST(Nom));
+  inline void associer_Bords_a_imprimer_sum(LIST(Nom));
   Entree& Lire_Bords_a_imprimer(Entree& s) ;
   Entree& Lire_Bords_a_imprimer_sum(Entree& s) ;
-  inline const STLLIST(Nom)& Bords_a_imprimer() const;
-  inline const STLLIST(Nom)& Bords_a_imprimer_sum() const;
+  inline const LIST(Nom)& Bords_a_imprimer() const;
+  inline const LIST(Nom)& Bords_a_imprimer_sum() const;
   inline int  Moments_a_imprimer() const
   {
     return Moments_a_imprimer_;
@@ -241,8 +241,8 @@ protected:
   IntTab elem_virt_pe_num_;
 
   void duplique_faces_internes();
-  STLLIST(Nom) Bords_a_imprimer_;
-  STLLIST(Nom) Bords_a_imprimer_sum_;
+  LIST(Nom) Bords_a_imprimer_;
+  LIST(Nom) Bords_a_imprimer_sum_;
   int Moments_a_imprimer_;
 
 private:
@@ -253,22 +253,22 @@ private:
   mutable ArrsOfInt cached_elements_;
 };
 
-inline const STLLIST(Nom)& Zone::Bords_a_imprimer() const
+inline const LIST(Nom)& Zone::Bords_a_imprimer() const
 {
   return Bords_a_imprimer_;
 }
 
-inline const STLLIST(Nom)& Zone::Bords_a_imprimer_sum() const
+inline const LIST(Nom)& Zone::Bords_a_imprimer_sum() const
 {
   return Bords_a_imprimer_sum_;
 }
 
-inline void Zone::associer_Bords_a_imprimer(STLLIST(Nom) liste)
+inline void Zone::associer_Bords_a_imprimer(LIST(Nom) liste)
 {
   Bords_a_imprimer_=liste;
 }
 
-inline void Zone::associer_Bords_a_imprimer_sum(STLLIST(Nom) liste)
+inline void Zone::associer_Bords_a_imprimer_sum(LIST(Nom) liste)
 {
   Bords_a_imprimer_sum_=liste;
 }

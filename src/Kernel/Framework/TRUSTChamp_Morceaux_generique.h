@@ -56,11 +56,11 @@ public:
 
   const REF(Domaine)& domaine() const { return mon_domaine; }
   REF(Domaine)& domaine() { return mon_domaine; }
-  const STLLIST(REF(Sous_Zone))& sous_zones() const { return les_sous_zones; }
-  STLLIST(REF(Sous_Zone))& sous_zones() { return les_sous_zones; }
+  const LIST(REF(Sous_Zone))& sous_zones() const { return les_sous_zones; }
+  LIST(REF(Sous_Zone))& sous_zones() { return les_sous_zones; }
 
 protected:
-  STLLIST(REF(Sous_Zone)) les_sous_zones;
+  LIST(REF(Sous_Zone)) les_sous_zones;
   REF(Domaine) mon_domaine;
   REF(Probleme_base) ref_pb;
   VECT(Parser_U) parser; /* vecteur de tous les parsers */

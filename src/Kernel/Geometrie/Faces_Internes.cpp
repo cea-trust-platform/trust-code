@@ -15,11 +15,11 @@
 
 #include <Faces_Internes.h>
 
-Implemente_instanciable(Faces_Internes, "Faces_Internes", STLLIST(Faces_Interne));
+Implemente_instanciable(Faces_Internes, "Faces_Internes", LIST(Faces_Interne));
 
-Sortie& Faces_Internes::printOn(Sortie& os) const { return STLLIST(Faces_Interne)::printOn(os); }
+Sortie& Faces_Internes::printOn(Sortie& os) const { return LIST(Faces_Interne)::printOn(os); }
 
-Entree& Faces_Internes::readOn(Entree& is) { return STLLIST(Faces_Interne)::readOn(is); }
+Entree& Faces_Internes::readOn(Entree& is) { return LIST(Faces_Interne)::readOn(is); }
 
 /*! @brief Associe une zone a tous les objets Faces_Interne de la liste.
  *

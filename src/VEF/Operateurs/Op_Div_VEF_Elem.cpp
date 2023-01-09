@@ -138,7 +138,7 @@ int Op_Div_VEF_Elem::impr(Sortie& os) const
       Flux_div << finl;
     }
 
-  const STLLIST(Nom)& Liste_Bords_a_imprimer = la_zone_vef->zone().Bords_a_imprimer();
+  const LIST(Nom)& Liste_Bords_a_imprimer = la_zone_vef->zone().Bords_a_imprimer();
   if (!Liste_Bords_a_imprimer.est_vide())
     {
       EcrFicPartage Flux_face;
