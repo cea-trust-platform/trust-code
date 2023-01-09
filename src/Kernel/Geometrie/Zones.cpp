@@ -16,11 +16,11 @@
 #include <Domaine.h>
 #include <Zones.h>
 
-Implemente_instanciable(Zones, "Zones", LIST(Zone));
+Implemente_instanciable(Zones, "Zones",List_Zone);
 
-Sortie& Zones::printOn(Sortie& s) const { return LIST(Zone)::printOn(s); }
+Sortie& Zones::printOn(Sortie& s) const { return List_Zone::printOn(s); }
 
-Entree& Zones::readOn(Entree& s) { return LIST(Zone)::readOn(s); }
+Entree& Zones::readOn(Entree& s) { return List_Zone::readOn(s); }
 
 /*! @brief Associe toutes les zones de la liste au domaine specifie.
  *
@@ -28,7 +28,7 @@ Entree& Zones::readOn(Entree& s) { return LIST(Zone)::readOn(s); }
  */
 void Zones::associer_domaine(const Domaine& un_domaine)
 {
-  LIST_CURSEUR(Zone) curseur(*this);;;
+  List_Zone_Curseur curseur(*this);;;
   while(curseur)
     {
       curseur->associer_domaine(un_domaine);
@@ -45,7 +45,7 @@ void Zones::associer_domaine(const Domaine& un_domaine)
  */
 void Zones::reordonner()
 {
-  LIST_CURSEUR(Zone) curseur(*this);;;
+  List_Zone_Curseur curseur(*this);;;
   while(curseur)
     {
       curseur->reordonner();
@@ -69,7 +69,7 @@ void Zones::comprimer()
   IntVect fait(size());
   int rang1=0, rang2=0;
   {
-    LIST_CURSEUR(Zone) curseur(*this);;;
+    List_Zone_Curseur curseur(*this);;;
     while(curseur)
       {
         curseur->comprimer();
@@ -77,7 +77,7 @@ void Zones::comprimer()
       }
   }
 
-  LIST_CURSEUR(Zone) curseur1(*this);;;
+  List_Zone_Curseur curseur1(*this);;;
   while(curseur1)
     {
       if (!fait(rang1) )
@@ -85,7 +85,7 @@ void Zones::comprimer()
           fait(rang1)=1;
           Zone& zone1=curseur1.valeur();
           rang2=rang1;
-          LIST_CURSEUR(Zone) curseur2(curseur1.list());;;
+          List_Zone_Curseur curseur2(curseur1.list());;;
           while(curseur2)
             {
               if (!fait(rang2) )
@@ -158,10 +158,10 @@ void Zones::comprimer()
  */
 void Zones::merge()
 {
-  LIST_CURSEUR(Zone) curseur(*this);;;
+  List_Zone_Curseur curseur(*this);;;
   Zone& zone1=curseur.valeur();
 
-  LIST_CURSEUR(Zone) curseur2(curseur.list());;;
+  List_Zone_Curseur curseur2(curseur.list());;;
   while(!curseur2.list().est_dernier())
     {
       Zone& zone2=curseur2.list().suivant().valeur();

@@ -13,25 +13,57 @@
 *
 *****************************************************************************/
 
-#ifndef Zones_included
-#define Zones_included
-
 #include <List_Zone.h>
 
-/*! @brief Classe Zones Cette classe represente une liste de Zone.
- *
- * @sa Zone
- */
+Implemente_instanciable(List_Zone, "List_Zone", liste);
 
-class Zones : public List_Zone
+Sortie& List_Zone::printOn(Sortie& os) const { return liste::printOn(os); }
+
+Entree& List_Zone::readOn(Entree& is)
 {
-  Declare_instanciable(Zones);
-public :
-  void associer_domaine(const Domaine&);
-  void comprimer();
-  void reordonner();
-  void merge();
+  if (!est_vide())
+    if (0) Cerr << "list not empty, append to it" << finl;
 
-};
+  Nom accouverte = "{", accfermee = "}", virgule = ",";
+  Motcle nom_;
+  is >> nom_;
+  if (nom_ == (const char*) "vide") return is;
 
-#endif
+  if (nom_ != accouverte) Cerr << "Error while reading a list. One expected an opened bracket { to start." << finl, Process::exit();
+  Zone t;
+
+  while (1)
+    {
+      is >> add(t);
+      is >> nom_;
+      if (nom_ == accfermee) return is;
+      if (nom_ != virgule) Cerr << nom_ << " one expected a ',' or a '}'" << finl, Process::exit();
+    }
+}
+
+Zone& List_Zone::add_if_not(const char *const t)
+{
+  Nom nom(t);
+  if (est_vide())
+    {
+      Zone to_add;
+      to_add.nommer(nom);
+      return add(to_add);
+    }
+  liste_curseur curseur = *this;
+  while (curseur)
+    {
+      if (curseur.valeur().le_nom() == nom)
+        return static_cast<Zone&>(curseur.valeur());
+      if (curseur.list().est_dernier())
+        {
+          Zone to_add;
+          to_add.nommer(nom);
+          return add(to_add);
+        }
+      ++curseur;
+    }
+  Cerr << "Error in a list for add_if_not " << finl;
+  return static_cast<Zone&>(valeur());
+}
+

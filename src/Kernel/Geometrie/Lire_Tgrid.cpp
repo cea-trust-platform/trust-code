@@ -681,7 +681,7 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
             if (itr.le_nom()==(Nom)izone) itr.nommer(nom_zone);
           // On parcourt les zones pour renommer
           Zones& les_zones=dom.zones();
-          LIST_CURSEUR(Zone) curseur2=les_zones;
+          List_Zone_Curseur curseur2=les_zones;
           while (curseur2)
             {
               if (curseur2->le_nom()==(Nom)izone)
