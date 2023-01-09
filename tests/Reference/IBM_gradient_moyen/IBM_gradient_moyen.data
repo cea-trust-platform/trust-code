@@ -7,16 +7,13 @@
   mu = (rho*U_max*L)/Re
   A.N.
   mu = 1.0 */
-# PARALLEL NOT #
+# PARALLEL OK #
 dimension 3
 Pb_Hydraulique pb
 Domaine dom
 system "mkdir -p results"
 
-# MAILLAGE ------------------------------------------- #
-
-# DEBUT SEQ #
-
+# DEBUT MAILLAGE #
 Lire_MED {
     domain dom
     file res_domain_mesh_40_cyl_mesh_250fact12.med
@@ -25,6 +22,21 @@ Lire_MED {
 regroupebord dom Wall { TOP }
 regroupebord dom Postpro { BOTTOM }
 regroupebord dom Sortie { IN OUT DOWN UP }
+# FIN MAILLAGE #
+
+# DEBUT DECOUPAGE
+Partition dom
+{
+    Partition_tool tranche { tranches 2 2 1 }
+    Larg_joint 2
+    zones_name DOM
+}
+End
+FIN DECOUPAGE #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
 
 # DISCRETISATION EF ---------------------------------- #
 
