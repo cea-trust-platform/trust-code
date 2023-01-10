@@ -9,7 +9,7 @@ define_modules_config()
    #
    echo "source /etc/profile" >> $env
    echo "module purge" >> $env
-   echo "module load compilers/intel/2019_update5 mpi/intelmpi/2019_update5 || exit -1 # Load mpi compilers" >> $env
+   echo "module load iccifort/2019.5.281 impi/icc_2019.5.281/2019.5.281 || exit -1 # Load mpi compilers" >> $env
    . $env
 }
 

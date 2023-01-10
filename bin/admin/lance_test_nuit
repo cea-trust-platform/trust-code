@@ -1060,7 +1060,7 @@ fi
          git pull 1>tmp.log 2>&1
          if [ $? != 0 ]
          then
-            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull portage KO \" $TRUST_MAIL
+             git reset --hard origin/portage && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git reset hard portage \" $TRUST_MAIL
          else
             [ "`grep 'Already up to date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull portage OK \" $TRUST_MAIL
          fi

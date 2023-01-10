@@ -1,6 +1,5 @@
 //
-// Warning : DO NOT EDIT !
-// To update this file, run: make depend
+// Warning : DO NOT EDIT ! file generated automatically
 // TRUST_NO_INDENT
 //
 #include <verifie_pere.h>
