@@ -34,16 +34,12 @@ class TRUST_List : public Objet_U
 {
   using value_type = _CLASSE_;
   using STLList = std::list<_CLASSE_>;
+  using Iterator = typename std::list<_CLASSE_>::iterator;
+  using CIterator = typename std::list<_CLASSE_>::const_iterator;
 
 protected:
   unsigned taille_memoire() const override { throw; }
-
-  int duplique() const override
-  {
-    TRUST_List *xxx = new TRUST_List(*this);
-    if (!xxx) Process::exit("Not enough memory !");
-    return xxx->numero();
-  }
+  int duplique() const override { throw; }
 
   Sortie& printOn(Sortie& os) const override
   {
@@ -86,22 +82,12 @@ private:
   STLList list_;
 
 public:
-  // Iterator class to enable iterating over the elements of TRUST_List
-  struct Iterator
-  {
-  private:
-    typename std::list<_CLASSE_>::iterator it;
-  public:
-    Iterator(typename std::list<_CLASSE_>::iterator i) : it(i) { }
-    int operator*() { return *it; }
-    Iterator& operator++() { ++it; return *this; }
-    bool operator!=(const Iterator& other) { return it != other.it; }
-  };
+  // Iterators to enable iterating over the elements of TRUST_List
+  Iterator begin() { return list_.begin(); }
+  Iterator end() { return list_.end(); }
+  const CIterator begin() const { return list_.begin(); }
+  const CIterator end() const { return list_.end(); }
 
-  inline Iterator begin() { return Iterator(list_.begin()); }
-  inline Iterator end() { return Iterator(list_.end()); }
-  inline Iterator cbegin() const { return Iterator(list_.cbegin()); }
-  inline Iterator cend() const { return Iterator(list_.cend()); }
   const std::list<_CLASSE_>& get_stl_list() const { return list_; }
   std::list<_CLASSE_>& get_stl_list() { return list_; }
 
@@ -111,6 +97,12 @@ public:
 
   int size() const { return (int)list_.size(); }
   void vide() { list_.clear(); }
+  const _CLASSE_& front() const { return list_.front(); }
+  _CLASSE_& front() { return list_.front(); }
+  const _CLASSE_& dernier() const { return list_.back(); }
+  _CLASSE_& dernier() { return list_.back(); }
+  int est_vide() const { return list_.empty(); }
+  void suppr(const _CLASSE_& t) { list_.remove(t); }
 
   /* Add list to list */
   TRUST_List& add(const TRUST_List& a_list)
@@ -140,15 +132,6 @@ public:
 
     return *it;
   }
-
-  const _CLASSE_& front() const { return list_.front(); }
-  _CLASSE_& front() { return list_.front(); }
-  const _CLASSE_& dernier() const { return list_.back(); }
-  _CLASSE_& dernier() { return list_.back(); }
-
-  int est_vide() const { return list_.empty(); }
-
-  void suppr(const _CLASSE_& t) { list_.remove(t); }
 
   // XXX : Elie Saikali
   // j'ai tente de supprimer tout ce bordel mais ... bon courage je te laisse faire
@@ -208,16 +191,6 @@ public:
   const _CLASSE_& operator()(int i) const { return operator[](i); }
   _CLASSE_& operator()(const Nom& n) { return operator[](n); }
   const _CLASSE_& operator()(const Nom& n) const { return operator[](n); }
-
-//  _CLASSE_& operator[](int i) = delete;
-//  const _CLASSE_& operator[](int i) const = delete;
-//  _CLASSE_& operator[](const Nom& nom) = delete;
-//  const _CLASSE_& operator[](const Nom& nom) const = delete;
-//
-//  _CLASSE_& operator()(int i) = delete;
-//  const _CLASSE_& operator()(int i) const = delete;
-//  _CLASSE_& operator()(const Nom& n) = delete;
-//  const _CLASSE_& operator()(const Nom& n) const = delete;
 
   TRUST_List& operator=(const _CLASSE_ &t)
   {
