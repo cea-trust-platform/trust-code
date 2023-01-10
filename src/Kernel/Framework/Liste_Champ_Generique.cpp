@@ -24,16 +24,14 @@ Entree& Liste_Champ_Generique::readOn(Entree& is) { return is; }
 int Liste_Champ_Generique::sauvegarder(Sortie& os) const
 {
   int bytes = 0;
-  const auto& list = get_stl_list();
-  for (const auto &itr : list) bytes += itr->sauvegarder(os);
+  for (const auto &itr : *this) bytes += itr->sauvegarder(os);
 
   return bytes;
 }
 
 int Liste_Champ_Generique::reprendre(Entree& is)
 {
-  auto& list = get_stl_list();
-  for (auto &itr : list) itr->reprendre(is);
+  for (auto &itr : *this) itr->reprendre(is);
 
   return 1;
 }

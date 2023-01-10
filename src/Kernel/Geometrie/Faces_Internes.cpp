@@ -27,8 +27,7 @@ Entree& Faces_Internes::readOn(Entree& is) { return LIST(Faces_Interne)::readOn(
  */
 void Faces_Internes::associer_zone(const Zone& une_zone)
 {
-  auto& list = get_stl_list();
-  for (auto& itr : list) itr.associer_zone(une_zone);
+  for (auto& itr : *this) itr.associer_zone(une_zone);
 }
 
 /*! @brief Renvoie le nombre total de faces contenues dans la liste des Faces_Interne, i.
@@ -42,8 +41,7 @@ void Faces_Internes::associer_zone(const Zone& une_zone)
 int Faces_Internes::nb_faces() const
 {
   int nombre = 0;
-  const auto& list = get_stl_list();
-  for (const auto &itr : list) nombre += itr.nb_faces();
+  for (const auto &itr : *this) nombre += itr.nb_faces();
 
   return nombre;
 }
@@ -60,8 +58,7 @@ int Faces_Internes::nb_faces() const
 int Faces_Internes::nb_faces(Type_Face type) const
 {
   int nombre = 0;
-  const auto& list = get_stl_list();
-  for (const auto &itr : list)
+  for (const auto &itr : *this)
     if (type == itr.faces().type_face()) nombre += itr.nb_faces();
 
   return nombre;

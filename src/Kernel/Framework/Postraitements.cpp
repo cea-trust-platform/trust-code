@@ -26,8 +26,7 @@ Entree& Postraitements::readOn(Entree& s)
 
 Sortie& Postraitements::printOn(Sortie& s) const
 {
-  const auto& list = get_stl_list();
-  for (const auto& itr : list)
+  for (const auto& itr : *this)
     {
       const Postraitement_base& post = itr.valeur(); // valeur() car DERIV
       s << post;
@@ -208,8 +207,7 @@ int Postraitements::lire_postraitements(Entree& is, const Motcle& motlu, const P
 
 void Postraitements::postraiter()
 {
-  auto& list = get_stl_list();
-  for (auto& itr : list)
+  for (auto& itr : *this)
     {
       Postraitement_base& post = itr.valeur();
       post.postraiter(1); // On force le postraitement
@@ -218,8 +216,7 @@ void Postraitements::postraiter()
 
 void Postraitements::traiter_postraitement()
 {
-  auto& list = get_stl_list();
-  for (auto& itr : list)
+  for (auto& itr : *this)
     {
       Postraitement_base& post = itr.valeur();
       post.postraiter(0); // Postraitement si intervalle de temps ecoule
@@ -228,8 +225,7 @@ void Postraitements::traiter_postraitement()
 
 void Postraitements::mettre_a_jour(double temps)
 {
-  auto& list = get_stl_list();
-  for (auto& itr : list)
+  for (auto& itr : *this)
     {
       Postraitement_base& post = itr.valeur();
       post.mettre_a_jour(temps);
@@ -238,8 +234,7 @@ void Postraitements::mettre_a_jour(double temps)
 
 void Postraitements::init()
 {
-  auto& list = get_stl_list();
-  for (auto& itr : list)
+  for (auto& itr : *this)
     {
       Postraitement_base& post = itr.valeur();
       post.init();
@@ -248,8 +243,7 @@ void Postraitements::init()
 
 void Postraitements::finir()
 {
-  auto& list = get_stl_list();
-  for (auto& itr : list)
+  for (auto& itr : *this)
     {
       Postraitement_base& post = itr.valeur();
       post.finir();
@@ -259,8 +253,7 @@ void Postraitements::finir()
 int Postraitements::sauvegarder(Sortie& os) const
 {
   int bytes = 0;
-  const auto& list = get_stl_list();
-  for (const auto& itr : list)
+  for (const auto& itr : *this)
     {
       const Postraitement_base& post = itr.valeur();
       bytes += post.sauvegarder(os);
@@ -270,8 +263,7 @@ int Postraitements::sauvegarder(Sortie& os) const
 
 int Postraitements::reprendre(Entree& is)
 {
-  auto& list = get_stl_list();
-  for (auto& itr : list)
+  for (auto& itr : *this)
     {
       Postraitement_base& post = itr.valeur();
       post.reprendre(is);
@@ -281,8 +273,7 @@ int Postraitements::reprendre(Entree& is)
 
 void Postraitements::completer()
 {
-  auto& list = get_stl_list();
-  for (auto& itr : list)
+  for (auto& itr : *this)
     {
       Postraitement_base& post = itr.valeur();
       post.completer();
@@ -291,8 +282,7 @@ void Postraitements::completer()
 
 void Postraitements::completer_sondes()
 {
-  auto& list = get_stl_list();
-  for (auto& itr : list)
+  for (auto& itr : *this)
     {
       Postraitement_base& post = itr.valeur();
       post.completer_sondes();

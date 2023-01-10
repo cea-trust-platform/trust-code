@@ -541,13 +541,10 @@ void ExtrudeParoi::extrude(Domaine& dom)
   zone.construit_octree();
   Cerr << "  Octree rebuilt" << finl;
 
-
   {
     Cerr << "Reconstruction of the boundaries" << finl;
-
-    auto& list = zone.faces_bord().get_stl_list();
     int num_front=0;
-    for (auto& itr : list)
+    for (auto& itr : zone.faces_bord())
       {
         Faces& lesfacesbord=itr.faces();
         lesfacesbord.typer(Faces::triangle_3D);

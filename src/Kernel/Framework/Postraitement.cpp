@@ -78,8 +78,7 @@ void Postraitement::postraiter(int forcer)
           tstat_dernier_calcul_ = tstat_deb_;
           tstat_fin_ = tstat_deb_ + dt_integr_serie_;
 
-          auto& list = champs_post_complet_.get_stl_list();
-          for (auto &itr : list)
+          for (auto &itr : champs_post_complet_)
             {
               if (sub_type(Champ_Gen_de_Champs_Gen, itr.valeur()))
                 {
@@ -94,8 +93,7 @@ void Postraitement::postraiter(int forcer)
 void Postraitement::mettre_a_jour(double temps)
 {
   //Mise a jour des operateurs statistiques portes par les Champ_Generique_Statistiques
-  auto& list = champs_post_complet_.get_stl_list();
-  for (auto &itr : list) itr->mettre_a_jour(temps);
+  for (auto &itr : champs_post_complet_) itr->mettre_a_jour(temps);
 
   if ( inf_ou_egal(tstat_deb_,temps) &&  inf_ou_egal(temps,tstat_fin_) )
     tstat_dernier_calcul_ =  temps;// Il y a eu mise a jour effective des integrales
@@ -706,8 +704,7 @@ int Postraitement::reprendre(Entree& is)
                   Cerr << "We do not resume the statistics and thus the statistics calculation" << finl;
                   Cerr << "will restart at t_deb=" << tstat_deb_ << finl;
 
-                  auto& list = champs_post_complet_.get_stl_list();
-                  for (auto &itr : list)
+                  for (auto &itr : champs_post_complet_)
                     {
                       if (sub_type(Champ_Gen_de_Champs_Gen, itr.valeur()))
                         {
@@ -724,8 +721,7 @@ int Postraitement::reprendre(Entree& is)
                   // pour tenir compte de la reprise
                   tstat_deb_ = tstat_deb_sauv;
 
-                  auto& list = champs_post_complet_.get_stl_list();
-                  for (auto &itr : list)
+                  for (auto &itr : champs_post_complet_)
                     {
                       if (sub_type(Champ_Gen_de_Champs_Gen, itr.valeur()))
                         {
@@ -1196,8 +1192,7 @@ void Postraitement::init()
 
   {
     Nom le_nom_champ_post;
-    auto& list = noms_champs_a_post_.get_stl_list();
-    for (auto& itr : list)
+    for (auto& itr : noms_champs_a_post_)
       {
         const Nom& nom_post = itr;
         const REF(Champ_Generique_base)& champ = get_champ_post(nom_post);
@@ -1397,8 +1392,7 @@ void Postraitement::postprocess_field_values()
   double temps_courant = mon_probleme->schema_temps().temps_courant();
   const Domaine& dom=le_domaine.valeur();
 
-  auto& list = noms_champs_a_post_.get_stl_list();
-  for (auto& itr : list)
+  for (auto& itr : noms_champs_a_post_)
     {
       const Champ_Generique_base& champ = get_champ_post(itr);
 
@@ -2179,8 +2173,7 @@ void Postraitement::creer_champ_post_med(const Motcle& motlu1,const Motcle& motl
 
 int Postraitement::comprend_champ_post(const Motcle& identifiant) const
 {
-  const auto& list = champs_post_complet_.get_stl_list();
-  for (const auto &itr : list)
+  for (const auto &itr : champs_post_complet_)
     if (itr->comprend_champ_post(identifiant))
       return 1;
 
@@ -2192,8 +2185,7 @@ const Champ_Generique_base& Postraitement::get_champ_post(const Motcle& nom) con
 
   REF(Champ_Generique_base) ref_champ;
   Cerr << "Provisoire searching for " << nom << finl;
-  const auto& list = champs_post_complet_.get_stl_list();
-  for (const auto& itr : list)
+  for (const auto& itr : champs_post_complet_)
     {
       try
         {

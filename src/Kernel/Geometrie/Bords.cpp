@@ -27,8 +27,7 @@ Entree& Bords::readOn(Entree& is) { return LIST(Bord)::readOn(is); }
  */
 void Bords::associer_zone(const Zone& une_zone)
 {
-  auto& list = this->get_stl_list();
-  for (auto &itr : list) itr.associer_zone(une_zone);
+  for (auto &itr : *this) itr.associer_zone(une_zone);
 }
 
 /*! @brief Renvoie le nombre total de faces de tous les bords de la liste
@@ -37,10 +36,9 @@ void Bords::associer_zone(const Zone& une_zone)
  */
 int Bords::nb_faces() const
 {
-  const auto& list = this->get_stl_list();
   int nombre = 0;
 
-  for (const auto &itr : list) nombre += itr.nb_faces();
+  for (const auto &itr : *this) nombre += itr.nb_faces();
 
   return nombre;
 }
@@ -52,10 +50,9 @@ int Bords::nb_faces() const
  */
 int Bords::nb_faces(Type_Face type) const
 {
-  const auto& list = this->get_stl_list();
   int nombre = 0;
 
-  for (const auto &itr : list)
+  for (const auto &itr : *this)
     if (type == itr.faces().type_face()) nombre += itr.nb_faces();
 
   return nombre;

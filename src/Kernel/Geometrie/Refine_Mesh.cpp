@@ -453,8 +453,7 @@ void Refine_Mesh::build_new_boundary_faces_2D(IntTabs& new_nodes_of_boundary_fac
   new_cells_of_boundary_faces.dimensionner(nb_boundaries);
 
   int boundary = 0;
-  const auto& list = domaine().zone(0).faces_bord().get_stl_list();
-  for (const auto &itr : list)
+  for (const auto &itr : domaine().zone(0).faces_bord())
     {
       IntTab& nodes = new_nodes_of_boundary_faces[boundary];
       IntTab& cells = new_cells_of_boundary_faces[boundary];
@@ -470,8 +469,7 @@ void Refine_Mesh::build_new_boundary_faces_3D(IntTabs& new_nodes_of_boundary_fac
   new_cells_of_boundary_faces.dimensionner(nb_boundaries);
 
   int boundary = 0;
-  const auto& list = domaine().zone(0).faces_bord().get_stl_list();
-  for (const auto &itr : list)
+  for (const auto &itr : domaine().zone(0).faces_bord())
     {
       IntTab& nodes = new_nodes_of_boundary_faces[boundary];
       IntTab& cells = new_cells_of_boundary_faces[boundary];
@@ -487,8 +485,7 @@ void Refine_Mesh::build_new_connector_faces_2D(IntTabs& new_nodes_of_connector_f
   new_cells_of_connector_faces.dimensionner(nb_connectors);
 
   int connector = 0;
-  const auto& list = domaine().zone(0).faces_raccord().get_stl_list();
-  for (const auto &itr : list)
+  for (const auto &itr : domaine().zone(0).faces_raccord())
     {
       IntTab& nodes = new_nodes_of_connector_faces[connector];
       IntTab& cells = new_cells_of_connector_faces[connector];
@@ -504,8 +501,7 @@ void Refine_Mesh::build_new_connector_faces_3D(IntTabs& new_nodes_of_connector_f
   new_cells_of_connector_faces.dimensionner(nb_connectors);
 
   int connector = 0;
-  const auto& list = domaine().zone(0).faces_raccord().get_stl_list();
-  for (const auto &itr : list)
+  for (const auto &itr : domaine().zone(0).faces_raccord())
     {
       IntTab& nodes = new_nodes_of_connector_faces[connector];
       IntTab& cells = new_cells_of_connector_faces[connector];
@@ -522,8 +518,7 @@ void Refine_Mesh::build_new_internal_frontier_faces_2D(IntTabs& new_nodes_of_int
   new_cells_of_internal_frontier_faces.dimensionner(nb_internal_frontier);
 
   int internal_frontier = 0;
-  const auto& list = domaine().zone(0).faces_int().get_stl_list();
-  for (const auto& itr : list)
+  for (const auto& itr : domaine().zone(0).faces_int())
     {
       IntTab& nodes = new_nodes_of_internal_frontier_faces[internal_frontier];
       IntTab& cells = new_cells_of_internal_frontier_faces[internal_frontier];
@@ -540,8 +535,7 @@ void Refine_Mesh::build_new_internal_frontier_faces_3D(IntTabs& new_nodes_of_int
   new_cells_of_internal_frontier_faces.dimensionner(nb_internal_frontier);
 
   int internal_frontier = 0;
-  const auto& list = domaine().zone(0).faces_int().get_stl_list();
-  for (const auto& itr : list)
+  for (const auto& itr : domaine().zone(0).faces_int())
     {
       IntTab& nodes = new_nodes_of_internal_frontier_faces[internal_frontier];
       IntTab& cells = new_cells_of_internal_frontier_faces[internal_frontier];
@@ -679,8 +673,7 @@ void Refine_Mesh::update_sub_zones(const Noms& new_sub_zones_descriptions)
 void Refine_Mesh::update_boundary_faces(const Type_Face& face_type, const IntTabs& new_nodes_of_boundary_faces, const IntTabs& new_cells_of_boundary_faces)
 {
   int boundary = 0;
-  auto& list = domaine().zone(0).faces_bord().get_stl_list();
-  for (auto &itr : list)
+  for (auto &itr : domaine().zone(0).faces_bord())
     {
       Faces& faces = itr.faces();
       faces.typer(face_type);
@@ -693,8 +686,7 @@ void Refine_Mesh::update_boundary_faces(const Type_Face& face_type, const IntTab
 void Refine_Mesh::update_connector_faces(const Type_Face& face_type, const IntTabs& new_nodes_of_connector_faces, const IntTabs& new_cells_of_connector_faces)
 {
   int connector = 0;
-  auto& list = domaine().zone(0).faces_raccord().get_stl_list();
-  for (auto &itr : list)
+  for (auto &itr : domaine().zone(0).faces_raccord())
     {
       Faces& faces = itr->faces();
       faces.typer(face_type);
@@ -707,8 +699,7 @@ void Refine_Mesh::update_connector_faces(const Type_Face& face_type, const IntTa
 void Refine_Mesh::update_internal_frontier_faces(const Type_Face& face_type, const IntTabs& new_nodes_of_internal_frontier_faces, const IntTabs& new_cells_of_internal_frontier_faces)
 {
   int internal_frontier = 0;
-  auto& list = domaine().zone(0).faces_int().get_stl_list();
-  for (auto &itr : list)
+  for (auto &itr : domaine().zone(0).faces_int())
     {
       Faces& faces = itr.faces();
       faces.typer(face_type);

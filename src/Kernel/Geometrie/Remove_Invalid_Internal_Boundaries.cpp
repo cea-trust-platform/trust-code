@@ -44,152 +44,140 @@ Entree& Remove_Invalid_Internal_Boundaries::interpreter_(Entree& is)
   ArrOfInt cells_on_frontier_face;
   cells_on_frontier_face.set_smart_resize(1);
 
-  {
-    auto& list = zone.faces_bord().get_stl_list();
-    for (auto &itr : list)
-      {
-        const Faces& frontier_faces    = itr.faces();
-        const int nb_frontier_faces = frontier_faces.nb_faces_tot();
-        const int nb_nodes_per_face = frontier_faces.nb_som_faces();
+  for (auto &itr : zone.faces_bord())
+    {
+      const Faces& frontier_faces    = itr.faces();
+      const int nb_frontier_faces = frontier_faces.nb_faces_tot();
+      const int nb_nodes_per_face = frontier_faces.nb_som_faces();
 
-        nodes_of_frontier_face.resize_array(nb_nodes_per_face);
-        cells_on_frontier_face.resize_array(0);
+      nodes_of_frontier_face.resize_array(nb_nodes_per_face);
+      cells_on_frontier_face.resize_array(0);
 
-        for (int i=0; i<nb_nodes_per_face; ++i)
-          {
-            nodes_of_frontier_face[i] = frontier_faces.sommet(0,i);
-          }
-        find_adjacent_elements(incidence,nodes_of_frontier_face,cells_on_frontier_face);
+      for (int i=0; i<nb_nodes_per_face; ++i)
+        {
+          nodes_of_frontier_face[i] = frontier_faces.sommet(0,i);
+        }
+      find_adjacent_elements(incidence,nodes_of_frontier_face,cells_on_frontier_face);
 
-        bool remove_frontier = false;
+      bool remove_frontier = false;
 
-        if (cells_on_frontier_face.size_array() == 1)
-          {
-            remove_frontier = false;
-          }
-        else if (cells_on_frontier_face.size_array() == 2)
-          {
-            remove_frontier = true;
-            Nom dummy;
-            Nom& new_useless_frontier_name = name_of_useless_boundaries.add(dummy);
-            new_useless_frontier_name = itr.le_nom();
-          }
-        else
-          {
-            Cerr << "Error in 'Remove_Invalid_Internal_Boundaries::interpreter_()' :" << finl;
-            Cerr << "  Invalid incidence" << finl;
-            Process::exit();
-          }
-
-        for (int f=0; f<nb_frontier_faces; ++f)
-          {
-            for (int i=0; i<nb_nodes_per_face; ++i)
-              {
-                nodes_of_frontier_face[i] = frontier_faces.sommet(0,i);
-              }
-            find_adjacent_elements(incidence,nodes_of_frontier_face,cells_on_frontier_face);
-
-            if (remove_frontier)
-              {
-                if (cells_on_frontier_face.size_array() != 2)
-                  {
-                    Cerr << "Error in 'Remove_Invalid_Internal_Boundaries::interpreter_()' :" << finl;
-                    Cerr << "  Invalid incidence" << finl;
-                    Process::exit();
-                  }
-              }
-            else
-              {
-                if (cells_on_frontier_face.size_array() != 1)
-                  {
-                    Cerr << "Error in 'Remove_Invalid_Internal_Boundaries::interpreter_()' :" << finl;
-                    Cerr << "  Invalid incidence" << finl;
-                    Process::exit();
-                  }
-              }
-          }
-      }
-  }
-
-  {
-    auto& list = zone.faces_raccord().get_stl_list();
-    for (auto &itr : list)
-      {
-        const Faces& frontier_faces = itr->faces();
-        const int nb_frontier_faces = frontier_faces.nb_faces_tot();
-        const int nb_nodes_per_face = frontier_faces.nb_som_faces();
-
-        nodes_of_frontier_face.resize_array(nb_nodes_per_face);
-        cells_on_frontier_face.resize_array(0);
-
-        for (int i = 0; i < nb_nodes_per_face; ++i)
-          nodes_of_frontier_face[i] = frontier_faces.sommet(0, i);
-
-        find_adjacent_elements(incidence, nodes_of_frontier_face, cells_on_frontier_face);
-
-        bool remove_frontier = false;
-
-        if (cells_on_frontier_face.size_array() == 1)
+      if (cells_on_frontier_face.size_array() == 1)
+        {
           remove_frontier = false;
-        else if (cells_on_frontier_face.size_array() == 2)
-          {
-            remove_frontier = true;
-            Nom dummy;
-            Nom& new_useless_frontier_name = name_of_useless_connectors.add(dummy);
-            new_useless_frontier_name = itr->le_nom();
-          }
-        else
-          {
-            Cerr << "Error in 'Remove_Invalid_Internal_Boundaries::interpreter_()' :" << finl;
-            Cerr << "  Invalid incidence" << finl;
-            Process::exit();
-          }
+        }
+      else if (cells_on_frontier_face.size_array() == 2)
+        {
+          remove_frontier = true;
+          Nom dummy;
+          Nom& new_useless_frontier_name = name_of_useless_boundaries.add(dummy);
+          new_useless_frontier_name = itr.le_nom();
+        }
+      else
+        {
+          Cerr << "Error in 'Remove_Invalid_Internal_Boundaries::interpreter_()' :" << finl;
+          Cerr << "  Invalid incidence" << finl;
+          Process::exit();
+        }
 
-        for (int f = 0; f < nb_frontier_faces; ++f)
-          {
-            for (int i = 0; i < nb_nodes_per_face; ++i)
-              nodes_of_frontier_face[i] = frontier_faces.sommet(0, i);
-            find_adjacent_elements(incidence, nodes_of_frontier_face, cells_on_frontier_face);
+      for (int f=0; f<nb_frontier_faces; ++f)
+        {
+          for (int i=0; i<nb_nodes_per_face; ++i)
+            {
+              nodes_of_frontier_face[i] = frontier_faces.sommet(0,i);
+            }
+          find_adjacent_elements(incidence,nodes_of_frontier_face,cells_on_frontier_face);
 
-            if (remove_frontier)
-              {
-                if (cells_on_frontier_face.size_array() != 2)
-                  {
-                    Cerr << "Error in 'Remove_Invalid_Internal_Boundaries::interpreter_()' :" << finl;
-                    Cerr << "  Invalid incidence" << finl;
-                    Process::exit();
-                  }
-              }
-            else
-              {
-                if (cells_on_frontier_face.size_array() != 1)
-                  {
-                    Cerr << "Error in 'Remove_Invalid_Internal_Boundaries::interpreter_()' :" << finl;
-                    Cerr << "  Invalid incidence" << finl;
-                    Process::exit();
-                  }
-              }
-          }
-      }
-  }
+          if (remove_frontier)
+            {
+              if (cells_on_frontier_face.size_array() != 2)
+                {
+                  Cerr << "Error in 'Remove_Invalid_Internal_Boundaries::interpreter_()' :" << finl;
+                  Cerr << "  Invalid incidence" << finl;
+                  Process::exit();
+                }
+            }
+          else
+            {
+              if (cells_on_frontier_face.size_array() != 1)
+                {
+                  Cerr << "Error in 'Remove_Invalid_Internal_Boundaries::interpreter_()' :" << finl;
+                  Cerr << "  Invalid incidence" << finl;
+                  Process::exit();
+                }
+            }
+        }
+    }
 
-  {
-    auto& list = name_of_useless_boundaries.get_stl_list();
-    for (auto& itr : list)
-      {
-        Bords& boundaries = zone.faces_bord();
-        boundaries.suppr(zone.bord(itr));
-      }
-  }
+  for (auto &itr : zone.faces_raccord())
+    {
+      const Faces& frontier_faces = itr->faces();
+      const int nb_frontier_faces = frontier_faces.nb_faces_tot();
+      const int nb_nodes_per_face = frontier_faces.nb_som_faces();
 
-  {
-    auto& list = name_of_useless_connectors.get_stl_list();
-    for (auto& itr : list)
-      {
-        Raccords& connectors = zone.faces_raccord();
-        connectors.suppr(zone.raccord(itr));
-      }
-  }
+      nodes_of_frontier_face.resize_array(nb_nodes_per_face);
+      cells_on_frontier_face.resize_array(0);
+
+      for (int i = 0; i < nb_nodes_per_face; ++i)
+        nodes_of_frontier_face[i] = frontier_faces.sommet(0, i);
+
+      find_adjacent_elements(incidence, nodes_of_frontier_face, cells_on_frontier_face);
+
+      bool remove_frontier = false;
+
+      if (cells_on_frontier_face.size_array() == 1)
+        remove_frontier = false;
+      else if (cells_on_frontier_face.size_array() == 2)
+        {
+          remove_frontier = true;
+          Nom dummy;
+          Nom& new_useless_frontier_name = name_of_useless_connectors.add(dummy);
+          new_useless_frontier_name = itr->le_nom();
+        }
+      else
+        {
+          Cerr << "Error in 'Remove_Invalid_Internal_Boundaries::interpreter_()' :" << finl;
+          Cerr << "  Invalid incidence" << finl;
+          Process::exit();
+        }
+
+      for (int f = 0; f < nb_frontier_faces; ++f)
+        {
+          for (int i = 0; i < nb_nodes_per_face; ++i)
+            nodes_of_frontier_face[i] = frontier_faces.sommet(0, i);
+          find_adjacent_elements(incidence, nodes_of_frontier_face, cells_on_frontier_face);
+
+          if (remove_frontier)
+            {
+              if (cells_on_frontier_face.size_array() != 2)
+                {
+                  Cerr << "Error in 'Remove_Invalid_Internal_Boundaries::interpreter_()' :" << finl;
+                  Cerr << "  Invalid incidence" << finl;
+                  Process::exit();
+                }
+            }
+          else
+            {
+              if (cells_on_frontier_face.size_array() != 1)
+                {
+                  Cerr << "Error in 'Remove_Invalid_Internal_Boundaries::interpreter_()' :" << finl;
+                  Cerr << "  Invalid incidence" << finl;
+                  Process::exit();
+                }
+            }
+        }
+    }
+
+  for (auto& itr : name_of_useless_boundaries)
+    {
+      Bords& boundaries = zone.faces_bord();
+      boundaries.suppr(zone.bord(itr));
+    }
+
+  for (auto& itr : name_of_useless_connectors)
+    {
+      Raccords& connectors = zone.faces_raccord();
+      connectors.suppr(zone.raccord(itr));
+    }
 
   Scatter::init_sequential_domain(domain);
 

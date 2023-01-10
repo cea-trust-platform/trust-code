@@ -408,22 +408,18 @@ void Extruder_en20::extruder_dvt(Domaine& dom, Faces& les_faces, int oldnbsom, i
   Zone& zone = dom.zone(0);
   const int nbfaces2D = les_faces.nb_faces();
   IntTab& les_elems = zone.les_elems();
-  {
-    auto& list = zone.faces_bord().get_stl_list();
-    for (auto &itr : list)
-      {
-        Faces& les_faces_bord = itr.faces();
-        traiter_faces_dvt(les_faces_bord, les_faces, oldnbsom, oldsz, nbfaces2D);
-      }
-  }
-  {
-    auto& list = zone.faces_raccord().get_stl_list();
-    for (auto &itr : list)
-      {
-        Faces& les_faces_bord = itr->faces();
-        traiter_faces_dvt(les_faces_bord, les_faces, oldnbsom, oldsz, nbfaces2D);
-      }
-  }
+
+  for (auto &itr : zone.faces_bord())
+    {
+      Faces& les_faces_bord = itr.faces();
+      traiter_faces_dvt(les_faces_bord, les_faces, oldnbsom, oldsz, nbfaces2D);
+    }
+
+  for (auto &itr : zone.faces_raccord())
+    {
+      Faces& les_faces_bord = itr->faces();
+      traiter_faces_dvt(les_faces_bord, les_faces, oldnbsom, oldsz, nbfaces2D);
+    }
 
   Bord& devant = zone.faces_bord().add(Bord());
   devant.nommer("devant");

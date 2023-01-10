@@ -676,9 +676,9 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
               exit();
             }
 
-          auto& list = les_bords.get_stl_list();
-          for (auto& itr : list)
+          for (auto& itr : les_bords)
             if (itr.le_nom()==(Nom)izone) itr.nommer(nom_zone);
+
           // On parcourt les zones pour renommer
           Zones& les_zones=dom.zones();
           List_Zone_Curseur curseur2=les_zones;

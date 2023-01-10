@@ -541,8 +541,7 @@ int Zone::face_interne_conjuguee(int face) const
   if ((face) < compteur)
     return -1;
 
-  const auto& list = mes_faces_int.get_stl_list();
-  for (const auto& itr : list)
+  for (const auto& itr : mes_faces_int)
     {
       const Faces& les_faces = itr.faces();
       int nbf = les_faces.nb_faces();
@@ -772,26 +771,17 @@ int Zone::comprimer()
  */
 void Zone::ecrire_noms_bords(Sortie& os) const
 {
-  {
-    // Les Bords
-    const auto& list = mes_faces_bord.get_stl_list();
-    for (const auto &itr : list)
-      os << itr.le_nom() << finl;
-  }
+  // Les Bords
+  for (const auto &itr : mes_faces_bord)
+    os << itr.le_nom() << finl;
 
-  {
-    // Les Faces Internes :
-    const auto& list = mes_faces_raccord.get_stl_list();
-    for (const auto &itr : list)
-      os << itr->le_nom() << finl;
-  }
+  // Les Faces Internes :
+  for (const auto &itr : mes_faces_raccord)
+    os << itr->le_nom() << finl;
 
-  {
-    // Les Faces Internes :
-    const auto& list = mes_faces_int.get_stl_list();
-    for (const auto &itr : list)
-      os << itr.le_nom() << finl;
-  }
+  // Les Faces Internes :
+  for (const auto &itr : mes_faces_int)
+    os << itr.le_nom() << finl;
 }
 
 double Zone::epsilon() const
@@ -893,35 +883,26 @@ int Zone::chercher_sommets(double x, double y, double z, int reel) const
 int Zone::rang_frontiere(const Nom& un_nom) const
 {
   int i = 0;
-  {
-    const auto& list = mes_faces_bord.get_stl_list();
-    for (const auto &itr : list)
-      {
-        if (itr.le_nom() == un_nom)
-          return i;
-        ++i;
-      }
-  }
+  for (const auto &itr : mes_faces_bord)
+    {
+      if (itr.le_nom() == un_nom)
+        return i;
+      ++i;
+    }
 
-  {
-    const auto& list = mes_faces_raccord.get_stl_list();
-    for (const auto &itr : list)
-      {
-        if (itr->le_nom() == un_nom)
-          return i;
-        ++i;
-      }
-  }
+  for (const auto &itr : mes_faces_raccord)
+    {
+      if (itr->le_nom() == un_nom)
+        return i;
+      ++i;
+    }
 
-  {
-    const auto& list = mes_faces_int.get_stl_list();
-    for (const auto &itr : list)
-      {
-        if (itr.le_nom() == un_nom)
-          return i;
-        ++i;
-      }
-  }
+  for (const auto &itr : mes_faces_int)
+    {
+      if (itr.le_nom() == un_nom)
+        return i;
+      ++i;
+    }
   Cerr << "Zone::rang_frontiere(): We have not found a boundary with name " << un_nom << finl;
   Process::exit();
   return -1;
@@ -943,35 +924,24 @@ void Zone::fixer_premieres_faces_frontiere()
 {
   Journal() << "Zone::fixer_premieres_faces_frontiere()" << finl;
   int compteur = 0;
-  {
-    auto& list = mes_faces_bord.get_stl_list();
-    for (auto &itr : list)
-      {
-        itr.fixer_num_premiere_face(compteur);
-        compteur += itr.nb_faces();
-        Journal() << "Le bord " << itr.le_nom() << " commence a la face : " << itr.num_premiere_face() << finl;
-      }
-  }
-  {
-    auto& list = mes_faces_raccord.get_stl_list();
-    for (auto &itr : list)
-      {
-        itr->fixer_num_premiere_face(compteur);
-        compteur += itr->nb_faces();
-        Journal() << "Le raccord " << itr->le_nom() << " commence a la face : " << itr->num_premiere_face() << finl;
-      }
-  }
-  {
-    auto& list = mes_faces_joint.get_stl_list();
-    for (auto &itr : list)
-      {
-        itr.fixer_num_premiere_face(compteur);
-        compteur += itr.nb_faces();
-        Journal() << "Le joint " << itr.le_nom() << " commence a la face : " << itr.num_premiere_face() << finl;
-      }
-  }
-  // GF recalcul de nb_faces_Cl (inutile dans la 1.5.8)
-  // nb_faces_Cl = nb_faces_bord() + nb_faces_raccord() + nb_faces_int();
+  for (auto &itr : mes_faces_bord)
+    {
+      itr.fixer_num_premiere_face(compteur);
+      compteur += itr.nb_faces();
+      Journal() << "Le bord " << itr.le_nom() << " commence a la face : " << itr.num_premiere_face() << finl;
+    }
+  for (auto &itr : mes_faces_raccord)
+    {
+      itr->fixer_num_premiere_face(compteur);
+      compteur += itr->nb_faces();
+      Journal() << "Le raccord " << itr->le_nom() << " commence a la face : " << itr->num_premiere_face() << finl;
+    }
+  for (auto &itr : mes_faces_joint)
+    {
+      itr.fixer_num_premiere_face(compteur);
+      compteur += itr.nb_faces();
+      Journal() << "Le joint " << itr.le_nom() << " commence a la face : " << itr.num_premiere_face() << finl;
+    }
 }
 
 // Construction du tableau elem_virt_pe_num_ a partir du tableau mes_elems

@@ -130,9 +130,8 @@ void Transformer::transformation_complete(Noms& les_fcts)
           type_elem.typer("Hexaedre_VEF");
           type_elem.associer_zone(domaine().zone(0));
           Bords& les_bords = domaine().zone(0).faces_bord();
-          auto& list = les_bords.get_stl_list();
 
-          for (auto &itr : list)
+          for (auto &itr : les_bords)
             itr.faces().typer(Faces::quadrangle_3D);
 
           les_bords.associer_zone(domaine().zone(0));

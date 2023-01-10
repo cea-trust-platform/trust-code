@@ -132,8 +132,7 @@ void Sondes::set_noms_champs_postraitables()
 void Sondes::completer()
 {
   set_noms_champs_postraitables();
-  auto& list = get_stl_list();
-  for (auto &itr : list) itr.completer();
+  for (auto &itr : *this) itr.completer();
 }
 
 /*! @brief Effectue le postraitement sur chacune des sondes de la liste.
@@ -141,8 +140,7 @@ void Sondes::completer()
  */
 void Sondes::postraiter()
 {
-  auto& list = get_stl_list();
-  for (auto &itr : list) itr.postraiter();
+  for (auto &itr : *this) itr.postraiter();
 
   clear_cache();
 }
@@ -181,8 +179,7 @@ REF(Champ_base) Sondes::get_from_cache(REF(Champ_Generique_base)& mon_champ, con
  */
 void Sondes::mettre_a_jour(double temps, double tinit)
 {
-  auto& list = get_stl_list();
-  for (auto &itr : list) itr.mettre_a_jour(temps, tinit);
+  for (auto &itr : *this) itr.mettre_a_jour(temps, tinit);
 
   clear_cache();
 }

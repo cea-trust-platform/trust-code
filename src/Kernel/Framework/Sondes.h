@@ -55,8 +55,7 @@ private:
 
 inline void Sondes::init_bords()
 {
-  auto& list = get_stl_list();
-  for (auto& itr : list) itr.init_bords();
+  for (auto& itr : *this) itr.init_bords();
 }
 
 /*! @brief Ouvre tous les fichiers associes a chacune des sondes de la liste.
@@ -64,8 +63,7 @@ inline void Sondes::init_bords()
  */
 inline void Sondes::ouvrir_fichiers()
 {
-  auto& list = get_stl_list();
-  for (auto &itr : list) itr.ouvrir_fichier();
+  for (auto &itr : *this) itr.ouvrir_fichier();
 }
 
 /*! @brief Ferme tous les fichiers des sondes de la liste.
@@ -73,8 +71,7 @@ inline void Sondes::ouvrir_fichiers()
  */
 inline void Sondes::fermer_fichiers()
 {
-  auto& list = get_stl_list();
-  for (auto &itr : list) itr.fermer_fichier();
+  for (auto &itr : *this) itr.fermer_fichier();
 }
 
 #endif /* Sondes_included */

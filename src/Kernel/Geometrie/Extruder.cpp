@@ -375,24 +375,20 @@ void Extruder::extruder_dvt(Domaine& dom, Faces& les_faces, int oldnbsom, int ol
   Zone& zone = dom.zone(0);
   const int nbfaces2D = les_faces.nb_faces();
   IntTab& les_elems=zone.les_elems();
-  {
-    auto& list = zone.faces_bord().get_stl_list();
-    for (auto &itr : list)
-      {
-        check_boundary_name(itr.le_nom());
-        Faces& les_faces_bord = itr.faces();
-        traiter_faces_dvt(les_faces_bord, les_faces, oldnbsom, oldsz, nbfaces2D);
-      }
-  }
-  {
-    auto& list = zone.faces_raccord().get_stl_list();
-    for (auto &itr : list)
-      {
-        check_boundary_name(itr.le_nom());
-        Faces& les_faces_bord = itr->faces();
-        traiter_faces_dvt(les_faces_bord, les_faces, oldnbsom, oldsz, nbfaces2D);
-      }
-  }
+
+  for (auto &itr : zone.faces_bord())
+    {
+      check_boundary_name(itr.le_nom());
+      Faces& les_faces_bord = itr.faces();
+      traiter_faces_dvt(les_faces_bord, les_faces, oldnbsom, oldsz, nbfaces2D);
+    }
+
+  for (auto &itr : zone.faces_raccord())
+    {
+      check_boundary_name(itr.le_nom());
+      Faces& les_faces_bord = itr->faces();
+      traiter_faces_dvt(les_faces_bord, les_faces, oldnbsom, oldsz, nbfaces2D);
+    }
 
   Bord& devant = zone.faces_bord().add(Bord());
   devant.nommer("devant");
@@ -576,24 +572,20 @@ void Extruder::extruder_dvt_hexa(Domaine& dom, Faces& les_faces, int oldnbsom, i
 {
   Zone& zone = dom.zone(0);
   IntTab& les_elems=zone.les_elems();
-  {
-    auto& list = zone.faces_bord().get_stl_list();
-    for (auto &itr : list)
-      {
-        check_boundary_name(itr.le_nom());
-        Faces& les_faces_bord = itr.faces();
-        traiter_faces_dvt_hexa(les_faces_bord, oldnbsom);
-      }
-  }
-  {
-    auto& list = zone.faces_raccord().get_stl_list();
-    for (auto &itr : list)
-      {
-        check_boundary_name(itr.le_nom());
-        Faces& les_faces_bord = itr->faces();
-        traiter_faces_dvt_hexa(les_faces_bord, oldnbsom);
-      }
-  }
+
+  for (auto &itr : zone.faces_bord())
+    {
+      check_boundary_name(itr.le_nom());
+      Faces& les_faces_bord = itr.faces();
+      traiter_faces_dvt_hexa(les_faces_bord, oldnbsom);
+    }
+
+  for (auto &itr : zone.faces_raccord())
+    {
+      check_boundary_name(itr.le_nom());
+      Faces& les_faces_bord = itr->faces();
+      traiter_faces_dvt_hexa(les_faces_bord, oldnbsom);
+    }
 
   Bord& devant = zone.faces_bord().add(Bord());
   devant.nommer("devant");

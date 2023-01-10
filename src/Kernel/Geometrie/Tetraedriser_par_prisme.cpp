@@ -154,39 +154,27 @@ void Tetraedriser_par_prisme::trianguler(Zone& zone) const
       les_elems.ref(new_elems);
     }
   else
-    {
-      Cerr << "We do not yet know how to Tetraedriser_par_prisme the " << zone.type_elem()->que_suis_je() << "s" << finl;
-    }
-  {
-    auto& list = zone.faces_bord().get_stl_list();
-    for (auto &itr : list)
-      {
-        Faces& les_faces = itr.faces();
-        les_faces.typer(Faces::triangle_3D);
-        //        decoupe(les_faces);
-        decoupe(zone, les_faces);
-      }
-  }
+    Cerr << "We do not yet know how to Tetraedriser_par_prisme the " << zone.type_elem()->que_suis_je() << "s" << finl;
 
-  {
-    auto& list = zone.faces_raccord().get_stl_list();
-    for (auto &itr : list)
-      {
-        Faces& les_faces = itr->faces();
-        les_faces.typer(Faces::triangle_3D);
-        //        decoupe(les_faces);
-        decoupe(zone, les_faces);
-      }
-  }
-  {
-    auto& list = zone.faces_int().get_stl_list();
-    for (auto &itr : list)
-      {
-        Faces& les_faces = itr.faces();
-        les_faces.typer(Faces::triangle_3D);
-        //        decoupe(les_faces);
-        decoupe(zone, les_faces);
-      }
-  }
+  for (auto &itr : zone.faces_bord())
+    {
+      Faces& les_faces = itr.faces();
+      les_faces.typer(Faces::triangle_3D);
+      decoupe(zone, les_faces);
+    }
+
+  for (auto &itr : zone.faces_raccord())
+    {
+      Faces& les_faces = itr->faces();
+      les_faces.typer(Faces::triangle_3D);
+      decoupe(zone, les_faces);
+    }
+
+  for (auto &itr : zone.faces_int())
+    {
+      Faces& les_faces = itr.faces();
+      les_faces.typer(Faces::triangle_3D);
+      decoupe(zone, les_faces);
+    }
 }
 

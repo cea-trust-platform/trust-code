@@ -175,100 +175,93 @@ void Trianguler_fin::trianguler(Zone& zone) const
       zone.construit_octree();
       Cerr << "  Octree rebuilt" << finl;
 
-      {
-        Cerr << "Splitting of the boundaries" << finl;
-        auto& list = zone.faces_bord().get_stl_list();
-        for (auto &itr : list)
-          {
-            Faces& les_faces = itr.faces();
-            les_faces.typer(Faces::segment_2D);
-            IntTab& sommetsfaces = les_faces.les_sommets();
-            int nb_faces = sommetsfaces.dimension(0);
-            IntTab nouveaux(2 * nb_faces, 2);
-            les_faces.voisins().resize(2 * nb_faces, 2);
-            les_faces.voisins() = -1;
+      Cerr << "Splitting of the boundaries" << finl;
+      for (auto &itr : zone.faces_bord())
+        {
+          Faces& les_faces = itr.faces();
+          les_faces.typer(Faces::segment_2D);
+          IntTab& sommetsfaces = les_faces.les_sommets();
+          int nb_faces = sommetsfaces.dimension(0);
+          IntTab nouveaux(2 * nb_faces, 2);
+          les_faces.voisins().resize(2 * nb_faces, 2);
+          les_faces.voisins() = -1;
 
-            for (int i = 0; i < nb_faces; i++)
-              {
-                int i0 = sommetsfaces(i, 0);
-                int i1 = sommetsfaces(i, 1);
-                int i01 = -1;
-                for (int ii = 0; ii < nbs + oldsz + j; ii++)
-                  if (fait_sommet_arete(ii, 0) == i0 && fait_sommet_arete(ii, 1) == i1)
-                    i01 = nbs + oldsz + ii;
-                assert(i01 >= 0);
-                nouveaux(2 * i, 0) = i0;
-                nouveaux(2 * i, 1) = i01;
-                nouveaux(2 * i + 1, 0) = i01;
-                nouveaux(2 * i + 1, 1) = i1;
-              }
-            sommetsfaces.ref(nouveaux);
-          }
-      }
-      {
-        Cerr << "Splitting of the connectors" << finl;
-        auto& list = zone.faces_raccord().get_stl_list();
-        for (auto &itr : list)
-          {
-            Faces& les_faces = itr->faces();
-            les_faces.typer(Faces::segment_2D);
-            IntTab& sommetsfaces = les_faces.les_sommets();
-            int nb_faces = sommetsfaces.dimension(0);
-            IntTab nouveaux(2 * nb_faces, 2);
-            les_faces.voisins().resize(2 * nb_faces, 2);
-            les_faces.voisins() = -1;
+          for (int i = 0; i < nb_faces; i++)
+            {
+              int i0 = sommetsfaces(i, 0);
+              int i1 = sommetsfaces(i, 1);
+              int i01 = -1;
+              for (int ii = 0; ii < nbs + oldsz + j; ii++)
+                if (fait_sommet_arete(ii, 0) == i0 && fait_sommet_arete(ii, 1) == i1)
+                  i01 = nbs + oldsz + ii;
+              assert(i01 >= 0);
+              nouveaux(2 * i, 0) = i0;
+              nouveaux(2 * i, 1) = i01;
+              nouveaux(2 * i + 1, 0) = i01;
+              nouveaux(2 * i + 1, 1) = i1;
+            }
+          sommetsfaces.ref(nouveaux);
+        }
 
-            for (int i = 0; i < nb_faces; i++)
-              {
-                int i0 = sommetsfaces(i, 0);
-                int i1 = sommetsfaces(i, 1);
-                int i01 = -1;
-                for (int ii = 0; ii < nbs + oldsz + j; ii++)
-                  if (fait_sommet_arete(ii, 0) == i0 && fait_sommet_arete(ii, 1) == i1)
-                    i01 = nbs + oldsz + ii;
-                assert(i01 >= 0);
-                nouveaux(2 * i, 0) = i0;
-                nouveaux(2 * i, 1) = i01;
-                nouveaux(2 * i + 1, 0) = i01;
-                nouveaux(2 * i + 1, 1) = i1;
-              }
-            sommetsfaces.ref(nouveaux);
-          }
-      }
-      {
-        Cerr << "Splitting of the internal faces" << finl;
-        auto& list = zone.faces_int().get_stl_list();
-        for (auto &itr : list)
-          {
-            Faces& les_faces = itr.faces();
-            les_faces.typer(Faces::segment_2D);
-            IntTab& sommetsfaces = les_faces.les_sommets();
-            int nb_faces = sommetsfaces.dimension(0);
-            IntTab nouveaux(2 * nb_faces, 2);
-            les_faces.voisins().resize(2 * nb_faces, 2);
-            les_faces.voisins() = -1;
+      Cerr << "Splitting of the connectors" << finl;
+      for (auto &itr : zone.faces_raccord())
+        {
+          Faces& les_faces = itr->faces();
+          les_faces.typer(Faces::segment_2D);
+          IntTab& sommetsfaces = les_faces.les_sommets();
+          int nb_faces = sommetsfaces.dimension(0);
+          IntTab nouveaux(2 * nb_faces, 2);
+          les_faces.voisins().resize(2 * nb_faces, 2);
+          les_faces.voisins() = -1;
 
-            for (int i = 0; i < nb_faces; i++)
-              {
-                int i0 = sommetsfaces(i, 0);
-                int i1 = sommetsfaces(i, 1);
-                int i01 = -1;
-                for (int ii = 0; ii < nbs + oldsz + j; ii++)
-                  if (fait_sommet_arete(ii, 0) == i0 && fait_sommet_arete(ii, 1) == i1)
-                    i01 = nbs + oldsz + ii;
-                assert(i01 >= 0);
-                nouveaux(2 * i, 0) = i0;
-                nouveaux(2 * i, 1) = i01;
-                nouveaux(2 * i + 1, 0) = i01;
-                nouveaux(2 * i + 1, 1) = i1;
-              }
-            sommetsfaces.ref(nouveaux);
-          }
-      }
+          for (int i = 0; i < nb_faces; i++)
+            {
+              int i0 = sommetsfaces(i, 0);
+              int i1 = sommetsfaces(i, 1);
+              int i01 = -1;
+              for (int ii = 0; ii < nbs + oldsz + j; ii++)
+                if (fait_sommet_arete(ii, 0) == i0 && fait_sommet_arete(ii, 1) == i1)
+                  i01 = nbs + oldsz + ii;
+              assert(i01 >= 0);
+              nouveaux(2 * i, 0) = i0;
+              nouveaux(2 * i, 1) = i01;
+              nouveaux(2 * i + 1, 0) = i01;
+              nouveaux(2 * i + 1, 1) = i1;
+            }
+          sommetsfaces.ref(nouveaux);
+        }
+
+      Cerr << "Splitting of the internal faces" << finl;
+      for (auto &itr : zone.faces_int())
+        {
+          Faces& les_faces = itr.faces();
+          les_faces.typer(Faces::segment_2D);
+          IntTab& sommetsfaces = les_faces.les_sommets();
+          int nb_faces = sommetsfaces.dimension(0);
+          IntTab nouveaux(2 * nb_faces, 2);
+          les_faces.voisins().resize(2 * nb_faces, 2);
+          les_faces.voisins() = -1;
+
+          for (int i = 0; i < nb_faces; i++)
+            {
+              int i0 = sommetsfaces(i, 0);
+              int i1 = sommetsfaces(i, 1);
+              int i01 = -1;
+              for (int ii = 0; ii < nbs + oldsz + j; ii++)
+                if (fait_sommet_arete(ii, 0) == i0 && fait_sommet_arete(ii, 1) == i1)
+                  i01 = nbs + oldsz + ii;
+              assert(i01 >= 0);
+              nouveaux(2 * i, 0) = i0;
+              nouveaux(2 * i, 1) = i01;
+              nouveaux(2 * i + 1, 0) = i01;
+              nouveaux(2 * i + 1, 1) = i1;
+            }
+          sommetsfaces.ref(nouveaux);
+        }
     }
   else
     {
       Cerr << "We do not yet know how to Trianguler_fin the " << zone.type_elem()->que_suis_je() << "s" << finl;
-      exit();
+      Process::exit();
     }
 }

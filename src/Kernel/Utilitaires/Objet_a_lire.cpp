@@ -100,8 +100,7 @@ void Objet_a_lire::set_name(const LIST(Nom) &n)
 int Objet_a_lire::comprend_name(Motcle& mot) const
 {
   if (mot == name) return 1;
-  const auto& list = names.get_stl_list();
-  for (const auto& itr : list)
+  for (const auto& itr : names)
     if (mot == itr)
       {
         mot = name;

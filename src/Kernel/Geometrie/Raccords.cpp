@@ -27,8 +27,7 @@ Entree& Raccords::readOn(Entree& is) { return LIST(Raccord)::readOn(is); }
  */
 void Raccords::associer_zone(const Zone& une_zone)
 {
-  auto& list = get_stl_list();
-  for (auto& itr : list) itr->associer_zone(une_zone);
+  for (auto& itr : *this) itr->associer_zone(une_zone);
 }
 
 /*! @brief Renvoie le nombre de face total des Raccords de la liste.
@@ -41,8 +40,7 @@ void Raccords::associer_zone(const Zone& une_zone)
 int Raccords::nb_faces() const
 {
   int nombre = 0;
-  const auto& list = get_stl_list();
-  for (const auto &itr : list) nombre += itr->nb_faces();
+  for (const auto &itr : *this) nombre += itr->nb_faces();
 
   return nombre;
 }
@@ -59,8 +57,7 @@ int Raccords::nb_faces() const
 int Raccords::nb_faces(Type_Face type) const
 {
   int nombre = 0;
-  const auto& list = get_stl_list();
-  for (const auto &itr : list)
+  for (const auto &itr : *this)
     if (type == itr->faces().type_face()) nombre += itr->nb_faces();
 
   return nombre;

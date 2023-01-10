@@ -46,8 +46,7 @@ void Champ_val_tot_sur_vol_base::evaluer(const Zone_dis_base& zdis,const Zone_Cl
 
   int cpt=1;
 
-  auto& list = les_sous_zones.get_stl_list();
-  for (auto& itr : list)
+  for (auto& itr : les_sous_zones)
     {
       const Sous_Zone& sz = itr.valeur();
       int size_sz = sz.nb_elem_tot();

@@ -39,8 +39,7 @@ bool Champs_compris::has_champ(const Motcle& motcle, REF(Champ_base)& ref_champ)
       Process::exit();
     }
 
-  const auto& list = liste_champs_.get_stl_list();
-  for (const auto& itr : list)
+  for (const auto& itr : liste_champs_)
     {
       ref_champ = itr.valeur();
       if (ref_champ.le_nom() == motcle)  // case insensitive test
@@ -68,8 +67,7 @@ bool Champs_compris::has_champ(const Motcle& motcle, REF(Champ_base)& ref_champ)
 int new_liste_add_if_not(LIST(Nom)& new_list,const Nom& nom_champ)
 {
   Motcle mot(nom_champ);
-  const auto& list = new_list.get_stl_list();
-  for (const auto& itr : list)
+  for (const auto& itr : new_list)
     {
       if (mot == itr)
         return 0;
@@ -90,8 +88,7 @@ void rebuild_liste_noms(const LIST(REF(Champ_base))& liste_champs_, const Noms& 
   REF(Champ_base) ref_champ;
 
   Nom nom_champ;
-  const auto& list = liste_champs_.get_stl_list();
-  for (const auto &itr : list)
+  for (const auto &itr : liste_champs_)
     {
       const Champ_base& ch = itr.valeur();
       nom_champ = ch.le_nom();
@@ -156,8 +153,7 @@ void Champs_compris::ajoute_champ(const Champ_base& champ)
 {
 
   Motcle nom_champ_add = champ.le_nom();
-  const auto& list = liste_champs_.get_stl_list();
-  for (const auto &itr : list)
+  for (const auto &itr : liste_champs_)
     {
       const Champ_base& ch = itr.valeur();
       const Nom& nom_champ = ch.le_nom();

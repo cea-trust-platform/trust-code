@@ -41,8 +41,7 @@ int Param::lire_avec_accolades_depuis(Entree& is)
 int Param::lire_sans_accolade(Entree& is)
 {
   Motcle bidon;
-  auto& list = list_parametre_a_lire_.get_stl_list();
-  for (auto &itr : list)
+  for (auto &itr : list_parametre_a_lire_)
     {
       Objet_a_lire& obj = itr;
       if (obj.is_optional())
@@ -79,8 +78,7 @@ int Param::read(Entree& is, int with_acco)
       bool found = false;
       Motcle mot(motlu);
 
-      auto& list = list_parametre_a_lire_.get_stl_list();
-      for (auto &itr : list)
+      for (auto &itr : list_parametre_a_lire_)
         if (!found)
           {
             Objet_a_lire& obj = itr;
@@ -188,8 +186,7 @@ int Param::check()
   {
     // ok on a fini de lire est ce que tous les attributs non optionnels ont ete lus ?
     int err = 0;
-    auto& list = list_parametre_a_lire_.get_stl_list();
-    for (auto &itr : list)
+    for (auto &itr : list_parametre_a_lire_)
       {
         Objet_a_lire& obj = itr;
         if (!obj.is_optional())
@@ -317,13 +314,11 @@ Param& Param::dictionnaire_param(const char *nom_option, int valeur)
 Objet_a_lire& Param::create_or_get_objet_a_lire(const char *mot)
 {
   LIST(Nom) split_noms = split_mot(Nom(mot));
-  const auto& list1 = split_noms.get_stl_list();
-  auto& list2 = list_parametre_a_lire_.get_stl_list();
 
-  for (auto &itr1 : list1)
+  for (const auto &itr1 : split_noms)
     {
       Motcle name_var(itr1);
-      for (auto &itr2 : list2)
+      for (auto &itr2 : list_parametre_a_lire_)
         {
           if (itr2.comprend_name(name_var))
             {
@@ -345,8 +340,7 @@ void Param::supprimer(const char *mot)
 {
   LIST(Nom) split_noms = split_mot(Nom(mot));
   Motcle motcle(split_noms(0));
-  auto& list = list_parametre_a_lire_.get_stl_list();
-  for (auto &itr : list)
+  for (auto &itr : list_parametre_a_lire_)
     {
       Objet_a_lire& obj = itr;
       if (obj.comprend_name(motcle))

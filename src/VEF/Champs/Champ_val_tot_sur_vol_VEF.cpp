@@ -57,8 +57,7 @@ DoubleVect& Champ_val_tot_sur_vol_VEF::eval_contrib_loc(const Zone_dis_base& zdi
   int cpt=1;
   IntVect face_fait(nb_faces);
 
-  auto& list = les_sous_zones.get_stl_list();
-  for (auto& itr : list)
+  for (auto& itr : les_sous_zones)
     {
       const Sous_Zone& sz = itr.valeur();
       int size_sz = sz.nb_elem_tot();

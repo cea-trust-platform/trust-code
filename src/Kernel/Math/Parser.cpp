@@ -670,8 +670,7 @@ int Parser::searchCst(const std::string& v)
 {
   int i=0;
   Nom nv(v);
-  auto& list = les_cst.get_stl_list();
-  for (auto& itr : list)
+  for (auto& itr : les_cst)
     {
       Constante& cst = ref_cast(Constante,itr);
       std::string ss(cst.le_nom());
@@ -688,8 +687,7 @@ int Parser::searchFunc(const std::string& v)
   int i=0;
   Nom nv(v);
   nv.majuscule();
-  auto& list = unary_func.get_stl_list();
-  for (auto& itr : list)
+  for (auto& itr : unary_func)
     {
       UnaryFunction& f = itr.valeur();
       Nom n2(f.getName());

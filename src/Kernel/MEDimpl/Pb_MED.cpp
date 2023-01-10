@@ -290,8 +290,7 @@ const Champ_base& Pb_MED::get_champ(const Motcle& un_nom) const
   Motcle nom_champ;
   int ok_post=1;
 
-  const auto& list = champs_fonc_post.get_stl_list();
-  for (const auto& itr : list)
+  for (const auto& itr : champs_fonc_post)
     {
       Champ_Fonc_MED& ch_med = ref_cast_non_const(Champ_Fonc_MED,itr.valeur());
       nom_champ = Motcle(itr.le_nom());

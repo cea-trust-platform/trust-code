@@ -331,8 +331,7 @@ void Probleme_base::completer()
   for (int i = 0; i < nombre_d_equations(); i++)
     equation(i).completer();
 
-  auto& list = liste_loi_fermeture_.get_stl_list();
-  for (auto& itr : list)
+  for (auto& itr : liste_loi_fermeture_)
     {
       Loi_Fermeture_base& loi = itr.valeur();
       loi.completer();
@@ -412,8 +411,7 @@ void Probleme_base::discretiser(const Discretisation_base& une_discretisation)
         }
     }
 
-  auto& list = liste_loi_fermeture_.get_stl_list();
-  for (auto& itr : list)
+  for (auto& itr : liste_loi_fermeture_)
     {
       Loi_Fermeture_base& loi = itr.valeur();
       loi.discretiser(une_discretisation);
@@ -425,8 +423,7 @@ void Probleme_base::discretiser(const Discretisation_base& une_discretisation)
  */
 void Probleme_base::init_postraitements()
 {
-  auto& list = les_postraitements.get_stl_list();
-  for (auto& itr : list) // Pour chaque postraitement
+  for (auto& itr : les_postraitements) // Pour chaque postraitement
     {
       DERIV(Postraitement_base) &der_post = itr;
 
@@ -771,8 +768,7 @@ void Probleme_base::creer_champ(const Motcle& motlu)
   for (int i=0; i<nb_eq; i++)
     equation(i).creer_champ(motlu);
 
-  auto& list = liste_loi_fermeture_.get_stl_list();
-  for (auto& itr : list)
+  for (auto& itr : liste_loi_fermeture_)
     {
       Loi_Fermeture_base& loi=itr.valeur();
       loi.creer_champ(motlu);
@@ -802,8 +798,7 @@ bool Probleme_base::has_champ(const Motcle& un_nom) const
         }
     }
 
-  const auto& list = liste_loi_fermeture_.get_stl_list();
-  for (const auto& itr : list)
+  for (const auto& itr : liste_loi_fermeture_)
     {
       const Loi_Fermeture_base& loi=itr.valeur();
       try
@@ -840,8 +835,7 @@ const Champ_base& Probleme_base::get_champ(const Motcle& un_nom) const
         }
     }
 
-  const auto& list = liste_loi_fermeture_.get_stl_list();
-  for (const auto& itr : list)
+  for (const auto& itr : liste_loi_fermeture_)
     {
       const Loi_Fermeture_base& loi=itr.valeur();
       try
@@ -881,8 +875,7 @@ void Probleme_base::get_noms_champs_postraitables(Noms& noms,Option opt) const
   for (int i=0; i<nb_eq; i++)
     equation(i).get_noms_champs_postraitables(noms,opt);
 
-  const auto& list = liste_loi_fermeture_.get_stl_list();
-  for (const auto& itr : list)
+  for (const auto& itr : liste_loi_fermeture_)
     {
       const Loi_Fermeture_base& loi=itr.valeur();
       loi.get_noms_champs_postraitables(noms,opt);
@@ -894,8 +887,7 @@ int Probleme_base::comprend_champ_post(const Motcle& un_nom) const
 {
   if (un_nom == "TEMPERATURE_PHYSIQUE") return 0;
 
-  const auto& list = postraitements().get_stl_list();
-  for (const auto &itr : list)
+  for (const auto &itr : postraitements())
     {
       const Postraitement& post = ref_cast(Postraitement, itr.valeur());
       if (post.comprend_champ_post(un_nom))
@@ -909,8 +901,7 @@ int Probleme_base::comprend_champ_post(const Motcle& un_nom) const
  */
 int Probleme_base::verifie_tdeb_tfin(const Motcle& un_nom) const
 {
-  const auto& list = postraitements().get_stl_list();
-  for (const auto &itr : list)
+  for (const auto &itr : postraitements())
     {
       const Postraitement& post = ref_cast(Postraitement, itr.valeur());
       if (tstat_deb_ == -1)
@@ -930,8 +921,7 @@ const Champ_Generique_base& Probleme_base::get_champ_post(const Motcle& un_nom) 
 {
   REF(Champ_Generique_base) ref_champ;
 
-  const auto& list = postraitements().get_stl_list();
-  for (const auto &itr : list)
+  for (const auto &itr : postraitements())
     {
       if (sub_type(Postraitement, itr.valeur()))
         {
@@ -986,8 +976,7 @@ void Probleme_base::mettre_a_jour(double temps)
   // Update the domain:
   domaine().mettre_a_jour(temps,domaine_dis(),*this);
 
-  auto& list = liste_loi_fermeture_.get_stl_list();
-  for (auto& itr : list)
+  for (auto& itr : liste_loi_fermeture_)
     {
       Loi_Fermeture_base& loi=itr.valeur();
       loi.mettre_a_jour(temps);
@@ -1015,8 +1004,7 @@ void Probleme_base::preparer_calcul()
   if (schema_temps().file_allocation() && EcritureLectureSpecial::Active)
     file_size_xyz();
 
-  auto& list = liste_loi_fermeture_.get_stl_list();
-  for (auto& itr : list)
+  for (auto& itr : liste_loi_fermeture_)
     {
       Loi_Fermeture_base& loi = itr.valeur();
       loi.preparer_calcul();

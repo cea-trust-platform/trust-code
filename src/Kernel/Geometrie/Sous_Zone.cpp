@@ -189,8 +189,7 @@ Entree& Sous_Zone::readOn(Entree& is)
                 }
               x/=((double)(nbsom));
               int test = 1;
-              auto& list = les_polynomes.get_stl_list();
-              for (auto& itr : list)
+              for (auto& itr : les_polynomes)
                 {
                   if (dimension==2)
                     {

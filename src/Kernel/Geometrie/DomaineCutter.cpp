@@ -285,10 +285,9 @@ void construire_liste_faces_sous_domaine(const ArrOfInt& elements_voisins, const
 void DomaineCutter::construire_faces_bords_ssdom(const ArrOfInt& liste_inverse_sommets, const int partie, Zone& zone_partie) const
 {
   const Zone& zone = ref_domaine_.valeur().zone(0);
-  const auto& list = zone.faces_bord().get_stl_list();
   int i_fr = 0;
   ArrOfInt elements_voisins;
-  for (const auto& itr : list)
+  for (const auto& itr : zone.faces_bord())
     {
       const Frontiere& frontiere = itr;
       Frontiere& front_partie = zone_partie.faces_bord()/*difference*/.add(Bord()/*difference*/);
@@ -312,8 +311,7 @@ void DomaineCutter::construire_faces_raccords_ssdom(const ArrOfInt& liste_invers
   int i_fr = zone.nb_bords();
   ArrOfInt elements_voisins;
 
-  const auto& list = zone.faces_raccord().get_stl_list();
-  for (const auto& itr : list)
+  for (const auto& itr : zone.faces_raccord())
     {
 
       const Raccord& raccord = itr;
@@ -341,8 +339,7 @@ void DomaineCutter::construire_faces_internes_ssdom(const ArrOfInt& liste_invers
   int i_fr = zone.nb_bords() + zone.nb_raccords();
   ArrOfInt elements_voisins;
 
-  const auto& list = zone.faces_int().get_stl_list();
-  for (const auto& itr : list)
+  for (const auto& itr : zone.faces_int())
     {
       const Frontiere& frontiere = itr;
       Frontiere& front_partie = zone_partie.faces_int()/*difference*/.add(Faces_Interne()/*difference*/);

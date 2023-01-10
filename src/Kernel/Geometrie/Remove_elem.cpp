@@ -307,8 +307,7 @@ void Remove_elem::Remove_elem_(Zone& zone)
 
       {
         Cerr << " Regeneration of boundaries" << finl;
-        auto& list = zone.faces_bord().get_stl_list();
-        for (auto &itr : list)
+        for (auto &itr : zone.faces_bord())
           {
             Faces& les_faces = itr.faces();
             if (dimension == 2)
@@ -331,8 +330,7 @@ void Remove_elem::Remove_elem_(Zone& zone)
       {
         // Les Faces internes
         Cerr << "Regeneration of internal faces" << finl;
-        auto& list = zone.faces_int().get_stl_list();
-        for (auto &itr : list)
+        for (auto &itr : zone.faces_int())
           {
             Faces& les_faces = itr.faces();
             if (dimension == 2)

@@ -124,34 +124,27 @@ void Tetraedriser::trianguler(Zone& zone) const
     {
       Cerr << "We do not yet know how to Tetraedriser the " << zone.type_elem()->que_suis_je() << "s" << finl;
       Cerr << "Try to use Tetraedriser_homogene_compact instead." << finl;
-      exit();
+      Process::exit();
     }
-  {
-    auto& list = zone.faces_bord().get_stl_list();
-    for (auto &itr : list)
-      {
-        Faces& les_faces = itr.faces();
-        les_faces.typer(Faces::triangle_3D);
-        decoupe(les_faces);
-      }
-  }
 
-  {
-    auto& list = zone.faces_raccord().get_stl_list();
-    for (auto &itr : list)
-      {
-        Faces& les_faces = itr->faces();
-        les_faces.typer(Faces::triangle_3D);
-        decoupe(les_faces);
-      }
-  }
-  {
-    auto& list = zone.faces_int().get_stl_list();
-    for (auto &itr : list)
-      {
-        Faces& les_faces = itr.faces();
-        les_faces.typer(Faces::triangle_3D);
-        decoupe(les_faces);
-      }
-  }
+  for (auto &itr : zone.faces_bord())
+    {
+      Faces& les_faces = itr.faces();
+      les_faces.typer(Faces::triangle_3D);
+      decoupe(les_faces);
+    }
+
+  for (auto &itr : zone.faces_raccord())
+    {
+      Faces& les_faces = itr->faces();
+      les_faces.typer(Faces::triangle_3D);
+      decoupe(les_faces);
+    }
+
+  for (auto &itr : zone.faces_int())
+    {
+      Faces& les_faces = itr.faces();
+      les_faces.typer(Faces::triangle_3D);
+      decoupe(les_faces);
+    }
 }

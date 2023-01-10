@@ -137,60 +137,51 @@ void NettoieNoeuds::nettoie(Domaine& dom)
             }
       }
 
-      {
-        // On recupere les bords :
-        auto& list = zone.faces_bord().get_stl_list();
-        for (auto &itr : list)
-          {
-            Frontiere& front = itr;
-            Faces& faces = front.faces();
-            IntTab& faces_sommets = faces.les_sommets();
-            IntTab old_faces_sommets(faces.les_sommets());
-            int nb_faces = faces_sommets.dimension(0);
-            int nb_som_face = faces_sommets.dimension(1);
-            for (int i = 0; i < nb_faces; i++)
-              for (int j = 0; j < nb_som_face; j++)
-                {
-                  int som = old_faces_sommets(i, j);
-                  if (som != -1)
-                    faces_sommets(i, j) = renum_som_old2new[som];
-                  else
-                    faces_sommets(i, j) = som;
-                }
-          }
-      }
-      {
-        // Les Faces Internes :
-        auto& list = zone.faces_int().get_stl_list();
-        for (auto &itr : list)
-          {
-            Frontiere& front = itr;
-            Faces& faces = front.faces();
-            IntTab& faces_sommets = faces.les_sommets();
-            IntTab old_faces_sommets(faces.les_sommets());
-            int nb_faces = faces_sommets.dimension(0);
-            int nb_som_face = faces_sommets.dimension(1);
-            for (int i = 0; i < nb_faces; i++)
-              for (int j = 0; j < nb_som_face; j++)
-                faces_sommets(i, j) = renum_som_old2new[old_faces_sommets(i, j)];
-          }
-      }
-      {
-        // Les Raccords
-        auto& list = zone.faces_raccord().get_stl_list();
-        for (auto &itr : list)
-          {
-            Frontiere& front = itr.valeur();
-            Faces& faces = front.faces();
-            IntTab& faces_sommets = faces.les_sommets();
-            IntTab old_faces_sommets(faces.les_sommets());
-            int nb_faces = faces_sommets.dimension(0);
-            int nb_som_face = faces_sommets.dimension(1);
-            for (int i = 0; i < nb_faces; i++)
-              for (int j = 0; j < nb_som_face; j++)
-                faces_sommets(i, j) = renum_som_old2new[old_faces_sommets(i, j)];
-          }
-      }
+      // On recupere les bords :
+      for (auto &itr : zone.faces_bord())
+        {
+          Frontiere& front = itr;
+          Faces& faces = front.faces();
+          IntTab& faces_sommets = faces.les_sommets();
+          IntTab old_faces_sommets(faces.les_sommets());
+          int nb_faces = faces_sommets.dimension(0);
+          int nb_som_face = faces_sommets.dimension(1);
+          for (int i = 0; i < nb_faces; i++)
+            for (int j = 0; j < nb_som_face; j++)
+              {
+                int som = old_faces_sommets(i, j);
+                if (som != -1)
+                  faces_sommets(i, j) = renum_som_old2new[som];
+                else
+                  faces_sommets(i, j) = som;
+              }
+        }
+      // Les Faces Internes :
+      for (auto &itr : zone.faces_int())
+        {
+          Frontiere& front = itr;
+          Faces& faces = front.faces();
+          IntTab& faces_sommets = faces.les_sommets();
+          IntTab old_faces_sommets(faces.les_sommets());
+          int nb_faces = faces_sommets.dimension(0);
+          int nb_som_face = faces_sommets.dimension(1);
+          for (int i = 0; i < nb_faces; i++)
+            for (int j = 0; j < nb_som_face; j++)
+              faces_sommets(i, j) = renum_som_old2new[old_faces_sommets(i, j)];
+        }
+      // Les Raccords
+      for (auto &itr : zone.faces_raccord())
+        {
+          Frontiere& front = itr.valeur();
+          Faces& faces = front.faces();
+          IntTab& faces_sommets = faces.les_sommets();
+          IntTab old_faces_sommets(faces.les_sommets());
+          int nb_faces = faces_sommets.dimension(0);
+          int nb_som_face = faces_sommets.dimension(1);
+          for (int i = 0; i < nb_faces; i++)
+            for (int j = 0; j < nb_som_face; j++)
+              faces_sommets(i, j) = renum_som_old2new[old_faces_sommets(i, j)];
+        }
     }
   Scatter::init_sequential_domain(dom);
 }

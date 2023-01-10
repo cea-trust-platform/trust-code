@@ -28,8 +28,7 @@ Entree& Operateurs_Statistique_tps::readOn(Entree& s) { return s; }
 
 inline const Operateur_Statistique_tps& recherche(Operateurs_Statistique_tps& op, const Nom& champ, const Motcle& motlu)
 {
-  auto& list = op.get_stl_list();
-  for (auto &itr : list)
+  for (auto &itr : op)
     {
       if (itr->le_nom() == champ)
         return itr;
@@ -61,8 +60,7 @@ int Operateurs_Statistique_tps::sauvegarder(Sortie& os) const
     }
 
   int bytes = 0;
-  const auto& list = get_stl_list();
-  for (const auto &itr : list)
+  for (const auto &itr : *this)
     bytes += itr.sauvegarder(os);
 
   if (a_faire) os.flush();
@@ -132,8 +130,7 @@ int Operateurs_Statistique_tps::reprendre(Entree& is)
       else // tinit=>temps_derniere_mise_a_jour_stats : on fait la reprise
         {
           Nom bidon2;
-          auto& list = get_stl_list();
-          for (auto &itr : list)
+          for (auto &itr : *this)
             {
               is >> bidon2 >> bidon2; // On saute l'identificateur et le type des champs
               itr.reprendre(is);
@@ -141,7 +138,7 @@ int Operateurs_Statistique_tps::reprendre(Entree& is)
           // On modifie l'attribut tstat_deb_ et l'attribut t_debut_ des champs
           // pour tenir compte de la reprise
           tstat_deb_ = tstat_deb_sauv;
-          for (auto &itr : list)
+          for (auto &itr : *this)
             itr.fixer_tstat_deb(tstat_deb_,temps_derniere_mise_a_jour_stats);
         }
     }

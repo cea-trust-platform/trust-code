@@ -27,6 +27,5 @@ Sortie& Champs_Fonc::printOn(Sortie& s) const { return s; }
  */
 void Champs_Fonc::mettre_a_jour(double tps)
 {
-  auto& list = get_stl_list();
-  for (auto &itr : list) itr.mettre_a_jour(tps);
+  for (auto &itr : *this) itr.mettre_a_jour(tps);
 }

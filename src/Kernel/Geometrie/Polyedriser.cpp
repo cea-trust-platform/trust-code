@@ -208,35 +208,26 @@ void Polyedriser::polyedriser(Zone& zone) const
 
   const DoubleTab& coords = zone.domaine().coord_sommets();
 
-  {
-    auto& list = zone.faces_bord().get_stl_list();
-    for (auto &itr : list)
-      {
-        Faces& les_faces = itr.faces();
-        les_faces.typer(Faces::polygone_3D);
-        reorder_vertices(les_faces, coords);
-      }
-  }
+  for (auto &itr : zone.faces_bord())
+    {
+      Faces& les_faces = itr.faces();
+      les_faces.typer(Faces::polygone_3D);
+      reorder_vertices(les_faces, coords);
+    }
 
-  {
-    auto& list = zone.faces_raccord().get_stl_list();
-    for (auto &itr : list)
-      {
-        Faces& les_faces = itr->faces();
-        les_faces.typer(Faces::polygone_3D);
-        reorder_vertices(les_faces, coords);
-      }
-  }
+  for (auto &itr : zone.faces_raccord())
+    {
+      Faces& les_faces = itr->faces();
+      les_faces.typer(Faces::polygone_3D);
+      reorder_vertices(les_faces, coords);
+    }
 
-  {
-    auto& list = zone.faces_int().get_stl_list();
-    for (auto &itr : list)
-      {
-        Faces& les_faces = itr.faces();
-        les_faces.typer(Faces::polygone_3D);
-        reorder_vertices(les_faces, coords);
-      }
-  }
+  for (auto &itr : zone.faces_int())
+    {
+      Faces& les_faces = itr.faces();
+      les_faces.typer(Faces::polygone_3D);
+      reorder_vertices(les_faces, coords);
+    }
   return;
 }
 

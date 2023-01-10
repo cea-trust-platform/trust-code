@@ -226,8 +226,7 @@ void Decouper_Bord_coincident::Decouper_Bord_coincident_(Zone& zone)
       {
         // Les Raccords
         Cerr << "Splitting of connections" << finl;
-        auto& list = zone.faces_raccord().get_stl_list();
-        for (auto &itr : list)
+        for (auto &itr : zone.faces_raccord())
           {
             if (itr->le_nom() == nom_bord)
               {

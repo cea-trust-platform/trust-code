@@ -296,174 +296,168 @@ void TroisDto2D::extraire_2D(const Domaine& dom3D, Domaine& dom2D, const Bord& b
       }
 
   dimension = 2;
-  {
-    // On recupere les bords :
-    const auto& list = zone3D.faces_bord().get_stl_list();
-    for (const auto &itr : list)
-      {
-        const Frontiere& front = itr;
-        const Faces& faces3D_front = front.faces();
-        if ((front.le_nom() != nom_bord))
-          {
-            Bord tmp;
-            Bord& bord2D = zone2D.faces_bord().add(tmp);
-            bord2D.nommer(front.le_nom());
-            bord2D.associer_zone(zone2D);
-            if (test_axi)
-              bord2D.typer_faces("QUADRILATERE_2D_AXI");
-            else
-              bord2D.typer_faces("segment_2D");
-            // creer les faces de bord 2D ici!
-            int compteur2 = 0;
-            const IntTab& faces_sommets = faces3D_front.les_sommets();
-            int nb_faces = faces_sommets.dimension(0);
-            IntTab& aretes = bord2D.les_sommets_des_faces();
-            IntTab& faces_voisins = bord2D.faces().voisins();
+  // On recupere les bords :
+  for (const auto &itr : zone3D.faces_bord())
+    {
+      const Frontiere& front = itr;
+      const Faces& faces3D_front = front.faces();
+      if ((front.le_nom() != nom_bord))
+        {
+          Bord tmp;
+          Bord& bord2D = zone2D.faces_bord().add(tmp);
+          bord2D.nommer(front.le_nom());
+          bord2D.associer_zone(zone2D);
+          if (test_axi)
+            bord2D.typer_faces("QUADRILATERE_2D_AXI");
+          else
+            bord2D.typer_faces("segment_2D");
+          // creer les faces de bord 2D ici!
+          int compteur2 = 0;
+          const IntTab& faces_sommets = faces3D_front.les_sommets();
+          int nb_faces = faces_sommets.dimension(0);
+          IntTab& aretes = bord2D.les_sommets_des_faces();
+          IntTab& faces_voisins = bord2D.faces().voisins();
 
-            aretes.resize(nb_faces, 2);
-            // Boucle sur les faces du domaine 2D
-            int doublons = 0;
-            for (int face = 0; face < nb_faces; face++)
-              {
-                int ok = 0;
-                int tmpbis;
-                for (int i = 0; i < nb_som_fac3D; i++)
-                  {
-                    tmpbis = renum_som3D2D[faces_sommets(face, i)];
-                    if (tmpbis != -1)
-                      {
-                        ok++;
-                        if (ok == 1)
-                          aretes(compteur2, 0) = tmpbis;
-                        if (ok == 2)
-                          {
-                            aretes(compteur2, 1) = tmpbis;
-                            compteur2++;
-                          }
-                        if (ok == 3)
-                          {
-                            // Si 3 sommets de la face appartienne a la frontiere
-                            // il y'a un probleme, on ajoute les 3 aretes et on cherchera
-                            // les doublons qu'il faudra eliminer...
-                            doublons = 1;
-                            aretes(compteur2, 0) = aretes(compteur2 - 1, 1);
-                            aretes(compteur2, 1) = tmpbis;
-                            compteur2++;
-                            aretes(compteur2, 0) = aretes(compteur2 - 1, 1);
-                            aretes(compteur2, 1) = aretes(compteur2 - 2, 0);
-                            compteur2++;
-                          }
-                      }
-                  }
-              }
-            if (doublons)
-              {
-                // Recherche des doublons (algo en n^2)
-                for (int i = 0; i < compteur2; i++)
-                  {
-                    int& S10 = aretes(i, 0);
-                    int& S11 = aretes(i, 1);
-                    for (int j = i + 1; j < compteur2; j++)
-                      {
-                        int& S20 = aretes(j, 0);
-                        int& S21 = aretes(j, 1);
-                        if ((S10 == S20 && S11 == S21) || (S10 == S21 && S11 == S20))
-                          {
-                            S10 = -1;
-                            S11 = -1;
-                            S20 = -1;
-                            S21 = -1;
-                          }
-                      }
-                  }
-                // On supprime les doublons
-                for (int i = 0; i < compteur2; i++)
-                  if (aretes(i, 0) == -1)
+          aretes.resize(nb_faces, 2);
+          // Boucle sur les faces du domaine 2D
+          int doublons = 0;
+          for (int face = 0; face < nb_faces; face++)
+            {
+              int ok = 0;
+              int tmpbis;
+              for (int i = 0; i < nb_som_fac3D; i++)
+                {
+                  tmpbis = renum_som3D2D[faces_sommets(face, i)];
+                  if (tmpbis != -1)
                     {
-                      for (int j = i; j < compteur2 - 1; j++)
+                      ok++;
+                      if (ok == 1)
+                        aretes(compteur2, 0) = tmpbis;
+                      if (ok == 2)
                         {
-                          aretes(j, 0) = aretes(j + 1, 0);
-                          aretes(j, 1) = aretes(j + 1, 1);
+                          aretes(compteur2, 1) = tmpbis;
+                          compteur2++;
                         }
-                      compteur2--;
+                      if (ok == 3)
+                        {
+                          // Si 3 sommets de la face appartienne a la frontiere
+                          // il y'a un probleme, on ajoute les 3 aretes et on cherchera
+                          // les doublons qu'il faudra eliminer...
+                          doublons = 1;
+                          aretes(compteur2, 0) = aretes(compteur2 - 1, 1);
+                          aretes(compteur2, 1) = tmpbis;
+                          compteur2++;
+                          aretes(compteur2, 0) = aretes(compteur2 - 1, 1);
+                          aretes(compteur2, 1) = aretes(compteur2 - 2, 0);
+                          compteur2++;
+                        }
                     }
-              }
-            aretes.resize(compteur2, 2);
-            faces_voisins.resize(compteur2, 2);
-            faces_voisins = -1;
-            if (compteur2 == 0)
-              {
-                Cerr << "boundary to eliminate " << front.le_nom() << finl;
-                zone2D.faces_bord().suppr(bord2D);
-              }
-            else
-              {
-                Cerr << "boundary maintained " << front.le_nom() << finl;
-              }
-          }
-      }
-  }
-
-  {
-    // On recupere les raccords :
-    const auto& list = zone3D.faces_raccord().get_stl_list();
-    for (const auto& itr : list)
-      {
-        const Frontiere& front = itr.valeur();
-        const Faces& faces3Dfront = front.faces();
-        if ((front.le_nom() != nom_bord))
-          {
-            Raccord tmpbis;
-            Raccord& bord2D = zone2D.faces_raccord().add(tmpbis);
-            bord2D.typer(itr->le_type());
-            bord2D->nommer(front.le_nom());
-            bord2D->associer_zone(zone2D);
-            if (test_axi)
-              bord2D->typer_faces("QUADRILATERE_2D_AXI");
-            else
-              bord2D->typer_faces("segment_2D");
-            // creer les faces de bord 2D ici!
-            int compteur2 = 0;
-            const IntTab& faces_sommets = faces3Dfront.les_sommets();
-            int nb_faces = faces_sommets.dimension(0);
-            IntTab& aretes = bord2D->les_sommets_des_faces();
-            IntTab& faces_voisins = bord2D->faces().voisins();
-
-            aretes.resize(nb_faces, 2);
-            for (int face = 0; face < nb_faces; face++)
-              {
-                int ok = 0;
-                int tmp;
-                for (int i = 0; i < nb_som_fac3D; i++)
+                }
+            }
+          if (doublons)
+            {
+              // Recherche des doublons (algo en n^2)
+              for (int i = 0; i < compteur2; i++)
+                {
+                  int& S10 = aretes(i, 0);
+                  int& S11 = aretes(i, 1);
+                  for (int j = i + 1; j < compteur2; j++)
+                    {
+                      int& S20 = aretes(j, 0);
+                      int& S21 = aretes(j, 1);
+                      if ((S10 == S20 && S11 == S21) || (S10 == S21 && S11 == S20))
+                        {
+                          S10 = -1;
+                          S11 = -1;
+                          S20 = -1;
+                          S21 = -1;
+                        }
+                    }
+                }
+              // On supprime les doublons
+              for (int i = 0; i < compteur2; i++)
+                if (aretes(i, 0) == -1)
                   {
-                    tmp = renum_som3D2D[faces_sommets(face, i)];
-                    if (tmp != -1)
+                    for (int j = i; j < compteur2 - 1; j++)
                       {
-                        ok++;
-                        if (ok == 1)
-                          aretes(compteur2, 0) = tmp;
-                        else if (ok == 2)
-                          {
-                            aretes(compteur2, 1) = tmp;
-                            compteur2++;
-                            i = nb_som_fac3D;
-                          }
+                        aretes(j, 0) = aretes(j + 1, 0);
+                        aretes(j, 1) = aretes(j + 1, 1);
                       }
+                    compteur2--;
                   }
-              }
-            aretes.resize(compteur2, 2);
-            faces_voisins.resize(compteur2, 2);
-            faces_voisins = -1;
-            if (compteur2 == 0)
-              {
-                Cerr << "connector to eliminate " << front.le_nom() << finl;
-                zone2D.faces_raccord().suppr(bord2D);
-              }
-            else
-              Cerr << "connector maintained " << front.le_nom() << finl;
-          }
-      }
-  }
+            }
+          aretes.resize(compteur2, 2);
+          faces_voisins.resize(compteur2, 2);
+          faces_voisins = -1;
+          if (compteur2 == 0)
+            {
+              Cerr << "boundary to eliminate " << front.le_nom() << finl;
+              zone2D.faces_bord().suppr(bord2D);
+            }
+          else
+            {
+              Cerr << "boundary maintained " << front.le_nom() << finl;
+            }
+        }
+    }
+
+  // On recupere les raccords :
+  for (const auto& itr : zone3D.faces_raccord())
+    {
+      const Frontiere& front = itr.valeur();
+      const Faces& faces3Dfront = front.faces();
+      if ((front.le_nom() != nom_bord))
+        {
+          Raccord tmpbis;
+          Raccord& bord2D = zone2D.faces_raccord().add(tmpbis);
+          bord2D.typer(itr->le_type());
+          bord2D->nommer(front.le_nom());
+          bord2D->associer_zone(zone2D);
+          if (test_axi)
+            bord2D->typer_faces("QUADRILATERE_2D_AXI");
+          else
+            bord2D->typer_faces("segment_2D");
+          // creer les faces de bord 2D ici!
+          int compteur2 = 0;
+          const IntTab& faces_sommets = faces3Dfront.les_sommets();
+          int nb_faces = faces_sommets.dimension(0);
+          IntTab& aretes = bord2D->les_sommets_des_faces();
+          IntTab& faces_voisins = bord2D->faces().voisins();
+
+          aretes.resize(nb_faces, 2);
+          for (int face = 0; face < nb_faces; face++)
+            {
+              int ok = 0;
+              int tmp;
+              for (int i = 0; i < nb_som_fac3D; i++)
+                {
+                  tmp = renum_som3D2D[faces_sommets(face, i)];
+                  if (tmp != -1)
+                    {
+                      ok++;
+                      if (ok == 1)
+                        aretes(compteur2, 0) = tmp;
+                      else if (ok == 2)
+                        {
+                          aretes(compteur2, 1) = tmp;
+                          compteur2++;
+                          i = nb_som_fac3D;
+                        }
+                    }
+                }
+            }
+          aretes.resize(compteur2, 2);
+          faces_voisins.resize(compteur2, 2);
+          faces_voisins = -1;
+          if (compteur2 == 0)
+            {
+              Cerr << "connector to eliminate " << front.le_nom() << finl;
+              zone2D.faces_raccord().suppr(bord2D);
+            }
+          else
+            Cerr << "connector maintained " << front.le_nom() << finl;
+        }
+    }
 
   if (zone3D.type_elem()->que_suis_je() != "Hexaedre_VEF")
     if (coupe_ != 2)

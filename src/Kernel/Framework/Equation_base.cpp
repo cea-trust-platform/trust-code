@@ -377,8 +377,7 @@ void Equation_base::ecrire_fichier_xyz() const
         {
           // On recherche le champ dans le probleme contenant l'equation, et les postraitements
           // dans les postraitements ?
-          const auto& list = mon_probleme->postraitements().get_stl_list();
-          for (auto &itr : list)
+          for (auto &itr :  mon_probleme->postraitements())
             if (!champ_ok)
               if (sub_type(Postraitement, itr.valeur()))
                 {
@@ -1193,8 +1192,7 @@ void Equation_base::creer_champ(const Motcle& motlu)
         operateur(i).l_op_base().creer_champ(motlu);
     }
 
-  auto& list = les_sources.get_stl_list();
-  for (auto& itr : list)
+  for (auto& itr : les_sources)
     if (itr.non_nul())
       itr->creer_champ(motlu);
 }
@@ -1222,8 +1220,7 @@ const Champ_base& Equation_base::get_champ(const Motcle& nom) const
     }
   else
     {
-      const auto& list = list_champ_combi.get_stl_list();
-      for (const auto& itr : list)
+      for (const auto& itr : list_champ_combi)
         {
           const Champ_Fonc& ch = itr;
           if (ch.le_nom()==nom && ch.temps()!=inconnue()->temps())
@@ -1260,8 +1257,7 @@ const Champ_base& Equation_base::get_champ(const Motcle& nom) const
           }
     }
 
-  const auto& list = les_sources.get_stl_list();
-  for (const auto& itr : list)
+  for (const auto& itr : les_sources)
     {
       if (itr.non_nul())
         try
@@ -1292,8 +1288,7 @@ void Equation_base::get_noms_champs_postraitables(Noms& noms,Option opt) const
         operateur(i).l_op_base().get_noms_champs_postraitables(noms,opt);
     }
 
-  const auto& list = les_sources.get_stl_list();
-  for (const auto& itr : list)
+  for (const auto& itr : les_sources)
     if (itr.non_nul())
       itr->get_noms_champs_postraitables(noms,opt);
 }

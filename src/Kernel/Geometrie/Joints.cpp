@@ -29,8 +29,7 @@ Entree& Joints::readOn(Entree& is) { return LIST(Joint)::readOn(is); }
  */
 void Joints::associer_zone(const Zone& une_zone)
 {
-  auto& list = get_stl_list();
-  for (auto& itr : list) itr.associer_zone(une_zone);
+  for (auto& itr : *this) itr.associer_zone(une_zone);
 }
 
 /*! @brief Renvoie le nombre de face total des Joints de la liste.
@@ -43,8 +42,7 @@ void Joints::associer_zone(const Zone& une_zone)
 int Joints::nb_faces() const
 {
   int nombre = 0;
-  const auto& list = get_stl_list();
-  for (const auto &itr : list) nombre += itr.nb_faces();
+  for (const auto &itr : *this) nombre += itr.nb_faces();
 
   return nombre;
 }
@@ -60,8 +58,7 @@ int Joints::nb_faces() const
 int Joints::nb_faces(Type_Face type) const
 {
   int nombre = 0;
-  const auto& list = get_stl_list();
-  for (const auto &itr : list)
+  for (const auto &itr : *this)
     if (type == itr.faces().type_face())
       nombre += itr.nb_faces();
 
@@ -141,8 +138,7 @@ int Joints::nb_joints() const
  */
 Joint& Joints::joint_PE(int pe)
 {
-  auto& list = get_stl_list();
-  for (auto &itr : list)
+  for (auto &itr : *this)
     {
       Joint& joint = itr;
       int pe_joint = joint.PEvoisin();

@@ -83,8 +83,7 @@ Entree& Sources::readOn(Entree& is)
  */
 DoubleTab& Sources::ajouter(DoubleTab& xx) const
 {
-  const auto& list = get_stl_list();
-  for (const auto& itr : list) itr.ajouter(xx);
+  for (const auto& itr : *this) itr.ajouter(xx);
   return xx;
 }
 
@@ -98,8 +97,7 @@ DoubleTab& Sources::ajouter(DoubleTab& xx) const
 DoubleTab& Sources::calculer(DoubleTab& xx) const
 {
   xx = 0.;
-  const auto& list = get_stl_list();
-  for (const auto& itr : list) itr.ajouter(xx);
+  for (const auto& itr : *this) itr.ajouter(xx);
   return xx;
 }
 
@@ -109,8 +107,7 @@ DoubleTab& Sources::calculer(DoubleTab& xx) const
  */
 void Sources::mettre_a_jour(double temps)
 {
-  auto& list = get_stl_list();
-  for (auto& itr : list) itr.mettre_a_jour(temps);
+  for (auto& itr : *this) itr.mettre_a_jour(temps);
 }
 
 
@@ -121,8 +118,7 @@ void Sources::mettre_a_jour(double temps)
  */
 void Sources::completer()
 {
-  auto& list = get_stl_list();
-  for (auto& itr : list) itr.completer();
+  for (auto& itr : *this) itr.completer();
 }
 
 /*! @brief Pour chaque source de la liste, appel a associer_champ_rho de la source.
@@ -134,8 +130,7 @@ void Sources::completer()
  */
 void Sources::associer_champ_rho(const Champ_base& champ_rho)
 {
-  auto& list = get_stl_list();
-  for (auto& itr : list)
+  for (auto& itr : *this)
     {
       Source& src = itr;
       Source_base& src_base = src.valeur();
@@ -152,8 +147,7 @@ int Sources::a_pour_Champ_Fonc(const Motcle& mot,
                                REF(Champ_base)& ch_ref) const
 {
   int ok = 0;
-  const auto& list = get_stl_list();
-  for (const auto& itr : list)
+  for (const auto& itr : *this)
     {
       const Source& src = itr;
       const Source_base& src_base = src.valeur();
@@ -173,8 +167,7 @@ int Sources::a_pour_Champ_Fonc(const Motcle& mot,
  */
 int Sources::impr(Sortie& os) const
 {
-  const auto& list = get_stl_list();
-  for (const auto& itr : list) itr.impr(os);
+  for (const auto& itr : *this) itr.impr(os);
   return 1;
 }
 
@@ -185,8 +178,7 @@ int Sources::impr(Sortie& os) const
  */
 void Sources::dimensionner(Matrice_Morse& matrice) const
 {
-  const auto& list = get_stl_list();
-  for (const auto& itr : list)
+  for (const auto& itr : *this)
     {
       const Source& src = itr;
       const Source_base& src_base = src.valeur();
@@ -200,8 +192,7 @@ void Sources::dimensionner(Matrice_Morse& matrice) const
  */
 void Sources::contribuer_a_avec(const DoubleTab& a, Matrice_Morse& matrice) const
 {
-  const auto& list = get_stl_list();
-  for (const auto& itr : list)
+  for (const auto& itr : *this)
     {
       const Source& src = itr;
       const Source_base& src_base = src.valeur();
@@ -211,8 +202,7 @@ void Sources::contribuer_a_avec(const DoubleTab& a, Matrice_Morse& matrice) cons
 
 void Sources::contribuer_jacobienne(Matrice_Bloc& matrice, int n) const
 {
-  const auto& list = get_stl_list();
-  for (const auto& itr : list)
+  for (const auto& itr : *this)
     {
       const Source& src = itr;
       const Source_base& src_base = src.valeur();
@@ -228,16 +218,14 @@ void Sources::contribuer_jacobienne(Matrice_Bloc& matrice, int n) const
 int Sources::initialiser(double temps)
 {
   int ok=1;
-  auto& list = get_stl_list();
-  for (auto& itr : list)
+  for (auto& itr : *this)
     ok = ok && itr.initialiser(temps);
   return ok;
 }
 
 void Sources::check_multiphase_compatibility() const
 {
-  const auto& list = get_stl_list();
-  for (const auto& itr : list)
+  for (const auto& itr : *this)
     {
       const Source& src = itr;
       const Source_base& src_base = src.valeur();

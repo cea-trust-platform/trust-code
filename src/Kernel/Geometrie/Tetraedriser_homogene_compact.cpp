@@ -471,44 +471,33 @@ void Tetraedriser_homogene_compact::trianguler(Zone& zone) const
       zone.invalide_octree();
       zone.typer("Tetraedre");
 
-      {
-        Cerr << "Splitting of the boundaries" << finl;
-        auto& list = zone.faces_bord().get_stl_list();
-        for (auto &itr : list)
-          {
-            Faces& les_faces = itr.faces();
-            les_faces.typer(Faces::triangle_3D);
-            decoupe(zone, les_faces, new_soms_old_elems, fait_sommet, nface);
-          }
-      }
+      Cerr << "Splitting of the boundaries" << finl;
+      for (auto &itr : zone.faces_bord())
+        {
+          Faces& les_faces = itr.faces();
+          les_faces.typer(Faces::triangle_3D);
+          decoupe(zone, les_faces, new_soms_old_elems, fait_sommet, nface);
+        }
 
-      {
-        Cerr << "Splitting of the connectors" << finl;
-        auto& list = zone.faces_raccord().get_stl_list();
-        for (auto &itr : list)
-          {
-            Faces& les_faces = itr->faces();
-            les_faces.typer(Faces::triangle_3D);
-            decoupe(zone, les_faces, new_soms_old_elems, fait_sommet, nface);
-          }
-      }
+      Cerr << "Splitting of the connectors" << finl;
+      for (auto &itr : zone.faces_raccord())
+        {
+          Faces& les_faces = itr->faces();
+          les_faces.typer(Faces::triangle_3D);
+          decoupe(zone, les_faces, new_soms_old_elems, fait_sommet, nface);
+        }
 
-      {
-        Cerr << "Splitting of the internal faces" << finl;
-        auto& list = zone.faces_int().get_stl_list();
-        for (auto &itr : list)
-          {
-            Faces& les_faces = itr.faces();
-            les_faces.typer(Faces::triangle_3D);
-            decoupe(zone, les_faces, new_soms_old_elems, fait_sommet, nface);
-          }
-      }
+      Cerr << "Splitting of the internal faces" << finl;
+      for (auto &itr : zone.faces_int())
+        {
+          Faces& les_faces = itr.faces();
+          les_faces.typer(Faces::triangle_3D);
+          decoupe(zone, les_faces, new_soms_old_elems, fait_sommet, nface);
+        }
 
       Cerr << "END of Tetraedriser_homogene_compact..." << finl;
       Cerr << "  1 NbElem=" << zone.les_elems().dimension(0) << "  NbNod=" << zone.nb_som() << finl;
     }
   else
-    {
-      Cerr << "We do not yet know how to Tetraedriser_homogene_compact the " << zone.type_elem()->que_suis_je() << "s" << finl;
-    }
+    Cerr << "We do not yet know how to Tetraedriser_homogene_compact the " << zone.type_elem()->que_suis_je() << "s" << finl;
 }

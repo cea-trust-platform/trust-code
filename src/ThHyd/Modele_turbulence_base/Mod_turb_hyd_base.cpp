@@ -321,8 +321,7 @@ int Mod_turb_hyd_base::preparer_calcul()
 
   bool contient_distance_paroi = false;
 
-  auto& list = equation().probleme().postraitements().get_stl_list();
-  for (auto &itr : list)
+  for (auto &itr : equation().probleme().postraitements())
     if (!contient_distance_paroi)
       if (sub_type(Postraitement, itr.valeur()))
         {

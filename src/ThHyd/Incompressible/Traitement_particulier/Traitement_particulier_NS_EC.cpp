@@ -270,8 +270,7 @@ void Traitement_particulier_NS_EC::calculer_Ec(double& energie_cinetique)
       // Verification de l'existence d'un terme source Acceleration dans Navier Stokes
       const Sources& les_sources=mon_equation->sources();
 
-      const auto& list = les_sources.get_stl_list();
-      for (const auto& itr : list)
+      for (const auto& itr : les_sources)
         {
           if (sub_type(Terme_Source_Acceleration,itr.valeur()))
             {

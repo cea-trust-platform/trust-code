@@ -318,24 +318,20 @@ void Extruder_en3::construire_bords(Domaine& dom, Faces& les_faces, int oldnbsom
 {
   Zone& zone = dom.zone(0);
   IntTab& les_elems = zone.les_elems();
+
   // Les bords:
-  {
-    auto& list = zone.faces_bord().get_stl_list();
-    for (auto &itr : list)
-      {
-        Faces& les_faces_du_bord = itr.faces();
-        construire_bord_lateral(les_faces_du_bord, les_faces, oldnbsom, num);
-      }
-  }
+  for (auto &itr : zone.faces_bord())
+    {
+      Faces& les_faces_du_bord = itr.faces();
+      construire_bord_lateral(les_faces_du_bord, les_faces, oldnbsom, num);
+    }
+
   // Les raccords:
-  {
-    auto& list = zone.faces_raccord().get_stl_list();
-    for (auto &itr : list)
-      {
-        Faces& les_faces_du_bord = itr->faces();
-        construire_bord_lateral(les_faces_du_bord, les_faces, oldnbsom, num);
-      }
-  }
+  for (auto &itr : zone.faces_raccord())
+    {
+      Faces& les_faces_du_bord = itr->faces();
+      construire_bord_lateral(les_faces_du_bord, les_faces, oldnbsom, num);
+    }
 
   // Devant
   if(nom_dvt_=="NULL")

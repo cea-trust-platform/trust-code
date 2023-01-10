@@ -67,8 +67,7 @@ Entree& Sondes_Int::readOn(Entree& s )
  */
 void Sondes_Int::postraiter(double temps)
 {
-  auto& list = get_stl_list();
-  for (auto& itr : list) itr.postraiter(temps);
+  for (auto& itr : *this) itr.postraiter(temps);
 }
 
 /*! @brief Effectue une mise a jour en temps de chacune des sondes de la liste.
@@ -78,8 +77,7 @@ void Sondes_Int::postraiter(double temps)
  */
 void Sondes_Int::mettre_a_jour(double temps, double tinit)
 {
-  auto& list = get_stl_list();
-  for (auto& itr : list) itr.mettre_a_jour(temps,tinit);
+  for (auto& itr : *this) itr.mettre_a_jour(temps,tinit);
 }
 
 /*! @brief Associe un postraitement a la liste des sondes.
