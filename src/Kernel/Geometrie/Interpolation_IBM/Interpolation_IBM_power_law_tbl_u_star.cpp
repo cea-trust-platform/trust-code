@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,6 +20,7 @@
 #include <Param.h>
 
 Implemente_instanciable( Interpolation_IBM_power_law_tbl_u_star, "Interpolation_IBM_power_law_tbl_u_star|IBM_power_law_tbl_u_star", Interpolation_IBM_mean_gradient ) ;
+// XD Interpolation_IBM_power_law_tbl_u_star interpolation_ibm_base IBM_power_law_tbl_u_star 1 Immersed Boundary Method (IBM): power law tbl u_star interpolation
 
 Sortie& Interpolation_IBM_power_law_tbl_u_star::printOn( Sortie& os ) const
 {
@@ -32,7 +33,7 @@ Entree& Interpolation_IBM_power_law_tbl_u_star::readOn( Entree& is )
   Param param(que_suis_je());
   Interpolation_IBM_base::set_param(param);
   param.ajouter("points_solides",&solid_points_lu_,Param::REQUIRED);  // XD_ADD_P field_base Node field giving the projection of the node on the immersed boundary
-  param.ajouter("est_dirichlet",&is_dirichlet_lu_,Param::REQUIRED);   // XD_ADD_P field_base Node field of booleans indicating whether the node belong to an element where the interface is
+  param.ajouter("est_dirichlet",&is_dirichlet_lu_,Param::REQUIRED);   // XD_ADD_P flag Node field of booleans indicating whether the node belong to an element where the interface is
   param.ajouter("correspondance_elements",&corresp_elems_lu_,Param::REQUIRED); // XD_ADD_P field_base Cell field giving the SALOME cell number
   param.ajouter("elements_solides",&solid_elems_lu_,Param::REQUIRED); // XD_ADD_P field_base Node field giving the element number containing the solid point
   param.lire_avec_accolades_depuis(is);
