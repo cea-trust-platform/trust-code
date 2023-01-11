@@ -30,12 +30,10 @@ public:
   virtual void set_param(Param& param);
 
   double sigma(const double T, const double P) const; // can be called if point-to-point calculation is required
-  void sigma(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const;
-
-private:
-  virtual void sigma_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const = 0;
+  void   sigma(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const;
 
 protected:
+  virtual void sigma_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const = 0;
   double sigma__ = -1;
 };
 

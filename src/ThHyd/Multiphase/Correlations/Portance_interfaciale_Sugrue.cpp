@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,7 +48,9 @@ void Portance_interfaciale_Sugrue::coefficient(const input_t& in, output_t& out)
   for (k = 0; k < N; k++)
     if (k!=n_l) // k gas phase
       {
-        double Eo = g_ * std::abs(in.rho[n_l]-in.rho[k]) * in.d_bulles[k]*in.d_bulles[k]/in.sigma[N*n_l+k];
+        int ind_trav = (k>n_l) ? (n_l*(N-1)-(n_l-1)*(n_l)/2) + (k-n_l-1) : (k*(N-1)-(k-1)*(k)/2) + (n_l-k-1);
+
+        double Eo = g_ * std::abs(in.rho[n_l]-in.rho[k]) * in.d_bulles[k]*in.d_bulles[k]/in.sigma[ind_trav];
         double Wo = std::min(Eo * in.k_turb[n_l]/std::max(in.nv[N*n_l+k]*in.nv[N*n_l+k], 1.e-8) , 6.); // Experimental validation up to Wo=6
         double f_Wo = std::min(0.03, 5.0404 - 5.0781*std::pow(Wo, 0.0108));
         double f_alp= std::max(1.0155-0.0154*std::exp(8.0506*in.alpha[k]), 0.);

@@ -43,9 +43,9 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
                             * k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : NULL ;
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
 
-  int e, f, b, c, d, d2, i, k, n, N = ch.valeurs().line_size(), Np = press.line_size(), D = dimension, Nk = (k_turb) ? (*k_turb).dimension(1) : 1 ,
-                                  cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), nf_tot = domaine.nb_faces();
-  DoubleTrav a_l(N), p_l(N), T_l(N), rho_l(N), mu_l(N), sigma_l(N,N), k_l(Nk), d_b_l(N), dv(N, N), ddv_c(4), coeff(N, N), //arguments pour coeff
+  int e, f, b, c, d, d2, i, k, l, n, N = ch.valeurs().line_size(), Np = press.line_size(), D = dimension, Nk = (k_turb) ? (*k_turb).dimension(1) : 1 ,
+                                     cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), nf_tot = domaine.nb_faces();
+  DoubleTrav a_l(N), p_l(N), T_l(N), rho_l(N), mu_l(N), sigma_l(N*(N-1)/2), k_l(Nk), d_b_l(N), dv(N, N), ddv_c(4), coeff(N, N), //arguments pour coeff
              vr_l(N,D), scal_ur(N), scal_u(N), pvit_l(N, D), vort_l( D==2 ? 1 :D), grad_l(D,D), scal_grad(D); // Requis pour corrections vort et u_l-u-g
   double fac_e, fac_f, vl_norm;
   const Portance_interfaciale_base& correlation_pi = ref_cast(Portance_interfaciale_base, correlation_.valeur());
@@ -55,25 +55,58 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
   DoubleTab& Cl = out.Cl;
   Cl.resize(N, N);
 
+  // Et pour les methodes span de la classe Interface pour choper la tension de surface
+  const int nbelem_tot = domaine.nb_elem_tot(), nb_max_sat =  N * (N-1) /2; // oui !! suite arithmetique !!
+  DoubleTrav Sigma_tab(nbelem_tot,nb_max_sat);
+
+  // remplir les tabs ...
+  for (k = 0; k < N; k++)
+    for (l = k + 1; l < N; l++)
+      {
+        if (milc.has_saturation(k, l))
+          {
+            Saturation_base& z_sat = milc.get_saturation(k, l);
+            const int ind_trav = (k*(N-1)-(k-1)*(k)/2) + (l-k-1); // Et oui ! matrice triang sup !
+            // XXX XXX XXX
+            // Attention c'est dangereux ! on suppose pour le moment que le champ de pression a 1 comp. Par contre la taille de res est nb_max_sat*nbelem !!
+            // Aussi, on passe le Span le nbelem pour le champ de pression et pas nbelem_tot ....
+            assert(press.line_size() == 1);
+            assert(temp.line_size() == N);
+
+            std::map<std::string, SpanD> sats_all = { { "pressure", press.get_span_tot() /* elem reel */}, {"temperature", temp.get_span_tot() } };
+
+            sats_all.insert( { "sigma", Sigma_tab.get_span_tot() });
+
+            z_sat.compute_all_frottement_interfacial(sats_all, nb_max_sat, ind_trav);
+          }
+        else if (milc.has_interface(k, l))
+          {
+            Interface_base& sat = milc.get_interface(k,l);
+            const int ind_trav = (k*(N-1)-(k-1)*(k)/2) + (l-k-1); // Et oui ! matrice triang sup !
+            for (i = 0 ; i<nbelem_tot ; i++) Sigma_tab(i,ind_trav) = sat.sigma(temp(i,k),press(i,k * (Np > 1))) ;
+          }
+      }
+
+
   /* elements */
-  for (e = 0; e < domaine.nb_elem_tot(); e++)
+  for (e = 0; e < nbelem_tot; e++)
     {
       /* arguments de coeff */
 
       for (n = 0; n < N; n++)
         {
-          for (k = 0; k < N; k++)
+          for (k = n+1; k < N; k++)
             if(milc.has_interface(n, k))
               {
-                Interface_base& sat = milc.get_interface(n, k);
-                sigma_l(n,k) = sat.sigma(temp(e,n), press(e,n * (Np > 1)));
+                const int ind_trav = (n*(N-1)-(n-1)*(n)/2) + (k-n-1);
+                sigma_l(ind_trav) = Sigma_tab(e, ind_trav);
               }
           for (k = 0; k < N; k++)
             dv(k, n) = ch.v_norm(pvit, pvit, e, -1, k, n, nullptr, nullptr);
         }
 
       in.alpha = &alpha(e, 0), in.T = &temp(e, 0), in.p = press(e, 0), in.nv = &dv(0, 0);
-      in.mu = &mu(!cM * e, 0), in.rho = &rho(!cR * e, 0), in.sigma = &sigma_l(0,0);
+      in.mu = &mu(!cM * e, 0), in.rho = &rho(!cR * e, 0), in.sigma = &sigma_l(0);
       in.k_turb  = (k_turb)   ? &(*k_turb)(e,0) : nullptr, in.d_bulles= (d_bulles) ? &(*d_bulles)(e,0) : nullptr;
 
       correlation_pi.coefficient(in, out);
@@ -165,11 +198,11 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
                   rho_l(n) += vf_dir(f, c)/vf(f) * rho(!cR * e, n);
                   mu_l(n)  += vf_dir(f, c)/vf(f) * mu(!cM * e, n);
                   d_b_l(n) += (d_bulles) ? vf_dir(f, c)/vf(f) * (*d_bulles)(e,n) : 0;
-                  for (k = 0; k < N; k++)
+                  for (k = n+1; k < N; k++)
                     if(milc.has_interface(n, k))
                       {
-                        Interface_base& sat = milc.get_interface(n, k);
-                        sigma_l(n,k) += vf_dir(f, c)/vf(f) * sat.sigma(temp(e,n), press(e,n * (Np > 1)));
+                        const int ind_trav = (n*(N-1)-(n-1)*(n)/2) + (k-n-1);
+                        sigma_l(ind_trav) += vf_dir(f, c) / vf(f) * Sigma_tab(e, ind_trav);
                       }
                   for (k = 0; k < N; k++)
                     dv(k, n) += vf_dir(f, c)/vf(f) * ch.v_norm(pvit, pvit, e, f, k, n, nullptr, nullptr);
@@ -178,7 +211,7 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
             }
 
           in.alpha = &a_l(0), in.T = &T_l(0), in.p = p_l( 0), in.nv = &dv(0, 0);
-          in.mu = &mu_l( 0), in.rho = &rho_l(0), in.sigma = &sigma_l(0,0);
+          in.mu = &mu_l( 0), in.rho = &rho_l(0), in.sigma = &sigma_l(0);
           in.k_turb  = (k_turb)   ? &k_l(0) : nullptr, in.d_bulles= (d_bulles) ? &d_b_l(0) : nullptr;
 
           correlation_pi.coefficient(in, out);

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,8 +48,10 @@ void Portance_interfaciale_Tomiyama::coefficient(const input_t& in, output_t& ou
   for (k = 0; k < N; k++)
     if (k!=n_l) // k gas phase
       {
+        int ind_trav = (k>n_l) ? (n_l*(N-1)-(n_l-1)*(n_l)/2) + (k-n_l-1) : (k*(N-1)-(k-1)*(k)/2) + (n_l-k-1);
+
         double Re = in.rho[n_l] * in.nv[N*n_l+k] * in.d_bulles[k]/in.mu[n_l];
-        double Eo = g_ * std::abs(in.rho[n_l]-in.rho[k]) * in.d_bulles[k]*in.d_bulles[k]/in.sigma[N*n_l+k];
+        double Eo = g_ * std::abs(in.rho[n_l]-in.rho[k]) * in.d_bulles[k]*in.d_bulles[k]/in.sigma[ind_trav];
         double f_Eo = .00105*Eo*Eo*Eo - .0159*Eo*Eo - .0204*Eo + .474;
         double Cl;
         if (Eo<4) Cl = std::min( .288*std::tanh( .121*Re ), f_Eo) ;

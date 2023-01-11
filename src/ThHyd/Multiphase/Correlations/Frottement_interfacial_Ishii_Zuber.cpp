@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -63,9 +63,10 @@ void Frottement_interfacial_Ishii_Zuber::coefficient(const DoubleTab& alpha, con
   for (int k = 0; k < N; k++)
     if (k!=n_l)
       {
+        int ind_trav = (k>n_l) ? (n_l*(N-1)-(n_l-1)*(n_l)/2) + (k-n_l-1) : (k*(N-1)-(k-1)*(k)/2) + (n_l-k-1);
 
         double Re = rho(n_l) * std::max(ndv(n_l,k), 1.e-6)  * d_bulles(k)/mu(n_l);
-        double Eo = g_ * std::abs(rho(n_l)-rho(k)) * d_bulles(k)*d_bulles(k)/sigma(n_l,k);
+        double Eo = g_ * std::abs(rho(n_l)-rho(k)) * d_bulles(k)*d_bulles(k)/sigma(ind_trav);
         double Cd = beta_ * std::max( 24./Re*(1.+.1*std::pow(Re, .75))  , 2.3*std::sqrt(Eo));
 
         coeff(k, n_l, 1) = (alpha(n_l) < 1.e-6) ? 3./4.*Cd/d_bulles(k) * alpha(k) * rho(n_l) * alpha(n_l) * 1.e6
@@ -89,9 +90,10 @@ void Frottement_interfacial_Ishii_Zuber::coefficient_CD(const DoubleTab& alpha, 
   for (int k = 0; k < N; k++)
     if (k!=n_l)
       {
+        int ind_trav = (k>n_l) ? (n_l*(N-1)-(n_l-1)*(n_l)/2) + (k-n_l-1) : (k*(N-1)-(k-1)*(k)/2) + (n_l-k-1);
 
         double Re = rho(n_l) * std::max(ndv(n_l,k), 1.e-6)  * d_bulles(k)/mu(n_l);
-        double Eo = g_ * std::abs(rho(n_l)-rho(k)) * d_bulles(k)*d_bulles(k)/sigma(n_l,k);
+        double Eo = g_ * std::abs(rho(n_l)-rho(k)) * d_bulles(k)*d_bulles(k)/sigma(ind_trav);
         double Cd = beta_ * std::max( 24./Re*(1.+.1*std::pow(Re, .75))  , 2.3*std::sqrt(Eo));
 
         coeff(k, n_l) = (coeff(n_l, k) = Cd);

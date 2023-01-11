@@ -367,7 +367,6 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
           {
             Ts_tab[i].resize(nbelem_tot,nb_max_sat), Sigma_tab[i].resize(nbelem_tot,nb_max_sat), Lvap_tab[i].resize(nbelem_tot,nb_max_sat);
             const DoubleTab& press = ref_cast(Pb_Multiphase, op_ext[i]->equation().probleme()).eq_qdm.pression()->passe();
-            const DoubleTab& temp  = ref_cast(Pb_Multiphase, op_ext[i]->equation().probleme()).eq_energie.inconnue()->passe();
             for (k = 0; k < N[i]; k++)
               for (l = k + 1; l < N[i]; l++)
                 if (milc.has_saturation(k, l))
@@ -378,9 +377,14 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                     // Attention c'est dangereux ! on suppose pour le moment que le champ de pression a 1 comp. Par contre la taille de res est nb_max_sat*nbelem !!
                     // Aussi, on passe le Span le nbelem pour le champ de pression et pas nbelem_tot ....
                     assert (press.line_size() == 1);
-                    z_sat.Tsat( press.get_span_tot(),   Ts_tab[i].get_span_tot(),nb_max_sat,ind_trav);
-                    z_sat.Lvap( press.get_span_tot(), Lvap_tab[i].get_span_tot(),nb_max_sat,ind_trav);
-                    z_sat.sigma( temp.get_span_tot(),       press.get_span_tot(), Sigma_tab[i].get_span_tot(),nb_max_sat,ind_trav);
+
+                    std::map<std::string, SpanD> sats_all = { { "pressure", press.get_span_tot() /* elem reel */} };
+
+                    sats_all.insert( { "Tsat", Ts_tab[i].get_span_tot() });
+                    sats_all.insert( { "Lvap", Lvap_tab[i].get_span_tot() });
+                    sats_all.insert( {"sigma", Sigma_tab[i].get_span_tot() });
+
+                    z_sat.compute_all_flux_parietal(sats_all, nb_max_sat, ind_trav);
                   }
           }
       }

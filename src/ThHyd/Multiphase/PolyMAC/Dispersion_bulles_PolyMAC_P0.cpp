@@ -71,7 +71,7 @@ void Dispersion_bulles_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
   int N = pvit.line_size() , Np = press.line_size(), D = dimension, nf_tot = domaine.nb_faces_tot(), nf = domaine.nb_faces(), ne_tot = domaine.nb_elem_tot(),  cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), Nk = (k_turb) ? (*k_turb).dimension(1) : 1;
   DoubleTrav nut(domaine.nb_elem_tot(), N); //viscosite turbulente
   if (is_turb) ref_cast(Viscosite_turbulente_base, ref_cast(Op_Diff_Turbulent_PolyMAC_P0_Face, equation().operateur(0).l_op_base()).correlation().valeur()).eddy_viscosity(nut); //remplissage par la correlation
-  DoubleTrav a_l(N), p_l(N), T_l(N), rho_l(N), mu_l(N), sigma_l(N,N), dv(N, N), ddv(N, N, 4), ddv_c(4), nut_l(N), k_l(Nk), d_b_l(N), coeff(N, N); //arguments pour coeff
+  DoubleTrav a_l(N), p_l(N), T_l(N), rho_l(N), mu_l(N), sigma_l(N*(N-1)/2), dv(N, N), ddv(N, N, 4), ddv_c(4), nut_l(N), k_l(Nk), d_b_l(N), coeff(N, N); //arguments pour coeff
 
   const Dispersion_bulles_base& correlation_db = ref_cast(Dispersion_bulles_base, correlation_.valeur());
 
@@ -83,6 +83,39 @@ void Dispersion_bulles_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
   const DoubleTab&  fg_w = ch_a.fgrad_w;
   const Conds_lim& cls_a = ch_a.domaine_Cl_dis().les_conditions_limites(); 		// conditions aux limites du champ alpha
   const IntTab&    fcl_a = ch_a.fcl();	// tableaux utilitaires sur les CLs : fcl(f, .) = (type de la CL, no de la CL, indice dans la CL)
+
+
+  // Et pour les methodes span de la classe Interface pour choper la tension de surface
+  const int nb_max_sat =  N * (N-1) /2; // oui !! suite arithmetique !!
+  DoubleTrav Sigma_tab(ne_tot,nb_max_sat);
+
+  // remplir les tabs ...
+  for (int k = 0; k < N; k++)
+    for (int l = k + 1; l < N; l++)
+      {
+        if (milc.has_saturation(k, l))
+          {
+            Saturation_base& z_sat = milc.get_saturation(k, l);
+            const int ind_trav = (k*(N-1)-(k-1)*(k)/2) + (l-k-1); // Et oui ! matrice triang sup !
+            // XXX XXX XXX
+            // Attention c'est dangereux ! on suppose pour le moment que le champ de pression a 1 comp. Par contre la taille de res est nb_max_sat*nbelem !!
+            // Aussi, on passe le Span le nbelem pour le champ de pression et pas nbelem_tot ....
+            assert(press.line_size() == 1);
+            assert(temp.line_size() == N);
+
+            std::map<std::string, SpanD> sats_all = { { "pressure", press.get_span_tot() /* elem reel */}, {"temperature", temp.get_span_tot() } };
+
+            sats_all.insert( { "sigma", Sigma_tab.get_span_tot() });
+
+            z_sat.compute_all_frottement_interfacial(sats_all, nb_max_sat, ind_trav);
+          }
+        else if (milc.has_interface(k, l))
+          {
+            Interface_base& sat = milc.get_interface(k,l);
+            const int ind_trav = (k*(N-1)-(k-1)*(k)/2) + (l-k-1); // Et oui ! matrice triang sup !
+            for (int i = 0 ; i<ne_tot ; i++) Sigma_tab(i,ind_trav) = sat.sigma(temp(i,k),press(i,k * (Np > 1))) ;
+          }
+      }
 
   for (int n = 0; n < N; n++)
     for (int f = 0; f < nf_tot; f++)
@@ -139,11 +172,11 @@ void Dispersion_bulles_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
                 mu_l(n)  += vf_dir(f, c)/vf(f) * mu(!cM * e, n);
                 nut_l(n) += is_turb    ? vf_dir(f, c)/vf(f) * nut(e,n) : 0;
                 d_b_l(n) += (d_bulles) ? vf_dir(f, c)/vf(f) * (*d_bulles)(e,n) : 0;
-                for (int k = 0; k < N; k++)
+                for (int k = n+1; k < N; k++)
                   if (milc.has_interface(n,k))
                     {
-                      Interface_base& sat = milc.get_interface(n, k);
-                      sigma_l(n,k) += vf_dir(f, c)/vf(f) * sat.sigma(temp(e,n),press(e,n * (Np > 1)));
+                      const int ind_trav = (n*(N-1)-(n-1)*(n)/2) + (k-n-1);
+                      sigma_l(ind_trav) += vf_dir(f, c) / vf(f) * Sigma_tab(e, ind_trav);
                     }
                 for (int k = 0; k < N; k++)
                   dv(k, n) += vf_dir(f, c)/vf(f) * ch.v_norm(pvit, pvit, e, f, k, n, nullptr, nullptr);
@@ -175,11 +208,11 @@ void Dispersion_bulles_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
           mu_l(n)  =    mu(!cM * e, n);
           nut_l(n) = is_turb    ? nut(e,n) : 0;
           d_b_l(n) = (d_bulles) ? (*d_bulles)(e,n) : 0;
-          for (int k = 0; k < N; k++)
+          for (int k = n+1; k < N; k++)
             if (milc.has_interface(n,k))
               {
-                Interface_base& sat = milc.get_interface(n, k);
-                sigma_l(n,k) = sat.sigma(temp(e,n),press(e,n * (Np > 1)));
+                const int ind_trav = (n*(N-1)-(n-1)*(n)/2) + (k-n-1);
+                sigma_l(ind_trav) = Sigma_tab(e, ind_trav);
               }
 
           for (int k = 0; k < N; k++)

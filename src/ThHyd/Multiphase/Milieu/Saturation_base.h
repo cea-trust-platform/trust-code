@@ -42,6 +42,8 @@ public:
 
   // Called from Flux_interfacial
   virtual void compute_all_flux_interfacial(MSpanD , int ncomp = 1, int ind = 0) const;
+  virtual void compute_all_frottement_interfacial(MSpanD , int ncomp = 1, int ind = 0) const;
+  virtual void compute_all_flux_parietal(MSpanD , int ncomp = 1, int ind = 0) const;
 
   // Methods that can be called if point-to-point calculation is required
   double Tsat(const double P) const { return double_to_span<&Saturation_base::Tsat_>(P); }

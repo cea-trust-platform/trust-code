@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,7 +47,10 @@ void Frottement_interfacial_Weber::coefficient(const DoubleTab& alpha, const Dou
                                                const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma, double Dh,
                                                const DoubleTab& ndv, const DoubleTab& d_bulles, DoubleTab& coeff) const
 {
-  double Db = We_c * sigma(n_l, n_g) / (rho(n_l) * ndv(n_l, n_g) * ndv(n_l, n_g)),					//diametre des bulles
+  int N = ref_cast(Pb_Multiphase, pb_.valeur()).nb_phases();
+  int ind_trav = (n_g>n_l) ? (n_l*(N-1)-(n_l-1)*(n_l)/2) + (n_g-n_l-1) : (n_g*(N-1)-(n_g-1)*(n_g)/2) + (n_l-n_g-1);
+
+  double Db = We_c * sigma(ind_trav) / (rho(n_l) * ndv(n_l, n_g) * ndv(n_l, n_g)),					//diametre des bulles
          Reb = rho(n_l) * ndv(n_l, n_g) * Db / mu(n_l), 											//Reynolds associe a une bulle
          Cx = 24. / Reb * (1. + 0.1 * pow(Reb, 0.75)); 												//coefficient de trainee
 
