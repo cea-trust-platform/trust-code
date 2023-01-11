@@ -1692,6 +1692,7 @@ case $TRUST_ARCH_CC in
 	# sur clang v > 10 ou 11, ajouter -ffp-model=strict -ffp-exception-behavior=strict pour eviter fausses FPE
 	clangFlags="-Wsuggest-override -ffp-exception-behavior=strict -Wno-unsupported-floating-point-opt" && [ "`echo $TRUST_VERSION_CLANG | awk '{split($1,a,".");print (a[1]<11?1:0)}'`" = 1 ] && clangFlags=""
 	CppFlags=$CppFlags" "$clangFlags
+        [ `uname -s` = "Darwin" ] && CppFlags=$CppFlags" -Wl,-w" #seul moyen de supprimer les warnings "could not create compact unwind" sur Mac
 	# GF pas convaincu des erreurs trouvees
 	#CppFlags=$CppFlags" -pedantic" # mis en commentaire au passage de clang 4.0.0 car sinon erreur compilation en mode debug
 	CppFlags=$CppFlags" -Wno-tautological-compare -Werror"
