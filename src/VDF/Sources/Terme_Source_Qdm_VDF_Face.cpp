@@ -15,6 +15,7 @@
 
 #include <Terme_Source_Qdm_VDF_Face.h>
 #include <Neumann_sortie_libre.h>
+#include <Discretisation_base.h>
 #include <Dirichlet_homogene.h>
 #include <Champ_Uniforme.h>
 #include <Equation_base.h>
@@ -216,4 +217,11 @@ void Terme_Source_Qdm_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& re
 void Terme_Source_Qdm_VDF_Face::mettre_a_jour(double temps)
 {
   la_source->mettre_a_jour(temps);
+}
+
+int Terme_Source_Qdm_VDF_Face::initialiser(double temps)
+{
+  equation().discretisation().nommer_completer_champ_physique(equation().domaine_dis(), "source_qdm", "", la_source.valeur(), equation().probleme());
+  la_source->initialiser(temps);
+  return Source_base::initialiser(temps);
 }

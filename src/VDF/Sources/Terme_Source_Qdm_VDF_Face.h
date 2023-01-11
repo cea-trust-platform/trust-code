@@ -34,12 +34,13 @@ class Terme_Source_Qdm_VDF_Face : public Source_base, public Terme_Source_Qdm
 {
   Declare_instanciable(Terme_Source_Qdm_VDF_Face);
 public:
+  int initialiser(double temps) override;
   void associer_pb(const Probleme_base& ) override { }
   void mettre_a_jour(double ) override;
   inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
   inline int has_interface_blocs() const override { return 1; }
-  void check_multiphase_compatibility() const override { } // certooooooo
+  void check_multiphase_compatibility() const override { }
 
 protected:
   REF(Domaine_VDF) le_dom_VDF;
