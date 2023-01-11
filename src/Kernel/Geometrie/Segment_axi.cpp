@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Segment_axi.h>
-#include <DomaineAxi1d.h>
+#include <ZoneAxi1d.h>
 
 Implemente_instanciable( Segment_axi, "Segment_axi", Segment ) ;
 
@@ -33,7 +33,7 @@ Entree& Segment_axi::readOn( Entree& is )
 void Segment_axi::calculer_volumes(DoubleVect& volumes) const
 {
   const Zone& zone=ma_zone.valeur();
-  const DomaineAxi1d& dom = ref_cast(DomaineAxi1d,zone.domaine());
+  const ZoneAxi1d& dom = ref_cast(ZoneAxi1d,zone.domaine());
 
   int S1,S2;
 

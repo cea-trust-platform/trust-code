@@ -13,56 +13,43 @@
 *
 *****************************************************************************/
 
-#include <DomaineAxi1d.h>
-#include <Param.h>
+#ifndef ZoneAxi1d_included
+#define ZoneAxi1d_included
 
-Implemente_instanciable_sans_constructeur( DomaineAxi1d, "DomaineAxi1d", Zone ) ;
-// XD DomaineAxi1d domaine DomaineAxi1d -1 1D domain
-DomaineAxi1d::DomaineAxi1d()
-{
-  axi1d_ = 1;
-}
+#include <Zone.h>
+#include <Champ.h>
+#include <Ref_DoubleTab.h>
+class Param;
 
-Sortie& DomaineAxi1d::printOn( Sortie& os ) const
-{
-  Zone::printOn( os );
-  return os;
-}
+/*! @brief : class ZoneAxi1d
+ *
+ *  <Description of class ZoneAxi1d>
+ */
 
-Entree& DomaineAxi1d::readOn( Entree& is )
+class ZoneAxi1d : public Zone
 {
-  Param param(que_suis_je());
-  set_param(param);
-  param.lire_avec_accolades_depuis(is);
-  return is;
-}
 
-void DomaineAxi1d::set_param(Param& param)
-{
-  param.ajouter("ORIGINE",&champ_orig,Param::REQUIRED);
-}
+  Declare_instanciable( ZoneAxi1d ) ;
 
-const Champ& DomaineAxi1d::champ_origine()
-{
-  return champ_orig;
-}
+public :
 
-const Champ& DomaineAxi1d::champ_origine() const
-{
-  return champ_orig;
-}
+  const Champ& champ_origine() const;
+  const Champ& champ_origine();
+  const DoubleTab& origine_repere();
+  const DoubleTab& origine_repere() const;
+  void associer_origine_repere(const DoubleTab& orig);
+  inline double origine_repere(int i,int j);
+  inline double origine_repere(int i,int j) const;
 
-const DoubleTab& DomaineAxi1d::origine_repere()
-{
-  return ref_origine_.valeur();
-}
 
-const DoubleTab& DomaineAxi1d::origine_repere() const
-{
-  return ref_origine_.valeur();
-}
+protected :
+  void set_param(Param& param);
 
-void DomaineAxi1d::associer_origine_repere(const DoubleTab& orig)
-{
-  ref_origine_ = orig;
-}
+  Champ champ_orig;
+  Ref_DoubleTab ref_origine_;
+};
+
+inline double ZoneAxi1d::origine_repere(int i,int j) { return ref_origine_.valeur()(i,j); }
+inline double ZoneAxi1d::origine_repere(int i,int j) const {  return ref_origine_.valeur()(i,j); }
+
+#endif /* ZoneAxi1d_included */

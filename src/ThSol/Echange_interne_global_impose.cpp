@@ -19,7 +19,7 @@
 #include <Probleme_base.h>
 #include <Zone_Cl_dis_base.h>
 #include <Zone_VF.h>
-#include <DomaineAxi1d.h>
+#include <ZoneAxi1d.h>
 
 
 Implemente_instanciable(Echange_interne_global_impose,"Paroi_echange_interne_global_impose",Echange_global_impose);
@@ -97,7 +97,7 @@ void Echange_interne_global_impose::completer()
 
   if (zvf.zone().domaine().axi1d())
     {
-      const DomaineAxi1d& domax = ref_cast(DomaineAxi1d,zvf.zone().domaine());
+      const ZoneAxi1d& domax = ref_cast(ZoneAxi1d,zvf.zone().domaine());
       const IntTab& face_voisins = zvf.face_voisins();
       const DoubleTab& xv = zvf.xv();
       const IntTab& fmap = t_ext.face_map();

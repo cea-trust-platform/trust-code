@@ -13,7 +13,7 @@
 *
 *****************************************************************************/
 #include <ModifyDomaineAxi1D.h>
-#include <DomaineAxi1d.h>
+#include <ZoneAxi1d.h>
 
 Implemente_instanciable(ModifyDomaineAxi1D,"ModifyDomaineAxi1D|Convert_1D_to_1Daxi",Interprete);
 // XD modifydomaineAxi1d interprete modifydomaineAxi1d 0 Convert a 1D mesh to 1D axisymmetric mesh
@@ -35,7 +35,7 @@ Entree& ModifyDomaineAxi1D::interpreter(Entree& is )
 {
   Nom dom;
   is >> dom;
-  is >> ref_cast(DomaineAxi1d, objet(dom));
+  is >> ref_cast(ZoneAxi1d, objet(dom));
   return is;
 }
 

@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Zone_EF_axi.h>
-#include <DomaineAxi1d.h>
+#include <ZoneAxi1d.h>
 #include <Zone_Cl_dis_base.h>
 #include <Equation_base.h>
 #include <Milieu_base.h>
@@ -124,7 +124,7 @@ void Zone_EF_axi::calculer_IPhi(const Zone_Cl_dis_base& zcl)
 
 void Zone_EF_axi::remplir_tableau_origine()
 {
-  DomaineAxi1d& domax = domaine_axi();
+  ZoneAxi1d& domax = domaine_axi();
   const Champ& orig = domax.champ_origine();
 
   origine_repere_.resize(0,Objet_U::dimension-1);
@@ -154,7 +154,7 @@ void Zone_EF_axi::verifie_compatibilite_domaine()
       Cerr << " Error in " << que_suis_je() << " : the type of domain " << zone().domaine().que_suis_je();
       Cerr << " is not compatible" << finl;
       Cerr << " with the discretisation EF_axi. " << finl;
-      Cerr << " Please use the discretization EF or define a domain of type DomaineAxi1d." << finl;
+      Cerr << " Please use the discretization EF or define a domain of type ZoneAxi1d." << finl;
       Cerr << "*****************************************************************************" << finl;
       Process::exit();
     }
@@ -169,13 +169,13 @@ void Zone_EF_axi::discretiser()
   Zone_EF::discretiser();
 }
 
-const DomaineAxi1d& Zone_EF_axi::domaine_axi() const
+const ZoneAxi1d& Zone_EF_axi::domaine_axi() const
 {
-  return ref_cast(DomaineAxi1d,zone().domaine());
+  return ref_cast(ZoneAxi1d,zone().domaine());
 }
 
-DomaineAxi1d& Zone_EF_axi::domaine_axi()
+ZoneAxi1d& Zone_EF_axi::domaine_axi()
 {
-  return ref_cast(DomaineAxi1d,zone().domaine());
+  return ref_cast(ZoneAxi1d,zone().domaine());
 }
 

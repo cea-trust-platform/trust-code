@@ -18,7 +18,7 @@
 
 #include <Zone_EF.h>
 
-class DomaineAxi1d;
+class ZoneAxi1d;
 /*! @brief : class Zone_EF_axi
  *
  *  <Description of class Zone_EF_axi>
@@ -39,8 +39,8 @@ public :
   void remplir_tableau_origine();
   void discretiser() override;
 
-  const DomaineAxi1d& domaine_axi() const;
-  DomaineAxi1d& domaine_axi();
+  const ZoneAxi1d& domaine_axi() const;
+  ZoneAxi1d& domaine_axi();
 
   void verifie_compatibilite_domaine() override;
 

@@ -13,46 +13,56 @@
 *
 *****************************************************************************/
 
-#ifndef DomaineAxi1d_included
-#define DomaineAxi1d_included
+#include <ZoneAxi1d.h>
+#include <Param.h>
 
-#include <Zone.h>
-#include <Champ.h>
-#include <Ref_DoubleTab.h>
-class Param;
-
-/*! @brief : class DomaineAxi1d
- *
- *  <Description of class DomaineAxi1d>
- *
- *
- *
- */
-
-class DomaineAxi1d : public Domaine
+Implemente_instanciable_sans_constructeur( ZoneAxi1d, "DomaineAxi1d", Zone ) ;
+// XD ZoneAxi1d domaine ZoneAxi1d -1 1D domain
+ZoneAxi1d::ZoneAxi1d()
 {
+  axi1d_ = 1;
+}
 
-  Declare_instanciable( DomaineAxi1d ) ;
+Sortie& ZoneAxi1d::printOn( Sortie& os ) const
+{
+  Zone::printOn( os );
+  return os;
+}
 
-public :
+Entree& ZoneAxi1d::readOn( Entree& is )
+{
+  Param param(que_suis_je());
+  set_param(param);
+  param.lire_avec_accolades_depuis(is);
+  return is;
+}
 
-  const Champ& champ_origine() const;
-  const Champ& champ_origine();
-  const DoubleTab& origine_repere();
-  const DoubleTab& origine_repere() const;
-  void associer_origine_repere(const DoubleTab& orig);
-  inline double origine_repere(int i,int j);
-  inline double origine_repere(int i,int j) const;
+void ZoneAxi1d::set_param(Param& param)
+{
+  param.ajouter("ORIGINE",&champ_orig,Param::REQUIRED);
+}
 
+const Champ& ZoneAxi1d::champ_origine()
+{
+  return champ_orig;
+}
 
-protected :
-  void set_param(Param& param);
+const Champ& ZoneAxi1d::champ_origine() const
+{
+  return champ_orig;
+}
 
-  Champ champ_orig;
-  Ref_DoubleTab ref_origine_;
-};
+const DoubleTab& ZoneAxi1d::origine_repere()
+{
+  return ref_origine_.valeur();
+}
 
-inline double DomaineAxi1d::origine_repere(int i,int j) { return ref_origine_.valeur()(i,j); }
-inline double DomaineAxi1d::origine_repere(int i,int j) const {  return ref_origine_.valeur()(i,j); }
+const DoubleTab& ZoneAxi1d::origine_repere() const
+{
+  return ref_origine_.valeur();
+}
 
-#endif /* DomaineAxi1d_included */
+void ZoneAxi1d::associer_origine_repere(const DoubleTab& orig)
+{
+  ref_origine_ = orig;
+}

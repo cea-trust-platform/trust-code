@@ -15,7 +15,7 @@
 
 #include <Faces.h>
 #include <Faces2.h>
-#include <DomaineAxi1d.h>
+#include <ZoneAxi1d.h>
 #include <communications.h>
 #include <Linear_algebra_tools_impl.h>
 
@@ -647,7 +647,7 @@ void Faces::calculer_surfaces(DoubleVect& surfaces) const
       {
         assert(dimension==3);
 
-        const DomaineAxi1d& domax = ref_cast(DomaineAxi1d,dom);
+        const ZoneAxi1d& domax = ref_cast(ZoneAxi1d,dom);
 
         for(int face=0; face <nb_faces_tot(); face++)
           {
