@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,5 +24,8 @@ Sortie& Flux_interfacial_base::printOn(Sortie& os) const
 
 Entree& Flux_interfacial_base::readOn(Entree& is)
 {
+  Param param(que_suis_je());
+  param.ajouter("dv_min", &dv_min_);
+  param.lire_avec_accolades_depuis(is);
   return is;
 }

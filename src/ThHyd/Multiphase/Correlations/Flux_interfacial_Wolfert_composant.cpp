@@ -27,6 +27,7 @@ Entree& Flux_interfacial_Wolfert_composant::readOn(Entree& is)
 {
   Param param(que_suis_je());
   param.ajouter("Pr_t", &Pr_t_);
+  param.ajouter("dv_min", &dv_min_);
   param.lire_avec_accolades_depuis(is);
 
   return is;

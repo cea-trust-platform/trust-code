@@ -49,6 +49,7 @@ public:
     double dh;            // diametre hyd
     const double *alpha;  // alpha[n] : taux de vide de la phase n
     const double *T;      // T[n]     : temperature de la phase n
+    const double *T_passe;// T_passe[n]: temperature de la phase n a l'iteration precedente
     double p;             // pression
     const double *nv;     // nv[N * k + l] : norme de ||v_k - v_l||
     const double *lambda; // lambda[n]     : conductivite de la phase n
@@ -75,6 +76,8 @@ public:
     DoubleTab dp_hi; //dp_hi(k, l)    : derivee de hi(k, l) en p
   };
   virtual void coeffs(const input_t& input, output_t& output) const = 0;
+  double dv_min() const {return dv_min_;};
+  double dv_min_ = 0.01;
 };
 
 #endif

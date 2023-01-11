@@ -41,6 +41,9 @@ Entree& Source_Flux_interfacial_base::readOn(Entree& is)
     Process::exit(que_suis_je() + " : a flux_interfacial correlation must be defined in the global correlations { } block!");
 
   correlation_ = pbm.get_correlation("flux_interfacial");
+
+  dv_min = ref_cast(Flux_interfacial_base, correlation_->valeur()).dv_min();
+
   return is;
 }
 
@@ -142,7 +145,7 @@ void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab&
                         &ch_temp = pbm.eq_energie.inconnue().valeur(), &ch_p = pbm.eq_qdm.pression().valeur(),
                          *pch_rho = sub_type(Champ_Inc_base, ch_rho) ? &ref_cast(Champ_Inc_base, ch_rho) : nullptr;
 
-  const DoubleTab& inco = ch.valeurs(), &alpha = ch_alpha.valeurs(), &press = ch_p.valeurs(), &temp  = ch_temp.valeurs(),
+  const DoubleTab& inco = ch.valeurs(), &alpha = ch_alpha.valeurs(), &press = ch_p.valeurs(), &temp  = ch_temp.valeurs(), &temp_p  = ch_temp.passe(),
                    &h = milc.enthalpie().valeurs(), *dP_h = der_h.count("pression") ? &der_h.at("pression") : nullptr, *dT_h = der_h.count("temperature") ? &der_h.at("temperature") : nullptr,
                     &lambda = milc.conductivite().passe(), &mu = milc.viscosite_dynamique().passe(), &rho = milc.masse_volumique().passe(), &Cp = milc.capacite_calorifique().passe(),
                      &p_ar = ch_a_r.passe(), &a_r = ch_a_r.valeurs(), &qi = qpi(), &dTqi = dT_qpi(), &daqi = da_qpi(), &dpqi = dp_qpi(),
@@ -242,7 +245,7 @@ void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab&
 
   for (e = 0; e < domaine.nb_elem(); e++)
     {
-      double vol = pe(e) * ve(e), x, G = 0, dv_min = 0.1, dh = milc.diametre_hydraulique_elem()(e), dP_G = 0.; // E. Saikali : initialise dP_G ici sinon fuite memoire ...
+      double vol = pe(e) * ve(e), x, G = 0, dh = milc.diametre_hydraulique_elem()(e), dP_G = 0.; // E. Saikali : initialise dP_G ici sinon fuite memoire ...
       for (in.v = 0, d = 0; d < D; d++)
         for (n = 0; n < N; n++)
           in.v(n, d) = pvit_elem(e, N * d + n);
@@ -252,7 +255,7 @@ void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab&
       for (n = 0; n < N; n++)
         for (k = 0 ; k<N ; k++) nv(n, k) = std::max(sqrt(nv(n, k)), dv_min);
       //coeffs d'echange vers l'interface (explicites)
-      in.dh = dh, in.alpha = &alpha(e, 0), in.T = &temp(e, 0), in.p = press(e, 0), in.nv = &nv(0, 0), in.h = &h(e, 0), in.dT_h = dT_h ? &(*dT_h)(e, 0) : nullptr, in.dP_h = dP_h ? &(*dP_h)(e, 0) : nullptr;
+      in.dh = dh, in.alpha = &alpha(e, 0), in.T = &temp(e, 0),  in.T_passe = &temp_p(e, 0), in.p = press(e, 0), in.nv = &nv(0, 0), in.h = &h(e, 0), in.dT_h = dT_h ? &(*dT_h)(e, 0) : nullptr, in.dP_h = dP_h ? &(*dP_h)(e, 0) : nullptr;
       in.lambda = &lambda(!cL * e, 0), in.mu = &mu(!cM * e, 0), in.rho = &rho(!cR * e, 0), in.Cp = &Cp(!cCp * e, 0), in.e = e, in.Lvap = &Lvap_tab(e, 0), in.dP_Lvap = &dP_Lvap_tab(e, 0);
       in.d_bulles = (d_bulles) ? &(*d_bulles)(e,0) : nullptr, in.k_turb = (k_turb) ? &(*k_turb)(e,0) : nullptr, in.nut = (is_turb_) ? &nut(e,0) : nullptr;
       correlation_fi.coeffs(in, out);
