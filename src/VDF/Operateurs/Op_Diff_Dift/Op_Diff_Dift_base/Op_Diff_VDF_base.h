@@ -42,6 +42,7 @@ public:
 
   virtual void calculer_flux_bord(const DoubleTab& inco, const DoubleTab& val_b) const = delete;
   void contribuer_au_second_membre(DoubleTab& resu) const override { iter->contribuer_au_second_membre(resu); }
+  void check_multiphase_compatibility() const override { }
 
 protected:
   void ajoute_terme_pour_axi(matrices_t , DoubleTab& , const tabs_t& ) const;

@@ -148,8 +148,10 @@ void Op_Diff_VDF_Elem_base::dimensionner_termes_croises(Matrice_Morse& matrice, 
 
 void Op_Diff_VDF_Elem_base::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
+  const std::string nom_inco = equation().inconnue().le_nom().getString();
+  if (semi_impl.count(nom_inco)) return; //semi-implicite -> rien a dimensionner
+
   if (!op_ext_init_) init_op_ext();
-  const std::string& nom_inco = equation().inconnue().le_nom().getString();
   int n_ext = (int)op_ext.size(); //pour la thermique monolithique
 
   std::vector<Matrice_Morse *> mat(n_ext);
