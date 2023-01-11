@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -102,7 +102,7 @@ template<typename _TYPE_>
 class TRUSTList_Curseur
 {
 public :
-  TRUSTList_Curseur() {};
+  TRUSTList_Curseur() { }
   TRUSTList_Curseur(const TRUSTList<_TYPE_>& a_list) : curseur(&(TRUSTListElem<_TYPE_>&) a_list) { if (a_list.est_vide()) curseur = 0; }
   TRUSTList_Curseur(const TRUSTListElem<_TYPE_>& a_list) : curseur(&(TRUSTListElem<_TYPE_>&) a_list) { if (a_list.est_vide()) curseur = 0; }
 
@@ -127,7 +127,7 @@ public :
   inline TRUSTListElem<_TYPE_>& list() { return *curseur; }
 
 private :
-  TRUSTListElem<_TYPE_>* curseur;
+  TRUSTListElem<_TYPE_>* curseur = nullptr;
 };
 
 // typedefs !!!

@@ -46,15 +46,9 @@ class TRUST_Vector: public Objet_U
 
 protected:
   unsigned taille_memoire() const override { throw; }
+  int duplique() const override { throw; }
   Sortie& printOn(Sortie& s) const override { return printOn_<_CLASSE_>(s); }
   Entree& readOn(Entree& s) override { return readOn_<_CLASSE_>(s); }
-
-  int duplique() const override
-  {
-    TRUST_Vector *xxx = new TRUST_Vector(*this);
-    if (!xxx) Process::exit("Not enough memory !");
-    return xxx->numero();
-  }
 
 private:
   STLVect z_vect_;
@@ -99,10 +93,10 @@ public:
   STLVect& get_stl_vect() { return z_vect_; }
 
   // iterators on TRUST_Vector
-  inline Iterator begin() { return z_vect_.begin(); }
-  inline Iterator end() { return z_vect_.end(); }
-  inline Const_Iterator begin() const { return z_vect_.begin(); }
-  inline Const_Iterator end() const { return z_vect_.end(); }
+  Iterator begin() { return z_vect_.begin(); }
+  Iterator end() { return z_vect_.end(); }
+  const Const_Iterator begin() const { return z_vect_.begin(); }
+  const Const_Iterator end() const { return z_vect_.end(); }
 
   const _CLASSE_& operator[](int i) const { return static_cast<const _CLASSE_&>(z_vect_[i]); }
   _CLASSE_& operator[](int i) { return static_cast<_CLASSE_&>(z_vect_[i]); }
@@ -144,7 +138,7 @@ public:
   _CLASSE_& add(const _CLASSE_& data_to_add)
   {
     z_vect_.push_back(data_to_add);
-    return z_vect_.back();
+    return static_cast<_CLASSE_&>(z_vect_.back());
   }
 
   /* Append a vect to a vect */

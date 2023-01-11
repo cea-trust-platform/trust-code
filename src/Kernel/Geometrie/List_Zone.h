@@ -46,40 +46,14 @@ public:
   const Zone& valeur() const { return static_cast<const Zone&>(liste::valeur()); }
 
   List_Zone& operator=(const Zone& t) { return static_cast<List_Zone&>(liste::operator=(t)); }
-  Zone* operator ->() { return static_cast<Zone*>(liste::operator->()); }
-
   List_Zone& operator=(const List_Zone& a_list) { return static_cast<List_Zone&>(liste::operator=(a_list)); }
   List_Zone& add(const List_Zone& a_list) {  return static_cast<List_Zone&>(liste::add(a_list)); }
   Zone& add(const Zone& t) { return static_cast<Zone&>(liste::add((const Objet_U&) t)); }
 
-  List_Zone& inserer(const List_Zone& a_list) { return static_cast<List_Zone&>(liste::inserer(a_list)); }
-  Zone& inserer(const Zone& t) { return static_cast<Zone&>(liste::inserer(t)); }
-
   void supprimer() { liste::supprimer(); }
-
-  List_Zone& operator +=(const List_Zone& a_list) { return static_cast<List_Zone&>(liste::operator+=(a_list)); }
-  List_Zone& operator +=(const Zone& t) { return static_cast<List_Zone&>(liste::operator+=(t)); }
-
-  Zone& add_if_not(const Zone& t) { return static_cast<Zone&>(liste::add_if_not(t)); }
-  Zone& add_if_not(const char* const);
-
-  List_Zone& search(const Zone& t) const { return static_cast<List_Zone&>(liste::search(t)); }
-  List_Zone& search(const char* const c) const { return static_cast<List_Zone&>(liste::search(c)); }
-
   List_Zone& suivant() { return static_cast<List_Zone&>(liste::suivant()); }
-  const List_Zone& suivant() const { return static_cast<const List_Zone&>(liste::suivant()); }
-
-  List_Zone& dernier() { return static_cast<List_Zone&>(liste::dernier()); }
-  const List_Zone& dernier() const { return static_cast<const List_Zone&>(liste::dernier()); }
-
-  List_Zone& operator -=(const Zone& t) { return static_cast<List_Zone&>(liste::operator-=(t)); }
 
   int est_egal_a(const Objet_U&) const override { return 0; }
-
-  int contient(const Zone& t) const { return liste::contient(t); }
-  int contient(const char* const c) const { return liste::contient(c); }
-
-  int rang(const Zone& t) const { return liste::rang(t); }
   void suppr(const Zone& t) { liste::suppr(t); }
 };
 

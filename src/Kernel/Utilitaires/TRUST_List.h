@@ -91,6 +91,7 @@ public:
   const std::list<_CLASSE_>& get_stl_list() const { return list_; }
   std::list<_CLASSE_>& get_stl_list() { return list_; }
 
+  ~TRUST_List() { list_.clear(); }
   TRUST_List() : list_() { }
   TRUST_List(const _CLASSE_& t) : list_(t) { }
   TRUST_List(const TRUST_List& t) : Objet_U(t) { list_ = t.list_; }
@@ -212,6 +213,17 @@ public:
       {
         if (itr.le_nom() == nom) return ind;
         ind++;
+      }
+    return -1;
+  }
+
+  int rang(const _CLASSE_ &obj) const
+  {
+    int i = 0;
+    for (auto &itr : list_)
+      {
+        if (itr == obj) return i;
+        i++;
       }
     return -1;
   }

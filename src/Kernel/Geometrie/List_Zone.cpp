@@ -40,30 +40,3 @@ Entree& List_Zone::readOn(Entree& is)
       if (nom_ != virgule) Cerr << nom_ << " one expected a ',' or a '}'" << finl, Process::exit();
     }
 }
-
-Zone& List_Zone::add_if_not(const char *const t)
-{
-  Nom nom(t);
-  if (est_vide())
-    {
-      Zone to_add;
-      to_add.nommer(nom);
-      return add(to_add);
-    }
-  liste_curseur curseur = *this;
-  while (curseur)
-    {
-      if (curseur.valeur().le_nom() == nom)
-        return static_cast<Zone&>(curseur.valeur());
-      if (curseur.list().est_dernier())
-        {
-          Zone to_add;
-          to_add.nommer(nom);
-          return add(to_add);
-        }
-      ++curseur;
-    }
-  Cerr << "Error in a list for add_if_not " << finl;
-  return static_cast<Zone&>(valeur());
-}
-
