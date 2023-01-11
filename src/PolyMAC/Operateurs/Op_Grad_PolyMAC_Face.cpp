@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -74,7 +74,8 @@ void Op_Grad_PolyMAC_Face::completer()
   ref_cast(Champ_Elem_PolyMAC, ref_cast(Navier_Stokes_std, equation()).pression().valeur()).init_auxiliary_variables();
   /* et de grad P si la vitesse en a */
   if (equation().inconnue().valeurs().get_md_vector() == domaine.mdv_faces_aretes)
-    ref_cast(Champ_Face_PolyMAC, ref_cast(Navier_Stokes_std, equation()).grad_P().valeur()).init_auxiliary_variables();
+    if (ref_cast(Navier_Stokes_std, equation()).grad_P().non_nul())
+      ref_cast(Champ_Face_PolyMAC, ref_cast(Navier_Stokes_std, equation()).grad_P().valeur()).init_auxiliary_variables();
   /* besoin d'un joint de 1 */
   if (domaine.domaine().nb_joints() && domaine.domaine().joint(0).epaisseur() < 1)
     {

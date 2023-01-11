@@ -433,7 +433,7 @@ void Fluide_base::calculer_e_int(const Objet_U& obj, DoubleTab& val, DoubleTab& 
   const Fluide_base& fl = ref_cast(Fluide_base, obj);
   const Champ_base& ch_T = fl.equation("temperature").inconnue().valeur(), &ch_Cp = fl.capacite_calorifique();
   const DoubleTab& T = ch_T.valeurs(), &Cp = ch_Cp.valeurs();
-  int i, zero = 0, Ni = T.dimension_tot(0), Nb = bval.dimension_tot(0), n, N = fl.id_composite >= 0 ? 1 : Cp.dimension(1),
+  int i, zero = 0, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n, N = fl.id_composite >= 0 ? 1 : Cp.dimension(1),
          n0 = std::max(fl.id_composite, zero), cCp = Cp.dimension_tot(0) == 1;
 
   for (i = 0; i < Ni; i++)
