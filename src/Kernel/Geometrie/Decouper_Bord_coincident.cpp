@@ -34,8 +34,7 @@ Entree& Decouper_Bord_coincident::interpreter_(Entree& is)
   associer_domaine(is);
   is >> nom_bord;
 
-  for (int i = 0; i < domaine().nb_zones(); i++)
-    decouper_(domaine().zone(i));
+  decouper_(domaine());
 
   Cerr << "Decouper_Bord_coincident... OK" << finl;
   return is;

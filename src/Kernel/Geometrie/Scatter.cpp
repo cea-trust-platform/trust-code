@@ -16,6 +16,7 @@
 
 #include <Scatter.h>
 #include <Zone.h>
+#include <Zones.h>
 #include <LecFicDistribueBin.h>
 #include <Statistiques.h>
 #include <TRUSTTabs.h>
@@ -438,47 +439,48 @@ void Scatter::readDomainWithoutCollComm(Zone& dom, Entree& fic )
  */
 void Scatter::mergeDomains(Zone& dom, Zone& dom_to_add)
 {
-  int old_nb_elems = dom.nb_zones() ? dom.zone(0).nb_elem() : 0;
-  // merging vertices
-  IntVect nums;
-  Zone& zone=dom.add(dom_to_add.zone(0));
-  zone.associer_domaine(dom);
-  dom.ajouter(dom_to_add.coord_sommets(), nums);
-  Scatter::uninit_sequential_domain(dom);
-  zone.renum(nums);
-  zone.renum_joint_common_items(nums, old_nb_elems);
-  zone.associer_domaine(dom);
+//  int old_nb_elems = dom.nb_zones() ? dom.zone(0).nb_elem() : 0;
+//  // merging vertices
+//  IntVect nums;
+//  Zone& zone=dom.add(dom_to_add.zone(0));
+//  zone.associer_domaine(dom);
+//  dom.ajouter(dom_to_add.coord_sommets(), nums);
+//  Scatter::uninit_sequential_domain(dom);
+//  zone.renum(nums);
+//  zone.renum_joint_common_items(nums, old_nb_elems);
+//  zone.associer_domaine(dom);
 
-  if(dom.zones().size() > 1)
-    {
-      int new_nb_elems = dom.zone(0).nb_elem();
-      // merging zones
-      dom.zones().merge();
-
-      //merging common vertices and remote items
-      const int nb_joints = dom_to_add.zone(0).nb_joints();
-      for (int i_joint = 0; i_joint < nb_joints; i_joint++)
-        {
-          const Joint& joint_to_add  = dom_to_add.zone(0).faces_joint()[i_joint];
-
-          int my_joint_index = 0;
-          while(joint_to_add.PEvoisin() != dom.zone(0).faces_joint()[my_joint_index].PEvoisin())
-            my_joint_index++;
-
-          const ArrOfInt& sommets_to_add = joint_to_add.joint_item(Joint::SOMMET).items_communs();
-          ArrOfInt& items_communs = dom.zone(0).faces_joint()[my_joint_index].set_joint_item(Joint::SOMMET).set_items_communs();
-          items_communs.set_smart_resize(1);
-          for(int index=0; index<sommets_to_add.size_array(); index++)
-            items_communs.append_array(nums[sommets_to_add[index]]);
-          items_communs.array_trier_retirer_doublons();
-
-          const ArrOfInt& elements_to_add = joint_to_add.joint_item(Joint::ELEMENT).items_distants();
-          ArrOfInt& items_distants = dom.zone(0).faces_joint()[my_joint_index].set_joint_item(Joint::ELEMENT).set_items_distants();
-          items_distants.set_smart_resize(1);
-          for(int index=0; index<elements_to_add.size_array(); index++)
-            items_distants.append_array(new_nb_elems + elements_to_add[index]);
-        }
-    }
+  throw;
+//  if(dom.zones().size() > 1)
+//    {
+//      int new_nb_elems = dom.zone(0).nb_elem();
+//      // merging zones
+//      dom.zones().merge();
+//
+//      //merging common vertices and remote items
+//      const int nb_joints = dom_to_add.zone(0).nb_joints();
+//      for (int i_joint = 0; i_joint < nb_joints; i_joint++)
+//        {
+//          const Joint& joint_to_add  = dom_to_add.zone(0).faces_joint()[i_joint];
+//
+//          int my_joint_index = 0;
+//          while(joint_to_add.PEvoisin() != dom.zone(0).faces_joint()[my_joint_index].PEvoisin())
+//            my_joint_index++;
+//
+//          const ArrOfInt& sommets_to_add = joint_to_add.joint_item(Joint::SOMMET).items_communs();
+//          ArrOfInt& items_communs = dom.zone(0).faces_joint()[my_joint_index].set_joint_item(Joint::SOMMET).set_items_communs();
+//          items_communs.set_smart_resize(1);
+//          for(int index=0; index<sommets_to_add.size_array(); index++)
+//            items_communs.append_array(nums[sommets_to_add[index]]);
+//          items_communs.array_trier_retirer_doublons();
+//
+//          const ArrOfInt& elements_to_add = joint_to_add.joint_item(Joint::ELEMENT).items_distants();
+//          ArrOfInt& items_distants = dom.zone(0).faces_joint()[my_joint_index].set_joint_item(Joint::ELEMENT).set_items_distants();
+//          items_distants.set_smart_resize(1);
+//          for(int index=0; index<elements_to_add.size_array(); index++)
+//            items_distants.append_array(new_nb_elems + elements_to_add[index]);
+//        }
+//    }
 }
 
 /*! @brief Lit le domaine dans le fichier de nom "nomentree", de type LecFicDistribueBin ou LecFicDistribue
@@ -552,7 +554,6 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
 
           // Feed TRUST objects:
           readDomainWithoutCollComm(dom, data);
-          dom.zones().associer_domaine(dom);
           dom.set_fichier_lu(nomentree);
           data >> liste_bords_periodiques;
           domain_not_built = false;
@@ -597,7 +598,6 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
         {
           readDomainWithoutCollComm(dom, fichier_binaire );
 
-          dom.zones().associer_domaine(dom);
           // Renseigne dans quel fichier le domaine a ete lu
           dom.set_fichier_lu(nomentree);
           fichier_binaire >> liste_bords_periodiques;
@@ -2880,14 +2880,10 @@ void Scatter::init_sequential_domain(Zone& dom)
   md.copy(mdstd);
   dom.les_sommets().set_md_vector(md);
 
-  const int nb_zones = dom.nb_zones();
-  for (int i = 0; i < nb_zones; i++)
-    {
-      const int nb_elem = dom.zone(i).nb_elem();
-      init_simple_md_vector(mdstd, nb_elem);
-      md.copy(mdstd);
-      dom.zone(i).les_elems().set_md_vector(md);
-    }
+  const int nb_elem = dom.nb_elem();
+  init_simple_md_vector(mdstd, nb_elem);
+  md.copy(mdstd);
+  dom.les_elems().set_md_vector(md);
 }
 
 /*! @brief methode utilisee par les interpretes qui modifient le domaine (sequentiel), detruit les descripteurs des sommets et elements pour permettre
@@ -2899,10 +2895,6 @@ void Scatter::uninit_sequential_domain(Zone& dom)
 {
   MD_Vector md; // descripteur nul
   dom.les_sommets().set_md_vector(md);
-  const int nb_zones = dom.nb_zones();
-  for (int i = 0; i < nb_zones; i++)
-    {
-      dom.zone(i).les_elems().set_md_vector(md);
-    }
+  dom.les_elems().set_md_vector(md);
 }
 

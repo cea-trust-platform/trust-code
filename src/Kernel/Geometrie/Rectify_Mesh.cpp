@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,7 +46,6 @@ void Rectify_Mesh::apply(void)
   Cerr << "Rectifying domain " << domaine().le_nom() << finl;
 
   check_dimension();
-  check_nb_zones();
   check_cell_type();
 
   if ( Objet_U::dimension == 2 )
@@ -68,17 +67,6 @@ void Rectify_Mesh::check_dimension(void) const
       Cerr << "Error in 'Rectify_Mesh::check_dimension()':" << finl;
       Cerr << "  Invalid dimension: " << Objet_U::dimension << finl;
       Cerr << "  Rectify_Mesh can only deal 2D or 3D domains" << finl;
-      Process::exit();
-    }
-}
-
-void Rectify_Mesh::check_nb_zones(void) const
-{
-  if ( domaine().nb_zones() != 1 )
-    {
-      Cerr << "Error in 'Rectify_Mesh::check_nb_zones()':" << finl;
-      Cerr << "  Invalid number of zones: " << domaine().nb_zones() << finl;
-      Cerr << "  Rectify_Mesh cannot deal with domains having more than one zone" << finl;
       Process::exit();
     }
 }

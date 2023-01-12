@@ -55,18 +55,17 @@ Entree& Interprete_geometrique_base::interpreter(Entree& is)
   // On met a jour un certain nombre de choses
   // suite a la modification des domaines
   for (int j=0; j<domains_.size(); j++)
-    for(int i=0; i<domaine(j).nb_zones() ; i++)
-      {
-        Zone& zone = domaine(j).zone(i);
-        zone.invalide_octree();
-        zone.faces_bord().associer_zone(zone);
-        zone.faces_joint().associer_zone(zone);
-        zone.faces_raccord().associer_zone(zone);
-        zone.faces_int().associer_zone(zone);
-        zone.type_elem().associer_zone(zone);
-        zone.fixer_premieres_faces_frontiere();
-        zone.associer_domaine(domaine(j));
-      }
+    {
+      Zone& zone = domaine(j);
+      zone.invalide_octree();
+      zone.faces_bord().associer_zone(zone);
+      zone.faces_joint().associer_zone(zone);
+      zone.faces_raccord().associer_zone(zone);
+      zone.faces_int().associer_zone(zone);
+      zone.type_elem().associer_zone(zone);
+      zone.fixer_premieres_faces_frontiere();
+      zone.associer_domaine(domaine(j));
+    }
   return is;
 }
 

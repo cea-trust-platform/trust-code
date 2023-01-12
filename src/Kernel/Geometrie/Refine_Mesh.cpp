@@ -42,7 +42,6 @@ void Refine_Mesh::apply(void)
   Cerr << "Refining domain " << domaine().le_nom() << finl;
 
   check_dimension();
-  check_nb_zones();
   check_cell_type();
 
   if (Objet_U::dimension == 2)
@@ -64,17 +63,6 @@ void Refine_Mesh::check_dimension(void) const
       Cerr << "Error in 'Refine_Mesh::check_dimension()':" << finl;
       Cerr << "  Invalid dimension: " << Objet_U::dimension << finl;
       Cerr << "  Refine_Mesh can only deal 2D or 3D domains" << finl;
-      Process::exit();
-    }
-}
-
-void Refine_Mesh::check_nb_zones(void) const
-{
-  if (domaine().nb_zones() != 1)
-    {
-      Cerr << "Error in 'Refine_Mesh::check_nb_zones()':" << finl;
-      Cerr << "  Invalid number of zones: " << domaine().nb_zones() << finl;
-      Cerr << "  Refine_Mesh cannot deal with domains having more than one zone" << finl;
       Process::exit();
     }
 }

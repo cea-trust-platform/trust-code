@@ -109,7 +109,7 @@ void Domaine_dis::discretiser(const Nom& type_1)
   // correspondants.
   Zones_dis *zptr = new Zones_dis;
   les_zones = *zptr;
-  les_zones->dimensionner(dom.nb_zones());
+  les_zones->dimensionner(1);
 
   for(int i=0; i<nombre_de_zones(); i++)
     {

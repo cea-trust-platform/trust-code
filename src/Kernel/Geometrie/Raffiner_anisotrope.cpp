@@ -45,11 +45,7 @@ Entree& Raffiner_anisotrope::interpreter_(Entree& is)
     }
   associer_domaine(is);
   Scatter::uninit_sequential_domain(domaine());
-  for(int i=0; i<domaine().nb_zones() ; i++)
-
-    {
-      raffiner_(domaine().zone(i));
-    }
+  raffiner_(domaine());
   Scatter::init_sequential_domain(domaine());
   Cerr << "Refinement... OK" << finl;
   return is;

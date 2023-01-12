@@ -45,10 +45,7 @@ Entree& Triangulation_base::interpreter_(Entree& is)
 
   associer_domaine(is);
   Scatter::uninit_sequential_domain(domaine());
-  for(int i=0; i<domaine().nb_zones() ; i++)
-    {
-      trianguler(domaine().zone(i));
-    }
+  trianguler(domaine());
   Scatter::init_sequential_domain(domaine());
   return is;
 }

@@ -19,6 +19,8 @@
 #include <Param.h>
 #include <communications.h>
 #include <EFichier.h>
+#include <List_Ref_Zone.h>
+
 #include <sys/stat.h>
 #include <string> // Necessaire avec xlC pour std::getline
 

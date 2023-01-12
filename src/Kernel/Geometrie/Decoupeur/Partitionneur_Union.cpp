@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,6 +18,7 @@
 #include <Param.h>
 #include <EChaine.h>
 #include <Sous_Zone.h>
+#include <Interprete.h>
 
 // XD partitionneur_union partitionneur_deriv union 0 Let several local domains be generated from a bigger one using the keyword create_domain_from_sous_zone, and let their partitions be generated in the usual way. Provided the list of partition files for each small domain, the keyword 'union' will partition the global domain in a conform fashion with the smaller domains.
 // XD attr liste bloc_lecture liste 0 List of the partition files with the following syntaxe: {sous_zone1 decoupage1  ... sous_zoneim decoupageim } where sous_zone1 ... sous_zomeim are small domains names and decoupage1 ... decoupageim are partition files.

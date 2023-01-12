@@ -68,10 +68,7 @@ Entree& Remove_elem::interpreter_(Entree& is)
     }
 
   Scatter::uninit_sequential_domain(domaine());
-  for (int i = 0; i < domaine().nb_zones(); i++)
-    {
-      remove_elem_(domaine().zone(i));
-    }
+  remove_elem_(domaine());
   Scatter::init_sequential_domain(domaine());
   NettoieNoeuds::nettoie(domaine());
   Cerr << "Refinement... OK" << finl;

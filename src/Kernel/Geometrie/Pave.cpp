@@ -467,7 +467,7 @@ void Pave::associer_domaine(const Zone& un_dom)
   if(Les_Noeuds.size() > 0)
     {
       // On copie Les_Noeuds dans le domaine
-      le_domaine->ajouter(Les_Noeuds, Les_Nums);
+      ajouter(Les_Noeuds, Les_Nums);
       // On n'a plus besoin du tableau Les_Noeuds
       Les_Noeuds.resize(0,Les_Noeuds.dimension(1));
       // On renumerote la zone avec le tableau Les_Nums

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -250,12 +250,6 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Zone& le_domaine,
     {
       /* Surface algorithm */
       const Zone& le_domaine2D = ref_cast(Zone,le_domaine.interprete().objet(nom_surface));
-      if (le_domaine2D.nb_zones() == 0)
-        {
-          Cerr << "Error in Perte_Charge_Singuliere::lire_surfaces" << finl;
-          Cerr << "You must correct your data file because the " << nom_surface << " surface is not well defined in parallel !" << finl;
-          Process::exit();
-        }
       const Zone& zone_2D = le_domaine2D.zone(0);
       const DoubleTab& coord_sommets_2D=le_domaine2D.coord_sommets();
 

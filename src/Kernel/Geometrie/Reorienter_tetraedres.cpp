@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -117,53 +117,46 @@ Reorienter_tetraedres::Sens Reorienter_tetraedres::reorienter_tetra(IntTab& les_
 void Reorienter_tetraedres::reorienter(Zone& dom) const
 {
   const DoubleTab& coord_sommets = dom.coord_sommets();
-  int nb_zones = dom.nb_zones();
-  int iz;
 
-  //on balaye les zones du domaine
-  for(iz=0 ; iz<nb_zones ; iz++)
+  if (dom.type_elem()->que_suis_je() == "Tetraedre" )
     {
-      Zone& zone = dom.zone(iz);
-      if (zone.type_elem()->que_suis_je() == "Tetraedre" )
-        {
-          //zone de tetraedres
-          IntTab& les_elems = zone.les_elems();
-          int nb_elems = les_elems.dimension(0);
-          int ielem;
+      //zone de tetraedres
+      IntTab& les_elems = dom.les_elems();
+      int nb_elems = les_elems.dimension(0);
+      int ielem;
 
-          //balaye les tetraedres
-          for (ielem=0 ; ielem<nb_elems ; ielem++)
+      //balaye les tetraedres
+      for (ielem=0 ; ielem<nb_elems ; ielem++)
+        {
+          if (test_orientation_tetra(les_elems, ielem, coord_sommets)==INDIRECT)
             {
-              if (test_orientation_tetra(les_elems, ielem, coord_sommets)==INDIRECT)
-                {
-                  //tetraedre oriente en sens indirect -> a reorienter
-                  reorienter_tetra(les_elems, ielem);
+              //tetraedre oriente en sens indirect -> a reorienter
+              reorienter_tetra(les_elems, ielem);
 
 #ifdef _AFFDEBUG
-                  {
-                    Process::Journal<<"  #element reoriente "<<ielem<<finl;
-                    static const int SOM_Z = 0;  // indice du sommet qui servira d'origine
-                    static const int SOM_A = 1;     // indice du sommet qui servira pour le premier vecteur
-                    static const int SOM_B = 2;     // indice du sommet qui servira pour le second vecteur
-                    static const int SOM_C = 3;     // indice du sommet qui servira pour le troisieme vecteur
-                    const int som_Z = les_elems(ielem,SOM_Z);
-                    const int som_A = les_elems(ielem,SOM_A);
-                    const int som_B = les_elems(ielem,SOM_B);
-                    const int som_C = les_elems(ielem,SOM_C);
-                    Process::Journal<<"    somA= "<<som_A<<"  coords= "<<coord_sommets(som_A, 0)<<" "<<coord_sommets(som_A, 1)<<" "<<coord_sommets(som_A, 2)<<finl;
-                    Process::Journal<<"    somB= "<<som_B<<"  coords= "<<coord_sommets(som_B, 0)<<" "<<coord_sommets(som_B, 1)<<" "<<coord_sommets(som_B, 2)<<finl;
-                    Process::Journal<<"    somC= "<<som_C<<"  coords= "<<coord_sommets(som_C, 0)<<" "<<coord_sommets(som_C, 1)<<" "<<coord_sommets(som_C, 2)<<finl;
-                    Process::Journal<<"    somA= "<<som_A<<"  coords= "<<coord_sommets(som_A, 0)<<" "<<coord_sommets(som_A, 1)<<" "<<coord_sommets(som_A, 2)<<finl<<finl;
-                    Process::Journal<<"    somZ= "<<som_Z<<"  coords= "<<coord_sommets(som_Z, 0)<<" "<<coord_sommets(som_Z, 1)<<" "<<coord_sommets(som_Z, 2)<<finl;
-                    Process::Journal<<"    somA= "<<som_A<<"  coords= "<<coord_sommets(som_A, 0)<<" "<<coord_sommets(som_A, 1)<<" "<<coord_sommets(som_A, 2)<<finl<<finl;
-                    Process::Journal<<"    somZ= "<<som_Z<<"  coords= "<<coord_sommets(som_Z, 0)<<" "<<coord_sommets(som_Z, 1)<<" "<<coord_sommets(som_Z, 2)<<finl;
-                    Process::Journal<<"    somB= "<<som_B<<"  coords= "<<coord_sommets(som_B, 0)<<" "<<coord_sommets(som_B, 1)<<" "<<coord_sommets(som_B, 2)<<finl<<finl;
-                    Process::Journal<<"    somZ= "<<som_Z<<"  coords= "<<coord_sommets(som_Z, 0)<<" "<<coord_sommets(som_Z, 1)<<" "<<coord_sommets(som_Z, 2)<<finl;
-                    Process::Journal<<"    somC= "<<som_C<<"  coords= "<<coord_sommets(som_C, 0)<<" "<<coord_sommets(som_C, 1)<<" "<<coord_sommets(som_C, 2)<<finl<<finl;
-                  }
+              {
+                Process::Journal<<"  #element reoriente "<<ielem<<finl;
+                static const int SOM_Z = 0;  // indice du sommet qui servira d'origine
+                static const int SOM_A = 1;     // indice du sommet qui servira pour le premier vecteur
+                static const int SOM_B = 2;     // indice du sommet qui servira pour le second vecteur
+                static const int SOM_C = 3;     // indice du sommet qui servira pour le troisieme vecteur
+                const int som_Z = les_elems(ielem,SOM_Z);
+                const int som_A = les_elems(ielem,SOM_A);
+                const int som_B = les_elems(ielem,SOM_B);
+                const int som_C = les_elems(ielem,SOM_C);
+                Process::Journal<<"    somA= "<<som_A<<"  coords= "<<coord_sommets(som_A, 0)<<" "<<coord_sommets(som_A, 1)<<" "<<coord_sommets(som_A, 2)<<finl;
+                Process::Journal<<"    somB= "<<som_B<<"  coords= "<<coord_sommets(som_B, 0)<<" "<<coord_sommets(som_B, 1)<<" "<<coord_sommets(som_B, 2)<<finl;
+                Process::Journal<<"    somC= "<<som_C<<"  coords= "<<coord_sommets(som_C, 0)<<" "<<coord_sommets(som_C, 1)<<" "<<coord_sommets(som_C, 2)<<finl;
+                Process::Journal<<"    somA= "<<som_A<<"  coords= "<<coord_sommets(som_A, 0)<<" "<<coord_sommets(som_A, 1)<<" "<<coord_sommets(som_A, 2)<<finl<<finl;
+                Process::Journal<<"    somZ= "<<som_Z<<"  coords= "<<coord_sommets(som_Z, 0)<<" "<<coord_sommets(som_Z, 1)<<" "<<coord_sommets(som_Z, 2)<<finl;
+                Process::Journal<<"    somA= "<<som_A<<"  coords= "<<coord_sommets(som_A, 0)<<" "<<coord_sommets(som_A, 1)<<" "<<coord_sommets(som_A, 2)<<finl<<finl;
+                Process::Journal<<"    somZ= "<<som_Z<<"  coords= "<<coord_sommets(som_Z, 0)<<" "<<coord_sommets(som_Z, 1)<<" "<<coord_sommets(som_Z, 2)<<finl;
+                Process::Journal<<"    somB= "<<som_B<<"  coords= "<<coord_sommets(som_B, 0)<<" "<<coord_sommets(som_B, 1)<<" "<<coord_sommets(som_B, 2)<<finl<<finl;
+                Process::Journal<<"    somZ= "<<som_Z<<"  coords= "<<coord_sommets(som_Z, 0)<<" "<<coord_sommets(som_Z, 1)<<" "<<coord_sommets(som_Z, 2)<<finl;
+                Process::Journal<<"    somC= "<<som_C<<"  coords= "<<coord_sommets(som_C, 0)<<" "<<coord_sommets(som_C, 1)<<" "<<coord_sommets(som_C, 2)<<finl<<finl;
+              }
 #endif
-                }
             }
         }
-    }//fin balayage zones
+    }
 }

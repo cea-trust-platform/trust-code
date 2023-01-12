@@ -1779,11 +1779,6 @@ void LireMED::lire_geom(Nom& nom_fic, Zone& dom, const Nom& nom_dom, const Nom& 
   else
     sommets=sommets2;
 
-  if (dom.nb_zones()==0)
-    {
-      Zone zonebidon;
-      dom.add(zonebidon);
-    }
   //
   Zone& zone=dom.zone(0);
   zone.nommer("PAS_NOMME");

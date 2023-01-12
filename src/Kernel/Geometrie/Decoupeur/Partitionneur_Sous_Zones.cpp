@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,6 +17,7 @@
 #include <Zone.h>
 #include <Sous_Zone.h>
 #include <Param.h>
+#include <Interprete.h>
 
 Implemente_instanciable_sans_constructeur(Partitionneur_Sous_Zones,"Partitionneur_Sous_Zones",Partitionneur_base);
 // XD partitionneur_sous_zones partitionneur_deriv sous_zones -1 This algorithm will create one part for each specified subzone/domain. All elements contained in the first subzone/domain are put in the first part, all remaining elements contained in the second subzone/domain in the second part, etc... NL2 If all elements of the current domain are contained in the specified subzones/domain, then N parts are created, otherwise, a supplemental part is created with the remaining elements. NL2 If no subzone is specified, all subzones defined in the domain are used to split the mesh.

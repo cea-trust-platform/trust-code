@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -113,9 +113,9 @@ void type_face_to_type_elem(const Elem_geom_base& type_elem, const Type_Face& ty
  *
  */
 void Zone_bord::extraire_domaine_bord(const Zone& src,
-                                         const Nom& nom_bord,
-                                         Zone& dest,
-                                         ArrOfInt& renum_som)
+                                      const Nom& nom_bord,
+                                      Zone& dest,
+                                      ArrOfInt& renum_som)
 {
   if (Process::nproc() > 1)
     {
