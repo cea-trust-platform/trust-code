@@ -12,15 +12,15 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-#include <Domaine_bord.h>
+#include <Zone_bord.h>
 #include <Hexaedre.h>
 
-Implemente_instanciable(Domaine_bord,"Domaine_bord",Zone);
+Implemente_instanciable(Zone_bord,"Zone_bord",Zone);
 
 /*! @brief pour l'instant exit()
  *
  */
-Entree& Domaine_bord::readOn(Entree& is)
+Entree& Zone_bord::readOn(Entree& is)
 {
   exit();
   return is;
@@ -29,7 +29,7 @@ Entree& Domaine_bord::readOn(Entree& is)
 /*! @brief pour l'instant exit()
  *
  */
-Sortie& Domaine_bord::printOn(Sortie& os) const
+Sortie& Zone_bord::printOn(Sortie& os) const
 {
   exit();
   return os;
@@ -38,7 +38,7 @@ Sortie& Domaine_bord::printOn(Sortie& os) const
 /*! @brief construit le domaine en appelant extraire_domaine_bord()
  *
  */
-void Domaine_bord::construire_domaine_bord(const Zone& source, const Nom& nom_bord)
+void Zone_bord::construire_domaine_bord(const Zone& source, const Nom& nom_bord)
 {
   domaine_source_ = source;
   bord_source_ = nom_bord;
@@ -48,7 +48,7 @@ void Domaine_bord::construire_domaine_bord(const Zone& source, const Nom& nom_bo
 /*! @brief renvoie une reference au domaine source
  *
  */
-const Zone& Domaine_bord::get_domaine_source() const
+const Zone& Zone_bord::get_domaine_source() const
 {
   return domaine_source_;
 }
@@ -56,7 +56,7 @@ const Zone& Domaine_bord::get_domaine_source() const
 /*! @brief renvoie le nom du bord source
  *
  */
-const Nom& Domaine_bord::get_nom_bord_source() const
+const Nom& Zone_bord::get_nom_bord_source() const
 {
   return bord_source_;
 }
@@ -64,7 +64,7 @@ const Nom& Domaine_bord::get_nom_bord_source() const
 /*! @brief renvoie renum_som (pour chaque sommet du domaine_bord, indice du meme sommet dans le domaine)
  *
  */
-const ArrOfInt& Domaine_bord::get_renum_som() const
+const ArrOfInt& Zone_bord::get_renum_som() const
 {
   return renum_som_;
 }
@@ -112,7 +112,7 @@ void type_face_to_type_elem(const Elem_geom_base& type_elem, const Type_Face& ty
  *   suit: renum_som[i] est l'indice dans le domaine "src" du sommet i du domaine "dest".
  *
  */
-void Domaine_bord::extraire_domaine_bord(const Zone& src,
+void Zone_bord::extraire_domaine_bord(const Zone& src,
                                          const Nom& nom_bord,
                                          Zone& dest,
                                          ArrOfInt& renum_som)

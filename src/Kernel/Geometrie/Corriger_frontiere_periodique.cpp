@@ -18,7 +18,7 @@
 #include <Format_Post.h>
 #include <ArrOfBit.h>
 #include <Reordonner_faces_periodiques.h>
-#include <Domaine_bord.h>
+#include <Zone_bord.h>
 
 Implemente_instanciable(Corriger_frontiere_periodique,"Corriger_frontiere_periodique",Interprete_geometrique_base);
 
@@ -135,7 +135,7 @@ void Corriger_frontiere_periodique::corriger_coordonnees_sommets_perio(Zone& dom
       exit();
     }
 
-  Domaine_bord domaine_bord;
+  Zone_bord domaine_bord;
   domaine_bord.construire_domaine_bord(dom, nom_bord);
   const ArrOfInt& renum_som = domaine_bord.get_renum_som();
   const DoubleTab& som_bord = domaine_bord.les_sommets();

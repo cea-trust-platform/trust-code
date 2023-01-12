@@ -12,8 +12,8 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-#ifndef Domaine_bord_included
-#define Domaine_bord_included
+#ifndef Zone_bord_included
+#define Zone_bord_included
 #include <Zone.h>
 
 /*! @brief Cette classe est un domaine dont les sommets et les elements sont extraits d'un bord d'un domaine source.
@@ -21,9 +21,9 @@
  *   On construit ce domaine par la methode construire_domaine_bord()
  *
  */
-class Domaine_bord : public Domaine
+class Zone_bord : public Zone
 {
-  Declare_instanciable(Domaine_bord);
+  Declare_instanciable(Zone_bord);
 public:
   virtual void construire_domaine_bord(const Zone& source, const Nom& nom_bord);
   virtual const Zone&   get_domaine_source() const;
