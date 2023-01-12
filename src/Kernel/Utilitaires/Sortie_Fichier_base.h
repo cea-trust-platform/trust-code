@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,13 +16,13 @@
 #ifndef Sortie_Fichier_base_included
 #define Sortie_Fichier_base_included
 
-#include <Sortie.h>
 #include <Objet_U.h>
+#include <Sortie.h>
+#include <Nom.h>
 
 using std::ifstream;
 using std::ofstream;
 using std::streampos;
-
 
 class Sortie_Fichier_base :  public Sortie, public Objet_U
 {
@@ -31,7 +31,6 @@ public:
   Sortie_Fichier_base();
   Sortie_Fichier_base(const Sortie_Fichier_base&) = default;
   Sortie_Fichier_base(const char* name, IOS_OPEN_MODE mode=ios::out);
-// ~Sortie_Fichier_base();
   ofstream& get_ofstream();
   void close();
   void precision(int pre) override;
@@ -44,21 +43,18 @@ public:
 
 protected:
   ofstream* ofstream_;
+  Sortie_Fichier_base& operator=(const Sortie_Fichier_base& f)
+  {
+    if (&f != this) Process::exit("Assignement operator not allowed in Sortie_Fichier_base !");
+    return *this;
+  }
 
 private:
   char* internalBuff_;
   int toFlush_;
-
   void set_buffer();
   void set_toFlush();
-  int toFlush()
-  {
-    return toFlush_;
-  }
-  //Sortie_Fichier_base(const Sortie_Fichier_base&);
-  Sortie_Fichier_base& operator=(const Sortie_Fichier_base&);
+  int toFlush() { return toFlush_; }
 };
-
-
 
 #endif

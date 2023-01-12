@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,16 +13,10 @@
 *
 *****************************************************************************/
 
-
 #ifndef EcrFicCollecteBin_included
 #define EcrFicCollecteBin_included
 
 #include <EcrFicCollecte.h>
-
-
-class Objet_U;
-
-
 
 /*! @brief Ecriture dans un fichier au format binaire Cette classe implemente les operateurs et les methodes virtuelles de la clase SFichier de la facon suivante :
  *
@@ -32,26 +26,18 @@ class Objet_U;
  *
  */
 
+// le maitre collecte l'information de tous les PE et l'ecrit dans differents fichiers
 class EcrFicCollecteBin : public EcrFicCollecte
 {
   Declare_instanciable_sans_constructeur_ni_destructeur(EcrFicCollecteBin);
-  // le maitre collecte l'information de tous les PE et l'ecrit dans differents fichiers
 public:
-  EcrFicCollecteBin()
-  {
-    set_bin(1);
-  };
+  EcrFicCollecteBin() { set_bin(1); }
   EcrFicCollecteBin(const char* name,IOS_OPEN_MODE mode=ios::out)
   {
     set_bin(1);
     ouvrir(name,mode);
-  };
-  ~EcrFicCollecteBin() override
-  {
-    close();
-  };
+  }
+  ~EcrFicCollecteBin() override { close(); }
 };
 
-
-
-#endif
+#endif /* EcrFicCollecteBin_included */

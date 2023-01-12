@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,22 +22,17 @@
  *
  * @sa EFichierBin SFichier
  */
-
 class SFichierBin : public SFichier
 {
   Declare_instanciable_sans_constructeur_ni_destructeur(SFichierBin);
 public:
-  SFichierBin():SFichier()
-  {
-    set_bin(1);
-  };
+  SFichierBin():SFichier() { set_bin(1); }
   SFichierBin(const char* name,IOS_OPEN_MODE mode=ios::out)
   {
     ofstream_=0;
     set_bin(1);
     ouvrir(name,mode);
-  };
+  }
 };
 
-
-#endif
+#endif /* SFichierBin_included */

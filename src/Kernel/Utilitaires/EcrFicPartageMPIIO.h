@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,17 +16,12 @@
 #ifndef EcrFicPartageMPIIO_included
 #define EcrFicPartageMPIIO_included
 
-#include <Nom.h>
-#include <SFichier.h>
 #include <comm_incl.h>
-class Objet_U;
+#include <SFichier.h>
 
 /*! @brief Class to use MPI-IO to write in a single file
  *
- *
- *
  */
-
 class EcrFicPartageMPIIO : public SFichier
 {
   // Parallel write in a shared file with MPIIO

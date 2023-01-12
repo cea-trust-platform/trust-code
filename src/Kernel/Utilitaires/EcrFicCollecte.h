@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,13 +13,11 @@
 *
 *****************************************************************************/
 
-
 #ifndef EcrFicCollecte_included
 #define EcrFicCollecte_included
 
 #include <SFichier.h>
 #include <Process.h>
-class Objet_U;
 
 /*! @brief Ecriture dans un fichier Cette classe implemente les operateurs et les methodes virtuelles de la clase SFichier de la facon suivante :
  *
@@ -32,23 +30,13 @@ class Objet_U;
 class EcrFicCollecte : public SFichier
 {
   Declare_instanciable_sans_constructeur(EcrFicCollecte);
-  // le maitre collecte l'information de tous les PE et l'ecrit dans
-  // differents fichiers
+  // le maitre collecte l'information de tous les PE et l'ecrit dans differents fichiers
 private :
-  EcrFicCollecte(int) {};
+  EcrFicCollecte(int) {}
 public:
-
   EcrFicCollecte() {};
   EcrFicCollecte(const char* name,IOS_OPEN_MODE mode=ios::out);
-  //~EcrFicCollecte();
   int ouvrir(const char* name,IOS_OPEN_MODE mode=ios::out) override;
-
-protected:
-
-private:
-
 };
 
-
-
-#endif
+#endif /* EcrFicCollecte_included */
