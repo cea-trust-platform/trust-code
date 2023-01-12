@@ -1,7 +1,8 @@
 #!/bin/bash
 # NVIDIA HPC SDK
-SDK_VERSION=22.9 && CUDA_VERSION=11.7
-installer=nvhpc_2022_229_Linux_x86_64_cuda_$CUDA_VERSION
+SDK_VERSION=22.9 && CUDA_VERSION=11.7 && installer=nvhpc_2022_229_Linux_x86_64_cuda_$CUDA_VERSION  # 11.7 uniquement
+SDK_VERSION=22.2 && CUDA_VERSION=11.6 && installer=nvhpc_2022_222_Linux_x86_64_cuda_multi # 11.6, 11.2, 11.0, 10.2 
+SDK_VERSION=22.1 && CUDA_VERSION=11.5 && installer=nvhpc_2022_221_Linux_x86_64_cuda_multi # 11.5, 11.0, 10.2 (nvcc 11.5 OK pour gcc 11.0 de Fedora 34)
 [ "$TRUST_TMP" = "" ] && TRUST_TMP="."
 NVHPC=$TRUST_TMP/nvhpc-$SDK_VERSION/Linux_x86_64/$SDK_VERSION/compilers
 if [ ! -f $NVHPC/bin/nvc++ ]

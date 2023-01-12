@@ -154,6 +154,12 @@ def generate_cmake(listdirorg,sans_subdir,atelier):
         out=open('CMakeLists.txt.trio','w')
     else:
         out=open('src/CMakeLists.txt','w')
+
+    if (os.getenv("TRUST_ARCH_CC")=="linux_nvc++"):
+        out.write('# Pour cmake 3.22 et NVidia:\n')
+        out.write('SET(CMAKE_C_ABI_COMPILED 1)\n')
+        out.write('SET(CMAKE_Fortran_COMPILER_WORKS 1)\n\n')
+
     out.write('''# Tell the CMake makefile generator to not have rules depend on
 # themselves.  This causes extra rebuilds when the include path
 # changes from turning a kit on or off.

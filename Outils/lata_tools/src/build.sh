@@ -26,6 +26,13 @@ build_mode="Release"
 if [ "x$exec" == "x$exec_debug" ] || [ "x$OPT" == "x" ]; then 
    echo "lata_tools will be built in DEBUG mode!!"
    build_mode="Debug" 
+fi
+if [ "$TRUST_CC_BASE_EXTP" != "" ]
+then
+   export OMPI_CXX=$TRUST_CC_BASE_EXTP
+   export OMPI_CC=$TRUST_cc_BASE_EXTP
+   export MPICH_CXX=$OMPI_CXX
+   export MPICH_CC=$OMPI_CC
 fi 
 cmake $ORG -DCMAKE_BUILD_TYPE=$build_mode -DCMAKE_INSTALL_PREFIX=$TRUST_ROOT/exec/lata_tools -DCMAKE_C_COMPILER=$TRUST_cc -DCMAKE_CXX_COMPILER=$TRUST_CC -DSWIG_EXECUTABLE=$SWIG_EXECUTABLE
 make -j  $TRUST_NB_PROCS  install || exit -1

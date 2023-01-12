@@ -148,7 +148,7 @@ MEDLDFLAGS="\$(TRUST_MED_ROOT)/lib/libmed.a \$(TRUST_MED_ROOT)/lib/libmedimport.
 #############
 # MEDCoupling
 #############
-LISTP="" && [ $TRUST_DISABLE_MPI = 0 ] && LISTP="paramedmem paramedloader" 
+LISTP="" && [ "$TRUST_DISABLE_MPI" != 1 ] && LISTP="paramedmem paramedloader" 
 LIBS_MEDC=""
 for ll in medloader medcouplingremapper medcoupling medicoco $LISTP interpkernel
 do

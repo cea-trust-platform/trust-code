@@ -1,6 +1,6 @@
 #!/bin/bash
 # CUDA TOOLKIT
-CUDA_VERSION=11.8.0 && installer=cuda_$CUDA_VERSION"_520.61.05_linux.run" # Ne converge pas (PAR_gpu_3D) semble se produire des 11.3,11.6,11.7
+CUDA_VERSION=11.8.0 && installer=cuda_$CUDA_VERSION"_520.61.05_linux.run" # Ne converge pas (c-amg dans PAR_gpu_3D) semble se produire des 11.3,11.6,11.7, par contre sa-amg fonctionne sauf si Cuda plus recent que driver CUDENSE handle...
 CUDA_VERSION=11.2.0 && installer=cuda_$CUDA_VERSION"_460.27.04_linux.run" 
 [ "$TRUST_TMP" = "" ] && TRUST_TMP="."
 CUDA_BIN=$TRUST_TMP/cuda-$CUDA_VERSION/bin

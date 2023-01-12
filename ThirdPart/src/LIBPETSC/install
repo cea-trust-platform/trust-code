@@ -275,11 +275,12 @@ then
    with_gpu="--with-cuda"
    with_gpu=$with_gpu" --with-cudac=$CUDA_ROOT/bin/nvcc"
    CUDA_STUBS="" && [ -d $CUDA_ROOT/lib64/stubs ]        && CUDA_STUBS=",-L$CUDA_ROOT/lib64/stubs"        # Necessaire sur irene pas sur jeanzay (fait ch..r)
-   CUDA_MATH=""
-   [ -d $CUDA_ROOT/../math_libs/lib64 ] &&  CUDA_MATH=",-L$CUDA_ROOT/../math_libs/lib64" # Nouveau HPC SDK sur orcus            (fait ch..r)
-   [ -d $CUDA_ROOT/math_libs/lib64 ]    &&  CUDA_MATH=",-L$CUDA_ROOT/math_libs/lib64"    # Nouveau topaze                       (fait ch..r)
-   with_gpu=$with_gpu" --with-cuda-lib=[-L$CUDA_ROOT/lib64$CUDA_STUBS$CUDA_MATH,-lcudart,-lcublas,-lcufft,-lcusparse,-lcusolver]"
-   CUDA_INCLUDES=`ls $CUDA_ROOT/include/cuda/cuda.h $CUDA_ROOT/include/cuda.h $CUDA_ROOT/math_libs/include/cublas.h $CUDA_ROOT/../math_libs/include/cublas.h 2>/dev/null`
+   for CUDA_LIB_PATH in $CUDA_ROOT/math_libs $CUDA_ROOT/../math_libs $CUDA_ROOT/../../math_libs `echo $CUDA_ROOT | sed "1,$ s?/cuda/?/../math_libs/?g"`
+   do
+      [ -d $CUDA_LIB_PATH ] && CUDA_MATH=",-L$CUDA_LIB_PATH/lib64" && break
+   done
+   with_gpu=$with_gpu" --with-cuda-lib=[-L$CUDA_ROOT/lib64$CUDA_STUBS$CUDA_MATH,-lcudart,-lcublas,-lcublasLt,-lcufft,-lcusparse,-lcusolver]"
+   CUDA_INCLUDES=`ls $CUDA_ROOT/include/cuda/cuda.h $CUDA_ROOT/include/cuda.h $CUDA_LIB_PATH/include/cublas.h 2>/dev/null`
    with_gpu=$with_gpu" --with-cuda-include=["
    for CUDA_INCLUDE in $CUDA_INCLUDES
    do

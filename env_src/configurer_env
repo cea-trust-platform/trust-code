@@ -358,19 +358,31 @@ check_nvidia_cuda()
    # Detection nvcc
    ################
    # Ajout du nvcc local en priorite si trouve pour coherence avec driver
-   local_nvcc=`ls /usr/local/*/bin/nvcc 2>/dev/null | tail -1` && [ "$local_nvcc" != "" ] && export PATH=`dirname $local_nvcc`:$PATH
+   # local_nvcc=`ls /usr/local/*/bin/nvcc 2>/dev/null | tail -1` && [ "$local_nvcc" != "" ] && export PATH=`dirname $local_nvcc`:$PATH
    m="# Path to CUDA compiler";e="`cherche_file CUDA_NVCC nvcc`";ecrit $m"|"$e"|"$env;eval $e
+   # Verifie si NVIdia SDK que l'on pointe vers une version specifique du Cuda Toolkit integree et non sur /compilers/bin/nvcc:
+   if [ "`echo $CUDA_NVCC | grep Linux_x86_64`" != "" ]
+   then
+      echo "Using NVidia SDK." && [ "`echo $CUDA_NVCC | grep /compilers/`" != "" ] && echo "Error, you should specify nvcc to a specific Cuda Toolkit version inside the HPC SDK." && exit -1
+   fi
+   # Version que le compilateur fonctionne (typiquement GNU trop recent par rapport a nvcc, build echoue ensuite dans PETSc ou AmgX)
+   CCBIN=$TRUST_CC_BASE && [ "$TRUST_CC_BASE_EXTP" != "" ] && CCBIN=$TRUST_CC_BASE_EXTP
+   check_nvcc="touch test.cu && $CUDA_NVCC -ccbin $CCBIN -c ./test.cu -o test"
+   eval $check_nvcc
+   [ $? != 0 ] && echo "Error: $CUDA_NVCC -ccbin $CCBIN is not working." && exit -1
+   # Verifie la version de nvcc:
    NVCC_VERSION=`$CUDA_NVCC --version 2>/dev/null | awk -F, '/release/ {gsub("release","",$2);gsub(" ","",$2);print $2}'`
    echo "Cuda compiler version: $NVCC_VERSION"
-   # Cuda 11.3, 11.6, 11.7 testes, ne marchent pas (PAR_gpu_3D diverge...)
+   # Cuda 11.3, 11.6, 11.7 testes, ne marchent pas (PAR_gpu_3D diverge EN MULTI-GPU, OK en MONO-GPU !)
+   # ToDo verifier si on ne peut pas compiler avec Cuda recent et utiliser Cuda ancien au runtime...
    NVCC_VERSION_SUPPORTED=11.2
-   NVCC_VALIDE=`echo $NVCC_VERSION $NVCC_VERSION_SUPPORTED '{if (1.0*$1<=1.0*$2) print 1}'`
+   NVCC_VALIDE=`echo $NVCC_VERSION $NVCC_VERSION_SUPPORTED | awk '{if (1.0*$1<=1.0*$2) print 1}'`
    if [ "$NVCC_VALIDE" = "" ]
    then
-      echo "Error, no valid cuda compiler (nvcc<=$NVCC_VERSION_SUPPORTED) found:"
+      echo "Warning, no valid cuda compiler (nvcc<=$NVCC_VERSION_SUPPORTED) found:"
       echo "`$CUDA_NVCC --version 2>/dev/null`"
       echo "Load Cuda module or use ./configure -cuda=download to download Cuda toolkit $NVCC_VERSION_SUPPORTED."
-      exit -1
+      #exit -1
    fi
    # Verification par rapport au driver CUDA (ToDo: mieux detecter sur cluster: trust -gpu nvidia-smi)
    NVIDIA_VERSION=`nvidia-smi 2>/dev/null | awk '/CUDA Version/ {print $(NF-1)}'`
@@ -1751,7 +1763,7 @@ case $TRUST_ARCH_CC in
    	Defines="-D_COMPILE_AVEC_PGCC"
     CppFlags="-O3 -fPIC -Ktrap=fp -Kieee -noswitcherror" # -Ktrap=fp evitent des soucis Arithmetic Exceptions...
     CppFlags=$CppFlags" -std=c++14 -Wno-long-long -Wall -Wshadow -Wextra -Wno-unused-parameter -Werror --display_error_number --diag_suppress185" #--diag_suppress111 si on veut supprimer le warning "statement is unreachable"
-    SYSLIBS="-lgfortran" # Car BLAS+AMGX+PETSC compile avec GNU
+    SYSLIBS="-lgfortran -lnvf" # Car BLAS+AMGX+PETSC compile avec GNU
     F77Flags="-O3 -fPIC -noswitcherror"
     ccFLAGS="-O3 -fPIC -noswitcherror"
     ShLibFlag="\$(TRUST_CC) -shared"

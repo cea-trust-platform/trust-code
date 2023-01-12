@@ -5,10 +5,18 @@ AMGX_DIR=`dirname $1`
 LIB=`basename $1`
 ROOT=`pwd`
 valgrind=$TRUST_ROOT/exec/valgrind/bin/valgrind
+
+# Gestion du NVidia SDK (apparait de plus en plus sur les clusters. Et necessaire pour OpenMP)
+# Il faut cmake 3.22 (sinon CUDA::cublas non detecte) et nvcc qui pointe sur une version du Cuda Toolkit !
+# Pas:  /product/ubuntu20-x86_64/apps/NVHPC-nompi/22.1/Linux_x86_64/22.1/compilers/bin/nvcc
+# Mais: /product/ubuntu20-x86_64/apps/NVHPC-nompi/22.1/Linux_x86_64/22.1/cuda/11.0/bin/nvcc
+# On peut se baser sur Linux_x86_64 pour voir que c'est le Nvidia SDK et refuser le chemin /compilers/
+[ "`cmake --version 2>/dev/null | grep 3.18`" != "" ] && conda install -y cmake=3.22 # En attendant l'upgrade de conda
+
 # ToDo: remonter dans configure de TRUST pour partage avec PETSc ?
-for CUDA_LIB_PATH in $CUDA_ROOT/math_libs $CUDA_ROOT/../math_libs $CUDA_ROOT/../../math_libs
+for CUDA_LIB_PATH in $CUDA_ROOT/math_libs $CUDA_ROOT/../math_libs $CUDA_ROOT/../../math_libs `echo $CUDA_ROOT | sed "1,$ s?/cuda/?/../math_libs/?g"`
 do
-   [ -d $CUDA_LIB_PATH ] && export CUDA_LIB_PATH && CUDA_NVCC_FLAGS="-DCUDA_NVCC_FLAGS=-I$CUDA_LIB_PATH/include;--compiler-options;-L$CUDA_LIB_PATH/lib64 -fPIC" && break
+   [ -d $CUDA_LIB_PATH ] && export CUDA_LIB_PATH && CUDA_NVCC_FLAGS="-DCUDA_NVCC_FLAGS=-I$CUDA_LIB_PATH/include;--compiler-options;-L$CUDA_LIB_PATH/lib64;-fPIC" && break
 done
 # Fin ToDo
 log=$ROOT/perf_$LIB.log && rm -f $log
@@ -36,9 +44,11 @@ then
    else
       AMGX_COMPILERS="-DCMAKE_CXX_COMPILER=$TRUST_CC_BASE -DCMAKE_C_COMPILER=$TRUST_cc_BASE"
    fi
+   # ToDo -DCUDA_ARCH="60;70;80" ou --gpu=all
+   # -DCMAKE_CUDA_FLAGS=-L$CUDA_ROOT/lib64 regle le pb de (cannot find -lcudadevrt -lcudart_static) au configure pour le NVidia SDK
+   # -DCUDA_TOOLKIT_ROOT_DIR=$CUDA_ROOT  changement de syntax pour cmake 3.18 -> 3.22 ?
+   cmake -DCUDAToolkit_ROOT=$CUDA_ROOT -DCMAKE_CUDA_FLAGS=-L$CUDA_ROOT/lib64 $CUDA_NVCC_FLAGS -DAMGX_NO_RPATH=1 -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB $AMGX_COMPILERS -DCMAKE_CUDA_FLAGS_RELEASE="-DNDEBUG" .. || exit -1
    # Sur jeanzay, $TRUST_MAKE plante (pas assez de memoire sur frontale?) donc on retente avec make:
-   #-DCUDA_ARCH="60;70;80"
-   cmake -Wno-dev $CUDA_NVCC_FLAGS -DCUDA_TOOLKIT_ROOT_DIR=$CUDA_ROOT -DAMGX_NO_RPATH=1 -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB $AMGX_COMPILERS -DCMAKE_CUDA_FLAGS_RELEASE="-DNDEBUG" .. || exit -1
    ($TRUST_MAKE || make) && make install && cp -f ../examples/matrix.mtx $AMGX_DIR/$LIB/lib/examples || exit -1
    make install && cp -f ../examples/matrix.mtx $AMGX_DIR/$LIB/lib/examples
    cd $ROOT && rm -r -f $LIB
@@ -74,13 +84,6 @@ then
    fi
    CMAKE_FLAGS=" -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX -DCMAKE_CUDA_HOST_COMPILER=$CC -DCMAKE_CUDA_FLAGS=-fPIC"
    export CXXFLAGS=-fPIC && [ "$TRUST_USE_OPENMP" = 1 ] && CXXFLAGS=$CXXFLAGS" -fopenmp"
-   # cmake (meme recent, 3.20) pas foutu de detecter correctement le nvcc du HPC SDK (cannot find -lcudadevrt -lcudart_static):
-   if [ "$NVHPC" != "" ] || [ "$NVCOMPILERS" != "" ]
-   then
-       # Sur orcus, besoin d'ajouter -L$CUDA_ROOT/../compilers/lib -lnvc -lnvcpumath avec 21.2 (undefined reference __pgi au link...)
-       # echo "$CUDA_ROOT/bin/nvcc -L$CUDA_ROOT/../compilers/lib -lnvc -lnvcpumath -L$CUDA_ROOT/lib64 \$*" > nvcc && chmod +x nvcc && CMAKE_FLAGS=$CMAKE_FLAGS" -DCMAKE_CUDA_COMPILER=`pwd`/nvcc"
-       echo "$CUDA_ROOT/bin/nvcc -L$CUDA_ROOT/lib64 \$*" > nvcc && chmod +x nvcc && CMAKE_FLAGS=$CMAKE_FLAGS" -DCMAKE_CUDA_COMPILER=`pwd`/nvcc"
-   fi
    # Configure and build:
    cmake $CMAKE_FLAGS -DCMAKE_INSTALL_LIBDIR=lib64 -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB -DCMAKE_BUILD_TYPE=$BUILD -DBUILD_SHARED_LIBS=OFF .. && $TRUST_MAKE
    [ $? != 0 ] && exit -1

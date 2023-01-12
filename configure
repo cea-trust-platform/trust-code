@@ -265,7 +265,7 @@ echo "[-force_latest_openmpi]           Download and use the OpenMPI `awk -F= '/
 echo "[-force_system_mpi]               Use the system-provided MPI library."
 echo "[-force_even_unsupported]         Force the configure even the compiler/OS is not supported."
 echo "[-cuda[=path to nvcc|=download]]  Activate the CUDA support into several libraries for NVidia GPU computing (experimental)"
-echo "[-openmp]                         Enable OpenMP support (and GPU offload if -cuda is also used)"
+echo "[-openmp]                         Enable OpenMP support (and GPU offload if -cuda is also used. In this case NVidia SDK is downloaded if not available)"
 echo "[-rocalution=0|path to rocALUTION]Disable or specify extern rocALUTION library for AMD GPU computing (experimental). Default: using provided rocALUTION library"
 echo "[-disable-petsc]                  Disable PETSc library installation."
 echo "[-disable-petsc-optionals]        Disable some PETSc optionals for Cathare (visualization features, HDF5 support,...)"
