@@ -45,6 +45,15 @@ public:
   void ajouter(const char *, Objet_U* ,Param::Nature nat = Param::OPTIONAL);//int opt=1);
   void ajouter_arr_size_predefinie(const char *, ArrOfInt* ,Param::Nature nat = Param::OPTIONAL);//int opt=1);
   void ajouter_arr_size_predefinie(const char *, ArrOfDouble* ,Param::Nature nat = Param::OPTIONAL);//int opt=1);
+
+  template <typename _CLASSE_>
+  void ajouter_deriv(const char * mot, const char *prefixe, TRUST_Deriv<_CLASSE_> * quoi, Param::Nature nat = Param::OPTIONAL)
+  {
+    Objet_a_lire& obj=create_or_get_objet_a_lire(mot);
+    obj.set_nature( nat == Param::REQUIRED ? Objet_a_lire::REQUIRED : Objet_a_lire::OPTIONAL);
+    obj.set_deriv<_CLASSE_>(quoi, prefixe);
+  }
+
   void ajouter_flag(const char *,int* ,Param::Nature nat = Param::OPTIONAL);//int opt=1);
   Param& ajouter_param(const char *, Param::Nature nat = Param::OPTIONAL);
   void ajouter_non_std(const char *,Objet_U* ,Param::Nature nat = Param::OPTIONAL);//int opt=1);

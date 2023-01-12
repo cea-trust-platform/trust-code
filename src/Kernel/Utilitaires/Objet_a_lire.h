@@ -17,6 +17,7 @@
 #ifndef Objet_a_lire_included
 #define Objet_a_lire_included
 
+#include <TRUST_Deriv.h>
 #include <TRUSTArray.h>
 #include <TRUST_List.h>
 #include <ptrParam.h>
@@ -38,6 +39,15 @@ public:
   void set_objet(Objet_U*);
   void set_arrofint(ArrOfInt*);
   void set_arrofdouble(ArrOfDouble*);
+
+  template<typename _CLASSE_>
+  void set_deriv(TRUST_Deriv<_CLASSE_> *quoi, const char *prefixe)
+  {
+    obj_a_lire = quoi;
+    type = DERIV;
+    prefixe_deriv = prefixe;
+  }
+
   Param& create_param(const char*);
   void set_flag(int*);
   void set_non_std(Objet_U*);
