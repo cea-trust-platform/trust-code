@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,7 +18,17 @@
 #include <stat_counters.h>
 
 Implemente_instanciable_sans_constructeur(Coarsen_Operator_Uniform, "Coarsen_Operator_Uniform", Coarsen_Operator_base);
-
+// XD Coarsen_Operator_Uniform objet_lecture nul 0 Object defining the uniform coarsening process of the given grid in IJK discretization
+// XD   attr Coarsen_Operator_Uniform chaine Coarsen_Operator_Uniform 1 not_set
+// XD   attr aco chaine(into=["{"]) aco 0 opening curly brace
+// XD   attr coarsen_i chaine(into=["coarsen_i"]) coarsen_i 1 not_set
+// XD   attr coarsen_i_val entier coarsen_i_val 1 Integer indicating the number by which we will divide the number of elements in the I direction (in order to obtain a coarser grid)
+// XD   attr coarsen_j chaine(into=["coarsen_j"]) coarsen_j 1 not_set
+// XD   attr coarsen_j_val entier coarsen_j_val 1 Integer indicating the number by which we will divide the number of elements in the J direction (in order to obtain a coarser grid)
+// XD   attr coarsen_k chaine(into=["coarsen_k"]) coarsen_k 1 not_set
+// XD   attr coarsen_k_val entier coarsen_k_val 1 Integer indicating the number by which we will divide the number of elements in the K direction (in order to obtain a coarser grid)
+// XD   attr acof chaine(into=["}"]) acof 0 closing curly brace
+// XD coarsen_operators listobj nul 0 Coarsen_Operator_Uniform 0 not_set
 Coarsen_Operator_Uniform::Coarsen_Operator_Uniform()
 {
   coarsen_factors_.resize_array(3);

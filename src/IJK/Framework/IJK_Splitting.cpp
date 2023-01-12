@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,6 +23,8 @@
 
 Implemente_instanciable_sans_constructeur(IJK_Splitting, "IJK_Splitting", Objet_U);
 Implemente_ref(IJK_Splitting);
+
+// XD IJK_Splitting objet_u IJK_Splitting -1 Object to specify how the domain will be divided between processors in IJK discretization
 
 IJK_Splitting::IJK_Splitting()
 {
@@ -53,10 +55,10 @@ Entree& IJK_Splitting::readOn(Entree& is)
   Nom geom_name;
   int ni, nj, nk;
   int group_i = 1, group_j = 1, group_k = 1;
-  param.ajouter("ijk_grid_geometry", &geom_name, Param::REQUIRED);
-  param.ajouter("nproc_i", &ni, Param::REQUIRED);
-  param.ajouter("nproc_j", &nj, Param::REQUIRED);
-  param.ajouter("nproc_k", &nk, Param::REQUIRED);
+  param.ajouter("ijk_grid_geometry", &geom_name, Param::REQUIRED); // XD_ADD_P ref_IJK_Grid_Geometry the grid that will be splitted
+  param.ajouter("nproc_i", &ni, Param::REQUIRED); // XD_ADD_P entier the number of processors into which we will divide the grid following the I direction
+  param.ajouter("nproc_j", &nj, Param::REQUIRED); // XD_ADD_P entier the number of processors into which we will divide the grid following the J direction
+  param.ajouter("nproc_k", &nk, Param::REQUIRED); // XD_ADD_P entier the number of processors into which we will divide the grid following the K direction
   param.ajouter("process_grouping_i", &group_i);
   param.ajouter("process_grouping_j", &group_j);
   param.ajouter("process_grouping_k", &group_k);

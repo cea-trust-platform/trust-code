@@ -36,28 +36,31 @@ static int global_count_dump_in_file = 0;
 #endif
 
 Implemente_base_sans_constructeur(Multigrille_base, "Multigrille_base", SolveurSys_base);
+// XD multigrid_solver interprete nul 1 Object defining a multigrid solver in IJK discretization
+// XD   attr coarsen_operators coarsen_operators coarsen_operators 1 Definition of the number of grids that will be used, in addition to the finest (original) grid, followed by the list of the coarsen operators that will be applied to get those grids
+// XD   attr ghost_size entier ghost_size 1 Number of ghost cells known by each processor in each of the three directions
 
 Sortie& Multigrille_base::printOn(Sortie& os) const { return os; }
 
 void Multigrille_base::ajouter_param(Param& param)
 {
-  param.ajouter("relax_jacobi", &relax_jacobi_);
-  param.ajouter("pre_smooth_steps", &pre_smooth_steps_);
-  param.ajouter("smooth_steps", &smooth_steps_);
-  param.ajouter("nb_full_mg_steps", &nb_full_mg_steps_);
-  param.ajouter("solveur_grossier", &solveur_grossier_);
+  param.ajouter("relax_jacobi", &relax_jacobi_); // XD_ADD_P list Parameter between 0 and 1 that will be used in the Jacobi method to solve equation on each grid. Should be around 0.7
+  param.ajouter("pre_smooth_steps", &pre_smooth_steps_); // XD_ADD_P listentier First integer of the list indicates the numbers of integers that has to be read next. Following integers define the numbers of iterations done before solving the equation on each grid. For example, 2 7 8 means that we have a list of 2 integers, the first one tells us to perform 7 pre-smooth steps on the first grid, the second one tells us to perform 8 pre-smooth steps on the second grid. If there are more than 2 grids in the solver, then the remaining ones will have as many pre-smooth steps as the last mentionned number (here, 8)
+  param.ajouter("smooth_steps", &smooth_steps_); // XD_ADD_P listentier First integer of the list indicates the numbers of integers that has to be read next. Following integers define the numbers of iterations done after solving the equation on each grid. Same behavior as pre_smooth_steps
+  param.ajouter("nb_full_mg_steps", &nb_full_mg_steps_); // XD_ADD_P listentier Number of multigrid iterations at each level
+  param.ajouter("solveur_grossier", &solveur_grossier_); // XD_ADD_P solveur_sys_base Name of the iterative solver that will be used to solve the system on the coarsest grid. This resolution must be more precise than the ones occurring on the fine grids. The threshold of this solver must therefore be lower than seuil defined above.
   param.ajouter("check_residu", &check_residu_);
-  param.ajouter("seuil", &seuil_);
+  param.ajouter("seuil", &seuil_); // XD_ADD_P floattant Define an upper bound on the norm of the final residue (i.e. the one obtained after applying the multigrid solver). With hybrid precision, as long as we have not obtained a residue whose norm is lower than the imposed threshold, we keep applying the solver
   param.ajouter("iterations_gcp", &max_iter_gcp_);
   param.ajouter("iterations_gmres", &max_iter_gmres_);
   param.ajouter("solv_jacobi", &solv_jacobi_);
   param.ajouter("n_krilov", &n_krilov_);
-  param.ajouter_flag("impr", &impr_);
-  param.ajouter("solver_precision", &solver_precision_);
+  param.ajouter_flag("impr", &impr_); // XD_ADD_P rien Flag to display some info on the resolution on eahc grid
+  param.ajouter("solver_precision", &solver_precision_); // XD_ADD_P chaine(into=["mixed","double"]) Precision with which the variables at stake during the resolution of the system will be stored. We can have a simple or double precision or both. In the case of a hybrid precision, the multigrid solver is launched in simple precision, but the residual is calculated in double precision.
   param.dictionnaire("double", precision_double_);
   param.dictionnaire("float", precision_float_);
   param.dictionnaire("mixed", precision_mix_);
-  param.ajouter("iterations_mixed_solver", &max_iter_mixed_solver_);
+  param.ajouter("iterations_mixed_solver", &max_iter_mixed_solver_); // XD_ADD_P entier Define the maximum number of iterations in mixed precision solver
 }
 
 Multigrille_base::Multigrille_base() : precision_double_(0), precision_float_(1),

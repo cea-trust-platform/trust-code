@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,6 +23,7 @@
 #include <Hexaedre.h>
 
 Implemente_instanciable_sans_constructeur(IJK_Grid_Geometry, "IJK_Grid_Geometry", Objet_U);
+// XD IJK_Grid_Geometry domaine IJK_Grid_Geometry -1 Object to define the grid that will represent the domain of the simulation in IJK discretization
 
 IJK_Grid_Geometry::IJK_Grid_Geometry()
 {
@@ -48,21 +49,21 @@ Entree& IJK_Grid_Geometry::readOn(Entree& is)
   ArrOfDouble constant_deltadir(3); // Constant element size in each direction
   Noms file_coord(3);
   constant_deltadir = -1.; // default means "unspecified"
-  param.ajouter_flag("perio_i", &perio_flags[0]);
-  param.ajouter_flag("perio_j", &perio_flags[1]);
-  param.ajouter_flag("perio_k", &perio_flags[2]);
-  param.ajouter("nbelem_i", &ndir[0]);
-  param.ajouter("nbelem_j", &ndir[1]);
-  param.ajouter("nbelem_k", &ndir[2]);
-  param.ajouter("uniform_domain_size_i", &constant_deltadir[0]);
-  param.ajouter("uniform_domain_size_j", &constant_deltadir[1]);
-  param.ajouter("uniform_domain_size_k", &constant_deltadir[2]);
+  param.ajouter_flag("perio_i", &perio_flags[0]); // XD_ADD_P rien flag to specify the border along the I direction is periodic
+  param.ajouter_flag("perio_j", &perio_flags[1]); // XD_ADD_P rien flag to specify the border along the J direction is periodic
+  param.ajouter_flag("perio_k", &perio_flags[2]); // XD_ADD_P rien flag to specify the border along the K direction is periodic
+  param.ajouter("nbelem_i", &ndir[0]); // XD_ADD_P entier the number of elements of the grid in the I direction
+  param.ajouter("nbelem_j", &ndir[1]); // XD_ADD_P entier the number of elements of the grid in the J direction
+  param.ajouter("nbelem_k", &ndir[2]); // XD_ADD_P entier the number of elements of the grid in the K direction
+  param.ajouter("uniform_domain_size_i", &constant_deltadir[0]); // XD_ADD_P floattant the size of the elements along the I direction
+  param.ajouter("uniform_domain_size_j", &constant_deltadir[1]); // XD_ADD_P floattant the size of the elements along the J direction
+  param.ajouter("uniform_domain_size_k", &constant_deltadir[2]); // XD_ADD_P floattant the size of the elements along the K direction
   param.ajouter("file_coord_i", &file_coord[0]);
   param.ajouter("file_coord_j", &file_coord[1]);
   param.ajouter("file_coord_k", &file_coord[2]);
-  param.ajouter("origin_i", &origin[0]);
-  param.ajouter("origin_j", &origin[1]);
-  param.ajouter("origin_k", &origin[2]);
+  param.ajouter("origin_i", &origin[0]); // XD_ADD_P floattant I-coordinate of the origin of the grid
+  param.ajouter("origin_j", &origin[1]); // XD_ADD_P floattant J-coordinate of the origin of the grid
+  param.ajouter("origin_k", &origin[2]); // XD_ADD_P floattant K-coordinate of the origin of the grid
   param.lire_avec_accolades(is);
 
   VECT(ArrOfDouble) delta_dir(3);

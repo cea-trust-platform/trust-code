@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,6 +21,8 @@
 #include <IJK_Navier_Stokes_tools.h>
 
 Implemente_instanciable(Parallel_io_parameters, "Parallel_io_parameters", Interprete);
+
+// XD Parallel_io_parameters interprete Parallel_io_parameters 1 Object to handle parallel files in IJK discretization
 
 // Reasonable default value for typical machines nowadays
 long long Parallel_io_parameters::max_block_size_ = (long long) 0; // for the moment, deactivate parallel write by default 1024*1024*64;
@@ -49,11 +51,11 @@ Entree& Parallel_io_parameters::interpreter(Entree& is)
   Nom ijk_name_write, ijk_name_read;
 
   Param param(que_suis_je());
-  param.ajouter("block_size_bytes", &bs_bytes);
-  param.ajouter("block_size_megabytes", &bs);
-  param.ajouter("writing_processes", &n);
-  param.ajouter("bench_ijk_splitting_write", &ijk_name_write);
-  param.ajouter("bench_ijk_splitting_read", &ijk_name_read);
+  param.ajouter("block_size_bytes", &bs_bytes); // XD_ADD_P entier File writes will be performed by chunks of this size (in bytes). This parameter will not be taken into account if block_size_megabytes has been defined
+  param.ajouter("block_size_megabytes", &bs); // XD_ADD_P entier File writes will be performed by chunks of this size (in megabytes). The size should be a multiple of the GPFS block size or lustre stripping size (typically several megabytes)
+  param.ajouter("writing_processes", &n); // XD_ADD_P entier This is the number of processes that will write concurrently to the file system (this must be set according to the capacity of the filesystem, set to 1 on small computers, can be up to 64 or 128 on very large systems).
+  param.ajouter("bench_ijk_splitting_write", &ijk_name_write); // XD_ADD_P chaine Name of the splitting object we want to use to run a parallel write bench  (optional parameter)
+  param.ajouter("bench_ijk_splitting_read", &ijk_name_read); // XD_ADD_P chaine Name of the splitting object we want to use to run a parallel read bench  (optional parameter)
   param.lire_avec_accolades(is);
 
   if (bs < 0)

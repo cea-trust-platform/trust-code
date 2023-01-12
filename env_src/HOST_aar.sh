@@ -7,7 +7,7 @@ define_modules_config()
 {
    env=$TRUST_ROOT/env/machine.env
    #
-   GNU_ENV=`ls /home/prog/trust/env_gcc_5-5-0_ompi.sh 2>/dev/null`
+   GNU_ENV=`ls /home/prog/trust/env_gcc-8.2.0_openmpi-3.1.6.sh 2>/dev/null`
    if [ "$GNU_ENV" != "" ]
    then
       ligne_supp="source $GNU_ENV # GNU compiler and openmpi"
