@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -214,8 +214,10 @@ int Sortie_Fichier_base::ouvrir(const char* name,IOS_OPEN_MODE mode)
   set_ostream(ofstream_);
   if (!ofstream_->good())
     {
-      Cerr << "Error when opening the file " << name << finl;
-      Cerr << "Check if this file can be opened." << finl;
+      Cerr << "Error when opening the file " << name << ". File was opened " << counters[name] << " time(s) ..." << finl;
+      Cerr << "Either:\n you don't have write rights,\n or your filesystem is very slow and multiple file open/close." << finl;
+      Cerr << "Contact TRUST support team." << finl;
+      Process::exception_sur_exit=2;
       Process::exit();
     }
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -230,6 +230,11 @@ void Process::exit(int i)
 }
 void Process::exit(const Nom& message ,int i)
 {
+  if (exception_sur_exit == 2)
+    {
+      ::exit(-1); // ND 11/01/23 utilisation d'un second ::exit(-1) dans TRUST car si pas droits d'ecriture appel recursif a Process::exit()
+    }
+
   if(je_suis_maitre())
     {
       Cerr << message << finl;
@@ -312,7 +317,7 @@ void Process::exit(const Nom& message ,int i)
     }
   // On force exit();
   if (i==0) i=-1;
-  ::exit(i); //Seul ::exit utilise dans le code
+  ::exit(i); //Seul ::exit utilise dans le code jusqu'a 01/23. second ajoute car appel recursif a Process::exit si droits ecriture dossier etude manquants
 }
 
 /*! @brief Routine de sortie de Trio-U sur une erreur abort()
