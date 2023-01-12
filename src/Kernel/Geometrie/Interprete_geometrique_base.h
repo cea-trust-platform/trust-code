@@ -27,9 +27,8 @@
 
 /*! @brief classe Interprete_geometrique_base .
  *
- *
- *
- * @sa Classe abstraite dont les interpretes geometriques qui modifient un ou plusieurs domaines doivent deriver., Une reference est faite a chaque domaine. L'invalidation de l'octree apres modification du domaine, (par interpreter_(is)) est factorisee dans la methode interpreter(), Methodes abstraites:, int nombre_d_operateurs() const
+ * @sa Classe abstraite dont les interpretes geometriques qui modifient un ou plusieurs domaines doivent deriver., Une reference est faite a chaque domaine. L'invalidation de l'octree apres modification
+ * du domaine, (par interpreter_(is)) est factorisee dans la methode interpreter(), Methodes abstraites:, int nombre_d_operateurs() const
  */
 class Interprete_geometrique_base : public Interprete
 {

@@ -225,25 +225,25 @@ Entree& Zone::lire_bords_a_imprimer_sum(Entree& is)
 //
 /////////////////////////////////////////////////////////////////////
 
-/*! @brief Renvoie le domaine dont la zone fait partie.
- *
- * (version const)
- *
- * @return (Zone&) le domaine dont la zone fait partie
- */
-const Zone& Zone::domaine() const
-{
-  return le_domaine.valeur();
-}
-
-/*! @brief Renvoie le domaine dont la zone fait partie.
- *
- * @return (Zone&) le domaine dont la zone fait partie
- */
-Zone& Zone::domaine()
-{
-  return le_domaine.valeur();
-}
+///*! @brief Renvoie le domaine dont la zone fait partie.
+// *
+// * (version const)
+// *
+// * @return (Zone&) le domaine dont la zone fait partie
+// */
+//const Zone& Zone::domaine() const
+//{
+//  return le_domaine.valeur();
+//}
+//
+///*! @brief Renvoie le domaine dont la zone fait partie.
+// *
+// * @return (Zone&) le domaine dont la zone fait partie
+// */
+//Zone& Zone::domaine()
+//{
+//  return le_domaine.valeur();
+//}
 
 /*! @brief che les numeros (indices) des elements contenants les sommets specifies par le parametre "sommets".
  *

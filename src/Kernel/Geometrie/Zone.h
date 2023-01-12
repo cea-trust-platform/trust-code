@@ -29,14 +29,32 @@
 #include <Bords.h>
 #include <Noms.h>
 
+//@@@@@@@@@@@@@@@
 #include <List_Ref_Sous_Zone.h>
-#include <Zone.h>  // For LIST(REF(Zone))
+#include <Ref_Domaine.h>
+
+#include <medcoupling++.h>
+#ifdef MEDCOUPLING_
+#include <MEDCouplingUMesh.hxx>
+using MEDCoupling::MEDCouplingUMesh;
+using MEDCoupling::MCAuto;
+#endif
+
+class LIST(REF(Zone));
+class Conds_lim;
+class Zone_dis;
+class Zone_dis_base;
+class Domaine_dis;
+
+//@@@@@@@@@@@@@@@
 
 class Motcle;
 
 class Sous_Zone;
 class Zones;
 class Probleme_base;
+
+
 
 /*! @brief classe Zone Une Zone est un maillage compose d'un ensemble d'elements geometriques
  *
@@ -57,44 +75,44 @@ public:
 
   //// @@@@@@@@@@@@@@
 //  inline const Nom& le_nom() const override;
-  inline void nommer(const Nom& ) override;
-  inline int nb_zones() const;
-  inline const Zone& zone(int) const;
-  inline Zone& zone(int);
-  inline const Zone& zone(const Nom&) const;
-  inline Zone& zone(const Nom&);
-  inline int nb_ss_zones() const;
-  inline const Sous_Zone& ss_zone(int) const;
-  inline Sous_Zone& ss_zone(int);
-  inline const Sous_Zone& ss_zone(const Nom&) const;
-  inline Sous_Zone& ss_zone(const Nom&);
+//  inline void nommer(const Nom& ) override;
+  int nb_zones() const;
+  const Zone& zone(int) const;
+  Zone& zone(int);
+  const Zone& zone(const Nom&) const;
+  Zone& zone(const Nom&);
+  int nb_ss_zones() const;
+  const Sous_Zone& ss_zone(int) const;
+  Sous_Zone& ss_zone(int);
+  const Sous_Zone& ss_zone(const Nom&) const;
+  Sous_Zone& ss_zone(const Nom&);
 
-  inline double coord(int, int) const;
-  inline double& coord(int, int);
-  inline const DoubleTab& coord_sommets() const;
+  double coord(int, int) const;
+  double& coord(int, int);
+  const DoubleTab& coord_sommets() const;
 //  virtual int nb_som() const;
 //  virtual int nb_som_tot() const;
 
   void add(const Sous_Zone&);
   int associer_(Objet_U&) override;
-  inline DoubleTab& les_sommets();
-  inline const DoubleTab& les_sommets() const;
+  DoubleTab& les_sommets();
+  const DoubleTab& les_sommets() const;
   DoubleTab getBoundingBox() const;
   //
 
   Zone& add(Zone&);
   void ajouter(const DoubleTab&, IntVect&);
   void ajouter(const DoubleTab&);
-  void comprimer();
-  inline void fixer_epsilon(double);
-  inline double epsilon() const;
-  void reordonner();
-  inline const Zones& zones() const;
-  inline Zones& zones() ;
-  inline const LIST(REF(Sous_Zone))& ss_zones() const;
+//  void comprimer();
+  void fixer_epsilon(double);
+//  double epsilon() const;
+//  void reordonner();
+  const Zones& zones() const;
+  Zones& zones() ;
+  const LIST(REF(Sous_Zone))& ss_zones() const;
   inline int deformable() const  {   return deformable_;  }
   inline int& deformable()  {   return deformable_;  }
-  inline int get_renum_som_perio(int ) const;
+  int get_renum_som_perio(int ) const;
   void construire_renum_som_perio(const Conds_lim&, const Zone_dis&) ;
   virtual void initialiser (double temps, Domaine_dis&, Probleme_base&) {}
   virtual void set_dt(double& dt_) {}
@@ -103,7 +121,7 @@ public:
   inline const Nom& get_fichier_lu() const  {   return fichier_lu_;  }
 
   virtual void creer_tableau_sommets(Array_base&, Array_base::Resize_Options opt = Array_base::COPY_INIT) const;
-  virtual void creer_tableau_elements(Array_base&, Array_base::Resize_Options opt = Array_base::COPY_INIT) const;
+//  virtual void creer_tableau_elements(Array_base&, Array_base::Resize_Options opt = Array_base::COPY_INIT) const;
   virtual const MD_Vector& md_vector_sommets() const;
   inline void set_renum_som_perio(IntTab& renum)  {    renum_som_perio_=renum;   };
 
@@ -112,7 +130,7 @@ public:
 
   // Informations
   void imprimer() const;
-  inline const LIST(REF(Zone))& domaines_frontieres() const  {   return domaines_frontieres_;   }
+  const LIST(REF(Zone))& domaines_frontieres() const;
 #ifdef MEDCOUPLING_
   // MEDCoupling:
   MCAuto<MEDCouplingUMesh>& getUMesh() const  {   return mesh_;   };
@@ -270,10 +288,10 @@ protected:
 //////@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
   DoubleTab sommets_;
-  Zones les_zones_;
+//  Zones les_zones_;
   ArrOfInt renum_som_perio_;
 
-  LIST(REF(Zone)) domaines_frontieres_;
+//  LIST(REF(Domaine)) domaines_frontieres_;
   LIST(REF(Sous_Zone)) les_ss_zones_;
   double epsilon_;
   int deformable_;
@@ -288,7 +306,7 @@ protected:
   int axi1d_;
 //////@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-  REF(Zone) le_domaine;
+//  REF(Domaine) le_domaine;
   // Type de l'element geometrique de cette Zone
   Elem_geom elem_;
   // Description des elements (pour le multi-element, le tableau peut contenir des -1 !!!)

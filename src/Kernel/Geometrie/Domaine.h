@@ -128,8 +128,8 @@ protected :
   Zones les_zones_;
   ArrOfInt renum_som_perio_;
 
-  LIST(REF(Domaine)) domaines_frontieres_;
-  LIST(REF(Sous_Zone)) les_ss_zones_;
+//  LIST(REF(Domaine)) domaines_frontieres_;
+//  LIST(REF(Sous_Zone)) les_ss_zones_;
   double epsilon_;
   int deformable_;
   Nom fichier_lu_;
