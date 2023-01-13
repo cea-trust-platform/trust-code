@@ -70,7 +70,7 @@ double Op_Diff_VDF_Face_base::calculer_dt_stab(const Zone_VDF& zone_VDF) const
   const double Cdiffu = sub_type(Champ_Uniforme, ch_diffu);
 
   // Si la diffusivite est variable, ce doit etre un champ aux elements.
-  assert(Cdiffu || diffu.size() == zone_VDF.nb_elem());
+  assert(Cdiffu || diffu.size() == diffu.line_size() * zone_VDF.nb_elem());
   const int nb_elem = zone_VDF.nb_elem();
   for (int elem = 0; elem < nb_elem; elem++)
     {
