@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,17 +33,22 @@ class Eval_Diff_VDF_const : public Eval_Diff_VDF
 
 {
 public:
-  inline Eval_Diff_VDF_const() :db_diffusivite(-1.0e+300) {}
+  Eval_Diff_VDF_const() {}
   inline void associer(const Champ_base&) override;
-  inline void mettre_a_jour() override { db_diffusivite = diffusivite_.valeur()(0,0); }
+  inline void mettre_a_jour() override
+  {
+    const DoubleTab& diffu_val = diffusivite_->valeurs();
+    for (int compo = 0; compo < diffu_val.dimension(1); compo++)
+      db_diffusivite[compo] = diffu_val(0, compo);
+  }
   inline const Champ_base& get_diffusivite() const override;
 
   // Methods used by the flux computation in template class:
-  inline double nu_1_impl(int i, int compo) const { return db_diffusivite; }
-  inline double nu_2_impl(int i, int compo) const { return db_diffusivite; }
-  inline double compute_heq_impl(double d0, int i, double d1, int j, int compo) const { return db_diffusivite/(d0+d1); }
-  inline double nu_1_impl_face(int i, int j, int compo) const { return db_diffusivite; }
-  inline double nu_2_impl_face(int i, int j, int k, int l, int compo) const { return db_diffusivite; }
+  inline double nu_1_impl(int i, int compo) const { return db_diffusivite[compo]; }
+  inline double nu_2_impl(int i, int compo) const { return db_diffusivite[compo]; }
+  inline double compute_heq_impl(double d0, int i, double d1, int j, int compo) const { return db_diffusivite[compo]/(d0+d1); }
+  inline double nu_1_impl_face(int i, int j, int compo) const { return db_diffusivite[compo]; }
+  inline double nu_2_impl_face(int i, int j, int k, int l, int compo) const { return db_diffusivite[compo]; }
   inline double nu_lam_impl_face(int i, int j, int k, int l, int compo) const { return nu_2_impl_face(i,j,k,l,compo); }
   inline double nu_lam_impl_face2(int i, int j, int compo) const { return nu_1_impl_face(i,j,compo); }
   inline double nu_t_impl(int i, int compo) const { return 0.; }
@@ -54,13 +59,16 @@ public:
 
 protected:
   REF(Champ_Uniforme) diffusivite_;
-  double db_diffusivite;
+  std::vector<double> db_diffusivite;
 };
 
 inline void Eval_Diff_VDF_const::associer(const Champ_base& diffu)
 {
+  db_diffusivite.clear();
   diffusivite_ = ref_cast(Champ_Uniforme, diffu);
-  db_diffusivite = diffusivite_.valeur()(0,0);
+  const DoubleTab& diffu_val = diffusivite_->valeurs();
+  for (int compo = 0; compo < diffu_val.dimension(1); compo++)
+    db_diffusivite.push_back(diffu_val(0, compo));
 }
 
 inline const Champ_base& Eval_Diff_VDF_const::get_diffusivite() const

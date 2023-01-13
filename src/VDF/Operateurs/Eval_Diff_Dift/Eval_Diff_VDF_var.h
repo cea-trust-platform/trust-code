@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,8 +37,8 @@ public:
   inline const Champ_base& diffusivite() const { return get_diffusivite(); }
 
   // Methods used by the flux computation in template class:
-  inline double nu_1_impl(int i, int compo) const { return dv_diffusivite(i); }
-  inline double nu_2_impl(int i, int compo) const { return dv_diffusivite(i); }
+  inline double nu_1_impl(int i, int compo) const { return dv_diffusivite(i, compo); }
+  inline double nu_2_impl(int i, int compo) const { return dv_diffusivite(i, compo); }
   inline double nu_t_impl(int i, int compo) const { return 0.; }
   inline double nu_lam_impl_face(int i, int j, int k, int l, int compo) const { return nu_2_impl_face(i,j,k,l,compo); }
   inline double nu_lam_impl_face2(int i, int j, int compo) const { return nu_1_impl_face(i,j,compo); }
@@ -49,18 +49,19 @@ public:
 
   inline double compute_heq_impl(double d0, int i, double d1, int j, int compo) const
   {
-    return 1./(d0/dv_diffusivite(i) + d1/dv_diffusivite(j));
+    return 1. / (d0 / dv_diffusivite(i, compo) + d1 / dv_diffusivite(j, compo));
   }
 
-  inline double nu_1_impl_face(int i, int j, int compo) const { return 0.5*(dv_diffusivite(i)+dv_diffusivite(j)); }
+  inline double nu_1_impl_face(int i, int j, int compo) const { return 0.5*(dv_diffusivite(i, compo)+dv_diffusivite(j, compo)); }
   inline double nu_2_impl_face(int i, int j, int k, int l, int compo) const
   {
-    return 0.25*(dv_diffusivite(i)+dv_diffusivite(j)+dv_diffusivite(k)+dv_diffusivite(l));
+    Cerr << "compo " << compo << finl;
+    return 0.25 * (dv_diffusivite(i, compo) + dv_diffusivite(j, compo) + dv_diffusivite(k, compo) + dv_diffusivite(l, compo));
   }
 
 protected:
   REF(Champ_base) diffusivite_;
-  DoubleVect dv_diffusivite;
+  DoubleTab dv_diffusivite;
 };
 
 inline void Eval_Diff_VDF_var::associer(const Champ_base& diffu)
