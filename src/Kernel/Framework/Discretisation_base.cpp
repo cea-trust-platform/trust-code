@@ -469,7 +469,7 @@ Nom Discretisation_base::get_name_of_type_for(const Nom& class_operateur, const 
         {
           Nom nb_inc;
           // Modif Elie Saikali (Nov 2020)
-          if (diffusivite.nb_comp() == 1 && nom_discr == "VDF")
+          if (eqn.inconnue()->que_suis_je() == "Champ_Face" || (diffusivite.nb_comp() == 1 && nom_discr == "VDF"))
             nb_inc = "_";
           else if (diffusivite.nb_comp() > 1 && diffusivite.le_nom() == "conductivite")
             nb_inc = "ANISOTROPE_";
