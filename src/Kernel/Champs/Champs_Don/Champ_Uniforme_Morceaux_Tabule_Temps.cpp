@@ -61,7 +61,7 @@ Entree& Champ_Uniforme_Morceaux_Tabule_Temps::readOn(Entree& is)
     }
   DoubleVect val(dim);
   for( k=0; k< dim; k++) is >> val(k);
-  for( poly=0; poly<le_domaine.zone(0).nb_elem(); poly++)
+  for( poly=0; poly<le_domaine.nb_elem(); poly++)
     for( k=0; k< dim; k++)
       valeurs_(poly,k)=val(k);
   is >> nom;

@@ -76,7 +76,7 @@ Entree& TroisDto2D::interpreter_(Entree& is)
   }
   Zone& dom2D = ref_cast(Zone, objet(nom_dom2D));
   const Zone& dom3D = domaine();
-  const Zone& zone3D = dom3D.zone(0);
+  const Zone& zone3D = dom3D;
   const Bord& bord3D = zone3D.bord(nom_bord);
   Scatter::uninit_sequential_domain(dom2D);
   extraire_2D(dom3D, dom2D, bord3D, nom_bord, test_axi);
@@ -89,7 +89,6 @@ void TroisDto2D::extraire_2D(const Zone& dom3D, Zone& dom2D, const Bord& bord3D,
 {
   const DoubleTab& coord_sommets3D = dom3D.coord_sommets();
   DoubleTab& coord_sommets2D = dom2D.les_sommets();
-  const Zone& zone3D = dom3D.zone(0);
   const Faces& faces3D = bord3D.faces();
   const IntTab& les_faces3D = faces3D.les_sommets();
   int nb_som3D = coord_sommets3D.dimension(0);
@@ -130,16 +129,16 @@ void TroisDto2D::extraire_2D(const Zone& dom3D, Zone& dom2D, const Bord& bord3D,
   Nom nom_zone("surface");
   nom_zone += dom2D.le_nom();
   zone2D.nommer("surface");
-  if (zone3D.type_elem()->que_suis_je() == "Hexaedre")
+  if (dom3D.type_elem()->que_suis_je() == "Hexaedre")
     if (test_axi)
       zone2D.typer("Rectangle_2D_axi");
     else
       zone2D.typer("Rectangle");
-  else if (zone3D.type_elem()->que_suis_je() == "Tetraedre")
+  else if (dom3D.type_elem()->que_suis_je() == "Tetraedre")
     {
       zone2D.typer("Triangle");
     }
-  else if (zone3D.type_elem()->que_suis_je() == "Hexaedre_VEF")
+  else if (dom3D.type_elem()->que_suis_je() == "Hexaedre_VEF")
     {
       zone2D.typer("Quadrangle");
     }
@@ -297,7 +296,7 @@ void TroisDto2D::extraire_2D(const Zone& dom3D, Zone& dom2D, const Bord& bord3D,
 
   dimension = 2;
   // On recupere les bords :
-  for (const auto &itr : zone3D.faces_bord())
+  for (const auto &itr : dom3D.faces_bord())
     {
       const Frontiere& front = itr;
       const Faces& faces3D_front = front.faces();
@@ -402,7 +401,7 @@ void TroisDto2D::extraire_2D(const Zone& dom3D, Zone& dom2D, const Bord& bord3D,
     }
 
   // On recupere les raccords :
-  for (const auto& itr : zone3D.faces_raccord())
+  for (const auto& itr : dom3D.faces_raccord())
     {
       const Frontiere& front = itr.valeur();
       const Faces& faces3Dfront = front.faces();
@@ -459,7 +458,7 @@ void TroisDto2D::extraire_2D(const Zone& dom3D, Zone& dom2D, const Bord& bord3D,
         }
     }
 
-  if (zone3D.type_elem()->que_suis_je() != "Hexaedre_VEF")
+  if (dom3D.type_elem()->que_suis_je() != "Hexaedre_VEF")
     if (coupe_ != 2)
       dom2D.reordonner();
   dimension = 3;

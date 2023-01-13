@@ -123,7 +123,7 @@ void Zone_bord::extraire_domaine_bord(const Zone& src,
            << " (this will be done one day... ask to B.Mathieu)" << finl;
     }
 
-  const Zone& zone_src = src.zone(0);
+  const Zone& zone_src = src;
   // Le domaine destination doit etre vide:
   assert(dest.nb_zones() == 0);
   // Initialisation du domaine et d'une zone:
@@ -132,7 +132,7 @@ void Zone_bord::extraire_domaine_bord(const Zone& src,
   // On cree une zone
   Zone z;
   dest.add(z);
-  Zone& zone_dest = dest.zone(0);
+  Zone& zone_dest = dest;
   zone_dest.associer_domaine(dest);
   // Type des elements de la zone:
   Motcle type_elem;

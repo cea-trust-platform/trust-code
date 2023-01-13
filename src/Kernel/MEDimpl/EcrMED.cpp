@@ -806,7 +806,7 @@ const Frontiere& mes_faces_fr(const Zone& zone,int i)
 // a partir d'un domaine extrait le type de face, la connectivite des faces de bords, le nom des bords et cree les familles
 void creer_all_faces_bord(const Zone& dom,Noms& type_face,IntTabs& all_faces_bord, Noms& noms_bords,ArrsOfInt& familles)
 {
-  const Zone& zone=dom.zone(0);
+  const Zone& zone=dom;
   int nb_type_face=zone.type_elem().nb_type_face();
   type_face.dimensionner(nb_type_face);
   all_faces_bord.dimensionner(nb_type_face);
@@ -919,7 +919,7 @@ void EcrMED::ecrire_domaine_dis(const Nom& nom_fic,const Zone& dom,const REF(Zon
 {
   //Cerr<<"Here writing of the domain "<<nom_dom<<" in "<<nom_fic<<" mode "<<mode<<finl;
   const  DoubleTab& sommets=dom.les_sommets();
-  const  Zone& zone=dom.zone(0);
+  const  Zone& zone=dom;
   Nom type_elem=zone.type_elem()->que_suis_je();
 
   const IntTab& les_elems=zone.les_elems();

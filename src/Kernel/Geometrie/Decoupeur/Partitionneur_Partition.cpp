@@ -84,7 +84,7 @@ void Partitionneur_Partition::construire_partition(IntVect& elem_part, int& nb_p
       Cerr << "The domain \"" << dom_interpol.le_nom() << "\" to be split is empty !" << finl;
       exit();
     }
-  const Zone& zone_interpol = dom_interpol.zone(0);
+  const Zone& zone_interpol = dom_interpol;
   const int nb_elem_interpol = zone_interpol.nb_elem_tot();
   const int dim_interpol = dom_interpol.dimension;
 
@@ -95,7 +95,7 @@ void Partitionneur_Partition::construire_partition(IntVect& elem_part, int& nb_p
       Cerr << "The reference domain \"" << dom_calcul.le_nom() << "\" is empty !" << finl;
       exit();
     }
-  const Zone& zone_calcul = dom_calcul.zone(0);
+  const Zone& zone_calcul = dom_calcul;
   const int nb_elem_calcul = zone_calcul.nb_elem();
   const int dim_calcul = dom_calcul.dimension;
 

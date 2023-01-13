@@ -47,7 +47,7 @@ Entree& Marqueur_Lagrange_base::readOn(Entree& is)
 void Marqueur_Lagrange_base::discretiser(const Probleme_base& pb, const  Discretisation_base& dis)
 {
   const Zone_dis_base& zone_dis=pb.equation(0).zone_dis();
-  const Zone& zone = pb.domaine().zone(0);
+  const Zone& zone = pb.domaine();
   double temps = pb.schema_temps().temps_courant();
   Nom nom="densite_particules";
   Nom unite="sans_dimension";

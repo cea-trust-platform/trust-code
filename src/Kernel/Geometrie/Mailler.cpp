@@ -113,15 +113,15 @@ Entree& Mailler::interpreter_(Entree& is)
           Cerr << "Adding a domain " << nom_dom << finl;
           Zone& added_dom=ref_cast(Zone, objet(nom_dom));
           IntVect nums;
-          Zone& zone=dom.add(added_dom.zone(0));
+          Zone& zone=dom.add(added_dom);
           zone.associer_domaine(dom);
           dom.ajouter(added_dom.coord_sommets(), nums);
           Scatter::uninit_sequential_domain(dom);
           zone.renum(nums);
           zone.associer_domaine(dom);
           dom.comprimer();
-          dom.zone(0).fixer_premieres_faces_frontiere();
-          dom.zone(0).type_elem().associer_zone(dom.zone(0));
+          dom.fixer_premieres_faces_frontiere();
+          dom.type_elem().associer_zone(dom);
           is >> motlu;
           verifie_syntaxe(motlu);
         }
@@ -142,7 +142,7 @@ Entree& Mailler::interpreter_(Entree& is)
   // d'origine
   precision_geom=precision_geom_sa;
   dom.comprimer();
-  dom.zone(0).fixer_premieres_faces_frontiere();
+  dom.fixer_premieres_faces_frontiere();
 
 
   NettoieNoeuds::nettoie(dom);

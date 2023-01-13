@@ -106,7 +106,7 @@ Entree& Analyse_Angle::interpreter(Entree& is)
 void histogramme_angle(const Zone& dom , Sortie& out,  int nb_histo )
 {
   out<<finl<<"Histogram of the largest angle of each element found into the mesh "<<dom.le_nom()<<" :" << finl;
-  Motcle type_elem(dom.zone(0).type_elem().valeur().que_suis_je());
+  Motcle type_elem(dom.type_elem().valeur().que_suis_je());
   if (((type_elem!="triangle")&& (type_elem!="tetraedre")) || ((type_elem=="triangle") && (Zone::dimension==3)))
     {
       out<<"Not available for "<<type_elem<<" in dimension "<<Zone::dimension<<finl;
@@ -114,9 +114,9 @@ void histogramme_angle(const Zone& dom , Sortie& out,  int nb_histo )
     }
 
   ArrOfInt histo(nb_histo+1);
-  int nb_elem=dom.zone(0).nb_elem();
+  int nb_elem=dom.nb_elem();
   const DoubleTab& som=dom.les_sommets();
-  const IntTab& les_elems=dom.zone(0).les_elems();
+  const IntTab& les_elems=dom.les_elems();
   int dim_space=som.dimension(1);
   int nb_som_elem=les_elems.dimension(1);
   DoubleTab coords(nb_som_elem,3);

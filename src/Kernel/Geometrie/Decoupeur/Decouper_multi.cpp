@@ -93,7 +93,7 @@ Entree& Decouper_multi::interpreter(Entree& is)
       Partitionneur_base& partitionneur = n_d.second.deriv_partitionneur.valeur();
       partitionneur.declarer_bords_periodiques(n_d.second.liste_bords_periodiques);
       partitionneur.construire_partition(v_proc.back(), n_d.second.nb_parts_tot);
-      construire_connectivite_som_elem(dom.nb_som(), dom.zone(0).les_elems(), v_se.back(), 1);
+      construire_connectivite_som_elem(dom.nb_som(), dom.les_elems(), v_se.back(), 1);
     }
 
 #ifdef MEDCOUPLING_

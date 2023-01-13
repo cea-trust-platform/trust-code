@@ -93,7 +93,7 @@ Entree& Corriger_frontiere_periodique::interpreter_(Entree& is)
   Cerr << "Searching and moving periodicity nodes for domain " << nom_dom << " boundary "
        << nom_bord << finl;
   corriger_coordonnees_sommets_perio(dom, nom_bord, direction_perio, nom_fichier_post);
-  Bord& bord = dom.zone(0).bord(nom_bord);
+  Bord& bord = dom.bord(nom_bord);
   IntTab& faces = bord.faces().les_sommets();
   const double epsilon = Objet_U::precision_geom;
   const int ok = Reordonner_faces_periodiques::reordonner_faces_periodiques(dom, faces, direction_perio, epsilon);

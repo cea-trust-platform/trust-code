@@ -250,7 +250,7 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Zone& le_domaine,
     {
       /* Surface algorithm */
       const Zone& le_domaine2D = ref_cast(Zone,le_domaine.interprete().objet(nom_surface));
-      const Zone& zone_2D = le_domaine2D.zone(0);
+      const Zone& zone_2D = le_domaine2D;
       const DoubleTab& coord_sommets_2D=le_domaine2D.coord_sommets();
 
       DoubleTab xv2D;
@@ -260,7 +260,7 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Zone& le_domaine,
 
       const DoubleTab& coord_sommets=le_domaine.coord_sommets();
       const IntTab& face_sommets = zvf.face_sommets();
-      const Zone& zone_vol = le_domaine.zone(0);
+      const Zone& zone_vol = le_domaine;
       const OctreeRoot& octree_vol = zone_vol.construit_octree();
 
       // Loop on faces on the surface domain

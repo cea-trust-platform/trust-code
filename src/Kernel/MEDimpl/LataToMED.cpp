@@ -92,7 +92,7 @@ void convert_domain_to_Domaine(  const Domain& dom , Zone& dom_trio)
 
   Zone zone_bidon;
   dom_trio.add(zone_bidon);
-  Zone& zone=dom_trio.zone(0);
+  Zone& zone=dom_trio;
   zone.nommer("PAS_NOMME");
   Nom type_elem=dom.lata_element_name(dom.elt_type_);
   if (type_elem=="PRISM6") type_elem="PRISME";

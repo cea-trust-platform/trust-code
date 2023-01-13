@@ -69,7 +69,7 @@ Entree& VerifierCoin::interpreter_(Entree& is)
 
   associer_domaine(is);
   Zone& dom=domaine();
-  Zone& zone=dom.zone(0);
+  Zone& zone=dom;
   if (zone.type_elem()->que_suis_je() != "Triangle" && zone.type_elem()->que_suis_je() != "Tetraedre")
     {
       Cerr << "Error for "<<que_suis_je() <<" interpreter : it can be applied only for triangular or tetraedral meshing." << finl;

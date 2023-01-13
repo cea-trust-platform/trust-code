@@ -45,7 +45,7 @@ static void compute_triangle_side_lengths(const ArrOfDouble& x,const ArrOfDouble
 
 static void compute_cell_qualities_for_triangle(const Zone& domain, ArrOfDouble& quality)
 {
-  const IntTab&    cells = domain.zone(0).les_elems();
+  const IntTab&    cells = domain.les_elems();
   const DoubleTab& nodes = domain.les_sommets();
 
   const int nb_cells = cells.dimension(0);
@@ -168,7 +168,7 @@ static double compute_tetrahedron_surface(const ArrOfDouble& x,const ArrOfDouble
 
 static void compute_cell_qualities_for_tetrahedron(const Zone& domain, ArrOfDouble& quality)
 {
-  const IntTab&    cells = domain.zone(0).les_elems();
+  const IntTab&    cells = domain.les_elems();
   const DoubleTab& nodes = domain.les_sommets();
 
   const int nb_cells = cells.dimension(0);
@@ -200,7 +200,7 @@ static void compute_cell_qualities_for_tetrahedron(const Zone& domain, ArrOfDoub
 
 static void compute_cell_qualities(const Zone& domain, ArrOfDouble& quality)
 {
-  const Nom& cell_type = domain.zone(0).type_elem().valeur().que_suis_je();
+  const Nom& cell_type = domain.type_elem().valeur().que_suis_je();
 
   Motcles understood_keywords(2);
   understood_keywords[0] = "Triangle";

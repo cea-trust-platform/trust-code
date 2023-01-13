@@ -47,7 +47,7 @@ DoubleTab& Champ_som_lu::valeur_aux_elems(const DoubleTab& positions, const IntV
   else erreur_champ_(__func__);
 
   const DoubleTab& coord = mon_domaine->coord_sommets();
-  const Zone& zone = mon_domaine->zone(0);
+  const Zone& zone = mon_domaine;
   const DoubleTab& ch = valeurs();
   int le_poly;
 
@@ -98,7 +98,7 @@ DoubleVect& Champ_som_lu::valeur_aux_elems_compo(const DoubleTab& positions, con
 {
   assert(val.size() == les_polys.size_array());
   const DoubleTab& coord = mon_domaine->coord_sommets();
-  const Zone& zone = mon_domaine->zone(0);
+  const Zone& zone = mon_domaine;
   const DoubleTab& ch = valeurs();
   int le_poly;
 

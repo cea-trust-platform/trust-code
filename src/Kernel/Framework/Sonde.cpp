@@ -682,7 +682,7 @@ void Sonde::initialiser()
   if(elem_.size() != nbre_points_tot)
     elem_.resize(nbre_points_tot);
 
-  const Zone& zone_geom = mon_champ->get_ref_domain().zone(0);
+  const Zone& zone_geom = mon_champ->get_ref_domain();
 
   if (numero_elem_==-1)
     {
@@ -738,7 +738,7 @@ void Sonde::initialiser()
       Cerr << "WARNING: The point number " << i+1 << " of the probe named " << nom_ << " is outside the computational domain " << zone_geom.domaine().le_nom() << finl;
 
   // Probes may be moved to cog, face, vertex:
-  const Zone& zone = mon_champ->get_ref_domain().zone(0);
+  const Zone& zone = mon_champ->get_ref_domain();
   const Noms nom_champ = mon_champ->get_property("nom");
 
   if (grav || gravcl)

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -147,7 +147,7 @@ void Champ_Fonc_Tabule_Morceaux::mettre_a_jour(double time)
       is_multi.push_back(pval.back()->dimension(1) > 1);
     }
   std::vector<double> vals(ch_param.size());
-  for (int e  = 0; e < mon_domaine->zone(0).nb_elem(); e++)
+  for (int e  = 0; e < mon_domaine->nb_elem(); e++)
     {
       const CHTAB& mor = morceaux[i_mor(e)];
       int N = tab.dimension(1), M = (int) mor.i_ch.size();

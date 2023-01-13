@@ -34,7 +34,7 @@ Entree& Modif_bord_to_raccord::interpreter_(Entree& is)
   is>>nom_bord;
   Zone& dom=domaine();
 
-  Zone& zone=dom.zone(0);
+  Zone& zone=dom;
   Bord& bord=zone.bord(nom_bord);
 
   Raccords& listrac=zone.faces_raccord();

@@ -70,7 +70,7 @@ void Partitionneur_Union::associer_domaine(const Zone& domaine)
  */
 void Partitionneur_Union::construire_partition(IntVect& elem_part, int& nb_parts_tot) const
 {
-  elem_part.resize(ref_domaine_->zone(0).nb_elem());
+  elem_part.resize(ref_domaine_->nb_elem());
   elem_part = -1;
   for (auto &&kv : fic_ssz)
     {

@@ -100,7 +100,7 @@ void BlocData::add_bloc(Zone& domaine, const ArrsOfDouble& coord_ijk) const
   // Les elements
   {
     assert(dim==3);
-    Zone& zone = domaine.zone(0);
+    Zone& zone = domaine;
     IntTab& elements = zone.les_elems();
     const int nb_som_par_element = 8;
 
@@ -139,7 +139,7 @@ void BlocData::add_bloc(Zone& domaine, const ArrsOfDouble& coord_ijk) const
       }
   }
   // Les bords
-  Zone& zone = domaine.zone(0);
+  Zone& zone = domaine;
   for (int dir = 0; dir < 3; dir++)
     {
       if (xmin_[dir] == 0)
@@ -829,7 +829,7 @@ Entree& MaillerParallel::interpreter(Entree& is)
           {
             ArrOfDouble dir(3);
             dir[d] = coord_ijk[d][nb_noeuds[d]-1] - coord_ijk[d][0];
-            IntTab& faces = domaine.zone(0).bord(nom_bords_min[d]).faces().les_sommets();
+            IntTab& faces = domaine.bord(nom_bords_min[d]).faces().les_sommets();
             double epsilon = precision_geom;
             Reordonner_faces_periodiques::reordonner_faces_periodiques(domaine, faces, dir, epsilon);
           }
@@ -837,7 +837,7 @@ Entree& MaillerParallel::interpreter(Entree& is)
   }
 
 
-  auto_build_joints(domaine.zone(0), epaisseur_joint);
+  auto_build_joints(domaine, epaisseur_joint);
 
 
   statistiques().end_count(stats);
@@ -851,7 +851,7 @@ Entree& MaillerParallel::interpreter(Entree& is)
       statistiques().begin_count(stats);
 
       Scatter::construire_correspondance_sommets_par_coordonnees(domaine);
-      Scatter::calculer_renum_items_communs(domaine.zone(0).faces_joint(), Joint::SOMMET);
+      Scatter::calculer_renum_items_communs(domaine.faces_joint(), Joint::SOMMET);
 
       statistiques().end_count(stats);
       maxtime = mp_max(statistiques().last_time(stats));
@@ -871,7 +871,7 @@ Entree& MaillerParallel::interpreter(Entree& is)
       Scatter::init_sequential_domain(domaine);
     }
 
-  domaine.zone(0).nommer(domaine.le_nom());
+  domaine.nommer(domaine.le_nom());
 
   Cerr << "MaillerParallel::construire_domaine : end" << finl;
 

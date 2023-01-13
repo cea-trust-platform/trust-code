@@ -38,7 +38,7 @@ Entree& Champ_input_P0::readOn(Entree& is)
   read(is);
 
   valeurs_.resize(0, nb_compo_);
-  mon_pb->domaine().zone(0).creer_tableau_elements(valeurs_);
+  mon_pb->domaine().creer_tableau_elements(valeurs_);
   associer_zone_dis_base(mon_pb->domaine_dis().zone_dis(0));
   mon_pb->addInputField(*this);
 
@@ -54,7 +54,7 @@ Entree& Champ_input_P0::readOn(Entree& is)
   if (ma_sous_zone.non_nul())
     {
       const Sous_Zone& ssz=ma_sous_zone.valeur();
-      nb_elems_reels_loc_ = mon_pb->domaine().zone(0).les_elems().dimension(0);
+      nb_elems_reels_loc_ = mon_pb->domaine().les_elems().dimension(0);
       for (int i = 0; i < ssz.nb_elem_tot(); i++)
         nb_elems_reels_sous_zone_ += (ssz[i] < nb_elems_reels_loc_);
     }

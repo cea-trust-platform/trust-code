@@ -314,7 +314,7 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
 
   if (localisation_ == "elem")
     {
-      const int nb_elements = domaine.zone(0).nb_elem();
+      const int nb_elements = domaine.nb_elem();
 
       if (ncomp==-1)
         {
@@ -685,13 +685,13 @@ void Champ_Generique_Interpolation::discretiser_domaine()
       const Discretisation_base& discr = Pb.discretisation();
       const Nom& type_discr = discr.que_suis_je();
       // on ne cree pas les faces sauf si on veut une interpolation aux faces ou si on a des polyedres
-      // Nom type = sub_type(Poly_geom_base, domaine_.valeur().zone(0).type_elem().valeur()) ? "Zone_" : "NO_FACE_Zone_";
+      // Nom type = sub_type(Poly_geom_base, domaine_.valeur().type_elem().valeur()) ? "Zone_" : "NO_FACE_Zone_";
       Nom type = "NO_FACE_Zone_";
       if (localisation_=="faces")
         {
           type="Zone_";
           // On verifie que la localisation aux faces est possible sur le domaine (sinon elem ou som)
-          if (domaine_.valeur().zone(0).type_elem().valeur().nb_som_face()<=2 && dimension==3)
+          if (domaine_.valeur().type_elem().valeur().nb_som_face()<=2 && dimension==3)
             {
               Cerr << "'localisation faces' is not possible in 3D on the 2D surface mesh " << domaine_.le_nom() << " with the field: " << get_property("NOM")[0] << finl;
               Cerr << "Please use 'localisation elem' instead." << finl;

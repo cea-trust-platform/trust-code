@@ -115,7 +115,7 @@ void Partitionneur_Fichier_MED::construire_partition(IntVect& elem_part, int& nb
   elem_part.resize(sz);
   std::copy(field_values, field_values+sz, elem_part.addr());
   // Sanity check
-  const int nelem = ref_domaine_.valeur().zone(0).nb_elem();
+  const int nelem = ref_domaine_.valeur().nb_elem();
   if (nelem != sz)
     {
       Cerr << "Error in Partitionneur_Fichier_MED::construire_partition" << finl;

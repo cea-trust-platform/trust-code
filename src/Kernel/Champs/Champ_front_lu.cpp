@@ -138,7 +138,7 @@ int Champ_front_lu::initialiser(double temps, const Champ_Inc_base& inco)
   //
   //                Restriction --> champs aux faces
 
-  const Zone& ma_zone = domaine.zone(0);
+  const Zone& ma_zone = domaine;
   int nb_elems = ma_zone.nb_elem();
   int nbfacelem=ma_zone.nb_faces_elem();
   const Zone_VF& zvf = ref_cast(Zone_VF, zone_dis());

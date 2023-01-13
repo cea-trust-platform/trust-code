@@ -68,7 +68,7 @@ void ScatterMED::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
   // On renomme la zone (important pour le format lml:
   // nom de la topologie utilise par lance_test_seq_par)
   const Nom& nom_dom = dom.le_nom();
-  dom.zone(0).nommer(nom_dom);
+  dom.nommer(nom_dom);
 
   //fichier >> liste_bords_periodiques;
 

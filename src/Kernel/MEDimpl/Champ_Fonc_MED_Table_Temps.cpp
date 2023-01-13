@@ -95,7 +95,7 @@ void Champ_Fonc_MED_Table_Temps::lire_donnees_champ(const std::string& fileName,
   vrai_champ0_.typer(type_champ);
   fixer_nb_comp(nbcomp);
   le_champ0().fixer_nb_comp(nbcomp);
-  zonebidon_inst.associer_zone(mon_dom.valeur().zone(0));
+  zonebidon_inst.associer_zone(mon_dom.valeur());
   le_champ0().associer_zone_dis_base(zonebidon_inst);
   if (zonebidon_inst.nb_elem()==0) size = 0;
   le_champ0().fixer_nb_valeurs_nodales(size);

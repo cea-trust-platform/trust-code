@@ -1780,7 +1780,7 @@ void LireMED::lire_geom(Nom& nom_fic, Zone& dom, const Nom& nom_dom, const Nom& 
     sommets=sommets2;
 
   //
-  Zone& zone=dom.zone(0);
+  Zone& zone=dom;
   zone.nommer("PAS_NOMME");
   // typage des elts de  la zone et remplissage des elts
   // Avant de typer on regarde si il ne faut pas transormer les hexa en Hexa_vef
@@ -2029,7 +2029,7 @@ void medinfochamp_existe(const Nom& nom_fic,Noms& nomschamp,const Zone& dom,ArrO
           if (dom.le_nom()==(const char*)meshname)
             // il faut verifier si nom_dom est correct pour le champ
             {
-              med_geometry_type type_geo=type_geo_trio_to_type_med(dom.zone(0).type_elem()->que_suis_je());
+              med_geometry_type type_geo=type_geo_trio_to_type_med(dom.type_elem()->que_suis_je());
               int numero_ch,nb_dt,nbcomp,size;
               med_entity_type type_ent;
               ArrOfDouble temps_sauv2;

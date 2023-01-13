@@ -34,6 +34,6 @@ Entree& Imprimer_flux::readOn(Entree& is )
 Entree& Imprimer_flux::interpreter_(Entree& is)
 {
   associer_domaine(is);
-  domaine().zone(0).lire_bords_a_imprimer(is);
+  domaine().lire_bords_a_imprimer(is);
   return is;
 }

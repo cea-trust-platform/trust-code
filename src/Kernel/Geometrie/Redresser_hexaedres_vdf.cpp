@@ -45,7 +45,7 @@ Entree& Redresser_hexaedres_vdf::interpreter_(Entree& is)
   double epsilon = Objet_U::precision_geom;
   int ok=0;
   // On type en rectangle ou hexaedre
-  const Elem_geom_base& elem=domaine().zone(0).type_elem().valeur();
+  const Elem_geom_base& elem=domaine().type_elem().valeur();
   Cerr << "Attempt on the mesh ";
   if                 (sub_type(Rectangle,elem)) Cerr << "to correct rectangles..." << finl;
   else if          (sub_type(Quadrangle_VEF,elem)) Cerr << "to correct VEF quadrangles into rectangles..." << finl;
@@ -56,9 +56,9 @@ Entree& Redresser_hexaedres_vdf::interpreter_(Entree& is)
       Cerr << "This type of element ("<<elem.que_suis_je()<<") is not supported by Redresser_hexaedres_vdf" << finl;
       exit();
     }
-  if (dimension==2) domaine().zone(0).typer("Rectangle");
-  if (dimension==3) domaine().zone(0).typer("Hexaedre");
-  Elem_geom_base& new_elem=domaine().zone(0).type_elem().valeur();
+  if (dimension==2) domaine().typer("Rectangle");
+  if (dimension==3) domaine().typer("Hexaedre");
+  Elem_geom_base& new_elem=domaine().type_elem().valeur();
   do
     {
       double correction_max = 0;

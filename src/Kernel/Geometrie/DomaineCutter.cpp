@@ -284,7 +284,7 @@ void construire_liste_faces_sous_domaine(const ArrOfInt& elements_voisins, const
 // Remplissage des frontieres de la partie associee a un processeur.
 void DomaineCutter::construire_faces_bords_ssdom(const ArrOfInt& liste_inverse_sommets, const int partie, Zone& zone_partie) const
 {
-  const Zone& zone = ref_domaine_.valeur().zone(0);
+  const Zone& zone = ref_domaine_.valeur();
   int i_fr = 0;
   ArrOfInt elements_voisins;
   for (const auto& itr : zone.faces_bord())
@@ -307,7 +307,7 @@ void DomaineCutter::construire_faces_bords_ssdom(const ArrOfInt& liste_inverse_s
  */
 void DomaineCutter::construire_faces_raccords_ssdom(const ArrOfInt& liste_inverse_sommets, const int partie, Zone& zone_partie) const
 {
-  const Zone& zone = ref_domaine_.valeur().zone(0);
+  const Zone& zone = ref_domaine_.valeur();
   int i_fr = zone.nb_bords();
   ArrOfInt elements_voisins;
 
@@ -335,7 +335,7 @@ void DomaineCutter::construire_faces_internes_ssdom(const ArrOfInt& liste_invers
 {
   // Rappel : les faces internes sont des "frontieres" a l'interieur du domaine
   // (par exemple une plaque d'epaisseur nulle dans l'ecoulement)
-  const Zone& zone = ref_domaine_.valeur().zone(0);
+  const Zone& zone = ref_domaine_.valeur();
   int i_fr = zone.nb_bords() + zone.nb_raccords();
   ArrOfInt elements_voisins;
 
@@ -477,8 +477,8 @@ static void parcourir_epaisseurs_elements(const IntTab& elements, const Static_I
  */
 void DomaineCutter::construire_elements_distants_ssdom(const int partie, const ArrOfInt& liste_sommets, const ArrOfInt& liste_inverse_elements, Zone& zone_partie) const
 {
-  const Zone& zone = ref_domaine_.valeur().zone(0);
-  const IntTab& elements = zone.les_elems();
+  const Zone& zone          = ref_domaine_.valeur();
+  const IntTab& elements    = zone.les_elems();
   const IntVect& elem_part = ref_elem_part_.valeur();
 
   const int nb_som_elem = elements.dimension(1);
@@ -774,7 +774,7 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie, const Domain
     const IntVect& elem_part = ref_elem_part_.valeur();
     // Sommets des elements du maillage global
     const Zone& domaine = ref_domaine_.valeur();
-    const IntTab& elem_som = domaine.zone(0).les_elems();
+    const IntTab& elem_som = domaine.les_elems();
 
     ArrOfInt une_face(nb_sommets_par_face);
     ArrOfInt elements_voisins;
@@ -870,7 +870,7 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie, const Domain
   // Troisieme etape: ajout des faces dans les joints
   {
     // Le type des faces de joint
-    const Zone& zone_globale = ref_domaine_.valeur().zone(0);
+    const Zone& zone_globale = ref_domaine_.valeur();
     const Type_Face& type_face_joint = zone_globale.type_elem().type_face();
     // On va modifier les joints:
     Joints& joints_partie = zone_partie.faces_joint();
@@ -953,7 +953,7 @@ void calculer_listes_elements_sous_domaines(const IntVect& elem_part, const int 
 
 void calculer_elements_voisins_bords(const Zone& dom, const Static_Int_Lists& som_elem, Static_Int_Lists& voisins, const IntVect& elem_part, const int permissif, Noms& bords_a_pb_)
 {
-  const Zone& zone = dom.zone(0);
+  const Zone& zone = dom;
   const int nb_front = zone.nb_front_Cl();
   ArrOfInt nb_faces(nb_front);
   for (int i = 0; i < nb_front; i++)
@@ -1010,7 +1010,7 @@ void DomaineCutter::initialiser(const Zone& domaine_global, const IntVect& elem_
 {
   assert(nb_parts >= 0);
   assert(domaine_global.nb_zones() == 1);
-  assert(elem_part.size_array() == domaine_global.zone(0).nb_elem_tot());
+  assert(elem_part.size_array() == domaine_global.nb_elem_tot());
   assert(max_array(elem_part) < nb_parts);
   if (min_array(elem_part) < 0)
     {
@@ -1028,7 +1028,7 @@ void DomaineCutter::initialiser(const Zone& domaine_global, const IntVect& elem_
   epaisseur_joint_ = epaisseur_joint;
   liste_bords_periodiques_ = liste_bords_periodiques;
 
-  const IntTab& elems = domaine_global.zone(0).les_elems();
+  const IntTab& elems = domaine_global.les_elems();
   const int nb_som = domaine_global.nb_som_tot();
   construire_connectivite_som_elem(nb_som, elems, som_elem_, 1 /* inclure les elems virtuels */);
 
@@ -1053,15 +1053,12 @@ void DomaineCutter::construire_sous_domaine(const int part, DomaineCutter_Corres
 {
   // L'objet doit etre initialise:
   assert(nb_parties_ >= 0);
-  // Pas de zone dans sous_domaine
-  assert(sous_domaine.nb_zones() == 0);
   // Numero de partie valide
   assert(part >= 0 && part < nb_parties_);
 
   correspondance.partie_ = part;
 
   const Zone& domaine = ref_domaine_.valeur();
-  const Zone& zone = domaine.zone(0);
 
   ArrOfInt elements_sous_partie;
   liste_elems_sous_domaines_.copy_list_to_array(part, elements_sous_partie);
@@ -1074,21 +1071,21 @@ void DomaineCutter::construire_sous_domaine(const int part, DomaineCutter_Corres
   Zone& zone_partie = sous_domaine.add(new_empty_zone);
   // Nom de la zone
   {
-    const Nom nom_zone = zone.le_nom();
+    const Nom nom_zone = domaine.le_nom();
     zone_partie.nommer(nom_zone);
   }
   zone_partie.associer_domaine(sous_domaine);
-  if (sub_type(Poly_geom_base, zone.type_elem().valeur()))
-    ref_cast(Poly_geom_base,zone.type_elem().valeur()).build_reduced(zone_partie.type_elem(), elements_sous_partie);
+  if (sub_type(Poly_geom_base, domaine.type_elem().valeur()))
+    ref_cast(Poly_geom_base,domaine.type_elem().valeur()).build_reduced(zone_partie.type_elem(), elements_sous_partie);
   else
-    zone_partie.type_elem() = zone.type_elem();
+    zone_partie.type_elem() = domaine.type_elem();
   zone_partie.type_elem().associer_zone(zone_partie);
 
-  construire_liste_sommets_sousdomaine(domaine.nb_som_tot(), zone.les_elems(), elements_sous_partie, part, som_raccord, correspondance.liste_sommets_ /* write */,
+  construire_liste_sommets_sousdomaine(domaine.nb_som_tot(), domaine.les_elems(), elements_sous_partie, part, som_raccord, correspondance.liste_sommets_ /* write */,
                                        correspondance.liste_inverse_sommets_ /* write */);
 
   remplir_coordsommets_sous_domaine(domaine.coord_sommets(), correspondance.liste_sommets_, sous_domaine.les_sommets() /* write */);
-  construire_elems_sous_domaine(zone.les_elems(), elements_sous_partie, correspondance.liste_inverse_sommets_, zone_partie.les_elems() /* write */, correspondance.liste_inverse_elements_ /* write */);
+  construire_elems_sous_domaine(domaine.les_elems(), elements_sous_partie, correspondance.liste_inverse_sommets_, zone_partie.les_elems() /* write */, correspondance.liste_inverse_elements_ /* write */);
   {
     const ArrOfInt& l_som = correspondance.liste_sommets_;
     const ArrOfInt& l_inv_som = correspondance.liste_inverse_sommets_;
@@ -1224,7 +1221,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
   ArrOfInt zones_index(nb_parties_);
   zones_index = -2;
 
-  const int nbelem = domaine.zone(0).nb_elem();
+  const int nbelem = domaine.nb_elem();
 
   Cerr << "Generation of " << nb_parties_ << " parts:" << finl;
   IntVect EdgeCut(nb_parties_);
@@ -1376,7 +1373,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
           construire_sous_domaine(i_part, dc_correspondance, sous_domaine, som_raccord);
           // On affiche quelques informations...
           {
-            const Zone& zone = sous_domaine.zone(0);
+            const Zone& zone = sous_domaine;
             const Joints& joints = zone.faces_joint();
             const int nb_joints = joints.size();
             Cerr << "  Number of nodes    : " << sous_domaine.nb_som() << finl;
@@ -1415,7 +1412,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
           }
           if (reorder && loop == 0)
             {
-              const Zone& zone = sous_domaine.zone(0);
+              const Zone& zone = sous_domaine;
               const Joints& joints = zone.faces_joint();
               const int nb_joints = joints.size();
               // Resize ja:

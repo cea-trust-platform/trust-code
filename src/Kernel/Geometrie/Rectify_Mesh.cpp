@@ -73,7 +73,7 @@ void Rectify_Mesh::check_dimension(void) const
 
 void Rectify_Mesh::check_cell_type(void) const
 {
-  const Nom& cell_type = domaine().zone(0).type_elem().valeur().que_suis_je();
+  const Nom& cell_type = domaine().type_elem().valeur().que_suis_je();
 
   if ( ! ( (cell_type == Motcle("Triangle")) || (cell_type == Motcle("Tetraedre")) ) )
     {
@@ -89,7 +89,7 @@ void Rectify_Mesh::apply_2D(void)
   Zone& domain = domaine();
   Scatter::uninit_sequential_domain(domain);
 
-  assert( domain.zone(0).type_elem().valeur().que_suis_je() == Motcle("Triangle") );
+  assert( domain.type_elem().valeur().que_suis_je() == Motcle("Triangle") );
 
   check_cell_orientation_2D();
 
@@ -102,7 +102,7 @@ void Rectify_Mesh::apply_3D(void)
   Zone& domain = domaine();
   Scatter::uninit_sequential_domain(domain);
 
-  assert( domain.zone(0).type_elem().valeur().que_suis_je() == Motcle("Tetraedre") );
+  assert( domain.type_elem().valeur().que_suis_je() == Motcle("Tetraedre") );
 
   check_cell_orientation_3D();
   check_cell_enumeration_3D();
@@ -113,7 +113,7 @@ void Rectify_Mesh::apply_3D(void)
 void Rectify_Mesh::check_cell_orientation_2D(void)
 {
   const DoubleTab& nodes = domaine().les_sommets();
-  IntTab&          cells = domaine().zone(0).les_elems();
+  IntTab&          cells = domaine().les_elems();
 
   const int nb_cells = cells.dimension(0);
 
@@ -150,7 +150,7 @@ void Rectify_Mesh::check_cell_orientation_2D(void)
 void Rectify_Mesh::check_cell_orientation_3D(void)
 {
   const DoubleTab& nodes = domaine().les_sommets();
-  IntTab&          cells = domaine().zone(0).les_elems();
+  IntTab&          cells = domaine().les_elems();
 
   const int nb_cells = cells.dimension(0);
 
@@ -201,7 +201,7 @@ void Rectify_Mesh::check_cell_orientation_3D(void)
 void Rectify_Mesh::check_cell_enumeration_3D(void)
 {
   const DoubleTab& nodes = domaine().les_sommets();
-  IntTab&          cells = domaine().zone(0).les_elems();
+  IntTab&          cells = domaine().les_elems();
 
   const int nb_cells = cells.dimension(0);
 

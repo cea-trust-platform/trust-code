@@ -144,7 +144,7 @@ DoubleTab& Champ_Face_VDF_implementation::valeur_aux_sommets(const Zone& dom, Do
       Process::exit();
     }
 
-  const Zone& mazone = dom.zone(0);
+  const Zone& mazone = dom;
 
   const int nb_elem_tot = mazone.nb_elem_tot(), nb_som = mazone.nb_som(), nb_som_elem = mazone.nb_som_elem();
   const int N = le_champ().valeurs().line_size(), D = Objet_U::dimension;
@@ -185,7 +185,7 @@ DoubleVect& Champ_Face_VDF_implementation::valeur_aux_sommets_compo(const Zone& 
     }
   assert(le_champ().valeurs().line_size() == 1); // not compatible with multiphase
 
-  const Zone& mazone = dom.zone(0);
+  const Zone& mazone = dom;
   int nb_elem_tot = mazone.nb_elem_tot();
   int nb_som = mazone.nb_som();
   int nb_som_elem = mazone.nb_som_elem();

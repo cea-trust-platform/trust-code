@@ -84,7 +84,7 @@ Entree& Extruder_en3::interpreter_(Entree& is)
       // on parcourt les domaines a l'envers pour retrouver l'ancien comportement
       associer_domaine(nom_dom[nb_dom-1-i]);
       Zone& domi=domaine(i);
-      Zone& zone_tot=dom_tot.add(domi.zone(0));
+      Zone& zone_tot=dom_tot.add(domi);
       zone_tot.associer_domaine(dom_tot);
       int nb_som=domi.coord_sommets().dimension(0);
       IntVect num(nb_som);
@@ -93,8 +93,8 @@ Entree& Extruder_en3::interpreter_(Entree& is)
       zone_tot.associer_domaine(dom_tot);
       Scatter::uninit_sequential_domain(dom_tot);
       dom_tot.comprimer();
-      dom_tot.zone(0).fixer_premieres_faces_frontiere();
-      dom_tot.zone(0).type_elem().associer_zone(dom_tot.zone(0));
+      dom_tot.fixer_premieres_faces_frontiere();
+      dom_tot.type_elem().associer_zone(dom_tot);
 
       /////////////////////////
       // extrusion des domaines
@@ -112,7 +112,7 @@ Entree& Extruder_en3::interpreter_(Entree& is)
  */
 void Extruder_en3::extruder(Zone& dom, const IntVect& num)
 {
-  Zone& zone = dom.zone(0);
+  Zone& zone = dom;
   if(zone.type_elem()->que_suis_je() == "Triangle")
     {
       int oldnbsom = zone.nb_som();
@@ -316,18 +316,16 @@ void Extruder_en3::extruder(Zone& dom, const IntVect& num)
  */
 void Extruder_en3::construire_bords(Zone& dom, Faces& les_faces, int oldnbsom, int oldsz, const IntVect& num)
 {
-  Zone& zone = dom.zone(0);
-  IntTab& les_elems = zone.les_elems();
-
+  IntTab& les_elems = dom.les_elems();
   // Les bords:
-  for (auto &itr : zone.faces_bord())
+  for (auto &itr : dom.faces_bord())
     {
       Faces& les_faces_du_bord = itr.faces();
       construire_bord_lateral(les_faces_du_bord, les_faces, oldnbsom, num);
     }
 
   // Les raccords:
-  for (auto &itr : zone.faces_raccord())
+  for (auto &itr : dom.faces_raccord())
     {
       Faces& les_faces_du_bord = itr->faces();
       construire_bord_lateral(les_faces_du_bord, les_faces, oldnbsom, num);
@@ -340,7 +338,7 @@ void Extruder_en3::construire_bords(Zone& dom, Faces& les_faces, int oldnbsom, i
     }
   else
     {
-      Bord& devant = zone.faces_bord().add(Bord());
+      Bord& devant = dom.faces_bord().add(Bord());
       devant.nommer(nom_dvt_);
       Faces& les_faces_dvt=devant.faces();
       les_faces_dvt.typer(Faces::triangle_3D);
@@ -369,7 +367,7 @@ void Extruder_en3::construire_bords(Zone& dom, Faces& les_faces, int oldnbsom, i
     }
   else
     {
-      Bord& derriere = zone.faces_bord().add(Bord());
+      Bord& derriere = dom.faces_bord().add(Bord());
       derriere.nommer(nom_derriere_);
       Faces& les_faces_der=derriere.faces();
       les_faces_der.typer(Faces::triangle_3D);

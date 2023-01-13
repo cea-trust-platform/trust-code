@@ -35,9 +35,9 @@ Entree& DecoupeBord::readOn(Entree& is)
 void create_listb_from_domaine2(const Zone& dom1, const Zone& dom2,const Noms& nomdec)
 {
   const DoubleTab& xs1=dom1.coord_sommets();
-  const Zone& zone1=dom1.zone(0);
+  const Zone& zone1=dom1;
   const DoubleTab& xs2=dom2.coord_sommets();
-  const Zone& zone2=dom2.zone(0);
+  const Zone& zone2=dom2;
 
   int nbfr=zone1.nb_front_Cl();
 
@@ -141,7 +141,7 @@ void create_listb_from_xyz(const Zone& dom1,const Noms& nomdec,const Noms& expr)
     }
 
   const DoubleTab& xs1=dom1.coord_sommets();
-  const Zone& zone1=dom1.zone(0);
+  const Zone& zone1=dom1;
   Parser_U parser;
   parser.setNbVar(Objet_U::dimension);
   parser.addVar("x");
@@ -231,7 +231,7 @@ void create_listb_naif(const Zone& dom1,const Noms& nomdec,const ArrOfInt& nbdec
     }
 
   SFichier listb(dom1.le_nom()+".boundary_list");
-  const Zone& zone=dom1.zone(0);
+  const Zone& zone=dom1;
   int nbfr=zone.nb_front_Cl();
   for (int l=0; l<nbfr; l++)
     {
@@ -292,7 +292,7 @@ void create_listb_geom(const Zone& dom1,const Noms& nomdec,const ArrOfInt& nbdec
     }
 
   const DoubleTab& xs=dom1.coord_sommets();
-  const Zone& zone=dom1.zone(0);
+  const Zone& zone=dom1;
   int nbfr=zone.nb_front_Cl();
 
   Parser_U parser;
@@ -501,8 +501,8 @@ Entree& DecoupeBord::interpreter_(Entree& is)
 void DecoupeBord::Decouper(Zone& dom, const Nom& nom_file)
 {
   Cerr << "Splitting to the radiation of the boundaries of the domain " << dom.le_nom() << finl;
-  int nb_faces_bord_sa=dom.zone(0). nb_faces_bord();
-  int nb_faces_raccord_sa=dom.zone(0). nb_faces_raccord();
+  int nb_faces_bord_sa=dom. nb_faces_bord();
+  int nb_faces_raccord_sa=dom. nb_faces_raccord();
   if (nproc()!=1)
     {
       Cerr << " The splitting DecoupeBord can be done only in sequential " << finl;
@@ -528,7 +528,7 @@ void DecoupeBord::Decouper(Zone& dom, const Nom& nom_file)
   Noms nomborddec(nbtot);
   for (int nf=0; nf<nbtot; nf++) listb2>>nomborddec[nf];
 
-  Zone& zone=dom.zone(0);
+  Zone& zone=dom;
 
   int nbfr=zone.nb_front_Cl();
   Bords& listbord=zone.faces_bord();
@@ -608,14 +608,14 @@ void DecoupeBord::Decouper(Zone& dom, const Nom& nom_file)
   listbord.add(listbord2);
   listrac.add(listrac2);
 
-  int nb_faces_bord=dom.zone(0).nb_faces_bord();
+  int nb_faces_bord=dom.nb_faces_bord();
   if (nb_faces_bord!=nb_faces_bord_sa)
     {
       Cerr<<"the new number of boundary faces is false :"<<nb_faces_bord;
       Cerr<<" instead of "<<nb_faces_bord_sa<<finl;
       exit();
     }
-  int nb_faces_raccord=dom.zone(0).nb_faces_raccord();
+  int nb_faces_raccord=dom.nb_faces_raccord();
   if (nb_faces_raccord!=nb_faces_raccord_sa)
     {
       Cerr<<"the new number of connection faces is false :"<<nb_faces_raccord;

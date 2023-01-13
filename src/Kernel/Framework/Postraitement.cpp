@@ -1289,7 +1289,7 @@ void Postraitement::init()
           const int nb_faces = faces_sommets.dimension(0);
           format_post->ecrire_item_int("FACES", /* Identifiant */
                                        dom.le_nom(),
-                                       dom.zone(0).le_nom(),
+                                       dom.le_nom(),
                                        "FACES", /* localisation */
                                        "SOMMETS", /* reference */
                                        faces_sommets,
@@ -1298,7 +1298,7 @@ void Postraitement::init()
           const IntTab& elem_faces = zone_vf.elem_faces();
           format_post->ecrire_item_int("ELEM_FACES", /* Identifiant */
                                        dom.le_nom(),
-                                       dom.zone(0).le_nom(),
+                                       dom.le_nom(),
                                        "ELEMENTS", /* localisation */
                                        "FACES", /* reference */
                                        elem_faces,
@@ -1356,7 +1356,7 @@ int Postraitement::postraiter_champs()
           const int nb_faces = faces_sommets.dimension(0);
           format_post->ecrire_item_int("FACES", /* Identifiant */
                                        dom.le_nom(),
-                                       dom.zone(0).le_nom(),
+                                       dom.le_nom(),
                                        "FACES", /* localisation */
                                        "SOMMETS", /* reference */
                                        faces_sommets,
@@ -1365,7 +1365,7 @@ int Postraitement::postraiter_champs()
           const IntTab& elem_faces = zone_vf.elem_faces();
           format_post->ecrire_item_int("ELEM_FACES", /* Identifiant */
                                        dom.le_nom(),
-                                       dom.zone(0).le_nom(),
+                                       dom.le_nom(),
                                        "ELEMENTS", /* localisation */
                                        "FACES", /* reference */
                                        elem_faces,
@@ -1453,7 +1453,7 @@ int Postraitement::postraiter_tableaux()
     {
       const Nom& id_item = *itr2;
       const Nom& id_du_domaine = dom.le_nom();
-      const Nom& id_zone = dom.zone(0).le_nom();
+      const Nom& id_zone = dom.le_nom();
       const Nom localisation="";
       const Nom reference="";
       const IntVect& val = itr1;
@@ -1569,7 +1569,7 @@ int Postraitement::postraiter_tableau(const Zone& dom,const Noms& unites,const N
         }
       else if (localisation == "ELEM")
         {
-          const Zone& zone=dom.zone(0);
+          const Zone& zone=dom;
           DoubleTab coord;
           zone.calculer_centres_gravite(coord);
           format_post->ecrire_champ2(dom,unites,noms_compo,ncomp,temps,id_champ_ecrit,id_du_domaine,localisation,nature,val_post_ecrit,coord);

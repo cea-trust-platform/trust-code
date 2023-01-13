@@ -95,7 +95,7 @@ static void construire_connectivite_real_som_virtual_elem(const int       nb_som
 void Domain_Graph::construire_graph_from_segment(const Zone& dom,
                                                  const int use_weights)
 {
-  const IntTab& liaisons = dom.zone(0).les_elems();
+  const IntTab& liaisons = dom.les_elems();
 
   // ****************************************************************
   // PREMIERE ETAPE: calcul du nombre de vertex et edges du graph:
@@ -166,7 +166,7 @@ void Domain_Graph::construire_graph_elem_elem(const Zone& dom,
                                               Static_Int_Lists& graph_elements_perio)
 {
   Static_Int_Lists som_elem;
-  const Zone& zone = dom.zone(0);
+  const Zone& zone = dom;
   const Elem_geom_base& type_elem = zone.type_elem().valeur();
   IntTab faces_element_reference;
   const int is_regular =
@@ -215,7 +215,7 @@ void Domain_Graph::construire_graph_elem_elem(const Zone& dom,
   if (liste_bords_periodiques.size() > 0)
     {
       Cerr << " Construction of graph connectivity for periodic boundaries" << finl;
-      nb_connexions_perio = Partitionneur_base::calculer_graphe_connexions_periodiques(dom.zone(0),
+      nb_connexions_perio = Partitionneur_base::calculer_graphe_connexions_periodiques(dom,
                                                                                        liste_bords_periodiques,
                                                                                        som_elem,
                                                                                        my_offset,

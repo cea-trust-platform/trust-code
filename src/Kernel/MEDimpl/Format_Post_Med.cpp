@@ -501,7 +501,7 @@ int Format_Post_Med::ecrire_champ_med(const Zone& dom,const Noms& unite_, const 
       os << "champ: " << nom_post << " " << nom_dom << " " << loc_post << finl;
     }
 
-  Nom type_elem = dom.zone(0).type_elem()->que_suis_je();
+  Nom type_elem = dom.type_elem()->que_suis_je();
 
   // modif noms compo
   for (int i = 0; i < noms_compo.size(); ++i)

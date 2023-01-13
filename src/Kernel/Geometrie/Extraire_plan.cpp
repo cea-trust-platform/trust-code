@@ -172,7 +172,7 @@ Entree& Extraire_plan::interpreter_(Entree& is)
   const DoubleTab& coord=dom.les_sommets();
   Zone zone__;
   dom.add(zone__);
-  Zone& zone=dom.zone(0);
+  Zone& zone=dom;
   zone.nommer(dom.le_nom());
   const Nom& type_elem=zone_vf.zone().type_elem().valeur().que_suis_je();
   if (type_elem==Motcle("Tetraedre"))
@@ -191,7 +191,7 @@ Entree& Extraire_plan::interpreter_(Entree& is)
   {
     Zone prov;
     test.add(prov);
-    Zone& zone_test=test.zone(0);
+    Zone& zone_test=test;
     zone.nommer("NO_FACE");
     if (triangle)
       zone_test.typer("Prisme");
@@ -231,7 +231,7 @@ Entree& Extraire_plan::interpreter_(Entree& is)
       es<<test;
     */
   }
-  Zone& zone_test=test.zone(0);
+  Zone& zone_test=test;
   const DoubleTab& xv =zone_vf.xv();
 
   int nbfaces=zone_vf.nb_faces();

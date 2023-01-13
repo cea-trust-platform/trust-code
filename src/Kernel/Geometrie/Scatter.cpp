@@ -16,7 +16,6 @@
 
 #include <Scatter.h>
 #include <Zone.h>
-#include <Zones.h>
 #include <LecFicDistribueBin.h>
 #include <Statistiques.h>
 #include <TRUSTTabs.h>
@@ -78,7 +77,7 @@ static void dump_lata(const Zone& dom)
   Format_Post_Lata post;  // Lata V2
   Nom nom_fichier_lata("espaces_virtuels");
 
-  const Zone& zone = dom.zone(0);
+  const Zone& zone = dom;
   const int nb_joints = zone.nb_joints();
   constexpr int IS_FIRST = 1;
 
@@ -218,7 +217,7 @@ Entree& Scatter::interpreter(Entree& is)
 
   barrier();
   Cerr << "Calculation of renum_items_communs for the nodes" << finl;
-  calculer_renum_items_communs(dom.zone(0).faces_joint(), Joint::SOMMET);
+  calculer_renum_items_communs(dom.faces_joint(), Joint::SOMMET);
 
   // Pas encore code: on verifie que les sommets communs ont des coordonnees identiques
   // sur tous les processeurs.
@@ -235,11 +234,11 @@ Entree& Scatter::interpreter(Entree& is)
   Cerr << "End Distribue_zones" << finl;
 
   Cerr << "\nQuality of partitioning --------------------------------------------" << finl;
-  int total_nb_elem = Process::mp_sum(dom.zone(0).nb_elem());
+  int total_nb_elem = Process::mp_sum(dom.nb_elem());
   Cerr << "\nTotal number of elements = " << total_nb_elem << finl;
   Cerr << "Number of Zones : " << Process::nproc() << finl;
-  double min_element_zone = mp_min(dom.zone(0).nb_elem());
-  double max_element_zone = mp_max(dom.zone(0).nb_elem());
+  double min_element_zone = mp_min(dom.nb_elem());
+  double max_element_zone = mp_max(dom.nb_elem());
   double mean_element_zone = total_nb_elem / Process::nproc();
   Cerr << "Min number of elements on a Zone = " << min_element_zone << finl;
   Cerr << "Max number of elements on a Zone = " << max_element_zone << finl;
@@ -247,7 +246,7 @@ Entree& Scatter::interpreter(Entree& is)
   double load_imbalance = max_element_zone / mean_element_zone;
   Cerr << "Load imbalance = " << load_imbalance << "\n" << finl;
 
-  Elem_geom_base& elem=dom.zone(0).type_elem().valeur();
+  Elem_geom_base& elem=dom.type_elem().valeur();
   if (sub_type(Poly_geom_base,elem))
     {
       ref_cast(Poly_geom_base,elem).compute_virtual_index();
@@ -271,7 +270,7 @@ Entree& Scatter::interpreter(Entree& is)
  */
 void Scatter::check_consistancy_remote_items(Zone& dom, const ArrOfInt& mergedZones)
 {
-  const Joints& joints     = dom.zone(0).faces_joint();
+  const Joints& joints     = dom.faces_joint();
   const int nb_joints = joints.size();
 
   const DoubleTab& coords = dom.les_sommets();
@@ -364,7 +363,7 @@ void Scatter::check_consistancy_remote_items(Zone& dom, const ArrOfInt& mergedZo
           const int neighbourZoneWasMerged = mergedZones[pe_voisin];
           if(neighbourZoneWasMerged && pe_voisin>moi)
             continue;
-          ArrOfInt& items_communs = dom.zone(0).faces_joint()[i_joint].set_joint_item(Joint::SOMMET).set_items_communs();
+          ArrOfInt& items_communs = dom.faces_joint()[i_joint].set_joint_item(Joint::SOMMET).set_items_communs();
           const ArrOfInt old_items_communs = joints[i_joint].joint_item(Joint::SOMMET).items_communs();
           const int     nb_items      = items_communs.size_array();
           const DoubleTab& coord_voisin = coord_items_distants[i_joint];
@@ -439,10 +438,10 @@ void Scatter::readDomainWithoutCollComm(Zone& dom, Entree& fic )
  */
 void Scatter::mergeDomains(Zone& dom, Zone& dom_to_add)
 {
-//  int old_nb_elems = dom.nb_zones() ? dom.zone(0).nb_elem() : 0;
+//  int old_nb_elems = dom.nb_zones() ? dom.nb_elem() : 0;
 //  // merging vertices
 //  IntVect nums;
-//  Zone& zone=dom.add(dom_to_add.zone(0));
+//  Zone& zone=dom.add(dom_to_add);
 //  zone.associer_domaine(dom);
 //  dom.ajouter(dom_to_add.coord_sommets(), nums);
 //  Scatter::uninit_sequential_domain(dom);
@@ -453,29 +452,29 @@ void Scatter::mergeDomains(Zone& dom, Zone& dom_to_add)
   throw;
 //  if(dom.zones().size() > 1)
 //    {
-//      int new_nb_elems = dom.zone(0).nb_elem();
+//      int new_nb_elems = dom.nb_elem();
 //      // merging zones
 //      dom.zones().merge();
 //
 //      //merging common vertices and remote items
-//      const int nb_joints = dom_to_add.zone(0).nb_joints();
+//      const int nb_joints = dom_to_add.nb_joints();
 //      for (int i_joint = 0; i_joint < nb_joints; i_joint++)
 //        {
-//          const Joint& joint_to_add  = dom_to_add.zone(0).faces_joint()[i_joint];
+//          const Joint& joint_to_add  = dom_to_add.faces_joint()[i_joint];
 //
 //          int my_joint_index = 0;
-//          while(joint_to_add.PEvoisin() != dom.zone(0).faces_joint()[my_joint_index].PEvoisin())
+//          while(joint_to_add.PEvoisin() != dom.faces_joint()[my_joint_index].PEvoisin())
 //            my_joint_index++;
 //
 //          const ArrOfInt& sommets_to_add = joint_to_add.joint_item(Joint::SOMMET).items_communs();
-//          ArrOfInt& items_communs = dom.zone(0).faces_joint()[my_joint_index].set_joint_item(Joint::SOMMET).set_items_communs();
+//          ArrOfInt& items_communs = dom.faces_joint()[my_joint_index].set_joint_item(Joint::SOMMET).set_items_communs();
 //          items_communs.set_smart_resize(1);
 //          for(int index=0; index<sommets_to_add.size_array(); index++)
 //            items_communs.append_array(nums[sommets_to_add[index]]);
 //          items_communs.array_trier_retirer_doublons();
 //
 //          const ArrOfInt& elements_to_add = joint_to_add.joint_item(Joint::ELEMENT).items_distants();
-//          ArrOfInt& items_distants = dom.zone(0).faces_joint()[my_joint_index].set_joint_item(Joint::ELEMENT).set_items_distants();
+//          ArrOfInt& items_distants = dom.faces_joint()[my_joint_index].set_joint_item(Joint::ELEMENT).set_items_distants();
 //          items_distants.set_smart_resize(1);
 //          for(int index=0; index<elements_to_add.size_array(); index++)
 //            items_distants.append_array(new_nb_elems + elements_to_add[index]);
@@ -620,7 +619,7 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
   // il verifie seulement que le nombre de processeurs n'est pas superieur au nombre de zones)
   {
 
-    const Joints& joints = dom.zone(0).faces_joint();
+    const Joints& joints = dom.faces_joint();
     const int nb_joints = joints.size();
     int max_pe_voisin = 0;
     for (int i = 0; i < nb_joints; i++)
@@ -644,11 +643,11 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
   }
 
   //tri des joints dans l'ordre croissant des procs
-  Joints& joints = dom.zone(0).faces_joint();
+  Joints& joints = dom.faces_joint();
   trier_les_joints(joints);
   envoyer_all_to_all(mergedZones, mergedZones);
   check_consistancy_remote_items( dom, mergedZones );
-  dom.zone(0).check_zone();
+  dom.check_zone();
 
   // PL : pas tout a fait exact le nombre affiche de sommets, on compte plusieurs fois les sommets des joints...
   int nbsom = mp_sum(dom.les_sommets().dimension(0));
@@ -663,7 +662,7 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
       for(auto& itr : liste_bords_periodiques)
         {
           Nom bp_nom = itr;
-          Bord& bord = dom.zone(0).bord(bp_nom);
+          Bord& bord = dom.bord(bp_nom);
           if(bord.nb_faces() == 0)
             continue;
 
@@ -691,7 +690,7 @@ void Scatter::construire_structures_paralleles(Zone& dom, const Noms& liste_bord
   {
     MD_Vector md_nul;
     dom.les_sommets().set_md_vector(md_nul);
-    dom.zone(0).les_elems().set_md_vector(md_nul);
+    dom.les_elems().set_md_vector(md_nul);
   }
 
   // L'ordre d'appel est important:
@@ -700,7 +699,7 @@ void Scatter::construire_structures_paralleles(Zone& dom, const Noms& liste_bord
   if (liste_bords_periodiques.size() > 0)
     corriger_espace_distant_elements_perio(dom, liste_bords_periodiques);
 
-  calculer_nb_items_virtuels(dom.zone(0).faces_joint(), Joint::ELEMENT);
+  calculer_nb_items_virtuels(dom.faces_joint(), Joint::ELEMENT);
 
   // Determination des sommets distants en fonction des elements distants
   calculer_espace_distant_sommets(dom, liste_bords_periodiques);
@@ -708,7 +707,7 @@ void Scatter::construire_structures_paralleles(Zone& dom, const Noms& liste_bord
   // Creation des espaces distants virtuels et items communs pour les tableaux
   // sommets et elements:
   DoubleTab& sommets = dom.les_sommets();
-  IntTab& elements = dom.zone(0).les_elems();
+  IntTab& elements = dom.les_elems();
   MD_Vector md_sommets, md_elements;
   construire_md_vector(dom, sommets.dimension(0), Joint::SOMMET, md_sommets);
   construire_md_vector(dom, elements.dimension(0), Joint::ELEMENT, md_elements);
@@ -1243,7 +1242,7 @@ static void calculer_espace_distant_item(Zone& la_zone,
  *   (plus petit pe qui le possede) qui le met dans son espace distant.
  *   Attention, on cree de nouveaux joints.
  *   On remplit les tableaux
- *    dom.zone(0).faces_joint(i).joint_item(Joint::SOMMET).items_distants();
+ *    dom.faces_joint(i).joint_item(Joint::SOMMET).items_distants();
  *
  */
 void Scatter::calculer_espace_distant_sommets(Zone& dom, const Noms& liste_bords_perio)
@@ -1251,7 +1250,7 @@ void Scatter::calculer_espace_distant_sommets(Zone& dom, const Noms& liste_bords
   if (Process::je_suis_maitre())
     Cerr << "Scatter::calculer_espace_distant_sommets : start" << finl;
 
-  Zone&          zone                  = dom.zone(0);
+  Zone&          zone                  = dom;
   const IntTab& connectivite_elem_som = zone.les_elems();
   const int   nb_sommets_reels      = dom.nb_som();
 
@@ -1373,7 +1372,7 @@ void Scatter::calculer_renum_items_communs(Joints& joints,
  */
 void Scatter::construire_md_vector(const Zone& dom, int nb_items_reels, const Joint::Type_Item type_item, MD_Vector& md_vector)
 {
-  const Joints& joints  = dom.zone(0).faces_joint();
+  const Joints& joints  = dom.faces_joint();
   const int nb_joints = joints.size();
 
   ArrOfInt pe_voisins(nb_joints);
@@ -1779,7 +1778,7 @@ void Scatter::reordonner_faces_de_joint(Zone& dom)
   dictionnaire_indices.initialiser(dom.les_sommets().get_md_vector());
 
   Schema_Comm schema_comm;
-  Joints&      joints    = dom.zone(0).faces_joint();
+  Joints&      joints    = dom.faces_joint();
   const int nb_joints = joints.size();
   const int moi       = Process::me();
   int       i_joint;
@@ -1926,7 +1925,7 @@ static void calculer_liste_complete_aretes_joint(const Joint& joint, ArrOfInt& l
             // Calcul du point C entre 2 sommets Si et Sj
             for (int comp=0; comp<Objet_U::dimension; comp++)
               positions(0,comp)=0.5*(coord(Si,comp)+coord(Sj,comp));
-            dom.zone(0).chercher_aretes(positions,aretes);
+            dom.chercher_aretes(positions,aretes);
             // Si on trouve une arete dont le centre coincide avec le point C
             // et dont les sommets sont identiques a Si et Sj, on ajoute l'arete a la liste
             if (aretes[0]>=0 && arete_de_sommets_Si_et_Sj(Si, Sj, aretes[0], aretes_som))
@@ -1964,7 +1963,7 @@ static void calculer_liste_complete_aretes_joint(const Joint& joint, ArrOfInt& l
         int Sj = som_isoles[j];
         for (int comp=0; comp<Objet_U::dimension; comp++)
           positions(0,comp)=0.5*(coord(Si,comp)+coord(Sj,comp));
-        dom.zone(0).chercher_aretes(positions,aretes);
+        dom.chercher_aretes(positions,aretes);
         // Si on trouve une arete dont le centre coincide avec le point C
         // et dont les sommets sont identiques a Si et Sj, on ajoute l'arete a la liste
         if (aretes[0]>=0 && arete_de_sommets_Si_et_Sj(Si, Sj, aretes[0], aretes_som))
@@ -2010,7 +2009,7 @@ void Scatter::corriger_espace_distant_elements_perio(Zone& dom,
   if (Process::je_suis_maitre())
     Cerr << "Correction of remote spaces of the elements for the periodic faces" << finl;
 
-  Zone& zone = dom.zone(0);
+  Zone& zone = dom;
   const int nb_elem = zone.nb_elem();
   const IntTab& les_elems = zone.les_elems();
 
@@ -2156,7 +2155,7 @@ void Scatter::corriger_espace_distant_elements_perio(Zone& dom,
  */
 void Scatter::calculer_espace_distant_elements(Zone& dom)
 {
-  Zone&        zone         = dom.zone(0);
+  Zone&        zone         = dom;
   const int nbjoints    = zone.nb_joints();
   const int nb_som_elem  = zone.nb_som_elem();
   const IntTab& les_elems    = zone.les_elems();
@@ -2796,7 +2795,7 @@ void Scatter::construire_correspondance_items_par_coordonnees(Joints& joints, co
 
 void Scatter::construire_correspondance_sommets_par_coordonnees(Zone& dom)
 {
-  construire_correspondance_items_par_coordonnees(dom.zone(0).faces_joint(), Joint::SOMMET, dom.coord_sommets());
+  construire_correspondance_items_par_coordonnees(dom.faces_joint(), Joint::SOMMET, dom.coord_sommets());
 }
 
 /*! @brief Construction des tableaux joint_item(Joint::ARETE).

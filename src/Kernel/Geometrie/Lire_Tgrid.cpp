@@ -382,7 +382,7 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
           else
             {
               int izone=htoi(motlu.suffix("("));
-              dom.zone(0).nommer((Nom)izone);
+              dom.nommer((Nom)izone);
               fic >> motlu;        // Debut
               //int ideb=htoi(motlu);
               fic >> motlu;        // Fin
@@ -394,22 +394,22 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
               if (motlu=="2))")
                 {
                   // On lit bien des tetraedres
-                  dom.zone(0).type_elem().typer("Tetraedre");
+                  dom.type_elem().typer("Tetraedre");
                 }
               else if (motlu=="4))")
                 {
                   // On lit bien des hexaedres
-                  dom.zone(0).type_elem().typer("Hexaedre_VEF");
+                  dom.type_elem().typer("Hexaedre_VEF");
                 }
               else if (motlu=="1))")
                 {
                   // On lit bien des triangles
-                  dom.zone(0).type_elem().typer("Triangle");
+                  dom.type_elem().typer("Triangle");
                 }
               else if (motlu=="3))")
                 {
                   // On lit bien des quadrangles
-                  dom.zone(0).type_elem().typer("Quadrangle");
+                  dom.type_elem().typer("Quadrangle");
                 }
               else
                 {
@@ -418,7 +418,7 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
                   Cerr << "Contact TRUST support." << finl;
                   exit();
                 }
-              dom.zone(0).type_elem().associer_zone(dom.zone(0));
+              dom.type_elem().associer_zone(dom);
             }
           Cerr << finl;
         }
@@ -481,7 +481,7 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
                   exit();
                 }
               // Tableaux de travail
-              IntTab& les_elems=dom.zone(0).les_elems();
+              IntTab& les_elems=dom.les_elems();
               if (les_elems.size()==0)
                 {
                   // Si les_elems n'est pas dimensionne (1ere lecture de faces)
@@ -555,7 +555,7 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
                           // C'est bien une frontiere donc on dimensionne le necessaire
                           type=3;
                           Cerr << nb_face_lu << " faces are read from the boundary number " << izone << finl;
-                          nouveau_bord=dom.zone(0).faces_bord().add(Bord());
+                          nouveau_bord=dom.faces_bord().add(Bord());
                           nouveau_bord->nommer((Nom)izone);
                           if (nb_som_face==3)
                             nouveau_bord->faces().typer(Faces::triangle_3D);
@@ -667,8 +667,8 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
               }
           Cerr << "The area " << izone << " is called " << nom_zone << finl;
           // On parcourt les bords pour renommer
-          Bords& les_bords=dom.zone(0).faces_bord();
-          les_bords.associer_zone(dom.zone(0));
+          Bords& les_bords=dom.faces_bord();
+          les_bords.associer_zone(dom);
           if (les_bords.est_vide())
             {
               Cerr << "Reading a name before reading the boundaries..." << finl;
@@ -706,7 +706,7 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
         }
     }
   // Verification si le tableau les_elems a ete rempli completement
-  IntTab& les_elems=dom.zone(0).les_elems();
+  IntTab& les_elems=dom.les_elems();
   for (int i=0; i<nb_elem; i++)
     for (int j=0; j<nb_som_elem; j++)
       if (les_elems(i,j)==-1)
@@ -717,7 +717,7 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
         }
 
   // On reordonne le domaine (utile surtout pour les hexaedres)
-  dom.zone(0).type_elem().reordonner();
+  dom.type_elem().reordonner();
 
   // Nettoie le domaine pour enlever les noeuds inutiles
   // Mettre une methode a Zone::nettoie

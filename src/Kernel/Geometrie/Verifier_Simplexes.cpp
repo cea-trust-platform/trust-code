@@ -39,7 +39,7 @@ static void check_internal_diagonal_for_triangle(Zone& domain)
 static void check_internal_diagonal_for_tetrahedron(Zone& domain)
 {
   const DoubleTab& nodes = domain.les_sommets();
-  IntTab&           cells = domain.zone(0).les_elems();
+  IntTab&           cells = domain.les_elems();
 
   ArrOfDouble lengths(3);
 
@@ -144,7 +144,7 @@ static void check_internal_diagonal_for_tetrahedron(Zone& domain)
 
 static void check_internal_diagonal(Zone& domain)
 {
-  const Nom& cell_type = domain.zone(0).type_elem().valeur().que_suis_je();
+  const Nom& cell_type = domain.type_elem().valeur().que_suis_je();
 
   Motcles understood_keywords(2);
   understood_keywords[0] = "Triangle";
@@ -170,7 +170,7 @@ static void check_internal_diagonal(Zone& domain)
 static void check_positive_volumes_for_triangle(Zone& domain)
 {
   const DoubleTab& nodes = domain.les_sommets();
-  IntTab&           cells = domain.zone(0).les_elems();
+  IntTab&           cells = domain.les_elems();
 
   const int nb_cells = cells.dimension(0);
   int err_count = 0;
@@ -209,7 +209,7 @@ static void check_positive_volumes_for_triangle(Zone& domain)
 static void check_positive_volumes_for_tetrahedron(Zone& domain)
 {
   const DoubleTab& nodes = domain.les_sommets();
-  IntTab&           cells = domain.zone(0).les_elems();
+  IntTab&           cells = domain.les_elems();
 
   const int nb_cells = cells.dimension(0);
   int err_count = 0;
@@ -262,7 +262,7 @@ static void check_positive_volumes_for_tetrahedron(Zone& domain)
 
 static void check_positive_volumes(Zone& domain)
 {
-  const Nom& cell_type = domain.zone(0).type_elem().valeur().que_suis_je();
+  const Nom& cell_type = domain.type_elem().valeur().que_suis_je();
 
   Motcles understood_keywords(2);
   understood_keywords[0] = "Triangle";

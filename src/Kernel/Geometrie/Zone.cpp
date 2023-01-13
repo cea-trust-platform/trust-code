@@ -19,7 +19,6 @@
 #include <Sous_Zone.h>
 #include <Zone.h>
 #include <Octree.h>
-#include <Zone.h>
 #include <TRUSTTrav.h>
 #include <Scatter.h>
 #include <Poly_geom_base.h>
@@ -41,8 +40,6 @@
 using MEDCoupling::DataArrayInt;
 using MEDCoupling::DataArrayDouble;
 #endif
-
-#include <Zones.h>  // TODO FIXME Adrien a virer
 
 Implemente_instanciable_sans_constructeur(Zone,"Zone",Objet_U);
 
@@ -1668,17 +1665,17 @@ void Zone::creer_mes_domaines_frontieres(const Zone_VF& zone_vf)
 {
   const Nom expr_elements("1");
   const Nom expr_faces("1");
-  int nb_frontieres = zone(0).nb_front_Cl();
+  int nb_frontieres = nb_front_Cl();
   domaines_frontieres_.vide();
   for (int i=0; i<nb_frontieres; i++)
     {
       // Nom de la frontiere
       Noms nom_frontiere(1);
-      nom_frontiere[0]=zone(0).frontiere(i).le_nom();
+      nom_frontiere[0]=frontiere(i).le_nom();
       // Nom du domaine surfacique que l'on va construire
       Nom nom_domaine_surfacique=le_nom();
       nom_domaine_surfacique+="_boundaries_";
-      nom_domaine_surfacique+=zone(0).frontiere(i).le_nom();
+      nom_domaine_surfacique+=frontiere(i).le_nom();
       // Creation
       Cerr << "Creating a surface domain named " << nom_domaine_surfacique << " for the boundary " << nom_frontiere[0] << " of the domain " << le_nom() << finl;
 
@@ -1908,7 +1905,7 @@ void Zone::imprimer() const
   // We recompute volumes (cause stored in Zone_VF and so not available from Domaine...):
   DoubleVect volumes;
   DoubleVect inverse_volumes;
-  zone(0).calculer_volumes(volumes,inverse_volumes);
+  calculer_volumes(volumes,inverse_volumes);
   Cerr << "==============================================" << finl;
   Cerr << "The volume cells of the domain " << le_nom() << " are:" << finl;
   const int i_vmax = imax_array(volumes);
@@ -1918,8 +1915,8 @@ void Zone::imprimer() const
   const double volmin = mp_min(vmin_local);
   const double volmax = mp_max(vmax_local);
   double volume_total = mp_somme_vect(volumes);
-  const int nb_elem = zone(0).nb_elem();
-  double volmoy = volume_total / Process::mp_sum(nb_elem);
+  const int nbe = nb_elem();
+  double volmoy = volume_total / Process::mp_sum(nbe);
   Cerr << "sum(volume cells)= "  << volume_total << finl;
   Cerr << "mean(volume cells)= " << volmoy << finl;
   Cerr << "min(volume cells)= "  << volmin << finl;

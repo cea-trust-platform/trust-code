@@ -198,7 +198,7 @@ void Debog_Pb::write_geometry_data()
       f << zvf.xa();
   }
   register_item(dom.md_vector_sommets(), "SOM");
-  register_item(dom.zone(0).md_vector_elements(), "ELEM");
+  register_item(dom.md_vector_elements(), "ELEM");
   register_item(zvf.md_vector_faces(), "FACE");
   if (zvf.md_vector_aretes().non_nul())
     register_item(zvf.md_vector_aretes(), "ARETES");
@@ -285,7 +285,7 @@ void Debog_Pb::read_geometry_data()
           Zone dom_seq;
           f >> dom_seq;
           coord_som_seq = dom_seq.coord_sommets();
-          const Elem_geom_base& elem = dom_seq.zone(0).type_elem().valeur();
+          const Elem_geom_base& elem = dom_seq.type_elem().valeur();
           elem.calculer_centres_gravite(xp_seq);
           PE_Groups::exit_group();
         }
@@ -304,7 +304,7 @@ void Debog_Pb::read_geometry_data()
     add_renum_item(coord_som_seq, coord_som, md_som, "SOM");
     const DoubleTab& xp = zvf.xp();
     // Le tableau xp n'a pas de structure parallele, on la prend dans les elements...
-    const MD_Vector& md_elem = dom.zone(0).les_elems().get_md_vector();
+    const MD_Vector& md_elem = dom.les_elems().get_md_vector();
     add_renum_item(xp_seq, xp, md_elem, "ELEM");
   }
   {

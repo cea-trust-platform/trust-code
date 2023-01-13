@@ -76,7 +76,7 @@ Entree& Create_domain_from_sous_zone::interpreter_(Entree& is)
   DomaineCutter cutter;
   Noms vide;
 
-  IntTab index(domaine_org.zone(0).nb_elem()); //0 -> 1er domaine, ..., n_dom + 1 -> le reste
+  IntTab index(domaine_org.nb_elem()); //0 -> 1er domaine, ..., n_dom + 1 -> le reste
   int nb_dom = noms_doms.size();
   index = 0; //par defaut, on ne prend rien
   for (int i = 0; i < nb_dom; i++)
@@ -95,7 +95,7 @@ Entree& Create_domain_from_sous_zone::interpreter_(Entree& is)
     {
       Zone& dom = ref_cast(Zone, objet(noms_doms[i]));
       cutter.construire_sous_domaine(i + 1, dom);
-      Zone& zone=dom.zone(0);
+      Zone& zone=dom;
       Bords& bords=zone.faces_bord();
 
       if (cutter.bords_internes().size()>0)
@@ -144,7 +144,7 @@ Entree& Create_domain_from_sous_zone::interpreter_(Entree& is)
       const LIST(REF(Sous_Zone)) & liste_sous_zones = domaine_org.ss_zones();
       int nb_sous_zones = liste_sous_zones.size();
       const Sous_Zone& ssz=ref_cast(Sous_Zone,objet(noms_sous_zones[i]));
-      ArrOfInt rev_ssz(domaine_org.zone(0).nb_elem());
+      ArrOfInt rev_ssz(domaine_org.nb_elem());
       rev_ssz = -1;
       for (int j = 0; j < ssz.nb_elem_tot(); j++)
         rev_ssz[ssz[j]] = j;

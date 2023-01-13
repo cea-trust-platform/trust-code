@@ -39,11 +39,11 @@ Entree& Calculer_Moments::interpreter_(Entree& is)
   Zone& dom=domaine();
   is >> nom_var;
   Cerr << nom_var << finl;
-  dom.zone(0).moments_a_imprimer()=1;
+  dom.moments_a_imprimer()=1;
   if(nom_var=="calcul")
     {
       Cerr << "Calculation of center of gravity " << nom_var<< finl;
-      dom.zone(0).calculer_mon_centre_de_gravite(c);
+      dom.calculer_mon_centre_de_gravite(c);
     }
   else if (nom_var=="centre_de_gravite")
     {
@@ -52,7 +52,7 @@ Entree& Calculer_Moments::interpreter_(Entree& is)
       is >> c[1];
       if (dimension==3)
         is >> c[2];
-      dom.zone(0).exporter_mon_centre_de_gravite(c);
+      dom.exporter_mon_centre_de_gravite(c);
     }
   else
     {

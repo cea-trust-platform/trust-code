@@ -184,7 +184,7 @@ void mon_construire_correspondance_items_par_coordonnees(Joints& joints, const J
 
 void mon_construire_correspondance_sommets_par_coordonnees(Zone& dom)
 {
-  mon_construire_correspondance_items_par_coordonnees(dom.zone(0).faces_joint(), Joint::SOMMET, dom.coord_sommets());
+  mon_construire_correspondance_items_par_coordonnees(dom.faces_joint(), Joint::SOMMET, dom.coord_sommets());
 }
 
 
@@ -258,7 +258,7 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
     {
       Scatter::uninit_sequential_domain(dom_new);
       int nb_sommet_avant_completion=dom_new.nb_som();
-      Scatter::trier_les_joints(dom_new.zone(0).faces_joint());
+      Scatter::trier_les_joints(dom_new.faces_joint());
       statistiques().begin_count(stats);
 
 
@@ -287,7 +287,7 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
       {
 
         Scatter::construire_correspondance_sommets_par_coordonnees(dom_new);
-        Scatter::calculer_renum_items_communs(dom_new.zone(0).faces_joint(), Joint::SOMMET);
+        Scatter::calculer_renum_items_communs(dom_new.faces_joint(), Joint::SOMMET);
 
         statistiques().end_count(stats);
         double maxtime = mp_max(statistiques().last_time(stats));
@@ -307,9 +307,9 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
         int ecrit=1;
         if (ecrit)
           {
-            int nb_elem_reel=dom_new.zone(0).nb_elem();
+            int nb_elem_reel=dom_new.nb_elem();
             Scatter::uninit_sequential_domain(dom_new);
-            dom_new.zone(0).les_elems().resize( nb_elem_reel,dom_new.zone(0).les_elems().dimension(1));
+            dom_new.les_elems().resize( nb_elem_reel,dom_new.les_elems().dimension(1));
             dom_new.les_sommets().resize(nb_sommet_avant_completion,dimension);
 
             Scatter::uninit_sequential_domain(dom_new);

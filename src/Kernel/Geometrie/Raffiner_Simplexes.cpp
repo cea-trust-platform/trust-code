@@ -782,8 +782,8 @@ void Raffiner_Simplexes::refine_domain(const Zone& src,
                                        Zone&        dest)
 {
 
-  const Nom&        cell_type          = src.zone(0).type_elem().valeur().que_suis_je();
-  const IntTab&     nodes_of_cells_src = src.zone(0).les_elems();
+  const Nom&        cell_type          = src.type_elem().valeur().que_suis_je();
+  const IntTab&     nodes_of_cells_src = src.les_elems();
   const DoubleTab& nodes_src          = src.les_sommets();
 
   IntTab edges_pattern;
@@ -809,12 +809,12 @@ void Raffiner_Simplexes::refine_domain(const Zone& src,
   DoubleTab& nodes_dest = dest.les_sommets();
   build_nodes(nodes_src,nodes_of_edges_src,nodes_dest);
 
-  IntTab& nodes_of_cells_dest = dest.zone(0).les_elems();
+  IntTab& nodes_of_cells_dest = dest.les_elems();
   build_cells(nodes_of_cells_src,edges_of_cells_src,cell_refinement_pattern,nodes_src.dimension(0),nodes_of_cells_dest);
 
   {
-    const Bords& boundaries_src  = src.zone(0).faces_bord();
-    Bords&        boundaries_dest = dest.zone(0).faces_bord();
+    const Bords& boundaries_src  = src.faces_bord();
+    Bords&        boundaries_dest = dest.faces_bord();
     boundaries_dest.vide();
     const int nb_boundaries = boundaries_src.size();
     for (int boundary=0; boundary<nb_boundaries; ++boundary)
@@ -828,14 +828,14 @@ void Raffiner_Simplexes::refine_domain(const Zone& src,
                        edges_of_cells_src,
                        faces_pattern,
                        face_refinement_pattern,
-                       dest.zone(0),
+                       dest,
                        boundaries_dest[boundary]);
       }
   }
 
   {
-    const Raccords& boundaries_src  = src.zone(0).faces_raccord();
-    Raccords&        boundaries_dest = dest.zone(0).faces_raccord();
+    const Raccords& boundaries_src  = src.faces_raccord();
+    Raccords&        boundaries_dest = dest.faces_raccord();
     boundaries_dest.vide();
     const int nb_boundaries = boundaries_src.size();
     for (int boundary=0; boundary<nb_boundaries; ++boundary)
@@ -850,14 +850,14 @@ void Raffiner_Simplexes::refine_domain(const Zone& src,
                        edges_of_cells_src,
                        faces_pattern,
                        face_refinement_pattern,
-                       dest.zone(0),
+                       dest,
                        boundaries_dest[boundary].valeur());
       }
   }
 
   {
-    const Faces_Internes& boundaries_src  = src.zone(0).faces_int();
-    Faces_Internes&        boundaries_dest = dest.zone(0).faces_int();
+    const Faces_Internes& boundaries_src  = src.faces_int();
+    Faces_Internes&        boundaries_dest = dest.faces_int();
     boundaries_dest.vide();
     const int nb_boundaries = boundaries_src.size();
     for (int boundary=0; boundary<nb_boundaries; ++boundary)
@@ -871,14 +871,14 @@ void Raffiner_Simplexes::refine_domain(const Zone& src,
                        edges_of_cells_src,
                        faces_pattern,
                        face_refinement_pattern,
-                       dest.zone(0),
+                       dest,
                        boundaries_dest[boundary]);
       }
   }
   //marq_front_nodes=0;
   {
-    const Joints& boundaries_src  = src.zone(0).faces_joint();
-    Joints&       boundaries_dest = dest.zone(0).faces_joint();
+    const Joints& boundaries_src  = src.faces_joint();
+    Joints&       boundaries_dest = dest.faces_joint();
     boundaries_dest.vide();
     const int nb_boundaries = boundaries_src.size();
     for (int boundary=0; boundary<nb_boundaries; ++boundary)
@@ -892,7 +892,7 @@ void Raffiner_Simplexes::refine_domain(const Zone& src,
                        edges_of_cells_src,
                        faces_pattern,
                        face_refinement_pattern,
-                       dest.zone(0),
+                       dest,
                        boundaries_dest[boundary]);
       }
     for (int boundary=0; boundary<nb_boundaries; ++boundary)

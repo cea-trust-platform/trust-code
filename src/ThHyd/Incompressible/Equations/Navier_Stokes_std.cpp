@@ -1555,8 +1555,8 @@ int Navier_Stokes_std::impr(Sortie& os) const
       // Calculation as OpenFOAM: http://foam.sourceforge.net/docs/cpp/a04190_source.html
       // It is relative errors (normalized by the volume/dt)
       double dt = schema_temps().pas_de_temps();
-      double local = LocalFlowRateError / ( probleme().domaine().zone(0).volume_total() / dt );
-      double global = mp_somme_vect(divergence_U.valeurs()) / ( probleme().domaine().zone(0).volume_total() / dt );
+      double local = LocalFlowRateError / ( probleme().domaine().volume_total() / dt );
+      double global = mp_somme_vect(divergence_U.valeurs()) / ( probleme().domaine().volume_total() / dt );
       cumulative_ += global;
       os << "time step continuity errors : sum local = " << local << ", global = " << global << ", cumulative = " << cumulative_ << finl;
       // Nouveau 1.6.1, arret si bilans de masse mauvais et seuil<1.e20

@@ -502,9 +502,9 @@ Entree& Moyenne_volumique::interpreter(Entree& is)
   DoubleTab coords;
   if (localisation == id_elem)
     {
-      dom.zone(0).calculer_centres_gravite(coords);
+      dom.calculer_centres_gravite(coords);
       // Le tableau contient aussi les elements virtuels et pas d'espace virtuel. bouh.
-      coords.resize(dom.zone(0).nb_elem(), coords.dimension(1));
+      coords.resize(dom.nb_elem(), coords.dimension(1));
     }
   else
     {

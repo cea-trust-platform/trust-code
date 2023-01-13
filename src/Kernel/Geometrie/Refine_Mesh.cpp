@@ -69,7 +69,7 @@ void Refine_Mesh::check_dimension(void) const
 
 void Refine_Mesh::check_cell_type(void) const
 {
-  const Nom& cell_type = domaine().zone(0).type_elem().valeur().que_suis_je();
+  const Nom& cell_type = domaine().type_elem().valeur().que_suis_je();
 
   if (!((cell_type == Motcle("Triangle")) || (cell_type == Motcle("Tetraedre"))))
     {
@@ -85,7 +85,7 @@ void Refine_Mesh::apply_2D(void)
   Zone& domain = domaine();
   Scatter::uninit_sequential_domain(domain);
 
-  assert(domain.zone(0).type_elem().valeur().que_suis_je() == Motcle("Triangle"));
+  assert(domain.type_elem().valeur().que_suis_je() == Motcle("Triangle"));
 
   IntTab nodes_of_edges;
   IntTab edges_of_cells;
@@ -126,7 +126,7 @@ void Refine_Mesh::apply_3D(void)
   Zone& domain = domaine();
   Scatter::uninit_sequential_domain(domain);
 
-  assert(domain.zone(0).type_elem().valeur().que_suis_je() == Motcle("Tetraedre"));
+  assert(domain.type_elem().valeur().que_suis_je() == Motcle("Tetraedre"));
 
   IntTab nodes_of_edges;
   IntTab edges_of_cells;
@@ -202,7 +202,7 @@ void Refine_Mesh::build_edges_3D(IntTab& nodes_of_edges, IntTab& edges_of_cells)
 
 void Refine_Mesh::build_edges(IntTab& nodes_of_edges, IntTab& edges_of_cells, int nb_edges_per_cell, int nb_nodes_per_edge, const IntTab& local_nodes_of_edges) const
 {
-  const IntTab& cells = domaine().zone(0).les_elems();
+  const IntTab& cells = domaine().les_elems();
 
   const int nb_cells = cells.dimension(0);
 
@@ -280,7 +280,7 @@ void Refine_Mesh::build_new_nodes(DoubleTab& new_nodes, const IntTab& nodes_of_e
 void Refine_Mesh::build_new_cells_2D(IntTab& new_cells, const IntTab& edges_of_cells) const
 {
   const DoubleTab& nodes = domaine().les_sommets();
-  const IntTab& cells = domaine().zone(0).les_elems();
+  const IntTab& cells = domaine().les_elems();
 
   const int nb_cells = cells.dimension(0);
   const int nb_nodes = nodes.dimension(0);
@@ -315,7 +315,7 @@ void Refine_Mesh::build_new_cells_2D(IntTab& new_cells, const IntTab& edges_of_c
 void Refine_Mesh::build_new_cells_3D(IntTab& new_cells, const IntTab& edges_of_cells) const
 {
   const DoubleTab& nodes = domaine().les_sommets();
-  const IntTab& cells = domaine().zone(0).les_elems();
+  const IntTab& cells = domaine().les_elems();
 
   const int nb_cells = cells.dimension(0);
   const int nb_nodes = nodes.dimension(0);
@@ -436,12 +436,12 @@ void Refine_Mesh::build_incidence_from_node_to_edges(int nb_nodes, const IntTab&
 
 void Refine_Mesh::build_new_boundary_faces_2D(IntTabs& new_nodes_of_boundary_faces, IntTabs& new_cells_of_boundary_faces, const Static_Int_Lists& incidence_from_node_to_edges) const
 {
-  const int nb_boundaries = domaine().zone(0).nb_bords();
+  const int nb_boundaries = domaine().nb_bords();
   new_nodes_of_boundary_faces.dimensionner(nb_boundaries);
   new_cells_of_boundary_faces.dimensionner(nb_boundaries);
 
   int boundary = 0;
-  for (const auto &itr : domaine().zone(0).faces_bord())
+  for (const auto &itr : domaine().faces_bord())
     {
       IntTab& nodes = new_nodes_of_boundary_faces[boundary];
       IntTab& cells = new_cells_of_boundary_faces[boundary];
@@ -452,12 +452,12 @@ void Refine_Mesh::build_new_boundary_faces_2D(IntTabs& new_nodes_of_boundary_fac
 
 void Refine_Mesh::build_new_boundary_faces_3D(IntTabs& new_nodes_of_boundary_faces, IntTabs& new_cells_of_boundary_faces, const Static_Int_Lists& incidence_from_node_to_edges) const
 {
-  const int nb_boundaries = domaine().zone(0).nb_bords();
+  const int nb_boundaries = domaine().nb_bords();
   new_nodes_of_boundary_faces.dimensionner(nb_boundaries);
   new_cells_of_boundary_faces.dimensionner(nb_boundaries);
 
   int boundary = 0;
-  for (const auto &itr : domaine().zone(0).faces_bord())
+  for (const auto &itr : domaine().faces_bord())
     {
       IntTab& nodes = new_nodes_of_boundary_faces[boundary];
       IntTab& cells = new_cells_of_boundary_faces[boundary];
@@ -468,12 +468,12 @@ void Refine_Mesh::build_new_boundary_faces_3D(IntTabs& new_nodes_of_boundary_fac
 
 void Refine_Mesh::build_new_connector_faces_2D(IntTabs& new_nodes_of_connector_faces, IntTabs& new_cells_of_connector_faces, const Static_Int_Lists& incidence_from_node_to_edges) const
 {
-  const int nb_connectors = domaine().zone(0).nb_raccords();
+  const int nb_connectors = domaine().nb_raccords();
   new_nodes_of_connector_faces.dimensionner(nb_connectors);
   new_cells_of_connector_faces.dimensionner(nb_connectors);
 
   int connector = 0;
-  for (const auto &itr : domaine().zone(0).faces_raccord())
+  for (const auto &itr : domaine().faces_raccord())
     {
       IntTab& nodes = new_nodes_of_connector_faces[connector];
       IntTab& cells = new_cells_of_connector_faces[connector];
@@ -484,12 +484,12 @@ void Refine_Mesh::build_new_connector_faces_2D(IntTabs& new_nodes_of_connector_f
 
 void Refine_Mesh::build_new_connector_faces_3D(IntTabs& new_nodes_of_connector_faces, IntTabs& new_cells_of_connector_faces, const Static_Int_Lists& incidence_from_node_to_edges) const
 {
-  const int nb_connectors = domaine().zone(0).nb_raccords();
+  const int nb_connectors = domaine().nb_raccords();
   new_nodes_of_connector_faces.dimensionner(nb_connectors);
   new_cells_of_connector_faces.dimensionner(nb_connectors);
 
   int connector = 0;
-  for (const auto &itr : domaine().zone(0).faces_raccord())
+  for (const auto &itr : domaine().faces_raccord())
     {
       IntTab& nodes = new_nodes_of_connector_faces[connector];
       IntTab& cells = new_cells_of_connector_faces[connector];
@@ -501,12 +501,12 @@ void Refine_Mesh::build_new_connector_faces_3D(IntTabs& new_nodes_of_connector_f
 void Refine_Mesh::build_new_internal_frontier_faces_2D(IntTabs& new_nodes_of_internal_frontier_faces, IntTabs& new_cells_of_internal_frontier_faces,
                                                        const Static_Int_Lists& incidence_from_node_to_edges) const
 {
-  const int nb_internal_frontier = domaine().zone(0).nb_frontieres_internes();
+  const int nb_internal_frontier = domaine().nb_frontieres_internes();
   new_nodes_of_internal_frontier_faces.dimensionner(nb_internal_frontier);
   new_cells_of_internal_frontier_faces.dimensionner(nb_internal_frontier);
 
   int internal_frontier = 0;
-  for (const auto& itr : domaine().zone(0).faces_int())
+  for (const auto& itr : domaine().faces_int())
     {
       IntTab& nodes = new_nodes_of_internal_frontier_faces[internal_frontier];
       IntTab& cells = new_cells_of_internal_frontier_faces[internal_frontier];
@@ -518,12 +518,12 @@ void Refine_Mesh::build_new_internal_frontier_faces_2D(IntTabs& new_nodes_of_int
 void Refine_Mesh::build_new_internal_frontier_faces_3D(IntTabs& new_nodes_of_internal_frontier_faces, IntTabs& new_cells_of_internal_frontier_faces,
                                                        const Static_Int_Lists& incidence_from_node_to_edges) const
 {
-  const int nb_internal_frontier = domaine().zone(0).nb_frontieres_internes();
+  const int nb_internal_frontier = domaine().nb_frontieres_internes();
   new_nodes_of_internal_frontier_faces.dimensionner(nb_internal_frontier);
   new_cells_of_internal_frontier_faces.dimensionner(nb_internal_frontier);
 
   int internal_frontier = 0;
-  for (const auto& itr : domaine().zone(0).faces_int())
+  for (const auto& itr : domaine().faces_int())
     {
       IntTab& nodes = new_nodes_of_internal_frontier_faces[internal_frontier];
       IntTab& cells = new_cells_of_internal_frontier_faces[internal_frontier];
@@ -636,14 +636,14 @@ void Refine_Mesh::update_nodes(const DoubleTab& new_nodes)
 
 void Refine_Mesh::update_cells(const IntTab& new_cells)
 {
-  domaine().zone(0).les_elems().ref(new_cells);
+  domaine().les_elems().ref(new_cells);
 }
 
 void Refine_Mesh::update_octree(const Nom& cell_type)
 {
-  domaine().zone(0).invalide_octree();
-  domaine().zone(0).typer(cell_type);
-  domaine().zone(0).construit_octree();
+  domaine().invalide_octree();
+  domaine().typer(cell_type);
+  domaine().construit_octree();
 }
 
 void Refine_Mesh::update_sub_zones(const Noms& new_sub_zones_descriptions)
@@ -661,7 +661,7 @@ void Refine_Mesh::update_sub_zones(const Noms& new_sub_zones_descriptions)
 void Refine_Mesh::update_boundary_faces(const Type_Face& face_type, const IntTabs& new_nodes_of_boundary_faces, const IntTabs& new_cells_of_boundary_faces)
 {
   int boundary = 0;
-  for (auto &itr : domaine().zone(0).faces_bord())
+  for (auto &itr : domaine().faces_bord())
     {
       Faces& faces = itr.faces();
       faces.typer(face_type);
@@ -674,7 +674,7 @@ void Refine_Mesh::update_boundary_faces(const Type_Face& face_type, const IntTab
 void Refine_Mesh::update_connector_faces(const Type_Face& face_type, const IntTabs& new_nodes_of_connector_faces, const IntTabs& new_cells_of_connector_faces)
 {
   int connector = 0;
-  for (auto &itr : domaine().zone(0).faces_raccord())
+  for (auto &itr : domaine().faces_raccord())
     {
       Faces& faces = itr->faces();
       faces.typer(face_type);
@@ -687,7 +687,7 @@ void Refine_Mesh::update_connector_faces(const Type_Face& face_type, const IntTa
 void Refine_Mesh::update_internal_frontier_faces(const Type_Face& face_type, const IntTabs& new_nodes_of_internal_frontier_faces, const IntTabs& new_cells_of_internal_frontier_faces)
 {
   int internal_frontier = 0;
-  for (auto &itr : domaine().zone(0).faces_int())
+  for (auto &itr : domaine().faces_int())
     {
       Faces& faces = itr.faces();
       faces.typer(face_type);

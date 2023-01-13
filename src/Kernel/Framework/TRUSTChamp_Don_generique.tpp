@@ -35,7 +35,7 @@ void TRUSTChamp_Don_generique<_TYPE_>::mettre_a_jour(double t)
   else
     {
       changer_temps(t);
-      int nb_elems = mon_domaine->zone(0).nb_elem();
+      int nb_elems = mon_domaine->nb_elem();
       DoubleTab& mes_val = valeurs();
       DoubleTab positions(nb_elems, dimension);
       mettre_a_jour_positions(positions);
@@ -65,8 +65,8 @@ template <Champ_Don_Type _TYPE_>
 void TRUSTChamp_Don_generique<_TYPE_>::mettre_a_jour_positions(DoubleTab& positions)
 {
   positions = 0.0;
-  const int nb_elems = mon_domaine->zone(0).nb_elem(), D = dimension;
-  const IntTab& les_Polys = mon_domaine->zone(0).les_elems();
+  const int nb_elems = mon_domaine->nb_elem(), D = dimension;
+  const IntTab& les_Polys = mon_domaine->les_elems();
   for (int num_elem = 0; num_elem < nb_elems; num_elem++)
     {
       int nb_som = 0;
@@ -102,7 +102,7 @@ template <Champ_Don_Type _TYPE_> template<Champ_Don_Type T>
 enable_if_t<T == Champ_Don_Type::LU, DoubleVect&>
 TRUSTChamp_Don_generique<_TYPE_>::valeur_a_(const DoubleVect& x, DoubleVect& val) const
 {
-  const Zone& la_zone = mon_domaine->zone(0);
+  const Zone& la_zone = mon_domaine;
   IntVect le_poly(1);
   la_zone.chercher_elements(x,le_poly);
   return valeur_a_elem(x,val,le_poly(0));
@@ -185,7 +185,7 @@ template <Champ_Don_Type _TYPE_> template <Champ_Don_Type T>
 enable_if_t<T == Champ_Don_Type::LU, DoubleTab&>
 TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_(const DoubleTab& x, DoubleTab& val) const
 {
-  const Zone& la_zone = mon_domaine->zone(0);
+  const Zone& la_zone = mon_domaine;
   IntVect les_polys(la_zone.nb_elem());
   la_zone.chercher_elements(x,les_polys);
   return valeur_aux_elems(x,les_polys,val); // VTABLE pour Champ_som_lu
@@ -210,7 +210,7 @@ template <Champ_Don_Type _TYPE_> template<Champ_Don_Type T>
 enable_if_t<T == Champ_Don_Type::LU, DoubleVect&>
 TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_compo_(const DoubleTab& x, DoubleVect& val, int ncomp) const
 {
-  const Zone& la_zone = mon_domaine->zone(0);
+  const Zone& la_zone = mon_domaine;
   IntVect les_polys(la_zone.nb_elem());
   la_zone.chercher_elements(x,les_polys);
   return valeur_aux_elems_compo(x,les_polys,val,ncomp); // VTABLE pour Champ_som_lu

@@ -65,7 +65,7 @@ Entree& Extruder_en20::interpreter_(Entree& is)
  */
 void Extruder_en20::extruder(Zone& dom)
 {
-  Zone& zone = dom.zone(0);
+  Zone& zone = dom;
 
   if (zone.type_elem()->que_suis_je() == "Rectangle" || zone.type_elem()->que_suis_je() ==  "Quadrangle" )
     {
@@ -405,7 +405,7 @@ void Extruder_en20::traiter_faces_dvt(Faces& les_faces_bord, Faces& les_faces, i
 
 void Extruder_en20::extruder_dvt(Zone& dom, Faces& les_faces, int oldnbsom, int oldsz)
 {
-  Zone& zone = dom.zone(0);
+  Zone& zone = dom;
   const int nbfaces2D = les_faces.nb_faces();
   IntTab& les_elems = zone.les_elems();
 

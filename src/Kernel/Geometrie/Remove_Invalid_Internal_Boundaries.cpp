@@ -31,7 +31,7 @@ Entree& Remove_Invalid_Internal_Boundaries::interpreter_(Entree& is)
   associer_domaine(is);
 
   Zone& domain = domaine(0);
-  Zone&    zone   = domain.zone(0);
+  Zone&    zone   = domain;
 
   Scatter::uninit_sequential_domain(domain);
 

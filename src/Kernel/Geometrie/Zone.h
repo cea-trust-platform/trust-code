@@ -66,8 +66,6 @@ public:
 
   //// @@@@@@@@@@@@@@
   //// TODO FIXME Adrien - A VIRER
-  const Zone& zone(int) const { return *this; }
-  Zone& zone(int) { return *this; }
   Zone& add(Zone&);
   /////
 

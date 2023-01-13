@@ -59,7 +59,7 @@ void NettoieNoeuds::nettoie(Zone& dom)
   Scatter::uninit_sequential_domain(dom);
 
   DoubleTab& coord_sommets=dom.les_sommets();
-  Zone& zone=dom.zone(0);
+  Zone& zone=dom;
   IntTab& les_elems=zone.les_elems();
   int nb_som_init=coord_sommets.dimension(0);
   int nb_elem=les_elems.dimension(0);
@@ -195,7 +195,7 @@ void NettoieNoeuds::verifie_noeuds(const Zone& dom)
   const DoubleTab& coord_sommets=dom.les_sommets();
   int ns=coord_sommets.dimension(0);
   //  int nbsomelem=coord_sommets.dimension(1);
-  //  const IntTab& les_elems= dom.zone(0).les_elems();
+  //  const IntTab& les_elems= dom.les_elems();
   int err=0;
   // la version avec chercher element plus rapide a priori
   // n log(n) a des chances de rater des sommets doubles
@@ -209,7 +209,7 @@ void NettoieNoeuds::verifie_noeuds(const Zone& dom)
       if (dimension>2)
       z=coord_sommets(sommet,0);
 
-      int elem2=dom.zone(0).chercher_elements(x,y,z);
+      int elem2=dom.chercher_elements(x,y,z);
       if (elem2==-1)
       {
       Cerr<<"unable to find node "<<finl;

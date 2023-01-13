@@ -70,7 +70,7 @@ Entree& ExtrudeBord::interpreter_(Entree& is)
   associer_domaine(nom_dom_volumique);
 
   const Zone& dom=domaine();
-  const Zone& zone=dom.zone(0);
+  const Zone& zone=dom;
 
   if (zone.nb_som_elem()==8 && (hexa_old == 1))
     {
@@ -91,7 +91,7 @@ void ExtrudeBord::extruder_bord(Nom& nom_front, Nom& nom_dom_surfacique, DoubleV
 {
   const Zone& dom=domaine();
 
-  const Zone& zone=dom.zone(0);
+  const Zone& zone=dom;
   const Bord& front=zone.bord(nom_front);
 
   Zone& dom_surfacique=ref_cast(Zone, objet(nom_dom_surfacique));
@@ -155,7 +155,7 @@ void ExtrudeBord::extruder_bord(Nom& nom_front, Nom& nom_dom_surfacique, DoubleV
       dom_surfacique.ajouter(dom_surfacique.coord_sommets(), num);
       extr3.extruder(dom_surfacique,num);
 
-      Zone& zone2 = dom_surfacique.zone(0);
+      Zone& zone2 = dom_surfacique;
       if ((zone2.type_elem()->que_suis_je())== "Rectangle")
         {
           Cerr << "It is not possible to apply ExtrudeBord with 3Tetra option to : "   <<  zone2.type_elem()->que_suis_je() << " mesh cells" << finl;
@@ -203,7 +203,7 @@ void ExtrudeBord::extruder_bord(Nom& nom_front, Nom& nom_dom_surfacique, DoubleV
   int nb_faces=faces.nb_faces();
   int nb_som_faces=faces.nb_som_faces();
 
-  const Zone& zone2=dom_surfacique.zone(0);
+  const Zone& zone2=dom_surfacique;
   const Faces& faces2=zone2.frontiere(zone2.rang_frontiere("devant")).faces();
   const Faces& faces3=zone2.frontiere(zone2.rang_frontiere("derriere")).faces();
   for (int j=0; j<nb_faces; j++)
@@ -227,7 +227,7 @@ void ExtrudeBord::extruder_hexa_old(Nom& nom_front, Nom& nom_dom_surfacique, Dou
 
   const Zone& dom=domaine();
 
-  const Zone& zone=dom.zone(0);
+  const Zone& zone=dom;
   int nbfr=zone.nb_front_Cl();
 
 

@@ -232,17 +232,17 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
           liremed.lire_geom(nom_fichier_med_,dom_med_,nom_dom_,nom_dom_trio_non_nomme);
 
           DoubleTab diff_som(dom_med_.les_sommets());
-          IntTab diff_elem(dom_med_.zone(0).les_elems());
+          IntTab diff_elem(dom_med_.les_elems());
           diff_som.set_md_vector(le_domaine.les_sommets().get_md_vector());
-          diff_elem.set_md_vector(le_domaine.zone(0).les_elems().get_md_vector());
+          diff_elem.set_md_vector(le_domaine.les_elems().get_md_vector());
           diff_som-=le_domaine.les_sommets();
-          diff_elem-=le_domaine.zone(0).les_elems();
+          diff_elem-=le_domaine.les_elems();
           /*
                     diff_som.set_md_vector(un_dom.les_sommets().get_md_vector());
                     diff_som-=un_dom.les_sommets();
                     diff_som.set_md_vector(MD_Vector());
-                    diff_elem.set_md_vector(un_dom.zone(0).les_elems().get_md_vector());
-                    diff_elem-=un_dom.zone(0).les_elems();
+                    diff_elem.set_md_vector(un_dom.les_elems().get_md_vector());
+                    diff_elem-=un_dom.les_elems();
                     diff_elem.set_md_vector(MD_Vector());
           */
           double err_som0 = max_abs_array(diff_som);
@@ -254,11 +254,11 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
           dom_med_.les_sommets().set_md_vector(le_domaine.les_sommets().get_md_vector());
           dom_med_.les_sommets()-=le_domaine.les_sommets();
           dom_med_.les_sommets().set_md_vector(MD_Vector());
-          dom_med_.zone(0).les_elems().set_md_vector(le_domaine.zone(0).les_elems().get_md_vector());
-          dom_med_.zone(0).les_elems()-=le_domaine.zone(0).les_elems();
-          dom_med_.zone(0).les_elems().set_md_vector(MD_Vector());
+          dom_med_.les_elems().set_md_vector(le_domaine.les_elems().get_md_vector());
+          dom_med_.les_elems()-=le_domaine.les_elems();
+          dom_med_.les_elems().set_md_vector(MD_Vector());
           double err_som = max_abs_array(dom_med_.les_sommets());
-          int err_elem = max_abs_array(dom_med_.zone(0).les_elems());
+          int err_elem = max_abs_array(dom_med_.les_elems());
 
           if ((err_som>1e-5 || err_elem>0) && (err_som0>1e-5 || err_elem0>0))
             {
@@ -585,7 +585,7 @@ int Champ_Fonc_MED::creer(const Nom& nom_fic, const Zone& un_dom, const Motcle& 
   nom_fichier_med_ = nom_fic;
   mon_dom=un_dom;
   int nbcomp,size;
-  const Nom& type_elem=un_dom.zone(0).type_elem()->que_suis_je();
+  const Nom& type_elem=un_dom.type_elem()->que_suis_je();
   Nom type_champ;
   nom_champ_dans_fichier_med_ = le_nom();
 #ifdef MEDCOUPLING_
@@ -688,9 +688,9 @@ int Champ_Fonc_MED::creer(const Nom& nom_fic, const Zone& un_dom, const Motcle& 
   vrai_champ_.typer(type_champ);
   fixer_nb_comp(nbcomp);
   le_champ().fixer_nb_comp(nbcomp);
-  zonebidon_inst.associer_zone(un_dom.zone(0));
+  zonebidon_inst.associer_zone(un_dom);
   le_champ().associer_zone_dis_base(zonebidon_inst);
-  le_champ().fixer_nb_valeurs_nodales(type_champ == "Champ_Fonc_P0_MED" ? un_dom.zone(0).nb_elem() : un_dom.nb_som());
+  le_champ().fixer_nb_valeurs_nodales(type_champ == "Champ_Fonc_P0_MED" ? un_dom.nb_elem() : un_dom.nb_som());
   //pour forcer la lecture lors du mettre a jour
   changer_temps(-1e3);
 

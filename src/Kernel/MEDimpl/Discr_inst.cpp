@@ -107,13 +107,13 @@ void Discr_inst::discretiser_champ_fonc_don(
   int rang = motcles.search(directive);
   //int default_nb_comp = 1;
   const Zone& domaine=z.zone().domaine();
-  int nb_som_elem = domaine.zone(0).nb_som_elem();
+  int nb_som_elem = domaine.nb_som_elem();
   int nb_ddl=-1;
   switch(rang)
     {
     case 0:
       type = "Champ_Fonc_P0_MED";
-      nb_ddl = domaine.zone(0).nb_elem();
+      nb_ddl = domaine.nb_elem();
       break;
     case 1:
       type = "Champ_Fonc_P1_MED";

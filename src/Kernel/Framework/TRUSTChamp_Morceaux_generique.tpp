@@ -37,7 +37,7 @@ Champ_base& TRUSTChamp_Morceaux_generique<_TYPE_>::affecter_(const Champ_base& c
 template<Champ_Morceaux_Type _TYPE_>
 DoubleVect& TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_a(const DoubleVect& positions, DoubleVect& tab_valeurs) const
 {
-  const Zone& la_zone = mon_domaine->zone(0);
+  const Zone& la_zone = mon_domaine;
   IntVect le_poly(1);
   la_zone.chercher_elements(positions, le_poly);
   return valeur_a_elem(positions, tab_valeurs, le_poly[0]);
@@ -85,7 +85,7 @@ double TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_a_elem_compo(const DoubleVe
 template<Champ_Morceaux_Type _TYPE_>
 DoubleTab& TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_aux(const DoubleTab& positions, DoubleTab& tab_valeurs) const
 {
-  const Zone& la_zone = mon_domaine->zone(0);
+  const Zone& la_zone = mon_domaine;
   IntVect les_polys(la_zone.nb_elem());
   la_zone.chercher_elements(positions, les_polys);
   return valeur_aux_elems(positions, les_polys, tab_valeurs);
@@ -100,7 +100,7 @@ DoubleTab& TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_aux(const DoubleTab& po
 template<Champ_Morceaux_Type _TYPE_>
 DoubleVect& TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_aux_compo(const DoubleTab& positions, DoubleVect& tab_valeurs, int ncomp) const
 {
-  const Zone& la_zone = mon_domaine->zone(0);
+  const Zone& la_zone = mon_domaine;
   IntVect les_polys(la_zone.nb_elem());
   la_zone.chercher_elements(positions, les_polys);
   return valeur_aux_elems_compo(positions, les_polys, tab_valeurs, ncomp);
@@ -168,14 +168,14 @@ void TRUSTChamp_Morceaux_generique<_TYPE_>::mettre_a_jour(double time)
     }
   else
     {
-      const IntTab& les_elems = mon_domaine->zone(0).les_elems();
-      const int nb_som_elem = mon_domaine->zone(0).nb_som_elem();
+      const IntTab& les_elems = mon_domaine->les_elems();
+      const int nb_som_elem = mon_domaine->nb_som_elem();
 
       const Champ_base *ch = ref_pb.non_nul() ? &ref_pb->get_champ(nom_champ_parametre_) : nullptr;
 
       DoubleTab& tab = valeurs();
 
-      for (int i = 0; i < mon_domaine->zone(0).nb_elem_tot(); i++)
+      for (int i = 0; i < mon_domaine->nb_elem_tot(); i++)
         {
           /* xs : coordonnees du poly par barycentre des sommets -> pas top */
           double xs[3] = {0,};
@@ -260,7 +260,7 @@ Entree& TRUSTChamp_Morceaux_generique<_TYPE_>::complete_readOn(const int dim, co
       if (ref_pb.non_nul()) psr.addVar("val");
       psr.parseString();
 
-      for (poly = 0; poly < mon_domaine->zone(0).nb_elem_tot(); poly++)
+      for (poly = 0; poly < mon_domaine->nb_elem_tot(); poly++)
         parser_idx(poly, k) = parser.size();
 
       parser.add(psr);

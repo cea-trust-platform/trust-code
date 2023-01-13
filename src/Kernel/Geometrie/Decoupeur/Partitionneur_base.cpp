@@ -249,7 +249,7 @@ int Partitionneur_base::corriger_sommets_bord(const Zone& domaine,
                                               IntVect& elem_part)
 {
   const int nb_som_tot = domaine.nb_som_tot();
-  const Zone& zone = domaine.zone(0);
+  const Zone& zone = domaine;
   const int nb_elem = zone.nb_elem();
   const int nb_elem_tot = zone.nb_elem_tot();
 
@@ -410,7 +410,7 @@ int Partitionneur_base::corriger_multiperiodique(const Zone& domaine,
                                                  IntVect& elem_part)
 {
   const int nb_som = domaine.nb_som();
-  const Zone& zone = domaine.zone(0);
+  const Zone& zone = domaine;
   const int nb_elem = zone.nb_elem();
 
   // Pour chaque sommet periodique, selectionner une partie a laquelle il appartient
@@ -669,7 +669,7 @@ void Partitionneur_base::corriger_bords_avec_liste(const Zone& dom,
                                                    const int my_offset,
                                                    IntVect& elem_part)
 {
-  const Zone& zone = dom.zone(0);
+  const Zone& zone = dom;
   Cerr << "Correction of the splitting for the periodicity" << finl;
   Static_Int_Lists som_elem;
   Cerr << " Construction of the connectivity som_elem" << finl;

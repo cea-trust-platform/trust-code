@@ -63,7 +63,7 @@ Entree& Distanceparoi::interpreter_(Entree& is)
   Nom fichier = dom.le_nom();
   fichier += "_Wall_length.xyz";
 
-  Zone& la_zone=dom.zone(0);
+  Zone& la_zone=dom;
 
   if (Process::je_suis_maitre())
     Cerr << "In Distanceparoi::interpreter : Generate faces" << finl;

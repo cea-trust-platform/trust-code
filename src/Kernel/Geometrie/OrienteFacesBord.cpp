@@ -44,8 +44,8 @@ void OrienteFacesBord::oriente_faces_bord(const Nom& nom_dom)
 
   Zone& dom=ref_cast(Zone, objet(nom_dom));
 
-  Zone& zone=dom.zone(0);
-  Nom type=dom.zone(0).type_elem()->que_suis_je();
+  Zone& zone=dom;
+  Nom type=dom.type_elem()->que_suis_je();
 
 
   double e=0.001;
@@ -101,7 +101,7 @@ void OrienteFacesBord::oriente_faces_bord(const Nom& nom_dom)
                   pos(0,0)=0.5*(x0+x1)+alpha*nx;
                   pos(0,1)=0.5*(y0+y1)+alpha*ny;
                 }
-              dom.zone(0).chercher_elements(pos,elem);
+              dom.chercher_elements(pos,elem);
               if (elem(0)!=-1)
                 {
                   new_faces(j,0) = som(j,0);
@@ -154,7 +154,7 @@ void OrienteFacesBord::oriente_faces_bord(const Nom& nom_dom)
                       else
                         pos(0,1)=(1-e)*t0;
                     }
-                  dom.zone(0).chercher_elements(pos,elem);
+                  dom.chercher_elements(pos,elem);
                   if (elem(0)!=-1)
                     {
                       new_faces(j,0) = som(j,0);
@@ -189,7 +189,7 @@ void OrienteFacesBord::oriente_faces_bord(const Nom& nom_dom)
                   pos(0,0)=(x0+x1+x2)/3.+alpha*nx;
                   pos(0,1)=(y0+y1+y2)/3.+alpha*ny;
                   pos(0,2)=(z0+z1+z2)/3.+alpha*nz;
-                  dom.zone(0).chercher_elements(pos,elem);
+                  dom.chercher_elements(pos,elem);
                   /*
                     if (x0>0 && y0>0 && x1>0 && y1>0 && x2>0 && y2>0)
                     {
@@ -238,7 +238,7 @@ void OrienteFacesBord::oriente_faces_bord(const Nom& nom_dom)
                       pos(0,0)=(x0+x1+x2)/3.-alpha*nx;
                       pos(0,1)=(y0+y1+y2)/3.-alpha*ny;
                       pos(0,2)=(z0+z1+z2)/3.-alpha*nz;
-                      dom.zone(0).chercher_elements(pos,elem);
+                      dom.chercher_elements(pos,elem);
                       if (elem(0)!=-1)
                         {
                           Cerr << "Case not implemented in the OrienteFacesBord algorithm! " << finl;

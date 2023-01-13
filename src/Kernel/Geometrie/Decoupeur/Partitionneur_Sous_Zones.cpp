@@ -95,7 +95,7 @@ void Partitionneur_Sous_Zones::construire_partition(IntVect& elem_part, int& nb_
 {
   assert(ref_domaine_.non_nul());
   const Zone& dom = ref_domaine_.valeur();
-  const Zone& zone = dom.zone(0);
+  const Zone& zone = dom;
   const int nb_elem = zone.nb_elem_tot();
   elem_part.resize(nb_elem);
   elem_part = -1;
@@ -121,9 +121,9 @@ void Partitionneur_Sous_Zones::construire_partition(IntVect& elem_part, int& nb_
             }
           const Zone& domaine = ref_cast(Zone, interprete().objet(nom_domaine));
           DoubleTab domaine_xp;
-          domaine.zone(0).calculer_centres_gravite(domaine_xp);
+          domaine.calculer_centres_gravite(domaine_xp);
           IntVect dom_cells_containing_domaine_cells;
-          dom.zone(0).chercher_elements(domaine_xp, dom_cells_containing_domaine_cells);
+          dom.chercher_elements(domaine_xp, dom_cells_containing_domaine_cells);
           Cerr << " Allocation of elements of the domain " << domaine.le_nom() << " to the processor " << pe << finl;
           for (int cell = 0; cell < dom_cells_containing_domaine_cells.size(); cell++)
             {

@@ -384,18 +384,18 @@ int Format_Post_Lml::ecrire_domaine_lml(const Zone& domaine,Nom& nom_fich)
 
   int j;
   int nsom = domaine.nb_som();
-  int nb_elem_tot = Process::mp_sum(domaine.zone(0).nb_elem());
+  int nb_elem_tot = Process::mp_sum(domaine.nb_elem());
   Nom nom_top("Topologie_");
-  nom_top+= domaine.zone(0).le_nom();
+  nom_top+= domaine.le_nom();
   nom_top+="_";
   nom_top+=domaine.le_nom();
-  Nom type_maille=domaine.zone(0).type_elem().nom_lml();
+  Nom type_maille=domaine.type_elem().nom_lml();
 
 
   //Ajout pour modification syntaxe ci-dessous
-  int nb_elem = domaine.zone(0).nb_elem() ;
-  int nb_som_elem = domaine.zone(0).nb_som_elem();
-  const IntTab& sommet_elem = domaine.zone(0).les_elems();
+  int nb_elem = domaine.nb_elem() ;
+  int nb_som_elem = domaine.nb_som_elem();
+  const IntTab& sommet_elem = domaine.les_elems();
   int nb_som_PE = mppartial_sum(nsom);
   if(je_suis_maitre())
     {
@@ -477,7 +477,7 @@ int Format_Post_Lml::ecrire_champ_lml(const Zone& domaine,const Noms& unite_,con
   EcrFicPartage os;
   os.ouvrir(nom_fich,ios::app);
   Nom nom_top("Topologie_");
-  nom_top+= domaine.zone(0).le_nom();
+  nom_top+= domaine.le_nom();
   nom_top+="_";
   nom_top+=domaine.le_nom();
   int dim = domaine.les_sommets().dimension(1);
@@ -520,7 +520,7 @@ int Format_Post_Lml::ecrire_champ_lml(const Zone& domaine,const Noms& unite_,con
         }
       else if(localisation=="ELEM")
         {
-          const Zone& zone=domaine.zone(0);
+          const Zone& zone=domaine;
           int nb_elem=zone.nb_elem();
           int nb_elem_tot = Process::mp_sum(nb_elem);
           int nb_elem_PE = mppartial_sum(nb_elem);
@@ -575,7 +575,7 @@ int Format_Post_Lml::ecrire_champ_lml(const Zone& domaine,const Noms& unite_,con
         }
       else if(localisation=="ELEM")
         {
-          const Zone& zone=domaine.zone(0);
+          const Zone& zone=domaine;
           int nb_elem=zone.nb_elem();
           int nb_elem_tot = Process::mp_sum(nb_elem);
           int nb_elem_PE = mppartial_sum(nb_elem);

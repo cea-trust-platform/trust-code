@@ -317,7 +317,7 @@ void Format_Post_base::postraiter_debug_valeurs_un_instant(const Nom& nom_fich,
       const int nb_faces = faces_sommets.dimension(0);
       ecrire_item_int("FACES", // Identifiant
                       dom.le_nom(),
-                      dom.zone(0).le_nom(),
+                      dom.le_nom(),
                       "FACES", // localisation
                       "SOMMETS", // reference
                       faces_sommets,
@@ -326,7 +326,7 @@ void Format_Post_base::postraiter_debug_valeurs_un_instant(const Nom& nom_fich,
       const IntTab& elem_faces = zone_vf.elem_faces();
       ecrire_item_int("ELEM_FACES", // Identifiant
                       dom.le_nom(),
-                      dom.zone(0).le_nom(),
+                      dom.le_nom(),
                       "ELEMENTS", // localisation
                       "FACES", // reference
                       elem_faces,

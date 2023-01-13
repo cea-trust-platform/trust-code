@@ -244,7 +244,7 @@ Entree& Sonde_Int::readOn(Entree& is )
       exit();
     }
 
-  const Zone& la_zone =pb.domaine().zone(0);
+  const Zone& la_zone =pb.domaine();
   initialiser(la_zone);
   return is;
 }

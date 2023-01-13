@@ -61,7 +61,7 @@ void Reordonner_faces_periodiques::chercher_direction_perio(ArrOfDouble& directi
   const int dim = sommets.dimension(1);
   direction_perio.resize_array(dim);
   direction_perio = 0.;
-  const Frontiere& front = dom.zone(0).frontiere(bord);
+  const Frontiere& front = dom.frontiere(bord);
   const int nb_faces = front.nb_faces();
   if (nb_faces == 0)
     return;
@@ -72,7 +72,7 @@ void Reordonner_faces_periodiques::chercher_direction_perio(ArrOfDouble& directi
   int i;
   for (i = 0; i < nb_som_face; i++)
     une_face(0, i) = faces(0, i);
-  dom.zone(0).type_elem().calculer_normales(une_face, normale);
+  dom.type_elem().calculer_normales(une_face, normale);
   normale /= local_norme_vect(normale);
 
   ArrOfDouble delta(nb_faces);
@@ -299,7 +299,7 @@ void Reordonner_faces_periodiques::renum_som_perio(const Zone& domaine,
   for (auto& itr : liste_bords_periodiques)
     {
       const Nom& nom_bord = itr;
-      const Frontiere& front = domaine.zone(0).bord(nom_bord);
+      const Frontiere& front = domaine.bord(nom_bord);
       // Direction periodique de ce bord:
       ArrOfDouble delta;
       ArrOfDouble erreur;

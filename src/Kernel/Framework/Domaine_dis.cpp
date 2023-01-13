@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -111,15 +111,15 @@ void Domaine_dis::discretiser(const Nom& type_1)
   les_zones = *zptr;
   les_zones->dimensionner(1);
 
-  for(int i=0; i<nombre_de_zones(); i++)
+  for(int i=0; i<1; i++)  // TODO FIXME Adrien
     {
       zone_dis(i).typer(type);
-      zone_dis(i).associer_zone(dom.zone(i));
+      zone_dis(i).associer_zone(dom);
       if (face_ok)
         zone_dis(i).discretiser();
       else
         {
-          Zone& zone_geom = domaine().zone(0);
+          Zone& zone_geom = domaine();
           Zone_VF& zvf = ref_cast(Zone_VF,zone_dis(i).valeur());
           zvf.typer_elem(zone_geom);
           // Calcul du volume de la zone discretisee

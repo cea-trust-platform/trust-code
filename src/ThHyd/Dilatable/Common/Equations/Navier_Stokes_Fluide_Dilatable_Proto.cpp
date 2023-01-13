@@ -83,7 +83,7 @@ int Navier_Stokes_Fluide_Dilatable_Proto::impr_impl(const Navier_Stokes_std& eqn
 
   // Calculation as OpenFOAM: http://foam.sourceforge.net/docs/cpp/a04190_source.html
   // It is relative errors (normalized by the volume/dt)
-  double TotalMass = rho_moyen * eqn.probleme().domaine().zone(0).volume_total();
+  double TotalMass = rho_moyen * eqn.probleme().domaine().volume_total();
   double local = LocalMassFlowRateError / ( TotalMass / dt ), global = mp_somme_vect(array) / ( TotalMass / dt );
   cumulative_ += global;
 

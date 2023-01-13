@@ -115,7 +115,7 @@ int Mod_turb_hyd_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
           Nom accolade_fermee="}";
           nom_fichier_=Objet_U::nom_du_cas()+"_"+equation().probleme().le_nom()+"_ustar_mean_only";
           Zone& dom=equation().probleme().domaine();
-          Zone& zone=dom.zone(0);
+          Zone& zone=dom;
           LIST(Nom) nlistbord_dom;                      //!< liste stockant tous les noms de frontiere du domaine
           int nbfr=zone.nb_front_Cl();
           for (int b=0; b<nbfr; b++)

@@ -37,8 +37,8 @@ Entree& Champ_Uniforme_Morceaux::readOn(Entree& is)
   is >> nom;
   interprete_get_domaine(nom);
   Zone& le_domaine=mon_domaine.valeur();
-  const IntTab& les_elems=le_domaine.zone(0).les_elems();
-  const int nb_som_elem = le_domaine.zone(0).nb_som_elem();
+  const IntTab& les_elems=le_domaine.les_elems();
+  const int nb_som_elem = le_domaine.nb_som_elem();
   double x=0,y=0,z=0;
 
   dim=lire_dimension(is,que_suis_je());
@@ -75,7 +75,7 @@ Entree& Champ_Uniforme_Morceaux::readOn(Entree& is)
       fxyz[k].parseString();
     }
 
-  for( poly=0; poly<le_domaine.zone(0).nb_elem(); poly++)
+  for( poly=0; poly<le_domaine.nb_elem(); poly++)
     {
       x = y = z = 0;
       int nsom = 0, e=-1;

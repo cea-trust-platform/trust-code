@@ -315,7 +315,7 @@ void Postraiter_domaine::ecrire(Nom& nom_pdb)
     {
       Zone& dom=domaine(numero_domaine);
       Nom nom_dom(dom.le_nom());
-      Zone& zone=dom.zone(0);
+      Zone& zone=dom;
       const IntTab& les_elems = zone.les_elems();
       IntVect ch_som(zone.nb_som());
       int nb_elem=zone.nb_elem();

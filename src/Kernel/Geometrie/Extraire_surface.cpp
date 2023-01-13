@@ -99,7 +99,7 @@ void Extraire_surface::extraire_surface(Zone& domaine_surfacique,const Zone& dom
   const DoubleTab& coord=domaine_surfacique.les_sommets();
   Zone zone__;
   domaine_surfacique.add(zone__);
-  Zone& zone=domaine_surfacique.zone(0);
+  Zone& zone=domaine_surfacique;
   zone.nommer("NO_FACE");
   const Nom& type_elem=zone_vf.zone().type_elem().valeur().que_suis_je();
 

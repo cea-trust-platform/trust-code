@@ -63,7 +63,7 @@ static const double coeff_penalisation = 1e9;
  */
 DoubleTab& valeur_P1_L2(Champ_P1NC& cha, const Zone& dom)
 {
-  const Zone& mazone = dom.zone(0);
+  const Zone& mazone = dom;
 
   int nb_elem_tot = mazone.nb_elem_tot();
   int nb_som = mazone.nb_som_tot();
@@ -481,7 +481,7 @@ DoubleTab& valeur_P1_L2(Champ_P1NC& cha, const Zone& dom)
 
 DoubleTab& valeur_P1_L2(Champ_Fonc_P1NC& cha, const Zone& dom)
 {
-  const Zone& mazone = dom.zone(0);
+  const Zone& mazone = dom;
   int nb_elem_tot = mazone.nb_elem_tot();
   int nb_som = mazone.nb_som_tot();
   int nb_som_elem = mazone.nb_som_elem();
@@ -705,7 +705,7 @@ valeur_P1_H1(const Champ_P1NC& cha,
              const Zone& dom,
              DoubleTab& ch_som)
 {
-  const Zone& zone = dom.zone(0);
+  const Zone& zone = dom;
   int nb_elem_tot = zone.nb_elem_tot();
   int nb_som = zone.nb_som();
   int nb_som_elem = zone.nb_som_elem();
@@ -1599,7 +1599,7 @@ DoubleTab& Champ_P1NC_implementation::
 valeur_aux_sommets(const Zone& dom,
                    DoubleTab& champ_som) const
 {
-  const Zone& mazone = dom.zone(0);
+  const Zone& mazone = dom;
 
   int nb_som = mazone.nb_som_tot();
   int nb_som_return = champ_som.dimension_tot(0);

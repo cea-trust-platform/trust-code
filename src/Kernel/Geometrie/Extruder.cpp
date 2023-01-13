@@ -76,7 +76,7 @@ inline void check_boundary_name(const Nom& name)
  */
 void Extruder::extruder(Zone& dom)
 {
-  Zone& zone = dom.zone(0);
+  Zone& zone = dom;
 
   if((zone.type_elem()->que_suis_je() == "Rectangle" || zone.type_elem()->que_suis_je() ==  "Quadrangle" ))
     {
@@ -372,7 +372,7 @@ void Extruder::traiter_faces_dvt(Faces& les_faces_bord, Faces& les_faces, int ol
 
 void Extruder::extruder_dvt(Zone& dom, Faces& les_faces, int oldnbsom, int oldsz)
 {
-  Zone& zone = dom.zone(0);
+  Zone& zone = dom;
   const int nbfaces2D = les_faces.nb_faces();
   IntTab& les_elems=zone.les_elems();
 
@@ -432,7 +432,7 @@ void Extruder::extruder_dvt(Zone& dom, Faces& les_faces, int oldnbsom, int oldsz
 
 void Extruder::extruder_hexa(Zone& dom)
 {
-  Zone& zone = dom.zone(0);
+  Zone& zone = dom;
   int oldnbsom = zone.nb_som();
   IntTab& les_elems=zone.les_elems();
   int oldsz=les_elems.dimension(0);
@@ -570,7 +570,7 @@ void Extruder::traiter_faces_dvt_hexa(Faces& les_faces_bord, int oldnbsom)
 
 void Extruder::extruder_dvt_hexa(Zone& dom, Faces& les_faces, int oldnbsom, int oldsz)
 {
-  Zone& zone = dom.zone(0);
+  Zone& zone = dom;
   IntTab& les_elems=zone.les_elems();
 
   for (auto &itr : zone.faces_bord())

@@ -117,7 +117,7 @@ Entree& ExtrudeParoi::interpreter_(Entree& is)
  */
 void ExtrudeParoi::extrude(Zone& dom)
 {
-  Zone& zone = dom.zone(0);
+  Zone& zone = dom;
 
   if  (zone.type_elem()->que_suis_je() == "Tetraedre")
     {

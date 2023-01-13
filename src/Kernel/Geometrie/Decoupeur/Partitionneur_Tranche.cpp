@@ -193,7 +193,7 @@ void Partitionneur_Tranche::construire_partition(IntVect& elem_part, int& nb_par
   assert(nb_tranches_[0] > 0);
 
   const Zone& dom = ref_domaine_.valeur();
-  const Zone& zone = dom.zone(0);
+  const Zone& zone = dom;
   const int nb_elem = zone.nb_elem();
 
   const int dim = dom.dimension;

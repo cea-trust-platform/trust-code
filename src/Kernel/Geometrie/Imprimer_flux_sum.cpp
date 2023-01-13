@@ -35,6 +35,6 @@ Entree& Imprimer_flux_sum::readOn(Entree& is )
 Entree& Imprimer_flux_sum::interpreter_(Entree& is)
 {
   associer_domaine(is);
-  domaine().zone(0).lire_bords_a_imprimer_sum(is);
+  domaine().lire_bords_a_imprimer_sum(is);
   return is;
 }

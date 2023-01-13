@@ -71,7 +71,7 @@ Entree& Extraire_domaine::interpreter_(Entree& is)
   //const DoubleTab& coord=dom.les_sommets();
   Zone zone__;
   dom.add(zone__);
-  Zone& zone=dom.zone(0);
+  Zone& zone=dom;
   zone.nommer(dom.le_nom());
   zone.typer(zone_vf.zone().type_elem().valeur().que_suis_je());
   zone.associer_domaine(dom);

@@ -975,9 +975,9 @@ int Format_Post_Lata::ecrire_domaine(const Zone& domaine,const int est_le_premie
            << " status = RESET. Uninitialized object" << finl;
       exit();
     }
-  Motcle type_elem = domaine.zone(0).type_elem().valeur().que_suis_je();
+  Motcle type_elem = domaine.type_elem().valeur().que_suis_je();
 
-  ecrire_domaine_low_level(domaine.le_nom(), domaine.les_sommets(), domaine.zone(0).les_elems(), type_elem);
+  ecrire_domaine_low_level(domaine.le_nom(), domaine.les_sommets(), domaine.les_elems(), type_elem);
 
   // Si on a des frontieres domaine, on les ecrit egalement
   const LIST(REF(Zone)) bords= domaine.domaines_frontieres();

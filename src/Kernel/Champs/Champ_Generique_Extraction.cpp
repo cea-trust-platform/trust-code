@@ -355,17 +355,17 @@ void Champ_Generique_Extraction::completer(const Postraitement_base& post)
   // Verification que le domaine d'extraction utilise est correct:
   if (domaine_->nb_som()!=0)
     {
-      if (domaine_->zone(0).les_elems().dimension(0) != nb_faces ||
-          domaine_->zone(0).les_elems().dimension(1) != nb_som_faces)
+      if (domaine_->les_elems().dimension(0) != nb_faces ||
+          domaine_->les_elems().dimension(1) != nb_som_faces)
         {
-          Cerr << "Error when extracting the field " << nom_post_ << ": The " << domaine_.le_nom() << " domain can't be used cause already built with different support !" << finl;
+          Cerr << "Error when extracting the field " << nom_post_ << ": The " << domaine_->le_nom() << " domain can't be used cause already built with different support !" << finl;
           Cerr << "You could create an empty domain with no operations on it before extracting this field." << finl;
           Process::exit();
         }
     }
   Zone zz;
   domaine_->add(zz);
-  Zone& ajoutee = domaine_->zone(0);
+  Zone& ajoutee = domaine_;
   ajoutee.typer(type_elem);
   ajoutee.associer_domaine(domaine_);
 

@@ -95,7 +95,7 @@ void Partitionneur_Fichier_Decoupage::construire_partition(IntVect& elem_part, i
   file >> nb_parts_tot;
   file.close();
   const int sz = elem_part.size_array();
-  const int nelem = ref_domaine_.valeur().zone(0).nb_elem();
+  const int nelem = ref_domaine_.valeur().nb_elem();
   if (nelem != sz)
     {
       Cerr << "Error in Partitionneur_Fichier_Decoupage::construire_partition\n";

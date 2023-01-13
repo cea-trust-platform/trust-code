@@ -1036,7 +1036,7 @@ int Sous_Zone::associer_(Objet_U& ob)
     {
       // MONOZONE pour le moment
       if(la_zone_.non_nul()) return 1;
-      associer_zone(ref_cast(Zone, ob).zone(0));
+      associer_zone(ref_cast(Zone, ob));
       ob.associer_(*this);
       return 1;
     }
