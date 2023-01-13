@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -667,12 +667,94 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter(const DoubleTab& pre,
   if (zone_VEF.get_alphaS()) ajouter_som(pre, grad);
   if (zone_VEF.get_alphaA()) ajouter_aretes(pre, grad);
   modifier_grad_pour_Cl(grad);
+  //calculer_flux_bords();
   //Optimisation car pas necessaire:
   //grad.echange_espace_virtuel();
   //Debog::verifier("Op_Grad_VEF_P1B_Face::ajouter grad en sortie:", grad);
   return grad;
 }
 
+void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
+{
+  const Zone_VEF_PreP1b& zone_VEF = zone_Vef();
+  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
+  if (flux_bords_.size_array()==0) flux_bords_.resize(zone_VEF.nb_faces_bord(),dimension);
+  flux_bords_ = 0.;
+
+  int nse=zone_VEF.zone().nb_som_elem();
+  int nps=zone_VEF.numero_premier_sommet();
+  int npa=zone_VEF.numero_premiere_arete();
+  const IntTab& face_voisins = zone_VEF.face_voisins();
+  const IntTab& som_elem=la_zone_vef->zone().les_elems();
+  const DoubleTab& face_normales = zone_VEF.face_normales();
+  const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,equation());
+  const Champ_P1_isoP1Bulle& la_pression_P1B = ref_cast(Champ_P1_isoP1Bulle,eqn_hydr.pression_pa().valeur());
+  // Si on filtre:
+  la_pression_P1B.filtrage(zone_VEF,la_pression_P1B);
+  const DoubleVect& pression_P1B = la_pression_P1B.champ_filtre();
+
+  double coeff_P1 = 1./dimension;
+  double coeff_Pa = 1./dimension;
+  int nb_bord = zone_VEF.nb_front_Cl();
+  for (int n_bord=0; n_bord<nb_bord; n_bord++)
+    {
+      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      int ndeb = le_bord.num_premiere_face();
+      int nfin = ndeb + le_bord.nb_faces();
+      for (int face=ndeb; face<nfin; face++)
+        {
+          int voisin = 0;
+          int elem = face_voisins(face,voisin);
+          if (zone_VEF.get_num_fac_loc(face, voisin)==-1)
+            {
+              voisin = 1;
+              elem = face_voisins(face,voisin);
+            }
+          int signe=zone_VEF.oriente_normale(face,elem);
+          int som_opp = la_zone_vef->get_num_fac_loc(face, voisin);
+          som_opp = som_elem(elem, som_opp);
+          double pres_tot = 0. ;
+
+          // Contribution de la pression P0
+          if (zone_VEF.get_alphaE())
+            pres_tot += pression_P1B(elem);
+
+          // Contribution de la pression P1
+          if (zone_VEF.get_alphaS())
+            {
+              double pres_som = 0.;
+              for(int som=0; som<nse; som++)
+                {
+                  int som_glob = som_elem(elem, som);
+                  if (som_glob != som_opp)
+                    pres_som += pression_P1B(nps+som_glob);
+                }
+              pres_tot += coeff_P1 * pres_som;
+            }
+
+          // Contribution de la pression Pa
+          // GF descativation car bilan incorret
+          if (zone_VEF.get_alphaA()*0!=0)
+            {
+              double pres_arete = 0.;
+              const IntTab& elem_aretes=la_zone_vef->zone().elem_aretes();
+              const IntTab& aretes_som=la_zone_vef->zone().aretes_som();
+              for(int arete=0; arete<6; arete++)
+                {
+                  int arete_glob = elem_aretes(elem, arete);
+                  if (aretes_som(arete_glob,0)!=som_opp && aretes_som(arete_glob,1)!=som_opp)
+                    pres_arete += pression_P1B(npa+arete_glob);
+                }
+              pres_tot += coeff_Pa * pres_arete;
+            }
+
+          // Calcul de la resultante et du couple de pression
+          for (int i=0; i<dimension; i++)
+            flux_bords_(face,i) = pres_tot * signe * face_normales(face,i);
+        }
+    } // fin for n_bord
+}
 
 int Op_Grad_VEF_P1B_Face::impr(Sortie& os) const
 {
@@ -682,25 +764,7 @@ int Op_Grad_VEF_P1B_Face::impr(Sortie& os) const
   const Schema_Temps_base& sch = equation().probleme().schema_temps();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   const Zone_VEF_PreP1b& zone_VEF = zone_Vef();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
-  const DoubleTab& face_normales = zone_VEF.face_normales();
-  const IntTab& som_elem=la_zone_vef->zone().les_elems();
-  const Equation_base& eqn = equation();
-  const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,eqn);
-  const Champ_P1_isoP1Bulle& la_pression_P1B = ref_cast(Champ_P1_isoP1Bulle,eqn_hydr.pression_pa().valeur());
-  // Si on filtre:
-  la_pression_P1B.filtrage(zone_VEF,la_pression_P1B);
-  const DoubleVect& pression_P1B = la_pression_P1B.champ_filtre();
-  Debog::verifier("la pression filtree dans Op_Grad_VEF_P1B_Face::impr=",pression_P1B);
-  double pres_som, pres_arete, pres_tot ;
-  double n0, n1, n2 ;
-  const int nb_faces =  zone_VEF.nb_faces_tot();
-  int nse=zone_VEF.zone().nb_som_elem();
-  int nps=zone_VEF.numero_premier_sommet();
-  int npa=zone_VEF.numero_premiere_arete();
-  int elem ;
-  int face;
-  int som_opp, som, som_glob;
+  const int nb_faces = zone_VEF.nb_faces_tot();
   DoubleTab xgr(nb_faces,dimension);
   xgr=0.;
   //DoubleVect moment(dimension);
@@ -712,9 +776,7 @@ int Op_Grad_VEF_P1B_Face::impr(Sortie& os) const
         for (int i=0; i<dimension; i++)
           xgr(num_face,i)=xgrav(num_face,i)-c_grav[i];
     }
-  flux_bords_.resize(zone_VEF.nb_faces_bord(),dimension);
-  flux_bords_ = 0.;
-
+  calculer_flux_bords();
   DoubleTrav tab_flux_bords(3,zone_VEF.nb_front_Cl(),dimension);
   tab_flux_bords=0.;
   /*
@@ -728,8 +790,6 @@ int Op_Grad_VEF_P1B_Face::impr(Sortie& os) const
     moment(1)     ->   flux_bords2(2,num_cl,1)
     moment(2)     ->   flux_bords2(2,num_cl,2)
   */
-  double coeff_P1 = 1./dimension;
-  double coeff_Pa = 1./dimension;
   int nb_bord = zone_VEF.nb_front_Cl();
   for (int n_bord=0; n_bord<nb_bord; n_bord++)
     {
@@ -738,62 +798,11 @@ int Op_Grad_VEF_P1B_Face::impr(Sortie& os) const
       int impr_boundary = (zone_VEF.zone().Bords_a_imprimer_sum().contient(le_bord.le_nom()) ? 1 : 0);
       int ndeb = le_bord.num_premiere_face();
       int nfin = ndeb + le_bord.nb_faces();
-      for (face=ndeb; face<nfin; face++)
+      for (int face=ndeb; face<nfin; face++)
         {
-          int voisin = 0;
-          elem = face_voisins(face,voisin);
-          if (zone_VEF.get_num_fac_loc(face, voisin)==-1)
-            {
-              voisin = 1;
-              elem = face_voisins(face,voisin);
-            }
-          int signe=zone_VEF.oriente_normale(face,elem);
-          som_opp = la_zone_vef->get_num_fac_loc(face, voisin);
-          som_opp = som_elem(elem, som_opp);
-          pres_tot = 0. ;
-
-          // Contribution de la pression P0
-          if (zone_VEF.get_alphaE())
-            pres_tot += pression_P1B(elem);
-
-          // Contribution de la pression P1
-          if (zone_VEF.get_alphaS())
-            {
-              pres_som = 0.;
-              for(som=0; som<nse; som++)
-                {
-                  som_glob = som_elem(elem, som);
-                  if (som_glob != som_opp)
-                    pres_som += pression_P1B(nps+som_glob);
-                }
-              pres_tot += coeff_P1 * pres_som;
-            }
-
-          // Contribution de la pression Pa
-          // GF descativation car bilan incorret
-          if (zone_VEF.get_alphaA()*0!=0)
-            {
-              pres_arete = 0.;
-              const IntTab& elem_aretes=la_zone_vef->zone().elem_aretes();
-              const IntTab& aretes_som=la_zone_vef->zone().aretes_som();
-              for(int arete=0; arete<6; arete++)
-                {
-                  int arete_glob = elem_aretes(elem, arete);
-                  if (aretes_som(arete_glob,0)!=som_opp && aretes_som(arete_glob,1)!=som_opp)
-                    pres_arete += pression_P1B(npa+arete_glob);
-                }
-              pres_tot += coeff_Pa * pres_arete;
-            }
-
           // Calcul de la resultante et du couple de pression
           if (dimension == 2)
             {
-              n0 = signe*face_normales(face,0) ;
-              n1 = signe*face_normales(face,1) ;
-
-              flux_bords_(face,0) = pres_tot*n0  ;
-              flux_bords_(face,1) = pres_tot*n1  ;
-
               tab_flux_bords(0,n_bord,0) += flux_bords_(face,0) ;
               tab_flux_bords(0,n_bord,1) += flux_bords_(face,1) ;
 
@@ -808,14 +817,6 @@ int Op_Grad_VEF_P1B_Face::impr(Sortie& os) const
             }
           else if (dimension == 3)
             {
-              n0   = signe*face_normales(face,0) ;
-              n1   = signe*face_normales(face,1) ;
-              n2   = signe*face_normales(face,2) ;
-
-              flux_bords_(face,0) = pres_tot*n0 ;
-              flux_bords_(face,1) = pres_tot*n1 ;
-              flux_bords_(face,2) = pres_tot*n2 ;
-
               tab_flux_bords(0,n_bord,0) += flux_bords_(face,0) ;
               tab_flux_bords(0,n_bord,1) += flux_bords_(face,1) ;
               tab_flux_bords(0,n_bord,2) += flux_bords_(face,2) ;
@@ -912,7 +913,7 @@ int Op_Grad_VEF_P1B_Face::impr(Sortie& os) const
                   sch.imprimer_temps_courant(Flux_grad_face);
                   Flux_grad_face << " : " << finl;
                 }
-              for (face=ndeb; face<nfin; face++)
+              for (int face=ndeb; face<nfin; face++)
                 {
                   Flux_grad_face << "# Face a x= " << zone_VEF.xv(face,0) << " y= " << zone_VEF.xv(face,1);
                   if (dimension==3) Flux_grad_face << " z= " << zone_VEF.xv(face,2);

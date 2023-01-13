@@ -41,6 +41,38 @@ Implemente_instanciable(Op_Grad_VDF_Face,"Op_Grad_VDF_Face",Op_Grad_VDF_Face_bas
 Sortie& Op_Grad_VDF_Face::printOn(Sortie& s) const { return s << que_suis_je(); }
 Entree& Op_Grad_VDF_Face::readOn(Entree& s) { return s; }
 
+void Op_Grad_VDF_Face::calculer_flux_bords() const
+{
+  const Zone_VDF& zvdf = la_zone_vdf.valeur();
+  if (flux_bords_.size_array()==0) flux_bords_.resize(zvdf.nb_faces_bord(),dimension);
+  flux_bords_ = 0.;
+  const Zone_Cl_VDF& zclvdf = la_zcl_vdf.valeur();
+  const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,equation());
+  const Champ_P0_VDF& la_pression_P0 = ref_cast(Champ_P0_VDF,eqn_hydr.pression_pa().valeur());
+  const DoubleTab& pression_P0 = la_pression_P0.valeurs();
+  const DoubleVect& face_surfaces = zvdf.face_surfaces();
+  int nb_bord = zvdf.nb_front_Cl();
+  for (int n_bord=0; n_bord<nb_bord; n_bord++)
+    {
+      const Cond_lim& la_cl = zclvdf.les_conditions_limites(n_bord);
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      int ndeb = le_bord.num_premiere_face();
+      int nfin = ndeb + le_bord.nb_faces();
+      for (int face=ndeb; face<nfin; face++)
+        {
+          int elem0 = face_voisins(face,0);
+          int ori = orientation(face);
+          double n0 = face_surfaces(face)*porosite_surf(face);
+          if (elem0 != -1) flux_bords_(face,ori) = (pression_P0(elem0))*n0 ;
+          else
+            {
+              int elem1 = face_voisins(face,1);
+              flux_bords_(face,ori) = -(pression_P0(elem1))*n0 ;
+            }
+        } // fin for face
+    } // fin for n_bord
+}
+
 int Op_Grad_VDF_Face::impr(Sortie& os) const
 {
   const int impr_mom=la_zone_vdf->zone().Moments_a_imprimer();
@@ -49,13 +81,7 @@ int Op_Grad_VDF_Face::impr(Sortie& os) const
   const Schema_Temps_base& sch = equation().probleme().schema_temps();
   const Zone_VDF& zvdf = la_zone_vdf.valeur();
   const Zone_Cl_VDF& zclvdf = la_zcl_vdf.valeur();
-  const DoubleVect& face_surfaces = zvdf.face_surfaces();
-  const Equation_base& eqn = equation();
-  const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,eqn);
-  const Champ_P0_VDF& la_pression_P0 = ref_cast(Champ_P0_VDF,eqn_hydr.pression_pa().valeur());
-  const DoubleTab& pression_P0 = la_pression_P0.valeurs();
-  int elem0, elem1, face, ori;
-  double n0;
+  int face, ori;
   const int nb_faces =  zvdf.nb_faces_tot();
   DoubleTab xgr(nb_faces,dimension);
   xgr=0.;
@@ -66,9 +92,7 @@ int Op_Grad_VDF_Face::impr(Sortie& os) const
       for (int num_face=0; num_face <nb_faces; num_face++)
         for (int i=0; i<dimension; i++) xgr(num_face,i)=xgrav(num_face,i)-c_grav[i];
     }
-
-  flux_bords_.resize(zvdf.nb_faces_bord(),dimension);
-  flux_bords_ = 0.;
+  calculer_flux_bords();
   // flux_bords contains the sum of flux on each boundary:
   DoubleTrav tab_flux_bords(3,zvdf.nb_front_Cl(),3);
   tab_flux_bords=0.;
@@ -87,39 +111,8 @@ int Op_Grad_VDF_Face::impr(Sortie& os) const
 
       for (face=ndeb; face<nfin; face++)
         {
-          elem0 = face_voisins(face,0);
           ori = orientation(face);
-          n0 = face_surfaces(face)*porosite_surf(face);
-          if (ori == 0)
-            {
-              if (elem0 != -1) flux_bords_(face,0) = (pression_P0(elem0))*n0 ;
-              else
-                {
-                  elem1 = face_voisins(face,1);
-                  flux_bords_(face,0) = -(pression_P0(elem1))*n0 ;
-                }
-              tab_flux_bords(0, n_bord, 0) += flux_bords_(face,0) ;
-            }
-          else if (ori == 1)
-            {
-              if (elem0 != -1) flux_bords_(face,1) = (pression_P0(elem0))*n0 ;
-              else
-                {
-                  elem1 = face_voisins(face,1);
-                  flux_bords_(face,1) = -(pression_P0(elem1))*n0 ;
-                }
-              tab_flux_bords(0, n_bord, 1) += flux_bords_(face,1) ;
-            }
-          else if (ori == 2)
-            {
-              if (elem0 != -1) flux_bords_(face,2) = (pression_P0(elem0))*n0 ;
-              else
-                {
-                  elem1 = face_voisins(face,1);
-                  flux_bords_(face,2) = -(pression_P0(elem1))*n0 ;
-                }
-              tab_flux_bords(0, n_bord, 2) += flux_bords_(face,2) ;
-            }
+          tab_flux_bords(0, n_bord, ori) += flux_bords_(face,ori) ;
 
           if (dimension == 2)
             {

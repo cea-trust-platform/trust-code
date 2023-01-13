@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,9 +40,10 @@ public :
     l'interface ajouter_blocs tient compte du signe du gradient (- grad p), tandis que ajouter() calcule (grad p)
     -> on doit modifier l'implementation par defaut de ajouter() pour en tenir compte
   */
-  DoubleTab&  ajouter(const DoubleTab& inco, DoubleTab& secmem) const override;
+  DoubleTab& ajouter(const DoubleTab& inco, DoubleTab& secmem) const override;
 
   virtual DoubleVect& multvect(const DoubleTab&, DoubleTab&) const;
+  virtual void calculer_flux_bords() const {};
 };
 
 #endif

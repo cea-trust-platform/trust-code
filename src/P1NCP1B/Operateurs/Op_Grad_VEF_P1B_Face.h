@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -57,6 +57,8 @@ public:
 
   static double calculer_coef_som(int elem,  const Zone_Cl_VEF& zcl,
                                   const Zone_VEF_PreP1b& zone_VEF) ;
+  void calculer_flux_bords() const override;
+
 private:
   mutable ArrOfDouble coeff_som_;
   mutable IntTab som_;

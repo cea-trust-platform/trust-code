@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -328,6 +328,32 @@ DoubleTab& Op_Grad_EF::calculer(const DoubleTab& pre, DoubleTab& grad) const
 
 }
 
+void Op_Grad_EF::calculer_flux_bords() const
+{
+  const Zone_Cl_EF& zone_Cl_EF = la_zcl_EF.valeur();
+  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  const IntTab& face_voisins = zone_EF.face_voisins();
+  const DoubleTab& face_normales = zone_EF.face_normales();
+  const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,equation());
+  const Champ_P0_EF& la_pression_P0 = ref_cast(Champ_P0_EF,eqn_hydr.pression_pa().valeur());
+  const DoubleTab& pression_P0 = la_pression_P0.valeurs();
+  if (flux_bords_.size_array()==0) flux_bords_.resize(zone_EF.nb_faces_bord(),dimension);
+  flux_bords_ = 0.;
+  for (int n_bord=0; n_bord<zone_EF.nb_front_Cl(); n_bord++)
+    {
+      const Cond_lim& la_cl = zone_Cl_EF.les_conditions_limites(n_bord);
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      int ndeb = le_bord.num_premiere_face();
+      int nfin = ndeb + le_bord.nb_faces();
+      for (int face=ndeb; face<nfin; face++)
+        {
+          int elem = face_voisins(face,0);
+          for (int i=0; i<dimension; i++)
+            flux_bords_(face,i) = pression_P0(elem)*face_normales(face,i);
+        }
+    }
+}
+
 int Op_Grad_EF::impr(Sortie& os) const
 {
   const int impr_mom=la_zone_EF->zone().Moments_a_imprimer();
@@ -337,18 +363,10 @@ int Op_Grad_EF::impr(Sortie& os) const
   double temps = sch.temps_courant();
   const Zone_Cl_EF& zone_Cl_EF = la_zcl_EF.valeur();
   const Zone_EF& zone_EF = la_zone_EF.valeur();
-  const IntTab& face_voisins = zone_EF.face_voisins();
-  const DoubleTab& face_normales = zone_EF.face_normales();
-  const Equation_base& eqn = equation();
-  const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,eqn);
-  const Champ_P0_EF& la_pression_P0 = ref_cast(Champ_P0_EF,eqn_hydr.pression_pa().valeur());
-  const DoubleTab& pression_P0 = la_pression_P0.valeurs();
-  int n_bord, elem ;
+  int n_bord ;
   int face;
-  double n0, n1, n2 ;
   const ArrOfDouble& c_grav=la_zone_EF->zone().cg_moments();
-  flux_bords_.resize(zone_EF.nb_faces_bord(),dimension);
-  flux_bords_ = 0.;
+  calculer_flux_bords();
   int flag=je_suis_maitre();
   SFichier Flux_grad;
   ouvrir_fichier(Flux_grad,"",flag);
@@ -383,18 +401,8 @@ int Op_Grad_EF::impr(Sortie& os) const
       double moment_z = 0.;
       for (face=ndeb; face<nfin; face++)
         {
-
-          elem = face_voisins(face,0);
-
-
           if (dimension == 2)
             {
-              n0   = face_normales(face,0) ;
-              n1   = face_normales(face,1) ;
-
-              flux_bords_(face,0) = pression_P0(elem)*n0 ;
-              flux_bords_(face,1) = pression_P0(elem)*n1 ;
-
               fluxx_s += flux_bords_(face,0) ;
               fluxy_s += flux_bords_(face,1) ;
 
@@ -409,14 +417,6 @@ int Op_Grad_EF::impr(Sortie& os) const
             }
           else if (dimension == 3)
             {
-              n0   = face_normales(face,0) ;
-              n1   = face_normales(face,1) ;
-              n2   = face_normales(face,2) ;
-
-              flux_bords_(face,0) = pression_P0(elem)*n0 ;
-              flux_bords_(face,1) = pression_P0(elem)*n1 ;
-              flux_bords_(face,2) = pression_P0(elem)*n2 ;
-
               fluxx_s += flux_bords_(face,0) ;
               fluxy_s += flux_bords_(face,1) ;
               fluxz_s += flux_bords_(face,2) ;
