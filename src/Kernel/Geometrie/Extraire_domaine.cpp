@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -68,16 +68,7 @@ Entree& Extraire_domaine::interpreter_(Entree& is)
   Probleme_base& pb=ref_cast(Probleme_base, objet(nom_pb));
   const Zone_VF& zone_vf=ref_cast(Zone_VF,pb.domaine_dis().zone_dis(0).valeur());
   dom.les_sommets()=zone_vf.zone().domaine().les_sommets();
-  //const DoubleTab& coord=dom.les_sommets();
-  Zone zone__;
-  dom.add(zone__);
-  Zone& zone=dom;
-  zone.nommer(dom.le_nom());
-  zone.typer(zone_vf.zone().type_elem().valeur().que_suis_je());
-  zone.associer_domaine(dom);
-  // IntTab& les_elems=zone.les_elems();
-
-  //
+  dom.typer(zone_vf.zone().type_elem().valeur().que_suis_je());
 
   const DoubleTab& xp =zone_vf.xp();
 
@@ -173,7 +164,7 @@ Entree& Extraire_domaine::interpreter_(Entree& is)
 
   Cerr<<me()<<" nb_elem_m "<<nb_elem_m<<finl;
   Cerr<<me()<<" nb_t "<<nb_t<<finl;
-  IntTab& les_elems=zone.les_elems();
+  IntTab& les_elems=dom.les_elems();
   const IntTab& les_elems_old=zone_vf.zone().les_elems();
   int nb_som_elem=les_elems_old.dimension(1);
   les_elems.resize(nb_elem_m,nb_som_elem);
@@ -212,10 +203,10 @@ Entree& Extraire_domaine::interpreter_(Entree& is)
         nb++;
       }
   Cerr<<finl;;
-  zone.faces_bord().add(faces);
-  zone.faces_bord().associer_zone(zone);
-  zone.type_elem().associer_zone(zone);
-  zone.fixer_premieres_faces_frontiere();
+  dom.faces_bord().add(faces);
+  dom.faces_bord().associer_zone(dom);
+  dom.type_elem().associer_zone(dom);
+  dom.fixer_premieres_faces_frontiere();
 
   assert(nb==nb_t);
   NettoieNoeuds::nettoie(dom);

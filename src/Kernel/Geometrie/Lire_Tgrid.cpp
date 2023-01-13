@@ -249,9 +249,6 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
               Cerr << "The total number of elements to read is " << nb_elem << finl;
               lecture >> motlu;        // Type de la zone (0=dead zone; 1=active zone; 32=inactive zone) ou 0))
               if (motlu!="0))") lecture >> motlu; // On saut le type s'il existe
-              Zone une_zone;
-              Zone& la_zone=dom.add(une_zone);
-              la_zone.associer_domaine(dom);
             }
           else if (motlu=="(id") lecture >> motlu;        // evite de lire la description de la balise (12
           else
@@ -382,7 +379,6 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
           else
             {
               int izone=htoi(motlu.suffix("("));
-              dom.nommer((Nom)izone);
               fic >> motlu;        // Debut
               //int ideb=htoi(motlu);
               fic >> motlu;        // Fin
@@ -678,10 +674,6 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
 
           for (auto& itr : les_bords)
             if (itr.le_nom()==(Nom)izone) itr.nommer(nom_zone);
-
-          // On renomme la Zone
-          if (dom.le_nom()==(Nom)izone)
-            dom.nommer(nom_zone);
 
           Cerr << finl;
         }

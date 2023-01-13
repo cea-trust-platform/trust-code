@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,21 +19,14 @@
 #include <Elem_geom_base.h>
 #include <Elem_geom.h>
 
-/*! @brief : class Poly_geom_base
- *
- *  <Description of class Poly_geom_base>
- *
- *
+/*! @brief Base class for polyedrons and polygons.
  *
  */
-
 class Poly_geom_base : public Elem_geom_base
 {
-
   Declare_base( Poly_geom_base ) ;
 
 public :
-
   int get_tab_faces_sommets_locaux(IntTab& faces_som_local) const override =0;
   virtual int get_tab_faces_sommets_locaux(IntTab& faces_som_local,int elem) const=0;
   virtual const ArrOfInt& getFacesIndex() const =0;
@@ -42,8 +35,6 @@ public :
   virtual void calculer_un_centre_gravite(const int elem,DoubleVect& xp) const =0;
   virtual void build_reduced(Elem_geom& type_elem, const ArrOfInt& elems_sous_part) const = 0;
   virtual void compute_virtual_index()=0;
-protected :
-
 };
 
 #endif /* Poly_geom_base_included */

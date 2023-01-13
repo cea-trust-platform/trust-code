@@ -64,7 +64,7 @@ Entree& Interprete_geometrique_base::interpreter(Entree& is)
       zone.faces_int().associer_zone(zone);
       zone.type_elem().associer_zone(zone);
       zone.fixer_premieres_faces_frontiere();
-      zone.associer_domaine(domaine(j));
+//      zone.associer_domaine(domaine(j));
     }
   return is;
 }

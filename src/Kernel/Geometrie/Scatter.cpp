@@ -72,7 +72,10 @@ Zone& Scatter::domaine()
   return le_domaine.valeur();
 }
 
-static void dump_lata(const Zone& dom)
+namespace
+{
+// For debug:
+void dump_lata(const Zone& dom)
 {
   Format_Post_Lata post;  // Lata V2
   Nom nom_fichier_lata("espaces_virtuels");
@@ -110,6 +113,7 @@ static void dump_lata(const Zone& dom)
                        );
     }
 }
+} // end anonymous namespace
 
 /*! @brief Lit et complete un domaine parallele selon les motcles lus dans le jeu de donnees.
  *
@@ -118,7 +122,6 @@ static void dump_lata(const Zone& dom)
  *   On lit les sommets, les elements et les sommets et faces de joint,
  *   On construit les espaces distants et virtuels en fonction
  *   de l'epaisseur de joint.
- *
  */
 Entree& Scatter::interpreter(Entree& is)
 {
@@ -248,9 +251,7 @@ Entree& Scatter::interpreter(Entree& is)
 
   Elem_geom_base& elem=dom.type_elem().valeur();
   if (sub_type(Poly_geom_base,elem))
-    {
-      ref_cast(Poly_geom_base,elem).compute_virtual_index();
-    }
+    ref_cast(Poly_geom_base,elem).compute_virtual_index();
   statistiques().end_count(interprete_scatter_counter_);
   if(Process::me()==0)
     {
@@ -391,102 +392,83 @@ void Scatter::check_consistancy_remote_items(Zone& dom, const ArrOfInt& mergedZo
 /*! @brief Does the exact same thing as the readOn of the class Zone but without collective communication
  *
  *  Necessary when the processors don't have the same numbers of file to read
- *
  */
-void Scatter::readDomainWithoutCollComm(Zone& dom, Entree& fic )
+void Scatter::read_domain_no_comm(Entree& fic)
 {
-  Cerr << "reading vertices..." << finl;
-  dom.read_vertices(fic);
+  Zone& dom = le_domaine.valeur();
 
-  Cerr << "Done !\nreading zones..." << finl;
+  Cerr << "\treading vertices..." << finl;
+  Zone dom_tmp_for_vertices;
+  dom_tmp_for_vertices.read_vertices(fic);
 
-  Nom accouverte="{";
-  Nom accfermee="}";
-  Nom virgule=",";
+  Cerr << "\tDone !\n\treading elem infos (zones)..." << finl;
+
+  Nom accouverte="{", accfermee="}", virgule=",";
   Motcle nom;
   fic >> nom;
+  Zone zone_read;
   if(nom!=(const char*)"vide")
     {
       if (nom!=accouverte)
-        {
-          Cerr << "Error while reading a list." << finl;
-          Cerr << "One expected an opened bracket { to start." << finl;
-          exit();
-        }
-      while(1)
-        {
-          Zone zone_tmp;
-          zone_tmp.read_zone(fic);
-          dom.add(zone_tmp);
-
-          fic >> nom;
-          if(nom==accfermee)
-            break;
-          if(nom!=virgule)
-            {
-              Cerr << nom << " one expected a ',' or a '}'" << finl;
-              exit();
-            }
-        }
-
+        Process::exit("Error: Scatter::read_domain_no_comm() -- One expected an opened bracket { to start.");
+      zone_read.read_former_zone(fic);
+      fic >> nom;
+      if(nom!=accfermee)
+        Process::exit("Error: Scatter::read_domain_no_comm() -- One expected a closing bracket } to end.");
     }
+  else
+    Process::exit("Error: Scatter::read_domain_no_comm() -- Empty list ?! Should not happen?");
   Cerr << "Done!" << finl;
-}
 
-/*! @brief Merging dom_to_add with dom
- *
- */
-void Scatter::mergeDomains(Zone& dom, Zone& dom_to_add)
-{
-//  int old_nb_elems = dom.nb_zones() ? dom.nb_elem() : 0;
-//  // merging vertices
-//  IntVect nums;
-//  Zone& zone=dom.add(dom_to_add);
-//  zone.associer_domaine(dom);
-//  dom.ajouter(dom_to_add.coord_sommets(), nums);
-//  Scatter::uninit_sequential_domain(dom);
-//  zone.renum(nums);
-//  zone.renum_joint_common_items(nums, old_nb_elems);
-//  zone.associer_domaine(dom);
+  //
+  // Now merge the read zone with the current domain
+  //
+  int nb_elems = dom.nb_elem();
+  IntVect nums;
+  Scatter::uninit_sequential_domain(dom);
+  // Complete domain with new nodes and/or renumber nodes when we have doublons
+  dom.ajouter(dom_tmp_for_vertices.les_sommets(), /*out*/ nums);
+  if (nb_elems > 0)
+    {
+      zone_read.renum(nums);
+      zone_read.renum_joint_common_items(nums, nb_elems);
+    }
 
-  throw;
-//  if(dom.zones().size() > 1)
-//    {
-//      int new_nb_elems = dom.nb_elem();
-//      // merging zones
-//      dom.zones().merge();
-//
-//      //merging common vertices and remote items
-//      const int nb_joints = dom_to_add.nb_joints();
-//      for (int i_joint = 0; i_joint < nb_joints; i_joint++)
-//        {
-//          const Joint& joint_to_add  = dom_to_add.faces_joint()[i_joint];
-//
-//          int my_joint_index = 0;
-//          while(joint_to_add.PEvoisin() != dom.faces_joint()[my_joint_index].PEvoisin())
-//            my_joint_index++;
-//
-//          const ArrOfInt& sommets_to_add = joint_to_add.joint_item(Joint::SOMMET).items_communs();
-//          ArrOfInt& items_communs = dom.faces_joint()[my_joint_index].set_joint_item(Joint::SOMMET).set_items_communs();
-//          items_communs.set_smart_resize(1);
-//          for(int index=0; index<sommets_to_add.size_array(); index++)
-//            items_communs.append_array(nums[sommets_to_add[index]]);
-//          items_communs.array_trier_retirer_doublons();
-//
-//          const ArrOfInt& elements_to_add = joint_to_add.joint_item(Joint::ELEMENT).items_distants();
-//          ArrOfInt& items_distants = dom.faces_joint()[my_joint_index].set_joint_item(Joint::ELEMENT).set_items_distants();
-//          items_distants.set_smart_resize(1);
-//          for(int index=0; index<elements_to_add.size_array(); index++)
-//            items_distants.append_array(new_nb_elems + elements_to_add[index]);
-//        }
-//    }
+  // Merge zone_read into current domain, w/o taking care of the joints.
+  dom.merge_wo_vertices_with(zone_read);
+
+  if(nb_elems > 0)  // Current domain already had something, so joints will need update
+    // Otherwise, joints were already read by "zone_read.read_former_zone(fic);" above and joints are OK.
+    {
+      //merging common vertices and remote items
+      const int nb_joints = zone_read.nb_joints();
+      for (int i_joint = 0; i_joint < nb_joints; i_joint++)
+        {
+          const Joint& joint_to_add  = zone_read.faces_joint()[i_joint];
+
+          int my_joint_index = 0;
+          while(joint_to_add.PEvoisin() != dom.faces_joint()[my_joint_index].PEvoisin())
+            my_joint_index++;
+
+          const ArrOfInt& sommets_to_add = joint_to_add.joint_item(Joint::SOMMET).items_communs();
+          ArrOfInt& items_communs = dom.faces_joint()[my_joint_index].set_joint_item(Joint::SOMMET).set_items_communs();
+          items_communs.set_smart_resize(1);
+          for(int index=0; index<sommets_to_add.size_array(); index++)
+            items_communs.append_array(sommets_to_add[index]); // sommets_to_add is already renumbered with 'nums' - see call to renum_joint_common_items above
+          items_communs.array_trier_retirer_doublons();
+
+          const ArrOfInt& elements_to_add = joint_to_add.joint_item(Joint::ELEMENT).items_distants();
+          ArrOfInt& items_distants = dom.faces_joint()[my_joint_index].set_joint_item(Joint::ELEMENT).set_items_distants();
+          items_distants.set_smart_resize(1);
+          for(int index=0; index<elements_to_add.size_array(); index++)
+            items_distants.append_array(elements_to_add[index]); // idem
+        }
+    }
 }
 
 /*! @brief Lit le domaine dans le fichier de nom "nomentree", de type LecFicDistribueBin ou LecFicDistribue
  *
  *   Format attendu : Zone::ReadOn
- *   La zone est renommee comme le domaine (pour lance_test_seq_par)
- *
  */
 void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
 {
@@ -496,6 +478,8 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
   barrier(); // Attendre que le message soit affiche
 
   Zone& dom = domaine();
+  // Just in case - some dataset improperly build a Domain and then try to Scatter on it ...:
+  dom.clear();
 
   Nom copy(nomentree);
   copy = copy.nom_me(Process::nproc(), "p", 1);
@@ -525,7 +509,6 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
           for(int i=0; i<Process::nproc(); i++)
             {
               Entree_Brute data_part;
-              Zone part_dom;
               std::string tmp = dname + "_" + std::to_string(i);
 
               bool exists = fic_hdf.exists(tmp.c_str());
@@ -533,8 +516,7 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
                 {
                   Nom dataset_name(dname);
                   fic_hdf.read_dataset(dataset_name, i, data_part);
-                  readDomainWithoutCollComm( part_dom, data_part );
-                  mergeDomains(dom, part_dom);
+                  read_domain_no_comm(data_part);
 
                   // Renseigne dans quel fichier le domaine a ete lu
                   dom.set_fichier_lu(nomentree);
@@ -552,7 +534,7 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
           fic_hdf.read_dataset("/zone", Process::me(), data);
 
           // Feed TRUST objects:
-          readDomainWithoutCollComm(dom, data);
+          read_domain_no_comm(data);
           dom.set_fichier_lu(nomentree);
           data >> liste_bords_periodiques;
           domain_not_built = false;
@@ -560,7 +542,7 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
 
       fic_hdf.close();
     }
-  else
+  else  // Not HDF
     {
       LecFicDistribueBin fichier_binaire;
       int isSingleZone = fichier_binaire.ouvrir(nomentree);
@@ -580,8 +562,7 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
               int ok = fichier_binaire_part.ouvrir(nomentree_part);
               if(ok)
                 {
-                  readDomainWithoutCollComm( part_dom, fichier_binaire_part );
-                  mergeDomains(dom, part_dom);
+                  read_domain_no_comm(fichier_binaire_part);
 
                   // Renseigne dans quel fichier le domaine a ete lu
                   dom.set_fichier_lu(nomentree);
@@ -595,7 +576,7 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
         }
       else
         {
-          readDomainWithoutCollComm(dom, fichier_binaire );
+          read_domain_no_comm(fichier_binaire);
 
           // Renseigne dans quel fichier le domaine a ete lu
           dom.set_fichier_lu(nomentree);

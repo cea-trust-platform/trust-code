@@ -23,10 +23,11 @@
 
 Implemente_instanciable_sans_constructeur(Extruder_en3,"Extruder_en3",Interprete_geometrique_base);
 
-Extruder_en3::Extruder_en3()
+Extruder_en3::Extruder_en3():
+  NZ_(-1),
+  nom_dvt_("devant"),
+  nom_derriere_("derriere")
 {
-  nom_dvt_ = "devant";
-  nom_derriere_ = "derriere";
   direction_.resize(3,Array_base::NOCOPY_NOINIT);
 }
 
@@ -34,9 +35,9 @@ Sortie& Extruder_en3::printOn(Sortie& os) const { return Interprete::printOn(os)
 
 Entree& Extruder_en3::readOn(Entree& is) { return Interprete::readOn(is); }
 
-/*! @brief Fonction principale de l'interprete Extruder_en3 Triangule 1 a 1 toutes les zones du domaine
+/*! @brief Fonction principale de l'interprete Extruder_en3
  *
- *     specifie par la directive.
+ * Triangule 1 a 1 toutes les zones du domaine specifie par la directive.
  *     On triangule la zone grace a la methode:
  *       void Extruder_en3::extruder(Zone& zone) const
  *     Extruder_en3 signifie ici transformer en triangle des
@@ -55,17 +56,15 @@ Entree& Extruder_en3::interpreter_(Entree& is)
     }
 
   int nb_dom=0;
-  Noms nom_dom;
-  Cerr << "The format has changed after the 1.5.3. A list of domains must now be readen as follows :" << finl;
-  Cerr << "domaine N dom1 dom2 domN" << finl;
+  Noms noms_dom;
   Param param(que_suis_je());
-  param.ajouter("domaine",&nom_dom,Param::REQUIRED);
+  param.ajouter("domaine",&noms_dom,Param::REQUIRED);
   param.ajouter("nb_tranches",&NZ_,Param::REQUIRED);
   param.ajouter_arr_size_predefinie("direction",&direction_,Param::REQUIRED);
   param.ajouter("nom_cl_devant",&nom_dvt_);
   param.ajouter("nom_cl_derriere",&nom_derriere_);
   param.lire_avec_accolades_depuis(is);
-  nb_dom=nom_dom.size();
+  nb_dom=noms_dom.size();
 
   // creation du tableau de correspondance des indices
   // pour assurer le decoupage conforme entre domaines
@@ -73,28 +72,16 @@ Entree& Extruder_en3::interpreter_(Entree& is)
 
   // PQ : 07/09/08 : le decoupage des prismes apres extrusion est base sur une numerotation
   // globale des indices qui permet d'assurer la conformite des maillages. Ces indices references
-  // dans le tableau nums sont issus du regroupement des domaines en un seul suivant la methode
-  // se trouvant dans Mailler.cpp.
+  // dans le tableau nums sont issus du regroupement des domaines en un seul
   // On procede par concatenation des domaines dans "dom_tot" de maniere a ne pas interferer
-  // avec les domaines et les zones d'origines.
-
-  Zone dom_tot;
+  // avec les domaines d'origines.
+  Zone dom_tot;   // just to get correct renumbering
   for(int i=0; i<nb_dom; i++)
     {
-      // on parcourt les domaines a l'envers pour retrouver l'ancien comportement
-      associer_domaine(nom_dom[nb_dom-1-i]);
+      associer_domaine(noms_dom[nb_dom-1-i]);
       Zone& domi=domaine(i);
-      Zone& zone_tot=dom_tot.add(domi);
-      zone_tot.associer_domaine(dom_tot);
-      int nb_som=domi.coord_sommets().dimension(0);
-      IntVect num(nb_som);
+      IntVect num;
       dom_tot.ajouter(domi.coord_sommets(), num);
-      zone_tot.renum(num);
-      zone_tot.associer_domaine(dom_tot);
-      Scatter::uninit_sequential_domain(dom_tot);
-      dom_tot.comprimer();
-      dom_tot.fixer_premieres_faces_frontiere();
-      dom_tot.type_elem().associer_zone(dom_tot);
 
       /////////////////////////
       // extrusion des domaines
@@ -112,11 +99,10 @@ Entree& Extruder_en3::interpreter_(Entree& is)
  */
 void Extruder_en3::extruder(Zone& dom, const IntVect& num)
 {
-  Zone& zone = dom;
-  if(zone.type_elem()->que_suis_je() == "Triangle")
+  if(dom.type_elem()->que_suis_je() == "Triangle")
     {
-      int oldnbsom = zone.nb_som();
-      IntTab& les_elems=zone.les_elems();
+      int oldnbsom = dom.nb_som();
+      IntTab& les_elems=dom.les_elems();
       int oldsz=les_elems.dimension(0);
       double dx = direction_[0]/NZ_;
       double dy = direction_[1]/NZ_;
@@ -125,13 +111,13 @@ void Extruder_en3::extruder(Zone& dom, const IntVect& num)
       Faces les_faces;
       {
         // bloc a factoriser avec Zone_VF.cpp :
-        Type_Face type_face = zone.type_elem().type_face(0);
+        Type_Face type_face = dom.type_elem().type_face(0);
         les_faces.typer(type_face);
-        les_faces.associer_zone(zone);
+        les_faces.associer_zone(dom);
 
         Static_Int_Lists connectivite_som_elem;
-        const int     nb_sommets_tot = zone.domaine().nb_som_tot();
-        const IntTab&    elements       = zone.les_elems();
+        const IntTab& elements = dom.les_elems();
+        const int nb_sommets_tot = dom.nb_som_tot();
 
         construire_connectivite_som_elem(nb_sommets_tot,
                                          elements,
@@ -139,11 +125,11 @@ void Extruder_en3::extruder(Zone& dom, const IntVect& num)
                                          1 /* include virtual elements */);
 
         Faces_builder faces_builder;
-        IntTab elem_faces; // Tableau dont on aura pas besoin
-        faces_builder.creer_faces_reeles(zone,
+        IntTab dnu; // Tableau dont on aura pas besoin
+        faces_builder.creer_faces_reeles(dom,
                                          connectivite_som_elem,
                                          les_faces,
-                                         elem_faces);
+                                         dnu);
       }
 
       int newnbsom = oldnbsom*(NZ_+1);
@@ -288,7 +274,7 @@ void Extruder_en3::extruder(Zone& dom, const IntVect& num)
                     }
                 }
 
-              mettre_a_jour_sous_zone(zone,i,j,3);
+              mettre_a_jour_sous_zone(dom,i,j,3);
               i1+=oldnbsom;
               i2+=oldnbsom;
               i3+=oldnbsom;
@@ -298,17 +284,14 @@ void Extruder_en3::extruder(Zone& dom, const IntVect& num)
             }
         }
       // Reconstruction de l'octree
-      zone.invalide_octree();
-      zone.typer("Tetraedre");
+      dom.invalide_octree();
+      dom.typer("Tetraedre");
 
       les_elems.ref(new_elems);
       construire_bords(dom, les_faces,oldnbsom, oldsz, num);
     }
   else
-    {
-      Cerr << "It is not known yet how to extrude "
-           << zone.type_elem()->que_suis_je() <<"s"<<finl;
-    }
+    Cerr << "TRUST doesn't know how to extrude " << dom.type_elem()->que_suis_je() <<"s"<<finl;
 }
 
 /*! @brief Creation des bords du domaine extrude

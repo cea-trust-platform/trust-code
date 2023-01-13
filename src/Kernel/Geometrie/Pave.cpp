@@ -373,11 +373,11 @@ Entree& Pave::readOn(Entree& is)
       // Les coordonnees sont modulo 2 pi
       double deux_pi=M_PI*2.0 ;
       {
-        int Les_Noeuds_dimension0_opt=Les_Noeuds.dimension(0);
+        int Les_Noeuds_dimension0_opt=sommets_.dimension(0);
         for(int i=0; i<Les_Noeuds_dimension0_opt; i++)
           {
-            Les_Noeuds(i, 1)-=(int) Les_Noeuds(i, 1);
-            Les_Noeuds(i, 1)*=deux_pi;
+            sommets_(i, 1)-=(int) sommets_(i, 1);
+            sommets_(i, 1)*=deux_pi;
           }
       }
 
@@ -453,29 +453,9 @@ Entree& Pave::readOn(Entree& is)
           }
       }
   }
+
   return is;
 }
-
-
-/*! @brief Associe un domaine au Pave.
- *
- * @param (Zone& un_dom) le domaine dont fait partie le pave
- */
-void Pave::associer_domaine(const Zone& un_dom)
-{
-  Zone::associer_domaine(un_dom);
-  if(Les_Noeuds.size() > 0)
-    {
-      // On copie Les_Noeuds dans le domaine
-      ajouter(Les_Noeuds, Les_Nums);
-      // On n'a plus besoin du tableau Les_Noeuds
-      Les_Noeuds.resize(0,Les_Noeuds.dimension(1));
-      // On renumerote la zone avec le tableau Les_Nums
-      renum(Les_Nums);
-      Les_Nums.resize(0);
-    }
-}
-
 
 /*! @brief Effectue un maillage 1D, du pave avec les valeurs des parametres lus par ReadOn.
  *
@@ -1251,23 +1231,24 @@ void Pave::typer_()
   switch(dimension)
     {
     case 1:
-      typer("Segment");
+      Zone::typer("Segment");
       break;
     case 2:
       if (axi)
-        typer("Rectangle_Axi");
+        Zone::typer("Rectangle_Axi");
       else if (bidim_axi)
-        typer("Rectangle_2D_Axi");
+        Zone::typer("Rectangle_2D_Axi");
       else
-        typer("Rectangle");
+        Zone::typer("Rectangle");
       break;
     case 3:
       if (axi)
-        typer("Hexaedre_Axi");
+        Zone::typer("Hexaedre_Axi");
       else
-        typer("Hexaedre");
+        Zone::typer("Hexaedre");
       break;
     default :
+      throw;
       break;
     }
 }
@@ -1326,7 +1307,7 @@ void Pave::lire_noeuds(Entree& is)
       Mx=Nb_Noeuds(0);
       Nx=Nb_Noeuds(0)-1;
       mes_elems_.resize(Nx,2);
-      Les_Noeuds.resize(Mx);
+      sommets_.resize(Mx);
       for (i=0; i<Nx; i++)
         {
           maille_sommet(i,0)=numero_sommet(i);
@@ -1342,7 +1323,7 @@ void Pave::lire_noeuds(Entree& is)
       assert(tour_complet!=-123);
       if(tour_complet) Ny++;
       mes_elems_.resize(Nx*Ny,4);
-      Les_Noeuds.resize(Mx*My,2);
+      sommets_.resize(Mx*My,2);
       for (i=0; i<Nx; i++)
         for (j=0; j<Ny; j++)
           {
@@ -1363,7 +1344,7 @@ void Pave::lire_noeuds(Entree& is)
       assert(tour_complet!=-123);
       if(tour_complet) Ny++;
       mes_elems_.resize(Nx*Ny*Nz,8);
-      Les_Noeuds.resize(Mx*My*Mz,3);
+      sommets_.resize(Mx*My*Mz,3);
       for (i=0; i<Nx; i++)
         for ( j=0; j<Ny; j++)
           for ( k=0; k<Nz; k++)

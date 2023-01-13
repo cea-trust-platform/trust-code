@@ -20,6 +20,9 @@
 #include <Scatter.h>
 #include <Zone.h>
 
+#include <list>
+#include <memory>
+
 Implemente_instanciable(Mailler,"Mailler",Interprete_geometrique_base);
 
 Sortie& Mailler::printOn(Sortie& os) const
@@ -81,6 +84,8 @@ Entree& Mailler::interpreter_(Entree& is)
       exit();
     }
   Nom typ_zone;
+  std::list<Zone*> dom_lst;  // the list of domains we will merge later when calling comprimer()
+  std::list<DERIV(Zone)> dom_lst2; // just for memory management
   do
     {
       is >> typ_zone;
@@ -90,21 +95,10 @@ Entree& Mailler::interpreter_(Entree& is)
           double eps;
           is >> eps;
           dom.fixer_epsilon(eps);
-          // GF le eps du domaine ne sert plus quand on cherche les sommets
-          // doubles;
+          // GF le eps du domaine ne sert plus quand on cherche les sommets doubles;
           precision_geom=eps;
           is >> motlu;
-          if ((motlu!="}") && (motlu!=",") )
-            {
-              Cerr<<"The syntax of \"Mailler\" has changed. We expected \",\" after the definition of epsilon and not \"" <<motlu << "\"" <<finl;
-              exit();
-            }
           verifie_syntaxe(motlu);
-        }
-      else if (motlu=="Zone")
-        {
-          Cerr<<"The syntax of \"Mailler\" has changed. The keyword \"Zone\" has been replaced by \"Domain\"" <<finl;
-          exit();
         }
       else if(motlu=="Domain")
         {
@@ -112,38 +106,28 @@ Entree& Mailler::interpreter_(Entree& is)
           is >> nom_dom;
           Cerr << "Adding a domain " << nom_dom << finl;
           Zone& added_dom=ref_cast(Zone, objet(nom_dom));
-          IntVect nums;
-          Zone& zone=dom.add(added_dom);
-          zone.associer_domaine(dom);
-          dom.ajouter(added_dom.coord_sommets(), nums);
-          Scatter::uninit_sequential_domain(dom);
-          zone.renum(nums);
-          zone.associer_domaine(dom);
-          dom.comprimer();
-          dom.fixer_premieres_faces_frontiere();
-          dom.type_elem().associer_zone(dom);
+          dom_lst.push_back(&added_dom);
           is >> motlu;
           verifie_syntaxe(motlu);
         }
       else
         {
-          DERIV(Zone) une_zone;
-          une_zone.typer(typ_zone);
-          Zone& ajoutee = dom.add(une_zone.valeur());
-          ajoutee.associer_domaine(dom);
-          is >> ajoutee;
-          ajoutee.associer_domaine(dom); // On renumerote!
+          dom_lst2.push_back(DERIV(Zone)()); // to keep them alive till the end of the method
+          DERIV(Zone)& une_zone = dom_lst2.back();
+          une_zone.typer(typ_zone); // Most likely a Pave ...
+          Zone& ze_zone = une_zone.valeur();
+          is >> ze_zone;
+          dom_lst.push_back(&ze_zone);
           is >> motlu;
           verifie_syntaxe(motlu);
         }
     }
   while(motlu != "}");
-  // Dans le cas ou on a modifie precision geom, on le remet a la valeur
-  // d'origine
-  precision_geom=precision_geom_sa;
-  dom.comprimer();
-  dom.fixer_premieres_faces_frontiere();
 
+  // Dans le cas ou on a modifie precision geom, on le remet a la valeur d'origine
+  precision_geom=precision_geom_sa;
+  dom.fill_from_list(dom_lst);
+  dom.fixer_premieres_faces_frontiere();
 
   NettoieNoeuds::nettoie(dom);
 

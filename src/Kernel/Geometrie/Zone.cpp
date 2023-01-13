@@ -35,18 +35,36 @@
 #include <Frontiere_dis_base.h>
 #include <Frontiere.h>
 #include <Conds_lim.h>
+#include <NettoieNoeuds.h>
 
 #ifdef MEDCOUPLING_
 using MEDCoupling::DataArrayInt;
 using MEDCoupling::DataArrayDouble;
 #endif
 
-Implemente_instanciable_sans_constructeur(Zone,"Zone",Objet_U);
+Implemente_instanciable_sans_constructeur(Zone,"Domaine",Objet_U);
 
 Zone::Zone() :
-  moments_a_imprimer_(0)
+  epsilon_(Objet_U::precision_geom),deformable_(0),
+  axi1d_(0),
+  moments_a_imprimer_(0),
+  volume_total_(-1)
+{ }
+
+/*! @brief Reset the Zone completely except for its name.
+ */
+void Zone::clear()
 {
-  volume_total_ = -1.; // pas encore calcule
+  Nom n = nom_;
+  // Erase MD structures to authorize copy of a (void) array afterwards
+  sommets_.reset();
+  mes_elems_.reset();
+  aretes_som_.reset();
+  elem_aretes_.reset();
+  elem_virt_pe_num_.reset();
+  // Now we can safely do:
+  *this = Zone();
+  nom_= n;
 }
 
 /*! @brief Ecrit la Zone sur un flot de sortie.
@@ -60,14 +78,28 @@ Zone::Zone() :
  */
 Sortie& Zone::printOn(Sortie& s) const
 {
-  Cerr << "Writing of " << nb_elem() << " elements." << finl;
+  Cerr << "Writing of " << nb_som() << " nodes." << finl;
+#ifdef SORT_POUR_DEBOG
+  s.setf(ios::scientific);
+  s.precision(20);
+#endif
   s << nom_ << finl;
+  s << sommets_;
+
+  // Now write what was formerly the zones (before TRUST 1.9.2):
+  // Write them in the form of a list with a single element, for backward compat (Domains used to contain a list of Zons)
+  s << "{" << finl;
+  Cerr << "Writing of " << nb_elem() << " elements." << finl;
+  s << "DUMMY_ZONE" << finl; // really just to keep a name here for backward compat
   s << elem_ << finl;
   s << mes_elems_;
   s << mes_faces_bord_;
   s << mes_faces_joint_;
   s << mes_faces_raccord_;
   s << mes_faces_int_;
+  s << "}" << finl;
+  //
+
   return s;
 }
 
@@ -130,23 +162,68 @@ static void corriger_type(Faces& faces, const Elem_geom_base& type_elem)
  */
 Entree& Zone::readOn(Entree& s)
 {
-  read_zone(s);
+#ifdef SORT_POUR_DEBOG
+  s.setf(ios::scientific);
+  s.precision(20);
+#endif
+  // Ajout BM: reset de la structure (a pour effet de debloquer la structure parallele)
+  sommets_.reset();
+  renum_som_perio_.reset();
+  // ne pas faire reset du nom (deja lu)
+  // pour deformable je ne sais pas...
+
+  Nom tmp;
+  s >> tmp;
+  // Si le domaine n'est pas nomme, on prend celui lu
+  if (nom_=="??") nom_=tmp;
+  Cerr << "Reading domain " << le_nom() << finl;
+  s >> sommets_;
+  // PL : pas tout a fait exact le nombre affiche de sommets, on compte plusieurs fois les sommets des joints...
+  int nbsom = mp_sum(sommets_.dimension(0));
+  Cerr << " Number of nodes: " << nbsom << finl;
+
+  // Reading element description (what was fomerly the "zone" part) - this used to be a list so check for '{ }'
+  Nom acc;
+  s >> acc;
+  assert (acc == "{");
+  read_former_zone(s);
+  s >> acc;
+  assert (acc == "}");
+  check_zone();
+
+  if ( (Process::nproc()==1) && (NettoieNoeuds::NettoiePasNoeuds==0) )
+    {
+      NettoieNoeuds::nettoie(*this);
+      nbsom = mp_sum(sommets_.dimension(0));
+      Cerr << " Number of nodes after node-cleanup: " << nbsom << finl;
+    }
+
+  // On initialise les descripteurs "sequentiels" (attention, cela bloque le resize des tableaux sommets et elements !)
+  Scatter::init_sequential_domain(*this);
+
   check_zone();
   return s;
 }
 
-/*! @brief read zone from the input stream
- *
+
+/*! @brief read what was (before TRUST 1.9.2) the "zone" part from the input stream
+ * i.e. (roughly) the element description.
  */
-void Zone::read_zone(Entree& s)
+void Zone::read_former_zone(Entree& s)
 {
-  s >> nom_ ;
-  Cerr << " Reading zone " << le_nom() << finl;
+  Nom dnu;
+  Cerr << " Reading part of domain " << le_nom() << finl;
+  s >> dnu; // Name of the Zone, now unused ...
   s >> elem_;
+  mes_elems_.reset();
   s >> mes_elems_;
+  mes_faces_bord_.vide();
   s >> mes_faces_bord_;
+  mes_faces_joint_.vide();
   s >> mes_faces_joint_;
+  mes_faces_raccord_.vide();
   s >> mes_faces_raccord_;
+  mes_faces_int_.vide();
   s >> mes_faces_int_;
 }
 
@@ -160,9 +237,7 @@ void Zone::check_zone()
     int i;
     int n = nb_front_Cl();
     for (i = 0; i < n; i++)
-      {
-        corriger_type(frontiere(i).faces(), type_elem().valeur());
-      }
+      corriger_type(frontiere(i).faces(), type_elem().valeur());
   }
 
   if (mes_faces_bord_.size() == 0 && mes_faces_raccord_.size() == 0 && Process::nproc() == 1)
@@ -183,7 +258,6 @@ void Zone::check_zone()
   check_frontiere(mes_faces_bord_, "(Bord)");
   check_frontiere(mes_faces_raccord_, "(Raccord)");
   check_frontiere(mes_faces_int_, "(Face_Interne)");
-
 }
 
 Entree& Zone::lire_bords_a_imprimer(Entree& is)
@@ -270,7 +344,7 @@ Zone& Zone::domaine()
 ArrOfInt& Zone::indice_elements(const IntTab& sommets, ArrOfInt& elem, int reel) const
 {
   int i, j, k;
-  const DoubleTab& les_coord = domaine().coord_sommets();
+  const DoubleTab& les_coord = sommets_;
   int sz_sommets = sommets.dimension(0);
   DoubleTab xg(sz_sommets, Objet_U::dimension);
   for (i = 0; i < sz_sommets; i++)
@@ -304,7 +378,7 @@ ArrOfInt& Zone::chercher_elements(const DoubleTab& positions, ArrOfInt& elements
 {
   bool set_cache = false;
   // PL: On devrait faire un appel a chercher_elements(x,y,z,elem) si positions.dimension(0)=1 ...
-  if (!domaine().deformable() && positions.dimension(0) > 1)
+  if (!deformable() && positions.dimension(0) > 1)
     {
       set_cache = true;
       if (!deriv_octree_.non_nul() || !deriv_octree_.valeur().construit())
@@ -450,8 +524,7 @@ int Zone::nb_faces_int() const
  */
 int Zone::nb_som() const
 {
-  // MONOZONE pour le moment!
-  return domaine().nb_som();
+  return sommets_.dimension(0);
 }
 
 /*! @brief Renvoie le nombre total de sommets de la zone.
@@ -463,8 +536,7 @@ int Zone::nb_som() const
  */
 int Zone::nb_som_tot() const
 {
-  // MONOZONE pour le moment!
-  return domaine().nb_som_tot();
+  return sommets_.dimension_tot(0);
 }
 
 /*! @brief Renvoie le nombre de faces du i-ieme bord.
@@ -582,8 +654,10 @@ int Zone::face_interne_conjuguee(int face) const
   return -1;
 }
 
-/*! @brief Correcting type of borders if they were empty before merge (ie equal to vide_0D) difference with corriger_type is that we don't want to delete faces inside borders afterwards
+
+/*! @brief Correcting type of borders if they were empty before merge (ie equal to vide_0D)
  *
+ * Difference with corriger_type is that we don't want to delete faces inside borders afterwards.
  */
 void Zone::correct_type_of_borders_after_merge()
 {
@@ -784,9 +858,90 @@ int Zone::comprimer()
   return 1;
 }
 
-/*! @brief Ecriture des noms des bords sur un flot de sortie Ecrit les noms des: bords, bords periodiques, raccords
+/*! @brief Merge another Zone into this, without considering vertices which are handled separately
  *
- *                         et faces internes.
+ */
+void Zone::merge_wo_vertices_with(Zone& dom2)
+{
+  Cerr << "   Merging elem info for domain "<< nom_ << " with " << dom2.nom_ << finl;
+
+  // Prepare type if first merge:
+  if (!elem_.non_nul())
+    elem_ = dom2.elem_;
+
+  // Prepare correct initial elem size if first merge
+  if (nb_elem() == 0)
+    les_elems().resize(0, dom2.les_elems().dimension(1));
+
+  int sz1 = les_elems().dimension(0);
+  int sz2 = dom2.les_elems().dimension(0);
+  int nb_ccord = les_elems().dimension(1);
+  IntTab& elems1 = les_elems();
+  IntTab& elems2 = dom2.les_elems();
+  elems1.resize(sz1+sz2, nb_ccord);
+  for(int i=0; i<sz2; i++)
+    for(int j=0; j<nb_ccord; j++)
+      elems1(sz1+i,j)=elems2(i,j);
+
+  dom2.faces_bord().associer_zone(*this);
+  faces_bord().add(dom2.faces_bord());
+
+  dom2.faces_joint().associer_zone(*this);
+  faces_joint().add(dom2.faces_joint());
+
+  dom2.faces_raccord().associer_zone(*this);
+  faces_raccord().add(dom2.faces_raccord());
+
+  dom2.faces_int().associer_zone(*this);
+  faces_int().add(dom2.faces_int());
+
+  correct_type_of_borders_after_merge();
+  comprimer();
+  comprimer_joints();
+  invalide_octree();
+}
+
+/*! @brief Fills the Zone from a list of Zone objects by aggregating them.
+ *
+ * See Mailler for example
+ */
+void Zone::fill_from_list(std::list<Zone*>& lst)
+{
+  Cerr << "Filling domain from list of domains in progress... " << finl;
+  if (Process::nproc() > 1)
+    Process::exit("Error in Zone::fill_from_list() : compression prohibited in parallel mode");
+  if (lst.size() == 0)
+    Process::exit("Error in Zone::fill_from_list() : compression prohibited in parallel mode");
+
+  for(auto& elem: lst)
+    elem->comprimer();
+
+  Zone& fst_dom = *lst.front();
+  Nom typ_elem = fst_dom.type_elem()->que_suis_je();
+
+  for(auto& it: lst)
+    {
+      Zone& dom2 = *it;
+      Cerr << "   Concatenating Domains "<< nom_ << " and " << dom2.nom_ << finl;;
+      // Check single geometrical type:
+      assert(typ_elem == dom2.type_elem()->que_suis_je());
+      // Handle nodes:
+      IntVect les_nums;
+      // Copy sommets to this
+      ajouter(dom2.sommets_, les_nums);  // les_nums: out parameter
+      // Renumber current Zone to prepare addition of elements
+      dom2.renum(les_nums);
+      // Merge elem info:
+      merge_wo_vertices_with(dom2);
+    }
+
+  Cerr << "Filling from list - End!" << finl;
+}
+
+
+/*! @brief Ecriture des noms des bords sur un flot de sortie
+ *
+ * Ecrit les noms des: bords, bords periodiques, raccords et faces internes.
  *
  * @param (Sortie& os) un flot de sortie
  */
@@ -807,7 +962,7 @@ void Zone::ecrire_noms_bords(Sortie& os) const
 
 double Zone::epsilon() const
 {
-  return domaine().epsilon();
+  return epsilon_;
 }
 
 /*! @brief Renvoie le nombre de faces du type specifie.
@@ -1079,7 +1234,7 @@ void Zone::calculer_volumes(DoubleVect& volumes, DoubleVect& inverse_volumes) co
  */
 void Zone::calculer_centres_gravite_aretes(DoubleTab& xa) const
 {
-  const DoubleTab& coord = domaine().coord_sommets();
+  const DoubleTab& coord = sommets_;
   // Calcule les centres de gravite des aretes reelles seulement
   xa.resize(nb_aretes(), dimension);
   for (int i = 0; i < nb_aretes(); i++)
@@ -1154,8 +1309,10 @@ const MD_Vector& Zone::md_vector_elements() const
   const MD_Vector& md = mes_elems_.get_md_vector();
   if (!md.non_nul())
     {
-      Cerr << "Internal error in Zone::md_vector_elements(): descriptor for elements not initialized\n" << " You might use a buggy Domain constructor that does not build descriptors,\n"
-           << " Use the following syntax to finish the domain construction\n" << "  Scatter ; " << domaine().le_nom() << finl;
+      Cerr << "Internal error in Zone::md_vector_elements(): descriptor for elements not initialized\n"
+           << " You might use a buggy Domain constructor that does not build descriptors,\n"
+           << " Use the following syntax to finish the domain construction\n"
+           << "  Scatter ; " << le_nom() << finl;
       exit();
     }
   // Pour l'instant je prends le descripteur dans le tableau mes_elems, mais on
@@ -1330,7 +1487,7 @@ void Zone::init_faces_virt_bord(const MD_Vector& md_vect_faces, MD_Vector& md_ve
 
       // Creation de l'espace virtuel des faces de la frontiere
       // (c'est ici qu'on associe le descripteur md_frontiere au tableau des faces)
-      const MD_Vector& md_sommets = domaine().les_sommets().get_md_vector();
+      const MD_Vector& md_sommets = les_sommets().get_md_vector();
       Scatter::construire_espace_virtuel_traduction(md_frontiere, /* tableau indexe par des numeros de faces de bord */
                                                     md_sommets, /* contenant des indices de sommets du domaine */
                                                     faces_sommets_frontiere, /* tableau a traiter */
@@ -1493,8 +1650,8 @@ void Zone::creer_aretes()
               int s1 = elem_som(i_elem, f_e_r(i, j)), s2 = elem_som(i_elem, f_e_r(i, j + 1 < f_e_r.dimension(1) && f_e_r(i, j + 1) >= 0 ? j + 1 : 0));
               std::array<double, 3> key;
               for (int l = 0; l < 3; l++)
-                key[l] = (domaine().coord_sommets()(s1, l) + domaine().coord_sommets()(s2, l)) / 2;
-              aretes_loc[key] = { { std::min(s1, s2), std::max(s1, s2) } };
+                key[l] = (sommets_(s1, l) + sommets_(s2, l)) / 2;
+              aretes_loc[key] = {{ std::min(s1, s2), std::max(s1, s2) }};
             }
 
         for (auto &&kv : aretes_loc)
@@ -1542,7 +1699,7 @@ void Zone::creer_aretes()
   aretes_som_.set_smart_resize(0);
   aretes_som_.resize(n_aretes_tot, 2);
 
-  Journal() << "Zone " << domaine().le_nom() << " nb_aretes=" << nb_aretes_reelles << " nb_aretes_tot=" << n_aretes_tot << finl;
+  Journal() << "Zone " << le_nom() << " nb_aretes=" << nb_aretes_reelles << " nb_aretes_tot=" << n_aretes_tot << finl;
 
   // Construction du descripteur parallele
   {
@@ -1734,14 +1891,14 @@ void Zone::add(const Sous_Zone& ssz)
 DoubleTab Zone::getBoundingBox() const
 {
   DoubleTab BB(dimension, 2);
-  int nbsom=coord_sommets().dimension(0);
+  int nbsom=sommets_.dimension(0);
   for (int j=0; j<dimension; j++)
     {
       double min_=0.5*DMAXFLOAT;
       double max_=-0.5*DMAXFLOAT;
       for (int i=0; i<nbsom; i++)
         {
-          double c = coord_sommets()(i,j);
+          double c = sommets_(i,j);
           min_ = (c < min_ ? c : min_);
           max_ = (c > max_ ? c : max_);
         }
@@ -1838,9 +1995,7 @@ void Zone::ajouter(const DoubleTab& soms, IntVect& nums)
       // if som has a descriptor, delete it:
       sommets_.set_md_vector(MD_Vector());
       for(int i=0; i<ajoutsz; i++)
-        {
-          nums(i)=i;
-        }
+        nums(i)=i;
     }
 }
 
@@ -1882,7 +2037,7 @@ void Zone::read_vertices(Entree& s)
   s >> tmp;
   // Si le domaine n'est pas nomme, on prend celui lu
   if (nom_=="??") nom_=tmp;
-  Cerr << "Reading domain " << le_nom() << finl;
+  Cerr << "Reading vertices for domain " << le_nom() << finl;
   s >> sommets_;
 }
 
@@ -2018,5 +2173,6 @@ void Zone::buildUFacesMesh(const Zone_dis_base& zone_dis_base) const
 
 Zone& Zone::add(Zone&)
 {
+  throw;
   return *this;
 }

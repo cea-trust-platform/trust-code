@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,6 +49,9 @@ Entree& LataToMED::readOn(Entree& is)
   return Interprete::readOn(is);
 }
 
+/*! @brief Convert a Lata domain object ('Domain') into a TRUST domain object ('Zone')
+ *
+ */
 void convert_domain_to_Domaine(  const Domain& dom , Zone& dom_trio)
 {
   //      dom_trio.les_sommets()=geom.nodes_;
@@ -90,26 +93,21 @@ void convert_domain_to_Domaine(  const Domain& dom , Zone& dom_trio)
             }
     }
 
-  Zone zone_bidon;
-  dom_trio.add(zone_bidon);
-  Zone& zone=dom_trio;
-  zone.nommer("PAS_NOMME");
   Nom type_elem=dom.lata_element_name(dom.elt_type_);
   if (type_elem=="PRISM6") type_elem="PRISME";
   // zone.type_elem()=type_ele;
-  zone.typer(type_elem);
+  dom_trio.typer(type_elem);
 
-  zone.type_elem().associer_zone(zone);
-  zone.associer_domaine(dom_trio);
+  dom_trio.type_elem().associer_zone(dom_trio);
   if (dom.get_domain_type()==Domain::UNSTRUCTURED)
     {
       const DomainUnstructured& geom = dom.cast_DomainUnstructured();
-      zone.les_elems()=geom.elements_;
+      dom_trio.les_elems()=geom.elements_;
     }
   else
     {
-      zone.les_elems().resize((nx-1)*(ny-1)*(nz-1),zone.nb_som_elem());
-      IntTab& elems=zone.les_elems();
+      dom_trio.les_elems().resize((nx-1)*(ny-1)*(nz-1),dom_trio.nb_som_elem());
+      IntTab& elems=dom_trio.les_elems();
       for (int i=0; i<nx-1; i++)
         for (int j=0; j<ny-1; j++)
           for (int k=0; k<nz-1; k++)
@@ -126,12 +124,12 @@ void convert_domain_to_Domaine(  const Domain& dom , Zone& dom_trio)
       // a coder
       //Process::exit();
     }
-  zone.faces_bord().associer_zone(zone);
-  zone.faces_raccord().associer_zone(zone);
-  zone.faces_joint().associer_zone(zone);
+  dom_trio.faces_bord().associer_zone(dom_trio);
+  dom_trio.faces_raccord().associer_zone(dom_trio);
+  dom_trio.faces_joint().associer_zone(dom_trio);
 
-  zone.type_elem().associer_zone(zone);
-  zone.fixer_premieres_faces_frontiere();
+  dom_trio.type_elem().associer_zone(dom_trio);
+  dom_trio.fixer_premieres_faces_frontiere();
 
   if (dom.id_.timestep_!=0)
     dom_trio.deformable()=1;

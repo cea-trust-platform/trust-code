@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -97,51 +97,25 @@ void Extraire_surface::extraire_surface(Zone& domaine_surfacique,const Zone& dom
   // Copie des sommets
   domaine_surfacique.les_sommets()=domaine_volumique.les_sommets();
   const DoubleTab& coord=domaine_surfacique.les_sommets();
-  Zone zone__;
-  domaine_surfacique.add(zone__);
-  Zone& zone=domaine_surfacique;
-  zone.nommer("NO_FACE");
   const Nom& type_elem=zone_vf.zone().type_elem().valeur().que_suis_je();
 
   if (dimension==3)
-    {
-      if (type_elem==Motcle("Tetraedre"))
-        {
-          zone.typer("Triangle");
-        }
-      else
-        {
-          if (type_elem==Motcle("Segment"))
-            {
-              zone.typer("Point");
-            }
-          else
-            {
-              if ((type_elem==Motcle("Hexaedre"))|| (type_elem==Motcle("Hexaedre_VEF")))
-                {
-                  zone.typer("Quadrangle");
-                }
-              else
-                {
-                  if (type_elem==Motcle("Polyedre"))
-                    {
-                      zone.typer("Polygone");
-                    }
-                  else
-                    {
-                      Cerr<<"WARNING "<<type_elem<< " not coded, use Quadrangle" <<finl;
-                      zone.typer("Quadrangle");
-                      //      exit();
-                    }
-                }
-            }
-        }
-    }
+    if (type_elem==Motcle("Tetraedre"))
+      domaine_surfacique.typer("Triangle");
+    else if (type_elem==Motcle("Segment"))
+      domaine_surfacique.typer("Point");
+    else if ((type_elem==Motcle("Hexaedre"))|| (type_elem==Motcle("Hexaedre_VEF")))
+      domaine_surfacique.typer("Quadrangle");
+    else if (type_elem==Motcle("Polyedre"))
+      domaine_surfacique.typer("Polygone");
+    else
+      {
+        Cerr<<"WARNING "<<type_elem<< " not coded, use Quadrangle" <<finl;
+        domaine_surfacique.typer("Quadrangle");
+        //      exit();
+      }
   else
-    {
-      zone.typer("segment");
-    }
-  zone.associer_domaine(domaine_surfacique);
+    domaine_surfacique.typer("segment");
 
   const DoubleTab& xp =zone_vf.xp();
 
@@ -244,7 +218,7 @@ void Extraire_surface::extraire_surface(Zone& domaine_surfacique,const Zone& dom
 
   ArrOfDouble point0b(3),point1b(3),point2b(3);
   Cerr<<"Number of elements of the new domain : "<<nb_t<<finl;
-  IntTab& les_elems=zone.les_elems();
+  IntTab& les_elems=domaine_surfacique.les_elems();
 
   const IntTab& face_sommets=zone_vf.face_sommets();
   int nb_sommet_face=face_sommets.dimension(1);
@@ -285,10 +259,7 @@ void Extraire_surface::extraire_surface(Zone& domaine_surfacique,const Zone& dom
             else
               {
                 for (int i=0; i<nb_sommet_face; i++)
-                  {
-
-                    point0b[i]=coord(les_elems(nb,1),i)-coord(les_elems(nb,0),i);
-                  }
+                  point0b[i]=coord(les_elems(nb,1),i)-coord(les_elems(nb,0),i);
                 double produit=normal[0]*point0b[1]-normal[1]*point0b[0];
                 if (produit<0)
                   {

@@ -321,7 +321,7 @@ void Champ_Generique_Extraction::completer(const Postraitement_base& post)
   const IntTab& face_sommets = source.get_ref_connectivity(index1,index2);
   int nb_som_faces = zvf_source.nb_som_face();
 
-  Nom type_zone,type_elem;
+  Nom type_elem;
   if (type_face_source==Faces::segment_2D || type_face_source==Faces::segment_2D_axi)
     type_elem = "Segment"; // Pour MC2
   else if (type_face_source==5)
@@ -363,13 +363,9 @@ void Champ_Generique_Extraction::completer(const Postraitement_base& post)
           Process::exit();
         }
     }
-  Zone zz;
-  domaine_->add(zz);
-  Zone& ajoutee = domaine_;
-  ajoutee.typer(type_elem);
-  ajoutee.associer_domaine(domaine_);
+  domaine_->typer(type_elem);
 
-  IntTab& mes_elems_zone = ajoutee.les_elems();
+  IntTab& mes_elems_zone = domaine_->les_elems();
   mes_elems_zone.reset();
   mes_elems_zone.resize(nb_faces, nb_som_faces);
 
@@ -381,8 +377,6 @@ void Champ_Generique_Extraction::completer(const Postraitement_base& post)
       mes_elems_zone(face, s) = face_sommets(num_premiere_face + face, s);
   NettoieNoeuds::nettoie(domaine_);
 
-  //Renumerotation
-  ajoutee.associer_domaine(domaine_);
   // Discretisation du domaine d'extraction
   discretiser_domaine();
 }

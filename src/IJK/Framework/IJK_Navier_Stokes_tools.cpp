@@ -127,7 +127,7 @@ Probleme_base& creer_zone_vdf(const IJK_Splitting& splitting, const Nom& nom_dom
 
   SChaine instructions;
   instructions << "Dimension 3 " << finl;
-  instructions << "Zone " << nom_domaine << finl;
+  instructions << "Domaine " << nom_domaine << finl;
   instructions << "MaillerParallel" << finl;
   instructions << "{" << finl;
   instructions << "  domain " << nom_domaine << finl;

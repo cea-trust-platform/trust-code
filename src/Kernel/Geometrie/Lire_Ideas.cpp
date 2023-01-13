@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -106,13 +106,8 @@ Entree& Lire_Ideas::interpreter_(Entree& is)
   Cerr << " Reading completed " << finl;
   //
   DoubleTab& coord=dom.les_sommets();
-  Zone une_zone;
-  Zone& la_zone=dom.add(une_zone);
-  //
-  la_zone.nommer(dom.le_nom());
-  la_zone.associer_domaine(dom);
-  la_zone.type_elem().typer("Tetraedre");
-  la_zone.type_elem().associer_zone(la_zone);
+  dom.type_elem().typer("Tetraedre");
+  dom.type_elem().associer_zone(dom);
 
   //
   // On commence par transferer les coordonnees
@@ -131,7 +126,7 @@ Entree& Lire_Ideas::interpreter_(Entree& is)
   //
   // On continue par les elements (connectivite element -> noeuds)
   //
-  IntTab& les_elems=la_zone.les_elems();
+  IntTab& les_elems=dom.les_elems();
   les_elems.resize(NTETRA, dimension+1);
   for(int i=0; i<NTETRA; i++)
     {
@@ -169,12 +164,12 @@ Entree& Lire_Ideas::interpreter_(Entree& is)
   // On definit les bords comme etant des faces de bords de la zone
   // On fait Zone --> les_bords
   //
-  Bords& les_bords=la_zone.faces_bord();
+  Bords& les_bords=dom.faces_bord();
   //
-  // Ici, on associe les bords a la zone (on se refere a la_zone)
+  // Ici, on associe les bords a la zone (on se refere a dom)
   // On fait les_bords --> Zone
   //
-  les_bords.associer_zone(la_zone);
+  les_bords.associer_zone(dom);
   //
   Nom nom_bord="Bord";
   //
@@ -204,14 +199,14 @@ Entree& Lire_Ideas::interpreter_(Entree& is)
           nouveau.faces().sommet(j,1)= FACB(1,num)-1;
           nouveau.faces().sommet(j,2)= FACB(2,num)-1;
         }
-      nouveau.associer_zone(la_zone);
+      nouveau.associer_zone(dom);
     }
   //
   Cerr << " Completing the assignment of the boundary faces" << finl;
   //
   Cerr << " Exit of Lire_Ideas " << finl;
   //
-  la_zone.fixer_premieres_faces_frontiere();
+  dom.fixer_premieres_faces_frontiere();
 
   Scatter::init_sequential_domain(dom);
   return is;

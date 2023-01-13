@@ -48,7 +48,6 @@ class Pave : public Zone
 {
   Declare_instanciable(Pave);
 public :
-  void associer_domaine(const Zone& ) override;
 
 protected:
   DoubleVect Origine, Longueurs, Facteurs, Pas;
@@ -81,10 +80,11 @@ protected:
   inline double& coord_noeud(int, int, int);
   inline double& coord_noeud(int, int, int, int);
 
-  void typer_();
   void maille1D();
   void maille2D();
   void maille3D();
+
+  void typer_();
 
   void lire_longueurs(Entree& is);
   void lire_noeuds(Entree& is);
@@ -227,7 +227,7 @@ inline int& Pave::maille_sommet(int i, int j, int k, int l)
 inline double& Pave::coord_noeud(int i)
 {
   assert(dimension == 1);
-  return Les_Noeuds(numero_sommet(i));
+  return sommets_(numero_sommet(i));
 }
 
 /*! @brief Renvoie une reference sur les coordonnees du (i,j)-ieme noeud.
@@ -239,7 +239,7 @@ inline double& Pave::coord_noeud(int i)
 inline double& Pave::coord_noeud(int i, int j, int l)
 {
   assert(dimension == 2);
-  return Les_Noeuds(numero_sommet(i, j),l);
+  return sommets_(numero_sommet(i, j),l);
 }
 
 /*! @brief Renvoie une reference sur les coordonnees du (i,j,k)-ieme noeud.
@@ -252,7 +252,7 @@ inline double& Pave::coord_noeud(int i, int j, int l)
 inline double& Pave::coord_noeud(int i, int j, int k, int l)
 {
   assert(dimension == 3);
-  return Les_Noeuds(numero_sommet(i, j, k),l);
+  return sommets_(numero_sommet(i, j, k),l);
 }
 
 #endif

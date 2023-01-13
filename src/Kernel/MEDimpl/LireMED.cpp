@@ -1780,20 +1780,17 @@ void LireMED::lire_geom(Nom& nom_fic, Zone& dom, const Nom& nom_dom, const Nom& 
     sommets=sommets2;
 
   //
-  Zone& zone=dom;
-  zone.nommer("PAS_NOMME");
   // typage des elts de  la zone et remplissage des elts
   // Avant de typer on regarde si il ne faut pas transormer les hexa en Hexa_vef
   int err=verifier_modifier_type_elem(type_elem,les_elems2,sommets);
   if (err!=0) exit();
 
-  zone.type_elem()=type_ele;
+  dom.type_elem()=type_ele;
   // si on a modifier_type_elem
   if (type_ele.valeur().que_suis_je()!=type_elem)
-    zone.typer(type_elem);
-  zone.type_elem().associer_zone(zone);
-  zone.associer_domaine(dom);
-  IntTab& les_elems=zone.les_elems();
+    dom.typer(type_elem);
+  dom.type_elem().associer_zone(dom);
+  IntTab& les_elems=dom.les_elems();
   // on revient a une numerotation c
   //les_elems2-=1;
   les_elems=les_elems2;
@@ -1828,11 +1825,11 @@ void LireMED::lire_geom(Nom& nom_fic, Zone& dom, const Nom& nom_dom, const Nom& 
       }
   }
   ArrOfInt nb_t(nbord);
-  Bords& faces_bord=zone.faces_bord();
+  Bords& faces_bord=dom.faces_bord();
   faces_bord.vide();
-  Raccords& faces_raccord=zone.faces_raccord();
+  Raccords& faces_raccord=dom.faces_raccord();
   faces_raccord.vide();
-  Joints& faces_joint=zone.faces_joint();
+  Joints& faces_joint=dom.faces_joint();
   faces_joint.vide();
 
   Noms noms_des_joints;
@@ -1928,34 +1925,34 @@ void LireMED::lire_geom(Nom& nom_fic, Zone& dom, const Nom& nom_dom, const Nom& 
                 faces_bord.add(bordprov_);
             }
         }
-  for (int j=0; j<nbord; j++)
-    {
-      if (Indices_bord(j)==-1000)
-        {
-          // Cerr<<" j "<<j <<noms_bords[j]<<finl;
-          Nom nom_zone=noms_bords[j];
-          if (nom_zone.debute_par("cpy_"))
-            nom_zone.suffix("cpy_");
-          Cerr<<" the zone is named "<<nom_zone<<finl;
-          zone.nommer(nom_zone);
-        }
-    }
-  faces_bord.associer_zone(zone);
-  faces_raccord.associer_zone(zone);
-  faces_joint.associer_zone(zone);
-  zone.type_elem().associer_zone(zone);
-  zone.fixer_premieres_faces_frontiere();
-  int nbfr=zone.nb_front_Cl();
+//  for (int j=0; j<nbord; j++)
+//    {
+//      if (Indices_bord(j)==-1000)
+//        {
+//          // Cerr<<" j "<<j <<noms_bords[j]<<finl;
+//          Nom nom_zone=noms_bords[j];
+//          if (nom_zone.debute_par("cpy_"))
+//            nom_zone.suffix("cpy_");
+//          Cerr<<" the zone is named "<<nom_zone<<finl;
+//          dom.nommer(nom_zone);
+//        }
+//    }
+  faces_bord.associer_zone(dom);
+  faces_raccord.associer_zone(dom);
+  faces_joint.associer_zone(dom);
+  dom.type_elem().associer_zone(dom);
+  dom.fixer_premieres_faces_frontiere();
+  int nbfr=dom.nb_front_Cl();
   for (int fr=0; fr<nbfr; fr++)
     {
-      zone.frontiere(fr).faces().associer_zone(zone);
-      if ( zone.frontiere(fr).faces().type_face()!=Faces::vide_0D)
-        zone.frontiere(fr).faces().reordonner();
+      dom.frontiere(fr).faces().associer_zone(dom);
+      if ( dom.frontiere(fr).faces().type_face()!=Faces::vide_0D)
+        dom.frontiere(fr).faces().reordonner();
     }
   //  GF au moins en polyedre il faut reordonner
   //  il faut certainement le faire tout le temps
   //  non c'est trop long
-  if (sub_type(Polyedre,zone.type_elem().valeur())|| (type_elem=="Rectangle")|| (type_elem=="Hexaedre"))
+  if (sub_type(Polyedre,dom.type_elem().valeur())|| (type_elem=="Rectangle")|| (type_elem=="Hexaedre"))
     dom.reordonner();
 
   if (nproc()==1)

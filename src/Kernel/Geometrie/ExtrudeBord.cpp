@@ -73,14 +73,9 @@ Entree& ExtrudeBord::interpreter_(Entree& is)
   const Zone& zone=dom;
 
   if (zone.nb_som_elem()==8 && (hexa_old == 1))
-    {
-      extruder_hexa_old(nom_front, nom_dom_surfacique, vect_dir, nbpas);
-    }
+    extruder_hexa_old(nom_front, nom_dom_surfacique, vect_dir, nbpas);
   else if (zone.nb_som_elem()==4 || zone.nb_som_elem()==8)
-    {
-      extruder_bord(nom_front, nom_dom_surfacique, vect_dir, nbpas);
-    }
-
+    extruder_bord(nom_front, nom_dom_surfacique, vect_dir, nbpas);
 
   Zone& dom_surfacique=ref_cast(Zone, objet(nom_dom_surfacique));
   Scatter::init_sequential_domain(dom_surfacique);
@@ -103,13 +98,6 @@ void ExtrudeBord::extruder_bord(Nom& nom_front, Nom& nom_dom_surfacique, DoubleV
   if (en3D_)
     coupe=2;
   tD2dD.extraire_2D(dom,dom_surfacique,front,nom_front,0);
-  if (0)
-    {
-      SFichier test("bord.geom");
-      test<<dom_surfacique;
-    }
-
-
 
   double xa = tD2dD.getXa();
   double ya = tD2dD.getYa();
@@ -150,8 +138,7 @@ void ExtrudeBord::extruder_bord(Nom& nom_front, Nom& nom_dom_surfacique, DoubleV
                          vect_dir(0)*Jx+vect_dir(1)*Jy+vect_dir(2)*Jz,
                          vect_dir(0)*Kx+vect_dir(1)*Ky+vect_dir(2)*Kz);
 
-      int nb_som=dom_surfacique.coord_sommets().dimension(0);
-      IntVect num(nb_som);
+      IntVect num;
       dom_surfacique.ajouter(dom_surfacique.coord_sommets(), num);
       extr3.extruder(dom_surfacique,num);
 
@@ -233,12 +220,9 @@ void ExtrudeBord::extruder_hexa_old(Nom& nom_front, Nom& nom_dom_surfacique, Dou
 
   Zone& dom_surfacique=ref_cast(Zone, objet(nom_dom_surfacique));
 
-  Zone& zone2=dom_surfacique.add(*(new Zone()));
-  zone2.associer_domaine(dom_surfacique);
-  zone2.typer("Hexaedre");
-  zone2.nommer(nom_dom_surfacique);
+  dom_surfacique.typer("Hexaedre");
   DoubleTab& sommets2=dom_surfacique.les_sommets();
-  IntTab& les_elems2=zone2.les_elems();
+  IntTab& les_elems2=dom_surfacique.les_elems();
   int i;
 
   for (int l=0; l<nbfr; l++)
@@ -339,7 +323,7 @@ void ExtrudeBord::extruder_hexa_old(Nom& nom_front, Nom& nom_dom_surfacique, Dou
           // ******** Definition des frontieres periodiques
 
 
-          Bord& bordperio=zone2.faces_bord().add(Bord());
+          Bord& bordperio=dom_surfacique.faces_bord().add(Bord());
           bordperio.nommer("PERIO");
           bordperio.typer_faces("QUADRANGLE_3D");
           bordperio.dimensionner(0);
@@ -381,7 +365,7 @@ void ExtrudeBord::extruder_hexa_old(Nom& nom_front, Nom& nom_dom_surfacique, Dou
           // ******** Definition des frontieres parois
 
 
-          Bord& bordparoi=zone2.faces_bord().add(Bord());
+          Bord& bordparoi=dom_surfacique.faces_bord().add(Bord());
           bordparoi.nommer("PAROI");
           bordparoi.typer_faces("QUADRANGLE_3D");
           bordparoi.dimensionner(0);

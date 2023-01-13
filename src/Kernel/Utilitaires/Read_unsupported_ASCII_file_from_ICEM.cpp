@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -109,7 +109,8 @@ void check_ICEM_binary_file(Nom& filename, const Nom& nom_objet_lu)
 {
   // On verifie que l'objet lu est un domaine
   Objet_U& objet_lu = Interprete::objet(nom_objet_lu);
-  if (objet_lu.que_suis_je()!="Zone") return;
+  // [ABN] hmmmm ... hopefully the only place where we have this sort of things....:
+  if (!(objet_lu.que_suis_je()=="Zone" || objet_lu.que_suis_je()=="Domaine")) return;
 
   EFichierBin tmp(filename);
   // Un fichier binaire ASCII est reconnaissable par le fait que le nom du

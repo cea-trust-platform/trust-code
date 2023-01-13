@@ -39,6 +39,8 @@ using MEDCoupling::MEDCouplingUMesh;
 using MEDCoupling::MCAuto;
 #endif
 
+#include <list>
+
 class Conds_lim;
 class Zone_dis;
 class Zone_dis_base;
@@ -46,6 +48,7 @@ class Domaine_dis;
 class Motcle;
 class Sous_Zone;
 class Probleme_base;
+class DERIV(Zone);
 
 /*! @brief classe Zone Une Zone est un maillage compose d'un ensemble d'elements geometriques
  *
@@ -118,14 +121,17 @@ public:
   ///
   /// Various
   ///
+  void fill_from_list(std::list<Zone*>& lst);
+  void merge_wo_vertices_with(Zone& z);
   inline bool axi1d() const {  return axi1d_;  }
   inline void fixer_epsilon(double eps)  { epsilon_=eps; }
   inline int deformable() const  {   return deformable_;  }
-  inline int& deformable()  {   return deformable_;  }
+  inline int& deformable() {   return deformable_;  }
   inline void set_fichier_lu(Nom& nom)  {    fichier_lu_=nom;   }
   inline const Nom& get_fichier_lu() const  {   return fichier_lu_;  }
   void imprimer() const;
   void read_vertices(Entree& s);
+  void clear();
 
   ///
   /// MEDCoupling:
@@ -273,7 +279,7 @@ public:
                                    const DoubleVect& coord_ref);
 
   //used for the readOn
-  void read_zone(Entree& s);
+  void read_former_zone(Entree& s);
   void check_zone();
 
   void correct_type_of_borders_after_merge();
@@ -330,10 +336,11 @@ protected:
   // elem_virt_pe_num_(i-nb_elem,1) = numero local de cet element sur le PE qui le possede
   IntTab elem_virt_pe_num_;
 
-  void duplique_faces_internes();
   LIST(Nom) bords_a_imprimer_;
   LIST(Nom) bords_a_imprimer_sum_;
   int moments_a_imprimer_;
+
+  void duplique_faces_internes();
 
 private:
   // Volume total de la zone (somme sur tous les processeurs)

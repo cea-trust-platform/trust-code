@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -86,7 +86,6 @@ Entree& Extraire_plan::interpreter_(Entree& is)
 
   if (via_extraire_surface)
     {
-
       // determination de la normale
       ArrOfDouble normal(3);
       calcul_normal_norme(origine,point1,point2,normal);
@@ -142,8 +141,6 @@ Entree& Extraire_plan::interpreter_(Entree& is)
               else
                 out <<"_le_0)*";
             }
-
-
         }
       out<<"1)"<<finl;
       //out<<" avec_les_bords "<<finl;
@@ -170,36 +167,25 @@ Entree& Extraire_plan::interpreter_(Entree& is)
   const Zone_VF& zone_vf=ref_cast(Zone_VF,pb.domaine_dis().zone_dis(0).valeur());
   dom.les_sommets()=zone_vf.zone().domaine().les_sommets();
   const DoubleTab& coord=dom.les_sommets();
-  Zone zone__;
-  dom.add(zone__);
-  Zone& zone=dom;
-  zone.nommer(dom.le_nom());
   const Nom& type_elem=zone_vf.zone().type_elem().valeur().que_suis_je();
   if (type_elem==Motcle("Tetraedre"))
-    zone.typer("Triangle");
+    dom.typer("Triangle");
   else
     {
       Cerr<<que_suis_je()<<"  not coded for this type of elements "<<finl;
       exit();
     }
-  zone.associer_domaine(dom);
-  // IntTab& les_elems=zone.les_elems();
 
   // creation d'une zone pipo pour pouvoir chercher les faces
-  Zone test;
+  Zone zone_test;
   ArrOfDouble normal(3);
   {
-    Zone prov;
-    test.add(prov);
-    Zone& zone_test=test;
-    zone.nommer("NO_FACE");
     if (triangle)
       zone_test.typer("Prisme");
     else
       zone_test.typer("Hexaedre_vef");
-    zone_test.associer_domaine(test);
 
-    DoubleTab& somm_hexa=test.les_sommets();
+    DoubleTab& somm_hexa=zone_test.les_sommets();
     int nb_som=4;
     if (triangle) nb_som=3;
     somm_hexa.resize(nb_som*2,3);
@@ -231,11 +217,9 @@ Entree& Extraire_plan::interpreter_(Entree& is)
       es<<test;
     */
   }
-  Zone& zone_test=test;
   const DoubleTab& xv =zone_vf.xv();
 
   int nbfaces=zone_vf.nb_faces();
-
 
   ArrOfInt marq(nbfaces);
   // on marque les joints
@@ -271,7 +255,7 @@ Entree& Extraire_plan::interpreter_(Entree& is)
     }
   ArrOfDouble point0b(3),point1b(3),point2b(3);
   Cerr<<"Number of elements of the new domain "<<nb_t<<finl;
-  IntTab& les_elems=zone.les_elems();
+  IntTab& les_elems=dom.les_elems();
   les_elems.resize(nb_t,3);
   const IntTab& face_sommets=zone_vf.face_sommets();
   int nb=0;

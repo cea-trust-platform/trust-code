@@ -580,7 +580,7 @@ void Polyedre::build_reduced(Elem_geom& type_elem, const ArrOfInt& elems_sous_pa
 
 void Polyedre::compute_virtual_index()
 {
-  // Methode brutal mais il faut bien commencer ....
+  // Methode brutale mais il faut bien commencer ....
 
   IntTab faces_som(0,nb_face_elem_max_,nb_som_face_max_);
   ma_zone.valeur().creer_tableau_elements(faces_som);

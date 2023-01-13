@@ -69,15 +69,11 @@ public:
   static void uninit_sequential_domain(Zone&);
 
   static void check_consistancy_remote_items( Zone& dom, const ArrOfInt& mergedZones );
-  static void readDomainWithoutCollComm(Zone& dom, Entree& fic );
-
 
 protected:
   REF(Zone) le_domaine;
 
-private:
-  void mergeDomains(Zone& dom, Zone& part_dom);
-
+  void read_domain_no_comm(Entree& fic );
 };
 
 #endif
