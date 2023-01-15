@@ -76,7 +76,7 @@ protected:
   int *flag_a_lire;
   Motcles dictionnaire_noms;
   ArrOfInt dictionnaire_valeurs;
-  VECT(ptrParam) dictionnaire_params;
+  LIST(ptrParam) dictionnaire_params;
   Motcle prefixe_deriv;
   ptrParam param_interne;
 };
