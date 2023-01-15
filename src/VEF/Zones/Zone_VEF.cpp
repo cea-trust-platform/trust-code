@@ -384,6 +384,7 @@ void Zone_VEF::calculer_h_carre()
 {
   const int nbe=nb_elem();
   // Calcul de h_carre
+  h_carre = 1.e30;
   h_carre_.resize(nbe);
   // Calcul des surfaces
   const DoubleVect& surfaces=face_surfaces();

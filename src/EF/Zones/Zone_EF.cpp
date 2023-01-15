@@ -747,6 +747,7 @@ void Zone_EF::calculer_porosites_sommets()
 void Zone_EF::calculer_h_carre()
 {
   // Calcul de h_carre
+  h_carre = 1.e30;
   h_carre_.resize(nb_faces());
   // Calcul des surfaces
   const DoubleVect& surfaces=face_surfaces();

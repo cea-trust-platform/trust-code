@@ -535,6 +535,8 @@ void Zone_Poly_base::detecter_faces_non_planes() const
 
 void Zone_Poly_base::calculer_h_carre()
 {
+  // Calcul de h_carre
+  h_carre = 1.e30;
   if (h_carre_.size()) return; // deja fait
   h_carre_.resize(nb_faces());
   // Calcul des surfaces
