@@ -16,7 +16,9 @@
 #ifndef TRUST_Vector_included
 #define TRUST_Vector_included
 
+#include <algorithm> // pour std::transform
 #include <vector>
+#include <memory> // pour std::shared_ptr
 #include <Nom.h>
 
 class MD_Vector;
@@ -40,9 +42,43 @@ template<typename _CLASSE_>
 class TRUST_Vector: public Objet_U
 {
   using value_type = _CLASSE_;
-  using STLVect = std::vector<_CLASSE_>;
+  using pointer_type = std::shared_ptr<_CLASSE_>;
+  using STLVect = std::vector<pointer_type>; // vector of shared ptr to _CLASSE_
   using Iterator = typename STLVect::iterator;
   using Const_Iterator = typename STLVect::const_iterator;
+
+  // XXX : Elie Saikali
+  // We have an std vector of shared ptrs => iterators return pointers and not the passed value type
+  // These classes allows a return of the value type
+  class IteratorWrapper
+  {
+  public:
+    explicit IteratorWrapper(Iterator it) : it_(it) { }
+    value_type& operator*() { return *it_->get(); }
+    value_type* operator->() { return it_->get(); }
+    IteratorWrapper& operator++() { ++it_; return *this; }
+    IteratorWrapper operator++(int) { return IteratorWrapper(it_++); }
+    bool operator==(const IteratorWrapper& other) const { return it_ == other.it_; }
+    bool operator!=(const IteratorWrapper& other) const { return it_ != other.it_; }
+
+  private:
+    Iterator it_;
+  };
+
+  class ConstIteratorWrapper
+  {
+  public:
+    explicit ConstIteratorWrapper(Const_Iterator it) : it_(it) {}
+    const value_type& operator*() const { return *it_->get(); }
+    const value_type* operator->() const { return it_->get(); }
+    ConstIteratorWrapper& operator++() { ++it_; return *this; }
+    ConstIteratorWrapper operator++(int) { return ConstIteratorWrapper(it_++); }
+    bool operator==(const ConstIteratorWrapper& other) const { return it_ == other.it_; }
+    bool operator!=(const ConstIteratorWrapper& other) const { return it_ != other.it_; }
+
+  private:
+    Const_Iterator it_;
+  };
 
 protected:
   unsigned taille_memoire() const override { throw; }
@@ -59,8 +95,13 @@ private:
   {
     int i;
     s >> i;
-    z_vect_.resize(i);
-    for (auto &itr : z_vect_) s >> itr;
+    clear();
+    _TYPE_ obj;
+    for (int ind = 0; ind < i; ind++)
+      {
+        s >> obj;
+        add(std::move(obj));
+      }
     return s;
   }
 
@@ -69,7 +110,7 @@ private:
   printOn_(Sortie& s) const
   {
     s << (int) z_vect_.size() << space;
-    for (auto &itr : z_vect_) s << itr << space;
+    for (auto &itr : z_vect_) s << *itr << space;
     return s << finl;
   }
 
@@ -84,65 +125,101 @@ private:
 
 public:
   ~TRUST_Vector() { z_vect_.clear(); }
-  TRUST_Vector() : z_vect_() { }
-  TRUST_Vector(int i) : z_vect_(i) { }
-  TRUST_Vector(const TRUST_Vector& avect) : Objet_U(avect) { z_vect_ = avect.z_vect_; }
 
-  // get stl vector
+  TRUST_Vector() = default;
+
+  explicit TRUST_Vector(int i) { dimensionner_force(i); } /* clear, resize to i & fill with i empty shared ptrs */
+
+  // XXX : Elie Saikali
+  // Nota Bene : Deep copy : should not use the same memory !! So dangerous attention !!
+  TRUST_Vector(const TRUST_Vector& avect) : Objet_U(avect)
+  {
+    clear();
+    for (int i = 0; i < avect.size(); i++)
+      z_vect_.push_back(std::make_shared<_CLASSE_>(*avect.z_vect_[i]));
+  }
+
+  // get stl vector : attention its a vector of shared ptrs !!
   const STLVect& get_stl_vect() const { return z_vect_; }
   STLVect& get_stl_vect() { return z_vect_; }
 
   // iterators on TRUST_Vector
-  Iterator begin() { return z_vect_.begin(); }
-  Iterator end() { return z_vect_.end(); }
-  const Const_Iterator begin() const { return z_vect_.begin(); }
-  const Const_Iterator end() const { return z_vect_.end(); }
+  IteratorWrapper begin() { return IteratorWrapper(z_vect_.begin()); }
+  IteratorWrapper end() { return IteratorWrapper(z_vect_.end()); }
+  const ConstIteratorWrapper begin() const { return ConstIteratorWrapper(z_vect_.begin()); }
+  const ConstIteratorWrapper end() const { return ConstIteratorWrapper(z_vect_.end()); }
 
-  const _CLASSE_& operator[](int i) const { return static_cast<const _CLASSE_&>(z_vect_[i]); }
-  _CLASSE_& operator[](int i) { return static_cast<_CLASSE_&>(z_vect_[i]); }
+  /* Iterator begin() { return (z_vect_.begin()); }
+  Iterator end() { return (z_vect_.end()); }
+  const Const_Iterator begin() const { return (z_vect_.begin()); }
+  const Const_Iterator end() const { return (z_vect_.end()); } */
 
-  // Elie Saikali : Pas de negociation pour ca desole ...
-  const _CLASSE_& operator()(int i) const = delete;
-  _CLASSE_& operator()(int i) = delete;
+  const value_type& operator[](int i) const { return *z_vect_[i]; }
+  value_type& operator[](int i) { return *z_vect_[i]; }
 
-  _CLASSE_& add() = delete; //{ return add(_CLASSE_()); }
+  // XXX : Elie Saikali : Pas de negociation pour ca desole ...
+  const value_type& operator()(int i) const = delete;
+  value_type& operator()(int i) = delete;
+  value_type& add() = delete; //{ return add(_CLASSE_()); }
 
   int size() const { return (int)z_vect_.size(); }
   void reset() { z_vect_.clear(); }
-  void dimensionner(int i) { z_vect_.resize(i); }
+  void clear() { z_vect_.clear(); }
+  void resize(int i) { dimensionner(i); }
+  value_type& back() { return *(z_vect_.back()); }
+  value_type& front() { return *(z_vect_.front()); }
 
-  Entree& lit(Entree& s)
+  // XXX : Elie Saikali
+  // Attention : it is so important to implement dimensionner and dimensionner_force as this otherwise issue with the standard = operator.
+  // A pre-initialised sgared ptr is required in each zone memory of the sized vector.
+  void dimensionner(int i)
   {
-    int i;
-    s >> i;
-    dimensionner_force(i);
-    for (auto& itr : z_vect_) s >> itr;
-    return s;
+    z_vect_.resize(i);
+    for (auto& itr : z_vect_) itr = std::make_shared<_CLASSE_>();
   }
 
   void dimensionner_force(int i)
   {
     z_vect_.clear();
     z_vect_.resize(i);
+    for (auto& itr : z_vect_) itr = std::make_shared<_CLASSE_>();
   }
+
+  Entree& lit(Entree& s) { return readOn_<_CLASSE_>(s); }
 
   TRUST_Vector& operator=(const TRUST_Vector& avect)
   {
     if (this == &avect) return *this;
 
-    z_vect_ = avect.z_vect_;
+    clear();
+    for (int i = 0; i < avect.size(); i++)
+      z_vect_.push_back(std::make_shared<_CLASSE_>(*avect.z_vect_[i]));
+
     return *this;
   }
 
   /* Add a new element to the vect */
-  _CLASSE_& add(const _CLASSE_& data_to_add)
+  value_type& add(value_type&& data_to_add)
   {
-    z_vect_.push_back(data_to_add);
-    return static_cast<_CLASSE_&>(z_vect_.back());
+    z_vect_.emplace_back(std::make_shared<_CLASSE_>(std::forward<_CLASSE_>(data_to_add)));
+    return *(z_vect_.back());
+  }
+
+  value_type& add(const value_type& data_to_add)
+  {
+    z_vect_.push_back(std::make_shared<_CLASSE_>(data_to_add));
+    return *(z_vect_.back());
   }
 
   /* Append a vect to a vect */
-  void add(const TRUST_Vector& v2) { z_vect_.insert(end(), v2.begin(), v2.end()); }
+  void add(const TRUST_Vector& v2)
+  {
+    STLVect tmp_;
+    tmp_.reserve(v2.size());
+    auto lambda_ = [](pointer_type const &iter) { return std::make_shared<_CLASSE_>(*iter); };
+    std::transform(v2.get_stl_vect().begin(), v2.get_stl_vect().end(), std::back_inserter(tmp_), lambda_);
+    z_vect_.insert(z_vect_.end(), std::make_move_iterator(tmp_.begin()), std::make_move_iterator(tmp_.end()));
+  }
 };
 
 #endif /* TRUST_Vector_included */
