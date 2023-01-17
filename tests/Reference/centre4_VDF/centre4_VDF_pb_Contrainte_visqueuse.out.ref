@@ -1,0 +1,5 @@
+# Printing on the boundaries of the equation Navier_Stokes_standard of the problem pb
+# Friction drag exerted by the fluid=Integral(-mu*grad(u)*ndS) [N] if SI units used
+#            Time         Gauche_X         Gauche_Y           Haut_X           Haut_Y           BasE_X           BasE_Y           BasP_X           BasP_Y           BasS_X           BasS_Y          Droit_X          Droit_Y          Total_X          Total_Y
+   1.08531900e-05   2.45556171e-14   5.09574657e-06   0.00000000e+00   1.42124236e-06   2.09202521e+00   2.37286991e-04   2.59722211e-01   1.71857020e-12   2.50531198e+00  -2.02560755e-04  -1.12276531e-14  -2.27415877e-05   4.85705940e+00   1.85016390e-05
+   4.56237990e-05  -3.74365169e-15   1.55116578e-05   0.00000000e+00   4.90521775e-06   8.61195152e-01   6.28254665e-04   1.06499039e-01   1.83936895e-12   1.02630742e+00  -4.50104339e-04  -5.90202398e-14  -1.04908969e-04   1.99400161e+00   9.36582341e-05

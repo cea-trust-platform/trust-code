@@ -1,0 +1,5 @@
+# Printing on the boundaries of the equation Navier_Stokes_standard of the problem pb
+# Momentum flow rate=Integral(rho*u*u*ndS) [N] if SI units used
+#            Time         Gauche_X         Gauche_Y           Haut_X           Haut_Y           BasE_X           BasE_Y           BasP_X           BasP_Y           BasS_X           BasS_Y          Droit_X          Droit_Y          Total_X          Total_Y
+   1.08531900e-05  -2.85791912e+00  -3.83198847e-04   0.00000000e+00   3.18815344e-08   0.00000000e+00  -1.05651775e-05   0.00000000e+00  -1.00298378e-21   0.00000000e+00  -1.36844350e-05   2.85840784e+00  -6.42254948e-03   4.88721285e-04  -6.82996605e-03
+   4.56237990e-05  -2.86061806e+00   9.63687749e-05   0.00000000e+00   3.23034213e-07   0.00000000e+00  -7.13125370e-05   0.00000000e+00  -1.10038409e-21   0.00000000e+00  -6.25543708e-05   2.86581753e+00  -1.83599465e-02   5.19947948e-03  -1.83971216e-02

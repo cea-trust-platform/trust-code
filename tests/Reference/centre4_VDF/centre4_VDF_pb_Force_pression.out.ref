@@ -1,0 +1,5 @@
+# Printing on the boundaries of the equation Navier_Stokes_standard of the problem pb
+# Pressure drag exerted by the fluid=Integral(P*ndS) [N] if SI units used
+#            Time         Gauche_X         Gauche_Y           Haut_X           Haut_Y           BasE_X           BasE_Y           BasP_X           BasP_Y           BasS_X           BasS_Y          Droit_X          Droit_Y
+   1.08531900e-05  -4.85669208e+00   0.00000000e+00   0.00000000e+00   1.97832940e+02   0.00000000e+00  -1.34093843e+02   0.00000000e+00  -1.14245846e+01   0.00000000e+00  -5.23173169e+01  -8.56045929e-04   0.00000000e+00
+   4.56237990e-05  -1.99249148e+00   0.00000000e+00   0.00000000e+00   7.97848602e+01   0.00000000e+00  -5.44107894e+01   0.00000000e+00  -4.61269784e+00   0.00000000e+00  -2.07491309e+01  -6.70960188e-03   0.00000000e+00

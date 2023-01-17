@@ -1,0 +1,5 @@
+# Printing on the boundaries of the equation Convection_Diffusion_Temperature of the problem pb
+# Conduction heat transfer rate=Integral(lambda*grad(T)*ndS) [W] if SI units used
+#            Time           Entree             Wall         Symetrie           Sortie            Total
+   2.05790529e-03  -2.66453526e-15  -4.44089210e-16   2.87964097e-16  -6.66133815e-15  -9.48199852e-15
+   1.15437865e-02  -2.66453526e-15  -4.44089210e-16   2.87964097e-16  -6.66133815e-15  -9.48199852e-15
