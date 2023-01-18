@@ -776,7 +776,6 @@ int Op_Grad_VEF_P1B_Face::impr(Sortie& os) const
         for (int i=0; i<dimension; i++)
           xgr(num_face,i)=xgrav(num_face,i)-c_grav[i];
     }
-  calculer_flux_bords();
   DoubleTrav tab_flux_bords(3,zone_VEF.nb_front_Cl(),dimension);
   tab_flux_bords=0.;
   /*

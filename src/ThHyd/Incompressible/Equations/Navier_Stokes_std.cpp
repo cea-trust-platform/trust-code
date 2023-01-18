@@ -1019,21 +1019,15 @@ int Navier_Stokes_std::preparer_calcul()
   // Mise a jour pression
   la_pression.changer_temps(temps);
   calculer_la_pression_en_pa();
+  // Calcul des forces de pression:
+  gradient->calculer_flux_bords();
 
-  // Calcul gradient_P
+  // Calcul gradient_P (ToDo rendre coherent avec ::mettre_a_jour()):
   gradient.calculer(la_pression.valeurs(),gradient_P.valeurs());
   gradient_P.changer_temps(temps);
-  // ToDo mettre a jour flux_bords de gradient
-  // Attention en parallele...
-  // Mieux ecrire les boucles en 2D/3D et corriger l'ouverture multiple (DI TMA)
-  // Modifier Cx (verifie) pour que le Cx_FPX.son a t=0 ecrive la bonne valeur...
-  // Cx_FPX_CYLINDER.son
-  //SFichier null("/dev/null");
-  //gradient.impr(null);
 
   // Calcul divergence_U
   divergence.calculer(la_vitesse.valeurs(),divergence_U.valeurs());
-  //divergence_U.valeurs()=0.;
   divergence_U.changer_temps(temps);
 
   if (le_traitement_particulier.non_nul())
@@ -1063,13 +1057,13 @@ void Navier_Stokes_std::mettre_a_jour(double temps)
 
   // Mise a jour de la pression
   la_pression.mettre_a_jour(temps);
+  calculer_la_pression_en_pa();
+  // Calcul des forces de pression:
+  gradient->calculer_flux_bords();
 
   // Update the divergence of the velocity div(U)
   divergence.calculer(la_vitesse->valeurs(),divergence_U.valeurs());
   divergence_U.mettre_a_jour(temps);
-
-  // Update the pressure field in Pascal
-  calculer_la_pression_en_pa();;
 
   // Pour le postraitement, on veut M-1BtP et non BtP
   if (postraitement_gradient_P_)
@@ -1079,8 +1073,8 @@ void Navier_Stokes_std::mettre_a_jour(double temps)
         {
           solveur_masse.appliquer(gradient_P.valeurs());
         }
+      gradient_P.mettre_a_jour(temps);
     }
-  gradient_P.mettre_a_jour(temps);
 
   // PQ : 04/03 : procedure de determination dynamique du seuil de convergence en pression
   if(sub_type(solv_iteratif,solveur_pression_.valeur()) && seuil_divU < 1.)
@@ -1104,7 +1098,7 @@ void Navier_Stokes_std::mettre_a_jour(double temps)
 
   if (le_traitement_particulier.non_nul())
     le_traitement_particulier.post_traitement_particulier();
-  Debog::verifier("Navier_Stokes_std::mettre_a_jour : pression",  la_pression.valeurs());
+  Debog::verifier("Navier_Stokes_std::mettre_a_jour : pression", la_pression.valeurs());
   Debog::verifier("Navier_Stokes_std::mettre_a_jour : vitesse", la_vitesse.valeurs());
 }
 

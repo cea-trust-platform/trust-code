@@ -1,3 +1,4 @@
+XX/XX/23 (TRUST) Fix          : Pressure force was not computed at t=tinit and not correctly updated/printed for a probe if dt_impr value was greater than probe period
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.2_beta : Enhancements, modifications and corrected bugs since version 1.9.1 :
 --------------------------------------------------------------------------------------------------

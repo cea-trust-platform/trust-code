@@ -1,0 +1,111 @@
+# ThermoHydraulique 3D dans une structure en croix pour verifier symetrie #
+# PARALLEL NOT #
+
+dimension 3
+Pb_Thermohydraulique pb
+Domaine dom_pb1
+# BEGIN MESH #
+Read_file dom_pb1 croix_3D_VDF.geom
+Tetraedriser dom_pb1
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom_pb1
+{
+    Partitionneur Metis { nb_parts 2 }
+    Larg_joint 2
+    Nom_Zones DOM1
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM1.Zones dom_pb1
+END SCATTER #
+
+VEFPreP1B dis
+Schema_Euler_Explicite sch
+Lire sch
+{
+    nb_pas_dt_max 10
+    tinit 0.
+    dt_impr 10
+    precision_impr 3
+    dt_sauv 1.
+    seuil_statio 1.e-18
+}
+
+
+
+Associate pb dom_pb1
+Associate pb sch
+
+Discretize pb dis
+
+
+Lire pb
+{
+
+    fluide_incompressible {
+        mu Champ_Uniforme 1 1.
+        rho Champ_Uniforme 1 1.
+        lambda Champ_Uniforme 1 1.
+        Cp Champ_Uniforme 1 1.
+        beta_th Champ_Uniforme 1 1.
+
+    }
+
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection { amont }
+        diffusion { }
+        conditions_initiales { vitesse Champ_Uniforme 3 0. 0. 0. }
+        boundary_conditions {
+            entree frontiere_ouverte_pression_imposee Champ_front_uniforme 1 1.
+            sud frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            nord frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            gauche frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            droit frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            bas frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            haut frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            paroi paroi_fixe
+        }
+    }
+
+    Convection_Diffusion_Temperature
+    {
+        diffusion { }
+        convection { amont }
+        boundary_conditions
+        {
+            entree frontiere_ouverte_temperature_imposee Champ_front_uniforme 1 1.
+            sud frontiere_ouverte T_ext Champ_Front_Uniforme 1 0.
+            nord frontiere_ouverte T_ext Champ_Front_Uniforme 1 0.
+            gauche frontiere_ouverte T_ext Champ_Front_Uniforme 1 0.
+            droit frontiere_ouverte T_ext Champ_Front_Uniforme 1 0.
+            bas frontiere_ouverte T_ext Champ_Front_Uniforme 1 0.
+            haut frontiere_ouverte T_ext Champ_Front_Uniforme 1 0.
+            paroi paroi_echange_externe_impose T_ext Champ_Front_Uniforme 1 0.5 H_imp Champ_Front_Uniforme 1 1.e11
+        }
+        conditions_initiales { Temperature Champ_Uniforme 1 0. }
+    }
+    Postraitement
+    {
+        Definition_champs
+        {
+            FPx Reduction_0D {
+                methode sum source Interpolation {
+                    domaine dom_pb1_boundaries_droit localisation elem source Predefini { pb_champ pb pressure_force_x }
+                }
+            }
+        }
+        Sondes
+        {
+            FPx FPx periode 1.e-20 numero_elem_sur_maitre 0
+        }
+    }
+}
+Solve pb
+Fin
+

@@ -366,7 +366,6 @@ int Op_Grad_EF::impr(Sortie& os) const
   int n_bord ;
   int face;
   const ArrOfDouble& c_grav=la_zone_EF->zone().cg_moments();
-  calculer_flux_bords();
   int flag=je_suis_maitre();
   SFichier Flux_grad;
   ouvrir_fichier(Flux_grad,"",flag);

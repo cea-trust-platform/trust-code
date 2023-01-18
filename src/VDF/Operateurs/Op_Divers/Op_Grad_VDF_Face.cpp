@@ -92,7 +92,6 @@ int Op_Grad_VDF_Face::impr(Sortie& os) const
       for (int num_face=0; num_face <nb_faces; num_face++)
         for (int i=0; i<dimension; i++) xgr(num_face,i)=xgrav(num_face,i)-c_grav[i];
     }
-  calculer_flux_bords();
   // flux_bords contains the sum of flux on each boundary:
   DoubleTrav tab_flux_bords(3,zvdf.nb_front_Cl(),3);
   tab_flux_bords=0.;
