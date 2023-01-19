@@ -266,12 +266,11 @@ void Source_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const ta
 /*! @brief Contrairement aux methodes mettre_a_jour, les methodes initialiser des sources ne peuvent pas dependre de l'exterieur
  *
  *     (lui-meme peut ne pas etre initialise)
- *     Par defaut, mettre_a_jour
+ *     Par defaut, rien
  *
  */
 int Source_base::initialiser(double temps)
 {
-  mettre_a_jour(temps);
   return 1;
 }
 
