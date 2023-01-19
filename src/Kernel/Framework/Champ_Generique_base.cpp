@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -352,11 +352,9 @@ const Champ_Generique_base& Champ_Generique_base::get_champ_post(const Motcle& n
 
   {
     const Noms composantes = get_property("composantes");
-    int nb_composantes = composantes.size();
-
-    for (int i=0; i<nb_composantes; i++)
+    for (const auto& itr : composantes)
       {
-        nom_champ = Motcle(composantes[i]);
+        nom_champ = Motcle(itr);
         if (nom_champ==nom)
           {
             ref_champ = *this;
@@ -381,11 +379,9 @@ int Champ_Generique_base::comprend_champ_post(const Motcle& identifiant) const
   else
     {
       const Noms composantes = get_property("composantes");
-      int nb_composantes = composantes.size();
-
-      for (int i=0; i<nb_composantes; i++)
+      for (const auto& itr : composantes)
         {
-          nom_champ = Motcle(composantes[i]);
+          nom_champ = Motcle(itr);
           if (nom_champ==identifiant)
             return 1;
         }

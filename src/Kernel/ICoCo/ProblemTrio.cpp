@@ -387,8 +387,8 @@ vector<string> ProblemTrio::getInputFieldsNames() const
   vector<string> v;
   Noms noms;
   pb->getInputFieldsNames(noms);
-  for (int i=0; i<noms.size(); i++)
-    v.push_back(noms[i].getChar());
+  for (const auto& itr : noms)
+    v.push_back(itr.getChar());
   return v;
 }
 
@@ -461,8 +461,8 @@ vector<string> ProblemTrio::getOutputFieldsNames() const
   Noms my_names;
   pb->getOutputFieldsNames(my_names);
   vector<string> output_names;
-  for (int i=0; i<my_names.size(); i++)
-    output_names.push_back(my_names[i].getChar());
+  for (const auto& itr : my_names)
+    output_names.push_back(itr.getChar());
   return  output_names;
 
 }

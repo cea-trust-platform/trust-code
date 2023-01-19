@@ -763,10 +763,10 @@ int Zone_Cl_EF::nb_faces_sortie_libre() const
 
 int Zone_Cl_EF::nb_bord_periodicite() const
 {
-  int compteur=0;
-  for(int cl=0; cl<les_conditions_limites_.size(); cl++)
+  int compteur = 0;
+  for (const auto &itr : les_conditions_limites_)
     {
-      if (sub_type(Periodique,les_conditions_limites_[cl].valeur()))
+      if (sub_type(Periodique, itr.valeur()))
         compteur++;
     }
   return compteur;

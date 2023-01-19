@@ -423,11 +423,10 @@ int Partitionneur_base::corriger_multiperiodique(const Domaine& domaine,
   // Initialise a 0
   ArrOfInt marqueur_bord(nb_som);
 
-  const int nb_bords_perio = liste_bords_perio.size();
   int deux_puissance_i_bord = 1;
-  for (int i_bord = 0; i_bord < nb_bords_perio; i_bord++)
+  for (auto& itr : liste_bords_perio)
     {
-      const Bord& bord = zone.bord(liste_bords_perio[i_bord]);
+      const Bord& bord = zone.bord(itr);
       const IntTab& faces_sommets = bord.faces().les_sommets();
       const int nb_faces_bord = faces_sommets.dimension(0);
       const int nb_som_face = faces_sommets.dimension(1);

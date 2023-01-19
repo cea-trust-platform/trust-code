@@ -217,11 +217,10 @@ void Navier_Stokes_Fluide_Dilatable_Proto::assembler_avec_inertie_impl(const Nav
    * on ne doit pas imposer un+1 mais rho_un+1 => on multiplie dons le resu par rho_face_np1
    */
   const Conds_lim& lescl=eqn.zone_Cl_dis().les_conditions_limites();
-  int nbcondlim=lescl.size();
 
-  for (int icl=0; icl<nbcondlim; icl++)
+  for (auto& itr : lescl)
     {
-      const Cond_lim_base& la_cl_base = lescl[icl].valeur();
+      const Cond_lim_base& la_cl_base = itr.valeur();
       if (sub_type(Dirichlet,la_cl_base))
         {
 
@@ -307,11 +306,10 @@ void Navier_Stokes_Fluide_Dilatable_Proto::assembler_blocs_avec_inertie(const Na
    * on ne doit pas imposer un+1 mais rho_un+1 => on multiplie dons le resu par rho_face_np1
    */
   const Conds_lim& lescl=eqn.zone_Cl_dis().les_conditions_limites();
-  int nbcondlim=lescl.size();
 
-  for (int icl=0; icl<nbcondlim; icl++)
+  for (auto& itr : lescl)
     {
-      const Cond_lim_base& la_cl_base = lescl[icl].valeur();
+      const Cond_lim_base& la_cl_base = itr.valeur();
       if (sub_type(Dirichlet,la_cl_base))
         {
 
@@ -435,15 +433,15 @@ void Navier_Stokes_Fluide_Dilatable_Proto::update_vpoint_on_boundaries(const Nav
   const DoubleTab& vit = eqn.vitesse().valeurs();
   const Conds_lim& lescl=eqn.zone_Cl_dis().les_conditions_limites();
   const IntTab& face_voisins = eqn.zone_dis().valeur().face_voisins();
-  const int nbcondlim = lescl.size(), taille = vpoint.line_size();
+  const int taille = vpoint.line_size();
 
   if (taille==1)
     if (orientation_VDF_.size() == 0)
       orientation_VDF_.ref(ref_cast(Zone_VF,eqn.zone_dis().valeur()).orientation());
 
-  for (int icl=0; icl<nbcondlim; icl++)
+  for (auto& itr : lescl)
     {
-      const Cond_lim_base& la_cl_base = lescl[icl].valeur();
+      const Cond_lim_base& la_cl_base = itr.valeur();
       if (sub_type(Dirichlet,la_cl_base))
         {
           const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl_base.frontiere_dis());

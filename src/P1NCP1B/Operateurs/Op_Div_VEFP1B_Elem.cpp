@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -678,11 +678,10 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter(const DoubleTab& vitesse_face_absolue, Do
   if ((zone_VEF.get_alphaS())&&((zone_VEF.get_cl_pression_sommet_faible()==0)))
     {
       const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
-      int nb_bords =les_cl.size();
       int nps = zone_VEF.numero_premier_sommet();
-      for (int n_bord=0; n_bord<nb_bords; n_bord++)
+      for (const auto& itr : les_cl)
         {
-          const Cond_lim& la_cl = les_cl[n_bord];
+          const Cond_lim& la_cl = itr;
           if (sub_type(Neumann,la_cl.valeur()) || sub_type(Neumann_val_ext,la_cl.valeur()))
             {
               const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());

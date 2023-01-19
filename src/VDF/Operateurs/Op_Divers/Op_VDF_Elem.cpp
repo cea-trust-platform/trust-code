@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,9 +53,9 @@ void Op_VDF_Elem::dimensionner(const Zone_VDF& la_zone, const Zone_Cl_VDF& la_zo
     }
 
   // Prise en compte des conditions de type periodicite
-  for (int i = 0; i < les_cl.size(); i++)
+  for (const auto& itr : les_cl)
     {
-      const Cond_lim& la_cl = les_cl[i];
+      const Cond_lim& la_cl = itr;
       if (sub_type(Periodique,la_cl.valeur()))
         {
           const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());

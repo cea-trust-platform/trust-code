@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -510,13 +510,12 @@ void Zone_VEF_PreP1b::construire_renum_arete_perio(const Conds_lim& conds_lim)
   const IntTab& elem_aretes=zone().elem_aretes();
   ArrOfInt aretes1(6);
   ArrOfInt aretes2(6);
-  int nb_cond_lim=conds_lim.size();
   // Premiere etape: faire pointer tous les aretes periodiques liees entre elles vers la meme arete
-  for (int num_cond_lim=0; num_cond_lim<nb_cond_lim; num_cond_lim++)
+  for (auto& itr : conds_lim)
     {
       //for cl
 
-      const Cond_lim_base& cl = conds_lim[num_cond_lim].valeur();
+      const Cond_lim_base& cl = itr.valeur();
       if (sub_type(Periodique, cl))
         {
           //if Perio

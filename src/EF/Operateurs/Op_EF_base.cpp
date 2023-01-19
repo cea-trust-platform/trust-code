@@ -275,9 +275,9 @@ void Op_EF_base::modifier_pour_Cl(const Zone_EF& la_zone,
 
   int nb_som=secmem.dimension(0);
   // Cerr << "nb_comp " << nb_comp << finl;
-  for (int i=0; i<les_cl.size(); i++)
+  for (const auto& itr : les_cl)
     {
-      const Cond_lim& la_cl = les_cl[i];
+      const Cond_lim& la_cl = itr;
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
       int nfaces = le_bord.nb_faces_tot();
       if (sub_type(Dirichlet,la_cl.valeur()))

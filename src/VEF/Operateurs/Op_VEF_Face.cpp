@@ -190,10 +190,9 @@ void Op_VEF_Face::modifier_pour_Cl(const Zone_VEF& la_zone,
   const DoubleTab& champ_inconnue = la_zone_cl.equation().inconnue().valeurs();
   const int nb_comp = champ_inconnue.line_size();
   ArrOfDouble normale(nb_comp);
-  int size = les_cl.size();
-  for (int i=0; i<size; i++)
+  for (const auto& itr : les_cl)
     {
-      const Cond_lim& la_cl = les_cl[i];
+      const Cond_lim& la_cl = itr;
       if (sub_type(Dirichlet,la_cl.valeur()))
         {
           const Dirichlet& la_cl_Dirichlet = ref_cast(Dirichlet,la_cl.valeur());

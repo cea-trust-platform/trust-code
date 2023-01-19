@@ -736,18 +736,13 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
   else
     mode = ios::out;
 
-  int nb_cl=les_cl.size();
-  for (int num_cl=0; num_cl<nb_cl; num_cl++)
+  for (auto& itr : les_cl)
     {
-      const Cond_lim& la_cl = les_cl[num_cl];
+      const Cond_lim& la_cl = itr;
       if (la_cl.valeur().que_suis_je() == "Paroi_decalee_Robin")
-        {
-          nb_cl_robin+=1;
-        }
+        nb_cl_robin+=1;
       if (sub_type(Dirichlet_paroi_fixe,la_cl.valeur()))
-        {
-          nb_cl_diri+=1;
-        }
+        nb_cl_diri+=1;
     }
 
   if (modele_turbulence.non_nul() && !ref_cast(Mod_turb_hyd_base,modele_turbulence.valeur()).loi_paroi().valeur().que_suis_je().debute_par("negligeable"))
@@ -792,14 +787,14 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
 
 //            for each cl, calculation of the mean tauw
 //            loop on boundaries
-          for (int num_cl=0; num_cl<nb_cl; num_cl++)
+          for (auto& itr : les_cl)
             {
               tauw_diri_tmp=0.;
               if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
                 rho = 0.;
               if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
                 mu = 0.;
-              const Cond_lim& la_cl = les_cl[num_cl];
+              const Cond_lim& la_cl = itr;
               if (sub_type(Dirichlet_paroi_fixe,la_cl.valeur()))
                 {
                   const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
@@ -915,14 +910,14 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
 
 //            for each cl, calculation of the mean tauw
 //            loop on boundaries
-          for (int num_cl=0; num_cl<nb_cl; num_cl++)
+          for (auto& itr : les_cl)
             {
               tauw_robin_tmp=0.;
               if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
                 rho = 0.;
               if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
                 mu = 0.;
-              const Cond_lim& la_cl = les_cl[num_cl];
+              const Cond_lim& la_cl = itr;
               if (la_cl.valeur().que_suis_je() == "Paroi_decalee_Robin")
                 {
                   const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());

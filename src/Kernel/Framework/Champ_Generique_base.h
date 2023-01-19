@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -142,8 +142,8 @@ inline int Champ_Generique_base::composante(const Nom& nom_test,const Nom& nom,c
   Motcle motlu(nom_test);
   if (motlu == Motcle(nom))
     return -1;
-  for (int i=0; i<syno.size(); i++)
-    if (syno[i]==motlu) return -1;
+  for (auto& itr : syno)
+    if (itr==motlu) return -1;
   int n = composantes.size();
   Motcles les_noms_comp(n);
   for (int i=0; i<n; i++)

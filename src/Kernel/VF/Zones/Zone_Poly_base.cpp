@@ -783,13 +783,13 @@ void Zone_Poly_base::init_dist_paroi_globale(const Conds_lim& conds_lim) // Meth
   int nb_faces_bord_ = 0;
   int nb_aretes = 0;
   std::set<int> soms;
-  for (int ind_cl = 0 ; ind_cl < conds_lim.size() ; ind_cl++)
-    if ( sub_type(Dirichlet_paroi_defilante, conds_lim[ind_cl].valeur()) || sub_type(Dirichlet_homogene, conds_lim[ind_cl].valeur()) || sub_type(Navier, conds_lim[ind_cl].valeur()) )
+  for (auto& itr : conds_lim)
+    if ( sub_type(Dirichlet_paroi_defilante, itr.valeur()) || sub_type(Dirichlet_homogene, itr.valeur()) || sub_type(Navier, itr.valeur()) )
       {
-        int num_face_1_cl = conds_lim[ind_cl].frontiere_dis().frontiere().num_premiere_face();
-        int nb_faces_cl   = conds_lim[ind_cl].frontiere_dis().frontiere().nb_faces();
+        int num_face_1_cl = itr.frontiere_dis().frontiere().num_premiere_face();
+        int nb_faces_cl   = itr.frontiere_dis().frontiere().nb_faces();
 
-        nb_faces_bord_ += conds_lim[ind_cl].frontiere_dis().frontiere().nb_faces();
+        nb_faces_bord_ += itr.frontiere_dis().frontiere().nb_faces();
 
         for (int f=num_face_1_cl ; f < nb_faces_cl+num_face_1_cl ; f++)
           {

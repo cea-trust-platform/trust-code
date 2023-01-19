@@ -82,8 +82,8 @@ void Op_Diff_PolyMAC_P0_base::completer()
   const Conds_lim& cls = eq.zone_Cl_dis().les_conditions_limites();
   nu_constant_ = (sub_type(Champ_Uniforme, diffusivite()) || sub_type(Champ_Don_Fonc_xyz, diffusivite())) ;
   if (nu_constant_)
-    for (int i = 0; i < cls.size(); i++)
-      if (sub_type(Echange_impose_base, cls[i].valeur()) || sub_type(Frottement_impose_base, cls[i].valeur()))
+    for (auto& itr : cls)
+      if (sub_type(Echange_impose_base, itr.valeur()) || sub_type(Frottement_impose_base, itr.valeur()))
         nu_constant_ = 0;
 }
 

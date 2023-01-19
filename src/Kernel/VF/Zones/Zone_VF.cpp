@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -263,12 +263,10 @@ Faces* Zone_VF::creer_faces()
 void Zone_VF::modifier_pour_Cl(const Conds_lim& conds_lim)
 {
   Cerr << " Zone_VF::modifier_pour_Cl" << finl;
-  int nb_cond_lim=conds_lim.size();
-  int i=0;
-  for (; i<nb_cond_lim; i++)
+  for (auto& itr : conds_lim)
     {
       // for( cl ...
-      const Cond_lim_base& cl=conds_lim[i].valeur();
+      const Cond_lim_base& cl=itr.valeur();
       if (sub_type(Periodique, cl))
         {
           // if (perio ...
@@ -460,11 +458,9 @@ void Zone_VF::marquer_faces_double_contrib(const Conds_lim& conds_lim)
   // marquage des faces periodiques
   ////////////////////////////////////////////////
 
-  int nb_cond_lim=conds_lim.size();
-
-  for (int i=0; i<nb_cond_lim; i++)
+  for (auto& itr : conds_lim)
     {
-      const Cond_lim_base& cl=conds_lim[i].valeur();
+      const Cond_lim_base& cl=itr.valeur();
       if (sub_type(Periodique, cl))
         {
           const Periodique& la_cl_period = ref_cast(Periodique,cl);

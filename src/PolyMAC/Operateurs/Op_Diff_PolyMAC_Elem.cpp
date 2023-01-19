@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -81,10 +81,10 @@ void Op_Diff_PolyMAC_Elem::init_op_ext() const
       const Op_Diff_PolyMAC_Elem* op = *ops_tbd.begin();
       ops_tbd.erase(ops_tbd.begin()), ops.insert(op);
       const Conds_lim& cls = op->equation().zone_Cl_dis().les_conditions_limites();
-      for (int i = 0; i < cls.size(); i++)
-        if (sub_type(Echange_contact_PolyMAC, cls[i].valeur()))
+      for (const auto& itr : cls)
+        if (sub_type(Echange_contact_PolyMAC, itr.valeur()))
           {
-            const Echange_contact_PolyMAC& cl = ref_cast(Echange_contact_PolyMAC, cls[i].valeur());
+            const Echange_contact_PolyMAC& cl = ref_cast(Echange_contact_PolyMAC, itr.valeur());
             cl.init_op();
             if (!ops.count(&cl.o_diff.valeur())) ops_tbd.insert(&cl.o_diff.valeur()); //on a un nouvel operateur a scanner
           }

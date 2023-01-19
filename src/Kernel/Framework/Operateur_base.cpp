@@ -91,9 +91,9 @@ void Operateur_base::completer()
   const Champ_Inc& inco = le_champ_inco.non_nul() ? le_champ_inco.valeur() : eqn.inconnue();
   associer(zdis, zcl, inco);
   const Conds_lim& les_cl = zcl->les_conditions_limites();
-  for (int i = 0; i < les_cl.size(); i++)
+  for (auto& itr : les_cl)
     {
-      const Frontiere_dis_base& la_fr = les_cl[i].frontiere_dis();
+      const Frontiere_dis_base& la_fr = itr.frontiere_dis();
       col_width_ = std::max(col_width_, la_fr.le_nom().longueur());
     }
   int w_suffix = 3; // pour ajout _Mx (moment)

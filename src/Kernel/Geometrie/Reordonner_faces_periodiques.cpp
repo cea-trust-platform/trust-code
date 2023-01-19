@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -296,10 +296,9 @@ void Reordonner_faces_periodiques::renum_som_perio(const Domaine& domaine,
   // Etape 1: pour chaque sommet reel, trouver un sommet associe (si plusieurs directions
   //  de periodicite, un sommet peut etre associe a plusieurs autres).
 
-  const int nb_bords_perio = liste_bords_periodiques.size();
-  for (int i_bord = 0; i_bord < nb_bords_perio; i_bord++)
+  for (auto& itr : liste_bords_periodiques)
     {
-      const Nom& nom_bord = liste_bords_periodiques[i_bord];
+      const Nom& nom_bord = itr;
       const Frontiere& front = domaine.zone(0).bord(nom_bord);
       // Direction periodique de ce bord:
       ArrOfDouble delta;

@@ -133,7 +133,7 @@ Entree& Pb_Multiphase::lire_equations(Entree& is, Motcle& mot)
   /* lecture d'equations optionnelles */
   Noms noms_eq, noms_eq_maj; //noms de toutes les equations possibles!
   Type_info::les_sous_types(Nom("Equation_base"), noms_eq);
-  for (int i = 0; i < noms_eq.size(); i++) noms_eq_maj.add(Motcle(noms_eq[i])); //ha ha ha
+  for (auto& itr : noms_eq) noms_eq_maj.add(Motcle(itr)); //ha ha ha
   for (is >> mot; noms_eq_maj.rang(mot) >= 0; is >> mot)
     {
       eq_opt.add(Equation()); //une autre equation optionelle

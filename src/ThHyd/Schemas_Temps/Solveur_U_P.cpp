@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -110,8 +110,8 @@ void Solveur_U_P::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pre
   /* doit-on fixer P(elem 0) = 0 ? */
   int has_P_ref=0;
   const Conds_lim& cls = eqnNS.zone_Cl_dis().les_conditions_limites();
-  for (int n_bord=0; n_bord < cls.size(); n_bord++)
-    if (sub_type(Neumann_sortie_libre,cls[n_bord].valeur())) has_P_ref=1;
+  for (auto& itr : cls)
+    if (sub_type(Neumann_sortie_libre,itr.valeur())) has_P_ref=1;
 
   /* ligne de masse : (div, 0) */
   Operateur_Div_base& divergence = eqnNS.operateur_divergence().valeur();

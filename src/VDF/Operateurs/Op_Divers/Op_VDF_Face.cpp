@@ -93,9 +93,9 @@ void Op_VDF_Face::dimensionner(const Zone_VDF& la_zone, const Zone_Cl_VDF& la_zo
   const Conds_lim& les_cl = la_zone_cl.les_conditions_limites();
   const IntTab& faces_voisins = la_zone.face_voisins(), &elem_faces = la_zone.elem_faces();
 
-  for (int i = 0; i < les_cl.size(); i++)
+  for (const auto& itr : les_cl)
     {
-      const Cond_lim& la_cl = les_cl[i];
+      const Cond_lim& la_cl = itr;
       if (sub_type(Periodique,la_cl.valeur()))
         {
           const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
@@ -154,9 +154,9 @@ void Op_VDF_Face::modifier_pour_Cl(const Zone_VDF& la_zone, const Zone_Cl_VDF& l
   const DoubleTab& champ_inconnue = la_zone_cl.equation().inconnue().valeurs();
   const int nb_comp = champ_inconnue.line_size();
 
-  for (int i = 0; i < les_cl.size(); i++)
+  for (const auto& itr : les_cl)
     {
-      const Cond_lim& la_cl = les_cl[i];
+      const Cond_lim& la_cl = itr;
       const Front_VF& la_front_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
       const int numdeb = la_front_dis.num_premiere_face(), nfaces = la_front_dis.nb_faces();
 

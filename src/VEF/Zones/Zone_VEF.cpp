@@ -457,12 +457,10 @@ void Zone_VEF::remplir_elem_faces()
 void Zone_VEF::modifier_pour_Cl(const Conds_lim& conds_lim)
 {
   Journal() << "Zone_VEF::Modifier_pour_Cl" << finl;
-  int nb_cond_lim=conds_lim.size();
-  int num_cond_lim=0;
-  for (; num_cond_lim<nb_cond_lim; num_cond_lim++)
+  for (auto& itr : conds_lim)
     {
       //for cl
-      const Cond_lim_base& cl = conds_lim[num_cond_lim].valeur();
+      const Cond_lim_base& cl = itr.valeur();
       if (sub_type(Periodique, cl))
         {
           //if Perio

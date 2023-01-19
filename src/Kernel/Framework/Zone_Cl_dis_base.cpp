@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -164,9 +164,8 @@ Entree& Zone_Cl_dis_base::readOn(Entree& is)
  */
 int Zone_Cl_dis_base::contient_Cl(const Nom& type)
 {
-  for(int i=0; i< les_conditions_limites_.size(); i++)
-    if(les_conditions_limites_[i].get_info()->has_base(type))
-      return 1;
+  for (auto& itr : les_conditions_limites_)
+    if (itr.get_info()->has_base(type)) return 1;
   return 0;
 }
 
@@ -257,14 +256,11 @@ void Zone_Cl_dis_base::mettre_a_jour(double temps)
  */
 void Zone_Cl_dis_base::mettre_a_jour_ss_pas_dt(double temps)
 {
-  const int nb_cl = les_conditions_limites_.size();
-  for (int i=0; i<nb_cl; i++)
+  for (auto &itr : les_conditions_limites_)
     {
-      Cond_lim_base& la_cl = les_conditions_limites_[i].valeur();
-      if (la_cl.a_mettre_a_jour_ss_pas_dt()==1)
-        {
-          la_cl.mettre_a_jour(temps);
-        }
+      Cond_lim_base& la_cl = itr.valeur();
+      if (la_cl.a_mettre_a_jour_ss_pas_dt() == 1)
+        la_cl.mettre_a_jour(temps);
     }
 }
 

@@ -705,13 +705,13 @@ void Zone_Cl_VEF::imposer_cond_lim(Champ_Inc& ch, double temps)
 
 int Zone_Cl_VEF::nb_faces_sortie_libre() const
 {
-  int compteur=0;
-  for(int cl=0; cl<les_conditions_limites_.size(); cl++)
+  int compteur = 0;
+  for (const auto &itr : les_conditions_limites_)
     {
-      if(sub_type(Neumann_sortie_libre, les_conditions_limites_[cl].valeur()))
+      if (sub_type(Neumann_sortie_libre, itr.valeur()))
         {
-          const Front_VF& le_bord=ref_cast(Front_VF,les_conditions_limites_[cl]->frontiere_dis());
-          compteur+=le_bord.nb_faces();
+          const Front_VF& le_bord = ref_cast(Front_VF, itr->frontiere_dis());
+          compteur += le_bord.nb_faces();
         }
     }
   return compteur;
@@ -719,10 +719,10 @@ int Zone_Cl_VEF::nb_faces_sortie_libre() const
 
 int Zone_Cl_VEF::nb_bord_periodicite() const
 {
-  int compteur=0;
-  for(int cl=0; cl<les_conditions_limites_.size(); cl++)
+  int compteur = 0;
+  for (const auto &itr : les_conditions_limites_)
     {
-      if (sub_type(Periodique,les_conditions_limites_[cl].valeur()))
+      if (sub_type(Periodique, itr.valeur()))
         compteur++;
     }
   return compteur;

@@ -91,10 +91,10 @@ void Op_Diff_PolyMAC_P0_Elem::init_s_dist() const
 {
   if (s_dist_init_) return; //deja fait
   const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
-  for (int i = 0; i < cls.size(); i++)
-    if (sub_type(Echange_contact_PolyMAC_P0, cls[i].valeur()))
+  for (const auto& itr : cls)
+    if (sub_type(Echange_contact_PolyMAC_P0, itr.valeur()))
       {
-        const Echange_contact_PolyMAC_P0& cl = ref_cast(Echange_contact_PolyMAC_P0, cls[i].valeur());
+        const Echange_contact_PolyMAC_P0& cl = ref_cast(Echange_contact_PolyMAC_P0, itr.valeur());
         cl.init_op();
         const Op_Diff_PolyMAC_P0_Elem *o_diff = &cl.o_diff.valeur();
         cl.init_fs_dist();
@@ -119,10 +119,10 @@ void Op_Diff_PolyMAC_P0_Elem::init_op_ext() const
       op_ext_tbd.erase(op_ext_tbd.begin());
       //elargissement de op_ext
       const Conds_lim& cls = op->equation().zone_Cl_dis()->les_conditions_limites();
-      for (i = 0; i < cls.size(); i++)
-        if (sub_type(Echange_contact_PolyMAC_P0, cls[i].valeur()))
+      for (const auto& itr : cls)
+        if (sub_type(Echange_contact_PolyMAC_P0, itr.valeur()))
           {
-            const Echange_contact_PolyMAC_P0& cl = ref_cast(Echange_contact_PolyMAC_P0, cls[i].valeur());
+            const Echange_contact_PolyMAC_P0& cl = ref_cast(Echange_contact_PolyMAC_P0, itr.valeur());
             cl.init_op();
             const Op_Diff_PolyMAC_P0_Elem *o_diff = &cl.o_diff.valeur();
             if (std::find(op_ext.begin(), op_ext.end(), o_diff) == op_ext.end())

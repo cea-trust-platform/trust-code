@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -139,11 +139,10 @@ void Partitionneur_Tranche::chercher_direction_perio(const Zone& zone,
   const int dim = Objet_U::dimension;
   directions_perio.resize_array(dim);
   directions_perio = 0;
-  const int n = liste_bords_perio.size();
-  for (int i = 0; i < n; i++)
+  for (auto& itr : liste_bords_perio)
     {
       int num_bord = 0;
-      const Nom& nom_bord = liste_bords_perio[i];
+      const Nom& nom_bord = itr;
       const int nb_bords = zone.nb_bords();
       while (num_bord < nb_bords)
         {

@@ -724,19 +724,19 @@ DoubleTab Champ_Inc_base::valeur_aux_bords() const
   DoubleTrav result(zone.xv_bord().dimension_tot(0), valeurs().line_size());
 
   const Conds_lim& cls = zone_Cl_dis().valeur().les_conditions_limites();
-  int i, j, k, f, fb, s, n, N = result.line_size(), is_p = (le_nom().debute_par("pression") || le_nom().debute_par("pressure")), n_som;
-  for (i = 0; i < cls.size(); i++)
+  int j, k, f, fb, s, n, N = result.line_size(), is_p = (le_nom().debute_par("pression") || le_nom().debute_par("pressure")), n_som;
+  for (const auto& itr : cls)
     {
-      const Front_VF& fr = ref_cast(Front_VF, cls[i].valeur().frontiere_dis());
+      const Front_VF& fr = ref_cast(Front_VF, itr->frontiere_dis());
       //valeur au bord imposee, sauf si c'est une paroi (dans ce cas, la CL peut avoir moins de composantes que le champ -> Energie_Multiphase)
-      if (is_p ? sub_type(Neumann, cls[i].valeur()) : (sub_type(Dirichlet, cls[i].valeur()) && !sub_type(Scalaire_impose_paroi, cls[i].valeur())))
+      if (is_p ? sub_type(Neumann, itr.valeur()) : (sub_type(Dirichlet, itr.valeur()) && !sub_type(Scalaire_impose_paroi, itr.valeur())))
         for (j = 0; j < fr.nb_faces_tot(); j++)
           for (f = fr.num_face(j), fb = zone.fbord(f), n = 0; n < N; n++)
-            result(fb, n) = is_p ? ref_cast(Neumann, cls[i].valeur()).flux_impose(j, n) : ref_cast(Dirichlet, cls[i].valeur()).val_imp(j, n);
-      else if (sub_type(Neumann_val_ext, cls[i].valeur())) //valeur externe imposee
+            result(fb, n) = is_p ? ref_cast(Neumann, itr.valeur()).flux_impose(j, n) : ref_cast(Dirichlet, itr.valeur()).val_imp(j, n);
+      else if (sub_type(Neumann_val_ext, itr.valeur())) //valeur externe imposee
         for (j = 0; j < fr.nb_faces_tot(); j++)
           for (f = fr.num_face(j), fb = zone.fbord(f), n = 0; n < N; n++)
-            result(fb, n) = ref_cast(Neumann_val_ext, cls[i].valeur()).val_ext(j, n);
+            result(fb, n) = ref_cast(Neumann_val_ext, itr.valeur()).val_ext(j, n);
       else if (sub_type(Champ_Inc_P0_base, *this))
         for (j = 0; j < fr.nb_faces_tot(); j++) //Champ P0 : on peut prendre la valeur en l'element
           for (f = fr.num_face(j), fb = zone.fbord(f), n = 0; n < N; n++)

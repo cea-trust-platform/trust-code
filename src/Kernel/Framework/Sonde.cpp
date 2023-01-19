@@ -119,12 +119,12 @@ void Sonde::completer()
         {
           nom_macro_test = nom_champ_lu_;
           nom_macro_test = nom_macro_test.suffix("CORRELATION_");
-          for (int i=0; i<noms_champs_postraitables.size(); i++)
+          for (auto& itr : noms_champs_postraitables)
             {
-              nom_macro_test = nom_macro_test.suffix(noms_champs_postraitables[i]);
+              nom_macro_test = nom_macro_test.suffix(itr);
               if (nom_macro_test.debute_par("_"))
                 {
-                  nom1 = noms_champs_postraitables[i];
+                  nom1 = itr;
                   nom2 = nom_macro_test.suffix("_");
                 }
             }

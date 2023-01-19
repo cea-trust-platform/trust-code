@@ -660,9 +660,9 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
   const int myZoneWasMerged = mergedZones[Process::me()];
   if(myZoneWasMerged)
     {
-      for(int bord_perio = 0; bord_perio < liste_bords_periodiques.size(); bord_perio++)
+      for(auto& itr : liste_bords_periodiques)
         {
-          Nom bp_nom = liste_bords_periodiques[bord_perio];
+          Nom bp_nom = itr;
           Bord& bord = dom.zone(0).bord(bp_nom);
           if(bord.nb_faces() == 0)
             continue;
@@ -2034,7 +2034,6 @@ void Scatter::corriger_espace_distant_elements_perio(Domaine& dom,
   elems_voisins.set_smart_resize(1);
 
   const int nb_joints = zone.nb_joints();
-  const int nb_bords_perio = liste_bords_periodiques.size();
 
   // Marqueurs des elements distants existants:
   ArrOfBit marqueurs_elements_distants(nb_elem);
@@ -2048,9 +2047,9 @@ void Scatter::corriger_espace_distant_elements_perio(Domaine& dom,
   do
     {
       nb_elements_ajoutes = 0;
-      for (int i_bord_perio = 0; i_bord_perio < nb_bords_perio; i_bord_perio++)
+      for (auto& itr : liste_bords_periodiques)
         {
-          const Nom& nom_bord = liste_bords_periodiques[i_bord_perio];
+          const Nom& nom_bord = itr;
           const Bord& bord = zone.bord(nom_bord);
           const IntTab& faces_sommets = bord.les_sommets_des_faces();
           const int nb_faces = bord.nb_faces();

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -2340,58 +2340,38 @@ void updateP1P1(const Zone_dis_base& z,
   Matrice_Morse& AVR=ref_cast(Matrice_Morse, A.get_bloc(1,0).valeur());
   Matrice_Morse& AVV=ref_cast(Matrice_Morse, A.get_bloc(1,1).valeur());
   // Faces de bord :
-  for(int i=0; i<les_cl.size(); i++)
+  for (auto &itr : les_cl)
     {
-      const Cond_lim& la_cl = les_cl[i];
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Cond_lim& la_cl = itr;
+      const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
       int nb_faces_bord_tot = le_bord.nb_faces_tot();
-      for(int ind_face=0; ind_face<nb_faces_bord_tot; ind_face++)
+      for (int ind_face = 0; ind_face < nb_faces_bord_tot; ind_face++)
         {
-          ok=okface(ind_face, face, la_cl);
-          if (ok==-1) break;
-          elem1=face_voisins(face, 0);
-          elem2=face_voisins(face, 1);
-          remplir_sommets(zone_VEF, face, elem1, elem2, sommets,
-                          face_opp1, face_opp2);
+          ok = okface(ind_face, face, la_cl);
+          if (ok == -1)
+            break;
+          elem1 = face_voisins(face, 0);
+          elem2 = face_voisins(face, 1);
+          remplir_sommets(zone_VEF, face, elem1, elem2, sommets, face_opp1, face_opp2);
           sort(sommets, face_opp1, face_opp2);
-          if(ok==3)
-            {
-              update_matrice_NeumannP1P1(zone_VEF,
-                                         inverse_quantitee_entrelacee,
-                                         face, elem1, sommets,
-                                         face_opp1, coef_som,
-                                         ARR,ARV,AVR,AVV);
-            }
-          else if(ok==4)
-            {
-              update_matrice_SymetrieP1P1(zone_VEF,
-                                          inverse_quantitee_entrelacee,
-                                          face, elem1, sommets,
-                                          face_opp1, coef_som,
-                                          ARR,ARV,AVR,AVV);
-            }
+          if (ok == 3)
+            update_matrice_NeumannP1P1(zone_VEF, inverse_quantitee_entrelacee, face, elem1, sommets, face_opp1, coef_som, ARR, ARV, AVR, AVV);
+          else if (ok == 4)
+            update_matrice_SymetrieP1P1(zone_VEF, inverse_quantitee_entrelacee, face, elem1, sommets, face_opp1, coef_som, ARR, ARV, AVR, AVV);
           else
-            update_matriceP1P1(zone_VEF,
-                               inverse_quantitee_entrelacee,
-                               face, elem1, elem2, sommets,
-                               face_opp1, face_opp2, coef_som,
-                               ARR,ARV,AVR,AVV);
+            update_matriceP1P1(zone_VEF, inverse_quantitee_entrelacee, face, elem1, elem2, sommets, face_opp1, face_opp2, coef_som, ARR, ARV, AVR, AVV);
         }
     }
   face_associee=-1;
-  for(face=nint; face<nb_faces; face++)
+  for (face = nint; face < nb_faces; face++)
     {
-      elem1=face_voisins(face, 0);
-      elem2=face_voisins(face, 1);
+      elem1 = face_voisins(face, 0);
+      elem2 = face_voisins(face, 1);
       if (!zone_VEF.est_une_face_virt_bord(face)) // On ne traite que les faces internes
         {
-          remplir_sommets(zone_VEF, face, elem1, elem2, sommets,
-                          face_opp1, face_opp2);
+          remplir_sommets(zone_VEF, face, elem1, elem2, sommets, face_opp1, face_opp2);
           sort(sommets, face_opp1, face_opp2);
-          update_matriceP1P1(zone_VEF, inverse_quantitee_entrelacee,
-                             face, elem1, elem2, sommets,
-                             face_opp1, face_opp2, coef_som,
-                             ARR,ARV,AVR,AVV);
+          update_matriceP1P1(zone_VEF, inverse_quantitee_entrelacee, face, elem1, elem2, sommets, face_opp1, face_opp2, coef_som, ARR, ARV, AVR, AVV);
         }
     }
   int nb_som=zone_VEF.zone().nb_som();
@@ -2426,10 +2406,10 @@ void modifieP1P1neumann(const Zone_dis_base& z,
   // Faces de bord :
   assert(ref_cast(Zone_VEF_PreP1b, z).get_cl_pression_sommet_faible()==0);
   int nb_som_tot=z.nb_som();
-  for(int i=0; i<les_cl.size(); i++)
+  for(auto& itr : les_cl)
     {
 
-      const Cond_lim_base& la_cl = les_cl[i].valeur();
+      const Cond_lim_base& la_cl = itr.valeur();
       if (sub_type(Neumann_sortie_libre,la_cl))
         {
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
@@ -2567,57 +2547,36 @@ void updatePaPa(const Zone_dis_base& z,
   Matrice_Morse& AVR=ref_cast(Matrice_Morse, A.get_bloc(1,0).valeur());
   Matrice_Morse& AVV=ref_cast(Matrice_Morse, A.get_bloc(1,1).valeur());
   // Faces de bord :
-  for(int i=0; i<les_cl.size(); i++)
+  for (auto &itr : les_cl)
     {
-      const Cond_lim& la_cl = les_cl[i];
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Cond_lim& la_cl = itr;
+      const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
       int nb_faces_bord_tot = le_bord.nb_faces_tot();
-      for(int ind_face=0; ind_face<nb_faces_bord_tot; ind_face++)
+      for (int ind_face = 0; ind_face < nb_faces_bord_tot; ind_face++)
         {
-          ok=okface(ind_face, face, la_cl);
-          if (ok==-1) break;
-          elem1=face_voisins(face, 0);
-          elem2=face_voisins(face, 1);
-          remplir_sommets(zone_VEF, face, elem1, elem2, sommets,
-                          face_opp1, face_opp2);
-          if(ok==3)
-            {
-              update_matrice_NeumannPaPa(zone_VEF,
-                                         inverse_quantitee_entrelacee,
-                                         face, elem1, sommets,
-                                         face_opp1,
-                                         ARR, ARV, AVR, AVV);
-            }
-          else if(ok==4)
-            {
-              update_matrice_SymetriePaPa(zone_VEF,
-                                          inverse_quantitee_entrelacee,
-                                          face, elem1, sommets,
-                                          face_opp1,
-                                          ARR, ARV, AVR, AVV);
-            }
+          ok = okface(ind_face, face, la_cl);
+          if (ok == -1)
+            break;
+          elem1 = face_voisins(face, 0);
+          elem2 = face_voisins(face, 1);
+          remplir_sommets(zone_VEF, face, elem1, elem2, sommets, face_opp1, face_opp2);
+          if (ok == 3)
+            update_matrice_NeumannPaPa(zone_VEF, inverse_quantitee_entrelacee, face, elem1, sommets, face_opp1, ARR, ARV, AVR, AVV);
+          else if (ok == 4)
+            update_matrice_SymetriePaPa(zone_VEF, inverse_quantitee_entrelacee, face, elem1, sommets, face_opp1, ARR, ARV, AVR, AVV);
           else
-            update_matricePaPa(zone_VEF,
-                               inverse_quantitee_entrelacee,
-                               face, elem1, elem2, sommets,
-                               face_opp1, face_opp2,
-                               ARR, ARV, AVR, AVV);
+            update_matricePaPa(zone_VEF, inverse_quantitee_entrelacee, face, elem1, elem2, sommets, face_opp1, face_opp2, ARR, ARV, AVR, AVV);
         }
     }
   face_associee=-1;
-  for(face=nint; face<nb_faces; face++)
+  for (face = nint; face < nb_faces; face++)
     {
-      elem1=face_voisins(face, 0);
-      elem2=face_voisins(face, 1);
+      elem1 = face_voisins(face, 0);
+      elem2 = face_voisins(face, 1);
       if (!zone_VEF.est_une_face_virt_bord(face)) // On ne traite que les faces internes
         {
-          remplir_sommets(zone_VEF, face, elem1, elem2, sommets,
-                          face_opp1, face_opp2);
-          update_matricePaPa(zone_VEF,
-                             inverse_quantitee_entrelacee,
-                             face, elem1, elem2, sommets,
-                             face_opp1, face_opp2,
-                             ARR,ARV,AVR,AVV);
+          remplir_sommets(zone_VEF, face, elem1, elem2, sommets, face_opp1, face_opp2);
+          update_matricePaPa(zone_VEF, inverse_quantitee_entrelacee, face, elem1, elem2, sommets, face_opp1, face_opp2, ARR, ARV, AVR, AVV);
         }
     }
   for(int i=0; i<nb_arete; i++)
@@ -2728,52 +2687,35 @@ void updateP0Pa(const Zone_dis_base& z,
   Matrice_Morse& AVR=ref_cast(Matrice_Morse, A.get_bloc(1,0).valeur());
   Matrice_Morse& AVV=ref_cast(Matrice_Morse, A.get_bloc(1,1).valeur());
   // Faces de bord :
-  for(int i=0; i<les_cl.size(); i++)
+  for (auto &itr : les_cl)
     {
-      const Cond_lim& la_cl = les_cl[i];
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Cond_lim& la_cl = itr;
+      const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
       int nb_faces_bord_tot = le_bord.nb_faces_tot();
-      for(int ind_face=0; ind_face<nb_faces_bord_tot; ind_face++)
+      for (int ind_face = 0; ind_face < nb_faces_bord_tot; ind_face++)
         {
-          ok=okface(ind_face, face, la_cl);
-          if (ok==-1) break;
-          elem1=face_voisins(face, 0);
-          elem2=face_voisins(face, 1);
-          remplir_sommets(zone_VEF, face, elem1, elem2, sommets,
-                          face_opp1, face_opp2);
-          if(ok==3)
-            {
-              update_matrice_NeumannP0Pa(zone_VEF,
-                                         inverse_quantitee_entrelacee,
-                                         face, elem1, sommets,
-                                         face_opp1,
-                                         ARR,ARV,AVR,AVV);
-            }
-          else if(ok==4)
-            {
-              ; // RIEN
-            }
+          ok = okface(ind_face, face, la_cl);
+          if (ok == -1)
+            break;
+          elem1 = face_voisins(face, 0);
+          elem2 = face_voisins(face, 1);
+          remplir_sommets(zone_VEF, face, elem1, elem2, sommets, face_opp1, face_opp2);
+          if (ok == 3)
+            update_matrice_NeumannP0Pa(zone_VEF, inverse_quantitee_entrelacee, face, elem1, sommets, face_opp1, ARR, ARV, AVR, AVV);
+          else if (ok == 4) { /* Do nothing */ }
           else
-            update_matriceP0Pa(zone_VEF, inverse_quantitee_entrelacee,
-                               face, elem1, elem2, sommets,
-                               face_opp1, face_opp2,
-                               ARR,ARV,AVR,AVV);
+            update_matriceP0Pa(zone_VEF, inverse_quantitee_entrelacee, face, elem1, elem2, sommets, face_opp1, face_opp2, ARR, ARV, AVR, AVV);
         }
     }
-  face_associee=-1;
-  for(face=nint; face<nb_faces; face++)
+  face_associee = -1;
+  for (face = nint; face < nb_faces; face++)
     {
-      elem1=face_voisins(face, 0);
-      elem2=face_voisins(face, 1);
+      elem1 = face_voisins(face, 0);
+      elem2 = face_voisins(face, 1);
       if (!zone_VEF.est_une_face_virt_bord(face)) // On ne traite que les faces internes
         {
-          remplir_sommets(zone_VEF, face, elem1, elem2, sommets,
-                          face_opp1, face_opp2);
-          update_matriceP0Pa(zone_VEF,
-                             inverse_quantitee_entrelacee,
-                             face, elem1, elem2, sommets,
-                             face_opp1, face_opp2,
-                             ARR,ARV,AVR,AVV);
+          remplir_sommets(zone_VEF, face, elem1, elem2, sommets, face_opp1, face_opp2);
+          update_matriceP0Pa(zone_VEF, inverse_quantitee_entrelacee, face, elem1, elem2, sommets, face_opp1, face_opp2, ARR, ARV, AVR, AVV);
         }
     }
   Cerr << "Update P0Pa OK" << finl;
@@ -2887,57 +2829,36 @@ void updateP1Pa(const Zone_dis_base& z,
   Matrice_Morse& AVR=ref_cast(Matrice_Morse, A.get_bloc(1,0).valeur());
   Matrice_Morse& AVV=ref_cast(Matrice_Morse, A.get_bloc(1,1).valeur());
   // Faces de bord :
-  for(int i=0; i<les_cl.size(); i++)
+  for (auto &itr : les_cl)
     {
-      const Cond_lim& la_cl = les_cl[i];
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Cond_lim& la_cl = itr;
+      const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
       int nb_faces_bord_tot = le_bord.nb_faces_tot();
-      for(int ind_face=0; ind_face<nb_faces_bord_tot; ind_face++)
+      for (int ind_face = 0; ind_face < nb_faces_bord_tot; ind_face++)
         {
-          ok=okface(ind_face, face, la_cl);
-          if (ok==-1) break;
-          elem1=face_voisins(face, 0);
-          elem2=face_voisins(face, 1);
-          remplir_sommets(zone_VEF, face, elem1, elem2, sommets,
-                          face_opp1, face_opp2);
-          if(ok==3)
-            {
-              update_matrice_NeumannP1Pa(zone_VEF,
-                                         inverse_quantitee_entrelacee,
-                                         face, elem1, sommets,
-                                         face_opp1, coef_som,
-                                         ARR,ARV,AVR,AVV);
-            }
-          else if(ok==4)
-            {
-              update_matrice_SymetrieP1Pa(zone_VEF,
-                                          inverse_quantitee_entrelacee,
-                                          face, elem1, sommets,
-                                          face_opp1, coef_som,
-                                          ARR,ARV,AVR,AVV);
-            }
+          ok = okface(ind_face, face, la_cl);
+          if (ok == -1)
+            break;
+          elem1 = face_voisins(face, 0);
+          elem2 = face_voisins(face, 1);
+          remplir_sommets(zone_VEF, face, elem1, elem2, sommets, face_opp1, face_opp2);
+          if (ok == 3)
+            update_matrice_NeumannP1Pa(zone_VEF, inverse_quantitee_entrelacee, face, elem1, sommets, face_opp1, coef_som, ARR, ARV, AVR, AVV);
+          else if (ok == 4)
+            update_matrice_SymetrieP1Pa(zone_VEF, inverse_quantitee_entrelacee, face, elem1, sommets, face_opp1, coef_som, ARR, ARV, AVR, AVV);
           else
-            update_matriceP1Pa(zone_VEF,
-                               inverse_quantitee_entrelacee,
-                               face, elem1, elem2, sommets,
-                               face_opp1, face_opp2, coef_som,
-                               ARR,ARV,AVR,AVV);
+            update_matriceP1Pa(zone_VEF, inverse_quantitee_entrelacee, face, elem1, elem2, sommets, face_opp1, face_opp2, coef_som, ARR, ARV, AVR, AVV);
         }
     }
   face_associee=-1;
-  for(face=nint; face<nb_faces; face++)
+  for (face = nint; face < nb_faces; face++)
     {
-      elem1=face_voisins(face, 0);
-      elem2=face_voisins(face, 1);
+      elem1 = face_voisins(face, 0);
+      elem2 = face_voisins(face, 1);
       if (!zone_VEF.est_une_face_virt_bord(face)) // On ne traite que les faces internes
         {
-          remplir_sommets(zone_VEF, face, elem1, elem2, sommets,
-                          face_opp1, face_opp2);
-          update_matriceP1Pa(zone_VEF,
-                             inverse_quantitee_entrelacee,
-                             face, elem1, elem2, sommets,
-                             face_opp1, face_opp2,coef_som,
-                             ARR,ARV,AVR,AVV);
+          remplir_sommets(zone_VEF, face, elem1, elem2, sommets, face_opp1, face_opp2);
+          update_matriceP1Pa(zone_VEF, inverse_quantitee_entrelacee, face, elem1, elem2, sommets, face_opp1, face_opp2, coef_som, ARR, ARV, AVR, AVV);
         }
     }
 
@@ -3046,38 +2967,25 @@ void updateP0P1(const Zone_dis_base& z,
   Matrice_Morse& AVR=ref_cast(Matrice_Morse, A.get_bloc(1,0).valeur());
   Matrice_Morse& AVV=ref_cast(Matrice_Morse, A.get_bloc(1,1).valeur());
   // Faces de bord :
-  for(int i=0; i<les_cl.size(); i++)
+  for (auto &itr : les_cl)
     {
-      const Cond_lim& la_cl = les_cl[i];
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Cond_lim& la_cl = itr;
+      const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
       int nb_faces_bord_tot = le_bord.nb_faces_tot();
-      for(int ind_face=0; ind_face<nb_faces_bord_tot; ind_face++)
+      for (int ind_face = 0; ind_face < nb_faces_bord_tot; ind_face++)
         {
-          ok=okface(ind_face, face, la_cl);
-          if (ok==-1) break;
-          elem1=face_voisins(face, 0);
-          elem2=face_voisins(face, 1);
-          remplir_sommets(zone_VEF, face, elem1, elem2, sommets,
-                          face_opp1, face_opp2);
+          ok = okface(ind_face, face, la_cl);
+          if (ok == -1)
+            break;
+          elem1 = face_voisins(face, 0);
+          elem2 = face_voisins(face, 1);
+          remplir_sommets(zone_VEF, face, elem1, elem2, sommets, face_opp1, face_opp2);
           sort(sommets, face_opp1, face_opp2);
-          if(ok==3)
-            {
-              update_matrice_NeumannP0P1(zone_VEF,
-                                         inverse_quantitee_entrelacee,
-                                         face, elem1, sommets,
-                                         face_opp1, coef_som,
-                                         ARR,ARV,AVR,AVV);
-            }
-          else if(ok==4)
-            {
-              ;// RIEN
-            }
+          if (ok == 3)
+            update_matrice_NeumannP0P1(zone_VEF, inverse_quantitee_entrelacee, face, elem1, sommets, face_opp1, coef_som, ARR, ARV, AVR, AVV);
+          else if (ok == 4) { /* Do nothing */ }
           else
-            update_matriceP0P1(zone_VEF,
-                               inverse_quantitee_entrelacee,
-                               face, elem1, elem2, sommets,
-                               face_opp1, face_opp2, coef_som,
-                               ARR,ARV,AVR,AVV);
+            update_matriceP0P1(zone_VEF, inverse_quantitee_entrelacee, face, elem1, elem2, sommets, face_opp1, face_opp2, coef_som, ARR, ARV, AVR, AVV);
         }
     }
   face_associee=-1;
