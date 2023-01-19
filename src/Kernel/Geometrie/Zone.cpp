@@ -2168,11 +2168,3 @@ void Zone::buildUFacesMesh(const Zone_dis_base& zone_dis_base) const
 #endif
 #endif
 }
-
-//// TODO FIXME Adrien, virer :
-
-Zone& Zone::add(Zone&)
-{
-  throw;
-  return *this;
-}

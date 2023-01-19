@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -531,7 +531,7 @@ Entree& MaillerParallel::interpreter(Entree& is)
 {
   if (dimension != 3)
     {
-      Cerr << "Error: Mailler_Parallel is only coded for dimension 3" << finl;
+      Cerr << "Error: MaillerParallel is only coded for dimension 3" << finl;
       barrier();
       exit();
     }
@@ -642,7 +642,7 @@ Entree& MaillerParallel::interpreter(Entree& is)
 
   const int numproc = Process::me();
 
-  static Stat_Counter_Id stats = statistiques().new_counter(0 /* Level */, "Mailler_Parallel", 0 /* Group */);
+  static Stat_Counter_Id stats = statistiques().new_counter(0 /* Level */, "MaillerParallel", 0 /* Group */);
 
   const int dim = Objet_U::dimension;
   if (nb_noeuds.size_array() != dim)
@@ -724,33 +724,21 @@ Entree& MaillerParallel::interpreter(Entree& is)
 
   // On cree une zone pour le domaine
   Zone empty_zone;
-  Zone& zone = domaine.add(empty_zone);
-  // Nom de la zone
-  {
-    Nom nom_zone("Proc");
-    nom_zone += Nom(numproc);
-    nom_zone += "sur";
-    nom_zone += Nom(Process::nproc());
-    zone.nommer(nom_zone);
-  }
-  zone.associer_domaine(domaine);
-  {
-    Elem_geom& elem = zone.type_elem();
-    switch(dim)
-      {
-      case 3:
-        elem.typer("Hexaedre");
-        break;
-      default:
-        Cerr << "MaillerParallel::construire_domaine  erreur" << finl;
-        exit();
-      }
-    elem.valeur().associer_zone(zone);
-  }
+  Elem_geom& elem = domaine.type_elem();
+  switch(dim)
+    {
+    case 3:
+      elem.typer("Hexaedre");
+      break;
+    default:
+      Cerr << "MaillerParallel::construire_domaine  erreur" << finl;
+      exit();
+    }
+  elem.valeur().associer_zone(domaine);
 
   BlocData data;
   Noms liste_bords_perio;
-  Bords& bords = zone.faces_bord();
+  Bords& bords = domaine.faces_bord();
   data.bord_xmin_ = nom_bords_min;
   data.bord_xmax_ = nom_bords_max;
   for (int dir = 0; dir < 3; dir++)
@@ -784,8 +772,8 @@ Entree& MaillerParallel::interpreter(Entree& is)
   for (num_bord = 0; num_bord < bords.size(); num_bord++)
     {
       Bord& bord = bords[num_bord];
-      bord.associer_zone(zone);
-      bord.faces().typer(zone.type_elem().valeur().type_face());
+      bord.associer_zone(domaine);
+      bord.faces().typer(domaine.type_elem().valeur().type_face());
       // important pour dimensionner le linesize du tableau des faces pour les frontieres vides
       bord.faces().dimensionner(0);
     }

@@ -66,12 +66,6 @@ class Zone : public Objet_U
   Declare_instanciable(Zone);
 
 public:
-
-  //// @@@@@@@@@@@@@@
-  //// TODO FIXME Adrien - A VIRER
-  Zone& add(Zone&);
-  /////
-
   ///
   /// Nodes
   ///
