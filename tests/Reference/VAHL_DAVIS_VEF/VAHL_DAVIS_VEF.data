@@ -248,6 +248,7 @@ Read pb
 
         post_front
         {
+	    domaine front
             Definition_champs
             {
 
@@ -339,7 +340,6 @@ Read pb
                 convT_gauche convT_sum periode 0.0001 numero_elem_sur_maitre 0
             }
 
-            domaine front
             format lata
             fields dt_post 0.1
             {

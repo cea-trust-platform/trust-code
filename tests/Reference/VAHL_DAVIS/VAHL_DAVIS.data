@@ -236,6 +236,7 @@ Read pb
         surface_fields
         {
 # Advanced fields definition: #
+            domaine front
             Definition_champs
             {
 
@@ -309,7 +310,6 @@ Read pb
                 diffT_gauche diffT_sum periode 0.01 numero_elem_sur_maitre 0
                 convT_gauche convT_sum periode 0.01 numero_elem_sur_maitre 0
             }
-            domaine front
             format lata
             fields dt_post 0.1
             {

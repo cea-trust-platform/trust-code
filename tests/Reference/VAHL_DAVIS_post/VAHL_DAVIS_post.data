@@ -181,6 +181,7 @@ Read pb
         }
         second_post
         {
+            Domaine dom_post2
             Probes
             {
                 sonde_temp_interp temperature_elem_dom_post2 periode 0.01 points 1 0.008 0.008
@@ -200,8 +201,6 @@ Read pb
                 }
 
             }
-
-            Domaine dom_post2
             fields dt_post 0.1 {
                 temperature_elem_dom_post2
             }

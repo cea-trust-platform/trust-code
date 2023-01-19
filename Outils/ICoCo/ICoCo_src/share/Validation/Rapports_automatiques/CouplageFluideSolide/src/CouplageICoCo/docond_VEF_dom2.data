@@ -95,6 +95,7 @@ Read pb2
     Post_processings
     {
         front {
+            domaine dom_fluide_boundaries_Paroi_echange
             Definition_champs
             {
                 FLUX_SURFACIQUE_OUT_DOM2 Interpolation {
@@ -114,7 +115,6 @@ Read pb2
                 sonde_tflu temperature periode 5. points 1 0.55 0.55
                 sonde_segf temperature periode 5. segment 10 0.3 0.75 1.0 0.75
             }
-            domaine dom_fluide_boundaries_Paroi_echange
             fichier docond_VEF_fluide_echange format lata
             fields dt_post 10
             {

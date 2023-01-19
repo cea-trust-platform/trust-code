@@ -85,6 +85,7 @@ Read pb1
     Post_processings
     {
         front {
+            domaine dom_solide_boundaries_Paroi_echange
             Definition_champs
             {
                 TEMPERATURE_OUT_DOM1 Interpolation {
@@ -101,7 +102,6 @@ Read pb1
                 sonde_segs temperature periode 5. segment 10
                 0. 0.75 0.3 0.75
             }
-            domaine dom_solide_boundaries_Paroi_echange
             fichier docond_VEF_solide_echange format lata
             fields dt_post 10
             {

@@ -465,9 +465,9 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
     }
   else if (mot=="Domaine")
     {
-      if ((champs_demande_) || (stat_demande_))
+      if (champs_demande_ || stat_demande_ || sondes_demande_)
         {
-          Cerr<<"The domain must be specified before reading Champs and Statistiques blocks "<<finl;
+          Cerr<<"The domain must be specified before reading Champs, Probes and Statistiques blocks at the beginning of the post-processing block."<<finl;
           exit();
         }
 
@@ -479,9 +479,9 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
   else if (mot=="Sous_zone")
     {
       // Sanity check
-      if ((champs_demande_) || (stat_demande_))
+      if (champs_demande_ || stat_demande_ || sondes_demande_)
         {
-          Cerr<<"The sous_zone must be specified before reading Champs and Statistiques blocks "<<finl;
+          Cerr<<"The domain must be specified before reading Champs, Probes and Statistiques blocks at the beginning of the post-processing block."<<finl;
           exit();
         }
 

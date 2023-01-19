@@ -147,7 +147,7 @@ Read pb
     }
     Post_processing
     {
-
+        domaine plan
         Definition_champs {
             u_plan Interpolation
             {
@@ -167,8 +167,6 @@ Read pb
             Sonde3 vitesse periode 0.01 segment 31  0.01 0.01 0.02
             0.0 0.02 0.02
         }
-        domaine plan
-
         fields  dt_post 50.0
         {
             vitesse elem

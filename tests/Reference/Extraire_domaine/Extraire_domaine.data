@@ -106,8 +106,7 @@ Read pb
     }
     Post_processing
     {
-
-
+        domaine sous_domaine
         definition_champs
         {
             vitesse_sous Interpolation
@@ -157,8 +156,6 @@ Read pb
             sonde4 vitesse_max_surface periode 1e-6 numero_elem_sur_maitre 1
 
         }
-        domaine sous_domaine
-
         fields  dt_post 50.0
         {
             vitesse elem
