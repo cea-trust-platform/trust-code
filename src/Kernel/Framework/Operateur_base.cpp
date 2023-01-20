@@ -279,12 +279,18 @@ void Operateur_base::associer_zone_cl_dis(const Zone_Cl_dis_base&)
   exit();
 }
 
+int Operateur_base::NUMBER_UNKNOW_OPERATORS = 0;
+
 void Operateur_base::set_fichier(const Nom& nom)
 {
   out_=Objet_U::nom_du_cas();
   out_+="_";
   out_+=equation().probleme().le_nom()+"_"+nom;
-  if (nom=="") out_+="unknown_operator";
+  if (nom=="")
+    {
+      out_+="unknown_operator";
+      NUMBER_UNKNOW_OPERATORS++;
+    }
 }
 
 /*! @brief Ouverture/creation d'un fichier d'impression d'un operateur A surcharger dans les classes derivees.
