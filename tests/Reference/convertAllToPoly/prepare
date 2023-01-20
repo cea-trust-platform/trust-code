@@ -1,0 +1,2 @@
+gunzip -c Mesh_1_hexa.med.gz > Mesh_1_hexa.med
+

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1376,6 +1376,15 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
           //assert(dim == dimension);
         }
 
+      // Desormais l'option permet de convertir tout type de maillage vers des polyedres:
+      if (convertAllToPoly)
+        {
+          Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+          Cerr << "Conversion to polyedrons and polygons..." << finl;
+          Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+          mesh->convertAllToPoly(); // Conversion maillage volumique
+        }
+
       // Get the nodes: size and fill sommets2:
       int nnodes = mesh->getNumberOfNodes();
       const double *coord = mesh->getCoords()->begin();
@@ -1420,10 +1429,6 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
                       Process::exit();
                     }
                   Cerr << finl;
-                  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-                  Cerr << "Conversion to polyedrons and polygons..." << finl;
-                  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-                  mesh->convertAllToPoly(); // Conversion maillage volumique
                   break;
                 }
               if (i==ncells-1) supported_mesh = true;

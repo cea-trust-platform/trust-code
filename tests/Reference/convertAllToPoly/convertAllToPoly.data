@@ -1,0 +1,60 @@
+# Example of reading a haxa mesh and converting to polyedras with convertAllToPoly option #
+dimension 3
+Pb_hydraulique pb
+domaine dom
+ 
+Lire_MED {
+    domain dom
+    file Mesh_1_hexa.med
+    convertAllToPoly
+}
+Postraiter_domaine { domaine dom fichier dom.med format med }
+
+Polymac dis
+
+Schema_euler_implicite sch
+Read sch
+{
+    nb_pas_dt_max 3
+    tinit 0
+    tmax 2.5
+    dt_min 0.001
+    dt_max 0.001
+    dt_impr 0.001
+    facsec 1
+    facsec_max 1
+    solveur implicite { seuil_convergence_solveur 1.e-12 solveur petsc cli { } }
+}
+
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+Read pb
+{
+    fluide_incompressible {
+        mu Champ_Uniforme 1 3.7e-05
+        rho Champ_Uniforme 1 2
+    }
+
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection { amont }
+        diffusion {  }
+        initial_conditions {
+            vitesse Champ_Uniforme 3 0. 0. 0.
+        }
+        boundary_conditions {
+            Wall paroi_fixe
+            Outlet frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
+            Inlet frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 3  0. 1. 0.
+        }
+    }
+    Postraitement
+    {
+       format med Champs dt_post 1e6 { pression elem vitesse elem }
+    }
+}
+Solve pb
+End

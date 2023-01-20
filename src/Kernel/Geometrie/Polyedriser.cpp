@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -202,6 +202,7 @@ void Polyedriser::polyedriser(Zone& zone) const
     {
       Cerr << "We do not yet know how to Polyedriser the "
            << zone.type_elem()->que_suis_je() <<"s"<<finl;
+      Cerr << "Try to use convertAllToPoly option of Lire_MED|Read_MED keyword if you read a MED file for your mesh." << finl;
       exit();
     }
 
