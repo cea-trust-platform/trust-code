@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,6 +19,7 @@
 #include <Eval_Dift_VDF_Face_leaves.h>
 #include <Op_Dift_VDF_Face_Axi_base.h>
 #include <Op_Dift_VDF_Face_base.h>
+#include <Ref_Champ_Uniforme.h>
 #include <Op_Diff_Dift_VDF.h>
 
 /// \cond DO_NOT_DOCUMENT

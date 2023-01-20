@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,8 +23,8 @@
 #include <Mod_turb_hyd_base.h>
 
 /// \cond DO_NOT_DOCUMENT
-class Eval_Dift_VDF_Face_leaves : public Eval_Diff_VDF_Face<Eval_Dift_VDF_Face_leaves>,
-  public Eval_Dift_VDF_const {};
+class Eval_Dift_VDF_Face_leaves
+{};
 /// \endcond
 
 /*! @brief class Eval_Dift_VDF_const_Face Evaluateur VDF pour la diffusion totale (laminaire et turbulente)

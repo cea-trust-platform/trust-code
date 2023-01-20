@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,15 +13,10 @@
 *
 *****************************************************************************/
 
-
 #ifndef Eval_Diff_VDF_Multi_inco_var_included
 #define Eval_Diff_VDF_Multi_inco_var_included
 
-#include <Ref_Champ_base.h>
 #include <Eval_Diff_VDF.h>
-#include <Champ_base.h>
-#include <Zone_VDF.h>
-class Champ_base;
 
 /*! @brief class Eval_Diff_VDF_Multi_inco_var Cette classe represente un evaluateur de flux diffusif
  *
@@ -32,30 +27,6 @@ class Champ_base;
  */
 class Eval_Diff_VDF_Multi_inco_var : public Eval_Diff_VDF
 {
-
-public:
-  inline void mettre_a_jour() override { }
-  inline void associer(const Champ_base& ) override;
-  inline const Champ_base& get_diffusivite() const override { return diffusivite_ ; }
-
-  // Methods used by the flux computation in template class:
-  inline double nu_1_impl(int i, int compo) const { return dt_diffusivite(i, compo); }
-  inline double nu_2_impl(int i, int compo) const { return dt_diffusivite(i, compo); }
-  inline double compute_heq_impl(double d0, int i, double d1, int j, int compo) const
-  {
-    return 1./(d0/dt_diffusivite(i,compo) + d1/dt_diffusivite(j,compo));
-  }
-
-protected:
-  REF(Champ_base) diffusivite_;
-  DoubleTab dt_diffusivite;
-  inline double dist_face(int, int, int) const;
 };
-
-inline void Eval_Diff_VDF_Multi_inco_var::associer(const Champ_base& diffu)
-{
-  diffusivite_ = ref_cast(Champ_base,diffu);
-  dt_diffusivite.ref(diffu.valeurs());
-}
 
 #endif /* Eval_Diff_VDF_Multi_inco_var_included */

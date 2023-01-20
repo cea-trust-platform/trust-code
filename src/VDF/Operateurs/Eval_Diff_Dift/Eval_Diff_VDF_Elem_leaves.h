@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,8 +25,8 @@
 
 
 /// \cond DO_NOT_DOCUMENT
-class Eval_Diff_VDF_Elem_leaves: public Eval_Diff_VDF_Elem<Eval_Diff_VDF_Elem_leaves>,
-  public Eval_Diff_VDF_const {};
+class Eval_Diff_VDF_Elem_leaves
+{};
 /// \endcond
 
 /*
@@ -105,6 +105,7 @@ class Eval_Diff_VDF_Multi_inco_const_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_D
 {
 public:
   static constexpr bool IS_MULTD = false, IS_AXI = true;
+  void mettre_a_jour() override { }
 };
 
 /*! @brief class Eval_Diff_VDF_Multi_inco_const_Elem Evaluateur VDF pour la diffusion
@@ -118,6 +119,7 @@ class Eval_Diff_VDF_Multi_inco_const_Elem : public Eval_Diff_VDF_Elem<Eval_Diff_
 {
 public:
   static constexpr bool IS_MULTD = false;
+  void mettre_a_jour() override { }
 };
 
 /*! @brief class Eval_Diff_VDF_Multi_inco_var_Elem_Axi Evaluateur VDF pour la diffusion en coordonnees cylindriques
@@ -131,6 +133,7 @@ class Eval_Diff_VDF_Multi_inco_var_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Dif
 {
 public:
   static constexpr bool IS_MULTD = false, IS_AXI = true;
+  void mettre_a_jour() override { }
 };
 
 /*! @brief class Eval_Diff_VDF_Multi_inco_var_Elem Evaluateur VDF pour la diffusion
@@ -144,6 +147,7 @@ class Eval_Diff_VDF_Multi_inco_var_Elem : public Eval_Diff_VDF_Elem<Eval_Diff_VD
 {
 public:
   static constexpr bool IS_MULTD = false;
+  void mettre_a_jour() override { }
 };
 
 #endif /* Eval_Diff_VDF_Elem_leaves_included */

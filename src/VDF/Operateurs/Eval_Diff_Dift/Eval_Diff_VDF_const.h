@@ -16,13 +16,7 @@
 #ifndef Eval_Diff_VDF_const_included
 #define Eval_Diff_VDF_const_included
 
-#include <Ref_Champ_Uniforme.h>
-#include <Champ_Uniforme.h>
 #include <Eval_Diff_VDF.h>
-#include <Champ_Face_VDF.h>
-#include <Champ_base.h>
-#include <Zone_VDF.h>
-class Champ_base;
 
 /*! @brief class Eval_Diff_VDF_const Cette classe represente un evaluateur de flux diffusif
  *
@@ -30,51 +24,7 @@ class Champ_base;
  *
  */
 class Eval_Diff_VDF_const : public Eval_Diff_VDF
-
 {
-public:
-  Eval_Diff_VDF_const() {}
-  inline void associer(const Champ_base&) override;
-  inline void mettre_a_jour() override
-  {
-    const DoubleTab& diffu_val = diffusivite_->valeurs();
-    for (int compo = 0; compo < diffu_val.dimension(1); compo++)
-      db_diffusivite[compo] = diffu_val(0, compo);
-  }
-  inline const Champ_base& get_diffusivite() const override;
-
-  // Methods used by the flux computation in template class:
-  inline double nu_1_impl(int i, int compo) const { return db_diffusivite[compo]; }
-  inline double nu_2_impl(int i, int compo) const { return db_diffusivite[compo]; }
-  inline double compute_heq_impl(double d0, int i, double d1, int j, int compo) const { return db_diffusivite[compo]/(d0+d1); }
-  inline double nu_1_impl_face(int i, int j, int compo) const { return db_diffusivite[compo]; }
-  inline double nu_2_impl_face(int i, int j, int k, int l, int compo) const { return db_diffusivite[compo]; }
-  inline double nu_lam_impl_face(int i, int j, int k, int l, int compo) const { return nu_2_impl_face(i,j,k,l,compo); }
-  inline double nu_lam_impl_face2(int i, int j, int compo) const { return nu_1_impl_face(i,j,compo); }
-  inline double nu_t_impl(int i, int compo) const { return 0.; }
-  inline double tau_tan_impl(int i, int j) const { return 0.; }
-  inline bool uses_wall() const { return false; }
-  inline bool uses_mod() const { return false; }
-  inline const DoubleTab& get_k_elem() const { throw; } // pour F5 seulement ...
-
-protected:
-  REF(Champ_Uniforme) diffusivite_;
-  std::vector<double> db_diffusivite;
 };
-
-inline void Eval_Diff_VDF_const::associer(const Champ_base& diffu)
-{
-  db_diffusivite.clear();
-  diffusivite_ = ref_cast(Champ_Uniforme, diffu);
-  const DoubleTab& diffu_val = diffusivite_->valeurs();
-  for (int compo = 0; compo < diffu_val.dimension(1); compo++)
-    db_diffusivite.push_back(diffu_val(0, compo));
-}
-
-inline const Champ_base& Eval_Diff_VDF_const::get_diffusivite() const
-{
-  assert(diffusivite_.non_nul());
-  return diffusivite_.valeur();
-}
 
 #endif /* Eval_Diff_VDF_const_included */
