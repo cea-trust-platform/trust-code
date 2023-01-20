@@ -1108,6 +1108,7 @@ then
 		    echo $ECHO_OPTS "****************************************"
 		    echo $ECHO_OPTS "CAUTION: THIS TEST CASE ABRUPTLY FAILED"
 		    echo $ECHO_OPTS "****************************************"
+		    echo "See `pwd`/$NOM2.err"
 		    mes="|$DEB|%%:%%:%%|%%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| CORE  |"$NOM2" "$ATTENTION
 		    echo $ECHO_OPTS $mes >> $SORTIE
 		    path=""

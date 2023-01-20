@@ -265,7 +265,7 @@ then
    ./prepare 1>prepare.log 2>&1
    if [ $? != 0 ]
    then
-      echo "KO."
+      echo "KO. See `pwd`/prepare.log"
       exit -1
    else
       echo "End."
