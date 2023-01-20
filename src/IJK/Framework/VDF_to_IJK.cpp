@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -85,8 +85,8 @@ static const DoubleTab& get_items_coords(const Zone_VF& zone_vf, IJK_Splitting::
       nb_items = zone_vf.zone().nb_elem();
       return zone_vf.xp();
     case IJK_Splitting::NODES:
-      nb_items = zone_vf.zone().domaine().nb_som();
-      return zone_vf.zone().domaine().les_sommets();
+      nb_items = zone_vf.zone().nb_som();
+      return zone_vf.zone().les_sommets();
     default:
       nb_items = zone_vf.nb_faces();
       return zone_vf.xv();

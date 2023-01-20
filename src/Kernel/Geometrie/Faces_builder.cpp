@@ -284,7 +284,7 @@ void Faces_builder::check_erreur_faces(const char * message,
           sptr += snprintf(sptr, 100, "%4ld %4ld", (long)face_elem(iface,0),(long) face_elem(iface,1));
           J << s << finl;
         }
-      NettoieNoeuds::verifie_noeuds(ref_zone_.valeur().domaine());
+      NettoieNoeuds::verifie_noeuds(ref_zone_.valeur());
       Process::exit();
     }
 }

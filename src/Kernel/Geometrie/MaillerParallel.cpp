@@ -352,7 +352,7 @@ static void find_joint_faces(const Zone& zone, IntTab& faces)
 {
   Static_Int_Lists som_elem;
   const IntTab& elements = zone.les_elems();
-  const int nb_som = zone.domaine().nb_som();
+  const int nb_som = zone.nb_som();
   construire_connectivite_som_elem(nb_som, elements, som_elem, 0 /* do not include virtual elements */);
   const int nb_som_faces = zone.type_elem().valeur().nb_som_face();
   faces.resize(0, nb_som_faces);
@@ -411,7 +411,7 @@ static void find_joint_faces(const Zone& zone, IntTab& faces)
             }
         }
     }
-  Process::Journal() << "Domain " << zone.domaine().le_nom() << " has " << faces.dimension(0) << " undeclared boundary faces candidates for joint faces" << finl;
+  Process::Journal() << "Domain " << zone.le_nom() << " has " << faces.dimension(0) << " undeclared boundary faces candidates for joint faces" << finl;
 }
 
 static void auto_build_joints(Zone& zone, const int epaisseur_joint)
@@ -422,7 +422,7 @@ static void auto_build_joints(Zone& zone, const int epaisseur_joint)
   IntTab faces;
   find_joint_faces(zone, faces);
 
-  const DoubleTab& sommets = zone.domaine().les_sommets();
+  const DoubleTab& sommets = zone.les_sommets();
   // List of unique local boundary node numbers
   const int dim = sommets.dimension(1);
 

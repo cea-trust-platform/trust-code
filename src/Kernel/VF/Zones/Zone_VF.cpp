@@ -103,7 +103,7 @@ void Zone_VF::discretiser()
   Cerr << "<<<<<< Discretization VF >>>>>>>>>>" << finl;
 
   Zone& lazone=zone();
-  histogramme_angle(lazone.domaine(),Cerr);
+  histogramme_angle(lazone,Cerr);
   Faces* les_faces_ptr=creer_faces();
   Faces& les_faces= *les_faces_ptr;
   {
@@ -156,7 +156,7 @@ void Zone_VF::discretiser()
 
     Scatter::calculer_espace_distant_faces(zone(), les_faces.nb_faces(), elem_faces_);
     // Apres la methode suivante, on aura le droit d'utiliser creer_tableau_faces() :
-    Scatter::construire_md_vector(zone().domaine(), les_faces.nb_faces(), Joint::FACE, md_vector_faces_);
+    Scatter::construire_md_vector(zone(), les_faces.nb_faces(), Joint::FACE, md_vector_faces_);
 
 
     const MD_Vector& md_vect_sommets = zone().les_sommets().get_md_vector();

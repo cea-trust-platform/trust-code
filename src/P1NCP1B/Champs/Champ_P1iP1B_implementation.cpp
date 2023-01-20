@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -174,7 +174,7 @@ DoubleTab& Champ_P1iP1B_implementation::valeur_aux_sommets(const Zone& dom, Doub
       Champ_P0_VEF tmp;
       tmp.associer_zone_dis_base(zvef);
       tmp.valeurs() = champ_filtre_;
-      tmp.valeur_aux_sommets(zvef.zone().domaine(), val);
+      tmp.valeur_aux_sommets(zvef.zone(), val);
     }
 
   if (zvef.get_alphaS()) // Support P1

@@ -255,7 +255,7 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ(Champ& espace_stockage
               if (loc==ELEMENT)
                 zvf.zone().creer_tableau_elements(vect_source,Array_base::NOCOPY_NOINIT);
               else if (loc==NODE)
-                zvf.domaine_dis().creer_tableau_sommets(vect_source,Array_base::NOCOPY_NOINIT);
+                zvf.domaine_dis().domaine().creer_tableau_sommets(vect_source,Array_base::NOCOPY_NOINIT);
               else if (loc==FACE)
                 zvf.creer_tableau_faces(vect_source,Array_base::NOCOPY_NOINIT);
               vect_source = 0.;
@@ -665,7 +665,7 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
       if (loc==ELEMENT)
         zvf.zone().creer_tableau_elements(un,Array_base::NOCOPY_NOINIT);
       else if (loc==NODE)
-        zvf.domaine_dis().creer_tableau_sommets(un,Array_base::NOCOPY_NOINIT);
+        zvf.domaine_dis().domaine().creer_tableau_sommets(un,Array_base::NOCOPY_NOINIT);
       else if (loc==FACE)
         zvf.creer_tableau_faces(un,Array_base::NOCOPY_NOINIT);
       un = 1.;

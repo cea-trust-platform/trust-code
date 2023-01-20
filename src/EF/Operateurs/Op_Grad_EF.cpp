@@ -145,7 +145,7 @@ void ajouter_bord(DoubleTab& resu,const Zone_EF& zone_EF,const  Zone_Cl_EF& zone
           interface_CALCULSI CALCULSI;
           DoubleTab xl(3,8),poro(4),detj(npgau), cnorm(3),si(4);
           int ip=0;
-          const DoubleTab& coord=zone_EF.zone().domaine().coord_sommets();
+          const DoubleTab& coord=zone_EF.zone().coord_sommets();
 
           //const DoubleTab& face_normales = zone_EF.face_normales();
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,7 +40,7 @@ void Segment_EF_axi::normale(int num_Face,DoubleTab& Face_normales,
   Segment_EF::normale(num_Face,Face_normales,Face_sommets,Face_voisins,elem_faces,zone_geom);
 
   const DoubleTab& les_coords = zone_geom.coord_sommets();
-  const ZoneAxi1d& domax = ref_cast(ZoneAxi1d,zone_geom.domaine());
+  const ZoneAxi1d& domax = ref_cast(ZoneAxi1d,zone_geom);
   int elem = Face_voisins(num_Face,0)==-1 ? Face_voisins(num_Face,1) : Face_voisins(num_Face,0);
 
   double x0 = domax.origine_repere(elem,0);

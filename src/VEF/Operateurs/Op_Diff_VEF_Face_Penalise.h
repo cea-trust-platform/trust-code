@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -171,7 +171,7 @@ inline const Zone&  Op_Diff_VEF_Face_Penalise::zone() const
 
 inline const Zone&  Op_Diff_VEF_Face_Penalise::domaine() const
 {
-  return zone().domaine();
+  return zone();
 }
 
 

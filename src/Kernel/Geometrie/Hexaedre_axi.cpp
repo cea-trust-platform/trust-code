@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -69,7 +69,7 @@ const Nom& Hexaedre_axi::nom_lml() const
 void Hexaedre_axi::calculer_centres_gravite(DoubleTab& xp) const
 {
   const IntTab& les_Polys = ma_zone->les_elems();
-  const Zone& le_domaine = ma_zone->domaine();
+  const Zone& le_domaine = ma_zone.valeur();
   int nb_elem = ma_zone->nb_elem();
   int num_som;
 

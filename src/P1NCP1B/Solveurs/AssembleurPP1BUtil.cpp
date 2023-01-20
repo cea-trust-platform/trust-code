@@ -160,8 +160,8 @@ int verifier( const Assembleur_P_VEFPreP1B& ass,
   const Zone& zone=zone_VEF.zone();
   int nb_elem=zone.nb_elem();
   int nb_elem_tot=zone.nb_elem_tot();
-  int nb_som=zone.domaine().nb_som();
-  int nb_som_tot=zone.domaine().nb_som_tot();
+  int nb_som=zone.nb_som();
+  int nb_som_tot=zone.nb_som_tot();
   int nb_aretes=zone.nb_aretes();
   const ArrOfInt& ok_arete=zone_VEF.get_ok_arete();
   for (int proc=0; proc<Process::nproc(); proc++)
@@ -185,7 +185,7 @@ int verifier( const Assembleur_P_VEFPreP1B& ass,
                 {
                   int sommet=i-nb_elem_tot;
                   Cerr << "On verifie le sommet reel ";
-                  if (zone.domaine().get_renum_som_perio(sommet)!=sommet) Cerr << "periodique ";
+                  if (zone.get_renum_som_perio(sommet)!=sommet) Cerr << "periodique ";
                   Cerr << i-nb_elem_tot << " du processeur " << proc;
                   pre(i)=1;
                 }
@@ -297,7 +297,7 @@ static inline int chercher_arete(const Zone_VEF_PreP1b& zone_VEF,
                                  const IntTab& aretes_som)
 {
   const ArrOfInt& renum_arete_perio=zone_VEF.get_renum_arete_perio();
-  const Zone& dom=zone_VEF.zone().domaine();
+  const Zone& dom=zone_VEF.zone();
   if(somi>somj)
     {
       int k=somi;
@@ -344,7 +344,7 @@ static inline void remplir_sommets(const Zone_VEF& zone_VEF,
   const IntTab& elem_som = zone_VEF.zone().les_elems();
   const IntTab& face_som = zone_VEF.face_sommets();
   const IntTab& elem_faces = zone_VEF.elem_faces();
-  const Zone& dom=zone_VEF.zone().domaine();
+  const Zone& dom=zone_VEF.zone();
   int i,j,k;
   for(i=0; i<Objet_U::dimension; i++)
     sommets[i]=dom.get_renum_som_perio(face_som(face,i));

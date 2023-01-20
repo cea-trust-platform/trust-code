@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -906,7 +906,7 @@ void Champ_front_contact_VEF::test_faces_coin()
   const Conds_lim& conds_lim = la_zcl_dis1.les_conditions_limites();
   int size_cl = conds_lim.size();
 
-  const Nom& nom_dom = l_inconnue1->equation().probleme().le_nom();
+  const Nom& nom_dom = l_inconnue1->equation().probleme().domaine().le_nom();
   int erreur = 0;
   for (int num_cl=0; num_cl<size_cl; num_cl++)
     {

@@ -68,7 +68,7 @@ void Decouper_Bord_coincident::decouper_(Zone& zone)
 
       //On dimensionne une premiere fois le tableau des sommets
       //puis on redimensionnera seulement a la fin par la dimension exacte
-      Scatter::uninit_sequential_domain(dom);
+      Scatter::uninit_sequential_domain(zone);
 
       DoubleTab& sommets_dom = zone.les_sommets();
       //int dim_som_old=sommets_zone.dimension(0); // dim_som_old = oldnbsom
@@ -240,7 +240,7 @@ void Decouper_Bord_coincident::decouper_(Zone& zone)
               }
           }
       }
-      Scatter::init_sequential_domain(dom);
+      Scatter::init_sequential_domain(zone);
       Cerr<<"END of Decouper_Bord_coincident..."<<finl;
       Cerr<<"  1 NbElem="<<zone.les_elems().dimension(0)<<"  NbSom="<<zone.nb_som()<<finl;
     }
@@ -249,7 +249,4 @@ void Decouper_Bord_coincident::decouper_(Zone& zone)
       Cerr << "We do not yet know how to Decouper_Bord_coincident the "
            << zone.type_elem()->que_suis_je() <<"s"<<finl;
     }
-
 }
-
-

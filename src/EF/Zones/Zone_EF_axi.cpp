@@ -171,11 +171,11 @@ void Zone_EF_axi::discretiser()
 
 const ZoneAxi1d& Zone_EF_axi::domaine_axi() const
 {
-  return ref_cast(ZoneAxi1d,zone().domaine());
+  return ref_cast(ZoneAxi1d,zone());
 }
 
 ZoneAxi1d& Zone_EF_axi::domaine_axi()
 {
-  return ref_cast(ZoneAxi1d,zone().domaine());
+  return ref_cast(ZoneAxi1d,zone());
 }
 

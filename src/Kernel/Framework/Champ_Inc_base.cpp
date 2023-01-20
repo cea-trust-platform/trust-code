@@ -412,7 +412,7 @@ int Champ_Inc_base::sauvegarder(Sortie& fich) const
     {
       Nom mon_ident(nom_);
       mon_ident += que_suis_je();
-      mon_ident += equation().probleme().le_nom();
+      mon_ident += equation().probleme().domaine().le_nom();
       mon_ident += Nom(temps_, "%e");
       fich << mon_ident << finl;
       fich << que_suis_je() << finl;

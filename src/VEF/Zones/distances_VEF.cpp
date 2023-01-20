@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -630,7 +630,7 @@ DoubleVect& calcul_longueur_filtre(DoubleVect& longueur_filtre, const Motcle& me
 
   if ( ! (methode == Motcle("volume_sans_lissage")) )  // processus de "regularisation"
     {
-      const Zone& dom=zone.zone().domaine();
+      const Zone& dom=zone.zone();
       const IntTab& les_sommets = zone_geom.les_elems();
       int nb_sommet = zone.nb_som_tot();
       ArrOfDouble longueur_filtre_sommet(nb_sommet);
@@ -666,7 +666,7 @@ DoubleVect& calcul_longueur_filtre(DoubleVect& longueur_filtre, const Motcle& me
 double distance_sommets(const int sommet1, const int sommet2, const Zone_VEF& zone)
 {
   const Zone& zone_geom = zone.zone();
-  const DoubleTab& xs = zone_geom.domaine().coord_sommets();
+  const DoubleTab& xs = zone_geom.coord_sommets();
   double x1 = xs(sommet1,0);
   double y1 = xs(sommet1,1);
   double x2 = xs(sommet2,0);
@@ -687,7 +687,7 @@ double distance_sommets(const int sommet1, const int sommet2, const Zone_VEF& zo
 double som_pscal(const int som0, const int som1, const int som2, const int som3, const Zone_VEF& zone)
 {
   const Zone& zone_geom = zone.zone();
-  const DoubleTab& xs = zone_geom.domaine().coord_sommets();
+  const DoubleTab& xs = zone_geom.coord_sommets();
 
   ArrOfDouble v1(3),v2(3),v3(3);
   double n1,n2,n3;

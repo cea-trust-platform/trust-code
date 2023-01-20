@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,7 +38,7 @@ void affecte_int_avec_inttab(int** p, const ArrOfInt& trio)
 void build_triofield(const Champ_Generique_base& ch, ICoCo::TrioField& afield)
 {
   const Zone_VF& zvf = ref_cast(Zone_VF, ch.get_ref_zone_dis_base());
-  const Zone& dom = zvf.zone().domaine();
+  const Zone& dom = zvf.zone();
 
   afield.clear();
   afield.setName(ch.le_nom().getString());

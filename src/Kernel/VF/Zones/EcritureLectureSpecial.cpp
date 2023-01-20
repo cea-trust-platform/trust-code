@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,8 +47,8 @@ const DoubleTab& get_ref_coordinates_items(const Zone_VF& zvf, const MD_Vector& 
     return zvf.xp(); // Descripteur des elements
   else if (md == zvf.xa().get_md_vector())
     return zvf.xa(); // Descripteur des aretes
-  else if (md == zvf.zone().domaine().les_sommets().get_md_vector())
-    return zvf.zone().domaine().les_sommets();
+  else if (md == zvf.zone().les_sommets().get_md_vector())
+    return zvf.zone().les_sommets();
   else
     {
       Cerr << "Error in get_ref_coordinates_items\n"
@@ -490,7 +490,7 @@ static int lecture_special_part2(const Zone_VF& zvf, Entree& fich, DoubleTab& va
   else if (sub_type(MD_Vector_std, md.valeur()))
     {
       const DoubleTab& coords = get_ref_coordinates_items(zvf, md);
-      const double epsilon = zvf.zone().domaine().epsilon();
+      const double epsilon = zvf.zone().epsilon();
       ntot += lire_special(fich, coords, val, epsilon);
     }
   else

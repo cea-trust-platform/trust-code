@@ -1887,7 +1887,7 @@ static void calculer_liste_complete_aretes_joint(const Joint& joint, ArrOfInt& l
   int nb_faces_joint=joint.faces().nb_faces();
   int nb_som_faces=joint.faces().nb_som_faces();
   const IntTab& sommet=joint.faces().les_sommets();
-  const Zone& dom=joint.zone().domaine();
+  const Zone& dom=joint.zone();
   const DoubleTab& coord=dom.coord_sommets();
   const IntTab& aretes_som=joint.zone().aretes_som();
   ArrOfInt aretes(1);

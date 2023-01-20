@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -97,7 +97,7 @@ void Echange_interne_global_impose::completer()
 
   if (zvf.zone().axi1d())
     {
-      const ZoneAxi1d& domax = ref_cast(ZoneAxi1d,zvf.zone().domaine());
+      const ZoneAxi1d& domax = ref_cast(ZoneAxi1d,zvf.zone());
       const IntTab& face_voisins = zvf.face_voisins();
       const DoubleTab& xv = zvf.xv();
       const IntTab& fmap = t_ext.face_map();

@@ -318,7 +318,7 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
                     {
                       sources_location.add( "elem" );
                     }
-                  else if( md == zvf_source_i.zone( ).domaine( ).les_sommets( ).get_md_vector( ) )
+                  else if( md == zvf_source_i.zone( ).les_sommets( ).get_md_vector( ) )
                     {
                       sources_location.add( "som" );
                     }

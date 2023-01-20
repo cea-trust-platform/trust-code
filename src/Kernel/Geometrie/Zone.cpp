@@ -447,16 +447,6 @@ ArrOfInt& Zone::chercher_elements(const DoubleVect& positions, ArrOfInt& element
     positions2(0, ii) = positions(ii);
   return chercher_elements(positions2, elements, reel);
 }
-/*! @brief Specifie le domaine dont la zone fait partie.
- *
- * @param (Zone& un_domaine) le domaine dont la zone fait partie
- */
-void Zone::associer_domaine(const Zone& un_domaine)
-{
-  //TODO FIXME Adrien
-  throw;
-  //le_domaine=un_domaine;
-}
 
 /*! @brief Renvoie le nombre de faces qui sont des bords.
  *
