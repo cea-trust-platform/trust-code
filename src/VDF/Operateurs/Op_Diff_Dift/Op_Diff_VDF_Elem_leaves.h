@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,78 +25,6 @@
 class Op_Diff_VDF_Elem_leaves
 { };
 /// \endcond
-
-//////////////// CONST /////////////////
-
-/*! @brief class Op_Diff_VDF_Elem Cette classe represente l'operateur de diffusion associe a une equation de transport.
- *
- *   La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite n'est pas uniforme
- *   L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Diff_VDF_var_Elem
- *
- */
-class Op_Diff_VDF_Elem : public Op_Diff_VDF_Elem_base, public Op_Diff_Dift_VDF<Op_Diff_VDF_Elem>
-{
-  Declare_instanciable_sans_constructeur(Op_Diff_VDF_Elem);
-public:
-  Op_Diff_VDF_Elem();
-  inline Op_Diff_VDF_Elem(const Iterateur_VDF_base& it) : Op_Diff_VDF_Elem_base(it) { } // pour FT
-  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd, const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_DIFF_ELEM,Eval_Diff_VDF_const_Elem>(zd,zcd,ch); }
-  inline void associer_diffusivite(const Champ_base& ch) override { associer_diffusivite_impl<Eval_Diff_VDF_const_Elem>(ch); }
-  inline const Champ_base& diffusivite() const override { return diffusivite_impl<Eval_Diff_VDF_const_Elem>(); }
-};
-
-/*! @brief class Op_Diff_VDF_Elem_Axi Cette classe represente l'operateur de diffusion associe a une equation de transport.
- *
- *   La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite n'est pas uniforme
- *   L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Diff_VDF_var_Elem
- *
- */
-class Op_Diff_VDF_Elem_Axi : public Op_Diff_VDF_Elem_base, public Op_Diff_Dift_VDF<Op_Diff_VDF_Elem_Axi>
-{
-  Declare_instanciable_sans_constructeur(Op_Diff_VDF_Elem_Axi);
-public:
-  Op_Diff_VDF_Elem_Axi();
-  inline Op_Diff_VDF_Elem_Axi(const Iterateur_VDF_base& iterateur) : Op_Diff_VDF_Elem_base(iterateur) { } // pour FT
-  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd, const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_DIFF_ELEM,Eval_Diff_VDF_const_Elem_Axi>(zd,zcd,ch); }
-  inline void associer_diffusivite(const Champ_base& ch) override { associer_diffusivite_impl<Eval_Diff_VDF_const_Elem_Axi>(ch); }
-  inline const Champ_base& diffusivite() const override { return diffusivite_impl<Eval_Diff_VDF_const_Elem_Axi>(); }
-};
-
-/*! @brief class Op_Diff_VDF_Multi_inco_Elem Cette classe represente l'operateur de diffusion associe a une equation de transport.
- *
- *   La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite n'est pas uniforme
- *   L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Diff_VDF_var_Elem
- *
- */
-class Op_Diff_VDF_Multi_inco_Elem : public Op_Diff_VDF_Elem_base, public Op_Diff_Dift_VDF<Op_Diff_VDF_Multi_inco_Elem>
-{
-  Declare_instanciable_sans_constructeur(Op_Diff_VDF_Multi_inco_Elem);
-public:
-  Op_Diff_VDF_Multi_inco_Elem();
-  inline Op_Diff_VDF_Multi_inco_Elem(const Iterateur_VDF_base& iterateur) : Op_Diff_VDF_Elem_base(iterateur) { } // pour FT
-  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd, const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_DIFF_ELEM,Eval_Diff_VDF_Multi_inco_const_Elem>(zd,zcd,ch); }
-  inline void associer_diffusivite(const Champ_base& ch) override { associer_diffusivite_impl<Eval_Diff_VDF_Multi_inco_const_Elem>(ch); }
-  inline const Champ_base& diffusivite() const override { return diffusivite_impl<Eval_Diff_VDF_Multi_inco_const_Elem>(); }
-};
-
-/*! @brief class Op_Diff_VDF_Multi_inco_Elem_Axi Cette classe represente l'operateur de diffusion associe a une equation de transport.
- *
- *   La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite n'est pas uniforme
- *   L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Diff_VDF_var_Elem
- *
- */
-class Op_Diff_VDF_Multi_inco_Elem_Axi : public Op_Diff_VDF_Elem_base, public Op_Diff_Dift_VDF<Op_Diff_VDF_Multi_inco_Elem_Axi>
-{
-  Declare_instanciable_sans_constructeur(Op_Diff_VDF_Multi_inco_Elem_Axi);
-public:
-  Op_Diff_VDF_Multi_inco_Elem_Axi();
-  inline Op_Diff_VDF_Multi_inco_Elem_Axi(const Iterateur_VDF_base& iterateur) : Op_Diff_VDF_Elem_base(iterateur) { } // pour FT
-  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd, const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_DIFF_ELEM,Eval_Diff_VDF_Multi_inco_const_Elem_Axi>(zd,zcd,ch); }
-  inline void associer_diffusivite(const Champ_base& ch) override { associer_diffusivite_impl<Eval_Diff_VDF_Multi_inco_const_Elem_Axi>(ch); }
-  inline const Champ_base& diffusivite() const override { return diffusivite_impl<Eval_Diff_VDF_Multi_inco_const_Elem_Axi>(); }
-};
-
-//////////////// VAR /////////////////
 
 /*! @brief class Op_Diff_VDF_var_Elem Cette classe represente l'operateur de diffusion associe a une equation de transport.
  *

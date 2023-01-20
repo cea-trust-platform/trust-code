@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,19 +14,6 @@
 *****************************************************************************/
 
 #include <Op_Diff_VDF_Face_leaves.h>
-
-//////////////// CONST /////////////////
-
-Implemente_instanciable_sans_constructeur(Op_Diff_VDF_Face,"Op_Diff_VDF_const_Face",Op_Diff_VDF_Face_base);
-Sortie& Op_Diff_VDF_Face::printOn(Sortie& s ) const { return s << que_suis_je() ; }
-Entree& Op_Diff_VDF_Face::readOn(Entree& s ) { return s ; }
-Op_Diff_VDF_Face::Op_Diff_VDF_Face() : Op_Diff_VDF_Face_base(Iterateur_VDF_Face<Eval_Diff_VDF_const_Face>()) { }
-
-Implemente_instanciable(Op_Diff_VDF_Face_Axi,"Op_Diff_VDF_const_Face_Axi",Op_Diff_VDF_Face_Axi_base);
-Sortie& Op_Diff_VDF_Face_Axi::printOn(Sortie& s ) const { return s << que_suis_je() ; }
-Entree& Op_Diff_VDF_Face_Axi::readOn(Entree& s ) { return s ; }
-
-//////////////// VAR /////////////////
 
 Implemente_instanciable_sans_constructeur(Op_Diff_VDF_var_Face,"Op_Diff_VDF_var_Face",Op_Diff_VDF_Face_base);
 Sortie& Op_Diff_VDF_var_Face::printOn(Sortie& s ) const { return s << que_suis_je() ; }

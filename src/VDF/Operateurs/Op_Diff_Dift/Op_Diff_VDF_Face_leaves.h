@@ -27,47 +27,6 @@ class Op_Diff_VDF_Face_leaves
 { };
 /// \endcond
 
-//////////////// CONST /////////////////
-
-/*! @brief class Op_Diff_VDF_Face Cette classe represente l'operateur de diffusion associe a une equation de la quantite de mouvement.
- *
- *   La discretisation est VDF. Le champ diffuse est un Champ_Face_VDF. Le champ de diffusivite est uniforme
- *   L'iterateur associe est de type Iterateur_VDF_Face. L'evaluateur associe est de type Eval_Diff_VDF_const_Face
- *
- */
-class Op_Diff_VDF_Face : public Op_Diff_VDF_Face_base, public Op_Diff_Dift_VDF<Op_Diff_VDF_Face>
-{
-  Declare_instanciable_sans_constructeur(Op_Diff_VDF_Face);
-public:
-  Op_Diff_VDF_Face();
-  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd, const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_DIFF_FACE,Eval_Diff_VDF_const_Face>(zd,zcd,ch); }
-  inline void associer_diffusivite(const Champ_base& ch) override { associer_diffusivite_impl<Eval_Diff_VDF_const_Face>(ch); }
-  inline const Champ_base& diffusivite() const override { return diffusivite_impl<Eval_Diff_VDF_const_Face>(); }
-  inline void mettre_a_jour(double ) override { mettre_a_jour_impl<Type_Operateur::Op_DIFF_FACE,Eval_Diff_VDF_const_Face>(); }
-};
-
-/*! @brief class Op_Diff_VDF_Face_Axi Cette classe represente l'operateur de diffusion associe aux equations de quantite de mouvement en coordonnees cylindriques.
- *
- *   La discretisation est VDF. Le champ diffuse est un Champ_Face_VDF. Le champ de diffusivite est uniforme
- *   Cette classe n'utilise ni iterateur ni evaluateur (il y avait trop de termes supplementaires dus aux coordonnees cylindriques)
- *
- */
-class Op_Diff_VDF_Face_Axi : public Op_Diff_VDF_Face_Axi_base
-{
-  Declare_instanciable(Op_Diff_VDF_Face_Axi);
-public:
-  inline double nu_(const int i) const override { return diffusivite_.valeur()(0,0); }
-  inline double nu_mean_2_pts_(const int , const int ) const override { return diffusivite_.valeur()(0,0); }
-  inline double nu_mean_4_pts_(const int , const int ) const override { return diffusivite_.valeur()(0,0); }
-  inline void associer_diffusivite(const Champ_base& diffu) override { diffusivite_ = ref_cast(Champ_Uniforme, diffu); }
-  inline const Champ_base& diffusivite() const override { return diffusivite_; }
-
-protected:
-  REF(Champ_Uniforme) diffusivite_;
-};
-
-//////////////// VAR /////////////////
-
 /*! @brief class Op_Diff_VDF_var_Face Cette classe represente l'operateur de diffusion associe a une equation de la quantite de mouvement.
  *
  *   La discretisation est VDF. Le champ diffuse est un Champ_Face_VDF. Le champ de diffusivite n'est pas uniforme

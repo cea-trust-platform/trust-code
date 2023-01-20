@@ -31,31 +31,9 @@ class Eval_Diff_VDF_Elem_leaves
 
 /*
  * ******************************
- * CAS SCALAIRE - const/var/aniso
+ * CAS SCALAIRE - var/aniso
  * ******************************
  */
-
-/*! @brief class Eval_Diff_VDF_const_Elem_Axi Evaluateur VDF pour la diffusion en coordonnees cylindriques
- *
- *  Le champ diffuse est scalaire (Champ_P0_VDF). Le champ de diffusivite est constant.
- *
- * @sa Eval_Diff_VDF_const
- */
-class Eval_Diff_VDF_const_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_const_Elem_Axi>, public Eval_Diff_VDF_const
-{
-public:
-  static constexpr bool IS_AXI = true;
-};
-
-/*! @brief class Eval_Diff_VDF_const_Elem Evaluateur VDF pour la diffusion
- *
- *  Le champ diffuse est scalaire (Champ_P0_VDF). Le champ de diffusivite est constant.
- *
- * @sa Eval_Diff_VDF_const
- */
-class Eval_Diff_VDF_const_Elem : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_const_Elem>, public Eval_Diff_VDF_const {};
-
-
 /*! @brief class Eval_Diff_VDF_var_Elem_Axi Evaluateur VDF pour la diffusion en coordonnees cylindriques
  *
  *  Le champ diffuse est scalaire (Champ_P0_VDF). Le champ de diffusivite n'est pas constant.
@@ -90,37 +68,9 @@ public:
 
 /*
  * ******************************
- * CAS VECTORIEL - const/var
+ * CAS VECTORIEL - var
  * ******************************
  */
-
-/*! @brief class Eval_Diff_VDF_Multi_inco_const_Elem_Axi Evaluateur VDF pour la diffusion en coordonnees cylindriques
- *
- *  Le champ diffuse est scalaire (Champ_P0_VDF) avec plusieurs inconnues
- *  Il y a une diffusivite par inconnue. Le champ de diffusivite associe a chaque inconnue est constant.
- *
- * @sa Eval_Diff_VDF_Multi_inco_const
- */
-class Eval_Diff_VDF_Multi_inco_const_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_Multi_inco_const_Elem_Axi>, public Eval_Diff_VDF_Multi_inco_const
-{
-public:
-  static constexpr bool IS_MULTD = false, IS_AXI = true;
-  void mettre_a_jour() override { }
-};
-
-/*! @brief class Eval_Diff_VDF_Multi_inco_const_Elem Evaluateur VDF pour la diffusion
- *
- *  Le champ diffuse est scalaire (Champ_P0_VDF) avec plusieurs inconnues
- *  Il y a une diffusivite par inconnue. Le champ de diffusivite associe a chaque inconnue est constant.
- *
- * @sa Eval_Diff_VDF_Multi_inco_const
- */
-class Eval_Diff_VDF_Multi_inco_const_Elem : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_Multi_inco_const_Elem>, public Eval_Diff_VDF_Multi_inco_const
-{
-public:
-  static constexpr bool IS_MULTD = false;
-  void mettre_a_jour() override { }
-};
 
 /*! @brief class Eval_Diff_VDF_Multi_inco_var_Elem_Axi Evaluateur VDF pour la diffusion en coordonnees cylindriques
  *

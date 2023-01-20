@@ -25,15 +25,6 @@ class Eval_Diff_VDF_Face_leaves
 {};
 /// \endcond
 
-/*! @brief class Eval_Diff_VDF_const_Face Evaluateur VDF pour la diffusion
- *
- *  Le champ diffuse est un Champ_Face_VDF
- *  Le champ de diffusivite est constant.
- *
- */
-class Eval_Diff_VDF_const_Face : public Eval_Diff_VDF_Face<Eval_Diff_VDF_const_Face>,
-  public Eval_Diff_VDF_const { };
-
 /*! @brief class Eval_Diff_VDF_var_Face Evaluateur VDF pour la diffusion
  *
  *  Le champ diffuse est un Champ_Face_VDF
