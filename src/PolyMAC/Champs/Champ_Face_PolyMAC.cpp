@@ -232,7 +232,7 @@ DoubleTab& Champ_Face_PolyMAC::valeur_aux_elems_(const DoubleTab& val_face ,cons
 
   //on interpole ve sur tous les elements, puis on se restreint a les_polys
   DoubleTrav ve(0, N * D);
-  zone_PolyMAC().zone().domaine().creer_tableau_elements(ve);
+  zone_PolyMAC().zone().creer_tableau_elements(ve);
   bool is_vit = cha.le_nom().debute_par("vitesse") && !cha.le_nom().debute_par("vitesse_debitante");
   interp_ve(val_face, ve, is_vit);
   for (int p = 0; p < les_polys.size(); p++)
@@ -247,7 +247,7 @@ DoubleVect& Champ_Face_PolyMAC::valeur_aux_elems_compo(const DoubleTab& position
 
   //on interpole ve sur tous les elements, puis on se restreint a les_polys
   DoubleTrav ve(0, dimension * cha.valeurs().line_size());
-  zone_PolyMAC().zone().domaine().creer_tableau_elements(ve);
+  zone_PolyMAC().zone().creer_tableau_elements(ve);
   interp_ve(cha.valeurs(), ve);
 
   for (int p = 0; p < polys.size(); p++) val(p) = (polys(p) == -1) ? 0. : ve(polys(p), ncomp);
@@ -306,7 +306,7 @@ DoubleTab& Champ_Face_PolyMAC::trace(const Frontiere_dis_base& fr, DoubleTab& x,
   DoubleTrav ve(0, N * D);
   if (vectoriel)
     {
-      zone_PolyMAC().zone().domaine().creer_tableau_elements(ve);
+      zone_PolyMAC().zone().creer_tableau_elements(ve);
       interp_ve(val, ve);
     }
 

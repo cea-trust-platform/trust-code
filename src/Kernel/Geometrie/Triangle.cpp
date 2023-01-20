@@ -80,7 +80,7 @@ int Triangle::contient(const ArrOfDouble& pos, int ielem) const
 {
   assert(pos.size_array()==2);
   const Zone& zone=ma_zone.valeur();
-  const Zone& dom=zone.domaine();
+  const Zone& dom=zone;
   assert(ielem<zone.nb_elem_tot());
   int som0 = zone.sommet_elem(ielem,0);
   int som1 = zone.sommet_elem(ielem,1);
@@ -158,7 +158,7 @@ int Triangle::contient(const ArrOfInt& som, int element ) const
 void Triangle::calculer_volumes(DoubleVect& volumes) const
 {
   const Zone& zone=ma_zone.valeur();
-  const DoubleTab& coord = zone.domaine().coord_sommets();
+  const DoubleTab& coord = zone.coord_sommets();
   DoubleTab pos(3,dimension);
   int size_tot = zone.nb_elem_tot();
   assert(volumes.size_totale()==size_tot);
@@ -183,7 +183,7 @@ void Triangle::calculer_normales(const IntTab& Face_sommets ,
                                  DoubleTab& face_normales) const
 {
   const Zone& zone_geom = ma_zone.valeur();
-  const DoubleTab& les_coords = zone_geom.domaine().coord_sommets();
+  const DoubleTab& les_coords = zone_geom.coord_sommets();
   int nbfaces = Face_sommets.dimension(0);
   double x1,y1;
   int n0,n1;

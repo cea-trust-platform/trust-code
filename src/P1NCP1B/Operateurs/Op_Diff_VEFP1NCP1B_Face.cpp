@@ -263,7 +263,7 @@ double Op_Diff_VEFP1NCP1B_Face::calculer_dt_stab() const
   if (alphaS)
     {
       DoubleTab nu_p1;
-      zone.domaine().creer_tableau_sommets(nu_p1);
+      zone.creer_tableau_sommets(nu_p1);
       remplir_nu_p1(nu,nu_p1);
       calculer_dt_stab_som(nu_p1,coeffOperateur);
     }
@@ -480,7 +480,7 @@ calculer_gradient_som(const DoubleVect& inconnue) const
   const Zone_VEF_PreP1b& zone_VEF = zone_VEFPreP1B();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   const Zone& zone = zone_VEF.zone();
-  const Zone& dom=zone.domaine();
+  const Zone& dom=zone;
 
   const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
 
@@ -855,7 +855,7 @@ calculer_divergence_som(DoubleVect& div) const
 {
   const Zone_VEF_PreP1b& zone_VEF = zone_VEFPreP1B();
   const Zone& zone = zone_VEF.zone();
-  const Zone& dom=zone.domaine();
+  const Zone& dom=zone;
 
   const DoubleTab& face_normales = zone_VEF.face_normales();
   ArrOfDouble sigma(dimension);
@@ -1052,7 +1052,7 @@ ajouter(const DoubleTab& inconnue, DoubleTab& resu) const
   //et est seulement reutilisee ici.
   if (alphaS)
     {
-      zone.domaine().creer_tableau_sommets(nu_p1);
+      zone.creer_tableau_sommets(nu_p1);
       remplir_nu_p1(nu,nu_p1);
       laplacien_p1_.ajouter_multvect(inconnue2,resu3);
 
@@ -1098,7 +1098,7 @@ void Op_Diff_VEFP1NCP1B_Face::initialiser()
   zone_VEF.zone().creer_tableau_elements(gradient_p0_);
 
   gradient_p1_.resize(0, size, Objet_U::dimension);
-  zone_VEF.zone().domaine().creer_tableau_sommets(gradient_p1_);
+  zone_VEF.zone().creer_tableau_sommets(gradient_p1_);
 
   if (alphaA)
     {
@@ -1218,7 +1218,7 @@ void Op_Diff_VEFP1NCP1B_Face::calculer_flux_bords_som(const DoubleVect& inconnue
   const Zone_VEF_PreP1b& zone_VEF = zone_VEFPreP1B();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   const Zone& zone = zone_VEF.zone();
-  const Zone& dom=zone.domaine();
+  const Zone& dom=zone;
 
   const IntTab& face_sommets=zone_VEF.face_sommets();
 
@@ -2192,7 +2192,7 @@ ajouter_contribution(const DoubleTab& inconnue,Matrice_Morse& matrice) const
     ajouter_contribution_elem(inconnue,porosite_face,nu,matrice);
   if (alphaS)
     {
-      zone.domaine().creer_tableau_sommets(nu_p1);
+      zone.creer_tableau_sommets(nu_p1);
       remplir_nu_p1(nu,nu_p1);
       ajouter_contribution_som(inconnue,porosite_face,nu_p1,matrice);
     }
@@ -2221,7 +2221,7 @@ remplir_nu_p1(const DoubleTab& nu_elem,DoubleTab& nu_p1) const
 {
   const Zone_VEF_PreP1b& zone_VEF=zone_VEFPreP1B();
   const Zone& zone=zone_VEF.zone();
-  const Zone& dom=zone.domaine();
+  const Zone& dom=zone;
 
   const int nb_som = dom.nb_som();
   const int nb_elem_tot=zone.nb_elem_tot();
@@ -2316,7 +2316,7 @@ void Op_Diff_VEFP1NCP1B_Face::liste_face(IntLists& liste,int& nnz) const
   const Zone_VEF_PreP1b& zone_VEF = zone_VEFPreP1B();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   const Zone& zone = zone_VEF.zone();
-  const Zone& dom=zone.domaine();
+  const Zone& dom=zone;
 
 
   const IntTab& som_elem=zone.les_elems();
@@ -2719,7 +2719,7 @@ gradient_som(const int face,int& nnz, IntVect& som_glob,DoubleTab& grad) const
 {
   const Zone_VEF_PreP1b& zone_VEF=zone_VEFPreP1B();
   const Zone& zone=zone_VEF.zone();
-  const Zone& dom=zone.domaine();
+  const Zone& dom=zone;
 
   const DoubleTab& face_normales=zone_VEF.face_normales();
   const DoubleVect& volume_aux_sommets=zone_VEF.volume_aux_sommets();
@@ -2834,7 +2834,7 @@ gradient_som_CL(const int face,int& nnz, IntVect& som_glob,DoubleTab& grad) cons
 {
   const Zone_VEF_PreP1b& zone_VEF=zone_VEFPreP1B();
   const Zone& zone=zone_VEF.zone();
-  const Zone& dom=zone.domaine();
+  const Zone& dom=zone;
 
   const DoubleTab& face_normales=zone_VEF.face_normales();
   const DoubleVect& volume_aux_sommets=zone_VEF.volume_aux_sommets();
@@ -2938,7 +2938,7 @@ void Op_Diff_VEFP1NCP1B_Face::isInStencil(int face,int som_glob,
 {
   const Zone_VEF_PreP1b& zone_VEF=zone_VEFPreP1B();
   const Zone& zone=zone_VEF.zone();
-  const Zone& dom=zone.domaine();
+  const Zone& dom=zone;
 
   const IntTab& face_voisins=zone_VEF.face_voisins();
   const IntTab& elem_som=zone.les_elems();
@@ -3194,7 +3194,7 @@ void Op_Diff_VEFP1NCP1B_Face::test() const
   const Zone_VEF_PreP1b& zone_VEF=zone_VEFPreP1B();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   const Zone& zone = zone_VEF.zone();
-  const Zone& dom=zone.domaine();
+  const Zone& dom=zone;
 
   const Solveur_Masse& solveur_masse=equation().solv_masse();
 

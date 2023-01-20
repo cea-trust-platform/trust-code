@@ -258,7 +258,7 @@ Entree& Postraitement::readOn(Entree& s )
     }
 
   Probleme_base& le_pb = mon_probleme.valeur();
-  le_domaine=le_pb.domaine();
+  le_domaine=le_pb;
 
   Postraitement_base::readOn(s);
 
@@ -491,7 +491,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
       la_sous_zone=ref_cast(Sous_Zone,Interprete_bloc::objet_global(nom_de_la_sous_zone));
 
       // Declaration du domaine
-      Nom nom_du_dom(la_sous_zone.zone().domaine().le_nom());
+      Nom nom_du_dom(la_sous_zone.zone().le_nom());
       Nom nom_du_nouveau_dom = nom_du_dom + Nom("_") + nom_de_la_sous_zone;
 
       Nom in("domaine ");
@@ -628,7 +628,7 @@ int Postraitement::sauvegarder(Sortie& os) const
             {
               //On veut retrouver le nom precedent pour relecture des statistiques (format xyz)
               Nom mon_ident("Operateurs_Statistique_tps");
-              mon_ident += probleme().domaine().le_nom();
+              mon_ident += probleme().le_nom();
               double temps = probleme().schema_temps().temps_courant();
               mon_ident += Nom(temps,"%e");
               os << mon_ident << finl;
@@ -1753,7 +1753,7 @@ void Postraitement::creer_champ_post(const Motcle& motlu1,const Motcle& motlu2,E
   Entree_complete s_complete(ajout,s);
   s_complete>>champ;
 
-  //if ((le_domaine.valeur().le_nom()!=mon_probleme.valeur().domaine().le_nom()) && ((motlu2!="natif"))) {
+  //if ((le_domaine.valeur().le_nom()!=mon_probleme.valeur().le_nom()) && ((motlu2!="natif"))) {
   {
 
     if ((motlu2!="natif")&&(motlu2!="faces"))
@@ -1910,7 +1910,7 @@ void Postraitement::creer_champ_post_stat(const Motcle& motlu1,const Motcle& mot
       Entree_complete s_complete(ajout,s);
       s_complete>>champ;
 
-      //if (le_domaine.valeur().le_nom()!=mon_probleme.valeur().domaine().le_nom()) {
+      //if (le_domaine.valeur().le_nom()!=mon_probleme.valeur().le_nom()) {
       Champ_Generique_Interpolation& champ_interp = ref_cast(Champ_Generique_Interpolation,champ.valeur());
       champ_interp.set_domaine(le_domaine.valeur().le_nom());
       // champ_interp.discretiser_domaine(*this);

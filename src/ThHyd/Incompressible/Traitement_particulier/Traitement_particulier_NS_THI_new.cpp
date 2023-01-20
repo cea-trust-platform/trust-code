@@ -150,7 +150,7 @@ int& Traitement_particulier_NS_THI_new::calcul_nb_som_dir(const Zone& zone)
   const char* methode_actuelle="Traitement_particulier_NS_THI_new::calcul_nb_som_dir";
 
   // Sert a calculer le nombre de sommet commun en parallele
-  double nb_som = zone.domaine().md_vector_sommets().valeur().nb_items_seq_tot();
+  double nb_som = zone.md_vector_sommets().valeur().nb_items_seq_tot();
   // Somme sur tous les processeurs
 
   double nb=pow(nb_som*1.,1./3.);

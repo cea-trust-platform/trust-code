@@ -99,7 +99,7 @@ void Rectangle_2D_axi::calculer_centres_gravite(DoubleTab& xp) const
 void Rectangle_2D_axi::calculer_volumes(DoubleVect& volumes) const
 {
   const Zone& zone=ma_zone.valeur();// zone.valeur() permet d'acceder a                                            // la zone qui est en cours de traitement
-  const Zone& dom=zone.domaine();
+  const Zone& dom=zone;
   double r,r1,r2,dr,dz;
   int S1,S2,S3;
   int size_tot = zone.nb_elem_tot();

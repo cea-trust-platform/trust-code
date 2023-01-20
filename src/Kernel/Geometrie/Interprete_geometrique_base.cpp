@@ -72,7 +72,7 @@ Entree& Interprete_geometrique_base::interpreter(Entree& is)
 // Je rajoute dans les sous-zones les nouveaux elements
 void Interprete_geometrique_base::mettre_a_jour_sous_zone(Zone& zone, int& elem, int num_premier_elem, int nb_elem) const
 {
-  Zone& dom=zone.domaine();
+  Zone& dom=zone;
   for (int ssz=0; ssz<dom.nb_ss_zones(); ssz++)
     {
       Sous_Zone& sous_zone=dom.ss_zone(ssz);

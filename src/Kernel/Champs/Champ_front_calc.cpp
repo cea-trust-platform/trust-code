@@ -103,7 +103,7 @@ int Champ_front_calc::initialiser(double temps, const Champ_Inc_base& inco)
       const Frontiere& frontiere_locale = frontiere_dis().frontiere();
       if (distant_ && !sub_type(Raccord_distant_homogene, frontiere_opposee))
         {
-          const Nom& nom_domaine_oppose = zone_dis_opposee.zone().domaine().le_nom();
+          const Nom& nom_domaine_oppose = zone_dis_opposee.zone().le_nom();
           Cerr << "Error, the boundary " << frontiere_opposee.le_nom() << " should be a Raccord." << finl;
           Cerr << "Add in your data file between the definition and the partition of the domain " << nom_domaine_oppose << " :" << finl;
           Cerr << "Modif_bord_to_raccord " << nom_domaine_oppose << " " << frontiere_opposee.le_nom() << finl;

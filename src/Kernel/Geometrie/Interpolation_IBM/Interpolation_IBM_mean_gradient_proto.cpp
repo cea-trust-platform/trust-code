@@ -29,7 +29,7 @@ void Interpolation_IBM_mean_gradient_proto::computeSommetsVoisins(Zone_dis_base&
   int nb_som_elem = la_zone_EF.zone().nb_som_elem();
   DoubleTab& elems_solid_ref = solid_elems_.valeur().valeurs();
   const IntTab& elems = la_zone_EF.zone().les_elems();
-  const DoubleTab& coordsDom = la_zone_EF.zone().domaine().coord_sommets();
+  const DoubleTab& coordsDom = la_zone_EF.zone().coord_sommets();
   const DoubleTab& solidPointsCoords = solid_points.valeur().valeurs();
 
   //Cerr << "nb_som_elem = " << nb_som_elem << finl;

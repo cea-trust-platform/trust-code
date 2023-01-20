@@ -25,11 +25,11 @@ void Octree_Zone::reset()
 void Octree_Zone::build(const Zone& zone, const double epsilon)
 {
   ref_zone_ = zone;
-  octree_double_.build_elements(zone.domaine().les_sommets(),
+  octree_double_.build_elements(zone.les_sommets(),
                                 zone.les_elems(),
                                 epsilon,
                                 1);
-  pos_.resize_array(zone.domaine().les_sommets().dimension(1));
+  pos_.resize_array(zone.les_sommets().dimension(1));
 }
 
 int Octree_Zone::rang_elem(double x, double y, double z) const

@@ -33,7 +33,7 @@ void Polyedre_poly::normale(int num_Face,DoubleTab& Face_normales,
 {
 
   //Cerr << " num_Face " << num_Face << finl;
-  const DoubleTab& les_coords = zone_geom.domaine().coord_sommets();
+  const DoubleTab& les_coords = zone_geom.coord_sommets();
 
   // Cerr << "les face sommet " << Face_sommets << finl;
 

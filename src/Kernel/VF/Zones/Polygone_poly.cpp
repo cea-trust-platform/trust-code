@@ -38,7 +38,7 @@ void Polygone_poly::normale(int num_Face,DoubleTab& Face_normales,
                             const IntTab& elem_faces,
                             const Zone& zone_geom) const
 {
-  const DoubleTab& les_coords = zone_geom.domaine().coord_sommets();
+  const DoubleTab& les_coords = zone_geom.coord_sommets();
 
   double x1,y1;
   double nx,ny;

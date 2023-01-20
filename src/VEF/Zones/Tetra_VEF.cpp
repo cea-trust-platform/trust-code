@@ -61,7 +61,7 @@ void Tetra_VEF::normale(int num_Face,DoubleTab& Face_normales,
 {
 
   //Cerr << " num_Face " << num_Face << finl;
-  const DoubleTab& les_coords = zone_geom.domaine().coord_sommets();
+  const DoubleTab& les_coords = zone_geom.coord_sommets();
 
   // Cerr << "les face sommet " << Face_sommets << finl;
   double x1,y1,z1,x2,y2,z2;
@@ -129,7 +129,7 @@ void Tetra_VEF::creer_facette_normales(const Zone& zone_geom,
                                        DoubleTab& facette_normales,
                                        const IntVect& rang_elem_non_std) const
 {
-  const DoubleTab& les_coords = zone_geom.domaine().coord_sommets();
+  const DoubleTab& les_coords = zone_geom.coord_sommets();
   const IntTab& les_Polys = zone_geom.les_elems();
   int nb_elem = zone_geom.nb_elem();
 

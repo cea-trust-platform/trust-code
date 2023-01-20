@@ -36,8 +36,8 @@ int Champ_P0_EF::imprime(Sortie& os, int ncomp) const
 {
   const Zone_dis_base& zone_dis = zone_dis_base();
   const Zone& zone = zone_dis.zone();
-  const DoubleTab& coord=zone.domaine().coord_sommets();
-  const int nb_som = zone.domaine().nb_som();
+  const DoubleTab& coord=zone.coord_sommets();
+  const int nb_som = zone.nb_som();
   const DoubleTab& val = valeurs();
   int som;
   os << nb_som << finl;

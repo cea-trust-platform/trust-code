@@ -307,7 +307,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
   const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b, la_zone_vef.valeur());
   assert(zone_VEF.get_alphaS());
   const Zone& zone = zone_VEF.zone();
-  const Zone& dom = zone.domaine();
+  const Zone& dom = zone;
   const DoubleTab& face_normales = zone_VEF.face_normales();
   const IntTab& som_elem = zone.les_elems();
   const IntTab& elem_faces = zone_VEF.elem_faces();
@@ -780,7 +780,7 @@ void Op_Div_VEFP1B_Elem::degres_liberte() const
   // (sommet uniquement commun a des faces avec des CL Diriclet)
   const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b,la_zone_vef.valeur());
   const Zone& zone = zone_VEF.zone();
-  const Zone& dom=zone.domaine();
+  const Zone& dom=zone;
   const IntTab& som_elem=zone.les_elems();
   const IntTab& elem_faces=zone_VEF.elem_faces();
   const IntTab& face_voisins=zone_VEF.face_voisins();

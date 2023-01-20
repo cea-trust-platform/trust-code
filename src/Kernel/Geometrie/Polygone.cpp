@@ -195,7 +195,7 @@ int Polygone::contient(const ArrOfDouble& pos_r, int num_poly ) const
 {
   const Zone& zone=ma_zone.valeur();
   const IntTab& elem=zone.les_elems();
-  const DoubleTab& coord=zone.domaine().coord_sommets();
+  const DoubleTab& coord=zone.coord_sommets();
   DoubleTab pos(3,dimension);
   // on decoupe le polygone en triangle ayany tous le sommet 0.
 
@@ -242,7 +242,7 @@ void Polygone::calculer_volumes(DoubleVect& volumes) const
 
   const Zone& zone=ma_zone.valeur();
   const IntTab& elem=zone.les_elems();
-  const DoubleTab& coord=zone.domaine().coord_sommets();
+  const DoubleTab& coord=zone.coord_sommets();
   int size = zone.nb_elem();
 
 
@@ -398,7 +398,7 @@ void Polygone::calculer_centres_gravite(DoubleTab& xp) const
 {
   const Zone& zone=ma_zone.valeur();
   const IntTab& elem=zone.les_elems();
-  const DoubleTab& coord=zone.domaine().coord_sommets();
+  const DoubleTab& coord=zone.coord_sommets();
   int nb_elem;
   if(xp.dimension(0)==0)
     {
@@ -445,7 +445,7 @@ void Polygone::calculer_un_centre_gravite(const int num_poly,DoubleVect& xp) con
 {
   const Zone& zone=ma_zone.valeur();
   const IntTab& elem=zone.les_elems();
-  const DoubleTab& coord=zone.domaine().coord_sommets();
+  const DoubleTab& coord=zone.coord_sommets();
   xp.resize(dimension);
 
 

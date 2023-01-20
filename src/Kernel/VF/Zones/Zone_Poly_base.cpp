@@ -149,7 +149,7 @@ void Zone_Poly_base::reordonner(Faces& les_faces)
   //   le tableau Zone_Cl_Poly_base::type_elem_Cl_).
   // Un element est non standard s'il est voisin d'une face frontiere.
   {
-    const Zone& dom = zone().domaine();
+    const Zone& dom = zone();
     const int nb_elements = nb_elem();
     const int nb_faces_front = zone().nb_faces_frontiere();
     dom.creer_tableau_elements(rang_elem_non_std_);
@@ -416,7 +416,7 @@ void Zone_Poly_base::discretiser()
   {
     const int n = nb_faces();
     face_normales_.resize(n, dimension);
-    // const Zone & dom = zone().domaine();
+    // const Zone & dom = zone();
     //    Scatter::creer_tableau_distribue(dom, Joint::FACE, face_normales_);
     creer_tableau_faces(face_normales_);
     const IntTab& face_som = face_sommets();
@@ -454,7 +454,7 @@ void Zone_Poly_base::discretiser()
   }
 
   /* recalcul de xv pour avoir les vrais CG des faces */
-  const DoubleTab& coords = zone().domaine().coord_sommets();
+  const DoubleTab& coords = zone().coord_sommets();
   for (int face = 0; dimension == 3 && face < nb_faces(); face++)
     {
       double xs[3] = { 0, }, S = 0;
@@ -476,7 +476,7 @@ void Zone_Poly_base::discretiser()
           Cerr << "===============================" << finl;
           Cerr << "Error in your mesh for " << que_suis_je() << "!" << finl;
           Cerr << "Add this keyword before discretization in your data file to create polyedras:" << finl;
-          Cerr << "Polyedriser " << zone().domaine().le_nom() << finl;
+          Cerr << "Polyedriser " << zone().le_nom() << finl;
           Process::exit();
         }
       for (int r = 0; r < 3; r++) xv_(face, r) = xs[r] / S;
@@ -507,7 +507,7 @@ void Zone_Poly_base::discretiser()
 void Zone_Poly_base::detecter_faces_non_planes() const
 {
   const IntTab& f_e = face_voisins(), &f_s = face_sommets_;
-  const DoubleTab& xs = zone().domaine().coord_sommets(), &nf = face_normales_;
+  const DoubleTab& xs = zone().coord_sommets(), &nf = face_normales_;
   const DoubleVect& fs = face_surfaces();
   int i, j, f, s, rk = Process::me(), np = Process::nproc();
   double sin2;
@@ -676,7 +676,7 @@ const IntTab& Zone_Poly_base::equiv() const
   IntTrav ntot, nequiv;
   creer_tableau_faces(ntot), creer_tableau_faces(nequiv);
   equiv_.resize(nb_faces_tot(), 2, e_f.dimension(1));
-  Cerr << zone().domaine().le_nom() << " : intializing equiv... ";
+  Cerr << zone().le_nom() << " : intializing equiv... ";
   for (f = 0, equiv_ = -1; f < nb_faces_tot(); f++)
     if ((e1 = f_e(f, 0)) >= 0 && (e2 = f_e(f, 1)) >= 0)
       for (i = 0; i < e_f.dimension(1) && (f1 = e_f(e1, i)) >= 0; i++)
@@ -694,7 +694,7 @@ const IntTab& Zone_Poly_base::equiv() const
 const Static_Int_Lists& Zone_Poly_base::som_elem() const
 {
   if (som_elem_.get_nb_lists() >= 0) return som_elem_;
-  construire_connectivite_som_elem(zone().domaine().nb_som_tot(), zone().les_elems(), som_elem_, 1);
+  construire_connectivite_som_elem(zone().nb_som_tot(), zone().les_elems(), som_elem_, 1);
   return som_elem_;
 }
 
@@ -724,7 +724,7 @@ const DoubleTab& Zone_Poly_base::vol_elem_som() const
 {
   if (vol_elem_som_.size()) return vol_elem_som_; //deja fait
   const IntTab& es_d = elem_som_d(), &e_f = elem_faces(), &f_s = face_sommets(), &e_s = zone().les_elems();
-  const DoubleTab& xs = zone().domaine().coord_sommets();
+  const DoubleTab& xs = zone().coord_sommets();
   DoubleTab& vol = vol_elem_som_;
   vol.resize(es_d(nb_elem_tot()));
   int e, s, f, i, j, k, D = dimension;
@@ -746,7 +746,7 @@ const DoubleTab& Zone_Poly_base::pvol_som(const DoubleVect& porosite_elem) const
   if (pvol_som_.size()) return pvol_som_; //deja fait
   const IntTab& es_d = elem_som_d(), &e_s = zone().les_elems();
   const DoubleTab& v_es = vol_elem_som();
-  zone().domaine().creer_tableau_sommets(pvol_som_);
+  zone().creer_tableau_sommets(pvol_som_);
   for (int e = 0; e < nb_elem_tot(); e++)
     for (int i = 0, j = es_d(e); j < es_d(e + 1); i++, j++)
       pvol_som_(e_s(e, i)) += porosite_elem(e) * v_es(j);
@@ -762,7 +762,7 @@ void Zone_Poly_base::init_dist_paroi_globale(const Conds_lim& conds_lim) // Meth
   const Zone_Poly_base& zone_ = *this;
   int D=Objet_U::dimension, nf = zone_.nb_faces(), ne = zone_.nb_elem();
   const IntTab& f_s = face_sommets();
-  const DoubleTab& xs = zone_.zone().domaine().coord_sommets();
+  const DoubleTab& xs = zone_.zone().coord_sommets();
 
   // On initialise les tables y_faces_ et y_elem_
   zone_.creer_tableau_faces(y_faces_);
@@ -937,5 +937,5 @@ void Zone_Poly_base::init_dist_paroi_globale(const Conds_lim& conds_lim) // Meth
   y_faces_.echange_espace_virtuel();
   y_elem_.echange_espace_virtuel();
   dist_paroi_initialisee_ = 1;
-  Cerr <<"Initialize the y table " << zone_.zone().domaine().le_nom();
+  Cerr <<"Initialize the y table " << zone_.zone().le_nom();
 }

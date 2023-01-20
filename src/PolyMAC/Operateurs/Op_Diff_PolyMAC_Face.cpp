@@ -178,7 +178,7 @@ void Op_Diff_PolyMAC_Face::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
   update_nu();
   int i, j, k, e, f, fb, a, ab, s, n, N = ch.valeurs().line_size(), nf_tot = zone.nb_faces_tot(), d, db, D = dimension, N_nu = nu_.line_size(), semi = (int)semi_impl.count(nom_inco);
   double vecz[3] = { 0, 0, 1 }, v_cl[3], t = equation().schema_temps().temps_courant();
-  const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &xs = zone.zone().domaine().coord_sommets(), &xa = D < 3 ? xs : zone.xa(), &ta = zone.ta(), &nf = zone.face_normales(),
+  const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &xs = zone.zone().coord_sommets(), &xa = D < 3 ? xs : zone.xa(), &ta = zone.ta(), &nf = zone.face_normales(),
                    &inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : ch.valeurs();
   const DoubleVect& la = zone.longueur_aretes(), &vf = zone.volumes_entrelaces(), &fs = zone.face_surfaces(), &ve = zone.volumes();
 

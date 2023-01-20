@@ -206,7 +206,7 @@ void Polyedriser::polyedriser(Zone& zone) const
       exit();
     }
 
-  const DoubleTab& coords = zone.domaine().coord_sommets();
+  const DoubleTab& coords = zone.coord_sommets();
 
   for (auto &itr : zone.faces_bord())
     {

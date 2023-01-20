@@ -355,5 +355,5 @@ void Raccord_distant_homogene::initialise(const Frontiere& opposed_boundary, con
   raccord_distant.e() = 0;
   raccord_distant.est_initialise() = 1;
   raccord_distant.completer();
-  Cerr <<"Initialize the remote connection " << zone_dis.zone().domaine().le_nom() << "/" << raccord_distant.le_nom() << "<-" << opposed_zone_dis.zone().domaine().le_nom() << "/" << opposed_boundary.le_nom() << finl;
+  Cerr <<"Initialize the remote connection " << zone_dis.zone().le_nom() << "/" << raccord_distant.le_nom() << "<-" << opposed_zone_dis.zone().le_nom() << "/" << opposed_boundary.le_nom() << finl;
 }

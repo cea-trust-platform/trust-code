@@ -100,7 +100,7 @@ int Prisme::contient(const ArrOfDouble& pos, int ielem ) const
   // adaptation de tetraedre contient
   assert(pos.size_array()==3);
   const Zone& zone=ma_zone.valeur();
-  const Zone& dom=zone.domaine();
+  const Zone& dom=zone;
   double prod1,prod2,xn,yn,zn;
   int som0, som1, som2, som3,som4,som5;
 
@@ -204,7 +204,7 @@ void Prisme::calculer_volumes(DoubleVect& volumes) const
 {
   const Zone& zone=ma_zone.valeur();
   const IntTab& elem=zone.les_elems();
-  const DoubleTab& coord=zone.domaine().coord_sommets();
+  const DoubleTab& coord=zone.coord_sommets();
   int size_tot = zone.nb_elem_tot();
   assert(volumes.size_totale()==size_tot);
   for (int num_poly=0; num_poly<size_tot; num_poly++)

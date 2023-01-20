@@ -933,7 +933,7 @@ void Champ_P1NC_implementation::filtrer_H1(DoubleTab& valeurs) const
 void Champ_P1NC_implementation::filtrer_L2(DoubleTab& valeurs) const
 {
   const Zone_VEF& zone_VEF = zone_vef();
-  const Zone& dom=zone_VEF.zone().domaine();
+  const Zone& dom=zone_VEF.zone();
   double coeff= 1./Objet_U::dimension;
   //   int nb_som= zone_VEF.zone().nb_som_tot();
   int nb_faces=valeurs.dimension_tot(0);
@@ -1130,7 +1130,7 @@ void Champ_P1NC_implementation::filtrer_resu(DoubleTab& resu) const
   const Zone_VEF& zone_VEF = zone_vef();
   const DoubleVect& volumes_entrelaces= zone_VEF.volumes_entrelaces();
   const Zone& mazone =zone_VEF.zone();
-  const Zone& dom=mazone.domaine();
+  const Zone& dom=mazone;
   const IntTab& face_sommets=zone_VEF.face_sommets();
   int nb_faces=resu.dimension(0);
   int nb_faces_tot=resu.dimension_tot(0);
@@ -1325,7 +1325,7 @@ DoubleVect& Champ_P1NC_implementation::valeur_a_elem(const DoubleVect& position,
   const int N = cha.nb_comp(), D = Objet_U::dimension;
   const Zone& zone_geom = get_zone_geom();
   const Zone_VEF& zone_VEF = zone_vef();
-  const DoubleTab& coord = zone_geom.domaine().coord_sommets();
+  const DoubleTab& coord = zone_geom.coord_sommets();
   const IntTab& sommet_poly = zone_geom.les_elems();
   const IntTab& elem_faces=zone_VEF.elem_faces();
   const DoubleTab& ch = cha.valeurs();
@@ -1353,7 +1353,7 @@ valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const
   const Zone& zone_geom = get_zone_geom();
   const int D = Objet_U::dimension;
   const Zone_VEF& zone_VEF = zone_vef();
-  const DoubleTab& coord = zone_geom.domaine().coord_sommets();
+  const DoubleTab& coord = zone_geom.coord_sommets();
   const IntTab& sommet_poly = zone_geom.les_elems();
   const IntTab& elem_faces=zone_VEF.elem_faces();
   const DoubleTab& ch = cha.valeurs();
@@ -1388,7 +1388,7 @@ valeur_aux_elems(const DoubleTab& positions,
 
   const Zone_VEF& zone_VEF = zone_vef();
   const Zone& zone_geom = get_zone_geom();
-  const DoubleTab& coord = zone_geom.domaine().coord_sommets();
+  const DoubleTab& coord = zone_geom.coord_sommets();
   const IntTab& sommet_poly = zone_geom.les_elems();
   if (val.nb_dim() > 2)
     {
@@ -1441,7 +1441,7 @@ valeur_aux_elems_compo(const DoubleTab& positions,
   int face;
   const Zone_VEF& zone_VEF = zone_vef();
   const Zone& zone_geom = get_zone_geom();
-  const DoubleTab& coord = zone_geom.domaine().coord_sommets();
+  const DoubleTab& coord = zone_geom.coord_sommets();
   const IntTab& sommet_poly = zone_geom.les_elems();
   // Commenter en attendant de comprendre le dimensionnement de xp apres la sortie de version
   // assert(val.size() == les_polys_size);
@@ -1493,8 +1493,8 @@ valeur_aux_elems_smooth(const DoubleTab& positions,
   const DoubleTab&  ch_sommet= (ch_som());
   const Zone_VEF& zone_VEF = zone_vef();
   const Zone& zone_geom = get_zone_geom();
-  const Zone& dom=zone_VEF.zone().domaine();
-  const DoubleTab& coord = zone_geom.domaine().coord_sommets();
+  const Zone& dom=zone_VEF.zone();
+  const DoubleTab& coord = zone_geom.coord_sommets();
   const IntTab& sommet_poly = zone_geom.les_elems();
   if (val.nb_dim() == 2)
     {
@@ -1557,9 +1557,9 @@ valeur_aux_elems_compo_smooth(const DoubleTab& positions,
   const int les_polys_size = les_polys.size(), nb_compo_=cha.nb_comp(), D = Objet_U::dimension;
   const DoubleTab& ch_sommet= (ch_som());
   const Zone_VEF& zone_VEF = zone_vef();
-  const Zone& dom=zone_VEF.zone().domaine();
+  const Zone& dom=zone_VEF.zone();
   const Zone& zone_geom = get_zone_geom();
-  const DoubleTab& coord = zone_geom.domaine().coord_sommets();
+  const DoubleTab& coord = zone_geom.coord_sommets();
   const IntTab& sommet_poly = zone_geom.les_elems();
   if (!filtrer_L2_deja_appele_)
     {
@@ -1919,7 +1919,7 @@ int Champ_P1NC_implementation::fixer_nb_valeurs_nodales(int n)
   const int nb_dim = le_champ().valeurs().nb_dim();
   if (nb_dim > 1)
     ch_som_.resize(0, le_champ().nb_comp());
-  const Zone& dom = zone_vef().zone().domaine();
+  const Zone& dom = zone_vef().zone();
   dom.creer_tableau_sommets(ch_som_);
   ch_som_vect_.reset();
   dom.creer_tableau_sommets(ch_som_vect_);

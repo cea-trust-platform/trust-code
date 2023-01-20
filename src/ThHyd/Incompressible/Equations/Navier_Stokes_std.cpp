@@ -1241,7 +1241,7 @@ int Navier_Stokes_std::reprendre(Entree& is)
   double temps = schema_temps().temps_courant();
   Nom ident_pression(la_pression.le_nom());
   ident_pression += la_pression.valeur().que_suis_je();
-  ident_pression += probleme().domaine().le_nom();
+  ident_pression += probleme().le_nom();
   ident_pression += Nom(temps,probleme().reprise_format_temps());
   avancer_fichier(is, ident_pression);
   la_pression.reprendre(is);
@@ -1397,7 +1397,7 @@ void  Navier_Stokes_std::calculer_pression_hydrostatique(Champ_base& pression_hy
 {
   //  abort();
   DoubleTab& val= pression_hydro.valeurs();
-  const DoubleTab& coords = zone_dis().zone().domaine().les_sommets();
+  const DoubleTab& coords = zone_dis().zone().les_sommets();
   if (!milieu().a_gravite())
     {
       Cerr<<"postprocessing of presion_hydrostatique needs gravity"<<finl;
@@ -1555,8 +1555,8 @@ int Navier_Stokes_std::impr(Sortie& os) const
       // Calculation as OpenFOAM: http://foam.sourceforge.net/docs/cpp/a04190_source.html
       // It is relative errors (normalized by the volume/dt)
       double dt = schema_temps().pas_de_temps();
-      double local = LocalFlowRateError / ( probleme().domaine().volume_total() / dt );
-      double global = mp_somme_vect(divergence_U.valeurs()) / ( probleme().domaine().volume_total() / dt );
+      double local = LocalFlowRateError / ( probleme().volume_total() / dt );
+      double global = mp_somme_vect(divergence_U.valeurs()) / ( probleme().volume_total() / dt );
       cumulative_ += global;
       os << "time step continuity errors : sum local = " << local << ", global = " << global << ", cumulative = " << cumulative_ << finl;
       // Nouveau 1.6.1, arret si bilans de masse mauvais et seuil<1.e20

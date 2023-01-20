@@ -53,7 +53,7 @@ void Trianguler::trianguler(Zone& zone) const
     {
       zone.typer("Triangle");
       IntTab& les_elems=zone.les_elems();
-      const DoubleTab& som =zone.domaine().les_sommets();
+      const DoubleTab& som =zone.les_sommets();
       int oldsz=les_elems.dimension(0);
       IntTab new_elems(2*oldsz, 3);
       for(int i=0; i< oldsz; i++)

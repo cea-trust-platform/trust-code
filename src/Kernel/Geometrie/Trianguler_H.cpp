@@ -49,7 +49,7 @@ Entree& Trianguler_H::readOn(Entree& is)
  */
 void Trianguler_H::trianguler(Zone& zone) const
 {
-  Zone& dom=zone.domaine();
+  Zone& dom=zone;
   IntTab& les_elems=zone.les_elems();
   int oldsz=les_elems.dimension(0);
   DoubleTab& sommets=dom.les_sommets();

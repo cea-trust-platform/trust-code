@@ -100,7 +100,7 @@ void Champ_implementation_P1::value_interpolation(const DoubleTab& positions, co
   const Zone& zone = get_zone_geom();
   const Zone_Poly_base *zpoly = sub_type(Zone_Poly_base, get_zone_dis()) ? &ref_cast(Zone_Poly_base, get_zone_dis()) : NULL;
   const IntTab& les_elems = zone.les_elems();
-  const DoubleTab& nodes = zone.domaine().les_sommets();
+  const DoubleTab& nodes = zone.les_sommets();
   const int nb_nodes_per_cell = zone.nb_som_elem(), N = resu.line_size();
   ArrOfInt index(nb_nodes_per_cell);
   ArrOfDouble position(Objet_U::dimension);

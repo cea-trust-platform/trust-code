@@ -107,7 +107,7 @@ void Zone_EF::calculer_IPhi(const Zone_Cl_dis_base& zcl)
   int nbelem=zone().nb_elem();
   int nb_som_elem=zone().nb_som_elem();
   IPhi_.resize(nbelem,nb_som_elem);
-  zone().domaine().creer_tableau_elements(IPhi_);
+  zone().creer_tableau_elements(IPhi_);
   //  Scatter::creer_tableau_distribue(zone().domaine(), Joint::ELEMENT, IPhi_);
   IPhi_thilde_=IPhi_;
   double rap=1./zone().nb_som_elem();
@@ -130,7 +130,7 @@ void Zone_EF::calculer_volumes_sommets(const Zone_Cl_dis_base& zcl)
 {
   //  volumes_sommets_thilde_.resize(nb_som());
   //Scatter::creer_tableau_distribue(zone().domaine(), Joint::SOMMET, volumes_sommets_thilde_);
-//  zone().domaine().creer_tableau_sommets(volumes_sommets_thilde_);
+//  zone().creer_tableau_sommets(volumes_sommets_thilde_);
 
   calculer_IPhi(zcl);
 
@@ -243,7 +243,7 @@ void Zone_EF::reordonner(Faces& les_faces)
   //   le tableau Zone_Cl_EF::type_elem_Cl_).
   // Un element est non standard s'il est voisin d'une face frontiere.
   {
-    const Zone& dom = zone().domaine();
+    const Zone& dom = zone();
     const int nb_elements = nb_elem();
     const int nb_faces_front = zone().nb_faces_frontiere();
     dom.creer_tableau_elements(rang_elem_non_std_);
@@ -413,10 +413,10 @@ void Zone_EF::typer_elem(Zone& zone_geom)
 
 void Zone_EF::verifie_compatibilite_domaine()
 {
-  if (zone().domaine().axi1d())
+  if (zone().axi1d())
     {
       Cerr << "*****************************************************************************" << finl;
-      Cerr << " Error in " << que_suis_je() << " : the type of domain " << zone().domaine().que_suis_je();
+      Cerr << " Error in " << que_suis_je() << " : the type of domain " << zone().que_suis_je();
       Cerr << " is not compatible" << finl;
       Cerr << " with the discretisation EF. " << finl;
       Cerr << " Please use the discretization EF_axi or define a domain of type Zone." << finl;
@@ -524,7 +524,7 @@ void Zone_EF::discretiser()
   {
     const int n = nb_faces();
     face_normales_.resize(n, dimension);
-    // const Zone & dom = zone().domaine();
+    // const Zone & dom = zone();
     //    Scatter::creer_tableau_distribue(dom, Joint::FACE, face_normales_);
     creer_tableau_faces(face_normales_);
     const IntTab& face_som = face_sommets();
@@ -539,7 +539,7 @@ void Zone_EF::discretiser()
       }
   }
 
-  zone().domaine().creer_tableau_sommets(volumes_sommets_thilde_);
+  zone().creer_tableau_sommets(volumes_sommets_thilde_);
 }
 
 void Zone_EF::calculer_Bij_gen(DoubleTab& bij)
@@ -653,7 +653,7 @@ void Zone_EF::calculer_Bij(DoubleTab& bij)
       DoubleTab xl(dimension,nbnn),bijl(dimension,nbnn),poro;
       DoubleTab detj(npgau),ajm1(npgau*9),aj(npgau*9),df(npgau*nbnn*3),iphi(nbnn);
       int ip=0;
-      const DoubleTab& coord=zone().domaine().coord_sommets();
+      const DoubleTab& coord=zone().coord_sommets();
       for (int elem=0; elem<nbelem; elem++)
         {
           for (int i=0; i<nbnn; i++)

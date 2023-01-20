@@ -59,7 +59,7 @@ void Tri_VEF::normale(int num_Face,DoubleTab& Face_normales,
                       const IntTab& elem_faces,
                       const Zone& zone_geom) const
 {
-  const DoubleTab& les_coords = zone_geom.domaine().coord_sommets();
+  const DoubleTab& les_coords = zone_geom.coord_sommets();
 
   double x1,y1;
   double nx,ny;
@@ -104,7 +104,7 @@ void Tri_VEF::creer_facette_normales(const Zone& zone_geom,
                                      DoubleTab& facette_normales,
                                      const IntVect& rang_elem_non_std) const
 {
-  const DoubleTab& les_coords = zone_geom.domaine().coord_sommets();
+  const DoubleTab& les_coords = zone_geom.coord_sommets();
   const IntTab& les_Polys = zone_geom.les_elems();
   int nb_elem = zone_geom.nb_elem();
 

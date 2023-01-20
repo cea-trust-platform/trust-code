@@ -611,7 +611,7 @@ void Zone_Cl_EF::imposer_cond_lim(Champ_Inc& ch, double temps)
   const Zone_EF& zoneEF =  zone_EF(); //ref_cast(Zone_EF,ch->equation().zone_dis().valeur());
   const IntTab& faces_sommets=zoneEF.face_sommets();
   int nb_som_face=faces_sommets.dimension(1);
-  const DoubleTab& coords= zoneEF.zone().domaine().coord_sommets();
+  const DoubleTab& coords= zoneEF.zone().coord_sommets();
 
   // dans un premier temps on annule le champ sur les dirichlets
   // puis on ajoute 1/nb_cl*val_imp

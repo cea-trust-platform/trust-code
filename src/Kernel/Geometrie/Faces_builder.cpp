@@ -262,7 +262,7 @@ void Faces_builder::check_erreur_faces(const char * message,
         << " elem1 elem2 = neighbouring element number\n"
         << "facenumber som1 (x1 y1 z1) som2 (x2 y2 z2) [som3 (x3 y3 z3)...] elem1 elem2" << finl;
       char s[1000];
-      const DoubleTab& coord = ref_zone_.valeur().domaine().coord_sommets();
+      const DoubleTab& coord = ref_zone_.valeur().coord_sommets();
       const IntTab&     faces = faces_sommets_.valeur();
       const IntTab&     face_elem = face_elem_.valeur();
       const int dim = Objet_U::dimension;

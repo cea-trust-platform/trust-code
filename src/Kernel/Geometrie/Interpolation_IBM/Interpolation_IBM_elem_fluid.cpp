@@ -71,7 +71,7 @@ void Interpolation_IBM_elem_fluid::computeFluidElems(Zone_dis_base& la_zone_EF)
   int nb_som_tot = la_zone_EF.nb_som_tot();
   int nb_elem = la_zone_EF.nb_elem();
   int nb_elem_tot = la_zone_EF.nb_elem_tot();
-  const DoubleTab& coordsDom = la_zone_EF.zone().domaine().coord_sommets();
+  const DoubleTab& coordsDom = la_zone_EF.zone().coord_sommets();
   // const IntTab& elems = la_zone_EF.zone().les_elems();
 
   DoubleTab& elems_fluid_ref = fluid_elems_.valeur().valeurs();

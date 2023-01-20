@@ -325,7 +325,7 @@ void Source_PDF_EF::associer_pb(const Probleme_base& pb)
         }
       else
         {
-          const DoubleTab& coords = la_zone_EF.valeur().zone().domaine().coord_sommets();
+          const DoubleTab& coords = la_zone_EF.valeur().zone().coord_sommets();
           modele_lu_.affecter_vitesse_imposee(la_zone_EF, coords);
         }
     }
@@ -376,7 +376,7 @@ void Source_PDF_EF::compute_vitesse_imposee_projete(const DoubleTab& marqueur, c
 {
   int nb_som=la_zone_EF.valeur().zone().nb_som();
   int dim = Objet_U::dimension;
-  const DoubleTab& coords = la_zone_EF.valeur().zone().domaine().coord_sommets();
+  const DoubleTab& coords = la_zone_EF.valeur().zone().coord_sommets();
   ArrOfDouble x(dim);
   for (int i = 0; i < nb_som; i++)
     {
@@ -892,7 +892,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_elem_fluid()
   const Zone_EF& zone_EF = la_zone_EF.valeur();
   int nb_som=zone_EF.zone().nb_som();
   int nb_comp = dimension;
-  const Zone& dom = zone_EF.zone().domaine();
+  const Zone& dom = zone_EF.zone();
   // const IntTab& elems= zone_EF.zone().les_elems();
   DoubleTab& vitesse_imposee_mod = modele_lu_.vitesse_imposee_.valeur().valeurs();
   DoubleTab& vitesse_imposee_calculee = vitesse_imposee_;
@@ -953,7 +953,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_mean_grad()
   const Zone_EF& zone_EF = la_zone_EF.valeur();
   int nb_som=zone_EF.zone().nb_som();
   int nb_comp = dimension;
-  const Zone& dom = zone_EF.zone().domaine();
+  const Zone& dom = zone_EF.zone();
   // const IntTab& elems= zone_EF.zone().les_elems();
   DoubleTab& vitesse_imposee_mod = modele_lu_.vitesse_imposee_.valeur().valeurs();
   DoubleTab& vitesse_imposee_calculee = vitesse_imposee_;
@@ -1036,7 +1036,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_hybrid()
   const Zone_EF& zone_EF = la_zone_EF.valeur();
   int nb_som=zone_EF.zone().nb_som();
   int nb_comp = dimension;
-  const Zone& dom = zone_EF.zone().domaine();
+  const Zone& dom = zone_EF.zone();
   // const IntTab& elems= zone_EF.zone().les_elems();
   DoubleTab& vitesse_imposee_mod = modele_lu_.vitesse_imposee_.valeur().valeurs();
   DoubleTab& vitesse_imposee_calculee = vitesse_imposee_;
@@ -1144,7 +1144,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl()
   const Zone_EF& zone_EF = la_zone_EF.valeur();
   int nb_som=zone_EF.zone().nb_som();
   int nb_comp = dimension;
-  const Zone& dom = zone_EF.zone().domaine();
+  const Zone& dom = zone_EF.zone();
   // const IntTab& elems= zone_EF.zone().les_elems();
   DoubleTab& vitesse_imposee_mod = modele_lu_.vitesse_imposee_.valeur().valeurs();
   DoubleTab& vitesse_imposee_calculee = vitesse_imposee_;

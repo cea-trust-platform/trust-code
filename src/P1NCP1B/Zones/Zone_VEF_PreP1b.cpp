@@ -56,7 +56,7 @@ void Zone_VEF_PreP1b::discretiser()
 {
   Zone_VEF::discretiser();
 
-  zone().domaine().creer_tableau_sommets(volumes_som, Array_base::NOCOPY_NOINIT);
+  zone().creer_tableau_sommets(volumes_som, Array_base::NOCOPY_NOINIT);
 
   double coeff=1./3.;
   if (dimension==3)
@@ -109,7 +109,7 @@ void Zone_VEF_PreP1b::discretiser_suite(const VEFPreP1B& discr)
       }
     if (alphaS)
       {
-        const MD_Vector& md = zone().domaine().md_vector_sommets();
+        const MD_Vector& md = zone().md_vector_sommets();
         md_p1b.add_part(md, 0, "P1");
       }
     if (alphaA)
@@ -124,7 +124,7 @@ void Zone_VEF_PreP1b::discretiser_suite(const VEFPreP1B& discr)
 
 void Zone_VEF_PreP1b::discretiser_arete()
 {
-  const Zone& dom = zone().domaine();
+  const Zone& dom = zone();
 
   // Creation des aretes reelles (informations geometriques construites et stockees dans la zone)
   zone().creer_aretes();
@@ -220,7 +220,7 @@ void Zone_VEF_PreP1b::modifier_pour_Cl(const Conds_lim& conds_lim)
   static DoubleVect* ptr=0;
   if(ptr!=&volumes_som)
     {
-      const Zone& dom=zone().domaine();
+      const Zone& dom=zone();
       int i;
       const int ns = nb_som();
       for(i=0; i<ns; i++)
@@ -243,7 +243,7 @@ void Zone_VEF_PreP1b::modifier_pour_Cl(const Conds_lim& conds_lim)
   if (Debog::active())
     {
       IntVect tmp;
-      const Zone& dom = zone().domaine();
+      const Zone& dom = zone();
       dom.creer_tableau_sommets(tmp, Array_base::NOCOPY_NOINIT);
       const int n = tmp.size_array();
       for (int i=0; i<n; i++)
@@ -282,7 +282,7 @@ void exemple_champ_non_homogene(const Zone_VEF_PreP1b& zone_VEF, DoubleTab& tab)
 {
   const DoubleTab& xp = zone_VEF.xp();
   const Zone& zone=zone_VEF.zone();
-  const DoubleTab& coord=zone.domaine().coord_sommets();
+  const DoubleTab& coord=zone.coord_sommets();
   const DoubleTab& xa=zone_VEF.xa();
   const ArrOfInt& renum_arete_perio=zone_VEF.get_renum_arete_perio();
   // Verification du tableau xa des coordonnees arete
@@ -302,7 +302,7 @@ void exemple_champ_non_homogene(const Zone_VEF_PreP1b& zone_VEF, DoubleTab& tab)
       tab(nb_elem_tot+I)=(1.1+coord(I,0))*(1.1+2*coord(I,1));
       if (Objet_U::dimension==3) tab(nb_elem_tot+I)*=(1.1+3*coord(I,2));
       // On applique la periodicite:
-      tab(nb_elem_tot+I)=tab(nb_elem_tot+zone.domaine().get_renum_som_perio(I));
+      tab(nb_elem_tot+I)=tab(nb_elem_tot+zone.get_renum_som_perio(I));
     }
 
 #ifndef NDEBUG
@@ -322,7 +322,7 @@ void exemple_champ_non_homogene(const Zone_VEF_PreP1b& zone_VEF, DoubleTab& tab)
 void Zone_VEF_PreP1b::construire_ok_arete()
 {
   Cerr << "Build array ok_arete..." << finl;
-  const Zone& dom=zone().domaine();
+  const Zone& dom=zone();
   const IntTab& aretes_som=zone().aretes_som();
   const int nb_som_reel=nb_som();
 
@@ -466,7 +466,7 @@ void Zone_VEF_PreP1b::construire_ok_arete()
   // Ecriture des aretes superflues dans un fichier nom_du_cas.ok_arete afin de le relire la fois suivante
   Nom fichier(nom_du_cas());
   fichier+="_";
-  fichier+=zone().domaine().le_nom()+".ok_arete";
+  fichier+=zone().le_nom()+".ok_arete";
 
   Cerr << "Writing file " << fichier << finl;
   EcrFicPartageBin fic_ok_arete_;
@@ -500,7 +500,7 @@ void Zone_VEF_PreP1b::construire_renum_arete_perio(const Conds_lim& conds_lim)
   Cerr << "Build array renum_arete_perio..." << finl;
   const IntTab& aretes_som=zone().aretes_som();
   const int nb_aretes_tot=zone().nb_aretes_tot();
-  const Zone& dom=zone().domaine();
+  const Zone& dom=zone();
 
   // Initialisation de renum_arete_perio
   renum_arete_perio.resize_array(nb_aretes_tot);
@@ -676,7 +676,7 @@ void Zone_VEF_PreP1b::verifie_ok_arete(int nombre_aretes_superflues_prevues_sur_
   // ...
   // contenu doit contenir uniquement 2 ce qui implique que tous les
   // sommets ont ete analyses.
-  const Zone& dom=zone().domaine();
+  const Zone& dom=zone();
   const int nb_som_reel=nb_som();
   const IntTab& aretes_som=zone().aretes_som();
   int nb_aretes_pour_verbose=60; // Pour verbose
@@ -803,7 +803,7 @@ int Zone_VEF_PreP1b::lecture_ok_arete()
 {
   Nom fichier(nom_du_cas());
   fichier+="_";
-  fichier+=zone().domaine().le_nom()+".ok_arete";
+  fichier+=zone().le_nom()+".ok_arete";
 
   Cerr << "Trying to read file " << fichier << " (edges to remove from the set of degrees of freedom)" << finl;
   EFichierBin fic_ok_arete_;

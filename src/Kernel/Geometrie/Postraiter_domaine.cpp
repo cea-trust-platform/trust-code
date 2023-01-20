@@ -42,7 +42,7 @@ Entree& Postraiter_domaine::readOn(Entree& is)
 }
 void traite_bord(const Zone& zone,IntVect& ch_som,IntVect& ch_elem3,int num2, Faces& faces,Nom& nom_bord,Nom& fichier,const IntTab& les_elems, Format_Post_base& post, int& compteur,int& compteur0,int& compteur_reel,int& moi,int isjoint=0)
 {
-  const Zone& dom=zone.domaine();
+  const Zone& dom=zone;
   Nom nom_dom=dom.le_nom();
   int num=-num2;
   int nb_elem=les_elems.dimension(0);
@@ -348,7 +348,7 @@ void Postraiter_domaine::ecrire(Nom& nom_pdb)
                   if (nb_domaine_==1)
                     nom_bord = nom_fr;
                   else
-                    nom_bord = zone.domaine().le_nom()+"_"+nom_fr;
+                    nom_bord = zone.le_nom()+"_"+nom_fr;
                   Faces& faces=zone.frontiere(zone.rang_frontiere(nom_fr)).faces();
                   traite_bord(zone, ch_som,ch_elem2, num, faces, nom_bord, fichier, les_elems, post,compteur,compteur0,compteur_reel,moi);
                 }
@@ -367,7 +367,7 @@ void Postraiter_domaine::ecrire(Nom& nom_pdb)
                   if (nb_domaine_==1)
                     nom_bord = Nom("Raccord_")+nom_fr;
                   else
-                    nom_bord = zone.domaine().le_nom()+Nom("_Raccord_")+nom_fr;
+                    nom_bord = zone.le_nom()+Nom("_Raccord_")+nom_fr;
 
                   Faces& faces=zone.frontiere(zone.rang_frontiere(nom_fr)).faces();
                   traite_bord(zone, ch_som,ch_elem2, num, faces, nom_bord, fichier, les_elems, post,compteur,compteur0,compteur_reel,moi);
@@ -380,7 +380,7 @@ void Postraiter_domaine::ecrire(Nom& nom_pdb)
               if (nb_domaine_==1)
                 noms_post[0] = "Bord";
               else
-                noms_post[0] = zone.domaine().le_nom()+"_Bord";
+                noms_post[0] = zone.le_nom()+"_Bord";
               Noms unites(1);
               unites[0]="1";
               int nb_som=zone.nb_som();
@@ -406,7 +406,7 @@ void Postraiter_domaine::ecrire(Nom& nom_pdb)
                         if (nb_domaine_==1)
                           nom_bord="Joint_Proc_";
                         else
-                          nom_bord=zone.domaine().le_nom()+"Joint_Proc_";
+                          nom_bord=zone.le_nom()+"Joint_Proc_";
                         Nom namep(p);
                         nom_bord+=namep;
                         nom_bord+="_avec_Proc_";

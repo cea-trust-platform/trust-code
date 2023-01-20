@@ -29,27 +29,26 @@ Entree& Trianguler_fin::readOn(Entree& is) { return Interprete::readOn(is); }
  *
  * @param (Zone& zone) la zone dont on veut trianguler les elements
  */
-void Trianguler_fin::trianguler(Zone& zone) const
+void Trianguler_fin::trianguler(Zone& dom) const
 {
-  Zone& dom = zone.domaine();
-  const DoubleTab& xs = dom.coord_sommets();
-  IntTab& les_elems = zone.les_elems();
+  const DoubleTab &xs = dom.coord_sommets();
+  IntTab &les_elems = dom.les_elems();
   int oldsz = les_elems.dimension(0);
-  DoubleTab& sommets = dom.les_sommets();
+  DoubleTab &sommets = dom.les_sommets();
   int nbs = sommets.dimension(0);
 
   {
     DoubleTab sommets_ajoutes(oldsz, dimension);
-    zone.type_elem()->calculer_centres_gravite(sommets_ajoutes);
+    dom.type_elem()->calculer_centres_gravite(sommets_ajoutes);
     sommets.resize(4 * nbs, dimension);
     for (int i = 0; i < oldsz; i++)
       for (int j = 0; j < dimension; j++)
         sommets(nbs + i, j) = sommets_ajoutes(i, j);
   }
 
-  if ((zone.type_elem()->que_suis_je() == "Rectangle") || (zone.type_elem()->que_suis_je() == "Quadrangle"))
+  if ((dom.type_elem()->que_suis_je() == "Rectangle") || (dom.type_elem()->que_suis_je() == "Quadrangle"))
     {
-      zone.typer("Triangle");
+      dom.typer("Triangle");
       IntTab new_elems(8 * oldsz, 3);
       IntTab fait_sommet_arete(4 * nbs, 3);
       fait_sommet_arete = -1;
@@ -125,37 +124,37 @@ void Trianguler_fin::trianguler(Zone& zone) const
           new_elems(i + oldsz, 0) = i + nbs;
           new_elems(i + oldsz, 1) = i01;
           new_elems(i + oldsz, 2) = i1;
-          mettre_a_jour_sous_zone(zone, i, i + oldsz, 1);
+          mettre_a_jour_sous_zone(dom, i, i + oldsz, 1);
 
           new_elems(i + 2 * oldsz, 0) = i + nbs;
           new_elems(i + 2 * oldsz, 1) = i1;
           new_elems(i + 2 * oldsz, 2) = i13;
-          mettre_a_jour_sous_zone(zone, i, i + 2 * oldsz, 1);
+          mettre_a_jour_sous_zone(dom, i, i + 2 * oldsz, 1);
 
           new_elems(i + 3 * oldsz, 0) = i + nbs;
           new_elems(i + 3 * oldsz, 1) = i13;
           new_elems(i + 3 * oldsz, 2) = i3;
-          mettre_a_jour_sous_zone(zone, i, i + 3 * oldsz, 1);
+          mettre_a_jour_sous_zone(dom, i, i + 3 * oldsz, 1);
 
           new_elems(i + 4 * oldsz, 0) = i + nbs;
           new_elems(i + 4 * oldsz, 1) = i3;
           new_elems(i + 4 * oldsz, 2) = i23;
-          mettre_a_jour_sous_zone(zone, i, i + 4 * oldsz, 1);
+          mettre_a_jour_sous_zone(dom, i, i + 4 * oldsz, 1);
 
           new_elems(i + 5 * oldsz, 0) = i + nbs;
           new_elems(i + 5 * oldsz, 1) = i23;
           new_elems(i + 5 * oldsz, 2) = i2;
-          mettre_a_jour_sous_zone(zone, i, i + 5 * oldsz, 1);
+          mettre_a_jour_sous_zone(dom, i, i + 5 * oldsz, 1);
 
           new_elems(i + 6 * oldsz, 0) = i + nbs;
           new_elems(i + 6 * oldsz, 1) = i2;
           new_elems(i + 6 * oldsz, 2) = i02;
-          mettre_a_jour_sous_zone(zone, i, i + 6 * oldsz, 1);
+          mettre_a_jour_sous_zone(dom, i, i + 6 * oldsz, 1);
 
           new_elems(i + 7 * oldsz, 0) = i + nbs;
           new_elems(i + 7 * oldsz, 1) = i02;
           new_elems(i + 7 * oldsz, 2) = i0;
-          mettre_a_jour_sous_zone(zone, i, i + 7 * oldsz, 1);
+          mettre_a_jour_sous_zone(dom, i, i + 7 * oldsz, 1);
 
         }
 
@@ -169,14 +168,14 @@ void Trianguler_fin::trianguler(Zone& zone) const
 
       // Reconstruction de l'octree
       Cerr << "We have split the rectangles..." << finl;
-      zone.invalide_octree();
-      zone.typer("Triangle");
+      dom.invalide_octree();
+      dom.typer("Triangle");
       Cerr << "  Reconstruction of the Octree" << finl;
-      zone.construit_octree();
+      dom.construit_octree();
       Cerr << "  Octree rebuilt" << finl;
 
       Cerr << "Splitting of the boundaries" << finl;
-      for (auto &itr : zone.faces_bord())
+      for (auto &itr : dom.faces_bord())
         {
           Faces& les_faces = itr.faces();
           les_faces.typer(Faces::segment_2D);
@@ -204,7 +203,7 @@ void Trianguler_fin::trianguler(Zone& zone) const
         }
 
       Cerr << "Splitting of the connectors" << finl;
-      for (auto &itr : zone.faces_raccord())
+      for (auto &itr : dom.faces_raccord())
         {
           Faces& les_faces = itr->faces();
           les_faces.typer(Faces::segment_2D);
@@ -232,7 +231,7 @@ void Trianguler_fin::trianguler(Zone& zone) const
         }
 
       Cerr << "Splitting of the internal faces" << finl;
-      for (auto &itr : zone.faces_int())
+      for (auto &itr : dom.faces_int())
         {
           Faces& les_faces = itr.faces();
           les_faces.typer(Faces::segment_2D);
@@ -261,7 +260,7 @@ void Trianguler_fin::trianguler(Zone& zone) const
     }
   else
     {
-      Cerr << "We do not yet know how to Trianguler_fin the " << zone.type_elem()->que_suis_je() << "s" << finl;
+      Cerr << "We do not yet know how to Trianguler_fin the " << dom.type_elem()->que_suis_je() << "s" << finl;
       Process::exit();
     }
 }

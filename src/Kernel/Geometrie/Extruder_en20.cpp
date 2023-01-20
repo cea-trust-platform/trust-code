@@ -90,7 +90,7 @@ void Extruder_en20::extruder(Zone& dom)
         les_faces.associer_zone(zone);
 
         Static_Int_Lists connectivite_som_elem;
-        const int     nb_sommets_tot = zone.domaine().nb_som_tot();
+        const int     nb_sommets_tot = zone.nb_som_tot();
         const IntTab&    elements       = zone.les_elems();
 
         construire_connectivite_som_elem(nb_sommets_tot,

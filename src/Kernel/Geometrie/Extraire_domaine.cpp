@@ -67,7 +67,7 @@ Entree& Extraire_domaine::interpreter_(Entree& is)
     }
   Probleme_base& pb=ref_cast(Probleme_base, objet(nom_pb));
   const Zone_VF& zone_vf=ref_cast(Zone_VF,pb.domaine_dis().zone_dis(0).valeur());
-  dom.les_sommets()=zone_vf.zone().domaine().les_sommets();
+  dom.les_sommets()=zone_vf.zone().les_sommets();
   dom.typer(zone_vf.zone().type_elem().valeur().que_suis_je());
 
   const DoubleTab& xp =zone_vf.xp();

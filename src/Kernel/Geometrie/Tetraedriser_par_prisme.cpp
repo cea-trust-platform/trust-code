@@ -29,19 +29,17 @@ Entree& Tetraedriser_par_prisme::readOn(Entree& is) { return Interprete::readOn(
  *
  * @param (Faces& faces) l'ensemble des faces a decouper
  */
-static void decoupe(Zone& zone, Faces& faces)
+static void decoupe(Zone& dom, Faces& faces)
 {
+  const DoubleTab &coord = dom.coord_sommets();
 
-  const Zone& dom = zone.domaine();
-  const DoubleTab& coord = dom.coord_sommets();
-
-  IntTab& sommets = faces.les_sommets();
+  IntTab &sommets = faces.les_sommets();
   int nb_faces = sommets.dimension(0);
   assert(sommets.dimension(1) == 4);
   IntTab nouveaux(2 * nb_faces, 3);
   faces.voisins().resize(2 * nb_faces, 2);
   faces.voisins() = -1;
-  for (int i = 0; i < nb_faces; i++)
+  for(int i=0; i<nb_faces; i++)
     {
       int i1 = sommets(i, 0);
       int i2 = sommets(i, 1);

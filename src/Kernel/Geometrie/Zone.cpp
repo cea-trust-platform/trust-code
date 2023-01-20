@@ -307,31 +307,6 @@ Entree& Zone::lire_bords_a_imprimer_sum(Entree& is)
   return is;
 }
 
-/////////////////////////////////////////////////////////////////////
-//
-//  Implementation des fonctions de la classe Zone
-//
-/////////////////////////////////////////////////////////////////////
-
-/*! @brief Renvoie le domaine dont la zone fait partie.
- *
- * (version const)
- *
- * @return (Zone&) le domaine dont la zone fait partie
- */
-const Zone& Zone::domaine() const
-{
-  return *this;
-}
-
-/*! @brief Renvoie le domaine dont la zone fait partie.
- *
- * @return (Zone&) le domaine dont la zone fait partie
- */
-Zone& Zone::domaine()
-{
-  return *this;
-}
 
 /*! @brief che les numeros (indices) des elements contenants les sommets specifies par le parametre "sommets".
  *

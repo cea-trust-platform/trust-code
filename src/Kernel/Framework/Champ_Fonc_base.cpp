@@ -95,7 +95,7 @@ int Champ_Fonc_base::sauvegarder(Sortie& fich) const
     {
       Nom mon_ident(nom_);
       mon_ident += que_suis_je();
-      mon_ident += zone_dis_base().zone().domaine().le_nom();
+      mon_ident += zone_dis_base().zone().le_nom();
       mon_ident += Nom(temps_, "%e");
       fich << mon_ident << finl;
       fich << que_suis_je() << finl;
@@ -229,7 +229,7 @@ int Champ_Fonc_base::remplir_coord_noeuds_et_polys_compo(DoubleTab&, IntVect&, i
 
 const Zone& Champ_Fonc_base::domaine() const
 {
-  return zone_dis_base().zone().domaine();
+  return zone_dis_base().zone();
 }
 
 DoubleTab& Champ_Fonc_base::valeur_aux(const DoubleTab& positions, DoubleTab& tab_valeurs) const

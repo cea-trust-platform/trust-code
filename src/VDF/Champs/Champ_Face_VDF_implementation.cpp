@@ -67,7 +67,7 @@ DoubleVect& Champ_Face_VDF_implementation::valeur_a_elem_(const DoubleTab& val_f
   const Zone_VDF& zone_VDF = zone_vdf();
   const Zone& zone_geom = get_zone_geom();
   const IntTab& f_s = zone_VDF.face_sommets(), &e_f = zone_VDF.elem_faces();
-  const Zone& dom = zone_geom.domaine();
+  const Zone& dom = zone_geom;
 
   for (int d = 0; d < D; d++)
     {
@@ -125,7 +125,7 @@ double Champ_Face_VDF_implementation::valeur_a_elem_compo(const DoubleVect& posi
 
   const IntTab& f_s = zone_vdf().face_sommets(), &e_f = zone_vdf().elem_faces();
   const DoubleTab& vals = le_champ().valeurs();
-  const Zone& dom = zone_vdf().zone().domaine();
+  const Zone& dom = zone_vdf().zone();
   const int D = Objet_U::dimension;
 
   const double val1 = vals(e_f(e, d)), val2 = vals(e_f(e, D + d));

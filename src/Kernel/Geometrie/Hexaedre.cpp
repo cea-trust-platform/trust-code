@@ -80,7 +80,7 @@ void Hexaedre::reordonner()
 int Hexaedre::reordonner_elem()
 {
   Zone& zone = ma_zone.valeur();
-  const Zone& dom = zone.domaine();
+  const Zone& dom = zone;
   const DoubleTab& dom_coord = dom.les_sommets();
   IntTab& elem = zone.les_elems();
   ArrOfInt S(8);
@@ -170,7 +170,7 @@ int Hexaedre::contient(const ArrOfDouble& pos, int element ) const
 {
   assert(pos.size_array()==3);
   const Zone& zone=ma_zone.valeur();
-  const Zone& dom=zone.domaine();
+  const Zone& dom=zone;
   int som0 = zone.sommet_elem(element,0);
   int som7 = zone.sommet_elem(element,7);
   if (    inf_ou_egal(dom.coord(som0,0),pos[0]) && inf_ou_egal(pos[0],dom.coord(som7,0))
@@ -213,7 +213,7 @@ int Hexaedre::contient(const ArrOfInt& som, int element ) const
 void Hexaedre::calculer_volumes(DoubleVect& volumes) const
 {
   const Zone& zone=ma_zone.valeur();
-  const Zone& dom=zone.domaine();
+  const Zone& dom=zone;
   double dx,dy,dz;
   int S1,S2,S3,S4;
 
@@ -240,7 +240,7 @@ void Hexaedre::calculer_volumes(DoubleVect& volumes) const
 void Hexaedre::calculer_normales(const IntTab& Face_sommets ,DoubleTab& face_normales) const
 {
   const Zone& zone_geom = ma_zone.valeur();
-  const DoubleTab& les_coords = zone_geom.domaine().coord_sommets();
+  const DoubleTab& les_coords = zone_geom.coord_sommets();
   int nbfaces = Face_sommets.dimension(0);
   double x1,y1,z1,x2,y2,z2;
   int n0,n1,n2;

@@ -56,7 +56,7 @@ void Raffiner_anisotrope::raffiner_(Zone& zone)
   if  ((zone.type_elem()->que_suis_je() == "Triangle")
        ||(zone.type_elem()->que_suis_je() == "Tetraedre"))
     {
-      Zone& dom=zone.domaine();
+      Zone& dom=zone;
       IntTab& les_elems=zone.les_elems();
       int oldsz=les_elems.dimension(0);
       DoubleTab& sommets=dom.les_sommets();

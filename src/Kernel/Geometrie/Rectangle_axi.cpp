@@ -114,7 +114,7 @@ const Nom& Rectangle_axi::nom_lml() const
 void Rectangle_axi::calculer_volumes(DoubleVect& volumes) const
 {
   const Zone& zone=ma_zone.valeur();
-  const Zone& dom=zone.domaine();
+  const Zone& dom=zone;
   double r,dr,d_teta;
   int S1,S2,S4;
 
@@ -165,7 +165,7 @@ int Rectangle_axi::contient(const ArrOfDouble& pos, int element ) const
 {
   assert(pos.size_array()==2);
   const Zone& zone=ma_zone.valeur();
-  const Zone& dom=zone.domaine();
+  const Zone& dom=zone;
   int som0 = zone.sommet_elem(element,0);
   int som3 = zone.sommet_elem(element,3);
   double r0,r3,t0,t3;

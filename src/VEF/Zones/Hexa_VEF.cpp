@@ -60,7 +60,7 @@ void Hexa_VEF::normale(int num_Face,DoubleTab& Face_normales,
                        const IntTab& elem_faces,
                        const Zone& zone_geom) const
 {
-  const DoubleTab& les_coords = zone_geom.domaine().coord_sommets();
+  const DoubleTab& les_coords = zone_geom.coord_sommets();
 
   double x1,y1,z1,x2,y2,z2;
   double nx,ny,nz;
@@ -191,7 +191,7 @@ void Hexa_VEF::creer_facette_normales(const Zone& zone_geom,
                                       DoubleTab& facette_normales,
                                       const IntVect& rang_elem_non_std) const
 {
-  const DoubleTab& les_coords = zone_geom.domaine().coord_sommets();
+  const DoubleTab& les_coords = zone_geom.coord_sommets();
   const IntTab& les_Polys = zone_geom.les_elems();
   int nb_elem = zone_geom.nb_elem();
   int i, fa7;
@@ -451,7 +451,7 @@ void Hexa_VEF::creer_normales_facettes_Cl(DoubleTab& normales_facettes_Cl,
   double pv[3];
   double psc;
 
-  const DoubleTab& les_coords = zone_geom.domaine().coord_sommets();
+  const DoubleTab& les_coords = zone_geom.coord_sommets();
   const IntTab& les_Polys = zone_geom.les_elems();
 
   int i2 = KEL_(2,fa7);

@@ -250,7 +250,7 @@ int Hexaedre_VEF::contient(const ArrOfDouble& pos, int element ) const
 {
   assert(pos.size_array()==3);
   const Zone& zone=ma_zone.valeur();
-  const Zone& dom=zone.domaine();
+  const Zone& dom=zone;
   int som0 = zone.sommet_elem(element,0);
   int som1 = zone.sommet_elem(element,1);
   int som2 = zone.sommet_elem(element,2);
@@ -324,7 +324,7 @@ int Hexaedre_VEF::contient(const ArrOfInt& som, int element ) const
 void Hexaedre_VEF::calculer_volumes(DoubleVect& volumes) const
 {
   const Zone& zone=ma_zone.valeur();
-  const Zone& dom=zone.domaine();
+  const Zone& dom=zone;
   IntTab face_sommet_global;
   face_sommet_global.resize(6,4);
   double x0,y0,z0;
@@ -617,7 +617,7 @@ void Hexaedre_VEF::reordonner()
   Zone& zone=ma_zone.valeur();
   IntTab& elem=zone.les_elems();
   int nb_elem=zone.nb_elem();
-  DoubleTab& coord=zone.domaine().les_sommets();
+  DoubleTab& coord=zone.les_sommets();
   // tableau contenant les permutations valides d'un quadrangle
   IntTab perm(8,4);
   perm( 0 , 0 )= 0 ;

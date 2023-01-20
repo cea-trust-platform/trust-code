@@ -42,7 +42,7 @@ int Assembleur_P_VDF_Q4::assembler(Matrice& la_matrice)
   int nbfaces = la_zone_VDF->nb_faces(),  nbsom = la_zone_VDF->nb_som();
   const DoubleVect& volumes_entrelaces = la_zone_VDF->volumes_entrelaces();
   const DoubleVect& porosite_face = eqn_->milieu().porosite_face();
-  const DoubleTab& CoordSom = la_zone_VDF->zone().domaine().coord_sommets();
+  const DoubleTab& CoordSom = la_zone_VDF->zone().coord_sommets();
   double surf,vol,por,val, r;
   int ori, elem0,elem1;
   //construction matrice
@@ -142,11 +142,11 @@ int Assembleur_P_VDF_Q4::modifier_secmem(DoubleTab& secmem)
 
 int Assembleur_P_VDF_Q4::modifier_secmem(const DoubleTab& tab_secmem_, DoubleVect& secmem)
 {
-  const DoubleTab& CoordSommets = la_zone_VDF->zone().domaine().coord_sommets();
+  const DoubleTab& CoordSommets = la_zone_VDF->zone().coord_sommets();
   const IntTab& FaceSoms = la_zone_VDF->face_sommets();
   const IntTab& FaceVois = la_zone_VDF->face_voisins();
   const IntVect& Orientation = la_zone_VDF->orientation();
-  const DoubleTab& CoordSom = la_zone_VDF->zone().domaine().coord_sommets();
+  const DoubleTab& CoordSom = la_zone_VDF->zone().coord_sommets();
   int face, som0,som1, ori, invori, elem0,elem1;
   int nbfaces = la_zone_VDF->nb_faces(),  nbsom = la_zone_VDF->nb_som();
   double surf, r;

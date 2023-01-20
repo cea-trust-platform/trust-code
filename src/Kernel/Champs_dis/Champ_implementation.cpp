@@ -22,7 +22,7 @@
 DoubleTab& Champ_implementation::valeur_aux_sommets(const Zone& domain, DoubleTab& result) const
 {
   Nom domain_name = domain.le_nom();
-  Nom support_name = get_zone_geom().domaine().le_nom();
+  Nom support_name = get_zone_geom().le_nom();
 
   if (domain_name == support_name)
     {
@@ -40,7 +40,7 @@ DoubleTab& Champ_implementation::valeur_aux_sommets(const Zone& domain, DoubleTa
 DoubleVect& Champ_implementation::valeur_aux_sommets_compo(const Zone& domain, DoubleVect& result, int ncomp) const
 {
   Nom domain_name = domain.le_nom();
-  Nom support_name = get_zone_geom().domaine().le_nom();
+  Nom support_name = get_zone_geom().le_nom();
 
   if (domain_name == support_name)
     {

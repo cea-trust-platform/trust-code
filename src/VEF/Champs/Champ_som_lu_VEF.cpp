@@ -70,7 +70,7 @@ DoubleTab& Champ_som_lu_VEF::valeur_aux_elems(const DoubleTab& positions, const 
   double xs, ys, zs;
 
   const Zone& la_zone = mon_domaine;
-  const DoubleTab& coord = la_zone.domaine().coord_sommets();
+  const DoubleTab& coord = la_zone.coord_sommets();
   const IntTab& sommet_poly = la_zone.les_elems();
 
   if (val.nb_dim() > 2) erreur_champ_(__func__);
@@ -111,7 +111,7 @@ DoubleVect& Champ_som_lu_VEF::valeur_aux_elems_compo(const DoubleTab& positions,
   int som, le_poly;
   double xs, ys, zs;
   const Zone& la_zone = mon_domaine;
-  const DoubleTab& coord = la_zone.domaine().coord_sommets();
+  const DoubleTab& coord = la_zone.coord_sommets();
   const IntTab& sommet_poly = la_zone.les_elems();
   assert(val.size() == les_polys.size());
   const DoubleTab& ch = valeurs();

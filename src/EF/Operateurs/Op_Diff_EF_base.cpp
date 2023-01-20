@@ -119,7 +119,7 @@ double Op_Diff_EF_base::calculer_dt_stab() const
       else
         {
           const Zone_EF& zone_ef=ref_cast(Zone_EF,equation().zone_dis().valeur());
-          const DoubleTab& coord=zone_ef.zone().domaine().les_sommets();
+          const DoubleTab& coord=zone_ef.zone().les_sommets();
           const IntTab& elems=zone_ef.zone().les_elems() ;
           const Champ_base& champ_diffusivite = diffusivite_pour_pas_de_temps();
           const DoubleVect&      valeurs_diffusivite = champ_diffusivite.valeurs();

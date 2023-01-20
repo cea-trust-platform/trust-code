@@ -144,7 +144,7 @@ void Champ_Post_Operateur_Eqn::completer(const Postraitement_base& post)
       localisation_inco_=ELEMENT;
       ok=1;
     }
-  if (md == zvf.zone().domaine().les_sommets().get_md_vector())
+  if (md == zvf.zone().les_sommets().get_md_vector())
     {
       ok=1;
       localisation_inco_=NODE;

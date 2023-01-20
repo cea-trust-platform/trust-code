@@ -71,7 +71,7 @@ void Champ_implementation_Q1::value_interpolation(const DoubleTab& positions, co
 {
   const Zone& zone = get_zone_geom();
   const IntTab& les_elems = zone.les_elems();
-  const DoubleTab& nodes = zone.domaine().les_sommets();
+  const DoubleTab& nodes = zone.les_sommets();
   const int nb_nodes_per_cell = les_elems.dimension(1);
   ArrOfDouble position(Objet_U::dimension);
 
@@ -227,7 +227,7 @@ double Champ_implementation_Q1::form_function(const ArrOfDouble& position, int c
   if (test_sommet)
     {
       const IntTab& cells = zone_geom.les_elems();
-      const DoubleTab& nodes = zone_geom.domaine().les_sommets();
+      const DoubleTab& nodes = zone_geom.les_sommets();
 
       int nb_nodes_per_cell = cells.dimension(1);
       int sc = -1;

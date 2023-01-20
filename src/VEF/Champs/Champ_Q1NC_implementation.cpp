@@ -141,7 +141,7 @@ double Champ_Q1NC_implementation::valeur_a_sommet_compo(int num_som, int le_poly
   // ne sont pas triviales au sommet des hexas... On repasse
   // par calcule_valeur_a_elem_compo
   double xs, ys, zs = 0;
-  const Zone& dom = get_zone_geom().domaine();
+  const Zone& dom = get_zone_geom();
   xs = dom.coord(num_som, 0);
   ys = dom.coord(num_som, 1);
   if (Objet_U::dimension == 3)
@@ -351,7 +351,7 @@ void Champ_Q1NC_implementation::transforme_coord2D()
   const int nb_elem_tot = zone_VEF.nb_elem_tot();
   const IntTab& sommet_face = zone_VEF.face_sommets();
   const IntTab& elem_faces = zone_VEF.elem_faces();
-  const Zone& dom = zone_geom.domaine();
+  const Zone& dom = zone_geom;
   const DoubleTab& coords = dom.les_sommets();
   double lec0, lec1, alpha, beta;
   int i, poly, som0, som1;
@@ -418,7 +418,7 @@ void Champ_Q1NC_implementation::transforme_coord3D()
   const int nb_elem_tot = zone_VEF.nb_elem_tot();
   const IntTab& sommet_face = zone_VEF.face_sommets();
   const IntTab& elem_faces = zone_VEF.elem_faces();
-  const Zone& dom = zone_geom.domaine();
+  const Zone& dom = zone_geom;
   const DoubleTab& coords = dom.les_sommets();
   double lec0, lec1, lec2;
   double alpha, beta;

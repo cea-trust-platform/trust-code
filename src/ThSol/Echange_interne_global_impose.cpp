@@ -95,7 +95,7 @@ void Echange_interne_global_impose::completer()
   frontiere_dis().frontiere().creer_tableau_faces(surface_gap_, Array_base::NOCOPY_NOINIT);
 
 
-  if (zvf.zone().domaine().axi1d())
+  if (zvf.zone().axi1d())
     {
       const ZoneAxi1d& domax = ref_cast(ZoneAxi1d,zvf.zone().domaine());
       const IntTab& face_voisins = zvf.face_voisins();

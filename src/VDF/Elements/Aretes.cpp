@@ -101,7 +101,7 @@ void Aretes::affecter(int& numero_a, int dir, int type, int nb_face,
 void Aretes::calculer_centre_de_gravite(Zone_VDF& zone)
 {
   const IntTab& so = zone.face_sommets();
-  const DoubleTab& co = zone.zone().domaine().les_sommets();
+  const DoubleTab& co = zone.zone().les_sommets();
   DoubleTab& xa_ = zone.xa();
   int i,j,k;
   int f0=-1,f1=-1,s00,s01,s10,s11;

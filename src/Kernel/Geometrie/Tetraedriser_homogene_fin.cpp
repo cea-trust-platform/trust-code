@@ -338,7 +338,7 @@ void Tetraedriser_homogene_fin::trianguler(Zone& zone) const
       // pour chaque cube, liste des nouveaux sommets qu'il contient :
       IntTab new_soms_old_elems(oldsz, 19);
       IntTab sommets(8);
-      Zone& dom = zone.domaine();
+      Zone& dom = zone;
       int compteur = 0;
       int nbnewsoms = 0;
       int nface = 0;

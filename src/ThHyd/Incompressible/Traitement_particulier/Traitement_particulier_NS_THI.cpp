@@ -150,7 +150,7 @@ int& Traitement_particulier_NS_THI::calcul_nb_som_dir(const Zone& zone)
 
   // Sert a calculer le nombre de sommet commun en parallele
   ArrOfBit unused;
-  int nb_som = MD_Vector_tools::get_sequential_items_flags(zone.domaine().les_sommets().get_md_vector(), unused);
+  int nb_som = MD_Vector_tools::get_sequential_items_flags(zone.les_sommets().get_md_vector(), unused);
   // Somme sur tous les processeurs
   nb_som = mp_sum(nb_som);
 

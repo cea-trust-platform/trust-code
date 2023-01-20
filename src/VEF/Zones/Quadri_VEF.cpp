@@ -58,7 +58,7 @@ void Quadri_VEF::normale(int num_Face,DoubleTab& Face_normales,
                          const IntTab& elem_faces,
                          const Zone& zone_geom) const
 {
-  const DoubleTab& les_coords = zone_geom.domaine().coord_sommets();
+  const DoubleTab& les_coords = zone_geom.coord_sommets();
   double x1,y1;
   double nx,ny;
   double x1g=0,y1g=0;
@@ -141,7 +141,7 @@ void Quadri_VEF::creer_facette_normales(const Zone& zone_geom,
                                         DoubleTab& facette_normales,
                                         const IntVect& rang_elem_non_std) const
 {
-  const DoubleTab& les_coords = zone_geom.domaine().coord_sommets();
+  const DoubleTab& les_coords = zone_geom.coord_sommets();
   const IntTab& les_Polys = zone_geom.les_elems();
   int nb_elem = zone_geom.nb_elem();
 
@@ -340,7 +340,7 @@ void Quadri_VEF::modif_volumes_entrelaces(int j,int elem,
   //       DoubleTab coord(3,2);
   //       for(int i=0;i<3;i++)
   //         for(int k=0;k<2;k++)
-  //           coord(i,k)=la_zone_VEF.zone().domaine().coord(la_zone_VEF.zone().sommet_elem(elem,i),k);
+  //           coord(i,k)=la_zone_VEF.zone().coord(la_zone_VEF.zone().sommet_elem(elem,i),k);
   //       volumes_entrelaces_Cl[elem_faces(elem,0)]  = std::fabs((coord(0,0)-coord(2,0))*((coord(2,1)+coord(3,1))/2-coord(2,2)) - ((coord(2,0)+coord(3,0))/2-coord(2,0))*(coord(0,1)-coord(2,2)))/2;
   //       volumes_entrelaces_Cl[elem_faces(elem,2)]  = std::fabs((coord(1,0)-coord(3,0))*((coord(2,1)+coord(3,1))/2-coord(3,2)) - ((coord(2,0)+coord(3,0))/2-coord(3,0))*(coord(1,1)-coord(3,2)))/2;
   //       volumes_entrelaces_Cl[elem_faces(elem,1)]  = std::fabs((coord(1,0)-coord(0,0))*((coord(2,1)+coord(3,1))/2-coord(0,2)) - ((coord(2,0)+coord(3,0))/2-coord(0,0))*(coord(1,1)-coord(0,2)))/2;
@@ -352,7 +352,7 @@ void Quadri_VEF::modif_volumes_entrelaces(int j,int elem,
   //       DoubleTab coord(3,2);
   //       for(int i=0;i<3;i++)
   //         for(int k=0;k<2;k++)
-  //           coord(i,k)=la_zone_VEF.zone().domaine().coord(la_zone_VEF.zone().sommet_elem(elem,i),k);
+  //           coord(i,k)=la_zone_VEF.zone().coord(la_zone_VEF.zone().sommet_elem(elem,i),k);
   //       volumes_entrelaces_Cl[elem_faces(elem,1)]  = std::fabs((coord(2,0)-coord(3,0))*((coord(1,1)+coord(3,1))/2-coord(3,2)) - ((coord(1,0)+coord(3,0))/2-coord(3,0))*(coord(2,1)-coord(3,2)))/2;
   //       volumes_entrelaces_Cl[elem_faces(elem,3)]  = std::fabs((coord(0,0)-coord(1,0))*((coord(1,1)+coord(3,1))/2-coord(1,2)) - ((coord(1,0)+coord(3,0))/2-coord(1,0))*(coord(0,1)-coord(1,2)))/2;
   //       volumes_entrelaces_Cl[elem_faces(elem,0)]  = std::fabs((coord(0,0)-coord(2,0))*((coord(1,1)+coord(3,1))/2-coord(2,2)) - ((coord(1,0)+coord(3,0))/2-coord(2,0))*(coord(0,1)-coord(2,2)))/2;
@@ -364,7 +364,7 @@ void Quadri_VEF::modif_volumes_entrelaces(int j,int elem,
   //       DoubleTab coord(3,2);
   //       for(int i=0;i<3;i++)
   //         for(int k=0;k<2;k++)
-  //           coord(i,k)=la_zone_VEF.zone().domaine().coord(la_zone_VEF.zone().sommet_elem(elem,i),k);
+  //           coord(i,k)=la_zone_VEF.zone().coord(la_zone_VEF.zone().sommet_elem(elem,i),k);
   //       volumes_entrelaces_Cl[elem_faces(elem,0)]  = std::fabs((coord(2,0)-coord(0,0))*((coord(0,1)+coord(1,1))/2-coord(0,2)) - ((coord(0,0)+coord(1,0))/2-coord(0,0))*(coord(2,1)-coord(0,2)))/2;
   //       volumes_entrelaces_Cl[elem_faces(elem,2)]  = std::fabs((coord(3,0)-coord(1,0))*((coord(0,1)+coord(1,1))/2-coord(1,2)) - ((coord(0,0)+coord(1,0))/2-coord(1,0))*(coord(3,1)-coord(1,2)))/2;
   //       volumes_entrelaces_Cl[elem_faces(elem,3)]  = std::fabs((coord(3,0)-coord(2,0))*((coord(0,1)+coord(1,1))/2-coord(2,2)) - ((coord(0,0)+coord(1,0))/2-coord(2,0))*(coord(3,1)-coord(2,2)))/2;
@@ -378,7 +378,7 @@ void Quadri_VEF::modif_volumes_entrelaces(int j,int elem,
   //       for(int i=0;i<3;i++) {
   //         for(int k=0;k<2;k++) {
   //           Cerr << "la_zone_VEF.zone().sommet_elem(elem,i) " << la_zone_VEF.zone().sommet_elem(elem,i) << finl;
-  //           coord(i,k)=la_zone_VEF.zone().domaine().coord(la_zone_VEF.zone().sommet_elem(elem,i),k);
+  //           coord(i,k)=la_zone_VEF.zone().coord(la_zone_VEF.zone().sommet_elem(elem,i),k);
   //           Cerr << "coord(i,k) " <<  coord(i,k) << finl;
   //         }
   //       }

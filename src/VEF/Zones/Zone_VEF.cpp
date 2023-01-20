@@ -375,7 +375,7 @@ void Zone_VEF::discretiser()
                                     rang_elem_non_std());
 
   calculer_volumes_entrelaces();
-  Cerr << "Informations of the Zone VEF of the domain " << zone().domaine().le_nom() << " : " << finl;
+  Cerr << "Informations of the Zone VEF of the domain " << zone().le_nom() << " : " << finl;
 
   calculer_h_carre();
 }
@@ -423,7 +423,7 @@ void Zone_VEF::calculer_volumes_entrelaces()
 
   // Si domaine dynamique, le tableau peut eventuellement deja avoir la bonne structure, ou pas.
   // S'il n'est pas deformable, on n'est pas cense passer ici deux fois.
-  assert(zone().domaine().deformable()
+  assert(zone().deformable()
          || !(volumes_entrelaces_.get_md_vector().non_nul()));
   if (!(volumes_entrelaces_.get_md_vector() == md_vector_faces()))
     {
@@ -619,7 +619,7 @@ DoubleTab& Zone_VEF::vecteur_face_facette()
 {
   // On construit si de taille nul
   // ou si le maillage est deformable
-  if (vecteur_face_facette_.size()==0 || zone().domaine().deformable())
+  if (vecteur_face_facette_.size()==0 || zone().deformable())
     {
       // Taille 8*n*4*3*2=192n
       const int nfa7 = type_elem().nb_facette();
@@ -627,7 +627,7 @@ DoubleTab& Zone_VEF::vecteur_face_facette()
       vecteur_face_facette_.resize(nb_poly_tot,nfa7,dimension,2);
       const IntTab& KEL=type_elem().valeur().KEL();
       const IntTab& les_Polys = zone().les_elems();
-      const DoubleTab& coord =  zone().domaine().coord_sommets();
+      const DoubleTab& coord =  zone().coord_sommets();
       const DoubleTab& xg = xp();
       //const int nb_som_facette = zone().type_elem().nb_som_face();
       int nb_som_facette=dimension;

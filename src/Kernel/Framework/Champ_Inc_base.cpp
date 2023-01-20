@@ -412,7 +412,7 @@ int Champ_Inc_base::sauvegarder(Sortie& fich) const
     {
       Nom mon_ident(nom_);
       mon_ident += que_suis_je();
-      mon_ident += equation().probleme().domaine().le_nom();
+      mon_ident += equation().probleme().le_nom();
       mon_ident += Nom(temps_, "%e");
       fich << mon_ident << finl;
       fich << que_suis_je() << finl;
@@ -633,7 +633,7 @@ int Champ_Inc_base::remplir_coord_noeuds_et_polys_compo(DoubleTab& coord, IntVec
 
 const Zone& Champ_Inc_base::domaine() const
 {
-  return zone_dis_base().zone().domaine();
+  return zone_dis_base().zone();
 }
 
 int Champ_Inc_base::imprime(Sortie& os, int ncomp) const

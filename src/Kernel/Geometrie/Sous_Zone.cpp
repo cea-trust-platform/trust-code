@@ -94,7 +94,7 @@ Entree& Sous_Zone::readOn(Entree& is)
     }
 
   const Zone& lazone=la_zone_.valeur();
-  const Zone& dom=lazone.domaine();
+  const Zone& dom=lazone;
   ArrOfInt les_polys_possibles_;
 
   // GF de prendre nb_elem_tot au lieu de nb_elem permet de ne plus avoir besoin de decouper les sous zones..

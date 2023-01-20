@@ -124,7 +124,7 @@ int Hexaedre_axi::contient(const ArrOfDouble& pos, int element ) const
 {
   assert(pos.size_array()==3);
   const Zone& zone=ma_zone.valeur();
-  const Zone& dom=zone.domaine();
+  const Zone& dom=zone;
   int som0 = zone.sommet_elem(element,0);
   int som7 = zone.sommet_elem(element,7);
   double t7;
@@ -172,7 +172,7 @@ int Hexaedre_axi::contient(const ArrOfInt& som, int element ) const
 void Hexaedre_axi::calculer_volumes(DoubleVect& volumes) const
 {
   const Zone& zone=ma_zone.valeur();
-  const Zone& dom=zone.domaine();
+  const Zone& dom=zone;
   double r,dr,d_teta,dz;
   int S1,S2,S4,S5;
 

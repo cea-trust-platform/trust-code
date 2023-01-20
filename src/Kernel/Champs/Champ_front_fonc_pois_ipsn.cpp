@@ -68,7 +68,7 @@ int Champ_front_fonc_pois_ipsn::initialiser(double temps, const Champ_Inc_base& 
 
   const Frontiere& front=la_frontiere_dis->frontiere();
   const Zone& zone=front.zone();
-  const Zone& domaine=zone.domaine();
+  const Zone& domaine=zone;
   const Faces& faces=front.faces();
 
   int nb_faces=front.nb_faces();

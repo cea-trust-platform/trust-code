@@ -188,7 +188,7 @@ DoubleTab& Op_Conv_kschemas_centre_VEF::ajouter(const DoubleTab& transporte,
   const DoubleVect& volumes = zone_VEF.volumes();
   const DoubleTab& xv = zone_VEF.xv();
   const DoubleTab& xg = zone_VEF.xp();
-  const DoubleTab& coord = zone.domaine().coord_sommets();
+  const DoubleTab& coord = zone.coord_sommets();
   int premiere_face_int = zone_VEF.premiere_face_int();
   const IntTab& les_Polys = zone.les_elems();
 

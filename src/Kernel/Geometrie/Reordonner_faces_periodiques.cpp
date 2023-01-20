@@ -230,7 +230,7 @@ int Reordonner_faces_periodiques::check_faces_periodiques(const Frontiere& front
       Process::exit();
     }
   const int n = nb_faces / 2;
-  const DoubleTab coord = frontiere.zone().domaine().les_sommets();
+  const DoubleTab coord = frontiere.zone().les_sommets();
 
   int i;
   // Calculer un vecteur delta (tous les procs n'ont pas forcement des faces de ce bord)

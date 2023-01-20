@@ -31,7 +31,7 @@ void Eval_Puiss_Neutr_VDF_Elem::associer_repartition(const Nom& n, const Nom& no
 {
   const int nb_elem = la_zone->nb_elem();
   const DoubleTab& xp = ref_cast(Zone_VDF, la_zone.valeur()).xp();
-  const Sous_Zone& ssz = la_zone->zone().domaine().ss_zone(nom_ssz);
+  const Sous_Zone& ssz = la_zone->zone().ss_zone(nom_ssz);
 
   fxyz = n;
 

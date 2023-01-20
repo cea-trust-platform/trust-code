@@ -117,7 +117,7 @@ Champ_base& Champ_P1_isoP1Bulle::affecter_(const Champ_base& ch)
 
       //const Zone_VEF_PreP1b& zvef=zone_vef();
       const Zone& la_zone = zvef.zone();
-      const Zone& dom = la_zone.domaine();
+      const Zone& dom = la_zone;
       const DoubleTab& coord_sommets = dom.coord_sommets();
       const DoubleTab& xg = zvef.xp();
       ch.valeur_aux(xg, Pk);
@@ -139,7 +139,7 @@ Champ_base& Champ_P1_isoP1Bulle::affecter_(const Champ_base& ch)
       /*
        // on regarde si Ps vaut 0 on recupere la p aux elems
        // bidouille ....
-       const DoubleTab& coord=zvef.zone().domaine().coord_sommets();
+       const DoubleTab& coord=zvef.zone().coord_sommets();
        for (int s=0;s<nb_som;s++)
        if (Ps(s)==0)
        {

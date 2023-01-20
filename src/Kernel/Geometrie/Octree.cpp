@@ -318,7 +318,7 @@ const Zone& Octree::zone() const
 }
 double Octree::get_epsilon() const
 {
-  return zone().domaine().epsilon();
+  return zone().epsilon();
 }
 void Octree::ranger_elem_1D(ArrOfInt& ok, int elem, int i, int nb_som_elem, const DoubleTab& coord,
                             const IntTab& elems, ArrOfInt& compteur,
@@ -585,7 +585,7 @@ void Octree::construire(int nb_octrees, const ArrOfInt& Tab,
     {
       //else
       const Zone& z=zone();
-      const Zone& dom=z.domaine();
+      const Zone& dom=z;
       IntVects SousTab(nb_octrees);
       ArrOfInt compteur(nb_octrees);
       int nb_som_elem=z.nb_som_elem();
@@ -713,7 +713,7 @@ void OctreeRoot::construire(int reel_prec)
   reel_=reel_prec;
   pere=0;
   const Zone& z=zone();
-  const Zone& dom=z.domaine();
+  const Zone& dom=z;
 
   {
     // Calcul du min et du max des coordonnees dans chaque direction
@@ -789,7 +789,7 @@ int OctreeRoot::rang_sommet(double x, double y, double z) const
   if (elem != -1)
     {
       const Zone& zo=zone();
-      const Zone& dom=zo.domaine();
+      const Zone& dom=zo;
       int nb_som_elem=zo.nb_som_elem();
       double epsilon=get_epsilon();
       for(int i=0; i<nb_som_elem; i++)
@@ -854,7 +854,7 @@ int OctreeRoot::rang_arete(double x, double y, double z) const
       // Boucle sur les aretes de l'element
       double epsilon=get_epsilon();
       const IntTab& aretes_som=zone().aretes_som();
-      const DoubleTab& coord=zone().domaine().coord_sommets();
+      const DoubleTab& coord=zone().coord_sommets();
       int nb_aretes_elem=elem_aretes.dimension(1);
       for(int i=0; i<nb_aretes_elem; i++)
         {

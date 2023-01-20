@@ -79,7 +79,7 @@ DoubleTab& Champ_P1iP1B_implementation::valeur_aux_elems(const DoubleTab& positi
 
   const Zone_VEF_PreP1b& zvef = zone_vef();
   const Zone& zone_geom = zvef.zone();
-  const DoubleTab& coord = zone_geom.domaine().coord_sommets();
+  const DoubleTab& coord = zone_geom.coord_sommets();
   const IntTab& sommet_poly = zone_geom.les_elems();
   int prs=zvef.numero_premier_sommet();
   int nb_compo_=le_champ().nb_comp();
@@ -216,7 +216,7 @@ DoubleTab& Champ_P1iP1B_implementation::remplir_coord_noeuds(DoubleTab& coord) c
 {
   const Zone_VEF_PreP1b& zvef=zone_vef();
   const Zone& la_zone=zvef.zone();
-  const Zone& dom=la_zone.domaine();
+  const Zone& dom=la_zone;
   const DoubleTab& coord_sommets=dom.coord_sommets();
   int nbe=zvef.nb_elem_tot();
   int nbs=zvef.nb_som_tot();
@@ -267,7 +267,7 @@ void assembler(const Zone_VEF_PreP1b& zone_VEF, Matrice& matrice)
   int nnz=nb_som_tot+nb_arete_tot;
   const IntTab& aretes_som=zone_VEF.zone().aretes_som();
   const ArrOfInt& renum_arete_perio=zone_VEF.get_renum_arete_perio();
-  const Zone& dom=zone_VEF.zone().domaine();
+  const Zone& dom=zone_VEF.zone();
 
   IntLists voisins(nb_som_tot);
   DoubleLists coeffs(nb_som_tot);
@@ -313,7 +313,7 @@ double second_membre(const Zone_VEF_PreP1b& zone_VEF, ArrOfDouble& Pa, DoubleVec
   int nb_arete_tot = zone_VEF.zone().nb_aretes_tot();
   const IntTab& aretes_som=zone_VEF.zone().aretes_som();
   const ArrOfInt& renum_arete_perio=zone_VEF.get_renum_arete_perio();
-  const Zone& dom=zone_VEF.zone().domaine();
+  const Zone& dom=zone_VEF.zone();
   secmem=0;
   // On parcourt toutes les aretes non periodiques
   for(int arete=0; arete<nb_arete_tot; arete++)
@@ -366,7 +366,7 @@ void corriger(const Zone_VEF_PreP1b& zone_VEF, DoubleTab& champ_filtre_, Matrice
 
       // Construction du second membre
       DoubleVect secmem;
-      zone_VEF.zone().domaine().creer_tableau_sommets(secmem);
+      zone_VEF.zone().creer_tableau_sommets(secmem);
       second_membre(zone_VEF, Pa, secmem);
 
       // Calcul de la correction
@@ -383,7 +383,7 @@ void corriger(const Zone_VEF_PreP1b& zone_VEF, DoubleTab& champ_filtre_, Matrice
       solveur.resoudre_systeme(matrice, secmem, solution);
 
       // Application de la periodicite sur la solution:
-      const Zone& dom=zone_VEF.zone().domaine();
+      const Zone& dom=zone_VEF.zone();
       for(int i=0; i<nb_som; i++)
         {
           int som=dom.get_renum_som_perio(i);

@@ -79,7 +79,7 @@ int Point::contient(const ArrOfDouble& pos, int element ) const
 
 
   const Zone& zone=ma_zone.valeur();
-  const Zone& dom=zone.domaine();
+  const Zone& dom=zone;
   const IntTab& elem=zone.les_elems();
   for (int s=0; s<1; s++)
     {

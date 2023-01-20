@@ -218,7 +218,7 @@ DoubleVect& Champ_Q4_implementation::valeur_aux_sommets_compo(const Zone& dom, D
 
 DoubleTab& Champ_Q4_implementation::remplir_coord_noeuds(DoubleTab& positions) const
 {
-  const DoubleTab& coordsom = get_zone_geom().domaine().coord_sommets();
+  const DoubleTab& coordsom = get_zone_geom().coord_sommets();
   positions = coordsom;
   return positions;
 }
@@ -244,7 +244,7 @@ int Champ_Q4_implementation::imprime_Q4(Sortie& os, int ncomp) const
   const DoubleTab& val = cha.valeurs();
   int som;
   // On recalcule les centres de gravite :
-  const DoubleTab pos_som = la_zone.domaine().coord_sommets();
+  const DoubleTab pos_som = la_zone.coord_sommets();
   os << nb_som_tot << finl;
   for (som = 0; som < nb_som_tot; som++)
     {

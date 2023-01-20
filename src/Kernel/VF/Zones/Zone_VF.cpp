@@ -113,7 +113,7 @@ void Zone_VF::discretiser()
       les_faces.associer_zone(zone());
 
       Static_Int_Lists connectivite_som_elem;
-      const int     nb_sommets_tot = zone().domaine().nb_som_tot();
+      const int     nb_sommets_tot = zone().nb_som_tot();
       const IntTab&    elements       = zone().les_elems();
 
       construire_connectivite_som_elem(nb_sommets_tot,
@@ -159,7 +159,7 @@ void Zone_VF::discretiser()
     Scatter::construire_md_vector(zone().domaine(), les_faces.nb_faces(), Joint::FACE, md_vector_faces_);
 
 
-    const MD_Vector& md_vect_sommets = zone().domaine().les_sommets().get_md_vector();
+    const MD_Vector& md_vect_sommets = zone().les_sommets().get_md_vector();
     const MD_Vector& md_vect_elements = zone().les_elems().get_md_vector();
     // Construction de l'espace virtuel du tableau face_sommets
     Scatter::construire_espace_virtuel_traduction(md_vector_faces_, md_vect_sommets, les_faces.les_sommets());
@@ -222,7 +222,7 @@ void Zone_VF::discretiser()
   lazone.calculer_mon_centre_de_gravite(c);
 
   // On cree les domaines frontieres
-  lazone.domaine().creer_mes_domaines_frontieres(*this);
+  lazone.creer_mes_domaines_frontieres(*this);
 
   // Attention : ca ne remplit pas elem_faces, ca fait
   // creer_faces_virtuelles_non_std() en VEF :
@@ -236,7 +236,7 @@ void Zone_VF::discretiser()
   ///////////////////////
   // On imprime des infos
   ///////////////////////
-  lazone.domaine().imprimer();        // Extremas du domaine et volumes
+  lazone.imprimer();        // Extremas du domaine et volumes
   infobord();                        // Aires des bords
   info_elem_som();                // Nombre elements et sommets
   Cerr << "<<<<<< End of Discretization VF >>>>>>>>>>" << finl;
@@ -504,7 +504,7 @@ void Zone_VF::typer_elem(Zone& azone)
 void Zone_VF::infobord()
 {
   Cerr << "==============================================" << finl;
-  Cerr << "The boundary areas of the domain " << zone().domaine().le_nom() << " are:" << finl;
+  Cerr << "The boundary areas of the domain " << zone().le_nom() << " are:" << finl;
   DoubleVect surfaces;
 
   // Raccords
@@ -542,9 +542,9 @@ void Zone_VF::infobord()
 void Zone_VF::info_elem_som()
 {
   const int nbelem = zone().les_elems().get_md_vector().valeur().nb_items_seq_tot();
-  const int nbsom = zone().domaine().les_sommets().get_md_vector().valeur().nb_items_seq_tot();
+  const int nbsom = zone().les_sommets().get_md_vector().valeur().nb_items_seq_tot();
   const int nbfaces = face_voisins().get_md_vector().valeur().nb_items_seq_tot();
-  Cerr<<"Calculation of elements and nodes on " << zone().domaine().le_nom() << " :" << finl;
+  Cerr<<"Calculation of elements and nodes on " << zone().le_nom() << " :" << finl;
   Cerr<<"Total number of elements = "<<nbelem<<finl;
   Cerr<<"Total number of nodes = "<<nbsom<<finl;
   Cerr<<"Total number of faces = "<<nbfaces<<finl;

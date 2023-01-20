@@ -453,7 +453,7 @@ void projette(DoubleTab& valeurs_espace,const DoubleTab& val_source,const Zone_V
       Cerr<<"option composante_normale not coded in this case"<<finl;
       Process::exit();
     }
-  const DoubleTab& coord=zvf.zone().domaine().coord_sommets();
+  const DoubleTab& coord=zvf.zone().coord_sommets();
   const IntTab& elems=zvf.zone().les_elems();
 
   int nb_v= valeurs_espace.dimension(0);

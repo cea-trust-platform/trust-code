@@ -88,7 +88,7 @@ int Champ_front_contact_VEF::initialiser(double temps, const Champ_Inc_base& inc
       const Frontiere& frontiere_locale = frontiere_dis().frontiere();
       if (!sub_type(Raccord_distant_homogene, frontiere_opposee))
         {
-          const Nom& nom_domaine_oppose = zone_dis_opposee.zone().domaine().le_nom();
+          const Nom& nom_domaine_oppose = zone_dis_opposee.zone().le_nom();
           Cerr << "Error, the boundary " << frontiere_opposee.le_nom() << " should be a Raccord." << finl;
           Cerr << "Add in your data file between the definition and the partition of the domain " << nom_domaine_oppose << " :" << finl;
           Cerr << "Modif_bord_to_raccord " << nom_domaine_oppose << " " << frontiere_opposee.le_nom() << finl;
@@ -665,9 +665,9 @@ void Champ_front_contact_VEF::remplir_connect_bords()
   if(nb_faces1!=nb_faces2)
     {
       Cerr << "Warning, the number of faces (" << nb_faces1 << ") on the boundary " << la_front_vf1.le_nom();
-      Cerr << " of the domain " << la_zone_dis1.zone().domaine().le_nom() << finl;
+      Cerr << " of the domain " << la_zone_dis1.zone().le_nom() << finl;
       Cerr << "is different of the number of faces (" << nb_faces2 << ") on the boundary " << la_front_vf2.le_nom();
-      Cerr << " of the domain " << la_zone_dis2.zone().domaine().le_nom() << " ..." << finl;
+      Cerr << " of the domain " << la_zone_dis2.zone().le_nom() << " ..." << finl;
       Cerr << "The exchange condition with the paroi_contact can't succeed!" << finl;
       Nom fichier="connectivity_failed_";
       Nom fichier_med="connectivity_failed_";
@@ -906,7 +906,7 @@ void Champ_front_contact_VEF::test_faces_coin()
   const Conds_lim& conds_lim = la_zcl_dis1.les_conditions_limites();
   int size_cl = conds_lim.size();
 
-  const Nom& nom_dom = l_inconnue1->equation().probleme().domaine().le_nom();
+  const Nom& nom_dom = l_inconnue1->equation().probleme().le_nom();
   int erreur = 0;
   for (int num_cl=0; num_cl<size_cl; num_cl++)
     {
@@ -1036,7 +1036,7 @@ void Champ_front_contact_VEF::connectivity_failed(const Zone_VEF& zvef1, int& nb
   Nom bis(fichier_med);
   bis+="_index";
   fichier_med.prefix(".med");
-  const Zone& dom2 = zvef2.zone().domaine();
+  const Zone& dom2 = zvef2.zone();
   Noms unites_(1);
   unites_[0]="1";
   Noms nom_compos(1);

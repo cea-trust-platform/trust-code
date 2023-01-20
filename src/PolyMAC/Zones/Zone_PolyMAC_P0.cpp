@@ -98,7 +98,7 @@ void Zone_PolyMAC_P0::init_stencils() const
 {
   if (fsten_d.size()) return;
   const IntTab& f_s = face_sommets(), &f_e = face_voisins(), &e_s = zone().les_elems();
-  int i, e, f, s, ne_tot = nb_elem_tot(), ns_tot = zone().domaine().nb_som_tot();
+  int i, e, f, s, ne_tot = nb_elem_tot(), ns_tot = zone().nb_som_tot();
   fsten_d.set_smart_resize(1), fsten_d.resize(1), fsten_eb.set_smart_resize(1);
 
   /* connectivite sommets -> elems / faces de bord */
@@ -144,7 +144,7 @@ void Zone_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntTab&
   Process::exit();
 #else
   const IntTab& f_e = face_voisins(), &e_f = elem_faces(), &f_s = face_sommets();
-  const DoubleTab& nf = face_normales(), &xs = zone().domaine().coord_sommets(), &vfd = volumes_entrelaces_dir();
+  const DoubleTab& nf = face_normales(), &xs = zone().coord_sommets(), &vfd = volumes_entrelaces_dir();
   const DoubleVect& fs = face_surfaces(), &vf = volumes_entrelaces();
   const Static_Int_Lists& s_e = som_elem();
   int i, i_s, j, k, l, e, f, s, sb, n_f, n_m, n_ef, n_e, n_eb, m, n, ne_tot = nb_elem_tot(), sgn, nw, infoo, d, db, D = dimension, rk, nl, nc, un = 1, il, ok, essai;
@@ -158,7 +158,7 @@ void Zone_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntTab&
   std::vector<std::vector<int>> se_f; /* se_f[i][.] : faces connectees au i-eme element connecte au sommet s */
   DoubleTrav M, B, X, Ff, Feb, Mf, Meb, W(1), x_fs, A, S; //systeme M.(grad u) = B dans chaque element, flux a la face Ff.u_fs + Feb.u_eb, equations Mf.u_fs = Meb.u_eb
   IntTrav piv, ctr[3];
-  for (i = 0; first_fgrad_ && i < 3; i++) zone().domaine().creer_tableau_sommets(ctr[i]);
+  for (i = 0; first_fgrad_ && i < 3; i++) zone().creer_tableau_sommets(ctr[i]);
   M.set_smart_resize(1), B.set_smart_resize(1), X.set_smart_resize(1), Ff.set_smart_resize(1), Feb.set_smart_resize(1), Mf.set_smart_resize(1), Meb.set_smart_resize(1);
   W.set_smart_resize(1), x_fs.set_smart_resize(1), A.set_smart_resize(1), piv.set_smart_resize(1), S.set_smart_resize(1);
 
@@ -335,7 +335,7 @@ void Zone_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntTab&
   if (!first_fgrad_) return;
   int count[3] = { mp_somme_vect(ctr[0]), mp_somme_vect(ctr[1]), mp_somme_vect(ctr[2]) }, tot = count[0] + count[1] + count[2];
   if (tot)
-    Cerr << zone().domaine().le_nom() << "::fgrad(): " << 100. * count[0] / tot << "% MPFA-O "
+    Cerr << zone().le_nom() << "::fgrad(): " << 100. * count[0] / tot << "% MPFA-O "
          << 100. * count[1] / tot << "% MPFA-O(h) " << 100. * count[2] / tot << "% MPFA-SYM" << finl;
   first_fgrad_ = 0;
 #endif

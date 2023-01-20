@@ -206,7 +206,7 @@ void IJK_Grid_Geometry::initialize_from_unstructured(const Zone& zone,
   periodic_[2] = perio_z;
   // Find all coordinates in the unstructured mesh
   // swap directions
-  const DoubleTab& coord_som = zone.domaine().les_sommets();
+  const DoubleTab& coord_som = zone.les_sommets();
   Cout << "IJK_Grid_Geometry::initialize_from_unstructured maps x->" <<  direction_for_x
        << " y->" << direction_for_y << " z->" << direction_for_z << finl;
 

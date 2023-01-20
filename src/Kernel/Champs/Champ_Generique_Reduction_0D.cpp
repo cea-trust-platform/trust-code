@@ -105,7 +105,7 @@ void Champ_Generique_Reduction_0D::completer(const Postraitement_base& post)
 
       const Zone_VF& zvf = ref_cast(Zone_VF,zone_dis);
       // position la plus a gauche
-      const DoubleTab& coords=zvf.zone().domaine().les_sommets();
+      const DoubleTab& coords=zvf.zone().les_sommets();
       const IntTab& conn=zvf.zone().les_elems();
       double minp=mp_min_vect(coords);
       //Cerr<<" uu "<<minp<<finl;
@@ -255,7 +255,7 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ(Champ& espace_stockage
               if (loc==ELEMENT)
                 zvf.zone().creer_tableau_elements(vect_source,Array_base::NOCOPY_NOINIT);
               else if (loc==NODE)
-                zvf.domaine_dis().domaine().creer_tableau_sommets(vect_source,Array_base::NOCOPY_NOINIT);
+                zvf.domaine_dis().creer_tableau_sommets(vect_source,Array_base::NOCOPY_NOINIT);
               else if (loc==FACE)
                 zvf.creer_tableau_faces(vect_source,Array_base::NOCOPY_NOINIT);
               vect_source = 0.;
@@ -351,7 +351,7 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
       //int volumes_size_tot = mp_sum(volumes.size_array());
       if (volumes.size_array()<zvf.nb_elem())
         {
-          Cerr << "The mesh volumes of the domain " << zvf.zone().domaine().le_nom() << " are not available yet." << finl;
+          Cerr << "The mesh volumes of the domain " << zvf.zone().le_nom() << " are not available yet." << finl;
           Cerr << "It is not implemented yet." << finl;
           exit();
         }
@@ -515,7 +515,7 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
       //int volumes_size_tot = mp_sum(volumes.size_array());
       if (volumes.size_array()<zvf.nb_elem())
         {
-          Cerr << "The mesh volumes of the domain " << zvf.zone().domaine().le_nom() << " are not available yet." << finl;
+          Cerr << "The mesh volumes of the domain " << zvf.zone().le_nom() << " are not available yet." << finl;
           Cerr << "It is not implemented yet." << finl;
           exit();
         }
@@ -611,7 +611,7 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
       // int volumes_size_tot = mp_sum(volumes.size_array());
       if (volumes.size_array()<zvf.nb_elem())
         {
-          Cerr << "The mesh volumes of the domain " << zvf.zone().domaine().le_nom() << " are not available yet." << finl;
+          Cerr << "The mesh volumes of the domain " << zvf.zone().le_nom() << " are not available yet." << finl;
           Cerr << "It is not implemented yet." << finl;
           exit();
         }
@@ -665,7 +665,7 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
       if (loc==ELEMENT)
         zvf.zone().creer_tableau_elements(un,Array_base::NOCOPY_NOINIT);
       else if (loc==NODE)
-        zvf.domaine_dis().domaine().creer_tableau_sommets(un,Array_base::NOCOPY_NOINIT);
+        zvf.domaine_dis().creer_tableau_sommets(un,Array_base::NOCOPY_NOINIT);
       else if (loc==FACE)
         zvf.creer_tableau_faces(un,Array_base::NOCOPY_NOINIT);
       un = 1.;

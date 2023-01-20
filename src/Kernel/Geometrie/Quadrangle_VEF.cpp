@@ -93,7 +93,7 @@ int Quadrangle_VEF::contient(const ArrOfDouble& pos, int element) const
 {
   assert(pos.size_array()==2);
   const Zone& zone=ma_zone.valeur();
-  const Zone& dom=zone.domaine();
+  const Zone& dom=zone;
   int som0 = zone.sommet_elem(element,0);
   int som1 = zone.sommet_elem(element,1);
   int som2 = zone.sommet_elem(element,2);
@@ -165,7 +165,7 @@ int Quadrangle_VEF::contient(const ArrOfInt& som, int element ) const
 void Quadrangle_VEF::calculer_volumes(DoubleVect& volumes) const
 {
   const Zone& zone=ma_zone.valeur();
-  const DoubleTab& coord = zone.domaine().coord_sommets();
+  const DoubleTab& coord = zone.coord_sommets();
   int S0,S1,S2,S3;
   ArrOfDouble xg(dimension);
   IntTab face_sommet_global;
@@ -226,7 +226,7 @@ void Quadrangle_VEF::calculer_volumes(DoubleVect& volumes) const
 void Quadrangle_VEF::reordonner()
 {
   Zone& zone=ma_zone.valeur();
-  const Zone& dom=zone.domaine();
+  const Zone& dom=zone;
   IntTab& elem=zone.les_elems();
 
   ArrOfInt S(4);

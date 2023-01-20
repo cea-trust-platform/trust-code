@@ -83,7 +83,7 @@ void Zone_PolyMAC::discretiser()
 
       /* ordre canonique dans aretes_som */
       IntTab& a_s = zone().set_aretes_som(), &e_a = zone().set_elem_aretes();
-      const DoubleTab& xs = zone().domaine().coord_sommets();
+      const DoubleTab& xs = zone().coord_sommets();
       std::map<std::array<double, 3>, int> xv_fsa;
       for (int a = 0, i, j, s; a < a_s.dimension_tot(0); a++)
         {
@@ -121,14 +121,14 @@ void Zone_PolyMAC::discretiser()
 
   //MD_vector pour Champ_Face_PolyMAC (faces + aretes)
   MD_Vector_composite mdc_fa;
-  mdc_fa.add_part(md_vector_faces()), mdc_fa.add_part(dimension < 3 ? zone().domaine().md_vector_sommets() : md_vector_aretes());
+  mdc_fa.add_part(md_vector_faces()), mdc_fa.add_part(dimension < 3 ? zone().md_vector_sommets() : md_vector_aretes());
   mdv_faces_aretes.copy(mdc_fa);
 }
 
 void Zone_PolyMAC::orthocentrer()
 {
   const IntTab& f_s = face_sommets(), &e_s = zone().les_elems(), &e_f = elem_faces();
-  const DoubleTab& xs = zone().domaine().coord_sommets(), &nf = face_normales_;
+  const DoubleTab& xs = zone().coord_sommets(), &nf = face_normales_;
   const DoubleVect& fs = face_surfaces();
   int i, j, e, f, s, np;
   DoubleTab M(0, dimension + 1), X(dimension + 1, 1), S(0, 1), vp; //pour les systemes lineaires
@@ -137,7 +137,7 @@ void Zone_PolyMAC::orthocentrer()
   creer_tableau_faces(b_f_ortho), zone().creer_tableau_elements(b_e_ortho);
 
   /* 1. orthocentrage des faces (en dimension 3) */
-  Cerr << zone().domaine().le_nom() << " : ";
+  Cerr << zone().le_nom() << " : ";
   if (dimension < 3) b_f_ortho = 1; //les faces (segments) sont deja orthcentrees!
   else for (f = 0; f < nb_faces_tot(); f++)
       {
@@ -172,7 +172,7 @@ void Zone_PolyMAC::orthocentrer()
   Cerr << 100. * mp_somme_vect(b_f_ortho) / Process::mp_sum(nb_faces()) << "% de faces orthocentrees" << finl;
 
   /* 2. orthocentrage des elements */
-  Cerr << zone().domaine().le_nom() << " : ";
+  Cerr << zone().le_nom() << " : ";
   for (e = 0; e < nb_elem_tot(); e++)
     {
       //l'element est-il deja orthocentre?
@@ -209,7 +209,7 @@ const DoubleTab& Zone_PolyMAC::surf_elem_arete() const
   if (surf_elem_arete_.nb_dim() == 2) return surf_elem_arete_; //deja fait
   int e, f, a, s, sb, i, j, k, d, D = dimension, sgn;
   const IntTab& ea_d = elem_arete_d(), e_f = elem_faces(), &f_s = face_sommets(), &e_a = D < 3 ? e_f : zone().elem_aretes();//en 2D, les aretes sont les faces!
-  const DoubleTab& xe = xp(), &xf = xv(), &xs = zone().domaine().coord_sommets();
+  const DoubleTab& xe = xp(), &xf = xv(), &xs = zone().coord_sommets();
   surf_elem_arete_.resize(ea_d(nb_elem_tot()), D);
   double vecz[3] = { 0, 0, 1 };
   for (e = 0; e < nb_elem_tot(); e++)
@@ -301,7 +301,7 @@ void Zone_PolyMAC::W2(const DoubleTab *nu, int e, DoubleTab& w2) const
 void Zone_PolyMAC::M1(const DoubleTab *nu, int e, DoubleTab& m1) const
 {
   const IntTab& e_f = elem_faces(), &f_s = face_sommets(), &e_a = dimension < 3 ? e_f : zone().elem_aretes(), &a_s = dimension < 3 ? f_s : zone().aretes_som(), &ea_d = elem_arete_d(); //en 2D, les aretes sont les faces!
-  const DoubleTab& xs = zone().domaine().coord_sommets(), &S_ea = surf_elem_arete();
+  const DoubleTab& xs = zone().coord_sommets(), &S_ea = surf_elem_arete();
   const DoubleVect& ve = volumes();
   int i, j, k, a, s, sb, n, N = nu ? nu->dimension(1) : 1, e_nu = nu && nu->dimension_tot(0) == 1 ? 0 : e, n_a = ea_d(e + 1) - ea_d(e), d, D = dimension, idx;
   double prefac, fac, beta = 1 || n_a == 3 * D - 3 ? 1. / D : D == 2 ? 1. / sqrt(2) : 1. / sqrt(3); //stabilisation : DGA sur simplexes, SUSHI sinon
@@ -330,7 +330,7 @@ void Zone_PolyMAC::M1(const DoubleTab *nu, int e, DoubleTab& m1) const
 void Zone_PolyMAC::W1(const DoubleTab *nu, int e, DoubleTab& w1, DoubleTab& v_e, DoubleTab& v_ea) const
 {
   const IntTab& e_f = elem_faces(), &f_s = face_sommets(), &e_a = dimension < 3 ? e_f : zone().elem_aretes(), &a_s = dimension < 3 ? f_s : zone().aretes_som(), &ea_d = elem_arete_d(); //en 2D, les aretes sont les faces!
-  const DoubleTab& xs = zone().domaine().coord_sommets(), &S_ea = surf_elem_arete();
+  const DoubleTab& xs = zone().coord_sommets(), &S_ea = surf_elem_arete();
   const DoubleVect& ve = volumes();
   int i, j, k, a, s, sb, n, N = nu ? nu->dimension(1) : 1, e_nu = nu && nu->dimension_tot(0) == 1 ? 0 : e, n_a = ea_d(e + 1) - ea_d(e), d, D = dimension, idx;
   double prefac, fac, beta = n_a == 3 * D - 3 ? 1. / D : D == 2 ? 1. / sqrt(2) : 1. / sqrt(3); //stabilisation : DGA sur simplexes, SUSHI sinon

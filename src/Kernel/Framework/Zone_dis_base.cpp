@@ -94,7 +94,7 @@ int Zone_dis_base::rang_frontiere(const Nom& nom) const
   for(int i=0; i<nb_front_Cl(); i++)
     if (frontiere_dis(i).le_nom()==nom)
       return i;
-  Cerr << "We did not find the boundary name " << nom << " on the domain " << zone().domaine().le_nom() << finl;
+  Cerr << "We did not find the boundary name " << nom << " on the domain " << zone().le_nom() << finl;
   Cerr << "Check the given boundary name or the domain." << finl;
   exit();
   return -1;
@@ -105,7 +105,7 @@ int Zone_dis_base::rang_frontiere(const Nom& nom)
   for(int i=0; i<nb_front_Cl(); i++)
     if (frontiere_dis(i).le_nom()==nom)
       return i;
-  Cerr << "We did not find the boundary name " << nom << " on the domain " << zone().domaine().le_nom() << finl;
+  Cerr << "We did not find the boundary name " << nom << " on the domain " << zone().le_nom() << finl;
   Cerr << "Check the given boundary name or the domain." << finl;
   exit();
   return -1;

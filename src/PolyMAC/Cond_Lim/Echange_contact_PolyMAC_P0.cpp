@@ -74,7 +74,7 @@ void Echange_contact_PolyMAC_P0::init_fs_dist() const
 {
   if (fs_dist_init_) return; //deja fait
   const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0, fvf->zone_dis()), &o_zone = ref_cast(Zone_PolyMAC_P0, o_fvf->zone_dis());
-  const DoubleTab& xv = zone.xv(), &o_xv = o_zone.xv(), &xs = zone.zone().domaine().coord_sommets(), &o_xs = o_zone.zone().domaine().coord_sommets();
+  const DoubleTab& xv = zone.xv(), &o_xv = o_zone.xv(), &xs = zone.zone().coord_sommets(), &o_xs = o_zone.zone().coord_sommets();
   const IntTab& f_s = zone.face_sommets(), &o_f_s = o_zone.face_sommets();
 
   int i, j, f, o_f, s, o_s, nf_tot = fvf->nb_faces_tot(), o_nf_tot = o_fvf->nb_faces_tot(), d, D = dimension;

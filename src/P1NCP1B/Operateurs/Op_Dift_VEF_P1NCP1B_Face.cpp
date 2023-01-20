@@ -139,7 +139,7 @@ DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_gradient_som(const DoubleTab& vit,
 
   const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b, (la_zone_vef.valeur()));
   const Zone& zone = zone_VEF.zone();
-  const Zone& dom = zone.domaine();
+  const Zone& dom = zone;
   const DoubleTab& face_normales = zone_VEF.face_normales();
   const IntTab& som_elem = zone.les_elems();
   const IntTab& elem_faces = zone_VEF.elem_faces();
@@ -430,14 +430,13 @@ DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_divergence_elem(double nu, const D
 DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_divergence_som(double nu, const DoubleTab& nu_turb, const DoubleTab& grad, DoubleTab& div) const
 {
   const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b, la_zone_vef.valeur());
-  const Zone& zone = zone_VEF.zone();
-  const Zone& dom = zone.domaine();
+  const Zone& dom = zone_VEF.zone();
   const DoubleTab& face_normales = zone_VEF.face_normales();
-  const IntTab& som_elem = zone.les_elems();
+  const IntTab& som_elem = dom.les_elems();
   const IntTab& elem_faces = zone_VEF.elem_faces();
   const IntTab& face_voisins = zone_VEF.face_voisins();
-  int nfe = zone.nb_faces_elem();
-  int nb_elem_tot = zone.nb_elem_tot();
+  int nfe = dom.nb_faces_elem();
+  int nb_elem_tot = dom.nb_elem_tot();
   int nps = zone_VEF.numero_premier_sommet();
   int elem, indice, indice2, face, compi, compj, som;
   ArrOfDouble sigma(dimension);
@@ -496,10 +495,9 @@ DoubleTab& Op_Dift_VEF_P1NCP1B_Face::ajouter(const DoubleTab& inconnue, DoubleTa
 {
   //  const Zone_Cl_VEFP1B& zone_Cl_VEF = la_zcl_vef.valeur();
   const Zone_VEF_PreP1b& zone_VEF = la_zone_vef.valeur();
-  const Zone& zone = zone_VEF.zone();
-  const Zone& dom = zone.domaine();
-  int nb_elem_tot = zone.nb_elem_tot();
-  int nb_som_tot = dom.nb_som_tot();
+  const Zone& dom = zone_VEF.zone();
+  int nb_elem_tot=dom.nb_elem_tot();
+  int nb_som_tot=dom.nb_som_tot();
 
   const DoubleTab& nu_turb = diffusivite_turbulente()->valeurs();
   double nu = (diffusivite_.valeur())(0, 0);

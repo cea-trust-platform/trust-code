@@ -216,7 +216,7 @@ void Zone_Cl_VEF::remplir_volumes_entrelaces_Cl(const Zone_VEF& la_zone_VEF)
 void Zone_Cl_VEF::remplir_normales_facettes_Cl(const Zone_VEF& la_zone_VEF)
 {
   const Zone& z = la_zone_VEF.zone();
-  const Zone& dom = z.domaine();
+  const Zone& dom = z;
   const DoubleTab& les_coords =dom.coord_sommets();
   const IntTab& les_Polys = z.les_elems() ;
   const Elem_VEF& elemvef = la_zone_VEF.type_elem();

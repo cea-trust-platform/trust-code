@@ -152,7 +152,7 @@ void EDO_Pression_th_VEF::calculer_grad(const DoubleTab& inco, DoubleTab& grad)
           const IntTab& som_elem = la_zone->zone().les_elems();
           int s0,s1,elem0,elem1;
           const IntTab& face_sommets = la_zone->face_sommets();
-          const DoubleTab& coord_sommets = la_zone->zone().domaine().coord_sommets();
+          const DoubleTab& coord_sommets = la_zone->zone().coord_sommets();
           const DoubleTab& xp = la_zone->xp();
           //    const DoubleTab& xv = la_zone->xv();
           DoubleTab incosom(nb_som);

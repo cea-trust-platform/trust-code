@@ -72,7 +72,7 @@ void Ensemble_Lagrange_base::remplir_sommets_tmp(DoubleTab& soms_tmp)
 void Ensemble_Lagrange_base::generer_marqueurs_sz(DoubleTab& soms_tmp)
 {
   const Zone& mazone = ma_zone_.valeur();
-  const Zone& dom = mazone.domaine();
+  const Zone& dom = mazone;
   int nb_sz,nb_marq_sz, old_size, dim;
   soms_tmp.resize(0);
   dim=Objet_U::dimension;

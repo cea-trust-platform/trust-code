@@ -148,10 +148,10 @@ void Zone_EF_axi::remplir_tableau_origine()
 
 void Zone_EF_axi::verifie_compatibilite_domaine()
 {
-  if (!zone().domaine().axi1d())
+  if (!zone().axi1d())
     {
       Cerr << "*****************************************************************************" << finl;
-      Cerr << " Error in " << que_suis_je() << " : the type of domain " << zone().domaine().que_suis_je();
+      Cerr << " Error in " << que_suis_je() << " : the type of domain " << zone().que_suis_je();
       Cerr << " is not compatible" << finl;
       Cerr << " with the discretisation EF_axi. " << finl;
       Cerr << " Please use the discretization EF or define a domain of type ZoneAxi1d." << finl;

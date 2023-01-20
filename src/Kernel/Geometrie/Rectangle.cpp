@@ -70,7 +70,7 @@ void Rectangle::reordonner()
 int Rectangle::reordonner_elem()
 {
   Zone& zone=ma_zone.valeur();
-  const Zone& dom=zone.domaine();
+  const Zone& dom=zone;
   IntTab& elem=zone.les_elems();
 
   ArrOfInt S(4);
@@ -146,7 +146,7 @@ int Rectangle::contient(const ArrOfDouble& pos, int element ) const
 {
   assert(pos.size_array()==2);
   const Zone& zone=ma_zone.valeur();
-  const Zone& dom=zone.domaine();
+  const Zone& dom=zone;
   int som0 = zone.sommet_elem(element,0);
   int som3 = zone.sommet_elem(element,3);
   if (    inf_ou_egal(dom.coord(som0,0),pos[0]) && inf_ou_egal(pos[0],dom.coord(som3,0))
@@ -189,7 +189,7 @@ void Rectangle::calculer_volumes(DoubleVect& volumes) const
       exit();
     }
   const Zone& zone=ma_zone.valeur();
-  const Zone& dom=zone.domaine();
+  const Zone& dom=zone;
   double dx,dy;
   int S1,S2,S3;
 
@@ -216,7 +216,7 @@ void Rectangle::calculer_normales(const IntTab& Face_sommets ,
                                   DoubleTab& face_normales) const
 {
   const Zone& zone_geom = ma_zone.valeur();
-  const DoubleTab& les_coords = zone_geom.domaine().coord_sommets();
+  const DoubleTab& les_coords = zone_geom.coord_sommets();
   int nbfaces = Face_sommets.dimension(0);
   double x1,y1;
   int n0,n1;

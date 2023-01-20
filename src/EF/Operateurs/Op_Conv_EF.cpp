@@ -356,7 +356,7 @@ double Op_Conv_EF::calculer_dt_stab() const
     }
   const DoubleVect& valeurs_diffusivite_2 = ref_cast(Operateur_Diff_base,equation().probleme().equation(autre_eq).operateur(0).l_op_base()).diffusivite().valeurs();
 
-  const DoubleTab& coord=zone_ef.zone().domaine().les_sommets();
+  const DoubleTab& coord=zone_ef.zone().les_sommets();
 
   int nb_elem_tot=zone_ef.zone().nb_elem_tot();
   int nb_som_elem=zone_ef.zone().nb_som_elem();

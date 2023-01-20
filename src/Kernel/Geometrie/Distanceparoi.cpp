@@ -79,7 +79,7 @@ Entree& Distanceparoi::interpreter_(Entree& is)
     les_faces.associer_zone(la_zone);
 
     Static_Int_Lists connectivite_som_elem;
-    const int     nb_sommets_tot = la_zone.domaine().nb_som_tot();
+    const int     nb_sommets_tot = la_zone.nb_som_tot();
     const IntTab&    elements       = la_zone.les_elems();
 
     construire_connectivite_som_elem(nb_sommets_tot,

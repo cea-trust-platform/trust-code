@@ -100,7 +100,7 @@ DoubleTab& Champ_implementation_sommet::remplir_coord_noeuds(DoubleTab& position
 {
   const Zone& zone = get_zone_geom();
   positions.resize(zone.nb_som(), Objet_U::dimension);
-  positions = zone.domaine().les_sommets();
+  positions = zone.les_sommets();
   return positions;
 }
 
@@ -108,7 +108,7 @@ int Champ_implementation_sommet::remplir_coord_noeuds_et_polys(DoubleTab& positi
 {
   const Zone& zone = get_zone_geom();
   positions.resize(zone.nb_som(), Objet_U::dimension);
-  positions = zone.domaine().les_sommets();
+  positions = zone.les_sommets();
   zone.chercher_elements(positions, polys);
   return 1;
 }

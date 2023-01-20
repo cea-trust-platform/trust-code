@@ -22,17 +22,17 @@ Sortie& Tetraedriser_homogene::printOn(Sortie& os) const { return Interprete::pr
 Entree& Tetraedriser_homogene::readOn(Entree& is) { return Interprete::readOn(is); }
 
 // Traitement des faces
-static void decoupe(Zone& zone, Faces& faces, IntTab& new_soms_old_elems)
+//
+static void decoupe(Zone& dom, Faces& faces, IntTab& new_soms_old_elems)
 {
-  const Zone& dom = zone.domaine();
-  const DoubleTab& coord = dom.coord_sommets();
-  IntTab& sommets = faces.les_sommets();
-  int nb_faces = sommets.dimension(0);
-  assert(sommets.dimension(1) == 4);
-  IntTab nouveaux(8 * nb_faces, 3);
-  faces.voisins().resize(8 * nb_faces, 2);
-  faces.voisins() = -1;
-  for (int i = 0; i < nb_faces; i++)
+  const DoubleTab& coord=dom.coord_sommets();
+  IntTab& sommets=faces.les_sommets();
+  int nb_faces=sommets.dimension(0);
+  assert(sommets.dimension(1)==4);
+  IntTab nouveaux(8*nb_faces, 3);
+  faces.voisins().resize(8*nb_faces, 2);
+  faces.voisins()=-1;
+  for(int i=0; i<nb_faces; i++)
     {
       int i1 = sommets(i, 0);
       int i3 = sommets(i, 1);
@@ -42,25 +42,25 @@ static void decoupe(Zone& zone, Faces& faces, IntTab& new_soms_old_elems)
       double x = 0.5 * (coord(i1, 0) + coord(i3, 0));
       double y = 0.5 * (coord(i1, 1) + coord(i3, 1));
       double z = 0.5 * (coord(i1, 2) + coord(i3, 2));
-      int i2 = zone.chercher_sommets(x, y, z);
+      int i2 = dom.chercher_sommets(x, y, z);
       assert(i2 >= 0);
 
       x = 0.5 * (coord(i3, 0) + coord(i9, 0));
       y = 0.5 * (coord(i3, 1) + coord(i9, 1));
       z = 0.5 * (coord(i3, 2) + coord(i9, 2));
-      int i4 = zone.chercher_sommets(x, y, z);
+      int i4 = dom.chercher_sommets(x, y, z);
       assert(i4 >= 0);
 
       x = 0.5 * (coord(i1, 0) + coord(i7, 0));
       y = 0.5 * (coord(i1, 1) + coord(i7, 1));
       z = 0.5 * (coord(i1, 2) + coord(i7, 2));
-      int i5 = zone.chercher_sommets(x, y, z);
+      int i5 = dom.chercher_sommets(x, y, z);
       assert(i5 >= 0);
 
       x = 0.5 * (coord(i7, 0) + coord(i9, 0));
       y = 0.5 * (coord(i7, 1) + coord(i9, 1));
       z = 0.5 * (coord(i7, 2) + coord(i9, 2));
-      int i8 = zone.chercher_sommets(x, y, z);
+      int i8 = dom.chercher_sommets(x, y, z);
       assert(i8 >= 0);
 
       //Nouveau : on prend le barycentre de la face
@@ -70,7 +70,7 @@ static void decoupe(Zone& zone, Faces& faces, IntTab& new_soms_old_elems)
       x = 0.25 * (coord(i1, 0) + coord(i3, 0) + coord(i7, 0) + coord(i9, 0));
       y = 0.25 * (coord(i1, 1) + coord(i3, 1) + coord(i7, 1) + coord(i9, 1));
       z = 0.25 * (coord(i1, 2) + coord(i3, 2) + coord(i7, 2) + coord(i9, 2));
-      int i6 = zone.chercher_sommets(x, y, z);
+      int i6 = dom.chercher_sommets(x, y, z);
       if (i6 < 0)
         {
           Cerr << "New Node i6 not found : pos=" << x << " " << y << " " << z << finl;
@@ -142,14 +142,8 @@ int creer_sommet(Zone& dom, Zone& zone, DoubleTab& new_soms, IntTab& elem_traite
   z /= NbSom;
 
   int trouve = -1;
-  /*
-   for (int zo=0; zo<nb_zones-1; zo++) {
-   trouve = dom.zone(zo).chercher_elements(x,y,z);
-   if(trouve!=-1) break;
-   }
-   */
-  trouve = zone.chercher_elements(x, y, z);
-  if (trouve < 0)
+  trouve = dom.chercher_elements(x,y,z);
+  if (trouve<0)
     {
       for (int ii = 0; ii < NbSom; ii++)
         {
@@ -222,7 +216,7 @@ void Tetraedriser_homogene::trianguler(Zone& zone) const
       // pour chaque cube, liste des nouveaux sommets qu'il contient :
       IntTab new_soms_old_elems(oldsz, 19);
       IntTab sommets(8);
-      Zone& dom = zone.domaine();
+      Zone& dom = zone;
       int compteur = 0;
       int nbnewsoms = 0;
       int i;

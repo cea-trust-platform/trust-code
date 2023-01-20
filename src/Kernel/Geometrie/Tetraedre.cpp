@@ -79,7 +79,7 @@ int Tetraedre::contient(const ArrOfDouble& pos, int ielem) const
   // 29/01/2010 Optimisation CPU de la methode (50% plus rapide) par PL
   assert(pos.size_array()==3);
   const Zone& zone=ma_zone.valeur();
-  const DoubleTab& coord=zone.domaine().coord_sommets();
+  const DoubleTab& coord=zone.coord_sommets();
   double prod1,prod2,xn,yn,zn;
   int som0 = zone.sommet_elem(ielem,0);
   int som1 = zone.sommet_elem(ielem,1);
@@ -208,7 +208,7 @@ int Tetraedre::contient(const ArrOfInt& som, int element ) const
 void Tetraedre::calculer_volumes(DoubleVect& volumes) const
 {
   const Zone& zone=ma_zone.valeur();
-  const Zone& dom=zone.domaine();
+  const Zone& dom=zone;
 
   double x0,y0,z0;
   double x1,y1,z1;
@@ -255,7 +255,7 @@ void Tetraedre::calculer_normales(const IntTab& Face_sommets ,
                                   DoubleTab& face_normales) const
 {
   const Zone& zone_geom = ma_zone.valeur();
-  const DoubleTab& les_coords = zone_geom.domaine().coord_sommets();
+  const DoubleTab& les_coords = zone_geom.coord_sommets();
   int nbfaces = Face_sommets.dimension(0);
   double x1,y1,z1,x2,y2,z2;
   int n0,n1,n2;

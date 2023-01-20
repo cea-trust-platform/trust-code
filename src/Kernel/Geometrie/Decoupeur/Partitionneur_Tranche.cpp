@@ -135,7 +135,7 @@ void Partitionneur_Tranche::chercher_direction_perio(const Zone& zone,
                                                      const Noms& liste_bords_perio,
                                                      ArrOfInt& directions_perio)
 {
-  Cerr << "Search of periodic directions of domain " << zone.domaine().le_nom() << finl;
+  Cerr << "Search of periodic directions of domain " << zone.le_nom() << finl;
   const int dim = Objet_U::dimension;
   directions_perio.resize_array(dim);
   directions_perio = 0;

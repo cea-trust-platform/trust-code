@@ -56,8 +56,7 @@ void Decouper_Bord_coincident::decouper_(Zone& zone)
           exit();
         }
 
-      Zone& dom = zone.domaine();
-      const DoubleTab& xs = dom.coord_sommets();
+      const DoubleTab& xs = zone.coord_sommets();
       IntTab& les_elems = zone.les_elems();
       int oldsz = les_elems.dimension(0);
       int oldnbsom = zone.nb_som();
@@ -71,8 +70,8 @@ void Decouper_Bord_coincident::decouper_(Zone& zone)
       //puis on redimensionnera seulement a la fin par la dimension exacte
       Scatter::uninit_sequential_domain(dom);
 
-      DoubleTab& sommets_dom = dom.les_sommets();
-      //int dim_som_old=sommets_dom.dimension(0); // dim_som_old = oldnbsom
+      DoubleTab& sommets_dom = zone.les_sommets();
+      //int dim_som_old=sommets_zone.dimension(0); // dim_som_old = oldnbsom
       sommets_dom.resize(2*oldnbsom,dimension);
 
       // On initialise new_elem sur la base du maillage non redecoupe :

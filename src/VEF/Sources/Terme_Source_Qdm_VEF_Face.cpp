@@ -75,7 +75,7 @@ DoubleTab& Terme_Source_Qdm_VEF_Face::ajouter(DoubleTab& resu) const
   const IntTab& elem_faces = zone_VEF.elem_faces();
   const IntTab& elem_sommets = zone_VEF.zone().les_elems();
   const DoubleVect& volumes = zone_VEF.volumes();
-  const DoubleTab& coord_sommets=zone_VEF.zone().domaine().les_sommets();
+  const DoubleTab& coord_sommets=zone_VEF.zone().les_sommets();
   ArrOfDouble a0(dimension),a0a1(dimension),a0a2(dimension), a0a3(dimension);
   int nb_elem_tot=zone_VEF.nb_elem_tot();
   double volume;

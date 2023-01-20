@@ -71,7 +71,7 @@ void Polyedre::calculer_centres_gravite(DoubleTab& xp) const
 
   const Zone& zone=ma_zone.valeur();
   const IntTab& elem=zone.les_elems();
-  const DoubleTab& coord=zone.domaine().coord_sommets();
+  const DoubleTab& coord=zone.coord_sommets();
 
 
   int nb_elem;
@@ -207,7 +207,7 @@ int Polyedre::contient(const ArrOfDouble& pos, int num_poly ) const
   // on regarde si le point P est du meme cote que xg pour chaque face .
   const Zone& zone=ma_zone.valeur();
   const IntTab& elem=zone.les_elems();
-  const DoubleTab& coord=zone.domaine().coord_sommets();
+  const DoubleTab& coord=zone.coord_sommets();
   Vecteur3 P(pos[0],pos[1],pos[2]);
   Vecteur3 xg(0,0,0);
   int nb_som_max=elem.dimension(1);
@@ -286,7 +286,7 @@ void Polyedre::calculer_volumes(DoubleVect& volumes) const
 {
   const Zone& zone=ma_zone.valeur();
   const IntTab& elem=zone.les_elems();
-  const DoubleTab& coord=zone.domaine().coord_sommets();
+  const DoubleTab& coord=zone.coord_sommets();
 
   int size_tot = zone.nb_elem_tot();
   assert(volumes.size_totale()==size_tot);

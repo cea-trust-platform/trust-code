@@ -70,11 +70,6 @@ public:
   inline void typer(const Nom&);
   double epsilon() const;
 
-  /// @@@@@@
-  const Zone& domaine() const;
-  Zone& domaine();
-  virtual void associer_domaine(const Zone&);
-
   ///
   /// Nodes
   ///

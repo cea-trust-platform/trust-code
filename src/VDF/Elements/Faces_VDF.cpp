@@ -43,7 +43,7 @@ void Faces_VDF::calculer_orientation(IntVect& tab_orientation,
   nx=ny=nz=0;
 
   const Zone& mazone=zone();
-  const Zone& dom=mazone.domaine();
+  const Zone& dom=mazone;
   double dx=0, dy=0, dz=1.e30;
 
   for(int face=0; face<nb_faces_tot(); face++)
