@@ -45,9 +45,10 @@ using MEDCoupling::DataArrayDouble;
 Implemente_instanciable_sans_constructeur(Zone,"Domaine",Objet_U);
 
 Zone::Zone() :
-  epsilon_(Objet_U::precision_geom),deformable_(0),
-  axi1d_(0),
   moments_a_imprimer_(0),
+  axi1d_(0),
+  epsilon_(Objet_U::precision_geom),
+  deformable_(0),
   volume_total_(-1)
 { }
 
@@ -1242,14 +1243,7 @@ void Zone::calculer_centres_gravite_aretes(DoubleTab& xa) const
       xa(i, j) = 0.5 * (coord(aretes_som_(i, 0), j) + coord(aretes_som_(i, 1), j));
 }
 
-int Zone::rang_elem_depuis(const DoubleTab& coord, const ArrOfInt& elems, ArrOfInt& prems) const
-{
-  Cerr << "Zone::rang_elem_depuis: function not any more implemented" << finl;
-  exit();
-  return -1;
-}
-
-void Zone::rang_elems_sommet(ArrOfInt& elems, double x, double y, double z) const
+void Zone::rang_elems_sommet(ArrOfInt &elems, double x, double y, double z) const
 {
   const OctreeRoot octree = construit_octree();
   octree.rang_elems_sommet(elems, x, y, z);

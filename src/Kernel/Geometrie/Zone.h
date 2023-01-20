@@ -45,18 +45,14 @@ class Conds_lim;
 class Zone_dis;
 class Zone_dis_base;
 class Domaine_dis;
-class Motcle;
 class Sous_Zone;
 class Probleme_base;
-class DERIV(Zone);
 
 /*! @brief classe Zone Une Zone est un maillage compose d'un ensemble d'elements geometriques
  *
  *     de meme type. Les differents types d'elements sont des objets de
  *     classes derivees de Elem_geom_base.
- *     Une zone a un domaine associe (chaque Zone peut referencer son domaine)
- *     elle a aussi un Nom.
- *     Une zone est constituee d'elements, de bords, de bords periodiques,
+ *     Une zone est constituee  de noeuds, d'elements, de bords, de bords periodiques,
  *     de joints, de raccords et de face internes.
  *
  * @sa Zone SousZone Frontiere Elem_geom Elem_geom_base, Bord Bord_perio Joint Raccord Faces_Interne
@@ -66,6 +62,19 @@ class Zone : public Objet_U
   Declare_instanciable(Zone);
 
 public:
+  ///
+  /// General
+  ///
+  inline const Nom& le_nom() const override;
+  inline void nommer(const Nom& ) override;
+  inline void typer(const Nom&);
+  double epsilon() const;
+
+  /// @@@@@@
+  const Zone& domaine() const;
+  Zone& domaine();
+  virtual void associer_domaine(const Zone&);
+
   ///
   /// Nodes
   ///
@@ -79,6 +88,106 @@ public:
   void ajouter(const DoubleTab&, IntVect&);
   virtual void creer_tableau_sommets(Array_base&, Array_base::Resize_Options opt = Array_base::COPY_INIT) const;
   virtual const MD_Vector& md_vector_sommets() const { return sommets_.get_md_vector(); }
+  int nb_som() const ;
+  int nb_som_tot() const ;
+  void read_vertices(Entree& s);
+
+  ///
+  /// Elements
+  ///
+  inline const Elem_geom& type_elem() const;
+  inline Elem_geom& type_elem();
+  inline IntTab& les_elems();
+  inline const IntTab& les_elems() const;
+  inline int nb_elem() const ;
+  inline int nb_elem_tot() const ;
+  inline int nb_som_elem() const;
+  inline int nb_faces_elem(int=0) const ;
+  inline int sommet_elem(int , int ) const;
+
+  ///
+  /// Aretes
+  ///
+  inline int nb_aretes() const;
+  inline int nb_aretes_tot() const;
+  void creer_aretes();
+
+  ///
+  /// Faces
+  ///
+  int nb_faces_bord() const ;
+  int nb_faces_bord(int ) const ;
+  int nb_faces_bord(Type_Face type) const ;
+  int nb_faces_joint() const ;
+  int nb_faces_joint(int ) const ;
+  int nb_faces_joint(Type_Face type) const ;
+  int nb_faces_raccord() const ;
+  int nb_faces_raccord(int ) const ;
+  int nb_faces_raccord(Type_Face type) const ;
+  int nb_faces_int() const ;
+  int nb_faces_int(int ) const ;
+  int nb_faces_int(Type_Face type) const ;
+  inline int nb_faces_frontiere() const ;
+  inline int nb_faces_frontiere(Type_Face type) const ;
+
+  inline const Faces_Interne& faces_interne(int) const;
+  inline Faces_Interne& faces_interne(int);
+  inline const Faces_Internes& faces_int() const;
+  inline Faces_Internes& faces_int();
+  inline const Faces_Interne& faces_interne(const Nom&) const;
+  inline Faces_Interne& faces_interne(const Nom&);
+  int face_interne_conjuguee(int) const;
+
+  inline const Bords& faces_bord() const;
+  inline Bords& faces_bord();
+
+  inline const Joints& faces_joint() const;
+  inline Joints& faces_joint();
+
+  inline const Raccords& faces_raccord() const;
+  inline Raccords& faces_raccord();
+
+  ///
+  /// Bords
+  ///
+  inline int nb_bords() const ;
+  inline const Bord& bord(int) const;
+  inline Bord& bord(int);
+  inline const Bord& bord(const Nom&) const;
+  inline Bord& bord(const Nom&);
+
+  ///
+  /// Frontieres
+  ///
+  inline const Frontiere& frontiere(int i) const;
+  inline Frontiere& frontiere(int i);
+  int rang_frontiere(const Nom& ) const;
+  const Frontiere& frontiere(const Nom&) const;
+  Frontiere& frontiere(const Nom&);
+  inline int nb_frontieres_internes() const ;
+  inline int nb_front_Cl() const ;
+
+  ///
+  /// Joints
+  ///
+  inline int nb_joints() const ;
+  inline const Joint& joint(int) const;
+  inline Joint& joint(int);
+  inline Joint& joint_of_pe(int);
+  inline const Joint& joint_of_pe(int) const;
+  inline const Joint& joint(const Nom&) const;
+  inline Joint& joint(const Nom&);
+  void renum_joint_common_items(const IntVect& Les_Nums, const int elem_offset);
+  int comprimer_joints();
+
+  ///
+  /// Raccords
+  ///
+  inline int nb_raccords() const ;
+  inline const Raccord& raccord(int) const;
+  inline Raccord& raccord(int);
+  inline const Raccord& raccord(const Nom&) const;
+  inline Raccord& raccord(const Nom&);
 
   ///
   /// Sous_Zone
@@ -113,8 +222,55 @@ public:
   inline const LIST(REF(Zone))& domaines_frontieres() const { return domaines_frontieres_; }
 
   ///
+  /// Geometric computations
+  ///
+  inline void calculer_centres_gravite(DoubleTab& ) const;
+  void calculer_centres_gravite_aretes(DoubleTab& ) const;
+  void calculer_volumes(DoubleVect&,DoubleVect& ) const;
+  void calculer_mon_centre_de_gravite(ArrOfDouble& );
+  double volume_total() const;
+  inline const ArrOfDouble& cg_moments() const  {  return cg_moments_;  }
+  inline ArrOfDouble& cg_moments() {  return cg_moments_;  }
+
+  ///
+  /// Lookup methods and mapping arrays
+  ///
+  ArrOfInt& chercher_elements(const DoubleTab& ,ArrOfInt& ,int reel=0) const;
+  ArrOfInt& chercher_elements(const DoubleVect& ,ArrOfInt& ,int reel=0) const;
+  ArrOfInt& indice_elements(const IntTab&, ArrOfInt&,int reel=0) const;
+  int chercher_elements(double x, double y=0, double z=0,int reel=0) const;
+  ArrOfInt& chercher_sommets(const DoubleTab& ,ArrOfInt& ,int reel=0) const;
+  int chercher_sommets(double x, double y=0, double z=0,int reel=0) const;
+  ArrOfInt& chercher_aretes(const DoubleTab& ,ArrOfInt& ,int reel=0) const;
+  inline int arete_sommets(int i, int j) const;
+  inline int elem_aretes(int i, int j) const;
+  inline const IntTab& aretes_som() const;
+  inline const IntTab& elem_aretes() const;
+  inline IntTab& set_aretes_som();
+  inline IntTab& set_elem_aretes();
+  void rang_elems_sommet(ArrOfInt&, double x, double y=0, double z=0) const;
+  void invalide_octree();
+  const OctreeRoot& construit_octree() const;
+  const OctreeRoot& construit_octree(int&) const;
+
+  ///
+  /// Printing/export stuff
+  ///
+  void ecrire_noms_bords(Sortie& ) const;
+  inline void associer_bords_a_imprimer(LIST(Nom) liste)     { bords_a_imprimer_=liste; }
+  inline void associer_bords_a_imprimer_sum(LIST(Nom) liste) { bords_a_imprimer_sum_=liste; }
+  Entree& lire_bords_a_imprimer(Entree& s) ;
+  Entree& lire_bords_a_imprimer_sum(Entree& s) ;
+  inline const LIST(Nom)& bords_a_imprimer() const { return bords_a_imprimer_; }
+  inline const LIST(Nom)& bords_a_imprimer_sum() const { return bords_a_imprimer_sum_; }
+  inline int  moments_a_imprimer() const  {  return moments_a_imprimer_;  }
+  inline int& moments_a_imprimer() {  return moments_a_imprimer_;  }
+  inline void exporter_mon_centre_de_gravite(ArrOfDouble c)  {  cg_moments_ = c; }
+
+  ///
   /// Various
   ///
+  void clear();
   void fill_from_list(std::list<Zone*>& lst);
   void merge_wo_vertices_with(Zone& z);
   inline bool axi1d() const {  return axi1d_;  }
@@ -124,8 +280,14 @@ public:
   inline void set_fichier_lu(Nom& nom)  {    fichier_lu_=nom;   }
   inline const Nom& get_fichier_lu() const  {   return fichier_lu_;  }
   void imprimer() const;
-  void read_vertices(Entree& s);
-  void clear();
+  void fixer_premieres_faces_frontiere();
+  void init_faces_virt_bord(const MD_Vector& md_vect_faces, MD_Vector& md_vect_faces_bord);
+  void read_former_zone(Entree& s);
+  void check_zone();
+  void correct_type_of_borders_after_merge();
+  int comprimer() ;
+  void renum(const IntVect&);
+  inline void reordonner();
 
   ///
   /// MEDCoupling:
@@ -137,169 +299,24 @@ public:
 #endif
   void buildUFacesMesh(const Zone_dis_base& zone_dis_base) const;
 
-//// @@@@@@@@@@@@@@
-
-  inline const Elem_geom& type_elem() const;
-  inline Elem_geom& type_elem();
-  inline void typer(const Nom&);
-  inline int nb_elem() const ;
-  inline int nb_elem_tot() const ;
-  inline int nb_aretes() const;
-  inline int nb_aretes_tot() const;
-  int nb_som() const ;
-  int nb_som_tot() const ;
-  inline int nb_som_elem() const;
-  inline int nb_faces_elem(int=0) const ;
-  inline int sommet_elem(int , int ) const;
-  inline const Nom& le_nom() const override;
-  inline void nommer(const Nom& ) override;
-  const Zone& domaine() const;
-  Zone& domaine();
-  void fixer_premieres_faces_frontiere();
-  //
-
-  ArrOfInt& chercher_elements(const DoubleTab& ,ArrOfInt& ,int reel=0) const;
-  ArrOfInt& chercher_elements(const DoubleVect& ,ArrOfInt& ,int reel=0) const;
-  ArrOfInt& indice_elements(const IntTab&, ArrOfInt&,int reel=0) const;
-  int chercher_elements(double x, double y=0, double z=0,int reel=0) const;
-  ArrOfInt& chercher_sommets(const DoubleTab& ,ArrOfInt& ,int reel=0) const;
-  int chercher_sommets(double x, double y=0, double z=0,int reel=0) const;
-  ArrOfInt& chercher_aretes(const DoubleTab& ,ArrOfInt& ,int reel=0) const;
-
-  virtual void associer_domaine(const Zone&);
-  void init_faces_virt_bord(const MD_Vector& md_vect_faces, MD_Vector& md_vect_faces_bord);
-  inline void calculer_centres_gravite(DoubleTab& ) const;
-  void calculer_centres_gravite_aretes(DoubleTab& ) const;
-  void creer_aretes();
-  void calculer_volumes(DoubleVect&,DoubleVect& ) const;
-  void calculer_mon_centre_de_gravite(ArrOfDouble& );
-  //
-  inline IntTab& les_elems();
-  inline const IntTab& les_elems() const;
-  inline int arete_sommets(int i, int j) const;
-  inline int elem_aretes(int i, int j) const;
-  inline const IntTab& aretes_som() const;
-  inline const IntTab& elem_aretes() const;
-  inline IntTab& set_aretes_som();
-  inline IntTab& set_elem_aretes();
-  inline int nb_bords() const ;
-  inline int nb_joints() const ;
-  inline int nb_raccords() const ;
-  inline int nb_frontieres_internes() const ;
-  inline int nb_front_Cl() const ;
-
-  int nb_faces_bord() const ;
-  int nb_faces_joint() const ;
-  int nb_faces_raccord() const ;
-  int nb_faces_int() const ;
-  int nb_faces_bord(int ) const ;
-  int nb_faces_joint(int ) const ;
-  int nb_faces_raccord(int ) const ;
-  int nb_faces_int(int ) const ;
-  inline int nb_faces_frontiere(Type_Face type) const ;
-  inline int nb_faces_frontiere() const ;
-  inline const Bord& bord(int) const;
-  inline Bord& bord(int);
-  inline const Joint& joint(int) const;
-  inline Joint& joint(int);
-  inline Joint& joint_of_pe(int);
-  inline const Joint& joint_of_pe(int) const;
-  inline const Raccord& raccord(int) const;
-  inline Raccord& raccord(int);
-  inline const Faces_Interne& faces_interne(int) const;
-  inline Faces_Interne& faces_interne(int);
-  inline const Bord& bord(const Nom&) const;
-  inline Bord& bord(const Nom&);
-  inline const Frontiere& frontiere(int i) const;
-  inline Frontiere& frontiere(int i);
-  int rang_frontiere(const Nom& ) const;
-  const Frontiere& frontiere(const Nom&) const;
-  Frontiere& frontiere(const Nom&);
-  inline const Joint& joint(const Nom&) const;
-  inline Joint& joint(const Nom&);
-  inline const Raccord& raccord(const Nom&) const;
-  inline Raccord& raccord(const Nom&);
-  inline const Faces_Interne& faces_interne(const Nom&) const;
-  inline Faces_Interne& faces_interne(const Nom&);
-  inline const Bords& faces_bord() const;
-  inline Bords& faces_bord();
-  inline const Joints& faces_joint() const;
-  inline Joints& faces_joint();
-  inline const Raccords& faces_raccord() const;
-  inline Raccords& faces_raccord();
-  inline const Faces_Internes& faces_int() const;
-  inline Faces_Internes& faces_int();
-  void renum(const IntVect&);
-  void renum_joint_common_items(const IntVect& Les_Nums, const int elem_offset);
-  inline void reordonner();
-  int face_interne_conjuguee(int) const;
-  int comprimer() ;
-  int comprimer_joints();
-  void ecrire_noms_bords(Sortie& ) const;
-  double epsilon() const;
-  inline void associer_bords_a_imprimer(LIST(Nom));
-  inline void associer_bords_a_imprimer_sum(LIST(Nom));
-  Entree& lire_bords_a_imprimer(Entree& s) ;
-  Entree& lire_bords_a_imprimer_sum(Entree& s) ;
-  inline const LIST(Nom)& bords_a_imprimer() const;
-  inline const LIST(Nom)& bords_a_imprimer_sum() const;
-  inline int  moments_a_imprimer() const  {  return moments_a_imprimer_;  }
-  inline int& moments_a_imprimer() {  return moments_a_imprimer_;  }
-  inline const ArrOfDouble& cg_moments() const  {  return cg_moments_;  }
-  inline ArrOfDouble& cg_moments() {  return cg_moments_;  }
-  inline void exporter_mon_centre_de_gravite(ArrOfDouble c)  {  cg_moments_ = c; }
-  double volume_total() const;
-
-  int nb_faces_bord(Type_Face type) const ;
-  int nb_faces_joint(Type_Face type) const ;
-  int nb_faces_raccord(Type_Face type) const ;
-  int nb_faces_int(Type_Face type) const ;
-
-  int rang_elem_depuis(const DoubleTab&, const ArrOfInt&, ArrOfInt&) const;
-  void rang_elems_sommet(ArrOfInt&, double x, double y=0, double z=0) const;
-  void invalide_octree();
-  const OctreeRoot& construit_octree() const;
-  const OctreeRoot& construit_octree(int&) const;
+  ///
+  /// Parallelism and virtual items management
+  ///
   inline const ArrOfInt& ind_faces_virt_bord() const;
   void construire_elem_virt_pe_num();
   void construire_elem_virt_pe_num(IntTab& elem_virt_pe_num_cpy) const;
   const IntTab& elem_virt_pe_num() const;
-
   virtual void creer_tableau_elements(Array_base&, Array_base::Resize_Options opt = Array_base::COPY_INIT) const;
   virtual const MD_Vector& md_vector_elements() const;
-
-  static int identifie_item_unique(IntList& item_possible,
-                                   DoubleTab& coord_possible,
-                                   const DoubleVect& coord_ref);
-
-  //used for the readOn
-  void read_former_zone(Entree& s);
-  void check_zone();
-
-  void correct_type_of_borders_after_merge();
+  static int identifie_item_unique(IntList& item_possible, DoubleTab& coord_possible, const DoubleVect& coord_ref);
 
 protected:
+  // Zone name
   Nom nom_;
-
-//////@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  // Array of vertices
   DoubleTab sommets_;
+  // Renumbering array for periodicity
   ArrOfInt renum_som_perio_;
-
-  LIST(REF(Zone)) domaines_frontieres_;
-  LIST(REF(Sous_Zone)) les_ss_zones_;
-  double epsilon_;
-  int deformable_;
-  Nom fichier_lu_;
-
-#ifdef MEDCOUPLING_
-  ///! MEDCoupling version of the domain:
-  mutable MCAuto<MEDCouplingUMesh> mesh_;
-  ///! MEDCoupling version of the faces domain:
-  mutable MCAuto<MEDCouplingUMesh> faces_mesh_;
-#endif
-  int axi1d_;
-//////@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
   // Type de l'element geometrique de cette Zone
   Elem_geom elem_;
   // Description des elements (pour le multi-element, le tableau peut contenir des -1 !!!)
@@ -330,9 +347,25 @@ protected:
   // elem_virt_pe_num_(i-nb_elem,1) = numero local de cet element sur le PE qui le possede
   IntTab elem_virt_pe_num_;
 
+  LIST(REF(Zone)) domaines_frontieres_;
+
+  LIST(REF(Sous_Zone)) les_ss_zones_;
+
+  int moments_a_imprimer_;
   LIST(Nom) bords_a_imprimer_;
   LIST(Nom) bords_a_imprimer_sum_;
-  int moments_a_imprimer_;
+
+  int axi1d_;
+  double epsilon_;
+  int deformable_;
+  Nom fichier_lu_;
+
+#ifdef MEDCOUPLING_
+  ///! MEDCoupling version of the domain:
+  mutable MCAuto<MEDCouplingUMesh> mesh_;
+  ///! MEDCoupling version of the faces domain:
+  mutable MCAuto<MEDCouplingUMesh> faces_mesh_;
+#endif
 
   void duplique_faces_internes();
 
@@ -343,12 +376,6 @@ private:
   mutable DoubleTabs cached_positions_;
   mutable ArrsOfInt cached_elements_;
 };
-
-inline const LIST(Nom)& Zone::bords_a_imprimer() const { return bords_a_imprimer_; }
-inline const LIST(Nom)& Zone::bords_a_imprimer_sum() const { return bords_a_imprimer_sum_; }
-inline void Zone::associer_bords_a_imprimer(LIST(Nom) liste) { bords_a_imprimer_=liste; }
-inline void Zone::associer_bords_a_imprimer_sum(LIST(Nom) liste) { bords_a_imprimer_sum_=liste; }
-
 
 /*! @brief Renvoie le nombre d'elements de la zone.
  *
@@ -381,7 +408,6 @@ inline const Nom& Zone::le_nom() const {   return nom_; }
  * @param (Nom& nom) le nom a donner a la zone
  */
 inline void Zone::nommer(const Nom& nom) {  nom_ = nom; }
-
 
 /*! @brief Renvoie le tableau des sommets des elements
  *
@@ -692,46 +718,30 @@ inline Joints& Zone::faces_joint() { return mes_faces_joint_; }
  *
  * @return (Raccords&) la liste des raccords de la zone
  */
-inline const Raccords& Zone::faces_raccord() const
-{
-  return mes_faces_raccord_;
-}
+inline const Raccords& Zone::faces_raccord() const { return mes_faces_raccord_; }
 
 /*! @brief Renvoie la liste des racoords de la zone.
  *
  * @return (Raccords&) la liste des raccords de la zone
  */
-inline Raccords& Zone::faces_raccord()
-{
-  return mes_faces_raccord_;
-}
+inline Raccords& Zone::faces_raccord() { return mes_faces_raccord_; }
 
 /*! @brief Renvoie la liste des faces internes de la zone.
  * (version const)
  *
  * @return (Faces_Internes&) la liste des faces internes de la zone
  */
-inline const Faces_Internes& Zone::faces_int() const
-{
-  return mes_faces_int_;
-}
+inline const Faces_Internes& Zone::faces_int() const { return mes_faces_int_; }
 
 /*! @brief Renvoie la liste des faces internes de la zone.
  *
  * @return (Faces_Internes&) la liste des faces internes de la zone
  */
-inline Faces_Internes& Zone::faces_int()
-{
-  return mes_faces_int_;
-}
+inline Faces_Internes& Zone::faces_int() { return mes_faces_int_; }
 
 /*! @brief Reordonne les elements suivant la convention employe par Trio-U.
  */
-inline void Zone::reordonner()
-{
-  elem_.reordonner();
-}
-
+inline void Zone::reordonner() { elem_.reordonner(); }
 
 /*! @brief Renvoie le nombre de faces frontiere de la zone du type specifie.
  *
