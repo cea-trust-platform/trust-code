@@ -68,7 +68,7 @@ analyse_fichier_colonne()
       for par_output in $list_output
       do
          seq_output=${par_output#PAR_}
-	 compare_sonde $seq_output $par_output -max_delta -seuil_erreur $seuil 1>compare_${seq_output}.log 2>ompare_${seq_output}.err
+	 compare_sonde $seq_output $par_output -max_delta -seuil_erreur $seuil 1>compare_${seq_output}.log 2>compare_${seq_output}.err
 	 if [ $? = 0 ]
            then
           let egal=$egal+1
