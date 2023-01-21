@@ -16,7 +16,6 @@
 #ifndef Eval_Dift_VDF_Elem_leaves_included
 #define Eval_Dift_VDF_Elem_leaves_included
 
-#include <Turbulence_paroi_scal.h>
 #include <Eval_Diff_VDF_Elem.h>
 #include <Eval_Dift_VDF.h>
 
