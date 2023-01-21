@@ -18,7 +18,6 @@
 
 #include <Champ_Uniforme.h>
 #include <Ref_Champ_base.h>
-#include <Eval_Diff_VDF.h>
 #include <Champ_base.h>
 
 class Eval_Diff_VDF

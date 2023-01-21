@@ -13,14 +13,10 @@
 *
 *****************************************************************************/
 
-
 #ifndef Eval_Dift_VDF_Multi_inco_const_included
 #define Eval_Dift_VDF_Multi_inco_const_included
 
-#include <Eval_Turbulence.h>
-#include <Ref_Champ_Fonc.h>
-#include <Eval_Diff_VDF.h>
-#include <Champ_Fonc.h>
+#include <Eval_Dift_VDF.h>
 
 /*! @brief class Eval_Dift_VDF_Multi_inco_const Cette classe represente un evaluateur de flux diffusif total
  *
@@ -30,52 +26,9 @@
  *
  * @sa Eval_Diff_VDF
  */
-class Eval_Dift_VDF_Multi_inco_const : public Eval_Diff_VDF, public Eval_Turbulence
+class Eval_Dift_VDF_Multi_inco_const : public Eval_Dift_VDF
 {
-public:
-  inline void mettre_a_jour() override;
-  inline void associer_diff_turb(const Champ_Fonc& );
-  inline const Champ_Fonc& diffusivite_turbulente() const { return diffusivite_turbulente_.valeur(); }
-
-  // Overloaded methods used by the flux computation in template class:
-  inline double nu_1_impl(int i, int compo) const
-  {
-    const double nu_lam = Eval_Diff_VDF::nu_1_impl(i,compo);
-    const double nu_turb = dv_diffusivite_turbulente(i);
-    return nu_lam+nu_turb;
-  }
-
-  inline double nu_2_impl(int i, int compo) const
-  {
-    return Eval_Diff_VDF::nu_2_impl(i,compo);
-  }
-
-  inline double compute_heq_impl(double d0, int i, double d1, int j, int compo) const
-  {
-    const double heq_lam = Eval_Diff_VDF::compute_heq_impl(d0, i, d1, j, compo);
-    const double heq_turb= 0.5*(dv_diffusivite_turbulente(i)+dv_diffusivite_turbulente(j))/(d1+d0);
-    return heq_lam + heq_turb;
-  }
-
-  inline double get_equivalent_distance(int boundary_index,int local_face) const override
-  {
-    return equivalent_distance[boundary_index](local_face);
-  }
-
-protected:
-  REF(Champ_Fonc) diffusivite_turbulente_;
-  DoubleVect dv_diffusivite_turbulente;
 };
 
-inline void Eval_Dift_VDF_Multi_inco_const::mettre_a_jour()
-{
-  update_equivalent_distance();  // from Eval_Turbulence
-}
-
-inline void Eval_Dift_VDF_Multi_inco_const::associer_diff_turb(const Champ_Fonc& diff_turb)
-{
-  diffusivite_turbulente_=diff_turb;
-  dv_diffusivite_turbulente.ref(diff_turb.valeurs());
-}
 
 #endif /* Eval_Dift_VDF_Multi_inco_const_included */

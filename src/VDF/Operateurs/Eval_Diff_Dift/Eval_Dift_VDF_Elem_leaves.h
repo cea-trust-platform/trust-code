@@ -135,6 +135,7 @@ class Eval_Dift_VDF_Multi_inco_const_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_D
 {
 public:
   static constexpr bool IS_MULTD = false, IS_DEQUIV = true, IS_AXI = true;
+  inline void mettre_a_jour() override { update_equivalent_distance();  /* from Eval_Turbulence */ }
 };
 
 /*! @brief class Eval_Dift_VDF_Multi_inco_const_Elem Evaluateur VDF pour la diffusion totale (laminaire et turbulente)
@@ -148,12 +149,14 @@ class Eval_Dift_VDF_Multi_inco_const_Elem : public Eval_Diff_VDF_Elem<Eval_Dift_
 {
 public:
   static constexpr bool IS_MULTD = false, IS_DEQUIV = true;
+  inline void mettre_a_jour() override { update_equivalent_distance();  /* from Eval_Turbulence */ }
 };
 
 class Eval_Dift_VDF_Multi_inco_var_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_Multi_inco_var_Elem_Axi>, public Eval_Dift_VDF_Multi_inco_var
 {
 public:
   static constexpr bool IS_MULTD = false, IS_DEQUIV = true, IS_AXI = true;
+  inline void mettre_a_jour() override { update_equivalent_distance();  /* from Eval_Turbulence */ }
 };
 
 /*! @brief class Eval_Dift_VDF_Multi_inco_var_Elem Evaluateur VDF pour la diffusion totale (laminaire et turbulente)
@@ -167,6 +170,7 @@ class Eval_Dift_VDF_Multi_inco_var_Elem : public Eval_Diff_VDF_Elem<Eval_Dift_VD
 {
 public:
   static constexpr bool IS_MULTD = false, IS_DEQUIV = true;
+  inline void mettre_a_jour() override { update_equivalent_distance();  /* from Eval_Turbulence */ }
 };
 
 #endif /* Eval_Dift_VDF_Elem_leaves_included */
