@@ -13,8 +13,8 @@
 *
 *****************************************************************************/
 
-#ifndef Eval_Diff_VDF_Elem_included
-#define Eval_Diff_VDF_Elem_included
+#ifndef Eval_Diff_VDF_Elem_Gen_included
+#define Eval_Diff_VDF_Elem_Gen_included
 
 #include <Champ_front_calc_interne.h>
 #include <Echange_interne_impose.h>
@@ -22,12 +22,12 @@
 #include <Evaluateur_VDF.h>
 #include <Eval_VDF_Elem.h>
 
-/*! @brief class Eval_Diff_VDF_Elem Evaluateur VDF pour la diffusion : Le champ diffuse est un Champ_P0_VDF
+/*! @brief class Eval_Diff_VDF_Elem_Gen Evaluateur VDF pour la diffusion : Le champ diffuse est un Champ_P0_VDF
  *
  * @sa Eval_VDF_Elem, Evaluateur_VDF
  */
 template <typename DERIVED_T>
-class Eval_Diff_VDF_Elem : public Eval_VDF_Elem, public Evaluateur_VDF
+class Eval_Diff_VDF_Elem_Gen : public Eval_VDF_Elem, public Evaluateur_VDF
 {
 public:
 
@@ -135,6 +135,6 @@ private:
   inline double dv_mvol(const int i) const { return static_cast<const DERIVED_T *>(this)->get_dv_mvol(i); }
 };
 
-#include <Eval_Diff_VDF_Elem.tpp> // templates specializations ici ;)
+#include <Eval_Diff_VDF_Elem_Gen.tpp> // templates specializations ici ;)
 
-#endif /* Eval_Diff_VDF_Elem_included */
+#endif /* Eval_Diff_VDF_Elem_Gen_included */

@@ -13,21 +13,21 @@
 *
 *****************************************************************************/
 
-#ifndef Eval_Diff_VDF_Face_included
-#define Eval_Diff_VDF_Face_included
+#ifndef Eval_Diff_VDF_Face_Gen_included
+#define Eval_Diff_VDF_Face_Gen_included
 
 #include <Neumann_sortie_libre.h>
 #include <Evaluateur_VDF.h>
 #include <Eval_VDF_Face.h>
 
-/*! @brief class Eval_Diff_VDF_Face Evaluateur VDF pour la diffusion
+/*! @brief class Eval_Diff_VDF_Face_Gen Evaluateur VDF pour la diffusion
  *
  *  Le champ diffuse est un Champ_Face_VDF
  *
  * @sa Eval_VDF_Face, Evaluateur_VDF
  */
 template <typename DERIVED_T>
-class Eval_Diff_VDF_Face : public Eval_VDF_Face, public Evaluateur_VDF
+class Eval_Diff_VDF_Face_Gen : public Eval_VDF_Face, public Evaluateur_VDF
 {
 public:
   // TEST_COEFFS : if true, activate the finite difference evaluation of coeffs to check the implementation
@@ -164,6 +164,6 @@ private:
   test_coeffs_arete(const int, const int, const int, const int, const Type_Double& , const Type_Double&) const;
 };
 
-#include <Eval_Diff_VDF_Face.tpp> // templates specializations ici ;)
+#include <Eval_Diff_VDF_Face_Gen.tpp> // templates specializations ici ;)
 
-#endif /* Eval_Diff_VDF_Face_included */
+#endif /* Eval_Diff_VDF_Face_Gen_included */

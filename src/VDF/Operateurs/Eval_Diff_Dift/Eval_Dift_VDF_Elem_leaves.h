@@ -16,7 +16,7 @@
 #ifndef Eval_Dift_VDF_Elem_leaves_included
 #define Eval_Dift_VDF_Elem_leaves_included
 
-#include <Eval_Diff_VDF_Elem.h>
+#include <Eval_Diff_VDF_Elem_Gen.h>
 #include <Eval_Dift_VDF.h>
 
 /// \cond DO_NOT_DOCUMENT
@@ -30,7 +30,7 @@ class Eval_Dift_VDF_Elem_leaves
  *
  * @sa Eval_Dift_VDF_var
  */
-class Eval_Dift_VDF_var_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_var_Elem_Axi>, public Eval_Dift_VDF
+class Eval_Dift_VDF_var_Elem_Axi : public Eval_Diff_VDF_Elem_Gen<Eval_Dift_VDF_var_Elem_Axi>, public Eval_Dift_VDF
 {
 public:
   static constexpr bool IS_DEQUIV = true, IS_AXI = true;
@@ -42,7 +42,7 @@ public:
  *
  * @sa Eval_Dift_VDF_var
  */
-class Eval_Dift_VDF_var_Elem : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_var_Elem>, public Eval_Dift_VDF
+class Eval_Dift_VDF_var_Elem : public Eval_Diff_VDF_Elem_Gen<Eval_Dift_VDF_var_Elem>, public Eval_Dift_VDF
 {
 public:
   inline Eval_Dift_VDF_var_Elem( ): ind_Fluctu_Term(1) {}
@@ -66,7 +66,7 @@ private:
   int ind_Fluctu_Term;
 };
 
-class Eval_Dift_VDF_Multi_inco_var_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_Multi_inco_var_Elem_Axi>, public Eval_Dift_VDF
+class Eval_Dift_VDF_Multi_inco_var_Elem_Axi : public Eval_Diff_VDF_Elem_Gen<Eval_Dift_VDF_Multi_inco_var_Elem_Axi>, public Eval_Dift_VDF
 {
 public:
   static constexpr bool IS_MULTD = false, IS_DEQUIV = true, IS_AXI = true;
@@ -80,7 +80,7 @@ public:
  *
  * @sa Eval_Dift_VDF_Multi_inco_var
  */
-class Eval_Dift_VDF_Multi_inco_var_Elem : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_Multi_inco_var_Elem>, public Eval_Dift_VDF
+class Eval_Dift_VDF_Multi_inco_var_Elem : public Eval_Diff_VDF_Elem_Gen<Eval_Dift_VDF_Multi_inco_var_Elem>, public Eval_Dift_VDF
 {
 public:
   static constexpr bool IS_MULTD = false, IS_DEQUIV = true;

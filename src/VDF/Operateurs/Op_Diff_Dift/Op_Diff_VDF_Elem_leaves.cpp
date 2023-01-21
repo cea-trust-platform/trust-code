@@ -15,27 +15,27 @@
 
 #include <Op_Diff_VDF_Elem_leaves.h>
 
-Implemente_instanciable_sans_constructeur(Op_Diff_VDF_var_Elem,"Op_Diff_VDF_var_P0_VDF",Op_Diff_VDF_Elem_base);
-Sortie& Op_Diff_VDF_var_Elem::printOn(Sortie& s ) const { return s << que_suis_je() ; }
-Entree& Op_Diff_VDF_var_Elem::readOn(Entree& s ) { return s ; }
-Op_Diff_VDF_var_Elem::Op_Diff_VDF_var_Elem() : Op_Diff_VDF_Elem_base(Iterateur_VDF_Elem<Eval_Diff_VDF_var_Elem>()) { }
+Implemente_instanciable_sans_constructeur(Op_Diff_VDF_Elem,"Op_Diff_VDF_P0_VDF",Op_Diff_VDF_Elem_base);
+Sortie& Op_Diff_VDF_Elem::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+Entree& Op_Diff_VDF_Elem::readOn(Entree& s ) { return s ; }
+Op_Diff_VDF_Elem::Op_Diff_VDF_Elem() : Op_Diff_VDF_Elem_base(Iterateur_VDF_Elem<Eval_Diff_VDF_Elem>()) { }
 
-Implemente_instanciable_sans_constructeur(Op_Diff_VDF_var_Elem_Axi,"Op_Diff_VDF_var_P0_VDF_Axi",Op_Diff_VDF_Elem_base);
-Sortie& Op_Diff_VDF_var_Elem_Axi::printOn(Sortie& s ) const { return s << que_suis_je() ; }
-Entree& Op_Diff_VDF_var_Elem_Axi::readOn(Entree& s ) { return s ; }
-Op_Diff_VDF_var_Elem_Axi::Op_Diff_VDF_var_Elem_Axi() : Op_Diff_VDF_Elem_base(Iterateur_VDF_Elem<Eval_Diff_VDF_var_Elem_Axi>()) { }
+Implemente_instanciable_sans_constructeur(Op_Diff_VDF_Elem_Axi,"Op_Diff_VDF_P0_VDF_Axi",Op_Diff_VDF_Elem_base);
+Sortie& Op_Diff_VDF_Elem_Axi::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+Entree& Op_Diff_VDF_Elem_Axi::readOn(Entree& s ) { return s ; }
+Op_Diff_VDF_Elem_Axi::Op_Diff_VDF_Elem_Axi() : Op_Diff_VDF_Elem_base(Iterateur_VDF_Elem<Eval_Diff_VDF_Elem_Axi>()) { }
 
-Implemente_instanciable_sans_constructeur(Op_Diff_VDF_var_Elem_aniso,"Op_Diff_VDFANISOTROPE_var_P0_VDF",Op_Diff_VDF_Elem_base);
-Sortie& Op_Diff_VDF_var_Elem_aniso::printOn(Sortie& s ) const { return s << que_suis_je() ; }
-Entree& Op_Diff_VDF_var_Elem_aniso::readOn(Entree& s ) { return s ; }
-Op_Diff_VDF_var_Elem_aniso::Op_Diff_VDF_var_Elem_aniso() : Op_Diff_VDF_Elem_base(Iterateur_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>()) { }
+Implemente_instanciable_sans_constructeur(Op_Diff_VDF_Elem_aniso,"Op_Diff_VDFANISOTROPE_P0_VDF",Op_Diff_VDF_Elem_base);
+Sortie& Op_Diff_VDF_Elem_aniso::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+Entree& Op_Diff_VDF_Elem_aniso::readOn(Entree& s ) { return s ; }
+Op_Diff_VDF_Elem_aniso::Op_Diff_VDF_Elem_aniso() : Op_Diff_VDF_Elem_base(Iterateur_VDF_Elem<Eval_Diff_VDF_Elem_aniso>()) { }
 
-Implemente_instanciable_sans_constructeur(Op_Diff_VDF_Multi_inco_var_Elem,"Op_Diff_VDF_Multi_inco_var_P0_VDF",Op_Diff_VDF_Elem_base);
-Sortie& Op_Diff_VDF_Multi_inco_var_Elem::printOn(Sortie& s ) const { return s << que_suis_je() ; }
-Entree& Op_Diff_VDF_Multi_inco_var_Elem::readOn(Entree& s ) { return s ; }
-Op_Diff_VDF_Multi_inco_var_Elem::Op_Diff_VDF_Multi_inco_var_Elem() : Op_Diff_VDF_Elem_base(Iterateur_VDF_Elem<Eval_Diff_VDF_Multi_inco_var_Elem>()) { }
+Implemente_instanciable_sans_constructeur(Op_Diff_VDF_Multi_inco_Elem,"Op_Diff_VDF_Multi_inco_P0_VDF",Op_Diff_VDF_Elem_base);
+Sortie& Op_Diff_VDF_Multi_inco_Elem::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+Entree& Op_Diff_VDF_Multi_inco_Elem::readOn(Entree& s ) { return s ; }
+Op_Diff_VDF_Multi_inco_Elem::Op_Diff_VDF_Multi_inco_Elem() : Op_Diff_VDF_Elem_base(Iterateur_VDF_Elem<Eval_Diff_VDF_Multi_inco_Elem>()) { }
 
-Implemente_instanciable_sans_constructeur(Op_Diff_VDF_Multi_inco_var_Elem_Axi,"Op_Diff_VDF_Multi_inco_var_P0_VDF_Axi",Op_Diff_VDF_Elem_base);
-Sortie& Op_Diff_VDF_Multi_inco_var_Elem_Axi::printOn(Sortie& s ) const { return s << que_suis_je() ; }
-Entree& Op_Diff_VDF_Multi_inco_var_Elem_Axi::readOn(Entree& s ) { return s ; }
-Op_Diff_VDF_Multi_inco_var_Elem_Axi::Op_Diff_VDF_Multi_inco_var_Elem_Axi() : Op_Diff_VDF_Elem_base(Iterateur_VDF_Elem<Eval_Diff_VDF_Multi_inco_var_Elem_Axi>()) { }
+Implemente_instanciable_sans_constructeur(Op_Diff_VDF_Multi_inco_Elem_Axi,"Op_Diff_VDF_Multi_inco_P0_VDF_Axi",Op_Diff_VDF_Elem_base);
+Sortie& Op_Diff_VDF_Multi_inco_Elem_Axi::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+Entree& Op_Diff_VDF_Multi_inco_Elem_Axi::readOn(Entree& s ) { return s ; }
+Op_Diff_VDF_Multi_inco_Elem_Axi::Op_Diff_VDF_Multi_inco_Elem_Axi() : Op_Diff_VDF_Elem_base(Iterateur_VDF_Elem<Eval_Diff_VDF_Multi_inco_Elem_Axi>()) { }

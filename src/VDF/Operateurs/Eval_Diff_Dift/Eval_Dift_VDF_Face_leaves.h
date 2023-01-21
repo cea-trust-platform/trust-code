@@ -17,7 +17,7 @@
 #define Eval_Dift_VDF_Face_leaves_included
 
 #include <Ref_Turbulence_paroi_base.h>
-#include <Eval_Diff_VDF_Face.h>
+#include <Eval_Diff_VDF_Face_Gen.h>
 #include <Mod_turb_hyd_base.h>
 #include <Eval_Dift_VDF.h>
 
@@ -32,7 +32,7 @@ class Eval_Dift_VDF_Face_leaves
  *  Le champ de diffusivite n'est pas constant.
  *
  */
-class Eval_Dift_VDF_var_Face : public Eval_Diff_VDF_Face<Eval_Dift_VDF_var_Face>, public Eval_Dift_VDF
+class Eval_Dift_VDF_var_Face : public Eval_Diff_VDF_Face_Gen<Eval_Dift_VDF_var_Face>, public Eval_Dift_VDF
 {
 public:
   static constexpr bool IS_TURB = true, CALC_FA7_SORTIE_LIB = true, CALC_ARR_PAR_FL = false;
