@@ -17,10 +17,9 @@
 #define Eval_Dift_VDF_Face_leaves_included
 
 #include <Ref_Turbulence_paroi_base.h>
-#include <Eval_Dift_VDF_const.h>
 #include <Eval_Diff_VDF_Face.h>
-#include <Eval_Dift_VDF_var.h>
 #include <Mod_turb_hyd_base.h>
+#include <Eval_Dift_VDF.h>
 
 /// \cond DO_NOT_DOCUMENT
 class Eval_Dift_VDF_Face_leaves
@@ -33,8 +32,7 @@ class Eval_Dift_VDF_Face_leaves
  *  Le champ de diffusivite est constant.
  *
  */
-class Eval_Dift_VDF_const_Face : public Eval_Diff_VDF_Face<Eval_Dift_VDF_const_Face>,
-  public Eval_Dift_VDF_const
+class Eval_Dift_VDF_const_Face : public Eval_Diff_VDF_Face<Eval_Dift_VDF_const_Face>, public Eval_Dift_VDF
 {
 public:
   static constexpr bool IS_TURB = true, CALC_FA7_SORTIE_LIB = true, CALC_ARR_PAR_FL = false;
@@ -52,7 +50,7 @@ protected:
 
 inline void Eval_Dift_VDF_const_Face::mettre_a_jour()
 {
-  Eval_Dift_VDF_const::mettre_a_jour( ) ;
+  Eval_Dift_VDF::mettre_a_jour( ) ;
   if (le_modele_turbulence->loi_paroi().non_nul()) tau_tan_.ref(le_modele_turbulence->loi_paroi()->Cisaillement_paroi());
 }
 
@@ -79,8 +77,7 @@ inline double Eval_Dift_VDF_const_Face::tau_tan_impl(int face, int k) const
  *  Le champ de diffusivite n'est pas constant.
  *
  */
-class Eval_Dift_VDF_var_Face : public Eval_Diff_VDF_Face<Eval_Dift_VDF_var_Face>,
-  public Eval_Dift_VDF_var
+class Eval_Dift_VDF_var_Face : public Eval_Diff_VDF_Face<Eval_Dift_VDF_var_Face>, public Eval_Dift_VDF
 {
 public:
   static constexpr bool IS_VAR = true, IS_TURB = true, CALC_FA7_SORTIE_LIB = true, CALC_ARR_PAR_FL = false;
@@ -99,7 +96,7 @@ private:
 
 inline void Eval_Dift_VDF_var_Face::mettre_a_jour()
 {
-  Eval_Dift_VDF_var::mettre_a_jour();
+  Eval_Dift_VDF::mettre_a_jour();
   if (le_modele_turbulence->loi_paroi().non_nul())
     {
       // Modif E. Saikali : on fait le ref seulement si le tableau a ete initialise, sinon pointeur nulle

@@ -16,12 +16,9 @@
 #ifndef Eval_Dift_VDF_Elem_leaves_included
 #define Eval_Dift_VDF_Elem_leaves_included
 
-#include <Eval_Dift_VDF_Multi_inco_const.h>
-#include <Eval_Dift_VDF_Multi_inco_var.h>
 #include <Turbulence_paroi_scal.h>
-#include <Eval_Dift_VDF_const.h>
 #include <Eval_Diff_VDF_Elem.h>
-#include <Eval_Dift_VDF_var.h>
+#include <Eval_Dift_VDF.h>
 
 /// \cond DO_NOT_DOCUMENT
 class Eval_Dift_VDF_Elem_leaves
@@ -40,7 +37,7 @@ class Eval_Dift_VDF_Elem_leaves
  *
  * @sa Eval_Dift_VDF_const
  */
-class Eval_Dift_VDF_const_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_const_Elem_Axi>, public Eval_Dift_VDF_const
+class Eval_Dift_VDF_const_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_const_Elem_Axi>, public Eval_Dift_VDF
 {
 public:
   static constexpr bool IS_DEQUIV = true, IS_AXI = true;
@@ -52,7 +49,7 @@ public:
  *
  * @sa Eval_Dift_VDF_const
  */
-class Eval_Dift_VDF_const_Elem : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_const_Elem>, public Eval_Dift_VDF_const
+class Eval_Dift_VDF_const_Elem : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_const_Elem>, public Eval_Dift_VDF
 {
 public :
   inline Eval_Dift_VDF_const_Elem() : ind_Fluctu_Term(1) {}
@@ -62,7 +59,7 @@ public :
 
   inline void associer_loipar(const Turbulence_paroi_scal& loi_paroi) override
   {
-    Eval_Dift_VDF_const::associer_loipar(loi_paroi);
+    Eval_Dift_VDF::associer_loipar(loi_paroi);
     ind_Fluctu_Term = 0;
   }
 
@@ -82,7 +79,7 @@ private:
  *
  * @sa Eval_Dift_VDF_var
  */
-class Eval_Dift_VDF_var_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_var_Elem_Axi>, public Eval_Dift_VDF_var
+class Eval_Dift_VDF_var_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_var_Elem_Axi>, public Eval_Dift_VDF
 {
 public:
   static constexpr bool IS_DEQUIV = true, IS_AXI = true;
@@ -94,7 +91,7 @@ public:
  *
  * @sa Eval_Dift_VDF_var
  */
-class Eval_Dift_VDF_var_Elem : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_var_Elem>, public Eval_Dift_VDF_var
+class Eval_Dift_VDF_var_Elem : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_var_Elem>, public Eval_Dift_VDF
 {
 public:
   inline Eval_Dift_VDF_var_Elem( ): ind_Fluctu_Term(1) {}
@@ -110,7 +107,7 @@ public:
 
   inline void associer_loipar(const Turbulence_paroi_scal& loi_paroi) override
   {
-    Eval_Dift_VDF_var::associer_loipar(loi_paroi);
+    Eval_Dift_VDF::associer_loipar(loi_paroi);
     ind_Fluctu_Term = 0;
   }
 
@@ -131,7 +128,7 @@ private:
  *
  * @sa Eval_Dift_VDF_Multi_inco_const_Elem
  */
-class Eval_Dift_VDF_Multi_inco_const_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_Multi_inco_const_Elem_Axi>, public Eval_Dift_VDF_Multi_inco_const
+class Eval_Dift_VDF_Multi_inco_const_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_Multi_inco_const_Elem_Axi>, public Eval_Dift_VDF
 {
 public:
   static constexpr bool IS_MULTD = false, IS_DEQUIV = true, IS_AXI = true;
@@ -145,14 +142,14 @@ public:
  *
  * @sa Eval_Dift_VDF_Multi_inco_const
  */
-class Eval_Dift_VDF_Multi_inco_const_Elem : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_Multi_inco_const_Elem>, public Eval_Dift_VDF_Multi_inco_const
+class Eval_Dift_VDF_Multi_inco_const_Elem : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_Multi_inco_const_Elem>, public Eval_Dift_VDF
 {
 public:
   static constexpr bool IS_MULTD = false, IS_DEQUIV = true;
   inline void mettre_a_jour() override { update_equivalent_distance();  /* from Eval_Turbulence */ }
 };
 
-class Eval_Dift_VDF_Multi_inco_var_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_Multi_inco_var_Elem_Axi>, public Eval_Dift_VDF_Multi_inco_var
+class Eval_Dift_VDF_Multi_inco_var_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_Multi_inco_var_Elem_Axi>, public Eval_Dift_VDF
 {
 public:
   static constexpr bool IS_MULTD = false, IS_DEQUIV = true, IS_AXI = true;
@@ -166,7 +163,7 @@ public:
  *
  * @sa Eval_Dift_VDF_Multi_inco_var
  */
-class Eval_Dift_VDF_Multi_inco_var_Elem : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_Multi_inco_var_Elem>, public Eval_Dift_VDF_Multi_inco_var
+class Eval_Dift_VDF_Multi_inco_var_Elem : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_Multi_inco_var_Elem>, public Eval_Dift_VDF
 {
 public:
   static constexpr bool IS_MULTD = false, IS_DEQUIV = true;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,14 +13,13 @@
 *
 *****************************************************************************/
 
-#include <Eval_Dift_VDF_const.h>
 #include <Mod_turb_hyd_base.h>
-#include <Eval_Dift_VDF_var.h>
 #include <Op_Dift_VDF_base.h>
+#include <Eval_Dift_VDF.h>
+#include <Statistiques.h>
 #include <Champ_Fonc.h>
 #include <TRUSTTrav.h>
 #include <Motcle.h>
-#include <Statistiques.h>
 
 extern Stat_Counter_Id diffusion_counter_;
 
@@ -67,21 +66,14 @@ void Op_Dift_VDF_base::ajoute_terme_pour_axi_turb(matrices_t matrices, DoubleTab
               const Champ_base& ch = eval.get_diffusivite();
               const DoubleVect& tab_diffusivite = ch.valeurs();
               int size = diffu_tot.size_totale();
+              const Eval_Dift_VDF& eval_dift = static_cast<const Eval_Dift_VDF&>(eval);
+              const Champ_Fonc& ch_diff_turb = eval_dift.diffusivite_turbulente();
+              const DoubleVect& diffusivite_turb = ch_diff_turb.valeurs();
+
               if (tab_diffusivite.size() == 1)
-                {
-                  db_diffusivite = tab_diffusivite[0];
-                  const Eval_Dift_VDF_const& eval_dift = static_cast<const Eval_Dift_VDF_const&>(eval);
-                  const Champ_Fonc& ch_diff_turb = eval_dift.diffusivite_turbulente();
-                  const DoubleVect& diffusivite_turb = ch_diff_turb.valeurs();
-                  for (int i = 0; i < size; i++) diffu_tot[i] = db_diffusivite + diffusivite_turb[i];
-                }
+                for (int i = 0; i < size; i++) diffu_tot[i] = tab_diffusivite[0] + diffusivite_turb[i];
               else
-                {
-                  const Eval_Dift_VDF_var& eval_dift = static_cast<const Eval_Dift_VDF_var&>(eval);
-                  const Champ_Fonc& ch_diff_turb = eval_dift.diffusivite_turbulente();
-                  const DoubleVect& diffusivite_turb = ch_diff_turb.valeurs();
-                  for (int i = 0; i < size; i++) diffu_tot[i] = tab_diffusivite[i] + diffusivite_turb[i];
-                }
+                for (int i = 0; i < size; i++) diffu_tot[i] = tab_diffusivite[i] + diffusivite_turb[i];
             }
           else
             {
