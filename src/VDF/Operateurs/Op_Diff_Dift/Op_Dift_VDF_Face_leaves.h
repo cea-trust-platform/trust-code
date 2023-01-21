@@ -16,9 +16,9 @@
 #ifndef Op_Dift_VDF_Face_leaves_included
 #define Op_Dift_VDF_Face_leaves_included
 
-#include <Eval_Dift_VDF_Face_leaves.h>
 #include <Op_Dift_VDF_Face_Axi_base.h>
 #include <Op_Dift_VDF_Face_base.h>
+#include <Eval_Dift_VDF_leaves.h>
 #include <Ref_Champ_Uniforme.h>
 #include <Op_Diff_Dift_VDF.h>
 
@@ -30,63 +30,63 @@ class Op_Dift_VDF_Face_leaves
 class Mod_turb_hyd_base;
 class Champ_Fonc;
 
-class Op_Dift_VDF_var_Face : public Op_Dift_VDF_Face_base, public Op_Diff_Dift_VDF<Op_Dift_VDF_var_Face>
+class Op_Dift_VDF_Face : public Op_Dift_VDF_Face_base, public Op_Diff_Dift_VDF<Op_Dift_VDF_Face>
 {
-  Declare_instanciable_sans_constructeur(Op_Dift_VDF_var_Face);
+  Declare_instanciable_sans_constructeur(Op_Dift_VDF_Face);
 
 public:
-  Op_Dift_VDF_var_Face();
-  inline void completer() override { completer_impl<Type_Operateur::Op_DIFT_FACE,Eval_Dift_VDF_var_Face>(); }
-  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd, const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_DIFT_FACE,Eval_Dift_VDF_var_Face>(zd,zcd,ch); }
-  inline void associer_diffusivite_turbulente(const Champ_Fonc& ch) { associer_diffusivite_turbulente_impl<Type_Operateur::Op_DIFT_FACE,Eval_Dift_VDF_var_Face>(ch); }
-  inline void associer_diffusivite(const Champ_base& ch) override { associer_diffusivite_impl<Eval_Dift_VDF_var_Face>(ch); }
-  inline const Champ_base& diffusivite() const override { return diffusivite_impl<Eval_Dift_VDF_var_Face>(); }
+  Op_Dift_VDF_Face();
+  inline void completer() override { completer_impl<Type_Operateur::Op_DIFT_FACE,Eval_Dift_VDF_Face>(); }
+  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd, const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_DIFT_FACE,Eval_Dift_VDF_Face>(zd,zcd,ch); }
+  inline void associer_diffusivite_turbulente(const Champ_Fonc& ch) { associer_diffusivite_turbulente_impl<Type_Operateur::Op_DIFT_FACE,Eval_Dift_VDF_Face>(ch); }
+  inline void associer_diffusivite(const Champ_base& ch) override { associer_diffusivite_impl<Eval_Dift_VDF_Face>(ch); }
+  inline const Champ_base& diffusivite() const override { return diffusivite_impl<Eval_Dift_VDF_Face>(); }
 };
 
 // ===========================================================================================================================================
 
-class Op_Dift_VDF_var_Face_Axi : public Op_Dift_VDF_Face_Axi_base
+class Op_Dift_VDF_Face_Axi : public Op_Dift_VDF_Face_Axi_base
 {
-  Declare_instanciable(Op_Dift_VDF_var_Face_Axi);
+  Declare_instanciable(Op_Dift_VDF_Face_Axi);
 public:
 
-  inline bool is_var() const override { return is_var_ ? true : false; }
+  inline bool is_var() const override { return is_ ? true : false; }
   inline double nu_(const int i) const override
   {
-    return diffusivite_->valeurs()(is_var_ * i);
+    return diffusivite_->valeurs()(is_ * i);
   }
 
   inline double nu_mean_2_pts_(const int i, const int j) const override
   {
-    return 0.5 * (diffusivite_->valeurs()(is_var_ * i) + diffusivite_->valeurs()(is_var_ * j));
+    return 0.5 * (diffusivite_->valeurs()(is_ * i) + diffusivite_->valeurs()(is_ * j));
   }
   inline double nu_mean_4_pts_(const int, const int) const override;
   inline double nu_mean_4_pts_(const int i, const int j, const int k, const int l) const override
   {
-    return 0.25 * (diffusivite_->valeurs()(is_var_ * i) + diffusivite_->valeurs()(is_var_ * j) + diffusivite_->valeurs()(is_var_ * k) + diffusivite_->valeurs()(is_var_ * l));
+    return 0.25 * (diffusivite_->valeurs()(is_ * i) + diffusivite_->valeurs()(is_ * j) + diffusivite_->valeurs()(is_ * k) + diffusivite_->valeurs()(is_ * l));
   }
   inline void associer_diffusivite(const Champ_base& diffu) override
   {
     diffusivite_ = diffu;
-    is_var_ = sub_type(Champ_Uniforme, diffu) ? 0 : 1;
+    is_ = sub_type(Champ_Uniforme, diffu) ? 0 : 1;
   }
 
   inline void mettre_a_jour_var(double t) const override
   {
-    if (is_var_)
-      ref_cast_non_const(Op_Dift_VDF_var_Face_Axi,(*this)).mettre_a_jour(t);
+    if (is_)
+      ref_cast_non_const(Op_Dift_VDF_Face_Axi,(*this)).mettre_a_jour(t);
   }
 
   inline const Champ_base& diffusivite() const override { return diffusivite_; }
 
 protected:
-  int is_var_ = 0;
+  int is_ = 0;
   REF(Champ_base) diffusivite_;
 };
 
-inline double Op_Dift_VDF_var_Face_Axi::nu_mean_4_pts_(const int i, const int j) const
+inline double Op_Dift_VDF_Face_Axi::nu_mean_4_pts_(const int i, const int j) const
 {
-  if (!is_var_) return diffusivite_->valeurs()(0,0);
+  if (!is_) return diffusivite_->valeurs()(0,0);
 
   int element;
   double d_visco_lam = 0;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,18 +13,43 @@
 *
 *****************************************************************************/
 
-#include <Eval_Turbulence.h>
+#include <Eval_Dift_VDF_leaves.h>
 
-// We are obliged to have at least one cpp file in the folder Evaluateurs_Diff
-// This is because of TRUST check_source and make include.
-// If CMakeLists and make include are removed, TRUST compile ... but not its baltiks that include Eval* headears ...
-
-void Eval_Turbulence::update_equivalent_distance()
+void Eval_Dift_VDF_Elem::init_ind_fluctu_term()
 {
-  if (loipar.non_nul())
+  ind_Fluctu_Term = 0;
+  if (!loipar.non_nul()) ind_Fluctu_Term = 1;
+}
+
+void Eval_Dift_VDF_Elem::associer_loipar(const Turbulence_paroi_scal& loi_paroi)
+{
+  Eval_Dift_VDF::associer_loipar(loi_paroi);
+  ind_Fluctu_Term = 0;
+}
+
+void Eval_Dift_VDF_Face::mettre_a_jour()
+{
+  Eval_Dift_VDF::mettre_a_jour();
+  if (le_modele_turbulence->loi_paroi().non_nul())
     {
-      int s=loipar->tab_equivalent_distance_size();
-      equivalent_distance.dimensionner(s);
-      for(int i=0; i<s; i++) equivalent_distance[i].ref(loipar->tab_equivalent_distance(i));
+      // Modif E. Saikali : on fait le ref seulement si le tableau a ete initialise, sinon pointeur nulle
+      const DoubleTab& tab = le_modele_turbulence->loi_paroi().valeur().Cisaillement_paroi();
+      if (tab.size_array() > 0) tau_tan_.ref(tab);
     }
+}
+
+double Eval_Dift_VDF_Face::tau_tan_impl(int face, int k) const
+{
+  const int nb_faces = la_zone.valeur().nb_faces();
+  const ArrOfInt& ind_faces_virt_bord = la_zone.valeur().ind_faces_virt_bord();
+  int f = (face >= tau_tan_.dimension(0)) ? ind_faces_virt_bord[face-nb_faces] : face;
+  if(f >= tau_tan_.dimension_tot(0))
+    {
+      Cerr << "Erreur dans tau_tan " << finl;
+      Cerr << "dimension : " << tau_tan_.dimension(0) << finl;
+      Cerr << "dimension_tot : " << tau_tan_.dimension_tot(0) << finl;
+      Cerr << "face : " << face << finl;
+      Process::exit();
+    }
+  return tau_tan_(f,k);
 }

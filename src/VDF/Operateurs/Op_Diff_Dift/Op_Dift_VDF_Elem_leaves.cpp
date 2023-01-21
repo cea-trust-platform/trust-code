@@ -15,22 +15,22 @@
 
 #include <Op_Dift_VDF_Elem_leaves.h>
 
-Implemente_instanciable_sans_constructeur(Op_Dift_VDF_var_Elem,"Op_Dift_VDF_var_P0_VDF",Op_Dift_VDF_Elem_base);
-Sortie& Op_Dift_VDF_var_Elem::printOn(Sortie& s ) const { return s << que_suis_je() ; }
-Entree& Op_Dift_VDF_var_Elem::readOn(Entree& s ) { return s ; }
-Op_Dift_VDF_var_Elem::Op_Dift_VDF_var_Elem() : Op_Dift_VDF_Elem_base(Iterateur_VDF_Elem<Eval_Dift_VDF_var_Elem>()) { }
+Implemente_instanciable_sans_constructeur(Op_Dift_VDF_Elem,"Op_Dift_VDF_P0_VDF",Op_Dift_VDF_Elem_base);
+Sortie& Op_Dift_VDF_Elem::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+Entree& Op_Dift_VDF_Elem::readOn(Entree& s ) { return s ; }
+Op_Dift_VDF_Elem::Op_Dift_VDF_Elem() : Op_Dift_VDF_Elem_base(Iterateur_VDF_Elem<Eval_Dift_VDF_Elem>()) { }
 
-Implemente_instanciable_sans_constructeur(Op_Dift_VDF_var_Elem_Axi,"Op_Dift_VDF_var_P0_VDF_Axi",Op_Dift_VDF_Elem_base);
-Sortie& Op_Dift_VDF_var_Elem_Axi::printOn(Sortie& s ) const { return s << que_suis_je() ; }
-Entree& Op_Dift_VDF_var_Elem_Axi::readOn(Entree& s ) { return s ; }
-Op_Dift_VDF_var_Elem_Axi::Op_Dift_VDF_var_Elem_Axi() : Op_Dift_VDF_Elem_base(Iterateur_VDF_Elem<Eval_Dift_VDF_var_Elem_Axi>()) { }
+Implemente_instanciable_sans_constructeur(Op_Dift_VDF_Elem_Axi,"Op_Dift_VDF_P0_VDF_Axi",Op_Dift_VDF_Elem_base);
+Sortie& Op_Dift_VDF_Elem_Axi::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+Entree& Op_Dift_VDF_Elem_Axi::readOn(Entree& s ) { return s ; }
+Op_Dift_VDF_Elem_Axi::Op_Dift_VDF_Elem_Axi() : Op_Dift_VDF_Elem_base(Iterateur_VDF_Elem<Eval_Dift_VDF_Elem_Axi>()) { }
 
-Implemente_instanciable_sans_constructeur(Op_Dift_VDF_Multi_inco_var_Elem,"Op_Dift_VDF_Multi_inco_var_P0_VDF",Op_Dift_VDF_Elem_base);
-Sortie& Op_Dift_VDF_Multi_inco_var_Elem::printOn(Sortie& s ) const { return s << que_suis_je() ; }
-Entree& Op_Dift_VDF_Multi_inco_var_Elem::readOn(Entree& s ) { return s ; }
-Op_Dift_VDF_Multi_inco_var_Elem::Op_Dift_VDF_Multi_inco_var_Elem() : Op_Dift_VDF_Elem_base(Iterateur_VDF_Elem<Eval_Dift_VDF_Multi_inco_var_Elem>()) { }
+Implemente_instanciable_sans_constructeur(Op_Dift_VDF_Multi_inco_Elem,"Op_Dift_VDF_Multi_inco_P0_VDF",Op_Dift_VDF_Elem_base);
+Sortie& Op_Dift_VDF_Multi_inco_Elem::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+Entree& Op_Dift_VDF_Multi_inco_Elem::readOn(Entree& s ) { return s ; }
+Op_Dift_VDF_Multi_inco_Elem::Op_Dift_VDF_Multi_inco_Elem() : Op_Dift_VDF_Elem_base(Iterateur_VDF_Elem<Eval_Dift_VDF_Multi_inco_Elem>()) { }
 
-Implemente_instanciable_sans_constructeur(Op_Dift_VDF_Multi_inco_var_Elem_Axi,"Op_Dift_VDF_Multi_inco_var_P0_VDF_Axi",Op_Dift_VDF_Elem_base);
-Sortie& Op_Dift_VDF_Multi_inco_var_Elem_Axi::printOn(Sortie& s ) const { return s << que_suis_je() ; }
-Entree& Op_Dift_VDF_Multi_inco_var_Elem_Axi::readOn(Entree& s ) { return s ; }
-Op_Dift_VDF_Multi_inco_var_Elem_Axi::Op_Dift_VDF_Multi_inco_var_Elem_Axi() : Op_Dift_VDF_Elem_base(Iterateur_VDF_Elem<Eval_Dift_VDF_Multi_inco_var_Elem_Axi>()) { }
+Implemente_instanciable_sans_constructeur(Op_Dift_VDF_Multi_inco_Elem_Axi,"Op_Dift_VDF_Multi_inco_P0_VDF_Axi",Op_Dift_VDF_Elem_base);
+Sortie& Op_Dift_VDF_Multi_inco_Elem_Axi::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+Entree& Op_Dift_VDF_Multi_inco_Elem_Axi::readOn(Entree& s ) { return s ; }
+Op_Dift_VDF_Multi_inco_Elem_Axi::Op_Dift_VDF_Multi_inco_Elem_Axi() : Op_Dift_VDF_Elem_base(Iterateur_VDF_Elem<Eval_Dift_VDF_Multi_inco_Elem_Axi>()) { }

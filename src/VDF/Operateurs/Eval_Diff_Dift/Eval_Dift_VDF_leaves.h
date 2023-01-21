@@ -13,35 +13,83 @@
 *
 *****************************************************************************/
 
-#ifndef Eval_Dift_VDF_Face_leaves_included
-#define Eval_Dift_VDF_Face_leaves_included
+#ifndef Eval_Dift_VDF_leaves_included
+#define Eval_Dift_VDF_leaves_included
 
 #include <Ref_Turbulence_paroi_base.h>
 #include <Eval_Diff_VDF_Face_Gen.h>
+#include <Eval_Diff_VDF_Elem_Gen.h>
 #include <Mod_turb_hyd_base.h>
 #include <Eval_Dift_VDF.h>
 
 /// \cond DO_NOT_DOCUMENT
-class Eval_Dift_VDF_Face_leaves
+class Eval_Dift_VDF_leaves
 {};
 /// \endcond
 
-/*! @brief class Eval_Dift_VDF_var_Face Evaluateur VDF pour la diffusion totale (laminaire et turbulente)
+/*! @brief class Eval_Dift_VDF_Elem_Axi Evaluateur VDF pour la diffusion totale (laminaire et turbulente) en coordonnees cylindriques
+ *
+ *  Le champ diffuse est scalaire (Champ_P0_VDF).
+ *
+ * @sa Eval_Dift_VDF_var
+ */
+class Eval_Dift_VDF_Elem_Axi : public Eval_Diff_VDF_Elem_Gen<Eval_Dift_VDF_Elem_Axi>, public Eval_Dift_VDF
+{
+public:
+  static constexpr bool IS_DEQUIV = true, IS_AXI = true;
+};
+
+/*! @brief class Eval_Dift_VDF_Elem Evaluateur VDF pour la diffusion totale (laminaire et turbulente)
+ *
+ *  Le champ diffuse est scalaire (Champ_P0_VDF).
+ *
+ * @sa Eval_Dift_VDF_var
+ */
+class Eval_Dift_VDF_Elem : public Eval_Diff_VDF_Elem_Gen<Eval_Dift_VDF_Elem>, public Eval_Dift_VDF
+{
+public:
+  static constexpr bool IS_MODIF_DEQ = true;
+  inline int get_ind_Fluctu_Term() const { return ind_Fluctu_Term; }
+  void init_ind_fluctu_term() override;
+  void associer_loipar(const Turbulence_paroi_scal& loi_paroi) override;
+
+private:
+  int ind_Fluctu_Term = 1;
+};
+
+class Eval_Dift_VDF_Multi_inco_Elem_Axi : public Eval_Diff_VDF_Elem_Gen<Eval_Dift_VDF_Multi_inco_Elem_Axi>, public Eval_Dift_VDF
+{
+public:
+  static constexpr bool IS_MULTD = false, IS_DEQUIV = true, IS_AXI = true;
+  inline void mettre_a_jour() override { update_equivalent_distance(); }
+};
+
+/*! @brief class Eval_Dift_VDF_Multi_inco_Elem Evaluateur VDF pour la diffusion totale (laminaire et turbulente)
+ *
+ *  Le champ diffuse est scalaire (Champ_P0_VDF) avec plusieurs inconnues. Il y a une diffusivite par inconnue.
+ *
+ * @sa Eval_Dift_VDF_Multi_inco_var
+ */
+class Eval_Dift_VDF_Multi_inco_Elem : public Eval_Diff_VDF_Elem_Gen<Eval_Dift_VDF_Multi_inco_Elem>, public Eval_Dift_VDF
+{
+public:
+  static constexpr bool IS_MULTD = false, IS_DEQUIV = true;
+  inline void mettre_a_jour() override { update_equivalent_distance(); }
+};
+
+/*! @brief class Eval_Dift_VDF_Face Evaluateur VDF pour la diffusion totale (laminaire et turbulente)
  *
  *  Le champ diffuse est un Champ_Face_VDF
- *  Le champ de diffusivite n'est pas constant.
  *
  */
-class Eval_Dift_VDF_var_Face : public Eval_Diff_VDF_Face_Gen<Eval_Dift_VDF_var_Face>, public Eval_Dift_VDF
+class Eval_Dift_VDF_Face : public Eval_Diff_VDF_Face_Gen<Eval_Dift_VDF_Face>, public Eval_Dift_VDF
 {
 public:
   static constexpr bool IS_TURB = true, CALC_FA7_SORTIE_LIB = true, CALC_ARR_PAR_FL = false;
   inline void associer_modele_turbulence(const Mod_turb_hyd_base& mod) { le_modele_turbulence = mod;  }
-  inline void mettre_a_jour() override;
-
-  // overload methods (see implementations in Eval_Diff_VDF_const)
-  inline double tau_tan_impl(int face,int k) const;
   inline bool uses_wall() const { return le_modele_turbulence.valeur().utiliser_loi_paroi(); }
+  void mettre_a_jour() override;
+  double tau_tan_impl(int face,int k) const;
 
 private:
   REF(Mod_turb_hyd_base) le_modele_turbulence;
@@ -49,31 +97,4 @@ private:
   DoubleTab tau_tan_;
 };
 
-inline void Eval_Dift_VDF_var_Face::mettre_a_jour()
-{
-  Eval_Dift_VDF::mettre_a_jour();
-  if (le_modele_turbulence->loi_paroi().non_nul())
-    {
-      // Modif E. Saikali : on fait le ref seulement si le tableau a ete initialise, sinon pointeur nulle
-      const DoubleTab& tab = le_modele_turbulence->loi_paroi().valeur().Cisaillement_paroi();
-      if (tab.size_array() > 0) tau_tan_.ref(tab);
-    }
-}
-
-inline double Eval_Dift_VDF_var_Face::tau_tan_impl(int face, int k) const
-{
-  const int nb_faces = la_zone.valeur().nb_faces();
-  const ArrOfInt& ind_faces_virt_bord = la_zone.valeur().ind_faces_virt_bord();
-  int f = (face >= tau_tan_.dimension(0)) ? ind_faces_virt_bord[face-nb_faces] : face;
-  if(f >= tau_tan_.dimension_tot(0))
-    {
-      Cerr << "Erreur dans tau_tan " << finl;
-      Cerr << "dimension : " << tau_tan_.dimension(0) << finl;
-      Cerr << "dimension_tot : " << tau_tan_.dimension_tot(0) << finl;
-      Cerr << "face : " << face << finl;
-      Process::exit();
-    }
-  return tau_tan_(f,k);
-}
-
-#endif /* Eval_Dift_VDF_Face_leaves_included */
+#endif /* Eval_Dift_VDF_leaves_included */

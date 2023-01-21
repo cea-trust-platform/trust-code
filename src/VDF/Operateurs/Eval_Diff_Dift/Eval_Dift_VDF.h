@@ -16,16 +16,20 @@
 #ifndef Eval_Dift_VDF_included
 #define Eval_Dift_VDF_included
 
-#include <Eval_Turbulence.h>
+#include <Ref_Turbulence_paroi_scal.h>
+#include <Turbulence_paroi_scal.h>
+#include <Ref_Champ_Fonc.h>
 #include <Eval_Diff_VDF.h>
+#include <Champ_Fonc.h>
+#include <TRUSTVects.h>
 
-class Eval_Dift_VDF : public Eval_Diff_VDF, public Eval_Turbulence
+class Eval_Dift_VDF : public Eval_Diff_VDF
 {
 public:
   inline void mettre_a_jour() override
   {
     Eval_Diff_VDF::mettre_a_jour();
-    update_equivalent_distance();  // from Eval_Turbulence
+    update_equivalent_distance();
   }
 
   inline double get_equivalent_distance(int boundary_index, int local_face) const override
@@ -73,6 +77,33 @@ public:
   {
     return 0.25 * (dv_diffusivite_turbulente(i) + dv_diffusivite_turbulente(j) + dv_diffusivite_turbulente(k) + dv_diffusivite_turbulente(l));
   }
+
+  void update_equivalent_distance()
+  {
+    if (loipar.non_nul())
+      {
+        int s = loipar->tab_equivalent_distance_size();
+        equivalent_distance.dimensionner(s);
+        for (int i = 0; i < s; i++) equivalent_distance[i].ref(loipar->tab_equivalent_distance(i));
+      }
+  }
+
+  inline const Champ_Fonc& diffusivite_turbulente() const { return ref_diffusivite_turbulente_.valeur(); }
+
+  inline void associer_diff_turb(const Champ_Fonc& diff_turb)
+  {
+    ref_diffusivite_turbulente_ = diff_turb;
+    dv_diffusivite_turbulente.ref(diff_turb.valeurs());
+  }
+
+  inline virtual void associer_loipar(const Turbulence_paroi_scal& loi_paroi) { loipar = loi_paroi; }
+  inline virtual void init_ind_fluctu_term() { /* do nothing */}
+
+protected:
+  REF(Champ_Fonc) ref_diffusivite_turbulente_;
+  REF(Turbulence_paroi_scal) loipar;
+  DoubleVects equivalent_distance;
+  DoubleVect dv_diffusivite_turbulente;
 };
 
 #endif /* Eval_Dift_VDF_included */
