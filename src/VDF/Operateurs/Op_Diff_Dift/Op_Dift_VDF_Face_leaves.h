@@ -30,45 +30,6 @@ class Op_Dift_VDF_Face_leaves
 class Mod_turb_hyd_base;
 class Champ_Fonc;
 
-//////////////// CONST /////////////////
-
-// ===========================================================================================================================================
-
-class Op_Dift_VDF_Face : public Op_Dift_VDF_Face_base, public Op_Diff_Dift_VDF<Op_Dift_VDF_Face>
-{
-  Declare_instanciable_sans_constructeur(Op_Dift_VDF_Face);
-public:
-  Op_Dift_VDF_Face();
-  inline void completer() override { completer_impl<Type_Operateur::Op_DIFT_FACE,Eval_Dift_VDF_const_Face>(); }
-  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd, const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_DIFT_FACE,Eval_Dift_VDF_const_Face>(zd,zcd,ch); }
-  inline void associer_diffusivite_turbulente(const Champ_Fonc& ch) { associer_diffusivite_turbulente_impl<Type_Operateur::Op_DIFT_FACE,Eval_Dift_VDF_const_Face>(ch); }
-  inline void associer_diffusivite(const Champ_base& ch) override { associer_diffusivite_impl<Eval_Dift_VDF_const_Face>(ch); }
-  inline const Champ_base& diffusivite() const override { return diffusivite_impl<Eval_Dift_VDF_const_Face>(); }
-};
-
-// ===========================================================================================================================================
-
-class Op_Dift_VDF_Face_Axi : public Op_Dift_VDF_Face_Axi_base
-{
-  Declare_instanciable(Op_Dift_VDF_Face_Axi);
-public:
-  inline bool is_VAR() const override { return false; }
-  inline double nu_(const int ) const override { return diffusivite_.valeur()(0,0); }
-  inline double nu_mean_2_pts_(const int i, const int ) const override { return nu_(i); }
-  inline double nu_mean_4_pts_(const int i, const int ) const override { return nu_(i); }
-  inline double nu_mean_4_pts_(const int i, const int , const int , const int ) const override { return nu_(i); }
-  inline void associer_diffusivite(const Champ_base& diffu) override { diffusivite_ = ref_cast(Champ_Uniforme, diffu); }
-  inline void mettre_a_jour_var(double ) const override { /* do nothing */}
-  inline const Champ_base& diffusivite() const override { return diffusivite_; }
-
-protected:
-  REF(Champ_Uniforme) diffusivite_;
-};
-
-//////////////// VAR /////////////////
-
-// ===========================================================================================================================================
-
 class Op_Dift_VDF_var_Face : public Op_Dift_VDF_Face_base, public Op_Diff_Dift_VDF<Op_Dift_VDF_var_Face>
 {
   Declare_instanciable_sans_constructeur(Op_Dift_VDF_var_Face);
@@ -89,7 +50,7 @@ class Op_Dift_VDF_var_Face_Axi : public Op_Dift_VDF_Face_Axi_base
   Declare_instanciable(Op_Dift_VDF_var_Face_Axi);
 public:
 
-  inline bool is_VAR() const override { return is_var_ ? true : false; }
+  inline bool is_var() const override { return is_var_ ? true : false; }
   inline double nu_(const int i) const override
   {
     return diffusivite_->valeurs()(is_var_ * i);

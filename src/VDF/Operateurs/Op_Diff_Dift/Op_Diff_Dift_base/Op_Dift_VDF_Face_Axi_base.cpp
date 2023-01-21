@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -114,7 +114,7 @@ void Op_Dift_VDF_Face_Axi_base::ajouter_aretes_bords(const DoubleVect& visco_tur
             const int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), ori3 = orientation(fac3);
             const int rang1 = (fac1 - la_zone_vdf->premiere_face_bord()), rang2 = (fac2-la_zone_vdf->premiere_face_bord());
             double coef;
-            if (is_VAR()) // XXX : E Saikali : sais pas quoi faire sinon ecarts ...
+            if (is_var()) // XXX : E Saikali : sais pas quoi faire sinon ecarts ...
               {
                 // Calcul du frottement identique a celui de TRIOVF : On calcule la moyenne des u_star et on l'eleve au carre. On calcule la moyenne des surfaces
                 const double tau_tan_1 = tau_tan(rang1,ori3), tau_tan_2 = tau_tan(rang2,ori3) ;
@@ -349,7 +349,7 @@ void Op_Dift_VDF_Face_Axi_base::ajouter_contribution_elem(const DoubleVect& visc
       const double visc_elem = nu_(num_elem) + 2*visco_turb(num_elem);
       double flux_X, flux_Y;
 
-      if (is_VAR())
+      if (is_var())
         {
           flux_X = (visc_elem*tau_diag(num_elem,0))*0.5*(surface(fx0)+surface(fx1));
           flux_Y = (visc_elem*tau_diag(num_elem,1))*0.5*(surface(fy0)+surface(fy1));
@@ -365,7 +365,7 @@ void Op_Dift_VDF_Face_Axi_base::ajouter_contribution_elem(const DoubleVect& visc
 
       // Termes supplementaires dans le laplacien en axi : Ils sont integres comme des termes sources
       double coef_laplacien_axi;
-      if (is_VAR()) coef_laplacien_axi = -0.5*(tau_diag(num_elem,1)*visc_elem);
+      if (is_var()) coef_laplacien_axi = -0.5*(tau_diag(num_elem,1)*visc_elem);
       else coef_laplacien_axi = -0.5*visc_elem; // XXX : comprends rien la
 
       for (int l = tab1[fx0]-1; l < tab1[fx0+1]-1; l++)
@@ -384,7 +384,7 @@ void Op_Dift_VDF_Face_Axi_base::ajouter_contribution_elem_3D(const DoubleVect& v
       const double visc_elem = nu_(num_elem) + 2*visco_turb(num_elem);
       double flux_Z;
 
-      if (is_VAR()) flux_Z = (visc_elem*tau_diag(num_elem,2))*0.5*(surface(fz0)+surface(fz1));
+      if (is_var()) flux_Z = (visc_elem*tau_diag(num_elem,2))*0.5*(surface(fz0)+surface(fz1));
       else flux_Z = visc_elem*0.5*(surface(fz0)+surface(fz1));
 
       fill_coeff_matrice_morse(fz0,fz1,flux_Z,matrice);
@@ -590,7 +590,7 @@ void Op_Dift_VDF_Face_Axi_base::contribue_au_second_membre(DoubleTab& resu ) con
             const int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), ori3 = orientation(fac3);
             const int rang1 = (fac1 - la_zone_vdf->premiere_face_bord()), rang2 = (fac2 - la_zone_vdf->premiere_face_bord());
             double coef;
-            if (is_VAR())
+            if (is_var())
               {
                 // Calcul du frottement identique a celui de TRIOVF : On calcule la moyenne des u_star et on l'eleve au carre. On calcule la moyenne des surfaces
                 const double tau = 0.5*(sqrt(tau_tan(rang1,ori3)) + sqrt(tau_tan(rang2,ori3))), surf = 0.5*(surface(fac1)+surface(fac2));

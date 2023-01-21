@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,7 +50,7 @@ protected:
   DoubleTab xp, xv, tau_tan;
 
   virtual void mettre_a_jour_var(double ) const = 0;
-  virtual bool is_VAR() const = 0;
+  virtual bool is_var() const = 0;
   virtual double nu_(const int ) const = 0;
   virtual double nu_mean_2_pts_(const int , const int ) const = 0;
   virtual double nu_mean_4_pts_(const int , const int ) const = 0;
