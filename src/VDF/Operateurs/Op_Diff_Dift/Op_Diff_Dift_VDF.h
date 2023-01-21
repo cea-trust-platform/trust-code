@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -59,6 +59,15 @@ protected:
   {
     const EVAL_TYPE& eval_diff_turb = static_cast<const EVAL_TYPE&>(iter_()->evaluateur());
     return eval_diff_turb.get_diffusivite();
+  }
+
+  template <typename EVAL_TYPE>
+  const double& alpha_impl(const int i) const // TODO : FIXME : pour multiphase faut ajouter compo
+  {
+    const EVAL_TYPE& eval_diff_turb = static_cast<const EVAL_TYPE&>(iter_()->evaluateur());
+    const Champ_base& diffu = eval_diff_turb.get_diffusivite();
+    const int is_var = eval_diff_turb.is_var();
+    return diffu.valeurs()(is_var * i);
   }
 
   template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>

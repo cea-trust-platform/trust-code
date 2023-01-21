@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -118,7 +118,7 @@ class Op_Dift_VDF_var_Elem : public Op_Dift_VDF_Elem_base, public Op_Diff_Dift_V
 public:
   Op_Dift_VDF_var_Elem();
   inline double calculer_dt_stab() const override { return calculer_dt_stab_elem(); }
-  inline double alpha_(const int i) const override { return diffusivite().valeurs()(i); }
+  inline double alpha_(const int i) const override { return alpha_impl<Eval_Dift_VDF_var_Elem>(i); }
   inline void completer() override { completer_impl<Type_Operateur::Op_DIFT_ELEM,Eval_Dift_VDF_var_Elem>(); }
   inline void associer_loipar(const Turbulence_paroi_scal& lp ) { associer_loipar_impl<Type_Operateur::Op_DIFT_ELEM,Eval_Dift_VDF_var_Elem>(lp); }
   inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd, const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_DIFT_ELEM,Eval_Dift_VDF_var_Elem>(zd,zcd,ch); }
@@ -135,7 +135,7 @@ class Op_Dift_VDF_var_Elem_Axi : public Op_Dift_VDF_Elem_base, public Op_Diff_Di
 public:
   Op_Dift_VDF_var_Elem_Axi();
   inline double calculer_dt_stab() const override { return calculer_dt_stab_elem_axi(); }
-  inline double alpha_(const int i) const override { return diffusivite().valeurs()(i); }
+  inline double alpha_(const int i) const override { return alpha_impl<Eval_Dift_VDF_var_Elem_Axi>(i); }
   inline void completer() override { completer_impl<Type_Operateur::Op_DIFT_ELEM,Eval_Dift_VDF_var_Elem_Axi>(); }
   inline void associer_loipar(const Turbulence_paroi_scal& lp ) { associer_loipar_impl<Type_Operateur::Op_DIFT_ELEM,Eval_Dift_VDF_var_Elem_Axi>(lp); }
   inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd, const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_DIFT_ELEM,Eval_Dift_VDF_var_Elem_Axi>(zd,zcd,ch); }
@@ -155,8 +155,9 @@ public:
   inline double alpha_(const int i) const override
   {
     const DoubleTab& alpha = diffusivite_pour_pas_de_temps().valeurs();
-    double alpha_lam = alpha(i,0);
-    for (int k = 1; k < alpha.line_size(); k++) alpha_lam = std::max(alpha_lam, alpha(i,k));
+    const int is_var = sub_type(Champ_Uniforme, diffusivite()) ? 0 : 1;
+    double alpha_lam = alpha(is_var * i,0);
+    for (int k = 1; k < alpha.line_size(); k++) alpha_lam = std::max(alpha_lam, alpha(is_var * i,k));
     return alpha_lam;
   }
   inline void completer() override { completer_impl<Type_Operateur::Op_DIFT_ELEM,Eval_Dift_VDF_Multi_inco_var_Elem>(); }
@@ -178,7 +179,8 @@ public:
   inline double alpha_(const int i) const override
   {
     const DoubleTab& alpha = diffusivite().valeurs();
-    double alpha_lam = alpha(i,0);
+    const int is_var = sub_type(Champ_Uniforme, diffusivite()) ? 0 : 1;
+    double alpha_lam = alpha(is_var * i,0);
     for (int k = 1; k < alpha.line_size(); k++) alpha_lam = std::max(alpha_lam, alpha(i,k));
     return alpha_lam;
   }

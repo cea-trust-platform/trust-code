@@ -25,6 +25,8 @@ class Eval_Diff_VDF
 public:
   virtual ~Eval_Diff_VDF() { }
 
+  inline const int& is_var() const { return is_var_; }
+
   inline virtual const Champ_base& diffusivite() const final { return get_diffusivite(); }
 
   inline virtual const Champ_base& get_diffusivite() const final
@@ -36,7 +38,7 @@ public:
   inline virtual void associer(const Champ_base& diffu)
   {
     ref_diffusivite_ = diffu;
-    is_var = sub_type(Champ_Uniforme, diffu) ? 0 : 1;
+    is_var_ = sub_type(Champ_Uniforme, diffu) ? 0 : 1;
     tab_diffusivite_.ref(diffu.valeurs());
   }
 
@@ -49,20 +51,20 @@ public:
   // Methods used by the flux computation in template class:
   inline double compute_heq_impl(double d0, int i, double d1, int j, int compo) const
   {
-    return 1. / (d0 / tab_diffusivite_(is_var * i, compo) + d1 / tab_diffusivite_(is_var * j, compo));
+    return 1. / (d0 / tab_diffusivite_(is_var_ * i, compo) + d1 / tab_diffusivite_(is_var_ * j, compo));
   }
 
-  inline double nu_1_impl(int i, int compo) const { return tab_diffusivite_(is_var * i, compo); }
-  inline double nu_2_impl(int i, int compo) const { return tab_diffusivite_(is_var * i, compo); }
+  inline double nu_1_impl(int i, int compo) const { return tab_diffusivite_(is_var_ * i, compo); }
+  inline double nu_2_impl(int i, int compo) const { return tab_diffusivite_(is_var_ * i, compo); }
 
   inline double nu_1_impl_face(int i, int j, int compo) const
   {
-    return 0.5 * (tab_diffusivite_(is_var * i, compo) + tab_diffusivite_(is_var * j, compo));
+    return 0.5 * (tab_diffusivite_(is_var_ * i, compo) + tab_diffusivite_(is_var_ * j, compo));
   }
 
   inline double nu_2_impl_face(int i, int j, int k, int l, int compo) const
   {
-    return 0.25 * (tab_diffusivite_(is_var * i, compo) + tab_diffusivite_(is_var * j, compo) + tab_diffusivite_(is_var * k, compo) + tab_diffusivite_(is_var * l, compo));
+    return 0.25 * (tab_diffusivite_(is_var_ * i, compo) + tab_diffusivite_(is_var_ * j, compo) + tab_diffusivite_(is_var_ * k, compo) + tab_diffusivite_(is_var_ * l, compo));
   }
 
   inline double nu_lam_impl_face(int i, int j, int k, int l, int compo) const { return nu_2_impl_face(i, j, k, l, compo); }
@@ -79,7 +81,7 @@ public:
   inline const DoubleTab& get_k_elem() const { throw; } // pour F5 seulement ...
 
 protected:
-  int is_var = 0;
+  int is_var_ = 0;
   REF(Champ_base) ref_diffusivite_;
   DoubleTab tab_diffusivite_;
 };

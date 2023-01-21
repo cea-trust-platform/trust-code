@@ -89,24 +89,44 @@ class Op_Dift_VDF_var_Face_Axi : public Op_Dift_VDF_Face_Axi_base
   Declare_instanciable(Op_Dift_VDF_var_Face_Axi);
 public:
 
-  inline bool is_VAR() const override { return true; }
-  inline double nu_(const int i) const override { return diffusivite_->valeurs()(i); }
-  inline double nu_mean_2_pts_(const int i, const int j) const override { return 0.5*(diffusivite_->valeurs()(i)+diffusivite_->valeurs()(j)); }
-  inline double nu_mean_4_pts_(const int , const int ) const override;
+  inline bool is_VAR() const override { return is_var_ ? true : false; }
+  inline double nu_(const int i) const override
+  {
+    return diffusivite_->valeurs()(is_var_ * i);
+  }
+
+  inline double nu_mean_2_pts_(const int i, const int j) const override
+  {
+    return 0.5 * (diffusivite_->valeurs()(is_var_ * i) + diffusivite_->valeurs()(is_var_ * j));
+  }
+  inline double nu_mean_4_pts_(const int, const int) const override;
   inline double nu_mean_4_pts_(const int i, const int j, const int k, const int l) const override
   {
-    return 0.25*( diffusivite_->valeurs()(i) + diffusivite_->valeurs()(j) + diffusivite_->valeurs()(k) + diffusivite_->valeurs()(l));
+    return 0.25 * (diffusivite_->valeurs()(is_var_ * i) + diffusivite_->valeurs()(is_var_ * j) + diffusivite_->valeurs()(is_var_ * k) + diffusivite_->valeurs()(is_var_ * l));
   }
-  inline void associer_diffusivite(const Champ_base& diffu) override { diffusivite_ = diffu; }
-  inline void mettre_a_jour_var(double t) const override { ref_cast_non_const(Op_Dift_VDF_var_Face_Axi,(*this)).mettre_a_jour(t); }
+  inline void associer_diffusivite(const Champ_base& diffu) override
+  {
+    diffusivite_ = diffu;
+    is_var_ = sub_type(Champ_Uniforme, diffu) ? 0 : 1;
+  }
+
+  inline void mettre_a_jour_var(double t) const override
+  {
+    if (is_var_)
+      ref_cast_non_const(Op_Dift_VDF_var_Face_Axi,(*this)).mettre_a_jour(t);
+  }
+
   inline const Champ_base& diffusivite() const override { return diffusivite_; }
 
 protected:
+  int is_var_ = 0;
   REF(Champ_base) diffusivite_;
 };
 
 inline double Op_Dift_VDF_var_Face_Axi::nu_mean_4_pts_(const int i, const int j) const
 {
+  if (!is_var_) return diffusivite_->valeurs()(0,0);
+
   int element;
   double d_visco_lam = 0;
   if ((element=face_voisins(i,0)) != -1) d_visco_lam += diffusivite_->valeurs()(element);
