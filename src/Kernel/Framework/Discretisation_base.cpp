@@ -482,8 +482,12 @@ Nom Discretisation_base::get_name_of_type_for(const Nom& class_operateur, const 
           type += nb_inc;
 
           Nom type_diff;
-          if (sub_type(Champ_Uniforme, diffusivite)) type_diff = "const_";
-          else type_diff = "var_";
+          if (nom_discr == "VDF") type_diff = "var_";
+          else
+            {
+              if (sub_type(Champ_Uniforme, diffusivite)) type_diff = "const_";
+              else type_diff = "var_";
+            }
 
           type += type_diff;
         }
