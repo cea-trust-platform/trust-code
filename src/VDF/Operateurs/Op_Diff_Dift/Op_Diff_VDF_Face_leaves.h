@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -95,13 +95,18 @@ class Op_Diff_VDF_var_Face_Axi : public Op_Diff_VDF_Face_Axi_base
 {
   Declare_instanciable(Op_Diff_VDF_var_Face_Axi);
 public:
-  inline double nu_(const int i) const override { return diffusivite_->valeurs()(i); }
-  inline double nu_mean_2_pts_(const int i, const int j) const override { return 0.5*(diffusivite_->valeurs()(i)+diffusivite_->valeurs()(j)); }
+  inline double nu_(const int i) const override { return diffusivite_->valeurs()(is_var * i); }
+  inline double nu_mean_2_pts_(const int i, const int j) const override { return 0.5*(diffusivite_->valeurs()(is_var * i)+diffusivite_->valeurs()(is_var * j)); }
   inline double nu_mean_4_pts_(const int , const int ) const override;
-  inline void associer_diffusivite(const Champ_base& diffu) override { diffusivite_ = diffu; }
+  inline void associer_diffusivite(const Champ_base& diffu) override
+  {
+    diffusivite_ = diffu;
+    is_var = sub_type(Champ_Uniforme, diffu) ? 0 : 1;
+  }
   inline const Champ_base& diffusivite() const override { return diffusivite_; }
 protected:
   REF(Champ_base) diffusivite_;
+  int is_var = 0;
 };
 
 inline double Op_Diff_VDF_var_Face_Axi::nu_mean_4_pts_(const int i, const int j) const
@@ -111,22 +116,22 @@ inline double Op_Diff_VDF_var_Face_Axi::nu_mean_4_pts_(const int i, const int j)
 
   if ((element=face_voisins(i,0)) != -1)
     {
-      db_diffusivite += diffusivite_->valeurs()(element);
+      db_diffusivite += diffusivite_->valeurs()(is_var * element);
       compteur++;
     }
   if ((element=face_voisins(i,1)) != -1)
     {
-      db_diffusivite += diffusivite_->valeurs()(element);
+      db_diffusivite += diffusivite_->valeurs()(is_var * element);
       compteur++;
     }
   if ((element=face_voisins(j,0)) != -1)
     {
-      db_diffusivite += diffusivite_->valeurs()(element);
+      db_diffusivite += diffusivite_->valeurs()(is_var * element);
       compteur++;
     }
   if ((element=face_voisins(j,1)) != -1)
     {
-      db_diffusivite += diffusivite_->valeurs()(element);
+      db_diffusivite += diffusivite_->valeurs()(is_var * element);
       compteur++;
     }
   db_diffusivite /= compteur;
