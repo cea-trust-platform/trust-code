@@ -17,9 +17,9 @@
 #ifndef Eval_Dift_VDF_Multi_inco_var_included
 #define Eval_Dift_VDF_Multi_inco_var_included
 
-#include <Eval_Diff_VDF_Multi_inco_var.h>
 #include <Eval_Turbulence.h>
 #include <Ref_Champ_Fonc.h>
+#include <Eval_Diff_VDF.h>
 #include <Champ_Fonc.h>
 
 /*! @brief class Eval_Dift_VDF_Multi_inco_var Cette classe represente un evaluateur de flux diffusif total
@@ -28,9 +28,9 @@
  *  avec une diffusivite par inconnue.
  *  Le champ de diffusivite associe a chaque inconnue n'est pas constant.
  *
- * @sa Eval_Diff_VDF_Multi_inco_var
+ * @sa Eval_Diff_VDF
  */
-class Eval_Dift_VDF_Multi_inco_var : public Eval_Diff_VDF_Multi_inco_var, public Eval_Turbulence
+class Eval_Dift_VDF_Multi_inco_var : public Eval_Diff_VDF, public Eval_Turbulence
 {
 
 public:
@@ -41,19 +41,19 @@ public:
   // Overloaded methods used by the flux computation in template class:
   inline double nu_1_impl(int i, int compo) const
   {
-    const double nu_lam = Eval_Diff_VDF_Multi_inco_var::nu_1_impl(i,compo);
+    const double nu_lam = Eval_Diff_VDF::nu_1_impl(i,compo);
     const double nu_turb = dv_diffusivite_turbulente(i);
     return nu_lam+nu_turb;
   }
 
   inline double nu_2_impl(int i, int compo) const
   {
-    return Eval_Diff_VDF_Multi_inco_var::nu_2_impl(i,compo);
+    return Eval_Diff_VDF::nu_2_impl(i,compo);
   }
 
   inline double compute_heq_impl(double d0, int i, double d1, int j, int compo) const
   {
-    const double heq_lam = Eval_Diff_VDF_Multi_inco_var::compute_heq_impl(d0, i, d1, j, compo);
+    const double heq_lam = Eval_Diff_VDF::compute_heq_impl(d0, i, d1, j, compo);
     const double heq_turb= 0.5*(dv_diffusivite_turbulente(i)+dv_diffusivite_turbulente(j))/(d1+d0);
     return heq_lam + heq_turb;
   }
