@@ -37,8 +37,6 @@ class Eval_Diff_VDF_Face_leaves
  */
 class Eval_Diff_VDF_var_Face : public Eval_Diff_VDF_Face<Eval_Diff_VDF_var_Face>, public Eval_Diff_VDF
 {
-public:
-  static constexpr bool IS_VAR = true;
 };
 
 #endif /* Eval_Diff_VDF_Face_leaves_included */

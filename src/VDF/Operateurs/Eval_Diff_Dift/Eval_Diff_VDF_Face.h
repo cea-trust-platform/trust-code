@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,7 +32,7 @@ class Eval_Diff_VDF_Face : public Eval_VDF_Face, public Evaluateur_VDF
 public:
   // TEST_COEFFS : if true, activate the finite difference evaluation of coeffs to check the implementation
   // ACTIVATE_TAU_TR : if true, activate the calculation of the tau_tr component (should always be activated, use for debug in laminar for example)
-  static constexpr bool IS_VAR = false, IS_TURB = false, TEST_COEFFS = false, ACTIVATE_TAU_TR = true;
+  static constexpr bool IS_TURB = false, TEST_COEFFS = false, ACTIVATE_TAU_TR = true;
 
   /* ****************************************************************************** *
    * YES, we do magic ! Its all about : Substition Failure Is Not An Error (SFINAE) *
@@ -104,8 +104,8 @@ public:
   coeffs_arete(const DoubleTab*, int, int, int, int, Type_Double& , Type_Double& , Type_Double& ) const { /* Do nothing */ }
 
 private:
-  inline double surface_(int i,int j) const { return (DERIVED_T::IS_VAR || DERIVED_T::IS_TURB) ? 0.5*(surface(i)+surface(j)) : 0.5*(surface(i)*porosite(i)+surface(j)*porosite(j)); }
-  inline double porosity_(int i,int j) const { return (DERIVED_T::IS_VAR || DERIVED_T::IS_TURB) ? 0.5*(porosite(i)+porosite(j)) : 1.0; }
+  inline double surface_(int i,int j) const { return 0.5*(surface(i)+surface(j)); }
+  inline double porosity_(int i,int j) const { return 0.5*(porosite(i)+porosite(j)); }
 
   // CRTP pattern to static_cast the appropriate class and get the implementation : This is magic !
   inline double nu_mean_2pts(int i=0, int j=0, int compo=0) const { return static_cast<const DERIVED_T *>(this)->nu_1_impl_face(i, j, compo); }

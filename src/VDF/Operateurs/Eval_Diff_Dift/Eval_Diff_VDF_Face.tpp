@@ -76,7 +76,7 @@ Eval_Diff_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, const DoubleTab
   for (int k = 0; k < N; k++)
     if (inco(fac4,k)*inco(fac3,k) != 0)
       {
-        const double visc_lam = DERIVED_T::IS_VAR ? visc_lam_temp[k]: nu_lam(0, k), visc_turb = DERIVED_T::IS_TURB ? visc_turb_temp[k] : 0.0;
+        const double visc_lam = visc_lam_temp[k], visc_turb = DERIVED_T::IS_TURB ? visc_turb_temp[k] : 0.0;
         const double tau = (inco(fac4,k)-inco(fac3,k))/dist_face(fac3,fac4,ori1), tau_tr = ACTIVATE_TAU_TR ? (inco(fac2,k)-inco(fac1,k))/dist_face(fac1,fac2,ori3) : 0.0;
         flux[k] = ((tau + tau_tr) * (visc_lam + visc_turb)) * surf * poros;
       }
@@ -235,7 +235,7 @@ Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete(const DoubleTab*,int fac1, int fac2,
   for (int k = 0; k < ncomp; k++)
     if (inco(fac4,k) * inco(fac3,k) != 0)
       {
-        const double visc_lam = DERIVED_T::IS_VAR ? visc_lam_temp[k] : nu_lam(0, k), visc_turb =  DERIVED_T::IS_TURB ? visc_turb_temp[k] : 0.;
+        const double visc_lam = visc_lam_temp[k], visc_turb =  DERIVED_T::IS_TURB ? visc_turb_temp[k] : 0.;
         aii[k] = ajj[k] = ((d_tau + d_tau_tr) * (visc_lam + visc_turb)) * surf * poros;
       }
 
