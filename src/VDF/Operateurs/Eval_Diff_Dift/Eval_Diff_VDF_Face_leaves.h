@@ -16,9 +16,8 @@
 #ifndef Eval_Diff_VDF_Face_leaves_included
 #define Eval_Diff_VDF_Face_leaves_included
 
-#include <Eval_Diff_VDF_const.h>
 #include <Eval_Diff_VDF_Face.h>
-#include <Eval_Diff_VDF_var.h>
+#include <Eval_Diff_VDF.h>
 
 /// \cond DO_NOT_DOCUMENT
 class Eval_Diff_VDF_Face_leaves
@@ -36,8 +35,7 @@ class Eval_Diff_VDF_Face_leaves
  *  par les conditions limites.
  *
  */
-class Eval_Diff_VDF_var_Face : public Eval_Diff_VDF_Face<Eval_Diff_VDF_var_Face>,
-  public Eval_Diff_VDF_var
+class Eval_Diff_VDF_var_Face : public Eval_Diff_VDF_Face<Eval_Diff_VDF_var_Face>, public Eval_Diff_VDF
 {
 public:
   static constexpr bool IS_VAR = true;

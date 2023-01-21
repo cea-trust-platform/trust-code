@@ -16,31 +16,21 @@
 #ifndef Eval_Diff_VDF_Elem_leaves_included
 #define Eval_Diff_VDF_Elem_leaves_included
 
-#include <Eval_Diff_VDF_Multi_inco_const.h>
-#include <Eval_Diff_VDF_Multi_inco_var.h>
-#include <Eval_Diff_VDF_var_aniso.h>
-#include <Eval_Diff_VDF_const.h>
 #include <Eval_Diff_VDF_Elem.h>
-#include <Eval_Diff_VDF_var.h>
-
+#include <Eval_Diff_VDF.h>
 
 /// \cond DO_NOT_DOCUMENT
 class Eval_Diff_VDF_Elem_leaves
 {};
 /// \endcond
 
-/*
- * ******************************
- * CAS SCALAIRE - var/aniso
- * ******************************
- */
 /*! @brief class Eval_Diff_VDF_var_Elem_Axi Evaluateur VDF pour la diffusion en coordonnees cylindriques
  *
  *  Le champ diffuse est scalaire (Champ_P0_VDF). Le champ de diffusivite n'est pas constant.
  *
  * @sa Eval_Diff_VDF_var
  */
-class Eval_Diff_VDF_var_Elem_Axi :public Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_Axi>, public Eval_Diff_VDF_var
+class Eval_Diff_VDF_var_Elem_Axi :public Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_Axi>, public Eval_Diff_VDF
 {
 public:
   static constexpr bool IS_AXI = true;
@@ -52,7 +42,7 @@ public:
  *
  * @sa Eval_Diff_VDF_var
  */
-class Eval_Diff_VDF_var_Elem : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem>, public Eval_Diff_VDF_var {};
+class Eval_Diff_VDF_var_Elem : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem>, public Eval_Diff_VDF {};
 
 /*! @brief class Eval_Diff_VDF_var_Elem_aniso Evaluateur VDF pour la diffusion
  *
@@ -60,17 +50,24 @@ class Eval_Diff_VDF_var_Elem : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem>
  *
  * @sa Eval_Diff_VDF_var_aniso
  */
-class Eval_Diff_VDF_var_Elem_aniso : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>, public Eval_Diff_VDF_var_aniso
+class Eval_Diff_VDF_var_Elem_aniso : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>, public Eval_Diff_VDF
 {
 public:
   static constexpr bool IS_ANISO= true;
+  inline void associer(const Champ_base& diffu) override
+  {
+    // ONLY AVAILABLE FOR TRUST : conduction problem
+    // TODO : generalize ME
+    if (diffu.le_nom() == "conductivite" && diffu.nb_comp() != Objet_U::dimension)
+      {
+        Cerr << "Error in Eval_Diff_VDF_var_aniso::associer (anisotropic diffusion VDF operator) !" << finl;
+        Cerr << "Ensure that the dimension of the conductivity field is equal to the dimension of the domain !" << finl;
+        Cerr << "A general conductivity tensor with non-zero cross-corellation terms is not yet supported (switch to VEF) !" << finl;
+        Process::exit();
+      }
+    Eval_Diff_VDF::associer(diffu);
+  }
 };
-
-/*
- * ******************************
- * CAS VECTORIEL - var
- * ******************************
- */
 
 /*! @brief class Eval_Diff_VDF_Multi_inco_var_Elem_Axi Evaluateur VDF pour la diffusion en coordonnees cylindriques
  *
@@ -79,7 +76,7 @@ public:
  *
  * @sa Eval_Diff_VDF_Multi_inco_var
  */
-class Eval_Diff_VDF_Multi_inco_var_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_Multi_inco_var_Elem_Axi>, public Eval_Diff_VDF_Multi_inco_var
+class Eval_Diff_VDF_Multi_inco_var_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_Multi_inco_var_Elem_Axi>, public Eval_Diff_VDF
 {
 public:
   static constexpr bool IS_MULTD = false, IS_AXI = true;
@@ -93,7 +90,7 @@ public:
  *
  * @sa Eval_Diff_VDF_Multi_inco_var
  */
-class Eval_Diff_VDF_Multi_inco_var_Elem : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_Multi_inco_var_Elem>, public Eval_Diff_VDF_Multi_inco_var
+class Eval_Diff_VDF_Multi_inco_var_Elem : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_Multi_inco_var_Elem>, public Eval_Diff_VDF
 {
 public:
   static constexpr bool IS_MULTD = false;
