@@ -54,43 +54,45 @@ class Op_Diff_VDF_Face_Axi : public Op_Diff_VDF_Face_Axi_base
 {
   Declare_instanciable(Op_Diff_VDF_Face_Axi);
 public:
-  inline double nu_(const int i) const override { return diffusivite_->valeurs()(is_var * i); }
-  inline double nu_mean_2_pts_(const int i, const int j) const override { return 0.5*(diffusivite_->valeurs()(is_var * i)+diffusivite_->valeurs()(is_var * j)); }
+  inline double nu_(const int i) const override { return diffusivite_->valeurs()(is_var_ * i); }
+  inline double nu_mean_2_pts_(const int i, const int j) const override { return 0.5 * (diffusivite_->valeurs()(is_var_ * i) + diffusivite_->valeurs()(is_var_ * j)); }
   inline double nu_mean_4_pts_(const int , const int ) const override;
   inline void associer_diffusivite(const Champ_base& diffu) override
   {
     diffusivite_ = diffu;
-    is_var = sub_type(Champ_Uniforme, diffu) ? 0 : 1;
+    is_var_ = sub_type(Champ_Uniforme, diffu) ? 0 : 1;
   }
   inline const Champ_base& diffusivite() const override { return diffusivite_; }
 protected:
   REF(Champ_base) diffusivite_;
-  int is_var = 0;
+  int is_var_ = 0;
 };
 
 inline double Op_Diff_VDF_Face_Axi::nu_mean_4_pts_(const int i, const int j) const
 {
+  if (!is_var_) return nu_(i); // can help here ;)
+
   double db_diffusivite = 0;
   int element, compteur = 0;
 
   if ((element=face_voisins(i,0)) != -1)
     {
-      db_diffusivite += diffusivite_->valeurs()(is_var * element);
+      db_diffusivite += diffusivite_->valeurs()(is_var_ * element);
       compteur++;
     }
   if ((element=face_voisins(i,1)) != -1)
     {
-      db_diffusivite += diffusivite_->valeurs()(is_var * element);
+      db_diffusivite += diffusivite_->valeurs()(is_var_ * element);
       compteur++;
     }
   if ((element=face_voisins(j,0)) != -1)
     {
-      db_diffusivite += diffusivite_->valeurs()(is_var * element);
+      db_diffusivite += diffusivite_->valeurs()(is_var_ * element);
       compteur++;
     }
   if ((element=face_voisins(j,1)) != -1)
     {
-      db_diffusivite += diffusivite_->valeurs()(is_var * element);
+      db_diffusivite += diffusivite_->valeurs()(is_var_ * element);
       compteur++;
     }
   db_diffusivite /= compteur;
