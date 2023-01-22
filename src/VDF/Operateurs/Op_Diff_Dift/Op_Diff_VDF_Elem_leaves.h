@@ -41,6 +41,11 @@ public:
   inline void associer(const Domaine_dis& zd, const Domaine_Cl_dis& zcd, const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_DIFF_ELEM,Eval_Diff_VDF_Elem>(zd,zcd,ch); }
   inline void associer_diffusivite(const Champ_base& ch) override { associer_diffusivite_impl<Eval_Diff_VDF_Elem>(ch); }
   inline const Champ_base& diffusivite() const override { return diffusivite_impl<Eval_Diff_VDF_Elem>(); }
+  inline void completer() override
+  {
+    Op_Diff_VDF_Elem_base::completer();
+    update_diffusivite_impl<Eval_Diff_VDF_Elem>(equation().probleme());
+  }
 };
 
 /*! @brief class Op_Diff_VDF_Elem_Axi Cette classe represente l'operateur de diffusion associe a une equation de transport.
@@ -58,6 +63,11 @@ public:
   inline void associer(const Domaine_dis& zd, const Domaine_Cl_dis& zcd, const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_DIFF_ELEM,Eval_Diff_VDF_Elem_Axi>(zd,zcd,ch); }
   inline void associer_diffusivite(const Champ_base& ch) override { associer_diffusivite_impl<Eval_Diff_VDF_Elem_Axi>(ch); }
   inline const Champ_base& diffusivite() const override { return diffusivite_impl<Eval_Diff_VDF_Elem_Axi>(); }
+  inline void completer() override
+  {
+    Op_Diff_VDF_Elem_base::completer();
+    update_diffusivite_impl<Eval_Diff_VDF_Elem_Axi>(equation().probleme());
+  }
 };
 
 /*! @brief class Op_Diff_VDF_Elem_aniso Cette classe represente l'operateur de diffusion associe a une equation de transport.
@@ -75,6 +85,11 @@ public:
   inline void associer(const Domaine_dis& zd, const Domaine_Cl_dis& zcd, const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_DIFF_ELEM,Eval_Diff_VDF_Elem_aniso>(zd,zcd,ch); }
   inline void associer_diffusivite(const Champ_base& ch) override { associer_diffusivite_impl<Eval_Diff_VDF_Elem_aniso>(ch); }
   inline const Champ_base& diffusivite() const override { return diffusivite_impl<Eval_Diff_VDF_Elem_aniso>(); }
+  inline void completer() override
+  {
+    Op_Diff_VDF_Elem_base::completer();
+    update_diffusivite_impl<Eval_Diff_VDF_Elem_aniso>(equation().probleme());
+  }
 };
 
 /*! @brief class Op_Diff_VDF_Multi_inco_Elem Cette classe represente l'operateur de diffusion associe a une equation de transport.
@@ -92,6 +107,11 @@ public:
   inline void associer(const Domaine_dis& zd, const Domaine_Cl_dis& zcd, const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_DIFF_ELEM,Eval_Diff_VDF_Multi_inco_Elem>(zd,zcd,ch); }
   inline void associer_diffusivite(const Champ_base& ch) override { associer_diffusivite_impl<Eval_Diff_VDF_Multi_inco_Elem>(ch); }
   inline const Champ_base& diffusivite() const override { return diffusivite_impl<Eval_Diff_VDF_Multi_inco_Elem>(); }
+  inline void completer() override
+  {
+    Op_Diff_VDF_Elem_base::completer();
+    update_diffusivite_impl<Eval_Diff_VDF_Multi_inco_Elem>(equation().probleme());
+  }
 };
 
 /*! @brief class Op_Diff_VDF_Multi_inco_Elem_Axi Cette classe represente l'operateur de diffusion associe a une equation de transport.
@@ -109,6 +129,11 @@ public:
   inline void associer(const Domaine_dis& zd, const Domaine_Cl_dis& zcd, const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_DIFF_ELEM,Eval_Diff_VDF_Multi_inco_Elem_Axi>(zd,zcd,ch); }
   inline void associer_diffusivite(const Champ_base& ch) override { associer_diffusivite_impl<Eval_Diff_VDF_Multi_inco_Elem_Axi>(ch); }
   inline const Champ_base& diffusivite() const override { return diffusivite_impl<Eval_Diff_VDF_Multi_inco_Elem_Axi>(); }
+  inline void completer() override
+  {
+    Op_Diff_VDF_Elem_base::completer();
+    update_diffusivite_impl<Eval_Diff_VDF_Multi_inco_Elem_Axi>(equation().probleme());
+  }
 };
 
 #endif /* Op_Diff_VDF_Elem_leaves_included */

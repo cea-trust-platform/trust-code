@@ -41,6 +41,11 @@ public:
   inline void associer_diffusivite(const Champ_base& ch) override { associer_diffusivite_impl<Eval_Diff_VDF_Face>(ch); }
   inline const Champ_base& diffusivite() const override { return diffusivite_impl<Eval_Diff_VDF_Face>(); }
   inline void mettre_a_jour(double ) override { mettre_a_jour_impl<Type_Operateur::Op_DIFF_FACE,Eval_Diff_VDF_Face>(); }
+  inline void completer() override
+  {
+    Op_Diff_VDF_Face_base::completer();
+    update_diffusivite_impl<Eval_Diff_VDF_Face>(equation().probleme());
+  }
 };
 
 /*! @brief class Op_Diff_VDF_Face_Axi Cette classe represente l'operateur de diffusion associe aux equations de quantite de mouvement en coordonnees cylindriques.
