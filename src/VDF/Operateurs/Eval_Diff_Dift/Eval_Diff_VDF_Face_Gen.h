@@ -32,7 +32,7 @@ class Eval_Diff_VDF_Face_Gen : public Eval_VDF_Face, public Evaluateur_VDF
 public:
   // TEST_COEFFS : if true, activate the finite difference evaluation of coeffs to check the implementation
   // ACTIVATE_TAU_TR : if true, activate the calculation of the tau_tr component (should always be activated, use for debug in laminar for example)
-  static constexpr bool IS_TURB = false, TEST_COEFFS = false, ACTIVATE_TAU_TR = true;
+  static constexpr bool IS_TURB = false, IS_ANISO = false, TEST_COEFFS = false, ACTIVATE_TAU_TR = true;
 
   /* ****************************************************************************** *
    * YES, we do magic ! Its all about : Substition Failure Is Not An Error (SFINAE) *
