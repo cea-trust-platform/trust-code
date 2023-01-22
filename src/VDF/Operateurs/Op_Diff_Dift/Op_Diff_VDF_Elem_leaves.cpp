@@ -25,7 +25,7 @@ Sortie& Op_Diff_VDF_Elem_Axi::printOn(Sortie& s ) const { return s << que_suis_j
 Entree& Op_Diff_VDF_Elem_Axi::readOn(Entree& s ) { return s ; }
 Op_Diff_VDF_Elem_Axi::Op_Diff_VDF_Elem_Axi() : Op_Diff_VDF_Elem_base(Iterateur_VDF_Elem<Eval_Diff_VDF_Elem_Axi>()) { }
 
-Implemente_instanciable_sans_constructeur(Op_Diff_VDF_Elem_aniso,"Op_Diff_VDFANISOTROPE_P0_VDF",Op_Diff_VDF_Elem_base);
+Implemente_instanciable_sans_constructeur(Op_Diff_VDF_Elem_aniso,"Op_Diff_VDFANISOTROPE_P0_VDF|Op_Diff_VDFANISO_P0_VDF",Op_Diff_VDF_Elem_base);
 Sortie& Op_Diff_VDF_Elem_aniso::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 Entree& Op_Diff_VDF_Elem_aniso::readOn(Entree& s ) { return s ; }
 Op_Diff_VDF_Elem_aniso::Op_Diff_VDF_Elem_aniso() : Op_Diff_VDF_Elem_base(Iterateur_VDF_Elem<Eval_Diff_VDF_Elem_aniso>()) { }
