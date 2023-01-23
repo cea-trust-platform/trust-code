@@ -341,7 +341,7 @@ inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::secmem_face(const int face, const
     {
       const double h = la_cl.h_imp(face-num1,k), T_ext = la_cl.T_ext(face-num1,k);
       const double phi_ext = la_cl.has_phi_ext() ? la_cl.flux_exterieur_impose(face-num1, k) : 0.;
-      flux[k] = (i != -1) ? (phi_ext+h*T_ext)*surface(face) : (-phi_ext-h*T_ext)*surface(face);
+      flux[k] = ((i != -1) ? 1.0 : -1.0) * (phi_ext + h * T_ext) * surface(face);
     }
 }
 
@@ -360,7 +360,7 @@ inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::secmem_face(const int boundary_in
       for (int k = 0; k < ncomp; k++)
         {
           const int ori = DERIVED_T::IS_ANISO ? orientation(face) : k;
-          const double h_imp = la_cl.h_imp(face-num1,k), T_ext = la_cl.T_ext(face-num1);
+          const double h_imp = la_cl.h_imp(face-num1,k), T_ext = la_cl.T_ext(face-num1, k);
           if (nu_2(i,ori) == 0.0) heq = 0.0;
           else
             {
@@ -375,7 +375,7 @@ inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::secmem_face(const int boundary_in
       for (int k = 0; k < ncomp; k++)
         {
           const int ori = DERIVED_T::IS_ANISO ? orientation(face) : k;
-          const double h_imp = la_cl.h_imp(face-num1,k), T_ext = la_cl.T_ext(face-num1);
+          const double h_imp = la_cl.h_imp(face-num1,k), T_ext = la_cl.T_ext(face-num1, k);
           if (nu_2(j,ori) == 0.0) heq = 0.0;
           else
             {
