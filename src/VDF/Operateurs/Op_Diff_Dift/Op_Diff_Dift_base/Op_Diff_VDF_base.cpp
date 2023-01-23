@@ -140,3 +140,51 @@ void Op_Diff_VDF_base::ajoute_terme_pour_axi(matrices_t matrices, DoubleTab& sec
         }
     }
 }
+
+double Op_Diff_VDF_base::calculer_dt_stab_(const Domaine_VDF& zone_VDF) const
+{
+  // Calcul du pas de temps de stabilite :
+  //
+  //
+  //  - La diffusivite n'est pas uniforme donc:
+  //
+  //     dt_stab = Min (1/(2*diffusivite(elem)*coeff(elem))
+  //
+  //     avec :
+  //            coeff =  1/(dx*dx) + 1/(dy*dy) + 1/(dz*dz)
+  //
+  //            i decrivant l'ensemble des elements du maillage
+  //
+  //  Rq: en hydraulique on cherche le Max sur les elements du maillage
+  //      initial (comme en thermique) et non le Max sur les volumes de Qdm.
+  double dt_stab = DMAXFLOAT;
+  const Champ_base& ch_diffu = has_champ_masse_volumique() ? diffusivite() : diffusivite_pour_pas_de_temps();
+  const DoubleTab& diffu = ch_diffu.valeurs(), *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : nullptr;
+  const bool Cdiffu = sub_type(Champ_Uniforme, ch_diffu);
+
+  // Si la diffusivite est variable, ce doit etre un champ aux elements.
+  assert(Cdiffu || diffu.size() == diffu.line_size() * zone_VDF.nb_elem());
+
+  for (int elem = 0; elem < zone_VDF.nb_elem(); elem++)
+    {
+      double h = 0;
+      for (int d = 0 ; d < dimension; d++)
+        {
+          const double l = zone_VDF.dim_elem(elem, d);
+          h += 1. / (l * l);
+        }
+      for (int n = 0; n < diffu.dimension(1); n++)
+        {
+          double alpha_loc = diffu(Cdiffu ? 0 : elem, n);
+          if (has_champ_masse_volumique())
+            {
+              const DoubleTab& rho = get_champ_masse_volumique().valeurs();
+              alpha_loc/= rho(elem, n);
+            }
+          const double dt_loc = (alp ? (*alp)(elem, n) : 1.0) * 0.5 / ((alpha_loc + DMINFLOAT) * h);
+          if (dt_loc < dt_stab) dt_stab = dt_loc;
+        }
+    }
+
+  return Process::mp_min(dt_stab);
+}

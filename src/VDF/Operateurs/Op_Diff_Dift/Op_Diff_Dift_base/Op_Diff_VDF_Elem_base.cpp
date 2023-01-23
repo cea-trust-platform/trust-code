@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,7 +47,6 @@ double Op_Diff_VDF_Elem_base::calculer_dt_stab() const
   const Domaine_VDF& domaine_VDF = iter->domaine();
   const DoubleTab& diffu = has_champ_masse_volumique() ? diffusivite().valeurs() : diffusivite_pour_pas_de_temps().valeurs();
 
-
   if (sub_type(Champ_Uniforme,diffusivite_pour_pas_de_temps()) && !has_champ_masse_volumique())
     {
       // GF le max permet de traiter le multi_inco
@@ -59,32 +58,10 @@ double Op_Diff_VDF_Elem_base::calculer_dt_stab() const
 
       if (alpha==0) dt_stab = DMAXFLOAT;
       else dt_stab = 0.5/(alpha*coef);
-    }
-  else
-    {
-      double alpha_loc;
-      const int nb_elem = diffu.dimension(0);
-      for (int elem = 0 ; elem < nb_elem; elem++)
-        {
-          double h = 0;
-          for (int i=0 ; i<dimension; i++)
-            {
-              double l = domaine_VDF.dim_elem(elem,i);
-              h += 1./(l*l);
-            }
-          alpha_loc = diffu(elem,0);
-          for (int ncomp=1; ncomp<diffu.dimension(1); ncomp++) alpha_loc = std::max(alpha_loc,diffu(elem,ncomp));
-          if (has_champ_masse_volumique())
-            {
-              const DoubleTab& rho = get_champ_masse_volumique().valeurs();
-              alpha_loc/= rho(elem);
-            }
-          double dt_loc = 0.5/((alpha_loc+DMINFLOAT)*h);
-          if (dt_loc<dt_stab) dt_stab = dt_loc;
-        }
+      return Process::mp_min(dt_stab);
     }
 
-  return Process::mp_min(dt_stab);
+  return Op_Diff_VDF_base::calculer_dt_stab_(domaine_VDF);
 }
 
 void Op_Diff_VDF_Elem_base::contribuer_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, Matrice_Morse& matrice) const

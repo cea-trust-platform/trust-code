@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,12 +24,6 @@
 class Eval_VDF_Face;
 class Champ_Inc;
 
-/*! @brief class Op_Diff_VDF_Face_base Cette classe represente l'operateur de diffusion associe a une equation de la quantite de mouvement.
- *
- *   La discretisation est VDF. Le champ diffuse est un Champ_Face_VDF. Le champ de diffusivite est uniforme
- *   L'iterateur associe est de type Iterateur_VDF_Face. L'evaluateur associe est de type Eval_Diff_VDF_const_Face
- *
- */
 class Op_Diff_VDF_Face_base : public Op_Diff_VDF_base, public Op_VDF_Face
 {
   Declare_base(Op_Diff_VDF_Face_base);
@@ -40,7 +34,6 @@ public:
   }
 
   double calculer_dt_stab() const override;
-  double calculer_dt_stab(const Domaine_VDF&) const;
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
   inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { Op_VDF_Face::modifier_pour_Cl(iter->domaine(), iter->domaine_Cl(), matrice, secmem); }

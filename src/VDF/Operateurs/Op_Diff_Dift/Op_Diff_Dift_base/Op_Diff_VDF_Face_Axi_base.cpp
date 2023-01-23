@@ -42,7 +42,7 @@ void Op_Diff_VDF_Face_Axi_base::associer(const Domaine_dis& domaine_dis, const D
 
 double Op_Diff_VDF_Face_Axi_base::calculer_dt_stab() const
 {
-  return Op_Diff_VDF_Face_base::calculer_dt_stab(le_dom_vdf.valeur()) ;
+  return Op_Diff_VDF_base::calculer_dt_stab_(le_dom_vdf.valeur()) ;
 }
 
 void Op_Diff_VDF_Face_Axi_base::ajouter_elem(const DoubleTab& inco, DoubleTab& resu) const

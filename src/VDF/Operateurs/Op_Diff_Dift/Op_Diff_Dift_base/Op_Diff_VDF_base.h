@@ -45,6 +45,7 @@ public:
   void check_multiphase_compatibility() const override { }
 
 protected:
+  double calculer_dt_stab_(const Domaine_VDF& zone_VDF) const;
   void ajoute_terme_pour_axi(matrices_t , DoubleTab& , const tabs_t& ) const;
 
   Iterateur_VDF iter;
