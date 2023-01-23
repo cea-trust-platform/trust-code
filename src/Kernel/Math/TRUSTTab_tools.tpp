@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,11 +16,14 @@
 #ifndef TRUSTTab_tools_TPP_included
 #define TRUSTTab_tools_TPP_included
 
+#include <limits>
+
 inline void local_carre_norme_tab(const TRUSTTab<int>& , TRUSTArray<int>& ) = delete;
 
 template <typename _T_>
 inline void local_carre_norme_tab(const TRUSTTab<_T_>& tableau, TRUSTArray<_T_>& norme_colonne)
 {
+  norme_colonne = 0.;
   const TRUSTArray<int>& blocs = tableau.get_md_vector().valeur().get_items_to_sum();
   const int nblocs = blocs.size_array() >> 1;
   const TRUSTVect<_T_>& vect = tableau;
@@ -64,6 +67,7 @@ inline void local_max_abs_tab(const TRUSTTab<int>& , TRUSTArray<int>& ) = delete
 template <typename _T_>
 inline void local_max_abs_tab(const TRUSTTab<_T_>& tableau, TRUSTArray<_T_>& max_colonne)
 {
+  max_colonne = std::numeric_limits<_T_>::min();
   const TRUSTArray<int>& blocs = tableau.get_md_vector().valeur().get_items_to_compute();
   const int nblocs = blocs.size_array() >> 1;
   const TRUSTVect<_T_>& vect = tableau;
