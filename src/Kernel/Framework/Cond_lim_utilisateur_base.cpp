@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -67,34 +67,11 @@ void Cond_lim_utilisateur_base::complement(Nom& ajout)
   Cerr<<"Cond_lim_utilisateur_base::complement(Nom& toto) does nothing"<<finl;
 }
 
-int Cond_lim_utilisateur_base::is_pb_VDF()
+int Cond_lim_utilisateur_base::is_pb(std::string dis)
 {
   const Discretisation_base& discr=mon_equation->discretisation();
   Nom nom_discr=discr.que_suis_je();
-  if  (nom_discr=="VDF")
-    return 1;
-  else
-    return 0;
-}
-
-int Cond_lim_utilisateur_base::is_pb_PolyMAC()
-{
-  const Discretisation_base& discr=mon_equation->discretisation();
-  Nom nom_discr=discr.que_suis_je();
-  if (nom_discr=="PolyMAC")
-    return 1;
-  else
-    return 0;
-}
-
-int Cond_lim_utilisateur_base::is_pb_PolyMAC_P0()
-{
-  const Discretisation_base& discr=mon_equation->discretisation();
-  Nom nom_discr=discr.que_suis_je();
-  if (nom_discr=="PolyMAC_P0")
-    return 1;
-  else
-    return 0;
+  return int(nom_discr == dis);
 }
 
 int Cond_lim_utilisateur_base::is_pb_VEF()
@@ -256,9 +233,12 @@ void cl_timp::complement(Nom& ajout)
       ajout = "paroi_echange_externe_impose";
       if (rayo)
         ajout += Nrayo;
-      Nom cl(" h_imp champ_front_uniforme 1 1e10 t_ext");
+      Nom cl(" h_imp champ_front_uniforme ");
+      const int N = mon_equation->inconnue().valeurs().dimension(1);
+      cl += N;
+      for (int n = 0; n < N; n++) cl += " 1e10";
+      cl += " t_ext";
       ajout += cl;
-      //exit();
     }
   else
     {
