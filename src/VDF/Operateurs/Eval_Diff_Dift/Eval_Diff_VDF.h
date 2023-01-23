@@ -36,10 +36,14 @@ public:
     return ref_diffusivite_.valeur();
   }
 
-  inline virtual void update_diffusivite(const Probleme_base& pb) final
+  inline virtual void associer_pb(const Probleme_base& pb) final
   {
     ref_probleme_ = pb;
+    update_diffusivite();
+  }
 
+  inline virtual void update_diffusivite() final
+  {
     // Pour Pb_multiphase, tab_diffusivite_ = alpha * Mu ou alpha * D
     if (sub_type(Pb_Multiphase, ref_probleme_.valeur()))
       {
@@ -62,18 +66,7 @@ public:
   virtual void mettre_a_jour() // surcharger pour Multi-incos ...
   {
     ref_diffusivite_->valeurs().echange_espace_virtuel();
-
-    // Pour Pb_multiphase, tab_diffusivite_ = alpha * Mu ou alpha * D
-    if (sub_type(Pb_Multiphase, ref_probleme_.valeur()))
-      {
-        tab_alpha_.ref(ref_cast(Pb_Multiphase, ref_probleme_.valeur()).eq_masse.inconnue().passe());
-        tab_diffusivite_ = tab_alpha_;
-        for (int e = 0; e < tab_diffusivite_.dimension(0); e++)
-          for (int n = 0; n < tab_diffusivite_.dimension(1); n++)
-            tab_diffusivite_(e, n) = std::max(tab_alpha_(e, n), 1e-8) * ref_diffusivite_->valeurs()(is_var_ * e, n);
-      }
-    else
-      tab_diffusivite_.ref(ref_diffusivite_->valeurs());
+    update_diffusivite();
   }
 
   // Methods used by the flux computation in template class:

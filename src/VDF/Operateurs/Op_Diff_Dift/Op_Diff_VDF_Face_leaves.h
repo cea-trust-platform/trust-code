@@ -44,7 +44,7 @@ public:
   inline void completer() override
   {
     Op_Diff_VDF_Face_base::completer();
-    update_diffusivite_impl<Eval_Diff_VDF_Face>(equation().probleme());
+    associer_pb<Eval_Diff_VDF_Face>(equation().probleme());
   }
 };
 

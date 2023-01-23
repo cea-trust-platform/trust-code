@@ -42,7 +42,7 @@ public:
   inline void completer() override
   {
     completer_impl<Type_Operateur::Op_DIFT_FACE, Eval_Dift_VDF_Face>();
-    update_diffusivite_impl<Eval_Dift_VDF_Face>(equation().probleme());
+    associer_pb<Eval_Dift_VDF_Face>(equation().probleme());
   }
 };
 

@@ -55,10 +55,10 @@ protected:
   }
 
   template <typename EVAL_TYPE>
-  void update_diffusivite_impl(const Probleme_base& pb)
+  void associer_pb(const Probleme_base& pb)
   {
     EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&>(iter_()->evaluateur());
-    eval_diff_turb.update_diffusivite(pb);
+    eval_diff_turb.associer_pb(pb);
   }
 
   template <typename EVAL_TYPE>

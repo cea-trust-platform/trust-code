@@ -44,7 +44,7 @@ public:
   inline void completer() override
   {
     completer_impl<Type_Operateur::Op_DIFT_ELEM, Eval_Dift_VDF_Elem>();
-    update_diffusivite_impl<Eval_Dift_VDF_Elem>(equation().probleme());
+    associer_pb<Eval_Dift_VDF_Elem>(equation().probleme());
   }
 };
 
@@ -65,7 +65,7 @@ public:
   inline void completer() override
   {
     completer_impl<Type_Operateur::Op_DIFT_ELEM, Eval_Dift_VDF_Elem_Axi>();
-    update_diffusivite_impl<Eval_Dift_VDF_Elem_Axi>(equation().probleme());
+    associer_pb<Eval_Dift_VDF_Elem_Axi>(equation().probleme());
   }
 };
 
@@ -93,7 +93,7 @@ public:
   inline void completer() override
   {
     completer_impl<Type_Operateur::Op_DIFT_ELEM, Eval_Dift_VDF_Multi_inco_Elem>();
-    update_diffusivite_impl<Eval_Dift_VDF_Multi_inco_Elem>(equation().probleme());
+    associer_pb<Eval_Dift_VDF_Multi_inco_Elem>(equation().probleme());
   }
 };
 
@@ -122,7 +122,7 @@ public:
   inline void completer() override
   {
     completer_impl<Type_Operateur::Op_DIFT_ELEM, Eval_Dift_VDF_Multi_inco_Elem_Axi>();
-    update_diffusivite_impl<Eval_Dift_VDF_Multi_inco_Elem_Axi>(equation().probleme());
+    associer_pb<Eval_Dift_VDF_Multi_inco_Elem_Axi>(equation().probleme());
   }
 };
 
