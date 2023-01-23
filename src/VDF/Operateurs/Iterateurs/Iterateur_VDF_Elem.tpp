@@ -152,7 +152,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_interne(const int N, matrices_t m
         }
     }
 
-  Matrice_Morse *m_vit = mats.count("vitesse") ? mats.at("vitesse") : nullptr, *mat = (!is_pb_multiphase() && mats.count(nom_ch_inco_)) ? mats.at(nom_ch_inco_) : nullptr;
+  Matrice_Morse *m_vit = (mats.count("vitesse") && is_convective_op()) ? mats.at("vitesse") : nullptr, *mat = (!is_pb_multiphase() && mats.count(nom_ch_inco_)) ? mats.at(nom_ch_inco_) : nullptr;
   VectorDeriv d_cc;
   fill_derivee_cc(mats, semi_impl, d_cc);
 
@@ -195,7 +195,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const BC& cl, const int nd
           fill_flux_tables_(face, N, 1.0 /* coeff */, flux, resu);
         }
 
-      Matrice_Morse *m_vit = mats.count("vitesse") ? mats.at("vitesse") : nullptr, *mat = (!is_pb_multiphase() && mats.count(nom_ch_inco_)) ? mats.at(nom_ch_inco_) : nullptr;
+      Matrice_Morse *m_vit = (mats.count("vitesse") && is_convective_op()) ? mats.at("vitesse") : nullptr, *mat = (!is_pb_multiphase() && mats.count(nom_ch_inco_)) ? mats.at(nom_ch_inco_) : nullptr;
       VectorDeriv d_cc;
       fill_derivee_cc(mats, semi_impl, d_cc);
 
@@ -303,7 +303,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Echange_externe_impo
           fill_flux_tables_(face, N, 1.0 /* coeff */, flux, resu);
         }
 
-      Matrice_Morse *m_vit = mats.count("vitesse") ? mats.at("vitesse") : nullptr, *mat = (!is_pb_multiphase() && mats.count(nom_ch_inco_)) ? mats.at(nom_ch_inco_) : nullptr;
+      Matrice_Morse *m_vit = (mats.count("vitesse") && is_convective_op()) ? mats.at("vitesse") : nullptr, *mat = (!is_pb_multiphase() && mats.count(nom_ch_inco_)) ? mats.at(nom_ch_inco_) : nullptr;
       VectorDeriv d_cc;
       fill_derivee_cc(mats, semi_impl, d_cc);
 
