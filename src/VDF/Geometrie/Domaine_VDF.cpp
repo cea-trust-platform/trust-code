@@ -600,69 +600,28 @@ void Domaine_VDF::genere_aretes()
  */
 void Domaine_VDF::calcul_h()
 {
-  // Calcul de h_x_ , h_y_ et h_z_:
-
   Domaine& domaine_geom=domaine();
-  int nb_poly = domaine_geom.nb_elem();
-
-  double deux_pi = M_PI*2.0;
   IntVect numfa(domaine_geom.nb_faces_elem());
+  const double deux_pi = M_PI * 2.0;
+  const int D = dimension;
 
-  if (axi)
-    if (dimension == 2)
-      {
-        double d_teta;
-        for (int num_poly=0; num_poly<nb_poly; num_poly++)
-          {
-            for (int j=0; j<domaine_geom.nb_faces_elem(); j++)
-              numfa[j] = elem_faces(num_poly,j);
-            h_x_ = std::min(h_x_,xv_(numfa[2],0) - xv_(numfa[0],0));
-            d_teta = xv_(numfa[3],1) - xv_(numfa[1],1);
-            if (d_teta < 0)
-              d_teta += deux_pi;
-            h_y_ = std::min(h_y_,d_teta*xv_(numfa[1],0));
-          }
-      }
-    else
-      {
-        double d_teta;
-        for (int num_poly=0; num_poly<nb_poly; num_poly++)
-          {
-            for (int j=0; j<domaine_geom.nb_faces_elem(); j++)
-              numfa[j] = elem_faces(num_poly,j);
-            h_x_ = std::min(h_x_,xv_(numfa[3],0) - xv_(numfa[0],0));
-            d_teta = xv_(numfa[4],1) - xv_(numfa[1],1);
-            if (d_teta < 0)
-              d_teta += deux_pi;
-            h_y_ = std::min(h_y_,d_teta*xv_(numfa[1],0));
-            h_z_ = std::min(h_z_,xv_(numfa[5],2) - xv_(numfa[2],2));
-          }
-      }
-  else
+  for (int e = 0; e < domaine_geom.nb_elem(); e++)
     {
-      if (dimension == 2)
+      for (int j = 0; j < domaine_geom.nb_faces_elem(); j++)
+        numfa[j] = elem_faces(e, j);
+
+      h_x_ = std::min(h_x_, xv_(numfa[D], 0) - xv_(numfa[0], 0));
+      double hy_loc;
+      if (axi)
         {
-          for (int num_poly=0; num_poly<nb_poly; num_poly++)
-            {
-              for (int j=0; j<domaine_geom.nb_faces_elem(); j++)
-                numfa[j] = elem_faces(num_poly,j);
-              h_x_ = std::min(h_x_,xv_(numfa[2],0) - xv_(numfa[0],0));
-              h_y_ = std::min(h_y_,xv_(numfa[3],1) - xv_(numfa[1],1));
-            }
+          double d_teta = xv_(numfa[D + 1], 1) - xv_(numfa[1], 1);
+          if (d_teta < 0) d_teta += deux_pi;
+          hy_loc = d_teta * xv_(numfa[1], 0);
         }
-      else
-        {
-          for (int num_poly=0; num_poly<nb_poly; num_poly++)
-            {
-              for (int j=0; j<domaine_geom.nb_faces_elem(); j++)
-                numfa[j] = elem_faces(num_poly,j);
-              h_x_ = std::min(h_x_,xv_(numfa[3],0) - xv_(numfa[0],0));
-              h_y_ = std::min(h_y_,xv_(numfa[4],1) - xv_(numfa[1],1));
-              h_z_ = std::min(h_z_,xv_(numfa[5],2) - xv_(numfa[2],2));
-            }
-        }
+      else hy_loc = xv_(numfa[D + 1], 1) - xv_(numfa[1], 1);
+      h_y_ = std::min(h_y_, hy_loc);
+      if (dimension == 3) h_z_ = std::min(h_z_, xv_(numfa[5], 2) - xv_(numfa[2], 2));
     }
-  // On prend le minimum de chaque processeur
   h_x_ = mp_min(h_x_);
   h_y_ = mp_min(h_y_);
   h_z_ = mp_min(h_z_);
