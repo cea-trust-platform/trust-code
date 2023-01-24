@@ -31,10 +31,10 @@ Entree& Trianguler_fin::readOn(Entree& is) { return Interprete::readOn(is); }
  */
 void Trianguler_fin::trianguler(Zone& dom) const
 {
-  const DoubleTab &xs = dom.coord_sommets();
-  IntTab &les_elems = dom.les_elems();
+  const DoubleTab& xs = dom.coord_sommets();
+  IntTab& les_elems = dom.les_elems();
   int oldsz = les_elems.dimension(0);
-  DoubleTab &sommets = dom.les_sommets();
+  DoubleTab& sommets = dom.les_sommets();
   int nbs = sommets.dimension(0);
 
   {

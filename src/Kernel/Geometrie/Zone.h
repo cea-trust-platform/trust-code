@@ -28,9 +28,8 @@
 #include <Joints.h>
 #include <Bords.h>
 #include <Noms.h>
-#include <List_Ref_Zone.h>
-#include <List_Ref_Sous_Zone.h>
 #include <Ref_Zone.h>
+#include <Ref_Sous_Zone.h>
 
 #include <medcoupling++.h>
 #ifdef MEDCOUPLING_

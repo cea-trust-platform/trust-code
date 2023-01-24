@@ -31,9 +31,9 @@ Entree& Tetraedriser_par_prisme::readOn(Entree& is) { return Interprete::readOn(
  */
 static void decoupe(Zone& dom, Faces& faces)
 {
-  const DoubleTab &coord = dom.coord_sommets();
+  const DoubleTab& coord = dom.coord_sommets();
 
-  IntTab &sommets = faces.les_sommets();
+  IntTab& sommets = faces.les_sommets();
   int nb_faces = sommets.dimension(0);
   assert(sommets.dimension(1) == 4);
   IntTab nouveaux(2 * nb_faces, 3);
