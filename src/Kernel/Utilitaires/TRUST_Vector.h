@@ -171,11 +171,21 @@ public:
 
   // XXX : Elie Saikali
   // Attention : it is so important to implement dimensionner and dimensionner_force as this otherwise issue with the standard = operator.
-  // A pre-initialised sgared ptr is required in each zone memory of the sized vector.
+  // A pre-initialised shared ptr is required in each zone memory of the sized vector.
   void dimensionner(int i)
   {
+    const int old_size = (int)z_vect_.size();
+    if (old_size == i) return;
+
+    if (old_size != 0)
+      {
+        Cerr << "WARNING : dimensionner method of a TRUST_Vector" << finl;
+        Cerr << "Old vector size : " << old_size << finl;
+        Cerr << "New vector size : " << i << finl;
+      }
+
     z_vect_.resize(i);
-    for (auto& itr : z_vect_) itr = std::make_shared<_CLASSE_>();
+    for (int j = old_size; j < i; j++) z_vect_[j] = std::make_shared<_CLASSE_>();
   }
 
   void dimensionner_force(int i)
