@@ -233,7 +233,7 @@ public:
     Nom nom(ch);
     for (auto& itr : list_)
       if (itr.le_nom() == nom) return 1;
-    return -1;
+    return 0;
   }
 
   int contient(const Objet_U& obj) const
