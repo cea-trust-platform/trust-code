@@ -1,6 +1,9 @@
 -------------------------------------------------------------
 Developer notes version 1.9.2_beta : Changes since version 1.9.1 :
 -------------------------------------------------------------
+24/01/23 (TRUST) Major change : TRUST_Deriv is a template class now. No need for macros to declare/implement. Used always with the DERIV macro.
+24/01/23 (TRUST) Major change : TRUST_List is a template class that encapsulates an std::list. No need for macros to declare/implement. Used always with the LIST macro.
+24/01/23 (TRUST) Major change : TRUST_Vector is a template class that encapsulates an std::vector of shared_ptr. No need for macros to declare/implement. Used always with the VECT macro.
 03/01/23 (TRUST) Parser_Eval : Huge refactoring !
 03/01/23 (TRUST) Rename classes : Champ_Face => Champ_Face_VDF, Champ_Fonc_Face => Champ_Fonc_Face_VDF, Champ_Face_implementation => Champ_Face_VDF_implementation
 -------------------------------------------------------------
