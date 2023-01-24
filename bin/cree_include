@@ -21,6 +21,11 @@ do
 echo "#error File $file deprecated in TRUST 1.9.1. You SHOULD change the include. See TRUST_ROOT/DEVELOPER_NOTES for more information" > backward/$file
 done
 
+# Ajout des fichiers deprecated by TRUST 1.9.2:
+for file in Deriv_.h O_U_Ptr.h MacDeriv.h List.h MacList.h Vect_MD_Vector.h Vect_impl.h MacVect.h 
+do
+echo "#error File $file deprecated in TRUST 1.9.2. You SHOULD change the include. See TRUST_ROOT/DEVELOPER_NOTES for more information" > backward/$file
+done
 
 # Ouverture de $INC
 echo "s?$MPI_INCLUDE/mpi\.h?\$(MPI_INCLUDE)/mpi\.h?g">.tmp
