@@ -57,7 +57,7 @@ class TRUST_Vector: public Objet_U
     value_type& operator*() { return *it_->get(); }
     value_type* operator->() { return it_->get(); }
     IteratorWrapper& operator++() { ++it_; return *this; }
-    IteratorWrapper operator++(int) { return IteratorWrapper(it_++); }
+    IteratorWrapper operator++(True_int) { return IteratorWrapper(it_++); }
     bool operator==(const IteratorWrapper& other) const { return it_ == other.it_; }
     bool operator!=(const IteratorWrapper& other) const { return it_ != other.it_; }
 
@@ -72,7 +72,7 @@ class TRUST_Vector: public Objet_U
     const value_type& operator*() const { return *it_->get(); }
     const value_type* operator->() const { return it_->get(); }
     ConstIteratorWrapper& operator++() { ++it_; return *this; }
-    ConstIteratorWrapper operator++(int) { return ConstIteratorWrapper(it_++); }
+    ConstIteratorWrapper operator++(True_int) { return ConstIteratorWrapper(it_++); }
     bool operator==(const ConstIteratorWrapper& other) const { return it_ == other.it_; }
     bool operator!=(const ConstIteratorWrapper& other) const { return it_ != other.it_; }
 
