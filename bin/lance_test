@@ -851,14 +851,14 @@ then
 	fi
 	REP=`dirname $file`
 	# Discard test case with OpenMP #
-  if [ "`grep -i "# OPENMP NOT #" $file 2>/dev/null`" != "" ]
+	if [ "$TRUST_USE_OPENMP" = 1 ] && [ "`grep -i "# OPENMP NOT #" $file 2>/dev/null`" != "" ]
 	then
-     echo "Test $i skipped (Not supported with OpenMP)"
+	   echo "Test $i skipped (Not supported with OpenMP)"
 	   liste_skipped=$liste_skipped" $i"
 	   i=""
-  fi
+	fi
 	# Discard test case from Valgrind #
-  if [ "$VALGRIND" = 1 ]
+	if [ "$VALGRIND" = 1 ]
 	then
 	   if [ "`grep -i "# VALGRIND NOT #" $file 2>/dev/null`" != "" ]
            then

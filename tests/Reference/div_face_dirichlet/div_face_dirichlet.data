@@ -129,14 +129,6 @@ Read pb
             }
         }
         first_post {
-            Probes
-            {
-                sonde_pression pression periode 0.01 points 1 0.0045 0.0045
-                sonde_vitesse vitesse periode 0.01 segment 10 0.0005 0.005 0.0095 0.005
-                sonde_vit vitesse periode 0.01 segment 11 0.0005 0. 0.0005 0.01
-                sonde_temp temperature periode 0.01 segment 21 0. 0.0055 0.01 0.0055
-
-            }
             fichier div_face_dirichlet
             Definition_champs
             {
@@ -199,6 +191,10 @@ Read pb
             }
             Probes
             {
+                sonde_pression pression periode 0.01 points 1 0.0045 0.0045
+                sonde_vitesse vitesse periode 0.01 segment 10 0.0005 0.005 0.0095 0.005
+                sonde_vit vitesse periode 0.01 segment 11 0.0005 0. 0.0005 0.01
+                sonde_temp temperature periode 0.01 segment 21 0. 0.0055 0.01 0.0055
                 moyt  chsom Moyenne_temperature   periode 1e-5 pointS 1 5e-3 5e-3
             }
             fields dt_post 0.01
@@ -328,6 +324,7 @@ Read pb
 
             }
 
+            domaine front
             Probes
             {
                 debit_gauche debit_sum periode 0.0001 numero_elem_sur_maitre 0
@@ -339,7 +336,6 @@ Read pb
                 convT_gauche convT_sum periode 0.0001 numero_elem_sur_maitre 0
             }
 
-            domaine front
             format lata
             fields dt_post 0.1
             {
