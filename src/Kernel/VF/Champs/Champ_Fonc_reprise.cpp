@@ -316,7 +316,7 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
 
   if (reprend_champ_moyen)
     {
-      double tdeb,tfin;
+      double tdeb = -1,tfin=-1;
       int n; // Nombre d'operateurs statistiques
       if (format_rep != "single_hdf")
         {
