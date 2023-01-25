@@ -97,7 +97,6 @@ void Op_Diff_VDF_base::ajoute_terme_pour_axi(matrices_t matrices, DoubleTab& sec
           const IntTab& face_voisins = zvdf.face_voisins();
           const DoubleVect& volumes_entrelaces = zvdf.volumes_entrelaces();
           int face, nb_faces = zvdf.nb_faces();      //, cst;
-          DoubleTrav diffu_tot(zvdf.nb_elem_tot());
           double db_diffusivite;
           Nom nom_eq = equation().que_suis_je();
           if ((nom_eq == "Navier_Stokes_standard") || (nom_eq == "Navier_Stokes_QC") || (nom_eq == "Navier_Stokes_FT_Disc") || (nom_eq == "QDM_Multiphase"))
@@ -106,25 +105,28 @@ void Op_Diff_VDF_base::ajoute_terme_pour_axi(matrices_t matrices, DoubleTab& sec
               const Champ_base& ch_diff = eval.get_diffusivite();
               const DoubleTab& tab_diffusivite = ch_diff.valeurs();
 
+              const int N = tab_diffusivite.dimension(1);
+              DoubleTrav diffu_tot(zvdf.nb_elem_tot(), N);
               if (tab_diffusivite.size() == 1) diffu_tot = tab_diffusivite(0, 0);
               else diffu_tot = tab_diffusivite;
 
               for (face = 0; face < nb_faces; face++)
-                if (ori(face) == 0)
-                  {
-                    const int elem1 = face_voisins(face, 0), elem2 = face_voisins(face, 1);
+                for (int n = 0; n < N; n++)
+                  if (ori(face) == 0)
+                    {
+                      const int elem1 = face_voisins(face, 0), elem2 = face_voisins(face, 1);
 
-                    if (elem1 == -1) db_diffusivite = diffu_tot(elem2);
-                    else if (elem2 == -1) db_diffusivite = diffu_tot(elem1);
-                    else db_diffusivite = 0.5 * (diffu_tot(elem2) + diffu_tot(elem1));
+                      if (elem1 == -1) db_diffusivite = diffu_tot(elem2, n);
+                      else if (elem2 == -1) db_diffusivite = diffu_tot(elem1, n);
+                      else db_diffusivite = 0.5 * (diffu_tot(elem2, n) + diffu_tot(elem1, n));
 
-                    double r = xv(face, 0);
-                    if (r >= 1.e-24)
-                      {
-                        if (mat) (*mat)(face, face) += db_diffusivite * volumes_entrelaces(face) / (r * r);
-                        secmem(face) -= inco(face) * db_diffusivite * volumes_entrelaces(face) / (r * r);
-                      }
-                  }
+                      double r = xv(face, 0);
+                      if (r >= 1.e-24)
+                        {
+                          if (mat) (*mat)(N * face + n, N * face + n) += db_diffusivite * volumes_entrelaces(face) / (r * r);
+                          secmem(face, n) -= inco(face, n) * db_diffusivite * volumes_entrelaces(face) / (r * r);
+                        }
+                    }
             }
           else if (equation().que_suis_je() == "Navier_Stokes_Interface_avec_trans_masse" || equation().que_suis_je() == "Navier_Stokes_Interface_sans_trans_masse"
                    || equation().que_suis_je() == "Navier_Stokes_Front_Tracking" || equation().que_suis_je() == "Navier_Stokes_Front_Tracking_BMOL" /* c'est quoi ce truc ???? un truc de 1900 ? */)
