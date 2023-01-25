@@ -108,7 +108,7 @@ void Operateur_base::completer()
         noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getSuffix(eqn.inconnue().le_nom());
         w_suffix = std::max(w_suffix, noms_compo_courts[i].longueur());
       }
-  col_width_ += w_suffix;
+  col_width_ += w_suffix + 1;
 }
 
 void Operateur_base::associer_champ(const Champ_Inc& ch, const std::string& nom_ch)
