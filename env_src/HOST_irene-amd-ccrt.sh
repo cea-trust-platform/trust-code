@@ -27,8 +27,17 @@ define_modules_config()
    # Load modules
    if [ "$TRUST_USE_CUDA" = 1 ]
    then
-      cuda_version=10.2.89
-      module="gnu/8.3.0 mpi/openmpi/4.0.2 cuda/$cuda_version"
+      if [ "$TRUST_USE_OPENMP" = 1 ]
+      then
+         # No tested yet, we use Intel compiler for lib/tools:
+         export TRUST_CC_BASE_EXTP=icpc
+         export TRUST_cc_BASE_EXTP=icc
+         export TRUST_F77_BASE_EXTP=ifort
+         module="mpi/openmpi/4.0.2 cuda/11.2 nvhpc/21.2 cmake/3.22.2" # Marche au configure mais apres ?
+         #module="gnu/11.2.0 mpi/openmpi/4.1.4 nvhpc/22.2" # Pb c'est Cuda 11.6...
+      else
+         module="gnu/8.3.0 mpi/openmpi/4.0.2 cuda/10.2.89" # Ok, it works
+      fi
    else
       # module="intel/19.0.5.281 mpi/intelmpi/2019.0.5.281" # Desactive car performances meilleures sur grands nombre de procs avec OpenMPI vs IntelMPI 
       # module="intel/19.0.5.281 mpi/openmpi/4.0.2 feature/openmpi/io/collective_buffering" # openmpi/io/collective_buffering recommendation CCRT pour IO paralleles

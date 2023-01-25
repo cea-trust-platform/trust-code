@@ -270,10 +270,10 @@ public:
   inline virtual void resize_tab(int n, Array_base::Resize_Options opt = COPY_INIT);
 
   // Host/Device methods:
-  inline dataLocation get_dataLocation() { return p_==NULL ? HostOnly : p_->get_dataLocation(); }
-  inline dataLocation get_dataLocation() const { return p_==NULL ? HostOnly : p_->get_dataLocation(); }
-  inline void set_dataLocation(dataLocation flag) { if (p_!=NULL) p_->set_dataLocation(flag); }
-  inline void set_dataLocation(dataLocation flag) const { if (p_!=NULL) p_->set_dataLocation(flag); }
+  inline DataLocation get_dataLocation() { return p_==NULL ? HostOnly : p_->get_dataLocation(); }
+  inline DataLocation get_dataLocation() const { return p_==NULL ? HostOnly : p_->get_dataLocation(); }
+  inline void set_dataLocation(DataLocation flag) { if (p_!=NULL) p_->set_dataLocation(flag); }
+  inline void set_dataLocation(DataLocation flag) const { if (p_!=NULL) p_->set_dataLocation(flag); }
   inline void checkDataOnHost() { checkDataOnHost(*this); }
   inline void checkDataOnHost() const { checkDataOnHost(*this); }
 

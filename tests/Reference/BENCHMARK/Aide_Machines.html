@@ -29,8 +29,9 @@ Soit environ 1000 octets/maille (Resolution avec gradient conjugue).
 Comparaison temps calcul (donne par la balise clock: Total execution) sur test gpu_3D (125000 mailles):
 -------------------------------------------------------------------------------------------------------
 Arch  Model     GPU/Cuda/Mem   		   SP/DP/BW      1MPI+1GPU	Machine                 (Compiler version) 	   2MPI+1GPU 2GPU 	TestCase version Processor PhysicalCores@freq 	1MPI (Petsc)
-Linux x86_64 	4*A100/11.2/320Go	19.5/9.7/2039		10.5s	topaze.ccc.cea.fr	(g++ 8.3.0, OpenMPI 4.0.5)	 7.8 12.0 	gpu_3D   v1.8.3	AMD Epyc 7763 	2*64@1.5-3.5Ghz
-Linux x86_64    2*A5000/11.2/48Go    	27.8/0.87/768		13.6s   petra.intra.cea.fr      (g++ 9.4.0, MPICH 3.2)          11.2 14.0	gpu_3D   v1.9.1 Xeon Gold 622R  2*16@2.9-?.?Ghz 125.2s 
+Linux x86_64 	4*A100/11.2/320Go   19.5/9.7/2039		10.5s	topaze.ccc.cea.fr	(g++ 8.3.0, OpenMPI 4.0.5)	 7.8 12.0 	gpu_3D   v1.8.3	AMD Epyc 7763 	2*64@1.5-3.5Ghz
+Linux x86_64    2*A5000/11.2/48Go   27.8/0.87/768		13.6s   petra.intra.cea.fr      (g++ 9.4.0, MPICH 3.2)          11.2 14.0	gpu_3D   v1.9.1 Xeon Gold 622R  2*16@2.9-?.?Ghz 125.2s
+Linux x86_64    1*A6000/11.4/48Go   38.7/1.2/768		13.8s	is157091.intra.cea.fr	(g++ 11.0.1, MPICH 3.2)		11.4		gpu_3D   v1.9.2 Ryzen 5975WX 	1*32@3.6-4.5Ghz ?.?s
 Linux x86_64	4*V100/10.2/64Go				14.4s	jean-zay1.idris.fr 	(g++ 8.3.1, OpenMPI 4.0.2-cuda) 11.2 14.1 	gpu_3D   v1.8.3 Xeon Gold 6248 	2*20@2.5-3.9Ghz        # GPU direct non active 
 Linux x86_64	4*A100/11.2/160Go				15.0s	jean-zay1.idris.fr 	(g++ 8.3.1, OpenMPI 4.0.5-cuda) 16.6 23.2 	gpu_3D   v1.8.3 Xeon Gold 6240 	2*24@2.4-4.0Ghz	???.?s # A100 Tres decevant sur JeanZay
 Linux x86_64	4*V100/11.2/64Go				16.5s	jean-zay1.idris.fr 	(g++ 8.3.1, OpenMPI 4.0.5-cuda) ??.? ??.? 	gpu_3D   v1.8.3 Xeon Gold 6248 	2*20@2.5-3.9Ghz	159.8s # Moins bien avec Cuda 11?
@@ -46,7 +47,8 @@ Comparaison temps calcul (donne par la balise clock: Total execution) sur test c
 Arch  Model  PhysicalCores@frequency	 RAM:Cache  	Processor Model CPU	Machine			(Compiler version) 	SpeedUp(n=2) 	TestCase version Passmark
 Linux x86_64 	1*16@3.2-5.2Ghz		    :30Mo	Xeon i9-12900K	0.9s	?			(g++ 11.2.1)				cpu_3D   v1.8.5	 4210
 Linux x86_64 	 1*8@2.6-5.0Ghz  	    :24Mo	Xeon i9-11950H  1.2s	?			(g++ 11.2.1)				cpu_3D   v1.8.5	 3254
-Darwin          1*10@3.2Ghz                     M1 Max		    1.4s	mac portable							cpu_3D	 v1.9.1	 3851
+Linux x86_64	1*32@3.6-4.5Ghz		    :128Mo	Ryzen 5975WX    1.3s    is157091.intra.cea.fr	(g++ 11.0.1)			1.77	cpu_3D	 v1.9.2  3337
+Darwin          1*10@3.2Ghz                      	M1 Max		1.4s	mac portable							cpu_3D	 v1.9.1	 3851
 Linux x86_64	 1*8@3.0-4.7Ghz		32Go:12Mo	Xeon i7-9700 	1.5s	is242981.intra.cea.fr	(g++ 10.0.1)			1.62	cpu_3D	 v1.8.1  2774
 Linux x86_64	2*64@1.5-3.5Ghz        256Go:32Mo	AMD Epyc 7763   1.7s    topaze.ccc.cea.fr	(g++ 11.1.0, OpenMPI 4.0.5)	1.58	cpu_3D	 v1.8.3  2576
 Linux x86_64	 1*4@2.5-4.2Ghz		16Go:8Mo	Xeon i5-8400H	1.6s	is241032.intra.cea.fr	(g++ 9.0.1)			1.52	cpu_3D	 v1.8.5  2442      # Gain 10% avec 1.8.5

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -90,7 +90,7 @@ inline double superbee(double grad1, double grad2)
 #pragma omp end declare target
 
 #pragma omp declare target
-inline double LIMITEUR_GPU(double grad1, double grad2, int cas)
+inline double FCT_LIMITEUR(double grad1, double grad2, int cas)
 {
   switch(cas)
     {
@@ -105,9 +105,7 @@ inline double LIMITEUR_GPU(double grad1, double grad2, int cas)
     case 5:
       return superbee(grad1, grad2);
     default:
-      {
-        return -1;
-      }
+      return -1;
     }
 }
 #pragma omp end declare target

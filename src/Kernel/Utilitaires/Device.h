@@ -66,14 +66,14 @@ inline std::string toString(const void* adr)
   return ss.str();
 }
 template <typename _TYPE_>
-inline _TYPE_* copyToDevice_(TRUSTArray<_TYPE_>& tab, dataLocation nextLocation, std::string arrayName)
+inline _TYPE_* copyToDevice_(TRUSTArray<_TYPE_>& tab, DataLocation nextLocation, std::string arrayName)
 {
 #ifdef _OPENMP
 #ifndef NDEBUG
   if (self_test()) self_test();
 #endif
   tab.nommer(arrayName);
-  dataLocation currentLocation = tab.get_dataLocation();
+  DataLocation currentLocation = tab.get_dataLocation();
   tab.set_dataLocation(nextLocation); // Important de specifier le nouveau status avant la recuperation du pointeur:
 #endif
   _TYPE_* tab_addr = tab.addr(); // Car addr() contient un mecanisme de verification

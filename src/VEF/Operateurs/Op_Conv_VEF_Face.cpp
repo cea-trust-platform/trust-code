@@ -421,17 +421,14 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
         {
           int elem1=face_voisins_addr[fac*2];
           int elem2=face_voisins_addr[fac*2+1];
-          int minmod_pres_du_bord = 0;
-          if (ordre==3 && (traitement_pres_bord_addr[elem1] || traitement_pres_bord_addr[elem2])) minmod_pres_du_bord = 1;
+          int limiteur = cas;
+          if (ordre==3 && (traitement_pres_bord_addr[elem1] || traitement_pres_bord_addr[elem2])) limiteur = 1;
           for (int comp0=0; comp0<ncomp_ch_transporte; comp0++)
             for (int i=0; i<dimension; i++)
               {
                 double grad1=gradient_elem_addr[(elem1*ncomp_ch_transporte+comp0)*dimension+i];
                 double grad2=gradient_elem_addr[(elem2*ncomp_ch_transporte+comp0)*dimension+i];
-                if (minmod_pres_du_bord)
-                  gradient_addr[(fac*ncomp_ch_transporte+comp0)*dimension+i] = minmod(grad1, grad2);
-                else
-                  gradient_addr[(fac*ncomp_ch_transporte+comp0)*dimension+i] = LIMITEUR_GPU(grad1, grad2, cas);
+                gradient_addr[(fac*ncomp_ch_transporte+comp0)*dimension+i] = FCT_LIMITEUR(grad1, grad2, limiteur);
               }
         } // fin du for faces
       end_timer("Face loop in Op_Conv_VEF_Face::ajouter");

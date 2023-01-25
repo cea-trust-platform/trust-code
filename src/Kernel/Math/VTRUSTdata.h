@@ -32,7 +32,7 @@ template<typename _TYPE_> class TRUST_ptr_trav;
  *
  * @sa TRUSTArray
  */
-enum dataLocation { HostOnly, Host, Device, HostDevice };
+enum DataLocation { HostOnly, Host, Device, HostDevice };
 
 template<typename _TYPE_>
 class VTRUSTdata
@@ -69,10 +69,10 @@ public:
   // Host       : data_ est a jour sur host (pas sur device)
   // Device     : data_ est a jour sur device (pas sur host)
   // HostDevice : data_ est a jour sur host et device
-  inline dataLocation get_dataLocation() { return dataLocation_; }
-  inline dataLocation get_dataLocation() const { return dataLocation_; }
-  inline void set_dataLocation(dataLocation flag) { dataLocation_ = flag; }
-  //inline void set_dataLocation(dataLocation flag) const { dataLocation_ = flag; }
+  inline DataLocation get_dataLocation() { return dataLocation_; }
+  inline DataLocation get_dataLocation() const { return dataLocation_; }
+  inline void set_dataLocation(DataLocation flag) { dataLocation_ = flag; }
+  //inline void set_dataLocation(DataLocation flag) const { dataLocation_ = flag; }
 
 private:
   // Le constructeur par copie et l'operateur= sont interdits.
@@ -97,7 +97,7 @@ private:
   // Host      : A jour sur le host pas sur le device
   // Device    : A jour sur le device mais pas sur le host
   // HostDevice: A jour sur le host et le device
-  dataLocation dataLocation_ = HostOnly;
+  DataLocation dataLocation_ = HostOnly;
 };
 
 using VDoubledata = VTRUSTdata<double>;
