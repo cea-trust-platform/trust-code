@@ -100,7 +100,7 @@ void Op_Diff_VDF_base::ajoute_terme_pour_axi(matrices_t matrices, DoubleTab& sec
           DoubleTrav diffu_tot(zvdf.nb_elem_tot());
           double db_diffusivite;
           Nom nom_eq = equation().que_suis_je();
-          if ((nom_eq == "Navier_Stokes_standard") || (nom_eq == "Navier_Stokes_QC") || (nom_eq == "Navier_Stokes_FT_Disc"))
+          if ((nom_eq == "Navier_Stokes_standard") || (nom_eq == "Navier_Stokes_QC") || (nom_eq == "Navier_Stokes_FT_Disc") || (nom_eq == "QDM_Multiphase"))
             {
               const Eval_Diff_VDF& eval = dynamic_cast<const Eval_Diff_VDF&>(iter->evaluateur());
               const Champ_base& ch_diff = eval.get_diffusivite();
