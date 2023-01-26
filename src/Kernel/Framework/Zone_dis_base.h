@@ -16,7 +16,7 @@
 #ifndef Zone_dis_base_included
 #define Zone_dis_base_included
 
-#include <Ref_Domaine_dis.h>
+#include <Ref_Zone_dis.h>
 #include <Zone.h>
 #include <Sous_zones_dis.h>
 
