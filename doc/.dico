@@ -1158,6 +1158,7 @@
  Tri_EF Tri_EF Tri_EF.h
  Tri_poly Tri_poly Tri_poly.h
  Tri_VEF Tri_VEF Tri_VEF.h
+ TRUST_Deriv_Objet_U TRUST_Deriv_Objet_U TRUST_Deriv.h
  Turbulence_paroi Turbulence_paroi Turbulence_paroi.h
  Turbulence_paroi_base Turbulence_paroi_base Turbulence_paroi_base.h
  Turbulence_paroi_scal Turbulence_paroi_scal Turbulence_paroi_scal.h
