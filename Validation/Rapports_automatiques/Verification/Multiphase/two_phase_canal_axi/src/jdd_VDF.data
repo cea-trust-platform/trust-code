@@ -1,0 +1,166 @@
+# PARALLEL OK 8 #
+dimension 2
+bidim_axi
+pb_multiphase pbt
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+    Pave tube
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds $nr $nz
+        Longueurs $r $h
+    }
+    {
+        bord axi    X = 0   0 <= Y <= $h
+        bord haut   Y = $h   0 <= X <= $r
+        bord bas    Y = 0   0 <= X <= $r
+        bord wall   X = $r 0 <= Y <= $h
+    }
+}
+# END MESH #
+
+# BEGIN PARTITION
+Decouper dom
+{
+    partitionneur metis { nb_parts 2 }
+    nb_parts_tot 2
+    Larg_joint 2
+    Nom_Zones dom
+    ecrire_decoupage dom.txt
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom.Zones dom
+END SCATTER #
+
+VDF  dis
+Option_VDF { p_imposee_aux_faces oui }
+
+Schema_euler_implicite sch_ice
+Read sch_ice
+{
+    tinit 0
+    dt_start dt_fixe 1e-5
+    facsec 0.5
+    facsec_max 0.5
+    seuil_statio 1e-3
+    dt_impr 1e-10
+    gnuplot_header 1
+    solveur ice
+    {
+        pressure_reduction 1
+        solveur petsc cli { }
+        # solveur petsc cholesky { } #
+        seuil_convergence_implicite 1e30
+    }
+}
+
+associate pbt dom
+
+Associate pbt sch_ice
+Discretize pbt dis
+
+Read pbt
+{
+    Milieu_composite
+    {
+        liquide_sodium Fluide_sodium_liquide { }
+        gaz_sodium Fluide_sodium_gaz { }
+        saturation_sodium saturation_sodium { }
+    }
+    correlations
+    {
+        flux_interfacial coef_constant { liquide_sodium 1e10 gaz_sodium 1e10 }
+    }
+
+    QDM_Multiphase
+    {
+        evanescence { homogene { alpha_res 1 alpha_res_min 0.5 } }
+        solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg }
+        convection { amont }
+        diffusion  { }
+        initial_conditions
+        {
+            vitesse Champ_composite 2
+            {
+                Champ_Fonc_xyz dom 2 0 1
+                Champ_Fonc_xyz dom 2 0 1
+            }
+            pression champ_uniforme 1 $p
+        }
+        boundary_conditions
+        {
+            axi    symetrie
+            bas    frontiere_ouverte_vitesse_imposee champ_front_fonc_t 4 0 0 1 1
+            # champ_front_composite 2
+            {
+                champ_front_fonc_t 2 0 t_min_1
+                champ_front_fonc_t 2 0 t_min_1
+            } #
+            wall   paroi_fixe
+            haut   frontiere_ouverte_pression_imposee champ_front_uniforme 1 $p
+        }
+    }
+    Masse_Multiphase
+    {
+        initial_conditions { alpha champ_uniforme 2 1 0 }
+        convection { amont }
+        boundary_conditions
+        {
+            axi    symetrie
+            bas    frontiere_ouverte a_ext champ_front_uniforme 2 1 0
+            wall   paroi
+            haut   frontiere_ouverte a_ext champ_front_uniforme 2 1 0
+        }
+        sources { flux_interfacial }
+    }
+    Energie_Multiphase
+    {
+        diffusion { }
+        convection { amont }
+        initial_conditions { temperature Champ_Uniforme 2 $Tin $Tsat }
+        boundary_conditions
+        {
+            axi     symetrie
+            bas     frontiere_ouverte_temperature_imposee champ_front_uniforme 2 $Tin $Tsat
+            wall    paroi_flux_impose champ_front_fonc_txyz 2 $flux*(y>0.1)*(0.1+(t_min_0.9)) 0
+            haut    frontiere_ouverte t_ext champ_front_uniforme 2 $Tin $Tsat
+        }
+        sources
+        {
+            # puissance_thermique Champ_composite 2
+            {
+                champ_uniforme 1 $power
+                champ_uniforme 1 0
+            } , #
+            travail_pression ,
+            flux_interfacial
+        }
+    }
+
+    Post_processing
+    {
+        Probes
+        {
+            T grav temperature periode 1e8 segment 500 0 $h_2 $r $h_2
+            Tax grav temperature periode 1e8 segment 500 $r_2 0 $r_2 $h
+            V grav     vitesse periode 1e8 segment 500 0 $h_2 $r $h_2
+            A grav     alpha   periode 1e8 segment 500 $r_2 0 $r_2 $h
+        }
+        format lata
+        fields dt_post 1e8
+        {
+            alpha          elem
+            VITESSE_LIQUIDE_SODIUM          elem
+            temperature      elem
+        }
+    }
+}
+
+Solve pbt
+End
