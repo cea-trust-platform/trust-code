@@ -375,11 +375,10 @@ mor_eqn objet_u mor_eqn -1 Class of equation pieces (morceaux d\'equation).
 bords_ecrire objet_lecture nul 0 not_set
   attr chaine chaine(into=["bords"]) chaine 0 not_set
   attr bords listchaine bords 0 Keyword to post-process only on some boundaries : NL2 bords nb_bords boundary1 ... boundaryn NL2 where NL2 nb_bords : number of boundaries NL2 boundary1 ... boundaryn : name of the boundaries.
-ecrire_fichier_xyz_valeur_item objet_lecture nul 0 To write the values of a field for some boundaries in a text file. NL2 The name of the files is pb_name_field_name_time.dat NL2 Several Ecrire_fichier_xyz_valeur keywords may be written into an equation to write several fields. This kind of files may be read by Champ_don_lu or Champ_front_lu for example.
+ecrire_fichier_xyz_valeur_param objet_lecture nul 0 To write the values of a field for some boundaries in a text file. NL2 The name of the files is pb_name_field_name_time.dat NL2 Several Ecrire_fichier_xyz_valeur keywords may be written into an equation to write several fields. This kind of files may be read by Champ_don_lu or Champ_front_lu for example.
   attr name chaine name 0 Name of the field to write (Champ_Inc, Champ_Fonc or a post_processed field).
   attr dt_ecrire_fic floattant dt_ecrire_fic 0 Time period for printing in the file.
   attr bords bords_ecrire bords 1 to post-process only on some boundaries
-ecrire_fichier_xyz_valeur_param listobj nul -2 ecrire_fichier_xyz_valeur_item ecrire_fichier_xyz_valeur not_set
 convection_deriv objet_lecture convection_deriv 0 not_set
 bloc_convection objet_lecture nul 0 not_set
   attr aco chaine(into=["{"]) aco 0 Opening curly bracket.
