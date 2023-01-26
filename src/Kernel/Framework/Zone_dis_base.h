@@ -61,7 +61,7 @@ public :
 
   void ecrire_noms_bords(Sortie&) const;
   void associer_zone(const Zone&);
-  void associer_domaine_dis(const Domaine_dis&);
+  void associer_domaine_dis(const Zone_dis&);
   int rang_frontiere(const Nom& );
   int rang_frontiere(const Nom& ) const;
   const Frontiere_dis_base& frontiere_dis(const Nom& ) const;
@@ -80,8 +80,8 @@ public :
 
   inline const Zone& zone() const { return la_zone.valeur(); }
   inline Zone& zone() { return la_zone.valeur(); }
-  inline const Domaine_dis& domaine_dis() const { return le_domaine_dis.valeur(); }
-  inline Domaine_dis& domaine_dis() { return le_domaine_dis.valeur(); }
+  inline const Zone_dis& domaine_dis() const { return le_domaine_dis.valeur(); }
+  inline Zone_dis& domaine_dis() { return le_domaine_dis.valeur(); }
 
   // Raccourcis :
   inline int nb_elem() const { return zone().nb_elem(); }
@@ -101,7 +101,7 @@ public :
 
 protected :
   REF(Zone) la_zone;
-  REF(Domaine_dis) le_domaine_dis;
+  REF(Zone_dis) le_domaine_dis;
   REF(Sous_zones_dis) les_sous_zones_dis;
 
   int dist_paroi_initialisee_ = 0;

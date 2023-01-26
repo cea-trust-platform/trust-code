@@ -39,7 +39,7 @@ class Zone_dis : public DERIV(Zone_dis_base)
 public :
 
   inline void associer_zone(const Zone&);
-  inline void associer_domaine_dis(const Domaine_dis&);
+  inline void associer_domaine_dis(const Zone_dis&);
   inline const Zone& zone() const;
   inline Zone& zone();
   inline void discretiser();
@@ -59,7 +59,7 @@ inline void Zone_dis::associer_zone(const Zone& une_zone)
   valeur().associer_zone(une_zone);
 }
 
-inline void Zone_dis::associer_domaine_dis(const Domaine_dis& un_domaine_dis)
+inline void Zone_dis::associer_domaine_dis(const Zone_dis& un_domaine_dis)
 {
   valeur().associer_domaine_dis(un_domaine_dis);
 }

@@ -17,7 +17,7 @@
 #define Champ_Generique_Extraction_included
 
 #include <Champ_Gen_de_Champs_Gen.h>
-#include <Domaine_dis.h>
+#include <Zone_dis.h>
 
 /*! @brief Un champ generique qui effctue l extraction d un champ sur une frontiere
  *
@@ -59,7 +59,7 @@ protected :
   Nom nom_fr_;                        //Nom de la frontiere sur laquelle on fait l extraction
   Nom methode_;                        //Type de methode pour extraire ("trace" ou "champ_frontiere")
   REF(Zone) domaine_;        //Reference sur le domaine d extraction
-  Domaine_dis le_dom_dis;        //Le domaine discretise correspondant a domaine_.valeur()
+  Zone_dis le_dom_dis;        //Le domaine discretise correspondant a domaine_.valeur()
 };
 
 #endif

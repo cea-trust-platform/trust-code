@@ -27,7 +27,7 @@
 #include <Sortie_Brute.h>
 #include <TRUST_Deriv.h>
 #include <Ref_IntVect.h>
-#include <Domaine_dis.h>
+#include <Zone_dis.h>
 #include <TRUST_List.h>
 #include <Probleme_U.h>
 #include <Milieu.h>
@@ -98,8 +98,8 @@ public:
   Schema_Temps_base& schema_temps();
   const Zone& domaine() const;
   Zone& domaine();
-  const Domaine_dis& domaine_dis() const;
-  Domaine_dis& domaine_dis();
+  const Zone_dis& domaine_dis() const;
+  Zone_dis& domaine_dis();
   int is_dilatable() const;
 
   virtual int allocate_file_size(long int& size) const;
@@ -199,7 +199,7 @@ protected :
   // ***************************************************************************
 
   std::vector<Milieu> le_milieu_;
-  Domaine_dis le_domaine_dis;
+  Zone_dis le_domaine_dis;
   Postraitements les_postraitements;
   REF(Schema_Temps_base) le_schema_en_temps;
   REF(Discretisation_base) la_discretisation;

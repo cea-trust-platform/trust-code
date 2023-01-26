@@ -277,7 +277,7 @@ Sortie& Discretisation::printOn(Sortie& os) const
 }
 
 
-void Discretisation_base::discretiser(Domaine_dis& dom) const
+void Discretisation_base::discretiser(Zone_dis& dom) const
 {
   Nom type="Zone_";
   type+=que_suis_je();

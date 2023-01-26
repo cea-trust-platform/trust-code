@@ -20,8 +20,8 @@
 #define Ref_Domaine_dis_included
 
 #include <Ref.h>
-class Domaine_dis;
-Declare_ref(Domaine_dis);
+class Zone_dis;
+Declare_ref(Zone_dis);
 
 // .SECTION voir aussi
 // Domaine_dis

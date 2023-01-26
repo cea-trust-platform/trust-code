@@ -294,7 +294,7 @@ void Perte_Charge_VEF::completer()
     {
       sous_zone=false;
       const Sous_Zone& la_sous_zone=equation().probleme().domaine().ss_zone(nom_sous_zone);
-      const Domaine_dis& le_domaine_dis=la_zone_VEF->domaine_dis();
+      const Zone_dis& le_domaine_dis=la_zone_VEF->domaine_dis();
       for (int ssz=0; ssz<le_domaine_dis.nombre_de_sous_zones_dis(); ssz++)
         {
           if (le_domaine_dis.sous_zone_dis(ssz)->sous_zone().est_egal_a(la_sous_zone))

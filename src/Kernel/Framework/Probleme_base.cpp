@@ -354,7 +354,7 @@ int Probleme_base::verifier()
 /*! @brief Associe un domaine au probleme.
  *
  * Prend un_domaine comme support.
- *      apelle Domaine_dis::associer_dom(const Zone& )
+ *      apelle Zone_dis::associer_dom(const Zone& )
  *
  * @param (Zone& un_domaine) le domaine
  */
@@ -378,7 +378,7 @@ void Probleme_base::discretiser_equations()
  *
  *      Associe la premiere zone du Zone aux equations du probleme
  *      Discretise les equations associees au probleme
- *      NOTE: TRUST V1 une seule Zone_dis pas Domaine_dis est traitee
+ *      NOTE: TRUST V1 une seule Zone_dis pas Zone_dis est traitee
  *
  * @param (Discretisation_base& discretisation) une discretisation pour le probleme
  */
@@ -622,18 +622,18 @@ Zone& Probleme_base::domaine()
  *
  * (version const)
  *
- * @return (Domaine_dis&) un domaine discretise
+ * @return (Zone_dis&) un domaine discretise
  */
-const Domaine_dis& Probleme_base::domaine_dis() const
+const Zone_dis& Probleme_base::domaine_dis() const
 {
   return le_domaine_dis;
 }
 
 /*! @brief Renvoie le domaine discretise associe au probleme.
  *
- * @return (Domaine_dis&) un domaine discretise
+ * @return (Zone_dis&) un domaine discretise
  */
-Domaine_dis& Probleme_base::domaine_dis()
+Zone_dis& Probleme_base::domaine_dis()
 {
   return le_domaine_dis;
 }

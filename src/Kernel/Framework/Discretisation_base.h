@@ -26,7 +26,7 @@ class Champ_Inc_base;
 class Zone_dis_base;
 class Probleme_base;
 class Equation_base;
-class Domaine_dis;
+class Zone_dis;
 class Zone_Cl_dis;
 class Champ_base;
 class Champ_Fonc;
@@ -71,7 +71,7 @@ public :
 
   virtual void discretiser_variables() const;
   virtual void discretiser_Zone_Cl_dis(const Zone_dis&, Zone_Cl_dis&) const;
-  virtual void discretiser(Domaine_dis&) const;
+  virtual void discretiser(Zone_dis&) const;
   // pour que l'existant compile
   virtual void zone_Cl_dis(Zone_dis&, Zone_Cl_dis&) const =0;
 

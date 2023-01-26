@@ -18,7 +18,7 @@
 
 #include <VEF_discretisation.h>
 
-class Domaine_dis;
+class Zone_dis;
 
 class VEFPreP1B : public VEF_discretisation
 {
@@ -78,7 +78,7 @@ private:
     const Noms& nom, const Noms& unite,
     int nb_comp, double temps,
     Objet_U& champ) const;
-  void discretiser(Domaine_dis&) const override;
+  void discretiser(Zone_dis&) const override;
 private :
   int P1Bulle_;
   int alphaE_;

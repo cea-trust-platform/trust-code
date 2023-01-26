@@ -17,7 +17,7 @@
 #define Champ_Generique_Interpolation_included
 
 #include <Champ_Gen_de_Champs_Gen.h>
-#include <Domaine_dis.h>
+#include <Zone_dis.h>
 
 /*! @brief Un champ generique qui est construit comme une interpolation d'un autre champ generique (interpolation aux sommets ou aux elements).
  *
@@ -82,7 +82,7 @@ private:
   Motcle               methode_;                      // calculer_champ_post, etc...
   Nom                nom_domaine_lu_;        // Nom du domaine lu
   REF(Zone)         domaine_;                      // domaine sur lequel on veut interpoler le champ (domaine natif si reference nulle)
-  Domaine_dis le_dom_dis;                     // rempli si domaine d interpolation different du domaine natif
+  Zone_dis le_dom_dis;                     // rempli si domaine d interpolation different du domaine natif
   // ex : Sonde utilise valeur_aux...() qui necessite de disposer d une zone discretisee
   int optimisation_sous_maillage_,optimisation_demande_;
   ArrOfInt renumerotation_maillage_;

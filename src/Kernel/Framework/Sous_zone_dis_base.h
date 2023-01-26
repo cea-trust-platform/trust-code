@@ -34,7 +34,7 @@
    De meme, la Sous_zone_dis definit un sous_ensemble des attributs
    de la Zone_dis, en particulier des faces.
 
-   Voir aussi Domaine_dis, Sous_Zone, Zone_dis_base, Sous_Zone_VF
+   Voir aussi Zone_dis, Sous_Zone, Zone_dis_base, Sous_Zone_VF
 */
 
 class Sous_zone_dis_base : public Objet_U

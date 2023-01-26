@@ -43,7 +43,7 @@ using MEDCoupling::MCAuto;
 class Conds_lim;
 class Zone_dis;
 class Zone_dis_base;
-class Domaine_dis;
+class Zone_dis;
 class Sous_Zone;
 class Probleme_base;
 
@@ -205,9 +205,9 @@ public:
   ///
   /// Time-dependency
   ///
-  virtual void initialiser (double temps, Domaine_dis&, Probleme_base&) {}
+  virtual void initialiser (double temps, Zone_dis&, Probleme_base&) {}
   virtual void set_dt(double& dt_) {}
-  virtual void mettre_a_jour(double temps, Domaine_dis&, Probleme_base&) {}
+  virtual void mettre_a_jour(double temps, Zone_dis&, Probleme_base&) {}
 
   ///
   /// Domaines frontieres

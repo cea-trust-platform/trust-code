@@ -56,11 +56,11 @@ void Zone_dis_base::associer_zone(const Zone& une_zone)
   la_zone=une_zone;
 }
 
-/*! @brief Associe un Domaine_dis a l'objet.
+/*! @brief Associe un Zone_dis a l'objet.
  *
- * @param (Domaine_dis& un_domaine_dis) le domaine discretise a associer.
+ * @param (Zone_dis& un_domaine_dis) le domaine discretise a associer.
  */
-void Zone_dis_base::associer_domaine_dis(const Domaine_dis& un_domaine_dis)
+void Zone_dis_base::associer_domaine_dis(const Zone_dis& un_domaine_dis)
 {
   le_domaine_dis=un_domaine_dis;
 }

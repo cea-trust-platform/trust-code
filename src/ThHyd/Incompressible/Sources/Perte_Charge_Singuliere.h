@@ -18,7 +18,7 @@
 
 #include <TRUSTTabs_forward.h>
 #include <Perte_Charge.h>
-#include <Domaine_dis.h>
+#include <Zone_dis.h>
 #include <Champ_Don.h>
 #include <Parser_U.h>
 class Zone;

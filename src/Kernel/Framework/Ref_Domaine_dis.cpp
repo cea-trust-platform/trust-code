@@ -14,5 +14,5 @@
 *****************************************************************************/
 
 #include <Ref_Domaine_dis.h>
-#include <Domaine_dis.h>
-Implemente_ref(Domaine_dis);
+#include <Zone_dis.h>
+Implemente_ref(Zone_dis);
