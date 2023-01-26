@@ -18,10 +18,13 @@
 
 #include <Ref_Domaine_dis.h>
 #include <Zone.h>
+#include <Sous_zones_dis.h>
 
 class Frontiere_dis_base;
 class Zone_Cl_dis_base;
 class Conds_lim;
+
+Declare_ref(Sous_zones_dis);
 
 /*! @brief classe Zone_dis_base Cette classe est la base de la hierarchie des zones discretisees.
  *
@@ -34,7 +37,28 @@ class Conds_lim;
 class Zone_dis_base : public Objet_U
 {
   Declare_base(Zone_dis_base);
+
 public :
+  /// @@@@@@@ A VIRER
+  inline int nombre_de_zones() const { return 1; }
+  inline const Zone_dis& zone_dis(int) const { return *this; }
+  inline Zone_dis& zone_dis(int) { return *this;}
+  // associer_zone fait tout le taf:
+  void associer_domaine(const Zone& dom) {  throw; }
+  inline Zone& domaine()             {  return la_zone.valeur(); }
+  inline const Zone& domaine() const {  return la_zone.valeur(); }
+
+  ///
+  /// Sous_zones_dis
+  ///
+  inline int nombre_de_sous_zones_dis() const              {  return les_sous_zones_dis->size();      }
+  inline const Sous_zone_dis& sous_zone_dis(int i) const   {  return les_sous_zones_dis.valeur()[i];  }
+  inline Sous_zone_dis& sous_zone_dis(int i)               {   return les_sous_zones_dis.valeur()[i]; }
+
+  void discretiser(const Nom& );
+  /// @@@@@@@
+
+
   void ecrire_noms_bords(Sortie&) const;
   void associer_zone(const Zone&);
   void associer_domaine_dis(const Domaine_dis&);
@@ -78,6 +102,7 @@ public :
 protected :
   REF(Zone) la_zone;
   REF(Domaine_dis) le_domaine_dis;
+  REF(Sous_zones_dis) les_sous_zones_dis;
 
   int dist_paroi_initialisee_ = 0;
   DoubleTab y_elem_, y_faces_;
