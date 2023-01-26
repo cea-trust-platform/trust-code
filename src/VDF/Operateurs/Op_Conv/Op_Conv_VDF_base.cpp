@@ -148,8 +148,9 @@ void Op_Conv_VDF_base::dimensionner_blocs_face(matrices_t matrices, const tabs_t
   const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee").valeur()) : NULL;
   Matrice_Morse& mat = *matrices.at(nom_inco), mat2;
 
-  int e, eb, fb,  N = equation().inconnue().valeurs().line_size();
-
+  //int e, eb, fb,  N = equation().inconnue().valeurs().line_size();
+  // eb never used ? Warning Error on clang...
+  int e, fb,  N = equation().inconnue().valeurs().line_size();
   IntTab stencil(0, 2);
   stencil.set_smart_resize(1);
 
@@ -159,7 +160,8 @@ void Op_Conv_VDF_base::dimensionner_blocs_face(matrices_t matrices, const tabs_t
       for (int i = 0; i < 2; i++)
         if ((e = f_e(f, i)) >= 0)
           for (int j = 0; j < 2; j++)
-            if ((eb = f_e(f, j)) >= 0)
+            //if ((eb = f_e(f, j)) >= 0)
+            if (f_e(f, j) >= 0)
               for (int k = 0; k < e_f.dimension(1); k++)
                 if ((fb = e_f(e, k)) >= 0)
                   if (fb < zone.nb_faces() && fcl(fb, 0) < 2)

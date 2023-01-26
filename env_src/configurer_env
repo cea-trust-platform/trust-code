@@ -649,7 +649,7 @@ define_modules_config
 #######################
 # Variable TRUST_TMP #
 #######################
-cd $TRUST_ROOT/env_src
+cd $TRUST_ROOT/env
 . ./TRUST_TMP.env
 
 ###################################

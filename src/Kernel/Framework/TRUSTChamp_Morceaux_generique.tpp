@@ -185,15 +185,15 @@ void TRUSTChamp_Morceaux_generique<_TYPE_>::mettre_a_jour(double time)
 
           for (r = 0; r < dimension; r++) xs[r] /= nb_som;
 
-      /* calcul de chaque composante */
-      double val = ch ? ch->valeurs()(i, 0) : 0;
-      for (int k = 0; k < tab.dimension(1); k++)
-        {
-          Parser_U& psr = parser[parser_idx(i, k)];
-          psr.setVar("x", xs[0]);
-          psr.setVar("y", xs[1]);
-          psr.setVar("z", xs[2]);
-          psr.setVar("t", time);
+          /* calcul de chaque composante */
+          double val = ch ? ch->valeurs()(i, 0) : 0;
+          for (int k = 0; k < tab.dimension(1); k++)
+            {
+              Parser_U& psr = parser[parser_idx(i, k)];
+              psr.setVar("x", xs[0]);
+              psr.setVar("y", xs[1]);
+              psr.setVar("z", xs[2]);
+              psr.setVar("t", time);
 
               if (ref_pb.non_nul()) psr.setVar("val", val);
               tab(i, k) = psr.eval();

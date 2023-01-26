@@ -1,13 +1,18 @@
-XX/XX/22 (TRUST)  Fix         : Postprocessing fields on sub-zones: couldn't post-process PolyMAC fields with MED format + some fields were not found because of bad names
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.2_beta : Enhancements, modifications and corrected bugs since version 1.9.1 :
 --------------------------------------------------------------------------------------------------
-27/01/23 (TRUST)  Tools       : Upgrade to MEDCoupling 9.10.0
+XX/XX/23 (TRUST) Portability  : Adastra (CINES) cluster is supported
+XX/XX/23 (TRUST) Portability  : C++14 compilers are now mandatory so old GNU compilers (<5.0) are not supported anymore
+XX/XX/23 (TRUST) Portability  : NVidia compilers (nvc++, nvc, nvfortran) now fully supported for GPU offload with OpenMP-target (./configure -cuda -openmp)
+XX/XX/23 (TRUST) HPC          : VEF GPU kernels optimized with a reduction of host-device copy
+XX/XX/23 (TRUST) HPC          : OpenBLAS 0.3.21 (vectorized, threaded) is now used for Blas/Lapack library
+XX/XX/23 (TRUST) HPC          : Vectorization flag (-mavx2, -mavx, ...) determined during configure phase and used during build (opt_avx mode is then deprecated)
+27/01/23 (TRUST) Tools        : Upgrade to MEDCoupling 9.10.0
 23/01/23 (TRUST) Feature      : convertAllToPoly option in Lire_MED keyword may now be used to convert all MED mesh to polyedra not only MED mesh with different cell types
 19/01/23 (TRUST) Fix          : Pressure force was not computed at t=tinit and not correctly updated/printed for a probe if dt_impr value was greater than probe period
 13/01/23 (TRUST) Fix          : Postprocessing fields on sub-zones: couldn't post-process PolyMAC fields with MED format + some fields were not found because of bad names
 03/01/23 (TRUST) Major Change : For Pb_Multiphase, simple calls are now applied to compute fluid/saturations properties (improve significantly the performance especially with libraries like EOS, RefProp, ...)
-03/01/23 (TRUST) Major Change : Homogeneous Neumann boundary condition (BC) is applied on the velocity field if a fixed pressure BC is prescribed at an open boundary.
+03/01/23 (TRUST) Change       : Homogeneous Neumann boundary condition (BC) is applied on the velocity field if a fixed pressure BC is prescribed at an open boundary.
 19/12/22 (TRUST) Output       : if -journal verbosity set to a value >=1 when running computation, log files will be written even if nbproc > 5120
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.1 : Enhancements, modifications and corrected bugs since version 1.9.0 :

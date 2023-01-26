@@ -50,14 +50,15 @@ double TRUSTChamp_Don_generique<_TYPE_>::valeur_a_compo(const DoubleVect& x, int
   static constexpr bool IS_XYZ = (_TYPE_ == Champ_Don_Type::XYZ);
   if (!IS_XYZ)
     return Champ_Don_base::valeur_a_compo(x, ncomp); // appel simple si TXYZ ou LU !
-  else {
+  else
+    {
       if (ncomp > nb_compo_) erreur_champ_(__func__); // asking ncomp > nb_compo_ ?????
 
       DoubleTab positions(1, dimension), val_fct(1);
       for (int d = 0; d < dimension; d++) positions(0, d) = x(d);
       eval_fct(positions, val_fct, ncomp);
       return val_fct(0);
-  }
+    }
 }
 
 template <Champ_Don_Type _TYPE_>
