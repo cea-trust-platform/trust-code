@@ -19,6 +19,7 @@
 #include <EFichier.h>
 #include <EChaine.h>
 #include <medcoupling++.h>
+#include <trust_med_utils.h>
 #ifdef MEDCOUPLING_
 #include <MEDLoader.hxx>
 #include <MEDCouplingField.hxx>
@@ -37,18 +38,7 @@ using MEDCoupling::MEDFileField1TS;
 #endif
 
 // XD champ_fonc_med field_base champ_fonc_med 1 Field to read a data field in a MED-format file .med at a specified time. It is very useful, for example, to resume a calculation with a new or refined geometry. The field post-processed on the new geometry at med format is used as initial condition for the resume.
-Implemente_instanciable_sans_constructeur(Champ_Fonc_MED,"Champ_Fonc_MED",Champ_Fonc_base);
-
-Champ_Fonc_MED::Champ_Fonc_MED():Champ_Fonc_base::Champ_Fonc_base()
-{
-  last_time_only_=0;
-#ifdef MEDCOUPLING_
-  use_medcoupling_ = true;
-  field_type = MEDCoupling::ON_CELLS;
-#else
-  use_medcoupling_ = false;
-#endif
-}
+Implemente_instanciable(Champ_Fonc_MED,"Champ_Fonc_MED",Champ_Fonc_base);
 
 Sortie& Champ_Fonc_MED::printOn(Sortie& s) const
 {
@@ -97,11 +87,6 @@ void Champ_Fonc_MED::readOn_old_syntax(Entree& is, Nom& chaine_lue, bool& nom_de
     {
       is>>nom_decoup_;
       is>>chaine_lue;
-      if (use_medcoupling_)
-        {
-          Cerr << "Error: Decoup option is only available for the moment with Champ_Fonc_MEDFile keyword only." << finl;
-          Process::exit();
-        }
       if (!use_existing_domain_)
         {
           Cerr << "Error: you need to use use_existing_domain option with Decoup option." << finl;
@@ -204,7 +189,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
         {
           // use_existing_domain utilisable en parallele uniquement si le process 0 gere tout le domaine ou si decoup specifie:
           const Domaine& le_domaine=ref_cast(Domaine, interprete().objet(nom_dom_));
-          if (Process::nproc()>1 && mp_max((int)(le_domaine.nb_som()>0)) != 0 && use_medcoupling_==1)
+          if (Process::nproc()>1 && mp_max((int)(le_domaine.nb_som()>0)) != 0)
             {
               Cerr << "Warning, you can't use use_existing_domain on a partitionned domain like " << nom_dom_ << finl;
               Cerr << "It is not parallelized yet... So we use MED mesh, which is not optimal." << finl;
@@ -380,194 +365,70 @@ void Champ_Fonc_MED::lire(double t, int given_it)
     }
 #ifdef MED_
 #ifdef MEDCOUPLING_
-  if (use_medcoupling_)
+  // Read a field
+  std::string  meshName = mon_dom->le_nom().getString();
+  std::string fieldName = nom_champ_dans_fichier_med_.getString();
+  std::string  fileName = nom_fichier_med_.getString();
+  // Etude des conditions pour chercher ou nom un champ dans le fichier MED:
+  bool search_field = true;
+  nb_dt = temps_sauv_.size_array();
+  if (nb_dt>0)
     {
-      // Read a field
-      std::string  meshName = mon_dom->le_nom().getString();
-      std::string fieldName = nom_champ_dans_fichier_med_.getString();
-      std::string  fileName = nom_fichier_med_.getString();
-      // Etude des conditions pour chercher ou nom un champ dans le fichier MED:
-      bool search_field = true;
-      nb_dt = temps_sauv_.size_array();
-      if (nb_dt>0)
-        {
-          // nb_dt nombre de pas de temps dans le fichier MED
-          // ndt taille du tableau temps_sauv contenant les pas de temps du champ dans le fichier MED
-          // tmax dernier temps du tableau temps_sauv ?
-          // dt ?
-          // t temps courant pour lequel on veut remplir le champ
-          // last_time_only_ specifie dans le jeu de donnees ou non
-          double tmax = temps_sauv_[nb_dt - 1];
-          double dt = temps_sauv_[nb_dt - 1];
-          if (((nb_dt == 1) && (!est_egal(dt, t))) || ((last_time_only_ == 1) && (!est_egal(tmax, t))))
-            {
-              Cout << "We assume that the field " << fieldName << " is stationary." << finl;
-              search_field = false;
-            }
-        }
-      if (search_field)
-        {
-          if (temps_sauv_.size_array()==0)
-            temps_sauv_ = lire_temps_champ(fileName, fieldName);
-          unsigned int nn = temps_sauv_.size_array();
-          if (given_it == -1)
-            {
-              for (given_it = 0; given_it < (int) nn; given_it++)
-                if (est_egal(temps_sauv_[given_it], t)) break;
-              if (given_it == (int)nn)
-                {
-                  Cerr << "Error. Time " << t << " not found in the times list of the " << fileName << " file" << finl;
-                  for (unsigned int n=0; n<nn; n++)
-                    Cerr << temps_sauv_[n] << finl;
-                  Process::exit();
-                }
-            }
-          int iteration = time_steps_[given_it].first;
-          int order = time_steps_[given_it].second;
-
-          // Only one MCAuto below to avoid double deletion:
-          MCAuto<MEDCouplingField> ffield = lire_champ(fileName, meshName, fieldName, iteration, order);
-          Cerr << " at time " << t << " ... " << finl;
-          MEDCouplingFieldDouble * field = dynamic_cast<MEDCouplingFieldDouble *>((MEDCouplingField *)ffield);
-          if (field == 0)
-            {
-              Cerr << "ERROR reading MED field! Not a MEDCouplingFieldDouble!!" << finl;
-              Process::exit(-1);
-            }
-          const double *field_values = field->getArray()->begin();
-          assert(field->getNumberOfTuplesExpected() == le_champ().valeurs().dimension(0));
-          assert((int) field->getNumberOfComponents() ==
-                 (le_champ().valeurs().nb_dim() == 1 ? 1 : le_champ().valeurs().dimension(1)));
-          memcpy(le_champ().valeurs().addr(), field_values,
-                 le_champ().valeurs().size_array() * sizeof(double));
-        }
-    }
-  else
-#endif
-    {
-      med_idt fid = MEDfileOpen(nom_fichier_med_, MED_ACC_RDONLY);
-      if (fid < 0)
-        {
-          Cerr << "Problem while opening the file " << nom_fichier_med_ << finl;
-          exit();
-        }
-
-      Char_ptr pflname;
-      pflname.allocate(MED_NAME_SIZE);
-      if (given_it != -1)
-        {
-          Cerr<<"Searching for the "<<given_it+1<< " iteration of the field "<<le_nom()<<finl;
-        }
-
-      Char_ptr dt_unit;
-      dt_unit.allocate(MED_SNAME_SIZE);
-      // on cherche le numero du pas de temps
-      med_int numdt, numo;
-      double dt = -2;
-      int ret, size = 0;
-      Char_ptr maa_ass;
-      maa_ass.allocate(MED_NAME_SIZE);
-      //Cerr<<"nb_dt"<<nb_dt<<finl;
-      Nom nom_dom(mon_dom->le_nom());
-      int i2 = 0;
-      Nom& le_nom_du_champ = nom_champ_dans_fichier_med_;
-      med_field_type typcha;
-      //  Nom meshname; dimensionne_nom_taille(meshname,MED_NAME_SIZE);
-      Char_ptr dtunit;
-      dtunit.allocate(MED_SNAME_SIZE);
-      med_bool localmesh;
-      med_int nbofcstp;
-      int ncomp = MEDfieldnComponentByName(fid, le_nom_du_champ);
-      Char_ptr comp;
-      comp.allocate(MED_SNAME_SIZE * ncomp);
-      Char_ptr unit;
-      unit.allocate(MED_SNAME_SIZE * ncomp);
-      ret = MEDfieldInfoByName(fid, le_nom_du_champ, maa_ass, &localmesh, &typcha, comp, unit, dtunit, &nbofcstp);
-      int nb_dt_tot = nbofcstp;
-      double tmax = -1;
-      for (int j = 0; j < nb_dt_tot; j++)
-        {
-          med_int meshnumdt, meshnumit;
-          MEDfieldComputingStepMeshInfo(fid, le_nom_du_champ, j + 1, &numdt, &numo, &dt, &meshnumdt, &meshnumit);
-          tmax = dt;
-        }
-      for (int j = 0; j < nb_dt_tot; j++)
-        {
-          if (i2 >= nb_dt) exit();
-
-          med_int meshnumdt, meshnumit;
-          MEDfieldComputingStepMeshInfo(fid, le_nom_du_champ, j + 1, &numdt, &numo, &dt, &meshnumdt, &meshnumit);
-          Nom Nmaa_ass(maa_ass);
-          if (est_egal(dt, t))
-            {
-              size = MEDfieldnValue(fid, le_nom_du_champ, numdt, numo, type_ent, type_geo);
-              if ((size != 0) && (nom_dom == Nmaa_ass))
-                break;
-            }
-          if (Nmaa_ass == nom_dom)
-            {
-              if (given_it == i2)
-                {
-                  t = dt;
-                  given_it = j;
-                  break;
-                }
-              i2++;
-            }
-        }
-      //dt=t;
-      //numdt=1;
-      //numo=MED_NONOR;
-      // Cerr << "Provisoire temps=" << temps_sauv_ << finl;
-      // Cerr << "Provisoire temps= " << nb_dt << " " << dt << " " << t << " " << tmax << " " << last_time_only_ << finl;
+      // nb_dt nombre de pas de temps dans le fichier MED
+      // ndt taille du tableau temps_sauv contenant les pas de temps du champ dans le fichier MED
+      // tmax dernier temps du tableau temps_sauv ?
+      // dt ?
+      // t temps courant pour lequel on veut remplir le champ
+      // last_time_only_ specifie dans le jeu de donnees ou non
+      double tmax = temps_sauv_[nb_dt - 1];
+      double dt = temps_sauv_[nb_dt - 1];
       if (((nb_dt == 1) && (!est_egal(dt, t))) || ((last_time_only_ == 1) && (!est_egal(tmax, t))))
         {
-          Cout << "We assume that the field " << le_nom_du_champ << " is stationary." << finl;
-        }
-      else
-        {
-          if (!est_egal(dt, t))
-            {
-              Cerr.precision(12);
-              Cerr << "Error: we did not find the time " << t << finl;
-              Cerr << "Available times for " << le_nom_du_champ << " domain " << nom_dom << " are:" << finl;
-              for (int j = 0; j < nb_dt; j++)
-                {
-                  med_int meshnumdt, meshnumit;
-                  MEDfieldComputingStepMeshInfo(fid, le_nom_du_champ, j + 1, &numdt, &numo, &dt, &meshnumdt, &meshnumit);
-                  Cerr << dt << finl;
-                }
-              exit();
-            }
-          Cerr << "Reading the time step " << (int) numdt << " of field " << le_nom_du_champ << " time " << t
-               << " type ent " << (int) type_ent << finl;
-          if (filter.size_array() > 0) //lecture sur domaine parallele -> avec un filtre
-            {
-              Cerr << "Read with filter..." << finl;
-              med_filter flt = MED_FILTER_INIT;
-              if(MEDfilterEntityCr(fid, size, 1, le_champ().valeurs().nb_dim() > 1 ? le_champ().valeurs().dimension(1) : 1, MED_ALL_CONSTITUENT,
-                                   MED_FULL_INTERLACE, MED_COMPACT_STMODE, MED_ALLENTITIES_PROFILE, filter.size_array(), filter.addr(), &flt) < 0)
-                {
-                  Cerr << "Champ_Fonc_MED on parallel domain : error at filter creation!" << finl;
-                  Process::exit();
-                }
-              ret = MEDfieldValueAdvancedRd(fid,le_nom_du_champ,numdt,numo,type_ent,type_geo,&flt,(unsigned char*)le_champ().valeurs().addr());
-            }
-          else if (le_champ().valeurs().dimension(0) > 0)//lecture complete
-            ret = MEDfieldValueRd(fid, le_nom_du_champ, numdt, numo, type_ent, type_geo, MED_FULL_INTERLACE,
-                                  MED_ALL_CONSTITUENT, (unsigned char *) le_champ().valeurs().addr());
-          if (ret < 0)
-            {
-              Cerr << "Problem while reading field " << le_nom_du_champ << " name of domain " << mon_dom->le_nom() << finl;
-              exit();
-            }
-          MEDfileClose(fid);
+          Cout << "We assume that the field " << fieldName << " is stationary." << finl;
+          search_field = false;
         }
     }
+  if (search_field)
+    {
+      if (temps_sauv_.size_array()==0)
+        temps_sauv_ = lire_temps_champ(fileName, fieldName);
+      unsigned int nn = temps_sauv_.size_array();
+      if (given_it == -1)
+        {
+          for (given_it = 0; given_it < (int) nn; given_it++)
+            if (est_egal(temps_sauv_[given_it], t)) break;
+          if (given_it == (int)nn)
+            {
+              Cerr << "Error. Time " << t << " not found in the times list of the " << fileName << " file" << finl;
+              for (unsigned int n=0; n<nn; n++)
+                Cerr << temps_sauv_[n] << finl;
+              Process::exit();
+            }
+        }
+      int iteration = time_steps_[given_it].first;
+      int order = time_steps_[given_it].second;
+
+      // Only one MCAuto below to avoid double deletion:
+      MCAuto<MEDCouplingField> ffield = lire_champ(fileName, meshName, fieldName, iteration, order);
+      Cerr << " at time " << t << " ... " << finl;
+      MEDCouplingFieldDouble * field = dynamic_cast<MEDCouplingFieldDouble *>((MEDCouplingField *)ffield);
+      if (field == 0)
+        {
+          Cerr << "ERROR reading MED field! Not a MEDCouplingFieldDouble!!" << finl;
+          Process::exit(-1);
+        }
+      const double *field_values = field->getArray()->begin();
+      assert(field->getNumberOfTuplesExpected() == le_champ().valeurs().dimension(0));
+      assert((int) field->getNumberOfComponents() ==
+             (le_champ().valeurs().nb_dim() == 1 ? 1 : le_champ().valeurs().dimension(1)));
+      memcpy(le_champ().valeurs().addr(), field_values,
+             le_champ().valeurs().size_array() * sizeof(double));
+    }
+#endif  // MEDCOUPLING_
   // Mise a jour:
   Champ_Fonc_base::mettre_a_jour(t);
   le_champ().Champ_Fonc_base::mettre_a_jour(t);
-#else
+#else   // MED_
   med_non_installe();
 #endif
 }
@@ -589,101 +450,66 @@ int Champ_Fonc_MED::creer(const Nom& nom_fic, const Domaine& un_dom, const Motcl
   Nom type_champ;
   nom_champ_dans_fichier_med_ = le_nom();
 #ifdef MEDCOUPLING_
-  if (use_medcoupling_)
+  // MEDCoupling
+  int mesh_dimension = -1;
+  cell_type = type_geo_trio_to_type_medcoupling(type_elem, mesh_dimension);
+  if (localisation != Nom())
     {
-      // MEDCoupling
-      int mesh_dimension = -1;
-      cell_type = type_geo_trio_to_type_medcoupling(type_elem, mesh_dimension);
-      if (localisation != Nom())
+      if (localisation == "som")
         {
-          if (localisation == "som")
-            {
-              field_type = MEDCoupling::ON_NODES;
-              if ((cell_type == INTERP_KERNEL::NORM_QUAD4) || (cell_type == INTERP_KERNEL::NORM_HEXA8))
-                type_champ = "Champ_Fonc_Q1_MED";
-              else
-                type_champ = "Champ_Fonc_P1_MED";
-            }
-          else if (localisation == "elem")
-            {
-              field_type = MEDCoupling::ON_CELLS;
-              type_champ = "Champ_Fonc_P0_MED";
-            }
-          else
-            {
-              Cerr << localisation << " localization unknown." << finl;
-              exit();
-            }
-        }
-      std::string meshName = mon_dom->le_nom().getString();
-      std::string fileName = nom_fic.getString();
-      // Try to guess the field name in the MED file:
-      Noms fieldNamesGuess;
-      fieldNamesGuess.add((Motcle)nom_champ_dans_fichier_med_+"_"+mon_dom->le_nom());
-      if (localisation != Nom())
-        fieldNamesGuess.add((Motcle)nom_champ_dans_fichier_med_+"_"+localisation+"_"+mon_dom->le_nom());
-      fieldNamesGuess.add((Motcle)nom_champ_dans_fichier_med_);
-      if (!fieldNamesGuess.contient_(nom_champ_dans_fichier_med_))
-        fieldNamesGuess.add(nom_champ_dans_fichier_med_);
-      bool ok = false;
-      std::vector<std::string> fieldNames = GetAllFieldNamesOnMesh(fileName, meshName);
-      for (int i=0; i<fieldNamesGuess.size(); i++)
-        {
-          if (std::find(fieldNames.begin(), fieldNames.end(), fieldNamesGuess[i].getString()) != fieldNames.end())
-            {
-              nom_champ_dans_fichier_med_ = fieldNamesGuess[i];
-              ok = true;
-              break;
-            }
-        }
-      if (!ok)
-        {
-          Cerr << "Unable to find into file " << fileName << " a field named like :" << finl;
-          Cerr << fieldNamesGuess << finl;
-          Cerr << "This file contains the field(s) named:" << finl;
-          for (unsigned i=0; i<fieldNames.size(); i++)
-            Cerr << fieldNames[i] << finl;
-          Process::exit();
-        }
-      else
-        Cerr << "Ok, we find into file " << fileName << " a field named " << nom_champ_dans_fichier_med_ << finl;
-
-      std::string fieldName = nom_champ_dans_fichier_med_.getString();
-      lire_donnees_champ(fileName,meshName,fieldName,temps_sauv,size,nbcomp,type_champ);
-    }
-  else
-#endif
-    {
-      // MEDFile
-      type_geo = type_geo_trio_to_type_med(type_elem);
-      int verifie_type = 0;
-      if (localisation != Nom())
-        {
-          verifie_type = 1;
-          if (localisation == "som")
-            type_ent = MED_NODE;
-          else if (localisation == "elem")
-            type_ent = MED_CELL;
-          else
-            {
-              Cerr << localisation << " localisation not understood " << finl;
-              exit();
-            }
-        }
-      nom_champ_dans_fichier_med_ = medinfo1champ(nom_fic, nom_champ_dans_fichier_med_, numero_ch, nbcomp, nb_dt,
-                                                  type_ent, type_geo, size, un_dom.le_nom(), verifie_type, temps_sauv);
-      if (type_ent == MED_NODE)
-        {
-          if ((type_geo == MED_QUAD4) || (type_geo == MED_HEXA8))
+          field_type = MEDCoupling::ON_NODES;
+          if ((cell_type == INTERP_KERNEL::NORM_QUAD4) || (cell_type == INTERP_KERNEL::NORM_HEXA8))
             type_champ = "Champ_Fonc_Q1_MED";
           else
             type_champ = "Champ_Fonc_P1_MED";
         }
-      else if (type_ent == MED_CELL)
+      else if (localisation == "elem")
         {
+          field_type = MEDCoupling::ON_CELLS;
           type_champ = "Champ_Fonc_P0_MED";
         }
+      else
+        {
+          Cerr << localisation << " localization unknown." << finl;
+          exit();
+        }
     }
+  std::string meshName = mon_dom->le_nom().getString();
+  std::string fileName = nom_fic.getString();
+  // Try to guess the field name in the MED file:
+  Noms fieldNamesGuess;
+  fieldNamesGuess.add((Motcle)nom_champ_dans_fichier_med_+"_"+mon_dom->le_nom());
+  if (localisation != Nom())
+    fieldNamesGuess.add((Motcle)nom_champ_dans_fichier_med_+"_"+localisation+"_"+mon_dom->le_nom());
+  fieldNamesGuess.add((Motcle)nom_champ_dans_fichier_med_);
+  if (!fieldNamesGuess.contient_(nom_champ_dans_fichier_med_))
+    fieldNamesGuess.add(nom_champ_dans_fichier_med_);
+  bool ok = false;
+  std::vector<std::string> fieldNames = GetAllFieldNamesOnMesh(fileName, meshName);
+  for (int i=0; i<fieldNamesGuess.size(); i++)
+    {
+      if (std::find(fieldNames.begin(), fieldNames.end(), fieldNamesGuess[i].getString()) != fieldNames.end())
+        {
+          nom_champ_dans_fichier_med_ = fieldNamesGuess[i];
+          ok = true;
+          break;
+        }
+    }
+  if (!ok)
+    {
+      Cerr << "Unable to find into file " << fileName << " a field named like :" << finl;
+      Cerr << fieldNamesGuess << finl;
+      Cerr << "This file contains the field(s) named:" << finl;
+      for (unsigned i=0; i<fieldNames.size(); i++)
+        Cerr << fieldNames[i] << finl;
+      Process::exit();
+    }
+  else
+    Cerr << "Ok, we find into file " << fileName << " a field named " << nom_champ_dans_fichier_med_ << finl;
+
+  std::string fieldName = nom_champ_dans_fichier_med_.getString();
+  lire_donnees_champ(fileName,meshName,fieldName,temps_sauv,size,nbcomp,type_champ);
+#endif  // MEDCOUPLING_
   // Definition:
   vrai_champ_.typer(type_champ);
   fixer_nb_comp(nbcomp);
@@ -698,7 +524,7 @@ int Champ_Fonc_MED::creer(const Nom& nom_fic, const Domaine& un_dom, const Motcl
   le_champ().nommer(le_nom());
   //le_champ().corriger_unite_nom_compo();
   return size;
-#else
+#else    // MED_
   med_non_installe();
   return 0;
 #endif
@@ -770,7 +596,7 @@ void Champ_Fonc_MED::lire_donnees_champ(const std::string& fileName, const std::
   else if (field_type == MEDCoupling::ON_CELLS)
     type_champ = "Champ_Fonc_P0_MED";
 }
-#endif
+#endif // MEDCOUPLING_
 
 const Domaine_dis_base& Champ_Fonc_MED::domaine_dis_base() const
 {
@@ -780,25 +606,4 @@ const Domaine_dis_base& Champ_Fonc_MED::domaine_dis_base() const
 const ArrOfDouble& Champ_Fonc_MED::get_saved_times(void) const
 {
   return temps_sauv_;
-}
-
-
-/**
- * Read field with MEDFile API (soon deprecated)
- */
-Implemente_instanciable_sans_constructeur(Champ_Fonc_MEDfile, "Champ_Fonc_MEDfile", Champ_Fonc_MED);
-// XD Champ_Fonc_MEDfile champ_fonc_med Champ_Fonc_MEDfile -1 Obsolete keyword to read a field with MED file API
-Champ_Fonc_MEDfile::Champ_Fonc_MEDfile()
-{
-  use_medcoupling_ = false;
-}
-
-Sortie& Champ_Fonc_MEDfile::printOn(Sortie& os) const
-{
-  return Champ_Fonc_MED::printOn(os);
-}
-
-Entree& Champ_Fonc_MEDfile::readOn(Entree& is)
-{
-  return Champ_Fonc_MED::readOn(is);
 }

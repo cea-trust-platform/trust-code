@@ -19,7 +19,6 @@
 #include <EChaine.h>
 #include <med++.h>
 #include <NettoieNoeuds.h>
-#include <sys/stat.h>
 #include <SFichier.h>
 #include <TRUSTList.h>
 #include <TRUSTTabs.h>
@@ -32,6 +31,7 @@
 #include <Char_ptr.h>
 #include <fstream>
 #include <medcoupling++.h>
+#include <trust_med_utils.h>
 #ifdef MEDCOUPLING_
 #include <MEDLoader.hxx>
 #include <MEDFileMesh.hxx>
@@ -45,60 +45,16 @@ using MEDCoupling::MEDFileMeshes;
 using MEDCoupling::DataArrayInt;
 #endif
 
-// fonction utile pour creer un Nom d'une taille donnee
-void dimensionne_char_ptr_taille(Char_ptr& nom ,int taille_d_un_mot,int nb)
-{
-  nom.allocate(taille_d_un_mot*nb);
-}
-
 // XD Read_MED interprete lire_med 1 Keyword to read MED mesh files where 'domain' corresponds to the domain name, 'file' corresponds to the file (written in the MED format) containing the mesh named mesh_name. NL2 Note about naming boundaries: When reading 'file', TRUST will detect boundaries between domains (Raccord) when the name of the boundary begins by type_raccord_. For example, a boundary named type_raccord_wall in 'file' will be considered by TRUST as a boundary named 'wall' between two domains. NL2 NB: To read several domains from a mesh issued from a MED file, use Read_Med to read the mesh then use Create_domain_from_sub_domain keyword. NL2 NB: If the MED file contains one or several subdomaine defined as a group of volumes, then Read_MED will read it and will create two files domain_name_ssz.geo and domain_name_ssz_par.geo defining the subdomaines for sequential and/or parallel calculations. These subdomaines will be read in sequential in the datafile by including (after Read_Med keyword) something like: NL2 Read_Med .... NL2 Read_file domain_name_ssz.geo ; NL2 During the parallel calculation, you will include something: NL2 Scatter { ... } NL2 Read_file domain_name_ssz_par.geo ;
-Implemente_instanciable_sans_constructeur(LireMED,"Lire_MED",Interprete_geometrique_base);
+Implemente_instanciable(LireMED,"Lire_MED",Interprete_geometrique_base);
 Add_synonym(LireMED,"Read_med");
 
-LireMED::LireMED()
-{
-#ifdef MEDCOUPLING_
-  use_medcoupling_ = true;
-#else
-  use_medcoupling_ = false;
-#endif
-}
-
-/*! @brief Simple appel a: Interprete::printOn(Sortie&)
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& LireMED::printOn(Sortie& os) const
-{
-  return Interprete::printOn(os);
-}
-
-
-/*! @brief Simple appel a: Interprete::readOn(Entree&)
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& LireMED::readOn(Entree& is)
-{
-  return Interprete::readOn(is);
-}
-
-#ifndef MED_
-Entree& LireMED::interpreter_(Entree& is)
-{
-  med_non_installe();
-  return is;
-}
-void LireMED::lire_geom( Nom& nom_fic,Domaine& dom,const Nom& nom_dom,const Nom& nom_dom_trio,int isvef, int isfamilyshort)
-{
-  med_non_installe();
-}
-#else
-
+////
+//// Anonymous namespace for local methods to this translation unit:
+////
 namespace
 {
+
 void interp_old_syntax(Entree& is, int& isvefforce, int& convertAllToPoly, int& isfamilyshort, Nom& nom_dom_trio, Nom& nom_mesh, Nom& nom_fic)
 {
   //Cerr << "Syntax: Lire_MED [ vef|convertAllToPoly  ] [ family_names_from_group_names | short_family_names ] domaine_name mesh_name filename.med" << finl;
@@ -141,937 +97,9 @@ void interp_old_syntax(Entree& is, int& isvefforce, int& convertAllToPoly, int& 
   lire_nom_med(nom_mesh,is);
   is >> nom_fic;
 }
-}
-
-
-Entree& LireMED::interpreter_(Entree& is)
-{
-  int isvefforce=0;
-  int convertAllToPoly=0;
-  int isfamilyshort=0;
-  Nom nom_dom_trio,nom_mesh("--any--"), nom_fic;
-
-  is >> nom_dom_trio;
-  if (nom_dom_trio == "{") // New syntax !!
-    {
-      Nom s = "{ ";
-      int cnt = 1;
-      while (cnt)
-        {
-          Nom motlu;
-          is >> motlu;
-          if (motlu == "{") cnt++;
-          if (motlu == "}") cnt --;
-          s += Nom(" ") + motlu;
-        }
-      int nfnfgn = 0;
-      Param param(que_suis_je());
-      param.ajouter_flag("convertAllToPoly", &convertAllToPoly);       // XD_ADD_P flag Option to convert mesh with mixed cells into polyhedral/polygonal cells
-
-      // Awful option just to keep naked family names from MED file. Rarely used, to be removed very soon.
-      // In the new syntax, we implicitely assume that the former option 'family_names_from_group_names' is always set.
-      param.ajouter_flag("no_family_names_from_group_names", &nfnfgn); // XD_ADD_P flag Awful option just to keep naked family names from MED file. Rarely used, to be removed very soon.
-
-      param.ajouter("domain|domaine", &nom_dom_trio, Param::REQUIRED); // XD_ADD_P ref_domaine Corresponds to the domain name.
-      param.ajouter("file|fichier", &nom_fic, Param::REQUIRED);        // XD_ADD_P chaine File (written in the MED format, with extension '.med') containing the mesh
-
-      param.ajouter("mesh|maillage", &nom_mesh);                       // XD_ADD_P chaine Name of the mesh in med file. If not specified, the first mesh will be read.
-
-      EChaine is2(s);
-      param.lire_avec_accolades(is2);
-      isfamilyshort = nfnfgn ? 0 : 2;  // will be 2 most of the time in the new syntax.
-    }
-  else // Boooh: old syntax :-(
-    interp_old_syntax(is, isvefforce, convertAllToPoly, isfamilyshort, nom_dom_trio, nom_mesh, nom_fic);
-
-  // Strip _0000 if there, and create proper file name
-  Nom nom_fic2(nom_fic);
-  nom_fic2.prefix(".med");
-  if (nom_fic2==nom_fic)
-    {
-      Cerr<<"Error, the MED file should have .med as extension."<<finl;
-      Cerr<<"See the syntax of Read_MED keyword." << finl;
-      exit();
-    }
-  Nom nom_fic3(nom_fic2);
-  if (nom_fic3.prefix("_0000") != nom_fic2 )
-    {
-      nom_fic3+=".med";
-      nom_fic=nom_fic3.nom_me(me());
-    }
-  associer_domaine(nom_dom_trio);
-  Domaine& dom=domaine();
-  lire_geom(nom_fic,dom,nom_mesh,nom_dom_trio,isvefforce,convertAllToPoly,isfamilyshort);
-  return is;
-}
-
-void convert_med_int_to_inttab(ArrOfInt& tab,med_int* tabmed)
-{
-  if (sizeof(med_int)!=sizeof(int))
-    {
-      int taille=tab.size_array();
-      //    Cerr<<sizeof(tab)<<" "<<sizeof(int)<<" "<<sizeof(tab)/sizeof(int)<<" "<<taille<<finl;
-      Process::Journal()<<"medint* copy"<<finl;
-
-      for (int i=0; i<taille; i++)
-        tab[i]=tabmed[i];
-      // on peut liberer le tableau maintenant
-      delete [] tabmed;
-    }
-}
-med_int* alloue_med_int_from_inttab(const ArrOfInt& tab)
-{
-  med_int* tabmed;
-  if (sizeof(med_int)==sizeof(int))
-    tabmed=(med_int *)tab.addr();
-  else
-    {
-
-      int taille=tab.size_array();
-      Process::Journal()<<"medint* creation"<<finl;
-      tabmed=new med_int[taille];
-    }
-  return tabmed;
-}
-
-
-extern "C" int MEDimport(char*,char*);
-
-void test_version(Nom& nom)
-{
-  // on regarde si le fichier est d'une version differente, si oui
-  // on cree un fichier au format MED majeur courant, et on change le nom du fichier
-  med_bool med_ok, hdf_ok;
-  if (MEDfileCompatibility(nom, &med_ok, &hdf_ok))
-    {
-      Cerr<<"Problem when trying to open the file "<<nom<<finl;
-      Process::exit();
-    }
-
-  if (hdf_ok && med_ok) return; //pas besoin de convertir
-
-  // On serialise pour eviter que le fichier soit cree plusieurs fois en //
-
-  Nom nom2bis("Conv_");
-  // ajout prefixe Conv_
-  Nom nom2 ;
-
-  char* nomtmp = new char[strlen(nom)+1];
-  int compteur=(int)strlen(nom);
-
-  strcpy(nomtmp,nom);
-
-  const char* ptr=nomtmp+compteur;
-  int pas_de_slach=0;
-
-  while((*ptr!='/')&&(compteur>0))  // recherche du dernier slach dans le nom du fichier
-    {
-      ptr--;
-      compteur--;
-      if (*ptr=='/')
-        {
-          pas_de_slach=1;
-        }
-    }
-
-  if (pas_de_slach==0) // Cas ou le fichier med est dans le repertoire courant
-    {
-      nom2=nom2bis;
-      nom2+=nom;
-    }
-  else // Cas ou le fichier med est defini par un chemin
-    {
-      Nom cible(ptr);
-      cible.suffix("/");  // nom du fichier
-      nom2bis+= cible;   // nom du fichier + prefix Conv_
-
-      Nom nomentier(nom);
-      nomentier.prefix(cible);  // nom du chemin pour trouver fichier
-
-      nomentier+=nom2bis;  // nom du chemin + prefixe Conv . nom fichier
-      nom2=nomentier;
-    }
-
-  delete [] nomtmp;
-
-  for  (int p=0; p<Process::nproc(); p++)
-    {
-      if (p==Process::me())
-        {
-          //  if(Process::nproc()>1)
-          // nom2=nom2.nom_me(Process::me());
-
-          //Cerr<<"ICI"<<nom2<<finl;
-          int a_creer;
-          ifstream test(nom2);
-          if (test)
-            {
-              //Cerr<<"le fichier "<<nom2<<" existe deja , je ne fais rien "<<finl;//exit();
-              a_creer=0;
-              struct stat org,newf;
-              stat(nom,&org);
-              stat(nom2,&newf);
-              if (org.st_mtime>newf.st_mtime)
-                a_creer=1;
-
-            }
-          else
-            a_creer=1;
-          if (a_creer)
-            {
-              Cerr<<"Creation of the file "<<nom2<<" to newer format."<<finl;
-              MEDimport(Char_ptr(nom),Char_ptr(nom2));
-            }
-          else
-            Cerr<<"The file "<<nom2<<" is up to date."<<finl;
-        }
-      Process::barrier();
-    }
-  nom=nom2;
-  return;
-
-}
-
-int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& dimension,
-                DoubleTab& sommets, Nom& type_elem, Elem_geom& ele, IntTab& les_elems,
-                Noms& v_type_face, IntTabs& v_all_faces_bord, ArrsOfInt& v_familles,
-                Noms& noms_bords, IntVect& Indice_bords, int isvef, int isfamilyshort)
-{
-  // IntTab les_elems;
-  int ret=0;
-  test_version(nom_fic);
-
-  med_idt fid=MEDfileOpen(nom_fic,MED_ACC_RDONLY);
-  if (fid<0)
-    {
-      Cerr<<"Problem when trying to open the file "<<nom_fic<<finl;
-      Process::exit();
-    }
-  int nmaillage=MEDnMesh(fid);
-
-  if (nmaillage<1)
-    {
-      Cerr<<"We have "<<nmaillage<<" meshes instead of 1 mesh."<<finl;
-      return -1;
-    }
-  Char_ptr maa;
-  dimensionne_char_ptr_taille(maa,MED_NAME_SIZE);
-  int monmaillage=-1;
-
-  Char_ptr description,dtunit,axisname,axisunit;
-  dimensionne_char_ptr_taille(description,MED_COMMENT_SIZE);
-  dimensionne_char_ptr_taille(dtunit,MED_SNAME_SIZE);
-  dimensionne_char_ptr_taille(axisname,MED_SNAME_SIZE,3);
-  dimensionne_char_ptr_taille(axisunit,MED_SNAME_SIZE,3);
-  med_sorting_type sortingtype;
-  med_mesh_type meshtype;
-  med_int spacedim,meshdim,nstep;
-  med_axis_type axistype;
-
-  for (int i=0; i<nmaillage; i++)
-    {
-      med_int dim;
-      ret=MEDmeshInfo(fid,i+1,maa,&dim,&meshdim,&meshtype,description,dtunit,&sortingtype,&nstep,&axistype,axisname,axisunit);
-      spacedim=MEDmeshnAxis(fid,i+1);
-      if (spacedim<0) spacedim=meshdim;
-      Nom Nmaa(maa);
-      if (nom_dom==Nmaa)
-        {
-          monmaillage=i+1;
-          break;
-        }
-      else
-        Cerr<<"A mesh named "<<maa<<" is found in the file " << nom_fic << finl;
-    }
-  if (monmaillage==-1)
-    {
-      Cerr<<"But the mesh_name "<<nom_dom<<" is not found into the file " << nom_fic << "." << finl;
-      Cerr<<"Check the MED file or change the "<<nom_dom<<" name by "<<maa<<" name of Lire_MED interpreter in your .data file." << finl;
-      Process::exit();
-      return -1;
-    }
-  med_geometry_type type_geo=MED_POINT1;
-  med_connectivity_mode type_conn=MED_NODAL;
-  //Cerr<<"type_geo"<<type_geo<<finl;
-  dimension=meshdim;
-  if (spacedim>-1)
-    dimension=spacedim;
-  med_bool chgt,transfo;
-  int nsommet=MEDmeshnEntity(fid,maa,MED_NO_DT,MED_NO_IT, MED_NODE,type_geo,MED_COORDINATE, type_conn,&chgt,&transfo);
-  //Cerr<<"type_geo "<<type_geo<<" conn "<<type_conn<<finl;
-  sommets.resize(nsommet,dimension);
-
-  if (nsommet==0) return 0;
-
-  //   Nom nomcoo="x       y      ";
-  //   Nom unicco="m       m      ";
-  //   if (dimension>2)
-  //     {
-  //       nomcoo+="x       ";
-  //       unicco+="m       ";
-  //     }
-  double* sommets2=sommets.addr();
-  med_axis_type rep;
-  rep=axistype;
-  ret=MEDmeshNodeCoordinateRd(fid,maa,MED_NO_DT,MED_NO_IT,MED_FULL_INTERLACE,sommets2);
-  med_int* num_famille_elem;
-  // lecture du nbre et du type elt
-  const int med_nbr_type_geom=17;//MED_NBR_GEOMETRIE_MAILLE+2;
-  const med_geometry_type all_cell_type1[med_nbr_type_geom]= { MED_POINT1,MED_SEG2,MED_SEG3,MED_TRIA3,MED_QUAD4,MED_TRIA6,MED_POLYGON,MED_POLYHEDRON,MED_QUAD8,MED_TETRA4,MED_PYRA5,MED_PENTA6,MED_HEXA8,MED_TETRA10,MED_PYRA13,MED_PENTA15,MED_HEXA20};
-  int jelem=-1;
-  {
-    int nm1=0,nm;
-    //  med_geometry_type type_geo;
-    //    for (i=1;i<med_nbr_type_geom;i++)
-    for (int i=med_nbr_type_geom-1; i>0; i--)
-      if (nm1==0)
-        {
-          nm=0;
-          //        Cerr<<nm << " "<<all_cell_type1[i]<<finl;
-          med_bool cght,transfo2;
-          nm=MEDmeshnEntity(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_CELL,all_cell_type1[i], MED_CONNECTIVITY,MED_NODAL,&cght,&transfo2);
-
-          if (nm!=0)
-            {
-              if (nm1==0)
-                {
-                  nm1=nm;
-                  jelem=i;
-                  type_geo=all_cell_type1[i];
-                  Process::Journal()<<nm1<<" elements of kind "<<(int)type_geo<<" has been found." << finl;
-                }
-              else
-                {
-                  Cerr<<"Elements of kind "<<(int)type_geo<< " has already been readen" << finl;
-                  Cerr<<"TRUST does not support different element types for the mesh."<<finl;
-                  Cerr<<"The new elements of kind "<<(int)all_cell_type1[i]<<" are not read." << finl;
-                  //return -1;
-                }
-            }
-
-        }
-    if (nm1<=0)
-      {
-        Cerr<<"No elements found."<<finl;
-        return -1;
-      }
-    switch(type_geo)
-      {
-      case MED_QUAD4:
-        type_elem="Rectangle";
-        if (isvef==1) type_elem="Quadrangle";
-        break;
-
-      case MED_HEXA8:
-        type_elem="Hexaedre";
-        if (isvef==1) type_elem="Hexaedre_vef";
-        break;
-      case MED_TRIA3:
-        type_elem="Triangle";
-        break;
-      case MED_TETRA4:
-        type_elem="Tetraedre";
-        break;
-      case MED_PENTA6:
-        type_elem="Prisme";
-        break;
-      case MED_POLYHEDRON:
-        type_elem="Polyedre";
-        break;
-      case MED_POLYGON:
-        type_elem="Polygone";
-        break;
-      case MED_SEG2:
-        type_elem="Segment";
-        break;
-      default:
-        Cerr<<"type_geo " << (int)type_geo <<" is not a supported element."<<finl;
-        return -1;
-      }
-
-    if (rep==MED_CYLINDRICAL)
-      {
-        if (type_geo==MED_QUAD4)
-          {
-            type_elem="Rectangle_2D_axi";
-            if (!Objet_U::bidim_axi)
-              {
-                Cerr<<"Warning, we will use bidim_axi keyword."<<finl;
-                Objet_U::bidim_axi=1;
-              }
-          }
-        else
-          {
-            Process::exit();
-          }
-      }
-    if (rep==MED_SPHERICAL)
-      {
-        type_elem+="_axi";
-        if (! Objet_U::axi)
-          {
-            Cerr<<"Warning, we will use now Axi keyword."<<finl;
-            Objet_U::axi=1;
-          }
-      }
-    Process::Journal()<<"Element TRUST kind: "<<type_elem<<finl;
-    ele.typer(type_elem);
-
-    int is_poly=0;
-    if ((type_geo==MED_POLYHEDRON)||(type_geo==MED_POLYGON))
-      is_poly=1;
-    int nelem=nm1;
-    num_famille_elem=new med_int[nelem];
-    if (is_poly==0)
-      {
-        int nbsom=ele.nb_som();
-        les_elems.resize(nelem,nbsom);
-        IntTab elems_prov;
-        IntTab& les_elems2=les_elems;
-        //ArrOfInt num_famille_elem(nelem);
-        med_int* med_les_elems2=alloue_med_int_from_inttab(les_elems2);
-        double dtb;
-        med_int numdt,numit;
-        MEDmeshComputationStepInfo(fid,nom_dom,1,&numdt,&numit,&dtb);
-        ret=MEDmeshElementConnectivityRd(fid,nom_dom,numdt,numit,MED_CELL,type_geo,MED_NODAL,MED_FULL_INTERLACE,med_les_elems2);
-        int ret2=MEDmeshEntityFamilyNumberRd(fid,nom_dom,numdt,numit,MED_CELL,type_geo,num_famille_elem);
-        if (ret2<0)
-          {
-            //Process::exit();
-            for (int ii=0; ii<nelem; ii++)
-              num_famille_elem[ii] = 0;
-
-          }
-        convert_med_int_to_inttab(les_elems2,med_les_elems2);
-
-        if (ret<0)
-          {
-            Cerr<<"Problem when reading the elements into the file "<<nom_fic<<finl;
-            Process::exit();
-          }
-      }
-    else if (type_geo==MED_POLYGON)
-      {
-        // on a des polygone...
-        // avant d'oublier on lit les familles
-        if (MEDmeshEntityFamilyNumberRd(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_CELL,type_geo,num_famille_elem)<0)
-          for (int ii=0; ii<nelem; ii++)
-            num_famille_elem[ii] = 0;
-
-        int  NumberOfPolygone = nm1;
-        //med_int ConnectivitySize;
-        //med_err err1 = MEDpolygoneInfo(fid,nom_dom,MED_CELL,MED_NODAL, &ConnectivitySize);
-        med_int FacesIndexSize;
-        med_bool cght,transfo2;
-        // NumberOfNodes=NumberOfPolygone;
-        NumberOfPolygone=MEDmeshnEntity(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_CELL,MED_POLYGON,MED_INDEX_NODE,MED_NODAL,&cght,&transfo2)-1; // -1 a cause du +1 ensuite !!!
-        med_err err1=0;
-
-        FacesIndexSize=MEDmeshnEntity(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_CELL,MED_POLYGON, MED_CONNECTIVITY,MED_NODAL,&cght,&transfo2);
-        if (err1 != 0)
-          {
-            Cerr<<"Error MEDpolygoneInfo"<<finl;
-            Process::exit();
-          }
-        //Cerr<<NumberOfPolygone<< " "<<NumberOfNodes<<" "<<FacesIndexSize<<finl;
-        //  ArrOfInt Nodes(NumberOfNodes);
-        ArrOfInt FacesIndex(FacesIndexSize),PolygonIndex(NumberOfPolygone+1);
-        {
-          //med_int* med_Nodes=alloue_med_int_from_inttab(Nodes);
-          med_int* med_FacesIndex=alloue_med_int_from_inttab(FacesIndex);
-          med_int* med_PolygonIndex=alloue_med_int_from_inttab(PolygonIndex);
-          med_err err4 =MEDmeshPolygonRd(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_CELL,MED_NODAL,med_PolygonIndex,med_FacesIndex);
-          if (err4 != 0)
-            {
-              Cerr<<": MEDpolygoneConnLire returns "<<(int)err4;
-              Process::exit();
-            }
-          //convert_med_int_to_inttab(Nodes,med_Nodes);
-          convert_med_int_to_inttab(FacesIndex,med_FacesIndex);
-          convert_med_int_to_inttab(PolygonIndex,med_PolygonIndex);
-          //Cerr<<Nodes<< " "<<FacesIndex<<" "<<PolyhedronIndex<<finl;
-        }
-        // Nodes-=1;
-        FacesIndex-=1;
-        PolygonIndex-=1;
-
-        // Cerr<<"iiiiiiiiiii"<<FacesIndex<<"llllllll"<<finl;
-
-        ref_cast(Polygone,ele.valeur()).affecte_connectivite_numero_global( FacesIndex, PolygonIndex, les_elems);
-        // Cerr<<"iiiiiiiiiii"<<FacesIndex<<"llllllll"<<finl;
-        // on remet +1 car apres on le retire....
-        les_elems+=1;
-
-      }
-    else
-      {
-        // on a des polyedres...
-        // avant d'oublier on lit les familles
-        if (MEDmeshEntityFamilyNumberRd(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_CELL,type_geo,num_famille_elem)<0)
-          for (int ii=0; ii<nelem; ii++)
-            num_famille_elem[ii] = 0;
-
-        int  NumberOfPolyedre = nm1;
-
-
-        //med_int ConnectivitySize;
-        //med_err err1 = MEDpolygoneInfo(fid,nom_dom,MED_CELL,MED_NODAL, &ConnectivitySize);
-        med_int FacesIndexSize, NumberOfNodes;
-
-        med_bool cght,transfo2;
-        NumberOfNodes=NumberOfPolyedre;
-        NumberOfPolyedre=MEDmeshnEntity(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_CELL,MED_POLYHEDRON, MED_INDEX_FACE,MED_NODAL,&cght,&transfo2)-1; // -1 a cause du +1 ensuite !!!
-        med_err err1=0;
-
-        FacesIndexSize=MEDmeshnEntity(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_CELL,MED_POLYHEDRON, MED_INDEX_NODE,MED_NODAL,&cght,&transfo2);
-        if (err1 != 0)
-          {
-            Cerr<<"Error MEDpolygoneInfo"<<finl;
-            Process::exit();
-          }
-        //Cerr<<NumberOfPolyedre<< " "<<NumberOfNodes<<" "<<FacesIndexSize<<finl;
-        ArrOfInt Nodes(NumberOfNodes),FacesIndex(FacesIndexSize),PolyhedronIndex(NumberOfPolyedre+1);
-        {
-          med_int* med_Nodes=alloue_med_int_from_inttab(Nodes);
-          med_int* med_FacesIndex=alloue_med_int_from_inttab(FacesIndex);
-          med_int* med_PolyhedronIndex=alloue_med_int_from_inttab(PolyhedronIndex);
-          med_err err4 =MEDmeshPolyhedronRd(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_CELL,MED_NODAL,med_PolyhedronIndex,med_FacesIndex,med_Nodes);
-          if (err4 != 0)
-            {
-              Cerr<<": MEDpolyedreConnLire returns "<<(int)err4;
-              Process::exit();
-            }
-          convert_med_int_to_inttab(Nodes,med_Nodes);
-          convert_med_int_to_inttab(FacesIndex,med_FacesIndex);
-          convert_med_int_to_inttab(PolyhedronIndex,med_PolyhedronIndex);
-          //Cerr<<Nodes<< " "<<FacesIndex<<" "<<PolyhedronIndex<<finl;
-        }
-        Nodes-=1;
-        FacesIndex-=1;
-        PolyhedronIndex-=1;
-        ref_cast(Polyedre,ele.valeur()).affecte_connectivite_numero_global( Nodes,FacesIndex, PolyhedronIndex, les_elems);
-        // on remet +1 car apres on le retire....
-        les_elems+=1;
-      }
-  }
-  assert(jelem!=-1);
-  // lecture des faces
-  // lecture du nbre et du type face
-  // const med_geometry_type all_cell_type1[med_nbr_type_geom]={  MED_POINT1,MED_SEG2,MED_SEG3,MED_TRIA3,MED_QUAD4,MED_TRIA6,MED_QUAD8,MED_TETRA4,MED_PYRA5,MED_PENTA6,MED_HEXA8,MED_TETRA10,MED_PYRA13,MED_PENTA15,MED_HEXA20};
-
-  //ele.typer(type_elem);
-  int nb_type_face=ele.nb_type_face();
-  v_familles.dimensionner(nb_type_face);
-  v_all_faces_bord.dimensionner(nb_type_face);
-  v_type_face.dimensionner(nb_type_face);
-  int debut_cherche=jelem;
-  for (int tp=0; tp<nb_type_face; tp++)
-    {
-
-      ArrOfInt& familles=v_familles[tp];
-      IntTab& all_faces_bord=v_all_faces_bord[tp];
-      Nom& type_face=v_type_face[tp];
-
-      int nm1=0,nm;
-      //  med_geometry_type type_geo;
-      med_entity_type type_ent=MED_DESCENDING_FACE;
-      if (dimension==2) type_ent=MED_DESCENDING_EDGE;
-      if (jelem==0)
-        {
-          type_ent=MED_NODE;
-        }
-      for (int mm=0; mm<2; mm++)
-        {
-          if (nm1!=0) break;
-
-          if (mm==1) type_ent=MED_CELL;
-
-          for (int i=debut_cherche-1 ; i>=0; i--)
-            {
-              if (nm1!=0) break;
-
-              nm=0;
-              med_bool cght,transfo3;
-              nm=MEDmeshnEntity(fid,nom_dom,MED_NO_DT,MED_NO_IT,type_ent,all_cell_type1[i], MED_CONNECTIVITY,MED_NODAL,&cght,&transfo3);
-              if (nm!=0)
-                {
-                  if (nm1==0)
-                    {
-                      nm1=nm;
-                      type_geo=all_cell_type1[i];
-                      Process::Journal()<<"We find "<<nm1<<" faces of kind "<<(int)type_geo<<finl;
-                      debut_cherche=i;
-                    }
-                  else
-                    {
-                      Cerr<<"We have already faces of kind "<<(int)type_geo<<finl;
-                      Cerr<<"TRUST does not support several kind of faces."<<finl;
-                      return -1;
-                    }
-                }
-
-            }
-        }
-      if (nm1<=0)
-        {
-          Cerr<<"No faces found."<<finl;
-        }
-      else
-        {
-          switch(type_geo)
-            {
-            case MED_POINT1:
-              type_face="POINT_1D";
-              break;
-            case MED_SEG2:
-              type_face="SEGMENT_2D";
-              break;
-            case MED_TRIA3:
-              type_face="TRIANGLE_3D";
-              break;
-
-            case MED_QUAD4:
-              type_face="QUADRANGLE_3D";
-              break;
-            case MED_POLYGON:
-              type_face="polygone_3D";
-              break;
-            default:
-              Cerr<<"type_geo " << (int)type_geo <<" is not supported by TRUST."<<finl;
-              return -1;
-            }
-
-
-          if (rep==MED_CYLINDRICAL)
-            {
-              if (type_geo==MED_SEG2)
-                {
-                  type_face="QUADRILATERE_2D_AXI";
-                  assert(Objet_U::bidim_axi==1);
-                }
-              else
-                {
-                  Process::exit();
-                }
-            }
-          if (rep==MED_SPHERICAL)
-            {
-              type_face+="_axi";
-              assert(Objet_U::axi==1);
-            }
-          //    Cerr<<"type facem ici"<<type_face<<"a"<<finl;
-          Faces face;
-          face.typer(type_face);
-          int nface=nm1;
-          familles.resize_array(nface);
-          if (face.type_face()!=Faces::polygone_3D)
-            {
-
-              int nbsom=face.nb_som_faces();
-              //Cerr<<"nbre de sommets par elts "<<nbsom<<finl;
-
-              Char_ptr nomse2;
-              med_int *numse2;
-
-              //Cerr<<"nface bis"<<nface<<finl;
-              all_faces_bord.resize(nface,nbsom);
-              IntTab faces_prov;
-              IntTab& all_faces_bord2=all_faces_bord;
-              //IntTab& all_faces_bord2=all_faces_bord;
-              dimensionne_char_ptr_taille(nomse2,MED_SNAME_SIZE,nface);
-              numse2 = new med_int[nface];
-
-
-              {
-                med_int* med_all_faces_bord2=alloue_med_int_from_inttab(all_faces_bord2);
-                med_int* med_familles=alloue_med_int_from_inttab(familles);
-                med_bool withelementname,withelementnumber, withfamnumber;
-                med_int* elementnumber=numse2;
-                char* elementname=nomse2;
-                ret=MEDmeshElementRd(fid,nom_dom,MED_NO_DT,MED_NO_IT,type_ent,type_geo,MED_NODAL,MED_FULL_INTERLACE,med_all_faces_bord2,&withelementname,elementname,&withelementnumber,elementnumber,&withfamnumber,med_familles);
-                delete [] numse2;
-                convert_med_int_to_inttab(all_faces_bord2,med_all_faces_bord2);
-                convert_med_int_to_inttab(familles,med_familles);
-              }
-              if (ret<0)
-                {
-                  Cerr<<"Problem when reading the faces "<<ret<<finl;
-                  Process::exit();
-                }
-
-              //    Cerr<<"elem "<<ret<<finl;
-            }
-          else
-            {
-              // familles
-              med_int* med_familles=alloue_med_int_from_inttab(familles);
-              if (MEDmeshEntityFamilyNumberRd(fid,nom_dom,MED_NO_DT,MED_NO_IT,type_ent,type_geo,med_familles)<0)
-                for (int ii=0; ii<nface; ii++)
-                  med_familles[ii] = 0;
-
-              convert_med_int_to_inttab(familles,med_familles);
-              med_int size_conn;
-              med_bool cght,transfo3;
-              size_conn=nface;
-              nface=MEDmeshnEntity(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_CELL,MED_POLYGON,MED_INDEX_NODE,MED_NODAL,&cght,&transfo3)-1;
-              int taille_index=nface+1;
-              ArrOfInt connectivite(size_conn),index(taille_index);
-              med_int* med_conn=alloue_med_int_from_inttab(connectivite);
-              med_int* med_index=alloue_med_int_from_inttab(index);
-              ret=MEDmeshPolygonRd(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_CELL,MED_NODAL,med_index,med_conn);
-              convert_med_int_to_inttab(connectivite,med_conn);
-              convert_med_int_to_inttab(index,med_index);
-              int max_som_face=0;
-              for (int i=0; i<nface; i++)
-                {
-                  int nb_som_face=index[i+1]-index[i];
-                  if  (nb_som_face>max_som_face) max_som_face=nb_som_face;
-                }
-              all_faces_bord.resize(nface,max_som_face);
-              all_faces_bord=0;
-
-              for (int i=0; i<nface; i++)
-                {
-                  int nb_som_face=index[i+1]-index[i];
-                  for (int j=0; j<nb_som_face; j++)
-                    all_faces_bord(i,j)=connectivite[index[i]+j-1];
-
-                }
-              if (ret != 0)
-                {
-                  Cerr<<"Error MEDpolygoneConnlire"<<finl;
-                  Process::exit();
-                }
-            }
-        }
-    }
-
-  // lecture des familles c.a.d leur nom = les cl
-  {
-    int nfam;
-    if ((nfam = MEDnFamily(fid,nom_dom)) < 0)
-      {
-        Cerr<<"Problem during the read of the families."<<finl;
-        return -1;
-      }
-    Process::Journal()<<"Number of families: "<<nfam<<finl;
-    noms_bords.dimensionner(nfam);
-    Indice_bords.resize(nfam);
-    int non_affecte=-1000;
-    med_int ngro;
-    LIST(Nom) list_group;
-    IntTab corres_grp_fam;
-    for (int passage=0; passage<2; passage++)
-      {
-        if (passage==1)
-          {
-            // on connait maintenant le nombre de groupe
-            corres_grp_fam.resize(list_group.size(),nfam);
-            corres_grp_fam=non_affecte;
-          }
-        // on passe 2 fois
-        // la premiere fois on trouve le nombre de groupes totales
-        // la deuxieme fois on stocke la correspondance groupe face
-        for (int i=0; i<nfam; i++)
-          {
-            if ((ngro = MEDnFamily(fid,nom_dom))<0)
-              ret = -1;
-            //Cerr<<"ngro "<<ret<<finl;
-
-            /* nombre d'attributs */
-            Char_ptr nomfam;
-            med_int numfam;
-            Char_ptr gro;
-            dimensionne_char_ptr_taille(nomfam,MED_NAME_SIZE);
-            ngro=MEDnFamilyGroup(fid,nom_dom,i+1);
-            dimensionne_char_ptr_taille(gro,MED_LNAME_SIZE,ngro);
-
-            if (ret==0)
-              {
-                ret=MEDfamilyInfo(fid,nom_dom,i+1,nomfam,&numfam,gro);
-              }
-            if (ret==0)
-              {
-                // on raccourcit nomfam
-                {
-                  int max=nomfam.longueur()-2;
-                  while (nomfam[max]==' ') max--;
-                  nomfam[max+1]='\0';
-                }
-                Nom nom_famille(nomfam);
-                {
-                  for (int ngr=0; ngr<ngro; ngr++)
-                    {
-                      // on recupere le ngr ieme nom de groupe
-                      Char_ptr toto(gro.getChar()+MED_LNAME_SIZE*ngr);
-                      {
-                        // on coupe les noms apres le premier blanc
-                        for (int c=0; c<toto.longueur(); c++)
-                          if (toto[c]==' ')
-                            {
-                              toto[c]='\0';
-                              break;
-                            }
-                      }
-                      if (passage==0)
-                        {
-                          list_group.add(toto.getChar());
-                        }
-                      else
-                        {
-
-                          int grp=list_group.rang(toto.getChar());
-                          corres_grp_fam(grp,i)=numfam;
-                        }
-                    }
-                }
-                if (passage==0)
-                  {
-
-                    // Cerr<<ret<<finl;
-                    Process::Journal()<< " Family of name "<<nomfam<<" , number "<<(int)numfam<<finl;
-                    Indice_bords[i]=numfam;
-                    if (isfamilyshort==2)
-                      {
-                        if (ngro>0)
-                          {
-                            // Cerr<<list_group(list_group.size()-1)<<finl;
-                            noms_bords[i]=list_group(list_group.size()-1);
-
-                          }
-                        else
-                          {
-                            noms_bords[i]=nomfam;
-                            Process::Journal()<<noms_bords[i]<<" is not seen as a boundary "<< (int)numfam<<finl;
-                            if (numfam<0)
-                              Indice_bords[i]=-numfam;
-                            Indice_bords[i]+=10000;
-                          }
-                      }
-
-                    //Cerr<<"attdes " <<attdes<<finl;
-                    //Cerr<<"gro "<<gro<<finl;
-                    //Cerr<<natt<<" "<<attval[0]<<attide[0]<<finl;
-                    // BEG PHF
-                    else if ((isfamilyshort==1) && nom_famille.debute_par("FAM_"))
-                      {
-                        // pour certaines machines 64 bits mandriva 2006
-                        int dummy=numfam;
-                        Nom nnumfam(dummy);
-                        int lnumfam = 5+nnumfam.longueur();
-                        Nom nomfamcut(nom_famille.substr_old(lnumfam, nom_famille.longueur()-lnumfam));
-                        noms_bords[i] = nomfamcut;
-                        std::cerr << "### noms_bord = " << nomfamcut << " numfam = " << numfam << std::endl;
-                      }
-                    else
-                      {
-                        noms_bords[i]=nomfam;
-                      }
-                    // END PHF
-
-                    // on regarde si le numero ne porte pas que sur des elts
-                    int in_bord=0;
-                    for (int tp=0; tp<nb_type_face; tp++)
-                      for (int b=0; b<v_familles[tp].size_array(); b++)
-                        if (v_familles[tp][b]==numfam)
-                          {
-                            in_bord=1;
-                            break;
-                          }
-                    int  in_elem=0;
-                    if (in_bord==0)
-                      {
-                        // on n'a pas la famille sur les bords
-                        // soit c'est un bord vide soit c'est une famille d'element
-                        for (int el=0; el<les_elems.dimension(0); el++)
-                          if (num_famille_elem[el]==numfam)
-                            {
-                              in_elem=1;
-                              break;
-                            }
-                        if (in_elem==1)
-                          {
-                            assert(in_bord==0);
-                            // on met un numero de famille >10000 pour que la famille ne soit pas convertie en bord
-                            Cerr<<noms_bords[i]<<" is not seen as a boundary "<< (int)numfam<<finl;
-                            if (numfam<0)
-                              Indice_bords[i]=-numfam;
-                            Indice_bords[i]+=10000;
-                          }
-                        else
-                          {
-                            Cerr<< noms_bords[i]<<" is seen to be empty "<< (int)numfam<<finl;
-                            if (numfam>0)  Indice_bords[i]+=10000;
-                          }
-                      }
-                  }
-
-
-
-
-              }
-            //ret=MEDfamLire(fid,nom_dom,noms_bords[i],-(i+1),NULL,NULL,NULL,0,NULL,0);
-            //Cerr<<"famille "<<i<<" nom "<<noms_bords[i]<<ret<<finl;
-          }
-      }
-    if ((list_group.size())&& (Process::je_suis_maitre())&&(nom_dom_trio!=Nom()))
-      {
-        // Create a subdomaine file if a group of volumes is detected:
-        SFichier jdd(nom_dom_trio + "_ssz.geo");
-        SFichier jdd_par(nom_dom_trio + "_ssz_par.geo");
-        Process::Journal()<<"grp"<<list_group<<finl;
-        int nb_elem=les_elems.dimension(0);
-
-        for (int grp=0; grp<list_group.size(); grp++)
-          {
-            // on passe de IntList a ArrOfInt pour optimiser le temps
-            ArrOfInt prov(nb_elem);
-            int has_one=0;
-            for (int i=0; i<nfam; i++)
-              {
-                int numfam=corres_grp_fam(grp,i);
-                if (numfam!=non_affecte)
-                  for (int el=0; el<nb_elem; el++)
-                    if (num_famille_elem[el]==numfam)
-                      {
-                        prov[el]=1;
-                        has_one++;
-                      }
-              }
-            const Nom& toto=list_group(grp);
-            if (has_one>0)
-              {
-                Nom file_ssz(nom_dom_trio);
-                file_ssz+="_";
-                file_ssz+=toto;
-                file_ssz+=Nom(".file");
-                jdd<<"export Sous_Domaine "<<toto<<finl;;
-                jdd<<"Associer "<<toto <<" "<<nom_dom_trio<<finl;
-                jdd<<"Lire "<<toto <<" { "<<finl<<"fichier "<<file_ssz<<" \n }"<<finl;
-                jdd_par<<"export Sous_Domaine "<<toto<<finl;;
-                jdd_par<<"Associer "<<toto <<" "<<nom_dom_trio<<finl;
-                jdd_par<<"Lire "<<toto <<" { "<<finl<<"fichier "<<toto<<".ssz  \n }"<<finl;
-                SFichier f_ssz(file_ssz);
-                f_ssz<<has_one<<finl;
-                for (int el=0; el<nb_elem; el++)
-                  if (prov[el]==1)
-                    f_ssz<<el<<" ";
-                f_ssz<<finl;
-              }
-          }
-      }
-
-
-  }
-  delete [] num_famille_elem;
-  ret = MEDfileClose(fid);
-  return ret;
-}
-
 
 int verifier_modifier_type_elem(Nom& type_elem,const IntTab& les_elems,const DoubleTab& sommets)
 {
-
   if ((type_elem=="Rectangle")||(type_elem=="Hexaedre"))
     {
       int dimension=sommets.dimension(1);
@@ -1087,7 +115,6 @@ int verifier_modifier_type_elem(Nom& type_elem,const IntTab& les_elems,const Dou
               int n=0;
               for (int s=0; ((s<nb_som_elem)&&(ok)); s++)
                 {
-
                   double npos=sommets(les_elems(elem,s),dir);
                   int trouve=0;
                   for (int i=0; i<n; i++)
@@ -1100,7 +127,6 @@ int verifier_modifier_type_elem(Nom& type_elem,const IntTab& les_elems,const Dou
                           Cerr<<"There is at least the element "<<elem<<" wich seems to not possess a straight angle"<<finl;
                           ok=0;
                         }
-
                       else
                         {
                           pos[n]=npos;
@@ -1118,19 +144,15 @@ int verifier_modifier_type_elem(Nom& type_elem,const IntTab& les_elems,const Dou
             type_elem="Quadrangle";
           else if  (type_elem=="Hexaedre")
             type_elem="Hexaedre_vef";
-
         }
       return 0;
     }
   return 0;
 }
 
-
-void renum_conn(IntTab& les_elems2,Nom& type_elem,int sens);
-
-
 void recuperer_info_des_joints(Noms& noms_des_joints, const Nom& nom_fic, const Nom& nom_dom, ArrsOfInt& corres_joint,  ArrOfInt& tab_pe_voisin)
 {
+#ifdef MED_
   Cerr<<"reading of the joint informations "<<finl;
   int njoint=-1;
   med_idt fid=MEDfileOpen(nom_fic,MED_ACC_RDONLY);
@@ -1206,13 +228,14 @@ void recuperer_info_des_joints(Noms& noms_des_joints, const Nom& nom_fic, const 
     }
   MEDfileClose(fid);
   Cerr<<"End of the reading of the joint informations "<<finl;
+#endif
 }
 
-#ifdef MEDCOUPLING_
 // renvoie le type trio a partir du type medocoupling : http://docs.salome-platform.org/6/gui/MED/MEDLoader_8cxx.html
 Nom type_medcoupling_to_type_geo_trio(const int type_cell, const int isvef, const int axis_type, const bool& cell_from_boundary, const int axi1d)
 {
   Nom type_elem;
+#ifdef MEDCOUPLING_
   // [ABN] : first make sure the axis type is properly set, this will influence choice of the element
   // Set up correctly bidim_axi or axi variable according to MED file data.
   if (axis_type==MEDCoupling::AX_CYL)
@@ -1289,14 +312,104 @@ Nom type_medcoupling_to_type_geo_trio(const int type_cell, const int isvef, cons
 
   if (axi1d)
     type_elem += "_axi";
-
+#endif
   return type_elem;
 }
+
+} // end anonymous namespace
+
+/*! @brief Simple appel a: Interprete::printOn(Sortie&)
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
+Sortie& LireMED::printOn(Sortie& os) const
+{
+  return Interprete::printOn(os);
+}
+
+/*! @brief Simple appel a: Interprete::readOn(Entree&)
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
+Entree& LireMED::readOn(Entree& is)
+{
+  return Interprete::readOn(is);
+}
+
+Entree& LireMED::interpreter_(Entree& is)
+{
+#ifndef MED_
+  med_non_installe();
+#else
+  int isvefforce=0;
+  int convertAllToPoly=0;
+  int isfamilyshort=0;
+  Nom nom_dom_trio,nom_mesh("--any--"), nom_fic;
+
+  is >> nom_dom_trio;
+  if (nom_dom_trio == "{") // New syntax !!
+    {
+      Nom s = "{ ";
+      int cnt = 1;
+      while (cnt)
+        {
+          Nom motlu;
+          is >> motlu;
+          if (motlu == "{") cnt++;
+          if (motlu == "}") cnt --;
+          s += Nom(" ") + motlu;
+        }
+      int nfnfgn = 0;
+      Param param(que_suis_je());
+      param.ajouter_flag("convertAllToPoly", &convertAllToPoly);       // XD_ADD_P flag Option to convert mesh with mixed cells into polyhedral/polygonal cells
+
+      // Awful option just to keep naked family names from MED file. Rarely used, to be removed very soon.
+      // In the new syntax, we implicitely assume that the former option 'family_names_from_group_names' is always set.
+      param.ajouter_flag("no_family_names_from_group_names", &nfnfgn); // XD_ADD_P flag Awful option just to keep naked family names from MED file. Rarely used, to be removed very soon.
+
+      param.ajouter("domain|domaine", &nom_dom_trio, Param::REQUIRED); // XD_ADD_P ref_domaine Corresponds to the domain name.
+      param.ajouter("file|fichier", &nom_fic, Param::REQUIRED);        // XD_ADD_P chaine File (written in the MED format, with extension '.med') containing the mesh
+
+      param.ajouter("mesh|maillage", &nom_mesh);                       // XD_ADD_P chaine Name of the mesh in med file. If not specified, the first mesh will be read.
+
+      EChaine is2(s);
+      param.lire_avec_accolades(is2);
+      isfamilyshort = nfnfgn ? 0 : 2;  // will be 2 most of the time in the new syntax.
+    }
+  else // Boooh: old syntax :-(
+    interp_old_syntax(is, isvefforce, convertAllToPoly, isfamilyshort, nom_dom_trio, nom_mesh, nom_fic);
+
+  // Strip _0000 if there, and create proper file name
+  Nom nom_fic2(nom_fic);
+  nom_fic2.prefix(".med");
+  if (nom_fic2==nom_fic)
+    {
+      Cerr<<"Error, the MED file should have .med as extension."<<finl;
+      Cerr<<"See the syntax of Read_MED keyword." << finl;
+      exit();
+    }
+  Nom nom_fic3(nom_fic2);
+  if (nom_fic3.prefix("_0000") != nom_fic2 )
+    {
+      nom_fic3+=".med";
+      nom_fic=nom_fic3.nom_me(me());
+    }
+  associer_domaine(nom_dom_trio);
+  Domaine& dom=domaine();
+  lire_geom(nom_fic,dom,nom_mesh,nom_dom_trio,isvefforce,convertAllToPoly,isfamilyshort);
 #endif
+
+  return is;
+}
+
 
 void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const Nom& nom_dom_trio, int isvef, int convertAllToPoly, int isfamilyshort)
 {
-
+#ifndef MED_
+  med_non_installe();
+#else
   ArrsOfInt sommets_joints;
   ArrOfInt tab_pe_voisin;
 
@@ -1314,7 +427,6 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
   int axi1d=0;
   if (dom.que_suis_je()=="DomaineAxi1d")
     axi1d = 1;
-#endif
   // pour verif
   if (dimension==0)
     {
@@ -1324,409 +436,390 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
   Cerr << "Trying to read the domain " << nom_dom << " into the file " << nom_fic << " in order to affect to domain "
        << nom_dom_trio << "..." << finl;
   Elem_geom type_ele;
-#ifdef MEDCOUPLING_
-  if (use_medcoupling_)
+  std::string fileName = nom_fic.getString();
+  std::string meshName = nom_dom.getString();
+  // Check the mesh name is in the file:
+  const MCAuto<MEDFileMeshes> data(MEDFileMeshes::New(fileName));
+  std::vector< std::string > meshes_names = data->getMeshesNames();
+  if (std::find(meshes_names.begin(), meshes_names.end(), meshName) == meshes_names.end())
     {
-      Cerr << "-> Using MEDCoupling API... If it fails, please contact Trust support." << finl;
-      // MEDCoupling
-      std::string fileName = nom_fic.getString();
-      std::string meshName = nom_dom.getString();
-      // Check the mesh name is in the file:
-      const MCAuto<MEDFileMeshes> data(MEDFileMeshes::New(fileName));
-      std::vector< std::string > meshes_names = data->getMeshesNames();
-      if (std::find(meshes_names.begin(), meshes_names.end(), meshName) == meshes_names.end())
+      if (meshName == "--any--") meshName = meshes_names[0]; //magic name -> we take the first mesh
+      else
         {
-          if (meshName == "--any--") meshName = meshes_names[0]; //magic name -> we take the first mesh
-          else
-            {
-              Cerr << "Mesh " << nom_dom << " not found in the med file " << nom_fic << " !" << finl;
-              Cerr << "List of meshes found:" << finl;
-              for(unsigned int i = 0; i<meshes_names.size(); i++)
-                Cerr << meshes_names[i] << finl;
-              Process::exit(-1);
-            }
-        }
-      const MEDFileMesh* mfmesh = data->getMeshWithName(meshName);
-      const MEDFileUMesh* file = 0;
-      if (!(file=dynamic_cast<const MEDFileUMesh*>(mfmesh)))
-        {
-          Cerr << "Mesh " << nom_dom << " does not have the proper type in the med file " << nom_fic << "!" << finl;
+          Cerr << "Mesh " << nom_dom << " not found in the med file " << nom_fic << " !" << finl;
+          Cerr << "List of meshes found:" << finl;
+          for(unsigned int i = 0; i<meshes_names.size(); i++)
+            Cerr << meshes_names[i] << finl;
           Process::exit(-1);
         }
+    }
+  const MEDFileMesh* mfmesh = data->getMeshWithName(meshName);
+  const MEDFileUMesh* file = 0;
+  if (!(file=dynamic_cast<const MEDFileUMesh*>(mfmesh)))
+    {
+      Cerr << "Mesh " << nom_dom << " does not have the proper type in the med file " << nom_fic << "!" << finl;
+      Process::exit(-1);
+    }
 
-      MEDCoupling::MEDCouplingAxisType axis_type = file->getAxisType();
-      std::vector<int> nel = file->getNonEmptyLevels();
-      if (nel.size() < 1)
+  MEDCoupling::MEDCouplingAxisType axis_type = file->getAxisType();
+  std::vector<int> nel = file->getNonEmptyLevels();
+  if (nel.size() < 1)
+    {
+      Cerr << "Error! Expecting a multi level mesh named " << nom_fic << " in the " << nom_dom << " file." << finl;
+      Process::exit();
+    }
+  // Some checks:
+  assert(nel[0] == 0);
+  // Get the volume mesh:
+  MCAuto<MEDCouplingUMesh> mesh(file->getMeshAtLevel(nel[0])); // ToDo can not make it const because of ArrOfInt
+  dim = mesh->getSpaceDimension();
+  Cerr << "Detecting a " << (int)mesh->getMeshDimension() << "D mesh in " << dim << "D space." << finl;
+  if (dim != dimension)
+    {
+      Cerr << "The mesh space dimension may be higher than the computation space dimension" << finl;
+      Cerr << "as the algorithm will try to detect the useless direction in the mesh." << finl;
+      //assert(dim == dimension);
+    }
+
+  // Desormais l'option permet de convertir tout type de maillage vers des polyedres:
+  if (convertAllToPoly)
+    {
+      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+      Cerr << "Conversion to polyedrons and polygons..." << finl;
+      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+      mesh->convertAllToPoly(); // Conversion maillage volumique
+    }
+
+  // Get the nodes: size and fill sommets2:
+  int nnodes = mesh->getNumberOfNodes();
+  const double *coord = mesh->getCoords()->begin();
+  Cerr << "Detecting " << nnodes << " nodes." << finl;
+  sommets2.resize(nnodes, dim);
+  memcpy(sommets2.addr(), coord, sommets2.size_array() * sizeof(double));
+
+  // Get cells:
+  int ncells = mesh->getNumberOfCells();
+  bool cell_from_boundary = false;
+  //const int *conn = mesh->getNodalConnectivity()->begin();
+  //const int *connIndex = mesh->getNodalConnectivityIndex()->begin();
+  // Use ArrOfInt to benefit from assert:
+  ArrOfInt conn, connIndex;
+  bool supported_mesh = false;
+  while (supported_mesh == false)
+    {
+      conn.ref_data(mesh->getNodalConnectivity()->getPointer(), mesh->getNodalConnectivity()->getNbOfElems());
+      connIndex.ref_data(mesh->getNodalConnectivityIndex()->getPointer(),
+                         mesh->getNodalConnectivityIndex()->getNbOfElems());
+
+      int mesh_type_cell = conn[connIndex[0]];
+      type_elem = type_medcoupling_to_type_geo_trio(mesh_type_cell, isvef, axis_type, cell_from_boundary, axi1d);
+      type_ele.typer(type_elem);
+      // Detect a mesh with different cells (not supported):
+      for (int i = 0; i < ncells; i++)
         {
-          Cerr << "Error! Expecting a multi level mesh named " << nom_fic << " in the " << nom_dom << " file." << finl;
-          Process::exit();
+          int type_cell = conn[connIndex[i]];
+          if (type_cell != mesh_type_cell)
+            {
+              Cerr << "Elements of kind " << type_elem << " has already been read" << finl;
+              Cerr << "New elements of kind "
+                   << type_medcoupling_to_type_geo_trio(type_cell, isvef, axis_type, cell_from_boundary, axi1d);
+              if (!convertAllToPoly)
+                {
+                  Cerr << " are not read." << finl;
+                  Cerr << "TRUST does not support different element types for the mesh." << finl;
+                  Cerr << "Either you remesh your domain with a single element type," << finl;
+                  Cerr << "or you convert your cells to polyedrons and polygons by inserting an option in your command line:" << finl;
+                  Cerr << "Read_MED convertAllToPoly ... " << finl;
+                  Cerr << "After that, you should use a discretization supporting polyedrons !" << finl;
+                  Process::exit();
+                }
+              Cerr << finl;
+              break;
+            }
+          if (i==ncells-1) supported_mesh = true;
         }
-      // Some checks:
-      assert(nel[0] == 0);
-      // Get the volume mesh:
-      MCAuto<MEDCouplingUMesh> mesh(file->getMeshAtLevel(nel[0])); // ToDo can not make it const because of ArrOfInt
-      dim = mesh->getSpaceDimension();
-      Cerr << "Detecting a " << (int)mesh->getMeshDimension() << "D mesh in " << dim << "D space." << finl;
-      if (dim != dimension)
+    }
+  // Stockage du mesh au niveau du domaine, utile pour:
+  // Champ_Fonc_MED plus rapide (maillage non relu)
+  // Futurs developpements avec MEDCoupling
+  dom.setUMesh(mesh);
+
+  // Fill les_elem2 : Different treatment according type_elem:
+  if (sub_type(Polyedre, type_ele.valeur()))
+    {
+      int marker = 0;
+      int conn_size = mesh->getNodalConnectivity()->getNbOfElems();
+      for (int i = 0; i < conn_size; i++)
+        if (conn[i]<0) marker++;
+      int NumberOfNodes = conn_size - ncells - marker;
+      int nfaces = ncells + marker;
+      ArrOfInt Nodes(NumberOfNodes), FacesIndex(nfaces+1), PolyhedronIndex(ncells+1);
+      int face=0;
+      int node=0;
+      for (int i = 0; i < ncells; i++)
         {
-          Cerr << "The mesh space dimension may be higher than the computation space dimension" << finl;
-          Cerr << "as the algorithm will try to detect the useless direction in the mesh." << finl;
-          //assert(dim == dimension);
-        }
+          PolyhedronIndex[i] = face; // Index des polyedres
 
-      // Desormais l'option permet de convertir tout type de maillage vers des polyedres:
-      if (convertAllToPoly)
+          int index = connIndex[i] + 1;
+          int nb_som = connIndex[i + 1] - index;
+          for (int j = 0; j < nb_som; j++)
+            {
+              if (j==0 || conn[index + j]<0)
+                FacesIndex[face++] = node; // Index des faces:
+              if (conn[index + j]>=0)
+                Nodes[node++] = conn[index + j]; // Index local des sommets de la face
+            }
+        }
+      FacesIndex[nfaces] = node;
+      PolyhedronIndex[ncells] = face;
+      ref_cast(Polyedre,type_ele.valeur()).affecte_connectivite_numero_global(Nodes, FacesIndex, PolyhedronIndex, les_elems2);
+    }
+  else if (sub_type(Polygone, type_ele.valeur()))
+    {
+      int conn_size = mesh->getNodalConnectivity()->getNbOfElems();
+      int FacesIndexSize = conn_size - ncells;
+      ArrOfInt FacesIndex(FacesIndexSize), PolygonIndex(ncells+1);
+      int face=0;
+      for (int i = 0; i < ncells; i++)
         {
-          Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-          Cerr << "Conversion to polyedrons and polygons..." << finl;
-          Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-          mesh->convertAllToPoly(); // Conversion maillage volumique
+          PolygonIndex[i] = face;   // Index des polygones
+
+          int index = connIndex[i] + 1;
+          int nb_som = connIndex[i + 1] - index;
+          for (int j = 0; j < nb_som; j++)
+            FacesIndex[face++] = conn[index + j];
         }
+      PolygonIndex[ncells] = face;
+      ref_cast(Polygone,type_ele.valeur()).affecte_connectivite_numero_global(FacesIndex, PolygonIndex, les_elems2);
+    }
+  else // Tous les autres types
+    {
+      for (int i = 0; i < ncells; i++)
+        {
+          int index = connIndex[i] + 1;
+          int nb_som = connIndex[i + 1] - index;
+          if (i==0) les_elems2.resize(ncells, nb_som); // Size les_elems2
+          for (int j = 0; j < nb_som; j++)
+            les_elems2(i, j) = conn[index + j];
+        }
+    }
+  les_elems2+=1;  // +1 cause C++ -> Fortran
 
-      // Get the nodes: size and fill sommets2:
-      int nnodes = mesh->getNumberOfNodes();
-      const double *coord = mesh->getCoords()->begin();
-      Cerr << "Detecting " << nnodes << " nodes." << finl;
-      sommets2.resize(nnodes, dim);
-      memcpy(sommets2.addr(), coord, sommets2.size_array() * sizeof(double));
 
-      // Get cells:
-      int ncells = mesh->getNumberOfCells();
-      bool cell_from_boundary = false;
-      //const int *conn = mesh->getNodalConnectivity()->begin();
-      //const int *connIndex = mesh->getNodalConnectivityIndex()->begin();
+  // Detect Sub-domains (based on group of volumes);
+  unsigned nb_volume_groups = (unsigned)file->getGroupsOnSpecifiedLev(0).size();
+  if (nb_volume_groups>0 && Process::je_suis_maitre() && nom_dom_trio!=Nom())
+    {
+      SFichier jdd_seq(nom_dom_trio + "_ssz.geo");
+      SFichier jdd_par(nom_dom_trio + "_ssz_par.geo");
+      std::vector<std::string> groups = file->getGroupsOnSpecifiedLev(0);
+
+      int size = nb_volume_groups;
+      for (int i = 0; i < size; i++)
+        {
+          MCAuto<DataArrayInt> ids(file->getGroupArr(0, groups[i], false));
+          int nb_elems = (int) ids->getNbOfElems();
+          const Nom& nom_sous_domaine = groups[i]; // We take the name of the group for the subzone name
+          Cerr << "Detecting a sub-zone (group name="<< nom_sous_domaine << ") with " << nb_elems << " cells." << finl;
+          if (nb_elems > 0)
+            {
+              Nom file_ssz(nom_dom_trio);
+              file_ssz += "_";
+              file_ssz += nom_sous_domaine;
+              file_ssz += Nom(".file");
+              jdd_seq << "export Sous_Domaine " << nom_sous_domaine << finl;
+              jdd_par << "export Sous_Domaine " << nom_sous_domaine << finl;
+
+              jdd_seq << "Associer " << nom_sous_domaine << " " << nom_dom_trio << finl;
+              jdd_par << "Associer " << nom_sous_domaine << " " << nom_dom_trio << finl;
+
+              jdd_seq << "Lire " << nom_sous_domaine << " { fichier " << file_ssz << " }" << finl;
+              jdd_par << "Lire " << nom_sous_domaine << " { fichier " << nom_sous_domaine << ".ssz" << " }" << finl;
+              SFichier f_ssz(file_ssz);
+              f_ssz << nb_elems << finl;
+              for (int j = 0; j < nb_elems; j++)
+                {
+                  int elem = ids->getIJ(j, 0);
+                  f_ssz << elem << " ";
+                }
+              f_ssz << finl;
+            }
+        }
+    }
+
+  // Detect boundary meshes:
+  if (nel.size() > 1)
+    {
+      // Size the arrays;
+      int nb_type_face = type_ele.nb_type_face();
+      familles.dimensionner(nb_type_face);
+      all_faces_bord.dimensionner(nb_type_face);
+      type_face.dimensionner(nb_type_face);
+      for (int i = 0; i < nb_type_face; i++)
+        type_face[i] = "";
+
+      // Get boundary mesh:
+      assert(nel[1] == -1);
+      MCAuto<MEDCouplingUMesh> boundary_mesh(file->getMeshAtLevel(nel[1])); // ToDo can not make it const because of ArrayOfInt
+      if (dimension==3 && convertAllToPoly) boundary_mesh->convertAllToPoly(); // Conversion maillage frontiere
+      int nfaces = boundary_mesh->getNumberOfCells();
+      cell_from_boundary = true;
+      //conn = boundary_mesh->getNodalConnectivity()->begin();
+      //connIndex = boundary_mesh->getNodalConnectivityIndex()->begin();
       // Use ArrOfInt to benefit from assert:
-      ArrOfInt conn, connIndex;
-      bool supported_mesh = false;
-      while (supported_mesh == false)
+      conn.ref_data(boundary_mesh->getNodalConnectivity()->getPointer(), boundary_mesh->getNodalConnectivity()->getNbOfElems());
+      connIndex.ref_data(boundary_mesh->getNodalConnectivityIndex()->getPointer(), boundary_mesh->getNodalConnectivityIndex()->getNbOfElems());
+      int tp = 0;
+      int type_cell = -1;
+      int max_som_face = 0;
+      int nface = 0;
+      // First loop to size arrays:
+      for (int i = 0; i < nfaces; i++)
         {
-          conn.ref_data(mesh->getNodalConnectivity()->getPointer(), mesh->getNodalConnectivity()->getNbOfElems());
-          connIndex.ref_data(mesh->getNodalConnectivityIndex()->getPointer(),
-                             mesh->getNodalConnectivityIndex()->getNbOfElems());
-
-          int mesh_type_cell = conn[connIndex[0]];
-          type_elem = type_medcoupling_to_type_geo_trio(mesh_type_cell, isvef, axis_type, cell_from_boundary, axi1d);
-          type_ele.typer(type_elem);
-          // Detect a mesh with different cells (not supported):
-          for (int i = 0; i < ncells; i++)
+          nface++;
+          // Detect max number of nodes per face:
+          int nb_som_face = connIndex[i + 1] - connIndex[i] - 1;
+          if (nb_som_face > max_som_face) max_som_face = nb_som_face;
+          // Detect new type of face:
+          if (i == nfaces - 1 || conn[connIndex[i]] != conn[connIndex[i + 1]])
             {
-              int type_cell = conn[connIndex[i]];
-              if (type_cell != mesh_type_cell)
+              type_cell = conn[connIndex[i]];
+              Nom type_face_lu = type_medcoupling_to_type_geo_trio(type_cell, isvef, axis_type, cell_from_boundary, axi1d);
+              if (tp>=type_face.size())
                 {
-                  Cerr << "Elements of kind " << type_elem << " has already been read" << finl;
-                  Cerr << "New elements of kind "
-                       << type_medcoupling_to_type_geo_trio(type_cell, isvef, axis_type, cell_from_boundary, axi1d);
-                  if (!convertAllToPoly)
-                    {
-                      Cerr << " are not read." << finl;
-                      Cerr << "TRUST does not support different element types for the mesh." << finl;
-                      Cerr << "Either you remesh your domain with a single element type," << finl;
-                      Cerr << "or you convert your cells to polyedrons and polygons by inserting an option in your command line:" << finl;
-                      Cerr << "Read_MED convertAllToPoly ... " << finl;
-                      Cerr << "After that, you should use a discretization supporting polyedrons !" << finl;
-                      Process::exit();
-                    }
-                  Cerr << finl;
-                  break;
+                  Cerr << "Error, it does not support another face type: " << type_face_lu << finl;
+                  Process::exit();
                 }
-              if (i==ncells-1) supported_mesh = true;
+              type_face[tp] = type_face_lu;
+              familles[tp].resize_array(nface);
+              all_faces_bord[tp].resize(nface, max_som_face);
+              all_faces_bord[tp] = 0;
+              Cerr << "Detecting " << nface << " faces (" << type_face[tp] << ")." << finl;
+              max_som_face = 0;
+              nface = 0;
+              tp++;
             }
         }
-      // Stockage du mesh au niveau du domaine, utile pour:
-      // Champ_Fonc_MED plus rapide (maillage non relu)
-      // Futurs developpements avec MEDCoupling
-      dom.setUMesh(mesh);
-
-      // Fill les_elem2 : Different treatment according type_elem:
-      if (sub_type(Polyedre, type_ele.valeur()))
+      assert(tp == nb_type_face);
+      // Second loop to fill the connectivity
+      tp = 0;
+      nface = 0;
+      for (int i = 0; i < nfaces; i++)
         {
-          int marker = 0;
-          int conn_size = mesh->getNodalConnectivity()->getNbOfElems();
-          for (int i = 0; i < conn_size; i++)
-            if (conn[i]<0) marker++;
-          int NumberOfNodes = conn_size - ncells - marker;
-          int nfaces = ncells + marker;
-          ArrOfInt Nodes(NumberOfNodes), FacesIndex(nfaces+1), PolyhedronIndex(ncells+1);
-          int face=0;
-          int node=0;
-          for (int i = 0; i < ncells; i++)
+          int index = connIndex[i] + 1;
+          int nb_som = connIndex[i + 1] - index;
+          for (int j = 0; j < nb_som; j++)
+            all_faces_bord[tp](nface, j) = conn[index + j] + 1; // +1 cause C++ -> Fortran
+          nface++;
+          // Next type of face ?
+          if (i == nfaces - 1 || conn[connIndex[i]] != conn[connIndex[i + 1]])
             {
-              PolyhedronIndex[i] = face; // Index des polyedres
-
-              int index = connIndex[i] + 1;
-              int nb_som = connIndex[i + 1] - index;
-              for (int j = 0; j < nb_som; j++)
-                {
-                  if (j==0 || conn[index + j]<0)
-                    FacesIndex[face++] = node; // Index des faces:
-                  if (conn[index + j]>=0)
-                    Nodes[node++] = conn[index + j]; // Index local des sommets de la face
-                }
-            }
-          FacesIndex[nfaces] = node;
-          PolyhedronIndex[ncells] = face;
-          ref_cast(Polyedre,type_ele.valeur()).affecte_connectivite_numero_global(Nodes, FacesIndex, PolyhedronIndex, les_elems2);
-        }
-      else if (sub_type(Polygone, type_ele.valeur()))
-        {
-          int conn_size = mesh->getNodalConnectivity()->getNbOfElems();
-          int FacesIndexSize = conn_size - ncells;
-          ArrOfInt FacesIndex(FacesIndexSize), PolygonIndex(ncells+1);
-          int face=0;
-          for (int i = 0; i < ncells; i++)
-            {
-              PolygonIndex[i] = face;   // Index des polygones
-
-              int index = connIndex[i] + 1;
-              int nb_som = connIndex[i + 1] - index;
-              for (int j = 0; j < nb_som; j++)
-                FacesIndex[face++] = conn[index + j];
-            }
-          PolygonIndex[ncells] = face;
-          ref_cast(Polygone,type_ele.valeur()).affecte_connectivite_numero_global(FacesIndex, PolygonIndex, les_elems2);
-        }
-      else // Tous les autres types
-        {
-          for (int i = 0; i < ncells; i++)
-            {
-              int index = connIndex[i] + 1;
-              int nb_som = connIndex[i + 1] - index;
-              if (i==0) les_elems2.resize(ncells, nb_som); // Size les_elems2
-              for (int j = 0; j < nb_som; j++)
-                les_elems2(i, j) = conn[index + j];
+              nface = 0;
+              tp++;
             }
         }
-      les_elems2+=1;  // +1 cause C++ -> Fortran
-
-
-      // Detect Subdomaines (based on group of volumes);
-      unsigned nb_volume_groups = (unsigned)file->getGroupsOnSpecifiedLev(0).size();
-      if (nb_volume_groups>0 && Process::je_suis_maitre() && nom_dom_trio!=Nom())
+      // Pour debug, lecture des groupes
+      bool provisoire = true;
+      if (provisoire)
         {
-          SFichier jdd_seq(nom_dom_trio + "_ssz.geo");
-          SFichier jdd_par(nom_dom_trio + "_ssz_par.geo");
-          std::vector<std::string> groups = file->getGroupsOnSpecifiedLev(0);
-
-          int size = nb_volume_groups;
-          for (int i = 0; i < size; i++)
+          Cerr << "Reading groups at level -1:" << finl;
+          std::vector<std::string> groups = file->getGroupsOnSpecifiedLev(-1);
+          size_t size = groups.size();
+          for (size_t i=0; i<size; i++)
             {
-              MCAuto<DataArrayInt> ids(file->getGroupArr(0, groups[i], false));
-              int nb_elems = (int) ids->getNbOfElems();
-              const Nom& nom_sous_domaine = groups[i]; // We take the name of the group for the subdomaine name
-              Cerr << "Detecting a sub-domaine (group name="<< nom_sous_domaine << ") with " << nb_elems << " cells." << finl;
-              if (nb_elems > 0)
-                {
-                  Nom file_ssz(nom_dom_trio);
-                  file_ssz += "_";
-                  file_ssz += nom_sous_domaine;
-                  file_ssz += Nom(".file");
-                  jdd_seq << "export Sous_Domaine " << nom_sous_domaine << finl;
-                  jdd_par << "export Sous_Domaine " << nom_sous_domaine << finl;
-
-                  jdd_seq << "Associer " << nom_sous_domaine << " " << nom_dom_trio << finl;
-                  jdd_par << "Associer " << nom_sous_domaine << " " << nom_dom_trio << finl;
-
-                  jdd_seq << "Lire " << nom_sous_domaine << " { fichier " << file_ssz << " }" << finl;
-                  jdd_par << "Lire " << nom_sous_domaine << " { fichier " << nom_sous_domaine << ".ssz" << " }" << finl;
-                  SFichier f_ssz(file_ssz);
-                  f_ssz << nb_elems << finl;
-                  for (int j = 0; j < nb_elems; j++)
-                    {
-                      int elem = ids->getIJ(j, 0);
-                      f_ssz << elem << " ";
-                    }
-                  f_ssz << finl;
-                }
+              MCAuto<DataArrayInt> ids(file->getGroupArr(-1, groups[i], false));
+              int nb_faces = (int) ids->getNbOfElems();
+              size_t nb_families = file->getFamiliesIdsOnGroup(groups[i]).size();
+              Cerr << "group_name=" << groups[i] << " with " << nb_faces << " faces on ";
+              Cerr << nb_families << " families (";
+              for (size_t j=0; j<nb_families; j++)
+                Cerr << file->getFamiliesIdsOnGroup(groups[i])[j] << " ";
+              Cerr << ")" << finl;
             }
-        }
-
-
-      // Detect boundary meshes:
-      if (nel.size() > 1)
-        {
-          // Size the arrays;
-          int nb_type_face = type_ele.nb_type_face();
-          familles.dimensionner(nb_type_face);
-          all_faces_bord.dimensionner(nb_type_face);
-          type_face.dimensionner(nb_type_face);
-          for (int i = 0; i < nb_type_face; i++)
-            type_face[i] = "";
-
-          // Get boundary mesh:
-          assert(nel[1] == -1);
-          MCAuto<MEDCouplingUMesh> boundary_mesh(file->getMeshAtLevel(nel[1])); // ToDo can not make it const because of ArrayOfInt
-          if (dimension==3 && convertAllToPoly) boundary_mesh->convertAllToPoly(); // Conversion maillage frontiere
-          int nfaces = boundary_mesh->getNumberOfCells();
-          cell_from_boundary = true;
-          //conn = boundary_mesh->getNodalConnectivity()->begin();
-          //connIndex = boundary_mesh->getNodalConnectivityIndex()->begin();
-          // Use ArrOfInt to benefit from assert:
-          conn.ref_data(boundary_mesh->getNodalConnectivity()->getPointer(), boundary_mesh->getNodalConnectivity()->getNbOfElems());
-          connIndex.ref_data(boundary_mesh->getNodalConnectivityIndex()->getPointer(), boundary_mesh->getNodalConnectivityIndex()->getNbOfElems());
-          int tp = 0;
-          int type_cell = -1;
-          int max_som_face = 0;
-          int nface = 0;
-          // First loop to size arrays:
-          for (int i = 0; i < nfaces; i++)
-            {
-              nface++;
-              // Detect max number of nodes per face:
-              int nb_som_face = connIndex[i + 1] - connIndex[i] - 1;
-              if (nb_som_face > max_som_face) max_som_face = nb_som_face;
-              // Detect new type of face:
-              if (i == nfaces - 1 || conn[connIndex[i]] != conn[connIndex[i + 1]])
-                {
-                  type_cell = conn[connIndex[i]];
-                  Nom type_face_lu = type_medcoupling_to_type_geo_trio(type_cell, isvef, axis_type, cell_from_boundary, axi1d);
-                  if (tp>=type_face.size())
-                    {
-                      Cerr << "Error, it does not support another face type: " << type_face_lu << finl;
-                      Process::exit();
-                    }
-                  type_face[tp] = type_face_lu;
-                  familles[tp].resize_array(nface);
-                  all_faces_bord[tp].resize(nface, max_som_face);
-                  all_faces_bord[tp] = 0;
-                  Cerr << "Detecting " << nface << " faces (" << type_face[tp] << ")." << finl;
-                  max_som_face = 0;
-                  nface = 0;
-                  tp++;
-                }
-            }
-          assert(tp == nb_type_face);
-          // Second loop to fill the connectivity
-          tp = 0;
-          nface = 0;
-          for (int i = 0; i < nfaces; i++)
-            {
-              int index = connIndex[i] + 1;
-              int nb_som = connIndex[i + 1] - index;
-              for (int j = 0; j < nb_som; j++)
-                all_faces_bord[tp](nface, j) = conn[index + j] + 1; // +1 cause C++ -> Fortran
-              nface++;
-              // Next type of face ?
-              if (i == nfaces - 1 || conn[connIndex[i]] != conn[connIndex[i + 1]])
-                {
-                  nface = 0;
-                  tp++;
-                }
-            }
-          // Pour debug, lecture des groupes
-          bool provisoire = true;
-          if (provisoire)
-            {
-              Cerr << "Reading groups at level -1:" << finl;
-              std::vector<std::string> groups = file->getGroupsOnSpecifiedLev(-1);
-              size_t size = groups.size();
-              for (size_t i=0; i<size; i++)
-                {
-                  MCAuto<DataArrayInt> ids(file->getGroupArr(-1, groups[i], false));
-                  int nb_faces = (int) ids->getNbOfElems();
-                  size_t nb_families = file->getFamiliesIdsOnGroup(groups[i]).size();
-                  Cerr << "group_name=" << groups[i] << " with " << nb_faces << " faces on ";
-                  Cerr << nb_families << " families (";
-                  for (size_t j=0; j<nb_families; j++)
-                    Cerr << file->getFamiliesIdsOnGroup(groups[i])[j] << " ";
-                  Cerr << ")" << finl;
-                }
-              Cerr << "Reading families at level -1:" << finl;
-              std::vector<std::string> families = file->getFamiliesNames();
-              size = families.size();
-              for (size_t i = 0; i < size; i++)
-                {
-                  MCAuto<DataArrayInt> ids(file->getFamilyArr(-1 /* faces */, families[i], false));
-                  int nb_faces = (int) ids->getNbOfElems();
-                  size_t nb_groups = file->getGroupsOnFamily(families[i]).size();
-                  int family_id = file->getFamilyId(families[i]);
-                  Cerr << "family_name=" << families[i] << " (family id=" << family_id << ") with " << nb_faces << " faces on ";
-                  Cerr << nb_groups << " groups (";
-                  for (size_t j=0; j<nb_groups; j++)
-                    Cerr << file->getGroupsOnFamily(families[i])[j] << " ";
-                  Cerr << ")" << finl;
-                }
-            }
-          Cerr << "Reading boundaries:" << finl;
-          // Lecture des familles
+          Cerr << "Reading families at level -1:" << finl;
           std::vector<std::string> families = file->getFamiliesNames();
-          size_t size = families.size();
+          size = families.size();
           for (size_t i = 0; i < size; i++)
             {
               MCAuto<DataArrayInt> ids(file->getFamilyArr(-1 /* faces */, families[i], false));
               int nb_faces = (int) ids->getNbOfElems();
-              std::vector<std::string> groups = file->getGroupsOnFamily(families[i]);
-              if (nb_faces > 0)
+              size_t nb_groups = file->getGroupsOnFamily(families[i]).size();
+              int family_id = file->getFamilyId(families[i]);
+              Cerr << "family_name=" << families[i] << " (family id=" << family_id << ") with " << nb_faces << " faces on ";
+              Cerr << nb_groups << " groups (";
+              for (size_t j=0; j<nb_groups; j++)
+                Cerr << file->getGroupsOnFamily(families[i])[j] << " ";
+              Cerr << ")" << finl;
+            }
+        }
+      Cerr << "Reading boundaries:" << finl;
+      // Lecture des familles
+      std::vector<std::string> families = file->getFamiliesNames();
+      size_t size = families.size();
+      for (size_t i = 0; i < size; i++)
+        {
+          MCAuto<DataArrayInt> ids(file->getFamilyArr(-1 /* faces */, families[i], false));
+          int nb_faces = (int) ids->getNbOfElems();
+          std::vector<std::string> groups = file->getGroupsOnFamily(families[i]);
+          if (nb_faces > 0)
+            {
+              int family_id = file->getFamilyId(families[i]);
+              Nom nom_bord="";
+              if (isfamilyshort == 0) // Par defaut, boundary name = family name
+                nom_bord = families[i];
+              else if (isfamilyshort == 1) // Suppress FAM_*_ from family name
                 {
-                  int family_id = file->getFamilyId(families[i]);
-                  Nom nom_bord="";
-                  if (isfamilyshort == 0) // Par defaut, boundary name = family name
-                    nom_bord = families[i];
-                  else if (isfamilyshort == 1) // Suppress FAM_*_ from family name
-                    {
-                      Nom family_name = families[i];
-                      Nom tmp="FAM_";
-                      tmp+=(Nom)family_id;
-                      tmp+="_";
-                      nom_bord = family_name.suffix(tmp);
-                    }
+                  Nom family_name = families[i];
+                  Nom tmp="FAM_";
+                  tmp+=(Nom)family_id;
+                  tmp+="_";
+                  nom_bord = family_name.suffix(tmp);
+                }
+              else
+                {
+                  // Cherche le nom du groupe
+                  if (groups.size()==1)
+                    nom_bord = groups[0];
                   else
+                    for (unsigned long k=0; k<groups.size(); k++)
+                      {
+                        size_t nb_families = file->getFamiliesIdsOnGroup(groups[k]).size();
+                        if (nb_families==1) nom_bord = groups[k];
+                      }
+                }
+              if (nom_bord!="")
+                {
+                  Cerr << "Detecting a boundary named " << nom_bord << " (family id=" << family_id << ") with "
+                       << nb_faces << " faces." << finl;
+                  noms_bords.add(nom_bord);
+                  for (int j = 0; j < nb_faces; j++)
                     {
-                      // Cherche le nom du groupe
-                      if (groups.size()==1)
-                        nom_bord = groups[0];
-                      else
-                        for (unsigned long k=0; k<groups.size(); k++)
-                          {
-                            size_t nb_families = file->getFamiliesIdsOnGroup(groups[k]).size();
-                            if (nb_families==1) nom_bord = groups[k];
-                          }
-                    }
-                  if (nom_bord!="")
-                    {
-                      Cerr << "Detecting a boundary named " << nom_bord << " (family id=" << family_id << ") with "
-                           << nb_faces << " faces." << finl;
-                      noms_bords.add(nom_bord);
-                      for (int j = 0; j < nb_faces; j++)
+                      int face = ids->getIJ(j, 0);
+                      // Put the face on the good family
+                      tp = 0;
+                      int face_famille = face;
+                      while (face_famille >= familles[tp].size_array())
                         {
-                          int face = ids->getIJ(j, 0);
-                          // Put the face on the good family
-                          tp = 0;
-                          int face_famille = face;
-                          while (face_famille >= familles[tp].size_array())
-                            {
-                              face_famille -= familles[tp].size_array();
-                              tp++;
-                            }
-                          familles[tp][face_famille] = family_id;
+                          face_famille -= familles[tp].size_array();
+                          tp++;
                         }
-                      int nb_bords = noms_bords.size();
-                      Indices_bord.resize(nb_bords);
-                      Indices_bord[nb_bords - 1] = family_id;
+                      familles[tp][face_famille] = family_id;
                     }
+                  int nb_bords = noms_bords.size();
+                  Indices_bord.resize(nb_bords);
+                  Indices_bord[nb_bords - 1] = family_id;
                 }
             }
-          if (noms_bords.size()==0)
-            {
-              Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-              Cerr << "Warning: no boundary detected for the mesh." << finl;
-              Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-            }
         }
-    }
-  else
-#endif
-    {
-      // MEDFile
-      int ret = medliregeom(nom_fic, nom_dom, nom_dom_trio, dim,
-                            sommets2, type_elem, type_ele, les_elems2,
-                            type_face, all_faces_bord, familles,
-                            noms_bords, Indices_bord, isvef, isfamilyshort);
-      if (ret!=0)
+      if (noms_bords.size()==0)
         {
-          Cerr<<"Problem when reading the informations in the file " << nom_fic <<finl;
-          Process::exit();
+          Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+          Cerr << "Warning: no boundary detected for the mesh." << finl;
+          Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
         }
     }
+#endif // MEDCOUPLING_
+
   renum_conn(les_elems2,type_elem,-1);
   for (int j=0; j<type_face.size(); j++)
     renum_conn(all_faces_bord[j],type_face[j],-1);
@@ -1968,362 +1061,5 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
       r.rassemble_bords(dom);
     }
   Cerr<<"Reading of the domain ended"<<finl;
-  // return is;
-}
-
-//void medinfo1champ(const Nom& nom_fic, Nom& nomchamp,int& numero,int& nbcomp,int& ndt,med_entity_type& type_ent, med_geometry_type& type_geo,int& size,const Nom& nom_dom,int verifie_type,ArrOfDouble& temps_sauv);
-
-med_geometry_type type_geo_trio_to_type_med(const Nom& a);
-void medinfochamp_existe(const Nom& nom_fic,Noms& nomschamp,const Domaine& dom,ArrOfDouble& temps_sauv)
-{
-  med_idt fid=MEDfileOpen(nom_fic,MED_ACC_RDONLY);
-  if (fid<0)
-    {
-      Cerr <<"Problem when opening "<<nom_fic<<finl;
-      Process::exit();
-    }
-  int ret=0;
-  // on regarde si le champ existe
-  int nbch=MEDnField(fid);
-  if (nbch<0)
-    {
-      Cerr<<"Error when reading fileds number"<<finl;
-      Process::exit();
-    }
-  //  int trouve=0;
-  Char_ptr nomcha;
-  dimensionne_char_ptr_taille(nomcha,MED_NAME_SIZE);
-
-  Char_ptr comp, unit;
-  nomschamp.dimensionner(1);
-  int nbch_reel=0;
-  for (int ch=0; ch<nbch; ch++)
-    {
-      //printf("\nChamp numero : %d \n",i+1);
-      int ncomp=0;
-      /* combien de composantes */
-      if (ret == 0)
-        if ((ncomp = MEDfieldnComponent(fid,ch+1)) < 0)
-          ret = -1;
-      //printf("%d\n",ret);
-
-
-      /* allocation memoire de comp et unit*/
-      if (ret == 0)
-        {
-          dimensionne_char_ptr_taille(comp,MED_SNAME_SIZE,ncomp);
-          dimensionne_char_ptr_taille(unit,MED_SNAME_SIZE,ncomp);
-
-          /* infos sur les champs */
-          Char_ptr meshname;
-          dimensionne_char_ptr_taille(meshname,MED_NAME_SIZE);
-          Char_ptr dtunit;
-          dimensionne_char_ptr_taille(dtunit,MED_SNAME_SIZE);
-          med_bool localmesh;
-          med_field_type fieldtype;
-          med_int nbofcstp;
-          ret=MEDfieldInfo(fid,ch+1,nomcha,meshname,&localmesh,&fieldtype,comp,unit,dtunit,&nbofcstp);
-          if (dom.le_nom()==(const char*)meshname)
-            // il faut verifier si nom_dom est correct pour le champ
-            {
-              med_geometry_type type_geo=type_geo_trio_to_type_med(dom.type_elem()->que_suis_je());
-              int numero_ch,nb_dt,nbcomp,size;
-              med_entity_type type_ent;
-              ArrOfDouble temps_sauv2;
-              medinfo1champ(nom_fic,nomcha,numero_ch,nbcomp,nb_dt,type_ent,type_geo,size,dom.le_nom(),0,temps_sauv2);
-
-              if (nb_dt!=0)
-                {
-                  temps_sauv=temps_sauv2;
-                  nomschamp.add(nomcha.getChar());
-                  nbch_reel++;
-                  type_ent=MED_CELL;
-                  medinfo1champ(nom_fic,nomcha,numero_ch,nbcomp,nb_dt,type_ent,type_geo,size,dom.le_nom(),1,temps_sauv2);
-                  if (nb_dt!=0)
-                    {
-                      Cerr<<"the field "<<nomcha<<" is discretized at the elements"<<finl;
-                      nomschamp.add(nomcha.getChar());
-                      nbch_reel++;
-                      nomschamp[nbch_reel]+="_elem";
-                      Cerr<<"temps_sauv"<<temps_sauv2;
-                    }
-                  type_ent=MED_NODE;
-                  medinfo1champ(nom_fic,nomcha,numero_ch,nbcomp,nb_dt,type_ent,type_geo,size,dom.le_nom(),1,temps_sauv2);
-                  if (nb_dt!=0)
-                    {
-                      Cerr<<"the field "<<nomcha<<" is discretized at the vertices"<<finl;
-                      nomschamp.add(nomcha.getChar());
-                      nbch_reel++;
-                      nomschamp[nbch_reel]+="_som";
-                      Cerr<<"temps_sauv"<<temps_sauv2;
-                    }
-                }
-
-            }
-
-          //Cerr<<"Nom du champ "<<nomcha<<" de type "<<typcha<<finl;
-          //Cerr<<"Nom des composantes "<<comp<<finl;
-          //Cerr<<"Unites des composantes "<<unit<<finl
-        }
-    }
-  MEDfileClose(fid);
-}
-Nom medinfo1champ(const Nom& nom_fic, const char* nomchamp_utilisateur,int& numero,int& nbcomp,int& ndt,med_entity_type& type_ent, med_geometry_type& type_geo,int& size,const Nom& nom_dom,int verifie_type,ArrOfDouble& temps_sauv)
-{
-  Nom nomchamp(nomchamp_utilisateur);
-  med_idt fid=MEDfileOpen(nom_fic,MED_ACC_RDONLY);
-  if (fid<0)
-    {
-      Cerr <<"Problem when opening "<<nom_fic<<finl;
-      Process::exit();
-    }
-
-  int ret=0;
-  // on regarde si le champ existe
-  int nbch=MEDnField(fid);
-  if (nbch<0)
-    {
-      Cerr<<"Error when reading the fields number"<<finl;
-      Process::exit();
-    }
-  int trouve=0;
-  Char_ptr nomcha;
-  dimensionne_char_ptr_taille(nomcha,MED_NAME_SIZE);
-
-  Char_ptr comp, unit;
-  //  nomschamp.dimensionner(nbch);
-  Nom noms_champ_file("");
-  for (int ch=0; ch<nbch; ch++)
-    {
-      //printf("\nChamp numero : %d \n",i+1);
-      int ncomp=0;
-      /* combien de composantes */
-      if (ret == 0)
-        if ((ncomp = MEDfieldnComponent(fid,ch+1)) < 0)
-          ret = -1;
-      //printf("%d\n",ret);
-
-
-      /* allocation memoire de comp et unit*/
-      if (ret == 0)
-        {
-          dimensionne_char_ptr_taille(comp,MED_SNAME_SIZE,ncomp);
-          dimensionne_char_ptr_taille(unit,MED_SNAME_SIZE,ncomp);
-
-          /* infos sur les champs */
-          med_field_type typcha;
-          Char_ptr meshname;
-          dimensionne_char_ptr_taille(meshname,MED_NAME_SIZE);
-          Char_ptr dtunit;
-          dimensionne_char_ptr_taille(dtunit,MED_SNAME_SIZE);
-          med_bool localmesh;
-          //        med_field_type fieldtype;
-          med_int nbofcstp;
-          ret=MEDfieldInfo(fid,ch+1,nomcha,meshname,&localmesh,&typcha,comp,unit,dtunit,&nbofcstp);
-          // Cerr << nomcha<<" "<<nom_dom<<" "<<meshname <<finl;
-          if (nom_dom!=(const char*)meshname)
-            {
-              nomcha[0]='#';
-            }
-
-          ndt=nbofcstp;
-          Nom Nnomcha(nomcha);
-          //nomschamp[ch]=nomcha;
-          //Cerr<<"Nom du champ "<<nomcha<<" de type "<<typcha<<finl;
-          //Cerr<<"Nom des composantes "<<comp<<finl;
-          //Cerr<<"Unites des composantes "<<unit<<finl;
-          // Cerr << Motcle(nomchamp) << " " << Nnomcha << finl;
-          noms_champ_file+=Nnomcha+" ";
-
-          Motcle mot2(nomchamp);
-          mot2+="_";
-          mot2+=nom_dom;
-          Motcle mot3(nomchamp);
-          if (verifie_type==1)
-            {
-              if (type_ent==MED_CELL)
-                mot3+="_elem_";
-              else
-                mot3+="_som_";
-              mot3+=nom_dom;
-            }
-
-
-          /*
-
-          noms_champ_file+=mot2+" ";
-          */
-          if ((trouve==0)&&((Motcle(nomchamp)==Nnomcha) || (mot2==Nnomcha)||(mot3==Nnomcha)  ))
-            {
-              trouve=1;
-              nomchamp=Nnomcha;
-              numero=ch;
-              nbcomp=ncomp;
-              //  Cerr<<"On a deja ce champ"<<finl;
-              if (typcha!=MED_FLOAT64)
-                {
-                  Cerr<<"field of type different from MED_FLOAT64 not coded" <<finl;
-                  Process::exit();
-                }
-              break;
-            }
-        }
-    }
-  if (trouve==0)
-    {
-      Cerr<<nomchamp << " not found on "<<nom_dom<<finl;
-      Cerr<< "Fields in file : "<<  noms_champ_file<<finl;
-      Process::exit();
-    }
-  if (verifie_type==0)
-    {
-      type_ent=MED_CELL;
-      med_int numdt,numo;
-      double dtb;
-      MEDfieldComputingStepInfo(fid,nomcha,1,&numdt,&numo,&dtb);
-
-      if (MEDfieldnValue(fid,nomchamp,numdt,numo,type_ent,type_geo)<=0)
-        {
-          type_ent=MED_NODE;
-          // type_geo=MED_NONE;
-          if (MEDfieldnValue(fid,nomchamp,numdt,numo,type_ent,type_geo)<=0)
-            abort();
-        }
-    }
-  // on fait une boucle pour le cas ou temperature aux som pour un dom
-  // et aux elems pour l'autre
-  int fini=0;
-  med_int numo;
-  int numdtsa=-1,marq=0;
-  while (fini==0)
-    {
-      if ((ndt==0)&&(verifie_type==0))
-        {
-          Cerr<<"No time found for "<<nomchamp<<" on type_ent " << (int)type_ent<<finl;
-        }
-      temps_sauv.resize_array(ndt);
-      med_int numdt;
-      double dt;
-      Char_ptr dt_unit;
-      dimensionne_char_ptr_taille(dt_unit,MED_SNAME_SIZE);
-      strcpy(dt_unit," C      ");
-      Char_ptr nom_dom_med;
-      dimensionne_char_ptr_taille(nom_dom_med,MED_NAME_SIZE);
-      //strcpy(nom_dom_med,nom_dom);
-      // on regarde si tous les pas de temps sont sur le bon support
-      int ndt2=0;
-      for (int i=0; i<ndt; i++)
-        {
-          med_int meshnumdt,meshnumit;
-          MEDfieldComputingStepMeshInfo(fid,nomchamp,i+1,&numdt,&numo,&dt,&meshnumdt,&meshnumit);
-          size=MEDfieldnValue(fid,nomchamp,numdt,numo,type_ent,type_geo);
-          // Cerr<<"ici "<<size<<finl;
-          if (size)
-            {
-              temps_sauv[ndt2]=dt;
-              ndt2++;
-              numdtsa=numdt;
-            }
-        }
-      //Cerr<<"ici "<<numdt;
-      fini=1;
-      if (ndt!=ndt2)
-        {
-          Cerr<<" Only "<<ndt2<<" times available for "<<nomchamp <<" on "<<nom_dom<<" on MED type "<<(int)type_ent<<finl;
-          ndt=ndt2;
-          if (verifie_type==0)
-            if (ndt==0)
-              {
-                fini=0;
-                ndt=0;
-                if (marq==1) fini=1;
-                else marq=1;
-
-              }
-        }
-    }
-  if (ndt>0)
-    {
-      size=MEDfieldnValue(fid,nomchamp,numdtsa,numo,type_ent,type_geo);
-      if (size<0)
-        {
-          Cerr<<"Problem when reading the size for the field "<<nomchamp<<finl;
-          Process::exit();
-        }
-    }
-  temps_sauv.resize_array(ndt);
-  MEDfileClose(fid);
-  return nomchamp;
-}
 #endif
-
-void traite_nom_fichier_med(Nom& nom_fic)
-{
-  Nom nom_fic2(nom_fic);
-  nom_fic2.prefix(".med");
-  if (nom_fic2==nom_fic)
-    {
-      Cerr<<"Error : the med field must have a .med extension"<<finl;
-      Cerr<<nom_fic2 <<" "<<nom_fic<<finl;
-      Process::exit();
-    }
-
-  nom_fic2.prefix("_0000");
-  nom_fic2+=".med";
-  nom_fic=nom_fic2.nom_me(nom_fic.me());
-  // on essaye en premier les fichiers _0000.med
-  {
-    ifstream test(nom_fic);
-    if (!test)
-      {
-        nom_fic=nom_fic2;
-      }
-  }
-  {
-    ifstream test(nom_fic);
-    if (!test)
-      {
-        // on essaye Cas_0000.med
-        nom_fic=nom_fic2.nom_me(0);
-        ifstream test2(nom_fic);
-        if (!test2)
-          {
-            Cerr<<"med file "<<nom_fic<<" not found."<<finl;
-            Process::exit();
-          }
-      }
-  }
-  //  Cerr<<"File med read: "<<nom_fic<<finl;
-}
-
-/*! @brief Permet de lire le nom d'un champ particulier exemple "toto toto" ou "toto\ toto"
- *
- *     si le premier mot commence par " on concatene les mots jusqu'au dernier. Si on veut 2 espaces on est oblige de mettre "a\ \ a"
- *
- */
-void lire_nom_med(Nom& nom_champ, Entree& s)
-{
-
-  s>>nom_champ;
-  if (nom_champ[0]=='"')
-    {
-      nom_champ.suffix("\"");
-      nom_champ.prefix("\\");
-      Nom  suite;
-      while(nom_champ[nom_champ.longueur()-2]!='"')
-        {
-          //s.get(suite,1);
-          s >> suite;
-          nom_champ+=" ";
-          nom_champ+=suite;
-          nom_champ.prefix("\\");
-          Cerr<<nom_champ<<finl;
-          //Cerr<<nom_champ[nom_champ.longueur()-2]<<'"'<<finl;
-          //exit();
-        }
-      // nom_champ="champ vectoriel  1";
-      Cerr<<nom_champ<<finl;
-      nom_champ.prefix("\"");
-      Cerr<<nom_champ<<finl;
-    }
 }

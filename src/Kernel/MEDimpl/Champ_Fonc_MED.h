@@ -89,7 +89,7 @@ protected:
   med_geometry_type type_geo;
 #ifdef MEDCOUPLING_
   INTERP_KERNEL::NormalizedCellType cell_type;
-  MEDCoupling::TypeOfField field_type;
+  MEDCoupling::TypeOfField field_type = MEDCoupling::ON_CELLS;
   std::vector< std::pair<int,int> > time_steps_;
 #endif
 #endif
@@ -97,7 +97,6 @@ protected:
   Nom nom_champ_dans_fichier_med_;
   ArrOfInt filter;
   ArrOfDouble temps_sauv_;
-  bool use_medcoupling_;
 
   virtual void set_param(Param& param);
   void readOn_old_syntax(Entree& is, Nom& chaine_lue, bool& nom_decoup_lu);
@@ -137,8 +136,6 @@ inline DoubleVect& Champ_Fonc_MED::valeur_a(const DoubleVect& position, DoubleVe
   return le_champ().valeur_a_elem(position,tab_valeurs,le_poly(0));
 }
 
-
-// J'ajoute la methode valeur_a_elem()
 inline DoubleVect& Champ_Fonc_MED::valeur_a_elem(const DoubleVect& position, DoubleVect& tab_valeurs, int le_poly) const
 {
   // Le codage de cette methode passe par valeur_a() et ignore l'entier le_poly
@@ -178,12 +175,5 @@ inline int Champ_Fonc_MED::remplir_coord_noeuds_et_polys(DoubleTab& coord, IntVe
   return le_champ().remplir_coord_noeuds_et_polys(coord, elems);
 }
 
-/**
- * Read field with MEDFile API (soon deprecated)
- */
-class Champ_Fonc_MEDfile: public Champ_Fonc_MED
-{
-  Declare_instanciable(Champ_Fonc_MEDfile);
-};
 
 #endif

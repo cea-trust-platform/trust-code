@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,11 +22,9 @@
 #include <Champs_Fonc.h>
 
 /*! @brief Classe Pb_MED Classe pour postraiter relire des fichiers med et les postraiter
- *
  */
 class Pb_MED : public Probleme_base
 {
-
   Declare_instanciable(Pb_MED);
 
 public:
@@ -36,24 +34,17 @@ public:
   Equation_base& equation(int) override;
   int comprend_champ(const Motcle& ) const;
 
-  inline const ArrOfDouble& temps_sauv() const
-  {
-    return temps_sauv_ ;
-  };
-  inline Champs_Fonc& get_champs_fonc_post()
-  {
-    return champs_fonc_post;
-  };
+  inline const ArrOfDouble& temps_sauv() const   { return temps_sauv_ ;      }
+  inline Champs_Fonc& get_champs_fonc_post()     { return champs_fonc_post;  }
 
+  /////////////////////////////////////////////////////
   //Methodes de l interface des champs postraitables
   /////////////////////////////////////////////////////
   void creer_champ(const Motcle& motlu) override;
   const Champ_base& get_champ(const Motcle& nom) const override;
   void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
-  /////////////////////////////////////////////////////
 
 protected :
-
   Champs_Fonc champs_fonc_post;
 
 private:
@@ -71,19 +62,16 @@ private:
   //pas non plus de champs_compris_.
 
   //Champs_compris champs_compris_;
-
-
 };
+
+
 
 class Pbc_MED : public Probleme_Couple
 {
-
   Declare_instanciable(Pbc_MED);
+
 private:
   Schema_Temps sch_;
 };
+
 #endif
-
-
-
-

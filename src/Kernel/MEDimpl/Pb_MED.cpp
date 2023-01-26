@@ -19,6 +19,7 @@
 #include <Postraitement.h>
 #include <Interprete_bloc.h>
 #include <Domaine_dis_cache.h>
+#include <trust_med_utils.h>
 
 Implemente_instanciable(Pb_MED,"Pb_MED",Probleme_base);
 Implemente_instanciable(Pbc_MED,"Pbc_MED",Probleme_Couple);
@@ -77,10 +78,8 @@ Entree& Pbc_MED::readOn(Entree& is )
         }
     }
 
-
   for (int i=0; i<nb_problemes(); i++)
     ref_cast(Probleme_base,probleme(i)).init_postraitements();
-
 
   // On oublie les axi, car les inconnues ont deja eu le traitement
   // apres l'init pour ecrire correctement les geom
@@ -93,11 +92,9 @@ Entree& Pbc_MED::readOn(Entree& is )
   Cerr<<"nbpasdetemps "<<nbpasdetemps<<finl;
   for (int i=0; i<nbpasdetemps; i++)
     {
-
       schema_temps().mettre_a_jour();
       schema_temps().changer_temps_courant(temps_sauv[i]);
       postraiter();
-
     }
 
   if (nbpasdetemps==1)
@@ -139,11 +136,7 @@ Entree& Pb_MED::readOn(Entree& is )
   le_domaine_dis = Domaine_dis_cache::Build_or_get(typ, dom);
 
   Cerr<<"Reading the name of existing fields in "<<nom_fic<<finl;
-#ifdef MED_
-  medinfochamp_existe(nom_fic, nomschampmed, domaine(), temps_sauv_);
-#else
-  med_non_installe();
-#endif
+  read_med_field_names(nom_fic, nomschampmed, temps_sauv_);
   Cerr<<"temps_sauv "<<temps_sauv_<<finl;
   Probleme_base::readOn(is);
   return is;

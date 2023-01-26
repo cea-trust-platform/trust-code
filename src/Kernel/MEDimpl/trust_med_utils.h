@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,16 +13,36 @@
 *
 *****************************************************************************/
 
-#ifndef LireMEDfile_included
-#define LireMEDfile_included
+#ifndef med_utils_included
+#define med_utils_included
 
-/*! @brief Classe LireMEDfile Lit un fichier MED (avec MEDfile)
- *
- */
-#include <LireMED.h>
+#include <Process.h>
+#include <Nom.h>
+#include <TRUSTTabs_forward.h>
+#include <med++.h>
 
-class LireMEDfile : public LireMED
+////
+//// Useful MED-related fonctions
+////
+
+class Char_ptr;
+class Entree;
+class Nom;
+
+inline void med_non_installe()
 {
-  Declare_instanciable(LireMEDfile);
-};
+  Process::exit("This version has not been built with MED library.");
+}
+void lire_nom_med(Nom& nom_champ, Entree& is);
+void test_version(Nom& nom) ;
+void dimensionne_char_ptr_taille(Char_ptr& nom, int taille_d_un_mot, int nb=1);
+void traite_nom_fichier_med(Nom& nom_fic);
+void read_med_field_names(const Nom& nom_fic, Noms& noms_chps, ArrOfDouble& temps_sauv);
+void renum_conn(IntTab& les_elems2, Nom& type_elem, int sens);
+
+#ifdef MED_
+med_geometry_type type_geo_trio_to_type_med(const Nom& type_elem);
+med_geometry_type type_geo_trio_to_type_med(const Nom& type_elem_,med_axis_type& rep);
+#endif
+
 #endif
