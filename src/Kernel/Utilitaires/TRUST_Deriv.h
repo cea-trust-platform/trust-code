@@ -273,56 +273,49 @@ Objet_U * TRUST_Deriv<_CLASSE_>::typer(const char * type)
  *   ou
  *   - DerObjU
  */
-class TRUST_Deriv_Objet_U : public TRUST_Deriv<Objet_U>
+class TRUST_Deriv_Objet_U: public Objet_U_ptr
 {
+  Declare_instanciable_sans_constructeur(TRUST_Deriv_Objet_U);
 protected:
-  int duplique() const override
-  {
-    TRUST_Deriv_Objet_U *xxx = new TRUST_Deriv_Objet_U(*this);
-    if (!xxx) Process::exit("Not enough memory !");
-    return xxx->numero();
-  }
+  void set_Objet_U_ptr(Objet_U *objet) override;
 
-  static Objet_U* cree_instance()
-  {
-    TRUST_Deriv_Objet_U *instan = new TRUST_Deriv_Objet_U();
-    if (!instan) Process::exit("Not enough memory !");
-    return instan;
-  }
+private:
+  Objet_U *pointeur_;
 
 public:
-  TRUST_Deriv_Objet_U() : TRUST_Deriv<Objet_U>() { }
-  TRUST_Deriv_Objet_U(const TRUST_Deriv_Objet_U& t) : TRUST_Deriv<Objet_U>(t) { }
-  TRUST_Deriv_Objet_U(const Objet_U& t) : TRUST_Deriv<Objet_U>() { recopie(t); }
+  TRUST_Deriv_Objet_U();
+  TRUST_Deriv_Objet_U(const TRUST_Deriv_Objet_U& t);
+  TRUST_Deriv_Objet_U(const Objet_U& t);
+  const Type_info& get_info_ptr() const override;
+  const TRUST_Deriv_Objet_U& operator=(const Objet_U& t);
+  const TRUST_Deriv_Objet_U& operator=(const TRUST_Deriv_Objet_U& t);
+  int reprendre(Entree& is) override;
+  int sauvegarder(Sortie& os) const override;
+  void deplace(TRUST_Deriv_Objet_U& deriv_obj);
+  void detach();
 
-  const TRUST_Deriv_Objet_U& operator=(const Objet_U& t)
+  Objet_U* typer(const char *nom_type);
+  int associer_(Objet_U& objet) override;
+
+  inline const Objet_U& valeur() const
   {
-    detach();
-    recopie(t);
-    return *this;
+    assert(pointeur_ != 0);
+    assert(get_Objet_U_ptr_check() || 1);
+    return *pointeur_;
   }
 
-  const TRUST_Deriv_Objet_U& operator=(const TRUST_Deriv_Objet_U& t)
+  inline Objet_U& valeur()
   {
-    detach();
-    if (t.non_nul()) recopie(t.valeur());
-    else Objet_U_ptr::set_Objet_U_ptr((Objet_U *) 0); /* Elie Saikali : Attention pas la classe mere ! */
-    return *this;
+    assert(pointeur_ != 0);
+    assert(get_Objet_U_ptr_check() || 1);
+    return *pointeur_;
   }
 
-  int reprendre(Entree& is) override { return valeur().reprendre(is); }
-  int sauvegarder(Sortie& os) const override { return valeur().sauvegarder(os); }
-
-  /* Ici on a retire les operateurs de conversion implicite
-   * Cette fonction detruit l'objet en reference s'il existe et le remplace par l'objet deriv_obj.valeur()
-   * deriv_obj devient une reference nulle
-   */
-  void deplace(TRUST_Deriv_Objet_U& deriv_obj)
+  inline Objet_U* operator ->() const
   {
-    detach();
-    Objet_U& objet = deriv_obj.valeur();
-    set_Objet_U_ptr(&objet);
-    deriv_obj.set_Objet_U_ptr((Objet_U*) 0);
+    assert(pointeur_ != 0);
+    assert(get_Objet_U_ptr_check() || 1);
+    return pointeur_;
   }
 };
 
