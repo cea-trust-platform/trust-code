@@ -6,7 +6,6 @@ Lire_MED {
     domain dom
     file polyedre_med30.med
     mesh mesh
-    no_family_names_from_group_names
 }
 Ecrire_med dom polyedre2.med
 
@@ -15,10 +14,8 @@ Lire_MED {
     domain dom
     file NC_hexaedrons_fluidmesh_polyhedra.med
     mesh FluidMesh_1
-    no_family_names_from_group_names
 }
 Ecrire_fichier dom dom.geom
-Ecrire_medfile dom toto.med # Test also the keyword to use MEDFile (soon deprecated) #
 Ecrire_med dom toto.med
 domaine dom2
 Lire_MED {

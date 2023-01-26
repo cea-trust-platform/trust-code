@@ -1,0 +1,8 @@
+#!/bin/bash
+
+source $TRUST_MEDCOUPLING_ROOT/env.sh || exit 1
+
+# Is the group 'inner' correctly removed from the result?
+python -c "import medcoupling as mc;print(mc.GetMeshGroupsNames('mesh_no_inner_0000.med', 'dom'))" | grep -v inner
+exit $?
+

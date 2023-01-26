@@ -7,7 +7,6 @@ domaine dom
 Lire_MED {
     domain dom
     file all.med
-    no_family_names_from_group_names
 }
 /* Creation de sous zones */
 Read_file dom_ssz.geo ;
@@ -56,11 +55,11 @@ Regroupebord newdom sym1 { F_2D_32 F_2D_43 }
 Regroupebord newdom sym2 { F_2D_33 F_2D_44 }
  */
 /* test temporaire avec une seule sous-zone */
-Regroupebord newdom inlet { F_2D_41 }
-Regroupebord newdom outlet { F_2D_42 }
-Regroupebord newdom wall { F_2D_34 F_2D_45 }
-Regroupebord newdom sym1 { F_2D_43 }
-Regroupebord newdom sym2 { F_2D_44 }
+Regroupebord newdom inlet { G_2D_11 }
+Regroupebord newdom outlet { G_2D_12 }
+Regroupebord newdom wall { G_2D_15 G_2D_5 }
+Regroupebord newdom sym1 { G_2D_13 }
+Regroupebord newdom sym2 { G_2D_14 }
 
 VEFPreP1B dis
 

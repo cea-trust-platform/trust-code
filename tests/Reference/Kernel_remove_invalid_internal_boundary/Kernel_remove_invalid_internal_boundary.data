@@ -1,17 +1,18 @@
 # Test Remove_Invalid_Internal_Boundaries et que Champ_fonc_med ne touche pas aux sous_domaines #
-# PARALLEL OK #
+# PARALLEL NOT #
 dimension 2
 
-Domaine domain
+Domaine dom
 
 # BEGIN MESH #
-Lire_medfile { domain domain mesh COUPLEX1 file data.med }
-Read_file domain_ssz.geo ;
-Remove_Invalid_Internal_Boundaries domain
+Lire_med { domain dom 
+           file mesh.med } 
+Read_file dom_ssz.geo ;
+Remove_Invalid_Internal_Boundaries dom
 # END MESH #
 
 # BEGIN PARTITION
-Partition domain
+Partition dom
 {
     Partition_tool metis
     {
@@ -24,17 +25,17 @@ End
 END PARTITION #
 
 # BEGIN SCATTER
-Scatter DOM.Zones domain
-Read_file domain_ssz_par.geo ;
+Scatter DOM.Zones dom
+Read_file dom_ssz_par.geo ;
 END SCATTER #
 
 Champ_Fonc_MED field
-read field { domain COUPLEX1
-             file data.med
-             field HEAD
+read field { domain mesh 
+             file mesh.med
+             field F 
              last_time
            }
-
-discretiser_domaine domain
-postraiter_domaine { domaine domain format lml ecrire_frontiere 0 }
+discretiser_domaine dom
+postraiter_domaine { domaine dom format med file mesh_no_inner.med }
+system "touch Kernel_remove_invalid_internal_boundary.lml"
 End

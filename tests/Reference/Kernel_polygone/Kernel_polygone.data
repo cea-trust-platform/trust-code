@@ -7,7 +7,6 @@ domaine dom
 Lire_MED {
     domain dom
     file maillage_simple_grp.med
-    no_family_names_from_group_names
 }
 
 Ecrire_fichier_formatte dom dom.geom

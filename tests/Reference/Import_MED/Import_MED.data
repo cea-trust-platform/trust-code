@@ -21,7 +21,6 @@ domaine dom2
 Lire_Med { 
    domaine dom 
    file rectangle_a1.med 
-   no_family_names_from_group_names
    } /* Read an old 3 format */
 Ecrire_medfile dom new_rectangle_a1.med /* Convert to new format */
 Read_file dom_ssz.geo ;
@@ -84,10 +83,10 @@ Solide
             temperature Champ_Uniforme_Morceaux dom 1 { defaut -1 centre 1.  }
         }
         boundary_conditions {
-            FAM_-4_GAUCHE  paroi_adiabatique
-            FAM_-5_HAUT  paroi_adiabatique
-            FAM_-6_DROIT  paroi_adiabatique
-            FAM_-7_BAS  paroi_adiabatique
+            GAUCHE  paroi_adiabatique
+            HAUT  paroi_adiabatique
+            DROIT  paroi_adiabatique
+            BAS  paroi_adiabatique
         }
     }
     Post_processing
@@ -121,10 +120,10 @@ Solide
                                             last_time  }
         }
         boundary_conditions {
-            FAM_-4_GAUCHE  paroi_adiabatique
-            FAM_-5_HAUT  paroi_adiabatique
-            FAM_-6_DROIT  paroi_adiabatique
-            FAM_-7_BAS  paroi_adiabatique
+            GAUCHE  paroi_adiabatique
+            HAUT  paroi_adiabatique
+            DROIT  paroi_adiabatique
+            BAS  paroi_adiabatique
         }
     }
     Post_processing

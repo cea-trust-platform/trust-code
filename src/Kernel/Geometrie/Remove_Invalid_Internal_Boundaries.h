@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,24 +18,14 @@
 
 #include <Interprete_geometrique_base.h>
 
-/*! @brief : class Remove_Invalid_Internal_Boundaries
- *
- *  <Description of class Remove_Invalid_Internal_Boundaries>
- *
- *
- *
+/*! @brief Allows to remove internal boundary from a domain, ie boundary which faces are actually used in two elements.
  */
-
 class Remove_Invalid_Internal_Boundaries : public Interprete_geometrique_base
 {
-
   Declare_instanciable(Remove_Invalid_Internal_Boundaries) ;
 
 public :
   Entree& interpreter_(Entree& is) override;
-
-protected :
-
 };
 
 #endif /* Remove_Invalid_Internal_Boundaries_inclus */
